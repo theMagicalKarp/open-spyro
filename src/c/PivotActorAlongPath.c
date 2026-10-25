@@ -84,7 +84,8 @@ int PivotActorAlongPath(int *actor, PathData *path, int thresh, int speed,
     list = g_apSaveMenuAnimActorListBlock;
     while ((peer = (unsigned char *)(*(list++))) != 0) {
       if (ACTOR_RAW(peer, unsigned char, group) == kind &&
-          (unsigned int)ACTOR_RAW(peer, unsigned char, mode) < 0x80 &&
+          (unsigned int)ACTOR_RAW(peer, unsigned char, mode) <
+              ACTOR_MODE_DORMANT &&
           ACTOR_RAW(peer, unsigned char, subMode) == 1) {
         break;
       }

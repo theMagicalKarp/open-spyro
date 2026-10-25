@@ -1,7 +1,7 @@
 /* Credits_Update (0x8007AA50, credits overlay, 5504 B).
  *
  * Credits-sequence frame update (the Draw half is Credits_Draw).
- * While the sequence gate g_nGamestate0fMode is -1 it first BUILDS the sequence:
+ * While the sequence gate g_nCreditsMode is -1 it first BUILDS the sequence:
  * clears the 100-entry glyph pool (0x1C stride, base g_pCreditsGlyphPool =
  * Credits_OverlayEnd), loads the four credits VRAM strips through
  * CdReadSyncSectors, waits on the CD stream, relocates the loaded script
@@ -15,7 +15,7 @@
  * small punctuation table.  A second pass re-centres the finished line on
  * (x - 0x100) / 2 and seeds each glyph's per-frame drift/colour deltas, and
  * two more passes run the per-glyph state machine (1 = fly in, 3 = fall
- * out) and trim the pool tail.  Finally the 5-way g_nGamestate0fMode state machine
+ * out) and trim the pool tail.  Finally the 5-way g_nCreditsMode state machine
  * pages the next credits screen in through StartCdReadAsync / CopyWords.
  *
  * ---- STATE 2026-09-02 (first session; superseded, see 2026-10-04-1 below) --
@@ -296,7 +296,7 @@ typedef struct CamTrack {
 void Credits_Update(void) {
   short rect0[4];
 
-  if (g_nGamestate0fMode == -1) {
+  if (g_nCreditsMode == -1) {
     char *pool = Credits_OverlayEnd;
     int sector;
     if (g_pCreditsScratchBuf == 0) {
@@ -337,7 +337,7 @@ void Credits_Update(void) {
       g_nWorldRenderMeshChunkCount = g_nWorldCollisionTriCount;
       S.l600 = g_nLevelArchiveChunkOffset;
       S.h604 = g_nLevelArchiveChunkSize_n;
-      g_nScriptedMobCount = 0;
+      g_nPortalCount = 0;
       CdReadSyncSectors(g_nCdBaseLba[0], src, S.h604,
                     S.l600 + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], 0x258);
     }
@@ -382,11 +382,11 @@ void Credits_Update(void) {
         }
       }
     }
-    g_nGamestate0fMode = 0;
+    g_nCreditsMode = 0;
     g_nCreditsPageIndex += 1;
   }
   if (g_pCreditsScrollHeader != 0) {
-    int gate = g_nGamestate0fMode;
+    int gate = g_nCreditsMode;
     if (gate >= 0) {
       int *rec = (int *)g_pCreditsScrollHeader;
       int t = rec[0] + g_nFrameStep;
@@ -414,7 +414,7 @@ void Credits_Update(void) {
           g_nCameraEulerYaw = CAM_KEY(h, yaw);
         }
       } else {
-        g_nGamestate0fMode = gate + 1;
+        g_nCreditsMode = gate + 1;
       }
     }
   }
@@ -437,7 +437,7 @@ void Credits_Update(void) {
         g_nGenericCountdown = 0xF;
       }
       if (g_nGenericCountdown == 0xF) {
-        g_nGamestate0fMode = 0x63;
+        g_nCreditsMode = 0x63;
       }
     }
   }
@@ -704,7 +704,7 @@ void Credits_Update(void) {
     }
   }
   {
-    int st = g_nGamestate0fMode;
+    int st = g_nCreditsMode;
     if (st != -1) {
       if (st > 0) {
         RestartStalledCdRead();
@@ -714,21 +714,21 @@ void Credits_Update(void) {
         if (CallCdSync(1, 0) != 2) {
           return;
         }
-        st = g_nGamestate0fMode;
+        st = g_nCreditsMode;
       }
       if ((unsigned int)st < 5) {
         switch (st) {
         case 0: {
           int sector = g_anCreditsPageSectors[g_nCreditsPageIndex * 2];
           StartCdReadAsync(g_nCdBaseLba[0], g_pCreditsLoadBuf, 0x800, sector, 0x258);
-          g_nGamestate0fMode = g_nGamestate0fMode + 1;
+          g_nCreditsMode = g_nCreditsMode + 1;
           break;
         }
         case 1:
           CopyWords(g_nWorldTimAudioChunkOffset, g_pCreditsLoadBuf, 0x1D0);
           StartCdReadAsync(g_nCdBaseLba[0], g_pCreditsLoadBuf, 0x20000,
                         g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], 0x258);
-          g_nGamestate0fMode = g_nGamestate0fMode + 1;
+          g_nCreditsMode = g_nCreditsMode + 1;
           break;
         case 2: {
           short rect[4];
@@ -748,11 +748,11 @@ void Credits_Update(void) {
           StartCdReadAsync(g_nCdBaseLba[0], g_pCreditsLoadBuf, span,
                         g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2] + 0x20000,
                         0x258);
-          g_nGamestate0fMode = g_nGamestate0fMode + 1;
+          g_nCreditsMode = g_nCreditsMode + 1;
           break;
         }
         case 3:
-          g_nPreserveMobIdx = 0;
+          g_nEnteredPortalIdx = 0;
           break;
         case 4: {
           short rect[4];
@@ -782,9 +782,9 @@ void Credits_Update(void) {
           g_nLevelArchiveByteSize = g_nLevelArchiveChunkSize;
           g_nLevelArchiveBaseLba = g_nLevelArchiveChunkOffset;
           if (g_nCreditsPageIndex % 10 < 9) {
-            g_nGamestate0fMode = 0;
+            g_nCreditsMode = 0;
           } else {
-            g_nGamestate0fMode = 3;
+            g_nCreditsMode = 3;
           }
           g_nCreditsPageIndex += 1;
           break;

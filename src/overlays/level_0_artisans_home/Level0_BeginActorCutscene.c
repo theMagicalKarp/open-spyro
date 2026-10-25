@@ -1,8 +1,8 @@
 /* Level0_BeginActorCutscene (0x8007AEA0, level_0_artisans_home overlay).
  *
  * Begin the level's gem/dragon cutscene focused on `actor`: enter gamestate
- * 0xC, clear the cutscene timers (g_nGamestate0cSubstate..F0), record the focus actor
- * (g_pGamestate0cActor) and its path end (g_pGamestate0cRecord = actor pool + count*0x58),
+ * 0xC, clear the cutscene timers (g_nActorCutsceneSubstate..F0), record the focus actor
+ * (g_pActorCutsceneActor) and its path end (g_pActorCutsceneRecord = actor pool + count*0x58),
  * then aim the cutscene camera: yaw from the XY delta between the camera
  * anchor (g_anCameraPos..) and the actor position (arctan via ArcTan2),
  * pitch/roll from the transformed offset (SubtractVector + VectorLength),
@@ -31,22 +31,22 @@ void Level0_BeginActorCutscene(Actor *actor) {
 
   p = actor->state;
   g_nGamestate = GS_ACTOR_CUTSCENE;
-  g_nGamestate0cSubstate = 0;
-  g_nGamestate0cTimer = 0;
-  g_nGamestate0cMenuCursor = 0;
-  g_pGamestate0cActor = (unsigned char *)actor;
+  g_nActorCutsceneSubstate = 0;
+  g_nActorCutsceneTimer = 0;
+  g_nActorCutsceneMenuCursor = 0;
+  g_pActorCutsceneActor = (unsigned char *)actor;
   count = *p;
   pos = g_anCameraPos;
   g_nGameplayBlocked = 1;
   g_nGamePaused = 1;
-  g_pGamestate0cRecord = g_pActorListBase + count * ACTOR_SIZE;
-  g_nGamestate0cCamYawStart = ArcTan2(pos[0] - ACTOR_RAW(actor, int, posX),
+  g_pActorCutsceneRecord = g_pActorListBase + count * ACTOR_SIZE;
+  g_nActorCutsceneCamYawStart = ArcTan2(pos[0] - ACTOR_RAW(actor, int, posX),
                              g_nCameraPosY - ACTOR_RAW(actor, int, posY), 1);
   SubtractVector(vec, pos, &actor->posX);
-  g_nGamestate0cCamRadiusStart = VectorLength(vec, 0);
-  g_nGamestate0cCamHeightStart = g_nCameraPosZ;
+  g_nActorCutsceneCamRadiusStart = VectorLength(vec, 0);
+  g_nActorCutsceneCamHeightStart = g_nCameraPosZ;
   b = actor->rotZ;
-  g_nGamestate0cCamRadiusGoal = 0x52E;
-  g_nGamestate0cCamYawGoal = ((b << 4) - 0x312) & 0xFFF;
-  g_nGamestate0cCamHeightGoal = ACTOR_RAW(actor, int, posZ) + 0x58F;
+  g_nActorCutsceneCamRadiusGoal = 0x52E;
+  g_nActorCutsceneCamYawGoal = ((b << 4) - 0x312) & 0xFFF;
+  g_nActorCutsceneCamHeightGoal = ACTOR_RAW(actor, int, posZ) + 0x58F;
 }

@@ -216,13 +216,13 @@ void *UnpackWorldDataChunks(int *p, int flag) {
     return p;
   }
 
-  /* section: scripted mobs */
+  /* section: portals */
   n7 = *p;
   p++;
-  g_nScriptedMobCount = n7;
+  g_nPortalCount = n7;
   i = 0;
   if (n7 > 0) {
-    int **pe = (int **)g_apScriptedMobEntries;
+    int **pe = (int **)g_apPortals;
 
     do {
       int j;
@@ -254,7 +254,7 @@ void *UnpackWorldDataChunks(int *p, int flag) {
       pe++;
       i++;
       p = (int *)((char *)base + *base);
-    } while (i < g_nScriptedMobCount);
+    } while (i < g_nPortalCount);
   }
 
   /* section: mob id -> entry lookup */

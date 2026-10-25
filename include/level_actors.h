@@ -12,15 +12,15 @@
 
 extern void ComputeCameraToTargetAngle(int *out);
 extern int g_anRotBillboardOffsetsRand[][3];
-extern Actor *g_pThiefEggDrop;
+extern Actor *g_pLockedChestReward;
 extern int g_anSpuVoiceRowPitch[][7];                        /* g_aSpuVoiceRows[i].nPitch (rows are 7 words) */
 extern int g_anSpuVoiceRowPitchStep[][7];                    /* g_aSpuVoiceRows[i].nPitchStep */
-extern int g_nGamestate0cDialogPage;
+extern int g_nActorCutsceneDialogPage;
 extern Actor g_abHudIconActorRecords[];                      /* the four HUD class icons */
 extern int g_anCollisionResolvedPos;                         /* collision contact point */
 extern short g_anCosineLut[];
 extern int g_anFlightTargetTally[];                          /* tally collected, per class */
-extern int g_anLevelDragonsRescued[];                        /* per-g_nLevelIntroIndex completion counters */
+extern int g_anLevelDragonsRescued[];                        /* per-g_nLevelIndex completion counters */
 extern int g_anLevelEggsRecovered[];
 extern short g_anSineLut[];
 extern int g_anSpyroMotionVec;                               /* look-at offset */
@@ -38,7 +38,7 @@ extern void (*g_pfnLevelBeginActorCutscene)(Actor *actor);
 extern void (*g_pfnLevelEmitParticles)(int a, int effect, int *pos, void *c);
 extern void (*g_pfnLevelFallImpactCallback)(void);           /* out-of-time handler */
 extern Actor *(*g_pfnLevelSpawnActor)(int type, Actor *parent);
-extern Actor *g_pLevelOverlayInitRecord;                     /* Sparx, or null when absent */
+extern Actor *g_pSparxActor;                     /* Sparx, or null when absent */
 extern unsigned char *g_pLevelSampleBankEntries;             /* sound definitions, 20 bytes each */
 extern unsigned char *g_pLevelSampleBankHeader;              /* sound id table */
 /* Sample-bank entry pitch (u16 at +0xA of the 0x14-byte entry; full layout
@@ -58,7 +58,7 @@ extern void VectorToSVectorShr2(short *d, int *s);
 /* Hoisted: declared identically (bar parameter names) in every includer. */
 extern int CastRayWorldAndActors(int *a, int *b);
 extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
-extern int g_anLevelReadyFlagBlock[]; /* == g_nLevelReadyFlag; overlays read it as the balloon sequence stage (SPY.readyFlag) */
+extern int g_anSparxHealthBlock[]; /* == g_nSparxHealth (SPY.sparxHealth): 3 gold .. 1 green, 0 Sparx gone, -1 the fatal hit was taken */
 extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
 extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
 extern int PickupGroupHasLiveActor(int stage);

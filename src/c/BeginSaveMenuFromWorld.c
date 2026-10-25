@@ -68,7 +68,8 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   *(volatile unsigned char *)&g_bSpyroAnimFrame = 1;
   *(volatile unsigned char *)&g_bSpyroSubFrameTimer = 0;
   g_nSaveMenuSpyroFromYaw = yaw;
-  /* state word 1 is the pool index of the actor the dragon refers to */
+  /* state word 1 is the pool index of the actor the dragon refers to; the
+     int add before the cast is load-bearing (((int *)owner)[1] reorders cse) */
   rec = (char *)(*(int *)(owner + 4) * sizeof(Actor) + (int)g_pActorListBase);
   {
     register int ry asm("$2");
@@ -88,12 +89,11 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   g_nSaveMenuDragonToAngle = yw;
   EBB_BREAK();
   g_nSaveMenuDragonToZ = SPY_PREV[-4] + 0x170;
-  if (g_pLevelOverlayInitRecord != 0) {
-    g_nSaveMenuOverlayFromAngle = ArcTan2(
-        ((Actor *)g_pLevelOverlayInitRecord)->posX - SPY_PREV[-6],
-        ((Actor *)g_pLevelOverlayInitRecord)->posY - g_nSpyroWorldPosY, 1);
-    SubtractVector(vec, &((Actor *)g_pLevelOverlayInitRecord)->posX,
-                   &SPY_PREV[-6]);
+  if (g_pSparxActor != 0) {
+    g_nSaveMenuOverlayFromAngle =
+        ArcTan2(((Actor *)g_pSparxActor)->posX - SPY_PREV[-6],
+                ((Actor *)g_pSparxActor)->posY - g_nSpyroWorldPosY, 1);
+    SubtractVector(vec, &((Actor *)g_pSparxActor)->posX, &SPY_PREV[-6]);
     g_nSaveMenuOverlayFromDist = VectorLength(vec, 0);
     g_nSaveMenuOverlayToDist = 0x600;
     g_nSaveMenuOverlayToAngle = (g_nSaveMenuSpyroToYaw + 0x800) & 0xFFF;

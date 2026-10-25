@@ -8,6 +8,8 @@
    state 4 doubled. flags bit 0 lifts the probe point by 0x12C+radius
    during the checks. Returns 1 on actor contact, 2 on world collision,
    0 when the move was committed. */
+/* Local prototypes, not funcs.h: its caller-side MoveActorByDelta splits the
+   DeltaVec into three ints and conflicts with the definition below. */
 extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
                                         Actor *actor, int c);
 extern void RefreshActorDerivedState(Actor *actor, int mode);

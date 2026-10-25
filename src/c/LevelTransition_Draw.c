@@ -9,7 +9,7 @@
    with a temporary pitch-parallax view matrix while the intro countdown
    (g_nLevelIntroParallaxCountdown, -2/frame) runs. Ends with the standard
    2-vblank frame submit (0x8001a050, 956 bytes). */
-void Gamestate01_09_Draw(void) {
+void LevelTransition_Draw(void) {
   int r;
   int g;
   int b;

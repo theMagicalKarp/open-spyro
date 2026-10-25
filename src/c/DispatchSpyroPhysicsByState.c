@@ -1,8 +1,10 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "pad_buttons.h"
 #include "spyro_block.h"
+#include "spyro_state.h"
 
 typedef void (*ParticleSpawnFn)(int kind, int type, int *pos, int *vel);
 
@@ -65,7 +67,7 @@ void DispatchSpyroPhysicsByState(void) {
   case 42:
   case 43:
     if (g_nPadDirectionalIdleFlag != 0 && (g_dwPadHeld & PAD_TRIANGLE)) {
-      g_nCameraNextMode = 0x80000009;
+      g_nCameraNextMode = (CAM_HELD | CAM_MODE_FREE_LOOK);
     }
     AverageSpyroPlatformMotion();
     AdvanceSpyroPhysics();
@@ -118,7 +120,7 @@ void DispatchSpyroPhysicsByState(void) {
     } else {
       g_nSpyroMoveTargetMag = g_anSpyroSlopeSpeedTargets[0];
     }
-    if (SPY[SPY_STATE] == 3) {
+    if (SPY[SPY_STATE] == SPYRO_ST_STOP) {
       CopyVector(puff, &SPY[SPY_MOTION]);
       RShiftVector3(puff, 6);
       ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, 0x21, puff, 0);
@@ -241,7 +243,7 @@ void DispatchSpyroPhysicsByState(void) {
     if (SPY[SPY_WALL_SLIDE] == 0) {
       ProbeSpyroLedgeForward();
     }
-    if ((g_dwSpyroRequestMask & 0x4000) && g_nSpyroStateFlags == 9) {
+    if ((g_dwSpyroRequestMask & SPYRO_RQ_NO_CLIP) && g_nSpyroStateFlags == 9) {
       g_nSpyroGroundHeightZ = FindGroundHeightBelow(&SPY[0], 0x10000);
     }
     break;
@@ -302,7 +304,7 @@ void DispatchSpyroPhysicsByState(void) {
       n = *timer + 8;
       *timer = n;
       g_nSpyroWorldPosZ = g_nSpyroTriggerEntryZ + 0x164;
-      if (g_nLevelReadyFlag >= 0) {
+      if (g_nSparxHealth >= 0) {
         if (n > 0x96) {
           *timer = 0x96;
         }
@@ -328,7 +330,7 @@ void DispatchSpyroPhysicsByState(void) {
     ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, 9, bubble, bubbleVel);
     break;
   }
-  if (SPY[SPY_STATE] == 0x1D) {
+  if (SPY[SPY_STATE] == SPYRO_ST_HAZARD) {
     g_nSpyroWorldPosZ -= g_nSpyroBreathTimer;
     if (g_nSpyroGroundHeightZ != 0) {
       g_nSpyroSwimWaterFloorZ = g_nSpyroGroundHeightZ;

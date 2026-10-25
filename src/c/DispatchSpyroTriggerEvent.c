@@ -1,6 +1,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 /* One-field record view: an aggregate access lets sched hoist the flags
@@ -9,7 +10,7 @@ typedef struct {
   unsigned int v;
 } TriggerFlags;
 
-#define ENT (((int **)g_apScriptedMobEntries)[mob])
+#define ENT (((int **)g_apPortals)[mob])
 #define FLAGS (((TriggerFlags *)g_adwSpyroTriggerEventBlock)->v)
 
 /* Moby record reached through g_pActorListBase (0x58 bytes). */
@@ -24,11 +25,12 @@ typedef struct {
 } TriggerActor;
 
 /* 0x80056f64 (0x41c): fires trigger region `idx` for `event` (1 = enter,
-   2 = inside). The region record's type byte picks the action: orb drop and
-   gem fly hand their data to Spyro, type 2 arms a ground-proximity latch,
-   4/5/7 raise trigger flags (5 also calls the level overlay hook), and 6 is
-   a scripted level warp that either starts the level transition or
-   repositions the destination moby on the near side of its portal plane. */
+   2 = inside). The region record's type byte (TriggerRegionType) picks the
+   action: hazard and lift regions hand their data to Spyro and raise their
+   event bit, the ground latch arms a proximity flag, charge-hold / rebound /
+   damage raise their trigger-event bits (rebound also spawns type 0xEA), and
+   the portal region warps: it either starts the level transition or
+   repositions the destination actor on the near side of its portal plane. */
 void DispatchSpyroTriggerEvent(int idx, int event) {
   int tmp[3];
   unsigned char *rec;
@@ -44,36 +46,36 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
   rec = ((unsigned char **)g_pTriggerRegionTable)[idx];
   data = (int *)(rec + 4);
   switch (rec[0]) {
-  case 0:
+  case TRIGGER_HAZARD:
     if (event == 1 && g_nSpyroWorldPosZ - g_nSpyroGroundHeightZ > 0x200) {
       g_nSpyroTriggerCurrentEventId = event;
     } else if (event == 2) {
-      g_pSpyroOrbDropTriggerData = data;
-      FLAGS = (FLAGS & 0x3FF) | 0x400;
+      g_pSpyroHazardRegionData = data;
+      FLAGS = (FLAGS & 0x3FF) | SPYRO_EV_HAZARD;
       SCHED_FENCE();
       g_nSpyroTriggerEntryZ = g_nSpyroGroundHeightZ;
-      g_nSpyroOrbDropSpawnIndex = data[1];
+      g_nSpyroHazardKind = data[1];
     }
     break;
-  case 1:
-    g_pSpyroGemFlyTriggerData = data;
-    FLAGS = (FLAGS & 0x3FF) | 0x800;
+  case TRIGGER_LIFT:
+    g_pSpyroLiftRegionData = data;
+    FLAGS = (FLAGS & 0x3FF) | SPYRO_EV_LIFT;
     break;
-  case 2:
+  case TRIGGER_GROUND_LATCH:
     if ((unsigned int)event < 2 &&
         g_nSpyroWorldPosZ - g_nSpyroGroundHeightZ <= 0x190) {
       data[0] = 1;
     }
     break;
-  case 4:
-    FLAGS = (FLAGS & 0x3FF) | 0x2000;
+  case TRIGGER_CHARGE_HOLD:
+    FLAGS = (FLAGS & 0x3FF) | SPYRO_EV_CHARGE_HOLD;
     break;
-  case 5:
-    FLAGS = (FLAGS & 0x3FF) | 0x8000;
+  case TRIGGER_REBOUND:
+    FLAGS = (FLAGS & 0x3FF) | SPYRO_EV_REBOUND;
     ((void (*)(int, int))g_pfnLevelSpawnActor)(0xEA, 0);
     break;
-  case 6:
-    ready = g_anLevelReadyFlagBlock;
+  case TRIGGER_PORTAL:
+    ready = g_anSparxHealthBlock;
     if (*ready < 0) {
       break;
     }
@@ -83,11 +85,11 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
       break;
     }
     one = 1;
-    g_nScriptedRespawnFlag = one;
+    g_nPortalTransitionActive = one;
     mob = data[1];
-    g_nPreserveMobIdx = mob;
+    g_nEnteredPortalIdx = mob;
     if (g_nActiveLevelId % 10 != 0) {
-      g_nScriptedMobTag = g_nActiveLevelId;
+      g_nReturnPortalLevelId = g_nActiveLevelId;
     }
     SubtractVector(tmp, (int *)((char *)ready - 0x164), ENT + 0xB);
     d = -tmp[0] * ENT[2] - tmp[1] * ENT[3] - tmp[2] * ENT[4];
@@ -114,9 +116,9 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
       p[3] = ENT[4] >> 1;
     }
     break;
-  case 7:
+  case TRIGGER_DAMAGE:
     if (event == 2 && g_anLevelTriggerStateSlots[data[0]] != 0) {
-      FLAGS = (FLAGS & 0x3FF) | 0x26;
+      FLAGS = (FLAGS & 0x3FF) | (SPYRO_EV_CHARGE_HIT | SPYRO_EV_HIT_TINT);
     }
     break;
   }

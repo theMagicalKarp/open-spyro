@@ -15,7 +15,7 @@
 #include "actor_type.h"
 
 /* Named actor-system entry points. */
-void BeginGemPickupOverlay(Actor *actor);
+void BeginDragonRescue(Actor *actor);
 void DespawnActorRecord(Actor *actor);
 void EncodeCachedVecToActorDirCode(Actor *actor);
 int GetSoundVoiceStatusByOwner(Actor *actor, int a);
@@ -25,7 +25,7 @@ void InsertActorIntoSpatialGrid(Actor *actor);
 unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner, unsigned int mode, unsigned char *pPlaying);
 void StopSoundVoicesByOwner(Actor *actor, int mode);
 void TickGemCutsceneActorAnims(struct Actor **list, int mode);
-void TickGemPickupBurstEntity(Actor *actor);
+void TickStatueBurstShard(Actor *actor);
 
 /* Actor behaviour helpers (main 0x80037E98..0x8003C994 and neighbours), not
  * yet named. */
@@ -65,6 +65,6 @@ void SetSpawnAnchorFromActor(Actor *actor, int heading);
 
 /* Hoisted: declared identically (bar parameter names) in every includer. */
 extern Actor *AllocActorRecordSlot(void);
-extern char *g_pGamestate0cRecord;
+extern char *g_pActorCutsceneRecord;
 
 #endif /* OPEN_SPYRO_ACTOR_H */

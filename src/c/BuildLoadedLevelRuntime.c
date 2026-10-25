@@ -10,10 +10,12 @@
    pointer + count published to a global and its stored offsets rebased onto
    the chunk itself. */
 
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 struct CameraParamBlock {
@@ -64,7 +66,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   g_nMotionTrailRibbonCount = 0;
   root = p;
   if (g_nActiveLevelId == 0x40) {
-    g_nLevelEggCount = 0;
+    g_nLevelKeyState = 0;
   }
   g_nLevelLoadUnreadWord = 0;
   if ((g_nActiveLevelId == 0x28) || (g_nActiveLevelId == 0x2A)) {
@@ -74,18 +76,19 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   }
   ResetPadFrameSubstepTable(&g_dwPadPressed);
   if (g_nFlightLevelActive == 0) {
-    g_nLevelReadyFlagStash = g_nLevelReadyFlag;
+    g_nSparxHealthStash = g_nSparxHealth;
   }
   if (g_anSpawnAnchorBlock[0] != 0) {
     CopyVector(g_anSpyroWorldPos, g_anSpawnAnchorBlock + 20);
     yaw = g_nLevelSpawnYaw >> 4;
     g_abSpyroPersistentEuler[2] = yaw;
-  } else if (g_nScriptedMobTag == 0) {
+  } else if (g_nReturnPortalLevelId == 0) {
     g_anLevelSpawnPos[0] = p[0];
     g_anLevelSpawnPos[1] = p[1];
     g_nLevelSpawnPosZ = p[2];
     g_nLevelSpawnYaw = ((unsigned char *)p)[0xE];
-    if ((g_nScriptedRespawnFlag == 0) && (g_nGamestate != GS_ACTOR_CUTSCENE)) {
+    if ((g_nPortalTransitionActive == 0) &&
+        (g_nGamestate != GS_ACTOR_CUTSCENE)) {
       if (((g_nGamestate == GS_GAME_OVER) &&
            (((unsigned int)(g_nActiveLevelId - 0x28)) < 0x14)) &&
           ((gidx = g_nGameOverLevelIntroIndex - 0x12,
@@ -101,7 +104,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
       g_abSpyroPersistentEuler[2] = yaw;
     }
   }
-  g_nLevelReadyFlag = g_nLevelReadyFlagStash;
+  g_nSparxHealth = g_nSparxHealthStash;
   if (g_nGamestate != GS_ACTOR_CUTSCENE) {
     ResetSpyroEntity(0);
     g_nSpyroPadSnapshotCountdown = 0xC;
@@ -111,8 +114,8 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_nSpyroFallTrackingFlag = 1;
     g_nSpyroFallReferenceZ = g_nLevelSpawnPosZ;
     g_nSpyroFloorReferenceZ = g_nLevelSpawnPosZ;
-    ChangeSpyroState(0x20);
-    if (g_nScriptedRespawnFlag == 0) {
+    ChangeSpyroState(SPYRO_ST_FLY);
+    if (g_nPortalTransitionActive == 0) {
       g_nSpyroStateFlags = 0;
       g_abSpyroPersistentEuler[0] = 0;
       g_abSpyroPersistentEuler[1] = 0;
@@ -126,9 +129,8 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   } else {
     g_nFlightLevelActive = 0;
     g_nSpyroFallTrackingFlag = 0;
-    if (g_nScriptedRespawnFlag != 0) {
-      g_anLevelSpawnPosZBlock[0] +=
-          g_anLevelSpawnNudgeZTable[g_nLevelIntroIndex];
+    if (g_nPortalTransitionActive != 0) {
+      g_anLevelSpawnPosZBlock[0] += g_anLevelSpawnNudgeZTable[g_nLevelIndex];
       sinp = &g_anSineLut[g_nLevelSpawnYaw];
       radial = g_anCosineLut[g_nLevelSpawnYaw] >> 2;
       g_nLevelSpawnPosX -= radial;
@@ -142,15 +144,15 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_nGnastyLootFallRefZCap = 0x4638;
   }
   g_nGenericCountdown = 0;
-  if (g_nScriptedRespawnFlag == 0) {
+  if (g_nPortalTransitionActive == 0) {
     if (g_nGamestate == GS_ACTOR_CUTSCENE) {
       goto emitlist;
     }
     *((struct CameraParamBlock *)g_anCameraActiveTargetParams) =
         *((struct CameraParamBlock *)g_anCameraParamMode2Front);
     g_pCameraAnchorPos = g_anSpyroWorldPos;
-    g_nCameraCurrentMode = 0;
-    g_nCameraNextMode = 0;
+    g_nCameraCurrentMode = CAM_MODE_STAND;
+    g_nCameraNextMode = CAM_MODE_STAND;
     g_anCameraActiveTargetParams[2] = 0x600;
     g_pCameraTargetParams = g_anCameraActiveTargetParams;
     g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
@@ -396,7 +398,7 @@ sprites:
   mask = 0;
   i = 0;
   rec = (char *)g_pActorListBase;
-  if (ACTOR_RAW(rec, unsigned char, mode) != 0xFF) {
+  if (ACTOR_RAW(rec, unsigned char, mode) != ACTOR_MODE_END) {
     do {
       r = (char *)((i * ACTOR_SIZE) + ((int)rec));
       if (((int *)(&g_apActorMeshTable))[ACTOR_RAW(r, short, type)] < 0) {
@@ -420,7 +422,7 @@ sprites:
         if ((g_anRunningKillBitmap[wi] & b1) == 0) {
           mask |= 1 << type;
         } else {
-          row = (g_nLevelIntroIndex << 5) + ((int)g_anLevelKillBitmapTable);
+          row = (g_nLevelIndex << 5) + ((int)g_anLevelKillBitmapTable);
           if (((*((int *)((wi * 4) + row))) & b1) == 0) {
             mask |= 1 << type;
           }
@@ -433,7 +435,7 @@ sprites:
     rec = *(char *volatile *)&g_pActorListBase;
   }
   i = 0;
-  if (ACTOR_RAW(rec, unsigned char, mode) != 0xFF) {
+  if (ACTOR_RAW(rec, unsigned char, mode) != ACTOR_MODE_END) {
     do {
       register int sh2 asm("$5");
       register int tbl asm("$3");
@@ -441,7 +443,7 @@ sprites:
       wi = i >> 5;
       sh2 = i & 0x1F;
       tbl = (int)g_anLevelKillBitmapTable;
-      row = (g_nLevelIntroIndex << 5) + tbl;
+      row = (g_nLevelIndex << 5) + tbl;
       wi <<= 2;
       b3 = 1 << sh2;
       if ((*((int *)(wi + row))) & b3) {
@@ -501,8 +503,7 @@ sprites:
   ((int *)g_pEmitListBase)[0x800] = -1;
   ResetWorldParticleTables();
   if ((fullSetup != 0) && (g_nFlightLevelActive == 0)) {
-    g_pLevelOverlayInitRecord =
-        (*((void *(**)())(&g_pfnLevelSpawnActor)))(0x78, 0);
+    g_pSparxActor = (*((void *(**)())(&g_pfnLevelSpawnActor)))(0x78, 0);
     InitHudCounters(1);
   }
   HandleMusicCommand(g_nCurrentMusicTrack, 1);

@@ -1468,38 +1468,38 @@ dlabel g_aCameraXformPresets
     /* 5D238 8006CA38 00000000 */ .word 0x00000000
 enddlabel g_aCameraXformPresets
 
-nonmatching g_anCameraParamLedgeGrabYawBelow
+nonmatching g_anCameraParamTransitionYawBelow
 
-dlabel g_anCameraParamLedgeGrabYawBelow
+dlabel g_anCameraParamTransitionYawBelow
     /* 5D23C 8006CA3C 00040000 */ .word 0x00000400
     /* 5D240 8006CA40 40FFFFFF */ .word 0xFFFFFF40
     /* 5D244 8006CA44 000B0000 */ .word 0x00000B00
     /* 5D248 8006CA48 00000000 */ .word 0x00000000
     /* 5D24C 8006CA4C 30000000 */ .word 0x00000030
     /* 5D250 8006CA50 00000000 */ .word 0x00000000
-enddlabel g_anCameraParamLedgeGrabYawBelow
+enddlabel g_anCameraParamTransitionYawBelow
 
-nonmatching g_anCameraParamLedgeGrabStreaming
+nonmatching g_anCameraParamTransitionStreaming
 
-dlabel g_anCameraParamLedgeGrabStreaming
+dlabel g_anCameraParamTransitionStreaming
     /* 5D254 8006CA54 00000000 */ .word 0x00000000
     /* 5D258 8006CA58 40FFFFFF */ .word 0xFFFFFF40
     /* 5D25C 8006CA5C 000C0000 */ .word 0x00000C00
     /* 5D260 8006CA60 00000000 */ .word 0x00000000
     /* 5D264 8006CA64 60000000 */ .word 0x00000060
     /* 5D268 8006CA68 00000000 */ .word 0x00000000
-enddlabel g_anCameraParamLedgeGrabStreaming
+enddlabel g_anCameraParamTransitionStreaming
 
-nonmatching g_anCameraParamLedgeGrabYawAbove
+nonmatching g_anCameraParamTransitionYawAbove
 
-dlabel g_anCameraParamLedgeGrabYawAbove
+dlabel g_anCameraParamTransitionYawAbove
     /* 5D26C 8006CA6C 000C0000 */ .word 0x00000C00
     /* 5D270 8006CA70 40FFFFFF */ .word 0xFFFFFF40
     /* 5D274 8006CA74 000B0000 */ .word 0x00000B00
     /* 5D278 8006CA78 00000000 */ .word 0x00000000
     /* 5D27C 8006CA7C 30000000 */ .word 0x00000030
     /* 5D280 8006CA80 00000000 */ .word 0x00000000
-enddlabel g_anCameraParamLedgeGrabYawAbove
+enddlabel g_anCameraParamTransitionYawAbove
 
 nonmatching g_anCameraMode12Params
 
@@ -4120,21 +4120,21 @@ dlabel g_anLevelDeathPlaneZTable
     /* 5F230 8006EA30 00040000 */ .word 0x00000400
 enddlabel g_anLevelDeathPlaneZTable
 
-nonmatching g_anOrbDropEnterSpawnType
+nonmatching g_anHazardEnterSpawnType
 
-dlabel g_anOrbDropEnterSpawnType
+dlabel g_anHazardEnterSpawnType
     /* 5F234 8006EA34 DD010000 */ .word 0x000001DD
     /* 5F238 8006EA38 6B010000 */ .word 0x0000016B
     /* 5F23C 8006EA3C FB010000 */ .word 0x000001FB
-enddlabel g_anOrbDropEnterSpawnType
+enddlabel g_anHazardEnterSpawnType
 
-nonmatching g_anOrbDropTimeoutSpawnType
+nonmatching g_anHazardTimeoutSpawnType
 
-dlabel g_anOrbDropTimeoutSpawnType
+dlabel g_anHazardTimeoutSpawnType
     /* 5F240 8006EA40 95010000 */ .word 0x00000195
     /* 5F244 8006EA44 6C010000 */ .word 0x0000016C
     /* 5F248 8006EA48 FC010000 */ .word 0x000001FC
-enddlabel g_anOrbDropTimeoutSpawnType
+enddlabel g_anHazardTimeoutSpawnType
 
 nonmatching g_anLevelEntryPoints
 
@@ -4961,15 +4961,15 @@ dlabel D_8006F356
     /* 5FB8E 8006F38E */ .short 0x007E
 enddlabel D_8006F356
 
-nonmatching g_abGemPickupFlickerPairs1
+nonmatching g_abDragonRescueFlickerPairs1
 
-dlabel g_abGemPickupFlickerPairs1
+dlabel g_abDragonRescueFlickerPairs1
     /* 5FB90 8006F390 */ .byte 0x01
-enddlabel g_abGemPickupFlickerPairs1
+enddlabel g_abDragonRescueFlickerPairs1
 
-nonmatching g_abGemPickupFlickerPairs1Y
+nonmatching g_abDragonRescueFlickerPairs1Y
 
-dlabel g_abGemPickupFlickerPairs1Y
+dlabel g_abDragonRescueFlickerPairs1Y
     /* 5FB91 8006F391 */ .byte 0x00
     /* 5FB92 8006F392 */ .byte 0xFF
     /* 5FB93 8006F393 */ .byte 0x00
@@ -4977,17 +4977,17 @@ dlabel g_abGemPickupFlickerPairs1Y
     /* 5FB95 8006F395 */ .byte 0xFF
     /* 5FB96 8006F396 */ .byte 0x00
     /* 5FB97 8006F397 */ .byte 0x01
-enddlabel g_abGemPickupFlickerPairs1Y
+enddlabel g_abDragonRescueFlickerPairs1Y
 
-nonmatching g_abGemPickupFlickerPairs2
+nonmatching g_abDragonRescueFlickerPairs2
 
-dlabel g_abGemPickupFlickerPairs2
+dlabel g_abDragonRescueFlickerPairs2
     /* 5FB98 8006F398 */ .byte 0x01
-enddlabel g_abGemPickupFlickerPairs2
+enddlabel g_abDragonRescueFlickerPairs2
 
-nonmatching g_abGemPickupFlickerPairs2Y
+nonmatching g_abDragonRescueFlickerPairs2Y
 
-dlabel g_abGemPickupFlickerPairs2Y
+dlabel g_abDragonRescueFlickerPairs2Y
     /* 5FB99 8006F399 */ .byte 0x01
     /* 5FB9A 8006F39A */ .byte 0xFF
     /* 5FB9B 8006F39B */ .byte 0xFF
@@ -5027,11 +5027,11 @@ dlabel g_abGemPickupFlickerPairs2Y
     /* 5FBBD 8006F3BD */ .byte 0xFE
     /* 5FBBE 8006F3BE */ .byte 0x48
     /* 5FBBF 8006F3BF */ .byte 0x05
-enddlabel g_abGemPickupFlickerPairs2Y
+enddlabel g_abDragonRescueFlickerPairs2Y
 
-nonmatching g_anGemPickupScaleCurve
+nonmatching g_anDragonRescueScaleCurve
 
-dlabel g_anGemPickupScaleCurve
+dlabel g_anDragonRescueScaleCurve
     /* 5FBC0 8006F3C0 */ .short 0x0EF6
     /* 5FBC2 8006F3C2 */ .short 0x0DE9
     /* 5FBC4 8006F3C4 */ .short 0x0CE1
@@ -5056,11 +5056,11 @@ dlabel g_anGemPickupScaleCurve
     /* 5FBEA 8006F3EA */ .short 0x0040
     /* 5FBEC 8006F3EC */ .short 0x0030
     /* 5FBEE 8006F3EE */ .short 0x0030
-enddlabel g_anGemPickupScaleCurve
+enddlabel g_anDragonRescueScaleCurve
 
-nonmatching g_anGemPickupIconRestPos
+nonmatching g_anDragonRescueIconRestPos
 
-dlabel g_anGemPickupIconRestPos
+dlabel g_anDragonRescueIconRestPos
     /* 5FBF0 8006F3F0 00010000 */ .word 0x00000100
     /* 5FBF4 8006F3F4 07000000 */ .word 0x00000007
     /* 5FBF8 8006F3F8 70080000 */ .word 0x00000870
@@ -5070,7 +5070,7 @@ dlabel g_anGemPickupIconRestPos
     /* 5FC08 8006F408 DA000000 */ .word 0x000000DA
     /* 5FC0C 8006F40C 16000000 */ .word 0x00000016
     /* 5FC10 8006F410 A0050000 */ .word 0x000005A0
-enddlabel g_anGemPickupIconRestPos
+enddlabel g_anDragonRescueIconRestPos
 
 nonmatching g_abLevelTotalDragonsTable
 
@@ -14177,11 +14177,11 @@ dlabel g_nMotionTrailRibbonCount
     /* 65E84 80075684 00000000 */ .word 0x00000000
 enddlabel g_nMotionTrailRibbonCount
 
-nonmatching g_nPrevLevelIntroIndex
+nonmatching g_nPrevLevelIndex
 
-dlabel g_nPrevLevelIntroIndex
+dlabel g_nPrevLevelIndex
     /* 65E88 80075688 00000000 */ .word 0x00000000
-enddlabel g_nPrevLevelIntroIndex
+enddlabel g_nPrevLevelIndex
 
 nonmatching g_nPauseMenuIdleFrames
 
@@ -14280,11 +14280,11 @@ dlabel g_nFrameStep
     /* 65ECC 800756CC 00000000 */ .word 0x00000000
 enddlabel g_nFrameStep
 
-nonmatching g_nScriptedRespawnFlag
+nonmatching g_nPortalTransitionActive
 
-dlabel g_nScriptedRespawnFlag
+dlabel g_nPortalTransitionActive
     /* 65ED0 800756D0 00000000 */ .word 0x00000000
-enddlabel g_nScriptedRespawnFlag
+enddlabel g_nPortalTransitionActive
 
 nonmatching g_nSubMenuScrollDelta
 
@@ -14355,11 +14355,11 @@ dlabel g_nSpyroMotionAux
     /* 65F00 80075700 00000000 */ .word 0x00000000
 enddlabel g_nSpyroMotionAux
 
-nonmatching g_nGamestate0fMode
+nonmatching g_nCreditsMode
 
-dlabel g_nGamestate0fMode
+dlabel g_nCreditsMode
     /* 65F04 80075704 00000000 */ .word 0x00000000
-enddlabel g_nGamestate0fMode
+enddlabel g_nCreditsMode
 
 nonmatching g_pCreditsLineTable
 
@@ -14410,11 +14410,11 @@ dlabel g_nSpyroScriptedLiftRise
     /* 65F24 80075724 00000000 */ .word 0x00000000
 enddlabel g_nSpyroScriptedLiftRise
 
-nonmatching g_nSpyroOrbDropSpawnIndex
+nonmatching g_nSpyroHazardKind
 
-dlabel g_nSpyroOrbDropSpawnIndex
+dlabel g_nSpyroHazardKind
     /* 65F28 80075728 00000000 */ .word 0x00000000
-enddlabel g_nSpyroOrbDropSpawnIndex
+enddlabel g_nSpyroHazardKind
 
 nonmatching g_dwGamestateFrames
 
@@ -14464,11 +14464,11 @@ dlabel g_nMusicVolume
     /* 65F48 80075748 00000000 */ .word 0x00000000
 enddlabel g_nMusicVolume
 
-nonmatching g_pfnGamestate0cSubstateUpdate
+nonmatching g_pfnActorCutsceneSubstateUpdate
 
-dlabel g_pfnGamestate0cSubstateUpdate
+dlabel g_pfnActorCutsceneSubstateUpdate
     /* 65F4C 8007574C 00000000 */ .word 0x00000000
-enddlabel g_pfnGamestate0cSubstateUpdate
+enddlabel g_pfnActorCutsceneSubstateUpdate
 
 nonmatching g_nWorldDragonsRescued
 
@@ -14482,11 +14482,11 @@ dlabel g_nSfxVolume
     /* 65F54 80075754 00000000 */ .word 0x00000000
 enddlabel g_nSfxVolume
 
-nonmatching g_pThiefEggDrop
+nonmatching g_pLockedChestReward
 
-dlabel g_pThiefEggDrop
+dlabel g_pLockedChestReward
     /* 65F58 80075758 00000000 */ .word 0x00000000
-enddlabel g_pThiefEggDrop
+enddlabel g_pLockedChestReward
 
 nonmatching g_nFadeProgress
 
@@ -14512,11 +14512,11 @@ dlabel g_pCreditsScratchBuf
     /* 65F68 80075768 00000000 */ .word 0x00000000
 enddlabel g_pCreditsScratchBuf
 
-nonmatching g_nPreserveMobIdx
+nonmatching g_nEnteredPortalIdx
 
-dlabel g_nPreserveMobIdx
+dlabel g_nEnteredPortalIdx
     /* 65F6C 8007576C 00000000 */ .word 0x00000000
-enddlabel g_nPreserveMobIdx
+enddlabel g_nEnteredPortalIdx
 
 nonmatching D_80075770
 

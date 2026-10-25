@@ -6,29 +6,33 @@
 #ifndef OPEN_SPYRO_FLIGHT_ACTOR_STATES_H
 #define OPEN_SPYRO_FLIGHT_ACTOR_STATES_H
 
-/* Case 34 — the vortex/whirlwind pad that lifts Spyro out of the level. */
-typedef struct VortexState {
+/* Case 34 — a recovered dragon egg: spirals up off its spot, flies to just
+ * above Spyro, then requests the HUD egg-counter roll (Cross skips). */
+typedef struct EggRiseState {
   int idx;               /* 0x00 */
   int centre[3];         /* 0x04 pad centre */
   int apex[3];           /* 0x0A (short-aligned) rise target */
   unsigned short radius; /* 0x10 */
   unsigned char phase;   /* 0x12 */
   unsigned char angle;   /* 0x13 */
-} VortexState;
+} EggRiseState;
 
-/* Cases 14/15/83..87 — the generic enemy: a walker with a chase/charge/knock
- * -back state machine driven by ->subMode. */
-typedef struct EnemyState {
+/* Cases 14/15/83..87 — collectibles: 14 extra life, 15 Sparx food, 83..87
+ * gems (CollectPickupActor). They bounce out of a broken chest or fodder,
+ * glitter, and home in on Spyro once he (or Sparx, fetching) gets close. The
+ * same record as level_update_actors.h PickupState, in the field view these
+ * clones were matched with (signed lean/roll). */
+typedef struct CollectibleState {
   int vel[3];           /* 0x00 velocity, also read as a vector */
-  short node;           /* 0x0C current path node */
-  unsigned char mode;   /* 0x0E sub-mode within ->subMode */
+  short groundTri;      /* 0x0C collision triangle it rests on */
+  unsigned char mode;   /* 0x0E resting sub-state within ->subMode */
   unsigned char timer;  /* 0x0F */
-  signed char bounce;   /* 0x10 remaining knock-back bounces */
+  signed char bounce;   /* 0x10 bounces left */
   signed char lean;     /* 0x11 body pitch */
   signed char roll;     /* 0x12 */
   unsigned char spin;   /* 0x13 */
   unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
-} EnemyState;
+} CollectibleState;
 
 /* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
 typedef struct ShardState {
@@ -42,7 +46,7 @@ typedef struct ShardState {
 /* Case 398 — the level-exit vortex: drives the scripted camera and hands the
  * game over to the world map. */
 typedef struct ExitState {
-  PortalDesc *portal; /* 0x00 */
+  PortalCamPath *portal; /* 0x00 */
   int centre[3];      /* 0x04 */
   int dest;           /* 0x14 */
   int preset;         /* 0x18 */

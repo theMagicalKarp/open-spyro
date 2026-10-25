@@ -89,7 +89,7 @@ void TickCdMusicStream(void) {
           pick = (int)GetRandomU32();
           {
             int *base = g_anLevelMusicPickTable;
-            tbl = &base[g_nLevelIntroIndex * 3];
+            tbl = &base[g_nLevelIndex * 3];
           }
           g_nCdMusicStreamTimeout = g_nVblankTickCount + 0x7080;
           g_nCurrentMusicTrack = (&g_nLevelMusicTrack)[tbl[pick % 3]];

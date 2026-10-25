@@ -128,22 +128,22 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
     rec->tint0 = 0;
     rec->tint1 = 0;
     rec->tint2 = 0;
-    if (rec->type == 0xE) {
+    if (rec->type == ACTOR_TYPE_EXTRA_LIFE) {
       rec->tintMode = 0xC;
     }
-    if (rec->type == 0x53) {
+    if (rec->type == ACTOR_TYPE_GEM_1) {
       rec->tintMode = 1;
     }
-    if (rec->type == 0x54) {
+    if (rec->type == ACTOR_TYPE_GEM_2) {
       rec->tintMode = 2;
     }
-    if (rec->type == 0x55) {
+    if (rec->type == ACTOR_TYPE_GEM_5) {
       rec->tintMode = 3;
     }
-    if (rec->type == 0x56) {
+    if (rec->type == ACTOR_TYPE_GEM_10) {
       rec->tintMode = 4;
     }
-    if (rec->type == 0x57) {
+    if (rec->type == ACTOR_TYPE_GEM_25) {
       rec->tintMode = 5;
     }
     break;
@@ -156,11 +156,11 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
     InsertActorIntoSpatialGrid(rec);
     rec->subMode = 0;
     st->timer = 0;
-    st->vz = 0;
-    st->vy = 0;
-    st->vx = 0;
-    st->fx = 0;
-    st->rider = 0;
+    st->drift[2] = 0;
+    st->drift[1] = 0;
+    st->drift[0] = 0;
+    st->glow = 0;
+    st->target = 0;
     if (parent != 0) {
       CopyVector(&rec->posX, &parent->posX);
     }
@@ -230,9 +230,9 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
     rec->tint1 = 0;
     rec->tint2 = 0;
     rec->tintMode = 0xE;
-    if (g_nGemPickupSubstate == 3) {
+    if (g_nDragonRescueSubstate == 3) {
       rec->scale = 0x14;
-    } else if (g_nGemPickupSubstate == 1) {
+    } else if (g_nDragonRescueSubstate == 1) {
       rec->scale = 0x30;
     }
     i = GetRandomU32() & 7;

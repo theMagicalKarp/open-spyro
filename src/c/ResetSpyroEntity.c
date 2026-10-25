@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 /* 0x8004ac24 (0x214): resets Spyro's entity record. Leaving a looping-sfx
@@ -29,12 +30,12 @@ void ResetSpyroEntity(int full) {
     euler[0] = g_abSpyroPersistentEuler[0];
     euler[1] = g_abSpyroPersistentEuler[1];
     euler[2] = g_abSpyroPersistentEuler[2];
-    ready = g_nLevelReadyFlag;
+    ready = g_nSparxHealth;
     FillWord(g_anSpyroWorldPos, 0, 0x2A4);
     CopyVector(g_anSpyroWorldPos, pos);
     g_bSpyroOtBinBias = 4;
     g_bSpyroAnimFrame = 1;
-    g_nLevelReadyFlag = ready;
+    g_nSparxHealth = ready;
     g_nSpyroGroundChunkId = -1;
     g_abSpyroPersistentEuler[0] = euler[0];
     g_abSpyroPersistentEuler[1] = euler[1];
@@ -42,7 +43,7 @@ void ResetSpyroEntity(int full) {
     g_nSpyroBodyPitch = euler[0] << 4;
     g_nSpyroBodyRoll = euler[1] << 4;
     g_nSpyroBodyYaw = euler[2] << 4;
-    ChangeSpyroState(0);
+    ChangeSpyroState(SPYRO_ST_IDLE);
     g_nSpyroFirstContactChunkId = 0xFF;
     g_bSpyroSfxVoiceMarker = 0x3F;
     g_nSpyroFlameBreathTimer = 0;

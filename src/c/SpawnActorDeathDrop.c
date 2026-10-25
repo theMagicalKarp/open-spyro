@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_state.h"
 
 /* The tumbling sub-record hung off the drop's ->state pointer. */
 struct Debris {
@@ -17,9 +18,9 @@ struct Debris {
    latched so they only ever drop once; everything else rolls a gem colour
    (0xf normal, 0xe on a 2-in-25 roll, 0x10 for the "extra life" band while the
    level is still loading).  The 0x10 case doubles as the one-shot key/egg
-   record: while none is registered yet and g_nLevelReadyFlag is non-negative
+   record: while none is registered yet and g_nSparxHealth is non-negative
    the drop is built as id 0x78 instead, seeded by PlayActorMeshVoice, latched
-   into g_pLevelOverlayInitRecord and the flag knocked down to 1. Otherwise a
+   into g_pSparxActor and the flag knocked down to 1. Otherwise a
    record is allocated through g_pfnLevelSpawnActor and thrown: kinds 0/2/6
    land on the source (or `alt`) position with a small XY jitter, kind 1 and any
    kind-3/4 that fails its Spyro proximity test scatter over a wider XY box,
@@ -55,28 +56,28 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
     roll = (int)(((GetRandomU32() & 0xfff) * 25) >> 10);
     if (roll < 2) {
       id = 0xe;
-    } else if (g_nLevelReadyFlag < 3 && roll < 0xc) {
+    } else if (g_nSparxHealth < 3 && roll < 0xc) {
       id = 0x10;
     }
   }
 
   if (id == 0x10) {
-    if (g_pLevelOverlayInitRecord != 0 || g_anLevelReadyFlagBlock[0] < 0) {
+    if (g_pSparxActor != 0 || g_anSparxHealthBlock[0] < 0) {
       rec = (*(struct Actor * (*)(int, struct Actor *))
-                 g_pfnLevelSpawnActor)(0x10, src);
+                 g_pfnLevelSpawnActor)(ACTOR_TYPE_BUTTERFLY, src);
     } else {
       rec = (*(struct Actor * (*)(int, struct Actor *))
-                 g_pfnLevelSpawnActor)(0x78, src);
+                 g_pfnLevelSpawnActor)(ACTOR_TYPE_SPARX, src);
       PlayActorMeshVoice(rec, 0, 0);
-      g_anLevelReadyFlagBlock[0] = 1;
-      g_pLevelOverlayInitRecord = rec;
+      g_anSparxHealthBlock[0] = 1;
+      g_pSparxActor = rec;
     }
     return rec;
   }
 
   if (id == 0xe) {
     rec = (*(struct Actor * (*)(int, struct Actor *))
-               g_pfnLevelSpawnActor)(0xe, src);
+               g_pfnLevelSpawnActor)(ACTOR_TYPE_EXTRA_LIFE, src);
     dbg = (struct Debris *)rec->state;
     dbg->live = 1;
     return rec;
@@ -103,8 +104,10 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
     CopyVector(throw_, alt);
     vz = 0x8c;
   } else if (kind == 3 || kind == 4) {
-    if ((kind == 4 || g_nSpyroState == 0xb || g_nSpyroState == 0x18 ||
-         g_nSpyroState == 0x14 || g_nSpyroState == 0x2c) &&
+    if ((kind == 4 || g_nSpyroState == SPYRO_ST_CHARGE ||
+         g_nSpyroState == SPYRO_ST_SUPERCHARGE_AIR ||
+         g_nSpyroState == SPYRO_ST_CHARGE_AIR ||
+         g_nSpyroState == SPYRO_ST_SUPERCHARGE) &&
         (kind == 4 ||
          (ApproxDist2D(&rec->posX, g_anSpyroWorldPos) < 0x800 &&
           (d = rec->posZ - rec->floorOffset, e = d - g_nSpyroWorldPosZ,

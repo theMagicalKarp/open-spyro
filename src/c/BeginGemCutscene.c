@@ -8,7 +8,7 @@
    entering from world 1, then build the cutscene sample-bank entry at
    g_CutsceneSoundDef (sample 0x1010, per-world pitch from
    g_nWorldCutsceneSamplePitch) and trigger it via PlaySoundEffect with the
-   gem-pickup voice marker. */
+   dragon-rescue voice marker. */
 void BeginGemCutscene(void) {
   register int world;
   int *head;
@@ -40,5 +40,5 @@ void BeginGemCutscene(void) {
   g_nSfxOverrideVolR = 0x3FFF;
   g_nSfxOverrideFlags = 1;
 
-  PlaySoundEffect(0, 0, 0x10, &g_bGemPickupSfxVoiceMarker);
+  PlaySoundEffect(0, 0, 0x10, &g_bDragonRescueSfxVoiceMarker);
 }

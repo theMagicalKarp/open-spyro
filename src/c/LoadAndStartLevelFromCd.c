@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "spyro_state.h"
 
 /* 0x800144c8: loads + starts a level from CD. Silences sound, resolves the
    level's archive LBA (base + per-level offset table, stride 0x10), syncs
@@ -17,7 +18,7 @@ void LoadAndStartLevelFromCd(void) {
   (void)pad;
 
   StopAllSoundExceptMask(0);
-  level = *(volatile int *)&g_nLevelIntroIndex;
+  level = *(volatile int *)&g_nLevelIndex;
   base = *(volatile int *)&g_nCdBaseLba;
   archiveBase = *(volatile int *)&g_nLevelArchiveBaseLba;
   dst = *(void *volatile *)&g_pPathTableBuffer;
@@ -27,10 +28,10 @@ void LoadAndStartLevelFromCd(void) {
   BuildLoadedLevelRuntime(1);
 
   if (g_nFlightLevelActive) {
-    RestartSpyroAnimWithState(0x20);
+    RestartSpyroAnimWithState(SPYRO_ST_FLY);
   } else {
-    RestartSpyroAnimWithState(0);
+    RestartSpyroAnimWithState(SPYRO_ST_IDLE);
   }
 
-  g_nLevelReadyFlag = 3;
+  g_nSparxHealth = 3;
 }

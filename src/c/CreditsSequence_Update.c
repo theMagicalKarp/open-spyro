@@ -9,9 +9,9 @@
    treasure (0x36B0 gems) is collected; then clears the scripted-cutscene
    state and advances to mode 0x64, which streams the level transition. */
 
-void Gamestate0F_Update(void) {
+void CreditsSequence_Update(void) {
   RotateLightVectorXZ(3);
-  switch (g_nGamestate0fMode) {
+  switch (g_nCreditsMode) {
   case 0x63:
     g_nCdStreamState = 1;
     if (g_nCreditsReturnLevelId != -1) {
@@ -24,10 +24,10 @@ void Gamestate0F_Update(void) {
         g_nCurrentLevelId = 0x3C;
       }
     }
-    g_nScriptedMobTag = 0;
-    g_nScriptedRespawnFlag = 0;
+    g_nReturnPortalLevelId = 0;
+    g_nPortalTransitionActive = 0;
     g_nReturningHomePhase = 0;
-    g_nGamestate0fMode += 1;
+    g_nCreditsMode += 1;
     break;
   case 0x64:
     g_nReturningHomePhase += g_nFrameStep;

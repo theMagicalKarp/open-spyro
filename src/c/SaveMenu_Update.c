@@ -28,7 +28,7 @@
    "save game?" menu: the cursor, the three memory card stages (load the
    directory, write the save, read it back and verify the checksum) and the
    result screens, ending in EndSaveMenuToWorld. */
-void Gamestate0B_Update(void) {
+void SaveMenu_Update(void) {
   int vec[3];
   short ang[3];
   int t;
@@ -66,15 +66,15 @@ void Gamestate0B_Update(void) {
       TrackEntityYawTowardSpyro(ACT, 3, 0, 0);
       FindGroundHeightBelow(ACT + 3, 0x1000);
       EncodeCachedVecToActorDirCode(ACT);
-      if (g_pLevelOverlayInitRecord != 0) {
+      if (g_pSparxActor != 0) {
         a = LERP_ANGLE(g_nSaveMenuOverlayToAngle, g_nSaveMenuOverlayFromAngle,
                        t);
         d = g_nSaveMenuOverlayFromDist +
             (((g_nSaveMenuOverlayToDist - g_nSaveMenuOverlayFromDist) * t) >>
              13);
-        ((int *)g_pLevelOverlayInitRecord)[3] =
+        ((int *)g_pSparxActor)[3] =
             g_anSpyroWorldPos[0] + ((LookupCosine(a) * d) >> 12);
-        ((int *)g_pLevelOverlayInitRecord)[4] =
+        ((int *)g_pSparxActor)[4] =
             g_nSpyroWorldPosY + ((LookupSine(a) * d) >> 12);
       }
       a = LERP_ANGLE(SM[24], SM[21], t);
@@ -144,10 +144,10 @@ void Gamestate0B_Update(void) {
         ((unsigned char *)ACT)[0x46] = ArcTan2(
             g_anSpyroWorldPos[0] - act[3], g_anSpyroWorldPos[1] - act[4], 0);
       }
-      if (g_pLevelOverlayInitRecord != 0) {
-        ((int *)g_pLevelOverlayInitRecord)[3] =
+      if (g_pSparxActor != 0) {
+        ((int *)g_pSparxActor)[3] =
             g_anSpyroWorldPos[0] + ((LookupCosine(SM[19]) * SM[20]) >> 12);
-        ((int *)g_pLevelOverlayInitRecord)[4] =
+        ((int *)g_pSparxActor)[4] =
             g_anSpyroWorldPos[1] + ((LookupSine(SM[19]) * SM[20]) >> 12);
       }
       g_anCameraPos[0] =
@@ -212,9 +212,9 @@ void Gamestate0B_Update(void) {
             ACTOR_RAW(actor, unsigned char, mode) = 2;
             ((int *)actor)[2] = 0;
             ((short *)actor)[0x1A] = -1;
-            BeginGemPickupOverlay(actor);
+            BeginDragonRescue(actor);
             g_nWorldDragonsRescued--;
-            g_anLevelDragonsRescued[g_nLevelIntroIndex]--;
+            g_anLevelDragonsRescued[g_nLevelIndex]--;
           }
         } else {
           EndSaveMenuToWorld();

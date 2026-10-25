@@ -7,7 +7,7 @@
 #define SREC ((Actor *)g_pSpriteRecordWriteCursor)
 
 /* 0x8001973c — the level-entry/exit banner and post-level treasure tally
-   (2324 b), drawn by Gamestate01_09_Draw.
+   (2324 b), drawn by LevelTransition_Draw.
 
    The banner line is built from g_nCurrentLevelId: level 0 of a world is
    "RETURNING HOME...", the boss level (4) of a world and the Gnasty fight
@@ -174,8 +174,7 @@ void DrawLevelTransitionOverlay(void) {
     }
 
     if (g_nLevelTransitionPhase < 0x80) {
-      value =
-          g_anLevelGemsCollected[g_nPrevLevelIntroIndex] - g_nLevelGemsAtEntry;
+      value = g_anLevelGemsCollected[g_nPrevLevelIndex] - g_nLevelGemsAtEntry;
     } else if (g_nLevelTransitionPhase < 0xe0) {
       span = (g_nGemTallyIconCount + 1) * 2;
       if (span >= 0x41) {
@@ -189,13 +188,12 @@ void DrawLevelTransitionOverlay(void) {
       if (shown > span) {
         shown = span;
       }
-      value = (g_anLevelGemsCollected[g_nPrevLevelIntroIndex] -
-               g_nLevelGemsAtEntry) *
-              shown / span;
+      value =
+          (g_anLevelGemsCollected[g_nPrevLevelIndex] - g_nLevelGemsAtEntry) *
+          shown / span;
     } else if (g_nLevelTransitionPhase < 0x110) {
       value = g_nWorldTreasureCollected -
-              (g_anLevelGemsCollected[g_nPrevLevelIntroIndex] -
-               g_nLevelGemsAtEntry);
+              (g_anLevelGemsCollected[g_nPrevLevelIndex] - g_nLevelGemsAtEntry);
     } else {
       span = (g_nGemTallyIconCount + 1) * 2;
       if (span >= 0x41) {
@@ -209,10 +207,10 @@ void DrawLevelTransitionOverlay(void) {
       if (shown > span) {
         shown = span;
       }
-      value = g_nWorldTreasureCollected -
-              (g_anLevelGemsCollected[g_nPrevLevelIntroIndex] -
-               g_nLevelGemsAtEntry) *
-                  shown / span;
+      value =
+          g_nWorldTreasureCollected -
+          (g_anLevelGemsCollected[g_nPrevLevelIndex] - g_nLevelGemsAtEntry) *
+              shown / span;
     }
 
     msg = buf;

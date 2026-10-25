@@ -51,17 +51,6 @@ typedef struct ButterflyState {
   short idleTimer;
 } ButterflyState;
 
-/* Sparx (type 0x78) — SpawnActor's view of UpdateActors' FlierState. */
-typedef struct SparxState {
-  int timer;  /* 0x00 idle / fetch timer */
-  short vx;   /* 0x04 hover offset */
-  short vy;   /* 0x06 */
-  short vz;   /* 0x08 */
-  short pad0A;
-  int fx;     /* 0x0C glow node (FxNode *) */
-  int rider;  /* 0x10 actor being fetched (Actor *) */
-} SparxState;
-
 /* Chest / object fragment (types 0x43..0x45, 0xFF..0x101, 0x135..0x137 and
  * per-level ranges) — UpdateActors' SparkState / TumbleState. */
 typedef struct FragmentState {

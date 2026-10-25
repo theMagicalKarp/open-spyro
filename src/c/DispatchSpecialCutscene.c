@@ -13,7 +13,7 @@ void DispatchSpecialCutscene(void) {
   RECT rect;
   int world = g_nCurrentWorldId;
   if (world == 1) {
-    int *mode = g_anGamestate0dBlock;
+    int *mode = g_anTitleModeBlock;
     rect.w = 0x200;
     rect.x = 0;
     rect.y = 0;

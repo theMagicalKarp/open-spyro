@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "pad_buttons.h"
+#include "spyro_state.h"
 
 /* 0x8002edf0 (1492 bytes) — update for gamestate 5 (GS_GAME_OVER).
 
@@ -81,15 +82,15 @@ void RespawnOrGameOver_Update(void) {
         g_bSpyroAnimFrame = 1;
         g_nExtraLives = 4;
         g_nSparxFoodCount = 0;
-        g_nLevelReadyFlag = 3;
-        g_nScriptedRespawnFlag = 0;
-        g_nScriptedMobTag = 0;
-        g_nGameOverLevelIntroIndex = g_nLevelIntroIndex;
+        g_nSparxHealth = 3;
+        g_nPortalTransitionActive = 0;
+        g_nReturnPortalLevelId = 0;
+        g_nGameOverLevelIntroIndex = g_nLevelIndex;
         FillWord(&g_nSpawnAnchorValid, 0, 0x68);
         if (g_nActiveLevelId != (((lba = g_nActiveLevelId) / 10) * 10)) {
           g_nCurrentLevelId = (g_nActiveLevelId / 10) * 10;
           g_nCdStreamState = 2;
-          g_nPreserveMobIdx = -1;
+          g_nEnteredPortalIdx = -1;
         } else {
           g_nCdStreamState = 0xb;
         }
@@ -144,7 +145,7 @@ void RespawnOrGameOver_Update(void) {
       TickLevelTransitionStream(1);
     } else if ((g_nGameplayDrawFrame >= 0x169) &&
                ((g_dwPadHeld & PAD_START) != 0)) {
-      RestartSpyroAnimWithState(0);
+      RestartSpyroAnimWithState(SPYRO_ST_IDLE);
       g_nGameplayDrawMode = 2;
       g_nGameplayDrawFrame = 0;
     }

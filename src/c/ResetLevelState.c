@@ -35,7 +35,7 @@ void ResetLevelState(void) {
     eggs += 1;
     dragons += 1;
     g_abLevelVisitedFlag[i] = 0;
-    g_abLevelGemPercent[i] = 0;
+    g_abLevelExited[i] = 0;
     i += 1;
     gems += 1;
   } while (i < 0x24);
@@ -68,16 +68,16 @@ void ResetLevelState(void) {
 
   anchor = &g_nSpawnAnchorValid;
   v = 0;
-  g_nLevelReadyFlag = 3;
+  g_nSparxHealth = 3;
   g_nExtraLives = 4;
   g_nWorldTreasureCollected = 0;
   g_nWorldDragonsRescued = 0;
   g_nWorldEggsRecovered = 0;
   g_nLevelGemsAtEntry = 0;
   g_nGemTallyIconCount = 0;
-  g_nLevelEggCount = 0;
+  g_nLevelKeyState = 0;
   g_nSparxFoodCount = 0;
-  g_nLevelReadyFlagStash = -1;
+  g_nSparxHealthStash = -1;
   g_anLevelEscapeRunCount = 0;
   g_nLevelEscapeRunCountLane1 = 0;
   FillWord(anchor, v, 0x68);

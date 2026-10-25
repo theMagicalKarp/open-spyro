@@ -48,7 +48,8 @@ typedef struct Actor {
                         * bins at (MAC3 >> 6) - otBias, clamped >= 0. Default 4
                         * (InitActorRenderDefaults), 0x20 HUD/screen actors,
                         * 0x7F sprite records, 0xFE (-2) pushes it one bin pair deeper */
-  unsigned char mode;  /* 0x48 behaviour state; >= 0x80 dormant, 0xFF ends the pool */
+  unsigned char mode;  /* 0x48 behaviour state; >= ACTOR_MODE_DORMANT dormant,
+                          ACTOR_MODE_END ends the pool */
   unsigned char subMode; /* 0x49 sub-state */
   unsigned char visZone; /* 0x4A visibility-gate index into g_abVisZoneGates;
                           * 0xFF = always drawn (BuildRenderEntityLists) */
@@ -84,6 +85,11 @@ typedef struct Actor {
 /* Size of one actor record: the stride of the actor pool, the sprite-record
  * queue and the HUD icon table. (The typedef fails to compile if the struct
  * ever drifts from it; it emits nothing.) */
+/* Actor.mode sentinels: UpdateActors and the scans skip dormant records, and
+ * the pool ends at the first record whose mode is 0xFF. */
+#define ACTOR_MODE_DORMANT 0x80
+#define ACTOR_MODE_END 0xFF
+
 #define ACTOR_SIZE 0x58
 typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
 
@@ -96,6 +102,30 @@ typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
  * against scalar global stores; a few matched functions need that order.
  * Use it only where `actor->field` was measured to change the output. */
 #define ACTOR_RAW(actor, type, field) (*(type *)((char *)(actor) + ACTOR_OFFSET(field)))
+
+/* Actor->type values that mean the same class in every level (one global
+ * g_apActorMeshTable index space). Only classes whose behaviour is pinned
+ * down are named; the rest stay numeric in the per-level switches. */
+enum ActorType {
+  ACTOR_TYPE_LEVEL_EXIT = 9,       /* exit whirlwind: lifts Spyro back to the hub */
+  ACTOR_TYPE_EXTRA_LIFE = 14,      /* collected: g_nExtraLives + 1 */
+  ACTOR_TYPE_SPARX_FOOD = 15,      /* collected: g_nSparxFoodCount + 1 (20: a life) */
+  ACTOR_TYPE_BUTTERFLY = 16,       /* eaten by Sparx: g_nSparxHealth + 1 */
+  ACTOR_TYPE_DRAGON_EGG = 34,      /* recovered egg: rises, rolls the HUD egg tally */
+  ACTOR_TYPE_LETTER_OTHER = 0x4C,  /* a non-A..Z glyph of a floating name */
+  ACTOR_TYPE_GEM_1 = 0x53,         /* gems, by CollectPickupActor's value */
+  ACTOR_TYPE_GEM_2 = 0x54,
+  ACTOR_TYPE_GEM_5 = 0x55,
+  ACTOR_TYPE_GEM_10 = 0x56,
+  ACTOR_TYPE_GEM_25 = 0x57,
+  ACTOR_TYPE_SPARX = 0x78,         /* g_pSparxActor (SparxState) */
+  ACTOR_TYPE_KEY = 173,            /* the level key: g_nLevelKeyState = 1 */
+  ACTOR_TYPE_LOCKED_CHEST = 174,   /* opened with the key, drops a reward */
+  ACTOR_TYPE_DRAGON_STATUE = 0xFA, /* trapped dragon: counts the rescue */
+  ACTOR_TYPE_STATUE_SHARD = 0xFB,  /* its burst shards (BurstShardState) */
+  ACTOR_TYPE_GEM_DIGIT_0 = 0x104,  /* floating gem-value digits 0..9: 0x104..0x10D */
+  ACTOR_TYPE_LETTER_A = 0x1AA,     /* floating-name letters A..Z: 0x1AA..0x1C3 */
+};
 
 /* Waypoint path used by the path-following classes (10, 114, 339) and
  * FollowActorWaypointPath / PivotActorAlongPath: node count, current node,

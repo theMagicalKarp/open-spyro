@@ -1,6 +1,8 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_state.h"
 
 /* The active scripted-camera record pointer (g_pScriptedCameraView) and the
    camera position 0xc4 below it are reached through one held base register. */
@@ -23,9 +25,11 @@ void UpdateScriptedCameraView(void) {
 
   n = 0;
   if (g_nCdStreamState < 0) {
-    if (g_nSpyroState != 6 && g_nSpyroState != 0x10 && g_nSpyroState != 0x20 &&
-        g_nSpyroState != 0x21 && g_nSpyroState != 0x22 &&
-        g_nSpyroState != 0xf && g_nSpyroState != 0x1d) {
+    if (g_nSpyroState != SPYRO_ST_FALL &&
+        g_nSpyroState != SPYRO_ST_GLIDE_DROP && g_nSpyroState != SPYRO_ST_FLY &&
+        g_nSpyroState != SPYRO_ST_FLY_CLIMB &&
+        g_nSpyroState != SPYRO_ST_FLY_DIVE && g_nSpyroState != SPYRO_ST_GLIDE &&
+        g_nSpyroState != SPYRO_ST_HAZARD) {
       g_nCameraNextMode =
           (&g_abSpyroStateCameraMode)[*(volatile int *)&g_nSpyroState];
     }
@@ -45,7 +49,8 @@ void UpdateScriptedCameraView(void) {
         }
       }
     }
-    if (n != 0 || g_nCameraCurrentMode != 0x8000000e) {
+    if (n != 0 ||
+        g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
       n = GetRandomU32() & 0xfff;
       n = (n * 3) >> 12;
       if (VIEW == &g_anScriptedCameraPresetRecords[n * 0xe]) {

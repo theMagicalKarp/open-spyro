@@ -10,9 +10,9 @@
    register. (0x80032ab0, 88 bytes.) */
 void ArmStoryIntroOnStart(void) {
   if (g_dwPadPressed & PAD_TRIANGLE) {
-    g_anGamestate0dBlock[0] = 1;
+    g_anTitleModeBlock[0] = 1;
     g_nTitleSubState = 0;
     g_nStoryIntroSubstate = 0;
-    MemCardSync(0, &g_anGamestate0dBlock[0x10], &g_anGamestate0dBlock[0x11]);
+    MemCardSync(0, &g_anTitleModeBlock[0x10], &g_anTitleModeBlock[0x11]);
   }
 }

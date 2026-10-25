@@ -6,6 +6,7 @@
 #include "pad.h"
 #include "sdata.h"
 #include "spyro_block.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 /* Register-base view of g_anCameraScriptStickIntegrator. */
@@ -81,8 +82,8 @@ void UpdateCameraSpringForMode(void) {
   int i;
 
   if (((g_dwActiveCameraOptions & 0x10) || g_nCameraLookAroundActive) &&
-      CAM[CAM_CURRENT_MODE] == 0xF) {
-    CAM[CAM_CURRENT_MODE] = 0;
+      CAM[CAM_CURRENT_MODE] == CAM_MODE_BONK) {
+    CAM[CAM_CURRENT_MODE] = CAM_MODE_STAND;
   }
   OPAQUE_COPY(s, &CAM[CAM_STUCK_FRAMES]);
   column = (*s + 1) >> 1;
@@ -95,7 +96,8 @@ void UpdateCameraSpringForMode(void) {
     if (!((g_dwActiveCameraOptions & 0x10) &&
           g_nCameraSpringSuppressFlag == 0 && g_nCameraManualYawInput == 0 &&
           g_nCameraCollisionRetries == 0 &&
-          (g_nCameraSpringReengageCountdown != 0 || g_nSpyroState == 0x1B))) {
+          (g_nCameraSpringReengageCountdown != 0 ||
+           g_nSpyroState == SPYRO_ST_HURT_LONG))) {
       int yaw;
 
       *(int **)&CAM[CAM_TARGET_PARAMS] = g_anCameraParamDefault;
@@ -448,7 +450,7 @@ void UpdateCameraSpringForMode(void) {
     } else {
       REBASE_ALL(&s[S_POS]);
     }
-    if (g_dwSpyroRequestMask & 0x1000) {
+    if (g_dwSpyroRequestMask & SPYRO_RQ_LOCK_ON) {
       column = 5;
     }
     break;
@@ -473,7 +475,8 @@ void UpdateCameraSpringForMode(void) {
       g_nCameraCurrentMode != 0x80000007 &&
       g_nCameraCurrentMode != 0x80000012 &&
       g_nCameraCurrentMode != 0x8000000B &&
-      g_nCameraCurrentMode != 0x8000000E && g_nCameraCurrentMode != 3) {
+      g_nCameraCurrentMode != 0x8000000E &&
+      g_nCameraCurrentMode != CAM_MODE_CHARGE) {
     UpdateCameraManualYawInput();
   } else {
     g_nCameraManualYawInput = 0;
@@ -481,7 +484,7 @@ void UpdateCameraSpringForMode(void) {
   if (((g_dwActiveCameraOptions & 0x10) || g_nCameraLookAroundActive) &&
       g_nCameraLosClear && g_nCameraSpringReengageCountdown &&
       CAM[CAM_SUPPRESS] == 0 && g_nCameraManualYawInput == 0 &&
-      (g_nCameraCurrentMode == 0 || g_nCameraCurrentMode == 0x80000000)) {
+      (g_nCameraCurrentMode == 0 || g_nCameraCurrentMode == CAM_HELD)) {
     CopyVector(&CAM[3], CAM);
     g_anCameraSpringDeltaState[0] = 0;
     g_anCameraSpringDeltaState[1] = 0;
@@ -499,7 +502,7 @@ void UpdateCameraSpringForMode(void) {
     UpdateCameraEulerAngles();
   }
   g_nCameraTargetInverted = ComputeCameraToTargetAngle(g_anCameraPos);
-  if (!((g_dwActiveCameraOptions & 0x10) && g_nSpyroState == 5 &&
+  if (!((g_dwActiveCameraOptions & 0x10) && g_nSpyroState == SPYRO_ST_JUMP &&
         g_nCameraSpringSuppressFlag == 0 && g_nSpyroMotionSpeed < 0x400)) {
     g_nCameraSpringYaw = g_nCameraYaw;
   }

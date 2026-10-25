@@ -27,7 +27,7 @@ void PauseMenu_Update(void) {
   g_nHudDragonHoldTimer = 0;
   g_nHudLivesHoldTimer = 0;
   g_nHudWorldEggHoldTimer = 0;
-  g_nHudLevelEggHoldTimer = 0;
+  g_nHudKeyHoldTimer = 0;
   g_nPauseMenuIdleFrames++;
   RotateLightVectorXZ(3);
   if (g_nPauseMenuTransitionFrames < 5) {

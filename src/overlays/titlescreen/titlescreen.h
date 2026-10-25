@@ -135,7 +135,7 @@ typedef struct {
   SaveGameBuffer *apSaves[3];   /* 0x50 */
 } Struct_0x5C;
 
-extern Struct_0x5C g_nGamestate0dMode;
+extern Struct_0x5C g_nTitleMode;
 
 /* ---- cutscene layout ---- */
 typedef struct {
@@ -231,7 +231,7 @@ extern struct {
 } g_nCurrentMusicTrack;
 
 /* The memory-card save slot the game was loaded from (main 0x80078D14..0x20,
- * read back by the save menu, Gamestate0B_Update), viewed as one record. */
+ * read back by the save menu, SaveMenu_Update), viewed as one record. */
 typedef struct SaveSlotInfo {
   int loaded;   /* 0x14 g_nSaveSlotLoaded: a slot is known, saving is offered */
   int cardPort; /* 0x18 memory-card port << 4 */
@@ -254,9 +254,9 @@ typedef struct {
 
 extern int g_nGamePaused;
 extern int g_nSparxFoodCount;
-extern int g_nLevelReadyFlagStash;
-extern int g_nLevelReadyFlag;
-extern int g_bGemPickupSfxVoiceMarker;
+extern int g_nSparxHealthStash;
+extern int g_nSparxHealth;
+extern int g_bDragonRescueSfxVoiceMarker;
 extern u_char g_abSaveFileHeaderTemplate[512];
 extern char *g_pRenderScratchRegionBase;
 extern int g_nTitleSceneSectorOffset;

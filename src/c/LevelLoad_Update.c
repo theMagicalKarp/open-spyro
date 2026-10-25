@@ -6,7 +6,7 @@
    the forced-jump spyro tick, camera, and gem-tally particles, then advances
    the level-transition stream unless the CD stream is past stage 0xB and the
    tally is still active. (0x8002df9c, 100 bytes.) */
-void Gamestate01_Update(void) {
+void LevelLoad_Update(void) {
   TickSpyroFrameForceJump();
   UpdateCameraFrame();
   AnimateGemTallyParticles();

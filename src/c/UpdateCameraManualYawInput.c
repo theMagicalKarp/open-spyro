@@ -1,6 +1,7 @@
 #include "globals.h"
 #include "pad_buttons.h"
 #include "sdata.h"
+#include "spyro_state.h"
 
 SDATA(g_nCameraManualYawInput, 4);
 
@@ -9,7 +10,7 @@ SDATA(g_nCameraManualYawInput, 4);
    consumes. Suppressed by request bit 0x1000 or while the camera is stuck. */
 void UpdateCameraManualYawInput(void) {
   g_nCameraManualYawInput = 0;
-  if (g_dwSpyroRequestMask & 0x1000) {
+  if (g_dwSpyroRequestMask & SPYRO_RQ_LOCK_ON) {
     return;
   }
   if (g_nCameraStuckFrames != 0) {

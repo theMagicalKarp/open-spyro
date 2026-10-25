@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -160,7 +161,7 @@ void TickSpyroHornStrikeAttack(void) {
       break;
 
     default:
-      if (g_nCameraCurrentMode != 0x80000009) {
+      if (g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_FREE_LOOK)) {
         ZeroVector(&g_nSpyroSwingEulerPitchTarget);
       }
       break;

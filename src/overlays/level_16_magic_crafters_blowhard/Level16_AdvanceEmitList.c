@@ -44,6 +44,7 @@
 #include "level_advance_emit_list.h"
 #include "actor_type.h"
 #include "match_asm.h"
+#include "spyro_state.h"
 
 
 void Level16_AdvanceEmitList(int step) {
@@ -229,7 +230,7 @@ void Level16_AdvanceEmitList(int step) {
 
     case 0xA:
       /* The homing sparkle: it only lives while Spyro is on screen. */
-      if ((g_nSpyroState == 0x1D && g_nLevelReadyFlag < 0) || g_nSpyroDrawSuppressed != 0 ||
+      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < 0) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
         FreeEmitListRecord(rec);
       } else {
@@ -336,8 +337,8 @@ void Level16_AdvanceEmitList(int step) {
       }
       rec[0x1C] += g_nFrameStep * 8;
       heat = 0x3F;
-      if (g_nGemPickupTimer < 0x40) {
-        heat = g_nGemPickupTimer;
+      if (g_nDragonRescueTimer < 0x40) {
+        heat = g_nDragonRescueTimer;
       }
       HS(0x18) = (rec[0x1D] * (0x48 - heat)) >> 3;
       HS(0x1A) = (((0x20 - rec[0x1D]) * heat) >> 4) + 8;

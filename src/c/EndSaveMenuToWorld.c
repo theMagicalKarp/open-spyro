@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -26,8 +27,8 @@ void EndSaveMenuToWorld(void) {
   g_apCameraAnchorBlock[0] = &g_anSpyroSwingTargetBlock[-105];
 
   dyn = g_anCameraDynamicTargetParams;
-  g_nCameraCurrentMode = 0;
-  g_nCameraNextMode = 0;
+  g_nCameraCurrentMode = CAM_MODE_STAND;
+  g_nCameraNextMode = CAM_MODE_STAND;
   g_pCameraTargetParams = dyn;
   g_nSpyroFlameBreathTimer = g_nSpyroFlameBreathTimerSave;
   g_nCameraTargetYawBiasFromMode = g_anSpyroMoveTargetYawBlock[0x14];

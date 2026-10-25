@@ -31,7 +31,7 @@
  * and adds 0x6 (the orbiting spark, which reads a world point through the
  * pointer at +0x18), 0x15 and 0x4C (the two unit-circle swirls, which share
  * a cross-jumped sine tail), 0x18 (the fire jet, whose amplitude tracks the
- * global heat level g_nGemPickupTimer), 0x46 and 0x50 (two midpoint-relaxation
+ * global heat level g_nDragonRescueTimer), 0x46 and 0x50 (two midpoint-relaxation
  * classes).  Word-identical (bar the jump-table symbol and branch
  * displacements) to the copies in level_1 / level_4 / level_10 / level_28.
  *
@@ -52,6 +52,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_advance_emit_list.h"
+#include "spyro_state.h"
 
 
 void Level34_AdvanceEmitList(int step) {
@@ -127,7 +128,7 @@ void Level34_AdvanceEmitList(int step) {
 
     case 0xA:
       /* The homing sparkle: it only lives while Spyro is on screen. */
-      if ((g_nSpyroState == 0x1D && g_nLevelReadyFlag < 0) || g_nSpyroDrawSuppressed != 0 ||
+      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < 0) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
         FreeEmitListRecord(rec);
       } else {

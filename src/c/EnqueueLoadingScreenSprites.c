@@ -120,8 +120,8 @@ void EnqueueLoadingScreenSprites(void) {
         goto life_slot;
       }
     }
-    eggs = g_abHudLevelEggCounterBlock;
-    if (eggs[0] != 0 && g_nHudLevelEggCachedCount == 1) {
+    eggs = g_abHudKeyCounterBlock;
+    if (eggs[0] != 0 && g_nHudKeyCachedState == 1) {
       *slot = eggs + 0x408;
       slot += 1;
     }

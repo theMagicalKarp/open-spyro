@@ -78,7 +78,7 @@ void Level31_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       VectorToSVectorShr2(rec->u.spark.vel, (int *)effectArg);
       rec->u.spark.toggle = 0;
-      if (g_nGamestate == GS_GEM_PICKUP) {
+      if (g_nGamestate == GS_DRAGON_RESCUE) {
         rec->u.spark.life = 8;
       } else {
         rec->u.spark.life = 0x10;
@@ -247,9 +247,9 @@ void Level31_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->visible = 1;
       rec->u.spark.depthBias = 4;
-      if (((Actor *)pos)->type == 0x22) {
+      if (((Actor *)pos)->type == ACTOR_TYPE_DRAGON_EGG) {
         CopyVector(v1, &((Actor *)pos)->posX);
-      } else if (((Actor *)pos)->type == 0xAD || ((Actor *)pos)->type == 0xB5) {
+      } else if (((Actor *)pos)->type == ACTOR_TYPE_KEY || ((Actor *)pos)->type == 0xB5) {
         if ((effectArg >> 24) < 6) {
           RotateVectorByMatrix(((Actor *)pos)->mtx, &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
           AddVector(v1, v1, &((Actor *)pos)->posX);
@@ -258,7 +258,7 @@ void Level31_EmitParticles(int count, int type, int *pos, int effectArg) {
           rec->u.spark.depthBias = 0x16;
           CopyVector(v1, &g_anEmitSlotOffsets[(effectArg >> 24) * 3]);
         }
-      } else if (((Actor *)pos)->type == 0x78) {
+      } else if (((Actor *)pos)->type == ACTOR_TYPE_SPARX) {
         RotateVectorByMatrix(((Actor *)pos)->mtx, g_anSparxEmitOffset, v1);
         AddVector(v1, v1, &((Actor *)pos)->posX);
       } else {
@@ -405,7 +405,7 @@ void Level31_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.dust.vel[1] = 0;
       rec->u.dust.vel[2] = 0;
       rec->u.dust.life = 2;
-      if (effectArg == 1 || (effectArg == 0 && g_nLevelReadyFlag >= 3)) {
+      if (effectArg == 1 || (effectArg == 0 && g_nSparxHealth >= 3)) {
         rec->u.dust.r = 0xFF;
         rec->u.dust.g = 0xFF;
         rec->u.dust.b = 0;

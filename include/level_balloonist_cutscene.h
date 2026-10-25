@@ -30,7 +30,7 @@ extern unsigned char *g_apSaveMenuAnimActorList[];
 
 extern void (*g_pfnLevelAdvanceEmitList)(int);
 
-extern unsigned char *g_pLevelOverlayInitRecord;
+extern unsigned char *g_pSparxActor;
 
 extern void (*g_pfnLevelOnSaveMenuExit)();
 
@@ -46,15 +46,15 @@ extern int g_pCameraTargetParams;
 
 extern int g_dwPadPressed[];
 
-extern int g_nGamestate0cSubstate[];            /* [0] substate [1] phase [2] selected [3] submode [4] greeting */
+extern int g_nActorCutsceneSubstate[];            /* [0] substate [1] phase [2] selected [3] submode [4] greeting */
 
-extern int g_nGamestate0cTimer[];
+extern int g_nActorCutsceneTimer[];
 
-extern int g_nGamestate0cMenuCursor[];
+extern int g_nActorCutsceneMenuCursor[];
 
-extern int g_nGamestate0cDialogPage[];
+extern int g_nActorCutsceneDialogPage[];
 
-extern int g_nGamestate0cCamYawGoal[];
+extern int g_nActorCutsceneCamYawGoal[];
 
 extern int g_pRenderScratchRegionBase;
 
@@ -99,12 +99,18 @@ extern unsigned int g_dwHudBobSinePhase[];
 
 /* The balloonist actor record (Update reads its fields; Draw links it into
  * the OT as the pending node). */
-extern unsigned char *g_pGamestate0cRecord;
+extern unsigned char *g_pActorCutsceneRecord;
 
 /* The two cutscene actor pointers seen as Actor records: the focus actor
- * (g_pGamestate0cActor, set by BeginActorCutscene) and the orbit-centre
- * record above (the actor at the path end, or g_abGamestate0cActorSnapshot). */
-#define CUTSCENE_ACTOR ((Actor *)g_pGamestate0cActor)
-#define CUTSCENE_RECORD ((Actor *)g_pGamestate0cRecord)
+ * (g_pActorCutsceneActor, set by BeginActorCutscene) and the orbit-centre
+ * record above (the actor at the path end, or g_abActorCutsceneActorSnapshot). */
+#define CUTSCENE_ACTOR ((Actor *)g_pActorCutsceneActor)
+#define CUTSCENE_RECORD ((Actor *)g_pActorCutsceneRecord)
+
+/* g_nActorCutsceneSpyroToX (From + 12), stored through a char * off the From
+ * base: not in-struct, so sched keeps the following load below it (lever L2
+ * in the Update clones), and the address shares From's lui. The plain
+ * scalar store costs an extra lui. */
+#define SPYRO_TO_X_VIA_FROM (*(int *)((char *)g_anActorCutsceneSpyroFrom + 12))
 
 #endif /* OPEN_SPYRO_LEVEL_BALLOONIST_CUTSCENE_H */

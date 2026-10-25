@@ -26,13 +26,16 @@ extern int
     g_anWorldTimAudioChunkOffsetBlock[]; /* alias, held across the reads */
 
 extern int g_anActorMeshOffsetBlock[]; /* [-16] is g_nWorldDataExtChunkOffset */
+/* Its 0x40 actor-mesh offsets are followed by their g_apActorMeshTable
+ * indices, one short each. */
+#define ACTOR_MESH_INDEX_LIST(list) ((short *)((list) + 0x40))
 
 extern void *g_apActorMeshTableBlock[]; /* incomplete-array view of
                                            g_apActorMeshTable */
 
 /* Held-base alias of g_anCameraPos (0x80076df8): the [0] store and the
    SubtractVector argument share one base register while [1] and [2] stay
-   absolute — same split as g_anSpyroWorldPosBlock in Gamestate0D_Update. */
+   absolute — same split as g_anSpyroWorldPosBlock in Title_Update. */
 extern int g_anCameraPosBlock[];
 
 /* Held-base views of the Spyro record, the request mask and the camera's
@@ -122,7 +125,7 @@ extern void UpdateCameraFrame(void);
 
 extern void TickCdMusicStream(void);
 
-extern int g_nSpyroOrbDropSpawnIndex;
+extern int g_nSpyroHazardKind;
 
 extern int g_bSpyroJumpHoldForced;
 
@@ -142,7 +145,7 @@ extern void RasterizePairedActor(void);
 
 extern void ResetSpyroLinearMotion(void);
 
-extern int g_anLevelReadyFlagBlock[];     /* g_nLevelReadyFlag */
+extern int g_anSparxHealthBlock[];     /* g_nSparxHealth */
 
 extern void EnqueuePendingSpritePrims(void);
 
@@ -228,7 +231,7 @@ extern void SnapCameraToTarget(void);
 extern int g_abDrawBufPool;          /* draw-buffer sentinel */
 extern unsigned int g_adwSpyroRequestMaskBlock[];
 extern int g_anCameraViewMtx[]; /* camera view matrix (worldToCam at -0x14) */
-extern int g_anGemPickupAuraStarBlock[]; /* 0x80076248 aura-star state block */
+extern int g_anDragonRescueAuraStarBlock[]; /* 0x80076248 aura-star state block */
 extern int g_anSaveMenuBlock[];
 extern int g_anSpawnAnchorBlock[];
 extern int g_anSpyroStateBlock[];
@@ -244,8 +247,8 @@ extern unsigned char g_szReturningHome[]; /* "RETURNING HOME..." */
 extern char *g_apWorldUnpackHeadBlock[];
 extern char *volatile g_pActiveCutsceneSoundDef;
 extern int CdInit(void);
-extern int g_anGamestate0dBlock[];
-extern int g_anGemPickupBlock[];
+extern int g_anTitleModeBlock[];
+extern int g_anDragonRescueBlock[];
 extern int g_anSpyroBodyMtxBlock[];
 extern int g_anSpyroPadSnapshotBlock[];
 extern int g_anSpyroSlopeGravityVec[];
@@ -288,7 +291,7 @@ extern unsigned char g_bSpyroAnimLayer2Prev;
 extern unsigned int g_adwPadHeldBlock[];
 extern unsigned int g_adwPadPressedBlock[];
 extern void *g_apOtDepthBinBlock[];
-extern void *g_pfnGamestate0cSubstateDraw;
+extern void *g_pfnActorCutsceneSubstateDraw;
 extern void BuildSecondaryActorDrawList(void);
 extern void ClearPadHistoryRing(void);
 extern void ComputeVoicePanAndFalloff(short *vol, int dist, unsigned char bearing, unsigned int range, short *cached);
@@ -314,7 +317,7 @@ extern int g_nCreditsFirstVisibleLine;
 extern int g_nCreditsLastVisibleLine;
 extern int g_nCreditsLineCount;
 extern int g_nCreditsPageIndex;
-extern int g_nGamestate0fMode;
+extern int g_nCreditsMode;
 extern int g_nGenericCountdown;
 extern int g_nLevelIntroParallaxCountdown;
 extern int g_nStaticMeshLodCutoff;

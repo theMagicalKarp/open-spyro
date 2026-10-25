@@ -20,7 +20,7 @@ void OrActorGroupFlagsInCone(Actor *actor, int group, unsigned int bits,
     do {
       idx = *ptr & 0x7FFF;
       rec = (Actor *)((char *)g_pActorListBase + idx * ACTOR_SIZE);
-      if (rec->mode < 0x80) {
+      if (rec->mode < ACTOR_MODE_DORMANT) {
         d = actor->posX - rec->posX;
         if (d > 0) {
           if (d >= xyLim) {

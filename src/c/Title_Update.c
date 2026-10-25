@@ -3,7 +3,7 @@
 #include "main_shared.h"
 
 /* Update for gamestate 0xd (story-intro / new-game transition, 0x80032b08,
-   0x6a4). Only runs its body while g_nGamestate0dMode is 3; three substates:
+   0x6a4). Only runs its body while g_nTitleMode is 3; three substates:
    0 arms the transition (silences audio, picks the destination level from the
    message id — title screen, resume, or a fresh save's first level — and parks
    the camera on the intro shot), 1 blocks on the CD stream until the world is
@@ -13,11 +13,11 @@
    the level (resume path). Every substate falls through to the shared light
    rotation + timer tick. */
 
-void Gamestate0D_Update(void) {
+void Title_Update(void) {
   VECTOR delta;
   RECT clear;
 
-  if (g_nGamestate0dMode == 3) {
+  if (g_nTitleMode == 3) {
     if (g_nStoryIntroSubstate == 0) {
       StopAllSoundExceptMask(0);
       TickSpuPerFrame();
@@ -30,15 +30,15 @@ void Gamestate0D_Update(void) {
       } else if (g_nStoryIntroMessage == 1) {
         g_nFlightLevelActive = 0;
         g_nCdStreamState = 1;
-        g_nScriptedMobTag = 0;
-        g_nScriptedRespawnFlag = 0;
+        g_nReturnPortalLevelId = 0;
+        g_nPortalTransitionActive = 0;
         g_nCurrentLevelId = g_nActiveLevelId;
       } else if (g_nStoryIntroMessage == 2) {
         InitNewGameState();
         g_nFlightLevelActive = 0;
         g_nCdStreamState = 1;
-        g_nScriptedMobTag = 0;
-        g_nScriptedRespawnFlag = 0;
+        g_nReturnPortalLevelId = 0;
+        g_nPortalTransitionActive = 0;
         g_nActiveLevelId = g_anDeathTryLevelIds[g_nDeathTryIndex];
         g_nCurrentLevelId = g_nActiveLevelId;
       }

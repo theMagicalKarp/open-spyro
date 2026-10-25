@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -26,7 +27,7 @@ void GamestateUpdate(void) {
 
   if (g_nGamestate != GS_GAMEPLAY) {
     if (g_nGamestate == GS_LEVEL_LOAD) {
-      Gamestate01_Update();
+      LevelLoad_Update();
     } else if (g_nGamestate == GS_PAUSE_MENU) {
       PauseMenu_Update();
     } else if (g_nGamestate == GS_INVENTORY) {
@@ -36,30 +37,30 @@ void GamestateUpdate(void) {
     } else if (g_nGamestate == GS_GAME_OVER) {
       RespawnOrGameOver_Update();
     } else if (g_nGamestate == GS_OVERLAY_SCREEN) {
-      Gamestate06_Update();
+      OverlayScreen_Update();
     } else if (g_nGamestate == GS_OVERLAY_HOOK) {
       (*(void (*)())g_pfnGamestate7Handler)();
-    } else if (g_nGamestate == GS_GEM_PICKUP) {
-      GemPickup_Update();
+    } else if (g_nGamestate == GS_DRAGON_RESCUE) {
+      DragonRescue_Update();
     } else if (g_nGamestate == GS_ARRIVAL_CAMERA) {
       CameraSettle_Update();
     } else if (g_nGamestate == GS_MENU_TRANSITION) {
       SpyroStateDelay_Update();
     } else if (g_nGamestate == GS_SAVE_MENU) {
-      Gamestate0B_Update();
+      SaveMenu_Update();
     } else if (g_nGamestate == GS_ACTOR_CUTSCENE) {
-      Gamestate0C_Update();
+      ActorCutscene_Update();
     } else if (g_nGamestate == GS_TITLE) {
-      if (g_nGamestate0dMode != 3) {
+      if (g_nTitleMode != 3) {
         Titlescreen_Update();
       } else {
-        Gamestate0D_Update();
+        Title_Update();
       }
     } else if (g_nGamestate == GS_GEM_CUTSCENE) {
       GemCutscene_Update();
     } else if (g_nGamestate == GS_CREDITS) {
-      if (g_nGamestate0fMode >= 0x63) {
-        Gamestate0F_Update();
+      if (g_nCreditsMode >= 0x63) {
+        CreditsSequence_Update();
       } else {
         Credits_Update();
       }
@@ -100,7 +101,8 @@ void GamestateUpdate(void) {
     }
 
     if (g_nGamestate == GS_GAMEPLAY && g_nGameplayBlocked == 0 &&
-        g_nLevelReadyFlag >= 0 && g_nCameraCurrentMode != 0x8000000E) {
+        g_nSparxHealth >= 0 &&
+        g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
       if ((unsigned int)g_nPadType < 2 || (g_dwPadPressed & PAD_START)) {
         EnterPauseMenu(1);
       } else if (g_dwPadPressed & PAD_SELECT) {

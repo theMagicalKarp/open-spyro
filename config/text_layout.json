@@ -91,7 +91,7 @@
    "size": 1548
   },
   {
-   "name": "TickGemPickupAssetStream",
+   "name": "TickDragonRescueAssetStream",
    "vram": 2147568496,
    "size": 2048
   },
@@ -491,7 +491,7 @@
    "size": 2324
   },
   {
-   "name": "Gamestate01_09_Draw",
+   "name": "LevelTransition_Draw",
    "vram": 2147590224,
    "size": 956
   },
@@ -501,7 +501,7 @@
    "size": 8840
   },
   {
-   "name": "Gamestate0A_Draw",
+   "name": "MenuTransition_Draw",
    "vram": 2147600020,
    "size": 932
   },
@@ -511,7 +511,7 @@
    "size": 1444
   },
   {
-   "name": "Gamestate08_Draw",
+   "name": "DragonRescue_Draw",
    "vram": 2147602396,
    "size": 1852
   },
@@ -521,7 +521,7 @@
    "size": 2868
   },
   {
-   "name": "Gamestate0C_Draw",
+   "name": "ActorCutscene_Draw",
    "vram": 2147607116,
    "size": 1132
   },
@@ -696,12 +696,12 @@
    "size": 8
   },
   {
-   "name": "BeginGemPickupOverlay",
+   "name": "BeginDragonRescue",
    "vram": 2147666212,
    "size": 584
   },
   {
-   "name": "EndGemPickupToWorld",
+   "name": "EndDragonRescueToWorld",
    "vram": 2147666796,
    "size": 348
   },
@@ -761,7 +761,7 @@
    "size": 1320
   },
   {
-   "name": "Gamestate01_Update",
+   "name": "LevelLoad_Update",
    "vram": 2147671964,
    "size": 100
   },
@@ -791,22 +791,22 @@
    "size": 1492
   },
   {
-   "name": "Gamestate06_Update",
+   "name": "OverlayScreen_Update",
    "vram": 2147677124,
    "size": 32
   },
   {
-   "name": "GemPickup_Update",
+   "name": "DragonRescue_Update",
    "vram": 2147677156,
    "size": 8400
   },
   {
-   "name": "Gamestate0B_Update",
+   "name": "SaveMenu_Update",
    "vram": 2147685556,
    "size": 4132
   },
   {
-   "name": "Gamestate0C_Update",
+   "name": "ActorCutscene_Update",
    "vram": 2147689688,
    "size": 1352
   },
@@ -821,7 +821,7 @@
    "size": 88
   },
   {
-   "name": "Gamestate0D_Update",
+   "name": "Title_Update",
    "vram": 2147691272,
    "size": 1700
   },
@@ -831,7 +831,7 @@
    "size": 560
   },
   {
-   "name": "Gamestate0F_Update",
+   "name": "CreditsSequence_Update",
    "vram": 2147693532,
    "size": 248
   },
@@ -911,7 +911,7 @@
    "size": 5208
   },
   {
-   "name": "UpdateGemPickupPathCamera",
+   "name": "UpdatePortalPathCamera",
    "vram": 2147709964,
    "size": 776
   },
@@ -926,7 +926,7 @@
    "size": 632
   },
   {
-   "name": "UpdateLedgeGrabCamera",
+   "name": "UpdateLevelTransitionCamera",
    "vram": 2147711520,
    "size": 436
   },
@@ -1241,7 +1241,7 @@
    "size": 908
   },
   {
-   "name": "TickGemPickupBurstEntity",
+   "name": "TickStatueBurstShard",
    "vram": 2147731172,
    "size": 376
   },
@@ -1836,7 +1836,7 @@
    "size": 56
   },
   {
-   "name": "DrawGemPickupAuraStar",
+   "name": "DrawDragonRescueAuraStar",
    "vram": 2147846244,
    "size": 644
   },
@@ -3676,7 +3676,7 @@
   {
    "sym": "switchdataD_80010a70",
    "offset": 2672,
-   "owner": "TickGemPickupAssetStream",
+   "owner": "TickDragonRescueAssetStream",
    "size": 24
   },
   {
@@ -3964,13 +3964,13 @@
   {
    "sym": "switchdataD_80010de8",
    "offset": 3560,
-   "owner": "GemPickup_Update",
+   "owner": "DragonRescue_Update",
    "size": 32
   },
   {
    "sym": "switchdataD_80010e08",
    "offset": 3592,
-   "owner": "Gamestate0B_Update",
+   "owner": "SaveMenu_Update",
    "size": 32
   },
   {

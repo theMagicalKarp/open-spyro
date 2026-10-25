@@ -1,6 +1,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "pad.h"
+#include "pad_buttons.h"
 
 /* Pad sampler for the death-replay stream (0x800539fc, 0x26C). While the
    death sequence is recording (g_nDeathState == 2) it samples the real
@@ -77,7 +78,8 @@ int SamplePadForDeathReplayFrame(void) {
       (g_dwPadAnalogCalibrated & 0xFFFF0000) != 0x7F7F0000) {
     g_nPadDirectionalIdleFlag = 0;
   }
-  if (g_nPadDirectionalIdleFlag == 0 || (g_dwPadHeld & 0xF0FF) != 0) {
+  if (g_nPadDirectionalIdleFlag == 0 ||
+      (g_dwPadHeld & (PAD_DPAD | 0x00FF)) != 0) {
     g_nPadAllInputIdleFlag = 0;
   }
   g_nFrameTicks = 2;

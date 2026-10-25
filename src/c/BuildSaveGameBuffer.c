@@ -6,7 +6,7 @@
 /* 0x80059864 (484 bytes) — memcard save-block serializer: packs the current
    game state into a 0x600-byte buffer (options bytes, per-world tables,
    per-level visited/gem/dragon/egg tallies, kill bitmaps) and stamps the
-   checksum (SaveGameBuffer, save_game.h). Sole caller Gamestate0B_Update
+   checksum (SaveGameBuffer, save_game.h). Sole caller SaveMenu_Update
    (save-write). */
 void BuildSaveGameBuffer(unsigned char *buf) {
   unsigned char *start;
@@ -51,7 +51,7 @@ void BuildSaveGameBuffer(unsigned char *buf) {
     row += 5;
   } while (w < 5);
   CopyWords(buf + SAVE_OFFSET(levelVisited), g_abLevelVisitedFlag, 0x24);
-  CopyWords(buf + SAVE_OFFSET(levelGemPercent), g_abLevelGemPercent, 0x24);
+  CopyWords(buf + SAVE_OFFSET(levelExited), g_abLevelExited, 0x24);
   i = 0;
   eggs = g_anLevelEggsRecovered;
   gems = g_anLevelGemsCollected;

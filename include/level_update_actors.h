@@ -7,6 +7,7 @@
 #ifndef OPEN_SPYRO_LEVEL_UPDATE_ACTORS_H
 #define OPEN_SPYRO_LEVEL_UPDATE_ACTORS_H
 
+#include "actor_states.h"
 #include "model.h"
 
 /* The update list, and the per-actor values the loop publishes before it
@@ -16,7 +17,7 @@ extern int g_nActorFrameDelta;      /* frame delta, as seen by the callees */
 /* Ground-trigger region type under a probe point. Unprototyped on purpose:
  * some clones pass the point, others call it bare with $a0 already holding it. */
 extern int GetGroundTriggerRegionType();
-extern int g_nLevelReadyFlag; /* scalar form; the array users go through g_anLevelReadyFlagBlock */
+extern int g_nSparxHealth; /* scalar form; the array users go through g_anSparxHealthBlock */
 
 /* Spyro's persistent euler Z byte, re-read on every access. */
 extern volatile unsigned char g_bSpyroPersistentEulerZ;
@@ -75,12 +76,13 @@ extern void SVectorToVectorShl2(int *d, int *s);
 
 extern void CommitActorKillGems(int a, void *b);
 
-/* Types 260..269: floating digits. Same bounce, different layout. */
-typedef struct DebrisState {
+/* Types 260..269: a floating gem-value digit (0x104 + digit), spawned by
+ * SpawnFloatingDigitActors when a kill pays out gems. */
+typedef struct GemDigitState {
   int life;   /* 0x00 */
   int pad04;  /* 0x04 */
   int vel[3]; /* 0x08 */
-} DebrisState;
+} GemDigitState;
 
 /* Surface normal produced by the collision probes. */
 extern int g_anCollisionProbeVec;
@@ -163,16 +165,17 @@ typedef struct {
 
 extern CamObj g_anWorldToCameraRotMtx;
 
-/* Vortex path: node count and current node, then the two anchor positions
- * whose midpoint Spyro is pulled toward. */
-typedef struct PortalDesc {
+/* A hub portal's path (type 398's desc; g_pPortalCamPathData): node count
+ * and current node, then the two anchor positions whose midpoint Spyro is
+ * pulled toward while UpdatePortalPathCamera walks the camera along it. */
+typedef struct PortalCamPath {
   unsigned char count;    /* 0x00 */
   unsigned char index;    /* 0x01 */
   unsigned char pad02[6]; /* 0x02 */
   int posA[3];            /* 0x08 */
   int pad14;              /* 0x14 */
   int posB[3];            /* 0x18 */
-} PortalDesc;
+} PortalCamPath;
 
 extern void StubRewardHook(int script, int a);
 
@@ -225,7 +228,7 @@ typedef struct {
   char pad00F[0x18];
   unsigned char otBinBias;        /* 0x027 g_bSpyroOtBinBias */
   char pad028[0x4];
-  int damageFlags;                /* 0x02C */
+  int triggerEvents;                /* 0x02C */
   char pad030[0x4];
   int bodyMtx;                    /* 0x034 g_anSpyroBodyMtx[0] */
   char pad038[0x40];
@@ -243,7 +246,7 @@ typedef struct {
   char pad120[0x8];
   int frameMotionLength;          /* 0x128 g_nSpyroFrameMotionLength */
   char pad12C[0x38];
-  int readyFlag;                  /* 0x164 g_nLevelReadyFlag; overlays read it as the balloon sequence stage */
+  int sparxHealth;                  /* 0x164 g_nSparxHealth */
   char pad168[0x8];
   int triggerEventId;             /* 0x170 g_nSpyroTriggerCurrentEventId */
   char pad174[0x8];
@@ -251,7 +254,7 @@ typedef struct {
   char pad188[0x1C];
   int headLook;                   /* 0x1A4 */
   char pad1A8[0x4C];
-  int controlFlags;               /* 0x1F4 */
+  int requestMask;               /* 0x1F4 g_dwSpyroRequestMask (SPYRO_RQ_*) */
   char pad1F8[0x8];
   int requestTargetZ;             /* 0x200 g_nSpyroRequestTargetZ */
   char pad204[0x2];
@@ -266,12 +269,19 @@ typedef struct {
   void *pCamTarget;               /* 0x220 */
   Actor *pScriptedActor;          /* 0x224 */
   char pad228[0x18];
-  PortalDesc *pPortal;            /* 0x240 */
-  int camPathMaxStep;             /* 0x244 g_nGemPickupCamPathMaxStep */
-  int camPathReverse;             /* 0x248 g_nGemPickupCamPathReverseFlag */
+  PortalCamPath *pPortalCamPath;  /* 0x240 g_pPortalCamPathData */
+  int camPathMaxStep;             /* 0x244 g_nPortalCamPathMaxStep */
+  int camPathReverse;             /* 0x248 g_nPortalCamPathReverseFlag */
 } SpyroObj;
 
 extern SpyroObj g_anSpyroWorldPosBlock;
+
+/* A SpyroObj field addressed off the UpdateActors clones' held base
+ * (`base = (char *)&g_nSpyroWorldPosZ`, i.e. SpyroObj + 8). The single folded
+ * constant keeps the original `base + N` address; `spy->field` instead makes
+ * gcc materialize the SpyroObj pointer and reallocates the whole loop. */
+#define SPY_HELD_FIELD(base, type, field)                                      \
+  ((type *)((char *)(base) + ((int)&((SpyroObj *)0)->field - 8)))
 
 /* Case 13 — tethered follower: rides a parent actor (by table index) and,
  * once released, re-points every other follower at the same parent. */
@@ -298,22 +308,14 @@ typedef struct PlateState {
   int locked;  /* 0x24 */
 } PlateState;
 
-/* Case 120 — the balloonist himself: owns the smoke emitter and the gnorc he
- * is waiting on. */
-typedef struct BalloonState {
-  int timer;      /* 0x00 puff countdown */
-  short drift[3]; /* 0x04 wind drift, x/y/z */
-  char pad0A[0x2];
-  FxNode *smoke; /* 0x0C particle emitter */
-  Actor *gnorc;  /* 0x10 */
-} BalloonState;
-
-/* Case 173 — ambient flyer: circles, and pops when Spyro reaches it. */
-typedef struct FlyState {
+/* Case 173 — the level key (ACTOR_TYPE_KEY): rocks in place and sparkles;
+ * touching it sets g_nLevelKeyState = 1, and the locked chest (174) then
+ * flies it into its lock. */
+typedef struct KeyState {
   short timer;          /* 0x00 */
   unsigned char angle;  /* 0x02 */
-  unsigned char attach; /* 0x03 attached spark handle, 0xFF = none */
-} FlyState;
+  unsigned char attach; /* 0x03 attached spark billboard, 0xFF = none */
+} KeyState;
 
 /* Case 195 — the same chest with a wobble pose played before it breaks. */
 typedef struct WobbleState {
@@ -325,26 +327,27 @@ typedef struct WobbleState {
   int handle; /* 0x14 */
 } WobbleState;
 
-/* Cases 76 and 426..451 — the orbiting satellite: rides a parent actor at a
- * fixed radius, or falls back to a plain spin when the parent is not a
- * spinner. */
-typedef struct SatState {
+/* Cases 76 and 426..451 — a letter of a floating name (SpawnNameLetterActors:
+ * A..Z are 426..451, anything else 76): rides its sign at a fixed radius, or
+ * falls back to a plain spin when the sign is not a spinner. */
+typedef struct NameLetterState {
   Actor *parent; /* 0x00 */
   short radius;  /* 0x04 */
   short phase;   /* 0x06 */
-} SatState;
+} NameLetterState;
 
-/* Case 286 — the supercharge/flight path rider, stepping a waypoint ring. */
-typedef struct RideState30 {
-  int pose;       /* 0x00 which voice/pose the rider is in */
-  int volume;     /* 0x04 */
+/* Case 286 — ambient sound source: plays random ambient sounds at its
+ * sound range; mode 2 also steps it along a waypoint path. */
+typedef struct AmbientSoundState {
+  int mode;       /* 0x00 which ambient pattern (0..9) */
+  int soundRange;     /* 0x04 republished into actor->soundRange */
   PathData *path; /* 0x08 */
-  int wait;       /* 0x0C */
-  int leg;        /* 0x10 */
+  int timer;       /* 0x0C */
+  int sub;        /* 0x10 sub-state inside mode 2 */
   int speed;      /* 0x14 */
   int step[3];    /* 0x18 per-frame step along the leg */
   int left;       /* 0x24 frames left on this leg */
-} RideState30;
+} AmbientSoundState;
 
 /* Case 323 — the respawn warden: puts every dormant actor of its group back
  * once Spyro is far enough away. */
@@ -380,14 +383,15 @@ extern void RefreshHudLevelGemCounter(void);
 
 extern void ResetSpyroEntity(int a0);
 
-/* Case 9 -- exit drop: shows the exit text near the camera, sparkles, and
- * takes Spyro out of the level when he drops into it. */
-typedef struct DropState {
+/* Case 9 -- level-exit whirlwind: shows its name letters near the camera,
+ * sparkles, lifts Spyro (SPYRO_EV_LIFT toward its z + 0x4000) and, once he
+ * is above `depth` with the camera tilted up, starts the hub return. */
+typedef struct ExitWhirlState {
   int pad00;
   int tick; /* 0x04 sparkle counter */
   int pad08;
-  int depth; /* 0x0C drop depth that triggers the exit, 0 = 0x2000 */
-} DropState;
+  int depth; /* 0x0C lift height that triggers the exit, 0 = 0x2000 */
+} ExitWhirlState;
 
 extern int PivotActorAlongPath(Actor *actor, void *path, int a, int b, int c, int d,
                           int e, int f, int g);
@@ -430,15 +434,17 @@ extern int CheckSpyroLineOfSightTo(int *pos);
 
 extern int IsPointInRotatedBox(int *a, int *b);
 
-/* Case 174 -- the cage that carries Spyro. */
-typedef struct CageState {
-  int idx;    /* 0x00 index of its flyer in g_pActorListBase */
-  int shake;  /* 0x04 shake timer, then ride timer */
+/* Case 174 -- the locked chest (ACTOR_TYPE_LOCKED_CHEST): with the key held,
+ * Spyro facing it up close freezes, the key flies into its lock, and it
+ * bursts into wood shards and drops its reward (g_pLockedChestReward). */
+typedef struct LockedChestState {
+  int idx;    /* 0x00 g_pActorListBase index of its key */
+  int shake;  /* 0x04 shake timer, then the key-flight timer */
   int rotX;   /* 0x08 rest pose */
   int rotY;   /* 0x0C */
   int restZ;  /* 0x10 */
   int handle; /* 0x14 for SelectActorLodBand */
-} CageState;
+} LockedChestState;
 
 extern void DivideVector3(int *d, int *s, int k);
 
@@ -573,8 +579,9 @@ typedef struct PathState {
   int startDelay; /* 0x30 random 6..0x28 countdown before walking */
 } PathState;
 
-/* Type 286: ambient sound source; mode 2 also coasts along a path. */
-typedef struct RoamState {
+/* Type 286: ambient sound source (AmbientSoundState) with the path seen as
+ * bytes, the view the other clones were matched with. */
+typedef struct AmbientSoundBytesState {
   int mode;            /* 0x00 inner jump-table discriminant, 0..9 */
   int soundRange;           /* 0x04 republished into actor->soundRange every frame */
   unsigned char *path; /* 0x08 [0]=waypoint count, [1]=current index */
@@ -583,7 +590,7 @@ typedef struct RoamState {
   int speed;           /* 0x14 leg speed (ComputeStepTowardPoint speed) */
   int vel[3];          /* 0x18 current leg velocity, written by ComputeStepTowardPoint */
   int count;           /* 0x24 frames left on the current leg */
-} RoamState;
+} AmbientSoundBytesState;
 
 /* Type 34: dragon egg. Spirals up, flies to Spyro and is collected. */
 typedef struct ShotState {
@@ -640,13 +647,6 @@ typedef struct PickupState {
   unsigned char anim;  /* 0x14 0xFF == none */
 } PickupState;
 
-/* Type 173: key. Rocks in place, sparkles, and is collected on contact. */
-typedef struct SpinState {
-  short timer;         /* 0x00 */
-  unsigned char angle; /* 0x02 */
-  unsigned char anim;  /* 0x03 0xFF == none */
-} SpinState;
-
 /* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
  * saves a checkpoint and starts the rescue. */
 typedef struct RideState {
@@ -664,7 +664,7 @@ typedef struct RideState {
 
 /* Type 398 state block. */
 typedef struct PortalState {
-  PortalDesc *desc; /* 0x00 */
+  PortalCamPath *desc; /* 0x00 */
   int offset[3];    /* 0x04 nudge applied to the homing vector */
   int pad10;        /* 0x10 */
   int dest;         /* 0x14 destination, published to SPY.requestYaw as a byte (ExitState.dest) */
@@ -721,17 +721,6 @@ typedef struct WalkerState {
   int zVel;           /* 0x14 likewise */
 } WalkerState;
 
-/* Type 120: Sparx. Idle hover offset, glow node, and the actor he is
- * fetching. */
-typedef struct FlierState {
-  int timer;    /* 0x00 idle / fetch timer */
-  short vx;     /* 0x04 */
-  short vy;     /* 0x06 */
-  short vz;     /* 0x08 */
-  FxNode *fx;   /* 0x0C */
-  Actor *rider; /* 0x10 */
-} FlierState;
-
 /* Type 339: flock leader. Two linked chains of follower actors, a path, and
  * one formation slot per follower plus one for the leader. */
 typedef struct FlockState {
@@ -766,8 +755,8 @@ typedef struct OrbitState {
   short ringPhase;  /* 0x06 phase offset within the ring */
 } OrbitState;
 
-/* Case 16 — the balloonist's gnorc: wanders until the balloonist is up, then
- * hands itself to the flight cutscene. */
+/* Case 16 — butterfly: flutters near its spawn point until Sparx eats it
+ * (or it turns into Sparx when Spyro has none). */
 typedef struct WanderState {
   int turn;              /* 0x00 turn direction, +1 / -1 */
   int home[3];           /* 0x04 spawn position it stays near */
@@ -798,13 +787,14 @@ typedef struct ChargeState {
   int rest; /* 0x2C frames before the next charge */
 } ChargeState;
 
-/* Cases 260..269 — the thrown projectile: flies until it lands. */
-typedef struct ShotState30 {
+/* Cases 260..269 — the floating gem-value digits again, with the z velocity
+ * split out (the view two clones were matched with). */
+typedef struct GemDigitStateZ {
   int life; /* 0x00 */
   char pad04[0x4];
   int vel[2]; /* 0x08 */
   int velZ;   /* 0x10 */
-} ShotState30;
+} GemDigitStateZ;
 
 /* Case 416 — the bobbing platform. */
 typedef struct BobState {
@@ -1630,14 +1620,14 @@ extern int g_anLevelKillBitmapTable[];
 extern volatile unsigned char g_bSpyroOtBinBias;
 extern int g_nCameraSpringYaw;
 extern int g_nCameraYaw;
-extern int g_nGemPickupCamPathMaxStep;
+extern int g_nPortalCamPathMaxStep;
 extern int g_nGenericCountdown;
 extern int g_nGnastyLootFallRefZCap;
 extern int g_nHitRumbleTimer;
 extern int g_nMotionTrailRibbonCount;
 extern int g_nVblankTickCount;
 extern Xform *g_pCameraTargetParams;
-extern PortalDesc *volatile g_pGemPickupCamPathData;
+extern PortalCamPath *volatile g_pPortalCamPathData;
 extern int *g_pPathTableHead;
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
@@ -1656,7 +1646,7 @@ extern int g_bLevelBossDefeated; /* boss defeated */
 extern int g_bLevelPhasedBossKilled;
 extern int g_bLevelUseShortReleaseAnim;
 extern int g_dwActiveCameraOptions;
-extern int g_nGemPickupCamPathReverseFlag;
+extern int g_nPortalCamPathReverseFlag;
 extern int g_nSpyroMoveTargetYaw; /* camera yaw override */
 
 /* Word at byte offset `off` of g_anFlightHudClassWords (the flight HUD's

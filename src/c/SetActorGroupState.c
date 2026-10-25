@@ -12,14 +12,15 @@ void SetActorGroupState(Actor *actor, int value) {
 
   group = actor->group;
   if (group >= g_nLevelPickupTableCount) {
-    if ((unsigned int)actor->mode < 0x80) {
+    if ((unsigned int)actor->mode < ACTOR_MODE_DORMANT) {
       actor->mode = value;
     }
   } else {
     ptr = ((unsigned short **)g_pLevelPickupTableEntries)[group];
     do {
       idx = *ptr & 0x7FFF;
-      if ((unsigned int)((Actor *)g_pActorListBase)[idx].mode < 0x80) {
+      if ((unsigned int)((Actor *)g_pActorListBase)[idx].mode <
+          ACTOR_MODE_DORMANT) {
         ((Actor *)g_pActorListBase)[idx].mode = value;
       }
     } while ((short)*ptr++ >= 0);

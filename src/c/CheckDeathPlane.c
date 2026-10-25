@@ -78,7 +78,7 @@ int CheckDeathPlane(void) {
         g_nSfxOverrideFlags = 1;
         g_nSfxOverrideVolL = 0x3fff;
         g_nSfxOverrideVolR = 0x3fff;
-        PlaySoundEffect(0, 0, 0x10, &g_bGemPickupSfxVoiceMarker);
+        PlaySoundEffect(0, 0, 0x10, &g_bDragonRescueSfxVoiceMarker);
       } else {
         *(int *)g_pPathTableHead = 0x490;
       }

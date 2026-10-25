@@ -1,6 +1,6 @@
 /* Credits_Draw (0x8007BFD0, credits overlay).
  *
- * Credits-sequence frame draw. While the sequence gate (g_nGamestate0fMode) is -1,
+ * Credits-sequence frame draw. While the sequence gate (g_nCreditsMode) is -1,
  * only scrolls the double-height framebuffer: DrawSync/VSync, then MoveImage
  * (MoveImage) of the 512x224 strip at y=8 (front env active) or y=0xF8
  * to the opposite half, and a final DrawSync. Otherwise draws a full frame:
@@ -29,7 +29,7 @@
 void Credits_Draw(void) {
   int i;
 
-  if (g_nGamestate0fMode == -1) {
+  if (g_nCreditsMode == -1) {
     struct {
       short x, y, w, h;
     } rect;

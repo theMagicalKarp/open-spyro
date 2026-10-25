@@ -4,6 +4,7 @@
 #include "main_shared.h"
 #include "match_asm.h"
 #include "spyro_block.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 typedef struct {
@@ -13,7 +14,7 @@ typedef struct {
   int *path;
   int pad[3];
   int reverse;
-} MobActor;
+} PortalActor;
 
 #define MESH g_anWorldRenderMeshBlock
 #define CAM g_anCameraPosBlock
@@ -23,12 +24,13 @@ typedef struct {
    the body-yaw word; both reach the rest of the block relative to themselves.
  */
 #define PE_TO(word) ((word) * 4 - SPYB_EULER_Z)
+#define PE_WORD(word) (*(int *)(pe + PE_TO(word)))
 #define PYAW_BACK_TO(byte) (SPY_BODY_YAW * 4 - (byte))
 #define DRAWBUF_B (g_apDrawBufBBlock[0])
 #define LEVEL_SPLASH_OFFSET(i) ((&g_nLevelSplashOffset)[(i) * 4])
 #define LEVEL_SPLASH_SIZE(i) ((&g_nLevelSplashByteSize)[(i) * 4])
 #define LEVEL_ARCHIVE_OFFSET(i) ((&g_nLevelArchiveOffset)[(i) * 4])
-#define MOB_ENTRY(i) ((int *)g_apScriptedMobEntries[i])
+#define PORTAL_ENTRY(i) ((int *)g_apPortals[i])
 
 /* 0x80015370 (0x1074): the level-transition loader. Each tick (once the
    drive is idle past the first two stages) it runs one stage: preserve the
@@ -66,10 +68,10 @@ void TickLevelTransitionStream(int full) {
     char *src;
 
     StopAllSoundExceptMask(0);
-    if (g_nPreserveMobIdx >= 0) {
+    if (g_nEnteredPortalIdx >= 0) {
       char *rec;
 
-      rec = *(char **)g_apScriptedMobEntries[g_nPreserveMobIdx];
+      rec = *(char **)g_apPortals[g_nEnteredPortalIdx];
       src = rec + 0x14;
       size = *(int *)src + 0x400;
       p = (int *)((char *)g_pRenderScratchRegionBase - size);
@@ -118,11 +120,11 @@ void TickLevelTransitionStream(int full) {
 
     g_nActiveLevelId = g_nCurrentLevelId;
     ApplyPerLevelGlobalsTable();
-    g_nPrevLevelIntroIndex = g_nLevelIntroIndex;
+    g_nPrevLevelIndex = g_nLevelIndex;
     world = g_nActiveLevelId / 10 - 1;
     g_nActiveWorldIndex = world;
     intro = world * 6 + g_nActiveLevelId % 10;
-    g_nLevelIntroIndex = intro;
+    g_nLevelIndex = intro;
     if (full) {
       int lba = *(volatile int *)&g_nCdBaseLba;
       void *dst = *(void *volatile *)&g_pSharedLoadBuffer;
@@ -137,7 +139,7 @@ void TickLevelTransitionStream(int full) {
   } break;
   case 3: {
     int lba = *(volatile int *)&g_nCdBaseLba;
-    int intro = *(volatile int *)&g_nLevelIntroIndex;
+    int intro = *(volatile int *)&g_nLevelIndex;
     void *dst = *(void *volatile *)&g_pDrawBufB;
     int off = LEVEL_ARCHIVE_OFFSET(intro);
 
@@ -149,27 +151,27 @@ void TickLevelTransitionStream(int full) {
     CopyWords(g_anWorldTimAudioChunkOffsetBlock, DRAWBUF_B, 0x1D0);
     {
       int lba = *(volatile int *)&g_nCdBaseLba;
-      int intro = *(volatile int *)&g_nLevelIntroIndex;
+      int intro = *(volatile int *)&g_nLevelIndex;
       void *dst = *(void *volatile *)g_apDrawBufBBlock;
       int off = *(volatile int *)g_anWorldTimAudioChunkOffsetBlock;
 
       StartCdReadAsync(lba, dst, 0x80000, off + LEVEL_ARCHIVE_OFFSET(intro),
                        0x258);
     }
-    g_nPreserveMobIdx = 0;
+    g_nEnteredPortalIdx = 0;
     g_nCdStreamState++;
     break;
   case 5:
     rect.x = 0x200;
     rect.w = 0x200;
     rect.h = 0x100;
-    rect.y = g_nPreserveMobIdx << 8;
-    LoadImage(&rect, (char *)DRAWBUF_B + (g_nPreserveMobIdx << 18));
-    if (++g_nPreserveMobIdx == 2) {
+    rect.y = g_nEnteredPortalIdx << 8;
+    LoadImage(&rect, (char *)DRAWBUF_B + (g_nEnteredPortalIdx << 18));
+    if (++g_nEnteredPortalIdx == 2) {
       int lba = *(volatile int *)&g_nCdBaseLba;
       void *dst = DRAWBUF_B;
       int size = *(volatile int *)&g_nWorldTimAudioChunkSize;
-      int intro = *(volatile int *)&g_nLevelIntroIndex;
+      int intro = *(volatile int *)&g_nLevelIndex;
       int off = *(volatile int *)&g_nWorldTimAudioChunkOffset;
 
       g_nCdStreamState++;
@@ -191,7 +193,7 @@ void TickLevelTransitionStream(int full) {
   case 8: {
     int lba = *(volatile int *)&g_nCdBaseLba;
     void *dst = *(void *volatile *)&g_pDrawBufB;
-    int intro = *(volatile int *)&g_nLevelIntroIndex;
+    int intro = *(volatile int *)&g_nLevelIndex;
     int size = *(volatile int *)&g_nWorldBundleChunkSize;
     int off = *(volatile int *)&g_nWorldBundleChunkOffset;
 
@@ -203,11 +205,11 @@ void TickLevelTransitionStream(int full) {
     g_pWorldUnpackHead = UnpackWorldDataChunks(g_pDrawBufB, 0);
     if (MESH[0] != 0 && g_nGamestate != GS_GAME_OVER &&
         g_nGamestate != GS_ACTOR_CUTSCENE) {
-      if (g_nScriptedMobTag != 0) {
-        for (i = 0; i < g_nScriptedMobCount; i++) {
-          int *e = MOB_ENTRY(i);
+      if (g_nReturnPortalLevelId != 0) {
+        for (i = 0; i < g_nPortalCount; i++) {
+          int *e = PORTAL_ENTRY(i);
 
-          if (e[7] == g_nScriptedMobTag) {
+          if (e[7] == g_nReturnPortalLevelId) {
             *(Words5 *)MESH = *(Words5 *)e[0];
             break;
           }
@@ -219,7 +221,7 @@ void TickLevelTransitionStream(int full) {
     {
       int lba = *(volatile int *)&g_nCdBaseLba;
       void *dst = *(void *volatile *)&g_pWorldUnpackHead;
-      int intro = *(volatile int *)&g_nLevelIntroIndex;
+      int intro = *(volatile int *)&g_nLevelIndex;
       int size = *(volatile int *)&g_nWorldDataExtChunkSize;
       int off = *(volatile int *)&g_nWorldDataExtChunkOffset;
 
@@ -247,7 +249,7 @@ void TickLevelTransitionStream(int full) {
     i = 1;
     mesh = g_apActorMeshTableBlock;
     list = g_anActorMeshOffsetBlock;
-    slot = (short *)(list + 0x40) + 1;
+    slot = ACTOR_MESH_INDEX_LIST(list) + 1;
     for (; i < 0x40; i++) {
       if (list[i] <= 0) {
         break;
@@ -263,7 +265,7 @@ void TickLevelTransitionStream(int full) {
   case 11: {
     int lba = *(volatile int *)&g_nCdBaseLba;
     void *dst = *(void *volatile *)&g_pPathTableBuffer;
-    int intro = *(volatile int *)&g_nLevelIntroIndex;
+    int intro = *(volatile int *)&g_nLevelIndex;
     int size = *(volatile int *)&g_nLevelArchiveByteSize;
     int off = *(volatile int *)&g_nLevelArchiveBaseLba;
 
@@ -274,14 +276,14 @@ void TickLevelTransitionStream(int full) {
   case 12: {
     int d;
 
-    if (g_nScriptedRespawnFlag == 0) {
+    if (g_nPortalTransitionActive == 0) {
       g_nCdStreamState++;
       break;
     }
     if (g_nLevelIntroParallaxCountdown != 0) {
       break;
     }
-    if (g_nScriptedMobTag != 0) {
+    if (g_nReturnPortalLevelId != 0) {
       d = (g_nSpyroBodyYaw + g_nCameraYaw) & 0xFFF;
       if (d > 0x800) {
         d -= 0x1000;
@@ -300,19 +302,19 @@ void TickLevelTransitionStream(int full) {
     }
   } break;
   case 13: {
-    if (g_abLevelVisitedFlag[g_nLevelIntroIndex] == 0) {
+    if (g_abLevelVisitedFlag[g_nLevelIndex] == 0) {
       g_nCdMusicStreamTimeout = 0xA8C0;
     } else {
       g_nCdMusicStreamTimeout = 0x7080;
     }
-    g_nCurrentMusicTrack = (&g_nLevelMusicTrack)[g_nLevelIntroIndex];
-    g_abLevelVisitedFlag[g_nLevelIntroIndex] = 1;
+    g_nCurrentMusicTrack = (&g_nLevelMusicTrack)[g_nLevelIndex];
+    g_abLevelVisitedFlag[g_nLevelIndex] = 1;
     FillWord(g_anSpawnAnchorBlock, 0, 0x68);
-    g_nLevelEggCount = 0;
+    g_nLevelKeyState = 0;
     g_nGemTallyIconCount = 0;
-    g_nLevelGemsAtEntry = g_anLevelGemsCollected[g_nLevelIntroIndex];
+    g_nLevelGemsAtEntry = g_anLevelGemsCollected[g_nLevelIndex];
     BuildLoadedLevelRuntime(full);
-    if (g_nScriptedRespawnFlag != 0) {
+    if (g_nPortalTransitionActive != 0) {
       if (g_nFlightLevelActive != 0) {
         g_anSpyroStateFlagsBlock[0] = 10;
         ComputeCameraToTargetAngle(g_anCameraPos);
@@ -329,27 +331,26 @@ void TickLevelTransitionStream(int full) {
         ActivateScriptedCameraView(
             (int)(g_anSpyroDeathCamRecordBlock - (0x18 / 4)));
         g_nGamestate = GS_ARRIVAL_CAMERA;
-      } else if (g_nScriptedMobTag != 0) {
-        for (i = 0; i < g_nScriptedMobCount; i++) {
-          int *e = MOB_ENTRY(i);
+      } else if (g_nReturnPortalLevelId != 0) {
+        for (i = 0; i < g_nPortalCount; i++) {
+          int *e = PORTAL_ENTRY(i);
           unsigned char *pe = SPYB + SPYB_EULER_Z;
           int *pyaw = (int *)(SPYB + SPY_BODY_YAW * 4);
           int *cam = CAM;
           int *spring = CAM + 0x14;
 
-          if (e[7] == g_nScriptedMobTag) {
+          if (e[7] == g_nReturnPortalLevelId) {
             unsigned char yaw;
-            MobActor *actor;
+            PortalActor *actor;
 
             yaw = *pe;
             actor =
-                *(MobActor **)((char *)g_pActorListBase + e[6] * ACTOR_SIZE);
+                *(PortalActor **)((char *)g_pActorListBase + e[6] * ACTOR_SIZE);
             EBB_BREAK();
-            ChangeSpyroState(0xF);
-            *(int *)(pe + PE_TO(SPY_STATE_FLAGS)) = 9;
+            ChangeSpyroState(SPYRO_ST_GLIDE);
+            PE_WORD(SPY_STATE_FLAGS) = 9;
             ComputeCameraToTargetAngle(cam);
-            g_anCameraSpringYawBlock[6] =
-                g_nCameraYaw + *(int *)(pe + PE_TO(SPY_BODY_YAW));
+            g_anCameraSpringYawBlock[6] = g_nCameraYaw + PE_WORD(SPY_BODY_YAW);
             if (actor->reverse != 0) {
               CopyVector((int *)(pe - SPYB_EULER_Z), actor->path + 2);
               CopyVector((int *)(pe + PE_TO(SPY_REQUEST_TARGET)),
@@ -363,7 +364,7 @@ void TickLevelTransitionStream(int full) {
               *pe = ArcTan2(actor->path[2] - actor->path[6],
                             actor->path[3] - actor->path[7], 0);
             }
-            *(CameraAngles *)spring = *(CameraAngles *)(spring + 6);
+            *(CameraAngles *)spring = ((CameraAngles *)spring)[1];
             *pyaw = *((unsigned char *)pyaw - PYAW_BACK_TO(SPYB_EULER_Z)) << 4;
             *spring -= *((unsigned char *)pyaw - PYAW_BACK_TO(SPYB_EULER_Z))
                        << 4;
@@ -371,8 +372,8 @@ void TickLevelTransitionStream(int full) {
             AddVector(cam, cam, (int *)((char *)pyaw - PYAW_BACK_TO(0)));
             UpdateCameraEulerAngles();
             *((unsigned char *)pyaw - PYAW_BACK_TO(SPYB_OT_BIN_BIAS)) = 0x7F;
-            g_nScriptedMobViewPitchTilt = 0;
-            g_nScriptedMobViewYawSpin =
+            g_nPortalViewPitchTilt = 0;
+            g_nPortalViewYawSpin =
                 (yaw - *((unsigned char *)pyaw - PYAW_BACK_TO(SPYB_EULER_Z)))
                 << 4;
             break;
@@ -382,7 +383,7 @@ void TickLevelTransitionStream(int full) {
         int *yawp;
         int *pos;
 
-        ChangeSpyroState(0xF);
+        ChangeSpyroState(SPYRO_ST_GLIDE);
         ComputeCameraToTargetAngle(g_anCameraPos);
         yawp = (int *)(SPYB + SPY_BODY_YAW * 4);
         pos = (int *)SPYB;
@@ -418,12 +419,12 @@ void TickLevelTransitionStream(int full) {
     } else if (g_nFlightLevelActive != 0) {
       g_nSpyroStateFlags = 0;
     } else if (g_nGamestate != GS_ACTOR_CUTSCENE) {
-      ChangeSpyroState(0);
+      ChangeSpyroState(SPYRO_ST_IDLE);
     }
     *(Words5 *)&g_nWorldRenderMeshChunkCount =
         *(Words5 *)&g_nWorldCollisionTriCount;
-    g_nScriptedRespawnFlag = 0;
-    g_nScriptedMobTag = 0;
+    g_nPortalTransitionActive = 0;
+    g_nReturnPortalLevelId = 0;
     g_anLevelRunnerArrived = 0;
     g_nLevelRunnerArrivedGoal1 = 0;
     g_anLevelEscapeRunCount = 0;

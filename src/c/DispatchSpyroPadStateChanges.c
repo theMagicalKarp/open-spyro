@@ -2,18 +2,23 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "sample_bank.h"
+#include "spyro_block.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
-/* Map this frame's pad intent to Spyro state transitions (0x80040F68, 0x308).
+/* Map this frame's trigger events to Spyro state transitions (0x80040F68,
+   0x308).
 
-   `pad` is the raw intent mask; it is first gated by the input lockout (which
-   suppresses the ground moves 0x1F1, and the jump 0x400 too while Spyro is
-   still rising) and then by g_dwSpyroTriggerEventFlags, the set of transitions
-   the current state actually permits. The 0x5F1 group (attack/interact moves)
-   is a one-of ladder that ends in a single ChangeSpyroState and re-arms the
-   lockout; the remaining bits (0xFC00) are independent modifiers — headbutt
-   (0x8000), swim hold (0x800) and the charge-hold flag (0x2000). Returns 1
-   when a transition was dispatched. */
+   `pad` is the mask of events the calling state accepts; it is first gated by
+   the input lockout (0x5A post-hit invulnerability frames, which drop the
+   damage events 0x1F1, and the hazard 0x400 too while Spyro is still rising)
+   and then by g_dwSpyroTriggerEventFlags, the events raised this frame. The
+   0x5F1 group is damage: a one-of ladder that costs one g_nSparxHealth, picks
+   a hurt state (or, once health is gone, a death state), and re-arms the
+   lockout. The remaining bits (0xFC00) are independent: hazard (0x400,
+   SPYRO_ST_HAZARD), headbutt rebound (0x8000), lift hold (0x800,
+   SPYRO_ST_LIFT) and the charge-hold flag (0x2000). Returns 1 when a
+   transition was dispatched. */
 
 int DispatchSpyroPadStateChanges(int pad) {
   int *ev;
@@ -28,41 +33,42 @@ int DispatchSpyroPadStateChanges(int pad) {
     return 0;
   }
   if (g_nSpyroInputLockoutCountdown != 0) {
-    pad &= ~0x1F1;
+    pad &= ~SPYRO_EV_HITS;
     if (g_anSpyroMotionVec[2] > 0) {
-      pad &= ~0x400;
+      pad &= ~SPYRO_EV_HAZARD;
     }
   }
   ev = g_adwSpyroTriggerEventBlock;
   pad &= ev[0];
 
-  if ((pad & 0x5F1) && g_nLevelReadyFlag >= 0) {
+  if ((pad & (SPYRO_EV_HITS | SPYRO_EV_HAZARD)) && g_nSparxHealth >= 0) {
     if (g_bDebugNoDepletion == 0) {
-      g_nLevelReadyFlag = g_nLevelReadyFlag - 1;
+      g_nSparxHealth = g_nSparxHealth - 1;
     }
-    if (pad & 0x10) {
-      if (g_nLevelReadyFlag < 0) {
-        next = 0x1F;
+    if (pad & SPYRO_EV_HIT_PINNED) {
+      if (g_nSparxHealth < 0) {
+        next = SPYRO_ST_DEATH_PINNED;
       } else {
-        next = 0x19;
+        next = SPYRO_ST_HURT_PINNED;
       }
       ChangeSpyroState(next);
-    } else if (pad & 0x20) {
-      PlaySoundEffect(LEVEL_SFX(0x1F), (int)&ev[-0xB], 4, (char *)ev + 0x274);
-      ChangeSpyroState(7);
-    } else if (pad & 0x40) {
-      ChangeSpyroState(0x1B);
-    } else if (pad & 0x80) {
-      ChangeSpyroState(0x1C);
-    } else if (pad & 0x100) {
-      ChangeSpyroState(0x16);
-    } else if (pad & 0x400) {
-      ChangeSpyroState(0x1D);
-      if (*(int *)g_pSpyroOrbDropTriggerData != 0 && g_bDebugNoDepletion == 0) {
-        g_nLevelReadyFlag = -1;
+    } else if (pad & SPYRO_EV_HIT_TINT) {
+      PlaySoundEffect(LEVEL_SFX(0x1F), (int)&ev[-SPY_TRIGGER_FLAGS], 4,
+                      (char *)ev + (SPYB_VOICE_MARKER - SPY_TRIGGER_FLAGS * 4));
+      ChangeSpyroState(SPYRO_ST_HURT_TINT);
+    } else if (pad & SPYRO_EV_HIT_LONG) {
+      ChangeSpyroState(SPYRO_ST_HURT_LONG);
+    } else if (pad & SPYRO_EV_KNOCKBACK_2) {
+      ChangeSpyroState(SPYRO_ST_KNOCKBACK_2);
+    } else if (pad & SPYRO_EV_KNOCKBACK) {
+      ChangeSpyroState(SPYRO_ST_KNOCKBACK);
+    } else if (pad & SPYRO_EV_HAZARD) {
+      ChangeSpyroState(SPYRO_ST_HAZARD);
+      if (*(int *)g_pSpyroHazardRegionData != 0 && g_bDebugNoDepletion == 0) {
+        g_nSparxHealth = -1;
       }
     } else {
-      ChangeSpyroState(0xE);
+      ChangeSpyroState(SPYRO_ST_HURT);
     }
     lock = g_anSpyroInputLockoutBlock;
     if (lock[0] < 0x5A) {
@@ -72,8 +78,8 @@ int DispatchSpyroPadStateChanges(int pad) {
   }
 
   held = pad & 0xFC00;
-  if (pad & 0x400) {
-    ready = g_anLevelReadyFlagBlock;
+  if (pad & SPYRO_EV_HAZARD) {
+    ready = g_anSparxHealthBlock;
     if (ready[0] >= 0) {
       ResetSpyroLinearMotion();
       if (g_bDebugNoDepletion == 0) {
@@ -82,27 +88,27 @@ int DispatchSpyroPadStateChanges(int pad) {
       if (g_nSpyroInputLockoutCountdown < 0x5A) {
         g_nSpyroInputLockoutCountdown = 0x5A;
       }
-      ChangeSpyroState(0x1D);
+      ChangeSpyroState(SPYRO_ST_HAZARD);
     }
     ret = 1;
   }
 
-  if (held & 0x8000) {
-    ChangeSpyroState(0xC);
+  if (held & SPYRO_EV_REBOUND) {
+    ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
     SetVector3Magnitude(g_anSpyroFirstContactNormal, 0x800);
     CopyVector(g_anSpyroFirstContactNormal - 0x25, g_anSpyroFirstContactNormal);
     ret = 1;
   }
-  if (held & 0x800) {
-    if (g_nSpyroState != 0x11) {
-      ChangeSpyroState(0x11);
+  if (held & SPYRO_EV_LIFT) {
+    if (g_nSpyroState != SPYRO_ST_LIFT) {
+      ChangeSpyroState(SPYRO_ST_LIFT);
       ret = 1;
     }
-  } else if (g_nSpyroState == 0x11) {
-    ChangeSpyroState(0xF);
+  } else if (g_nSpyroState == SPYRO_ST_LIFT) {
+    ChangeSpyroState(SPYRO_ST_GLIDE);
   }
-  if (g_nSpyroState != 0x2C) {
-    if (held & 0x2000) {
+  if (g_nSpyroState != SPYRO_ST_SUPERCHARGE) {
+    if (held & SPYRO_EV_CHARGE_HOLD) {
       g_nSpyroChargeHoldFlag = 1;
     } else {
       g_nSpyroChargeHoldFlag = 0;

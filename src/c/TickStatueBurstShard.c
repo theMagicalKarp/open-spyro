@@ -3,13 +3,13 @@
 #include "globals.h"
 #include "vecmath.h"
 
-/* Per-frame tick of a gem-pickup burst particle entity (0x8003c6e4,
+/* Per-frame tick of a dragon-rescue burst particle entity (0x8003c6e4,
    0x178). Follows the burst record hung off actor[0]: while its lifetime
    byte runs and the vertical velocity stays under the actor's, integrates
    position/velocity (gravity -6 clamped at -0x80), fades the RGB bytes,
    and spawns a sparkle every other tick; otherwise emits the pop particle
    and despawns the actor. */
-void TickGemPickupBurstEntity(Actor *actor) {
+void TickStatueBurstShard(Actor *actor) {
   int burst[3];
   BurstShardState *rec;
   int t;

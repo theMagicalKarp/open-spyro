@@ -26,7 +26,7 @@ typedef struct {
   int unk_0x0C;                           /* 0x0C */
   SaveGameWorlds worlds;                  /* 0x10 */
   unsigned char levelVisited[TOTAL_LEVEL_COUNT];    /* 0x40 */
-  unsigned char levelGemPercent[TOTAL_LEVEL_COUNT]; /* 0x64 */
+  unsigned char levelExited[TOTAL_LEVEL_COUNT]; /* 0x64 */
   unsigned char levelDragons[TOTAL_LEVEL_COUNT];    /* 0x88 */
   short levelGems[TOTAL_LEVEL_COUNT];               /* 0xAC */
   unsigned char levelEggs[18];            /* 0xF4 worlds 0-2 only; the

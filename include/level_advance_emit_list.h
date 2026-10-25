@@ -33,7 +33,7 @@ extern int g_nSpyroInputLockoutCountdown[]; /* [-0x58] is the Spyro world positi
 /* g_anSpyroWorldPos reached through the lockout counter's held base. */
 #define SPYRO_POS_VIA_LOCKOUT (g_nSpyroInputLockoutCountdown - 0x58)
 
-extern int g_nLevelReadyFlag;
+extern int g_nSparxHealth;
 
 /* Field access on the current emit record `rec` (0x20 bytes, layout varies
  * by class; see each file's field map). These stay byte-offset accessors on

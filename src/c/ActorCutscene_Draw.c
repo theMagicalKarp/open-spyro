@@ -9,7 +9,7 @@
    (0x8001E24C, 0x46c).
 
    Only substates 4 and 5 draw the card; every other substate hands the frame
-   to the handler installed at g_pfnGamestate0cSubstateDraw. The card text is
+   to the handler installed at g_pfnActorCutsceneSubstateDraw. The card text is
    "<world>" for the first five hub arrivals, and "<world> <level>" past that,
    indexed out of g_apTitleCardNames by g_nCurrentLevelId / 10 (world) and % 10
    (level, six levels per world starting two entries into the table). The string
@@ -18,17 +18,17 @@
    0x58-byte record at a time, walking back down the sprite-record queue.
 
    Substates below 6 also cross-fade the world fog toward the actor mesh fade
-   color: the fade parameter runs g_nGamestate0cTimer*0x10 on the way in
-   (substate 4) and (0x100 - g_nGamestate0cTimer)*0x10 on the way out, clamped
+   color: the fade parameter runs g_nActorCutsceneTimer*0x10 on the way in
+   (substate 4) and (0x100 - g_nActorCutsceneTimer)*0x10 on the way out, clamped
    to 0..0x1000, and the fogged static mesh is re-emitted until the fade
    completes. Ends with the standard 2-vblank frame submit.
 
    The OT bin-head pair is written through an asm-opaque copy of the block
    address so cse keeps it as a held base; the empty volatile asm keeps the
-   g_pGamestate0cRecord load ahead of it.
+   g_pActorCutsceneRecord load ahead of it.
 */
 
-void Gamestate0C_Draw(void) {
+void ActorCutscene_Draw(void) {
   int pos[3];
   int attr[3];
   char buf[64];
@@ -39,13 +39,13 @@ void Gamestate0C_Draw(void) {
   int variant;
   char *rec;
 
-  if (g_nGamestate0cSubstate >= 4) {
-    if (g_nGamestate0cSubstate < 6) {
+  if (g_nActorCutsceneSubstate >= 4) {
+    if (g_nActorCutsceneSubstate < 6) {
       {
         register void **ot asm("$3");
         register void *h asm("$2");
 
-        h = g_pGamestate0cRecord;
+        h = g_pActorCutsceneRecord;
         KEEP_IN_REG(h);
         OPAQUE_COPY(ot, g_apOtDepthBinBlock);
         ot[1] = 0;
@@ -53,7 +53,7 @@ void Gamestate0C_Draw(void) {
       }
       EBB_BREAK();
 
-      variant = *(volatile int *)&g_nGamestate0cCardVariant;
+      variant = *(volatile int *)&g_nActorCutsceneCardVariant;
       if (variant < 5) {
         sprintf(buf, g_szEnteringWorldFmt,
                 g_apTitleCardNames[g_nCurrentLevelId / 10]);
@@ -79,7 +79,7 @@ void Gamestate0C_Draw(void) {
       rec -= ACTOR_SIZE;
       phase = 0;
       if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
-        int *fade = g_anGamestate0cTimerBlock;
+        int *fade = g_anActorCutsceneTimerBlock;
         unsigned short *cos = (unsigned short *)g_anCosineLut;
         do {
           ACTOR_RAW(rec, unsigned char, rotZ) =
@@ -97,12 +97,12 @@ void Gamestate0C_Draw(void) {
       RasterizeSpritePrimQueue();
       RasterizePairedActor();
 
-      if (g_nGamestate0cSubstate < 6) {
+      if (g_nActorCutsceneSubstate < 6) {
         g_dwActorMeshFadeColor = 0x401010;
-        if (g_nGamestate0cSubstate == 4) {
-          g_nFadeProgress = g_anGamestate0cTimerBlock[0] * 0x10;
+        if (g_nActorCutsceneSubstate == 4) {
+          g_nFadeProgress = g_anActorCutsceneTimerBlock[0] * 0x10;
         } else {
-          g_nFadeProgress = (0x100 - g_anGamestate0cTimerBlock[0]) * 0x10;
+          g_nFadeProgress = (0x100 - g_anActorCutsceneTimerBlock[0]) * 0x10;
         }
         if (g_nFadeProgress < 0) {
           *(volatile int *)&g_nFadeProgress = 0;
@@ -123,10 +123,10 @@ void Gamestate0C_Draw(void) {
         }
       }
     } else {
-      (*(void (*)())g_pfnGamestate0cSubstateDraw)();
+      (*(void (*)())g_pfnActorCutsceneSubstateDraw)();
     }
   } else {
-    (*(void (*)())g_pfnGamestate0cSubstateDraw)();
+    (*(void (*)())g_pfnActorCutsceneSubstateDraw)();
   }
 
   DrawCinematicLetterbox();

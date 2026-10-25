@@ -1,8 +1,9 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
 
-/* Leave the gem-pickup / dragon-rescue overlay back into the world
+/* Leave the dragon-rescue / dragon-rescue overlay back into the world
    (0x8002CB6C, gamestate 0): unblock gameplay, release the actor that owned
    the pickup (clear its +0x3C hold byte and re-enable it at +0x48), reset
    Spyro, re-seed the pad-snapshot countdown and point the camera anchor at his
@@ -13,7 +14,7 @@
 
    Shares its tail with EndSaveMenuToWorld. */
 
-void EndGemPickupToWorld(void) {
+void EndDragonRescueToWorld(void) {
   int **cam;
   int *dyn;
   int *snap;
@@ -21,7 +22,7 @@ void EndGemPickupToWorld(void) {
   unsigned char *rec;
   int timer;
 
-  id = ((int *)(*(void **)g_pGemPickupSourceActor))[8];
+  id = ((int *)(*(void **)g_pDragonRescueSourceActor))[8];
   g_nGamestate = GS_GAMEPLAY;
   g_nGameplayBlocked = 0;
   if (id != -1) {
@@ -36,8 +37,8 @@ void EndGemPickupToWorld(void) {
   cam[0] = &snap[-0x7C];
   timer = g_nSpyroFlameBreathTimerSave;
   dyn = g_anCameraDynamicTargetParams;
-  g_nCameraCurrentMode = 0;
-  g_nCameraNextMode = 0;
+  g_nCameraCurrentMode = CAM_MODE_STAND;
+  g_nCameraNextMode = CAM_MODE_STAND;
   g_pCameraTargetParams = dyn;
   g_nSpyroFlameBreathTimer = timer;
   g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;

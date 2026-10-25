@@ -30,7 +30,7 @@
  * The ground-level arm set: it drops the flight classes 0xD/0x13/0x1A/0x1B
  * and the orbiting-spark class 0x6, and adds 0x15 and 0x4C (the two unit-circle swirls, which share
  * a cross-jumped sine tail), 0x18 (the fire jet, whose amplitude tracks the
- * global heat level g_nGemPickupTimer), 0x46 and 0x50 (two midpoint-relaxation
+ * global heat level g_nDragonRescueTimer), 0x46 and 0x50 (two midpoint-relaxation
  * classes).  This is the level_2 variant minus class 0x6; dropping that arm
  * also drops the only use of the second stack vector, and the array must go
  * with it -- left declared, its address wins a callee-saved register and the
@@ -55,6 +55,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_advance_emit_list.h"
+#include "spyro_state.h"
 
 
 void Level20_AdvanceEmitList(int step) {
@@ -130,7 +131,7 @@ void Level20_AdvanceEmitList(int step) {
 
     case 0xA:
       /* The homing sparkle: it only lives while Spyro is on screen. */
-      if ((g_nSpyroState == 0x1D && g_nLevelReadyFlag < 0) || g_nSpyroDrawSuppressed != 0 ||
+      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < 0) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
         FreeEmitListRecord(rec);
       } else {
@@ -201,8 +202,8 @@ void Level20_AdvanceEmitList(int step) {
       }
       rec[0x1C] += g_nFrameStep * 8;
       heat = 0x3F;
-      if (g_nGemPickupTimer < 0x40) {
-        heat = g_nGemPickupTimer;
+      if (g_nDragonRescueTimer < 0x40) {
+        heat = g_nDragonRescueTimer;
       }
       HS(0x18) = (rec[0x1D] * (0x48 - heat)) >> 3;
       HS(0x1A) = (((0x20 - rec[0x1D]) * heat) >> 4) + 8;

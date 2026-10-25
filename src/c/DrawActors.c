@@ -1,7 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "match_asm.h"
-#include "scripted_mob.h"
+#include "portal.h"
 #include "types.h"
 #include "vecmath.h"
 
@@ -50,9 +50,9 @@ extern ScreenPt g_aMobRingScreenPts[];   /* projected ring points */
 extern int
     g_nCameraFloorSurfaceType[]; /* [-0x10] view mtx, [-0x15] world mtx */
 
-/* Render stage 4: draw the scripted-mob billboards, then the static actor
+/* Render stage 4: draw the portals, then the static actor
    mesh list. The camera-relative view matrix is rebuilt every frame from the
-   camera euler angles plus a slow spin/tilt (g_nScriptedMobViewYawSpin /
+   camera euler angles plus a slow spin/tilt (g_nPortalViewYawSpin /
    ...PitchTilt, both advanced 2/frame here) and squashed to 5/8 on the middle
    row. Each live mob is projected point-by-point into g_aMobRingScreenPts,
    depth-cued (and fog-blended during storms), then walked twice: once to
@@ -95,36 +95,36 @@ void DrawActors(void) {
   int dy;
   int lod;
 
-  g_nScriptedMobViewYawSpin = (g_nScriptedMobViewYawSpin + 2) & 0xfff;
-  g_nScriptedMobViewPitchTilt = (g_nScriptedMobViewPitchTilt + 2) & 0xfff;
-  if (g_nScriptedMobViewPitchTilt >= 0x801) {
-    g_nScriptedMobViewPitchTilt -= 0x1000;
+  g_nPortalViewYawSpin = (g_nPortalViewYawSpin + 2) & 0xfff;
+  g_nPortalViewPitchTilt = (g_nPortalViewPitchTilt + 2) & 0xfff;
+  if (g_nPortalViewPitchTilt >= 0x801) {
+    g_nPortalViewPitchTilt -= 0x1000;
   }
-  if (g_nScriptedMobViewPitchTilt >= 0x81) {
-    g_nScriptedMobViewPitchTilt = 0x80;
+  if (g_nPortalViewPitchTilt >= 0x81) {
+    g_nPortalViewPitchTilt = 0x80;
   }
 
   FillWord(&viewMtx, 0, 0x20);
   SetTransMatrix(&viewMtx);
   viewMtx.m[0][0] = 0x1000;
-  v = LookupCosine(g_anCameraEulerPitchBlock[0] - g_nScriptedMobViewPitchTilt);
+  v = LookupCosine(g_anCameraEulerPitchBlock[0] - g_nPortalViewPitchTilt);
   viewMtx.m[1][1] = v;
-  v = LookupSine(g_anCameraEulerPitchBlock[0] - g_nScriptedMobViewPitchTilt);
+  v = LookupSine(g_anCameraEulerPitchBlock[0] - g_nPortalViewPitchTilt);
   viewMtx.m[2][1] = v;
-  v = LookupSine(g_anCameraEulerPitchBlock[0] - g_nScriptedMobViewPitchTilt);
+  v = LookupSine(g_anCameraEulerPitchBlock[0] - g_nPortalViewPitchTilt);
   viewMtx.m[1][2] = -v;
-  v = LookupCosine(g_anCameraEulerPitchBlock[0] - g_nScriptedMobViewPitchTilt);
+  v = LookupCosine(g_anCameraEulerPitchBlock[0] - g_nPortalViewPitchTilt);
   viewMtx.m[2][2] = v;
 
   FillWord(&outMtx, 0, 0x20);
-  v = LookupCosine(g_nCameraEulerYaw + g_nScriptedMobViewYawSpin);
+  v = LookupCosine(g_nCameraEulerYaw + g_nPortalViewYawSpin);
   outMtx.m[0][0] = v;
-  v = LookupSine(g_nCameraEulerYaw + g_nScriptedMobViewYawSpin);
+  v = LookupSine(g_nCameraEulerYaw + g_nPortalViewYawSpin);
   outMtx.m[2][0] = -v;
   outMtx.m[1][1] = 0x1000;
-  v = LookupSine(g_nCameraEulerYaw + g_nScriptedMobViewYawSpin);
+  v = LookupSine(g_nCameraEulerYaw + g_nPortalViewYawSpin);
   outMtx.m[0][2] = v;
-  v = LookupCosine(g_nCameraEulerYaw + g_nScriptedMobViewYawSpin);
+  v = LookupCosine(g_nCameraEulerYaw + g_nPortalViewYawSpin);
   outMtx.m[2][2] = v;
   MulMatrix(&viewMtx, &outMtx);
 
@@ -157,17 +157,17 @@ void DrawActors(void) {
   }
   outMtx.m[1][2] = v >> 9;
 
-  for (i = 0; i < g_nScriptedMobCount; i++) {
-    if (g_apScriptedMobEntries[i]->nGateIndex < 0 ||
-        g_abVisZoneGates[g_apScriptedMobEntries[i]->nGateIndex] != 0) {
+  for (i = 0; i < g_nPortalCount; i++) {
+    if (g_apPortals[i]->nGateIndex < 0 ||
+        g_abVisZoneGates[g_apPortals[i]->nGateIndex] != 0) {
       flagY = 1;
       flagX = 1;
       n = LookupCosine(g_nVblankTickCount * 16 + (i << 9));
       color = abs(n) >> 1;
       color = ComputeDepthCuedColor(
-          *(unsigned int *)((char *)g_apScriptedMobEntries[i]->pMesh + 0x10),
-          0xffffff, color);
-      SubtractVector(vDelta, g_apScriptedMobEntries[i]->pts[0], g_anCameraPos);
+          *(unsigned int *)((char *)g_apPortals[i]->pMesh + 0x10), 0xffffff,
+          color);
+      SubtractVector(vDelta, g_apPortals[i]->pts[0], g_anCameraPos);
       maxX =
           CountLeadingZeros(abs(vDelta[0]) + abs(vDelta[1]) + abs(vDelta[2]));
       if (maxX >= 0xf) {
@@ -193,20 +193,19 @@ void DrawActors(void) {
       }
 
       ZeroVector(vCenter);
-      for (j = 0; j < g_apScriptedMobEntries[i]->nPoints; j++) {
+      for (j = 0; j < g_apPortals[i]->nPoints; j++) {
         ProjectWorldPointGTE((int *)&g_aMobRingScreenPts[j],
-                             g_apScriptedMobEntries[i]->pts[j], maxX);
-        AddVector(vCenter, vCenter, g_apScriptedMobEntries[i]->pts[j]);
+                             g_apPortals[i]->pts[j], maxX);
+        AddVector(vCenter, vCenter, g_apPortals[i]->pts[j]);
       }
-      vCenter[0] /= g_apScriptedMobEntries[i]->nPoints;
-      vCenter[1] /= g_apScriptedMobEntries[i]->nPoints;
-      vCenter[2] /= g_apScriptedMobEntries[i]->nPoints;
-      SubtractVector(vDelta, g_anCameraPos, g_apScriptedMobEntries[i]->pts[1]);
+      vCenter[0] /= g_apPortals[i]->nPoints;
+      vCenter[1] /= g_apPortals[i]->nPoints;
+      vCenter[2] /= g_apPortals[i]->nPoints;
+      SubtractVector(vDelta, g_anCameraPos, g_apPortals[i]->pts[1]);
       RShiftVector3(vDelta, maxX);
 
-      facing = -vDelta[0] * g_apScriptedMobEntries[i]->nx -
-               vDelta[1] * g_apScriptedMobEntries[i]->ny -
-               vDelta[2] * g_apScriptedMobEntries[i]->nz;
+      facing = -vDelta[0] * g_apPortals[i]->nx -
+               vDelta[1] * g_apPortals[i]->ny - vDelta[2] * g_apPortals[i]->nz;
       minX = 0x13f8;
       minY = 0xf0;
       maxY = 0;
@@ -219,19 +218,19 @@ void DrawActors(void) {
       sumY = 0;
       g_pActorDeferredTriStackTop = g_anActorDeferredTriStack;
 
-      for (; j < g_apScriptedMobEntries[i]->nPoints; j++) {
+      for (; j < g_apPortals[i]->nPoints; j++) {
         register int k asm("$5");
 
         if (facing > 0) {
           k = j + 1;
-          if (k == g_apScriptedMobEntries[i]->nPoints) {
+          if (k == g_apPortals[i]->nPoints) {
             k = 0;
           }
         } else {
           k = j - 1;
           if (k < 0) {
             {
-              register int n asm("$2") = g_apScriptedMobEntries[i]->nPoints;
+              register int n asm("$2") = g_apPortals[i]->nPoints;
 
               k = n - 1;
             }
@@ -298,7 +297,7 @@ void DrawActors(void) {
 
       if ((flagX == 0 && flagY == 0) || nEdges == 0) {
         {
-          register int np asm("$2") = g_apScriptedMobEntries[i]->nPoints;
+          register int np asm("$2") = g_apPortals[i]->nPoints;
 
           sumX /= np;
           g_nActorMeshOtDepthBin = (g_nActorMeshOtDepthBin / np) >> 7;
@@ -359,13 +358,11 @@ void DrawActors(void) {
             if (dist >= 0x3001) {
               g_nFadeProgress = dist - 0x3000;
               g_dwActorMeshFadeColor = ComputeDepthCuedColor(
-                  *(unsigned int *)((char *)g_apScriptedMobEntries[i]->pMesh +
-                                    0x10),
+                  *(unsigned int *)((char *)g_apPortals[i]->pMesh + 0x10),
                   color, dist - 0x3000);
               EmitDynamicActorMeshFogged(&g_dwActorMeshFadeColor);
             } else {
-              EmitDynamicActorMeshFogged(
-                  &g_apScriptedMobEntries[i]->pMesh->color);
+              EmitDynamicActorMeshFogged(&g_apPortals[i]->pMesh->color);
             }
           } else {
             EmitDynamicActorMeshFogged(&color);
@@ -380,7 +377,7 @@ void DrawActors(void) {
           flags = 0;
           g_pActorDeferredTriStackTop = g_anActorDeferredTriStack;
           nEdges = 0;
-          for (j = 0; j < g_apScriptedMobEntries[i]->nPoints; j++) {
+          for (j = 0; j < g_apPortals[i]->nPoints; j++) {
             int t;
 
             t = g_aMobRingScreenPts[j].x;
@@ -411,19 +408,19 @@ void DrawActors(void) {
             }
           }
 
-          for (j = 0; j < g_apScriptedMobEntries[i]->nPoints; j++) {
+          for (j = 0; j < g_apPortals[i]->nPoints; j++) {
             register int k asm("$5");
 
             if (facing > 0) {
               k = j + 1;
-              if (k == g_apScriptedMobEntries[i]->nPoints) {
+              if (k == g_apPortals[i]->nPoints) {
                 k = 0;
               }
             } else {
               k = j - 1;
               if (k < 0) {
                 {
-                  register int n asm("$2") = g_apScriptedMobEntries[i]->nPoints;
+                  register int n asm("$2") = g_apPortals[i]->nPoints;
 
                   k = n - 1;
                 }
@@ -510,14 +507,13 @@ void DrawActors(void) {
             if (dist >= 0x3001) {
               g_nFadeProgress = dist - 0x3000;
               g_dwActorMeshFadeColor = ComputeDepthCuedColor(
-                  *(unsigned int *)((char *)g_apScriptedMobEntries[i]->pMesh +
-                                    0x10),
+                  *(unsigned int *)((char *)g_apPortals[i]->pMesh + 0x10),
                   color, dist - 0x3000);
-              EmitDynamicActorMeshFogShaded(
-                  (int *)g_apScriptedMobEntries[i]->pMesh, &viewMtx, &outMtx);
+              EmitDynamicActorMeshFogShaded((int *)g_apPortals[i]->pMesh,
+                                            &viewMtx, &outMtx);
             } else {
-              EmitDynamicActorMeshScissored(
-                  (int *)g_apScriptedMobEntries[i]->pMesh, &viewMtx, &outMtx);
+              EmitDynamicActorMeshScissored((int *)g_apPortals[i]->pMesh,
+                                            &viewMtx, &outMtx);
             }
           }
         }

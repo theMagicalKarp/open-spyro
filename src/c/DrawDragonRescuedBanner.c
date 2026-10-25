@@ -5,7 +5,7 @@
    freed dragon's name (g_apDragonNames[actor->id at +0x38]) as two
    BuildTextSpriteChain labels right-shifted by the name length, then walk
    the sprite records the two calls appended (queue grows downward) and pulse
-   each glyph's alpha byte (+0x46) from the sine LUT off the gem-pickup
+   each glyph's alpha byte (+0x46) from the sine LUT off the dragon-rescue
    timer, phase-stepped 0xC per glyph. */
 void DrawDragonRescuedBanner(void) {
   int pos[3];
@@ -14,7 +14,7 @@ void DrawDragonRescuedBanner(void) {
   int w;
   int phase;
 
-  name = g_apDragonNames[*(int *)(*(char **)g_pGemPickupSourceActor + 0x38)];
+  name = g_apDragonNames[*(int *)(*(char **)g_pDragonRescueSourceActor + 0x38)];
   w = (strlen(name) - 1) * 13;
   rec = (unsigned char *)g_pSpriteRecordWriteCursor;
 
@@ -31,7 +31,7 @@ void DrawDragonRescuedBanner(void) {
   phase = 0;
   rec -= ACTOR_SIZE;
   if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
-    int *timer = &g_nGemPickupSecondaryTimer;
+    int *timer = &g_nDragonRescueSecondaryTimer;
     unsigned short *lut = (unsigned short *)g_anSineLut + 64;
     do {
       int idx = (*timer * 2 + phase) & 0xFF;
