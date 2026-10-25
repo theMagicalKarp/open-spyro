@@ -112,6 +112,7 @@ enum ActorType {
   ACTOR_TYPE_SPARX_FOOD = 15,      /* collected: g_nSparxFoodCount + 1 (20: a life) */
   ACTOR_TYPE_BUTTERFLY = 16,       /* eaten by Sparx: g_nSparxHealth + 1 */
   ACTOR_TYPE_DRAGON_EGG = 34,      /* recovered egg: rises, rolls the HUD egg tally */
+  ACTOR_TYPE_LETTER_OTHER = 0x4C,  /* a non-A..Z glyph of a floating name */
   ACTOR_TYPE_GEM_1 = 0x53,         /* gems, by CollectPickupActor's value */
   ACTOR_TYPE_GEM_2 = 0x54,
   ACTOR_TYPE_GEM_5 = 0x55,
@@ -120,6 +121,7 @@ enum ActorType {
   ACTOR_TYPE_SPARX = 0x78,         /* g_pSparxActor (SparxState) */
   ACTOR_TYPE_DRAGON_STATUE = 0xFA, /* trapped dragon: counts the rescue */
   ACTOR_TYPE_STATUE_SHARD = 0xFB,  /* its burst shards (BurstShardState) */
+  ACTOR_TYPE_LETTER_A = 0x1AA,     /* floating-name letters A..Z: 0x1AA..0x1C3 */
 };
 
 /* Waypoint path used by the path-following classes (10, 114, 339) and

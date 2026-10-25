@@ -323,14 +323,14 @@ typedef struct WobbleState {
   int handle; /* 0x14 */
 } WobbleState;
 
-/* Cases 76 and 426..451 — the orbiting satellite: rides a parent actor at a
- * fixed radius, or falls back to a plain spin when the parent is not a
- * spinner. */
-typedef struct SatState {
+/* Cases 76 and 426..451 — a letter of a floating name (SpawnNameLetterActors:
+ * A..Z are 426..451, anything else 76): rides its sign at a fixed radius, or
+ * falls back to a plain spin when the sign is not a spinner. */
+typedef struct NameLetterState {
   Actor *parent; /* 0x00 */
   short radius;  /* 0x04 */
   short phase;   /* 0x06 */
-} SatState;
+} NameLetterState;
 
 /* Case 286 — the supercharge/flight path rider, stepping a waypoint ring. */
 typedef struct RideState30 {
