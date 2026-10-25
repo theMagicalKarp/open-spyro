@@ -258,7 +258,7 @@ void Level27_UpdateActors(void) {
                 g_dwSpyroRequestMask = 0;
                 ResetSpyroEntity(0);
                 g_nSpyroFallTrackingFlag = 0;
-                g_nSpyroFlameBreathTimer = 0;
+                g_nSpyroSuperflameTimer = 0;
               }
             }
           }
@@ -2027,7 +2027,7 @@ void Level27_UpdateActors(void) {
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if ((st->link == -1 || g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) &&
-            st->cool == 0 && g_nSpyroFlameBreathTimer == 0 &&
+            st->cool == 0 && g_nSpyroSuperflameTimer == 0 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < range &&
             ABS2(SPY_DZ(actor)) < 0x7D0 &&
             AbsAngleDelta8(g_bSpyroPersistentEulerZ,
@@ -2124,7 +2124,7 @@ void Level27_UpdateActors(void) {
           if (actor->type == 0xF1) {
             f = 0xE;
           }
-          if (actor->nextFrame >= f && *(p = &g_nSpyroFlameBreathTimer) == 0) {
+          if (actor->nextFrame >= f && *(p = &g_nSpyroSuperflameTimer) == 0) {
             if (st->kind == 1 || st->kind == 3) {
               *p = 0x9450C00;
             } else if (st->kind == 2) {

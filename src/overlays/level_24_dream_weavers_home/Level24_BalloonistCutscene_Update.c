@@ -132,7 +132,7 @@ void Level24_BalloonistCutscene_Update(void)
               ((int **) g_pSparxActor)[0][3] = 0;
             }
           }
-          g_nSpyroFlameBreathTimerSave = g_nSpyroFlameBreathTimer;
+          g_nSpyroSuperflameTimerSave = g_nSpyroSuperflameTimer;
           ResetSpyroEntity(1);
           g_bSpyroAnimPrev[0] = 1;
           g_bSpyroAnimCurrent = 1;

@@ -32,10 +32,10 @@
 
 /* 0x8004a200 (1516 bytes) — the in-level gameplay tick: snapshot the pad,
    integrate a frame of motion, run the state behaviour + the per-substep
-   anim machine, compose the body/horn matrices, then police the death plane
-   (respawn / hard-fall state change / scripted death camera).  Ends by firing
-   the two footstep sound-effect slots (primary anim + layer-1 overlay) when
-   their anim record's sfx byte changes. */
+   anim machine, compose the body and composed-body matrices, then police the
+   death plane (respawn / hard-fall state change / scripted death camera).  Ends
+   by firing the two footstep sound-effect slots (primary anim + layer-1
+   overlay) when their anim record's sfx byte changes. */
 void TickSpyroGameplayFrame(void) {
   unsigned int key;
   unsigned int key2;
@@ -85,7 +85,7 @@ void TickSpyroGameplayFrame(void) {
   while (step < g_nFrameStep) {
     step += 1;
     TickSpyroAnimStateMachine();
-    TickSpyroHornStrikeAttack();
+    TickSpyroFlameAttack();
     TickSpyroAnimLayer1();
     TickSpyroAnimLayer2GateTimer();
     TickSpyroAnimLayer2();

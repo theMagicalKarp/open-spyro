@@ -176,10 +176,10 @@ extern int g_nSpyroAnimPlayRate;
 extern int g_nSpyroBodyYaw;                              /* camera yaw accumulator */
 extern int g_nSpyroDrawSuppressed;                       /* Spyro is being carried */
 extern int g_nSpyroFallTrackingFlag;
-extern int g_nSpyroFlameBreathTimer;
-extern int g_nSpyroFlameBreathTimerSave;
+extern int g_nSpyroSuperflameTimer;
+extern int g_nSpyroSuperflameTimerSave;
 extern int g_nSpyroGroundHeightZ;                        /* g_nSpyroGroundHeight */
-extern int g_nSpyroHornStrikeVariant;
+extern int g_nSpyroFlameVariant;
 extern int g_nSpyroMotionSpeed;
 extern int g_nSpyroMotionZ;
 extern int g_nSpyroPadSnapshotCountdown;
@@ -233,7 +233,7 @@ extern int g_anRunningKillBitmap[];
 extern int g_anWorldPersistentFlags[];
 extern int g_nCurrentWorldId[];
 extern int g_nCreditsMode;
-extern int g_nGenericCountdown;
+extern int g_nScreenFadeLevel;
 
 
 /* World / level CD-stream chunk bookkeeping and credits-sequence state

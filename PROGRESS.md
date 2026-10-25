@@ -372,7 +372,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x800495d8` | AdvanceSpyroAnimLayer1Frame | main | 136 | matched | game |
 | `0x80049660` | TickSpyroAnimLayer1 | main | 544 | matched | game |
 | `0x80049880` | SmoothSpyroByteEulerSpring | main | 320 | matched | game |
-| `0x800499c0` | TickSpyroHornStrikeAttack | main | 1084 | matched | game |
+| `0x800499c0` | TickSpyroFlameAttack | main | 1084 | matched | game |
 | `0x80049dfc` | AdvanceSpyroAnimLayer2Frame | main | 144 | matched | game |
 | `0x80049e8c` | TickSpyroAnimLayer2 | main | 176 | matched | game |
 | `0x80049f3c` | TickSpyroAnimLayer2GateTimer | main | 112 | matched | game |
@@ -457,7 +457,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80058bd8` | ComputeBillboardBasisVectors | main | 164 | matched | game |
 | `0x80058c7c` | InitLightVectorConstants | main | 68 | matched | game |
 | `0x80058cc0` | RotateLightVectorXZ | main | 164 | matched | game |
-| `0x80058d64` | DrawSpyroHornStrikeTrails | main | 1808 | asm | handwritten |
+| `0x80058d64` | DrawSpyroFlameTrails | main | 1808 | asm | handwritten |
 | `0x80059474` | SetSpawnAnchorFromActor | main | 248 | matched | game |
 | `0x8005956c` | ComputeSaveGameChecksum | main | 40 | matched | game |
 | `0x80059594` | ApplySaveGameBuffer | main | 720 | matched | game |

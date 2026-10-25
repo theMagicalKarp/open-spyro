@@ -4,7 +4,7 @@
 #include "main_shared.h"
 
 /* Draw gamestate 0xE (GS_CUTSCENE): the scripted in-engine cutscene with
-   a g_nGenericCountdown fade-to-black. Copies the world fog color into both
+   a g_nScreenFadeLevel fade-to-black. Copies the world fog color into both
    frame DRAWENVs, renders the actor + world passes, tints, then the standard
    2-vblank frame submit (0x8001e9c8). */
 void Cutscene_Draw(void) {
@@ -33,8 +33,8 @@ void Cutscene_Draw(void) {
   RenderWorldChunks(-1);
   EmitStaticActorMeshList(-1, g_anCameraViewMtx,
                           (int *)((char *)g_anCameraViewMtx - 0x14));
-  if (g_nGenericCountdown != 0) {
-    int t = g_nGenericCountdown << 4;
+  if (g_nScreenFadeLevel != 0) {
+    int t = g_nScreenFadeLevel << 4;
     DrawFullscreenTint(2, t, t, t);
   }
   DrawSync(0);

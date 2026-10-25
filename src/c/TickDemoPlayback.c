@@ -28,7 +28,7 @@ int TickDemoPlayback(void) {
       }
     } else {
       g_nDemoExitFadeFrame = g_nDemoExitFadeFrame + 1;
-      g_nGenericCountdown = g_nDemoExitFadeFrame * 2;
+      g_nScreenFadeLevel = g_nDemoExitFadeFrame * 2;
     }
     if (g_nDemoExitFadeFrame == 0x10) {
       StopAllSoundExceptMask(0);
@@ -62,7 +62,7 @@ int TickDemoPlayback(void) {
         TickCdMusicStream();
       }
       g_nGamestate = GS_CUTSCENE;
-      g_nGenericCountdown = 0xf;
+      g_nScreenFadeLevel = 0xf;
       BeginStoryIntro();
       if ((int)g_dwGamestateFrames >= g_anDemoLengthFrames[g_nDemoIndex]) {
         *(int *)g_pPathTableHead = 0x2d0;

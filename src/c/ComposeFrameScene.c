@@ -5,8 +5,8 @@
 /* Mid-frame scene composer (0x80019698, 164 bytes): sequences the actor /
    sprite / effect passes of one frame — actor draw lists, a FillWord clear of
    the OT depth-bin heads, sprite prims, entity spikes; Spyro's own passes
-   (RasterizePairedActor + drop shadow) unless g_nSpyroDrawSuppressed; horn
-   strike trails only while the horn collision is active; then the world
+   (RasterizePairedActor + drop shadow) unless g_nSpyroDrawSuppressed; flame
+   trails only while g_bSpyroFlameActive; then the world
    particle emitters. */
 
 void ComposeFrameScene(void) {
@@ -21,8 +21,8 @@ void ComposeFrameScene(void) {
     RasterizePairedActor();
     DrawSpyroDropShadow();
   }
-  if (g_bSpyroHornCollisionActive != 0) {
-    DrawSpyroHornStrikeTrails();
+  if (g_bSpyroFlameActive != 0) {
+    DrawSpyroFlameTrails();
   }
   DrawWorldParticleEmitters();
 }

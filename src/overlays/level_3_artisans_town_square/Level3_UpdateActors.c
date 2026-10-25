@@ -228,7 +228,7 @@ void Level3_UpdateActors(void) {
                 g_dwSpyroRequestMask = 0;
                 ResetSpyroEntity(0);
                 g_nSpyroFallTrackingFlag = 0;
-                g_nSpyroFlameBreathTimer = 0;
+                g_nSpyroSuperflameTimer = 0;
               }
             }
           }

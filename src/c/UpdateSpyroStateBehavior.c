@@ -120,7 +120,7 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_nSpyroStateTimer >= g_nSpyroIdleAnimTimeout &&
-        g_nSpyroHornStrikeState != 1) {
+        g_nSpyroFlameState != 1) {
       CycleSpyroIdleAnim();
     }
     break;
@@ -709,7 +709,7 @@ void UpdateSpyroStateBehavior(void) {
           ChangeSpyroState(SPYRO_ST_IDLE);
           break;
         }
-        if (g_nSpyroHornStrikeState != 1) {
+        if (g_nSpyroFlameState != 1) {
           break;
         }
       }

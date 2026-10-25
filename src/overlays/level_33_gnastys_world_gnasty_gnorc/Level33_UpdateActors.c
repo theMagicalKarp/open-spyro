@@ -2091,9 +2091,9 @@ void Level33_UpdateActors(void) {
         g_dwSpyroRequestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         TickCountdownByFrameDelta(&st->stateTimer, 4);
         if (st->stateTimer < 0x10) {
-          g_nGenericCountdown = sixteen - st->stateTimer;
-          if (g_nGenericCountdown >= 0x10) {
-            g_nGenericCountdown = 0xF;
+          g_nScreenFadeLevel = sixteen - st->stateTimer;
+          if (g_nScreenFadeLevel >= 0x10) {
+            g_nScreenFadeLevel = 0xF;
           }
         }
         if (st->stateTimer == 0) {

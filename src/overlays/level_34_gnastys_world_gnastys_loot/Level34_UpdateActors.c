@@ -276,7 +276,7 @@ void Level34_UpdateActors(void) {
                 g_dwSpyroRequestMask = 0;
                 ResetSpyroEntity(0);
                 g_nSpyroFallTrackingFlag = 0;
-                g_nSpyroFlameBreathTimer = 0;
+                g_nSpyroSuperflameTimer = 0;
               }
             }
           }
@@ -2466,9 +2466,9 @@ void Level34_UpdateActors(void) {
 
       if (g_nWorldTreasureCollected == 0x36B0 && SPY.state == SPYRO_ST_LIFT) {
         if (*t < 0x10) {
-          g_nGenericCountdown = 0x10 - *t;
-          if (g_nGenericCountdown >= 0x10) {
-            g_nGenericCountdown = 0xF;
+          g_nScreenFadeLevel = 0x10 - *t;
+          if (g_nScreenFadeLevel >= 0x10) {
+            g_nScreenFadeLevel = 0xF;
           }
         }
         if (TickCountdownByFrameDelta(t, 4)) {

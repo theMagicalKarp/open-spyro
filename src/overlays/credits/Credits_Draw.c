@@ -83,7 +83,7 @@ void Credits_Draw(void) {
     }
   }
   {
-    int n = g_nGenericCountdown;
+    int n = g_nScreenFadeLevel;
     if (n != 0) {
       int s = n << 4;
       DrawFullscreenTint(2, s, s, s);

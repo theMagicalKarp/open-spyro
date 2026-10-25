@@ -204,7 +204,7 @@ extern unsigned char g_abSpyroPersistentEulerBlock[]; /* 0x80078a64 */
 
 extern void TickSpyroAnimStateMachine(void);
 
-extern void TickSpyroHornStrikeAttack(void);
+extern void TickSpyroFlameAttack(void);
 
 extern void TickSpyroAnimLayer2GateTimer(void);
 
@@ -281,8 +281,8 @@ extern int g_nSpyroScriptedLiftTurn;
 extern int g_nSpyroScriptedLiftYaw;
 extern int g_nSpyroVelocityZ;
 extern int g_nTitleSubState;
-extern unsigned char g_abSpyroHornStrikeAnchorModeBlock[];
-extern unsigned char g_abSpyroHornStrikeAnimTable[];
+extern unsigned char g_abSpyroFlameAnchorModeBlock[];
+extern unsigned char g_abSpyroFlameAnimTable[];
 extern unsigned char g_bSpyroAnimLayer1Current;
 extern unsigned char g_bSpyroAnimLayer2Current;
 extern unsigned char g_bSpyroAnimLayer2Frame;
@@ -318,7 +318,7 @@ extern int g_nCreditsLastVisibleLine;
 extern int g_nCreditsLineCount;
 extern int g_nCreditsPageIndex;
 extern int g_nCreditsMode;
-extern int g_nGenericCountdown;
+extern int g_nScreenFadeLevel;
 extern int g_nLevelIntroParallaxCountdown;
 extern int g_nStaticMeshLodCutoff;
 

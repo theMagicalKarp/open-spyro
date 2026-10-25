@@ -214,7 +214,7 @@ fade_out_splash:
   g_pWorkAreaTop = (char *)0x80200000 - g_nCrt0StackSize;
   LoadActorMeshTables();
   BeginCutscene();
-  g_nGenericCountdown = 0xF;
+  g_nScreenFadeLevel = 0xF;
   BeginStoryIntro();
   g_nFrameStep = 2;
   g_nFrameTicks = 0;

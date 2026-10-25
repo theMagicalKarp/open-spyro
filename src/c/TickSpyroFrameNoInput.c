@@ -47,7 +47,7 @@ void TickSpyroFrameNoInput(void) {
   }
   for (i = 0; i < g_nFrameStep; i++) {
     TickSpyroAnimStateMachine();
-    TickSpyroHornStrikeAttack();
+    TickSpyroFlameAttack();
     TickSpyroAnimLayer1();
     TickSpyroAnimLayer2GateTimer();
     TickSpyroAnimLayer2();

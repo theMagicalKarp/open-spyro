@@ -143,7 +143,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_nSpyroFallReferenceZ = 0x3E80;
     g_nGnastyLootFallRefZCap = 0x4638;
   }
-  g_nGenericCountdown = 0;
+  g_nScreenFadeLevel = 0;
   if (g_nPortalTransitionActive == 0) {
     if (g_nGamestate == GS_ACTOR_CUTSCENE) {
       goto emitlist;
@@ -157,7 +157,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_pCameraTargetParams = g_anCameraActiveTargetParams;
     g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
     ResetCameraStateToTarget();
-    g_nGenericCountdown = 0x20;
+    g_nScreenFadeLevel = 0x20;
   }
   if (g_nGamestate != GS_ACTOR_CUTSCENE) {
     g_nGamestate = GS_GAMEPLAY;
@@ -166,10 +166,10 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_nLetterboxBarHeight = 0;
   }
 emitlist:
-  FillWord(g_anSpyroHornStrikeAnchorPos, 0, 0x138);
+  FillWord(g_anSpyroFlameAnchorPos, 0, 0x138);
 
-  g_anSpyroHornStrikeRibbonTexWords[0] = p[0];
-  g_anSpyroHornStrikeRibbonTexWords[1] = p[1];
+  g_anSpyroFlameRibbonTexWords[0] = p[0];
+  g_anSpyroFlameRibbonTexWords[1] = p[1];
   FillWord(g_abSpyroShadowRingHeights, 0, 0x28);
   p += 2;
   g_anEntitySpikeTexWords[0] = p[0];
@@ -189,8 +189,8 @@ sprites:
   }
   p += 0x16;
   i = 0;
-  g_anSpyroHornStrikeRibbonTexWords[2] = p[0];
-  g_anSpyroHornStrikeRibbonTexWords[3] = p[1];
+  g_anSpyroFlameRibbonTexWords[2] = p[0];
+  g_anSpyroFlameRibbonTexWords[3] = p[1];
   p += 2;
   g_anSecondaryActorTexWords[0] = p[0];
   g_anSecondaryActorTexWords[1] = p[1];

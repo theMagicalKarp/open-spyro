@@ -46,7 +46,7 @@ void ResetSpyroEntity(int full) {
     ChangeSpyroState(SPYRO_ST_IDLE);
     g_nSpyroFirstContactChunkId = 0xFF;
     g_bSpyroSfxVoiceMarker = 0x3F;
-    g_nSpyroFlameBreathTimer = 0;
+    g_nSpyroSuperflameTimer = 0;
   } else {
     g_nSpyroGroundChunkId = -1;
     g_nSpyroFirstContactChunkId = 0xFF;
@@ -57,7 +57,7 @@ void ResetSpyroEntity(int full) {
     g_nSpyroChargeHoldFlag = 0;
     g_nSpyroGlideBankingFlag = 0;
     g_nSpyroBreathTimer = 0;
-    g_nSpyroFlameBreathTimer = 0;
+    g_nSpyroSuperflameTimer = 0;
     g_nSpyroBodyPitch = g_abSpyroPersistentEuler[0] << 4;
     g_nSpyroBodyRoll = g_abSpyroPersistentEuler[1] << 4;
     g_nSpyroBodyYaw = g_abSpyroPersistentEuler[2] << 4;

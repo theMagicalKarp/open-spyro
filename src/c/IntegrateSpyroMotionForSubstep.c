@@ -214,7 +214,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
     if (g_nSpyroScriptedMoveMode == 0) {
       ComputeSpyroMoveTargetFromPad(0);
-    } else if (g_nSpyroStateTimer > 0x2C && g_bSpyroHornCollisionActive == 0) {
+    } else if (g_nSpyroStateTimer > 0x2C && g_bSpyroFlameActive == 0) {
       if (g_nSpyroSubstate != 0) {
         g_nSpyroScriptedMoveMode = 0;
       } else {

@@ -93,10 +93,10 @@ void GamestateUpdate(void) {
     ComputeBillboardBasisVectors();
     UpdateCameraFrame();
 
-    if (g_nGenericCountdown != 0) {
-      g_nGenericCountdown -= g_nFrameStep;
-      if (g_nGenericCountdown < 0) {
-        g_nGenericCountdown = 0;
+    if (g_nScreenFadeLevel != 0) {
+      g_nScreenFadeLevel -= g_nFrameStep;
+      if (g_nScreenFadeLevel < 0) {
+        g_nScreenFadeLevel = 0;
       }
     }
 

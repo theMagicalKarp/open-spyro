@@ -341,8 +341,8 @@ void Titlescreen_Draw(void) {
   EmitStaticActorMeshList(-1, g_anCameraViewMtx, g_anCameraViewMtx - 0x14);
 
   /* overlay the fade */
-  if (g_nGenericCountdown) {
-    DrawFullscreenTint(2, g_nGenericCountdown << 4, g_nGenericCountdown << 4, g_nGenericCountdown << 4);
+  if (g_nScreenFadeLevel) {
+    DrawFullscreenTint(2, g_nScreenFadeLevel << 4, g_nScreenFadeLevel << 4, g_nScreenFadeLevel << 4);
   }
 
   DrawSync(0);

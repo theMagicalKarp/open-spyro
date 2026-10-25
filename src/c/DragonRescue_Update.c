@@ -176,7 +176,7 @@ void DragonRescue_Update(void) {
       if (g_nDragonRescueSweepDurationFrames > 0x80) {
         g_nDragonRescueSweepDurationFrames = 0x80;
       }
-      g_nSpyroFlameBreathTimerSave = g_nSpyroFlameBreathTimer;
+      g_nSpyroSuperflameTimerSave = g_nSpyroSuperflameTimer;
       ResetSpyroEntity(1);
       g_bSpyroAnimPrev = 1;
       g_bSpyroAnimCurrent = 1;

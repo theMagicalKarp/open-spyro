@@ -1624,7 +1624,7 @@ extern volatile unsigned char g_bSpyroOtBinBias;
 extern int g_nCameraSpringYaw;
 extern int g_nCameraYaw;
 extern int g_nPortalCamPathMaxStep;
-extern int g_nGenericCountdown;
+extern int g_nScreenFadeLevel;
 extern int g_nGnastyLootFallRefZCap;
 extern int g_nHitRumbleTimer;
 extern int g_nMotionTrailRibbonCount;

@@ -17,7 +17,7 @@ void BeginCutscene(void) {
   int *entry;
 
   g_nGamestate = GS_CUTSCENE;
-  g_nGenericCountdown = 0;
+  g_nScreenFadeLevel = 0;
   head = (int *)g_pPathTableHead;
   world = g_nCurrentWorldId;
   *head = 0;

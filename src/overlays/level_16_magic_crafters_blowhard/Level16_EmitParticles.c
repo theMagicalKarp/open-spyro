@@ -716,7 +716,7 @@ void Level16_EmitParticles(int count, int type, int *pos, int effectArg) {
       v3[2] = u6 + t6;
       VectorToSVectorShr2(rec->u.line.a, v3);
       rec->u.line.c1[3] = 2;
-      if (g_nSpyroHornStrikeVariant == 0) {
+      if (g_nSpyroFlameVariant == 0) {
         rec->u.line.c0[0] = GetRandomU32() | 0xC0;
         rec->u.line.c0[1] = (GetRandomU32() & 0x3F) - 0x60;
         rec->u.line.c0[2] = 0;

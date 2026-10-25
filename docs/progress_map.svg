@@ -55,7 +55,7 @@
 <rect x="284.82" y="391.48" width="30.98" height="34.02" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>PlaySoundEffect  ·  1928 bytes  ·  matched</title></rect>
 <rect x="14.00" y="425.50" width="33.20" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DragonRescue_Draw  ·  1852 bytes  ·  matched</title></rect>
 <rect x="47.20" y="425.50" width="32.41" height="30.49" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_8004CEDC  ·  1808 bytes  ·  handwritten</title></rect>
-<rect x="79.61" y="425.50" width="32.41" height="30.49" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DrawSpyroHornStrikeTrails  ·  1808 bytes  ·  handwritten</title></rect>
+<rect x="79.61" y="425.50" width="32.41" height="30.49" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DrawSpyroFlameTrails  ·  1808 bytes  ·  handwritten</title></rect>
 <rect x="112.02" y="425.50" width="30.47" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Title_Update  ·  1700 bytes  ·  matched</title></rect>
 <rect x="142.49" y="425.50" width="29.97" height="30.49" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FormatAndWrite  ·  1672 bytes  ·  library</title></rect>
 <rect x="172.46" y="425.50" width="29.76" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>PollPadAndDistributeInput  ·  1660 bytes  ·  matched</title></rect>
@@ -88,7 +88,7 @@
 <rect x="39.50" y="483.85" width="26.87" height="23.03" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ActorCutscene_Draw  ·  1132 bytes  ·  matched</title></rect>
 <rect x="66.37" y="483.85" width="26.40" height="23.03" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>EmitStaticActorMeshList  ·  1112 bytes  ·  handwritten</title></rect>
 <rect x="92.77" y="483.85" width="25.83" height="23.03" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>AdvanceCutsceneFrame  ·  1088 bytes  ·  matched</title></rect>
-<rect x="118.59" y="483.85" width="25.73" height="23.03" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickSpyroHornStrikeAttack  ·  1084 bytes  ·  matched</title></rect>
+<rect x="118.59" y="483.85" width="25.73" height="23.03" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickSpyroFlameAttack  ·  1084 bytes  ·  matched</title></rect>
 <rect x="144.32" y="483.85" width="25.16" height="23.03" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_800671F0  ·  1060 bytes  ·  library</title></rect>
 <rect x="169.48" y="483.85" width="24.97" height="23.03" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DispatchSpyroTriggerEvent  ·  1052 bytes  ·  matched</title></rect>
 <rect x="194.46" y="483.85" width="24.97" height="23.03" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>CdCommandSync  ·  1052 bytes  ·  library</title></rect>

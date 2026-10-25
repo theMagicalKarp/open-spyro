@@ -109,8 +109,8 @@ void GamestateDraw(void) {
     SetupFrameOT();
     DrawActors();
     RasterizeEmitList();
-    if (g_nGenericCountdown != 0) {
-      tint = g_nGenericCountdown << 3;
+    if (g_nScreenFadeLevel != 0) {
+      tint = g_nScreenFadeLevel << 3;
       DrawFullscreenTint(2, tint, tint, tint);
     }
     if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {

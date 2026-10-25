@@ -1451,7 +1451,7 @@
    "size": 320
   },
   {
-   "name": "TickSpyroHornStrikeAttack",
+   "name": "TickSpyroFlameAttack",
    "vram": 2147785152,
    "size": 1084
   },
@@ -1876,7 +1876,7 @@
    "size": 164
   },
   {
-   "name": "DrawSpyroHornStrikeTrails",
+   "name": "DrawSpyroFlameTrails",
    "vram": 2147847524,
    "size": 1808
   },
