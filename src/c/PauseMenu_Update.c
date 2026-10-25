@@ -35,21 +35,21 @@ void PauseMenu_Update(void) {
   }
 
   pad = g_dwPadPressed;
-  if (pad & 0x100) {
+  if (pad & PAD_SELECT) {
     EnterInventoryMenu(0);
     return;
   }
 
   if (g_nPauseMenuSubstate == 2) {
-    if (pad & 0xA000) {
+    if (pad & (PAD_RIGHT | PAD_LEFT)) {
       SFX(0x2E);
       g_nPauseMenuCursor = 1 - g_nPauseMenuCursor;
       return;
     }
-    if (!(pad & 0x50)) {
+    if (!(pad & (PAD_TRIANGLE | PAD_CROSS))) {
       return;
     }
-    if (g_nPauseMenuCursor == 1 || (pad & 0x10)) {
+    if (g_nPauseMenuCursor == 1 || (pad & PAD_TRIANGLE)) {
       SFX(0x2D);
       g_nPauseMenuSubstate = 0;
       g_nPauseMenuCursor = 3;
@@ -87,7 +87,7 @@ void PauseMenu_Update(void) {
   }
 
   if (g_nPauseMenuSubstate == 1) {
-    if (pad & 0x4000) {
+    if (pad & PAD_DOWN) {
       SFX(0x2D);
       c = g_nPauseMenuCursor;
       g_nPauseMenuIdleFrames = 0;
@@ -97,7 +97,7 @@ void PauseMenu_Update(void) {
       } else if (c + 1 == 3 && !g_nPadIsDualshockFlag) {
         g_nPauseMenuCursor = c + 2;
       }
-    } else if (pad & 0x1000) {
+    } else if (pad & PAD_UP) {
       SFX(0x2D);
       c = g_nPauseMenuCursor;
       g_nPauseMenuIdleFrames = 0;
@@ -198,13 +198,13 @@ void PauseMenu_Update(void) {
   }
 
   last = 3;
-  if (pad & 0x4000) {
+  if (pad & PAD_DOWN) {
     SFX(0x2D);
     g_nPauseMenuIdleFrames = 0;
     if (last < ++g_nPauseMenuCursor) {
       g_nPauseMenuCursor = 0;
     }
-  } else if (pad & 0x1000) {
+  } else if (pad & PAD_UP) {
     SFX(0x2D);
     g_nPauseMenuIdleFrames = 0;
     if (--g_nPauseMenuCursor < 0) {

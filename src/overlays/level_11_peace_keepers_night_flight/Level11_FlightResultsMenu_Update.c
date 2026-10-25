@@ -6,8 +6,8 @@
  * then runs the retry/exit menu. g_nSubMenuScrollOffset paces g_nSubMenuCursor (menu reveal
  * timer, +1 every 5 ticks, capped 9); four HUD sprite records at
  * g_abHudIconActorRecords_rotZ (+0x58 stride) spin their +0x32 angle byte. Once revealed
- * (timer >= 9): select/start (pad & 0x5000) toggles the cursor
- * (g_nPauseMenuCursor) with a blip; confirm (pad & 0x840) either dispatches the
+ * (timer >= 9): select/start (pad & (PAD_UP | PAD_DOWN)) toggles the cursor
+ * (g_nPauseMenuCursor) with a blip; confirm (pad & (PAD_CROSS | PAD_START)) either dispatches the
  * cursor action (0 = restart flight via g_pfnLevelHandleFlightResults(1) +
  * LoadAndStartLevelFromCd/LoadAndStartLevelFromCd, 1 = exit via g_pfnLevelHandleFlightResults(0) +
  * BeginPauseToMenuTransition/BeginPauseToMenuTransition) or, when the course was
@@ -22,6 +22,7 @@
 #include "main_shared.h"
 #include "level_balloonist_cutscene.h"
 #include "level_flight_results.h"
+#include "pad_buttons.h"
 
 
 
@@ -53,12 +54,12 @@ void Level11_FlightResultsMenu_Update(void) {
   } while (i < 4);
   if (g_nSubMenuCursor >= 9) {
     unsigned int *pad = g_dwPadPressed;
-    if (pad[0] & 0x5000) {
+    if (pad[0] & (PAD_UP | PAD_DOWN)) {
       g_nPauseMenuIdleFrames = 0;
       g_nPauseMenuCursor = 1 - g_nPauseMenuCursor;
       PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
     }
-    if (pad[0] & 0x840) {
+    if (pad[0] & (PAD_CROSS | PAD_START)) {
       if (g_nSubMenuCursor >= 0x64 ||
           (g_anFlightTargetTally + g_nFlightTargetTally1 + g_nFlightTargetTally2 + g_nFlightTargetTally3 < 0x20 &&
            g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0)) {

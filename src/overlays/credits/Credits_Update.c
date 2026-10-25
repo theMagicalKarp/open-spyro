@@ -226,16 +226,14 @@ typedef struct {
   int w[5];
 } Blk20;
 
-extern int g_nReturningHomePhase;
-extern int g_nScriptedMobCount;
+/* Credits-local spellings of main globals. The volatile ones are re-read
+ * after every store (lever 3 above); the scalar / array / Blk20 views give
+ * each site the address form the original uses (A240). The shared headers
+ * declare these differently, so they stay here. */
 extern char *volatile g_pLevelSampleBankEntries;
 extern char *g_nCdBaseLba[];
 extern volatile int g_nCdReadInFlight[];
 extern int g_nWorldTimAudioChunkOffset[];
-extern int g_nWorldTimAudioChunkSize;
-extern int g_nWorldBundleChunkOffset;
-extern int g_nWorldBundleChunkSize;
-extern int g_nLevelArchiveChunkOffset;
 extern volatile int g_nLevelArchiveChunkSize;
 extern int g_anCameraPos;
 extern short g_nCameraEulerPitch;
@@ -248,7 +246,6 @@ extern char *g_pDrawBufA;
 extern char *g_pDrawBufB;
 extern char *g_pDrawBufB_blk[];
 extern char *g_pPathTableBuffer;
-extern int g_nLevelArchiveBaseLba;
 extern volatile int g_nLevelArchiveByteSize;
 
 typedef struct {
