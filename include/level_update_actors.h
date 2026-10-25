@@ -335,17 +335,18 @@ typedef struct NameLetterState {
   short phase;   /* 0x06 */
 } NameLetterState;
 
-/* Case 286 — the supercharge/flight path rider, stepping a waypoint ring. */
-typedef struct RideState30 {
-  int pose;       /* 0x00 which voice/pose the rider is in */
-  int volume;     /* 0x04 */
+/* Case 286 — ambient sound source: plays random ambient sounds at its
+ * sound range; mode 2 also steps it along a waypoint path. */
+typedef struct AmbientSoundState {
+  int mode;       /* 0x00 which ambient pattern (0..9) */
+  int soundRange;     /* 0x04 republished into actor->soundRange */
   PathData *path; /* 0x08 */
-  int wait;       /* 0x0C */
-  int leg;        /* 0x10 */
+  int timer;       /* 0x0C */
+  int sub;        /* 0x10 sub-state inside mode 2 */
   int speed;      /* 0x14 */
   int step[3];    /* 0x18 per-frame step along the leg */
   int left;       /* 0x24 frames left on this leg */
-} RideState30;
+} AmbientSoundState;
 
 /* Case 323 — the respawn warden: puts every dormant actor of its group back
  * once Spyro is far enough away. */
@@ -577,8 +578,9 @@ typedef struct PathState {
   int startDelay; /* 0x30 random 6..0x28 countdown before walking */
 } PathState;
 
-/* Type 286: ambient sound source; mode 2 also coasts along a path. */
-typedef struct RoamState {
+/* Type 286: ambient sound source (AmbientSoundState) with the path seen as
+ * bytes, the view the other clones were matched with. */
+typedef struct AmbientSoundBytesState {
   int mode;            /* 0x00 inner jump-table discriminant, 0..9 */
   int soundRange;           /* 0x04 republished into actor->soundRange every frame */
   unsigned char *path; /* 0x08 [0]=waypoint count, [1]=current index */
@@ -587,7 +589,7 @@ typedef struct RoamState {
   int speed;           /* 0x14 leg speed (ComputeStepTowardPoint speed) */
   int vel[3];          /* 0x18 current leg velocity, written by ComputeStepTowardPoint */
   int count;           /* 0x24 frames left on the current leg */
-} RoamState;
+} AmbientSoundBytesState;
 
 /* Type 34: dragon egg. Spirals up, flies to Spyro and is collected. */
 typedef struct ShotState {

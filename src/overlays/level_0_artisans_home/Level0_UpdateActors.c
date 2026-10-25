@@ -27,7 +27,8 @@
 #include "camera.h"
 
 
-/* Type 286: ambient sound source; mode 2 also coasts along a path. */
+/* Type 286: ambient sound source (AmbientSoundState) with the path seen as
+ * bytes, the view the other clones were matched with. */
 
 
 /* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
@@ -2294,9 +2295,9 @@ void Level0_UpdateActors(void) {
       break;
     }
 
-    /* Ambient sound source (RoamState). */
+    /* Ambient sound source (AmbientSoundBytesState). */
     case 286: {
-      RoamState *st = actor->state;
+      AmbientSoundBytesState *st = actor->state;
       int snd;
 
       actor->soundRange = st->soundRange;
@@ -2501,7 +2502,8 @@ void Level0_UpdateActors(void) {
       break;
     }
 
-    /* Dragon pad: saves a checkpoint when Spyro lands on it. */
+    /* Checkpoint: Spyro reaching it sets the respawn anchor
+     * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
     case 331: {
       switch (actor->mode) {
       case 0: {

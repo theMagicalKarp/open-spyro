@@ -39,7 +39,8 @@
 #include "camera.h"
 
 
-/* Type 286: ambient sound source; mode 2 also coasts along a path. */
+/* Type 286: ambient sound source (AmbientSoundState) with the path seen as
+ * bytes, the view the other clones were matched with. */
 
 
 /* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
@@ -3461,33 +3462,33 @@ void Level15_UpdateActors(void) {
       break;
     }
 
-    /* Waypoint rider (RideState30): steps a closed path and calls out a voice
-     * line per leg. */
+    /* Ambient sound source (AmbientSoundState): plays random ambient sounds;
+     * mode 2 also steps it along a waypoint path. */
     case 286: {
-      RideState30 *st = actor->state;
+      AmbientSoundState *st = actor->state;
       int voice = -1;
 
-      actor->soundRange = st->volume;
+      actor->soundRange = st->soundRange;
 
-      switch (st->pose) {
+      switch (st->mode) {
       case 0:
         voice = 6;
         break;
 
       case 1:
-        if (TickCountdownByFrameDelta(&st->wait, 4) != 0) {
-          st->wait = 0x258 - (GetRandomU32() & 0x7F);
+        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          st->timer = 0x258 - (GetRandomU32() & 0x7F);
           voice = (GetRandomU32() & 7) + 7;
         }
         break;
 
       case 2:
-        switch (st->leg) {
+        switch (st->sub) {
         case 0:
-          if (TickCountdownByFrameDelta(&st->wait, 4) != 0) {
-            st->wait = 0x200 - (GetRandomU32() & 0x7F);
+          if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+            st->timer = 0x200 - (GetRandomU32() & 0x7F);
             voice = (GetRandomU32() & 1) + 0xD;
-            st->leg = 1;
+            st->sub = 1;
           }
           break;
 
@@ -3509,7 +3510,7 @@ void Level15_UpdateActors(void) {
                 st->path->nodes[(st->path->cur + 1) % st->path->count].y;
             actor->posZ =
                 st->path->nodes[(st->path->cur + 1) % st->path->count].z;
-            st->leg = 0;
+            st->sub = 0;
             st->path->cur = (st->path->cur + 1) % st->path->count;
             st->left = ComputeStepTowardPoint(
                 &st->path->nodes[st->path->cur].x,
@@ -3526,17 +3527,17 @@ void Level15_UpdateActors(void) {
         break;
 
       case 3:
-        if (TickCountdownByFrameDelta(&st->wait, 4) != 0) {
-          st->wait = 0x270 - (GetRandomU32() & 0x7F);
+        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          st->timer = 0x270 - (GetRandomU32() & 0x7F);
           voice = (GetRandomU32() & 1) + 0xF;
         }
         break;
 
       case 4:
-        if (TickCountdownByFrameDelta(&st->wait, 4) != 0) {
+        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           int r;
 
-          st->wait = 0x258 - (GetRandomU32() & 0x7F);
+          st->timer = 0x258 - (GetRandomU32() & 0x7F);
           r = GetRandomU32();
           voice = (r % 4) + 0x15;
         }
@@ -4000,7 +4001,8 @@ void Level15_UpdateActors(void) {
       break;
     }
 
-    /* Type 332: ambush plant. Rears up and bites when Spyro walks past. */
+    /* Checkpoint: Spyro reaching it sets the respawn anchor
+     * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
     case 333:      switch (actor->mode) {
       case 0:
         if (ApproxDist2D(&actor->posX, &SPY.posX) > 0xA00) {

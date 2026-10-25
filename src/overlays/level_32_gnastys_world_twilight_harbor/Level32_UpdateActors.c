@@ -3011,7 +3011,8 @@ void Level32_UpdateActors(void) {
       break;
     }
 
-    /* Whirlwind pad: a short spin-up before the ride, then a cooldown. */
+    /* Checkpoint: Spyro reaching it sets the respawn anchor
+     * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
     case 331:      switch (actor->mode) {
       case 0:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xA01) {
