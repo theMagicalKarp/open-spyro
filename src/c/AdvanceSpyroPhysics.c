@@ -13,6 +13,7 @@
 #include "camera.h"
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
 #include "sdata.h"
@@ -228,7 +229,7 @@ int AdvanceSpyroPhysics(void) {
               if (a > 0x80) {
                 a -= 0x100;
               }
-              if (g_nActiveLevelId == 0x14) {
+              if (g_nActiveLevelId == LEVEL_PEACE_KEEPERS) {
                 side = 0x28;
                 if ((int)rq2[SPY_STATE - SPY_REQUEST] ==
                     SPYRO_ST_SCRIPTED_WALK) {

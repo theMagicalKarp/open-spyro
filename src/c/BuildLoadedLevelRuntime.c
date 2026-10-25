@@ -13,6 +13,7 @@
 #include "camera.h"
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
 #include "spyro_state.h"
@@ -65,11 +66,12 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   g_nSpyroDrawSuppressed = 0;
   g_nMotionTrailRibbonCount = 0;
   root = p;
-  if (g_nActiveLevelId == 0x40) {
+  if (g_nActiveLevelId == LEVEL_GNASTYS_LOOT) {
     g_nLevelKeyState = 0;
   }
   g_nLevelLoadUnreadWord = 0;
-  if ((g_nActiveLevelId == 0x28) || (g_nActiveLevelId == 0x2A)) {
+  if ((g_nActiveLevelId == LEVEL_BEAST_MAKERS) ||
+      (g_nActiveLevelId == LEVEL_MISTY_BOG)) {
     g_nLevelStormFlag = 1;
   } else {
     g_nLevelStormFlag = 0;
@@ -139,7 +141,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     }
   }
   p += 4;
-  if (g_nActiveLevelId == 0x40) {
+  if (g_nActiveLevelId == LEVEL_GNASTYS_LOOT) {
     g_nSpyroFallReferenceZ = 0x3E80;
     g_nGnastyLootFallRefZCap = 0x4638;
   }

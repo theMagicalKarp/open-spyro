@@ -40,6 +40,7 @@
 #include "level_emit_particles.h"
 #include "emit_record.h"
 #include "gamestate.h"
+#include "level_id.h"
 
 
 void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
@@ -187,7 +188,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
           rec->u.plume.b = 0x80;
           break;
         }
-      } else if (g_nActiveLevelId == 0x32) {
+      } else if (g_nActiveLevelId == LEVEL_DREAM_WEAVERS) {
         rec->u.plume.r = 0x80;
         rec->u.plume.g = 0x80;
         rec->u.plume.b = 0;

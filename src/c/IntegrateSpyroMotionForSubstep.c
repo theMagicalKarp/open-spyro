@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
 #include "sdata.h"
@@ -195,7 +196,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
 
   g_pPadSubstepState = &g_anPadSubstepRing[substep * 6];
   t = g_nSpyroStateTimer + substep;
-  if (g_nGamestate == GS_GAMEPLAY && g_nActiveLevelId == 0x40 &&
+  if (g_nGamestate == GS_GAMEPLAY && g_nActiveLevelId == LEVEL_GNASTYS_LOOT &&
       g_nSpyroAirborneFrames == 0) {
     g_nSpyroFlightMode = 1;
   }
@@ -1277,7 +1278,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
               if (y > 0x800) {
                 y -= 0x1000;
               }
-              if (g_nActiveLevelId == 0x16 && abs(y) < 0x100) {
+              if (g_nActiveLevelId == LEVEL_CLIFF_TOWN && abs(y) < 0x100) {
                 g_nCameraNextMode = (&g_abSpyroStateCameraMode)[g_nSpyroState];
               }
               y >>= 4;

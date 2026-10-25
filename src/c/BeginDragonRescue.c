@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "level_sfx.h"
 #include "main_shared.h"
 #include "sample_bank.h"
@@ -23,13 +24,13 @@ void BeginDragonRescue(Actor *actor) {
   int idx;
   register int one asm("$4");
   st = (unsigned int *)actor->state;
-  if (((g_nActiveLevelId == 0xa) && (st[6] == 1)) &&
+  if (((g_nActiveLevelId == LEVEL_ARTISANS) && (st[6] == 1)) &&
       ((((g_abLevelExited[1] != 0) || (g_abLevelExited[2] != 0)) ||
         (g_abLevelExited[3] != 0)) ||
        (g_abLevelExited[5] != 0))) {
     st[6] = 2;
   }
-  if (g_nActiveLevelId == 0x3c) {
+  if (g_nActiveLevelId == LEVEL_GNORC_GNEXUS) {
     if (g_abLevelExited[0x21] != 0) {
       st[6] = 1;
       st[0xa] = 0x800;

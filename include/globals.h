@@ -1004,7 +1004,7 @@ extern void *g_pScriptedCameraActor;                    /* 0x80078c7c */
 extern void *g_pPortalCamPathData;                   /* 0x80078c98 */
 extern int g_nPortalCamPathMaxStep;                  /* 0x80078c9c */
 extern int g_nPortalCamPathReverseFlag;              /* 0x80078ca0 */
-extern int g_nSpyroFlightMode;                    /* 0x80078ca4: Spyro can fly: set on flight levels (and level 0x40 once grounded), cleared on level exit. While set the glide/fly states take R1/L1 as substates 1/2 and the fall physics keeps tracking g_nSpyroFloorReferenceZ */
+extern int g_nSpyroFlightMode;                    /* 0x80078ca4: Spyro can fly: set on flight levels (and in Gnasty's Loot, LEVEL_GNASTYS_LOOT, once grounded), cleared on level exit. While set the glide/fly states take R1/L1 as substates 1/2 and the fall physics keeps tracking g_nSpyroFloorReferenceZ */
 extern int g_nSpyroChargeHoldFlag;                      /* 0x80078ca8 */
 extern int g_nSpyroGlideBankingFlag;                    /* 0x80078cac */
 extern uint g_dwSpyroFootstepPrimarySfxKey;             /* 0x80078cbc */

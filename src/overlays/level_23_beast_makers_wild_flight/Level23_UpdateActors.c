@@ -27,6 +27,7 @@
 #include "pad_buttons.h"
 #include "spyro_state.h"
 #include "level_sfx.h"
+#include "level_id.h"
 
 /* Level23_UpdateActors -- per-frame actor update for level 11 (Night Flight).
  *
@@ -1513,7 +1514,7 @@ void Level23_UpdateActors(void) {
       case 0: {
         int d = actor->rotZ;
 
-        if (g_nActiveLevelId == 0xF || g_nActiveLevelId == 0x2D) {
+        if (g_nActiveLevelId == LEVEL_SUNNY_FLIGHT || g_nActiveLevelId == LEVEL_WILD_FLIGHT) {
           TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0xC, 4);
         } else {
           TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x16, 0);

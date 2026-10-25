@@ -43,7 +43,7 @@ typedef enum SpyroState
   SPYRO_ST_HAZARD = 29,       /* event 0x400 hazard: Cross escapes after 0x10 frames, 0x3C kills */
   SPYRO_ST_DEATH = 30,        /* a hurt state ending with g_nSparxHealth < 0 */
   SPYRO_ST_DEATH_PINNED = 31, /* event 0x10 with no health left */
-  SPYRO_ST_FLY = 32,          /* flight levels (and level 0x40) instead of GLIDE */
+  SPYRO_ST_FLY = 32,          /* flight levels (and Gnasty's Loot) instead of GLIDE */
   SPYRO_ST_FLY_CLIMB = 33,
   SPYRO_ST_FLY_DIVE = 34,
   SPYRO_ST_SCRIPTED_HOLD = 35, /* frozen until g_dwSpyroRequestMask clears */

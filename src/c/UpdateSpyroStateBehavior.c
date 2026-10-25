@@ -1,6 +1,7 @@
 #include "camera.h"
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
 #include "pad_buttons.h"
@@ -47,9 +48,9 @@ static inline int OpaqueInt(int p) {
     ChangeSpyroState(SPYRO_ST_IDLE);                                           \
   }
 
-/* Jump: glide-jump in flight levels and level 0x40, else the plain jump. */
+/* Jump: glide-jump in flight levels and Gnasty's Loot, else the plain jump. */
 #define JUMP_STATE()                                                           \
-  if (g_nFlightLevelActive != 0 || g_nActiveLevelId == 0x40) {                 \
+  if (g_nFlightLevelActive != 0 || g_nActiveLevelId == LEVEL_GNASTYS_LOOT) {   \
     ChangeSpyroState(SPYRO_ST_FLY);                                            \
   } else {                                                                     \
     ChangeSpyroState(SPYRO_ST_GLIDE);                                          \
@@ -337,7 +338,8 @@ void UpdateSpyroStateBehavior(void) {
         break;
       }
       if ((g_dwPadPressed & PAD_CROSS) && g_nSpyroSubstate == 0) {
-        if (g_nFlightLevelActive != 0 || g_nActiveLevelId == 0x40) {
+        if (g_nFlightLevelActive != 0 ||
+            g_nActiveLevelId == LEVEL_GNASTYS_LOOT) {
           if (g_nSpyroGroundRunFlag == 0 || g_nSpyroStateTimer >= 0x10) {
             ChangeSpyroState(SPYRO_ST_FLY);
           }

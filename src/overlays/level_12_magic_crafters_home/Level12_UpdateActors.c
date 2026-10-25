@@ -40,6 +40,7 @@
 #include "spyro_state.h"
 #include "camera.h"
 #include "level_sfx.h"
+#include "level_id.h"
 
 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
@@ -3071,7 +3072,7 @@ void Level12_UpdateActors(void) {
         if (st->snd == -1) {
           break;
         }
-        if (st->snd == 0 && st->timer < 3 && (vsnd & 2) && g_nActiveLevelId == 0x1F) {
+        if (st->snd == 0 && st->timer < 3 && (vsnd & 2) && g_nActiveLevelId == LEVEL_ALPINE_RIDGE) {
           Actor *f = &g_pActorListBase[st->friend];
 
           PlaySoundEffect(g_pLevelSampleBankHeader[0x2A], f, 8, &f->sfxSlot);
@@ -3120,7 +3121,7 @@ void Level12_UpdateActors(void) {
           }
           if ((SPY.state == SPYRO_ST_SUPERCHARGE || SPY.state == SPYRO_ST_SUPERCHARGE_AIR ||
                (SPY.state == SPYRO_ST_CHARGE_AIR && (g_nSpyroSubstate & SPYRO_SUB_SUPERCHARGE))) &&
-              g_nActiveLevelId == 0x1E && marker < 2) {
+              g_nActiveLevelId == LEVEL_MAGIC_CRAFTERS && marker < 2) {
             break;
           }
           if ((st->fleeDist << 10) < dist && TickCountdownByFrameDelta(&st->timer, 4)) {

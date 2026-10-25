@@ -1,6 +1,7 @@
 #include "camera.h"
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "main_shared.h"
 #include "pad_buttons.h"
 #include "spyro_block.h"
@@ -31,7 +32,7 @@ typedef void (*ParticleSpawnFn)(int kind, int type, int *pos, int *vel);
         g_nSpyroGroundProbeSuspendFlag != 0) {                                 \
       g_nSpyroFallReferenceZ = g_nSpyroFloorReferenceZ;                        \
     }                                                                          \
-    if (g_nActiveLevelId == 0x40 &&                                            \
+    if (g_nActiveLevelId == LEVEL_GNASTYS_LOOT &&                              \
         g_nSpyroFallReferenceZ > g_nGnastyLootFallRefZCap) {                   \
       g_nSpyroFallReferenceZ = g_nGnastyLootFallRefZCap;                       \
     }                                                                          \

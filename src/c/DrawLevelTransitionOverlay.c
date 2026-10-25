@@ -1,6 +1,7 @@
 #include "actor.h"
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "main_shared.h"
 
 /* The sprite record being written (Actor layout). */
@@ -80,7 +81,7 @@ void DrawLevelTransitionOverlay(void) {
   if (sub == 0) {
     sprintf(buf, g_szReturningHome);
   } else if ((g_nCurrentLevelId < 0x3c && sub == 4) ||
-             g_nCurrentLevelId == 0x3f) {
+             g_nCurrentLevelId == LEVEL_GNASTY_GNORC) {
     sprintf(buf, g_szConfrontingFmt, g_apLevelNameStrings[idx]);
   } else {
     sprintf(buf, g_szEnteringDotsFmt, g_apLevelNameStrings[idx]);
