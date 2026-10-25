@@ -196,7 +196,7 @@ void SaveLoadMenu_Draw(void) {
     RasterizeSpritePrimQueue();
   }
   SetupFrameOT();
-  DrawActors();
+  DrawPortalsAndStaticActors();
   RasterizeEmitList();
   DrawCinematicLetterbox();
   DrawSync(0);

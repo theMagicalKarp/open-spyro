@@ -65,7 +65,7 @@ void Level5_FlightResults_Draw(void)
     do {
     strip = 0x200;
     RasterizeEmitList();
-    DrawActors();
+    DrawPortalsAndStaticActors();
     SetupFrameOT();
     DrawSync(0);
     VSync(0);

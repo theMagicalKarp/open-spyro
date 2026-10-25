@@ -32,7 +32,7 @@ void DragonRescue_Draw(void) {
     BuildRenderEntityLists();
     ComposeFrameScene();
     SetupFrameOT();
-    DrawActors();
+    DrawPortalsAndStaticActors();
     RasterizeEmitList();
     {
       int tint = g_nDragonRescueFullscreenTintLevel;
@@ -77,7 +77,7 @@ void DragonRescue_Draw(void) {
     RasterizePairedActor();
     DrawSpyroDropShadow();
     SetupFrameOT();
-    DrawActors();
+    DrawPortalsAndStaticActors();
     RasterizeEmitList();
     {
       int tint = g_nDragonRescueFullscreenTintLevel;
@@ -119,7 +119,7 @@ void DragonRescue_Draw(void) {
     DrawEntityDirectionalSpikes();
     DrawSpyroDropShadow();
     SetupFrameOT();
-    DrawActors();
+    DrawPortalsAndStaticActors();
     RasterizeEmitList();
     if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
@@ -164,7 +164,7 @@ void DragonRescue_Draw(void) {
     RasterizePairedActor();
     DrawSpyroDropShadow();
     SetupFrameOT();
-    DrawActors();
+    DrawPortalsAndStaticActors();
     RasterizeEmitList();
     if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
@@ -189,7 +189,7 @@ void DragonRescue_Draw(void) {
     RasterizePairedActor();
     DrawSpyroDropShadow();
     SetupFrameOT();
-    DrawActors();
+    DrawPortalsAndStaticActors();
     RasterizeEmitList();
     if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
@@ -224,7 +224,7 @@ void DragonRescue_Draw(void) {
     RasterizePairedActor();
     DrawSpyroDropShadow();
     SetupFrameOT();
-    DrawActors();
+    DrawPortalsAndStaticActors();
     RasterizeEmitList();
     if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();

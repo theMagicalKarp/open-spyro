@@ -60,7 +60,7 @@ void RespawnOrGameOver_Draw(void) {
       BuildRenderEntityLists();
       ComposeFrameScene();
       RasterizeEmitList();
-      DrawActors();
+      DrawPortalsAndStaticActors();
       SetupFrameOT();
       DrawSync(0);
       VSync(0);

@@ -402,7 +402,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80050240` | EmitDynamicActorMeshFogShaded | main | 972 | asm | handwritten |
 | `0x8005060c` | ClipAndEmitFogShadedActorTriangle | main | 260 | asm | handwritten |
 | `0x80050710` | func_80050710 | main | 1216 | asm | handwritten |
-| `0x80050bd0` | DrawActors | main | 5148 | matched | game |
+| `0x80050bd0` | DrawPortalsAndStaticActors | main | 5148 | matched | game |
 | `0x80051fec` | BuildActiveActorList | main | 468 | asm | handwritten |
 | `0x800521c0` | BuildRenderEntityLists | main | 256 | asm | handwritten |
 | `0x800522c0` | TickActorAnims | main | 516 | asm | handwritten |

@@ -1601,7 +1601,7 @@
    "size": 1216
   },
   {
-   "name": "DrawActors",
+   "name": "DrawPortalsAndStaticActors",
    "vram": 2147814352,
    "size": 5148
   },

@@ -623,7 +623,7 @@ extern int g_nExtraLives;                    /* 0x8007582c */
 extern int g_nLevelKeyState;                 /* 0x80075830: the level key: 0 none, 1 carried (key 173 picked up), 2 locked chest (174) opened, 3 its reward collected; shown as HUD counter 4 */
 extern int g_nCameraShakePeakAmplitude;      /* 0x80075848 */
 extern int g_nPulseRumbleAmount;             /* 0x8007584c */
-extern int g_nPortalViewYawSpin;        /* 0x80075858: portal-surface view spin, +2 a frame (DrawActors) */
+extern int g_nPortalViewYawSpin;        /* 0x80075858: portal-surface view spin, +2 a frame (DrawPortalsAndStaticActors) */
 extern void *g_pDemoPadCursor;           /* 0x8007585c: read/write cursor into the recorded demo pad stream (SampleDemoPadFrame) */
 extern int g_nWorldTreasureCollected;        /* 0x80075860 */
 extern int g_nCdStreamState;                 /* 0x80075864 */
@@ -652,7 +652,7 @@ extern void *g_pfnLevelEmitParticles; /* 0x800758e4 */
 extern int g_nSparxFoodCount;                /* 0x800758e8: type-15 pickups collected; every 20 become an extra life (UpdateHudCounters) */
 extern int g_nLevelSelectWorldIndex;         /* 0x800758ec */
 extern int g_nLevelSelectSubIndex;           /* 0x800758f0 */
-extern int g_nPortalViewPitchTilt;      /* 0x800758fc: portal-surface view tilt, +2 a frame (DrawActors) */
+extern int g_nPortalViewPitchTilt;      /* 0x800758fc: portal-surface view tilt, +2 a frame (DrawPortalsAndStaticActors) */
 extern int g_nHitRumbleTimer;                /* 0x80075904 */
 extern int g_nCameraShakeDuration;           /* 0x8007590c */
 extern uint g_dwActiveCameraOptions;         /* 0x80075914 */

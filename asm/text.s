@@ -9701,7 +9701,7 @@ glabel Gamestate02_03_06_Draw
     /* AC50 8001A450 E0001424 */   addiu     $s4, $zero, 0xE0
     /* AC54 8001A454 F25C010C */  jal        RasterizeEmitList
     /* AC58 8001A458 00021124 */   addiu     $s1, $zero, 0x200
-    /* AC5C 8001A45C F442010C */  jal        DrawActors
+    /* AC5C 8001A45C F442010C */  jal        DrawPortalsAndStaticActors
     /* AC60 8001A460 00000000 */   nop
     /* AC64 8001A464 73AE000C */  jal        SetupFrameOT
     /* AC68 8001A468 00000000 */   nop
@@ -12256,7 +12256,7 @@ glabel RespawnOrGameOver_Draw
     /* D27C 8001CA7C 00000000 */   nop
     /* D280 8001CA80 F25C010C */  jal        RasterizeEmitList
     /* D284 8001CA84 00000000 */   nop
-    /* D288 8001CA88 F442010C */  jal        DrawActors
+    /* D288 8001CA88 F442010C */  jal        DrawPortalsAndStaticActors
     /* D28C 8001CA8C 00000000 */   nop
     /* D290 8001CA90 73AE000C */  jal        SetupFrameOT
     /* D294 8001CA94 00000000 */   nop
@@ -12649,7 +12649,7 @@ glabel DragonRescue_Draw
     /* D838 8001D038 00000000 */   nop
     /* D83C 8001D03C 73AE000C */  jal        SetupFrameOT
     /* D840 8001D040 00000000 */   nop
-    /* D844 8001D044 F442010C */  jal        DrawActors
+    /* D844 8001D044 F442010C */  jal        DrawPortalsAndStaticActors
     /* D848 8001D048 00000000 */   nop
     /* D84C 8001D04C F25C010C */  jal        RasterizeEmitList
     /* D850 8001D050 00000000 */   nop
@@ -12738,7 +12738,7 @@ glabel DragonRescue_Draw
     /* D984 8001D184 00000000 */   nop
     /* D988 8001D188 73AE000C */  jal        SetupFrameOT
     /* D98C 8001D18C 00000000 */   nop
-    /* D990 8001D190 F442010C */  jal        DrawActors
+    /* D990 8001D190 F442010C */  jal        DrawPortalsAndStaticActors
     /* D994 8001D194 00000000 */   nop
     /* D998 8001D198 F25C010C */  jal        RasterizeEmitList
     /* D99C 8001D19C 00000000 */   nop
@@ -12956,7 +12956,7 @@ glabel DragonRescue_Draw
     /* DCBC 8001D4BC 00000000 */   nop
     /* DCC0 8001D4C0 73AE000C */  jal        SetupFrameOT
     /* DCC4 8001D4C4 00000000 */   nop
-    /* DCC8 8001D4C8 F442010C */  jal        DrawActors
+    /* DCC8 8001D4C8 F442010C */  jal        DrawPortalsAndStaticActors
     /* DCCC 8001D4CC 00000000 */   nop
     /* DCD0 8001D4D0 F25C010C */  jal        RasterizeEmitList
     /* DCD4 8001D4D4 00000000 */   nop
@@ -13033,7 +13033,7 @@ glabel DragonRescue_Draw
     /* DDD8 8001D5D8 00000000 */   nop
     /* DDDC 8001D5DC 73AE000C */  jal        SetupFrameOT
     /* DDE0 8001D5E0 00000000 */   nop
-    /* DDE4 8001D5E4 F442010C */  jal        DrawActors
+    /* DDE4 8001D5E4 F442010C */  jal        DrawPortalsAndStaticActors
     /* DDE8 8001D5E8 00000000 */   nop
     /* DDEC 8001D5EC F25C010C */  jal        RasterizeEmitList
     /* DDF0 8001D5F0 00000000 */   nop
@@ -13807,7 +13807,7 @@ glabel SaveLoadMenu_Draw
   .L8001E148:
     /* E948 8001E148 73AE000C */  jal        SetupFrameOT
     /* E94C 8001E14C 00000000 */   nop
-    /* E950 8001E150 F442010C */  jal        DrawActors
+    /* E950 8001E150 F442010C */  jal        DrawPortalsAndStaticActors
     /* E954 8001E154 00000000 */   nop
     /* E958 8001E158 F25C010C */  jal        RasterizeEmitList
     /* E95C 8001E15C 00000000 */   nop
@@ -14848,7 +14848,7 @@ glabel GamestateDraw
     /* F80C 8001F00C 00000000 */   nop
     /* F810 8001F010 73AE000C */  jal        SetupFrameOT
     /* F814 8001F014 00000000 */   nop
-    /* F818 8001F018 F442010C */  jal        DrawActors
+    /* F818 8001F018 F442010C */  jal        DrawPortalsAndStaticActors
     /* F81C 8001F01C 00000000 */   nop
     /* F820 8001F020 F25C010C */  jal        RasterizeEmitList
     /* F824 8001F024 00000000 */   nop
@@ -70825,11 +70825,11 @@ glabel func_80050710
 endlabel func_80050710
 .endif
 
-.section .text.DrawActors, "ax"
-.ifndef HAVE_C_DrawActors
-nonmatching DrawActors, 0x141C
+.section .text.DrawPortalsAndStaticActors, "ax"
+.ifndef HAVE_C_DrawPortalsAndStaticActors
+nonmatching DrawPortalsAndStaticActors, 0x141C
 
-glabel DrawActors
+glabel DrawPortalsAndStaticActors
     /* 413D0 80050BD0 0780023C */  lui        $v0, %hi(g_nPortalViewYawSpin)
     /* 413D4 80050BD4 5858428C */  lw         $v0, %lo(g_nPortalViewYawSpin)($v0)
     /* 413D8 80050BD8 0780033C */  lui        $v1, %hi(g_nPortalViewPitchTilt)
@@ -72218,7 +72218,7 @@ glabel DrawActors
     /* 427E0 80051FE0 A001BD27 */  addiu      $sp, $sp, 0x1A0
     /* 427E4 80051FE4 0800E003 */  jr         $ra
     /* 427E8 80051FE8 00000000 */   nop
-endlabel DrawActors
+endlabel DrawPortalsAndStaticActors
 
 /* Handwritten function */
 .endif

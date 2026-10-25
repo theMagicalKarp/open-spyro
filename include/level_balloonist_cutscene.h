@@ -78,7 +78,7 @@ extern void ComposeFrameScene();
 
 extern void SetupFrameOT();
 
-extern void DrawActors();
+extern void DrawPortalsAndStaticActors();
 
 extern void RasterizeEmitList();
 

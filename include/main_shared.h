@@ -165,7 +165,7 @@ extern void ComposeFrameScene(void);
 
 extern void RasterizeEmitList(void);
 
-extern void DrawActors(void);
+extern void DrawPortalsAndStaticActors(void);
 
 extern void SetupFrameOT(void);
 

@@ -25,7 +25,7 @@
 <rect x="162.78" y="196.99" width="58.99" height="63.34" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>EmitSecondaryActorPrimitives  ·  6836 bytes  ·  handwritten</title></rect>
 <rect x="221.77" y="196.99" width="49.09" height="63.34" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_800242B8  ·  5688 bytes  ·  handwritten</title></rect>
 <rect x="270.86" y="196.99" width="44.94" height="63.34" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateCameraSpringForMode  ·  5208 bytes  ·  matched</title></rect>
-<rect x="14.00" y="260.33" width="55.60" height="50.61" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DrawActors  ·  5148 bytes  ·  matched</title></rect>
+<rect x="14.00" y="260.33" width="55.60" height="50.61" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DrawPortalsAndStaticActors  ·  5148 bytes  ·  matched</title></rect>
 <rect x="69.60" y="260.33" width="53.57" height="50.61" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ChangeSpyroState  ·  4960 bytes  ·  matched</title></rect>
 <rect x="123.17" y="260.33" width="51.24" height="50.61" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ApplyPerLevelGlobalsTable  ·  4744 bytes  ·  matched</title></rect>
 <rect x="174.40" y="260.33" width="48.08" height="50.61" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>EmitActorDrawList  ·  4452 bytes  ·  handwritten</title></rect>

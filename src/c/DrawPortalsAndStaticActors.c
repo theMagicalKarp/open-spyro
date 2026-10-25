@@ -5,7 +5,7 @@
 #include "types.h"
 #include "vecmath.h"
 
-/* DrawActors - VMA 0x80050bd0, 5148 bytes, frame 0x1a0.
+/* DrawPortalsAndStaticActors - VMA 0x80050bd0, 5148 bytes, frame 0x1a0.
 
    Matching notes (all load-bearing):
    - `maxX` is the same variable as the earlier CLZ `shift` (both s4): its
@@ -61,7 +61,7 @@ extern int
    pushed 2 px away from the centroid, giving the fattened outline pass. A pass
    is emitted only when its extents fall inside the 512x240 frame and the ring
    faces the camera. (0x80050bd0, 5148 bytes.) */
-void DrawActors(void) {
+void DrawPortalsAndStaticActors(void) {
   MATRIX viewMtx;         /* sp+0x10 */
   MATRIX outMtx;          /* sp+0x30 */
   int vDelta[3];          /* sp+0x50 */
