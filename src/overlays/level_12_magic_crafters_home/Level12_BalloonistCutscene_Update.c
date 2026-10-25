@@ -80,6 +80,7 @@
 #include "level_globals.h"
 #include "level_funcs.h"
 #include "level_balloonist_cutscene.h"
+#include "gamestate.h"
 
 
 void Level12_BalloonistCutscene_Update(void)
@@ -826,7 +827,7 @@ void Level12_BalloonistCutscene_Update(void)
         g_anCameraDynamicTargetParams[0] = (g_anCameraDynamicTargetParams[0] + g_nCameraTargetYawBiasFromMode) & 0xFFF;
         ResetCameraStateToTarget();
         InitHudCounters(0);
-        g_nGamestate = 0;
+        g_nGamestate = GS_GAMEPLAY;
         g_nGamePaused = 1;
         g_nGameplayBlocked = 0;
         InitLightVectorConstants();

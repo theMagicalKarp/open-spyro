@@ -23,7 +23,7 @@ void DispatchSpecialCutscene(void) {
     StopAllSoundExceptMask(0);
     TickSpuPerFrame();
     LoadActorMeshTables();
-    g_nGamestate = 0xD;
+    g_nGamestate = GS_TITLE;
     FillWord(mode, 0, 0x5C);
     mode[0] = 3;
     g_nStoryIntroSubstate = 0;

@@ -5,9 +5,9 @@
 void TriggerRespawnOrGameOver(void) {
   if (g_nExtraLives != 0) {
     g_nExtraLives--;
-    g_nGamestate = 4;
+    g_nGamestate = GS_RESPAWN;
   } else {
-    g_nGamestate = 5;
+    g_nGamestate = GS_GAME_OVER;
   }
   g_nGameplayDrawMode = 0;
   g_nGameplayDrawFrame = 0;

@@ -43,7 +43,7 @@ void BeginGemPickupOverlay(Actor *actor) {
       st[0xe] = 0x10;
     }
   }
-  g_nGamestate = 8;
+  g_nGamestate = GS_GEM_PICKUP;
   world = g_nWorldDragonsRescued;
   g_nHudDragonCachedCount = world;
   dragons = &g_anLevelDragonsRescued[g_nLevelIntroIndex];

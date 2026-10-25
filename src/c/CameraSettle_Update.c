@@ -17,6 +17,6 @@ void CameraSettle_Update(void) {
   }
   if ((g_anCameraEulerPitchBlock[0] < -0x200) ||
       (g_pCameraTargetParams == g_anCameraMode12Params)) {
-    g_nGamestate = 0;
+    g_nGamestate = GS_GAMEPLAY;
   }
 }

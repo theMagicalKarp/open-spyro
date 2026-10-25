@@ -22,7 +22,7 @@ void EndGemPickupToWorld(void) {
   int timer;
 
   id = ((int *)(*(void **)g_pGemPickupSourceActor))[8];
-  g_nGamestate = 0;
+  g_nGamestate = GS_GAMEPLAY;
   g_nGameplayBlocked = 0;
   if (id != -1) {
     rec = (unsigned char *)g_pActorListBase + id * ACTOR_SIZE;

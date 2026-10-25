@@ -15,7 +15,7 @@ void EnterPauseMenu(int fromGameplay) {
     StopAllSoundExceptMask(0);
   }
   PlaySoundEffect(LEVEL_SFX(0x2C), 0, 0x10, 0);
-  g_nGamestate = 2;
+  g_nGamestate = GS_PAUSE_MENU;
   g_nPauseMenuCursor = 0;
   g_nPauseMenuSubstate = 0;
   g_nPauseMenuIdleFrames = 0;

@@ -194,7 +194,8 @@ void TickLevelTransitionStream(int full) {
     break;
   case 9:
     g_pWorldUnpackHead = UnpackWorldDataChunks(g_pDrawBufB, 0);
-    if (MESH[0] != 0 && g_nGamestate != 5 && g_nGamestate != 0xC) {
+    if (MESH[0] != 0 && g_nGamestate != GS_GAME_OVER &&
+        g_nGamestate != GS_ACTOR_CUTSCENE) {
       if (g_nScriptedMobTag != 0) {
         for (i = 0; i < g_nScriptedMobCount; i++) {
           int *e = MOB_ENTRY(i);
@@ -320,7 +321,7 @@ void TickLevelTransitionStream(int full) {
         CopyVector(g_anSpyroDeathCamRecordBlock, g_anCameraPos);
         ActivateScriptedCameraView(
             (int)(g_anSpyroDeathCamRecordBlock - (0x18 / 4)));
-        g_nGamestate = 9;
+        g_nGamestate = GS_ARRIVAL_CAMERA;
       } else if (g_nScriptedMobTag != 0) {
         for (i = 0; i < g_nScriptedMobCount; i++) {
           int *e = MOB_ENTRY(i);
@@ -391,7 +392,7 @@ void TickLevelTransitionStream(int full) {
           UpdateCameraEulerAngles();
           g_nCameraNextMode = g_abSpyroStateCameraModeTable[g_nSpyroState];
           g_nSpyroStateFlags = 0xB;
-          g_nGamestate = 0;
+          g_nGamestate = GS_GAMEPLAY;
           g_bSpyroOtBinBias = 4;
         } else {
           AddVector(g_anCameraPos, g_anCameraPos, pos);
@@ -400,12 +401,12 @@ void TickLevelTransitionStream(int full) {
           ActivateScriptedCameraView(
               (int)(g_anSpyroDeathCamRecordBlock - (0x18 / 4)));
           g_nSpyroStateFlags = 0xA;
-          g_nGamestate = 9;
+          g_nGamestate = GS_ARRIVAL_CAMERA;
         }
       }
     } else if (g_nFlightLevelActive != 0) {
       g_nSpyroStateFlags = 0;
-    } else if (g_nGamestate != 0xC) {
+    } else if (g_nGamestate != GS_ACTOR_CUTSCENE) {
       ChangeSpyroState(0);
     }
     *(Words5 *)&g_nWorldRenderMeshChunkCount =

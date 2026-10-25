@@ -33,6 +33,7 @@
 #include "level_update_actors.h"
 #include "level_actor_states.h"
 #include "level_update_actors_macros.h"
+#include "gamestate.h"
 
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
@@ -228,7 +229,7 @@ void Level10_UpdateActors(void) {
                 g_nScriptedRespawnFlag = 1;
                 g_nLevelTransitionTallyActive = 1;
                 g_nLevelTransitionPhase = 0;
-                g_nGamestate = 1;
+                g_nGamestate = GS_LEVEL_LOAD;
                 g_nGamePaused = 1;
                 g_nScriptedMobTag = g_nActiveLevelId;
                 g_nCurrentLevelId = g_nActiveLevelId / 10 * 10;

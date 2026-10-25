@@ -39,25 +39,7 @@ typedef ulong u_long;
 typedef ushort u_short;
 
 /* --- enums (from Ghidra) --- */
-typedef enum Gamestate
-{
-  GS_DEFAULT = 0,
-  GS_LOGO_SPLASH = 1,
-  GS_PAUSE_MENU = 2,
-  GS_INVENTORY = 3,
-  GS_IN_LEVEL = 4,
-  GS_GAME_OVER = 5,
-  GS_TITLE = 6,
-  GS_HOOK = 7,
-  GS_GEM_PICKUP = 8,
-  GS_LOGO_SPLASH_ALT = 9,
-  GS_MENU_TRANSITION = 10,
-  GS_SAVE_MENU = 11,
-  GS_LEVEL_INTRO = 12,
-  GS_STORY_INTRO = 13,
-  GS_GEM_CUTSCENE = 14,
-  GS_CREDITS = 15,
-} Gamestate;
+#include "gamestate.h"
 
 /* --- structs (from Ghidra / psyq SDK) --- */
 typedef struct CVECTOR

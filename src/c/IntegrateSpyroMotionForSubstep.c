@@ -195,7 +195,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
 
   g_pPadSubstepState = &g_anPadSubstepRing[substep * 6];
   t = g_nSpyroStateTimer + substep;
-  if (g_nGamestate == 0 && g_nActiveLevelId == 0x40 &&
+  if (g_nGamestate == GS_GAMEPLAY && g_nActiveLevelId == 0x40 &&
       g_nSpyroAirborneFrames == 0) {
     g_nSpyroFallTrackingFlag = 1;
   }

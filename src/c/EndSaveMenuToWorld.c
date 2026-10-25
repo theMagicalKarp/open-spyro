@@ -14,7 +14,7 @@
 void EndSaveMenuToWorld(void) {
   int *dyn;
 
-  g_nGamestate = 0;
+  g_nGamestate = GS_GAMEPLAY;
   g_nGameplayBlocked = 0;
   InitLightVectorConstants();
   ZeroVector(g_anSpyroSwingTargetBlock);

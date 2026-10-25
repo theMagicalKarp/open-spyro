@@ -9,7 +9,7 @@ void EndRespawnToGameplay(void) {
   u_char g = ((u_char *)&g_dwWorldFogColor)[1];
   u_char b = ((u_char *)&g_dwWorldFogColor)[2];
 
-  g_nGamestate = 0;
+  g_nGamestate = GS_GAMEPLAY;
   g_abFrameDrawEnv0.r0 = r;
   g_abFrameDrawEnv0.g0 = g;
   g_abFrameDrawEnv0.b0 = b;

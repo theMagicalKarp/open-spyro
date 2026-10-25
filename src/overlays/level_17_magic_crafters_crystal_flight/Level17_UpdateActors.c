@@ -23,6 +23,7 @@
 #include "level_update_actors.h"
 #include "flight_actor_states.h"
 #include "level_update_actors_macros.h"
+#include "gamestate.h"
 
 /* Level17_UpdateActors -- per-frame actor update for level 11 (Night Flight).
  *
@@ -1336,7 +1337,7 @@ void Level17_UpdateActors(void) {
       {
         Model **models = g_apActorMeshTable;
 
-        if (GetSoundVoiceStatusByOwner(actor, g_pLevelSoundIds[5]) == 0 && g_nGamestate == 0) {
+        if (GetSoundVoiceStatusByOwner(actor, g_pLevelSoundIds[5]) == 0 && g_nGamestate == GS_GAMEPLAY) {
           PlaySoundEffect(models[actor->type]->m_Sounds[1], actor, 8,
                         &actor->sfxSlot);
         }
@@ -1879,7 +1880,7 @@ void Level17_UpdateActors(void) {
         g_nFlightTallyShownClass = -1;
       }
 
-      if (g_nGamestate == 7) {
+      if (g_nGamestate == GS_OVERLAY_HOOK) {
         for (i = 0; i < 8; i++) {
           if (st->icon[i] != 0) {
             st->icon[i]->cullRadius = 0;

@@ -84,8 +84,8 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_anLevelSpawnPos[1] = p[1];
     g_nLevelSpawnPosZ = p[2];
     g_nLevelSpawnYaw = ((unsigned char *)p)[0xE];
-    if ((g_nScriptedRespawnFlag == 0) && (g_nGamestate != 0xC)) {
-      if (((g_nGamestate == 5) &&
+    if ((g_nScriptedRespawnFlag == 0) && (g_nGamestate != GS_ACTOR_CUTSCENE)) {
+      if (((g_nGamestate == GS_GAME_OVER) &&
            (((unsigned int)(g_nActiveLevelId - 0x28)) < 0x14)) &&
           ((gidx = g_nGameOverLevelIntroIndex - 0x12,
             g_anGameOverRespawnPosTable[gidx * 3] != 0))) {
@@ -101,7 +101,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     }
   }
   g_nLevelReadyFlag = g_nLevelReadyFlagStash;
-  if (g_nGamestate != 0xC) {
+  if (g_nGamestate != GS_ACTOR_CUTSCENE) {
     ResetSpyroEntity(0);
     g_nSpyroPadSnapshotCountdown = 0xC;
   }
@@ -142,7 +142,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   }
   g_nGenericCountdown = 0;
   if (g_nScriptedRespawnFlag == 0) {
-    if (g_nGamestate == 0xC) {
+    if (g_nGamestate == GS_ACTOR_CUTSCENE) {
       goto emitlist;
     }
     *((struct CameraParamBlock *)g_anCameraActiveTargetParams) =
@@ -156,8 +156,8 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     ResetCameraStateToTarget();
     g_nGenericCountdown = 0x20;
   }
-  if (g_nGamestate != 0xC) {
-    g_nGamestate = 0;
+  if (g_nGamestate != GS_ACTOR_CUTSCENE) {
+    g_nGamestate = GS_GAMEPLAY;
     g_nGamePaused = 1;
     g_nGameplayBlocked = 0;
     g_nLetterboxBarHeight = 0;
@@ -403,8 +403,8 @@ sprites:
       } else {
         HideActorRenderRecord(r);
       }
-      CopyVector(
-          pos, (int *)((((char *)g_pActorListBase) + (i * ACTOR_SIZE)) + 0xC));
+      CopyVector(pos, (int *)((((char *)g_pActorListBase) + (i * ACTOR_SIZE)) +
+                              ACTOR_OFFSET(posX)));
       pos[2] += 0x400;
       FindGroundHeightBelow(pos, 0x10000);
       EncodeCachedVecToActorDirCode(((char *)g_pActorListBase) +
@@ -427,7 +427,8 @@ sprites:
       }
       rec = (char *)g_pActorListBase;
       i++;
-    } while (((unsigned char)rec[(i * ACTOR_SIZE) + 0x48]) != 0xFF);
+    } while (((unsigned char)rec[(i * ACTOR_SIZE) + ACTOR_OFFSET(mode)]) !=
+             0xFF);
     rec = *(char *volatile *)&g_pActorListBase;
   }
   i = 0;
@@ -478,7 +479,8 @@ sprites:
       }
       rec = (char *)g_pActorListBase;
       i++;
-    } while (((unsigned char)rec[(i * ACTOR_SIZE) + 0x48]) != 0xFF);
+    } while (((unsigned char)rec[(i * ACTOR_SIZE) + ACTOR_OFFSET(mode)]) !=
+             0xFF);
   }
   i = 0;
   do {

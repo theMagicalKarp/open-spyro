@@ -10,10 +10,11 @@
 
 #include "level_globals.h"
 #include "level_spawn_actor.h"
+#include "gamestate.h"
 
 
 void Level5_FlightEndHook(void) {
-  if (g_nGamestate != 7) {
+  if (g_nGamestate != GS_OVERLAY_HOOK) {
     int score = g_nFlightRunClock;
     int five;
     int idx;
@@ -22,7 +23,7 @@ void Level5_FlightEndHook(void) {
     int cur;
     int ten;
 
-    g_nGamestate = 7;
+    g_nGamestate = GS_OVERLAY_HOOK;
     five = score * 5;
     idx = g_nActiveWorldIndex;
     base = g_anWorldPersistentFlags;

@@ -6,7 +6,7 @@
 
    Three arms on g_nGameplayDrawMode. Mode 0 is the load frame: after 16 frames
    it either hands straight back to gameplay (when the death happened outside a
-   game-over, g_nGamestate == GS_IN_LEVEL) or streams the game-over scene in
+   game-over, g_nGamestate == GS_RESPAWN) or streams the game-over scene in
    behind the render scratch region, rebases its chunk pointer table, parks the
    camera on the fixed game-over shot and resets Spyro's inventory/anim state.
    Mode 1 plays the presentation: frames 0xb4..0x174 sweep Spyro around the
@@ -30,7 +30,7 @@ void RespawnOrGameOver_Update(void) {
   mode = g_nGameplayDrawMode;
   if (mode == 0) {
     if (g_nGameplayDrawFrame >= 0x10) {
-      if (g_nGamestate == 4) {
+      if (g_nGamestate == GS_RESPAWN) {
         EndRespawnToGameplay();
         LoadAndStartLevelFromCd();
       } else {

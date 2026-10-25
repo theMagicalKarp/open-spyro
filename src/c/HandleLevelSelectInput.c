@@ -63,7 +63,7 @@ void HandleLevelSelectInput(void) {
           g_nPreserveMobIdx = -1;
           ResetSpyroEntity(0);
           RestartSpyroAnimWithState(0xF);
-          g_nGamestate = 1;
+          g_nGamestate = GS_LEVEL_LOAD;
           g_nCdStreamState = 1;
           g_nScriptedRespawnFlag = 0;
           g_nLevelTransitionTallyActive = 0;

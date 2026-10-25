@@ -23,6 +23,7 @@
 #include "level_funcs.h"
 #include "level_spawn_actor.h"
 #include "level_flight_results.h"
+#include "gamestate.h"
 
 extern char *g_pRenderScratchPrimTop;
 
@@ -41,7 +42,7 @@ void Level5_HandleFlightResults(int reload) {
     LoadImage(&rect, g_pRenderScratchPrimTop - 0x1C200);
     DrawSync(0);
   }
-  g_nGamestate = 0;
+  g_nGamestate = GS_GAMEPLAY;
   InitLightVectorConstants();
   for (i = 0; i < 4; i++) {
     if ((&g_anFlightTargetTally)[i] == 8) {

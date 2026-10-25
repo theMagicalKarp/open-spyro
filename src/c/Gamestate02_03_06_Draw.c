@@ -247,7 +247,7 @@ void Gamestate02_03_06_Draw(void) {
     (*(char **)&g_pPrimBufferWriteCursor) = p + 0x38;
     prim = (BackdropTail *)p;
     h = b;
-    if (g_nGamestate == 2) {
+    if (g_nGamestate == GS_PAUSE_MENU) {
       unsigned char *rec;
       unsigned char *fr;
       short *lut1, *lut2, *lut3, *lut4, *lut6, *lut7, *lut8, *lut9;
@@ -674,7 +674,7 @@ void Gamestate02_03_06_Draw(void) {
           } while (i < n6);
         }
       }
-    } else if (g_nGamestate == 3) {
+    } else if (g_nGamestate == GS_INVENTORY) {
       ModePolyF4 *prim3;
       unsigned char *rec;
       int n;
@@ -1038,7 +1038,7 @@ void Gamestate02_03_06_Draw(void) {
                            g_nSubMenuScrollOffset + 0x1ee, y - 0xb);
     }
     g_apSpritePrimQueue[0] = (void *)0;
-    if (g_nGamestate == 2 && g_nFlightLevelActive == 0) {
+    if (g_nGamestate == GS_PAUSE_MENU && g_nFlightLevelActive == 0) {
       EnqueueLoadingScreenSprites();
     }
     EnqueuePendingSpritePrims();

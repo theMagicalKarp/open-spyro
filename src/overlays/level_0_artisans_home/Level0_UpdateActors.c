@@ -21,6 +21,7 @@
 #include "level_globals.h"
 #include "level_update_actors.h"
 #include "level_update_actors_macros.h"
+#include "gamestate.h"
 
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
@@ -2904,7 +2905,7 @@ void Level0_UpdateActors(void) {
           g_nCdStreamState = 0;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
-          g_nGamestate = 1;
+          g_nGamestate = GS_LEVEL_LOAD;
           g_nGamePaused = 1;
           SPY.requestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
@@ -2943,7 +2944,7 @@ void Level0_UpdateActors(void) {
           g_nCdStreamState = 0;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
-          g_nGamestate = 1;
+          g_nGamestate = GS_LEVEL_LOAD;
           g_nGamePaused = 1;
           SPY.requestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);

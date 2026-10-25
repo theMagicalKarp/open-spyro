@@ -30,6 +30,7 @@
 #include "level_update_actors.h"
 #include "level_actor_states.h"
 #include "level_update_actors_macros.h"
+#include "gamestate.h"
 
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
@@ -2097,7 +2098,7 @@ void Level33_UpdateActors(void) {
           g_abLevelGemPercent[g_nLevelIntroIndex] = 1;
           g_nCreditsPageIndex = 0;
           g_nCurrentWorldId[0] = 2;
-          g_nGamestate = 0xE;
+          g_nGamestate = GS_GEM_CUTSCENE;
           g_nGamePaused = 1;
           g_nGameplayBlocked = 0;
           g_nSpyroDrawSuppressed = 0;

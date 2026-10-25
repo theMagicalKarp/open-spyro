@@ -15,7 +15,7 @@ void OrPickupGroupActorFlags(int a0, int a1) {
     base = (unsigned char *)g_pActorListBase;
     do {
       idx = *ptr & 0x7FFF;
-      if ((unsigned int)base[idx * ACTOR_SIZE + 0x48] < 0x80) {
+      if ((unsigned int)base[idx * ACTOR_SIZE + ACTOR_OFFSET(mode)] < 0x80) {
         ((Actor *)(base + idx * ACTOR_SIZE))->flags |= a1;
       }
     } while ((short)*ptr++ >= 0);

@@ -14,7 +14,7 @@ void BeginGemCutscene(void) {
   int *head;
   int *entry;
 
-  g_nGamestate = 0xE;
+  g_nGamestate = GS_GEM_CUTSCENE;
   g_nGenericCountdown = 0;
   head = (int *)g_pPathTableHead;
   world = g_nCurrentWorldId;

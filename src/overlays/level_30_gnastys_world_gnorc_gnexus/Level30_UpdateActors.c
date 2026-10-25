@@ -33,6 +33,7 @@
 #include "level_update_actors.h"
 #include "level_actor_states.h"
 #include "level_update_actors_macros.h"
+#include "gamestate.h"
 
 /* Level30_UpdateActors -- per-frame actor update for level 30 (Gnorc Gnexus).
  *
@@ -2413,7 +2414,7 @@ void Level30_UpdateActors(void) {
           g_nCdStreamState = 0;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
-          g_nGamestate = 1;
+          g_nGamestate = GS_LEVEL_LOAD;
           g_nGamePaused = 1;
           g_bSpyroRequestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
@@ -2456,7 +2457,7 @@ void Level30_UpdateActors(void) {
           g_nCdStreamState = 0;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
-          g_nGamestate = 1;
+          g_nGamestate = GS_LEVEL_LOAD;
           g_nGamePaused = 1;
           g_bSpyroRequestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);

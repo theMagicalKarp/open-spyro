@@ -16,6 +16,7 @@
 #include "actor.h"
 #include "level_emit_particles.h"
 #include "level_actor_cutscene.h"
+#include "gamestate.h"
 
 
 /* The three position reads go through ACTOR_RAW: written as
@@ -29,7 +30,7 @@ void Level1_BeginActorCutscene(Actor *actor) {
   int b;
 
   p = actor->state;
-  g_nGamestate = 0xC;
+  g_nGamestate = GS_ACTOR_CUTSCENE;
   g_nGamestate0cSubstate = 0;
   g_nGamestate0cTimer = 0;
   g_nGamestate0cMenuCursor = 0;

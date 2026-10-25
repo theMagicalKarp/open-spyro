@@ -14,8 +14,8 @@ void DespawnPickupGroupActors(int a0) {
     do {
       idx = *ptr & 0x7FFF;
       if ((unsigned int)((
-              unsigned char *)g_pActorListBase)[idx * ACTOR_SIZE + 0x48] <
-          0x80) {
+              unsigned char *)g_pActorListBase)[idx * ACTOR_SIZE +
+                                                ACTOR_OFFSET(mode)] < 0x80) {
         DespawnActorRecord((unsigned char *)g_pActorListBase +
                            idx * ACTOR_SIZE);
       }

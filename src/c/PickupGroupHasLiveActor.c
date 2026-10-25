@@ -17,7 +17,7 @@ int PickupGroupHasLiveActor(int a0) {
     do {
       id = *ptr;
       idx = id & 0x7FFF;
-      if ((unsigned int)base[idx * ACTOR_SIZE + 0x48] < 0x80) {
+      if ((unsigned int)base[idx * ACTOR_SIZE + ACTOR_OFFSET(mode)] < 0x80) {
         return 1;
       }
       ptr++;

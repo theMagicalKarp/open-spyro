@@ -305,7 +305,7 @@ void TickWorldChunkAnimations(int step);
 /* 0x8002b4ac: Sibling of TickWorldChunkAnimations that snaps every world chunk-anim table to its current keyframe state without advancing time (no delay decrement, no RLE walk). Same 6 tables: copies the current-keyframe full-mesh blob (0xa8 + 0x10), applies the current UV rotation pattern, writes the current step-index byte to each color-cycle target byte (+0x18..+0x1b), and rebuilds the packed-XY triangle anchors at DAT_800785d4+0x10 from the source triplet. Used by the level-loader (FUN_8001364c) to seed all world animations to their initial keyframe before gameplay begins. */
 void ResetWorldChunkAnimations(void);
 
-/* 0x8002b9cc: Frame OT/depth setup. Memcopies an empty OT into DAT_8006fcf4 (size 0x1c00), then picks the draw-distance constant DAT_800785d0 by context: In-level (DAT_80076e24 &lt; DAT_800785b4): 0x28000 (far draw distance, OT slot = current LOD). Cutscene story-intro / gem-cutscene (GS_STORY_INTRO or GS_GEM_CUTSCENE): 0x1c000 (close). Otherwise: 0x14000 (default UI / shorter range). Then calls FUN_800258f0 to publish the chosen OT range. */
+/* 0x8002b9cc: Frame OT/depth setup. Memcopies an empty OT into DAT_8006fcf4 (size 0x1c00), then picks the draw-distance constant DAT_800785d0 by context: In-level (DAT_80076e24 &lt; DAT_800785b4): 0x28000 (far draw distance, OT slot = current LOD). Cutscene story-intro / gem-cutscene (GS_TITLE story intro or GS_GEM_CUTSCENE): 0x1c000 (close). Otherwise: 0x14000 (default UI / shorter range). Then calls FUN_800258f0 to publish the chosen OT range. */
 void SetupFrameOT(void);
 
 /* 0x8002bb20: Returns the "X%" completion percentage shown in the inventory header (Gamestate 3). Formula: (g_nWorldTreasureCollected*50 + g_nWorldDragonsRescued*6000 + g_nWorldEggsRecovered*10000) / 12000 — i.e. 12000 gems = 50%, 80 dragons = 40%, 12 eggs = 10%, Spyro 1's exact 100% split. When treasure exceeds 12000 (Gnasty's Loot's extra 2000), switches to 100 + (treasure-12000)/100, giving the famous 120% cap. */
@@ -335,7 +335,7 @@ void EnterInventoryMenu(int fromGameplay);
 /* 0x8002c7bc: Exits the sub-menu back to title (g_Gamestate=0); restores the title snapshot framebuffer from _DAT_800785f0-0x1c200, zeros all five HUD palette indices, releases memcard slot 8. */
 void ExitSubMenuToTitle(void);
 
-/* 0x8002c85c: Player death dispatch: if g_nExtraLives (DAT_8007582c) > 0 decrement and go to g_Gamestate=4 (GS_IN_LEVEL, respawn); else g_Gamestate=5 (GS_GAME_OVER). Resets g_nGameplayDrawMode/Frame to 0 so the frame counter restarts cleanly. */
+/* 0x8002c85c: Player death dispatch: if g_nExtraLives (DAT_8007582c) > 0 decrement and go to g_Gamestate=4 (GS_RESPAWN); else g_Gamestate=5 (GS_GAME_OVER). Resets g_nGameplayDrawMode/Frame to 0 so the frame counter restarts cleanly. */
 void TriggerRespawnOrGameOver(void);
 
 /* 0x8002c8a4: Sets g_Gamestate=0 (gameplay) and restores HUD palette indices to defaults; ends the respawn (state 4) and game-over restart (state 5) paths of RespawnOrGameOver_Update — its only two callers. */
@@ -353,7 +353,7 @@ void EndGemPickupToWorld(void);
 /* 0x8002d02c: Ends the save-menu (GS_SAVE_MENU) back to gameplay: g_nGamestate=0, resets Spyro (ResetSpyroEntity) + camera mode 0, snapshots the live camera pose INTO g_anCameraDynamicTargetParams (CopyWords from &g_nCameraYaw, 0x18 BYTES = 6 ints), biases slot[0] yaw by g_nCameraTargetYawBiasFromMode, and points g_pCameraTargetParams at it so the world-return camera eases from the menu pose instead of a canned table. Re-inits HUD counters, restores music track. Mirrors EndGemPickupToWorld. */
 void EndSaveMenuToWorld(void);
 
-/* 0x8002d170: Begins the "IN THE WORLD OF DRAGONS…" story intro: g_Gamestate=13 (GS_STORY_INTRO). FillWord zeros 0x5c bytes starting at g_nGamestate0dMode, resets sfx/music volume to 10, primes the title-CD anchor at DAT_80078dc4 to the CD buffer end-2000, and kicks the libpress audio start at FUN_8006275c(0x159). */
+/* 0x8002d170: Begins the "IN THE WORLD OF DRAGONS…" story intro: g_Gamestate=13 (GS_TITLE, story-intro mode). FillWord zeros 0x5c bytes starting at g_nGamestate0dMode, resets sfx/music volume to 10, primes the title-CD anchor at DAT_80078dc4 to the CD buffer end-2000, and kicks the libpress audio start at FUN_8006275c(0x159). */
 void BeginStoryIntro(void);
 
 /* 0x8002d228: Begins the credits sequence: g_Gamestate=15 (GS_CREDITS), g_nGamestate0fMode=-1. Clears the screen to black, calls ChangeSpyroState(1,…) to freeze the player, loads the credits image via CdReadAndCopyToRam. param_1 nonzero (post-game variant) also runs FUN_8005b7d8 (audio reset) and marks DAT_800757ac=10 (post-game flag). */
@@ -377,7 +377,7 @@ void ApplyCheatCodeEffect(int code);
 /* 0x8002d8ec: Cheat-code matcher: appends g_dwPadPressed to the 16-slot g_anPadHistoryRing (index g_nPadHistoryIndex); for each of the 8 sequences in g_anCheatCodeSequences (stride 0x40 = 16 ints, 0-terminated) compares the last len presses of the ring; on match calls ApplyCheatCodeEffect(slot) + ClearPadHistoryRing. Only runs while g_nCdStreamState < 0 (no stream in flight). Called from SubMenu_Update (inventory screen). */
 void CheckCheatCodeMatch(void);
 
-/* 0x8002da74: Update half of the level-transition gem tally (sole caller Gamestate01_Update; was misread as a GS_LOGO_SPLASH fire ring). At phase 0 computes g_nGemTallyHoldEndPhase and clears the alive flags of all 64 records at g_pGemTallyParticleRecords (reused g_apSecondaryEntityList storage). Advances g_nLevelTransitionPhase by g_nFrameStep; from phase 0x80 spawns one gem-icon particle per tally unit (i-th at phase 0x80+2i, i < g_nGemTallyIconCount, max 32) with randomized arc params, then flies each through three sine arcs (age 0..0x30 rise, 0x30..0x60 hop, 0x60..0x93 fall into the total counter) and retires it — pickup sfx every 8 phase steps on spawn, chime every 3rd particle on landing. Past phase 0x1a0 clears g_nLevelTransitionTallyActive. DrawLevelTransitionOverlay renders one gem sprite per alive record. */
+/* 0x8002da74: Update half of the level-transition gem tally (sole caller Gamestate01_Update; was misread as a logo-splash fire ring). At phase 0 computes g_nGemTallyHoldEndPhase and clears the alive flags of all 64 records at g_pGemTallyParticleRecords (reused g_apSecondaryEntityList storage). Advances g_nLevelTransitionPhase by g_nFrameStep; from phase 0x80 spawns one gem-icon particle per tally unit (i-th at phase 0x80+2i, i < g_nGemTallyIconCount, max 32) with randomized arc params, then flies each through three sine arcs (age 0..0x30 rise, 0x30..0x60 hop, 0x60..0x93 fall into the total counter) and retires it — pickup sfx every 8 phase steps on spawn, chime every 3rd particle on landing. Past phase 0x1a0 clears g_nLevelTransitionTallyActive. DrawLevelTransitionOverlay renders one gem sprite per alive record. */
 void AnimateGemTallyParticles(void);
 
 /* 0x8002df9c: [inferred] g_Gamestate==1 handler. Brief: calls FUN_8004a7ec, FUN_80037bd4, FUN_8002da74; conditionally calls FUN_80015370 when DAT_80075864<0xb or DAT_800756b0==0. Role unclear — kept generic name pending more context. */
@@ -401,7 +401,7 @@ void RespawnOrGameOver_Update(void);
 /* 0x8002f3c4: Gamestate 6 handler — intentionally empty (calls the no-op substate stub). NO in-EXE writer ever sets g_nGamestate=6 (full setter map audited sweep 45: 1=HandleLevelSelectInput/BeginWorldHubReturn/portal, 2=EnterPauseMenu, 3=EnterInventoryMenu, 4/5=TriggerRespawnOrGameOver, 7=PauseMenu_Update overlay handoff, 8=BeginGemPickupOverlay, 9=TickLevelTransitionStream, 0xA=BeginPauseToMenuTransition, 0xD=BeginStoryIntro/DispatchSpecialCutscene, 0xE=CheckDeathPlane, 0xF=BeginCreditsSequence) — state 6 is entered only by overlay code poking g_nGamestate by absolute address. Its Draw path (Gamestate02_03_06_Draw) renders just the grayscale frozen-scene backdrop + whatever sprites the overlay enqueued: an overlay-rendered menu/dialog state (balloonist dialogue is the prime candidate; confirm when overlay disassembly lands). */
 void Gamestate06_Update(void);
 
-/* 0x8002f3e4: g_Gamestate==8 (GS_GEM_PICKUP) handler. 8-state submachine via g_nGemPickupSubstate (0..7) and g_nGemPickupTimer drives the gem-collect / dragon-rescue overlay: camera orbits via ArcTan2 + LookupSine/Cosine, spawns icons DAT_800770b8/bc, plays sfx bank DAT_800761d4+0x31..0x35. Substate 7 ends via EndGemPickupToWorld back to GS_DEFAULT. */
+/* 0x8002f3e4: g_Gamestate==8 (GS_GEM_PICKUP) handler. 8-state submachine via g_nGemPickupSubstate (0..7) and g_nGemPickupTimer drives the gem-collect / dragon-rescue overlay: camera orbits via ArcTan2 + LookupSine/Cosine, spawns icons DAT_800770b8/bc, plays sfx bank DAT_800761d4+0x31..0x35. Substate 7 ends via EndGemPickupToWorld back to GS_GAMEPLAY. */
 void GemPickup_Update(void);
 
 /* 0x800314b4: [inferred] g_Gamestate==0xB handler. Not yet decompiled in detail. Generic name retained. */

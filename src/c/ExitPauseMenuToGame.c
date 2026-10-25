@@ -17,7 +17,7 @@ void ExitPauseMenuToGame(int resumeMusic) {
   rect.h = 0xE1;
   LoadImage(&rect, (unsigned int)g_pRenderScratchPrimTop + 0xFFFE3E00);
   DrawSync(0);
-  g_nGamestate = 0;
+  g_nGamestate = GS_GAMEPLAY;
   InitLightVectorConstants();
   g_abHudCounterDisplayState[0] = 3;
   g_abHudCounterDisplayState[1] = 3;

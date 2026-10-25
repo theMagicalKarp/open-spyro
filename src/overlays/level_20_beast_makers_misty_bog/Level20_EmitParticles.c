@@ -34,6 +34,7 @@
 #include "level_globals.h"
 #include "level_emit_particles.h"
 #include "emit_record.h"
+#include "gamestate.h"
 
 
 void Level20_EmitParticles(int count, int type, int *pos, int effectArg) {
@@ -78,7 +79,7 @@ void Level20_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       VectorToSVectorShr2(rec->u.spark.vel, (int *)effectArg);
       rec->u.spark.toggle = 0;
-      if (g_nGamestate == 8) {
+      if (g_nGamestate == GS_GEM_PICKUP) {
         rec->u.spark.life = 8;
       } else {
         rec->u.spark.life = 0x10;

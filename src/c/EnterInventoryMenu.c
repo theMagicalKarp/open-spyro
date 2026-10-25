@@ -17,7 +17,7 @@ void EnterInventoryMenu(int fromGameplay) {
   PlaySoundEffect(LEVEL_SFX(0x2C), 0, 0x10, 0);
   g_nSubMenuScrollOffset = 0;
   g_nSubMenuScrollDelta = 0;
-  g_nGamestate = 3;
+  g_nGamestate = GS_INVENTORY;
   g_nSubMenuCursor = g_nLevelIntroIndex / 6;
   if (fromGameplay != 0) {
     g_nPauseMenuTransitionFrames = 0;
