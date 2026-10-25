@@ -980,7 +980,7 @@ extern int g_nSpyroBreathTimer;                         /* 0x80078bc0 */
 extern int g_nSpyroFirstContactChunkId;                 /* 0x80078bc4 */
 extern int g_nSpyroTriggerCurrentEventId;               /* 0x80078bc8 */
 extern int g_nSpyroTriggerEntryZ;                       /* 0x80078bcc */
-extern void *g_pSpyroGemFlyTriggerData;                 /* 0x80078bd0 */
+extern void *g_pSpyroLiftRegionData;                 /* 0x80078bd0 */
 extern int g_anSpyroFirstContactPoint[3];               /* 0x80078bd4 */
 extern int g_anSpyroFirstContactNormal[3];              /* 0x80078be0 */
 extern int g_nSpyroScriptedMoveMode;                    /* 0x80078bec */
@@ -1011,7 +1011,7 @@ extern uint g_dwSpyroFootstepPrimarySfxKey;             /* 0x80078cbc */
 extern uint g_dwSpyroFootstepSecondarySfxKey;           /* 0x80078cc0 */
 extern int g_nSpyroGroundChunkId;                       /* 0x80078ccc */
 extern int g_anSpyroGroundChunkVerts[9];                /* 0x80078cd0 */
-extern void *g_pSpyroOrbDropTriggerData;                /* 0x80078cf4 */
+extern void *g_pSpyroHazardRegionData;                /* 0x80078cf4 */
 extern byte g_bSpyroSfxVoiceMarker;                     /* 0x80078cf8 */
 extern int g_nSaveMenuMode;                             /* 0x80078d00 */
 extern int g_nSaveMenuAnimPhase;                        /* 0x80078d04 */
@@ -1221,8 +1221,8 @@ extern int g_anWorldSparkleShape[]; /* 0x8006e308: 10-word table in .data (5 sig
 extern int g_adwActorBurstColors[]; /* 0x8006e330 */
 extern int g_anFlightBoundsCenter[]; /* 0x8006e7dc */
 extern int g_anFlightBoundsRadius[]; /* 0x8006e7e4 */
-extern int g_anOrbDropEnterSpawnType[]; /* 0x8006ea34 */
-extern int g_anOrbDropTimeoutSpawnType[]; /* 0x8006ea40 */
+extern int g_anHazardEnterSpawnType[]; /* 0x8006ea34 */
+extern int g_anHazardTimeoutSpawnType[]; /* 0x8006ea40 */
 extern int g_anLevelEntryPoints[]; /* 0x8006ea4c: entry points, 4 words per level */
 extern int g_anScriptedCameraPresetRecords[]; /* 0x8006eb24 */
 extern int g_anDeathTryLevelIds[]; /* 0x8006ee7c: per-try first level table */

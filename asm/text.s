@@ -51756,13 +51756,13 @@ glabel ChangeSpyroState
     /* 302FC 8003FAFC 09F84000 */  jalr       $v0
     /* 30300 8003FB00 21380000 */   addu      $a3, $zero, $zero
   .L8003FB04:
-    /* 30304 8003FB04 0780023C */  lui        $v0, %hi(g_nSpyroOrbDropSpawnIndex)
-    /* 30308 8003FB08 2857428C */  lw         $v0, %lo(g_nSpyroOrbDropSpawnIndex)($v0)
+    /* 30304 8003FB04 0780023C */  lui        $v0, %hi(g_nSpyroHazardKind)
+    /* 30308 8003FB08 2857428C */  lw         $v0, %lo(g_nSpyroHazardKind)($v0)
     /* 3030C 8003FB0C 00000000 */  nop
     /* 30310 8003FB10 80100200 */  sll        $v0, $v0, 2
-    /* 30314 8003FB14 0780013C */  lui        $at, %hi(g_anOrbDropEnterSpawnType)
+    /* 30314 8003FB14 0780013C */  lui        $at, %hi(g_anHazardEnterSpawnType)
     /* 30318 8003FB18 21082200 */  addu       $at, $at, $v0
-    /* 3031C 8003FB1C 34EA248C */  lw         $a0, %lo(g_anOrbDropEnterSpawnType)($at)
+    /* 3031C 8003FB1C 34EA248C */  lw         $a0, %lo(g_anHazardEnterSpawnType)($at)
     /* 30320 8003FB20 0780023C */  lui        $v0, %hi(g_pfnLevelSpawnActor)
     /* 30324 8003FB24 CC58428C */  lw         $v0, %lo(g_pfnLevelSpawnActor)($v0)
     /* 30328 8003FB28 00000000 */  nop
@@ -53289,8 +53289,8 @@ glabel DispatchSpyroPadStateChanges
     /* 318A4 800410A4 0E000424 */   addiu     $a0, $zero, 0xE
     /* 318A8 800410A8 9AFA000C */  jal        ChangeSpyroState
     /* 318AC 800410AC 1D000424 */   addiu     $a0, $zero, 0x1D
-    /* 318B0 800410B0 0880023C */  lui        $v0, %hi(g_pSpyroOrbDropTriggerData)
-    /* 318B4 800410B4 F48C428C */  lw         $v0, %lo(g_pSpyroOrbDropTriggerData)($v0)
+    /* 318B0 800410B0 0880023C */  lui        $v0, %hi(g_pSpyroHazardRegionData)
+    /* 318B4 800410B4 F48C428C */  lw         $v0, %lo(g_pSpyroHazardRegionData)($v0)
     /* 318B8 800410B8 00000000 */  nop
     /* 318BC 800410BC 0000428C */  lw         $v0, 0x0($v0)
     /* 318C0 800410C0 00000000 */  nop
@@ -55897,14 +55897,14 @@ glabel UpdateSpyroStateBehavior
     /* 33E70 80043670 3D006228 */  slti       $v0, $v1, 0x3D
     /* 33E74 80043674 10004014 */  bnez       $v0, .L800436B8
     /* 33E78 80043678 10006228 */   slti      $v0, $v1, 0x10
-    /* 33E7C 8004367C 0780023C */  lui        $v0, %hi(g_nSpyroOrbDropSpawnIndex)
-    /* 33E80 80043680 2857428C */  lw         $v0, %lo(g_nSpyroOrbDropSpawnIndex)($v0)
+    /* 33E7C 8004367C 0780023C */  lui        $v0, %hi(g_nSpyroHazardKind)
+    /* 33E80 80043680 2857428C */  lw         $v0, %lo(g_nSpyroHazardKind)($v0)
     /* 33E84 80043684 FFFF0324 */  addiu      $v1, $zero, -0x1
     /* 33E88 80043688 000083AC */  sw         $v1, 0x0($a0)
     /* 33E8C 8004368C 80100200 */  sll        $v0, $v0, 2
-    /* 33E90 80043690 0780013C */  lui        $at, %hi(g_anOrbDropTimeoutSpawnType)
+    /* 33E90 80043690 0780013C */  lui        $at, %hi(g_anHazardTimeoutSpawnType)
     /* 33E94 80043694 21082200 */  addu       $at, $at, $v0
-    /* 33E98 80043698 40EA248C */  lw         $a0, %lo(g_anOrbDropTimeoutSpawnType)($at)
+    /* 33E98 80043698 40EA248C */  lw         $a0, %lo(g_anHazardTimeoutSpawnType)($at)
     /* 33E9C 8004369C 0780023C */  lui        $v0, %hi(g_pfnLevelSpawnActor)
     /* 33EA0 800436A0 CC58428C */  lw         $v0, %lo(g_pfnLevelSpawnActor)($v0)
     /* 33EA4 800436A4 00000000 */  nop
@@ -78051,8 +78051,8 @@ glabel DispatchSpyroTriggerEvent
     /* 47800 80057000 0880033C */  lui        $v1, %hi(g_dwSpyroTriggerEventFlags)
     /* 47804 80057004 848A6324 */  addiu      $v1, $v1, %lo(g_dwSpyroTriggerEventFlags)
     /* 47808 80057008 0000628C */  lw         $v0, 0x0($v1)
-    /* 4780C 8005700C 0880013C */  lui        $at, %hi(g_pSpyroOrbDropTriggerData)
-    /* 47810 80057010 F48C26AC */  sw         $a2, %lo(g_pSpyroOrbDropTriggerData)($at)
+    /* 4780C 8005700C 0880013C */  lui        $at, %hi(g_pSpyroHazardRegionData)
+    /* 47810 80057010 F48C26AC */  sw         $a2, %lo(g_pSpyroHazardRegionData)($at)
     /* 47814 80057014 FF034230 */  andi       $v0, $v0, 0x3FF
     /* 47818 80057018 00044234 */  ori        $v0, $v0, 0x400
     /* 4781C 8005701C 000062AC */  sw         $v0, 0x0($v1)
@@ -78061,16 +78061,16 @@ glabel DispatchSpyroTriggerEvent
     /* 47828 80057028 0400C38C */  lw         $v1, 0x4($a2)
     /* 4782C 8005702C 0880013C */  lui        $at, %hi(g_nSpyroTriggerEntryZ)
     /* 47830 80057030 CC8B22AC */  sw         $v0, %lo(g_nSpyroTriggerEntryZ)($at)
-    /* 47834 80057034 0780013C */  lui        $at, %hi(g_nSpyroOrbDropSpawnIndex)
-    /* 47838 80057038 285723AC */  sw         $v1, %lo(g_nSpyroOrbDropSpawnIndex)($at)
+    /* 47834 80057034 0780013C */  lui        $at, %hi(g_nSpyroHazardKind)
+    /* 47838 80057038 285723AC */  sw         $v1, %lo(g_nSpyroHazardKind)($at)
     /* 4783C 8005703C DA5C0108 */  j          .L80057368
     /* 47840 80057040 00000000 */   nop
   jlabel .L80057044
     /* 47844 80057044 0880033C */  lui        $v1, %hi(g_dwSpyroTriggerEventFlags)
     /* 47848 80057048 848A6324 */  addiu      $v1, $v1, %lo(g_dwSpyroTriggerEventFlags)
     /* 4784C 8005704C 0000628C */  lw         $v0, 0x0($v1)
-    /* 47850 80057050 0880013C */  lui        $at, %hi(g_pSpyroGemFlyTriggerData)
-    /* 47854 80057054 D08B26AC */  sw         $a2, %lo(g_pSpyroGemFlyTriggerData)($at)
+    /* 47850 80057050 0880013C */  lui        $at, %hi(g_pSpyroLiftRegionData)
+    /* 47854 80057054 D08B26AC */  sw         $a2, %lo(g_pSpyroLiftRegionData)($at)
     /* 47858 80057058 FF034230 */  andi       $v0, $v0, 0x3FF
     /* 4785C 8005705C D95C0108 */  j          .L80057364
     /* 47860 80057060 00084234 */   ori       $v0, $v0, 0x800

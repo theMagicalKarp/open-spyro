@@ -108,4 +108,16 @@ typedef enum SpyroState
 #define SPYRO_RQ_SCRIPTED_WALK 0x20000 /* g_nSpyroScriptedMoveMode = 1, walk */
 #define SPYRO_RQ_PENDING 0x80000000
 
+/* Trigger-region record types (byte 0 of a g_pTriggerRegionTable record),
+ * dispatched by DispatchSpyroTriggerEvent. */
+enum TriggerRegionType {
+  TRIGGER_HAZARD = 0,       /* raises SPYRO_EV_HAZARD; data: [0] instant death, [1] g_nSpyroHazardKind */
+  TRIGGER_LIFT = 1,         /* raises SPYRO_EV_LIFT (g_pSpyroLiftRegionData) */
+  TRIGGER_GROUND_LATCH = 2, /* sets data[0] while Spyro is near the ground */
+  TRIGGER_CHARGE_HOLD = 4,  /* raises SPYRO_EV_CHARGE_HOLD */
+  TRIGGER_REBOUND = 5,      /* raises SPYRO_EV_REBOUND and spawns type 0xEA */
+  TRIGGER_PORTAL = 6,       /* level warp: data[0] level id, [1] portal index */
+  TRIGGER_DAMAGE = 7,       /* while its g_anLevelTriggerStateSlots slot is set: a charge-proof hit */
+};
+
 #endif /* OPEN_SPYRO_SPYRO_STATE_H */

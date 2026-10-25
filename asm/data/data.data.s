@@ -4120,21 +4120,21 @@ dlabel g_anLevelDeathPlaneZTable
     /* 5F230 8006EA30 00040000 */ .word 0x00000400
 enddlabel g_anLevelDeathPlaneZTable
 
-nonmatching g_anOrbDropEnterSpawnType
+nonmatching g_anHazardEnterSpawnType
 
-dlabel g_anOrbDropEnterSpawnType
+dlabel g_anHazardEnterSpawnType
     /* 5F234 8006EA34 DD010000 */ .word 0x000001DD
     /* 5F238 8006EA38 6B010000 */ .word 0x0000016B
     /* 5F23C 8006EA3C FB010000 */ .word 0x000001FB
-enddlabel g_anOrbDropEnterSpawnType
+enddlabel g_anHazardEnterSpawnType
 
-nonmatching g_anOrbDropTimeoutSpawnType
+nonmatching g_anHazardTimeoutSpawnType
 
-dlabel g_anOrbDropTimeoutSpawnType
+dlabel g_anHazardTimeoutSpawnType
     /* 5F240 8006EA40 95010000 */ .word 0x00000195
     /* 5F244 8006EA44 6C010000 */ .word 0x0000016C
     /* 5F248 8006EA48 FC010000 */ .word 0x000001FC
-enddlabel g_anOrbDropTimeoutSpawnType
+enddlabel g_anHazardTimeoutSpawnType
 
 nonmatching g_anLevelEntryPoints
 
@@ -14410,11 +14410,11 @@ dlabel g_nSpyroScriptedLiftRise
     /* 65F24 80075724 00000000 */ .word 0x00000000
 enddlabel g_nSpyroScriptedLiftRise
 
-nonmatching g_nSpyroOrbDropSpawnIndex
+nonmatching g_nSpyroHazardKind
 
-dlabel g_nSpyroOrbDropSpawnIndex
+dlabel g_nSpyroHazardKind
     /* 65F28 80075728 00000000 */ .word 0x00000000
-enddlabel g_nSpyroOrbDropSpawnIndex
+enddlabel g_nSpyroHazardKind
 
 nonmatching g_dwGamestateFrames
 

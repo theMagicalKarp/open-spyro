@@ -64,7 +64,7 @@ int DispatchSpyroPadStateChanges(int pad) {
       ChangeSpyroState(SPYRO_ST_KNOCKBACK);
     } else if (pad & SPYRO_EV_HAZARD) {
       ChangeSpyroState(SPYRO_ST_HAZARD);
-      if (*(int *)g_pSpyroOrbDropTriggerData != 0 && g_bDebugNoDepletion == 0) {
+      if (*(int *)g_pSpyroHazardRegionData != 0 && g_bDebugNoDepletion == 0) {
         g_nSparxHealth = -1;
       }
     } else {

@@ -964,7 +964,7 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer > 0x3C) {
       SPY[SPY_SPARX_HEALTH] = -1;
       ((void (*)(int, int))g_pfnLevelSpawnActor)(
-          g_anOrbDropTimeoutSpawnType[g_nSpyroOrbDropSpawnIndex], 0);
+          g_anHazardTimeoutSpawnType[g_nSpyroHazardKind], 0);
       break;
     }
     if (g_nSpyroStateTimer >= 0x10 && (g_dwPadHeld & PAD_CROSS)) {

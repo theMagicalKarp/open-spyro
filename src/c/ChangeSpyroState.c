@@ -531,7 +531,7 @@ void ChangeSpyroState(int state) {
       PARTICLE_SPAWN(5, 0xA, 0, 0);
     }
     ((void (*)(int, int))g_pfnLevelSpawnActor)(
-        g_anOrbDropEnterSpawnType[g_nSpyroOrbDropSpawnIndex], 0);
+        g_anHazardEnterSpawnType[g_nSpyroHazardKind], 0);
     me = SPY;
     PlaySoundEffect(LEVEL_SFX(0x1D), me, 4,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER);

@@ -125,7 +125,7 @@ extern void UpdateCameraFrame(void);
 
 extern void TickCdMusicStream(void);
 
-extern int g_nSpyroOrbDropSpawnIndex;
+extern int g_nSpyroHazardKind;
 
 extern int g_bSpyroJumpHoldForced;
 
