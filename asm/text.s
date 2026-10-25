@@ -911,10 +911,10 @@ glabel UnpackWorldDataChunks
     /* 3620 80012E20 0000C28C */  lw         $v0, 0x0($a2)
     /* 3624 80012E24 0400C624 */  addiu      $a2, $a2, 0x4
     /* 3628 80012E28 21380000 */  addu       $a3, $zero, $zero
-    /* 362C 80012E2C 0880033C */  lui        $v1, %hi(g_nStaticMeshLodCutoff)
-    /* 3630 80012E30 B4856324 */  addiu      $v1, $v1, %lo(g_nStaticMeshLodCutoff)
-    /* 3634 80012E34 0880013C */  lui        $at, %hi(g_pStaticMeshLodTable)
-    /* 3638 80012E38 B08526AC */  sw         $a2, %lo(g_pStaticMeshLodTable)($at)
+    /* 362C 80012E2C 0880033C */  lui        $v1, %hi(g_nVisZoneCount)
+    /* 3630 80012E30 B4856324 */  addiu      $v1, $v1, %lo(g_nVisZoneCount)
+    /* 3634 80012E34 0880013C */  lui        $at, %hi(g_pVisZoneChunkLists)
+    /* 3638 80012E38 B08526AC */  sw         $a2, %lo(g_pVisZoneChunkLists)($at)
     /* 363C 80012E3C 0C004018 */  blez       $v0, .L80012E70
     /* 3640 80012E40 000062AC */   sw        $v0, 0x0($v1)
   .L80012E44:
@@ -957,10 +957,10 @@ glabel UnpackWorldDataChunks
     /* 36CC 80012ECC BB4B0008 */  j          .L80012EEC
     /* 36D0 80012ED0 00000000 */   nop
   .L80012ED4:
-    /* 36D4 80012ED4 0880013C */  lui        $at, %hi(g_nStaticMeshLodCutoff)
-    /* 36D8 80012ED8 B48520AC */  sw         $zero, %lo(g_nStaticMeshLodCutoff)($at)
-    /* 36DC 80012EDC 0880013C */  lui        $at, %hi(g_pStaticMeshLodTable)
-    /* 36E0 80012EE0 B08520AC */  sw         $zero, %lo(g_pStaticMeshLodTable)($at)
+    /* 36D4 80012ED4 0880013C */  lui        $at, %hi(g_nVisZoneCount)
+    /* 36D8 80012ED8 B48520AC */  sw         $zero, %lo(g_nVisZoneCount)($at)
+    /* 36DC 80012EDC 0880013C */  lui        $at, %hi(g_pVisZoneChunkLists)
+    /* 36E0 80012EE0 B08520AC */  sw         $zero, %lo(g_pVisZoneChunkLists)($at)
     /* 36E4 80012EE4 0780013C */  lui        $at, %hi(g_pWorldMeshIndexTable)
     /* 36E8 80012EE8 8C7720AC */  sw         $zero, %lo(g_pWorldMeshIndexTable)($at)
   .L80012EEC:
@@ -3640,8 +3640,8 @@ glabel TickLevelTransitionStream
     /* 5D98 80015598 3C4B000C */  jal        RelocateLevelSampleBank
     /* 5D9C 8001559C 21280000 */   addu      $a1, $zero, $zero
     /* 5DA0 800155A0 FFFF0224 */  addiu      $v0, $zero, -0x1
-    /* 5DA4 800155A4 0780013C */  lui        $at, %hi(g_nCameraFloorSurfaceType)
-    /* 5DA8 800155A8 246E22AC */  sw         $v0, %lo(g_nCameraFloorSurfaceType)($at)
+    /* 5DA4 800155A4 0780013C */  lui        $at, %hi(g_nCameraVisZone)
+    /* 5DA8 800155A8 246E22AC */  sw         $v0, %lo(g_nCameraVisZone)($at)
     /* 5DAC 800155AC ED580008 */  j          .L800163B4
     /* 5DB0 800155B0 02000224 */   addiu     $v0, $zero, 0x2
   jlabel .L800155B4
@@ -3652,8 +3652,8 @@ glabel TickLevelTransitionStream
     /* 5DC4 800155C4 FFFF0324 */  addiu      $v1, $zero, -0x1
     /* 5DC8 800155C8 0880013C */  lui        $at, %hi(g_nWorldRenderMeshChunkCount)
     /* 5DCC 800155CC 408A20AC */  sw         $zero, %lo(g_nWorldRenderMeshChunkCount)($at)
-    /* 5DD0 800155D0 0780013C */  lui        $at, %hi(g_nCameraFloorSurfaceType)
-    /* 5DD4 800155D4 246E23AC */  sw         $v1, %lo(g_nCameraFloorSurfaceType)($at)
+    /* 5DD0 800155D0 0780013C */  lui        $at, %hi(g_nCameraVisZone)
+    /* 5DD4 800155D4 246E23AC */  sw         $v1, %lo(g_nCameraVisZone)($at)
     /* 5DD8 800155D8 01004224 */  addiu      $v0, $v0, 0x1
     /* 5DDC 800155DC 0780013C */  lui        $at, %hi(g_nCdStreamState)
     /* 5DE0 800155E0 645822AC */  sw         $v0, %lo(g_nCdStreamState)($at)
@@ -28713,10 +28713,10 @@ glabel SetupFrameOT
     /* 1C1DC 8002B9DC 1000BFAF */  sw         $ra, 0x10($sp)
     /* 1C1E0 8002B9E0 4C5A000C */  jal        FillBlock16
     /* 1C1E4 8002B9E4 001C0624 */   addiu     $a2, $zero, 0x1C00
-    /* 1C1E8 8002B9E8 0780043C */  lui        $a0, %hi(g_nCameraFloorSurfaceType)
-    /* 1C1EC 8002B9EC 246E848C */  lw         $a0, %lo(g_nCameraFloorSurfaceType)($a0)
-    /* 1C1F0 8002B9F0 0880023C */  lui        $v0, %hi(g_nStaticMeshLodCutoff)
-    /* 1C1F4 8002B9F4 B485428C */  lw         $v0, %lo(g_nStaticMeshLodCutoff)($v0)
+    /* 1C1E8 8002B9E8 0780043C */  lui        $a0, %hi(g_nCameraVisZone)
+    /* 1C1EC 8002B9EC 246E848C */  lw         $a0, %lo(g_nCameraVisZone)($a0)
+    /* 1C1F0 8002B9F0 0880023C */  lui        $v0, %hi(g_nVisZoneCount)
+    /* 1C1F4 8002B9F4 B485428C */  lw         $v0, %lo(g_nVisZoneCount)($v0)
     /* 1C1F8 8002B9F8 00000000 */  nop
     /* 1C1FC 8002B9FC 2A108200 */  slt        $v0, $a0, $v0
     /* 1C200 8002BA00 06004010 */  beqz       $v0, .L8002BA1C
@@ -42488,21 +42488,21 @@ glabel UpdateCameraFrame
     /* 28610 80037E10 00000000 */   nop
     /* 28614 80037E14 05004010 */  beqz       $v0, .L80037E2C
     /* 28618 80037E18 00000000 */   nop
-    /* 2861C 80037E1C 0780023C */  lui        $v0, %hi(g_nWorldFloorSurfaceType)
-    /* 28620 80037E20 4458428C */  lw         $v0, %lo(g_nWorldFloorSurfaceType)($v0)
-    /* 28624 80037E24 0780013C */  lui        $at, %hi(g_nCameraFloorSurfaceType)
-    /* 28628 80037E28 246E22AC */  sw         $v0, %lo(g_nCameraFloorSurfaceType)($at)
+    /* 2861C 80037E1C 0780023C */  lui        $v0, %hi(g_nWorldFloorVisZone)
+    /* 28620 80037E20 4458428C */  lw         $v0, %lo(g_nWorldFloorVisZone)($v0)
+    /* 28624 80037E24 0780013C */  lui        $at, %hi(g_nCameraVisZone)
+    /* 28628 80037E28 246E22AC */  sw         $v0, %lo(g_nCameraVisZone)($at)
   .L80037E2C:
-    /* 2862C 80037E2C 0780023C */  lui        $v0, %hi(g_nCameraFloorSurfaceType)
-    /* 28630 80037E30 246E428C */  lw         $v0, %lo(g_nCameraFloorSurfaceType)($v0)
-    /* 28634 80037E34 0880033C */  lui        $v1, %hi(g_nStaticMeshLodCutoff)
-    /* 28638 80037E38 B485638C */  lw         $v1, %lo(g_nStaticMeshLodCutoff)($v1)
+    /* 2862C 80037E2C 0780023C */  lui        $v0, %hi(g_nCameraVisZone)
+    /* 28630 80037E30 246E428C */  lw         $v0, %lo(g_nCameraVisZone)($v0)
+    /* 28634 80037E34 0880033C */  lui        $v1, %hi(g_nVisZoneCount)
+    /* 28638 80037E38 B485638C */  lw         $v1, %lo(g_nVisZoneCount)($v1)
     /* 2863C 80037E3C 00000000 */  nop
     /* 28640 80037E40 2A104300 */  slt        $v0, $v0, $v1
     /* 28644 80037E44 03004014 */  bnez       $v0, .L80037E54
     /* 28648 80037E48 FFFF0224 */   addiu     $v0, $zero, -0x1
-    /* 2864C 80037E4C 0780013C */  lui        $at, %hi(g_nCameraFloorSurfaceType)
-    /* 28650 80037E50 246E22AC */  sw         $v0, %lo(g_nCameraFloorSurfaceType)($at)
+    /* 2864C 80037E4C 0780013C */  lui        $at, %hi(g_nCameraVisZone)
+    /* 28650 80037E50 246E22AC */  sw         $v0, %lo(g_nCameraVisZone)($at)
   .L80037E54:
     /* 28654 80037E54 0780013C */  lui        $at, %hi(g_apScriptedCameraViewBlock)
     /* 28658 80037E58 BC6E20AC */  sw         $zero, %lo(g_apScriptedCameraViewBlock)($at)
@@ -67879,16 +67879,16 @@ glabel FindWorldFloorBelowPoint
     /* 3EA70 8004E270 00000000 */  nop
     /* 3EA74 8004E274 20083300 */  add        $at, $at, $s3 /* handwritten instruction */
     /* 3EA78 8004E278 00002190 */  lbu        $at, 0x0($at)
-    /* 3EA7C 8004E27C 0780023C */  lui        $v0, %hi(g_nWorldFloorSurfaceType)
-    /* 3EA80 8004E280 44584224 */  addiu      $v0, $v0, %lo(g_nWorldFloorSurfaceType)
+    /* 3EA7C 8004E27C 0780023C */  lui        $v0, %hi(g_nWorldFloorVisZone)
+    /* 3EA80 8004E280 44584224 */  addiu      $v0, $v0, %lo(g_nWorldFloorVisZone)
     /* 3EA84 8004E284 13380108 */  j          .L8004E04C
     /* 3EA88 8004E288 000041AC */   sw        $at, 0x0($v0)
   .L8004E28C:
     /* 3EA8C 8004E28C 0600C01E */  bgtz       $s6, .L8004E2A8
     /* 3EA90 8004E290 00111600 */   sll       $v0, $s6, 4
     /* 3EA94 8004E294 FFFF0220 */  addi       $v0, $zero, -0x1 /* handwritten instruction */
-    /* 3EA98 8004E298 0780013C */  lui        $at, %hi(g_nWorldFloorSurfaceType)
-    /* 3EA9C 8004E29C 44582124 */  addiu      $at, $at, %lo(g_nWorldFloorSurfaceType)
+    /* 3EA98 8004E298 0780013C */  lui        $at, %hi(g_nWorldFloorVisZone)
+    /* 3EA9C 8004E29C 44582124 */  addiu      $at, $at, %lo(g_nWorldFloorVisZone)
     /* 3EAA0 8004E2A0 000022AC */  sw         $v0, 0x0($at)
     /* 3EAA4 8004E2A4 00000220 */  addi       $v0, $zero, 0x0 /* handwritten instruction */
   .L8004E2A8:
@@ -72192,11 +72192,11 @@ glabel DrawPortalsAndStaticActors
     /* 42780 80051F80 C3FB4014 */  bnez       $v0, .L80050E90
     /* 42784 80051F84 0801ACAF */   sw        $t4, 0x108($sp)
   .L80051F88:
-    /* 42788 80051F88 0780063C */  lui        $a2, %hi(g_nCameraFloorSurfaceType)
-    /* 4278C 80051F8C 246EC624 */  addiu      $a2, $a2, %lo(g_nCameraFloorSurfaceType)
+    /* 42788 80051F88 0780063C */  lui        $a2, %hi(g_nCameraVisZone)
+    /* 4278C 80051F8C 246EC624 */  addiu      $a2, $a2, %lo(g_nCameraVisZone)
     /* 42790 80051F90 0000C48C */  lw         $a0, 0x0($a2)
-    /* 42794 80051F94 0880023C */  lui        $v0, %hi(g_nStaticMeshLodCutoff)
-    /* 42798 80051F98 B485428C */  lw         $v0, %lo(g_nStaticMeshLodCutoff)($v0)
+    /* 42794 80051F94 0880023C */  lui        $v0, %hi(g_nVisZoneCount)
+    /* 42798 80051F98 B485428C */  lw         $v0, %lo(g_nVisZoneCount)($v0)
     /* 4279C 80051F9C 00000000 */  nop
     /* 427A0 80051FA0 2A108200 */  slt        $v0, $a0, $v0
     /* 427A4 80051FA4 02004014 */  bnez       $v0, .L80051FB0

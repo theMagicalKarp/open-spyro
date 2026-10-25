@@ -1103,7 +1103,7 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_bSpyroPersistentEulerY 0x80078a65 g_abSpyroPersistentEuler[1]
  *   g_pSharedLoadBuffer     0x800113a0  shared CD/asset/splash load buffer pointer
  *   g_nFarPlaneDrawDistance 0x800785d0  per-gamestate far-plane cull limit (SetupFrameOT)
- *   g_nStaticMeshLodCutoff  0x800785b4  static-mesh LOD cutoff
+ *   g_nVisZoneCount  0x800785b4  number of visibility zones
  *   g_nCdDaVolumeCurrent    0x80075f18  live CD-DA volume (fade ramp)
  *   g_pLevelSoundIds        0x80076824  level sound id table
  *
@@ -1167,7 +1167,7 @@ extern unsigned char g_bSpyroSwingByteEuler1;
 extern int g_nCreditsPageIndex;
 extern int g_nLevelIntroParallaxCountdown;
 extern int g_nSpyroSwingEulerPrev1;
-extern int g_nStaticMeshLodCutoff;
+extern int g_nVisZoneCount;
 
 /* Globals named after the one-time import, declared once here (by address). */
 extern unsigned char g_szDemoMode[]; /* 0x80010ac0 */
@@ -1253,7 +1253,7 @@ extern int g_nActorAnimDone; /* 0x80075794 */
 extern void *g_pfnLevelBeginActorCutscene; /* 0x800757a0 */
 extern void *g_pfnLevelHandleFlightResults; /* 0x800757a8 */
 extern int g_pCreditsScrollHeader; /* 0x800757bc */
-extern int g_nWorldFloorSurfaceType; /* 0x80075844 */
+extern int g_nWorldFloorVisZone; /* 0x80075844 */
 extern int g_bLevelPhasedBossKilled; /* 0x80075850 */
 extern int g_bLevelBossDefeated; /* 0x80075854: cleared on level load */
 extern int g_anLevelRunnerArrived; /* 0x80075870 */
@@ -1358,8 +1358,8 @@ extern int g_anWorldAnimColor1CountBlock[]; /* 0x80078578 */
 extern int g_anWorldAnimColor2CountBlock[]; /* 0x80078580 */
 extern int g_anWorldAnimColor3CountBlock[]; /* 0x80078588 */
 extern int g_anWorldAnimVertexMorphCountBlock[]; /* 0x800785a0 */
-extern void *g_pStaticMeshLodTable; /* 0x800785b0: relocated mesh-index LOD table (count g_nStaticMeshLodCutoff) */
-extern int g_anStaticMeshLodCutoffBlock[]; /* 0x800785b4: held-base view of g_nStaticMeshLodCutoff */
+extern void *g_pVisZoneChunkLists; /* 0x800785b0: per visibility zone, a 0xFF-terminated list of the world chunks drawn from it (count g_nVisZoneCount); the camera's zone is the floor under it (g_nCameraVisZone) */
+extern int g_anVisZoneCountBlock[]; /* 0x800785b4: held-base view of g_nVisZoneCount */
 extern int g_anTriggerRegionCount[]; /* 0x800785bc: trigger-region count (array view; the loop bound is re-read through it) */
 extern int g_anWorldMeshCountBlock[]; /* 0x800785c8: held-base view of g_nWorldMeshCount (-7 words: g_nWorldChunkCount) */
 extern int g_nInitUnreadWord; /* 0x800785cc */

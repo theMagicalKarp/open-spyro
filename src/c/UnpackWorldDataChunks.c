@@ -87,9 +87,9 @@ void *UnpackWorldDataChunks(int *p, int flag) {
       p++;
       i = 0;
       {
-        int *pn = g_anStaticMeshLodCutoffBlock;
+        int *pn = g_anVisZoneCountBlock;
 
-        g_pStaticMeshLodTable = p;
+        g_pVisZoneChunkLists = p;
         *pn = n3;
         if (n3 > 0) {
           do {
@@ -123,8 +123,8 @@ void *UnpackWorldDataChunks(int *p, int flag) {
         }
       }
     } else {
-      g_anStaticMeshLodCutoffBlock[0] = 0;
-      g_pStaticMeshLodTable = 0;
+      g_anVisZoneCountBlock[0] = 0;
+      g_pVisZoneChunkLists = 0;
       g_pWorldMeshIndexTable = 0;
     }
     p = (int *)((char *)base + *base);

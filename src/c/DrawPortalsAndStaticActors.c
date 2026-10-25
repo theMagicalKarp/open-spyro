@@ -47,8 +47,7 @@ extern EdgeRec g_aMobSilhouetteEdges[];  /* silhouette edge records */
 extern ScreenPt g_aMobRingScreenPts[];   /* projected ring points */
 /* point k through a held byte offset (the original keeps k*12 live) */
 #define KPT (*(ScreenPt *)((char *)g_aMobRingScreenPts + ko))
-extern int
-    g_nCameraFloorSurfaceType[]; /* [-0x10] view mtx, [-0x15] world mtx */
+extern int g_nCameraVisZone[]; /* [-0x10] view mtx, [-0x15] world mtx */
 
 /* Render stage 4: draw the portals, then the static actor
    mesh list. The camera-relative view matrix is rebuilt every frame from the
@@ -93,7 +92,7 @@ void DrawPortalsAndStaticActors(void) {
   int yk;
   int dx;
   int dy;
-  int lod;
+  int zone;
 
   g_nPortalViewYawSpin = (g_nPortalViewYawSpin + 2) & 0xfff;
   g_nPortalViewPitchTilt = (g_nPortalViewPitchTilt + 2) & 0xfff;
@@ -521,10 +520,10 @@ void DrawPortalsAndStaticActors(void) {
     }
   }
 
-  lod = g_nCameraFloorSurfaceType[0];
-  if (lod >= g_nStaticMeshLodCutoff) {
-    lod = -1;
+  zone = g_nCameraVisZone[0];
+  if (zone >= g_nVisZoneCount) {
+    zone = -1;
   }
-  EmitStaticActorMeshList(lod, (MATRIX *)&g_nCameraFloorSurfaceType[-0x10],
-                          (MATRIX *)&g_nCameraFloorSurfaceType[-0x15]);
+  EmitStaticActorMeshList(zone, (MATRIX *)&g_nCameraVisZone[-0x10],
+                          (MATRIX *)&g_nCameraVisZone[-0x15]);
 }

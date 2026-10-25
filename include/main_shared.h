@@ -56,7 +56,7 @@ extern int g_anLevelEscapeRunCount;
 
 extern int g_nLevelEscapeRunCountLane1;
 
-extern int g_nCameraFloorSurfaceType;
+extern int g_nCameraVisZone;
 
 /* array alias for the sub-frame accumulator at 0x80078a7c (see
    config/symbol_addrs.txt) -- forces the held base register, matching the
@@ -320,7 +320,7 @@ extern int g_nCreditsPageIndex;
 extern int g_nCreditsMode;
 extern int g_nScreenFadeLevel;
 extern int g_nLevelIntroParallaxCountdown;
-extern int g_nStaticMeshLodCutoff;
+extern int g_nVisZoneCount;
 
 /* C library. */
 extern int abs(int x);

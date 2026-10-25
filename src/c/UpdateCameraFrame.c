@@ -63,10 +63,10 @@ void UpdateCameraFrame(void) {
     }
     if (g_nCdStreamState < 0) {
       if (FindWorldFloorBelowPoint((uint *)g_anCameraPos) != 0) {
-        g_nCameraFloorSurfaceType = g_nWorldFloorSurfaceType;
+        g_nCameraVisZone = g_nWorldFloorVisZone;
       }
-      if (g_nCameraFloorSurfaceType >= g_nStaticMeshLodCutoff) {
-        g_nCameraFloorSurfaceType = -1;
+      if (g_nCameraVisZone >= g_nVisZoneCount) {
+        g_nCameraVisZone = -1;
       }
       g_apScriptedCameraViewBlock[0] = 0;
     }

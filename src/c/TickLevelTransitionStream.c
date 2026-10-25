@@ -106,13 +106,13 @@ void TickLevelTransitionStream(int full) {
                 g_nLevelSampleBankCount);
     CopyWords(p, g_pLevelSampleBankHeader, g_nLevelSampleBankCount);
     RelocateLevelSampleBank(p, 0);
-    g_nCameraFloorSurfaceType = -1;
+    g_nCameraVisZone = -1;
     g_nCdStreamState = 2;
   } break;
   case 1:
     StopAllSoundExceptMask(0);
     g_nWorldRenderMeshChunkCount = 0;
-    g_nCameraFloorSurfaceType = -1;
+    g_nCameraVisZone = -1;
     g_nCdStreamState++;
   case 2: {
     int world;
