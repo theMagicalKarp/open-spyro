@@ -649,7 +649,7 @@ extern void *g_pfnLevelSpawnActor;      /* 0x800758cc */
 extern byte g_abWorldBalloonistState[6];         /* 0x800758d0 per-homeworld balloonist progress: 0 unmet, 1 talked, 2 travel unlocked (ResetLevelState seeds [0] = 2, the unlock cheat fills all 2, homeworld UpdateActors steps it and picks the dialogue page) */
 extern int g_nPadActAlignedFlag;             /* 0x800758e0 */
 extern void *g_pfnLevelEmitParticles; /* 0x800758e4 */
-extern int g_nSparxFoodCount;                /* 0x800758e8 */
+extern int g_nSparxFoodCount;                /* 0x800758e8: type-15 pickups collected; every 20 become an extra life (UpdateHudCounters) */
 extern int g_nLevelSelectWorldIndex;         /* 0x800758ec */
 extern int g_nLevelSelectSubIndex;           /* 0x800758f0 */
 extern int g_nScriptedMobViewPitchTilt;      /* 0x800758fc */

@@ -322,7 +322,7 @@ void Level17_UpdateActors(void) {
     }
 
     /* Dragon egg (ShotState). */
-    case 34: {
+    case ACTOR_TYPE_DRAGON_EGG: {
       ShotState *st;
 
       st = (ShotState *)actor->state;

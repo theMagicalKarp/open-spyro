@@ -108,8 +108,9 @@ typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
  * down are named; the rest stay numeric in the per-level switches. */
 enum ActorType {
   ACTOR_TYPE_EXTRA_LIFE = 14,      /* collected: g_nExtraLives + 1 */
-  ACTOR_TYPE_SPARX_FOOD = 15,      /* collected: g_nSparxFoodCount + 1 */
+  ACTOR_TYPE_SPARX_FOOD = 15,      /* collected: g_nSparxFoodCount + 1 (20: a life) */
   ACTOR_TYPE_BUTTERFLY = 16,       /* eaten by Sparx: g_nSparxHealth + 1 */
+  ACTOR_TYPE_DRAGON_EGG = 34,      /* recovered egg: rises, rolls the HUD egg tally */
   ACTOR_TYPE_GEM_1 = 0x53,         /* gems, by CollectPickupActor's value */
   ACTOR_TYPE_GEM_2 = 0x54,
   ACTOR_TYPE_GEM_5 = 0x55,

@@ -117,10 +117,10 @@ void Level21_UpdateActors(void) {
 
   /* Scratch vectors, in the original's slot order (shared slots by sp offset). */
   int f056[3];
-  int vortexCentre[3];
-  int vortexRise[3];
+  int eggCentre[3];
+  int eggRise[3];
   int f104[3];
-  int vortexFxPos[3];
+  int eggFxPos[3];
   int f136[3];
   int throwGripMid[3];
   int f168[3];
@@ -518,9 +518,9 @@ void Level21_UpdateActors(void) {
       break;
     }
 
-    /* Vortex pad (VortexState): spins Spyro up and out of the level. */
-    case 34: {
-      VortexState *st = actor->state;
+    /* Recovered dragon egg (EggRiseState): spirals up, flies to Spyro, then rolls the HUD egg counter. */
+    case ACTOR_TYPE_DRAGON_EGG: {
+      EggRiseState *st = actor->state;
       unsigned int phase = actor->mode;
 
       if (phase != 0 && phase < 5) {
@@ -597,12 +597,12 @@ void Level21_UpdateActors(void) {
         st->phase += g_nFrameStep;
 
         if (st->phase < 0x40) {
-          SVectorToVectorShl2(vortexCentre, st->centre);
-          SVectorToVectorShl2(vortexRise, st->apex);
-          SubtractVector(vortexRise, vortexRise, vortexCentre);
-          ScaleVector3Sat(vortexRise, vortexRise, st->phase);
-          RShiftVector3(vortexRise, 6);
-          AddVector(&actor->posX, vortexCentre, vortexRise);
+          SVectorToVectorShl2(eggCentre, st->centre);
+          SVectorToVectorShl2(eggRise, st->apex);
+          SubtractVector(eggRise, eggRise, eggCentre);
+          ScaleVector3Sat(eggRise, eggRise, st->phase);
+          RShiftVector3(eggRise, 6);
+          AddVector(&actor->posX, eggCentre, eggRise);
           actor->rotZ += g_nFrameStep * 4;
         } else {
           CopyVector(f104, &spy->posX);
@@ -646,9 +646,9 @@ void Level21_UpdateActors(void) {
       }
 
       case 5: {
-        SubtractVector(vortexFxPos, &actor->posX, &CAM.posX);
-        WorldToCameraRotate(vortexFxPos, vortexFxPos);
-        g_pfnLevelEmitParticles(0x10, 0x4D, vortexFxPos, 0);
+        SubtractVector(eggFxPos, &actor->posX, &CAM.posX);
+        WorldToCameraRotate(eggFxPos, eggFxPos);
+        g_pfnLevelEmitParticles(0x10, 0x4D, eggFxPos, 0);
         g_nGameplayBlocked = 0;
         ZeroVector(&g_nSpyroSwingEulerPitchTarget);
         CommitActorKillGems(0, st->idx);

@@ -166,7 +166,7 @@ void Level7_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->visible = 1;
       rec->u.spark.depthBias = 4;
-      if (((Actor *)pos)->type == 0x22) {
+      if (((Actor *)pos)->type == ACTOR_TYPE_DRAGON_EGG) {
         CopyVector(v1, &((Actor *)pos)->posX);
       } else if (((Actor *)pos)->type == 0xAD || ((Actor *)pos)->type == 0xB5) {
         if ((effectArg >> 24) < 6) {

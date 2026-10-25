@@ -6,15 +6,16 @@
 #ifndef OPEN_SPYRO_LEVEL_ACTOR_STATES_H
 #define OPEN_SPYRO_LEVEL_ACTOR_STATES_H
 
-/* Case 34 — the vortex/whirlwind pad that lifts Spyro out of the level. */
-typedef struct VortexState {
+/* Case 34 — a recovered dragon egg: spirals up off its spot, flies to just
+ * above Spyro, then requests the HUD egg-counter roll (Cross skips). */
+typedef struct EggRiseState {
   int idx;               /* 0x00 */
-  short centre[3];       /* 0x04 pad centre */
-  short apex[3];         /* 0x0A rise target */
+  short centre[3];       /* 0x04 where it rose from (spiral centre) */
+  short apex[3];         /* 0x0A the point above Spyro it flies to */
   unsigned short radius; /* 0x10 */
   unsigned char phase;   /* 0x12 */
   unsigned char angle;   /* 0x13 */
-} VortexState;
+} EggRiseState;
 
 /* Cases 14/15/83..87 — collectibles: 14 extra life, 15 Sparx food, 83..87
  * gems (CollectPickupActor). They bounce out of a broken chest or fodder,
