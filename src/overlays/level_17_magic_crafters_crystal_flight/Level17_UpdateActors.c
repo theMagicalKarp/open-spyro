@@ -27,6 +27,7 @@
 #include "match_asm.h"
 #include "pad_buttons.h"
 #include "spyro_state.h"
+#include "level_sfx.h"
 
 /* Level17_UpdateActors -- per-frame actor update for level 11 (Night Flight).
  *
@@ -138,13 +139,13 @@ void Level17_UpdateActors(void) {
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
    * pass. */
   BuildActiveActorList();
-  TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, 0);
+  TickActorAnims(g_apActiveActorList, 0);
 
   if (g_nFrameStep >= 3) {
-    TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, g_nFrameStep == 3 ? 0x80000001 : 0x80000000);
+    TickActorAnims(g_apActiveActorList, g_nFrameStep == 3 ? 0x80000001 : 0x80000000);
   }
 
-  actorList = g_apSaveMenuAnimActorList;
+  actorList = g_apActiveActorList;
   sh6 = 6;
   base = (char *)&g_nSparxHealth;
 
@@ -770,7 +771,7 @@ void Level17_UpdateActors(void) {
               g_nSfxOverrideVolL = 0x3CCC >> (3 - st->count);
               g_nSfxOverrideVolR = 0x3CCC >> (3 - st->count);
 
-              PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, 8, &actor->sfxSlot);
 
               if (ReflectVectorOffNormal(st->vel, svH, st->vel)) {
                 st->count--;
@@ -874,7 +875,7 @@ void Level17_UpdateActors(void) {
         }
 
         if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 16, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 16, 0);
           RefreshActorDerivedState(actor, 4);
           g_pfnLevelEmitParticles(16, 70, &actor->posX, (void *)8);
           g_pfnLevelEmitParticles(16, 70, &actor->posX, (void *)0x10);
@@ -887,7 +888,7 @@ void Level17_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         } else if (actor->type == ACTOR_TYPE_SPARX_FOOD) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 16, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 16, 0);
           g_nSparxFoodCount++;
 
           DespawnActorRecord(actor);
@@ -1034,7 +1035,7 @@ void Level17_UpdateActors(void) {
         }
         case 1: {
           SPY.sparxHealth++;
-          PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
           actor->subMode++;
           DespawnActorRecord(st->target);
           break;
@@ -1078,7 +1079,7 @@ void Level17_UpdateActors(void) {
               g_nSfxOverrideFlags = 1;
               g_nSfxOverrideVolR = 0x3600;
               g_nSfxOverrideVolL = 0x3600;
-              PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, 8, &actor->sfxSlot);
             }
           } else {
             int dcheck = 310;
@@ -1201,7 +1202,7 @@ void Level17_UpdateActors(void) {
         dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
         if (dz > 0 ? dz < 0x200
                    : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x200) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
           RefreshActorDerivedState(actor, 4);
 
           for (i = 0; i < 6; i++) {

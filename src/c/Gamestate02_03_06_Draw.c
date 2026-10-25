@@ -1047,7 +1047,7 @@ void Gamestate02_03_06_Draw(void) {
     RasterizeSpritePrimQueue();
     DrawOTag(LinkOTPrimitives(0));
     DrawSync(0);
-    if (g_nDeathRespawnPending != 0) {
+    if (g_nDemoActive != 0) {
       VSync(0);
     }
     g_nVsyncFrameEndCount = VSync(-1);

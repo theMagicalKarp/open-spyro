@@ -4452,27 +4452,27 @@ dlabel D_8006EE70
     /* 5F678 8006EE78 00080000 */ .word 0x00000800
 enddlabel D_8006EE70
 
-nonmatching g_anDeathTryLevelIds
+nonmatching g_anDemoLevelIds
 
-dlabel g_anDeathTryLevelIds
+dlabel g_anDemoLevelIds
     /* 5F67C 8006EE7C 0B000000 */ .word 0x0000000B
     /* 5F680 8006EE80 18000000 */ .word 0x00000018
     /* 5F684 8006EE84 37000000 */ .word 0x00000037
     /* 5F688 8006EE88 21000000 */ .word 0x00000021
-enddlabel g_anDeathTryLevelIds
+enddlabel g_anDemoLevelIds
 
-nonmatching g_anDeathReplayFrameThreshold
+nonmatching g_anDemoLengthFrames
 
-dlabel g_anDeathReplayFrameThreshold
+dlabel g_anDemoLengthFrames
     /* 5F68C 8006EE8C 5C030000 */ .word 0x0000035C
     /* 5F690 8006EE90 4C040000 */ .word 0x0000044C
     /* 5F694 8006EE94 98030000 */ .word 0x00000398
     /* 5F698 8006EE98 DE030000 */ .word 0x000003DE
-enddlabel g_anDeathReplayFrameThreshold
+enddlabel g_anDemoLengthFrames
 
-nonmatching g_anDeathReplaySpawnTable
+nonmatching g_anDemoStartPose
 
-dlabel g_anDeathReplaySpawnTable
+dlabel g_anDemoStartPose
     /* 5F69C 8006EE9C BE9E0200 */ .word 0x00029EBE
     /* 5F6A0 8006EEA0 4F250200 */ .word 0x0002254F
     /* 5F6A4 8006EEA4 6A510000 */ .word 0x0000516A
@@ -4489,7 +4489,7 @@ dlabel g_anDeathReplaySpawnTable
     /* 5F6D0 8006EED0 60390100 */ .word 0x00013960
     /* 5F6D4 8006EED4 6B6D0000 */ .word 0x00006D6B
     /* 5F6D8 8006EED8 AB000000 */ .word 0x000000AB
-enddlabel g_anDeathReplaySpawnTable
+enddlabel g_anDemoStartPose
 
 nonmatching g_anCdAudioTrackLengths
 
@@ -6500,12 +6500,12 @@ dlabel D_8006FD2C
     /* 608F0 800700F0 01000000 */ .word 0x00000001
 enddlabel D_8006FD2C
 
-nonmatching g_apSaveMenuAnimActorList
+nonmatching g_apActiveActorList
 
-dlabel g_apSaveMenuAnimActorList
+dlabel g_apActiveActorList
     /* 608F4 800700F4 02000600 */ .word 0x00060002
     /* 608F8 800700F8 00202020 */ .word 0x20202000
-enddlabel g_apSaveMenuAnimActorList
+enddlabel g_apActiveActorList
 
 .align 2
 nonmatching D_800700FC
@@ -14380,11 +14380,11 @@ dlabel g_pSpriteRecordWriteCursor
     /* 65F10 80075710 00000000 */ .word 0x00000000
 enddlabel g_pSpriteRecordWriteCursor
 
-nonmatching g_nDeathState
+nonmatching g_nDemoMode
 
-dlabel g_nDeathState
+dlabel g_nDemoMode
     /* 65F14 80075714 00000000 */ .word 0x00000000
-enddlabel g_nDeathState
+enddlabel g_nDemoMode
 
 nonmatching g_nGroundSurfaceType
 
@@ -14549,11 +14549,11 @@ dlabel g_pPrimBufferLimit
     /* 65F80 80075780 00000000 */ .word 0x00000000
 enddlabel g_pPrimBufferLimit
 
-nonmatching g_nDeathRespawnPending
+nonmatching g_nDemoActive
 
-dlabel g_nDeathRespawnPending
+dlabel g_nDemoActive
     /* 65F84 80075784 00000000 */ .word 0x00000000
-enddlabel g_nDeathRespawnPending
+enddlabel g_nDemoActive
 
 nonmatching g_nSpyroIdleAnimTimeout
 
@@ -14634,11 +14634,11 @@ dlabel g_nLevelPickupTableCount
     /* 65FB4 800757B4 00000000 */ .word 0x00000000
 enddlabel g_nLevelPickupTableCount
 
-nonmatching g_nDeathTryIndex
+nonmatching g_nDemoIndex
 
-dlabel g_nDeathTryIndex
+dlabel g_nDemoIndex
     /* 65FB8 800757B8 00000000 */ .word 0x00000000
-enddlabel g_nDeathTryIndex
+enddlabel g_nDemoIndex
 
 nonmatching g_pCreditsScrollHeader
 

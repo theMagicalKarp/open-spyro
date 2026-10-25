@@ -31,7 +31,7 @@ extern int g_anActorCutsceneLandingY[];
 extern char *g_apWorldNameByLevelTens[];                               /* world names */
 extern char *g_apLevelNameByWorldRow[];                               /* level names */
 extern unsigned char g_abBalloonistDialoguePageEnds[];                       /* dialogue page end line */
-extern int g_pSaveMenuAnimActorList1;
+extern int g_pActiveActorList1;
 extern int g_abActorCutsceneActorSnapshot[];
 extern int g_bDebugNoDepletion;
 extern unsigned char g_bWorldBalloonistState1;                         /* per-world "seen it" flags */
@@ -125,7 +125,7 @@ extern int g_nCollisionProbeVecY;
 extern int g_nCollisionProbeVecZ;
 extern int g_nCollisionResolvedY;                        /* ..y */
 extern int g_nCurrentLevelId;                            /* current level id */
-extern int g_nDeathRespawnPending;
+extern int g_nDemoActive;
 extern int g_nExtraLives;                                /* life count, capped at 99 */
 extern int g_nFlightQuitFlag;
 extern int g_nFlightResultsRevealStep;                   /* reveal sound step */

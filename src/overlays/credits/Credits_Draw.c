@@ -103,7 +103,7 @@ void Credits_Draw(void) {
     EmitStaticActorMeshList(-1, g_anCameraViewMtx, (char *)g_anCameraViewMtx - 0x14);
   }
   DrawSync(0);
-  if (g_nDeathRespawnPending != 0) {
+  if (g_nDemoActive != 0) {
     VSync(0);
   }
   {

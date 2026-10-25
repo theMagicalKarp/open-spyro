@@ -764,7 +764,7 @@ void Level23_FlightResults_Draw(void)
   }
   DrawOTag(LinkOTPrimitives(0));
   DrawSync(0);
-  if (g_nDeathRespawnPending != 0)
+  if (g_nDemoActive != 0)
   {
     VSync(0);
   }

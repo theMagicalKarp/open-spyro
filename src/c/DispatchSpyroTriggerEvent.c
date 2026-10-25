@@ -13,16 +13,18 @@ typedef struct {
 #define ENT (((int **)g_apPortals)[mob])
 #define FLAGS (((TriggerFlags *)g_adwSpyroTriggerEventBlock)->v)
 
-/* Moby record reached through g_pActorListBase (0x58 bytes). */
+/* The portal guide actor (type 398) reached through g_pActorListBase (0x58
+   bytes, the Actor fields this function writes). */
 typedef struct {
-  int *pos; /* 0x00 */
+  int *state; /* 0x00 PortalState; words 1..3 = its offset */
   unsigned char pad04[0x44];
-  unsigned char active;  /* 0x48 */
-  unsigned char flipped; /* 0x49 */
+  unsigned char mode;    /* 0x48 1 wakes the guide */
+  unsigned char subMode; /* 0x49 side of the portal plane Spyro entered from */
   unsigned char pad4a[8];
-  unsigned char fade; /* 0x52 */
+  unsigned char
+      updateDist; /* 0x52 activation radius >> 10; 0xFF keeps it updating */
   unsigned char pad53[5];
-} TriggerActor;
+} PortalGuideActor;
 
 /* 0x80056f64 (0x41c): fires trigger region `idx` for `event` (1 = enter,
    2 = inside). The region record's type byte (TriggerRegionType) picks the
@@ -101,16 +103,16 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
       g_nLevelTransitionPhase = 0;
       break;
     }
-    ((TriggerActor *)g_pActorListBase)[a].active = 1;
-    ((TriggerActor *)g_pActorListBase)[a].fade = 0xFF;
-    p = ((TriggerActor *)g_pActorListBase)[a].pos;
+    ((PortalGuideActor *)g_pActorListBase)[a].mode = 1;
+    ((PortalGuideActor *)g_pActorListBase)[a].updateDist = 0xFF;
+    p = ((PortalGuideActor *)g_pActorListBase)[a].state;
     if (d < 0) {
-      ((TriggerActor *)g_pActorListBase)[a].flipped = 1;
+      ((PortalGuideActor *)g_pActorListBase)[a].subMode = 1;
       p[1] = -ENT[2] >> 1;
       p[2] = -ENT[3] >> 1;
       p[3] = -ENT[4] >> 1;
     } else {
-      ((TriggerActor *)g_pActorListBase)[a].flipped = 0;
+      ((PortalGuideActor *)g_pActorListBase)[a].subMode = 0;
       p[1] = ENT[2] >> 1;
       p[2] = ENT[3] >> 1;
       p[3] = ENT[4] >> 1;

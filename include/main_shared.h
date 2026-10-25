@@ -175,7 +175,7 @@ extern void TickSpyroAnimLayer1(void);
 
 extern void TickSpyroAnimLayer2(void);
 
-extern void BeginGemCutscene(void);
+extern void BeginCutscene(void);
 
 extern short
     g_nCdDaVolumeCurrent;  /* live CD-DA volume (fade ramp current value) */
@@ -263,13 +263,13 @@ extern int g_nSaveMenuCameraFromZ;
 extern int g_nSaveMenuCameraToAngle;
 extern int g_nSaveMenuCameraToDist;
 extern int g_nSaveMenuCameraToZ;
-extern int g_nSaveMenuDragonFromZ;
-extern int g_nSaveMenuDragonToAngle;
-extern int g_nSaveMenuDragonToDist;
-extern int g_nSaveMenuDragonToZ;
-extern int g_nSaveMenuOverlayFromAngle;
-extern int g_nSaveMenuOverlayToAngle;
-extern int g_nSaveMenuOverlayToDist;
+extern int g_nSaveMenuHostFromZ;
+extern int g_nSaveMenuHostToAngle;
+extern int g_nSaveMenuHostToDist;
+extern int g_nSaveMenuHostToZ;
+extern int g_nSaveMenuSparxFromAngle;
+extern int g_nSaveMenuSparxToAngle;
+extern int g_nSaveMenuSparxToDist;
 extern int g_nSaveMenuSpyroToYaw;
 extern int g_nSaveSlotLoaded;
 extern int g_nSpyroAnimLayer2Request;

@@ -628,7 +628,7 @@ RotateLightVectorXZ:
     Do not enable this wip in a multi-function build: it overflows its text slot
     (`ld: cannot move location counter backwards ... 80058d68 -> 80058d64`) and
     every other diff in that build then reads stale bytes.
-BeginGemCutscene:
+BeginCutscene:
   verdict: matched
   class: "A171 (cse canonicity) + A172 (allocno live-range demotion)"
   date: 2026-08-10
@@ -4073,7 +4073,7 @@ harvest_inventory_staleness_2026_09_15:
     Seven of the seventeen parks named in cookbook C's 2026-08-24/08-25
     rankings no longer have a `.c.wip` at all — `TurnSpyroTowardMoveTargetWithLean`
     (listed there as "2/92, the closest thing on the board"), `func_8005FBB4`,
-    `SetSpawnAnchorFromActor`, `BeginGemCutscene`, `AlignSpyroBodyToVelocity`,
+    `SetSpawnAnchorFromActor`, `BeginCutscene`, `AlignSpyroBodyToVelocity`,
     `ApplyPadInputToSpyroBodyYaw` and `ComputeVoicePanAndFalloff`. Linked
     re-measure of the ten that remain, 2026-09-15: SteerActorYawTowardSpyro 4/152,
     ApplySaveGameBuffer 4/180, IsPointInRotatedBox 6/66, BeginDragonRescue 7/146,
@@ -4415,7 +4415,7 @@ func_8002CCC8_2026_09_22:
   note: >-
     31 -> 16/217 on the B23 hoist lever: `yaw` load above the byte-store block,
     knot 2 closed by batch-reading actor+0x14/g_nSaveMenuSpyroToYaw into locals above
-    the D3C/D34/D38 stores plus a second barrier before `g_nSaveMenuDragonToZ = ...`.
+    the D3C/D34/D38 stores plus a second barrier before `g_nSaveMenuHostToZ = ...`.
     posY above the barrier (3 positions) = 20; in-place `py = rec[0x10] - py`
     byte-identical. Next: -dl on the ArcTan2 block.
 
@@ -5096,7 +5096,7 @@ TickGemPickupAssetStream_2026_10_06_b:
   verdict: parked
   class: "F8 sched: case-2 split-arm camera-path block (the /24 multiply must issue before the head/offset loads) + the case-4 WriteSpuRam size operand load order"
   date: 2026-10-06
-  note: "21/512 length-exact. The case 3/4 StartCdReadAsync arg orders closed with CheckDeathPlane's recipe (ordered *(volatile T *)& reads into block locals). Volatile reads in the case-2 split arm or WriteSpuRam make it worse."
+  note: "21/512 length-exact. The case 3/4 StartCdReadAsync arg orders closed with TickDemoPlayback's recipe (ordered *(volatile T *)& reads into block locals). Volatile reads in the case-2 split arm or WriteSpuRam make it worse."
 DispatchSpyroPhysicsByState_2026_10_06:
   verdict: viable
   class: "B8 retired; 45-way Spyro physics switch, 75 calls, slope-speed interpolation math"

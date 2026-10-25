@@ -42,6 +42,7 @@
 #include "pad_buttons.h"
 #include "spyro_state.h"
 #include "camera.h"
+#include "level_sfx.h"
 
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
@@ -159,13 +160,13 @@ void Level26_UpdateActors(void) {
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
    * pass. */
   BuildActiveActorList();
-  TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, 0);
+  TickActorAnims(g_apActiveActorList, 0);
 
   if (g_nFrameStep >= 3) {
-    TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, g_nFrameStep == 3 ? 0x80000001 : 0x80000000);
+    TickActorAnims(g_apActiveActorList, g_nFrameStep == 3 ? 0x80000001 : 0x80000000);
   }
 
-  actorList = g_apSaveMenuAnimActorList;
+  actorList = g_apActiveActorList;
   base = (char *)&g_nSpyroWorldPosZ;
 
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
@@ -1292,7 +1293,7 @@ void Level26_UpdateActors(void) {
             g_nSfxOverrideFlags = 1;
             g_nSfxOverrideVolL = 0x3CCC >> (3 - st->bounce);
             g_nSfxOverrideVolR = 0x3CCC >> (3 - st->bounce);
-            PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, 8, &actor->sfxSlot);
 
             if (ReflectVectorOffNormal((int *)st, t232, (int *)st) != 0) {
               st->bounce -= 1;
@@ -1412,7 +1413,7 @@ void Level26_UpdateActors(void) {
             }
 
             if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
-              PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
               RefreshActorDerivedState(actor, 4);
               g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (int *)8);
               g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (int *)0x10);
@@ -1425,7 +1426,7 @@ void Level26_UpdateActors(void) {
             }
 
             if (actor->type == ACTOR_TYPE_SPARX_FOOD) {
-              PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
               g_nSparxFoodCount += 1;
               DespawnActorRecord(actor);
             } else {
@@ -1535,12 +1536,11 @@ void Level26_UpdateActors(void) {
       break;
     }
 
-    /* Lift plate (PlateState): rises once its trigger actor is gone, waits,
-     * then drops back. */
-    case 110: {
-      PlateState *st = actor->state;
-      Actor *trigger = &g_pActorListBase[st->trigger];
-      Actor *rider = &g_pActorListBase[st->rider];
+    /* Save-prompt host (SaveHostState). */
+    case ACTOR_TYPE_SAVE_HOST: {
+      SaveHostState *st = actor->state;
+      Actor *trigger = &g_pActorListBase[st->armer];
+      Actor *rider = &g_pActorListBase[st->anchor];
 
       switch (actor->mode) {
       case 0:
@@ -1569,10 +1569,10 @@ void Level26_UpdateActors(void) {
             int drop = height - SPY.posZ;
 
             if (drop > 0 ? drop < 0x800 : (SPY.posZ - height) < 0x800) {
-              if (st->locked == 0 || rider->mode == 1) {
+              if (st->prompted == 0 || rider->mode == 1) {
                 int *at = &actor->posX;
 
-                st->locked = 0;
+                st->prompted = 0;
                 actor->posZ = st->baseZ + 0x80;
                 actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                              spy->posY - actor->posY, 0) -
@@ -1598,7 +1598,7 @@ void Level26_UpdateActors(void) {
         } else {
           actor->mode = 4;
           st->timer = 0;
-          st->step = 0x1E;
+          st->wanderTimer = 0x1E;
         }
         break;
 
@@ -1617,7 +1617,7 @@ void Level26_UpdateActors(void) {
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
             (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
           actor->mode = 6;
-          st->locked = 1;
+          st->prompted = 1;
           BeginSaveMenuFromWorld(actor);
           break;
         }
@@ -1630,23 +1630,23 @@ void Level26_UpdateActors(void) {
           break;
         }
 
-        st->step -= 1;
-        if (st->step == 0) {
+        st->wanderTimer -= 1;
+        if (st->wanderTimer == 0) {
           int reach = (GetRandomU32() & 0x3F) + 0x140;
           int bearing = ArcTan2(spy->posX - rider->posX,
                                       spy->posY - rider->posY, 0);
           int aim = (bearing + (GetRandomU32() & 0xF)) - 8;
 
           EBB_BREAK();
-          CopyVector(st->from, &rider->posX);
+          CopyVector(st->wanderTo, &rider->posX);
           aim &= 0xFF;
           aim *= 0x10;
           actor->mode = 5;
-          st->from[0] -= (LookupCosine(aim) * reach) >> 12;
-          st->from[1] -= (LookupSine(aim) * reach) >> 12;
-          st->yaw = ArcTan2(spy->posX - st->from[0],
-                                  spy->posY - st->from[1], 0);
-          st->step = 0;
+          st->wanderTo[0] -= (LookupCosine(aim) * reach) >> 12;
+          st->wanderTo[1] -= (LookupSine(aim) * reach) >> 12;
+          st->faceYaw = ArcTan2(spy->posX - st->wanderTo[0],
+                                  spy->posY - st->wanderTo[1], 0);
+          st->wanderTimer = 0;
         }
         break;
       }
@@ -1665,7 +1665,7 @@ void Level26_UpdateActors(void) {
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
             (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
           actor->mode = 6;
-          st->locked = 1;
+          st->prompted = 1;
           BeginSaveMenuFromWorld(actor);
           break;
         }
@@ -1683,21 +1683,21 @@ void Level26_UpdateActors(void) {
           int wSpan;
           int wDen;
 
-          st->step += 1;
-          SubtractVector(t264, st->from, here);
-          turn = SignedAngleDelta8(st->yaw, actor->rotZ);
-          w0 = LookupCosine((st->step - 1) << 7);
-          wSpan = w0 - LookupCosine(st->step << 7);
-          wDen = LookupCosine((st->step - 1) << 7) + 0x1000;
+          st->wanderTimer += 1;
+          SubtractVector(t264, st->wanderTo, here);
+          turn = SignedAngleDelta8(st->faceYaw, actor->rotZ);
+          w0 = LookupCosine((st->wanderTimer - 1) << 7);
+          wSpan = w0 - LookupCosine(st->wanderTimer << 7);
+          wDen = LookupCosine((st->wanderTimer - 1) << 7) + 0x1000;
           actor->posX += (t264[0] * wSpan) / wDen;
           actor->posY += (t264[1] * wSpan) / wDen;
           actor->rotZ += (turn * wSpan) / wDen;
           FindGroundHeightBelow(here, 0x1000);
           EncodeCachedVecToActorDirCode(actor);
 
-          if (st->step == 0x10) {
+          if (st->wanderTimer == 0x10) {
             actor->mode = 4;
-            st->step = (GetRandomU32() & 0x1F) + 0x1E;
+            st->wanderTimer = (GetRandomU32() & 0x1F) + 0x1E;
           }
         }
         break;
@@ -1863,7 +1863,7 @@ void Level26_UpdateActors(void) {
 
           case 1:
             g_anSparxHealthBlock[0] += 1;
-            PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
             actor->subMode += 1;
             DespawnActorRecord(st->target);
             break;
@@ -1905,11 +1905,11 @@ void Level26_UpdateActors(void) {
               st->target = 0;
               EBB_BREAK();
 
-              if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[0x2F]) == 0) {
+              if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[SFX_GEM_BOUNCE]) == 0) {
                 g_nSfxOverrideFlags = 1;
                 g_nSfxOverrideVolR = 0x3600;
                 g_nSfxOverrideVolL = 0x3600;
-                PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
+                PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, 8, &actor->sfxSlot);
               }
             } else {
               int lim = 0x136;
@@ -2109,7 +2109,7 @@ void Level26_UpdateActors(void) {
           if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
             int i;
 
-            PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
             RefreshActorDerivedState(actor, 4);
 
             for (i = 0; i < 6; i++) {

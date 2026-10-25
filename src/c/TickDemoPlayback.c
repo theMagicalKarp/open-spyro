@@ -9,28 +9,28 @@
    address. */
 #define BANK (*(char *volatile *)&g_pLevelSampleBankEntries)
 
-/* Death-plane watcher (GS state-0 path, g_nDeathState != 0). Ramps the fade
-   frame each tick; at 16 fades to black, tears down the level, sync-loads the
-   death-cutscene bundle, sets g_Gamestate=0xE (gem cutscene) and advances the
-   death-try index. Returns 1 when the death sequence fires, else 0.
+/* Attract-demo watcher (gameplay path, g_nDemoMode != 0). Plays back the
+   recorded pad; once the demo runs out (or a real button is pressed) it ramps
+   the fade, and at 16 tears down the level, sync-loads cutscene bundle 0 (the
+   title backdrop), enters GS_CUTSCENE and advances g_nDemoIndex. Returns 1
+   when the demo ended this frame, else 0.
    (0x800334d4, 904 bytes.) */
-int CheckDeathPlane(void) {
+int TickDemoPlayback(void) {
   short rect[8];
 
-  SamplePadForDeathReplayFrame();
-  if (g_nDeathState != 2) {
-    if (g_nDeathFadeFrame == 0) {
-      if (g_anDeathReplayFrameThreshold[g_nDeathTryIndex] - 8 <=
-              (int)g_dwGamestateFrames ||
+  SampleDemoPadFrame();
+  if (g_nDemoMode != 2) {
+    if (g_nDemoExitFadeFrame == 0) {
+      if (g_anDemoLengthFrames[g_nDemoIndex] - 8 <= (int)g_dwGamestateFrames ||
           ((int)g_dwGamestateFrames > 0xf && g_abPadRawReport[0] == 0 &&
            (g_abPadRawReport[2] != 0xff || g_abPadRawReport[3] != 0xff))) {
-        g_nDeathFadeFrame = 1;
+        g_nDemoExitFadeFrame = 1;
       }
     } else {
-      g_nDeathFadeFrame = g_nDeathFadeFrame + 1;
-      g_nGenericCountdown = g_nDeathFadeFrame * 2;
+      g_nDemoExitFadeFrame = g_nDemoExitFadeFrame + 1;
+      g_nGenericCountdown = g_nDemoExitFadeFrame * 2;
     }
-    if (g_nDeathFadeFrame == 0x10) {
+    if (g_nDemoExitFadeFrame == 0x10) {
       StopAllSoundExceptMask(0);
       TickSpuPerFrame();
       rect[2] = 0x200;
@@ -45,11 +45,11 @@ int CheckDeathPlane(void) {
       g_nVibrationLevel = 0;
       g_nPulseRumbleTimer = 0;
       g_nPulseRumbleAmount = 0;
-      g_nDeathState = 0;
+      g_nDemoMode = 0;
       g_nCdStreamState = 0;
       g_nCurrentWorldId = 0;
       g_nFlightLevelActive = 0;
-      g_nDeathRespawnPending = 0;
+      g_nDemoActive = 0;
       {
         int lba = *(volatile int *)&g_nCdBaseLba;
         int count = *(volatile int *)&g_nLevelLoadChunkSize;
@@ -61,11 +61,10 @@ int CheckDeathPlane(void) {
         TickWorldBundleLoadStream();
         TickCdMusicStream();
       }
-      g_nGamestate = GS_GEM_CUTSCENE;
+      g_nGamestate = GS_CUTSCENE;
       g_nGenericCountdown = 0xf;
       BeginStoryIntro();
-      if ((int)g_dwGamestateFrames >=
-          g_anDeathReplayFrameThreshold[g_nDeathTryIndex]) {
+      if ((int)g_dwGamestateFrames >= g_anDemoLengthFrames[g_nDemoIndex]) {
         *(int *)g_pPathTableHead = 0x2d0;
         g_pLevelSampleBankEntries = g_CutsceneSoundDef;
         SAMPLE_RAW(BANK, int, nSampleAddr) = 0x262d0;
@@ -91,7 +90,7 @@ int CheckDeathPlane(void) {
         StartCdReadAsync(lba, dst, 0x40000, offset, 600);
       }
       g_nGamePaused = 1;
-      g_nDeathTryIndex = (g_nDeathTryIndex + 1) & 3;
+      g_nDemoIndex = (g_nDemoIndex + 1) & 3;
       return 1;
     }
   }

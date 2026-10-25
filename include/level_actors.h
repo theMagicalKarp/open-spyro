@@ -26,7 +26,7 @@ extern short g_anSineLut[];
 extern int g_anSpyroMotionVec;                               /* look-at offset */
 extern int g_anSpyroWorldPos;                                /* Spyro, as a plain symbol (the loop's spy carrier) */
 extern int g_anWorldPersistentFlags[];                       /* per-mode "time attack" flag */
-extern Actor *g_apSaveMenuAnimActorList[];                   /* live actor list, 0-terminated */
+extern Actor *g_apActiveActorList[];                   /* live actor list, 0-terminated */
 extern int g_dwPadPressed;                                   /* pad buttons pressed; 0x40 skips the egg */
 extern short g_nCameraEulerPitch;
 extern int g_nCameraScriptStickRequestY[];

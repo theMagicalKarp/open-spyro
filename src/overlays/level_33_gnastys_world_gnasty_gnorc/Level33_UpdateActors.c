@@ -35,6 +35,7 @@
 #include "pad_buttons.h"
 #include "spyro_state.h"
 #include "camera.h"
+#include "level_sfx.h"
 
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
@@ -266,13 +267,13 @@ void Level33_UpdateActors(void) {
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
    * pass. */
   BuildActiveActorList();
-  TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, 0);
+  TickActorAnims(g_apActiveActorList, 0);
 
   if (g_nFrameStep >= 3) {
-    TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, g_nFrameStep == 3 ? 0x80000001 : 0x80000000);
+    TickActorAnims(g_apActiveActorList, g_nFrameStep == 3 ? 0x80000001 : 0x80000000);
   }
 
-  actorList = g_apSaveMenuAnimActorList;
+  actorList = g_apActiveActorList;
   base = (char *)g_anSparxHealthBlock;
 
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
@@ -1009,7 +1010,7 @@ void Level33_UpdateActors(void) {
             g_nSfxOverrideFlags = 1;
             g_nSfxOverrideVolL = 0x3CCC >> (3 - st->bounce);
             g_nSfxOverrideVolR = 0x3CCC >> (3 - st->bounce);
-            PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, 8, &actor->sfxSlot);
 
             if (ReflectVectorOffNormal((int *)st, svH, (int *)st) != 0) {
               st->bounce -= 1;
@@ -1126,7 +1127,7 @@ void Level33_UpdateActors(void) {
             }
 
             if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
-              PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
               RefreshActorDerivedState(actor, 4);
               g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (int *)8);
               g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (int *)0x10);
@@ -1139,7 +1140,7 @@ void Level33_UpdateActors(void) {
             }
 
             if (actor->type == ACTOR_TYPE_SPARX_FOOD) {
-              PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
               g_nSparxFoodCount += 1;
               DespawnActorRecord(actor);
             } else {
@@ -1298,7 +1299,7 @@ void Level33_UpdateActors(void) {
 
           case 1:
             g_nSparxHealth += 1;
-            PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
             actor->subMode += 1;
             DespawnActorRecord(st->target);
             break;
@@ -1340,11 +1341,11 @@ void Level33_UpdateActors(void) {
               st->target = 0;
               EBB_BREAK();
 
-              if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[0x2F]) == 0) {
+              if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[SFX_GEM_BOUNCE]) == 0) {
                 g_nSfxOverrideFlags = 1;
                 g_nSfxOverrideVolR = 0x3600;
                 g_nSfxOverrideVolL = 0x3600;
-                PlaySoundEffect(g_pLevelSampleBankHeader[0x2F], actor, 8, &actor->sfxSlot);
+                PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, 8, &actor->sfxSlot);
               }
             } else {
               int lim = 0x136;
@@ -1766,6 +1767,8 @@ void Level33_UpdateActors(void) {
           int *anc;
 
           g_dwSpyroRequestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FREEZE_INPUT);
+          /* st->path2, read by byte offset: the in-struct form reorders
+             the loads (9/8304 insns differ). */
           anc = PATH_END(*(FlyPath **)((char *)st + 4));
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
           *(int *)&g_anCameraActiveTargetParams = -ca << 4;
@@ -2097,7 +2100,7 @@ void Level33_UpdateActors(void) {
           g_abLevelExited[g_nLevelIndex] = 1;
           g_nCreditsPageIndex = 0;
           g_nCurrentWorldId[0] = 2;
-          g_nGamestate = GS_GEM_CUTSCENE;
+          g_nGamestate = GS_CUTSCENE;
           g_nGamePaused = 1;
           g_nGameplayBlocked = 0;
           g_nSpyroDrawSuppressed = 0;
@@ -2319,7 +2322,7 @@ void Level33_UpdateActors(void) {
           if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
             int i;
 
-            PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
             RefreshActorDerivedState(actor, 4);
 
             for (i = 0; i < 6; i++) {
@@ -2384,7 +2387,7 @@ void Level33_UpdateActors(void) {
           int i;
           int c;
 
-          PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
           RefreshActorDerivedState(actor, 4);
           i = 0;
           c = 0x8080;

@@ -290,7 +290,7 @@ extern void CopyWords(void *, void *, int);
 extern int ReadRootCounter2(void);
 extern void InitNewGameState(void);
 extern int ArmStoryIntroOnStart(void);
-extern void AdvanceGemCutsceneFrame(int);
+extern void AdvanceCutsceneFrame(int);
 extern void RotateLightVectorXZ(int);
 
 /* overlay-local */

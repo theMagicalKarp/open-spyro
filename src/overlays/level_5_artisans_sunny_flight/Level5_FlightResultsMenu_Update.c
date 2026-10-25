@@ -23,6 +23,7 @@
 #include "level_balloonist_cutscene.h"
 #include "level_flight_results.h"
 #include "pad_buttons.h"
+#include "level_sfx.h"
 
 
 
@@ -57,7 +58,7 @@ void Level5_FlightResultsMenu_Update(void) {
     if (pad[0] & (PAD_UP | PAD_DOWN)) {
       g_nPauseMenuIdleFrames = 0;
       g_nPauseMenuCursor = 1 - g_nPauseMenuCursor;
-      PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
+      PlaySoundEffect(g_pLevelSampleBankHeader[SFX_MENU_MOVE], 0, 0x10, 0);
     }
     if (pad[0] & (PAD_CROSS | PAD_START)) {
       if (g_nSubMenuCursor >= 0x64 ||
@@ -73,15 +74,15 @@ void Level5_FlightResultsMenu_Update(void) {
           BeginPauseToMenuTransition();
           break;
         }
-        PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
+        PlaySoundEffect(g_pLevelSampleBankHeader[SFX_MENU_MOVE], 0, 0x10, 0);
       } else {
         g_nSubMenuCursor = 0x64;
-        PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
+        PlaySoundEffect(g_pLevelSampleBankHeader[SFX_MENU_MOVE], 0, 0x10, 0);
       }
     }
   } else if (g_dwPadPressed[0] & (PAD_CROSS | PAD_START)) {
     g_nSubMenuCursor = 9;
     g_nSubMenuScrollOffset = 0;
-    PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
+    PlaySoundEffect(g_pLevelSampleBankHeader[SFX_MENU_MOVE], 0, 0x10, 0);
   }
 }

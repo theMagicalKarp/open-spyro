@@ -148,7 +148,7 @@ void MenuTransition_Draw(void) {
   RasterizePairedActor();
   DrawOTag(LinkOTPrimitives(0x800));
   DrawSync(0);
-  if (g_nDeathRespawnPending != 0) {
+  if (g_nDemoActive != 0) {
     VSync(0);
   }
   g_nVsyncFrameEndCount = VSync(-1);

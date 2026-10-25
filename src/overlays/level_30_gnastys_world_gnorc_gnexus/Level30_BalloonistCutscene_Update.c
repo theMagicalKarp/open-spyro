@@ -84,6 +84,7 @@
 #include "match_asm.h"
 #include "camera.h"
 #include "pad_buttons.h"
+#include "level_sfx.h"
 
 
 void Level30_BalloonistCutscene_Update(void)
@@ -99,9 +100,9 @@ void Level30_BalloonistCutscene_Update(void)
   st = g_nActorCutsceneSubstate;
   if (st[0] < 4)
   {
-    g_pSaveMenuAnimActorList1 = 0;
-    g_apSaveMenuAnimActorList[0] = g_pActorCutsceneActor;
-    TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, 0);
+    g_pActiveActorList1 = 0;
+    g_apActiveActorList[0] = g_pActorCutsceneActor;
+    TickActorAnims(g_apActiveActorList, 0);
   }
   switch (st[0])
   {
@@ -376,7 +377,7 @@ void Level30_BalloonistCutscene_Update(void)
             g_nActorCutsceneMenuCursor[0] = i - 1;
           }
           g_nActorCutsceneTimer[0] = 0x20;
-          PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_MENU_MOVE], 0, 0x10, 0);
         }
         else
           if (g_dwPadPressed[0] & PAD_DOWN)
@@ -387,7 +388,7 @@ void Level30_BalloonistCutscene_Update(void)
             g_nActorCutsceneMenuCursor[0] = 0;
           }
           g_nActorCutsceneTimer[0] = 0x20;
-          PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_MENU_MOVE], 0, 0x10, 0);
         }
         if ((g_dwPadPressed[0] & (PAD_CROSS | PAD_START)) == 0)
         {
@@ -419,7 +420,7 @@ void Level30_BalloonistCutscene_Update(void)
         {
           g_anActorCutsceneTimerBlock_s = 0x20;
           g_nActorCutsceneMenuCursor_s = 1 - g_nActorCutsceneMenuCursor_s;
-          PlaySoundEffect(g_pLevelSampleBankHeader[0x2D], 0, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_MENU_MOVE], 0, 0x10, 0);
         }
         if ((g_dwPadPressed[0] & (PAD_CROSS | PAD_START)) == 0)
         {

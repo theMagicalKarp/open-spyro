@@ -79,8 +79,8 @@ void GamestateDraw(void) {
       } else {
         Titlescreen_Draw();
       }
-    } else if (g_nGamestate == GS_GEM_CUTSCENE) {
-      GemCutscene_Draw();
+    } else if (g_nGamestate == GS_CUTSCENE) {
+      Cutscene_Draw();
     } else if (g_nGamestate == GS_CREDITS) {
       if (g_nCreditsMode < 0x63) {
         Credits_Draw();
@@ -102,7 +102,7 @@ void GamestateDraw(void) {
     if (g_nFlightLevelActive == 0) {
       EnqueueLoadingScreenSprites();
     }
-    if (g_nDeathState != 0) {
+    if (g_nDemoMode != 0) {
       DrawDemoModeOverlay();
     }
     ComposeFrameScene();
@@ -119,7 +119,7 @@ void GamestateDraw(void) {
     DrawMotionTrailRibbons();
 
     DrawSync(0);
-    if (g_nDeathRespawnPending != 0) {
+    if (g_nDemoActive != 0) {
       VSync(0);
     }
     g_nVsyncFrameEndCount = VSync(-1);

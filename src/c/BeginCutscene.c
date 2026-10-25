@@ -3,18 +3,20 @@
 #include "main_shared.h"
 #include "sample_bank.h"
 
-/* Enter the gem-cutscene gamestate (0x8002d338, gamestate 0xE): reset the
-   generic countdown fade and the path-table head, raise the storm flag when
-   entering from world 1, then build the cutscene sample-bank entry at
+/* Enter the scripted-cutscene gamestate (0x8002d338, gamestate 0xE). The
+   cutscene id is g_nCurrentWorldId: 0 title backdrop, 1 opening story, 2/3
+   ending. Steps: reset the
+   generic countdown fade and the path-table head, raise the storm flag for
+   the opening story (id 1), then build the cutscene sample-bank entry at
    g_CutsceneSoundDef (sample 0x1010, per-world pitch from
    g_nWorldCutsceneSamplePitch) and trigger it via PlaySoundEffect with the
    dragon-rescue voice marker. */
-void BeginGemCutscene(void) {
+void BeginCutscene(void) {
   register int world;
   int *head;
   int *entry;
 
-  g_nGamestate = GS_GEM_CUTSCENE;
+  g_nGamestate = GS_CUTSCENE;
   g_nGenericCountdown = 0;
   head = (int *)g_pPathTableHead;
   world = g_nCurrentWorldId;

@@ -69,7 +69,7 @@ extern void SubtractVector(int *out, int *a, int *b);
 extern void TallyFlightTarget(int sound);
 extern void TickActiveSoundVoices(void);
 struct Actor;
-extern void TickGemCutsceneActorAnims(struct Actor **list, int mode);
+extern void TickActorAnims(struct Actor **list, int mode);
 extern void TickLevelTransitionStream();
 extern void TickSpyroAttackEffects(int a0);
 extern void UnpackWorldCollisionTri(int a, int *out);

@@ -1,7 +1,7 @@
 /* sample_bank.h — one entry of the per-level sample bank
  * (g_pLevelSampleBankEntries, stride 0x14). PlaySoundEffect reads the
  * address/pitch fields; the cutscene and credits paths point the bank at a
- * single static entry and fill it in by hand. Those fills (CheckDeathPlane,
+ * single static entry and fill it in by hand. Those fills (TickDemoPlayback,
  * Credits_Update) stay byte-offset stores, spelled with SAMPLE_RAW: their
  * per-field volatile base reloads are part of the match, and a struct view
  * reschedules them. */
@@ -26,8 +26,8 @@ typedef struct {
   (*(type *)((char *)(entry) + SAMPLE_OFFSET(field)))
 
 /* Sound id `i` of the level's sound-id table (g_pLevelSampleBankHeader, one
- * byte per sound slot; RelocateLevelSampleBank installs it). Slot 0x2C is
- * the menu-open sound, slot 0 the cheat-confirm jingle. */
+ * byte per sound slot; RelocateLevelSampleBank installs it). Named slots:
+ * level_sfx.h. */
 #define LEVEL_SFX(i) (((unsigned char *)g_pLevelSampleBankHeader)[i])
 
 #endif /* OPEN_SPYRO_SAMPLE_BANK_H */

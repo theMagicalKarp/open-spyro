@@ -7,7 +7,7 @@
 
 /* Per-VBlank pad poll callback (0x80053c68, 0x67C), registered by
    InitPadSystem via InstallVSyncCallback. Ticks the vblank/CD watchdog
-   counters, bails out while the death replay owns the pad, then drives the
+   counters, bails out while the attract demo owns the pad, then drives the
    rumble command block, classifies the controller from the raw report id
    byte, remaps Saturn buttons, synthesizes virtual D-pad bits from the
    calibrated left stick, edge-detects pressed/released against g_dwPadHeld,
@@ -24,7 +24,7 @@ void PollPadAndDistributeInput(void) {
   if (g_nCdStallMarker != 0) {
     g_nCdStallWatchdogTicks += 1;
   }
-  if (g_nDeathState != 0) {
+  if (g_nDemoMode != 0) {
     return;
   }
 
