@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "emit_record.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -109,10 +110,10 @@ void TickSpyroFlameAttack(void) {
           ApplyActiveGteRotation(tip + 6, vel);
           if (g_nSpyroFlameVariant != 0) {
             ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
-                1, 1, pos, vel);
+                1, EMIT_SPARK_VEL_DIM, pos, vel);
           } else {
             ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
-                1, 0, pos, vel);
+                1, EMIT_SPARK_VEL, pos, vel);
           }
         }
         {
@@ -123,10 +124,10 @@ void TickSpyroFlameAttack(void) {
           ApplyActiveGteRotation(tip + 6, vel);
           if (g_nSpyroFlameVariant != 0) {
             ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
-                1, 1, pos, vel);
+                1, EMIT_SPARK_VEL_DIM, pos, vel);
           } else {
             ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
-                1, 0, pos, vel);
+                1, EMIT_SPARK_VEL, pos, vel);
           }
         }
       } else if ((g_dwPadPressed & PAD_CIRCLE) &&

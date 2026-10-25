@@ -153,4 +153,21 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
   } u;
 } Emit;
 
+/* Effect types for g_pfnLevelEmitParticles(count, type, pos, effectArg)
+ * whose arm is the same in all 35 level EmitParticles clones. The rest stay
+ * numeric. */
+enum EmitEffect {
+  EMIT_SPARK_VEL = 0x0,     /* spark moving at the velocity effectArg points to, 0x18 frames
+                             * (the flame breath's particles) */
+  EMIT_SPARK_VEL_DIM = 0x1, /* dimmer, shorter EMIT_SPARK_VEL (8 frames during the dragon rescue;
+                             * the superflame's particles) */
+  EMIT_SPARK_RISE = 0x2,    /* spark drifting up with a random XY jitter */
+  EMIT_ACTOR_SPARK = 0xC,   /* spark at an emit offset of the Actor * in pos; effectArg packed RGB
+                             * (bits 24+ pick the offset slot for keys) */
+  EMIT_TWINKLE = 0x42,      /* 2-frame twinkle: yellow for effectArg 1 (or 0 while Sparx is at full
+                             * health), else a random colour */
+  EMIT_STREAK_BURST = 0x46, /* yellow-orange streaks thrown out to radius effectArg */
+  EMIT_STREAK_BURST_WHITE = 0x47, /* small white-yellow streak burst */
+};
+
 #endif /* OPEN_SPYRO_EMIT_RECORD_H */

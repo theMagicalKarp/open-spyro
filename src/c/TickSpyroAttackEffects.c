@@ -12,6 +12,7 @@
    - Slot age/state bytes are givs off the anchor block, the arc-path select
      pins the table base to $2 and the path to $3 with an empty barrier in
      the long arm, and the product `k` is its own local. */
+#include "emit_record.h"
 #include "funcs.h"
 #include "globals.h"
 #include "level_sfx.h"
@@ -216,7 +217,7 @@ void TickSpyroAttackEffects(int steps) {
               RotateVectorByMatrix(&pt[-0xd], dir, dir);
               dir[2] = 0;
               ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
-                  1, 1, tip, dir);
+                  1, EMIT_SPARK_VEL_DIM, tip, dir);
               if ((*((volatile int *)(&pt[-0xf]))) == 0) {
                 ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
                     4, 0x4e, tip, 0);
@@ -246,10 +247,10 @@ void TickSpyroAttackEffects(int steps) {
             ZeroVector(dir);
             if (g_nSpyroFlameVariant != 0) {
               ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
-                  1, 1, tip, dir);
+                  1, EMIT_SPARK_VEL_DIM, tip, dir);
             } else {
               ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
-                  1, 0, tip, dir);
+                  1, EMIT_SPARK_VEL, tip, dir);
             }
             if (g_nSpyroFlameVariant == 0) {
               ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(

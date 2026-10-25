@@ -37,6 +37,7 @@
 #include "spyro_state.h"
 #include "camera.h"
 #include "level_sfx.h"
+#include "emit_record.h"
 
 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
@@ -534,7 +535,7 @@ void Level21_UpdateActors(void) {
 
       if ((unsigned int)(actor->mode - 2) < 3) {
         AimCameraStickTowardPoint(&actor->posX);
-        g_pfnLevelEmitParticles(1, 0xC, actor, (int *)0x602080);
+        g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, (int *)0x602080);
       }
 
       switch (actor->mode) {
@@ -1599,13 +1600,13 @@ void Level21_UpdateActors(void) {
         f136[0] = GetRandomU32() & 3;
         f136[1] = GetRandomU32() & 3;
         f136[2] = 0x14;
-        g_pfnLevelEmitParticles(1, 1, &actor->posX, f136);
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, f136);
       }
 
       st->life -= 1;
       break;
       }
-      g_pfnLevelEmitParticles(8, 0x46, &actor->posX, (int *)0x10);
+      g_pfnLevelEmitParticles(8, EMIT_STREAK_BURST, &actor->posX, (int *)0x10);
       DespawnActorRecord(actor);
       continue;
     }
@@ -1974,8 +1975,8 @@ void Level21_UpdateActors(void) {
         if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 16, 0);
           RefreshActorDerivedState(actor, 4);
-          g_pfnLevelEmitParticles(16, 70, &actor->posX, (void *)8);
-          g_pfnLevelEmitParticles(16, 70, &actor->posX, (void *)0x10);
+          g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, (void *)8);
+          g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, (void *)0x10);
 
           if (g_nExtraLives < 99) {
             g_nExtraLives++;
@@ -2195,13 +2196,13 @@ void Level21_UpdateActors(void) {
         f232[2] = 0;
         RotateVectorByMatrix(&actor->mtx[0], f232, f232);
         AddVector(f232, f232, &actor->posX);
-        g_pfnLevelEmitParticles(2, 0x42, f232, 0);
+        g_pfnLevelEmitParticles(2, EMIT_TWINKLE, f232, 0);
         f232[0] = 0;
         f232[1] = -0x64;
         f232[2] = 0;
         ApplyActiveGteRotation(f232, f232);
         AddVector(f232, f232, &actor->posX);
-        g_pfnLevelEmitParticles(2, 0x42, f232, 0);
+        g_pfnLevelEmitParticles(2, EMIT_TWINKLE, f232, 0);
       }
 
       if (g_anSparxHealthBlock[0] >= 3) {
@@ -2359,11 +2360,11 @@ void Level21_UpdateActors(void) {
               st->target->subMode = 3;
 
               if (st->target->type == ACTOR_TYPE_EXTRA_LIFE) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType14);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType14);
               } else if (st->target->type == ACTOR_TYPE_SPARX_FOOD) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType15);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType15);
               } else {
-                g_pfnLevelEmitParticles(1, 0xC, actor, g_adwActorBurstColors[st->target->type]);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_adwActorBurstColors[st->target->type]);
               }
               st->target = 0;
               EBB_BREAK();
@@ -2500,7 +2501,7 @@ void Level21_UpdateActors(void) {
             RefreshActorDerivedState(actor, 4);
 
             for (i = 0; i < 6; i++) {
-              g_pfnLevelEmitParticles(1, 0xC, actor, (int *)(0x8080 + (i << 24)));
+              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, (int *)(0x8080 + (i << 24)));
             }
 
             g_nLevelKeyState = 1;
@@ -2718,7 +2719,7 @@ void Level21_UpdateActors(void) {
             g_pfnLevelSpawnActor(0x135, actor);
           }
 
-          g_pfnLevelEmitParticles(0x20, 0x46, &actor->posX, (void *)0x18);
+          g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, (void *)0x18);
           g_pLockedChestReward = SpawnActorDeathDrop(actor, 1, 0, 0);
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
@@ -2730,9 +2731,9 @@ void Level21_UpdateActors(void) {
 
         RefreshActorDerivedState(key, 4);
         if (st->shake % 4 < 2) {
-          g_pfnLevelEmitParticles(1, 0xC, (int *)key, (void *)0x8080);
+          g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)key, (void *)0x8080);
         } else {
-          g_pfnLevelEmitParticles(1, 0xC, (int *)key, (void *)0x5008080);
+          g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)key, (void *)0x5008080);
         }
         break;
       }
@@ -2773,8 +2774,8 @@ void Level21_UpdateActors(void) {
         g_pfnLevelSpawnActor(0x101, actor);
       }
 
-      g_pfnLevelEmitParticles(5, 2, &actor->posX, 0);
-      g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (void *)0x20);
+      g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
+      g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x20);
       SpawnActorDeathDrop(actor, 3, 0, 0);
       MarkActorCommittedKill(actor);
       DespawnActorRecord(actor);
@@ -2840,7 +2841,7 @@ void Level21_UpdateActors(void) {
           g_pfnLevelSpawnActor(0x135, actor);
         }
 
-        g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (int *)0x18);
+        g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x18);
         SpawnActorDeathDrop(actor, 3, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
@@ -3057,7 +3058,7 @@ void Level21_UpdateActors(void) {
             DespawnActorRecord(actor);
           }
         } else {
-          g_pfnLevelEmitParticles(10, 0x47, &actor->posX, 0);
+          g_pfnLevelEmitParticles(10, EMIT_STREAK_BURST_WHITE, &actor->posX, 0);
           DespawnActorRecord(actor);
         }
       }
@@ -3572,7 +3573,7 @@ void Level21_UpdateActors(void) {
         f432[1] = (GetRandomU32() & 0xFE) - 0x7F;
         f432[2] = (GetRandomU32() & 0xFE) - 0x40;
         AddVector(f432, f432, &actor->posX);
-        g_pfnLevelEmitParticles(1, 0x42, f432, (int *)1);
+        g_pfnLevelEmitParticles(1, EMIT_TWINKLE, f432, (int *)1);
         st->life -= 1;
       } else {
         DespawnActorRecord(actor);
@@ -3630,7 +3631,7 @@ void Level21_UpdateActors(void) {
             shardSparkPos[1] = (GetRandomU32() & 0xFE) - 0x7F;
             shardSparkPos[2] = (GetRandomU32() & 0xFE) - 0x40;
             AddVector(shardSparkPos, shardSparkPos, &actor->posX);
-            g_pfnLevelEmitParticles(1, 0x42, shardSparkPos, (int *)1);
+            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, shardSparkPos, (int *)1);
           } while (i < 3);
         }
 
@@ -3639,7 +3640,7 @@ void Level21_UpdateActors(void) {
       }
 
       if (actor->drawn != 0) {
-        g_pfnLevelEmitParticles(8, 0x46, &actor->posX, (int *)0x10);
+        g_pfnLevelEmitParticles(8, EMIT_STREAK_BURST, &actor->posX, (int *)0x10);
       }
       DespawnActorRecord(actor);
       continue;
@@ -3738,7 +3739,7 @@ void Level21_UpdateActors(void) {
         if (st->timer < 0x20 &&
             (st->timer & 3) <= ((st->timer + g_nFrameStep) & 3)) {
           ZeroVector(f512);
-          g_pfnLevelEmitParticles(1, 0, &st->prize->posX, f512);
+          g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &st->prize->posX, f512);
         }
         if ((ApproxDist2D(&st->prize->posX, &spy->posX) < 0x1E0 &&
              (unsigned int)(SPY.posZ - st->prize->posZ + 0xDF) < 0x2BF) ||
@@ -3760,8 +3761,8 @@ void Level21_UpdateActors(void) {
             }
             g_pfnLevelSpawnActor(0x45, actor);
           }
-          g_pfnLevelEmitParticles(5, 2, &actor->posX, 0);
-          g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (void *)0x20);
+          g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
+          g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x20);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3781,8 +3782,8 @@ void Level21_UpdateActors(void) {
             }
             g_pfnLevelSpawnActor(0x45, actor);
           }
-          g_pfnLevelEmitParticles(5, 2, &actor->posX, 0);
-          g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (void *)0x20);
+          g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
+          g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x20);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3798,7 +3799,7 @@ void Level21_UpdateActors(void) {
             podSparkVel[0] = g_anCosineLut[j * 43] >> 7;
             podSparkVel[1] = g_anSineLut[j * 43] >> 7;
             podSparkVel[2] = 0x10;
-            g_pfnLevelEmitParticles(1, 0, f528, podSparkVel);
+            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, f528, podSparkVel);
           }
           DespawnActorRecord(st->prize);
           actor->killGroup &= 0x7F;
@@ -3926,7 +3927,7 @@ void Level21_UpdateActors(void) {
           }
           g_pfnLevelSpawnActor(0x135, actor);
         }
-        g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (int *)0x18);
+        g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x18);
         SpawnActorDeathDrop(actor, 3, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
@@ -4018,7 +4019,7 @@ void Level21_UpdateActors(void) {
             }
             g_pfnLevelSpawnActor(0x135, actor);
           }
-          g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (int *)0x18);
+          g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x18);
           PlayActorMeshVoice(actor, 0, 0);
           DespawnActorRecord(actor);
           continue;
@@ -4078,7 +4079,7 @@ void Level21_UpdateActors(void) {
           g_pfnLevelSpawnActor(0x135, actor);
           i++;
         }
-        g_pfnLevelEmitParticles(0x20, 0x46, &actor->posX, 0x18);
+        g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, 0x18);
         SpawnActorDeathDrop(actor, 3, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
@@ -4209,10 +4210,10 @@ void Level21_UpdateActors(void) {
         f528[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
         f528[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
         f528[2] = 0x18;
-        g_pfnLevelEmitParticles(1, 0, &actor->posX, f528);
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, f528);
       }
 
-      g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (void *)0x18);
+      g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x18);
 
       if (actor->mode == 1) {
         DespawnActorRecord(st->passenger);
