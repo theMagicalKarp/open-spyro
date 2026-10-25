@@ -225,7 +225,7 @@ void GemPickup_Update(void) {
       g_nPulseRumbleTimer = 8;
     }
     g_nPulseRumbleAmount = 0x46;
-    ((void (*)(int, void *))g_pfnLevelSpawnActor)(0xFB,
+    ((void (*)(int, void *))g_pfnLevelSpawnActor)(ACTOR_TYPE_STATUE_SHARD,
                                                   g_pGemPickupSourceActor);
     if (g_nGemPickupTimer < g_nGemPickupSweepDurationFrames) {
       t = LookupSine((g_nGemPickupTimer << 11) /
@@ -440,7 +440,7 @@ void GemPickup_Update(void) {
       g_nPulseRumbleTimer = 8;
     }
     g_nPulseRumbleAmount = 0x46;
-    ((void (*)(int, void *))g_pfnLevelSpawnActor)(0xFB,
+    ((void (*)(int, void *))g_pfnLevelSpawnActor)(ACTOR_TYPE_STATUE_SHARD,
                                                   g_pGemPickupSourceActor);
     if (g_nGemPickupTimer < 0x10 || g_nGemPickupStreamState < 3) {
       AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
@@ -788,7 +788,7 @@ void GemPickup_Update(void) {
     char *actor = g_pActorListBase;
 
     while (ACTOR_RAW(actor, unsigned char, mode) != 0xFF) {
-      if (ACTOR_RAW(actor, short, type) == 0xFB &&
+      if (ACTOR_RAW(actor, short, type) == ACTOR_TYPE_STATUE_SHARD &&
           ACTOR_RAW(actor, unsigned char, mode) < 0x80) {
         TickGemPickupBurstEntity(actor);
       }

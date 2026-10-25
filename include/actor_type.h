@@ -97,6 +97,23 @@ typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
  * Use it only where `actor->field` was measured to change the output. */
 #define ACTOR_RAW(actor, type, field) (*(type *)((char *)(actor) + ACTOR_OFFSET(field)))
 
+/* Actor->type values that mean the same class in every level (one global
+ * g_apActorMeshTable index space). Only classes whose behaviour is pinned
+ * down are named; the rest stay numeric in the per-level switches. */
+enum ActorType {
+  ACTOR_TYPE_EXTRA_LIFE = 14,      /* collected: g_nExtraLives + 1 */
+  ACTOR_TYPE_SPARX_FOOD = 15,      /* collected: g_nSparxFoodCount + 1 */
+  ACTOR_TYPE_BUTTERFLY = 16,       /* eaten by Sparx: g_nSparxHealth + 1 */
+  ACTOR_TYPE_GEM_1 = 0x53,         /* gems, by CollectPickupActor's value */
+  ACTOR_TYPE_GEM_2 = 0x54,
+  ACTOR_TYPE_GEM_5 = 0x55,
+  ACTOR_TYPE_GEM_10 = 0x56,
+  ACTOR_TYPE_GEM_25 = 0x57,
+  ACTOR_TYPE_SPARX = 0x78,         /* g_pSparxActor (SparxState) */
+  ACTOR_TYPE_DRAGON_STATUE = 0xFA, /* trapped dragon: counts the rescue */
+  ACTOR_TYPE_STATUE_SHARD = 0xFB,  /* its burst shards (BurstShardState) */
+};
+
 /* Waypoint path used by the path-following classes (10, 114, 339) and
  * FollowActorWaypointPath / PivotActorAlongPath: node count, current node,
  * direction, then 0x10-byte nodes that begin with a position. */

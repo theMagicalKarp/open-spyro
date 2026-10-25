@@ -260,7 +260,7 @@ void Level1_EmitParticles(int count, int type, int *pos, int effectArg) {
           rec->u.spark.depthBias = 0x16;
           CopyVector(v1, &g_anEmitSlotOffsets[(effectArg >> 24) * 3]);
         }
-      } else if (((Actor *)pos)->type == 0x78) {
+      } else if (((Actor *)pos)->type == ACTOR_TYPE_SPARX) {
         RotateVectorByMatrix(((Actor *)pos)->mtx, g_anSparxEmitOffset, v1);
         AddVector(v1, v1, &((Actor *)pos)->posX);
       } else {

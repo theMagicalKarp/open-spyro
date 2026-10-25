@@ -64,10 +64,10 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
   if (id == 0x10) {
     if (g_pSparxActor != 0 || g_anSparxHealthBlock[0] < 0) {
       rec = (*(struct Actor * (*)(int, struct Actor *))
-                 g_pfnLevelSpawnActor)(0x10, src);
+                 g_pfnLevelSpawnActor)(ACTOR_TYPE_BUTTERFLY, src);
     } else {
       rec = (*(struct Actor * (*)(int, struct Actor *))
-                 g_pfnLevelSpawnActor)(0x78, src);
+                 g_pfnLevelSpawnActor)(ACTOR_TYPE_SPARX, src);
       PlayActorMeshVoice(rec, 0, 0);
       g_anSparxHealthBlock[0] = 1;
       g_pSparxActor = rec;
@@ -77,7 +77,7 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
 
   if (id == 0xe) {
     rec = (*(struct Actor * (*)(int, struct Actor *))
-               g_pfnLevelSpawnActor)(0xe, src);
+               g_pfnLevelSpawnActor)(ACTOR_TYPE_EXTRA_LIFE, src);
     dbg = (struct Debris *)rec->state;
     dbg->live = 1;
     return rec;

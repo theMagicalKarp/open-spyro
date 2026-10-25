@@ -462,7 +462,7 @@ void Level14_UpdateActors(void) {
     }
 
     /* Butterfly (ChaseState). */
-    case 16: {
+    case ACTOR_TYPE_BUTTERFLY: {
       ChaseState *st = (ChaseState *)actor->state;
 
       if (SPY.sparxHealth < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
@@ -471,7 +471,7 @@ void Level14_UpdateActors(void) {
         if (ABS2(actorZ - SPY.posZ) < 1800) {
           if (g_pSparxActor == 0) {
             if (SPY.sparxHealth >= 0) {
-              g_pSparxActor = g_pfnLevelSpawnActor(120, actor);
+              g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
               PlayActorMeshVoice(g_pSparxActor, 0, 0);
 
@@ -1579,13 +1579,13 @@ void Level14_UpdateActors(void) {
     }
 
     /* Collectibles: life statue, life orb, gems (PickupState). */
-    case 14:
-    case 15:
-    case 83:
-    case 84:
-    case 85:
-    case 86:
-    case 87: {
+    case ACTOR_TYPE_EXTRA_LIFE:
+    case ACTOR_TYPE_SPARX_FOOD:
+    case ACTOR_TYPE_GEM_1:
+    case ACTOR_TYPE_GEM_2:
+    case ACTOR_TYPE_GEM_5:
+    case ACTOR_TYPE_GEM_10:
+    case ACTOR_TYPE_GEM_25: {
       PickupState *st = (PickupState *)actor->state;
 
       int dist = ApproxDist2D(&actor->posX, &SPY.posX);
@@ -1594,12 +1594,12 @@ void Level14_UpdateActors(void) {
         st->timer += g_nFrameStep;
       }
 
-      if (actor->type != 15) {
+      if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
 
         if (st->anim != 255) {
           RefreshActorDerivedState(actor, 4);
 
-          if (actor->type == 14) {
+          if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
             RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset5, g_aRotBillboards[st->anim].pos);
           } else {
             RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset3, g_aRotBillboards[st->anim].pos);
@@ -1745,7 +1745,7 @@ void Level14_UpdateActors(void) {
         }
 
         if (svG[2] < 0) {
-          if (actor->type != 14 && actor->type != 15) {
+          if (actor->type != ACTOR_TYPE_EXTRA_LIFE && actor->type != ACTOR_TYPE_SPARX_FOOD) {
             CollectPickupActor(actor);
           }
           DespawnActorRecord(actor);
@@ -1755,7 +1755,7 @@ void Level14_UpdateActors(void) {
 
           if (CollideSphereWithWorldAndActors(svG, 240, 240)) {
             if (GetGroundTriggerRegionType() == 0) {
-              if (actor->type != 14 && actor->type != 15) {
+              if (actor->type != ACTOR_TYPE_EXTRA_LIFE && actor->type != ACTOR_TYPE_SPARX_FOOD) {
                 CollectPickupActor(actor);
               }
               DespawnActorRecord(actor);
@@ -1776,7 +1776,7 @@ void Level14_UpdateActors(void) {
                 CopyVector(&actor->posX, svG);
                 actor->posZ = groundHeight;
 
-                if (actor->type != 0xF) {
+                if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
 
                   st->pitch = -ArcTan2_8bit(
                       IntegerSqrt((svH[0] * svH[0]) + (svH[2] * svH[2])),
@@ -1877,11 +1877,11 @@ void Level14_UpdateActors(void) {
       }
       }
       if (actor->subMode < 3) {
-        if (actor->type == 14) {
+        if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
           actor->rotX = (g_anCosineLut[st->roll] >> 9) + st->pitch;
           actor->rotY = (g_anSineLut[st->roll] >> 9) + st->yaw;
           st->roll += g_nFrameStep << 1;
-        } else if (actor->type == 15) {
+        } else if (actor->type == ACTOR_TYPE_SPARX_FOOD) {
           actor->rotZ += 8;
           actor->rotY -= 6;
         } else {
@@ -1902,7 +1902,7 @@ void Level14_UpdateActors(void) {
           }
         }
 
-        if (actor->type == 14) {
+        if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 16, 0);
           RefreshActorDerivedState(actor, 4);
           g_pfnLevelEmitParticles(16, 70, &actor->posX, (void *)8);
@@ -1915,7 +1915,7 @@ void Level14_UpdateActors(void) {
           CommitActorKillGems(0, actor);
           DespawnActorRecord(actor);
           continue;
-        } else if (actor->type == 15) {
+        } else if (actor->type == ACTOR_TYPE_SPARX_FOOD) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 16, 0);
           g_nSparxFoodCount++;
 
@@ -2597,7 +2597,7 @@ void Level14_UpdateActors(void) {
     }
 
     /* Sparx (SparxState). */
-    case 120: {
+    case ACTOR_TYPE_SPARX: {
       SparxState *st = (SparxState *)actor->state;
       char pitchAngle;
 
@@ -2649,7 +2649,7 @@ void Level14_UpdateActors(void) {
 
       if (SPY.sparxHealth <= 0) {
         Actor *target = st->target;
-        if (target != 0 && target->type == 16) {
+        if (target != 0 && target->type == ACTOR_TYPE_BUTTERFLY) {
           target->mode = 0;
         }
         g_pSparxActor = 0;
@@ -2761,9 +2761,9 @@ void Level14_UpdateActors(void) {
             CopyVector(cp->vel, &st->target->posX);
             st->target->subMode = 3;
 
-            if (st->target->type == 14)
+            if (st->target->type == ACTOR_TYPE_EXTRA_LIFE)
               g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_dwBurstColorType14);
-            else if (st->target->type == 15)
+            else if (st->target->type == ACTOR_TYPE_SPARX_FOOD)
               g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_dwBurstColorType15);
             else
               g_pfnLevelEmitParticles(1, 0xC, (int *)actor, g_adwActorBurstColors[st->target->type]);
@@ -3308,7 +3308,7 @@ void Level14_UpdateActors(void) {
     }
 
     /* Crystal dragon (RideState). */
-    case 250: {
+    case ACTOR_TYPE_DRAGON_STATUE: {
       RideState *st = (RideState *)actor->state;
 
       if (actor->mode == 0) {
@@ -3429,7 +3429,7 @@ void Level14_UpdateActors(void) {
     }
 
     /* Dragon fragment, updated out of line. */
-    case 251:
+    case ACTOR_TYPE_STATUE_SHARD:
       TickGemPickupBurstEntity(actor);
       break;
 

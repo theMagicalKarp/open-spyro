@@ -370,7 +370,7 @@ void Level21_UpdateActors(void) {
     }
 
     /* Butterfly (ChaseState). */
-    case 16: {
+    case ACTOR_TYPE_BUTTERFLY: {
       ChaseState *st = (ChaseState *)actor->state;
 
       if (SPY.sparxHealth < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
@@ -379,7 +379,7 @@ void Level21_UpdateActors(void) {
         if (ABS2(actorZ - SPY.posZ) < 1800) {
           if (g_pSparxActor == 0) {
             if (SPY.sparxHealth >= 0) {
-              g_pSparxActor = g_pfnLevelSpawnActor(120, actor);
+              g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
               PlayActorMeshVoice(g_pSparxActor, 0, 0);
 
@@ -1644,13 +1644,13 @@ void Level21_UpdateActors(void) {
     }
 
     /* Collectibles: life statue, life orb, gems (PickupState). */
-    case 14:
-    case 15:
-    case 83:
-    case 84:
-    case 85:
-    case 86:
-    case 87: {
+    case ACTOR_TYPE_EXTRA_LIFE:
+    case ACTOR_TYPE_SPARX_FOOD:
+    case ACTOR_TYPE_GEM_1:
+    case ACTOR_TYPE_GEM_2:
+    case ACTOR_TYPE_GEM_5:
+    case ACTOR_TYPE_GEM_10:
+    case ACTOR_TYPE_GEM_25: {
       PickupState *st = (PickupState *)actor->state;
 
       int dist = ApproxDist2D(&actor->posX, &SPY.posX);
@@ -1659,12 +1659,12 @@ void Level21_UpdateActors(void) {
         st->timer += g_nFrameStep;
       }
 
-      if (actor->type != 15) {
+      if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
 
         if (st->anim != 255) {
           RefreshActorDerivedState(actor, 4);
 
-          if (actor->type == 14) {
+          if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
             RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset5, g_aRotBillboards[st->anim].pos);
           } else {
             RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset3, g_aRotBillboards[st->anim].pos);
@@ -1810,7 +1810,7 @@ void Level21_UpdateActors(void) {
         }
 
         if (f168[2] < 0) {
-          if (actor->type != 14 && actor->type != 15) {
+          if (actor->type != ACTOR_TYPE_EXTRA_LIFE && actor->type != ACTOR_TYPE_SPARX_FOOD) {
             CollectPickupActor(actor);
           }
           DespawnActorRecord(actor);
@@ -1820,7 +1820,7 @@ void Level21_UpdateActors(void) {
 
           if (CollideSphereWithWorldAndActors(f168, 240, 240)) {
             if (GetGroundTriggerRegionType() == 0) {
-              if (actor->type != 14 && actor->type != 15) {
+              if (actor->type != ACTOR_TYPE_EXTRA_LIFE && actor->type != ACTOR_TYPE_SPARX_FOOD) {
                 CollectPickupActor(actor);
               }
               DespawnActorRecord(actor);
@@ -1841,7 +1841,7 @@ void Level21_UpdateActors(void) {
                 CopyVector(&actor->posX, f168);
                 actor->posZ = groundHeight;
 
-                if (actor->type != 0xF) {
+                if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
 
                   st->pitch = -ArcTan2_8bit(
                       IntegerSqrt((f352[0] * f352[0]) + (f352[2] * f352[2])),
@@ -1942,11 +1942,11 @@ void Level21_UpdateActors(void) {
       }
       }
       if (actor->subMode < 3) {
-        if (actor->type == 14) {
+        if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
           actor->rotX = (g_anCosineLut[st->roll] >> 9) + st->pitch;
           actor->rotY = (g_anSineLut[st->roll] >> 9) + st->yaw;
           st->roll += g_nFrameStep << 1;
-        } else if (actor->type == 15) {
+        } else if (actor->type == ACTOR_TYPE_SPARX_FOOD) {
           actor->rotZ += 8;
           actor->rotY -= 6;
         } else {
@@ -1967,7 +1967,7 @@ void Level21_UpdateActors(void) {
           }
         }
 
-        if (actor->type == 14) {
+        if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 16, 0);
           RefreshActorDerivedState(actor, 4);
           g_pfnLevelEmitParticles(16, 70, &actor->posX, (void *)8);
@@ -1980,7 +1980,7 @@ void Level21_UpdateActors(void) {
           CommitActorKillGems(0, actor);
           DespawnActorRecord(actor);
           continue;
-        } else if (actor->type == 15) {
+        } else if (actor->type == ACTOR_TYPE_SPARX_FOOD) {
           PlaySoundEffect(g_pLevelSampleBankHeader[0], actor, 16, 0);
           g_nSparxFoodCount++;
 
@@ -2183,7 +2183,7 @@ void Level21_UpdateActors(void) {
 
     /* Sparx (SparxState): hovers beside Spyro, glows by health, catches
      * butterflies (health + 1) and fetches nearby pickups. Despawns at 0. */
-    case 120: {
+    case ACTOR_TYPE_SPARX: {
       SparxState *st = actor->state;
 
       if (g_anSparxHealthBlock[0] >= 2) {
@@ -2231,7 +2231,7 @@ void Level21_UpdateActors(void) {
       }
 
       if (g_anSparxHealthBlock[0] <= 0) {
-        if (st->target != 0 && st->target->type == 16) {
+        if (st->target != 0 && st->target->type == ACTOR_TYPE_BUTTERFLY) {
           st->target->mode = 0;
         }
         g_pSparxActor = 0;
@@ -2355,9 +2355,9 @@ void Level21_UpdateActors(void) {
               CopyVector((int *)pk, &st->target->posX);
               st->target->subMode = 3;
 
-              if (st->target->type == 14) {
+              if (st->target->type == ACTOR_TYPE_EXTRA_LIFE) {
                 g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType14);
-              } else if (st->target->type == 15) {
+              } else if (st->target->type == ACTOR_TYPE_SPARX_FOOD) {
                 g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType15);
               } else {
                 g_pfnLevelEmitParticles(1, 0xC, actor, g_adwActorBurstColors[st->target->type]);
@@ -2857,7 +2857,7 @@ void Level21_UpdateActors(void) {
     }
 
     /* Crystal dragon statue (DragonStatueState): shakes, then counts the rescue when Spyro is close. */
-    case 250: {
+    case ACTOR_TYPE_DRAGON_STATUE: {
       DragonStatueState *st = actor->state;
       int *at;
 
@@ -2996,7 +2996,7 @@ void Level21_UpdateActors(void) {
     }
 
     /* Dragon fragment, updated out of line. */
-    case 251:      TickGemPickupBurstEntity(actor);
+    case ACTOR_TYPE_STATUE_SHARD:      TickGemPickupBurstEntity(actor);
       break;
 
     /* Floating digits (DebrisState). */
@@ -3494,8 +3494,8 @@ void Level21_UpdateActors(void) {
             break;
           if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1C01)
             break;
-        } else if (g_pActorListBase[st->idx].type == 0xFA ||
-                   g_pActorListBase[st->idx].type == 0x53) {
+        } else if (g_pActorListBase[st->idx].type == ACTOR_TYPE_DRAGON_STATUE ||
+                   g_pActorListBase[st->idx].type == ACTOR_TYPE_GEM_1) {
           if (g_pActorListBase[st->idx].mode < 0x80)
             break;
         } else {
