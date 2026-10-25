@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "match_asm.h"
 
 /* 0x80016fd0, 120 bytes -- transpose the packed 3x3 short matrix at src into
    dst: three halfword-field swaps (word0<->word1 high halves, word1<->word3
@@ -28,7 +29,7 @@ void TransposePackedMatrix(unsigned int *dst, unsigned int *src) {
   w2 = src[2];
   w3 = src[3];
   w4 = src[4];
-  __asm__ volatile("");
+  SCHED_FENCE();
   m = 0xFFFF0000;
 
   a = w0 & m;

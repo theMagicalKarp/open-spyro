@@ -13,6 +13,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "sdata.h"
 #include "spyro_block.h"
 #include "vecmath.h"
@@ -251,7 +252,7 @@ int AdvanceSpyroPhysics(void) {
                   t = h - 0x40;
                 }
                 a = t << 4;
-                __asm__ volatile("");
+                SCHED_FENCE();
                 a = (a - g_nSpyroMoveTargetYaw) & 0xFFF;
                 if (a > 0x800) {
                   a -= 0x1000;

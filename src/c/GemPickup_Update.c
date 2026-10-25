@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "hud.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "model.h"
 #include "sample_bank.h"
 #include "vecmath.h"
@@ -455,7 +456,7 @@ void GemPickup_Update(void) {
           ((void (*)(int, void *))g_pfnLevelSpawnActor)(
               0xFB, g_pGemPickupSourceActor);
         }
-        __asm__("" : "=r"(five) : "0"(5));
+        OPAQUE_COPY(five, 5);
         GB[24] = (int)AllocActorRecordSlot();
         InitActorRenderDefaults((void *)GB[24]);
         ACTOR_RAW(STATUE, short, type) = 0x1FE;

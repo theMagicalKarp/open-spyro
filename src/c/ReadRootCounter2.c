@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "match_asm.h"
 
 /* 0x80017fd4, 16 bytes -- read root counter 2's current value
    (0x1F801120).
@@ -12,6 +13,6 @@
 unsigned short ReadRootCounter2(void) {
   register unsigned short *io asm("$1");
 
-  __asm__("" : "=r"(io) : "0"(0x1F800000));
+  OPAQUE_COPY(io, 0x1F800000);
   return io[0x1120 / 2];
 }

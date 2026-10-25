@@ -2,6 +2,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "sdata.h"
 #include "spyro_block.h"
 
@@ -16,7 +17,7 @@
 #define REBASE()                                                               \
   {                                                                            \
     g_nCameraTargetInverted = ComputeCameraToTargetAngle(CAM);                 \
-    __asm__ volatile("");                                                      \
+    SCHED_FENCE();                                                             \
     *(CameraAngles *)&g_nCameraSpringYaw = *(CameraAngles *)&g_nCameraYaw;     \
   }
 
@@ -67,7 +68,7 @@ void SelectCameraMode(void) {
       CAM[CAM_NEXT_MODE] = STATE_MODE();
       *(int **)&CAM[CAM_ANCHOR] = SPY;
       g_nCameraTargetInverted = ComputeCameraToTargetAngle(CAM);
-      __asm__ volatile("");
+      SCHED_FENCE();
       opts = g_dwActiveCameraOptions;
       *(CameraAngles *)&g_nCameraSpringYaw = *(CameraAngles *)&g_nCameraYaw;
       if (((opts & 0x10) || g_nCameraLookAroundActive) &&

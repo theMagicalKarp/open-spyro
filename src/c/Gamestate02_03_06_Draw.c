@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "gpu_prim.h"
 #include "main_shared.h"
+#include "match_asm.h"
 
 /* The sprite record being written (Actor layout). */
 #define SREC ((Actor *)g_pSpriteRecordWriteCursor)
@@ -72,7 +73,7 @@ void Gamestate02_03_06_Draw(void) {
     DRAWENV *envBase;
     register int k18 asm("$18");
     i = 0;
-    __asm__("" : "=r"(k18));
+    REG_RESERVE(k18);
     BuildRenderEntityLists();
     h = 0xe0;
     ComposeFrameScene();
@@ -89,7 +90,7 @@ void Gamestate02_03_06_Draw(void) {
       PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
       img = (void **)g_apRenderScratchPrimTopBlock;
     } while (0);
-    __asm__ volatile("" : : "r"(k18));
+    KEEP_IN_REG(k18);
     img2 = img - 2;
     PutDrawEnv(g_pActiveFrameDrawEnv);
     DrawOTag(LinkOTPrimitives(0x800));
@@ -103,7 +104,7 @@ void Gamestate02_03_06_Draw(void) {
     StoreImage(&rect, (void *)((char *)img[0] + 0xFFFE3E00));
     y = 8;
     do {
-      __asm__ volatile("" : : "r"(strip));
+      KEEP_IN_REG(strip);
       rect.x = i << 7;
       if (g_pActiveFrameDrawEnv != envBase) {
         y = 0xf8;
@@ -848,7 +849,7 @@ void Gamestate02_03_06_Draw(void) {
         ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posX) =
             g_nSubMenuScrollOffset + bF;
       }
-      __asm__ volatile("");
+      SCHED_FENCE();
       ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posY) = 0x6c;
       pp = pos;
       bp = buf;
@@ -856,7 +857,7 @@ void Gamestate02_03_06_Draw(void) {
       SREC->rotY = ((unsigned short *)g_anCosineLut)[g_dwHudBobSinePhase]
                        << 0x10 >>
                    0x19;
-      __asm__ volatile("");
+      SCHED_FENCE();
       SREC->rotZ = g_dwHudBobSinePhase;
       SREC->otBias = 0x7f;
       SREC->tintMode = 0xb;
@@ -933,7 +934,7 @@ void Gamestate02_03_06_Draw(void) {
           {
             int idx = g_nSubMenuCursor * 6 + i;
             int *gb = g_anLevelGemsBlock;
-            __asm__ volatile("");
+            SCHED_FENCE();
             gems = gb + idx;
           }
           pos[0] = gx;

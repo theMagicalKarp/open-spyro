@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "sdata.h"
 #include "spyro_block.h"
 #include "vecmath.h"
@@ -27,18 +28,16 @@ SDATA(g_pSpyroContactActor, 4);
 static inline int OpaqueInt(int p) {
   int q;
 
-  __asm__("" : "=r"(q) : "0"(p));
+  OPAQUE_COPY(q, p);
   return q;
 }
 
 static inline int *Opaque(int *p) {
   int *q;
 
-  __asm__("" : "=r"(q) : "0"(p));
+  OPAQUE_COPY(q, p);
   return q;
 }
-
-#define OPAQUE(v) __asm__("" : "=r"(v) : "0"(v))
 
 /* Input lockout frames count down to zero. */
 #define LOCKOUT_TICK(p)                                                        \
@@ -126,7 +125,7 @@ static inline int *Opaque(int *p) {
       v = (base) + IntegerSqrt(f << 13);                                       \
     }                                                                          \
     g_nSpyroMotionSpeed = v;                                                   \
-    __asm__ volatile("");                                                      \
+    SCHED_FENCE();                                                             \
   }
 
 /* Ease the pitch toward a yaw-rate-dependent bank. */
@@ -900,7 +899,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         x = g_nSpyroFloorReferenceZ - g_nSpyroWorldPosZ;
         SPY[SPY_PITCH] = (SPY[SPY_PITCH] + p) & 0xFFF;
         if (x < 0) {
-          __asm__ volatile("" : : "r"(p));
+          KEEP_IN_REG(p);
           g_nSpyroMotionSpeed = 0x1040 - (IntegerSqrt(-x) << 7);
         } else {
           g_nSpyroMotionSpeed = (IntegerSqrt(x) << 6) + 0x1040;
@@ -1540,7 +1539,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       v = obj[5] = (obj[5] + dt) & 0xFFF;
     }
     ((unsigned char *)g_pScriptedCameraActor)[0x46] = v >> 4;
-    __asm__ volatile("");
+    SCHED_FENCE();
     vA0[0] = (dist * LookupCosine(a)) >> 12;
     {
       int t = LookupSine(a);
@@ -1554,10 +1553,10 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     SubtractVector(vA0, vA0, ob - SPY_SCRIPTED_ACTOR);
     vA0[2] = 0;
     LShiftVector3(vA0, 6);
-    __asm__ volatile("");
+    SCHED_FENCE();
     obj2 = ob + (SPY_VELOCITY - SPY_SCRIPTED_ACTOR);
     CopyVector(obj2, vA0);
-    __asm__ volatile("" : : "r"(obj2));
+    KEEP_IN_REG(obj2);
     g_nSpyroBodyYaw = (g_nSpyroBodyYaw + dt) & 0xFFF;
     if (g_nSpyroCliffEdgeHint != 0) {
       ob[SPY_VELOCITY + 2 - SPY_SCRIPTED_ACTOR] -= 0xC0;

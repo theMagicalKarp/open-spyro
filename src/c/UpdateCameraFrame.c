@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "sdata.h"
 
 SDATA(g_nCameraSpringReengageCountdown, 4);
@@ -27,7 +28,7 @@ void UpdateCameraFrame(void) {
   } else {
     int *next;
 
-    __asm__("" : "=r"(next) : "0"(&g_nCameraNextMode));
+    OPAQUE_COPY(next, &g_nCameraNextMode);
     if (*next >= 0) {
       *next = (&g_abSpyroStateCameraMode)[g_nSpyroState];
     }

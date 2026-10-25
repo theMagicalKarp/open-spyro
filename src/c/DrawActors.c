@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "match_asm.h"
 #include "scripted_mob.h"
 #include "types.h"
 #include "vecmath.h"
@@ -273,7 +274,7 @@ void DrawActors(void) {
             flagX = 0;
           }
           dy = g_aMobRingScreenPts[j].y - yk;
-          __asm__ volatile("" : : "r"(yk));
+          KEEP_IN_REG(yk);
           if (dy < 0) {
             dy = -dy;
           }

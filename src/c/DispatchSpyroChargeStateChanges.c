@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "sdata.h"
 #include "vecmath.h"
 
@@ -27,7 +28,7 @@ int DispatchSpyroChargeStateChanges(void) {
   if (g_nCurrentLevelId != g_nActiveLevelId) {
     return 0;
   }
-  __asm__("" : "=r"(lock) : "0"(&g_nSpyroInputLockoutCountdown));
+  OPAQUE_COPY(lock, &g_nSpyroInputLockoutCountdown);
   if (lock[0] != 0) {
     flags = 0xFE0E;
   }
@@ -92,7 +93,7 @@ int DispatchSpyroChargeStateChanges(void) {
     changed = 1;
   }
   if (hi & 0x400) {
-    __asm__("" : "=r"(ready) : "0"(&g_nLevelReadyFlag));
+    OPAQUE_COPY(ready, &g_nLevelReadyFlag);
     if (*ready < 0) {
       goto hold;
     }

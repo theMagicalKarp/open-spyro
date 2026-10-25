@@ -13,6 +13,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "vecmath.h"
 
 struct CameraParamBlock {
@@ -456,8 +457,8 @@ sprites:
             register int k3 asm("$3");
             register int k4 asm("$4");
 
-            __asm__("" : "=r"(k3));
-            __asm__("" : "=r"(k4));
+            REG_RESERVE(k3);
+            REG_RESERVE(k4);
             tb = (*((unsigned char *)(((i * ACTOR_SIZE) +
                                        ((int)g_pActorListBase)) +
                                       0x3A))) &

@@ -2,6 +2,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "pad.h"
 #include "sdata.h"
 #include "spyro_block.h"
@@ -83,7 +84,7 @@ void UpdateCameraSpringForMode(void) {
       CAM[CAM_CURRENT_MODE] == 0xF) {
     CAM[CAM_CURRENT_MODE] = 0;
   }
-  __asm__("" : "=r"(s) : "0"(&CAM[CAM_STUCK_FRAMES]));
+  OPAQUE_COPY(s, &CAM[CAM_STUCK_FRAMES]);
   column = (*s + 1) >> 1;
   if (column >= 5) {
     column = 4;
@@ -343,7 +344,7 @@ void UpdateCameraSpringForMode(void) {
           STICK[1] -= 0x30;
         }
       }
-      __asm__("" : "=r"(ig) : "0"(STICK));
+      OPAQUE_COPY(ig, STICK);
       if (ig[0] < -0x400) {
         ig[0] = -0x400;
       }

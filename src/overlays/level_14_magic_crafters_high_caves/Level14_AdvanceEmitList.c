@@ -28,6 +28,7 @@
 #include "level_globals.h"
 #include "level_advance_emit_list.h"
 #include "actor_type.h"
+#include "match_asm.h"
 
 
 void Level14_AdvanceEmitList(int step) {
@@ -124,7 +125,7 @@ void Level14_AdvanceEmitList(int step) {
        * fall into the shared distance test at the bottom, which flips the
        * record between its normal and its "close" colour set (class byte 3).
        */
-      __asm__ volatile("" : : "r"(burst));
+      KEEP_IN_REG(burst);
       SVectorToVectorShl2(pt, POS);
       if (HU(0x1E) & 8) {
         if (AGE >= 0x30) {
@@ -201,7 +202,7 @@ void Level14_AdvanceEmitList(int step) {
         AddVector(pt, pt, dir);
       }
     commit:
-      __asm__ volatile("" : : "r"(burst));
+      KEEP_IN_REG(burst);
       VectorToSVectorShr2(POS, pt);
       AGE++;
     measure:
@@ -273,7 +274,7 @@ void Level14_AdvanceEmitList(int step) {
       /* The wizard's homing bolt: it spirals around the line to its owner
        * actor (g_pActorListBase + owner * 0x58), and switches to its burst state
        * (class byte 3) once it closes inside 0x2800. */
-      __asm__ volatile("" : : "r"(burst));
+      KEEP_IN_REG(burst);
       SVectorToVectorShl2(p, POS);
       do {
       } while (0);
@@ -293,7 +294,7 @@ void Level14_AdvanceEmitList(int step) {
         } else {
           ScaleVector3ByRatio(bolt, len, 0x80);
           AddVector(home, home, bolt);
-          __asm__ volatile("" : : "r"(burst));
+          KEEP_IN_REG(burst);
           VectorToSVectorShr2(POS, home);
           AGE++;
           home = (int *)g_anCameraPos;

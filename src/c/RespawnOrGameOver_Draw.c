@@ -3,6 +3,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 
 /* The "GAME OVER" letter screen position at byte offset `k` (letter * 4) of
    g_anGameOverLetterPosXY; the draw loop steps k by 4 alongside the letter
@@ -32,7 +33,7 @@ typedef struct LetterPos {
 static inline unsigned char *Opaque(unsigned char *p) {
   unsigned char *q;
 
-  __asm__("" : "=r"(q) : "0"(p));
+  OPAQUE_COPY(q, p);
   return q;
 }
 

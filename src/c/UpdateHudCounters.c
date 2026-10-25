@@ -14,6 +14,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "hud.h"
+#include "match_asm.h"
 
 /* 0x80054988, 3652 bytes — the per-frame HUD tick.  Bobs the two sine-driven
    icon anchors, then runs five independent roll-animation state machines (one
@@ -79,7 +80,7 @@ void UpdateHudCounters(void) {
   } while (0);
   idx = g_dwHudBobSinePhase;
   g_nHudFrameCycleMod9 = t - q9;
-  __asm__ volatile("");
+  SCHED_FENCE();
   nCos = g_anCosineLut[idx];
   g_abHudIconActorRecords[0x1A6] = nPhase;
   g_abHudIconActorRecords[0x1A5] = nCos >> 9;
@@ -124,7 +125,7 @@ void UpdateHudCounters(void) {
       {
         int *gc;
 
-        __asm__("" : "=r"(gc) : "0"(&GEMCACHE));
+        OPAQUE_COPY(gc, &GEMCACHE);
         SetHudCounterDigits(0, 4, gc[0] + 1, 0);
         CommitHudCounterAnimState(0, 4, ((unsigned char *)gc)[-0x1B]);
         nDelta = g_anLevelGemsCollected[g_nLevelIntroIndex] - gc[0];

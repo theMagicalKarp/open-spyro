@@ -3,6 +3,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 
 /* Draw handler for gamestate 0xC — the level-transition title card
    (0x8001E24C, 0x46c).
@@ -45,8 +46,8 @@ void Gamestate0C_Draw(void) {
         register void *h asm("$2");
 
         h = g_pGamestate0cRecord;
-        __asm__ volatile("" : : "r"(h));
-        __asm__("" : "=r"(ot) : "0"(g_apOtDepthBinBlock));
+        KEEP_IN_REG(h);
+        OPAQUE_COPY(ot, g_apOtDepthBinBlock);
         ot[1] = 0;
         ot[0] = h;
       }

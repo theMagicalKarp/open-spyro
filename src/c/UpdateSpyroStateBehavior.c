@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "match_asm.h"
 #include "sdata.h"
 #include "spyro_block.h"
 #include "vecmath.h"
@@ -15,14 +16,14 @@ SDATA(g_bSpyroJumpHoldForced, 4);
 static inline int *Opaque(int *p) {
   int *q;
 
-  __asm__("" : "=r"(q) : "0"(p));
+  OPAQUE_COPY(q, p);
   return q;
 }
 
 static inline int OpaqueInt(int p) {
   int q;
 
-  __asm__("" : "=r"(q) : "0"(p));
+  OPAQUE_COPY(q, p);
   return q;
 }
 
@@ -189,11 +190,11 @@ void UpdateSpyroStateBehavior(void) {
     if (AbsAngleDelta12(g_nSpyroMoveTargetYaw, g_nSpyroBodyYaw) > 0x500) {
       register int a0 asm("$4");
 
-      __asm__("" : "=r"(a0));
+      REG_RESERVE(a0);
       if (g_nPadStickActiveFlag != 0) {
         int d;
 
-        __asm__ volatile("" : : "r"(a0));
+        KEEP_IN_REG(a0);
         d = ((unsigned char *)g_pPadSubstepState)[0x17] - 0x7F;
 
         if (d < 0) {
