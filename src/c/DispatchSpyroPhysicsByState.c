@@ -3,6 +3,7 @@
 #include "main_shared.h"
 #include "pad_buttons.h"
 #include "spyro_block.h"
+#include "spyro_state.h"
 
 typedef void (*ParticleSpawnFn)(int kind, int type, int *pos, int *vel);
 
@@ -118,7 +119,7 @@ void DispatchSpyroPhysicsByState(void) {
     } else {
       g_nSpyroMoveTargetMag = g_anSpyroSlopeSpeedTargets[0];
     }
-    if (SPY[SPY_STATE] == 3) {
+    if (SPY[SPY_STATE] == SPYRO_ST_STOP) {
       CopyVector(puff, &SPY[SPY_MOTION]);
       RShiftVector3(puff, 6);
       ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, 0x21, puff, 0);
@@ -328,7 +329,7 @@ void DispatchSpyroPhysicsByState(void) {
     ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, 9, bubble, bubbleVel);
     break;
   }
-  if (SPY[SPY_STATE] == 0x1D) {
+  if (SPY[SPY_STATE] == SPYRO_ST_HAZARD) {
     g_nSpyroWorldPosZ -= g_nSpyroBreathTimer;
     if (g_nSpyroGroundHeightZ != 0) {
       g_nSpyroSwimWaterFloorZ = g_nSpyroGroundHeightZ;

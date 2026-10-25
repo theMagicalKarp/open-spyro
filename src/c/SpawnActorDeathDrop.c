@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_state.h"
 
 /* The tumbling sub-record hung off the drop's ->state pointer. */
 struct Debris {
@@ -103,8 +104,10 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
     CopyVector(throw_, alt);
     vz = 0x8c;
   } else if (kind == 3 || kind == 4) {
-    if ((kind == 4 || g_nSpyroState == 0xb || g_nSpyroState == 0x18 ||
-         g_nSpyroState == 0x14 || g_nSpyroState == 0x2c) &&
+    if ((kind == 4 || g_nSpyroState == SPYRO_ST_CHARGE ||
+         g_nSpyroState == SPYRO_ST_SUPERCHARGE_AIR ||
+         g_nSpyroState == SPYRO_ST_CHARGE_AIR ||
+         g_nSpyroState == SPYRO_ST_SUPERCHARGE) &&
         (kind == 4 ||
          (ApproxDist2D(&rec->posX, g_anSpyroWorldPos) < 0x800 &&
           (d = rec->posZ - rec->floorOffset, e = d - g_nSpyroWorldPosZ,

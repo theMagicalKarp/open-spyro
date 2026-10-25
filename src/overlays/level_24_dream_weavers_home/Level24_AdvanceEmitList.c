@@ -37,6 +37,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_advance_emit_list.h"
+#include "spyro_state.h"
 
 /* Level24_AdvanceEmitList (0x80083274, level_2_artisans_dark_hollow overlay,
  * 0x122c bytes).
@@ -178,7 +179,7 @@ void Level24_AdvanceEmitList(int step) {
 
     case 0xA:
       /* The homing sparkle: it only lives while Spyro is on screen. */
-      if ((g_nSpyroState == 0x1D && g_nSparxHealth < 0) || g_nSpyroDrawSuppressed != 0 ||
+      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < 0) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
         FreeEmitListRecord(rec);
       } else {

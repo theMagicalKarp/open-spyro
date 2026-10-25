@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_state.h"
 
 /* Spyro state-delay updater (0x8002e084): tick Spyro with no input and the
    camera, counting idle frames. At 0x20 frames the counter wraps and bumps
@@ -23,7 +24,7 @@ void SpyroStateDelay_Update(void) {
     }
   } else if (frames == 0x10) {
     if (g_nPauseMenuTransitionFrames == 0) {
-      ChangeSpyroState(0xF);
+      ChangeSpyroState(SPYRO_ST_GLIDE);
     }
   }
 }

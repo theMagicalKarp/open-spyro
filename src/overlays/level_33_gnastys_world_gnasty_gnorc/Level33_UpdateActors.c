@@ -33,6 +33,7 @@
 #include "gamestate.h"
 #include "match_asm.h"
 #include "pad_buttons.h"
+#include "spyro_state.h"
 
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
@@ -555,7 +556,7 @@ void Level33_UpdateActors(void) {
 
       if (actor->mode != 0 && actor->mode < 5) {
         SPY.controlFlags = 0x80002000;
-        if (SPY.state != 0 && SPY.state != 0xC) {
+        if (SPY.state != SPYRO_ST_IDLE && SPY.state != SPYRO_ST_CHARGE_BONK) {
           actor->mode = 5;
         }
       }
@@ -1722,7 +1723,7 @@ void Level33_UpdateActors(void) {
       if (st->phase < 2) {
         CopyVector(o140, &actor->posX);
         o140[2] += 0x3E8;
-        if (g_nSpyroState == 0xB || g_nSpyroState == 0x14) {
+        if (g_nSpyroState == SPYRO_ST_CHARGE || g_nSpyroState == SPYRO_ST_CHARGE_AIR) {
           st->camTimer = 0x3C;
         }
         if (TickCountdownByFrameDelta(&st->camTimer, 4) != 0 && dist < 0x4000 &&
@@ -2443,7 +2444,7 @@ void Level33_UpdateActors(void) {
       }
 
       case 1:
-        if (((unsigned)SPY.state < 2 || SPY.state == 0x15 || SPY.state == 2) &&
+        if (((unsigned)SPY.state < 2 || SPY.state == SPYRO_ST_JOG || SPY.state == SPYRO_ST_RUN) &&
             IsPointInRotatedBox(&SPY.posX, st->pad) &&
             AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(g_pActorListBase[st->target].posX - SPY.posX,
@@ -2535,8 +2536,8 @@ void Level33_UpdateActors(void) {
           RotateVectorByMatrix(actor->mtx, w, w);
           AddVector(&actor->posX, w, &g_pActorListBase[st->target].posX);
         }
-        if (st->timer >= 0xD0 || !((unsigned)SPY.state < 2 || SPY.state == 0x15 ||
-                                    SPY.state == 2 || SPY.state == 3)) {
+        if (st->timer >= 0xD0 || !((unsigned)SPY.state < 2 || SPY.state == SPYRO_ST_JOG ||
+                                    SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_STOP)) {
           actor->cullRadius = 0;
           actor->drawn = 0;
           g_nGameplayBlocked = 0;
@@ -3112,8 +3113,8 @@ void Level33_UpdateActors(void) {
         }
         if ((ApproxDist2D(&st->prize->posX, &spy->posX) < 0x1E0 &&
              (unsigned int)(SPY.posZ - st->prize->posZ + 0xDF) < 0x2BF) ||
-            g_nSpyroState == 0x2C || g_nSpyroState == 0x18 ||
-            (g_nSpyroState == 0x14 && (g_nSpyroStateFlags & 0x40))) {
+            g_nSpyroState == SPYRO_ST_SUPERCHARGE || g_nSpyroState == SPYRO_ST_SUPERCHARGE_AIR ||
+            (g_nSpyroState == SPYRO_ST_CHARGE_AIR && (g_nSpyroStateFlags & 0x40))) {
           CollectPickupActor(st->prize);
           DespawnActorRecord(st->prize);
           PlayActorMeshVoice(actor, 2, 0);

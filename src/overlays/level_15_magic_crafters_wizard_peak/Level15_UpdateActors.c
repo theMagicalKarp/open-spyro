@@ -35,6 +35,7 @@
 #include "gamestate.h"
 #include "match_asm.h"
 #include "pad_buttons.h"
+#include "spyro_state.h"
 
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
@@ -220,7 +221,7 @@ void Level15_UpdateActors(void) {
             depth = st->depth;
           }
 
-          if (g_nSpyroState == 0x11 || top + 0xC00 < z + depth) {
+          if (g_nSpyroState == SPYRO_ST_LIFT || top + 0xC00 < z + depth) {
             if (g_abHudCounterDisplayState == 2) {
               RefreshHudLevelGemCounter();
             }
@@ -1055,7 +1056,7 @@ void Level15_UpdateActors(void) {
 
       if (phase != 0 && phase < 5) {
         g_dwSpyroRequestMask = 0x80002000;
-        if (g_nSpyroState != 0 && g_nSpyroState != 0xC) {
+        if (g_nSpyroState != SPYRO_ST_IDLE && g_nSpyroState != SPYRO_ST_CHARGE_BONK) {
           actor->mode = 5;
         }
       }
@@ -1463,7 +1464,7 @@ void Level15_UpdateActors(void) {
 
       case 3:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
-        if (SPY.state == 0x19) {
+        if (SPY.state == SPYRO_ST_HURT_PINNED) {
           st->timer = 3;
         }
         if (g_nActorAnimDone == 0) {
@@ -2093,7 +2094,7 @@ void Level15_UpdateActors(void) {
             ApproxDist2D(&rider->posX, &spy->posX) < 0x400 &&
             (height = rider->posZ - rider->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
-            (g_nSpyroState == 0 || g_nSpyroState == 0xD) && g_nSpyroStateTimer > 0) {
+            (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
           actor->mode = 6;
           st->locked = 1;
           BeginSaveMenuFromWorld(actor);
@@ -2141,7 +2142,7 @@ void Level15_UpdateActors(void) {
             ApproxDist2D(&rider->posX, &spy->posX) < 0x400 &&
             (height = rider->posZ - rider->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
-            (g_nSpyroState == 0 || g_nSpyroState == 0xD) && g_nSpyroStateTimer > 0) {
+            (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
           actor->mode = 6;
           st->locked = 1;
           BeginSaveMenuFromWorld(actor);
@@ -3685,7 +3686,7 @@ void Level15_UpdateActors(void) {
       SubtractVector(x304, &spy->posX, &actor->posX);
       distance = VectorLength(x304, 0);
       if (distance < st->radius && x304[2] >= -0x3FF && x304[2] < st->spanZ &&
-          (SPY.state == 0x11 || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
+          (SPY.state == SPYRO_ST_LIFT || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
         spyro = &SPY;
         spyro->controlFlags = 0x80000000;
         SPY.pScriptedActor = actor;
@@ -3920,8 +3921,8 @@ void Level15_UpdateActors(void) {
         }
         if ((ApproxDist2D(&st->prize->posX, &spy->posX) < 0x1E0 &&
              (unsigned int)(SPY.posZ - st->prize->posZ + 0xDF) < 0x2BF) ||
-            g_nSpyroState == 0x2C || g_nSpyroState == 0x18 ||
-            (g_nSpyroState == 0x14 && (g_nSpyroStateFlags & 0x40))) {
+            g_nSpyroState == SPYRO_ST_SUPERCHARGE || g_nSpyroState == SPYRO_ST_SUPERCHARGE_AIR ||
+            (g_nSpyroState == SPYRO_ST_CHARGE_AIR && (g_nSpyroStateFlags & 0x40))) {
           CollectPickupActor(st->prize);
           DespawnActorRecord(st->prize);
           PlayActorMeshVoice(actor, 2, 0);

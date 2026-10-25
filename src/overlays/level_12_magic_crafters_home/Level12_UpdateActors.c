@@ -37,6 +37,7 @@
 #include "gamestate.h"
 #include "match_asm.h"
 #include "pad_buttons.h"
+#include "spyro_state.h"
 
 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
@@ -1126,7 +1127,7 @@ void Level12_UpdateActors(void) {
 
       if (phase != 0 && phase < 5) {
         g_dwSpyroRequestMask = 0x80002000;
-        if (g_nSpyroState != 0 && g_nSpyroState != 0xC) {
+        if (g_nSpyroState != SPYRO_ST_IDLE && g_nSpyroState != SPYRO_ST_CHARGE_BONK) {
           actor->mode = 5;
         }
       }
@@ -1940,7 +1941,7 @@ void Level12_UpdateActors(void) {
             ApproxDist2D(&rider->posX, &spy->posX) < 0x400 &&
             (height = rider->posZ - rider->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
-            (g_nSpyroState == 0 || g_nSpyroState == 0xD) && g_nSpyroStateTimer > 0) {
+            (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
           actor->mode = 6;
           st->locked = 1;
           BeginSaveMenuFromWorld(actor);
@@ -1988,7 +1989,7 @@ void Level12_UpdateActors(void) {
             ApproxDist2D(&rider->posX, &spy->posX) < 0x400 &&
             (height = rider->posZ - rider->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
-            (g_nSpyroState == 0 || g_nSpyroState == 0xD) && g_nSpyroStateTimer > 0) {
+            (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
           actor->mode = 6;
           st->locked = 1;
           BeginSaveMenuFromWorld(actor);
@@ -2467,8 +2468,8 @@ void Level12_UpdateActors(void) {
         int drop;
 
         if (g_nLevelEggCount == 1 &&
-            (SPY.state == 0 || SPY.state == 1 || SPY.state == 0x15 ||
-             SPY.state == 2) &&
+            (SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
+             SPY.state == SPYRO_ST_RUN) &&
             ApproxDist2D(&actor->posX, &spy->posX) < 0x600) {
           height = actor->posZ - actor->floorOffset;
           drop = height - SPY.posZ;
@@ -2554,8 +2555,8 @@ void Level12_UpdateActors(void) {
         }
 
         if (st->shake >= 0xD0 ||
-            !(SPY.state == 0 || SPY.state == 1 || SPY.state == 0x15 ||
-              SPY.state == 2 || SPY.state == 3)) {
+            !(SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
+              SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_STOP)) {
           int i;
 
           fly->cullRadius = 0;
@@ -2612,8 +2613,8 @@ void Level12_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1000) {
           actor->mode = 1;
         }
-      } else if ((SPY.state == 0 || SPY.state == 1 || SPY.state == 0x15 ||
-                  SPY.state == 2 || SPY.state == 0xB) &&
+      } else if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
+                  SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_CHARGE) &&
                  ApproxDist2D(&actor->posX, &spy->posX) < 0x780 &&
                  AbsAngleDelta8(SPY.bodyRotZ,
                                ArcTan2(actor->posX - spy->posX,
@@ -3052,7 +3053,7 @@ void Level12_UpdateActors(void) {
           marker = (vsnd >> 8) & 0xFF;
         }
         if (dist < st->camDist << 10 && (st->camAlways != 0 || marker >= 2) &&
-            SPY.state != 0xB && SPY.state != 0x14 &&
+            SPY.state != SPYRO_ST_CHARGE && SPY.state != SPYRO_ST_CHARGE_AIR &&
             AbsAngleDelta8(SPY.bodyRotZ,
                           ArcTan2(actor->posX - SPY.posX,
                                         actor->posY - SPY.posY, 0)) < 0x20) {
@@ -3077,7 +3078,7 @@ void Level12_UpdateActors(void) {
         if (st->mode == 0) {
           range = st->talkDist << 10;
 
-          if (SPY.state != 0xB || st->noBoost == 0) {
+          if (SPY.state != SPYRO_ST_CHARGE || st->noBoost == 0) {
             range += 0xC00;
           }
           SnapActorToGround(actor);
@@ -3116,8 +3117,8 @@ void Level12_UpdateActors(void) {
           if (TickCountdownByFrameDelta(&st->faceTimer, 4) == 0) {
             break;
           }
-          if ((SPY.state == 0x2C || SPY.state == 0x18 ||
-               (SPY.state == 0x14 && (g_nSpyroStateFlags & 0x40))) &&
+          if ((SPY.state == SPYRO_ST_SUPERCHARGE || SPY.state == SPYRO_ST_SUPERCHARGE_AIR ||
+               (SPY.state == SPYRO_ST_CHARGE_AIR && (g_nSpyroStateFlags & 0x40))) &&
               g_nActiveLevelId == 0x1E && marker < 2) {
             break;
           }
@@ -4302,8 +4303,8 @@ void Level12_UpdateActors(void) {
         }
         if ((ApproxDist2D(&st->prize->posX, &spy->posX) < 0x1E0 &&
              (unsigned int)(SPY.posZ - st->prize->posZ + 0xDF) < 0x2BF) ||
-            g_nSpyroState == 0x2C || g_nSpyroState == 0x18 ||
-            (g_nSpyroState == 0x14 && (g_nSpyroStateFlags & 0x40))) {
+            g_nSpyroState == SPYRO_ST_SUPERCHARGE || g_nSpyroState == SPYRO_ST_SUPERCHARGE_AIR ||
+            (g_nSpyroState == SPYRO_ST_CHARGE_AIR && (g_nSpyroStateFlags & 0x40))) {
           CollectPickupActor(st->prize);
           DespawnActorRecord(st->prize);
           PlayActorMeshVoice(actor, 2, 0);

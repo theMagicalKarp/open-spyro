@@ -4,6 +4,7 @@
 #include "main_shared.h"
 #include "match_asm.h"
 #include "spyro_block.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 typedef struct {
@@ -345,7 +346,7 @@ void TickLevelTransitionStream(int full) {
             actor =
                 *(MobActor **)((char *)g_pActorListBase + e[6] * ACTOR_SIZE);
             EBB_BREAK();
-            ChangeSpyroState(0xF);
+            ChangeSpyroState(SPYRO_ST_GLIDE);
             *(int *)(pe + PE_TO(SPY_STATE_FLAGS)) = 9;
             ComputeCameraToTargetAngle(cam);
             g_anCameraSpringYawBlock[6] =
@@ -382,7 +383,7 @@ void TickLevelTransitionStream(int full) {
         int *yawp;
         int *pos;
 
-        ChangeSpyroState(0xF);
+        ChangeSpyroState(SPYRO_ST_GLIDE);
         ComputeCameraToTargetAngle(g_anCameraPos);
         yawp = (int *)(SPYB + SPY_BODY_YAW * 4);
         pos = (int *)SPYB;
@@ -418,7 +419,7 @@ void TickLevelTransitionStream(int full) {
     } else if (g_nFlightLevelActive != 0) {
       g_nSpyroStateFlags = 0;
     } else if (g_nGamestate != GS_ACTOR_CUTSCENE) {
-      ChangeSpyroState(0);
+      ChangeSpyroState(SPYRO_ST_IDLE);
     }
     *(Words5 *)&g_nWorldRenderMeshChunkCount =
         *(Words5 *)&g_nWorldCollisionTriCount;

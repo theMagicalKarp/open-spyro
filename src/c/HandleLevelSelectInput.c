@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "pad_buttons.h"
+#include "spyro_state.h"
 
 /* Level-select (cheat menu) pad handler (0x8002d580, 0x290 bytes).
  * Square/Triangle/Circle/Cross/L1/R1/L2 pick a slot 0-6; R2 (0x1000) steps
@@ -63,7 +64,7 @@ void HandleLevelSelectInput(void) {
           g_nScriptedMobTag = 0;
           g_nPreserveMobIdx = -1;
           ResetSpyroEntity(0);
-          RestartSpyroAnimWithState(0xF);
+          RestartSpyroAnimWithState(SPYRO_ST_GLIDE);
           g_nGamestate = GS_LEVEL_LOAD;
           g_nCdStreamState = 1;
           g_nScriptedRespawnFlag = 0;

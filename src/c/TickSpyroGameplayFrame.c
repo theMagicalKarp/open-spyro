@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "model.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 /* `mesh` is Spyro's model plus anim * 4, so ANIM_SLOT reads that anim's
@@ -68,7 +69,7 @@ void TickSpyroGameplayFrame(void) {
     countdown[0] -= 1;
   }
   AdvanceSpyroFrameMotion();
-  if (g_nSpyroState == 0x1D) {
+  if (g_nSpyroState == SPYRO_ST_HAZARD) {
     if (g_nSpyroBreathTimer <= 0) {
       g_nSpyroBreathTimer = 1;
     }
@@ -123,20 +124,22 @@ void TickSpyroGameplayFrame(void) {
       }
       break;
     }
-  } else if ((g_nSpyroWorldPosZ < 0x400) ||
-             ((g_nSpyroState == 6) && (g_nSpyroStateFlags >= 0x79))) {
+  } else if ((g_nSpyroWorldPosZ < 0x400) || ((g_nSpyroState == SPYRO_ST_FALL) &&
+                                             (g_nSpyroStateFlags >= 0x79))) {
     TriggerRespawnOrGameOver();
   } else {
     pos = g_anSpyroWorldPosZBlock;
     if (pos[0] < g_anLevelDeathPlaneZTable[g_nLevelIntroIndex]) {
-      if ((g_nSpyroState != 6) && (g_nSpyroState != 0x10)) {
-        ChangeSpyroState(6);
+      if ((g_nSpyroState != SPYRO_ST_FALL) &&
+          (g_nSpyroState != SPYRO_ST_GLIDE_DROP)) {
+        ChangeSpyroState(SPYRO_ST_FALL);
       }
     } else if ((g_anSpyroWorldPos[0] < 0x800) || (g_nSpyroWorldPosY < 0x800)) {
-      if ((g_nSpyroState != 6) && (g_nSpyroState != 0x10)) {
+      if ((g_nSpyroState != SPYRO_ST_FALL) &&
+          (g_nSpyroState != SPYRO_ST_GLIDE_DROP)) {
         ZeroVector(pos + (0x104 / 4));
         ZeroVector(pos + (0xEC / 4));
-        ChangeSpyroState(6);
+        ChangeSpyroState(SPYRO_ST_FALL);
       }
     } else {
       goto done;

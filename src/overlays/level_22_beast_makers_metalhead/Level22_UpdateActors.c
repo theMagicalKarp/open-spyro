@@ -34,6 +34,7 @@
 #include "gamestate.h"
 #include "match_asm.h"
 #include "pad_buttons.h"
+#include "spyro_state.h"
 
 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
@@ -220,7 +221,7 @@ void Level22_UpdateActors(void) {
             depth = st->depth;
           }
 
-          if (g_nSpyroState == 0x11 || top + 0xC00 < z + depth) {
+          if (g_nSpyroState == SPYRO_ST_LIFT || top + 0xC00 < z + depth) {
             if (g_abHudCounterDisplayState == 2) {
               RefreshHudLevelGemCounter();
             }
@@ -527,7 +528,7 @@ void Level22_UpdateActors(void) {
 
       if (phase != 0 && phase < 5) {
         g_dwSpyroRequestMask = 0x80002000;
-        if (g_nSpyroState != 0 && g_nSpyroState != 0xC) {
+        if (g_nSpyroState != SPYRO_ST_IDLE && g_nSpyroState != SPYRO_ST_CHARGE_BONK) {
           actor->mode = 5;
         }
       }
@@ -704,7 +705,7 @@ void Level22_UpdateActors(void) {
           if (TickCountdownByFrameDelta(&st->camTimer, 4) != 0 &&
               (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x578
                                  : -SPY_DZ(actor) < 0x578) &&
-              dist < 0x6400 && g_nSpyroState != 0xB && g_nSpyroState != 0x14) {
+              dist < 0x6400 && g_nSpyroState != SPYRO_ST_CHARGE && g_nSpyroState != SPYRO_ST_CHARGE_AIR) {
             g_dwSpyroRequestMask = 0x80010000;
             g_pScriptedCameraActor = actor;
           }
@@ -712,13 +713,13 @@ void Level22_UpdateActors(void) {
           if (TickCountdownByFrameDelta(&st->camTimer, 4) != 0 &&
               (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x578
                                  : -SPY_DZ(actor) < 0x578) &&
-              dist < 0x6000 && g_nSpyroState != 0xB && g_nSpyroState != 0x14) {
+              dist < 0x6000 && g_nSpyroState != SPYRO_ST_CHARGE && g_nSpyroState != SPYRO_ST_CHARGE_AIR) {
             g_dwSpyroRequestMask = 0x80010000;
             g_pScriptedCameraActor = actor;
           }
         }
       }
-      if (g_nSpyroState == 0xB || g_nSpyroState == 0x14) {
+      if (g_nSpyroState == SPYRO_ST_CHARGE || g_nSpyroState == SPYRO_ST_CHARGE_AIR) {
         st->camTimer = 0x3C;
       }
       if (PickupGroupHasLiveActor(st->phase + 2) == 0 && actor->mode < 4) {
@@ -1430,7 +1431,7 @@ void Level22_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2BC &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x2BC
                                : -SPY_DZ(actor) < 0x2BC) &&
-            g_nSpyroState != 0xB && g_nSpyroState != 0x14) {
+            g_nSpyroState != SPYRO_ST_CHARGE && g_nSpyroState != SPYRO_ST_CHARGE_AIR) {
           int a = StepAngle8Toward(ArcTan2(g_anSpyroWorldPos - actor->posX,
                                               g_nSpyroWorldPosY - actor->posY, 0),
                                 st->heading, 0x20)
@@ -2585,7 +2586,7 @@ void Level22_UpdateActors(void) {
             ApproxDist2D(&tgtB->posX, &SPY.posX) < 1024 &&
             ABS2(tgtB->posZ - tgtB->floorOffset - SPY.posZ) < 512) {
 
-          if ((SPY.state == 0 || SPY.state == 0xD) && SPY.stateTimer > 0) {
+          if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_TEETER) && SPY.stateTimer > 0) {
             actor->mode = 6;
             st->flag24 = 1;
             BeginSaveMenuFromWorld(actor);
@@ -2626,7 +2627,7 @@ void Level22_UpdateActors(void) {
             ApproxDist2D(&tgtB->posX, &SPY.posX) < 0x400 &&
             ABS2(tgtB->posZ - tgtB->floorOffset - SPY.posZ) < 512) {
 
-          if ((SPY.state == 0 || SPY.state == 0xD) && SPY.stateTimer > 0) {
+          if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_TEETER) && SPY.stateTimer > 0) {
             actor->mode = 6;
             st->flag24 = 1;
             BeginSaveMenuFromWorld(actor);
@@ -3144,8 +3145,8 @@ void Level22_UpdateActors(void) {
         int drop;
 
         if (g_nLevelEggCount == 1 &&
-            (SPY.state == 0 || SPY.state == 1 || SPY.state == 0x15 ||
-             SPY.state == 2) &&
+            (SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
+             SPY.state == SPYRO_ST_RUN) &&
             ApproxDist2D(&actor->posX, &spy->posX) < 0x600) {
           height = actor->posZ - actor->floorOffset;
           drop = height - SPY.posZ;
@@ -3231,8 +3232,8 @@ void Level22_UpdateActors(void) {
         }
 
         if (st->shake >= 0xD0 ||
-            !(SPY.state == 0 || SPY.state == 1 || SPY.state == 0x15 ||
-              SPY.state == 2 || SPY.state == 3)) {
+            !(SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
+              SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_STOP)) {
           int i;
 
           fly->cullRadius = 0;
@@ -3659,7 +3660,7 @@ void Level22_UpdateActors(void) {
       SubtractVector(g536, &SPY.posX, &actor->posX);
       distance = VectorLength(g536, 0);
       if (distance < st->radius && g536[2] >= -0x3FF && g536[2] < st->spanZ &&
-          (SPY.state == 0x11 || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
+          (SPY.state == SPYRO_ST_LIFT || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
         spyro = &SPY;
         spyro->controlFlags = 0x80000000;
         SPY.pScriptedActor = actor;
@@ -4066,8 +4067,8 @@ void Level22_UpdateActors(void) {
         }
         if ((ApproxDist2D(&st->prize->posX, &spy->posX) < 0x1E0 &&
              (unsigned int)(SPY.posZ - st->prize->posZ + 0xDF) < 0x2BF) ||
-            g_nSpyroState == 0x2C || g_nSpyroState == 0x18 ||
-            (g_nSpyroState == 0x14 && (g_nSpyroStateFlags & 0x40))) {
+            g_nSpyroState == SPYRO_ST_SUPERCHARGE || g_nSpyroState == SPYRO_ST_SUPERCHARGE_AIR ||
+            (g_nSpyroState == SPYRO_ST_CHARGE_AIR && (g_nSpyroStateFlags & 0x40))) {
           CollectPickupActor(st->prize);
           DespawnActorRecord(st->prize);
           PlayActorMeshVoice(actor, 2, 0);

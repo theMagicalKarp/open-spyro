@@ -1,6 +1,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "sdata.h"
+#include "spyro_state.h"
 
 /* Held-base view of g_anCameraSpringDeltaState. */
 /* Scalar view of g_anCameraSpringDeltaState[0]. */
@@ -97,7 +98,7 @@ void AdvanceCameraSpringStep(int column) {
     }
   }
   SPRING(0);
-  if (g_nSpyroState == 0xF && g_nSpyroStateFlags == 0xB) {
+  if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroStateFlags == 0xB) {
     int *p = g_anCameraSpringDeltaStateBlock;
 
     if (*p < -0x800) {
@@ -122,7 +123,7 @@ void AdvanceCameraSpringStep(int column) {
   if (PASSIVE_HOLD()) {
     goto hold;
   }
-  if ((g_dwActiveCameraOptions & 0x10) && g_nSpyroState == 6 &&
+  if ((g_dwActiveCameraOptions & 0x10) && g_nSpyroState == SPYRO_ST_FALL &&
       g_nCameraCollisionRetries == 0) {
     delta = 0;
     g_anCameraSpringDeltaState[1] = 0;

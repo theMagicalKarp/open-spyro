@@ -14,6 +14,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 struct CameraParamBlock {
@@ -111,7 +112,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_nSpyroFallTrackingFlag = 1;
     g_nSpyroFallReferenceZ = g_nLevelSpawnPosZ;
     g_nSpyroFloorReferenceZ = g_nLevelSpawnPosZ;
-    ChangeSpyroState(0x20);
+    ChangeSpyroState(SPYRO_ST_FLY);
     if (g_nScriptedRespawnFlag == 0) {
       g_nSpyroStateFlags = 0;
       g_abSpyroPersistentEuler[0] = 0;

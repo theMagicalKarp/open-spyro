@@ -4,6 +4,7 @@
 #include "match_asm.h"
 #include "sdata.h"
 #include "spyro_block.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 SDATA(g_nSpyroScriptedLiftBaseZ, 4);
@@ -239,7 +240,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         d -= 0x1000;
       }
       if (abs(d) < 0x10) {
-        ChangeSpyroState(0);
+        ChangeSpyroState(SPYRO_ST_IDLE);
       }
     }
     g_nSpyroStateFlags = 0;
@@ -512,7 +513,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       *vel = 0;
       g_nSpyroVelocityZ = 0;
       g_nSpyroVelocityY = m;
-      if (g_nSpyroState == 10) {
+      if (g_nSpyroState == SPYRO_ST_SIDESTEP_R1) {
         g_nSpyroVelocityY = -m;
       }
     }
@@ -1124,7 +1125,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       if (g_anSpyroVelocityFp6[0] != 0 || g_anSpyroVelocityFp6[1] != 0) {
         moving = 1;
       }
-      if (g_nSpyroState == 0x20) {
+      if (g_nSpyroState == SPYRO_ST_FLY) {
         int b = moving - 3;
 
         n = (g_nSpyroMotionSpeed >> 11) - b;

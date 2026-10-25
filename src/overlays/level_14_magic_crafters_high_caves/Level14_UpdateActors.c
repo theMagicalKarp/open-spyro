@@ -42,6 +42,7 @@
 #include "gamestate.h"
 #include "match_asm.h"
 #include "pad_buttons.h"
+#include "spyro_state.h"
 
 /* ==== Per-class state blocks ====
  *
@@ -307,7 +308,7 @@ void Level14_UpdateActors(void) {
             depth = st->depth;
           }
 
-          if (g_nSpyroState == 0x11 || top + 0xC00 < z + depth) {
+          if (g_nSpyroState == SPYRO_ST_LIFT || top + 0xC00 < z + depth) {
             if (g_abHudCounterDisplayState == 2) {
               RefreshHudLevelGemCounter();
             }
@@ -1256,7 +1257,7 @@ void Level14_UpdateActors(void) {
 
       if (phase != 0 && phase < 5) {
         g_dwSpyroRequestMask = 0x80002000;
-        if (g_nSpyroState != 0 && g_nSpyroState != 0xC) {
+        if (g_nSpyroState != SPYRO_ST_IDLE && g_nSpyroState != SPYRO_ST_CHARGE_BONK) {
           actor->mode = 5;
         }
       }
@@ -1940,7 +1941,7 @@ void Level14_UpdateActors(void) {
         if (st->mode & 0x80) {
           if (g_nSpyroAirborneFrames != 0) {
             g_dwSpyroRequestMask = 0x80000200;
-            if (g_nSpyroState == 8) {
+            if (g_nSpyroState == SPYRO_ST_08) {
               g_anCameraActiveTargetParams.w[0] = (g_anCameraParamMode2Front.w[0] - g_nSpyroMoveTargetYaw) & 0xFFF;
             } else {
               g_anCameraActiveTargetParams.w[0] = (g_anCameraParamMode2Front.w[0] - g_nSpyroBodyYaw) & 0xFFF;
@@ -2490,7 +2491,7 @@ void Level14_UpdateActors(void) {
             ApproxDist2D(&tgtB->posX, &SPY.posX) < 1024 &&
             ABS2(tgtB->posZ - tgtB->floorOffset - SPY.posZ) < 512) {
 
-          if ((SPY.state == 0 || SPY.state == 0xD) && SPY.stateTimer > 0) {
+          if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_TEETER) && SPY.stateTimer > 0) {
             actor->mode = 6;
             st->flag24 = 1;
             BeginSaveMenuFromWorld(actor);
@@ -2531,7 +2532,7 @@ void Level14_UpdateActors(void) {
             ApproxDist2D(&tgtB->posX, &SPY.posX) < 0x400 &&
             ABS2(tgtB->posZ - tgtB->floorOffset - SPY.posZ) < 512) {
 
-          if ((SPY.state == 0 || SPY.state == 0xD) && SPY.stateTimer > 0) {
+          if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_TEETER) && SPY.stateTimer > 0) {
             actor->mode = 6;
             st->flag24 = 1;
             BeginSaveMenuFromWorld(actor);
@@ -4103,7 +4104,7 @@ void Level14_UpdateActors(void) {
         continue;
       }
       actor->flags = 0;
-      if (SPY.state == 0xE) {
+      if (SPY.state == SPYRO_ST_HURT) {
         st->timer = 0x78;
         st->mode |= 0x10;
       }
@@ -4762,8 +4763,8 @@ void Level14_UpdateActors(void) {
         }
         if ((ApproxDist2D(&st->prize->posX, &spy->posX) < 0x1E0 &&
              (unsigned int)(SPY.posZ - st->prize->posZ + 0xDF) < 0x2BF) ||
-            g_nSpyroState == 0x2C || g_nSpyroState == 0x18 ||
-            (g_nSpyroState == 0x14 && (g_nSpyroStateFlags & 0x40))) {
+            g_nSpyroState == SPYRO_ST_SUPERCHARGE || g_nSpyroState == SPYRO_ST_SUPERCHARGE_AIR ||
+            (g_nSpyroState == SPYRO_ST_CHARGE_AIR && (g_nSpyroStateFlags & 0x40))) {
           CollectPickupActor(st->prize);
           DespawnActorRecord(st->prize);
           PlayActorMeshVoice(actor, 2, 0);

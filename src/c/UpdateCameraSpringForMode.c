@@ -6,6 +6,7 @@
 #include "pad.h"
 #include "sdata.h"
 #include "spyro_block.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 /* Register-base view of g_anCameraScriptStickIntegrator. */
@@ -95,7 +96,8 @@ void UpdateCameraSpringForMode(void) {
     if (!((g_dwActiveCameraOptions & 0x10) &&
           g_nCameraSpringSuppressFlag == 0 && g_nCameraManualYawInput == 0 &&
           g_nCameraCollisionRetries == 0 &&
-          (g_nCameraSpringReengageCountdown != 0 || g_nSpyroState == 0x1B))) {
+          (g_nCameraSpringReengageCountdown != 0 ||
+           g_nSpyroState == SPYRO_ST_HURT_LONG))) {
       int yaw;
 
       *(int **)&CAM[CAM_TARGET_PARAMS] = g_anCameraParamDefault;
@@ -499,7 +501,7 @@ void UpdateCameraSpringForMode(void) {
     UpdateCameraEulerAngles();
   }
   g_nCameraTargetInverted = ComputeCameraToTargetAngle(g_anCameraPos);
-  if (!((g_dwActiveCameraOptions & 0x10) && g_nSpyroState == 5 &&
+  if (!((g_dwActiveCameraOptions & 0x10) && g_nSpyroState == SPYRO_ST_JUMP &&
         g_nCameraSpringSuppressFlag == 0 && g_nSpyroMotionSpeed < 0x400)) {
     g_nCameraSpringYaw = g_nCameraYaw;
   }

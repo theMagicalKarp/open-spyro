@@ -29,6 +29,7 @@
 #include "level_advance_emit_list.h"
 #include "actor_type.h"
 #include "match_asm.h"
+#include "spyro_state.h"
 
 
 void Level14_AdvanceEmitList(int step) {
@@ -344,7 +345,7 @@ void Level14_AdvanceEmitList(int step) {
     case 0xA:
     /* <- Level10_AdvanceEmitList */
       /* The homing sparkle: it only lives while Spyro is on screen. */
-      if ((g_nSpyroState == 0x1D && g_nSparxHealth < 0) || g_nSpyroDrawSuppressed != 0 ||
+      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < 0) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
         goto expire;
       } else {

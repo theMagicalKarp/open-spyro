@@ -3,17 +3,20 @@
 #include "main_shared.h"
 #include "match_asm.h"
 #include "sdata.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 SDATA(g_pSpyroContactActor, 4);
 
 /* Charge-state trigger dispatcher (0x80041270, 744 bytes), called from the
-   charge (0xB) and flame (0x14) states. Masks the trigger-event flags (fewer
-   while the input lockout runs) and routes them: a bump (bits 0x6 == 4, or
-   == 2 with the contact actor within +-0x200 of Spyro's heading) kicks state
-   0xC; a combo (== 6) spends a life-gated lockout and picks the target state
-   from the flag bits; 0x8000 rebounds off the first contact normal; 0x800
-   forces state 0x11; 0x400 spends a level-ready credit for state 0x1D. Bit
+   charge states (SPYRO_ST_CHARGE, SPYRO_ST_CHARGE_AIR). Masks the
+   trigger-event flags (fewer while the input lockout runs) and routes them: a
+   bump (bits 0x6 == 4, or
+   == 2 with the contact actor within +-0x200 of Spyro's heading) kicks
+   SPYRO_ST_CHARGE_BONK; a hit (== 6) outside the lockout costs one
+   g_nSparxHealth, re-arms the lockout and picks the hurt (or, past 0, death)
+   state from the flag bits; 0x8000 rebounds off the first contact normal; 0x800
+   forces SPYRO_ST_LIFT; 0x400 spends Sparx health for SPYRO_ST_HAZARD. Bit
    0x2000 latches the charge hold. Returns nonzero once any state changed. */
 int DispatchSpyroChargeStateChanges(void) {
   int flags = 0xFFFF;
@@ -48,7 +51,7 @@ int DispatchSpyroChargeStateChanges(void) {
     }
     /* FALLTHROUGH */
   case 4:
-    ChangeSpyroState(0xC);
+    ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
     changed = 1;
     break;
   case 6:
@@ -58,22 +61,22 @@ int DispatchSpyroChargeStateChanges(void) {
       }
       lock[0] = 0x5A;
       if (flags & 0x10) {
-        state = 0x19;
+        state = SPYRO_ST_HURT_PINNED;
         if (lock[1] < 0) {
-          state = 0x1F;
+          state = SPYRO_ST_DEATH_PINNED;
         }
       } else if (flags & 0x20) {
-        state = 7;
+        state = SPYRO_ST_HURT_TINT;
       } else if (flags & 0x40) {
-        state = 0x1B;
+        state = SPYRO_ST_HURT_LONG;
       } else if (flags & 0x80) {
-        state = 0x1C;
+        state = SPYRO_ST_KNOCKBACK_2;
       } else if (flags & 0x100) {
-        state = 0x16;
+        state = SPYRO_ST_KNOCKBACK;
       } else {
-        state = 0xE;
+        state = SPYRO_ST_HURT;
         if (flags & 0x400) {
-          state = 0x1D;
+          state = SPYRO_ST_HAZARD;
         }
       }
       ChangeSpyroState(state);
@@ -83,13 +86,13 @@ int DispatchSpyroChargeStateChanges(void) {
   }
   hi = flags & 0xFC00;
   if (flags & 0x8000) {
-    ChangeSpyroState(0xC);
+    ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
     SetVector3Magnitude(g_anSpyroFirstContactNormal, 0x800);
     CopyVector(g_anSpyroFirstContactNormal - 0x25, g_anSpyroFirstContactNormal);
     changed = 1;
   }
-  if ((flags & 0x800) && g_nSpyroState != 0x11) {
-    ChangeSpyroState(0x11);
+  if ((flags & 0x800) && g_nSpyroState != SPYRO_ST_LIFT) {
+    ChangeSpyroState(SPYRO_ST_LIFT);
     changed = 1;
   }
   if (hi & 0x400) {
@@ -104,7 +107,7 @@ int DispatchSpyroChargeStateChanges(void) {
     if (g_nSpyroInputLockoutCountdown < 0x5A) {
       g_nSpyroInputLockoutCountdown = 0x5A;
     }
-    ChangeSpyroState(0x1D);
+    ChangeSpyroState(SPYRO_ST_HAZARD);
     changed = 1;
   }
 hold:

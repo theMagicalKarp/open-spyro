@@ -941,7 +941,7 @@ extern int g_nSpyroAnimPlayRate;                        /* 0x80078ab0 */
 extern int g_nSpyroPrevState;                           /* 0x80078ab4 */
 extern int g_nSpyroHornStrikeSwingPhase;                /* 0x80078ab8 */
 extern int g_nSpyroHornStrikeAnimRate;                  /* 0x80078abc */
-extern int g_nSpyroState;                               /* 0x80078ad0 */
+extern int g_nSpyroState;                               /* 0x80078ad0: SpyroState (spyro_state.h) */
 extern int g_nSpyroStateFlags;                          /* 0x80078ad4 */
 extern int g_nSpyroStateTimer;                          /* 0x80078ad8 */
 extern int g_nSpyroPrevStateTimer;                      /* 0x80078adc */

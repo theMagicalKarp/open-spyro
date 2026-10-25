@@ -6,6 +6,7 @@
 #include "pad_buttons.h"
 #include "sdata.h"
 #include "spyro_block.h"
+#include "spyro_state.h"
 
 #define CAM g_anCameraPosBlock
 #define CAM_CURRENT_MODE 0x0C /* g_nCameraCurrentMode */
@@ -43,7 +44,7 @@ void SelectCameraMode(void) {
 
   if (mode == 0x80000009) {
     if (g_dwActiveCameraOptions & 0x10) {
-      if (g_nSpyroState == 0 || g_nSpyroState == 0xD) {
+      if (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) {
         if (!(g_dwPadHeld & PAD_TRIANGLE)) {
           g_nCameraNextMode = 0x80000010;
           g_nCameraPassiveModeHoldTimer = 0x2D;
@@ -53,7 +54,7 @@ void SelectCameraMode(void) {
         }
         goto done;
       }
-    } else if ((g_dwPadHeld & PAD_TRIANGLE) && g_nSpyroState == 0) {
+    } else if ((g_dwPadHeld & PAD_TRIANGLE) && g_nSpyroState == SPYRO_ST_IDLE) {
       goto done;
     }
     {

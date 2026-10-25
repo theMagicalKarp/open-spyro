@@ -3,6 +3,7 @@
 #include "main_shared.h"
 #include "match_asm.h"
 #include "sdata.h"
+#include "spyro_state.h"
 
 SDATA(g_nCameraSpringReengageCountdown, 4);
 
@@ -13,7 +14,7 @@ SDATA(g_nCameraSpringReengageCountdown, 4);
    vertical camera shake and, while no CD stream runs, refresh the floor
    lookup under the camera. Pad snapshots bracket the frame. */
 void UpdateCameraFrame(void) {
-  if (g_nSpyroState == 0x1B) {
+  if (g_nSpyroState == SPYRO_ST_HURT_LONG) {
     g_nCameraLookAroundActive = 1;
   } else {
     g_nCameraLookAroundActive = 0;

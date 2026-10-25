@@ -36,6 +36,7 @@
 #include "gamestate.h"
 #include "match_asm.h"
 #include "pad_buttons.h"
+#include "spyro_state.h"
 
 /* Level30_UpdateActors -- per-frame actor update for level 30 (Gnorc Gnexus).
  *
@@ -487,7 +488,7 @@ void Level30_UpdateActors(void) {
 
       if (phase != 0 && phase < 5) {
         g_dwSpyroRequestMask = 0x80002000;
-        if (g_nSpyroState != 0 && g_nSpyroState != 0xC) {
+        if (g_nSpyroState != SPYRO_ST_IDLE && g_nSpyroState != SPYRO_ST_CHARGE_BONK) {
           actor->mode = 5;
         }
       }
@@ -1135,7 +1136,7 @@ void Level30_UpdateActors(void) {
             ApproxDist2D(&rider->posX, &spy->posX) < 0x400 &&
             (height = rider->posZ - rider->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
-            (g_nSpyroState == 0 || g_nSpyroState == 0xD) && g_nSpyroStateTimer > 0) {
+            (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
           actor->mode = 6;
           st->locked = 1;
           BeginSaveMenuFromWorld(actor);
@@ -1182,7 +1183,7 @@ void Level30_UpdateActors(void) {
             ApproxDist2D(&rider->posX, &spy->posX) < 0x400 &&
             (height = rider->posZ - rider->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
-            (g_nSpyroState == 0 || g_nSpyroState == 0xD) && g_nSpyroStateTimer > 0) {
+            (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
           actor->mode = 6;
           st->locked = 1;
           BeginSaveMenuFromWorld(actor);
@@ -1598,8 +1599,8 @@ void Level30_UpdateActors(void) {
         continue;
       }
 
-      if (((unsigned int)g_nSpyroState < 2 || g_nSpyroState == 0x15 ||
-           g_nSpyroState == 2 || g_nSpyroState == 0xB) &&
+      if (((unsigned int)g_nSpyroState < 2 || g_nSpyroState == SPYRO_ST_JOG ||
+           g_nSpyroState == SPYRO_ST_RUN || g_nSpyroState == SPYRO_ST_CHARGE) &&
           ApproxDist2D(&actor->posX, &spy->posX) < 0x780 &&
           AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                         ArcTan2(actor->posX - spy->posX,
@@ -1747,21 +1748,21 @@ void Level30_UpdateActors(void) {
       if (st->started == 0) {
         if (g_bAmbienceChannelMask != 0) {
           ModifyWorldChunkAnimFlags(0, 0xFC, 0);
-          if (g_nSpyroState == 0xF && g_nSpyroStateFlags == 9) {
+          if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroStateFlags == 9) {
             SetWorldChunkAnimStep(0, 0x3B, 0);
           }
         }
 
         if (g_abLevelVisitedFlag[0x21] != 0) {
           ModifyWorldChunkAnimFlags(1, 0xFC, 0);
-          if (g_nSpyroState == 0xF && g_nSpyroStateFlags == 9) {
+          if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroStateFlags == 9) {
             SetWorldChunkAnimStep(1, 0x3B, 0);
           }
         }
 
         if (g_abLevelVisitedFlag[0x22] != 0) {
           ModifyWorldChunkAnimFlags(2, 0xFC, 0);
-          if (g_nSpyroState == 0xF && g_nSpyroStateFlags == 9) {
+          if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroStateFlags == 9) {
             SetWorldChunkAnimStep(2, 0x3B, 0);
           }
         }

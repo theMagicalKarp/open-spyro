@@ -23,6 +23,7 @@
 #include "level_update_actors_macros.h"
 #include "gamestate.h"
 #include "pad_buttons.h"
+#include "spyro_state.h"
 
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
@@ -574,7 +575,7 @@ void Level0_UpdateActors(void) {
 
       if (actor->mode != 0 && actor->mode < 5) {
         SPY.controlFlags = 0x80002000;
-        if (SPY.state != 0 && SPY.state != 0xC) {
+        if (SPY.state != SPYRO_ST_IDLE && SPY.state != SPYRO_ST_CHARGE_BONK) {
           actor->mode = 5;
         }
       }
@@ -1258,7 +1259,7 @@ void Level0_UpdateActors(void) {
             ApproxDist2D(&tgtB->posX, &SPY.posX) < 1024 &&
             ABS2(tgtB->posZ - tgtB->floorOffset - SPY.posZ) < 512) {
 
-          if ((SPY.state == 0 || SPY.state == 0xD) && SPY.stateTimer > 0) {
+          if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_TEETER) && SPY.stateTimer > 0) {
             actor->mode = 6;
             st->flag24 = 1;
             BeginSaveMenuFromWorld(actor);
@@ -1299,7 +1300,7 @@ void Level0_UpdateActors(void) {
             ApproxDist2D(&tgtB->posX, &SPY.posX) < 0x400 &&
             ABS2(tgtB->posZ - tgtB->floorOffset - SPY.posZ) < 512) {
 
-          if ((SPY.state == 0 || SPY.state == 0xD) && SPY.stateTimer > 0) {
+          if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_TEETER) && SPY.stateTimer > 0) {
             actor->mode = 6;
             st->flag24 = 1;
             BeginSaveMenuFromWorld(actor);
@@ -1546,7 +1547,7 @@ void Level0_UpdateActors(void) {
 
       case 4: {
         if (g_nActorAnimDone != 0) {
-          if (SPY.state == 0xB || SPY.state == 0x14) {
+          if (SPY.state == SPYRO_ST_CHARGE || SPY.state == SPYRO_ST_CHARGE_AIR) {
             if (actor->anim != 6) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, 6);
@@ -1666,7 +1667,7 @@ void Level0_UpdateActors(void) {
       case 0x14: {
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
 
-        if (SPY.state != 0xB && SPY.state != 0x14) {
+        if (SPY.state != SPYRO_ST_CHARGE && SPY.state != SPYRO_ST_CHARGE_AIR) {
           ENTER_POSE(actor, 5);
         }
 
@@ -2026,8 +2027,8 @@ void Level0_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1000) {
           actor->mode = 1;
         }
-      } else if ((SPY.state == 0 || SPY.state == 1 || SPY.state == 0x15 ||
-                  SPY.state == 2 || SPY.state == 0xB) &&
+      } else if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
+                  SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_CHARGE) &&
                  ApproxDist2D(&actor->posX, &SPY.posX) < 0x780 &&
                  AbsAngleDelta8(SPY.bodyRotZ,
                                ArcTan2(actor->posX - SPY.posX,
@@ -2436,7 +2437,7 @@ void Level0_UpdateActors(void) {
       SubtractVector(svK, &SPY.posX, &actor->posX);
       distance = VectorLength(svK, 0);
       if (distance < st->radius && svK[2] >= -0x3FF && svK[2] < st->spanZ &&
-          (SPY.state == 0x11 || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
+          (SPY.state == SPYRO_ST_LIFT || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
         spyro = &SPY;
         spyro->controlFlags = 0x80000000;
         SPY.pScriptedActor = actor;

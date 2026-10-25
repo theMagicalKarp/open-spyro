@@ -37,6 +37,7 @@
 #include "gamestate.h"
 #include "match_asm.h"
 #include "pad_buttons.h"
+#include "spyro_state.h"
 
 
 /* Type 286: ambient sound source; mode 2 also coasts along a path. */
@@ -211,7 +212,7 @@ void Level1_UpdateActors(void) {
             depth = st->depth;
           }
 
-          if (g_nSpyroState == 0x11 || top + 0xC00 < z + depth) {
+          if (g_nSpyroState == SPYRO_ST_LIFT || top + 0xC00 < z + depth) {
             if (g_abHudCounterDisplayState == 2) {
               RefreshHudLevelGemCounter();
             }
@@ -1360,7 +1361,7 @@ void Level1_UpdateActors(void) {
 
       if (phase != 0 && phase < 5) {
         g_dwSpyroRequestMask = 0x80002000;
-        if (g_nSpyroState != 0 && g_nSpyroState != 0xC) {
+        if (g_nSpyroState != SPYRO_ST_IDLE && g_nSpyroState != SPYRO_ST_CHARGE_BONK) {
           actor->mode = 5;
         }
       }
@@ -1618,7 +1619,7 @@ void Level1_UpdateActors(void) {
         }
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x5DC &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x384) {
-          if (st->camStage == 0 && g_nSpyroState != 0xB && g_nSpyroState != 0x14) {
+          if (st->camStage == 0 && g_nSpyroState != SPYRO_ST_CHARGE && g_nSpyroState != SPYRO_ST_CHARGE_AIR) {
             st->camStage = 1;
             EBB_BREAK();
             g_dwSpyroTriggerEventFlags |= 0x80;
@@ -2215,7 +2216,7 @@ void Level1_UpdateActors(void) {
             ApproxDist2D(&rider->posX, &spy->posX) < 0x400 &&
             (height = rider->posZ - rider->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
-            (g_nSpyroState == 0 || g_nSpyroState == 0xD) && g_nSpyroStateTimer > 0) {
+            (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
           actor->mode = 6;
           st->locked = 1;
           BeginSaveMenuFromWorld(actor);
@@ -2263,7 +2264,7 @@ void Level1_UpdateActors(void) {
             ApproxDist2D(&rider->posX, &spy->posX) < 0x400 &&
             (height = rider->posZ - rider->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
-            (g_nSpyroState == 0 || g_nSpyroState == 0xD) && g_nSpyroStateTimer > 0) {
+            (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
           actor->mode = 6;
           st->locked = 1;
           BeginSaveMenuFromWorld(actor);
@@ -2423,7 +2424,7 @@ void Level1_UpdateActors(void) {
 
       case 5:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
-        if (g_nSpyroState == 0x16) {
+        if (g_nSpyroState == SPYRO_ST_KNOCKBACK) {
           st->t04 = 0x8C;
         }
         if (g_nActorAnimDone != 0) {
@@ -2896,8 +2897,8 @@ void Level1_UpdateActors(void) {
         int drop;
 
         if (g_nLevelEggCount == 1 &&
-            (SPY.state == 0 || SPY.state == 1 || SPY.state == 0x15 ||
-             SPY.state == 2) &&
+            (SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
+             SPY.state == SPYRO_ST_RUN) &&
             ApproxDist2D(&actor->posX, &spy->posX) < 0x600) {
           height = actor->posZ - actor->floorOffset;
           drop = height - SPY.posZ;
@@ -2983,8 +2984,8 @@ void Level1_UpdateActors(void) {
         }
 
         if (st->shake >= 0xD0 ||
-            !(SPY.state == 0 || SPY.state == 1 || SPY.state == 0x15 ||
-              SPY.state == 2 || SPY.state == 3)) {
+            !(SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
+              SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_STOP)) {
           int i;
 
           fly->cullRadius = 0;
@@ -3533,7 +3534,7 @@ void Level1_UpdateActors(void) {
       SubtractVector(v250, &spy->posX, &actor->posX);
       distance = VectorLength(v250, 0);
       if (distance < st->radius && v250[2] >= -0x3FF && v250[2] < st->spanZ &&
-          (SPY.state == 0x11 || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
+          (SPY.state == SPYRO_ST_LIFT || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
         spyro = &SPY;
         spyro->controlFlags = 0x80000000;
         SPY.pScriptedActor = actor;

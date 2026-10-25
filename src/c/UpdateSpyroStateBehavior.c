@@ -5,6 +5,7 @@
 #include "pad_buttons.h"
 #include "sdata.h"
 #include "spyro_block.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 SDATA(g_bSpyroJumpHoldForced, 4);
@@ -32,25 +33,25 @@ static inline int OpaqueInt(int p) {
 #define LAND_ON_GROUND()                                                       \
   if (g_nSpyroSpeedTarget > 0) {                                               \
     if (g_nSpyroMotionSpeed > 0xF00) {                                         \
-      ChangeSpyroState(2);                                                     \
+      ChangeSpyroState(SPYRO_ST_RUN);                                          \
     } else if (g_nSpyroMotionSpeed > 0x780) {                                  \
-      ChangeSpyroState(21);                                                    \
+      ChangeSpyroState(SPYRO_ST_JOG);                                          \
     } else {                                                                   \
-      ChangeSpyroState(1);                                                     \
+      ChangeSpyroState(SPYRO_ST_WALK);                                         \
     }                                                                          \
   } else if (g_nSpyroMotionSpeed >= 0x780) {                                   \
-    ChangeSpyroState(3);                                                       \
+    ChangeSpyroState(SPYRO_ST_STOP);                                           \
   } else {                                                                     \
     ResetSpyroLinearMotion();                                                  \
-    ChangeSpyroState(0);                                                       \
+    ChangeSpyroState(SPYRO_ST_IDLE);                                           \
   }
 
 /* Jump: glide-jump in flight levels and level 0x40, else the plain jump. */
 #define JUMP_STATE()                                                           \
   if (g_nFlightLevelActive != 0 || g_nActiveLevelId == 0x40) {                 \
-    ChangeSpyroState(32);                                                      \
+    ChangeSpyroState(SPYRO_ST_FLY);                                            \
   } else {                                                                     \
-    ChangeSpyroState(15);                                                      \
+    ChangeSpyroState(SPYRO_ST_GLIDE);                                          \
   }
 
 /* Ring of four dust puffs around Spyro's facing. */
@@ -74,32 +75,32 @@ static inline int OpaqueInt(int p) {
    and hands the chosen next state to ChangeSpyroState. */
 void UpdateSpyroStateBehavior(void) {
   switch (g_nSpyroState) {
-  case 0:
+  case SPYRO_ST_IDLE:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
-      ChangeSpyroState(5);
+      ChangeSpyroState(SPYRO_ST_JUMP);
       break;
     }
     if (g_nSpyroAirborneFrames >= 4 || g_nSpyroGroundSlope >= 0x17) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_dwPadHeld & PAD_SQUARE) {
-      ChangeSpyroState(11);
+      ChangeSpyroState(SPYRO_ST_CHARGE);
       break;
     }
     if (g_dwPadPressed & PAD_L1) {
-      ChangeSpyroState(9);
+      ChangeSpyroState(SPYRO_ST_SIDESTEP_L1);
       break;
     }
     if (g_dwPadPressed & PAD_R1) {
-      ChangeSpyroState(10);
+      ChangeSpyroState(SPYRO_ST_SIDESTEP_R1);
       break;
     }
     if (g_nSpyroFrameMotionLength > 0x400) {
-      ChangeSpyroState(3);
+      ChangeSpyroState(SPYRO_ST_STOP);
       g_nSpyroStateFlags = 7;
       break;
     }
@@ -107,14 +108,14 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_nPadDirectionalIdleFlag == 0) {
-      ChangeSpyroState(1);
+      ChangeSpyroState(SPYRO_ST_WALK);
       break;
     }
     if (g_nSpyroPadSnapshotCountdown != 0) {
       break;
     }
     if (g_nSpyroCliffEdgeHint != 0) {
-      ChangeSpyroState(13);
+      ChangeSpyroState(SPYRO_ST_TEETER);
       break;
     }
     if (g_nSpyroStateTimer >= g_nSpyroIdleAnimTimeout &&
@@ -122,67 +123,67 @@ void UpdateSpyroStateBehavior(void) {
       CycleSpyroIdleAnim();
     }
     break;
-  case 1:
+  case SPYRO_ST_WALK:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
-      ChangeSpyroState(5);
+      ChangeSpyroState(SPYRO_ST_JUMP);
       break;
     }
     if (g_nSpyroAirborneFrames >= 4 || g_nSpyroGroundSlope >= 0x17) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_dwPadHeld & PAD_SQUARE) {
-      ChangeSpyroState(11);
+      ChangeSpyroState(SPYRO_ST_CHARGE);
       break;
     }
     if (g_dwPadPressed & PAD_L1) {
-      ChangeSpyroState(9);
+      ChangeSpyroState(SPYRO_ST_SIDESTEP_L1);
       break;
     }
     if (g_dwPadPressed & PAD_R1) {
-      ChangeSpyroState(10);
+      ChangeSpyroState(SPYRO_ST_SIDESTEP_R1);
       break;
     }
     if (g_nSpyroMotionSpeed == 0 && g_nSpyroSpeedTarget == 0 &&
         g_nSpyroStateTimer >= 0x10) {
-      ChangeSpyroState(0);
+      ChangeSpyroState(SPYRO_ST_IDLE);
       break;
     }
     if (g_nSpyroMotionSpeed > 0xF00) {
-      ChangeSpyroState(2);
+      ChangeSpyroState(SPYRO_ST_RUN);
     } else if (g_nSpyroMotionSpeed > 0x780) {
-      ChangeSpyroState(21);
+      ChangeSpyroState(SPYRO_ST_JOG);
     }
     break;
-  case 2:
+  case SPYRO_ST_RUN:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
-      ChangeSpyroState(5);
+      ChangeSpyroState(SPYRO_ST_JUMP);
       break;
     }
     if (g_nSpyroAirborneFrames >= 4 || g_nSpyroGroundSlope >= 0x17) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_dwPadHeld & PAD_SQUARE) {
-      ChangeSpyroState(11);
+      ChangeSpyroState(SPYRO_ST_CHARGE);
       break;
     }
     if (g_dwPadPressed & PAD_L1) {
-      ChangeSpyroState(9);
+      ChangeSpyroState(SPYRO_ST_SIDESTEP_L1);
       break;
     }
     if (g_dwPadPressed & PAD_R1) {
-      ChangeSpyroState(10);
+      ChangeSpyroState(SPYRO_ST_SIDESTEP_R1);
       break;
     }
     if (g_nSpyroSpeedTarget == 0) {
-      ChangeSpyroState(3);
+      ChangeSpyroState(SPYRO_ST_STOP);
       break;
     }
     if (AbsAngleDelta12(g_nSpyroMoveTargetYaw, g_nSpyroBodyYaw) > 0x500) {
@@ -199,92 +200,92 @@ void UpdateSpyroStateBehavior(void) {
           d = -d;
         }
         if (d > 0x30) {
-          ChangeSpyroState(4);
+          ChangeSpyroState(SPYRO_ST_TURN_AROUND);
         } else {
-          ChangeSpyroState(3);
+          ChangeSpyroState(SPYRO_ST_STOP);
         }
       } else {
-        ChangeSpyroState(4);
+        ChangeSpyroState(SPYRO_ST_TURN_AROUND);
       }
       break;
     }
     if (g_nSpyroSpeedTarget == 0) {
-      ChangeSpyroState(0);
+      ChangeSpyroState(SPYRO_ST_IDLE);
       break;
     }
     if (g_nSpyroMotionSpeed < 0x640) {
-      ChangeSpyroState(1);
+      ChangeSpyroState(SPYRO_ST_WALK);
       break;
     }
     if (g_nSpyroMotionSpeed < 0xC80) {
-      ChangeSpyroState(21);
+      ChangeSpyroState(SPYRO_ST_JOG);
     }
     break;
-  case 3:
+  case SPYRO_ST_STOP:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
-      ChangeSpyroState(5);
+      ChangeSpyroState(SPYRO_ST_JUMP);
       break;
     }
     if (g_nSpyroAirborneFrames >= 4 || g_nSpyroGroundSlope >= 0x17) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_dwPadHeld & PAD_SQUARE) {
-      ChangeSpyroState(11);
+      ChangeSpyroState(SPYRO_ST_CHARGE);
       break;
     }
     if (g_dwPadPressed & PAD_L1) {
-      ChangeSpyroState(9);
+      ChangeSpyroState(SPYRO_ST_SIDESTEP_L1);
       break;
     }
     if (g_dwPadPressed & PAD_R1) {
-      ChangeSpyroState(10);
+      ChangeSpyroState(SPYRO_ST_SIDESTEP_R1);
       break;
     }
     if (g_nSpyroMotionSpeed == 0 && g_nSpyroSpeedTarget == 0 &&
         g_nSpyroFrameMotionLength < 0x100) {
-      ChangeSpyroState(0);
+      ChangeSpyroState(SPYRO_ST_IDLE);
       break;
     }
     if (g_nSpyroSpeedTarget > 0 && g_nSpyroStateTimer < 0x12 &&
         AbsAngleDelta12(g_nSpyroMoveTargetYaw, g_nSpyroBodyYaw) > 0x500) {
-      ChangeSpyroState(4);
+      ChangeSpyroState(SPYRO_ST_TURN_AROUND);
       break;
     }
     if (g_nSpyroMotionSpeed > 0xF00 && g_nSpyroSpeedTarget > 0) {
-      ChangeSpyroState(2);
+      ChangeSpyroState(SPYRO_ST_RUN);
       break;
     }
     if (g_nSpyroMotionSpeed > 0x780 && g_nSpyroSpeedTarget > 0) {
-      ChangeSpyroState(21);
+      ChangeSpyroState(SPYRO_ST_JOG);
       break;
     }
     if (g_nSpyroMotionSpeed > 0 && g_nSpyroSpeedTarget > 0) {
-      ChangeSpyroState(1);
+      ChangeSpyroState(SPYRO_ST_WALK);
     }
     break;
-  case 4:
+  case SPYRO_ST_TURN_AROUND:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if (g_nSpyroAirborneFrames >= 4 || g_nSpyroGroundSlope >= 0x17) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_nSpyroStateTimer < 0x25) {
       break;
     }
     if (g_nPadDirectionalIdleFlag != 0) {
-      ChangeSpyroState(0);
+      ChangeSpyroState(SPYRO_ST_IDLE);
     } else {
       g_nSpyroMotionSpeed = 0xA00;
-      ChangeSpyroState(1);
+      ChangeSpyroState(SPYRO_ST_WALK);
     }
     break;
-  case 5:
+  case SPYRO_ST_JUMP:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
@@ -300,7 +301,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_nSpyroAirborneFrames == 0 && g_nSpyroStateTimer >= 0x10) {
       if (g_nSpyroGroundSlope >= 0x17) {
-        ChangeSpyroState(19);
+        ChangeSpyroState(SPYRO_ST_SLIDE);
         break;
       }
       if (g_anSpyroGroundNormal[0] * g_anSpyroVelocity[0] +
@@ -312,7 +313,7 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_dwPadHeld & PAD_SQUARE) {
-      ChangeSpyroState(20);
+      ChangeSpyroState(SPYRO_ST_CHARGE_AIR);
       g_nSpyroMotionSpeed = 0x1F80;
       break;
     }
@@ -322,27 +323,27 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_anSpyroMotionVec[2] < -0x1900 || g_nSpyroStateTimer >= 0x79) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
     }
     break;
-  case 6:
+  case SPYRO_ST_FALL:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
       if (g_nSpyroGravityEnableFlag != 0 && g_nSpyroStateTimer < 4) {
-        ChangeSpyroState(5);
+        ChangeSpyroState(SPYRO_ST_JUMP);
         break;
       }
       if ((g_dwPadPressed & PAD_CROSS) && g_nSpyroStateFlags == 0) {
         if (g_nFlightLevelActive != 0 || g_nActiveLevelId == 0x40) {
           if (g_nSpyroGroundRunFlag == 0 || g_nSpyroStateTimer >= 0x10) {
-            ChangeSpyroState(32);
+            ChangeSpyroState(SPYRO_ST_FLY);
           }
           break;
         }
         if (g_nSpyroGroundRunFlag == 0 || g_nSpyroStateTimer >= 0x1F) {
-          ChangeSpyroState(15);
+          ChangeSpyroState(SPYRO_ST_GLIDE);
         }
         break;
       }
@@ -355,26 +356,26 @@ void UpdateSpyroStateBehavior(void) {
 
       if (g_nSpyroGroundSlope >= 0x17) {
         if (g_nSpyroStateTimer >= 9) {
-          ChangeSpyroState(19);
+          ChangeSpyroState(SPYRO_ST_SLIDE);
         }
         break;
       }
       if (g_nSpyroSpeedTarget > 0) {
         if (g_nSpyroMotionSpeed > 0xF00) {
-          next = 2;
+          next = SPYRO_ST_RUN;
         } else {
-          next = 1;
+          next = SPYRO_ST_WALK;
           if (g_nSpyroMotionSpeed > 0x780) {
-            next = 21;
+            next = SPYRO_ST_JOG;
           }
         }
         ChangeSpyroState(next);
         LANDING_DUST(fwd);
       } else {
-        next = 3;
+        next = SPYRO_ST_STOP;
         if (g_nSpyroMotionSpeed < 0x780) {
           ResetSpyroLinearMotion();
-          next = 0;
+          next = SPYRO_ST_IDLE;
         }
         ChangeSpyroState(next);
         LANDING_DUST(back);
@@ -392,7 +393,7 @@ void UpdateSpyroStateBehavior(void) {
       }
     }
     break;
-  case 8:
+  case SPYRO_ST_08:
     if (DispatchSpyroPadStateChanges(0xFBF9)) {
       if (g_nSpyroStateTimer >= 0xD) {
         g_nSpyroBodyYaw = g_nSpyroMoveTargetYaw;
@@ -408,18 +409,18 @@ void UpdateSpyroStateBehavior(void) {
     g_nSpyroBodyPitch = -g_nSpyroBodyPitch & 0xFFF;
     g_nSpyroBodyRoll = -g_nSpyroBodyRoll & 0xFFF;
     if (g_nPadDirectionalIdleFlag != 0) {
-      ChangeSpyroState(0);
+      ChangeSpyroState(SPYRO_ST_IDLE);
     } else {
-      ChangeSpyroState(1);
+      ChangeSpyroState(SPYRO_ST_WALK);
       g_nSpyroMotionSpeed = 0x15;
     }
     break;
-  case 9:
+  case SPYRO_ST_SIDESTEP_L1:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if (SPY[SPY_AIRBORNE] >= 4 || g_nSpyroGroundSlope >= 0x17) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_dwPadHeld & PAD_L1) {
@@ -430,14 +431,14 @@ void UpdateSpyroStateBehavior(void) {
     }
     CopyVector(&SPY[SPY_VELOCITY], &SPY[SPY_CARRY]);
     g_nSpyroMotionSpeed = 0;
-    ChangeSpyroState(0);
+    ChangeSpyroState(SPYRO_ST_IDLE);
     break;
-  case 10:
+  case SPYRO_ST_SIDESTEP_R1:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if (SPY[SPY_AIRBORNE] >= 4 || g_nSpyroGroundSlope >= 0x17) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_dwPadHeld & PAD_R1) {
@@ -448,41 +449,41 @@ void UpdateSpyroStateBehavior(void) {
     }
     CopyVector(&SPY[SPY_VELOCITY], &SPY[SPY_CARRY]);
     g_nSpyroMotionSpeed = 0;
-    ChangeSpyroState(0);
+    ChangeSpyroState(SPYRO_ST_IDLE);
     break;
-  case 11:
+  case SPYRO_ST_CHARGE:
     if (DispatchSpyroChargeStateChanges()) {
       break;
     }
     if ((g_dwPadHeld & (PAD_CROSS | PAD_SQUARE)) == 0xC0 &&
         g_nSpyroGroundSlope < 0xC) {
-      ChangeSpyroState(20);
+      ChangeSpyroState(SPYRO_ST_CHARGE_AIR);
       g_nSpyroVelocityZ += 0xDC0;
       g_nSpyroAirborneFrames++;
       break;
     }
     if (g_nSpyroAirborneFrames >= 4) {
-      ChangeSpyroState(20);
+      ChangeSpyroState(SPYRO_ST_CHARGE_AIR);
       break;
     }
     if (g_nSpyroGroundSlope >= 0x17) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (!(g_dwPadHeld & PAD_SQUARE)) {
-      ChangeSpyroState(2);
+      ChangeSpyroState(SPYRO_ST_RUN);
       g_nSpyroStateTimer = g_nSpyroPrevStateTimer * 2;
       break;
     }
     if (g_nSpyroMotionSpeed > 0xC80 &&
         g_nSpyroFrameMotionLength * 2 < g_nSpyroMotionSpeed &&
         g_nScriptedRespawnFlag == 0) {
-      ChangeSpyroState(12);
+      ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
       break;
     }
     if (SPY[SPY_CHARGE_HOLD] != 0) {
       if (g_nSpyroMotionSpeed > 0x3000) {
-        ChangeSpyroState(44);
+        ChangeSpyroState(SPYRO_ST_SUPERCHARGE);
         break;
       }
       if (!(g_nSpyroStateFlags & 0x80)) {
@@ -500,63 +501,63 @@ void UpdateSpyroStateBehavior(void) {
       g_nSpyroStateFlags &= ~0x80;
     }
     break;
-  case 12:
+  case SPYRO_ST_CHARGE_BONK:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if (g_nSpyroStateTimer > 0x10 &&
         (g_nSpyroAirborneFrames != 0 || g_nSpyroGroundSlope >= 0x17)) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_nSpyroStateTimer >= 0x19) {
-      ChangeSpyroState(0);
+      ChangeSpyroState(SPYRO_ST_IDLE);
     }
     break;
-  case 13:
+  case SPYRO_ST_TEETER:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
-      ChangeSpyroState(5);
+      ChangeSpyroState(SPYRO_ST_JUMP);
       break;
     }
     if (g_nSpyroAirborneFrames >= 4 || g_nSpyroGroundSlope >= 0x17) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_dwPadHeld & PAD_SQUARE) {
-      ChangeSpyroState(11);
+      ChangeSpyroState(SPYRO_ST_CHARGE);
       break;
     }
     if (g_dwPadPressed & PAD_L1) {
-      ChangeSpyroState(9);
+      ChangeSpyroState(SPYRO_ST_SIDESTEP_L1);
       break;
     }
     if (g_dwPadPressed & PAD_R1) {
-      ChangeSpyroState(10);
+      ChangeSpyroState(SPYRO_ST_SIDESTEP_R1);
       break;
     }
     if (g_nCameraNextMode == 0x80000009) {
-      ChangeSpyroState(0);
+      ChangeSpyroState(SPYRO_ST_IDLE);
       break;
     }
     if (g_nPadDirectionalIdleFlag == 0) {
-      ChangeSpyroState(1);
+      ChangeSpyroState(SPYRO_ST_WALK);
       break;
     }
     if (g_nSpyroPadSnapshotCountdown != 0) {
-      ChangeSpyroState(0);
+      ChangeSpyroState(SPYRO_ST_IDLE);
       break;
     }
     if (g_nSpyroStateTimer < 0x1F) {
       break;
     }
     if (g_nSpyroCliffEdgeHint == 0) {
-      ChangeSpyroState(0);
+      ChangeSpyroState(SPYRO_ST_IDLE);
     }
     break;
-  case 7:
+  case SPYRO_ST_HURT_TINT:
     if (g_dwSpyroTriggerEventFlags & 0x20) {
       break;
     }
@@ -564,37 +565,37 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_nSparxHealth < 0) {
-      ChangeSpyroState(30);
+      ChangeSpyroState(SPYRO_ST_DEATH);
       break;
     }
     goto land;
-  case 14:
-  case 22:
-  case 28:
+  case SPYRO_ST_HURT:
+  case SPYRO_ST_KNOCKBACK:
+  case SPYRO_ST_KNOCKBACK_2:
     if (g_nSpyroStateTimer < 0x18) {
       break;
     }
     if (g_nSparxHealth < 0) {
-      ChangeSpyroState(30);
+      ChangeSpyroState(SPYRO_ST_DEATH);
       break;
     }
     goto land;
-  case 27:
+  case SPYRO_ST_HURT_LONG:
     if (g_nSpyroStateTimer < 0x30) {
       break;
     }
     if (g_nSparxHealth < 0) {
-      ChangeSpyroState(30);
+      ChangeSpyroState(SPYRO_ST_DEATH);
       break;
     }
     goto land;
-  case 15:
+  case SPYRO_ST_GLIDE:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if (g_nSpyroAirborneFrames == 0) {
       if (g_nSpyroGroundSlope >= 0x17) {
-        ChangeSpyroState(6);
+        ChangeSpyroState(SPYRO_ST_FALL);
       } else {
         LAND_ON_GROUND();
       }
@@ -602,15 +603,15 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_nSpyroGroundProbeSuspendFlag == 0 ||
         g_nSpyroFrameMotionLength < 0x400) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_dwPadHeld & PAD_SQUARE) {
-      ChangeSpyroState(20);
+      ChangeSpyroState(SPYRO_ST_CHARGE_AIR);
       break;
     }
     if (g_nSpyroStateTimer > 0x10 && (g_dwPadPressed & PAD_TRIANGLE)) {
-      ChangeSpyroState(16);
+      ChangeSpyroState(SPYRO_ST_GLIDE_DROP);
       break;
     }
     if (g_nSpyroFallTrackingFlag != 0) {
@@ -622,7 +623,7 @@ void UpdateSpyroStateBehavior(void) {
       }
       d = g_nSpyroWorldPosZ;
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
-        ChangeSpyroState(6);
+        ChangeSpyroState(SPYRO_ST_FALL);
         break;
       }
       pad = ((int *)g_pPadSubstepState)[1];
@@ -636,62 +637,62 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_nSpyroStateFlags == 0 &&
         g_nSpyroFloorReferenceZ + 0x18 < g_nSpyroWorldPosZ) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_nSpyroMotionSpeed < 0xC80 && g_nSpyroStateTimer > 0x10) {
-      ChangeSpyroState(23);
+      ChangeSpyroState(SPYRO_ST_GLIDE_SLOW);
     }
     break;
-  case 17:
+  case SPYRO_ST_LIFT:
     DispatchSpyroPadStateChanges(0xFFF9);
     break;
-  case 18:
-  case 36:
-  case 37:
-  case 38:
-  case 39:
-  case 40:
-  case 41:
-  case 42:
-  case 43: {
+  case SPYRO_ST_FIDGET_0:
+  case SPYRO_ST_FIDGET_1:
+  case SPYRO_ST_FIDGET_2:
+  case SPYRO_ST_FIDGET_3:
+  case SPYRO_ST_FIDGET_4:
+  case SPYRO_ST_FIDGET_5:
+  case SPYRO_ST_FIDGET_6:
+  case SPYRO_ST_FIDGET_7:
+  case SPYRO_ST_FIDGET_8: {
     int *air;
 
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
-      ChangeSpyroState(5);
+      ChangeSpyroState(SPYRO_ST_JUMP);
       break;
     }
     air = Opaque(&SPY[SPY_AIRBORNE]);
     if (*air >= 4 || g_nSpyroGroundSlope >= 0x17) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_dwPadHeld & PAD_SQUARE) {
-      ChangeSpyroState(11);
+      ChangeSpyroState(SPYRO_ST_CHARGE);
       break;
     }
     if (g_dwPadPressed & PAD_L1) {
-      ChangeSpyroState(9);
+      ChangeSpyroState(SPYRO_ST_SIDESTEP_L1);
       break;
     }
     if (g_dwPadPressed & PAD_R1) {
-      ChangeSpyroState(10);
+      ChangeSpyroState(SPYRO_ST_SIDESTEP_R1);
       break;
     }
     if (g_nSpyroFrameMotionLength > 0x400) {
-      ChangeSpyroState(3);
+      ChangeSpyroState(SPYRO_ST_STOP);
       break;
     }
     if (g_nCameraNextMode != 0x80000009) {
       if (g_nPadDirectionalIdleFlag == 0) {
-        ChangeSpyroState(1);
+        ChangeSpyroState(SPYRO_ST_WALK);
         break;
       }
       if (g_nSpyroCliffEdgeHint != 0) {
-        RestartSpyroAnimWithState(13);
+        RestartSpyroAnimWithState(SPYRO_ST_TEETER);
         break;
       }
       if (g_nSpyroPadSnapshotCountdown == 0) {
@@ -704,7 +705,7 @@ void UpdateSpyroStateBehavior(void) {
                                            4 +
                                        1] -
                     1) {
-          ChangeSpyroState(0);
+          ChangeSpyroState(SPYRO_ST_IDLE);
           break;
         }
         if (g_nSpyroHornStrikeState != 1) {
@@ -712,20 +713,20 @@ void UpdateSpyroStateBehavior(void) {
         }
       }
     }
-    RestartSpyroAnimWithState(0);
+    RestartSpyroAnimWithState(SPYRO_ST_IDLE);
     break;
   }
-  case 16:
+  case SPYRO_ST_GLIDE_DROP:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if (g_nSpyroWorldPosZ >= g_anLevelDeathPlaneZTable[g_nLevelIntroIndex] &&
         g_nSpyroAirborneFrames == 0) {
       if (g_nSpyroStateTimer >= 0x18 || g_nSpyroGroundSlope >= 0x17) {
-        ChangeSpyroState(6);
+        ChangeSpyroState(SPYRO_ST_FALL);
         g_nSpyroStateTimer = g_nSpyroPrevStateTimer;
       } else {
-        ChangeSpyroState(0);
+        ChangeSpyroState(SPYRO_ST_IDLE);
       }
       if (SPY[SPY_COUNTDOWN] < 8) {
         SPY[SPY_COUNTDOWN] = 8;
@@ -734,25 +735,25 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_dwPadPressed & PAD_CROSS) {
       if (g_nSpyroGroundRunFlag == 0 || g_nSpyroStateTimer >= 0x10) {
-        ChangeSpyroState(15);
+        ChangeSpyroState(SPYRO_ST_GLIDE);
       }
       break;
     }
     goto fall_timeout;
-  case 19:
+  case SPYRO_ST_SLIDE:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if ((g_dwPadHeld & PAD_CROSS) && g_nSpyroStateTimer < 4) {
-      ChangeSpyroState(5);
+      ChangeSpyroState(SPYRO_ST_JUMP);
       break;
     }
     if ((g_dwPadHeld & PAD_SQUARE) && g_nSpyroMotionSpeed > 0x1F00) {
-      ChangeSpyroState(20);
+      ChangeSpyroState(SPYRO_ST_CHARGE_AIR);
       break;
     }
     if (g_nSpyroAirborneFrames >= 8) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_nSpyroGroundSlope < 0x17 &&
@@ -771,7 +772,7 @@ void UpdateSpyroStateBehavior(void) {
       }
     }
     break;
-  case 20:
+  case SPYRO_ST_CHARGE_AIR:
     if (g_nSpyroGroundRunFlag == 0 && (g_dwPadPressed & PAD_CROSS)) {
       g_nSpyroJumpHoldLatch = 1;
     }
@@ -782,21 +783,21 @@ void UpdateSpyroStateBehavior(void) {
         g_anSpyroVelocity[0] * g_anSpyroGroundNormal[0] +
                 g_anSpyroVelocity[1] * g_anSpyroGroundNormal[1] <
             0) {
-      ChangeSpyroState(12);
+      ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
       break;
     }
     if (g_nSpyroContactedActorFlag == 0 && g_nSpyroMotionSpeed > 0xC80 &&
         g_nSpyroFrameMotionLength * 2 < g_nSpyroMotionSpeed &&
         g_nScriptedRespawnFlag == 0) {
       BuildSpyroVelocityFromBodyEuler();
-      ChangeSpyroState(12);
+      ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
       break;
     }
     if (g_nSpyroAirborneFrames == 0) {
       if (g_nSpyroStateFlags & 0x40) {
-        ChangeSpyroState(44);
+        ChangeSpyroState(SPYRO_ST_SUPERCHARGE);
       } else {
-        ChangeSpyroState(11);
+        ChangeSpyroState(SPYRO_ST_CHARGE);
       }
       break;
     }
@@ -804,43 +805,43 @@ void UpdateSpyroStateBehavior(void) {
       JUMP_STATE();
     }
     break;
-  case 21:
+  case SPYRO_ST_JOG:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
-      ChangeSpyroState(5);
+      ChangeSpyroState(SPYRO_ST_JUMP);
       break;
     }
     if (g_nSpyroAirborneFrames >= 4 || g_nSpyroGroundSlope >= 0x17) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_dwPadHeld & PAD_SQUARE) {
-      ChangeSpyroState(11);
+      ChangeSpyroState(SPYRO_ST_CHARGE);
       break;
     }
     if (g_dwPadPressed & PAD_L1) {
-      ChangeSpyroState(9);
+      ChangeSpyroState(SPYRO_ST_SIDESTEP_L1);
       break;
     }
     if (g_dwPadPressed & PAD_R1) {
-      ChangeSpyroState(10);
+      ChangeSpyroState(SPYRO_ST_SIDESTEP_R1);
       break;
     }
     if (g_nSpyroMotionSpeed > 0xF00) {
-      ChangeSpyroState(2);
+      ChangeSpyroState(SPYRO_ST_RUN);
     } else if (g_nSpyroMotionSpeed < 0x640) {
-      ChangeSpyroState(1);
+      ChangeSpyroState(SPYRO_ST_WALK);
     }
     break;
-  case 23:
+  case SPYRO_ST_GLIDE_SLOW:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if (g_nSpyroAirborneFrames == 0) {
       if (g_nSpyroGroundSlope >= 0x17) {
-        ChangeSpyroState(6);
+        ChangeSpyroState(SPYRO_ST_FALL);
       } else {
         LAND_ON_GROUND();
       }
@@ -848,26 +849,26 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_nSpyroGroundProbeSuspendFlag == 0 ||
         g_nSpyroFrameMotionLength < 0x400) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_dwPadHeld & PAD_SQUARE) {
-      ChangeSpyroState(20);
+      ChangeSpyroState(SPYRO_ST_CHARGE_AIR);
       break;
     }
     if (g_dwPadPressed & PAD_TRIANGLE) {
-      ChangeSpyroState(16);
+      ChangeSpyroState(SPYRO_ST_GLIDE_DROP);
       break;
     }
     if (g_nSpyroFloorReferenceZ + 0x18 < g_nSpyroWorldPosZ) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_nSpyroMotionSpeed > 0xC80) {
       JUMP_STATE();
     }
     break;
-  case 24: {
+  case SPYRO_ST_SUPERCHARGE_AIR: {
     int t;
 
     if (g_nSpyroStateTimer >= 4) {
@@ -883,7 +884,7 @@ void UpdateSpyroStateBehavior(void) {
       t = g_anSpyroVelocity[0] * g_anSpyroGroundNormal[0] +
           g_anSpyroVelocity[1] * g_anSpyroGroundNormal[1];
       if (t < 0) {
-        ChangeSpyroState(12);
+        ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
         break;
       }
     }
@@ -894,23 +895,23 @@ void UpdateSpyroStateBehavior(void) {
     t = (g_nSpyroFrameMotionLength << 12) / t;
     if (g_nSpyroContactedActorFlag == 0 && t < 0x800 &&
         g_nScriptedRespawnFlag == 0) {
-      ChangeSpyroState(12);
+      ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
       break;
     }
     if (g_nSpyroAirborneFrames == 0) {
-      ChangeSpyroState(11);
+      ChangeSpyroState(SPYRO_ST_CHARGE);
       break;
     }
     if (g_anSpyroVelocity[2] < 0) {
       if (g_nSpyroJumpHoldLatch == 0) {
-        ChangeSpyroState(20);
+        ChangeSpyroState(SPYRO_ST_CHARGE_AIR);
       } else {
         JUMP_STATE();
       }
     }
     break;
   }
-  case 25:
+  case SPYRO_ST_HURT_PINNED:
     if (g_dwSpyroTriggerEventFlags & 0x10) {
       break;
     }
@@ -918,14 +919,14 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_nSparxHealth < 0) {
-      ChangeSpyroState(30);
+      ChangeSpyroState(SPYRO_ST_DEATH);
       break;
     }
   land: {
-    int next = 6;
+    int next = SPYRO_ST_FALL;
 
     if (g_nSpyroAirborneFrames == 0) {
-      next = OpaqueInt(0);
+      next = OpaqueInt(SPYRO_ST_IDLE);
     }
     ChangeSpyroState(next);
     if (SPY[SPY_COUNTDOWN] < 0xC) {
@@ -933,26 +934,26 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   }
-  case 26:
+  case SPYRO_ST_SCRIPTED_WALK:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
-      ChangeSpyroState(5);
+      ChangeSpyroState(SPYRO_ST_JUMP);
       break;
     }
     if (g_nSpyroAirborneFrames >= 4 || g_nSpyroGroundSlope >= 0x17) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_nSpyroMotionSpeed != 0 || g_nSpyroSpeedTarget != 0 ||
         g_nSpyroStateTimer < 0x10) {
-      ChangeSpyroState(1);
+      ChangeSpyroState(SPYRO_ST_WALK);
       break;
     }
-    ChangeSpyroState(0);
+    ChangeSpyroState(SPYRO_ST_IDLE);
     break;
-  case 29:
+  case SPYRO_ST_HAZARD:
     if (DispatchSpyroPadStateChanges(0xFBF9)) {
       break;
     }
@@ -966,10 +967,10 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_nSpyroStateTimer >= 0x10 && (g_dwPadHeld & PAD_CROSS)) {
-      ChangeSpyroState(5);
+      ChangeSpyroState(SPYRO_ST_JUMP);
     }
     break;
-  case 32:
+  case SPYRO_ST_FLY:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
@@ -977,20 +978,20 @@ void UpdateSpyroStateBehavior(void) {
       if (g_nSpyroGroundSlope < 0x17) {
         LAND_ON_GROUND();
       } else {
-        ChangeSpyroState(6);
+        ChangeSpyroState(SPYRO_ST_FALL);
       }
     } else if (g_nSpyroGroundProbeSuspendFlag == 0 ||
                g_nSpyroFrameMotionLength < 0x400) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
     } else if (g_anSpyroMotionVec[2] > 0x800 || (g_dwPadPressed & PAD_CROSS)) {
-      ChangeSpyroState(33);
+      ChangeSpyroState(SPYRO_ST_FLY_CLIMB);
     } else if (g_anSpyroMotionVec[2] < -0x1000) {
-      ChangeSpyroState(34);
+      ChangeSpyroState(SPYRO_ST_FLY_DIVE);
     } else if (g_nSpyroStateFlags == 0) {
       int d = g_nSpyroWorldPosZ;
 
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
-        ChangeSpyroState(6);
+        ChangeSpyroState(SPYRO_ST_FALL);
       } else {
         int pad = ((int *)g_pPadSubstepState)[1];
 
@@ -1006,14 +1007,14 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_dwPadHeld & PAD_SQUARE) {
-      ChangeSpyroState(20);
+      ChangeSpyroState(SPYRO_ST_CHARGE_AIR);
       break;
     }
     if (g_nSpyroStateTimer > 0x10 && (g_dwPadPressed & PAD_TRIANGLE)) {
-      ChangeSpyroState(16);
+      ChangeSpyroState(SPYRO_ST_GLIDE_DROP);
     }
     break;
-  case 33:
+  case SPYRO_ST_FLY_CLIMB:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
@@ -1021,18 +1022,18 @@ void UpdateSpyroStateBehavior(void) {
       if (g_nSpyroGroundSlope < 0x17) {
         LAND_ON_GROUND();
       } else {
-        ChangeSpyroState(6);
+        ChangeSpyroState(SPYRO_ST_FALL);
       }
     } else if (g_nSpyroGroundProbeSuspendFlag == 0 ||
                g_nSpyroFrameMotionLength < 0x400) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
     } else if (g_nSpyroStateTimer >= 0x1F && g_anSpyroMotionVec[2] < 0x600) {
-      ChangeSpyroState(32);
+      ChangeSpyroState(SPYRO_ST_FLY);
     } else if (SPY[SPY_STATE_FLAGS] == 0) {
       int d = g_nSpyroWorldPosZ;
 
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
-        ChangeSpyroState(6);
+        ChangeSpyroState(SPYRO_ST_FALL);
       } else {
         int pad = ((int *)g_pPadSubstepState)[1];
 
@@ -1048,14 +1049,14 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_dwPadHeld & PAD_SQUARE) {
-      ChangeSpyroState(20);
+      ChangeSpyroState(SPYRO_ST_CHARGE_AIR);
       break;
     }
     if (g_nSpyroStateTimer > 0x10 && (g_dwPadPressed & PAD_TRIANGLE)) {
-      ChangeSpyroState(16);
+      ChangeSpyroState(SPYRO_ST_GLIDE_DROP);
     }
     break;
-  case 34:
+  case SPYRO_ST_FLY_DIVE:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
@@ -1063,20 +1064,20 @@ void UpdateSpyroStateBehavior(void) {
       if (g_nSpyroGroundSlope < 0x17) {
         LAND_ON_GROUND();
       } else {
-        ChangeSpyroState(6);
+        ChangeSpyroState(SPYRO_ST_FALL);
       }
     } else if (g_nSpyroGroundProbeSuspendFlag == 0 ||
                g_nSpyroFrameMotionLength < 0x400) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
     } else if (g_dwPadPressed & PAD_CROSS) {
-      ChangeSpyroState(33);
+      ChangeSpyroState(SPYRO_ST_FLY_CLIMB);
     } else if (g_nSpyroStateTimer >= 0x1F && g_anSpyroMotionVec[2] >= -0xBFF) {
-      ChangeSpyroState(32);
+      ChangeSpyroState(SPYRO_ST_FLY);
     } else if (SPY[SPY_STATE_FLAGS] == 0) {
       int d = g_nSpyroWorldPosZ;
 
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
-        ChangeSpyroState(6);
+        ChangeSpyroState(SPYRO_ST_FALL);
       } else {
         int pad = ((int *)g_pPadSubstepState)[1];
 
@@ -1092,22 +1093,22 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_dwPadHeld & PAD_SQUARE) {
-      ChangeSpyroState(20);
+      ChangeSpyroState(SPYRO_ST_CHARGE_AIR);
       break;
     }
     if (g_nSpyroStateTimer > 0x10 && (g_dwPadPressed & PAD_TRIANGLE)) {
-      ChangeSpyroState(16);
+      ChangeSpyroState(SPYRO_ST_GLIDE_DROP);
     }
     break;
-  case 35:
+  case SPYRO_ST_SCRIPTED_HOLD:
     if (DispatchSpyroPadStateChanges(0xFFF9)) {
       break;
     }
     if (g_dwSpyroRequestMask == 0) {
-      ChangeSpyroState(0);
+      ChangeSpyroState(SPYRO_ST_IDLE);
     }
     break;
-  case 44:
+  case SPYRO_ST_SUPERCHARGE:
     if (DispatchSpyroPadStateChanges(0x8400)) {
       break;
     }
@@ -1121,7 +1122,7 @@ void UpdateSpyroStateBehavior(void) {
     jump: {
       int *vz;
 
-      ChangeSpyroState(24);
+      ChangeSpyroState(SPYRO_ST_SUPERCHARGE_AIR);
       vz = &SPY[SPY_VELOCITY + 2];
       g_nSpyroGravityEnableFlag = 0;
       *vz += 0xDC0;
@@ -1130,27 +1131,27 @@ void UpdateSpyroStateBehavior(void) {
     }
     }
     if (g_nSpyroAirborneFrames >= 4) {
-      ChangeSpyroState(24);
+      ChangeSpyroState(SPYRO_ST_SUPERCHARGE_AIR);
       g_nSpyroGravityEnableFlag = 1;
       break;
     }
     if (g_nSpyroGroundSlope >= 0x17) {
-      ChangeSpyroState(6);
+      ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
     if (g_nSpyroStateTimer >= 0xF &&
         !(*(volatile unsigned int *)&g_dwPadHeld & PAD_SQUARE)) {
-      ChangeSpyroState(11);
+      ChangeSpyroState(SPYRO_ST_CHARGE);
       break;
     }
     if (g_nSpyroContactedActorFlag == 0 && g_nSpyroMotionSpeed > 0xC80 &&
         g_nSpyroFrameMotionLength * 2 < g_nSpyroMotionSpeed &&
         g_nScriptedRespawnFlag == 0) {
-      ChangeSpyroState(12);
+      ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
       break;
     }
     if (g_nSpyroMotionSpeed < 0x1E00) {
-      ChangeSpyroState(11);
+      ChangeSpyroState(SPYRO_ST_CHARGE);
     }
     break;
   }

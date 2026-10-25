@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "spyro_state.h"
 
 /* 0x800144c8: loads + starts a level from CD. Silences sound, resolves the
    level's archive LBA (base + per-level offset table, stride 0x10), syncs
@@ -27,9 +28,9 @@ void LoadAndStartLevelFromCd(void) {
   BuildLoadedLevelRuntime(1);
 
   if (g_nFlightLevelActive) {
-    RestartSpyroAnimWithState(0x20);
+    RestartSpyroAnimWithState(SPYRO_ST_FLY);
   } else {
-    RestartSpyroAnimWithState(0);
+    RestartSpyroAnimWithState(SPYRO_ST_IDLE);
   }
 
   g_nSparxHealth = 3;

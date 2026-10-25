@@ -1,13 +1,14 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_state.h"
 
 /* shared-base view of g_nSpyroState (0x80078ad0): the state read and the
    ZeroVector arg at +0x88 (g_anSpyroVelocityFp6) share one register. */
 
 /* 0x8004a7ec (544 bytes) — Spyro frame tick that forces the jump state
-   (0xF): snapshot the pad, ChangeSpyroState(0xF) unless already there,
-   disable charge via the state flags, then the same substep-integrate /
+   (0xF): snapshot the pad, ChangeSpyroState(SPYRO_ST_GLIDE) unless already
+   there, disable charge via the state flags, then the same substep-integrate /
    position-step / finalize / anim-tick / body-matrix-rebuild sequence as
    TickSpyroFrameNoInput. Called from Gamestate01_Update (post-level-load
    intro). */
@@ -27,7 +28,7 @@ void TickSpyroFrameForceJump(void) {
   SnapshotPadInputState(&g_dwPadPressed, &g_dwPad2Buttons);
   sblock = g_anSpyroStateBlock;
   if (sblock[0] != 0xF) {
-    ChangeSpyroState(0xF);
+    ChangeSpyroState(SPYRO_ST_GLIDE);
   }
   g_nSpyroStateFlags = 8;
   if (g_nSpyroPadSnapshotCountdown <= 0) {

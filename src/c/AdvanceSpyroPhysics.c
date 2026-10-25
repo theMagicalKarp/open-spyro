@@ -16,6 +16,7 @@
 #include "match_asm.h"
 #include "sdata.h"
 #include "spyro_block.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 SDATA(g_nSpyroScriptedAlignFrames, 4);
@@ -227,12 +228,14 @@ int AdvanceSpyroPhysics(void) {
               }
               if (g_nActiveLevelId == 0x14) {
                 side = 0x28;
-                if ((int)rq2[SPY_STATE - SPY_REQUEST] == 0x1A) {
+                if ((int)rq2[SPY_STATE - SPY_REQUEST] ==
+                    SPYRO_ST_SCRIPTED_WALK) {
                   side = 0x32;
                 }
               } else {
                 side = 0x30;
-                if ((int)rq2[SPY_STATE - SPY_REQUEST] == 0x1A) {
+                if ((int)rq2[SPY_STATE - SPY_REQUEST] ==
+                    SPYRO_ST_SCRIPTED_WALK) {
                   side = 0x38;
                 }
               }
@@ -258,8 +261,8 @@ int AdvanceSpyroPhysics(void) {
                   a -= 0x1000;
                 }
                 if (abs(a) < 0x200) {
-                  if (g_nSpyroState != 0x1A) {
-                    ChangeSpyroState(0x1A);
+                  if (g_nSpyroState != SPYRO_ST_SCRIPTED_WALK) {
+                    ChangeSpyroState(SPYRO_ST_SCRIPTED_WALK);
                   }
                   g_dwSpyroRequestMask |= 0x100;
                   if (side) {
@@ -310,7 +313,7 @@ int AdvanceSpyroPhysics(void) {
     }
     if (g_dwSpyroRequestMask & 0x20000) {
       g_nSpyroScriptedMoveMode = 1;
-      ChangeSpyroState(1);
+      ChangeSpyroState(SPYRO_ST_WALK);
     }
   } else {
     SPY[SPY_REQUEST] = 0;

@@ -39,6 +39,7 @@
 #include "level_update_actors_macros.h"
 #include "gamestate.h"
 #include "pad_buttons.h"
+#include "spyro_state.h"
 
 /* Level11_UpdateActors -- per-frame actor update for level 11 (Night Flight).
  *
@@ -323,7 +324,7 @@ void Level11_UpdateActors(void) {
 
       if (actor->mode != 0 && actor->mode < 5) {
         SPY.controlFlags = 0x80002000;
-        if (SPY.state != 0 && SPY.state != 0xC) {
+        if (SPY.state != SPYRO_ST_IDLE && SPY.state != SPYRO_ST_CHARGE_BONK) {
           actor->mode = 5;
         }
       }
@@ -1632,7 +1633,7 @@ void Level11_UpdateActors(void) {
           g_nFlightRunClock = 0x8C9F;
         }
       } else {
-        ChangeSpyroState(0x20);
+        ChangeSpyroState(SPYRO_ST_FLY);
         g_nSpyroStateFlags = 3;
         g_dwSpyroRequestMask = 0x80004000;
       }
