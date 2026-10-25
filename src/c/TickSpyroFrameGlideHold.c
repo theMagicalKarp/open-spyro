@@ -6,13 +6,14 @@
 /* shared-base view of g_nSpyroState (0x80078ad0): the state read and the
    ZeroVector arg at +0x88 (g_anSpyroVelocityFp6) share one register. */
 
-/* 0x8004a7ec (544 bytes) — Spyro frame tick that forces the jump state
-   (0xF): snapshot the pad, ChangeSpyroState(SPYRO_ST_GLIDE) unless already
-   there, disable charge via the state flags, then the same substep-integrate /
+/* 0x8004a7ec (544 bytes) — Spyro frame tick that holds him in a frozen
+   glide (formerly TickSpyroFrameForceJump): snapshot the pad,
+   ChangeSpyroState(SPYRO_ST_GLIDE) unless already there, substate
+   SPYRO_SUB_GLIDE_HOLD, then the same substep-integrate /
    position-step / finalize / anim-tick / body-matrix-rebuild sequence as
    TickSpyroFrameNoInput. Called from LevelLoad_Update (post-level-load
    intro). */
-void TickSpyroFrameForceJump(void) {
+void TickSpyroFrameGlideHold(void) {
   int i;
   int *sblock;
   int *vel;

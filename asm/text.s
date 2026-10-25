@@ -31470,7 +31470,7 @@ nonmatching LevelLoad_Update, 0x64
 glabel LevelLoad_Update
     /* 1E79C 8002DF9C E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 1E7A0 8002DFA0 1000BFAF */  sw         $ra, 0x10($sp)
-    /* 1E7A4 8002DFA4 FB29010C */  jal        TickSpyroFrameForceJump
+    /* 1E7A4 8002DFA4 FB29010C */  jal        TickSpyroFrameGlideHold
     /* 1E7A8 8002DFA8 00000000 */   nop
     /* 1E7AC 8002DFAC F5DE000C */  jal        UpdateCameraFrame
     /* 1E7B0 8002DFB0 00000000 */   nop
@@ -63848,11 +63848,11 @@ glabel TickSpyroGameplayFrame
 endlabel TickSpyroGameplayFrame
 .endif
 
-.section .text.TickSpyroFrameForceJump, "ax"
-.ifndef HAVE_C_TickSpyroFrameForceJump
-nonmatching TickSpyroFrameForceJump, 0x220
+.section .text.TickSpyroFrameGlideHold, "ax"
+.ifndef HAVE_C_TickSpyroFrameGlideHold
+nonmatching TickSpyroFrameGlideHold, 0x220
 
-glabel TickSpyroFrameForceJump
+glabel TickSpyroFrameGlideHold
     /* 3AFEC 8004A7EC A8FFBD27 */  addiu      $sp, $sp, -0x58
     /* 3AFF0 8004A7F0 0780043C */  lui        $a0, %hi(g_dwPadPressed)
     /* 3AFF4 8004A7F4 78738424 */  addiu      $a0, $a0, %lo(g_dwPadPressed)
@@ -63997,7 +63997,7 @@ glabel TickSpyroFrameForceJump
     /* 3B200 8004AA00 5800BD27 */  addiu      $sp, $sp, 0x58
     /* 3B204 8004AA04 0800E003 */  jr         $ra
     /* 3B208 8004AA08 00000000 */   nop
-endlabel TickSpyroFrameForceJump
+endlabel TickSpyroFrameGlideHold
 .endif
 
 .section .text.TickSpyroFrameNoInput, "ax"

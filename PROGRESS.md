@@ -378,7 +378,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80049f3c` | TickSpyroAnimLayer2GateTimer | main | 112 | matched | game |
 | `0x80049fac` | SampleSpyroShadowRingHeights | main | 596 | matched | game |
 | `0x8004a200` | TickSpyroGameplayFrame | main | 1516 | matched | game |
-| `0x8004a7ec` | TickSpyroFrameForceJump | main | 544 | matched | game |
+| `0x8004a7ec` | TickSpyroFrameGlideHold | main | 544 | matched | game |
 | `0x8004aa0c` | TickSpyroFrameNoInput | main | 536 | matched | game |
 | `0x8004ac24` | ResetSpyroEntity | main | 532 | matched | game |
 | `0x8004ae38` | CastRayWorldAndActors | main | 4020 | asm | handwritten |

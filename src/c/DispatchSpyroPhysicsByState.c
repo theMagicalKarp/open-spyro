@@ -42,7 +42,8 @@ typedef void (*ParticleSpawnFn)(int kind, int type, int *pos, int *vel);
    own mix of platform averaging, integration, ground probe, slope gravity,
    floor snap and ledge probe; walking states also derive the slope-adjusted
    move speed, and the fall states track the floor reference used for fall
-   damage. Afterwards the swim state settles the water floor height. */
+   damage. Afterwards SPYRO_ST_HAZARD records the floor under the hazard
+   (g_nSpyroHazardFloorZ). */
 void DispatchSpyroPhysicsByState(void) {
   int pos[3];
   int puff[3];
