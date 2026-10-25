@@ -11,10 +11,11 @@ Signals (per ``src/**/*.c`` file; weights in ``WEIGHTS``):
               already names — fixed mechanically by ``open-spyro canonicalize``
   anon_func   placeholder function name (``func_<ADDR>``, ``func_<seg>_<ADDR>``, ``FUN_``),
               including the file's own function
-  anon_data   placeholder data name (``D_<ADDR>``, ``DAT_``, ``unk_…``) incl. views
+  anon_data   placeholder data name (``D_<ADDR>``, ``DAT_``, ``unk_…``) incl. views,
+              and struct fields still named by offset (``st->u2C``)
   m2c_local   decompiler / permuter scaffolding locals (m2c ``temp_*``, ``var_*``,
               ``spXX``, ``argN``; Ghidra ``iVar1``, ``param_1``, ``local_10``;
-              permuter ``new_var``)
+              permuter ``new_var``; frame-offset names ``f168``)
   raw_offset  pointer-cast field access (``*(int *)(p + 0x44)``) or any
               byte- or int-cast base plus a field-sized constant (``(char *)p + 0x44``),
               however parenthesized, or a pointer cast of one (``(int *)(p + 0xC)``) —
@@ -56,7 +57,7 @@ _ANON_DATA = re.compile(
 )
 _M2C = re.compile(
     r"\b(?:temp_[a-z0-9_]+|var_[a-z0-9_]+|sp[0-9A-F]{2,3}|arg[0-9]"
-    r"|new_var[0-9]*|[a-z]{1,3}Var[0-9]+|param_[0-9]+|local_[0-9a-f]+)\b"
+    r"|new_var[0-9]*|[a-z]{1,3}Var[0-9]+|param_[0-9]+|local_[0-9a-f]+|f[0-9]{3})\b"
 )
 _RAW = re.compile(
     r"\*\s*\(+\s*(?:volatile\s+)?(?:unsigned\s+|signed\s+)?"
@@ -78,6 +79,8 @@ _PTR_OFF = re.compile(
     r"|[A-Z]\w*)\s*\*+\s*\)\s*\(\s*[A-Za-z_]\w*\s*(\+)\s*(?:0x[0-9a-fA-F]{1,3}|\d{1,3})\s*\)"
 )
 _DEFINE = re.compile(r"^[ \t]*#[ \t]*define\b.*?(?<!\\)$", re.M | re.S)
+# A struct field still named by its offset (``st->u2C``, ``rec.u88``).
+_ANON_FIELD = re.compile(r"(?:->|\.)(u[0-9A-F]{2,3})\b")
 _EXTERN = re.compile(r"^extern\b", re.M)
 _ASM = re.compile(r"\b(?:__)?asm(?:__)?\s*(?:volatile\s*|__volatile__\s*)?\(")
 _COMMENT = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
@@ -107,6 +110,7 @@ def scan(root: Path) -> list[dict]:
         alias_ids = set(aliases.get(rel, {}))
         anon_f = {m for m in _ANON_FUNC.findall(code)} - alias_ids
         anon_d = {m for m in _ANON_DATA.findall(code)} - alias_ids
+        anon_d |= {"." + m for m in _ANON_FIELD.findall(code)}
         sig = {
             "alias": len(alias_ids),
             "anon_func": len(anon_f),
