@@ -49,7 +49,7 @@
 <rect x="87.46" y="391.48" width="34.38" height="34.02" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>sprintf  ·  2140 bytes  ·  library</title></rect>
 <rect x="121.84" y="391.48" width="32.97" height="34.02" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateGameplayCamera  ·  2052 bytes  ·  matched</title></rect>
 <rect x="154.81" y="391.48" width="32.90" height="34.02" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickDragonRescueAssetStream  ·  2048 bytes  ·  matched</title></rect>
-<rect x="187.71" y="391.48" width="32.71" height="34.02" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>RasterizePairedActor  ·  2036 bytes  ·  handwritten</title></rect>
+<rect x="187.71" y="391.48" width="32.71" height="34.02" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>RasterizeSpyroModel  ·  2036 bytes  ·  handwritten</title></rect>
 <rect x="220.43" y="391.48" width="32.71" height="34.02" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_80066634  ·  2036 bytes  ·  library</title></rect>
 <rect x="253.14" y="391.48" width="31.68" height="34.02" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SelectCameraMode  ·  1972 bytes  ·  matched</title></rect>
 <rect x="284.82" y="391.48" width="30.98" height="34.02" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>PlaySoundEffect  ·  1928 bytes  ·  matched</title></rect>
@@ -101,7 +101,7 @@
 <rect x="39.50" y="553.37" width="22.90" height="23.01" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>FindWorldFloorBelowPoint  ·  964 bytes  ·  handwritten</title></rect>
 <rect x="39.50" y="576.38" width="22.90" height="22.82" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>LevelTransition_Draw  ·  956 bytes  ·  matched</title></rect>
 <rect x="39.50" y="599.19" width="22.90" height="22.24" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MenuTransition_Draw  ·  932 bytes  ·  matched</title></rect>
-<rect x="39.50" y="621.44" width="22.90" height="21.96" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EnqueueLoadingScreenSprites  ·  920 bytes  ·  matched</title></rect>
+<rect x="39.50" y="621.44" width="22.90" height="21.96" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EnqueueHudSprites  ·  920 bytes  ·  matched</title></rect>
 <rect x="39.50" y="643.39" width="22.90" height="21.96" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TweenActorAlongPath  ·  920 bytes  ·  matched</title></rect>
 <rect x="39.50" y="665.35" width="22.90" height="21.86" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>SetSpuCommonAttr  ·  916 bytes  ·  library</title></rect>
 <rect x="39.50" y="687.21" width="22.90" height="21.67" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SpawnNameLetterActors  ·  908 bytes  ·  matched</title></rect>

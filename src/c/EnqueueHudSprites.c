@@ -1,8 +1,8 @@
 #include "funcs.h"
 #include "globals.h"
 
-/* Rebuilds the HUD sprite-record queue for the loading/inventory screen
-   (0x80019300, 0x398). Appends, to the first free slot of
+/* Rebuilds the in-level HUD sprite-record queue (0x80019300, 0x398); also
+   drawn under the pause and inventory menus. Appends, to the first free slot of
    g_apSpritePrimQueue: the five gem-counter icon records (starting at record
    4 when the counter is in state 4), the gem digit chain built on the fly by
    sprintf + BuildTextSpriteChain (each digit record gets a cosine bob written
@@ -32,7 +32,7 @@
 #define FRAME_CYCLE                                                            \
   (*(int *)&g_abHudWorldEggIconBlock[0x3D]) /* g_nHudFrameCycleMod9 */
 
-void EnqueueLoadingScreenSprites(void) {
+void EnqueueHudSprites(void) {
   void **slot;
   byte *gems;
   byte *digits;

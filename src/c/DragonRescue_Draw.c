@@ -74,7 +74,7 @@ void DragonRescue_Draw(void) {
     EmitActorDrawList();
     RasterizeSpritePrimQueue();
     DrawEntityDirectionalSpikes();
-    RasterizePairedActor();
+    RasterizeSpyroModel();
     DrawSpyroDropShadow();
     SetupFrameOT();
     DrawPortalsAndStaticActors();
@@ -161,7 +161,7 @@ void DragonRescue_Draw(void) {
     FillWord(&g_pOtDepthBinHead0, 0, 0x900);
     EmitActorDrawList();
     RasterizeSpritePrimQueue();
-    RasterizePairedActor();
+    RasterizeSpyroModel();
     DrawSpyroDropShadow();
     SetupFrameOT();
     DrawPortalsAndStaticActors();
@@ -186,7 +186,7 @@ void DragonRescue_Draw(void) {
     *q = 0;
     FillWord(&g_pOtDepthBinHead0, 0, 0x900);
     RasterizeSpritePrimQueue();
-    RasterizePairedActor();
+    RasterizeSpyroModel();
     DrawSpyroDropShadow();
     SetupFrameOT();
     DrawPortalsAndStaticActors();
@@ -221,7 +221,7 @@ void DragonRescue_Draw(void) {
       RasterizeSpritePrimQueue();
       DrawEntityDirectionalSpikes();
     }
-    RasterizePairedActor();
+    RasterizeSpyroModel();
     DrawSpyroDropShadow();
     SetupFrameOT();
     DrawPortalsAndStaticActors();

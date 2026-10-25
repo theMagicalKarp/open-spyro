@@ -476,7 +476,7 @@
    "size": 356
   },
   {
-   "name": "EnqueueLoadingScreenSprites",
+   "name": "EnqueueHudSprites",
    "vram": 2147586816,
    "size": 920
   },
@@ -576,7 +576,7 @@
    "size": 4248
   },
   {
-   "name": "RasterizePairedActor",
+   "name": "RasterizeSpyroModel",
    "vram": 2147629764,
    "size": 2036
   },

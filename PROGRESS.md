@@ -177,7 +177,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80018f30` | DrawCinematicLetterbox | main | 420 | matched | game |
 | `0x800190d4` | DrawFullscreenTint | main | 200 | matched | game |
 | `0x8001919c` | EmitTexturedQuad | main | 356 | matched | game |
-| `0x80019300` | EnqueueLoadingScreenSprites | main | 920 | matched | game |
+| `0x80019300` | EnqueueHudSprites | main | 920 | matched | game |
 | `0x80019698` | ComposeFrameScene | main | 164 | matched | game |
 | `0x8001973c` | DrawLevelTransitionOverlay | main | 2324 | matched | game |
 | `0x8001a050` | LevelTransition_Draw | main | 956 | matched | game |
@@ -197,7 +197,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80020f34` | EmitSecondaryActorPrimitives | main | 6836 | asm | handwritten |
 | `0x800229e8` | StoreAndRestoreStaticRegs | main | 68 | matched | game |
 | `0x80022a2c` | RasterizeSpritePrimQueue | main | 4248 | asm | handwritten |
-| `0x80023ac4` | RasterizePairedActor | main | 2036 | asm | handwritten |
+| `0x80023ac4` | RasterizeSpyroModel | main | 2036 | asm | handwritten |
 | `0x800242b8` | func_800242B8 | main | 5688 | asm | handwritten |
 | `0x800258f0` | RenderWorldChunks | main | 19976 | asm | handwritten |
 | `0x8002a6fc` | TickWorldChunkAnimations | main | 3220 | asm | handwritten |

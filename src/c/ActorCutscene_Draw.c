@@ -95,7 +95,7 @@ void ActorCutscene_Draw(void) {
       g_apSpritePrimQueue[0] = 0;
       EnqueuePendingSpritePrims();
       RasterizeSpritePrimQueue();
-      RasterizePairedActor();
+      RasterizeSpyroModel();
 
       if (g_nActorCutsceneSubstate < 6) {
         g_dwActorMeshFadeColor = 0x401010;

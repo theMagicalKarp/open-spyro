@@ -8480,11 +8480,11 @@ glabel EmitTexturedQuad
 endlabel EmitTexturedQuad
 .endif
 
-.section .text.EnqueueLoadingScreenSprites, "ax"
-.ifndef HAVE_C_EnqueueLoadingScreenSprites
-nonmatching EnqueueLoadingScreenSprites, 0x398
+.section .text.EnqueueHudSprites, "ax"
+.ifndef HAVE_C_EnqueueHudSprites
+nonmatching EnqueueHudSprites, 0x398
 
-glabel EnqueueLoadingScreenSprites
+glabel EnqueueHudSprites
     /* 9B00 80019300 0780023C */  lui        $v0, %hi(g_nFlightLevelActive)
     /* 9B04 80019304 9056428C */  lw         $v0, %lo(g_nFlightLevelActive)($v0)
     /* 9B08 80019308 A8FFBD27 */  addiu      $sp, $sp, -0x58
@@ -8731,7 +8731,7 @@ glabel EnqueueLoadingScreenSprites
     /* 9E8C 8001968C 5800BD27 */  addiu      $sp, $sp, 0x58
     /* 9E90 80019690 0800E003 */  jr         $ra
     /* 9E94 80019694 00000000 */   nop
-endlabel EnqueueLoadingScreenSprites
+endlabel EnqueueHudSprites
 .endif
 
 .section .text.ComposeFrameScene, "ax"
@@ -8763,7 +8763,7 @@ glabel ComposeFrameScene
     /* 9EEC 800196EC 00000000 */  nop
     /* 9EF0 800196F0 05004014 */  bnez       $v0, .L80019708
     /* 9EF4 800196F4 00000000 */   nop
-    /* 9EF8 800196F8 B18E000C */  jal        RasterizePairedActor
+    /* 9EF8 800196F8 B18E000C */  jal        RasterizeSpyroModel
     /* 9EFC 800196FC 00000000 */   nop
     /* 9F00 80019700 9266010C */  jal        DrawSpyroDropShadow
     /* 9F04 80019704 00000000 */   nop
@@ -9458,7 +9458,7 @@ glabel LevelTransition_Draw
     /* A8D0 8001A0D0 CF65000C */  jal        DrawLevelTransitionOverlay
     /* A8D4 8001A0D4 00000000 */   nop
   .L8001A0D8:
-    /* A8D8 8001A0D8 B18E000C */  jal        RasterizePairedActor
+    /* A8D8 8001A0D8 B18E000C */  jal        RasterizeSpyroModel
     /* A8DC 8001A0DC 00000000 */   nop
     /* A8E0 8001A0E0 0880023C */  lui        $v0, %hi(g_nWorldRenderMeshChunkCount)
     /* A8E4 8001A0E4 408A428C */  lw         $v0, %lo(g_nWorldRenderMeshChunkCount)($v0)
@@ -11898,7 +11898,7 @@ glabel Gamestate02_03_06_Draw
     /* CD60 8001C560 00000000 */  nop
     /* CD64 8001C564 03004014 */  bnez       $v0, .L8001C574
     /* CD68 8001C568 00000000 */   nop
-    /* CD6C 8001C56C C064000C */  jal        EnqueueLoadingScreenSprites
+    /* CD6C 8001C56C C064000C */  jal        EnqueueHudSprites
     /* CD70 8001C570 00000000 */   nop
   .L8001C574:
     /* CD74 8001C574 2062000C */  jal        EnqueuePendingSpritePrims
@@ -12172,7 +12172,7 @@ glabel MenuTransition_Draw
     /* D158 8001C958 21280000 */  addu       $a1, $zero, $zero
     /* D15C 8001C95C 455A000C */  jal        FillWord
     /* D160 8001C960 00090624 */   addiu     $a2, $zero, 0x900
-    /* D164 8001C964 B18E000C */  jal        RasterizePairedActor
+    /* D164 8001C964 B18E000C */  jal        RasterizeSpyroModel
     /* D168 8001C968 00000000 */   nop
     /* D16C 8001C96C E159000C */  jal        LinkOTPrimitives
     /* D170 8001C970 00080424 */   addiu     $a0, $zero, 0x800
@@ -12449,7 +12449,7 @@ glabel RespawnOrGameOver_Draw
     /* D560 8001CD60 B5004228 */  slti       $v0, $v0, 0xB5
     /* D564 8001CD64 03004014 */  bnez       $v0, .L8001CD74
     /* D568 8001CD68 00000000 */   nop
-    /* D56C 8001CD6C B18E000C */  jal        RasterizePairedActor
+    /* D56C 8001CD6C B18E000C */  jal        RasterizeSpyroModel
     /* D570 8001CD70 00000000 */   nop
   .L8001CD74:
     /* D574 8001CD74 0780023C */  lui        $v0, %hi(g_anGameOverCameraEuler + 0x4)
@@ -12732,7 +12732,7 @@ glabel DragonRescue_Draw
     /* D96C 8001D16C 00000000 */   nop
     /* D970 8001D170 E367010C */  jal        DrawEntityDirectionalSpikes
     /* D974 8001D174 00000000 */   nop
-    /* D978 8001D178 B18E000C */  jal        RasterizePairedActor
+    /* D978 8001D178 B18E000C */  jal        RasterizeSpyroModel
     /* D97C 8001D17C 00000000 */   nop
     /* D980 8001D180 9266010C */  jal        DrawSpyroDropShadow
     /* D984 8001D184 00000000 */   nop
@@ -12949,7 +12949,7 @@ glabel DragonRescue_Draw
   .L8001D4A8:
     /* DCA8 8001D4A8 8B8A000C */  jal        RasterizeSpritePrimQueue
     /* DCAC 8001D4AC 00000000 */   nop
-    /* DCB0 8001D4B0 B18E000C */  jal        RasterizePairedActor
+    /* DCB0 8001D4B0 B18E000C */  jal        RasterizeSpyroModel
     /* DCB4 8001D4B4 00000000 */   nop
   .L8001D4B8:
     /* DCB8 8001D4B8 9266010C */  jal        DrawSpyroDropShadow
@@ -13027,7 +13027,7 @@ glabel DragonRescue_Draw
     /* DDC4 8001D5C4 E367010C */  jal        DrawEntityDirectionalSpikes
     /* DDC8 8001D5C8 00000000 */   nop
   .L8001D5CC:
-    /* DDCC 8001D5CC B18E000C */  jal        RasterizePairedActor
+    /* DDCC 8001D5CC B18E000C */  jal        RasterizeSpyroModel
     /* DDD0 8001D5D0 00000000 */   nop
     /* DDD4 8001D5D4 9266010C */  jal        DrawSpyroDropShadow
     /* DDD8 8001D5D8 00000000 */   nop
@@ -14037,7 +14037,7 @@ glabel ActorCutscene_Draw
     /* EC98 8001E498 00000000 */   nop
     /* EC9C 8001E49C 8B8A000C */  jal        RasterizeSpritePrimQueue
     /* ECA0 8001E4A0 00000000 */   nop
-    /* ECA4 8001E4A4 B18E000C */  jal        RasterizePairedActor
+    /* ECA4 8001E4A4 B18E000C */  jal        RasterizeSpyroModel
     /* ECA8 8001E4A8 00000000 */   nop
     /* ECAC 8001E4AC 0780033C */  lui        $v1, %hi(g_nActorCutsceneSubstate)
     /* ECB0 8001E4B0 E877638C */  lw         $v1, %lo(g_nActorCutsceneSubstate)($v1)
@@ -14354,7 +14354,7 @@ glabel StoryIntro_Draw
     /* F124 8001E924 02000224 */  addiu      $v0, $zero, 0x2
     /* F128 8001E928 12006214 */  bne        $v1, $v0, .L8001E974
     /* F12C 8001E92C 00000000 */   nop
-    /* F130 8001E930 B18E000C */  jal        RasterizePairedActor
+    /* F130 8001E930 B18E000C */  jal        RasterizeSpyroModel
     /* F134 8001E934 00000000 */   nop
     /* F138 8001E938 0780033C */  lui        $v1, %hi(g_pOtActiveDepthSlot)
     /* F13C 8001E93C 1C58638C */  lw         $v1, %lo(g_pOtActiveDepthSlot)($v1)
@@ -14833,7 +14833,7 @@ glabel GamestateDraw
     /* F7D8 8001EFD8 00000000 */  nop
     /* F7DC 8001EFDC 03004014 */  bnez       $v0, .L8001EFEC
     /* F7E0 8001EFE0 00000000 */   nop
-    /* F7E4 8001EFE4 C064000C */  jal        EnqueueLoadingScreenSprites
+    /* F7E4 8001EFE4 C064000C */  jal        EnqueueHudSprites
     /* F7E8 8001EFE8 00000000 */   nop
   .L8001EFEC:
     /* F7EC 8001EFEC 0780023C */  lui        $v0, %hi(g_nDemoMode)
@@ -20068,11 +20068,11 @@ endlabel RasterizeSpritePrimQueue
 /* Handwritten function */
 .endif
 
-.section .text.RasterizePairedActor, "ax"
-.ifndef HAVE_C_RasterizePairedActor
-nonmatching RasterizePairedActor, 0x7F4
+.section .text.RasterizeSpyroModel, "ax"
+.ifndef HAVE_C_RasterizeSpyroModel
+nonmatching RasterizeSpyroModel, 0x7F4
 
-glabel RasterizePairedActor
+glabel RasterizeSpyroModel
     /* 142C4 80023AC4 0780013C */  lui        $at, 0x8007
     /* 142C8 80023AC8 D87D2124 */  addiu      $at, $at, 0x7DD8
     /* 142CC 80023ACC 000030AC */  sw         $s0, 0x0($at)
@@ -20598,7 +20598,7 @@ glabel RasterizePairedActor
     /* 14AAC 800242AC 00002194 */  lhu        $at, 0x0($at)
     /* 14AB0 800242B0 001C0200 */  sll        $v1, $v0, 16
     /* 14AB4 800242B4 00008348 */  mtc2       $v1, $0 /* handwritten instruction */
-endlabel RasterizePairedActor
+endlabel RasterizeSpyroModel
 
 /* Handwritten function */
 .endif

@@ -141,7 +141,7 @@ extern void EmitActorDrawList(void);
 
 extern void RasterizeSpritePrimQueue(void);
 
-extern void RasterizePairedActor(void);
+extern void RasterizeSpyroModel(void);
 
 extern void ResetSpyroLinearMotion(void);
 
@@ -220,7 +220,7 @@ extern short g_anTweenBlendWeights8[];
 extern short g_anTweenBlendWeights2[];
 extern void DrawFullscreenTint(int slot, int r, int g, int b);
 extern void EmitStaticActorMeshListFogged(void);
-extern void EnqueueLoadingScreenSprites(void);
+extern void EnqueueHudSprites(void);
 extern long GetSpuTransferStatus(int mode);
 extern void InitActorMeshScratchRegions(int mode);
 extern void InitNewGameState(void);

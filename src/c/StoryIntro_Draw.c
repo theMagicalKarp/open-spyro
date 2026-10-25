@@ -98,7 +98,7 @@ void StoryIntro_Draw(void) {
   RasterizeSpritePrimQueue();
 
   if (g_nStoryIntroSubstate == 2) {
-    RasterizePairedActor();
+    RasterizeSpyroModel();
     ((int *)g_pOtDepthBinArrayBase)[0x40] = g_pOtActiveDepthSlot[0];
     ((int *)g_pOtDepthBinArrayBase)[0x41] = g_pOtActiveDepthSlot[1];
     g_pOtActiveDepthSlot[0] = 0;

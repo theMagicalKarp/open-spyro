@@ -2420,7 +2420,7 @@ func_800658FC:
     two post-jal sites that want `la; lw 0(r)` (a volatile-declared scalar does
     not reach it — expand never force_regs a DECL's address).
 
-EnqueueLoadingScreenSprites:
+EnqueueHudSprites:
   verdict: parked
   class: "runtime-pointer address hoist (NOT retired-B16) + F2 preheader rotation + constant reassociation"
   date: 2026-08-24

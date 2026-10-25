@@ -100,7 +100,7 @@ void GamestateDraw(void) {
     g_abFrameDrawEnv1.b0 = b;
     BuildRenderEntityLists();
     if (g_nFlightLevelActive == 0) {
-      EnqueueLoadingScreenSprites();
+      EnqueueHudSprites();
     }
     if (g_nDemoMode != 0) {
       DrawDemoModeOverlay();
