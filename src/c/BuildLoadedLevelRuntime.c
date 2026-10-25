@@ -130,8 +130,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_nFlightLevelActive = 0;
     g_nSpyroFallTrackingFlag = 0;
     if (g_nPortalTransitionActive != 0) {
-      g_anLevelSpawnPosZBlock[0] +=
-          g_anLevelSpawnNudgeZTable[g_nLevelIntroIndex];
+      g_anLevelSpawnPosZBlock[0] += g_anLevelSpawnNudgeZTable[g_nLevelIndex];
       sinp = &g_anSineLut[g_nLevelSpawnYaw];
       radial = g_anCosineLut[g_nLevelSpawnYaw] >> 2;
       g_nLevelSpawnPosX -= radial;
@@ -423,7 +422,7 @@ sprites:
         if ((g_anRunningKillBitmap[wi] & b1) == 0) {
           mask |= 1 << type;
         } else {
-          row = (g_nLevelIntroIndex << 5) + ((int)g_anLevelKillBitmapTable);
+          row = (g_nLevelIndex << 5) + ((int)g_anLevelKillBitmapTable);
           if (((*((int *)((wi * 4) + row))) & b1) == 0) {
             mask |= 1 << type;
           }
@@ -444,7 +443,7 @@ sprites:
       wi = i >> 5;
       sh2 = i & 0x1F;
       tbl = (int)g_anLevelKillBitmapTable;
-      row = (g_nLevelIntroIndex << 5) + tbl;
+      row = (g_nLevelIndex << 5) + tbl;
       wi <<= 2;
       b3 = 1 << sh2;
       if ((*((int *)(wi + row))) & b3) {

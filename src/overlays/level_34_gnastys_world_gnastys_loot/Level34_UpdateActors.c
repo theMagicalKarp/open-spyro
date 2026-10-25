@@ -260,7 +260,7 @@ void Level34_UpdateActors(void) {
                 yaw -= 0x1000;
               }
               if (yaw < -0x200) {
-                g_abLevelGemPercent[g_nLevelIntroIndex] = 1;
+                g_abLevelExited[g_nLevelIndex] = 1;
                 g_nCdStreamState = 0;
                 g_nEnteredPortalIdx = -1;
                 g_nPortalTransitionActive = one;
@@ -696,7 +696,7 @@ void Level34_UpdateActors(void) {
         ZeroVector(&g_nSpyroSwingEulerPitchTarget);
         CommitActorKillGems(0, st->idx);
         g_nWorldEggsRecovered += 1;
-        g_anLevelEggsRecovered[g_nLevelIntroIndex] += 1;
+        g_anLevelEggsRecovered[g_nLevelIndex] += 1;
         g_nHudWorldEggRollRequest.v = 0;
         DespawnActorRecord(actor);
         continue;
@@ -2470,7 +2470,7 @@ void Level34_UpdateActors(void) {
           }
         }
         if (TickCountdownByFrameDelta(t, 4)) {
-          g_abLevelGemPercent[g_nLevelIntroIndex] = 1;
+          g_abLevelExited[g_nLevelIndex] = 1;
           g_nCurrentWorldId[0] = 3;
           g_nGamestate = GS_GEM_CUTSCENE;
           g_nGamePaused = one;

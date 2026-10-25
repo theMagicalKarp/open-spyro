@@ -696,7 +696,7 @@ void Level0_UpdateActors(void) {
         ZeroVector(&SPY.headLook);
         CommitActorKillGems(0, st->killActor);
         g_nWorldEggsRecovered = g_nWorldEggsRecovered + 1;
-        g_anLevelEggsRecovered[g_nLevelIntroIndex] += 1;
+        g_anLevelEggsRecovered[g_nLevelIndex] += 1;
         g_nHudWorldEggRollRequest.v = 0;
         DespawnActorRecord(actor);
         break;
@@ -724,7 +724,7 @@ void Level0_UpdateActors(void) {
 
       switch (marker) {
       case 0:
-        if (g_abLevelGemPercent[1] || g_abLevelGemPercent[2] || g_abLevelGemPercent[3] || g_abLevelGemPercent[4]) {
+        if (g_abLevelExited[1] || g_abLevelExited[2] || g_abLevelExited[3] || g_abLevelExited[4]) {
           /* Wake only once the linked actor is dormant and Spyro is near. */
           if (g_pActorListBase[st->idx].mode >= ACTOR_MODE_DORMANT &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
@@ -2174,7 +2174,7 @@ void Level0_UpdateActors(void) {
             SetSpawnAnchorFromActor(actor, rotZ);
 
             if (st->rewardScript != -1) {
-              g_anLevelDragonsRescued[g_nLevelIntroIndex]++;
+              g_anLevelDragonsRescued[g_nLevelIndex]++;
               g_nWorldDragonsRescued++;
               StubRewardHook(st->rewardScript, 0);
               if (st->partner != -1) {
@@ -2183,7 +2183,7 @@ void Level0_UpdateActors(void) {
               DespawnActorRecord(actor);
               continue;
             } else if (cutsceneId = st->cutsceneId, cutsceneId == st->rewardScript) {
-              g_anLevelDragonsRescued[g_nLevelIntroIndex]++;
+              g_anLevelDragonsRescued[g_nLevelIndex]++;
               g_nWorldDragonsRescued++;
               if (st->partner != cutsceneId) {
                 g_pActorListBase[st->partner].mode = 1;

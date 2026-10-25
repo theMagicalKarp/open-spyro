@@ -10,7 +10,7 @@ void RefreshHudLevelGemCounter(void) {
   unsigned char *ps = ((unsigned char *)g_anHudLevelGemCachedBlock) - 0x20;
   unsigned char *pr = ((unsigned char *)g_anHudLevelGemCachedBlock) - 0x1B;
   unsigned char state;
-  int gems = g_anLevelGemsCollected[g_nLevelIntroIndex];
+  int gems = g_anLevelGemsCollected[g_nLevelIndex];
   *pc = gems;
   SetHudCounterDigits(0, 4, gems, 1);
   /* the do/while(0) is load-bearing: it pins the state load below the

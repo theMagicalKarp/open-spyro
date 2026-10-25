@@ -14177,11 +14177,11 @@ dlabel g_nMotionTrailRibbonCount
     /* 65E84 80075684 00000000 */ .word 0x00000000
 enddlabel g_nMotionTrailRibbonCount
 
-nonmatching g_nPrevLevelIntroIndex
+nonmatching g_nPrevLevelIndex
 
-dlabel g_nPrevLevelIntroIndex
+dlabel g_nPrevLevelIndex
     /* 65E88 80075688 00000000 */ .word 0x00000000
-enddlabel g_nPrevLevelIntroIndex
+enddlabel g_nPrevLevelIndex
 
 nonmatching g_nPauseMenuIdleFrames
 

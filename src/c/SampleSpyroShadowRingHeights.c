@@ -54,7 +54,7 @@ void SampleSpyroShadowRingHeights(int probe) {
      folding to an absolute address (see the cookbook's B-i fold). */
   EBB_BREAK();
   g_anSpyroShadowHidden[0] = 0;
-  if ((g_anLevelDeathPlaneZTable[g_nLevelIntroIndex] >= gz) ||
+  if ((g_anLevelDeathPlaneZTable[g_nLevelIndex] >= gz) ||
       (g_anSpyroBodyMtx[0x4F] != 0)) {
     g_anSpyroShadowHidden[0] = 1;
   }

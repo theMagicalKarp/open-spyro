@@ -129,7 +129,7 @@ void TickSpyroGameplayFrame(void) {
     TriggerRespawnOrGameOver();
   } else {
     pos = g_anSpyroWorldPosZBlock;
-    if (pos[0] < g_anLevelDeathPlaneZTable[g_nLevelIntroIndex]) {
+    if (pos[0] < g_anLevelDeathPlaneZTable[g_nLevelIndex]) {
       if ((g_nSpyroState != SPYRO_ST_FALL) &&
           (g_nSpyroState != SPYRO_ST_GLIDE_DROP)) {
         ChangeSpyroState(SPYRO_ST_FALL);

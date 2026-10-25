@@ -606,7 +606,7 @@ void Level24_UpdateActors(void) {
         ZeroVector(&g_nSpyroSwingEulerPitchTarget);
         CommitActorKillGems(0, st->idx);
         g_nWorldEggsRecovered += 1;
-        g_anLevelEggsRecovered[g_nLevelIntroIndex] += 1;
+        g_anLevelEggsRecovered[g_nLevelIndex] += 1;
         g_nHudWorldEggRollRequest.v = 0;
         DespawnActorRecord(actor);
         continue;
@@ -3036,7 +3036,7 @@ void Level24_UpdateActors(void) {
             SetSpawnAnchorFromActor(actor, facing);
 
             if (st->reward != -1) {
-              g_anLevelDragonsRescued[g_nLevelIntroIndex] += 1;
+              g_anLevelDragonsRescued[g_nLevelIndex] += 1;
               g_nWorldDragonsRescued += 1;
               StubRewardHook(st->reward, 0);
 
@@ -3048,7 +3048,7 @@ void Level24_UpdateActors(void) {
             }
 
             if (st->cutsceneId == st->reward) {
-              g_anLevelDragonsRescued[g_nLevelIntroIndex] += 1;
+              g_anLevelDragonsRescued[g_nLevelIndex] += 1;
               g_nWorldDragonsRescued += 1;
 
               if (st->partner != -1) {

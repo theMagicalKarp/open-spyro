@@ -33,11 +33,11 @@ void SetSpawnAnchorFromActor(Actor *actor, int yaw) {
   *((volatile int *)(&g_nSpawnAnchorValid)) = t;
   dst = &g_anLevelSpawnYawBlock[-19];
   *((volatile int *)(&g_nLevelSpawnPosZ)) += 0x164;
-  rescued = &g_anLevelDragonsRescued[g_nLevelIntroIndex];
+  rescued = &g_anLevelDragonsRescued[g_nLevelIndex];
   {
     t = *rescued;
     *((volatile int *)(&g_nSpawnAnchorDragonsRescued)) = t;
-    t = g_anLevelGemsCollected[g_nLevelIntroIndex];
+    t = g_anLevelGemsCollected[g_nLevelIndex];
     *(&g_nSpawnAnchorReserved) = 0;
     *((volatile int *)(&g_nSpawnAnchorGemsCollected)) = t;
   }

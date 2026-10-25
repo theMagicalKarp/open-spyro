@@ -74,7 +74,7 @@ extern unsigned char g_abEmitTrailColorsB[];
 extern unsigned char g_abEmitTrailColorsG[];
 extern unsigned char g_abGemTallyIconUvTable[];
 extern unsigned char g_abHudCounterDisplayState;
-extern unsigned char g_abLevelGemPercent[];              /* per-level "left through the exit" flags */
+extern unsigned char g_abLevelExited[];              /* per-level "left through the exit" flags */
 extern unsigned char g_abWorldBalloonistState[];             /* per-world balloonist progress 0/1/2 */
 extern unsigned char g_abSpyroStateCameraMode[];
 extern unsigned char g_abWorldPerLevelByteTable[];       /* per-course claim flags */
@@ -154,7 +154,7 @@ extern int g_nGemTallyIconCount;
 extern int g_nGroundSurfaceType;                         /* index of the surface under the probe */
 extern int g_nLastCollisionHitChunkId;                   /* collision triangle index */
 extern int g_nLevelEggCount;                             /* key collected */
-extern int g_nLevelIntroIndex;
+extern int g_nLevelIndex;
 extern int g_nLevelIntroParallaxCountdown;
 extern int g_nLevelTransitionPhase;
 extern int g_nLevelTransitionTallyActive;

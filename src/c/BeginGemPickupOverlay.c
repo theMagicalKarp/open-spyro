@@ -23,13 +23,13 @@ void BeginGemPickupOverlay(Actor *actor) {
   register int one asm("$4");
   st = (unsigned int *)actor->state;
   if (((g_nActiveLevelId == 0xa) && (st[6] == 1)) &&
-      ((((g_abLevelGemPercent[1] != 0) || (g_abLevelGemPercent[2] != 0)) ||
-        (g_abLevelGemPercent[3] != 0)) ||
-       (g_abLevelGemPercent[5] != 0))) {
+      ((((g_abLevelExited[1] != 0) || (g_abLevelExited[2] != 0)) ||
+        (g_abLevelExited[3] != 0)) ||
+       (g_abLevelExited[5] != 0))) {
     st[6] = 2;
   }
   if (g_nActiveLevelId == 0x3c) {
-    if (g_abLevelGemPercent[0x21] != 0) {
+    if (g_abLevelExited[0x21] != 0) {
       st[6] = 1;
       st[0xa] = 0x800;
       st[0xb] = 0xcc8;
@@ -46,7 +46,7 @@ void BeginGemPickupOverlay(Actor *actor) {
   g_nGamestate = GS_GEM_PICKUP;
   world = g_nWorldDragonsRescued;
   g_nHudDragonCachedCount = world;
-  dragons = &g_anLevelDragonsRescued[g_nLevelIntroIndex];
+  dragons = &g_anLevelDragonsRescued[g_nLevelIndex];
   prevDragons = *dragons;
   one = 1;
   g_nGameplayBlocked = one;

@@ -617,7 +617,7 @@ void Level30_UpdateActors(void) {
         ZeroVector(&g_nSpyroSwingEulerPitchTarget);
         CommitActorKillGems(0, st->idx);
         g_nWorldEggsRecovered += 1;
-        g_anLevelEggsRecovered[g_nLevelIntroIndex] += 1;
+        g_anLevelEggsRecovered[g_nLevelIndex] += 1;
         g_nHudWorldEggRollRequest.v = 0;
         DespawnActorRecord(actor);
         continue;
@@ -1771,12 +1771,12 @@ void Level30_UpdateActors(void) {
         st->started = 1;
       }
 
-      if (!((GetWorldChunkAnimState(0) >> 8) & 0xFF) && g_abLevelGemPercent[0x1F] != 0 &&
+      if (!((GetWorldChunkAnimState(0) >> 8) & 0xFF) && g_abLevelExited[0x1F] != 0 &&
           g_anLevelDragonsRescued[0x1E] > 0) {
         ModifyWorldChunkAnimFlags(0, 0xFC, 0);
       }
 
-      if (!((GetWorldChunkAnimState(1) >> 8) & 0xFF) && g_abLevelGemPercent[0x20] != 0) {
+      if (!((GetWorldChunkAnimState(1) >> 8) & 0xFF) && g_abLevelExited[0x20] != 0) {
         ModifyWorldChunkAnimFlags(1, 0xFC, 0);
       }
 
@@ -1936,7 +1936,7 @@ void Level30_UpdateActors(void) {
             SetSpawnAnchorFromActor(actor, facing);
 
             if (st->reward != -1) {
-              g_anLevelDragonsRescued[g_nLevelIntroIndex] += 1;
+              g_anLevelDragonsRescued[g_nLevelIndex] += 1;
               g_nWorldDragonsRescued += 1;
               StubRewardHook(st->reward, 0);
 
@@ -1948,7 +1948,7 @@ void Level30_UpdateActors(void) {
             }
 
             if (st->cutsceneId == st->reward) {
-              g_anLevelDragonsRescued[g_nLevelIntroIndex] += 1;
+              g_anLevelDragonsRescued[g_nLevelIndex] += 1;
               g_nWorldDragonsRescued += 1;
 
               if (st->partner != -1) {

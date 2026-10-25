@@ -86,7 +86,7 @@ icon_slot:
     rect += 8;
   } while (rect < 0x60);
   anchor = &HUD_ICON(4 * ACTOR_SIZE)->type;
-  idx = VOL(g_nLevelIntroIndex);
+  idx = VOL(g_nLevelIndex);
   VOL(anchor[0]) = 0x1D7;
   VOL(HUD_ICON(7 * ACTOR_SIZE)->type) = 0x1FA;
   VOL(HUD_ICON(10 * ACTOR_SIZE)->type) = 0x3A;

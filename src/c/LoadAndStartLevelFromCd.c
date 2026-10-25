@@ -18,7 +18,7 @@ void LoadAndStartLevelFromCd(void) {
   (void)pad;
 
   StopAllSoundExceptMask(0);
-  level = *(volatile int *)&g_nLevelIntroIndex;
+  level = *(volatile int *)&g_nLevelIndex;
   base = *(volatile int *)&g_nCdBaseLba;
   archiveBase = *(volatile int *)&g_nLevelArchiveBaseLba;
   dst = *(void *volatile *)&g_pPathTableBuffer;

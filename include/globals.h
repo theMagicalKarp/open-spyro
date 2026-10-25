@@ -545,7 +545,7 @@ extern int g_nGnastyLootFallRefZCap;         /* 0x80075678 */
 extern void *g_pfnGamestate7DrawHook;        /* 0x8007567c */
 extern void *g_pPathTableHead;               /* 0x80075680 */
 extern int g_nMotionTrailRibbonCount;        /* 0x80075684 */
-extern int g_nPrevLevelIntroIndex;           /* 0x80075688 */
+extern int g_nPrevLevelIndex;           /* 0x80075688 */
 extern int g_nPauseMenuIdleFrames;           /* 0x8007568c */
 extern int g_nFlightLevelActive;             /* 0x80075690 */
 extern void *g_pfnLevelFallImpactCallback;   /* 0x80075694 */
@@ -670,7 +670,7 @@ extern byte g_bSpyroPadSnapshotReverseFlag;  /* 0x80075944 */
 extern int g_nVsyncFramePaceAnchor;          /* 0x80075950 */
 extern int g_nVsyncFrameEndCount;            /* 0x80075954 */
 extern int g_nSpyroPitchRateAccum;           /* 0x80075960 */
-extern int g_nLevelIntroIndex;               /* 0x80075964 */
+extern int g_nLevelIndex;               /* 0x80075964: the active level as 0..35, (id / 10 - 1) * 6 + id % 10; indexes every per-level table */
 extern int g_nActiveLevelId;                 /* 0x8007596c */
 extern int g_nSpyroIdleAnimSeqCursor;        /* 0x80075970 */
 
@@ -1027,7 +1027,7 @@ extern byte g_abPad2RawReport[34];                      /* 0x80078e50 */
 extern unsigned char g_abLevelVisitedFlagVirtualBase[]; /* FIXME: type/size unrecovered @ 0x80078e72 */
 extern byte g_abLevelVisitedFlag[36];                   /* 0x80078e78 */
 extern byte g_abGpuOpQueueRing[6144];                   /* 0x80078ea0 */
-extern byte g_abLevelGemPercent[36];                    /* 0x8007a6a8 */
+extern byte g_abLevelExited[36];                    /* 0x8007a6a8: per-level flag, set to 1 when Spyro leaves through the level-exit whirlwind (saved) */
 extern int g_nWorldArchiveOffset;                       /* 0x8007a6e8 */
 extern int g_nGameOverSceneSectorOffset;                /* 0x8007a708 */
 extern int g_nGameOverSceneByteSize;                    /* 0x8007a70c */

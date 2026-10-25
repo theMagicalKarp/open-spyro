@@ -72,7 +72,7 @@ int ApplySaveGameBuffer(unsigned char *buf) {
     g_nExtraLives = 4;
   }
   CopyWords(g_anWorldPersistentFlags, buf + SAVE_OFFSET(worlds), 0x14);
-  off = SAVE_OFFSET(levelGemPercent);
+  off = SAVE_OFFSET(levelExited);
   w = 0;
   row = buf;
   tbl = g_abWorldPerLevelByteTable;
@@ -88,7 +88,7 @@ int ApplySaveGameBuffer(unsigned char *buf) {
     tbl += 5;
   } while (w < 5);
   CopyWords(g_abLevelVisitedFlag, buf + SAVE_OFFSET(levelVisited), 0x24);
-  CopyWords(g_abLevelGemPercent, buf + off, 0x24);
+  CopyWords(g_abLevelExited, buf + off, 0x24);
   i = 0;
   eggs = g_anLevelEggsRecovered;
   gems = g_anLevelGemsCollected;

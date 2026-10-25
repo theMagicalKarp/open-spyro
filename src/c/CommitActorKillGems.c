@@ -37,7 +37,7 @@ void CommitActorKillGems(int value, unsigned char *actor) {
     if (ACT->posZ >= 0x300) {
       SpawnFloatingDigitActors(value, ACT);
     }
-    gems = &g_anLevelGemsCollected[g_nLevelIntroIndex];
+    gems = &g_anLevelGemsCollected[g_nLevelIndex];
     w = g_nWorldTreasureCollected + value;
     g = *gems + value;
     g_nWorldTreasureCollected = w;
@@ -60,7 +60,7 @@ void CommitActorKillGems(int value, unsigned char *actor) {
   word = id >> 5;
   id = id & 0x1F;
   {
-    int *row = &g_anLevelKillBitmapTable[g_nLevelIntroIndex * 8];
+    int *row = &g_anLevelKillBitmapTable[g_nLevelIndex * 8];
     row[word] |= 1 << id;
   }
   PlaySoundEffect(*((struct SampleBankRef *)&g_pLevelSampleBankHeader)->head,

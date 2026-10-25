@@ -54,7 +54,7 @@ void TickGemPickupAssetStream(void) {
     StartCdReadAsync(g_nCdBaseLba, g_pWorldUnpackHead,
                      g_nGemPickupReadByteCount,
                      DRAGON_ASSET_OFFSET(g_nGemPickupTypeSnapshot) +
-                         LEVEL_ARCHIVE_OFFSET(g_nLevelIntroIndex),
+                         LEVEL_ARCHIVE_OFFSET(g_nLevelIndex),
                      600);
     g_nGemPickupStreamState++;
     return;
@@ -79,7 +79,7 @@ void TickGemPickupAssetStream(void) {
                        DRAGON_ASSET_SIZE(g_nGemPickupTypeSnapshot) -
                            g_nGemPickupReadByteCount,
                        DRAGON_ASSET_OFFSET(g_nGemPickupTypeSnapshot) +
-                           LEVEL_ARCHIVE_OFFSET(g_nLevelIntroIndex) +
+                           LEVEL_ARCHIVE_OFFSET(g_nLevelIndex) +
                            g_nGemPickupReadByteCount,
                        600);
     }
@@ -154,7 +154,7 @@ void TickGemPickupAssetStream(void) {
       t -= 0x100000;
       {
         int lba = *(volatile int *)&g_nCdBaseLba;
-        int intro = *(volatile int *)&g_nLevelIntroIndex;
+        int intro = *(volatile int *)&g_nLevelIndex;
         void *dst = *(void *volatile *)&g_pWorldUnpackHead;
         int off = *(volatile int *)&g_nWorldTimAudioChunkOffset;
 
@@ -179,7 +179,7 @@ void TickGemPickupAssetStream(void) {
     {
       int lba = *(volatile int *)&g_nCdBaseLba;
       void *dst = *(void *volatile *)&g_pWorldUnpackHead;
-      int intro = *(volatile int *)&g_nLevelIntroIndex;
+      int intro = *(volatile int *)&g_nLevelIndex;
       int size = *(volatile int *)&g_nWorldDataExtChunkSize;
       int off = *(volatile int *)&g_nWorldDataExtChunkOffset;
 

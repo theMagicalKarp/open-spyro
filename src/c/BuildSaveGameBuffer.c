@@ -51,7 +51,7 @@ void BuildSaveGameBuffer(unsigned char *buf) {
     row += 5;
   } while (w < 5);
   CopyWords(buf + SAVE_OFFSET(levelVisited), g_abLevelVisitedFlag, 0x24);
-  CopyWords(buf + SAVE_OFFSET(levelGemPercent), g_abLevelGemPercent, 0x24);
+  CopyWords(buf + SAVE_OFFSET(levelExited), g_abLevelExited, 0x24);
   i = 0;
   eggs = g_anLevelEggsRecovered;
   gems = g_anLevelGemsCollected;

@@ -678,7 +678,7 @@ void Level33_UpdateActors(void) {
         ZeroVector(&SPY.headLook);
         CommitActorKillGems(0, st->killActor);
         g_nWorldEggsRecovered = g_nWorldEggsRecovered + 1;
-        g_anLevelEggsRecovered[g_nLevelIntroIndex] += 1;
+        g_anLevelEggsRecovered[g_nLevelIndex] += 1;
         g_nHudWorldEggRollRequest.v = 0;
         DespawnActorRecord(actor);
         break;
@@ -2094,7 +2094,7 @@ void Level33_UpdateActors(void) {
           }
         }
         if (st->stateTimer == 0) {
-          g_abLevelGemPercent[g_nLevelIntroIndex] = 1;
+          g_abLevelExited[g_nLevelIndex] = 1;
           g_nCreditsPageIndex = 0;
           g_nCurrentWorldId[0] = 2;
           g_nGamestate = GS_GEM_CUTSCENE;

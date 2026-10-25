@@ -18,7 +18,7 @@ void EnterInventoryMenu(int fromGameplay) {
   g_nSubMenuScrollOffset = 0;
   g_nSubMenuScrollDelta = 0;
   g_nGamestate = GS_INVENTORY;
-  g_nSubMenuCursor = g_nLevelIntroIndex / 6;
+  g_nSubMenuCursor = g_nLevelIndex / 6;
   if (fromGameplay != 0) {
     g_nPauseMenuTransitionFrames = 0;
   }

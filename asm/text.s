@@ -359,9 +359,9 @@ glabel ResetLevelState
     /* 2E44 80012644 0880013C */  lui        $at, %hi(g_abLevelVisitedFlag)
     /* 2E48 80012648 21082300 */  addu       $at, $at, $v1
     /* 2E4C 8001264C 788E20A0 */  sb         $zero, %lo(g_abLevelVisitedFlag)($at)
-    /* 2E50 80012650 0880013C */  lui        $at, %hi(g_abLevelGemPercent)
+    /* 2E50 80012650 0880013C */  lui        $at, %hi(g_abLevelExited)
     /* 2E54 80012654 21082300 */  addu       $at, $at, $v1
-    /* 2E58 80012658 A8A620A0 */  sb         $zero, %lo(g_abLevelGemPercent)($at)
+    /* 2E58 80012658 A8A620A0 */  sb         $zero, %lo(g_abLevelExited)($at)
     /* 2E5C 8001265C 01006324 */  addiu      $v1, $v1, 0x1
     /* 2E60 80012660 24006228 */  slti       $v0, $v1, 0x24
     /* 2E64 80012664 F0FF4014 */  bnez       $v0, .L80012628
@@ -1725,8 +1725,8 @@ glabel BuildLoadedLevelRuntime
     /* 41B8 800139B8 00000000 */   nop
     /* 41BC 800139BC 0780053C */  lui        $a1, %hi(g_nLevelSpawnPosZ)
     /* 41C0 800139C0 E078A524 */  addiu      $a1, $a1, %lo(g_nLevelSpawnPosZ)
-    /* 41C4 800139C4 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 41C8 800139C8 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 41C4 800139C4 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 41C8 800139C8 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 41CC 800139CC 0000A38C */  lw         $v1, 0x0($a1)
     /* 41D0 800139D0 0780043C */  lui        $a0, %hi(g_nLevelSpawnYaw)
     /* 41D4 800139D4 E478848C */  lw         $a0, %lo(g_nLevelSpawnYaw)($a0)
@@ -2301,8 +2301,8 @@ glabel BuildLoadedLevelRuntime
     /* 4A3C 8001423C 24104500 */  and        $v0, $v0, $a1
     /* 4A40 80014240 0D004010 */  beqz       $v0, .L80014278
     /* 4A44 80014244 0410F300 */   sllv      $v0, $s3, $a3
-    /* 4A48 80014248 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 4A4C 8001424C 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 4A48 80014248 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 4A4C 8001424C 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 4A50 80014250 0780033C */  lui        $v1, %hi(g_anLevelKillBitmapTable)
     /* 4A54 80014254 08796324 */  addiu      $v1, $v1, %lo(g_anLevelKillBitmapTable)
     /* 4A58 80014258 40110200 */  sll        $v0, $v0, 5
@@ -2341,8 +2341,8 @@ glabel BuildLoadedLevelRuntime
     /* 4ACC 800142CC 1F002532 */  andi       $a1, $s1, 0x1F
     /* 4AD0 800142D0 0780033C */  lui        $v1, %hi(g_anLevelKillBitmapTable)
     /* 4AD4 800142D4 08796324 */  addiu      $v1, $v1, %lo(g_anLevelKillBitmapTable)
-    /* 4AD8 800142D8 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 4ADC 800142DC 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 4AD8 800142D8 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 4ADC 800142DC 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 4AE0 800142E0 80300600 */  sll        $a2, $a2, 2
     /* 4AE4 800142E4 40110200 */  sll        $v0, $v0, 5
     /* 4AE8 800142E8 21104300 */  addu       $v0, $v0, $v1
@@ -2487,8 +2487,8 @@ glabel LoadAndStartLevelFromCd
     /* 4CCC 800144CC 3800BFAF */  sw         $ra, 0x38($sp)
     /* 4CD0 800144D0 CA5A010C */  jal        StopAllSoundExceptMask
     /* 4CD4 800144D4 21200000 */   addu      $a0, $zero, $zero
-    /* 4CD8 800144D8 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 4CDC 800144DC 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 4CD8 800144D8 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 4CDC 800144DC 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 4CE0 800144E0 0780043C */  lui        $a0, %hi(g_nCdBaseLba)
     /* 4CE4 800144E4 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
     /* 4CE8 800144E8 0880073C */  lui        $a3, %hi(g_nLevelArchiveBaseLba)
@@ -3024,8 +3024,8 @@ glabel TickGemPickupAssetStream
     /* 5490 80014C90 6870C68C */  lw         $a2, %lo(g_nGemPickupReadByteCount)($a2)
     /* 5494 80014C94 0780023C */  lui        $v0, %hi(g_nGemPickupTypeSnapshot)
     /* 5498 80014C98 5470428C */  lw         $v0, %lo(g_nGemPickupTypeSnapshot)($v0)
-    /* 549C 80014C9C 0780033C */  lui        $v1, %hi(g_nLevelIntroIndex)
-    /* 54A0 80014CA0 6459638C */  lw         $v1, %lo(g_nLevelIntroIndex)($v1)
+    /* 549C 80014C9C 0780033C */  lui        $v1, %hi(g_nLevelIndex)
+    /* 54A0 80014CA0 6459638C */  lw         $v1, %lo(g_nLevelIndex)($v1)
     /* 54A4 80014CA4 C0100200 */  sll        $v0, $v0, 3
     /* 54A8 80014CA8 00190300 */  sll        $v1, $v1, 4
     /* 54AC 80014CAC 0780013C */  lui        $at, %hi(g_nDragonAssetOffset)
@@ -3122,8 +3122,8 @@ glabel TickGemPickupAssetStream
     /* 560C 80014E0C 0780083C */  lui        $t0, %hi(g_nGemPickupReadByteCount)
     /* 5610 80014E10 6870088D */  lw         $t0, %lo(g_nGemPickupReadByteCount)($t0)
     /* 5614 80014E14 0000028E */  lw         $v0, 0x0($s0)
-    /* 5618 80014E18 0780033C */  lui        $v1, %hi(g_nLevelIntroIndex)
-    /* 561C 80014E1C 6459638C */  lw         $v1, %lo(g_nLevelIntroIndex)($v1)
+    /* 5618 80014E18 0780033C */  lui        $v1, %hi(g_nLevelIndex)
+    /* 561C 80014E1C 6459638C */  lw         $v1, %lo(g_nLevelIndex)($v1)
     /* 5620 80014E20 2128A800 */  addu       $a1, $a1, $t0
     /* 5624 80014E24 2328A200 */  subu       $a1, $a1, $v0
     /* 5628 80014E28 00190300 */  sll        $v1, $v1, 4
@@ -3340,8 +3340,8 @@ glabel TickGemPickupAssetStream
     /* 5948 80015148 2130C800 */  addu       $a2, $a2, $t0
     /* 594C 8001514C 0780043C */  lui        $a0, %hi(g_nCdBaseLba)
     /* 5950 80015150 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
-    /* 5954 80015154 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 5958 80015158 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 5954 80015154 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 5958 80015158 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 595C 8001515C 0880053C */  lui        $a1, %hi(g_pWorldUnpackHead)
     /* 5960 80015160 E085A58C */  lw         $a1, %lo(g_pWorldUnpackHead)($a1)
     /* 5964 80015164 0780073C */  lui        $a3, %hi(g_nWorldTimAudioChunkOffset)
@@ -3393,8 +3393,8 @@ glabel TickGemPickupAssetStream
     /* 5A0C 8001520C 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
     /* 5A10 80015210 0880053C */  lui        $a1, %hi(g_pWorldUnpackHead)
     /* 5A14 80015214 E085A58C */  lw         $a1, %lo(g_pWorldUnpackHead)($a1)
-    /* 5A18 80015218 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 5A1C 8001521C 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 5A18 80015218 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 5A1C 8001521C 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 5A20 80015220 0780063C */  lui        $a2, %hi(g_nWorldDataExtChunkSize)
     /* 5A24 80015224 146CC68C */  lw         $a2, %lo(g_nWorldDataExtChunkSize)($a2)
     /* 5A28 80015228 0780033C */  lui        $v1, %hi(g_nWorldDataExtChunkOffset)
@@ -3669,10 +3669,10 @@ glabel TickLevelTransitionStream
     /* 5E04 80015604 6C59A58C */  lw         $a1, %lo(g_nActiveLevelId)($a1)
     /* 5E08 80015608 67664234 */  ori        $v0, $v0, (0x66666667 & 0xFFFF)
     /* 5E0C 8001560C 1800A200 */  mult       $a1, $v0
-    /* 5E10 80015610 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 5E14 80015614 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
-    /* 5E18 80015618 0780013C */  lui        $at, %hi(g_nPrevLevelIntroIndex)
-    /* 5E1C 8001561C 885622AC */  sw         $v0, %lo(g_nPrevLevelIntroIndex)($at)
+    /* 5E10 80015610 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 5E14 80015614 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
+    /* 5E18 80015618 0780013C */  lui        $at, %hi(g_nPrevLevelIndex)
+    /* 5E1C 8001561C 885622AC */  sw         $v0, %lo(g_nPrevLevelIndex)($at)
     /* 5E20 80015620 C3170500 */  sra        $v0, $a1, 31
     /* 5E24 80015624 10480000 */  mfhi       $t1
     /* 5E28 80015628 83200900 */  sra        $a0, $t1, 2
@@ -3688,8 +3688,8 @@ glabel TickLevelTransitionStream
     /* 5E50 80015650 40100200 */  sll        $v0, $v0, 1
     /* 5E54 80015654 2328A200 */  subu       $a1, $a1, $v0
     /* 5E58 80015658 21106500 */  addu       $v0, $v1, $a1
-    /* 5E5C 8001565C 0780013C */  lui        $at, %hi(g_nLevelIntroIndex)
-    /* 5E60 80015660 645922AC */  sw         $v0, %lo(g_nLevelIntroIndex)($at)
+    /* 5E5C 8001565C 0780013C */  lui        $at, %hi(g_nLevelIndex)
+    /* 5E60 80015660 645922AC */  sw         $v0, %lo(g_nLevelIndex)($at)
     /* 5E64 80015664 0F000012 */  beqz       $s0, .L800156A4
     /* 5E68 80015668 00000000 */   nop
     /* 5E6C 8001566C 00110200 */  sll        $v0, $v0, 4
@@ -3715,8 +3715,8 @@ glabel TickLevelTransitionStream
     /* 5EB4 800156B4 00080624 */  addiu      $a2, $zero, 0x800
     /* 5EB8 800156B8 0780043C */  lui        $a0, %hi(g_nCdBaseLba)
     /* 5EBC 800156BC 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
-    /* 5EC0 800156C0 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 5EC4 800156C4 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 5EC0 800156C0 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 5EC4 800156C4 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 5EC8 800156C8 0880053C */  lui        $a1, %hi(g_pDrawBufB)
     /* 5ECC 800156CC DC85A58C */  lw         $a1, %lo(g_pDrawBufB)($a1)
     /* 5ED0 800156D0 00110200 */  sll        $v0, $v0, 4
@@ -3742,8 +3742,8 @@ glabel TickLevelTransitionStream
     /* 5F1C 8001571C 0800063C */  lui        $a2, (0x80000 >> 16)
     /* 5F20 80015720 0780043C */  lui        $a0, %hi(g_nCdBaseLba)
     /* 5F24 80015724 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
-    /* 5F28 80015728 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 5F2C 8001572C 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 5F28 80015728 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 5F2C 8001572C 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 5F30 80015730 0000058E */  lw         $a1, 0x0($s0)
     /* 5F34 80015734 0000238E */  lw         $v1, 0x0($s1)
     /* 5F38 80015738 00110200 */  sll        $v0, $v0, 4
@@ -3791,8 +3791,8 @@ glabel TickLevelTransitionStream
     /* 5FDC 800157DC 0000058E */  lw         $a1, 0x0($s0)
     /* 5FE0 800157E0 0780023C */  lui        $v0, %hi(g_nWorldTimAudioChunkSize)
     /* 5FE4 800157E4 046C428C */  lw         $v0, %lo(g_nWorldTimAudioChunkSize)($v0)
-    /* 5FE8 800157E8 0780033C */  lui        $v1, %hi(g_nLevelIntroIndex)
-    /* 5FEC 800157EC 6459638C */  lw         $v1, %lo(g_nLevelIntroIndex)($v1)
+    /* 5FE8 800157E8 0780033C */  lui        $v1, %hi(g_nLevelIndex)
+    /* 5FEC 800157EC 6459638C */  lw         $v1, %lo(g_nLevelIndex)($v1)
     /* 5FF0 800157F0 0780083C */  lui        $t0, %hi(g_nWorldTimAudioChunkOffset)
     /* 5FF4 800157F4 006C088D */  lw         $t0, %lo(g_nWorldTimAudioChunkOffset)($t0)
     /* 5FF8 800157F8 21304600 */  addu       $a2, $v0, $a2
@@ -3838,8 +3838,8 @@ glabel TickLevelTransitionStream
     /* 608C 8001588C 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
     /* 6090 80015890 0880053C */  lui        $a1, %hi(g_pDrawBufB)
     /* 6094 80015894 DC85A58C */  lw         $a1, %lo(g_pDrawBufB)($a1)
-    /* 6098 80015898 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 609C 8001589C 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 6098 80015898 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 609C 8001589C 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 60A0 800158A0 0780063C */  lui        $a2, %hi(g_nWorldBundleChunkSize)
     /* 60A4 800158A4 0C6CC68C */  lw         $a2, %lo(g_nWorldBundleChunkSize)($a2)
     /* 60A8 800158A8 0780033C */  lui        $v1, %hi(g_nWorldBundleChunkOffset)
@@ -3936,8 +3936,8 @@ glabel TickLevelTransitionStream
     /* 6200 80015A00 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
     /* 6204 80015A04 0880053C */  lui        $a1, %hi(g_pWorldUnpackHead)
     /* 6208 80015A08 E085A58C */  lw         $a1, %lo(g_pWorldUnpackHead)($a1)
-    /* 620C 80015A0C 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 6210 80015A10 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 620C 80015A0C 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 6210 80015A10 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 6214 80015A14 0780063C */  lui        $a2, %hi(g_nWorldDataExtChunkSize)
     /* 6218 80015A18 146CC68C */  lw         $a2, %lo(g_nWorldDataExtChunkSize)($a2)
     /* 621C 80015A1C 0780033C */  lui        $v1, %hi(g_nWorldDataExtChunkOffset)
@@ -4040,8 +4040,8 @@ glabel TickLevelTransitionStream
     /* 6384 80015B84 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
     /* 6388 80015B88 0880053C */  lui        $a1, %hi(g_pPathTableBuffer)
     /* 638C 80015B8C E485A58C */  lw         $a1, %lo(g_pPathTableBuffer)($a1)
-    /* 6390 80015B90 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 6394 80015B94 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 6390 80015B90 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 6394 80015B94 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 6398 80015B98 0880063C */  lui        $a2, %hi(g_nLevelArchiveByteSize)
     /* 639C 80015B9C 0486C68C */  lw         $a2, %lo(g_nLevelArchiveByteSize)($a2)
     /* 63A0 80015BA0 0880033C */  lui        $v1, %hi(g_nLevelArchiveBaseLba)
@@ -4127,8 +4127,8 @@ glabel TickLevelTransitionStream
     /* 64C4 80015CC4 ED580008 */  j          .L800163B4
     /* 64C8 80015CC8 01004224 */   addiu     $v0, $v0, 0x1
   jlabel .L80015CCC
-    /* 64CC 80015CCC 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 64D0 80015CD0 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 64CC 80015CCC 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 64D0 80015CD0 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 64D4 80015CD4 0880013C */  lui        $at, %hi(g_abLevelVisitedFlag)
     /* 64D8 80015CD8 21082200 */  addu       $at, $at, $v0
     /* 64DC 80015CDC 788E2290 */  lbu        $v0, %lo(g_abLevelVisitedFlag)($at)
@@ -4142,8 +4142,8 @@ glabel TickLevelTransitionStream
     /* 64F8 80015CF8 0780133C */  lui        $s3, %hi(g_nSpawnAnchorValid)
     /* 64FC 80015CFC 88787326 */  addiu      $s3, $s3, %lo(g_nSpawnAnchorValid)
     /* 6500 80015D00 21206002 */  addu       $a0, $s3, $zero
-    /* 6504 80015D04 0780033C */  lui        $v1, %hi(g_nLevelIntroIndex)
-    /* 6508 80015D08 6459638C */  lw         $v1, %lo(g_nLevelIntroIndex)($v1)
+    /* 6504 80015D04 0780033C */  lui        $v1, %hi(g_nLevelIndex)
+    /* 6508 80015D08 6459638C */  lw         $v1, %lo(g_nLevelIndex)($v1)
     /* 650C 80015D0C 21280000 */  addu       $a1, $zero, $zero
     /* 6510 80015D10 80100300 */  sll        $v0, $v1, 2
     /* 6514 80015D14 0780013C */  lui        $at, %hi(g_nLevelMusicTrack)
@@ -4157,8 +4157,8 @@ glabel TickLevelTransitionStream
     /* 6534 80015D34 788E22A0 */  sb         $v0, %lo(g_abLevelVisitedFlag)($at)
     /* 6538 80015D38 455A000C */  jal        FillWord
     /* 653C 80015D3C 68000624 */   addiu     $a2, $zero, 0x68
-    /* 6540 80015D40 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 6544 80015D44 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 6540 80015D40 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 6544 80015D44 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 6548 80015D48 00000000 */  nop
     /* 654C 80015D4C 80100200 */  sll        $v0, $v0, 2
     /* 6550 80015D50 0780013C */  lui        $at, %hi(g_anLevelGemsCollected)
@@ -9096,8 +9096,8 @@ glabel DrawLevelTransitionOverlay
     /* A3A0 80019BA0 80006228 */  slti       $v0, $v1, 0x80
     /* A3A4 80019BA4 0C004010 */  beqz       $v0, .L80019BD8
     /* A3A8 80019BA8 E0006228 */   slti      $v0, $v1, 0xE0
-    /* A3AC 80019BAC 0780023C */  lui        $v0, %hi(g_nPrevLevelIntroIndex)
-    /* A3B0 80019BB0 8856428C */  lw         $v0, %lo(g_nPrevLevelIntroIndex)($v0)
+    /* A3AC 80019BAC 0780023C */  lui        $v0, %hi(g_nPrevLevelIndex)
+    /* A3B0 80019BB0 8856428C */  lw         $v0, %lo(g_nPrevLevelIndex)($v0)
     /* A3B4 80019BB4 00000000 */  nop
     /* A3B8 80019BB8 80100200 */  sll        $v0, $v0, 2
     /* A3BC 80019BBC 0780013C */  lui        $at, %hi(g_anLevelGemsCollected)
@@ -9130,8 +9130,8 @@ glabel DrawLevelTransitionOverlay
     /* A41C 80019C1C 00000000 */   nop
     /* A420 80019C20 21288000 */  addu       $a1, $a0, $zero
   .L80019C24:
-    /* A424 80019C24 0780023C */  lui        $v0, %hi(g_nPrevLevelIntroIndex)
-    /* A428 80019C28 8856428C */  lw         $v0, %lo(g_nPrevLevelIntroIndex)($v0)
+    /* A424 80019C24 0780023C */  lui        $v0, %hi(g_nPrevLevelIndex)
+    /* A428 80019C28 8856428C */  lw         $v0, %lo(g_nPrevLevelIndex)($v0)
     /* A42C 80019C2C 0780033C */  lui        $v1, %hi(g_nLevelGemsAtEntry)
     /* A430 80019C30 7C58638C */  lw         $v1, %lo(g_nLevelGemsAtEntry)($v1)
     /* A434 80019C34 80100200 */  sll        $v0, $v0, 2
@@ -9162,8 +9162,8 @@ glabel DrawLevelTransitionOverlay
   .L80019C90:
     /* A490 80019C90 0E004010 */  beqz       $v0, .L80019CCC
     /* A494 80019C94 00000000 */   nop
-    /* A498 80019C98 0780023C */  lui        $v0, %hi(g_nPrevLevelIntroIndex)
-    /* A49C 80019C9C 8856428C */  lw         $v0, %lo(g_nPrevLevelIntroIndex)($v0)
+    /* A498 80019C98 0780023C */  lui        $v0, %hi(g_nPrevLevelIndex)
+    /* A49C 80019C9C 8856428C */  lw         $v0, %lo(g_nPrevLevelIndex)($v0)
     /* A4A0 80019CA0 0780033C */  lui        $v1, %hi(g_nLevelGemsAtEntry)
     /* A4A4 80019CA4 7C58638C */  lw         $v1, %lo(g_nLevelGemsAtEntry)($v1)
     /* A4A8 80019CA8 80100200 */  sll        $v0, $v0, 2
@@ -9196,8 +9196,8 @@ glabel DrawLevelTransitionOverlay
     /* A508 80019D08 00000000 */   nop
     /* A50C 80019D0C 21288000 */  addu       $a1, $a0, $zero
   .L80019D10:
-    /* A510 80019D10 0780023C */  lui        $v0, %hi(g_nPrevLevelIntroIndex)
-    /* A514 80019D14 8856428C */  lw         $v0, %lo(g_nPrevLevelIntroIndex)($v0)
+    /* A510 80019D10 0780023C */  lui        $v0, %hi(g_nPrevLevelIndex)
+    /* A514 80019D14 8856428C */  lw         $v0, %lo(g_nPrevLevelIndex)($v0)
     /* A518 80019D18 0780033C */  lui        $v1, %hi(g_nLevelGemsAtEntry)
     /* A51C 80019D1C 7C58638C */  lw         $v1, %lo(g_nLevelGemsAtEntry)($v1)
     /* A520 80019D20 80100200 */  sll        $v0, $v0, 2
@@ -11701,8 +11701,8 @@ glabel Gamestate02_03_06_Draw
     /* CA70 8001C270 40180200 */  sll        $v1, $v0, 1
     /* CA74 8001C274 21186200 */  addu       $v1, $v1, $v0
     /* CA78 8001C278 40180300 */  sll        $v1, $v1, 1
-    /* CA7C 8001C27C 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* CA80 8001C280 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* CA7C 8001C27C 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* CA80 8001C280 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* CA84 8001C284 21187300 */  addu       $v1, $v1, $s3
     /* CA88 8001C288 1E006214 */  bne        $v1, $v0, .L8001C304
     /* CA8C 8001C28C 00000000 */   nop
@@ -28990,8 +28990,8 @@ glabel TickCdMusicStream
     /* 1C588 8002BD88 5555033C */  lui        $v1, (0x55555556 >> 16)
     /* 1C58C 8002BD8C 56556334 */  ori        $v1, $v1, (0x55555556 & 0xFFFF)
     /* 1C590 8002BD90 18004300 */  mult       $v0, $v1
-    /* 1C594 8002BD94 0780033C */  lui        $v1, %hi(g_nLevelIntroIndex)
-    /* 1C598 8002BD98 6459638C */  lw         $v1, %lo(g_nLevelIntroIndex)($v1)
+    /* 1C594 8002BD94 0780033C */  lui        $v1, %hi(g_nLevelIndex)
+    /* 1C598 8002BD98 6459638C */  lw         $v1, %lo(g_nLevelIndex)($v1)
     /* 1C59C 8002BD9C 0780043C */  lui        $a0, %hi(g_anLevelMusicPickTable)
     /* 1C5A0 8002BDA0 5CF08424 */  addiu      $a0, $a0, %lo(g_anLevelMusicPickTable)
     /* 1C5A4 8002BDA4 40280300 */  sll        $a1, $v1, 1
@@ -29687,8 +29687,8 @@ glabel EnterInventoryMenu
     /* 1CF44 8002C744 9E56010C */  jal        PlaySoundEffect
     /* 1CF48 8002C748 21380000 */   addu      $a3, $zero, $zero
     /* 1CF4C 8002C74C AA2A023C */  lui        $v0, (0x2AAAAAAB >> 16)
-    /* 1CF50 8002C750 0780033C */  lui        $v1, %hi(g_nLevelIntroIndex)
-    /* 1CF54 8002C754 6459638C */  lw         $v1, %lo(g_nLevelIntroIndex)($v1)
+    /* 1CF50 8002C750 0780033C */  lui        $v1, %hi(g_nLevelIndex)
+    /* 1CF54 8002C754 6459638C */  lw         $v1, %lo(g_nLevelIndex)($v1)
     /* 1CF58 8002C758 ABAA4234 */  ori        $v0, $v0, (0x2AAAAAAB & 0xFFFF)
     /* 1CF5C 8002C75C 18006200 */  mult       $v1, $v0
     /* 1CF60 8002C760 0780013C */  lui        $at, %hi(g_nSubMenuScrollOffset)
@@ -29870,23 +29870,23 @@ glabel BeginGemPickupOverlay
     /* 1D154 8002C954 00000000 */  nop
     /* 1D158 8002C958 16006214 */  bne        $v1, $v0, .L8002C9B4
     /* 1D15C 8002C95C 00000000 */   nop
-    /* 1D160 8002C960 0880023C */  lui        $v0, %hi(g_abLevelGemPercent + 0x1)
-    /* 1D164 8002C964 A9A64290 */  lbu        $v0, %lo(g_abLevelGemPercent + 0x1)($v0)
+    /* 1D160 8002C960 0880023C */  lui        $v0, %hi(g_abLevelExited + 0x1)
+    /* 1D164 8002C964 A9A64290 */  lbu        $v0, %lo(g_abLevelExited + 0x1)($v0)
     /* 1D168 8002C968 00000000 */  nop
     /* 1D16C 8002C96C 10004014 */  bnez       $v0, .L8002C9B0
     /* 1D170 8002C970 02000224 */   addiu     $v0, $zero, 0x2
-    /* 1D174 8002C974 0880023C */  lui        $v0, %hi(g_abLevelGemPercent + 0x2)
-    /* 1D178 8002C978 AAA64290 */  lbu        $v0, %lo(g_abLevelGemPercent + 0x2)($v0)
+    /* 1D174 8002C974 0880023C */  lui        $v0, %hi(g_abLevelExited + 0x2)
+    /* 1D178 8002C978 AAA64290 */  lbu        $v0, %lo(g_abLevelExited + 0x2)($v0)
     /* 1D17C 8002C97C 00000000 */  nop
     /* 1D180 8002C980 0B004014 */  bnez       $v0, .L8002C9B0
     /* 1D184 8002C984 02000224 */   addiu     $v0, $zero, 0x2
-    /* 1D188 8002C988 0880023C */  lui        $v0, %hi(g_abLevelGemPercent + 0x3)
-    /* 1D18C 8002C98C ABA64290 */  lbu        $v0, %lo(g_abLevelGemPercent + 0x3)($v0)
+    /* 1D188 8002C988 0880023C */  lui        $v0, %hi(g_abLevelExited + 0x3)
+    /* 1D18C 8002C98C ABA64290 */  lbu        $v0, %lo(g_abLevelExited + 0x3)($v0)
     /* 1D190 8002C990 00000000 */  nop
     /* 1D194 8002C994 06004014 */  bnez       $v0, .L8002C9B0
     /* 1D198 8002C998 02000224 */   addiu     $v0, $zero, 0x2
-    /* 1D19C 8002C99C 0880023C */  lui        $v0, %hi(g_abLevelGemPercent + 0x5)
-    /* 1D1A0 8002C9A0 ADA64290 */  lbu        $v0, %lo(g_abLevelGemPercent + 0x5)($v0)
+    /* 1D19C 8002C99C 0880023C */  lui        $v0, %hi(g_abLevelExited + 0x5)
+    /* 1D1A0 8002C9A0 ADA64290 */  lbu        $v0, %lo(g_abLevelExited + 0x5)($v0)
     /* 1D1A4 8002C9A4 00000000 */  nop
     /* 1D1A8 8002C9A8 02004010 */  beqz       $v0, .L8002C9B4
     /* 1D1AC 8002C9AC 02000224 */   addiu     $v0, $zero, 0x2
@@ -29898,8 +29898,8 @@ glabel BeginGemPickupOverlay
     /* 1D1BC 8002C9BC 3C000224 */  addiu      $v0, $zero, 0x3C
     /* 1D1C0 8002C9C0 1D006214 */  bne        $v1, $v0, .L8002CA38
     /* 1D1C4 8002C9C4 08000224 */   addiu     $v0, $zero, 0x8
-    /* 1D1C8 8002C9C8 0880023C */  lui        $v0, %hi(g_abLevelGemPercent + 0x21)
-    /* 1D1CC 8002C9CC C9A64290 */  lbu        $v0, %lo(g_abLevelGemPercent + 0x21)($v0)
+    /* 1D1C8 8002C9C8 0880023C */  lui        $v0, %hi(g_abLevelExited + 0x21)
+    /* 1D1CC 8002C9CC C9A64290 */  lbu        $v0, %lo(g_abLevelExited + 0x21)($v0)
     /* 1D1D0 8002C9D0 00000000 */  nop
     /* 1D1D4 8002C9D4 17004010 */  beqz       $v0, .L8002CA34
     /* 1D1D8 8002C9D8 0100053C */   lui       $a1, (0x134BF >> 16)
@@ -29935,8 +29935,8 @@ glabel BeginGemPickupOverlay
     /* 1D248 8002CA48 01000424 */  addiu      $a0, $zero, 0x1
     /* 1D24C 8002CA4C 0780103C */  lui        $s0, %hi(g_nGemPickupSubstate)
     /* 1D250 8002CA50 58701026 */  addiu      $s0, $s0, %lo(g_nGemPickupSubstate)
-    /* 1D254 8002CA54 0780033C */  lui        $v1, %hi(g_nLevelIntroIndex)
-    /* 1D258 8002CA58 6459638C */  lw         $v1, %lo(g_nLevelIntroIndex)($v1)
+    /* 1D254 8002CA54 0780033C */  lui        $v1, %hi(g_nLevelIndex)
+    /* 1D258 8002CA58 6459638C */  lw         $v1, %lo(g_nLevelIndex)($v1)
     /* 1D25C 8002CA5C 0780053C */  lui        $a1, %hi(g_nWorldDragonsRescued)
     /* 1D260 8002CA60 5057A58C */  lw         $a1, %lo(g_nWorldDragonsRescued)($a1)
     /* 1D264 8002CA64 80180300 */  sll        $v1, $v1, 2
@@ -32611,8 +32611,8 @@ glabel RespawnOrGameOver_Update
     /* 1F7DC 8002EFDC 0780043C */  lui        $a0, %hi(g_nSpawnAnchorValid)
     /* 1F7E0 8002EFE0 88788424 */  addiu      $a0, $a0, %lo(g_nSpawnAnchorValid)
     /* 1F7E4 8002EFE4 21280000 */  addu       $a1, $zero, $zero
-    /* 1F7E8 8002EFE8 0780033C */  lui        $v1, %hi(g_nLevelIntroIndex)
-    /* 1F7EC 8002EFEC 6459638C */  lw         $v1, %lo(g_nLevelIntroIndex)($v1)
+    /* 1F7E8 8002EFE8 0780033C */  lui        $v1, %hi(g_nLevelIndex)
+    /* 1F7EC 8002EFEC 6459638C */  lw         $v1, %lo(g_nLevelIndex)($v1)
     /* 1F7F0 8002EFF0 10000224 */  addiu      $v0, $zero, 0x10
     /* 1F7F4 8002EFF4 0880013C */  lui        $at, %hi(g_bSpyroAnimPrev)
     /* 1F7F8 8002EFF8 708A22A0 */  sb         $v0, %lo(g_bSpyroAnimPrev)($at)
@@ -35844,8 +35844,8 @@ glabel Gamestate0B_Update
     /* 2280C 8003200C 080080AC */  sw         $zero, 0x8($a0)
     /* 22810 80032010 49B2000C */  jal        BeginGemPickupOverlay
     /* 22814 80032014 340082A4 */   sh        $v0, 0x34($a0)
-    /* 22818 80032018 0780043C */  lui        $a0, %hi(g_nLevelIntroIndex)
-    /* 2281C 8003201C 6459848C */  lw         $a0, %lo(g_nLevelIntroIndex)($a0)
+    /* 22818 80032018 0780043C */  lui        $a0, %hi(g_nLevelIndex)
+    /* 2281C 8003201C 6459848C */  lw         $a0, %lo(g_nLevelIndex)($a0)
     /* 22820 80032020 0780023C */  lui        $v0, %hi(g_anLevelDragonsRescued)
     /* 22824 80032024 D8724224 */  addiu      $v0, $v0, %lo(g_anLevelDragonsRescued)
     /* 22828 80032028 80200400 */  sll        $a0, $a0, 2
@@ -46974,8 +46974,8 @@ glabel CommitActorKillGems
     /* 2C084 8003B884 F355010C */  jal        SpawnFloatingDigitActors
     /* 2C088 8003B888 00000000 */   nop
   .L8003B88C:
-    /* 2C08C 8003B88C 0780043C */  lui        $a0, %hi(g_nLevelIntroIndex)
-    /* 2C090 8003B890 6459848C */  lw         $a0, %lo(g_nLevelIntroIndex)($a0)
+    /* 2C08C 8003B88C 0780043C */  lui        $a0, %hi(g_nLevelIndex)
+    /* 2C090 8003B890 6459848C */  lw         $a0, %lo(g_nLevelIndex)($a0)
     /* 2C094 8003B894 0780023C */  lui        $v0, %hi(g_anLevelGemsCollected)
     /* 2C098 8003B898 20744224 */  addiu      $v0, $v0, %lo(g_anLevelGemsCollected)
     /* 2C09C 8003B89C 80200400 */  sll        $a0, $a0, 2
@@ -47036,8 +47036,8 @@ glabel CommitActorKillGems
     /* 2C16C 8003B96C 0780033C */  lui        $v1, %hi(g_anLevelKillBitmapTable)
     /* 2C170 8003B970 08796324 */  addiu      $v1, $v1, %lo(g_anLevelKillBitmapTable)
     /* 2C174 8003B974 80200400 */  sll        $a0, $a0, 2
-    /* 2C178 8003B978 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 2C17C 8003B97C 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 2C178 8003B978 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 2C17C 8003B97C 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 2C180 8003B980 21282002 */  addu       $a1, $s1, $zero
     /* 2C184 8003B984 40110200 */  sll        $v0, $v0, 5
     /* 2C188 8003B988 21104300 */  addu       $v0, $v0, $v1
@@ -54373,8 +54373,8 @@ glabel UpdateSpyroStateBehavior
     /* 3280C 8004200C F20F0108 */  j          .L80043FC8
     /* 32810 80042010 00000000 */   nop
   .L80042014:
-    /* 32814 80042014 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 32818 80042018 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 32814 80042014 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 32818 80042018 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 3281C 8004201C 0880033C */  lui        $v1, %hi(g_nSpyroWorldPosZ)
     /* 32820 80042020 608A638C */  lw         $v1, %lo(g_nSpyroWorldPosZ)($v1)
     /* 32824 80042024 80100200 */  sll        $v0, $v0, 2
@@ -55206,8 +55206,8 @@ glabel UpdateSpyroStateBehavior
     /* 33440 80042C40 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 33444 80042C44 E0044014 */  bnez       $v0, .L80043FC8
     /* 33448 80042C48 00000000 */   nop
-    /* 3344C 80042C4C 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 33450 80042C50 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 3344C 80042C4C 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 33450 80042C50 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 33454 80042C54 0880033C */  lui        $v1, %hi(g_nSpyroWorldPosZ)
     /* 33458 80042C58 608A638C */  lw         $v1, %lo(g_nSpyroWorldPosZ)($v1)
     /* 3345C 80042C5C 80100200 */  sll        $v0, $v0, 2
@@ -63323,8 +63323,8 @@ glabel SampleSpyroShadowRingHeights
     /* 3A85C 8004A05C 0880013C */  lui        $at, %hi(g_nSpyroShadowOtBinBias)
     /* 3A860 8004A060 2CAA22AC */  sw         $v0, %lo(g_nSpyroShadowOtBinBias)($at)
   .L8004A064:
-    /* 3A864 8004A064 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 3A868 8004A068 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 3A864 8004A064 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 3A868 8004A068 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 3A86C 8004A06C 0880013C */  lui        $at, %hi(g_nSpyroShadowHiddenFlag)
     /* 3A870 8004A070 34AA20AC */  sw         $zero, %lo(g_nSpyroShadowHiddenFlag)($at)
     /* 3A874 8004A074 80100200 */  sll        $v0, $v0, 2
@@ -63662,8 +63662,8 @@ glabel TickSpyroGameplayFrame
   .L8004A52C:
     /* 3AD2C 8004A52C 0880103C */  lui        $s0, %hi(g_nSpyroWorldPosZ)
     /* 3AD30 8004A530 608A1026 */  addiu      $s0, $s0, %lo(g_nSpyroWorldPosZ)
-    /* 3AD34 8004A534 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 3AD38 8004A538 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 3AD34 8004A534 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 3AD38 8004A538 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 3AD3C 8004A53C 0000038E */  lw         $v1, 0x0($s0)
     /* 3AD40 8004A540 80100200 */  sll        $v0, $v0, 2
     /* 3AD44 8004A544 0780013C */  lui        $at, %hi(g_anLevelDeathPlaneZTable)
@@ -75034,8 +75034,8 @@ glabel RefreshHudLevelGemCounter
     /* 44D80 80054580 0780103C */  lui        $s0, %hi(g_nHudLevelGemCachedCount)
     /* 44D84 80054584 C87F1026 */  addiu      $s0, $s0, %lo(g_nHudLevelGemCachedCount)
     /* 44D88 80054588 21200000 */  addu       $a0, $zero, $zero
-    /* 44D8C 8005458C 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 44D90 80054590 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 44D8C 8005458C 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 44D90 80054590 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 44D94 80054594 04000524 */  addiu      $a1, $zero, 0x4
     /* 44D98 80054598 1400BFAF */  sw         $ra, 0x14($sp)
     /* 44D9C 8005459C 80100200 */  sll        $v0, $v0, 2
@@ -75161,8 +75161,8 @@ glabel InitHudCounters
     /* 44F4C 8005474C 21200000 */   addu      $a0, $zero, $zero
     /* 44F50 80054750 0880103C */  lui        $s0, %hi(g_anHudIconAnchorBlock)
     /* 44F54 80054754 82811026 */  addiu      $s0, $s0, %lo(g_anHudIconAnchorBlock)
-    /* 44F58 80054758 0780033C */  lui        $v1, %hi(g_nLevelIntroIndex)
-    /* 44F5C 8005475C 6459638C */  lw         $v1, %lo(g_nLevelIntroIndex)($v1)
+    /* 44F58 80054758 0780033C */  lui        $v1, %hi(g_nLevelIndex)
+    /* 44F5C 8005475C 6459638C */  lw         $v1, %lo(g_nLevelIndex)($v1)
     /* 44F60 80054760 D7010224 */  addiu      $v0, $zero, 0x1D7
     /* 44F64 80054764 000002A6 */  sh         $v0, 0x0($s0)
     /* 44F68 80054768 FA010224 */  addiu      $v0, $zero, 0x1FA
@@ -75355,8 +75355,8 @@ glabel UpdateHudCounters
     /* 4522C 80054A2C 918122A0 */  sb         $v0, %lo(D_80078191)($at)
     /* 45230 80054A30 0E006014 */  bnez       $v1, .L80054A6C
     /* 45234 80054A34 01000224 */   addiu     $v0, $zero, 0x1
-    /* 45238 80054A38 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 4523C 80054A3C 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 45238 80054A38 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 4523C 80054A3C 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 45240 80054A40 E4FFC38C */  lw         $v1, -0x1C($a2)
     /* 45244 80054A44 80100200 */  sll        $v0, $v0, 2
     /* 45248 80054A48 0780013C */  lui        $at, %hi(g_anLevelGemsCollected)
@@ -75377,8 +75377,8 @@ glabel UpdateHudCounters
     /* 45280 80054A80 FF006530 */  andi       $a1, $v1, 0xFF
     /* 45284 80054A84 1200A214 */  bne        $a1, $v0, .L80054AD0
     /* 45288 80054A88 01006224 */   addiu     $v0, $v1, 0x1
-    /* 4528C 80054A8C 0780033C */  lui        $v1, %hi(g_nLevelIntroIndex)
-    /* 45290 80054A90 6459638C */  lw         $v1, %lo(g_nLevelIntroIndex)($v1)
+    /* 4528C 80054A8C 0780033C */  lui        $v1, %hi(g_nLevelIndex)
+    /* 45290 80054A90 6459638C */  lw         $v1, %lo(g_nLevelIndex)($v1)
     /* 45294 80054A94 02000224 */  addiu      $v0, $zero, 0x2
     /* 45298 80054A98 C4FFC2A0 */  sb         $v0, -0x3C($a2)
     /* 4529C 80054A9C 0780013C */  lui        $at, %hi(g_bHudLevelGemRollPhase)
@@ -75406,8 +75406,8 @@ glabel UpdateHudCounters
   .L80054AF0:
     /* 452F0 80054AF0 6C006214 */  bne        $v1, $v0, .L80054CA4
     /* 452F4 80054AF4 03000224 */   addiu     $v0, $zero, 0x3
-    /* 452F8 80054AF8 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 452FC 80054AFC 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 452F8 80054AF8 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 452FC 80054AFC 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 45300 80054B00 E4FFC38C */  lw         $v1, -0x1C($a2)
     /* 45304 80054B04 80100200 */  sll        $v0, $v0, 2
     /* 45308 80054B08 0780013C */  lui        $at, %hi(g_anLevelGemsCollected)
@@ -75428,8 +75428,8 @@ glabel UpdateHudCounters
     /* 45344 80054B44 54530108 */  j          .L80054D50
     /* 45348 80054B48 03000224 */   addiu     $v0, $zero, 0x3
   .L80054B4C:
-    /* 4534C 80054B4C 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 45350 80054B50 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 4534C 80054B4C 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 45350 80054B50 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 45354 80054B54 0780033C */  lui        $v1, %hi(g_nHudLevelGemCachedCount)
     /* 45358 80054B58 C87F638C */  lw         $v1, %lo(g_nHudLevelGemCachedCount)($v1)
     /* 4535C 80054B5C 0780013C */  lui        $at, %hi(g_nHudLevelGemHoldTimer)
@@ -75473,8 +75473,8 @@ glabel UpdateHudCounters
     /* 453EC 80054BEC E5FF0692 */  lbu        $a2, -0x1B($s0)
     /* 453F0 80054BF0 2A51010C */  jal        CommitHudCounterAnimState
     /* 453F4 80054BF4 04000524 */   addiu     $a1, $zero, 0x4
-    /* 453F8 80054BF8 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 453FC 80054BFC 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 453F8 80054BF8 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 453FC 80054BFC 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 45400 80054C00 0000048E */  lw         $a0, 0x0($s0)
     /* 45404 80054C04 80100200 */  sll        $v0, $v0, 2
     /* 45408 80054C08 0780013C */  lui        $at, %hi(g_anLevelGemsCollected)
@@ -75499,8 +75499,8 @@ glabel UpdateHudCounters
   .L80054C4C:
     /* 4544C 80054C4C 000002AE */  sw         $v0, 0x0($s0)
   .L80054C50:
-    /* 45450 80054C50 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 45454 80054C54 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 45450 80054C50 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 45454 80054C54 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 45458 80054C58 00000000 */  nop
     /* 4545C 80054C5C 40100200 */  sll        $v0, $v0, 1
     /* 45460 80054C60 0780013C */  lui        $at, %hi(g_anLevelTotalGemsTable)
@@ -75523,8 +75523,8 @@ glabel UpdateHudCounters
   .L80054CA4:
     /* 454A4 80054CA4 21006214 */  bne        $v1, $v0, .L80054D2C
     /* 454A8 80054CA8 04000224 */   addiu     $v0, $zero, 0x4
-    /* 454AC 80054CAC 0780023C */  lui        $v0, %hi(g_nLevelIntroIndex)
-    /* 454B0 80054CB0 6459428C */  lw         $v0, %lo(g_nLevelIntroIndex)($v0)
+    /* 454AC 80054CAC 0780023C */  lui        $v0, %hi(g_nLevelIndex)
+    /* 454B0 80054CB0 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 454B4 80054CB4 0780033C */  lui        $v1, %hi(g_nHudLevelGemCachedCount)
     /* 454B8 80054CB8 C87F638C */  lw         $v1, %lo(g_nHudLevelGemCachedCount)($v1)
     /* 454BC 80054CBC 80100200 */  sll        $v0, $v0, 2
@@ -80638,8 +80638,8 @@ glabel SetSpawnAnchorFromActor
     /* 49CBC 800594BC 887822AC */  sw         $v0, %lo(g_nSpawnAnchorValid)($at)
     /* 49CC0 800594C0 0780023C */  lui        $v0, %hi(g_nLevelSpawnPosZ)
     /* 49CC4 800594C4 E078428C */  lw         $v0, %lo(g_nLevelSpawnPosZ)($v0)
-    /* 49CC8 800594C8 0780033C */  lui        $v1, %hi(g_nLevelIntroIndex)
-    /* 49CCC 800594CC 6459638C */  lw         $v1, %lo(g_nLevelIntroIndex)($v1)
+    /* 49CC8 800594C8 0780033C */  lui        $v1, %hi(g_nLevelIndex)
+    /* 49CCC 800594CC 6459638C */  lw         $v1, %lo(g_nLevelIndex)($v1)
     /* 49CD0 800594D0 64014224 */  addiu      $v0, $v0, 0x164
     /* 49CD4 800594D4 80180300 */  sll        $v1, $v1, 2
     /* 49CD8 800594D8 0780013C */  lui        $at, %hi(g_nLevelSpawnPosZ)
@@ -80811,8 +80811,8 @@ glabel ApplySaveGameBuffer
     /* 49F1C 8005971C 40000526 */  addiu      $a1, $s0, 0x40
     /* 49F20 80059720 565A000C */  jal        CopyWords
     /* 49F24 80059724 24000624 */   addiu     $a2, $zero, 0x24
-    /* 49F28 80059728 0880043C */  lui        $a0, %hi(g_abLevelGemPercent)
-    /* 49F2C 8005972C A8A68424 */  addiu      $a0, $a0, %lo(g_abLevelGemPercent)
+    /* 49F28 80059728 0880043C */  lui        $a0, %hi(g_abLevelExited)
+    /* 49F2C 8005972C A8A68424 */  addiu      $a0, $a0, %lo(g_abLevelExited)
     /* 49F30 80059730 64000526 */  addiu      $a1, $s0, 0x64
     /* 49F34 80059734 565A000C */  jal        CopyWords
     /* 49F38 80059738 24000624 */   addiu     $a2, $zero, 0x24
@@ -80974,8 +80974,8 @@ glabel BuildSaveGameBuffer
     /* 4A174 80059974 565A000C */  jal        CopyWords
     /* 4A178 80059978 24000624 */   addiu     $a2, $zero, 0x24
     /* 4A17C 8005997C 64000426 */  addiu      $a0, $s0, 0x64
-    /* 4A180 80059980 0880053C */  lui        $a1, %hi(g_abLevelGemPercent)
-    /* 4A184 80059984 A8A6A524 */  addiu      $a1, $a1, %lo(g_abLevelGemPercent)
+    /* 4A180 80059980 0880053C */  lui        $a1, %hi(g_abLevelExited)
+    /* 4A184 80059984 A8A6A524 */  addiu      $a1, $a1, %lo(g_abLevelExited)
     /* 4A188 80059988 565A000C */  jal        CopyWords
     /* 4A18C 8005998C 24000624 */   addiu     $a2, $zero, 0x24
     /* 4A190 80059990 21200000 */  addu       $a0, $zero, $zero

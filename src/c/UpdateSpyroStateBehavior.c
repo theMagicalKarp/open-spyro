@@ -349,7 +349,7 @@ void UpdateSpyroStateBehavior(void) {
         break;
       }
     }
-    if (g_nSpyroWorldPosZ >= g_anLevelDeathPlaneZTable[g_nLevelIntroIndex] &&
+    if (g_nSpyroWorldPosZ >= g_anLevelDeathPlaneZTable[g_nLevelIndex] &&
         g_nSpyroAirborneFrames == 0) {
       int next;
       int fwd[3];
@@ -721,7 +721,7 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
-    if (g_nSpyroWorldPosZ >= g_anLevelDeathPlaneZTable[g_nLevelIntroIndex] &&
+    if (g_nSpyroWorldPosZ >= g_anLevelDeathPlaneZTable[g_nLevelIndex] &&
         g_nSpyroAirborneFrames == 0) {
       if (g_nSpyroStateTimer >= 0x18 || g_nSpyroGroundSlope >= 0x17) {
         ChangeSpyroState(SPYRO_ST_FALL);

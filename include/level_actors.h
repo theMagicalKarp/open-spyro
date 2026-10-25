@@ -20,7 +20,7 @@ extern Actor g_abHudIconActorRecords[];                      /* the four HUD cla
 extern int g_anCollisionResolvedPos;                         /* collision contact point */
 extern short g_anCosineLut[];
 extern int g_anFlightTargetTally[];                          /* tally collected, per class */
-extern int g_anLevelDragonsRescued[];                        /* per-g_nLevelIntroIndex completion counters */
+extern int g_anLevelDragonsRescued[];                        /* per-g_nLevelIndex completion counters */
 extern int g_anLevelEggsRecovered[];
 extern short g_anSineLut[];
 extern int g_anSpyroMotionVec;                               /* look-at offset */

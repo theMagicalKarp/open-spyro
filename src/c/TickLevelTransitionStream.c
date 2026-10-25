@@ -120,11 +120,11 @@ void TickLevelTransitionStream(int full) {
 
     g_nActiveLevelId = g_nCurrentLevelId;
     ApplyPerLevelGlobalsTable();
-    g_nPrevLevelIntroIndex = g_nLevelIntroIndex;
+    g_nPrevLevelIndex = g_nLevelIndex;
     world = g_nActiveLevelId / 10 - 1;
     g_nActiveWorldIndex = world;
     intro = world * 6 + g_nActiveLevelId % 10;
-    g_nLevelIntroIndex = intro;
+    g_nLevelIndex = intro;
     if (full) {
       int lba = *(volatile int *)&g_nCdBaseLba;
       void *dst = *(void *volatile *)&g_pSharedLoadBuffer;
@@ -139,7 +139,7 @@ void TickLevelTransitionStream(int full) {
   } break;
   case 3: {
     int lba = *(volatile int *)&g_nCdBaseLba;
-    int intro = *(volatile int *)&g_nLevelIntroIndex;
+    int intro = *(volatile int *)&g_nLevelIndex;
     void *dst = *(void *volatile *)&g_pDrawBufB;
     int off = LEVEL_ARCHIVE_OFFSET(intro);
 
@@ -151,7 +151,7 @@ void TickLevelTransitionStream(int full) {
     CopyWords(g_anWorldTimAudioChunkOffsetBlock, DRAWBUF_B, 0x1D0);
     {
       int lba = *(volatile int *)&g_nCdBaseLba;
-      int intro = *(volatile int *)&g_nLevelIntroIndex;
+      int intro = *(volatile int *)&g_nLevelIndex;
       void *dst = *(void *volatile *)g_apDrawBufBBlock;
       int off = *(volatile int *)g_anWorldTimAudioChunkOffsetBlock;
 
@@ -171,7 +171,7 @@ void TickLevelTransitionStream(int full) {
       int lba = *(volatile int *)&g_nCdBaseLba;
       void *dst = DRAWBUF_B;
       int size = *(volatile int *)&g_nWorldTimAudioChunkSize;
-      int intro = *(volatile int *)&g_nLevelIntroIndex;
+      int intro = *(volatile int *)&g_nLevelIndex;
       int off = *(volatile int *)&g_nWorldTimAudioChunkOffset;
 
       g_nCdStreamState++;
@@ -193,7 +193,7 @@ void TickLevelTransitionStream(int full) {
   case 8: {
     int lba = *(volatile int *)&g_nCdBaseLba;
     void *dst = *(void *volatile *)&g_pDrawBufB;
-    int intro = *(volatile int *)&g_nLevelIntroIndex;
+    int intro = *(volatile int *)&g_nLevelIndex;
     int size = *(volatile int *)&g_nWorldBundleChunkSize;
     int off = *(volatile int *)&g_nWorldBundleChunkOffset;
 
@@ -221,7 +221,7 @@ void TickLevelTransitionStream(int full) {
     {
       int lba = *(volatile int *)&g_nCdBaseLba;
       void *dst = *(void *volatile *)&g_pWorldUnpackHead;
-      int intro = *(volatile int *)&g_nLevelIntroIndex;
+      int intro = *(volatile int *)&g_nLevelIndex;
       int size = *(volatile int *)&g_nWorldDataExtChunkSize;
       int off = *(volatile int *)&g_nWorldDataExtChunkOffset;
 
@@ -265,7 +265,7 @@ void TickLevelTransitionStream(int full) {
   case 11: {
     int lba = *(volatile int *)&g_nCdBaseLba;
     void *dst = *(void *volatile *)&g_pPathTableBuffer;
-    int intro = *(volatile int *)&g_nLevelIntroIndex;
+    int intro = *(volatile int *)&g_nLevelIndex;
     int size = *(volatile int *)&g_nLevelArchiveByteSize;
     int off = *(volatile int *)&g_nLevelArchiveBaseLba;
 
@@ -302,17 +302,17 @@ void TickLevelTransitionStream(int full) {
     }
   } break;
   case 13: {
-    if (g_abLevelVisitedFlag[g_nLevelIntroIndex] == 0) {
+    if (g_abLevelVisitedFlag[g_nLevelIndex] == 0) {
       g_nCdMusicStreamTimeout = 0xA8C0;
     } else {
       g_nCdMusicStreamTimeout = 0x7080;
     }
-    g_nCurrentMusicTrack = (&g_nLevelMusicTrack)[g_nLevelIntroIndex];
-    g_abLevelVisitedFlag[g_nLevelIntroIndex] = 1;
+    g_nCurrentMusicTrack = (&g_nLevelMusicTrack)[g_nLevelIndex];
+    g_abLevelVisitedFlag[g_nLevelIndex] = 1;
     FillWord(g_anSpawnAnchorBlock, 0, 0x68);
     g_nLevelEggCount = 0;
     g_nGemTallyIconCount = 0;
-    g_nLevelGemsAtEntry = g_anLevelGemsCollected[g_nLevelIntroIndex];
+    g_nLevelGemsAtEntry = g_anLevelGemsCollected[g_nLevelIndex];
     BuildLoadedLevelRuntime(full);
     if (g_nPortalTransitionActive != 0) {
       if (g_nFlightLevelActive != 0) {

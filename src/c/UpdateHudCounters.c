@@ -86,7 +86,7 @@ void UpdateHudCounters(void) {
 
   /* --- counter 0: level gems ------------------------------------------ */
   if (GEM_STATE == 0) {
-    if (GEM_CACHED != g_anLevelGemsCollected[g_nLevelIntroIndex]) {
+    if (GEM_CACHED != g_anLevelGemsCollected[g_nLevelIndex]) {
       GEM_STATE = 1;
       GEM_PHASE = 0;
     }
@@ -96,7 +96,7 @@ void UpdateHudCounters(void) {
       GEM_STATE = 2;
       FIELD(g_bHudLevelGemRollPhase) = 0;
       GEM_TIMER = 0;
-      if (GEM_CACHED == g_anLevelGemsCollected[g_nLevelIntroIndex]) {
+      if (GEM_CACHED == g_anLevelGemsCollected[g_nLevelIndex]) {
         GEM_TIMER = -0x28;
       }
     } else {
@@ -104,8 +104,7 @@ void UpdateHudCounters(void) {
       OffsetHudIconRollAxis(0, 5, g_anHudRollInStepTable[p]);
     }
   } else if (GEM_STATE == 2) {
-    if (GEM_CACHED == g_anLevelGemsCollected[g_nLevelIntroIndex] &&
-        GEM_PHASE == 0) {
+    if (GEM_CACHED == g_anLevelGemsCollected[g_nLevelIndex] && GEM_PHASE == 0) {
       GEM_TIMER = GEM_TIMER + 1;
       if (GEM_TIMER == 0x14) {
         GEM_STATE = 3;
@@ -113,8 +112,7 @@ void UpdateHudCounters(void) {
       }
     } else {
       FIELDW(g_nHudLevelGemHoldTimer) = 0;
-      if (g_anLevelGemsCollected[g_nLevelIntroIndex] -
-                  g_nHudLevelGemCachedCount >=
+      if (g_anLevelGemsCollected[g_nLevelIndex] - g_nHudLevelGemCachedCount >=
               3 &&
           (g_bHudLevelGemRollPhase & 0x1F) == 0) {
         g_bHudLevelGemRollPhase -= 0x20;
@@ -127,22 +125,20 @@ void UpdateHudCounters(void) {
         OPAQUE_COPY(gc, &GEMCACHE);
         SetHudCounterDigits(0, 4, gc[0] + 1, 0);
         CommitHudCounterAnimState(0, 4, ((unsigned char *)gc)[-0x1B]);
-        nDelta = g_anLevelGemsCollected[g_nLevelIntroIndex] - gc[0];
+        nDelta = g_anLevelGemsCollected[g_nLevelIndex] - gc[0];
         if (nDelta >= 0xC9) {
           gc[0] = gc[0] + 8;
         } else if (nDelta >= 0x15 || ((unsigned char *)gc)[-0x1B] == 0xC0) {
           gc[0] = gc[0] + 1;
         }
       }
-      if (g_nHudLevelGemCachedCount ==
-              g_anLevelTotalGemsTable[g_nLevelIntroIndex] &&
+      if (g_nHudLevelGemCachedCount == g_anLevelTotalGemsTable[g_nLevelIndex] &&
           g_bHudLevelGemRollPhase == 0) {
         g_abHudCounterDisplayState[0] = 4;
       }
     }
   } else if (GEM_STATE == 3) {
-    if (g_nHudLevelGemCachedCount !=
-        g_anLevelGemsCollected[g_nLevelIntroIndex]) {
+    if (g_nHudLevelGemCachedCount != g_anLevelGemsCollected[g_nLevelIndex]) {
       GEM_STATE = 1;
     } else if (g_bHudLevelGemRollPhase == 0) {
       GEM_STATE = 0;

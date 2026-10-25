@@ -85,7 +85,7 @@ void RespawnOrGameOver_Update(void) {
         g_nSparxHealth = 3;
         g_nPortalTransitionActive = 0;
         g_nReturnPortalLevelId = 0;
-        g_nGameOverLevelIntroIndex = g_nLevelIntroIndex;
+        g_nGameOverLevelIntroIndex = g_nLevelIndex;
         FillWord(&g_nSpawnAnchorValid, 0, 0x68);
         if (g_nActiveLevelId != (((lba = g_nActiveLevelId) / 10) * 10)) {
           g_nCurrentLevelId = (g_nActiveLevelId / 10) * 10;

@@ -978,7 +978,7 @@ void Gamestate02_03_06_Draw(void) {
             BuildTextSpriteChain(g_szUiSlash, pos, 0x12, 2);
             SREC->rotX = 0x29;
           }
-          if (g_nSubMenuCursor * 6 + i == g_nLevelIntroIndex) {
+          if (g_nSubMenuCursor * 6 + i == g_nLevelIndex) {
             rec -= ACTOR_SIZE;
             if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
               phase = 0;

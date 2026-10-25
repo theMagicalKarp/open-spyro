@@ -214,7 +214,7 @@ void Gamestate0B_Update(void) {
             ((short *)actor)[0x1A] = -1;
             BeginGemPickupOverlay(actor);
             g_nWorldDragonsRescued--;
-            g_anLevelDragonsRescued[g_nLevelIntroIndex]--;
+            g_anLevelDragonsRescued[g_nLevelIndex]--;
           }
         } else {
           EndSaveMenuToWorld();

@@ -35,7 +35,7 @@ void ResetLevelState(void) {
     eggs += 1;
     dragons += 1;
     g_abLevelVisitedFlag[i] = 0;
-    g_abLevelGemPercent[i] = 0;
+    g_abLevelExited[i] = 0;
     i += 1;
     gems += 1;
   } while (i < 0x24);
