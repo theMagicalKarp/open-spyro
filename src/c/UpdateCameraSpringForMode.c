@@ -206,7 +206,7 @@ void UpdateCameraSpringForMode(void) {
     g_pCameraAnchorPos = g_anSpyroWorldPos;
     g_nCameraTargetYawBiasFromMode = yaw;
     if (g_nCameraCollisionRetries == 0) {
-      if (g_nSpyroFallTrackingFlag != 0) {
+      if (g_nSpyroFlightMode != 0) {
         if (g_nSpyroSubstate == 2) {
           yaw = (yaw - g_nCameraEulerYaw) & 0xFFF;
           if (yaw > 0x800) {

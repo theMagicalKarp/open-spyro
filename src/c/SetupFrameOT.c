@@ -1,4 +1,5 @@
 #include "funcs.h"
+#include "gamestate.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -22,7 +23,8 @@ void SetupFrameOT(void) {
     g_nFarPlaneDrawDistance = 0x28000;
     RenderWorldChunks(g_nCameraVisZone);
   } else {
-    if ((unsigned int)(g_nGamestate - 0xd) < 2) {
+    if ((unsigned int)(g_nGamestate - GS_TITLE) <
+        2) { /* GS_TITLE, GS_CUTSCENE */
       dist = 0x1c000;
       g_nFarPlaneDrawDistance = dist;
     } else {

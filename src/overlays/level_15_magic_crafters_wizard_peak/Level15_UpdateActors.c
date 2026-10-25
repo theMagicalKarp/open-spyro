@@ -255,7 +255,7 @@ void Level15_UpdateActors(void) {
                 g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
                 g_dwSpyroRequestMask = 0;
                 ResetSpyroEntity(0);
-                g_nSpyroFallTrackingFlag = 0;
+                g_nSpyroFlightMode = 0;
                 g_nSpyroSuperflameTimer = 0;
               }
             }

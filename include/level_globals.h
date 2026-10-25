@@ -175,7 +175,7 @@ extern int g_nSpyroAirborneFrames;
 extern int g_nSpyroAnimPlayRate;
 extern int g_nSpyroBodyYaw;                              /* camera yaw accumulator */
 extern int g_nSpyroDrawSuppressed;                       /* Spyro is being carried */
-extern int g_nSpyroFallTrackingFlag;
+extern int g_nSpyroFlightMode;
 extern int g_nSpyroSuperflameTimer;
 extern int g_nSpyroSuperflameTimerSave;
 extern int g_nSpyroGroundHeightZ;                        /* g_nSpyroGroundHeight */

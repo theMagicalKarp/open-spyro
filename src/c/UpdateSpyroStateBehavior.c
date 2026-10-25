@@ -615,7 +615,7 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_GLIDE_DROP);
       break;
     }
-    if (g_nSpyroFallTrackingFlag != 0) {
+    if (g_nSpyroFlightMode != 0) {
       int d;
       int pad;
 

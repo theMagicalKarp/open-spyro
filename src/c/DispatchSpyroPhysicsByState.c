@@ -174,12 +174,12 @@ void DispatchSpyroPhysicsByState(void) {
     break;
   case SPYRO_ST_FALL:
   case SPYRO_ST_GLIDE_DROP:
-    if (SPY[SPY_FALL_TRACKING] == 0) {
+    if (SPY[SPY_FLIGHT_MODE] == 0) {
       g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;
     }
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
-    if (SPY[SPY_FALL_TRACKING] != 0) {
+    if (SPY[SPY_FLIGHT_MODE] != 0) {
       if (g_nFlightLevelActive != 0) {
         TRACK_FLOOR_REFERENCE();
       } else {
@@ -192,12 +192,12 @@ void DispatchSpyroPhysicsByState(void) {
     CopyVector(&SPY[SPY_VELOCITY], &SPY[SPY_MOTION]);
     break;
   case SPYRO_ST_GLIDE_SLOW:
-    if (SPY[SPY_FALL_TRACKING] == 0) {
+    if (SPY[SPY_FLIGHT_MODE] == 0) {
       g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;
     }
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
-    if (SPY[SPY_FALL_TRACKING] != 0) {
+    if (SPY[SPY_FLIGHT_MODE] != 0) {
       if (g_nFlightLevelActive != 0) {
         TRACK_FLOOR_REFERENCE();
       } else {
@@ -211,12 +211,12 @@ void DispatchSpyroPhysicsByState(void) {
   case SPYRO_ST_FLY:
   case SPYRO_ST_FLY_CLIMB:
   case SPYRO_ST_FLY_DIVE:
-    if (SPY[SPY_FALL_TRACKING] == 0) {
+    if (SPY[SPY_FLIGHT_MODE] == 0) {
       g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;
     }
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
-    if (SPY[SPY_FALL_TRACKING] != 0) {
+    if (SPY[SPY_FLIGHT_MODE] != 0) {
       if (g_nFlightLevelActive != 0) {
         TRACK_FLOOR_REFERENCE();
         if (g_nSpyroSubstate == 3 &&
@@ -232,12 +232,12 @@ void DispatchSpyroPhysicsByState(void) {
     }
     break;
   case SPYRO_ST_GLIDE:
-    if (SPY[SPY_FALL_TRACKING] == 0) {
+    if (SPY[SPY_FLIGHT_MODE] == 0) {
       g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;
     }
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
-    if (SPY[SPY_FALL_TRACKING] != 0) {
+    if (SPY[SPY_FLIGHT_MODE] != 0) {
       CLAMP_FALL_REFERENCE();
     }
     if (SPY[SPY_WALL_SLIDE] == 0) {

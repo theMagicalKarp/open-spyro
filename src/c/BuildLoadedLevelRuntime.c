@@ -111,7 +111,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   }
   if ((g_nActiveLevelId % 10) == 5) {
     g_nFlightLevelActive = 1;
-    g_nSpyroFallTrackingFlag = 1;
+    g_nSpyroFlightMode = 1;
     g_nSpyroFallReferenceZ = g_nLevelSpawnPosZ;
     g_nSpyroFloorReferenceZ = g_nLevelSpawnPosZ;
     ChangeSpyroState(SPYRO_ST_FLY);
@@ -128,7 +128,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     }
   } else {
     g_nFlightLevelActive = 0;
-    g_nSpyroFallTrackingFlag = 0;
+    g_nSpyroFlightMode = 0;
     if (g_nPortalTransitionActive != 0) {
       g_anLevelSpawnPosZBlock[0] += g_anLevelSpawnNudgeZTable[g_nLevelIndex];
       sinp = &g_anSineLut[g_nLevelSpawnYaw];

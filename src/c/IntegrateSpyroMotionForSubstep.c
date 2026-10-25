@@ -197,7 +197,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
   t = g_nSpyroStateTimer + substep;
   if (g_nGamestate == GS_GAMEPLAY && g_nActiveLevelId == 0x40 &&
       g_nSpyroAirborneFrames == 0) {
-    g_nSpyroFallTrackingFlag = 1;
+    g_nSpyroFlightMode = 1;
   }
   switch (g_nSpyroState) {
   case SPYRO_ST_IDLE:
@@ -439,7 +439,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     int l;
 
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
-    if (g_nSpyroFallTrackingFlag != 0) {
+    if (g_nSpyroFlightMode != 0) {
       int d;
 
       ComputeSpyroMoveTargetFromPad(g_nSpyroMoveTargetMag);
@@ -688,7 +688,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     int *p60;
 
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
-    if (g_nSpyroFallTrackingFlag != 0) {
+    if (g_nSpyroFlightMode != 0) {
       int moving;
       int n;
       register int mix asm("$20");

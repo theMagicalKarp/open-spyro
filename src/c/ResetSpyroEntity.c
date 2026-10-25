@@ -53,7 +53,7 @@ void ResetSpyroEntity(int full) {
     *(int *)g_abSpyroFxParticleRgba = 0;
     g_dwSpyroTriggerEventFlags = 0;
     g_nSpyroHazardFloorZ = 0;
-    g_nSpyroFallTrackingFlag = 0;
+    g_nSpyroFlightMode = 0;
     g_nSpyroChargeHoldFlag = 0;
     g_nSpyroGlideBankingFlag = 0;
     g_nSpyroHazardSinkDepth = 0;

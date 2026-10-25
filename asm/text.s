@@ -1678,8 +1678,8 @@ glabel BuildLoadedLevelRuntime
     /* 4100 80013900 E078638C */  lw         $v1, %lo(g_nLevelSpawnPosZ)($v1)
     /* 4104 80013904 0780013C */  lui        $at, %hi(g_nFlightLevelActive)
     /* 4108 80013908 905622AC */  sw         $v0, %lo(g_nFlightLevelActive)($at)
-    /* 410C 8001390C 0880013C */  lui        $at, %hi(g_nSpyroFallTrackingFlag)
-    /* 4110 80013910 A48C22AC */  sw         $v0, %lo(g_nSpyroFallTrackingFlag)($at)
+    /* 410C 8001390C 0880013C */  lui        $at, %hi(g_nSpyroFlightMode)
+    /* 4110 80013910 A48C22AC */  sw         $v0, %lo(g_nSpyroFlightMode)($at)
     /* 4114 80013914 0780013C */  lui        $at, %hi(g_nSpyroFallReferenceZ)
     /* 4118 80013918 C05823AC */  sw         $v1, %lo(g_nSpyroFallReferenceZ)($at)
     /* 411C 8001391C 0880013C */  lui        $at, %hi(g_nSpyroFloorReferenceZ)
@@ -1719,8 +1719,8 @@ glabel BuildLoadedLevelRuntime
     /* 41A0 800139A0 D056428C */  lw         $v0, %lo(g_nPortalTransitionActive)($v0)
     /* 41A4 800139A4 0780013C */  lui        $at, %hi(g_nFlightLevelActive)
     /* 41A8 800139A8 905620AC */  sw         $zero, %lo(g_nFlightLevelActive)($at)
-    /* 41AC 800139AC 0880013C */  lui        $at, %hi(g_nSpyroFallTrackingFlag)
-    /* 41B0 800139B0 A48C20AC */  sw         $zero, %lo(g_nSpyroFallTrackingFlag)($at)
+    /* 41AC 800139AC 0880013C */  lui        $at, %hi(g_nSpyroFlightMode)
+    /* 41B0 800139B0 A48C20AC */  sw         $zero, %lo(g_nSpyroFlightMode)($at)
     /* 41B4 800139B4 23004010 */  beqz       $v0, .L80013A44
     /* 41B8 800139B8 00000000 */   nop
     /* 41BC 800139BC 0780053C */  lui        $a1, %hi(g_nLevelSpawnPosZ)
@@ -40784,8 +40784,8 @@ glabel UpdateCameraSpringForMode
     /* 26DE0 800365E0 A46E24AC */  sw         $a0, %lo(g_nCameraTargetYawBiasFromMode)($at)
     /* 26DE4 800365E4 BF004014 */  bnez       $v0, .L800368E4
     /* 26DE8 800365E8 00000000 */   nop
-    /* 26DEC 800365EC 0880023C */  lui        $v0, %hi(g_nSpyroFallTrackingFlag)
-    /* 26DF0 800365F0 A48C428C */  lw         $v0, %lo(g_nSpyroFallTrackingFlag)($v0)
+    /* 26DEC 800365EC 0880023C */  lui        $v0, %hi(g_nSpyroFlightMode)
+    /* 26DF0 800365F0 A48C428C */  lw         $v0, %lo(g_nSpyroFlightMode)($v0)
     /* 26DF4 800365F4 00000000 */  nop
     /* 26DF8 800365F8 71004010 */  beqz       $v0, .L800367C0
     /* 26DFC 800365FC 02000224 */   addiu     $v0, $zero, 0x2
@@ -55014,8 +55014,8 @@ glabel UpdateSpyroStateBehavior
     /* 33184 80042984 8E054014 */  bnez       $v0, .L80043FC0
     /* 33188 80042988 10000424 */   addiu     $a0, $zero, 0x10
   .L8004298C:
-    /* 3318C 8004298C 0880023C */  lui        $v0, %hi(g_nSpyroFallTrackingFlag)
-    /* 33190 80042990 A48C428C */  lw         $v0, %lo(g_nSpyroFallTrackingFlag)($v0)
+    /* 3318C 8004298C 0880023C */  lui        $v0, %hi(g_nSpyroFlightMode)
+    /* 33190 80042990 A48C428C */  lw         $v0, %lo(g_nSpyroFlightMode)($v0)
     /* 33194 80042994 00000000 */  nop
     /* 33198 80042998 26004010 */  beqz       $v0, .L80042A34
     /* 3319C 8004299C 00000000 */   nop
@@ -56588,8 +56588,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 3485C 8004405C 00000000 */  nop
     /* 34860 80044060 03004014 */  bnez       $v0, .L80044070
     /* 34864 80044064 01000224 */   addiu     $v0, $zero, 0x1
-    /* 34868 80044068 0880013C */  lui        $at, %hi(g_nSpyroFallTrackingFlag)
-    /* 3486C 8004406C A48C22AC */  sw         $v0, %lo(g_nSpyroFallTrackingFlag)($at)
+    /* 34868 80044068 0880013C */  lui        $at, %hi(g_nSpyroFlightMode)
+    /* 3486C 8004406C A48C22AC */  sw         $v0, %lo(g_nSpyroFlightMode)($at)
   .L80044070:
     /* 34870 80044070 0880033C */  lui        $v1, %hi(g_nSpyroState)
     /* 34874 80044074 D08A638C */  lw         $v1, %lo(g_nSpyroState)($v1)
@@ -57171,8 +57171,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 350C0 800448C0 000062AC */   sw        $v0, 0x0($v1)
     /* 350C4 800448C4 000060AC */  sw         $zero, 0x0($v1)
   .L800448C8:
-    /* 350C8 800448C8 0880023C */  lui        $v0, %hi(g_nSpyroFallTrackingFlag)
-    /* 350CC 800448CC A48C428C */  lw         $v0, %lo(g_nSpyroFallTrackingFlag)($v0)
+    /* 350C8 800448C8 0880023C */  lui        $v0, %hi(g_nSpyroFlightMode)
+    /* 350CC 800448CC A48C428C */  lw         $v0, %lo(g_nSpyroFlightMode)($v0)
     /* 350D0 800448D0 00000000 */  nop
     /* 350D4 800448D4 1A004010 */  beqz       $v0, .L80044940
     /* 350D8 800448D8 00000000 */   nop
@@ -57827,8 +57827,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 35A48 80045248 000062AC */   sw        $v0, 0x0($v1)
     /* 35A4C 8004524C 000060AC */  sw         $zero, 0x0($v1)
   .L80045250:
-    /* 35A50 80045250 0880023C */  lui        $v0, %hi(g_nSpyroFallTrackingFlag)
-    /* 35A54 80045254 A48C428C */  lw         $v0, %lo(g_nSpyroFallTrackingFlag)($v0)
+    /* 35A50 80045250 0880023C */  lui        $v0, %hi(g_nSpyroFlightMode)
+    /* 35A54 80045254 A48C428C */  lw         $v0, %lo(g_nSpyroFlightMode)($v0)
     /* 35A58 80045258 00000000 */  nop
     /* 35A5C 8004525C 5B044010 */  beqz       $v0, .L800463CC
     /* 35A60 80045260 00000000 */   nop
@@ -60950,8 +60950,8 @@ glabel DispatchSpyroPhysicsByState
     /* 38714 80047F14 66210108 */  j          .L80048598
     /* 38718 80047F18 00000000 */   nop
   jlabel .L80047F1C
-    /* 3871C 80047F1C 0880103C */  lui        $s0, %hi(g_nSpyroFallTrackingFlag)
-    /* 38720 80047F20 A48C1026 */  addiu      $s0, $s0, %lo(g_nSpyroFallTrackingFlag)
+    /* 3871C 80047F1C 0880103C */  lui        $s0, %hi(g_nSpyroFlightMode)
+    /* 38720 80047F20 A48C1026 */  addiu      $s0, $s0, %lo(g_nSpyroFlightMode)
     /* 38724 80047F24 0000028E */  lw         $v0, 0x0($s0)
     /* 38728 80047F28 00000000 */  nop
     /* 3872C 80047F2C 05004014 */  bnez       $v0, .L80047F44
@@ -61066,8 +61066,8 @@ glabel DispatchSpyroPhysicsByState
     /* 388B8 800480B8 F8210108 */  j          .L800487E0
     /* 388BC 800480BC 00000000 */   nop
   jlabel .L800480C0
-    /* 388C0 800480C0 0880103C */  lui        $s0, %hi(g_nSpyroFallTrackingFlag)
-    /* 388C4 800480C4 A48C1026 */  addiu      $s0, $s0, %lo(g_nSpyroFallTrackingFlag)
+    /* 388C0 800480C0 0880103C */  lui        $s0, %hi(g_nSpyroFlightMode)
+    /* 388C4 800480C4 A48C1026 */  addiu      $s0, $s0, %lo(g_nSpyroFlightMode)
     /* 388C8 800480C8 0000028E */  lw         $v0, 0x0($s0)
     /* 388CC 800480CC 00000000 */  nop
     /* 388D0 800480D0 05004014 */  bnez       $v0, .L800480E8
@@ -61169,8 +61169,8 @@ glabel DispatchSpyroPhysicsByState
     /* 38A30 80048230 66210108 */  j          .L80048598
     /* 38A34 80048234 00000000 */   nop
   jlabel .L80048238
-    /* 38A38 80048238 0880103C */  lui        $s0, %hi(g_nSpyroFallTrackingFlag)
-    /* 38A3C 8004823C A48C1026 */  addiu      $s0, $s0, %lo(g_nSpyroFallTrackingFlag)
+    /* 38A38 80048238 0880103C */  lui        $s0, %hi(g_nSpyroFlightMode)
+    /* 38A3C 8004823C A48C1026 */  addiu      $s0, $s0, %lo(g_nSpyroFlightMode)
     /* 38A40 80048240 0000028E */  lw         $v0, 0x0($s0)
     /* 38A44 80048244 00000000 */  nop
     /* 38A48 80048248 05004014 */  bnez       $v0, .L80048260
@@ -61287,8 +61287,8 @@ glabel DispatchSpyroPhysicsByState
     /* 38BE4 800483E4 66210108 */  j          .L80048598
     /* 38BE8 800483E8 00000000 */   nop
   jlabel .L800483EC
-    /* 38BEC 800483EC 0880103C */  lui        $s0, %hi(g_nSpyroFallTrackingFlag)
-    /* 38BF0 800483F0 A48C1026 */  addiu      $s0, $s0, %lo(g_nSpyroFallTrackingFlag)
+    /* 38BEC 800483EC 0880103C */  lui        $s0, %hi(g_nSpyroFlightMode)
+    /* 38BF0 800483F0 A48C1026 */  addiu      $s0, $s0, %lo(g_nSpyroFlightMode)
     /* 38BF4 800483F4 0000028E */  lw         $v0, 0x0($s0)
     /* 38BF8 800483F8 00000000 */  nop
     /* 38BFC 800483FC 05004014 */  bnez       $v0, .L80048414
@@ -64265,8 +64265,8 @@ glabel ResetSpyroEntity
     /* 3B5C0 8004ADC0 848A20AC */  sw         $zero, %lo(g_dwSpyroTriggerEventFlags)($at)
     /* 3B5C4 8004ADC4 0880013C */  lui        $at, %hi(g_nSpyroHazardFloorZ)
     /* 3B5C8 8004ADC8 888A20AC */  sw         $zero, %lo(g_nSpyroHazardFloorZ)($at)
-    /* 3B5CC 8004ADCC 0880013C */  lui        $at, %hi(g_nSpyroFallTrackingFlag)
-    /* 3B5D0 8004ADD0 A48C20AC */  sw         $zero, %lo(g_nSpyroFallTrackingFlag)($at)
+    /* 3B5CC 8004ADCC 0880013C */  lui        $at, %hi(g_nSpyroFlightMode)
+    /* 3B5D0 8004ADD0 A48C20AC */  sw         $zero, %lo(g_nSpyroFlightMode)($at)
     /* 3B5D4 8004ADD4 0880013C */  lui        $at, %hi(g_nSpyroChargeHoldFlag)
     /* 3B5D8 8004ADD8 A88C20AC */  sw         $zero, %lo(g_nSpyroChargeHoldFlag)($at)
     /* 3B5DC 8004ADDC 0880013C */  lui        $at, %hi(g_nSpyroGlideBankingFlag)

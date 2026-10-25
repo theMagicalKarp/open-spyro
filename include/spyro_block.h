@@ -46,7 +46,7 @@
 #define SPY_REQUEST_TARGET 0x7E /* g_anSpyroRequestTargetPos */
 #define SPY_REQUEST_STATE  0x86 /* g_nSpyroRequestState */
 #define SPY_SCRIPTED_ACTOR 0x89 /* g_pScriptedCameraActor */
-#define SPY_FALL_TRACKING  0x93 /* g_nSpyroFallTrackingFlag */
+#define SPY_FLIGHT_MODE    0x93 /* g_nSpyroFlightMode */
 #define SPY_CHARGE_HOLD    0x94 /* g_nSpyroChargeHoldFlag */
 #define SPY_GLIDE_BANK     0x95 /* g_nSpyroGlideBankingFlag */
 
