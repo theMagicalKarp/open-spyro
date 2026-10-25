@@ -1767,6 +1767,8 @@ void Level33_UpdateActors(void) {
           int *anc;
 
           g_dwSpyroRequestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FREEZE_INPUT);
+          /* st->path2, read by byte offset: the in-struct form reorders
+             the loads (9/8304 insns differ). */
           anc = PATH_END(*(FlyPath **)((char *)st + 4));
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
           *(int *)&g_anCameraActiveTargetParams = -ca << 4;
