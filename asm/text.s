@@ -787,7 +787,7 @@ glabel Initialize
     /* 3480 80012C80 FC8522AC */  sw         $v0, %lo(g_pWorkAreaTop)($at)
     /* 3484 80012C84 F66D010C */  jal        LoadActorMeshTables
     /* 3488 80012C88 00000000 */   nop
-    /* 348C 80012C8C CEB4000C */  jal        BeginGemCutscene
+    /* 348C 80012C8C CEB4000C */  jal        BeginCutscene
     /* 3490 80012C90 00000000 */   nop
     /* 3494 80012C94 0F000224 */  addiu      $v0, $zero, 0xF
     /* 3498 80012C98 0780013C */  lui        $at, %hi(g_nGenericCountdown)
@@ -2182,40 +2182,40 @@ glabel BuildLoadedLevelRuntime
     /* 487C 8001407C F5FF4014 */  bnez       $v0, .L80014054
     /* 4880 80014080 04001026 */   addiu     $s0, $s0, 0x4
   .L80014084:
-    /* 4884 80014084 0780023C */  lui        $v0, %hi(g_nDeathState)
-    /* 4888 80014088 1457428C */  lw         $v0, %lo(g_nDeathState)($v0)
+    /* 4884 80014084 0780023C */  lui        $v0, %hi(g_nDemoMode)
+    /* 4888 80014088 1457428C */  lw         $v0, %lo(g_nDemoMode)($v0)
     /* 488C 8001408C 00000000 */  nop
     /* 4890 80014090 30004010 */  beqz       $v0, .L80014154
     /* 4894 80014094 00000000 */   nop
     /* 4898 80014098 D789010C */  jal        srand
     /* 489C 8001409C D2040424 */   addiu     $a0, $zero, 0x4D2
-    /* 48A0 800140A0 0780033C */  lui        $v1, %hi(g_nDeathTryIndex)
-    /* 48A4 800140A4 B857638C */  lw         $v1, %lo(g_nDeathTryIndex)($v1)
+    /* 48A0 800140A0 0780033C */  lui        $v1, %hi(g_nDemoIndex)
+    /* 48A4 800140A4 B857638C */  lw         $v1, %lo(g_nDemoIndex)($v1)
     /* 48A8 800140A8 00000000 */  nop
     /* 48AC 800140AC 00190300 */  sll        $v1, $v1, 4
-    /* 48B0 800140B0 0780013C */  lui        $at, %hi(g_anDeathReplaySpawnTable)
+    /* 48B0 800140B0 0780013C */  lui        $at, %hi(g_anDemoStartPose)
     /* 48B4 800140B4 21082300 */  addu       $at, $at, $v1
-    /* 48B8 800140B8 9CEE228C */  lw         $v0, %lo(g_anDeathReplaySpawnTable)($at)
+    /* 48B8 800140B8 9CEE228C */  lw         $v0, %lo(g_anDemoStartPose)($at)
     /* 48BC 800140BC 0880013C */  lui        $at, %hi(g_anSpyroWorldPos)
     /* 48C0 800140C0 588A22AC */  sw         $v0, %lo(g_anSpyroWorldPos)($at)
-    /* 48C4 800140C4 0780013C */  lui        $at, %hi(g_anDeathReplaySpawnTable + 0x4)
+    /* 48C4 800140C4 0780013C */  lui        $at, %hi(g_anDemoStartPose + 0x4)
     /* 48C8 800140C8 21082300 */  addu       $at, $at, $v1
-    /* 48CC 800140CC A0EE228C */  lw         $v0, %lo(g_anDeathReplaySpawnTable + 0x4)($at)
+    /* 48CC 800140CC A0EE228C */  lw         $v0, %lo(g_anDemoStartPose + 0x4)($at)
     /* 48D0 800140D0 0880013C */  lui        $at, %hi(g_nSpyroWorldPosY)
     /* 48D4 800140D4 5C8A22AC */  sw         $v0, %lo(g_nSpyroWorldPosY)($at)
-    /* 48D8 800140D8 0780013C */  lui        $at, %hi(g_anDeathReplaySpawnTable + 0x8)
+    /* 48D8 800140D8 0780013C */  lui        $at, %hi(g_anDemoStartPose + 0x8)
     /* 48DC 800140DC 21082300 */  addu       $at, $at, $v1
-    /* 48E0 800140E0 A4EE228C */  lw         $v0, %lo(g_anDeathReplaySpawnTable + 0x8)($at)
+    /* 48E0 800140E0 A4EE228C */  lw         $v0, %lo(g_anDemoStartPose + 0x8)($at)
     /* 48E4 800140E4 0880013C */  lui        $at, %hi(g_nSpyroWorldPosZ)
     /* 48E8 800140E8 608A22AC */  sw         $v0, %lo(g_nSpyroWorldPosZ)($at)
-    /* 48EC 800140EC 0780013C */  lui        $at, %hi(g_anDeathReplaySpawnTable + 0xC)
+    /* 48EC 800140EC 0780013C */  lui        $at, %hi(g_anDemoStartPose + 0xC)
     /* 48F0 800140F0 21082300 */  addu       $at, $at, $v1
-    /* 48F4 800140F4 A8EE228C */  lw         $v0, %lo(g_anDeathReplaySpawnTable + 0xC)($at)
-    /* 48F8 800140F8 0780033C */  lui        $v1, %hi(g_nDeathState)
-    /* 48FC 800140FC 1457638C */  lw         $v1, %lo(g_nDeathState)($v1)
+    /* 48F4 800140F4 A8EE228C */  lw         $v0, %lo(g_anDemoStartPose + 0xC)($at)
+    /* 48F8 800140F8 0780033C */  lui        $v1, %hi(g_nDemoMode)
+    /* 48FC 800140FC 1457638C */  lw         $v1, %lo(g_nDemoMode)($v1)
     /* 4900 80014100 01000424 */  addiu      $a0, $zero, 0x1
-    /* 4904 80014104 0780013C */  lui        $at, %hi(g_nDeathRespawnPending)
-    /* 4908 80014108 845724AC */  sw         $a0, %lo(g_nDeathRespawnPending)($at)
+    /* 4904 80014104 0780013C */  lui        $at, %hi(g_nDemoActive)
+    /* 4908 80014108 845724AC */  sw         $a0, %lo(g_nDemoActive)($at)
     /* 490C 8001410C 0880013C */  lui        $at, %hi(g_abSpyroPersistentEuler + 0x2)
     /* 4910 80014110 668A22A0 */  sb         $v0, %lo(g_abSpyroPersistentEuler + 0x2)($at)
     /* 4914 80014114 FF004230 */  andi       $v0, $v0, 0xFF
@@ -2224,13 +2224,13 @@ glabel BuildLoadedLevelRuntime
     /* 4920 80014120 748B22AC */  sw         $v0, %lo(g_nSpyroBodyYaw)($at)
     /* 4924 80014124 05006414 */  bne        $v1, $a0, .L8001413C
     /* 4928 80014128 6080023C */   lui       $v0, (0x80600000 >> 16)
-    /* 492C 8001412C 0780013C */  lui        $at, %hi(g_pDeathReplayCursor)
-    /* 4930 80014130 5C5830AC */  sw         $s0, %lo(g_pDeathReplayCursor)($at)
+    /* 492C 8001412C 0780013C */  lui        $at, %hi(g_pDemoPadCursor)
+    /* 4930 80014130 5C5830AC */  sw         $s0, %lo(g_pDemoPadCursor)($at)
     /* 4934 80014134 56500008 */  j          .L80014158
     /* 4938 80014138 21900000 */   addu      $s2, $zero, $zero
   .L8001413C:
-    /* 493C 8001413C 0780013C */  lui        $at, %hi(g_pDeathReplayCursor)
-    /* 4940 80014140 5C5822AC */  sw         $v0, %lo(g_pDeathReplayCursor)($at)
+    /* 493C 8001413C 0780013C */  lui        $at, %hi(g_pDemoPadCursor)
+    /* 4940 80014140 5C5822AC */  sw         $v0, %lo(g_pDemoPadCursor)($at)
     /* 4944 80014144 6080043C */  lui        $a0, (0x80600000 >> 16)
     /* 4948 80014148 21280000 */  addu       $a1, $zero, $zero
     /* 494C 8001414C 455A000C */  jal        FillWord
@@ -9618,8 +9618,8 @@ glabel LevelTransition_Draw
   .L8001A334:
     /* AB34 8001A334 D97D010C */  jal        DrawSync
     /* AB38 8001A338 21200000 */   addu      $a0, $zero, $zero
-    /* AB3C 8001A33C 0780023C */  lui        $v0, %hi(g_nDeathRespawnPending)
-    /* AB40 8001A340 8457428C */  lw         $v0, %lo(g_nDeathRespawnPending)($v0)
+    /* AB3C 8001A33C 0780023C */  lui        $v0, %hi(g_nDemoActive)
+    /* AB40 8001A340 8457428C */  lw         $v0, %lo(g_nDemoActive)($v0)
     /* AB44 8001A344 00000000 */  nop
     /* AB48 8001A348 03004010 */  beqz       $v0, .L8001A358
     /* AB4C 8001A34C 00000000 */   nop
@@ -11916,8 +11916,8 @@ glabel Gamestate02_03_06_Draw
     /* CDA4 8001C5A4 21204000 */   addu      $a0, $v0, $zero
     /* CDA8 8001C5A8 D97D010C */  jal        DrawSync
     /* CDAC 8001C5AC 21200000 */   addu      $a0, $zero, $zero
-    /* CDB0 8001C5B0 0780023C */  lui        $v0, %hi(g_nDeathRespawnPending)
-    /* CDB4 8001C5B4 8457428C */  lw         $v0, %lo(g_nDeathRespawnPending)($v0)
+    /* CDB0 8001C5B0 0780023C */  lui        $v0, %hi(g_nDemoActive)
+    /* CDB4 8001C5B4 8457428C */  lw         $v0, %lo(g_nDemoActive)($v0)
     /* CDB8 8001C5B8 00000000 */  nop
     /* CDBC 8001C5BC 03004010 */  beqz       $v0, .L8001C5CC
     /* CDC0 8001C5C0 00000000 */   nop
@@ -12180,8 +12180,8 @@ glabel MenuTransition_Draw
     /* D178 8001C978 21204000 */   addu      $a0, $v0, $zero
     /* D17C 8001C97C D97D010C */  jal        DrawSync
     /* D180 8001C980 21200000 */   addu      $a0, $zero, $zero
-    /* D184 8001C984 0780023C */  lui        $v0, %hi(g_nDeathRespawnPending)
-    /* D188 8001C988 8457428C */  lw         $v0, %lo(g_nDeathRespawnPending)($v0)
+    /* D184 8001C984 0780023C */  lui        $v0, %hi(g_nDemoActive)
+    /* D188 8001C988 8457428C */  lw         $v0, %lo(g_nDemoActive)($v0)
     /* D18C 8001C98C 00000000 */  nop
     /* D190 8001C990 03004010 */  beqz       $v0, .L8001C9A0
     /* D194 8001C994 00000000 */   nop
@@ -13062,8 +13062,8 @@ glabel DragonRescue_Draw
   .L8001D644:
     /* DE44 8001D644 D97D010C */  jal        DrawSync
     /* DE48 8001D648 21200000 */   addu      $a0, $zero, $zero
-    /* DE4C 8001D64C 0780023C */  lui        $v0, %hi(g_nDeathRespawnPending)
-    /* DE50 8001D650 8457428C */  lw         $v0, %lo(g_nDeathRespawnPending)($v0)
+    /* DE4C 8001D64C 0780023C */  lui        $v0, %hi(g_nDemoActive)
+    /* DE50 8001D650 8457428C */  lw         $v0, %lo(g_nDemoActive)($v0)
     /* DE54 8001D654 00000000 */  nop
     /* DE58 8001D658 03004010 */  beqz       $v0, .L8001D668
     /* DE5C 8001D65C 00000000 */   nop
@@ -13815,8 +13815,8 @@ glabel SaveLoadMenu_Draw
     /* E964 8001E164 00000000 */   nop
     /* E968 8001E168 D97D010C */  jal        DrawSync
     /* E96C 8001E16C 21200000 */   addu      $a0, $zero, $zero
-    /* E970 8001E170 0780023C */  lui        $v0, %hi(g_nDeathRespawnPending)
-    /* E974 8001E174 8457428C */  lw         $v0, %lo(g_nDeathRespawnPending)($v0)
+    /* E970 8001E170 0780023C */  lui        $v0, %hi(g_nDemoActive)
+    /* E974 8001E174 8457428C */  lw         $v0, %lo(g_nDemoActive)($v0)
     /* E978 8001E178 00000000 */  nop
     /* E97C 8001E17C 03004010 */  beqz       $v0, .L8001E18C
     /* E980 8001E180 00000000 */   nop
@@ -14125,8 +14125,8 @@ glabel ActorCutscene_Draw
     /* EDE0 8001E5E0 00000000 */   nop
     /* EDE4 8001E5E4 D97D010C */  jal        DrawSync
     /* EDE8 8001E5E8 21200000 */   addu      $a0, $zero, $zero
-    /* EDEC 8001E5EC 0780023C */  lui        $v0, %hi(g_nDeathRespawnPending)
-    /* EDF0 8001E5F0 8457428C */  lw         $v0, %lo(g_nDeathRespawnPending)($v0)
+    /* EDEC 8001E5EC 0780023C */  lui        $v0, %hi(g_nDemoActive)
+    /* EDF0 8001E5F0 8457428C */  lw         $v0, %lo(g_nDemoActive)($v0)
     /* EDF4 8001E5F4 00000000 */  nop
     /* EDF8 8001E5F8 03004010 */  beqz       $v0, .L8001E608
     /* EDFC 8001E5FC 00000000 */   nop
@@ -14396,11 +14396,11 @@ glabel StoryIntro_Draw
 endlabel StoryIntro_Draw
 .endif
 
-.section .text.GemCutscene_Draw, "ax"
-.ifndef HAVE_C_GemCutscene_Draw
-nonmatching GemCutscene_Draw, 0x1B8
+.section .text.Cutscene_Draw, "ax"
+.ifndef HAVE_C_Cutscene_Draw
+nonmatching Cutscene_Draw, 0x1B8
 
-glabel GemCutscene_Draw
+glabel Cutscene_Draw
     /* F1C8 8001E9C8 0880023C */  lui        $v0, %hi(g_dwWorldFogColor)
     /* F1CC 8001E9CC 508A4290 */  lbu        $v0, %lo(g_dwWorldFogColor)($v0)
     /* F1D0 8001E9D0 0880033C */  lui        $v1, %hi(g_dwWorldFogColor + 0x1)
@@ -14461,8 +14461,8 @@ glabel GemCutscene_Draw
   .L8001EAAC:
     /* F2AC 8001EAAC D97D010C */  jal        DrawSync
     /* F2B0 8001EAB0 21200000 */   addu      $a0, $zero, $zero
-    /* F2B4 8001EAB4 0780023C */  lui        $v0, %hi(g_nDeathRespawnPending)
-    /* F2B8 8001EAB8 8457428C */  lw         $v0, %lo(g_nDeathRespawnPending)($v0)
+    /* F2B4 8001EAB4 0780023C */  lui        $v0, %hi(g_nDemoActive)
+    /* F2B8 8001EAB8 8457428C */  lw         $v0, %lo(g_nDemoActive)($v0)
     /* F2BC 8001EABC 00000000 */  nop
     /* F2C0 8001EAC0 03004010 */  beqz       $v0, .L8001EAD0
     /* F2C4 8001EAC4 00000000 */   nop
@@ -14515,7 +14515,7 @@ glabel GemCutscene_Draw
     /* F374 8001EB74 1800BD27 */  addiu      $sp, $sp, 0x18
     /* F378 8001EB78 0800E003 */  jr         $ra
     /* F37C 8001EB7C 00000000 */   nop
-endlabel GemCutscene_Draw
+endlabel Cutscene_Draw
 .endif
 
 .section .text.ReturningHome_Draw, "ax"
@@ -14785,7 +14785,7 @@ glabel GamestateDraw
   .L8001EF28:
     /* F728 8001EF28 05006214 */  bne        $v1, $v0, .L8001EF40
     /* F72C 8001EF2C 0F000224 */   addiu     $v0, $zero, 0xF
-    /* F730 8001EF30 727A000C */  jal        GemCutscene_Draw
+    /* F730 8001EF30 727A000C */  jal        Cutscene_Draw
     /* F734 8001EF34 00000000 */   nop
     /* F738 8001EF38 517C0008 */  j          .L8001F144
     /* F73C 8001EF3C 00000000 */   nop
@@ -14836,8 +14836,8 @@ glabel GamestateDraw
     /* F7E4 8001EFE4 C064000C */  jal        EnqueueLoadingScreenSprites
     /* F7E8 8001EFE8 00000000 */   nop
   .L8001EFEC:
-    /* F7EC 8001EFEC 0780023C */  lui        $v0, %hi(g_nDeathState)
-    /* F7F0 8001EFF0 1457428C */  lw         $v0, %lo(g_nDeathState)($v0)
+    /* F7EC 8001EFEC 0780023C */  lui        $v0, %hi(g_nDemoMode)
+    /* F7F0 8001EFF0 1457428C */  lw         $v0, %lo(g_nDemoMode)($v0)
     /* F7F4 8001EFF4 00000000 */  nop
     /* F7F8 8001EFF8 03004010 */  beqz       $v0, .L8001F008
     /* F7FC 8001EFFC 00000000 */   nop
@@ -14880,8 +14880,8 @@ glabel GamestateDraw
     /* F880 8001F080 00000000 */   nop
     /* F884 8001F084 D97D010C */  jal        DrawSync
     /* F888 8001F088 21200000 */   addu      $a0, $zero, $zero
-    /* F88C 8001F08C 0780023C */  lui        $v0, %hi(g_nDeathRespawnPending)
-    /* F890 8001F090 8457428C */  lw         $v0, %lo(g_nDeathRespawnPending)($v0)
+    /* F88C 8001F08C 0780023C */  lui        $v0, %hi(g_nDemoActive)
+    /* F890 8001F090 8457428C */  lw         $v0, %lo(g_nDemoActive)($v0)
     /* F894 8001F094 00000000 */  nop
     /* F898 8001F098 03004010 */  beqz       $v0, .L8001F0A8
     /* F89C 8001F09C 00000000 */   nop
@@ -29153,11 +29153,11 @@ glabel TickCdMusicStream
 endlabel TickCdMusicStream
 .endif
 
-.section .text.AdvanceGemCutsceneFrame, "ax"
-.ifndef HAVE_C_AdvanceGemCutsceneFrame
-nonmatching AdvanceGemCutsceneFrame, 0x440
+.section .text.AdvanceCutsceneFrame, "ax"
+.ifndef HAVE_C_AdvanceCutsceneFrame
+nonmatching AdvanceCutsceneFrame, 0x440
 
-glabel AdvanceGemCutsceneFrame
+glabel AdvanceCutsceneFrame
     /* 1C7E0 8002BFE0 0780043C */  lui        $a0, %hi(g_pPathTableHead)
     /* 1C7E4 8002BFE4 8056848C */  lw         $a0, %lo(g_pPathTableHead)($a0)
     /* 1C7E8 8002BFE8 00000000 */  nop
@@ -29436,7 +29436,7 @@ glabel AdvanceGemCutsceneFrame
     /* 1CC14 8002C414 2800BD27 */  addiu      $sp, $sp, 0x28
     /* 1CC18 8002C418 0800E003 */  jr         $ra
     /* 1CC1C 8002C41C 00000000 */   nop
-endlabel AdvanceGemCutsceneFrame
+endlabel AdvanceCutsceneFrame
 .endif
 
 .section .text.EnterPauseMenu, "ax"
@@ -30555,11 +30555,11 @@ glabel BeginCreditsSequence
 endlabel BeginCreditsSequence
 .endif
 
-.section .text.BeginGemCutscene, "ax"
-.ifndef HAVE_C_BeginGemCutscene
-nonmatching BeginGemCutscene, 0x108
+.section .text.BeginCutscene, "ax"
+.ifndef HAVE_C_BeginCutscene
+nonmatching BeginCutscene, 0x108
 
-glabel BeginGemCutscene
+glabel BeginCutscene
     /* 1DB38 8002D338 E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 1DB3C 8002D33C 0E000224 */  addiu      $v0, $zero, 0xE
     /* 1DB40 8002D340 0780033C */  lui        $v1, %hi(g_pPathTableHead)
@@ -30627,7 +30627,7 @@ glabel BeginGemCutscene
     /* 1DC34 8002D434 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 1DC38 8002D438 0800E003 */  jr         $ra
     /* 1DC3C 8002D43C 00000000 */   nop
-endlabel BeginGemCutscene
+endlabel BeginCutscene
 .endif
 
 .section .text.DispatchSpecialCutscene, "ax"
@@ -31746,7 +31746,7 @@ glabel PauseMenu_Update
     /* 1EB54 8002E354 0A004228 */  slti       $v0, $v0, 0xA
     /* 1EB58 8002E358 F7FF4014 */  bnez       $v0, .L8002E338
     /* 1EB5C 8002E35C 00000000 */   nop
-    /* 1EB60 8002E360 CEB4000C */  jal        BeginGemCutscene
+    /* 1EB60 8002E360 CEB4000C */  jal        BeginCutscene
     /* 1EB64 8002E364 00000000 */   nop
     /* 1EB68 8002E368 5CB4000C */  jal        BeginStoryIntro
     /* 1EB6C 8002E36C 00000000 */   nop
@@ -35109,14 +35109,14 @@ glabel SaveMenu_Update
     /* 21CE4 800314E4 21104300 */  addu       $v0, $v0, $v1
     /* 21CE8 800314E8 3063010C */  jal        RotateLightVectorXZ
     /* 21CEC 800314EC 000022AE */   sw        $v0, 0x0($s1)
-    /* 21CF0 800314F0 0780043C */  lui        $a0, %hi(g_apSaveMenuAnimActorList)
-    /* 21CF4 800314F4 F4008424 */  addiu      $a0, $a0, %lo(g_apSaveMenuAnimActorList)
+    /* 21CF0 800314F0 0780043C */  lui        $a0, %hi(g_apActiveActorList)
+    /* 21CF4 800314F4 F4008424 */  addiu      $a0, $a0, %lo(g_apActiveActorList)
     /* 21CF8 800314F8 0880023C */  lui        $v0, %hi(g_pSaveMenuDragonActor)
     /* 21CFC 800314FC 748D428C */  lw         $v0, %lo(g_pSaveMenuDragonActor)($v0)
     /* 21D00 80031500 21280000 */  addu       $a1, $zero, $zero
-    /* 21D04 80031504 0780013C */  lui        $at, %hi(g_apSaveMenuAnimActorList + 0x4)
-    /* 21D08 80031508 F80020AC */  sw         $zero, %lo(g_apSaveMenuAnimActorList + 0x4)($at)
-    /* 21D0C 8003150C B048010C */  jal        TickGemCutsceneActorAnims
+    /* 21D04 80031504 0780013C */  lui        $at, %hi(g_apActiveActorList + 0x4)
+    /* 21D08 80031508 F80020AC */  sw         $zero, %lo(g_apActiveActorList + 0x4)($at)
+    /* 21D0C 8003150C B048010C */  jal        TickActorAnims
     /* 21D10 80031510 000082AC */   sw        $v0, 0x0($a0)
     /* 21D14 80031514 FCFF238E */  lw         $v1, -0x4($s1)
     /* 21D18 80031518 00000000 */  nop
@@ -36662,13 +36662,13 @@ glabel Title_Update
     /* 233D4 80032BD4 00040224 */   addiu     $v0, $zero, 0x400
     /* 233D8 80032BD8 DF49000C */  jal        InitNewGameState
     /* 233DC 80032BDC 00000000 */   nop
-    /* 233E0 80032BE0 0780023C */  lui        $v0, %hi(g_nDeathTryIndex)
-    /* 233E4 80032BE4 B857428C */  lw         $v0, %lo(g_nDeathTryIndex)($v0)
+    /* 233E0 80032BE0 0780023C */  lui        $v0, %hi(g_nDemoIndex)
+    /* 233E4 80032BE4 B857428C */  lw         $v0, %lo(g_nDemoIndex)($v0)
     /* 233E8 80032BE8 00000000 */  nop
     /* 233EC 80032BEC 80100200 */  sll        $v0, $v0, 2
-    /* 233F0 80032BF0 0780013C */  lui        $at, %hi(g_anDeathTryLevelIds)
+    /* 233F0 80032BF0 0780013C */  lui        $at, %hi(g_anDemoLevelIds)
     /* 233F4 80032BF4 21082200 */  addu       $at, $at, $v0
-    /* 233F8 80032BF8 7CEE228C */  lw         $v0, %lo(g_anDeathTryLevelIds)($at)
+    /* 233F8 80032BF8 7CEE228C */  lw         $v0, %lo(g_anDemoLevelIds)($at)
     /* 233FC 80032BFC 0780013C */  lui        $at, %hi(g_nFlightLevelActive)
     /* 23400 80032C00 905620AC */  sw         $zero, %lo(g_nFlightLevelActive)($at)
     /* 23404 80032C04 0780013C */  lui        $at, %hi(g_nCdStreamState)
@@ -36996,7 +36996,7 @@ glabel Title_Update
     /* 238C4 800330C4 0A004228 */  slti       $v0, $v0, 0xA
     /* 238C8 800330C8 F7FF4014 */  bnez       $v0, .L800330A8
     /* 238CC 800330CC 00000000 */   nop
-    /* 238D0 800330D0 CEB4000C */  jal        BeginGemCutscene
+    /* 238D0 800330D0 CEB4000C */  jal        BeginCutscene
     /* 238D4 800330D4 00000000 */   nop
     /* 238D8 800330D8 01000224 */  addiu      $v0, $zero, 0x1
     /* 238DC 800330DC 0780013C */  lui        $at, %hi(g_nGamePaused)
@@ -37028,10 +37028,10 @@ glabel Title_Update
     /* 2393C 8003313C 00000000 */  nop
     /* 23940 80033140 05006214 */  bne        $v1, $v0, .L80033158
     /* 23944 80033144 01000224 */   addiu     $v0, $zero, 0x1
-    /* 23948 80033148 0780013C */  lui        $at, %hi(g_nDeathState)
-    /* 2394C 8003314C 145722AC */  sw         $v0, %lo(g_nDeathState)($at)
-    /* 23950 80033150 0780013C */  lui        $at, %hi(g_nDeathFadeFrame)
-    /* 23954 80033154 845820AC */  sw         $zero, %lo(g_nDeathFadeFrame)($at)
+    /* 23948 80033148 0780013C */  lui        $at, %hi(g_nDemoMode)
+    /* 2394C 8003314C 145722AC */  sw         $v0, %lo(g_nDemoMode)($at)
+    /* 23950 80033150 0780013C */  lui        $at, %hi(g_nDemoExitFadeFrame)
+    /* 23954 80033154 845820AC */  sw         $zero, %lo(g_nDemoExitFadeFrame)($at)
   .L80033158:
     /* 23958 80033158 092B010C */  jal        ResetSpyroEntity
     /* 2395C 8003315C 01000424 */   addiu     $a0, $zero, 0x1
@@ -37059,11 +37059,11 @@ glabel Title_Update
 endlabel Title_Update
 .endif
 
-.section .text.GemCutscene_Update, "ax"
-.ifndef HAVE_C_GemCutscene_Update
-nonmatching GemCutscene_Update, 0x230
+.section .text.Cutscene_Update, "ax"
+.ifndef HAVE_C_Cutscene_Update
+nonmatching Cutscene_Update, 0x230
 
-glabel GemCutscene_Update
+glabel Cutscene_Update
     /* 239AC 800331AC 0780023C */  lui        $v0, %hi(g_nCurrentWorldId)
     /* 239B0 800331B0 6C56428C */  lw         $v0, %lo(g_nCurrentWorldId)($v0)
     /* 239B4 800331B4 E0FFBD27 */  addiu      $sp, $sp, -0x20
@@ -37129,7 +37129,7 @@ glabel GemCutscene_Update
     /* 23A9C 8003329C 0A004228 */  slti       $v0, $v0, 0xA
     /* 23AA0 800332A0 F7FF4014 */  bnez       $v0, .L80033280
     /* 23AA4 800332A4 00000000 */   nop
-    /* 23AA8 800332A8 CEB4000C */  jal        BeginGemCutscene
+    /* 23AA8 800332A8 CEB4000C */  jal        BeginCutscene
     /* 23AAC 800332AC 00000000 */   nop
   .L800332B0:
     /* 23AB0 800332B0 0780023C */  lui        $v0, %hi(g_pPathTableHead)
@@ -37202,7 +37202,7 @@ glabel GemCutscene_Update
     /* 23BA8 800333A8 8056428C */  lw         $v0, %lo(g_pPathTableHead)($v0)
     /* 23BAC 800333AC 00000000 */  nop
     /* 23BB0 800333B0 0000448C */  lw         $a0, 0x0($v0)
-    /* 23BB4 800333B4 F8AF000C */  jal        AdvanceGemCutsceneFrame
+    /* 23BB4 800333B4 F8AF000C */  jal        AdvanceCutsceneFrame
     /* 23BB8 800333B8 00000000 */   nop
     /* 23BBC 800333BC F3CC0008 */  j          .L800333CC
     /* 23BC0 800333C0 00000000 */   nop
@@ -37214,7 +37214,7 @@ glabel GemCutscene_Update
     /* 23BD0 800333D0 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 23BD4 800333D4 0800E003 */  jr         $ra
     /* 23BD8 800333D8 00000000 */   nop
-endlabel GemCutscene_Update
+endlabel Cutscene_Update
 .endif
 
 .section .text.CreditsSequence_Update, "ax"
@@ -37293,32 +37293,32 @@ glabel CreditsSequence_Update
 endlabel CreditsSequence_Update
 .endif
 
-.section .text.CheckDeathPlane, "ax"
-.ifndef HAVE_C_CheckDeathPlane
-nonmatching CheckDeathPlane, 0x388
+.section .text.TickDemoPlayback, "ax"
+.ifndef HAVE_C_TickDemoPlayback
+nonmatching TickDemoPlayback, 0x388
 
-glabel CheckDeathPlane
+glabel TickDemoPlayback
     /* 23CD4 800334D4 D0FFBD27 */  addiu      $sp, $sp, -0x30
     /* 23CD8 800334D8 2C00BFAF */  sw         $ra, 0x2C($sp)
-    /* 23CDC 800334DC 7F4E010C */  jal        SamplePadForDeathReplayFrame
+    /* 23CDC 800334DC 7F4E010C */  jal        SampleDemoPadFrame
     /* 23CE0 800334E0 2800B0AF */   sw        $s0, 0x28($sp)
-    /* 23CE4 800334E4 0780033C */  lui        $v1, %hi(g_nDeathState)
-    /* 23CE8 800334E8 1457638C */  lw         $v1, %lo(g_nDeathState)($v1)
+    /* 23CE4 800334E4 0780033C */  lui        $v1, %hi(g_nDemoMode)
+    /* 23CE8 800334E8 1457638C */  lw         $v1, %lo(g_nDemoMode)($v1)
     /* 23CEC 800334EC 02000224 */  addiu      $v0, $zero, 0x2
     /* 23CF0 800334F0 D5006210 */  beq        $v1, $v0, .L80033848
     /* 23CF4 800334F4 21100000 */   addu      $v0, $zero, $zero
-    /* 23CF8 800334F8 0780023C */  lui        $v0, %hi(g_nDeathFadeFrame)
-    /* 23CFC 800334FC 8458428C */  lw         $v0, %lo(g_nDeathFadeFrame)($v0)
+    /* 23CF8 800334F8 0780023C */  lui        $v0, %hi(g_nDemoExitFadeFrame)
+    /* 23CFC 800334FC 8458428C */  lw         $v0, %lo(g_nDemoExitFadeFrame)($v0)
     /* 23D00 80033500 00000000 */  nop
     /* 23D04 80033504 24004014 */  bnez       $v0, .L80033598
     /* 23D08 80033508 01004224 */   addiu     $v0, $v0, 0x1
-    /* 23D0C 8003350C 0780023C */  lui        $v0, %hi(g_nDeathTryIndex)
-    /* 23D10 80033510 B857428C */  lw         $v0, %lo(g_nDeathTryIndex)($v0)
+    /* 23D0C 8003350C 0780023C */  lui        $v0, %hi(g_nDemoIndex)
+    /* 23D10 80033510 B857428C */  lw         $v0, %lo(g_nDemoIndex)($v0)
     /* 23D14 80033514 00000000 */  nop
     /* 23D18 80033518 80100200 */  sll        $v0, $v0, 2
-    /* 23D1C 8003351C 0780013C */  lui        $at, %hi(g_anDeathReplayFrameThreshold)
+    /* 23D1C 8003351C 0780013C */  lui        $at, %hi(g_anDemoLengthFrames)
     /* 23D20 80033520 21082200 */  addu       $at, $at, $v0
-    /* 23D24 80033524 8CEE228C */  lw         $v0, %lo(g_anDeathReplayFrameThreshold)($at)
+    /* 23D24 80033524 8CEE228C */  lw         $v0, %lo(g_anDemoLengthFrames)($at)
     /* 23D28 80033528 0780033C */  lui        $v1, %hi(g_dwGamestateFrames)
     /* 23D2C 8003352C 2C57638C */  lw         $v1, %lo(g_dwGamestateFrames)($v1)
     /* 23D30 80033530 F8FF4224 */  addiu      $v0, $v0, -0x8
@@ -37345,19 +37345,19 @@ glabel CheckDeathPlane
   .L80033584:
     /* 23D84 80033584 01000224 */  addiu      $v0, $zero, 0x1
   .L80033588:
-    /* 23D88 80033588 0780013C */  lui        $at, %hi(g_nDeathFadeFrame)
-    /* 23D8C 8003358C 845822AC */  sw         $v0, %lo(g_nDeathFadeFrame)($at)
+    /* 23D88 80033588 0780013C */  lui        $at, %hi(g_nDemoExitFadeFrame)
+    /* 23D8C 8003358C 845822AC */  sw         $v0, %lo(g_nDemoExitFadeFrame)($at)
     /* 23D90 80033590 6BCD0008 */  j          .L800335AC
     /* 23D94 80033594 00000000 */   nop
   .L80033598:
-    /* 23D98 80033598 0780013C */  lui        $at, %hi(g_nDeathFadeFrame)
-    /* 23D9C 8003359C 845822AC */  sw         $v0, %lo(g_nDeathFadeFrame)($at)
+    /* 23D98 80033598 0780013C */  lui        $at, %hi(g_nDemoExitFadeFrame)
+    /* 23D9C 8003359C 845822AC */  sw         $v0, %lo(g_nDemoExitFadeFrame)($at)
     /* 23DA0 800335A0 40100200 */  sll        $v0, $v0, 1
     /* 23DA4 800335A4 0780013C */  lui        $at, %hi(g_nGenericCountdown)
     /* 23DA8 800335A8 185922AC */  sw         $v0, %lo(g_nGenericCountdown)($at)
   .L800335AC:
-    /* 23DAC 800335AC 0780033C */  lui        $v1, %hi(g_nDeathFadeFrame)
-    /* 23DB0 800335B0 8458638C */  lw         $v1, %lo(g_nDeathFadeFrame)($v1)
+    /* 23DAC 800335AC 0780033C */  lui        $v1, %hi(g_nDemoExitFadeFrame)
+    /* 23DB0 800335B0 8458638C */  lw         $v1, %lo(g_nDemoExitFadeFrame)($v1)
     /* 23DB4 800335B4 10000224 */  addiu      $v0, $zero, 0x10
     /* 23DB8 800335B8 A3006214 */  bne        $v1, $v0, .L80033848
     /* 23DBC 800335BC 21100000 */   addu      $v0, $zero, $zero
@@ -37401,16 +37401,16 @@ glabel CheckDeathPlane
     /* 23E54 80033654 D05720AC */  sw         $zero, %lo(g_nPulseRumbleTimer)($at)
     /* 23E58 80033658 0780013C */  lui        $at, %hi(g_nPulseRumbleAmount)
     /* 23E5C 8003365C 4C5820AC */  sw         $zero, %lo(g_nPulseRumbleAmount)($at)
-    /* 23E60 80033660 0780013C */  lui        $at, %hi(g_nDeathState)
-    /* 23E64 80033664 145720AC */  sw         $zero, %lo(g_nDeathState)($at)
+    /* 23E60 80033660 0780013C */  lui        $at, %hi(g_nDemoMode)
+    /* 23E64 80033664 145720AC */  sw         $zero, %lo(g_nDemoMode)($at)
     /* 23E68 80033668 0780013C */  lui        $at, %hi(g_nCdStreamState)
     /* 23E6C 8003366C 645820AC */  sw         $zero, %lo(g_nCdStreamState)($at)
     /* 23E70 80033670 0780013C */  lui        $at, %hi(g_nCurrentWorldId)
     /* 23E74 80033674 6C5620AC */  sw         $zero, %lo(g_nCurrentWorldId)($at)
     /* 23E78 80033678 0780013C */  lui        $at, %hi(g_nFlightLevelActive)
     /* 23E7C 8003367C 905620AC */  sw         $zero, %lo(g_nFlightLevelActive)($at)
-    /* 23E80 80033680 0780013C */  lui        $at, %hi(g_nDeathRespawnPending)
-    /* 23E84 80033684 845720AC */  sw         $zero, %lo(g_nDeathRespawnPending)($at)
+    /* 23E80 80033680 0780013C */  lui        $at, %hi(g_nDemoActive)
+    /* 23E84 80033684 845720AC */  sw         $zero, %lo(g_nDemoActive)($at)
     /* 23E88 80033688 4059000C */  jal        CdReadSyncSectors
     /* 23E8C 8003368C 1000A2AF */   sw        $v0, 0x10($sp)
     /* 23E90 80033690 AACD0008 */  j          .L800336A8
@@ -37434,14 +37434,14 @@ glabel CheckDeathPlane
     /* 23ED0 800336D0 185922AC */  sw         $v0, %lo(g_nGenericCountdown)($at)
     /* 23ED4 800336D4 5CB4000C */  jal        BeginStoryIntro
     /* 23ED8 800336D8 00000000 */   nop
-    /* 23EDC 800336DC 0780023C */  lui        $v0, %hi(g_nDeathTryIndex)
-    /* 23EE0 800336E0 B857428C */  lw         $v0, %lo(g_nDeathTryIndex)($v0)
+    /* 23EDC 800336DC 0780023C */  lui        $v0, %hi(g_nDemoIndex)
+    /* 23EE0 800336E0 B857428C */  lw         $v0, %lo(g_nDemoIndex)($v0)
     /* 23EE4 800336E4 0780033C */  lui        $v1, %hi(g_dwGamestateFrames)
     /* 23EE8 800336E8 2C57638C */  lw         $v1, %lo(g_dwGamestateFrames)($v1)
     /* 23EEC 800336EC 80100200 */  sll        $v0, $v0, 2
-    /* 23EF0 800336F0 0780013C */  lui        $at, %hi(g_anDeathReplayFrameThreshold)
+    /* 23EF0 800336F0 0780013C */  lui        $at, %hi(g_anDemoLengthFrames)
     /* 23EF4 800336F4 21082200 */  addu       $at, $at, $v0
-    /* 23EF8 800336F8 8CEE228C */  lw         $v0, %lo(g_anDeathReplayFrameThreshold)($at)
+    /* 23EF8 800336F8 8CEE228C */  lw         $v0, %lo(g_anDemoLengthFrames)($at)
     /* 23EFC 800336FC 00000000 */  nop
     /* 23F00 80033700 2A186200 */  slt        $v1, $v1, $v0
     /* 23F04 80033704 34006014 */  bnez       $v1, .L800337D8
@@ -37518,14 +37518,14 @@ glabel CheckDeathPlane
     /* 24018 80033818 888D30AC */  sw         $s0, %lo(g_nTitleSubState)($at)
     /* 2401C 8003381C A659000C */  jal        StartCdReadAsync
     /* 24020 80033820 21284500 */   addu      $a1, $v0, $a1
-    /* 24024 80033824 0780033C */  lui        $v1, %hi(g_nDeathTryIndex)
-    /* 24028 80033828 B857638C */  lw         $v1, %lo(g_nDeathTryIndex)($v1)
+    /* 24024 80033824 0780033C */  lui        $v1, %hi(g_nDemoIndex)
+    /* 24028 80033828 B857638C */  lw         $v1, %lo(g_nDemoIndex)($v1)
     /* 2402C 8003382C 0780013C */  lui        $at, %hi(g_nGamePaused)
     /* 24030 80033830 9C5730AC */  sw         $s0, %lo(g_nGamePaused)($at)
     /* 24034 80033834 01006324 */  addiu      $v1, $v1, 0x1
     /* 24038 80033838 03006330 */  andi       $v1, $v1, 0x3
-    /* 2403C 8003383C 0780013C */  lui        $at, %hi(g_nDeathTryIndex)
-    /* 24040 80033840 B85723AC */  sw         $v1, %lo(g_nDeathTryIndex)($at)
+    /* 2403C 8003383C 0780013C */  lui        $at, %hi(g_nDemoIndex)
+    /* 24040 80033840 B85723AC */  sw         $v1, %lo(g_nDemoIndex)($at)
     /* 24044 80033844 01000224 */  addiu      $v0, $zero, 0x1
   .L80033848:
     /* 24048 80033848 2C00BF8F */  lw         $ra, 0x2C($sp)
@@ -37533,7 +37533,7 @@ glabel CheckDeathPlane
     /* 24050 80033850 3000BD27 */  addiu      $sp, $sp, 0x30
     /* 24054 80033854 0800E003 */  jr         $ra
     /* 24058 80033858 00000000 */   nop
-endlabel CheckDeathPlane
+endlabel TickDemoPlayback
 .endif
 
 .section .text.GamestateUpdate, "ax"
@@ -37661,7 +37661,7 @@ glabel GamestateUpdate
   .L800339FC:
     /* 241FC 800339FC 05006214 */  bne        $v1, $v0, .L80033A14
     /* 24200 80033A00 0F000224 */   addiu     $v0, $zero, 0xF
-    /* 24204 80033A04 6BCC000C */  jal        GemCutscene_Update
+    /* 24204 80033A04 6BCC000C */  jal        Cutscene_Update
     /* 24208 80033A08 00000000 */   nop
     /* 2420C 80033A0C 0CCF0008 */  j          .L80033C30
     /* 24210 80033A10 00000000 */   nop
@@ -37686,14 +37686,14 @@ glabel GamestateUpdate
   .L80033A54:
     /* 24254 80033A54 0780023C */  lui        $v0, %hi(g_dwGamestateFrames)
     /* 24258 80033A58 2C57428C */  lw         $v0, %lo(g_dwGamestateFrames)($v0)
-    /* 2425C 80033A5C 0780033C */  lui        $v1, %hi(g_nDeathState)
-    /* 24260 80033A60 1457638C */  lw         $v1, %lo(g_nDeathState)($v1)
+    /* 2425C 80033A5C 0780033C */  lui        $v1, %hi(g_nDemoMode)
+    /* 24260 80033A60 1457638C */  lw         $v1, %lo(g_nDemoMode)($v1)
     /* 24264 80033A64 01004224 */  addiu      $v0, $v0, 0x1
     /* 24268 80033A68 0780013C */  lui        $at, %hi(g_dwGamestateFrames)
     /* 2426C 80033A6C 2C5722AC */  sw         $v0, %lo(g_dwGamestateFrames)($at)
     /* 24270 80033A70 05006010 */  beqz       $v1, .L80033A88
     /* 24274 80033A74 00000000 */   nop
-    /* 24278 80033A78 35CD000C */  jal        CheckDeathPlane
+    /* 24278 80033A78 35CD000C */  jal        TickDemoPlayback
     /* 2427C 80033A7C 00000000 */   nop
     /* 24280 80033A80 6D004014 */  bnez       $v0, .L80033C38
     /* 24284 80033A84 00000000 */   nop
@@ -45149,8 +45149,8 @@ glabel PivotActorAlongPath
     /* 2A888 8003A088 FF000224 */  addiu      $v0, $zero, 0xFF
     /* 2A88C 8003A08C 2500E212 */  beq        $s7, $v0, .L8003A124
     /* 2A890 8003A090 2130C002 */   addu      $a2, $s6, $zero
-    /* 2A894 8003A094 0780043C */  lui        $a0, %hi(g_apSaveMenuAnimActorList)
-    /* 2A898 8003A098 F4008424 */  addiu      $a0, $a0, %lo(g_apSaveMenuAnimActorList)
+    /* 2A894 8003A094 0780043C */  lui        $a0, %hi(g_apActiveActorList)
+    /* 2A898 8003A098 F4008424 */  addiu      $a0, $a0, %lo(g_apActiveActorList)
     /* 2A89C 8003A09C 0000838C */  lw         $v1, 0x0($a0)
     /* 2A8A0 8003A0A0 00000000 */  nop
     /* 2A8A4 8003A0A4 15006010 */  beqz       $v1, .L8003A0FC
@@ -72437,11 +72437,11 @@ endlabel BuildRenderEntityLists
 /* Handwritten function */
 .endif
 
-.section .text.TickGemCutsceneActorAnims, "ax"
-.ifndef HAVE_C_TickGemCutsceneActorAnims
-nonmatching TickGemCutsceneActorAnims, 0x204
+.section .text.TickActorAnims, "ax"
+.ifndef HAVE_C_TickActorAnims
+nonmatching TickActorAnims, 0x204
 
-glabel TickGemCutsceneActorAnims
+glabel TickActorAnims
     /* 42AC0 800522C0 0780013C */  lui        $at, %hi(g_pOtDepthBinHead0)
     /* 42AC4 800522C4 F4FC2124 */  addiu      $at, $at, %lo(g_pOtDepthBinHead0)
     /* 42AC8 800522C8 13002000 */  mtlo       $at
@@ -72580,7 +72580,7 @@ glabel TickGemCutsceneActorAnims
     /* 42CB8 800524B8 00000000 */  nop
     /* 42CBC 800524BC 0800E003 */  jr         $ra
     /* 42CC0 800524C0 00000000 */   nop
-endlabel TickGemCutsceneActorAnims
+endlabel TickActorAnims
 
 /* Handwritten function */
 .endif
@@ -74168,14 +74168,14 @@ glabel MapPadAxisToCalibratedRange
 endlabel MapPadAxisToCalibratedRange
 .endif
 
-.section .text.SamplePadForDeathReplayFrame, "ax"
-.ifndef HAVE_C_SamplePadForDeathReplayFrame
-nonmatching SamplePadForDeathReplayFrame, 0x26C
+.section .text.SampleDemoPadFrame, "ax"
+.ifndef HAVE_C_SampleDemoPadFrame
+nonmatching SampleDemoPadFrame, 0x26C
 
-glabel SamplePadForDeathReplayFrame
+glabel SampleDemoPadFrame
     /* 441FC 800539FC E8FFBD27 */  addiu      $sp, $sp, -0x18
-    /* 44200 80053A00 0780033C */  lui        $v1, %hi(g_nDeathState)
-    /* 44204 80053A04 1457638C */  lw         $v1, %lo(g_nDeathState)($v1)
+    /* 44200 80053A00 0780033C */  lui        $v1, %hi(g_nDemoMode)
+    /* 44204 80053A04 1457638C */  lw         $v1, %lo(g_nDemoMode)($v1)
     /* 44208 80053A08 02000224 */  addiu      $v0, $zero, 0x2
     /* 4420C 80053A0C 1400BFAF */  sw         $ra, 0x14($sp)
     /* 44210 80053A10 1E006214 */  bne        $v1, $v0, .L80053A8C
@@ -74198,24 +74198,24 @@ glabel SamplePadForDeathReplayFrame
     /* 44254 80053A54 8E734290 */  lbu        $v0, %lo(g_abPadAnalogCalibratedBlock + 0x2)($v0)
     /* 44258 80053A58 0780033C */  lui        $v1, %hi(g_abPadAnalogCalibratedBlock + 0x3)
     /* 4425C 80053A5C 8F736390 */  lbu        $v1, %lo(g_abPadAnalogCalibratedBlock + 0x3)($v1)
-    /* 44260 80053A60 0780043C */  lui        $a0, %hi(g_pDeathReplayCursor)
-    /* 44264 80053A64 5C58848C */  lw         $a0, %lo(g_pDeathReplayCursor)($a0)
+    /* 44260 80053A60 0780043C */  lui        $a0, %hi(g_pDemoPadCursor)
+    /* 44264 80053A64 5C58848C */  lw         $a0, %lo(g_pDemoPadCursor)($a0)
     /* 44268 80053A68 00140200 */  sll        $v0, $v0, 16
     /* 4426C 80053A6C 25800202 */  or         $s0, $s0, $v0
     /* 44270 80053A70 001E0300 */  sll        $v1, $v1, 24
     /* 44274 80053A74 25800302 */  or         $s0, $s0, $v1
     /* 44278 80053A78 04008224 */  addiu      $v0, $a0, 0x4
-    /* 4427C 80053A7C 0780013C */  lui        $at, %hi(g_pDeathReplayCursor)
-    /* 44280 80053A80 5C5822AC */  sw         $v0, %lo(g_pDeathReplayCursor)($at)
+    /* 4427C 80053A7C 0780013C */  lui        $at, %hi(g_pDemoPadCursor)
+    /* 44280 80053A80 5C5822AC */  sw         $v0, %lo(g_pDemoPadCursor)($at)
     /* 44284 80053A84 B54E0108 */  j          .L80053AD4
     /* 44288 80053A88 000090AC */   sw        $s0, 0x0($a0)
   .L80053A8C:
-    /* 4428C 80053A8C 0780033C */  lui        $v1, %hi(g_pDeathReplayCursor)
-    /* 44290 80053A90 5C58638C */  lw         $v1, %lo(g_pDeathReplayCursor)($v1)
+    /* 4428C 80053A8C 0780033C */  lui        $v1, %hi(g_pDemoPadCursor)
+    /* 44290 80053A90 5C58638C */  lw         $v1, %lo(g_pDemoPadCursor)($v1)
     /* 44294 80053A94 00000000 */  nop
     /* 44298 80053A98 04006224 */  addiu      $v0, $v1, 0x4
-    /* 4429C 80053A9C 0780013C */  lui        $at, %hi(g_pDeathReplayCursor)
-    /* 442A0 80053AA0 5C5822AC */  sw         $v0, %lo(g_pDeathReplayCursor)($at)
+    /* 4429C 80053A9C 0780013C */  lui        $at, %hi(g_pDemoPadCursor)
+    /* 442A0 80053AA0 5C5822AC */  sw         $v0, %lo(g_pDemoPadCursor)($at)
     /* 442A4 80053AA4 0000708C */  lw         $s0, 0x0($v1)
     /* 442A8 80053AA8 7F000224 */  addiu      $v0, $zero, 0x7F
     /* 442AC 80053AAC 0780013C */  lui        $at, %hi(g_abPadAnalogCalibratedBlock)
@@ -74337,7 +74337,7 @@ glabel SamplePadForDeathReplayFrame
     /* 4445C 80053C5C 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 44460 80053C60 0800E003 */  jr         $ra
     /* 44464 80053C64 00000000 */   nop
-endlabel SamplePadForDeathReplayFrame
+endlabel SampleDemoPadFrame
 .endif
 
 .section .text.PollPadAndDistributeInput, "ax"
@@ -74365,8 +74365,8 @@ glabel PollPadAndDistributeInput
     /* 444AC 80053CAC 0780013C */  lui        $at, %hi(g_nCdStallWatchdogTicks)
     /* 444B0 80053CB0 8C5822AC */  sw         $v0, %lo(g_nCdStallWatchdogTicks)($at)
   .L80053CB4:
-    /* 444B4 80053CB4 0780023C */  lui        $v0, %hi(g_nDeathState)
-    /* 444B8 80053CB8 1457428C */  lw         $v0, %lo(g_nDeathState)($v0)
+    /* 444B4 80053CB4 0780023C */  lui        $v0, %hi(g_nDemoMode)
+    /* 444B8 80053CB8 1457428C */  lw         $v0, %lo(g_nDemoMode)($v0)
     /* 444BC 80053CBC 00000000 */  nop
     /* 444C0 80053CC0 82014014 */  bnez       $v0, .L800542CC
     /* 444C4 80053CC4 00000000 */   nop

@@ -5,12 +5,12 @@
 /* Update for gamestate 0xd (story-intro / new-game transition, 0x80032b08,
    0x6a4). Only runs its body while g_nTitleMode is 3; three substates:
    0 arms the transition (silences audio, picks the destination level from the
-   message id — title screen, resume, or a fresh save's first level — and parks
+   message id — title screen, resume, or the attract demo's level — and parks
    the camera on the intro shot), 1 blocks on the CD stream until the world is
    in RAM, 2 flies Spyro along the scripted intro path (two cosine sweeps with
    a hold and a linear drift between them), aiming him down the motion delta
-   each frame, and hands off either to the gem cutscene (title path) or back to
-   the level (resume path). Every substate falls through to the shared light
+   each frame, and hands off either to the title cutscene (title path) or back
+   to the level (resume path). Every substate falls through to the shared light
    rotation + timer tick. */
 
 void Title_Update(void) {
@@ -39,7 +39,7 @@ void Title_Update(void) {
         g_nCdStreamState = 1;
         g_nReturnPortalLevelId = 0;
         g_nPortalTransitionActive = 0;
-        g_nActiveLevelId = g_anDeathTryLevelIds[g_nDeathTryIndex];
+        g_nActiveLevelId = g_anDemoLevelIds[g_nDemoIndex];
         g_nCurrentLevelId = g_nActiveLevelId;
       }
       g_nCameraEulerYaw = 0x400;
@@ -138,7 +138,7 @@ void Title_Update(void) {
               TickWorldBundleLoadStream();
               TickCdMusicStream();
             }
-            BeginGemCutscene();
+            BeginCutscene();
             g_nGamePaused = 1;
             return;
           }
@@ -148,8 +148,8 @@ void Title_Update(void) {
           }
           if (g_nStoryIntroTimer >= 0x180 && g_nCdStreamState == 0xd) {
             if (msg[0] == 2) {
-              g_nDeathState = 1;
-              g_nDeathFadeFrame = 0;
+              g_nDemoMode = 1;
+              g_nDemoExitFadeFrame = 0;
             }
             ResetSpyroEntity(1);
             TickLevelTransitionStream(1);

@@ -99,9 +99,9 @@ void Level18_BalloonistCutscene_Update(void)
   st = g_nActorCutsceneSubstate;
   if (st[0] < 4)
   {
-    g_pSaveMenuAnimActorList1 = 0;
-    g_apSaveMenuAnimActorList[0] = g_pActorCutsceneActor;
-    TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, 0);
+    g_pActiveActorList1 = 0;
+    g_apActiveActorList[0] = g_pActorCutsceneActor;
+    TickActorAnims(g_apActiveActorList, 0);
   }
   switch (st[0])
   {

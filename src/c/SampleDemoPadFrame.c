@@ -3,17 +3,17 @@
 #include "pad.h"
 #include "pad_buttons.h"
 
-/* Pad sampler for the death-replay stream (0x800539fc, 0x26C). While the
-   death sequence is recording (g_nDeathState == 2) it samples the real
+/* Pad sampler for the attract demo (0x800539fc, 0x26C). While a demo is
+   being recorded (g_nDemoMode == 2) it samples the real
    pad — inverted button halfword plus the calibrated right-stick bytes —
-   and appends the packed frame at g_pDeathReplayCursor; otherwise it
+   and appends the packed frame at g_pDemoPadCursor; otherwise it
    plays the next recorded frame back into the pad state (stick centered
    at 0x7F). Either way it then rebuilds pressed/held/released, the
    stick-active flag, fans the held state out to the 4 pad substep-ring
    slots, refreshes the input-idle flags and forces a 2-tick frame.
    Returns 2 (the tick count). */
 
-int SamplePadForDeathReplayFrame(void) {
+int SampleDemoPadFrame(void) {
   int frame;
   unsigned int held;
   unsigned int rel;
@@ -22,7 +22,7 @@ int SamplePadForDeathReplayFrame(void) {
   unsigned int *p;
   unsigned int *heldp;
 
-  if (g_nDeathState == 2) {
+  if (g_nDemoMode == 2) {
     unsigned char *cal = g_abPadAnalogCalibratedBlock;
     unsigned char *cur;
     frame = ~((g_abPadRawReport[2] << 8) | g_abPadRawReport[3]);
@@ -31,14 +31,14 @@ int SamplePadForDeathReplayFrame(void) {
     frame &= 0xFFFF;
     frame |= cal[2] << 16;
     frame |= cal[3] << 24;
-    cur = g_pDeathReplayCursor;
-    g_pDeathReplayCursor = cur + 4;
+    cur = g_pDemoPadCursor;
+    g_pDemoPadCursor = cur + 4;
     *(unsigned int *)cur = frame;
   } else {
     unsigned char *cal = (unsigned char *)&g_dwPadAnalogCalibrated;
     unsigned char *cur;
-    cur = g_pDeathReplayCursor;
-    g_pDeathReplayCursor = cur + 4;
+    cur = g_pDemoPadCursor;
+    g_pDemoPadCursor = cur + 4;
     frame = *(int *)cur;
     cal[0] = 0x7F;
     cal[1] = 0x7F;

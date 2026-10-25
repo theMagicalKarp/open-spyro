@@ -391,8 +391,8 @@ extern int g_anLevelDeathPlaneZTable[36];                    /* 0x8006e9a4 */
 extern int g_anLevelSpawnNudgeZTable[36];                    /* 0x8006edb4 */
 extern int g_nWorldHeaderChunkSize;                          /* 0x8006ee5c */
 extern int g_nWorldCutsceneSamplePitch;                      /* 0x8006ee6c */
-extern int g_anDeathReplayFrameThreshold[4];                 /* 0x8006ee8c */
-extern int g_anDeathReplaySpawnTable[16];                    /* 0x8006ee9c */
+extern int g_anDemoLengthFrames[4];                 /* 0x8006ee8c: demo length in frames, per g_nDemoIndex (TickDemoPlayback) */
+extern int g_anDemoStartPose[16];                    /* 0x8006ee9c: 4 x {x, y, z, yaw byte} Spyro start pose per demo (BuildLoadedLevelRuntime) */
 extern int g_anCdAudioTrackLengths[48];                      /* 0x8006eedc */
 extern int g_nLevelMusicTrack;                               /* 0x8006ef9c */
 extern int g_anCdAudioBankBaseLba[6];                        /* 0x8006f200 */
@@ -416,7 +416,7 @@ extern void *g_pOtMergedChainHead;                           /* 0x8006fcec */
 extern void *g_pOtMergedChainTail;                           /* 0x8006fcf0 */
 extern void *g_pOtDepthBinHead0;                             /* 0x8006fcf4 */
 extern void *g_pOtDepthBinTail0;                             /* 0x8006fcf8 */
-extern void *g_apSaveMenuAnimActorList[2];                   /* 0x800700f4 */
+extern void *g_apActiveActorList[2];                   /* 0x800700f4 */
 extern int g_anActorDeferredTriStack[64];                    /* 0x800704f4 */
 extern int g_anActorVertSzOverflow[256];                     /* 0x800705f4 */
 extern int g_anActorDepthCuedVtxColor[32];                   /* 0x80070df4 */
@@ -570,7 +570,7 @@ extern void *g_pSpriteRecordBufferTop;       /* 0x800756fc */
 extern int g_nCreditsMode;               /* 0x80075704 */
 extern int g_nGameplayBlocked;               /* 0x8007570c */
 extern void *g_pSpriteRecordWriteCursor;     /* 0x80075710 */
-extern int g_nDeathState;                    /* 0x80075714 */
+extern int g_nDemoMode;                    /* 0x80075714: attract demo: 0 off, 1 playback (set by Title_Update), 2 record into 0x80600000 */
 extern int g_nGroundSurfaceType;             /* 0x80075718 */
 extern void *g_pGemTallyParticleRecords;     /* 0x8007571c */
 extern int g_nPauseMenuCursor;               /* 0x80075720 */
@@ -590,14 +590,14 @@ extern int g_nVibrationLevel;                /* 0x80075764 */
 extern int g_nEnteredPortalIdx;                /* 0x8007576c: g_apPortals index of the portal just entered (exit trigger data[1]); -1 none. TickLevelTransitionStream also counts its two texture pages in it */
 extern void *g_pActorSpatialGridBase;        /* 0x80075778 */
 extern void *g_pPrimBufferLimit;             /* 0x80075780 */
-extern int g_nDeathRespawnPending;           /* 0x80075784 */
+extern int g_nDemoActive;           /* 0x80075784: 1 while a demo level runs: the draw handlers add a VSync so frames pace at 2 vblanks */
 extern short g_nSpyroIdleAnimTimeout;        /* 0x80075788 */
 extern int *g_pActorDeferredTriStackTop;     /* 0x80075798 */
 extern int g_nGamePaused;                    /* 0x8007579c */
 extern int g_nOptionVibrationEnabled;        /* 0x800757a4 */
 extern void *g_pPrimBufferWriteCursor;       /* 0x800757b0 */
 extern int g_nLevelPickupTableCount;         /* 0x800757b4 */
-extern int g_nDeathTryIndex;                 /* 0x800757b8 */
+extern int g_nDemoIndex;                 /* 0x800757b8: which of the 4 attract demos plays next (cycles &3) */
 extern void *g_pfnGamestate7Handler;         /* 0x800757c0 */
 extern int g_nPauseMenuSubstate;             /* 0x800757c8 */
 extern int g_nSubMenuScrollOffset;           /* 0x800757cc */
@@ -624,13 +624,13 @@ extern int g_nLevelKeyState;                 /* 0x80075830: the level key: 0 non
 extern int g_nCameraShakePeakAmplitude;      /* 0x80075848 */
 extern int g_nPulseRumbleAmount;             /* 0x8007584c */
 extern int g_nPortalViewYawSpin;        /* 0x80075858: portal-surface view spin, +2 a frame (DrawActors) */
-extern void *g_pDeathReplayCursor;           /* 0x8007585c */
+extern void *g_pDemoPadCursor;           /* 0x8007585c: read/write cursor into the recorded demo pad stream (SampleDemoPadFrame) */
 extern int g_nWorldTreasureCollected;        /* 0x80075860 */
 extern int g_nCdStreamState;                 /* 0x80075864 */
 extern int g_nInGameTick;                    /* 0x80075868 */
 extern int g_nLevelGemsAtEntry;              /* 0x8007587c */
 extern int g_nLevelSelectModeActive;         /* 0x80075880 */
-extern int g_nDeathFadeFrame;                /* 0x80075884 */
+extern int g_nDemoExitFadeFrame;                /* 0x80075884: demo-end fade frame, 0 until the demo ends; at 0x10 the demo tears down */
 extern DRAWENV *g_pActiveFrameDrawEnv;       /* 0x80075888 */
 extern int g_nCdStallWatchdogTicks;          /* 0x8007588c */
 extern void *g_pActorPoolDynBase;            /* 0x80075890 */
@@ -1063,7 +1063,7 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_nSpyroRequestVelocityY/Z 0x80078c64/68  g_anSpyroRequestVelocity[1..2]
  *   g_nCameraPosY/Z            0x80076dfc/e00  g_anCameraPos[1..2]
  *
- * One-shot PlaySoundEffect overrides (set by CheckDeathPlane, BeginGemCutscene):
+ * One-shot PlaySoundEffect overrides (set by TickDemoPlayback, BeginCutscene):
  *   g_nSfxOverrideFlags  0x800761dc  1 = volume pair, 2 = pitch
  *   g_nSfxOverrideVolL/R 0x800761e8/ea, g_nSfxOverridePitch 0x800761f4
  *
@@ -1156,7 +1156,7 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_apLevelNameByWorldRow  0x8006f7d8  indexed (level id / 10) * 6 + level id % 10 (lands in
  *       g_apLevelNameStrings from world 1)
  *   g_abBalloonistDialoguePageEnds 0x8006f89d  &g_abBalloonistDialoguePageStarts[1]: page m ends where m + 1 starts
- *   g_pSaveMenuAnimActorList1 0x800700f8  g_apSaveMenuAnimActorList[1] (cleared on cutscene entry)
+ *   g_pActiveActorList1 0x800700f8  g_apActiveActorList[1] (cleared on cutscene entry)
  */
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
@@ -1225,7 +1225,7 @@ extern int g_anHazardEnterSpawnType[]; /* 0x8006ea34 */
 extern int g_anHazardTimeoutSpawnType[]; /* 0x8006ea40 */
 extern int g_anLevelEntryPoints[]; /* 0x8006ea4c: entry points, 4 words per level */
 extern int g_anScriptedCameraPresetRecords[]; /* 0x8006eb24 */
-extern int g_anDeathTryLevelIds[]; /* 0x8006ee7c: per-try first level table */
+extern int g_anDemoLevelIds[]; /* 0x8006ee7c: level id per attract demo (Title_Update) */
 extern int g_anLevelMusicPickTable[]; /* 0x8006f05c */
 extern int g_anGameOverRespawnPosVirtualBase[]; /* 0x8006f140 */
 extern unsigned char g_abGameOverGlyphs[]; /* 0x8006f304: GAMEOVER letter glyph indices */
@@ -1276,7 +1276,7 @@ extern int g_anSpuPendingKeyOnBlock[]; /* 0x80076238: shared-base view of g_dwSp
 extern unsigned int g_anSpuPendingKeyOffBlock[]; /* 0x8007623c */
 extern int g_anSoundMonoMixFlagBlock[]; /* 0x80076240 */
 extern void *g_apActorMeshTableBlock[]; /* 0x80076378 */
-extern char *g_apActorMeshTable_1[]; /* 0x8007637c: &g_apActorMeshTable[1] (AdvanceGemCutsceneFrame walks types 1..) */
+extern char *g_apActorMeshTable_1[]; /* 0x8007637c: &g_apActorMeshTable[1] (AdvanceCutsceneFrame walks types 1..) */
 extern int g_nWorldUnpackLimit; /* 0x80076760: end of the unpack work area */
 extern volatile int g_anCdBaseLbaBlock[]; /* 0x80076b90: held-base view of g_nCdBaseLba */
 extern unsigned char g_abCdlLocScratchBlock[36]; /* 0x80076b98 */
@@ -1335,7 +1335,7 @@ extern int g_anLevelSpawnPosZBlock[]; /* 0x800778e0 */
 extern int g_anLevelSpawnYawBlock[]; /* 0x800778e4: +0 spawn yaw (see alias) */
 extern int g_nLevelProgress; /* 0x800778e8: live level progress word */
 extern int g_nLevelProgressCheckpoint; /* 0x800778ec: g_nLevelProgress at the last checkpoint */
-extern int g_CutsceneSoundDef[]; /* 0x800778f0: shared cutscene sample-bank record (death / gem cutscenes) */
+extern int g_CutsceneSoundDef[]; /* 0x800778f0: shared cutscene sample-bank record (cutscene entry and demo end) */
 extern byte g_abHudGemCounterBlock[]; /* 0x80077fa8: +0: icon records at +0x44 */
 extern byte g_abHudGemRollBlock[]; /* 0x80077fa8: +0: roll timer at +0xC */
 extern byte g_abHudDragonCounterBlock[]; /* 0x80077fa9: +1: records at +0x1FB */

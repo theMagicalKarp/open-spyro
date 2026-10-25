@@ -24,7 +24,7 @@ void InitActorRenderDefaults(Actor *actor);
 void InsertActorIntoSpatialGrid(Actor *actor);
 unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner, unsigned int mode, unsigned char *pPlaying);
 void StopSoundVoicesByOwner(Actor *actor, int mode);
-void TickGemCutsceneActorAnims(struct Actor **list, int mode);
+void TickActorAnims(struct Actor **list, int mode);
 void TickStatueBurstShard(Actor *actor);
 
 /* Actor behaviour helpers (main 0x80037E98..0x8003C994 and neighbours), not

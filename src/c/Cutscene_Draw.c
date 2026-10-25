@@ -3,11 +3,11 @@
 #include "globals.h"
 #include "main_shared.h"
 
-/* Draw gamestate 0xE (GS_GEM_CUTSCENE): the collected gem shown in 3D with a
-   g_nGenericCountdown fade-to-black. Copies the world fog color into both frame
-   DRAWENVs, renders the actor + world passes, tints, then the standard 2-vblank
-   frame submit (0x8001e9c8). */
-void GemCutscene_Draw(void) {
+/* Draw gamestate 0xE (GS_CUTSCENE): the scripted in-engine cutscene with
+   a g_nGenericCountdown fade-to-black. Copies the world fog color into both
+   frame DRAWENVs, renders the actor + world passes, tints, then the standard
+   2-vblank frame submit (0x8001e9c8). */
+void Cutscene_Draw(void) {
   int r;
   int g;
   int b;
@@ -38,7 +38,7 @@ void GemCutscene_Draw(void) {
     DrawFullscreenTint(2, t, t, t);
   }
   DrawSync(0);
-  if (g_nDeathRespawnPending != 0) {
+  if (g_nDemoActive != 0) {
     VSync(0);
   }
   g_nVsyncFrameEndCount = VSync(-1);

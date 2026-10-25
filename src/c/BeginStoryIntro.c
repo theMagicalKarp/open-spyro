@@ -5,7 +5,7 @@
 /* Enter the story-intro gamestate (0x8002d170, gamestate 0xD): zero the
    0x5C-byte mode block, prime the SPU common attr (mask 0xC0, master volume
    0x5000 into +0x10/+0x12) alongside the 0x3FFF/0x5000 volume shadow globals,
-   drop SFX/music volume to 10, park the gem-cutscene scratch pointer 0x2000
+   drop SFX/music volume to 10, park the cutscene scratch pointer 0x2000
    below the render scratch region, and reseed the RNG. The 0xC0 store and the
    SetSpuCommonAttr argument address the attr block 0x320 below
    g_nSfxMixVolume_blk, which gcc holds as the one materialized base across the

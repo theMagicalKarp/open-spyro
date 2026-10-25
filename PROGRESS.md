@@ -188,7 +188,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8001d718` | SaveLoadMenu_Draw | main | 2868 | matched | game |
 | `0x8001e24c` | ActorCutscene_Draw | main | 1132 | matched | game |
 | `0x8001e6b8` | StoryIntro_Draw | main | 784 | matched | game |
-| `0x8001e9c8` | GemCutscene_Draw | main | 440 | matched | game |
+| `0x8001e9c8` | Cutscene_Draw | main | 440 | matched | game |
 | `0x8001eb80` | ReturningHome_Draw | main | 476 | matched | game |
 | `0x8001ed5c` | GamestateDraw | main | 1020 | matched | game |
 | `0x8001f158` | BuildActorDrawList | main | 1600 | asm | handwritten |
@@ -210,7 +210,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8002bab8` | LaunchCrashDemo | main | 104 | matched | game |
 | `0x8002bb20` | ComputeInventoryProgressPercent | main | 192 | matched | game |
 | `0x8002bbe0` | TickCdMusicStream | main | 1024 | matched | game |
-| `0x8002bfe0` | AdvanceGemCutsceneFrame | main | 1088 | matched | game |
+| `0x8002bfe0` | AdvanceCutsceneFrame | main | 1088 | matched | game |
 | `0x8002c420` | EnterPauseMenu | main | 276 | matched | game |
 | `0x8002c534` | ExitPauseMenuToGame | main | 228 | matched | game |
 | `0x8002c618` | BeginPauseToMenuTransition | main | 76 | matched | game |
@@ -227,7 +227,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8002d02c` | EndSaveMenuToWorld | main | 324 | matched | game |
 | `0x8002d170` | BeginStoryIntro | main | 184 | matched | game |
 | `0x8002d228` | BeginCreditsSequence | main | 272 | matched | game |
-| `0x8002d338` | BeginGemCutscene | main | 264 | matched | game |
+| `0x8002d338` | BeginCutscene | main | 264 | matched | game |
 | `0x8002d440` | DispatchSpecialCutscene | main | 276 | matched | game |
 | `0x8002d554` | ClearPadHistoryRing | main | 44 | matched | game |
 | `0x8002d580` | HandleLevelSelectInput | main | 656 | matched | game |
@@ -247,9 +247,9 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80032a20` | PollMemCardSyncRing | main | 144 | matched | game |
 | `0x80032ab0` | ArmStoryIntroOnStart | main | 88 | matched | game |
 | `0x80032b08` | Title_Update | main | 1700 | matched | game |
-| `0x800331ac` | GemCutscene_Update | main | 560 | matched | game |
+| `0x800331ac` | Cutscene_Update | main | 560 | matched | game |
 | `0x800333dc` | CreditsSequence_Update | main | 248 | matched | game |
-| `0x800334d4` | CheckDeathPlane | main | 904 | matched | game |
+| `0x800334d4` | TickDemoPlayback | main | 904 | matched | game |
 | `0x8003385c` | GamestateUpdate | main | 1012 | matched | game |
 | `0x80033c50` | BuildCameraViewMatrix | main | 496 | matched | game |
 | `0x80033e40` | CheckLineOfSightSegment | main | 200 | matched | game |
@@ -405,7 +405,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80050bd0` | DrawActors | main | 5148 | matched | game |
 | `0x80051fec` | BuildActiveActorList | main | 468 | asm | handwritten |
 | `0x800521c0` | BuildRenderEntityLists | main | 256 | asm | handwritten |
-| `0x800522c0` | TickGemCutsceneActorAnims | main | 516 | asm | handwritten |
+| `0x800522c0` | TickActorAnims | main | 516 | asm | handwritten |
 | `0x800524c4` | AllocActorRecordSlot | main | 164 | asm | handwritten |
 | `0x80052568` | DespawnActorRecord | main | 320 | asm | handwritten |
 | `0x800526a8` | InsertActorIntoSpatialGrid | main | 804 | asm | handwritten |
@@ -422,7 +422,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8005375c` | ResetPadStickCalibrationDefaults | main | 52 | matched | game |
 | `0x80053790` | FinalizePadCalibration | main | 432 | matched | game |
 | `0x80053940` | MapPadAxisToCalibratedRange | main | 188 | matched | game |
-| `0x800539fc` | SamplePadForDeathReplayFrame | main | 620 | matched | game |
+| `0x800539fc` | SampleDemoPadFrame | main | 620 | matched | game |
 | `0x80053c68` | PollPadAndDistributeInput | main | 1660 | matched | game |
 | `0x800542e4` | SetHudCounterDigits | main | 284 | matched | game |
 | `0x80054400` | OffsetHudIconRollAxis | main | 92 | matched | game |

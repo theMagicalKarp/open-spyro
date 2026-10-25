@@ -2,7 +2,7 @@
  * and the per-pad state/calibration block (PadState).
  *
  * PollPadAndDistributeInput fills one entry per frame tick (up to 4 ticks
- * per game frame) and the death replay refills all four from a recorded
+ * per game frame) and the attract demo refills all four from a recorded
  * frame; each entry mirrors the live pad globals of that tick. */
 
 #ifndef OPEN_SPYRO_PAD_H

@@ -67,7 +67,7 @@ void Titlescreen_Update(void) {
   if (g_nGenericCountdown)
     --g_nGenericCountdown;
 
-  AdvanceGemCutsceneFrame(g_pPathTableHead->introFrame);
+  AdvanceCutsceneFrame(g_pPathTableHead->introFrame);
 
   g_nCameraEulerRoll.x = 0;
   g_nCameraEulerRoll.y += 16;

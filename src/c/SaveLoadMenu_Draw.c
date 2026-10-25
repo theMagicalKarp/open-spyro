@@ -200,7 +200,7 @@ void SaveLoadMenu_Draw(void) {
   RasterizeEmitList();
   DrawCinematicLetterbox();
   DrawSync(0);
-  if (g_nDeathRespawnPending != 0) {
+  if (g_nDemoActive != 0) {
     VSync(0);
   }
   g_nVsyncFrameEndCount = VSync(-1);

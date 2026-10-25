@@ -141,13 +141,13 @@ void Level20_UpdateActors(void) {
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
    * pass. */
   BuildActiveActorList();
-  TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, 0);
+  TickActorAnims(g_apActiveActorList, 0);
 
   if (g_nFrameStep >= 3) {
-    TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, g_nFrameStep == 3 ? 0x80000001 : 0x80000000);
+    TickActorAnims(g_apActiveActorList, g_nFrameStep == 3 ? 0x80000001 : 0x80000000);
   }
 
-  actorList = g_apSaveMenuAnimActorList;
+  actorList = g_apActiveActorList;
 
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
   while (actor = *actorList++) {
@@ -1828,7 +1828,7 @@ void Level20_UpdateActors(void) {
           break;
         }
         if (st->filter != 0) {
-          Actor **pp = g_apSaveMenuAnimActorList;
+          Actor **pp = g_apActiveActorList;
           Actor *a;
 
           while ((a = *pp++) != 0) {
@@ -3558,7 +3558,7 @@ void Level20_UpdateActors(void) {
             actor->mode = 2;
             continue;
           }
-          lp = g_apSaveMenuAnimActorList;
+          lp = g_apActiveActorList;
           while ((o = *lp++) != 0) {
             if (o->type == 0x1C &&
                 (actor->posX - o->posX > 0 ? actor->posX - o->posX < 0xBB8

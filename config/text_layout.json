@@ -531,7 +531,7 @@
    "size": 784
   },
   {
-   "name": "GemCutscene_Draw",
+   "name": "Cutscene_Draw",
    "vram": 2147609032,
    "size": 440
   },
@@ -641,7 +641,7 @@
    "size": 1024
   },
   {
-   "name": "AdvanceGemCutsceneFrame",
+   "name": "AdvanceCutsceneFrame",
    "vram": 2147663840,
    "size": 1088
   },
@@ -726,7 +726,7 @@
    "size": 272
   },
   {
-   "name": "BeginGemCutscene",
+   "name": "BeginCutscene",
    "vram": 2147668792,
    "size": 264
   },
@@ -826,7 +826,7 @@
    "size": 1700
   },
   {
-   "name": "GemCutscene_Update",
+   "name": "Cutscene_Update",
    "vram": 2147692972,
    "size": 560
   },
@@ -836,7 +836,7 @@
    "size": 248
   },
   {
-   "name": "CheckDeathPlane",
+   "name": "TickDemoPlayback",
    "vram": 2147693780,
    "size": 904
   },
@@ -1616,7 +1616,7 @@
    "size": 256
   },
   {
-   "name": "TickGemCutsceneActorAnims",
+   "name": "TickActorAnims",
    "vram": 2147820224,
    "size": 516
   },
@@ -1701,7 +1701,7 @@
    "size": 188
   },
   {
-   "name": "SamplePadForDeathReplayFrame",
+   "name": "SampleDemoPadFrame",
    "vram": 2147826172,
    "size": 620
   },

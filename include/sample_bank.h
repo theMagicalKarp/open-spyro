@@ -1,7 +1,7 @@
 /* sample_bank.h — one entry of the per-level sample bank
  * (g_pLevelSampleBankEntries, stride 0x14). PlaySoundEffect reads the
  * address/pitch fields; the cutscene and credits paths point the bank at a
- * single static entry and fill it in by hand. Those fills (CheckDeathPlane,
+ * single static entry and fill it in by hand. Those fills (TickDemoPlayback,
  * Credits_Update) stay byte-offset stores, spelled with SAMPLE_RAW: their
  * per-field volatile base reloads are part of the match, and a struct view
  * reschedules them. */

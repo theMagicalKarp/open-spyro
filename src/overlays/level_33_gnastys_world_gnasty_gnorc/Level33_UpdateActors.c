@@ -266,13 +266,13 @@ void Level33_UpdateActors(void) {
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
    * pass. */
   BuildActiveActorList();
-  TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, 0);
+  TickActorAnims(g_apActiveActorList, 0);
 
   if (g_nFrameStep >= 3) {
-    TickGemCutsceneActorAnims(g_apSaveMenuAnimActorList, g_nFrameStep == 3 ? 0x80000001 : 0x80000000);
+    TickActorAnims(g_apActiveActorList, g_nFrameStep == 3 ? 0x80000001 : 0x80000000);
   }
 
-  actorList = g_apSaveMenuAnimActorList;
+  actorList = g_apActiveActorList;
   base = (char *)g_anSparxHealthBlock;
 
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
@@ -2097,7 +2097,7 @@ void Level33_UpdateActors(void) {
           g_abLevelExited[g_nLevelIndex] = 1;
           g_nCreditsPageIndex = 0;
           g_nCurrentWorldId[0] = 2;
-          g_nGamestate = GS_GEM_CUTSCENE;
+          g_nGamestate = GS_CUTSCENE;
           g_nGamePaused = 1;
           g_nGameplayBlocked = 0;
           g_nSpyroDrawSuppressed = 0;

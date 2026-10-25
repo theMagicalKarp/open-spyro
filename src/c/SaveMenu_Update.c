@@ -39,7 +39,7 @@ void SaveMenu_Update(void) {
   RotateLightVectorXZ(3);
   g_apSaveMenuAnimActorListBlock[0] = ACT;
   g_apSaveMenuAnimActorListBlock[1] = 0;
-  TickGemCutsceneActorAnims(g_apSaveMenuAnimActorListBlock, 0);
+  TickActorAnims(g_apSaveMenuAnimActorListBlock, 0);
   switch (SM[0]) {
   case 0:
     if (SM[1] < 0x40) {

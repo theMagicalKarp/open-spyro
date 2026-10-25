@@ -26,7 +26,7 @@ extern void ClearWord(int a0);
 
 extern int g_anCameraDynamicTargetParams[];
 
-extern unsigned char *g_apSaveMenuAnimActorList[];
+extern unsigned char *g_apActiveActorList[];
 
 extern void (*g_pfnLevelAdvanceEmitList)(int);
 

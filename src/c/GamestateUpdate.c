@@ -56,8 +56,8 @@ void GamestateUpdate(void) {
       } else {
         Title_Update();
       }
-    } else if (g_nGamestate == GS_GEM_CUTSCENE) {
-      GemCutscene_Update();
+    } else if (g_nGamestate == GS_CUTSCENE) {
+      Cutscene_Update();
     } else if (g_nGamestate == GS_CREDITS) {
       if (g_nCreditsMode >= 0x63) {
         CreditsSequence_Update();
@@ -67,8 +67,8 @@ void GamestateUpdate(void) {
     }
   } else {
     g_dwGamestateFrames += 1;
-    if (g_nDeathState != 0) {
-      if (CheckDeathPlane()) {
+    if (g_nDemoMode != 0) {
+      if (TickDemoPlayback()) {
         return;
       }
     }

@@ -4,12 +4,12 @@
 #include "pad_buttons.h"
 #include "types.h"
 
-/* 0x800331ac — GS_GEM_CUTSCENE (0xE) per-tick handler: on first entry (timer
+/* 0x800331ac — GS_CUTSCENE (0xE) per-tick handler: on first entry (timer
    0, hub world) clear the screen, stream the cutscene bundle in synchronously
-   and re-seed via BeginGemCutscene; per tick advance the cutscene timer toward
+   and re-seed via BeginCutscene; per tick advance the cutscene timer toward
    twice the threshold, fade g_nGenericCountdown at both ends, allow a pad
    press to skip ahead, then hand off to DispatchSpecialCutscene at the end. */
-void GemCutscene_Update(void) {
+void Cutscene_Update(void) {
   RECT rect;
   int *path;
   int t;
@@ -37,7 +37,7 @@ void GemCutscene_Update(void) {
       TickWorldBundleLoadStream();
       TickCdMusicStream();
     }
-    BeginGemCutscene();
+    BeginCutscene();
   }
 
   path = (int *)g_pPathTableHead;
@@ -60,7 +60,7 @@ void GemCutscene_Update(void) {
         p[2] = (cur >> 1) + 0x10;
       }
     }
-    AdvanceGemCutsceneFrame(*(int *)g_pPathTableHead);
+    AdvanceCutsceneFrame(*(int *)g_pPathTableHead);
   } else {
     DispatchSpecialCutscene();
   }

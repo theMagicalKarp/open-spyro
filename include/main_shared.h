@@ -175,7 +175,7 @@ extern void TickSpyroAnimLayer1(void);
 
 extern void TickSpyroAnimLayer2(void);
 
-extern void BeginGemCutscene(void);
+extern void BeginCutscene(void);
 
 extern short
     g_nCdDaVolumeCurrent;  /* live CD-DA volume (fade ramp current value) */

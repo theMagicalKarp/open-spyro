@@ -370,28 +370,28 @@ sprites:
       p++;
     } while (i < (*base));
   }
-  if (g_nDeathState != 0) {
+  if (g_nDemoMode != 0) {
     {
       register int kk asm("$3");
       register int dd asm("$2");
 
       srand(1234);
-      kk = g_nDeathTryIndex;
-      dd = g_anDeathReplaySpawnTable[kk * 4];
+      kk = g_nDemoIndex;
+      dd = g_anDemoStartPose[kk * 4];
       g_anSpyroWorldPos[0] = dd;
-      dd = g_anDeathReplaySpawnTable[(kk * 4) + 1];
+      dd = g_anDemoStartPose[(kk * 4) + 1];
       g_nSpyroWorldPosY = dd;
-      dd = g_anDeathReplaySpawnTable[(kk * 4) + 2];
+      dd = g_anDemoStartPose[(kk * 4) + 2];
       g_nSpyroWorldPosZ = dd;
-      dd = g_anDeathReplaySpawnTable[(kk * 4) + 3];
-      g_nDeathRespawnPending = 1;
+      dd = g_anDemoStartPose[(kk * 4) + 3];
+      g_nDemoActive = 1;
       g_abSpyroPersistentEuler[2] = dd;
       g_nSpyroBodyYaw = (dd & 0xFF) * 0x10;
     }
-    if (g_nDeathState == 1) {
-      g_pDeathReplayCursor = p;
+    if (g_nDemoMode == 1) {
+      g_pDemoPadCursor = p;
     } else {
-      g_pDeathReplayCursor = (void *)0x80600000;
+      g_pDemoPadCursor = (void *)0x80600000;
       FillWord((void *)0x80600000, 0, 0x4000);
     }
   }

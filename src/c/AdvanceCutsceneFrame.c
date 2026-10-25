@@ -6,13 +6,13 @@
    (g_anCameraEulerRollBlock: array store, so the loop guard load stays below
    it — globals.h types the three as scalars). */
 
-/* 0x8002bfe0 — per-tick gem-cutscene pose update (1088 b, leaf). Reads the
+/* 0x8002bfe0 — per-tick scripted-cutscene pose update (1088 b, leaf). Reads the
    current path node (timer>>1, stride 0x18) into the camera pos/euler
    globals, then for each cutscene actor derives a segment index + 1/64
    fraction from the actor's control type byte (0x10: /8, 0x15: /6, 0x20: /4,
    else /2), writes the seg/60 keyframe split into the actor record and lerps
    the packed 10-bit path points into the actor position. */
-void AdvanceGemCutsceneFrame(int timer) {
+void AdvanceCutsceneFrame(int timer) {
   int *path;
   int *hdr;
   int i;

@@ -80,7 +80,7 @@ void PauseMenu_Update(void) {
       TickWorldBundleLoadStream();
       TickCdMusicStream();
     }
-    BeginGemCutscene();
+    BeginCutscene();
     BeginStoryIntro();
     g_nGamePaused = 1;
     return;
