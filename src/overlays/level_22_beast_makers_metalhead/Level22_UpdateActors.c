@@ -2760,7 +2760,7 @@ void Level22_UpdateActors(void) {
           switch (actor->subMode) {
           case 0: {
             /* Closing in on the butterfly. */
-            EnemyState *ge = st->target->state;
+            CollectibleState *pk = st->target->state;
             int high = actor->nextAnim & 1;
             int dist;
             int reach;
@@ -2808,7 +2808,7 @@ void Level22_UpdateActors(void) {
                 (TickCountdownByFrameDelta((void *)st, 4) != 0 ||
                  (st->timer < 0x50 &&
                   AbsAngleDelta8(
-                      (actor->rotZ + (ge->vel[0] * 0x6E)) & 0xFF,
+                      (actor->rotZ + (pk->vel[0] * 0x6E)) & 0xFF,
                       (((unsigned short)g_nCameraEulerYaw << 16 >> 20) + 0x80) &
                           0xFF) < 8))) {
               if (actor->nextAnim != actor->nextAnim + 1) {
@@ -2851,18 +2851,18 @@ void Level22_UpdateActors(void) {
 
           case 4: {
             /* Fetching a pickup: once close it homes in on Spyro. */
-            EnemyState *ge = st->target->state;
+            CollectibleState *pk = st->target->state;
             int dist;
 
             SubtractVector(g448, &st->target->posX, &actor->posX);
             dist = VectorLength(g448, 1);
 
             if (dist < 0x200) {
-              ge->timer = 0;
-              ge->lean = GetRandomU32() & 0xE;
-              ge->roll = GetRandomU32() & 0xE;
-              ge->spin = GetRandomU32() & 0xE;
-              CopyVector((int *)ge, &st->target->posX);
+              pk->timer = 0;
+              pk->lean = GetRandomU32() & 0xE;
+              pk->roll = GetRandomU32() & 0xE;
+              pk->spin = GetRandomU32() & 0xE;
+              CopyVector((int *)pk, &st->target->posX);
               st->target->subMode = 3;
 
               if (st->target->type == 14) {

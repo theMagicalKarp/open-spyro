@@ -1086,8 +1086,8 @@ void Level28_UpdateActors(void) {
       break;
     }
 
-    /* The generic enemy: patrols, notices Spyro, charges, gets knocked back.
-     * ->subMode is the outer state and st->mode the sub-state. */
+    /* Collectibles: extra life (14), Sparx food (15), gems (83..87)
+     * (CollectibleState). ->subMode is the outer state, st->mode the sub-state. */
     case 14:
     case 15:
     case 83:
@@ -1095,7 +1095,7 @@ void Level28_UpdateActors(void) {
     case 85:
     case 86:
     case 87: {
-      EnemyState *st = actor->state;
+      CollectibleState *st = actor->state;
       int toSpyro;
 
       toSpyro = ApproxDist2D(&actor->posX, &SPY.posX);
@@ -1171,7 +1171,7 @@ void Level28_UpdateActors(void) {
               }
             }
           } else if (st->mode == 2) {
-            UnpackWorldCollisionTri(st->node, g216[0]);
+            UnpackWorldCollisionTri(st->groundTri, g216[0]);
             AddVector(g216[0], g216[0], g216[1]);
             AddVector(g216[0], g216[0], g216[2]);
             actor->posX = g216[0][0] / 3;
@@ -1185,7 +1185,7 @@ void Level28_UpdateActors(void) {
             g200[2] += 0x400;
             RefreshActorDerivedState(actor, 2);
             if (FindGroundHeightBelow(g200, 0x1000) > 0) {
-              st->node = g_nLastCollisionHitChunkId;
+              st->groundTri = g_nLastCollisionHitChunkId;
               st->mode = 2;
             }
           }
@@ -1701,7 +1701,7 @@ void Level28_UpdateActors(void) {
           switch (actor->subMode) {
           case 0: {
             /* Closing in on the butterfly. */
-            EnemyState *ge = st->target->state;
+            CollectibleState *pk = st->target->state;
             int high = actor->nextAnim & 1;
             int dist;
             int reach;
@@ -1749,7 +1749,7 @@ void Level28_UpdateActors(void) {
                 (TickCountdownByFrameDelta((void *)st, 4) != 0 ||
                  (st->timer < 0x50 &&
                   AbsAngleDelta8(
-                      (actor->rotZ + (ge->vel[0] * 0x6E)) & 0xFF,
+                      (actor->rotZ + (pk->vel[0] * 0x6E)) & 0xFF,
                       (((unsigned short)g_nCameraEulerYaw << 16 >> 20) + 0x80) &
                           0xFF) < 8))) {
               if (actor->nextAnim != actor->nextAnim + 1) {
@@ -1792,18 +1792,18 @@ void Level28_UpdateActors(void) {
 
           case 4: {
             /* Fetching a pickup: once close it homes in on Spyro. */
-            EnemyState *ge = st->target->state;
+            CollectibleState *pk = st->target->state;
             int dist;
 
             SubtractVector(g320, &st->target->posX, &actor->posX);
             dist = VectorLength(g320, 1);
 
             if (dist < 0x200) {
-              ge->timer = 0;
-              ge->lean = GetRandomU32() & 0xE;
-              ge->roll = GetRandomU32() & 0xE;
-              ge->spin = GetRandomU32() & 0xE;
-              CopyVector((int *)ge, &st->target->posX);
+              pk->timer = 0;
+              pk->lean = GetRandomU32() & 0xE;
+              pk->roll = GetRandomU32() & 0xE;
+              pk->spin = GetRandomU32() & 0xE;
+              CopyVector((int *)pk, &st->target->posX);
               st->target->subMode = 3;
 
               if (st->target->type == 14) {

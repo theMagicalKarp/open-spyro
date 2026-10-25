@@ -16,19 +16,22 @@ typedef struct VortexState {
   unsigned char angle;   /* 0x13 */
 } VortexState;
 
-/* Cases 14/15/83..87 — the generic enemy: a walker with a chase/charge/knock
- * -back state machine driven by ->subMode. */
-typedef struct EnemyState {
+/* Cases 14/15/83..87 — collectibles: 14 extra life, 15 Sparx food, 83..87
+ * gems (CollectPickupActor). They bounce out of a broken chest or fodder,
+ * glitter, and home in on Spyro once he (or Sparx, fetching) gets close. The
+ * same record as level_update_actors.h PickupState, in the field view these
+ * clones were matched with (signed lean/roll). */
+typedef struct CollectibleState {
   int vel[3];           /* 0x00 velocity, also read as a vector */
-  short node;           /* 0x0C current path node */
-  unsigned char mode;   /* 0x0E sub-mode within ->subMode */
+  short groundTri;      /* 0x0C collision triangle it rests on */
+  unsigned char mode;   /* 0x0E resting sub-state within ->subMode */
   unsigned char timer;  /* 0x0F */
-  signed char bounce;   /* 0x10 remaining knock-back bounces */
+  signed char bounce;   /* 0x10 bounces left */
   signed char lean;     /* 0x11 body pitch */
   signed char roll;     /* 0x12 */
   unsigned char spin;   /* 0x13 */
   unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
-} EnemyState;
+} CollectibleState;
 
 /* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
 typedef struct ShardState {
