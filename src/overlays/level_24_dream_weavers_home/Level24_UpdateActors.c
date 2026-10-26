@@ -937,7 +937,7 @@ void Level24_UpdateActors(void) {
           ANIM_SET(actor, st->base);
         }
       }
-      if (actor->mode < 3 && (st->range != 0 || (actor->flags & 0x40000))) {
+      if (actor->mode < 3 && (st->range != 0 || (actor->flags & ACTOR_HIT_BLAST))) {
         if (st->range > 0 && actor->mode == 0 &&
             (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range ||
              IsPointInRotatedBox((int *)spy, st->vol) != 0) &&
@@ -949,7 +949,7 @@ void Level24_UpdateActors(void) {
           g_pActorListBase[st->partner].subMode = actor - g_pActorListBase;
           *(int *)g_pActorListBase[st->partner].state = st->msg;
           st->timer2 = st->reload;
-        } else if (actor->flags & 0x40000) {
+        } else if (actor->flags & ACTOR_HIT_BLAST) {
           actor->flags = 0;
           if (st->flags & 4) {
             st->range = -st->range;
@@ -1196,7 +1196,7 @@ void Level24_UpdateActors(void) {
             actor->mode = 1;
             continue;
           }
-          DispatchActorContactAtSphere(&actor->posX, 0x258, 0, 0x40000, actor, 2);
+          DispatchActorContactAtSphere(&actor->posX, 0x258, 0, ACTOR_HIT_BLAST, actor, 2);
           if (CollideSphereWithWorldAndActors(&actor->posX, 0x168, 0x168) != 0) {
             actor->mode = 1;
           }
@@ -2446,7 +2446,7 @@ void Level24_UpdateActors(void) {
           ANIM_SET(actor, st->base);
         }
       }
-      if (actor->mode < 3 && (st->range != 0 || (actor->flags & 0x40000))) {
+      if (actor->mode < 3 && (st->range != 0 || (actor->flags & ACTOR_HIT_BLAST))) {
         if (st->range > 0 && (actor->mode == 0 || actor->mode == 2) &&
             (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range ||
              IsPointInRotatedBox((int *)spy, st->vol) != 0) &&
@@ -2464,7 +2464,7 @@ void Level24_UpdateActors(void) {
           if (st->follow2 != -1) {
             ((int *)g_pActorListBase[st->follow2].state)[19] = 0x50;
           }
-        } else if (actor->flags & 0x40000) {
+        } else if (actor->flags & ACTOR_HIT_BLAST) {
           actor->flags = 0;
           if (st->flags & 4) {
             st->range = -st->range;
@@ -3450,7 +3450,7 @@ void Level24_UpdateActors(void) {
         break;
 
       case 1:
-        if (actor->flags & 0x40000) {
+        if (actor->flags & ACTOR_HIT_BLAST) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
           actor->cullRadius = 0x7F;
@@ -3486,7 +3486,7 @@ void Level24_UpdateActors(void) {
 
         st->timer = t;
         if (t < 0x78) {
-        if ((actor->flags & 0x40000) && t < 0x5A) {
+        if ((actor->flags & ACTOR_HIT_BLAST) && t < 0x5A) {
           st->timer = 0x5A;
         }
         for (i = 0; i < 6; i++) {
@@ -3617,7 +3617,7 @@ void Level24_UpdateActors(void) {
           }
           g_nSpyroRequestVelocityZ = 0x46;
         }
-        DispatchActorContactAtSphere(&actor->posX, (st->timer + 1) << 8, 0, 0x50000, actor, 0);
+        DispatchActorContactAtSphere(&actor->posX, (st->timer + 1) << 8, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_BLAST), actor, 0);
         if (++st->timer >= 8) {
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);

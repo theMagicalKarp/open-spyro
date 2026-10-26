@@ -2855,7 +2855,7 @@ void Level18_UpdateActors(void) {
         break;
 
       case 1:
-        if (actor->flags & 0x40000) {
+        if (actor->flags & ACTOR_HIT_BLAST) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
           actor->cullRadius = 0x7F;
@@ -2891,7 +2891,7 @@ void Level18_UpdateActors(void) {
 
         st->timer = t;
         if (t < 0x78) {
-        if ((actor->flags & 0x40000) && t < 0x5A) {
+        if ((actor->flags & ACTOR_HIT_BLAST) && t < 0x5A) {
           st->timer = 0x5A;
         }
         for (i = 0; i < 6; i++) {
@@ -3022,7 +3022,7 @@ void Level18_UpdateActors(void) {
           }
           g_nSpyroRequestVelocityZ = 0x46;
         }
-        DispatchActorContactAtSphere(&actor->posX, (st->timer + 1) << 8, 0, 0x50000, actor, 0);
+        DispatchActorContactAtSphere(&actor->posX, (st->timer + 1) << 8, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_BLAST), actor, 0);
         if (++st->timer >= 8) {
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
@@ -3374,8 +3374,8 @@ void Level18_UpdateActors(void) {
         actor->posZ += 0xB4;
         if (st->timer >= 5 &&
             (CollideSphereWithWorldAndActors(&actor->posX, 0xB4, 0xB4) != 0 ||
-             DispatchActorContactAtSphere(&actor->posX, 0x100, 0, 0x30000, actor, 0) != 0)) {
-          DispatchActorContactAtSphere(&actor->posX, 0x400, 0, 0x30000, actor, 0);
+             DispatchActorContactAtSphere(&actor->posX, 0x100, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, 0) != 0)) {
+          DispatchActorContactAtSphere(&actor->posX, 0x400, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, 0);
           for (i = 0; i < 2; i++) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
@@ -3859,9 +3859,9 @@ void Level18_UpdateActors(void) {
     case ACTOR_TYPE_ROAMING_RAM: {
       RoamingRamState *st = actor->state;
 
-      if ((actor->flags & 0xF0000) && actor->mode != 3) {
+      if ((actor->flags & ACTOR_HIT_ANY) && actor->mode != 3) {
         EBB_BREAK();
-        if (actor->flags & 0x40000) {
+        if (actor->flags & ACTOR_HIT_BLAST) {
           st->knock = ArcTan2(actor->posX - g_pActorListBase[st->target].posX,
                                     actor->posY - g_pActorListBase[st->target].posY,
                                     0);

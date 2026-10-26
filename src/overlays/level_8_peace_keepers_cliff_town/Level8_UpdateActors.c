@@ -2424,7 +2424,7 @@ void Level8_UpdateActors(void) {
     case 239:
     case 242:
       if (actor->flags != 0) {
-        if (actor->flags == 0x10000 && actor->subMode == 0) {
+        if (actor->flags == ACTOR_HIT_FLAME && actor->subMode == 0) {
           actor->subMode = 0x50;
           ANIM_SET(actor, 2);
         } else if (actor->nextAnim == 0) {

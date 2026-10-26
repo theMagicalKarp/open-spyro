@@ -86,8 +86,12 @@ typedef struct Actor {
  * DispatchActorContactAtSphere (AdvanceSpyroPhysics, TickSpyroAttackEffects). */
 #define ACTOR_HIT_FLAME 0x10000  /* the flame breath */
 #define ACTOR_HIT_CHARGE 0x20000 /* a charge (SPYRO_ST_CHARGE) */
+#define ACTOR_HIT_BLAST 0x40000   /* another actor's blast or shot: a cracking boulder's
+                                  * burst (with FLAME), level 19's aimed bolt; boulders and
+                                  * roaming rams react to it */
 #define ACTOR_HIT_SUPER 0x80000  /* a supercharge; a superflame breath adds it to FLAME */
 #define ACTOR_HITS_SPYRO (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)
+#define ACTOR_HIT_ANY (ACTOR_HITS_SPYRO | ACTOR_HIT_BLAST)
 
 /* Size of one actor record: the stride of the actor pool, the sprite-record
  * queue and the HUD icon table. (The typedef fails to compile if the struct

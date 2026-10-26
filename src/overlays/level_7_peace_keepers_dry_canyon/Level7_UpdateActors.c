@@ -2676,7 +2676,7 @@ void Level7_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       if (actor->flags & ACTOR_HITS_SPYRO && actor->mode != 3) {
-        if (actor->flags == 0x20000) {
+        if (actor->flags == ACTOR_HIT_CHARGE) {
           st->speed = 0x15E;
         } else if (actor->mode == 7 && actor->frame - 4U < 0x1B) {
           goto idle;
@@ -3147,7 +3147,7 @@ void Level7_UpdateActors(void) {
     case 206:
     case 239:
     case 242:      if (actor->flags != 0) {
-        if (actor->flags == 0x10000 && actor->subMode == 0) {
+        if (actor->flags == ACTOR_HIT_FLAME && actor->subMode == 0) {
           actor->subMode = 0x50;
           ANIM_SET(actor, 2);
         } else if (actor->nextAnim == 0) {
@@ -3929,7 +3929,7 @@ void Level7_UpdateActors(void) {
         break;
 
       case 1:
-        if (actor->flags & 0x40000) {
+        if (actor->flags & ACTOR_HIT_BLAST) {
           actor->subMode = 2;
           actor->updateDist = 0xFF;
           actor->cullRadius = 0x7F;
@@ -3965,7 +3965,7 @@ void Level7_UpdateActors(void) {
 
         st->timer = t;
         if (t < 0x78) {
-        if ((actor->flags & 0x40000) && t < 0x5A) {
+        if ((actor->flags & ACTOR_HIT_BLAST) && t < 0x5A) {
           st->timer = 0x5A;
         }
         for (i = 0; i < 6; i++) {
@@ -4096,7 +4096,7 @@ void Level7_UpdateActors(void) {
           }
           g_nSpyroRequestVelocityZ = 0x46;
         }
-        DispatchActorContactAtSphere(&actor->posX, (st->timer + 1) << 8, 0, 0x50000, actor, 0);
+        DispatchActorContactAtSphere(&actor->posX, (st->timer + 1) << 8, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_BLAST), actor, 0);
         if (++st->timer >= 8) {
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
@@ -4465,8 +4465,8 @@ void Level7_UpdateActors(void) {
         actor->posZ += 0xB4;
         if (st->timer >= 5 &&
             (CollideSphereWithWorldAndActors(&actor->posX, 0xB4, 0xB4) != 0 ||
-             DispatchActorContactAtSphere(&actor->posX, 0x100, 0, 0x30000, actor, 0) != 0)) {
-          DispatchActorContactAtSphere(&actor->posX, 0x400, 0, 0x30000, actor, 0);
+             DispatchActorContactAtSphere(&actor->posX, 0x100, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, 0) != 0)) {
+          DispatchActorContactAtSphere(&actor->posX, 0x400, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, 0);
           for (i = 0; i < 2; i++) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;

@@ -3527,7 +3527,7 @@ void Level6_UpdateActors(void) {
             }
           }
           if (st->age >= 9 && st->delay == 0 &&
-              DispatchActorContactAtSphere(&actor->posX, 0x400, 0, 0x80000, actor, 2) != 0) {
+              DispatchActorContactAtSphere(&actor->posX, 0x400, 0, ACTOR_HIT_SUPER, actor, 2) != 0) {
             PlayActorMeshVoice(actor, 0, 0);
             actor->mode = 1;
             if (st->link != -1) {
@@ -3561,7 +3561,7 @@ void Level6_UpdateActors(void) {
           g_pfnLevelEmitParticles(1, 0xD, g376, g328);
         }
         g_pfnLevelEmitParticles(0xA, EMIT_STREAK_BURST, &actor->posX, (void *)0x10);
-        DispatchActorContactAtSphere(&actor->posX, 0x800, 0, 0x80000, actor, 2);
+        DispatchActorContactAtSphere(&actor->posX, 0x800, 0, ACTOR_HIT_SUPER, actor, 2);
         DespawnActorRecord(actor);
         continue;
       }

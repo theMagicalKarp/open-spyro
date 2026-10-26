@@ -1778,11 +1778,11 @@ void Level2_UpdateActors(void) {
       TickActorFlameGlow(actor);
       EBB_BREAK();
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2 &&
-          (actor->flags != 0x10000 || st->flag == 0)) {
+          (actor->flags != ACTOR_HIT_FLAME || st->flag == 0)) {
         st->time = 0x8C;
         st->speed = 0x118;
         st->timer = 0x28;
-        if (actor->flags == 0x20000) {
+        if (actor->flags == ACTOR_HIT_CHARGE) {
           st->time = 0xAA;
           st->speed = 0x15E;
           st->timer = 0x3C;

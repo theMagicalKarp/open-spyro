@@ -2797,8 +2797,8 @@ void Level19_UpdateActors(void) {
         actor->posZ += 0xB4;
         if (st->timer >= 5 &&
             (CollideSphereWithWorldAndActors(&actor->posX, 0xB4, 0xB4) != 0 ||
-             DispatchActorContactAtSphere(&actor->posX, 0x100, 0, 0x30000, actor, 0) != 0)) {
-          DispatchActorContactAtSphere(&actor->posX, 0x400, 0, 0x30000, actor, 0);
+             DispatchActorContactAtSphere(&actor->posX, 0x100, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, 0) != 0)) {
+          DispatchActorContactAtSphere(&actor->posX, 0x400, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, 0);
           for (i = 0; i < 2; i++) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
@@ -3325,8 +3325,8 @@ void Level19_UpdateActors(void) {
     case ACTOR_TYPE_ROAMING_RAM: {
       RoamingRamState *st = actor->state;
 
-      if ((actor->flags & 0xF0000) && actor->mode != 3) {
-        if (actor->flags & 0x40000) {
+      if ((actor->flags & ACTOR_HIT_ANY) && actor->mode != 3) {
+        if (actor->flags & ACTOR_HIT_BLAST) {
           st->knock = ArcTan2(actor->posX - g_pActorListBase[st->target].posX,
                                     actor->posY - g_pActorListBase[st->target].posY,
                                     0);
@@ -3752,7 +3752,7 @@ void Level19_UpdateActors(void) {
         continue;
       }
       if (st->mode == 2 &&
-          DispatchActorContactAtSphere(&actor->posX, 0x15E, 0, 0x40000, actor, 0) != 0) {
+          DispatchActorContactAtSphere(&actor->posX, 0x15E, 0, ACTOR_HIT_BLAST, actor, 0) != 0) {
         DespawnActorRecord(actor);
         continue;
       }
