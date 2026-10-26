@@ -68,7 +68,7 @@ void ChangeSpyroState(int state) {
                     (unsigned char *)g_anSpyroWorldPos + SPYB_VOICE_MARKER);
     break;
   case SPYRO_ST_HURT_PINNED:
-    PlaySoundEffect(LEVEL_SFX(0x20), g_anSpyroWorldPos, 4,
+    PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_PINNED_EXIT), g_anSpyroWorldPos, 4,
                     (unsigned char *)g_anSpyroWorldPos + SPYB_VOICE_MARKER);
     break;
   }
