@@ -673,7 +673,7 @@ void Level22_UpdateActors(void) {
     /* Type 48: Metalhead. Stomps, sprays shots or lobs a bolt depending on
      * how far away Spyro is; each time his health drops a phase he runs
      * the path to the next spot. */
-    case 48: {
+    case ACTOR_TYPE_METALHEAD: {
       MetalheadState *st = actor->state;
       int dist;
 

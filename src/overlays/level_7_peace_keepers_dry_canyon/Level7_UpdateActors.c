@@ -2526,7 +2526,7 @@ void Level7_UpdateActors(void) {
     }
 
     /* Type 184: brawler. */
-    case 184: {
+    case ACTOR_TYPE_BRAWLER: {
       BrawlerState *st = actor->state;
 
       if (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER) && actor->mode != 6) {
@@ -2671,7 +2671,7 @@ void Level7_UpdateActors(void) {
     }
 
     /* Type 186: shooter sentry. */
-    case 186: {
+    case ACTOR_TYPE_SHOOTER: {
       ShooterState *st = actor->state;
 
       TickActorFlameGlow(actor);
@@ -2748,7 +2748,7 @@ void Level7_UpdateActors(void) {
           int *v = s328;
 
           st->spawned = one;
-          c = g_pfnLevelSpawnActor(0xC5, actor);
+          c = g_pfnLevelSpawnActor(ACTOR_TYPE_SHOOTER_SHOT, actor);
           cs = c->state;
           c->rotZ = actor->rotZ;
           cs->countdown0 = 0x88;
@@ -3083,7 +3083,7 @@ void Level7_UpdateActors(void) {
     }
 
     /* Type 197: the shooter's shot (spawned by 186). */
-    case 197: {
+    case ACTOR_TYPE_SHOOTER_SHOT: {
       ShooterShotState *st = actor->state;
       int i;
 

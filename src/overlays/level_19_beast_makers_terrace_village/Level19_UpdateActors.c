@@ -747,8 +747,7 @@ void Level19_UpdateActors(void) {
       break;
     }
 
-    /* Type 35. */
-    case 35: {
+    case ACTOR_TYPE_BOLT_GUARD: {
       BoltGuardState *st = actor->state;
       int *v = svD;
       int d;
@@ -823,7 +822,7 @@ void Level19_UpdateActors(void) {
 
           RefreshActorDerivedState(actor, 4);
           for (i = 0; i < 2; i++) {
-            Actor *c = g_pfnLevelSpawnActor(0x1EE, actor);
+            Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_AIMED_BOLT, actor);
             AimedBoltState *cs;
 
             c->scale = 0x48;
@@ -902,7 +901,7 @@ void Level19_UpdateActors(void) {
 
           RefreshActorDerivedState(actor, 4);
           for (i = 0; i < 2; i++) {
-            Actor *c = g_pfnLevelSpawnActor(0x1EE, actor);
+            Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_AIMED_BOLT, actor);
             AimedBoltState *cs;
 
             c->scale = 0x48;
@@ -2599,8 +2598,7 @@ void Level19_UpdateActors(void) {
       }
       break;
 
-    /* Type 343. */
-    case 343: {
+    case ACTOR_TYPE_ATTACH_BEAD: {
       AttachBeadState *st = actor->state;
 
       switch (actor->mode) {
@@ -3472,8 +3470,7 @@ void Level19_UpdateActors(void) {
       break;
     }
 
-    /* Type 467. */
-    case 467: {
+    case ACTOR_TYPE_BOLT_SENTRY: {
       BoltSentryState *st = actor->state;
       int i;
 
@@ -3490,7 +3487,7 @@ void Level19_UpdateActors(void) {
       if (st->guards != 0) {
         for (i = 0; i < 3; i++) {
           if (st->kids[i] == 0) {
-            Actor *k = g_pfnLevelSpawnActor(0x157, actor);
+            Actor *k = g_pfnLevelSpawnActor(ACTOR_TYPE_ATTACH_BEAD, actor);
 
             st->kids[i] = k;
             k->subMode = i;
@@ -3565,7 +3562,7 @@ void Level19_UpdateActors(void) {
             ApproxDist2D(&actor->posX, spy) < 0x1194) {
           AimedBoltState *bs;
 
-          st->bolt = g_pfnLevelSpawnActor(0x1EE, actor);
+          st->bolt = g_pfnLevelSpawnActor(ACTOR_TYPE_AIMED_BOLT, actor);
           st->bolt->rotZ = actor->rotZ;
           bs = st->bolt->state;
           bs->mode = 0;
@@ -3690,7 +3687,7 @@ void Level19_UpdateActors(void) {
     }
 
     /* Type 494: bolt thrown by 35 and 467. */
-    case 494: {
+    case ACTOR_TYPE_AIMED_BOLT: {
       AimedBoltState *st = actor->state;
 
       if (actor->subMode != 0) {

@@ -2000,9 +2000,9 @@ void Level27_UpdateActors(void) {
       continue;
     }
 
-    /* Type 227. */
+    /* Superflame givers: 142 and 241 (level 14's 227 body). */
     case 142:
-    case 241: {
+    case ACTOR_TYPE_SUPERFLAME_GIVER_ALT: {
       SuperflameGiverState *st = actor->state;
 
       if (st->heading == -1) {
@@ -2103,10 +2103,10 @@ void Level27_UpdateActors(void) {
           int *q;
 
           if (actor->nextFrame >= 6 &&
-              (++st->count == 2 || actor->type == 0xF1)) {
+              (++st->count == 2 || actor->type == ACTOR_TYPE_SUPERFLAME_GIVER_ALT)) {
             int r = 0x140;
 
-            if (actor->type == 0xF1) {
+            if (actor->type == ACTOR_TYPE_SUPERFLAME_GIVER_ALT) {
               r = 0x190;
             }
             CopyVector(g272, &SPY.posX);
@@ -2122,7 +2122,7 @@ void Level27_UpdateActors(void) {
             PlayActorMeshVoice(actor, 0, 0);
           }
           f = 7;
-          if (actor->type == 0xF1) {
+          if (actor->type == ACTOR_TYPE_SUPERFLAME_GIVER_ALT) {
             f = 0xE;
           }
           if (actor->nextFrame >= f && *(p = &g_nSpyroSuperflameTimer) == 0) {

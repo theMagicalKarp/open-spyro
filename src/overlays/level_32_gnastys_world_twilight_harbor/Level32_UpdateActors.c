@@ -1594,8 +1594,7 @@ void Level32_UpdateActors(void) {
       break;
     }
 
-    /* Type 145. */
-    case 145: {
+    case ACTOR_TYPE_BURST_GUNNER: {
       BurstGunnerState *st = actor->state;
       int dist;
 
@@ -1670,7 +1669,7 @@ void Level32_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         st->shotGap += g_nFrameStep;
         if ((unsigned)(actor->nextFrame - 0x10) < 0xA && st->shotGap >= 4) {
-          Actor *o = g_pfnLevelSpawnActor(0x9C, actor);
+          Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_BURST_GUNNER_SHOT, actor);
           short *p = o->state;
 
           RefreshActorDerivedState(actor, 4);
@@ -1734,8 +1733,7 @@ void Level32_UpdateActors(void) {
       continue;
     }
 
-    /* Type 147. */
-    case 147: {
+    case ACTOR_TYPE_SWEEP_GUNNER: {
       SweepGunnerState *st = actor->state;
       int dist;
 
@@ -1822,7 +1820,7 @@ void Level32_UpdateActors(void) {
           }
           actor->rotZ = st->sweepYaw >> 4;
           if (g_dwGamestateFrames & 1) {
-            Actor *o = g_pfnLevelSpawnActor(0x9C, actor);
+            Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_BURST_GUNNER_SHOT, actor);
             unsigned char i = actor->rotZ - 5;
             int spd = 0x190;
             short *p;
@@ -1902,8 +1900,7 @@ void Level32_UpdateActors(void) {
       continue;
     }
 
-    /* Type 148. */
-    case 148: {
+    case ACTOR_TYPE_LOB_GUNNER: {
       LobGunnerState *st = actor->state;
       int dist;
 
@@ -2019,7 +2016,7 @@ void Level32_UpdateActors(void) {
         unsigned char *p = st->targetPath;
 
         if (st->heldLob == 0 && actor->nextFrame >= 5) {
-          st->heldLob = g_pfnLevelSpawnActor(0xB0, actor);
+          st->heldLob = g_pfnLevelSpawnActor(ACTOR_TYPE_LOB_GUNNER_LOB, actor);
           st->heldLob->cullRadius = 0x28;
           st->heldLob->updateDist = 0xFF;
         }
@@ -2079,7 +2076,7 @@ void Level32_UpdateActors(void) {
     }
 
     /* Type 156: the shot thrown by type 145. */
-    case 156: {
+    case ACTOR_TYPE_BURST_GUNNER_SHOT: {
       L32Shot *st = actor->state;
 
       switch (actor->mode) {
@@ -2224,7 +2221,7 @@ void Level32_UpdateActors(void) {
     }
 
     /* Type 176: the lob thrown by type 148. */
-    case 176: {
+    case ACTOR_TYPE_LOB_GUNNER_LOB: {
       LobState *q = actor->state;
       int i;
 

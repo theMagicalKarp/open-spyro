@@ -2693,7 +2693,7 @@ void Level10_UpdateActors(void) {
 
     /* Doctor Shemp's guard: patrols, closes on Spyro and swings; a flame
      * or charge from the front knocks it back. */
-    case 370: {
+    case ACTOR_TYPE_SHEMP_GUARD: {
       GuardState370 *st = actor->state;
       int d;
       int g;
@@ -3021,7 +3021,7 @@ void Level10_UpdateActors(void) {
 
     /* Doctor Shemp. Three phases, each ending at a path node; a flame or
      * charge from behind stuns him, the third one sends him off. */
-    case 371: {
+    case ACTOR_TYPE_DOCTOR_SHEMP: {
       ShempState *st = actor->state;
       int d;
       int a;
@@ -3455,7 +3455,7 @@ void Level10_UpdateActors(void) {
 
     /* Shemp's lookout: idles and turns toward Spyro; when a linked guard is
      * idle it rouses it, and it swipes at Spyro when he comes close. */
-    case 372: {
+    case ACTOR_TYPE_SHEMP_LOOKOUT: {
       LookoutState *st = actor->state;
       Actor *link;
       int d;

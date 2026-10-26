@@ -1454,8 +1454,7 @@ void Level33_UpdateActors(void) {
       break;
     }
 
-    /* Type 143. */
-    case 143: {
+    case ACTOR_TYPE_SHOCKWAVE: {
       ShockwaveState *st = actor->state;
 
       st->radius += dt * 14;
@@ -1513,7 +1512,7 @@ void Level33_UpdateActors(void) {
     }
 
     /* Type 159: a path patroller that turns back toward Spyro. */
-    case 159: {
+    case ACTOR_TYPE_LANE_PATROLLER: {
       LanePatrollerState *st = actor->state;
       int dist;
 
@@ -1682,7 +1681,7 @@ void Level33_UpdateActors(void) {
 
     /* Type 161: Gnasty Gnorc. Runs his escape paths, throws trail bombs
      * (169) at Spyro and drops the vault keys as he is hit. */
-    case 161: {
+    case ACTOR_TYPE_GNASTY_GNORC: {
       GnastyState *st = actor->state;
       int dist;
 
@@ -1858,7 +1857,7 @@ void Level33_UpdateActors(void) {
           ANIM_GO(actor, 0);
         }
         if (st->timer == 0 && actor->nextFrame >= 9) {
-          Actor *o = g_pfnLevelSpawnActor(0xA9, actor);
+          Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_TRAIL_BOMB, actor);
           TrailBombState *q = o->state;
           int n;
           int spd = 0x190;
@@ -2212,7 +2211,7 @@ void Level33_UpdateActors(void) {
 
     /* Type 169: a rolling wave that lays a trail and spawns shockwaves (143)
      * where it lands. */
-    case 169: {
+    case ACTOR_TYPE_TRAIL_BOMB: {
       TrailBombState *st = actor->state;
       int s = actor->mode;
 
@@ -2253,7 +2252,7 @@ void Level33_UpdateActors(void) {
             st->landDelay = 0;
           }
           if (st->landDelay == 0 && CastRayWorldAndActors(o150, &actor->posX) != 0) {
-            Actor *o = g_pfnLevelSpawnActor(0x8F, actor);
+            Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_SHOCKWAVE, actor);
             ShockwaveState *p = o->state;
 
             p->radius = 0x190;
@@ -2366,7 +2365,7 @@ void Level33_UpdateActors(void) {
     }
 
     /* Type 181: loot vortex (LootVortexState). */
-    case 181: {
+    case ACTOR_TYPE_LOOT_VORTEX: {
       LootVortexState *st = actor->state;
       unsigned int ks = g_pActorListBase[st->key].mode;
       int kt = g_pActorListBase[st->key].type;

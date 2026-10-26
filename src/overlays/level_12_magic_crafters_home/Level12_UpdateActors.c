@@ -2981,7 +2981,7 @@ void Level12_UpdateActors(void) {
     }
 
     /* Type 270: villager (VillagerState). */
-    case 270: {
+    case ACTOR_TYPE_VILLAGER: {
       VillagerState *st = actor->state;
       int pairGone;
       int snd;
@@ -3302,7 +3302,7 @@ void Level12_UpdateActors(void) {
     }
 
     /* Type 271: shepherd (ShepherdState). */
-    case 271: {
+    case ACTOR_TYPE_SHEPHERD: {
       ShepherdState *st = actor->state;
       int near = 0x4B0;
 

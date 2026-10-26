@@ -2123,7 +2123,7 @@ void Level34_UpdateActors(void) {
     int w560[3];
 
     /* Type 181: loot vortex (LootVortexState). */
-    case 181: {
+    case ACTOR_TYPE_LOOT_VORTEX: {
       LootVortexState *st = actor->state;
       unsigned int ks = g_pActorListBase[st->key].mode;
       int kt = g_pActorListBase[st->key].type;

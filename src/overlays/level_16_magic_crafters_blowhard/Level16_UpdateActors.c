@@ -3112,7 +3112,7 @@ void Level16_UpdateActors(void) {
     /* Type 495: the level boss. Patrols three paths in turn, dropping a
      * type 37 rider on Spyro when he is in front of it; each hit sends it
      * to the next path, and the third ends the fight. */
-    case 495: {
+    case ACTOR_TYPE_BLOWHARD: {
       L16Boss *st = actor->state;
       int dist = ApproxDist2D(&actor->posX, &SPY.posX);
       int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;

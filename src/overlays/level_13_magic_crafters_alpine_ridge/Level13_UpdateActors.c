@@ -3151,7 +3151,7 @@ void Level13_UpdateActors(void) {
     }
 
     /* Type 270: villager (VillagerState). */
-    case 270: {
+    case ACTOR_TYPE_VILLAGER: {
       VillagerState *st = actor->state;
       int pairGone;
       int snd;
@@ -3475,7 +3475,7 @@ void Level13_UpdateActors(void) {
     }
 
     /* Type 271: shepherd (ShepherdState). */
-    case 271: {
+    case ACTOR_TYPE_SHEPHERD: {
       ShepherdState *st = actor->state;
       int near = 0x4B0;
 
@@ -4547,7 +4547,7 @@ void Level13_UpdateActors(void) {
     }
 
     /* Type 326: sorcerer (SorcererState). */
-    case 326: {
+    case ACTOR_TYPE_SORCERER: {
       SorcererState *st = actor->state;
       int dist = ApproxDist2D(&actor->posX, &SPY.posX);
 

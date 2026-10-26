@@ -1941,8 +1941,7 @@ void Level14_UpdateActors(void) {
       break;
     }
 
-    /* Type 109. */
-    case 109: {
+    case ACTOR_TYPE_CARRIER: {
       CarrierState *st = actor->state;
       int d;
       int h;
@@ -2887,8 +2886,7 @@ void Level14_UpdateActors(void) {
       break;
     }
 
-    /* Type 227. */
-    case 227: {
+    case ACTOR_TYPE_SUPERFLAME_GIVER: {
       SuperflameGiverState *st = actor->state;
 
       if (st->heading == -1) {
@@ -2989,10 +2987,10 @@ void Level14_UpdateActors(void) {
           int *q;
 
           if (actor->nextFrame >= 6 &&
-              (++st->count == 2 || actor->type == 0xF1)) {
+              (++st->count == 2 || actor->type == ACTOR_TYPE_SUPERFLAME_GIVER_ALT)) {
             int r = 0x140;
 
-            if (actor->type == 0xF1) {
+            if (actor->type == ACTOR_TYPE_SUPERFLAME_GIVER_ALT) {
               r = 0x190;
             }
             CopyVector(x288, &SPY.posX);
@@ -3008,7 +3006,7 @@ void Level14_UpdateActors(void) {
             PlayActorMeshVoice(actor, 0, 0);
           }
           f = 7;
-          if (actor->type == 0xF1) {
+          if (actor->type == ACTOR_TYPE_SUPERFLAME_GIVER_ALT) {
             f = 0xE;
           }
           if (actor->nextFrame >= f && *(p = &g_nSpyroSuperflameTimer) == 0) {
@@ -3691,8 +3689,7 @@ void Level14_UpdateActors(void) {
       break;
     }
 
-    /* Type 301. */
-    case 301: {
+    case ACTOR_TYPE_BOLT_CASTER: {
       BoltCasterState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 4) {
@@ -3834,8 +3831,7 @@ void Level14_UpdateActors(void) {
       break;
     }
 
-    /* Type 302. */
-    case 302: {
+    case ACTOR_TYPE_CHUNK_OPERATOR: {
       ChunkOperatorState *st = actor->state;
       int i;
 
@@ -3966,8 +3962,7 @@ void Level14_UpdateActors(void) {
       break;
     }
 
-    /* Type 303. */
-    case 303: {
+    case ACTOR_TYPE_RUNNER_SPAWNER: {
       RunnerSpawnerState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4) {
@@ -4012,7 +4007,7 @@ void Level14_UpdateActors(void) {
       case 3:
         if (actor->nextFrame >= 5 && !(st->flags & 1)) {
           st->link[1] = 0;
-          ((short *)g_pfnLevelSpawnActor(0x130, actor)->state)[10] = st->value;
+          ((short *)g_pfnLevelSpawnActor(ACTOR_TYPE_WAYPOINT_RUNNER, actor)->state)[10] = st->value;
           st->flags |= 1;
         }
         if (g_nActorAnimDone != 0) {
@@ -4033,8 +4028,7 @@ void Level14_UpdateActors(void) {
       break;
     }
 
-    /* Type 304. */
-    case 304: {
+    case ACTOR_TYPE_WAYPOINT_RUNNER: {
       WaypointRunnerState *st = actor->state;
 
       switch (actor->mode) {
@@ -4087,8 +4081,7 @@ void Level14_UpdateActors(void) {
       break;
     }
 
-    /* Type 305. */
-    case 305: {
+    case ACTOR_TYPE_FLEEING_WALKER: {
       FleeingWalkerState *st = actor->state;
 
       TickActorFlameGlow(actor);
