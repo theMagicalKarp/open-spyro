@@ -221,6 +221,12 @@ enum ActorType {
 #define ACTOR_REFRESH_GRID 2      /* relink ->gridCell from the X/Y position */
 #define ACTOR_REFRESH_MATRIX 4    /* ->mtx from the rotX/rotY/rotZ euler bytes */
 
+/* PlaySoundEffect's mode: the voice row's flag group. */
+#define SFX_MODE_FLAT 4     /* flat volume; no re-trigger while the owner plays it */
+#define SFX_MODE_3D 8       /* panned and attenuated from the owner's position; dropped
+                             * outside its audible range */
+#define SFX_MODE_PANNED 0x10 /* pan supplied by the caller */
+
 /* StopSoundVoicesByOwner's mode: which of the owner's voices to stop. */
 #define VOICE_STOP_ALL 1     /* every voice it owns */
 #define VOICE_STOP_LOOPING 2 /* only its looping voices (row flag 0x100) */

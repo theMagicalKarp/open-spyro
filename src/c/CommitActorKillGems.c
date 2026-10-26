@@ -64,5 +64,5 @@ void CommitActorKillGems(int value, unsigned char *actor) {
     row[word] |= 1 << id;
   }
   PlaySoundEffect(*((struct SampleBankRef *)&g_pLevelSampleBankHeader)->head,
-                  (int)actor, 0x10, 0);
+                  (int)actor, SFX_MODE_PANNED, 0);
 }

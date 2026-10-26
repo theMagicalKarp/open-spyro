@@ -9,11 +9,11 @@ void PlayActorMeshVoice(Actor *actor, int voiceOffset, void *owner) {
   if (owner != 0) {
     PlaySoundEffect(
         ((unsigned char *)(&g_apActorMeshTable)[actor->type] + voiceOffset)[4],
-        actor, 8, owner);
+        actor, SFX_MODE_3D, owner);
   } else {
     StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
     PlaySoundEffect(
         ((unsigned char *)(&g_apActorMeshTable)[actor->type] + voiceOffset)[4],
-        actor, 8, &actor->sfxSlot);
+        actor, SFX_MODE_3D, &actor->sfxSlot);
   }
 }

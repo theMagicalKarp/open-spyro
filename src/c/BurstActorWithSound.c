@@ -10,9 +10,10 @@
  */
 void BurstActorWithSound(Actor *actor, int mode) {
   if (actor != 0) {
-    PlaySoundEffect(LEVEL_SFX(SFX_ACTOR_BURST), actor, 8, &actor->sfxSlot);
+    PlaySoundEffect(LEVEL_SFX(SFX_ACTOR_BURST), actor, SFX_MODE_3D,
+                    &actor->sfxSlot);
   } else {
-    PlaySoundEffect(LEVEL_SFX(SFX_ACTOR_BURST), 0, 0x10, (void *)0);
+    PlaySoundEffect(LEVEL_SFX(SFX_ACTOR_BURST), 0, SFX_MODE_PANNED, (void *)0);
   }
   BurstActorIntoSparks(actor, mode);
 }

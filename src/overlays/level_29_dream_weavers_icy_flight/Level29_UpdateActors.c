@@ -834,7 +834,7 @@ void Level29_UpdateActors(void) {
               g_nSfxOverrideVolL = 0x3CCC >> (3 - st->count);
               g_nSfxOverrideVolR = 0x3CCC >> (3 - st->count);
 
-              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, 8, &actor->sfxSlot);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
 
               if (ReflectVectorOffNormal(st->vel, svH, st->vel)) {
                 st->count--;
@@ -938,7 +938,7 @@ void Level29_UpdateActors(void) {
         }
 
         if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 16, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, (void *)8);
           g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, (void *)0x10);
@@ -951,7 +951,7 @@ void Level29_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         } else if (actor->type == ACTOR_TYPE_SPARX_FOOD) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 16, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
           g_nSparxFoodCount++;
 
           DespawnActorRecord(actor);
@@ -1098,7 +1098,7 @@ void Level29_UpdateActors(void) {
         }
         case 1: {
           SPY.sparxHealth++;
-          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
           actor->subMode++;
           DespawnActorRecord(st->target);
           break;
@@ -1142,7 +1142,7 @@ void Level29_UpdateActors(void) {
               g_nSfxOverrideFlags = 1;
               g_nSfxOverrideVolR = 0x3600;
               g_nSfxOverrideVolL = 0x3600;
-              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, 8, &actor->sfxSlot);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
             }
           } else {
             int dcheck = 310;
@@ -1295,7 +1295,7 @@ void Level29_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, 8, &actor->sfxSlot);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
           g_pfnLevelSpawnActor(0x190, actor);
           DespawnActorRecord(actor);
           continue;
@@ -1324,7 +1324,7 @@ void Level29_UpdateActors(void) {
         dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
         if (dz > 0 ? dz < 0x200
                    : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x200) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
           for (i = 0; i < 6; i++) {
@@ -1488,7 +1488,7 @@ void Level29_UpdateActors(void) {
         Model **models = g_apActorMeshTable;
 
         if (GetSoundVoiceStatusByOwner(actor, g_pLevelSoundIds[5]) == 0 && g_nGamestate == GS_GAMEPLAY) {
-          PlaySoundEffect(models[actor->type]->m_Sounds[1], actor, 8,
+          PlaySoundEffect(models[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
                         &actor->sfxSlot);
         }
       }
@@ -1523,7 +1523,7 @@ void Level29_UpdateActors(void) {
         actor->cullRadius = 0xFF;
         actor->otBias = 0x20;
         actor->mode = 2;
-        PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_COLLECT], actor, 0x10, 0);
+        PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_COLLECT], actor, SFX_MODE_PANNED, 0);
         break;
       case 2: {
         int d;
@@ -1550,7 +1550,7 @@ void Level29_UpdateActors(void) {
       case 3:
         if (TickCountdownByFrameDelta(st, 4) != 0) {
           g_nFlightTimeRemaining += (actor->type - 0x158) * 60;
-          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_TIME_ADDED], actor, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_TIME_ADDED], actor, SFX_MODE_PANNED, 0);
           DespawnActorRecord(actor);
         }
         break;
@@ -1736,13 +1736,13 @@ void Level29_UpdateActors(void) {
               st->hurry = 0;
             }
             if (i < 10) {
-              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_CLOCK], actor, 0x10, 0);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_CLOCK], actor, SFX_MODE_PANNED, 0);
             }
           }
           if (st->hurry != 0) {
             i = t / 6;
             if (i < prevTenth) {
-              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_HURRY], actor, 0x10, 0);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_HURRY], actor, SFX_MODE_PANNED, 0);
             }
           }
         }
@@ -1753,7 +1753,7 @@ void Level29_UpdateActors(void) {
           st->count--;
           st->spent[st->count]->mode = 2;
           st->timer = 0x10;
-          PlaySoundEffect(AS_PTRU8(g_pLevelSampleBankHeader)[SFX_FLIGHT_TALLY], actor, 0x10, 0);
+          PlaySoundEffect(AS_PTRU8(g_pLevelSampleBankHeader)[SFX_FLIGHT_TALLY], actor, SFX_MODE_PANNED, 0);
         }
         for (i = 0; i < 8; i++) {
           Actor *a = st->spent[i];
@@ -1769,7 +1769,7 @@ void Level29_UpdateActors(void) {
               DespawnActorRecord(a);
             }
             st->spent[i] = 0;
-            PlaySoundEffect(AS_PTRU8(g_pLevelSampleBankHeader)[SFX_FLIGHT_TALLY], actor, 0x10, 0);
+            PlaySoundEffect(AS_PTRU8(g_pLevelSampleBankHeader)[SFX_FLIGHT_TALLY], actor, SFX_MODE_PANNED, 0);
           }
         }
       } else if (st->slot[0] != 0 && st->slot[1] != 0 && st->slot[2] != 0 &&

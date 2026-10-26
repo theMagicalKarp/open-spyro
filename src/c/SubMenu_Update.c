@@ -30,7 +30,7 @@ void SubMenu_Update(void) {
     if (g_nSubMenuCursor > 0) {
       if (g_abLevelVisitedFlagVirtualBase[g_nSubMenuCursor * 6] != 0) {
         if (g_dwPadHeld & PAD_LEFT) {
-          PlaySoundEffect(LEVEL_SFX(SFX_MENU_PAGE), 0, 0x10, 0);
+          PlaySoundEffect(LEVEL_SFX(SFX_MENU_PAGE), 0, SFX_MODE_PANNED, 0);
           g_nSubMenuScrollDelta = 0x40;
         }
       }
@@ -38,7 +38,7 @@ void SubMenu_Update(void) {
     if (g_nSubMenuCursor < 5) {
       if (g_abLevelVisitedFlag[(g_nSubMenuCursor * 6) + 6] != 0) {
         if (g_dwPadHeld & PAD_RIGHT) {
-          PlaySoundEffect(LEVEL_SFX(SFX_MENU_PAGE), 0, 0x10, 0);
+          PlaySoundEffect(LEVEL_SFX(SFX_MENU_PAGE), 0, SFX_MODE_PANNED, 0);
           g_nSubMenuScrollDelta = -0x40;
         }
       }

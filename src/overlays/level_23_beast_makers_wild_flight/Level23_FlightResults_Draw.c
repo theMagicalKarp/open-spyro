@@ -320,7 +320,7 @@ void Level23_FlightResults_Draw(void)
         BuildTextSpriteChain(buf, pos, 0x12, 0xB);
         if (g_nFlightResultsRevealStep < 2)
         {
-          PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, SFX_MODE_PANNED, 0);
           g_nFlightResultsRevealStep = 2;
         }
       }
@@ -363,7 +363,7 @@ void Level23_FlightResults_Draw(void)
         BuildTextSpriteChain(buf, pos, 0x12, 0xB);
         if (g_nFlightResultsRevealStep < 4)
         {
-          PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, SFX_MODE_PANNED, 0);
           g_nFlightResultsRevealStep = 4;
         }
       }
@@ -406,7 +406,7 @@ void Level23_FlightResults_Draw(void)
         BuildTextSpriteChain(buf, pos, 0x12, 0xB);
         if (g_nFlightResultsRevealStep < 6)
         {
-          PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, SFX_MODE_PANNED, 0);
           g_nFlightResultsRevealStep = 6;
         }
       }
@@ -449,7 +449,7 @@ void Level23_FlightResults_Draw(void)
         BuildTextSpriteChain(buf, pos, 0x12, 0xB);
         if (g_nFlightResultsRevealStep < 8)
         {
-          PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, SFX_MODE_PANNED, 0);
           g_nFlightResultsRevealStep = 8;
         }
       }
@@ -484,7 +484,7 @@ void Level23_FlightResults_Draw(void)
         BuildTextSpriteChain(buf, pos, 0x12, 0xB);
         if (g_nFlightResultsRevealStep < 9)
         {
-          PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[snd], g_anSpyroWorldPos, SFX_MODE_PANNED, 0);
           g_nFlightResultsRevealStep = 9;
         }
       }

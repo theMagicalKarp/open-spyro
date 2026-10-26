@@ -69,6 +69,6 @@ void BeginDragonRescue(Actor *actor) {
   CopyVector(g_anDragonRescueAuraStarAnchor, &actor->posX);
   g_anDragonRescueAuraStarAnchor[2] += 0x40;
   PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_START),
-                  (Actor *)&g_anDragonRescueBlock[0x1a], 0x10,
+                  (Actor *)&g_anDragonRescueBlock[0x1a], SFX_MODE_PANNED,
                   &((Actor *)g_anDragonRescueBlock[0x1a])->sfxSlot);
 }
