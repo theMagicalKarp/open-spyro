@@ -40,6 +40,7 @@
 #include "level_spawn_actor.h"
 #include "actor.h"
 #include "level_emit_particles.h"
+#include "emit_record.h"
 
 /* Debris state block (types 0x43..0x45, 0xFF..0x101, 0x135..0x137). */
 /* Flung-critter state block (level_27 type 0xD7). */
@@ -168,7 +169,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
       rec->frameRate = g_apActorMeshTable[rec->type][0x10][0xC];
       rec->anim = 2;
       rec->nextAnim = 2;
-      g_pfnLevelEmitParticles(4, 7, pos, 0x10);
+      g_pfnLevelEmitParticles(4, EMIT_DRIFT_SPARKLE, pos, 0x10);
       InsertActorIntoSpatialGrid(rec);
       break;
     } else {

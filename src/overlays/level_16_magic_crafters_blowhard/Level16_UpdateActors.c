@@ -822,7 +822,7 @@ void Level16_UpdateActors(void) {
           continue;
         }
         if ((*st & 7) == 0) {
-          g_pfnLevelEmitParticles(1, 7, &actor->posX, (void *)0x10);
+          g_pfnLevelEmitParticles(1, EMIT_DRIFT_SPARKLE, &actor->posX, (void *)0x10);
         }
         break;
       }
@@ -2196,7 +2196,7 @@ void Level16_UpdateActors(void) {
       L16Guard *st = actor->state;
 
       if (actor->mode != 2) {
-        g_pfnLevelEmitParticles(1, 0x41, actor, 0);
+        g_pfnLevelEmitParticles(1, EMIT_ACTOR_WHITE_STREAK, actor, 0);
         if (actor->flags & ACTOR_HITS_SPYRO) {
           st->speed = 0xDC;
           st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
@@ -2660,7 +2660,7 @@ void Level16_UpdateActors(void) {
           RotateVectorByMatrix(actor->mtx, ps + 3, ps + 3);
           ps[3] += (GetRandomU32() & 0xF) - 8;
           ps[4] += (GetRandomU32() & 0xF) - 8;
-          g_pfnLevelEmitParticles(1, 0x4A, ps, ps + 3);
+          g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, ps, ps + 3);
         }
         n = st->timer / 40 + 1;
         for (i = 0; i < n; i++) {
@@ -2848,7 +2848,7 @@ void Level16_UpdateActors(void) {
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
-          g_pfnLevelEmitParticles(8, 0x40, &actor->posX, (void *)(st->prize->type - 0x53));
+          g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (void *)(st->prize->type - 0x53));
           PlayActorMeshVoice(actor, 0, 0);
           actor->mode = 1;
           ANIM_RESET(actor, 1);
@@ -3525,7 +3525,7 @@ void Level16_UpdateActors(void) {
 
       case 2:
         if (g_dwGamestateFrames & 1) {
-          g_pfnLevelEmitParticles(1, 8, actor, &g_pActorListBase[st->target]);
+          g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->target]);
         }
         r = GetWorldChunkAnimState(st->chan);
         if ((r & 2) && TickCountdownByFrameDelta(&st->timer, 4) != 0) {

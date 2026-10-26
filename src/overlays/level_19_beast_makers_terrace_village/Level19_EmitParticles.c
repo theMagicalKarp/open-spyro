@@ -196,7 +196,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.plume.texIndex = 0;
       break;
     }
-    case 0x7: {
+    case EMIT_DRIFT_SPARKLE: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
@@ -496,7 +496,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.line.c0[3] = 0x50;
       break;
     }
-    case 0x4A: {
+    case EMIT_YELLOW_DUST: {
       rec = (Emit *)AllocEmitListRecord(0);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;

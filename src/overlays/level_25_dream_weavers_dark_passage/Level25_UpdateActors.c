@@ -2515,7 +2515,7 @@ void Level25_UpdateActors(void) {
           CopyVector(svV, svW);
           LShiftVector3(svV, 2);
           AddVector(svV, svV, &actor->posX);
-          g_pfnLevelEmitParticles(1, 0xD, svV, svW);
+          g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, svV, svW);
         }
         DespawnActorRecord(actor);
         continue;
@@ -3172,7 +3172,7 @@ void Level25_UpdateActors(void) {
           RotateVectorByMatrix(actor->mtx, ps + 3, ps + 3);
           ps[3] += (GetRandomU32() & 0xF) - 8;
           ps[4] += (GetRandomU32() & 0xF) - 8;
-          g_pfnLevelEmitParticles(1, 0x4A, ps, ps + 3);
+          g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, ps, ps + 3);
         }
         n = st->timer / 40 + 1;
         for (i = 0; i < n; i++) {
@@ -3352,7 +3352,7 @@ void Level25_UpdateActors(void) {
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
-          g_pfnLevelEmitParticles(8, 0x40, &actor->posX, (void *)(st->prize->type - 0x53));
+          g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (void *)(st->prize->type - 0x53));
           PlayActorMeshVoice(actor, 0, 0);
           actor->mode = 1;
           ANIM_RESET(actor, 1);
@@ -3634,7 +3634,7 @@ void Level25_UpdateActors(void) {
           RotateVectorByMatrix(actor->mtx, s544, s544);
           s544[0] += (GetRandomU32() & 0xF) - 8;
           s544[1] += (GetRandomU32() & 0xF) - 8;
-          g_pfnLevelEmitParticles(1, 0x4A, s512, s544);
+          g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, s512, s544);
           if (actor->sfxSlot != 0x7F) {
             continue;
           }

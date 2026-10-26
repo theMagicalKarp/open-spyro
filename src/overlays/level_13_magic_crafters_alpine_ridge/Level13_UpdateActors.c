@@ -3222,7 +3222,7 @@ void Level13_UpdateActors(void) {
         dist = ApproxDist2D(&actor->posX, &SPY.posX);
         if (st->friend >= 0 && (st->mode != 2 || actor->subMode == 0) &&
             (GetRandomU32() & 1)) {
-          g_pfnLevelEmitParticles(1, 8, (int *)actor, &g_pActorListBase[st->friend]);
+          g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, (int *)actor, &g_pActorListBase[st->friend]);
         }
         if (st->snd != -1) {
           vsnd = GetWorldChunkAnimState(st->snd);
@@ -4379,7 +4379,7 @@ void Level13_UpdateActors(void) {
           RotateVectorByMatrix(actor->mtx, ps + 3, ps + 3);
           ps[3] += (GetRandomU32() & 0xF) - 8;
           ps[4] += (GetRandomU32() & 0xF) - 8;
-          g_pfnLevelEmitParticles(1, 0x4A, ps, ps + 3);
+          g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, ps, ps + 3);
         }
         n = st->timer / 40 + 1;
         for (i = 0; i < n; i++) {
@@ -4825,7 +4825,7 @@ void Level13_UpdateActors(void) {
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
-          g_pfnLevelEmitParticles(8, 0x40, &actor->posX, (void *)(st->prize->type - 0x53));
+          g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (void *)(st->prize->type - 0x53));
           PlayActorMeshVoice(actor, 0, 0);
           actor->mode = 1;
           ANIM_RESET(actor, 1);

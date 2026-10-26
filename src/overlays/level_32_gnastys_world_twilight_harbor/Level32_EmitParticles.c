@@ -275,7 +275,7 @@ void Level32_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0xD: {
+    case EMIT_SPARK_YELLOW: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;

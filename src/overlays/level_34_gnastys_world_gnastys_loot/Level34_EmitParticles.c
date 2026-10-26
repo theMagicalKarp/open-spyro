@@ -444,7 +444,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.line.c0[3] = 0x50;
       break;
     }
-    case 0x4A: {
+    case EMIT_YELLOW_DUST: {
       rec = (Emit *)AllocEmitListRecord(0);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;

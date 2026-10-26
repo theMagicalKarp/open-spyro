@@ -3886,7 +3886,7 @@ void Level14_UpdateActors(void) {
         }
         d = ApproxDist2D(&SPY.posX, (int *)(st->anchor + 0x18));
         if (d < 0x2000 && st->spark != 0 && (GetRandomU32() & 1)) {
-          g_pfnLevelEmitParticles(1, 8, actor, &g_pActorListBase[st->spark]);
+          g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->spark]);
         }
         r = GetWorldChunkAnimState(st->chunk);
         if (r & 2) {
@@ -3907,7 +3907,7 @@ void Level14_UpdateActors(void) {
 
       case 1:
         if (st->spark >= 0 && (GetRandomU32() & 1)) {
-          g_pfnLevelEmitParticles(1, 8, actor, &g_pActorListBase[st->spark]);
+          g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->spark]);
         }
         ModifyWorldChunkAnimFlags(st->chunk, 0xFC, 0);
         break;
@@ -3920,7 +3920,7 @@ void Level14_UpdateActors(void) {
         }
         if (st->spark != 0 && (GetRandomU32() & 1) &&
             ApproxDist2D(&SPY.posX, (int *)(st->anchor + 0x18)) < 0x2000) {
-          g_pfnLevelEmitParticles(1, 8, actor, &g_pActorListBase[st->spark]);
+          g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->spark]);
         }
         break;
 
@@ -3947,7 +3947,7 @@ void Level14_UpdateActors(void) {
       case 4:
         if (st->spark >= 0) {
           if (GetRandomU32() & 1) {
-            g_pfnLevelEmitParticles(1, 8, actor, &g_pActorListBase[st->spark]);
+            g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->spark]);
           }
         }
         ModifyWorldChunkAnimFlags(st->chunk, 0xFC, 0);
@@ -4482,7 +4482,7 @@ void Level14_UpdateActors(void) {
           RotateVectorByMatrix(actor->mtx, ps + 3, ps + 3);
           ps[3] += (GetRandomU32() & 0xF) - 8;
           ps[4] += (GetRandomU32() & 0xF) - 8;
-          g_pfnLevelEmitParticles(1, 0x4A, ps, ps + 3);
+          g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, ps, ps + 3);
         }
         n = st->timer / 40 + 1;
         for (i = 0; i < n; i++) {
@@ -4723,7 +4723,7 @@ void Level14_UpdateActors(void) {
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
-          g_pfnLevelEmitParticles(8, 0x40, &actor->posX, (void *)(st->prize->type - 0x53));
+          g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (void *)(st->prize->type - 0x53));
           PlayActorMeshVoice(actor, 0, 0);
           actor->mode = 1;
           ANIM_RESET(actor, 1);

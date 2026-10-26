@@ -734,7 +734,7 @@ void Level24_UpdateActors(void) {
             i++;
             g136[0] += (GetRandomU32() & 0xF) - 8;
             g136[1] += (GetRandomU32() & 0xF) - 8;
-            g_pfnLevelEmitParticles(1, 0x4A, g056, (void *)g136);
+            g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, g056, (void *)g136);
           } while (i < 5);
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
@@ -3501,7 +3501,7 @@ void Level24_UpdateActors(void) {
           RotateVectorByMatrix(actor->mtx, g456 + 3, g456 + 3);
           g456[3] += (GetRandomU32() & 0xF) - 8;
           g456[4] += (GetRandomU32() & 0xF) - 8;
-          g_pfnLevelEmitParticles(1, 0x4A, g456, g456 + 3);
+          g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, g456, g456 + 3);
         }
         n = st->timer / 40 + 1;
         for (i = 0; i < n; i++) {
@@ -3681,7 +3681,7 @@ void Level24_UpdateActors(void) {
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
-          g_pfnLevelEmitParticles(8, 0x40, &actor->posX, (void *)(st->prize->type - 0x53));
+          g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (void *)(st->prize->type - 0x53));
           PlayActorMeshVoice(actor, 0, 0);
           actor->mode = 1;
           ANIM_RESET(actor, 1);

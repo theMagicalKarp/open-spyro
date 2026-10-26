@@ -25,6 +25,7 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "actor.h"
+#include "emit_record.h"
 
 /* Level16_SpawnActor (0x80083AB4, level_16_magic_crafters_blowhard
  * overlay, 0xD7C bytes).
@@ -240,7 +241,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
         rec->frameRate = g_apActorMeshTable[rec->type][0x10][0xC];
         rec->anim = 2;
         rec->nextAnim = 2;
-        g_pfnLevelEmitParticles(4, 7, pos, 0x10);
+        g_pfnLevelEmitParticles(4, EMIT_DRIFT_SPARKLE, pos, 0x10);
         InsertActorIntoSpatialGrid(rec);
         break;
       }

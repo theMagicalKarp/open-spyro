@@ -3378,7 +3378,7 @@ void Level6_UpdateActors(void) {
             i++;
             g344[0] += (GetRandomU32() & 0xF) - 8;
             g344[1] += (GetRandomU32() & 0xF) - 8;
-            g_pfnLevelEmitParticles(1, 0x4A, g328, (void *)g344);
+            g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, g328, (void *)g344);
           } while (i < 5);
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
@@ -3558,7 +3558,7 @@ void Level6_UpdateActors(void) {
           CopyVector(g376, g328);
           LShiftVector3(g376, 2);
           AddVector(g376, g376, &actor->posX);
-          g_pfnLevelEmitParticles(1, 0xD, g376, g328);
+          g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, g376, g328);
         }
         g_pfnLevelEmitParticles(0xA, EMIT_STREAK_BURST, &actor->posX, (void *)0x10);
         DispatchActorContactAtSphere(&actor->posX, 0x800, 0, ACTOR_HIT_SUPER, actor, 2);
@@ -4029,7 +4029,7 @@ void Level6_UpdateActors(void) {
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
-          g_pfnLevelEmitParticles(8, 0x40, &actor->posX, (void *)(st->prize->type - 0x53));
+          g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (void *)(st->prize->type - 0x53));
           PlayActorMeshVoice(actor, 0, 0);
           actor->mode = 1;
           ANIM_RESET(actor, 1);

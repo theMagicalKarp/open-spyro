@@ -595,7 +595,7 @@ void Level29_UpdateActors(void) {
             CopyVector(svY, svA);
             LShiftVector3(svY, 2);
             AddVector(svY, svY, &actor->posX);
-            g_pfnLevelEmitParticles(1, 0xD, svY, svA);
+            g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, svY, svA);
           }
           PlayActorMeshVoice(actor, 0, 0);
           DespawnActorRecord(actor);

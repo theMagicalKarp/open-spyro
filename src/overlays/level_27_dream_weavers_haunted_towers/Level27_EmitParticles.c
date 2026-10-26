@@ -210,7 +210,7 @@ void Level27_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.plume.texIndex = 0;
       break;
     }
-    case 0x7: {
+    case EMIT_DRIFT_SPARKLE: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
@@ -317,7 +317,7 @@ void Level27_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0xD: {
+    case EMIT_SPARK_YELLOW: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
@@ -525,7 +525,7 @@ void Level27_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0x41: {
+    case EMIT_ACTOR_WHITE_STREAK: {
       int t1, t2, t3;
       int u1, u2, u3;
       rec = (Emit *)AllocEmitListRecord(1);

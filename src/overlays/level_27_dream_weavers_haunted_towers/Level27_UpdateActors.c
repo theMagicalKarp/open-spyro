@@ -711,7 +711,7 @@ void Level27_UpdateActors(void) {
           continue;
         }
         if ((*st & 7) == 0) {
-          g_pfnLevelEmitParticles(1, 7, &actor->posX, (void *)0x10);
+          g_pfnLevelEmitParticles(1, EMIT_DRIFT_SPARKLE, &actor->posX, (void *)0x10);
         }
         break;
       }
@@ -1883,7 +1883,7 @@ void Level27_UpdateActors(void) {
         CopyVector(g304, g288);
         LShiftVector3(g304, 2);
         AddVector(g304, g304, &actor->posX);
-        g_pfnLevelEmitParticles(1, 0xD, g304, (void *)g288);
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, g304, (void *)g288);
       }
       g_pfnLevelEmitParticles(10, EMIT_STREAK_BURST, &actor->posX, (void *)0x10);
       DespawnActorRecord(actor);
@@ -2678,7 +2678,7 @@ void Level27_UpdateActors(void) {
       int i;
 
       if (actor->mode != 4) {
-        g_pfnLevelEmitParticles(1, 0x41, (int *)actor, 0);
+        g_pfnLevelEmitParticles(1, EMIT_ACTOR_WHITE_STREAK, (int *)actor, 0);
       }
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4) {
         SpawnActorDeathDrop(actor, 3, 0, 0);
@@ -3256,7 +3256,7 @@ void Level27_UpdateActors(void) {
           RotateVectorByMatrix(actor->mtx, g472 + 3, g472 + 3);
           g472[3] += (GetRandomU32() & 0xF) - 8;
           g472[4] += (GetRandomU32() & 0xF) - 8;
-          g_pfnLevelEmitParticles(1, 0x4A, g472, g472 + 3);
+          g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, g472, g472 + 3);
         }
         n = st->timer / 40 + 1;
         for (i = 0; i < n; i++) {
@@ -3436,7 +3436,7 @@ void Level27_UpdateActors(void) {
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
-          g_pfnLevelEmitParticles(8, 0x40, &actor->posX, (void *)(st->prize->type - 0x53));
+          g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (void *)(st->prize->type - 0x53));
           PlayActorMeshVoice(actor, 0, 0);
           actor->mode = 1;
           ANIM_RESET(actor, 1);

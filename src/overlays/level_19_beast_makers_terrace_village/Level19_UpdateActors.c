@@ -2444,7 +2444,7 @@ void Level19_UpdateActors(void) {
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
-          g_pfnLevelEmitParticles(8, 0x40, &actor->posX, (void *)(st->prize->type - 0x53));
+          g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (void *)(st->prize->type - 0x53));
           PlayActorMeshVoice(actor, 0, 0);
           actor->mode = 1;
           ANIM_RESET(actor, 1);
@@ -2936,7 +2936,7 @@ void Level19_UpdateActors(void) {
           RotateVectorByMatrix(actor->mtx, o448, o448);
           o448[0] += (GetRandomU32() & 0xF) - 8;
           o448[1] += (GetRandomU32() & 0xF) - 8;
-          g_pfnLevelEmitParticles(1, 0x4A, o432, o448);
+          g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, o432, o448);
           if (actor->sfxSlot != 0x7F) {
             continue;
           }

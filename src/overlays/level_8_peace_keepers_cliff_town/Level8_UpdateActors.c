@@ -3902,7 +3902,7 @@ void Level8_UpdateActors(void) {
           RotateVectorByMatrix(actor->mtx, y384, y384);
           y384[0] += (GetRandomU32() & 0xF) - 8;
           y384[1] += (GetRandomU32() & 0xF) - 8;
-          g_pfnLevelEmitParticles(1, 0x4A, y368, y384);
+          g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, y368, y384);
           if (actor->sfxSlot != 0x7F) {
             continue;
           }

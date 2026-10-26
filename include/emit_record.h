@@ -191,6 +191,15 @@ enum EmitEffect {
                               * 0x28 frames */
   EMIT_FLAME_STREAK = 0x4F,  /* flame streak from pos toward pos + *effectArg, coloured
                               * by g_nSpyroFlameVariant; 0x18 frames */
+  EMIT_DRIFT_SPARKLE = 0x7,  /* grey sparkle jittered within effectArg of pos, drifting at random;
+                              * brightness ramps up then down over 0x19 frames */
+  EMIT_TRACKING_SPARK = 0x8, /* spark from an attach point of the Actor * in pos, tied to the
+                              * Actor * effectArg (track record) */
+  EMIT_SPARK_YELLOW = 0xD,   /* yellow spark at the velocity effectArg points to */
+  EMIT_GEM_COLOR_BURST = 0x40, /* callers pass a gem colour (prize type - 0x53), but no level's
+                                * EmitParticles has an arm for it: the call emits nothing */
+  EMIT_ACTOR_WHITE_STREAK = 0x41, /* short white streak jittered over the Actor * in pos; 8 frames */
+  EMIT_YELLOW_DUST = 0x4A,   /* class-0 yellow dust at pos moving at the velocity effectArg points to */
   EMIT_FALLING_STREAK_BURST = 0x50, /* EMIT_STREAK_BURST whose streaks keep their speed
                                      * and fall instead of easing out */
 };

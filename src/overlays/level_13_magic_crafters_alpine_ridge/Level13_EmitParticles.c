@@ -171,7 +171,7 @@ void Level13_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.track.texIndex = 0;
       break;
     }
-    case 0x8: {
+    case EMIT_TRACKING_SPARK: {
       int t1, t2, t3;
       int u1, u2, u3;
       rec = (Emit *)AllocEmitListRecord(3);

@@ -2290,7 +2290,7 @@ void Level32_UpdateActors(void) {
           CopyVector(o170, o150);
           LShiftVector3(o170, 2);
           AddVector(o170, o170, &actor->posX);
-          g_pfnLevelEmitParticles(1, 0xD, o170, o150);
+          g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, o170, o150);
         }
         g_pfnLevelEmitParticles(0xA, EMIT_STREAK_BURST, &actor->posX, (int *)0x10);
         DespawnActorRecord(actor);
@@ -2888,7 +2888,7 @@ void Level32_UpdateActors(void) {
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
-          g_pfnLevelEmitParticles(8, 0x40, &actor->posX, (void *)(st->prize->type - 0x53));
+          g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (void *)(st->prize->type - 0x53));
           PlayActorMeshVoice(actor, 0, 0);
           actor->mode = 1;
           ANIM_RESET(actor, 1);
