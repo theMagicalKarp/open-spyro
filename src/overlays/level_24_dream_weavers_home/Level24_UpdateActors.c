@@ -176,7 +176,7 @@ void Level24_UpdateActors(void) {
 
     switch (actor->type) {
     /* Portal name text: shown while the camera faces the portal. */
-    case 1: {
+    case ACTOR_TYPE_PORTAL_NAME: {
       int shouldSpawnText;
       int cameraAngleDiff;
       int distance = ApproxDist2D(&actor->posX, &CAM.posX);
@@ -2846,7 +2846,7 @@ void Level24_UpdateActors(void) {
     }
 
     /* Wooden chest (BreakState). */
-    case 194: {
+    case ACTOR_TYPE_WOOD_CHEST: {
       BreakState *st;
       int i;
 
@@ -2885,7 +2885,7 @@ void Level24_UpdateActors(void) {
     }
 
     /* Wobbling chest (WobbleState): plays a recoil pose, then breaks. */
-    case 195: {
+    case ACTOR_TYPE_WOBBLE_CHEST: {
       WobbleState *st = actor->state;
 
       if (st->snapToGround != 0) {
@@ -3440,7 +3440,7 @@ void Level24_UpdateActors(void) {
     /* Type 312: cracking boulder. Shakes and smokes when hit by a charge or
      * flame, then bursts into three rings of debris and knocks the camera
      * back. */
-    case 312: {
+    case ACTOR_TYPE_CRACKING_BOULDER: {
       L16Boulder *st = actor->state;
 
       switch (actor->subMode) {
@@ -3658,7 +3658,7 @@ void Level24_UpdateActors(void) {
     /* Type 329: seed pod. Wobbles when struck and holds a floating prize
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
-    case 329: {
+    case ACTOR_TYPE_SEED_POD: {
       L16Pod *st = actor->state;
 
       actor->soundRange = 0x20;
@@ -3981,7 +3981,7 @@ void Level24_UpdateActors(void) {
     }
 
     /* Life chest (LiftState). */
-    case 421: {
+    case ACTOR_TYPE_LIFE_CHEST: {
       LiftState *st = actor->state;
       Actor *rider;
       int i;

@@ -2427,7 +2427,7 @@ void Level2_UpdateActors(void) {
     }
 
     /* Wooden chest (BreakState). */
-    case 194: {
+    case ACTOR_TYPE_WOOD_CHEST: {
       BreakState *st;
       int i;
 
@@ -3009,7 +3009,7 @@ void Level2_UpdateActors(void) {
     }
 
     /* Life chest (LiftState). */
-    case 421: {
+    case ACTOR_TYPE_LIFE_CHEST: {
       LiftState *st = actor->state;
       Actor *rider;
       int i;

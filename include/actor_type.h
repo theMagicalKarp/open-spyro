@@ -114,6 +114,7 @@ typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
  * g_apActorMeshTable index space). Only classes whose behaviour is pinned
  * down are named; the rest stay numeric in the per-level switches. */
 enum ActorType {
+  ACTOR_TYPE_PORTAL_NAME = 1,          /* hub portal name text, shown while the camera faces the portal */
   ACTOR_TYPE_LEVEL_EXIT = 9,       /* exit whirlwind: lifts Spyro back to the hub */
   ACTOR_TYPE_FOLLOWER = 13,        /* rides a parent actor, released in turn when it dies (FollowState) */
   ACTOR_TYPE_EXTRA_LIFE = 14,      /* collected: g_nExtraLives + 1 */
@@ -131,15 +132,26 @@ enum ActorType {
   ACTOR_TYPE_SPARX = 0x78,         /* g_pSparxActor (SparxState) */
   ACTOR_TYPE_KEY = 173,            /* the level key: g_nLevelKeyState = 1 */
   ACTOR_TYPE_LOCKED_CHEST = 174,   /* opened with the key, drops a reward */
+  ACTOR_TYPE_WOOD_CHEST = 194,       /* breaks on the first hit into 0xFF..0x101 shards (BreakState) */
+  ACTOR_TYPE_WOBBLE_CHEST = 195,     /* shakes and recoils when hit, then breaks (WobbleState) */
   ACTOR_TYPE_DRAGON_STATUE = 0xFA, /* trapped dragon: counts the rescue */
   ACTOR_TYPE_STATUE_SHARD = 0xFB,  /* its burst shards (BurstShardState) */
   ACTOR_TYPE_GEM_DIGIT_0 = 0x104,  /* floating gem-value digits 0..9: 0x104..0x10D */
   ACTOR_TYPE_AMBIENT_SOUND = 286,  /* plays random ambient voices, mode 2 along a path (AmbientSoundState) */
+  ACTOR_TYPE_FLIGHT_CHEST = 299,     /* flight levels: flame or charge frees its reward */
   ACTOR_TYPE_WHIRLWIND = 300,      /* lifts Spyro to its top (WhirlwindState, SPYRO_ST_LIFT) */
+  ACTOR_TYPE_CRACKING_BOULDER = 312, /* shakes and smokes when hit, then bursts */
   ACTOR_TYPE_RESPAWNER = 323,      /* puts dormant actors of one type back once Spyro is far (RespawnState) */
+  ACTOR_TYPE_SEED_POD = 329,         /* wobbles when struck, holds a floating prize above itself */
   ACTOR_TYPE_CHECKPOINT = 331,     /* 331..333: sets the respawn anchor (SetSpawnAnchorFromActor) */
+  ACTOR_TYPE_TIME_BONUS = 345,       /* flight time bonus 345..347: flies to the HUD clock */
+  ACTOR_TYPE_FLIGHT_HUD = 358,       /* flight-level HUD controller (clock digits, target tally) */
+  ACTOR_TYPE_SPIN_CHEST = 390,       /* each charge spins it faster; spun fast enough, or flamed, it bursts */
+  ACTOR_TYPE_HOMING_SPARK = 392,     /* launched at the nearest enemy in front of Spyro */
   ACTOR_TYPE_PORTAL_GUIDE = 398,   /* flies Spyro through a portal (PortalState) */
+  ACTOR_TYPE_BREAKABLE_ROCK = 401,   /* shakes when struck; a charge shatters it */
   ACTOR_TYPE_BALLOON = 416,        /* bobs about its rest height; only in balloonist levels */
+  ACTOR_TYPE_LIFE_CHEST = 421,       /* shakes and pops its lid on a timer, spawning a 0x1A6 rider (LiftState) */
   ACTOR_TYPE_LETTER_A = 0x1AA,     /* floating-name letters A..Z: 0x1AA..0x1C3 */
 };
 

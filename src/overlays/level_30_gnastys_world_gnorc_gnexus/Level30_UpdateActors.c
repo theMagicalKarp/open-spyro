@@ -173,7 +173,7 @@ void Level30_UpdateActors(void) {
 
     switch (actor->type) {
     /* Portal name text: shown while the camera faces the portal. */
-    case 1: {
+    case ACTOR_TYPE_PORTAL_NAME: {
       int shouldSpawnText;
       int cameraAngleDiff;
       int distance = ApproxDist2D(&actor->posX, &CAM.posX);
@@ -1625,7 +1625,7 @@ void Level30_UpdateActors(void) {
       break;
 
     /* Breakable chest (ChestState): one hit showers gems. */
-    case 194: {
+    case ACTOR_TYPE_WOOD_CHEST: {
       ChestState *st = actor->state;
 
       if (st->shake != 0) {
@@ -1665,7 +1665,7 @@ void Level30_UpdateActors(void) {
     }
 
     /* Wobbling chest (WobbleState): plays a recoil pose, then breaks. */
-    case 195: {
+    case ACTOR_TYPE_WOBBLE_CHEST: {
       WobbleState *st = actor->state;
 
       if (st->snapToGround != 0) {

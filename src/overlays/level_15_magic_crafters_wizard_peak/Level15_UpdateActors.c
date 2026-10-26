@@ -2559,7 +2559,7 @@ void Level15_UpdateActors(void) {
     }
 
     /* Wooden chest (BreakState). */
-    case 194: {
+    case ACTOR_TYPE_WOOD_CHEST: {
       BreakState *st;
       int i;
 
@@ -2598,7 +2598,7 @@ void Level15_UpdateActors(void) {
     }
 
     /* Wobbling chest (WobbleState): plays a recoil pose, then breaks. */
-    case 195: {
+    case ACTOR_TYPE_WOBBLE_CHEST: {
       WobbleState *st = actor->state;
 
       if (st->snapToGround != 0) {
@@ -3858,7 +3858,7 @@ void Level15_UpdateActors(void) {
     /* Type 329: seed pod. Wobbles when struck and holds a floating prize
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
-    case 329: {
+    case ACTOR_TYPE_SEED_POD: {
       L16Pod *st = actor->state;
 
       actor->soundRange = 0x20;
@@ -4047,7 +4047,7 @@ void Level15_UpdateActors(void) {
 
     /* Type 390: spinning chest. Each charge spins it faster (with a rising
      * voice); spun fast enough, or flamed, it bursts. */
-    case 390: {
+    case ACTOR_TYPE_SPIN_CHEST: {
       L26Spinner *st = actor->state;
       int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
@@ -4118,7 +4118,7 @@ void Level15_UpdateActors(void) {
     /* Type 392: homing spark. Launched at the nearest enemy in front of
      * Spyro (or away from him when there is none), and bursts on what it
      * hits. */
-    case 392: {
+    case ACTOR_TYPE_HOMING_SPARK: {
       L26Spark *st = actor->state;
       int i;
 
@@ -4210,7 +4210,7 @@ void Level15_UpdateActors(void) {
 
     /* Type 401: breakable rock. Shakes when struck; a charge shatters it
      * into rubble and dust and removes it. */
-    case 401: {
+    case ACTOR_TYPE_BREAKABLE_ROCK: {
       L31Rock *st = actor->state;
 
       if (st->shake != 0) {
@@ -4276,7 +4276,7 @@ void Level15_UpdateActors(void) {
     }
 
     /* Life chest (LiftState). */
-    case 421: {
+    case ACTOR_TYPE_LIFE_CHEST: {
       LiftState *st = actor->state;
       Actor *rider;
       int i;

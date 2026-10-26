@@ -1450,7 +1450,7 @@ void Level29_UpdateActors(void) {
 
     /* Flight-level chest: flaming or charging it frees its reward and
      * scatters shards; otherwise it hums its ambient sound. */
-    case 299: {
+    case ACTOR_TYPE_FLIGHT_CHEST: {
       int *st = actor->state;
       int i;
 
@@ -1496,9 +1496,9 @@ void Level29_UpdateActors(void) {
     }
     /* Time-bonus pickup: turns to face Spyro, then flies to the HUD corner
      * and adds (type - 0x158) seconds when it arrives. */
-    case 0x159:
-    case 0x15A:
-    case 0x15B: {
+    case ACTOR_TYPE_TIME_BONUS:
+    case ACTOR_TYPE_TIME_BONUS + 1:
+    case ACTOR_TYPE_TIME_BONUS + 2: {
       int *st = actor->state;
 
       switch (actor->mode) {
@@ -1560,7 +1560,7 @@ void Level29_UpdateActors(void) {
     /* Flight-level HUD controller: the countdown / time-attack clock digits,
      * the per-target-class collection tally, and the four tally slots that
      * finish the level once they are all filled (HudState). */
-    case 0x166: {
+    case ACTOR_TYPE_FLIGHT_HUD: {
       HudState *st = actor->state;
       int i;
       int prevMin;

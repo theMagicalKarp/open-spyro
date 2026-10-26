@@ -2303,7 +2303,7 @@ void Level8_UpdateActors(void) {
     }
 
     /* Wooden chest (BreakState). */
-    case 194: {
+    case ACTOR_TYPE_WOOD_CHEST: {
       BreakState *st;
       int i;
 
@@ -2342,7 +2342,7 @@ void Level8_UpdateActors(void) {
     }
 
     /* Wobbling chest (WobbleState): plays a recoil pose, then breaks. */
-    case 195: {
+    case ACTOR_TYPE_WOBBLE_CHEST: {
       WobbleState *st = actor->state;
 
       if (st->snapToGround != 0) {
@@ -3790,7 +3790,7 @@ void Level8_UpdateActors(void) {
 
     /* Type 401: breakable rock. Shakes when struck; a charge shatters it
      * into rubble and dust and removes it. */
-    case 401: {
+    case ACTOR_TYPE_BREAKABLE_ROCK: {
       L31Rock *st = actor->state;
 
       if (st->shake != 0) {
@@ -3996,7 +3996,7 @@ void Level8_UpdateActors(void) {
     }
 
     /* Life chest (LiftState). */
-    case 421: {
+    case ACTOR_TYPE_LIFE_CHEST: {
       LiftState *st = actor->state;
       Actor *rider;
       int i;

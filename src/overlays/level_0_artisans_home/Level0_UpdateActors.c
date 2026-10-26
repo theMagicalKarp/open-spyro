@@ -126,7 +126,7 @@ void Level0_UpdateActors(void) {
      * update; `continue` also skips any shared tail inside the case. */
     switch (actor->type) {
     /* Portal name text: shown while the camera faces the portal. */
-    case 1: {
+    case ACTOR_TYPE_PORTAL_NAME: {
       int shouldSpawnText, cameraAngleDiff;
       int distance = ApproxDist2D(&actor->posX, &CAM.posX);
 
@@ -2071,7 +2071,7 @@ void Level0_UpdateActors(void) {
     }
 
     /* Wooden chest (BreakState). */
-    case 194: {
+    case ACTOR_TYPE_WOOD_CHEST: {
       BreakState *st;
       int i;
 
@@ -2998,7 +2998,7 @@ void Level0_UpdateActors(void) {
     }
 
     /* Life chest (LiftState). */
-    case 421: {
+    case ACTOR_TYPE_LIFE_CHEST: {
       LiftState *st = actor->state;
       Actor *rider;
       int i;

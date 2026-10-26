@@ -1666,7 +1666,7 @@ void Level4_UpdateActors(void) {
     }
 
     /* Wooden chest (BreakState). */
-    case 194: {
+    case ACTOR_TYPE_WOOD_CHEST: {
       BreakState *st;
       int i;
 
@@ -1705,7 +1705,7 @@ void Level4_UpdateActors(void) {
     }
 
     /* Wobbling chest (WobbleState): plays a recoil pose, then breaks. */
-    case 195: {
+    case ACTOR_TYPE_WOBBLE_CHEST: {
       WobbleState *st = actor->state;
 
       if (st->snapToGround != 0) {
