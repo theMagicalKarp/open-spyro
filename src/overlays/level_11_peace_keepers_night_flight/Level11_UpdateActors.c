@@ -1445,7 +1445,7 @@ void Level11_UpdateActors(void) {
     }
     /* Breakable flight target: bursts into 12 shards when Spyro flies
      * through, and otherwise pulses its glow with the frame counter. */
-    case 0x161: {
+    case ACTOR_TYPE_FLIGHT_TARGET: {
       TargetState *st = actor->state;
 
       if (g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0 && st->helper == 0) {
@@ -1476,7 +1476,7 @@ void Level11_UpdateActors(void) {
               if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
                 break;
               }
-              shard = g_pfnLevelSpawnActor(i + 0x176, actor);
+              shard = g_pfnLevelSpawnActor(i + ACTOR_TYPE_FLIGHT_TARGET_SHARD, actor);
               ss = shard->state;
               RotateVectorByMatrix(actor->mtx, &g_anActorShardOffsets[i * 3], svV);
               AddVector(&shard->posX, &actor->posX, svV);
@@ -1809,20 +1809,20 @@ void Level11_UpdateActors(void) {
       DespawnActorRecord(actor);
       continue;
 
-    /* A 0x161 burst shard: drifts and tumbles until its life runs out or it
+    /* A flight-target burst shard: drifts and tumbles until its life runs out or it
      * leaves the screen. */
-    case 0x177:
-    case 0x178:
-    case 0x179:
-    case 0x17A:
-    case 0x17B:
-    case 0x17C:
-    case 0x17D:
-    case 0x17E:
-    case 0x17F:
-    case 0x180:
-    case 0x181:
-    case 0x182: {
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 1:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 2:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 3:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 4:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 5:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 6:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 7:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 8:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 9:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 10:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 11:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 12: {
       BurstState *ss = actor->state;
 
       if (actor->drawn != 0 && TickCountdownByFrameDelta(&ss->life, 4) == 0) {

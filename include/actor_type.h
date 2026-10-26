@@ -187,10 +187,12 @@ enum ActorType {
   ACTOR_TYPE_CHECKPOINT = 331,     /* 331..333: sets the respawn anchor (SetSpawnAnchorFromActor) */
   ACTOR_TYPE_ATTACH_BEAD = 343, /* level 19: streams between its owner's attach points (AttachBeadState) */
   ACTOR_TYPE_TIME_BONUS = 345,       /* flight time bonus 345..347: flies to the HUD clock */
+  ACTOR_TYPE_FLIGHT_TARGET = 353,    /* breakable flight target: bursts into shards 374..386 when flown through */
   ACTOR_TYPE_FLIGHT_HUD = 358,       /* flight-level HUD controller (clock digits, target tally) */
   ACTOR_TYPE_SHEMP_GUARD = 370, /* level 10: Doctor Shemp's guard (GuardState370) */
   ACTOR_TYPE_DOCTOR_SHEMP = 371, /* level 10 boss (ShempState) */
   ACTOR_TYPE_SHEMP_LOOKOUT = 372, /* level 10: Doctor Shemp's lookout (LookoutState) */
+  ACTOR_TYPE_FLIGHT_TARGET_SHARD = 374, /* 374..386: a flight target's burst shards */
   ACTOR_TYPE_SPIN_CHEST = 390,       /* each charge spins it faster; spun fast enough, or flamed, it bursts */
   ACTOR_TYPE_HOMING_SPARK = 392,     /* launched at the nearest enemy in front of Spyro */
   ACTOR_TYPE_PORTAL_GUIDE = 398,   /* flies Spyro through a portal (PortalState) */
