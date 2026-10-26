@@ -926,7 +926,7 @@ void Level21_UpdateActors(void) {
           st->landSoundPlayed = 1;
         }
         if (g_nActorAnimDone != 0) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
@@ -940,7 +940,7 @@ void Level21_UpdateActors(void) {
           st->rock->subMode = 0;
         }
         if (st->rock != 0 && st->rock->subMode == 0) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 0, &st->rock->posX);
           st->rock->rotZ = ArcTan2(spy->posX - st->rock->posX,
                                           spy->posY - st->rock->posY, 0);
@@ -1078,7 +1078,7 @@ void Level21_UpdateActors(void) {
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 || r == 2 ||
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > 0x9470) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           MarkActorCommittedKill(actor);
@@ -1147,7 +1147,7 @@ void Level21_UpdateActors(void) {
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
         ANIM_GO(actor, 6);
-        RefreshActorDerivedState(p, 4);
+        RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(p, 0, svD);
         GetActorAttachPoint(p, 1, throwHand1);
         AddVector(throwGripMid, svD, throwHand1);
@@ -1164,7 +1164,7 @@ void Level21_UpdateActors(void) {
         Actor *p = &g_pActorListBase[st->rider];
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
-        RefreshActorDerivedState(p, 4);
+        RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(p, 0, svE);
         GetActorAttachPoint(p, 1, svF);
         AddVector(throwCarryMid, svE, svF);
@@ -1185,7 +1185,7 @@ void Level21_UpdateActors(void) {
         break;
       }
       }
-      RefreshActorDerivedState(actor, 1);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       continue;
     }
 
@@ -1329,7 +1329,7 @@ void Level21_UpdateActors(void) {
       case 5:
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xE, 0xA);
         if (g_nActorAnimDone != 0) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x34);
           DespawnActorRecord(actor);
           continue;
@@ -1435,7 +1435,7 @@ void Level21_UpdateActors(void) {
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 || r == 2 ||
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > 0x9470) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x34);
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           MarkActorCommittedKill(actor);
@@ -1514,7 +1514,7 @@ void Level21_UpdateActors(void) {
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
         ANIM_GO(actor, 7);
-        RefreshActorDerivedState(p, 4);
+        RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(p, 0, svD);
         GetActorAttachPoint(p, 1, keepHand1);
         AddVector(svE, svD, keepHand1);
@@ -1531,7 +1531,7 @@ void Level21_UpdateActors(void) {
         Actor *p = &g_pActorListBase[st->rider];
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
-        RefreshActorDerivedState(p, 4);
+        RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(p, 0, svG);
         GetActorAttachPoint(p, 1, keepCarryHand1);
         AddVector(keepCarryMid, svG, keepCarryHand1);
@@ -1552,7 +1552,7 @@ void Level21_UpdateActors(void) {
         break;
       }
       }
-      RefreshActorDerivedState(actor, 1);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       continue;
     }
 
@@ -1667,7 +1667,7 @@ void Level21_UpdateActors(void) {
       if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
 
         if (st->anim != 255) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
           if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
             RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset5, g_aRotBillboards[st->anim].pos);
@@ -1742,7 +1742,7 @@ void Level21_UpdateActors(void) {
             actor->posY = pickupTri[0][1] / 3;
             actor->posZ = pickupTri[0][2] / 3;
 
-            RefreshActorDerivedState(actor, 2);
+            RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
 
@@ -1752,7 +1752,7 @@ void Level21_UpdateActors(void) {
             CopyVector(svG, &actor->posX);
             svG[2] += 0x400;
 
-            RefreshActorDerivedState(actor, 2);
+            RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
 
             if (FindGroundHeightBelow(svG, 0x1000) > 0) {
               colIndex = g_nLastCollisionHitChunkId;
@@ -1974,7 +1974,7 @@ void Level21_UpdateActors(void) {
 
         if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 16, 0);
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, (void *)8);
           g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, (void *)0x10);
 
@@ -2045,7 +2045,7 @@ void Level21_UpdateActors(void) {
                 actor->mode = 3;
                 actor->scale = 0x60;
                 g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, at, (int *)0xC);
-                RefreshActorDerivedState(actor, 1);
+                RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
                 FindGroundHeightBelow(at, 0x1000);
                 EncodeCachedVecToActorDirCode(actor);
                 actor->groundCode |= 0x80000000;
@@ -2475,7 +2475,7 @@ void Level21_UpdateActors(void) {
           }
         }
 
-        RefreshActorDerivedState(actor, 4);
+        RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
       }
 
       break;
@@ -2498,7 +2498,7 @@ void Level21_UpdateActors(void) {
             int i;
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
-            RefreshActorDerivedState(actor, 4);
+            RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
             for (i = 0; i < 6; i++) {
               g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, (int *)(0x8080 + (i << 24)));
@@ -2516,7 +2516,7 @@ void Level21_UpdateActors(void) {
         }
 
         if (st->attach != 0xFF) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           RotateVectorByMatrix(&actor->mtx[0], &g_anRotBillboardOffset4,
                         g_aRotBillboards[st->attach].pos);
           AddVector(g_aRotBillboards[st->attach].pos, g_aRotBillboards[st->attach].pos,
@@ -2729,7 +2729,7 @@ void Level21_UpdateActors(void) {
           g_nSpyroSwingEulerPitchTarget = 0;
         }
 
-        RefreshActorDerivedState(key, 4);
+        RefreshActorDerivedState(key, ACTOR_REFRESH_MATRIX);
         if (st->shake % 4 < 2) {
           g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)key, (void *)0x8080);
         } else {
@@ -3283,7 +3283,7 @@ void Level21_UpdateActors(void) {
       case 2:
         DriveActorTrackedMove(actor, &st->knock, st->knockAng, &st->lift, 0xC, 0xC);
         if (g_nActorAnimDone != 0) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
@@ -4418,7 +4418,7 @@ void Level21_UpdateActors(void) {
       case 2:
         DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, 0x10);
         if (g_nActorAnimDone != 0) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x10);
           DespawnActorRecord(actor);
           continue;
@@ -4446,7 +4446,7 @@ void Level21_UpdateActors(void) {
         ANIM_GO(actor, 0);
         break;
       }
-      RefreshActorDerivedState(actor, 1);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       break;
     }
 }

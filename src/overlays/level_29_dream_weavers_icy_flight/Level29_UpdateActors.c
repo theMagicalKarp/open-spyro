@@ -565,7 +565,7 @@ void Level29_UpdateActors(void) {
       }
       GetActorAttachPoint(&g_pActorListBase[st->host], 0, &actor->posX);
       *(Rot3 *)&actor->rotX = *(Rot3 *)&g_pActorListBase[st->host].rotX;
-      RefreshActorDerivedState(actor, 2);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
       switch (actor->mode) {
       case 0:
         break;
@@ -625,7 +625,7 @@ void Level29_UpdateActors(void) {
       if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
 
         if (st->anim != 255) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
           if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
             RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset5, g_aRotBillboards[st->anim].pos);
@@ -702,7 +702,7 @@ void Level29_UpdateActors(void) {
             actor->posY = acc[0][1] / 3;
             actor->posZ = acc[0][2] / 3;
 
-            RefreshActorDerivedState(actor, 2);
+            RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
 
@@ -712,7 +712,7 @@ void Level29_UpdateActors(void) {
             CopyVector(svF, &actor->posX);
             svF[2] += 0x400;
 
-            RefreshActorDerivedState(actor, 2);
+            RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
 
             if (FindGroundHeightBelow(svF, 0x1000) > 0) {
               colIndex = g_nLastCollisionHitChunkId;
@@ -939,7 +939,7 @@ void Level29_UpdateActors(void) {
 
         if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 16, 0);
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, (void *)8);
           g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, (void *)0x10);
 
@@ -1241,7 +1241,7 @@ void Level29_UpdateActors(void) {
           break;
         }
       }
-      RefreshActorDerivedState(actor, 4);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
       break;
     }
 
@@ -1325,7 +1325,7 @@ void Level29_UpdateActors(void) {
         if (dz > 0 ? dz < 0x200
                    : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x200) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
           for (i = 0; i < 6; i++) {
             g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, (void *)(0x8080 + 0x1000000 * i));
@@ -1343,7 +1343,7 @@ void Level29_UpdateActors(void) {
       }
 
       if (st->attach != 0xFF) {
-        RefreshActorDerivedState(actor, 4);
+        RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset4, g_aRotBillboards[st->attach].pos);
         AddVector(g_aRotBillboards[st->attach].pos, g_aRotBillboards[st->attach].pos,
                       &actor->posX);
@@ -2048,7 +2048,7 @@ void Level29_UpdateActors(void) {
       }
       if (g_nSpyroSubstate < SPYRO_SUB_SCRIPTED) {
         TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, 4);
-        RefreshActorDerivedState(actor, 4);
+        RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         if ((g_dwGamestateFrames & 3) == 0) {
           GetActorAttachPoint(actor, 3, svZ);
           g_pfnLevelEmitParticles(1, 0x13, svZ, 0);
@@ -2090,7 +2090,7 @@ void Level29_UpdateActors(void) {
         break;
       case 1:
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           for (i = 0; i < 3; i++) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;

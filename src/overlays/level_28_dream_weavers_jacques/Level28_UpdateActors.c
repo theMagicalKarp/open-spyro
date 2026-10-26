@@ -722,7 +722,7 @@ void Level28_UpdateActors(void) {
         continue;
       }
       actor->flags = 0;
-      RefreshActorDerivedState(actor, 5);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
       if (dist > 0xC00) {
         st->charged = 0;
       }
@@ -779,7 +779,7 @@ void Level28_UpdateActors(void) {
       case 4:
         DriveActorTrackedMove(actor, &st->knock, st->heading, &st->lift, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
-          RefreshActorDerivedState(actor, 5);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x20);
           DespawnActorRecord(actor);
           continue;
@@ -827,7 +827,7 @@ void Level28_UpdateActors(void) {
           st->timer = 0xA0;
           st->charged = one;
           st->saved = 6;
-          RefreshActorDerivedState(actor, 1);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
           ENTER_POSE(actor, 3);
         }
         continue;
@@ -842,7 +842,7 @@ void Level28_UpdateActors(void) {
         int h = ArcTan2_8bit(st->home[0] - actor->posX,
                               st->home[1] - actor->posY);
 
-        RefreshActorDerivedState(actor, 1);
+        RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
         if (TurnActorYawTowardAngle(actor, h, 4, 0x14, one) != 0) {
           MoveActorAlongHeading(actor, 0x5A, 0x300, 0x200, 0x27);
         }
@@ -862,7 +862,7 @@ void Level28_UpdateActors(void) {
       CarriedRockState *st = actor->state;
 
       if (st->mode != 0x63) {
-        RefreshActorDerivedState(actor, 5);
+        RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
         FindGroundHeightBelow(&actor->posX, 0x10000);
         EncodeCachedVecToActorDirCode(actor);
         CopyVector(g056, &actor->posX);
@@ -940,7 +940,7 @@ void Level28_UpdateActors(void) {
       }
 
       case 1:
-        RefreshActorDerivedState(actor, 5);
+        RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);
           continue;
@@ -948,7 +948,7 @@ void Level28_UpdateActors(void) {
         continue;
 
       case 2:
-        RefreshActorDerivedState(actor, 5);
+        RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);
           continue;
@@ -1110,7 +1110,7 @@ void Level28_UpdateActors(void) {
 
       if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
         if (st->attach != 0xFF) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
             RotateVectorByMatrix(&actor->mtx[0], &g_anRotBillboardOffset5,
                           g_aRotBillboards[st->attach].pos);
@@ -1181,13 +1181,13 @@ void Level28_UpdateActors(void) {
             actor->posX = g216[0][0] / 3;
             actor->posY = g216[0][1] / 3;
             actor->posZ = g216[0][2] / 3;
-            RefreshActorDerivedState(actor, 2);
+            RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
           } else if (st->mode == 3) {
             CopyVector(g200, &actor->posX);
             g200[2] += 0x400;
-            RefreshActorDerivedState(actor, 2);
+            RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             if (FindGroundHeightBelow(g200, 0x1000) > 0) {
               st->groundTri = g_nLastCollisionHitChunkId;
               st->mode = 2;
@@ -1422,7 +1422,7 @@ void Level28_UpdateActors(void) {
 
             if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
               PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
-              RefreshActorDerivedState(actor, 4);
+              RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
               g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)8);
               g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x10);
               if (g_nExtraLives < 0x63) {
@@ -1495,7 +1495,7 @@ void Level28_UpdateActors(void) {
                 actor->mode = 3;
                 actor->scale = 0x60;
                 g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, at, (int *)0xC);
-                RefreshActorDerivedState(actor, 1);
+                RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
                 FindGroundHeightBelow(at, 0x1000);
                 EncodeCachedVecToActorDirCode(actor);
                 actor->groundCode |= 0x80000000;
@@ -1925,7 +1925,7 @@ void Level28_UpdateActors(void) {
           }
         }
 
-        RefreshActorDerivedState(actor, 4);
+        RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
       }
 
       break;
@@ -1960,7 +1960,7 @@ void Level28_UpdateActors(void) {
         ANIM_RESET(actor, 8);
         continue;
       }
-      RefreshActorDerivedState(actor, 1);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       FindGroundHeightBelow(&actor->posX, 0x10000);
       EncodeCachedVecToActorDirCode(actor);
 
@@ -2060,7 +2060,7 @@ void Level28_UpdateActors(void) {
           actor->posZ -= 0x40;
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        RefreshActorDerivedState(actor, 5);
+        RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
         if (g_nActorAnimDone != 0) {
           st->timer = st->period;
           switch (st->mode) {
@@ -2098,7 +2098,7 @@ void Level28_UpdateActors(void) {
 
       case 9:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        RefreshActorDerivedState(actor, 5);
+        RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
         if (st->next == 0x63) {
           ENTER_POSE(actor, 0xC);
         }
@@ -2204,7 +2204,7 @@ void Level28_UpdateActors(void) {
         actor->mode = 10;
         continue;
       }
-      RefreshActorDerivedState(actor, 4);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
       FindGroundHeightBelow(&spy->posX, 0xFFFF);
       ApproxDist2D(&actor->posX, &spy->posX);
 
@@ -2342,7 +2342,7 @@ void Level28_UpdateActors(void) {
         }
         break;
       }
-      RefreshActorDerivedState(actor, 1);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       break;
     }
 
@@ -2363,7 +2363,7 @@ void Level28_UpdateActors(void) {
             int i;
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
-            RefreshActorDerivedState(actor, 4);
+            RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
             for (i = 0; i < 6; i++) {
               g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, (int *)(0x8080 + (i << 24)));
@@ -2381,7 +2381,7 @@ void Level28_UpdateActors(void) {
         }
 
         if (st->attach != 0xFF) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           RotateVectorByMatrix(&actor->mtx[0], &g_anRotBillboardOffset4,
                         g_aRotBillboards[st->attach].pos);
           AddVector(g_aRotBillboards[st->attach].pos, g_aRotBillboards[st->attach].pos,
@@ -2594,7 +2594,7 @@ void Level28_UpdateActors(void) {
           g_nSpyroSwingEulerPitchTarget = 0;
         }
 
-        RefreshActorDerivedState(key, 4);
+        RefreshActorDerivedState(key, ACTOR_REFRESH_MATRIX);
         if (st->shake % 4 < 2) {
           g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)key, (void *)0x8080);
         } else {

@@ -2105,8 +2105,9 @@ int RaiseSpyroTriggerInRadius(int *pos, int radius, int flags);
  * plus every member of a pickup group (+0x43) with any active member. */
 void BuildActiveActorList(void);
 
-/* 0x800529e4: Recompute an actor's derived state by flag bits: 1 = mesh/anim frame
- * pointer (+8), 2 = spatial-grid cell relink (+0x34), 4 = rotation matrix from euler (+0x44). */
+/* 0x800529e4: Recompute an actor's derived state by ACTOR_REFRESH_* bits: COLLISION
+ * (1) reloads ->collision (+8) from the current animation frame, GRID (2) relinks the
+ * spatial-grid cell (+0x34), MATRIX (4) rebuilds ->mtx from the euler bytes (+0x44). */
 void RefreshActorDerivedState(Actor *actor, int mode);
 
 /* 0x80052d64: World position of attach/mount point `slot` on an actor's model. */

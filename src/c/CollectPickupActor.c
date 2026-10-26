@@ -16,7 +16,7 @@ void CollectPickupActor(Actor *a) {
   if ((unsigned char *)a == g_pLockedChestReward) {
     g_nLevelKeyState = 3;
   }
-  RefreshActorDerivedState(a, 4);
+  RefreshActorDerivedState(a, ACTOR_REFRESH_MATRIX);
   ((void (*)(int, int, Actor *, int))g_pfnLevelEmitParticles)(
       6, EMIT_ACTOR_SPARK, a, g_adwActorBurstColors[a->type]);
 

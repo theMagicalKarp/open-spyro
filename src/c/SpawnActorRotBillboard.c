@@ -38,7 +38,7 @@ int SpawnActorRotBillboard(Actor *actor, int *offset) {
     rec->g = 0xFF;
     rec->b = 0xFF;
 
-    RefreshActorDerivedState(actor, 4);
+    RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
     RotateVectorByMatrix(actor->mtx, offset, rec->pos);
     AddVector(rec->pos, rec->pos, &actor->posX);
     rec->angle = GetRandomU32();

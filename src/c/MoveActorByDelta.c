@@ -60,6 +60,6 @@ int MoveActorByDelta(Actor *actor, DeltaVec delta, int group, int radius,
     newpos[2] = t - radius;
   }
   CopyVector(&actor->posX, newpos);
-  RefreshActorDerivedState(actor, 2);
+  RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
   return 0;
 }

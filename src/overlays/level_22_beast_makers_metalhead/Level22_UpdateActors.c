@@ -828,7 +828,7 @@ void Level22_UpdateActors(void) {
           PodShotState *sh = o->state;
           int d;
 
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 3, &o->posX);
           CopyVector(g056, &actor->posX);
           g056[0] += ((st->shots * 150 + 3000) * g_anCosineLut[actor->rotZ]) >> 12;
@@ -876,7 +876,7 @@ void Level22_UpdateActors(void) {
           b->vz = ComputeLobVelocityZ(&o->posX, st->aim, b->speed, b->dvz, &b->flightTime);
         }
         if (actor->nextFrame < 3) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 5, st->hand);
         }
         st->count += g_nFrameStep;
@@ -956,7 +956,7 @@ void Level22_UpdateActors(void) {
         ANIM_GO(actor, 0xB);
         if (g_nActorAnimDone != 0) {
           ModifyWorldChunkAnimFlags(3, 0xFC, 0);
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x40);
           g_bLevelBossDefeated = 1;
           DespawnActorRecord(actor);
@@ -1125,7 +1125,7 @@ void Level22_UpdateActors(void) {
         DespawnActorRecord(actor);
         continue;
       }
-      RefreshActorDerivedState(actor, 1);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       continue;
     }
 
@@ -1302,7 +1302,7 @@ void Level22_UpdateActors(void) {
           st->landSoundPlayed = 1;
         }
         if (g_nActorAnimDone != 0) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
@@ -1316,7 +1316,7 @@ void Level22_UpdateActors(void) {
           st->rock->subMode = 0;
         }
         if (st->rock != 0 && st->rock->subMode == 0) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 0, &st->rock->posX);
           st->rock->rotZ = ArcTan2(spy->posX - st->rock->posX,
                                           spy->posY - st->rock->posY, 0);
@@ -1454,7 +1454,7 @@ void Level22_UpdateActors(void) {
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 || r == 2 ||
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > 0x9470) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           MarkActorCommittedKill(actor);
@@ -1523,7 +1523,7 @@ void Level22_UpdateActors(void) {
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
         ANIM_GO(actor, 6);
-        RefreshActorDerivedState(p, 4);
+        RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(p, 0, g232);
         GetActorAttachPoint(p, 1, g248);
         AddVector(g216, g232, g248);
@@ -1540,7 +1540,7 @@ void Level22_UpdateActors(void) {
         Actor *p = &g_pActorListBase[st->rider];
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
-        RefreshActorDerivedState(p, 4);
+        RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(p, 0, g280);
         GetActorAttachPoint(p, 1, g296);
         AddVector(g264, g280, g296);
@@ -1561,7 +1561,7 @@ void Level22_UpdateActors(void) {
         break;
       }
       }
-      RefreshActorDerivedState(actor, 1);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       continue;
     }
 
@@ -1705,7 +1705,7 @@ void Level22_UpdateActors(void) {
       case 5:
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xE, 0xA);
         if (g_nActorAnimDone != 0) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x34);
           DespawnActorRecord(actor);
           continue;
@@ -1811,7 +1811,7 @@ void Level22_UpdateActors(void) {
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 || r == 2 ||
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > 0x9470) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x34);
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           MarkActorCommittedKill(actor);
@@ -1890,7 +1890,7 @@ void Level22_UpdateActors(void) {
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
         ANIM_GO(actor, 7);
-        RefreshActorDerivedState(p, 4);
+        RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(p, 0, g232);
         GetActorAttachPoint(p, 1, g312);
         AddVector(g280, g232, g312);
@@ -1907,7 +1907,7 @@ void Level22_UpdateActors(void) {
         Actor *p = &g_pActorListBase[st->rider];
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
-        RefreshActorDerivedState(p, 4);
+        RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(p, 0, g344);
         GetActorAttachPoint(p, 1, g360);
         AddVector(g328, g344, g360);
@@ -1928,7 +1928,7 @@ void Level22_UpdateActors(void) {
         break;
       }
       }
-      RefreshActorDerivedState(actor, 1);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       continue;
     }
 
@@ -2063,7 +2063,7 @@ void Level22_UpdateActors(void) {
         PlayActorMeshVoice(actor, 1, 0);
         RESET_IDLE(actor);
       }
-      RefreshActorDerivedState(actor, 1);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       continue;
     }
 
@@ -2180,7 +2180,7 @@ void Level22_UpdateActors(void) {
       if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
 
         if (st->anim != 255) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
           if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
             RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset5, g_aRotBillboards[st->anim].pos);
@@ -2255,7 +2255,7 @@ void Level22_UpdateActors(void) {
             actor->posY = g376[0][1] / 3;
             actor->posZ = g376[0][2] / 3;
 
-            RefreshActorDerivedState(actor, 2);
+            RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
 
@@ -2265,7 +2265,7 @@ void Level22_UpdateActors(void) {
             CopyVector(g344, &actor->posX);
             g344[2] += 0x400;
 
-            RefreshActorDerivedState(actor, 2);
+            RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
 
             if (FindGroundHeightBelow(g344, 0x1000) > 0) {
               colIndex = g_nLastCollisionHitChunkId;
@@ -2487,7 +2487,7 @@ void Level22_UpdateActors(void) {
 
         if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 16, 0);
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, (void *)8);
           g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, (void *)0x10);
 
@@ -2559,7 +2559,7 @@ void Level22_UpdateActors(void) {
 
                 g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, (void *)0xC);
 
-                RefreshActorDerivedState(actor, 1);
+                RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
                 FindGroundHeightBelow(&actor->posX, 0x1000);
                 EncodeCachedVecToActorDirCode(actor);
                 actor->groundCode |= 0x80000000;
@@ -2985,7 +2985,7 @@ void Level22_UpdateActors(void) {
           }
         }
 
-        RefreshActorDerivedState(actor, 4);
+        RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
       }
 
       break;
@@ -3041,7 +3041,7 @@ void Level22_UpdateActors(void) {
             int i;
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
-            RefreshActorDerivedState(actor, 4);
+            RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
             for (i = 0; i < 6; i++) {
               g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, (int *)(0x8080 + (i << 24)));
@@ -3059,7 +3059,7 @@ void Level22_UpdateActors(void) {
         }
 
         if (st->attach != 0xFF) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           RotateVectorByMatrix(&actor->mtx[0], &g_anRotBillboardOffset4,
                         g_aRotBillboards[st->attach].pos);
           AddVector(g_aRotBillboards[st->attach].pos, g_aRotBillboards[st->attach].pos,
@@ -3272,7 +3272,7 @@ void Level22_UpdateActors(void) {
           g_nSpyroSwingEulerPitchTarget = 0;
         }
 
-        RefreshActorDerivedState(key, 4);
+        RefreshActorDerivedState(key, ACTOR_REFRESH_MATRIX);
         if (st->shake % 4 < 2) {
           g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)key, (void *)0x8080);
         } else {
@@ -4531,7 +4531,7 @@ void Level22_UpdateActors(void) {
       case 3:
         DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, 0x10);
         if (g_nActorAnimDone != 0) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x10);
           DespawnActorRecord(actor);
           continue;
@@ -4574,7 +4574,7 @@ void Level22_UpdateActors(void) {
         ANIM_GO(actor, 0);
         break;
       }
-      RefreshActorDerivedState(actor, 1);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       break;
     }
 }

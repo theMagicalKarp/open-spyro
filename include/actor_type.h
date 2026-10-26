@@ -216,6 +216,11 @@ enum ActorType {
   ACTOR_TYPE_BLOWHARD = 495, /* level 16 boss: patrols three paths, drops type 37 riders */
 };
 
+/* RefreshActorDerivedState's mode bits. */
+#define ACTOR_REFRESH_COLLISION 1 /* ->collision from the current animation frame's record */
+#define ACTOR_REFRESH_GRID 2      /* relink ->gridCell from the X/Y position */
+#define ACTOR_REFRESH_MATRIX 4    /* ->mtx from the rotX/rotY/rotZ euler bytes */
+
 /* SpawnActorDeathDrop's `kind`: how a thrown drop leaves its source. Rolled
  * extra lives, butterflies and Sparx ignore it. */
 enum DropThrow {
