@@ -80,7 +80,7 @@ void Gamestate02_03_06_Draw(void) {
     do {
       strip = 0x200;
       RasterizeEmitList();
-      DrawActors();
+      DrawPortalsAndStaticActors();
       SetupFrameOT();
       DrawSync(0);
       VSync(0);
@@ -1040,7 +1040,7 @@ void Gamestate02_03_06_Draw(void) {
     }
     g_apSpritePrimQueue[0] = (void *)0;
     if (g_nGamestate == GS_PAUSE_MENU && g_nFlightLevelActive == 0) {
-      EnqueueLoadingScreenSprites();
+      EnqueueHudSprites();
     }
     EnqueuePendingSpritePrims();
     FillWord(&g_pOtDepthBinHead0, 0, 0x900);

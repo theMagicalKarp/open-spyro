@@ -1,6 +1,7 @@
 #include "camera.h"
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "main_shared.h"
 #include "pad_buttons.h"
 #include "spyro_block.h"
@@ -31,7 +32,7 @@ typedef void (*ParticleSpawnFn)(int kind, int type, int *pos, int *vel);
         g_nSpyroGroundProbeSuspendFlag != 0) {                                 \
       g_nSpyroFallReferenceZ = g_nSpyroFloorReferenceZ;                        \
     }                                                                          \
-    if (g_nActiveLevelId == 0x40 &&                                            \
+    if (g_nActiveLevelId == LEVEL_GNASTYS_LOOT &&                              \
         g_nSpyroFallReferenceZ > g_nGnastyLootFallRefZCap) {                   \
       g_nSpyroFallReferenceZ = g_nGnastyLootFallRefZCap;                       \
     }                                                                          \
@@ -41,31 +42,32 @@ typedef void (*ParticleSpawnFn)(int kind, int type, int *pos, int *vel);
    own mix of platform averaging, integration, ground probe, slope gravity,
    floor snap and ledge probe; walking states also derive the slope-adjusted
    move speed, and the fall states track the floor reference used for fall
-   damage. Afterwards the swim state settles the water floor height. */
+   damage. Afterwards SPYRO_ST_HAZARD records the floor under the hazard
+   (g_nSpyroHazardFloorZ). */
 void DispatchSpyroPhysicsByState(void) {
   int pos[3];
   int puff[3];
   int dir[3];
   int dust[3];
   int dustVel[3];
-  int bubble[3];
-  int bubbleVel[3];
+  int trail[3];
+  int trailVel[3];
 
   g_nCameraSpringSuppressFlag = 0;
   switch (g_nSpyroState) {
-  case 0:
-  case 12:
-  case 13:
-  case 18:
-  case 35:
-  case 36:
-  case 37:
-  case 38:
-  case 39:
-  case 40:
-  case 41:
-  case 42:
-  case 43:
+  case SPYRO_ST_IDLE:
+  case SPYRO_ST_CHARGE_BONK:
+  case SPYRO_ST_TEETER:
+  case SPYRO_ST_FIDGET_0:
+  case SPYRO_ST_SCRIPTED_HOLD:
+  case SPYRO_ST_FIDGET_1:
+  case SPYRO_ST_FIDGET_2:
+  case SPYRO_ST_FIDGET_3:
+  case SPYRO_ST_FIDGET_4:
+  case SPYRO_ST_FIDGET_5:
+  case SPYRO_ST_FIDGET_6:
+  case SPYRO_ST_FIDGET_7:
+  case SPYRO_ST_FIDGET_8:
     if (g_nPadDirectionalIdleFlag != 0 && (g_dwPadHeld & PAD_TRIANGLE)) {
       g_nCameraNextMode = (CAM_HELD | CAM_MODE_FREE_LOOK);
     }
@@ -76,10 +78,10 @@ void DispatchSpyroPhysicsByState(void) {
       StepSpyroOntoLocalFloor();
     }
     break;
-  case 1:
-  case 2:
-  case 3:
-  case 21: {
+  case SPYRO_ST_WALK:
+  case SPYRO_ST_RUN:
+  case SPYRO_ST_STOP:
+  case SPYRO_ST_JOG: {
     AverageSpyroPlatformMotion();
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
@@ -126,7 +128,7 @@ void DispatchSpyroPhysicsByState(void) {
       ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, 0x21, puff, 0);
     }
   } break;
-  case 4:
+  case SPYRO_ST_TURN_AROUND:
     AverageSpyroPlatformMotion();
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
@@ -137,7 +139,7 @@ void DispatchSpyroPhysicsByState(void) {
     RotateVectorByMatrix(g_anSpyroBodyMtx, dir, dir);
     ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, 0x21, dir, 0);
     break;
-  case 7: {
+  case SPYRO_ST_HURT_TINT: {
     unsigned char frame;
 
     AdvanceSpyroPhysics();
@@ -145,41 +147,41 @@ void DispatchSpyroPhysicsByState(void) {
     ApplyGravityAlongSpyroSlopeNormal();
     frame = g_bSpyroAnimFrame;
     if (frame < 10) {
-      g_abSpyroFxParticleRgba[3] = 0xFF;
+      g_abSpyroTintRgba[3] = 0xFF;
       if (frame & 1) {
-        g_abSpyroFxParticleRgba[2] = 0xFF;
-        g_abSpyroFxParticleRgba[1] = 0xFF;
-        g_abSpyroFxParticleRgba[0] = 0xFF;
+        g_abSpyroTintRgba[2] = 0xFF;
+        g_abSpyroTintRgba[1] = 0xFF;
+        g_abSpyroTintRgba[0] = 0xFF;
       } else {
-        g_abSpyroFxParticleRgba[2] = 0x40;
-        g_abSpyroFxParticleRgba[1] = 0x40;
-        g_abSpyroFxParticleRgba[0] = 0x40;
+        g_abSpyroTintRgba[2] = 0x40;
+        g_abSpyroTintRgba[1] = 0x40;
+        g_abSpyroTintRgba[0] = 0x40;
       }
     } else {
-      g_abSpyroFxParticleRgba[3] = 0;
+      g_abSpyroTintRgba[3] = 0;
     }
   } break;
-  case 25:
-  case 27:
+  case SPYRO_ST_HURT_PINNED:
+  case SPYRO_ST_HURT_LONG:
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
     break;
-  case 5:
-  case 17:
+  case SPYRO_ST_JUMP:
+  case SPYRO_ST_LIFT:
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
     if (g_nSpyroWallSlideContributedFlag == 0) {
       ProbeSpyroLedgeForward();
     }
     break;
-  case 6:
-  case 16:
-    if (SPY[SPY_FALL_TRACKING] == 0) {
+  case SPYRO_ST_FALL:
+  case SPYRO_ST_GLIDE_DROP:
+    if (SPY[SPY_FLIGHT_MODE] == 0) {
       g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;
     }
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
-    if (SPY[SPY_FALL_TRACKING] != 0) {
+    if (SPY[SPY_FLIGHT_MODE] != 0) {
       if (g_nFlightLevelActive != 0) {
         TRACK_FLOOR_REFERENCE();
       } else {
@@ -191,13 +193,13 @@ void DispatchSpyroPhysicsByState(void) {
     }
     CopyVector(&SPY[SPY_VELOCITY], &SPY[SPY_MOTION]);
     break;
-  case 23:
-    if (SPY[SPY_FALL_TRACKING] == 0) {
+  case SPYRO_ST_GLIDE_SLOW:
+    if (SPY[SPY_FLIGHT_MODE] == 0) {
       g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;
     }
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
-    if (SPY[SPY_FALL_TRACKING] != 0) {
+    if (SPY[SPY_FLIGHT_MODE] != 0) {
       if (g_nFlightLevelActive != 0) {
         TRACK_FLOOR_REFERENCE();
       } else {
@@ -208,18 +210,18 @@ void DispatchSpyroPhysicsByState(void) {
       ProbeSpyroLedgeForward();
     }
     break;
-  case 32:
-  case 33:
-  case 34:
-    if (SPY[SPY_FALL_TRACKING] == 0) {
+  case SPYRO_ST_FLY:
+  case SPYRO_ST_FLY_CLIMB:
+  case SPYRO_ST_FLY_DIVE:
+    if (SPY[SPY_FLIGHT_MODE] == 0) {
       g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;
     }
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
-    if (SPY[SPY_FALL_TRACKING] != 0) {
+    if (SPY[SPY_FLIGHT_MODE] != 0) {
       if (g_nFlightLevelActive != 0) {
         TRACK_FLOOR_REFERENCE();
-        if (g_nSpyroStateFlags == 3 &&
+        if (g_nSpyroSubstate == 3 &&
             CollideSphereWithWorldAndActors(&SPY[0], 0x164, 0x164) != 0) {
           ((void (*)(void))g_pfnLevelFallImpactCallback)();
         }
@@ -231,29 +233,30 @@ void DispatchSpyroPhysicsByState(void) {
       ProbeSpyroLedgeForward();
     }
     break;
-  case 15:
-    if (SPY[SPY_FALL_TRACKING] == 0) {
+  case SPYRO_ST_GLIDE:
+    if (SPY[SPY_FLIGHT_MODE] == 0) {
       g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;
     }
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
-    if (SPY[SPY_FALL_TRACKING] != 0) {
+    if (SPY[SPY_FLIGHT_MODE] != 0) {
       CLAMP_FALL_REFERENCE();
     }
     if (SPY[SPY_WALL_SLIDE] == 0) {
       ProbeSpyroLedgeForward();
     }
-    if ((g_dwSpyroRequestMask & SPYRO_RQ_NO_CLIP) && g_nSpyroStateFlags == 9) {
+    if ((g_dwSpyroRequestMask & SPYRO_RQ_NO_CLIP) &&
+        g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
       g_nSpyroGroundHeightZ = FindGroundHeightBelow(&SPY[0], 0x10000);
     }
     break;
-  case 8:
+  case SPYRO_ST_08:
     AverageSpyroPlatformMotion();
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
     StepSpyroOntoLocalFloor();
     break;
-  case 11:
+  case SPYRO_ST_CHARGE:
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
     ApplyGravityAlongSpyroSlopeNormal();
@@ -263,18 +266,18 @@ void DispatchSpyroPhysicsByState(void) {
       ProbeSpyroLedgeForward();
     }
     break;
-  case 19:
+  case SPYRO_ST_SLIDE:
     AdvanceSpyroPhysics();
     CopyVector(&SPY[SPY_CARRY], &SPY[SPY_MOTION]);
     ProbeSpyroGroundContact();
     ApplyGravityAlongSpyroSlopeNormal();
     ApplyGravityAlongSpyroSlopeTangent();
     break;
-  case 20:
-  case 24:
+  case SPYRO_ST_CHARGE_AIR:
+  case SPYRO_ST_SUPERCHARGE_AIR:
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
-    if (SPY[SPY_STATE_FLAGS] & 0x40) {
+    if (SPY[SPY_SUBSTATE] & SPYRO_SUB_SUPERCHARGE) {
       CopyVector(dust, &SPY[0]);
       dust[0] += (GetRandomU32() & 0xFE) - 0x7F;
       dust[1] += (GetRandomU32() & 0xFE) - 0x7F;
@@ -283,23 +286,23 @@ void DispatchSpyroPhysicsByState(void) {
       ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, 9, dust, dustVel);
     }
     break;
-  case 9:
-  case 10:
-  case 14:
-  case 22:
-  case 26:
-  case 28:
-  case 30:
-  case 31:
+  case SPYRO_ST_SIDESTEP_L1:
+  case SPYRO_ST_SIDESTEP_R1:
+  case SPYRO_ST_HURT:
+  case SPYRO_ST_KNOCKBACK:
+  case SPYRO_ST_SCRIPTED_WALK:
+  case SPYRO_ST_KNOCKBACK_2:
+  case SPYRO_ST_DEATH:
+  case SPYRO_ST_DEATH_PINNED:
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
     ApplyGravityAlongSpyroSlopeNormal();
     break;
-  case 29: {
+  case SPYRO_ST_HAZARD: {
     int *timer;
     int n;
 
-    timer = &SPY[SPY_BREATH_TIMER];
+    timer = &SPY[SPY_HAZARD_SINK];
     if (*timer != 0) {
       n = *timer + 8;
       *timer = n;
@@ -316,30 +319,30 @@ void DispatchSpyroPhysicsByState(void) {
     ProbeSpyroGroundContact();
     StepSpyroOntoLocalFloor();
   } break;
-  case 44:
+  case SPYRO_ST_SUPERCHARGE:
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
     ApplyGravityAlongSpyroSlopeNormal();
     ApplyGravityAlongSpyroSlopeTangent();
-    CopyVector(bubble, &SPY[0]);
-    bubble[0] += (GetRandomU32() & 0xFE) - 0x7F;
-    bubble[1] += (GetRandomU32() & 0xFE) - 0x7F;
-    bubble[2] -= 0x164;
-    CopyVector(bubbleVel, &SPY[SPY_MOTION]);
-    RShiftVector3(bubbleVel, 6);
-    ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, 9, bubble, bubbleVel);
+    CopyVector(trail, &SPY[0]);
+    trail[0] += (GetRandomU32() & 0xFE) - 0x7F;
+    trail[1] += (GetRandomU32() & 0xFE) - 0x7F;
+    trail[2] -= 0x164;
+    CopyVector(trailVel, &SPY[SPY_MOTION]);
+    RShiftVector3(trailVel, 6);
+    ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, 9, trail, trailVel);
     break;
   }
   if (SPY[SPY_STATE] == SPYRO_ST_HAZARD) {
-    g_nSpyroWorldPosZ -= g_nSpyroBreathTimer;
+    g_nSpyroWorldPosZ -= g_nSpyroHazardSinkDepth;
     if (g_nSpyroGroundHeightZ != 0) {
-      g_nSpyroSwimWaterFloorZ = g_nSpyroGroundHeightZ;
+      g_nSpyroHazardFloorZ = g_nSpyroGroundHeightZ;
     } else {
       CopyVector(pos, &SPY[0]);
       pos[2] += 0x800;
-      g_nSpyroSwimWaterFloorZ = FindGroundHeightBelow(pos, 0xC00);
+      g_nSpyroHazardFloorZ = FindGroundHeightBelow(pos, 0xC00);
     }
   } else {
-    g_nSpyroSwimWaterFloorZ = 0;
+    g_nSpyroHazardFloorZ = 0;
   }
 }

@@ -39,9 +39,9 @@ void SaveMenu_Update(void) {
 
   SM[1] += g_nFrameStep;
   RotateLightVectorXZ(3);
-  g_apSaveMenuAnimActorListBlock[0] = ACT;
-  g_apSaveMenuAnimActorListBlock[1] = 0;
-  TickActorAnims(g_apSaveMenuAnimActorListBlock, 0);
+  g_apActiveActorListBlock[0] = ACT;
+  g_apActiveActorListBlock[1] = 0;
+  TickActorAnims(g_apActiveActorListBlock, 0);
   switch (SM[0]) {
   case 0:
     if (SM[1] < 0x40) {

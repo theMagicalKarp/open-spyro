@@ -13,6 +13,7 @@
 #include "camera.h"
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
 #include "spyro_state.h"
@@ -65,11 +66,12 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   g_nSpyroDrawSuppressed = 0;
   g_nMotionTrailRibbonCount = 0;
   root = p;
-  if (g_nActiveLevelId == 0x40) {
+  if (g_nActiveLevelId == LEVEL_GNASTYS_LOOT) {
     g_nLevelKeyState = 0;
   }
   g_nLevelLoadUnreadWord = 0;
-  if ((g_nActiveLevelId == 0x28) || (g_nActiveLevelId == 0x2A)) {
+  if ((g_nActiveLevelId == LEVEL_BEAST_MAKERS) ||
+      (g_nActiveLevelId == LEVEL_MISTY_BOG)) {
     g_nLevelStormFlag = 1;
   } else {
     g_nLevelStormFlag = 0;
@@ -111,12 +113,12 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   }
   if ((g_nActiveLevelId % 10) == 5) {
     g_nFlightLevelActive = 1;
-    g_nSpyroFallTrackingFlag = 1;
+    g_nSpyroFlightMode = 1;
     g_nSpyroFallReferenceZ = g_nLevelSpawnPosZ;
     g_nSpyroFloorReferenceZ = g_nLevelSpawnPosZ;
     ChangeSpyroState(SPYRO_ST_FLY);
     if (g_nPortalTransitionActive == 0) {
-      g_nSpyroStateFlags = 0;
+      g_nSpyroSubstate = 0;
       g_abSpyroPersistentEuler[0] = 0;
       g_abSpyroPersistentEuler[1] = 0;
       g_nSpyroBodyRoll = 0;
@@ -128,7 +130,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     }
   } else {
     g_nFlightLevelActive = 0;
-    g_nSpyroFallTrackingFlag = 0;
+    g_nSpyroFlightMode = 0;
     if (g_nPortalTransitionActive != 0) {
       g_anLevelSpawnPosZBlock[0] += g_anLevelSpawnNudgeZTable[g_nLevelIndex];
       sinp = &g_anSineLut[g_nLevelSpawnYaw];
@@ -139,11 +141,11 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     }
   }
   p += 4;
-  if (g_nActiveLevelId == 0x40) {
+  if (g_nActiveLevelId == LEVEL_GNASTYS_LOOT) {
     g_nSpyroFallReferenceZ = 0x3E80;
     g_nGnastyLootFallRefZCap = 0x4638;
   }
-  g_nGenericCountdown = 0;
+  g_nScreenFadeLevel = 0;
   if (g_nPortalTransitionActive == 0) {
     if (g_nGamestate == GS_ACTOR_CUTSCENE) {
       goto emitlist;
@@ -157,7 +159,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_pCameraTargetParams = g_anCameraActiveTargetParams;
     g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
     ResetCameraStateToTarget();
-    g_nGenericCountdown = 0x20;
+    g_nScreenFadeLevel = 0x20;
   }
   if (g_nGamestate != GS_ACTOR_CUTSCENE) {
     g_nGamestate = GS_GAMEPLAY;
@@ -166,10 +168,10 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_nLetterboxBarHeight = 0;
   }
 emitlist:
-  FillWord(g_anSpyroHornStrikeAnchorPos, 0, 0x138);
+  FillWord(g_anSpyroFlameAnchorPos, 0, 0x138);
 
-  g_anSpyroHornStrikeRibbonTexWords[0] = p[0];
-  g_anSpyroHornStrikeRibbonTexWords[1] = p[1];
+  g_anSpyroFlameRibbonTexWords[0] = p[0];
+  g_anSpyroFlameRibbonTexWords[1] = p[1];
   FillWord(g_abSpyroShadowRingHeights, 0, 0x28);
   p += 2;
   g_anEntitySpikeTexWords[0] = p[0];
@@ -189,8 +191,8 @@ sprites:
   }
   p += 0x16;
   i = 0;
-  g_anSpyroHornStrikeRibbonTexWords[2] = p[0];
-  g_anSpyroHornStrikeRibbonTexWords[3] = p[1];
+  g_anSpyroFlameRibbonTexWords[2] = p[0];
+  g_anSpyroFlameRibbonTexWords[3] = p[1];
   p += 2;
   g_anSecondaryActorTexWords[0] = p[0];
   g_anSecondaryActorTexWords[1] = p[1];

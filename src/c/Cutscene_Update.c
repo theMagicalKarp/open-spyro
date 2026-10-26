@@ -7,7 +7,7 @@
 /* 0x800331ac — GS_CUTSCENE (0xE) per-tick handler: on first entry (timer
    0, hub world) clear the screen, stream the cutscene bundle in synchronously
    and re-seed via BeginCutscene; per tick advance the cutscene timer toward
-   twice the threshold, fade g_nGenericCountdown at both ends, allow a pad
+   twice the threshold, fade g_nScreenFadeLevel at both ends, allow a pad
    press to skip ahead, then hand off to DispatchSpecialCutscene at the end. */
 void Cutscene_Update(void) {
   RECT rect;
@@ -46,12 +46,12 @@ void Cutscene_Update(void) {
   path[0] = t;
   if (t < end) {
     if (t < 0x10 || (t = end - t, t < 0x10)) {
-      g_nGenericCountdown = 0x10 - t;
+      g_nScreenFadeLevel = 0x10 - t;
     } else {
-      g_nGenericCountdown = 0;
+      g_nScreenFadeLevel = 0;
     }
-    if (g_nGenericCountdown >= 0x10) {
-      g_nGenericCountdown = 0xF;
+    if (g_nScreenFadeLevel >= 0x10) {
+      g_nScreenFadeLevel = 0xF;
     }
     if (g_nCurrentWorldId == 1 && (g_dwPadHeld & (PAD_CROSS | PAD_START))) {
       p = (int *)g_pPathTableHead;

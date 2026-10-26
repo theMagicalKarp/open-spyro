@@ -56,7 +56,7 @@ extern int g_anLevelEscapeRunCount;
 
 extern int g_nLevelEscapeRunCountLane1;
 
-extern int g_nCameraFloorSurfaceType;
+extern int g_nCameraVisZone;
 
 /* array alias for the sub-frame accumulator at 0x80078a7c (see
    config/symbol_addrs.txt) -- forces the held base register, matching the
@@ -141,7 +141,7 @@ extern void EmitActorDrawList(void);
 
 extern void RasterizeSpritePrimQueue(void);
 
-extern void RasterizePairedActor(void);
+extern void RasterizeSpyroModel(void);
 
 extern void ResetSpyroLinearMotion(void);
 
@@ -165,7 +165,7 @@ extern void ComposeFrameScene(void);
 
 extern void RasterizeEmitList(void);
 
-extern void DrawActors(void);
+extern void DrawPortalsAndStaticActors(void);
 
 extern void SetupFrameOT(void);
 
@@ -204,7 +204,7 @@ extern unsigned char g_abSpyroPersistentEulerBlock[]; /* 0x80078a64 */
 
 extern void TickSpyroAnimStateMachine(void);
 
-extern void TickSpyroHornStrikeAttack(void);
+extern void TickSpyroFlameAttack(void);
 
 extern void TickSpyroAnimLayer2GateTimer(void);
 
@@ -220,7 +220,7 @@ extern short g_anTweenBlendWeights8[];
 extern short g_anTweenBlendWeights2[];
 extern void DrawFullscreenTint(int slot, int r, int g, int b);
 extern void EmitStaticActorMeshListFogged(void);
-extern void EnqueueLoadingScreenSprites(void);
+extern void EnqueueHudSprites(void);
 extern long GetSpuTransferStatus(int mode);
 extern void InitActorMeshScratchRegions(int mode);
 extern void InitNewGameState(void);
@@ -239,7 +239,7 @@ extern int *g_apCameraAnchorBlock[]; /* alias of g_pCameraAnchorPos */
 extern void *g_apDrawBufBlock[];  /* alias of g_pDrawBufA */
 extern void *g_apRenderScratchPrimTopBlock[]; /* held-base alias of g_pRenderScratchPrimTop;
                                               * [-2] is g_pRenderScratchRegionBase */
-extern void *g_apSaveMenuAnimActorListBlock[];
+extern void *g_apActiveActorListBlock[];
 extern char g_szContinue[];       /* "CONTINUE"    */
 extern unsigned char g_szReturningHome[]; /* "RETURNING HOME..." */
 
@@ -252,7 +252,7 @@ extern int g_anDragonRescueBlock[];
 extern int g_anSpyroBodyMtxBlock[];
 extern int g_anSpyroPadSnapshotBlock[];
 extern int g_anSpyroSlopeGravityVec[];
-extern int g_anSpyroStateFlagsBlock[];
+extern int g_anSpyroSubstateBlock[];
 extern int g_anSpyroWorldPosZBlock[];
 extern int g_anStoryIntroTimerBlock[];
 extern int g_anWorldRenderMeshBlock[];
@@ -281,8 +281,8 @@ extern int g_nSpyroScriptedLiftTurn;
 extern int g_nSpyroScriptedLiftYaw;
 extern int g_nSpyroVelocityZ;
 extern int g_nTitleSubState;
-extern unsigned char g_abSpyroHornStrikeAnchorModeBlock[];
-extern unsigned char g_abSpyroHornStrikeAnimTable[];
+extern unsigned char g_abSpyroFlameAnchorModeBlock[];
+extern unsigned char g_abSpyroFlameAnimTable[];
 extern unsigned char g_bSpyroAnimLayer1Current;
 extern unsigned char g_bSpyroAnimLayer2Current;
 extern unsigned char g_bSpyroAnimLayer2Frame;
@@ -318,9 +318,9 @@ extern int g_nCreditsLastVisibleLine;
 extern int g_nCreditsLineCount;
 extern int g_nCreditsPageIndex;
 extern int g_nCreditsMode;
-extern int g_nGenericCountdown;
+extern int g_nScreenFadeLevel;
 extern int g_nLevelIntroParallaxCountdown;
-extern int g_nStaticMeshLodCutoff;
+extern int g_nVisZoneCount;
 
 /* C library. */
 extern int abs(int x);

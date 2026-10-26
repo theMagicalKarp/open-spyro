@@ -7,7 +7,7 @@
    the level-transition stream unless the CD stream is past stage 0xB and the
    tally is still active. (0x8002df9c, 100 bytes.) */
 void LevelLoad_Update(void) {
-  TickSpyroFrameForceJump();
+  TickSpyroFrameGlideHold();
   UpdateCameraFrame();
   AnimateGemTallyParticles();
   if (g_nCdStreamState < 0xB || g_nLevelTransitionTallyActive == 0) {

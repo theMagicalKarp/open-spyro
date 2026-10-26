@@ -54,6 +54,7 @@
 #include "spyro_state.h"
 #include "camera.h"
 #include "level_sfx.h"
+#include "emit_record.h"
 
 /* The update list, and the per-actor values the loop publishes before it
  * dispatches. */
@@ -260,8 +261,8 @@ void Level2_UpdateActors(void) {
                 g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
                 g_dwSpyroRequestMask = 0;
                 ResetSpyroEntity(0);
-                g_nSpyroFallTrackingFlag = 0;
-                g_nSpyroFlameBreathTimer = 0;
+                g_nSpyroFlightMode = 0;
+                g_nSpyroSuperflameTimer = 0;
               }
             }
           }
@@ -274,7 +275,7 @@ void Level2_UpdateActors(void) {
     /* Tethered follower (FollowState): rides a parent actor until the parent
      * goes dormant, then takes the parent's transform over and re-points the
      * other followers of that parent at itself. */
-    case 13: {
+    case ACTOR_TYPE_FOLLOWER: {
       FollowState *st = actor->state;
       Actor *parent = &g_pActorListBase[st->parent];
 
@@ -353,9 +354,9 @@ void Level2_UpdateActors(void) {
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]) +
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]) +
                 st->count;
-            PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, 8, &actor->sfxSlot);
             DespawnActorRecord(actor);
             continue;
           }
@@ -374,8 +375,8 @@ void Level2_UpdateActors(void) {
           if (st->count == 1) {
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
-                SAMPLE_PITCH(g_pLevelSampleBankHeader[0x37]);
-            PlaySoundEffect(g_pLevelSampleBankHeader[0x37], actor, 8, &actor->sfxSlot);
+                SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, 8, &actor->sfxSlot);
           }
         }
       }
@@ -544,7 +545,7 @@ void Level2_UpdateActors(void) {
 
       if ((unsigned int)(actor->mode - 2) < 3) {
         AimCameraStickTowardPoint(&actor->posX);
-        g_pfnLevelEmitParticles(1, 0xC, actor, (int *)0x602080);
+        g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, (int *)0x602080);
       }
 
       switch (actor->mode) {
@@ -683,7 +684,7 @@ void Level2_UpdateActors(void) {
       ShardState *st = actor->state;
 
       if (st->life <= 0 || actor->drawn == 0) {
-        g_pfnLevelEmitParticles(8, 0x46, &actor->posX, (int *)0x10);
+        g_pfnLevelEmitParticles(8, EMIT_STREAK_BURST, &actor->posX, (int *)0x10);
         DespawnActorRecord(actor);
         continue;
       }
@@ -721,7 +722,7 @@ void Level2_UpdateActors(void) {
         svD[0] = GetRandomU32() & 3;
         svD[1] = GetRandomU32() & 3;
         svD[2] = 0x14;
-        g_pfnLevelEmitParticles(1, 1, &actor->posX, svD);
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, svD);
       }
 
       st->life -= 1;
@@ -1097,8 +1098,8 @@ void Level2_UpdateActors(void) {
             if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
               PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
               RefreshActorDerivedState(actor, 4);
-              g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (int *)8);
-              g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (int *)0x10);
+              g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)8);
+              g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x10);
               if (g_nExtraLives < 0x63) {
                 g_nExtraLives += 1;
               }
@@ -1315,7 +1316,7 @@ void Level2_UpdateActors(void) {
     case 115: {
       GuardPairState *st = actor->state;
 
-      if ((actor->flags & 0x90000) && actor->mode != 6) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 6) {
         st->speed = 0xF0;
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
@@ -1455,13 +1456,13 @@ void Level2_UpdateActors(void) {
         svF[2] = 0;
         RotateVectorByMatrix(&actor->mtx[0], svF, svF);
         AddVector(svF, svF, &actor->posX);
-        g_pfnLevelEmitParticles(2, 0x42, svF, 0);
+        g_pfnLevelEmitParticles(2, EMIT_TWINKLE, svF, 0);
         svF[0] = 0;
         svF[1] = -0x64;
         svF[2] = 0;
         ApplyActiveGteRotation(svF, svF);
         AddVector(svF, svF, &actor->posX);
-        g_pfnLevelEmitParticles(2, 0x42, svF, 0);
+        g_pfnLevelEmitParticles(2, EMIT_TWINKLE, svF, 0);
       }
 
       if (g_anSparxHealthBlock[0] >= 3) {
@@ -1619,11 +1620,11 @@ void Level2_UpdateActors(void) {
               st->target->subMode = 3;
 
               if (st->target->type == ACTOR_TYPE_EXTRA_LIFE) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType14);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType14);
               } else if (st->target->type == ACTOR_TYPE_SPARX_FOOD) {
-                g_pfnLevelEmitParticles(1, 0xC, actor, g_dwBurstColorType15);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType15);
               } else {
-                g_pfnLevelEmitParticles(1, 0xC, actor, g_adwActorBurstColors[st->target->type]);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_adwActorBurstColors[st->target->type]);
               }
               st->target = 0;
               EBB_BREAK();
@@ -1744,7 +1745,7 @@ void Level2_UpdateActors(void) {
     case 129:
       switch (actor->mode) {
       case 0:
-        if (actor->flags & 0x20000) {
+        if (actor->flags & ACTOR_HIT_CHARGE) {
           ENTER_POSE(actor, 1);
         }
         break;
@@ -1759,7 +1760,7 @@ void Level2_UpdateActors(void) {
 
     /* Type 157: starts its sound and animation when hit, then settles. */
     case 157:
-      if ((actor->flags & 0x10000) && actor->mode == 0) {
+      if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode == 0) {
         ModifyWorldChunkAnimFlags(*(int *)actor->state, 0xFC, 0);
         actor->mode = 1;
         ANIM_RESET(actor, 1);
@@ -1776,7 +1777,7 @@ void Level2_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       EBB_BREAK();
-      if ((actor->flags & 0xB0000) && actor->mode != 2 &&
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2 &&
           (actor->flags != 0x10000 || st->flag == 0)) {
         st->time = 0x8C;
         st->speed = 0x118;
@@ -1994,7 +1995,7 @@ void Level2_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       EBB_BREAK();
-      if ((actor->flags & 0x90000) && actor->mode != 1 &&
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 1 &&
           AbsAngleDelta8(actor->rotZ,
                         ArcTan2(spy->posX - actor->posX,
                                       spy->posY - actor->posY, 0)) >= 0x47) {
@@ -2183,7 +2184,7 @@ void Level2_UpdateActors(void) {
             RefreshActorDerivedState(actor, 4);
 
             for (i = 0; i < 6; i++) {
-              g_pfnLevelEmitParticles(1, 0xC, actor, (int *)(0x8080 + (i << 24)));
+              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, (int *)(0x8080 + (i << 24)));
             }
 
             g_nLevelKeyState = 1;
@@ -2228,7 +2229,7 @@ void Level2_UpdateActors(void) {
       LockedChestState *st = actor->state;
       Actor *key = &g_pActorListBase[st->idx];
 
-      if (actor->flags & 0x80000) {
+      if (actor->flags & ACTOR_HIT_SUPER) {
         actor->subMode = 2;
         st->shake = 0xD2;
       }
@@ -2258,7 +2259,7 @@ void Level2_UpdateActors(void) {
             actor->rotY = st->rotY;
             actor->posZ = st->restZ;
           }
-        } else if (actor->flags & 0xB0000) {
+        } else if (actor->flags & ACTOR_HITS_SPYRO) {
           st->shake = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2401,7 +2402,7 @@ void Level2_UpdateActors(void) {
             g_pfnLevelSpawnActor(0x135, actor);
           }
 
-          g_pfnLevelEmitParticles(0x20, 0x46, &actor->posX, (void *)0x18);
+          g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, (void *)0x18);
           g_pLockedChestReward = SpawnActorDeathDrop(actor, 1, 0, 0);
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
@@ -2413,9 +2414,9 @@ void Level2_UpdateActors(void) {
 
         RefreshActorDerivedState(key, 4);
         if (st->shake % 4 < 2) {
-          g_pfnLevelEmitParticles(1, 0xC, (int *)key, (void *)0x8080);
+          g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)key, (void *)0x8080);
         } else {
-          g_pfnLevelEmitParticles(1, 0xC, (int *)key, (void *)0x5008080);
+          g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)key, (void *)0x5008080);
         }
         break;
       }
@@ -2434,7 +2435,7 @@ void Level2_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         continue;
       }
 
@@ -2456,8 +2457,8 @@ void Level2_UpdateActors(void) {
         g_pfnLevelSpawnActor(0x101, actor);
       }
 
-      g_pfnLevelEmitParticles(5, 2, &actor->posX, 0);
-      g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (void *)0x20);
+      g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
+      g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x20);
       SpawnActorDeathDrop(actor, 3, 0, 0);
       MarkActorCommittedKill(actor);
       DespawnActorRecord(actor);
@@ -2663,7 +2664,7 @@ void Level2_UpdateActors(void) {
             DespawnActorRecord(actor);
           }
         } else {
-          g_pfnLevelEmitParticles(10, 0x47, &actor->posX, 0);
+          g_pfnLevelEmitParticles(10, EMIT_STREAK_BURST_WHITE, &actor->posX, 0);
           DespawnActorRecord(actor);
         }
       }
@@ -2672,7 +2673,7 @@ void Level2_UpdateActors(void) {
 
     /* Ambient sound source (AmbientSoundState): plays random ambient sounds;
      * mode 2 also steps it along a waypoint path. */
-    case 286: {
+    case ACTOR_TYPE_AMBIENT_SOUND: {
       AmbientSoundState *st = actor->state;
       int voice = -1;
 
@@ -2799,7 +2800,7 @@ void Level2_UpdateActors(void) {
         svK[1] = (GetRandomU32() & 0xFE) - 0x7F;
         svK[2] = (GetRandomU32() & 0xFE) - 0x40;
         AddVector(svK, svK, &actor->posX);
-        g_pfnLevelEmitParticles(1, 0x42, svK, (int *)1);
+        g_pfnLevelEmitParticles(1, EMIT_TWINKLE, svK, (int *)1);
         st->life -= 1;
       } else {
         DespawnActorRecord(actor);
@@ -2857,7 +2858,7 @@ void Level2_UpdateActors(void) {
             svL[1] = (GetRandomU32() & 0xFE) - 0x7F;
             svL[2] = (GetRandomU32() & 0xFE) - 0x40;
             AddVector(svL, svL, &actor->posX);
-            g_pfnLevelEmitParticles(1, 0x42, svL, (int *)1);
+            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, svL, (int *)1);
           } while (i < 3);
         }
 
@@ -2866,15 +2867,15 @@ void Level2_UpdateActors(void) {
       }
 
       if (actor->drawn != 0) {
-        g_pfnLevelEmitParticles(8, 0x46, &actor->posX, (int *)0x10);
+        g_pfnLevelEmitParticles(8, EMIT_STREAK_BURST, &actor->posX, (int *)0x10);
       }
       DespawnActorRecord(actor);
       continue;
     }
 
-    /* Respawn warden (WardenState): puts its group back once Spyro has left. */
-    case 323: {
-      WardenState *st = actor->state;
+    /* Respawner (RespawnState): puts its type's dormant actors back once Spyro is far away. */
+    case ACTOR_TYPE_RESPAWNER: {
+      RespawnState *st = actor->state;
 
       CopyVector(&actor->posX, &SPY.posX);
 
@@ -2884,7 +2885,7 @@ void Level2_UpdateActors(void) {
         st->timer = st->period;
 
         for (scan = g_pActorListBase; scan < g_pActorPoolDynBase; scan++) {
-          if (scan->type == st->group && scan->mode >= ACTOR_MODE_DORMANT &&
+          if (scan->type == st->type && scan->mode >= ACTOR_MODE_DORMANT &&
               ApproxDist2D(&SPY.posX, scan->state) >= 0x6001) {
             CopyVector(&scan->posX, scan->state);
             InsertActorIntoSpatialGrid(scan);
@@ -2901,7 +2902,7 @@ void Level2_UpdateActors(void) {
 
     /* Checkpoint: Spyro reaching it sets the respawn anchor
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
-    case 331:
+    case ACTOR_TYPE_CHECKPOINT:
       switch (actor->mode) {
       case 0:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xA01) {
@@ -2959,13 +2960,13 @@ void Level2_UpdateActors(void) {
     case 412: {
       HopState *st = actor->state;
 
-      if ((actor->flags & 0xB0000) && actor->mode != 2) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
         EBB_BREAK();
         actor->flags = 0;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20, 0x40);
-        if (actor->flags & 0x10000) {
+        if (actor->flags & ACTOR_HIT_FLAME) {
           st->time = 0x96;
         } else {
           st->time = 0x12C;
@@ -3089,7 +3090,7 @@ void Level2_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & 0xB0000) == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
         break;
       }
 
@@ -3121,10 +3122,10 @@ void Level2_UpdateActors(void) {
         svN[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
         svN[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
         svN[2] = 0x18;
-        g_pfnLevelEmitParticles(1, 0, &actor->posX, svN);
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, svN);
       }
 
-      g_pfnLevelEmitParticles(0x10, 0x46, &actor->posX, (void *)0x18);
+      g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x18);
 
       if (actor->mode == 1) {
         DespawnActorRecord(st->passenger);

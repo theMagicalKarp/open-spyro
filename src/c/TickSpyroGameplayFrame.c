@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "model.h"
+#include "spyro_block.h"
 #include "spyro_state.h"
 #include "vecmath.h"
 
@@ -31,10 +32,10 @@
 
 /* 0x8004a200 (1516 bytes) — the in-level gameplay tick: snapshot the pad,
    integrate a frame of motion, run the state behaviour + the per-substep
-   anim machine, compose the body/horn matrices, then police the death plane
-   (respawn / hard-fall state change / scripted death camera).  Ends by firing
-   the two footstep sound-effect slots (primary anim + layer-1 overlay) when
-   their anim record's sfx byte changes. */
+   anim machine, compose the body and composed-body matrices, then police the
+   death plane (respawn / hard-fall state change / scripted death camera).  Ends
+   by firing the two footstep sound-effect slots (primary anim + layer-1
+   overlay) when their anim record's sfx byte changes. */
 void TickSpyroGameplayFrame(void) {
   unsigned int key;
   unsigned int key2;
@@ -43,7 +44,7 @@ void TickSpyroGameplayFrame(void) {
   int *bodyMtx;
   int *composedMtx;
   int *pos;
-  int *stateFlags;
+  int *fallFrames;
   int *camRecord;
   unsigned char *animBlock;
   unsigned int *footstep;
@@ -70,11 +71,11 @@ void TickSpyroGameplayFrame(void) {
   }
   AdvanceSpyroFrameMotion();
   if (g_nSpyroState == SPYRO_ST_HAZARD) {
-    if (g_nSpyroBreathTimer <= 0) {
-      g_nSpyroBreathTimer = 1;
+    if (g_nSpyroHazardSinkDepth <= 0) {
+      g_nSpyroHazardSinkDepth = 1;
     }
   } else {
-    g_nSpyroBreathTimer = 0;
+    g_nSpyroHazardSinkDepth = 0;
   }
   if (((g_dwSpyroRequestMask & SPYRO_RQ_FORCE_STATE) == 0) &&
       (g_nSpyroScriptedMoveMode == 0)) {
@@ -84,7 +85,7 @@ void TickSpyroGameplayFrame(void) {
   while (step < g_nFrameStep) {
     step += 1;
     TickSpyroAnimStateMachine();
-    TickSpyroHornStrikeAttack();
+    TickSpyroFlameAttack();
     TickSpyroAnimLayer1();
     TickSpyroAnimLayer2GateTimer();
     TickSpyroAnimLayer2();
@@ -103,8 +104,8 @@ void TickSpyroGameplayFrame(void) {
   g_dwSpyroTriggerEventFlags = 0;
   if (g_nSparxHealth < 0) {
     switch (g_nSpyroState) {
-    case 0x1D:
-      if (g_nSpyroBreathTimer == 0x240) {
+    case SPYRO_ST_HAZARD:
+      if (g_nSpyroHazardSinkDepth == 0x240) {
         if (g_nFlightLevelActive != 0) {
           (*(void (*)(void))g_pfnLevelFallImpactCallback)();
           (*(void (*)(void))g_pfnLevelUpdateActors)();
@@ -113,19 +114,19 @@ void TickSpyroGameplayFrame(void) {
         }
       }
       break;
-    case 0x1E:
+    case SPYRO_ST_DEATH:
       if (g_nSpyroStateTimer >= 0x65) {
         TriggerRespawnOrGameOver();
       }
       break;
-    case 0x1F:
+    case SPYRO_ST_DEATH_PINNED:
       if (g_nSpyroStateTimer >= 0x7D) {
         TriggerRespawnOrGameOver();
       }
       break;
     }
-  } else if ((g_nSpyroWorldPosZ < 0x400) || ((g_nSpyroState == SPYRO_ST_FALL) &&
-                                             (g_nSpyroStateFlags >= 0x79))) {
+  } else if ((g_nSpyroWorldPosZ < 0x400) ||
+             ((g_nSpyroState == SPYRO_ST_FALL) && (g_nSpyroSubstate >= 0x79))) {
     TriggerRespawnOrGameOver();
   } else {
     pos = g_anSpyroWorldPosZBlock;
@@ -144,13 +145,13 @@ void TickSpyroGameplayFrame(void) {
     } else {
       goto done;
     }
-    stateFlags = g_anSpyroStateFlagsBlock;
-    if (stateFlags[0] == 0) {
+    fallFrames = g_anSpyroSubstateBlock;
+    if (fallFrames[0] == 0) {
       camRecord = g_anSpyroDeathCamRecordBlock;
       CopyVector(camRecord, g_anCameraPos);
       ActivateScriptedCameraView((int)(camRecord - (0x18 / 4)));
     }
-    stateFlags[0] += g_nFrameStep;
+    fallFrames[0] += g_nFrameStep;
   }
 done:
   animBlock = g_abSpyroAnimPrevBlock;
@@ -161,7 +162,8 @@ done:
     ptr = ANIM_SLOT(mesh);
     rec = frame + ptr;
     if (g_dwSpyroFootstepPrimarySfxKey != FRAME_KEY(rec)) {
-      PlaySoundEffect(sfx[0], animBlock - 0x18, 4, animBlock + 0x288);
+      PlaySoundEffect(sfx[0], SPY_FROM_ANIM_PREV(animBlock, 0), 4,
+                      SPY_FROM_ANIM_PREV(animBlock, SPYB_VOICE_MARKER));
     }
   }
   key = FRAME_KEY(FRAMEREC(g_bSpyroAnimPrev * 4 + (int)g_apActorMeshTable,

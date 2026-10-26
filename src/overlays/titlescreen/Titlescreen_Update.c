@@ -64,8 +64,8 @@ void Titlescreen_Update(void) {
     }
   }
 
-  if (g_nGenericCountdown)
-    --g_nGenericCountdown;
+  if (g_nScreenFadeLevel)
+    --g_nScreenFadeLevel;
 
   AdvanceCutsceneFrame(g_pPathTableHead->introFrame);
 
@@ -147,9 +147,9 @@ void Titlescreen_Update(void) {
       if (g_nTitleMode.animTimer == 0) {
         Titlescreen_PlayUiSound(5);
       }
-      g_nGenericCountdown = g_nTitleMode.animTimer;
-      if (g_nGenericCountdown > 15)
-        g_nGenericCountdown = 15;
+      g_nScreenFadeLevel = g_nTitleMode.animTimer;
+      if (g_nScreenFadeLevel > 15)
+        g_nScreenFadeLevel = 15;
       if (g_nTitleMode.animTimer >= 16) {
         RECT rc;
         g_nTitleMode.mode = Mode_0x03;
@@ -935,9 +935,9 @@ void Titlescreen_Update(void) {
         Titlescreen_PlayUiSound(5);
       }
 
-      g_nGenericCountdown = g_nTitleMode.animTimer + 1;
-      if (g_nGenericCountdown > 15)
-        g_nGenericCountdown = 15;
+      g_nScreenFadeLevel = g_nTitleMode.animTimer + 1;
+      if (g_nScreenFadeLevel > 15)
+        g_nScreenFadeLevel = 15;
 
       if (g_nTitleMode.animTimer >= 16) {
         RECT rc;

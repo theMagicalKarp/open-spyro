@@ -100,17 +100,17 @@ void GamestateDraw(void) {
     g_abFrameDrawEnv1.b0 = b;
     BuildRenderEntityLists();
     if (g_nFlightLevelActive == 0) {
-      EnqueueLoadingScreenSprites();
+      EnqueueHudSprites();
     }
     if (g_nDemoMode != 0) {
       DrawDemoModeOverlay();
     }
     ComposeFrameScene();
     SetupFrameOT();
-    DrawActors();
+    DrawPortalsAndStaticActors();
     RasterizeEmitList();
-    if (g_nGenericCountdown != 0) {
-      tint = g_nGenericCountdown << 3;
+    if (g_nScreenFadeLevel != 0) {
+      tint = g_nScreenFadeLevel << 3;
       DrawFullscreenTint(2, tint, tint, tint);
     }
     if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {

@@ -150,7 +150,7 @@ extern Struct_0x10 *g_pPathTableHead;
 /* ---- misc main-EXE state the overlay touches ---- */
 extern u_char g_abTitleSlideInCurve[16];
 extern u_char g_abTitleSlideOutCurve[16];
-extern int g_nGenericCountdown;
+extern int g_nScreenFadeLevel;
 
 /* frame double-buffer: draw-env @0 (r0/g0/b0 @+0x19), disp-env @0x5C */
 typedef struct {

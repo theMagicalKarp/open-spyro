@@ -1,6 +1,7 @@
 #include "camera.h"
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
 #include "pad_buttons.h"
@@ -47,9 +48,9 @@ static inline int OpaqueInt(int p) {
     ChangeSpyroState(SPYRO_ST_IDLE);                                           \
   }
 
-/* Jump: glide-jump in flight levels and level 0x40, else the plain jump. */
+/* Jump: glide-jump in flight levels and Gnasty's Loot, else the plain jump. */
 #define JUMP_STATE()                                                           \
-  if (g_nFlightLevelActive != 0 || g_nActiveLevelId == 0x40) {                 \
+  if (g_nFlightLevelActive != 0 || g_nActiveLevelId == LEVEL_GNASTYS_LOOT) {   \
     ChangeSpyroState(SPYRO_ST_FLY);                                            \
   } else {                                                                     \
     ChangeSpyroState(SPYRO_ST_GLIDE);                                          \
@@ -102,7 +103,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_nSpyroFrameMotionLength > 0x400) {
       ChangeSpyroState(SPYRO_ST_STOP);
-      g_nSpyroStateFlags = 7;
+      g_nSpyroSubstate = 7;
       break;
     }
     if (g_nCameraNextMode == (CAM_HELD | CAM_MODE_FREE_LOOK)) {
@@ -120,7 +121,7 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_nSpyroStateTimer >= g_nSpyroIdleAnimTimeout &&
-        g_nSpyroHornStrikeState != 1) {
+        g_nSpyroFlameState != 1) {
       CycleSpyroIdleAnim();
     }
     break;
@@ -294,11 +295,11 @@ void UpdateSpyroStateBehavior(void) {
       g_nSpyroJumpHoldLatch = 1;
     }
     if (g_anSpyroMotionVec[2] < 0) {
-      g_nSpyroStateFlags = 1;
+      g_nSpyroSubstate = 1;
     }
-    if (g_nSpyroStateFlags == 0 && !(g_dwPadHeld & PAD_CROSS) &&
+    if (g_nSpyroSubstate == 0 && !(g_dwPadHeld & PAD_CROSS) &&
         g_bSpyroJumpHoldForced == 0) {
-      g_nSpyroStateFlags = 2;
+      g_nSpyroSubstate = 2;
     }
     if (g_nSpyroAirborneFrames == 0 && g_nSpyroStateTimer >= 0x10) {
       if (g_nSpyroGroundSlope >= 0x17) {
@@ -318,7 +319,7 @@ void UpdateSpyroStateBehavior(void) {
       g_nSpyroMotionSpeed = 0x1F80;
       break;
     }
-    if (g_nSpyroGroundRunFlag == 0 && g_nSpyroStateFlags == 1 &&
+    if (g_nSpyroGroundRunFlag == 0 && g_nSpyroSubstate == 1 &&
         g_nSpyroJumpHoldLatch != 0) {
       JUMP_STATE();
       break;
@@ -336,8 +337,9 @@ void UpdateSpyroStateBehavior(void) {
         ChangeSpyroState(SPYRO_ST_JUMP);
         break;
       }
-      if ((g_dwPadPressed & PAD_CROSS) && g_nSpyroStateFlags == 0) {
-        if (g_nFlightLevelActive != 0 || g_nActiveLevelId == 0x40) {
+      if ((g_dwPadPressed & PAD_CROSS) && g_nSpyroSubstate == 0) {
+        if (g_nFlightLevelActive != 0 ||
+            g_nActiveLevelId == LEVEL_GNASTYS_LOOT) {
           if (g_nSpyroGroundRunFlag == 0 || g_nSpyroStateTimer >= 0x10) {
             ChangeSpyroState(SPYRO_ST_FLY);
           }
@@ -487,7 +489,7 @@ void UpdateSpyroStateBehavior(void) {
         ChangeSpyroState(SPYRO_ST_SUPERCHARGE);
         break;
       }
-      if (!(g_nSpyroStateFlags & 0x80)) {
+      if (!(g_nSpyroSubstate & SPYRO_SUB_CHARGE_LATCHED)) {
         int v;
 
         g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;
@@ -496,10 +498,10 @@ void UpdateSpyroStateBehavior(void) {
           v = 0x1F80;
         }
         g_nSpyroSpeedTarget = v;
-        g_nSpyroStateFlags |= 0x80;
+        g_nSpyroSubstate |= SPYRO_SUB_CHARGE_LATCHED;
       }
     } else {
-      g_nSpyroStateFlags &= ~0x80;
+      g_nSpyroSubstate &= ~SPYRO_SUB_CHARGE_LATCHED;
     }
     break;
   case SPYRO_ST_CHARGE_BONK:
@@ -615,11 +617,11 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_GLIDE_DROP);
       break;
     }
-    if (g_nSpyroFallTrackingFlag != 0) {
+    if (g_nSpyroFlightMode != 0) {
       int d;
       int pad;
 
-      if (g_nSpyroStateFlags != 0) {
+      if (g_nSpyroSubstate != 0) {
         break;
       }
       d = g_nSpyroWorldPosZ;
@@ -629,14 +631,14 @@ void UpdateSpyroStateBehavior(void) {
       }
       pad = ((int *)g_pPadSubstepState)[1];
       if (pad & 8) {
-        g_nSpyroStateFlags = 1;
+        g_nSpyroSubstate = 1;
       } else if (pad & 4) {
-        g_nSpyroStateFlags = 2;
+        g_nSpyroSubstate = 2;
         g_nSpyroMotionAux = d;
       }
       break;
     }
-    if (g_nSpyroStateFlags == 0 &&
+    if (g_nSpyroSubstate == 0 &&
         g_nSpyroFloorReferenceZ + 0x18 < g_nSpyroWorldPosZ) {
       ChangeSpyroState(SPYRO_ST_FALL);
       break;
@@ -709,7 +711,7 @@ void UpdateSpyroStateBehavior(void) {
           ChangeSpyroState(SPYRO_ST_IDLE);
           break;
         }
-        if (g_nSpyroHornStrikeState != 1) {
+        if (g_nSpyroFlameState != 1) {
           break;
         }
       }
@@ -777,7 +779,8 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroGroundRunFlag == 0 && (g_dwPadPressed & PAD_CROSS)) {
       g_nSpyroJumpHoldLatch = 1;
     }
-    if (!(g_nSpyroStateFlags & 0x40) && DispatchSpyroChargeStateChanges()) {
+    if (!(g_nSpyroSubstate & SPYRO_SUB_SUPERCHARGE) &&
+        DispatchSpyroChargeStateChanges()) {
       break;
     }
     if (g_nSpyroGroundSlope >= 0x17 && g_nPortalTransitionActive == 0 &&
@@ -795,7 +798,7 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_nSpyroAirborneFrames == 0) {
-      if (g_nSpyroStateFlags & 0x40) {
+      if (g_nSpyroSubstate & SPYRO_SUB_SUPERCHARGE) {
         ChangeSpyroState(SPYRO_ST_SUPERCHARGE);
       } else {
         ChangeSpyroState(SPYRO_ST_CHARGE);
@@ -988,7 +991,7 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_FLY_CLIMB);
     } else if (g_anSpyroMotionVec[2] < -0x1000) {
       ChangeSpyroState(SPYRO_ST_FLY_DIVE);
-    } else if (g_nSpyroStateFlags == 0) {
+    } else if (g_nSpyroSubstate == 0) {
       int d = g_nSpyroWorldPosZ;
 
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
@@ -997,9 +1000,9 @@ void UpdateSpyroStateBehavior(void) {
         int pad = ((int *)g_pPadSubstepState)[1];
 
         if (pad & 8) {
-          g_nSpyroStateFlags = 1;
+          g_nSpyroSubstate = 1;
         } else if (pad & 4) {
-          g_nSpyroStateFlags = 2;
+          g_nSpyroSubstate = 2;
           g_nSpyroMotionAux = d;
         }
       }
@@ -1030,7 +1033,7 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_FALL);
     } else if (g_nSpyroStateTimer >= 0x1F && g_anSpyroMotionVec[2] < 0x600) {
       ChangeSpyroState(SPYRO_ST_FLY);
-    } else if (SPY[SPY_STATE_FLAGS] == 0) {
+    } else if (SPY[SPY_SUBSTATE] == 0) {
       int d = g_nSpyroWorldPosZ;
 
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
@@ -1039,9 +1042,9 @@ void UpdateSpyroStateBehavior(void) {
         int pad = ((int *)g_pPadSubstepState)[1];
 
         if (pad & 8) {
-          SPY[SPY_STATE_FLAGS] = 1;
+          SPY[SPY_SUBSTATE] = 1;
         } else if (pad & 4) {
-          SPY[SPY_STATE_FLAGS] = 2;
+          SPY[SPY_SUBSTATE] = 2;
           g_nSpyroMotionAux = d;
         }
       }
@@ -1074,7 +1077,7 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_FLY_CLIMB);
     } else if (g_nSpyroStateTimer >= 0x1F && g_anSpyroMotionVec[2] >= -0xBFF) {
       ChangeSpyroState(SPYRO_ST_FLY);
-    } else if (SPY[SPY_STATE_FLAGS] == 0) {
+    } else if (SPY[SPY_SUBSTATE] == 0) {
       int d = g_nSpyroWorldPosZ;
 
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
@@ -1083,9 +1086,9 @@ void UpdateSpyroStateBehavior(void) {
         int pad = ((int *)g_pPadSubstepState)[1];
 
         if (pad & 8) {
-          SPY[SPY_STATE_FLAGS] = 1;
+          SPY[SPY_SUBSTATE] = 1;
         } else if (pad & 4) {
-          SPY[SPY_STATE_FLAGS] = 2;
+          SPY[SPY_SUBSTATE] = 2;
           g_nSpyroMotionAux = d;
         }
       }

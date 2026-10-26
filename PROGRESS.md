@@ -177,7 +177,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80018f30` | DrawCinematicLetterbox | main | 420 | matched | game |
 | `0x800190d4` | DrawFullscreenTint | main | 200 | matched | game |
 | `0x8001919c` | EmitTexturedQuad | main | 356 | matched | game |
-| `0x80019300` | EnqueueLoadingScreenSprites | main | 920 | matched | game |
+| `0x80019300` | EnqueueHudSprites | main | 920 | matched | game |
 | `0x80019698` | ComposeFrameScene | main | 164 | matched | game |
 | `0x8001973c` | DrawLevelTransitionOverlay | main | 2324 | matched | game |
 | `0x8001a050` | LevelTransition_Draw | main | 956 | matched | game |
@@ -197,7 +197,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80020f34` | EmitSecondaryActorPrimitives | main | 6836 | asm | handwritten |
 | `0x800229e8` | StoreAndRestoreStaticRegs | main | 68 | matched | game |
 | `0x80022a2c` | RasterizeSpritePrimQueue | main | 4248 | asm | handwritten |
-| `0x80023ac4` | RasterizePairedActor | main | 2036 | asm | handwritten |
+| `0x80023ac4` | RasterizeSpyroModel | main | 2036 | asm | handwritten |
 | `0x800242b8` | func_800242B8 | main | 5688 | asm | handwritten |
 | `0x800258f0` | RenderWorldChunks | main | 19976 | asm | handwritten |
 | `0x8002a6fc` | TickWorldChunkAnimations | main | 3220 | asm | handwritten |
@@ -372,13 +372,13 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x800495d8` | AdvanceSpyroAnimLayer1Frame | main | 136 | matched | game |
 | `0x80049660` | TickSpyroAnimLayer1 | main | 544 | matched | game |
 | `0x80049880` | SmoothSpyroByteEulerSpring | main | 320 | matched | game |
-| `0x800499c0` | TickSpyroHornStrikeAttack | main | 1084 | matched | game |
+| `0x800499c0` | TickSpyroFlameAttack | main | 1084 | matched | game |
 | `0x80049dfc` | AdvanceSpyroAnimLayer2Frame | main | 144 | matched | game |
 | `0x80049e8c` | TickSpyroAnimLayer2 | main | 176 | matched | game |
 | `0x80049f3c` | TickSpyroAnimLayer2GateTimer | main | 112 | matched | game |
 | `0x80049fac` | SampleSpyroShadowRingHeights | main | 596 | matched | game |
 | `0x8004a200` | TickSpyroGameplayFrame | main | 1516 | matched | game |
-| `0x8004a7ec` | TickSpyroFrameForceJump | main | 544 | matched | game |
+| `0x8004a7ec` | TickSpyroFrameGlideHold | main | 544 | matched | game |
 | `0x8004aa0c` | TickSpyroFrameNoInput | main | 536 | matched | game |
 | `0x8004ac24` | ResetSpyroEntity | main | 532 | matched | game |
 | `0x8004ae38` | CastRayWorldAndActors | main | 4020 | asm | handwritten |
@@ -402,7 +402,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80050240` | EmitDynamicActorMeshFogShaded | main | 972 | asm | handwritten |
 | `0x8005060c` | ClipAndEmitFogShadedActorTriangle | main | 260 | asm | handwritten |
 | `0x80050710` | func_80050710 | main | 1216 | asm | handwritten |
-| `0x80050bd0` | DrawActors | main | 5148 | matched | game |
+| `0x80050bd0` | DrawPortalsAndStaticActors | main | 5148 | matched | game |
 | `0x80051fec` | BuildActiveActorList | main | 468 | asm | handwritten |
 | `0x800521c0` | BuildRenderEntityLists | main | 256 | asm | handwritten |
 | `0x800522c0` | TickActorAnims | main | 516 | asm | handwritten |
@@ -457,7 +457,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80058bd8` | ComputeBillboardBasisVectors | main | 164 | matched | game |
 | `0x80058c7c` | InitLightVectorConstants | main | 68 | matched | game |
 | `0x80058cc0` | RotateLightVectorXZ | main | 164 | matched | game |
-| `0x80058d64` | DrawSpyroHornStrikeTrails | main | 1808 | asm | handwritten |
+| `0x80058d64` | DrawSpyroFlameTrails | main | 1808 | asm | handwritten |
 | `0x80059474` | SetSpawnAnchorFromActor | main | 248 | matched | game |
 | `0x8005956c` | ComputeSaveGameChecksum | main | 40 | matched | game |
 | `0x80059594` | ApplySaveGameBuffer | main | 720 | matched | game |

@@ -206,8 +206,8 @@ void UpdateCameraSpringForMode(void) {
     g_pCameraAnchorPos = g_anSpyroWorldPos;
     g_nCameraTargetYawBiasFromMode = yaw;
     if (g_nCameraCollisionRetries == 0) {
-      if (g_nSpyroFallTrackingFlag != 0) {
-        if (g_nSpyroStateFlags == 2) {
+      if (g_nSpyroFlightMode != 0) {
+        if (g_nSpyroSubstate == 2) {
           yaw = (yaw - g_nCameraEulerYaw) & 0xFFF;
           if (yaw > 0x800) {
             yaw -= 0x1000;
@@ -221,7 +221,7 @@ void UpdateCameraSpringForMode(void) {
           g_nCameraTargetInverted = ComputeCameraToTargetAngle(CAM);
           g_nCameraSpringYaw = g_nCameraYaw;
           LoadCameraTargetAnglesFromMode();
-        } else if (g_nSpyroStateFlags == 1) {
+        } else if (g_nSpyroSubstate == 1) {
           yaw = (yaw - g_nCameraEulerYaw) & 0xFFF;
           if (yaw > 0x800) {
             yaw -= 0x1000;
@@ -246,7 +246,7 @@ void UpdateCameraSpringForMode(void) {
       } else {
         int r = AbsAngleDelta12(yaw, g_nCameraEulerYaw);
 
-        if (g_nSpyroStateFlags != 0xB && r > 0x578) {
+        if (g_nSpyroSubstate != SPYRO_SUB_GLIDE_ENTER && r > 0x578) {
           g_pCameraTargetParams = g_anCameraParamMode2Reverse;
         } else {
           *(int **)&CAM[CAM_TARGET_PARAMS] = g_anCameraParamMode2Front;

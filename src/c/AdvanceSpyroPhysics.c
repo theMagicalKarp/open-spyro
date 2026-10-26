@@ -13,6 +13,7 @@
 #include "camera.h"
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
 #include "sdata.h"
@@ -228,7 +229,7 @@ int AdvanceSpyroPhysics(void) {
               if (a > 0x80) {
                 a -= 0x100;
               }
-              if (g_nActiveLevelId == 0x14) {
+              if (g_nActiveLevelId == LEVEL_PEACE_KEEPERS) {
                 side = 0x28;
                 if ((int)rq2[SPY_STATE - SPY_REQUEST] ==
                     SPYRO_ST_SCRIPTED_WALK) {
@@ -268,9 +269,9 @@ int AdvanceSpyroPhysics(void) {
                   }
                   g_dwSpyroRequestMask |= SPYRO_RQ_FORCE_STATE;
                   if (side) {
-                    g_nSpyroStateFlags = 1;
+                    g_nSpyroSubstate = 1;
                   } else {
-                    g_nSpyroStateFlags = 2;
+                    g_nSpyroSubstate = 2;
                   }
                 }
               } else {
@@ -354,25 +355,27 @@ int AdvanceSpyroPhysics(void) {
           void *hit;
 
           switch (*st) {
-          case 0x14:
-            if (st[1] & 0x40) {
-              hit = DispatchActorContactAtSphere(
-                  pos, 0x164, &g_dwSpyroTriggerEventFlags, 0x80000, 0, 0);
+          case SPYRO_ST_CHARGE_AIR:
+            if (st[1] & SPYRO_SUB_SUPERCHARGE) {
+              hit = DispatchActorContactAtSphere(pos, 0x164,
+                                                 &g_dwSpyroTriggerEventFlags,
+                                                 ACTOR_HIT_SUPER, 0, 0);
               if (hit == 0) {
                 goto collide;
               }
               if (st[SPY_TRIGGER_FLAGS - SPY_STATE] & 0x4000) {
-                hit = DispatchActorContactAtSphere(
-                    pos, 0x164, &g_dwSpyroTriggerEventFlags, 0x80000, 0, one);
+                hit = DispatchActorContactAtSphere(pos, 0x164,
+                                                   &g_dwSpyroTriggerEventFlags,
+                                                   ACTOR_HIT_SUPER, 0, one);
               }
               break;
             }
             /* FALLTHROUGH */
-          case 0xB:
+          case SPYRO_ST_CHARGE:
             hit = DispatchActorContactAtSphere(
                 st - SPY_STATE, 0x164,
-                (unsigned int *)(st - (SPY_STATE - SPY_TRIGGER_FLAGS)), 0x20000,
-                0, one);
+                (unsigned int *)(st - (SPY_STATE - SPY_TRIGGER_FLAGS)),
+                ACTOR_HIT_CHARGE, 0, one);
             if (hit == 0) {
               goto collide;
             }
@@ -383,9 +386,9 @@ int AdvanceSpyroPhysics(void) {
               g_nPulseRumbleTimer = 0xC;
             }
             break;
-          case 0x18:
-          case 0x2C:
-            mask |= 0x80000;
+          case SPYRO_ST_SUPERCHARGE_AIR:
+          case SPYRO_ST_SUPERCHARGE:
+            mask |= ACTOR_HIT_SUPER;
             hit = DispatchActorContactAtSphere(
                 pos, 0x164, &g_dwSpyroTriggerEventFlags, mask, 0, 0);
             if (hit == 0) {

@@ -9,7 +9,7 @@
    swing-euler target and reset him, re-seed the swing-euler defaults and the
    pad-snapshot countdown, point the camera anchor 0x1A4 below the swing-target
    block, retarget the dynamic camera params (yaw re-biased to Spyro's body yaw
-   and wrapped to 12 bits), restore the flame-breath timer, reset the camera and
+   and wrapped to 12 bits), restore the superflame timer, reset the camera and
    the HUD (all five counters hidden), and re-issue the current music track. */
 
 void EndSaveMenuToWorld(void) {
@@ -30,7 +30,7 @@ void EndSaveMenuToWorld(void) {
   g_nCameraCurrentMode = CAM_MODE_STAND;
   g_nCameraNextMode = CAM_MODE_STAND;
   g_pCameraTargetParams = dyn;
-  g_nSpyroFlameBreathTimer = g_nSpyroFlameBreathTimerSave;
+  g_nSpyroSuperflameTimer = g_nSpyroSuperflameTimerSave;
   g_nCameraTargetYawBiasFromMode = g_anSpyroMoveTargetYawBlock[0x14];
 
   ComputeCameraToTargetAngle((char *)g_apCameraAnchorBlock - 0xA8);

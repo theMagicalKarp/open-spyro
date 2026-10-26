@@ -5,7 +5,7 @@
 #include "types.h"
 #include "vecmath.h"
 
-/* DrawActors - VMA 0x80050bd0, 5148 bytes, frame 0x1a0.
+/* DrawPortalsAndStaticActors - VMA 0x80050bd0, 5148 bytes, frame 0x1a0.
 
    Matching notes (all load-bearing):
    - `maxX` is the same variable as the earlier CLZ `shift` (both s4): its
@@ -47,8 +47,7 @@ extern EdgeRec g_aMobSilhouetteEdges[];  /* silhouette edge records */
 extern ScreenPt g_aMobRingScreenPts[];   /* projected ring points */
 /* point k through a held byte offset (the original keeps k*12 live) */
 #define KPT (*(ScreenPt *)((char *)g_aMobRingScreenPts + ko))
-extern int
-    g_nCameraFloorSurfaceType[]; /* [-0x10] view mtx, [-0x15] world mtx */
+extern int g_nCameraVisZone[]; /* [-0x10] view mtx, [-0x15] world mtx */
 
 /* Render stage 4: draw the portals, then the static actor
    mesh list. The camera-relative view matrix is rebuilt every frame from the
@@ -61,7 +60,7 @@ extern int
    pushed 2 px away from the centroid, giving the fattened outline pass. A pass
    is emitted only when its extents fall inside the 512x240 frame and the ring
    faces the camera. (0x80050bd0, 5148 bytes.) */
-void DrawActors(void) {
+void DrawPortalsAndStaticActors(void) {
   MATRIX viewMtx;         /* sp+0x10 */
   MATRIX outMtx;          /* sp+0x30 */
   int vDelta[3];          /* sp+0x50 */
@@ -93,7 +92,7 @@ void DrawActors(void) {
   int yk;
   int dx;
   int dy;
-  int lod;
+  int zone;
 
   g_nPortalViewYawSpin = (g_nPortalViewYawSpin + 2) & 0xfff;
   g_nPortalViewPitchTilt = (g_nPortalViewPitchTilt + 2) & 0xfff;
@@ -521,10 +520,10 @@ void DrawActors(void) {
     }
   }
 
-  lod = g_nCameraFloorSurfaceType[0];
-  if (lod >= g_nStaticMeshLodCutoff) {
-    lod = -1;
+  zone = g_nCameraVisZone[0];
+  if (zone >= g_nVisZoneCount) {
+    zone = -1;
   }
-  EmitStaticActorMeshList(lod, (MATRIX *)&g_nCameraFloorSurfaceType[-0x10],
-                          (MATRIX *)&g_nCameraFloorSurfaceType[-0x15]);
+  EmitStaticActorMeshList(zone, (MATRIX *)&g_nCameraVisZone[-0x10],
+                          (MATRIX *)&g_nCameraVisZone[-0x15]);
 }

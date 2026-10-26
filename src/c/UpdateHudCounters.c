@@ -11,6 +11,7 @@
      beside the re-read instead of below the cosine load.
    - Roll-phase/hold-timer stores go through one-field struct views (A426)
      and the butterfly ring is a byte-offset walk (A179/A35). */
+#include "emit_record.h"
 #include "funcs.h"
 #include "globals.h"
 #include "hud.h"
@@ -355,7 +356,7 @@ void UpdateHudCounters(void) {
         i = 0;
         do {
           (*(void (*)(int, int, unsigned char *, int))g_pfnLevelEmitParticles)(
-              1, 0xC, &g_abHudIconActorRecords[0x3C8],
+              1, EMIT_ACTOR_SPARK, &g_abHudIconActorRecords[0x3C8],
               ((i + 6) << 24) + 0x8080);
           i += 1;
         } while (i < 6);

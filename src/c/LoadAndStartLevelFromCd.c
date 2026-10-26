@@ -4,8 +4,8 @@
 
 /* 0x800144c8: loads + starts a level from CD. Silences sound, resolves the
    level's archive LBA (base + per-level offset table, stride 0x10), syncs
-   it in, builds the runtime level, restarts Spyro's anim state (flight
-   levels pass an extra 0x20 flag), then marks the level ready. */
+   it in, builds the runtime level, restarts Spyro's anim state (flying on
+   flight levels, idle elsewhere), then gives Sparx full health. */
 void LoadAndStartLevelFromCd(void) {
   int pad[8];
   int level;

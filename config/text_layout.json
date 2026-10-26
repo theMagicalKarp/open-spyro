@@ -476,7 +476,7 @@
    "size": 356
   },
   {
-   "name": "EnqueueLoadingScreenSprites",
+   "name": "EnqueueHudSprites",
    "vram": 2147586816,
    "size": 920
   },
@@ -576,7 +576,7 @@
    "size": 4248
   },
   {
-   "name": "RasterizePairedActor",
+   "name": "RasterizeSpyroModel",
    "vram": 2147629764,
    "size": 2036
   },
@@ -1451,7 +1451,7 @@
    "size": 320
   },
   {
-   "name": "TickSpyroHornStrikeAttack",
+   "name": "TickSpyroFlameAttack",
    "vram": 2147785152,
    "size": 1084
   },
@@ -1481,7 +1481,7 @@
    "size": 1516
   },
   {
-   "name": "TickSpyroFrameForceJump",
+   "name": "TickSpyroFrameGlideHold",
    "vram": 2147788780,
    "size": 544
   },
@@ -1601,7 +1601,7 @@
    "size": 1216
   },
   {
-   "name": "DrawActors",
+   "name": "DrawPortalsAndStaticActors",
    "vram": 2147814352,
    "size": 5148
   },
@@ -1876,7 +1876,7 @@
    "size": 164
   },
   {
-   "name": "DrawSpyroHornStrikeTrails",
+   "name": "DrawSpyroFlameTrails",
    "vram": 2147847524,
    "size": 1808
   },

@@ -355,14 +355,6 @@ typedef struct AmbientSoundState {
   int left;       /* 0x24 frames left on this leg */
 } AmbientSoundState;
 
-/* Case 323 — the respawn warden: puts every dormant actor of its group back
- * once Spyro is far enough away. */
-typedef struct WardenState {
-  int group;  /* 0x00 */
-  int timer;  /* 0x04 */
-  int period; /* 0x08 */
-} WardenState;
-
 /* Case 250 — crystal dragon statue: shakes through its rest pose, then
  * counts the rescue (g_anLevelDragonsRescued) when Spyro is close. */
 typedef struct DragonStatueState {
@@ -538,6 +530,9 @@ typedef struct L7State184 {
   int timer;   /* 0x14 */
 } L7State184;
 
+/* Type 183, the bolt level 7's type 184 spawns at frame 0x11 of its mode 1.
+ * Nothing in case 184 enters mode 1, and Level7_UpdateActors has no arm for
+ * type 183, so these fields are write-only here and keep raw names. */
 typedef struct L7State183 {
   int link;    /* 0x00 */
   int u04;     /* 0x04 */
@@ -683,7 +678,8 @@ typedef struct PortalState {
   int cameraPreset;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
 } PortalState;
 
-/* Type 300: camera trigger volume. Live camera sphere and its template. */
+/* Type 300 (whirlwind): the camera it requests while lifting Spyro, and the
+ * template that camera is seeded from. */
 typedef struct Xform6 {
   int w[6];
 } Xform6;
@@ -692,17 +688,26 @@ extern Xform6 g_anCameraActiveTargetParams; /* live camera transform */
 
 extern Xform6 g_anCameraParamMode2Front; /* template it is seeded from */
 
-/* Type 300 state block: activation box, mode flags, timer, linked actor. */
-typedef struct TriggerState {
-  int spanZ; /* 0x00 vertical span; also the offset added to the target Z */
+/* Type 300 (whirlwind) state block. While Spyro is inside the cylinder it
+ * posts SPYRO_EV_LIFT with a request to rise to actor->posZ + spanZ (the LIFT
+ * state carries him up, then he glides) and plays SFX_WHIRLWIND. An
+ * owner-gated one stays off until its linked actor (key picked up, dragon
+ * freed, gem taken) says so. */
+typedef struct WhirlwindState {
+  int spanZ; /* 0x00 height; Spyro is lifted to posZ + spanZ */
   int radius; /* 0x04 horizontal radius */
-  int flags; /* 0x08 bit0 style, bit1 armed, bit2 held, bit3 owner-gated,
+  int flags; /* 0x08 bit0 target camera (else the front spring camera),
+              * bit1 idle (wakes 0xB4 frames after Spyro comes near),
+              * bit2 woken (idles again 0x78 frames after a lift),
+              * bit3 owner-gated,
               * bit4 also stamps actor->subMode */
-  int timer; /* 0x0C */
-  int idx;   /* 0x10 index into the actor pool at g_pActorListBase */
-} TriggerState;
+  int timer; /* 0x0C wake / idle countdown */
+  int idx;   /* 0x10 owner: index into the actor pool at g_pActorListBase */
+} WhirlwindState;
 
-/* Type 323: respawner. Revives dormant actors of one class out of view. */
+/* Type 323: respawner. It rides on Spyro and, every `period` frames, puts
+ * each dormant actor of `type` farther than 0x6000 from him back at its home
+ * position (the first words of its state block). */
 typedef struct RespawnState {
   int type;   /* 0x00 the actor type this manager owns */
   int timer;  /* 0x04 */
@@ -1622,7 +1627,7 @@ extern volatile unsigned char g_bSpyroOtBinBias;
 extern int g_nCameraSpringYaw;
 extern int g_nCameraYaw;
 extern int g_nPortalCamPathMaxStep;
-extern int g_nGenericCountdown;
+extern int g_nScreenFadeLevel;
 extern int g_nGnastyLootFallRefZCap;
 extern int g_nHitRumbleTimer;
 extern int g_nMotionTrailRibbonCount;

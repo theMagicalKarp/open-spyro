@@ -33,6 +33,7 @@
 #include "level_emit_particles.h"
 #include "emit_record.h"
 #include "gamestate.h"
+#include "level_id.h"
 
 
 void Level32_EmitParticles(int count, int type, int *pos, int effectArg) {
@@ -51,7 +52,7 @@ void Level32_EmitParticles(int count, int type, int *pos, int effectArg) {
   for (i = 0; i < count; i++) {
     k = i * 4;
     switch (type) {
-    case 0x0: {
+    case EMIT_SPARK_VEL: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
@@ -69,7 +70,7 @@ void Level32_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0x1:
+    case EMIT_SPARK_VEL_DIM:
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
@@ -90,7 +91,7 @@ void Level32_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
       break;
-    case 0x2: {
+    case EMIT_SPARK_RISE: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
@@ -178,7 +179,7 @@ void Level32_EmitParticles(int count, int type, int *pos, int effectArg) {
           rec->u.plume.b = 0x80;
           break;
         }
-      } else if (g_nActiveLevelId == 0x32) {
+      } else if (g_nActiveLevelId == LEVEL_DREAM_WEAVERS) {
         rec->u.plume.r = 0x80;
         rec->u.plume.g = 0x80;
         rec->u.plume.b = 0;
@@ -241,7 +242,7 @@ void Level32_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.vel[0] = ((count - i) << 12) / 5;
       break;
     }
-    case 0xC: {
+    case EMIT_ACTOR_SPARK: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->visible = 1;
@@ -373,7 +374,7 @@ void Level32_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0x42: {
+    case EMIT_TWINKLE: {
       rec = (Emit *)AllocEmitListRecord(0);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
@@ -436,7 +437,7 @@ void Level32_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.dust.fx = 0x40;
       break;
     }
-    case 0x46: {
+    case EMIT_STREAK_BURST: {
       rec = (Emit *)AllocEmitListRecord(1);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
@@ -461,7 +462,7 @@ void Level32_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.line.b[2] = rec->u.line.a[2] + z * 2;
       break;
     }
-    case 0x47: {
+    case EMIT_STREAK_BURST_WHITE: {
       rec = (Emit *)AllocEmitListRecord(1);
       rec->type = type;
       rec->phase = GetRandomU32() & 7;
@@ -579,7 +580,7 @@ void Level32_EmitParticles(int count, int type, int *pos, int effectArg) {
       v3[2] = u6 + t6;
       VectorToSVectorShr2(rec->u.line.a, v3);
       rec->u.line.c1[3] = 2;
-      if (g_nSpyroHornStrikeVariant == 0) {
+      if (g_nSpyroFlameVariant == 0) {
         rec->u.line.c0[0] = GetRandomU32() | 0xC0;
         rec->u.line.c0[1] = (GetRandomU32() & 0x3F) - 0x60;
         rec->u.line.c0[2] = 0;

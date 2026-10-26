@@ -330,7 +330,7 @@ extern int g_anSpyroWallNudgeAngleByProbeMask[16];           /* 0x8006c714 */
 extern short g_anCameraSpringDriveGains[36];                 /* 0x8006c754 */
 extern short g_anCameraSpringDampingGains[36];               /* 0x8006c79c */
 extern short g_anCameraSpringSnapThresholds[36];             /* 0x8006c7e4 */
-extern int g_anCameraAutoRotateRates[36];                    /* 0x8006c82c */
+extern int g_anCameraEscapeOffsets[36];                    /* 0x8006c82c */
 extern int g_anCameraDynamicTargetParams[6];                 /* 0x8006c8bc */
 extern int g_anCameraParamDefault[6];                        /* 0x8006c8d4 */
 extern int g_anCameraParamMode2Front[6];                     /* 0x8006c934 */
@@ -368,18 +368,18 @@ extern int g_anWorldChunkTriangleUvOrientPairs[128];         /* 0x8006d3c8 */
 extern int g_anWorldChunkTriList6Vert[7];                    /* 0x8006d5c8 */
 extern int g_anWorldChunkTriList9Vert[12];                   /* 0x8006d5e4 */
 extern int g_anAnimRootMotionDeltaLut[128];                  /* 0x8006d614 */
-extern int g_anSpyroHornStrikeAgeConfigShort[32];            /* 0x8006d94c */
-extern int g_anSpyroHornStrikeAgeConfigLong[40];             /* 0x8006d9cc */
-extern int g_anSpyroHornStrikeWindupAnchorOffsets[12];       /* 0x8006da6c */
-extern int g_anSpyroHornStrikeFinalAnchorOffset[3];          /* 0x8006da9c */
-extern short g_anSpyroHornStrikeArcPathsShort[384];          /* 0x8006daa8 */
-extern short g_anSpyroHornStrikeArcPathsLong[512];           /* 0x8006dda8 */
-extern int g_anSpyroHornStrikeCapColors[4];                  /* 0x8006e1a8 */
-extern int g_anSpyroHornStrikeCapColorsAlt[4];               /* 0x8006e1b8 */
-extern byte g_abSpyroHornStrikeSlotMap[16];                  /* 0x8006e1c8 */
-extern int g_anSpyroHornStrikeEndBurstDirs[24];              /* 0x8006e1d8 */
-extern int g_anSpyroHornStrikeTipOffsets[6];                 /* 0x8006e238 */
-extern int g_anSpyroHornStrikeTipBurstVels[6];               /* 0x8006e250 */
+extern int g_anSpyroFlameAgeConfigShort[32];            /* 0x8006d94c */
+extern int g_anSpyroFlameAgeConfigLong[40];             /* 0x8006d9cc */
+extern int g_anSpyroFlameWindupAnchorOffsets[12];       /* 0x8006da6c */
+extern int g_anSpyroFlameFinalAnchorOffset[3];          /* 0x8006da9c */
+extern short g_anSpyroFlameArcPathsShort[384];          /* 0x8006daa8 */
+extern short g_anSpyroFlameArcPathsLong[512];           /* 0x8006dda8 */
+extern int g_anSpyroFlameCapColors[4];                  /* 0x8006e1a8 */
+extern int g_anSpyroFlameCapColorsAlt[4];               /* 0x8006e1b8 */
+extern byte g_abSpyroFlameSlotMap[16];                  /* 0x8006e1c8 */
+extern int g_anSpyroFlameEndBurstDirs[24];              /* 0x8006e1d8 */
+extern int g_anSpyroFlameTipOffsets[6];                 /* 0x8006e238 */
+extern int g_anSpyroFlameTipBurstVels[6];               /* 0x8006e250 */
 extern int g_anSpyroShadowCircleTable[16];                   /* 0x8006e268 */
 extern int g_anSpyroShadowProbeOffsetTable[24];              /* 0x8006e2a8 */
 extern int g_anHudIconRestPos[36];                           /* 0x8006e68c */
@@ -623,7 +623,7 @@ extern int g_nExtraLives;                    /* 0x8007582c */
 extern int g_nLevelKeyState;                 /* 0x80075830: the level key: 0 none, 1 carried (key 173 picked up), 2 locked chest (174) opened, 3 its reward collected; shown as HUD counter 4 */
 extern int g_nCameraShakePeakAmplitude;      /* 0x80075848 */
 extern int g_nPulseRumbleAmount;             /* 0x8007584c */
-extern int g_nPortalViewYawSpin;        /* 0x80075858: portal-surface view spin, +2 a frame (DrawActors) */
+extern int g_nPortalViewYawSpin;        /* 0x80075858: portal-surface view spin, +2 a frame (DrawPortalsAndStaticActors) */
 extern void *g_pDemoPadCursor;           /* 0x8007585c: read/write cursor into the recorded demo pad stream (SampleDemoPadFrame) */
 extern int g_nWorldTreasureCollected;        /* 0x80075860 */
 extern int g_nCdStreamState;                 /* 0x80075864 */
@@ -637,7 +637,7 @@ extern void *g_pActorPoolDynBase;            /* 0x80075890 */
 extern int g_nCameraSpringReengageCountdown; /* 0x80075894 */
 extern void *g_pSparxActor;      /* 0x80075898: the Sparx actor (type 0x78, spawned by BuildLoadedLevelRuntime), or null while Sparx is gone */
 extern int g_nSpyroTurnRateAccum;            /* 0x800758a0 */
-extern int g_nSpyroFlameBreathTimerSave;     /* 0x800758a4 */
+extern int g_nSpyroSuperflameTimerSave;     /* 0x800758a4 */
 extern int g_nReturnPortalLevelId;                /* 0x800758ac: level being left (0 = none); the hub places Spyro at the portal leading to it */
 extern int g_nPrimBufferOverflowFlag;        /* 0x800758b0 */
 extern int g_nCurrentLevelId;                /* 0x800758b4 */
@@ -652,11 +652,11 @@ extern void *g_pfnLevelEmitParticles; /* 0x800758e4 */
 extern int g_nSparxFoodCount;                /* 0x800758e8: type-15 pickups collected; every 20 become an extra life (UpdateHudCounters) */
 extern int g_nLevelSelectWorldIndex;         /* 0x800758ec */
 extern int g_nLevelSelectSubIndex;           /* 0x800758f0 */
-extern int g_nPortalViewPitchTilt;      /* 0x800758fc: portal-surface view tilt, +2 a frame (DrawActors) */
+extern int g_nPortalViewPitchTilt;      /* 0x800758fc: portal-surface view tilt, +2 a frame (DrawPortalsAndStaticActors) */
 extern int g_nHitRumbleTimer;                /* 0x80075904 */
 extern int g_nCameraShakeDuration;           /* 0x8007590c */
 extern uint g_dwActiveCameraOptions;         /* 0x80075914 */
-extern int g_nGenericCountdown;              /* 0x80075918 */
+extern int g_nScreenFadeLevel;              /* 0x80075918: fade-to-black level (drawn as a subtractive fullscreen tint, decays by g_nFrameStep in gameplay) */
 extern int g_nLevelStormFlag;                /* 0x8007591c */
 extern int g_nCameraManualYawInput;          /* 0x80075924 */
 extern int g_nPadHistoryIndex;               /* 0x80075928 */
@@ -901,22 +901,22 @@ extern struct Portal *g_apPortals[];     /* 0x80078640 (portal.h) */
 extern int g_anCameraActiveTargetParams[6];             /* 0x80078668 */
 extern byte g_abWorldPerLevelByteTable[30];             /* 0x80078680 */
 extern byte g_abPadRawReport[34];                       /* 0x800786a0 */
-extern int g_anSpyroHornStrikeAnchorPos[3];             /* 0x800786c8 */
-extern byte g_abSpyroHornStrikeAnchorEuler[3];          /* 0x800786d4 */
-extern int g_anSpyroHornStrikeRibbonTexWords[4];        /* 0x800786d8 */
-extern byte g_abSpyroHornStrikeSlotAge[8];              /* 0x800786e8 */
-extern byte g_abSpyroHornStrikeSlotEndAge[8];           /* 0x800786f0 */
-extern byte g_abSpyroHornStrikeSlotState[8];            /* 0x800786f8 */
-extern byte g_bSpyroHornCollisionActive;                /* 0x80078760 */
-extern byte g_bSpyroHornStrikeSegmentIdx;               /* 0x80078761 */
-extern byte g_bSpyroHornStrikeAnchorMode;               /* 0x80078762 */
-extern byte g_bSpyroHornStrikeAnimRingBase;             /* 0x80078763 */
-extern int g_nSpyroHornStrikeVariant;                   /* 0x80078764 */
-extern int g_nSpyroFlameBreathTimer;                    /* 0x80078768 */
-extern int g_anSpyroHornStrikeAnchorMtx[5];             /* 0x8007876c */
-extern int g_anSpyroHornStrikeRenderMtx[5];             /* 0x80078780 */
-extern int g_anSpyroHornStrikeAnchorOffset[3];          /* 0x80078794 */
-extern int g_anSpyroHornStrikeSlotPrevPos[24];          /* 0x800787a0 */
+extern int g_anSpyroFlameAnchorPos[3];             /* 0x800786c8 */
+extern byte g_abSpyroFlameAnchorEuler[3];          /* 0x800786d4 */
+extern int g_anSpyroFlameRibbonTexWords[4];        /* 0x800786d8 */
+extern byte g_abSpyroFlameSlotAge[8];              /* 0x800786e8 */
+extern byte g_abSpyroFlameSlotEndAge[8];           /* 0x800786f0 */
+extern byte g_abSpyroFlameSlotState[8];            /* 0x800786f8 */
+extern byte g_bSpyroFlameActive;                /* 0x80078760: a flame breath is live (set on PAD_CIRCLE in TickSpyroFlameAttack, cleared when every flame slot is idle) */
+extern byte g_bSpyroFlameSegmentIdx;               /* 0x80078761 */
+extern byte g_bSpyroFlameAnchorMode;               /* 0x80078762 */
+extern byte g_bSpyroFlameAnimRingBase;             /* 0x80078763 */
+extern int g_nSpyroFlameVariant;                   /* 0x80078764: 1 for a superflame breath (alternate particles and cap colours) */
+extern int g_nSpyroSuperflameTimer;                    /* 0x80078768: superflame power-up frames left; given by an actor in levels 14/27, makes Spyro glow red and blink for the last 0x78 frames, cleared on level exit */
+extern int g_anSpyroFlameAnchorMtx[5];             /* 0x8007876c */
+extern int g_anSpyroFlameRenderMtx[5];             /* 0x80078780 */
+extern int g_anSpyroFlameAnchorOffset[3];          /* 0x80078794 */
+extern int g_anSpyroFlameSlotPrevPos[24];          /* 0x800787a0 */
 extern byte g_abWorldSparkleParticleTable[576];         /* 0x80078800 */
 extern int g_nWorldRenderMeshChunkCount;                /* 0x80078a40 */
 extern void *g_pWorldRenderMeshChunkArray;              /* 0x80078a44 */
@@ -932,17 +932,17 @@ extern byte g_bSpyroFramePrev;                          /* 0x80078a76 */
 extern byte g_bSpyroAnimFrame;                          /* 0x80078a77 */
 extern byte g_bSpyroSubFrameTimer;                      /* 0x80078a7c */
 extern byte g_bSpyroOtBinBias;                          /* 0x80078a7f */
-extern byte g_abSpyroFxParticleRgba[4];                 /* 0x80078a80 */
+extern byte g_abSpyroTintRgba[4];                 /* 0x80078a80: Spyro's model tint (alpha 0 = none): the superflame's red glow, the SPYRO_ST_HURT_TINT white/dark flash */
 extern uint g_dwSpyroTriggerEventFlags;                 /* 0x80078a84 */
-extern int g_nSpyroSwimWaterFloorZ;                     /* 0x80078a88 */
+extern int g_nSpyroHazardFloorZ;                     /* 0x80078a88 */
 extern int g_anSpyroBodyMtx[5];                         /* 0x80078a8c */
 extern int g_nSpyroAnimMode;                            /* 0x80078aac */
 extern int g_nSpyroAnimPlayRate;                        /* 0x80078ab0 */
 extern int g_nSpyroPrevState;                           /* 0x80078ab4 */
-extern int g_nSpyroHornStrikeSwingPhase;                /* 0x80078ab8 */
-extern int g_nSpyroHornStrikeAnimRate;                  /* 0x80078abc */
+extern int g_nSpyroFlamePhase;                /* 0x80078ab8 */
+extern int g_nSpyroFlameAnimRate;                  /* 0x80078abc */
 extern int g_nSpyroState;                               /* 0x80078ad0: SpyroState (spyro_state.h) */
-extern int g_nSpyroStateFlags;                          /* 0x80078ad4 */
+extern int g_nSpyroSubstate;                          /* 0x80078ad4 */
 extern int g_nSpyroStateTimer;                          /* 0x80078ad8 */
 extern int g_nSpyroPrevStateTimer;                      /* 0x80078adc */
 extern int g_nSpyroContactedActorFlag;                  /* 0x80078ae0 */
@@ -976,7 +976,7 @@ extern int g_nSpyroFloorReferenceZ;                     /* 0x80078bb0 */
 extern int g_nSpyroGravityEnableFlag;                   /* 0x80078bb4 */
 extern int g_nSpyroInputLockoutCountdown;               /* 0x80078bb8 */
 extern int g_nSparxHealth;                           /* 0x80078bbc: Sparx health: 3 gold, 2 blue, 1 green, 0 Sparx gone, -1 after the fatal hit. Hits decrement it (DispatchSpyroPadStateChanges / DispatchSpyroChargeStateChanges pick the death state once it goes negative); the Sparx actor eating a butterfly adds 1; a new game sets 3. */
-extern int g_nSpyroBreathTimer;                         /* 0x80078bc0 */
+extern int g_nSpyroHazardSinkDepth;                         /* 0x80078bc0 */
 extern int g_nSpyroFirstContactChunkId;                 /* 0x80078bc4 */
 extern int g_nSpyroTriggerCurrentEventId;               /* 0x80078bc8 */
 extern int g_nSpyroTriggerEntryZ;                       /* 0x80078bcc */
@@ -984,8 +984,8 @@ extern void *g_pSpyroLiftRegionData;                 /* 0x80078bd0 */
 extern int g_anSpyroFirstContactPoint[3];               /* 0x80078bd4 */
 extern int g_anSpyroFirstContactNormal[3];              /* 0x80078be0 */
 extern int g_nSpyroScriptedMoveMode;                    /* 0x80078bec */
-extern int g_nSpyroHornStrikeState;                     /* 0x80078bf0 */
-extern int g_nSpyroHornStrikeTimer;                     /* 0x80078bf8 */
+extern int g_nSpyroFlameState;                     /* 0x80078bf0 */
+extern int g_nSpyroFlameTimer;                     /* 0x80078bf8 */
 extern int g_nSpyroSwingEulerPitchTarget;               /* 0x80078bfc */
 extern int g_nCameraScriptStickRequestY;                /* 0x80078c00 */
 extern int g_nCameraScriptStickRequestX;                /* 0x80078c04 */
@@ -1004,7 +1004,7 @@ extern void *g_pScriptedCameraActor;                    /* 0x80078c7c */
 extern void *g_pPortalCamPathData;                   /* 0x80078c98 */
 extern int g_nPortalCamPathMaxStep;                  /* 0x80078c9c */
 extern int g_nPortalCamPathReverseFlag;              /* 0x80078ca0 */
-extern int g_nSpyroFallTrackingFlag;                    /* 0x80078ca4 */
+extern int g_nSpyroFlightMode;                    /* 0x80078ca4: Spyro can fly: set on flight levels (and in Gnasty's Loot, LEVEL_GNASTYS_LOOT, once grounded), cleared on level exit. While set the glide/fly states take R1/L1 as substates 1/2 and the fall physics keeps tracking g_nSpyroFloorReferenceZ */
 extern int g_nSpyroChargeHoldFlag;                      /* 0x80078ca8 */
 extern int g_nSpyroGlideBankingFlag;                    /* 0x80078cac */
 extern uint g_dwSpyroFootstepPrimarySfxKey;             /* 0x80078cbc */
@@ -1103,7 +1103,7 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_bSpyroPersistentEulerY 0x80078a65 g_abSpyroPersistentEuler[1]
  *   g_pSharedLoadBuffer     0x800113a0  shared CD/asset/splash load buffer pointer
  *   g_nFarPlaneDrawDistance 0x800785d0  per-gamestate far-plane cull limit (SetupFrameOT)
- *   g_nStaticMeshLodCutoff  0x800785b4  static-mesh LOD cutoff
+ *   g_nVisZoneCount  0x800785b4  number of visibility zones
  *   g_nCdDaVolumeCurrent    0x80075f18  live CD-DA volume (fade ramp)
  *   g_pLevelSoundIds        0x80076824  level sound id table
  *
@@ -1167,7 +1167,7 @@ extern unsigned char g_bSpyroSwingByteEuler1;
 extern int g_nCreditsPageIndex;
 extern int g_nLevelIntroParallaxCountdown;
 extern int g_nSpyroSwingEulerPrev1;
-extern int g_nStaticMeshLodCutoff;
+extern int g_nVisZoneCount;
 
 /* Globals named after the one-time import, declared once here (by address). */
 extern unsigned char g_szDemoMode[]; /* 0x80010ac0 */
@@ -1216,7 +1216,7 @@ extern void *g_pSharedLoadBuffer; /* 0x800113a0: shared CD/asset/splash load buf
 extern unsigned char g_abSpyroStateCameraModeTable[]; /* 0x8006c588 */
 extern short g_anDpadDirectionYaw[]; /* 0x8006c5d0 */
 extern short g_anSpyroTurnRateRows[]; /* 0x8006c5f0 */
-extern int g_anSpyroHornStrikeTipOffsets2[]; /* 0x8006e244: g_anSpyroHornStrikeTipOffsets+0xC */
+extern int g_anSpyroFlameTipOffsets2[]; /* 0x8006e244: g_anSpyroFlameTipOffsets+0xC */
 extern int g_anWorldSparkleShape[]; /* 0x8006e308: 10-word table in .data (5 signed pairs) */
 extern int g_adwActorBurstColors[]; /* 0x8006e330 */
 extern int g_anFlightBoundsCenter[]; /* 0x8006e7dc */
@@ -1237,8 +1237,8 @@ extern short g_anDragonRescueScaleCurve[]; /* 0x8006f3c0: dragon-rescue timer sc
 extern int g_anDragonRescueIconRestPos[]; /* 0x8006f3f0: HUD icon rest positions, 3 x vec3 */
 extern unsigned char g_abLevelTotalDragonsBlock[]; /* 0x8006f414: held-base view; the sized decl stays in use where the original addresses it absolutely (A240) */
 extern void *g_apOtDepthBinBlock[]; /* 0x8006fcf4 */
-extern unsigned char g_abSpyroHornStrikeTransitionModes[][2]; /* 0x80075264 */
-extern unsigned char g_abSpyroHornStrikeAnimTable[]; /* 0x80075268 */
+extern unsigned char g_abSpyroFlameTransitionModes[][2]; /* 0x80075264 */
+extern unsigned char g_abSpyroFlameAnimTable[]; /* 0x80075268 */
 extern unsigned short g_anGameOverCameraEulerU[]; /* 0x800752d8 */
 extern unsigned char g_abWorldTitleGlyphBlock[]; /* 0x8007555c: held-base view (A240) */
 extern int g_nLevelUnreadScratchA; /* 0x80075670 */
@@ -1253,7 +1253,7 @@ extern int g_nActorAnimDone; /* 0x80075794 */
 extern void *g_pfnLevelBeginActorCutscene; /* 0x800757a0 */
 extern void *g_pfnLevelHandleFlightResults; /* 0x800757a8 */
 extern int g_pCreditsScrollHeader; /* 0x800757bc */
-extern int g_nWorldFloorSurfaceType; /* 0x80075844 */
+extern int g_nWorldFloorVisZone; /* 0x80075844 */
 extern int g_bLevelPhasedBossKilled; /* 0x80075850 */
 extern int g_bLevelBossDefeated; /* 0x80075854: cleared on level load */
 extern int g_anLevelRunnerArrived; /* 0x80075870 */
@@ -1358,8 +1358,8 @@ extern int g_anWorldAnimColor1CountBlock[]; /* 0x80078578 */
 extern int g_anWorldAnimColor2CountBlock[]; /* 0x80078580 */
 extern int g_anWorldAnimColor3CountBlock[]; /* 0x80078588 */
 extern int g_anWorldAnimVertexMorphCountBlock[]; /* 0x800785a0 */
-extern void *g_pStaticMeshLodTable; /* 0x800785b0: relocated mesh-index LOD table (count g_nStaticMeshLodCutoff) */
-extern int g_anStaticMeshLodCutoffBlock[]; /* 0x800785b4: held-base view of g_nStaticMeshLodCutoff */
+extern void *g_pVisZoneChunkLists; /* 0x800785b0: per visibility zone, a 0xFF-terminated list of the world chunks drawn from it (count g_nVisZoneCount); the camera's zone is the floor under it (g_nCameraVisZone) */
+extern int g_anVisZoneCountBlock[]; /* 0x800785b4: held-base view of g_nVisZoneCount */
 extern int g_anTriggerRegionCount[]; /* 0x800785bc: trigger-region count (array view; the loop bound is re-read through it) */
 extern int g_anWorldMeshCountBlock[]; /* 0x800785c8: held-base view of g_nWorldMeshCount (-7 words: g_nWorldChunkCount) */
 extern int g_nInitUnreadWord; /* 0x800785cc */
@@ -1369,10 +1369,10 @@ extern void *volatile g_apPathTableBufferBlock[]; /* 0x800785e4 */
 extern unsigned char *g_apRenderScratchRegionBlock[]; /* 0x800785e8: g_pRenderScratchRegionBase */
 extern int g_anFlightTallyActiveSlots[]; /* 0x80078608 */
 extern void *g_apMotionTrailSlices[]; /* 0x80078658: per-ribbon slice list */
-extern unsigned char g_abSpyroHornCollisionActiveBlock[]; /* 0x80078760 */
-extern unsigned char g_abSpyroHornStrikeSegmentBlock[]; /* 0x80078761, +2 = ring row */
-extern int g_anSpyroFlameBreathTimerBlock[]; /* 0x80078768 */
-extern int g_anSpyroHornStrikeAnchorMtxBlock[]; /* 0x8007876c */
+extern unsigned char g_abSpyroFlameActiveBlock[]; /* 0x80078760 */
+extern unsigned char g_abSpyroFlameSegmentBlock[]; /* 0x80078761, +2 = ring row */
+extern int g_anSpyroSuperflameTimerBlock[]; /* 0x80078768 */
+extern int g_anSpyroFlameAnchorMtxBlock[]; /* 0x8007876c */
 extern unsigned char g_abSpyroAnimPrevBlock[]; /* 0x80078a70: Spyro-record view (+0 anim-prev byte, -0x18 world pos) */
 extern unsigned char g_bSpyroAnimLayer1Prev; /* 0x80078a72 */
 extern unsigned char g_bSpyroAnimLayer1Current; /* 0x80078a73 */
@@ -1380,8 +1380,8 @@ extern unsigned char g_bSpyroAnimFrame_blk[]; /* 0x80078a77: held-base view of g
 extern unsigned char g_bSpyroAnimLayer1FramePrev; /* 0x80078a78 */
 extern unsigned char g_bSpyroAnimLayer1Frame; /* 0x80078a79 */
 extern unsigned int g_adwSpyroTriggerEventBlock[]; /* 0x80078a84: held-base view of g_dwSpyroTriggerEventFlags */
-extern int g_anSpyroHornStrikeSwingPhaseBlock[]; /* 0x80078ab8 */
-extern int g_nSpyroHornStrikeLayer1State; /* 0x80078ac0 */
+extern int g_anSpyroFlamePhaseBlock[]; /* 0x80078ab8 */
+extern int g_nSpyroFlameLayer1State; /* 0x80078ac0 */
 extern int g_nSpyroAnimLayer2Phase; /* 0x80078ac4: 0 = tracking the primary anim */
 extern int g_nSpyroAnimLayer2Rate; /* 0x80078ac8: frame advance per tick */
 extern int g_nSpyroAnimLayer2Active; /* 0x80078acc: layer-2 anim now playing */
@@ -1399,8 +1399,8 @@ extern int g_nSpyroVelocityY; /* 0x80078b50: g_anSpyroVelocity[1] */
 extern int g_nSpyroMotionZ; /* 0x80078b6c: g_anSpyroMotionVec[2] */
 extern int g_nSpyroGravityStep_blk[]; /* 0x80078ba4: held-base view of g_nSpyroGravityStep (clamp/increment sites) */
 extern int g_anSpyroInputLockoutBlock[]; /* 0x80078bb8: g_nSpyroInputLockoutCountdown */
-extern int g_anSpyroHornStrikeStateBlock[]; /* 0x80078bf0: g_nSpyroHornStrikeState */
-extern int g_anSpyroHornStrikeTimerBlock[]; /* 0x80078bf8: g_nSpyroHornStrikeTimer */
+extern int g_anSpyroFlameStateBlock[]; /* 0x80078bf0: g_nSpyroFlameState */
+extern int g_anSpyroFlameTimerBlock[]; /* 0x80078bf8: g_nSpyroFlameTimer */
 extern int g_anSpyroSwingTargetBlock[]; /* 0x80078bfc */
 extern int g_anCameraScriptStickRequestXBlock[]; /* 0x80078c04 */
 extern int g_nSpyroSwingEulerPrev0; /* 0x80078c08 */

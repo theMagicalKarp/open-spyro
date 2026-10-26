@@ -1,3 +1,4 @@
+#include "emit_record.h"
 #include "funcs.h"
 #include "globals.h"
 
@@ -17,7 +18,7 @@ void CollectPickupActor(Actor *a) {
   }
   RefreshActorDerivedState(a, 4);
   ((void (*)(int, int, Actor *, int))g_pfnLevelEmitParticles)(
-      6, 0xC, a, g_adwActorBurstColors[a->type]);
+      6, EMIT_ACTOR_SPARK, a, g_adwActorBurstColors[a->type]);
 
   kind = a->type;
   if (kind == ACTOR_TYPE_GEM_1) {

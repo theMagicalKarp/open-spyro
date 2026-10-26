@@ -60,7 +60,7 @@ void RespawnOrGameOver_Draw(void) {
       BuildRenderEntityLists();
       ComposeFrameScene();
       RasterizeEmitList();
-      DrawActors();
+      DrawPortalsAndStaticActors();
       SetupFrameOT();
       DrawSync(0);
       VSync(0);
@@ -168,7 +168,7 @@ void RespawnOrGameOver_Draw(void) {
       FillWord((char *)q - 0x2400, 0, 0x900);
       RasterizeSpritePrimQueue();
       if (g_nGameplayDrawFrame >= 0xB5) {
-        RasterizePairedActor();
+        RasterizeSpyroModel();
       }
     }
     g_anCameraEulerPitchBlock[0] = g_anGameOverCameraEulerU[2];

@@ -23,17 +23,20 @@ typedef struct {
   int pitch;
   int distance;
   int pad[3];
-} RotateRate;
+} CameraEscapeOffset;
 
-#define RATE(off) (*(RotateRate *)((char *)g_anCameraAutoRotateRates + (off)))
+#define ESCAPE(off)                                                            \
+  (*(CameraEscapeOffset *)((char *)g_anCameraEscapeOffsets + (off)))
 
-/* Seat the eye at the angles rotated by one auto-rotate step (scaled). */
-#define TRY_ROTATED(off, shift)                                                \
-  (CAM[CAM_SPRING_YAW] = (CAM[CAM_YAW] + (RATE(off).yaw << (shift))) & 0xFFF,  \
+/* Seat the eye at the current angles plus one escape offset (scaled by 1 <<
+ * shift). */
+#define TRY_ESCAPE(off, shift)                                                 \
+  (CAM[CAM_SPRING_YAW] =                                                       \
+       (CAM[CAM_YAW] + (ESCAPE(off).yaw << (shift))) & 0xFFF,                  \
    CAM[CAM_SPRING_YAW + 1] =                                                   \
-       (CAM[CAM_YAW + 1] + (RATE(off).pitch << (shift))) & 0xFFF,              \
+       (CAM[CAM_YAW + 1] + (ESCAPE(off).pitch << (shift))) & 0xFFF,            \
    CAM[CAM_SPRING_YAW + 2] =                                                   \
-       CAM[CAM_YAW + 2] + (RATE(off).distance << (shift)),                     \
+       CAM[CAM_YAW + 2] + (ESCAPE(off).distance << (shift)),                   \
    ComputeCameraOrbitOffset(&CAM[CAM_EYE]),                                    \
    AddVector(&CAM[CAM_EYE], &CAM[CAM_EYE], *(int **)&CAM[CAM_ANCHOR]))
 
@@ -144,8 +147,8 @@ void UpdateGameplayCamera(void) {
     mask = 0;
     angles = *(CameraAngles *)&CAM[CAM_YAW];
     for (j = 0; j < 5; j++) {
-      off1 = j * sizeof(RotateRate);
-      TRY_ROTATED(off1, 0);
+      off1 = j * sizeof(CameraEscapeOffset);
+      TRY_ESCAPE(off1, 0);
       if (!CollideSphereWithWorldAndActors(&CAM[CAM_EYE], 0x100, 0x100)) {
         mask |= 1 << j;
         if (CheckLineOfSightSegment(&CAM[CAM_EYE], d) &&
@@ -156,9 +159,9 @@ void UpdateGameplayCamera(void) {
     }
     if (mask != 0) {
       for (j = 0; j < 5; j++) {
-        off2 = j * sizeof(RotateRate);
+        off2 = j * sizeof(CameraEscapeOffset);
         if ((mask >> j) & 1) {
-          TRY_ROTATED(off2, 1);
+          TRY_ESCAPE(off2, 1);
           if (!CollideSphereWithWorldAndActors(&CAM[CAM_EYE], 0x100, 0x100) &&
               CheckLineOfSightSegment(&CAM[CAM_EYE], d) &&
               CheckLineOfSightSegment(d, &CAM[CAM_EYE])) {
@@ -169,9 +172,9 @@ void UpdateGameplayCamera(void) {
     }
     if (mask != 0) {
       for (j = 0; j < 5; j++) {
-        off3 = j * sizeof(RotateRate);
+        off3 = j * sizeof(CameraEscapeOffset);
         if ((mask >> j) & 1) {
-          TRY_ROTATED(off3, 2);
+          TRY_ESCAPE(off3, 2);
           if (!CollideSphereWithWorldAndActors(&CAM[CAM_EYE], 0x100, 0x100) &&
               CheckLineOfSightSegment(&CAM[CAM_EYE], d) &&
               CheckLineOfSightSegment(d, &CAM[CAM_EYE])) {

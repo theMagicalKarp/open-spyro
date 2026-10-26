@@ -2420,7 +2420,7 @@ func_800658FC:
     two post-jal sites that want `la; lw 0(r)` (a volatile-declared scalar does
     not reach it — expand never force_regs a DECL's address).
 
-EnqueueLoadingScreenSprites:
+EnqueueHudSprites:
   verdict: parked
   class: "runtime-pointer address hoist (NOT retired-B16) + F2 preheader rotation + constant reassociation"
   date: 2026-08-24
@@ -3695,7 +3695,7 @@ Gamestate02_03_06_Draw:
     g_anHudFrameCycleBlock, g_abLevelTotalDragonsBlock, g_abLevelTotalEggsBlock,
     g_anLevelGemsBlock, g_abWorldTitleGlyphBlock); make check stays green.
 
-DrawActors:
+DrawPortalsAndStaticActors:
   verdict: parked
   class: "local-alloc a1<->a2 (k vs the k*3<<2 index temp) + a 2-slot reload-frame shortfall"
   date: 2026-09-09

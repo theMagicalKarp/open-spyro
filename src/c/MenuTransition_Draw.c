@@ -10,7 +10,7 @@
    plus a black line into OT slot 0x3ff. Phase 1: fog cross-fade — feed
    (0x20-idle)*0x80 through ComputeDepthCuedColor into the back DRAWENV's
    r0/g0/b0 and emit the fogged static mesh list. Both phases: OT clear,
-   RasterizePairedActor, DrawOTag, then the standard 2-vblank frame pace.
+   RasterizeSpyroModel, DrawOTag, then the standard 2-vblank frame pace.
 
    The quad loop is written field by field the way libgpu's set* macros
    expand: each derived vertex re-reads x0/y0/u0/v0 from the primitive, and
@@ -145,7 +145,7 @@ void MenuTransition_Draw(void) {
   }
   }
   FillWord(&g_pOtDepthBinHead0, 0, 0x900);
-  RasterizePairedActor();
+  RasterizeSpyroModel();
   DrawOTag(LinkOTPrimitives(0x800));
   DrawSync(0);
   if (g_nDemoActive != 0) {

@@ -58,7 +58,7 @@ typedef struct AimState {
   int beat;     /* 0x08 */
 } AimState;
 
-extern int g_anCameraPos;     /* turret aim target X */
+extern int g_anCameraPos;     /* scalar view of camera X: the spawned prop turns to face the camera */
 
 extern int g_anSpyroWorldPos[];
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
@@ -400,7 +400,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       st->vel[0] = ((LookupCosine(pitch) >> 5) * LookupCosine(yaw)) >> 12;
       st->vel[1] = ((LookupCosine(pitch) >> 5) * LookupSine(yaw)) >> 12;
       st->vel[2] = LookupSine(pitch) >> 5;
-      if (parent->flags & 0x20000)
+      if (parent->flags & ACTOR_HIT_CHARGE)
       {
         st->vel[0] += g_anSpyroVelocity[0] >> 6;
         st->vel[1] += g_anSpyroVelocity[1] >> 6;

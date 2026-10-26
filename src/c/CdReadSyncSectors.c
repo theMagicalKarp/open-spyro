@@ -47,7 +47,7 @@ void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset,
   g_nCdReadInFlight = 1;
   CdRead(sectors, dst, 0x80);
 
-  flag = (int *)(loc + 0x20);
+  flag = (int *)(loc + 0x20); /* g_nCdReadInFlight */
   for (;;) {
     if (*flag == 0 && CallCdSync(1, 0) == 2) {
       break;

@@ -81,7 +81,7 @@ int PivotActorAlongPath(int *actor, PathData *path, int thresh, int speed,
   if (ACTOR_TURNSTATE(actor) == 0 && kind != 0xFF) {
     /* Only one actor of this kind turns at a time — if a peer is already
        mid-turn (state 1), defer to it. */
-    list = g_apSaveMenuAnimActorListBlock;
+    list = g_apActiveActorListBlock;
     while ((peer = (unsigned char *)(*(list++))) != 0) {
       if (ACTOR_RAW(peer, unsigned char, group) == kind &&
           (unsigned int)ACTOR_RAW(peer, unsigned char, mode) <

@@ -18,8 +18,8 @@ typedef enum SpyroState
   SPYRO_ST_TURN_AROUND = 4,   /* reversing at speed (heading off by > 0x500) */
   SPYRO_ST_JUMP = 5,          /* Cross */
   SPYRO_ST_FALL = 6,          /* airborne >= 4 frames or on a too-steep slope */
-  SPYRO_ST_HURT_TINT = 7,     /* hit, event 0x20; exit clears g_abSpyroFxParticleRgba alpha */
-  SPYRO_ST_08 = 8,            /* no ChangeSpyroState site; flips yaw/pitch/roll after 0x14 frames */
+  SPYRO_ST_HURT_TINT = 7,     /* hit, event 0x20: flashes white/dark (g_abSpyroTintRgba) for 10 frames; exit clears the tint */
+  SPYRO_ST_08 = 8,            /* reached only as g_nSpyroRequestState (level 14 type 109 sets it at its path end); after 0x14 frames snaps yaw to g_nSpyroMoveTargetYaw, negates pitch/roll, then idles or walks */
   SPYRO_ST_SIDESTEP_L1 = 9,   /* L1 */
   SPYRO_ST_SIDESTEP_R1 = 10,  /* R1 */
   SPYRO_ST_CHARGE = 11,       /* Square held, on the ground */
@@ -43,7 +43,7 @@ typedef enum SpyroState
   SPYRO_ST_HAZARD = 29,       /* event 0x400 hazard: Cross escapes after 0x10 frames, 0x3C kills */
   SPYRO_ST_DEATH = 30,        /* a hurt state ending with g_nSparxHealth < 0 */
   SPYRO_ST_DEATH_PINNED = 31, /* event 0x10 with no health left */
-  SPYRO_ST_FLY = 32,          /* flight levels (and level 0x40) instead of GLIDE */
+  SPYRO_ST_FLY = 32,          /* flight levels (and Gnasty's Loot) instead of GLIDE */
   SPYRO_ST_FLY_CLIMB = 33,
   SPYRO_ST_FLY_DIVE = 34,
   SPYRO_ST_SCRIPTED_HOLD = 35, /* frozen until g_dwSpyroRequestMask clears */
@@ -107,6 +107,21 @@ typedef enum SpyroState
 #define SPYRO_RQ_FOLLOW_CAMERA 0x10000 /* CAM_MODE_SCRIPTED_FOLLOW */
 #define SPYRO_RQ_SCRIPTED_WALK 0x20000 /* g_nSpyroScriptedMoveMode = 1, walk */
 #define SPYRO_RQ_PENDING 0x80000000
+
+/* g_nSpyroSubstate (SpyroObj word 0x1F): a per-state phase that
+ * ChangeSpyroState resets on entry; most states use small values of their own
+ * (jump: 0 rising with Cross held, 1 descending, 2 Cross released; glide/fly:
+ * 1/2 from R1/L1, 3 a flight-level crash check; fall: a frame count that
+ * respawns Spyro at 0x79). The values shared across states: */
+#define SPYRO_SUB_SUPERCHARGE 0x40    /* charge/charge-air entered from a supercharge */
+#define SPYRO_SUB_CHARGE_LATCHED 0x80 /* charge target speed latched (LATCH_CHARGE_SPEED) */
+/* Glide/fly substates >= 8 are scripted: flight levels stop the clock and the
+ * path tweens while one runs. */
+#define SPYRO_SUB_SCRIPTED 8
+#define SPYRO_SUB_GLIDE_HOLD 8        /* frozen, turning to g_abSpyroRequestEuler (no-input / forced-jump frames) */
+#define SPYRO_SUB_GLIDE_TO_TARGET 9   /* no-clip glide to the hand-off point, then LEVEL_GLIDE_HANDOFF */
+#define SPYRO_SUB_GLIDE_ARRIVE 10     /* level-entry glide under GS_ARRIVAL_CAMERA, banks down to the ground */
+#define SPYRO_SUB_GLIDE_ENTER 11      /* level-entry glide straight into gameplay (camera mode 12) */
 
 /* Trigger-region record types (byte 0 of a g_pTriggerRegionTable record),
  * dispatched by DispatchSpyroTriggerEvent. */

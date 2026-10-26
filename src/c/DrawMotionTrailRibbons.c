@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "vecmath.h"
 
 /* 0x800189f0 — the motion-trail ribbons (1344 b), drawn from ComposeFrameScene.
@@ -10,8 +11,9 @@
    consecutive pair: the rim offset is the screen-space perpendicular of the
    slice-to-slice delta, scaled by the ribbon half-width over the slice depth,
    and the vertex colours fade out with the slice age.  The half-width ramps in
-   over the first three slices and collapses to 0 on the last-but-one; Gnasty's
-   world (level 0x3f) quarters it and swaps red with green. */
+   over the first three slices and collapses to 0 on the last-but-one; the
+   Gnasty Gnorc fight (LEVEL_GNASTY_GNORC) quarters it and swaps red with green.
+ */
 
 typedef struct {  /* 0x1c */
   int wx, wy, wz; /* 0x00 world position */
@@ -61,7 +63,7 @@ void DrawMotionTrailRibbons(void) {
       if (k < 3) {
         wide = (k * 0x271) << 5;
       }
-      if (g_nActiveLevelId == 0x3F) {
+      if (g_nActiveLevelId == LEVEL_GNASTY_GNORC) {
         wide >>= 2;
       }
       if (pts[k].age < 0x51) {
@@ -111,7 +113,7 @@ void DrawMotionTrailRibbons(void) {
             if (b1 < 0) {
               b1 = 0;
             }
-            if (g_nActiveLevelId == 0x3F) {
+            if (g_nActiveLevelId == LEVEL_GNASTY_GNORC) {
               hold = r0;
               r0 = g0;
               g0 = hold;

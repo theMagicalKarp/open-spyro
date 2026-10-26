@@ -1257,9 +1257,9 @@ dlabel g_anCameraSpringSnapThresholds
     /* 5D02A 8006C82A */ .short 0x0180
 enddlabel g_anCameraSpringSnapThresholds
 
-nonmatching g_anCameraAutoRotateRates
+nonmatching g_anCameraEscapeOffsets
 
-dlabel g_anCameraAutoRotateRates
+dlabel g_anCameraEscapeOffsets
     /* 5D02C 8006C82C 80000000 */ .word 0x00000080
     /* 5D030 8006C830 00000000 */ .word 0x00000000
     /* 5D034 8006C834 00000000 */ .word 0x00000000
@@ -1296,7 +1296,7 @@ dlabel g_anCameraAutoRotateRates
     /* 5D0B0 8006C8B0 00000000 */ .word 0x00000000
     /* 5D0B4 8006C8B4 00000000 */ .word 0x00000000
     /* 5D0B8 8006C8B8 00000000 */ .word 0x00000000
-enddlabel g_anCameraAutoRotateRates
+enddlabel g_anCameraEscapeOffsets
 
 nonmatching g_anCameraDynamicTargetParams
 
@@ -2820,9 +2820,9 @@ dlabel D_8006D908
     /* 5E148 8006D948 20000000 */ .word 0x00000020
 enddlabel D_8006D908
 
-nonmatching g_anSpyroHornStrikeAgeConfigShort
+nonmatching g_anSpyroFlameAgeConfigShort
 
-dlabel g_anSpyroHornStrikeAgeConfigShort
+dlabel g_anSpyroFlameAgeConfigShort
     /* 5E14C 8006D94C 00000002 */ .word 0x02000000
     /* 5E150 8006D950 00000103 */ .word 0x03010000
     /* 5E154 8006D954 00000204 */ .word 0x04020000
@@ -2855,11 +2855,11 @@ dlabel g_anSpyroHornStrikeAgeConfigShort
     /* 5E1C0 8006D9C0 000E0A18 */ .word 0x180A0E00
     /* 5E1C4 8006D9C4 00100818 */ .word 0x18081000
     /* 5E1C8 8006D9C8 00120618 */ .word 0x18061200
-enddlabel g_anSpyroHornStrikeAgeConfigShort
+enddlabel g_anSpyroFlameAgeConfigShort
 
-nonmatching g_anSpyroHornStrikeAgeConfigLong
+nonmatching g_anSpyroFlameAgeConfigLong
 
-dlabel g_anSpyroHornStrikeAgeConfigLong
+dlabel g_anSpyroFlameAgeConfigLong
     /* 5E1CC 8006D9CC 00000002 */ .word 0x02000000
     /* 5E1D0 8006D9D0 00000103 */ .word 0x03010000
     /* 5E1D4 8006D9D4 00000204 */ .word 0x04020000
@@ -2900,11 +2900,11 @@ dlabel g_anSpyroHornStrikeAgeConfigLong
     /* 5E260 8006DA60 000E0A21 */ .word 0x210A0E00
     /* 5E264 8006DA64 00100821 */ .word 0x21081000
     /* 5E268 8006DA68 00120621 */ .word 0x21061200
-enddlabel g_anSpyroHornStrikeAgeConfigLong
+enddlabel g_anSpyroFlameAgeConfigLong
 
-nonmatching g_anSpyroHornStrikeWindupAnchorOffsets
+nonmatching g_anSpyroFlameWindupAnchorOffsets
 
-dlabel g_anSpyroHornStrikeWindupAnchorOffsets
+dlabel g_anSpyroFlameWindupAnchorOffsets
     /* 5E26C 8006DA6C 00010000 */ .word 0x00000100
     /* 5E270 8006DA70 00000000 */ .word 0x00000000
     /* 5E274 8006DA74 80000000 */ .word 0x00000080
@@ -2917,19 +2917,19 @@ dlabel g_anSpyroHornStrikeWindupAnchorOffsets
     /* 5E290 8006DA90 80010000 */ .word 0x00000180
     /* 5E294 8006DA94 00000000 */ .word 0x00000000
     /* 5E298 8006DA98 60000000 */ .word 0x00000060
-enddlabel g_anSpyroHornStrikeWindupAnchorOffsets
+enddlabel g_anSpyroFlameWindupAnchorOffsets
 
-nonmatching g_anSpyroHornStrikeFinalAnchorOffset
+nonmatching g_anSpyroFlameFinalAnchorOffset
 
-dlabel g_anSpyroHornStrikeFinalAnchorOffset
+dlabel g_anSpyroFlameFinalAnchorOffset
     /* 5E29C 8006DA9C A0010000 */ .word 0x000001A0
     /* 5E2A0 8006DAA0 00000000 */ .word 0x00000000
     /* 5E2A4 8006DAA4 40000000 */ .word 0x00000040
-enddlabel g_anSpyroHornStrikeFinalAnchorOffset
+enddlabel g_anSpyroFlameFinalAnchorOffset
 
-nonmatching g_anSpyroHornStrikeArcPathsShort
+nonmatching g_anSpyroFlameArcPathsShort
 
-dlabel g_anSpyroHornStrikeArcPathsShort
+dlabel g_anSpyroFlameArcPathsShort
     /* 5E2A8 8006DAA8 00000000 */ .word 0x00000000
     /* 5E2AC 8006DAAC 1000F82C */ .word 0x2CF80010
     /* 5E2B0 8006DAB0 46003000 */ .word 0x00300046
@@ -3122,11 +3122,11 @@ dlabel g_anSpyroHornStrikeArcPathsShort
     /* 5E59C 8006DD9C A8FF182C */ .word 0x2C18FFA8
     /* 5E5A0 8006DDA0 4A0600FC */ .word 0xFC00064A
     /* 5E5A4 8006DDA4 A4FF102C */ .word 0x2C10FFA4
-enddlabel g_anSpyroHornStrikeArcPathsShort
+enddlabel g_anSpyroFlameArcPathsShort
 
-nonmatching g_anSpyroHornStrikeArcPathsLong
+nonmatching g_anSpyroFlameArcPathsLong
 
-dlabel g_anSpyroHornStrikeArcPathsLong
+dlabel g_anSpyroFlameArcPathsLong
     /* 5E5A8 8006DDA8 00000000 */ .word 0x00000000
     /* 5E5AC 8006DDAC 0000E02C */ .word 0x2CE00000
     /* 5E5B0 8006DDB0 50001800 */ .word 0x00180050
@@ -3383,29 +3383,29 @@ dlabel g_anSpyroHornStrikeArcPathsLong
     /* 5E99C 8006E19C F0003F2C */ .word 0x2C3F00F0
     /* 5E9A0 8006E1A0 B00918FD */ .word 0xFD1809B0
     /* 5E9A4 8006E1A4 1001402C */ .word 0x2C400110
-enddlabel g_anSpyroHornStrikeArcPathsLong
+enddlabel g_anSpyroFlameArcPathsLong
 
-nonmatching g_anSpyroHornStrikeCapColors
+nonmatching g_anSpyroFlameCapColors
 
-dlabel g_anSpyroHornStrikeCapColors
+dlabel g_anSpyroFlameCapColors
     /* 5E9A8 8006E1A8 F0F06030 */ .word 0x3060F0F0
     /* 5E9AC 8006E1AC D0904030 */ .word 0x304090D0
     /* 5E9B0 8006E1B0 90602030 */ .word 0x30206090
     /* 5E9B4 8006E1B4 A0301030 */ .word 0x301030A0
-enddlabel g_anSpyroHornStrikeCapColors
+enddlabel g_anSpyroFlameCapColors
 
-nonmatching g_anSpyroHornStrikeCapColorsAlt
+nonmatching g_anSpyroFlameCapColorsAlt
 
-dlabel g_anSpyroHornStrikeCapColorsAlt
+dlabel g_anSpyroFlameCapColorsAlt
     /* 5E9B8 8006E1B8 D0606030 */ .word 0x306060D0
     /* 5E9BC 8006E1BC F0C0C030 */ .word 0x30C0C0F0
     /* 5E9C0 8006E1C0 80202030 */ .word 0x30202080
     /* 5E9C4 8006E1C4 A0303030 */ .word 0x303030A0
-enddlabel g_anSpyroHornStrikeCapColorsAlt
+enddlabel g_anSpyroFlameCapColorsAlt
 
-nonmatching g_abSpyroHornStrikeSlotMap
+nonmatching g_abSpyroFlameSlotMap
 
-dlabel g_abSpyroHornStrikeSlotMap
+dlabel g_abSpyroFlameSlotMap
     /* 5E9C8 8006E1C8 */ .byte 0x03
     /* 5E9C9 8006E1C9 */ .byte 0x00
     /* 5E9CA 8006E1CA */ .byte 0x02
@@ -3422,11 +3422,11 @@ dlabel g_abSpyroHornStrikeSlotMap
     /* 5E9D5 8006E1D5 */ .byte 0x06
     /* 5E9D6 8006E1D6 */ .byte 0x07
     /* 5E9D7 8006E1D7 */ .byte 0x04
-enddlabel g_abSpyroHornStrikeSlotMap
+enddlabel g_abSpyroFlameSlotMap
 
-nonmatching g_anSpyroHornStrikeEndBurstDirs
+nonmatching g_anSpyroFlameEndBurstDirs
 
-dlabel g_anSpyroHornStrikeEndBurstDirs
+dlabel g_anSpyroFlameEndBurstDirs
     /* 5E9D8 8006E1D8 C0FFFFFF */ .word 0xFFFFFFC0
     /* 5E9DC 8006E1DC F0FFFFFF */ .word 0xFFFFFFF0
     /* 5E9E0 8006E1E0 00000000 */ .word 0x00000000
@@ -3451,28 +3451,28 @@ dlabel g_anSpyroHornStrikeEndBurstDirs
     /* 5EA2C 8006E22C D8FFFFFF */ .word 0xFFFFFFD8
     /* 5EA30 8006E230 20000000 */ .word 0x00000020
     /* 5EA34 8006E234 00000000 */ .word 0x00000000
-enddlabel g_anSpyroHornStrikeEndBurstDirs
+enddlabel g_anSpyroFlameEndBurstDirs
 
-nonmatching g_anSpyroHornStrikeTipOffsets
+nonmatching g_anSpyroFlameTipOffsets
 
-dlabel g_anSpyroHornStrikeTipOffsets
+dlabel g_anSpyroFlameTipOffsets
     /* 5EA38 8006E238 20020000 */ .word 0x00000220
     /* 5EA3C 8006E23C 60000000 */ .word 0x00000060
     /* 5EA40 8006E240 00000000 */ .word 0x00000000
-enddlabel g_anSpyroHornStrikeTipOffsets
+enddlabel g_anSpyroFlameTipOffsets
 
-nonmatching g_anSpyroHornStrikeTipOffsets2
+nonmatching g_anSpyroFlameTipOffsets2
 
-dlabel g_anSpyroHornStrikeTipOffsets2
+dlabel g_anSpyroFlameTipOffsets2
     /* 5EA44 8006E244 20020000 */ .word 0x00000220
     /* 5EA48 8006E248 A0FFFFFF */ .word 0xFFFFFFA0
     /* 5EA4C 8006E24C 00000000 */ .word 0x00000000
-enddlabel g_anSpyroHornStrikeTipOffsets2
+enddlabel g_anSpyroFlameTipOffsets2
 
 .align 2
-nonmatching g_anSpyroHornStrikeTipBurstVels
+nonmatching g_anSpyroFlameTipBurstVels
 
-dlabel g_anSpyroHornStrikeTipBurstVels
+dlabel g_anSpyroFlameTipBurstVels
     /* 5EA50 8006E250 */ .asciz "0"
     /* 30000000 */
 .align 2
@@ -3481,7 +3481,7 @@ dlabel g_anSpyroHornStrikeTipBurstVels
     /* 5EA5C 8006E25C 30000000 */ .word 0x00000030
     /* 5EA60 8006E260 E2FFFFFF */ .word 0xFFFFFFE2
     /* 5EA64 8006E264 00000000 */ .word 0x00000000
-enddlabel g_anSpyroHornStrikeTipBurstVels
+enddlabel g_anSpyroFlameTipBurstVels
 
 nonmatching g_anSpyroShadowCircleTable
 
@@ -12872,18 +12872,18 @@ dlabel D_80075254
     /* 65A60 80075260 00000000 */ .word 0x00000000
 enddlabel D_80075254
 
-nonmatching g_abSpyroHornStrikeTransitionModes
+nonmatching g_abSpyroFlameTransitionModes
 
-dlabel g_abSpyroHornStrikeTransitionModes
+dlabel g_abSpyroFlameTransitionModes
     /* 65A64 80075264 */ .byte 0x00
     /* 65A65 80075265 */ .byte 0x02
     /* 65A66 80075266 */ .byte 0x01
     /* 65A67 80075267 */ .byte 0x02
-enddlabel g_abSpyroHornStrikeTransitionModes
+enddlabel g_abSpyroFlameTransitionModes
 
-nonmatching g_abSpyroHornStrikeAnimTable
+nonmatching g_abSpyroFlameAnimTable
 
-dlabel g_abSpyroHornStrikeAnimTable
+dlabel g_abSpyroFlameAnimTable
     /* 65A68 80075268 */ .byte 0x00
     /* 65A69 80075269 */ .byte 0x07
     /* 65A6A 8007526A */ .byte 0x00
@@ -12896,7 +12896,7 @@ dlabel g_abSpyroHornStrikeAnimTable
     /* 65A71 80075271 */ .byte 0x00
     /* 65A72 80075272 */ .byte 0x00
     /* 65A73 80075273 */ .byte 0x00
-enddlabel g_abSpyroHornStrikeAnimTable
+enddlabel g_abSpyroFlameAnimTable
 
 nonmatching g_abSpyroIdleDelayRandTable
 

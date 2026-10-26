@@ -31,7 +31,7 @@ void LevelTransition_Draw(void) {
   if (g_nLevelTransitionTallyActive != 0) {
     DrawLevelTransitionOverlay();
   }
-  RasterizePairedActor();
+  RasterizeSpyroModel();
   if (g_nWorldRenderMeshChunkCount != 0) {
     g_nLevelIntroParallaxCountdown -= 2;
     if (g_nLevelIntroParallaxCountdown < 0) {

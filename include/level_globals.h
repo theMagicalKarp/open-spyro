@@ -140,7 +140,7 @@ extern int g_nFlightTimeRemaining;                       /* time remaining */
 extern int g_nFrameStep;                                 /* frame delta in ticks */
 extern int g_nGamePaused;
 extern int g_nGameplayBlocked;
-extern int g_nGamestate;                                 /* g_Gamestate */
+extern int g_nGamestate;                                 /* g_nGamestate */
 extern int g_nActorCutsceneCamHeightGoal;
 extern int g_nActorCutsceneCamHeightStart;
 extern int g_nActorCutsceneCamRadiusGoal;
@@ -175,18 +175,18 @@ extern int g_nSpyroAirborneFrames;
 extern int g_nSpyroAnimPlayRate;
 extern int g_nSpyroBodyYaw;                              /* camera yaw accumulator */
 extern int g_nSpyroDrawSuppressed;                       /* Spyro is being carried */
-extern int g_nSpyroFallTrackingFlag;
-extern int g_nSpyroFlameBreathTimer;
-extern int g_nSpyroFlameBreathTimerSave;
+extern int g_nSpyroFlightMode;
+extern int g_nSpyroSuperflameTimer;
+extern int g_nSpyroSuperflameTimerSave;
 extern int g_nSpyroGroundHeightZ;                        /* g_nSpyroGroundHeight */
-extern int g_nSpyroHornStrikeVariant;
+extern int g_nSpyroFlameVariant;
 extern int g_nSpyroMotionSpeed;
 extern int g_nSpyroMotionZ;
 extern int g_nSpyroPadSnapshotCountdown;
 extern int g_nSpyroRequestState;                         /* scripted camera mode */
 extern int g_nSpyroRequestVelocityZ;
 extern int g_nSpyroState;                                /* Spyro's state */
-extern int g_nSpyroStateFlags;
+extern int g_nSpyroSubstate;
 extern int g_nSpyroStateTimer;
 extern int g_nSpyroSwingEulerPitchTarget;
 extern int g_nSpyroSwingEulerPrev1;
@@ -233,7 +233,7 @@ extern int g_anRunningKillBitmap[];
 extern int g_anWorldPersistentFlags[];
 extern int g_nCurrentWorldId[];
 extern int g_nCreditsMode;
-extern int g_nGenericCountdown;
+extern int g_nScreenFadeLevel;
 
 
 /* World / level CD-stream chunk bookkeeping and credits-sequence state

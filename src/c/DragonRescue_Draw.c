@@ -32,7 +32,7 @@ void DragonRescue_Draw(void) {
     BuildRenderEntityLists();
     ComposeFrameScene();
     SetupFrameOT();
-    DrawActors();
+    DrawPortalsAndStaticActors();
     RasterizeEmitList();
     {
       int tint = g_nDragonRescueFullscreenTintLevel;
@@ -74,10 +74,10 @@ void DragonRescue_Draw(void) {
     EmitActorDrawList();
     RasterizeSpritePrimQueue();
     DrawEntityDirectionalSpikes();
-    RasterizePairedActor();
+    RasterizeSpyroModel();
     DrawSpyroDropShadow();
     SetupFrameOT();
-    DrawActors();
+    DrawPortalsAndStaticActors();
     RasterizeEmitList();
     {
       int tint = g_nDragonRescueFullscreenTintLevel;
@@ -119,7 +119,7 @@ void DragonRescue_Draw(void) {
     DrawEntityDirectionalSpikes();
     DrawSpyroDropShadow();
     SetupFrameOT();
-    DrawActors();
+    DrawPortalsAndStaticActors();
     RasterizeEmitList();
     if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
@@ -161,10 +161,10 @@ void DragonRescue_Draw(void) {
     FillWord(&g_pOtDepthBinHead0, 0, 0x900);
     EmitActorDrawList();
     RasterizeSpritePrimQueue();
-    RasterizePairedActor();
+    RasterizeSpyroModel();
     DrawSpyroDropShadow();
     SetupFrameOT();
-    DrawActors();
+    DrawPortalsAndStaticActors();
     RasterizeEmitList();
     if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
@@ -186,10 +186,10 @@ void DragonRescue_Draw(void) {
     *q = 0;
     FillWord(&g_pOtDepthBinHead0, 0, 0x900);
     RasterizeSpritePrimQueue();
-    RasterizePairedActor();
+    RasterizeSpyroModel();
     DrawSpyroDropShadow();
     SetupFrameOT();
-    DrawActors();
+    DrawPortalsAndStaticActors();
     RasterizeEmitList();
     if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
@@ -221,10 +221,10 @@ void DragonRescue_Draw(void) {
       RasterizeSpritePrimQueue();
       DrawEntityDirectionalSpikes();
     }
-    RasterizePairedActor();
+    RasterizeSpyroModel();
     DrawSpyroDropShadow();
     SetupFrameOT();
-    DrawActors();
+    DrawPortalsAndStaticActors();
     RasterizeEmitList();
     if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();

@@ -7,7 +7,7 @@
  * CdReadSyncSectors, waits on the CD stream, relocates the loaded script
  * (g_pCreditsLineTable line table, 0xC stride) and arms the scroll header
  * g_pCreditsScrollHeader.  Then, every frame: advances the header cursor and the fade
- * level g_nGenericCountdown, walks the visible line window
+ * level g_nScreenFadeLevel, walks the visible line window
  * [g_nCreditsFirstVisibleLine .. g_nCreditsLastVisibleLine], and for each newly revealed line lays its
  * text out into free glyph records -- one record per non-space character,
  * x advanced by 0xE (0x10 for digit runs, 3/4 of a space), ':' emitting two
@@ -394,15 +394,15 @@ void Credits_Update(void) {
       rec[0] = t;
       if (t < lim) {
         if (t < 0x20 || (t = lim - t, t < 0x20)) {
-          g_nGenericCountdown = 0x10 - (t >> 1);
+          g_nScreenFadeLevel = 0x10 - (t >> 1);
         } else {
-          g_nGenericCountdown = 0;
+          g_nScreenFadeLevel = 0;
         }
-        if (g_nGenericCountdown >= 0x10) {
-          g_nGenericCountdown = 0xF;
+        if (g_nScreenFadeLevel >= 0x10) {
+          g_nScreenFadeLevel = 0xF;
         }
-        if (g_nGenericCountdown < 0) {
-          g_nGenericCountdown = 0;
+        if (g_nScreenFadeLevel < 0) {
+          g_nScreenFadeLevel = 0;
         }
         {
           char *h = g_pCreditsScrollHeader;
@@ -432,11 +432,11 @@ void Credits_Update(void) {
           SAMPLE_RAW(p, short, nVolume) = 0;
         }
       }
-      g_nGenericCountdown = g_nReturningHomePhase;
+      g_nScreenFadeLevel = g_nReturningHomePhase;
       if (g_nReturningHomePhase >= 0x10) {
-        g_nGenericCountdown = 0xF;
+        g_nScreenFadeLevel = 0xF;
       }
-      if (g_nGenericCountdown == 0xF) {
+      if (g_nScreenFadeLevel == 0xF) {
         g_nCreditsMode = 0x63;
       }
     }

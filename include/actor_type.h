@@ -82,6 +82,13 @@ typedef struct Actor {
                         * packs it into the draw word) */
 } Actor; /* 0x58 */
 
+/* Actor.flags hit bits that Spyro's attacks raise through
+ * DispatchActorContactAtSphere (AdvanceSpyroPhysics, TickSpyroAttackEffects). */
+#define ACTOR_HIT_FLAME 0x10000  /* the flame breath */
+#define ACTOR_HIT_CHARGE 0x20000 /* a charge (SPYRO_ST_CHARGE) */
+#define ACTOR_HIT_SUPER 0x80000  /* a supercharge; a superflame breath adds it to FLAME */
+#define ACTOR_HITS_SPYRO (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)
+
 /* Size of one actor record: the stride of the actor pool, the sprite-record
  * queue and the HUD icon table. (The typedef fails to compile if the struct
  * ever drifts from it; it emits nothing.) */
@@ -108,9 +115,11 @@ typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
  * down are named; the rest stay numeric in the per-level switches. */
 enum ActorType {
   ACTOR_TYPE_LEVEL_EXIT = 9,       /* exit whirlwind: lifts Spyro back to the hub */
+  ACTOR_TYPE_FOLLOWER = 13,        /* rides a parent actor, released in turn when it dies (FollowState) */
   ACTOR_TYPE_EXTRA_LIFE = 14,      /* collected: g_nExtraLives + 1 */
   ACTOR_TYPE_SPARX_FOOD = 15,      /* collected: g_nSparxFoodCount + 1 (20: a life) */
   ACTOR_TYPE_BUTTERFLY = 16,       /* eaten by Sparx: g_nSparxHealth + 1 */
+  ACTOR_TYPE_EGG_THIEF = 33,       /* runs off with a dragon egg (34), drops it when hit (ThiefState) */
   ACTOR_TYPE_DRAGON_EGG = 34,      /* recovered egg: rises, rolls the HUD egg tally */
   ACTOR_TYPE_LETTER_OTHER = 0x4C,  /* a non-A..Z glyph of a floating name */
   ACTOR_TYPE_GEM_1 = 0x53,         /* gems, by CollectPickupActor's value */
@@ -125,8 +134,12 @@ enum ActorType {
   ACTOR_TYPE_DRAGON_STATUE = 0xFA, /* trapped dragon: counts the rescue */
   ACTOR_TYPE_STATUE_SHARD = 0xFB,  /* its burst shards (BurstShardState) */
   ACTOR_TYPE_GEM_DIGIT_0 = 0x104,  /* floating gem-value digits 0..9: 0x104..0x10D */
-  ACTOR_TYPE_PORTAL_GUIDE = 398,
-  ACTOR_TYPE_BALLOON = 416,        /* bobs about its rest height; only in balloonist levels */  /* flies Spyro through a portal (PortalState) */
+  ACTOR_TYPE_AMBIENT_SOUND = 286,  /* plays random ambient voices, mode 2 along a path (AmbientSoundState) */
+  ACTOR_TYPE_WHIRLWIND = 300,      /* lifts Spyro to its top (WhirlwindState, SPYRO_ST_LIFT) */
+  ACTOR_TYPE_RESPAWNER = 323,      /* puts dormant actors of one type back once Spyro is far (RespawnState) */
+  ACTOR_TYPE_CHECKPOINT = 331,     /* 331..333: sets the respawn anchor (SetSpawnAnchorFromActor) */
+  ACTOR_TYPE_PORTAL_GUIDE = 398,   /* flies Spyro through a portal (PortalState) */
+  ACTOR_TYPE_BALLOON = 416,        /* bobs about its rest height; only in balloonist levels */
   ACTOR_TYPE_LETTER_A = 0x1AA,     /* floating-name letters A..Z: 0x1AA..0x1C3 */
 };
 

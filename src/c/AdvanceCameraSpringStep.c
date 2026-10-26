@@ -99,7 +99,8 @@ void AdvanceCameraSpringStep(int column) {
     }
   }
   SPRING(0);
-  if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroStateFlags == 0xB) {
+  if (g_nSpyroState == SPYRO_ST_GLIDE &&
+      g_nSpyroSubstate == SPYRO_SUB_GLIDE_ENTER) {
     int *p = g_anCameraSpringDeltaStateBlock;
 
     if (*p < -0x800) {
