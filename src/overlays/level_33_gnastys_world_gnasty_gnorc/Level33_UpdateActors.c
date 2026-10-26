@@ -675,7 +675,7 @@ void Level33_UpdateActors(void) {
       case 5:
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
-        g_pfnLevelEmitParticles(0x10, 0x4D, svE, 0);
+        g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
         g_nGameplayBlocked = 0;
         ZeroVector(&SPY.headLook);
         CommitActorKillGems(0, st->killActor);
@@ -1507,7 +1507,7 @@ void Level33_UpdateActors(void) {
         col[0] = 0x80;
         col[1] = 0x70;
         col[2] = 0x40;
-        g_pfnLevelEmitParticles(1, 0x11, fx, col);
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_RGB, fx, col);
       }
       break;
     }
@@ -2936,7 +2936,7 @@ void Level33_UpdateActors(void) {
           RotateVectorByMatrix(actor->mtx, ps + 3, ps + 3);
           s448[0] = (GetRandomU32() & 7) + 0x10;
           s448[1] = (GetRandomU32() & 7) + 6;
-          g_pfnLevelEmitParticles(1, 0x10, ps, s448);
+          g_pfnLevelEmitParticles(1, EMIT_FADING_SPARK, ps, s448);
           if (actor->sfxSlot == 0x7F) {
             PlayActorMeshVoice(actor, 0, 0);
           }

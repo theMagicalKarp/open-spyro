@@ -208,10 +208,10 @@ void Level27_UpdateActors(void) {
 
         if (dist < 0x4000) {
           if (!(tick & 3)) {
-            g_pfnLevelEmitParticles(1, 0x15, &actor->posX, (void *)tick);
+            g_pfnLevelEmitParticles(1, EMIT_RISING_SPIRAL, &actor->posX, (void *)tick);
           }
         } else if ((tick & 0xF) < 8 && !(tick & 3)) {
-          g_pfnLevelEmitParticles(1, 0x4C, &actor->posX, (void *)tick);
+          g_pfnLevelEmitParticles(1, EMIT_RISING_SPIRAL_SMEAR, &actor->posX, (void *)tick);
         }
       }
 
@@ -652,7 +652,7 @@ void Level27_UpdateActors(void) {
       case 5:
         SubtractVector(g120, &actor->posX, &CAM.posX);
         WorldToCameraRotate(g120, g120);
-        g_pfnLevelEmitParticles(0x10, 0x4D, g120, 0);
+        g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, g120, 0);
         g_nGameplayBlocked = 0;
         ZeroVector(&SPY.headLook);
         CommitActorKillGems(0, st->killActor);
@@ -1219,7 +1219,7 @@ void Level27_UpdateActors(void) {
                 actor->mode = 3;
                 actor->scale = 0x60;
 
-                g_pfnLevelEmitParticles(0x18, 0x50, &actor->posX, (void *)0xC);
+                g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, (void *)0xC);
 
                 RefreshActorDerivedState(actor, 1);
                 FindGroundHeightBelow(&actor->posX, 0x1000);
@@ -1346,7 +1346,7 @@ void Level27_UpdateActors(void) {
           actor->mode = 2;
           st->timer = 16;
 
-          g_pfnLevelEmitParticles(0x18, 0x50, &actor->posX, (void *)0xC);
+          g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, (void *)0xC);
 
           actor->groundCode &= 0x7FFFFFFF;
         }
@@ -2252,7 +2252,7 @@ void Level27_UpdateActors(void) {
         g360[0] = 0x80;
         g360[1] = 0x70;
         g360[2] = 0x40;
-        g_pfnLevelEmitParticles(1, 0x11, g336, g360);
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_RGB, g336, g360);
       }
       break;
     }
@@ -3069,7 +3069,7 @@ void Level27_UpdateActors(void) {
         actor->subMode = 1;
       PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, 8, &actor->sfxSlot);
       if ((GetRandomU32() & 1) == 0)
-        g_pfnLevelEmitParticles(1, 6, (int *)actor, 0);
+        g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, (int *)actor, 0);
       SubtractVector(g392, &SPY.posX, &actor->posX);
       distance = VectorLength(g392, 0);
       if (distance < st->radius && g392[2] >= -0x3FF && g392[2] < st->spanZ &&
@@ -3271,7 +3271,7 @@ void Level27_UpdateActors(void) {
           RotateVectorByMatrix(actor->mtx, g472 + 3, g472 + 3);
           g496[0] = (GetRandomU32() & 7) + 0x10;
           g496[1] = (GetRandomU32() & 7) + 6;
-          g_pfnLevelEmitParticles(1, 0x10, g472, g496);
+          g_pfnLevelEmitParticles(1, EMIT_FADING_SPARK, g472, g496);
           if (actor->sfxSlot == 0x7F) {
             PlayActorMeshVoice(actor, 0, 0);
           }

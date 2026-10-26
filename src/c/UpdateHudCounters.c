@@ -302,8 +302,8 @@ void UpdateHudCounters(void) {
       av[0] = g_nHudWorldEggCachedCount * 0x144 - 0x9C4;
       av[1] = 0x3F0;
       av[2] = 0x1000;
-      (*(void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(0x10, 0x4D, av,
-                                                                 0);
+      (*(void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(
+          0x10, EMIT_DRIFT_STREAK, av, 0);
     } else if (g_nHudWorldEggHoldTimer >= 9) {
       g_nHudWorldEggCachedCount += 1;
       g_nHudWorldEggHoldTimer = 0;

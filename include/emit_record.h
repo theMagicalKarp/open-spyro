@@ -154,8 +154,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
 } Emit;
 
 /* Effect types for g_pfnLevelEmitParticles(count, type, pos, effectArg)
- * whose arm is the same in all 35 level EmitParticles clones. The rest stay
- * numeric. */
+ * whose arm is the same in every level EmitParticles clone that has it. The
+ * rest stay numeric. */
 enum EmitEffect {
   EMIT_SPARK_VEL = 0x0,     /* spark moving at the velocity effectArg points to, 0x18 frames
                              * (the flame breath's particles) */
@@ -168,6 +168,31 @@ enum EmitEffect {
                              * health), else a random colour */
   EMIT_STREAK_BURST = 0x46, /* yellow-orange streaks thrown out to radius effectArg */
   EMIT_STREAK_BURST_WHITE = 0x47, /* small white-yellow streak burst */
+
+  /* Named from the EmitParticles arm (what it writes) and the matching
+   * AdvanceEmitList arm (how it moves). Where the clones differ, they differ
+   * only in statement order. */
+  EMIT_ACTOR_PLUME = 0x6,    /* class-3 plume jittered around the Actor * in pos;
+                              * radius and rise come from its state words 1 and 0;
+                              * random colour when its subMode is set */
+  EMIT_SPEED_DUST = 0x9,     /* Spyro's run dust: a spark at the velocity effectArg
+                              * points to, red/orange/yellow/grey by g_nSpyroMotionSpeed */
+  EMIT_SPYRO_ORBIT_SPARKLE = 0xA, /* sparkle circling Spyro; freed when he is hidden */
+  EMIT_FADING_SPARK = 0x10,  /* spark from pos[0..2] at velocity pos[3..5]; effectArg ->
+                              * {life, grey >> 3}; all channels fade by 4 a frame */
+  EMIT_SPARK_RGB = 0x11,     /* spark from pos[0..2] at velocity pos[3..5]; effectArg ->
+                              * {r, g, b}; red cut off after frame 9, dies at 0xC */
+  EMIT_RISING_SPIRAL = 0x15, /* point that spirals out and up from pos, effectArg
+                              * picks the start angle and tint; freed at radius 0xC1 */
+  EMIT_RISING_SPIRAL_SMEAR = 0x4C, /* EMIT_RISING_SPIRAL as a class-0 smear */
+  EMIT_DRIFT_STREAK = 0x4D,  /* pink streak from a random point near pos, closing on
+                              * its tail while drifting +y; 0x20 frames */
+  EMIT_EMBER = 0x4E,         /* warm ember jittered around pos that wanders and fades;
+                              * 0x28 frames */
+  EMIT_FLAME_STREAK = 0x4F,  /* flame streak from pos toward pos + *effectArg, coloured
+                              * by g_nSpyroFlameVariant; 0x18 frames */
+  EMIT_FALLING_STREAK_BURST = 0x50, /* EMIT_STREAK_BURST whose streaks keep their speed
+                                     * and fall instead of easing out */
 };
 
 #endif /* OPEN_SPYRO_EMIT_RECORD_H */

@@ -220,7 +220,7 @@ void TickSpyroAttackEffects(int steps) {
                   1, EMIT_SPARK_VEL_DIM, tip, dir);
               if ((*((volatile int *)(&pt[-0xf]))) == 0) {
                 ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
-                    4, 0x4e, tip, 0);
+                    4, EMIT_EMBER, tip, 0);
               }
               __asm__("" : "=g"(hole) : "r"(mtx));
               dir[0] = 0x30;
@@ -228,7 +228,8 @@ void TickSpyroAttackEffects(int steps) {
               dir[2] = 0;
               ApplyActiveGteRotation(dir, dir);
               ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
-                  ((*((volatile int *)(&pt[-0xf]))) * 5) + 5, 0x4f, tip, dir);
+                  ((*((volatile int *)(&pt[-0xf]))) * 5) + 5, EMIT_FLAME_STREAK,
+                  tip, dir);
               __asm__ volatile("" : : "g"(hole));
               if (sfxDone == 0) {
                 PlaySoundEffect(LEVEL_SFX(SFX_ATTACK_HIT), wp, 4, 0);
@@ -254,11 +255,11 @@ void TickSpyroAttackEffects(int steps) {
             }
             if (g_nSpyroFlameVariant == 0) {
               ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
-                  4, 0x4e, tip, 0);
+                  4, EMIT_EMBER, tip, 0);
             }
             ApplyActiveGteRotation(&g_anSpyroFlameEndBurstDirs[i * 3], dir);
             ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
-                (g_nSpyroFlameVariant * 5) + 5, 0x4f, tip, dir);
+                (g_nSpyroFlameVariant * 5) + 5, EMIT_FLAME_STREAK, tip, dir);
           }
         }
       } else {

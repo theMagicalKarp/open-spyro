@@ -121,7 +121,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0x6: {
+    case EMIT_ACTOR_PLUME: {
       int *owner;
       int t1, t2, t3;
       int u1, u2, u3;
@@ -202,7 +202,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.plume.texIndex = 0;
       break;
     }
-    case 0x9: {
+    case EMIT_SPEED_DUST: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
@@ -234,7 +234,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0xA: {
+    case EMIT_SPYRO_ORBIT_SPARKLE: {
       rec = (Emit *)AllocEmitListRecord(3);
       rec->type = type;
       rec->phase = GetRandomU32() & 0x1F;
@@ -530,7 +530,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.line.c0[3] = 0x50;
       break;
     }
-    case 0x4D: {
+    case EMIT_DRIFT_STREAK: {
       int t;
       int u;
       rec = (Emit *)AllocEmitListRecord(4);
@@ -553,7 +553,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.line.a[2] = rec->u.line.a[2] + (u >> 8);
       break;
     }
-    case 0x4E: {
+    case EMIT_EMBER: {
       int t1, t2, t3;
       int u1, u2, u3;
       rec = (Emit *)AllocEmitListRecord(0);
@@ -583,7 +583,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.dust.life = 2;
       break;
     }
-    case 0x4F: {
+    case EMIT_FLAME_STREAK: {
       int t4, t5, t6;
       int u4, u5, u6;
       rec = (Emit *)AllocEmitListRecord(1);
@@ -621,7 +621,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.line.c0[3] = 0x50;
       break;
     }
-    case 0x50: {
+    case EMIT_FALLING_STREAK_BURST: {
       rec = (Emit *)AllocEmitListRecord(1);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
