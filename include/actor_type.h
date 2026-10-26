@@ -216,6 +216,18 @@ enum ActorType {
   ACTOR_TYPE_BLOWHARD = 495, /* level 16 boss: patrols three paths, drops type 37 riders */
 };
 
+/* SpawnActorDeathDrop's `kind`: how a thrown drop leaves its source. Rolled
+ * extra lives, butterflies and Sparx ignore it. */
+enum DropThrow {
+  DROP_HOP = 0,             /* lands on the source with a low hop */
+  DROP_SCATTER = 1,         /* lands at a random point within 0x200 of the source */
+  DROP_AT_POINT = 2,        /* lands on the `alt` position */
+  DROP_TUMBLE_IF_NEAR = 3,  /* DROP_TUMBLE when Spyro is charging close by, else DROP_SCATTER */
+  DROP_TUMBLE = 4,          /* rides off the source with a random tumble (subMode 3) */
+  DROP_IN_PLACE = 5,        /* appears on the source with no velocity */
+  DROP_HIGH_HOP = 6,        /* lands within 0x100 of the source with a high hop */
+};
+
 /* Waypoint path used by the path-following classes (10, 114, 339) and
  * FollowActorWaypointPath / PivotActorAlongPath: node count, current node,
  * direction, then 0x10-byte nodes that begin with a position. */

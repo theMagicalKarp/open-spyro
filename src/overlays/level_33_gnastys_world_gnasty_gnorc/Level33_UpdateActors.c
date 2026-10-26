@@ -365,12 +365,12 @@ void Level33_UpdateActors(void) {
             st->pos[2] += 0x400;
 
             if (st->dropToSpyro != 0) {
-              SpawnActorDeathDrop(actor, 4, 0, 0);
+              SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
             } else if (FindGroundHeightBelow(st->pos, 0x1400) != 0) {
               st->pos[2] -= 0x400;
-              SpawnActorDeathDrop(actor, 2, 0, st->pos);
+              SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, st->pos);
             } else {
-              SpawnActorDeathDrop(actor, 1, 0, 0);
+              SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             }
             MarkActorCommittedKill(actor);
             *(volatile int *)&st->count <<= 7;
@@ -1717,7 +1717,7 @@ void Level33_UpdateActors(void) {
           if (actor->dropKind != 0xFF) {
             g_anLevelKillBitmapTable[0xF0] &= ~1;
           }
-          SpawnActorDeathDrop(actor, 4, 0, 0);
+          SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           ENTER_POSE(actor, 8);
         }
       }
@@ -2617,7 +2617,7 @@ void Level33_UpdateActors(void) {
 
       g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x20);
-      SpawnActorDeathDrop(actor, 3, 0, 0);
+      SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
       MarkActorCommittedKill(actor);
       DespawnActorRecord(actor);
       continue;
@@ -2683,7 +2683,7 @@ void Level33_UpdateActors(void) {
         }
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x18);
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
@@ -2965,7 +2965,7 @@ void Level33_UpdateActors(void) {
           DebrisFallState *cs;
 
           PlayActorMeshVoice(actor, 1, 0);
-          SpawnActorDeathDrop(actor, 6, 0, 0);
+          SpawnActorDeathDrop(actor, DROP_HIGH_HOP, 0, 0);
           for (i = 0; i < 8; i++) {
             short *p;
 
@@ -3067,7 +3067,7 @@ void Level33_UpdateActors(void) {
           st->rotY = actor->rotY;
           st->restZ = actor->posZ;
           actor->updateDist = 0x40;
-          st->prize = SpawnActorDeathDrop(actor, 5, 0, 0);
+          st->prize = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
           st->prize->subMode = 4;
           st->prize->cullRadius = 0;
           st->prize->drawn = 0;

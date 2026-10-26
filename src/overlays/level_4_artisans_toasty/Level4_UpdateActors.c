@@ -346,12 +346,12 @@ void Level4_UpdateActors(void) {
             st->pos[2] += 0x400;
 
             if (st->dropToSpyro != 0) {
-              SpawnActorDeathDrop(actor, 4, 0, 0);
+              SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
             } else if (FindGroundHeightBelow(st->pos, 0x1400) != 0) {
               st->pos[2] -= 0x400;
-              SpawnActorDeathDrop(actor, 2, 0, st->pos);
+              SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, st->pos);
             } else {
-              SpawnActorDeathDrop(actor, 1, 0, 0);
+              SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             }
             MarkActorCommittedKill(actor);
             *(volatile int *)&st->count <<= 7;
@@ -1698,7 +1698,7 @@ void Level4_UpdateActors(void) {
 
       g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x20);
-      SpawnActorDeathDrop(actor, 3, 0, 0);
+      SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
       MarkActorCommittedKill(actor);
       DespawnActorRecord(actor);
       continue;
@@ -1764,7 +1764,7 @@ void Level4_UpdateActors(void) {
         }
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x18);
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
@@ -2254,7 +2254,7 @@ void Level4_UpdateActors(void) {
             Actor *drop = &g_pActorListBase[st->drop];
 
             CopyVector(&drop->posX, &actor->posX);
-            SpawnActorDeathDrop(drop, 1, 0, 0);
+            SpawnActorDeathDrop(drop, DROP_SCATTER, 0, 0);
             MarkActorCommittedKill(drop);
             st->drop = -1;
             DespawnActorRecord(drop);
@@ -2281,7 +2281,7 @@ void Level4_UpdateActors(void) {
           mate->rotZ = actor->rotZ;
           mate->cullRadius = 0x28;
           mate->updateDist = 0x28;
-          SpawnActorDeathDrop(actor, 1, 0, 0);
+          SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
           ANIM_SET(actor, 5);
           break;
@@ -2315,7 +2315,7 @@ void Level4_UpdateActors(void) {
 
         case 2:
           ModifyWorldChunkAnimFlags(2, 0xFC, 0);
-          SpawnActorDeathDrop(actor, 1, 0, 0);
+          SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
           BurstActorWithSound(actor, 0x20);
           DespawnActorRecord(actor);
@@ -2456,7 +2456,7 @@ void Level4_UpdateActors(void) {
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && (c = actor->mode) != 4 &&
           (unsigned char)(c - 13) >= 3) {
         if (st->hits == 0) {
-          SpawnActorDeathDrop(actor, 1, 0, 0);
+          SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
           st->knockSpeed = 0xE6;
           st->knockAngle = StepAndLerpAngle8(
@@ -2495,7 +2495,7 @@ void Level4_UpdateActors(void) {
       CopyVector(svM, &actor->posX);
       svM[2] += 0x400;
       if (FindGroundHeightBelow(svM, 0x1000) == 0) {
-        SpawnActorDeathDrop(actor, 4, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
         MarkActorCommittedKill(actor);
         RefreshActorDerivedState(actor, 4);
         BurstActorWithSound(actor, 0x18);
@@ -2611,7 +2611,7 @@ void Level4_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           BurstActorWithSound(actor, 0x18);
-          SpawnActorDeathDrop(actor, 1, 0, 0);
+          SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
           continue;
@@ -2710,7 +2710,7 @@ void Level4_UpdateActors(void) {
         if (GetRandomU32() & 1) {
           st->spin = -st->spin;
         }
-        SpawnActorDeathDrop(actor, 1, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
         ENTER_POSE4(actor, 7);
       }

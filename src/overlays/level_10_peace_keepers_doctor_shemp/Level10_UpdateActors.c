@@ -332,12 +332,12 @@ void Level10_UpdateActors(void) {
             st->pos[2] += 0x400;
 
             if (st->dropToSpyro != 0) {
-              SpawnActorDeathDrop(actor, 4, 0, 0);
+              SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
             } else if (FindGroundHeightBelow(st->pos, 0x1400) != 0) {
               st->pos[2] -= 0x400;
-              SpawnActorDeathDrop(actor, 2, 0, st->pos);
+              SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, st->pos);
             } else {
-              SpawnActorDeathDrop(actor, 1, 0, 0);
+              SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             }
             MarkActorCommittedKill(actor);
             *(volatile int *)&st->count <<= 7;
@@ -1841,7 +1841,7 @@ void Level10_UpdateActors(void) {
           }
 
           g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, (void *)0x18);
-          g_pLockedChestReward = SpawnActorDeathDrop(actor, 1, 0, 0);
+          g_pLockedChestReward = SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
           g_nLevelKeyState = 2;
@@ -1897,7 +1897,7 @@ void Level10_UpdateActors(void) {
 
       g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x20);
-      SpawnActorDeathDrop(actor, 3, 0, 0);
+      SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
       MarkActorCommittedKill(actor);
       DespawnActorRecord(actor);
       continue;
@@ -1963,7 +1963,7 @@ void Level10_UpdateActors(void) {
         }
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x18);
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
@@ -2519,7 +2519,7 @@ void Level10_UpdateActors(void) {
           st->rotY = actor->rotY;
           st->restZ = actor->posZ;
           actor->updateDist = 0x40;
-          st->prize = SpawnActorDeathDrop(actor, 5, 0, 0);
+          st->prize = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
           st->prize->subMode = 4;
           st->prize->cullRadius = 0;
           st->prize->drawn = 0;
@@ -2709,7 +2709,7 @@ void Level10_UpdateActors(void) {
         st->lift = 0xA0;
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         StopSoundVoicesByOwner(actor, 1);
         ENTER_POSE(actor, 3);
@@ -2974,7 +2974,7 @@ void Level10_UpdateActors(void) {
         }
         if (actor->subMode == 0 && st->lift < -0x50) {
           FindNearestPathPointToActor(actor, (PostPath *)st->path, &idx370[1]);
-          SpawnActorDeathDrop(actor, 2, 0, (int *)(st->path + ((idx370[1] << 4) + 8)));
+          SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, (int *)(st->path + ((idx370[1] << 4) + 8)));
           MarkActorCommittedKill(actor);
           actor->subMode = 1;
         }
@@ -3062,7 +3062,7 @@ void Level10_UpdateActors(void) {
             int *ls = link->state;
 
             CopyVector(&link->posX, &actor->posX);
-            SpawnActorDeathDrop(link, 1, 0, 0);
+            SpawnActorDeathDrop(link, DROP_SCATTER, 0, 0);
             MarkActorCommittedKill(link);
             st->chain = *ls;
             DespawnActorRecord(link);
@@ -3442,7 +3442,7 @@ void Level10_UpdateActors(void) {
           BurstActorWithSound(actor, 0x40);
           actor->floorOffset = 0;
           SnapActorToGround(actor);
-          SpawnActorDeathDrop(actor, 1, 0, 0);
+          SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
           continue;
@@ -3470,7 +3470,7 @@ void Level10_UpdateActors(void) {
         st->speed = 0xF0;
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
-        SpawnActorDeathDrop(actor, 1, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
         ENTER_POSE(actor, 7);
       }

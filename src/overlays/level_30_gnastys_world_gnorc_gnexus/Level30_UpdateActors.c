@@ -283,12 +283,12 @@ void Level30_UpdateActors(void) {
             st->pos[2] += 0x400;
 
             if (st->dropToSpyro != 0) {
-              SpawnActorDeathDrop(actor, 4, 0, 0);
+              SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
             } else if (FindGroundHeightBelow(st->pos, 0x1400) != 0) {
               st->pos[2] -= 0x400;
-              SpawnActorDeathDrop(actor, 2, 0, st->pos);
+              SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, st->pos);
             } else {
-              SpawnActorDeathDrop(actor, 1, 0, 0);
+              SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             }
             MarkActorCommittedKill(actor);
             *(volatile int *)&st->count <<= 7;
@@ -1655,7 +1655,7 @@ void Level30_UpdateActors(void) {
 
         g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x20);
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
         continue;
@@ -1724,7 +1724,7 @@ void Level30_UpdateActors(void) {
         }
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x18);
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
@@ -1805,7 +1805,7 @@ void Level30_UpdateActors(void) {
           st->speed = 0x190;
         }
         actor->flags = 0;
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         actor->mode = 1;
 

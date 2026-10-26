@@ -398,7 +398,7 @@ void Level3_UpdateActors(void) {
         st->heading = StepAngle8Toward(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20);
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         st->spin = 2;
         if (actor->flags & ACTOR_HIT_CHARGE) {
@@ -678,7 +678,7 @@ void Level3_UpdateActors(void) {
             spy->bodyRotZ, 0x20, 0x40);
         if (actor->dropKind == 0xFF) {
           actor->dropKind = 0xF;
-          SpawnActorDeathDrop(actor, 3, 0, 0);
+          SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorCommittedKill(actor);
         }
         actor->mode = 10;
@@ -2471,7 +2471,7 @@ void Level3_UpdateActors(void) {
 
       g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x20);
-      SpawnActorDeathDrop(actor, 3, 0, 0);
+      SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
       MarkActorCommittedKill(actor);
       DespawnActorRecord(actor);
       continue;
@@ -2537,7 +2537,7 @@ void Level3_UpdateActors(void) {
         }
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x18);
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
@@ -3016,7 +3016,7 @@ void Level3_UpdateActors(void) {
           st->rotY = actor->rotY;
           st->restZ = actor->posZ;
           actor->updateDist = 0x40;
-          st->prize = SpawnActorDeathDrop(actor, 5, 0, 0);
+          st->prize = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
           st->prize->subMode = 4;
           st->prize->cullRadius = 0;
           st->prize->drawn = 0;
@@ -3261,7 +3261,7 @@ void Level3_UpdateActors(void) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPARKLE_SHARD, actor);
         }
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x18);
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       }
@@ -3371,7 +3371,7 @@ void Level3_UpdateActors(void) {
         st->spinX = RandomIntInRange(-10, 10);
         st->spinY = RandomIntInRange(-10, 10);
         actor->flags = 0;
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         ENTER_POSE(actor, 3);
       }
@@ -3467,7 +3467,7 @@ void Level3_UpdateActors(void) {
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20, 0x40);
         st->speed = 0xFA;
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         ENTER_POSE(actor, 2);
       }
@@ -3597,7 +3597,7 @@ void Level3_UpdateActors(void) {
         break;
       }
 
-      rider = SpawnActorDeathDrop(actor, 5, 0, 0);
+      rider = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
       if (st->rideMode == 1) {
         ((unsigned char *)rider->state)[0xE] = st->rideMode;
       }

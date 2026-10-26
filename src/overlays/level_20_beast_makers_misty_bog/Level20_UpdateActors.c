@@ -431,7 +431,7 @@ void Level20_UpdateActors(void) {
                                   spy->bodyRotZ, 0x20, 0x40);
         }
         actor->flags = 0;
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         ENTER_POSE_B(actor, 5);
       }
@@ -1683,7 +1683,7 @@ void Level20_UpdateActors(void) {
         if (actor->mode != 0) {
           *st->flag = 0;
         }
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         ENTER_POSE(actor, 2);
       }
@@ -1691,7 +1691,7 @@ void Level20_UpdateActors(void) {
         st->init = 1;
         if (st->lurk != 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
           if (actor->dropKind != 0xFF) {
-            SpawnActorDeathDrop(actor, 1, 0, 0);
+            SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             MarkActorCommittedKill(actor);
           }
           DespawnActorRecord(actor);
@@ -2090,7 +2090,7 @@ void Level20_UpdateActors(void) {
 
         g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x20);
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
         continue;
@@ -2159,7 +2159,7 @@ void Level20_UpdateActors(void) {
         }
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x18);
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
@@ -2496,7 +2496,7 @@ void Level20_UpdateActors(void) {
           st->rotY = actor->rotY;
           st->restZ = actor->posZ;
           actor->updateDist = 0x40;
-          st->prize = SpawnActorDeathDrop(actor, 5, 0, 0);
+          st->prize = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
           st->prize->subMode = 4;
           st->prize->cullRadius = 0;
           st->prize->drawn = 0;
@@ -2740,7 +2740,7 @@ void Level20_UpdateActors(void) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPARKLE_SHARD, actor);
         }
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x18);
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       }
@@ -2874,7 +2874,7 @@ void Level20_UpdateActors(void) {
             g_pSparxActor->subMode = 0;
           }
         }
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         ENTER_POSE(actor, 2);
       }
@@ -3163,7 +3163,7 @@ void Level20_UpdateActors(void) {
         break;
       }
 
-      rider = SpawnActorDeathDrop(actor, 5, 0, 0);
+      rider = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
       if (st->rideMode == 1) {
         ((unsigned char *)rider->state)[0xE] = st->rideMode;
       }
@@ -3325,7 +3325,7 @@ void Level20_UpdateActors(void) {
             st->speed += 0x46;
             st->lift += 0x32;
           }
-          SpawnActorDeathDrop(actor, 3, 0, 0);
+          SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorCommittedKill(actor);
         }
         if (actor->nextAnim != 3) {
@@ -3417,7 +3417,7 @@ void Level20_UpdateActors(void) {
         if (g_anLevelTriggerStateSlots[st->chan] == 0) {
           st->speed = 0;
           st->lift = 0;
-          SpawnActorDeathDrop(actor, 1, 0, 0);
+          SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
           ENTER_POSE(actor, 3);
         }
@@ -3469,7 +3469,7 @@ void Level20_UpdateActors(void) {
         if (o->anim != 0xA) {
           ANIM_RESET(o, 0xA);
         }
-        SpawnActorDeathDrop(actor, 1, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
         st->knockSpeed = 0x15E;
         if (actor->mode >= 0xA) {

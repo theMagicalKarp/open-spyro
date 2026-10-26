@@ -178,7 +178,7 @@ void Level0_UpdateActors(void) {
           st->speed = 0x190;
         }
 
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         actor->mode = 3;
         ANIM_RESET(actor, 3);
@@ -1375,7 +1375,7 @@ void Level0_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HITS_SPYRO) != 0 &&
           (unsigned int)(actor->mode - 7) >= 3) {
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
 
         if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
@@ -2103,7 +2103,7 @@ void Level0_UpdateActors(void) {
 
       g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x20);
-      SpawnActorDeathDrop(actor, 3, 0, 0);
+      SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
       MarkActorCommittedKill(actor);
       DespawnActorRecord(actor);
       continue;
@@ -2586,7 +2586,7 @@ void Level0_UpdateActors(void) {
           int *link = p->state;
 
           CopyVector(&p->posX, &actor->posX);
-          SpawnActorDeathDrop(p, 1, 0, 0);
+          SpawnActorDeathDrop(p, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(p);
           st->chainA = *link;
           DespawnActorRecord(p);
@@ -2604,7 +2604,7 @@ void Level0_UpdateActors(void) {
               st->slots[n][0] = actor->posX + (LookupCosine(n * 0x555) >> 2);
               st->slots[n][1] = actor->posY + (LookupSine(n * 0x555) >> 2);
               st->slots[n][2] = actor->posZ;
-              SpawnActorDeathDrop(p, 2, 0, st->slots[n]);
+              SpawnActorDeathDrop(p, DROP_AT_POINT, 0, st->slots[n]);
               n++;
               MarkActorCommittedKill(p);
               DespawnActorRecord(p);
@@ -2616,7 +2616,7 @@ void Level0_UpdateActors(void) {
           st->slots[n][0] = actor->posX + (LookupCosine(n * 0x555) >> 2);
           st->slots[n][1] = actor->posY + (LookupSine(n * 0x555) >> 2);
           st->slots[n][2] = actor->posZ;
-          SpawnActorDeathDrop(actor, 2, 0, st->slots[n]);
+          SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, st->slots[n]);
           MarkActorCommittedKill(actor);
           st->knockSpeed = 0x118;
           st->knockAngle = StepAndLerpAngle8(
@@ -3083,7 +3083,7 @@ void Level0_UpdateActors(void) {
         break;
       }
 
-      rider = SpawnActorDeathDrop(actor, 5, 0, 0);
+      rider = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
       if (st->rideMode == 1) {
         ((unsigned char *)rider->state)[0xE] = 1;
       }
