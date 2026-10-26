@@ -1606,7 +1606,7 @@ void Level32_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4 &&
           actor->mode != 0x14) {
-        StopSoundVoicesByOwner(actor, 1);
+        StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         st->knockSpeed = 0xDC;
         if (actor->flags & ACTOR_HIT_CHARGE) {
           st->knockSpeed = 0x154;
@@ -1745,7 +1745,7 @@ void Level32_UpdateActors(void) {
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 4 &&
           actor->mode != 0x14) {
-        StopSoundVoicesByOwner(actor, 1);
+        StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         st->knockSpeed = 0xC8;
         st->knockZSpeed = 0x104;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
@@ -1914,7 +1914,7 @@ void Level32_UpdateActors(void) {
           actor->mode != 0x14) {
         Actor *c;
 
-        StopSoundVoicesByOwner(actor, 1);
+        StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         st->knockSpeed = 0x12C;
         st->knockZSpeed = 0x104;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
@@ -2153,7 +2153,7 @@ void Level32_UpdateActors(void) {
         }
       }
       if (TickCountdownByFrameDelta(&st->rearmTimer, 4) != 0 && g_nActorAnimDone != 0) {
-        StopSoundVoicesByOwner(actor, 1);
+        StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         actor->mode = 0;
         ANIM_RESET(actor, 0);
         continue;
@@ -2496,7 +2496,7 @@ void Level32_UpdateActors(void) {
           actor->rotY = st->rotY;
           actor->posZ = st->restZ;
           actor->flags = 0;
-          StopSoundVoicesByOwner(actor, 1);
+          StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         } else if (st->phase >= 0xC0) {
           int dx;
           int dy;
@@ -2524,7 +2524,7 @@ void Level32_UpdateActors(void) {
           st->restZ = actor->posZ;
         } else if (actor->flags != 0) {
           st->phase = 0xBC;
-          StopSoundVoicesByOwner(actor, 1);
+          StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         } else if ((st->phase >> 1) == 0x10 && !(GetRandomU32() & 3)) {
           SpawnActorRotBillboard(actor, &g_anRotBillboardOffset0);
         } else if ((st->phase >> 1) == 0x30 && !(GetRandomU32() & 3)) {

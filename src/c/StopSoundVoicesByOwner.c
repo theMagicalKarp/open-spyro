@@ -4,12 +4,13 @@
 
 extern SPUVOICEROW g_aSpuVoiceRows[]; /* the 24 mixer rows */
 
-/* Stop every software voice row owned by `owner` (0x800562a4). mode 1 stops
-   unconditionally; mode 2 only stops rows whose nFlags has bit 0x100 set. A
-   stopped row silences its live sample byte (0x7F), clears pPlaying and
-   pOwner, parks nFlags at idle (0x40), zeros nPitchStep, resets nSampleId to
-   0xFF, and accumulates the voice bit into the pending hardware key-off mask.
-   24 rows of g_aSpuVoiceRows, walked as three field pointers. */
+/* Stop every software voice row owned by `owner` (0x800562a4). mode 1
+   (VOICE_STOP_ALL) stops unconditionally; mode 2 (VOICE_STOP_LOOPING) only
+   stops rows whose nFlags has bit 0x100 set. A stopped row silences its live
+   sample byte (0x7F), clears pPlaying and pOwner, parks nFlags at idle (0x40),
+   zeros nPitchStep, resets nSampleId to 0xFF, and accumulates the voice bit
+   into the pending hardware key-off mask. 24 rows of g_aSpuVoiceRows, walked as
+   three field pointers. */
 
 void StopSoundVoicesByOwner(int owner, int mode) {
   unsigned int kmask = 0;

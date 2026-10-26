@@ -187,7 +187,7 @@
     Actor *sp_ = g_pfnLevelSpawnActor(0x190, a);                                         \
     Actor *w_;                                                                 \
                                                                                \
-    StopSoundVoicesByOwner(a, 1);                                                       \
+    StopSoundVoicesByOwner(a, VOICE_STOP_ALL);                                                       \
     PlaySoundEffect(g_apActorMeshTable[(a)->type]->m_Sounds[3], sp_, 8, &sp_->sfxSlot);    \
     w_ = (st)->rider;                                                          \
     if (w_ != 0 && w_->type == 0x9A && w_->mode == 2) {                       \

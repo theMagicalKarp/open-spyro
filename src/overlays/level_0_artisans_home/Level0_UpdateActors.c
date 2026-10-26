@@ -740,7 +740,7 @@ void Level0_UpdateActors(void) {
         break;
 
       case 0x3C:
-        StopSoundVoicesByOwner(actor, 1);
+        StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x4801) {
           ModifyWorldChunkAnimFlags(st->handle, 0xFC, 0);
         }
@@ -2130,7 +2130,7 @@ void Level0_UpdateActors(void) {
           actor->rotY = st->savedRotY;
           actor->posZ = st->savedPosZ;
           actor->flags = 0;
-          StopSoundVoicesByOwner(actor, 1);
+          StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         } else if (st->phase >= 192) {
 
           if (!GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[0])) {
@@ -2151,7 +2151,7 @@ void Level0_UpdateActors(void) {
           st->savedPosZ = actor->posZ;
         } else if (actor->flags != 0) {
           st->phase = 188;
-          StopSoundVoicesByOwner(actor, 1);
+          StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         } else {
           if ((st->phase >> 1) == 16 && (GetRandomU32() & 3) == 0) {
             SpawnActorRotBillboard(actor, &g_anRotBillboardOffset0);
@@ -2803,7 +2803,7 @@ void Level0_UpdateActors(void) {
         break;
 
       case 0x63:
-        StopSoundVoicesByOwner(actor, 1);
+        StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         break;
       }
       break;

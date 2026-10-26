@@ -1559,7 +1559,7 @@ void Level34_UpdateActors(void) {
         actor->frameRate = 0;
         actor->cullRadius = 0;
         actor->drawn = 0;
-        StopSoundVoicesByOwner(actor, 1);
+        StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         if (((GetWorldChunkAnimState(st->snd) >> 8) & 0xFF) > 0) {
           st->init = one;
           actor->frameRate = 0x10;
@@ -3114,7 +3114,7 @@ void Level34_UpdateActors(void) {
         }
       }
       if (st->speed < 0x19) {
-        StopSoundVoicesByOwner(actor, 1);
+        StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
       if (actor->subMode == 0) {
         st->lid = g_pfnLevelSpawnActor(0x188, actor);

@@ -738,7 +738,7 @@ void Level24_UpdateActors(void) {
           } while (i < 5);
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-          StopSoundVoicesByOwner(actor, 2);
+          StopSoundVoicesByOwner(actor, VOICE_STOP_LOOPING);
           actor->mode = 3;
           continue;
         }
@@ -2387,7 +2387,7 @@ void Level24_UpdateActors(void) {
         continue;
 
       case 12:
-        StopSoundVoicesByOwner(actor, 1);
+        StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         if (g_nActorAnimDone != 0) {
           st->next = 2;
           actor->mode = 2;
@@ -2417,7 +2417,7 @@ void Level24_UpdateActors(void) {
       TickActorFlameGlow(actor);
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != 3 &&
           (st->kind != 1 || !(actor->flags & ACTOR_HIT_CHARGE))) {
-        StopSoundVoicesByOwner(actor, 1);
+        StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         st->lift = 0x96;
         st->knock = 0x118;
         if (actor->flags & ACTOR_HIT_CHARGE) {
@@ -2631,7 +2631,7 @@ void Level24_UpdateActors(void) {
         TickCountdownByFrameDelta(&st->timer2, 4);
         actor->scale += g_nFrameStep * 2;
         if (actor->scale >= 0x38) {
-          StopSoundVoicesByOwner(actor, 1);
+          StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
           actor->scale = 0x20;
           BurstActorWithSound(actor, 0x20);
           st->base = 4;
@@ -2987,7 +2987,7 @@ void Level24_UpdateActors(void) {
           actor->rotY = st->rotY;
           actor->posZ = st->restZ;
           actor->flags = 0;
-          StopSoundVoicesByOwner(actor, 1);
+          StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         } else if (st->phase >= 0xC0) {
           int dx;
           int dy;
@@ -3015,7 +3015,7 @@ void Level24_UpdateActors(void) {
           st->restZ = actor->posZ;
         } else if (actor->flags != 0) {
           st->phase = 0xBC;
-          StopSoundVoicesByOwner(actor, 1);
+          StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         } else if ((st->phase >> 1) == 0x10 && !(GetRandomU32() & 3)) {
           SpawnActorRotBillboard(actor, &g_anRotBillboardOffset0);
         } else if ((st->phase >> 1) == 0x30 && !(GetRandomU32() & 3)) {

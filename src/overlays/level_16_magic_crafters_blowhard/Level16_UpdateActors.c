@@ -2008,7 +2008,7 @@ void Level16_UpdateActors(void) {
           actor->rotY = st->rotY;
           actor->posZ = st->restZ;
           actor->flags = 0;
-          StopSoundVoicesByOwner(actor, 1);
+          StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         } else if (st->phase >= 0xC0) {
           int dx;
           int dy;
@@ -2036,7 +2036,7 @@ void Level16_UpdateActors(void) {
           st->restZ = actor->posZ;
         } else if (actor->flags != 0) {
           st->phase = 0xBC;
-          StopSoundVoicesByOwner(actor, 1);
+          StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         } else if ((st->phase >> 1) == 0x10 && !(GetRandomU32() & 3)) {
           SpawnActorRotBillboard(actor, &g_anRotBillboardOffset0);
         } else if ((st->phase >> 1) == 0x30 && !(GetRandomU32() & 3)) {
@@ -3147,7 +3147,7 @@ void Level16_UpdateActors(void) {
           case 0x5D:
             g_nLevelProgress[0] += 1;
             if (st->minion != 0) {
-              StopSoundVoicesByOwner(st->minion, 1);
+              StopSoundVoicesByOwner(st->minion, VOICE_STOP_ALL);
               DespawnActorRecord(st->minion);
               st->minion = 0;
             }

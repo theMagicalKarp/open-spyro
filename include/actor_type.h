@@ -221,6 +221,10 @@ enum ActorType {
 #define ACTOR_REFRESH_GRID 2      /* relink ->gridCell from the X/Y position */
 #define ACTOR_REFRESH_MATRIX 4    /* ->mtx from the rotX/rotY/rotZ euler bytes */
 
+/* StopSoundVoicesByOwner's mode: which of the owner's voices to stop. */
+#define VOICE_STOP_ALL 1     /* every voice it owns */
+#define VOICE_STOP_LOOPING 2 /* only its looping voices (row flag 0x100) */
+
 /* SpawnActorDeathDrop's `kind`: how a thrown drop leaves its source. Rolled
  * extra lives, butterflies and Sparx ignore it. */
 enum DropThrow {

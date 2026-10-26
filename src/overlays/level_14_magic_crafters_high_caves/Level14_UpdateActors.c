@@ -2336,7 +2336,7 @@ void Level14_UpdateActors(void) {
                               0);
             STEER(actor, h, d, 0x20, 0x30, 4);
           } else {
-            StopSoundVoicesByOwner(actor, 1);
+            StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
             TrackEntityYawTowardSpyro(actor, 0x10, 0x18, 1);
           }
           d = (SPY.posZ - actor->posZ - 0x400) >> 1;
@@ -3337,7 +3337,7 @@ void Level14_UpdateActors(void) {
           actor->rotY = st->savedRotY;
           actor->posZ = st->savedPosZ;
           actor->flags = 0;
-          StopSoundVoicesByOwner(actor, 1);
+          StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         } else if (st->phase >= 192) {
 
           if (!GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[0])) {
@@ -3358,7 +3358,7 @@ void Level14_UpdateActors(void) {
           st->savedPosZ = actor->posZ;
         } else if (actor->flags != 0) {
           st->phase = 188;
-          StopSoundVoicesByOwner(actor, 1);
+          StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         } else {
           if ((st->phase >> 1) == 16 && (GetRandomU32() & 3) == 0) {
             SpawnActorRotBillboard(actor, &g_anRotBillboardOffset0);
@@ -4019,7 +4019,7 @@ void Level14_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
-          StopSoundVoicesByOwner(actor, 2);
+          StopSoundVoicesByOwner(actor, VOICE_STOP_LOOPING);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4070,7 +4070,7 @@ void Level14_UpdateActors(void) {
 
       case 2:
         if (g_nActorAnimDone != 0) {
-          StopSoundVoicesByOwner(actor, 2);
+          StopSoundVoicesByOwner(actor, VOICE_STOP_LOOPING);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4907,7 +4907,7 @@ void Level14_UpdateActors(void) {
         }
       }
       if (st->speed < 0x19) {
-        StopSoundVoicesByOwner(actor, 1);
+        StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
       if (actor->subMode == 0) {
         st->lid = g_pfnLevelSpawnActor(0x188, actor);
