@@ -936,7 +936,7 @@
    "size": 708
   },
   {
-   "name": "StubActorHook",
+   "name": "OnActorAnimQueued",
    "vram": 2147712664,
    "size": 8
   },

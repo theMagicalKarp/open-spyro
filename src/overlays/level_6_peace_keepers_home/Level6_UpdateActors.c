@@ -55,7 +55,7 @@
   (a)->nextAnim = (next);                                                         \
   (a)->frame = (a)->nextFrame;                                                     \
   (a)->nextFrame = 0;                                                              \
-  StubActorHook(a);
+  OnActorAnimQueued(a);
 
 /* ENTER_POSE sets the state byte to `n`, advances to animation `n` unless it
  * is already queued, and moves on to the next actor. It ends in a bare
@@ -69,7 +69,7 @@
     (a)->nextAnim = (n);                                                          \
     (a)->frame = (a)->nextFrame;                                                   \
     (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
+    OnActorAnimQueued(a);                                                          \
   }                                                                            \
   continue
 

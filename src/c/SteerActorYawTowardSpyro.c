@@ -11,7 +11,7 @@
    gamestate-scaled `speed` clamped to the remaining delta. While more
    than 0x101 off-bearing it swaps the actor's anim pair (anim..frameRate)
    (animId when turning positive, animId+1 otherwise) through
-   StubActorHook. Stores the coarse yaw in rotZ; returns the delta.
+   OnActorAnimQueued. Stores the coarse yaw in rotZ; returns the delta.
 
    In each anim arm the 0x10 stores are bare literals (a shared carrier costs
    the birthing boost and swaps the `li` with the call-arg copy), and `old` is
@@ -83,7 +83,7 @@ int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed,
         actor->nextFrame = 0;
         actor->anim = old;
         actor->frame = p3F;
-        StubActorHook(actor, p3F, next);
+        OnActorAnimQueued(actor, p3F, next);
       }
     } else {
       if (actor->nextAnim != next) {
@@ -98,7 +98,7 @@ int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed,
         actor->nextFrame = 0;
         actor->anim = old;
         actor->frame = p3F;
-        StubActorHook(actor, p3F, next);
+        OnActorAnimQueued(actor, p3F, next);
       }
     }
   }

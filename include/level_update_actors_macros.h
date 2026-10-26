@@ -75,7 +75,7 @@
     (a)->nextAnim = (n);                                                          \
     (a)->frame = (a)->nextFrame;                                                   \
     (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
+    OnActorAnimQueued(a);                                                          \
   }
 
 /* ENTER_POSE with an empty loop at the head of the change: cse starts a new
@@ -93,7 +93,7 @@
     (a)->nextAnim = (n);                                                          \
     (a)->frame = (a)->nextFrame;                                                   \
     (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
+    OnActorAnimQueued(a);                                                          \
   }                                                                            \
   continue
 
@@ -124,7 +124,7 @@
     (a)->nextAnim = (n);                                                          \
     (a)->frame = (a)->nextFrame;                                                   \
     (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
+    OnActorAnimQueued(a);                                                          \
   }
 
 /* Re-time the current animation once its frames are within 3 of each
@@ -143,7 +143,7 @@
   (a)->nextAnim = (n);                                                            \
   (a)->frame = (a)->nextFrame;                                                     \
   (a)->nextFrame = (f);                                                            \
-  StubActorHook(a)
+  OnActorAnimQueued(a)
 
 /* Set the state byte and queue animation `n` without promoting the current
  * one, then move on to the next actor. */
@@ -154,7 +154,7 @@
     (a)->frameRate = sixteen;                                                      \
     (a)->nextAnim = (n);                                                          \
     (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
+    OnActorAnimQueued(a);                                                          \
   }                                                                            \
   continue
 
@@ -221,7 +221,7 @@
     (a)->frameRate = sixteen;                                                      \
     (a)->nextAnim = (n);                                                          \
     (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
+    OnActorAnimQueued(a);                                                          \
   }
 
 #endif /* OPEN_SPYRO_LEVEL_UPDATE_ACTORS_MACROS_H */

@@ -269,7 +269,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x800377a8` | UpdateScriptedCameraView | main | 632 | matched | game |
 | `0x80037a20` | UpdateLevelTransitionCamera | main | 436 | matched | game |
 | `0x80037bd4` | UpdateCameraFrame | main | 708 | matched | game |
-| `0x80037e98` | StubActorHook | main | 8 | matched | game |
+| `0x80037e98` | OnActorAnimQueued | main | 8 | matched | game |
 | `0x80037ea0` | RandomIntInRange | main | 112 | matched | game |
 | `0x80037f10` | RandomSignedInRange | main | 128 | matched | game |
 | `0x80037f90` | TickCountdownByFrameDelta | main | 228 | matched | game |

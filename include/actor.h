@@ -30,7 +30,7 @@ void TickStatueBurstShard(Actor *actor);
 /* Actor behaviour helpers (main 0x80037E98..0x8003C994 and neighbours), not
  * yet named. */
 void BeginSaveMenuFromWorld(Actor *actor);
-void StubActorHook(Actor *actor, ...); /* no-op; SteerActorYawTowardSpyro passes two extra args */
+void OnActorAnimQueued(Actor *actor, ...); /* no-op; SteerActorYawTowardSpyro passes two extra args */
 int ProbeActorGroundHeight(Actor *actor);
 int IsActorGroundFlat(Actor *actor);
 int ProbeActorGroundHeightRaised(Actor *actor, int a);

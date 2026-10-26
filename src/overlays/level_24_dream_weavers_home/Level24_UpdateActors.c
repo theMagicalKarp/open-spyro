@@ -55,7 +55,7 @@
   (a)->nextAnim = (next);                                                         \
   (a)->frame = (a)->nextFrame;                                                     \
   (a)->nextFrame = 0;                                                              \
-  StubActorHook(a);
+  OnActorAnimQueued(a);
 
 /* ENTER_POSE sets the state byte to `n`, advances to animation `n` unless it
  * is already queued, and moves on to the next actor. It ends in a bare
@@ -69,7 +69,7 @@
     (a)->nextAnim = (n);                                                          \
     (a)->frame = (a)->nextFrame;                                                   \
     (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
+    OnActorAnimQueued(a);                                                          \
   }                                                                            \
   continue
 
@@ -1083,7 +1083,7 @@ void Level24_UpdateActors(void) {
             actor->nextAnim = actor->nextAnim;
             actor->frame = actor->nextFrame;
             actor->nextFrame = 0x14;
-            StubActorHook(actor);
+            OnActorAnimQueued(actor);
           }
         } else if (r == 3 && (unsigned)(actor->nextFrame - 0xB) < 9) {
           g_nActorAnimDone = 0;
@@ -1093,7 +1093,7 @@ void Level24_UpdateActors(void) {
           actor->nextAnim = actor->nextAnim;
           actor->frame = actor->nextFrame;
           actor->nextFrame = 0x16;
-          StubActorHook(actor);
+          OnActorAnimQueued(actor);
         }
         ANIM_RETIME(actor);
         break;
@@ -2601,7 +2601,7 @@ void Level24_UpdateActors(void) {
           actor->nextAnim = actor->nextAnim;
           actor->frame = actor->nextFrame;
           actor->nextFrame = 0xA;
-          StubActorHook(actor);
+          OnActorAnimQueued(actor);
         }
         if (r == 0 && actor->nextFrame == 9) {
           g_nActorAnimDone = 0;
@@ -2611,7 +2611,7 @@ void Level24_UpdateActors(void) {
           actor->nextAnim = actor->nextAnim;
           actor->frame = actor->nextFrame;
           actor->nextFrame = 5;
-          StubActorHook(actor);
+          OnActorAnimQueued(actor);
         }
         ANIM_RETIME(actor);
         break;

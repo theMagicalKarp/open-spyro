@@ -64,7 +64,7 @@
   (a)->nextAnim = (next);                                                         \
   (a)->frame = (a)->nextFrame;                                                     \
   (a)->nextFrame = 0;                                                              \
-  StubActorHook(a);
+  OnActorAnimQueued(a);
 
 /* ENTER_POSE sets the state byte to `n`, advances to animation `n` unless it
  * is already queued, and moves on to the next actor. It ends in a bare
@@ -78,7 +78,7 @@
     (a)->nextAnim = (n);                                                          \
     (a)->frame = (a)->nextFrame;                                                   \
     (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
+    OnActorAnimQueued(a);                                                          \
   }                                                                            \
   continue
 
@@ -2823,7 +2823,7 @@ void Level7_UpdateActors(void) {
           actor->nextAnim = 7;
           actor->frame = actor->nextFrame;
           actor->nextFrame = 5;
-          StubActorHook(actor);
+          OnActorAnimQueued(actor);
           actor->mode = 7;
           continue;
         } else {
@@ -2844,7 +2844,7 @@ void Level7_UpdateActors(void) {
             actor->nextAnim = 7;
             actor->frame = actor->nextFrame;
             actor->nextFrame = 5;
-            StubActorHook(actor);
+            OnActorAnimQueued(actor);
             actor->mode = 7;
             continue;
           }
@@ -3266,7 +3266,7 @@ void Level7_UpdateActors(void) {
               actor->nextAnim = 1;
               actor->frame = actor->nextFrame;
               actor->nextFrame = 0;
-              StubActorHook(actor);
+              OnActorAnimQueued(actor);
             }
             actor->mode = 1;
             continue;

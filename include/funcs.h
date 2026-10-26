@@ -2047,7 +2047,7 @@ void StubRewardHook(void);
 void PollMemCardSyncRing(void);
 
 /* 0x80037e98: Empty `jr ra` stub; level actor code calls it with the actor. */
-void StubActorHook(Actor *actor, ...); /* no-op; SteerActorYawTowardSpyro passes two extra args */
+void OnActorAnimQueued(Actor *actor, ...); /* no-op; SteerActorYawTowardSpyro passes two extra args */
 
 /* 0x8003891c: Vertical launch speed for a lob from pos to target at horizontal
  * `speed` under `gravity`; flight time (frames) via pOutTime. */

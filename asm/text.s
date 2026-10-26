@@ -42526,14 +42526,14 @@ glabel UpdateCameraFrame
 endlabel UpdateCameraFrame
 .endif
 
-.section .text.StubActorHook, "ax"
-.ifndef HAVE_C_StubActorHook
-nonmatching StubActorHook, 0x8
+.section .text.OnActorAnimQueued, "ax"
+.ifndef HAVE_C_OnActorAnimQueued
+nonmatching OnActorAnimQueued, 0x8
 
-glabel StubActorHook
+glabel OnActorAnimQueued
     /* 28698 80037E98 0800E003 */  jr         $ra
     /* 2869C 80037E9C 00000000 */   nop
-endlabel StubActorHook
+endlabel OnActorAnimQueued
 .endif
 
 .section .text.RandomIntInRange, "ax"
@@ -44066,7 +44066,7 @@ glabel SteerActorYawTowardSpyro
   .L800391B4:
     /* 299B4 800391B4 3F0000A2 */  sb         $zero, 0x3F($s0)
     /* 299B8 800391B8 3C0002A2 */  sb         $v0, 0x3C($s0)
-    /* 299BC 800391BC A6DF000C */  jal        StubActorHook
+    /* 299BC 800391BC A6DF000C */  jal        OnActorAnimQueued
     /* 299C0 800391C0 3E0005A2 */   sb        $a1, 0x3E($s0)
   .L800391C4:
     /* 299C4 800391C4 0000628E */  lw         $v0, 0x0($s3)

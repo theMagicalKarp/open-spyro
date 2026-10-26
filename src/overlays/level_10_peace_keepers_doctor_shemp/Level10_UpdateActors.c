@@ -70,7 +70,7 @@
   (a)->nextAnim = (next);                                                         \
   (a)->frame = (a)->nextFrame;                                                     \
   (a)->nextFrame = 0;                                                              \
-  StubActorHook(a);
+  OnActorAnimQueued(a);
 
 /* ENTER_POSE sets the state byte to `n`, advances to animation `n` unless it
  * is already queued, and moves on to the next actor. It ends in a bare
@@ -84,7 +84,7 @@
     (a)->nextAnim = (n);                                                          \
     (a)->frame = (a)->nextFrame;                                                   \
     (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
+    OnActorAnimQueued(a);                                                          \
   }                                                                            \
   continue
 
@@ -2836,7 +2836,7 @@ void Level10_UpdateActors(void) {
           actor->nextFrame = 0xD;
           actor->anim = c;
           actor->frame = f;
-          StubActorHook(actor);
+          OnActorAnimQueued(actor);
         }
         if (ABS2(actor->nextFrame - actor->frame) < 3) {
           actor->frameRate = TYPE_DESC(actor, actor->anim);
