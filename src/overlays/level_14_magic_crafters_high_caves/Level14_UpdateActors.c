@@ -8,9 +8,10 @@
  *
  * Most classes are shared with the other levels' actor updates (levels 0, 4,
  * 9, 12, 13, 15, 16, 25 and 26); the level-14 classes are 109 (a flying
- * carrier that follows Spyro and can be ridden), 227 (a charging turret with
- * a scripted camera), 301 (a bolt caster), 302 (a riding platform), 303 and
- * 304 (a spawner and its runner) and 305 (a path-walking critter that flees).
+ * carrier that follows Spyro and can be ridden), 227 (the superflame giver: it
+ * flies in front of Spyro under a scripted camera and grants the superflame),
+ * 301 (a bolt caster), 302 (a world-chunk operator), 303 and 304 (a spawner
+ * and its runner) and 305 (a path-walking critter that flees).
  *
  * Load-bearing source forms:
  *   - No base/spy carrier: `spy` is `&SPY`, so Spyro reads are absolute and
@@ -111,45 +112,51 @@
 /* ==== Level 14 classes ==== */
 extern int g_anCollisionContactPoint[2]; /* wall probe hit x, y */
 
-/* Type 303. */
-typedef struct L14State303 {
+/* Type 303: runner spawner. Every so often (`timer`, 0xB4) spawns one type
+ * 304 runner and hands it `value`; killable. */
+typedef struct RunnerSpawnerState {
   unsigned char *link; /* 0x00 byte +1 cleared when the spawn fires */
   int flags;           /* 0x04 bit 0: spawned */
   int wait;            /* 0x08 */
   int timer;           /* 0x0C */
   int value;           /* 0x10 copied to the spawn's state +0x14 */
-} L14State303;
+} RunnerSpawnerState;
 
-/* Type 304. */
-typedef struct L14State304 {
+/* Type 304: waypoint runner. Walks `path` until it reaches Spyro, the path
+ * end, or its `target` actor (which it flags), then clears its spawner's
+ * flags bit 0 and leaves. */
+typedef struct WaypointRunnerState {
   void *path;   /* 0x00 */
   Actor *link;  /* 0x04 its state's flags bit 0 is cleared on release */
   int hold;     /* 0x08 */
   int pad0C[2]; /* 0x0C */
   short target; /* 0x14 pool index, < 0 = none */
-} L14State304;
+} WaypointRunnerState;
 
-/* Type 302. */
-typedef struct L14State302 {
-  int snd;       /* 0x00 sound handle */
+/* Type 302: chunk operator. Starts its world chunk's animation when Spyro
+ * comes near (0x2000) or goes far (0x3000); with `riding` set it follows the
+ * moving floor triangle under it. */
+typedef struct ChunkOperatorState {
+  int chunk;     /* 0x00 world chunk it animates (GetWorldChunkAnimState) */
   int riding;    /* 0x04 */
   char *anchor;  /* 0x08 +0x18: distance reference */
   int spark;     /* 0x0C pool index of the spark target */
   int node;      /* 0x10 path node, -1 = none */
   int pts[3][3]; /* 0x14 node triangle */
-} L14State302;
+} ChunkOperatorState;
 
-/* Type 301. */
-typedef struct L14State301 {
+/* Type 301: bolt caster. Wakes when Spyro is in range and fires type 295
+ * bolts at him. */
+typedef struct BoltCasterState {
   int target; /* 0x00 pool index of the actor it fires at, -1 = none */
   int flags;  /* 0x04 bit 0: woken, bit 1: Spyro in range */
   int timer;  /* 0x08 */
   int count;  /* 0x0C bolts fired */
-} L14State301;
+} BoltCasterState;
 
 
-/* Type 305. */
-typedef struct L14State305 {
+/* Type 305: a critter that walks one of three paths and flees Spyro. */
+typedef struct FleeingWalkerState {
   PathData *cur;   /* 0x00 path being walked */
   PathData *pathA; /* 0x04 */
   PathData *pathB; /* 0x08 */
@@ -162,7 +169,7 @@ typedef struct L14State305 {
   int pad28;       /* 0x28 */
   int speed;       /* 0x2C */
   int range;       /* 0x30 */
-} L14State305;
+} FleeingWalkerState;
 
 #define PATH_END(p) (&(p)->nodes[(p)->count - 1].x)
 #define PATH_CUR(p) (&(p)->nodes[(p)->cur].x)
@@ -172,8 +179,8 @@ typedef struct Cam5 {
   int w[5];
 } Cam5;
 
-/* Type 109. */
-typedef struct L14State109 {
+/* Type 109: flying carrier. Follows Spyro and can be ridden. */
+typedef struct CarrierState {
   int mode;        /* 0x00 bits 0-1 riding (1/2 = side), 2 to dest, 3 path0,
                       4 follow Spyro, 5 return along cur, 6 back down cur,
                       7 camera hold; 0x2C = carried */
@@ -186,7 +193,7 @@ typedef struct L14State109 {
   int rider;       /* 0x24 pool index */
   int bob;         /* 0x28 */
   int vz;          /* 0x2C */
-} L14State109;
+} CarrierState;
 
 /* Turn toward `h`; walk at `d`, slowed by the remaining turn. */
 #define STEER(a, h, d, k1, k2, sh)                                             \
@@ -1936,7 +1943,7 @@ void Level14_UpdateActors(void) {
 
     /* Type 109. */
     case 109: {
-      L14State109 *st = actor->state;
+      CarrierState *st = actor->state;
       int d;
       int h;
 
@@ -2882,7 +2889,7 @@ void Level14_UpdateActors(void) {
 
     /* Type 227. */
     case 227: {
-      L14State227 *st = actor->state;
+      SuperflameGiverState *st = actor->state;
 
       if (st->heading == -1) {
         st->heading = actor->rotZ;
@@ -3686,7 +3693,7 @@ void Level14_UpdateActors(void) {
 
     /* Type 301. */
     case 301: {
-      L14State301 *st = actor->state;
+      BoltCasterState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 4) {
         SpawnActorDeathDrop(actor, 3, 0, 0);
@@ -3829,7 +3836,7 @@ void Level14_UpdateActors(void) {
 
     /* Type 302. */
     case 302: {
-      L14State302 *st = actor->state;
+      ChunkOperatorState *st = actor->state;
       int i;
 
       if (st->riding != 0) {
@@ -3885,16 +3892,16 @@ void Level14_UpdateActors(void) {
         if (d < 0x2000 && st->spark != 0 && (GetRandomU32() & 1)) {
           g_pfnLevelEmitParticles(1, 8, actor, &g_pActorListBase[st->spark]);
         }
-        r = GetWorldChunkAnimState(st->snd);
+        r = GetWorldChunkAnimState(st->chunk);
         if (r & 2) {
           r = (r >> 8) & 0xFF;
           if (r == 0 && d < 0x2000) {
-            ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
+            ModifyWorldChunkAnimFlags(st->chunk, 0xFC, 0);
             ENTER_POSE(actor, 2);
             continue;
           }
           if (r == 0xE && d > 0x3000) {
-            ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
+            ModifyWorldChunkAnimFlags(st->chunk, 0xFC, 0);
             ENTER_POSE(actor, 2);
             continue;
           }
@@ -3906,7 +3913,7 @@ void Level14_UpdateActors(void) {
         if (st->spark >= 0 && (GetRandomU32() & 1)) {
           g_pfnLevelEmitParticles(1, 8, actor, &g_pActorListBase[st->spark]);
         }
-        ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
+        ModifyWorldChunkAnimFlags(st->chunk, 0xFC, 0);
         break;
 
       case 2:
@@ -3923,12 +3930,12 @@ void Level14_UpdateActors(void) {
 
       case 3:
         if (st->riding == 0) {
-          int r = GetWorldChunkAnimState(st->snd);
+          int r = GetWorldChunkAnimState(st->chunk);
 
           if (r & 2) {
             r = (r >> 8) & 0xFF;
             if (r == 0xE) {
-              ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
+              ModifyWorldChunkAnimFlags(st->chunk, 0xFC, 0);
             }
           }
         }
@@ -3947,7 +3954,7 @@ void Level14_UpdateActors(void) {
             g_pfnLevelEmitParticles(1, 8, actor, &g_pActorListBase[st->spark]);
           }
         }
-        ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
+        ModifyWorldChunkAnimFlags(st->chunk, 0xFC, 0);
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
           actor->mode = 1;
@@ -3961,7 +3968,7 @@ void Level14_UpdateActors(void) {
 
     /* Type 303. */
     case 303: {
-      L14State303 *st = actor->state;
+      RunnerSpawnerState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4) {
         StopSoundVoiceByIndex(actor->sfxSlot, 4);
@@ -4028,7 +4035,7 @@ void Level14_UpdateActors(void) {
 
     /* Type 304. */
     case 304: {
-      L14State304 *st = actor->state;
+      WaypointRunnerState *st = actor->state;
 
       switch (actor->mode) {
       case 0:
@@ -4082,7 +4089,7 @@ void Level14_UpdateActors(void) {
 
     /* Type 305. */
     case 305: {
-      L14State305 *st = actor->state;
+      FleeingWalkerState *st = actor->state;
 
       TickActorFlameGlow(actor);
       if (actor->mode == 2) {

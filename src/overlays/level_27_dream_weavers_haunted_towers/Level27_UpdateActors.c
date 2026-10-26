@@ -2003,7 +2003,7 @@ void Level27_UpdateActors(void) {
     /* Type 227. */
     case 142:
     case 241: {
-      L14State227 *st = actor->state;
+      SuperflameGiverState *st = actor->state;
 
       if (st->heading == -1) {
         st->heading = actor->rotZ;

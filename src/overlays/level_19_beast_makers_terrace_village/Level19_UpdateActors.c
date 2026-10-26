@@ -9,8 +9,8 @@
  * Most classes are shared with the other levels' actor updates (levels 3, 7,
  * 8, 9, 10, 15, 25, 31 and the level-18 workspace); the level-19 classes are
  * 32 (an egg carried by its thief), 35 (a guard that scatters when hit and
- * fires bolts), 343 (a swinging pair), 467 (a bolt-throwing sentry with three
- * guards) and 494 (the bolt).
+ * fires bolts), 343 (a bead streaming between two attach points), 467 (a
+ * bolt-throwing sentry with three guards) and 494 (the bolt).
  *
  * Load-bearing source forms:
  *   - Level 8's loop top (fp = `one`, s7 = `spy`); the frame is laid out in
@@ -115,8 +115,8 @@
   }                                                                            \
   break
 
-/* Type 35 state. */
-typedef struct L19State35 {
+/* Type 35 state: a guard that scatters when hit and fires type 494 bolts. */
+typedef struct BoltGuardState {
   int mode;    /* 0x00 1 = guards, 2 = follows a linked actor */
   int timer;   /* 0x04 */
   int timer2;  /* 0x08 */
@@ -131,16 +131,17 @@ typedef struct L19State35 {
   short spinX; /* 0x2C */
   short spinY; /* 0x2E */
   int box[3];  /* 0x30 */
-} L19State35;
+} BoltGuardState;
 
-/* Type 343 state. */
-typedef struct L19State343 {
+/* Type 343 state: a bead that streams from its owner's attach point 1 to
+ * point 0, starting subMode * 42 frames late and growing as it goes. */
+typedef struct AttachBeadState {
   Actor *owner; /* 0x00 */
   int t;        /* 0x04 */
-} L19State343;
+} AttachBeadState;
 
-/* Type 467 state. */
-typedef struct L19State467 {
+/* Type 467 state: a bolt-throwing sentry with three guards (`kids`). */
+typedef struct BoltSentryState {
   int mode;      /* 0x00 */
   int *path;     /* 0x04 */
   int range;     /* 0x08 in 1024s */
@@ -154,15 +155,17 @@ typedef struct L19State467 {
   int guards;    /* 0x28 */
   Actor *kids[3]; /* 0x2C */
   Actor *fx;     /* 0x38 */
-} L19State467;
+} BoltSentryState;
 
-/* Type 494 state (the bolt spawned by 35 and 467). */
-typedef struct L19State494 {
+/* Type 494 state: the bolt spawned by 35 and 467. Mode 0 rides its parent's
+ * attach point aimed at Spyro, mode 1 flies and knocks Spyro back, mode 2
+ * steers toward `target` and hits actors there. */
+typedef struct AimedBoltState {
   Actor *parent; /* 0x00 */
   int target[3]; /* 0x04 */
   short timer;   /* 0x10 */
   short mode;    /* 0x12 */
-} L19State494;
+} AimedBoltState;
 
 /* ENTER_POSE_BRK with the pose constant split from the queue store (A285). */
 #define ENTER_POSE_BRK_B(a, n)                                                 \
@@ -746,7 +749,7 @@ void Level19_UpdateActors(void) {
 
     /* Type 35. */
     case 35: {
-      L19State35 *st = actor->state;
+      BoltGuardState *st = actor->state;
       int *v = svD;
       int d;
 
@@ -821,7 +824,7 @@ void Level19_UpdateActors(void) {
           RefreshActorDerivedState(actor, 4);
           for (i = 0; i < 2; i++) {
             Actor *c = g_pfnLevelSpawnActor(0x1EE, actor);
-            L19State494 *cs;
+            AimedBoltState *cs;
 
             c->scale = 0x48;
             c->rotZ = actor->rotZ;
@@ -900,7 +903,7 @@ void Level19_UpdateActors(void) {
           RefreshActorDerivedState(actor, 4);
           for (i = 0; i < 2; i++) {
             Actor *c = g_pfnLevelSpawnActor(0x1EE, actor);
-            L19State494 *cs;
+            AimedBoltState *cs;
 
             c->scale = 0x48;
             cs = c->state;
@@ -914,7 +917,7 @@ void Level19_UpdateActors(void) {
           st->timer = 8;
         }
         if (TickCountdownByFrameDelta(&st->timer2, 4) != 0 && g_nActorAnimDone != 0) {
-          L19State35 *ts = g_pActorListBase[st->link].state;
+          BoltGuardState *ts = g_pActorListBase[st->link].state;
 
           if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT || st->link == -1) {
             st->mode = 0;
@@ -2598,7 +2601,7 @@ void Level19_UpdateActors(void) {
 
     /* Type 343. */
     case 343: {
-      L19State343 *st = actor->state;
+      AttachBeadState *st = actor->state;
 
       switch (actor->mode) {
       case 0:
@@ -3471,7 +3474,7 @@ void Level19_UpdateActors(void) {
 
     /* Type 467. */
     case 467: {
-      L19State467 *st = actor->state;
+      BoltSentryState *st = actor->state;
       int i;
 
       if (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER) && ApproxDist2D(&actor->posX, spy) < 0xE10 &&
@@ -3560,7 +3563,7 @@ void Level19_UpdateActors(void) {
         }
         if (st->bolt == 0 && actor->nextFrame - 0xFU < 3 &&
             ApproxDist2D(&actor->posX, spy) < 0x1194) {
-          L19State494 *bs;
+          AimedBoltState *bs;
 
           st->bolt = g_pfnLevelSpawnActor(0x1EE, actor);
           st->bolt->rotZ = actor->rotZ;
@@ -3688,7 +3691,7 @@ void Level19_UpdateActors(void) {
 
     /* Type 494: bolt thrown by 35 and 467. */
     case 494: {
-      L19State494 *st = actor->state;
+      AimedBoltState *st = actor->state;
 
       if (actor->subMode != 0) {
         DespawnActorRecord(actor);

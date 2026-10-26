@@ -1596,7 +1596,7 @@ void Level32_UpdateActors(void) {
 
     /* Type 145. */
     case 145: {
-      L32State145 *st = actor->state;
+      BurstGunnerState *st = actor->state;
       int dist;
 
       SubtractVector(o100, spy, &actor->posX);
@@ -1736,7 +1736,7 @@ void Level32_UpdateActors(void) {
 
     /* Type 147. */
     case 147: {
-      L32State147 *st = actor->state;
+      SweepGunnerState *st = actor->state;
       int dist;
 
       SubtractVector(o120, spy, &actor->posX);
@@ -1904,7 +1904,7 @@ void Level32_UpdateActors(void) {
 
     /* Type 148. */
     case 148: {
-      L32State148 *st = actor->state;
+      LobGunnerState *st = actor->state;
       int dist;
 
       SubtractVector(o130, spy, &actor->posX);
@@ -2425,7 +2425,7 @@ void Level32_UpdateActors(void) {
 
     /* Type 236. */
     case 236: {
-      L32State236 *st = actor->state;
+      WandererState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,

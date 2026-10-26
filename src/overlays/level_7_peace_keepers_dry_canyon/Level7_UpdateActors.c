@@ -7,9 +7,10 @@
  * (->subMode), and usually a class-specific state block behind ->state.
  *
  * Most classes are shared with the other levels' actor updates (levels 1, 3,
- * 8, 10, 26 and 31); the level-7 classes are 184 (a charger that spits a
- * bolt (183) and bursts into debris when it dies), 186 (a blinking sentry
- * that lobs a fireball (197) at Spyro), 197 itself, and the trail-less shard
+ * 8, 10, 26 and 31); the level-7 classes are 184 (a stationary brawler; its
+ * unreachable mode 1 would spawn a type 183, and it bursts into debris when it
+ * dies), 186 (a blinking sentry that fires a flat
+ * knock-back shot (197) at Spyro), 197 itself, and the trail-less shard
  * pair 458/459.
  *
  * Load-bearing source forms:
@@ -2524,9 +2525,9 @@ void Level7_UpdateActors(void) {
       continue;
     }
 
-    /* Type 184. */
+    /* Type 184: brawler. */
     case 184: {
-      L7State184 *st = actor->state;
+      BrawlerState *st = actor->state;
 
       if (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER) && actor->mode != 6) {
         st->heading =
@@ -2560,7 +2561,7 @@ void Level7_UpdateActors(void) {
         if (g_nActorAnimNewFrame != 0 && actor->frame == 0x11) {
           int h = WrapAddAngle8(actor->rotZ, 0xFD);
           Actor *c = g_pfnLevelSpawnActor(0xB7, actor);
-          L7State183 *cs = c->state;
+          BrawlerSpawnState *cs = c->state;
 
           CopyVector(&c->posX, &actor->posX);
           s328[0] = (g_anCosineLut[h] * 0x591) >> 11;
@@ -2669,9 +2670,9 @@ void Level7_UpdateActors(void) {
       continue;
     }
 
-    /* Type 186. */
+    /* Type 186: shooter sentry. */
     case 186: {
-      L7State186 *st = actor->state;
+      ShooterState *st = actor->state;
 
       TickActorFlameGlow(actor);
       if (actor->flags & ACTOR_HITS_SPYRO && actor->mode != 3) {
@@ -2743,7 +2744,7 @@ void Level7_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (st->spawned == 0) {
           Actor *c;
-          L7State197 *cs;
+          ShooterShotState *cs;
           int *v = s328;
 
           st->spawned = one;
@@ -3081,9 +3082,9 @@ void Level7_UpdateActors(void) {
       break;
     }
 
-    /* Type 197 (spawned by 186). */
+    /* Type 197: the shooter's shot (spawned by 186). */
     case 197: {
-      L7State197 *st = actor->state;
+      ShooterShotState *st = actor->state;
       int i;
 
       actor->soundRange = 0x20;

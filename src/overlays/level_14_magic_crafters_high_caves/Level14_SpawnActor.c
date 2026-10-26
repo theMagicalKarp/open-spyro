@@ -40,7 +40,7 @@
 #include "level_spawn_actor.h"
 #include "actor.h"
 
-/* Path-walker state block (type 0x130; L14State304 in the updater). */
+/* Path-walker state block (type 0x130; WaypointRunnerState in the updater). */
 typedef struct AimState {
   int path;     /* 0x00 waypoint path, inherited from the parent */
   Actor *owner; /* 0x04 */

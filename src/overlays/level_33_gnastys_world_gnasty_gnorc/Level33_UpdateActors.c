@@ -124,11 +124,11 @@ extern short g_anSineLut_s[];
 
 /* ==== Level 33 classes ==== */
 
-/* Type 143 state. */
-typedef struct L33State143 {
+/* Type 143 state: the shockwave a trail bomb sets off. */
+typedef struct ShockwaveState {
   int radius; /* 0x00 radius */
   int timer; /* 0x04 timer */
-} L33State143;
+} ShockwaveState;
 
 /* Type 169's trail point. */
 typedef struct L33Trail {
@@ -137,23 +137,23 @@ typedef struct L33Trail {
   int age;    /* 0x18 */
 } L33Trail;   /* 0x1C */
 
-/* Type 169 state. */
-typedef struct L33State169 {
+/* Type 169 state: a trail bomb (Gnasty's), drawn with a motion trail. */
+typedef struct TrailBombState {
   L33Trail *trail; /* 0x00 */
-  short h04;       /* 0x04 spawn timer */
-  short h06;       /* 0x06 life timer */
-  short h08;       /* 0x08 landing delay */
-  short h0A;       /* 0x0A trail length */
+  short spawnTimer;       /* 0x04 spawn timer */
+  short lifeTimer;       /* 0x06 life timer */
+  short landDelay;       /* 0x08 landing delay */
+  short trailLen;       /* 0x0A trail length */
   int speed;         /* 0x0C speed */
   int climb;         /* 0x10 climb */
-} L33State169;
+} TrailBombState;
 
 extern L33Trail *g_apMotionTrailSlices[]; /* trails */
 
 #define FLY_FLAGS(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0x14))
 
-/* Type 159 state. */
-typedef struct L33State159 {
+/* Type 159 state: a lane patroller. */
+typedef struct LanePatrollerState {
   FlyPath *path; /* 0x00 */
   int lane;       /* 0x04 lane; indexes g_anLevelEscapeRunCount */
   int slowTimer;       /* 0x08 slow-down timer */
@@ -166,7 +166,7 @@ typedef struct L33State159 {
   int endNodeFwd;       /* 0x24 end node going forward */
   int box[14];   /* 0x28 trigger box */
   int partner;       /* 0x60 partner actor index, -1 none */
-} L33State159;
+} LanePatrollerState;
 
 extern int g_anLevelEscapeRunCount[]; /* laps per lane */
 
@@ -1456,7 +1456,7 @@ void Level33_UpdateActors(void) {
 
     /* Type 143. */
     case 143: {
-      L33State143 *st = actor->state;
+      ShockwaveState *st = actor->state;
 
       st->radius += dt * 14;
       actor->scale = 0xBB80 / st->radius;
@@ -1514,7 +1514,7 @@ void Level33_UpdateActors(void) {
 
     /* Type 159: a path patroller that turns back toward Spyro. */
     case 159: {
-      L33State159 *st = actor->state;
+      LanePatrollerState *st = actor->state;
       int dist;
 
       SubtractVector(o128, &SPY.posX, &actor->posX);
@@ -1859,7 +1859,7 @@ void Level33_UpdateActors(void) {
         }
         if (st->timer == 0 && actor->nextFrame >= 9) {
           Actor *o = g_pfnLevelSpawnActor(0xA9, actor);
-          L33State169 *q = o->state;
+          TrailBombState *q = o->state;
           int n;
           int spd = 0x190;
 
@@ -1880,9 +1880,9 @@ void Level33_UpdateActors(void) {
             q->climb = -0x1F4;
           }
           q->trail = st->trails[st->throws % 3];
-          q->h0A = 0;
-          q->h06 = 0xA0;
-          q->h08 = n - 1;
+          q->trailLen = 0;
+          q->lifeTimer = 0xA0;
+          q->landDelay = n - 1;
           st->throws++;
           PlayActorMeshVoice(actor, 0, (int)&st->voice);
           if (st->phase == 2 && st->throws >= 2) {
@@ -2213,7 +2213,7 @@ void Level33_UpdateActors(void) {
     /* Type 169: a rolling wave that lays a trail and spawns shockwaves (143)
      * where it lands. */
     case 169: {
-      L33State169 *st = actor->state;
+      TrailBombState *st = actor->state;
       int s = actor->mode;
 
       if (s < 3) {
@@ -2226,8 +2226,8 @@ void Level33_UpdateActors(void) {
 
         CopyVector(o150, &actor->posX);
         if (actor->mode == 0) {
-          st->h04 += g_nFrameStep;
-          if (st->h04 >= 0xA) {
+          st->spawnTimer += g_nFrameStep;
+          if (st->spawnTimer >= 0xA) {
             Actor *o = g_pfnLevelSpawnActor(0xA8, actor);
 
             CopyVector(&o->posX, &actor->posX);
@@ -2235,12 +2235,12 @@ void Level33_UpdateActors(void) {
             o->rotY = ArcTan2(st->speed, st->climb, 0);
             o->rotZ = actor->rotZ;
             o->cullRadius = 0x50;
-            st->h04 = 0;
+            st->spawnTimer = 0;
           }
           actor->posX += (st->speed * g_anCosineLut[actor->rotZ]) >> 12;
           actor->posY += (st->speed * g_anSineLut[actor->rotZ]) >> 12;
           actor->posZ += st->climb;
-          if (TickCountdownByFrameDelta(&st->h06, 2) != 0) {
+          if (TickCountdownByFrameDelta(&st->lifeTimer, 2) != 0) {
             actor->mode = 1;
           }
           if (actor->posX < 0 || actor->posY < 0 || actor->posZ < 0) {
@@ -2249,12 +2249,12 @@ void Level33_UpdateActors(void) {
             actor->mode = 1;
             continue;
           }
-          if (--st->h08 < 0) {
-            st->h08 = 0;
+          if (--st->landDelay < 0) {
+            st->landDelay = 0;
           }
-          if (st->h08 == 0 && CastRayWorldAndActors(o150, &actor->posX) != 0) {
+          if (st->landDelay == 0 && CastRayWorldAndActors(o150, &actor->posX) != 0) {
             Actor *o = g_pfnLevelSpawnActor(0x8F, actor);
-            L33State143 *p = o->state;
+            ShockwaveState *p = o->state;
 
             p->radius = 0x190;
             p->timer = 0x12;
@@ -2274,14 +2274,14 @@ void Level33_UpdateActors(void) {
           }
         }
         n = 0;
-        if (actor->mode == 0 && g_nMotionTrailRibbonCount < 3 && st->h0A < 0x78) {
-          int k = st->h0A;
+        if (actor->mode == 0 && g_nMotionTrailRibbonCount < 3 && st->trailLen < 0x78) {
+          int k = st->trailLen;
 
           CopyVector(st->trail[k].pos, &actor->posX);
           st->trail[k].age = 0;
-          st->h0A++;
+          st->trailLen++;
         }
-        for (i = 0; i < st->h0A; i++) {
+        for (i = 0; i < st->trailLen; i++) {
           st->trail[i].age += g_nFrameStep;
           if (st->trail[i].age < 0x51) {
             n++;
@@ -2294,7 +2294,7 @@ void Level33_UpdateActors(void) {
         if (g_nMotionTrailRibbonCount < 3) {
           int k = g_nMotionTrailRibbonCount;
 
-          g_anMotionTrailSliceCounts[k] = st->h0A;
+          g_anMotionTrailSliceCounts[k] = st->trailLen;
           g_nMotionTrailRibbonCount = k + 1;
           g_apMotionTrailSlices[k] = st->trail;
         }

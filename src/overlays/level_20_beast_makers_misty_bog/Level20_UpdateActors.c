@@ -415,7 +415,7 @@ void Level20_UpdateActors(void) {
 
     /* Type 28: gunner. Wakes its partner, turns to it, then fires. */
     case 28: {
-      L20State28 *st = actor->state;
+      GunnerState *st = actor->state;
 
       TickActorFlameGlow(actor);
       EBB_BREAK();
@@ -2844,7 +2844,7 @@ void Level20_UpdateActors(void) {
     /* Type 403: lurker. Roams its path, then pops up and drags Spyro with a
      * tether actor (type 31). */
     case 403: {
-      L20State403 *st = actor->state;
+      LurkerState *st = actor->state;
       int dist;
 
       SubtractVector(A304, &spy->posX, &actor->posX);
@@ -3456,7 +3456,7 @@ void Level20_UpdateActors(void) {
     /* Type 476: grabber. Creeps up on Spyro, seizes him, carries him off and
      * throws him; it drops him when hit. */
     case 476: {
-      L20State476 *st = actor->state;
+      GrabberState *st = actor->state;
       int d0 = ApproxDist2D(&actor->posX, &spy->posX);
 
       EBB_BREAK();
