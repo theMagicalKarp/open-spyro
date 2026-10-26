@@ -470,8 +470,8 @@ void Level29_UpdateActors(void) {
     }
 
     /* Bouncing chest fragments (SparkState). */
-    case 478:
-    case 479: {
+    case ACTOR_TYPE_FLIGHT_CHEST_SHARD:
+    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 1: {
       SparkState *st = actor->state;
 
       if (st->life > 0 && actor->drawn) {
@@ -527,7 +527,7 @@ void Level29_UpdateActors(void) {
     }
 
     /* Falling chest fragments (TumbleState). */
-    case 480: {
+    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 2: {
       TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn && actor->posZ > st->floorZ) {
@@ -1468,14 +1468,14 @@ void Level29_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x1DE, actor);
-          g_pfnLevelSpawnActor(0x1DF, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 1, actor);
         }
         for (i = 0; i < 6; i++) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x1E0, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 2, actor);
         }
 
         g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
@@ -2063,8 +2063,8 @@ void Level29_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x1E1, actor);
-            g_pfnLevelSpawnActor(0x1E2, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4, actor);
           }
           g_pfnLevelSpawnActor(0x16A, actor);
           DespawnActorRecord(actor);
@@ -2095,8 +2095,8 @@ void Level29_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x1E1, actor);
-            g_pfnLevelSpawnActor(0x1E2, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4, actor);
           }
           g_pfnLevelSpawnActor(0x16A, actor);
           DespawnActorRecord(actor);
@@ -2192,8 +2192,8 @@ void Level29_UpdateActors(void) {
     }
     break;
 
-    case 0x1E1:
-    case 0x1E2: {
+    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3:
+    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4: {
       EmberState *st = actor->state;
       int trail[3];
 

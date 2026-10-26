@@ -122,6 +122,7 @@ enum ActorType {
   ACTOR_TYPE_BUTTERFLY = 16,       /* eaten by Sparx: g_nSparxHealth + 1 */
   ACTOR_TYPE_EGG_THIEF = 33,       /* runs off with a dragon egg (34), drops it when hit (ThiefState) */
   ACTOR_TYPE_DRAGON_EGG = 34,      /* recovered egg: rises, rolls the HUD egg tally */
+  ACTOR_TYPE_SEED_POD_SHARD = 67,    /* 67..69: seed pod burst (67/68 bounce, 69 tumbles) */
   ACTOR_TYPE_LETTER_OTHER = 0x4C,  /* a non-A..Z glyph of a floating name */
   ACTOR_TYPE_GEM_1 = 0x53,         /* gems, by CollectPickupActor's value */
   ACTOR_TYPE_GEM_2 = 0x54,
@@ -130,16 +131,21 @@ enum ActorType {
   ACTOR_TYPE_GEM_25 = 0x57,
   ACTOR_TYPE_SAVE_HOST = 110,      /* hovers near its anchor, opens the save menu (SaveHostState) */
   ACTOR_TYPE_SPARX = 0x78,         /* g_pSparxActor (SparxState) */
+  ACTOR_TYPE_BOULDER_DEBRIS = 151,   /* 151..153: cracking boulder burst (151 tumbles, 152/153 spark) */
   ACTOR_TYPE_KEY = 173,            /* the level key: g_nLevelKeyState = 1 */
   ACTOR_TYPE_LOCKED_CHEST = 174,   /* opened with the key, drops a reward */
   ACTOR_TYPE_WOOD_CHEST = 194,       /* breaks on the first hit into 0xFF..0x101 shards (BreakState) */
   ACTOR_TYPE_WOBBLE_CHEST = 195,     /* shakes and recoils when hit, then breaks (WobbleState) */
   ACTOR_TYPE_DRAGON_STATUE = 0xFA, /* trapped dragon: counts the rescue */
   ACTOR_TYPE_STATUE_SHARD = 0xFB,  /* its burst shards (BurstShardState) */
+  ACTOR_TYPE_WOOD_CHEST_SHARD = 255, /* 255..257: wood chest burst (255/256 bounce, 257 tumbles) */
   ACTOR_TYPE_GEM_DIGIT_0 = 0x104,  /* floating gem-value digits 0..9: 0x104..0x10D */
   ACTOR_TYPE_AMBIENT_SOUND = 286,  /* plays random ambient voices, mode 2 along a path (AmbientSoundState) */
   ACTOR_TYPE_FLIGHT_CHEST = 299,     /* flight levels: flame or charge frees its reward */
   ACTOR_TYPE_WHIRLWIND = 300,      /* lifts Spyro to its top (WhirlwindState, SPYRO_ST_LIFT) */
+  ACTOR_TYPE_SPARKLE_SHARD = 309,    /* one puff a frame; with 310/311 the burst of wobble, spin and
+                                      * locked chests and breakable rocks */
+  ACTOR_TYPE_WOOD_SHARD = 310,       /* 310..311: bounces and throws three sparks a frame */
   ACTOR_TYPE_CRACKING_BOULDER = 312, /* shakes and smokes when hit, then bursts */
   ACTOR_TYPE_RESPAWNER = 323,      /* puts dormant actors of one type back once Spyro is far (RespawnState) */
   ACTOR_TYPE_SEED_POD = 329,         /* wobbles when struck, holds a floating prize above itself */
@@ -152,7 +158,9 @@ enum ActorType {
   ACTOR_TYPE_BREAKABLE_ROCK = 401,   /* shakes when struck; a charge shatters it */
   ACTOR_TYPE_BALLOON = 416,        /* bobs about its rest height; only in balloonist levels */
   ACTOR_TYPE_LIFE_CHEST = 421,       /* shakes and pops its lid on a timer, spawning a 0x1A6 rider (LiftState) */
+  ACTOR_TYPE_LIFE_CHEST_SHARD = 423, /* 423..425: life chest burst (423/424 bounce, 425 tumbles) */
   ACTOR_TYPE_LETTER_A = 0x1AA,     /* floating-name letters A..Z: 0x1AA..0x1C3 */
+  ACTOR_TYPE_FLIGHT_CHEST_SHARD = 478, /* 478..483: flight chest burst */
 };
 
 /* Waypoint path used by the path-following classes (10, 114, 339) and
