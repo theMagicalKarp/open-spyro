@@ -162,7 +162,7 @@ done:
     ptr = ANIM_SLOT(mesh);
     rec = frame + ptr;
     if (g_dwSpyroFootstepPrimarySfxKey != FRAME_KEY(rec)) {
-      PlaySoundEffect(sfx[0], SPY_FROM_ANIM_PREV(animBlock, 0), 4,
+      PlaySoundEffect(sfx[0], SPY_FROM_ANIM_PREV(animBlock, 0), SFX_MODE_FLAT,
                       SPY_FROM_ANIM_PREV(animBlock, SPYB_VOICE_MARKER));
     }
   }
@@ -178,7 +178,8 @@ done:
     rec = g_bSpyroAnimLayer1FramePrev * 4 + ptr;
     if (g_dwSpyroFootstepSecondarySfxKey != FRAME_KEY(rec)) {
       PlaySoundEffect(sfx[1], (unsigned char *)footstep - FOOTSTEP_TO_SPYRO_POS,
-                      4, (unsigned char *)footstep + FOOTSTEP_TO_VOICE_MARKER);
+                      SFX_MODE_FLAT,
+                      (unsigned char *)footstep + FOOTSTEP_TO_VOICE_MARKER);
     }
   }
   key2 =

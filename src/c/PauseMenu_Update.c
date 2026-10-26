@@ -8,7 +8,7 @@ extern unsigned char g_abDrawBufPool[]; /* draw buffer pool */
 extern int
     g_nCdAudioVolume_blk[]; /* [0] music volume, -0x31c bytes SpuCommonAttr */
 
-#define SFX(off) PlaySoundEffect(LEVEL_SFX(off), 0, 0x10, 0)
+#define SFX(off) PlaySoundEffect(LEVEL_SFX(off), 0, SFX_MODE_PANNED, 0)
 
 /* 0x8002e12c (0xa00): GS_PAUSE_MENU tick. Substate 0 is the main pause menu
    (resume / options / inventory / quit), 1 the options page (SFX and music

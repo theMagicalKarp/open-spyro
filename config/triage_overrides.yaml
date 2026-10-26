@@ -1342,7 +1342,7 @@ func_80038FC8_2026_08_14:
   note: >-
     608 B. Re-tested the multi-set-local lever (A198) as a way to give the call-arg
     copy `move a0,s0` a lower LUID than the arm's `li v1,16`: a function-scope
-    `rec` assigned in BOTH anim arms and passed to StubActorHook is BYTE-IDENTICAL.
+    `rec` assigned in BOTH anim arms and passed to OnActorAnimQueued is BYTE-IDENTICAL.
     Both defs have the same source, so the copy coalesces and the arg setup is
     re-created at the call. A198 pins the position of a MATERIALISATION (a
     constant), not of a copy of an already-live value.
@@ -2150,7 +2150,7 @@ SteerActorYawTowardSpyro:
     its use only 3/8 (both still lose — floor_log2 is a STEP function, 3 refs
     is still 1); wrapping BOTH gives old 4/8 = 10000 and it takes v0 with c16
     single-set and in v1. What blocks it now is that the use-site barrier lets
-    jump.c cross-jump the two arms' identical StubActorHook tails, collapsing
+    jump.c cross-jump the two arms' identical OnActorAnimQueued tails, collapsing
     both per-arm `move a0,s0` copies into the shared tail (7/152). Every
     use-site nesting depth is bit-identical — the dial saturates. Park stays on
     the 4/152 multi-set body.
@@ -3140,7 +3140,7 @@ A236_screening_2026_08_29_2:
     three divides so it must avoid v0/v1/a0, and a2 is simply the lowest free reg,
     not a suggestion. `SteerActorYawTowardSpyro` (the 0x10 constant must vacate $v0 for `old`):
     A236 would move the constant to $a3 via the spare argument slot of
-    StubActorHook, but the original has it in $v1, so it trades one wrong register
+    OnActorAnimQueued, but the original has it in $v1, so it trades one wrong register
     for another. The general precondition is therefore: a call in the SAME basic
     block, a callee that provably ignores the slot, and the wanted register being one
     of $a0..$a3.

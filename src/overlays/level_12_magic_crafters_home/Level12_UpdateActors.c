@@ -67,7 +67,7 @@
   (a)->nextAnim = (next);                                                         \
   (a)->frame = (a)->nextFrame;                                                     \
   (a)->nextFrame = 0;                                                              \
-  StubActorHook(a);
+  OnActorAnimQueued(a);
 
 /* ENTER_POSE sets the state byte to `n`, advances to animation `n` unless it
  * is already queued, and moves on to the next actor. It ends in a bare
@@ -81,7 +81,7 @@
     (a)->nextAnim = (n);                                                          \
     (a)->frame = (a)->nextFrame;                                                   \
     (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
+    OnActorAnimQueued(a);                                                          \
   }                                                                            \
   continue
 
@@ -171,7 +171,7 @@ void Level12_UpdateActors(void) {
 
     switch (actor->type) {
     /* Portal name text: shown while the camera faces the portal. */
-    case 1: {
+    case ACTOR_TYPE_PORTAL_NAME: {
       int shouldSpawnText, cameraAngleDiff;
       int distance = ApproxDist2D(&actor->posX, &CAM.posX);
 
@@ -209,7 +209,7 @@ void Level12_UpdateActors(void) {
     }
 
     /* Particle emitter on a random timer. */
-    case 11: {
+    case ACTOR_TYPE_TIMED_EMITTER: {
       int *st;
 
       st = (int *)actor->state;
@@ -292,12 +292,12 @@ void Level12_UpdateActors(void) {
             st->pos[2] += 0x400;
 
             if (st->dropToSpyro != 0) {
-              SpawnActorDeathDrop(actor, 4, 0, 0);
+              SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
             } else if (FindGroundHeightBelow(st->pos, 0x1400) != 0) {
               st->pos[2] -= 0x400;
-              SpawnActorDeathDrop(actor, 2, 0, st->pos);
+              SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, st->pos);
             } else {
-              SpawnActorDeathDrop(actor, 1, 0, 0);
+              SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             }
             MarkActorCommittedKill(actor);
             *(volatile int *)&st->count <<= 7;
@@ -305,7 +305,7 @@ void Level12_UpdateActors(void) {
             g_nSfxOverridePitch.v =
                 SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]) +
                 st->count;
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, 8, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->sfxSlot);
             DespawnActorRecord(actor);
             continue;
           }
@@ -325,7 +325,7 @@ void Level12_UpdateActors(void) {
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
                 SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]);
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, 8, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->sfxSlot);
           }
         }
       }
@@ -497,7 +497,7 @@ void Level12_UpdateActors(void) {
             spy->bodyRotZ, 0x20, 0x40);
         if (actor->dropKind == 0xFF) {
           actor->dropKind = 0xF;
-          SpawnActorDeathDrop(actor, 3, 0, 0);
+          SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorCommittedKill(actor);
         }
         actor->mode = 10;
@@ -817,7 +817,7 @@ void Level12_UpdateActors(void) {
         if (g_nActorAnimDone == 0) {
           break;
         }
-        RefreshActorDerivedState(actor, 4);
+        RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         BurstActorWithSound(actor, 0x18);
         DespawnActorRecord(actor);
         continue;
@@ -1117,10 +1117,10 @@ void Level12_UpdateActors(void) {
       }
 
       if (st->egg != 0) {
-        RefreshActorDerivedState(actor, 4);
+        RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(actor, 0, &st->egg->posX);
       }
-      RefreshActorDerivedState(actor, 1);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       break;
     }
 
@@ -1254,7 +1254,7 @@ void Level12_UpdateActors(void) {
       case 5: {
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
-        g_pfnLevelEmitParticles(0x10, 0x4D, svE, 0);
+        g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
         g_nGameplayBlocked = 0;
         ZeroVector(&g_nSpyroSwingEulerPitchTarget);
         CommitActorKillGems(0, st->idx);
@@ -1271,11 +1271,11 @@ void Level12_UpdateActors(void) {
 
     /* Path walker (PathState): waits for Spyro, then paces its path, turning
      * back at either end and choosing the node that leads away from him. */
-    case 36: {
+    case ACTOR_TYPE_PATH_WALKER: {
       PathState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         actor->mode = 2;
         ANIM_RESET(actor, 2);
@@ -1358,7 +1358,7 @@ void Level12_UpdateActors(void) {
         break;
       }
 
-      RefreshActorDerivedState(actor, 1);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       break;
     }
 
@@ -1405,7 +1405,7 @@ void Level12_UpdateActors(void) {
           continue;
         }
         if ((*st & 7) == 0) {
-          g_pfnLevelEmitParticles(1, 7, &actor->posX, (void *)0x10);
+          g_pfnLevelEmitParticles(1, EMIT_DRIFT_SPARKLE, &actor->posX, (void *)0x10);
         }
         break;
       }
@@ -1414,12 +1414,12 @@ void Level12_UpdateActors(void) {
     }
 
     /* Explosion shard with a ground bounce (ShardState). */
-    case 67:
-    case 68:
-    case 255:
-    case 256:
-    case 423:
-    case 424: {
+    case ACTOR_TYPE_SEED_POD_SHARD:
+    case ACTOR_TYPE_SEED_POD_SHARD + 1:
+    case ACTOR_TYPE_WOOD_CHEST_SHARD:
+    case ACTOR_TYPE_WOOD_CHEST_SHARD + 1:
+    case ACTOR_TYPE_LIFE_CHEST_SHARD:
+    case ACTOR_TYPE_LIFE_CHEST_SHARD + 1: {
       ShardState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {
@@ -1469,9 +1469,9 @@ void Level12_UpdateActors(void) {
     }
 
     /* Falling chest fragments (TumbleState). */
-    case 69:
-    case 257:
-    case 425: {
+    case ACTOR_TYPE_SEED_POD_SHARD + 2:
+    case ACTOR_TYPE_WOOD_CHEST_SHARD + 2:
+    case ACTOR_TYPE_LIFE_CHEST_SHARD + 2: {
       TumbleState *st = actor->state;
 
       /* Retire when out of life, no longer drawn, or sunk to the floor. */
@@ -1525,7 +1525,7 @@ void Level12_UpdateActors(void) {
 
       if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
         if (st->attach != 0xFF) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
             RotateVectorByMatrix(&actor->mtx[0], &g_anRotBillboardOffset5,
                           g_aRotBillboards[st->attach].pos);
@@ -1596,13 +1596,13 @@ void Level12_UpdateActors(void) {
             actor->posX = acc[0][0] / 3;
             actor->posY = acc[0][1] / 3;
             actor->posZ = acc[0][2] / 3;
-            RefreshActorDerivedState(actor, 2);
+            RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
           } else if (st->mode == 3) {
             CopyVector(svF, &actor->posX);
             svF[2] += 0x400;
-            RefreshActorDerivedState(actor, 2);
+            RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             if (FindGroundHeightBelow(svF, 0x1000) > 0) {
               st->groundTri = g_nLastCollisionHitChunkId;
               st->mode = 2;
@@ -1716,7 +1716,7 @@ void Level12_UpdateActors(void) {
             g_nSfxOverrideFlags = 1;
             g_nSfxOverrideVolL = 0x3CCC >> (3 - st->bounce);
             g_nSfxOverrideVolR = 0x3CCC >> (3 - st->bounce);
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, 8, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
 
             if (ReflectVectorOffNormal((int *)st, svH, (int *)st) != 0) {
               st->bounce -= 1;
@@ -1836,8 +1836,8 @@ void Level12_UpdateActors(void) {
             }
 
             if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
-              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
-              RefreshActorDerivedState(actor, 4);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
+              RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
               g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)8);
               g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x10);
               if (g_nExtraLives < 0x63) {
@@ -1849,7 +1849,7 @@ void Level12_UpdateActors(void) {
             }
 
             if (actor->type == ACTOR_TYPE_SPARX_FOOD) {
-              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
               g_nSparxFoodCount += 1;
               DespawnActorRecord(actor);
             } else {
@@ -1909,8 +1909,8 @@ void Level12_UpdateActors(void) {
                 actor->cullRadius = 0x20;
                 actor->mode = 3;
                 actor->scale = 0x60;
-                g_pfnLevelEmitParticles(0x18, 0x50, at, (int *)0xC);
-                RefreshActorDerivedState(actor, 1);
+                g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, at, (int *)0xC);
+                RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
                 FindGroundHeightBelow(at, 0x1000);
                 EncodeCachedVecToActorDirCode(actor);
                 actor->groundCode |= 0x80000000;
@@ -2041,7 +2041,7 @@ void Level12_UpdateActors(void) {
           actor->drawn = 0;
           actor->mode = 2;
           st->timer = 0x10;
-          g_pfnLevelEmitParticles(0x18, 0x50, &actor->posX, (int *)0xC);
+          g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, (int *)0xC);
           actor->groundCode &= 0x7FFFFFFF;
         }
         break;
@@ -2192,7 +2192,7 @@ void Level12_UpdateActors(void) {
 
           case 1:
             g_anSparxHealthBlock[0] += 1;
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
             actor->subMode += 1;
             DespawnActorRecord(st->target);
             break;
@@ -2238,7 +2238,7 @@ void Level12_UpdateActors(void) {
                 g_nSfxOverrideFlags = 1;
                 g_nSfxOverrideVolR = 0x3600;
                 g_nSfxOverrideVolL = 0x3600;
-                PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, 8, &actor->sfxSlot);
+                PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
               }
             } else {
               int lim = 0x136;
@@ -2340,7 +2340,7 @@ void Level12_UpdateActors(void) {
           }
         }
 
-        RefreshActorDerivedState(actor, 4);
+        RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
       }
 
       break;
@@ -2362,8 +2362,8 @@ void Level12_UpdateActors(void) {
           if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
             int i;
 
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
-            RefreshActorDerivedState(actor, 4);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
+            RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
             for (i = 0; i < 6; i++) {
               g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, (int *)(0x8080 + (i << 24)));
@@ -2381,7 +2381,7 @@ void Level12_UpdateActors(void) {
         }
 
         if (st->attach != 0xFF) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           RotateVectorByMatrix(&actor->mtx[0], &g_anRotBillboardOffset4,
                         g_aRotBillboards[st->attach].pos);
           AddVector(g_aRotBillboards[st->attach].pos, g_aRotBillboards[st->attach].pos,
@@ -2573,19 +2573,19 @@ void Level12_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x136, actor);
-            g_pfnLevelSpawnActor(0x137, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD + 1, actor);
           }
 
           for (i = 0; i < 10; i++) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x135, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SPARKLE_SHARD, actor);
           }
 
           g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, (void *)0x18);
-          g_pLockedChestReward = SpawnActorDeathDrop(actor, 1, 0, 0);
+          g_pLockedChestReward = SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
           g_nLevelKeyState = 2;
@@ -2594,7 +2594,7 @@ void Level12_UpdateActors(void) {
           g_nSpyroSwingEulerPitchTarget = 0;
         }
 
-        RefreshActorDerivedState(key, 4);
+        RefreshActorDerivedState(key, ACTOR_REFRESH_MATRIX);
         if (st->shake % 4 < 2) {
           g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)key, (void *)0x8080);
         } else {
@@ -2658,7 +2658,7 @@ void Level12_UpdateActors(void) {
     }
 
     /* Wooden chest (BreakState). */
-    case 194: {
+    case ACTOR_TYPE_WOOD_CHEST: {
       BreakState *st;
       int i;
 
@@ -2678,26 +2678,26 @@ void Level12_UpdateActors(void) {
         if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
           break;
         }
-        g_pfnLevelSpawnActor(0xFF, actor);
-        g_pfnLevelSpawnActor(0x100, actor);
+        g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_CHEST_SHARD, actor);
+        g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_CHEST_SHARD + 1, actor);
       }
       for (i = 0; i < 6; i++) {
         if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
           break;
         }
-        g_pfnLevelSpawnActor(0x101, actor);
+        g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_CHEST_SHARD + 2, actor);
       }
 
       g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x20);
-      SpawnActorDeathDrop(actor, 3, 0, 0);
+      SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
       MarkActorCommittedKill(actor);
       DespawnActorRecord(actor);
       continue;
     }
 
     /* Wobbling chest (WobbleState): plays a recoil pose, then breaks. */
-    case 195: {
+    case ACTOR_TYPE_WOBBLE_CHEST: {
       WobbleState *st = actor->state;
 
       if (st->snapToGround != 0) {
@@ -2744,19 +2744,19 @@ void Level12_UpdateActors(void) {
           if ((g_nActorPoolCapacity - g_nActorPoolLiveCount) < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x136, actor);
-          g_pfnLevelSpawnActor(0x137, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD + 1, actor);
         }
 
         for (i = 0; i < 6; i++) {
           if ((g_nActorPoolCapacity - g_nActorPoolLiveCount) < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x135, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPARKLE_SHARD, actor);
         }
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x18);
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
@@ -2799,7 +2799,7 @@ void Level12_UpdateActors(void) {
           actor->rotY = st->rotY;
           actor->posZ = st->restZ;
           actor->flags = 0;
-          StopSoundVoicesByOwner(actor, 1);
+          StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         } else if (st->phase >= 0xC0) {
           int dx;
           int dy;
@@ -2827,7 +2827,7 @@ void Level12_UpdateActors(void) {
           st->restZ = actor->posZ;
         } else if (actor->flags != 0) {
           st->phase = 0xBC;
-          StopSoundVoicesByOwner(actor, 1);
+          StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         } else if ((st->phase >> 1) == 0x10 && !(GetRandomU32() & 3)) {
           SpawnActorRotBillboard(actor, &g_anRotBillboardOffset0);
         } else if ((st->phase >> 1) == 0x30 && !(GetRandomU32() & 3)) {
@@ -2981,7 +2981,7 @@ void Level12_UpdateActors(void) {
     }
 
     /* Type 270: villager (VillagerState). */
-    case 270: {
+    case ACTOR_TYPE_VILLAGER: {
       VillagerState *st = actor->state;
       int pairGone;
       int snd;
@@ -3034,7 +3034,7 @@ void Level12_UpdateActors(void) {
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20, 0x40);
         StopSoundVoiceByIndex(actor->sfxSlot, 4);
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         ENTER_POSE(actor, 3);
       }
@@ -3049,7 +3049,7 @@ void Level12_UpdateActors(void) {
         dist = ApproxDist2D(&actor->posX, &SPY.posX);
         if (st->friend >= 0 && (st->mode != 2 || actor->subMode == 0) &&
             (GetRandomU32() & 1)) {
-          g_pfnLevelEmitParticles(1, 8, (int *)actor, &g_pActorListBase[st->friend]);
+          g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, (int *)actor, &g_pActorListBase[st->friend]);
         }
         if (st->snd != -1) {
           vsnd = GetWorldChunkAnimState(st->snd);
@@ -3076,7 +3076,7 @@ void Level12_UpdateActors(void) {
         if (st->snd == 0 && st->timer < 3 && (vsnd & 2) && g_nActiveLevelId == LEVEL_ALPINE_RIDGE) {
           Actor *f = &g_pActorListBase[st->friend];
 
-          PlaySoundEffect(g_pLevelSampleBankHeader[0x2A], f, 8, &f->sfxSlot);
+          PlaySoundEffect(g_pLevelSampleBankHeader[0x2A], f, SFX_MODE_3D, &f->sfxSlot);
         }
         if (st->mode == 0) {
           range = st->talkDist << 10;
@@ -3215,7 +3215,7 @@ void Level12_UpdateActors(void) {
           st->sndDone = one;
         }
         if (actor->cullRadius == 0 && st->sndDone != 0) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
           StopSoundVoiceByIndex(actor->sfxSlot, 4);
           DespawnActorRecord(actor);
@@ -3297,12 +3297,12 @@ void Level12_UpdateActors(void) {
         }
         break;
       }
-      RefreshActorDerivedState(actor, 1);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       break;
     }
 
     /* Type 271: shepherd (ShepherdState). */
-    case 271: {
+    case ACTOR_TYPE_SHEPHERD: {
       ShepherdState *st = actor->state;
       int near = 0x4B0;
 
@@ -3314,7 +3314,7 @@ void Level12_UpdateActors(void) {
             spy->bodyRotZ, 0x20, 0x40);
         st->knockSpin = 0x8C;
         actor->flags = 0;
-        ((unsigned char *)SpawnActorDeathDrop(actor, 3, 0, 0)->state)[0xE] = 1;
+        ((unsigned char *)SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0)->state)[0xE] = 1;
         MarkActorCommittedKill(actor);
         PlayActorMeshVoice(actor, 0, 0);
         ENTER_POSE(actor, 3);
@@ -3415,7 +3415,7 @@ void Level12_UpdateActors(void) {
                 actor->frameRate = sixteen;
                 actor->nextAnim = 1;
                 actor->nextFrame = 0;
-                StubActorHook(actor);
+                OnActorAnimQueued(actor);
               }
               actor->mode = 2;
               continue;
@@ -3685,7 +3685,7 @@ void Level12_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockSpin,
                       0x12, 0xC);
         if (g_nActorAnimDone != 0) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
@@ -3754,7 +3754,7 @@ void Level12_UpdateActors(void) {
         int d;
 
         ((ShepherdState *)p->state)->timer = 0xE;
-        RefreshActorDerivedState(p, 4);
+        RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(p, 0, tgt271);
         if (st->vz < -0x12C) {
           st->vz = -0x12C;
@@ -3805,7 +3805,7 @@ void Level12_UpdateActors(void) {
           actor->mode = 0x12;
           continue;
         }
-        RefreshActorDerivedState(p, 4);
+        RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(p, 0, &actor->posX);
         TurnActorYawTowardAngle(actor, p->rotZ, 6, 0, 0);
         break;
@@ -3861,18 +3861,18 @@ void Level12_UpdateActors(void) {
         break;
       }
       }
-      RefreshActorDerivedState(actor, 1);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       break;
     }
 
     /* Type 283: path guard. Walks its waypoint ring, waits on its partner,
      * rears up (and calls for help) when Spyro comes near, and is knocked
      * away when hit. */
-    case 283: {
+    case ACTOR_TYPE_PATH_GUARD: {
       L16Guard *st = actor->state;
 
       if (actor->mode != 2) {
-        g_pfnLevelEmitParticles(1, 0x41, actor, 0);
+        g_pfnLevelEmitParticles(1, EMIT_ACTOR_WHITE_STREAK, actor, 0);
         if (actor->flags & ACTOR_HITS_SPYRO) {
           st->speed = 0xDC;
           st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
@@ -3882,7 +3882,7 @@ void Level12_UpdateActors(void) {
             st->speed += 0x8C;
           }
           StopSoundVoiceByIndex(actor->sfxSlot, 4);
-          SpawnActorDeathDrop(actor, 3, 0, 0);
+          SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorCommittedKill(actor);
           ENTER_POSE(actor, 2);
         }
@@ -3991,14 +3991,14 @@ void Level12_UpdateActors(void) {
       case 2:
         DriveActorTrackedMove(actor, &st->speed, st->knock, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
           continue;
         }
         break;
       }
-      RefreshActorDerivedState(actor, 1);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       break;
     }
 
@@ -4105,14 +4105,14 @@ void Level12_UpdateActors(void) {
       }
 
       if (voice >= 0) {
-        PlaySoundEffect(g_pLevelSampleBankHeader[voice], actor, 8, &actor->sfxSlot);
+        PlaySoundEffect(g_pLevelSampleBankHeader[voice], actor, SFX_MODE_3D, &actor->sfxSlot);
       }
 
       break;
     }
 
     /* Sparkling shard: 1 puff per frame. */
-    case 309: {
+    case ACTOR_TYPE_SPARKLE_SHARD: {
       ShardState *st = actor->state;
 
       if (st->life != 0 && actor->drawn != 0) {
@@ -4142,8 +4142,8 @@ void Level12_UpdateActors(void) {
     }
 
     /* Wood shard: bounces and throws three sparks a frame. */
-    case 310:
-    case 311: {
+    case ACTOR_TYPE_WOOD_SHARD:
+    case ACTOR_TYPE_WOOD_SHARD + 1: {
       ShardState *st = actor->state;
       register int i asm("$16");
 
@@ -4206,7 +4206,7 @@ void Level12_UpdateActors(void) {
 
     /* Type 328: floor-snapped marker. Drops onto the floor once, then sits at
      * the centroid of the triangle it landed on. */
-    case 328: {
+    case ACTOR_TYPE_FLOOR_MARKER: {
       int *tri = actor->state;
 
       if (*tri < 0) {
@@ -4239,7 +4239,7 @@ void Level12_UpdateActors(void) {
     /* Type 329: seed pod. Wobbles when struck and holds a floating prize
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
-    case 329: {
+    case ACTOR_TYPE_SEED_POD: {
       L16Pod *st = actor->state;
 
       actor->soundRange = 0x20;
@@ -4256,13 +4256,13 @@ void Level12_UpdateActors(void) {
           st->rotY = actor->rotY;
           st->restZ = actor->posZ;
           actor->updateDist = 0x40;
-          st->prize = SpawnActorDeathDrop(actor, 5, 0, 0);
+          st->prize = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
           st->prize->subMode = 4;
           st->prize->cullRadius = 0;
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
-          g_pfnLevelEmitParticles(8, 0x40, &actor->posX, (void *)(st->prize->type - 0x53));
+          g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (void *)(st->prize->type - 0x53));
           PlayActorMeshVoice(actor, 0, 0);
           actor->mode = 1;
           ANIM_RESET(actor, 1);
@@ -4315,14 +4315,14 @@ void Level12_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x43, actor);
-            g_pfnLevelSpawnActor(0x44, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SEED_POD_SHARD, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SEED_POD_SHARD + 1, actor);
           }
           for (i = 0; i < 6; i++) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x45, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SEED_POD_SHARD + 2, actor);
           }
           g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
           g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x20);
@@ -4336,14 +4336,14 @@ void Level12_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x43, actor);
-            g_pfnLevelSpawnActor(0x44, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SEED_POD_SHARD, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SEED_POD_SHARD + 1, actor);
           }
           for (i = 0; i < 6; i++) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x45, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SEED_POD_SHARD + 2, actor);
           }
           g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
           g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x20);
@@ -4427,7 +4427,7 @@ void Level12_UpdateActors(void) {
 
     /* Type 390: spinning chest. Each charge spins it faster (with a rising
      * voice); spun fast enough, or flamed, it bursts. */
-    case 390: {
+    case ACTOR_TYPE_SPIN_CHEST: {
       L26Spinner *st = actor->state;
       int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
@@ -4435,14 +4435,14 @@ void Level12_UpdateActors(void) {
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == 0x10000) {
         actor->updateDist = 0xFF;
-        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, 8,
+        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
                       &actor->sfxSlot);
         if (actor->sfxSlot != 0x7F) {
           g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0] = pitch + st->speed * 4;
         }
       }
       if (st->speed < 0x19) {
-        StopSoundVoicesByOwner(actor, 1);
+        StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
       if (actor->subMode == 0) {
         st->lid = g_pfnLevelSpawnActor(0x188, actor);
@@ -4477,17 +4477,17 @@ void Level12_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x136, actor);
-          g_pfnLevelSpawnActor(0x137, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD + 1, actor);
         }
         for (i = 0; i < 6; i++) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x135, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPARKLE_SHARD, actor);
         }
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x18);
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       }
@@ -4498,7 +4498,7 @@ void Level12_UpdateActors(void) {
     /* Type 392: homing spark. Launched at the nearest enemy in front of
      * Spyro (or away from him when there is none), and bursts on what it
      * hits. */
-    case 392: {
+    case ACTOR_TYPE_HOMING_SPARK: {
       L26Spark *st = actor->state;
       int i;
 
@@ -4563,20 +4563,20 @@ void Level12_UpdateActors(void) {
         actor->posZ += 0xB4;
         if (st->timer >= 5 &&
             (CollideSphereWithWorldAndActors(&actor->posX, 0xB4, 0xB4) != 0 ||
-             DispatchActorContactAtSphere(&actor->posX, 0x100, 0, 0x30000, actor, 0) != 0)) {
-          DispatchActorContactAtSphere(&actor->posX, 0x400, 0, 0x30000, actor, 0);
+             DispatchActorContactAtSphere(&actor->posX, 0x100, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, 0) != 0)) {
+          DispatchActorContactAtSphere(&actor->posX, 0x400, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, 0);
           for (i = 0; i < 2; i++) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x136, actor);
-            g_pfnLevelSpawnActor(0x137, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD + 1, actor);
           }
           for (i = 0; i < 6; i++) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x135, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SPARKLE_SHARD, actor);
           }
           g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x18);
           PlayActorMeshVoice(actor, 0, 0);
@@ -4706,7 +4706,7 @@ void Level12_UpdateActors(void) {
 
     /* Type 401: breakable rock. Shakes when struck; a charge shatters it
      * into rubble and dust and removes it. */
-    case 401: {
+    case ACTOR_TYPE_BREAKABLE_ROCK: {
       L31Rock *st = actor->state;
 
       if (st->shake != 0) {
@@ -4743,19 +4743,19 @@ void Level12_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x136, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD, actor);
           i++;
-          g_pfnLevelSpawnActor(0x137, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD + 1, actor);
         }
         for (i = 0; i < 0xA;) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x135, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPARKLE_SHARD, actor);
           i++;
         }
         g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, 0x18);
-        SpawnActorDeathDrop(actor, 3, 0, 0);
+        SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         DespawnActorRecord(actor);
       } else {
@@ -4787,7 +4787,7 @@ void Level12_UpdateActors(void) {
     }
 
     /* Life chest (LiftState). */
-    case 421: {
+    case ACTOR_TYPE_LIFE_CHEST: {
       LiftState *st = actor->state;
       Actor *rider;
       int i;
@@ -4872,7 +4872,7 @@ void Level12_UpdateActors(void) {
         break;
       }
 
-      rider = SpawnActorDeathDrop(actor, 5, 0, 0);
+      rider = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
       if (st->rideMode == 1) {
         ((unsigned char *)rider->state)[0xE] = one;
       }
@@ -4885,15 +4885,15 @@ void Level12_UpdateActors(void) {
         if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
           break;
         }
-        g_pfnLevelSpawnActor(0x1A7, actor);
-        g_pfnLevelSpawnActor(0x1A8, actor);
+        g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_SHARD, actor);
+        g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_SHARD + 1, actor);
       }
 
       for (i = 0; i < 6; i++) {
         if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
           break;
         }
-        g_pfnLevelSpawnActor(0x1A9, actor);
+        g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_SHARD + 2, actor);
       }
 
       for (i = 0; i < 8; i++) {
@@ -4909,7 +4909,7 @@ void Level12_UpdateActors(void) {
         DespawnActorRecord(st->passenger);
       }
 
-      PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[2], actor, 8,
+      PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[2], actor, SFX_MODE_3D,
                     (void *)(long)actor->sfxSlot);
       DespawnActorRecord(actor);
       continue;

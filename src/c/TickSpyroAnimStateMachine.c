@@ -53,7 +53,8 @@ void TickSpyroAnimStateMachine(void) {
     if (StepSpyroAnimAndCommitTransition(
             g_abSpyroAnimDescTable[*prev * 4 + 3]) != 0) {
       if (*prev == 0x1A) {
-        PlaySoundEffect(LEVEL_SFX(0x1B), SPY_FROM_ANIM_PREV(prev, 0), 0x10, 0);
+        PlaySoundEffect(LEVEL_SFX(0x1B), SPY_FROM_ANIM_PREV(prev, 0),
+                        SFX_MODE_PANNED, 0);
       }
       g_nSpyroAnimMode = 0;
     }

@@ -91,6 +91,6 @@ int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step,
   pos = &actor->posX;
   actor->rotY = -x + 0x40;
   AddVector(pos, pos, dir);
-  RefreshActorDerivedState(actor, 2);
+  RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
   return ret;
 }

@@ -4,8 +4,7 @@
  * image (SaveGame) is named from BuildSaveGameBuffer's field order and the
  * memory-card file header (McFileHeader) follows the standard PS1 save-block
  * header; TitleState fields are named from their use in Titlescreen_Update /
- * _Draw. Remaining unk_0x.. fields and the Sprite_0x.. ids keep their offset /
- * value names.
+ * _Draw. Unread fields are padNN; the Sprite_0x.. ids keep their value names.
  */
 #ifndef OVL_TITLESCREEN_H
 #define OVL_TITLESCREEN_H
@@ -105,12 +104,12 @@ typedef struct {
   char reserved[0x1C];
   u_short clut[0x10];
   u_char icon[0x80][3];
-} Struct_0x200; /* 0x200 */
+} McFileHeader; /* 0x200 */
 
 typedef struct {
-  Struct_0x200 header;    /* 0x000 */
+  McFileHeader header;    /* 0x000 */
   SaveGameBuffer saves[3]; /* 0x200, 3 x 0x600 */
-} Struct_0x1A00;
+} TitleSaveFile;
 
 /* ---- titlescreen state (0x5C bytes) ---- */
 typedef struct {
@@ -125,27 +124,27 @@ typedef struct {
   int savedSelection;/* 0x20 */
   int retryCount;        /* 0x24 */
   int cardPort;         /* 0x28 */
-  int unk_0x2C;        /* 0x2C */
+  int pad2C;           /* 0x2C */
   int cardStatus[2];        /* 0x30 */
   int needsFormat[2];   /* 0x38 per port: card reported McErrNotFormat */
   int mcCmd;    /* 0x40 */
   int mcResult;    /* 0x44 */
   int anySaveUsed;           /* 0x48 some save slot has levelVisited[0] */
-  Struct_0x1A00 *file; /* 0x4C */
+  TitleSaveFile *file; /* 0x4C */
   SaveGameBuffer *apSaves[3];   /* 0x50 */
-} Struct_0x5C;
+} TitleState;
 
-extern Struct_0x5C g_nTitleMode;
+extern TitleState g_nTitleMode;
 
 /* ---- cutscene layout ---- */
 typedef struct {
   int introFrame; /* 0x00 */
-  int unk_0x04;
-  int unk_0x08;
-  int unk_0x0C;
-} Struct_0x10;
+  int pad04;
+  int pad08;
+  int pad0C;
+} PathTableHead;
 
-extern Struct_0x10 *g_pPathTableHead;
+extern PathTableHead *g_pPathTableHead;
 
 /* ---- misc main-EXE state the overlay touches ---- */
 extern u_char g_abTitleSlideInCurve[16];
@@ -156,9 +155,9 @@ extern int g_nScreenFadeLevel;
 typedef struct {
   u_char drawEnv[0x5C]; /* DRAWENV */
   u_char dispEnv[0x14]; /* DISPENV */
-} Struct_0x70;
+} FrameEnvPair;
 
-extern Struct_0x70 *g_pActiveFrameDrawEnv;
+extern FrameEnvPair *g_pActiveFrameDrawEnv;
 
 extern struct {
   int post; /* 0x80075950 */
@@ -215,7 +214,7 @@ extern struct {
   int readSectorCount;/* 0x04 g_nCdReadSectorCount */
   int cdlLoc;         /* 0x08 CdlLOC g_abCdlLocScratch */
   void *readDst;        /* 0x0C g_pCdReadDstBuffer */
-  char unk_0x10[24];     /* 0x10 CdlFILE */
+  char cdlFile[24];      /* 0x10 CdlFILE */
   volatile int readInFlight; /* 0x28 g_nCdReadInFlight */
 } g_nCdBaseLba;
 
@@ -224,7 +223,7 @@ extern struct {
   int streamStatus;             /* 0x004 g_dwMusicStreamStatus */
   struct { int start, end; } trackLba[64]; /* 0x008 */
   int readHead;     /* 0x208 g_dwCdMusicReadHead */
-  char unk_0x20C[8];      /* 0x20C */
+  char pad20C[8];         /* 0x20C */
   int lastCommand;   /* 0x214 g_nLastCdMusicCommand */
   int pendingCommand;            /* 0x218 g_nPendingMusicCommand */
   int streamTimeout;    /* 0x21C g_nCdMusicStreamTimeout */

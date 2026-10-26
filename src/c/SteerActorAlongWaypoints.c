@@ -69,7 +69,7 @@ int SteerActorAlongWaypoints(char *actor, unsigned char *path, int radius,
   }
   CopyVector(actor + 0xC, vec);
   EncodeCachedVecToActorDirCode(actor);
-  RefreshActorDerivedState(actor, 2);
+  RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
   ret = 0;
   SubtractVector(vec, &path[path[1] * 0x10 + 8], actor + 0xC);
   if (((int)VectorLength(vec, 1)) < radius) {

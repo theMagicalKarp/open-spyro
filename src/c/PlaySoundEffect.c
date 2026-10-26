@@ -34,12 +34,12 @@ extern volatile unsigned short
 #define ENT ((SAMPLEENTRY *)g_pLevelSampleBankEntries + sampleId)
 
 /* Start sample `sampleId` on a free software mixer row, owned by entity
-   `owner`. `mode` is the row's flag group: 4 = flat volume, 8 = 3D positional,
-   0x10 = caller-supplied pan. Modes 4 and 8 refuse to double-trigger a sample
-   the owner is already playing, and mode 8 additionally drops the sound when
-   the camera is outside the owner's audible range (owner->soundRange << 10,
-   default 0x4000) — reporting 0x7F ("finished") through `pPlaying` so the
-   caller stops waiting on it.
+   `owner`. `mode` is the row's flag group (actor_type.h): SFX_MODE_FLAT (4),
+   SFX_MODE_3D (8, positional) or SFX_MODE_PANNED (0x10, caller-supplied pan).
+   Modes 4 and 8 refuse to double-trigger a sample the owner is already playing,
+   and mode 8 additionally drops the sound when the camera is outside the
+   owner's audible range (owner->soundRange << 10, default 0x4000) — reporting
+   0x7F ("finished") through `pPlaying` so the caller stops waiting on it.
 
    The chosen row is stamped with owner/sample/flags and a pitch that may be
    randomized around the bank entry's nominal value (nPitchMode 0 = centred

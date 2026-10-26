@@ -828,7 +828,7 @@
 <rect x="307.95" y="765.61" width="2.24" height="1.95" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EmptyStub  ·  8 bytes  ·  matched</title></rect>
 <rect x="307.95" y="767.56" width="2.24" height="1.95" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>StubRewardHook  ·  8 bytes  ·  matched</title></rect>
 <rect x="307.95" y="769.51" width="2.24" height="1.95" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Gamestate06SubstateStub_Noop  ·  8 bytes  ·  matched</title></rect>
-<rect x="307.95" y="771.46" width="2.24" height="1.95" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>StubActorHook  ·  8 bytes  ·  matched</title></rect>
+<rect x="307.95" y="771.46" width="2.24" height="1.95" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>OnActorAnimQueued  ·  8 bytes  ·  matched</title></rect>
 <rect x="310.19" y="765.61" width="1.87" height="2.34" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ClearWord  ·  8 bytes  ·  matched</title></rect>
 <rect x="312.06" y="765.61" width="1.87" height="2.34" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADENTRY_OBJ_A4  ·  8 bytes  ·  library</title></rect>
 <rect x="313.93" y="765.61" width="1.87" height="2.34" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADCMD_OBJ_18C  ·  8 bytes  ·  library</title></rect>

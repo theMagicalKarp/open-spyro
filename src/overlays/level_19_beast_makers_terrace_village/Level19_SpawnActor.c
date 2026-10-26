@@ -43,7 +43,7 @@
 #include "level_emit_particles.h"
 
 /* Debris state block (types 0x43..0x45, 0xFF..0x101, 0x135..0x137). */
-/* Parent-anchored tracker state block (type 0x157; L19State343 in the
+/* Attach-point bead state block (type 0x157; AttachBeadState in the
  * updater). */
 typedef struct TrackState {
   Actor *owner;        /* 0x00 */

@@ -20,11 +20,13 @@ struct Debris {
    10 in 25 a butterfly (ACTOR_TYPE_BUTTERFLY), or Sparx himself when he is
    gone (no g_pSparxActor) and the health is not negative; else a Sparx food
    (ACTOR_TYPE_SPARX_FOOD).  Extra lives, butterflies and Sparx are returned
-   as spawned.  Anything else is thrown: kinds 0/2/6 land on the source (or
-   `alt`) position with a small XY jitter, kind 1 and any kind-3/4 that fails
-   its Spyro proximity test scatter over a wider XY box, kind 5 drops in place
-   with zero velocity, and kinds 3/4 that pass attach straight onto the source
-   with a random tumble.  The thrown path probes the landing spot for ground
+   as spawned.  Anything else is thrown by `kind` (enum DropThrow,
+   actor_type.h): DROP_HOP / DROP_AT_POINT land on the source (or `alt`)
+   position, DROP_HIGH_HOP with a small XY jitter, DROP_SCATTER and a
+   DROP_TUMBLE_IF_NEAR that fails its Spyro proximity test scatter over a
+   wider XY box, DROP_IN_PLACE drops in place with zero velocity, and
+   DROP_TUMBLE (or a passing DROP_TUMBLE_IF_NEAR) rides off the source with a
+   random tumble.  The thrown path probes the landing spot for ground
    and a walkable slope, integrates the ballistic arc at 10 units of gravity
    per frame to count the flight time, and divides the offset by that count to
    get the launch velocity. */
@@ -86,28 +88,28 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
                                                                           src);
   dbg = (struct Debris *)rec->state;
 
-  if (kind == 0) {
+  if (kind == DROP_HOP) {
     CopyVector(throw_, &src->posX);
     vz = 0x8c;
-  } else if (kind == 6) {
+  } else if (kind == DROP_HIGH_HOP) {
     CopyVector(throw_, &src->posX);
     vz = 0x12c;
     throw_[0] -= 0x100 - (int)(GetRandomU32() & 0x1ff);
     throw_[1] -= 0x100 - (int)(GetRandomU32() & 0x1ff);
-  } else if (kind == 1) {
+  } else if (kind == DROP_SCATTER) {
     CopyVector(throw_, &src->posX);
     vz = 0x8c;
     throw_[0] -= 0x200 - (int)(GetRandomU32() & 0x3ff);
     throw_[1] -= 0x200 - (int)(GetRandomU32() & 0x3ff);
-  } else if (kind == 2) {
+  } else if (kind == DROP_AT_POINT) {
     CopyVector(throw_, alt);
     vz = 0x8c;
-  } else if (kind == 3 || kind == 4) {
-    if ((kind == 4 || g_nSpyroState == SPYRO_ST_CHARGE ||
+  } else if (kind == DROP_TUMBLE_IF_NEAR || kind == DROP_TUMBLE) {
+    if ((kind == DROP_TUMBLE || g_nSpyroState == SPYRO_ST_CHARGE ||
          g_nSpyroState == SPYRO_ST_SUPERCHARGE_AIR ||
          g_nSpyroState == SPYRO_ST_CHARGE_AIR ||
          g_nSpyroState == SPYRO_ST_SUPERCHARGE) &&
-        (kind == 4 ||
+        (kind == DROP_TUMBLE ||
          (ApproxDist2D(&rec->posX, g_anSpyroWorldPos) < 0x800 &&
           (d = rec->posZ - rec->floorOffset, e = d - g_nSpyroWorldPosZ,
            e > 0 ? e < 0x400 : g_nSpyroWorldPosZ - d < 0x400)))) {
@@ -126,7 +128,7 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
     vz = 0x8c;
     throw_[0] -= 0x200 - (int)(GetRandomU32() & 0x3ff);
     throw_[1] -= 0x200 - (int)(GetRandomU32() & 0x3ff);
-  } else if (kind == 5) {
+  } else if (kind == DROP_IN_PLACE) {
     CopyVector(&rec->posX, &src->posX);
     rec->posZ += 0x100;
     ZeroVector(dbg->vel);

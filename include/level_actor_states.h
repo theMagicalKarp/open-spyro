@@ -42,8 +42,10 @@ typedef struct ShardState {
   int floor;     /* 0x10 */
 } ShardState;
 
-/* Type 227. */
-typedef struct L14State227 {
+/* Type 227 (levels 14, 27): superflame giver. When Spyro faces it in range
+ * it freezes him, flies in front of him under a scripted camera (`cam`), and
+ * sets g_nSpyroSuperflameTimer by `kind`; then flies back to `home`. */
+typedef struct SuperflameGiverState {
   int home[3];    /* 0x00 */
   int timer;      /* 0x0C */
   int cam[3];     /* 0x10 camera anchor */
@@ -55,7 +57,7 @@ typedef struct L14State227 {
   int alert;      /* 0x30 */
   int link;       /* 0x34 pool index, -1 = none */
   int heading;    /* 0x38 -1 = unset */
-} L14State227;
+} SuperflameGiverState;
 
 /* Case 461 -- war drum. */
 typedef struct WarDrumState {
@@ -113,8 +115,9 @@ typedef struct L18Guard {
   int speedOverride; /* 0x5C */
 } L18Guard;
 
-/* Type 28 state. */
-typedef struct L20State28 {
+/* Type 28 state (level 20): the gunner, paired with a `partner`; fires
+ * type 400 shots in mode 5. */
+typedef struct GunnerState {
   void *path;  /* 0x00 */
   int partner; /* 0x04 index into g_pActorListBase */
   int knockSpeed;     /* 0x08 knock-back speed */
@@ -124,10 +127,10 @@ typedef struct L20State28 {
   int mode;    /* 0x18 0 guard, 1 patrol, 2 lookout */
   int hit;     /* 0x1C */
   int range;   /* 0x20 sight range (< 0x20: in units of 0x400) */
-} L20State28;
+} GunnerState;
 
-/* Type 403 state. */
-typedef struct L20State403 {
+/* Type 403 state (level 20): the lurker with its `tether`; can hold Spyro. */
+typedef struct LurkerState {
   int mode;      /* 0x00 0 roams its path */
   FlyPath *path; /* 0x04 */
   int knockHeading;       /* 0x08 knock-back heading */
@@ -141,10 +144,10 @@ typedef struct L20State403 {
   int holdsSpyro;       /* 0x28 holds Spyro */
   int u2C[3];    /* 0x2C */
   int stunTimer;       /* 0x38 stun timer */
-} L20State403;
+} LurkerState;
 
-/* Type 476 state. */
-typedef struct L20State476 {
+/* Type 476 state (level 20): the grabber that carries Spyro off to `home`. */
+typedef struct GrabberState {
   int u00[2];   /* 0x00 */
   int home[3];  /* 0x08 drop-off point */
   int grabChance;      /* 0x14 grab chance */
@@ -157,7 +160,7 @@ typedef struct L20State476 {
   int hasSpyro;      /* 0x30 has Spyro */
   int grabCoolDown;      /* 0x34 grab cool-down */
   int voice;      /* 0x38 */
-} L20State476;
+} GrabberState;
 
 /* Type 57 state (boulder and its shards). */
 typedef struct BoulderState {
@@ -568,8 +571,8 @@ typedef struct FenceCaptainState {
   TriggerBox all2;         /* 0x14C */
 } FenceCaptainState;
 
-/* Type 145 state. */
-typedef struct L32State145 {
+/* Type 145 state (level 32): gunner that fires bursts of type 156 shots. */
+typedef struct BurstGunnerState {
   int flags;     /* 0x00 flags; bit 0 armed */
   int knockSpeed;     /* 0x04 knock-back speed */
   int knockHeading;     /* 0x08 knock-back heading */
@@ -585,10 +588,11 @@ typedef struct L32State145 {
   int box2[6];  /* 0x58 trigger box */
   int initialised;     /* 0x70 initialised */
   int sinkTimer;     /* 0x74 sink timer */
-} L32State145;
+} BurstGunnerState;
 
-/* Type 147 state. */
-typedef struct L32State147 {
+/* Type 147 state (level 32): gunner that sweeps its aim between two yaw
+ * limits. */
+typedef struct SweepGunnerState {
   int flags;     /* 0x00 flags; bit 0 armed */
   void *path;   /* 0x04 path */
   int knockSpeed;     /* 0x08 knock-back speed */
@@ -606,10 +610,10 @@ typedef struct L32State147 {
   int box1[6];  /* 0x4C trigger box */
   int box2[6];  /* 0x64 trigger box */
   int initialised;     /* 0x7C initialised */
-} L32State147;
+} SweepGunnerState;
 
-/* Type 148 state. */
-typedef struct L32State148 {
+/* Type 148 state (level 32): gunner that throws a held type 176 lob. */
+typedef struct LobGunnerState {
   int flags;              /* 0x00 flags; bit 0 armed */
   int knockSpeed;              /* 0x04 knock-back speed */
   int knockHeading;              /* 0x08 knock-back heading */
@@ -625,7 +629,7 @@ typedef struct L32State148 {
   int box1[6];           /* 0x44 trigger box */
   int box2[6];           /* 0x5C trigger box */
   int initialised;              /* 0x74 initialised */
-} L32State148;
+} LobGunnerState;
 
 /* State of the lob type 148 throws. */
 typedef struct LobState {
@@ -653,13 +657,13 @@ typedef struct L32Timer {
   int rearmTimer; /* 0x04 re-arm timer */
 } L32Timer;
 
-/* Type 236 state (the head is UpdateActorWander's wander block). */
-typedef struct L32State236 {
+/* Type 236 state (level 32 wanderer; the head is UpdateActorWander's wander block). */
+typedef struct WandererState {
   int u00[8]; /* 0x00 */
   int knockSpeed;    /* 0x20 knock-back speed */
   int knockHeading;    /* 0x24 knock-back heading */
   int u28;    /* 0x28 */
   int idleTimer;    /* 0x2C idle timer */
-} L32State236;
+} WandererState;
 
 #endif /* OPEN_SPYRO_LEVEL_ACTOR_STATES_H */

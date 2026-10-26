@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "emit_record.h"
 #include "funcs.h"
 #include "globals.h"
 #include "level_id.h"
@@ -283,7 +284,8 @@ void DispatchSpyroPhysicsByState(void) {
       dust[1] += (GetRandomU32() & 0xFE) - 0x7F;
       CopyVector(dustVel, &SPY[SPY_MOTION]);
       RShiftVector3(dustVel, 6);
-      ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, 9, dust, dustVel);
+      ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, EMIT_SPEED_DUST, dust,
+                                                 dustVel);
     }
     break;
   case SPYRO_ST_SIDESTEP_L1:
@@ -330,7 +332,8 @@ void DispatchSpyroPhysicsByState(void) {
     trail[2] -= 0x164;
     CopyVector(trailVel, &SPY[SPY_MOTION]);
     RShiftVector3(trailVel, 6);
-    ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, 9, trail, trailVel);
+    ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, EMIT_SPEED_DUST, trail,
+                                               trailVel);
     break;
   }
   if (SPY[SPY_STATE] == SPYRO_ST_HAZARD) {

@@ -23,7 +23,7 @@ typedef struct {
   unsigned char escapeRunCount;           /* 0x09 g_anLevelEscapeRunCount */
   unsigned char escapeRunCountLane1;      /* 0x0A g_nLevelEscapeRunCountLane1 */
   unsigned char extraLives;               /* 0x0B */
-  int unk_0x0C;                           /* 0x0C */
+  int pad0C;                              /* 0x0C never written (FillWord zeroes it) */
   SaveGameWorlds worlds;                  /* 0x10 */
   unsigned char levelVisited[TOTAL_LEVEL_COUNT];    /* 0x40 */
   unsigned char levelExited[TOTAL_LEVEL_COUNT]; /* 0x64 */

@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "level_sfx.h"
 #include "main_shared.h"
 #include "sample_bank.h"
 #include "spyro_block.h"
@@ -53,7 +54,8 @@ int DispatchSpyroPadStateChanges(int pad) {
       }
       ChangeSpyroState(next);
     } else if (pad & SPYRO_EV_HIT_TINT) {
-      PlaySoundEffect(LEVEL_SFX(0x1F), (int)&ev[-SPY_TRIGGER_FLAGS], 4,
+      PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT_FLASH),
+                      (int)&ev[-SPY_TRIGGER_FLAGS], SFX_MODE_FLAT,
                       (char *)ev + (SPYB_VOICE_MARKER - SPY_TRIGGER_FLAGS * 4));
       ChangeSpyroState(SPYRO_ST_HURT_TINT);
     } else if (pad & SPYRO_EV_HIT_LONG) {

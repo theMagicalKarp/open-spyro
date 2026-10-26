@@ -55,7 +55,7 @@ void ChangeSpyroState(int state) {
   case SPYRO_ST_GLIDE:
   case SPYRO_ST_FLY:
   case SPYRO_ST_SUPERCHARGE:
-    StopSoundVoicesByOwner(g_anSpyroWorldPos, 2);
+    StopSoundVoicesByOwner(g_anSpyroWorldPos, VOICE_STOP_LOOPING);
     break;
   case SPYRO_ST_HURT_TINT:
     g_abSpyroTintRgba[3] = 0;
@@ -64,11 +64,12 @@ void ChangeSpyroState(int state) {
   case SPYRO_ST_KNOCKBACK:
   case SPYRO_ST_HURT_LONG:
   case SPYRO_ST_KNOCKBACK_2:
-    PlaySoundEffect(LEVEL_SFX(0x1B), g_anSpyroWorldPos, 4,
+    PlaySoundEffect(LEVEL_SFX(0x1B), g_anSpyroWorldPos, SFX_MODE_FLAT,
                     (unsigned char *)g_anSpyroWorldPos + SPYB_VOICE_MARKER);
     break;
   case SPYRO_ST_HURT_PINNED:
-    PlaySoundEffect(LEVEL_SFX(0x20), g_anSpyroWorldPos, 4,
+    PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_PINNED_EXIT), g_anSpyroWorldPos,
+                    SFX_MODE_FLAT,
                     (unsigned char *)g_anSpyroWorldPos + SPYB_VOICE_MARKER);
     break;
   }
@@ -212,7 +213,7 @@ void ChangeSpyroState(int state) {
     ApplyGravityAlongSpyroSlopeNormal();
     ApplyGravityAlongSpyroSlopeTangent();
     g_nSpyroGravityEnableFlag = 1;
-    PlaySoundEffect(LEVEL_SFX(SFX_CHARGE), me, 4,
+    PlaySoundEffect(LEVEL_SFX(SFX_CHARGE), me, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER + 1);
     g_pSpyroHomingTargetActor = 0;
     {
@@ -336,7 +337,7 @@ void ChangeSpyroState(int state) {
     if (g_nHitRumbleTimer < 0xF) {
       g_nHitRumbleTimer = 0xF;
     }
-    PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT), SPY, 4,
+    PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT), SPY, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER);
     break;
   }
@@ -349,7 +350,7 @@ void ChangeSpyroState(int state) {
     if (g_nHitRumbleTimer < 0xF) {
       g_nHitRumbleTimer = 0xF;
     }
-    PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT_PINNED), SPY, 4,
+    PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT_PINNED), SPY, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER);
     break;
   case SPYRO_ST_HURT_LONG:
@@ -516,7 +517,7 @@ void ChangeSpyroState(int state) {
     }
     g_nSpyroGravityEnableFlag = 1;
     PARTICLE_SPAWN(5, 0xA, 0, 0);
-    PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT), SPY, 4,
+    PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT), SPY, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER);
     if (g_nHitRumbleTimer < 0xF) {
       g_nHitRumbleTimer = 0xF;
@@ -535,9 +536,9 @@ void ChangeSpyroState(int state) {
     ((void (*)(int, int))g_pfnLevelSpawnActor)(
         g_anHazardEnterSpawnType[g_nSpyroHazardKind], 0);
     me = SPY;
-    PlaySoundEffect(LEVEL_SFX(SFX_SPLASH), me, 4,
+    PlaySoundEffect(LEVEL_SFX(SFX_SPLASH), me, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER);
-    PlaySoundEffect(LEVEL_SFX(0x1B), me, 4,
+    PlaySoundEffect(LEVEL_SFX(0x1B), me, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER);
     if (g_nHitRumbleTimer < 0xF) {
       g_nHitRumbleTimer = 0xF;
@@ -584,7 +585,7 @@ void ChangeSpyroState(int state) {
     ApplyGravityAlongSpyroSlopeTangent();
     g_nSpyroGravityEnableFlag = 1;
     g_nSpyroMotionAux = 0;
-    PlaySoundEffect(LEVEL_SFX(SFX_SUPERCHARGE), SPY, 4,
+    PlaySoundEffect(LEVEL_SFX(SFX_SUPERCHARGE), SPY, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER + 1);
     break;
   }

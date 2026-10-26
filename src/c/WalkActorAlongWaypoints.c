@@ -83,7 +83,7 @@ int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist,
   }
   CopyVector(&actor->posX, vec);
   EncodeCachedVecToActorDirCode((int)actor);
-  RefreshActorDerivedState(actor, 2);
+  RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
   ret = 0;
   SubtractVector(vec, &path->nodes[path->cur].x, &actor->posX);
   if ((int)VectorLength(vec, 1) < arriveDist) {

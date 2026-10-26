@@ -54,5 +54,5 @@ void Titlescreen_PlayUiSound(int nSoundId) {
   g_pLevelSampleBankEntries.nNextSoundOverrideFlags = 1;
   g_pLevelSampleBankEntries.nVolumeOverrideLeft = 0x3FFF;
   g_pLevelSampleBankEntries.nVolumeOverrideRight = 0x3FFF;
-  PlaySoundEffect(0, 0, 16, (unsigned char *)&g_bDragonRescueSfxVoiceMarker);
+  PlaySoundEffect(0, 0, SFX_MODE_PANNED, (unsigned char *)&g_bDragonRescueSfxVoiceMarker);
 }

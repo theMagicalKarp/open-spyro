@@ -355,7 +355,7 @@ void Credits_Update(void) {
     g_nSfxOverrideFlags = 1;
     g_nSfxOverrideVolL = 0x3FFF;
     g_nSfxOverrideVolR = 0x3FFF;
-    PlaySoundEffect(0, 0, 0x10, 0);
+    PlaySoundEffect(0, 0, SFX_MODE_PANNED, 0);
     }
     {
       char *hdr;

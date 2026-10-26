@@ -521,28 +521,35 @@ typedef struct L26Critter {
   int speed; /* 0x3C knock-back speed */
 } L26Critter;
 
-typedef struct L7State184 {
+/* Type 184 (level 7): a stationary brawler. Turns to face Spyro and swings
+ * when he is close (mode 4, re-armed by `timer`); flame or superflame knocks
+ * it back along `heading`/`speed` (mode 6) and it bursts into type 230/288/289
+ * debris. */
+typedef struct BrawlerState {
   int link;    /* 0x00 handed to the spawned bolt */
   int flag;    /* 0x04 */
   int u08;     /* 0x08 */
   int heading; /* 0x0C */
   int speed;   /* 0x10 */
   int timer;   /* 0x14 */
-} L7State184;
+} BrawlerState;
 
 /* Type 183, the bolt level 7's type 184 spawns at frame 0x11 of its mode 1.
  * Nothing in case 184 enters mode 1, and Level7_UpdateActors has no arm for
  * type 183, so these fields are write-only here and keep raw names. */
-typedef struct L7State183 {
+typedef struct BrawlerSpawnState {
   int link;    /* 0x00 */
   int u04;     /* 0x04 */
   int u08;     /* 0x08 */
   int heading; /* 0x0C */
   int u10;     /* 0x10 */
   int u14;     /* 0x14 */
-} L7State183;
+} BrawlerSpawnState;
 
-typedef struct L7State186 {
+/* Type 186 (level 7): a blinking sentry that wakes inside `range` (or 0x2800)
+ * and fires a type-197 shot at Spyro when it has line of sight; walks back to
+ * `home` after a chase. */
+typedef struct ShooterState {
   int home[3];   /* 0x00 */
   void *path;    /* 0x0C */
   int triggered; /* 0x10 */
@@ -555,13 +562,17 @@ typedef struct L7State186 {
   int turn;      /* 0x2C */
   int range;     /* 0x30 */
   int spawned;   /* 0x34 */
-} L7State186;
+} ShooterState;
 
-typedef struct L7State197 {
+/* Type 197 (level 7): the shot type 186 fires. Flies on `vel` (z zeroed),
+ * knocks Spyro back on contact, and bursts into debris on a wall hit, the
+ * contact, or when `countdown0` runs out; once `countdown1` runs out MoveActorByDelta gets
+ * 0x12C as its fifth argument. */
+typedef struct ShooterShotState {
   int vel[3];         /* 0x00 */
   short countdown0;          /* 0x0C */
   short countdown1;          /* 0x0E */
-} L7State197;
+} ShooterShotState;
 
 /* Type 10: path patroller. */
 typedef struct PathState {

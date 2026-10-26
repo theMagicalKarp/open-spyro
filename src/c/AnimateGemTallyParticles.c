@@ -86,7 +86,7 @@ void AnimateGemTallyParticles(void) {
       PARTICLES[i].signy = (GetRandomU32() & 2) - 1;
       PARTICLES[i].spinv = (GetRandomU32() & 0xF) - 8;
       if ((g_nLevelTransitionPhase & 7) == 0) {
-        PlaySoundEffect(LEVEL_SFX(SFX_REWARD), 0, 0x10, 0);
+        PlaySoundEffect(LEVEL_SFX(SFX_REWARD), 0, SFX_MODE_PANNED, 0);
       }
     }
     if (PARTICLES[i].live == 0) {
@@ -122,7 +122,7 @@ void AnimateGemTallyParticles(void) {
     } else {
       PARTICLES[i].live = 0;
       if (i % 3 == 0) {
-        PlaySoundEffect(LEVEL_SFX(SFX_GEM_BOUNCE), 0, 0x10, 0);
+        PlaySoundEffect(LEVEL_SFX(SFX_GEM_BOUNCE), 0, SFX_MODE_PANNED, 0);
       }
     }
   }

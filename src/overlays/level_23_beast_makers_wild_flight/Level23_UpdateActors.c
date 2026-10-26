@@ -77,7 +77,7 @@
   (a)->nextAnim = (next);                                                         \
   (a)->frame = (a)->nextFrame;                                                     \
   (a)->nextFrame = 0;                                                              \
-  StubActorHook(a);
+  OnActorAnimQueued(a);
 
 /* ENTER_POSE sets the state byte to `n`, advances to animation `n` unless it
  * is already queued, and moves on to the next actor. It ends in a bare
@@ -91,7 +91,7 @@
     (a)->nextAnim = (n);                                                          \
     (a)->frame = (a)->nextFrame;                                                   \
     (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
+    OnActorAnimQueued(a);                                                          \
   }                                                                            \
   continue
 
@@ -463,7 +463,7 @@ void Level23_UpdateActors(void) {
       case 5:
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
-        g_pfnLevelEmitParticles(0x10, 0x4D, svE, 0);
+        g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
         g_nGameplayBlocked = 0;
         ZeroVector(&SPY.headLook);
         CommitActorKillGems(0, st->killActor);
@@ -480,8 +480,8 @@ void Level23_UpdateActors(void) {
     }
 
     /* Bouncing chest fragments (SparkState). */
-    case 478:
-    case 479: {
+    case ACTOR_TYPE_FLIGHT_CHEST_SHARD:
+    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 1: {
       SparkState *st = actor->state;
 
       if (st->life > 0 && actor->drawn) {
@@ -529,7 +529,7 @@ void Level23_UpdateActors(void) {
     }
 
     /* Falling chest fragments (TumbleState). */
-    case 480: {
+    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 2: {
       TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn && actor->posZ > st->floorZ) {
@@ -573,7 +573,7 @@ void Level23_UpdateActors(void) {
       if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
 
         if (st->anim != 255) {
-          RefreshActorDerivedState(actor, 4);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
           if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
             RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset5, g_aRotBillboards[st->anim].pos);
@@ -648,7 +648,7 @@ void Level23_UpdateActors(void) {
             actor->posY = acc[0][1] / 3;
             actor->posZ = acc[0][2] / 3;
 
-            RefreshActorDerivedState(actor, 2);
+            RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
 
@@ -658,7 +658,7 @@ void Level23_UpdateActors(void) {
             CopyVector(svF, &actor->posX);
             svF[2] += 0x400;
 
-            RefreshActorDerivedState(actor, 2);
+            RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
 
             if (FindGroundHeightBelow(svF, 0x1000) > 0) {
               colIndex = g_nLastCollisionHitChunkId;
@@ -780,7 +780,7 @@ void Level23_UpdateActors(void) {
               g_nSfxOverrideVolL = 0x3CCC >> (3 - st->count);
               g_nSfxOverrideVolR = 0x3CCC >> (3 - st->count);
 
-              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, 8, &actor->sfxSlot);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
 
               if (ReflectVectorOffNormal(st->vel, svH, st->vel)) {
                 st->count--;
@@ -884,8 +884,8 @@ void Level23_UpdateActors(void) {
         }
 
         if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 16, 0);
-          RefreshActorDerivedState(actor, 4);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, (void *)8);
           g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, (void *)0x10);
 
@@ -897,7 +897,7 @@ void Level23_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         } else if (actor->type == ACTOR_TYPE_SPARX_FOOD) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 16, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
           g_nSparxFoodCount++;
 
           DespawnActorRecord(actor);
@@ -1044,7 +1044,7 @@ void Level23_UpdateActors(void) {
         }
         case 1: {
           SPY.sparxHealth++;
-          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
           actor->subMode++;
           DespawnActorRecord(st->target);
           break;
@@ -1088,7 +1088,7 @@ void Level23_UpdateActors(void) {
               g_nSfxOverrideFlags = 1;
               g_nSfxOverrideVolR = 0x3600;
               g_nSfxOverrideVolL = 0x3600;
-              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, 8, &actor->sfxSlot);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
             }
           } else {
             int dcheck = 310;
@@ -1187,7 +1187,7 @@ void Level23_UpdateActors(void) {
           break;
         }
       }
-      RefreshActorDerivedState(actor, 4);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
       break;
     }
 
@@ -1280,7 +1280,7 @@ void Level23_UpdateActors(void) {
             actor->frameRate = 0x10;
             actor->nextAnim = 2;
             actor->nextFrame = 0;
-            StubActorHook(actor);
+            OnActorAnimQueued(actor);
           }
           continue;
         }
@@ -1289,14 +1289,14 @@ void Level23_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, 8, &actor->sfxSlot);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
           g_pfnLevelSpawnActor(0x190, actor);
           DespawnActorRecord(actor);
           continue;
         }
         break;
       }
-      RefreshActorDerivedState(actor, 1);
+      RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       break;
     }
     /* Key (KeyState). */
@@ -1319,8 +1319,8 @@ void Level23_UpdateActors(void) {
         dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
         if (dz > 0 ? dz < 0x200
                    : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x200) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, 0x10, 0);
-          RefreshActorDerivedState(actor, 4);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
+          RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
           for (i = 0; i < 6; i++) {
             g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, (void *)(0x8080 + 0x1000000 * i));
@@ -1338,7 +1338,7 @@ void Level23_UpdateActors(void) {
       }
 
       if (st->attach != 0xFF) {
-        RefreshActorDerivedState(actor, 4);
+        RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset4, g_aRotBillboards[st->attach].pos);
         AddVector(g_aRotBillboards[st->attach].pos, g_aRotBillboards[st->attach].pos,
                       &actor->posX);
@@ -1421,7 +1421,7 @@ void Level23_UpdateActors(void) {
 
     /* Flight-level chest: flaming or charging it frees its reward and
      * scatters shards; otherwise it hums its ambient sound. */
-    case 299: {
+    case ACTOR_TYPE_FLIGHT_CHEST: {
       int *st = actor->state;
       int i;
 
@@ -1439,14 +1439,14 @@ void Level23_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x1DE, actor);
-          g_pfnLevelSpawnActor(0x1DF, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 1, actor);
         }
         for (i = 0; i < 6; i++) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x1E0, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 2, actor);
         }
 
         g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
@@ -1459,7 +1459,7 @@ void Level23_UpdateActors(void) {
         Model **models = g_apActorMeshTable;
 
         if (GetSoundVoiceStatusByOwner(actor, g_pLevelSoundIds[5]) == 0 && g_nGamestate == GS_GAMEPLAY) {
-          PlaySoundEffect(models[actor->type]->m_Sounds[1], actor, 8,
+          PlaySoundEffect(models[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
                         &actor->sfxSlot);
         }
       }
@@ -1501,9 +1501,9 @@ void Level23_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x1E1, actor);
-          g_pfnLevelSpawnActor(0x1E2, actor);
-          g_pfnLevelSpawnActor(0x1E3, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 5, actor);
         }
         PlayActorMeshVoice(actor, 0, 0);
         actor->mode = 1;
@@ -1541,7 +1541,7 @@ void Level23_UpdateActors(void) {
       case 1:
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, 8, &actor->sfxSlot);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
           g_pfnLevelSpawnActor(0x190, actor);
           DespawnActorRecord(actor);
           continue;
@@ -1554,7 +1554,7 @@ void Level23_UpdateActors(void) {
       case 2:
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, 8, &actor->sfxSlot);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
           g_pfnLevelSpawnActor(0x190, actor);
           DespawnActorRecord(actor);
           continue;
@@ -1565,9 +1565,9 @@ void Level23_UpdateActors(void) {
     }
     /* Time-bonus pickup: turns to face Spyro, then flies to the HUD corner
      * and adds (type - 0x158) seconds when it arrives. */
-    case 0x159:
-    case 0x15A:
-    case 0x15B: {
+    case ACTOR_TYPE_TIME_BONUS:
+    case ACTOR_TYPE_TIME_BONUS + 1:
+    case ACTOR_TYPE_TIME_BONUS + 2: {
       int *st = actor->state;
 
       switch (actor->mode) {
@@ -1592,7 +1592,7 @@ void Level23_UpdateActors(void) {
         actor->cullRadius = 0xFF;
         actor->otBias = 0x20;
         actor->mode = 2;
-        PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_COLLECT], actor, 0x10, 0);
+        PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_COLLECT], actor, SFX_MODE_PANNED, 0);
         break;
       case 2: {
         int d;
@@ -1619,7 +1619,7 @@ void Level23_UpdateActors(void) {
       case 3:
         if (TickCountdownByFrameDelta(st, 4) != 0) {
           g_nFlightTimeRemaining += (actor->type - 0x158) * 60;
-          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_TIME_ADDED], actor, 0x10, 0);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_TIME_ADDED], actor, SFX_MODE_PANNED, 0);
           DespawnActorRecord(actor);
         }
         break;
@@ -1628,7 +1628,7 @@ void Level23_UpdateActors(void) {
     }
     /* Breakable flight target: bursts into 12 shards when Spyro flies
      * through, and otherwise pulses its glow with the frame counter. */
-    case 0x161: {
+    case ACTOR_TYPE_FLIGHT_TARGET: {
       TargetState *st = actor->state;
 
       if (g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0 && st->helper == 0) {
@@ -1659,7 +1659,7 @@ void Level23_UpdateActors(void) {
               if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
                 break;
               }
-              shard = g_pfnLevelSpawnActor(i + 0x176, actor);
+              shard = g_pfnLevelSpawnActor(i + ACTOR_TYPE_FLIGHT_TARGET_SHARD, actor);
               ss = shard->state;
               RotateVectorByMatrix(actor->mtx, &g_anActorShardOffsets[i * 3], svV);
               AddVector(&shard->posX, &actor->posX, svV);
@@ -1696,7 +1696,7 @@ void Level23_UpdateActors(void) {
     /* Flight-level HUD controller: the countdown / time-attack clock digits,
      * the per-target-class collection tally, and the four tally slots that
      * finish the level once they are all filled (HudState). */
-    case 0x166: {
+    case ACTOR_TYPE_FLIGHT_HUD: {
       HudState *st = actor->state;
       int i;
       int prevMin;
@@ -1872,13 +1872,13 @@ void Level23_UpdateActors(void) {
               st->hurry = 0;
             }
             if (i < 10) {
-              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_CLOCK], actor, 0x10, 0);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_CLOCK], actor, SFX_MODE_PANNED, 0);
             }
           }
           if (st->hurry != 0) {
             i = t / 6;
             if (i < prevTenth) {
-              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_HURRY], actor, 0x10, 0);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_HURRY], actor, SFX_MODE_PANNED, 0);
             }
           }
         }
@@ -1889,7 +1889,7 @@ void Level23_UpdateActors(void) {
           st->count--;
           st->spent[st->count]->mode = 2;
           st->timer = 0x10;
-          PlaySoundEffect(AS_PTRU8(g_pLevelSampleBankHeader)[SFX_FLIGHT_TALLY], actor, 0x10, 0);
+          PlaySoundEffect(AS_PTRU8(g_pLevelSampleBankHeader)[SFX_FLIGHT_TALLY], actor, SFX_MODE_PANNED, 0);
         }
         for (i = 0; i < 8; i++) {
           Actor *a = st->spent[i];
@@ -1905,7 +1905,7 @@ void Level23_UpdateActors(void) {
               DespawnActorRecord(a);
             }
             st->spent[i] = 0;
-            PlaySoundEffect(AS_PTRU8(g_pLevelSampleBankHeader)[SFX_FLIGHT_TALLY], actor, 0x10, 0);
+            PlaySoundEffect(AS_PTRU8(g_pLevelSampleBankHeader)[SFX_FLIGHT_TALLY], actor, SFX_MODE_PANNED, 0);
           }
         }
       } else if (st->slot[0] != 0 && st->slot[1] != 0 && st->slot[2] != 0 &&
@@ -2018,20 +2018,20 @@ void Level23_UpdateActors(void) {
       DespawnActorRecord(actor);
       continue;
 
-    /* A 0x161 burst shard: drifts and tumbles until its life runs out or it
+    /* A flight-target burst shard: drifts and tumbles until its life runs out or it
      * leaves the screen. */
-    case 0x177:
-    case 0x178:
-    case 0x179:
-    case 0x17A:
-    case 0x17B:
-    case 0x17C:
-    case 0x17D:
-    case 0x17E:
-    case 0x17F:
-    case 0x180:
-    case 0x181:
-    case 0x182: {
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 1:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 2:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 3:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 4:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 5:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 6:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 7:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 8:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 9:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 10:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 11:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 12: {
       BurstState *ss = actor->state;
 
       if (actor->drawn != 0 && TickCountdownByFrameDelta(&ss->life, 4) == 0) {
@@ -2216,9 +2216,9 @@ void Level23_UpdateActors(void) {
     }
     break;
 
-    case 0x1E1:
-    case 0x1E2:
-    case 0x1E3: {
+    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3:
+    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4:
+    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 5: {
       EmberState *st = actor->state;
       int trail[3];
 

@@ -17,6 +17,7 @@
 #include "level_spawn_actor.h"
 #include "actor.h"
 #include "level_emit_particles.h"
+#include "emit_record.h"
 
 
 extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
@@ -132,7 +133,7 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
       rec->frameRate = g_apActorMeshTable[rec->type][0x10][0xC];
       rec->anim = 2;
       rec->nextAnim = 2;
-      g_pfnLevelEmitParticles(4, 7, pos, 0x10);
+      g_pfnLevelEmitParticles(4, EMIT_DRIFT_SPARKLE, pos, 0x10);
       InsertActorIntoSpatialGrid(rec);
       break;
     } else {

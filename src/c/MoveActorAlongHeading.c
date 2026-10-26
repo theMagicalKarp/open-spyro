@@ -105,6 +105,6 @@ int MoveActorAlongHeading(Actor *actor, int speed, int group, int radius,
   if (flags & 0x54) {
     EncodeCachedVecToActorDirCode(actor);
   }
-  RefreshActorDerivedState(actor, 2);
+  RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
   return 0;
 }

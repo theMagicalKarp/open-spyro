@@ -75,7 +75,7 @@
     (a)->nextAnim = (n);                                                          \
     (a)->frame = (a)->nextFrame;                                                   \
     (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
+    OnActorAnimQueued(a);                                                          \
   }
 
 /* ENTER_POSE with an empty loop at the head of the change: cse starts a new
@@ -93,7 +93,7 @@
     (a)->nextAnim = (n);                                                          \
     (a)->frame = (a)->nextFrame;                                                   \
     (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
+    OnActorAnimQueued(a);                                                          \
   }                                                                            \
   continue
 
@@ -124,7 +124,7 @@
     (a)->nextAnim = (n);                                                          \
     (a)->frame = (a)->nextFrame;                                                   \
     (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
+    OnActorAnimQueued(a);                                                          \
   }
 
 /* Re-time the current animation once its frames are within 3 of each
@@ -143,7 +143,7 @@
   (a)->nextAnim = (n);                                                            \
   (a)->frame = (a)->nextFrame;                                                     \
   (a)->nextFrame = (f);                                                            \
-  StubActorHook(a)
+  OnActorAnimQueued(a)
 
 /* Set the state byte and queue animation `n` without promoting the current
  * one, then move on to the next actor. */
@@ -154,7 +154,7 @@
     (a)->frameRate = sixteen;                                                      \
     (a)->nextAnim = (n);                                                          \
     (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
+    OnActorAnimQueued(a);                                                          \
   }                                                                            \
   continue
 
@@ -187,8 +187,8 @@
     Actor *sp_ = g_pfnLevelSpawnActor(0x190, a);                                         \
     Actor *w_;                                                                 \
                                                                                \
-    StopSoundVoicesByOwner(a, 1);                                                       \
-    PlaySoundEffect(g_apActorMeshTable[(a)->type]->m_Sounds[3], sp_, 8, &sp_->sfxSlot);    \
+    StopSoundVoicesByOwner(a, VOICE_STOP_ALL);                                                       \
+    PlaySoundEffect(g_apActorMeshTable[(a)->type]->m_Sounds[3], sp_, SFX_MODE_3D, &sp_->sfxSlot);    \
     w_ = (st)->rider;                                                          \
     if (w_ != 0 && w_->type == 0x9A && w_->mode == 2) {                       \
       w_->subMode = 1;                                                           \
@@ -221,7 +221,7 @@
     (a)->frameRate = sixteen;                                                      \
     (a)->nextAnim = (n);                                                          \
     (a)->nextFrame = 0;                                                            \
-    StubActorHook(a);                                                          \
+    OnActorAnimQueued(a);                                                          \
   }
 
 #endif /* OPEN_SPYRO_LEVEL_UPDATE_ACTORS_MACROS_H */
