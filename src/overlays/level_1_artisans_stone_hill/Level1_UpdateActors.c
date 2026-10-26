@@ -259,7 +259,7 @@ void Level1_UpdateActors(void) {
     }
 
     /* Path patroller (PathState). */
-    case 10: {
+    case ACTOR_TYPE_PATH_PATROLLER: {
       PathState *st;
 
       EBB_BREAK();

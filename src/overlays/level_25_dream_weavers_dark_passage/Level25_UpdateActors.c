@@ -2524,7 +2524,7 @@ void Level25_UpdateActors(void) {
     }
 
     /* Type 160: wandering critter; knocked away when hit. */
-    case 160: {
+    case ACTOR_TYPE_WANDERING_CRITTER: {
       L26Critter *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
@@ -3589,7 +3589,7 @@ void Level25_UpdateActors(void) {
 
     /* Type 402: cannon. Smokes while it builds up, fires, then flies its
      * ball along a path to the target, waking the linked actor. */
-    case 402: {
+    case ACTOR_TYPE_CANNON: {
       L25Shot *st = actor->state;
 
       if (st->init == 1) {

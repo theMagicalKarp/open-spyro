@@ -2622,7 +2622,7 @@ void Level7_UpdateActors(void) {
       case 6:
         if (actor->subMode == 0) {
           int h = WrapAddAngle8(actor->rotZ, -0x40);
-          Actor *c = g_pfnLevelSpawnActor(0xE6, actor);
+          Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_SWOOPER, actor);
           SwoopState *cs = c->state;
           int i;
 
@@ -3177,7 +3177,7 @@ void Level7_UpdateActors(void) {
       break;
 
     /* Swooping guard (SwoopState). */
-    case 230: {
+    case ACTOR_TYPE_SWOOPER: {
       SwoopState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4) {

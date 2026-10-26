@@ -258,7 +258,7 @@ void Level13_UpdateActors(void) {
     }
 
     /* Particle emitter on a random timer. */
-    case 11: {
+    case ACTOR_TYPE_TIMED_EMITTER: {
       int *st;
 
       st = (int *)actor->state;
@@ -1318,7 +1318,7 @@ void Level13_UpdateActors(void) {
 
     /* Path walker (PathState): waits for Spyro, then paces its path, turning
      * back at either end and choosing the node that leads away from him. */
-    case 36: {
+    case ACTOR_TYPE_PATH_WALKER: {
       PathState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
@@ -4147,7 +4147,7 @@ void Level13_UpdateActors(void) {
     }
 
     /* Homing wisp (WispState). */
-    case 295: {
+    case ACTOR_TYPE_HOMING_WISP: {
       WispState *st = actor->state;
       int i;
 
@@ -4610,7 +4610,7 @@ void Level13_UpdateActors(void) {
                           6, 0, 0);
             if (TickCountdownByFrameDelta(&st->timer, 4) && actor->nextFrame >= 6 &&
                 st->count < 3) {
-              Actor *b = g_pfnLevelSpawnActor(0x127, actor);
+              Actor *b = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_WISP, actor);
               BoltState *bs = b->state;
 
               CopyVector(w408, &t->posX);
@@ -4686,7 +4686,7 @@ void Level13_UpdateActors(void) {
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) && actor->nextFrame >= 6 &&
             st->count < 3) {
-          Actor *b = g_pfnLevelSpawnActor(0x127, actor);
+          Actor *b = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_WISP, actor);
 
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0xA00 &&
               ABS2(SPY_DZ(actor)) < 0x400) {
@@ -4769,7 +4769,7 @@ void Level13_UpdateActors(void) {
 
     /* Type 328: floor-snapped marker. Drops onto the floor once, then sits at
      * the centroid of the triangle it landed on. */
-    case 328: {
+    case ACTOR_TYPE_FLOOR_MARKER: {
       int *tri = actor->state;
 
       if (*tri < 0) {

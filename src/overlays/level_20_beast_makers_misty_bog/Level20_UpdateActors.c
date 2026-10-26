@@ -3304,7 +3304,7 @@ void Level20_UpdateActors(void) {
     /* Type 466: roaming ram. Wanders its waypoint ring away from Spyro,
      * charges down its path once he is close, and is knocked back by hits
      * or by its partner. */
-    case 466: {
+    case ACTOR_TYPE_ROAMING_RAM: {
       RoamingRamState *st = actor->state;
 
       if ((actor->flags & 0xF0000) && actor->mode != 3) {

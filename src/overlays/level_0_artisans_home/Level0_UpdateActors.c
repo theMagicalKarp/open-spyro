@@ -164,7 +164,7 @@ void Level0_UpdateActors(void) {
     }
 
     /* Path patroller (PathState). */
-    case 10: {
+    case ACTOR_TYPE_PATH_PATROLLER: {
       PathState *st = (PathState *)actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != 3) {
@@ -351,7 +351,7 @@ void Level0_UpdateActors(void) {
     }
 
     /* Particle emitter on a random timer. */
-    case 11: {
+    case ACTOR_TYPE_TIMED_EMITTER: {
       int *st;
 
       st = (int *)actor->state;

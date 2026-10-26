@@ -2192,7 +2192,7 @@ void Level16_UpdateActors(void) {
     /* Type 283: path guard. Walks its waypoint ring, waits on its partner,
      * rears up (and calls for help) when Spyro comes near, and is knocked
      * away when hit. */
-    case 283: {
+    case ACTOR_TYPE_PATH_GUARD: {
       L16Guard *st = actor->state;
 
       if (actor->mode != 2) {
@@ -2789,7 +2789,7 @@ void Level16_UpdateActors(void) {
 
     /* Type 328: floor-snapped marker. Finds the floor triangle under itself
      * once, then sits at that triangle's centroid. */
-    case 328: {
+    case ACTOR_TYPE_FLOOR_MARKER: {
       int *st = actor->state;
 
       if (*st < 0) {

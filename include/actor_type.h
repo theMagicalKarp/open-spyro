@@ -116,12 +116,15 @@ typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
 enum ActorType {
   ACTOR_TYPE_PORTAL_NAME = 1,          /* hub portal name text, shown while the camera faces the portal */
   ACTOR_TYPE_LEVEL_EXIT = 9,       /* exit whirlwind: lifts Spyro back to the hub */
+  ACTOR_TYPE_PATH_PATROLLER = 10, /* walks its path, turning back at the ends unless it loops (PathState) */
+  ACTOR_TYPE_TIMED_EMITTER = 11, /* particle emitter on a random timer */
   ACTOR_TYPE_FOLLOWER = 13,        /* rides a parent actor, released in turn when it dies (FollowState) */
   ACTOR_TYPE_EXTRA_LIFE = 14,      /* collected: g_nExtraLives + 1 */
   ACTOR_TYPE_SPARX_FOOD = 15,      /* collected: g_nSparxFoodCount + 1 (20: a life) */
   ACTOR_TYPE_BUTTERFLY = 16,       /* eaten by Sparx: g_nSparxHealth + 1 */
   ACTOR_TYPE_EGG_THIEF = 33,       /* runs off with a dragon egg (34), drops it when hit (ThiefState) */
   ACTOR_TYPE_DRAGON_EGG = 34,      /* recovered egg: rises, rolls the HUD egg tally */
+  ACTOR_TYPE_PATH_WALKER = 36, /* waits for Spyro, then paces its path (PathState) */
   ACTOR_TYPE_SEED_POD_SHARD = 67,    /* 67..69: seed pod burst (67/68 bounce, 69 tumbles) */
   ACTOR_TYPE_LETTER_OTHER = 0x4C,  /* a non-A..Z glyph of a floating name */
   ACTOR_TYPE_GEM_1 = 0x53,         /* gems, by CollectPickupActor's value */
@@ -132,15 +135,19 @@ enum ActorType {
   ACTOR_TYPE_SAVE_HOST = 110,      /* hovers near its anchor, opens the save menu (SaveHostState) */
   ACTOR_TYPE_SPARX = 0x78,         /* g_pSparxActor (SparxState) */
   ACTOR_TYPE_BOULDER_DEBRIS = 151,   /* 151..153: cracking boulder burst (151 tumbles, 152/153 spark) */
+  ACTOR_TYPE_WANDERING_CRITTER = 160, /* wanders; knocked away when hit */
   ACTOR_TYPE_KEY = 173,            /* the level key: g_nLevelKeyState = 1 */
   ACTOR_TYPE_LOCKED_CHEST = 174,   /* opened with the key, drops a reward */
   ACTOR_TYPE_WOOD_CHEST = 194,       /* breaks on the first hit into 0xFF..0x101 shards (BreakState) */
   ACTOR_TYPE_WOBBLE_CHEST = 195,     /* shakes and recoils when hit, then breaks (WobbleState) */
+  ACTOR_TYPE_SWOOPER = 230, /* swooping guard (SwoopState) */
   ACTOR_TYPE_DRAGON_STATUE = 0xFA, /* trapped dragon: counts the rescue */
   ACTOR_TYPE_STATUE_SHARD = 0xFB,  /* its burst shards (BurstShardState) */
   ACTOR_TYPE_WOOD_CHEST_SHARD = 255, /* 255..257: wood chest burst (255/256 bounce, 257 tumbles) */
   ACTOR_TYPE_GEM_DIGIT_0 = 0x104,  /* floating gem-value digits 0..9: 0x104..0x10D */
+  ACTOR_TYPE_PATH_GUARD = 283, /* walks its waypoint ring, waits on its partner */
   ACTOR_TYPE_AMBIENT_SOUND = 286,  /* plays random ambient voices, mode 2 along a path (AmbientSoundState) */
+  ACTOR_TYPE_HOMING_WISP = 295, /* homing wisp (WispState) */
   ACTOR_TYPE_FLIGHT_CHEST = 299,     /* flight levels: flame or charge frees its reward */
   ACTOR_TYPE_WHIRLWIND = 300,      /* lifts Spyro to its top (WhirlwindState, SPYRO_ST_LIFT) */
   ACTOR_TYPE_SPARKLE_SHARD = 309,    /* one puff a frame; with 310/311 the burst of wobble, spin and
@@ -148,6 +155,7 @@ enum ActorType {
   ACTOR_TYPE_WOOD_SHARD = 310,       /* 310..311: bounces and throws three sparks a frame */
   ACTOR_TYPE_CRACKING_BOULDER = 312, /* shakes and smokes when hit, then bursts */
   ACTOR_TYPE_RESPAWNER = 323,      /* puts dormant actors of one type back once Spyro is far (RespawnState) */
+  ACTOR_TYPE_FLOOR_MARKER = 328, /* drops onto the floor triangle under it once, then sits there */
   ACTOR_TYPE_SEED_POD = 329,         /* wobbles when struck, holds a floating prize above itself */
   ACTOR_TYPE_CHECKPOINT = 331,     /* 331..333: sets the respawn anchor (SetSpawnAnchorFromActor) */
   ACTOR_TYPE_TIME_BONUS = 345,       /* flight time bonus 345..347: flies to the HUD clock */
@@ -156,10 +164,13 @@ enum ActorType {
   ACTOR_TYPE_HOMING_SPARK = 392,     /* launched at the nearest enemy in front of Spyro */
   ACTOR_TYPE_PORTAL_GUIDE = 398,   /* flies Spyro through a portal (PortalState) */
   ACTOR_TYPE_BREAKABLE_ROCK = 401,   /* shakes when struck; a charge shatters it */
+  ACTOR_TYPE_CANNON = 402, /* smokes while it builds up, fires, then flies its ball along a path */
   ACTOR_TYPE_BALLOON = 416,        /* bobs about its rest height; only in balloonist levels */
   ACTOR_TYPE_LIFE_CHEST = 421,       /* shakes and pops its lid on a timer, spawning a 0x1A6 rider (LiftState) */
   ACTOR_TYPE_LIFE_CHEST_SHARD = 423, /* 423..425: life chest burst (423/424 bounce, 425 tumbles) */
   ACTOR_TYPE_LETTER_A = 0x1AA,     /* floating-name letters A..Z: 0x1AA..0x1C3 */
+  ACTOR_TYPE_ROAMING_RAM_QUIET = 453, /* ACTOR_TYPE_ROAMING_RAM without the voice channel (level 21) */
+  ACTOR_TYPE_ROAMING_RAM = 466, /* wanders its waypoint ring away from Spyro, charges down its path (RoamingRamState) */
   ACTOR_TYPE_FLIGHT_CHEST_SHARD = 478, /* 478..483: flight chest burst */
 };
 

@@ -2052,7 +2052,7 @@ void Level26_UpdateActors(void) {
     }
 
     /* Type 160: wandering critter; knocked away when hit. */
-    case 160: {
+    case ACTOR_TYPE_WANDERING_CRITTER: {
       L26Critter *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {

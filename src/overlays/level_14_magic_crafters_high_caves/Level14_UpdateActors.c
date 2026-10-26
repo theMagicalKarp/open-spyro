@@ -1408,7 +1408,7 @@ void Level14_UpdateActors(void) {
 
     /* Path walker (PathState): waits for Spyro, then paces its path, turning
      * back at either end and choosing the node that leads away from him. */
-    case 36: {
+    case ACTOR_TYPE_PATH_WALKER: {
       PathState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
@@ -3616,7 +3616,7 @@ void Level14_UpdateActors(void) {
     }
 
     /* Homing wisp (WispState). */
-    case 295: {
+    case ACTOR_TYPE_HOMING_WISP: {
       WispState *st = actor->state;
       int i;
 
@@ -3774,7 +3774,7 @@ void Level14_UpdateActors(void) {
       case 3:
         if (TickCountdownByFrameDelta(&st->timer, 4) && actor->nextFrame >= 4 &&
             st->count < 3) {
-          Actor *b = g_pfnLevelSpawnActor(0x127, actor);
+          Actor *b = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_WISP, actor);
 
           if (st->flags & 2) {
             if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xA00 &&
@@ -4674,7 +4674,7 @@ void Level14_UpdateActors(void) {
 
     /* Type 328: floor-snapped marker. Drops onto the floor once, then sits at
      * the centroid of the triangle it landed on. */
-    case 328: {
+    case ACTOR_TYPE_FLOOR_MARKER: {
       int *tri = actor->state;
 
       if (*tri < 0) {

@@ -209,7 +209,7 @@ void Level12_UpdateActors(void) {
     }
 
     /* Particle emitter on a random timer. */
-    case 11: {
+    case ACTOR_TYPE_TIMED_EMITTER: {
       int *st;
 
       st = (int *)actor->state;
@@ -1271,7 +1271,7 @@ void Level12_UpdateActors(void) {
 
     /* Path walker (PathState): waits for Spyro, then paces its path, turning
      * back at either end and choosing the node that leads away from him. */
-    case 36: {
+    case ACTOR_TYPE_PATH_WALKER: {
       PathState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
@@ -3868,7 +3868,7 @@ void Level12_UpdateActors(void) {
     /* Type 283: path guard. Walks its waypoint ring, waits on its partner,
      * rears up (and calls for help) when Spyro comes near, and is knocked
      * away when hit. */
-    case 283: {
+    case ACTOR_TYPE_PATH_GUARD: {
       L16Guard *st = actor->state;
 
       if (actor->mode != 2) {
@@ -4206,7 +4206,7 @@ void Level12_UpdateActors(void) {
 
     /* Type 328: floor-snapped marker. Drops onto the floor once, then sits at
      * the centroid of the triangle it landed on. */
-    case 328: {
+    case ACTOR_TYPE_FLOOR_MARKER: {
       int *tri = actor->state;
 
       if (*tri < 0) {

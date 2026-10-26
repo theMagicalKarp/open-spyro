@@ -1201,7 +1201,7 @@ void Level15_UpdateActors(void) {
 
     /* Path walker (PathState): waits for Spyro, then paces its path, turning
      * back at either end and choosing the node that leads away from him. */
-    case 36: {
+    case ACTOR_TYPE_PATH_WALKER: {
       PathState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
@@ -2884,7 +2884,7 @@ void Level15_UpdateActors(void) {
     /* Type 283: path guard. Walks its waypoint ring, waits on its partner,
      * rears up (and calls for help) when Spyro comes near, and is knocked
      * away when hit. */
-    case 283: {
+    case ACTOR_TYPE_PATH_GUARD: {
       L16Guard *st = actor->state;
 
       if (actor->mode != 2) {
@@ -3338,7 +3338,7 @@ void Level15_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && actor->nextFrame >= 7 &&
             st->count < 3) {
-          Actor *b = g_pfnLevelSpawnActor(0x127, actor);
+          Actor *b = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_WISP, actor);
 
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0xA00 &&
               ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x400) {
@@ -3573,7 +3573,7 @@ void Level15_UpdateActors(void) {
     }
 
     /* Homing wisp (WispState). */
-    case 295: {
+    case ACTOR_TYPE_HOMING_WISP: {
       WispState *st = actor->state;
       int i;
 
