@@ -1346,7 +1346,7 @@ void Level11_UpdateActors(void) {
     }
     /* Flight-level target (ring/chest) that hands a helper to its owner and
      * pays out when Spyro flies through it. */
-    case 0x154: {
+    case ACTOR_TYPE_FLIGHT_RING: {
       TargetState *st = actor->state;
 
       if (g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0 && st->helper == 0) {
@@ -1923,12 +1923,12 @@ void Level11_UpdateActors(void) {
       break;
     }
     /* Flight trigger: when hit, plays its sound, spawns its reward and
-     * retires itself as type 0x18F. */
-    case 0x18D:
-    case 0x18F: {
+     * retires itself as ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT. */
+    case ACTOR_TYPE_FLAME_FLIGHT_TARGET:
+    case ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT: {
       int *st = actor->state;
 
-      if (actor->type == 0x18D && (actor->flags & ACTOR_HIT_FLAME)) {
+      if (actor->type == ACTOR_TYPE_FLAME_FLIGHT_TARGET && (actor->flags & ACTOR_HIT_FLAME)) {
         Actor *reward;
 
         TallyFlightTarget(st[0]);
@@ -1939,7 +1939,7 @@ void Level11_UpdateActors(void) {
         if (st[2] >= 0) {
           ModifyWorldChunkAnimFlags(st[2], 0xFC, 0);
         }
-        actor->type = 0x18F;
+        actor->type = ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT;
       }
       break;
     }

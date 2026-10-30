@@ -105,7 +105,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x11:
+    case ACTOR_TYPE_AIMED_SHOT:
     {
       int *st;
       int dir;
@@ -290,7 +290,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x167 ... 0x169:
+    case ACTOR_TYPE_TUMBLE_SHARD ... ACTOR_TYPE_TUMBLE_SHARD + 2:
     {
       FragmentState *st = rec->state;
       int seed;

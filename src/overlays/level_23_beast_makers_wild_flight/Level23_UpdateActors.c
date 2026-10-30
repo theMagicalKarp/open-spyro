@@ -324,7 +324,7 @@ void Level23_UpdateActors(void) {
 
       break;
     }
-    case 0x11: {
+    case ACTOR_TYPE_AIMED_SHOT: {
       DriftState *st = actor->state;
 
       if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
@@ -1212,9 +1212,9 @@ void Level23_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x167, actor);
-          g_pfnLevelSpawnActor(0x168, actor);
-          g_pfnLevelSpawnActor(0x169, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_TUMBLE_SHARD, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_TUMBLE_SHARD + 1, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_TUMBLE_SHARD + 2, actor);
         }
         PlayActorMeshVoice(actor, 0, 0);
         actor->mode = 1;
@@ -1465,7 +1465,7 @@ void Level23_UpdateActors(void) {
       }
       break;
     }
-    case 0x134: {
+    case ACTOR_TYPE_BANKING_FLIGHT_TARGET: {
       RollerState *st = actor->state;
 
       if (st->ready == 0) {
@@ -1983,9 +1983,9 @@ void Level23_UpdateActors(void) {
       }
       break;
     }
-    case 0x167:
-    case 0x168:
-    case 0x169: {
+    case ACTOR_TYPE_TUMBLE_SHARD:
+    case ACTOR_TYPE_TUMBLE_SHARD + 1:
+    case ACTOR_TYPE_TUMBLE_SHARD + 2: {
       TumbleState *st = actor->state;
 
       if (st->life > 0 && actor->drawn) {

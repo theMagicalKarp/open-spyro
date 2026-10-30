@@ -114,7 +114,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     HideActorRenderRecord(rec);
     break;
 
-  case 0x4E:
+  case ACTOR_TYPE_RIDING_FLIGHT_TARGET:
     InitActorRenderDefaults(rec);
     InsertActorIntoSpatialGrid(rec);
     break;
@@ -275,7 +275,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x167 ... 0x169:
+  case ACTOR_TYPE_TUMBLE_SHARD ... ACTOR_TYPE_TUMBLE_SHARD + 2:
   {
     FragmentState *st = rec->state;
     int seed;
@@ -308,7 +308,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x16A:
+  case ACTOR_TYPE_WRECK_EMBER:
   {
     FragmentState *st = rec->state;
     int *pst = parent->state;
@@ -406,7 +406,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     rec->tintMode = 0;
     break;
 
-  case 0x18F:
+  case ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT:
     InitActorRenderDefaults(rec);
     rec->cullRadius = 0xFF;
     rec->posX = 0x1CC;

@@ -546,7 +546,7 @@ void Level34_UpdateActors(void) {
 
     /* Type 17: bolt. Flies along its velocity until its timer runs out or it
      * hits the world, then despawns. */
-    case 17: {
+    case ACTOR_TYPE_AIMED_SHOT: {
       BoltFlight *st = actor->state;
       int *pos;
 

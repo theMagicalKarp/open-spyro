@@ -101,7 +101,7 @@ Actor *Level17_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x11:
+    case ACTOR_TYPE_AIMED_SHOT:
     {
       int *st;
       int dir;

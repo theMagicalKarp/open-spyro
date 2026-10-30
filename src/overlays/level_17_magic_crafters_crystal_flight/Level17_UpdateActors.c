@@ -309,7 +309,7 @@ void Level17_UpdateActors(void) {
 
       break;
     }
-    case 0x11: {
+    case ACTOR_TYPE_AIMED_SHOT: {
       DriftState *st = actor->state;
 
       if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
@@ -1350,7 +1350,7 @@ void Level17_UpdateActors(void) {
       }
       break;
     }
-    case 0x134: {
+    case ACTOR_TYPE_BANKING_FLIGHT_TARGET: {
       RollerState *st = actor->state;
 
       if (st->ready == 0) {
@@ -1450,7 +1450,7 @@ void Level17_UpdateActors(void) {
     }
     /* Flight-level target (ring/chest) that hands a helper to its owner and
      * pays out when Spyro flies through it. */
-    case 0x154: {
+    case ACTOR_TYPE_FLIGHT_RING: {
       TargetState *st = actor->state;
 
       if (g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0 && st->helper == 0) {

@@ -333,7 +333,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       rec->tintMode = 0;
       break;
 
-    case 0x18F:
+    case ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT:
       InitActorRenderDefaults(rec);
       rec->cullRadius = 0xFF;
       rec->posX = 0x1CC;

@@ -126,6 +126,7 @@ enum ActorType {
   ACTOR_TYPE_EXTRA_LIFE = 14,      /* collected: g_nExtraLives + 1 */
   ACTOR_TYPE_SPARX_FOOD = 15,      /* collected: g_nSparxFoodCount + 1 (20: a life) */
   ACTOR_TYPE_BUTTERFLY = 16,       /* eaten by Sparx: g_nSparxHealth + 1 */
+  ACTOR_TYPE_AIMED_SHOT = 17, /* levels 5/17/23/34: leaves its parent's facing aimed at Spyro (speed 0xA0); despawns on timeout, a world hit or reaching Spyro (DriftState) */
   ACTOR_TYPE_GUNNER = 28, /* level 20: wakes its partner, turns to it, fires type 400 shots (GunnerState) */
   ACTOR_TYPE_EGG_THIEF = 33,       /* runs off with a dragon egg (34), drops it when hit (ThiefState) */
   ACTOR_TYPE_DRAGON_EGG = 34,      /* recovered egg: rises, rolls the HUD egg tally */
@@ -134,6 +135,7 @@ enum ActorType {
   ACTOR_TYPE_METALHEAD = 48, /* level 22 boss (MetalheadState) */
   ACTOR_TYPE_SEED_POD_SHARD = 67,    /* 67..69: seed pod burst (67/68 bounce, 69 tumbles) */
   ACTOR_TYPE_LETTER_OTHER = 0x4C,  /* a non-A..Z glyph of a floating name */
+  ACTOR_TYPE_RIDING_FLIGHT_TARGET = 78, /* flight levels 5/29: rides its host's attach point 0; flamed, pays out its reward, tallies, blasts (ACTOR_HIT_SUPER) and bursts into tumble shards (RiderState) */
   ACTOR_TYPE_GEM_1 = 0x53,         /* gems, by CollectPickupActor's value */
   ACTOR_TYPE_GEM_2 = 0x54,
   ACTOR_TYPE_GEM_5 = 0x55,
@@ -181,6 +183,7 @@ enum ActorType {
   ACTOR_TYPE_RUNNER_SPAWNER = 303, /* level 14: spawns type 304 runners (RunnerSpawnerState) */
   ACTOR_TYPE_WAYPOINT_RUNNER = 304, /* level 14 (WaypointRunnerState) */
   ACTOR_TYPE_FLEEING_WALKER = 305, /* level 14: walks one of three paths, flees Spyro (FleeingWalkerState) */
+  ACTOR_TYPE_BANKING_FLIGHT_TARGET = 308, /* flight levels 5/17/23: tweens its path banking into turns; flamed, pays out, tallies and runs off until it splashes down (RollerState) */
   ACTOR_TYPE_SPARKLE_SHARD = 309,    /* one puff a frame; with 310/311 the burst of wobble, spin and
                                       * locked chests and breakable rocks */
   ACTOR_TYPE_WOOD_SHARD = 310,       /* 310..311: bounces and throws three sparks a frame */
@@ -190,10 +193,13 @@ enum ActorType {
   ACTOR_TYPE_FLOOR_MARKER = 328, /* drops onto the floor triangle under it once, then sits there */
   ACTOR_TYPE_SEED_POD = 329,         /* wobbles when struck, holds a floating prize above itself */
   ACTOR_TYPE_CHECKPOINT = 331,     /* 331..333: sets the respawn anchor (SetSpawnAnchorFromActor) */
+  ACTOR_TYPE_FLIGHT_RING = 340, /* flight levels 11/17: spinning ring; flying through its plane tallies it (TargetState) */
   ACTOR_TYPE_ATTACH_BEAD = 343, /* level 19: streams between its owner's attach points (AttachBeadState) */
   ACTOR_TYPE_TIME_BONUS = 345,       /* flight time bonus 345..347: flies to the HUD clock */
   ACTOR_TYPE_FLIGHT_TARGET = 353,    /* breakable flight target: bursts into shards 374..386 when flown through */
   ACTOR_TYPE_FLIGHT_HUD = 358,       /* flight-level HUD controller (clock digits, target tally) */
+  ACTOR_TYPE_TUMBLE_SHARD = 359, /* 359..361: falling, spinning burst shards of the riding target and level 23's cycler (TumbleState) */
+  ACTOR_TYPE_WRECK_EMBER = 362, /* flight levels 5/29: an ember from a wrecked path smoker/prop; rebounds off walls (EmberState) */
   ACTOR_TYPE_HAZARD1_ENTER_FX = 363, /* g_anHazardEnterSpawnType[1]: one-shot effect at Spyro as he enters a kind-1 hazard */
   ACTOR_TYPE_HAZARD1_DEATH_FX = 364, /* g_anHazardTimeoutSpawnType[1]: one-shot effect when the kind-1 hazard kills him */
   ACTOR_TYPE_SHEMP_GUARD = 370, /* level 10: Doctor Shemp's guard (GuardState370) */
@@ -202,12 +208,16 @@ enum ActorType {
   ACTOR_TYPE_FLIGHT_TARGET_SHARD = 374, /* 374..386: a flight target's burst shards */
   ACTOR_TYPE_SPIN_CHEST = 390,       /* each charge spins it faster; spun fast enough, or flamed, it bursts */
   ACTOR_TYPE_HOMING_SPARK = 392,     /* launched at the nearest enemy in front of Spyro */
+  ACTOR_TYPE_FLAME_FLIGHT_TARGET = 397, /* flight levels 11/29: flamed, tallies, pays out and becomes ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT */
   ACTOR_TYPE_PORTAL_GUIDE = 398,   /* flies Spyro through a portal (PortalState) */
+  ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT = 399, /* the flame flight target after it paid out */
   ACTOR_TYPE_SPLASH = 400, /* one-shot splash where an actor lands in water (spawned with SFX_SPLASH) */
   ACTOR_TYPE_BREAKABLE_ROCK = 401,   /* shakes when struck; a charge shatters it */
   ACTOR_TYPE_CANNON = 402, /* smokes while it builds up, fires, then flies its ball along a path */
   ACTOR_TYPE_LURKER = 403, /* level 20: drags Spyro with a tether actor (LurkerState) */
   ACTOR_TYPE_HAZARD0_DEATH_FX = 405, /* g_anHazardTimeoutSpawnType[0] */
+  ACTOR_TYPE_BLASTABLE_PATH_SMOKER = 407, /* flight levels 5/29: tweens its path puffing smoke from attach point 3; a blast (ACTOR_HIT_SUPER) wrecks it (SmokerState) */
+  ACTOR_TYPE_BLASTABLE_PATH_PROP = 408, /* flight levels 5/29: ACTOR_TYPE_BLASTABLE_PATH_SMOKER without the smoke */
   ACTOR_TYPE_BALLOON = 416,        /* bobs about its rest height; only in balloonist levels */
   ACTOR_TYPE_LIFE_CHEST = 421,       /* shakes and pops its lid on a timer, spawning a 0x1A6 rider (LiftState) */
   ACTOR_TYPE_LIFE_CHEST_SHARD = 423, /* 423..425: life chest burst (423/424 bounce, 425 tumbles) */

@@ -552,7 +552,7 @@ void Level29_UpdateActors(void) {
       break;
     }
 
-    case 0x4E: {
+    case ACTOR_TYPE_RIDING_FLIGHT_TARGET: {
       RiderState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 1) {
@@ -584,9 +584,9 @@ void Level29_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x167, actor);
-            g_pfnLevelSpawnActor(0x168, actor);
-            g_pfnLevelSpawnActor(0x169, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_TUMBLE_SHARD, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_TUMBLE_SHARD + 1, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_TUMBLE_SHARD + 2, actor);
           }
           for (i = 0; i < 8; i++) {
             svA[0] = (GetRandomU32() & 0x7E) - 0x3F;
@@ -1847,9 +1847,9 @@ void Level29_UpdateActors(void) {
       }
       break;
     }
-    case 0x167:
-    case 0x168:
-    case 0x169: {
+    case ACTOR_TYPE_TUMBLE_SHARD:
+    case ACTOR_TYPE_TUMBLE_SHARD + 1:
+    case ACTOR_TYPE_TUMBLE_SHARD + 2: {
       TumbleState *st = actor->state;
 
       if (st->life > 0 && actor->drawn) {
@@ -1873,7 +1873,7 @@ void Level29_UpdateActors(void) {
       }
       break;
     }
-    case 0x16A: {
+    case ACTOR_TYPE_WRECK_EMBER: {
       EmberState *st = actor->state;
 
       if (st->life > 0 && actor->drawn) {
@@ -2017,12 +2017,12 @@ void Level29_UpdateActors(void) {
       break;
     }
     /* Flight trigger: when hit, plays its sound, spawns its reward and
-     * retires itself as type 0x18F. */
-    case 0x18D:
-    case 0x18F: {
+     * retires itself as ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT. */
+    case ACTOR_TYPE_FLAME_FLIGHT_TARGET:
+    case ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT: {
       int *st = actor->state;
 
-      if (actor->type == 0x18D && (actor->flags & ACTOR_HIT_FLAME)) {
+      if (actor->type == ACTOR_TYPE_FLAME_FLIGHT_TARGET && (actor->flags & ACTOR_HIT_FLAME)) {
         Actor *reward;
 
         TallyFlightTarget(st[0]);
@@ -2033,11 +2033,11 @@ void Level29_UpdateActors(void) {
         if (st[2] >= 0) {
           ModifyWorldChunkAnimFlags(st[2], 0xFC, 0);
         }
-        actor->type = 0x18F;
+        actor->type = ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT;
       }
       break;
     }
-    case 0x197: {
+    case ACTOR_TYPE_BLASTABLE_PATH_SMOKER: {
       SmokerState *st = actor->state;
       int svZ[3];
       int i;
@@ -2066,7 +2066,7 @@ void Level29_UpdateActors(void) {
             g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3, actor);
             g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4, actor);
           }
-          g_pfnLevelSpawnActor(0x16A, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_WRECK_EMBER, actor);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2074,7 +2074,7 @@ void Level29_UpdateActors(void) {
       }
       break;
     }
-    case 0x198: {
+    case ACTOR_TYPE_BLASTABLE_PATH_PROP: {
       SmokerState *st = actor->state;
       int i;
 
@@ -2098,7 +2098,7 @@ void Level29_UpdateActors(void) {
             g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3, actor);
             g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4, actor);
           }
-          g_pfnLevelSpawnActor(0x16A, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_WRECK_EMBER, actor);
           DespawnActorRecord(actor);
           continue;
         }

@@ -95,7 +95,7 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x11: {
+  case ACTOR_TYPE_AIMED_SHOT: {
     int *st;
     int dir;
     int d[3];
@@ -127,7 +127,7 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     HideActorRenderRecord(rec);
     break;
 
-  case 0x4E:
+  case ACTOR_TYPE_RIDING_FLIGHT_TARGET:
     InitActorRenderDefaults(rec);
     InsertActorIntoSpatialGrid(rec);
     break;
@@ -271,7 +271,7 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x167 ... 0x169:
+  case ACTOR_TYPE_TUMBLE_SHARD ... ACTOR_TYPE_TUMBLE_SHARD + 2:
   {
     FragmentState *st = rec->state;
     int seed;
@@ -304,7 +304,7 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x16A:
+  case ACTOR_TYPE_WRECK_EMBER:
   {
     FragmentState *st = rec->state;
     int *pst = parent->state;
