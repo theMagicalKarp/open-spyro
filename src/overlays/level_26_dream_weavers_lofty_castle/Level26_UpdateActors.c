@@ -675,7 +675,7 @@ void Level26_UpdateActors(void) {
 
     /* Type 52: bomb-lobbing lizard. Hides until Spyro is in range, then
      * lobs type 55 bombs at him; knocked away when hit. */
-    case 52: {
+    case ACTOR_TYPE_BOMB_LOBBER: {
       L26Lobber *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 2) {
@@ -707,7 +707,7 @@ void Level26_UpdateActors(void) {
         }
         if (actor->nextFrame >= 6 && st->timer == 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          g_pfnLevelEmitParticles(0x10, 0x1C, g_pfnLevelSpawnActor(0x37, actor), (void *)0x10);
+          g_pfnLevelEmitParticles(0x10, 0x1C, g_pfnLevelSpawnActor(ACTOR_TYPE_LOBBED_BOMB, actor), (void *)0x10);
           st->timer = st->reload;
         }
         break;
@@ -730,7 +730,7 @@ void Level26_UpdateActors(void) {
 
     /* Type 55: lobbed bomb. Bursts on landing, on a timer or against
      * Spyro, then plays its burst and is removed. */
-    case 55: {
+    case ACTOR_TYPE_LOBBED_BOMB: {
       int *st = actor->state;
 
       switch (actor->mode) {

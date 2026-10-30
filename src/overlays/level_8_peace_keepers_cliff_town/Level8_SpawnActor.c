@@ -269,7 +269,7 @@ Actor *Level8_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x120 ... 0x121: {
+  case ACTOR_TYPE_BOUNCE_DEBRIS ... ACTOR_TYPE_BOUNCE_DEBRIS + 1: {
     ShardState *st = rec->state;
     int yaw;
     int pitch;

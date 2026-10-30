@@ -2420,9 +2420,9 @@ void Level8_UpdateActors(void) {
     }
 
     /* Bell prop: rings when charged, spawning a ripple, and settles. */
-    case 206:
-    case 239:
-    case 242:
+    case ACTOR_TYPE_BELL_A:
+    case ACTOR_TYPE_BELL_B:
+    case ACTOR_TYPE_BELL_C:
       if (actor->flags != 0) {
         if (actor->flags == ACTOR_HIT_FLAME && actor->subMode == 0) {
           actor->subMode = 0x50;
@@ -2883,8 +2883,8 @@ void Level8_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x120, actor);
-            p = g_pfnLevelSpawnActor(0x121, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_BOUNCE_DEBRIS, actor);
+            p = g_pfnLevelSpawnActor(ACTOR_TYPE_BOUNCE_DEBRIS + 1, actor);
             if (GetRandomU32() & 1) {
               p->mode = 1;
               ANIM_RESET(p, 1);
@@ -3517,8 +3517,8 @@ void Level8_UpdateActors(void) {
     }
 
     /* Bouncing debris (BounceState). */
-    case 288:
-    case 289: {
+    case ACTOR_TYPE_BOUNCE_DEBRIS:
+    case ACTOR_TYPE_BOUNCE_DEBRIS + 1: {
       BounceState *st = actor->state;
 
       if (st->life == 0 || actor->drawn == 0) {
@@ -3533,7 +3533,7 @@ void Level8_UpdateActors(void) {
         st->vy = 0;
         st->vz = 0;
       }
-      if (actor->type == 0x120) {
+      if (actor->type == ACTOR_TYPE_BOUNCE_DEBRIS) {
         actor->rotX += st->rx;
         actor->rotY += st->ry;
         actor->rotZ += st->rz;

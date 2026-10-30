@@ -115,7 +115,7 @@ Actor *Level26_SpawnActor(int type, Actor *parent) {
     HideActorRenderRecord(rec);
     break;
 
-  case 0x37: {
+  case ACTOR_TYPE_LOBBED_BOMB: {
     PickupDropState *st = rec->state;
     int *pos;
     int turn;

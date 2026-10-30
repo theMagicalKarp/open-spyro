@@ -128,7 +128,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     HideActorRenderRecord(rec);
     break;
 
-  case 0x26: {
+  case ACTOR_TYPE_SPLIT_SHOT: {
     int *st = rec->state;
     int *pos;
     int turn;
@@ -447,7 +447,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     HideActorRenderRecord(rec);
     break;
 
-  case 0x1CA ... 0x1CB: {
+  case ACTOR_TYPE_REBOUND_DEBRIS ... ACTOR_TYPE_REBOUND_DEBRIS + 1: {
     FragmentState *st = rec->state;
 
     InitActorRenderDefaults(rec);

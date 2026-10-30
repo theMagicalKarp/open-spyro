@@ -1575,7 +1575,7 @@ void Level18_UpdateActors(void) {
     /* Type 137: guard. Patrols, waits or lurks until Spyro comes within
      * range, then turns on him and charges; after a charge the camera is
      * pulled in on it, and a hit knocks it back. */
-    case 137: {
+    case ACTOR_TYPE_CHARGING_GUARD: {
       L18Guard *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 2) {
@@ -3776,7 +3776,7 @@ void Level18_UpdateActors(void) {
 
     /* Type 461: war drum. Beats on a timer (with its own voice), and is
      * knocked away when hit. */
-    case 461: {
+    case ACTOR_TYPE_WAR_DRUM: {
       WarDrumState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && (unsigned int)(actor->mode - 3) >= 2) {

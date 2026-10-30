@@ -92,7 +92,7 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
     HideActorRenderRecord(rec);
     break;
 
-  case 0x26: {
+  case ACTOR_TYPE_SPLIT_SHOT: {
     int *st = rec->state;
     int *pos;
     int turn;

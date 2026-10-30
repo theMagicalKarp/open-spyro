@@ -368,7 +368,7 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x13E: {
+  case ACTOR_TYPE_FALLING_DEBRIS: {
     int *st = rec->state;
 
     InitActorRenderDefaults(rec);

@@ -319,7 +319,7 @@ Actor *Level13_SpawnActor(int type, Actor *parent) {
     InsertActorIntoSpatialGrid(rec);
     break;
   }
-  case 0x13E: {
+  case ACTOR_TYPE_FALLING_DEBRIS: {
     int *st = rec->state;
 
     InitActorRenderDefaults(rec);

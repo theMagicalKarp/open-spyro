@@ -275,7 +275,7 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x120 ... 0x121: {
+  case ACTOR_TYPE_BOUNCE_DEBRIS ... ACTOR_TYPE_BOUNCE_DEBRIS + 1: {
     ShardState *st = rec->state;
     int yaw;
     int pitch;
@@ -375,7 +375,7 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
     HideActorRenderRecord(rec);
     break;
 
-  case 0x1CA ... 0x1CB: {
+  case ACTOR_TYPE_REBOUND_DEBRIS ... ACTOR_TYPE_REBOUND_DEBRIS + 1: {
     FragmentState *st = rec->state;
 
     InitActorRenderDefaults(rec);

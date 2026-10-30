@@ -1934,7 +1934,7 @@ void Level28_UpdateActors(void) {
     /* Type 126: a path walker. Turns to face Spyro when he is near, walks
      * its path, sings its tune while it rests, and can be carried and
      * thrown by its rider. */
-    case 126: {
+    case ACTOR_TYPE_SINGING_PATH_WALKER: {
       PathWalkerState *st = actor->state;
 
       if (st->init == 0) {

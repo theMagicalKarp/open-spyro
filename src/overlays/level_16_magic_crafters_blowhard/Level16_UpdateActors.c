@@ -780,9 +780,10 @@ void Level16_UpdateActors(void) {
       break;
     }
 
-    /* Type 38: a thrown bomb. Bursts into four type 38 fragments when it
-     * lands on something, and fizzles out on a timer. */
-    case 38: {
+    /* Split shot: launched at Spyro on the thrower's release frame, it
+     * splits into four more of itself when it reaches him, and fizzles out
+     * on a timer or against a wall. */
+    case ACTOR_TYPE_SPLIT_SHOT: {
       int *st = actor->state;
 
       switch (actor->mode) {
@@ -809,7 +810,7 @@ void Level16_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x26, actor)->rotX = ang;
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor)->rotX = ang;
             ang += 0x40;
           }
           DespawnActorRecord(actor);
@@ -2302,13 +2303,13 @@ void Level16_UpdateActors(void) {
         }
         if (st->timer <= 0) {
           st->timer = 1;
-          g_pfnLevelSpawnActor(0x26, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         } else if (st->timer < 2 && actor->nextFrame >= 2) {
           st->timer = 2;
-          g_pfnLevelSpawnActor(0x26, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         } else if (st->timer < 0x3C && actor->nextFrame >= 6) {
           st->timer = 0x3C;
-          g_pfnLevelSpawnActor(0x26, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         }
         break;
 

@@ -2092,7 +2092,7 @@ void Level9_UpdateActors(void) {
 
     /* Type 205: snowball thrower. Holds its snowball overhead, throws it at
      * Spyro on its throw frame and is stunned when hit. */
-    case 205: {
+    case ACTOR_TYPE_OVERHEAD_THROWER: {
       int *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != 1) {

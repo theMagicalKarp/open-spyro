@@ -2581,7 +2581,7 @@ void Level6_UpdateActors(void) {
     }
 
     /* Type 193: wandering critter; knocked away when hit. */
-    case 193: {
+    case ACTOR_TYPE_WANDERING_CRITTER_B: {
       L26Critter *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
@@ -3548,8 +3548,8 @@ void Level6_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x1CA, actor);
-          g_pfnLevelSpawnActor(0x1CB, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_REBOUND_DEBRIS, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_REBOUND_DEBRIS + 1, actor);
         }
         for (i = 0; i < 8; i++) {
           g328[0] = (GetRandomU32() & 0x3E) - 0x1F;
@@ -4694,8 +4694,8 @@ void Level6_UpdateActors(void) {
 
     /* Types 458/459: tumbling debris. Bounces off walls and floors,
      * falling and spinning until its life runs out. */
-    case 458:
-    case 459: {
+    case ACTOR_TYPE_REBOUND_DEBRIS:
+    case ACTOR_TYPE_REBOUND_DEBRIS + 1: {
       SparkState *st = actor->state;
 
       if (st->life > 0 && actor->drawn) {

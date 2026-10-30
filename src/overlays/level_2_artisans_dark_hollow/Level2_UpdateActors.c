@@ -1741,8 +1741,8 @@ void Level2_UpdateActors(void) {
       break;
     }
 
-    /* Type 129: waits to be hit, then plays its reaction once. */
-    case 129:
+    /* Charge-reactive prop: a charge plays its reaction animation once. */
+    case ACTOR_TYPE_CHARGE_REACT_PROP:
       switch (actor->mode) {
       case 0:
         if (actor->flags & ACTOR_HIT_CHARGE) {

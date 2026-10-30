@@ -93,7 +93,7 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
     HideActorRenderRecord(rec);
     break;
 
-  case 0x26: {
+  case ACTOR_TYPE_SPLIT_SHOT: {
     int *st = rec->state;
     int *pos;
     int turn;
@@ -371,7 +371,7 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
     InsertActorIntoSpatialGrid(rec);
     break;
   }
-  case 0x13E: {
+  case ACTOR_TYPE_FALLING_DEBRIS: {
     int *st = rec->state;
 
     InitActorRenderDefaults(rec);

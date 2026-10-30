@@ -2275,8 +2275,8 @@ void Level32_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x1CA, actor);
-          g_pfnLevelSpawnActor(0x1CB, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_REBOUND_DEBRIS, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_REBOUND_DEBRIS + 1, actor);
         }
         for (i = 0; i < 0x2A; i++) {
           int a = GetRandomU32() & 0xFF;
@@ -3355,8 +3355,8 @@ void Level32_UpdateActors(void) {
     }
 
     /* Bouncing shard without the trail (ShardState). */
-    case 458:
-    case 459: {
+    case ACTOR_TYPE_REBOUND_DEBRIS:
+    case ACTOR_TYPE_REBOUND_DEBRIS + 1: {
       ShardState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {

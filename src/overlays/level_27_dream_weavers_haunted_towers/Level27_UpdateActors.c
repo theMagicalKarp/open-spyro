@@ -668,9 +668,10 @@ void Level27_UpdateActors(void) {
       break;
     }
 
-    /* Bubble vent: rises out of the ground and pops into four bubbles when it
-     * reaches the surface. */
-    case 38: {
+    /* Split shot: launched at Spyro on the thrower's release frame, it
+     * splits into four more of itself when it reaches him, and fizzles out
+     * on a timer or against a wall. */
+    case ACTOR_TYPE_SPLIT_SHOT: {
       int *st = actor->state;
 
       switch (actor->mode) {
@@ -699,7 +700,7 @@ void Level27_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x26, actor)->rotX = a;
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor)->rotX = a;
           }
           DespawnActorRecord(actor);
           continue;
@@ -1873,8 +1874,8 @@ void Level27_UpdateActors(void) {
         if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
           break;
         }
-        g_pfnLevelSpawnActor(0x1CA, actor);
-        g_pfnLevelSpawnActor(0x1CB, actor);
+        g_pfnLevelSpawnActor(ACTOR_TYPE_REBOUND_DEBRIS, actor);
+        g_pfnLevelSpawnActor(ACTOR_TYPE_REBOUND_DEBRIS + 1, actor);
       }
       for (i = 0; i < 0x12; i++) {
         g288[0] = RandomIntInRange(-0x5A, 0x5A);
@@ -2790,13 +2791,13 @@ void Level27_UpdateActors(void) {
         }
         if (st->stage <= 0) {
           st->stage = 1;
-          g_pfnLevelSpawnActor(0x26, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         } else if (st->stage < 2 && actor->nextFrame >= 2) {
           st->stage = 2;
-          g_pfnLevelSpawnActor(0x26, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         } else if (st->stage < 0x3C && actor->nextFrame >= 6) {
           st->stage = 0x3C;
-          g_pfnLevelSpawnActor(0x26, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         }
         break;
 
@@ -4067,8 +4068,8 @@ void Level27_UpdateActors(void) {
 
     /* Types 458/459: tumbling debris. Bounces off walls and floors,
      * falling and spinning until its life runs out. */
-    case 458:
-    case 459: {
+    case ACTOR_TYPE_REBOUND_DEBRIS:
+    case ACTOR_TYPE_REBOUND_DEBRIS + 1: {
       SparkState *st = actor->state;
 
       if (st->life > 0 && actor->drawn) {

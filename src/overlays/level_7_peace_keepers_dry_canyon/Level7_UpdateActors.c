@@ -2646,8 +2646,8 @@ void Level7_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            p = g_pfnLevelSpawnActor(0x121, c);
-            g_pfnLevelSpawnActor(0x120, c);
+            p = g_pfnLevelSpawnActor(ACTOR_TYPE_BOUNCE_DEBRIS + 1, c);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_BOUNCE_DEBRIS, c);
             if (GetRandomU32() & 1) {
               p->mode = 1;
               ANIM_RESET(p, 1);
@@ -2923,7 +2923,7 @@ void Level7_UpdateActors(void) {
     }
 
     /* Type 160: wandering critter; knocked away when hit. */
-    case 193: {
+    case ACTOR_TYPE_WANDERING_CRITTER_B: {
       L26Critter *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
@@ -3120,8 +3120,8 @@ void Level7_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x1CA, actor);
-          g_pfnLevelSpawnActor(0x1CB, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_REBOUND_DEBRIS, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_REBOUND_DEBRIS + 1, actor);
         }
         for (i = 0; i < 8; i++) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
@@ -3144,9 +3144,9 @@ void Level7_UpdateActors(void) {
     }
 
     /* Bell prop: rings when charged, spawning a ripple, and settles. */
-    case 206:
-    case 239:
-    case 242:      if (actor->flags != 0) {
+    case ACTOR_TYPE_BELL_A:
+    case ACTOR_TYPE_BELL_B:
+    case ACTOR_TYPE_BELL_C:      if (actor->flags != 0) {
         if (actor->flags == ACTOR_HIT_FLAME && actor->subMode == 0) {
           actor->subMode = 0x50;
           ANIM_SET(actor, 2);
@@ -3199,8 +3199,8 @@ void Level7_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x120, actor);
-            p = g_pfnLevelSpawnActor(0x121, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_BOUNCE_DEBRIS, actor);
+            p = g_pfnLevelSpawnActor(ACTOR_TYPE_BOUNCE_DEBRIS + 1, actor);
             if (GetRandomU32() & 1) {
               p->mode = 1;
               ANIM_RESET(p, 1);
@@ -3773,8 +3773,8 @@ void Level7_UpdateActors(void) {
     }
 
     /* Bouncing debris (BounceState). */
-    case 288:
-    case 289: {
+    case ACTOR_TYPE_BOUNCE_DEBRIS:
+    case ACTOR_TYPE_BOUNCE_DEBRIS + 1: {
       BounceState *st = actor->state;
 
       if (st->life == 0 || actor->drawn == 0) {
@@ -3789,7 +3789,7 @@ void Level7_UpdateActors(void) {
         st->vy = 0;
         st->vz = 0;
       }
-      if (actor->type == 0x120) {
+      if (actor->type == ACTOR_TYPE_BOUNCE_DEBRIS) {
         actor->rotX += st->rx;
         actor->rotY += st->ry;
         actor->rotZ += st->rz;
@@ -4730,8 +4730,8 @@ void Level7_UpdateActors(void) {
     }
 
     /* Bouncing shard without the trail (ShardState). */
-    case 458:
-    case 459: {
+    case ACTOR_TYPE_REBOUND_DEBRIS:
+    case ACTOR_TYPE_REBOUND_DEBRIS + 1: {
       ShardState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {

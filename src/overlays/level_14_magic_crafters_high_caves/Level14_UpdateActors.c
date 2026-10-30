@@ -3650,7 +3650,7 @@ void Level14_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x13E, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_DEBRIS, actor);
         }
         g_anSpyroRequestVelocity.x = g_anCosineLut[actor->rotZ] >> 5;
         g_nSpyroRequestVelocityY = g_anSineLut[actor->rotZ] >> 5;
@@ -3672,7 +3672,7 @@ void Level14_UpdateActors(void) {
               if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
                 break;
               }
-              g_pfnLevelSpawnActor(0x13E, actor);
+              g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_DEBRIS, actor);
             }
             st->target->flags |= 1;
             DespawnActorRecord(actor);
@@ -4611,7 +4611,7 @@ void Level14_UpdateActors(void) {
 
     /* Falling debris: tumbles along its velocity while on screen and is
      * removed once its timer runs out or it goes off screen. */
-    case 318: {
+    case ACTOR_TYPE_FALLING_DEBRIS: {
       int *st = actor->state;
 
       if (TickCountdownByFrameDelta(&st[3], 4) != 0 || actor->drawn == 0) {

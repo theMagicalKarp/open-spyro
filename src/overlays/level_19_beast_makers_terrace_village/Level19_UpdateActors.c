@@ -774,7 +774,7 @@ void Level19_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x5D, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_GROUND_BOUNCE_SHARD, actor);
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
@@ -936,7 +936,7 @@ void Level19_UpdateActors(void) {
     /* Explosion shard with a ground bounce (ShardState). */
     case ACTOR_TYPE_SEED_POD_SHARD:
     case ACTOR_TYPE_SEED_POD_SHARD + 1:
-    case 93:
+    case ACTOR_TYPE_GROUND_BOUNCE_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1:
     case ACTOR_TYPE_LIFE_CHEST_SHARD:
@@ -3240,7 +3240,7 @@ void Level19_UpdateActors(void) {
 
     /* Type 461: war drum. Beats on a timer (with its own voice), and is
      * knocked away when hit. */
-    case 461: {
+    case ACTOR_TYPE_WAR_DRUM: {
       WarDrumState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && (unsigned int)(actor->mode - 3) >= 2) {

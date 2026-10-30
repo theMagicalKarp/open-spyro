@@ -668,7 +668,7 @@ void Level21_UpdateActors(void) {
 
     /* Type 57: boulder. Rolls down to the floor and bursts into shards
      * (more type-57 actors in state 1) that bounce off the scenery. */
-    case 57: {
+    case ACTOR_TYPE_ROLLING_BOULDER: {
       BoulderState *st = actor->state;
 
       switch (actor->mode) {
@@ -716,7 +716,7 @@ void Level21_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          o = g_pfnLevelSpawnActor(0x39, actor);
+          o = g_pfnLevelSpawnActor(ACTOR_TYPE_ROLLING_BOULDER, actor);
           o->mode = 1;
           if (o->anim != 1) {
             ANIM_RESET(o, 1);
@@ -936,7 +936,7 @@ void Level21_UpdateActors(void) {
       case 4:
         TrackEntityYawTowardSpyro(actor, 8, 0, 0);
         if ((unsigned)(actor->nextFrame - 3) < 5 && st->rock == 0) {
-          st->rock = g_pfnLevelSpawnActor(0x39, actor);
+          st->rock = g_pfnLevelSpawnActor(ACTOR_TYPE_ROLLING_BOULDER, actor);
           st->rock->subMode = 0;
         }
         if (st->rock != 0 && st->rock->subMode == 0) {

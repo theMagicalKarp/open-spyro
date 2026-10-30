@@ -196,7 +196,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x26:
+    case ACTOR_TYPE_SPLIT_SHOT:
     {
       int *st = rec->state;
       int *pos;
@@ -204,7 +204,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       InitActorRenderDefaults(rec);
       pos = &rec->posX;
       CopyVector(pos, &parent->posX);
-      if (parent->type == 0x26)
+      if (parent->type == ACTOR_TYPE_SPLIT_SHOT)
       {
         rec->rotZ = parent->rotZ;
         rec->mode = 3;

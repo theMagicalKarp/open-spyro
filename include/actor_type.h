@@ -132,7 +132,11 @@ enum ActorType {
   ACTOR_TYPE_DRAGON_EGG = 34,      /* recovered egg: rises, rolls the HUD egg tally */
   ACTOR_TYPE_BOLT_GUARD = 35, /* level 19: scatters when hit, fires type 494 bolts (BoltGuardState) */
   ACTOR_TYPE_PATH_WALKER = 36, /* waits for Spyro, then paces its path (PathState) */
+  ACTOR_TYPE_SPLIT_SHOT = 38, /* levels 12/15/16/27: launched at Spyro on its thrower's release frame; splits into four more of itself when it reaches him */
   ACTOR_TYPE_METALHEAD = 48, /* level 22 boss (MetalheadState) */
+  ACTOR_TYPE_BOMB_LOBBER = 52, /* levels 25/26: hides until Spyro is in range, then lobs ACTOR_TYPE_LOBBED_BOMB at him */
+  ACTOR_TYPE_LOBBED_BOMB = 55, /* levels 25/26: bursts on landing, on a timer or against Spyro */
+  ACTOR_TYPE_ROLLING_BOULDER = 57, /* levels 21/22: rolls to the floor and bursts into more of itself (state 1) (BoulderState) */
   ACTOR_TYPE_SEED_POD_SHARD = 67,    /* 67..69: seed pod burst (67/68 bounce, 69 tumbles) */
   ACTOR_TYPE_LETTER_OTHER = 0x4C,  /* a non-A..Z glyph of a floating name */
   ACTOR_TYPE_RIDING_FLIGHT_TARGET = 78, /* flight levels 5/29: rides its host's attach point 0; flamed, pays out its reward, tallies, blasts (ACTOR_HIT_SUPER) and bursts into tumble shards (RiderState) */
@@ -141,9 +145,13 @@ enum ActorType {
   ACTOR_TYPE_GEM_5 = 0x55,
   ACTOR_TYPE_GEM_10 = 0x56,
   ACTOR_TYPE_GEM_25 = 0x57,
+  ACTOR_TYPE_GROUND_BOUNCE_SHARD = 93, /* levels 19/22: explosion shard with a ground bounce (ShardState) */
   ACTOR_TYPE_CARRIER = 109, /* level 14: flying carrier that follows Spyro and can be ridden (CarrierState) */
   ACTOR_TYPE_SAVE_HOST = 110,      /* hovers near its anchor, opens the save menu (SaveHostState) */
   ACTOR_TYPE_SPARX = 0x78,         /* g_pSparxActor (SparxState) */
+  ACTOR_TYPE_SINGING_PATH_WALKER = 126, /* levels 24/28: walks its path, sings while it rests, can be carried and thrown by its rider (PathWalkerState) */
+  ACTOR_TYPE_CHARGE_REACT_PROP = 129, /* levels 2/25: a charge plays its reaction animation once */
+  ACTOR_TYPE_CHARGING_GUARD = 137, /* levels 18/20: turns on Spyro in range and charges; the camera pulls in after a charge */
   ACTOR_TYPE_SHOCKWAVE = 143, /* level 33: set off where a trail bomb lands (ShockwaveState) */
   ACTOR_TYPE_BURST_GUNNER = 145, /* level 32: fires bursts of type 156 shots (BurstGunnerState) */
   ACTOR_TYPE_SWEEP_GUNNER = 147, /* level 32: sweeps its aim between two yaw limits (SweepGunnerState) */
@@ -160,13 +168,18 @@ enum ActorType {
   ACTOR_TYPE_LOOT_VORTEX = 181, /* levels 33/34 (LootVortexState) */
   ACTOR_TYPE_BRAWLER = 184, /* level 7: stationary brawler (BrawlerState) */
   ACTOR_TYPE_SHOOTER = 186, /* level 7: blinking sentry that fires type 197 (ShooterState) */
+  ACTOR_TYPE_WANDERING_CRITTER_B = 193, /* levels 6/7: wanders; knocked away when hit (L26Critter) */
   ACTOR_TYPE_WOOD_CHEST = 194,       /* breaks on the first hit into 0xFF..0x101 shards (BreakState) */
   ACTOR_TYPE_WOBBLE_CHEST = 195,     /* shakes and recoils when hit, then breaks (WobbleState) */
   ACTOR_TYPE_SHOOTER_SHOT = 197, /* level 7: the shooter's knock-back shot (ShooterShotState) */
+  ACTOR_TYPE_OVERHEAD_THROWER = 205, /* levels 9/10: holds its projectile overhead, throws it at Spyro on its throw frame; stunned when hit */
+  ACTOR_TYPE_BELL_A = 206, /* levels 7/8: rings when charged, spawning ACTOR_TYPE_BELL_RIPPLE (also 239/242) */
   ACTOR_TYPE_SUPERFLAME_GIVER = 227, /* level 14: grants the superflame (SuperflameGiverState) */
   ACTOR_TYPE_SWOOPER = 230, /* swooping guard (SwoopState) */
   ACTOR_TYPE_REBOUND_FX = 234, /* TRIGGER_REBOUND's impact: placed on Spyro's first contact point, facing the wall normal; removed when its animation ends */
+  ACTOR_TYPE_BELL_B = 239, /* levels 7/8: ACTOR_TYPE_BELL_A's body */
   ACTOR_TYPE_SUPERFLAME_GIVER_ALT = 241, /* level 27's superflame giver: wider reach, later grant frame */
+  ACTOR_TYPE_BELL_C = 242, /* levels 7/8: ACTOR_TYPE_BELL_A's body */
   ACTOR_TYPE_DRAGON_STATUE = 0xFA, /* trapped dragon: counts the rescue */
   ACTOR_TYPE_STATUE_SHARD = 0xFB,  /* its burst shards (BurstShardState) */
   ACTOR_TYPE_WOOD_CHEST_SHARD = 255, /* 255..257: wood chest burst (255/256 bounce, 257 tumbles) */
@@ -175,6 +188,7 @@ enum ActorType {
   ACTOR_TYPE_SHEPHERD = 271, /* levels 12/13 (ShepherdState) */
   ACTOR_TYPE_PATH_GUARD = 283, /* walks its waypoint ring, waits on its partner */
   ACTOR_TYPE_AMBIENT_SOUND = 286,  /* plays random ambient voices, mode 2 along a path (AmbientSoundState) */
+  ACTOR_TYPE_BOUNCE_DEBRIS = 288, /* 288..289, levels 7/8: bouncing debris (BounceState) */
   ACTOR_TYPE_HOMING_WISP = 295, /* homing wisp (WispState) */
   ACTOR_TYPE_FLIGHT_CHEST = 299,     /* flight levels: flame or charge frees its reward */
   ACTOR_TYPE_WHIRLWIND = 300,      /* lifts Spyro to its top (WhirlwindState, SPYRO_ST_LIFT) */
@@ -188,6 +202,7 @@ enum ActorType {
                                       * locked chests and breakable rocks */
   ACTOR_TYPE_WOOD_SHARD = 310,       /* 310..311: bounces and throws three sparks a frame */
   ACTOR_TYPE_CRACKING_BOULDER = 312, /* shakes and smokes when hit, then bursts */
+  ACTOR_TYPE_FALLING_DEBRIS = 318, /* levels 13/14/15: tumbles along its velocity until its timer runs out or it leaves the screen */
   ACTOR_TYPE_RESPAWNER = 323,      /* puts dormant actors of one type back once Spyro is far (RespawnState) */
   ACTOR_TYPE_SORCERER = 326, /* level 13 (SorcererState) */
   ACTOR_TYPE_FLOOR_MARKER = 328, /* drops onto the floor triangle under it once, then sits there */
@@ -223,6 +238,8 @@ enum ActorType {
   ACTOR_TYPE_LIFE_CHEST_SHARD = 423, /* 423..425: life chest burst (423/424 bounce, 425 tumbles) */
   ACTOR_TYPE_LETTER_A = 0x1AA,     /* floating-name letters A..Z: 0x1AA..0x1C3 */
   ACTOR_TYPE_ROAMING_RAM_QUIET = 453, /* ACTOR_TYPE_ROAMING_RAM without the voice channel (level 21) */
+  ACTOR_TYPE_REBOUND_DEBRIS = 458, /* 458..459, levels 6/7/27/32: rebounds off walls and floors, spinning until its life runs out */
+  ACTOR_TYPE_WAR_DRUM = 461, /* levels 18/19: beats on a timer with its own voice; knocked away when hit (WarDrumState) */
   ACTOR_TYPE_ROAMING_RAM = 466, /* wanders its waypoint ring away from Spyro, charges down its path (RoamingRamState) */
   ACTOR_TYPE_BOLT_SENTRY = 467, /* level 19: bolt-throwing sentry with three guards (BoltSentryState) */
   ACTOR_TYPE_GRABBER = 476, /* level 20: carries Spyro off and throws him (GrabberState) */

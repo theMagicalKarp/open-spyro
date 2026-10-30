@@ -172,7 +172,7 @@ Actor *Level22_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x5D: {
+  case ACTOR_TYPE_GROUND_BOUNCE_SHARD: {
     FragmentState *st = rec->state;
     int yaw;
     int pitch;
