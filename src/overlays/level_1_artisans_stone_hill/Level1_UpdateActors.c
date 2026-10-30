@@ -3173,8 +3173,8 @@ void Level1_UpdateActors(void) {
       break;
     }
 
-    /* Fade-out prop: removed as soon as its animation finishes. */
-    case 234:
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_REBOUND_FX:
       if (g_nActorAnimDone == 0) {
         break;
       }
@@ -3731,10 +3731,9 @@ void Level1_UpdateActors(void) {
       }
       break;
 
-    /* Types 363/364: a one-shot effect that is removed when its animation
-     * ends. */
-    case 405:
-    case 477:      if (g_nActorAnimDone != 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }

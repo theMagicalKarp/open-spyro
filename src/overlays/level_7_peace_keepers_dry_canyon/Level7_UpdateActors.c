@@ -3158,7 +3158,7 @@ void Level7_UpdateActors(void) {
       if (g_nActorAnimDone != 0) {
         switch (actor->nextAnim) {
         case 2: {
-          Actor *p = g_pfnLevelSpawnActor(0x1ED, actor);
+          Actor *p = g_pfnLevelSpawnActor(ACTOR_TYPE_BELL_RIPPLE, actor);
 
           p->rotZ = ((unsigned short)g_nCameraEulerYaw << 16 >> 18) - 0x80;
           CopyVector(&p->posX, &actor->posX);
@@ -4773,11 +4773,10 @@ void Level7_UpdateActors(void) {
 
     
 
-    /* Types 363/364: a one-shot effect that is removed when its animation
-     * ends. */
-    case 363:
-    case 364:
-    case 493:      if (g_nActorAnimDone != 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD1_ENTER_FX:
+    case ACTOR_TYPE_HAZARD1_DEATH_FX:
+    case ACTOR_TYPE_BELL_RIPPLE:      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }

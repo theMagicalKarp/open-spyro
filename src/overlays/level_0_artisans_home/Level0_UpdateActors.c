@@ -2809,9 +2809,9 @@ void Level0_UpdateActors(void) {
       break;
     }
 
-    /* Water bubbles and splash. */
-    case 405:
-    case 477:
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
       /* Removed as soon as the animation finishes. */
       if (g_nActorAnimDone == 0) {
         break;

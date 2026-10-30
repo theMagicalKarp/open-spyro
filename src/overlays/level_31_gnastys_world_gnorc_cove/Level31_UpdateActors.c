@@ -3915,13 +3915,12 @@ void Level31_UpdateActors(void) {
       }
       break;
 
-    /* Types 363/364: a one-shot effect that is removed when its animation
-     * ends. */
-    case 363:
-    case 364:
-    case 400:
-    case 405:
-    case 477:      if (g_nActorAnimDone != 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD1_ENTER_FX:
+    case ACTOR_TYPE_HAZARD1_DEATH_FX:
+    case ACTOR_TYPE_SPLASH:
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }

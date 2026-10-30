@@ -990,8 +990,8 @@ void Level28_UpdateActors(void) {
       continue;
     }
 
-    case 507:
-    case 508:
+    case ACTOR_TYPE_HAZARD2_ENTER_FX:
+    case ACTOR_TYPE_HAZARD2_DEATH_FX:
       if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
@@ -2725,7 +2725,7 @@ void Level28_UpdateActors(void) {
       break;
     }
 
-    case 234:
+    case ACTOR_TYPE_REBOUND_FX:
       if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;

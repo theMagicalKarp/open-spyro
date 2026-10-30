@@ -167,7 +167,7 @@ Actor *Level8_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0xEA:
+  case ACTOR_TYPE_REBOUND_FX:
     InitActorRenderDefaults(rec);
     CopyVector(&rec->posX, g_anSpyroFirstContactPoint);
     rec->rotZ = ArcTan2(g_anSpyroFirstContactNormal[0], g_anSpyroFirstContactNormal[1], 0) + 0x40;
@@ -324,7 +324,7 @@ Actor *Level8_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x16B ... 0x16C: {
+  case ACTOR_TYPE_HAZARD1_ENTER_FX ... ACTOR_TYPE_HAZARD1_DEATH_FX: {
     int ground;
     int z;
     int gap;

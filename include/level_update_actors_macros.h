@@ -184,7 +184,7 @@
 /* Burst a barrel: splash, release its rider, and remove it. */
 #define BARREL_BURST(a, st)                                                    \
   {                                                                            \
-    Actor *sp_ = g_pfnLevelSpawnActor(0x190, a);                                         \
+    Actor *sp_ = g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, a);                                         \
     Actor *w_;                                                                 \
                                                                                \
     StopSoundVoicesByOwner(a, VOICE_STOP_ALL);                                                       \

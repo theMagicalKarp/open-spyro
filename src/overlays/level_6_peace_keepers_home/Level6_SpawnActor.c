@@ -306,9 +306,9 @@ Actor *Level6_SpawnActor(int type, Actor *parent) {
     rec->tintMode = 0;
     break;
 
-  case 0x16B ... 0x16C:
-  case 0x195:
-  case 0x1DD: {
+  case ACTOR_TYPE_HAZARD1_ENTER_FX ... ACTOR_TYPE_HAZARD1_DEATH_FX:
+  case ACTOR_TYPE_HAZARD0_DEATH_FX:
+  case ACTOR_TYPE_HAZARD0_ENTER_FX: {
     int ground;
     int z;
     int gap;

@@ -429,11 +429,11 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       rec->tintMode = 0;
       break;
 
-    case 0x190:
+    case ACTOR_TYPE_SPLASH:
 
-    case 0x195:
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
 
-    case 0x1DD:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
     {
       int ground;
       int z;

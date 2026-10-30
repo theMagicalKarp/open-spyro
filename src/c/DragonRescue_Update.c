@@ -467,7 +467,7 @@ void DragonRescue_Update(void) {
 
         for (n = 0; n < 0x20; n++) {
           ((void (*)(int, void *))g_pfnLevelSpawnActor)(
-              0xFB, g_pDragonRescueSourceActor);
+              ACTOR_TYPE_STATUE_SHARD, g_pDragonRescueSourceActor);
         }
         OPAQUE_COPY(five, 5);
         GB[24] = (int)AllocActorRecordSlot();

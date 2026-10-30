@@ -2947,9 +2947,9 @@ void Level2_UpdateActors(void) {
       }
       break;
 
-    /* Fade-out props: removed as soon as their animation finishes. */
-    case 405:
-    case 477:
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
       if (g_nActorAnimDone == 0) {
         break;
       }

@@ -285,8 +285,8 @@ Actor *Level2_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x195:
-  case 0x1DD: {
+  case ACTOR_TYPE_HAZARD0_DEATH_FX:
+  case ACTOR_TYPE_HAZARD0_ENTER_FX: {
     int ground;
     int z;
     int gap;

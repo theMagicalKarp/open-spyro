@@ -163,6 +163,7 @@ enum ActorType {
   ACTOR_TYPE_SHOOTER_SHOT = 197, /* level 7: the shooter's knock-back shot (ShooterShotState) */
   ACTOR_TYPE_SUPERFLAME_GIVER = 227, /* level 14: grants the superflame (SuperflameGiverState) */
   ACTOR_TYPE_SWOOPER = 230, /* swooping guard (SwoopState) */
+  ACTOR_TYPE_REBOUND_FX = 234, /* TRIGGER_REBOUND's impact: placed on Spyro's first contact point, facing the wall normal; removed when its animation ends */
   ACTOR_TYPE_SUPERFLAME_GIVER_ALT = 241, /* level 27's superflame giver: wider reach, later grant frame */
   ACTOR_TYPE_DRAGON_STATUE = 0xFA, /* trapped dragon: counts the rescue */
   ACTOR_TYPE_STATUE_SHARD = 0xFB,  /* its burst shards (BurstShardState) */
@@ -193,6 +194,8 @@ enum ActorType {
   ACTOR_TYPE_TIME_BONUS = 345,       /* flight time bonus 345..347: flies to the HUD clock */
   ACTOR_TYPE_FLIGHT_TARGET = 353,    /* breakable flight target: bursts into shards 374..386 when flown through */
   ACTOR_TYPE_FLIGHT_HUD = 358,       /* flight-level HUD controller (clock digits, target tally) */
+  ACTOR_TYPE_HAZARD1_ENTER_FX = 363, /* g_anHazardEnterSpawnType[1]: one-shot effect at Spyro as he enters a kind-1 hazard */
+  ACTOR_TYPE_HAZARD1_DEATH_FX = 364, /* g_anHazardTimeoutSpawnType[1]: one-shot effect when the kind-1 hazard kills him */
   ACTOR_TYPE_SHEMP_GUARD = 370, /* level 10: Doctor Shemp's guard (GuardState370) */
   ACTOR_TYPE_DOCTOR_SHEMP = 371, /* level 10 boss (ShempState) */
   ACTOR_TYPE_SHEMP_LOOKOUT = 372, /* level 10: Doctor Shemp's lookout (LookoutState) */
@@ -200,9 +203,11 @@ enum ActorType {
   ACTOR_TYPE_SPIN_CHEST = 390,       /* each charge spins it faster; spun fast enough, or flamed, it bursts */
   ACTOR_TYPE_HOMING_SPARK = 392,     /* launched at the nearest enemy in front of Spyro */
   ACTOR_TYPE_PORTAL_GUIDE = 398,   /* flies Spyro through a portal (PortalState) */
+  ACTOR_TYPE_SPLASH = 400, /* one-shot splash where an actor lands in water (spawned with SFX_SPLASH) */
   ACTOR_TYPE_BREAKABLE_ROCK = 401,   /* shakes when struck; a charge shatters it */
   ACTOR_TYPE_CANNON = 402, /* smokes while it builds up, fires, then flies its ball along a path */
   ACTOR_TYPE_LURKER = 403, /* level 20: drags Spyro with a tether actor (LurkerState) */
+  ACTOR_TYPE_HAZARD0_DEATH_FX = 405, /* g_anHazardTimeoutSpawnType[0] */
   ACTOR_TYPE_BALLOON = 416,        /* bobs about its rest height; only in balloonist levels */
   ACTOR_TYPE_LIFE_CHEST = 421,       /* shakes and pops its lid on a timer, spawning a 0x1A6 rider (LiftState) */
   ACTOR_TYPE_LIFE_CHEST_SHARD = 423, /* 423..425: life chest burst (423/424 bounce, 425 tumbles) */
@@ -211,9 +216,13 @@ enum ActorType {
   ACTOR_TYPE_ROAMING_RAM = 466, /* wanders its waypoint ring away from Spyro, charges down its path (RoamingRamState) */
   ACTOR_TYPE_BOLT_SENTRY = 467, /* level 19: bolt-throwing sentry with three guards (BoltSentryState) */
   ACTOR_TYPE_GRABBER = 476, /* level 20: carries Spyro off and throws him (GrabberState) */
+  ACTOR_TYPE_HAZARD0_ENTER_FX = 477, /* g_anHazardEnterSpawnType[0]; both kind-0 effects snap to the ground under Spyro (or the parent) */
   ACTOR_TYPE_FLIGHT_CHEST_SHARD = 478, /* 478..483: flight chest burst */
+  ACTOR_TYPE_BELL_RIPPLE = 493, /* levels 7/8: ripple a charged bell (206/239/242) spawns; removed when its animation ends */
   ACTOR_TYPE_AIMED_BOLT = 494, /* level 19: bolt thrown by 35 and 467 (AimedBoltState) */
   ACTOR_TYPE_BLOWHARD = 495, /* level 16 boss: patrols three paths, drops type 37 riders */
+  ACTOR_TYPE_HAZARD2_ENTER_FX = 507, /* g_anHazardEnterSpawnType[2]; level 32 also spawns it where a knocked actor lands on ground surface 1..2 */
+  ACTOR_TYPE_HAZARD2_DEATH_FX = 508, /* g_anHazardTimeoutSpawnType[2] */
 };
 
 /* RefreshActorDerivedState's mode bits. */

@@ -263,7 +263,7 @@ Actor *Level32_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x1FB ... 0x1FC: {
+  case ACTOR_TYPE_HAZARD2_ENTER_FX ... ACTOR_TYPE_HAZARD2_DEATH_FX: {
     int ground;
     int z;
     int gap;

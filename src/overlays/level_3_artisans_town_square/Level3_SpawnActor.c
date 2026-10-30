@@ -167,7 +167,7 @@ Actor *Level3_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0xEA:
+  case ACTOR_TYPE_REBOUND_FX:
     InitActorRenderDefaults(rec);
     CopyVector(&rec->posX, g_anSpyroFirstContactPoint);
     rec->rotZ = ArcTan2(g_anSpyroFirstContactNormal[0], g_anSpyroFirstContactNormal[1], 0) + 0x40;
@@ -281,8 +281,8 @@ Actor *Level3_SpawnActor(int type, Actor *parent) {
     InsertActorIntoSpatialGrid(rec);
     break;
 
-  case 0x195:
-  case 0x1DD: {
+  case ACTOR_TYPE_HAZARD0_DEATH_FX:
+  case ACTOR_TYPE_HAZARD0_ENTER_FX: {
     int ground;
     int z;
     int gap;

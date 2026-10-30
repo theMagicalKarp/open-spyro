@@ -341,7 +341,7 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
     InsertActorIntoSpatialGrid(rec);
     break;
 
-  case 0x16B ... 0x16C: {
+  case ACTOR_TYPE_HAZARD1_ENTER_FX ... ACTOR_TYPE_HAZARD1_DEATH_FX: {
     int ground;
     int z;
     int gap;

@@ -4194,9 +4194,9 @@ void Level22_UpdateActors(void) {
       }
       break;
 
-    /* Fade-out props: removed as soon as their animation finishes. */
-    case 507:
-    case 508:      if (g_nActorAnimDone == 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD2_ENTER_FX:
+    case ACTOR_TYPE_HAZARD2_DEATH_FX:      if (g_nActorAnimDone == 0) {
         break;
       }
       DespawnActorRecord(actor);

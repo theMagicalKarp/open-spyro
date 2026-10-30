@@ -534,7 +534,7 @@ void Level20_UpdateActors(void) {
 
           if (z - h > 0 ? z - h < 0x64 : h - z < 0x64) {
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
-            g_pfnLevelSpawnActor(0x190, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
             st->timer = 0xA;
             actor->mode = 0xA;
             continue;
@@ -2669,10 +2669,10 @@ void Level20_UpdateActors(void) {
       }
       break;
 
-    /* Fade-out props: removed as soon as their animation finishes. */
-    case 400:
-    case 405:
-    case 477:      if (g_nActorAnimDone == 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_SPLASH:
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:      if (g_nActorAnimDone == 0) {
         break;
       }
       DespawnActorRecord(actor);
@@ -2954,7 +2954,7 @@ void Level20_UpdateActors(void) {
           int z = actor->posZ - actor->floorOffset;
 
           if (z - h > 0 ? z - h < 0x64 : h - z < 0x64) {
-            Actor *o = g_pfnLevelSpawnActor(0x190, actor);
+            Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
             o->scale = 0x34;

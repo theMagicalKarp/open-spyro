@@ -1290,7 +1290,7 @@ void Level23_UpdateActors(void) {
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
-          g_pfnLevelSpawnActor(0x190, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
           DespawnActorRecord(actor);
           continue;
         }
@@ -1542,7 +1542,7 @@ void Level23_UpdateActors(void) {
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
-          g_pfnLevelSpawnActor(0x190, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
           DespawnActorRecord(actor);
           continue;
         }
@@ -1555,7 +1555,7 @@ void Level23_UpdateActors(void) {
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
-          g_pfnLevelSpawnActor(0x190, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2009,9 +2009,9 @@ void Level23_UpdateActors(void) {
       }
       break;
     }
-    case 0x190:
-    case 405:
-    case 477:
+    case ACTOR_TYPE_SPLASH:
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
       if (g_nActorAnimDone == 0) {
         break;
       }
