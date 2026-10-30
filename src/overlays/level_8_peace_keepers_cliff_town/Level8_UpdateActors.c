@@ -3142,10 +3142,10 @@ void Level8_UpdateActors(void) {
       break;
     }
 
-    /* Wandering critter (L31Critter): roams its patch, and is knocked away
+    /* Wandering critter (RoamingCritterState): roams its patch, and is knocked away
      * (or stunned, when charged) when struck. */
     case ACTOR_TYPE_ROAMING_CRITTER: {
-      L31Critter *st = actor->state;
+      RoamingCritterState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 5 && actor->mode != 6) {
         st->knock = StepAndLerpAngle8(
@@ -3791,7 +3791,7 @@ void Level8_UpdateActors(void) {
     /* Type 401: breakable rock. Shakes when struck; a charge shatters it
      * into rubble and dust and removes it. */
     case ACTOR_TYPE_BREAKABLE_ROCK: {
-      L31Rock *st = actor->state;
+      BreakableRockState *st = actor->state;
 
       if (st->shake != 0) {
         st->shake += g_nFrameStep;
@@ -3858,7 +3858,7 @@ void Level8_UpdateActors(void) {
     /* Type 402: cannon. Smokes while it builds up, fires, then flies its
      * ball along a path to the target, waking the linked actor. */
     case ACTOR_TYPE_CANNON: {
-      L25Shot *st = actor->state;
+      CannonState *st = actor->state;
 
       if (st->init == 1) {
         int pitch;

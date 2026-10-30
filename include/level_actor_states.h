@@ -90,7 +90,7 @@ typedef struct RoamingRamState {
 } RoamingRamState;
 
 /* Case 137 -- guard. */
-typedef struct L18Guard {
+typedef struct ChargingGuardState {
   int mode;          /* 0x00 0 idle, 1 patrol, 2 post, 3 follow */
   int vec[3];        /* 0x04 home point */
   int timer;         /* 0x10 */
@@ -113,7 +113,7 @@ typedef struct L18Guard {
   int init;          /* 0x54 */
   int lurk;          /* 0x58 */
   int speedOverride; /* 0x5C */
-} L18Guard;
+} ChargingGuardState;
 
 /* Type 28 state (level 20): the gunner, paired with a `partner`; fires
  * type 400 shots in mode 5. */

@@ -2112,7 +2112,7 @@ void Level9_UpdateActors(void) {
       }
       if (actor->mode == 1) {
         if (*st >= 0) {
-          L9Snowball *ball = g_pActorListBase[*st].state;
+          ThrownSnowballState *ball = g_pActorListBase[*st].state;
           int ang = ArcTan2(spy->posX - actor->posX,
                                   spy->posY - actor->posY, 0) *
                     16;
@@ -2135,7 +2135,7 @@ void Level9_UpdateActors(void) {
     /* Type 209: thrown snowball. Flies along its arc and bursts on a timer,
      * on landing or when it reaches Spyro. */
     case ACTOR_TYPE_THROWN_SNOWBALL: {
-      L9Snowball *st = actor->state;
+      ThrownSnowballState *st = actor->state;
 
       if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
         g_pfnLevelEmitParticles(0x10, EMIT_JITTER_BURST, &actor->posX, 0);
@@ -2241,7 +2241,7 @@ void Level9_UpdateActors(void) {
           GetActorAttachPoint(actor, 0, &ball->posX);
           SubtractVector(bv, &SPY.posX, &ball->posX);
           ScaleVector3ByRatio(bv, VectorLength(bv, 1), 0xC8);
-          ((L9Snowball *)bv)->timer = 0x8C;
+          ((ThrownSnowballState *)bv)->timer = 0x8C;
           st->knock = WrapAddAngle8(actor->rotZ, 0x80);
           st->speed = 0;
           st->throwT = 0x1E;
@@ -3024,7 +3024,7 @@ void Level9_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {

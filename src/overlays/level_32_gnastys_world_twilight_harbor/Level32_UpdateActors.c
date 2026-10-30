@@ -2866,7 +2866,7 @@ void Level32_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -3066,7 +3066,7 @@ void Level32_UpdateActors(void) {
     /* Type 401: breakable rock. Shakes when struck; a charge shatters it
      * into rubble and dust and removes it. */
     case ACTOR_TYPE_BREAKABLE_ROCK: {
-      L31Rock *st = actor->state;
+      BreakableRockState *st = actor->state;
 
       if (st->shake != 0) {
         st->shake += g_nFrameStep;

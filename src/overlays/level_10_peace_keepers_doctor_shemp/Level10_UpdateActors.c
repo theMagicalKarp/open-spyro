@@ -2003,7 +2003,7 @@ void Level10_UpdateActors(void) {
       }
       if (actor->mode == 1) {
         if (*st >= 0) {
-          L9Snowball *ball = g_pActorListBase[*st].state;
+          ThrownSnowballState *ball = g_pActorListBase[*st].state;
           int ang = ArcTan2(spy->posX - actor->posX,
                                   spy->posY - actor->posY, 0) *
                     16;
@@ -2503,7 +2503,7 @@ void Level10_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {

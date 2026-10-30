@@ -2304,7 +2304,7 @@ void Level28_UpdateActors(void) {
 
     /* Type 160: wandering critter; knocked away when hit. */
     case ACTOR_TYPE_WANDERING_CRITTER: {
-      L26Critter *st = actor->state;
+      CritterKnockState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
         EBB_BREAK();
@@ -3102,7 +3102,7 @@ void Level28_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {

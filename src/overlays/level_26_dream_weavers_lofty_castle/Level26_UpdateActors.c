@@ -676,7 +676,7 @@ void Level26_UpdateActors(void) {
     /* Type 52: bomb-lobbing lizard. Hides until Spyro is in range, then
      * lobs type 55 bombs at him; knocked away when hit. */
     case ACTOR_TYPE_BOMB_LOBBER: {
-      L26Lobber *st = actor->state;
+      BombLobberState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 2) {
         st->speed = 0xF0;
@@ -2053,7 +2053,7 @@ void Level26_UpdateActors(void) {
 
     /* Type 160: wandering critter; knocked away when hit. */
     case ACTOR_TYPE_WANDERING_CRITTER: {
-      L26Critter *st = actor->state;
+      CritterKnockState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
         actor->flags = 0;
@@ -2972,7 +2972,7 @@ void Level26_UpdateActors(void) {
      * flame, then bursts into three rings of debris and knocks the camera
      * back. */
     case ACTOR_TYPE_CRACKING_BOULDER: {
-      L16Boulder *st = actor->state;
+      CrackingBoulderState *st = actor->state;
 
       switch (actor->subMode) {
       case 0:
@@ -3190,7 +3190,7 @@ void Level26_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -3393,7 +3393,7 @@ void Level26_UpdateActors(void) {
     /* Type 390: spinning chest. Each charge spins it faster (with a rising
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
-      L26Spinner *st = actor->state;
+      SpinChestState *st = actor->state;
       int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
@@ -3464,7 +3464,7 @@ void Level26_UpdateActors(void) {
      * Spyro (or away from him when there is none), and bursts on what it
      * hits. */
     case ACTOR_TYPE_HOMING_SPARK: {
-      L26Spark *st = actor->state;
+      HomingSparkState *st = actor->state;
       int i;
 
       if (actor->subMode == 1) {

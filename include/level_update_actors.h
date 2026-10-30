@@ -404,13 +404,13 @@ typedef struct DebrisFallState {
 } DebrisFallState;
 
 /* Case 312 -- cracking boulder. */
-typedef struct L16Boulder {
+typedef struct CrackingBoulderState {
   int timer;  /* 0x00 shake time, then burst ring */
   int rotX;   /* 0x04 rest pose */
   int rotY;   /* 0x08 */
   int restZ;  /* 0x0C */
   int pushed; /* 0x10 camera knocked back */
-} L16Boulder;
+} CrackingBoulderState;
 
 typedef struct SmokeJet {
   short pos[3]; /* 0x00 */
@@ -420,13 +420,13 @@ typedef struct SmokeJet {
 extern SmokeJet g_aSmokeJetEmitters[];
 
 /* Case 329 -- seed pod. */
-typedef struct L16Pod {
+typedef struct SeedPodState {
   Actor *prize; /* 0x00 */
   int timer;    /* 0x04 */
   int rotX;     /* 0x08 rest pose */
   int rotY;     /* 0x0C */
   int restZ;    /* 0x10 */
-} L16Pod;
+} SeedPodState;
 
 extern int CheckSpyroLineOfSightTo(int *pos);
 
@@ -473,19 +473,19 @@ typedef struct ThiefState {
 } ThiefState;
 
 /* Case 390 -- spinning chest. */
-typedef struct L26Spinner {
+typedef struct SpinChestState {
   Actor *lid; /* 0x00 */
   int angle;  /* 0x04 */
   int speed;  /* 0x08 */
   int timer;  /* 0x0C */
   int handle; /* 0x10 for SelectActorLodBand */
-} L26Spinner;
+} SpinChestState;
 
 /* Case 392 -- homing spark. */
-typedef struct L26Spark {
+typedef struct HomingSparkState {
   int vel[3]; /* 0x00 */
   int timer;  /* 0x0C */
-} L26Spark;
+} HomingSparkState;
 
 typedef struct BounceState {
   short vx;           /* 0x00 */
@@ -515,11 +515,11 @@ typedef struct SwoopState {
   int count;     /* 0x34 */
 } SwoopState;
 
-typedef struct L26Critter {
+typedef struct CritterKnockState {
   char pad00[0x38];
   int knock; /* 0x38 knock-back heading */
   int speed; /* 0x3C knock-back speed */
-} L26Critter;
+} CritterKnockState;
 
 /* Type 184 (level 7): a stationary brawler. Turns to face Spyro and swings
  * when he is close (mode 4, re-armed by `timer`); flame or superflame knocks
@@ -888,7 +888,7 @@ typedef struct HelperState {
 } HelperState;
 
 /* Case 283 -- path guard. */
-typedef struct L16Guard {
+typedef struct PathGuardState {
   PathData *path; /* 0x00 */
   int flags;      /* 0x04 bit 1: on watch */
   int dist;       /* 0x08 */
@@ -899,7 +899,7 @@ typedef struct L16Guard {
   int heading;    /* 0x1C */
   int speed;      /* 0x20 knock-back speed */
   int knock;      /* 0x24 knock-back heading */
-} L16Guard;
+} PathGuardState;
 
 /* Case 497 -- humming bell. */
 typedef struct L16Bell {
@@ -997,13 +997,13 @@ typedef struct PatrolState {
 } PatrolState;
 
 /* Cases 205/209 -- the snowball thrower and its snowball. */
-typedef struct L9Snowball {
+typedef struct ThrownSnowballState {
   int vx;             /* 0x00 */
   int vy;             /* 0x04 */
   int vz;             /* 0x08 */
   int timer;          /* 0x0C */
   unsigned char kind; /* 0x10 */
-} L9Snowball;
+} ThrownSnowballState;
 
 /* Case 213 -- circling bird. */
 typedef struct L9Bird {
@@ -1087,13 +1087,13 @@ typedef struct {
   void *v;
 } PtrV;
 
-typedef struct L31Rock {
+typedef struct BreakableRockState {
   int shake;  /* 0x00 shake timer, 0 = still */
   int rotX;   /* 0x04 rest rotation */
   int rotY;   /* 0x08 */
   int restZ;  /* 0x0C */
   int handle; /* 0x10 for SelectActorLodBand */
-} L31Rock;
+} BreakableRockState;
 
 /* Type 295: homing wisp. Steers toward its target actor (or Spyro), and
  * bursts into three sparks when it arrives or touches the ground. */
@@ -1152,13 +1152,13 @@ extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, i
 extern int SteerActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, int c,
                          int d, int e, int *f);
 
-typedef struct L25Shot {
+typedef struct CannonState {
   int link;            /* 0x00 index of the actor it wakes on arrival */
   int vel[3];          /* 0x04 */
   int timer;           /* 0x10 */
   unsigned char *path; /* 0x14 */
   int init;            /* 0x18 1 = aim the barrel along the path */
-} L25Shot;
+} CannonState;
 
 typedef struct CatapultState {
   int angle;     /* 0x00 0..0x120 */
@@ -1168,13 +1168,13 @@ typedef struct CatapultState {
   int timer;     /* 0x10 */
 } CatapultState;
 
-typedef struct L31Critter {
+typedef struct RoamingCritterState {
   char pad00[0x20];
   int speed; /* 0x20 knock-back speed */
   int knock; /* 0x24 knock-back heading */
   char pad28[0x4];
   int wait;  /* 0x2C pause timer */
-} L31Critter;
+} RoamingCritterState;
 
 /* Type 370: Doctor Shemp's guard. */
 typedef struct {
@@ -1426,12 +1426,12 @@ typedef struct LootVortexState {
   int seen;             /* 0x2C index into g_nCurrentWorldId, 0 = none */
 } LootVortexState;
 
-typedef struct L26Lobber {
+typedef struct BombLobberState {
   int timer;   /* 0x00 */
   int heading; /* 0x04 knock-back heading */
   int speed;   /* 0x08 knock-back speed */
   int reload;  /* 0x0C */
-} L26Lobber;
+} BombLobberState;
 
 typedef struct L26Sink {
   int partner; /* 0x00 index into g_pActorListBase */

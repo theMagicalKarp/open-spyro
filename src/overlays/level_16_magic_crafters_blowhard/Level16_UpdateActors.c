@@ -2194,7 +2194,7 @@ void Level16_UpdateActors(void) {
      * rears up (and calls for help) when Spyro comes near, and is knocked
      * away when hit. */
     case ACTOR_TYPE_PATH_GUARD: {
-      L16Guard *st = actor->state;
+      PathGuardState *st = actor->state;
 
       if (actor->mode != 2) {
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_WHITE_STREAK, actor, 0);
@@ -2250,7 +2250,7 @@ void Level16_UpdateActors(void) {
             }
           }
           if (st->flags == 1) {
-            L16Guard *ps = g_pActorListBase[st->partner].state;
+            PathGuardState *ps = g_pActorListBase[st->partner].state;
 
             st->path->cur = 0;
             if (st->dist == 0) {
@@ -2601,7 +2601,7 @@ void Level16_UpdateActors(void) {
      * flame, then bursts into three rings of debris and knocks the camera
      * back. */
     case ACTOR_TYPE_CRACKING_BOULDER: {
-      L16Boulder *st = actor->state;
+      CrackingBoulderState *st = actor->state;
 
       switch (actor->subMode) {
       case 0:
@@ -2827,7 +2827,7 @@ void Level16_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {

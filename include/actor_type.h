@@ -223,7 +223,7 @@ enum ActorType {
   ACTOR_TYPE_BRAWLER = 184, /* level 7: stationary brawler (BrawlerState) */
   ACTOR_TYPE_SHOOTER = 186, /* level 7: blinking sentry that fires type 197 (ShooterState) */
   ACTOR_TYPE_HOME_TALKER = 187, /* 187..192: the homeworld talkers (levels 0/6/12/18/24/30); walking up facing one starts its actor cutscene */
-  ACTOR_TYPE_WANDERING_CRITTER_B = 193, /* levels 6/7: wanders; knocked away when hit (L26Critter) */
+  ACTOR_TYPE_WANDERING_CRITTER_B = 193, /* levels 6/7: wanders; knocked away when hit (CritterKnockState) */
   ACTOR_TYPE_WOOD_CHEST = 194,       /* breaks on the first hit into 0xFF..0x101 shards (BreakState) */
   ACTOR_TYPE_WOBBLE_CHEST = 195,     /* shakes and recoils when hit, then breaks (WobbleState) */
   ACTOR_TYPE_SHOOTER_SHOT = 197, /* level 7: the shooter's knock-back shot (ShooterShotState) */
@@ -258,7 +258,7 @@ enum ActorType {
   ACTOR_TYPE_REBOUND_FX = 234, /* TRIGGER_REBOUND's impact: placed on Spyro's first contact point, facing the wall normal; removed when its animation ends */
   ACTOR_TYPE_WANDERING_CRITTER_C = 236, /* levels 30/31/32: UpdateActorWander roamer; knocked away with a death drop when struck */
   ACTOR_TYPE_FIREBALL = 237, /* level 6: flies under gravity, bursts on walls or Spyro, wakes its linked actor */
-  ACTOR_TYPE_ROAMING_CRITTER = 238, /* level 8: roams its patch; knocked away (stunned by a charge) when struck (L31Critter) */
+  ACTOR_TYPE_ROAMING_CRITTER = 238, /* level 8: roams its patch; knocked away (stunned by a charge) when struck (RoamingCritterState) */
   ACTOR_TYPE_BELL_B = 239, /* levels 7/8: ACTOR_TYPE_BELL_A's body */
   ACTOR_TYPE_SUPERFLAME_GIVER_ALT = 241, /* level 27's superflame giver: wider reach, later grant frame */
   ACTOR_TYPE_BELL_C = 242, /* levels 7/8: ACTOR_TYPE_BELL_A's body */

@@ -3787,7 +3787,7 @@ void Level22_UpdateActors(void) {
      * flame, then bursts into three rings of debris and knocks the camera
      * back. */
     case ACTOR_TYPE_CRACKING_BOULDER: {
-      L16Boulder *st = actor->state;
+      CrackingBoulderState *st = actor->state;
 
       switch (actor->subMode) {
       case 0:
@@ -4005,7 +4005,7 @@ void Level22_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {

@@ -1576,7 +1576,7 @@ void Level18_UpdateActors(void) {
      * range, then turns on him and charges; after a charge the camera is
      * pulled in on it, and a hit knocks it back. */
     case ACTOR_TYPE_CHARGING_GUARD: {
-      L18Guard *st = actor->state;
+      ChargingGuardState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 2) {
         EBB_BREAK();
@@ -2846,7 +2846,7 @@ void Level18_UpdateActors(void) {
      * flame, then bursts into three rings of debris and knocks the camera
      * back. */
     case ACTOR_TYPE_CRACKING_BOULDER: {
-      L16Boulder *st = actor->state;
+      CrackingBoulderState *st = actor->state;
 
       switch (actor->subMode) {
       case 0:
@@ -3037,7 +3037,7 @@ void Level18_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -3238,7 +3238,7 @@ void Level18_UpdateActors(void) {
     /* Type 390: spinning chest. Each charge spins it faster (with a rising
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
-      L26Spinner *st = actor->state;
+      SpinChestState *st = actor->state;
       int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
@@ -3310,7 +3310,7 @@ void Level18_UpdateActors(void) {
      * Spyro (or away from him when there is none), and bursts on what it
      * hits. */
     case ACTOR_TYPE_HOMING_SPARK: {
-      L26Spark *st = actor->state;
+      HomingSparkState *st = actor->state;
       int i;
 
       if (actor->subMode == 1) {

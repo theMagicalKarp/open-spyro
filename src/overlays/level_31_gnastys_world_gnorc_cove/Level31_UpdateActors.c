@@ -2978,7 +2978,7 @@ void Level31_UpdateActors(void) {
     /* Type 236: wandering critter. Roams its patch, pauses now and then, and
      * is knocked away and removed when struck. */
     case ACTOR_TYPE_WANDERING_CRITTER_C: {
-      L31Critter *st = actor->state;
+      RoamingCritterState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
@@ -3507,7 +3507,7 @@ void Level31_UpdateActors(void) {
      * flame, then bursts into three rings of debris and knocks the camera
      * back. */
     case ACTOR_TYPE_CRACKING_BOULDER: {
-      L16Boulder *st = actor->state;
+      CrackingBoulderState *st = actor->state;
 
       switch (actor->subMode) {
       case 0:
@@ -3725,7 +3725,7 @@ void Level31_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -3929,7 +3929,7 @@ void Level31_UpdateActors(void) {
     /* Type 401: breakable rock. Shakes when struck; a charge shatters it
      * into rubble and dust and removes it. */
     case ACTOR_TYPE_BREAKABLE_ROCK: {
-      L31Rock *st = actor->state;
+      BreakableRockState *st = actor->state;
 
       if (st->shake != 0) {
         st->shake += g_nFrameStep;

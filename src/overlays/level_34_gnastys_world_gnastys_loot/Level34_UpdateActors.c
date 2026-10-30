@@ -2751,7 +2751,7 @@ void Level34_UpdateActors(void) {
      * flame, then bursts into three rings of debris and knocks the camera
      * back. */
     case ACTOR_TYPE_CRACKING_BOULDER: {
-      L16Boulder *st = actor->state;
+      CrackingBoulderState *st = actor->state;
 
       switch (actor->subMode) {
       case 0:
@@ -2942,7 +2942,7 @@ void Level34_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -3099,7 +3099,7 @@ void Level34_UpdateActors(void) {
     /* Type 390: spinning chest. Each charge spins it faster (with a rising
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
-      L26Spinner *st = actor->state;
+      SpinChestState *st = actor->state;
       int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
@@ -3170,7 +3170,7 @@ void Level34_UpdateActors(void) {
      * Spyro (or away from him when there is none), and bursts on what it
      * hits. */
     case ACTOR_TYPE_HOMING_SPARK: {
-      L26Spark *st = actor->state;
+      HomingSparkState *st = actor->state;
       int i;
 
       if (actor->subMode == 1) {
@@ -3262,7 +3262,7 @@ void Level34_UpdateActors(void) {
     /* Type 401: breakable rock. Shakes when struck; a charge shatters it
      * into rubble and dust and removes it. */
     case ACTOR_TYPE_BREAKABLE_ROCK: {
-      L31Rock *st = actor->state;
+      BreakableRockState *st = actor->state;
 
       if (st->shake != 0) {
         st->shake += g_nFrameStep;
@@ -3329,7 +3329,7 @@ void Level34_UpdateActors(void) {
     /* Type 402: cannon. Smokes while it builds up, fires, then flies its
      * ball along a path to the target, waking the linked actor. */
     case ACTOR_TYPE_CANNON: {
-      L25Shot *st = actor->state;
+      CannonState *st = actor->state;
 
       if (st->init == 1) {
         int pitch;
