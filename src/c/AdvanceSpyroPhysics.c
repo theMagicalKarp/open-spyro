@@ -28,7 +28,7 @@ SDATA(g_pSpyroContactActor, 4);
 #define WS g_anSpyroWallSlideBlock
 
 #define ACTOR_YAW(a) (((unsigned char *)(a))[0x46])
-#define ACTOR_POS(a) (&ACTOR_RAW(a, int, posX))
+#define ACTOR_POS(a) (&((Actor *)a)->posX)
 
 /* Pull `pos` back to at most 0x140 from `from`. */
 #define LIMIT_STEP(pos, from)                                                  \

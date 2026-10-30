@@ -82,8 +82,7 @@ void ActorCutscene_Draw(void) {
         int *fade = g_anActorCutsceneTimerBlock;
         unsigned short *cos = (unsigned short *)g_anCosineLut;
         do {
-          ACTOR_RAW(rec, unsigned char, rotZ) =
-              cos[(*fade * 2 + phase) & 0xFF] >> 7;
+          ((Actor *)rec)->rotZ = cos[(*fade * 2 + phase) & 0xFF] >> 7;
           rec -= ACTOR_SIZE;
           phase += 0xC;
         } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);

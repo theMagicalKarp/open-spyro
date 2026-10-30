@@ -114,9 +114,12 @@ typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
  * Use it only where `actor->field` was measured to change the output. */
 #define ACTOR_RAW(actor, type, field) (*(type *)((char *)(actor) + ACTOR_OFFSET(field)))
 
-/* Actor->type values that mean the same class in every level (one global
- * g_apActorMeshTable index space). Only classes whose behaviour is pinned
- * down are named; the rest stay numeric in the per-level switches. */
+/* Actor->type values: one global g_apActorMeshTable index space. Every type
+ * handled by more than one level's UpdateActors runs the same body in each,
+ * up to statement order (checked arm by arm, e.g. 38, 236), so a name holds
+ * in every level even where its comment cites the levels that use it. Only
+ * the flight tally icons (their types come from level data) and level 20's
+ * type 487 stay numeric. */
 enum ActorType {
   ACTOR_TYPE_PORTAL_NAME = 1,          /* hub portal name text, shown while the camera faces the portal */
   ACTOR_TYPE_LEVEL_EXIT = 9,       /* exit whirlwind: lifts Spyro back to the hub */

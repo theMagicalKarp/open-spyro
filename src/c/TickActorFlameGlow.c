@@ -9,17 +9,17 @@
    band out for the same flag, so +0x4E reads as a scorch glow (likely). */
 void TickActorFlameGlow(char *e) {
   if (((Actor *)e)->flags & ACTOR_HIT_FLAME) {
-    int v = (unsigned char)ACTOR_RAW(e, unsigned char, tint2) + 0x18;
-    ACTOR_RAW(e, unsigned char, tint2) = v;
+    int v = (unsigned char)((Actor *)e)->tint2 + 0x18;
+    ((Actor *)e)->tint2 = v;
     if ((unsigned char)v >= 0x61) {
-      ACTOR_RAW(e, unsigned char, tint2) = 0x60;
+      ((Actor *)e)->tint2 = 0x60;
     }
   } else {
     unsigned char b;
-    if ((b = ACTOR_RAW(e, unsigned char, tint2)) >= 0x21) {
-      ACTOR_RAW(e, unsigned char, tint2) = b - 2;
+    if ((b = ((Actor *)e)->tint2) >= 0x21) {
+      ((Actor *)e)->tint2 = b - 2;
     } else if (b != 0) {
-      ACTOR_RAW(e, unsigned char, tint2) = b - 1;
+      ((Actor *)e)->tint2 = b - 1;
     }
   }
 }

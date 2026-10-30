@@ -27,8 +27,8 @@ void EndDragonRescueToWorld(void) {
   g_nGameplayBlocked = 0;
   if (id != -1) {
     rec = (unsigned char *)g_pActorListBase + id * ACTOR_SIZE;
-    ACTOR_RAW(rec, unsigned char, anim) = 0;
-    ACTOR_RAW(rec, unsigned char, mode) = 1;
+    ((Actor *)rec)->anim = 0;
+    ((Actor *)rec)->mode = 1;
   }
   ResetSpyroEntity(1);
   cam = g_apCameraAnchorBlock;

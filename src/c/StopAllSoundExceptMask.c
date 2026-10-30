@@ -67,7 +67,7 @@ top:
       owner = VOICE_ROW_RAW(o, unsigned char *, pOwner);
 
       if (owner != 0) {
-        ACTOR_RAW(owner, unsigned char, sfxSlot) = sil;
+        ((Actor *)owner)->sfxSlot = sil;
       }
     park:
       v2 = i & 0x7F;

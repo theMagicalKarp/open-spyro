@@ -29,8 +29,8 @@
  *
  * The ground-level arm set: it drops the flight classes 0xD/0x13/0x1A/0x1B
  * and the orbiting-spark class 0x6, and adds 0x15 and 0x4C (the two unit-circle swirls, which share
- * a cross-jumped sine tail), 0x18 (the fire jet, whose amplitude tracks the
- * global heat level g_nDragonRescueTimer), 0x46 and 0x50 (two midpoint-relaxation
+ * a cross-jumped sine tail), 0x18 (EMIT_RESCUE_SWIRL, whose radius and height track
+ * g_nDragonRescueTimer), 0x46 and 0x50 (two midpoint-relaxation
  * classes).  This is the level_2 variant minus class 0x6; dropping that arm
  * also drops the only use of the second stack vector, and the array must go
  * with it -- left declared, its address wins a callee-saved register and the

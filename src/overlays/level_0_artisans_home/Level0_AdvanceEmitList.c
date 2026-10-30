@@ -24,13 +24,13 @@
  *   0x18  spin angle                0x1C  wrap count    0x1E  phase toggle
  *
  * The Artisans-home arm set: the ground classes 0x6 (the orbiting spark) and
- * 0x18 (the fire jet) plus the midpoint families all transfer verbatim from
+ * 0x18 (EMIT_RESCUE_SWIRL) plus the midpoint families all transfer verbatim from
  * the matched level_6 / level_2 copies.  Three arms are new here:
- *   0xE   a whirlwind whose two spin components decay one step per frame
- *         toward zero and whose r/g/b fade together off the red channel;
- *   0x16  the same decay pair, but the colour ramp is driven by the global
+ *   0xE   EMIT_SLOWING_SPARK: its x/y velocity decays one step per frame
+ *         toward zero, and its r/g/b fade together off the red channel;
+ *   0x16  EMIT_DRIFTING_MOTE: the same decay pair, but the colour ramp is driven by the global
  *         step g_nFrameStep and the green/blue channels track half of red;
- *   0x1E  a drifting mote that advances its height by the record's own phase
+ *   0x1E  EMIT_RISING_PUFF: advances its height by the record's own phase
  *         word -- the one arm in this variant that dies on age ALONE, with no
  *         alive-byte test, so it cannot use the shared kill tail.
  *

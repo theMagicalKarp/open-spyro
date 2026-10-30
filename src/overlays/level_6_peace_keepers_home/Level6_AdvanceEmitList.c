@@ -23,7 +23,7 @@
  *   0x10..0x16  per-record velocity / colour bytes
  *   0x18  spin angle                0x1C  wrap count    0x1E  phase toggle
  *
- * A hub mix: the flight contrail 0xD, the ground fire jet 0x18, the drifting
+ * A hub mix: the flight contrail 0xD, the rescue swirl 0x18, the drifting
  * mote 0x4A and the midpoint class 0x50 all transfer verbatim from the
  * matched level_5 / level_2 / level_24 copies; only 0x17 -- the banner mote,
  * whose blue channel is driven by the record's own phase toggle instead of

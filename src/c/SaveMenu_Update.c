@@ -50,11 +50,11 @@ void SaveMenu_Update(void) {
       t = LookupSine((SM[1] << 5) - 0x400) + 0x1000;
       actor =
           (unsigned char *)g_pActorListBase + ((int *)ACT[0])[1] * ACTOR_SIZE;
-      if (ACTOR_RAW(actor, unsigned char, mode) == 2) {
-        ACTOR_RAW(actor, unsigned char, subMode) += g_nFrameStep;
-        if (ACTOR_RAW(actor, unsigned char, subMode) >= 0x30) {
-          ACTOR_RAW(actor, unsigned char, mode) = 0;
-          ACTOR_RAW(actor, unsigned char, anim) = 0;
+      if (((Actor *)actor)->mode == 2) {
+        ((Actor *)actor)->subMode += g_nFrameStep;
+        if (((Actor *)actor)->subMode >= 0x30) {
+          ((Actor *)actor)->mode = 0;
+          ((Actor *)actor)->anim = 0;
         }
       }
       a = LERP_ANGLE(SM[14], SM[11], t);
@@ -208,7 +208,7 @@ void SaveMenu_Update(void) {
           path = *(int **)actor;
           if (path[9] == -1 && path[6] != -1) {
             EndSaveMenuToWorld();
-            ACTOR_RAW(actor, unsigned char, mode) = 2;
+            ((Actor *)actor)->mode = 2;
             ((int *)actor)[2] = 0;
             ((short *)actor)[0x1A] = -1;
             BeginDragonRescue(actor);

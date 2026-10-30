@@ -128,7 +128,7 @@ void Level3_BalloonistCutscene_Draw(void) {
         if (g_nActorCutsceneSubstate[2] == 0) {
           for (greetPhase = 0; rec >= (unsigned char *)g_pSpriteRecordWriteCursor;
                rec -= ACTOR_SIZE, greetPhase += 1) {
-            ACTOR_RAW(rec, unsigned char, rotZ) = g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + greetPhase * 0xC) & 0xFF] >> 8;
+            ((Actor *)rec)->rotZ = g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + greetPhase * 0xC) & 0xFF] >> 8;
           }
         }
         slot = 1;
@@ -141,7 +141,7 @@ void Level3_BalloonistCutscene_Draw(void) {
             if (g_nActorCutsceneSubstate[2] == slot) {
               for (rosterPhase = 0; rec >= (unsigned char *)g_pSpriteRecordWriteCursor;
                    rec -= ACTOR_SIZE, rosterPhase += 1) {
-                ACTOR_RAW(rec, unsigned char, rotZ) = g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + rosterPhase * 0xC) & 0xFF] >> 8;
+                ((Actor *)rec)->rotZ = g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + rosterPhase * 0xC) & 0xFF] >> 8;
               }
             }
             slot += 1;
@@ -179,7 +179,7 @@ void Level3_BalloonistCutscene_Draw(void) {
         if (g_nActorCutsceneSubstate[2] == 0) {
           for (promptPhase = 0; rec >= (unsigned char *)g_pSpriteRecordWriteCursor;
                rec -= ACTOR_SIZE, promptPhase += 1) {
-            ACTOR_RAW(rec, unsigned char, rotZ) = g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + promptPhase * 0xC) & 0xFF] >> 8;
+            ((Actor *)rec)->rotZ = g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + promptPhase * 0xC) & 0xFF] >> 8;
           }
         }
         askPos[0] = 0x80;
@@ -194,7 +194,7 @@ void Level3_BalloonistCutscene_Draw(void) {
         if (g_nActorCutsceneSubstate[2] == 1) {
           for (namePhase = 0; rec >= (unsigned char *)g_pSpriteRecordWriteCursor;
                rec -= ACTOR_SIZE, namePhase += 1) {
-            ACTOR_RAW(rec, unsigned char, rotZ) = g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + namePhase * 0xC) & 0xFF] >> 8;
+            ((Actor *)rec)->rotZ = g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + namePhase * 0xC) & 0xFF] >> 8;
           }
         }
       }

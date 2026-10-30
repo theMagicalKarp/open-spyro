@@ -72,8 +72,8 @@
  * The ground-level arm set: it drops the flight classes 0xD/0x13/0x1A/0x1B
  * and adds 0x6 (the orbiting spark, which reads a world point through the
  * pointer at +0x18), 0x15 and 0x4C (the two unit-circle swirls, which share
- * a cross-jumped sine tail), 0x18 (the fire jet, whose amplitude tracks the
- * global heat level g_nDragonRescueTimer), 0x46 and 0x50 (two midpoint-relaxation
+ * a cross-jumped sine tail), 0x18 (EMIT_RESCUE_SWIRL, whose radius and height track
+ * g_nDragonRescueTimer), 0x46 and 0x50 (two midpoint-relaxation
  * classes).  Word-identical (bar the jump-table symbol and branch
  * displacements) to the copies in level_1 / level_4 / level_10 / level_28.
  *

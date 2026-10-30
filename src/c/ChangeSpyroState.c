@@ -233,8 +233,7 @@ void ChangeSpyroState(int state) {
       int *from = me;
 
       do {
-        if (ACTOR_RAW(actor, unsigned char, mode) < 0x7F &&
-            ((Actor *)actor)->collision != 0) {
+        if (((Actor *)actor)->mode < 0x7F && ((Actor *)actor)->collision != 0) {
           int a;
           int da;
 

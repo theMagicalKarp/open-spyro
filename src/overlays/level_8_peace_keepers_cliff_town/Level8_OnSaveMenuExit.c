@@ -22,6 +22,6 @@ void Level8_OnSaveMenuExit(void) {
   g_nSpyroSwingEulerPrev1 = 0;
   g_bSpyroSwingByteEuler1 = 0;
   if (actor != 0) {
-    ACTOR_RAW(actor, unsigned char, cullRadius) = 0x10;
+    ((Actor *)actor)->cullRadius = 0x10;
   }
 }

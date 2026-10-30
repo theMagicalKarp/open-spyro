@@ -58,13 +58,13 @@ void DragonRescue_Draw(void) {
     *ot = 0;
     act = (unsigned char *)g_pActorListBase;
     q = &g_apOtDepthBinBlock[2304];
-    id = ACTOR_RAW(act, unsigned char, mode);
+    id = ((Actor *)act)->mode;
     while (id != 0xFF) {
       if (((Actor *)act)->type == ACTOR_TYPE_STATUE_SHARD && id < 0x80) {
         *q++ = act;
       }
       act += ACTOR_SIZE;
-      id = ACTOR_RAW(act, unsigned char, mode);
+      id = ((Actor *)act)->mode;
     }
     *q = 0;
     DrawDragonRescuedBanner();
@@ -99,13 +99,13 @@ void DragonRescue_Draw(void) {
     *ot = 0;
     q = &g_apOtDepthBinBlock[2304];
     act = (unsigned char *)g_pActorListBase;
-    id = ACTOR_RAW(act, unsigned char, mode);
+    id = ((Actor *)act)->mode;
     while (id != 0xFF) {
       if (((Actor *)act)->type == ACTOR_TYPE_STATUE_SHARD && id < 0x80) {
         *q++ = act;
       }
       act += ACTOR_SIZE;
-      id = ACTOR_RAW(act, unsigned char, mode);
+      id = ((Actor *)act)->mode;
     }
     *q = 0;
     if (g_nDragonRescueTimer < 0x3C) {
