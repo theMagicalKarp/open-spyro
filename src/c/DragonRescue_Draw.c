@@ -49,7 +49,7 @@ void DragonRescue_Draw(void) {
     void **ot;
     void **q;
     ot = g_apOtDepthBinBlock;
-    if (((unsigned char *)g_pDragonRescueSourceActor)[0x48] < 0x80) {
+    if (((Actor *)g_pDragonRescueSourceActor)->mode < 0x80) {
       *ot++ = g_pDragonRescueSourceActor;
     }
     if (g_nDragonRescueSubstate == 3) {

@@ -209,7 +209,7 @@ void TickWorldBundleLoadStream(void) {
 
       actor = (unsigned char *)((i * ACTOR_SIZE) + ((int)g_pActorListBase));
       ((Actor *)actor)->cullRadius = def;
-      ((short *)actor)[0x1B] = i + 1;
+      ((Actor *)actor)->type = i + 1;
       i += 1;
       if (i < ((int *)g_pPathTableHead)[3]) {
         goto actor_loop;

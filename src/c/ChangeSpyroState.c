@@ -417,8 +417,8 @@ void ChangeSpyroState(int state) {
       g_nSpyroScriptedLiftTurn =
           ((g_nSpyroScriptedLiftRise << 10) >> 10) + 0x400;
       g_nSpyroScriptedLiftTurn =
-          ((((unsigned char *)g_pScriptedCameraActor)[0x46] << 4) -
-           g_nSpyroBodyYaw - g_nSpyroScriptedLiftTurn) &
+          ((((Actor *)g_pScriptedCameraActor)->rotZ << 4) - g_nSpyroBodyYaw -
+           g_nSpyroScriptedLiftTurn) &
           0xFFF;
       if (g_nSpyroScriptedLiftTurn > 0x800) {
         g_nSpyroScriptedLiftTurn -= 0x1000;

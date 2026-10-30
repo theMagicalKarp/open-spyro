@@ -72,9 +72,9 @@ void SaveMenu_Update(void) {
         a = LERP_ANGLE(g_nSaveMenuSparxToAngle, g_nSaveMenuSparxFromAngle, t);
         d = g_nSaveMenuSparxFromDist +
             (((g_nSaveMenuSparxToDist - g_nSaveMenuSparxFromDist) * t) >> 13);
-        ((int *)g_pSparxActor)[3] =
+        ((Actor *)g_pSparxActor)->posX =
             g_anSpyroWorldPos[0] + ((LookupCosine(a) * d) >> 12);
-        ((int *)g_pSparxActor)[4] =
+        ((Actor *)g_pSparxActor)->posY =
             g_nSpyroWorldPosY + ((LookupSine(a) * d) >> 12);
       }
       a = LERP_ANGLE(SM[24], SM[21], t);
@@ -144,9 +144,9 @@ void SaveMenu_Update(void) {
             g_anSpyroWorldPos[0] - act[3], g_anSpyroWorldPos[1] - act[4], 0);
       }
       if (g_pSparxActor != 0) {
-        ((int *)g_pSparxActor)[3] =
+        ((Actor *)g_pSparxActor)->posX =
             g_anSpyroWorldPos[0] + ((LookupCosine(SM[19]) * SM[20]) >> 12);
-        ((int *)g_pSparxActor)[4] =
+        ((Actor *)g_pSparxActor)->posY =
             g_anSpyroWorldPos[1] + ((LookupSine(SM[19]) * SM[20]) >> 12);
       }
       g_anCameraPos[0] =
@@ -209,8 +209,8 @@ void SaveMenu_Update(void) {
           if (path[9] == -1 && path[6] != -1) {
             EndSaveMenuToWorld();
             ((Actor *)actor)->mode = 2;
-            ((int *)actor)[2] = 0;
-            ((short *)actor)[0x1A] = -1;
+            ((Actor *)actor)->collision = 0;
+            ((Actor *)actor)->gridCell = -1;
             BeginDragonRescue(actor);
             g_nWorldDragonsRescued--;
             g_anLevelDragonsRescued[g_nLevelIndex]--;

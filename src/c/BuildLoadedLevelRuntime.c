@@ -332,7 +332,7 @@ sprites:
   p = (int *)(((char *)base) + (*base));
   g_pActorPoolDynBase = ((char *)g_pActorListBase) + (i * ACTOR_SIZE);
   g_pActorPoolFreeHead = g_pActorPoolDynBase;
-  ((char *)g_pActorPoolDynBase)[0x48] = 0xFF;
+  ((Actor *)g_pActorPoolDynBase)->mode = ACTOR_MODE_END;
   g_nActorPoolLiveCount = 0;
   g_pActorAuxPoolTop = p;
   g_pActorAuxPoolFreeHead = p;

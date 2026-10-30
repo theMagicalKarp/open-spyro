@@ -138,8 +138,8 @@ void DragonRescue_Update(void) {
         char *src = SRC;
 
         g_nDragonRescueOrbitStartYaw =
-            ArcTan2(g_anSpyroWorldPos[0] - ACTOR_RAW(src, int, posX),
-                    g_nSpyroWorldPosY - ACTOR_RAW(src, int, posY), 1);
+            ArcTan2(g_anSpyroWorldPos[0] - ((Actor *)src)->posX,
+                    g_nSpyroWorldPosY - ((Actor *)src)->posY, 1);
       }
       SubtractVector(vec, g_anSpyroWorldPos, &((Actor *)SRC)->posX);
       g_nDragonRescueOrbitStartRadius = VectorLength(vec, 0);
@@ -160,8 +160,8 @@ void DragonRescue_Update(void) {
 
         rec = REC(src);
         g_nDragonRescueCameraTargetYaw =
-            ArcTan2(W32(rec, 0) - ACTOR_RAW(src, int, posX),
-                    W32(rec, 4) - ACTOR_RAW(src, int, posY), 1);
+            ArcTan2(W32(rec, 0) - ((Actor *)src)->posX,
+                    W32(rec, 4) - ((Actor *)src)->posY, 1);
       }
       SubtractVector(vec, rec, &((Actor *)SRC)->posX);
       g_nDragonRescueCameraTargetRadius = VectorLength(vec, 0);
@@ -186,7 +186,7 @@ void DragonRescue_Update(void) {
       g_bSpyroSubFrameTimer = 0;
       g_pEmitListWriteCursor = g_pEmitListBase;
       ((unsigned char *)g_pEmitListBase)[1] = 0xFF;
-      StopAllSoundExceptMask(1 << ACTOR_RAW(SRC, unsigned char, sfxSlot));
+      StopAllSoundExceptMask(1 << ((Actor *)SRC)->sfxSlot);
       PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_SWEEP), 0, SFX_MODE_PANNED, &GB[11]);
     }
   } break;
@@ -209,22 +209,19 @@ void DragonRescue_Update(void) {
     {
       char *s = SRC;
 
-      ACTOR_RAW(s, unsigned char, subMode) =
-          (ACTOR_RAW(s, unsigned char, subMode) + 1) & 3;
+      ((Actor *)s)->subMode = (((Actor *)s)->subMode + 1) & 3;
     }
     {
       char *s = SRC;
 
-      ACTOR_RAW(s, unsigned char, rotX) =
-          g_abDragonRescueFlickerPairs1[ACTOR_RAW(s, unsigned char, subMode) *
-                                        2];
+      ((Actor *)s)->rotX =
+          g_abDragonRescueFlickerPairs1[((Actor *)s)->subMode * 2];
     }
     {
       char *s = SRC;
 
-      ACTOR_RAW(s, unsigned char, rotY) =
-          g_abDragonRescueFlickerPairs1Y[ACTOR_RAW(s, unsigned char, subMode) *
-                                         2];
+      ((Actor *)s)->rotY =
+          g_abDragonRescueFlickerPairs1Y[((Actor *)s)->subMode * 2];
     }
     if (g_nPulseRumbleTimer < 8) {
       g_nPulseRumbleTimer = 8;
@@ -254,9 +251,8 @@ void DragonRescue_Update(void) {
            12);
       CopyVector(vec, g_anSpyroWorldPos);
       g_anSpyroWorldPos[0] =
-          ACTOR_RAW(SRC, int, posX) + ((LookupCosine(a) * d) >> 12);
-      g_nSpyroWorldPosY =
-          ACTOR_RAW(SRC, int, posY) + ((LookupSine(a) * d) >> 12);
+          ((Actor *)SRC)->posX + ((LookupCosine(a) * d) >> 12);
+      g_nSpyroWorldPosY = ((Actor *)SRC)->posY + ((LookupSine(a) * d) >> 12);
       SubtractVector(vec, g_anSpyroWorldPos, vec);
       {
         int dir = ArcTan2(vec[0], vec[1], 0);
@@ -290,10 +286,8 @@ void DragonRescue_Update(void) {
              g_nDragonRescueCameraStartRadius) *
             t) >>
            13);
-      g_anCameraPos[0] =
-          ACTOR_RAW(SRC, int, posX) + ((LookupCosine(a) * d) >> 12);
-      g_anCameraPos[1] =
-          ACTOR_RAW(SRC, int, posY) + ((LookupSine(a) * d) >> 12);
+      g_anCameraPos[0] = ((Actor *)SRC)->posX + ((LookupCosine(a) * d) >> 12);
+      g_anCameraPos[1] = ((Actor *)SRC)->posY + ((LookupSine(a) * d) >> 12);
       g_anCameraPos[2] =
           g_nDragonRescueCameraStartZ +
           (((g_nDragonRescueCameraTargetZ - g_nDragonRescueCameraStartZ) * t) >>
@@ -314,7 +308,7 @@ void DragonRescue_Update(void) {
                g_nDragonRescueSweepDurationFrames + 0x20) {
       if (g_nDragonRescueTimer - g_nFrameStep <
           g_nDragonRescueSweepDurationFrames) {
-        g_anSpyroWorldPos[0] = ACTOR_RAW(SRC, int, posX) +
+        g_anSpyroWorldPos[0] = ((Actor *)SRC)->posX +
                                ((LookupCosine(g_dwDragonRescueOrbitTargetYaw) *
                                  g_nDragonRescueOrbitTargetRadius) >>
                                 12);
@@ -432,22 +426,19 @@ void DragonRescue_Update(void) {
   case 2: {
     char *s = SRC;
 
-    ACTOR_RAW(s, unsigned char, subMode) =
-        (ACTOR_RAW(s, unsigned char, subMode) + 1) & 3;
+    ((Actor *)s)->subMode = (((Actor *)s)->subMode + 1) & 3;
   }
     {
       char *s = SRC;
 
-      ACTOR_RAW(s, unsigned char, rotX) =
-          g_abDragonRescueFlickerPairs2[ACTOR_RAW(s, unsigned char, subMode) *
-                                        2];
+      ((Actor *)s)->rotX =
+          g_abDragonRescueFlickerPairs2[((Actor *)s)->subMode * 2];
     }
     {
       char *s = SRC;
 
-      ACTOR_RAW(s, unsigned char, rotY) =
-          g_abDragonRescueFlickerPairs2Y[ACTOR_RAW(s, unsigned char, subMode) *
-                                         2];
+      ((Actor *)s)->rotY =
+          g_abDragonRescueFlickerPairs2Y[((Actor *)s)->subMode * 2];
     }
     if (g_nPulseRumbleTimer < 8) {
       g_nPulseRumbleTimer = 8;
@@ -479,21 +470,21 @@ void DragonRescue_Update(void) {
           char *s = SRC;
           char *t = STATUE;
 
-          ACTOR_RAW(t, unsigned char, rotZ) = ACTOR_RAW(s, unsigned char, rotZ);
+          ((Actor *)t)->rotZ = ((Actor *)s)->rotZ;
         }
-        ACTOR_RAW(STATUE, unsigned char, scale) = 0x60;
-        ACTOR_RAW(STATUE, unsigned char, otBias) = five;
+        ((Actor *)STATUE)->scale = 0x60;
+        ((Actor *)STATUE)->otBias = five;
         ACTOR_RAW(STATUE, int, groundCode) = -1;
-        ACTOR_RAW(STATUE, int, posZ) += 0x400;
+        ((Actor *)STATUE)->posZ += 0x400;
         FindWorldFloorBelowPoint(&((Actor *)GB[24])->posX);
-        ACTOR_RAW(STATUE, int, posZ) -= 0x400;
+        ((Actor *)STATUE)->posZ -= 0x400;
         EncodeCachedVecToActorDirCode((void *)GB[24]);
         InsertActorIntoSpatialGrid((void *)GB[24]);
         g_pDragonRescueSpyroMirrorActor = AllocActorRecordSlot();
         InitActorRenderDefaults(g_pDragonRescueSpyroMirrorActor);
         ACTOR_RAW(MIRROR, short, type) = 0x1FF;
         CopyVector(&((Actor *)MIRROR)->posX, g_anSpyroWorldPos);
-        ACTOR_RAW(MIRROR, unsigned char, otBias) = five;
+        ((Actor *)MIRROR)->otBias = five;
         InsertActorIntoSpatialGrid(MIRROR);
         StopSoundVoiceByIndex(GB[11], 4);
         PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_STATUE), 0, SFX_MODE_PANNED,
@@ -505,20 +496,18 @@ void DragonRescue_Update(void) {
     break;
   case 3:
     if (GB[5] < 0x18) {
-      ACTOR_RAW(STATUE, unsigned char, scale) = 0x60 - GB[5] * 3;
+      ((Actor *)STATUE)->scale = 0x60 - GB[5] * 3;
       {
         char *s = SRC;
         int turn;
 
-        turn = SignedAngleDelta8(W32(REC(s), 0x30) >> 4,
-                                 ACTOR_RAW(s, unsigned char, rotZ)) *
+        turn = SignedAngleDelta8(W32(REC(s), 0x30) >> 4, ((Actor *)s)->rotZ) *
                GB[5] / 24;
         {
           char *s2 = SRC;
           char *t = STATUE;
 
-          ACTOR_RAW(t, unsigned char, rotZ) =
-              ACTOR_RAW(s2, unsigned char, rotZ) + turn;
+          ((Actor *)t)->rotZ = ((Actor *)s2)->rotZ + turn;
         }
       }
     } else {
@@ -528,11 +517,11 @@ void DragonRescue_Update(void) {
       g_nDragonRescueSubstate = 4;
       GB[5] = 0;
       t = STATUE;
-      ACTOR_RAW(t, unsigned char, rotZ) = W32(REC(s), 0x30) >> 4;
-      ACTOR_RAW(STATUE, unsigned char, scale) = 0;
-      ACTOR_RAW(MIRROR, unsigned char, rotX) = g_abSpyroPersistentEuler[0];
-      ACTOR_RAW(MIRROR, unsigned char, rotY) = g_abSpyroPersistentEuler[1];
-      ACTOR_RAW(MIRROR, unsigned char, rotZ) = g_abSpyroPersistentEuler[2];
+      ((Actor *)t)->rotZ = W32(REC(s), 0x30) >> 4;
+      ((Actor *)STATUE)->scale = 0;
+      ((Actor *)MIRROR)->rotX = g_abSpyroPersistentEuler[0];
+      ((Actor *)MIRROR)->rotY = g_abSpyroPersistentEuler[1];
+      ((Actor *)MIRROR)->rotZ = g_abSpyroPersistentEuler[2];
     }
     break;
   case 4: {
@@ -574,43 +563,39 @@ void DragonRescue_Update(void) {
         g_nCameraEulerYaw = CAM_KEY_RAW(p, yaw);
       }
       FRAME_STEP(g_pDragonRescueStatueModelData, step);
-      ACTOR_RAW(STATUE, unsigned char, frame) = GB[5] / step;
+      ((Actor *)STATUE)->frame = GB[5] / step;
       {
         char *p = STATUE;
 
-        ACTOR_RAW(p, unsigned char, nextFrame) =
-            ACTOR_RAW(p, unsigned char, frame) + 1;
+        ((Actor *)p)->nextFrame = ((Actor *)p)->frame + 1;
       }
-      ACTOR_RAW(STATUE, unsigned char, frameProgress) =
-          (GB[5] % step << 6) / step;
+      ((Actor *)STATUE)->frameProgress = (GB[5] % step << 6) / step;
       {
         short n = ANIM_HEADER_RAW(FIRST_ANIM(g_pDragonRescueStatueModelData),
                                   short, m_NumFrames);
         char *p = STATUE;
 
-        if (ACTOR_RAW(p, unsigned char, nextFrame) >= n) {
-          ACTOR_RAW(p, unsigned char, frame) = n - 1;
-          ACTOR_RAW(STATUE, unsigned char, frameProgress) = 0;
+        if (((Actor *)p)->nextFrame >= n) {
+          ((Actor *)p)->frame = n - 1;
+          ((Actor *)STATUE)->frameProgress = 0;
         }
       }
       FRAME_STEP(g_pDragonRescueMirrorModelData, step);
-      ACTOR_RAW(MIRROR, unsigned char, frame) = GB[5] / step;
+      ((Actor *)MIRROR)->frame = GB[5] / step;
       {
         char *p = MIRROR;
 
-        ACTOR_RAW(p, unsigned char, nextFrame) =
-            ACTOR_RAW(p, unsigned char, frame) + 1;
+        ((Actor *)p)->nextFrame = ((Actor *)p)->frame + 1;
       }
-      ACTOR_RAW(MIRROR, unsigned char, frameProgress) =
-          (GB[5] % step << 6) / step;
+      ((Actor *)MIRROR)->frameProgress = (GB[5] % step << 6) / step;
       {
         short n = ANIM_HEADER_RAW(FIRST_ANIM(g_pDragonRescueMirrorModelData),
                                   short, m_NumFrames);
         char *p = MIRROR;
 
-        if (ACTOR_RAW(p, unsigned char, nextFrame) >= n) {
-          ACTOR_RAW(p, unsigned char, frame) = n - 1;
-          ACTOR_RAW(MIRROR, unsigned char, frameProgress) = 0;
+        if (((Actor *)p)->nextFrame >= n) {
+          ((Actor *)p)->frame = n - 1;
+          ((Actor *)MIRROR)->frameProgress = 0;
         }
       }
       if (g_dwPadPressed & PAD_CROSS) {
@@ -637,16 +622,16 @@ void DragonRescue_Update(void) {
       g_nCameraEulerRoll = CAM_KEY_RAW((CamPathKey *)p - 1, roll);
       g_nCameraEulerPitch = CAM_KEY_RAW((CamPathKey *)p - 1, pitch);
       g_nCameraEulerYaw = CAM_KEY_RAW((CamPathKey *)p - 1, yaw);
-      ACTOR_RAW(STATUE, unsigned char, frame) =
+      ((Actor *)STATUE)->frame =
           ANIM_HEADER_RAW(FIRST_ANIM(g_pDragonRescueStatueModelData),
                           unsigned char, m_NumFrames) -
           1;
-      ACTOR_RAW(STATUE, unsigned char, frameProgress) = 0;
-      ACTOR_RAW(MIRROR, unsigned char, frame) =
+      ((Actor *)STATUE)->frameProgress = 0;
+      ((Actor *)MIRROR)->frame =
           ANIM_HEADER_RAW(FIRST_ANIM(g_pDragonRescueMirrorModelData),
                           unsigned char, m_NumFrames) -
           1;
-      ACTOR_RAW(MIRROR, unsigned char, frameProgress) = 0;
+      ((Actor *)MIRROR)->frameProgress = 0;
       g_bSpyroAnimPrev = 0;
       g_bSpyroAnimCurrent = 0;
       g_bSpyroFramePrev = 0;
@@ -805,9 +790,9 @@ void DragonRescue_Update(void) {
   {
     char *actor = g_pActorListBase;
 
-    while (ACTOR_RAW(actor, unsigned char, mode) != ACTOR_MODE_END) {
-      if (ACTOR_RAW(actor, short, type) == ACTOR_TYPE_STATUE_SHARD &&
-          ACTOR_RAW(actor, unsigned char, mode) < ACTOR_MODE_DORMANT) {
+    while (((Actor *)actor)->mode != ACTOR_MODE_END) {
+      if (((Actor *)actor)->type == ACTOR_TYPE_STATUE_SHARD &&
+          ((Actor *)actor)->mode < ACTOR_MODE_DORMANT) {
         TickStatueBurstShard(actor);
       }
       actor += ACTOR_SIZE;
