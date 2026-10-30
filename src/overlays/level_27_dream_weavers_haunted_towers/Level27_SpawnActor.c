@@ -205,7 +205,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     st->pitch = 0;
     st->yaw = 0;
     st->roll = 0;
-    if (parent->type == 0xD) {
+    if (parent->type == ACTOR_TYPE_FOLLOWER) {
       st->bounces = 2;
     } else {
       st->bounces = 3;
@@ -454,7 +454,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     rec->cullRadius = 0x20;
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
-    if (parent->type == 0xB0) {
+    if (parent->type == ACTOR_TYPE_LOB_GUNNER_LOB) {
       st->vel[0] = RandomIntInRange(-0x64, 0x64);
       st->vel[1] = RandomIntInRange(-0x64, 0x64);
       st->vel[2] = RandomIntInRange(-0x3C, 0x6E);

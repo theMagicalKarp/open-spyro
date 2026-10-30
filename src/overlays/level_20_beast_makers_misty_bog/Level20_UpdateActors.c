@@ -1835,7 +1835,7 @@ void Level20_UpdateActors(void) {
           while ((a = *pp++) != 0) {
             int d;
 
-            if (a->type == 0x193 || a->type == st->filter) {
+            if (a->type == ACTOR_TYPE_LURKER || a->type == st->filter) {
               d = actor->posX - a->posX;
               if (d > 0 ? d < 0xBB8 : a->posX - actor->posX < 0xBB8) {
                 d = actor->posY - a->posY;
@@ -2698,7 +2698,7 @@ void Level20_UpdateActors(void) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
       if (actor->subMode == 0) {
-        st->lid = g_pfnLevelSpawnActor(0x188, actor);
+        st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_SPARK, actor);
         st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
         actor->subMode = 1;
@@ -3561,7 +3561,7 @@ void Level20_UpdateActors(void) {
           }
           lp = g_apActiveActorList;
           while ((o = *lp++) != 0) {
-            if (o->type == 0x1C &&
+            if (o->type == ACTOR_TYPE_GUNNER &&
                 (actor->posX - o->posX > 0 ? actor->posX - o->posX < 0xBB8
                                            : o->posX - actor->posX < 0xBB8) &&
                 (actor->posY - o->posY > 0 ? actor->posY - o->posY < 0xBB8

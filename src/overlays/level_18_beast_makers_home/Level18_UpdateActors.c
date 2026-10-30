@@ -265,7 +265,7 @@ void Level18_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -322,7 +322,7 @@ void Level18_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -1740,7 +1740,7 @@ void Level18_UpdateActors(void) {
           while ((a = *pp++) != 0) {
             int d;
 
-            if (a->type == 0x193 || a->type == st->filter) {
+            if (a->type == ACTOR_TYPE_LURKER || a->type == st->filter) {
               d = actor->posX - a->posX;
               if (d > 0 ? d < 0xBB8 : a->posX - actor->posX < 0xBB8) {
                 d = actor->posY - a->posY;
@@ -3256,7 +3256,7 @@ void Level18_UpdateActors(void) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
       if (actor->subMode == 0) {
-        st->lid = g_pfnLevelSpawnActor(0x188, actor);
+        st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_SPARK, actor);
         st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
         actor->subMode = 1;

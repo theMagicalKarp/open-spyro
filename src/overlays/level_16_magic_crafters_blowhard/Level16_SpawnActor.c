@@ -298,7 +298,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       st->pitch = 0;
       st->yaw = 0;
       st->roll = 0;
-      if (parent->type == 0xD)
+      if (parent->type == ACTOR_TYPE_FOLLOWER)
       {
         st->bounces = 2;
       }

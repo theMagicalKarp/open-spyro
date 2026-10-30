@@ -250,7 +250,7 @@ void Level24_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -307,7 +307,7 @@ void Level24_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -778,7 +778,7 @@ void Level24_UpdateActors(void) {
           int d;
 
           if (q == actor || q->mode >= ACTOR_MODE_DORMANT || q->type == ACTOR_TYPE_DRAGON_STATUE ||
-              q->type == 0x6E || q->collision == 0 || q->collision >= 0) {
+              q->type == ACTOR_TYPE_SAVE_HOST || q->collision == 0 || q->collision >= 0) {
             continue;
           }
           SubtractVector(g152, &q->posX, &actor->posX);

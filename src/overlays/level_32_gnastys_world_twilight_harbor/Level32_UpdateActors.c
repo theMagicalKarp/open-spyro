@@ -295,7 +295,7 @@ void Level32_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -352,7 +352,7 @@ void Level32_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -1922,7 +1922,7 @@ void Level32_UpdateActors(void) {
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
         actor->flags = 0;
         c = st->heldLob;
-        if (c != 0 && c != (Actor *)-1 && c->type == 0xB0 && c->subMode == 0 &&
+        if (c != 0 && c != (Actor *)-1 && c->type == ACTOR_TYPE_LOB_GUNNER_LOB && c->subMode == 0 &&
             c->mode < ACTOR_MODE_DORMANT) {
           c->subMode = 1;
           st->heldLob->mode = 2;

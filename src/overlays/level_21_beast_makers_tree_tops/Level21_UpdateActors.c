@@ -298,7 +298,7 @@ void Level21_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -355,7 +355,7 @@ void Level21_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -790,12 +790,12 @@ void Level21_UpdateActors(void) {
       BoulderThrowerState *st = actor->state;
       int f;
 
-      if (actor->type == 0x66) {
+      if (actor->type == ACTOR_TYPE_BOULDER_THROWER_B) {
         TickActorFlameGlow(actor);
       }
       f = actor->flags;
       if ((f & 0xF0000) && actor->mode != 3 &&
-          (actor->type != 0x66 || f != 0x10000)) {
+          (actor->type != ACTOR_TYPE_BOULDER_THROWER_B || f != 0x10000)) {
         Actor *c;
 
         if (f & 0x40000) {
@@ -960,7 +960,7 @@ void Level21_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           st->timer = 0x78;
-          if (actor->type == 0x66) {
+          if (actor->type == ACTOR_TYPE_BOULDER_THROWER_B) {
             st->timer = 0x50;
           }
           st->rock = 0;
@@ -1089,7 +1089,7 @@ void Level21_UpdateActors(void) {
           Actor *o;
 
           while ((o = *lp++) != 0) {
-            if (o->type == 0x41 &&
+            if (o->type == ACTOR_TYPE_PLATFORM_POD &&
                 (actor->posX - o->posX > 0 ? actor->posX - o->posX < 0xBB8
                                            : o->posX - actor->posX < 0xBB8) &&
                 (actor->posY - o->posY > 0 ? actor->posY - o->posY < 0xBB8
@@ -1258,7 +1258,7 @@ void Level21_UpdateActors(void) {
         if (actor->subMode == 0 && st->idlePose2 == 0) {
           break;
         }
-        if (actor->type == 0xAA) {
+        if (actor->type == ACTOR_TYPE_GATEKEEPER_B) {
           actor->mode = 2;
           ANIM_RESET(actor, 2);
           continue;
@@ -1446,7 +1446,7 @@ void Level21_UpdateActors(void) {
           Actor *o;
 
           while ((o = *lp++) != 0) {
-            if (o->type == 0x41 &&
+            if (o->type == ACTOR_TYPE_PLATFORM_POD &&
                 (actor->posX - o->posX > 0 ? actor->posX - o->posX < 0xBB8
                                            : o->posX - actor->posX < 0xBB8) &&
                 (actor->posY - o->posY > 0 ? actor->posY - o->posY < 0xBB8
@@ -3886,7 +3886,7 @@ void Level21_UpdateActors(void) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
       if (actor->subMode == 0) {
-        st->lid = g_pfnLevelSpawnActor(0x188, actor);
+        st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_SPARK, actor);
         st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
         actor->subMode = 1;

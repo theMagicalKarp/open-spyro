@@ -292,7 +292,7 @@ void Level6_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -349,7 +349,7 @@ void Level6_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -3421,7 +3421,7 @@ void Level6_UpdateActors(void) {
         actor->flags = 0;
         for (q = g_pActorListBase; q < g_pActorPoolDynBase; q++) {
           if (q == actor || q->mode >= ACTOR_MODE_DORMANT || q->type == ACTOR_TYPE_DRAGON_STATUE ||
-              q->type == 0x6E || q->type == ACTOR_TYPE_FIREBALL_CANNON) {
+              q->type == ACTOR_TYPE_SAVE_HOST || q->type == ACTOR_TYPE_FIREBALL_CANNON) {
             continue;
           }
           if ((q->collision == 0 || q->collision >= 0) && q->type != ACTOR_TYPE_REWARD_BURST) {

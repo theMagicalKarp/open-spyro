@@ -306,7 +306,7 @@ void Level13_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -363,7 +363,7 @@ void Level13_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -3564,7 +3564,7 @@ void Level13_UpdateActors(void) {
             continue;
           }
           if (g_nActorAnimNewFrame != 0 && actor->nextFrame == 0xE) {
-            Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_BLOCK, actor);
+            Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_SHEPHERD_THROW, actor);
             CrookState *cs = c->state;
 
             GetActorAttachPoint(actor, 0, &c->posX);
@@ -3605,7 +3605,7 @@ void Level13_UpdateActors(void) {
             }
           }
           if (g_nActorAnimNewFrame != 0 && actor->nextFrame == 0xE) {
-            Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_BLOCK, actor);
+            Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_SHEPHERD_THROW, actor);
             CrookState *cs = c->state;
 
             GetActorAttachPoint(actor, 0, &c->posX);
@@ -3702,7 +3702,7 @@ void Level13_UpdateActors(void) {
               actor->subMode = 1;
             }
             if (g_nActorAnimNewFrame != 0 && actor->nextFrame == 0xE) {
-              Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_BLOCK, actor);
+              Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_SHEPHERD_THROW, actor);
               CrookState *cs = c->state;
 
               GetActorAttachPoint(actor, 0, &c->posX);
@@ -4506,9 +4506,9 @@ void Level13_UpdateActors(void) {
       break;
     }
 
-    /* Type 315: falling block. Once triggered it drops along its heading
-     * until its timer runs out, then despawns. */
-    case ACTOR_TYPE_FALLING_BLOCK: {
+    /* Shepherd's throw: once released (live) it flies along its heading under
+     * gravity until its timer runs out, then despawns. */
+    case ACTOR_TYPE_SHEPHERD_THROW: {
       FallState *st = actor->state;
 
       if (st->live == 0) {
@@ -5020,7 +5020,7 @@ void Level13_UpdateActors(void) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
       if (actor->subMode == 0) {
-        st->lid = g_pfnLevelSpawnActor(0x188, actor);
+        st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_SPARK, actor);
         st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
         actor->subMode = 1;

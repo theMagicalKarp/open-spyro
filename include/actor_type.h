@@ -291,7 +291,7 @@ enum ActorType {
   ACTOR_TYPE_WOOD_SHARD = 310,       /* 310..311: bounces and throws three sparks a frame */
   ACTOR_TYPE_CRACKING_BOULDER = 312, /* shakes and smokes when hit, then bursts */
   ACTOR_TYPE_ALARM_POST_GUARD = 314, /* level 4: patrols between posts, raises the alarm, hands off to its partner (GuardState) */
-  ACTOR_TYPE_FALLING_BLOCK = 315, /* level 13: once triggered, drops along its heading until its timer runs out (FallState) */
+  ACTOR_TYPE_SHEPHERD_THROW = 315, /* levels 12/13: the shepherd releases it on frame 0xE; once live it flies its heading under gravity until its timer runs out (CrookState / FallState) */
   ACTOR_TYPE_FALLING_DEBRIS = 318, /* levels 13/14/15: tumbles along its velocity until its timer runs out or it leaves the screen */
   ACTOR_TYPE_RESPAWNER = 323,      /* puts dormant actors of one type back once Spyro is far (RespawnState) */
   ACTOR_TYPE_SORCERER = 326, /* level 13 (SorcererState) */
