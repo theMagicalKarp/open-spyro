@@ -970,7 +970,7 @@ extern int g_anSpyroPendingImpulse[3];                  /* 0x80078b84 */
 extern int g_nSpyroMoveTargetMag;                       /* 0x80078b9c */
 extern int g_nSpyroBodyYawStep;                         /* 0x80078ba0 */
 extern int g_nSpyroGravityStep;                         /* 0x80078ba4 */
-extern int g_nSpyroGroundRunFlag;                       /* 0x80078ba8 */
+extern int g_nSpyroGlideEnteredLatch;                       /* 0x80078ba8 set to 1 whenever ChangeSpyroState enters a glide/fly state from another state; only ResetSpyroEntity(1)'s FillWord clears it. While set, the jump-hold latch is off and a fall needs 0x1F (flight: 0x10) frames before Cross glides */
 extern int g_nSpyroJumpHoldLatch;                       /* 0x80078bac */
 extern int g_nSpyroFloorReferenceZ;                     /* 0x80078bb0 */
 extern int g_nSpyroGravityEnableFlag;                   /* 0x80078bb4 */

@@ -292,7 +292,7 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
-    if (g_nSpyroGroundRunFlag == 0 && (g_dwPadPressed & PAD_CROSS)) {
+    if (g_nSpyroGlideEnteredLatch == 0 && (g_dwPadPressed & PAD_CROSS)) {
       g_nSpyroJumpHoldLatch = 1;
     }
     if (g_anSpyroMotionVec[2] < 0) {
@@ -320,7 +320,7 @@ void UpdateSpyroStateBehavior(void) {
       g_nSpyroMotionSpeed = 0x1F80;
       break;
     }
-    if (g_nSpyroGroundRunFlag == 0 && g_nSpyroSubstate == 1 &&
+    if (g_nSpyroGlideEnteredLatch == 0 && g_nSpyroSubstate == 1 &&
         g_nSpyroJumpHoldLatch != 0) {
       JUMP_STATE();
       break;
@@ -341,12 +341,12 @@ void UpdateSpyroStateBehavior(void) {
       if ((g_dwPadPressed & PAD_CROSS) && g_nSpyroSubstate == 0) {
         if (g_nFlightLevelActive != 0 ||
             g_nActiveLevelId == LEVEL_GNASTYS_LOOT) {
-          if (g_nSpyroGroundRunFlag == 0 || g_nSpyroStateTimer >= 0x10) {
+          if (g_nSpyroGlideEnteredLatch == 0 || g_nSpyroStateTimer >= 0x10) {
             ChangeSpyroState(SPYRO_ST_FLY);
           }
           break;
         }
-        if (g_nSpyroGroundRunFlag == 0 || g_nSpyroStateTimer >= 0x1F) {
+        if (g_nSpyroGlideEnteredLatch == 0 || g_nSpyroStateTimer >= 0x1F) {
           ChangeSpyroState(SPYRO_ST_GLIDE);
         }
         break;
@@ -738,7 +738,7 @@ void UpdateSpyroStateBehavior(void) {
       ResetSpyroLinearMotion();
     }
     if (g_dwPadPressed & PAD_CROSS) {
-      if (g_nSpyroGroundRunFlag == 0 || g_nSpyroStateTimer >= 0x10) {
+      if (g_nSpyroGlideEnteredLatch == 0 || g_nSpyroStateTimer >= 0x10) {
         ChangeSpyroState(SPYRO_ST_GLIDE);
       }
       break;
@@ -777,7 +777,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_CHARGE_AIR:
-    if (g_nSpyroGroundRunFlag == 0 && (g_dwPadPressed & PAD_CROSS)) {
+    if (g_nSpyroGlideEnteredLatch == 0 && (g_dwPadPressed & PAD_CROSS)) {
       g_nSpyroJumpHoldLatch = 1;
     }
     if (!(g_nSpyroSubstate & SPYRO_SUB_SUPERCHARGE) &&
@@ -882,7 +882,7 @@ void UpdateSpyroStateBehavior(void) {
     if ((g_dwPadHeld & PAD_CROSS) && g_nSpyroGravityEnableFlag != 0) {
       g_nSpyroGravityEnableFlag = 0;
       g_nSpyroVelocityZ += 0xDC0;
-    } else if ((g_dwPadPressed & PAD_CROSS) && g_nSpyroGroundRunFlag == 0) {
+    } else if ((g_dwPadPressed & PAD_CROSS) && g_nSpyroGlideEnteredLatch == 0) {
       g_nSpyroJumpHoldLatch = 1;
     }
     if (g_nSpyroGroundSlope >= 0x17 && g_nPortalTransitionActive == 0) {

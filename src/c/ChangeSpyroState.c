@@ -377,7 +377,7 @@ void ChangeSpyroState(int state) {
       break;
     }
     g_nSpyroSubstate = 0;
-    g_nSpyroGroundRunFlag = 1;
+    g_nSpyroGlideEnteredLatch = 1;
     g_nSpyroBodyYawStep = 0;
     g_nSpyroPitchRateAccum = 0;
     g_nSpyroTurnRateAccum = 0;
