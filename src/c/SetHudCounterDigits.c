@@ -38,7 +38,7 @@ void SetHudCounterDigits(int slot, int count, int value, int icon) {
         int off = (slot * 11) << 3;
         int digit = *p;
         HUD_ICON(off)->cullRadius = ff;
-        HUD_ICON(off)->type = digit + 0x104;
+        HUD_ICON(off)->type = ACTOR_TYPE_GEM_DIGIT_0 + digit;
       }
     } else {
       if (icon != 0) {

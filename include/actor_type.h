@@ -130,6 +130,7 @@ enum ActorType {
   ACTOR_TYPE_PRESSURE_SWITCH = 18, /* level 0: pressure switch (SwitchState) */
   ACTOR_TYPE_PATROL_WARD = 23, /* level 3: patrol guard (WardState) */
   ACTOR_TYPE_GUNNER = 28, /* level 20: wakes its partner, turns to it, fires type 400 shots (GunnerState) */
+  ACTOR_TYPE_LURKER_TETHER = 31, /* level 20: the tether ACTOR_TYPE_LURKER drags Spyro with; no UpdateActors arm */
   ACTOR_TYPE_CARRIED_EGG = 32, /* level 19: rides its carrier until the carrier reaches pose 4, then behaves as a dragon egg */
   ACTOR_TYPE_EGG_THIEF = 33,       /* runs off with a dragon egg (34), drops it when hit (ThiefState) */
   ACTOR_TYPE_DRAGON_EGG = 34,      /* recovered egg: rises, rolls the HUD egg tally */
@@ -186,6 +187,7 @@ enum ActorType {
   ACTOR_TYPE_SINGING_PATH_WALKER = 126, /* levels 24/28: walks its path, sings while it rests, can be carried and thrown by its rider (PathWalkerState) */
   ACTOR_TYPE_CHARGE_REACT_PROP = 129, /* levels 2/25: a charge plays its reaction animation once */
   ACTOR_TYPE_BIG_LUNGING_GUARD = 130, /* level 24: ACTOR_TYPE_LUNGING_GUARD plus two followers and a growl */
+  ACTOR_TYPE_BREAKABLE_WALL_PART = 132, /* level 27: one of ACTOR_TYPE_BREAKABLE_WALL's four parts */
   ACTOR_TYPE_RUBBLE_SHARD = 133, /* level 27: explosion shard with a ground bounce (ShardState); also 215 */
   ACTOR_TYPE_ROCK_THROWER = 134, /* level 27: throws ACTOR_TYPE_FALLING_CHUNK rocks at Spyro (RockThrowerState) */
   ACTOR_TYPE_FALLING_CHUNK = 135, /* level 27: rides the floor or falls; bursts into rubble (FallingChunkState) */
@@ -220,6 +222,7 @@ enum ActorType {
   ACTOR_TYPE_LOOT_THIEF = 177, /* level 34: treasure thief (LootThiefState) */
   ACTOR_TYPE_LOOT_CRITTER = 179, /* level 34: loot critter (CritterState) */
   ACTOR_TYPE_LOOT_VORTEX = 181, /* levels 33/34 (LootVortexState) */
+  ACTOR_TYPE_BRAWLER_SPAWN = 183, /* level 7: spawned by ACTOR_TYPE_BRAWLER on frame 0x11; no level has an UpdateActors arm for it (BrawlerSpawnState) */
   ACTOR_TYPE_BRAWLER = 184, /* level 7: stationary brawler (BrawlerState) */
   ACTOR_TYPE_SHOOTER = 186, /* level 7: blinking sentry that fires type 197 (ShooterState) */
   ACTOR_TYPE_HOME_TALKER = 187, /* 187..192: the homeworld talkers (levels 0/6/12/18/24/30); walking up facing one starts its actor cutscene */
@@ -295,6 +298,7 @@ enum ActorType {
   ACTOR_TYPE_FALLING_DEBRIS = 318, /* levels 13/14/15: tumbles along its velocity until its timer runs out or it leaves the screen */
   ACTOR_TYPE_RESPAWNER = 323,      /* puts dormant actors of one type back once Spyro is far (RespawnState) */
   ACTOR_TYPE_SORCERER = 326, /* level 13 (SorcererState) */
+  ACTOR_TYPE_HUD_CLOCK_SEPARATOR = 327, /* flight clock separator glyph; every clock slot spawns as one and the digit slots are re-typed to ACTOR_TYPE_GEM_DIGIT_0 + n */
   ACTOR_TYPE_FLOOR_MARKER = 328, /* drops onto the floor triangle under it once, then sits there */
   ACTOR_TYPE_SEED_POD = 329,         /* wobbles when struck, holds a floating prize above itself */
   ACTOR_TYPE_CHECKPOINT = 331,     /* 331..333: sets the respawn anchor (SetSpawnAnchorFromActor) */
@@ -337,6 +341,7 @@ enum ActorType {
   ACTOR_TYPE_BALLOON = 416,        /* bobs about its rest height; only in balloonist levels */
   ACTOR_TYPE_REWARD_BURST = 417, /* level 6: once triggered, plays its sound and throws up to four sets of sparks */
   ACTOR_TYPE_LIFE_CHEST = 421,       /* shakes and pops its lid on a timer, spawning a 0x1A6 rider (LiftState) */
+  ACTOR_TYPE_LIFE_CHEST_RIDER = 422, /* shown while ACTOR_TYPE_LIFE_CHEST's lid is up, then despawned; no UpdateActors arm */
   ACTOR_TYPE_LIFE_CHEST_SHARD = 423, /* 423..425: life chest burst (423/424 bounce, 425 tumbles) */
   ACTOR_TYPE_LETTER_A = 0x1AA,     /* floating-name letters A..Z: 0x1AA..0x1C3 */
   ACTOR_TYPE_ROAMING_RAM_QUIET = 453, /* ACTOR_TYPE_ROAMING_RAM without the voice channel (level 21) */

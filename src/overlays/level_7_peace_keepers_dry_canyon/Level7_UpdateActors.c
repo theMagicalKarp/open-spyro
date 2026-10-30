@@ -2560,7 +2560,7 @@ void Level7_UpdateActors(void) {
         st->flag = one;
         if (g_nActorAnimNewFrame != 0 && actor->frame == 0x11) {
           int h = WrapAddAngle8(actor->rotZ, 0xFD);
-          Actor *c = g_pfnLevelSpawnActor(0xB7, actor);
+          Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_BRAWLER_SPAWN, actor);
           BrawlerSpawnState *cs = c->state;
 
           CopyVector(&c->posX, &actor->posX);
@@ -4531,7 +4531,7 @@ void Level7_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;

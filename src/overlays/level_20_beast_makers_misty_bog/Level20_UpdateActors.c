@@ -2894,7 +2894,7 @@ void Level20_UpdateActors(void) {
                                         spy->posY - actor->posY, 0)) < 0x14) {
           int k;
 
-          st->tether = g_pfnLevelSpawnActor(0x1F, actor);
+          st->tether = g_pfnLevelSpawnActor(ACTOR_TYPE_LURKER_TETHER, actor);
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 0, A336);
           GetActorAttachPoint(actor, 1, A352);
@@ -3103,7 +3103,7 @@ void Level20_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;

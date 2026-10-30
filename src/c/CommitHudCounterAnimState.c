@@ -28,7 +28,7 @@ top:
   o2 = (slot * 11) << 3;
   cur2 = HUD_ICON(o2)->subMode;
   if (cur2 != ff && state == commit) {
-    HUD_ICON(o2)->type = cur2 + 0x104;
+    HUD_ICON(o2)->type = ACTOR_TYPE_GEM_DIGIT_0 + cur2;
     HUD_ICON(o2)->cullRadius = ff;
   }
   slot += 1;

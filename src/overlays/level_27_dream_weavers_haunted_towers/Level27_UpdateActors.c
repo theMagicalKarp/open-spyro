@@ -1905,7 +1905,7 @@ void Level27_UpdateActors(void) {
           int d = 0x190;
           int h = (actor->rotZ + 0x40) & 0xFF;
 
-          st->part[i] = g_pfnLevelSpawnActor(0x84, actor);
+          st->part[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_BREAKABLE_WALL_PART, actor);
           CopyVector(&st->part[i]->posX, &actor->posX);
           if (i < 2) {
             d = -(i + 1) * d;
@@ -3868,7 +3868,7 @@ void Level27_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;
