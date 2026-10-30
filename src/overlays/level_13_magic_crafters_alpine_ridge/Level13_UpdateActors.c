@@ -265,7 +265,7 @@ void Level13_UpdateActors(void) {
       if (TickCountdownByFrameDelta(st, 4) == 0) {
         break;
       }
-      g_pfnLevelEmitParticles(1, 0x16, &actor->posX, 0);
+      g_pfnLevelEmitParticles(1, EMIT_DRIFTING_MOTE, &actor->posX, 0);
       *st = GetRandomU32() & 0xE;
       break;
     }
@@ -4213,7 +4213,7 @@ void Level13_UpdateActors(void) {
           }
         }
       } else {
-        g_pfnLevelEmitParticles(1, 5, &actor->posX, 0);
+        g_pfnLevelEmitParticles(1, EMIT_JITTER_DRIFT, &actor->posX, 0);
       }
       if (CastRayWorldAndActors(x288, &actor->posX) != 0) {
         DespawnActorRecord(actor);

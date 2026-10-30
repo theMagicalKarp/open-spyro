@@ -2138,18 +2138,18 @@ void Level9_UpdateActors(void) {
       L9Snowball *st = actor->state;
 
       if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-        g_pfnLevelEmitParticles(0x10, 0xF, &actor->posX, 0);
+        g_pfnLevelEmitParticles(0x10, EMIT_JITTER_BURST, &actor->posX, 0);
         DespawnActorRecord(actor);
         continue;
       }
       if (MoveActorByDelta(actor, st->vx, st->vy, st->vz, 0, 0xC8, 0) != 0) {
-        g_pfnLevelEmitParticles(0x10, 0xF, &actor->posX, 0);
+        g_pfnLevelEmitParticles(0x10, EMIT_JITTER_BURST, &actor->posX, 0);
         DespawnActorRecord(actor);
         continue;
       }
       if (RaiseSpyroTriggerInRadius(&actor->posX, 0x80, 1) != 0) {
         PlayActorMeshVoice(actor, 0, 0);
-        g_pfnLevelEmitParticles(0x10, 0xF, &actor->posX, 0);
+        g_pfnLevelEmitParticles(0x10, EMIT_JITTER_BURST, &actor->posX, 0);
         DespawnActorRecord(actor);
         continue;
       }

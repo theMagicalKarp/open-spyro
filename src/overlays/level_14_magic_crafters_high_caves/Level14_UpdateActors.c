@@ -2996,7 +2996,7 @@ void Level14_UpdateActors(void) {
             CopyVector(x288, &SPY.posX);
             x288[0] += (r * g_anCosineLut[SPY.bodyRotZ]) >> 12;
             x288[1] += (r * g_anSineLut[SPY.bodyRotZ]) >> 12;
-            g_pfnLevelEmitParticles(1, 0x1F, x288, 0);
+            g_pfnLevelEmitParticles(1, EMIT_SPREAD_MOTE, x288, 0);
             st->count = 0;
           }
           if (g_nActorAnimDone != 0) {
@@ -3680,7 +3680,7 @@ void Level14_UpdateActors(void) {
           }
         }
       } else {
-        g_pfnLevelEmitParticles(1, 5, &actor->posX, 0);
+        g_pfnLevelEmitParticles(1, EMIT_JITTER_DRIFT, &actor->posX, 0);
       }
       if (CastRayWorldAndActors(svL, &actor->posX) != 0) {
         DespawnActorRecord(actor);

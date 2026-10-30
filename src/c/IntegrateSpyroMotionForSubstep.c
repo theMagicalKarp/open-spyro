@@ -1,3 +1,4 @@
+#include "emit_record.h"
 #include "funcs.h"
 #include "globals.h"
 #include "level_id.h"
@@ -1120,7 +1121,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         v50[1] += g_nSpyroWorldPosY;
         v50[2] =
             g_nSpyroGroundHeightZ; /* last: keeps t0 live past the fn load */
-        PARTICLE_SPAWN(1, 0x1B, v50, n0);
+        PARTICLE_SPAWN(1, EMIT_FLIGHT_GROUND_WAKE, v50, n0);
       }
       moving = 0;
       if (g_anSpyroVelocityFp6[0] != 0 || g_anSpyroVelocityFp6[1] != 0) {
@@ -1160,7 +1161,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         CopyVector(p70, (int *)SPY_FROM_ANIM_PREV(ap, SPY_VELOCITY_FP6 * 4));
         RShiftVector3(p70, 6);
         AddVector(p60, p60, p70);
-        PARTICLE_SPAWN(1, 0x1A, p60, n);
+        PARTICLE_SPAWN(1, EMIT_FLIGHT_TRAIL, p60, n);
         k += 0x5B;
       }
     } else {

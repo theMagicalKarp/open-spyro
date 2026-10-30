@@ -358,7 +358,7 @@ void Level0_UpdateActors(void) {
       if (TickCountdownByFrameDelta(st, 4) == 0) {
         break;
       }
-      g_pfnLevelEmitParticles(1, 0x16, &actor->posX, 0);
+      g_pfnLevelEmitParticles(1, EMIT_DRIFTING_MOTE, &actor->posX, 0);
       *st = GetRandomU32() & 0xE;
       break;
     }
@@ -2860,7 +2860,7 @@ void Level0_UpdateActors(void) {
       tri[0][0] = (short)g_anCosineLut[actor->rotZ] >> 5;
       tri[0][1] = (short)g_anSineLut[actor->rotZ] >> 5;
       tri[0][2] = 0x20;
-      g_pfnLevelEmitParticles(1, 0xE, &actor->posX, tri[0]);
+      g_pfnLevelEmitParticles(1, EMIT_SLOWING_SPARK, &actor->posX, tri[0]);
       break;
     }
 

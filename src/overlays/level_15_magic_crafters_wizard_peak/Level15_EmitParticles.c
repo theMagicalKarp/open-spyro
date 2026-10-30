@@ -112,7 +112,7 @@ void Level15_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0x4: {
+    case EMIT_HOMING_ORB: {
       int t1, t2, t3;
       int u1, u2, u3;
       rec = (Emit *)AllocEmitListRecord(3);
@@ -141,7 +141,7 @@ void Level15_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.plume.texIndex = 0;
       break;
     }
-    case 0x5: {
+    case EMIT_JITTER_DRIFT: {
       int t1, t2, t3;
       int u1, u2, u3;
       rec = (Emit *)AllocEmitListRecord(3);
@@ -382,7 +382,7 @@ void Level15_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.ribbon.texIndex = 0;
       break;
     }
-    case 0x18: {
+    case EMIT_RESCUE_SWIRL: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->visible = 1;
@@ -404,7 +404,7 @@ void Level15_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.band.segment = i;
       break;
     }
-    case 0x21: {
+    case EMIT_DUST_PUFF: {
       int ta, tb;
       int ua, ub;
       rec = (Emit *)AllocEmitListRecord(2);

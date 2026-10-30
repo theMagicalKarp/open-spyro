@@ -707,7 +707,7 @@ void Level26_UpdateActors(void) {
         }
         if (actor->nextFrame >= 6 && st->timer == 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          g_pfnLevelEmitParticles(0x10, 0x1C, g_pfnLevelSpawnActor(ACTOR_TYPE_LOBBED_BOMB, actor), (void *)0x10);
+          g_pfnLevelEmitParticles(0x10, EMIT_ACTOR_RING_SPARK, g_pfnLevelSpawnActor(ACTOR_TYPE_LOBBED_BOMB, actor), (void *)0x10);
           st->timer = st->reload;
         }
         break;
@@ -750,11 +750,11 @@ void Level26_UpdateActors(void) {
             CastRayWorldAndActors(svD, &actor->posX) != 0) {
           actor->mode = 1;
         }
-        g_pfnLevelEmitParticles(1, 0x1C, actor, (void *)8);
+        g_pfnLevelEmitParticles(1, EMIT_ACTOR_RING_SPARK, actor, (void *)8);
         break;
 
       case 1:
-        g_pfnLevelEmitParticles(0x10, 0x1C, actor, (void *)0x10);
+        g_pfnLevelEmitParticles(0x10, EMIT_ACTOR_RING_SPARK, actor, (void *)0x10);
         DespawnActorRecord(actor);
         continue;
       }

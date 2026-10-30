@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "emit_record.h"
 #include "funcs.h"
 #include "globals.h"
 #include "level_id.h"
@@ -67,7 +68,7 @@ static inline int OpaqueInt(int p) {
     for (i = 0; i < 4; i++) {                                                  \
       v[0] = (short)(unsigned short)g_anCosineLut[a] >> 7;                     \
       v[1] = (short)((unsigned short *)g_anSineLut)[a] >> 7;                   \
-      PARTICLE_SPAWN(1, 0x21, v, 0);                                           \
+      PARTICLE_SPAWN(1, EMIT_DUST_PUFF, v, 0);                                 \
       a = (a + 0x40) & 0xFF;                                                   \
     }                                                                          \
   }

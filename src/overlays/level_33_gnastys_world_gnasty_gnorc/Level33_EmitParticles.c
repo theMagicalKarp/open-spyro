@@ -238,7 +238,7 @@ void Level33_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0x19: {
+    case EMIT_HEAT_SPARK: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
@@ -270,7 +270,7 @@ void Level33_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0x21: {
+    case EMIT_DUST_PUFF: {
       int ta, tb;
       int ua, ub;
       rec = (Emit *)AllocEmitListRecord(2);

@@ -195,7 +195,7 @@ void Level23_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0x1A:
+    case EMIT_FLIGHT_TRAIL:
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
@@ -211,7 +211,7 @@ void Level23_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
       break;
-    case 0x1B: {
+    case EMIT_FLIGHT_GROUND_WAKE: {
       int w;
       int q;
       rec = (Emit *)AllocEmitListRecord(6);
@@ -236,7 +236,7 @@ void Level23_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0x21: {
+    case EMIT_DUST_PUFF: {
       int ta, tb;
       int ua, ub;
       rec = (Emit *)AllocEmitListRecord(2);

@@ -2113,7 +2113,7 @@ void Level27_UpdateActors(void) {
             CopyVector(g272, &SPY.posX);
             g272[0] += (r * g_anCosineLut[SPY.bodyRotZ]) >> 12;
             g272[1] += (r * g_anSineLut[SPY.bodyRotZ]) >> 12;
-            g_pfnLevelEmitParticles(1, 0x1F, g272, 0);
+            g_pfnLevelEmitParticles(1, EMIT_SPREAD_MOTE, g272, 0);
             st->count = 0;
           }
           if (g_nActorAnimDone != 0) {
@@ -2767,7 +2767,7 @@ void Level27_UpdateActors(void) {
             p = g408;
           }
           GetActorAttachPoint(who, k, p);
-          g_pfnLevelEmitParticles(1, 0x1D, p, actor);
+          g_pfnLevelEmitParticles(1, EMIT_PATH_WISP, p, actor);
         }
         if ((st->timer == 0 && st->hit[st->cur + 1] != 0) ||
             g_nActorAnimDone != 0) {

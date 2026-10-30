@@ -3205,7 +3205,7 @@ void Level15_UpdateActors(void) {
           ChainState *cs = g_pActorListBase[st->link].state;
 
           if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
-            g_pfnLevelEmitParticles(5, 4, &g_pActorListBase[st->link].posX, &g_pActorListBase[st->link]);
+            g_pfnLevelEmitParticles(5, EMIT_HOMING_ORB, &g_pActorListBase[st->link].posX, &g_pActorListBase[st->link]);
           }
           st->timer = 0x20;
           st->link = cs->link;
@@ -3401,7 +3401,7 @@ void Level15_UpdateActors(void) {
           ApplyEulerRotation(&actor->rotX, x272, 0);
           RotateVectorByMatrix(x272, x256, x256);
           AddVector(x256, x256, &actor->posX);
-          g_pfnLevelEmitParticles(3, 4, x256, &g_pActorListBase[st->link]);
+          g_pfnLevelEmitParticles(3, EMIT_HOMING_ORB, x256, &g_pActorListBase[st->link]);
         }
         if (g_nActorAnimDone == 0) {
           break;
@@ -3640,7 +3640,7 @@ void Level15_UpdateActors(void) {
           }
         }
       } else {
-        g_pfnLevelEmitParticles(1, 5, &actor->posX, 0);
+        g_pfnLevelEmitParticles(1, EMIT_JITTER_DRIFT, &actor->posX, 0);
       }
       if (CastRayWorldAndActors(x288, &actor->posX) != 0) {
         DespawnActorRecord(actor);

@@ -3347,7 +3347,7 @@ void Level21_UpdateActors(void) {
             LShiftVector3(svH, 3);
             AddVector(runnerSpark, runnerSpark, svH);
             runnerSpark[6] = spd;
-            g_pfnLevelEmitParticles(1, 0x19, runnerSpark, 0);
+            g_pfnLevelEmitParticles(1, EMIT_HEAT_SPARK, runnerSpark, 0);
           } while (k < 3);
         }
         last = st->mode < 2 ? st->path[0] - 1 : 0;

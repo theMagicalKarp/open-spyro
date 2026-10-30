@@ -216,7 +216,7 @@ void Level12_UpdateActors(void) {
       if (TickCountdownByFrameDelta(st, 4) == 0) {
         break;
       }
-      g_pfnLevelEmitParticles(1, 0x16, &actor->posX, 0);
+      g_pfnLevelEmitParticles(1, EMIT_DRIFTING_MOTE, &actor->posX, 0);
       *st = GetRandomU32() & 0xE;
       break;
     }

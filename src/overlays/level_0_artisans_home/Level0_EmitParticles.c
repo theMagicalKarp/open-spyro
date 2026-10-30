@@ -284,7 +284,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0xE: {
+    case EMIT_SLOWING_SPARK: {
       int d;
       d = ApproxDist2D(pos, g_anCameraPos);
       if (d > 0x7FFF) {
@@ -312,7 +312,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0x16: {
+    case EMIT_DRIFTING_MOTE: {
       int d;
       d = ApproxDist2D(pos, g_anCameraPos);
       if (d > 0x7FFF) {
@@ -345,7 +345,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0x18: {
+    case EMIT_RESCUE_SWIRL: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->visible = 1;
@@ -367,7 +367,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.band.segment = i;
       break;
     }
-    case 0x1E: {
+    case EMIT_RISING_PUFF: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
@@ -384,7 +384,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0x21: {
+    case EMIT_DUST_PUFF: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;

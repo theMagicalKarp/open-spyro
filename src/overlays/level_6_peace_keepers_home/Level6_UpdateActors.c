@@ -4436,7 +4436,7 @@ void Level6_UpdateActors(void) {
         g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_SPARK + 1, actor);
         g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_SPARK + 2, actor);
       }
-      g_pfnLevelEmitParticles(8, 0x17, &actor->posX, 0);
+      g_pfnLevelEmitParticles(8, EMIT_SCATTER_MOTE, &actor->posX, 0);
       ModifyWorldChunkAnimFlags(0, 0xFC, 0);
       DespawnActorRecord(actor);
       continue;

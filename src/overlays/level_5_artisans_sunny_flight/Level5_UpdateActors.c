@@ -2112,7 +2112,7 @@ void Level5_UpdateActors(void) {
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         if ((g_dwGamestateFrames & 3) == 0) {
           GetActorAttachPoint(actor, 3, svZ);
-          g_pfnLevelEmitParticles(1, 0x13, svZ, 0);
+          g_pfnLevelEmitParticles(1, EMIT_SMOKE_PUFF, svZ, 0);
         }
       }
       switch (actor->mode) {

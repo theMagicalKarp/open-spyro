@@ -218,7 +218,7 @@ void Level3_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.ribbon.depthBias = 2;
       break;
     }
-    case 0x18: {
+    case EMIT_RESCUE_SWIRL: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->visible = 1;
@@ -240,7 +240,7 @@ void Level3_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.band.segment = i;
       break;
     }
-    case 0x21: {
+    case EMIT_DUST_PUFF: {
       int ta, tb;
       int ua, ub;
       rec = (Emit *)AllocEmitListRecord(2);
