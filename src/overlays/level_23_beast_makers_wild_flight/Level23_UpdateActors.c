@@ -1191,7 +1191,7 @@ void Level23_UpdateActors(void) {
       break;
     }
 
-    case 0xA2: {
+    case ACTOR_TYPE_CYCLING_FLIGHT_TARGET: {
       CyclerState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode == 0) {

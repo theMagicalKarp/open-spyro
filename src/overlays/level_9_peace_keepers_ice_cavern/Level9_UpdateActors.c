@@ -1981,7 +1981,7 @@ void Level9_UpdateActors(void) {
 
     /* Type 198: charging yak. Grazes, lowers its horns and charges when
      * Spyro comes near, and is knocked away when flamed or charged. */
-    case 198: {
+    case ACTOR_TYPE_CHARGING_YAK: {
       L9Yak *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 6) {
@@ -2134,7 +2134,7 @@ void Level9_UpdateActors(void) {
 
     /* Type 209: thrown snowball. Flies along its arc and bursts on a timer,
      * on landing or when it reaches Spyro. */
-    case 209: {
+    case ACTOR_TYPE_THROWN_SNOWBALL: {
       L9Snowball *st = actor->state;
 
       if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
@@ -2160,8 +2160,8 @@ void Level9_UpdateActors(void) {
     /* Types 211/212: snowball thrower on a patrol path. Walks its path,
      * turns to face Spyro and throws a type 209 snowball when he is in
      * line, and is knocked away when flamed or charged. */
-    case 211:
-    case 212: {
+    case ACTOR_TYPE_PATH_SNOWBALL_THROWER:
+    case ACTOR_TYPE_PATH_SNOWBALL_THROWER + 1: {
       L9Thrower *st = actor->state;
       int r;
 
@@ -2226,7 +2226,7 @@ void Level9_UpdateActors(void) {
         break;
 
       case 2: {
-        int frame = actor->type == 0xD3 ? 0x17 : 0x13;
+        int frame = actor->type == ACTOR_TYPE_PATH_SNOWBALL_THROWER ? 0x17 : 0x13;
 
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (g_nActorAnimNewFrame != 0 && actor->frame == frame) {
@@ -2234,7 +2234,7 @@ void Level9_UpdateActors(void) {
           int *bv;
 
           WrapAddAngle8(actor->rotZ, 0xE0);
-          ball = g_pfnLevelSpawnActor(0xD1, actor);
+          ball = g_pfnLevelSpawnActor(ACTOR_TYPE_THROWN_SNOWBALL, actor);
           bv = ball->state;
           ball->rotZ = actor->rotZ;
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -2337,7 +2337,7 @@ void Level9_UpdateActors(void) {
 
     /* Type 213: circling bird. Waits for Spyro, circles over him, then
      * flies back to its perch; knocked out of the air when hit. */
-    case 213: {
+    case ACTOR_TYPE_CIRCLING_BIRD: {
       L9Bird *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4) {
@@ -2420,7 +2420,7 @@ void Level9_UpdateActors(void) {
 
     /* Type 231: ram. Like the yak, but takes four hits to knock away and
      * is thrown into the air by each one. */
-    case 231: {
+    case ACTOR_TYPE_TOUGH_RAM: {
       L9Ram *st = actor->state;
 
       TickActorFlameGlow(actor);

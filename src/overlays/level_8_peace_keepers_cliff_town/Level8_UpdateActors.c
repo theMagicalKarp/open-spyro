@@ -2454,7 +2454,7 @@ void Level8_UpdateActors(void) {
       break;
 
     /* Catapult (CatapultState). */
-    case 218: {
+    case ACTOR_TYPE_CATAPULT: {
       CatapultState *st = actor->state;
 
       if (actor->flags & ACTOR_HIT_FLAME) {
@@ -2547,7 +2547,7 @@ void Level8_UpdateActors(void) {
     }
 
     /* Two-path patroller (RunnerState). */
-    case 226: {
+    case ACTOR_TYPE_TWO_PATH_RUNNER: {
       RunnerState *st = actor->state;
       int r;
 
@@ -2677,7 +2677,7 @@ void Level8_UpdateActors(void) {
 
     /* Lookout (LookoutState): watches over the guard it is linked to, rouses
      * it when Spyro comes into range, and swipes at him up close. */
-    case 229: {
+    case ACTOR_TYPE_GUARD_LOOKOUT: {
       LookoutState *st = actor->state;
       Actor *link;
       int d;
@@ -3144,7 +3144,7 @@ void Level8_UpdateActors(void) {
 
     /* Wandering critter (L31Critter): roams its patch, and is knocked away
      * (or stunned, when charged) when struck. */
-    case 238: {
+    case ACTOR_TYPE_ROAMING_CRITTER: {
       L31Critter *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 5 && actor->mode != 6) {

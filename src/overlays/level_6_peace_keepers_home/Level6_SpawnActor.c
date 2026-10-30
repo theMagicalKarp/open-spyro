@@ -334,7 +334,7 @@ Actor *Level6_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x1C6 ... 0x1C8: {
+  case ACTOR_TYPE_FALLING_SPARK ... ACTOR_TYPE_FALLING_SPARK + 2: {
     FragmentState *st;
     int drop;
     int nudge;

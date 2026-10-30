@@ -387,7 +387,7 @@ void Level3_UpdateActors(void) {
     }
 
     /* Patrol guard (WardState). */
-    case 23: {
+    case ACTOR_TYPE_PATROL_WARD: {
       WardState *st;
 
       EBB_BREAK();
@@ -3362,7 +3362,7 @@ void Level3_UpdateActors(void) {
     }
 
     /* Follower (Follower). */
-    case 395: {
+    case ACTOR_TYPE_LINKED_FOLLOWER: {
       Follower *st = actor->state;
 
       if (actor->mode != 3 && (actor->flags & ACTOR_HITS_SPYRO)) {
@@ -3449,7 +3449,7 @@ void Level3_UpdateActors(void) {
 
     /* Grazing critter (GrazerState): roams and bleats, and bursts into
      * fluff when struck. */
-    case 413: {
+    case ACTOR_TYPE_GRAZING_CRITTER: {
       GrazerState *st = actor->state;
       int i;
 
@@ -3460,7 +3460,7 @@ void Level3_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x1F6, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SWAYING_DEBRIS, actor);
         }
         st->knock = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
@@ -3736,7 +3736,7 @@ void Level3_UpdateActors(void) {
     
 
     /* Bouncing debris (BounceState): sways as it falls. */
-    case 502: {
+    case ACTOR_TYPE_SWAYING_DEBRIS: {
       BounceState *st = actor->state;
 
       if (st->life == 0 || actor->drawn == 0) {

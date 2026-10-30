@@ -786,7 +786,7 @@ void Level21_UpdateActors(void) {
 
     /* Type 100 (and 102): boulder thrower. Patrols its path, picks up a
      * boulder (57) and hurls it, rides its partner, and charges Spyro. */
-    case 100: {
+    case ACTOR_TYPE_BOULDER_THROWER: {
       BoulderThrowerState *st = actor->state;
       int f;
 
@@ -1191,7 +1191,7 @@ void Level21_UpdateActors(void) {
 
     /* Type 101: gatekeeper. Guards a run of keys (g_pActorListBase actors) and
      * releases them as Spyro approaches; rides its partner and charges. */
-    case 101: {
+    case ACTOR_TYPE_GATEKEEPER: {
       GatekeeperState *st = actor->state;
       int f = actor->flags;
 
@@ -3067,8 +3067,8 @@ void Level21_UpdateActors(void) {
 
     /* Types 293/294: path runner. Runs its path ahead of Spyro and raises
      * its goal flag on arrival; struck, it is knocked away. */
-    case 293:
-    case 294: {
+    case ACTOR_TYPE_PATH_RUNNER:
+    case ACTOR_TYPE_PATH_RUNNER + 1: {
       PathRunnerState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode >= 3 &&

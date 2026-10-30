@@ -676,7 +676,7 @@ void Level16_UpdateActors(void) {
     /* Type 37: a rider on its parent's rim. Drifts out toward where Spyro
      * was when it last finished an animation, and spawns its type 39 helper
      * when he comes close. */
-    case 37: {
+    case ACTOR_TYPE_RIM_RIDER: {
       RimState *st = actor->state;
 
       CopyVector(svD, &actor->posX);
@@ -724,7 +724,7 @@ void Level16_UpdateActors(void) {
 
         case 3:
           if (st->child == 0) {
-            st->child = g_pfnLevelSpawnActor(0x27, actor);
+            st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER_HELPER, actor);
             PlayActorMeshVoice(actor, 1, 0);
           }
         case 2: {
@@ -767,7 +767,7 @@ void Level16_UpdateActors(void) {
         break;
 
       case 4:
-        st->child = g_pfnLevelSpawnActor(0x27, actor);
+        st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER_HELPER, actor);
         PlayActorMeshVoice(actor, 1, 0);
         ENTER_POSE(actor, 5);
 
@@ -832,7 +832,7 @@ void Level16_UpdateActors(void) {
 
     /* Type 39: the rim rider's helper. Follows its owner and faces the
      * camera until the owner lets it go. */
-    case 39: {
+    case ACTOR_TYPE_RIM_RIDER_HELPER: {
       HelperState *st = actor->state;
 
       if (((RimState *)st->owner->state)->child == 0) {
@@ -3303,7 +3303,7 @@ void Level16_UpdateActors(void) {
           CopyVector(v, &actor->posX);
           v[2] += 0x400;
           if (CheckLineOfSightSegment(v, &SPY.posX) != 0) {
-            st->minion = g_pfnLevelSpawnActor(0x25, actor);
+            st->minion = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER, actor);
             PlayActorMeshVoice(st->minion, 0, 0);
           }
         }
@@ -3357,7 +3357,7 @@ void Level16_UpdateActors(void) {
           CopyVector(v, &actor->posX);
           v[2] += 0x400;
           if (CheckLineOfSightSegment(v, &SPY.posX) != 0) {
-            st->minion = g_pfnLevelSpawnActor(0x25, actor);
+            st->minion = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER, actor);
             PlayActorMeshVoice(st->minion, 0, 0);
           }
         }
@@ -3418,7 +3418,7 @@ void Level16_UpdateActors(void) {
           CopyVector(v, &actor->posX);
           v[2] += 0x400;
           if (CheckLineOfSightSegment(v, &SPY.posX) != 0) {
-            st->minion = g_pfnLevelSpawnActor(0x25, actor);
+            st->minion = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER, actor);
             PlayActorMeshVoice(st->minion, 0, 0);
           }
         }
@@ -3470,7 +3470,7 @@ void Level16_UpdateActors(void) {
 
     /* Type 497: humming bell. Rings a looping voice while it is alive,
      * rings out when struck, and is removed once the voice has died away. */
-    case 497: {
+    case ACTOR_TYPE_HUMMING_BELL: {
       L16Bell *st = actor->state;
       int r;
 

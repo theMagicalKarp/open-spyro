@@ -2235,7 +2235,7 @@ void Level6_UpdateActors(void) {
 
     /* Type 146: a breakable prop. A flame breaks it at once; a charge needs
      * a second hit within half a second. */
-    case 146: {
+    case ACTOR_TYPE_BREAKABLE_PROP: {
       int *st = actor->state;
 
       if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode < 2) {
@@ -2535,7 +2535,7 @@ void Level6_UpdateActors(void) {
       continue;
     }
 
-    case 188: {
+    case ACTOR_TYPE_HOME_TALKER + 1: {
       if (actor->mode == 0) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1000) {
           actor->mode = 1;
@@ -2745,8 +2745,8 @@ void Level6_UpdateActors(void) {
     /* Types 214/216: Peace Keeper soldiers. Each `kind` patrols, guards or
      * escorts in its own way; all can be knocked down, and the gunners lob
      * fireballs (237) at Spyro or at a partner's target. */
-    case 214:
-    case 216: {
+    case ACTOR_TYPE_SOLDIER:
+    case ACTOR_TYPE_SOLDIER_B: {
       L6Keeper *st = actor->state;
 
       if (actor->flags != 0 && actor->mode == 0xB &&
@@ -3042,7 +3042,7 @@ void Level6_UpdateActors(void) {
           }
           if (r < 4 && d > 0x1400 && d < 0x3C00 && st->seen > 0x50 &&
               CheckLineOfSightSegment(&actor->posX, &g_anSpyroWorldPos) != 0) {
-            Actor *o = g_pfnLevelSpawnActor(0xED, actor);
+            Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_FIREBALL, actor);
             L6Fireball *fs = o->state;
 
             CopyVector(&o->posX, &a->posX);
@@ -3100,7 +3100,7 @@ void Level6_UpdateActors(void) {
           if (TickCountdownByFrameDelta(&st->volley, 4) == 2) {
             int h = ArcTan2(c->posX - actor->posX, c->posY - actor->posY,
                                   0);
-            Actor *o = g_pfnLevelSpawnActor(0xED, actor);
+            Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_FIREBALL, actor);
             L6Fireball *fs = o->state;
 
             CopyVector(&o->posX, &a->posX);
@@ -3151,13 +3151,13 @@ void Level6_UpdateActors(void) {
           }
           break;
         }
-        if (actor->type == 0xD8 && a->mode >= ACTOR_MODE_DORMANT) {
+        if (actor->type == ACTOR_TYPE_SOLDIER_B && a->mode >= ACTOR_MODE_DORMANT) {
           actor->subMode = 1;
           actor->mode = 0xB;
           ANIM_RESET(actor, 0xB);
           continue;
         }
-        if (st->kind == 6 && actor->type == 0xD6) {
+        if (st->kind == 6 && actor->type == ACTOR_TYPE_SOLDIER) {
           st->kind = 2;
           actor->mode = 1;
           continue;
@@ -3286,7 +3286,7 @@ void Level6_UpdateActors(void) {
 
     /* Type 225: a cannon. Watches for Spyro to stand in its sights and
      * blasts him, then lobs a fireball (237) at the nearest target. */
-    case 225: {
+    case ACTOR_TYPE_FIREBALL_CANNON: {
       L6Cannon *st = actor->state;
       Actor *p = &g_pActorListBase[st->link];
 
@@ -3399,7 +3399,7 @@ void Level6_UpdateActors(void) {
         int h;
 
         do {
-          o = g_pfnLevelSpawnActor(0xED, actor);
+          o = g_pfnLevelSpawnActor(ACTOR_TYPE_FIREBALL, actor);
           cs = o->state;
           CopyVector(&o->posX, &actor->posX);
           o->rotZ = actor->rotZ;
@@ -3421,10 +3421,10 @@ void Level6_UpdateActors(void) {
         actor->flags = 0;
         for (q = g_pActorListBase; q < g_pActorPoolDynBase; q++) {
           if (q == actor || q->mode >= ACTOR_MODE_DORMANT || q->type == ACTOR_TYPE_DRAGON_STATUE ||
-              q->type == 0x6E || q->type == 0xE1) {
+              q->type == 0x6E || q->type == ACTOR_TYPE_FIREBALL_CANNON) {
             continue;
           }
-          if ((q->collision == 0 || q->collision >= 0) && q->type != 0x1A1) {
+          if ((q->collision == 0 || q->collision >= 0) && q->type != ACTOR_TYPE_REWARD_BURST) {
             continue;
           }
           SubtractVector(g360, &q->posX, &actor->posX);
@@ -3455,7 +3455,7 @@ void Level6_UpdateActors(void) {
             d = 0;
           }
           d += ang << 12;
-          if (q->type == 0x1A1) {
+          if (q->type == ACTOR_TYPE_REWARD_BURST) {
             d >>= 2;
           }
           if (d < bestScore) {
@@ -3478,7 +3478,7 @@ void Level6_UpdateActors(void) {
               cs->vz = bestScore;
               cs->speed = bestScore;
               cs->delay = ang / bestScore - 4;
-              if (best->type == 0x1A1) {
+              if (best->type == ACTOR_TYPE_REWARD_BURST) {
                 cs->link = best - g_pActorListBase;
               }
             }
@@ -3495,7 +3495,7 @@ void Level6_UpdateActors(void) {
 
     /* Type 237: a fireball. Flies on its heading under gravity, bursts on
      * walls or on Spyro, and wakes its linked actor when it hits. */
-    case 237: {
+    case ACTOR_TYPE_FIREBALL: {
       L6Fireball *st = actor->state;
       int i;
 
@@ -4407,7 +4407,7 @@ void Level6_UpdateActors(void) {
 
     /* Type 417: a reward burst. Once triggered it plays its sound, throws up
      * to four sets of sparks (while the spawn budget allows) and goes. */
-    case 417: {
+    case ACTOR_TYPE_REWARD_BURST: {
       int *st = actor->state;
       int i;
 
@@ -4432,9 +4432,9 @@ void Level6_UpdateActors(void) {
         if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
           break;
         }
-        g_pfnLevelSpawnActor(0x1C6, actor);
-        g_pfnLevelSpawnActor(0x1C7, actor);
-        g_pfnLevelSpawnActor(0x1C8, actor);
+        g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_SPARK, actor);
+        g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_SPARK + 1, actor);
+        g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_SPARK + 2, actor);
       }
       g_pfnLevelEmitParticles(8, 0x17, &actor->posX, 0);
       ModifyWorldChunkAnimFlags(0, 0xFC, 0);
@@ -4668,9 +4668,9 @@ void Level6_UpdateActors(void) {
 
     /* Types 454-456: falling sparks. Fall (faster than 458's) until they
      * land, time out or leave the visible set. */
-    case 454:
-    case 455:
-    case 456: {
+    case ACTOR_TYPE_FALLING_SPARK:
+    case ACTOR_TYPE_FALLING_SPARK + 1:
+    case ACTOR_TYPE_FALLING_SPARK + 2: {
       SparkState *st = actor->state;
 
       if (TickCountdownByFrameDelta(&st->life, 4) == 0 && actor->posZ >= 0x7D0 &&

@@ -1548,7 +1548,7 @@ void Level34_UpdateActors(void) {
     }
 
     /* Type 177: treasure thief (LootThiefState). */
-    case 177: {
+    case ACTOR_TYPE_LOOT_THIEF: {
       LootThiefState *st = actor->state;
       int speed;
       int n;
@@ -1864,7 +1864,7 @@ void Level34_UpdateActors(void) {
     }
 
     /* Type 179: loot critter (CritterState). */
-    case 179: {
+    case ACTOR_TYPE_LOOT_CRITTER: {
       CritterState *st = actor->state;
       int speed;
       int *pos;
@@ -2462,7 +2462,7 @@ void Level34_UpdateActors(void) {
     /* Type 217: vault timer. While Spyro rides the vault lift it counts the
      * vault down on the HUD, then flags the vault cleared and cues the
      * exit. */
-    case 217: {
+    case ACTOR_TYPE_VAULT_TIMER: {
       int *t = actor->state;
 
       if (g_nWorldTreasureCollected == 0x36B0 && SPY.state == SPYRO_ST_LIFT) {

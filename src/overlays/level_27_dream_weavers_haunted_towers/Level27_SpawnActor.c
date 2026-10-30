@@ -249,7 +249,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0xD7: {
+  case ACTOR_TYPE_RUBBLE_SHARD_B: {
     BatState *st;
     int speed;
     int dir;
@@ -304,7 +304,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     break;
 
   case 0x43 ... 0x45:
-  case 0x85:
+  case ACTOR_TYPE_RUBBLE_SHARD:
   case 0x97:
   case 0xFF ... 0x101:
   case 0x135 ... 0x137:

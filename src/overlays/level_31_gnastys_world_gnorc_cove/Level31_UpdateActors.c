@@ -1647,7 +1647,7 @@ void Level31_UpdateActors(void) {
     /* Type 154: hatch. Opens when struck (a charge or flame, or only a
      * charge for the sealed kind), releasing its occupant, and closes again
      * once Spyro and the camera have moved away. */
-    case 154: {
+    case ACTOR_TYPE_HATCH: {
       L31Hatch *st = actor->state;
       int kind;
       int mask;
@@ -1660,9 +1660,9 @@ void Level31_UpdateActors(void) {
       }
       if ((actor->flags & mask) && actor->mode != 2) {
         if (kind != 0) {
-          st->child = g_pfnLevelSpawnActor(0xCF, actor);
+          st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_FLOATING_MINE, actor);
         } else {
-          st->child = g_pfnLevelSpawnActor(0xCA, actor);
+          st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_FLOATING_BARREL, actor);
         }
         st->child->posZ += 0x233;
         st->child->flags = actor->flags;
@@ -2118,7 +2118,7 @@ void Level31_UpdateActors(void) {
 
     /* Type 199: mount. Carries a rider actor; knocked away (and the rider
      * dropped) when struck, or when its rider is knocked off. */
-    case 199: {
+    case ACTOR_TYPE_MOUNT: {
       L31Mount *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
@@ -2202,7 +2202,7 @@ void Level31_UpdateActors(void) {
     /* Type 200: carrier. Waits by its hatch until the hatch opens, lifts
      * the occupant out, carries it along its two hand bones and throws it;
      * knocked away when struck. */
-    case 200: {
+    case ACTOR_TYPE_HATCH_CARRIER: {
       L31Carrier *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 3) {
@@ -2297,7 +2297,7 @@ void Level31_UpdateActors(void) {
     /* Type 201: thrower. Waits for Spyro, walks up, winds up and throws the
      * actor it carries in its hands (a charge makes it duck and try again);
      * knocked away by a charge while exposed. */
-    case 201: {
+    case ACTOR_TYPE_CARRIED_THROWER: {
       L31Thrower *st = actor->state;
       int thrown = 0;
 
@@ -2499,7 +2499,7 @@ void Level31_UpdateActors(void) {
     /* Type 202: floating barrel. Bobs on the water; struck, it bursts into
      * staves and splinters and its blast pushes Spyro back, then it sinks
      * and is removed. */
-    case 202: {
+    case ACTOR_TYPE_FLOATING_BARREL: {
       L31Barrel *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) &&
@@ -2615,7 +2615,7 @@ void Level31_UpdateActors(void) {
           }
         }
         w = st->rider;
-        if (w != 0 && w->type == 0x9A && w->mode == 2) {
+        if (w != 0 && w->type == ACTOR_TYPE_HATCH && w->mode == 2) {
           w->subMode = 1;
         }
         st->timer = 0;
@@ -2695,7 +2695,7 @@ void Level31_UpdateActors(void) {
     /* Type 207: floating mine. Drifts like the barrel; a flame sets it
      * running at the nearest target in front of it, and it bursts on
      * whatever it hits. */
-    case 207: {
+    case ACTOR_TYPE_FLOATING_MINE: {
       L31Barrel *st = actor->state;
       int i;
       unsigned char s;
@@ -2865,7 +2865,7 @@ void Level31_UpdateActors(void) {
           }
         }
         w = st->rider;
-        if (w != 0 && w->type == 0x9A && w->mode == 2) {
+        if (w != 0 && w->type == ACTOR_TYPE_HATCH && w->mode == 2) {
           w->subMode = 1;
         }
         st->timer = 0;
@@ -2977,7 +2977,7 @@ void Level31_UpdateActors(void) {
 
     /* Type 236: wandering critter. Roams its patch, pauses now and then, and
      * is knocked away and removed when struck. */
-    case 236: {
+    case ACTOR_TYPE_WANDERING_CRITTER_C: {
       L31Critter *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {

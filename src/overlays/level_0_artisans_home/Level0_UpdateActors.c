@@ -509,7 +509,7 @@ void Level0_UpdateActors(void) {
     }
 
     /* Pressure switch (SwitchState). */
-    case 18: {
+    case ACTOR_TYPE_PRESSURE_SWITCH: {
       SwitchState *st = (SwitchState *)actor->state;
       int active = g_anLevelKillBitmapTable[0x78] & 1;
 
@@ -712,7 +712,7 @@ void Level0_UpdateActors(void) {
     }
 
     /* Sequenced prop gated on the exit vortices (AnimState). */
-    case 49: {
+    case ACTOR_TYPE_EXIT_GATED_PROP: {
       AnimState *st = actor->state;
       int marker;
 
@@ -1369,7 +1369,7 @@ void Level0_UpdateActors(void) {
     }
 
     /* Path-following enemy (WalkerState). */
-    case 114: {
+    case ACTOR_TYPE_PATH_ENEMY: {
       WalkerState *st = (WalkerState *)actor->state;
       int distance;
 
@@ -2026,7 +2026,7 @@ void Level0_UpdateActors(void) {
     }
 
     /* Talking dragon: when Spyro faces it up close, start its dialogue. */
-    case 187: {
+    case ACTOR_TYPE_HOME_TALKER: {
       if (actor->mode == 0) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1000) {
           actor->mode = 1;
@@ -2543,8 +2543,8 @@ void Level0_UpdateActors(void) {
 
     /* Animated scenery: re-randomised speed; plays its hit animation when
      * damaged. */
-    case 336:
-    case 342:
+    case ACTOR_TYPE_ANIMATED_SCENERY:
+    case ACTOR_TYPE_ANIMATED_SCENERY_B:
       if (g_nActorAnimDone != 0) {
         /* Base speed comes from the animation that is playing. */
         int poseBase = TYPE_DESC(actor, actor->nextAnim);
@@ -2573,7 +2573,7 @@ void Level0_UpdateActors(void) {
       break;
 
     /* Flock leader (FlockState). */
-    case 339: {
+    case ACTOR_TYPE_FLOCK_LEADER: {
       FlockState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode < 4) {
@@ -2750,7 +2750,7 @@ void Level0_UpdateActors(void) {
     }
 
     /* Sequenced prop (PropAnimState). */
-    case 350: {
+    case ACTOR_TYPE_SEQUENCED_PROP: {
       PropAnimState *st = actor->state;
 
       /* First tick: if already unlocked, skip to the finished state. */
@@ -2820,7 +2820,7 @@ void Level0_UpdateActors(void) {
       continue;
 
     /* Collision-triangle rider (PatchRideState). */
-    case 391: {
+    case ACTOR_TYPE_PATCH_RIDER: {
       PatchRideState *st = actor->state;
       int tri[3][3];
 

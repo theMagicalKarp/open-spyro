@@ -2139,7 +2139,7 @@ void Level32_UpdateActors(void) {
     }
 
     /* Type 171. */
-    case 171: {
+    case ACTOR_TYPE_FLAME_CHUNK_SWITCH: {
       L32Timer *st = actor->state;
 
       if (actor->flags & ACTOR_HIT_FLAME) {
@@ -2421,7 +2421,7 @@ void Level32_UpdateActors(void) {
     }
 
     /* Type 236. */
-    case 236: {
+    case ACTOR_TYPE_WANDERING_CRITTER_C: {
       WandererState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {

@@ -1592,7 +1592,7 @@ void Level30_UpdateActors(void) {
 
     /* Boss-door trigger: opens the gnexus door when Spyro walks up facing it.
      */
-    case 192:
+    case ACTOR_TYPE_HOME_TALKER + 5:
       if (actor->mode == 0) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
           break;
@@ -1744,7 +1744,7 @@ void Level30_UpdateActors(void) {
 
     /* Hub ambience (MusicState): starts the three voice channels and keeps
      * them alive. */
-    case 208: {
+    case ACTOR_TYPE_HUB_AMBIENCE: {
       MusicState *st = actor->state;
 
       if (st->started == 0) {
@@ -1789,9 +1789,10 @@ void Level30_UpdateActors(void) {
       break;
     }
 
-    /* Charging gnorc (ChargeState): winds up when hit, dashes, recovers. */
-    case 236: {
-      ChargeState *st;
+    /* Wandering critter (WanderKnockState): roams (UpdateActorWander); struck, it
+     * is knocked away with a death drop. */
+    case ACTOR_TYPE_WANDERING_CRITTER_C: {
+      WanderKnockState *st;
 
       EBB_BREAK();
       st = actor->state;

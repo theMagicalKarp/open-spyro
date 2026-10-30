@@ -2200,7 +2200,7 @@ void Level4_UpdateActors(void) {
 
     /* Post guard (GuardState): patrols between posts, raises the alarm when
      * Spyro gets close, and hands off to its partner when knocked down. */
-    case 314: {
+    case ACTOR_TYPE_ALARM_POST_GUARD: {
       GuardState *st = actor->state;
       unsigned char c;
 
@@ -2443,7 +2443,7 @@ void Level4_UpdateActors(void) {
 
     /* Lunging enemy (LungeState): charges when Spyro comes close, leaps at
      * him, and takes a few hits before it goes down. */
-    case 335: {
+    case ACTOR_TYPE_LUNGER: {
       int *pos = &actor->posX;
       LungeState *st;
       int dist;
@@ -2691,7 +2691,7 @@ void Level4_UpdateActors(void) {
 
     /* Spinning enemy (SpinnerState): idles, rears up at Spyro, and spins
      * away when knocked back. */
-    case 349: {
+    case ACTOR_TYPE_SPINNER: {
       SpinnerState *st;
 
       EBB_BREAK();

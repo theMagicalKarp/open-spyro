@@ -189,7 +189,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     rec->tintMode = 0xD;
     break;
 
-  case 0xCA: {
+  case ACTOR_TYPE_FLOATING_BARREL: {
     SeekState *st = rec->state;
     int *pos;
     int probe[3];
@@ -213,7 +213,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0xCF: {
+  case ACTOR_TYPE_FLOATING_MINE: {
     SeekState *st = rec->state;
     int *pos;
     int probe[3];

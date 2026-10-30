@@ -2612,7 +2612,7 @@ void Level12_UpdateActors(void) {
     /* Type 189: talking dragon. When Spyro faces it up close, start its
      * dialogue; the first visit and the post-boss visit pick their own
      * lines. */
-    case 189: {
+    case ACTOR_TYPE_HOME_TALKER + 2: {
       if (actor->mode == 0) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1000) {
           actor->mode = 1;

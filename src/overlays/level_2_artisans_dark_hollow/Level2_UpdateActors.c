@@ -1313,7 +1313,7 @@ void Level2_UpdateActors(void) {
 
     /* Type 115: patrolling guard (GuardPairState). Charges Spyro when he is
      * near and level with it, and cues its partner when it faces it. */
-    case 115: {
+    case ACTOR_TYPE_GUARD_PAIR: {
       GuardPairState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 6) {
@@ -1759,7 +1759,7 @@ void Level2_UpdateActors(void) {
       break;
 
     /* Type 157: starts its sound and animation when hit, then settles. */
-    case 157:
+    case ACTOR_TYPE_FLAME_CHUNK_TRIGGER:
       if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode == 0) {
         ModifyWorldChunkAnimFlags(*(int *)actor->state, 0xFC, 0);
         actor->mode = 1;
@@ -1772,7 +1772,7 @@ void Level2_UpdateActors(void) {
     /* Type 165: post guard (PostState). Waits at one of two posts, steps
      * out to the post nearer Spyro, hops at him with its partner, and is
      * knocked away spinning when hit. */
-    case 165: {
+    case ACTOR_TYPE_POST_GUARD: {
       PostState *st = actor->state;
 
       TickActorFlameGlow(actor);
@@ -1990,7 +1990,7 @@ void Level2_UpdateActors(void) {
 
     /* Type 166: path patroller (PatrolState). Walks its path back and forth,
      * and charges Spyro down the path when he is ahead of it. */
-    case 166: {
+    case ACTOR_TYPE_PATH_CHARGER: {
       PatrolState *st = actor->state;
 
       TickActorFlameGlow(actor);
@@ -2957,7 +2957,7 @@ void Level2_UpdateActors(void) {
       continue;
 
     /* Type 412: wandering critter; knocked back when hit, then recovers. */
-    case 412: {
+    case ACTOR_TYPE_HOPPING_CRITTER: {
       HopState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {

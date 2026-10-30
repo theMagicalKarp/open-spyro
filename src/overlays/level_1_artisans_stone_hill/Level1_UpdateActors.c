@@ -1505,7 +1505,7 @@ void Level1_UpdateActors(void) {
     }
 
     /* Sentry (SentryState). */
-    case 121: {
+    case ACTOR_TYPE_SENTRY: {
       SentryState *st;
 
       EBB_BREAK();
@@ -2328,7 +2328,7 @@ void Level1_UpdateActors(void) {
 
     /* Rearing critter (RearState): idles, rears up at Spyro, and spins away
      * when knocked back. */
-    case 113: {
+    case ACTOR_TYPE_REARING_CRITTER: {
       RearState *st;
 
       EBB_BREAK();
@@ -3156,9 +3156,9 @@ void Level1_UpdateActors(void) {
     }
 
     /* Camera-facing prop: turns toward the view once, on its first frame. */
-    case 222:
-    case 223:
-    case 224: {
+    case ACTOR_TYPE_CAMERA_FACING_PROP:
+    case ACTOR_TYPE_CAMERA_FACING_PROP + 1:
+    case ACTOR_TYPE_CAMERA_FACING_PROP + 2: {
       int *st = actor->state;
       int *view;
 

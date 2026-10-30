@@ -794,14 +794,15 @@ typedef struct MusicState {
   int started; /* 0x00 */
 } MusicState;
 
-/* Case 236 — the charging gnorc: winds up, dashes, recovers. */
-typedef struct ChargeState {
+/* ACTOR_TYPE_WANDERING_CRITTER_C (level 30): pad00 is UpdateActorWander's
+ * block; speed/heading drive the knock-away. */
+typedef struct WanderKnockState {
   char pad00[0x20];
   int speed;   /* 0x20 */
   int heading; /* 0x24 */
   char pad28[0x4];
-  int rest; /* 0x2C frames before the next charge */
-} ChargeState;
+  int rest; /* 0x2C frames until the next idle pause (mode 2) */
+} WanderKnockState;
 
 /* Cases 260..269 — the floating gem-value digits again, with the z velocity
  * split out (the view two clones were matched with). */

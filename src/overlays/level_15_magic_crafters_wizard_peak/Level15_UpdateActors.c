@@ -1345,7 +1345,7 @@ void Level15_UpdateActors(void) {
     }
 
     /* Tethered guard (TetherState). */
-    case 66: {
+    case ACTOR_TYPE_TETHERED_GUARD: {
       TetherState *st = actor->state;
 
       if (st->mode == 1) {
@@ -3020,7 +3020,7 @@ void Level15_UpdateActors(void) {
     }
 
     /* Tether keeper (KeeperState). */
-    case 284: {
+    case ACTOR_TYPE_TETHER_KEEPER: {
       KeeperState *st = actor->state;
 
       TickActorFlameGlow(actor);
@@ -3187,7 +3187,7 @@ void Level15_UpdateActors(void) {
     }
 
     /* Sentinel (SentinelState). */
-    case 285: {
+    case ACTOR_TYPE_SENTINEL: {
       SentinelState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode < 6) {

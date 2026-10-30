@@ -691,9 +691,9 @@ void Level33_UpdateActors(void) {
       break;
     }
 
-    /* Type 168: counts its sub-state down, restarting its animation each
-     * time, then shares 363's exit. */
-    case 168:
+    /* Trail-bomb puff: replays its animation subMode times, then shares the
+     * one-shot effects' exit. */
+    case ACTOR_TYPE_TRAIL_BOMB_PUFF:
       if (actor->subMode != 0) {
         actor->subMode--;
         actor->frame = 0;
@@ -2066,7 +2066,7 @@ void Level33_UpdateActors(void) {
           st->drop[2] = -1;
         }
         if (g_nSpyroDrawSuppressed == 0 && actor->nextFrame >= 0xE) {
-          Actor *o = g_pfnLevelSpawnActor(0x19E, actor);
+          Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_FOLLOW_FACER, actor);
 
           *(Actor **)o->state = actor;
           CopyVector(&o->posX, &SPY.posX);
@@ -2226,7 +2226,7 @@ void Level33_UpdateActors(void) {
         if (actor->mode == 0) {
           st->spawnTimer += g_nFrameStep;
           if (st->spawnTimer >= 0xA) {
-            Actor *o = g_pfnLevelSpawnActor(0xA8, actor);
+            Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_TRAIL_BOMB_PUFF, actor);
 
             CopyVector(&o->posX, &actor->posX);
             o->subMode = 0;
@@ -3194,7 +3194,7 @@ void Level33_UpdateActors(void) {
     }
 
     /* Type 414: turns toward the actor it follows. */
-    case 414: {
+    case ACTOR_TYPE_FOLLOW_FACER: {
       Actor **st = actor->state;
 
       TurnActorYawTowardAngle(actor,

@@ -1245,7 +1245,7 @@ void Level29_UpdateActors(void) {
       break;
     }
 
-    case 0xA3: {
+    case ACTOR_TYPE_BOBBING_FLIGHT_TARGET: {
       BobberState *st = actor->state;
 
       if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode == 0) {
@@ -1262,7 +1262,7 @@ void Level29_UpdateActors(void) {
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, 0),
             SPY.bodyRotZ, 0x28, 0x40);
         PlayActorMeshVoice(actor, 0, 0);
-        g_pfnLevelSpawnActor(0xE8, actor);
+        g_pfnLevelSpawnActor(ACTOR_TYPE_BOBBER_SPINOFF, actor);
         actor->mode = 1;
         ANIM_RESET(actor, 1);
         break;
@@ -1362,7 +1362,7 @@ void Level29_UpdateActors(void) {
       continue;
     }
 
-    case 0xE8: {
+    case ACTOR_TYPE_BOBBER_SPINOFF: {
       SpinRunState *st = actor->state;
 
       actor->rotZ += 8;

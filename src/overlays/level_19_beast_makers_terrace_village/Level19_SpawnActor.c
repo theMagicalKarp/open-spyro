@@ -114,7 +114,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x20: {
+  case ACTOR_TYPE_CARRIED_EGG: {
     TrackState *st = rec->state;
 
     InitActorRenderDefaults(rec);

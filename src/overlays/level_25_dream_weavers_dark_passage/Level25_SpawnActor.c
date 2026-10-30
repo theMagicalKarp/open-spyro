@@ -171,7 +171,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x38: {
+  case ACTOR_TYPE_FALLING_ROCK: {
     PickupDropState *st = rec->state;
     int *pos;
     int turn;
@@ -275,7 +275,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x7C: {
+  case ACTOR_TYPE_LANTERN_FLAME: {
     TrackState *st = rec->state;
     int dx;
     int dy;
@@ -307,7 +307,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
     rec->tintMode = 0xD;
     break;
 
-  case 0x9B: {
+  case ACTOR_TYPE_FLYING_EMBER: {
     PickupDropState *st = rec->state;
     int *pos;
     int turn;

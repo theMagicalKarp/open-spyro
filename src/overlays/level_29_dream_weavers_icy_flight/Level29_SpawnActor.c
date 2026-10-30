@@ -196,7 +196,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0xE8:
+  case ACTOR_TYPE_BOBBER_SPINOFF:
   {
     AimState *st = rec->state;
 

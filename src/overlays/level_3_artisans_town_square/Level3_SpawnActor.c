@@ -316,7 +316,7 @@ Actor *Level3_SpawnActor(int type, Actor *parent) {
     HideActorRenderRecord(rec);
     break;
 
-  case 0x1F6: {
+  case ACTOR_TYPE_SWAYING_DEBRIS: {
     ShardState *st = rec->state;
     int yaw;
     int pitch;

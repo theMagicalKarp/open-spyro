@@ -592,7 +592,7 @@ void Level19_UpdateActors(void) {
 
     /* Type 32: rides its carrier until the carrier reaches pose 4, then
      * behaves as a dragon egg. */
-    case 32: {
+    case ACTOR_TYPE_CARRIED_EGG: {
       Actor **st = actor->state;
 
       if (actor->subMode != 0 || (*st)->mode != 4) {
@@ -3554,7 +3554,7 @@ void Level19_UpdateActors(void) {
       case 4:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (st->fx == 0 && actor->nextFrame - 2U < 0x1A) {
-          st->fx = g_pfnLevelSpawnActor(0x20, actor);
+          st->fx = g_pfnLevelSpawnActor(ACTOR_TYPE_CARRIED_EGG, actor);
         }
         if (st->bolt == 0 && actor->nextFrame - 0xFU < 3 &&
             ApproxDist2D(&actor->posX, spy) < 0x1194) {

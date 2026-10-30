@@ -145,7 +145,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       HideActorRenderRecord(rec);
       break;
 
-    case 0x25:
+    case ACTOR_TYPE_RIM_RIDER:
     {
       WindState *st = rec->state;
       int probe[3];
@@ -268,7 +268,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x27:
+    case ACTOR_TYPE_RIM_RIDER_HELPER:
     {
       AimState *st = rec->state;
       InitActorRenderDefaults(rec);

@@ -2202,7 +2202,7 @@ void Level18_UpdateActors(void) {
     }
 
     /* Talking dragon: when Spyro faces it up close, start its dialogue. */
-    case 190: {
+    case ACTOR_TYPE_HOME_TALKER + 3: {
       if (actor->mode == 0) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1000) {
           actor->mode = 1;
@@ -4007,7 +4007,7 @@ void Level18_UpdateActors(void) {
 
     /* Type 475: bell post. Rung by a charge (or a flame), rings out, and
      * resets once its animation ends. */
-    case 475:
+    case ACTOR_TYPE_BELL_POST:
       switch (actor->mode) {
       case 0:
         if (actor->flags & ACTOR_HIT_CHARGE) {

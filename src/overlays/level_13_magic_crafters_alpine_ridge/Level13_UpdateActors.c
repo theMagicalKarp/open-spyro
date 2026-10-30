@@ -2697,7 +2697,7 @@ void Level13_UpdateActors(void) {
       break;
 
     /* Type 253: guard captain (CaptainState). */
-    case 253: {
+    case ACTOR_TYPE_GUARD_CAPTAIN: {
       CaptainState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) != 0 && actor->mode != 3) {
@@ -3564,7 +3564,7 @@ void Level13_UpdateActors(void) {
             continue;
           }
           if (g_nActorAnimNewFrame != 0 && actor->nextFrame == 0xE) {
-            Actor *c = g_pfnLevelSpawnActor(0x13B, actor);
+            Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_BLOCK, actor);
             CrookState *cs = c->state;
 
             GetActorAttachPoint(actor, 0, &c->posX);
@@ -3605,7 +3605,7 @@ void Level13_UpdateActors(void) {
             }
           }
           if (g_nActorAnimNewFrame != 0 && actor->nextFrame == 0xE) {
-            Actor *c = g_pfnLevelSpawnActor(0x13B, actor);
+            Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_BLOCK, actor);
             CrookState *cs = c->state;
 
             GetActorAttachPoint(actor, 0, &c->posX);
@@ -3702,7 +3702,7 @@ void Level13_UpdateActors(void) {
               actor->subMode = 1;
             }
             if (g_nActorAnimNewFrame != 0 && actor->nextFrame == 0xE) {
-              Actor *c = g_pfnLevelSpawnActor(0x13B, actor);
+              Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_BLOCK, actor);
               CrookState *cs = c->state;
 
               GetActorAttachPoint(actor, 0, &c->posX);
@@ -4508,7 +4508,7 @@ void Level13_UpdateActors(void) {
 
     /* Type 315: falling block. Once triggered it drops along its heading
      * until its timer runs out, then despawns. */
-    case 315: {
+    case ACTOR_TYPE_FALLING_BLOCK: {
       FallState *st = actor->state;
 
       if (st->live == 0) {
