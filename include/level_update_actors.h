@@ -902,17 +902,17 @@ typedef struct PathGuardState {
 } PathGuardState;
 
 /* Case 497 -- humming bell. */
-typedef struct L16Bell {
+typedef struct HummingBellState {
   char pad00[0x10];
   int chan;   /* 0x10 voice channel */
   int timer;  /* 0x14 */
   int period; /* 0x18 */
   char pad1C[0x14];
   int target; /* 0x30 index into g_pActorListBase */
-} L16Bell;
+} HummingBellState;
 
 /* Case 495 -- the level boss. */
-typedef struct L16Boss {
+typedef struct BlowhardState {
   char pad00[0x10];
   int chan;           /* 0x10 voice channel, -1 = none */
   PathData *path;     /* 0x14 path in use */
@@ -933,7 +933,7 @@ typedef struct L16Boss {
   int wait;           /* 0x68 */
   char pad6C[0x8];
   int soundBox;          /* 0x74 */
-} L16Boss;
+} BlowhardState;
 
 /* Case 412 -- wandering critter. */
 typedef struct HopState {
@@ -1006,26 +1006,26 @@ typedef struct ThrownSnowballState {
 } ThrownSnowballState;
 
 /* Case 213 -- circling bird. */
-typedef struct L9Bird {
+typedef struct CirclingBirdState {
   int home[3]; /* 0x00 perch */
   int timer;   /* 0x0C */
   int radius;  /* 0x10 */
   int angle;   /* 0x14 */
   int height;  /* 0x18 */
   int call;    /* 0x1C */
-} L9Bird;
+} CirclingBirdState;
 
 /* Case 198 -- charging yak. */
-typedef struct L9Yak {
+typedef struct ChargingYakState {
   int heading; /* 0x00 knock-back heading */
   int speed;   /* 0x04 */
   int rest;    /* 0x08 rest countdown after a charge */
   int pad0C;
   int timer;   /* 0x10 grazing timer */
-} L9Yak;
+} ChargingYakState;
 
 /* Case 231 -- ram. */
-typedef struct L9Ram {
+typedef struct ToughRamState {
   int heading; /* 0x00 knock-back heading */
   int speed;   /* 0x04 */
   int rest;    /* 0x08 rest countdown, knock-back height step */
@@ -1035,10 +1035,10 @@ typedef struct L9Ram {
   int pad18;
   int pad1C;
   int hits;    /* 0x20 */
-} L9Ram;
+} ToughRamState;
 
 /* Cases 211/212 -- snowball thrower. */
-typedef struct L9Thrower {
+typedef struct SnowballThrowerState {
   PathData *path; /* 0x00 */
   int dist;       /* 0x04 */
   int heading;    /* 0x08 */
@@ -1051,7 +1051,7 @@ typedef struct L9Thrower {
   int p24;        /* 0x24 */
   int p28;        /* 0x28 */
   int throwT;     /* 0x2C */
-} L9Thrower;
+} SnowballThrowerState;
 
 typedef struct {
   int x;
@@ -1183,7 +1183,7 @@ typedef struct {
   int posY; /* 0x3C */
 } GuardTarget;
 
-typedef struct GuardState370 {
+typedef struct ShempGuardState {
   int mode;           /* 0x00 0 = patrol, 1 = hold near target */
   int timer04;        /* 0x04 */
   int lift;           /* 0x08 */
@@ -1202,7 +1202,7 @@ typedef struct GuardState370 {
   unsigned char *path; /* 0x3C */
   int boxA[6];        /* 0x40 */
   int boxB[6];        /* 0x58 */
-} GuardState370;
+} ShempGuardState;
 
 /* Type 372: Shemp's lookout. */
 typedef struct LookoutState {
@@ -1433,28 +1433,28 @@ typedef struct BombLobberState {
   int reload;  /* 0x0C */
 } BombLobberState;
 
-typedef struct L26Sink {
+typedef struct SinkingBlockState {
   int partner; /* 0x00 index into g_pActorListBase */
   int depth;   /* 0x04 */
-} L26Sink;
+} SinkingBlockState;
 
-typedef struct L26Bob {
+typedef struct PartnerPlatformState {
   int partner;        /* 0x00 index into g_pActorListBase */
   unsigned int phase; /* 0x04 */
   int pad08;
   int pad0C;
   int baseZ;          /* 0x10 */
   int big;            /* 0x14 */
-} L26Bob;
+} PartnerPlatformState;
 
-typedef struct L26Rider {
+typedef struct PartnerBouncerState {
   int partner; /* 0x00 index into g_pActorListBase */
   int speed;   /* 0x04 */
   int lift;    /* 0x08 */
   int heading; /* 0x0C */
-} L26Rider;
+} PartnerBouncerState;
 
-typedef struct L26Escort {
+typedef struct FormationEscortState {
   int leader;     /* 0x00 index into g_pActorListBase */
   int partner;    /* 0x04 index into g_pActorListBase, -1 = none */
   PathData *path; /* 0x08 */
@@ -1462,9 +1462,9 @@ typedef struct L26Escort {
   int timer;      /* 0x18 */
   int slot;       /* 0x1C place in the ring */
   int speed;      /* 0x20 */
-} L26Escort;
+} FormationEscortState;
 
-typedef struct L26Guard {
+typedef struct ChasingPathGuardState {
   int home[3];    /* 0x00 */
   int timer;      /* 0x0C */
   int knock;      /* 0x10 knock-back heading */
@@ -1475,37 +1475,37 @@ typedef struct L26Guard {
   int onPath;     /* 0x24 */
   int lastSnd;    /* 0x28 */
   int sndTimer;   /* 0x2C */
-} L26Guard;
+} ChasingPathGuardState;
 
 typedef struct L26Rot {
   unsigned char r[3];
 } L26Rot;
 
-typedef struct L31Hatch {
+typedef struct HatchState {
   int pad00;
   int kind;     /* 0x04 0 = opens to charge or flame, else charge only */
   Actor *child; /* 0x08 released occupant */
   int handle;   /* 0x0C for SelectActorLodBand */
-} L31Hatch;
+} HatchState;
 
-typedef struct L31Mount {
+typedef struct MountState {
   int rider; /* 0x00 index into g_pActorListBase, -1 = none */
   int init;  /* 0x04 */
   int knock; /* 0x08 knock-back heading */
   int speed; /* 0x0C */
   int lift;  /* 0x10 */
-} L31Mount;
+} MountState;
 
-typedef struct L31Carrier {
+typedef struct HatchCarrierState {
   int hatch;   /* 0x00 index of its hatch in g_pActorListBase */
   Actor *held; /* 0x04 carried occupant */
   int timer;   /* 0x08 */
   int knock;   /* 0x0C knock-back heading */
   int speed;   /* 0x10 */
   int lift;    /* 0x14 */
-} L31Carrier;
+} HatchCarrierState;
 
-typedef struct L31Barrel {
+typedef struct FloatingBarrelState {
   short timer;  /* 0x00 */
   short blast;  /* 0x02 blast pushed Spyro */
   Actor *rider; /* 0x04 */
@@ -1513,7 +1513,7 @@ typedef struct L31Barrel {
   int sink;     /* 0x0C sink speed */
   int link;     /* 0x10 index into g_pActorListBase, -1 = none */
   short handle; /* 0x14 for SelectActorLodBand */
-} L31Barrel;
+} FloatingBarrelState;
 
 typedef struct L31Debris {
   int vx;    /* 0x00 */
@@ -1525,14 +1525,14 @@ typedef struct L31Debris {
   unsigned char spinZ; /* 0x12 */
 } L31Debris;
 
-typedef struct L31Thrower {
+typedef struct CarriedThrowerState {
   int held;  /* 0x00 index of the carried actor in g_pActorListBase, -1 = none */
   int duck;  /* 0x04 Spyro charged: duck instead of throwing */
   int timer; /* 0x08 */
   int knock; /* 0x0C knock-back heading */
   int speed; /* 0x10 */
   int lift;  /* 0x14 */
-} L31Thrower;
+} CarriedThrowerState;
 
 typedef struct WardState {
   int homeX;      /* 0x00 post */
@@ -1591,7 +1591,7 @@ typedef struct ShempState {
   int timer2;          /* 0x44 */
 } ShempState;
 
-typedef struct L25Grabber {
+typedef struct PostGrabberState {
   int homeX;     /* 0x00 post it returns to */
   int homeY;     /* 0x04 */
   int pad08;     /* 0x08 */
@@ -1603,23 +1603,23 @@ typedef struct L25Grabber {
   int fleeDir;   /* 0x28 */
   int fleeSpeed; /* 0x2C */
   int fleeStep;  /* 0x30 */
-} L25Grabber;
+} PostGrabberState;
 
-typedef struct L25Sentry {
+typedef struct AlarmSentryState {
   int speed; /* 0x00 retreat speed (case 54) */
   int step;  /* 0x04 */
   int dir;   /* 0x08 retreat heading */
   int link;  /* 0x0C index of its partner in g_pActorListBase, -1 = none */
   int timer; /* 0x10 */
-} L25Sentry;
+} AlarmSentryState;
 
-typedef struct L25Lantern {
+typedef struct LanternState {
   int held;    /* 0x00 */
   int timer;   /* 0x04 */
   FxNode *fx;  /* 0x08 glow node */
   int pos[3];  /* 0x0C glow anchor */
   int sound;   /* 0x18 sound handle, -1 = none */
-} L25Lantern;
+} LanternState;
 
 extern int FindFarthestPathPointFromSpyro(PathData *path);
 

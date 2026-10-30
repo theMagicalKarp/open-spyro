@@ -18,7 +18,7 @@
 #include "actor.h"
 #include "level_emit_particles.h"
 
-/* Barrel state block (types 0xCA / 0xCF; L31Barrel in the updater). */
+/* Barrel state block (types 0xCA / 0xCF; FloatingBarrelState in the updater). */
 typedef struct SeekState {
   short pad00;
   short blast;  /* 0x02 blast pushed Spyro */

@@ -693,7 +693,7 @@ void Level25_UpdateActors(void) {
     /* Type 50: grabber. Seizes Spyro when he wanders close in front of it,
      * holds him under a scripted camera, then walks back to its post. */
     case ACTOR_TYPE_POST_GRABBER: {
-      L25Grabber *st = actor->state;
+      PostGrabberState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 5 && actor->mode != 1) {
         if (*st->slot == actor) {
@@ -890,7 +890,7 @@ void Level25_UpdateActors(void) {
     /* Type 51: lookout. Shares the grabber's slot; bolts when struck and
      * turns into type 50 once its partner is roused. */
     case ACTOR_TYPE_GRABBER_LOOKOUT: {
-      L25Grabber *st = actor->state;
+      PostGrabberState *st = actor->state;
 
       if (actor->flags & ACTOR_HITS_SPYRO) {
         if (actor->mode != 3) {
@@ -1068,7 +1068,7 @@ void Level25_UpdateActors(void) {
     /* Type 53: sentry. Watches for Spyro in front of it and raises the
      * alarm; turns into type 54 once its partner is roused. */
     case ACTOR_TYPE_ALARM_SENTRY: {
-      L25Sentry *st = actor->state;
+      AlarmSentryState *st = actor->state;
 
       TickActorFlameGlow(actor);
       actor->flags = 0;
@@ -1161,7 +1161,7 @@ void Level25_UpdateActors(void) {
     /* Type 54: roused sentry. Backs away when struck; otherwise watches and
      * fires like type 53. */
     case ACTOR_TYPE_ROUSED_SENTRY: {
-      L25Sentry *st = actor->state;
+      AlarmSentryState *st = actor->state;
 
       TickActorFlameGlow(actor);
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode < 2) {
@@ -2268,7 +2268,7 @@ void Level25_UpdateActors(void) {
     /* Type 122: lantern. Lit and snuffed by Spyro; the glow node grows and
      * fades with it. */
     case ACTOR_TYPE_LANTERN: {
-      L25Lantern *st = actor->state;
+      LanternState *st = actor->state;
 
       if (actor->flags & ACTOR_HITS_SPYRO) {
         actor->flags = 0;

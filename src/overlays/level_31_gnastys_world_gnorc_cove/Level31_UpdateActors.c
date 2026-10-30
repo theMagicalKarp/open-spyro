@@ -1648,7 +1648,7 @@ void Level31_UpdateActors(void) {
      * charge for the sealed kind), releasing its occupant, and closes again
      * once Spyro and the camera have moved away. */
     case ACTOR_TYPE_HATCH: {
-      L31Hatch *st = actor->state;
+      HatchState *st = actor->state;
       int kind;
       int mask;
 
@@ -2119,7 +2119,7 @@ void Level31_UpdateActors(void) {
     /* Type 199: mount. Carries a rider actor; knocked away (and the rider
      * dropped) when struck, or when its rider is knocked off. */
     case ACTOR_TYPE_MOUNT: {
-      L31Mount *st = actor->state;
+      MountState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
         ((int *)g_pActorListBase[st->rider].state)[4] = -1;
@@ -2203,7 +2203,7 @@ void Level31_UpdateActors(void) {
      * the occupant out, carries it along its two hand bones and throws it;
      * knocked away when struck. */
     case ACTOR_TYPE_HATCH_CARRIER: {
-      L31Carrier *st = actor->state;
+      HatchCarrierState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 3) {
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
@@ -2229,7 +2229,7 @@ void Level31_UpdateActors(void) {
 
       case 1:
         if (st->held == 0 && actor->nextFrame >= 4) {
-          L31Hatch *hs = g_pActorListBase[st->hatch].state;
+          HatchState *hs = g_pActorListBase[st->hatch].state;
 
           if (hs->child != 0) {
             st->held = hs->child;
@@ -2298,7 +2298,7 @@ void Level31_UpdateActors(void) {
      * actor it carries in its hands (a charge makes it duck and try again);
      * knocked away by a charge while exposed. */
     case ACTOR_TYPE_CARRIED_THROWER: {
-      L31Thrower *st = actor->state;
+      CarriedThrowerState *st = actor->state;
       int thrown = 0;
 
       TickActorFlameGlow(actor);
@@ -2500,7 +2500,7 @@ void Level31_UpdateActors(void) {
      * staves and splinters and its blast pushes Spyro back, then it sinks
      * and is removed. */
     case ACTOR_TYPE_FLOATING_BARREL: {
-      L31Barrel *st = actor->state;
+      FloatingBarrelState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) &&
           (unsigned int)(actor->mode - 2) >= 2) {
@@ -2696,7 +2696,7 @@ void Level31_UpdateActors(void) {
      * running at the nearest target in front of it, and it bursts on
      * whatever it hits. */
     case ACTOR_TYPE_FLOATING_MINE: {
-      L31Barrel *st = actor->state;
+      FloatingBarrelState *st = actor->state;
       int i;
       unsigned char s;
 

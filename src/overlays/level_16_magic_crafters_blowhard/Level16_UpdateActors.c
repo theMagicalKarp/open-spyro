@@ -3114,7 +3114,7 @@ void Level16_UpdateActors(void) {
      * type 37 rider on Spyro when he is in front of it; each hit sends it
      * to the next path, and the third ends the fight. */
     case ACTOR_TYPE_BLOWHARD: {
-      L16Boss *st = actor->state;
+      BlowhardState *st = actor->state;
       int dist = ApproxDist2D(&actor->posX, &SPY.posX);
       int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
@@ -3471,7 +3471,7 @@ void Level16_UpdateActors(void) {
     /* Type 497: humming bell. Rings a looping voice while it is alive,
      * rings out when struck, and is removed once the voice has died away. */
     case ACTOR_TYPE_HUMMING_BELL: {
-      L16Bell *st = actor->state;
+      HummingBellState *st = actor->state;
       int r;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 1) {

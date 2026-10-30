@@ -2077,7 +2077,7 @@ void Level32_UpdateActors(void) {
 
     /* Type 156: the shot thrown by type 145. */
     case ACTOR_TYPE_BURST_GUNNER_SHOT: {
-      L32Shot *st = actor->state;
+      BurstGunnerShotState *st = actor->state;
 
       switch (actor->mode) {
       case 0: {
@@ -2140,7 +2140,7 @@ void Level32_UpdateActors(void) {
 
     /* Type 171. */
     case ACTOR_TYPE_FLAME_CHUNK_SWITCH: {
-      L32Timer *st = actor->state;
+      FlameChunkSwitchState *st = actor->state;
 
       if (actor->flags & ACTOR_HIT_FLAME) {
         PlayActorMeshVoice(actor, 0, &actor->sfxSlot);

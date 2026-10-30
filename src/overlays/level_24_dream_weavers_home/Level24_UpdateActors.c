@@ -902,7 +902,7 @@ void Level24_UpdateActors(void) {
     /* Type 92: a guard. Wakes its partner when Spyro comes into range,
      * paces its path, lunges, and spins away when struck. */
     case ACTOR_TYPE_LUNGING_GUARD: {
-      L24Guard *st = actor->state;
+      LungingGuardState *st = actor->state;
       int dist;
 
       SubtractVector(g104, &spy->posX, &actor->posX);
@@ -2411,7 +2411,7 @@ void Level24_UpdateActors(void) {
     /* Type 130: the big guard (as type 92, plus two followers it wakes and
      * a growl while it lunges). */
     case ACTOR_TYPE_BIG_LUNGING_GUARD: {
-      L24Guard2 *st = actor->state;
+      BigLungingGuardState *st = actor->state;
 
       TickActorFlameGlow(actor);
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != 3 &&

@@ -213,7 +213,7 @@ enum ActorType {
   ACTOR_TYPE_TRAIL_BOMB_PUFF = 168, /* level 33: dropped by ACTOR_TYPE_TRAIL_BOMB; replays its animation subMode times, then is removed */
   ACTOR_TYPE_TRAIL_BOMB = 169, /* level 33: Gnasty's rolling trail bomb (TrailBombState) */
   ACTOR_TYPE_GATEKEEPER_B = 170, /* level 22's ACTOR_TYPE_GATEKEEPER */
-  ACTOR_TYPE_FLAME_CHUNK_SWITCH = 171, /* level 32: flamed, toggles its world chunk animation; re-arms after 0x50 frames (L32Timer) */
+  ACTOR_TYPE_FLAME_CHUNK_SWITCH = 171, /* level 32: flamed, toggles its world chunk animation; re-arms after 0x50 frames (FlameChunkSwitchState) */
   ACTOR_TYPE_KEY = 173,            /* the level key: g_nLevelKeyState = 1 */
   ACTOR_TYPE_LOCKED_CHEST = 174,   /* opened with the key, drops a reward */
   ACTOR_TYPE_LOB_GUNNER_LOB = 176, /* level 32: the lob gunner's lob */
@@ -313,7 +313,7 @@ enum ActorType {
   ACTOR_TYPE_WRECK_EMBER = 362, /* flight levels 5/29: an ember from a wrecked path smoker/prop; rebounds off walls (EmberState) */
   ACTOR_TYPE_HAZARD1_ENTER_FX = 363, /* g_anHazardEnterSpawnType[1]: one-shot effect at Spyro as he enters a kind-1 hazard */
   ACTOR_TYPE_HAZARD1_DEATH_FX = 364, /* g_anHazardTimeoutSpawnType[1]: one-shot effect when the kind-1 hazard kills him */
-  ACTOR_TYPE_SHEMP_GUARD = 370, /* level 10: Doctor Shemp's guard (GuardState370) */
+  ACTOR_TYPE_SHEMP_GUARD = 370, /* level 10: Doctor Shemp's guard (ShempGuardState) */
   ACTOR_TYPE_DOCTOR_SHEMP = 371, /* level 10 boss (ShempState) */
   ACTOR_TYPE_SHEMP_LOOKOUT = 372, /* level 10: Doctor Shemp's lookout (LookoutState) */
   ACTOR_TYPE_FLIGHT_TARGET_SHARD = 374, /* 374..386: a flight target's burst shards */

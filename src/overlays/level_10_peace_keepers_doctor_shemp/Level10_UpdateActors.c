@@ -2693,7 +2693,7 @@ void Level10_UpdateActors(void) {
     /* Doctor Shemp's guard: patrols, closes on Spyro and swings; a flame
      * or charge from the front knocks it back. */
     case ACTOR_TYPE_SHEMP_GUARD: {
-      GuardState370 *st = actor->state;
+      ShempGuardState *st = actor->state;
       int d;
       int g;
 
@@ -3610,7 +3610,7 @@ void Level10_UpdateActors(void) {
           ANIM_GO(actor, 8);
         }
         if (actor->anim == 8 && g_nActorAnimNewFrame != 0 && actor->frame == 5) {
-          GuardState370 *ls = link->state;
+          ShempGuardState *ls = link->state;
 
           if (link->mode < 0x7F && link->nextAnim != 3) {
             link->mode = 1;

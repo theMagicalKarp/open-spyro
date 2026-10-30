@@ -436,7 +436,7 @@ typedef struct CometCannonState {
 } CometCannonState;
 
 /* Types 92/130 state: a guard whose animations start at `base`. */
-typedef struct L24Guard {
+typedef struct LungingGuardState {
   int knock;           /* 0x00 knock-back speed */
   int heading;         /* 0x04 knock-back heading */
   int lift;            /* 0x08 */
@@ -454,10 +454,10 @@ typedef struct L24Guard {
   int timer2;          /* 0x4C */
   int reload;          /* 0x50 */
   int spin;            /* 0x54 */
-} L24Guard;
+} LungingGuardState;
 
 /* Type 130 state: the bigger guard (as type 92's, with two followers). */
-typedef struct L24Guard2 {
+typedef struct BigLungingGuardState {
   int knock;           /* 0x00 */
   int heading;         /* 0x04 */
   int lift;            /* 0x08 */
@@ -480,7 +480,7 @@ typedef struct L24Guard2 {
   int u60;             /* 0x60 */
   int flip;            /* 0x64 */
   int sound;           /* 0x68 */
-} L24Guard2;
+} BigLungingGuardState;
 
 /* Type 135 state: a falling chunk. */
 typedef struct FallingChunkState {
@@ -645,17 +645,17 @@ typedef struct LobState {
 } LobState;
 
 /* Type 156 state. */
-typedef struct L32Shot {
+typedef struct BurstGunnerShotState {
   int vel[3]; /* 0x00 */
   short life;  /* 0x0C life timer */
   short longReachTimer;  /* 0x0E long-reach timer */
-} L32Shot;
+} BurstGunnerShotState;
 
 /* Type 171 state. */
-typedef struct L32Timer {
+typedef struct FlameChunkSwitchState {
   int u00; /* 0x00 */
   int rearmTimer; /* 0x04 re-arm timer */
-} L32Timer;
+} FlameChunkSwitchState;
 
 /* Type 236 state (level 32 wanderer; the head is UpdateActorWander's wander block). */
 typedef struct WandererState {

@@ -111,7 +111,7 @@
 
 
 /* Type 237 state: a fireball. */
-typedef struct L6Fireball {
+typedef struct FireballState {
   int speed;   /* 0x00 */
   int vz;      /* 0x04 */
   int grav;    /* 0x08 */
@@ -119,10 +119,10 @@ typedef struct L6Fireball {
   short spent; /* 0x0E */
   int link;    /* 0x10 index into g_pActorListBase to wake on impact, -1 none */
   short delay; /* 0x14 ticks before it can hit Spyro */
-} L6Fireball;
+} FireballState;
 
 /* Type 225 state: a cannon. */
-typedef struct L6Cannon {
+typedef struct FireballCannonState {
   int link;    /* 0x00 index into g_pActorListBase (its trigger) */
   int u04;     /* 0x04 */
   int u08;     /* 0x08 */
@@ -133,10 +133,10 @@ typedef struct L6Cannon {
   int camFlag; /* 0x1C */
   int init;    /* 0x20 */
   int voice;     /* 0x24 */
-} L6Cannon;
+} FireballCannonState;
 
 /* Types 214/216 state: a Peace Keeper soldier (kind picks the behaviour). */
-typedef struct L6Keeper {
+typedef struct SoldierState {
   char pad00[0x20];
   unsigned char *path; /* 0x20 */
   int kind;            /* 0x24 */
@@ -154,7 +154,7 @@ typedef struct L6Keeper {
   int bold;            /* 0x60 */
   int gone;            /* 0x64 */
   int vol[6];          /* 0x68 */
-} L6Keeper;
+} SoldierState;
 
 /* ==== The function ==== */
 #define spy (&SPY)
@@ -2747,7 +2747,7 @@ void Level6_UpdateActors(void) {
      * fireballs (237) at Spyro or at a partner's target. */
     case ACTOR_TYPE_SOLDIER:
     case ACTOR_TYPE_SOLDIER_B: {
-      L6Keeper *st = actor->state;
+      SoldierState *st = actor->state;
 
       if (actor->flags != 0 && actor->mode == 0xB &&
           g_pActorListBase[st->link].collision != 0) {
@@ -3043,7 +3043,7 @@ void Level6_UpdateActors(void) {
           if (r < 4 && d > 0x1400 && d < 0x3C00 && st->seen > 0x50 &&
               CheckLineOfSightSegment(&actor->posX, &g_anSpyroWorldPos) != 0) {
             Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_FIREBALL, actor);
-            L6Fireball *fs = o->state;
+            FireballState *fs = o->state;
 
             CopyVector(&o->posX, &a->posX);
             o->rotZ = a->rotZ;
@@ -3101,7 +3101,7 @@ void Level6_UpdateActors(void) {
             int h = ArcTan2(c->posX - actor->posX, c->posY - actor->posY,
                                   0);
             Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_FIREBALL, actor);
-            L6Fireball *fs = o->state;
+            FireballState *fs = o->state;
 
             CopyVector(&o->posX, &a->posX);
             o->rotZ = h;
@@ -3287,7 +3287,7 @@ void Level6_UpdateActors(void) {
     /* Type 225: a cannon. Watches for Spyro to stand in its sights and
      * blasts him, then lobs a fireball (237) at the nearest target. */
     case ACTOR_TYPE_FIREBALL_CANNON: {
-      L6Cannon *st = actor->state;
+      FireballCannonState *st = actor->state;
       Actor *p = &g_pActorListBase[st->link];
 
       RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -3390,7 +3390,7 @@ void Level6_UpdateActors(void) {
 
       case 3: {
         Actor *o;
-        L6Fireball *cs;
+        FireballState *cs;
         Actor *best;
         Actor *q;
         int bestScore;
@@ -3496,7 +3496,7 @@ void Level6_UpdateActors(void) {
     /* Type 237: a fireball. Flies on its heading under gravity, bursts on
      * walls or on Spyro, and wakes its linked actor when it hits. */
     case ACTOR_TYPE_FIREBALL: {
-      L6Fireball *st = actor->state;
+      FireballState *st = actor->state;
       int i;
 
       actor->rotY = WrapAddAngle8(actor->rotY, 3);

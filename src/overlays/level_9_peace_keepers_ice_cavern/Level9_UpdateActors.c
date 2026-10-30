@@ -1982,7 +1982,7 @@ void Level9_UpdateActors(void) {
     /* Type 198: charging yak. Grazes, lowers its horns and charges when
      * Spyro comes near, and is knocked away when flamed or charged. */
     case ACTOR_TYPE_CHARGING_YAK: {
-      L9Yak *st = actor->state;
+      ChargingYakState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 6) {
         st->speed = 0xF0;
@@ -2162,7 +2162,7 @@ void Level9_UpdateActors(void) {
      * line, and is knocked away when flamed or charged. */
     case ACTOR_TYPE_PATH_SNOWBALL_THROWER:
     case ACTOR_TYPE_PATH_SNOWBALL_THROWER + 1: {
-      L9Thrower *st = actor->state;
+      SnowballThrowerState *st = actor->state;
       int r;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 3) {
@@ -2338,7 +2338,7 @@ void Level9_UpdateActors(void) {
     /* Type 213: circling bird. Waits for Spyro, circles over him, then
      * flies back to its perch; knocked out of the air when hit. */
     case ACTOR_TYPE_CIRCLING_BIRD: {
-      L9Bird *st = actor->state;
+      CirclingBirdState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4) {
         if (actor->mode != 1 || st->timer == 0) {
@@ -2421,7 +2421,7 @@ void Level9_UpdateActors(void) {
     /* Type 231: ram. Like the yak, but takes four hits to knock away and
      * is thrown into the air by each one. */
     case ACTOR_TYPE_TOUGH_RAM: {
-      L9Ram *st = actor->state;
+      ToughRamState *st = actor->state;
 
       TickActorFlameGlow(actor);
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != 6) {

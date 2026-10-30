@@ -764,7 +764,7 @@ void Level26_UpdateActors(void) {
     /* Type 61: sinking block. Struck, it frees its partner and sinks into
      * the floor. */
     case ACTOR_TYPE_SINKING_BLOCK: {
-      L26Sink *st = actor->state;
+      SinkingBlockState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode == 0) {
         st->depth = 0;
@@ -801,7 +801,7 @@ void Level26_UpdateActors(void) {
     /* Type 62: path guard. Patrols its path (or stands at home), turns to
      * face Spyro and gives chase, and is knocked away when hit. */
     case ACTOR_TYPE_CHASING_PATH_GUARD: {
-      L26Guard *st = actor->state;
+      ChasingPathGuardState *st = actor->state;
       int d;
       int ang;
       int a;
@@ -1447,7 +1447,7 @@ void Level26_UpdateActors(void) {
     /* Type 88: escort. Follows its leader on a ring, joins its partner's
      * formation and flies off when the leader breaks away. */
     case ACTOR_TYPE_FORMATION_ESCORT: {
-      L26Escort *st = actor->state;
+      FormationEscortState *st = actor->state;
 
       switch (actor->mode) {
       case 0:
@@ -2681,7 +2681,7 @@ void Level26_UpdateActors(void) {
 
     /* Type 296: bobbing platform tied to a partner actor. */
     case ACTOR_TYPE_PARTNER_PLATFORM: {
-      L26Bob *st = actor->state;
+      PartnerPlatformState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode == 0) {
         actor->mode = 1;
@@ -2725,7 +2725,7 @@ void Level26_UpdateActors(void) {
     /* Type 298: bouncer riding its partner. Thrown when its partner is
      * charged, and dropped when the partner goes. */
     case ACTOR_TYPE_PARTNER_BOUNCER: {
-      L26Rider *st = actor->state;
+      PartnerBouncerState *st = actor->state;
 
       TickActorFlameGlow(actor);
       if (actor->mode < 2) {
