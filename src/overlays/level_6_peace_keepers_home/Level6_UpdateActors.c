@@ -387,7 +387,7 @@ void Level6_UpdateActors(void) {
               DespawnActorRecord(actor);
               break;
             }
-          } else if (g_pSparxActor->subMode != 99) {
+          } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
             ChaserState *cs = (ChaserState *)g_pSparxActor->state;
 
             if (cs->owner == 0) {
@@ -400,7 +400,7 @@ void Level6_UpdateActors(void) {
                 st->dir = -1;
               }
 
-              g_pSparxActor->subMode = 0;
+              g_pSparxActor->subMode = SPARX_SUB_CHASE;
               cs->owner = actor;
               cs->timer = RandomIntInRange(150, 210);
 
@@ -480,7 +480,7 @@ void Level6_UpdateActors(void) {
                                     st->dir * 8),
                       8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
 
-        if (g_pSparxActor == 0 || g_pSparxActor->subMode == 99) {
+        if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
           actor->mode = 0;
         } else {
           int refHeight;
@@ -1438,10 +1438,10 @@ void Level6_UpdateActors(void) {
         }
       }
 
-      if (actor->drawn != 0 || toSpyro <= 0x2000 || actor->subMode != 1 ||
+      if (actor->drawn != 0 || toSpyro <= 0x2000 || actor->subMode != COLLECT_REST ||
           st->mode != 0) {
         switch (actor->subMode) {
-        case 0:
+        case COLLECT_SETTLE:
           /* Idle: sample the floor normal and face along it. */
           CopyVector(g056, &actor->posX);
           g056[2] += 0x400;
@@ -1458,10 +1458,10 @@ void Level6_UpdateActors(void) {
           if (st->lean != 0 || st->roll != 0) {
             actor->rotZ = 0;
           }
-          actor->subMode = 1;
+          actor->subMode = COLLECT_REST;
           goto enemy_pose;
 
-        case 1: {
+        case COLLECT_REST: {
 
           if (st->mode == 0) {
           } else if (st->mode == 1) {
@@ -1521,7 +1521,7 @@ void Level6_UpdateActors(void) {
                     g_nSfxOverrideVolL = 0x2000;
                     PlayActorMeshVoice(g_pSparxActor, 0, 0);
                   }
-                  g_pSparxActor->subMode = 4;
+                  g_pSparxActor->subMode = SPARX_SUB_FETCH;
                   sparx->target = actor;
                 }
               }
@@ -1531,7 +1531,7 @@ void Level6_UpdateActors(void) {
           goto enemy_pose;
         }
 
-        case 2: {
+        case COLLECT_BOUNCE: {
           /* Knocked back: arc away, bounce, then settle. */
           int *at;
           int dist;
@@ -1580,7 +1580,7 @@ void Level6_UpdateActors(void) {
                   (signed char)ArcTan2_8bit(g208[2], VectorLength(g208, VEC_LEN_XY));
 
               if ((g192[2] - 0x190) < floor && slope < 0x18) {
-                actor->subMode = 1;
+                actor->subMode = COLLECT_REST;
                 CopyVector(at, g192);
                 actor->posZ = floor;
                 if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
@@ -1644,7 +1644,7 @@ void Level6_UpdateActors(void) {
                     g_nSfxOverrideVolL = 0x2000;
                     PlayActorMeshVoice(g_pSparxActor, 0, 0);
                   }
-                  g_pSparxActor->subMode = 4;
+                  g_pSparxActor->subMode = SPARX_SUB_FETCH;
                   sparx->target = actor;
                 }
               }
@@ -1656,7 +1656,7 @@ void Level6_UpdateActors(void) {
 
           goto enemy_pose;
 
-        case 3:
+        case COLLECT_HOMING:
           /* Fetched by Sparx: pulled toward Spyro, then collected. */
           if (st->timer >= 0x20) {
             CopyVector(&actor->posX, &SPY.posX);
@@ -1681,12 +1681,12 @@ void Level6_UpdateActors(void) {
           actor->rotZ += (unsigned char)(st->spin - 7);
           goto enemy_pose;
 
-        case 4:
+        case COLLECT_INERT:
           continue;
 
         default:
         enemy_pose:
-          if (actor->subMode < 3) {
+          if (actor->subMode < COLLECT_HOMING) {
             if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
               int v;
 
@@ -1715,7 +1715,7 @@ void Level6_UpdateActors(void) {
 
           if ((st->timer >= 0x21 && toSpyro < 0x200 &&
                (unsigned int)((SPY.posZ - actor->posZ) + 0x17F) < 0x37F) ||
-              (actor->subMode == 3 && st->timer >= 0x41)) {
+              (actor->subMode == COLLECT_HOMING && st->timer >= 0x41)) {
             if (g_pSparxActor != 0) {
               SparxState *sparx = g_pSparxActor->state;
 
@@ -2001,10 +2001,10 @@ void Level6_UpdateActors(void) {
         st->timer = 0;
       }
 
-      if (actor->subMode != 0x63) {
+      if (actor->subMode != SPARX_SUB_PARKED) {
         if (st->target != 0) {
           switch (actor->subMode) {
-          case 0: {
+          case SPARX_SUB_CHASE: {
             /* Closing in on the butterfly. */
             CollectibleState *pk = st->target->state;
             int high = actor->nextAnim & 1;
@@ -2077,25 +2077,25 @@ void Level6_UpdateActors(void) {
             break;
           }
 
-          case 1:
+          case SPARX_SUB_EAT:
             g_anSparxHealthBlock[0] += 1;
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
             actor->subMode += 1;
             DespawnActorRecord(st->target);
             break;
 
-          case 2:
+          case SPARX_SUB_EAT_DONE:
             if (g_nActorAnimDone != 0) {
               if (actor->nextAnim != actor->nextAnim - 1) {
                 g_nActorAnimDone = 0;
                 ANIM_ADVANCE(actor, actor->nextAnim - 1);
               }
               st->target = 0;
-              actor->subMode = 0;
+              actor->subMode = SPARX_SUB_CHASE;
             }
             break;
 
-          case 4: {
+          case SPARX_SUB_FETCH: {
             /* Fetching a pickup: once close it homes in on Spyro. */
             CollectibleState *pk = st->target->state;
             int dist;
@@ -2109,7 +2109,7 @@ void Level6_UpdateActors(void) {
               pk->roll = GetRandomU32() & 0xE;
               pk->spin = GetRandomU32() & 0xE;
               CopyVector((int *)pk, &st->target->posX);
-              st->target->subMode = 3;
+              st->target->subMode = COLLECT_HOMING;
 
               if (st->target->type == ACTOR_TYPE_EXTRA_LIFE) {
                 g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType14);

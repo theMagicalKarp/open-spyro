@@ -397,7 +397,7 @@ void Level22_UpdateActors(void) {
               DespawnActorRecord(actor);
               break;
             }
-          } else if (g_pSparxActor->subMode != 99) {
+          } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
             ChaserState *cs = (ChaserState *)g_pSparxActor->state;
 
             if (cs->owner == 0) {
@@ -410,7 +410,7 @@ void Level22_UpdateActors(void) {
                 st->dir = -1;
               }
 
-              g_pSparxActor->subMode = 0;
+              g_pSparxActor->subMode = SPARX_SUB_CHASE;
               cs->owner = actor;
               cs->timer = RandomIntInRange(150, 210);
 
@@ -490,7 +490,7 @@ void Level22_UpdateActors(void) {
                                     st->dir * 8),
                       8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
 
-        if (g_pSparxActor == 0 || g_pSparxActor->subMode == 99) {
+        if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
           actor->mode = 0;
         } else {
           int refHeight;
@@ -2206,12 +2206,12 @@ void Level22_UpdateActors(void) {
         }
       }
 
-      if (!actor->drawn && dist > 0x2000 && actor->subMode == 1 && st->sub == 0) {
+      if (!actor->drawn && dist > 0x2000 && actor->subMode == COLLECT_REST && st->sub == 0) {
         break;
       }
 
       switch (actor->subMode) {
-      case 0: {
+      case COLLECT_SETTLE: {
         int *nrm = &g_anCollisionProbeVec;
 
         CopyVector(g296, &actor->posX);
@@ -2226,10 +2226,10 @@ void Level22_UpdateActors(void) {
           actor->rotZ = 0;
         }
 
-        actor->subMode = 1;
+        actor->subMode = COLLECT_REST;
         break;
       }
-      case 1: {
+      case COLLECT_REST: {
         if (st->sub != 0) {
 
           if (st->sub == 1) {
@@ -2298,7 +2298,7 @@ void Level22_UpdateActors(void) {
                       PlayActorMeshVoice(g_pSparxActor, 0, 0);
                     }
 
-                    g_pSparxActor->subMode = 4;
+                    g_pSparxActor->subMode = SPARX_SUB_FETCH;
                     cs->owner = actor;
                   }
                 }
@@ -2309,7 +2309,7 @@ void Level22_UpdateActors(void) {
 
         break;
       }
-      case 2: {
+      case COLLECT_BOUNCE: {
         int speed;
 
         ScaleVector3Sat(g232, st->vel, g_nFrameStep);
@@ -2355,7 +2355,7 @@ void Level22_UpdateActors(void) {
                   (signed char)ArcTan2_8bit(g416[2], VectorLength(g416, VEC_LEN_XY));
 
               if ((g232[2] - 400) < groundHeight && groundAngle < 24) {
-                actor->subMode = 1;
+                actor->subMode = COLLECT_REST;
                 CopyVector(&actor->posX, g232);
                 actor->posZ = groundHeight;
 
@@ -2421,7 +2421,7 @@ void Level22_UpdateActors(void) {
                     PlayActorMeshVoice(g_pSparxActor, 0, 0);
                   }
 
-                  g_pSparxActor->subMode = 4;
+                  g_pSparxActor->subMode = SPARX_SUB_FETCH;
                   cs->owner = actor;
                 }
               }
@@ -2431,7 +2431,7 @@ void Level22_UpdateActors(void) {
 
         break;
       }
-      case 3: {
+      case COLLECT_HOMING: {
         if (st->timer >= 32) {
           CopyVector(&actor->posX, &SPY.posX);
         } else {
@@ -2455,11 +2455,11 @@ void Level22_UpdateActors(void) {
         break;
       }
 
-      case 4: {
+      case COLLECT_INERT: {
         continue;
       }
       }
-      if (actor->subMode < 3) {
+      if (actor->subMode < COLLECT_HOMING) {
         if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
           actor->rotX = (g_anCosineLut[st->roll] >> 9) + st->pitch;
           actor->rotY = (g_anSineLut[st->roll] >> 9) + st->yaw;
@@ -2475,7 +2475,7 @@ void Level22_UpdateActors(void) {
       }
       if ((st->timer > 32 && dist < 512 && (-384 < (SPY.posZ - actor->posZ)) &&
            ((SPY.posZ - actor->posZ) < 512)) ||
-          (actor->subMode == 3 && st->timer > 64)) {
+          (actor->subMode == COLLECT_HOMING && st->timer > 64)) {
 
         if (g_pSparxActor != 0) {
           ChaserState *cs = (ChaserState *)g_pSparxActor->state;
@@ -2759,10 +2759,10 @@ void Level22_UpdateActors(void) {
         st->timer = 0;
       }
 
-      if (actor->subMode != 0x63) {
+      if (actor->subMode != SPARX_SUB_PARKED) {
         if (st->target != 0) {
           switch (actor->subMode) {
-          case 0: {
+          case SPARX_SUB_CHASE: {
             /* Closing in on the butterfly. */
             CollectibleState *pk = st->target->state;
             int high = actor->nextAnim & 1;
@@ -2835,25 +2835,25 @@ void Level22_UpdateActors(void) {
             break;
           }
 
-          case 1:
+          case SPARX_SUB_EAT:
             g_anSparxHealthBlock[0] += 1;
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
             actor->subMode += 1;
             DespawnActorRecord(st->target);
             break;
 
-          case 2:
+          case SPARX_SUB_EAT_DONE:
             if (g_nActorAnimDone != 0) {
               if (actor->nextAnim != actor->nextAnim - 1) {
                 g_nActorAnimDone = 0;
                 ANIM_ADVANCE(actor, actor->nextAnim - 1);
               }
               st->target = 0;
-              actor->subMode = 0;
+              actor->subMode = SPARX_SUB_CHASE;
             }
             break;
 
-          case 4: {
+          case SPARX_SUB_FETCH: {
             /* Fetching a pickup: once close it homes in on Spyro. */
             CollectibleState *pk = st->target->state;
             int dist;
@@ -2867,7 +2867,7 @@ void Level22_UpdateActors(void) {
               pk->roll = GetRandomU32() & 0xE;
               pk->spin = GetRandomU32() & 0xE;
               CopyVector((int *)pk, &st->target->posX);
-              st->target->subMode = 3;
+              st->target->subMode = COLLECT_HOMING;
 
               if (st->target->type == ACTOR_TYPE_EXTRA_LIFE) {
                 g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType14);
