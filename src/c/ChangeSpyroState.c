@@ -65,7 +65,8 @@ void ChangeSpyroState(int state) {
   case SPYRO_ST_KNOCKBACK:
   case SPYRO_ST_HURT_LONG:
   case SPYRO_ST_KNOCKBACK_2:
-    PlaySoundEffect(LEVEL_SFX(0x1B), g_anSpyroWorldPos, SFX_MODE_FLAT,
+    PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT_EXIT), g_anSpyroWorldPos,
+                    SFX_MODE_FLAT,
                     (unsigned char *)g_anSpyroWorldPos + SPYB_VOICE_MARKER);
     break;
   case SPYRO_ST_HURT_PINNED:
@@ -538,7 +539,7 @@ void ChangeSpyroState(int state) {
     me = SPY;
     PlaySoundEffect(LEVEL_SFX(SFX_SPLASH), me, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER);
-    PlaySoundEffect(LEVEL_SFX(0x1B), me, SFX_MODE_FLAT,
+    PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT_EXIT), me, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER);
     if (g_nHitRumbleTimer < 0xF) {
       g_nHitRumbleTimer = 0xF;

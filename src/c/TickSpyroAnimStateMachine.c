@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "level_sfx.h"
 #include "main_shared.h"
 #include "sample_bank.h"
 #include "spyro_block.h"
@@ -7,7 +8,8 @@
 /* 0x8003d194 (0x224): per-frame Spyro animation state-machine tick, routed on
    g_nSpyroAnimMode. Modes 1/2/6 and 5 run the sub-frame timer at +2/+4 and
    drop back to mode 0 on overflow; 3/10 step a pending transition when the
-   transition-anim matrix entry is 3/4/10 (landing sfx for anim 0x1a); 4 waits
+   transition-anim matrix entry is 3/4/10 (SFX_SPYRO_HURT_EXIT when
+   anim 0x1A, SPYRO_ST_HURT_PINNED's, ends); 4 waits
    for timer overflow then enters mode 3. */
 void TickSpyroAnimStateMachine(void) {
   unsigned char *timer;
@@ -53,8 +55,8 @@ void TickSpyroAnimStateMachine(void) {
     if (StepSpyroAnimAndCommitTransition(
             g_abSpyroAnimDescTable[*prev * 4 + 3]) != 0) {
       if (*prev == 0x1A) {
-        PlaySoundEffect(LEVEL_SFX(0x1B), SPY_FROM_ANIM_PREV(prev, 0),
-                        SFX_MODE_PANNED, 0);
+        PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT_EXIT),
+                        SPY_FROM_ANIM_PREV(prev, 0), SFX_MODE_PANNED, 0);
       }
       g_nSpyroAnimMode = 0;
     }
