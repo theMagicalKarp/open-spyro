@@ -377,7 +377,7 @@ void Level13_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xb:  /* <- Level15_AdvanceEmitList */
+    case EMIT_BURST_SPARK:  /* <- Level15_AdvanceEmitList */
     /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, &HS(0x12));
       rec[0xC] -= 8;

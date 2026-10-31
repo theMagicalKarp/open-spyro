@@ -372,6 +372,7 @@ enum ActorType {
   ACTOR_TYPE_GRABBER = 476, /* level 20: carries Spyro off and throws him (GrabberState) */
   ACTOR_TYPE_HAZARD0_ENTER_FX = 477, /* g_anHazardEnterSpawnType[0]; both kind-0 effects snap to the ground under Spyro (or the parent) */
   ACTOR_TYPE_FLIGHT_CHEST_SHARD = 478, /* 478..483: flight chest burst */
+  ACTOR_TYPE_ONE_SHOT_PROP = 487, /* level 20: plays anim 1 -> 2 once set to mode 1, or anim 3 -> 4 when hit, then holds */
   ACTOR_TYPE_BELL_RIPPLE = 493, /* levels 7/8: ripple a charged bell (206/239/242) spawns; removed when its animation ends */
   ACTOR_TYPE_AIMED_BOLT = 494, /* level 19: bolt thrown by 35 and 467 (AimedBoltState) */
   ACTOR_TYPE_BLOWHARD = 495, /* level 16 boss: patrols three paths, drops type 37 riders */

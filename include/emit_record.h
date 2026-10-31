@@ -174,9 +174,11 @@ enum EmitClass {
 
 /* Effect types for g_pfnLevelEmitParticles(count, type, pos, effectArg)
  * whose arm is the same in every level EmitParticles clone that has it.
- * 0xB, 0x45, 0x48 and 0x49 have only AdvanceEmitList arms (no level
- * EmitParticles creates them) and stay numeric. */
+ * EMIT_BURST_SPARK comes from main's BurstActorIntoSparks instead; 0x45,
+ * 0x48 and 0x49 have only AdvanceEmitList arms and stay numeric. */
 enum EmitEffect {
+  EMIT_BURST_SPARK = 0xB,   /* BurstActorIntoSparks: drifts by the velocity at +0x12 and fades
+                             * its RGB by 8 a tick until red reaches 0 */
   EMIT_SPARK_VEL = 0x0,     /* spark moving at the velocity effectArg points to, 0x18 frames
                              * (the flame breath's particles) */
   EMIT_SPARK_VEL_DIM = 0x1, /* dimmer, shorter EMIT_SPARK_VEL (8 frames during the dragon rescue;

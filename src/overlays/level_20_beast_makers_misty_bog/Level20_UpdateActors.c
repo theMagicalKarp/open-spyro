@@ -3749,8 +3749,7 @@ void Level20_UpdateActors(void) {
       continue;
     }
 
-    /* Type 487. */
-    case 487:
+    case ACTOR_TYPE_ONE_SHOT_PROP:
       if (actor->flags != 0 && actor->mode < 3) {
         actor->mode = 3;
         ANIM_RESET(actor, 3);
