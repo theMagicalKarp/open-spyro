@@ -429,8 +429,8 @@ void TickLevelTransitionStream(int full) {
     g_nLevelRunnerArrivedGoal1 = 0;
     g_anLevelEscapeRunCount = 0;
     g_nLevelEscapeRunCountLane1 = 0;
-    g_nLevelUnreadScratchA = 0;
-    g_nLevelUnreadScratchB = 0;
+    g_nLevelVortexSeen1 = 0;
+    g_nLevelVortexSeen2 = 0;
     g_bLevelUseShortReleaseAnim = 0;
     g_bLevelBossDefeated = 0;
     g_bLevelPhasedBossKilled = 0;

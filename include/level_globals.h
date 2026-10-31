@@ -231,7 +231,7 @@ extern unsigned char g_abLevelVisitedFlag[];
 extern int g_anLevelTriggerStateSlots[];
 extern int g_anRunningKillBitmap[];
 extern int g_anWorldPersistentFlags[];
-extern int g_nCutsceneId[]; /* [0] the cutscene id; [1]/[2] are flags levels 33/34 index by a seen field */
+extern int g_nCutsceneId[]; /* [0] the cutscene id; [1]/[2] are g_nLevelVortexSeen1/2, indexed by LootVortexState.seen */
 extern int g_nCreditsMode;
 extern int g_nScreenFadeLevel;
 

@@ -14141,17 +14141,17 @@ dlabel g_nCutsceneId
     /* 65E6C 8007566C 00000000 */ .word 0x00000000
 enddlabel g_nCutsceneId
 
-nonmatching g_nLevelUnreadScratchA
+nonmatching g_nLevelVortexSeen1
 
-dlabel g_nLevelUnreadScratchA
+dlabel g_nLevelVortexSeen1
     /* 65E70 80075670 00000000 */ .word 0x00000000
-enddlabel g_nLevelUnreadScratchA
+enddlabel g_nLevelVortexSeen1
 
-nonmatching g_nLevelUnreadScratchB
+nonmatching g_nLevelVortexSeen2
 
-dlabel g_nLevelUnreadScratchB
+dlabel g_nLevelVortexSeen2
     /* 65E74 80075674 00000000 */ .word 0x00000000
-enddlabel g_nLevelUnreadScratchB
+enddlabel g_nLevelVortexSeen2
 
 nonmatching g_nGnastyLootFallRefZCap
 

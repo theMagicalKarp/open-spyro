@@ -1243,8 +1243,8 @@ extern unsigned char g_abSpyroFlameTransitionModes[][2]; /* 0x80075264 */
 extern unsigned char g_abSpyroFlameAnimTable[]; /* 0x80075268 */
 extern unsigned short g_anGameOverCameraEulerU[]; /* 0x800752d8 */
 extern unsigned char g_abWorldTitleGlyphBlock[]; /* 0x8007555c: held-base view (A240) */
-extern int g_nLevelUnreadScratchA; /* 0x80075670 */
-extern int g_nLevelUnreadScratchB; /* 0x80075674 */
+extern int g_nLevelVortexSeen1; /* 0x80075670: a loot vortex (levels 33/34, LootVortexState.seen 1) was entered this visit; read as g_nCutsceneId[1] */
+extern int g_nLevelVortexSeen2; /* 0x80075674: the same for seen 2 (g_nCutsceneId[2]) */
 extern int g_nLevelLoadUnreadWord; /* 0x80075698 */
 extern void *g_pfnActorCutsceneSubstateUpdate; /* 0x8007574c: per-level handler for the other 0xC substates (ApplyPerLevelGlobalsTable) */
 extern unsigned char *g_pLockedChestReward; /* 0x80075758 */
