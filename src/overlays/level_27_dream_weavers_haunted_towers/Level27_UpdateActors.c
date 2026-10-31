@@ -1660,7 +1660,7 @@ void Level27_UpdateActors(void) {
       RockThrowerState *st = actor->state;
 
       TickActorFlameGlow(actor);
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 3) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != ROCKTHROW_KNOCKED) {
         Actor *o;
         FallingChunkState *c;
 
@@ -1690,12 +1690,12 @@ void Level27_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 3);
+        ENTER_POSE(actor, ROCKTHROW_KNOCKED);
       }
       actor->flags = 0;
 
       switch (actor->mode) {
-      case 0:
+      case ROCKTHROW_WATCH:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if ((st->flags & 1) &&
             (((SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x1F4
@@ -1703,36 +1703,36 @@ void Level27_UpdateActors(void) {
               ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range) ||
              (st->link != -1 && g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) ||
              IsPointInRotatedBox(&g_anSpyroWorldPos, st->vol) != 0)) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, ROCKTHROW_WALK);
         }
         if (st->flags & 2) {
-          actor->mode = 4;
+          actor->mode = ROCKTHROW_ESCORT;
           continue;
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && g_nGameplayBlocked == 0 &&
             ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range2 &&
             SPY_DZ(actor) < 0xC8 && CheckSpyroLineOfSightTo(&actor->posX) != 0) {
           actor->subMode = 0;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, ROCKTHROW_THROW);
         }
         ANIM_GO(actor, 0);
         break;
 
-      case 1:
+      case ROCKTHROW_WALK:
         st->flags &= ~1;
         if (st->range != 0 &&
             ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1400) {
           actor->subMode = 0;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, ROCKTHROW_THROW);
         }
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, 5) ==
             0x100) {
-          actor->mode = 10;
+          actor->mode = ROCKTHROW_TURN;
           continue;
         }
         break;
 
-      case 2:
+      case ROCKTHROW_THROW:
         TrackEntityYawTowardSpyro(actor, 8, 0, 0);
         if (actor->nextFrame >= 0x1A && g_nGameplayBlocked == 0 && actor->subMode == 0) {
           Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_CHUNK, actor);
@@ -1757,11 +1757,11 @@ void Level27_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           actor->subMode = 0;
           st->timer = 0x28;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, ROCKTHROW_WATCH);
         }
         break;
 
-      case 3:
+      case ROCKTHROW_KNOCKED:
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC, 0x10);
         if (g_nActorAnimDone != 0 && actor->nextAnim == 3) {
           ANIM_SET(actor, 4);
@@ -1774,7 +1774,7 @@ void Level27_UpdateActors(void) {
         }
         break;
 
-      case 4: {
+      case ROCKTHROW_ESCORT: {
         int spd = 0x78;
         int d = ApproxDist2D(&actor->posX, &g_pActorListBase[st->partner].posX);
 
@@ -1796,15 +1796,15 @@ void Level27_UpdateActors(void) {
         if (st->trig != 0) {
           st->flags = one;
           g_pActorListBase[st->partner].subMode = 1;
-          actor->mode = 0;
+          actor->mode = ROCKTHROW_WATCH;
           continue;
         }
         break;
       }
 
-      case 10:
+      case ROCKTHROW_TURN:
         if (TrackEntityYawTowardSpyro(actor, 5, 2, 1) != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, ROCKTHROW_WATCH);
         }
         break;
       }

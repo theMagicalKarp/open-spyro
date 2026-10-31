@@ -694,7 +694,7 @@ void Level28_UpdateActors(void) {
         st->init = one;
         actor->frame = actor->nextFrame = (int)GetRandomU32() % 10;
         if (st->mode != 0) {
-          actor->mode = 2;
+          actor->mode = CRAM_WATCH;
           actor->nextAnim = 2;
           actor->anim = 2;
         }
@@ -702,7 +702,7 @@ void Level28_UpdateActors(void) {
       if (actor->type == ACTOR_TYPE_BIG_CHARGING_RAM) {
         TickActorFlameGlow(actor);
       }
-      if (actor->mode != 4 &&
+      if (actor->mode != CRAM_KNOCKED &&
           ((actor->type == ACTOR_TYPE_BIG_CHARGING_RAM && (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER))) ||
            (actor->type == ACTOR_TYPE_CHARGING_RAM && (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER))))) {
         st->knock = 0x190;
@@ -717,7 +717,7 @@ void Level28_UpdateActors(void) {
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         }
         MarkActorCommittedKill(actor);
-        actor->mode = 4;
+        actor->mode = CRAM_KNOCKED;
         ANIM_RESET(actor, 4);
         continue;
       }
@@ -728,8 +728,8 @@ void Level28_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
-      case 2:
+      case CRAM_GRAZE:
+      case CRAM_WATCH:
         TickCountdownByFrameDelta(&st->timer, 4);
         if (st->timer == 0 && dist < 0x2000 && actor->type == ACTOR_TYPE_CHARGING_RAM &&
             st->mode != 0 &&
@@ -741,25 +741,25 @@ void Level28_UpdateActors(void) {
                                         actor->posY - g_anCameraPos[1], 0)) <
                 0x23) {
           if (actor->nextAnim < 2) {
-            actor->mode = 6;
+            actor->mode = CRAM_REAR;
             ANIM_RESET(actor, 6);
             continue;
           }
-          ENTER_POSE(actor, 6);
+          ENTER_POSE(actor, CRAM_REAR);
         }
         TrackEntityYawTowardSpyro(actor, 7, 5, 0);
         if (st->timer == 0 && dist < range) {
           st->timer = 0xA0;
           st->saved = actor->mode;
           if (st->mode == 0) {
-            ENTER_POSE(actor, 1);
+            ENTER_POSE(actor, CRAM_BUTT);
           }
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, CRAM_BUTT_WATCH);
         }
         continue;
 
-      case 1:
-      case 3:
+      case CRAM_BUTT:
+      case CRAM_BUTT_WATCH:
         if (actor->nextFrame < 10) {
           int h = actor->rotZ;
 
@@ -776,7 +776,7 @@ void Level28_UpdateActors(void) {
         }
         continue;
 
-      case 4:
+      case CRAM_KNOCKED:
         DriveActorTrackedMove(actor, &st->knock, st->heading, &st->lift, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
@@ -786,9 +786,9 @@ void Level28_UpdateActors(void) {
         }
         continue;
 
-      case 5:
+      case CRAM_CHARGE:
         if (st->charged != 0) {
-          actor->mode = 100;
+          actor->mode = CRAM_GO_HOME;
           continue;
         }
         if (TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
@@ -801,7 +801,7 @@ void Level28_UpdateActors(void) {
                           4, 0x1E, one) != 0) {
           if (MoveActorAlongHeading(actor, 0x64, 0x300, 0x200, 0x25) != 0 ||
               ApproxDist2D(&actor->posX, st->home) > 0x2800) {
-            actor->mode = 100;
+            actor->mode = CRAM_GO_HOME;
             continue;
           }
         }
@@ -811,7 +811,7 @@ void Level28_UpdateActors(void) {
           if (st->timer3 != 0) {
             if (TickCountdownByFrameDelta(&st->timer3, 4) != 0) {
               st->timer3 = 0;
-              actor->mode = 100;
+              actor->mode = CRAM_GO_HOME;
               continue;
             }
           } else {
@@ -826,19 +826,19 @@ void Level28_UpdateActors(void) {
                                         spy->posY - actor->posY, 0)) < 0x40) {
           st->timer = 0xA0;
           st->charged = one;
-          st->saved = 6;
+          st->saved = CRAM_REAR;
           RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, CRAM_BUTT_WATCH);
         }
         continue;
 
-      case 6:
+      case CRAM_REAR:
         if (actor->frame >= 3) {
-          ANIM_QUEUE(actor, 5);
+          ANIM_QUEUE(actor, CRAM_CHARGE);
         }
         continue;
 
-      case 100: {
+      case CRAM_GO_HOME: {
         int h = ArcTan2_8bit(st->home[0] - actor->posX,
                               st->home[1] - actor->posY);
 
@@ -848,7 +848,7 @@ void Level28_UpdateActors(void) {
         }
         ANIM_GO(actor, 5);
         if (ApproxDist2D(&actor->posX, st->home) < 0x80) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, CRAM_WATCH);
         }
         continue;
       }

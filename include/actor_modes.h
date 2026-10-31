@@ -699,4 +699,67 @@ enum GuardPairMode {
   GPAIR_CUE = 10,     /* signals its partner (subMode steps the gesture), then IDLE */
 };
 
+/* ->mode of a sweep gunner (ACTOR_TYPE_SWEEP_GUNNER, SweepGunnerState;
+ * level 32). */
+enum SweepGunnerMode {
+  SWEEPGUN_IDLE = 0,     /* faces Spyro; in range and level: SWEEP */
+  SWEEPGUN_ADVANCE = 2,  /* Spyro entered its trigger box: walks its path, then IDLE */
+  SWEEPGUN_SWEEP = 3,    /* sprays shots, sweeping between its yaw limits (subMode 1: reverses) */
+  SWEEPGUN_KNOCKED = 4,  /* flamed: knocked away; bursts, or sinks on water */
+  SWEEPGUN_TURN = 10,    /* turns to Spyro, then IDLE */
+  SWEEPGUN_SINK = 20,    /* knocked into the water: despawns after a moment */
+};
+
+/* ->mode of a lurker (ACTOR_TYPE_LURKER, LurkerState; level 20). */
+enum LurkerMode {
+  LURKER_WATCH = 0,    /* Spyro close in front: LASH; else hops between path nodes */
+  LURKER_KNOCKED = 2,  /* struck: drops its tether, knocked away; bursts or sinks */
+  LURKER_SPIN = 4,     /* spins a while, then WATCH */
+  LURKER_AIM = 10,     /* turns to its next path node, then HOP */
+  LURKER_HOP = 11,     /* hops to it, then WATCH */
+  LURKER_FACE = 15,    /* turns to Spyro, then WATCH */
+  LURKER_LASH = 20,    /* lashes its ACTOR_TYPE_LURKER_TETHER at Spyro and drags him */
+  LURKER_SINK = 30,    /* knocked into the water: despawns after a moment */
+};
+
+/* ->mode of a gunner (ACTOR_TYPE_GUNNER, GunnerState; level 20).
+ * GUNNER_IDLE runs GunnerState.mode's role (guard, patrol, lookout). */
+enum GunnerMode {
+  GUNNER_IDLE = 0,
+  GUNNER_WAKE = 1,     /* nudges its partner awake, then TURN */
+  GUNNER_TURN = 2,     /* turns to the partner, then CHAT */
+  GUNNER_CHAT = 3,     /* faces the partner until its timer or Spyro: GUARD */
+  GUNNER_GUARD = 4,    /* tracks Spyro; in range: ADVANCE; close: FIRE */
+  GUNNER_KNOCKED = 5,  /* charged: knocked away; bursts, or sinks on water */
+  GUNNER_ADVANCE = 7,  /* walks at Spyro, then FIRE */
+  GUNNER_FIRE = 8,     /* fires, then GUARD */
+  GUNNER_STARTLE = 9,  /* the lookout jumps at Spyro, then GUARD */
+  GUNNER_SINK = 10,    /* knocked into the water: sinks and despawns */
+};
+
+/* ->mode of a charging ram (ACTOR_TYPE_CHARGING_RAM / _BIG_, ChargingRamState;
+ * level 28); the mode is also the animation index. A butt returns to the
+ * mode saved in ChargingRamState.saved. */
+enum ChargingRamMode {
+  CRAM_GRAZE = 0,      /* grazes, facing Spyro; close: BUTT */
+  CRAM_BUTT = 1,       /* head-butts Spyro back */
+  CRAM_WATCH = 2,      /* the awake kind; Spyro looking away from afar: REAR */
+  CRAM_BUTT_WATCH = 3, /* the awake kind's butt */
+  CRAM_KNOCKED = 4,    /* knocked away, then bursts */
+  CRAM_CHARGE = 5,     /* charges Spyro; too far or he turns away: GO_HOME */
+  CRAM_REAR = 6,       /* rears up, then CHARGE */
+  CRAM_GO_HOME = 100,  /* walks home, then WATCH */
+};
+
+/* ->mode of a rock thrower (ACTOR_TYPE_ROCK_THROWER, RockThrowerState;
+ * level 27); the mode is also the animation index. */
+enum RockThrowerMode {
+  ROCKTHROW_WATCH = 0,   /* faces Spyro; in sight: THROW; triggered: WALK */
+  ROCKTHROW_WALK = 1,    /* walks its path (throwing if Spyro is close), then TURN */
+  ROCKTHROW_THROW = 2,   /* throws an ACTOR_TYPE_FALLING_CHUNK at Spyro, then WATCH */
+  ROCKTHROW_KNOCKED = 3, /* drops its rock, knocked away, then bursts */
+  ROCKTHROW_ESCORT = 4,  /* follows its partner until Spyro trips its box */
+  ROCKTHROW_TURN = 10,   /* turns to Spyro, then WATCH */
+};
+
 #endif

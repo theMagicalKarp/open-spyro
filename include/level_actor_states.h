@@ -134,7 +134,7 @@ typedef struct GunnerState {
   int knockZSpeed;     /* 0x0C */
   int knockHeading;     /* 0x10 knock-back heading */
   int timer;   /* 0x14 */
-  int mode;    /* 0x18 0 guard, 1 patrol, 2 lookout */
+  int mode;    /* 0x18 role while GUNNER_IDLE: 0 guard, 1 patrol, 2 lookout */
   int hit;     /* 0x1C */
   int range;   /* 0x20 sight range (< 0x20: in units of 0x400) */
 } GunnerState;
