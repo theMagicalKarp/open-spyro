@@ -77,7 +77,7 @@ void AdvanceCameraSpringStep(int column) {
   int delta;
 
   drive = g_anCameraSpringDriveGains[column];
-  if (g_nCameraCurrentMode == 3 && drive < 0x400) {
+  if (g_nCameraCurrentMode == CAM_MODE_CHARGE && drive < 0x400) {
     drive = 0x400;
   }
   if (g_nCameraManualYawInput != 0) {
@@ -111,14 +111,15 @@ void AdvanceCameraSpringStep(int column) {
     }
   }
   if ((g_dwActiveCameraOptions & 0x40) && g_nCameraCollisionRetries == 0 &&
-      (g_nCameraCurrentMode == 0x80000009 ||
+      (g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_FREE_LOOK) ||
        g_nCameraCurrentMode == CAM_MODE_CHARGE)) {
     CLAMP_STATE(g_nCameraSpringYawDelta, 0x2000);
   }
   if (((g_dwActiveCameraOptions & 0x10) || g_nCameraLookAroundActive) &&
       g_nCameraSpringReengageCountdown == 0 && g_nCameraLosClear != 0 &&
       g_nCameraSpringSuppressFlag == 0 &&
-      (g_nCameraCurrentMode == 0 || g_nCameraCurrentMode == CAM_HELD)) {
+      (g_nCameraCurrentMode == CAM_MODE_STAND ||
+       g_nCameraCurrentMode == CAM_HELD)) {
     CLAMP_STATE(g_nCameraSpringYawDelta, 0x800);
   }
   APPLY(0);
@@ -138,7 +139,8 @@ void AdvanceCameraSpringStep(int column) {
   }
   drive = g_anCameraSpringDriveGains[6 + column];
   SPRING(1);
-  if ((g_dwActiveCameraOptions & 0x40) && g_nCameraCurrentMode == 0x80000009 &&
+  if ((g_dwActiveCameraOptions & 0x40) &&
+      g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_FREE_LOOK) &&
       g_nCameraCollisionRetries == 0) {
     CLAMP_STATE(g_nCameraSpringPitchDelta, 0x2000);
   }

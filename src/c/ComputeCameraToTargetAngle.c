@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -44,7 +45,8 @@ int ComputeCameraToTargetAngle(int *target) {
     d2 -= 0x1000;
   }
   if (abs(d2) < abs(d1) &&
-      (g_nCameraCurrentMode == 0x80000009 || g_nCameraTargetInverted != 0)) {
+      (g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_FREE_LOOK) ||
+       g_nCameraTargetInverted != 0)) {
     if (abs(vec[0]) < 0x81) {
       if (abs(vec[1]) < 0x81) {
         goto spring;

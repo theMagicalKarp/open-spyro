@@ -187,7 +187,7 @@ void UpdateGameplayCamera(void) {
   }
   g_nCameraLosClear = 1;
   if (g_nCameraCollisionRetries != 0) {
-    if (g_nCameraCurrentMode != 0 &&
+    if (g_nCameraCurrentMode != CAM_MODE_STAND &&
         g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_FREE_LOOK)) {
       g_nCameraCollisionRetries--;
     } else if (g_nCameraTargetInverted != 0) {
