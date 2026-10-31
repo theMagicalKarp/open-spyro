@@ -59,7 +59,7 @@ void Level16_AdvanceEmitList(int step) {
   int *dir;
   int step4;
 
-  if (CLASS == 0xFF) {
+  if (CLASS == EMIT_CLASS_END) {
     return;
   }
 
@@ -189,7 +189,7 @@ void Level16_AdvanceEmitList(int step) {
           SubtractVector(v, p2, hold);
           c = abs(v[0]) + abs(v[1]);
           len = c + abs(v[2]);
-          if (CLASS == 3) {
+          if (CLASS == EMIT_CLASS_ALT_LIT_QUAD) {
             if (len >= 0x3001) {
               rec[0xA] = 4;
               rec[0xF] = 0x40;
@@ -697,5 +697,5 @@ void Level16_AdvanceEmitList(int step) {
     }
 
     rec += 0x20;
-  } while (CLASS != 0xFF);
+  } while (CLASS != EMIT_CLASS_END);
 }

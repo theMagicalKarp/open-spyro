@@ -61,7 +61,7 @@ void Level19_AdvanceEmitList(int step) {
   int p[3];
   int v[3];
 
-  if (CLASS == 0xFF) {
+  if (CLASS == EMIT_CLASS_END) {
     return;
   }
 
@@ -586,5 +586,5 @@ void Level19_AdvanceEmitList(int step) {
     }
 
     rec += 0x20;
-  } while (CLASS != 0xFF);
+  } while (CLASS != EMIT_CLASS_END);
 }

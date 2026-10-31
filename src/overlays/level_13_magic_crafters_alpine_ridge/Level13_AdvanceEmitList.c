@@ -64,7 +64,7 @@ void Level13_AdvanceEmitList(int step) {
   int c;
   int d;
 
-  if (CLASS == 0xFF) {
+  if (CLASS == EMIT_CLASS_END) {
     return;
   }
 
@@ -868,5 +868,5 @@ void Level13_AdvanceEmitList(int step) {
 
   next:
     rec += 0x20;
-  } while (CLASS != 0xFF);
+  } while (CLASS != EMIT_CLASS_END);
 }

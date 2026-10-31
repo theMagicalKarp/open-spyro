@@ -43,7 +43,7 @@ void Level6_AdvanceEmitList(int step) {
   unsigned char *rec = g_pEmitListBase;
   int v[3];
 
-  if (CLASS == 0xFF) {
+  if (CLASS == EMIT_CLASS_END) {
     return;
   }
 
@@ -551,5 +551,5 @@ void Level6_AdvanceEmitList(int step) {
     }
 
     rec += 0x20;
-  } while (CLASS != 0xFF);
+  } while (CLASS != EMIT_CLASS_END);
 }

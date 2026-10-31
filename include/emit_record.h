@@ -162,7 +162,8 @@ enum EmitClass {
   EMIT_CLASS_ALT_LIT_QUAD = 3, /* billboard with the alternate lighting */
   EMIT_CLASS_LINE_ABS = 4, /* EMIT_CLASS_LINE with absolute positions */
   EMIT_CLASS_FADED_QUAD = 5, /* depth-faded spinning billboard */
-  EMIT_CLASS_QUAD = 6      /* plain spinning billboard */
+  EMIT_CLASS_QUAD = 6,     /* plain spinning billboard */
+  EMIT_CLASS_END = 0xFF    /* list terminator (the loader seeds it) */
 };
 
 /* GPU command codes for the `fx` byte: it is the top byte of the colour
