@@ -335,7 +335,7 @@ void UpdateHudCounters(void) {
   }
 
   /* --- counter 4: the level key (g_nLevelKeyState) ------------------ */
-  if (*(volatile int *)&g_nLevelKeyState != 1) {
+  if (*(volatile int *)&g_nLevelKeyState != KEYSTATE_CARRIED) {
     g_nHudKeyCachedState = g_nLevelKeyState;
   }
   switch (KEY_STATE) {

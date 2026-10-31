@@ -14,7 +14,7 @@ void CollectPickupActor(Actor *actor) {
   g_abGemTallyIconUvTable[g_nGemTallyIconCount & 0x1F] = actor->type;
   g_nGemTallyIconCount += 1;
   if (actor == g_pLockedChestReward) {
-    g_nLevelKeyState = 3;
+    g_nLevelKeyState = KEYSTATE_REWARD_TAKEN;
   }
   RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
   g_pfnLevelEmitParticles(6, EMIT_ACTOR_SPARK, actor,

@@ -1604,7 +1604,7 @@ void Level9_UpdateActors(void) {
     case ACTOR_TYPE_KEY: {
       KeyState *st = actor->state;
 
-      if (actor->subMode == 0) {
+      if (actor->subMode == KEY_WAITING) {
         actor->rotX = (unsigned short)g_anCosineLut[st->angle] >> 7;
         actor->rotY = (unsigned short)g_anSineLut[st->angle] >> 7;
         st->angle += g_nFrameStep * 2;
@@ -1623,14 +1623,14 @@ void Level9_UpdateActors(void) {
               g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, (int *)(0x8080 + (i << 24)));
             }
 
-            g_nLevelKeyState = 1;
+            g_nLevelKeyState = KEYSTATE_CARRIED;
             actor->scale = 0x40;
             actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->groundCode = 0;
             actor->visZone = 0xFF;
-            actor->subMode = 2;
+            actor->subMode = KEY_TAKEN;
           }
         }
 
@@ -1666,11 +1666,11 @@ void Level9_UpdateActors(void) {
       Actor *key = &g_pActorListBase[st->idx];
 
       if (actor->flags & ACTOR_HIT_SUPER) {
-        actor->subMode = 2;
+        actor->subMode = LOCKCHEST_OPENING;
         st->shake = 0xD2;
       }
 
-      if (actor->subMode < 2) {
+      if (actor->subMode < LOCKCHEST_OPENING) {
         if (st->shake != 0) {
           st->shake += g_nFrameStep;
           if (st->shake < 0x40) {
@@ -1704,27 +1704,27 @@ void Level9_UpdateActors(void) {
       }
 
       switch (actor->subMode) {
-      case 0:
-        if (g_nLevelKeyState == 0 || g_nLevelKeyState == 3) {
-          g_nLevelKeyState = 0;
+      case LOCKCHEST_NO_KEY:
+        if (g_nLevelKeyState == KEYSTATE_NONE || g_nLevelKeyState == KEYSTATE_REWARD_TAKEN) {
+          g_nLevelKeyState = KEYSTATE_NONE;
           actor->updateDist = sixteen;
           key->updateDist = 0x40;
           key->cullRadius = 0x18;
         } else {
-          g_nLevelKeyState = 1;
-          actor->subMode = 1;
+          g_nLevelKeyState = KEYSTATE_CARRIED;
+          actor->subMode = LOCKCHEST_KEY_READY;
           key->scale = 0x40;
           key->groundCode = 0;
           key->visZone = 0xFF;
-          key->subMode = 2;
+          key->subMode = KEY_TAKEN;
         }
         break;
 
-      case 1: {
+      case LOCKCHEST_KEY_READY: {
         int height;
         int drop;
 
-        if (g_nLevelKeyState == 1 &&
+        if (g_nLevelKeyState == KEYSTATE_CARRIED &&
             (SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
              SPY.state == SPYRO_ST_RUN) &&
             ApproxDist2D(&actor->posX, &spy->posX) < 0x600) {
@@ -1740,7 +1740,7 @@ void Level9_UpdateActors(void) {
             spy->requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
             ResetSpyroLinearMotion();
             ZeroVector(&spy->headLook);
-            actor->subMode = 2;
+            actor->subMode = LOCKCHEST_OPENING;
             if (st->shake > 0) {
               st->shake = 0;
               actor->rotX = st->rotX;
@@ -1755,7 +1755,7 @@ void Level9_UpdateActors(void) {
         break;
       }
 
-      case 2:
+      case LOCKCHEST_OPENING:
         if (g_dwPadPressed & PAD_CROSS) {
           st->shake = 0xD2;
         }
@@ -1842,7 +1842,7 @@ void Level9_UpdateActors(void) {
           g_pLockedChestReward = SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
-          g_nLevelKeyState = 2;
+          g_nLevelKeyState = KEYSTATE_CHEST_OPENED;
           g_nCameraScriptStickRequestX = 0;
           g_nCameraScriptStickRequestY[0] = 0;
           g_nSpyroSwingEulerPitchTarget = 0;

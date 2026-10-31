@@ -622,7 +622,7 @@ extern void *g_pOtDepthBinArrayBase;         /* 0x80075820 */
 extern void *g_pEmitListBase;                /* 0x80075824 */
 extern struct Actor *g_pActorListBase;       /* 0x80075828: the level actor pool (0x58-byte Actor records, mode 0xFF ends it) */
 extern int g_nExtraLives;                    /* 0x8007582c */
-extern int g_nLevelKeyState;                 /* 0x80075830: the level key: 0 none, 1 carried (key 173 picked up), 2 locked chest (174) opened, 3 its reward collected; shown as HUD counter 4 */
+extern int g_nLevelKeyState;                 /* 0x80075830: the level key (enum LevelKeyState): none, carried (key 173 picked up), locked chest (174) opened, its reward collected; shown as HUD counter 4 */
 extern int g_nCameraShakePeakAmplitude;      /* 0x80075848 */
 extern int g_nPulseRumbleAmount;             /* 0x8007584c */
 extern int g_nPortalViewYawSpin;        /* 0x80075858: portal-surface view spin, +2 a frame (DrawPortalsAndStaticActors) */

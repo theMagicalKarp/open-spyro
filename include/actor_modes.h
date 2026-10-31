@@ -79,4 +79,26 @@ enum LevelExitMode {
   LEVELEXIT_NEAR = 1, /* camera close: its name letters were spawned */
 };
 
+/* g_nLevelKeyState: the level key's progress (HUD counter 4). */
+enum LevelKeyState {
+  KEYSTATE_NONE = 0,         /* key not picked up */
+  KEYSTATE_CARRIED = 1,      /* Spyro has the key (ACTOR_TYPE_KEY touched) */
+  KEYSTATE_CHEST_OPENED = 2, /* the locked chest burst and dropped its reward */
+  KEYSTATE_REWARD_TAKEN = 3, /* that reward was collected (CollectPickupActor) */
+};
+
+/* ->subMode of the level key (ACTOR_TYPE_KEY, KeyState). */
+enum KeySubMode {
+  KEY_WAITING = 0, /* rocks and sparkles until Spyro touches it */
+  KEY_TAKEN = 2,   /* picked up (hidden); the locked chest flies it to its lock */
+};
+
+/* ->subMode of the locked chest (ACTOR_TYPE_LOCKED_CHEST, LockedChestState). */
+enum LockedChestSubMode {
+  LOCKCHEST_NO_KEY = 0,    /* waits for KEYSTATE_CARRIED */
+  LOCKCHEST_KEY_READY = 1, /* waits for Spyro to face it up close */
+  LOCKCHEST_OPENING = 2,   /* the key flies into the lock, then it bursts
+                            * (a superflame hit skips straight to the burst) */
+};
+
 #endif

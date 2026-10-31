@@ -1235,7 +1235,7 @@ void Level5_UpdateActors(void) {
       int i;
 
       st = (KeyState *)actor->state;
-      if (actor->subMode != 0) {
+      if (actor->subMode != KEY_WAITING) {
         continue;
       }
 
@@ -1254,14 +1254,14 @@ void Level5_UpdateActors(void) {
             g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, (void *)(0x8080 + 0x1000000 * i));
           }
 
-          g_nLevelKeyState = 1;
+          g_nLevelKeyState = KEYSTATE_CARRIED;
           actor->scale = 0x40;
           actor->cullRadius = 0;
           actor->updateDist = 0;
           actor->drawn = 0;
           actor->groundCode = 0;
           actor->visZone = 0xFF;
-          actor->subMode = 2;
+          actor->subMode = KEY_TAKEN;
         }
       }
 

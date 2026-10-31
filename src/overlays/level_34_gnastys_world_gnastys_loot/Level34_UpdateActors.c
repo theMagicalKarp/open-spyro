@@ -1493,7 +1493,7 @@ void Level34_UpdateActors(void) {
     case ACTOR_TYPE_KEY: {
       KeyState *st = actor->state;
 
-      if (actor->subMode == 0) {
+      if (actor->subMode == KEY_WAITING) {
         actor->rotX = (unsigned short)g_anCosineLut[st->angle] >> 7;
         actor->rotY = (unsigned short)g_anSineLut[st->angle] >> 7;
         st->angle += g_nFrameStep * 2;
@@ -1512,14 +1512,14 @@ void Level34_UpdateActors(void) {
               g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, (int *)(0x8080 + (i << 24)));
             }
 
-            g_nLevelKeyState = 1;
+            g_nLevelKeyState = KEYSTATE_CARRIED;
             actor->scale = 0x40;
             actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->groundCode = 0;
             actor->visZone = 0xFF;
-            actor->subMode = 2;
+            actor->subMode = KEY_TAKEN;
           }
         }
 
@@ -2321,7 +2321,7 @@ void Level34_UpdateActors(void) {
         g_nCameraScriptStickRequestY[1] = 0;
         g_nCameraScriptStickRequestY[0] = 0;
         g_nCameraScriptStickRequestY[-1] = 0;
-        g_nLevelKeyState = 0;
+        g_nLevelKeyState = KEYSTATE_NONE;
         switch (st->chunkAnim) {
         case 0:
           g_nGnastyLootFallRefZCap = 0x563B;
