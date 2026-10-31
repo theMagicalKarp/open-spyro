@@ -67,7 +67,7 @@ void SpawnNameLetterActors(Actor *sign, int named) {
   spacing[2] = 0;
 
   if (named != 0) {
-    if (sign->subMode == 0) {
+    if (sign->subMode == NAMESIDE_FRONT) {
       yaw = sign->rotZ - 0x80;
     } else {
       yaw = sign->rotZ;

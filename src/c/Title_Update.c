@@ -1,3 +1,4 @@
+#include "cutscene_id.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -23,7 +24,7 @@ void Title_Update(void) {
       TickSpuPerFrame();
       g_nStoryIntroSubstate = 1;
       if (g_nStoryIntroMessage == 0) {
-        g_nCutsceneId = 1;
+        g_nCutsceneId = CUTSCENE_OPENING;
         g_nCdStreamState = 0;
         g_pDrawBufA = g_pSharedLoadBuffer;
         g_pDrawBufB = g_pSharedLoadBuffer;

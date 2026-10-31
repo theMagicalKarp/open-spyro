@@ -297,7 +297,7 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
     if (st->vel[2] < 0x20) {
       st->vel[2] = 0x20;
     }
-    if (rec->type == 0x121) {
+    if (rec->type == ACTOR_TYPE_BOUNCE_DEBRIS + 1) {
       st->vel[2] += 0x20;
       rec->rotZ = GetRandomU32();
       if ((int)(GetRandomU32() & 0xFFF) >= 0x800) {
@@ -330,7 +330,7 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case ACTOR_TYPE_HOMING_SPARK:
+  case ACTOR_TYPE_SPIN_CHEST_LID:
     InitActorRenderDefaults(rec);
     rec->otBias = 5;
     if (parent != 0) {

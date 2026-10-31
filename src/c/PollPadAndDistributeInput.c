@@ -146,22 +146,22 @@ void PollPadAndDistributeInput(void) {
         buttons = pressed;
       }
       if ((buttons & PAD_DPAD) == 0) {
-        if (cal[2] >= 0xC1) {
+        if (cal[PAD_AXIS_LX] >= 0xC1) {
           buttons |= PAD_RIGHT;
-        } else if (cal[2] < 0x40) {
+        } else if (cal[PAD_AXIS_LX] < 0x40) {
           buttons |= PAD_LEFT;
         }
-        if (cal[3] >= 0xC1) {
+        if (cal[PAD_AXIS_LY] >= 0xC1) {
           buttons |= PAD_DOWN;
-        } else if (cal[3] < 0x40) {
+        } else if (cal[PAD_AXIS_LY] < 0x40) {
           buttons |= PAD_UP;
         }
-        if (cal[2] != 0x7F || cal[3] != cal[2]) {
+        if (cal[PAD_AXIS_LX] != 0x7F || cal[PAD_AXIS_LY] != cal[PAD_AXIS_LX]) {
           g_nPadStickActiveFlag = 1;
         }
       }
     } else {
-      *(unsigned int *)cal = 0x7F7F7F7F;
+      *(unsigned int *)cal = PAD_ANALOG_CENTERED;
     }
 
     held = g_adwPadHeldBlock[0];
@@ -183,7 +183,8 @@ void PollPadAndDistributeInput(void) {
       g_dwPadAnalogCalibrated = *(unsigned int *)cal;
       if (g_nPadAllInputIdleFlag != 0) {
         if ((g_dwPadHeld & PAD_DPAD) != 0 ||
-            (padType == 3 && (cal[2] != 0x7F || cal[3] != cal[2]))) {
+            (padType == 3 && (cal[PAD_AXIS_LX] != 0x7F ||
+                              cal[PAD_AXIS_LY] != cal[PAD_AXIS_LX]))) {
           g_nPadDirectionalIdleFlag = 0;
         }
         if (g_nPadDirectionalIdleFlag == 0 ||

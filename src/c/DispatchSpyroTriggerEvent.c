@@ -105,16 +105,16 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
       g_nLevelTransitionPhase = 0;
       break;
     }
-    ((PortalGuideActor *)g_pActorListBase)[a].mode = 1;
+    ((PortalGuideActor *)g_pActorListBase)[a].mode = PORTALGUIDE_ENTER;
     ((PortalGuideActor *)g_pActorListBase)[a].updateDist = 0xFF;
     p = ((PortalGuideActor *)g_pActorListBase)[a].state;
     if (d < 0) {
-      ((PortalGuideActor *)g_pActorListBase)[a].subMode = 1;
+      ((PortalGuideActor *)g_pActorListBase)[a].subMode = PORTAL_SIDE_REVERSED;
       p[1] = -ENT[2] >> 1;
       p[2] = -ENT[3] >> 1;
       p[3] = -ENT[4] >> 1;
     } else {
-      ((PortalGuideActor *)g_pActorListBase)[a].subMode = 0;
+      ((PortalGuideActor *)g_pActorListBase)[a].subMode = PORTAL_SIDE_FORWARD;
       p[1] = ENT[2] >> 1;
       p[2] = ENT[3] >> 1;
       p[3] = ENT[4] >> 1;

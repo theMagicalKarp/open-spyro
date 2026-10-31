@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "pad.h"
 
 /* Reset the per-frame pad sub-step table. The header (base[0..7]) is zeroed
    except for the 0x7F7F7F7F neutral-stick word at +0x14 and the two enable
@@ -8,7 +9,7 @@
 void ResetPadFrameSubstepTable(int *base) {
   int i;
 
-  base[5] = 0x7F7F7F7F;
+  base[5] = PAD_ANALOG_CENTERED;
   base[2] = 0;
   base[0] = 0;
   base[1] = 0;
@@ -19,7 +20,7 @@ void ResetPadFrameSubstepTable(int *base) {
     base[i * 6 + 0x12] = 0;
     base[i * 6 + 0x13] = 0;
     base[i * 6 + 0x14] = 0;
-    base[i * 6 + 0x16] = 0x7F7F7F7F;
+    base[i * 6 + 0x16] = PAD_ANALOG_CENTERED;
     base[i * 6 + 0x11] = t;
   }
 }

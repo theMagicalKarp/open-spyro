@@ -290,24 +290,6 @@ typedef struct FollowState {
   int dropToSpyro;    /* 0x24 nonzero: the death drop flies straight to Spyro (kind 4) */
 } FollowState;
 
-/* Type 110 (ACTOR_TYPE_SAVE_HOST): the save-prompt host. Waits until Spyro
- * is away from its anchor, then until its arming actor goes dormant; pops in
- * beside Spyro (particles, spin, shrink from scale 0x60), then hovers on a
- * cosine bob, wandering around the anchor actor. When Spyro stands idle at
- * the anchor it calls BeginSaveMenuFromWorld (the save menu pans this actor
- * around Spyro); it leaves when Spyro moves away. */
-typedef struct SaveHostState {
-  int armer;       /* 0x00 actor index of the dragon whose rescue (dormant, mode >= 0x80)
-                    arms the host; save-menu option 1 replays that rescue */
-  int anchor;      /* 0x04 actor index the host hovers around and Spyro stands at */
-  int timer;       /* 0x08 pop-in delay, then the bob phase */
-  int baseZ;       /* 0x0C bob centre height */
-  int wanderTo[3]; /* 0x10 next hover point near the anchor */
-  int faceYaw;     /* 0x1C bearing from the hover point to Spyro */
-  int wanderTimer; /* 0x20 frames until the next wander */
-  int prompted;    /* 0x24 the save menu was opened from this visit */
-} SaveHostState;
-
 /* Case 173 — the level key (ACTOR_TYPE_KEY): rocks in place and sparkles;
  * touching it sets g_nLevelKeyState = 1, and the locked chest (174) then
  * flies it into its lock. */
@@ -433,7 +415,7 @@ extern void GetActorAttachPoint(Actor *actor, int slot, int *pos);
 typedef struct ThiefState {
   PathData *path; /* 0x00 */
   Actor *egg;     /* 0x04 the carried egg, or null once dropped */
-  int mode;       /* 0x08 idle behaviour, picked by the level data */
+  int mode;       /* 0x08 idle behaviour (enum ThiefKind), picked by the level data */
   int vz;         /* 0x0C vertical speed while hopping */
   int landed;     /* 0x10 */
   int speed;      /* 0x14 path speed */
@@ -453,18 +435,18 @@ typedef struct ThiefState {
 
 /* Case 390 -- spinning chest. */
 typedef struct SpinChestState {
-  Actor *lid; /* 0x00 */
+  Actor *lid; /* 0x00 its ACTOR_TYPE_SPIN_CHEST_LID */
   int angle;  /* 0x04 */
   int speed;  /* 0x08 */
   int timer;  /* 0x0C */
   int handle; /* 0x10 for SelectActorLodBand */
 } SpinChestState;
 
-/* Case 392 -- homing spark. */
-typedef struct HomingSparkState {
+/* Case 392 -- the spin chest's lid, launched when the chest bursts. */
+typedef struct SpinChestLidState {
   int vel[3]; /* 0x00 */
   int timer;  /* 0x0C */
-} HomingSparkState;
+} SpinChestLidState;
 
 typedef struct BounceState {
   short vx;           /* 0x00 */
@@ -677,23 +659,6 @@ typedef struct Xform6 {
 extern Xform6 g_anCameraActiveTargetParams; /* live camera transform */
 
 extern Xform6 g_anCameraParamMode2Front; /* template it is seeded from */
-
-/* Type 300 (whirlwind) state block. While Spyro is inside the cylinder it
- * posts SPYRO_EV_LIFT with a request to rise to actor->posZ + spanZ (the LIFT
- * state carries him up, then he glides) and plays SFX_WHIRLWIND. An
- * owner-gated one stays off until its linked actor (key picked up, dragon
- * freed, gem taken) says so. */
-typedef struct WhirlwindState {
-  int spanZ; /* 0x00 height; Spyro is lifted to posZ + spanZ */
-  int radius; /* 0x04 horizontal radius */
-  int flags; /* 0x08 bit0 target camera (else the front spring camera),
-              * bit1 idle (wakes 0xB4 frames after Spyro comes near),
-              * bit2 woken (idles again 0x78 frames after a lift),
-              * bit3 owner-gated,
-              * bit4 also stamps actor->subMode */
-  int timer; /* 0x0C wake / idle countdown */
-  int idx;   /* 0x10 owner: index into the actor pool at g_pActorListBase */
-} WhirlwindState;
 
 /* Type 323: respawner. It rides on Spyro and, every `period` frames, puts
  * each dormant actor of `type` farther than 0x6000 from him back at its home

@@ -358,7 +358,8 @@ enum ActorType {
   ACTOR_TYPE_FLIGHT_TARGET_SHARD = 374, /* 374..386: a flight target's burst shards */
   ACTOR_TYPE_SPIN_CHEST = 390,       /* each charge spins it faster; spun fast enough, or flamed, it bursts */
   ACTOR_TYPE_PATCH_RIDER = 391, /* level 0: rides a collision triangle (PatchRideState) */
-  ACTOR_TYPE_HOMING_SPARK = 392,     /* launched at the nearest enemy in front of Spyro */
+  ACTOR_TYPE_SPIN_CHEST_LID = 392,   /* spins on ACTOR_TYPE_SPIN_CHEST; launched at the nearest enemy
+                                      * in front of Spyro when the chest bursts */
   ACTOR_TYPE_LINKED_FOLLOWER = 395, /* level 3: follows its linked actor's mode; knocked away when hit (Follower) */
   ACTOR_TYPE_FLAME_FLIGHT_TARGET = 397, /* flight levels 11/29: flamed, tallies, pays out and becomes ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT */
   ACTOR_TYPE_PORTAL_GUIDE = 398,   /* flies Spyro through a portal (PortalState) */
@@ -431,7 +432,7 @@ enum DropThrow {
   DROP_SCATTER = 1,         /* lands at a random point within 0x200 of the source */
   DROP_AT_POINT = 2,        /* lands on the `alt` position */
   DROP_TUMBLE_IF_NEAR = 3,  /* DROP_TUMBLE when Spyro is charging close by, else DROP_SCATTER */
-  DROP_TUMBLE = 4,          /* rides off the source with a random tumble (subMode 3) */
+  DROP_TUMBLE = 4,          /* rides off the source with a random tumble (COLLECT_HOMING) */
   DROP_IN_PLACE = 5,        /* appears on the source with no velocity */
   DROP_HIGH_HOP = 6,        /* lands within 0x100 of the source with a high hop */
 };
@@ -478,5 +479,7 @@ typedef struct WanderBlock {
   unsigned char contactCooldown; /* 0x1D moves ignore the contact group while set */
   short weave;                   /* 0x1E current weave offset */
 } WanderBlock; /* 0x20 */
+
+#include "actor_modes.h"
 
 #endif /* OPEN_SPYRO_ACTOR_TYPE_H */

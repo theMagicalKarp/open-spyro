@@ -157,7 +157,7 @@ done:
     if (((g_dwActiveCameraOptions & 0x10) || g_nCameraLookAroundActive) &&
         SPY[SPY_SCRIPTED_MOVE] == 0 && g_nCameraSpringSuppressFlag == 0 &&
         (CAM[CAM_NEXT_MODE] == 0 || CAM[CAM_NEXT_MODE] == CAM_HELD) &&
-        g_nCameraCurrentMode != 0x80000011 &&
+        g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_PASSIVE_SETTLE) &&
         *(int **)&CAM[CAM_ANCHOR] == SPY) {
       g_nCameraPassiveModeHoldTimer = 8;
       CAM[CAM_NEXT_MODE] = (CAM_HELD | CAM_MODE_PASSIVE_SETTLE);

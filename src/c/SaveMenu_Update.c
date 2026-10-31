@@ -1,3 +1,4 @@
+#include "actor_states.h"
 #include "funcs.h"
 #include "globals.h"
 #include "level_sfx.h"
@@ -49,7 +50,7 @@ void SaveMenu_Update(void) {
       Actor *actor;
 
       t = LookupSine((SM[1] << 5) - 0x400) + 0x1000;
-      actor = &g_pActorListBase[((int *)ACT->state)[1]];
+      actor = &g_pActorListBase[((SaveHostState *)ACT->state)->anchor];
       if (actor->mode == 2) {
         actor->subMode += g_nFrameStep;
         if (actor->subMode >= 0x30) {
@@ -203,13 +204,13 @@ void SaveMenu_Update(void) {
           }
         } else if (g_nSaveMenuCursor == 1) {
           Actor *actor;
-          int *path;
+          DragonStatueState *statue;
 
-          actor = &g_pActorListBase[*(int *)ACT->state];
-          path = *(int **)actor;
-          if (path[9] == -1 && path[6] != -1) {
+          actor = &g_pActorListBase[((SaveHostState *)ACT->state)->armer];
+          statue = actor->state;
+          if (statue->reward == -1 && statue->cutsceneId != -1) {
             EndSaveMenuToWorld();
-            actor->mode = 2;
+            actor->mode = STATUE_RESCUING;
             actor->collision = 0;
             actor->gridCell = -1;
             BeginDragonRescue(actor);

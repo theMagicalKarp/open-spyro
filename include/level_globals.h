@@ -9,6 +9,8 @@
 #ifndef OPEN_SPYRO_LEVEL_GLOBALS_H
 #define OPEN_SPYRO_LEVEL_GLOBALS_H
 
+#include "actor_type.h"
+
 extern int g_anSparkleGlowDesc;
 extern int g_anFlightHudClassWords[];
 extern void *g_dwBurstColorType15;
@@ -32,7 +34,7 @@ extern char *g_apWorldNameByLevelTens[];                               /* world 
 extern char *g_apLevelNameByWorldRow[];                               /* level names */
 extern unsigned char g_abBalloonistDialoguePageEnds[];                       /* dialogue page end line */
 extern int g_pActiveActorList1;
-extern int g_abActorCutsceneActorSnapshot[];
+extern Actor g_abActorCutsceneActorSnapshot[]; /* focus-actor copy taken at lift-off */
 extern int g_bDebugNoDepletion;
 extern unsigned char g_bWorldBalloonistState1;                         /* per-world "seen it" flags */
 extern int *g_apActorMeshTable_1A0[]; /* g_apActorMeshTable[0x1A0] (balloonist cutscene relocates it) */

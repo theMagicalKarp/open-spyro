@@ -330,9 +330,12 @@ void UpdateCameraSpringForMode(void) {
       LoadCameraTargetAnglesFromMode();
       pad = (unsigned char *)g_pPadSubstepState;
       if (((PadSubstep *)pad)->padType == 3 &&
-          (((PadSubstep *)pad)->analog & 0xFFFF0000) != 0x7F7F0000) {
-        g_anCameraScriptStickIntegrator[0] += (pad[0x16] - 0x7F) >> 1;
-        g_anCameraScriptStickIntegrator[1] += (0x7F - pad[0x17]) >> 1;
+          (((PadSubstep *)pad)->analog.word & PAD_LEFT_STICK_MASK) !=
+              PAD_LEFT_STICK_CENTERED) {
+        g_anCameraScriptStickIntegrator[0] +=
+            (((PadSubstep *)pad)->analog.axis[PAD_AXIS_LX] - 0x7F) >> 1;
+        g_anCameraScriptStickIntegrator[1] +=
+            (0x7F - ((PadSubstep *)pad)->analog.axis[PAD_AXIS_LY]) >> 1;
       } else {
         if (g_dwPadHeld & PAD_LEFT) {
           STICK[0] -= 0x30;
@@ -470,11 +473,11 @@ void UpdateCameraSpringForMode(void) {
     break;
   }
   }
-  if (g_nCameraCurrentMode != 0x80000009 &&
-      g_nCameraCurrentMode != 0x80000007 &&
-      g_nCameraCurrentMode != 0x80000012 &&
-      g_nCameraCurrentMode != 0x8000000B &&
-      g_nCameraCurrentMode != 0x8000000E &&
+  if (g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_FREE_LOOK) &&
+      g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_SCRIPTED_TARGET) &&
+      g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_LEVEL_TRANSITION) &&
+      g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_PORTAL_PATH) &&
+      g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE) &&
       g_nCameraCurrentMode != CAM_MODE_CHARGE) {
     UpdateCameraManualYawInput();
   } else {
@@ -483,7 +486,8 @@ void UpdateCameraSpringForMode(void) {
   if (((g_dwActiveCameraOptions & 0x10) || g_nCameraLookAroundActive) &&
       g_nCameraLosClear && g_nCameraSpringReengageCountdown &&
       CAM[CAM_SUPPRESS] == 0 && g_nCameraManualYawInput == 0 &&
-      (g_nCameraCurrentMode == 0 || g_nCameraCurrentMode == CAM_HELD)) {
+      (g_nCameraCurrentMode == CAM_MODE_STAND ||
+       g_nCameraCurrentMode == CAM_HELD)) {
     CopyVector(&CAM[3], CAM);
     g_anCameraSpringDeltaState[0] = 0;
     g_anCameraSpringDeltaState[1] = 0;

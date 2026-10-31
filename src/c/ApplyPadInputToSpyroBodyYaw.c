@@ -5,11 +5,11 @@
 #include "pad.h"
 
 /* 0x8003d840 (236 bytes) — steer Spyro's move-target yaw from the analog
-   stick.  While the stick is engaged (pad word +0x10 set and the raw axes at
-   +0x16/+0x17 not both centred at 0x7f) and its magnitude is under 0x60, step
-   the target yaw toward the body yaw by (magnitude * wrapped delta) >> 9; a
-   delta past 0x100 also raises the snap flag.  Always followed by a lean
-   update, whose remaining |yaw delta| it returns. */
+   stick.  While the stick is engaged (stickActive set and the left-stick axes
+   not both centred at 0x7f) and its magnitude is under 0x60, step the target
+   yaw toward the body yaw by (magnitude * wrapped delta) >> 9; a delta past
+   0x100 also raises the snap flag.  Always followed by a lean update, whose
+   remaining |yaw delta| it returns. */
 int ApplyPadInputToSpyroBodyYaw(void) {
   int vec[3];
   unsigned char *pad;
@@ -20,9 +20,10 @@ int ApplyPadInputToSpyroBodyYaw(void) {
 
   pad = (unsigned char *)g_pPadSubstepState;
   if ((((PadSubstep *)pad)->stickActive != 0) &&
-      ((((PadSubstep *)pad)->analog & 0xFFFF0000) != 0x7F7F0000)) {
-    vec[0] = pad[0x16] - 0x7F;
-    vec[1] = pad[0x17] - 0x7F;
+      ((((PadSubstep *)pad)->analog.word & PAD_LEFT_STICK_MASK) !=
+       PAD_LEFT_STICK_CENTERED)) {
+    vec[0] = ((PadSubstep *)pad)->analog.axis[PAD_AXIS_LX] - 0x7F;
+    vec[1] = ((PadSubstep *)pad)->analog.axis[PAD_AXIS_LY] - 0x7F;
     vec[2] = 0;
     mag = VectorLength(vec, VEC_LEN_XY);
     if (mag < 0x60) {

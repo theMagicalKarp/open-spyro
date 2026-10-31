@@ -190,15 +190,15 @@ void Level28_UpdateActors(void) {
       int dist = ApproxDist2D(&actor->posX, &CAM.posX);
       int i;
 
-      if (actor->mode != 0 ? dist < 0x2800 : dist < 0x2400) {
-        if (actor->mode == 0) {
+      if (actor->mode != LEVELEXIT_FAR ? dist < 0x2800 : dist < 0x2400) {
+        if (actor->mode == LEVELEXIT_FAR) {
           actor->posZ += 0x600;
           SpawnNameLetterActors(actor, 0);
           actor->posZ -= 0x600;
         }
         actor->mode = oneq;
       } else {
-        actor->mode = 0;
+        actor->mode = LEVELEXIT_FAR;
       }
 
       dist = ApproxDist2D(&actor->posX, &SPY.posX);
@@ -363,7 +363,7 @@ void Level28_UpdateActors(void) {
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
             if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
-                *(int *)parent->state == st->parent) {
+                ((FollowState *)parent->state)->parent == st->parent) {
               st->release += 9;
               st->count += 1;
             }
@@ -400,7 +400,7 @@ void Level28_UpdateActors(void) {
               DespawnActorRecord(actor);
               break;
             }
-          } else if (g_pSparxActor->subMode != 99) {
+          } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
             ChaserState *cs = (ChaserState *)g_pSparxActor->state;
 
             if (cs->owner == 0) {
@@ -413,11 +413,11 @@ void Level28_UpdateActors(void) {
                 st->dir = -1;
               }
 
-              g_pSparxActor->subMode = 0;
+              g_pSparxActor->subMode = SPARX_SUB_CHASE;
               cs->owner = actor;
               cs->timer = RandomIntInRange(150, 210);
 
-              actor->mode = 1;
+              actor->mode = BUTTERFLY_CIRCLE;
             }
           }
         }
@@ -428,7 +428,7 @@ void Level28_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0: {
+      case BUTTERFLY_FLUTTER: {
         if (TickCountdownByFrameDelta(&st->idleTimer, 2) == 0 || actor->drawn) {
           int refHeight, rotated, moved;
 
@@ -486,15 +486,15 @@ void Level28_UpdateActors(void) {
         }
         break;
       }
-      case 1: {
+      case BUTTERFLY_CIRCLE: {
         SteerActorAroundPoint(actor, &spy->posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, 0),
                                     st->dir * 8),
                       8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
 
-        if (g_pSparxActor == 0 || g_pSparxActor->subMode == 99) {
-          actor->mode = 0;
+        if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
+          actor->mode = BUTTERFLY_FLUTTER;
         } else {
           int refHeight;
 
@@ -536,7 +536,7 @@ void Level28_UpdateActors(void) {
       if (phase != 0 && phase < 5) {
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         if (g_nSpyroState != SPYRO_ST_IDLE && g_nSpyroState != SPYRO_ST_CHARGE_BONK) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
       }
 
@@ -546,7 +546,7 @@ void Level28_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 1:
+      case EGG_RELEASED:
         g_nGameplayBlocked = 1;
         VectorToSVectorShr2(st->centre, &actor->posX);
         st->angle =
@@ -560,7 +560,7 @@ void Level28_UpdateActors(void) {
         actor->mode += 1;
         break;
 
-      case 2: {
+      case EGG_SPIRAL_UP: {
         st->phase += g_nFrameStep;
 
         if (st->phase < 0x80) {
@@ -598,12 +598,12 @@ void Level28_UpdateActors(void) {
           actor->mode += 1;
         }
         if (g_dwPadPressed & PAD_CROSS) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
         break;
       }
 
-      case 3: {
+      case EGG_TO_SPYRO: {
         st->phase += g_nFrameStep;
 
         if (st->phase < 0x40) {
@@ -626,12 +626,12 @@ void Level28_UpdateActors(void) {
           actor->mode += 1;
         }
         if (g_dwPadPressed & PAD_CROSS) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
         break;
       }
 
-      case 4: {
+      case EGG_SPIRAL_DOWN: {
         st->phase += g_nFrameStep;
 
         if (st->phase < 0x80) {
@@ -650,18 +650,18 @@ void Level28_UpdateActors(void) {
           actor->mode += 1;
         }
         if (g_dwPadPressed & PAD_CROSS) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
         break;
       }
 
-      case 5: {
+      case EGG_COLLECTED: {
         SubtractVector(g120, &actor->posX, &CAM.posX);
         WorldToCameraRotate(g120, g120);
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, g120, 0);
         g_nGameplayBlocked = 0;
         ZeroVector(&g_nSpyroSwingEulerPitchTarget);
-        CommitActorKillGems(0, st->idx);
+        CommitActorKillGems(0, st->owner);
         g_nWorldEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
         g_nHudWorldEggRollRequest.v = 0;
@@ -1134,10 +1134,10 @@ void Level28_UpdateActors(void) {
         }
       }
 
-      if (actor->drawn != 0 || toSpyro <= 0x2000 || actor->subMode != 1 ||
+      if (actor->drawn != 0 || toSpyro <= 0x2000 || actor->subMode != COLLECT_REST ||
           st->mode != 0) {
         switch (actor->subMode) {
-        case 0:
+        case COLLECT_SETTLE:
           /* Idle: sample the floor normal and face along it. */
           CopyVector(g184, &actor->posX);
           g184[2] += 0x400;
@@ -1154,16 +1154,16 @@ void Level28_UpdateActors(void) {
           if (st->lean != 0 || st->roll != 0) {
             actor->rotZ = 0;
           }
-          actor->subMode = 1;
+          actor->subMode = COLLECT_REST;
           goto enemy_pose;
 
-        case 1: {
+        case COLLECT_REST: {
 
           if (st->mode == 0) {
           } else if (st->mode == 1) {
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
-            if (actor->type >= 83) {
+            if (actor->type >= ACTOR_TYPE_GEM_1) {
               {
                 int *nrm = &g_anCollisionProbeVec;
 
@@ -1217,7 +1217,7 @@ void Level28_UpdateActors(void) {
                     g_nSfxOverrideVolL = 0x2000;
                     PlayActorMeshVoice(g_pSparxActor, 0, 0);
                   }
-                  g_pSparxActor->subMode = 4;
+                  g_pSparxActor->subMode = SPARX_SUB_FETCH;
                   sparx->target = actor;
                 }
               }
@@ -1227,7 +1227,7 @@ void Level28_UpdateActors(void) {
           goto enemy_pose;
         }
 
-        case 2: {
+        case COLLECT_BOUNCE: {
           /* Knocked back: arc away, bounce, then settle. */
           int *at;
           int dist;
@@ -1276,7 +1276,7 @@ void Level28_UpdateActors(void) {
                   (signed char)ArcTan2_8bit(g272[2], VectorLength(g272, VEC_LEN_XY));
 
               if ((g256[2] - 0x190) < floor && slope < 0x18) {
-                actor->subMode = 1;
+                actor->subMode = COLLECT_REST;
                 CopyVector(at, g256);
                 actor->posZ = floor;
                 if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
@@ -1340,7 +1340,7 @@ void Level28_UpdateActors(void) {
                     g_nSfxOverrideVolL = 0x2000;
                     PlayActorMeshVoice(g_pSparxActor, 0, 0);
                   }
-                  g_pSparxActor->subMode = 4;
+                  g_pSparxActor->subMode = SPARX_SUB_FETCH;
                   sparx->target = actor;
                 }
               }
@@ -1352,7 +1352,7 @@ void Level28_UpdateActors(void) {
 
           goto enemy_pose;
 
-        case 3:
+        case COLLECT_HOMING:
           /* Fetched by Sparx: pulled toward Spyro, then collected. */
           if (st->timer >= 0x20) {
             CopyVector(&actor->posX, &SPY.posX);
@@ -1377,12 +1377,12 @@ void Level28_UpdateActors(void) {
           actor->rotZ += (unsigned char)(st->spin - 7);
           goto enemy_pose;
 
-        case 4:
+        case COLLECT_INERT:
           continue;
 
         default:
         enemy_pose:
-          if (actor->subMode < 3) {
+          if (actor->subMode < COLLECT_HOMING) {
             if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
               int v;
 
@@ -1411,7 +1411,7 @@ void Level28_UpdateActors(void) {
 
           if ((st->timer >= 0x21 && toSpyro < 0x200 &&
                (unsigned int)((SPY.posZ - actor->posZ) + 0x17F) < 0x37F) ||
-              (actor->subMode == 3 && st->timer >= 0x41)) {
+              (actor->subMode == COLLECT_HOMING && st->timer >= 0x41)) {
             if (g_pSparxActor != 0) {
               SparxState *sparx = g_pSparxActor->state;
 
@@ -1458,22 +1458,22 @@ void Level28_UpdateActors(void) {
       Actor *rider = &g_pActorListBase[st->anchor];
 
       switch (actor->mode) {
-      case 0:
+      case SAVEHOST_WAIT_AWAY:
         actor->collision = 0;
         if (ApproxDist2D(&rider->posX, &SPY.posX) > 0xA00) {
-          actor->mode = 1;
+          actor->mode = SAVEHOST_WAIT_ARMED;
         }
         break;
 
-      case 1:
+      case SAVEHOST_WAIT_ARMED:
         if (trigger->mode >= ACTOR_MODE_DORMANT) {
-          actor->mode = 2;
+          actor->mode = SAVEHOST_HIDDEN;
           st->timer = 0x10;
           st->baseZ = actor->posZ;
         }
         break;
 
-      case 2:
+      case SAVEHOST_HIDDEN:
         if (st->timer != 0) {
           st->timer -= 1;
         } else {
@@ -1492,7 +1492,7 @@ void Level28_UpdateActors(void) {
                                              spy->posY - actor->posY, 0) -
                                0x80;
                 actor->cullRadius = 0x20;
-                actor->mode = 3;
+                actor->mode = SAVEHOST_POP_IN;
                 actor->scale = 0x60;
                 g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, at, (int *)0xC);
                 RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
@@ -1505,18 +1505,18 @@ void Level28_UpdateActors(void) {
         }
         break;
 
-      case 3:
+      case SAVEHOST_POP_IN:
         if (actor->scale >= 0x21) {
           actor->scale -= 4;
           actor->rotZ += 8;
         } else {
-          actor->mode = 4;
+          actor->mode = SAVEHOST_HOVER;
           st->timer = 0;
           st->wanderTimer = 0x1E;
         }
         break;
 
-      case 4: {
+      case SAVEHOST_HOVER: {
         int height;
         int drop;
         int close;
@@ -1530,7 +1530,7 @@ void Level28_UpdateActors(void) {
             (height = rider->posZ - rider->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
             (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
-          actor->mode = 6;
+          actor->mode = SAVEHOST_POP_OUT;
           st->prompted = 1;
           BeginSaveMenuFromWorld(actor);
           break;
@@ -1540,7 +1540,7 @@ void Level28_UpdateActors(void) {
             (height = actor->posZ - actor->floorOffset, drop = height - SPY.posZ,
              close = drop > 0 ? drop < 0xC01 : (SPY.posZ - height) < 0xC01,
              close == 0)) {
-          actor->mode = 6;
+          actor->mode = SAVEHOST_POP_OUT;
           break;
         }
 
@@ -1555,7 +1555,7 @@ void Level28_UpdateActors(void) {
           CopyVector(st->wanderTo, &rider->posX);
           aim &= 0xFF;
           aim *= 0x10;
-          actor->mode = 5;
+          actor->mode = SAVEHOST_WANDER;
           st->wanderTo[0] -= (LookupCosine(aim) * reach) >> 12;
           st->wanderTo[1] -= (LookupSine(aim) * reach) >> 12;
           st->faceYaw = ArcTan2(spy->posX - st->wanderTo[0],
@@ -1565,7 +1565,7 @@ void Level28_UpdateActors(void) {
         break;
       }
 
-      case 5: {
+      case SAVEHOST_WANDER: {
         int height;
         int drop;
 
@@ -1578,7 +1578,7 @@ void Level28_UpdateActors(void) {
             (height = rider->posZ - rider->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
             (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
-          actor->mode = 6;
+          actor->mode = SAVEHOST_POP_OUT;
           st->prompted = 1;
           BeginSaveMenuFromWorld(actor);
           break;
@@ -1587,7 +1587,7 @@ void Level28_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &spy->posX) >= 0x2801 ||
             (height = actor->posZ - actor->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop >= 0xC01 : (SPY.posZ - height) >= 0xC01)) {
-          actor->mode = 6;
+          actor->mode = SAVEHOST_POP_OUT;
           break;
         }
         {
@@ -1610,21 +1610,21 @@ void Level28_UpdateActors(void) {
           EncodeCachedVecToActorDirCode(actor);
 
           if (st->wanderTimer == 0x10) {
-            actor->mode = 4;
+            actor->mode = SAVEHOST_HOVER;
             st->wanderTimer = (GetRandomU32() & 0x1F) + 0x1E;
           }
         }
         break;
       }
 
-      case 6:
+      case SAVEHOST_POP_OUT:
         if (actor->scale < 0x60) {
           actor->scale += 4;
           actor->rotZ += 8;
         } else {
           actor->cullRadius = 0;
           actor->drawn = 0;
-          actor->mode = 2;
+          actor->mode = SAVEHOST_HIDDEN;
           st->timer = 0x10;
           g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, (int *)0xC);
           actor->groundCode &= ~ACTOR_GROUND_VALID;
@@ -1686,7 +1686,7 @@ void Level28_UpdateActors(void) {
 
       if (g_anSparxHealthBlock[0] <= SPARX_GONE) {
         if (st->target != 0 && st->target->type == ACTOR_TYPE_BUTTERFLY) {
-          st->target->mode = 0;
+          st->target->mode = BUTTERFLY_FLUTTER;
         }
         g_pSparxActor = 0;
         DespawnActorRecord(actor);
@@ -1699,10 +1699,10 @@ void Level28_UpdateActors(void) {
         st->timer = 0;
       }
 
-      if (actor->subMode != 0x63) {
+      if (actor->subMode != SPARX_SUB_PARKED) {
         if (st->target != 0) {
           switch (actor->subMode) {
-          case 0: {
+          case SPARX_SUB_CHASE: {
             /* Closing in on the butterfly. */
             CollectibleState *pk = st->target->state;
             int high = actor->nextAnim & 1;
@@ -1775,25 +1775,25 @@ void Level28_UpdateActors(void) {
             break;
           }
 
-          case 1:
+          case SPARX_SUB_EAT:
             g_anSparxHealthBlock[0] += 1;
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
             actor->subMode += 1;
             DespawnActorRecord(st->target);
             break;
 
-          case 2:
+          case SPARX_SUB_EAT_DONE:
             if (g_nActorAnimDone != 0) {
               if (actor->nextAnim != actor->nextAnim - 1) {
                 g_nActorAnimDone = 0;
                 ANIM_ADVANCE(actor, actor->nextAnim - 1);
               }
               st->target = 0;
-              actor->subMode = 0;
+              actor->subMode = SPARX_SUB_CHASE;
             }
             break;
 
-          case 4: {
+          case SPARX_SUB_FETCH: {
             /* Fetching a pickup: once close it homes in on Spyro. */
             CollectibleState *pk = st->target->state;
             int dist;
@@ -1807,7 +1807,7 @@ void Level28_UpdateActors(void) {
               pk->roll = GetRandomU32() & 0xE;
               pk->spin = GetRandomU32() & 0xE;
               CopyVector((int *)pk, &st->target->posX);
-              st->target->subMode = 3;
+              st->target->subMode = COLLECT_HOMING;
 
               if (st->target->type == ACTOR_TYPE_EXTRA_LIFE) {
                 g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType14);
@@ -2306,7 +2306,7 @@ void Level28_UpdateActors(void) {
     case ACTOR_TYPE_WANDERING_CRITTER: {
       CritterKnockState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         EBB_BREAK();
         actor->flags = 0;
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
@@ -2321,17 +2321,17 @@ void Level28_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        actor->mode = 1;
+        actor->mode = CRITTER_KNOCKED;
         ANIM_RESET(actor, 1);
         continue;
       }
 
       switch (actor->mode) {
-      case 0:
+      case CRITTER_WANDER:
         UpdateActorWander(actor, st);
         break;
 
-      case 1:
+      case CRITTER_KNOCKED:
         if (st->speed >= 0x10) {
           st->speed -= 0xF;
           MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x2BC, 5);
@@ -2350,7 +2350,7 @@ void Level28_UpdateActors(void) {
     case ACTOR_TYPE_KEY: {
       KeyState *st = actor->state;
 
-      if (actor->subMode == 0) {
+      if (actor->subMode == KEY_WAITING) {
         actor->rotX = (unsigned short)g_anCosineLut[st->angle] >> 7;
         actor->rotY = (unsigned short)g_anSineLut[st->angle] >> 7;
         st->angle += g_nFrameStep * 2;
@@ -2369,14 +2369,14 @@ void Level28_UpdateActors(void) {
               g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, (int *)(0x8080 + (i << 24)));
             }
 
-            g_nLevelKeyState = 1;
+            g_nLevelKeyState = KEYSTATE_CARRIED;
             actor->scale = 0x40;
             actor->cullRadius = 0;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->groundCode = 0;
             actor->visZone = 0xFF;
-            actor->subMode = 2;
+            actor->subMode = KEY_TAKEN;
           }
         }
 
@@ -2412,11 +2412,11 @@ void Level28_UpdateActors(void) {
       Actor *key = &g_pActorListBase[st->idx];
 
       if (actor->flags & ACTOR_HIT_SUPER) {
-        actor->subMode = 2;
+        actor->subMode = LOCKCHEST_OPENING;
         st->shake = 0xD2;
       }
 
-      if (actor->subMode < 2) {
+      if (actor->subMode < LOCKCHEST_OPENING) {
         if (st->shake != 0) {
           st->shake += g_nFrameStep;
           if (st->shake < 0x40) {
@@ -2450,27 +2450,27 @@ void Level28_UpdateActors(void) {
       }
 
       switch (actor->subMode) {
-      case 0:
-        if (g_nLevelKeyState == 0 || g_nLevelKeyState == 3) {
-          g_nLevelKeyState = 0;
+      case LOCKCHEST_NO_KEY:
+        if (g_nLevelKeyState == KEYSTATE_NONE || g_nLevelKeyState == KEYSTATE_REWARD_TAKEN) {
+          g_nLevelKeyState = KEYSTATE_NONE;
           actor->updateDist = sixteen;
           key->updateDist = 0x40;
           key->cullRadius = 0x18;
         } else {
-          g_nLevelKeyState = 1;
-          actor->subMode = 1;
+          g_nLevelKeyState = KEYSTATE_CARRIED;
+          actor->subMode = LOCKCHEST_KEY_READY;
           key->scale = 0x40;
           key->groundCode = 0;
           key->visZone = 0xFF;
-          key->subMode = 2;
+          key->subMode = KEY_TAKEN;
         }
         break;
 
-      case 1: {
+      case LOCKCHEST_KEY_READY: {
         int height;
         int drop;
 
-        if (g_nLevelKeyState == 1 &&
+        if (g_nLevelKeyState == KEYSTATE_CARRIED &&
             (SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
              SPY.state == SPYRO_ST_RUN) &&
             ApproxDist2D(&actor->posX, &spy->posX) < 0x600) {
@@ -2486,7 +2486,7 @@ void Level28_UpdateActors(void) {
             spy->requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
             ResetSpyroLinearMotion();
             ZeroVector(&spy->headLook);
-            actor->subMode = 2;
+            actor->subMode = LOCKCHEST_OPENING;
             if (st->shake > 0) {
               st->shake = 0;
               actor->rotX = st->rotX;
@@ -2501,7 +2501,7 @@ void Level28_UpdateActors(void) {
         break;
       }
 
-      case 2:
+      case LOCKCHEST_OPENING:
         if (g_dwPadPressed & PAD_CROSS) {
           st->shake = 0xD2;
         }
@@ -2588,7 +2588,7 @@ void Level28_UpdateActors(void) {
           g_pLockedChestReward = SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
-          g_nLevelKeyState = 2;
+          g_nLevelKeyState = KEYSTATE_CHEST_OPENED;
           g_nCameraScriptStickRequestX = 0;
           g_nCameraScriptStickRequestY[0] = 0;
           g_nSpyroSwingEulerPitchTarget = 0;
@@ -2737,18 +2737,18 @@ void Level28_UpdateActors(void) {
       DragonStatueState *st = actor->state;
       int *at;
 
-      if (actor->mode == 0) {
+      if (actor->mode == STATUE_INIT) {
         if (st->partner != -1) {
           g_pActorListBase[st->partner].mode = 3;
         }
-        actor->mode = 1;
+        actor->mode = STATUE_IDLE;
         st->rotX = actor->rotX;
         st->rotY = actor->rotY;
         st->restZ = actor->posZ;
         break;
       }
 
-      if (actor->mode == 1) {
+      if (actor->mode == STATUE_IDLE) {
         st->phase += g_nFrameStep;
 
         if (st->phase >= 0x101) {
@@ -2830,7 +2830,7 @@ void Level28_UpdateActors(void) {
               continue;
             }
 
-            actor->mode = 2;
+            actor->mode = STATUE_RESCUING;
             actor->rotX = st->rotX;
             actor->rotY = st->rotY;
             actor->posZ = st->restZ;
@@ -3106,7 +3106,7 @@ void Level28_UpdateActors(void) {
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
-      case 0:
+      case SEEDPOD_CLOSED:
         if (actor->subMode == 0) {
           *(int *)&actor->tint0 = g_anTintByDropKind[actor->dropKind];
           actor->subMode = 1;
@@ -3119,14 +3119,14 @@ void Level28_UpdateActors(void) {
           st->restZ = actor->posZ;
           actor->updateDist = 0x40;
           st->prize = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
-          st->prize->subMode = 4;
+          st->prize->subMode = COLLECT_INERT;
           st->prize->cullRadius = 0;
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
           g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (void *)(st->prize->type - 0x53));
           PlayActorMeshVoice(actor, 0, 0);
-          actor->mode = 1;
+          actor->mode = SEEDPOD_OPEN;
           ANIM_RESET(actor, 1);
           continue;
         }
@@ -3137,7 +3137,7 @@ void Level28_UpdateActors(void) {
         st->timer += g_nFrameStep;
         break;
 
-      case 1: {
+      case SEEDPOD_OPEN: {
         int i;
 
         st->prize->cullRadius = 0x18;
@@ -3192,7 +3192,7 @@ void Level28_UpdateActors(void) {
           continue;
         }
         if (actor->flags & ACTOR_HIT_SUPER) {
-          st->prize->subMode = 2;
+          st->prize->subMode = COLLECT_BOUNCE;
           PlayActorMeshVoice(actor, 2, 0);
           for (i = 0; i < 2; i++) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
@@ -3234,7 +3234,7 @@ void Level28_UpdateActors(void) {
           actor->posZ = st->restZ;
           st->timer = 0;
           PlayActorMeshVoice(actor, 1, 0);
-          actor->mode = 0;
+          actor->mode = SEEDPOD_CLOSED;
           ANIM_RESET(actor, 0);
           continue;
         }
@@ -3291,7 +3291,7 @@ void Level28_UpdateActors(void) {
         EncodeCachedVecToActorDirCode(actor);
       }
 
-      if (actor->mode == 0) {
+      if (actor->mode == LIFECHEST_CLOSED) {
         st->phase += g_nFrameStep;
 
         if (st->phase >= 0x1E1) {
@@ -3299,7 +3299,7 @@ void Level28_UpdateActors(void) {
           actor->rotX = st->savedRotX;
           actor->rotY = st->savedRotY;
           actor->posZ = st->savedPosZ;
-          actor->mode = 1;
+          actor->mode = LIFECHEST_OPEN;
           actor->frameProgress = 8;
           actor->frameRate = 8;
           actor->nextAnim = 1;
@@ -3352,7 +3352,7 @@ void Level28_UpdateActors(void) {
           st->phase = GetRandomU32() & 0xFF;
           actor->frameProgress = 8;
           actor->frameRate = 8;
-          actor->mode = 0;
+          actor->mode = LIFECHEST_CLOSED;
           actor->nextAnim = 0;
           if (actor->voiceRow == VOICE_ROW_NONE) {
             PlayActorMeshVoice(actor, 3, 0);
@@ -3366,7 +3366,7 @@ void Level28_UpdateActors(void) {
 
       rider = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
       if (st->rideMode == 1) {
-        ((unsigned char *)rider->state)[0xE] = one;
+        ((CollectibleState *)rider->state)->mode = one;
       }
 
       actor->soundRange = 0x20;
@@ -3397,7 +3397,7 @@ void Level28_UpdateActors(void) {
 
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x18);
 
-      if (actor->mode == 1) {
+      if (actor->mode == LIFECHEST_OPEN) {
         DespawnActorRecord(st->passenger);
       }
 

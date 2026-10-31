@@ -309,7 +309,7 @@ void TickLevelTransitionStream(int full) {
     g_nCurrentMusicTrack = (&g_nLevelMusicTrack)[g_nLevelIndex];
     g_abLevelVisitedFlag[g_nLevelIndex] = 1;
     FillWord(g_anSpawnAnchorBlock, 0, 0x68);
-    g_nLevelKeyState = 0;
+    g_nLevelKeyState = KEYSTATE_NONE;
     g_nGemTallyIconCount = 0;
     g_nLevelGemsAtEntry = g_anLevelGemsCollected[g_nLevelIndex];
     BuildLoadedLevelRuntime(full);

@@ -67,7 +67,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   g_nMotionTrailRibbonCount = 0;
   root = p;
   if (g_nActiveLevelId == LEVEL_GNASTYS_LOOT) {
-    g_nLevelKeyState = 0;
+    g_nLevelKeyState = KEYSTATE_NONE;
   }
   g_nLevelLoadUnreadWord = 0;
   if ((g_nActiveLevelId == LEVEL_BEAST_MAKERS) ||
