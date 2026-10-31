@@ -1421,7 +1421,7 @@ typedef struct LootVortexState {
   int mode;             /* 0x20 */
   int key;              /* 0x24 actor index */
   int target;           /* 0x28 actor index */
-  int seen;             /* 0x2C index into g_nCurrentWorldId, 0 = none */
+  int seen;             /* 0x2C index into g_nCutsceneId, 0 = none */
 } LootVortexState;
 
 typedef struct BombLobberState {

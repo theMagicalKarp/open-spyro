@@ -62,7 +62,7 @@
 <rect x="202.22" y="425.50" width="28.68" height="30.49" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>BuildActorDrawList  ·  1600 bytes  ·  handwritten</title></rect>
 <rect x="230.90" y="425.50" width="28.61" height="30.49" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>ApplySpuVoiceAttrRange  ·  1596 bytes  ·  library</title></rect>
 <rect x="259.51" y="425.50" width="28.54" height="30.49" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>BuildSecondaryActorDrawList  ·  1592 bytes  ·  handwritten</title></rect>
-<rect x="288.05" y="425.50" width="27.75" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickWorldBundleLoadStream  ·  1548 bytes  ·  matched</title></rect>
+<rect x="288.05" y="425.50" width="27.75" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickCutsceneBundleLoadStream  ·  1548 bytes  ·  matched</title></rect>
 <rect x="14.00" y="456.00" width="29.76" height="27.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickSpyroGameplayFrame  ·  1516 bytes  ·  matched</title></rect>
 <rect x="43.76" y="456.00" width="29.28" height="27.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RespawnOrGameOver_Update  ·  1492 bytes  ·  matched</title></rect>
 <rect x="73.04" y="456.00" width="28.34" height="27.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RespawnOrGameOver_Draw  ·  1444 bytes  ·  matched</title></rect>

@@ -391,8 +391,8 @@ extern short g_anHudRollOutStepTable[14];                    /* 0x8006e798 */
 extern byte g_abHudButterflyRingXY[40];                      /* 0x8006e7b4 */
 extern int g_anLevelDeathPlaneZTable[36];                    /* 0x8006e9a4 */
 extern int g_anLevelSpawnNudgeZTable[36];                    /* 0x8006edb4 */
-extern int g_nWorldHeaderChunkSize;                          /* 0x8006ee5c */
-extern int g_nWorldCutsceneSamplePitch;                      /* 0x8006ee6c */
+extern int g_nCutsceneHeaderChunkSize;                          /* 0x8006ee5c */
+extern int g_nCutsceneSamplePitch;                      /* 0x8006ee6c */
 extern int g_anDemoLengthFrames[4];                 /* 0x8006ee8c: demo length in frames, per g_nDemoIndex (TickDemoPlayback) */
 extern int g_anDemoStartPose[16];                    /* 0x8006ee9c: 4 x {x, y, z, yaw byte} Spyro start pose per demo (BuildLoadedLevelRuntime) */
 extern int g_anCdAudioTrackLengths[48];                      /* 0x8006eedc */
@@ -542,7 +542,7 @@ extern char g_szUiSlot1[7];                 /* 0x80075630 */
 extern char g_szUiSlot2[7];                 /* 0x80075638 */
 
 /* ---- .sbss ---- */
-extern int g_nCurrentWorldId;                /* 0x8007566c */
+extern int g_nCutsceneId;                /* 0x8007566c: scripted cutscene / bundle id: 0 title backdrop, 1 opening story, 2/3 endings (BeginCutscene) */
 extern int g_nGnastyLootFallRefZCap;         /* 0x80075678 */
 extern void *g_pfnGamestate7DrawHook;        /* 0x8007567c */
 extern void *g_pPathTableHead;               /* 0x80075680 */
@@ -1030,7 +1030,7 @@ extern unsigned char g_abLevelVisitedFlagVirtualBase[]; /* FIXME: type/size unre
 extern byte g_abLevelVisitedFlag[36];                   /* 0x80078e78 */
 extern byte g_abGpuOpQueueRing[6144];                   /* 0x80078ea0 */
 extern byte g_abLevelExited[36];                    /* 0x8007a6a8: per-level flag, set to 1 when Spyro leaves through the level-exit whirlwind (saved) */
-extern int g_nWorldArchiveOffset;                       /* 0x8007a6e8 */
+extern int g_nCutsceneArchiveOffset;                       /* 0x8007a6e8 */
 extern int g_nGameOverSceneSectorOffset;                /* 0x8007a708 */
 extern int g_nGameOverSceneByteSize;                    /* 0x8007a70c */
 extern int g_nLevelSplashOffset;                        /* 0x8007a718 */

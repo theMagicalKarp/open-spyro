@@ -2098,7 +2098,7 @@ void Level33_UpdateActors(void) {
         if (st->stateTimer == 0) {
           g_abLevelExited[g_nLevelIndex] = 1;
           g_nCreditsPageIndex = 0;
-          g_nCurrentWorldId[0] = 2;
+          g_nCutsceneId[0] = 2;
           g_nGamestate = GS_CUTSCENE;
           g_nGamePaused = 1;
           g_nGameplayBlocked = 0;
@@ -2465,7 +2465,7 @@ void Level33_UpdateActors(void) {
           st->mode = 2;
           st->timer = 0;
           if (st->seen != 0) {
-            if (g_nCurrentWorldId[st->seen] != 0) {
+            if (g_nCutsceneId[st->seen] != 0) {
               int d;
               int r;
 
@@ -2476,7 +2476,7 @@ void Level33_UpdateActors(void) {
               r = g_bSpyroPersistentEulerZ + 0x40;
               actor->rotZ = r + d * (st->timer - 0x80) / 64;
             } else {
-              g_nCurrentWorldId[st->seen] = 1;
+              g_nCutsceneId[st->seen] = 1;
             }
           }
           CopyVector(&actor->posX, &SPY.posX);

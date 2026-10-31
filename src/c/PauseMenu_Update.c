@@ -67,7 +67,7 @@ void PauseMenu_Update(void) {
     g_pDrawBufA = g_abDrawBufPool;
     g_pDrawBufB = g_abDrawBufPool;
     g_nCdStreamState = 0;
-    g_nCurrentWorldId = 0;
+    g_nCutsceneId = 0;
     {
       int lba = *(volatile int *)&g_nCdBaseLba;
       int count = *(volatile int *)&g_nLevelLoadChunkSize;
@@ -77,7 +77,7 @@ void PauseMenu_Update(void) {
       CdReadSyncSectors(lba, dst, count, offset, 600);
     }
     while (g_nCdStreamState < 10) {
-      TickWorldBundleLoadStream();
+      TickCutsceneBundleLoadStream();
       TickCdMusicStream();
     }
     BeginCutscene();

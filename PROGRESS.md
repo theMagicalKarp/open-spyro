@@ -99,7 +99,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x800133e0` | RelocateActorMeshHeader | main | 620 | matched | game |
 | `0x8001364c` | BuildLoadedLevelRuntime | main | 3708 | matched | game |
 | `0x800144c8` | LoadAndStartLevelFromCd | main | 156 | matched | game |
-| `0x80014564` | TickWorldBundleLoadStream | main | 1548 | matched | game |
+| `0x80014564` | TickCutsceneBundleLoadStream | main | 1548 | matched | game |
 | `0x80014b70` | TickDragonRescueAssetStream | main | 2048 | matched | game |
 | `0x80015370` | TickLevelTransitionStream | main | 4212 | matched | game |
 | `0x800163e4` | RestartStalledCdRead | main | 172 | matched | game |
