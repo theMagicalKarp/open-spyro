@@ -2676,11 +2676,11 @@ void Level19_UpdateActors(void) {
       if (st->speed < 0x19) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
-      if (actor->subMode == 0) {
-        st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_SPARK, actor);
+      if (actor->subMode == SPINCHEST_INIT) {
+        st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_SPIN_CHEST_LID, actor);
         st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
-        actor->subMode = 1;
+        actor->subMode = SPINCHEST_SPINNING;
         continue;
       }
       if (st->timer == 0 || --st->timer == 0) {
@@ -2703,7 +2703,7 @@ void Level19_UpdateActors(void) {
       st->angle += (st->speed * g_nFrameStep) >> 1;
       st->lid->rotZ = st->angle >> 4;
       if (st->speed > 0xE0 || (actor->flags & ACTOR_HIT_SUPER)) {
-        st->lid->subMode = 1;
+        st->lid->subMode = LID_LAUNCH;
         PlayActorMeshVoice(actor, 0, 0);
         for (i = 0; i < 2; i++) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
@@ -2727,14 +2727,15 @@ void Level19_UpdateActors(void) {
       break;
     }
 
-    /* Type 392: homing spark. Launched at the nearest enemy in front of
-     * Spyro (or away from him when there is none), and bursts on what it
+    /* Type 392: spin chest lid. Spins on its chest (SpinChestState.lid);
+     * when the chest bursts it is launched at the nearest enemy in front of
+     * Spyro (or away from him when there is none) and breaks on what it
      * hits. */
-    case ACTOR_TYPE_HOMING_SPARK: {
-      HomingSparkState *st = actor->state;
+    case ACTOR_TYPE_SPIN_CHEST_LID: {
+      SpinChestLidState *st = actor->state;
       int i;
 
-      if (actor->subMode == 1) {
+      if (actor->subMode == LID_LAUNCH) {
         Actor *best = 0;
         int bestAng = 0x180;
         Actor *a;
@@ -2771,14 +2772,14 @@ void Level19_UpdateActors(void) {
         }
         st->vel[2] += 0xA0;
         st->timer = 0;
-        actor->subMode = 2;
+        actor->subMode = LID_FLYING;
         actor->cullRadius = 0x20;
         actor->updateDist = 0xFF;
         actor->rotX = 0xA;
         actor->rotY = 0;
         continue;
       }
-      if (actor->subMode != 2) {
+      if (actor->subMode != LID_FLYING) {
         continue;
       }
       st->timer += g_nFrameStep;

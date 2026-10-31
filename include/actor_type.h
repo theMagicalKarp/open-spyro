@@ -358,7 +358,8 @@ enum ActorType {
   ACTOR_TYPE_FLIGHT_TARGET_SHARD = 374, /* 374..386: a flight target's burst shards */
   ACTOR_TYPE_SPIN_CHEST = 390,       /* each charge spins it faster; spun fast enough, or flamed, it bursts */
   ACTOR_TYPE_PATCH_RIDER = 391, /* level 0: rides a collision triangle (PatchRideState) */
-  ACTOR_TYPE_HOMING_SPARK = 392,     /* launched at the nearest enemy in front of Spyro */
+  ACTOR_TYPE_SPIN_CHEST_LID = 392,   /* spins on ACTOR_TYPE_SPIN_CHEST; launched at the nearest enemy
+                                      * in front of Spyro when the chest bursts */
   ACTOR_TYPE_LINKED_FOLLOWER = 395, /* level 3: follows its linked actor's mode; knocked away when hit (Follower) */
   ACTOR_TYPE_FLAME_FLIGHT_TARGET = 397, /* flight levels 11/29: flamed, tallies, pays out and becomes ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT */
   ACTOR_TYPE_PORTAL_GUIDE = 398,   /* flies Spyro through a portal (PortalState) */

@@ -101,4 +101,27 @@ enum LockedChestSubMode {
                             * (a superflame hit skips straight to the burst) */
 };
 
+/* ->subMode of a cracking boulder (ACTOR_TYPE_CRACKING_BOULDER,
+ * CrackingBoulderState). */
+enum CrackingBoulderSubMode {
+  BOULDER_INIT = 0,     /* take the drop-kind tint */
+  BOULDER_INTACT = 1,   /* a charge bursts it at once, a flame or blast cracks it */
+  BOULDER_CRACKING = 2, /* shakes and smokes for 0x78 frames */
+  BOULDER_BURST = 3,    /* debris rings, the drop, and a push on Spyro */
+};
+
+/* ->subMode of a spin chest (ACTOR_TYPE_SPIN_CHEST, SpinChestState). */
+enum SpinChestSubMode {
+  SPINCHEST_INIT = 0,     /* spawn the lid */
+  SPINCHEST_SPINNING = 1, /* flames spin it up; fast enough (or a superflame) bursts it */
+};
+
+/* ->subMode of the spin chest's lid (ACTOR_TYPE_SPIN_CHEST_LID,
+ * SpinChestLidState). */
+enum SpinChestLidSubMode {
+  LID_ON_CHEST = 0, /* spun by its chest */
+  LID_LAUNCH = 1,   /* the chest burst: aim at an enemy (or away from Spyro) */
+  LID_FLYING = 2,   /* in flight; breaks on what it hits */
+};
+
 #endif

@@ -435,18 +435,18 @@ typedef struct ThiefState {
 
 /* Case 390 -- spinning chest. */
 typedef struct SpinChestState {
-  Actor *lid; /* 0x00 */
+  Actor *lid; /* 0x00 its ACTOR_TYPE_SPIN_CHEST_LID */
   int angle;  /* 0x04 */
   int speed;  /* 0x08 */
   int timer;  /* 0x0C */
   int handle; /* 0x10 for SelectActorLodBand */
 } SpinChestState;
 
-/* Case 392 -- homing spark. */
-typedef struct HomingSparkState {
+/* Case 392 -- the spin chest's lid, launched when the chest bursts. */
+typedef struct SpinChestLidState {
   int vel[3]; /* 0x00 */
   int timer;  /* 0x0C */
-} HomingSparkState;
+} SpinChestLidState;
 
 typedef struct BounceState {
   short vx;           /* 0x00 */

@@ -2604,21 +2604,21 @@ void Level16_UpdateActors(void) {
       CrackingBoulderState *st = actor->state;
 
       switch (actor->subMode) {
-      case 0:
+      case BOULDER_INIT:
         *(int *)&actor->tint0 = g_anTintByDropKind[actor->dropKind];
-        actor->subMode = 1;
+        actor->subMode = BOULDER_INTACT;
         break;
 
-      case 1:
+      case BOULDER_INTACT:
         if (actor->flags & ACTOR_HIT_BLAST) {
-          actor->subMode = 2;
+          actor->subMode = BOULDER_CRACKING;
           actor->updateDist = 0xFF;
           actor->cullRadius = 0x7F;
           if (st->timer < 0x5A) {
             st->timer = 0x5A;
           }
         } else if (actor->flags & ACTOR_HIT_FLAME) {
-          actor->subMode = 2;
+          actor->subMode = BOULDER_CRACKING;
           actor->updateDist = 0xFF;
           actor->cullRadius = 0x7F;
           st->timer = 0;
@@ -2632,14 +2632,14 @@ void Level16_UpdateActors(void) {
 
       hit:
         if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
-          actor->subMode = 3;
+          actor->subMode = BOULDER_BURST;
           actor->cullRadius = 0;
           actor->drawn = 0;
           st->timer = 0;
         }
         break;
 
-      case 2: {
+      case BOULDER_CRACKING: {
         int t = st->timer + g_nFrameStep;
         int i;
         int n;
@@ -2691,7 +2691,7 @@ void Level16_UpdateActors(void) {
                   6;
         }
         } else {
-          actor->subMode = 3;
+          actor->subMode = BOULDER_BURST;
           actor->cullRadius = 0;
           actor->drawn = 0;
           st->timer = 0;
@@ -2699,7 +2699,7 @@ void Level16_UpdateActors(void) {
         break;
       }
 
-      case 3:
+      case BOULDER_BURST:
         if (st->timer == 0) {
           int i;
           Actor *c;

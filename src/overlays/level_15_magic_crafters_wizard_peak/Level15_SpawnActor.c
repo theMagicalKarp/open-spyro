@@ -383,7 +383,7 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
     InsertActorIntoSpatialGrid(rec);
     break;
   }
-  case ACTOR_TYPE_HOMING_SPARK:
+  case ACTOR_TYPE_SPIN_CHEST_LID:
     InitActorRenderDefaults(rec);
     rec->otBias = 5;
     if (parent != 0) {

@@ -3200,21 +3200,21 @@ void Level27_UpdateActors(void) {
       CrackingBoulderState *st = actor->state;
 
       switch (actor->subMode) {
-      case 0:
+      case BOULDER_INIT:
         *(int *)&actor->tint0 = g_anTintByDropKind[actor->dropKind];
-        actor->subMode = 1;
+        actor->subMode = BOULDER_INTACT;
         break;
 
-      case 1:
+      case BOULDER_INTACT:
         if (actor->flags & ACTOR_HIT_BLAST) {
-          actor->subMode = 2;
+          actor->subMode = BOULDER_CRACKING;
           actor->updateDist = 0xFF;
           actor->cullRadius = 0x7F;
           if (st->timer < 0x5A) {
             st->timer = 0x5A;
           }
         } else if (actor->flags & ACTOR_HIT_FLAME) {
-          actor->subMode = 2;
+          actor->subMode = BOULDER_CRACKING;
           actor->updateDist = 0xFF;
           actor->cullRadius = 0x7F;
           st->timer = 0;
@@ -3228,14 +3228,14 @@ void Level27_UpdateActors(void) {
 
       hit:
         if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
-          actor->subMode = 3;
+          actor->subMode = BOULDER_BURST;
           actor->cullRadius = 0;
           actor->drawn = 0;
           st->timer = 0;
         }
         break;
 
-      case 2: {
+      case BOULDER_CRACKING: {
         int t = st->timer + g_nFrameStep;
         int i;
         int n;
@@ -3287,7 +3287,7 @@ void Level27_UpdateActors(void) {
                   6;
         }
         } else {
-          actor->subMode = 3;
+          actor->subMode = BOULDER_BURST;
           actor->cullRadius = 0;
           actor->drawn = 0;
           st->timer = 0;
@@ -3295,7 +3295,7 @@ void Level27_UpdateActors(void) {
         break;
       }
 
-      case 3:
+      case BOULDER_BURST:
         if (st->timer == 0) {
           int i;
           Actor *c;
@@ -3631,11 +3631,11 @@ void Level27_UpdateActors(void) {
       if (st->speed < 0x19) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
-      if (actor->subMode == 0) {
-        st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_SPARK, actor);
+      if (actor->subMode == SPINCHEST_INIT) {
+        st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_SPIN_CHEST_LID, actor);
         st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
-        actor->subMode = 1;
+        actor->subMode = SPINCHEST_SPINNING;
         continue;
       }
       if (st->timer == 0 || --st->timer == 0) {
@@ -3658,7 +3658,7 @@ void Level27_UpdateActors(void) {
       st->angle += (st->speed * g_nFrameStep) >> 1;
       st->lid->rotZ = st->angle >> 4;
       if (st->speed > 0xE0 || (actor->flags & ACTOR_HIT_SUPER)) {
-        st->lid->subMode = 1;
+        st->lid->subMode = LID_LAUNCH;
         PlayActorMeshVoice(actor, 0, 0);
         for (i = 0; i < 2; i++) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
@@ -3682,14 +3682,15 @@ void Level27_UpdateActors(void) {
       break;
     }
 
-    /* Type 392: homing spark. Launched at the nearest enemy in front of
-     * Spyro (or away from him when there is none), and bursts on what it
+    /* Type 392: spin chest lid. Spins on its chest (SpinChestState.lid);
+     * when the chest bursts it is launched at the nearest enemy in front of
+     * Spyro (or away from him when there is none) and breaks on what it
      * hits. */
-    case ACTOR_TYPE_HOMING_SPARK: {
-      HomingSparkState *st = actor->state;
+    case ACTOR_TYPE_SPIN_CHEST_LID: {
+      SpinChestLidState *st = actor->state;
       int i;
 
-      if (actor->subMode == 1) {
+      if (actor->subMode == LID_LAUNCH) {
         Actor *best = 0;
         int bestAng = 0x180;
         Actor *a;
@@ -3726,14 +3727,14 @@ void Level27_UpdateActors(void) {
         }
         st->vel[2] += 0xA0;
         st->timer = 0;
-        actor->subMode = 2;
+        actor->subMode = LID_FLYING;
         actor->cullRadius = 0x20;
         actor->updateDist = 0xFF;
         actor->rotX = 0xA;
         actor->rotY = 0;
         continue;
       }
-      if (actor->subMode != 2) {
+      if (actor->subMode != LID_FLYING) {
         continue;
       }
       st->timer += g_nFrameStep;
