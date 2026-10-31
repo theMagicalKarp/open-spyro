@@ -1198,9 +1198,9 @@ void Level23_UpdateActors(void) {
         Actor *reward;
         int i;
 
-        reward = g_pfnLevelSpawnActor(st->reward + 0x158, actor);
+        reward = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st->reward), actor);
         if (reward != 0) {
-          reward->mode = 1;
+          reward->mode = TIMEBONUS_COLLECT;
         }
         TallyFlightTarget(st->tally);
         st->zVel = 0xC8;
@@ -1430,9 +1430,9 @@ void Level23_UpdateActors(void) {
 
         PlayActorMeshVoice(actor, 0, 0);
         TallyFlightTarget(st[1]);
-        reward = g_pfnLevelSpawnActor(st[0] + 0x158, actor);
+        reward = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st[0]), actor);
         if (reward != 0) {
-          reward->mode = 1;
+          reward->mode = TIMEBONUS_COLLECT;
         }
 
         for (i = 0; i < 2; i++) {
@@ -1483,13 +1483,13 @@ void Level23_UpdateActors(void) {
         st->ready = 1;
       }
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode == 0) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode == BANKER_FLY) {
         Actor *reward;
         int i;
 
-        reward = g_pfnLevelSpawnActor(st->reward + 0x158, actor);
+        reward = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st->reward), actor);
         if (reward != 0) {
-          reward->mode = 1;
+          reward->mode = TIMEBONUS_COLLECT;
         }
         TallyFlightTarget(st->tally);
         st->zVel = 0;
@@ -1506,13 +1506,13 @@ void Level23_UpdateActors(void) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 5, actor);
         }
         PlayActorMeshVoice(actor, 0, 0);
-        actor->mode = 1;
+        actor->mode = BANKER_STRUCK;
         ANIM_RESET(actor, 1);
         break;
       }
 
       switch (actor->mode) {
-      case 0: {
+      case BANKER_FLY: {
         int d = actor->rotZ;
 
         if (g_nActiveLevelId == LEVEL_SUNNY_FLIGHT || g_nActiveLevelId == LEVEL_WILD_FLIGHT) {
@@ -1538,7 +1538,7 @@ void Level23_UpdateActors(void) {
         actor->rotX = st->roll >> 4;
         break;
       }
-      case 1:
+      case BANKER_STRUCK:
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
@@ -1547,11 +1547,11 @@ void Level23_UpdateActors(void) {
           continue;
         }
         if (g_nActorAnimDone != 0) {
-          actor->mode = 2;
+          actor->mode = BANKER_FLEE;
           ANIM_RESET(actor, 2);
         }
         break;
-      case 2:
+      case BANKER_FLEE:
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
@@ -1564,14 +1564,14 @@ void Level23_UpdateActors(void) {
       break;
     }
     /* Time-bonus pickup: turns to face Spyro, then flies to the HUD corner
-     * and adds (type - 0x158) seconds when it arrives. */
+     * and adds TIME_BONUS_SECONDS(type) seconds when it arrives. */
     case ACTOR_TYPE_TIME_BONUS:
     case ACTOR_TYPE_TIME_BONUS + 1:
     case ACTOR_TYPE_TIME_BONUS + 2: {
       int *st = actor->state;
 
       switch (actor->mode) {
-      case 0:
+      case TIMEBONUS_WAIT:
         if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
           DespawnActorRecord(actor);
           break;
@@ -1583,18 +1583,18 @@ void Level23_UpdateActors(void) {
                                     0x40),
                       4, 0, 0);
         break;
-      case 1:
-        g_nFlightTimeBonus += (actor->type - 0x158) * 60;
+      case TIMEBONUS_COLLECT:
+        g_nFlightTimeBonus += TIME_BONUS_SECONDS(actor->type) * 60;
         ProjectWorldPointGTEUnscaled(&actor->posX, &actor->posX);
         actor->rotX = 0;
         actor->rotY = 0;
         actor->rotZ = 0xC0;
         actor->cullRadius = 0xFF;
         actor->otBias = 0x20;
-        actor->mode = 2;
+        actor->mode = TIMEBONUS_TO_HUD;
         PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_COLLECT], actor, SFX_MODE_PANNED, 0);
         break;
-      case 2: {
+      case TIMEBONUS_TO_HUD: {
         int d;
 
         svU[0] = 0x1A4;
@@ -1603,7 +1603,7 @@ void Level23_UpdateActors(void) {
         SubtractVector(svU, svU, &actor->posX);
         d = VectorLength(svU, VEC_LEN_XYZ);
         if (d < 0x20) {
-          actor->mode = 3;
+          actor->mode = TIMEBONUS_ARRIVED;
           actor->posX = 0x1A4;
           actor->posY = 0x30;
           actor->posZ = 0x157C;
@@ -1616,9 +1616,9 @@ void Level23_UpdateActors(void) {
         }
         break;
       }
-      case 3:
+      case TIMEBONUS_ARRIVED:
         if (TickCountdownByFrameDelta(st, 4) != 0) {
-          g_nFlightTimeRemaining += (actor->type - 0x158) * 60;
+          g_nFlightTimeRemaining += TIME_BONUS_SECONDS(actor->type) * 60;
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_TIME_ADDED], actor, SFX_MODE_PANNED, 0);
           DespawnActorRecord(actor);
         }
@@ -1632,7 +1632,7 @@ void Level23_UpdateActors(void) {
       TargetState *st = actor->state;
 
       if (g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0 && st->helper == 0) {
-        st->helper = g_pfnLevelSpawnActor(st->helperType + 0x158, actor);
+        st->helper = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st->helperType), actor);
       }
 
       if (ApproxDist2D(&actor->posX, &spy->posX) < 3000) {
@@ -1649,7 +1649,7 @@ void Level23_UpdateActors(void) {
 
             TallyFlightTarget(st->tallyClass);
             if (st->helper != 0) {
-              st->helper->mode = 1;
+              st->helper->mode = TIMEBONUS_COLLECT;
             }
 
             for (i = 0; i < 13; i++) {

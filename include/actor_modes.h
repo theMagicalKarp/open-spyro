@@ -300,4 +300,172 @@ enum ShepherdMode {
   SHEPHERD_GO_HOME = 100, /* walks back to its home point */
 };
 
+/* ->mode of a singing path walker (ACTOR_TYPE_SINGING_PATH_WALKER,
+ * PathWalkerState; levels 24/28). The mode doubles as the pose's animation
+ * index (ENTER_POSE). PathWalkerState.mode is its SingerRole. */
+enum SingerMode {
+  SINGER_IDLE = 0,      /* waits; Spyro near: TURN, then WALK (close) or WATCH */
+  SINGER_TURN = 1,      /* plays the turn, then enters PathWalkerState.next */
+  SINGER_REST = 2,      /* faces Spyro; while carried, rides (rideMode 1) or flies (2) */
+  SINGER_WALK = 3,      /* walks its path, calling while Spyro is close; then REST */
+  SINGER_WATCH = 4,     /* faces Spyro; close: WALK, now and then: REST */
+  SINGER_LANDED = 7,    /* a thrown walker hit something: plays out, then RETURN */
+  SINGER_STRUCK = 8,    /* flamed or charged: releases its role's chunk animation */
+  SINGER_SING = 9,      /* sings in place until its timer runs out */
+  SINGER_SING_END = 10, /* last verse; a paired walker cues a singing partner to stop */
+  SINGER_SETTLE = 12,   /* stops its voices, back to REST */
+  SINGER_RETURN = 99,   /* walks its path back and frees the rider */
+  SINGER_CUE_STOP = 99, /* PathWalkerState.next: the partner says stop singing */
+};
+
+/* PathWalkerState.mode: the walker's role, fixed at spawn. */
+enum SingerRole {
+  SINGER_ROLE_PLAIN = 0,
+  SINGER_ROLE_DROPPED = 1, /* was CARRIED; struck off its rider */
+  SINGER_ROLE_PAIRED = 2,  /* sings with PathWalkerState.partner */
+  SINGER_ROLE_CARRIED = 3, /* rides PathWalkerState.rider */
+  SINGER_ROLE_TWO_GATE = 4, /* releases chunk animation 1, else 2 */
+  SINGER_ROLE_ABSENT = 6,  /* despawns at init */
+};
+
+/* ->mode of a charging guard (ACTOR_TYPE_CHARGING_GUARD, ChargingGuardState;
+ * levels 18/20). ChargingGuardState.flag is shared by the guards of one
+ * group: only one charges at a time. */
+enum ChargerMode {
+  CHARGER_IDLE = 0,      /* runs its ChargerRole until Spyro is in sight range */
+  CHARGER_CHARGE = 1,    /* aims at Spyro and runs at him; close and lined up: RAM */
+  CHARGER_KNOCKED = 2,   /* flamed: knocked back, then bursts */
+  CHARGER_RAM = 3,       /* the horn lunge; knocks Spyro back, camera pulls in */
+  CHARGER_TURN_BACK = 4, /* turns about after the ram */
+  CHARGER_GO_HOME = 100, /* back to its home point, then IDLE */
+};
+
+/* ChargingGuardState.mode: what a charging guard does while CHARGER_IDLE. */
+enum ChargerRole {
+  CHARGER_ROLE_STAND = 0,  /* faces Spyro */
+  CHARGER_ROLE_PATROL = 1, /* walks to random path nodes */
+  CHARGER_ROLE_POST = 2,   /* holds node 0; charges once Spyro reaches node 1 or 2 */
+  CHARGER_ROLE_FOLLOW = 3, /* follows ChargingGuardState.target (PATROL once alerted) */
+};
+
+/* ->mode of a path guard (ACTOR_TYPE_PATH_GUARD, PathGuardState; levels
+ * 12/15/16). */
+enum PathGuardMode {
+  PATHGUARD_WALK = 0,    /* walks its ring with its partner; Spyro near: THROW */
+  PATHGUARD_THROW = 1,   /* winds up and throws ACTOR_TYPE_SPLIT_SHOTs */
+  PATHGUARD_KNOCKED = 2, /* flamed or charged: knocked away, then bursts */
+};
+
+/* ->mode of a split shot (ACTOR_TYPE_SPLIT_SHOT), set at spawn from the
+ * thrower's animation frame; the mode doubles as the animation index. */
+enum SplitShotMode {
+  SPLITSHOT_GATHER = 0,   /* before the thrower's frame 2: glows in its hand */
+  SPLITSHOT_RAISE = 1,    /* frames 2..5: held overhead */
+  SPLITSHOT_FLY = 2,      /* frame 6+: launched; splits on reaching Spyro */
+  SPLITSHOT_FRAGMENT = 3, /* one of the four a split leaves behind */
+};
+
+/* ->subMode of a cannon (ACTOR_TYPE_CANNON, CannonState; levels 8/19/25/34). */
+enum CannonSubMode {
+  CANNON_UNLIT = 0,  /* waits for a flame; despawns once CannonState.link is dormant */
+  CANNON_FUSE = 1,   /* smokes, then sparks and recoils, then fires */
+  CANNON_FLIGHT = 2, /* flies the shot along its path; at the end strikes the link */
+};
+
+/* ->mode of a banking flight target (ACTOR_TYPE_BANKING_FLIGHT_TARGET,
+ * RollerState; flight levels 5/17/23). */
+enum BankerMode {
+  BANKER_FLY = 0,    /* tweens its path, banking into turns */
+  BANKER_STRUCK = 1, /* flamed: pays out a time bonus, tallies, flees */
+  BANKER_FLEE = 2,   /* keeps running until it splashes down */
+};
+
+/* ->mode of a flight time bonus (ACTOR_TYPE_TIME_BONUS..+2), set to
+ * TIMEBONUS_COLLECT by the target that pays it out. */
+enum TimeBonusMode {
+  TIMEBONUS_WAIT = 0,    /* faces Spyro beside its target */
+  TIMEBONUS_COLLECT = 1, /* banks the bonus and moves to screen space */
+  TIMEBONUS_TO_HUD = 2,  /* flies to the HUD clock */
+  TIMEBONUS_ARRIVED = 3, /* adds the seconds after a short hold */
+};
+
+/* ->mode of a Peace Keeper soldier (ACTOR_TYPE_SOLDIER / _B, SoldierState;
+ * level 6). SOLDIER_IDLE runs SoldierState.kind's patrol/guard behaviour;
+ * whole groups are switched with ReplaceActorGroupState. */
+enum SoldierMode {
+  SOLDIER_IDLE = 0,
+  SOLDIER_CHASE = 1,       /* walks at Spyro (or runs to its cannon); too far: GO_HOME */
+  SOLDIER_SHOVE = 2,       /* close: shoves Spyro back */
+  SOLDIER_KNOCKED = 3,     /* flamed or charged: knocked away, then bursts */
+  SOLDIER_ALERT = 4,       /* turns to Spyro and shouts, then CHASE */
+  SOLDIER_GUNNER = 8,      /* works SoldierState.link's cannon, lobbing fireballs at Spyro */
+  SOLDIER_DUEL = 9,        /* fires its cannon at the rival cannon; Spyro near: GUNNER */
+  SOLDIER_TO_POST = 10,    /* shouts, then runs to SoldierState.link's post */
+  SOLDIER_IN_POST = 11,    /* hides in the post and pops out at Spyro */
+  SOLDIER_ENTER_POST = 16, /* climbs in, then IN_POST */
+  SOLDIER_GO_HOME = 100,   /* walks back to SoldierState.home, then IDLE */
+};
+
+/* ->mode of a level 6 fireball cannon (ACTOR_TYPE_FIREBALL_CANNON,
+ * FireballCannonState). While its crew (FireballCannonState.link) stands, the
+ * crew fires it; once the crew is down, Spyro can flame the fuse. */
+enum FireballCannonMode {
+  FBCANNON_IDLE = 0,
+  FBCANNON_LIT = 1,  /* flamed from behind: starts the fuse */
+  FBCANNON_FUSE = 2, /* smokes for 0x3C ticks */
+  FBCANNON_FIRE = 3, /* lobs a fireball at the best target ahead, back to IDLE */
+};
+
+/* ->mode of a guard captain (ACTOR_TYPE_GUARD_CAPTAIN, CaptainState;
+ * level 13). CAPTAIN_IDLE runs CaptainState.mode's post (partnered sentry,
+ * group lookout, ledge guard, wanderer...). */
+enum CaptainMode {
+  CAPTAIN_IDLE = 0,
+  CAPTAIN_ADVANCE = 1,       /* walks at Spyro (or on its path); close: BASH or FIGHT */
+  CAPTAIN_ROUSE = 2,         /* waits out its timer, then ADVANCE */
+  CAPTAIN_KNOCKED = 3,       /* flamed: knocked away, then bursts */
+  CAPTAIN_FIGHT = 6,         /* sword fight, CaptainState.step sequencing the swings */
+  CAPTAIN_BASH = 7,          /* shoulder-bashes Spyro away, then GO_HOME */
+  CAPTAIN_SET_HOME = 10,     /* takes path node 0 as home */
+  CAPTAIN_STALK = 11,        /* the ledge guard closes on Spyro */
+  CAPTAIN_DRAW = 20,         /* draws its sword, then FIGHT */
+  CAPTAIN_ALERTED = 21,      /* set group-wide by a lookout: waits, then draws */
+  CAPTAIN_DRAW_ADVANCE = 22, /* draws its sword, then ADVANCE */
+  CAPTAIN_GO_HOME = 100,     /* walks back to CaptainState.home, then IDLE */
+};
+
+/* ->mode of Doctor Shemp's guard (ACTOR_TYPE_SHEMP_GUARD, ShempGuardState;
+ * level 10). A charge, or a flame from outside its front, knocks it away. */
+enum ShempGuardMode {
+  SGUARD_IDLE = 0,       /* faces Spyro; in range (or cued): ROUSE / CHASE */
+  SGUARD_CHASE = 1,      /* runs at Spyro; lined up and close: RUSH */
+  SGUARD_ROUSE = 2,      /* plays the alert, then CHASE */
+  SGUARD_KNOCKED = 3,    /* knocked away, then bursts */
+  SGUARD_RUSH = 4,       /* straight-line rush; butts Spyro back, then BRAKE_AIM */
+  SGUARD_BRAKE_AIM = 5,  /* aims at the nearest path point */
+  SGUARD_BRAKE = 6,      /* skids to a stop, turning to it */
+  SGUARD_RECOVER = 7,    /* catches its breath, then GUARD */
+  SGUARD_GUARD = 8,      /* holds its ground facing Spyro; close: SWIPE */
+  SGUARD_SWIPE = 9,      /* swipe, back to GUARD */
+  SGUARD_FALL = 10,      /* ran off a ledge: drops its loot on the path, despawns */
+  SGUARD_PATH_CHASE = 20, /* runs ShempGuardState.target's path, then CHASE */
+  SGUARD_PATH_RUSH = 30, /* rushes along ShempGuardState.target's path, then BRAKE_AIM */
+};
+
+/* ->mode of a path runner (ACTOR_TYPE_PATH_RUNNER..+1, PathRunnerState;
+ * level 21). PathRunnerState.mode picks which of the two runs it makes. */
+enum RunnerMode {
+  RUNNER_RUN = 0,      /* runs its path ahead of Spyro; raises its goal flag near the end */
+  RUNNER_PROD = 1,     /* turns to PathRunnerState.target and wakes it, then RUN */
+  RUNNER_KNOCKED = 2,  /* flamed or charged: knocked away, then bursts */
+  RUNNER_WAIT = 3,     /* at its goal, facing Spyro; Spyro closes in facing it: FLEE */
+  RUNNER_FLEE = 4,     /* runs its home path, kicking up sparks at speed */
+  RUNNER_DODGE = 5,    /* circles its path point away from Spyro */
+  RUNNER_CREEP = 6,    /* edges back toward Spyro's side */
+  RUNNER_TAUNT = 7,    /* faces Spyro; close or charging: DODGE */
+  RUNNER_LOOKOUT = 10, /* second run done: watches until Spyro climbs up */
+  RUNNER_RETURN = 11,  /* walks to home node 0, then WAIT */
+  RUNNER_LURK = 20,    /* waits for Spyro to enter PathRunnerState.volA, then RUN */
+};
+
 #endif

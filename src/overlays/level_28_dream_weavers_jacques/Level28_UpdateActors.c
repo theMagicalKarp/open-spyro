@@ -1940,23 +1940,23 @@ void Level28_UpdateActors(void) {
       if (st->init == 0) {
         st->init = one;
         st->path->cur = st->startCur;
-        if (st->mode == 6) {
+        if (st->mode == SINGER_ROLE_ABSENT) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (st->mode != 0) {
-          ENTER_POSE(actor, 2);
+        if (st->mode != SINGER_ROLE_PLAIN) {
+          ENTER_POSE(actor, SINGER_REST);
         }
       }
       if ((actor->flags & ACTOR_HITS_SPYRO) &&
-          (actor->mode < 8 || actor->mode == 0x63)) {
+          (actor->mode < SINGER_STRUCK || actor->mode == SINGER_RETURN)) {
         actor->flags = 0;
-        if (st->mode == 3) {
+        if (st->mode == SINGER_ROLE_CARRIED) {
           ((int *)g_pActorListBase[st->rider].state)[18] = one;
           st->path->count -= 4;
           st->mode = one;
         }
-        actor->mode = 8;
+        actor->mode = SINGER_STRUCK;
         ANIM_RESET(actor, 8);
         continue;
       }
@@ -1965,32 +1965,32 @@ void Level28_UpdateActors(void) {
       EncodeCachedVecToActorDirCode(actor);
 
       switch (actor->mode) {
-      case 0:
-        if (st->mode == 3) {
+      case SINGER_IDLE:
+        if (st->mode == SINGER_ROLE_CARRIED) {
           continue;
         }
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1000) {
-          st->next = 3;
+          st->next = SINGER_WALK;
           st->legStep[0] = 0xFF;
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, SINGER_TURN);
         }
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000) {
-          st->next = 4;
-          ENTER_POSE(actor, 1);
+          st->next = SINGER_WATCH;
+          ENTER_POSE(actor, SINGER_TURN);
         }
         continue;
 
-      case 1:
+      case SINGER_TURN:
         if (g_nActorAnimDone != 0) {
           ANIM_QUEUE(actor, st->next);
         }
         continue;
 
-      case 2:
+      case SINGER_REST:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if (st->mode != 3) {
+        if (st->mode != SINGER_ROLE_CARRIED) {
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1000) {
-            ENTER_POSE(actor, 3);
+            ENTER_POSE(actor, SINGER_WALK);
           }
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000 &&
               g_nActorAnimDone != 0 && (GetRandomU32() & 4)) {
@@ -2014,7 +2014,7 @@ void Level28_UpdateActors(void) {
           actor->posY += (st->speed * g_anSineLut[actor->rotZ]) >> 12;
           CopyVector(g368, &actor->posX);
           if (CollideSphereWithWorldAndActors(g368, 0x100, 0x100) != 0) {
-            actor->mode = 7;
+            actor->mode = SINGER_LANDED;
             ANIM_RESET(actor, 7);
             continue;
           }
@@ -2024,7 +2024,7 @@ void Level28_UpdateActors(void) {
         }
         continue;
 
-      case 3:
+      case SINGER_WALK:
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1000) {
           if (TickCountdownByFrameDelta(&st->call, 4) != 0) {
             st->call = (int)GetRandomU32() % 32 + 100;
@@ -2034,28 +2034,28 @@ void Level28_UpdateActors(void) {
           continue;
         }
         if (TweenActorAlongPath(actor, st->path, st->prevLeg, st->legStep, 0x16, 0) != 0) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, SINGER_REST);
         }
         continue;
 
-      case 4:
+      case SINGER_WATCH:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1000) {
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, SINGER_WALK);
         }
         if (g_nActorAnimDone != 0 && (GetRandomU32() & 4)) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, SINGER_REST);
         }
         continue;
 
-      case 7:
+      case SINGER_LANDED:
         if (g_nActorAnimDone != 0) {
           ANIM_GO(actor, 3);
-          actor->mode = 0x63;
+          actor->mode = SINGER_RETURN;
         }
         continue;
 
-      case 8:
+      case SINGER_STRUCK:
         if ((unsigned)(FindGroundHeightBelow(&actor->posX, 0x10000) - 0x81) < 0x177F) {
           actor->posZ -= 0x40;
         }
@@ -2064,21 +2064,21 @@ void Level28_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           st->timer = st->period;
           switch (st->mode) {
-          case 0:
-          case 1:
-          case 3:
+          case SINGER_ROLE_PLAIN:
+          case SINGER_ROLE_DROPPED:
+          case SINGER_ROLE_CARRIED:
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             break;
-          case 2:
+          case SINGER_ROLE_PAIRED:
             if (g_pActorListBase[st->partner].mode >= 6 &&
-                ((int *)g_pActorListBase[st->partner].state)[18] == 0) {
+                ((PathWalkerState *)g_pActorListBase[st->partner].state)->flag == 0) {
               st->flag = one;
             } else {
               st->timer = 0x1C2;
               ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             }
             break;
-          case 4:
+          case SINGER_ROLE_TWO_GATE:
             if (CHUNK_ANIM_STEP(GetWorldChunkAnimState(1)) > 0 ||
                 !(GetWorldChunkAnimState(1) & CHUNK_ANIM_HALTED)) {
               st->timer = 0x1C2;
@@ -2096,11 +2096,11 @@ void Level28_UpdateActors(void) {
         }
         continue;
 
-      case 9:
+      case SINGER_SING:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
-        if (st->next == 0x63) {
-          ENTER_POSE(actor, 0xC);
+        if (st->next == SINGER_CUE_STOP) {
+          ENTER_POSE(actor, SINGER_SETTLE);
         }
         if (st->flag != 0 && (GetWorldChunkAnimState(st->chunkAnim) & CHUNK_ANIM_HALTED)) {
           st->flag = 0;
@@ -2110,59 +2110,59 @@ void Level28_UpdateActors(void) {
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           st->timer = 0x50;
           PlayActorMeshVoice(actor, 1, 0);
-          ENTER_POSE(actor, 0xA);
+          ENTER_POSE(actor, SINGER_SING_END);
         }
         continue;
 
-      case 10:
-        if (st->next == 0x63) {
-          ENTER_POSE(actor, 0xC);
+      case SINGER_SING_END:
+        if (st->next == SINGER_CUE_STOP) {
+          ENTER_POSE(actor, SINGER_SETTLE);
         }
         switch (st->mode) {
-        case 0:
-        case 1:
-        case 3:
-        case 4:
+        case SINGER_ROLE_PLAIN:
+        case SINGER_ROLE_DROPPED:
+        case SINGER_ROLE_CARRIED:
+        case SINGER_ROLE_TWO_GATE:
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
-            ENTER_POSE(actor, 0xC);
+            ENTER_POSE(actor, SINGER_SETTLE);
           }
           break;
-        case 2:
+        case SINGER_ROLE_PAIRED:
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
             int s;
 
             if (g_pActorListBase[st->partner].mode >= 6) {
-              ((int *)g_pActorListBase[st->partner].state)[3] = 0x63;
+              ((PathWalkerState *)g_pActorListBase[st->partner].state)->next = SINGER_CUE_STOP;
             }
             s = GetWorldChunkAnimState(st->chunkAnim);
             if ((s & CHUNK_ANIM_HALTED) && CHUNK_ANIM_STEP(s) < 0x14) {
               SetWorldChunkAnimStep(st->chunkAnim, 0x1E, 0);
             }
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
-            ENTER_POSE(actor, 0xC);
+            ENTER_POSE(actor, SINGER_SETTLE);
           }
           break;
         }
         continue;
 
-      case 12:
+      case SINGER_SETTLE:
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         if (g_nActorAnimDone != 0) {
-          st->next = 2;
-          actor->mode = 2;
+          st->next = SINGER_REST;
+          actor->mode = SINGER_REST;
           actor->flags = 0;
           ANIM_RESET(actor, 2);
           continue;
         }
         continue;
 
-      case 99:
+      case SINGER_RETURN:
         if (TweenActorAlongPath(actor, st->path, st->prevLeg, st->legStep, sixteen, 4) == 2) {
           st->rideMode = 0;
           actor->rotY = 0;
           ((int *)g_pActorListBase[st->rider].state)[16] = one;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, SINGER_REST);
         }
         continue;
       }

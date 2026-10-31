@@ -101,7 +101,7 @@ typedef struct RoamingRamState {
 
 /* Case 137 -- guard. */
 typedef struct ChargingGuardState {
-  int mode;          /* 0x00 0 idle, 1 patrol, 2 post, 3 follow */
+  int mode;          /* 0x00 ChargerRole */
   int vec[3];        /* 0x04 home point */
   int timer;         /* 0x10 */
   int range;         /* 0x14 sight range >> 10 */
@@ -386,9 +386,9 @@ typedef struct ChargingRamState {
  * it rests. */
 typedef struct PathWalkerState {
   int init;            /* 0x00 */
-  int mode;            /* 0x04 0..6; 3 = carried, 6 = absent */
+  int mode;            /* 0x04 SingerRole */
   PathData *path;      /* 0x08 */
-  int next;            /* 0x0C state to enter after the turn, 0x63 = done */
+  int next;            /* 0x0C SingerMode to enter after the turn; SINGER_CUE_STOP */
   int prevLeg[3];          /* 0x10 */
   int legStep[5];          /* 0x1C */
   int chunkAnim;           /* 0x30 world chunk-anim handle (GetWorldChunkAnimState) */

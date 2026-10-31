@@ -787,15 +787,15 @@ void Level16_UpdateActors(void) {
       int *st = actor->state;
 
       switch (actor->mode) {
-      case 0:
-      case 1:
-      case 3:
+      case SPLITSHOT_GATHER:
+      case SPLITSHOT_RAISE:
+      case SPLITSHOT_FRAGMENT:
         if (g_nActorAnimDone != 0 && TickCountdownByFrameDelta(st, 4) != 0) {
           DespawnActorRecord(actor);
         }
         break;
 
-      case 2:
+      case SPLITSHOT_FLY:
         CopyVector(svA, &actor->posX);
         if (actor->posX < 0x400 || actor->posY < 0x400 ||
             actor->posZ < 0x400) {
@@ -2196,7 +2196,7 @@ void Level16_UpdateActors(void) {
     case ACTOR_TYPE_PATH_GUARD: {
       PathGuardState *st = actor->state;
 
-      if (actor->mode != 2) {
+      if (actor->mode != PATHGUARD_KNOCKED) {
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_WHITE_STREAK, actor, 0);
         if (actor->flags & ACTOR_HITS_SPYRO) {
           st->speed = 0xDC;
@@ -2209,12 +2209,12 @@ void Level16_UpdateActors(void) {
           StopSoundVoiceByIndex(actor->voiceRow, 4);
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorCommittedKill(actor);
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, PATHGUARD_KNOCKED);
         }
       }
 
       switch (actor->mode) {
-      case 0:
+      case PATHGUARD_WALK:
         if (st->flags & 2) {
           st->path->cur = st->node;
           if (ApproxDist2D(&actor->posX,
@@ -2227,7 +2227,7 @@ void Level16_UpdateActors(void) {
               if (dz > 0 ? dz < 0x800
                          : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x800) {
                 st->timer = 0;
-                ENTER_POSE(actor, 1);
+                ENTER_POSE(actor, PATHGUARD_THROW);
               }
             }
             if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
@@ -2244,7 +2244,7 @@ void Level16_UpdateActors(void) {
               TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
               if (st->timer == 0 || --st->timer <= 0) {
                 st->flags |= 2;
-                ENTER_POSE(actor, 1);
+                ENTER_POSE(actor, PATHGUARD_THROW);
               }
               break;
             }
@@ -2294,10 +2294,10 @@ void Level16_UpdateActors(void) {
         MoveActorAlongHeading(actor, 0x60, 0x180, 0x180, 0x27);
         break;
 
-      case 1:
+      case PATHGUARD_THROW:
         TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
         if (g_nActorAnimDone != 0) {
-          actor->mode = 0;
+          actor->mode = PATHGUARD_WALK;
           ANIM_RESET(actor, 0);
           continue;
         }
@@ -2313,7 +2313,7 @@ void Level16_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case PATHGUARD_KNOCKED:
         DriveActorTrackedMove(actor, &st->speed, st->knock, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

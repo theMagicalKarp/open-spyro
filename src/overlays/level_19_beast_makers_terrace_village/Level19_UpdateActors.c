@@ -2908,7 +2908,7 @@ void Level19_UpdateActors(void) {
       }
 
       switch (actor->subMode) {
-      case 0:
+      case CANNON_UNLIT:
         if (st->link >= 0 && g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {
           DespawnActorRecord(actor);
           continue;
@@ -2916,12 +2916,12 @@ void Level19_UpdateActors(void) {
         if (!(actor->flags & ACTOR_HIT_FLAME)) {
           continue;
         }
-        actor->subMode = 1;
+        actor->subMode = CANNON_FUSE;
         actor->updateDist = 0xFF;
         actor->cullRadius = 0x7F;
         continue;
 
-      case 1:
+      case CANNON_FUSE:
         st->timer += g_nFrameStep;
         if (st->timer < 0x5A) {
           o432[0] = 0;
@@ -2964,7 +2964,7 @@ void Level19_UpdateActors(void) {
         if (st->timer <= 0xB4) {
           continue;
         }
-        actor->subMode = 2;
+        actor->subMode = CANNON_FLIGHT;
         actor->cullRadius = 0x40;
         actor->updateDist = 0x40;
         st->path[1] = 1;
@@ -2973,7 +2973,7 @@ void Level19_UpdateActors(void) {
         PlayActorMeshVoice(actor, 1, 0);
         continue;
 
-      case 2:
+      case CANNON_FLIGHT:
         if (st->timer == 4) {
           SubtractVector(o464, PATH_PT(st->path, st->path[1]), &actor->posX);
           CopyVector(st->vel, o464);

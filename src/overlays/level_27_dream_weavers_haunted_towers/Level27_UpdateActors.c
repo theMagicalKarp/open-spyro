@@ -675,16 +675,16 @@ void Level27_UpdateActors(void) {
       int *st = actor->state;
 
       switch (actor->mode) {
-      case 0:
-      case 1:
-      case 3:
+      case SPLITSHOT_GATHER:
+      case SPLITSHOT_RAISE:
+      case SPLITSHOT_FRAGMENT:
         if (g_nActorAnimDone != 0 && TickCountdownByFrameDelta(st, 4) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
         break;
 
-      case 2: {
+      case SPLITSHOT_FLY: {
         int i;
         int a;
 
