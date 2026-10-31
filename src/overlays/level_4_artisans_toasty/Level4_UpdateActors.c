@@ -197,15 +197,15 @@ void Level4_UpdateActors(void) {
       int dist = ApproxDist2D(&actor->posX, &CAM.posX);
       int i;
 
-      if (actor->mode != 0 ? dist < 0x2800 : dist < 0x2400) {
-        if (actor->mode == 0) {
+      if (actor->mode != LEVELEXIT_FAR ? dist < 0x2800 : dist < 0x2400) {
+        if (actor->mode == LEVELEXIT_FAR) {
           actor->posZ += 0x600;
           SpawnNameLetterActors(actor, 0);
           actor->posZ -= 0x600;
         }
         actor->mode = oneq;
       } else {
-        actor->mode = 0;
+        actor->mode = LEVELEXIT_FAR;
       }
 
       dist = ApproxDist2D(&actor->posX, &SPY.posX);
@@ -423,7 +423,7 @@ void Level4_UpdateActors(void) {
               cs->owner = actor;
               cs->timer = RandomIntInRange(150, 210);
 
-              actor->mode = 1;
+              actor->mode = BUTTERFLY_CIRCLE;
             }
           }
         }
@@ -434,7 +434,7 @@ void Level4_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0: {
+      case BUTTERFLY_FLUTTER: {
         if (TickCountdownByFrameDelta(&st->idleTimer, 2) == 0 || actor->drawn) {
           int refHeight, rotated, moved;
 
@@ -492,7 +492,7 @@ void Level4_UpdateActors(void) {
         }
         break;
       }
-      case 1: {
+      case BUTTERFLY_CIRCLE: {
         SteerActorAroundPoint(actor, &spy->posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, 0),
@@ -500,7 +500,7 @@ void Level4_UpdateActors(void) {
                       8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
-          actor->mode = 0;
+          actor->mode = BUTTERFLY_FLUTTER;
         } else {
           int refHeight;
 
@@ -1362,7 +1362,7 @@ void Level4_UpdateActors(void) {
 
       if (g_anSparxHealthBlock[0] <= SPARX_GONE) {
         if (st->target != 0 && st->target->type == ACTOR_TYPE_BUTTERFLY) {
-          st->target->mode = 0;
+          st->target->mode = BUTTERFLY_FLUTTER;
         }
         g_pSparxActor = 0;
         DespawnActorRecord(actor);

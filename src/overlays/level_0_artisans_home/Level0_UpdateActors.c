@@ -398,7 +398,7 @@ void Level0_UpdateActors(void) {
               cs->owner = actor;
               cs->timer = RandomIntInRange(150, 210);
 
-              actor->mode = 1;
+              actor->mode = BUTTERFLY_CIRCLE;
             }
           }
         }
@@ -408,7 +408,7 @@ void Level0_UpdateActors(void) {
         break;
 
       switch (actor->mode) {
-      case 0: {
+      case BUTTERFLY_FLUTTER: {
         if (TickCountdownByFrameDelta(&st->idleTimer, 2) == 0 || actor->drawn) {
           int refHeight, rotated, moved;
 
@@ -466,7 +466,7 @@ void Level0_UpdateActors(void) {
         }
         break;
       }
-      case 1: {
+      case BUTTERFLY_CIRCLE: {
         SteerActorAroundPoint(actor, &SPY.posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - SPY.posX,
                                                   actor->posY - SPY.posY, 0),
@@ -474,7 +474,7 @@ void Level0_UpdateActors(void) {
                       8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
-          actor->mode = 0;
+          actor->mode = BUTTERFLY_FLUTTER;
         } else {
           int refHeight;
 
@@ -3010,7 +3010,7 @@ void Level0_UpdateActors(void) {
         EncodeCachedVecToActorDirCode(actor);
       }
 
-      if (actor->mode == 0) {
+      if (actor->mode == LIFECHEST_CLOSED) {
         st->phase += g_nFrameStep;
 
         if (st->phase >= 0x1E1) {
@@ -3018,7 +3018,7 @@ void Level0_UpdateActors(void) {
           actor->rotX = st->savedRotX;
           actor->rotY = st->savedRotY;
           actor->posZ = st->savedPosZ;
-          actor->mode = 1;
+          actor->mode = LIFECHEST_OPEN;
           actor->frameProgress = 8;
           actor->frameRate = 8;
           actor->nextAnim = 1;
@@ -3071,7 +3071,7 @@ void Level0_UpdateActors(void) {
           st->phase = GetRandomU32() & 0xFF;
           actor->frameProgress = 8;
           actor->frameRate = 8;
-          actor->mode = 0;
+          actor->mode = LIFECHEST_CLOSED;
           actor->nextAnim = 0;
           if (actor->voiceRow == VOICE_ROW_NONE) {
             PlayActorMeshVoice(actor, 3, 0);
@@ -3118,7 +3118,7 @@ void Level0_UpdateActors(void) {
 
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x18);
 
-      if (actor->mode == 1) {
+      if (actor->mode == LIFECHEST_OPEN) {
         DespawnActorRecord(st->passenger);
       }
 

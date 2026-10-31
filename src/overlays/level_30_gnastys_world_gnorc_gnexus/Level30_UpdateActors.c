@@ -361,7 +361,7 @@ void Level30_UpdateActors(void) {
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
               sparx->target = actor;
               sparx->timer = RandomIntInRange(0x96, 0xD2);
-              actor->mode = 1;
+              actor->mode = BUTTERFLY_CIRCLE;
             }
           }
         }
@@ -369,7 +369,7 @@ void Level30_UpdateActors(void) {
 
       if (!(actor->cullRadius & 0x80)) {
         switch (actor->mode) {
-        case 0:
+        case BUTTERFLY_FLUTTER:
           if (TickCountdownByFrameDelta(&st->wanderTimer, 2) == 0 || actor->drawn != 0) {
             int moved;
             int blocked;
@@ -435,7 +435,7 @@ void Level30_UpdateActors(void) {
           }
           break;
 
-        case 1:
+        case BUTTERFLY_CIRCLE:
           SteerActorAroundPoint(actor, &spy->posX, 0x320,
                         WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                     actor->posY - spy->posY, 0),
@@ -443,7 +443,7 @@ void Level30_UpdateActors(void) {
                         8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
 
           if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
-            actor->mode = 0;
+            actor->mode = BUTTERFLY_FLUTTER;
             break;
           }
 
@@ -1294,7 +1294,7 @@ void Level30_UpdateActors(void) {
 
       if (SPY.sparxHealth <= SPARX_GONE) {
         if (st->target != 0 && st->target->type == ACTOR_TYPE_BUTTERFLY) {
-          st->target->mode = 0;
+          st->target->mode = BUTTERFLY_FLUTTER;
         }
         g_pSparxActor = 0;
         DespawnActorRecord(actor);

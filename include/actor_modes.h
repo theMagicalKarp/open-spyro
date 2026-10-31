@@ -13,7 +13,7 @@ enum CollectSubMode {
   COLLECT_REST = 1,   /* on the ground; calls Sparx over when Spyro is near */
   COLLECT_BOUNCE = 2, /* knocked loose: arcs and bounces until it settles */
   COLLECT_HOMING = 3, /* pulled toward Spyro (fetched, or a DROP_TUMBLE), then collected */
-  COLLECT_INERT = 4,  /* skipped entirely */
+  COLLECT_INERT = 4,  /* skipped: a seed pod's displayed prize (the pod moves it) */
 };
 
 /* Sparx's ->subMode while he has a target (SparxState.target); with none he
@@ -53,6 +53,30 @@ enum DragonStatueMode {
   STATUE_INIT = 0,      /* snapshot the rest pose, hold the partner (mode 3) */
   STATUE_IDLE = 1,      /* shakes now and then; Spyro touching it frees the dragon */
   STATUE_RESCUING = 2,  /* BeginDragonRescue ran (also the save menu's replay) */
+};
+
+/* ->mode of a butterfly (ACTOR_TYPE_BUTTERFLY, WanderState). */
+enum ButterflyMode {
+  BUTTERFLY_FLUTTER = 0, /* drifts about its spawn point */
+  BUTTERFLY_CIRCLE = 1,  /* Sparx is coming to eat it: circles Spyro */
+};
+
+/* ->mode of a seed pod (ACTOR_TYPE_SEED_POD, SeedPodState). */
+enum SeedPodMode {
+  SEEDPOD_CLOSED = 0, /* struck: spawns its prize (COLLECT_INERT) and opens */
+  SEEDPOD_OPEN = 1,   /* shakes with the prize floating above; closes after a while */
+};
+
+/* ->mode of a life chest (ACTOR_TYPE_LIFE_CHEST, LiftState). */
+enum LifeChestMode {
+  LIFECHEST_CLOSED = 0, /* shakes on a timer, then lifts its lid */
+  LIFECHEST_OPEN = 1,   /* lid up, its rider showing; closes after 0xE6 frames */
+};
+
+/* ->mode of a level-exit whirlwind (ACTOR_TYPE_LEVEL_EXIT, ExitWhirlState). */
+enum LevelExitMode {
+  LEVELEXIT_FAR = 0,  /* camera out of range */
+  LEVELEXIT_NEAR = 1, /* camera close: its name letters were spawned */
 };
 
 #endif

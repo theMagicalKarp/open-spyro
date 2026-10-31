@@ -215,7 +215,7 @@ void Level23_UpdateActors(void) {
               cs->owner = actor;
               cs->timer = RandomIntInRange(150, 210);
 
-              actor->mode = 1;
+              actor->mode = BUTTERFLY_CIRCLE;
             }
           }
         }
@@ -225,7 +225,7 @@ void Level23_UpdateActors(void) {
         break;
 
       switch (actor->mode) {
-      case 0: {
+      case BUTTERFLY_FLUTTER: {
         if (TickCountdownByFrameDelta(&st->idleTimer, 2) == 0 || actor->drawn) {
           int refHeight, rotated, moved;
 
@@ -283,7 +283,7 @@ void Level23_UpdateActors(void) {
         }
         break;
       }
-      case 1: {
+      case BUTTERFLY_CIRCLE: {
         SteerActorAroundPoint(actor, &spy->posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, 0),
@@ -291,7 +291,7 @@ void Level23_UpdateActors(void) {
                       8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
-          actor->mode = 0;
+          actor->mode = BUTTERFLY_FLUTTER;
         } else {
           int refHeight;
 

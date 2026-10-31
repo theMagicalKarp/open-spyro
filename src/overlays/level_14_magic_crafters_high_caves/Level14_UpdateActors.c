@@ -281,15 +281,15 @@ void Level14_UpdateActors(void) {
       int dist = ApproxDist2D(&actor->posX, &CAM.posX);
       int i;
 
-      if (actor->mode != 0 ? dist < 0x2800 : dist < 0x2400) {
-        if (actor->mode == 0) {
+      if (actor->mode != LEVELEXIT_FAR ? dist < 0x2800 : dist < 0x2400) {
+        if (actor->mode == LEVELEXIT_FAR) {
           actor->posZ += 0x600;
           SpawnNameLetterActors(actor, 0);
           actor->posZ -= 0x600;
         }
         actor->mode = oneq;
       } else {
-        actor->mode = 0;
+        actor->mode = LEVELEXIT_FAR;
       }
 
       dist = ApproxDist2D(&actor->posX, &SPY.posX);
@@ -507,7 +507,7 @@ void Level14_UpdateActors(void) {
               cs->owner = actor;
               cs->timer = RandomIntInRange(150, 210);
 
-              actor->mode = 1;
+              actor->mode = BUTTERFLY_CIRCLE;
             }
           }
         }
@@ -517,7 +517,7 @@ void Level14_UpdateActors(void) {
         break;
 
       switch (actor->mode) {
-      case 0: {
+      case BUTTERFLY_FLUTTER: {
         if (TickCountdownByFrameDelta(&st->idleTimer, 2) == 0 || actor->drawn) {
           int refHeight, rotated, moved;
 
@@ -575,7 +575,7 @@ void Level14_UpdateActors(void) {
         }
         break;
       }
-      case 1: {
+      case BUTTERFLY_CIRCLE: {
         SteerActorAroundPoint(actor, &SPY.posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - SPY.posX,
                                                   actor->posY - SPY.posY, 0),
@@ -583,7 +583,7 @@ void Level14_UpdateActors(void) {
                       8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
-          actor->mode = 0;
+          actor->mode = BUTTERFLY_FLUTTER;
         } else {
           int refHeight;
 
@@ -4705,7 +4705,7 @@ void Level14_UpdateActors(void) {
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
-      case 0:
+      case SEEDPOD_CLOSED:
         if (actor->subMode == 0) {
           *(int *)&actor->tint0 = g_anTintByDropKind[actor->dropKind];
           actor->subMode = 1;
@@ -4718,14 +4718,14 @@ void Level14_UpdateActors(void) {
           st->restZ = actor->posZ;
           actor->updateDist = 0x40;
           st->prize = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
-          st->prize->subMode = 4;
+          st->prize->subMode = COLLECT_INERT;
           st->prize->cullRadius = 0;
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
           g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (void *)(st->prize->type - 0x53));
           PlayActorMeshVoice(actor, 0, 0);
-          actor->mode = 1;
+          actor->mode = SEEDPOD_OPEN;
           ANIM_RESET(actor, 1);
           continue;
         }
@@ -4736,7 +4736,7 @@ void Level14_UpdateActors(void) {
         st->timer += g_nFrameStep;
         break;
 
-      case 1: {
+      case SEEDPOD_OPEN: {
         int i;
 
         st->prize->cullRadius = 0x18;
@@ -4791,7 +4791,7 @@ void Level14_UpdateActors(void) {
           continue;
         }
         if (actor->flags & ACTOR_HIT_SUPER) {
-          st->prize->subMode = 2;
+          st->prize->subMode = COLLECT_BOUNCE;
           PlayActorMeshVoice(actor, 2, 0);
           for (i = 0; i < 2; i++) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
@@ -4833,7 +4833,7 @@ void Level14_UpdateActors(void) {
           actor->posZ = st->restZ;
           st->timer = 0;
           PlayActorMeshVoice(actor, 1, 0);
-          actor->mode = 0;
+          actor->mode = SEEDPOD_CLOSED;
           ANIM_RESET(actor, 0);
           continue;
         }
