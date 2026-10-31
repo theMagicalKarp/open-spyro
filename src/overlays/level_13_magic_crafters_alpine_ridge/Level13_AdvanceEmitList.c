@@ -693,7 +693,7 @@ void Level13_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x48:  /* <- Level15_AdvanceEmitList */
+    case EMIT_CRAWLING_STREAK:  /* <- Level15_AdvanceEmitList */
     /* <- Level10_AdvanceEmitList */
     {
       int d[3];

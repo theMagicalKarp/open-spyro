@@ -556,7 +556,7 @@ void Level14_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x45:
+    case EMIT_PATH_DOT:
     {
       unsigned char *path;
       int *base;
@@ -685,7 +685,7 @@ void Level14_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x48:
+    case EMIT_CRAWLING_STREAK:
     {
       int d[3];
       int j;
@@ -720,7 +720,7 @@ void Level14_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x49:
+    case EMIT_ORBIT_DOT:
       if (ALIVE == 0 || AGE >= 0x21) {
         FreeEmitListRecord(rec);
         break;

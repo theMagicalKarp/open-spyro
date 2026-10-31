@@ -38,7 +38,7 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       short vel[3];              /* 0x10 */
       short pad16;               /* 0x16 */
       int src;                   /* 0x18 the emitter argument it tracks */
-      int waypoint;                 /* 0x1C index into the waypoint list at src (stream-follower 0x45) */
+      int waypoint;                 /* 0x1C index into the waypoint list at src (EMIT_PATH_DOT) */
     } dust;
     struct {                     /* class 2 -- ribbon (2nd point at 0x12) */
       short pos[3];              /* 0x04 */
@@ -111,7 +111,7 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       short pad[3];              /* 0x12 */
       short vel[3];              /* 0x18 */
       unsigned char owner;       /* 0x1E actor index into the pool */
-      unsigned char orbitRadius;       /* 0x1F orbit radius (two-axis orbit 0x49) */
+      unsigned char orbitRadius;       /* 0x1F orbit radius (EMIT_ORBIT_DOT) */
     } track;
     struct {                     /* classes 1 / 4 -- streak */
       unsigned short a[3];       /* 0x04 head */
@@ -174,8 +174,10 @@ enum EmitClass {
 
 /* Effect types for g_pfnLevelEmitParticles(count, type, pos, effectArg)
  * whose arm is the same in every level EmitParticles clone that has it.
- * EMIT_BURST_SPARK comes from main's BurstActorIntoSparks instead; 0x45,
- * 0x48 and 0x49 have only AdvanceEmitList arms and stay numeric. */
+ * EMIT_BURST_SPARK comes from main's BurstActorIntoSparks instead. Nothing
+ * calls EmitParticles with 0x45, 0x48 or 0x49: only Level14_EmitParticles
+ * has arms for 0x45 / 0x49, and no clone creates 0x48, so these three are
+ * named from their AdvanceEmitList arms. */
 enum EmitEffect {
   EMIT_BURST_SPARK = 0xB,   /* BurstActorIntoSparks: drifts by the velocity at +0x12 and fades
                              * its RGB by 8 a tick until red reaches 0 */
@@ -190,6 +192,12 @@ enum EmitEffect {
                              * health), else a random colour */
   EMIT_STREAK_BURST = 0x46, /* yellow-orange streaks thrown out to radius effectArg */
   EMIT_STREAK_BURST_WHITE = 0x47, /* small white-yellow streak burst */
+  EMIT_PATH_DOT = 0x45,     /* random-colour dot that walks the waypoint list at effectArg with a
+                             * circular wobble; freed past the last waypoint */
+  EMIT_CRAWLING_STREAK = 0x48, /* two-point streak that creeps forward half its length a tick
+                                * with a random jitter; 0x30 frames */
+  EMIT_ORBIT_DOT = 0x49,    /* random-colour dot circling its start point at a random radius while
+                             * rising; 0x21 frames */
 
   /* Named from the EmitParticles arm (what it writes) and the matching
    * AdvanceEmitList arm (how it moves). Where the clones differ, they differ
