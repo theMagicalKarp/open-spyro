@@ -1811,7 +1811,8 @@ void Level34_UpdateActors(void) {
              * header): the camera anchor, target and control word. */
             g_nCameraScriptStickRequestY[29] = (int)&spyc->posX;
             g_nCameraScriptStickRequestY[30] = (int)&g_anCameraActiveTargetParams;
-            g_nCameraScriptStickRequestY[19] = 0x80002200;
+            g_nCameraScriptStickRequestY[19] = /* g_dwSpyroRequestMask */
+                (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT | SPYRO_RQ_CAMERA);
             g_anCameraActiveTargetParams.w[2] = 0xC00;
             g_anCameraActiveTargetParams.w[1] = 0x80;
             g_anCameraActiveTargetParams.w[4] = -0x100;

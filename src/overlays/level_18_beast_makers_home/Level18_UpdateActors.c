@@ -497,7 +497,7 @@ void Level18_UpdateActors(void) {
         {
           int *cf = &SPY.requestMask;
 
-          *cf = 0x80002000;
+          *cf = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         }
         if (SPY.state != SPYRO_ST_IDLE && SPY.state != SPYRO_ST_CHARGE_BONK) {
           actor->mode = EGG_COLLECTED;
@@ -3412,7 +3412,7 @@ void Level18_UpdateActors(void) {
         int *aim;
         int span;
 
-        *cf = 0x80006147;
+        *cf = (SPYRO_RQ_PENDING | SPYRO_RQ_NO_CLIP | SPYRO_RQ_FREEZE_INPUT | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_VEL_Z | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
         SPY.camPathReverse = actor->subMode;
         m = svR;
         portal = st->desc;

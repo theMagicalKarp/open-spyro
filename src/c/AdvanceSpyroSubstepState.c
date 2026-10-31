@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -39,7 +40,7 @@ void AdvanceSpyroSubstepState(void) {
       g_nSpyroAnimPlayRate = 4;
       if (g_dwActiveCameraOptions & 0x10) {
         int *cam = g_nCameraNextMode_blk;
-        int m = 0x80000000;
+        int m = (CAM_HELD | CAM_MODE_STAND);
         if (*cam >= 0) {
           *cam = m;
         }

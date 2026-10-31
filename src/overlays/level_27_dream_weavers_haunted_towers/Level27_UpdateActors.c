@@ -2134,7 +2134,7 @@ void Level27_UpdateActors(void) {
             } else {
               *p = 0x384;
             }
-            *(q = &g_dwSpyroRequestMask) |= 0x80020000;
+            *(q = &g_dwSpyroRequestMask) |= (SPYRO_RQ_PENDING | SPYRO_RQ_SCRIPTED_WALK);
             g_bSpyroRequestYaw = st->heading;
           }
           break;

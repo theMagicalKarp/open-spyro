@@ -2111,7 +2111,7 @@ void Level32_UpdateActors(void) {
         }
         if (ApproxDist2D(&actor->posX, spy) < reach &&
             ABS2(SPY_DZ(actor)) < high) {
-          AS_I32(g_dwSpyroRequestMask) = 0x80000047;
+          AS_I32(g_dwSpyroRequestMask) = (SPYRO_RQ_PENDING | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_VEL_Z | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
           SPY.triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
           g_anSpyroRequestVelocity.x = (st->vel[0] * 2) >> 3;
           g_nSpyroRequestVelocityZ = 0x28;

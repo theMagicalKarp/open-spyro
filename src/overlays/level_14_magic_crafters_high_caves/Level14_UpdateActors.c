@@ -1973,7 +1973,7 @@ void Level14_UpdateActors(void) {
         if (st->mode & 0x2C) {
           int *cf = &g_dwSpyroRequestMask;
 
-          *cf = 0x80000327;
+          *cf = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_YAW | SPYRO_RQ_VEL_Z | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
           SubtractVector(svF, &actor->posX, &SPY.posX);
           svF[2] -= 0x80;
           RShiftVector3(svF, 2);
@@ -2006,7 +2006,7 @@ void Level14_UpdateActors(void) {
         } else if (st->mode & 0x10) {
           int *cf = &g_dwSpyroRequestMask;
 
-          *cf = 0x80000327;
+          *cf = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_YAW | SPYRO_RQ_VEL_Z | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
           CopyVector(cf + 1, &SPY.posX);
           h = (actor->rotZ - SPY.bodyRotZ) & 0xFF;
           if (h > 0x80) {
@@ -3017,7 +3017,7 @@ void Level14_UpdateActors(void) {
             } else {
               *p = 0x384;
             }
-            *(q = &g_dwSpyroRequestMask) |= 0x80020000;
+            *(q = &g_dwSpyroRequestMask) |= (SPYRO_RQ_PENDING | SPYRO_RQ_SCRIPTED_WALK);
             g_bSpyroRequestYaw = st->heading;
           }
           break;

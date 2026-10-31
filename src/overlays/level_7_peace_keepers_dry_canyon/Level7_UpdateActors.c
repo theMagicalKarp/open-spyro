@@ -3103,7 +3103,8 @@ void Level7_UpdateActors(void) {
           actor->mode = 1;
         } else if (ApproxDist2D(&actor->posX, spy) < 0xC8 &&
                    ABS2(SPY_DZ(actor)) < 0x384) {
-          g_nCameraScriptStickRequestY[19] = 0x80000047;
+          g_nCameraScriptStickRequestY[19] = /* g_dwSpyroRequestMask */
+              (SPYRO_RQ_PENDING | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_VEL_Z | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
           SPY.triggerEvents |= (SPYRO_EV_HIT | SPYRO_EV_CONTACT);
           g_anSpyroRequestVelocity.x = (-st->vel[0] * 3) >> 2;
           g_nSpyroRequestVelocityZ = 0x50;

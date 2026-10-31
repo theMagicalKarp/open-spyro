@@ -2365,7 +2365,7 @@ void Level30_UpdateActors(void) {
         int *aim;
         int span;
 
-        *cf = 0x80006147;
+        *cf = (SPYRO_RQ_PENDING | SPYRO_RQ_NO_CLIP | SPYRO_RQ_FREEZE_INPUT | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_VEL_Z | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
         g_nPortalCamPathReverseFlag = actor->subMode;
         EBB_BREAK();
         portal = st->desc;
