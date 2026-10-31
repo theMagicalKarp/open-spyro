@@ -61,7 +61,7 @@ typedef struct SuperflameGiverState {
 
 /* Case 461 -- war drum. */
 typedef struct WarDrumState {
-  int chan;   /* 0x00 voice channel */
+  int chunkAnim;   /* 0x00 world chunk-anim handle (GetWorldChunkAnimState) */
   int wait;   /* 0x04 */
   int beat;   /* 0x08 */
   int fade;   /* 0x0C */
@@ -179,7 +179,7 @@ typedef struct BoulderThrowerState {
   int partner;     /* 0x00 index into g_pActorListBase, -1 none */
   int rider;       /* 0x04 index into g_pActorListBase */
   int groupAlert;         /* 0x08 level data: on waking, alert the group and its chunk anim */
-  int sound;         /* 0x0C sound handle */
+  int chunkAnim;         /* 0x0C world chunk-anim handle (GetWorldChunkAnimState) */
   int idlePose2;         /* 0x10 level data: idle in pose 2 */
   int partnerSignal; /* 0x14 set to 1 by the partner (its state word 5) */
   int u18[3];      /* 0x18 */
@@ -211,7 +211,7 @@ typedef struct GatekeeperState {
   int partner;     /* 0x00 index into g_pActorListBase, -1 none */
   int rider;       /* 0x04 index into g_pActorListBase */
   int groupAlert;         /* 0x08 level data: on waking, alert the group and its chunk anim */
-  int sound;         /* 0x0C sound handle */
+  int chunkAnim;         /* 0x0C world chunk-anim handle (GetWorldChunkAnimState) */
   int idlePose2;         /* 0x10 level data: idle in pose 2 */
   int partnerSignal; /* 0x14 set to 1 by the partner (its state word 5) */
   int mode;        /* 0x18 */
@@ -381,7 +381,7 @@ typedef struct PathWalkerState {
   int next;            /* 0x0C state to enter after the turn, 0x63 = done */
   int prevLeg[3];          /* 0x10 */
   int legStep[5];          /* 0x1C */
-  int sound;           /* 0x30 */
+  int chunkAnim;           /* 0x30 world chunk-anim handle (GetWorldChunkAnimState) */
   int period;          /* 0x34 */
   int timer;           /* 0x38 */
   int u3C;             /* 0x3C */

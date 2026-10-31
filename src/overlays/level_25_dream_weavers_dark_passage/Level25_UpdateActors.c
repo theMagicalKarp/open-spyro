@@ -2302,16 +2302,16 @@ void Level25_UpdateActors(void) {
           if (st->fx->size > 0x800) {
             st->fx->size = 0x800;
           }
-          if (st->sound >= 0 && st->fx->size >= 0x300 &&
-              CHUNK_ANIM_STEP(GetWorldChunkAnimState(st->sound)) < 0xB) {
-            ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
+          if (st->chunkAnim >= 0 && st->fx->size >= 0x300 &&
+              CHUNK_ANIM_STEP(GetWorldChunkAnimState(st->chunkAnim)) < 0xB) {
+            ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
           }
         }
       } else if (st->fx != 0) {
         st->fx->size -= 0x40;
-        if (st->fx->size <= 0x400 && st->sound >= 0 &&
-            CHUNK_ANIM_STEP(GetWorldChunkAnimState(st->sound)) > 0) {
-          ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
+        if (st->fx->size <= 0x400 && st->chunkAnim >= 0 &&
+            CHUNK_ANIM_STEP(GetWorldChunkAnimState(st->chunkAnim)) > 0) {
+          ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
         if (st->fx->size <= 0) {
           ClearWord(st->fx);
@@ -2338,8 +2338,8 @@ void Level25_UpdateActors(void) {
           st->timer = 0x78;
           actor->subMode &= 0xFD;
           if (actor->subMode & 1) {
-            if (st->sound >= 0) {
-              ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
+            if (st->chunkAnim >= 0) {
+              ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             }
             ENTER_POSE(actor, 1);
           }
@@ -2361,8 +2361,8 @@ void Level25_UpdateActors(void) {
         if (g_nActorAnimDone == 0) {
           break;
         }
-        if (st->sound >= 0) {
-          ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
+        if (st->chunkAnim >= 0) {
+          ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
         actor->subMode |= 2;
         ENTER_POSE(actor, 0);

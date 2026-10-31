@@ -625,7 +625,7 @@ typedef struct SwitchState {
 /* Type 49: sequenced prop driven by the 0x8002Bxxx player. Starts once any
  * exit vortex flag is set and its linked actor is dormant. */
 typedef struct AnimState {
-  int handle;  /* 0x00 */
+  int chunkAnim;  /* 0x00 world chunk-anim handle (GetWorldChunkAnimState) */
   int started; /* 0x04 one-shot init latch */
   int idx;     /* 0x08 pool index of the actor this one watches */
 } AnimState;
@@ -760,7 +760,7 @@ typedef struct PatchRideState {
 
 /* Type 350: sequenced prop driven by the 0x8002Bxxx player, unlocked once. */
 typedef struct PropAnimState {
-  int anim;   /* 0x00 handle for ModifyWorldChunkAnimFlags / B3F4 / B444 */
+  int chunkAnim;   /* 0x00 world chunk-anim handle (GetWorldChunkAnimState) */
   int timer;  /* 0x04 */
   int primed; /* 0x08 */
 } PropAnimState;
@@ -906,7 +906,7 @@ typedef struct PathGuardState {
 /* Case 497 -- humming bell. */
 typedef struct HummingBellState {
   char pad00[0x10];
-  int chan;   /* 0x10 voice channel */
+  int chunkAnim;   /* 0x10 world chunk-anim handle (GetWorldChunkAnimState) */
   int timer;  /* 0x14 */
   int period; /* 0x18 */
   char pad1C[0x14];
@@ -916,7 +916,7 @@ typedef struct HummingBellState {
 /* Case 495 -- the level boss. */
 typedef struct BlowhardState {
   char pad00[0x10];
-  int chan;           /* 0x10 voice channel, -1 = none */
+  int chunkAnim;           /* 0x10 world chunk-anim handle (GetWorldChunkAnimState) */
   PathData *path;     /* 0x14 path in use */
   int p18[3];         /* 0x18 */
   int p24;            /* 0x24 */
@@ -1243,7 +1243,7 @@ typedef struct RunnerState {
  * (mode 3); knocked back when hit, and runs off when Spyro gets close. */
 typedef struct VillagerState {
   unsigned char *path; /* 0x00 wander path { count, cur }, points at +8 */
-  int snd;             /* 0x04 voice handle, -1 = none */
+  int chunkAnim;             /* 0x04 world chunk-anim handle (GetWorldChunkAnimState) */
   int friend;          /* 0x08 actor it faces / sparkles at, -1 = none */
   int link;            /* 0x0C partner actor */
   int mode;            /* 0x10 */
@@ -1258,7 +1258,7 @@ typedef struct VillagerState {
   int fleeDist;        /* 0x34 in 1024ths */
   int speed;           /* 0x38 */
   int heading;         /* 0x3C */
-  int sndDone;         /* 0x40 */
+  int chunkAnimDone;         /* 0x40 chunk anim rewound to step < 2 (or none): ok to despawn */
   int stopVoice;       /* 0x44 */
   int runFrom;         /* 0x48 distance it started running at */
   int faceTimer;       /* 0x4C */
@@ -1395,7 +1395,7 @@ typedef struct LootThiefState {
   int look[3];    /* 0x1C */
   int laps;       /* 0x28 */
   int init;       /* 0x2C */
-  int snd;        /* 0x30 */
+  int chunkAnim;        /* 0x30 world chunk-anim handle (GetWorldChunkAnimState) */
   FlyPath *cur;   /* 0x34 */
   FlyPath *ring;  /* 0x38 */
   FlyPath *pathA; /* 0x3C */
@@ -1420,7 +1420,7 @@ typedef struct LootVortexState {
   short timer;          /* 0x00 */
   unsigned char phase;  /* 0x02 */
   unsigned char spark;  /* 0x03 0xFF = none */
-  int snd;              /* 0x04 */
+  int chunkAnim;              /* 0x04 world chunk-anim handle (GetWorldChunkAnimState) */
   int pad[6];           /* 0x08 trigger volume */
   int mode;             /* 0x20 */
   int key;              /* 0x24 actor index */
@@ -1620,7 +1620,7 @@ typedef struct LanternState {
   int timer;   /* 0x04 */
   FxNode *fx;  /* 0x08 glow node */
   int pos[3];  /* 0x0C glow anchor */
-  int sound;   /* 0x18 sound handle, -1 = none */
+  int chunkAnim;   /* 0x18 world chunk-anim handle (GetWorldChunkAnimState) */
 } LanternState;
 
 extern int FindFarthestPathPointFromSpyro(PathData *path);

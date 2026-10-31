@@ -3193,7 +3193,7 @@ void Level13_UpdateActors(void) {
             if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
               DespawnActorRecord(&g_pActorListBase[st->link]);
             }
-            ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
           }
           StopSoundVoiceByIndex(actor->sfxSlot, 4);
           DespawnActorRecord(actor);
@@ -3224,8 +3224,8 @@ void Level13_UpdateActors(void) {
             (GetRandomU32() & 1)) {
           g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, (int *)actor, &g_pActorListBase[st->friend]);
         }
-        if (st->snd != -1) {
-          animState = GetWorldChunkAnimState(st->snd);
+        if (st->chunkAnim != -1) {
+          animState = GetWorldChunkAnimState(st->chunkAnim);
           marker = CHUNK_ANIM_STEP(animState);
         }
         if (dist < st->camDist << 10 && (st->camAlways != 0 || marker >= 2) &&
@@ -3243,10 +3243,10 @@ void Level13_UpdateActors(void) {
           g_nCameraActiveTargetYawBias = 0;
           g_anCameraActiveTargetParams.w[0] = 0x800 - g_bSpyroPersistentEulerZ * 16;
         }
-        if (st->snd == -1) {
+        if (st->chunkAnim == -1) {
           break;
         }
-        if (st->snd == 0 && st->timer < 3 && (animState & CHUNK_ANIM_HALTED) && g_nActiveLevelId == LEVEL_ALPINE_RIDGE) {
+        if (st->chunkAnim == 0 && st->timer < 3 && (animState & CHUNK_ANIM_HALTED) && g_nActiveLevelId == LEVEL_ALPINE_RIDGE) {
           Actor *f = &g_pActorListBase[st->friend];
 
           PlaySoundEffect(g_pLevelSampleBankHeader[0x2A], f, SFX_MODE_3D, &f->sfxSlot);
@@ -3265,7 +3265,7 @@ void Level13_UpdateActors(void) {
               if (st->timer == 0) {
                 st->timer = st->timerLong;
               } else if (TickCountdownByFrameDelta(&st->timer, 4) == 2 && (animState & CHUNK_ANIM_HALTED)) {
-                ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
+                ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
               }
             } else {
               TickCountdownByFrameDelta(&st->timer, 4);
@@ -3278,7 +3278,7 @@ void Level13_UpdateActors(void) {
             }
             ANIM_GO(actor, 4);
             if (range + 0x800 < dist && (animState & CHUNK_ANIM_HALTED)) {
-              ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
+              ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
               st->timer = 0x1E;
             }
           }
@@ -3299,7 +3299,7 @@ void Level13_UpdateActors(void) {
             break;
           }
           if ((st->fleeDist << 10) < dist && TickCountdownByFrameDelta(&st->timer, 4)) {
-            ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             if (marker >= 2) {
               st->timer = st->timerLong;
             } else {
@@ -3316,7 +3316,7 @@ void Level13_UpdateActors(void) {
           if (actor->subMode == 0 &&
               (ApproxDist2D(&actor->posX, &SPY.posX) < 0x3400 ||
                g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT)) {
-            ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             actor->subMode = 1;
             st->timer = 0x46;
           } else if (TickCountdownByFrameDelta(&st->timer, 4) == 2) {
@@ -3346,7 +3346,7 @@ void Level13_UpdateActors(void) {
             }
             if ((ANIM_WORD(lead) & 0xFF0000FF) == 0x04000004 &&
                 (int)(GetRandomU32() & 0xFF) >= 0xD3) {
-              ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
+              ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
               st->timer = 0x5A;
             }
             if ((ANIM_WORD(lead) & 0xFF0000FF) == 0x08000004 &&
@@ -3358,7 +3358,7 @@ void Level13_UpdateActors(void) {
               ANIM_GO(actor, 0);
             }
           } else if (TickCountdownByFrameDelta(&st->timer, 4)) {
-            ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
           }
         }
         break;
@@ -3375,19 +3375,19 @@ void Level13_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           actor->cullRadius = 0;
         }
-        if (st->snd != -1 && st->sndDone == 0) {
-          animState = GetWorldChunkAnimState(st->snd);
+        if (st->chunkAnim != -1 && st->chunkAnimDone == 0) {
+          animState = GetWorldChunkAnimState(st->chunkAnim);
           if (animState & CHUNK_ANIM_HALTED) {
             if (CHUNK_ANIM_STEP(animState) >= 2) {
-              ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
+              ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             } else {
-              st->sndDone = one;
+              st->chunkAnimDone = one;
             }
           }
         } else {
-          st->sndDone = one;
+          st->chunkAnimDone = one;
         }
-        if (actor->cullRadius == 0 && st->sndDone != 0) {
+        if (actor->cullRadius == 0 && st->chunkAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
           StopSoundVoiceByIndex(actor->sfxSlot, 4);
@@ -3401,9 +3401,9 @@ void Level13_UpdateActors(void) {
         st->idleTimer = 0;
         SnapActorToGround(actor);
         if (st->stopVoice != 0) {
-          animState = GetWorldChunkAnimState(st->snd);
+          animState = GetWorldChunkAnimState(st->chunkAnim);
           if ((animState & CHUNK_ANIM_HALTED) && CHUNK_ANIM_STEP(animState) >= 2) {
-            ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
           }
         }
         ANIM_GO(actor, 7);
@@ -3422,9 +3422,9 @@ void Level13_UpdateActors(void) {
         }
         SnapActorToGround(actor);
         if (st->stopVoice != 0) {
-          animState = GetWorldChunkAnimState(st->snd);
+          animState = GetWorldChunkAnimState(st->chunkAnim);
           if ((animState & CHUNK_ANIM_HALTED) && CHUNK_ANIM_STEP(animState) >= 2) {
-            ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
           }
         }
         ANIM_GO(actor, 8);

@@ -1560,7 +1560,7 @@ void Level34_UpdateActors(void) {
         actor->cullRadius = 0;
         actor->drawn = 0;
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        if (CHUNK_ANIM_STEP(GetWorldChunkAnimState(st->snd)) > 0) {
+        if (CHUNK_ANIM_STEP(GetWorldChunkAnimState(st->chunkAnim)) > 0) {
           st->init = one;
           actor->frameRate = 0x10;
           actor->cullRadius = 0x40;
@@ -2317,12 +2317,12 @@ void Level34_UpdateActors(void) {
 
       case 3:
         PlaySoundEffect(g_pLevelSampleBankHeader[0x3C], 0, SFX_MODE_PANNED, 0);
-        ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         g_nCameraScriptStickRequestY[1] = 0;
         g_nCameraScriptStickRequestY[0] = 0;
         g_nCameraScriptStickRequestY[-1] = 0;
         g_nLevelKeyState = 0;
-        switch (st->snd) {
+        switch (st->chunkAnim) {
         case 0:
           g_nGnastyLootFallRefZCap = 0x563B;
           break;

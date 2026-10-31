@@ -2558,12 +2558,12 @@ void Level33_UpdateActors(void) {
 
       case 3:
         PlaySoundEffect(g_pLevelSampleBankHeader[0x3C], 0, SFX_MODE_PANNED, 0);
-        ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         g_nCameraScriptStickRequestY[1] = 0;
         g_nCameraScriptStickRequestY[0] = 0;
         g_nCameraScriptStickRequestY[-1] = 0;
         g_nLevelKeyState = 0;
-        switch (st->snd) {
+        switch (st->chunkAnim) {
         case 0:
           g_nGnastyLootFallRefZCap = 0x563B;
           break;

@@ -137,7 +137,7 @@ typedef struct WaypointRunnerState {
  * comes near (0x2000) or goes far (0x3000); with `riding` set it follows the
  * moving floor triangle under it. */
 typedef struct ChunkOperatorState {
-  int chunk;     /* 0x00 world chunk it animates (GetWorldChunkAnimState) */
+  int chunkAnim;     /* 0x00 world chunk it animates (GetWorldChunkAnimState) */
   int riding;    /* 0x04 */
   char *anchor;  /* 0x08 +0x18: distance reference */
   int spark;     /* 0x0C pool index of the spark target */
@@ -3888,16 +3888,16 @@ void Level14_UpdateActors(void) {
         if (d < 0x2000 && st->spark != 0 && (GetRandomU32() & 1)) {
           g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->spark]);
         }
-        r = GetWorldChunkAnimState(st->chunk);
+        r = GetWorldChunkAnimState(st->chunkAnim);
         if (r & CHUNK_ANIM_HALTED) {
           r = CHUNK_ANIM_STEP(r);
           if (r == 0 && d < 0x2000) {
-            ModifyWorldChunkAnimFlags(st->chunk, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             ENTER_POSE(actor, 2);
             continue;
           }
           if (r == 0xE && d > 0x3000) {
-            ModifyWorldChunkAnimFlags(st->chunk, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             ENTER_POSE(actor, 2);
             continue;
           }
@@ -3909,7 +3909,7 @@ void Level14_UpdateActors(void) {
         if (st->spark >= 0 && (GetRandomU32() & 1)) {
           g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->spark]);
         }
-        ModifyWorldChunkAnimFlags(st->chunk, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         break;
 
       case 2:
@@ -3926,12 +3926,12 @@ void Level14_UpdateActors(void) {
 
       case 3:
         if (st->riding == 0) {
-          int r = GetWorldChunkAnimState(st->chunk);
+          int r = GetWorldChunkAnimState(st->chunkAnim);
 
           if (r & CHUNK_ANIM_HALTED) {
             r = CHUNK_ANIM_STEP(r);
             if (r == 0xE) {
-              ModifyWorldChunkAnimFlags(st->chunk, CHUNK_ANIM_RESUME, 0);
+              ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             }
           }
         }
@@ -3950,7 +3950,7 @@ void Level14_UpdateActors(void) {
             g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->spark]);
           }
         }
-        ModifyWorldChunkAnimFlags(st->chunk, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
           actor->mode = 1;

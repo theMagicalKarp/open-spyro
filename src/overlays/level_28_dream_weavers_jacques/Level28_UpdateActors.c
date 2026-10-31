@@ -2067,7 +2067,7 @@ void Level28_UpdateActors(void) {
           case 0:
           case 1:
           case 3:
-            ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             break;
           case 2:
             if (g_pActorListBase[st->partner].mode >= 6 &&
@@ -2075,7 +2075,7 @@ void Level28_UpdateActors(void) {
               st->flag = one;
             } else {
               st->timer = 0x1C2;
-              ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
+              ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             }
             break;
           case 4:
@@ -2083,11 +2083,11 @@ void Level28_UpdateActors(void) {
                 !(GetWorldChunkAnimState(1) & CHUNK_ANIM_HALTED)) {
               st->timer = 0x1C2;
               ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
-              st->sound = 2;
+              st->chunkAnim = 2;
             } else {
               st->timer = 0x1C2;
               ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
-              st->sound = one;
+              st->chunkAnim = one;
             }
             break;
           }
@@ -2102,10 +2102,10 @@ void Level28_UpdateActors(void) {
         if (st->next == 0x63) {
           ENTER_POSE(actor, 0xC);
         }
-        if (st->flag != 0 && (GetWorldChunkAnimState(st->sound) & CHUNK_ANIM_HALTED)) {
+        if (st->flag != 0 && (GetWorldChunkAnimState(st->chunkAnim) & CHUNK_ANIM_HALTED)) {
           st->flag = 0;
           st->timer = 0x14A;
-          ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           st->timer = 0x50;
@@ -2124,7 +2124,7 @@ void Level28_UpdateActors(void) {
         case 3:
         case 4:
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-            ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             ENTER_POSE(actor, 0xC);
           }
           break;
@@ -2135,11 +2135,11 @@ void Level28_UpdateActors(void) {
             if (g_pActorListBase[st->partner].mode >= 6) {
               ((int *)g_pActorListBase[st->partner].state)[3] = 0x63;
             }
-            s = GetWorldChunkAnimState(st->sound);
+            s = GetWorldChunkAnimState(st->chunkAnim);
             if ((s & CHUNK_ANIM_HALTED) && CHUNK_ANIM_STEP(s) < 0x14) {
-              SetWorldChunkAnimStep(st->sound, 0x1E, 0);
+              SetWorldChunkAnimStep(st->chunkAnim, 0x1E, 0);
             }
-            ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             ENTER_POSE(actor, 0xC);
           }
           break;

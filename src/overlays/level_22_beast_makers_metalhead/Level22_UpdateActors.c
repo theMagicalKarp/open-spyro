@@ -1263,7 +1263,7 @@ void Level22_UpdateActors(void) {
         }
         if (st->groupAlert != 0) {
           SetActorGroupSubstate(actor, 1);
-          ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
         if (st->flags & 1) {
           ENTER_POSE(actor, 5);
@@ -1647,7 +1647,7 @@ void Level22_UpdateActors(void) {
         }
         if (st->groupAlert != 0) {
           SetActorGroupSubstate(actor, 2);
-          ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
         actor->mode = 2;
         ANIM_RESET(actor, 2);

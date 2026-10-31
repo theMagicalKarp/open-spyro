@@ -3266,11 +3266,11 @@ void Level19_UpdateActors(void) {
         st->wait = st->reload;
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
-      if (st->beat == 0 && CHUNK_ANIM_STEP(GetWorldChunkAnimState(st->chan)) < 2) {
-        g_anLevelTriggerStateSlots[st->chan] = 0;
+      if (st->beat == 0 && CHUNK_ANIM_STEP(GetWorldChunkAnimState(st->chunkAnim)) < 2) {
+        g_anLevelTriggerStateSlots[st->chunkAnim] = 0;
       }
       if (TickCountdownByFrameDelta(&st->fade, 4) == 0) {
-        ModifyWorldChunkAnimFlags(st->chan, CHUNK_ANIM_KEEP(CHUNK_ANIM_BRANCH), CHUNK_ANIM_BRANCH);
+        ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_KEEP(CHUNK_ANIM_BRANCH), CHUNK_ANIM_BRANCH);
       }
 
       switch (actor->mode) {
@@ -3282,9 +3282,9 @@ void Level19_UpdateActors(void) {
 
       case 2:
         if (actor->nextFrame >= 6 && st->beat == 0) {
-          ModifyWorldChunkAnimFlags(st->chan, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
           st->beat = 0x64;
-          g_anLevelTriggerStateSlots[st->chan] = 1;
+          g_anLevelTriggerStateSlots[st->chunkAnim] = 1;
           PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
                         &st->voice);
         }
@@ -3307,7 +3307,7 @@ void Level19_UpdateActors(void) {
         break;
 
       case 4:
-        if (GetWorldChunkAnimState(st->chan) & CHUNK_ANIM_HALTED) {
+        if (GetWorldChunkAnimState(st->chunkAnim) & CHUNK_ANIM_HALTED) {
           DespawnActorRecord(actor);
           continue;
         }
