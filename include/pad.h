@@ -10,13 +10,35 @@
 
 #include "pad_buttons.h"
 
+/* Stick axis bytes of the analog word, in controller-report order (right
+ * stick first). 0x7F is centred; X grows rightward, Y grows downward
+ * (PollPadAndDistributeInput maps the left stick onto the D-pad bits). */
+enum PadAxis {
+  PAD_AXIS_RX, /* right stick X */
+  PAD_AXIS_RY, /* right stick Y */
+  PAD_AXIS_LX, /* left stick X */
+  PAD_AXIS_LY  /* left stick Y */
+};
+
+/* All four axes centred (the neutral analog word). */
+#define PAD_ANALOG_CENTERED 0x7F7F7F7F
+
+/* The left stick is centred when the upper half of the word is 0x7F7F. */
+#define PAD_LEFT_STICK_MASK 0xFFFF0000
+#define PAD_LEFT_STICK_CENTERED 0x7F7F0000
+
+typedef union PadAnalog {
+  unsigned int word;
+  unsigned char axis[4]; /* indexed by PadAxis */
+} PadAnalog;
+
 typedef struct PadSubstep {
   int padType;           /* 0x00 g_nPadType */
   unsigned int held;     /* 0x04 g_dwPadHeld */
   unsigned int pressed;  /* 0x08 g_dwPadPressed */
   unsigned int released; /* 0x0C g_dwPadReleased */
   int stickActive;       /* 0x10 g_nPadStickActiveFlag */
-  unsigned int analog;   /* 0x14 g_dwPadAnalogCalibrated */
+  PadAnalog analog;      /* 0x14 g_dwPadAnalogCalibrated */
 } PadSubstep;            /* 0x18 */
 
 /* Ring entry at byte offset `off` (tick * 0x18). */

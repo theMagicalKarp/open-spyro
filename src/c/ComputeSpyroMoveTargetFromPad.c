@@ -39,15 +39,17 @@ void ComputeSpyroMoveTargetFromPad(int speed) {
 
   pad = (unsigned char *)g_pPadSubstepState;
   if (((PadSubstep *)pad)->stickActive != 0 &&
-      (((PadSubstep *)pad)->analog & 0xffff0000) != 0x7f7f0000) {
+      (((PadSubstep *)pad)->analog.word & PAD_LEFT_STICK_MASK) !=
+          PAD_LEFT_STICK_CENTERED) {
     k = 0x7f;
-    yaw = ArcTan2(k - pad[0x17], k - pad[0x16], 1);
+    yaw = ArcTan2(k - ((PadSubstep *)pad)->analog.axis[PAD_AXIS_LY],
+                  k - ((PadSubstep *)pad)->analog.axis[PAD_AXIS_LX], 1);
     target = (volatile int *)g_anSpyroMoveTargetYawBlock;
     *target = yaw;
     *(int *)target = (yaw + g_nCameraEulerYaw) & 0xfff;
     stick = *(unsigned char *volatile *)&g_pPadSubstepState;
-    y = stick[0x17];
-    x = stick[0x16];
+    y = ((PadSubstep *)stick)->analog.axis[PAD_AXIS_LY];
+    x = ((PadSubstep *)stick)->analog.axis[PAD_AXIS_LX];
     dy = k - y;
     if (dy < 0) {
       dy = -dy;

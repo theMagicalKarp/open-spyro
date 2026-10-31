@@ -29,8 +29,8 @@ int SampleDemoPadFrame(void) {
     *(unsigned int *)cal = *(unsigned int *)&g_abPadRawReport[4];
     MapPadAxisToCalibratedRange(cal, (int)(cal - 0x14));
     frame &= 0xFFFF;
-    frame |= cal[2] << 16;
-    frame |= cal[3] << 24;
+    frame |= cal[PAD_AXIS_LX] << 16;
+    frame |= cal[PAD_AXIS_LY] << 24;
     cur = g_pDemoPadCursor;
     g_pDemoPadCursor = cur + 4;
     *(unsigned int *)cur = frame;
@@ -42,8 +42,8 @@ int SampleDemoPadFrame(void) {
     frame = *(int *)cur;
     cal[0] = 0x7F;
     cal[1] = 0x7F;
-    cal[2] = frame >> 16;
-    cal[3] = frame >> 24;
+    cal[PAD_AXIS_LX] = frame >> 16;
+    cal[PAD_AXIS_LY] = frame >> 24;
   }
   frame &= 0xFFFF;
   held = g_dwPadHeld;
@@ -52,7 +52,8 @@ int SampleDemoPadFrame(void) {
   rel = held & ~frame;
   g_dwPadHeld = frame;
   g_dwPadReleased = rel;
-  if ((g_dwPadAnalogCalibrated & 0xFFFF0000) != 0x7F7F0000) {
+  if ((g_dwPadAnalogCalibrated & PAD_LEFT_STICK_MASK) !=
+      PAD_LEFT_STICK_CENTERED) {
     g_nPadStickActiveFlag = 1;
   } else {
     g_nPadStickActiveFlag = 0;
@@ -75,7 +76,8 @@ int SampleDemoPadFrame(void) {
   g_nPadAllInputIdleFlag = 1;
   g_nPadDirectionalIdleFlag = 1;
   if ((g_dwPadHeld & PAD_DPAD) != 0 ||
-      (g_dwPadAnalogCalibrated & 0xFFFF0000) != 0x7F7F0000) {
+      (g_dwPadAnalogCalibrated & PAD_LEFT_STICK_MASK) !=
+          PAD_LEFT_STICK_CENTERED) {
     g_nPadDirectionalIdleFlag = 0;
   }
   if (g_nPadDirectionalIdleFlag == 0 ||
