@@ -574,7 +574,7 @@ void Level3_UpdateActors(void) {
       case WARD_DAZED:
         if (actor->flags & ACTOR_HIT_FLAME) {
         pose9:
-          ANIM_QUEUE(actor, 9);
+          ANIM_QUEUE(actor, WARD_BURN);
         }
         switch (actor->anim) {
         case 4:

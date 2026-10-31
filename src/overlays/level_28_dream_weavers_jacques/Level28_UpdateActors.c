@@ -880,10 +880,10 @@ void Level28_UpdateActors(void) {
       case 0: {
         int d;
 
-        if (st->partner->mode == 0xA) {
-          ((int *)st->partner->state)[13] = 0;
-          ((int *)st->partner->state)[21] = 0;
-          ((int *)st->partner->state)[17] = 0;
+        if (st->partner->mode == JACQUES_HOP) {
+          ((JacquesState *)st->partner->state)->timer = 0;
+          ((JacquesState *)st->partner->state)->u54 = 0;
+          ((JacquesState *)st->partner->state)->child = 0;
           actor->mode = 1;
           ANIM_RESET(actor, 1);
           continue;
@@ -923,7 +923,7 @@ void Level28_UpdateActors(void) {
             ArcTan2(spy->posX - actor->posX, SPY.posY - actor->posY, 0);
         st->timer = 8;
         st->timer2 = 0x78;
-        ((int *)st->partner->state)[17] = 0;
+        ((JacquesState *)st->partner->state)->child = 0;
         st->speed = 0x12C;
         d = ApproxDist2D(&actor->posX, g168);
         if (d < st->speed) {
@@ -1994,7 +1994,7 @@ void Level28_UpdateActors(void) {
           }
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000 &&
               g_nActorAnimDone != 0 && (GetRandomU32() & 4)) {
-            ANIM_QUEUE(actor, 4);
+            ANIM_QUEUE(actor, SINGER_WATCH);
           }
           continue;
         }
@@ -2092,7 +2092,7 @@ void Level28_UpdateActors(void) {
             break;
           }
           PlayActorMeshVoice(actor, 0, 0);
-          ANIM_QUEUE(actor, 9);
+          ANIM_QUEUE(actor, SINGER_SING);
         }
         continue;
 
@@ -2188,7 +2188,7 @@ void Level28_UpdateActors(void) {
         ModifyWorldChunkAnimFlags(7, CHUNK_ANIM_RESUME, 0);
         ModifyWorldChunkAnimFlags(8, CHUNK_ANIM_RESUME, 0);
       }
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 3 && actor->mode != 6) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != JACQUES_DEFEATED && actor->mode != 6) {
         actor->flags = 0;
         switch (st->path->cur) {
         case 11:
@@ -2198,10 +2198,10 @@ void Level28_UpdateActors(void) {
           ModifyWorldChunkAnimFlags(10, CHUNK_ANIM_RESUME, 0);
           break;
         case 0:
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, JACQUES_DEFEATED);
         }
         ANIM_GO(actor, 0);
-        actor->mode = 10;
+        actor->mode = JACQUES_HOP;
         continue;
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -2209,7 +2209,7 @@ void Level28_UpdateActors(void) {
       ApproxDist2D(&actor->posX, &spy->posX);
 
       switch (actor->mode) {
-      case 0:
+      case JACQUES_WATCH:
         TrackEntityYawTowardSpyro(actor, 0x10, 0, 0);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1000 &&
             st->standGround == 0) {
@@ -2217,7 +2217,7 @@ void Level28_UpdateActors(void) {
             ModifyWorldChunkAnimFlags(10, CHUNK_ANIM_RESUME, 0);
           }
           ANIM_GO(actor, 0);
-          actor->mode = 10;
+          actor->mode = JACQUES_HOP;
           continue;
         }
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2800 &&
@@ -2226,11 +2226,11 @@ void Level28_UpdateActors(void) {
                           ArcTan2(actor->posX - g_anCameraPos[0],
                                         actor->posY - g_anCameraPos[1], 0)) <
                 0x1E) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, JACQUES_THROW);
         }
         continue;
 
-      case 2:
+      case JACQUES_THROW:
         TrackEntityYawTowardSpyro(actor, 0x10, 0, 0);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1000 &&
             st->standGround == 0) {
@@ -2239,12 +2239,12 @@ void Level28_UpdateActors(void) {
           }
           st->u54 = 0;
           ANIM_GO(actor, 0);
-          actor->mode = 10;
+          actor->mode = JACQUES_HOP;
           continue;
         }
         if (g_nActorAnimDone != 0) {
           st->timer = 0x4B;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, JACQUES_WATCH);
         }
         if (actor->nextFrame == 0 && st->child == 0) {
           st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_THROWN_ROCK, actor);
@@ -2254,7 +2254,7 @@ void Level28_UpdateActors(void) {
         }
         continue;
 
-      case 3:
+      case JACQUES_DEFEATED:
         if (g_nActorAnimDone != 0) {
           BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
@@ -2262,7 +2262,7 @@ void Level28_UpdateActors(void) {
         }
         continue;
 
-      case 10:
+      case JACQUES_HOP:
         if (st->freezesSpyro != 0) {
           g_nGameplayBlocked = one;
           g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
@@ -2296,7 +2296,7 @@ void Level28_UpdateActors(void) {
         g_nGameplayBlocked = 0;
         st->idx++;
         actor->flags = 0;
-        actor->mode = 0;
+        actor->mode = JACQUES_WATCH;
         continue;
       }
       continue;

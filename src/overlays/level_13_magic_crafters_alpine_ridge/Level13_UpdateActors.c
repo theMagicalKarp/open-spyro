@@ -4551,14 +4551,14 @@ void Level13_UpdateActors(void) {
       SorcererState *st = actor->state;
       int dist = ApproxDist2D(&actor->posX, &SPY.posX);
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) != 0 && actor->mode != 6) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) != 0 && actor->mode != SORCERER_KNOCKED) {
         if (st->mode == 1) {
-          actor->mode = 0xA;
+          actor->mode = SORCERER_BREAK_LINK;
         } else {
           StopSoundVoiceByIndex(actor->voiceRow, 4);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
-          actor->mode = 6;
+          actor->mode = SORCERER_KNOCKED;
           ANIM_RESET(actor, 6);
           continue;
         }
@@ -4568,22 +4568,22 @@ void Level13_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case SORCERER_IDLE:
         if (st->mode == 0) {
           TrackEntityYawTowardSpyro(actor, 8, 0, 0);
           if ((TickCountdownByFrameDelta(&st->timer, 4) &&
                ApproxDist2D(&SPY.posX, PATH_PT(st->path, 0)) < st->range) ||
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
             if (actor->group < 0xFF) {
-              SetActorGroupStateExcept(actor, 0x63, 6);
+              SetActorGroupStateExcept(actor, SORCERER_ALERTED, SORCERER_KNOCKED);
             } else {
-              ENTER_POSE(actor, 3);
+              ENTER_POSE(actor, SORCERER_CONJURE);
             }
           }
         } else if (st->mode == 1) {
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2800 &&
               g_nSpyroAirborneFrames == 0 && actor->nextAnim != 7) {
-            actor->mode = 0xA;
+            actor->mode = SORCERER_BREAK_LINK;
             continue;
           }
           switch (st->sub) {
@@ -4647,42 +4647,42 @@ void Level13_UpdateActors(void) {
         }
         break;
 
-      case 1:
+      case SORCERER_SETTLE:
         if (g_nActorAnimDone != 0) {
           ANIM_GO(actor, 0);
-          actor->mode = 0;
+          actor->mode = SORCERER_IDLE;
           continue;
         }
         break;
 
-      case 2:
+      case SORCERER_TAUNT:
         ANIM_GO(actor, 2);
         if (g_nActorAnimDone != 0) {
           st->angry = 1;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, SORCERER_IDLE);
         }
         break;
 
-      case 3:
+      case SORCERER_CONJURE:
         TrackEntityYawTowardSpyro(actor, 8, 0, 0);
         ANIM_GO(actor, 3);
         if (g_nActorAnimDone != 0) {
           st->timer = 0;
           st->count = 0;
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, SORCERER_CAST);
         }
         break;
 
-      case 4:
+      case SORCERER_CAST:
         TrackEntityYawTowardSpyro(actor, 8, 0, 0);
         if (ApproxDist2D(&spy->posX, PATH_PT(st->path, 0)) > st->range + 0x400 &&
             ApproxDist2D(&actor->posX, &spy->posX) > 0x1800) {
           if (st->angry != 0) {
             st->timer = 0x5A;
-            actor->mode = 0x61;
+            actor->mode = SORCERER_WAIT_CONJURE;
             continue;
           }
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, SORCERER_IDLE);
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) && actor->nextFrame >= 6 &&
             st->count < 3) {
@@ -4698,15 +4698,15 @@ void Level13_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           if (ApproxDist2D(&actor->posX, &SPY.posX) < st->range) {
             if (actor->group == 0xFF) {
-              ENTER_POSE(actor, 3);
+              ENTER_POSE(actor, SORCERER_CONJURE);
             }
-            SetActorGroupStateExcept(actor, 0x63, 6);
+            SetActorGroupStateExcept(actor, SORCERER_ALERTED, SORCERER_KNOCKED);
           }
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, SORCERER_IDLE);
         }
         break;
 
-      case 6:
+      case SORCERER_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x30);
@@ -4715,7 +4715,7 @@ void Level13_UpdateActors(void) {
         }
         break;
 
-      case 10: {
+      case SORCERER_BREAK_LINK: {
         Actor *t = &g_pActorListBase[st->target];
         SorcererState *ts = t->state;
         Actor *m = &g_pActorListBase[ts->target];
@@ -4728,36 +4728,36 @@ void Level13_UpdateActors(void) {
         CopyVector(&m->posX, &t->posX);
         m->posZ += 0x200;
         *tri = -1;
-        actor->mode = 1;
+        actor->mode = SORCERER_SETTLE;
         continue;
       }
 
-      case 0x60:
+      case SORCERER_WAIT_TAUNT:
         if (TickCountdownByFrameDelta(&st->timer, 4)) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, SORCERER_TAUNT);
         }
         break;
 
-      case 0x61:
+      case SORCERER_WAIT_CONJURE:
         if (TickCountdownByFrameDelta(&st->timer, 4)) {
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, SORCERER_CONJURE);
         }
         break;
 
-      case 0x62:
+      case SORCERER_CUE:
         if (actor->nextAnim == 0) {
           st->timer = GetRandomU32() & 0xF;
-          actor->mode = 0x60;
+          actor->mode = SORCERER_WAIT_TAUNT;
           continue;
         }
         actor->mode = actor->nextAnim;
         break;
 
-      case 0x63:
+      case SORCERER_ALERTED:
         st->angry = 1;
         if (actor->nextAnim == 0) {
           st->timer = st->rest;
-          actor->mode = 0x61;
+          actor->mode = SORCERER_WAIT_CONJURE;
           continue;
         }
         actor->mode = actor->nextAnim;

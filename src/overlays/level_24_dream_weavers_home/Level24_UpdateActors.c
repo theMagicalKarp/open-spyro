@@ -2233,7 +2233,7 @@ void Level24_UpdateActors(void) {
           }
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000 &&
               g_nActorAnimDone != 0 && (GetRandomU32() & 4)) {
-            ANIM_QUEUE(actor, 4);
+            ANIM_QUEUE(actor, SINGER_WATCH);
           }
           continue;
         }
@@ -2331,7 +2331,7 @@ void Level24_UpdateActors(void) {
             break;
           }
           PlayActorMeshVoice(actor, 0, 0);
-          ANIM_QUEUE(actor, 9);
+          ANIM_QUEUE(actor, SINGER_SING);
         }
         continue;
 

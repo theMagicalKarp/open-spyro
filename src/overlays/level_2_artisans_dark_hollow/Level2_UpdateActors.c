@@ -1316,17 +1316,17 @@ void Level2_UpdateActors(void) {
     case ACTOR_TYPE_GUARD_PAIR: {
       GuardPairState *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 6) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != GPAIR_KNOCKED) {
         st->speed = 0xF0;
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE_B(actor, 6);
+        ENTER_POSE_B(actor, GPAIR_KNOCKED);
       }
 
       switch (actor->mode) {
-      case 0: {
+      case GPAIR_IDLE: {
         int dz;
 
         TrackEntityYawTowardSpyro(actor, 3, 0x10, 0);
@@ -1334,7 +1334,7 @@ void Level2_UpdateActors(void) {
             ((dz = actor->posZ - SPY.posZ) > 0 ? dz < 0x5DC
                                                : SPY.posZ - actor->posZ < 0x5DC)) {
           st->speed = 0x48;
-          ENTER_POSE_B(actor, 2);
+          ENTER_POSE_B(actor, GPAIR_ROUSE);
         }
 
         if (st->partner != -1 && TickCountdownByFrameDelta(&st->timer, 4)) {
@@ -1346,18 +1346,18 @@ void Level2_UpdateActors(void) {
                                  actor->rotZ) +
                              0x20) < 7) {
             actor->subMode = 0;
-            actor->mode = 10;
+            actor->mode = GPAIR_CUE;
             continue;
           }
         }
         break;
       }
-      case 2:
+      case GPAIR_ROUSE:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE_B(actor, 3);
+          ENTER_POSE_B(actor, GPAIR_WATCH);
         }
         break;
-      case 3: {
+      case GPAIR_WATCH: {
         int dist = ApproxDist2D(&actor->posX, &spy->posX);
         int dz;
 
@@ -1367,31 +1367,31 @@ void Level2_UpdateActors(void) {
                                                : SPY.posZ - actor->posZ < 0x5DC)) {
           st->speed = 0x48;
           st->flag = 0;
-          ENTER_POSE_B(actor, 4);
+          ENTER_POSE_B(actor, GPAIR_SWING);
         }
         if (dist > 0x2400) {
-          ENTER_POSE_B(actor, 5);
+          ENTER_POSE_B(actor, GPAIR_LOWER);
         }
         break;
       }
-      case 4:
+      case GPAIR_SWING:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (SPY.state == SPYRO_ST_HURT_PINNED) {
           st->flag = 2;
         }
         if (g_nActorAnimDone != 0) {
           if (st->flag != 0) {
-            ENTER_POSE_B(actor, 7);
+            ENTER_POSE_B(actor, GPAIR_GLOAT);
           }
-          ENTER_POSE_B(actor, 3);
+          ENTER_POSE_B(actor, GPAIR_WATCH);
         }
         break;
-      case 5:
+      case GPAIR_LOWER:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE_B(actor, 0);
+          ENTER_POSE_B(actor, GPAIR_IDLE);
         }
         break;
-      case 6:
+      case GPAIR_KNOCKED:
         if (st->speed > 0) {
           MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 0);
           st->speed -= 0x10;
@@ -1403,12 +1403,12 @@ void Level2_UpdateActors(void) {
           continue;
         }
         break;
-      case 7:
+      case GPAIR_GLOAT:
         if (g_nActorAnimDone != 0 && TickCountdownByFrameDelta(&st->flag, 4)) {
-          ENTER_POSE_B(actor, 0);
+          ENTER_POSE_B(actor, GPAIR_IDLE);
         }
         break;
-      case 10:
+      case GPAIR_CUE:
         switch (actor->subMode) {
         case 0:
           ANIM_GO(actor, 2);
@@ -1434,7 +1434,7 @@ void Level2_UpdateActors(void) {
           ANIM_GO(actor, 5);
           if (g_nActorAnimDone != 0) {
             st->timer = 0x258;
-            ENTER_POSE_B(actor, 0);
+            ENTER_POSE_B(actor, GPAIR_IDLE);
           }
           break;
         }

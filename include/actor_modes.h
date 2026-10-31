@@ -644,4 +644,59 @@ enum HatchMode {
   HATCH_SEALED_WAIT = 4,
 };
 
+/* ->mode of a superflame giver (ACTOR_TYPE_SUPERFLAME_GIVER, level 14;
+ * _ALT / _B, level 27; SuperflameGiverState). */
+enum SuperflameGiverMode {
+  SFGIVER_IDLE = 0,   /* faces Spyro; he walks up facing it (guard gone): GRANT */
+  SFGIVER_GRANT = 1,  /* freezes Spyro and grants the superflame (SuperflameGiverSub) */
+  SFGIVER_RETURN = 2, /* floats back home, then IDLE */
+  SFGIVER_WALK = 3,   /* cued: walks its waypoints to a new home */
+  SFGIVER_CIRCLE = 4, /* alerted: circles path node 0 until its guard is gone */
+};
+
+/* ->subMode while SFGIVER_GRANT. */
+enum SuperflameGiverSub {
+  SFGIVER_SUB_APPROACH = 0, /* floats to Spyro's front */
+  SFGIVER_SUB_CAST = 1,     /* casts: motes, then sets g_nSpyroSuperflameTimer */
+  SFGIVER_SUB_LINGER = 2,   /* short hold, then SFGIVER_RETURN */
+};
+
+/* ->mode of Jacques (ACTOR_TYPE_JACQUES, JacquesState; level 28). */
+enum JacquesMode {
+  JACQUES_WATCH = 0,     /* faces Spyro; seen from afar: THROW; Spyro close: HOP */
+  JACQUES_THROW = 2,     /* throws an ACTOR_TYPE_THROWN_ROCK, then WATCH */
+  JACQUES_DEFEATED = 3,  /* struck at his last stop: bursts */
+  JACQUES_HOP = 10,      /* hops along his ring to the next stop, then WATCH */
+};
+
+/* ->mode of a bolt sentry (ACTOR_TYPE_BOLT_SENTRY, BoltSentryState;
+ * level 19); the mode is also the animation index. Its guards are three
+ * ACTOR_TYPE_ATTACH_BEADs, summoned once Spyro comes in range. */
+enum BoltSentryMode {
+  BSENTRY_IDLE = 0,    /* faces Spyro; close and level: ROUSE */
+  BSENTRY_PATROL = 1,  /* walks its path; Spyro ahead: THROW */
+  BSENTRY_ROUSE = 2,   /* then WATCH */
+  BSENTRY_WATCH = 3,   /* tracks Spyro; close: THROW, far: LOWER */
+  BSENTRY_THROW = 4,   /* throws an ACTOR_TYPE_AIMED_BOLT; a hit on Spyro: RECOVER */
+  BSENTRY_LOWER = 5,   /* then IDLE */
+  BSENTRY_KNOCKED = 6, /* flamed up close: knocked away, then bursts */
+  BSENTRY_RECOVER = 7, /* gloats a while, then IDLE */
+  BSENTRY_CUE = 8,     /* waits on BoltSentryState.mode's cue: LEAP or PATROL */
+  BSENTRY_LEAP = 9,    /* leaps down to its post */
+  BSENTRY_SUMMON = 10, /* summons its guards, then IDLE */
+};
+
+/* ->mode of a paired guard (ACTOR_TYPE_GUARD_PAIR, GuardPairState; level 2);
+ * the mode is also the animation index. */
+enum GuardPairMode {
+  GPAIR_IDLE = 0,     /* faces Spyro; near and level: ROUSE; facing its partner: CUE */
+  GPAIR_ROUSE = 2,    /* then WATCH */
+  GPAIR_WATCH = 3,    /* close and level: SWING; far: LOWER */
+  GPAIR_SWING = 4,    /* a swing that pins Spyro sends it to GLOAT */
+  GPAIR_LOWER = 5,    /* then IDLE */
+  GPAIR_KNOCKED = 6,  /* flamed: knocked away, then bursts */
+  GPAIR_GLOAT = 7,    /* then IDLE */
+  GPAIR_CUE = 10,     /* signals its partner (subMode steps the gesture), then IDLE */
+};
+
 #endif
