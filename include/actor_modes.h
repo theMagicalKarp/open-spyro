@@ -190,4 +190,28 @@ enum ThiefMode {
   THIEF_STAND = 0x3C,       /* stands facing Spyro */
 };
 
+/* ->mode of a roaming ram (ACTOR_TYPE_ROAMING_RAM, RoamingRamState). */
+enum RoamingRamMode {
+  RAM_GRAZE = 0,     /* calls; Spyro near: picks the node facing away from him */
+  RAM_WANDER = 1,    /* walks to that node */
+  RAM_KNOCKED = 3,   /* hit: tumbles away and bursts */
+  RAM_TRAPPED = 4,   /* inside its trigger box while the trigger is set */
+  RAM_RUN_PATH = 10, /* path rammer (RoamingRamState.mode 1): runs its path */
+  RAM_PATH_END = 11, /* at the end: wakes its partner, then idles calling */
+};
+
+/* ->mode of a path walker (ACTOR_TYPE_PATH_WALKER, PathState). */
+enum PathWalkerMode {
+  PATHWALK_WAIT = 0,  /* until Spyro is near and level with it */
+  PATHWALK_PACE = 1,  /* paces its path, heading for the node away from Spyro */
+  PATHWALK_DYING = 2, /* hit: plays out its death animation */
+};
+
+/* ->mode of a wandering critter (ACTOR_TYPE_WANDERING_CRITTER,
+ * CritterKnockState). */
+enum WanderingCritterMode {
+  CRITTER_WANDER = 0,  /* UpdateActorWander */
+  CRITTER_KNOCKED = 1, /* hit: slides away and despawns */
+};
+
 #endif

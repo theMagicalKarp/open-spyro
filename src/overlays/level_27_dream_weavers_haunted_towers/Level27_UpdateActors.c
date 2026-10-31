@@ -2262,7 +2262,7 @@ void Level27_UpdateActors(void) {
     case ACTOR_TYPE_WANDERING_CRITTER: {
       CritterKnockState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         actor->flags = 0;
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
@@ -2276,17 +2276,17 @@ void Level27_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        actor->mode = 1;
+        actor->mode = CRITTER_KNOCKED;
         ANIM_RESET(actor, 1);
         continue;
       }
 
       switch (actor->mode) {
-      case 0:
+      case CRITTER_WANDER:
         UpdateActorWander(actor, st);
         break;
 
-      case 1:
+      case CRITTER_KNOCKED:
         if (st->speed >= 0x10) {
           st->speed -= 0xF;
           MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x2BC, 5);

@@ -1204,27 +1204,27 @@ void Level15_UpdateActors(void) {
     case ACTOR_TYPE_PATH_WALKER: {
       PathState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != PATHWALK_DYING) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        actor->mode = 2;
+        actor->mode = PATHWALK_DYING;
         ANIM_RESET(actor, 2);
         continue;
       }
 
       switch (actor->mode) {
-      case 0:
+      case PATHWALK_WAIT:
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1800) {
           int height = actor->posZ - actor->floorOffset;
           int drop = height - SPY.posZ;
 
           if (drop > 0 ? drop < 0x800 : (SPY.posZ - height) < 0x800) {
-            ENTER_POSE4(actor, 1);
+            ENTER_POSE4(actor, PATHWALK_PACE);
           }
         }
         break;
 
-      case 1:
+      case PATHWALK_PACE:
         if (ApproxDist2D(&actor->posX,
                           &st->path->nodes[st->path->cur].x) < 0x400) {
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1801) {
@@ -1237,7 +1237,7 @@ void Level15_UpdateActors(void) {
             goto walk;
           }
         pose0:
-          ENTER_POSE4(actor, 0);
+          ENTER_POSE4(actor, PATHWALK_WAIT);
         walk:
           if (st->path->cur == 0 && st->loops == 0) {
             st->path->cur = 1;
@@ -1280,7 +1280,7 @@ void Level15_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case PATHWALK_DYING:
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);
           continue;

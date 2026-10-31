@@ -3860,7 +3860,7 @@ void Level18_UpdateActors(void) {
     case ACTOR_TYPE_ROAMING_RAM: {
       RoamingRamState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HIT_ANY) && actor->mode != 3) {
+      if ((actor->flags & ACTOR_HIT_ANY) && actor->mode != RAM_KNOCKED) {
         EBB_BREAK();
         if (actor->flags & ACTOR_HIT_BLAST) {
           st->knock = ArcTan2(actor->posX - g_pActorListBase[st->target].posX,
@@ -3889,24 +3889,24 @@ void Level18_UpdateActors(void) {
           actor->nextFrame = 0;
           OnActorAnimQueued(actor);
         }
-        actor->mode = 3;
+        actor->mode = RAM_KNOCKED;
         continue;
       }
       actor->flags = 0;
       if (st->triggerSlot != -1 && g_anLevelTriggerStateSlots[st->triggerSlot] != 0 &&
           (unsigned int)(actor->mode - 3) >= 2 &&
           IsPointInRotatedBox(&actor->posX, &st->box.x) != 0) {
-        ENTER_POSE(actor, 4);
+        ENTER_POSE(actor, RAM_TRAPPED);
       }
 
       switch (actor->mode) {
-      case 0:
+      case RAM_GRAZE:
         if (TickCountdownByFrameDelta(&st->call, 4) != 0) {
           st->call = (GetRandomU32() & 0x1F) + 0x50;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
         if (st->mode == 1 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
-          actor->mode = 10;
+          actor->mode = RAM_RUN_PATH;
           continue;
         }
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1388) {
@@ -3932,12 +3932,12 @@ void Level18_UpdateActors(void) {
           }
           if (best > 0x40) {
             st->path->cur = sel;
-            ENTER_POSE(actor, 1);
+            ENTER_POSE(actor, RAM_WANDER);
           }
         }
         break;
 
-      case 1: {
+      case RAM_WANDER: {
         int ang =
             ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                           st->path->nodes[st->path->cur].y - actor->posY, 0);
@@ -3950,13 +3950,13 @@ void Level18_UpdateActors(void) {
           MoveActorAlongAngle(actor, ang, 0x50, 0, 0x12C, 5);
           if (ApproxDist2D(&actor->posX,
                             &st->path->nodes[st->path->cur].x) < 0x100) {
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, RAM_GRAZE);
           }
         }
         break;
       }
 
-      case 3:
+      case RAM_KNOCKED:
         DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, 0x10);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -3966,13 +3966,13 @@ void Level18_UpdateActors(void) {
         }
         break;
 
-      case 4:
+      case RAM_TRAPPED:
         if (g_anLevelTriggerStateSlots[st->triggerSlot] == 0) {
           st->speed = 0;
           st->lift = 0;
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, RAM_KNOCKED);
         }
         if (actor->nextFrame >= 0xF) {
           actor->frame = 0;
@@ -3981,7 +3981,7 @@ void Level18_UpdateActors(void) {
         }
         break;
 
-      case 10:
+      case RAM_RUN_PATH:
         if (SPY.airborneFrames != 0) {
           break;
         }
@@ -3989,12 +3989,12 @@ void Level18_UpdateActors(void) {
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x28, 0xFF, 5) ==
             0x100) {
           g_pActorListBase[st->partner].subMode = 1;
-          actor->mode = 11;
+          actor->mode = RAM_PATH_END;
           continue;
         }
         break;
 
-      case 11:
+      case RAM_PATH_END:
         if (TickCountdownByFrameDelta(&st->call, 4) != 0) {
           st->call = (GetRandomU32() & 0x3F) + 0x78;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
