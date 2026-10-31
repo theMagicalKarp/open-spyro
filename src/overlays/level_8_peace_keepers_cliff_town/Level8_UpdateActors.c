@@ -556,7 +556,7 @@ void Level8_UpdateActors(void) {
       if (actor->dropKind != 0xFF && st->egg == 0 && actor->mode != 10) {
         st->egg = g_pfnLevelSpawnActor(ACTOR_TYPE_DRAGON_EGG, actor);
         st->egg->otBias = 0;
-        *(Actor **)st->egg->state = actor;
+        ((EggRiseState *)st->egg->state)->owner = actor;
       }
 
       if (TickCountdownByFrameDelta(&st->voice, 4) != 0 &&
@@ -1302,7 +1302,7 @@ void Level8_UpdateActors(void) {
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
         g_nGameplayBlocked = 0;
         ZeroVector(&g_nSpyroSwingEulerPitchTarget);
-        CommitActorKillGems(0, st->idx);
+        CommitActorKillGems(0, st->owner);
         g_nWorldEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
         g_nHudWorldEggRollRequest.v = 0;
@@ -4083,7 +4083,7 @@ void Level8_UpdateActors(void) {
 
       rider = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
       if (st->rideMode == 1) {
-        ((unsigned char *)rider->state)[0xE] = one;
+        ((CollectibleState *)rider->state)->mode = one;
       }
 
       actor->soundRange = 0x20;

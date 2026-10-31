@@ -9,7 +9,7 @@
 /* Case 34 — a recovered dragon egg: spirals up off its spot, flies to just
  * above Spyro, then requests the HUD egg-counter roll (Cross skips). */
 typedef struct EggRiseState {
-  int idx;               /* 0x00 */
+  Actor *owner;          /* 0x00 the egg thief that carried it (credited the kill gems) */
   int centre[3];         /* 0x04 pad centre */
   int apex[3];           /* 0x0A (short-aligned) rise target */
   unsigned short radius; /* 0x10 */

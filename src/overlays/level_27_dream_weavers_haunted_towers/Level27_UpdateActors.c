@@ -3930,7 +3930,7 @@ void Level27_UpdateActors(void) {
 
       rider = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
       if (st->rideMode == 1) {
-        ((unsigned char *)rider->state)[0xE] = st->rideMode;
+        ((CollectibleState *)rider->state)->mode = st->rideMode;
       }
 
       actor->soundRange = 0x20;
