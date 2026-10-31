@@ -1,3 +1,4 @@
+#include "cutscene_id.h"
 #include "cutscene_path.h"
 #include "funcs.h"
 #include "globals.h"
@@ -120,7 +121,7 @@ void TickCutsceneBundleLoadStream(void) {
     *((struct SECTION4HDR *)(&g_nWorldRenderMeshChunkCount)) =
         *((struct SECTION4HDR *)(&g_nWorldCollisionTriCount));
     g_pWorldUnpackHead = (char *)unpacked;
-    if (g_nCutsceneId == 1) {
+    if (g_nCutsceneId == CUTSCENE_OPENING) {
       g_nCdStreamState = 6;
       extSize = g_nWorldDataExtChunkSize - 0x60000;
     } else {

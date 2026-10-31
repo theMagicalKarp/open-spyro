@@ -1,3 +1,4 @@
+#include "cutscene_id.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -165,7 +166,7 @@ fade_in_splash:
   }
 
   g_nCdStreamState = 3;
-  g_nCutsceneId = 0;
+  g_nCutsceneId = CUTSCENE_TITLE_BACKDROP;
 stream_world:
   TickCutsceneBundleLoadStream();
   if (g_nCdStreamState < 0xA) {

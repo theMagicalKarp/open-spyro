@@ -32,6 +32,7 @@
  */
 
 #include "actor.h"
+#include "cutscene_id.h"
 #include "level_actors.h"
 #include "vecmath.h"
 #include "level_globals.h"
@@ -2475,7 +2476,7 @@ void Level34_UpdateActors(void) {
         }
         if (TickCountdownByFrameDelta(t, 4)) {
           g_abLevelExited[g_nLevelIndex] = 1;
-          g_nCutsceneId[0] = 3;
+          g_nCutsceneId[0] = CUTSCENE_LOOT_ENDING;
           g_nGamestate = GS_CUTSCENE;
           g_nGamePaused = one;
           g_pPathTableHead->frame = 0;

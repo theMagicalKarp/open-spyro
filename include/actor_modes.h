@@ -214,4 +214,26 @@ enum WanderingCritterMode {
   CRITTER_KNOCKED = 1, /* hit: slides away and despawns */
 };
 
+/* ->mode of Gnasty Gnorc (ACTOR_TYPE_GNASTY_GNORC, GnastyState). GnastyState
+ * .phase counts the fight: flamed near the end of his phase-2 path he swaps
+ * to the escape path (GNASTY_FLAMED), flamed near the end of that one he is
+ * beaten (GNASTY_DEFEATED). */
+enum GnastyMode {
+  GNASTY_WAIT = 0,         /* faces Spyro until he is seen near home */
+  GNASTY_THROW = 2,        /* throws trail bombs (ACTOR_TYPE_TRAIL_BOMB) at Spyro */
+  GNASTY_SWIPE = 3,        /* close swipe, then runs */
+  GNASTY_LOOKOUT = 4,      /* waits on his path for Spyro to come near */
+  GNASTY_RUN = 5,          /* runs his path away from Spyro */
+  GNASTY_ESCAPE = 6,       /* runs the escape path, jumping at flagged nodes */
+  GNASTY_FLAMED = 7,       /* flamed in phase 2: recoils, then GNASTY_ESCAPE */
+  GNASTY_DEFEATED = 8,     /* knocked out: drops the keys, freezes Spyro */
+  GNASTY_FADE_OUT = 9,     /* fades the screen into the ending cutscene */
+  GNASTY_TO_ESCAPE = 10,   /* walks to the escape path's start (phase 2) */
+  GNASTY_AT_DOOR = 11,     /* at escape node 6: waits for Spyro, opens the way */
+  GNASTY_STAND = 12,       /* at the path end: throws when Spyro is far */
+  GNASTY_STAND_SWIPE = 13, /* swipe from GNASTY_STAND */
+  GNASTY_PAUSE = 20,       /* waits out stateTimer, then runs */
+  GNASTY_PATH_END = 21,    /* at the path end until Spyro comes near from below */
+};
+
 #endif

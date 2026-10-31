@@ -1,3 +1,4 @@
+#include "cutscene_id.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -47,7 +48,7 @@ int TickDemoPlayback(void) {
       g_nPulseRumbleAmount = 0;
       g_nDemoMode = 0;
       g_nCdStreamState = 0;
-      g_nCutsceneId = 0;
+      g_nCutsceneId = CUTSCENE_TITLE_BACKDROP;
       g_nFlightLevelActive = 0;
       g_nDemoActive = 0;
       {

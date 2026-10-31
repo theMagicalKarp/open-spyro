@@ -1,3 +1,4 @@
+#include "cutscene_id.h"
 #include "funcs.h"
 #include "globals.h"
 #include "pad_buttons.h"
@@ -67,7 +68,7 @@ void PauseMenu_Update(void) {
     g_pDrawBufA = g_abDrawBufPool;
     g_pDrawBufB = g_abDrawBufPool;
     g_nCdStreamState = 0;
-    g_nCutsceneId = 0;
+    g_nCutsceneId = CUTSCENE_TITLE_BACKDROP;
     {
       int lba = *(volatile int *)&g_nCdBaseLba;
       int count = *(volatile int *)&g_nLevelLoadChunkSize;

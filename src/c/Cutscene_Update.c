@@ -1,3 +1,4 @@
+#include "cutscene_id.h"
 #include "cutscene_path.h"
 #include "funcs.h"
 #include "globals.h"
@@ -30,7 +31,7 @@ void Cutscene_Update(void) {
     g_nCdStreamState = 0;
     g_pDrawBufA = g_pSharedLoadBuffer;
     g_pDrawBufB = g_pSharedLoadBuffer;
-    if (g_nCutsceneId == 3) {
+    if (g_nCutsceneId == CUTSCENE_LOOT_ENDING) {
       g_pWorkAreaTop = (void *)(0x80200000 - g_nCrt0StackSize);
       InitActorMeshScratchRegions(1);
     }
@@ -54,7 +55,8 @@ void Cutscene_Update(void) {
     if (g_nScreenFadeLevel >= 0x10) {
       g_nScreenFadeLevel = 0xF;
     }
-    if (g_nCutsceneId == 1 && (g_dwPadHeld & (PAD_CROSS | PAD_START))) {
+    if (g_nCutsceneId == CUTSCENE_OPENING &&
+        (g_dwPadHeld & (PAD_CROSS | PAD_START))) {
       p = g_pPathTableHead;
       cur = p->frame;
       if (cur >= 0xF1 && cur < (p->length << 1) - 0x20) {

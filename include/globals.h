@@ -542,7 +542,7 @@ extern char g_szUiSlot1[7];                 /* 0x80075630 */
 extern char g_szUiSlot2[7];                 /* 0x80075638 */
 
 /* ---- .sbss ---- */
-extern int g_nCutsceneId;                /* 0x8007566c: scripted cutscene / bundle id: 0 title backdrop, 1 opening story, 2/3 endings (BeginCutscene) */
+extern int g_nCutsceneId;                /* 0x8007566c: scripted cutscene / bundle id (enum CutsceneId, cutscene_id.h): title backdrop, opening story, the two endings (BeginCutscene) */
 extern int g_nGnastyLootFallRefZCap;         /* 0x80075678 */
 extern void (*g_pfnGamestate7DrawHook)(void); /* 0x8007567c: flight levels' FlightResults_Draw */
 extern struct CutscenePath *g_pPathTableHead; /* 0x80075680: the cutscene path table (cutscene_path.h) */
