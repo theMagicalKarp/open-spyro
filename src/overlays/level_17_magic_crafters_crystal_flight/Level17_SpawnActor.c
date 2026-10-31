@@ -81,7 +81,7 @@ Actor *Level17_SpawnActor(int type, Actor *parent)
       rec->tint1 = 0;
       rec->tint2 = 0;
       rec->tintMode = 1;
-      rec->renderList |= 0x80;
+      rec->renderList |= ACTOR_RENDER_SECONDARY;
       break;
     }
 
@@ -253,7 +253,7 @@ Actor *Level17_SpawnActor(int type, Actor *parent)
       if (((unsigned int) (((unsigned short) rec->type) - 0x135)) < 3)
       {
         *((int *) (&rec->tint0)) = 0xA18618;
-        rec->renderList |= 0x80;
+        rec->renderList |= ACTOR_RENDER_SECONDARY;
       }
       break;
     }

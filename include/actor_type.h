@@ -53,8 +53,11 @@ typedef struct Actor {
   unsigned char subMode; /* 0x49 sub-state */
   unsigned char visZone; /* 0x4A visibility-gate index into g_abVisZoneGates;
                           * 0xFF = always drawn (BuildRenderEntityLists) */
-  unsigned char renderList; /* 0x4B sign picks the BuildRenderEntityLists
-                             * bucket: 0, < 0, > 0 (default 0x20) */
+  unsigned char renderList; /* 0x4B signed; picks the BuildRenderEntityLists
+                             * list: > 0 the main mesh list (default 0x20,
+                             * BuildActorDrawList), < 0 (ACTOR_RENDER_SECONDARY)
+                             * g_apSecondaryDrawEntityList, 0 the sprite queue
+                             * g_apSpritePrimQueue */
   /* 0x4C..0x4F tint. Read as one word, 0x4C..0x4E pack three 6-bit levels
    * under a 0xA tag: 0xA << 20 | c2 << 12 | c1 << 6 | c0. SelectActorLodBand
    * builds it with 0x18 as neutral, which gives the 0xA18618 the overlays
@@ -109,6 +112,9 @@ typedef struct Actor {
 /* Actor.killGroup: the group number, and bit 7, which latches the death drop. */
 #define ACTOR_KILL_GROUP_MASK 0x7F
 #define ACTOR_KILL_DROPPED 0x80
+/* Actor.renderList sign bit: draw through BuildSecondaryActorDrawList, which
+ * builds the rotation from the euler bytes, instead of the main mesh list. */
+#define ACTOR_RENDER_SECONDARY 0x80
 
 #define ACTOR_SIZE 0x58
 typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
