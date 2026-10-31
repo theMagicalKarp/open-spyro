@@ -38,7 +38,7 @@ extern void FillWord();                                      /* word fill */
 extern void FreeEmitListRecord(unsigned char *rec);
 extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 extern int GetRandomU32();
-extern void InitHudCounters(int a0);
+extern void InitHudCounters(int layout_butterflies);
 extern void InitLightVectorConstants(void);
 extern int IsPointInRotatedBox(int *pos, int *rec);
 extern void LoadAndStartLevelFromCd(void);
@@ -52,11 +52,11 @@ extern void PutDrawEnv();
 extern int RaiseSpyroTriggerInRadius(int *pos, int radius, int flags);
 extern void RefreshHudLevelGemCounter(void);
 extern void ResetCameraStateToTarget(void);
-extern void ResetSpyroEntity(int a0);
+extern void ResetSpyroEntity(int full);
 extern void ResetSpyroLinearMotion(void);
 extern void RotateVectorByMatrix();
 extern void RShiftVector3(int *vec, int shift);
-extern void SampleSpyroShadowRingHeights(int a0);
+extern void SampleSpyroShadowRingHeights(int probe);
 extern void ScaleVector3Sat(int *out, int *src, int scale);
 extern int SignedAngleDelta12(int a, int b);
 extern void sprintf();                                       /* format string */
@@ -71,7 +71,7 @@ extern void TickActiveSoundVoices(void);
 struct Actor;
 extern void TickActorAnims(struct Actor **list, int mode);
 extern void TickLevelTransitionStream();
-extern void TickSpyroAttackEffects(int a0);
+extern void TickSpyroAttackEffects(int steps);
 extern void UnpackWorldCollisionTri(int chunk, int *out);
 extern void UpdateCameraEulerAngles(void);
 #ifndef VEC_LEN_XY

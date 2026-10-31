@@ -98,7 +98,7 @@ void MenuTransition_Draw(void) {
     q->clut = 0x3820;
     q->tpage = tag;
     p = (unsigned char *)q;
-    AddPrimToOTSlot((int)p, slot);
+    AddPrimToOTSlot(p, slot);
     next = p + 0x28;
     g_pPrimBufferWriteCursor = next;
     slot = 0x3FF;
@@ -117,7 +117,7 @@ void MenuTransition_Draw(void) {
     LINE->g0 = 0;
     LINE->b0 = 0;
 #undef LINE
-    AddPrimToOTSlot((int)next, slot);
+    AddPrimToOTSlot(next, slot);
     g_pPrimBufferWriteCursor = p + 0x38;
     break;
   }

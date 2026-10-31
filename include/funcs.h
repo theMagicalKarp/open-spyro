@@ -84,8 +84,7 @@ void StartCdReadAsync(int lbaBase, void *dst, int size, int offset, int marker);
 void *LinkOTPrimitives(int depth_max);
 
 /* 0x800168a0: Appends primitive `prim` to OT depth slot `slot` (g_pOtDepthBinArrayBase[slot*8]). Same head/tail-link logic as AddPrimToOT but takes an explicit slot index instead of using the active slot at g_pOtActiveDepthSlot. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined AddPrimToOTSlot(int prim, int slot);
+void AddPrimToOTSlot(void *prim, int slot);
 
 /* 0x800168dc: Appends a primitive to the active OT depth slot (g_pOtActiveDepthSlot). If the slot already has a tail prim, patches its 24-bit next-addr tag to point at `prim`; else stores `prim` as the slot's head. PsyQ-style `addPrim` for this engine's per-depth OT slot table. */
 void AddPrimToOT(unsigned int prim);
@@ -196,7 +195,6 @@ void VectorToSVector(short *dst, int *src);
 void UnpackWorldCollisionTri(int chunk, int *verts);
 
 /* 0x80017e54: GTE depth-cue color computation. Interpolates the input RGB (base, packed 24-bit) toward a far color (color, packed as three 12-bit channels: R=bits 0-7, G=bits 4-15 masked, B=bits 12-23 masked) by IR0 factor (t, 0..0x1000). Returns the depth-cued RGB color in the low 32 bits, with the far-blue channel echoed in bits 32-39 (probably an artifact of the caller's unpack pattern at ActorCutscene_Draw where it stores all three output bytes into the backdrop color slots). Implementation: gte_ldRGB + gte_ldIR0 + gte_ldfcdir + gte_dpcs + gte_stRGB2. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
 unsigned int ComputeDepthCuedColor(unsigned int base, unsigned int color, int t);
 
 /* 0x80017e98: Convert a buffer of RGB15 pixels (two per 32-bit word) to packed 8-bit luminance bytes. Luma = (4*R + G*(1/16+1/32) + B/1024) >> 3. count = end-offset in bytes. */
@@ -645,7 +643,6 @@ int FindWorldFloorBelowPoint(int *pos);
 int DispatchActorContactAtSphere(int *pos, int radius, int events, int hitBits, Actor *self, int mode);
 
 /* 0x8004eba8: Renders the per-level static-actor mesh list. Stage 1: Z-cull each mesh chunk via gte_rtps_b, building visible-chunk pointer list at &g_pOtDepthBinHead0. Stage 2: project triangle verts through GTE, build 5-bit frustum outcodes, emit POLY_F3 (0x84) / POLY_F4 (0x86) flat prims into the OT bump buffer at g_pPrimBufferWriteCursor. lod = actor mesh index into g_pWorldRenderMeshIndexTable table (or -1 to walk the flat list at g_pWorldRenderMeshChunkArray..+g_nWorldRenderMeshChunkCount*4). viewMtx/worldMtx = camera rot/translate matrices. Called once at the end of DrawPortalsAndStaticActors, and by Gamestate01_09/04_05/Cutscene_Draw. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
 void EmitStaticActorMeshList(int zone, MATRIX *viewMtx, MATRIX *worldMtx);
 
 /* 0x8004f000: Fog-cued sibling of EmitStaticActorMeshList. Same two-stage pattern but uses pre-loaded global view matrix (&g_anCameraViewMtx..df4) + model matrix (&g_anWorldToCameraRotMtx..de0), and applies per-vertex depth cueing via gte_dpcs_b using g_dwActorMeshFadeColor fog RGB and g_nFadeProgress. Cued colors are written to scratch buffer &g_apSecondaryEntityList and fed back into the F3/F4 emit loop. Callers: MenuTransition_Draw (world hub) + ActorCutscene_Draw (post-level treasure summary). */
@@ -655,26 +652,22 @@ void EmitStaticActorMeshListFogged(void);
 void EmitDynamicActorMeshScissored(int *mesh, MATRIX *viewMtx, MATRIX *outMtx);
 
 /* 0x8004f7e8: Per-triangle clip-and-emit helper for EmitDynamicActorMeshScissored. Builds a 6-bit visibility code from 3 gte_nclip signed-area tests (one per edge) + the upstream 5-bit frustum outcode, then dispatches the 32-entry UNK_8004f890 jumptable to pick a clip case. Fast path: when in_t2 prim head is empty, writes the triangle directly into the OT bump buffer instead of clipping. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined ClipAndEmitActorTriangle(void);
+void ClipAndEmitActorTriangle(void); /* register-convention helper: no C callers */
 
-/* 0x8004fdac: GTE depth-cue color helper for a clipped polygon edge. Loads vertex RGB + fog direction (param_4 fog color) into GTE, runs gte_gpl12 (general-purpose linear interp along edge) followed by gte_dpcs_b (depth-cue single-color) to produce the blended RGB at the clip point. Returns the depth-cued color packed with POLY_F2 prim code (0x30000000). No direct callers: invoked exclusively via the UNK_8004f890 / UNK_80050028 clip jumptables from ClipAndEmit{Actor,FoggedActor}Triangle. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined8 BlendDepthCuedEdgeColor(int param_1, int param_2, undefined4 param_3, uint param_4);
+/* 0x8004fdac: GTE depth-cue color helper for a clipped polygon edge. Loads vertex RGB + fog direction (the fog color in a register) into GTE, runs gte_gpl12 (general-purpose linear interp along edge) followed by gte_dpcs_b (depth-cue single-color) to produce the blended RGB at the clip point. Returns the depth-cued color packed with POLY_F2 prim code (0x30000000). No direct callers: invoked exclusively via the UNK_8004f890 / UNK_80050028 clip jumptables from ClipAndEmit{Actor,FoggedActor}Triangle. */
+unsigned int BlendDepthCuedEdgeColor(void); /* register-convention helper: no C callers */
 
 /* 0x8004fea0: Fog-cued sibling of EmitDynamicActorMeshScissored. Drives per-triangle ClipAndEmitFoggedActorTriangle over the prim batch set up by the caller. Saves register state (s0-s8, ra, sp, k0) into the GTE backup area at g_anStaticRegSaveArea..e04 so the clip jumptable can read it without reload. Saves/restores g_pPrimBufferWriteCursor OT bump pointer. Reads its triangle list entirely from registers populated by the DrawPortalsAndStaticActors per-actor projection loop — no explicit params. Caller: DrawPortalsAndStaticActors fade-zone path (0x3000 < depth < 0x4000). */
 void EmitDynamicActorMeshFogged(unsigned int *color);
 
 /* 0x8004ff90: Per-triangle clip-and-emit helper for EmitDynamicActorMeshFogged. Mirrors ClipAndEmitActorTriangle: 3 gte_nclip tests build a 6-bit visibility code that dispatches the UNK_80050028 fog clip jumptable (32 cases). Fast path: when in_t2 is empty, emits a 5-dword POLY_F4 record into the caller's prim buffer (unaff_s2) and links it via OT head/tail (unaff_s3) without going through the clip jumptable. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined ClipAndEmitFoggedActorTriangle(void);
+void ClipAndEmitFoggedActorTriangle(void); /* register-convention helper: no C callers */
 
 /* 0x80050240: Fog-shaded sibling of EmitDynamicActorMeshScissored. Mirrors its Z-cull pre-pass over the submesh list (mesh = {count, *list}, viewMtx = world rotation matrix) into &g_pOtDepthBinHead0 survivor list. Stage 2 (uses outMtx = pose matrix) adds a per-vertex gte_dpcs_b color pass over RGB[] (loaded from g_dwActorMeshFadeColor / g_nFadeProgress, writing back into scratch at &g_apSecondaryEntityList) before the gte_rtps_b projection loop; emits screen outcodes against the same scissor at g_anActorScissorRect..0c and dispatches each triangle to ClipAndEmitFogShadedActorTriangle (jumptable UNK_800506b4). Saves GTE backup at g_anStaticRegSaveArea..e04 and advances g_pPrimBufferWriteCursor OT bump pointer. Caller: DrawPortalsAndStaticActors fade-band outline-jittered pass (depth 0x3001..0x3fff) — the per-vertex-dpcs sibling of EmitDynamicActorMeshScissored. */
 void EmitDynamicActorMeshFogShaded(int *mesh, MATRIX *viewMtx, MATRIX *outMtx);
 
 /* 0x8005060c: Per-triangle clip-and-emit helper for EmitDynamicActorMeshFogShaded. Mirrors ClipAndEmit{,Fogged}ActorTriangle: 3× gte_nclip on the three SXY's loaded by the caller → 6-bit outcode → dispatches through 32-entry jumptable at UNK_800506b4. Fast direct-emit path (5-dword POLY_F* head/tail) when the prim head is empty; otherwise writes the 7-dword deferred slot into the &g_anActorDeferredTriStack stack at g_pActorDeferredTriStackTop for the caller's drain loop. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined ClipAndEmitFogShadedActorTriangle(void);
+void ClipAndEmitFogShadedActorTriangle(void); /* register-convention helper: no C callers */
 
 /* 0x80050bd0: Render stage 4 (formerly DrawActors). Draws each hub portal in g_apPortals[0..g_nPortalCount] whose vis-zone gate (g_abVisZoneGates) is open: a view matrix rebuilt from the camera euler angles plus the slow g_nPortalViewYawSpin / PitchTilt swirl, the portal's ring projected into g_aMobRingScreenPts, depth-cued (ComputeDepthCuedColor), its silhouette edges built in g_aMobSilhouetteEdges and emitted once as-is and, nearer than 0x4000, once fattened by 2 px. Then emits the static actor meshes (EmitStaticActorMeshList), at LOD -1 (full) unless g_nCameraVisZone is under g_nVisZoneCount. */
 void DrawPortalsAndStaticActors(void);

@@ -15,15 +15,15 @@ extern void CopyWords(void *dst, void *src, int len);
 
 extern void ApplyEulerRotation(int *euler, int *mtx, int base);
 
-extern void ComputeCameraToTargetAngle(int *a0);
+extern void ComputeCameraToTargetAngle(int *target);
 
-extern int FindGroundHeightBelow(int *a0, int a1);
+extern int FindGroundHeightBelow(int *pos, int depth);
 
-extern void PlaySoundEffect(int a0, int a1, int a2, int a3);
+extern void PlaySoundEffect(int sampleId, int owner, int mode, int pPlaying);
 
-extern void StopAllSoundExceptMask(int a0);
+extern void StopAllSoundExceptMask(int mask);
 
-extern void ClearWord(int a0);
+extern void ClearWord(int p);
 
 extern int g_anCameraDynamicTargetParams[];
 

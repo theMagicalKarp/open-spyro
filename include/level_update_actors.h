@@ -359,7 +359,7 @@ extern struct {
 /* ==== Globals shared with level 4 ==== */
 extern void RefreshHudLevelGemCounter(void);
 
-extern void ResetSpyroEntity(int a0);
+extern void ResetSpyroEntity(int full);
 
 /* Case 9 -- level-exit whirlwind: shows its name letters near the camera,
  * sparkles, lifts Spyro (SPYRO_EV_LIFT toward its z + 0x4000) and, once he
