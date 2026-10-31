@@ -34,7 +34,7 @@ void Level8_BeginActorCutscene(Actor *actor) {
   g_nActorCutsceneSubstate = 0;
   g_nActorCutsceneTimer = 0;
   g_nActorCutsceneMenuCursor = 0;
-  g_pActorCutsceneActor = (unsigned char *)actor;
+  g_pActorCutsceneActor = actor;
   count = *p;
   pos = g_anCameraPos;
   g_nGameplayBlocked = 1;

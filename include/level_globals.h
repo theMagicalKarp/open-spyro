@@ -197,7 +197,7 @@ extern int g_nVsyncFramePaceAnchor;
 extern int g_nWorldDragonsRescued;
 extern int g_nWorldEggsRecovered;
 extern int g_nWorldTreasureCollected;                    /* gem total shown on the balloon */
-extern unsigned char *g_pActorCutsceneActor;
+extern struct Actor *g_pActorCutsceneActor;  /* focus actor (BeginActorCutscene) */
 extern unsigned char *g_pLevelSoundIds;                  /* level sound ids */
 extern void *g_pSpyroRequestCameraTargetParams;          /* SPY.pCamTarget, absolute form */
 
