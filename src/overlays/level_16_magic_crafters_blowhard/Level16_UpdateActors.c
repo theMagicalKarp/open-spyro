@@ -3121,8 +3121,8 @@ void Level16_UpdateActors(void) {
       if ((dz > 0 ? dz < 0x578
                   : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x578) &&
           dist < 0x2800 && CheckSpyroLineOfSightTo(&actor->posX) != 0 &&
-          g_nSpyroState != SPYRO_ST_CHARGE && g_nSpyroState != SPYRO_ST_CHARGE_AIR && actor->mode != 0x50 &&
-          actor->mode != 0x5A) {
+          g_nSpyroState != SPYRO_ST_CHARGE && g_nSpyroState != SPYRO_ST_CHARGE_AIR && actor->mode != BLOWHARD_P2_TRAVEL &&
+          actor->mode != BLOWHARD_P3_TRAVEL) {
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FOLLOW_CAMERA);
         g_pScriptedCameraActor = actor;
       }
@@ -3137,25 +3137,25 @@ void Level16_UpdateActors(void) {
         v[2] += 0x400;
         if (CheckLineOfSightSegment(v, &SPY.posX) != 0) {
           switch (actor->mode) {
-          case 5:
-          case 0x47:
-          case 0x48:
-          case 0x51:
-          case 0x52:
-          case 0x53:
-          case 0x5B:
-          case 0x5C:
-          case 0x5D:
+          case 5: /* no Blowhard state sets 5 */
+          case BLOWHARD_P1_HOVER:
+          case BLOWHARD_P1_DROP_RIDER:
+          case BLOWHARD_P2_PATROL:
+          case BLOWHARD_P2_DROP_RIDER:
+          case BLOWHARD_P2_WAIT:
+          case BLOWHARD_P3_PATROL:
+          case BLOWHARD_P3_DROP_RIDER:
+          case BLOWHARD_P3_WAIT:
             g_nLevelProgress[0] += 1;
             if (st->minion != 0) {
               StopSoundVoicesByOwner(st->minion, VOICE_STOP_ALL);
               DespawnActorRecord(st->minion);
               st->minion = 0;
             }
-            if (actor->mode == 0x5B || actor->mode == 0x5C ||
-                actor->mode == 0x5D) {
+            if (actor->mode == BLOWHARD_P3_PATROL || actor->mode == BLOWHARD_P3_DROP_RIDER ||
+                actor->mode == BLOWHARD_P3_WAIT) {
               StopSoundVoiceByIndex(actor->voiceRow, 4);
-              ENTER_POSE(actor, 7);
+              ENTER_POSE(actor, BLOWHARD_DYING);
             }
             if (st->prev >= 0) {
               Actor *a = &g_pActorListBase[st->prev];
@@ -3167,7 +3167,7 @@ void Level16_UpdateActors(void) {
               st->prev = *as;
               DespawnActorRecord(a);
             }
-            ENTER_POSE(actor, 2);
+            ENTER_POSE(actor, BLOWHARD_HIT);
           }
         }
       }
@@ -3180,7 +3180,7 @@ void Level16_UpdateActors(void) {
         int z = actor->posZ;
         int d = st->floorZ - z;
 
-        if (ABS2(d) > 0x20 && actor->mode != 0) {
+        if (ABS2(d) > 0x20 && actor->mode != BLOWHARD_START_PHASE) {
           actor->posZ = z + (d >> 3);
           goto settled;
         }
@@ -3202,7 +3202,7 @@ void Level16_UpdateActors(void) {
 
           st->started = 1;
           if (g_nLevelProgressCheckpoint[0] > 0) {
-            actor->mode = 0x51;
+            actor->mode = BLOWHARD_P2_PATROL;
             st->pathDone = 0;
             st->phase = 1;
             st->path = st->paths[3];
@@ -3217,7 +3217,7 @@ void Level16_UpdateActors(void) {
             st->chunkAnim = -1;
           }
           if (g_nLevelProgressCheckpoint[0] >= 2) {
-            actor->mode = 0x5B;
+            actor->mode = BLOWHARD_P3_PATROL;
             st->path = st->paths[4];
             a = &g_pActorListBase[st->prev];
             as = a->state;
@@ -3238,40 +3238,40 @@ void Level16_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case BLOWHARD_START_PHASE:
         switch (st->phase) {
         case 0:
-          actor->mode = 0x46;
+          actor->mode = BLOWHARD_P1_RISE;
           st->tweenStep = 0;
           break;
         case 1:
-          actor->mode = 0x50;
+          actor->mode = BLOWHARD_P2_TRAVEL;
           st->tweenStep = 0;
           break;
         case 2:
-          actor->mode = 0x5A;
+          actor->mode = BLOWHARD_P3_TRAVEL;
           st->tweenStep = 0;
           break;
         }
         break;
 
-      case 2:
+      case BLOWHARD_HIT:
         if (g_nActorAnimDone != 0) {
           if (st->chunkAnim >= 0) {
             if (GetWorldChunkAnimState(st->chunkAnim) & CHUNK_ANIM_HALTED) {
               ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
-              actor->mode = 0x63;
+              actor->mode = BLOWHARD_NEXT_PHASE;
               actor->flags = 0;
               st->chunkAnim = -1;
             }
           } else {
             actor->flags = 0;
-            actor->mode = 0x63;
+            actor->mode = BLOWHARD_NEXT_PHASE;
           }
         }
         break;
 
-      case 7:
+      case BLOWHARD_DYING:
         if (g_nActorAnimDone != 0) {
           SnapActorToGround(actor);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
@@ -3281,21 +3281,21 @@ void Level16_UpdateActors(void) {
         }
         break;
 
-      case 0x46:
-        actor->mode = 0x47;
+      case BLOWHARD_P1_RISE:
+        actor->mode = BLOWHARD_P1_HOVER;
         st->floorZ = actor->posZ + 0x578;
         break;
 
-      case 0x47:
+      case BLOWHARD_P1_HOVER:
         TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
         if (dist < 0x2800 && st->minion == 0 && st->floorZ == -1) {
-          actor->mode = 0x48;
+          actor->mode = BLOWHARD_P1_DROP_RIDER;
           st->floorZ = actor->posZ - 0x578;
           ANIM_GO(actor, 5);
         }
         break;
 
-      case 0x48:
+      case BLOWHARD_P1_DROP_RIDER:
         TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
         if (actor->anim == 5 && actor->frame >= 6 && st->minion == 0) {
           int v[3];
@@ -3312,16 +3312,16 @@ void Level16_UpdateActors(void) {
             ANIM_SET(actor, 6);
           }
           if (g_nActorAnimDone != 0 && actor->anim == 6) {
-            actor->mode = 0x47;
+            actor->mode = BLOWHARD_P1_HOVER;
             st->floorZ = actor->posZ + 0x578;
             ANIM_SET(actor, 0);
           }
         }
         break;
 
-      case 0x50:
+      case BLOWHARD_P2_TRAVEL:
         if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->tweenStep, 0x20, 4) == 2) {
-          actor->mode = 0x51;
+          actor->mode = BLOWHARD_P2_PATROL;
           actor->soundRange = 0;
           st->floorZ = actor->posZ + 0x578;
           st->path = st->paths[3];
@@ -3329,7 +3329,7 @@ void Level16_UpdateActors(void) {
         actor->rotY = 0;
         break;
 
-      case 0x51:
+      case BLOWHARD_P2_PATROL:
         if (dist < 0x2800 && st->floorZ == -1) {
           if (st->pathDone == 0) {
             if (PivotActorAlongPath(actor, st->path, 0x80, 0xB4, 0, 8, 0x28, 0xFF,
@@ -3337,7 +3337,7 @@ void Level16_UpdateActors(void) {
               st->pathDone = 1;
             }
           } else if (st->minion == 0 && dist > 0x1000) {
-            actor->mode = 0x52;
+            actor->mode = BLOWHARD_P2_DROP_RIDER;
             st->floorZ = actor->posZ - 0x578;
             ANIM_GO(actor, 5);
           }
@@ -3346,7 +3346,7 @@ void Level16_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
         break;
 
-      case 0x52:
+      case BLOWHARD_P2_DROP_RIDER:
         TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
         if (AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(actor->posX - SPY.posX,
@@ -3366,7 +3366,7 @@ void Level16_UpdateActors(void) {
             ANIM_SET(actor, 6);
           }
           if (g_nActorAnimDone != 0 && actor->anim == 6) {
-            actor->mode = 0x53;
+            actor->mode = BLOWHARD_P2_WAIT;
             st->wait = 0x6E;
             st->pathDone = 0;
             ANIM_SET(actor, 0);
@@ -3374,23 +3374,23 @@ void Level16_UpdateActors(void) {
         }
         break;
 
-      case 0x53:
+      case BLOWHARD_P2_WAIT:
         if (TickCountdownByFrameDelta(&st->wait, 4) != 0) {
           st->floorZ = actor->posZ + 0x578;
-          actor->mode = 0x51;
+          actor->mode = BLOWHARD_P2_PATROL;
         }
         break;
 
-      case 0x5A:
+      case BLOWHARD_P3_TRAVEL:
         if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->tweenStep, 0x20, 4) == 2) {
-          actor->mode = 0x5B;
+          actor->mode = BLOWHARD_P3_PATROL;
           st->floorZ = actor->posZ + 0x578;
           st->path = st->paths[4];
         }
         actor->rotY = 0;
         break;
 
-      case 0x5B:
+      case BLOWHARD_P3_PATROL:
         if (dist < 0x2800 && st->floorZ == -1) {
           if (st->pathDone == 0) {
             if (PivotActorAlongPath(actor, st->path, 0x80, 0xB4, 0, 8, 0x28, 0xFF,
@@ -3398,7 +3398,7 @@ void Level16_UpdateActors(void) {
               st->pathDone = 1;
             }
           } else if (st->minion == 0 && dist > 0x1000) {
-            actor->mode = 0x5C;
+            actor->mode = BLOWHARD_P3_DROP_RIDER;
             st->floorZ = actor->posZ - 0x578;
             ANIM_GO(actor, 5);
           }
@@ -3407,7 +3407,7 @@ void Level16_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
         break;
 
-      case 0x5C:
+      case BLOWHARD_P3_DROP_RIDER:
         TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
         if (AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(actor->posX - SPY.posX,
@@ -3431,7 +3431,7 @@ void Level16_UpdateActors(void) {
               ANIM_SET(actor, 6);
             }
             if (g_nActorAnimDone != 0 && actor->anim == 6) {
-              actor->mode = 0x5D;
+              actor->mode = BLOWHARD_P3_WAIT;
               st->pathDone = 0;
               st->wait = 0x6E;
               ANIM_SET(actor, 0);
@@ -3440,14 +3440,14 @@ void Level16_UpdateActors(void) {
         }
         break;
 
-      case 0x5D:
+      case BLOWHARD_P3_WAIT:
         if (TickCountdownByFrameDelta(&st->wait, 4) != 0) {
           st->floorZ = actor->posZ + 0x578;
-          actor->mode = 0x5B;
+          actor->mode = BLOWHARD_P3_PATROL;
         }
         break;
 
-      case 0x63:
+      case BLOWHARD_NEXT_PHASE:
         st->phase++;
         switch (st->phase) {
         case 0:
@@ -3463,7 +3463,7 @@ void Level16_UpdateActors(void) {
         st->path->cur = 0;
         st->p28 = 0;
         st->p2C = 0;
-        ENTER_POSE(actor, 0);
+        ENTER_POSE(actor, BLOWHARD_START_PHASE);
       }
       break;
     }

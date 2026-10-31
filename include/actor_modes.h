@@ -236,4 +236,26 @@ enum GnastyMode {
   GNASTY_PATH_END = 21,    /* at the path end until Spyro comes near from below */
 };
 
+/* ->mode of Blowhard, the level 16 boss (ACTOR_TYPE_BLOWHARD,
+ * BlowhardState). Each of its three phases rises (floorZ + 0x578), hovers
+ * or patrols its path, and sinks to drop an ACTOR_TYPE_RIM_RIDER on Spyro;
+ * a flame hit in any of them goes to BLOWHARD_HIT, then the next phase. */
+enum BlowhardMode {
+  BLOWHARD_START_PHASE = 0,     /* enter the current phase's first state */
+  BLOWHARD_HIT = 2,             /* hit: once its chunk animation halts, next phase */
+  BLOWHARD_DYING = 7,           /* the third hit: drops its loot and is removed */
+  BLOWHARD_P1_RISE = 0x46,
+  BLOWHARD_P1_HOVER = 0x47,     /* faces Spyro; close: sinks to drop a rider */
+  BLOWHARD_P1_DROP_RIDER = 0x48,
+  BLOWHARD_P2_TRAVEL = 0x50,    /* tweens to the phase-2 path */
+  BLOWHARD_P2_PATROL = 0x51,
+  BLOWHARD_P2_DROP_RIDER = 0x52,
+  BLOWHARD_P2_WAIT = 0x53,
+  BLOWHARD_P3_TRAVEL = 0x5A,    /* tweens to the phase-3 path */
+  BLOWHARD_P3_PATROL = 0x5B,
+  BLOWHARD_P3_DROP_RIDER = 0x5C,
+  BLOWHARD_P3_WAIT = 0x5D,
+  BLOWHARD_NEXT_PHASE = 0x63,   /* phase + 1, next path, back to START_PHASE */
+};
+
 #endif
