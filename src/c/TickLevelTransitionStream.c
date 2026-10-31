@@ -344,8 +344,7 @@ void TickLevelTransitionStream(int full) {
             PortalActor *actor;
 
             yaw = *pe;
-            actor =
-                *(PortalActor **)((char *)g_pActorListBase + e[6] * ACTOR_SIZE);
+            actor = (PortalActor *)((Actor *)g_pActorListBase)[e[6]].state;
             EBB_BREAK();
             ChangeSpyroState(SPYRO_ST_GLIDE);
             PE_WORD(SPY_SUBSTATE) = 9;

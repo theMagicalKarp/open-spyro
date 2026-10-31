@@ -4,10 +4,6 @@
 
 #define ACT ((Actor *)actor)
 
-struct Actor58 {
-  char _pad[0x58];
-};
-
 /* The sample-bank global is the head of the level's per-sound pointer table
    (the level overlays index the same object as a pointer array). Reading it
    as a RECORD MEMBER, not as a plain scalar, is load-bearing here: sched.c's
@@ -47,7 +43,7 @@ void CommitActorKillGems(int value, unsigned char *actor) {
   if ((unsigned int)actor >= (unsigned int)g_pActorListBase &&
       (unsigned int)actor < (unsigned int)g_pActorPoolDynBase) {
     int raw;
-    id = (struct Actor58 *)actor - (struct Actor58 *)g_pActorListBase;
+    id = ACT - (Actor *)g_pActorListBase;
     word = id >> 5;
     raw = id;
     id = id & 0x1F;

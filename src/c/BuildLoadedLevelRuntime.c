@@ -35,7 +35,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   int *dst;
   int *src;
   char *rec;
-  char *r;
+  Actor *r;
   int mask;
   int off;
   int i;
@@ -402,20 +402,18 @@ sprites:
   rec = (char *)g_pActorListBase;
   if (((Actor *)rec)->mode != ACTOR_MODE_END) {
     do {
-      r = (char *)((i * ACTOR_SIZE) + ((int)rec));
-      if (((int *)(&g_apActorMeshTable))[((Actor *)r)->type] < 0) {
+      /* An int sum, not &((Actor *)rec)[i]: the index form swaps the addu. */
+      r = (Actor *)((i * ACTOR_SIZE) + ((int)rec));
+      if (((int *)(&g_apActorMeshTable))[r->type] < 0) {
         InsertActorIntoSpatialGrid(r);
       } else {
         HideActorRenderRecord(r);
       }
-      CopyVector(pos, (int *)((((char *)g_pActorListBase) + (i * ACTOR_SIZE)) +
-                              ACTOR_OFFSET(posX)));
+      CopyVector(pos, &((Actor *)g_pActorListBase)[i].posX);
       pos[2] += 0x400;
       FindGroundHeightBelow(pos, 0x10000);
-      EncodeCachedVecToActorDirCode(((char *)g_pActorListBase) +
-                                    (i * ACTOR_SIZE));
-      type =
-          *((unsigned char *)(((i * 0x58) + ((int)g_pActorListBase)) + 0x3A));
+      EncodeCachedVecToActorDirCode(&((Actor *)g_pActorListBase)[i]);
+      type = ((Actor *)g_pActorListBase)[i].killGroup;
       if (((unsigned int)(type & 0x7F)) < 0x20) {
         register int b1 asm("$5");
         wi = i >> 5;
@@ -450,11 +448,11 @@ sprites:
       b3 = 1 << sh2;
       if ((*((int *)(wi + row))) & b3) {
         if ((*(int *)((char *)g_anRunningKillBitmap + wi) & b3) == 0) {
-          r = (char *)((i * ACTOR_SIZE) + ((int)rec));
-          if ((((Actor *)r)->killGroup & ACTOR_KILL_GROUP_MASK) == 0x7D) {
+          r = (Actor *)((i * ACTOR_SIZE) + ((int)rec));
+          if ((r->killGroup & ACTOR_KILL_GROUP_MASK) == 0x7D) {
             DespawnActorRecord(r);
           } else {
-            ((Actor *)r)->dropKind = 0xFF;
+            r->dropKind = 0xFF;
           }
         } else {
           {
@@ -463,10 +461,8 @@ sprites:
 
             REG_RESERVE(k3);
             REG_RESERVE(k4);
-            tb = (*((unsigned char *)(((i * ACTOR_SIZE) +
-                                       ((int)g_pActorListBase)) +
-                                      0x3A))) &
-                 0x7F;
+            tb = ((Actor *)g_pActorListBase)[i].killGroup &
+                 ACTOR_KILL_GROUP_MASK;
             if (tb < 0x20) {
               tbit = 1 << tb;
               count = (mask & tbit) != 0;
@@ -476,9 +472,9 @@ sprites:
             __asm__ volatile("" : : "r"(k3), "r"(k4));
           }
           if (count != 0) {
-            (((char *)g_pActorListBase) + (i * ACTOR_SIZE))[0x53] = 0xFF;
+            ((Actor *)g_pActorListBase)[i].dropKind = 0xFF;
           } else {
-            DespawnActorRecord(((char *)g_pActorListBase) + (i * ACTOR_SIZE));
+            DespawnActorRecord(&((Actor *)g_pActorListBase)[i]);
           }
         }
       }
