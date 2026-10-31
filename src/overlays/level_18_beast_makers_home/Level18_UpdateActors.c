@@ -1750,7 +1750,7 @@ void Level18_UpdateActors(void) {
                                   ArcTan2(a->posX - actor->posX,
                                                 a->posY - actor->posY, 0)) <
                         0x19) {
-                  a->flags |= 0x80000;
+                  a->flags |= ACTOR_HIT_SUPER;
                 }
               }
             }

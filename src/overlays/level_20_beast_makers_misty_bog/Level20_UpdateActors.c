@@ -1845,7 +1845,7 @@ void Level20_UpdateActors(void) {
                                   ArcTan2(a->posX - actor->posX,
                                                 a->posY - actor->posY, 0)) <
                         0x19) {
-                  a->flags |= 0x80000;
+                  a->flags |= ACTOR_HIT_SUPER;
                 }
               }
             }
@@ -3570,7 +3570,7 @@ void Level20_UpdateActors(void) {
                 AbsAngleDelta8(actor->rotZ,
                               ArcTan2(o->posX - actor->posX,
                                             o->posY - actor->posY, 0)) < 0x19) {
-              o->flags |= 0x80000;
+              o->flags |= ACTOR_HIT_SUPER;
             }
           }
           if (d1 < 0x44C) {

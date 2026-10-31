@@ -3950,7 +3950,7 @@ void Level8_UpdateActors(void) {
 
             if (st->link > 0) {
               target->updateDist = 0xFF;
-              target->flags |= 0x80000;
+              target->flags |= ACTOR_HIT_SUPER;
             }
             DespawnActorRecord(actor);
           }

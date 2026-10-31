@@ -1098,7 +1098,7 @@ void Level21_UpdateActors(void) {
                 AbsAngleDelta8(st->heading,
                               ArcTan2(o->posX - actor->posX,
                                             o->posY - actor->posY, 0)) < 0x28) {
-              o->flags |= 0xC0000;
+              o->flags |= ACTOR_HIT_BLAST | ACTOR_HIT_SUPER;
             }
           }
         }
@@ -1455,7 +1455,7 @@ void Level21_UpdateActors(void) {
                 AbsAngleDelta8(st->heading,
                               ArcTan2(o->posX - actor->posX,
                                             o->posY - actor->posY, 0)) < 0x28) {
-              o->flags |= 0xC0000;
+              o->flags |= ACTOR_HIT_BLAST | ACTOR_HIT_SUPER;
             }
           }
         }
