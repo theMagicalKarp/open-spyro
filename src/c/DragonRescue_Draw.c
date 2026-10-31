@@ -1,6 +1,7 @@
 #include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
+#include "hud.h"
 #include "main_shared.h"
 
 /* Draw for gamestate 8 (GS_DRAGON_RESCUE, 0x8001cfdc, 0x73c).
@@ -133,7 +134,7 @@ void DragonRescue_Draw(void) {
     *ot++ = g_pDragonRescueStatueActor;
     *ot = 0;
     q = &g_apOtDepthBinBlock[2304];
-    icon = &g_abHudIconActorRecords[0x1B8];
+    icon = (unsigned char *)HUD_ICON_SLOT(HUD_SLOT_DRAGON_DIGITS);
   icon5:
     *q++ = icon;
     icon += ACTOR_SIZE;
@@ -175,7 +176,7 @@ void DragonRescue_Draw(void) {
     int i;
     q = &g_apOtDepthBinBlock[2304];
     i = 0;
-    icon = &g_abHudIconActorRecords[0x1B8];
+    icon = (unsigned char *)HUD_ICON_SLOT(HUD_SLOT_DRAGON_DIGITS);
   icon6:
     *q++ = icon;
     icon += ACTOR_SIZE;
@@ -200,7 +201,7 @@ void DragonRescue_Draw(void) {
       void **q;
       i = 0;
       q = &g_apOtDepthBinBlock[2304];
-      icon = &g_abHudIconActorRecords[0x1B8];
+      icon = (unsigned char *)HUD_ICON_SLOT(HUD_SLOT_DRAGON_DIGITS);
     icon7:
       *q++ = icon;
       icon += ACTOR_SIZE;

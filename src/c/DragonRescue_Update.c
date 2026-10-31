@@ -665,7 +665,7 @@ void DragonRescue_Update(void) {
     AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
     i = 0;
     done = (int)g_anHudRollInStepTable; /* shares s4 with case 4 */
-    icon = &HUD_ICON_SLOT(5)->posY;
+    icon = &HUD_ICON_SLOT(HUD_SLOT_DRAGON_DIGITS)->posY;
     k = 0;
     off = 0;
     TickSpyroAnimLayer1();
@@ -707,7 +707,8 @@ void DragonRescue_Update(void) {
     if (g_anHudDragonCachedCountBlock[0] != g_nWorldDragonsRescued ||
         g_bHudDragonRollPhase != 0) {
       g_bHudDragonRollPhase += 0x10;
-      SetHudCounterDigits(5, 2, g_anHudDragonCachedCountBlock[0] + 1, 0);
+      SetHudCounterDigits(HUD_SLOT_DRAGON_DIGITS, 2,
+                          g_anHudDragonCachedCountBlock[0] + 1, 0);
       CommitHudCounterAnimState(5, 2, g_bHudDragonRollPhase);
       if (g_bHudDragonRollPhase == 0xC0) {
         g_anHudDragonCachedCountBlock[0]++;
@@ -738,7 +739,7 @@ void DragonRescue_Update(void) {
       int off;
 
       n = 0;
-      icon = &HUD_ICON_SLOT(5)->posY;
+      icon = &HUD_ICON_SLOT(HUD_SLOT_DRAGON_DIGITS)->posY;
       j = 0;
       off = 0;
     roll_out:

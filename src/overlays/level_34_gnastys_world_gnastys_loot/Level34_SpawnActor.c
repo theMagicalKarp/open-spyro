@@ -266,9 +266,9 @@ Actor *Level34_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x104 ... 0x10D:
-  case 0x115:
-  case 0x147: {
+  case ACTOR_TYPE_GEM_DIGIT_0 ... ACTOR_TYPE_GEM_DIGIT_0 + 9:
+  case ACTOR_TYPE_GLYPH_SLASH:
+  case ACTOR_TYPE_GLYPH_PERIOD: {
     int *st = rec->state;
 
     InitActorRenderDefaults(rec);

@@ -270,7 +270,7 @@ void Level23_FlightResults_Draw(void)
       FillWord(fp, 0, 0x58);
       {
         char *r = g_pSpriteRecordWriteCursor;
-        ACTOR_RAW(r, short, type) = 0x1D7;
+        ACTOR_RAW(r, short, type) = ACTOR_TYPE_HUD_GEM_ICON;
         ACTOR_RAW(r, int, posX) = 0x1CC;
         ACTOR_RAW(r, int, posY) = 0x28;
         ACTOR_RAW(r, int, posZ) = 0xC00;

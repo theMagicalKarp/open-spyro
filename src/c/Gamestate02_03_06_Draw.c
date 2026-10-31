@@ -454,7 +454,7 @@ void Gamestate02_03_06_Draw(void) {
               FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
               rp = (Actor *)g_pSpriteRecordWriteCursor;
               cur = g_nPauseMenuCursor;
-              rp->type = 0x1b2;
+              rp->type = ACTOR_TYPE_LETTER_GLYPH('I');
               rp->posY = 0x6d;
               rp->posX = x;
               rp->posZ = 0x1400;
@@ -505,7 +505,7 @@ void Gamestate02_03_06_Draw(void) {
               FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
               rp = (Actor *)g_pSpriteRecordWriteCursor;
               cur = g_nPauseMenuCursor;
-              rp->type = 0x1b2;
+              rp->type = ACTOR_TYPE_LETTER_GLYPH('I');
               rp->posY = 0x7d;
               rp->posZ = 0x1400;
               rp->posX = x;
@@ -721,7 +721,7 @@ void Gamestate02_03_06_Draw(void) {
       g_pSpriteRecordWriteCursor =
           (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
-      SREC->type = 0x1d7;
+      SREC->type = ACTOR_TYPE_HUD_GEM_ICON;
       ((Actor *)g_pSpriteRecordWriteCursor)->posX = 0x2e;
       ((Actor *)g_pSpriteRecordWriteCursor)->posY = 0x2e;
       ((Actor *)g_pSpriteRecordWriteCursor)->posZ = 0xc00;
@@ -736,7 +736,7 @@ void Gamestate02_03_06_Draw(void) {
       g_pSpriteRecordWriteCursor =
           (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
-      SREC->type = 0x1fa;
+      SREC->type = ACTOR_TYPE_HUD_DRAGON_ICON;
       ((Actor *)g_pSpriteRecordWriteCursor)->posX = 0x12c;
       if (g_nWorldDragonsRescued >= 0xa) {
         ((Actor *)g_pSpriteRecordWriteCursor)->posX = 0x111;
@@ -843,7 +843,7 @@ void Gamestate02_03_06_Draw(void) {
       g_pSpriteRecordWriteCursor =
           (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
-      SREC->type = 0x1d7;
+      SREC->type = ACTOR_TYPE_HUD_GEM_ICON;
       {
         int bF = bias + 0x15a;
         ((Actor *)g_pSpriteRecordWriteCursor)->posX =
@@ -873,7 +873,7 @@ void Gamestate02_03_06_Draw(void) {
         {
           register int fr asm("$2");
           fr = g_nPauseMenuTransitionFrames;
-          SREC->type = 0x1fa;
+          SREC->type = ACTOR_TYPE_HUD_DRAGON_ICON;
           bob = (fr * 0x10 & 0x1f0) >> 1;
         }
         ((Actor *)g_pSpriteRecordWriteCursor)->posZ = 0x780;

@@ -23,8 +23,9 @@
    counts, and draws the initial digits for the gem, dragon and life counters.
 
    With `layout_butterflies` set it also clears the world-egg roll request and
-   lays the sparx-food butterflies out around icon record 10's screen position
-   (records +0x37C/+0x380) using the g_abHudButterflyRingXY ring offsets. */
+   lays the sparx-food butterflies out around the lives icon's (slot 10) screen
+   position (records +0x37C/+0x380) using the g_abHudButterflyRingXY ring
+   offsets. */
 
 void InitHudCounters(int layout_butterflies) {
   short *anchor;
@@ -85,11 +86,11 @@ icon_slot:
         HUD_RECT(g_anHudDigitRestRects, rect)->h;
     rect += 8;
   } while (rect < 0x60);
-  anchor = &HUD_ICON_SLOT(4)->type;
+  anchor = &HUD_ICON_SLOT(HUD_SLOT_GEMS)->type;
   idx = VOL(g_nLevelIndex);
-  VOL(anchor[0]) = 0x1D7;
-  VOL(HUD_ICON_SLOT(7)->type) = 0x1FA;
-  VOL(HUD_ICON_SLOT(HUD_SLOT_BUTTERFLY)->type) = 0x3A;
+  VOL(anchor[0]) = ACTOR_TYPE_HUD_GEM_ICON;
+  VOL(HUD_ICON_SLOT(HUD_SLOT_DRAGONS)->type) = ACTOR_TYPE_HUD_DRAGON_ICON;
+  VOL(HUD_ICON_SLOT(HUD_SLOT_LIVES)->type) = ACTOR_TYPE_HUD_LIVES_ICON;
   VOL(HUD_ICON_SLOT(HUD_SLOT_KEY)->type) = ACTOR_TYPE_KEY;
   VOL(HUD_ICON_SLOT(HUD_SLOT_KEY)->rotZ) = 0x40;
   VOL(g_abHudCounterDisplayState[0]) = 1;
@@ -119,15 +120,15 @@ icon_slot:
   g_nHudButterflyCachedCount = food;
   g_nHudLivesCachedCount = lives;
   g_nHudLevelGemCachedCount = gems;
-  SetHudCounterDigits(0, 4, gems, 1);
-  SetHudCounterDigits(5, 2, g_nHudDragonCachedCount, 1);
-  SetHudCounterDigits(8, 2, g_nHudLivesCachedCount, 1);
+  SetHudCounterDigits(HUD_SLOT_GEM_DIGITS, 4, gems, 1);
+  SetHudCounterDigits(HUD_SLOT_DRAGON_DIGITS, 2, g_nHudDragonCachedCount, 1);
+  SetHudCounterDigits(HUD_SLOT_LIVES_DIGITS, 2, g_nHudLivesCachedCount, 1);
   if (layout_butterflies != 0) {
     g_nHudWorldEggRollRequest = 0;
     i = 0;
     count = g_nSparxFoodCount;
     if (count > 0) {
-      icon = &HUD_ICON_SLOT(HUD_SLOT_BUTTERFLY)->posX;
+      icon = &HUD_ICON_SLOT(HUD_SLOT_LIVES)->posX;
       size = 8;
       ring = 0;
       dst = 0x60;

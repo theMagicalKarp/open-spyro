@@ -131,7 +131,7 @@ void RespawnOrGameOver_Draw(void) {
           } else {
             SREC->posZ = 0x400;
           }
-          SREC->type = g_abGameOverGlyphs[i] + 0x169;
+          SREC->type = ACTOR_TYPE_LETTER_GLYPH(g_abGameOverGlyphs[i]);
           SREC->posX = LETTER_POS(k)->x;
           SREC->posY = LETTER_POS(k)->y;
           SREC->rotZ = g_abGameOverLetterAngle[i];

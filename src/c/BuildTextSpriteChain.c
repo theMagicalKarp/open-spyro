@@ -51,21 +51,21 @@ void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance,
 
       ch = *pszText;
       if (ch >= '0' && ch <= '9') {
-        ((Actor *)CURSOR_P)->type = ch + 0xD4;
+        ((Actor *)CURSOR_P)->type = ACTOR_TYPE_DIGIT_GLYPH(ch);
       } else if (ch >= 'A' && ch <= 'Z') {
-        ((Actor *)CURSOR_P)->type = ch + 0x169;
+        ((Actor *)CURSOR_P)->type = ACTOR_TYPE_LETTER_GLYPH(ch);
       } else if ((unsigned char)ch == '/') {
-        ((Actor *)CURSOR)->type = 0x115;
+        ((Actor *)CURSOR)->type = ACTOR_TYPE_GLYPH_SLASH;
       } else if ((unsigned char)ch == '?') {
-        ((Actor *)CURSOR)->type = 0x116;
+        ((Actor *)CURSOR)->type = ACTOR_TYPE_GLYPH_QUESTION;
       } else if ((unsigned char)ch == '%') {
-        ((Actor *)CURSOR)->type = 0x110;
+        ((Actor *)CURSOR)->type = ACTOR_TYPE_GLYPH_PERCENT;
       } else if ((unsigned char)ch == '^') {
-        ((Actor *)CURSOR)->type = 0x141;
+        ((Actor *)CURSOR)->type = ACTOR_TYPE_GLYPH_CARET;
       } else if ((unsigned char)ch == '+') {
-        ((Actor *)CURSOR)->type = 0x13D;
+        ((Actor *)CURSOR)->type = ACTOR_TYPE_GLYPH_PLUS;
       } else {
-        ((Actor *)CURSOR_P)->type = 0x147;
+        ((Actor *)CURSOR_P)->type = ACTOR_TYPE_GLYPH_PERIOD;
       }
 
       ((Actor *)CURSOR)->otBias = 0x7F;

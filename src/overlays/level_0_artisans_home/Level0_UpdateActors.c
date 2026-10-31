@@ -3129,7 +3129,7 @@ void Level0_UpdateActors(void) {
     }
 
     /* Floating-word letters (OrbitState). */
-    case ACTOR_TYPE_LETTER_OTHER:
+    case ACTOR_TYPE_GLYPH_COMMA:
     case ACTOR_TYPE_LETTER_A:
     case ACTOR_TYPE_LETTER_A + 1:
     case ACTOR_TYPE_LETTER_A + 2:

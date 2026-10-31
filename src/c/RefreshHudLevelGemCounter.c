@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "hud.h"
 
 /* Refresh the HUD level-gem counters (0x80054578): caches the collected
    count for the current level intro index and re-derives the displayed
@@ -12,7 +13,7 @@ void RefreshHudLevelGemCounter(void) {
   unsigned char state;
   int gems = g_anLevelGemsCollected[g_nLevelIndex];
   *pc = gems;
-  SetHudCounterDigits(0, 4, gems, 1);
+  SetHudCounterDigits(HUD_SLOT_GEM_DIGITS, 4, gems, 1);
   /* the do/while(0) is load-bearing: it pins the state load below the
      SetHudCounterDigits call instead of letting it hoist into the arg block */
   do {
