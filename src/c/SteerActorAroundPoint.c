@@ -18,6 +18,7 @@
  *    depth above it gives the same bytes. Once `face` wins s1 the deadzone
  *    wrapper the parked version carried is no longer needed.
  */
+#include "actor_type.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -33,7 +34,7 @@
    Camera mode g_nActorFrameDelta scales the turn speed by 1.5x / 2x.
    (0x80038638, 740 bytes.) */
 
-int SteerActorAroundPoint(int *actor, int *tgt, int radius, int face,
+int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face,
                           int deadzone, int speed, int turnStep,
                           int turnThreshold, int blockA, int blockB,
                           int moveGroup, int moveRadius, int flags) {
@@ -43,7 +44,7 @@ int SteerActorAroundPoint(int *actor, int *tgt, int radius, int face,
   int e;
   int heading;
   int r;
-  dir = ArcTan2(actor[3] - tgt[0], actor[4] - tgt[1], 0);
+  dir = ArcTan2(actor->posX - tgt[0], actor->posY - tgt[1], 0);
   face = WrapAngleDelta8(face, dir);
   do {
     do {
@@ -110,16 +111,16 @@ int SteerActorAroundPoint(int *actor, int *tgt, int radius, int face,
   }
   pt[0] = tgt[0] + ((g_anCosineLut[dir] * radius) >> 12);
   pt[1] = tgt[1] + ((g_anSineLut[dir] * radius) >> 12);
-  heading = ArcTan2(pt[0] - actor[3], pt[1] - actor[4], 0);
+  heading = ArcTan2(pt[0] - actor->posX, pt[1] - actor->posY, 0);
   if (g_nActorFrameDelta == 3) {
     speed = speed + (speed >> 1);
   } else if (g_nActorFrameDelta == 4) {
     speed = speed * 2;
   }
   if (flags & 8) {
-    TurnActorYawTowardAngle(actor,
-                            ArcTan2(tgt[0] - actor[3], tgt[1] - actor[4], 0),
-                            turnStep, 0, 0);
+    TurnActorYawTowardAngle(
+        actor, ArcTan2(tgt[0] - actor->posX, tgt[1] - actor->posY, 0), turnStep,
+        0, 0);
     r = MoveActorAlongAngle(actor, heading, speed, moveGroup, moveRadius,
                             flags);
   } else {

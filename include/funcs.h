@@ -2062,7 +2062,7 @@ int PlaneDistanceAbs(int *p, int *plane);
 
 /* 0x80038638: Steer an actor around a target point (aims `radius` off it on the
  * side it is already turning toward); returns the residual heading error. */
-int SteerActorAroundPoint(int *actor, int *tgt, int radius, int face, int deadzone, int speed, int turnStep, int turnThreshold, int blockA, int blockB, int moveGroup, int moveRadius, int flags);
+int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int deadzone, int speed, int turnStep, int turnThreshold, int blockA, int blockB, int moveGroup, int moveRadius, int flags);
 
 /* 0x80039e94: Path-follow that turns in place while the heading error exceeds
  * `lim`, then walks; returns 0x100 + node index on arrival. */
@@ -2088,7 +2088,7 @@ void CommitActorKillGems(int value, Actor *actor);
 
 /* 0x8003bad0: Turn (yaw/pitch clamped) and move an actor toward a 3D point, with
  * optional sphere collision; returns 1 when the move was adjusted. */
-int SteerActorTowardPoint(int actor, int *target, int speed, int yawLim, int pitchLim, int radius);
+int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim, int pitchLim, int radius);
 
 /* 0x8003bfc0: Move an actor along a path in fixed-length legs, cross-fading the
  * first steps of each leg with the previous leg vector; re-aims yaw/pitch. */
@@ -2115,7 +2115,7 @@ void BuildActiveActorList(void);
 void RefreshActorDerivedState(Actor *actor, int mode);
 
 /* 0x80052d64: World position of attach/mount point `slot` on an actor's model. */
-void GetActorAttachPoint(void *actor, int slot, int *dst);
+void GetActorAttachPoint(Actor *actor, int slot, int *dst);
 
 /* 0x80053570: Claim the next 0x20-byte emit-list record and stamp its class at +1
  * (a full list overwrites a random record). */
@@ -2148,7 +2148,7 @@ void BurstActorWithSound(Actor *actor, int mode);
 /* 0x800530c0: Load the actor's matrix/position into the GTE, decode its current
  * mesh frame's packed vertices and emit class-2 spark records (AllocEmitListRecord)
  * at them; `arg` lands in GTE RBK and seeds the spark colour. */
-void BurstActorIntoSparks(void *actor, int arg);
+void BurstActorIntoSparks(Actor *actor, int arg);
 
 /* 0x80016fd0: Transpose the packed 3x3 short matrix at src into dst (three
  * halfword-field swaps; the 5th word passes through). */
