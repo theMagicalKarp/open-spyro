@@ -77,7 +77,7 @@ typedef struct ShardState {
 
 extern int FindGroundHeightBelow(int *pos, int drop);
 
-extern void (*g_pfnLevelEmitParticles)(int kind, int count, int *pos, int spread); /* SpawnPuff */
+extern void (*g_pfnLevelEmitParticles)(int count, int type, int *pos, int effectArg);
 
 extern short g_anCosineLut[]; /* unit-circle x table (8-bit angle) */
 
