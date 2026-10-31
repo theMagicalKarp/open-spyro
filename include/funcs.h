@@ -83,9 +83,9 @@ void StartCdReadAsync(int lbaBase, void *dst, int size, int offset, int marker);
 /* 0x80016784: Walks the per-depth OT slot table at g_pOtDepthBinArrayBase backward from index `depth_max` down to 0, splicing each slot's primitive head into the previous slot's tail via 24-bit OT next-addr tags, and returns the head of the finalized chain. The chain is terminated at 0x8006bbe0 (0xbbe0 written as the term tag). Called as `DrawOTag(LinkOTPrimitives(0x800))` from every Gamestate*_Draw. */
 void *LinkOTPrimitives(int depth_max);
 
-/* 0x800168a0: Appends primitive `param_1` to OT depth slot `param_2` (g_pOtDepthBinArrayBase[param_2*8]). Same head/tail-link logic as AddPrimToOT but takes an explicit slot index instead of using the active slot at g_pOtActiveDepthSlot. */
+/* 0x800168a0: Appends primitive `prim` to OT depth slot `slot` (g_pOtDepthBinArrayBase[slot*8]). Same head/tail-link logic as AddPrimToOT but takes an explicit slot index instead of using the active slot at g_pOtActiveDepthSlot. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined AddPrimToOTSlot(int param_1, int param_2);
+undefined AddPrimToOTSlot(int prim, int slot);
 
 /* 0x800168dc: Appends a primitive to the active OT depth slot (g_pOtActiveDepthSlot). If the slot already has a tail prim, patches its 24-bit next-addr tag to point at `prim`; else stores `prim` as the slot's head. PsyQ-style `addPrim` for this engine's per-depth OT slot table. */
 void AddPrimToOT(unsigned int prim);
@@ -98,7 +98,7 @@ void FillBlock16(void *dst, int value, int count);
 void CopyWords(void *dst, void *src, int byte_count);
 
 /* 0x800169ac: 2-arg arctan returning 8-bit angle (0..0xff = 0..360deg). Smaller, lower-precision sibling of ArcTan2 — uses byte-LUT at s__________________________________8006d82c. */
-int ArcTan2_8bit(int param_1, int param_2);
+int ArcTan2_8bit(int y, int x);
 
 int ArcTan2(int y, int x, int high_precision);
 
