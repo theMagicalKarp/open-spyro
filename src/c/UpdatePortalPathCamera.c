@@ -28,7 +28,7 @@ void UpdatePortalPathCamera(void) {
 
   idx = PATH[1];
   SubtractVector(&toWaypoint, PATH + (idx * 0x10 + 8), g_anCameraPos);
-  dist = VectorLength(&toWaypoint, 1);
+  dist = VectorLength(&toWaypoint, VEC_LEN_XYZ);
   if (dist < 0x200) {
     if (g_nPortalCamPathReverseFlag != 0) {
       path = PATH;
@@ -52,7 +52,7 @@ void UpdatePortalPathCamera(void) {
 
   if (step != 0) {
     SubtractVector(&toPlayer, g_anSpyroWorldPos, g_anCameraPos);
-    span = VectorLength(&toPlayer, 1);
+    span = VectorLength(&toPlayer, VEC_LEN_XYZ);
     step = 0;
     if (span > 0x400) {
       step = (span - 0x400) * 4;

@@ -172,7 +172,7 @@ void Level14_AdvanceEmitList(int step) {
           }
           dv[2] += AGE << 5;
           SubtractVector(dir, dir, pt);
-          len = VectorLength(dir, 1);
+          len = VectorLength(dir, VEC_LEN_XYZ);
           if (len >= 0x81) {
             ScaleVector3ByRatio(dir, len, 0x80);
           }
@@ -185,7 +185,7 @@ void Level14_AdvanceEmitList(int step) {
         dv[1] += LookupSine(AGE << 7) >> 2;
         dv[2] += LookupCosine((AGE << 7) + 0x200) >> 2;
         SubtractVector(dir, dir, pt);
-        len = VectorLength(dir, 1);
+        len = VectorLength(dir, VEC_LEN_XYZ);
         if (len < 0x401 || AGE >= 0x41) {
           int *owner = *(int **)W(0x18);
 
@@ -289,7 +289,7 @@ void Level14_AdvanceEmitList(int step) {
         v[2] += LookupCosine((AGE << 7) - 0x100) >> 2;
         home = p;
         SubtractVector(bolt, bolt, home);
-        len = VectorLength(bolt, 1);
+        len = VectorLength(bolt, VEC_LEN_XYZ);
         if (len < 0x401 || AGE >= 0x41) {
           goto expire;
         } else {
@@ -572,7 +572,7 @@ void Level14_AdvanceEmitList(int step) {
       adv[1] += LookupSine(AGE << 7) >> 2;
       adv[2] += LookupCosine((AGE << 7) + 0x200) >> 2;
       SubtractVector(hop, hop, base);
-      len = VectorLength(hop, 1);
+      len = VectorLength(hop, VEC_LEN_XYZ);
       if (len < 0x401) {
         W(0x1C)++;
         if (W(0x1C) >= path[0]) {

@@ -121,7 +121,11 @@ void ApplyActiveGteRotation(int *dst, int *src);
 /* 0x80017110: Rotate a 3-vector by the camera rotation matrix at g_anCameraViewMtx (5 packed 32-bit slots = 9 GTE short matrix entries). Y/Z sign-flipped on input/output (PSX up-coord convention). Output written to dst. */
 void WorldToCameraRotate(int *src, int *dst);
 
-int VectorLength(int *vec, int mode);
+#ifndef VEC_LEN_XY
+#define VEC_LEN_XY 0  /* VectorLength: X/Y only (Z ignored) */
+#define VEC_LEN_XYZ 1 /* VectorLength: all three components */
+#endif
+int VectorLength(int *vec, int withZ);
 
 /* 0x8001729c: One Newton-Raphson refinement step for sqrt(x^2+y^2[+z^2]). Loads vec into IR1/IR2/IR3 (Z skipped when mode==0), squares via gte_sqr0_b, uses GTE LZCS/LZCR to derive a half-bit-length shift, then returns refined estimate. Skips refinement when len^2 fits in <=12 bits. */
 int RefineSqrtEstimate(int *v, int len, int mode);

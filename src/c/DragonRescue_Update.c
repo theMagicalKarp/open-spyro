@@ -142,7 +142,7 @@ void DragonRescue_Update(void) {
                     g_nSpyroWorldPosY - ((Actor *)src)->posY, 1);
       }
       SubtractVector(vec, g_anSpyroWorldPos, &((Actor *)SRC)->posX);
-      g_nDragonRescueOrbitStartRadius = VectorLength(vec, 0);
+      g_nDragonRescueOrbitStartRadius = VectorLength(vec, VEC_LEN_XY);
       {
         char *src = SRC;
 
@@ -153,7 +153,7 @@ void DragonRescue_Update(void) {
                     g_anCameraPos[1] - ACTOR_RAW(src, int, posY), 1);
       }
       SubtractVector(vec, g_anCameraPos, &((Actor *)SRC)->posX);
-      g_nDragonRescueCameraStartRadius = VectorLength(vec, 0);
+      g_nDragonRescueCameraStartRadius = VectorLength(vec, VEC_LEN_XY);
       g_nDragonRescueCameraStartZ = g_anCameraPos[2];
       {
         char *src = SRC;
@@ -164,7 +164,7 @@ void DragonRescue_Update(void) {
                     W32(rec, 4) - ((Actor *)src)->posY, 1);
       }
       SubtractVector(vec, rec, &((Actor *)SRC)->posX);
-      g_nDragonRescueCameraTargetRadius = VectorLength(vec, 0);
+      g_nDragonRescueCameraTargetRadius = VectorLength(vec, VEC_LEN_XY);
       g_nDragonRescueCameraTargetZ = W32(rec, 8);
       g_nDragonRescueSweepDurationFrames =
           (AbsAngleDelta12(g_nDragonRescueOrbitStartYaw,
@@ -269,7 +269,7 @@ void DragonRescue_Update(void) {
           }
         }
       }
-      g_nSpyroAnimPlayRate_blk[0] = VectorLength(vec, 0) >> 1;
+      g_nSpyroAnimPlayRate_blk[0] = VectorLength(vec, VEC_LEN_XY) >> 1;
       if (g_nSpyroAnimPlayRate_blk[0] < 4) {
         g_nSpyroAnimPlayRate_blk[0] = 4;
       }
@@ -354,7 +354,7 @@ void DragonRescue_Update(void) {
       SubtractVector(vec, vec, g_anCameraPos);
       if (g_nDragonRescueTimer < 0x10) {
         ang[0] = 0;
-        ang[1] = ArcTan2(VectorLength(vec, 0), -vec[2], 1);
+        ang[1] = ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], 1);
         ang[2] = ArcTan2(vec[0], vec[1], 1);
         g_nCameraEulerRoll = (g_nCameraEulerRoll +
                               ((SignedAngleDelta12(ang[0], g_nCameraEulerRoll) *
@@ -375,13 +375,14 @@ void DragonRescue_Update(void) {
       } else if (g_nDragonRescueTimer <
                  g_nDragonRescueSweepDurationFrames - 0x20) {
         g_nCameraEulerRoll = 0;
-        g_nCameraEulerPitch = ArcTan2(VectorLength(vec, 0), -vec[2], 1);
+        g_nCameraEulerPitch =
+            ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], 1);
         g_nCameraEulerYaw = ArcTan2(vec[0], vec[1], 1);
       } else {
         int *rec = REC(SRC);
 
         ang[0] = 0;
-        ang[1] = ArcTan2(VectorLength(vec, 0), -vec[2], 1);
+        ang[1] = ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], 1);
         ang[2] = ArcTan2(vec[0], vec[1], 1);
         g_nCameraEulerRoll =
             (ang[0] + ((SignedAngleDelta12(W32(rec, 0xc), ang[0]) *

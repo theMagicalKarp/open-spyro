@@ -115,7 +115,7 @@ Actor *Level17_SpawnActor(int type, Actor *parent)
       d[0] = g_anSpyroWorldPos[0] - rec->posX;
       d[1] = g_nSpyroWorldPosY - rec->posY;
       d[2] = g_nSpyroWorldPosZ - rec->posZ;
-      ScaleVector3ByRatio(d, VectorLength(d, 1), 0xA0);
+      ScaleVector3ByRatio(d, VectorLength(d, VEC_LEN_XYZ), 0xA0);
       InsertActorIntoSpatialGrid(rec);
       st = rec->state;
       CopyVector(st, d);

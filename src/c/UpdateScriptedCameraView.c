@@ -38,9 +38,9 @@ void UpdateScriptedCameraView(void) {
       n = 1;
     } else {
       SubtractVector(delta, CAMPOS, g_anSpyroWorldPos);
-      dist = VectorLength(delta, 1);
+      dist = VectorLength(delta, VEC_LEN_XYZ);
       SubtractVector(delta, CAMPOS, g_anSpyroWorldPos + 0x23);
-      if (VIEW[0xd] < dist && (int)VectorLength(delta, 1) < dist) {
+      if (VIEW[0xd] < dist && (int)VectorLength(delta, VEC_LEN_XYZ) < dist) {
         n = 1;
       } else {
         ProjectWorldPointGTEUnscaled(delta, g_anSpyroWorldPos);

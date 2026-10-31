@@ -494,7 +494,7 @@ void UpdateSpyroStateBehavior(void) {
         int v;
 
         g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;
-        v = VectorLength(&SPY[SPY_CARRY], 1);
+        v = VectorLength(&SPY[SPY_CARRY], VEC_LEN_XYZ);
         if (v < 0x1F80) {
           v = 0x1F80;
         }
@@ -893,7 +893,7 @@ void UpdateSpyroStateBehavior(void) {
         break;
       }
     }
-    t = VectorLength(g_anSpyroVelocity, 1);
+    t = VectorLength(g_anSpyroVelocity, VEC_LEN_XYZ);
     if (t == 0) {
       t = 1;
     }

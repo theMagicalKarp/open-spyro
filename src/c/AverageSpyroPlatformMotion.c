@@ -36,7 +36,7 @@ void AverageSpyroPlatformMotion(void) {
     avg[1] = avg[1] / 3;
     avg[2] = avg[2] / 3;
     CopyVector(g_anSpyroPendingImpulse, sum);
-    if (VectorLength(sum, 1) >= 0x21) {
+    if (VectorLength(sum, VEC_LEN_XYZ) >= 0x21) {
       g_nCameraSpringSuppressFlag = 1;
     }
   }

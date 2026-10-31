@@ -41,8 +41,12 @@ void SubtractVector(int *dst, int *a, int *b);
 void LShiftVector3(int *vec, int shift);
 void RShiftVector3(int *vec, int shift);
 
-/* Length of an int[3]; `mode` branches the computation (callers pass 0/1). */
-int VectorLength(int *vec, int mode);
+/* Length of an int[3] (GTE sqr + g_anSqrtLUT); withZ = 0 (VEC_LEN_XY) leaves Z out. */
+#ifndef VEC_LEN_XY
+#define VEC_LEN_XY 0  /* VectorLength: X/Y only (Z ignored) */
+#define VEC_LEN_XYZ 1 /* VectorLength: all three components */
+#endif
+int VectorLength(int *vec, int withZ);
 
 /* Scaling: by num/den (GTE gpl0), by a 12-bit factor with IR saturation, and
  * normalize-then-scale to a target magnitude. */

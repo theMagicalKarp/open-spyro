@@ -160,7 +160,7 @@ void Level12_AdvanceEmitList(int step) {
         v[1] += LookupSine(AGE << 7) >> 1;
         v[2] += LookupCosine((AGE << 7) - 0x100) >> 2;
         SubtractVector(dir, dir, p);
-        len = VectorLength(dir, 1);
+        len = VectorLength(dir, VEC_LEN_XYZ);
         if (len < 0x401 || AGE >= 0x41) {
           FreeEmitListRecord(rec);
         } else {

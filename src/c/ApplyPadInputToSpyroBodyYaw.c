@@ -24,7 +24,7 @@ int ApplyPadInputToSpyroBodyYaw(void) {
     vec[0] = pad[0x16] - 0x7F;
     vec[1] = pad[0x17] - 0x7F;
     vec[2] = 0;
-    mag = VectorLength(vec, 0);
+    mag = VectorLength(vec, VEC_LEN_XY);
     if (mag < 0x60) {
       tgt = g_anSpyroMoveTargetYawBlock[0];
       EBB_BREAK();

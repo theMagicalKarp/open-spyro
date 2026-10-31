@@ -9,7 +9,7 @@ int IsActorGroundFlat(Actor *actor) {
   actor->posZ += 0x5DC;
   FindGroundHeightBelow(&actor->posX, 0x1000);
   actor->posZ -= 0x5DC;
-  return (signed char)ArcTan2_8bit(g_anCollisionProbeVec[2],
-                                   VectorLength(g_anCollisionProbeVec, 0)) <
-         0x18;
+  return (signed char)ArcTan2_8bit(
+             g_anCollisionProbeVec[2],
+             VectorLength(g_anCollisionProbeVec, VEC_LEN_XY)) < 0x18;
 }

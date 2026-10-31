@@ -903,7 +903,7 @@ void Level9_UpdateActors(void) {
 
           ScaleVector3Sat(svG, (int *)st, g_nFrameStep);
           RShiftVector3(svG, 1);
-          dist = VectorLength(svG, 1);
+          dist = VectorLength(svG, VEC_LEN_XYZ);
 
           if (dist >= 0xDD) {
             ScaleVector3ByRatio(svG, dist, 0xDC);
@@ -942,7 +942,7 @@ void Level9_UpdateActors(void) {
             if (st->bounce == 0) {
               int floor = FindGroundHeightBelow(svG, 0x400);
               int slope =
-                  (signed char)ArcTan2_8bit(svH[2], VectorLength(svH, 0));
+                  (signed char)ArcTan2_8bit(svH[2], VectorLength(svH, VEC_LEN_XY));
 
               if ((svG[2] - 0x190) < floor && slope < 0x18) {
                 actor->subMode = 1;
@@ -1029,7 +1029,7 @@ void Level9_UpdateActors(void) {
             SubtractVector(svI, &spy->posX, (int *)st);
             RShiftVector3(svI, 5);
 
-            if (VectorLength(svI, 1) >= 0x1E1) {
+            if (VectorLength(svI, VEC_LEN_XYZ) >= 0x1E1) {
               CopyVector(&actor->posX, &spy->posX);
               st->timer = 0x20;
             } else {
@@ -1415,7 +1415,7 @@ void Level9_UpdateActors(void) {
             }
 
             SubtractVector(svA, svA, &actor->posX);
-            dist = VectorLength(svA, 1);
+            dist = VectorLength(svA, VEC_LEN_XYZ);
 
             if (high == 0 &&
                 (TickCountdownByFrameDelta((void *)st, 4) != 0 ||
@@ -1439,7 +1439,7 @@ void Level9_UpdateActors(void) {
             }
             AddVector(&actor->posX, &actor->posX, svA);
             TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], 0), 0xA, 0, 0);
-            actor->rotY = ArcTan2(VectorLength(svA, 0), svA[2], 0);
+            actor->rotY = ArcTan2(VectorLength(svA, VEC_LEN_XY), svA[2], 0);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
           }
@@ -1468,7 +1468,7 @@ void Level9_UpdateActors(void) {
             int dist;
 
             SubtractVector(svJ, &st->target->posX, &actor->posX);
-            dist = VectorLength(svJ, 1);
+            dist = VectorLength(svJ, VEC_LEN_XYZ);
 
             if (dist < 0x200) {
               pk->timer = 0;
@@ -1504,7 +1504,7 @@ void Level9_UpdateActors(void) {
               }
               AddVector(&actor->posX, &actor->posX, svJ);
               TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], 0), 0xA, 0, 0);
-              actor->rotY = ArcTan2(VectorLength(svJ, 0), svJ[2], 0);
+              actor->rotY = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], 0);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
             break;
@@ -2240,7 +2240,7 @@ void Level9_UpdateActors(void) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 0, &ball->posX);
           SubtractVector(bv, &SPY.posX, &ball->posX);
-          ScaleVector3ByRatio(bv, VectorLength(bv, 1), 0xC8);
+          ScaleVector3ByRatio(bv, VectorLength(bv, VEC_LEN_XYZ), 0xC8);
           ((ThrownSnowballState *)bv)->timer = 0x8C;
           st->knock = WrapAddAngle8(actor->rotZ, 0x80);
           st->speed = 0;
@@ -2369,7 +2369,7 @@ void Level9_UpdateActors(void) {
         if (st->timer == 0) {
           SteerActorTowardPoint(actor, st->home, 0x40, 8, 8, 0);
           SubtractVector(svL, st->home, &actor->posX);
-          if (VectorLength(svL, 1) < 0x200) {
+          if (VectorLength(svL, VEC_LEN_XYZ) < 0x200) {
             st->timer = 0x78;
             ENTER_POSE(actor, 3);
           }
@@ -2652,7 +2652,7 @@ void Level9_UpdateActors(void) {
           SubtractVector(svM, at, &spy->posX);
           svM[2] = (svM[2] * 3) >> 2;
 
-          if (VectorLength(svM, 1) < 0x440) {
+          if (VectorLength(svM, VEC_LEN_XYZ) < 0x440) {
             int facing;
 
             facing =
@@ -2710,7 +2710,7 @@ void Level9_UpdateActors(void) {
               g_nSpyroRequestVelocityZ = 0;
 
               if (SPY.requestVelX != 0 || g_nSpyroRequestVelocityY != 0) {
-                ScaleVector3ByRatio(look, VectorLength(look, 0), 0x60);
+                ScaleVector3ByRatio(look, VectorLength(look, VEC_LEN_XY), 0x60);
                 goto clear_c68;
               }
             }

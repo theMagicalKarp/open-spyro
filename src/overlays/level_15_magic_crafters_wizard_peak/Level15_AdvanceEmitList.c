@@ -167,7 +167,7 @@ void Level15_AdvanceEmitList(int step) {
           }
           dv[2] += AGE << 5;
           SubtractVector(dir, dir, pt);
-          len = VectorLength(dir, 1);
+          len = VectorLength(dir, VEC_LEN_XYZ);
           if (len >= 0x81) {
             ScaleVector3ByRatio(dir, len, 0x80);
           }
@@ -180,7 +180,7 @@ void Level15_AdvanceEmitList(int step) {
         dv[1] += LookupSine(AGE << 7) >> 2;
         dv[2] += LookupCosine((AGE << 7) + 0x200) >> 2;
         SubtractVector(dir, dir, pt);
-        len = VectorLength(dir, 1);
+        len = VectorLength(dir, VEC_LEN_XYZ);
         if (len < 0x401 || AGE >= 0x41) {
           int *owner = *(int **)W(0x18);
 

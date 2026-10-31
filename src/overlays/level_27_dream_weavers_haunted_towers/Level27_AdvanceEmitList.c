@@ -417,7 +417,7 @@ void Level27_AdvanceEmitList(int step) {
           }
           dv[2] += AGE << 5;
           SubtractVector(aim, aim, hold);
-          len = VectorLength(aim, 1);
+          len = VectorLength(aim, VEC_LEN_XYZ);
           if (len >= 0x81) {
             ScaleVector3ByRatio(aim, len, 0x80);
           }
@@ -435,7 +435,7 @@ void Level27_AdvanceEmitList(int step) {
         dv[1] += LookupSine(AGE << 7) >> 2;
         dv[2] += LookupCosine((AGE << 7) + 0x200) >> 2;
         SubtractVector(aim, aim, hold);
-        len = VectorLength(aim, 1);
+        len = VectorLength(aim, VEC_LEN_XYZ);
         if (len < 0x401) {
           rec[0x1A]++;
           if (rec[0x1A] >= *(unsigned char *)wp) {

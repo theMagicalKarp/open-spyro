@@ -14,7 +14,7 @@ void ApplyGravityAlongSpyroSlopeTangent(void) {
   int len;
 
   CopyVector(vec, g_anSpyroGroundNormal);
-  len = VectorLength(vec, 1);
+  len = VectorLength(vec, VEC_LEN_XYZ);
   if (len != 0) {
     ScaleVector3ByRatio(vec, len, (g_nSpyroGravityStep * vec[2]) / len);
     if (vec[2] > 0) {

@@ -79,10 +79,10 @@ void UpdateGameplayCamera(void) {
   int off3;
 
   SubtractVector(d, &CAM[CAM_EYE], g_anSpyroWorldPos);
-  far = VectorLength(d, 1) > 0x2000;
+  far = VectorLength(d, VEC_LEN_XYZ) > 0x2000;
   CopyVector(saved, &CAM[CAM_EYE]);
   SubtractVector(d, &CAM[CAM_EYE], CAM);
-  n = VectorLength(d, 1) / 256 + 1;
+  n = VectorLength(d, VEC_LEN_XYZ) / 256 + 1;
   if (n >= 2) {
     d[0] /= n;
     d[1] /= n;

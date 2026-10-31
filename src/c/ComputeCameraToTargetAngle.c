@@ -26,10 +26,10 @@ int ComputeCameraToTargetAngle(int *target) {
   int *pitch;
 
   SubtractVector(vec, target, g_pCameraAnchorPos);
-  dist = VectorLength(vec, 1);
+  dist = VectorLength(vec, VEC_LEN_XYZ);
   g_nCameraDistance = dist;
   g_nCameraDistance = RefineSqrtEstimate(vec, dist, 1);
-  dist = VectorLength(vec, 0);
+  dist = VectorLength(vec, VEC_LEN_XY);
   dist = RefineSqrtEstimate(vec, dist, 0);
   g_nCameraPitch = ArcTan2(dist, vec[2], 1);
   yaw = ArcTan2(vec[0], -vec[1], 1);

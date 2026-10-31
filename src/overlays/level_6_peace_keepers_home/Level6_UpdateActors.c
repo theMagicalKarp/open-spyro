@@ -1538,7 +1538,7 @@ void Level6_UpdateActors(void) {
 
           ScaleVector3Sat(g192, (int *)st, g_nFrameStep);
           RShiftVector3(g192, 1);
-          dist = VectorLength(g192, 1);
+          dist = VectorLength(g192, VEC_LEN_XYZ);
 
           if (dist >= 0xDD) {
             ScaleVector3ByRatio(g192, dist, 0xDC);
@@ -1577,7 +1577,7 @@ void Level6_UpdateActors(void) {
             if (st->bounce == 0) {
               int floor = FindGroundHeightBelow(g192, 0x400);
               int slope =
-                  (signed char)ArcTan2_8bit(g208[2], VectorLength(g208, 0));
+                  (signed char)ArcTan2_8bit(g208[2], VectorLength(g208, VEC_LEN_XY));
 
               if ((g192[2] - 0x190) < floor && slope < 0x18) {
                 actor->subMode = 1;
@@ -1664,7 +1664,7 @@ void Level6_UpdateActors(void) {
             SubtractVector(g224, &spy->posX, (int *)st);
             RShiftVector3(g224, 5);
 
-            if (VectorLength(g224, 1) >= 0x1E1) {
+            if (VectorLength(g224, VEC_LEN_XYZ) >= 0x1E1) {
               CopyVector(&actor->posX, &spy->posX);
               st->timer = 0x20;
             } else {
@@ -2048,7 +2048,7 @@ void Level6_UpdateActors(void) {
             }
 
             SubtractVector(g056, g056, &actor->posX);
-            dist = VectorLength(g056, 1);
+            dist = VectorLength(g056, VEC_LEN_XYZ);
 
             if (high == 0 &&
                 (TickCountdownByFrameDelta((void *)st, 4) != 0 ||
@@ -2072,7 +2072,7 @@ void Level6_UpdateActors(void) {
             }
             AddVector(&actor->posX, &actor->posX, g056);
             TurnActorYawTowardAngle(actor, ArcTan2(g056[0], g056[1], 0), 0xA, 0, 0);
-            actor->rotY = ArcTan2(VectorLength(g056, 0), g056[2], 0);
+            actor->rotY = ArcTan2(VectorLength(g056, VEC_LEN_XY), g056[2], 0);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
           }
@@ -2101,7 +2101,7 @@ void Level6_UpdateActors(void) {
             int dist;
 
             SubtractVector(g240, &st->target->posX, &actor->posX);
-            dist = VectorLength(g240, 1);
+            dist = VectorLength(g240, VEC_LEN_XYZ);
 
             if (dist < 0x200) {
               pk->timer = 0;
@@ -2137,7 +2137,7 @@ void Level6_UpdateActors(void) {
               }
               AddVector(&actor->posX, &actor->posX, g240);
               TurnActorYawTowardAngle(actor, ArcTan2(g240[0], g240[1], 0), 0xA, 0, 0);
-              actor->rotY = ArcTan2(VectorLength(g240, 0), g240[2], 0);
+              actor->rotY = ArcTan2(VectorLength(g240, VEC_LEN_XY), g240[2], 0);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
             break;
@@ -3443,7 +3443,7 @@ void Level6_UpdateActors(void) {
           if (ang >= 7) {
             continue;
           }
-          d = VectorLength(g360, 0);
+          d = VectorLength(g360, VEC_LEN_XY);
           if (d >= 0x6800) {
             continue;
           }
@@ -3468,7 +3468,7 @@ void Level6_UpdateActors(void) {
                                    best->posY - actor->posY, 0);
           cs->grav = -5;
           SubtractVector(g360, &best->posX, &o->posX);
-          ang = VectorLength(g360, 0);
+          ang = VectorLength(g360, VEC_LEN_XY);
           h = ang - g360[2];
           if (h > 0x400) {
             bestScore = ((ang * 5 >> 8) * ang / h) >> 1;
@@ -3636,7 +3636,7 @@ void Level6_UpdateActors(void) {
           SubtractVector(g304, at, &spy->posX);
           g304[2] = (g304[2] * 3) >> 2;
 
-          if (VectorLength(g304, 1) < 0x440) {
+          if (VectorLength(g304, VEC_LEN_XYZ) < 0x440) {
             int facing;
 
             facing =
@@ -3694,7 +3694,7 @@ void Level6_UpdateActors(void) {
               g_nSpyroRequestVelocityZ = 0;
 
               if (SPY.requestVelX != 0 || g_nSpyroRequestVelocityY != 0) {
-                ScaleVector3ByRatio(look, VectorLength(look, 0), 0x60);
+                ScaleVector3ByRatio(look, VectorLength(look, VEC_LEN_XY), 0x60);
                 goto clear_c68;
               }
             }
@@ -4232,7 +4232,7 @@ void Level6_UpdateActors(void) {
         SubtractVector(&SPY.requestVelX, g392, &SPY.posX);
         AddVector(&SPY.requestVelX, &SPY.requestVelX, st->offset);
 
-        mag = VectorLength(&SPY.requestVelX, 1);
+        mag = VectorLength(&SPY.requestVelX, VEC_LEN_XYZ);
         if (mag > 128) {
           ScaleVector3ByRatio(&SPY.requestVelX, mag, 128);
         } else {

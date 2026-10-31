@@ -202,7 +202,7 @@ void ActorCutscene_Update(void) {
 
       if (g_nActorCutsceneTimer < 0x40) {
         aim.vx = 0;
-        aim.vy = ArcTan2(VectorLength(&delta.vx, 0), -delta.vz, 1);
+        aim.vy = ArcTan2(VectorLength(&delta.vx, VEC_LEN_XY), -delta.vz, 1);
         aim.vz = ArcTan2(delta.vx, delta.vy, 1);
         /* Unsigned view for the accumulate only: the call argument above is a
            signed read of the same halfword (lh), the fold back in is not. */
@@ -218,7 +218,8 @@ void ActorCutscene_Update(void) {
                               6)) &
                             0xFFF;
       } else {
-        g_nCameraEulerPitch = ArcTan2(VectorLength(&delta.vx, 0), -delta.vz, 1);
+        g_nCameraEulerPitch =
+            ArcTan2(VectorLength(&delta.vx, VEC_LEN_XY), -delta.vz, 1);
         g_nCameraEulerYaw = ArcTan2(delta.vx, delta.vy, 1);
       }
     } else if (g_nCdStreamState == 0xA) {
@@ -278,7 +279,8 @@ void ActorCutscene_Update(void) {
                      cam);
       settle.vz += 0x200;
 
-      g_nCameraEulerPitch = ArcTan2(VectorLength(&settle.vx, 0), -settle.vz, 1);
+      g_nCameraEulerPitch =
+          ArcTan2(VectorLength(&settle.vx, VEC_LEN_XY), -settle.vz, 1);
       g_nCameraEulerYaw = ArcTan2(settle.vx, settle.vy, 1);
 
       /* Named to pin the g_pActorCutsceneRecord load ahead of the g_anCameraPos

@@ -91,7 +91,7 @@ void SaveMenu_Update(void) {
       SubtractVector(vec, vec, g_anCameraPos);
       if (g_nSaveMenuAnimPhase < 0x20) {
         ang[0] = 0;
-        ang[1] = ArcTan2(VectorLength(vec, 0), -vec[2], 1);
+        ang[1] = ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], 1);
         ang[2] = ArcTan2(vec[0], vec[1], 1);
         g_nCameraEulerRoll = (g_nCameraEulerRoll +
                               ((SignedAngleDelta12(ang[0], g_nCameraEulerRoll) *
@@ -111,7 +111,8 @@ void SaveMenu_Update(void) {
                             0xFFF;
       } else {
         g_nCameraEulerRoll = 0;
-        g_nCameraEulerPitch = ArcTan2(VectorLength(vec, 0), -vec[2], 1);
+        g_nCameraEulerPitch =
+            ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], 1);
         g_nCameraEulerYaw = ArcTan2(vec[0], vec[1], 1);
       }
       if (((SM[28] - SM[27]) & 0xFFF) < 0x801) {

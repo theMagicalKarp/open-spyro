@@ -121,7 +121,7 @@ int TickActiveSoundVoices(void) {
         range = 0x4000;
       }
       SubtractVector(vec, &((Actor *)owner)->posX, g_anCameraPos);
-      dist = VectorLength(vec, 1);
+      dist = VectorLength(vec, VEC_LEN_XYZ);
       if (dist >= range) {
         far = (SPUFARROW *)((char *)g_aSpuVoiceRows - 0x28 + i * 0x1C);
         attr.volR = (far->nVolR = g_aSpuVoiceRows[i].nVolR >> 1);

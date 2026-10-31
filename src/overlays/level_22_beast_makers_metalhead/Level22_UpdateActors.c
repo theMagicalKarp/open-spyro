@@ -680,7 +680,7 @@ void Level22_UpdateActors(void) {
       SubtractVector(g104, &spy->posX, &actor->posX);
       dist = ApproxDist2D(&actor->posX, &g_anSpyroWorldPos);
       if (dist < 0x32C8) {
-        dist = VectorLength(g104, 0);
+        dist = VectorLength(g104, VEC_LEN_XY);
       }
       if (st->init == 0) {
         st->init = 1;
@@ -2315,7 +2315,7 @@ void Level22_UpdateActors(void) {
         ScaleVector3Sat(g232, st->vel, g_nFrameStep);
         RShiftVector3(g232, 1);
 
-        speed = VectorLength(g232, 1);
+        speed = VectorLength(g232, VEC_LEN_XYZ);
 
         if (220 < speed) {
           ScaleVector3ByRatio(g232, speed, 220);
@@ -2352,7 +2352,7 @@ void Level22_UpdateActors(void) {
             if (st->count == 0) {
               int groundHeight = FindGroundHeightBelow(g232, 0x400);
               int groundAngle =
-                  (signed char)ArcTan2_8bit(g416[2], VectorLength(g416, 0));
+                  (signed char)ArcTan2_8bit(g416[2], VectorLength(g416, VEC_LEN_XY));
 
               if ((g232[2] - 400) < groundHeight && groundAngle < 24) {
                 actor->subMode = 1;
@@ -2439,7 +2439,7 @@ void Level22_UpdateActors(void) {
           SubtractVector(g432, &SPY.posX, st->vel);
           RShiftVector3(g432, 5);
 
-          if (VectorLength(g432, 1) > 480) {
+          if (VectorLength(g432, VEC_LEN_XYZ) > 480) {
             CopyVector(&actor->posX, &SPY.posX);
             st->timer = 32;
           } else {
@@ -2806,7 +2806,7 @@ void Level22_UpdateActors(void) {
             }
 
             SubtractVector(g344, g344, &actor->posX);
-            dist = VectorLength(g344, 1);
+            dist = VectorLength(g344, VEC_LEN_XYZ);
 
             if (high == 0 &&
                 (TickCountdownByFrameDelta((void *)st, 4) != 0 ||
@@ -2830,7 +2830,7 @@ void Level22_UpdateActors(void) {
             }
             AddVector(&actor->posX, &actor->posX, g344);
             TurnActorYawTowardAngle(actor, ArcTan2(g344[0], g344[1], 0), 0xA, 0, 0);
-            actor->rotY = ArcTan2(VectorLength(g344, 0), g344[2], 0);
+            actor->rotY = ArcTan2(VectorLength(g344, VEC_LEN_XY), g344[2], 0);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
           }
@@ -2859,7 +2859,7 @@ void Level22_UpdateActors(void) {
             int dist;
 
             SubtractVector(g448, &st->target->posX, &actor->posX);
-            dist = VectorLength(g448, 1);
+            dist = VectorLength(g448, VEC_LEN_XYZ);
 
             if (dist < 0x200) {
               pk->timer = 0;
@@ -2895,7 +2895,7 @@ void Level22_UpdateActors(void) {
               }
               AddVector(&actor->posX, &actor->posX, g448);
               TurnActorYawTowardAngle(actor, ArcTan2(g448[0], g448[1], 0), 0xA, 0, 0);
-              actor->rotY = ArcTan2(VectorLength(g448, 0), g448[2], 0);
+              actor->rotY = ArcTan2(VectorLength(g448, VEC_LEN_XY), g448[2], 0);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
             break;
@@ -3484,7 +3484,7 @@ void Level22_UpdateActors(void) {
           SubtractVector(g536, at, &SPY.posX);
           g536[2] = (g536[2] * 3) >> 2;
 
-          if (VectorLength(g536, 1) < 0x440) {
+          if (VectorLength(g536, VEC_LEN_XYZ) < 0x440) {
             int facing;
 
             facing =
@@ -3542,7 +3542,7 @@ void Level22_UpdateActors(void) {
               g_nSpyroRequestVelocityZ = 0;
 
               if (SPY.requestVelX != 0 || g_nSpyroRequestVelocityY != 0) {
-                ScaleVector3ByRatio(look, VectorLength(look, 0), 0x60);
+                ScaleVector3ByRatio(look, VectorLength(look, VEC_LEN_XY), 0x60);
                 goto clear_c68;
               }
             }
@@ -3662,7 +3662,7 @@ void Level22_UpdateActors(void) {
       if ((GetRandomU32() & 1) == 0)
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, (int *)actor, 0);
       SubtractVector(g536, &SPY.posX, &actor->posX);
-      distance = VectorLength(g536, 0);
+      distance = VectorLength(g536, VEC_LEN_XY);
       if (distance < st->radius && g536[2] >= -0x3FF && g536[2] < st->spanZ &&
           (SPY.state == SPYRO_ST_LIFT || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
         spyro = &SPY;
@@ -3955,7 +3955,7 @@ void Level22_UpdateActors(void) {
           g_nSpyroRequestVelocityZ = 0;
           g_nSpyroRequestVelocityY = SPY.posY - actor->posY;
           if (g_anSpyroRequestVelocity.x != 0 || g_nSpyroRequestVelocityY != 0) {
-            int len = VectorLength(&g_anSpyroRequestVelocity.x, 1);
+            int len = VectorLength(&g_anSpyroRequestVelocity.x, VEC_LEN_XYZ);
 
             ScaleVector3ByRatio(&g_anSpyroRequestVelocity.x, len,
                           (0x1000 - ApproxDist2D(&actor->posX, &SPY.posX)) /
