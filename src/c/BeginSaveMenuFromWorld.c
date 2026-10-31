@@ -56,7 +56,7 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   } else {
     g_nSaveMenuCursor = 2;
   }
-  g_pSaveMenuHostActor = (int *)actor;
+  g_pSaveMenuHostActor = actor;
   g_nSpyroSuperflameTimerSave = g_nSpyroSuperflameTimer;
   PlaySoundEffect(LEVEL_SFX(SFX_MENU_OPEN), 0, SFX_MODE_PANNED, 0);
   ResetSpyroEntity(1);

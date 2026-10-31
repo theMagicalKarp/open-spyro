@@ -15,7 +15,8 @@
 #define SM g_anSaveMenuBlock
 #define SPYB ((unsigned char *)g_anSpyroWorldPosBlock)
 #define ACT g_pSaveMenuHostActor
-#define FLD(p, off) (*(int *)((char *)(p) + (off)))
+/* The host position stores go through ACTOR_RAW: as Actor fields they
+   reschedule (A400). */
 
 /* Eases an angle from `from` toward `to` by t/0x2000 along the short arc. */
 #define LERP_ANGLE(to, from, t)                                                \
@@ -48,7 +49,7 @@ void SaveMenu_Update(void) {
       Actor *actor;
 
       t = LookupSine((SM[1] << 5) - 0x400) + 0x1000;
-      actor = &((Actor *)g_pActorListBase)[((int *)ACT[0])[1]];
+      actor = &((Actor *)g_pActorListBase)[((int *)ACT->state)[1]];
       if (actor->mode == 2) {
         actor->subMode += g_nFrameStep;
         if (actor->subMode >= 0x30) {
@@ -59,13 +60,15 @@ void SaveMenu_Update(void) {
       a = LERP_ANGLE(SM[14], SM[11], t);
       d = g_nSaveMenuHostFromDist +
           (((g_nSaveMenuHostToDist - g_nSaveMenuHostFromDist) * t) >> 13);
-      FLD(ACT, 0xc) = g_anSpyroWorldPos[0] + ((LookupCosine(a) * d) >> 12);
-      FLD(ACT, 0x10) = g_nSpyroWorldPosY + ((LookupSine(a) * d) >> 12);
-      FLD(ACT, 0x14) =
+      ACTOR_RAW(ACT, int, posX) =
+          g_anSpyroWorldPos[0] + ((LookupCosine(a) * d) >> 12);
+      ACTOR_RAW(ACT, int, posY) =
+          g_nSpyroWorldPosY + ((LookupSine(a) * d) >> 12);
+      ACTOR_RAW(ACT, int, posZ) =
           g_nSaveMenuHostFromZ +
           (((g_nSaveMenuHostToZ - g_nSaveMenuHostFromZ) * t) >> 13);
       TrackEntityYawTowardSpyro(ACT, 3, 0, 0);
-      FindGroundHeightBelow(ACT + 3, 0x1000);
+      FindGroundHeightBelow(&ACT->posX, 0x1000);
       EncodeCachedVecToActorDirCode(ACT);
       if (g_pSparxActor != 0) {
         a = LERP_ANGLE(g_nSaveMenuSparxToAngle, g_nSaveMenuSparxFromAngle, t);
@@ -83,7 +86,7 @@ void SaveMenu_Update(void) {
       g_anCameraPos[2] =
           g_nSaveMenuCameraFromZ +
           (((g_nSaveMenuCameraToZ - g_nSaveMenuCameraFromZ) * t) >> 13);
-      AddVector(vec, g_anSpyroWorldPos, ACT + 3);
+      AddVector(vec, g_anSpyroWorldPos, &ACT->posX);
       vec[2] += 0x240;
       RShiftVector3(vec, 1);
       SubtractVector(vec, vec, g_anCameraPos);
@@ -128,19 +131,19 @@ void SaveMenu_Update(void) {
       TickSpyroAttackEffects(g_nFrameStep);
       ((void (*)(int))g_pfnLevelAdvanceEmitList)(g_nFrameStep);
     } else {
-      FLD(ACT, 0xc) =
+      ACTOR_RAW(ACT, int, posX) =
           g_anSpyroWorldPos[0] +
           ((LookupCosine(g_nSaveMenuHostToAngle) * g_nSaveMenuHostToDist) >>
            12);
-      FLD(ACT, 0x10) =
+      ACTOR_RAW(ACT, int, posY) =
           g_anSpyroWorldPos[1] +
           ((LookupSine(g_nSaveMenuHostToAngle) * g_nSaveMenuHostToDist) >> 12);
-      FLD(ACT, 0x14) = g_nSaveMenuHostToZ;
+      ACTOR_RAW(ACT, int, posZ) = g_nSaveMenuHostToZ;
       {
-        int *act = ACT;
+        Actor *act = ACT;
 
-        ((unsigned char *)ACT)[0x46] = ArcTan2(
-            g_anSpyroWorldPos[0] - act[3], g_anSpyroWorldPos[1] - act[4], 0);
+        ACT->rotZ = ArcTan2(g_anSpyroWorldPos[0] - act->posX,
+                            g_anSpyroWorldPos[1] - act->posY, 0);
       }
       if (g_pSparxActor != 0) {
         g_pSparxActor->posX =
@@ -202,7 +205,7 @@ void SaveMenu_Update(void) {
           Actor *actor;
           int *path;
 
-          actor = &((Actor *)g_pActorListBase)[*(int *)ACT[0]];
+          actor = &((Actor *)g_pActorListBase)[*(int *)ACT->state];
           path = *(int **)actor;
           if (path[9] == -1 && path[6] != -1) {
             EndSaveMenuToWorld();

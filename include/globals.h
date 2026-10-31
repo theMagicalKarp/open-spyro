@@ -1422,7 +1422,7 @@ extern int g_nSaveMenuSparxFromDist; /* 0x80078d48 */
 extern int g_nSaveMenuCameraFromAngle; /* 0x80078d54 */
 extern int g_nSaveMenuCameraFromDist; /* 0x80078d58 */
 extern int g_nSaveMenuSpyroFromYaw; /* 0x80078d6c */
-extern int *volatile g_pSaveMenuHostActor; /* 0x80078d74: the save host (type 110) the save menu pans around Spyro */
+extern struct Actor *volatile g_pSaveMenuHostActor; /* 0x80078d74: the save host (type 110) the save menu pans around Spyro */
 extern int g_anStoryIntroMessageBlock[]; /* 0x80078d94: held-base view of the message id */
 extern volatile int g_nMemCardRingIndex; /* 0x80078da4 */
 extern volatile int g_anMemCardSyncRing[]; /* 0x80078da8 */
