@@ -3,7 +3,7 @@
 #include "main_shared.h"
 
 /* Path-follow steering step (0x8003a16c, 0x2b4 bytes). Moves `actor` toward
- * waypoint path[1] of `path` (u8 count, u8 index, 16-byte waypoints at +8):
+ * waypoint path->cur of `path` (u8 count, u8 index, 16-byte waypoints at +8):
  * builds a byte euler {0, pitch-to-waypoint, yaw} where the yaw chases the
  * waypoint bearing, stepped at most +/-`clamp` per tick (movement stalls when
  * the remaining turn exceeds `limit`), advances by `speed` (capped at the
@@ -12,7 +12,7 @@
  * Within `radius` of the waypoint: clears the actor +0x49 latch, advances
  * (and wraps) the waypoint index, and returns index + 0x100; else returns 0.
  * `d` carries the turn delta and is reused for the ground height. */
-int SteerActorAlongWaypoints(char *actor, unsigned char *path, int radius,
+int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius,
                              int speed, int contact, int clamp, int limit,
                              int *yawp) {
   char eul[8];
@@ -20,7 +20,7 @@ int SteerActorAlongWaypoints(char *actor, unsigned char *path, int radius,
   int d;
   int mtx[8];
   int ret;
-  SubtractVector(vec, &path[path[1] * 0x10 + 8], actor + 0xC);
+  SubtractVector(vec, &path->nodes[path->cur].x, &actor->posX);
   eul[0] = 0;
   eul[1] = ArcTan2(VectorLength(vec, VEC_LEN_XY), vec[2], 0);
   if (((int)VectorLength(vec, VEC_LEN_XY)) < radius) {
@@ -56,7 +56,7 @@ int SteerActorAlongWaypoints(char *actor, unsigned char *path, int radius,
   vec[1] = 0;
   vec[2] = 0;
   RotateVectorByMatrix(mtx, vec, vec);
-  AddVector(vec, actor + 0xC, vec);
+  AddVector(vec, &actor->posX, vec);
   if (contact != 0) {
     DispatchActorContactAtSphere(vec, contact, 0, 0, actor, 0);
   }
@@ -67,18 +67,18 @@ int SteerActorAlongWaypoints(char *actor, unsigned char *path, int radius,
   } else {
     vec[2] -= 0x400;
   }
-  CopyVector(actor + 0xC, vec);
+  CopyVector(&actor->posX, vec);
   EncodeCachedVecToActorDirCode(actor);
   RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
   ret = 0;
-  SubtractVector(vec, &path[path[1] * 0x10 + 8], actor + 0xC);
+  SubtractVector(vec, &path->nodes[path->cur].x, &actor->posX);
   if (((int)VectorLength(vec, VEC_LEN_XYZ)) < radius) {
-    ((Actor *)actor)->subMode = 0;
-    path[1] += 1;
-    if (path[1] == path[0]) {
-      path[1] = 0;
+    actor->subMode = 0;
+    path->cur += 1;
+    if (path->cur == path->count) {
+      path->cur = 0;
     }
-    ret = path[1] + 0x100;
+    ret = path->cur + 0x100;
   }
   return ret;
 }

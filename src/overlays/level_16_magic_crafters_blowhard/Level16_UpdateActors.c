@@ -355,7 +355,7 @@ void Level16_UpdateActors(void) {
             g_nSfxOverridePitch.v =
                 SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]) +
                 st->count;
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->voiceRow);
             DespawnActorRecord(actor);
             continue;
           }
@@ -375,7 +375,7 @@ void Level16_UpdateActors(void) {
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
                 SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]);
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->voiceRow);
           }
         }
       }
@@ -1168,7 +1168,7 @@ void Level16_UpdateActors(void) {
               g_nSfxOverrideVolL = 0x3CCC >> (3 - st->count);
               g_nSfxOverrideVolR = 0x3CCC >> (3 - st->count);
 
-              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
 
               if (ReflectVectorOffNormal(st->vel, svJ, st->vel)) {
                 st->count--;
@@ -1668,7 +1668,7 @@ void Level16_UpdateActors(void) {
                 g_nSfxOverrideFlags = 1;
                 g_nSfxOverrideVolR = 0x3600;
                 g_nSfxOverrideVolL = 0x3600;
-                PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
+                PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
               }
             } else {
               int lim = 0x136;
@@ -2206,7 +2206,7 @@ void Level16_UpdateActors(void) {
           if (actor->flags & ACTOR_HIT_CHARGE) {
             st->speed += 0x8C;
           }
-          StopSoundVoiceByIndex(actor->sfxSlot, 4);
+          StopSoundVoiceByIndex(actor->voiceRow, 4);
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorCommittedKill(actor);
           ENTER_POSE(actor, 2);
@@ -2383,7 +2383,7 @@ void Level16_UpdateActors(void) {
                 st->step, st->speed);
           }
 
-          if (actor->sfxSlot == 0x7F && st->left == (st->left / 48) * 48) {
+          if (actor->voiceRow == VOICE_ROW_NONE && st->left == (st->left / 48) * 48) {
             voice = 0xE;
           }
           break;
@@ -2430,7 +2430,7 @@ void Level16_UpdateActors(void) {
       }
 
       if (voice >= 0) {
-        PlaySoundEffect(g_pLevelSampleBankHeader[voice], actor, SFX_MODE_3D, &actor->sfxSlot);
+        PlaySoundEffect(g_pLevelSampleBankHeader[voice], actor, SFX_MODE_3D, &actor->voiceRow);
       }
 
       break;
@@ -2472,7 +2472,7 @@ void Level16_UpdateActors(void) {
       }
       if (flags & 0x10)
         actor->subMode = 1;
-      PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->sfxSlot);
+      PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->voiceRow);
       if ((GetRandomU32() & 1) == 0)
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, (int *)actor, 0);
       SubtractVector(svN, &SPY.posX, &actor->posX);
@@ -2677,7 +2677,7 @@ void Level16_UpdateActors(void) {
           svQ[0] = (GetRandomU32() & 7) + 0x10;
           svQ[1] = (GetRandomU32() & 7) + 6;
           g_pfnLevelEmitParticles(1, EMIT_FADING_SPARK, ps, svQ);
-          if (actor->sfxSlot == 0x7F) {
+          if (actor->voiceRow == VOICE_ROW_NONE) {
             PlayActorMeshVoice(actor, 0, 0);
           }
         }
@@ -3154,7 +3154,7 @@ void Level16_UpdateActors(void) {
             }
             if (actor->mode == 0x5B || actor->mode == 0x5C ||
                 actor->mode == 0x5D) {
-              StopSoundVoiceByIndex(actor->sfxSlot, 4);
+              StopSoundVoiceByIndex(actor->voiceRow, 4);
               ENTER_POSE(actor, 7);
             }
             if (st->prev >= 0) {
@@ -3214,7 +3214,7 @@ void Level16_UpdateActors(void) {
             }
             st->prev = *as;
             ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
-            st->chan = -1;
+            st->chunkAnim = -1;
           }
           if (g_nLevelProgressCheckpoint[0] >= 2) {
             actor->mode = 0x5B;
@@ -3242,27 +3242,27 @@ void Level16_UpdateActors(void) {
         switch (st->phase) {
         case 0:
           actor->mode = 0x46;
-          st->p24 = 0;
+          st->tweenStep = 0;
           break;
         case 1:
           actor->mode = 0x50;
-          st->p24 = 0;
+          st->tweenStep = 0;
           break;
         case 2:
           actor->mode = 0x5A;
-          st->p24 = 0;
+          st->tweenStep = 0;
           break;
         }
         break;
 
       case 2:
         if (g_nActorAnimDone != 0) {
-          if (st->chan >= 0) {
-            if (GetWorldChunkAnimState(st->chan) & CHUNK_ANIM_HALTED) {
-              ModifyWorldChunkAnimFlags(st->chan, CHUNK_ANIM_RESUME, 0);
+          if (st->chunkAnim >= 0) {
+            if (GetWorldChunkAnimState(st->chunkAnim) & CHUNK_ANIM_HALTED) {
+              ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
               actor->mode = 0x63;
               actor->flags = 0;
-              st->chan = -1;
+              st->chunkAnim = -1;
             }
           } else {
             actor->flags = 0;
@@ -3320,7 +3320,7 @@ void Level16_UpdateActors(void) {
         break;
 
       case 0x50:
-        if (TweenActorAlongPath(actor, st->path, st->p18, &st->p24, 0x20, 4) == 2) {
+        if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->tweenStep, 0x20, 4) == 2) {
           actor->mode = 0x51;
           actor->soundRange = 0;
           st->floorZ = actor->posZ + 0x578;
@@ -3382,7 +3382,7 @@ void Level16_UpdateActors(void) {
         break;
 
       case 0x5A:
-        if (TweenActorAlongPath(actor, st->path, st->p18, &st->p24, 0x20, 4) == 2) {
+        if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->tweenStep, 0x20, 4) == 2) {
           actor->mode = 0x5B;
           st->floorZ = actor->posZ + 0x578;
           st->path = st->paths[4];
@@ -3475,10 +3475,10 @@ void Level16_UpdateActors(void) {
       int r;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 1) {
-        StopSoundVoiceByIndex(actor->sfxSlot, 4);
+        StopSoundVoiceByIndex(actor->voiceRow, 4);
         SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
         MarkActorCommittedKill(actor);
-        GetWorldChunkAnimState(st->chan);
+        GetWorldChunkAnimState(st->chunkAnim);
         ENTER_POSE(actor, 1);
       }
 
@@ -3495,13 +3495,13 @@ void Level16_UpdateActors(void) {
           actor->collision = 0;
           BurstActorWithSound(actor, 0x20);
         }
-        switch (st->chan) {
+        switch (st->chunkAnim) {
         case 3:
         case 4:
-          r = GetWorldChunkAnimState(st->chan);
+          r = GetWorldChunkAnimState(st->chunkAnim);
           if (r & CHUNK_ANIM_HALTED) {
             if (CHUNK_ANIM_STEP(r) != 0) {
-              ModifyWorldChunkAnimFlags(st->chan, CHUNK_ANIM_RESUME, 0);
+              ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             } else if (actor->cullRadius == 0) {
               DespawnActorRecord(actor);
               continue;
@@ -3511,10 +3511,10 @@ void Level16_UpdateActors(void) {
 
         case 5:
         case 7:
-          r = GetWorldChunkAnimState(st->chan);
+          r = GetWorldChunkAnimState(st->chunkAnim);
           if (r & CHUNK_ANIM_HALTED) {
             if (CHUNK_ANIM_STEP(r) != 0) {
-              ModifyWorldChunkAnimFlags(st->chan, CHUNK_ANIM_RESUME, 0);
+              ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             } else if (actor->cullRadius == 0) {
               DespawnActorRecord(actor);
               continue;
@@ -3528,13 +3528,13 @@ void Level16_UpdateActors(void) {
         if (g_dwGamestateFrames & 1) {
           g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->target]);
         }
-        r = GetWorldChunkAnimState(st->chan);
+        r = GetWorldChunkAnimState(st->chunkAnim);
         if ((r & CHUNK_ANIM_HALTED) && TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           st->timer = st->period;
-          if (st->chan >= 5 && CHUNK_ANIM_STEP(r) >= 0x65) {
+          if (st->chunkAnim >= 5 && CHUNK_ANIM_STEP(r) >= 0x65) {
             st->timer = 0;
           }
-          ModifyWorldChunkAnimFlags(st->chan, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
         break;
       }

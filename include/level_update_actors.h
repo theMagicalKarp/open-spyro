@@ -74,9 +74,9 @@ extern struct {
 
 extern void AimCameraStickTowardPoint(int *pos);
 
-extern void SVectorToVectorShl2(int *d, int *s);
+extern void SVectorToVectorShl2(int *dst, int *s);
 
-extern void CommitActorKillGems(int a, void *b);
+extern void CommitActorKillGems(int value, void *actor);
 
 /* Types 260..269: a floating gem-value digit (0x104 + digit), spawned by
  * SpawnFloatingDigitActors when a kill pays out gems. */
@@ -94,7 +94,7 @@ typedef struct {
   int v;
 } I32;
 
-extern int CollideSphereWithWorldAndActors(int *pos, int a, int b); /* ground/wall probe */
+extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2); /* ground/wall probe */
 
 /* g_aRotBillboards records (SpawnActorRotBillboard) used as sparkles around items. */
 typedef struct RotBillboard {
@@ -182,9 +182,9 @@ typedef struct PortalCamPath {
 extern void StubRewardHook(int script, int a);
 
 /* Callees used by the collectible and fairy behaviours. */
-extern void UnpackWorldCollisionTri(int a, int *out);
+extern void UnpackWorldCollisionTri(int chunk, int *out);
 
-extern int CheckLineOfSightSegment(int *a, int *b);
+extern int CheckLineOfSightSegment(int *from, int *to);
 
 extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 
@@ -208,7 +208,7 @@ extern FxNode *AllocWorldSparkle(void);
 
 extern void ClearWord(FxNode *node);
 
-extern int StepAngle8Toward(int a, int b, int c);
+extern int StepAngle8Toward(int to, int from, int maxStep);
 extern int ApproachAngle8(int target, int cur, int step, int lim);
 
 /* Types 257/425: falling chest fragments. Integrate until life, visibility
@@ -366,7 +366,9 @@ typedef struct DragonStatueState {
   int facing;   /* 0x1C respawn heading when there is no partner */
   int partner; /* 0x20 actor index of the other door half, -1 = none */
   int reward;  /* 0x24 */
-  char pad28[0x1C];
+  char pad28[0x10];
+  int dragonName; /* 0x38 g_apDragonNames index (DrawDragonRescuedBanner) */
+  char pad3C[0x8];
   int phase; /* 0x44 open animation phase */
   int rotX;  /* 0x48 rest pose */
   int rotY;  /* 0x4C */
@@ -393,10 +395,9 @@ typedef struct ExitWhirlState {
   int depth; /* 0x0C lift height that triggers the exit, 0 = 0x2000 */
 } ExitWhirlState;
 
-extern int PivotActorAlongPath(Actor *actor, void *path, int a, int b, int c, int d,
-                          int e, int f, int g);
+extern int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed, int group, int step, int lim, int kind, int flags);
 
-extern int RaiseSpyroTriggerInRadius(int *pos, int a, int b);
+extern int RaiseSpyroTriggerInRadius(int *pos, int radius, int flags);
 
 /* Cases 152/153 -- sparking debris. */
 typedef struct DebrisFallState {
@@ -432,7 +433,7 @@ typedef struct SeedPodState {
 
 extern int CheckSpyroLineOfSightTo(int *pos);
 
-extern int IsPointInRotatedBox(int *a, int *b);
+extern int IsPointInRotatedBox(int *pos, int *rec);
 
 /* Case 174 -- the locked chest (ACTOR_TYPE_LOCKED_CHEST): with the key held,
  * Spyro facing it up close freezes, the key flies into its lock, and it
@@ -446,9 +447,9 @@ typedef struct LockedChestState {
   int handle; /* 0x14 for SelectActorLodBand */
 } LockedChestState;
 
-extern void DivideVector3(int *d, int *s, int k);
+extern void DivideVector3(int *dst, int *s, int k);
 
-extern void GetActorAttachPoint(Actor *actor, int a, int *pos);
+extern void GetActorAttachPoint(Actor *actor, int slot, int *pos);
 
 /* Type 33: egg thief. Carries a stolen egg (a type 0x22 actor it spawns),
  * runs a looping path away from Spyro, digs between path sections, and drops
@@ -560,7 +561,7 @@ typedef struct ShooterState {
   int heading;   /* 0x1C */
   int speed;     /* 0x20 */
   int blinks;    /* 0x24 */
-  int u28;       /* 0x28 */
+  int pad28;       /* 0x28 */
   int turn;      /* 0x2C */
   int range;     /* 0x30 */
   int spawned;   /* 0x34 */
@@ -625,7 +626,7 @@ typedef struct SwitchState {
 /* Type 49: sequenced prop driven by the 0x8002Bxxx player. Starts once any
  * exit vortex flag is set and its linked actor is dormant. */
 typedef struct AnimState {
-  int handle;  /* 0x00 */
+  int chunkAnim;  /* 0x00 world chunk-anim handle (GetWorldChunkAnimState) */
   int started; /* 0x04 one-shot init latch */
   int idx;     /* 0x08 pool index of the actor this one watches */
 } AnimState;
@@ -760,7 +761,7 @@ typedef struct PatchRideState {
 
 /* Type 350: sequenced prop driven by the 0x8002Bxxx player, unlocked once. */
 typedef struct PropAnimState {
-  int anim;   /* 0x00 handle for ModifyWorldChunkAnimFlags / B3F4 / B444 */
+  int chunkAnim;   /* 0x00 world chunk-anim handle (GetWorldChunkAnimState) */
   int timer;  /* 0x04 */
   int primed; /* 0x08 */
 } PropAnimState;
@@ -906,7 +907,7 @@ typedef struct PathGuardState {
 /* Case 497 -- humming bell. */
 typedef struct HummingBellState {
   char pad00[0x10];
-  int chan;   /* 0x10 voice channel */
+  int chunkAnim;   /* 0x10 world chunk-anim handle (GetWorldChunkAnimState) */
   int timer;  /* 0x14 */
   int period; /* 0x18 */
   char pad1C[0x14];
@@ -916,10 +917,10 @@ typedef struct HummingBellState {
 /* Case 495 -- the level boss. */
 typedef struct BlowhardState {
   char pad00[0x10];
-  int chan;           /* 0x10 voice channel, -1 = none */
+  int chunkAnim;           /* 0x10 world chunk-anim handle (GetWorldChunkAnimState) */
   PathData *path;     /* 0x14 path in use */
-  int p18[3];         /* 0x18 */
-  int p24;            /* 0x24 */
+  int tweenLeg[3];    /* 0x18 TweenActorAlongPath prev leg */
+  int tweenStep;       /* 0x24 TweenActorAlongPath step counter */
   int p28;            /* 0x28 */
   int p2C;            /* 0x2C */
   PathData *paths[5]; /* 0x30 */
@@ -971,8 +972,7 @@ typedef struct PostPath {
 extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
 
 /* Path tweens used by the patrol/post classes. */
-extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int c,
-                               int d);
+extern int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legs, int flags);
 
 typedef struct PostState {
   PostPath *path; /* 0x00 */
@@ -1050,8 +1050,8 @@ typedef struct SnowballThrowerState {
   int turn4;      /* 0x18 */
   int knock;      /* 0x1C knock-back heading */
   int speed;      /* 0x20 knock-back speed */
-  int p24;        /* 0x24 */
-  int p28;        /* 0x28 */
+  int blockHeadingA; /* 0x24 SteerActorAroundPoint blocked heading */
+  int blockHeadingB; /* 0x28 SteerActorAroundPoint blocked heading */
   int throwT;     /* 0x2C */
 } SnowballThrowerState;
 
@@ -1063,7 +1063,7 @@ typedef struct {
 
 typedef struct RearState {
   int timer;   /* 0x00 idle-hop countdown */
-  int t04;     /* 0x04 */
+  int hitCooldown; /* 0x04 frames before it rears again after knocking Spyro back */
   int heading; /* 0x08 knockback heading */
   int speed;   /* 0x0C knockback speed */
   int spin;    /* 0x10 per-frame yaw while tumbling */
@@ -1148,11 +1148,9 @@ typedef struct ChainState {
   int stop;  /* 0x18 path node where it waits */
 } ChainState;
 
-extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, int c,
-                         int d, int e, int f);
+extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist, int cap, int contactRadius, int maxTurn, int stallAngle, int f);
 
-extern int SteerActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, int c,
-                         int d, int e, int *f);
+extern int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius, int speed, int contact, int clamp, int limit, int *f);
 
 typedef struct CannonState {
   int link;            /* 0x00 index of the actor it wakes on arrival */
@@ -1243,7 +1241,7 @@ typedef struct RunnerState {
  * (mode 3); knocked back when hit, and runs off when Spyro gets close. */
 typedef struct VillagerState {
   unsigned char *path; /* 0x00 wander path { count, cur }, points at +8 */
-  int snd;             /* 0x04 voice handle, -1 = none */
+  int chunkAnim;             /* 0x04 world chunk-anim handle (GetWorldChunkAnimState) */
   int friend;          /* 0x08 actor it faces / sparkles at, -1 = none */
   int link;            /* 0x0C partner actor */
   int mode;            /* 0x10 */
@@ -1258,7 +1256,7 @@ typedef struct VillagerState {
   int fleeDist;        /* 0x34 in 1024ths */
   int speed;           /* 0x38 */
   int heading;         /* 0x3C */
-  int sndDone;         /* 0x40 */
+  int chunkAnimDone;         /* 0x40 chunk anim rewound to step < 2 (or none): ok to despawn */
   int stopVoice;       /* 0x44 */
   int runFrom;         /* 0x48 distance it started running at */
   int faceTimer;       /* 0x4C */
@@ -1395,7 +1393,7 @@ typedef struct LootThiefState {
   int look[3];    /* 0x1C */
   int laps;       /* 0x28 */
   int init;       /* 0x2C */
-  int snd;        /* 0x30 */
+  int chunkAnim;        /* 0x30 world chunk-anim handle (GetWorldChunkAnimState) */
   FlyPath *cur;   /* 0x34 */
   FlyPath *ring;  /* 0x38 */
   FlyPath *pathA; /* 0x3C */
@@ -1420,12 +1418,12 @@ typedef struct LootVortexState {
   short timer;          /* 0x00 */
   unsigned char phase;  /* 0x02 */
   unsigned char spark;  /* 0x03 0xFF = none */
-  int snd;              /* 0x04 */
+  int chunkAnim;              /* 0x04 world chunk-anim handle (GetWorldChunkAnimState) */
   int pad[6];           /* 0x08 trigger volume */
   int mode;             /* 0x20 */
   int key;              /* 0x24 actor index */
   int target;           /* 0x28 actor index */
-  int seen;             /* 0x2C index into g_nCurrentWorldId, 0 = none */
+  int seen;             /* 0x2C 1/2 picks g_nLevelVortexSeen1/2 (read as g_nCutsceneId[seen]), 0 = none */
 } LootVortexState;
 
 typedef struct BombLobberState {
@@ -1460,7 +1458,7 @@ typedef struct FormationEscortState {
   int leader;     /* 0x00 index into g_pActorListBase */
   int partner;    /* 0x04 index into g_pActorListBase, -1 = none */
   PathData *path; /* 0x08 */
-  int p0C[3];     /* 0x0C */
+  int tweenLeg[3]; /* 0x0C TweenActorAlongPath prev leg */
   int timer;      /* 0x18 */
   int slot;       /* 0x1C place in the ring */
   int speed;      /* 0x20 */
@@ -1620,7 +1618,7 @@ typedef struct LanternState {
   int timer;   /* 0x04 */
   FxNode *fx;  /* 0x08 glow node */
   int pos[3];  /* 0x0C glow anchor */
-  int sound;   /* 0x18 sound handle, -1 = none */
+  int chunkAnim;   /* 0x18 world chunk-anim handle (GetWorldChunkAnimState) */
 } LanternState;
 
 extern int FindFarthestPathPointFromSpyro(PathData *path);
@@ -1629,11 +1627,11 @@ extern int FindFarthestPathPointFromSpyro(PathData *path);
 extern int ComputeLobVelocityZ(int *from, int *to, int speed, int g, int *out);
 
 /* Declared identically by two or more *_UpdateActors.c files; hoisted here. */
-extern void ChangeSpyroState(int a);
+extern void ChangeSpyroState(int state);
 extern void ComputeCameraOrbitOffset(int *out);
-extern void ProjectWorldPointGTEUnscaled(int *d, int *s);
-extern void StopSoundVoiceByIndex(int ch, int a);
-extern void TallyFlightTarget(int sound);
+extern void ProjectWorldPointGTEUnscaled(int *out, int *s);
+extern void StopSoundVoiceByIndex(int ch, int mode);
+extern void TallyFlightTarget(int tallyClass);
 extern void UpdateCameraEulerAngles(void);
 extern Xform g_aCameraXformPresets[];
 extern int g_anLevelKillBitmapTable[];

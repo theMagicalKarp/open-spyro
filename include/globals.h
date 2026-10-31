@@ -391,8 +391,8 @@ extern short g_anHudRollOutStepTable[14];                    /* 0x8006e798 */
 extern byte g_abHudButterflyRingXY[40];                      /* 0x8006e7b4 */
 extern int g_anLevelDeathPlaneZTable[36];                    /* 0x8006e9a4 */
 extern int g_anLevelSpawnNudgeZTable[36];                    /* 0x8006edb4 */
-extern int g_nWorldHeaderChunkSize;                          /* 0x8006ee5c */
-extern int g_nWorldCutsceneSamplePitch;                      /* 0x8006ee6c */
+extern int g_nCutsceneHeaderChunkSize;                          /* 0x8006ee5c */
+extern int g_nCutsceneSamplePitch;                      /* 0x8006ee6c */
 extern int g_anDemoLengthFrames[4];                 /* 0x8006ee8c: demo length in frames, per g_nDemoIndex (TickDemoPlayback) */
 extern int g_anDemoStartPose[16];                    /* 0x8006ee9c: 4 x {x, y, z, yaw byte} Spyro start pose per demo (BuildLoadedLevelRuntime) */
 extern int g_anCdAudioTrackLengths[48];                      /* 0x8006eedc */
@@ -542,7 +542,7 @@ extern char g_szUiSlot1[7];                 /* 0x80075630 */
 extern char g_szUiSlot2[7];                 /* 0x80075638 */
 
 /* ---- .sbss ---- */
-extern int g_nCurrentWorldId;                /* 0x8007566c */
+extern int g_nCutsceneId;                /* 0x8007566c: scripted cutscene / bundle id: 0 title backdrop, 1 opening story, 2/3 endings (BeginCutscene) */
 extern int g_nGnastyLootFallRefZCap;         /* 0x80075678 */
 extern void *g_pfnGamestate7DrawHook;        /* 0x8007567c */
 extern void *g_pPathTableHead;               /* 0x80075680 */
@@ -611,7 +611,7 @@ extern void *g_pCollisionHitActor;           /* 0x800757e4 */
 extern int g_nGameOverLevelIntroIndex;       /* 0x800757e8 */
 extern void *g_pLevelPickupTableEntries;     /* 0x800757f8 */
 extern byte g_abPadActCommand[2];            /* 0x80075800 */
-extern void *g_pSpyroContactActor;           /* 0x80075804 */
+extern struct Actor *g_pSpyroContactActor;           /* 0x80075804 */
 extern int g_nLastCollisionHitChunkId;       /* 0x80075808 */
 extern int g_nSparxHealthStash;           /* 0x8007580c: saved g_nSparxHealth; -1 = none (ResetLevelState, new game) */
 extern int g_nWorldEggsRecovered;            /* 0x80075810 */
@@ -1030,7 +1030,7 @@ extern unsigned char g_abLevelVisitedFlagVirtualBase[]; /* FIXME: type/size unre
 extern byte g_abLevelVisitedFlag[36];                   /* 0x80078e78 */
 extern byte g_abGpuOpQueueRing[6144];                   /* 0x80078ea0 */
 extern byte g_abLevelExited[36];                    /* 0x8007a6a8: per-level flag, set to 1 when Spyro leaves through the level-exit whirlwind (saved) */
-extern int g_nWorldArchiveOffset;                       /* 0x8007a6e8 */
+extern int g_nCutsceneArchiveOffset;                       /* 0x8007a6e8 */
 extern int g_nGameOverSceneSectorOffset;                /* 0x8007a708 */
 extern int g_nGameOverSceneByteSize;                    /* 0x8007a70c */
 extern int g_nLevelSplashOffset;                        /* 0x8007a718 */
@@ -1243,14 +1243,14 @@ extern unsigned char g_abSpyroFlameTransitionModes[][2]; /* 0x80075264 */
 extern unsigned char g_abSpyroFlameAnimTable[]; /* 0x80075268 */
 extern unsigned short g_anGameOverCameraEulerU[]; /* 0x800752d8 */
 extern unsigned char g_abWorldTitleGlyphBlock[]; /* 0x8007555c: held-base view (A240) */
-extern int g_nLevelUnreadScratchA; /* 0x80075670 */
-extern int g_nLevelUnreadScratchB; /* 0x80075674 */
+extern int g_nLevelVortexSeen1; /* 0x80075670: a loot vortex (levels 33/34, LootVortexState.seen 1) was entered this visit; read as g_nCutsceneId[1] */
+extern int g_nLevelVortexSeen2; /* 0x80075674: the same for seen 2 (g_nCutsceneId[2]) */
 extern int g_nLevelLoadUnreadWord; /* 0x80075698 */
 extern void *g_pfnActorCutsceneSubstateUpdate; /* 0x8007574c: per-level handler for the other 0xC substates (ApplyPerLevelGlobalsTable) */
 extern unsigned char *g_pLockedChestReward; /* 0x80075758 */
 extern int g_pCreditsScratchBuf; /* 0x80075768 */
 extern int g_bLevelUseShortReleaseAnim; /* 0x8007577c */
-extern void *g_pSpyroHomingTargetActor; /* 0x80075790: charge homing target (ChangeSpyroState) */
+extern struct Actor *g_pSpyroHomingTargetActor; /* 0x80075790: charge homing target (ChangeSpyroState) */
 extern int g_nActorAnimDone; /* 0x80075794 */
 extern void *g_pfnLevelBeginActorCutscene; /* 0x800757a0 */
 extern void *g_pfnLevelHandleFlightResults; /* 0x800757a8 */
@@ -1422,7 +1422,7 @@ extern int g_nSaveMenuSparxFromDist; /* 0x80078d48 */
 extern int g_nSaveMenuCameraFromAngle; /* 0x80078d54 */
 extern int g_nSaveMenuCameraFromDist; /* 0x80078d58 */
 extern int g_nSaveMenuSpyroFromYaw; /* 0x80078d6c */
-extern int *volatile g_pSaveMenuHostActor; /* 0x80078d74: the save host (type 110) the save menu pans around Spyro */
+extern struct Actor *volatile g_pSaveMenuHostActor; /* 0x80078d74: the save host (type 110) the save menu pans around Spyro */
 extern int g_anStoryIntroMessageBlock[]; /* 0x80078d94: held-base view of the message id */
 extern volatile int g_nMemCardRingIndex; /* 0x80078da4 */
 extern volatile int g_anMemCardSyncRing[]; /* 0x80078da8 */

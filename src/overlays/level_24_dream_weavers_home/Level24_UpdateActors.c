@@ -298,7 +298,7 @@ void Level24_UpdateActors(void) {
             g_nSfxOverridePitch.v =
                 SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]) +
                 st->count;
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->voiceRow);
             DespawnActorRecord(actor);
             continue;
           }
@@ -318,7 +318,7 @@ void Level24_UpdateActors(void) {
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
                 SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]);
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->voiceRow);
           }
         }
       }
@@ -939,7 +939,7 @@ void Level24_UpdateActors(void) {
       if (actor->mode < 3 && (st->range != 0 || (actor->flags & ACTOR_HIT_BLAST))) {
         if (st->range > 0 && actor->mode == 0 &&
             (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range ||
-             IsPointInRotatedBox((int *)spy, st->vol) != 0) &&
+             IsPointInRotatedBox(&spy->posX, st->vol) != 0) &&
             TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
           st->range = -st->range;
           if (st->range == 0) {
@@ -1542,7 +1542,7 @@ void Level24_UpdateActors(void) {
             g_nSfxOverrideFlags = 1;
             g_nSfxOverrideVolL = 0x3CCC >> (3 - st->bounce);
             g_nSfxOverrideVolR = 0x3CCC >> (3 - st->bounce);
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
 
             if (ReflectVectorOffNormal((int *)st, g288, (int *)st) != 0) {
               st->bounce -= 1;
@@ -2062,7 +2062,7 @@ void Level24_UpdateActors(void) {
                 g_nSfxOverrideFlags = 1;
                 g_nSfxOverrideVolR = 0x3600;
                 g_nSfxOverrideVolL = 0x3600;
-                PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
+                PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
               }
             } else {
               int lim = 0x136;
@@ -2306,7 +2306,7 @@ void Level24_UpdateActors(void) {
           case 0:
           case 1:
           case 3:
-            ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             break;
           case 2:
             if (g_pActorListBase[st->partner].mode >= 6 &&
@@ -2314,7 +2314,7 @@ void Level24_UpdateActors(void) {
               st->flag = one;
             } else {
               st->timer = 0x1C2;
-              ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
+              ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             }
             break;
           case 4:
@@ -2322,11 +2322,11 @@ void Level24_UpdateActors(void) {
                 !(GetWorldChunkAnimState(1) & CHUNK_ANIM_HALTED)) {
               st->timer = 0x1C2;
               ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
-              st->sound = 2;
+              st->chunkAnim = 2;
             } else {
               st->timer = 0x1C2;
               ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
-              st->sound = one;
+              st->chunkAnim = one;
             }
             break;
           }
@@ -2341,10 +2341,10 @@ void Level24_UpdateActors(void) {
         if (st->next == 0x63) {
           ENTER_POSE(actor, 0xC);
         }
-        if (st->flag != 0 && (GetWorldChunkAnimState(st->sound) & CHUNK_ANIM_HALTED)) {
+        if (st->flag != 0 && (GetWorldChunkAnimState(st->chunkAnim) & CHUNK_ANIM_HALTED)) {
           st->flag = 0;
           st->timer = 0x14A;
-          ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           st->timer = 0x50;
@@ -2363,7 +2363,7 @@ void Level24_UpdateActors(void) {
         case 3:
         case 4:
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-            ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             ENTER_POSE(actor, 0xC);
           }
           break;
@@ -2374,11 +2374,11 @@ void Level24_UpdateActors(void) {
             if (g_pActorListBase[st->partner].mode >= 6) {
               ((int *)g_pActorListBase[st->partner].state)[3] = 0x63;
             }
-            s = GetWorldChunkAnimState(st->sound);
+            s = GetWorldChunkAnimState(st->chunkAnim);
             if ((s & CHUNK_ANIM_HALTED) && CHUNK_ANIM_STEP(s) < 0x14) {
-              SetWorldChunkAnimStep(st->sound, 0x1E, 0);
+              SetWorldChunkAnimStep(st->chunkAnim, 0x1E, 0);
             }
-            ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             ENTER_POSE(actor, 0xC);
           }
           break;
@@ -2448,7 +2448,7 @@ void Level24_UpdateActors(void) {
       if (actor->mode < 3 && (st->range != 0 || (actor->flags & ACTOR_HIT_BLAST))) {
         if (st->range > 0 && (actor->mode == 0 || actor->mode == 2) &&
             (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range ||
-             IsPointInRotatedBox((int *)spy, st->vol) != 0) &&
+             IsPointInRotatedBox(&spy->posX, st->vol) != 0) &&
             TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
           st->range = -st->range;
           if (st->range == 0) {
@@ -2563,7 +2563,7 @@ void Level24_UpdateActors(void) {
           }
           if (actor->nextFrame == 6 &&
               GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[0]) == 0) {
-            PlayActorMeshVoice(actor, 0, (int)&st->sound);
+            PlayActorMeshVoice(actor, 0, &st->sound);
           }
           break;
         }
@@ -3222,7 +3222,7 @@ void Level24_UpdateActors(void) {
                 st->step, st->speed);
           }
 
-          if (actor->sfxSlot == 0x7F && st->left == (st->left / 48) * 48) {
+          if (actor->voiceRow == VOICE_ROW_NONE && st->left == (st->left / 48) * 48) {
             voice = 0xE;
           }
           break;
@@ -3269,7 +3269,7 @@ void Level24_UpdateActors(void) {
       }
 
       if (voice >= 0) {
-        PlaySoundEffect(g_pLevelSampleBankHeader[voice], actor, SFX_MODE_3D, &actor->sfxSlot);
+        PlaySoundEffect(g_pLevelSampleBankHeader[voice], actor, SFX_MODE_3D, &actor->voiceRow);
       }
 
       break;
@@ -3311,7 +3311,7 @@ void Level24_UpdateActors(void) {
       }
       if (flags & 0x10)
         actor->subMode = 1;
-      PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->sfxSlot);
+      PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->voiceRow);
       if ((GetRandomU32() & 1) == 0)
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, (int *)actor, 0);
       SubtractVector(g408, &SPY.posX, &actor->posX);
@@ -3516,7 +3516,7 @@ void Level24_UpdateActors(void) {
           g480[0] = (GetRandomU32() & 7) + 0x10;
           g480[1] = (GetRandomU32() & 7) + 6;
           g_pfnLevelEmitParticles(1, EMIT_FADING_SPARK, g456, g480);
-          if (actor->sfxSlot == 0x7F) {
+          if (actor->voiceRow == VOICE_ROW_NONE) {
             PlayActorMeshVoice(actor, 0, 0);
           }
         }
@@ -4029,7 +4029,7 @@ void Level24_UpdateActors(void) {
           }
           actor->posZ = st->savedPosZ + (a + b) * 6;
 
-          if (actor->sfxSlot == 0x7F) {
+          if (actor->voiceRow == VOICE_ROW_NONE) {
             PlayActorMeshVoice(actor, 1, 0);
           }
         } else if (st->phase >= 0x19C) {
@@ -4055,7 +4055,7 @@ void Level24_UpdateActors(void) {
           actor->frameRate = 8;
           actor->mode = 0;
           actor->nextAnim = 0;
-          if (actor->sfxSlot == 0x7F) {
+          if (actor->voiceRow == VOICE_ROW_NONE) {
             PlayActorMeshVoice(actor, 3, 0);
           }
         }
@@ -4103,7 +4103,7 @@ void Level24_UpdateActors(void) {
       }
 
       PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[2], actor, SFX_MODE_3D,
-                    (void *)(long)actor->sfxSlot);
+                    (void *)(long)actor->voiceRow);
       DespawnActorRecord(actor);
       continue;
     }

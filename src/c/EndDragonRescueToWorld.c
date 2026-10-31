@@ -19,16 +19,17 @@ void EndDragonRescueToWorld(void) {
   int *dyn;
   int *snap;
   int id;
-  unsigned char *rec;
+  Actor *rec;
   int timer;
 
+  /* the statue's DragonStatueState.partner (+0x20), -1 = none */
   id = ((int *)(*(void **)g_pDragonRescueSourceActor))[8];
   g_nGamestate = GS_GAMEPLAY;
   g_nGameplayBlocked = 0;
   if (id != -1) {
-    rec = (unsigned char *)g_pActorListBase + id * ACTOR_SIZE;
-    ((Actor *)rec)->anim = 0;
-    ((Actor *)rec)->mode = 1;
+    rec = &((Actor *)g_pActorListBase)[id];
+    rec->anim = 0;
+    rec->mode = 1;
   }
   ResetSpyroEntity(1);
   cam = g_apCameraAnchorBlock;

@@ -34,8 +34,9 @@
    (0x80038638, 740 bytes.) */
 
 int SteerActorAroundPoint(int *actor, int *tgt, int radius, int face,
-                          int deadzone, int speed, int p6, int p7, int blockA,
-                          int blockB, int p10, int p11, int flags) {
+                          int deadzone, int speed, int turnStep,
+                          int turnThreshold, int blockA, int blockB,
+                          int moveGroup, int moveRadius, int flags) {
   int pt[3];
   int dir;
   int t;
@@ -116,15 +117,17 @@ int SteerActorAroundPoint(int *actor, int *tgt, int radius, int face,
     speed = speed * 2;
   }
   if (flags & 8) {
-    TurnActorYawTowardAngle(
-        actor, ArcTan2(tgt[0] - actor[3], tgt[1] - actor[4], 0), p6, 0, 0);
-    r = MoveActorAlongAngle(actor, heading, speed, p10, p11, flags);
+    TurnActorYawTowardAngle(actor,
+                            ArcTan2(tgt[0] - actor[3], tgt[1] - actor[4], 0),
+                            turnStep, 0, 0);
+    r = MoveActorAlongAngle(actor, heading, speed, moveGroup, moveRadius,
+                            flags);
   } else {
-    r = TurnActorYawTowardAngle(actor, heading, p6, p7, 1);
+    r = TurnActorYawTowardAngle(actor, heading, turnStep, turnThreshold, 1);
     if (r == 0) {
       goto stalled;
     }
-    r = MoveActorAlongHeading(actor, speed, p10, p11, flags);
+    r = MoveActorAlongHeading(actor, speed, moveGroup, moveRadius, flags);
   }
   if (r != 0) {
     return -r;

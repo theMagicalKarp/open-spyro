@@ -9,10 +9,11 @@
 #define OPEN_SPYRO_LEVEL_BALLOONIST_CUTSCENE_H
 
 #include "actor_type.h"
+#include "actor_states.h"
 
 extern void CopyWords(void *dst, void *src, int len);
 
-extern void ApplyEulerRotation(int *a, int *b, int c);
+extern void ApplyEulerRotation(int *euler, int *mtx, int base);
 
 extern void ComputeCameraToTargetAngle(int *a0);
 
@@ -26,11 +27,11 @@ extern void ClearWord(int a0);
 
 extern int g_anCameraDynamicTargetParams[];
 
-extern unsigned char *g_apActiveActorList[];
+extern Actor *g_apActiveActorList[];
 
 extern void (*g_pfnLevelAdvanceEmitList)(int);
 
-extern unsigned char *g_pSparxActor;
+extern Actor *g_pSparxActor;
 
 extern void (*g_pfnLevelOnSaveMenuExit)();
 
@@ -101,11 +102,6 @@ extern unsigned int g_dwHudBobSinePhase[];
  * the OT as the pending node). */
 extern Actor *g_pActorCutsceneRecord;
 
-/* The two cutscene actor pointers seen as Actor records: the focus actor
- * (g_pActorCutsceneActor, set by BeginActorCutscene) and the orbit-centre
- * record above (the actor at the path end, or g_abActorCutsceneActorSnapshot). */
-#define CUTSCENE_ACTOR ((Actor *)g_pActorCutsceneActor)
-#define CUTSCENE_RECORD g_pActorCutsceneRecord
 
 /* g_nActorCutsceneSpyroToX (From + 12), stored through a char * off the From
  * base: not in-struct, so sched keeps the following load below it (lever L2

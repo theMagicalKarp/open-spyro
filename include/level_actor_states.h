@@ -61,7 +61,7 @@ typedef struct SuperflameGiverState {
 
 /* Case 461 -- war drum. */
 typedef struct WarDrumState {
-  int chan;   /* 0x00 voice channel */
+  int chunkAnim;   /* 0x00 world chunk-anim handle (GetWorldChunkAnimState) */
   int wait;   /* 0x04 */
   int beat;   /* 0x08 */
   int fade;   /* 0x0C */
@@ -73,6 +73,17 @@ typedef struct WarDrumState {
   int voice;  /* 0x24 */
 } WarDrumState;
 
+/* A trigger box for IsPointInRotatedBox: a point, half-extents in the box's
+ * own frame, and that frame's yaw. A zero half-width marks an unused box. */
+typedef struct TriggerBox {
+  int x;         /* 0x00 */
+  int y;         /* 0x04 */
+  int z;         /* 0x08 */
+  int halfWidth; /* 0x0C 0 = unused */
+  int halfDepth; /* 0x10 */
+  int yaw;       /* 0x14 sine-LUT index */
+} TriggerBox;
+
 /* Case 466 -- roaming ram. */
 typedef struct RoamingRamState {
   char pad00[0xC];
@@ -83,9 +94,8 @@ typedef struct RoamingRamState {
   int mode;       /* 0x1C */
   int partner;    /* 0x20 index into g_pActorListBase */
   int target;     /* 0x24 index into g_pActorListBase */
-  int chan;       /* 0x28 voice channel, -1 = none */
-  int p2C;        /* 0x2C */
-  char pad30[0x14];
+  int triggerSlot;       /* 0x28 g_anLevelTriggerStateSlots index (a war drum sets it), -1 = none */
+  TriggerBox box; /* 0x2C where a set triggerSlot sends it into mode 4 */
   int call;       /* 0x44 */
 } RoamingRamState;
 
@@ -136,23 +146,23 @@ typedef struct LurkerState {
   int knockHeading;       /* 0x08 knock-back heading */
   int knockSpeed;       /* 0x0C knock-back speed */
   int knockZSpeed;       /* 0x10 */
-  int u14;       /* 0x14 */
+  int pad14;       /* 0x14 */
   int roamTimer;       /* 0x18 roam timer */
   int hopSpeed;       /* 0x1C hop speed */
   Actor *tether; /* 0x20 */
   int coolDown;       /* 0x24 cool-down */
   int holdsSpyro;       /* 0x28 holds Spyro */
-  int u2C[3];    /* 0x2C */
+  int pad2C[3];    /* 0x2C */
   int stunTimer;       /* 0x38 stun timer */
 } LurkerState;
 
 /* Type 476 state (level 20): the grabber that carries Spyro off to `home`. */
 typedef struct GrabberState {
-  int u00[2];   /* 0x00 */
+  int pad00[2];   /* 0x00 */
   int home[3];  /* 0x08 drop-off point */
   int grabChance;      /* 0x14 grab chance */
   int timer;      /* 0x18 timer */
-  int u1C;      /* 0x1C */
+  int pad1C;      /* 0x1C */
   int knockHeading;      /* 0x20 knock-back heading */
   int knockSpeed;      /* 0x24 knock-back speed */
   int knockZSpeed;      /* 0x28 */
@@ -167,8 +177,8 @@ typedef struct BoulderState {
   short vx;                /* 0x00 */
   short vy;                /* 0x02 */
   short vz;                /* 0x04 */
-  short u06;               /* 0x06 */
-  short u08;               /* 0x08 */
+  short pad06;               /* 0x06 */
+  short pad08;               /* 0x08 */
   short life;              /* 0x0A */
   unsigned char spin[3];   /* 0x0C */
   unsigned char heading;   /* 0x0F */
@@ -179,30 +189,30 @@ typedef struct BoulderThrowerState {
   int partner;     /* 0x00 index into g_pActorListBase, -1 none */
   int rider;       /* 0x04 index into g_pActorListBase */
   int groupAlert;         /* 0x08 level data: on waking, alert the group and its chunk anim */
-  int sound;         /* 0x0C sound handle */
+  int chunkAnim;         /* 0x0C world chunk-anim handle (GetWorldChunkAnimState) */
   int idlePose2;         /* 0x10 level data: idle in pose 2 */
   int partnerSignal; /* 0x14 set to 1 by the partner (its state word 5) */
-  int u18[3];      /* 0x18 */
+  int pad18[3];      /* 0x18 */
   FlyPath *path;   /* 0x24 */
   int flags;         /* 0x28 flags */
   int timer;         /* 0x2C timer */
   int heading;         /* 0x30 heading */
   int speed;         /* 0x34 speed */
-  int u38;         /* 0x38 */
+  int pad38;         /* 0x38 */
   int zSpeed;         /* 0x3C */
   Actor *rock;     /* 0x40 boulder being carried */
   int sightRange;         /* 0x44 sight range */
   int throwRange;         /* 0x48 throw range */
   int box0[3];      /* 0x4C trigger box */
   int box0HalfWidth;         /* 0x58 */
-  int u5C[2];      /* 0x5C */
+  int pad5C[2];      /* 0x5C */
   int box1[6];      /* 0x64 trigger box */
   int command;         /* 0x7C posted: 1 = mode 0x28, else reverse along the path (mode 0x32); cleared when taken */
   int orbitRadius;         /* 0x80 */
   int jitterA;         /* 0x84 random 8..15 on entering mode 0x2B; not read here */
   int jitterB;         /* 0x88 likewise */
   int *releaseFlag;        /* 0x8C cleared at the throw's release frame (0xE) */
-  int u90;         /* 0x90 */
+  int pad90;         /* 0x90 */
   int landSoundPlayed;         /* 0x94 */
 } BoulderThrowerState;
 
@@ -211,12 +221,12 @@ typedef struct GatekeeperState {
   int partner;     /* 0x00 index into g_pActorListBase, -1 none */
   int rider;       /* 0x04 index into g_pActorListBase */
   int groupAlert;         /* 0x08 level data: on waking, alert the group and its chunk anim */
-  int sound;         /* 0x0C sound handle */
+  int chunkAnim;         /* 0x0C world chunk-anim handle (GetWorldChunkAnimState) */
   int idlePose2;         /* 0x10 level data: idle in pose 2 */
   int partnerSignal; /* 0x14 set to 1 by the partner (its state word 5) */
   int mode;        /* 0x18 */
   int timer;         /* 0x1C timer */
-  int u20[3];      /* 0x20 */
+  int pad20[3];      /* 0x20 */
   int heading;         /* 0x2C heading */
   int speed;         /* 0x30 speed */
   int zSpeed;         /* 0x34 */
@@ -229,7 +239,7 @@ typedef struct GatekeeperState {
   int keys[2];     /* 0x7C key actor indices, -1 released */
   int count;       /* 0x84 */
   int *releaseFlag;        /* 0x88 cleared at the throw's release frame (0xE) */
-  int u8C;         /* 0x8C */
+  int pad8C;         /* 0x8C */
   int testFacing;         /* 0x90 facing to test, -1 any */
 } GatekeeperState;
 
@@ -285,8 +295,8 @@ typedef struct LobbedBoltState {
 typedef struct PlatformPodState {
   int timer;      /* 0x00 */
   int period;     /* 0x04 */
-  int u08;        /* 0x08 */
-  int u0C;        /* 0x0C */
+  int pad08;        /* 0x08 */
+  int pad0C;        /* 0x0C */
   int *counter;   /* 0x10 shared live-pod count */
   int initCount;  /* 0x14 */
   int init;       /* 0x18 */
@@ -332,8 +342,8 @@ typedef struct CarriedRockState {
  * hands rocks (47) to throw. */
 typedef struct JacquesState {
   PathData *path;          /* 0x00 */
-  int u04;                 /* 0x04 */
-  int u08;                 /* 0x08 */
+  int pad04;                 /* 0x04 */
+  int pad08;                 /* 0x08 */
   unsigned char stops[7];  /* 0x0C path nodes he rests at */
   unsigned char pad13;
   int idx;                 /* 0x14 current stop */
@@ -341,11 +351,11 @@ typedef struct JacquesState {
   int prevLeg[3];              /* 0x1C */
   int legStep[3];              /* 0x28 */
   int timer;               /* 0x34 */
-  int u38;                 /* 0x38 */
+  int pad38;                 /* 0x38 */
   Actor *stopActor;              /* 0x3C level actor tied to the stop just reached (38 or 41) */
   int atStop;                 /* 0x40 set on reaching each stop */
   Actor *child;            /* 0x44 rock in hand */
-  int u48;                 /* 0x48 */
+  int pad48;                 /* 0x48 */
   int freezesSpyro;                 /* 0x4C level data: hops block gameplay and freeze Spyro's input */
   int standGround;                 /* 0x50 1 at stops 0/7/11: does not hop away from a close Spyro */
   int u54;                 /* 0x54 */
@@ -357,16 +367,16 @@ typedef struct ChargingRamState {
   int mode;     /* 0x04 nonzero = starts awake */
   int knock;    /* 0x08 knock-back speed */
   int lift;     /* 0x0C */
-  int u10;      /* 0x10 */
+  int pad10;      /* 0x10 */
   int heading;  /* 0x14 */
-  int u18;      /* 0x18 */
-  int u1C;      /* 0x1C */
-  int u20;      /* 0x20 */
+  int pad18;      /* 0x18 */
+  int pad1C;      /* 0x1C */
+  int pad20;      /* 0x20 */
   int home[3];  /* 0x24 */
   int timer3;   /* 0x30 */
   int timer2;   /* 0x34 */
   int charged;  /* 0x38 */
-  int u3C;      /* 0x3C */
+  int pad3C;      /* 0x3C */
   int saved;    /* 0x40 state to return to */
   int heavy;    /* 0x44 */
   int timer;    /* 0x48 cooldown */
@@ -381,14 +391,14 @@ typedef struct PathWalkerState {
   int next;            /* 0x0C state to enter after the turn, 0x63 = done */
   int prevLeg[3];          /* 0x10 */
   int legStep[5];          /* 0x1C */
-  int sound;           /* 0x30 */
+  int chunkAnim;           /* 0x30 world chunk-anim handle (GetWorldChunkAnimState) */
   int period;          /* 0x34 */
   int timer;           /* 0x38 */
-  int u3C;             /* 0x3C */
+  int pad3C;             /* 0x3C */
   int startCur;        /* 0x40 */
   int partner;         /* 0x44 index into g_pActorListBase */
   int flag;            /* 0x48 */
-  int u4C;             /* 0x4C */
+  int pad4C;             /* 0x4C */
   int rideMode;        /* 0x50 1 = held, 2 = thrown */
   int rider;           /* 0x54 index into g_pActorListBase */
   int speed;           /* 0x58 */
@@ -400,7 +410,7 @@ typedef struct PathWalkerState {
 /* A trail point (as level 33's type 169). */
 typedef struct CometTrailPoint {
   int pos[3]; /* 0x00 */
-  int u0C[3]; /* 0x0C */
+  int pad0C[3]; /* 0x0C */
   int age;    /* 0x18 */
 } CometTrailPoint;   /* 0x1C */
 
@@ -425,11 +435,11 @@ typedef struct CometCannonState {
   int steps;      /* 0x00 comet sub-steps */
   int link;       /* 0x04 index into g_pActorListBase (its trigger) */
   int target;     /* 0x08 index into g_pActorListBase */
-  int u0C;        /* 0x0C */
+  int pad0C;        /* 0x0C */
   int timer;      /* 0x10 */
   int heading;    /* 0x14 */
   int camFlag;    /* 0x18 */
-  int u1C;        /* 0x1C */
+  int pad1C;        /* 0x1C */
   int idx;        /* 0x20 trail buffer in use */
   int init;       /* 0x24 */
   char trails[1]; /* 0x28 */
@@ -477,7 +487,7 @@ typedef struct BigLungingGuardState {
   int follow1;         /* 0x54 index into g_pActorListBase, -1 none */
   int follow2;         /* 0x58 */
   int spin;            /* 0x5C */
-  int u60;             /* 0x60 */
+  int pad60;             /* 0x60 */
   int flip;            /* 0x64 */
   int sound;           /* 0x68 */
 } BigLungingGuardState;
@@ -487,9 +497,9 @@ typedef struct FallingChunkState {
   short vx;               /* 0x00 */
   short vy;               /* 0x02 */
   short vz;               /* 0x04 */
-  unsigned char b06;      /* 0x06 */
+  unsigned char pad06;      /* 0x06 */
   unsigned char noFloor;  /* 0x07 */
-  short u08;              /* 0x08 */
+  short pad08;              /* 0x08 */
   short age;              /* 0x0A */
   short grav;             /* 0x0C */
   short u0E;              /* 0x0E */
@@ -516,7 +526,7 @@ typedef struct RockThrowerState {
   int range2;           /* 0x30 */
   unsigned char *path;  /* 0x34 */
   int partner;          /* 0x38 index into g_pActorListBase */
-  int u3C;              /* 0x3C */
+  int pad3C;              /* 0x3C */
   int link;             /* 0x40 index into g_pActorListBase, -1 none */
   int trig;             /* 0x44 */
 } RockThrowerState;
@@ -527,35 +537,24 @@ typedef struct FenceGuardState {
   int onPath; /* 0x04 1 = keep to the segment in path */
   int wake;   /* 0x08 */
   int *path;  /* 0x0C segment ends at [2],[3] and [6],[7] */
-  int u10;    /* 0x10 */
+  int pad10;    /* 0x10 */
   int timer;  /* 0x14 */
   int link;   /* 0x18 index into g_pActorListBase, -1 none */
-  int u1C;    /* 0x1C */
+  int pad1C;    /* 0x1C */
   int timer0; /* 0x20 timer reload */
 } FenceGuardState;
 
 /* Type 215 state: one of the guard's six pieces. */
 typedef struct FenceGuardPieceState {
-  int u00;   /* 0x00 */
+  int pad00;   /* 0x00 */
   short lift; /* 0x04 */
 } FenceGuardPieceState;
-
-/* A trigger box for IsPointInRotatedBox: a point, half-extents in the box's
- * own frame, and that frame's yaw. A zero half-width marks an unused box. */
-typedef struct TriggerBox {
-  int x;         /* 0x00 */
-  int y;         /* 0x04 */
-  int z;         /* 0x08 */
-  int halfWidth; /* 0x0C 0 = unused */
-  int halfDepth; /* 0x10 */
-  int yaw;       /* 0x14 sine-LUT index */
-} TriggerBox;
 
 /* Type 204 state: the fence-guard captain. Wakes the guards (203) whose
  * boxes Spyro has entered and sends them in one at a time. */
 typedef struct FenceCaptainState {
   unsigned char *path; /* 0x000 */
-  int u04[7];          /* 0x004 */
+  int pad04[7];          /* 0x004 */
   int link[7];         /* 0x020 the guards, index into g_pActorListBase, -1 none */
   int cur;             /* 0x03C */
   TriggerBox box[7];       /* 0x040 one per guard */
@@ -581,7 +580,7 @@ typedef struct BurstGunnerState {
   int shotGap;     /* 0x14 frames since the last shot of a burst */
   int shotReload;     /* 0x18 shot timer reload */
   void *path;   /* 0x1C path */
-  int u20;     /* 0x20 */
+  int pad20;     /* 0x20 */
   int countdown;     /* 0x24 */
   int box0[6];  /* 0x28 trigger box */
   int box1[6];  /* 0x40 trigger box */
@@ -598,11 +597,11 @@ typedef struct SweepGunnerState {
   int knockSpeed;     /* 0x08 knock-back speed */
   int knockHeading;     /* 0x0C knock-back heading */
   int knockZSpeed;     /* 0x10 */
-  int u14;     /* 0x14 */
+  int pad14;     /* 0x14 */
   int yawToSpyro;     /* 0x18 yaw toward Spyro */
   int yawLimitA;     /* 0x1C yaw limit (0xFF none) */
   int yawLimitB;     /* 0x20 yaw limit (0xFF none) */
-  int u24;     /* 0x24 */
+  int pad24;     /* 0x24 */
   int sweepRate;     /* 0x28 sweep rate */
   int sweepYaw;     /* 0x2C sweep yaw << 4 */
   int timer;     /* 0x30 timer */
@@ -624,7 +623,7 @@ typedef struct LobGunnerState {
   int timer;              /* 0x30 timer */
   int throwTimer;              /* 0x34 throw timer */
   Actor *heldLob;           /* 0x38 held lob (type 176), -1 once thrown */
-  int u3C;              /* 0x3C */
+  int pad3C;              /* 0x3C */
   int aimRange;              /* 0x40 aim-at-path range */
   int box1[6];           /* 0x44 trigger box */
   int box2[6];           /* 0x5C trigger box */
@@ -653,16 +652,16 @@ typedef struct BurstGunnerShotState {
 
 /* Type 171 state. */
 typedef struct FlameChunkSwitchState {
-  int u00; /* 0x00 */
+  int pad00; /* 0x00 */
   int rearmTimer; /* 0x04 re-arm timer */
 } FlameChunkSwitchState;
 
 /* Type 236 state (level 32 wanderer; the head is UpdateActorWander's wander block). */
 typedef struct WandererState {
-  int u00[8]; /* 0x00 */
+  int pad00[8]; /* 0x00 */
   int knockSpeed;    /* 0x20 knock-back speed */
   int knockHeading;    /* 0x24 knock-back heading */
-  int u28;    /* 0x28 */
+  int pad28;    /* 0x28 */
   int idleTimer;    /* 0x2C idle timer */
 } WandererState;
 

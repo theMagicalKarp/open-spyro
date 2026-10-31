@@ -10,8 +10,8 @@
    0 when the move was committed. */
 /* Local prototypes, not funcs.h: its caller-side MoveActorByDelta splits the
    DeltaVec into three ints and conflicts with the definition below. */
-extern int DispatchActorContactAtSphere(int *pos, int group, int a, int b,
-                                        Actor *actor, int c);
+extern int DispatchActorContactAtSphere(int *pos, int radius, int events,
+                                        int hitBits, Actor *self, int mode);
 extern void RefreshActorDerivedState(Actor *actor, int mode);
 
 typedef struct {

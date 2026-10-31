@@ -86,7 +86,7 @@
    "size": 156
   },
   {
-   "name": "TickWorldBundleLoadStream",
+   "name": "TickCutsceneBundleLoadStream",
    "vram": 2147566948,
    "size": 1548
   },
@@ -1161,7 +1161,7 @@
    "size": 132
   },
   {
-   "name": "IsPickupGroupAllType",
+   "name": "IsPickupGroupAllInMode",
    "vram": 2147725664,
    "size": 136
   },

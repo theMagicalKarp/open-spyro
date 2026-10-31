@@ -174,7 +174,7 @@ void DragonRescue_Update(void) {
       g_bSpyroSubFrameTimer = 0;
       g_pEmitListWriteCursor = g_pEmitListBase;
       ((unsigned char *)g_pEmitListBase)[1] = 0xFF;
-      StopAllSoundExceptMask(1 << SRC->sfxSlot);
+      StopAllSoundExceptMask(1 << SRC->voiceRow);
       PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_SWEEP), 0, SFX_MODE_PANNED, &GB[11]);
     }
   } break;
@@ -665,7 +665,7 @@ void DragonRescue_Update(void) {
     AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
     i = 0;
     done = (int)g_anHudRollInStepTable; /* shares s4 with case 4 */
-    icon = &HUD_ICON(5 * ACTOR_SIZE)->posY;
+    icon = &HUD_ICON_SLOT(5)->posY;
     k = 0;
     off = 0;
     TickSpyroAnimLayer1();
@@ -738,7 +738,7 @@ void DragonRescue_Update(void) {
       int off;
 
       n = 0;
-      icon = &HUD_ICON(5 * ACTOR_SIZE)->posY;
+      icon = &HUD_ICON_SLOT(5)->posY;
       j = 0;
       off = 0;
     roll_out:
@@ -774,14 +774,14 @@ void DragonRescue_Update(void) {
     TickDragonRescueAssetStream();
   }
   {
-    char *actor = g_pActorListBase;
+    Actor *actor = g_pActorListBase;
 
-    while (((Actor *)actor)->mode != ACTOR_MODE_END) {
-      if (((Actor *)actor)->type == ACTOR_TYPE_STATUE_SHARD &&
-          ((Actor *)actor)->mode < ACTOR_MODE_DORMANT) {
+    while (actor->mode != ACTOR_MODE_END) {
+      if (actor->type == ACTOR_TYPE_STATUE_SHARD &&
+          actor->mode < ACTOR_MODE_DORMANT) {
         TickStatueBurstShard(actor);
       }
-      actor += ACTOR_SIZE;
+      actor++;
     }
   }
 }

@@ -1,17 +1,18 @@
 #include "funcs.h"
 #include "globals.h"
 
-/* Step byte angle `b` toward `a` by at most `c`: if the shortest signed delta
-   (b - a) is larger in magnitude than the limit `c`, move `b` by `c` in the
-   delta's direction; otherwise it is already within range, so return `a`. */
-int StepAngle8Toward(int a, int b, int c, int d) {
-  int delta = WrapAngleDelta8(a, b);
+/* Step byte angle `from` toward `to` by at most `maxStep`: if the shortest
+   signed delta (from - to) is larger in magnitude than the limit `maxStep`,
+   move `from` by `maxStep` in the delta's direction; otherwise it is already
+   within range, so return `to`. */
+int StepAngle8Toward(int to, int from, int maxStep, int unused) {
+  int delta = WrapAngleDelta8(to, from);
   int absd = delta >= 0 ? delta : -delta;
-  if (c < absd) {
+  if (maxStep < absd) {
     if (delta < 0) {
-      return WrapAddAngle8(b, c);
+      return WrapAddAngle8(from, maxStep);
     }
-    return WrapAddAngle8(b, -c);
+    return WrapAddAngle8(from, -maxStep);
   }
-  return a;
+  return to;
 }

@@ -197,7 +197,7 @@ void ChangeSpyroState(int state) {
     goto slope_gravity;
   case SPYRO_ST_CHARGE: {
     int best;
-    unsigned char *actor;
+    Actor *actor;
     int *me;
 
     CopyVector(g_anSpyroCarryMotionVec, g_anSpyroCarryMotionVec + 9);
@@ -230,15 +230,15 @@ void ChangeSpyroState(int state) {
     }
     actor = g_pActorListBase;
     best = 0x7530;
-    if (actor < (unsigned char *)g_pActorPoolDynBase) {
+    if (actor < (Actor *)g_pActorPoolDynBase) {
       int *from = me;
 
       do {
-        if (((Actor *)actor)->mode < 0x7F && ((Actor *)actor)->collision != 0) {
+        if (actor->mode < 0x7F && actor->collision != 0) {
           int a;
           int da;
 
-          SubtractVector(d, &((Actor *)actor)->posX, from);
+          SubtractVector(d, &actor->posX, from);
           a = (ArcTan2(d[0], d[1], 1) - g_nSpyroBodyYaw) & 0xFFF;
           if (a > 0x800) {
             a -= 0x1000;
@@ -263,8 +263,8 @@ void ChangeSpyroState(int state) {
           }
         }
       next:
-        actor += ACTOR_SIZE;
-      } while (actor < (unsigned char *)g_pActorPoolDynBase);
+        actor++;
+      } while (actor < (Actor *)g_pActorPoolDynBase);
     }
     break;
   }

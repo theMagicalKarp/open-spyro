@@ -2,11 +2,12 @@
 #include "globals.h"
 
 /* 0x80018728 (0x150) — draw the dragon-rescue banner: "RESCUED" plus the
-   freed dragon's name (g_apDragonNames[actor->id at +0x38]) as two
-   BuildTextSpriteChain labels right-shifted by the name length, then walk
-   the sprite records the two calls appended (queue grows downward) and pulse
-   each glyph's alpha byte (+0x46) from the sine LUT off the dragon-rescue
-   timer, phase-stepped 0xC per glyph. */
+   freed dragon's name (g_apDragonNames[] at the statue's
+   DragonStatueState.dragonName, +0x38) as two BuildTextSpriteChain labels
+   right-shifted by the name length, then walk the sprite records the two calls
+   appended (queue grows downward) and pulse each glyph's alpha byte (+0x46)
+   from the sine LUT off the dragon-rescue timer, phase-stepped 0xC per glyph.
+ */
 void DrawDragonRescuedBanner(void) {
   int pos[3];
   char *name;

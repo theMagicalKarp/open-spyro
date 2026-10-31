@@ -70,5 +70,5 @@ void BeginDragonRescue(Actor *actor) {
   g_anDragonRescueAuraStarAnchor[2] += 0x40;
   PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_START),
                   (Actor *)&g_anDragonRescueBlock[0x1a], SFX_MODE_PANNED,
-                  &((Actor *)g_anDragonRescueBlock[0x1a])->sfxSlot);
+                  &((Actor *)g_anDragonRescueBlock[0x1a])->voiceRow);
 }

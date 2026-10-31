@@ -15,16 +15,13 @@
    same `kind` is already mid-turn); otherwise marks the actor moving
    and delegates the step to TurnActorYawTowardAngle + MoveActorAlongHeading. */
 
-#define ACTOR_YAW(a) ((Actor *)a)->rotZ
-#define ACTOR_TURNSTATE(a) ((Actor *)a)->subMode
-
 /* Turn the actor's yaw toward `ang`, at most `step` per frame. */
 #define TurnActorTowardAngle(actor, ang, step, lim)                            \
   do {                                                                         \
-    ACTOR_YAW(actor) = ApproachAngle8(ang, ACTOR_YAW(actor), step, lim);       \
+    actor->rotZ = ApproachAngle8(ang, actor->rotZ, step, lim);                 \
   } while (0)
 
-int PivotActorAlongPath(int *actor, PathData *path, int thresh, int speed,
+int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed,
                         int group, int step, int lim, int kind, int flags) {
   int ret;
   int zclose;
@@ -33,7 +30,7 @@ int PivotActorAlongPath(int *actor, PathData *path, int thresh, int speed,
   int wrap;
   int *node;
   void **list;
-  unsigned char *peer;
+  Actor *peer;
 
   if (g_nActorFrameDelta == 3) {
     speed += speed >> 1;
@@ -43,14 +40,14 @@ int PivotActorAlongPath(int *actor, PathData *path, int thresh, int speed,
 
   ret = 0;
   if (flags & 0x100) {
-    zclose = abs(actor[5] - path->nodes[path->cur].z) < thresh;
+    zclose = abs(actor->posZ - path->nodes[path->cur].z) < thresh;
   } else {
     zclose = 1;
   }
 
-  if (ApproxDist2D(actor + 3, &path->nodes[path->cur].x) < thresh &&
+  if (ApproxDist2D(&actor->posX, &path->nodes[path->cur].x) < thresh &&
       zclose != 0) {
-    ACTOR_TURNSTATE(actor) = 0;
+    actor->subMode = 0;
     if (path->reversed == -1) {
       wrap = path->count;
       idx = path->cur + 1;
@@ -69,23 +66,22 @@ int PivotActorAlongPath(int *actor, PathData *path, int thresh, int speed,
   }
 
   node = (int *)((char *)path + (path->cur << 4)); /* node x/y at [2]/[3] */
-  ang = ArcTan2(node[2] - actor[3], node[3] - actor[4], 0);
+  ang = ArcTan2(node[2] - actor->posX, node[3] - actor->posY, 0);
 
-  if (AbsAngleDelta8(ang, ACTOR_YAW(actor)) <= lim) {
-    ACTOR_TURNSTATE(actor) = 1;
+  if (AbsAngleDelta8(ang, actor->rotZ) <= lim) {
+    actor->subMode = 1;
     TurnActorYawTowardAngle(actor, ang, step, lim, 1);
     MoveActorAlongHeading(actor, speed, group, 0, flags);
     goto done;
   }
 
-  if (ACTOR_TURNSTATE(actor) == 0 && kind != 0xFF) {
+  if (actor->subMode == 0 && kind != 0xFF) {
     /* Only one actor of this kind turns at a time — if a peer is already
        mid-turn (state 1), defer to it. */
     list = g_apActiveActorListBlock;
-    while ((peer = (unsigned char *)(*(list++))) != 0) {
-      if (((Actor *)peer)->group == kind &&
-          (unsigned int)((Actor *)peer)->mode < ACTOR_MODE_DORMANT &&
-          ((Actor *)peer)->subMode == 1) {
+    while ((peer = *(list++)) != 0) {
+      if (peer->group == kind &&
+          (unsigned int)peer->mode < ACTOR_MODE_DORMANT && peer->subMode == 1) {
         break;
       }
     }
@@ -93,7 +89,7 @@ int PivotActorAlongPath(int *actor, PathData *path, int thresh, int speed,
       goto done;
     }
     TurnActorTowardAngle(actor, ang, step, lim);
-    ACTOR_TURNSTATE(actor) = 2;
+    actor->subMode = 2;
   } else {
     TurnActorTowardAngle(actor, ang, step, lim);
   }

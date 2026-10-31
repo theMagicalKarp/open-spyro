@@ -17,7 +17,7 @@ void Cutscene_Update(void) {
   int *p;
   int cur;
 
-  if (g_nCurrentWorldId >= 2 && *(int *)g_pPathTableHead == 0) {
+  if (g_nCutsceneId >= 2 && *(int *)g_pPathTableHead == 0) {
     StopAllSoundExceptMask(0);
     TickSpuPerFrame();
     rect.w = 0x200;
@@ -29,12 +29,12 @@ void Cutscene_Update(void) {
     g_nCdStreamState = 0;
     g_pDrawBufA = g_pSharedLoadBuffer;
     g_pDrawBufB = g_pSharedLoadBuffer;
-    if (g_nCurrentWorldId == 3) {
+    if (g_nCutsceneId == 3) {
       g_pWorkAreaTop = (void *)(0x80200000 - g_nCrt0StackSize);
       InitActorMeshScratchRegions(1);
     }
     while (g_nCdStreamState < 0xA) {
-      TickWorldBundleLoadStream();
+      TickCutsceneBundleLoadStream();
       TickCdMusicStream();
     }
     BeginCutscene();
@@ -53,7 +53,7 @@ void Cutscene_Update(void) {
     if (g_nScreenFadeLevel >= 0x10) {
       g_nScreenFadeLevel = 0xF;
     }
-    if (g_nCurrentWorldId == 1 && (g_dwPadHeld & (PAD_CROSS | PAD_START))) {
+    if (g_nCutsceneId == 1 && (g_dwPadHeld & (PAD_CROSS | PAD_START))) {
       p = (int *)g_pPathTableHead;
       cur = p[0];
       if (cur >= 0xF1 && cur < (p[2] << 1) - 0x20) {

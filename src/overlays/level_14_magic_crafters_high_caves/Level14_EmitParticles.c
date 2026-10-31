@@ -537,7 +537,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.dust.fx = EMIT_FX_LINE;
       break;
     }
-    case 0x45: {
+    case EMIT_PATH_DOT: {
       rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_DOT);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
@@ -642,7 +642,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.line.c0[3] = 0x50;
       break;
     }
-    case 0x49: {
+    case EMIT_ORBIT_DOT: {
       rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_DOT);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;

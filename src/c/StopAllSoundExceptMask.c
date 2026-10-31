@@ -7,7 +7,7 @@
    in `mask` (low 24 bits). Each stopped voice is accumulated into the pending
    hardware key-off word; mode-4 (one-shot) and mode-8 (owner-attached) rows
    also silence the owner's live sample byte (owner byte +0x2A0 / Actor
-   sfxSlot). The row is then parked idle exactly like StopSoundVoicesByOwner
+   voiceRow). The row is then parked idle exactly like StopSoundVoicesByOwner
    (flags 0x40, owner and sample pointer cleared, priority 0xFF). Finally the
    pending key-on word is dropped and the music engine is told to stop (command
    4). */
@@ -67,7 +67,7 @@ top:
       owner = VOICE_ROW_RAW(o, unsigned char *, pOwner);
 
       if (owner != 0) {
-        ((Actor *)owner)->sfxSlot = sil;
+        ((Actor *)owner)->voiceRow = sil;
       }
     park:
       v2 = i & 0x7F;

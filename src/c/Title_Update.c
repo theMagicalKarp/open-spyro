@@ -23,7 +23,7 @@ void Title_Update(void) {
       TickSpuPerFrame();
       g_nStoryIntroSubstate = 1;
       if (g_nStoryIntroMessage == 0) {
-        g_nCurrentWorldId = 1;
+        g_nCutsceneId = 1;
         g_nCdStreamState = 0;
         g_pDrawBufA = g_pSharedLoadBuffer;
         g_pDrawBufB = g_pSharedLoadBuffer;
@@ -61,7 +61,7 @@ void Title_Update(void) {
     } else if (g_nStoryIntroSubstate == 1) {
       if (g_nStoryIntroMessage == 0) {
         while (g_nCdStreamState < 3) {
-          TickWorldBundleLoadStream();
+          TickCutsceneBundleLoadStream();
           TickCdMusicStream();
         }
       } else {
@@ -123,7 +123,7 @@ void Title_Update(void) {
 
         if (msg[0] == 0) {
           if (g_nCdStreamState < 7) {
-            TickWorldBundleLoadStream();
+            TickCutsceneBundleLoadStream();
           }
           if (g_nStoryIntroTimer >= 0x180 && g_nCdStreamState == 7) {
             clear.x = 0;
@@ -135,7 +135,7 @@ void Title_Update(void) {
             g_pWorkAreaTop = (void *)(0x80200000 - g_nCrt0StackSize);
             InitActorMeshScratchRegions(1);
             while (g_nCdStreamState < 0xa) {
-              TickWorldBundleLoadStream();
+              TickCutsceneBundleLoadStream();
               TickCdMusicStream();
             }
             BeginCutscene();

@@ -52,10 +52,10 @@ extern Actor *g_pScriptedCameraActor;
 extern int *g_pSpyroRequestCameraAnchor;                     /* SPY.pCamAnchor, absolute form */
 extern unsigned char **g_pTriggerRegionTable;                /* surface records, indexed by the above */
 extern int RandomIntInRange(int lo, int hi);                 /* random in [lo, hi] */
-extern int RandomSignedInRange(int a, int b);
-extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
+extern int RandomSignedInRange(int lo, int hi);
+extern int StepAndLerpAngle8(int ang, int facing, int maxStep, int frac);
 extern int TickCountdownByFrameDelta(void *timer, int step);
-extern void VectorToSVectorShr2(short *d, int *s);
+extern void VectorToSVectorShr2(short *dst, int *s);
 
 /* World chunk-animation flags (byte [1] of a chunk-anim entry; each step
  * entry's low two bits are copied into it on arrival, TickWorldChunkAnimations). */
@@ -69,25 +69,25 @@ extern void VectorToSVectorShr2(short *d, int *s);
 #define CHUNK_ANIM_STEP(state) (((state) >> 8) & 0xFF)
 
 /* Hoisted: declared identically (bar parameter names) in every includer. */
-extern int CastRayWorldAndActors(int *a, int *b);
-extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
+extern int CastRayWorldAndActors(int *start, int *end);
+extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int speed);
 extern int g_anSparxHealthBlock[]; /* == g_nSparxHealth (SPY.sparxHealth): 3 gold .. 1 green, 0 Sparx gone, -1 the fatal hit was taken */
 extern int GetWorldChunkAnimState(int handle); /* flags | step << 8 | delay << 16 */
-extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
-extern int PickupGroupHasLiveActor(int stage);
+extern void ModifyWorldChunkAnimFlags(int handle, int andMask, int orMask);
+extern int PickupGroupHasLiveActor(int group);
 extern int PlaneDistanceAbs(int *pos, void *st);
-extern void SetWorldChunkAnimStep(int handle, int a, int b);
+extern void SetWorldChunkAnimStep(int handle, int step, int fire);
 extern int WrapAddAngle8(int a, int b);
 extern int g_anActorShardOffsets[];  /* shard offset vectors, 3 ints each */
 extern int g_anMotionTrailSliceCounts[];       /* trail lengths */
 extern signed char g_bSpyroRequestYaw; /* g_abSpyroRequestEuler[2]: requested yaw */
 
 /* Engine helpers every actor family calls; parameter names follow the main definitions. */
-extern int DispatchActorContactAtSphere(int *pos, int radius, int a, int mask, Actor *actor, int flag);
+extern int DispatchActorContactAtSphere(int *pos, int radius, int events, int mask, Actor *actor, int flag);
 extern void GetActorAttachPoint(Actor *actor, int slot, int *pos);
-extern int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int deadzone, int speed, int p6, int p7, int blockA, int blockB, int p10, int p11, int flags);
+extern int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int deadzone, int speed, int turnStep, int turnThreshold, int blockA, int blockB, int moveGroup, int moveRadius, int flags);
 extern int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim, int pitchLim, int radius);
-extern void SVectorToVectorShl2(int *d, int *s);
+extern void SVectorToVectorShl2(int *dst, int *s);
 extern int TrackEntityYawTowardSpyro(Actor *actor, int step, int threshold, int flag);
 extern int g_anCameraPos[];
 

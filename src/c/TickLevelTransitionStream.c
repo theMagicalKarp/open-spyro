@@ -344,8 +344,7 @@ void TickLevelTransitionStream(int full) {
             PortalActor *actor;
 
             yaw = *pe;
-            actor =
-                *(PortalActor **)((char *)g_pActorListBase + e[6] * ACTOR_SIZE);
+            actor = (PortalActor *)((Actor *)g_pActorListBase)[e[6]].state;
             EBB_BREAK();
             ChangeSpyroState(SPYRO_ST_GLIDE);
             PE_WORD(SPY_SUBSTATE) = 9;
@@ -429,8 +428,8 @@ void TickLevelTransitionStream(int full) {
     g_nLevelRunnerArrivedGoal1 = 0;
     g_anLevelEscapeRunCount = 0;
     g_nLevelEscapeRunCountLane1 = 0;
-    g_nLevelUnreadScratchA = 0;
-    g_nLevelUnreadScratchB = 0;
+    g_nLevelVortexSeen1 = 0;
+    g_nLevelVortexSeen2 = 0;
     g_bLevelUseShortReleaseAnim = 0;
     g_bLevelBossDefeated = 0;
     g_bLevelPhasedBossKilled = 0;

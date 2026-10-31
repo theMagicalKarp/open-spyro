@@ -4422,11 +4422,11 @@ dlabel D_8006EE44
     /* 5F658 8006EE58 00FCFFFF */ .word 0xFFFFFC00
 enddlabel D_8006EE44
 
-nonmatching g_nWorldHeaderChunkSize
+nonmatching g_nCutsceneHeaderChunkSize
 
-dlabel g_nWorldHeaderChunkSize
+dlabel g_nCutsceneHeaderChunkSize
     /* 5F65C 8006EE5C 00000400 */ .word 0x00040000
-enddlabel g_nWorldHeaderChunkSize
+enddlabel g_nCutsceneHeaderChunkSize
 
 nonmatching D_8006EE60
 
@@ -4437,11 +4437,11 @@ dlabel D_8006EE60
     /* 5F668 8006EE68 00000800 */ .word 0x00080000
 enddlabel D_8006EE60
 
-nonmatching g_nWorldCutsceneSamplePitch
+nonmatching g_nCutsceneSamplePitch
 
-dlabel g_nWorldCutsceneSamplePitch
+dlabel g_nCutsceneSamplePitch
     /* 5F66C 8006EE6C 00080000 */ .word 0x00000800
-enddlabel g_nWorldCutsceneSamplePitch
+enddlabel g_nCutsceneSamplePitch
 
 nonmatching D_8006EE70
 
@@ -14135,23 +14135,23 @@ dlabel g_nSpyroScriptedLiftBaseZ
     /* 65E68 80075668 00000000 */ .word 0x00000000
 enddlabel g_nSpyroScriptedLiftBaseZ
 
-nonmatching g_nCurrentWorldId
+nonmatching g_nCutsceneId
 
-dlabel g_nCurrentWorldId
+dlabel g_nCutsceneId
     /* 65E6C 8007566C 00000000 */ .word 0x00000000
-enddlabel g_nCurrentWorldId
+enddlabel g_nCutsceneId
 
-nonmatching g_nLevelUnreadScratchA
+nonmatching g_nLevelVortexSeen1
 
-dlabel g_nLevelUnreadScratchA
+dlabel g_nLevelVortexSeen1
     /* 65E70 80075670 00000000 */ .word 0x00000000
-enddlabel g_nLevelUnreadScratchA
+enddlabel g_nLevelVortexSeen1
 
-nonmatching g_nLevelUnreadScratchB
+nonmatching g_nLevelVortexSeen2
 
-dlabel g_nLevelUnreadScratchB
+dlabel g_nLevelVortexSeen2
     /* 65E74 80075674 00000000 */ .word 0x00000000
-enddlabel g_nLevelUnreadScratchB
+enddlabel g_nLevelVortexSeen2
 
 nonmatching g_nGnastyLootFallRefZCap
 

@@ -165,9 +165,9 @@ fade_in_splash:
   }
 
   g_nCdStreamState = 3;
-  g_nCurrentWorldId = 0;
+  g_nCutsceneId = 0;
 stream_world:
-  TickWorldBundleLoadStream();
+  TickCutsceneBundleLoadStream();
   if (g_nCdStreamState < 0xA) {
     goto stream_world;
   }

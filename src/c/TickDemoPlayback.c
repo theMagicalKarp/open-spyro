@@ -47,7 +47,7 @@ int TickDemoPlayback(void) {
       g_nPulseRumbleAmount = 0;
       g_nDemoMode = 0;
       g_nCdStreamState = 0;
-      g_nCurrentWorldId = 0;
+      g_nCutsceneId = 0;
       g_nFlightLevelActive = 0;
       g_nDemoActive = 0;
       {
@@ -58,7 +58,7 @@ int TickDemoPlayback(void) {
         CdReadSyncSectors(lba, dst, count, offset, 600);
       }
       while (g_nCdStreamState < 10) {
-        TickWorldBundleLoadStream();
+        TickCutsceneBundleLoadStream();
         TickCdMusicStream();
       }
       g_nGamestate = GS_CUTSCENE;
@@ -70,7 +70,7 @@ int TickDemoPlayback(void) {
         SAMPLE_RAW(BANK, int, nSampleAddr) = 0x262d0;
         SAMPLE_RAW(BANK, int, nLoopAddr) = -1;
         SAMPLE_RAW(BANK, short, nVolume) = 0x50;
-        SAMPLE_RAW(BANK, short, nPitch) = g_nWorldCutsceneSamplePitch;
+        SAMPLE_RAW(BANK, short, nPitch) = g_nCutsceneSamplePitch;
         SAMPLE_RAW(BANK, short, nPitchSpread) = 0;
         SAMPLE_RAW(BANK, short, nPitchStep) = 0;
         SAMPLE_RAW(BANK, int, nPitchMode) = 0;

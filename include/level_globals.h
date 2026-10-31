@@ -197,7 +197,7 @@ extern int g_nVsyncFramePaceAnchor;
 extern int g_nWorldDragonsRescued;
 extern int g_nWorldEggsRecovered;
 extern int g_nWorldTreasureCollected;                    /* gem total shown on the balloon */
-extern unsigned char *g_pActorCutsceneActor;
+extern struct Actor *g_pActorCutsceneActor;  /* focus actor (BeginActorCutscene) */
 extern unsigned char *g_pLevelSoundIds;                  /* level sound ids */
 extern void *g_pSpyroRequestCameraTargetParams;          /* SPY.pCamTarget, absolute form */
 
@@ -213,25 +213,25 @@ extern void (*g_pfnLevelHandleFlightResults)();
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
 extern void BuildActiveActorList(void);
-extern int CheckLineOfSightSegment(int *a, int *b);
+extern int CheckLineOfSightSegment(int *from, int *to);
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
-extern void CommitActorKillGems(int a, void *b);
+extern void CommitActorKillGems(int value, void *actor);
 extern int FindGroundHeightBelow(int *pos, int depth);
-extern int IsPointInRotatedBox(int *a, int *b);
-extern int RaiseSpyroTriggerInRadius(int *pos, int a, int b);
+extern int IsPointInRotatedBox(int *pos, int *rec);
+extern int RaiseSpyroTriggerInRadius(int *pos, int radius, int flags);
 extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 extern void RefreshHudLevelGemCounter(void);
 extern void ResetSpyroEntity(int hard);
 extern void ResetSpyroLinearMotion(void);
-extern int StepAngle8Toward(int a, int b, int c);
+extern int StepAngle8Toward(int to, int from, int maxStep);
 extern void StubRewardHook(int script, int a);
-extern void UnpackWorldCollisionTri(int a, int *out);
+extern void UnpackWorldCollisionTri(int chunk, int *out);
 extern int WrapAngleDelta8(int a, int b);
 extern unsigned char g_abLevelVisitedFlag[];
 extern int g_anLevelTriggerStateSlots[];
 extern int g_anRunningKillBitmap[];
 extern int g_anWorldPersistentFlags[];
-extern int g_nCurrentWorldId[];
+extern int g_nCutsceneId[]; /* [0] the cutscene id; [1]/[2] are g_nLevelVortexSeen1/2, indexed by LootVortexState.seen */
 extern int g_nCreditsMode;
 extern int g_nScreenFadeLevel;
 

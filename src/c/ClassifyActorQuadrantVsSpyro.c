@@ -5,22 +5,22 @@
    quadrant mask: compute actor(+0xC) - Spyro (optionally un-rotated by the
    actor's yaw byte at +0x46), then AND away the halves of 0xF that the
    X/Y signs rule out. */
-int ClassifyActorQuadrantVsSpyro(unsigned char *actor) {
+int ClassifyActorQuadrantVsSpyro(Actor *actor) {
   int mtx[8];
   signed char euler[8];
   int delta[4];
   int mask;
 
   mask = 0xF;
-  if (((Actor *)actor)->rotZ != 0) {
+  if (actor->rotZ != 0) {
     euler[0] = 0;
     euler[1] = 0;
-    euler[2] = -((Actor *)actor)->rotZ;
+    euler[2] = -actor->rotZ;
     ApplyEulerRotation(euler, mtx, 0);
-    SubtractVector(delta, actor + 0xC, g_anSpyroWorldPos);
+    SubtractVector(delta, &actor->posX, g_anSpyroWorldPos);
     RotateVectorByMatrix(mtx, delta, delta);
   } else {
-    SubtractVector(delta, actor + 0xC, g_anSpyroWorldPos);
+    SubtractVector(delta, &actor->posX, g_anSpyroWorldPos);
   }
 
   if (delta[0] > 0) {

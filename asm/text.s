@@ -555,8 +555,8 @@ glabel Initialize
     /* 3100 80012900 00080624 */  addiu      $a2, $zero, 0x800
     /* 3104 80012904 0780113C */  lui        $s1, %hi(g_nCdBaseLba)
     /* 3108 80012908 906B3126 */  addiu      $s1, $s1, %lo(g_nCdBaseLba)
-    /* 310C 8001290C 0880133C */  lui        $s3, %hi(g_nWorldArchiveOffset)
-    /* 3110 80012910 E8A67326 */  addiu      $s3, $s3, %lo(g_nWorldArchiveOffset)
+    /* 310C 8001290C 0880133C */  lui        $s3, %hi(g_nCutsceneArchiveOffset)
+    /* 3110 80012910 E8A67326 */  addiu      $s3, $s3, %lo(g_nCutsceneArchiveOffset)
     /* 3114 80012914 0000248E */  lw         $a0, 0x0($s1)
     /* 3118 80012918 0000678E */  lw         $a3, 0x0($s3)
     /* 311C 8001291C 0180053C */  lui        $a1, %hi(g_pSharedLoadBuffer)
@@ -692,10 +692,10 @@ glabel Initialize
     /* 3314 80012B14 03000224 */  addiu      $v0, $zero, 0x3
     /* 3318 80012B18 0780013C */  lui        $at, %hi(g_nCdStreamState)
     /* 331C 80012B1C 645822AC */  sw         $v0, %lo(g_nCdStreamState)($at)
-    /* 3320 80012B20 0780013C */  lui        $at, %hi(g_nCurrentWorldId)
-    /* 3324 80012B24 6C5620AC */  sw         $zero, %lo(g_nCurrentWorldId)($at)
+    /* 3320 80012B20 0780013C */  lui        $at, %hi(g_nCutsceneId)
+    /* 3324 80012B24 6C5620AC */  sw         $zero, %lo(g_nCutsceneId)($at)
   .L80012B28:
-    /* 3328 80012B28 5951000C */  jal        TickWorldBundleLoadStream
+    /* 3328 80012B28 5951000C */  jal        TickCutsceneBundleLoadStream
     /* 332C 80012B2C 00000000 */   nop
     /* 3330 80012B30 0780023C */  lui        $v0, %hi(g_nCdStreamState)
     /* 3334 80012B34 6458428C */  lw         $v0, %lo(g_nCdStreamState)($v0)
@@ -2526,11 +2526,11 @@ glabel LoadAndStartLevelFromCd
 endlabel LoadAndStartLevelFromCd
 .endif
 
-.section .text.TickWorldBundleLoadStream, "ax"
-.ifndef HAVE_C_TickWorldBundleLoadStream
-nonmatching TickWorldBundleLoadStream, 0x60C
+.section .text.TickCutsceneBundleLoadStream, "ax"
+.ifndef HAVE_C_TickCutsceneBundleLoadStream
+nonmatching TickCutsceneBundleLoadStream, 0x60C
 
-glabel TickWorldBundleLoadStream
+glabel TickCutsceneBundleLoadStream
     /* 4D64 80014564 C0FFBD27 */  addiu      $sp, $sp, -0x40
     /* 4D68 80014568 3C00BFAF */  sw         $ra, 0x3C($sp)
     /* 4D6C 8001456C 3800B2AF */  sw         $s2, 0x38($sp)
@@ -2563,14 +2563,14 @@ glabel TickWorldBundleLoadStream
     /* 4DD8 800145D8 00080624 */  addiu      $a2, $zero, 0x800
     /* 4DDC 800145DC 0780043C */  lui        $a0, %hi(g_nCdBaseLba)
     /* 4DE0 800145E0 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
-    /* 4DE4 800145E4 0780023C */  lui        $v0, %hi(g_nCurrentWorldId)
-    /* 4DE8 800145E8 6C56428C */  lw         $v0, %lo(g_nCurrentWorldId)($v0)
+    /* 4DE4 800145E4 0780023C */  lui        $v0, %hi(g_nCutsceneId)
+    /* 4DE8 800145E8 6C56428C */  lw         $v0, %lo(g_nCutsceneId)($v0)
     /* 4DEC 800145EC 0880053C */  lui        $a1, %hi(g_pDrawBufA)
     /* 4DF0 800145F0 D885A58C */  lw         $a1, %lo(g_pDrawBufA)($a1)
     /* 4DF4 800145F4 C0100200 */  sll        $v0, $v0, 3
-    /* 4DF8 800145F8 0880013C */  lui        $at, %hi(g_nWorldArchiveOffset)
+    /* 4DF8 800145F8 0880013C */  lui        $at, %hi(g_nCutsceneArchiveOffset)
     /* 4DFC 800145FC 21082200 */  addu       $at, $at, $v0
-    /* 4E00 80014600 E8A6278C */  lw         $a3, %lo(g_nWorldArchiveOffset)($at)
+    /* 4E00 80014600 E8A6278C */  lw         $a3, %lo(g_nCutsceneArchiveOffset)($at)
     /* 4E04 80014604 58020224 */  addiu      $v0, $zero, 0x258
     /* 4E08 80014608 A659000C */  jal        StartCdReadAsync
     /* 4E0C 8001460C 1000A2AF */   sw        $v0, 0x10($sp)
@@ -2589,20 +2589,20 @@ glabel TickWorldBundleLoadStream
     /* 4E3C 8001463C D0010624 */   addiu     $a2, $zero, 0x1D0
     /* 4E40 80014640 0780043C */  lui        $a0, %hi(g_nCdBaseLba)
     /* 4E44 80014644 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
-    /* 4E48 80014648 0780033C */  lui        $v1, %hi(g_nCurrentWorldId)
-    /* 4E4C 8001464C 6C56638C */  lw         $v1, %lo(g_nCurrentWorldId)($v1)
+    /* 4E48 80014648 0780033C */  lui        $v1, %hi(g_nCutsceneId)
+    /* 4E4C 8001464C 6C56638C */  lw         $v1, %lo(g_nCutsceneId)($v1)
     /* 4E50 80014650 0000058E */  lw         $a1, 0x0($s0)
     /* 4E54 80014654 C0100300 */  sll        $v0, $v1, 3
-    /* 4E58 80014658 0880013C */  lui        $at, %hi(g_nWorldArchiveOffset)
+    /* 4E58 80014658 0880013C */  lui        $at, %hi(g_nCutsceneArchiveOffset)
     /* 4E5C 8001465C 21082200 */  addu       $at, $at, $v0
-    /* 4E60 80014660 E8A6288C */  lw         $t0, %lo(g_nWorldArchiveOffset)($at)
+    /* 4E60 80014660 E8A6288C */  lw         $t0, %lo(g_nCutsceneArchiveOffset)($at)
     /* 4E64 80014664 58020224 */  addiu      $v0, $zero, 0x258
     /* 4E68 80014668 80180300 */  sll        $v1, $v1, 2
     /* 4E6C 8001466C 1000A2AF */  sw         $v0, 0x10($sp)
     /* 4E70 80014670 0000278E */  lw         $a3, 0x0($s1)
-    /* 4E74 80014674 0780013C */  lui        $at, %hi(g_nWorldHeaderChunkSize)
+    /* 4E74 80014674 0780013C */  lui        $at, %hi(g_nCutsceneHeaderChunkSize)
     /* 4E78 80014678 21082300 */  addu       $at, $at, $v1
-    /* 4E7C 8001467C 5CEE268C */  lw         $a2, %lo(g_nWorldHeaderChunkSize)($at)
+    /* 4E7C 8001467C 5CEE268C */  lw         $a2, %lo(g_nCutsceneHeaderChunkSize)($at)
     /* 4E80 80014680 A659000C */  jal        StartCdReadAsync
     /* 4E84 80014684 2138E800 */   addu      $a3, $a3, $t0
     /* 4E88 80014688 0780013C */  lui        $at, %hi(g_nCdStreamState)
@@ -2612,16 +2612,16 @@ glabel TickWorldBundleLoadStream
   .L80014698:
     /* 4E98 80014698 12007214 */  bne        $v1, $s2, .L800146E4
     /* 4E9C 8001469C 1800A427 */   addiu     $a0, $sp, 0x18
-    /* 4EA0 800146A0 0780023C */  lui        $v0, %hi(g_nCurrentWorldId)
-    /* 4EA4 800146A4 6C56428C */  lw         $v0, %lo(g_nCurrentWorldId)($v0)
+    /* 4EA0 800146A0 0780023C */  lui        $v0, %hi(g_nCutsceneId)
+    /* 4EA4 800146A4 6C56428C */  lw         $v0, %lo(g_nCutsceneId)($v0)
     /* 4EA8 800146A8 00020324 */  addiu      $v1, $zero, 0x200
     /* 4EAC 800146AC 1800A3A7 */  sh         $v1, 0x18($sp)
     /* 4EB0 800146B0 1A00A0A7 */  sh         $zero, 0x1A($sp)
     /* 4EB4 800146B4 1C00A3A7 */  sh         $v1, 0x1C($sp)
     /* 4EB8 800146B8 80100200 */  sll        $v0, $v0, 2
-    /* 4EBC 800146BC 0780013C */  lui        $at, %hi(g_nWorldHeaderChunkSize)
+    /* 4EBC 800146BC 0780013C */  lui        $at, %hi(g_nCutsceneHeaderChunkSize)
     /* 4EC0 800146C0 21082200 */  addu       $at, $at, $v0
-    /* 4EC4 800146C4 5CEE228C */  lw         $v0, %lo(g_nWorldHeaderChunkSize)($at)
+    /* 4EC4 800146C4 5CEE228C */  lw         $v0, %lo(g_nCutsceneHeaderChunkSize)($at)
     /* 4EC8 800146C8 0880053C */  lui        $a1, %hi(g_pDrawBufA)
     /* 4ECC 800146CC D885A58C */  lw         $a1, %lo(g_pDrawBufA)($a1)
     /* 4ED0 800146D0 83120200 */  sra        $v0, $v0, 10
@@ -2640,15 +2640,15 @@ glabel TickWorldBundleLoadStream
     /* 4F00 80014700 D885A58C */  lw         $a1, %lo(g_pDrawBufA)($a1)
     /* 4F04 80014704 0780063C */  lui        $a2, %hi(g_nWorldTimAudioChunkSize)
     /* 4F08 80014708 046CC68C */  lw         $a2, %lo(g_nWorldTimAudioChunkSize)($a2)
-    /* 4F0C 8001470C 0780023C */  lui        $v0, %hi(g_nCurrentWorldId)
-    /* 4F10 80014710 6C56428C */  lw         $v0, %lo(g_nCurrentWorldId)($v0)
+    /* 4F0C 8001470C 0780023C */  lui        $v0, %hi(g_nCutsceneId)
+    /* 4F10 80014710 6C56428C */  lw         $v0, %lo(g_nCutsceneId)($v0)
     /* 4F14 80014714 2130C300 */  addu       $a2, $a2, $v1
     /* 4F18 80014718 C0100200 */  sll        $v0, $v0, 3
     /* 4F1C 8001471C 0780033C */  lui        $v1, %hi(g_nWorldTimAudioChunkOffset)
     /* 4F20 80014720 006C638C */  lw         $v1, %lo(g_nWorldTimAudioChunkOffset)($v1)
-    /* 4F24 80014724 0880013C */  lui        $at, %hi(g_nWorldArchiveOffset)
+    /* 4F24 80014724 0880013C */  lui        $at, %hi(g_nCutsceneArchiveOffset)
     /* 4F28 80014728 21082200 */  addu       $at, $at, $v0
-    /* 4F2C 8001472C E8A6278C */  lw         $a3, %lo(g_nWorldArchiveOffset)($at)
+    /* 4F2C 8001472C E8A6278C */  lw         $a3, %lo(g_nCutsceneArchiveOffset)($at)
     /* 4F30 80014730 58020224 */  addiu      $v0, $zero, 0x258
     /* 4F34 80014734 1000A2AF */  sw         $v0, 0x10($sp)
     /* 4F38 80014738 21186700 */  addu       $v1, $v1, $a3
@@ -2677,16 +2677,16 @@ glabel TickWorldBundleLoadStream
     /* 4F8C 8001478C 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
     /* 4F90 80014790 0880053C */  lui        $a1, %hi(g_pDrawBufB)
     /* 4F94 80014794 DC85A58C */  lw         $a1, %lo(g_pDrawBufB)($a1)
-    /* 4F98 80014798 0780023C */  lui        $v0, %hi(g_nCurrentWorldId)
-    /* 4F9C 8001479C 6C56428C */  lw         $v0, %lo(g_nCurrentWorldId)($v0)
+    /* 4F98 80014798 0780023C */  lui        $v0, %hi(g_nCutsceneId)
+    /* 4F9C 8001479C 6C56428C */  lw         $v0, %lo(g_nCutsceneId)($v0)
     /* 4FA0 800147A0 0780063C */  lui        $a2, %hi(g_nWorldBundleChunkSize)
     /* 4FA4 800147A4 0C6CC68C */  lw         $a2, %lo(g_nWorldBundleChunkSize)($a2)
     /* 4FA8 800147A8 0780033C */  lui        $v1, %hi(g_nWorldBundleChunkOffset)
     /* 4FAC 800147AC 086C638C */  lw         $v1, %lo(g_nWorldBundleChunkOffset)($v1)
     /* 4FB0 800147B0 C0100200 */  sll        $v0, $v0, 3
-    /* 4FB4 800147B4 0880013C */  lui        $at, %hi(g_nWorldArchiveOffset)
+    /* 4FB4 800147B4 0880013C */  lui        $at, %hi(g_nCutsceneArchiveOffset)
     /* 4FB8 800147B8 21082200 */  addu       $at, $at, $v0
-    /* 4FBC 800147BC E8A6278C */  lw         $a3, %lo(g_nWorldArchiveOffset)($at)
+    /* 4FBC 800147BC E8A6278C */  lw         $a3, %lo(g_nCutsceneArchiveOffset)($at)
     /* 4FC0 800147C0 58020224 */  addiu      $v0, $zero, 0x258
     /* 4FC4 800147C4 1000A2AF */  sw         $v0, 0x10($sp)
     /* 4FC8 800147C8 A659000C */  jal        StartCdReadAsync
@@ -2700,8 +2700,8 @@ glabel TickWorldBundleLoadStream
     /* 4FE4 800147E4 DC85848C */  lw         $a0, %lo(g_pDrawBufB)($a0)
     /* 4FE8 800147E8 564B000C */  jal        UnpackWorldDataChunks
     /* 4FEC 800147EC 01000524 */   addiu     $a1, $zero, 0x1
-    /* 4FF0 800147F0 0780033C */  lui        $v1, %hi(g_nCurrentWorldId)
-    /* 4FF4 800147F4 6C56638C */  lw         $v1, %lo(g_nCurrentWorldId)($v1)
+    /* 4FF0 800147F0 0780033C */  lui        $v1, %hi(g_nCutsceneId)
+    /* 4FF4 800147F4 6C56638C */  lw         $v1, %lo(g_nCutsceneId)($v1)
     /* 4FF8 800147F8 0780073C */  lui        $a3, %hi(g_nWorldCollisionTriCount)
     /* 4FFC 800147FC 8077E724 */  addiu      $a3, $a3, %lo(g_nWorldCollisionTriCount)
     /* 5000 80014800 0880063C */  lui        $a2, %hi(g_nWorldRenderMeshChunkCount)
@@ -2737,16 +2737,16 @@ glabel TickWorldBundleLoadStream
   .L80014874:
     /* 5074 80014874 0780043C */  lui        $a0, %hi(g_nCdBaseLba)
     /* 5078 80014878 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
-    /* 507C 8001487C 0780023C */  lui        $v0, %hi(g_nCurrentWorldId)
-    /* 5080 80014880 6C56428C */  lw         $v0, %lo(g_nCurrentWorldId)($v0)
+    /* 507C 8001487C 0780023C */  lui        $v0, %hi(g_nCutsceneId)
+    /* 5080 80014880 6C56428C */  lw         $v0, %lo(g_nCutsceneId)($v0)
     /* 5084 80014884 0880053C */  lui        $a1, %hi(g_pWorldUnpackHead)
     /* 5088 80014888 E085A58C */  lw         $a1, %lo(g_pWorldUnpackHead)($a1)
     /* 508C 8001488C 0780033C */  lui        $v1, %hi(g_nWorldDataExtChunkOffset)
     /* 5090 80014890 106C638C */  lw         $v1, %lo(g_nWorldDataExtChunkOffset)($v1)
     /* 5094 80014894 C0100200 */  sll        $v0, $v0, 3
-    /* 5098 80014898 0880013C */  lui        $at, %hi(g_nWorldArchiveOffset)
+    /* 5098 80014898 0880013C */  lui        $at, %hi(g_nCutsceneArchiveOffset)
     /* 509C 8001489C 21082200 */  addu       $at, $at, $v0
-    /* 50A0 800148A0 E8A6278C */  lw         $a3, %lo(g_nWorldArchiveOffset)($at)
+    /* 50A0 800148A0 E8A6278C */  lw         $a3, %lo(g_nCutsceneArchiveOffset)($at)
     /* 50A4 800148A4 58020224 */  addiu      $v0, $zero, 0x258
     /* 50A8 800148A8 1000A2AF */  sw         $v0, 0x10($sp)
     /* 50AC 800148AC A659000C */  jal        StartCdReadAsync
@@ -2765,16 +2765,16 @@ glabel TickWorldBundleLoadStream
     /* 50DC 800148DC 146C298D */  lw         $t1, %lo(g_nWorldDataExtChunkSize)($t1)
     /* 50E0 800148E0 0780043C */  lui        $a0, %hi(g_nCdBaseLba)
     /* 50E4 800148E4 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
-    /* 50E8 800148E8 0780023C */  lui        $v0, %hi(g_nCurrentWorldId)
-    /* 50EC 800148EC 6C56428C */  lw         $v0, %lo(g_nCurrentWorldId)($v0)
+    /* 50E8 800148E8 0780023C */  lui        $v0, %hi(g_nCutsceneId)
+    /* 50EC 800148EC 6C56428C */  lw         $v0, %lo(g_nCutsceneId)($v0)
     /* 50F0 800148F0 0780033C */  lui        $v1, %hi(g_nWorldDataExtChunkOffset)
     /* 50F4 800148F4 106C638C */  lw         $v1, %lo(g_nWorldDataExtChunkOffset)($v1)
     /* 50F8 800148F8 2128A900 */  addu       $a1, $a1, $t1
     /* 50FC 800148FC 2128A800 */  addu       $a1, $a1, $t0
     /* 5100 80014900 C0100200 */  sll        $v0, $v0, 3
-    /* 5104 80014904 0880013C */  lui        $at, %hi(g_nWorldArchiveOffset)
+    /* 5104 80014904 0880013C */  lui        $at, %hi(g_nCutsceneArchiveOffset)
     /* 5108 80014908 21082200 */  addu       $at, $at, $v0
-    /* 510C 8001490C E8A6278C */  lw         $a3, %lo(g_nWorldArchiveOffset)($at)
+    /* 510C 8001490C E8A6278C */  lw         $a3, %lo(g_nCutsceneArchiveOffset)($at)
     /* 5110 80014910 58020224 */  addiu      $v0, $zero, 0x258
     /* 5114 80014914 21186900 */  addu       $v1, $v1, $t1
     /* 5118 80014918 1000A2AF */  sw         $v0, 0x10($sp)
@@ -2830,14 +2830,14 @@ glabel TickWorldBundleLoadStream
     /* 51D4 800149D4 048622AC */  sw         $v0, %lo(g_nLevelArchiveByteSize)($at)
     /* 51D8 800149D8 0880063C */  lui        $a2, %hi(g_nLevelArchiveByteSize)
     /* 51DC 800149DC 0486C68C */  lw         $a2, %lo(g_nLevelArchiveByteSize)($a2)
-    /* 51E0 800149E0 0780023C */  lui        $v0, %hi(g_nCurrentWorldId)
-    /* 51E4 800149E4 6C56428C */  lw         $v0, %lo(g_nCurrentWorldId)($v0)
+    /* 51E0 800149E0 0780023C */  lui        $v0, %hi(g_nCutsceneId)
+    /* 51E4 800149E4 6C56428C */  lw         $v0, %lo(g_nCutsceneId)($v0)
     /* 51E8 800149E8 0880013C */  lui        $at, %hi(g_nLevelArchiveBaseLba)
     /* 51EC 800149EC 008623AC */  sw         $v1, %lo(g_nLevelArchiveBaseLba)($at)
     /* 51F0 800149F0 C0100200 */  sll        $v0, $v0, 3
-    /* 51F4 800149F4 0880013C */  lui        $at, %hi(g_nWorldArchiveOffset)
+    /* 51F4 800149F4 0880013C */  lui        $at, %hi(g_nCutsceneArchiveOffset)
     /* 51F8 800149F8 21082200 */  addu       $at, $at, $v0
-    /* 51FC 800149FC E8A6278C */  lw         $a3, %lo(g_nWorldArchiveOffset)($at)
+    /* 51FC 800149FC E8A6278C */  lw         $a3, %lo(g_nCutsceneArchiveOffset)($at)
     /* 5200 80014A00 58020224 */  addiu      $v0, $zero, 0x258
     /* 5204 80014A04 1000A2AF */  sw         $v0, 0x10($sp)
     /* 5208 80014A08 A659000C */  jal        StartCdReadAsync
@@ -2937,7 +2937,7 @@ glabel TickWorldBundleLoadStream
     /* 5364 80014B64 4000BD27 */  addiu      $sp, $sp, 0x40
     /* 5368 80014B68 0800E003 */  jr         $ra
     /* 536C 80014B6C 00000000 */   nop
-endlabel TickWorldBundleLoadStream
+endlabel TickCutsceneBundleLoadStream
 .endif
 
 .section .text.TickDragonRescueAssetStream, "ax"
@@ -4569,10 +4569,10 @@ glabel TickLevelTransitionStream
     /* 6B78 80016378 385820AC */  sw         $zero, %lo(g_anLevelEscapeRunCount)($at)
     /* 6B7C 8001637C 0780013C */  lui        $at, %hi(g_nLevelEscapeRunCountLane1)
     /* 6B80 80016380 3C5820AC */  sw         $zero, %lo(g_nLevelEscapeRunCountLane1)($at)
-    /* 6B84 80016384 0780013C */  lui        $at, %hi(g_nLevelUnreadScratchA)
-    /* 6B88 80016388 705620AC */  sw         $zero, %lo(g_nLevelUnreadScratchA)($at)
-    /* 6B8C 8001638C 0780013C */  lui        $at, %hi(g_nLevelUnreadScratchB)
-    /* 6B90 80016390 745620AC */  sw         $zero, %lo(g_nLevelUnreadScratchB)($at)
+    /* 6B84 80016384 0780013C */  lui        $at, %hi(g_nLevelVortexSeen1)
+    /* 6B88 80016388 705620AC */  sw         $zero, %lo(g_nLevelVortexSeen1)($at)
+    /* 6B8C 8001638C 0780013C */  lui        $at, %hi(g_nLevelVortexSeen2)
+    /* 6B90 80016390 745620AC */  sw         $zero, %lo(g_nLevelVortexSeen2)($at)
     /* 6B94 80016394 0780013C */  lui        $at, %hi(g_bLevelUseShortReleaseAnim)
     /* 6B98 80016398 7C5720AC */  sw         $zero, %lo(g_bLevelUseShortReleaseAnim)($at)
     /* 6B9C 8001639C 0780013C */  lui        $at, %hi(g_bLevelBossDefeated)
@@ -30564,8 +30564,8 @@ glabel BeginCutscene
     /* 1DB3C 8002D33C 0E000224 */  addiu      $v0, $zero, 0xE
     /* 1DB40 8002D340 0780033C */  lui        $v1, %hi(g_pPathTableHead)
     /* 1DB44 8002D344 8056638C */  lw         $v1, %lo(g_pPathTableHead)($v1)
-    /* 1DB48 8002D348 0780043C */  lui        $a0, %hi(g_nCurrentWorldId)
-    /* 1DB4C 8002D34C 6C56848C */  lw         $a0, %lo(g_nCurrentWorldId)($a0)
+    /* 1DB48 8002D348 0780043C */  lui        $a0, %hi(g_nCutsceneId)
+    /* 1DB4C 8002D34C 6C56848C */  lw         $a0, %lo(g_nCutsceneId)($a0)
     /* 1DB50 8002D350 01000524 */  addiu      $a1, $zero, 0x1
     /* 1DB54 8002D354 1000BFAF */  sw         $ra, 0x10($sp)
     /* 1DB58 8002D358 0780013C */  lui        $at, %hi(g_nGamestate)
@@ -30596,9 +30596,9 @@ glabel BeginCutscene
     /* 1DBB8 8002D3B8 80100400 */  sll        $v0, $a0, 2
     /* 1DBBC 8002D3BC 0780033C */  lui        $v1, %hi(g_pLevelSampleBankEntries)
     /* 1DBC0 8002D3C0 D061638C */  lw         $v1, %lo(g_pLevelSampleBankEntries)($v1)
-    /* 1DBC4 8002D3C4 0780013C */  lui        $at, %hi(g_nWorldCutsceneSamplePitch)
+    /* 1DBC4 8002D3C4 0780013C */  lui        $at, %hi(g_nCutsceneSamplePitch)
     /* 1DBC8 8002D3C8 21082200 */  addu       $at, $at, $v0
-    /* 1DBCC 8002D3CC 6CEE228C */  lw         $v0, %lo(g_nWorldCutsceneSamplePitch)($at)
+    /* 1DBCC 8002D3CC 6CEE228C */  lw         $v0, %lo(g_nCutsceneSamplePitch)($at)
     /* 1DBD0 8002D3D0 00000000 */  nop
     /* 1DBD4 8002D3D4 0A0062A4 */  sh         $v0, 0xA($v1)
     /* 1DBD8 8002D3D8 0780023C */  lui        $v0, %hi(g_pLevelSampleBankEntries)
@@ -30635,8 +30635,8 @@ endlabel BeginCutscene
 nonmatching DispatchSpecialCutscene, 0x114
 
 glabel DispatchSpecialCutscene
-    /* 1DC40 8002D440 0780033C */  lui        $v1, %hi(g_nCurrentWorldId)
-    /* 1DC44 8002D444 6C56638C */  lw         $v1, %lo(g_nCurrentWorldId)($v1)
+    /* 1DC40 8002D440 0780033C */  lui        $v1, %hi(g_nCutsceneId)
+    /* 1DC44 8002D444 6C56638C */  lw         $v1, %lo(g_nCutsceneId)($v1)
     /* 1DC48 8002D448 D8FFBD27 */  addiu      $sp, $sp, -0x28
     /* 1DC4C 8002D44C 1C00B1AF */  sw         $s1, 0x1C($sp)
     /* 1DC50 8002D450 01001124 */  addiu      $s1, $zero, 0x1
@@ -31728,14 +31728,14 @@ glabel PauseMenu_Update
     /* 1EB14 8002E314 58020224 */  addiu      $v0, $zero, 0x258
     /* 1EB18 8002E318 0780013C */  lui        $at, %hi(g_nCdStreamState)
     /* 1EB1C 8002E31C 645820AC */  sw         $zero, %lo(g_nCdStreamState)($at)
-    /* 1EB20 8002E320 0780013C */  lui        $at, %hi(g_nCurrentWorldId)
-    /* 1EB24 8002E324 6C5620AC */  sw         $zero, %lo(g_nCurrentWorldId)($at)
+    /* 1EB20 8002E320 0780013C */  lui        $at, %hi(g_nCutsceneId)
+    /* 1EB24 8002E324 6C5620AC */  sw         $zero, %lo(g_nCutsceneId)($at)
     /* 1EB28 8002E328 4059000C */  jal        CdReadSyncSectors
     /* 1EB2C 8002E32C 1000A2AF */   sw        $v0, 0x10($sp)
     /* 1EB30 8002E330 D2B80008 */  j          .L8002E348
     /* 1EB34 8002E334 00000000 */   nop
   .L8002E338:
-    /* 1EB38 8002E338 5951000C */  jal        TickWorldBundleLoadStream
+    /* 1EB38 8002E338 5951000C */  jal        TickCutsceneBundleLoadStream
     /* 1EB3C 8002E33C 00000000 */   nop
     /* 1EB40 8002E340 F8AE000C */  jal        TickCdMusicStream
     /* 1EB44 8002E344 00000000 */   nop
@@ -36632,8 +36632,8 @@ glabel Title_Update
     /* 23364 80032B64 00000000 */   nop
     /* 23368 80032B68 0180023C */  lui        $v0, %hi(g_pSharedLoadBuffer)
     /* 2336C 80032B6C A013428C */  lw         $v0, %lo(g_pSharedLoadBuffer)($v0)
-    /* 23370 80032B70 0780013C */  lui        $at, %hi(g_nCurrentWorldId)
-    /* 23374 80032B74 6C5630AC */  sw         $s0, %lo(g_nCurrentWorldId)($at)
+    /* 23370 80032B70 0780013C */  lui        $at, %hi(g_nCutsceneId)
+    /* 23374 80032B74 6C5630AC */  sw         $s0, %lo(g_nCutsceneId)($at)
     /* 23378 80032B78 0780013C */  lui        $at, %hi(g_nCdStreamState)
     /* 2337C 80032B7C 645820AC */  sw         $zero, %lo(g_nCdStreamState)($at)
     /* 23380 80032B80 0880013C */  lui        $at, %hi(g_pDrawBufA)
@@ -36739,7 +36739,7 @@ glabel Title_Update
     /* 234FC 80032CFC 17004010 */  beqz       $v0, .L80032D5C
     /* 23500 80032D00 02000224 */   addiu     $v0, $zero, 0x2
   .L80032D04:
-    /* 23504 80032D04 5951000C */  jal        TickWorldBundleLoadStream
+    /* 23504 80032D04 5951000C */  jal        TickCutsceneBundleLoadStream
     /* 23508 80032D08 00000000 */   nop
     /* 2350C 80032D0C F8AE000C */  jal        TickCdMusicStream
     /* 23510 80032D10 00000000 */   nop
@@ -36948,7 +36948,7 @@ glabel Title_Update
     /* 23810 80033010 07004228 */  slti       $v0, $v0, 0x7
     /* 23814 80033014 03004010 */  beqz       $v0, .L80033024
     /* 23818 80033018 00000000 */   nop
-    /* 2381C 8003301C 5951000C */  jal        TickWorldBundleLoadStream
+    /* 2381C 8003301C 5951000C */  jal        TickCutsceneBundleLoadStream
     /* 23820 80033020 00000000 */   nop
   .L80033024:
     /* 23824 80033024 0880023C */  lui        $v0, %hi(g_nStoryIntroTimer)
@@ -36985,7 +36985,7 @@ glabel Title_Update
     /* 238A0 800330A0 2ECC0008 */  j          .L800330B8
     /* 238A4 800330A4 00000000 */   nop
   .L800330A8:
-    /* 238A8 800330A8 5951000C */  jal        TickWorldBundleLoadStream
+    /* 238A8 800330A8 5951000C */  jal        TickCutsceneBundleLoadStream
     /* 238AC 800330AC 00000000 */   nop
     /* 238B0 800330B0 F8AE000C */  jal        TickCdMusicStream
     /* 238B4 800330B4 00000000 */   nop
@@ -37064,8 +37064,8 @@ endlabel Title_Update
 nonmatching Cutscene_Update, 0x230
 
 glabel Cutscene_Update
-    /* 239AC 800331AC 0780023C */  lui        $v0, %hi(g_nCurrentWorldId)
-    /* 239B0 800331B0 6C56428C */  lw         $v0, %lo(g_nCurrentWorldId)($v0)
+    /* 239AC 800331AC 0780023C */  lui        $v0, %hi(g_nCutsceneId)
+    /* 239B0 800331B0 6C56428C */  lw         $v0, %lo(g_nCutsceneId)($v0)
     /* 239B4 800331B4 E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 239B8 800331B8 02004228 */  slti       $v0, $v0, 0x2
     /* 239BC 800331BC 3C004014 */  bnez       $v0, .L800332B0
@@ -37096,8 +37096,8 @@ glabel Cutscene_Update
     /* 23A20 80033220 21200000 */   addu      $a0, $zero, $zero
     /* 23A24 80033224 0180023C */  lui        $v0, %hi(g_pSharedLoadBuffer)
     /* 23A28 80033228 A013428C */  lw         $v0, %lo(g_pSharedLoadBuffer)($v0)
-    /* 23A2C 8003322C 0780033C */  lui        $v1, %hi(g_nCurrentWorldId)
-    /* 23A30 80033230 6C56638C */  lw         $v1, %lo(g_nCurrentWorldId)($v1)
+    /* 23A2C 8003322C 0780033C */  lui        $v1, %hi(g_nCutsceneId)
+    /* 23A30 80033230 6C56638C */  lw         $v1, %lo(g_nCutsceneId)($v1)
     /* 23A34 80033234 0780013C */  lui        $at, %hi(g_nCdStreamState)
     /* 23A38 80033238 645820AC */  sw         $zero, %lo(g_nCdStreamState)($at)
     /* 23A3C 8003323C 0880013C */  lui        $at, %hi(g_pDrawBufA)
@@ -37118,7 +37118,7 @@ glabel Cutscene_Update
     /* 23A78 80033278 A4CC0008 */  j          .L80033290
     /* 23A7C 8003327C 00000000 */   nop
   .L80033280:
-    /* 23A80 80033280 5951000C */  jal        TickWorldBundleLoadStream
+    /* 23A80 80033280 5951000C */  jal        TickCutsceneBundleLoadStream
     /* 23A84 80033284 00000000 */   nop
     /* 23A88 80033288 F8AE000C */  jal        TickCdMusicStream
     /* 23A8C 8003328C 00000000 */   nop
@@ -37169,8 +37169,8 @@ glabel Cutscene_Update
     /* 23B2C 8003332C 0780013C */  lui        $at, %hi(g_nScreenFadeLevel)
     /* 23B30 80033330 185922AC */  sw         $v0, %lo(g_nScreenFadeLevel)($at)
   .L80033334:
-    /* 23B34 80033334 0780033C */  lui        $v1, %hi(g_nCurrentWorldId)
-    /* 23B38 80033338 6C56638C */  lw         $v1, %lo(g_nCurrentWorldId)($v1)
+    /* 23B34 80033334 0780033C */  lui        $v1, %hi(g_nCutsceneId)
+    /* 23B38 80033338 6C56638C */  lw         $v1, %lo(g_nCutsceneId)($v1)
     /* 23B3C 8003333C 01000224 */  addiu      $v0, $zero, 0x1
     /* 23B40 80033340 18006214 */  bne        $v1, $v0, .L800333A4
     /* 23B44 80033344 00000000 */   nop
@@ -37405,8 +37405,8 @@ glabel TickDemoPlayback
     /* 23E64 80033664 145720AC */  sw         $zero, %lo(g_nDemoMode)($at)
     /* 23E68 80033668 0780013C */  lui        $at, %hi(g_nCdStreamState)
     /* 23E6C 8003366C 645820AC */  sw         $zero, %lo(g_nCdStreamState)($at)
-    /* 23E70 80033670 0780013C */  lui        $at, %hi(g_nCurrentWorldId)
-    /* 23E74 80033674 6C5620AC */  sw         $zero, %lo(g_nCurrentWorldId)($at)
+    /* 23E70 80033670 0780013C */  lui        $at, %hi(g_nCutsceneId)
+    /* 23E74 80033674 6C5620AC */  sw         $zero, %lo(g_nCutsceneId)($at)
     /* 23E78 80033678 0780013C */  lui        $at, %hi(g_nFlightLevelActive)
     /* 23E7C 8003367C 905620AC */  sw         $zero, %lo(g_nFlightLevelActive)($at)
     /* 23E80 80033680 0780013C */  lui        $at, %hi(g_nDemoActive)
@@ -37416,7 +37416,7 @@ glabel TickDemoPlayback
     /* 23E90 80033690 AACD0008 */  j          .L800336A8
     /* 23E94 80033694 00000000 */   nop
   .L80033698:
-    /* 23E98 80033698 5951000C */  jal        TickWorldBundleLoadStream
+    /* 23E98 80033698 5951000C */  jal        TickCutsceneBundleLoadStream
     /* 23E9C 8003369C 00000000 */   nop
     /* 23EA0 800336A0 F8AE000C */  jal        TickCdMusicStream
     /* 23EA4 800336A4 00000000 */   nop
@@ -37468,8 +37468,8 @@ glabel TickDemoPlayback
     /* 23F58 80033758 080062A4 */  sh         $v0, 0x8($v1)
     /* 23F5C 8003375C 0780033C */  lui        $v1, %hi(g_pLevelSampleBankEntries)
     /* 23F60 80033760 D061638C */  lw         $v1, %lo(g_pLevelSampleBankEntries)($v1)
-    /* 23F64 80033764 0780023C */  lui        $v0, %hi(g_nWorldCutsceneSamplePitch)
-    /* 23F68 80033768 6CEE428C */  lw         $v0, %lo(g_nWorldCutsceneSamplePitch)($v0)
+    /* 23F64 80033764 0780023C */  lui        $v0, %hi(g_nCutsceneSamplePitch)
+    /* 23F68 80033768 6CEE428C */  lw         $v0, %lo(g_nCutsceneSamplePitch)($v0)
     /* 23F6C 8003376C 21280000 */  addu       $a1, $zero, $zero
     /* 23F70 80033770 0A0062A4 */  sh         $v0, 0xA($v1)
     /* 23F74 80033774 0780023C */  lui        $v0, %hi(g_pLevelSampleBankEntries)
@@ -46402,11 +46402,11 @@ glabel PickupGroupHasLiveActor
 endlabel PickupGroupHasLiveActor
 .endif
 
-.section .text.IsPickupGroupAllType, "ax"
-.ifndef HAVE_C_IsPickupGroupAllType
-nonmatching IsPickupGroupAllType, 0x88
+.section .text.IsPickupGroupAllInMode, "ax"
+.ifndef HAVE_C_IsPickupGroupAllInMode
+nonmatching IsPickupGroupAllInMode, 0x88
 
-glabel IsPickupGroupAllType
+glabel IsPickupGroupAllInMode
     /* 2B960 8003B160 0780023C */  lui        $v0, %hi(g_nLevelPickupTableCount)
     /* 2B964 8003B164 B457428C */  lw         $v0, %lo(g_nLevelPickupTableCount)($v0)
     /* 2B968 8003B168 00000000 */  nop
@@ -46444,7 +46444,7 @@ glabel IsPickupGroupAllType
   .L8003B1E0:
     /* 2B9E0 8003B1E0 0800E003 */  jr         $ra
     /* 2B9E4 8003B1E4 00000000 */   nop
-endlabel IsPickupGroupAllType
+endlabel IsPickupGroupAllInMode
 .endif
 
 .section .text.SetActorGroupState, "ax"
