@@ -63,7 +63,7 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
   rec->poolIndex = owner;
 
   switch (type) {
-  case 0xF: {
+  case ACTOR_TYPE_SPARX_FOOD: {
     PickupDropState *st = rec->state;
 
     InitActorRenderDefaults(rec);
@@ -95,7 +95,7 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x10: {
+  case ACTOR_TYPE_BUTTERFLY: {
     ButterflyState *st = rec->state;
     int *pos;
 
@@ -111,7 +111,7 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x22:
+  case ACTOR_TYPE_DRAGON_EGG:
     InitActorRenderDefaults(rec);
     rec->cullRadius = 0x20;
     rec->updateDist = 0xFF;
@@ -121,8 +121,8 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     HideActorRenderRecord(rec);
     break;
 
-  case 0xE:
-  case 0x53 ... 0x57: {
+  case ACTOR_TYPE_EXTRA_LIFE:
+  case ACTOR_TYPE_GEM_1 ... ACTOR_TYPE_GEM_25: {
     PickupDropState *st = rec->state;
     int *pos;
     int probe[3];
@@ -180,7 +180,7 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x78: {
+  case ACTOR_TYPE_SPARX: {
     SparxState *st = rec->state;
 
     InitActorRenderDefaults(rec);
@@ -209,10 +209,10 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     rec->tintMode = 0xD;
     break;
 
-  case 0x43 ... 0x45:
-  case 0x97:
-  case 0xFF ... 0x101:
-  case 0x135 ... 0x137: {
+  case ACTOR_TYPE_SEED_POD_SHARD ... ACTOR_TYPE_SEED_POD_SHARD + 2:
+  case ACTOR_TYPE_BOULDER_DEBRIS:
+  case ACTOR_TYPE_WOOD_CHEST_SHARD ... ACTOR_TYPE_WOOD_CHEST_SHARD + 2:
+  case ACTOR_TYPE_SPARKLE_SHARD ... ACTOR_TYPE_SPARKLE_SHARD + 2: {
     FragmentState *st = rec->state;
     int yaw;
     int pitch;
@@ -246,7 +246,7 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0xFB: {
+  case ACTOR_TYPE_STATUE_SHARD: {
     BurstShardState *st = rec->state;
     int dir[3];
     int i;
@@ -304,7 +304,7 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x127: {
+  case ACTOR_TYPE_HOMING_WISP: {
     int *st = rec->state;
     int turn;
     int dx;
@@ -345,7 +345,7 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     InsertActorIntoSpatialGrid(rec);
     break;
   }
-  case 0x130: {
+  case ACTOR_TYPE_WAYPOINT_RUNNER: {
     AimState *st = rec->state;
     AimState *pst = parent->state;
     int *pos;
@@ -380,7 +380,7 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     InsertActorIntoSpatialGrid(rec);
     break;
   }
-  case 0x188:
+  case ACTOR_TYPE_HOMING_SPARK:
     InitActorRenderDefaults(rec);
     rec->otBias = 5;
     if (parent != 0) {
@@ -418,8 +418,8 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x4C:
-  case 0x1AA ... 0x1C3:
+  case ACTOR_TYPE_GLYPH_COMMA:
+  case ACTOR_TYPE_LETTER_A ... ACTOR_TYPE_LETTER_A + 25:
     InitActorRenderDefaults(rec);
     rec->cullRadius = 0x20;
     rec->updateDist = 0xFF;
