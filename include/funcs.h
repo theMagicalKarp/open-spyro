@@ -2066,11 +2066,11 @@ int SteerActorAroundPoint(int *actor, int *tgt, int radius, int face, int deadzo
 
 /* 0x80039e94: Path-follow that turns in place while the heading error exceeds
  * `lim`, then walks; returns 0x100 + node index on arrival. */
-int PivotActorAlongPath();
+int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed, int group, int step, int lim, int kind, int flags);
 
 /* 0x8003a16c: Path-follow steering step with clamped yaw, pitch toward the
  * waypoint, optional contact probe and ground snap; returns 0x100 + index on arrival. */
-int SteerActorAlongWaypoints(char *actor, unsigned char *path, int radius, int speed, int contact, int clamp, int limit, int *yawp);
+int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius, int speed, int contact, int clamp, int limit, int *yawp);
 
 /* 0x8003a420: Ground-walking path follow: clamped turn, matrix-rotated move,
  * ground contact, waypoint advance. */
