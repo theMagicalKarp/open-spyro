@@ -47,10 +47,10 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
 
   id = src->dropKind & 0x7f;
   if ((unsigned int)(id - 1) < 0x7e) {
-    if (src->killGroup & 0x80) {
+    if (src->killGroup & ACTOR_KILL_DROPPED) {
       return 0;
     }
-    src->killGroup |= 0x80;
+    src->killGroup |= ACTOR_KILL_DROPPED;
   } else {
     int roll;
     id = ACTOR_TYPE_SPARX_FOOD;

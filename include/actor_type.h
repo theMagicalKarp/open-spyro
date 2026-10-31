@@ -101,6 +101,15 @@ typedef struct Actor {
 #define ACTOR_MODE_DORMANT 0x80
 #define ACTOR_MODE_END 0xFF
 
+/* Actor.animFlags bits (AdvanceActorAnimation). */
+#define ACTOR_ANIM_NEW_FRAME 0x01 /* stepped onto a new frame this tick */
+#define ACTOR_ANIM_DONE 0x02      /* the animation finished (g_nActorAnimDone) */
+/* Actor.groundCode bit 31: the packed contact is valid. */
+#define ACTOR_GROUND_VALID 0x80000000
+/* Actor.killGroup: the group number, and bit 7, which latches the death drop. */
+#define ACTOR_KILL_GROUP_MASK 0x7F
+#define ACTOR_KILL_DROPPED 0x80
+
 #define ACTOR_SIZE 0x58
 typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
 

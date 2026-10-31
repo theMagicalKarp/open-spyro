@@ -268,8 +268,8 @@ void Level14_UpdateActors(void) {
       continue;
     }
 
-    g_nActorAnimDone = actor->animFlags & 2;
-    g_nActorAnimNewFrame = actor->animFlags & 1;
+    g_nActorAnimDone = actor->animFlags & ACTOR_ANIM_DONE;
+    g_nActorAnimNewFrame = actor->animFlags & ACTOR_ANIM_NEW_FRAME;
     dt = g_nFrameStep;
     g_nActorFrameDelta = dt;
 
@@ -2473,7 +2473,7 @@ void Level14_UpdateActors(void) {
                 RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
                 FindGroundHeightBelow(&actor->posX, 0x1000);
                 EncodeCachedVecToActorDirCode(actor);
-                actor->groundCode |= 0x80000000;
+                actor->groundCode |= ACTOR_GROUND_VALID;
               }
             }
           }
@@ -2597,7 +2597,7 @@ void Level14_UpdateActors(void) {
 
           g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, (void *)0xC);
 
-          actor->groundCode &= 0x7FFFFFFF;
+          actor->groundCode &= ~ACTOR_GROUND_VALID;
         }
         break;
       }
@@ -4652,7 +4652,7 @@ void Level14_UpdateActors(void) {
 
         CopyVector(&p->posX, p->state);
         InsertActorIntoSpatialGrid(p);
-        p->killGroup &= 0x7F;
+        p->killGroup &= ACTOR_KILL_GROUP_MASK;
         p->flags = 0;
         p->mode = 0;
         p->frameProgress = 0;
@@ -4826,7 +4826,7 @@ void Level14_UpdateActors(void) {
             g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, s512, s528);
           }
           DespawnActorRecord(st->prize);
-          actor->killGroup &= 0x7F;
+          actor->killGroup &= ACTOR_KILL_GROUP_MASK;
           actor->updateDist = 0x10;
           actor->rotX = st->rotX;
           actor->rotY = st->rotY;
