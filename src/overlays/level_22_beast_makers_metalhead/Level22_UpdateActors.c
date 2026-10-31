@@ -704,7 +704,7 @@ void Level22_UpdateActors(void) {
       }
       st->lodHandle = SelectActorLodBand(actor, st->lodHandle);
       actor->flags = 0;
-      if (actor->mode < 10) {
+      if (actor->mode < METALHEAD_PHASE_TURN) {
         if (st->phase == 0) {
           if (TickCountdownByFrameDelta(&st->camTimer, 4) != 0 &&
               (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x578
@@ -728,7 +728,7 @@ void Level22_UpdateActors(void) {
       }
       if (PickupGroupHasLiveActor(st->phase + 2) == 0 && actor->mode < 4) {
         ModifyWorldChunkAnimFlags(st->phase + 4, CHUNK_ANIM_RESUME, 0);
-        actor->mode = 10;
+        actor->mode = METALHEAD_PHASE_TURN;
         continue;
       }
       if (st->seen == 0 && dist < 0x6800) {
@@ -737,7 +737,7 @@ void Level22_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0: {
+      case METALHEAD_IDLE: {
         int sel;
         int d;
 
@@ -782,7 +782,7 @@ void Level22_UpdateActors(void) {
           }
           if (actor->subMode == 2) {
             actor->subMode = 0;
-            ENTER_POSE(actor, 1);
+            ENTER_POSE(actor, METALHEAD_STOMP);
           }
           continue;
 
@@ -791,7 +791,7 @@ void Level22_UpdateActors(void) {
               (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x3E8
                                  : -SPY_DZ(actor) < 0x3E8)) {
             st->shots = 0;
-            actor->mode = 2;
+            actor->mode = METALHEAD_SPRAY;
             continue;
           }
           st->choice = 0;
@@ -803,7 +803,7 @@ void Level22_UpdateActors(void) {
                                  : -SPY_DZ(actor) < 0x3E8)) {
             st->count = 0;
             CopyVector(st->aim, &g_anSpyroWorldPos);
-            actor->mode = 3;
+            actor->mode = METALHEAD_LOB;
             continue;
           }
           st->choice = 0;
@@ -812,16 +812,16 @@ void Level22_UpdateActors(void) {
         continue;
       }
 
-      case 1:
+      case METALHEAD_STOMP:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (g_nActorAnimDone != 0) {
           st->timer = 0x50;
           st->choice = 0;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, METALHEAD_IDLE);
         }
         continue;
 
-      case 2:
+      case METALHEAD_SPRAY:
         ANIM_GO(actor, 0xC);
         if ((unsigned)(actor->nextFrame - 5) < 0x10) {
           Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_POD_SHOT, actor);
@@ -853,11 +853,11 @@ void Level22_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           st->timer = 0x50;
           st->choice = 0;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, METALHEAD_IDLE);
         }
         continue;
 
-      case 3:
+      case METALHEAD_LOB:
         ANIM_GO(actor, 0xD);
         if ((unsigned)(actor->nextFrame - 4) < 5 && st->count >= 7) {
           Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_LOBBED_BOLT, actor);
@@ -883,11 +883,11 @@ void Level22_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           st->timer = 0x50;
           st->choice = 0;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, METALHEAD_IDLE);
         }
         continue;
 
-      case 10: {
+      case METALHEAD_PHASE_TURN: {
         int h = ArcTan2(PATH_X(st->path, st->path[1]) - actor->posX,
                               PATH_Y(st->path, st->path[1]) - actor->posY, 0);
 
@@ -895,7 +895,7 @@ void Level22_UpdateActors(void) {
         if (st->phase == 1) {
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
-          actor->mode = 0x14;
+          actor->mode = METALHEAD_DYING;
           continue;
         }
         ANIM_GO(actor, 4);
@@ -907,7 +907,7 @@ void Level22_UpdateActors(void) {
         continue;
       }
 
-      case 11:
+      case METALHEAD_PHASE_ROAR:
         ANIM_GO(actor, 8);
         if (g_nActorAnimDone != 0) {
           ANIM_THEN(actor, 9);
@@ -917,7 +917,7 @@ void Level22_UpdateActors(void) {
         }
         continue;
 
-      case 12:
+      case METALHEAD_PHASE_STAGGER:
         PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 3, 5, 0xFF, 5);
         if (TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
           actor->mode++;
@@ -925,7 +925,7 @@ void Level22_UpdateActors(void) {
         }
         continue;
 
-      case 13:
+      case METALHEAD_PHASE_RECOVER:
         ANIM_GO(actor, 0xA);
         if (g_nActorAnimDone != 0) {
           ANIM_THEN(actor, 5);
@@ -934,7 +934,7 @@ void Level22_UpdateActors(void) {
         }
         continue;
 
-      case 14:
+      case METALHEAD_PHASE_RUN:
         if (PivotActorAlongPath(actor, st->path, 0x15E, 0x118, 0, 8, 0x80, 0xFF, 5) ==
             st->pathEnd[st->phase] + 0x100) {
           actor->mode++;
@@ -942,17 +942,17 @@ void Level22_UpdateActors(void) {
         }
         continue;
 
-      case 15:
+      case METALHEAD_PHASE_ARRIVE:
         if (TrackEntityYawTowardSpyro(actor, 6, 4, 1) != 0) {
           actor->group = ++st->phase;
           SetActorGroupSubstate(actor, 1);
           actor->group = 0xFF;
           actor->subMode = 0;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, METALHEAD_IDLE);
         }
         continue;
 
-      case 20:
+      case METALHEAD_DYING:
         ANIM_GO(actor, 0xB);
         if (g_nActorAnimDone != 0) {
           ModifyWorldChunkAnimFlags(3, CHUNK_ANIM_RESUME, 0);

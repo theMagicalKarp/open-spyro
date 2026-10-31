@@ -3461,31 +3461,31 @@ void Level20_UpdateActors(void) {
       int d0 = ApproxDist2D(&actor->posX, &spy->posX);
 
       EBB_BREAK();
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 4 &&
-          actor->mode != 0x63) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != GRABBER_KNOCKED &&
+          actor->mode != GRABBER_HUSK) {
         Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_GRABBER, actor);
 
         CopyVector(&o->posX, &actor->posX);
-        o->mode = 0x63;
+        o->mode = GRABBER_HUSK;
         if (o->anim != 0xA) {
           ANIM_RESET(o, 0xA);
         }
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
         st->knockSpeed = 0x15E;
-        if (actor->mode >= 0xA) {
+        if (actor->mode >= GRABBER_SEIZE) {
           g_nSpyroDrawSuppressed = 0;
         }
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, 0),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
         st->knockZSpeed = 0xF0;
-        if (actor->mode != 0) {
+        if (actor->mode != GRABBER_LURK) {
           *st->held = 0;
         }
         PlayActorMeshVoice(actor, 1, 0);
         ANIM_SET(actor, 9);
-        actor->mode = 4;
+        actor->mode = GRABBER_KNOCKED;
         continue;
       }
       actor->flags = 0;
@@ -3495,7 +3495,7 @@ void Level20_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case GRABBER_LURK:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (d0 > 0x2C00) {
           st->grabChance = 0;
@@ -3531,7 +3531,7 @@ void Level20_UpdateActors(void) {
             *st->held = 1;
             st->timer = sixteen;
             StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-            actor->mode = 1;
+            actor->mode = GRABBER_RUSH;
             continue;
           }
           if (*st->held != 0) {
@@ -3540,7 +3540,7 @@ void Level20_UpdateActors(void) {
         }
         break;
 
-      case 1: {
+      case GRABBER_RUSH: {
         int d1 = ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos);
 
         if (d1 < 0xFA0) {
@@ -3557,7 +3557,7 @@ void Level20_UpdateActors(void) {
                                           spy->posY - actor->posY, 0),
                             0x15E, 0, 0, 0x15) != 0 ||
               spy->triggerEventId != 0) {
-            actor->mode = 2;
+            actor->mode = GRABBER_RETREAT;
             continue;
           }
           lp = g_apActiveActorList;
@@ -3576,14 +3576,14 @@ void Level20_UpdateActors(void) {
           }
           if (d1 < 0x44C) {
             st->hasSpyro = 0;
-            actor->mode = 0xA;
+            actor->mode = GRABBER_SEIZE;
             continue;
           }
         }
         break;
       }
 
-      case 2:
+      case GRABBER_RETREAT:
         ANIM_GO(actor, 3);
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(st->home[0] - actor->posX,
@@ -3597,11 +3597,11 @@ void Level20_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, st->home) < 0x100) {
           *st->held = 0;
           st->timer = 0x78;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, GRABBER_LURK);
         }
         break;
 
-      case 4:
+      case GRABBER_KNOCKED:
         actor->rotX += 4;
         actor->rotY += 4;
         if (DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0xE) == 3) {
@@ -3612,14 +3612,14 @@ void Level20_UpdateActors(void) {
         }
         break;
 
-      case 6:
+      case GRABBER_RECOVER:
         if (g_nActorAnimDone != 0) {
-          actor->mode = 1;
+          actor->mode = GRABBER_RUSH;
           continue;
         }
         break;
 
-      case 10: {
+      case GRABBER_SEIZE: {
         int dd = ApproxDist2D(&actor->posX, &spy->posX);
         int lim = 0x50;
         int v;
@@ -3642,7 +3642,7 @@ void Level20_UpdateActors(void) {
                                             SPY.posY - actor->posY, 0),
                               lim, 0, 0, 0x15) != 0 &&
                 g_nSpyroDrawSuppressed == 0) {
-              actor->mode = 2;
+              actor->mode = GRABBER_RETREAT;
               continue;
             }
           }
@@ -3657,11 +3657,11 @@ void Level20_UpdateActors(void) {
           g_nSpyroBodyYaw = (v & 0xFF) << 4;
           if (g_nSparxHealth == SPARX_GONE) {
             spy->triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_HIT);
-            actor->mode = 0xD;
+            actor->mode = GRABBER_DEVOUR;
             continue;
           }
           if (g_bLevelUseShortReleaseAnim != 0) {
-            actor->mode = 0xE;
+            actor->mode = GRABBER_THROW_SHORT;
             continue;
           }
           actor->mode++;
@@ -3669,7 +3669,7 @@ void Level20_UpdateActors(void) {
         break;
       }
 
-      case 11:
+      case GRABBER_CARRY:
         ANIM_GO(actor, 4);
         spy->posX = actor->posX;
         spy->posY = actor->posY;
@@ -3680,7 +3680,7 @@ void Level20_UpdateActors(void) {
         }
         break;
 
-      case 12:
+      case GRABBER_THROW:
         ANIM_GO(actor, 5);
         if (g_nSpyroDrawSuppressed != 0) {
           if (actor->nextFrame >= 0x29) {
@@ -3701,18 +3701,18 @@ void Level20_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           g_bLevelUseShortReleaseAnim = 1;
-          actor->mode = 2;
+          actor->mode = GRABBER_RETREAT;
           continue;
         }
         break;
 
-      case 13:
+      case GRABBER_DEVOUR:
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         ANIM_GO(actor, 8);
         g_dwSpyroTriggerEventFlags |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_HIT);
         break;
 
-      case 14:
+      case GRABBER_THROW_SHORT:
         ANIM_GO(actor, 7);
         if (g_nSpyroDrawSuppressed != 0) {
           if (actor->nextFrame >= 0x10) {
@@ -3732,12 +3732,12 @@ void Level20_UpdateActors(void) {
           }
         }
         if (g_nActorAnimDone != 0) {
-          actor->mode = 2;
+          actor->mode = GRABBER_RETREAT;
           continue;
         }
         break;
 
-      case 99:
+      case GRABBER_HUSK:
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);
           continue;

@@ -265,7 +265,7 @@ void Level1_UpdateActors(void) {
       EBB_BREAK();
       st = (PathState *)actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != 3) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != PATROLLER_KNOCKED) {
         actor->flags = 0;
         st->heading = ArcTan2(actor->posX - spy->posX,
                                     actor->posY - spy->posY, 0);
@@ -278,13 +278,13 @@ void Level1_UpdateActors(void) {
 
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        actor->mode = 3;
+        actor->mode = PATROLLER_KNOCKED;
         ANIM_RESET(actor, 3);
         continue;
       }
 
       switch (actor->mode) {
-      case 0: {
+      case PATROLLER_WAIT: {
         SnapActorToGround(actor);
 
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1400 &&
@@ -296,16 +296,16 @@ void Level1_UpdateActors(void) {
             while ((other = *scan++) != 0) {
               PathState *ost = (PathState *)other->state;
 
-              if (other->group == actor->group && other->mode == 0) {
+              if (other->group == actor->group && other->mode == PATROLLER_WAIT) {
                 if (ost->path->cur == st->path->cur) {
-                  other->mode = 1;
+                  other->mode = PATROLLER_PICK;
                   ost->startDelay = RandomIntInRange(6, 0x28);
                 }
               }
             }
           }
 
-          actor->mode = 1;
+          actor->mode = PATROLLER_PICK;
           continue;
         }
 
@@ -316,7 +316,7 @@ void Level1_UpdateActors(void) {
 
         break;
       }
-      case 1: {
+      case PATROLLER_PICK: {
         int spyroAngle;
         int angle;
         int angle2;
@@ -364,10 +364,10 @@ void Level1_UpdateActors(void) {
           st->travelTimer = 0x5A;
         }
 
-        actor->mode = 2;
+        actor->mode = PATROLLER_FLEE;
         continue;
       }
-      case 2: {
+      case PATROLLER_FLEE: {
         int distance = ApproxDist2D(&actor->posX,
                                      (int *)&st->path->nodes[st->path->cur]);
 
@@ -415,21 +415,21 @@ void Level1_UpdateActors(void) {
           }
           if (st->successCount >= 4 && g_nActorAnimDone != 0) {
             if (distance < 0x1400) {
-              actor->mode = 0;
+              actor->mode = PATROLLER_WAIT;
               continue;
             }
             st->heading = WrapAddAngle8(st->heading, RandomSignedInRange(0x3C, 0x64));
           }
         }
         if (distance < 0xC00 && g_nActorAnimDone != 0) {
-          actor->mode = 0;
+          actor->mode = PATROLLER_WAIT;
           continue;
         }
 
         break;
       }
 
-      case 3: {
+      case PATROLLER_KNOCKED: {
         if (st->speed >= 0x10) {
           st->speed -= 0xF;
           MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x2BC, 5);

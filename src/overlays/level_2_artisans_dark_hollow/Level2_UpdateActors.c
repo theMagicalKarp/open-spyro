@@ -1777,7 +1777,7 @@ void Level2_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       EBB_BREAK();
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2 &&
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != POSTGUARD_KNOCKED &&
           (actor->flags != ACTOR_HIT_FLAME || st->flag == 0)) {
         st->time = 0x8C;
         st->speed = 0x118;
@@ -1795,12 +1795,12 @@ void Level2_UpdateActors(void) {
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, POSTGUARD_KNOCKED);
       }
 
       actor->flags = 0;
       switch (actor->mode) {
-      case 0:
+      case POSTGUARD_IDLE:
         switch (st->mode) {
         case 0:
           if (ApproxDist2D(&spy->posX, &st->path->pts[0]) < 0x1C00) {
@@ -1812,7 +1812,7 @@ void Level2_UpdateActors(void) {
                 ApproxDist2D(&actor->posX, &spy->posX) >
                     ApproxDist2D(&actor->posX, &st->path->pts[0])) {
               st->path->sel = 0;
-              actor->mode = 3;
+              actor->mode = POSTGUARD_TO_POST;
               continue;
             }
           } else if (ApproxDist2D(&spy->posX, &st->path->pts[1]) < 0x1C00) {
@@ -1824,7 +1824,7 @@ void Level2_UpdateActors(void) {
                 ApproxDist2D(&actor->posX, &spy->posX) >
                     ApproxDist2D(&actor->posX, &st->path->pts[1])) {
               st->path->sel = 1;
-              actor->mode = 3;
+              actor->mode = POSTGUARD_TO_POST;
               continue;
             }
           }
@@ -1834,7 +1834,7 @@ void Level2_UpdateActors(void) {
           PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0xC8, 5, 0xA, actor->group,
                         5);
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400) {
-            SetActorGroupState(actor, 0x14);
+            SetActorGroupState(actor, POSTGUARD_ALERTED);
           }
           break;
         case 2:
@@ -1845,7 +1845,7 @@ void Level2_UpdateActors(void) {
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
             actor->subMode = 0;
             st->timer = RandomIntInRange(0x8C, 0xC8);
-            actor->mode = 1;
+            actor->mode = POSTGUARD_HOP;
             continue;
           }
           break;
@@ -1882,7 +1882,7 @@ void Level2_UpdateActors(void) {
             break;
           case 4:
             if (TrackEntityYawTowardSpyro(actor, 6, 0xA, 1)) {
-              actor->mode = 1;
+              actor->mode = POSTGUARD_HOP;
               continue;
             }
             break;
@@ -1891,7 +1891,7 @@ void Level2_UpdateActors(void) {
         }
         break;
 
-      case 1:
+      case POSTGUARD_HOP:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         switch (st->sub) {
         case 0:
@@ -1928,12 +1928,12 @@ void Level2_UpdateActors(void) {
           break;
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x2000) {
-          actor->mode = 0;
+          actor->mode = POSTGUARD_IDLE;
           continue;
         }
         break;
 
-      case 2:
+      case POSTGUARD_KNOCKED:
         actor->rotX += st->spinX;
         actor->rotY += st->spinY;
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->time, 0xC, 0xC);
@@ -1949,7 +1949,7 @@ void Level2_UpdateActors(void) {
         }
         break;
 
-      case 3:
+      case POSTGUARD_TO_POST:
         ANIM_GO(actor, 1);
         if (TurnActorYawTowardAngle(
                 actor,
@@ -1961,24 +1961,24 @@ void Level2_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &st->path->pts[st->path->sel]) < 0x100 ||
             ApproxDist2D(&actor->posX, &SPY.posX) < 0xC00) {
           ANIM_BLEND(actor, 4);
-          actor->mode = 1;
+          actor->mode = POSTGUARD_HOP;
           continue;
         }
         break;
 
-      case 20:
+      case POSTGUARD_ALERTED:
         if (TrackEntityYawTowardSpyro(actor, 7, 0x14, 1)) {
-          actor->mode = 0x15;
+          actor->mode = POSTGUARD_SHOUT;
           continue;
         }
         break;
 
-      case 21:
+      case POSTGUARD_SHOUT:
         ANIM_GO(actor, 7);
         if (g_nActorAnimDone != 0) {
           st->sub = 0;
           ANIM_BLEND(actor, 4);
-          actor->mode = 1;
+          actor->mode = POSTGUARD_HOP;
           continue;
         }
         break;

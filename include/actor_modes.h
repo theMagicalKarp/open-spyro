@@ -579,4 +579,69 @@ enum AlarmGuardMode {
   APGUARD_HANDED_OFF = 98, /* hidden after the hand-off; no collision */
 };
 
+/* ->mode of a path patroller (ACTOR_TYPE_PATH_PATROLLER, PathState; levels
+ * 0/1): a critter that scatters along its path nodes away from Spyro. */
+enum PatrollerMode {
+  PATROLLER_WAIT = 0,      /* Spyro near and level: PICK (and its group with it) */
+  PATROLLER_PICK = 1,      /* picks the neighbour node away from Spyro */
+  PATROLLER_FLEE = 2,      /* runs for it, then WAIT */
+  PATROLLER_KNOCKED = 3,   /* knocked away, then despawns */
+};
+
+/* ->mode of a lunging guard (ACTOR_TYPE_LUNGING_GUARD and
+ * ACTOR_TYPE_BIG_LUNGING_GUARD; level 24). A blast toggles its size kind
+ * through SHRINK / GROW. */
+enum LungingGuardMode {
+  LGUARD_IDLE = 0,     /* faces Spyro; close and level: LUNGE */
+  LGUARD_PACE = 1,     /* paces its path once, then IDLE */
+  LGUARD_LUNGE = 2,    /* lunges (the small kind bumps Spyro back) */
+  LGUARD_KNOCKED = 3,  /* spins away, then bursts */
+  LGUARD_SHRINK = 10,  /* scales down to the other kind, then IDLE */
+  LGUARD_GROW = 20,    /* scales up and bursts into the other kind, then IDLE */
+  LGUARD_ESCORT = 30,  /* keeps its partner between itself and Spyro */
+};
+
+/* ->mode of a grabber (ACTOR_TYPE_GRABBER, GrabberState; level 20).
+ * GrabberState.held is shared: one grabber goes for Spyro at a time. */
+enum GrabberMode {
+  GRABBER_LURK = 0,        /* faces Spyro; rolls its grab chance while unseen-ish */
+  GRABBER_RUSH = 1,        /* rushes Spyro (shoving gunners in its way); close: SEIZE */
+  GRABBER_RETREAT = 2,     /* back home, then LURK */
+  GRABBER_KNOCKED = 4,     /* flamed: drops Spyro, tumbles away and bursts */
+  GRABBER_RECOVER = 6,     /* plays out, then RUSH (no writer in the C sources) */
+  GRABBER_SEIZE = 10,      /* closes on Spyro and takes hold (hides him) */
+  GRABBER_CARRY = 11,
+  GRABBER_THROW = 12,      /* throws Spyro clear, then RETREAT */
+  GRABBER_DEVOUR = 13,     /* Sparx is gone: the hold kills Spyro */
+  GRABBER_THROW_SHORT = 14, /* the shorter throw used after the first one */
+  GRABBER_HUSK = 99,       /* the copy left behind by a knock: plays out, despawns */
+};
+
+/* ->mode of a sorcerer (ACTOR_TYPE_SORCERER, SorcererState; level 13).
+ * Modes below 0x60 double as the pose's animation index; the cue modes
+ * hand over to the queued animation (mode = nextAnim). */
+enum SorcererMode {
+  SORCERER_IDLE = 0,         /* sentry (watches its path start) or a wisp-caster on a path */
+  SORCERER_SETTLE = 1,       /* plays out, then IDLE */
+  SORCERER_TAUNT = 2,        /* taunts, turns angry, then IDLE */
+  SORCERER_CONJURE = 3,      /* raises its hands, then CAST */
+  SORCERER_CAST = 4,         /* casts ACTOR_TYPE_HOMING_WISPs at Spyro */
+  SORCERER_KNOCKED = 6,      /* flamed: bursts */
+  SORCERER_BREAK_LINK = 10,  /* the path caster was flamed: calms its target, then SETTLE */
+  SORCERER_WAIT_TAUNT = 96,  /* waits, then TAUNT */
+  SORCERER_WAIT_CONJURE = 97, /* waits, then CONJURE */
+  SORCERER_CUE = 98,         /* takes the queued pose (no writer in the C sources) */
+  SORCERER_ALERTED = 99,     /* set group-wide: turns angry, takes the queued pose */
+};
+
+/* ->mode of a hatch (ACTOR_TYPE_HATCH, HatchState; level 31); the mode is
+ * also the animation index. The idle pair loops on a subMode cue. */
+enum HatchMode {
+  HATCH_IDLE = 0,        /* plays its idle, then WAIT (the sealed kind: SEALED_IDLE) */
+  HATCH_WAIT = 1,        /* until cued (subMode 1), then IDLE */
+  HATCH_OPEN = 2,        /* struck: released its barrel or mine; recloses once Spyro is away */
+  HATCH_SEALED_IDLE = 3, /* the sealed kind's idle (only a charge opens it) */
+  HATCH_SEALED_WAIT = 4,
+};
+
 #endif

@@ -2204,16 +2204,16 @@ void Level4_UpdateActors(void) {
       GuardState *st = actor->state;
       unsigned char c;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && (unsigned char)((c = actor->mode) - 10) >= 10 &&
-          c != 0x62) {
-        actor->mode = 10;
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && (unsigned char)((c = actor->mode) - APGUARD_HIT) >= 10 &&
+          c != APGUARD_HANDED_OFF) {
+        actor->mode = APGUARD_HIT;
         continue;
       }
 
       actor->flags = 0;
 
       switch (actor->mode) {
-      case 0: {
+      case APGUARD_HOLD: {
         int limit;
         int toSpy;
         int toMe;
@@ -2240,13 +2240,13 @@ void Level4_UpdateActors(void) {
         }
 
         if (PickupGroupHasLiveActor(st->stage) == 0) {
-          actor->mode = 0x14;
+          actor->mode = APGUARD_WATCH;
           continue;
         }
         break;
       }
 
-      case 10:
+      case APGUARD_HIT:
         switch (st->stage) {
         case 0:
           ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
@@ -2271,7 +2271,7 @@ void Level4_UpdateActors(void) {
           GuardState *ms = mate->state;
 
           ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
-          mate->mode = 0xB;
+          mate->mode = APGUARD_HIT_PLAYOUT;
           mate->anim = 7;
           mate->nextAnim = 7;
           ms->anim = 7;
@@ -2294,7 +2294,7 @@ void Level4_UpdateActors(void) {
         actor->mode += 1;
         break;
 
-      case 11:
+      case APGUARD_HIT_PLAYOUT:
         if (g_nActorAnimDone == 0) {
           break;
         }
@@ -2307,7 +2307,7 @@ void Level4_UpdateActors(void) {
           if (st->anim == 0) {
             ANIM_SET(actor, 6);
             actor->collision = 0;
-            actor->mode = 0x62;
+            actor->mode = APGUARD_HANDED_OFF;
             continue;
           }
           ANIM_GO(actor, st->anim + 1);
@@ -2324,22 +2324,22 @@ void Level4_UpdateActors(void) {
         actor->mode += 1;
         break;
 
-      case 12:
+      case APGUARD_RECOVER:
         st->alarm = 0x78;
         actor->mode += 1;
         break;
 
-      case 13:
+      case APGUARD_TO_POST:
         if (ApproxDist2D(&actor->posX, &st->path->nodes[st->wp[st->stage]].x) <
             0x258) {
           st->stage += 1;
-          actor->mode = 0;
+          actor->mode = APGUARD_HOLD;
           continue;
         }
         PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 9, 0x14, 0xFF, 5);
         break;
 
-      case 20: {
+      case APGUARD_WATCH: {
         int range = 0xBB8;
 
         if (st->stage == 2) {
@@ -2366,13 +2366,13 @@ void Level4_UpdateActors(void) {
 
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < range) {
-          actor->mode = 0x15;
+          actor->mode = APGUARD_SHOVE;
           continue;
         }
         break;
       }
 
-      case 21:
+      case APGUARD_SHOVE:
         if (actor->nextAnim != st->anim + 3) {
           st->timer = 0xB4;
           g_anSpyroRequestVelocity.x = g_anSineLut[actor->rotZ] << 16 >> 21;
@@ -2383,13 +2383,13 @@ void Level4_UpdateActors(void) {
           } else {
             ANIM_SET(actor, st->anim + 3);
           }
-          actor->mode = 0x14;
+          actor->mode = APGUARD_WATCH;
           continue;
         }
         break;
       }
 
-      if (actor->mode != 0x62) {
+      if (actor->mode != APGUARD_HANDED_OFF) {
         RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       }
       break;
@@ -2453,8 +2453,8 @@ void Level4_UpdateActors(void) {
       dist = ApproxDist2D(pos, &spy->posX);
       EBB_BREAK();
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && (c = actor->mode) != 4 &&
-          (unsigned char)(c - 13) >= 3) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && (c = actor->mode) != LUNGER_KNOCKED &&
+          (unsigned char)(c - LUNGER_RECOIL) >= 3) {
         if (st->hits == 0) {
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
@@ -2463,7 +2463,7 @@ void Level4_UpdateActors(void) {
               ArcTan2(actor->posX - spy->posX, actor->posY - SPY.posY, 0),
               g_bSpyroPersistentEulerZ, 0x20, 0x40);
           st->velZ = 0x14;
-          actor->mode = 4;
+          actor->mode = LUNGER_KNOCKED;
           continue;
         }
         if (st->guard == 0) {
@@ -2484,7 +2484,7 @@ void Level4_UpdateActors(void) {
             st->heading = actor->rotZ;
             CopyVector(st->home, pos);
           lunge_hit:
-            actor->mode = 0xD;
+            actor->mode = LUNGER_RECOIL;
             ANIM_RESET(actor, 0xD);
             continue;
           }
@@ -2508,23 +2508,23 @@ void Level4_UpdateActors(void) {
       }
 
       if (TickCountdownByFrameDelta(&st->wait, 4) != 0 && dist < 0x898 &&
-          actor->mode == 0) {
+          actor->mode == LUNGER_IDLE) {
         CopyVector(st->target, &SPY.posX);
         st->wait = 0;
         actor->subMode = 0;
-        actor->mode = 1;
+        actor->mode = LUNGER_AIM;
         continue;
       }
 
       switch (actor->mode) {
-      case 0:
+      case LUNGER_IDLE:
         if (st->heading == -1) {
           st->heading = actor->rotZ;
         }
         ANIM_GO(actor, st->anim);
         break;
 
-      case 1:
+      case LUNGER_AIM:
         st->velZ = (ApproxDist2D(&actor->posX, &SPY.posX) * 35 >> 10) + 0x12C;
         ANIM_GO(actor, st->anim + 2);
         if (TurnActorYawTowardAngle(actor,
@@ -2532,12 +2532,12 @@ void Level4_UpdateActors(void) {
                                         st->target[1] - actor->posY, 0),
                           0xA, 4, 1) != 0) {
           PlayActorMeshVoice(actor, 1, 0);
-          actor->mode = 2;
+          actor->mode = LUNGER_LEAP;
           continue;
         }
         break;
 
-      case 2: {
+      case LUNGER_LEAP: {
         int floor = ProbeActorGroundHeight(actor);
 
         actor->posZ += st->velZ;
@@ -2565,7 +2565,7 @@ void Level4_UpdateActors(void) {
               actor->collision = 0;
             }
             ANIM_GO(actor, st->anim + 1);
-            actor->mode = 0x64;
+            actor->mode = LUNGER_GO_HOME;
             continue;
           }
         } else {
@@ -2591,7 +2591,7 @@ void Level4_UpdateActors(void) {
         break;
       }
 
-      case 4:
+      case LUNGER_KNOCKED:
         ANIM_GO(actor, st->anim + 4);
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockAngle, &st->velZ, 0xC,
                       0xA);
@@ -2603,7 +2603,7 @@ void Level4_UpdateActors(void) {
         }
         break;
 
-      case 10:
+      case LUNGER_BURST:
         if (actor->nextAnim >= 0xC) {
           ANIM_SET(actor, st->anim + 5);
         } else {
@@ -2618,7 +2618,7 @@ void Level4_UpdateActors(void) {
         }
         break;
 
-      case 13:
+      case LUNGER_RECOIL:
         if (actor->nextFrame < 2) {
           CopyVector(st->target, &SPY.posX);
         }
@@ -2630,31 +2630,31 @@ void Level4_UpdateActors(void) {
           ANIM_SET(actor, st->anim + 1);
           st->wait = 0;
           actor->subMode = 0;
-          actor->mode = 1;
+          actor->mode = LUNGER_AIM;
           continue;
         }
         break;
 
-      case 14:
-      case 15:
+      case LUNGER_RECOIL_B:
+      case LUNGER_RECOIL_C:
         if (actor->nextFrame >= 9) {
           ANIM_SET(actor, st->anim + 1);
-          actor->mode = 1;
+          actor->mode = LUNGER_AIM;
           continue;
         }
         break;
 
-      case 20:
+      case LUNGER_ALERTED:
         st->alerted = 1;
-        actor->mode = 0;
+        actor->mode = LUNGER_IDLE;
         continue;
 
-      case 100:
+      case LUNGER_GO_HOME:
         if (ApproxDist2D(&actor->posX, st->home) < 0xB4) {
           if (TurnActorYawTowardAngle(actor, st->heading, 6, 5, 1) != 0) {
             *st->flag = 0;
             st->wait = 0x78;
-            actor->mode = 0;
+            actor->mode = LUNGER_IDLE;
             continue;
           }
         } else {
@@ -2669,7 +2669,7 @@ void Level4_UpdateActors(void) {
         break;
       }
 
-      if (actor->mode == 2 ||
+      if (actor->mode == LUNGER_LEAP ||
           ApproxDist2D(&actor->posX, &spy->posX) >= 0x385) {
         RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       } else if (actor->collision == 0 &&
