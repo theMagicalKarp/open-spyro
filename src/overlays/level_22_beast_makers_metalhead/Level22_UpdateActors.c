@@ -2235,7 +2235,7 @@ void Level22_UpdateActors(void) {
           if (st->sub == 1) {
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
-            if (actor->type >= 83) {
+            if (actor->type >= ACTOR_TYPE_GEM_1) {
               int *nrm = &g_anCollisionProbeVec;
 
               st->pitch = -ArcTan2_8bit(

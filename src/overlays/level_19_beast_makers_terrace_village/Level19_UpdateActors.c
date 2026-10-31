@@ -1099,7 +1099,7 @@ void Level19_UpdateActors(void) {
           } else if (st->mode == 1) {
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
-            if (actor->type >= 83) {
+            if (actor->type >= ACTOR_TYPE_GEM_1) {
               {
                 int *nrm = &g_anCollisionProbeVec;
 

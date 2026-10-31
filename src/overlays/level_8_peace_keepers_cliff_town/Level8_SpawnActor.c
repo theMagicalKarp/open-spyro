@@ -291,7 +291,7 @@ Actor *Level8_SpawnActor(int type, Actor *parent) {
     if (st->vel[2] < 0x20) {
       st->vel[2] = 0x20;
     }
-    if (rec->type == 0x121) {
+    if (rec->type == ACTOR_TYPE_BOUNCE_DEBRIS + 1) {
       st->vel[2] += 0x20;
       rec->rotZ = GetRandomU32();
       if ((int)(GetRandomU32() & 0xFFF) >= 0x800) {

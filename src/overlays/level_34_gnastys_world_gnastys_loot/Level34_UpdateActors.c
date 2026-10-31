@@ -872,7 +872,7 @@ void Level34_UpdateActors(void) {
           } else if (st->mode == 1) {
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
-            if (actor->type >= 83) {
+            if (actor->type >= ACTOR_TYPE_GEM_1) {
               {
                 int *nrm = &g_anCollisionProbeVec;
 
@@ -2141,7 +2141,7 @@ void Level34_UpdateActors(void) {
         if ((ApproxDist2D(&actor->posX, &SPY.posX) < 0x200 &&
              ABS2(SPY_DZ(actor)) < 0x200 && open) ||
             (g_pActorListBase[st->key].mode >= ACTOR_MODE_DORMANT &&
-             g_pActorListBase[st->key].type == 0xB1)) {
+             g_pActorListBase[st->key].type == ACTOR_TYPE_LOOT_THIEF)) {
           int i;
           int c;
 
