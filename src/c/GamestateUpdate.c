@@ -39,7 +39,7 @@ void GamestateUpdate(void) {
     } else if (g_nGamestate == GS_OVERLAY_SCREEN) {
       OverlayScreen_Update();
     } else if (g_nGamestate == GS_OVERLAY_HOOK) {
-      (*(void (*)())g_pfnGamestate7Handler)();
+      g_pfnGamestate7Handler();
     } else if (g_nGamestate == GS_DRAGON_RESCUE) {
       DragonRescue_Update();
     } else if (g_nGamestate == GS_ARRIVAL_CAMERA) {
@@ -74,7 +74,7 @@ void GamestateUpdate(void) {
     }
 
     TickWorldChunkAnimations(g_nFrameStep);
-    (*(void (*)())g_pfnLevelUpdateActors)();
+    g_pfnLevelUpdateActors();
 
     if (g_nGamestate == GS_SAVE_MENU || g_nGamestate == GS_ACTOR_CUTSCENE ||
         g_nGamestate == GS_OVERLAY_HOOK || g_nGamestate == GS_LEVEL_LOAD) {
@@ -86,7 +86,7 @@ void GamestateUpdate(void) {
       return;
     }
 
-    (*(void (*)())g_pfnLevelAdvanceEmitList)(g_nFrameStep);
+    g_pfnLevelAdvanceEmitList(g_nFrameStep);
     if (!g_nFlightLevelActive) {
       UpdateHudCounters();
     }

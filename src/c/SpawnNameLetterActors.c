@@ -105,7 +105,7 @@ void SpawnNameLetterActors(Actor *sign, int named) {
         } else {
           ch = ACTOR_TYPE_GLYPH_COMMA;
         }
-        letter = (*(Actor * (*)(int, Actor *)) g_pfnLevelSpawnActor)(ch, sign);
+        letter = g_pfnLevelSpawnActor(ch, sign);
         REC(letter)->owner = sign;
         REC(letter)->count = len;
         REC(letter)->index = i;

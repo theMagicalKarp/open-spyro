@@ -129,7 +129,7 @@ void SaveMenu_Update(void) {
       TickSpyroAnimLayer1();
       TickSpyroAnimLayer2();
       TickSpyroAttackEffects(g_nFrameStep);
-      ((void (*)(int))g_pfnLevelAdvanceEmitList)(g_nFrameStep);
+      g_pfnLevelAdvanceEmitList(g_nFrameStep);
     } else {
       ACTOR_RAW(ACT, int, posX) =
           g_anSpyroWorldPos[0] +
@@ -176,7 +176,7 @@ void SaveMenu_Update(void) {
     TickSpyroAnimLayer1();
     TickSpyroAnimLayer2();
     g_dwGamestateFrames++;
-    ((void (*)(int))g_pfnLevelAdvanceEmitList)(g_nFrameStep);
+    g_pfnLevelAdvanceEmitList(g_nFrameStep);
     switch (SM[3]) {
     case 0:
       if (g_dwPadPressed & PAD_DOWN) {

@@ -224,7 +224,7 @@ void DispatchSpyroPhysicsByState(void) {
         TRACK_FLOOR_REFERENCE();
         if (g_nSpyroSubstate == 3 &&
             CollideSphereWithWorldAndActors(&SPY[0], 0x164, 0x164) != 0) {
-          ((void (*)(void))g_pfnLevelFallImpactCallback)();
+          g_pfnLevelFallImpactCallback();
         }
       } else {
         CLAMP_FALL_REFERENCE();

@@ -389,8 +389,8 @@ void UpdateSpyroStateBehavior(void) {
   fall_timeout:
     if (g_nSpyroStateTimer > 0x12C) {
       if (g_nFlightLevelActive != 0) {
-        ((void (*)(void))g_pfnLevelFallImpactCallback)();
-        ((void (*)(void))g_pfnLevelUpdateActors)();
+        g_pfnLevelFallImpactCallback();
+        g_pfnLevelUpdateActors();
       } else {
         g_nExtraLives++;
         TriggerRespawnOrGameOver();
@@ -768,8 +768,8 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_nSpyroStateTimer > 0x12C) {
       if (g_nFlightLevelActive != 0) {
-        ((void (*)(void))g_pfnLevelFallImpactCallback)();
-        ((void (*)(void))g_pfnLevelUpdateActors)();
+        g_pfnLevelFallImpactCallback();
+        g_pfnLevelUpdateActors();
       } else {
         g_nExtraLives++;
         TriggerRespawnOrGameOver();
@@ -967,8 +967,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_nSpyroStateTimer > 0x3C) {
       SPY[SPY_SPARX_HEALTH] = -1;
-      ((void (*)(int, int))g_pfnLevelSpawnActor)(
-          g_anHazardTimeoutSpawnType[g_nSpyroHazardKind], 0);
+      g_pfnLevelSpawnActor(g_anHazardTimeoutSpawnType[g_nSpyroHazardKind], 0);
       break;
     }
     if (g_nSpyroStateTimer >= 0x10 && (g_dwPadHeld & PAD_CROSS)) {

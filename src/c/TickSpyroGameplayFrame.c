@@ -107,8 +107,8 @@ void TickSpyroGameplayFrame(void) {
     case SPYRO_ST_HAZARD:
       if (g_nSpyroHazardSinkDepth == 0x240) {
         if (g_nFlightLevelActive != 0) {
-          (*(void (*)(void))g_pfnLevelFallImpactCallback)();
-          (*(void (*)(void))g_pfnLevelUpdateActors)();
+          g_pfnLevelFallImpactCallback();
+          g_pfnLevelUpdateActors();
         } else {
           TriggerRespawnOrGameOver();
         }

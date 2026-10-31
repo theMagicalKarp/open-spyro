@@ -101,7 +101,7 @@ void DragonRescue_Update(void) {
     int now;
 
     g_dwGamestateFrames++;
-    ((void (*)(void))g_pfnLevelUpdateActors)();
+    g_pfnLevelUpdateActors();
     TickSpyroGameplayFrame();
     UpdateCameraFrame();
     g_nDragonRescueAuraStarEnabled = 1;
@@ -216,8 +216,7 @@ void DragonRescue_Update(void) {
       g_nPulseRumbleTimer = 8;
     }
     g_nPulseRumbleAmount = 0x46;
-    ((void (*)(int, void *))g_pfnLevelSpawnActor)(ACTOR_TYPE_STATUE_SHARD,
-                                                  g_pDragonRescueSourceActor);
+    g_pfnLevelSpawnActor(ACTOR_TYPE_STATUE_SHARD, g_pDragonRescueSourceActor);
     if (g_nDragonRescueTimer < g_nDragonRescueSweepDurationFrames) {
       t = LookupSine((g_nDragonRescueTimer << 11) /
                          g_nDragonRescueSweepDurationFrames -
@@ -433,8 +432,7 @@ void DragonRescue_Update(void) {
       g_nPulseRumbleTimer = 8;
     }
     g_nPulseRumbleAmount = 0x46;
-    ((void (*)(int, void *))g_pfnLevelSpawnActor)(ACTOR_TYPE_STATUE_SHARD,
-                                                  g_pDragonRescueSourceActor);
+    g_pfnLevelSpawnActor(ACTOR_TYPE_STATUE_SHARD, g_pDragonRescueSourceActor);
     if (g_nDragonRescueTimer < 0x10 || g_nDragonRescueStreamState < 3) {
       AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
       TickSpyroAnimLayer1();
@@ -447,8 +445,8 @@ void DragonRescue_Update(void) {
         int five;
 
         for (n = 0; n < 0x20; n++) {
-          ((void (*)(int, void *))g_pfnLevelSpawnActor)(
-              ACTOR_TYPE_STATUE_SHARD, g_pDragonRescueSourceActor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_STATUE_SHARD,
+                               g_pDragonRescueSourceActor);
         }
         OPAQUE_COPY(five, 5);
         GB[24] = (int)AllocActorRecordSlot();
@@ -777,7 +775,7 @@ void DragonRescue_Update(void) {
     }
   } break;
   }
-  ((void (*)(int))g_pfnLevelAdvanceEmitList)(g_nFrameStep);
+  g_pfnLevelAdvanceEmitList(g_nFrameStep);
   if (g_nDragonRescueSubstate > 0) {
     TickDragonRescueAssetStream();
   }

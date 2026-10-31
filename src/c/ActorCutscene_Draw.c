@@ -122,10 +122,10 @@ void ActorCutscene_Draw(void) {
         }
       }
     } else {
-      (*(void (*)())g_pfnActorCutsceneSubstateDraw)();
+      g_pfnActorCutsceneSubstateDraw();
     }
   } else {
-    (*(void (*)())g_pfnActorCutsceneSubstateDraw)();
+    g_pfnActorCutsceneSubstateDraw();
   }
 
   DrawCinematicLetterbox();

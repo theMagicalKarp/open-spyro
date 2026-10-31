@@ -544,19 +544,19 @@ extern char g_szUiSlot2[7];                 /* 0x80075638 */
 /* ---- .sbss ---- */
 extern int g_nCutsceneId;                /* 0x8007566c: scripted cutscene / bundle id: 0 title backdrop, 1 opening story, 2/3 endings (BeginCutscene) */
 extern int g_nGnastyLootFallRefZCap;         /* 0x80075678 */
-extern void *g_pfnGamestate7DrawHook;        /* 0x8007567c */
+extern void (*g_pfnGamestate7DrawHook)(void); /* 0x8007567c: flight levels' FlightResults_Draw */
 extern void *g_pPathTableHead;               /* 0x80075680 */
 extern int g_nMotionTrailRibbonCount;        /* 0x80075684 */
 extern int g_nPrevLevelIndex;           /* 0x80075688 */
 extern int g_nPauseMenuIdleFrames;           /* 0x8007568c */
 extern int g_nFlightLevelActive;             /* 0x80075690 */
-extern void *g_pfnLevelFallImpactCallback;   /* 0x80075694 */
+extern void (*g_pfnLevelFallImpactCallback)(void); /* 0x80075694: flight levels' FlightEndHook, else null */
 extern int g_nActorPoolLiveCount;            /* 0x800756a4 */
 extern int g_nActorPoolCapacity;             /* 0x800756a8 */
 extern int g_nLevelTransitionPhase;          /* 0x800756ac */
 extern int g_nLevelTransitionTallyActive;    /* 0x800756b0 */
 extern int g_nCameraLosClear;                /* 0x800756b8 */
-extern void *g_pfnLevelAdvanceEmitList;        /* 0x800756bc */
+extern void (*g_pfnLevelAdvanceEmitList)(int frameStep); /* 0x800756bc */
 extern int g_nLetterboxBarHeight;            /* 0x800756c0 */
 extern int g_nGemTallyIconCount;             /* 0x800756c8 */
 extern int g_nFrameStep;                     /* 0x800756cc */
@@ -578,7 +578,7 @@ extern void *g_pGemTallyParticleRecords;     /* 0x8007571c */
 extern int g_nPauseMenuCursor;               /* 0x80075720 */
 extern uint g_dwGamestateFrames;             /* 0x8007572c */
 extern int g_nPadSetMainModePending;         /* 0x80075730 */
-extern void *g_pfnLevelUpdateActors;       /* 0x80075734 */
+extern void (*g_pfnLevelUpdateActors)(void); /* 0x80075734 */
 extern void *g_pEmitListWriteCursor;         /* 0x80075738 */
 extern struct Actor *g_pActorPoolFreeHead;   /* 0x8007573c: lowest free slot of the level actor pool (AllocActorRecordSlot) */
 extern int g_nGemTallyHoldEndPhase;          /* 0x80075740 */
@@ -600,7 +600,7 @@ extern int g_nOptionVibrationEnabled;        /* 0x800757a4 */
 extern void *g_pPrimBufferWriteCursor;       /* 0x800757b0 */
 extern int g_nLevelPickupTableCount;         /* 0x800757b4 */
 extern int g_nDemoIndex;                 /* 0x800757b8: which of the 4 attract demos plays next (cycles &3) */
-extern void *g_pfnGamestate7Handler;         /* 0x800757c0 */
+extern void (*g_pfnGamestate7Handler)(void);  /* 0x800757c0: flight levels' FlightResultsMenu_Update */
 extern int g_nPauseMenuSubstate;             /* 0x800757c8 */
 extern int g_nSubMenuScrollOffset;           /* 0x800757cc */
 extern int g_nPulseRumbleTimer;              /* 0x800757d0 */
@@ -647,7 +647,7 @@ extern int g_nPauseMenuTransitionFrames;     /* 0x800758b8 */
 extern int g_nPortalCount;              /* 0x800758bc */
 extern int g_nSpyroFallReferenceZ;           /* 0x800758c0 */
 extern int g_nVblankTickCount;               /* 0x800758c8 */
-extern void *g_pfnLevelSpawnActor;      /* 0x800758cc */
+extern struct Actor *(*g_pfnLevelSpawnActor)(int type, struct Actor *parent); /* 0x800758cc */
 extern byte g_abWorldBalloonistState[6];         /* 0x800758d0 per-homeworld balloonist progress: 0 unmet, 1 talked, 2 travel unlocked (ResetLevelState seeds [0] = 2, the unlock cheat fills all 2, homeworld UpdateActors steps it and picks the dialogue page) */
 extern int g_nPadActAlignedFlag;             /* 0x800758e0 */
 extern void *g_pfnLevelEmitParticles; /* 0x800758e4 */
@@ -1246,22 +1246,22 @@ extern unsigned char g_abWorldTitleGlyphBlock[]; /* 0x8007555c: held-base view (
 extern int g_nLevelVortexSeen1; /* 0x80075670: a loot vortex (levels 33/34, LootVortexState.seen 1) was entered this visit; read as g_nCutsceneId[1] */
 extern int g_nLevelVortexSeen2; /* 0x80075674: the same for seen 2 (g_nCutsceneId[2]) */
 extern int g_nLevelLoadUnreadWord; /* 0x80075698 */
-extern void *g_pfnActorCutsceneSubstateUpdate; /* 0x8007574c: per-level handler for the other 0xC substates (ApplyPerLevelGlobalsTable) */
+extern void (*g_pfnActorCutsceneSubstateUpdate)(void); /* 0x8007574c: per-level handler for the other 0xC substates (ApplyPerLevelGlobalsTable) */
 extern unsigned char *g_pLockedChestReward; /* 0x80075758 */
 extern int g_pCreditsScratchBuf; /* 0x80075768 */
 extern int g_bLevelUseShortReleaseAnim; /* 0x8007577c */
 extern struct Actor *g_pSpyroHomingTargetActor; /* 0x80075790: charge homing target (ChangeSpyroState) */
 extern int g_nActorAnimDone; /* 0x80075794 */
-extern void *g_pfnLevelBeginActorCutscene; /* 0x800757a0 */
-extern void *g_pfnLevelHandleFlightResults; /* 0x800757a8 */
+extern void (*g_pfnLevelBeginActorCutscene)(struct Actor *actor); /* 0x800757a0 */
+extern void (*g_pfnLevelHandleFlightResults)(int reload); /* 0x800757a8 */
 extern int g_pCreditsScrollHeader; /* 0x800757bc */
 extern int g_nWorldFloorVisZone; /* 0x80075844 */
 extern int g_bLevelPhasedBossKilled; /* 0x80075850 */
 extern int g_bLevelBossDefeated; /* 0x80075854: cleared on level load */
 extern int g_anLevelRunnerArrived; /* 0x80075870 */
 extern int g_nLevelRunnerArrivedGoal1; /* 0x80075874 */
-extern void *g_pfnLevelOnSaveMenuExit; /* 0x800758a8 */
-extern void *g_pfnFlightTimeFormatter; /* 0x800758c4 */
+extern void (*g_pfnLevelOnSaveMenuExit)(void); /* 0x800758a8 */
+extern int (*g_pfnFlightTimeFormatter)(int time, int *pos, int palette); /* 0x800758c4: flight levels' DrawFlightRaceTime */
 extern int g_nFlightQuitFlag; /* 0x80075900: flight-level quit flag */
 extern int g_nSpyroScriptedAlignFrames; /* 0x80075948 */
 extern int g_nActiveWorldIndex; /* 0x8007595c: current world index */

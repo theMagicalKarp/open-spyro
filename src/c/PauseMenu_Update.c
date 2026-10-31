@@ -241,7 +241,7 @@ void PauseMenu_Update(void) {
       g_nPauseMenuCursor = 0;
       g_nPauseMenuIdleFrames = 0;
       g_nFlightQuitFlag = 1;
-      ((void (*)(void))g_pfnLevelUpdateActors)();
+      g_pfnLevelUpdateActors();
     } else {
       BeginPauseToMenuTransition();
     }

@@ -500,7 +500,7 @@ sprites:
   ((int *)g_pEmitListBase)[0x800] = -1;
   ResetWorldParticleTables();
   if ((fullSetup != 0) && (g_nFlightLevelActive == 0)) {
-    g_pSparxActor = (*((void *(**)())(&g_pfnLevelSpawnActor)))(0x78, 0);
+    g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, 0);
     InitHudCounters(1);
   }
   HandleMusicCommand(g_nCurrentMusicTrack, 1);
