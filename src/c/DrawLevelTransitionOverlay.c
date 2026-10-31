@@ -96,20 +96,19 @@ void DrawLevelTransitionOverlay(void) {
   }
 
   {
-    char *glyph = (char *)g_pSpriteRecordWriteCursor;
+    Actor *glyph = g_pSpriteRecordWriteCursor;
     pos[2] = 0x1100;
     step[0] = 0x10;
     step[1] = 1;
     step[2] = 0x1400;
     BuildTextSprites((unsigned char *)buf, pos, step, 0x12, 2);
-    glyph -= ACTOR_SIZE;
+    glyph--;
     if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {
       unsigned short *lut = (unsigned short *)g_anCosineLut;
       int wave = 0;
       do {
-        ((Actor *)glyph)->rotZ =
-            lut[(g_nLevelTransitionPhase * 2 + wave) & 0xff] >> 7;
-        glyph -= ACTOR_SIZE;
+        glyph->rotZ = lut[(g_nLevelTransitionPhase * 2 + wave) & 0xff] >> 7;
+        glyph--;
         wave += 0xc;
       } while ((int)g_pSpriteRecordWriteCursor <= (int)glyph);
     }
@@ -155,19 +154,19 @@ void DrawLevelTransitionOverlay(void) {
       pos[0] -= 0x10;
     }
     {
-      char *glyph = (char *)g_pSpriteRecordWriteCursor;
+      Actor *glyph = g_pSpriteRecordWriteCursor;
       int wave;
       BuildTextSprites((unsigned char *)buf, pos, step, 0x12, 2);
-      glyph -= ACTOR_SIZE;
+      glyph--;
       wave = 0;
       if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {
         do {
-          ((Actor *)glyph)->rotZ =
+          glyph->rotZ =
               ((unsigned short *)
                    g_anCosineLut)[(g_nLevelTransitionPhase * 2 + wave) &
                                   0xff] >>
               7;
-          glyph -= ACTOR_SIZE;
+          glyph--;
           wave += 0xc;
         } while ((int)g_pSpriteRecordWriteCursor <= (int)glyph);
       }
@@ -218,16 +217,15 @@ void DrawLevelTransitionOverlay(void) {
     pos[2] = 0xf80;
     sprintf(msg, g_szFmtPercentD, value);
     {
-      char *glyph = (char *)g_pSpriteRecordWriteCursor;
+      Actor *glyph = g_pSpriteRecordWriteCursor;
       BuildTextSpriteChain((unsigned char *)msg, pos, 0x14, 2);
-      glyph -= ACTOR_SIZE;
+      glyph--;
       if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {
         unsigned short *lut = (unsigned short *)g_anCosineLut;
         int wave = 0;
         do {
-          ((Actor *)glyph)->rotZ =
-              lut[(g_nLevelTransitionPhase * 2 + wave) & 0xff] >> 7;
-          glyph -= ACTOR_SIZE;
+          glyph->rotZ = lut[(g_nLevelTransitionPhase * 2 + wave) & 0xff] >> 7;
+          glyph--;
           wave += 0xc;
         } while ((int)g_pSpriteRecordWriteCursor <= (int)glyph);
       }

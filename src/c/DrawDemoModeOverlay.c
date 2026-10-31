@@ -8,8 +8,8 @@
    by the vblank tick, and hand the records to the sprite queue via
    EnqueuePendingSpritePrims. */
 void DrawDemoModeOverlay(void) {
-  void *first;
-  int glyph;
+  Actor *first;
+  Actor *glyph;
   int phase;
   int pos[4];
   int size[4];
@@ -22,17 +22,17 @@ void DrawDemoModeOverlay(void) {
   pos[1] = 200;
   pos[2] = 0x1100;
   BuildTextSprites(g_szDemoMode, pos, size, 0x12, 2);
-  glyph = (int)first - (int)sizeof(Actor);
+  glyph = first - 1;
   phase = 0;
-  if ((int)g_pSpriteRecordWriteCursor <= glyph) {
+  if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {
     do {
-      ((Actor *)glyph)->rotZ =
+      glyph->rotZ =
           ((unsigned short *)
                g_anSineLut)[((g_nVblankTickCount * 4 + phase) & 0xff) + 0x40] >>
           7;
-      glyph -= sizeof(Actor);
+      glyph--;
       phase += 0xc;
-    } while ((int)g_pSpriteRecordWriteCursor <= glyph);
+    } while ((int)g_pSpriteRecordWriteCursor <= (int)glyph);
   }
   EnqueuePendingSpritePrims();
 }

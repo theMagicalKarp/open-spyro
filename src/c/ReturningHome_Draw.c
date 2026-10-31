@@ -8,10 +8,10 @@
    per-glyph brightness wave (g_anCosineLut stepped by g_nReturningHomePhase),
    then the standard sprite-queue rasterize + frame-flush tail (0x8001eb80). */
 void ReturningHome_Draw(void) {
-  void *first;
+  Actor *first;
   void **queue;
   int phase;
-  int glyph;
+  Actor *glyph;
   int sizeVec[3];
   int posVec[3];
 
@@ -29,17 +29,17 @@ void ReturningHome_Draw(void) {
   g_abFrameDrawEnv1.g0 = 0;
   g_abFrameDrawEnv1.b0 = 0;
   BuildTextSprites(g_szReturningHome, posVec, sizeVec, 0x12, 0xb);
-  glyph = (int)first - (int)sizeof(Actor);
+  glyph = first - 1;
   phase = 0;
-  if ((int)g_pSpriteRecordWriteCursor <= glyph) {
+  if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {
     do {
-      ((Actor *)glyph)->rotZ =
+      glyph->rotZ =
           ((unsigned short *)
                g_anCosineLut)[(g_nReturningHomePhase * 2 + phase) & 0xff] >>
           7;
-      glyph -= sizeof(Actor);
+      glyph--;
       phase += 0xc;
-    } while ((int)g_pSpriteRecordWriteCursor <= glyph);
+    } while ((int)g_pSpriteRecordWriteCursor <= (int)glyph);
   }
   queue = g_apSpritePrimQueue;
   queue[0] = 0;

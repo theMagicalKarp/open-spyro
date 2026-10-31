@@ -36,7 +36,7 @@ void EnqueueHudSprites(void) {
   void **slot;
   byte *gems;
   byte *digits;
-  byte *rec;
+  Actor *rec;
   byte *dragons;
   byte *lives;
   byte *eggs;
@@ -75,21 +75,21 @@ void EnqueueHudSprites(void) {
       if (digits[0] == 4) {
         sprintf((char *)scratch, g_szFmtDSlashD, g_nHudLevelGemCachedCount,
                 g_nHudLevelGemCachedCount);
-        rec = (byte *)g_pSpriteRecordWriteCursor;
+        rec = g_pSpriteRecordWriteCursor;
         rect[0] = 0x5A;
         rect[1] = 0x24;
         rect[2] = 0xB40;
         BuildTextSpriteChain((char *)scratch, rect, 0x1C, 0xB);
-        rec -= ACTOR_SIZE;
+        rec--;
         phase = 0;
         while ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
-          ((Actor *)rec)->rotZ =
+          rec->rotZ =
               ((unsigned short *)
                    g_anCosineLut)[(GEM_HOLD_TIMER * 4 + phase) & 0xFF] >>
               7;
           *slot = rec;
           slot += 1;
-          rec -= ACTOR_SIZE;
+          rec--;
           phase += 0xC;
         }
       }

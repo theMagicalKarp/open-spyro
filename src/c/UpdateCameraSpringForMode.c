@@ -30,9 +30,8 @@
 #define S_TARGET_PARAMS 0x04
 #define S_INVERTED 0x08
 
-/* World x/y of a scripted camera actor. */
+/* A scripted camera actor's world x, read as a raw int field. */
 #define ACTOR_X(a) ACTOR_RAW(a, int, posX)
-#define ACTOR_Y(a) ((Actor *)a)->posY
 
 SDATA(g_nCameraLosClear, 4);
 SDATA(g_nCameraManualYawInput, 4);
@@ -405,19 +404,19 @@ void UpdateCameraSpringForMode(void) {
     break;
   }
   case 0x80000007: {
-    unsigned char *actor;
+    Actor *actor;
     int y;
     int z;
 
     g_pCameraTargetParams = g_anCameraParamScriptedTarget;
-    actor = (unsigned char *)g_pScriptedCameraActor;
+    actor = g_pScriptedCameraActor;
     g_pCameraAnchorPos = g_anCameraScriptedTargetPos;
     g_pCameraAnchorPos[0] = ACTOR_X(actor);
     z = g_nSpyroWorldPosZ;
-    y = ACTOR_Y(actor);
+    y = actor->posY;
     g_anCameraScriptedTargetPos[2] = z;
     g_anCameraScriptedTargetPos[1] = y;
-    g_nCameraTargetYawBiasFromMode = ((Actor *)actor)->rotZ << 4;
+    g_nCameraTargetYawBiasFromMode = actor->rotZ << 4;
     g_nCameraTargetInverted = ComputeCameraToTargetAngle(&s[S_POS]);
     g_nCameraSpringYaw = g_nCameraYaw;
     g_nCameraSpringPitch = g_nCameraPitch;
@@ -426,12 +425,12 @@ void UpdateCameraSpringForMode(void) {
     break;
   }
   case 0x8000000C: {
-    unsigned char *actor = (unsigned char *)g_pScriptedCameraActor;
+    Actor *actor = g_pScriptedCameraActor;
 
     g_pCameraAnchorPos = g_anSpyroWorldPos;
     g_nCameraTargetYawBiasFromMode =
         ArcTan2(ACTOR_X(actor) - g_pCameraAnchorPos[0],
-                ACTOR_Y(actor) - g_nSpyroWorldPosY, 1);
+                actor->posY - g_nSpyroWorldPosY, 1);
     if (g_nCameraCollisionRetries != 0) {
       break;
     }

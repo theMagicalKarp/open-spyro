@@ -4,8 +4,8 @@
 #include "vecmath.h"
 
 /* The queue tail is re-read from the global at every field access. */
-#define CURSOR (*(unsigned char *volatile *)&g_pSpriteRecordWriteCursor)
-#define CURSOR_P (*(unsigned char **)&g_pSpriteRecordWriteCursor)
+#define CURSOR (*(Actor *volatile *)&g_pSpriteRecordWriteCursor)
+#define CURSOR_P g_pSpriteRecordWriteCursor
 
 /* Emit a glyph-sprite chain for a string: per non-space byte allocate a
    0x58-byte SPRT slot at g_pSpriteRecordWriteCursor (queue tail, grows down),
@@ -28,7 +28,7 @@
        `sh`s into the shared tail). The six equality arms keep the volatile
        read and DO get merged, which is what the original has.
      - the FillWord argument is the LOCAL `rec`, not a reload, so the
-       allocation is `rec = CURSOR - ACTOR_SIZE; CURSOR_P = rec;` as two
+       allocation is `rec = CURSOR - 1; CURSOR_P = rec;` as two
    statements; the embedded assignment form routes the value through v0 (+3
    insns).
      - the range tests are on an `int ch = *pszText;` (a0, unmasked) and the six
@@ -39,38 +39,38 @@
        to the plain form. */
 void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance,
                            int nPalette) {
-  unsigned char *rec;
+  Actor *rec;
   int ch;
 
   while (*pszText != 0) {
     if (*pszText != ' ') {
-      rec = CURSOR - ACTOR_SIZE;
+      rec = CURSOR - 1;
       CURSOR_P = rec;
       FillWord(rec, 0, 0x58);
-      CopyVector(&((Actor *)CURSOR)->posX, pPen);
+      CopyVector(&CURSOR->posX, pPen);
 
       ch = *pszText;
       if (ch >= '0' && ch <= '9') {
-        ((Actor *)CURSOR_P)->type = ACTOR_TYPE_DIGIT_GLYPH(ch);
+        CURSOR_P->type = ACTOR_TYPE_DIGIT_GLYPH(ch);
       } else if (ch >= 'A' && ch <= 'Z') {
-        ((Actor *)CURSOR_P)->type = ACTOR_TYPE_LETTER_GLYPH(ch);
+        CURSOR_P->type = ACTOR_TYPE_LETTER_GLYPH(ch);
       } else if ((unsigned char)ch == '/') {
-        ((Actor *)CURSOR)->type = ACTOR_TYPE_GLYPH_SLASH;
+        CURSOR->type = ACTOR_TYPE_GLYPH_SLASH;
       } else if ((unsigned char)ch == '?') {
-        ((Actor *)CURSOR)->type = ACTOR_TYPE_GLYPH_QUESTION;
+        CURSOR->type = ACTOR_TYPE_GLYPH_QUESTION;
       } else if ((unsigned char)ch == '%') {
-        ((Actor *)CURSOR)->type = ACTOR_TYPE_GLYPH_PERCENT;
+        CURSOR->type = ACTOR_TYPE_GLYPH_PERCENT;
       } else if ((unsigned char)ch == '^') {
-        ((Actor *)CURSOR)->type = ACTOR_TYPE_GLYPH_CARET;
+        CURSOR->type = ACTOR_TYPE_GLYPH_CARET;
       } else if ((unsigned char)ch == '+') {
-        ((Actor *)CURSOR)->type = ACTOR_TYPE_GLYPH_PLUS;
+        CURSOR->type = ACTOR_TYPE_GLYPH_PLUS;
       } else {
-        ((Actor *)CURSOR_P)->type = ACTOR_TYPE_GLYPH_PERIOD;
+        CURSOR_P->type = ACTOR_TYPE_GLYPH_PERIOD;
       }
 
-      ((Actor *)CURSOR)->otBias = 0x7F;
-      ((Actor *)CURSOR)->tintMode = nPalette;
-      ((Actor *)CURSOR)->cullRadius = 0xFF;
+      CURSOR->otBias = 0x7F;
+      CURSOR->tintMode = nPalette;
+      CURSOR->cullRadius = 0xFF;
     }
     *pPen += nAdvance;
     pszText++;

@@ -51,7 +51,7 @@ void RespawnOrGameOver_Draw(void) {
   void **q;
   int sk;
   int st;
-  char *sc;
+  Actor *sc;
   short *sbase;
 
   if (g_nGameplayDrawMode == 0) {
@@ -153,13 +153,13 @@ void RespawnOrGameOver_Draw(void) {
         i = 0;
         sbase = &g_anSineLut[0x40];
         sk = 0;
-        sc = (char *)g_pSpriteRecordWriteCursor;
+        sc = g_pSpriteRecordWriteCursor;
         do {
           i += 1;
           st = sbase[((g_nGameplayDrawFrame * 4) + sk) & 0xFF];
           sk += 0xC;
-          ((Actor *)sc)->rotZ = (st * 3) >> 9;
-          sc += ACTOR_SIZE;
+          sc->rotZ = (st * 3) >> 9;
+          sc++;
         } while (i < 0xA);
       }
       q = g_apSpritePrimQueue;

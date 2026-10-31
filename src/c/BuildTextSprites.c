@@ -5,7 +5,7 @@
 
 /* The sprite-record cursor as an Actor, read through a volatile view or
    plainly (see note 3 below). */
-#define CURSOR_V ((Actor *)*(void *volatile *)&g_pSpriteRecordWriteCursor)
+#define CURSOR_V (*(Actor *volatile *)&g_pSpriteRecordWriteCursor)
 
 /* Emit a glyph-sprite chain for a UI string, tracking per-glyph kerning: per
    non-space byte allocate a 0x58-byte SPRT slot at g_pSpriteRecordWriteCursor

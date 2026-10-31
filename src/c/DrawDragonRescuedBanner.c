@@ -12,7 +12,7 @@
 void DrawDragonRescuedBanner(void) {
   int pos[3];
   char *name;
-  unsigned char *rec;
+  Actor *rec;
   int w;
   int phase;
 
@@ -20,7 +20,7 @@ void DrawDragonRescuedBanner(void) {
       g_apDragonNames[((DragonStatueState *)g_pDragonRescueSourceActor->state)
                           ->dragonName];
   w = (strlen(name) - 1) * 13;
-  rec = (unsigned char *)g_pSpriteRecordWriteCursor;
+  rec = g_pSpriteRecordWriteCursor;
 
   pos[0] = 0xB0 - w;
   pos[1] = 0xC8;
@@ -33,14 +33,14 @@ void DrawDragonRescuedBanner(void) {
   BuildTextSpriteChain(name, pos, 0x1A, 2);
 
   phase = 0;
-  rec -= ACTOR_SIZE;
+  rec--;
   if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
     int *timer = &g_nDragonRescueSecondaryTimer;
     unsigned short *lut = (unsigned short *)g_anSineLut + 64;
     do {
       int idx = (*timer * 2 + phase) & 0xFF;
-      ((Actor *)rec)->rotZ = *(unsigned short *)((idx << 1) + (int)lut) >> 7;
-      rec -= ACTOR_SIZE;
+      rec->rotZ = *(unsigned short *)((idx << 1) + (int)lut) >> 7;
+      rec--;
       phase += 0xC;
     } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);
   }
