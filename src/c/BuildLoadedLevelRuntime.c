@@ -328,11 +328,11 @@ sprites:
   p++;
   i = *p;
   p++;
-  g_pActorListBase = p;
+  g_pActorListBase = (Actor *)p;
   p = (int *)(((char *)base) + (*base));
-  g_pActorPoolDynBase = ((char *)g_pActorListBase) + (i * ACTOR_SIZE);
+  g_pActorPoolDynBase = &g_pActorListBase[i];
   g_pActorPoolFreeHead = g_pActorPoolDynBase;
-  ((Actor *)g_pActorPoolDynBase)->mode = ACTOR_MODE_END;
+  g_pActorPoolDynBase->mode = ACTOR_MODE_END;
   g_nActorPoolLiveCount = 0;
   g_pActorAuxPoolTop = p;
   g_pActorAuxPoolFreeHead = p;
@@ -409,11 +409,11 @@ sprites:
       } else {
         HideActorRenderRecord(r);
       }
-      CopyVector(pos, &((Actor *)g_pActorListBase)[i].posX);
+      CopyVector(pos, &g_pActorListBase[i].posX);
       pos[2] += 0x400;
       FindGroundHeightBelow(pos, 0x10000);
-      EncodeCachedVecToActorDirCode(&((Actor *)g_pActorListBase)[i]);
-      type = ((Actor *)g_pActorListBase)[i].killGroup;
+      EncodeCachedVecToActorDirCode(&g_pActorListBase[i]);
+      type = g_pActorListBase[i].killGroup;
       if (((unsigned int)(type & 0x7F)) < 0x20) {
         register int b1 asm("$5");
         wi = i >> 5;
@@ -461,8 +461,7 @@ sprites:
 
             REG_RESERVE(k3);
             REG_RESERVE(k4);
-            tb = ((Actor *)g_pActorListBase)[i].killGroup &
-                 ACTOR_KILL_GROUP_MASK;
+            tb = g_pActorListBase[i].killGroup & ACTOR_KILL_GROUP_MASK;
             if (tb < 0x20) {
               tbit = 1 << tb;
               count = (mask & tbit) != 0;
@@ -472,9 +471,9 @@ sprites:
             __asm__ volatile("" : : "r"(k3), "r"(k4));
           }
           if (count != 0) {
-            ((Actor *)g_pActorListBase)[i].dropKind = 0xFF;
+            g_pActorListBase[i].dropKind = 0xFF;
           } else {
-            DespawnActorRecord(&((Actor *)g_pActorListBase)[i]);
+            DespawnActorRecord(&g_pActorListBase[i]);
           }
         }
       }

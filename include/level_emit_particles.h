@@ -39,5 +39,6 @@ extern char *g_pSpriteRecordWriteCursor;
 /* Attach-point lookup the particle clones aim from. */
 struct Actor;
 extern void GetActorAttachPoint(struct Actor *parent, int slot, int *dst);
+extern struct Actor *g_pActorListBase; /* level actor pool (tracking sparks store an owner index) */
 
 #endif /* OPEN_SPYRO_LEVEL_EMIT_PARTICLES_H */

@@ -13,11 +13,8 @@ void DespawnPickupGroupActors(int a0) {
     ptr = ((unsigned short **)g_pLevelPickupTableEntries)[a0];
     do {
       idx = *ptr & 0x7FFF;
-      if ((unsigned int)((
-              unsigned char *)g_pActorListBase)[idx * ACTOR_SIZE +
-                                                ACTOR_OFFSET(mode)] < 0x80) {
-        DespawnActorRecord((unsigned char *)g_pActorListBase +
-                           idx * ACTOR_SIZE);
+      if ((unsigned int)g_pActorListBase[idx].mode < ACTOR_MODE_DORMANT) {
+        DespawnActorRecord(&g_pActorListBase[idx]);
       }
     } while ((short)*ptr++ >= 0);
   }

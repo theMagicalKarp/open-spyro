@@ -9,9 +9,8 @@ void MarkActorCommittedKill(Actor *actor) {
   int word;
   int bit;
 
-  if ((unsigned int)actor >= (unsigned int)g_pActorListBase &&
-      (unsigned int)actor < (unsigned int)g_pActorPoolDynBase) {
-    index = actor - (Actor *)g_pActorListBase;
+  if (actor >= g_pActorListBase && actor < g_pActorPoolDynBase) {
+    index = actor - g_pActorListBase;
     word = index >> 5;
     bit = index & 0x1F;
     g_anCommittedKillBitmap[word] |= 1 << bit;

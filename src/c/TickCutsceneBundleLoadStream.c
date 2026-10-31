@@ -48,7 +48,7 @@ void TickCutsceneBundleLoadStream(void) {
   void *volatile *buf;
   int *ent;
   int *head;
-  unsigned char *actor;
+  Actor *actor;
   RestartStalledCdRead();
   if ((*((volatile int *)g_anCdReadInFlightBlock)) != 0) {
     return;
@@ -200,23 +200,24 @@ void TickCutsceneBundleLoadStream(void) {
         goto entry_loop;
       }
     }
-    g_pActorListBase = ((char *)g_pPathTableBuffer) + g_nLevelArchiveByteSize;
+    g_pActorListBase =
+        (Actor *)(((char *)g_pPathTableBuffer) + g_nLevelArchiveByteSize);
     i = 0;
     if (((int *)g_pPathTableHead)[3] > 0) {
       def = 0x20;
     actor_loop:
-      InitActorRenderDefaults(((int)g_pActorListBase) + (i * ACTOR_SIZE));
+      InitActorRenderDefaults(&g_pActorListBase[i]);
 
-      actor = (unsigned char *)((i * ACTOR_SIZE) + ((int)g_pActorListBase));
-      ((Actor *)actor)->cullRadius = def;
-      ((Actor *)actor)->type = i + 1;
+      /* int sum, not &g_pActorListBase[i]: that swaps the addu operands */
+      actor = (Actor *)((i * ACTOR_SIZE) + (int)g_pActorListBase);
+      actor->cullRadius = def;
+      actor->type = i + 1;
       i += 1;
       if (i < ((int *)g_pPathTableHead)[3]) {
         goto actor_loop;
       }
     }
-    (((unsigned char *)g_pActorListBase) +
-     (((int *)g_pPathTableHead)[3] * 0x58))[0x48] = 0xFF;
+    g_pActorListBase[((int *)g_pPathTableHead)[3]].mode = ACTOR_MODE_END;
     g_nCdStreamState = 0xA;
   }
 }

@@ -56,7 +56,7 @@ void DragonRescue_Draw(void) {
       *ot++ = g_pDragonRescueStatueActor;
     }
     *ot = 0;
-    act = (Actor *)g_pActorListBase;
+    act = g_pActorListBase;
     q = &g_apOtDepthBinBlock[2304];
     id = act->mode;
     while (id != ACTOR_MODE_END) {
@@ -98,7 +98,7 @@ void DragonRescue_Draw(void) {
     *ot++ = g_pDragonRescueSpyroMirrorActor;
     *ot = 0;
     q = &g_apOtDepthBinBlock[2304];
-    act = (Actor *)g_pActorListBase;
+    act = g_pActorListBase;
     id = act->mode;
     while (id != ACTOR_MODE_END) {
       if (act->type == ACTOR_TYPE_STATUE_SHARD && id < ACTOR_MODE_DORMANT) {

@@ -12,7 +12,7 @@
    directly as a condition, fold rewrites `(x & (1 << b)) != 0` into
    `(x >> b) & 1` and emits `srav` with the unmasked index. */
 int IsActorInRunningKillSet(Actor *actor) {
-  int idx = actor - (Actor *)g_pActorListBase;
+  int idx = actor - g_pActorListBase;
   int hit = 0;
 
   {

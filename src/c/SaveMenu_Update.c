@@ -49,7 +49,7 @@ void SaveMenu_Update(void) {
       Actor *actor;
 
       t = LookupSine((SM[1] << 5) - 0x400) + 0x1000;
-      actor = &((Actor *)g_pActorListBase)[((int *)ACT->state)[1]];
+      actor = &g_pActorListBase[((int *)ACT->state)[1]];
       if (actor->mode == 2) {
         actor->subMode += g_nFrameStep;
         if (actor->subMode >= 0x30) {
@@ -205,7 +205,7 @@ void SaveMenu_Update(void) {
           Actor *actor;
           int *path;
 
-          actor = &((Actor *)g_pActorListBase)[*(int *)ACT->state];
+          actor = &g_pActorListBase[*(int *)ACT->state];
           path = *(int **)actor;
           if (path[9] == -1 && path[6] != -1) {
             EndSaveMenuToWorld();

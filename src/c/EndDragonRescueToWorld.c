@@ -27,7 +27,7 @@ void EndDragonRescueToWorld(void) {
   g_nGamestate = GS_GAMEPLAY;
   g_nGameplayBlocked = 0;
   if (id != -1) {
-    rec = &((Actor *)g_pActorListBase)[id];
+    rec = &g_pActorListBase[id];
     rec->anim = 0;
     rec->mode = 1;
   }

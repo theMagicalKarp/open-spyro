@@ -21,9 +21,9 @@ void SetActorGroupStateExcept(Actor *actor, int value, int match) {
     ptr = ((unsigned short **)g_pLevelPickupTableEntries)[group];
     do {
       idx = *ptr & 0x7FFF;
-      type = ((Actor *)g_pActorListBase)[idx].mode;
+      type = g_pActorListBase[idx].mode;
       if (type < 0x80 && type != match) {
-        ((Actor *)g_pActorListBase)[idx].mode = value;
+        g_pActorListBase[idx].mode = value;
       }
     } while ((short)*ptr++ >= 0);
   }

@@ -2084,7 +2084,7 @@ int PickupGroupHasLiveActor(int group);
 
 /* 0x8003b854: Bank `value` gems for an actor kill/pickup and set its committed-kill
  * and per-level kill bits, then play the pickup sound on the actor. */
-void CommitActorKillGems(int value, unsigned char *actor);
+void CommitActorKillGems(int value, Actor *actor);
 
 /* 0x8003bad0: Turn (yaw/pitch clamped) and move an actor toward a 3D point, with
  * optional sphere collision; returns 1 when the move was adjusted. */

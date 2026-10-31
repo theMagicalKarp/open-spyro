@@ -22,7 +22,7 @@ extern void FreeEmitListRecord(unsigned char *rec);
 
 extern unsigned char *g_pEmitListBase;
 
-extern char *g_pActorListBase;
+extern struct Actor *g_pActorListBase; /* level actor pool */
 
 extern short g_anSineLut[];        /* sine table */
 

@@ -22,14 +22,14 @@ void CollectPickupActor(Actor *actor) {
 
   kind = actor->type;
   if (kind == ACTOR_TYPE_GEM_1) {
-    CommitActorKillGems(1, (unsigned char *)actor);
+    CommitActorKillGems(1, actor);
   } else if (kind == ACTOR_TYPE_GEM_2) {
-    CommitActorKillGems(2, (unsigned char *)actor);
+    CommitActorKillGems(2, actor);
   } else if (kind == ACTOR_TYPE_GEM_5) {
-    CommitActorKillGems(5, (unsigned char *)actor);
+    CommitActorKillGems(5, actor);
   } else if (kind == ACTOR_TYPE_GEM_10) {
-    CommitActorKillGems(0xA, (unsigned char *)actor);
+    CommitActorKillGems(0xA, actor);
   } else if (kind == ACTOR_TYPE_GEM_25) {
-    CommitActorKillGems(0x19, (unsigned char *)actor);
+    CommitActorKillGems(0x19, actor);
   }
 }

@@ -580,7 +580,7 @@ extern uint g_dwGamestateFrames;             /* 0x8007572c */
 extern int g_nPadSetMainModePending;         /* 0x80075730 */
 extern void *g_pfnLevelUpdateActors;       /* 0x80075734 */
 extern void *g_pEmitListWriteCursor;         /* 0x80075738 */
-extern void *g_pActorPoolFreeHead;           /* 0x8007573c */
+extern struct Actor *g_pActorPoolFreeHead;   /* 0x8007573c: lowest free slot of the level actor pool (AllocActorRecordSlot) */
 extern int g_nGemTallyHoldEndPhase;          /* 0x80075740 */
 extern int g_nSubMenuCursor;                 /* 0x80075744 */
 extern int g_nMusicVolume;                   /* 0x80075748 */
@@ -620,7 +620,7 @@ extern int g_nCreditsReturnLevelId;          /* 0x80075818 */
 extern int *g_pOtActiveDepthSlot;            /* 0x8007581c */
 extern void *g_pOtDepthBinArrayBase;         /* 0x80075820 */
 extern void *g_pEmitListBase;                /* 0x80075824 */
-extern void *g_pActorListBase;               /* 0x80075828 */
+extern struct Actor *g_pActorListBase;       /* 0x80075828: the level actor pool (0x58-byte Actor records, mode 0xFF ends it) */
 extern int g_nExtraLives;                    /* 0x8007582c */
 extern int g_nLevelKeyState;                 /* 0x80075830: the level key: 0 none, 1 carried (key 173 picked up), 2 locked chest (174) opened, 3 its reward collected; shown as HUD counter 4 */
 extern int g_nCameraShakePeakAmplitude;      /* 0x80075848 */
@@ -635,7 +635,7 @@ extern int g_nLevelSelectModeActive;         /* 0x80075880 */
 extern int g_nDemoExitFadeFrame;                /* 0x80075884: demo-end fade frame, 0 until the demo ends; at 0x10 the demo tears down */
 extern DRAWENV *g_pActiveFrameDrawEnv;       /* 0x80075888 */
 extern int g_nCdStallWatchdogTicks;          /* 0x8007588c */
-extern void *g_pActorPoolDynBase;            /* 0x80075890 */
+extern struct Actor *g_pActorPoolDynBase;    /* 0x80075890: end of the loaded actors, start of the dynamically spawned ones */
 extern int g_nCameraSpringReengageCountdown; /* 0x80075894 */
 extern struct Actor *g_pSparxActor;      /* 0x80075898: the Sparx actor (type 0x78, spawned by BuildLoadedLevelRuntime), or null while Sparx is gone */
 extern int g_nSpyroTurnRateAccum;            /* 0x800758a0 */

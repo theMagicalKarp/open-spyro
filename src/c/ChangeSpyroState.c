@@ -230,7 +230,7 @@ void ChangeSpyroState(int state) {
     }
     actor = g_pActorListBase;
     best = 0x7530;
-    if (actor < (Actor *)g_pActorPoolDynBase) {
+    if (actor < g_pActorPoolDynBase) {
       int *from = me;
 
       do {
@@ -264,7 +264,7 @@ void ChangeSpyroState(int state) {
         }
       next:
         actor++;
-      } while (actor < (Actor *)g_pActorPoolDynBase);
+      } while (actor < g_pActorPoolDynBase);
     }
     break;
   }

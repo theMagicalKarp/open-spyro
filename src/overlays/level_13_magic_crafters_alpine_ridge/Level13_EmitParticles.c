@@ -32,7 +32,6 @@
 #include "gamestate.h"
 
 
-extern Actor *g_pActorListBase;
 
 void Level13_EmitParticles(int count, int type, int *pos, int effectArg) {
   int v0[3];

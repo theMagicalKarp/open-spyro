@@ -155,7 +155,7 @@ void Level12_AdvanceEmitList(int step) {
       if (ALIVE == 0) {
         FreeEmitListRecord(rec);
       } else {
-        CopyVector(dir, &((Actor *)g_pActorListBase)[rec[0x1E]].posX);
+        CopyVector(dir, &g_pActorListBase[rec[0x1E]].posX);
         v[0] += LookupCosine(AGE << 7) >> 1;
         v[1] += LookupSine(AGE << 7) >> 1;
         v[2] += LookupCosine((AGE << 7) - 0x100) >> 2;

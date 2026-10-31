@@ -64,7 +64,7 @@ void BeginDragonRescue(Actor *actor) {
   g_nWorldDragonsRescued = world + 1;
   g_anDragonRescueBlock[-1] = st[6]; /* g_nDragonRescueTypeSnapshot */
   if (st[8] != (-1)) {
-    ((Actor *)g_pActorListBase)[st[8]].anim = 1;
+    g_pActorListBase[st[8]].anim = 1;
   }
   CopyVector(g_anDragonRescueAuraStarAnchor, &actor->posX);
   g_anDragonRescueAuraStarAnchor[2] += 0x40;

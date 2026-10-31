@@ -2,8 +2,6 @@
 #include "funcs.h"
 #include "globals.h"
 
-#define ACT ((Actor *)actor)
-
 /* The sample-bank global is the head of the level's per-sound pointer table
    (the level overlays index the same object as a pointer array). Reading it
    as a RECORD MEMBER, not as a plain scalar, is load-bearing here: sched.c's
@@ -22,7 +20,7 @@ struct SampleBankRef {
    bitmap (by 0x58-byte pool index when the pointer is in the live pool, else
    by its +0x56 id byte) and in the per-level kill bitmap, then play the
    level's pickup sound on the actor. */
-void CommitActorKillGems(int value, unsigned char *actor) {
+void CommitActorKillGems(int value, Actor *actor) {
   int id;
   int word;
 
@@ -30,8 +28,8 @@ void CommitActorKillGems(int value, unsigned char *actor) {
     int *gems;
     int w;
     int g;
-    if (ACT->posZ >= 0x300) {
-      SpawnFloatingDigitActors(value, ACT);
+    if (actor->posZ >= 0x300) {
+      SpawnFloatingDigitActors(value, actor);
     }
     gems = &g_anLevelGemsCollected[g_nLevelIndex];
     w = g_nWorldTreasureCollected + value;
@@ -40,17 +38,16 @@ void CommitActorKillGems(int value, unsigned char *actor) {
     *gems = g;
   }
 
-  if ((unsigned int)actor >= (unsigned int)g_pActorListBase &&
-      (unsigned int)actor < (unsigned int)g_pActorPoolDynBase) {
+  if (actor >= g_pActorListBase && actor < g_pActorPoolDynBase) {
     int raw;
-    id = ACT - (Actor *)g_pActorListBase;
+    id = actor - g_pActorListBase;
     word = id >> 5;
     raw = id;
     id = id & 0x1F;
     g_anCommittedKillBitmap[word] |= 1 << id;
     id = raw;
   } else {
-    id = ((Actor *)actor)->poolIndex;
+    id = actor->poolIndex;
   }
 
   word = id >> 5;

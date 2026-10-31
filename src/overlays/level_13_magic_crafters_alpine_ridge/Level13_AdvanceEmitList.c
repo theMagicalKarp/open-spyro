@@ -299,7 +299,7 @@ void Level13_AdvanceEmitList(int step) {
         goto expire;
       } else {
         bolt = v;
-        CopyVector(bolt, &((Actor *)g_pActorListBase)[rec[0x1E]].posX);
+        CopyVector(bolt, &g_pActorListBase[rec[0x1E]].posX);
         v[0] += LookupCosine(AGE << 7) >> 1;
         v[1] += LookupSine(AGE << 7) >> 1;
         v[2] += LookupCosine((AGE << 7) - 0x100) >> 2;

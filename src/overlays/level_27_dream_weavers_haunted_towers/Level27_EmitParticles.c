@@ -46,7 +46,6 @@
 #include "level_id.h"
 
 
-extern Actor *g_pActorListBase;
 
 void Level27_EmitParticles(int count, int type, int *pos, int effectArg) {
   int v0[3];

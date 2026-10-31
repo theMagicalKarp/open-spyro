@@ -13,7 +13,7 @@
  *    behind `shove:`.  That exact split is what makes step4 win $fp: with both
  *    calls inline &dv has one ref too many (4*23/1551 beats 4*23/1554) and it
  *    takes the register instead, costing an `lw` per arm across the function.
- *  - Arm 0x1D's patrol node is `(int *)(idx * 4 + *(int *)actor)` in INT
+ *  - Arm 0x1D's patrol node is `(int *)(idx * 4 + (int)actor->state)` in INT
  *    arithmetic (A149): the pointer form canonicalises the addu to put the
  *    deref first, which ties the sum to the deref's register instead of
  *    idx's and swaps the lbu between $v0 and $a2.
@@ -362,7 +362,7 @@ void Level27_AdvanceEmitList(int step) {
       int jy;
       int *node;
       char *wp;
-      char *actor;
+      Actor *actor;
       int idx;
 
       /* The haunted-towers ghost.  Three sub-states, selected by the flag
@@ -425,10 +425,10 @@ void Level27_AdvanceEmitList(int step) {
         }
       } else {
         idx = rec[0x19];
-        actor = g_pActorListBase + rec[0x18] * ACTOR_SIZE;
-        node = (int *)(idx * 4 + *(int *)actor);
+        actor = &g_pActorListBase[rec[0x18]];
+        node = (int *)(idx * 4 + (int)actor->state);
         wp = (char *)node[1];
-        actor = g_pActorListBase + node[8] * ACTOR_SIZE;
+        actor = &g_pActorListBase[node[8]];
         SVectorToVectorShl2(hold, POS);
         CopyVector(aim, (int *)(wp + (rec[0x1A] * 0x10 + 8)));
         dv[0] += LookupCosine(AGE << 7) >> 2;
@@ -439,9 +439,9 @@ void Level27_AdvanceEmitList(int step) {
         if (len < 0x401) {
           rec[0x1A]++;
           if (rec[0x1A] >= *(unsigned char *)wp) {
-            ((Actor *)actor)->subMode = 1;
+            actor->subMode = 1;
             HS(0x1E) = (GetRandomU32() & 6) + 1;
-            VectorToSVectorShr2(VEL, &((Actor *)actor)->posX);
+            VectorToSVectorShr2(VEL, &actor->posX);
             spin = GetRandomU32() & 0x7F;
             AGE = 0;
             HU(0x1C) += spin;
