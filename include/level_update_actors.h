@@ -1633,7 +1633,7 @@ extern void ChangeSpyroState(int a);
 extern void ComputeCameraOrbitOffset(int *out);
 extern void ProjectWorldPointGTEUnscaled(int *d, int *s);
 extern void StopSoundVoiceByIndex(int ch, int a);
-extern void TallyFlightTarget(int sound);
+extern void TallyFlightTarget(int tallyClass);
 extern void UpdateCameraEulerAngles(void);
 extern Xform g_aCameraXformPresets[];
 extern int g_anLevelKillBitmapTable[];

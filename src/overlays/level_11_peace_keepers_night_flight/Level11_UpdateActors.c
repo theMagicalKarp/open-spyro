@@ -1369,7 +1369,7 @@ void Level11_UpdateActors(void) {
           SubtractVector(svT, &actor->posX, &spy->posX);
           if (VectorLength(svT, VEC_LEN_XYZ) < 2500 &&
               PlaneDistanceAbs(&spy->posX, st) < 0x200) {
-            TallyFlightTarget(st->sound);
+            TallyFlightTarget(st->tallyClass);
             if (st->helper != 0) {
               st->helper->mode = 1;
             } else {
@@ -1464,7 +1464,7 @@ void Level11_UpdateActors(void) {
               PlaneDistanceAbs(&spy->posX, st) < 0x200) {
             int i;
 
-            TallyFlightTarget(st->sound);
+            TallyFlightTarget(st->tallyClass);
             if (st->helper != 0) {
               st->helper->mode = 1;
             }

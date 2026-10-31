@@ -83,7 +83,7 @@ typedef struct RoamingRamState {
   int mode;       /* 0x1C */
   int partner;    /* 0x20 index into g_pActorListBase */
   int target;     /* 0x24 index into g_pActorListBase */
-  int chan;       /* 0x28 voice channel, -1 = none */
+  int triggerSlot;       /* 0x28 g_anLevelTriggerStateSlots index (a war drum sets it), -1 = none */
   int p2C;        /* 0x2C */
   char pad30[0x14];
   int call;       /* 0x44 */

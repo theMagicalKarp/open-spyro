@@ -1647,7 +1647,7 @@ void Level23_UpdateActors(void) {
               PlaneDistanceAbs(&spy->posX, st) < 0x200) {
             int i;
 
-            TallyFlightTarget(st->sound);
+            TallyFlightTarget(st->tallyClass);
             if (st->helper != 0) {
               st->helper->mode = 1;
             }

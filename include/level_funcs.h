@@ -66,7 +66,7 @@ extern void StoreImage();                                    /* MoveImage */
 extern int strlen();                                         /* text glyph count */
 extern void StubRewardHook(int script, int a);
 extern void SubtractVector(int *out, int *a, int *b);
-extern void TallyFlightTarget(int sound);
+extern void TallyFlightTarget(int tallyClass);
 extern void TickActiveSoundVoices(void);
 struct Actor;
 extern void TickActorAnims(struct Actor **list, int mode);

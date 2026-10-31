@@ -52,7 +52,7 @@ typedef struct TargetState {
   int pad0C;
   Actor *helper;  /* 0x10 */
   int helperType; /* 0x14, spawned as helperType + 0x158 */
-  int sound;      /* 0x18 */
+  int tallyClass;      /* 0x18 flight target class 0..3 (TallyFlightTarget) */
 } TargetState;
 
 /* Particle burst shards spawned by the 0x161 target. */

@@ -22,7 +22,7 @@
  *   - Single-set temps (cookbook F14d): case 177's case-0 clamp uses its
  *     own `d0`; case 181 reads `SPY.bodyRotZ` (a struct MEM, so it depends
  *     on the preceding `st->timer` store) and writes the BFC..C04 triple as
- *     `g_nCameraScriptStickRequestY[-1..1]` so the `st->snd` load waits for them; the w181
+ *     `g_nCameraScriptStickRequestY[-1..1]` so the `st->chunkAnim` load waits for them; the w181
  *     init stores `w[0]` (the timer read) first.
  *
  *   - Case 177's camera block writes every camera word as an aggregate
