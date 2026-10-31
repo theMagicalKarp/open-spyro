@@ -99,13 +99,13 @@ extern unsigned int g_dwHudBobSinePhase[];
 
 /* The balloonist actor record (Update reads its fields; Draw links it into
  * the OT as the pending node). */
-extern unsigned char *g_pActorCutsceneRecord;
+extern Actor *g_pActorCutsceneRecord;
 
 /* The two cutscene actor pointers seen as Actor records: the focus actor
  * (g_pActorCutsceneActor, set by BeginActorCutscene) and the orbit-centre
  * record above (the actor at the path end, or g_abActorCutsceneActorSnapshot). */
 #define CUTSCENE_ACTOR ((Actor *)g_pActorCutsceneActor)
-#define CUTSCENE_RECORD ((Actor *)g_pActorCutsceneRecord)
+#define CUTSCENE_RECORD g_pActorCutsceneRecord
 
 /* g_nActorCutsceneSpyroToX (From + 12), stored through a char * off the From
  * base: not in-struct, so sched keeps the following load below it (lever L2

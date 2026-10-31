@@ -504,7 +504,7 @@ void Level24_BalloonistCutscene_Update(void)
         cn = LookupSine(((t << 11) / 102) - 0x400) + 0x1000;
         if (g_nActorCutsceneTimer[0] == g_nFrameStep)
         {
-          ((Actor *)g_pActorCutsceneRecord)->visZone = 0xFF;
+          g_pActorCutsceneRecord->visZone = 0xFF;
           g_nActorCutsceneCamYawStart = ArcTan2(g_anCameraPos[0] - CUTSCENE_RECORD->posX, g_nCameraPosY - CUTSCENE_RECORD->posY, 1);
           SubtractVector(vecB, g_anCameraPos, &CUTSCENE_RECORD->posX);
           g_nActorCutsceneCamRadiusStart = VectorLength(vecB, VEC_LEN_XY);
@@ -512,7 +512,7 @@ void Level24_BalloonistCutscene_Update(void)
           g_nActorCutsceneCamEulerRollStart = g_nCameraEulerRoll;
           g_nActorCutsceneCamEulerPitchStart = g_nCameraEulerPitch;
           g_nActorCutsceneCamEulerYawStart = g_nCameraEulerYaw;
-          n = ((Actor *)g_pActorCutsceneRecord)->rotZ;
+          n = g_pActorCutsceneRecord->rotZ;
           g_nActorCutsceneCamRadiusGoal = 0xE00;
           g_nActorCutsceneCamYawGoal_s = ((n * 0x10) - 0x480) & 0xFFF;
           g_nActorCutsceneCamHeightGoal = ACTOR_RAW(CUTSCENE_RECORD, int, posZ) + 0x200;
@@ -639,7 +639,7 @@ void Level24_BalloonistCutscene_Update(void)
         g_nCameraEulerPitch = ArcTan2(VectorLength(vecC, VEC_LEN_XY), -vecC[2], 1);
         g_nCameraEulerYaw = ArcTan2(vecC[0], vecC[1], 1);
         g_nSpyroWorldPosZ = ACTOR_RAW(CUTSCENE_RECORD, int, posZ) + 0x2D4;
-        g_bSpyroPersistentEulerZ = ((Actor *)g_pActorCutsceneRecord)->rotZ + 0x80;
+        g_bSpyroPersistentEulerZ = g_pActorCutsceneRecord->rotZ + 0x80;
       }
       else
       {
@@ -647,7 +647,7 @@ void Level24_BalloonistCutscene_Update(void)
         SubtractVector(vecC, g_anCameraPos, &CUTSCENE_RECORD->posX);
         g_nActorCutsceneCamRadiusStart = VectorLength(vecC, VEC_LEN_XY);
         g_nActorCutsceneCamHeightStart = g_nCameraPosZ;
-        n = ((Actor *)g_pActorCutsceneRecord)->rotZ;
+        n = g_pActorCutsceneRecord->rotZ;
         g_nActorCutsceneCamRadiusGoal = 0x800;
         g_nCdStreamState = 0;
         g_nEnteredPortalIdx = -1;
@@ -663,7 +663,7 @@ void Level24_BalloonistCutscene_Update(void)
         }
         TickLevelTransitionStream(1);
         CopyWords(g_abActorCutsceneActorSnapshot, g_pActorCutsceneRecord, 0x58);
-        g_pActorCutsceneRecord = (unsigned char *) g_abActorCutsceneActorSnapshot;
+        g_pActorCutsceneRecord = (Actor *)g_abActorCutsceneActorSnapshot;
         if (((unsigned int) g_pRenderScratchRegionBase) <= 0x801FFFFF)
         {
           bank = (int *) (g_pWorldRenderMeshChunkArray - 0x400C);
@@ -768,7 +768,7 @@ void Level24_BalloonistCutscene_Update(void)
         g_nCameraEulerPitch = ArcTan2(VectorLength(vecE, VEC_LEN_XY), -vecE[2], 1);
         g_nCameraEulerYaw = ArcTan2(vecE[0], vecE[1], 1);
         g_nSpyroWorldPosZ = ACTOR_RAW(CUTSCENE_RECORD, int, posZ) + 0x2D4;
-        g_bSpyroPersistentEulerZ = ((Actor *)g_pActorCutsceneRecord)->rotZ + 0x80;
+        g_bSpyroPersistentEulerZ = g_pActorCutsceneRecord->rotZ + 0x80;
       }
       else
       {
