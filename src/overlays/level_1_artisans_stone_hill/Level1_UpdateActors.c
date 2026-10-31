@@ -726,7 +726,7 @@ void Level1_UpdateActors(void) {
       EBB_BREAK();
       st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != 10) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != THIEF_CAUGHT) {
         st->knock = 0x96;
         if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
           st->knock = 0xE1;
@@ -739,18 +739,18 @@ void Level1_UpdateActors(void) {
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorCommittedKill(actor);
         }
-        actor->mode = 10;
+        actor->mode = THIEF_CAUGHT;
         continue;
       }
 
-      if (actor->dropKind != 0xFF && st->egg == 0 && actor->mode != 10) {
+      if (actor->dropKind != 0xFF && st->egg == 0 && actor->mode != THIEF_CAUGHT) {
         st->egg = g_pfnLevelSpawnActor(ACTOR_TYPE_DRAGON_EGG, actor);
         st->egg->otBias = 0;
         ((EggRiseState *)st->egg->state)->owner = actor;
       }
 
       if (TickCountdownByFrameDelta(&st->voice, 4) != 0 &&
-          (actor->mode == 1 || actor->mode == 0x28)) {
+          (actor->mode == THIEF_RUN || actor->mode == THIEF_CLIMB_RUN)) {
         int k;
 
         st->voice = (int)GetRandomU32() % 3 + 4;
@@ -774,17 +774,17 @@ void Level1_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case THIEF_IDLE:
         actor->otBias = 2;
-        if (st->mode == 0) {
+        if (st->mode == THIEFKIND_HOP) {
           TrackEntityYawTowardSpyro(actor, 6, 0, 0);
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1C00) {
             st->landed = 0;
             ANIM_GO(actor, 1);
-            actor->mode = 1;
+            actor->mode = THIEF_RUN;
             continue;
           }
-        } else if (st->mode == 1) {
+        } else if (st->mode == THIEFKIND_GUARD) {
           int spd = 0x154;
 
           spd -= ApproxDist2D(&actor->posX, &spy->posX) >> 5;
@@ -854,18 +854,18 @@ void Level1_UpdateActors(void) {
               actor->subMode = 0;
             }
           }
-        } else if (st->mode == 2) {
+        } else if (st->mode == THIEFKIND_LEDGE) {
           ANIM_GO(actor, 4);
           TrackEntityYawTowardSpyro(actor, 4, 0, 0);
           if (ApproxDist2D(&spy->posX, &st->path->nodes[6].x) < 0x1800) {
-            actor->mode = 0x19;
+            actor->mode = THIEF_LEDGE_RESET;
             continue;
           }
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1C00) {
-            actor->mode = 0x14;
+            actor->mode = THIEF_LEDGE_RUN;
             continue;
           }
-        } else if (st->mode == 3) {
+        } else if (st->mode == THIEFKIND_FLEE) {
           if (ApproxDist2D(&actor->posX, &spy->posX) < st->range << 10 &&
               ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x708 &&
               (st->needLos == 0 || CheckSpyroLineOfSightTo(&actor->posX) != 0)) {
@@ -879,7 +879,7 @@ void Level1_UpdateActors(void) {
                                  st->path->count) %
                                 st->path->count;
               }
-              actor->mode = 0x1E;
+              actor->mode = THIEF_FLEE;
               continue;
             }
             ANIM_GO(actor, 4);
@@ -888,14 +888,14 @@ void Level1_UpdateActors(void) {
           }
           ANIM_GO(actor, 4);
           TrackEntityYawTowardSpyro(actor, 6, 0, 0);
-        } else if (st->mode == 4) {
+        } else if (st->mode == THIEFKIND_CLIMB) {
           if (IsPointInRotatedBox(&SPY.posX, st->area) != 0) {
-            actor->mode = 0x28;
+            actor->mode = THIEF_CLIMB_RUN;
             continue;
           }
           ANIM_GO(actor, 4);
           TrackEntityYawTowardSpyro(actor, 6, 0, 0);
-        } else if (st->mode == 5) {
+        } else if (st->mode == THIEFKIND_CIRCLE) {
           if (st->dist == 0) {
             st->dist = ApproxDist2D(&actor->posX,
                                      &st->path->nodes[st->path->cur].x);
@@ -914,17 +914,17 @@ void Level1_UpdateActors(void) {
               d -= 0x100;
             }
             if (ABS(d) > 0x30) {
-              actor->mode = 0x32;
+              actor->mode = THIEF_CIRCLE;
               continue;
             }
           }
-        } else if (st->mode == 6) {
-          actor->mode = 0x3C;
+        } else if (st->mode == THIEFKIND_STAND) {
+          actor->mode = THIEF_STAND;
           continue;
         }
         break;
 
-      case 1: {
+      case THIEF_RUN: {
         int spd = 0x154;
 
         spd -= ApproxDist2D(&actor->posX, &SPY.posX) >> 5;
@@ -937,13 +937,13 @@ void Level1_UpdateActors(void) {
         if (PivotActorAlongPath(actor, st->path, 0x73A, spd, 0xC8, 0xA, 0x80,
                           actor->group, 0) == 0x104) {
           st->vz = 0x12C;
-          actor->mode = 2;
+          actor->mode = THIEF_LEAP;
           continue;
         }
         break;
       }
 
-      case 2:
+      case THIEF_LEAP:
         actor->otBias = 0;
         TurnActorYawTowardAngle(actor,
                       ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
@@ -953,14 +953,14 @@ void Level1_UpdateActors(void) {
         MoveActorAlongHeading(actor, 0x96, 0, 0, 1);
         if (ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x) <
             0x100) {
-          actor->mode = 3;
+          actor->mode = THIEF_PERCH;
           continue;
         }
         actor->posZ += st->vz;
         st->vz -= 0x14;
         break;
 
-      case 3: {
+      case THIEF_PERCH: {
         int g = ProbeActorGroundHeight(actor);
 
         ANIM_GO(actor, 4);
@@ -997,14 +997,14 @@ void Level1_UpdateActors(void) {
           } else if (ApproxDist2D(&spy->posX, &st->path->nodes[6].x) < 0x800 ||
                      ApproxDist2D(&spy->posX, &st->path->nodes[7].x) < 0x800) {
             st->vz = 0x96;
-            actor->mode = 4;
+            actor->mode = THIEF_LEAP_HOME;
             continue;
           }
         }
         break;
       }
 
-      case 4: {
+      case THIEF_LEAP_HOME: {
         int g;
 
         TurnActorYawTowardAngle(actor,
@@ -1024,7 +1024,7 @@ void Level1_UpdateActors(void) {
             actor->posZ = g;
             st->path->cur = 0;
             ANIM_GO(actor, 0);
-            actor->mode = 0;
+            actor->mode = THIEF_IDLE;
             continue;
           }
           actor->posZ = z;
@@ -1036,7 +1036,7 @@ void Level1_UpdateActors(void) {
         break;
       }
 
-      case 10:
+      case THIEF_CAUGHT:
         if (st->egg != 0) {
           g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
           if (actor->nextAnim == 3 && actor->nextFrame >= 5) {
@@ -1061,38 +1061,38 @@ void Level1_UpdateActors(void) {
         DespawnActorRecord(actor);
         continue;
 
-      case 0x14:
+      case THIEF_LEDGE_RUN:
         ANIM_GO(actor, 1);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0xF0, 0, 8, sixteen, 0xFF,
                           5) == 0x103) {
-          actor->mode = 0x15;
+          actor->mode = THIEF_LEDGE_WAIT;
           continue;
         }
         break;
 
-      case 0x15:
+      case THIEF_LEDGE_WAIT:
         if (ApproxDist2D(&spy->posX, &st->path->nodes[6].x) < 0x1800) {
-          actor->mode = 0x19;
+          actor->mode = THIEF_LEDGE_RESET;
           continue;
         }
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000) {
-          actor->mode = 0x16;
+          actor->mode = THIEF_LEDGE_RUN_ON;
           continue;
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         ANIM_GO(actor, 4);
         break;
 
-      case 0x16:
+      case THIEF_LEDGE_RUN_ON:
         ANIM_GO(actor, 1);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0xDA, 0, 0xA, 0x30, 0xFF,
                           5) == 0x101) {
-          actor->mode = 0x17;
+          actor->mode = THIEF_LEDGE_TAUNT;
           continue;
         }
         break;
 
-      case 0x17: {
+      case THIEF_LEDGE_TAUNT: {
         int d = ApproxDist2D(&actor->posX, &spy->posX);
 
         ANIM_GO(actor, 4);
@@ -1100,13 +1100,13 @@ void Level1_UpdateActors(void) {
         if (d < 0x2000 && SPY.posZ - actor->posZ >= -0xC7) {
           st->vz = 0x96;
           st->landed = 0;
-          actor->mode = 0x18;
+          actor->mode = THIEF_LEDGE_JUMP;
           continue;
         }
         break;
       }
 
-      case 0x18: {
+      case THIEF_LEDGE_JUMP: {
         int sp = 1;
 
         if (st->landed != 0) {
@@ -1122,7 +1122,7 @@ void Level1_UpdateActors(void) {
         MoveActorAlongHeading(actor, 0xFA, 0, 0, sp);
         if (ApproxDist2D(&actor->posX, &st->path->nodes[2].x) < 0x100) {
           st->path->cur = 3;
-          actor->mode = 0x15;
+          actor->mode = THIEF_LEDGE_WAIT;
           continue;
         }
         if (st->landed == 0) {
@@ -1137,14 +1137,14 @@ void Level1_UpdateActors(void) {
         break;
       }
 
-      case 0x19:
+      case THIEF_LEDGE_RESET:
         CopyVector(&actor->posX, &st->path->nodes[0].x);
         st->path->cur = 1;
         SnapActorToGround(actor);
-        actor->mode = 0x17;
+        actor->mode = THIEF_LEDGE_TAUNT;
         continue;
 
-      case 0x1E: {
+      case THIEF_FLEE: {
         int top = 0xCD;
         int next;
         int dCur;
@@ -1197,7 +1197,7 @@ void Level1_UpdateActors(void) {
         if (r & 0x100) {
           if ((r & ~0x100) ==
               (st->node - st->path->reversed) % st->path->count) {
-            actor->mode = 0;
+            actor->mode = THIEF_IDLE;
             continue;
           }
           st->node = FindFarthestPathPointFromSpyro(st->path);
@@ -1205,7 +1205,7 @@ void Level1_UpdateActors(void) {
         break;
       }
 
-      case 0x28:
+      case THIEF_CLIMB_RUN:
         ANIM_GO(actor, 1);
         if (actor->posZ < 0x800) {
           CopyVector(&actor->posX, &st->path->nodes[st->path->cur].x);
@@ -1218,12 +1218,12 @@ void Level1_UpdateActors(void) {
         if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, 0xFF,
                           5) == 0x10B) {
           st->vz = 0x96;
-          actor->mode = 0x29;
+          actor->mode = THIEF_CLIMB_HOP;
           continue;
         }
         break;
 
-      case 0x29: {
+      case THIEF_CLIMB_HOP: {
         int g = ProbeActorGroundHeight(actor);
         int d = ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x);
 
@@ -1241,7 +1241,7 @@ void Level1_UpdateActors(void) {
         }
         if (d < 0x100 && actor->posZ == g) {
           if (++st->path->cur == 0xD) {
-            actor->mode = 0x2A;
+            actor->mode = THIEF_CLIMB_TOP;
             continue;
           }
           st->vz = 0x96;
@@ -1258,7 +1258,7 @@ void Level1_UpdateActors(void) {
         break;
       }
 
-      case 0x2A:
+      case THIEF_CLIMB_TOP:
         ANIM_GO(actor, 4);
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (actor->posZ < 0x800) {
@@ -1269,12 +1269,12 @@ void Level1_UpdateActors(void) {
             ApproxDist2D(&actor->posX, (int *)(base - 8)) < 0x1800) {
           st->vz = 0x1A4;
           st->path->cur = 9;
-          actor->mode = 0x2B;
+          actor->mode = THIEF_CLIMB_HOP_DOWN;
           continue;
         }
         break;
 
-      case 0x2B: {
+      case THIEF_CLIMB_HOP_DOWN: {
         int g = ProbeActorGroundHeight(actor);
         int d = ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x);
 
@@ -1290,7 +1290,7 @@ void Level1_UpdateActors(void) {
         if (d < 0x100 && actor->posZ == g) {
           st->path->reversed = -st->path->reversed;
           st->path->cur = 8;
-          actor->mode = 0x2C;
+          actor->mode = THIEF_CLIMB_RUN_BACK;
           continue;
         }
         actor->posZ += st->vz;
@@ -1304,7 +1304,7 @@ void Level1_UpdateActors(void) {
         break;
       }
 
-      case 0x2C:
+      case THIEF_CLIMB_RUN_BACK:
         ANIM_GO(actor, 1);
         st->speed = 0xC8;
         if (actor->posZ < 0x800) {
@@ -1315,12 +1315,12 @@ void Level1_UpdateActors(void) {
                           5) == st->path->count + 0xFF) {
           st->path->reversed = -st->path->reversed;
           st->path->cur = 1;
-          actor->mode = 0;
+          actor->mode = THIEF_IDLE;
           continue;
         }
         break;
 
-      case 0x32:
+      case THIEF_CIRCLE:
         ANIM_GO(actor, 1);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000) {
           int a = (ArcTan2(spy->posX - st->path->nodes[st->path->cur].x,
@@ -1339,13 +1339,13 @@ void Level1_UpdateActors(void) {
             a -= 0x100;
           }
           if (ABS(a) < 0x20) {
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, THIEF_IDLE);
           }
           break;
         }
-        ENTER_POSE(actor, 0);
+        ENTER_POSE(actor, THIEF_IDLE);
 
-      case 0x3C:
+      case THIEF_STAND:
         ANIM_GO(actor, 4);
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         break;

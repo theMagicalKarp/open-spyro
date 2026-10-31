@@ -153,4 +153,41 @@ enum NameSignSide {
   NAMESIDE_BACK = 1,
 };
 
+/* ThiefState.mode: an egg thief's behaviour, from the level data; THIEF_IDLE
+ * runs it until Spyro triggers the matching routine. Path node numbers are
+ * the thief's own route (ThiefState.path). */
+enum ThiefKind {
+  THIEFKIND_HOP = 0,    /* Spyro near: THIEF_RUN, leap to a perch, leap home */
+  THIEFKIND_GUARD = 1,  /* keeps between Spyro and path node 0 */
+  THIEFKIND_LEDGE = 2,  /* Spyro near: the THIEF_LEDGE_* routine */
+  THIEFKIND_FLEE = 3,   /* Spyro in range (and sight): THIEF_FLEE */
+  THIEFKIND_CLIMB = 4,  /* Spyro in its area box: the THIEF_CLIMB_* routine */
+  THIEFKIND_CIRCLE = 5, /* Spyro near: THIEF_CIRCLE */
+  THIEFKIND_STAND = 6,  /* THIEF_STAND */
+};
+
+/* ->mode of an egg thief (ACTOR_TYPE_EGG_THIEF, ThiefState). */
+enum ThiefMode {
+  THIEF_IDLE = 0,           /* runs its ThiefKind */
+  THIEF_RUN = 1,            /* runs the path to node 4 */
+  THIEF_LEAP = 2,           /* leaps toward the current node */
+  THIEF_PERCH = 3,          /* lands, waits at node 4 or 5 until Spyro nears 6/7 */
+  THIEF_LEAP_HOME = 4,      /* leaps back to node 0 */
+  THIEF_CAUGHT = 10,        /* hit: releases the egg (EGG_RELEASED) and bursts */
+  THIEF_LEDGE_RUN = 0x14,   /* runs the path to node 3 */
+  THIEF_LEDGE_WAIT = 0x15,  /* waits for Spyro */
+  THIEF_LEDGE_RUN_ON = 0x16, /* runs on to node 1 */
+  THIEF_LEDGE_TAUNT = 0x17, /* waits until Spyro is close and level */
+  THIEF_LEDGE_JUMP = 0x18,  /* jumps across to node 2, then waits again */
+  THIEF_LEDGE_RESET = 0x19, /* Spyro is at node 6: warps to node 0 */
+  THIEF_FLEE = 0x1E,        /* runs its path ring away from Spyro */
+  THIEF_CLIMB_RUN = 0x28,   /* runs the path to node 11 */
+  THIEF_CLIMB_HOP = 0x29,   /* hops node to node up to node 13 */
+  THIEF_CLIMB_TOP = 0x2A,   /* waits on top until Spyro is well below */
+  THIEF_CLIMB_HOP_DOWN = 0x2B, /* hops down to node 9 */
+  THIEF_CLIMB_RUN_BACK = 0x2C, /* runs the path back to its start */
+  THIEF_CIRCLE = 0x32,      /* circles the current node away from Spyro */
+  THIEF_STAND = 0x3C,       /* stands facing Spyro */
+};
+
 #endif

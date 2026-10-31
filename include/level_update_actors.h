@@ -415,7 +415,7 @@ extern void GetActorAttachPoint(Actor *actor, int slot, int *pos);
 typedef struct ThiefState {
   PathData *path; /* 0x00 */
   Actor *egg;     /* 0x04 the carried egg, or null once dropped */
-  int mode;       /* 0x08 idle behaviour, picked by the level data */
+  int mode;       /* 0x08 idle behaviour (enum ThiefKind), picked by the level data */
   int vz;         /* 0x0C vertical speed while hopping */
   int landed;     /* 0x10 */
   int speed;      /* 0x14 path speed */
