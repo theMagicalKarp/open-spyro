@@ -57,9 +57,7 @@ void StoryIntro_Draw(void) {
     }
 
     if (g_anStoryIntroTimerBlock[0] < limit) {
-      g_pSpriteRecordWriteCursor =
-          (char *)g_pSpriteRecordWriteCursor +
-          ((limit - g_anStoryIntroTimerBlock[0]) >> 1) * 0x58;
+      g_pSpriteRecordWriteCursor += (limit - g_anStoryIntroTimerBlock[0]) >> 1;
     }
 
     rec -= ACTOR_SIZE;

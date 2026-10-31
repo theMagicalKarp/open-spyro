@@ -45,7 +45,7 @@ void GamestateDraw(void) {
   g_pOtActiveDepthSlot = otslot;
   g_pPrimBufferLimit = limit;
   g_pSpriteRecordBufferTop = limit;
-  g_pSpriteRecordWriteCursor = limit;
+  g_pSpriteRecordWriteCursor = (Actor *)limit;
   BuildCameraViewMatrix();
 
   if (g_nGamestate != GS_GAMEPLAY) {

@@ -5,7 +5,6 @@
 #include "main_shared.h"
 
 /* The sprite record being written (Actor layout). */
-#define SREC ((Actor *)g_pSpriteRecordWriteCursor)
 
 /* 0x8001973c — the level-entry/exit banner and post-level treasure tally
    (2324 b), drawn by LevelTransition_Draw.
@@ -97,7 +96,7 @@ void DrawLevelTransitionOverlay(void) {
   }
 
   {
-    char *glyph = g_pSpriteRecordWriteCursor;
+    char *glyph = (char *)g_pSpriteRecordWriteCursor;
     pos[2] = 0x1100;
     step[0] = 0x10;
     step[1] = 1;
@@ -156,7 +155,7 @@ void DrawLevelTransitionOverlay(void) {
       pos[0] -= 0x10;
     }
     {
-      char *glyph = g_pSpriteRecordWriteCursor;
+      char *glyph = (char *)g_pSpriteRecordWriteCursor;
       int wave;
       BuildTextSprites((unsigned char *)buf, pos, step, 0x12, 2);
       glyph -= ACTOR_SIZE;
@@ -219,7 +218,7 @@ void DrawLevelTransitionOverlay(void) {
     pos[2] = 0xf80;
     sprintf(msg, g_szFmtPercentD, value);
     {
-      char *glyph = g_pSpriteRecordWriteCursor;
+      char *glyph = (char *)g_pSpriteRecordWriteCursor;
       BuildTextSpriteChain((unsigned char *)msg, pos, 0x14, 2);
       glyph -= ACTOR_SIZE;
       if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {
@@ -237,8 +236,7 @@ void DrawLevelTransitionOverlay(void) {
     i = 0;
     do {
       if (PARTICLES[i].live != 0) {
-        g_pSpriteRecordWriteCursor =
-            (void *)((int)g_pSpriteRecordWriteCursor - ACTOR_SIZE);
+        g_pSpriteRecordWriteCursor--;
         FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
         SPR->uv = g_abGemTallyIconUvTable[i];
         gx = PARTICLES[i].x + 0x140;
@@ -246,20 +244,19 @@ void DrawLevelTransitionOverlay(void) {
         SPR->y = 0xc6 - PARTICLES[i].y;
         SPR->scale = 0x1000;
         SPR->r = PARTICLES[i].driftx;
-        SREC->rotY = PARTICLES[i].drifty;
-        SREC->rotZ = PARTICLES[i].spin;
-        SREC->otBias = 0x7f;
-        SREC->tintMode =
+        g_pSpriteRecordWriteCursor->rotY = PARTICLES[i].drifty;
+        g_pSpriteRecordWriteCursor->rotZ = PARTICLES[i].spin;
+        g_pSpriteRecordWriteCursor->otBias = 0x7f;
+        g_pSpriteRecordWriteCursor->tintMode =
             ACTOR_RAW(g_pSpriteRecordWriteCursor, unsigned char, type) - 0x52;
-        SREC->cullRadius = 0xff;
+        g_pSpriteRecordWriteCursor->cullRadius = 0xff;
       }
       i++;
     } while (i < 0x20);
 
-    g_pSpriteRecordWriteCursor =
-        (void *)((int)g_pSpriteRecordWriteCursor - ACTOR_SIZE);
+    g_pSpriteRecordWriteCursor--;
     FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
-    spr = g_pSpriteRecordWriteCursor;
+    spr = (TallySprite *)g_pSpriteRecordWriteCursor;
     spr->uv = 0x1d9;
     spr->x = x0 + 0x140;
     if (g_nLevelTransitionPhase < 0xe0) {
@@ -274,10 +271,10 @@ void DrawLevelTransitionOverlay(void) {
       y += 0xc;
     }
     spr->y = y;
-    SREC->rotZ = 0xb0;
-    SREC->otBias = 0x7f;
-    SREC->tintMode = 0xb;
-    SREC->cullRadius = 0xff;
+    g_pSpriteRecordWriteCursor->rotZ = 0xb0;
+    g_pSpriteRecordWriteCursor->otBias = 0x7f;
+    g_pSpriteRecordWriteCursor->tintMode = 0xb;
+    g_pSpriteRecordWriteCursor->cullRadius = 0xff;
   }
 
   g_apSpritePrimQueue[0] = 0;

@@ -14,7 +14,6 @@ typedef struct LetterPos {
 #define LETTER_POS(k) ((LetterPos *)((char *)g_anGameOverLetterPosXY + (k)))
 
 /* The sprite record being written (Actor layout). */
-#define SREC ((Actor *)g_pSpriteRecordWriteCursor)
 
 /* Game-over camera euler snapshot, read unsigned (lhu). */
 
@@ -124,20 +123,21 @@ void RespawnOrGameOver_Draw(void) {
         t = g_nGameplayDrawFrame - d;
         if (t >= 0) {
           rec = (char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
-          g_pSpriteRecordWriteCursor = rec;
+          g_pSpriteRecordWriteCursor = (Actor *)rec;
           FillWord(rec, 0, 0x58);
           if (t < 0x18) {
-            SREC->posZ = *(short *)(t * 2 + (int)ramp);
+            g_pSpriteRecordWriteCursor->posZ = *(short *)(t * 2 + (int)ramp);
           } else {
-            SREC->posZ = 0x400;
+            g_pSpriteRecordWriteCursor->posZ = 0x400;
           }
-          SREC->type = ACTOR_TYPE_LETTER_GLYPH(g_abGameOverGlyphs[i]);
-          SREC->posX = LETTER_POS(k)->x;
-          SREC->posY = LETTER_POS(k)->y;
-          SREC->rotZ = g_abGameOverLetterAngle[i];
-          SREC->otBias = 4;
-          SREC->tintMode = 0xB;
-          SREC->cullRadius = 0x20;
+          g_pSpriteRecordWriteCursor->type =
+              ACTOR_TYPE_LETTER_GLYPH(g_abGameOverGlyphs[i]);
+          g_pSpriteRecordWriteCursor->posX = LETTER_POS(k)->x;
+          g_pSpriteRecordWriteCursor->posY = LETTER_POS(k)->y;
+          g_pSpriteRecordWriteCursor->rotZ = g_abGameOverLetterAngle[i];
+          g_pSpriteRecordWriteCursor->otBias = 4;
+          g_pSpriteRecordWriteCursor->tintMode = 0xB;
+          g_pSpriteRecordWriteCursor->cullRadius = 0x20;
         }
         i += 1;
         k += 4;

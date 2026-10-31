@@ -95,6 +95,6 @@ extern char *g_apSpritePrimQueue[];
 extern int g_dwHudBobSinePhase;
 extern char g_pOtDepthBinHead0[];
 extern char *g_pRenderScratchRegionBase;
-extern char *g_pSpriteRecordWriteCursor;
+extern struct Actor *g_pSpriteRecordWriteCursor; /* sprite-record queue tail (grows down) */
 
 #endif /* OPEN_SPYRO_LEVEL_SPAWN_ACTOR_H */

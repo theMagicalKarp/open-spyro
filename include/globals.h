@@ -571,7 +571,7 @@ extern int g_nReturningHomePhase;            /* 0x800756f8 */
 extern void *g_pSpriteRecordBufferTop;       /* 0x800756fc */
 extern int g_nCreditsMode;               /* 0x80075704 */
 extern int g_nGameplayBlocked;               /* 0x8007570c */
-extern void *g_pSpriteRecordWriteCursor;     /* 0x80075710 */
+extern struct Actor *g_pSpriteRecordWriteCursor; /* 0x80075710: sprite-record queue tail; Actor-sized records, grows down from g_pSpriteRecordBufferTop */
 extern int g_nDemoMode;                    /* 0x80075714: attract demo: 0 off, 1 playback (set by Title_Update), 2 record into 0x80600000 */
 extern int g_nGroundSurfaceType;             /* 0x80075718 */
 extern void *g_pGemTallyParticleRecords;     /* 0x8007571c */

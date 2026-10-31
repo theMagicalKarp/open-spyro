@@ -19,7 +19,7 @@ void EnqueuePendingSpritePrims(void) {
   if (g_pSpriteRecordWriteCursor != g_pSpriteRecordBufferTop) {
     do {
       *p = g_pSpriteRecordWriteCursor;
-      g_pSpriteRecordWriteCursor = (Actor *)g_pSpriteRecordWriteCursor + 1;
+      g_pSpriteRecordWriteCursor = g_pSpriteRecordWriteCursor + 1;
       p = p + 1;
     } while (g_pSpriteRecordWriteCursor != g_pSpriteRecordBufferTop);
   }

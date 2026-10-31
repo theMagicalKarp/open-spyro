@@ -83,7 +83,10 @@ extern void DrawPortalsAndStaticActors();
 
 extern void RasterizeEmitList();
 
-extern int g_pSpriteRecordWriteCursor;              /* sprite-record write cursor */
+/* The sprite-record write cursor, declared int here: the balloonist Draw
+ * clones walk it with int cursors whose loop tests compare signed (as
+ * Actor * they would compare unsigned). */
+extern int g_pSpriteRecordWriteCursor;
 
 extern int g_apSpritePrimQueue;              /* sprite prim queue head */
 
