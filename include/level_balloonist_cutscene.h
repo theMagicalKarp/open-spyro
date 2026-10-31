@@ -9,6 +9,7 @@
 #define OPEN_SPYRO_LEVEL_BALLOONIST_CUTSCENE_H
 
 #include "actor_type.h"
+#include "actor_states.h"
 
 extern void CopyWords(void *dst, void *src, int len);
 
@@ -30,7 +31,7 @@ extern Actor *g_apActiveActorList[];
 
 extern void (*g_pfnLevelAdvanceEmitList)(int);
 
-extern unsigned char *g_pSparxActor;
+extern Actor *g_pSparxActor;
 
 extern void (*g_pfnLevelOnSaveMenuExit)();
 

@@ -124,12 +124,12 @@ void Level30_BalloonistCutscene_Update(void)
         {
           if (g_pSparxActor != 0)
           {
-            ((Actor *)g_pSparxActor)->cullRadius = 0;
-            ((Actor *)g_pSparxActor)->drawn = 0;
-            if (((int **) g_pSparxActor)[0][3] != 0)
+            g_pSparxActor->cullRadius = 0;
+            g_pSparxActor->drawn = 0;
+            if (((SparxState *)g_pSparxActor->state)->glow != 0)
             {
-              ClearWord(((int **) g_pSparxActor)[0][3]);
-              ((int **) g_pSparxActor)[0][3] = 0;
+              ClearWord((int)((SparxState *)g_pSparxActor->state)->glow);
+              ((SparxState *)g_pSparxActor->state)->glow = 0;
             }
           }
           g_nSpyroSuperflameTimerSave = g_nSpyroSuperflameTimer;
