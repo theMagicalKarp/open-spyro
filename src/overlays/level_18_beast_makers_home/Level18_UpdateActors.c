@@ -197,33 +197,33 @@ void Level18_UpdateActors(void) {
       int distance = ApproxDist2D(&actor->posX, &CAM.posX);
 
       if (distance < (actor->mode ? 12 : 11) * 1024) {
-        shouldSpawnText = actor->mode == 0;
+        shouldSpawnText = actor->mode == PORTALNAME_FAR;
 
-        actor->mode = 1;
+        actor->mode = PORTALNAME_NEAR;
 
         cameraAngleDiff = AbsAngleDelta8(
             actor->rotZ,
             ArcTan2(CAM.posX - actor->posX, CAM.posY - actor->posY, 0));
 
         if (cameraAngleDiff <= 56) {
-          if (actor->subMode == 1) {
+          if (actor->subMode == NAMESIDE_BACK) {
             shouldSpawnText = 1;
           }
-          actor->subMode = 0;
+          actor->subMode = NAMESIDE_FRONT;
         } else if (cameraAngleDiff > 71) {
-          if (actor->subMode == 0) {
+          if (actor->subMode == NAMESIDE_FRONT) {
             shouldSpawnText = 1;
           }
-          actor->subMode = 1;
+          actor->subMode = NAMESIDE_BACK;
         } else {
-          actor->mode = 0;
+          actor->mode = PORTALNAME_FAR;
         }
 
         if (actor->mode && shouldSpawnText) {
           SpawnNameLetterActors(actor, 1);
         }
       } else {
-        actor->mode = 0;
+        actor->mode = PORTALNAME_FAR;
       }
 
       break;
@@ -3405,7 +3405,7 @@ void Level18_UpdateActors(void) {
       PortalState *st = actor->state;
 
       switch (actor->mode) {
-      case 1: {
+      case PORTALGUIDE_ENTER: {
         register int *m asm("$16");
         int *cf = &SPY.requestMask;
         PortalCamPath *portal;
@@ -3436,7 +3436,7 @@ void Level18_UpdateActors(void) {
         } else {
           int more;
 
-          if (actor->subMode != 0) {
+          if (actor->subMode != PORTAL_SIDE_FORWARD) {
             int last = st->desc->count - 1;
 
             more = last > st->desc->index;
@@ -3444,14 +3444,14 @@ void Level18_UpdateActors(void) {
             more = st->desc->index;
           }
           if (more != 0) {
-            actor->mode = 2;
+            actor->mode = PORTALGUIDE_GLIDE;
           }
         }
 
         if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && *g_pTriggerRegionTable[g_nGroundSurfaceType] == 6) {
-          actor->mode = 0;
-          AS_I32(g_nCameraNextMode) = 0x80000012;
+          actor->mode = PORTALGUIDE_IDLE;
+          AS_I32(g_nCameraNextMode) = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
           SPY.requestState = SPYRO_ST_GLIDE;
           g_nCdStreamState = 0;
           LUID_PAD
@@ -3486,7 +3486,7 @@ void Level18_UpdateActors(void) {
         break;
       }
 
-      case 2:
+      case PORTALGUIDE_GLIDE:
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT | SPYRO_RQ_NO_CLIP);
         LUID_PAD5 LUID_PAD5
         LUID_PAD5 LUID_PAD5
@@ -3497,8 +3497,8 @@ void Level18_UpdateActors(void) {
 
         if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && *g_pTriggerRegionTable[g_nGroundSurfaceType] == 6) {
-          actor->mode = 0;
-          AS_I32(g_nCameraNextMode) = 0x80000012;
+          actor->mode = PORTALGUIDE_IDLE;
+          AS_I32(g_nCameraNextMode) = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
           g_nCdStreamState = 0;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;

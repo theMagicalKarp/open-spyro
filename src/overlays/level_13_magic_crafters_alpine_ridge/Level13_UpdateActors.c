@@ -5171,7 +5171,7 @@ void Level13_UpdateActors(void) {
       int mag;
       short progressed;
       switch (actor->mode) {
-      case 1: {
+      case PORTALGUIDE_ENTER: {
         SPY.requestMask =
             (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT | SPYRO_RQ_NO_CLIP |
              SPYRO_RQ_FORCE_STATE | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_VEL_Z |
@@ -5193,20 +5193,20 @@ void Level13_UpdateActors(void) {
         if (mag > 128) {
           ScaleVector3ByRatio(&SPY.requestVelX, mag, 128);
         } else {
-          if (actor->subMode != 0) {
+          if (actor->subMode != PORTAL_SIDE_FORWARD) {
             progressed = (st->desc->index < (st->desc->count - 1));
           } else {
             progressed = st->desc->index;
           }
 
           if (progressed) {
-            actor->mode = 2;
+            actor->mode = PORTALGUIDE_GLIDE;
           }
         }
 
         if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == TRIGGER_PORTAL) {
-          actor->mode = 0;
+          actor->mode = PORTALGUIDE_IDLE;
           CAM.nextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
           SPY.requestState = SPYRO_ST_GLIDE;
           g_nCdStreamState = 0;
@@ -5237,7 +5237,7 @@ void Level13_UpdateActors(void) {
         }
         break;
       }
-      case 2: {
+      case PORTALGUIDE_GLIDE: {
         SPY.requestMask = SPYRO_RQ_PENDING | 0x4000 | 0x2000 | 0x100;
         SPY.pPortalCamPath = st->desc;
         SPY.camPathMaxStep = 0x60;
@@ -5246,7 +5246,7 @@ void Level13_UpdateActors(void) {
 
         if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == TRIGGER_PORTAL) {
-          actor->mode = 0;
+          actor->mode = PORTALGUIDE_IDLE;
           CAM.nextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
           g_nCdStreamState = 0;
           g_nLevelTransitionTallyActive = 1;

@@ -124,4 +124,33 @@ enum SpinChestLidSubMode {
   LID_FLYING = 2,   /* in flight; breaks on what it hits */
 };
 
+/* ->mode of a portal guide (ACTOR_TYPE_PORTAL_GUIDE, PortalState); set to
+ * PORTALGUIDE_ENTER by DispatchSpyroTriggerEvent when Spyro enters a
+ * portal. */
+enum PortalGuideMode {
+  PORTALGUIDE_IDLE = 0,  /* inactive; set back once the camera reaches the portal and the load starts */
+  PORTALGUIDE_ENTER = 1, /* Spyro jumps toward the portal's midpoint */
+  PORTALGUIDE_GLIDE = 2, /* Spyro glides along the portal camera path */
+};
+
+/* ->subMode of a portal guide: the side of the portal plane Spyro entered
+ * from (g_nPortalCamPathReverseFlag). */
+enum PortalSide {
+  PORTAL_SIDE_FORWARD = 0,  /* walk the camera path forward */
+  PORTAL_SIDE_REVERSED = 1, /* walk it backward, offset negated */
+};
+
+/* ->mode of a portal name sign (ACTOR_TYPE_PORTAL_NAME). */
+enum PortalNameMode {
+  PORTALNAME_FAR = 0,  /* camera out of range (or side-on) */
+  PORTALNAME_NEAR = 1, /* camera close and facing one side: letters shown */
+};
+
+/* ->subMode of a portal name sign: the side the camera reads it from;
+ * SpawnNameLetterActors mirrors the letter arc for NAMESIDE_BACK. */
+enum NameSignSide {
+  NAMESIDE_FRONT = 0,
+  NAMESIDE_BACK = 1,
+};
+
 #endif
