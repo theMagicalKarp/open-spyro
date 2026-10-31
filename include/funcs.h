@@ -1965,7 +1965,7 @@ int DriveActorTrackedMove(Actor *actor, int *a, int heading, int *b, int c, int 
 void UpdateActorWander(Actor *actor, WanderBlock *wb);
 
 /* 0x8003a9ec: Nudges the actor's LOD band and points its mesh-table entry (+0x4C) at the matching VRAM page; returns the band. */
-int SelectActorLodBand(Actor *actor, int handle);
+int SelectActorLodBand(Actor *actor, int band);
 
 /* 0x8003b294: ORs `bits` into +0x18 of every non-dormant actor of pickup group `group` inside a box + facing cone around `actor`. */
 void OrActorGroupFlagsInCone(Actor *actor, int group, unsigned int bits, int distLim, int zLim, int xyLim, int angLim);

@@ -1,26 +1,28 @@
+#include "actor_type.h"
 #include "globals.h"
 
-/* Pick an actor's LOD band and point its mesh-table entry at the matching
-   VRAM page (0x8003a9ec). `level` 0 with no flags means "leave it alone";
-   otherwise the band is nudged (out to 0x50 for flag-0x10000 actors, in by 2
-   above 0x20, in by 1 below) and the quarter-band index selects the page
-   (0x1000 across, 0x40 down, less one byte per index) stored at +0x4C.
-   Returns the adjusted band. */
-int SelectActorLodBand(int *actor, int level) {
+/* Step an actor's shade band and rebuild its tint word from it (0x8003a9ec).
+   `band` 0 with no hit flags means "leave it alone"; otherwise the band is
+   pushed out by 0x10 (up to 0x50) while the flame-hit bit is set and eased
+   back in by 2 above 0x20, by 1 below. The quarter band n then becomes the
+   tagged tint 0xA << 20 | (0x18 + n) << 12 | (0x18 - n) << 6 | (0x18 - n)
+   (see Actor.tint0): the flame level rises as the other two fall. Returns
+   the adjusted band. */
+int SelectActorLodBand(Actor *actor, int band) {
   int n;
-  int addr;
+  int tint;
 
-  if (level != 0 || actor[6] != 0) {
-    if ((actor[6] & 0x10000) && level < 0x50) {
-      level += 0x10;
-    } else if (level >= 0x21) {
-      level -= 2;
-    } else if (level > 0) {
-      level -= 1;
+  if (band != 0 || actor->flags != 0) {
+    if ((actor->flags & ACTOR_HIT_FLAME) && band < 0x50) {
+      band += 0x10;
+    } else if (band >= 0x21) {
+      band -= 2;
+    } else if (band > 0) {
+      band -= 1;
     }
-    n = level >> 2;
-    addr = 0xA00000 + ((n + 0x18) << 12) + ((0x18 - n) << 6) + 0x18;
-    actor[19] = addr - n;
+    n = band >> 2;
+    tint = 0xA00000 + ((n + 0x18) << 12) + ((0x18 - n) << 6) + 0x18;
+    *(int *)&actor->tint0 = tint - n;
   }
-  return level;
+  return band;
 }
