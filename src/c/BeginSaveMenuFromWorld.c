@@ -92,9 +92,9 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   g_nSaveMenuHostToZ = SPY_PREV[-4] + 0x170;
   if (g_pSparxActor != 0) {
     g_nSaveMenuSparxFromAngle =
-        ArcTan2(((Actor *)g_pSparxActor)->posX - SPY_PREV[-6],
-                ((Actor *)g_pSparxActor)->posY - g_nSpyroWorldPosY, 1);
-    SubtractVector(vec, &((Actor *)g_pSparxActor)->posX, &SPY_PREV[-6]);
+        ArcTan2(g_pSparxActor->posX - SPY_PREV[-6],
+                g_pSparxActor->posY - g_nSpyroWorldPosY, 1);
+    SubtractVector(vec, &g_pSparxActor->posX, &SPY_PREV[-6]);
     g_nSaveMenuSparxFromDist = VectorLength(vec, VEC_LEN_XY);
     g_nSaveMenuSparxToDist = 0x600;
     g_nSaveMenuSparxToAngle = (g_nSaveMenuSpyroToYaw + 0x800) & 0xFFF;

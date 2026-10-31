@@ -1372,8 +1372,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       v80[1] = (m * LookupSine(g_nSpyroBodyYaw)) >> 12;
       AddVector(v80, v80, zb + 0x5D);
     } else {
-      a = (g_nSpyroBodyYaw - (((Actor *)g_pScriptedCameraActor)->rotZ << 4)) &
-          0xFFF;
+      a = (g_nSpyroBodyYaw - (g_pScriptedCameraActor->rotZ << 4)) & 0xFFF;
       m = reach;
       if (a > 0x800) {
         a -= 0x1000;
@@ -1386,7 +1385,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       AddVector(v80, v80, zb + 0x5D);
       a = zb[0x54] - zb[0];
       lift = (a * 0x12C0) >> 10;
-      a = (((Actor *)g_pScriptedCameraActor)->rotZ << 4) - ((a * a) >> 11);
+      a = (g_pScriptedCameraActor->rotZ << 4) - ((a * a) >> 11);
       g_nSpyroMoveTargetMag = 0xC80;
     }
     v80[2] = 0;
@@ -1535,12 +1534,12 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       g_nSpyroTurnRateAccum = g_nSpyroSpeedTarget;
     }
     a = (ang + dt + 0x800) & 0xFFF;
-    if (((Actor *)g_pScriptedCameraActor)->type == 0xFF) {
+    if (g_pScriptedCameraActor->type == 0xFF) {
       v = obj2[5] = (obj2[5] + dt) & 0xFFF;
     } else {
       v = obj[5] = (obj[5] + dt) & 0xFFF;
     }
-    ((Actor *)g_pScriptedCameraActor)->rotZ = v >> 4;
+    g_pScriptedCameraActor->rotZ = v >> 4;
     SCHED_FENCE();
     vA0[0] = (dist * LookupCosine(a)) >> 12;
     {
