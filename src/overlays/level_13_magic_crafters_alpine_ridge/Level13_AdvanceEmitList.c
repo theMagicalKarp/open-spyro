@@ -363,7 +363,7 @@ void Level13_AdvanceEmitList(int step) {
     case EMIT_SPYRO_ORBIT_SPARKLE:  /* <- Level15_AdvanceEmitList */
     /* <- Level10_AdvanceEmitList */
       /* The homing sparkle: it only lives while Spyro is on screen. */
-      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < 0) || g_nSpyroDrawSuppressed != 0 ||
+      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < SPARX_GONE) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
         goto expire;
       } else {

@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_state.h"
 
 /* 0x8003cce4 (0x4b0): applies the pending Spyro state change. The restart
    style comes from the transition matrix entry for (prev state, state):
@@ -101,7 +102,7 @@ void ApplySpyroStateTransition(void) {
 
     g_bSpyroAnimPrev = g_bSpyroAnimCurrent;
     g_bSpyroFramePrev = g_bSpyroAnimFrame;
-    if (g_nSpyroPrevState == 6 && g_nSpyroPrevStateTimer < 0x18) {
+    if (g_nSpyroPrevState == SPYRO_ST_FALL && g_nSpyroPrevStateTimer < 0x18) {
       state = g_nSpyroState;
       g_nSpyroAnimMode = 1;
       next = g_abSpyroStateAnimIndexMap[state];
@@ -118,7 +119,7 @@ void ApplySpyroStateTransition(void) {
       g_nSpyroAnimMode = 4;
       g_bSpyroAnimFrame = end;
     }
-    if (g_nSpyroPrevState == 6) {
+    if (g_nSpyroPrevState == SPYRO_ST_FALL) {
       g_nPulseRumbleAmount = 0xA0;
       if (g_nPulseRumbleTimer < 15) {
         g_nPulseRumbleTimer = 15;

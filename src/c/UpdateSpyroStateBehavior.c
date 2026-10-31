@@ -568,7 +568,7 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer < 0x18) {
       break;
     }
-    if (g_nSparxHealth < 0) {
+    if (g_nSparxHealth < SPARX_GONE) {
       ChangeSpyroState(SPYRO_ST_DEATH);
       break;
     }
@@ -579,7 +579,7 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer < 0x18) {
       break;
     }
-    if (g_nSparxHealth < 0) {
+    if (g_nSparxHealth < SPARX_GONE) {
       ChangeSpyroState(SPYRO_ST_DEATH);
       break;
     }
@@ -588,7 +588,7 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer < 0x30) {
       break;
     }
-    if (g_nSparxHealth < 0) {
+    if (g_nSparxHealth < SPARX_GONE) {
       ChangeSpyroState(SPYRO_ST_DEATH);
       break;
     }
@@ -923,7 +923,7 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer < 0x18) {
       break;
     }
-    if (g_nSparxHealth < 0) {
+    if (g_nSparxHealth < SPARX_GONE) {
       ChangeSpyroState(SPYRO_ST_DEATH);
       break;
     }

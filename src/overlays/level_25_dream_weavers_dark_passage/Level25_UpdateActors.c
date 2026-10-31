@@ -404,17 +404,17 @@ void Level25_UpdateActors(void) {
     case ACTOR_TYPE_BUTTERFLY: {
       ChaseState *st = (ChaseState *)actor->state;
 
-      if (SPY.sparxHealth < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
+      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
 
         if (ABS2(actorZ - SPY.posZ) < 1800) {
           if (g_pSparxActor == 0) {
-            if (SPY.sparxHealth >= 0) {
+            if (SPY.sparxHealth >= SPARX_GONE) {
               g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
               PlayActorMeshVoice(g_pSparxActor, 0, 0);
 
-              SPY.sparxHealth = 1;
+              SPY.sparxHealth = SPARX_GREEN;
 
               DespawnActorRecord(actor);
               break;
@@ -713,7 +713,7 @@ void Level25_UpdateActors(void) {
           ENTER_POSE(actor, 3);
         }
       } else {
-        actor->type = 0x33;
+        actor->type = ACTOR_TYPE_GRABBER_LOOKOUT;
         actor->mode = 0;
         ANIM_RESET(actor, 0);
         continue;
@@ -853,7 +853,7 @@ void Level25_UpdateActors(void) {
         if (g_nActorAnimDone == 0) {
           break;
         }
-        actor->type = 0x33;
+        actor->type = ACTOR_TYPE_GRABBER_LOOKOUT;
         actor->subMode = 1;
         st->timer = 0xF0;
         actor->mode = 1;
@@ -920,7 +920,7 @@ void Level25_UpdateActors(void) {
         if (*st->slot == actor) {
           *st->slot = 0;
         }
-        actor->type = 0x32;
+        actor->type = ACTOR_TYPE_POST_GRABBER;
         actor->mode = 4;
         ANIM_RESET(actor, 4);
         continue;
@@ -1077,7 +1077,7 @@ void Level25_UpdateActors(void) {
           ENTER_POSE(actor, 2);
         }
       } else {
-        actor->type = 0x36;
+        actor->type = ACTOR_TYPE_ROUSED_SENTRY;
         actor->mode = 0;
         ANIM_RESET(actor, 0);
         continue;
@@ -1143,7 +1143,7 @@ void Level25_UpdateActors(void) {
         if (g_nActorAnimDone == 0) {
           break;
         }
-        actor->type = 0x36;
+        actor->type = ACTOR_TYPE_ROUSED_SENTRY;
         actor->mode = 0;
         ANIM_RESET(actor, 0);
         continue;
@@ -1177,7 +1177,7 @@ void Level25_UpdateActors(void) {
       actor->flags = 0;
       if (actor->mode < 2 && st->link >= 0 &&
           g_pActorListBase[st->link].subMode == 2) {
-        actor->type = 0x35;
+        actor->type = ACTOR_TYPE_ALARM_SENTRY;
         actor->mode = 3;
         ANIM_RESET(actor, 3);
         continue;
@@ -1974,7 +1974,7 @@ void Level25_UpdateActors(void) {
     case ACTOR_TYPE_SPARX: {
       SparxState *st = actor->state;
 
-      if (g_anSparxHealthBlock[0] >= 2) {
+      if (g_anSparxHealthBlock[0] >= SPARX_BLUE) {
         s168[0] = 0;
         s168[1] = 0x64;
         s168[2] = 0;
@@ -1989,7 +1989,7 @@ void Level25_UpdateActors(void) {
         g_pfnLevelEmitParticles(2, EMIT_TWINKLE, s168, 0);
       }
 
-      if (g_anSparxHealthBlock[0] >= 3) {
+      if (g_anSparxHealthBlock[0] >= SPARX_GOLD) {
         FxNode *fx = st->glow;
 
         if (fx == 0) {
@@ -2018,7 +2018,7 @@ void Level25_UpdateActors(void) {
         st->glow = 0;
       }
 
-      if (g_anSparxHealthBlock[0] <= 0) {
+      if (g_anSparxHealthBlock[0] <= SPARX_GONE) {
         if (st->target != 0 && st->target->type == ACTOR_TYPE_BUTTERFLY) {
           st->target->mode = 0;
         }
@@ -2236,21 +2236,21 @@ void Level25_UpdateActors(void) {
           }
 
           switch (SPY.sparxHealth) {
-          case 1:
+          case SPARX_GREEN:
             if (actor->nextAnim != 0 && actor->anim != 0) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, 0);
             }
             break;
 
-          case 2:
+          case SPARX_BLUE:
             if (actor->nextAnim != 2 && actor->anim != 2) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, 2);
             }
             break;
 
-          case 3:
+          case SPARX_GOLD:
             if (actor->nextAnim != 4 && actor->anim != 4) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, 4);

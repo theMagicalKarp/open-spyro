@@ -8,6 +8,8 @@
 #ifndef OPEN_SPYRO_LEVEL_ACTORS_H
 #define OPEN_SPYRO_LEVEL_ACTORS_H
 
+#include "sparx.h"
+
 #include "actor.h"
 
 extern void ComputeCameraToTargetAngle(int *out);

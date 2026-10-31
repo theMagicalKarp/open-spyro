@@ -42,12 +42,13 @@ int DispatchSpyroPadStateChanges(int pad) {
   ev = g_adwSpyroTriggerEventBlock;
   pad &= ev[0];
 
-  if ((pad & (SPYRO_EV_HITS | SPYRO_EV_HAZARD)) && g_nSparxHealth >= 0) {
+  if ((pad & (SPYRO_EV_HITS | SPYRO_EV_HAZARD)) &&
+      g_nSparxHealth >= SPARX_GONE) {
     if (g_bDebugNoDepletion == 0) {
       g_nSparxHealth = g_nSparxHealth - 1;
     }
     if (pad & SPYRO_EV_HIT_PINNED) {
-      if (g_nSparxHealth < 0) {
+      if (g_nSparxHealth < SPARX_GONE) {
         next = SPYRO_ST_DEATH_PINNED;
       } else {
         next = SPYRO_ST_HURT_PINNED;
@@ -67,7 +68,7 @@ int DispatchSpyroPadStateChanges(int pad) {
     } else if (pad & SPYRO_EV_HAZARD) {
       ChangeSpyroState(SPYRO_ST_HAZARD);
       if (*(int *)g_pSpyroHazardRegionData != 0 && g_bDebugNoDepletion == 0) {
-        g_nSparxHealth = -1;
+        g_nSparxHealth = SPARX_FATAL;
       }
     } else {
       ChangeSpyroState(SPYRO_ST_HURT);

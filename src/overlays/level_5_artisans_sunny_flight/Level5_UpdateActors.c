@@ -167,12 +167,12 @@ void Level5_UpdateActors(void) {
     case ACTOR_TYPE_BUTTERFLY: {
       ChaseState *st = (ChaseState *)actor->state;
 
-      if (SPY.sparxHealth < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
+      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
 
         if (ABS2(actorZ - SPY.posZ) < 1800) {
           if (g_pSparxActor == 0) {
-            if (SPY.sparxHealth >= 0) {
+            if (SPY.sparxHealth >= SPARX_GONE) {
               g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
               PlayActorMeshVoice(g_pSparxActor, 0, 0);
@@ -969,7 +969,7 @@ void Level5_UpdateActors(void) {
         g_pfnLevelEmitParticles(2, EMIT_TWINKLE, svF, 0);
       }
 
-      if (SPY.sparxHealth >= 3) {
+      if (SPY.sparxHealth >= SPARX_GOLD) {
         if (st->glow == 0) {
           FxNode *g = AllocWorldSparkle();
           st->glow = g;
@@ -998,7 +998,7 @@ void Level5_UpdateActors(void) {
         }
       }
 
-      if (SPY.sparxHealth <= 0) {
+      if (SPY.sparxHealth <= SPARX_GONE) {
         Actor *target = st->target;
         if (target != 0 && target->type == ACTOR_TYPE_BUTTERFLY) {
           target->mode = 0;
@@ -1196,7 +1196,7 @@ void Level5_UpdateActors(void) {
         }
 
         switch (SPY.sparxHealth) {
-        case 1:
+        case SPARX_GREEN:
           if (actor->nextAnim != 0) {
             if (actor->anim != 0) {
               g_nActorAnimDone = 0;
@@ -1204,7 +1204,7 @@ void Level5_UpdateActors(void) {
             }
           }
           break;
-        case 2:
+        case SPARX_BLUE:
           if (actor->nextAnim != 2) {
             if (actor->anim != 2) {
               g_nActorAnimDone = 0;
@@ -1213,7 +1213,7 @@ void Level5_UpdateActors(void) {
           }
 
           break;
-        case 3:
+        case SPARX_GOLD:
           if (actor->nextAnim != 4) {
             if (actor->anim != 4) {
               g_nActorAnimDone = 0;

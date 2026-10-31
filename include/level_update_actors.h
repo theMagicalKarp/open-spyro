@@ -7,6 +7,8 @@
 #ifndef OPEN_SPYRO_LEVEL_UPDATE_ACTORS_H
 #define OPEN_SPYRO_LEVEL_UPDATE_ACTORS_H
 
+#include "sparx.h"
+
 #include "actor_states.h"
 #include "model.h"
 

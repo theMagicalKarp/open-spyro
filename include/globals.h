@@ -5,6 +5,8 @@
 #ifndef OPEN_SPYRO_GLOBALS_H
 #define OPEN_SPYRO_GLOBALS_H
 
+#include "sparx.h"
+
 #include "types.h"
 
 /* ---- MCTRL1 ---- */

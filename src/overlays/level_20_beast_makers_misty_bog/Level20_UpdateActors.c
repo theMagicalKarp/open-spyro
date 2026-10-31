@@ -260,18 +260,18 @@ void Level20_UpdateActors(void) {
 
       EBB_BREAK();
       st = actor->state;
-      if (SPY.sparxHealth < 3 && ApproxDist2D(&actor->posX, (int *)(base - 0x164)) < 0x960) {
+      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, (int *)(base - 0x164)) < 0x960) {
         int height = actor->posZ - actor->floorOffset;
         int drop = height - SPY.posZ;
 
         if (drop > 0 ? drop < 0x708 : (SPY.posZ - height) < 0x708) {
           if (g_pSparxActor == 0) {
-            if (g_nSparxHealth >= 0) {
+            if (g_nSparxHealth >= SPARX_GONE) {
               Actor *sparx = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
               g_pSparxActor = sparx;
               PlayActorMeshVoice(sparx, 0, 0);
-              g_nSparxHealth = 1;
+              g_nSparxHealth = SPARX_GREEN;
               DespawnActorRecord(actor);
               continue;
             }
@@ -1376,7 +1376,7 @@ void Level20_UpdateActors(void) {
     case ACTOR_TYPE_SPARX: {
       SparxState *st = actor->state;
 
-      if (g_anSparxHealthBlock[0] >= 2) {
+      if (g_anSparxHealthBlock[0] >= SPARX_BLUE) {
         svF[0] = 0;
         svF[1] = 0x64;
         svF[2] = 0;
@@ -1391,7 +1391,7 @@ void Level20_UpdateActors(void) {
         g_pfnLevelEmitParticles(2, EMIT_TWINKLE, svF, 0);
       }
 
-      if (g_anSparxHealthBlock[0] >= 3) {
+      if (g_anSparxHealthBlock[0] >= SPARX_GOLD) {
         FxNode *fx = st->glow;
 
         if (fx == 0) {
@@ -1420,7 +1420,7 @@ void Level20_UpdateActors(void) {
         st->glow = 0;
       }
 
-      if (g_anSparxHealthBlock[0] <= 0) {
+      if (g_anSparxHealthBlock[0] <= SPARX_GONE) {
         if (st->target != 0 && st->target->type == ACTOR_TYPE_BUTTERFLY) {
           st->target->mode = 0;
         }
@@ -1638,21 +1638,21 @@ void Level20_UpdateActors(void) {
           }
 
           switch (SPY.sparxHealth) {
-          case 1:
+          case SPARX_GREEN:
             if (actor->nextAnim != 0 && actor->anim != 0) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, 0);
             }
             break;
 
-          case 2:
+          case SPARX_BLUE:
             if (actor->nextAnim != 2 && actor->anim != 2) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, 2);
             }
             break;
 
-          case 3:
+          case SPARX_GOLD:
             if (actor->nextAnim != 4 && actor->anim != 4) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, 4);
@@ -3654,7 +3654,7 @@ void Level20_UpdateActors(void) {
           v = actor->rotZ + 0x80;
           g_bSpyroPersistentEulerZ = v;
           g_nSpyroBodyYaw = (v & 0xFF) << 4;
-          if (g_nSparxHealth == 0) {
+          if (g_nSparxHealth == SPARX_GONE) {
             spy->triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_HIT);
             actor->mode = 0xD;
             continue;

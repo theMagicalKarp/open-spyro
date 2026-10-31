@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "main_shared.h"
 
 /* World-hub special-cutscene dispatcher (0x8002d440). World 1: full story-intro
@@ -29,7 +30,7 @@ void DispatchSpecialCutscene(void) {
     g_nStoryIntroSubstate = 0;
     g_nStoryIntroMessage = 1;
     InitNewGameState();
-    g_nActiveLevelId = 0xA;
+    g_nActiveLevelId = LEVEL_ARTISANS;
     g_nGamePaused = 1;
   } else if (world == 2) {
     BeginCreditsSequence(0);
