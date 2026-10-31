@@ -55,11 +55,22 @@ extern int StepAndLerpAngle8(int ang, int facing, int a, int b);
 extern int TickCountdownByFrameDelta(void *timer, int step);
 extern void VectorToSVectorShr2(short *d, int *s);
 
+/* World chunk-animation flags (byte [1] of a chunk-anim entry; each step
+ * entry's low two bits are copied into it on arrival, TickWorldChunkAnimations). */
+#define CHUNK_ANIM_BRANCH 0x01 /* follow the step's next_b successor, not next_a */
+#define CHUNK_ANIM_HALTED 0x02 /* stopped: the tick skips the entry */
+/* ModifyWorldChunkAnimFlags andMask keeping every flag but `bits`. */
+#define CHUNK_ANIM_KEEP(bits) (0xFF & ~(bits))
+/* andMask that clears HALTED and BRANCH: run on along next_a. */
+#define CHUNK_ANIM_RESUME CHUNK_ANIM_KEEP(CHUNK_ANIM_HALTED | CHUNK_ANIM_BRANCH)
+/* Current step index from a GetWorldChunkAnimState value. */
+#define CHUNK_ANIM_STEP(state) (((state) >> 8) & 0xFF)
+
 /* Hoisted: declared identically (bar parameter names) in every includer. */
 extern int CastRayWorldAndActors(int *a, int *b);
 extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int a);
 extern int g_anSparxHealthBlock[]; /* == g_nSparxHealth (SPY.sparxHealth): 3 gold .. 1 green, 0 Sparx gone, -1 the fatal hit was taken */
-extern int GetWorldChunkAnimState(int handle); /* bits 8..15 are the anim marker */
+extern int GetWorldChunkAnimState(int handle); /* flags | step << 8 | delay << 16 */
 extern void ModifyWorldChunkAnimFlags(int handle, int a, int b);
 extern int PickupGroupHasLiveActor(int stage);
 extern int PlaneDistanceAbs(int *pos, void *st);

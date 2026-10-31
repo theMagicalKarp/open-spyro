@@ -4412,7 +4412,7 @@ void Level6_UpdateActors(void) {
       int i;
 
       if (st[0] == 1 && actor->dropKind == 0xFF) {
-        ModifyWorldChunkAnimFlags(0, 0xFC, 0);
+        ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
         DespawnActorRecord(actor);
         continue;
       }
@@ -4437,7 +4437,7 @@ void Level6_UpdateActors(void) {
         g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_SPARK + 2, actor);
       }
       g_pfnLevelEmitParticles(8, EMIT_SCATTER_MOTE, &actor->posX, 0);
-      ModifyWorldChunkAnimFlags(0, 0xFC, 0);
+      ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
       DespawnActorRecord(actor);
       continue;
     }

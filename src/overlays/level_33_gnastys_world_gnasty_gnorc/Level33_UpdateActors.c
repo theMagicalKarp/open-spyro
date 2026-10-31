@@ -1535,7 +1535,7 @@ void Level33_UpdateActors(void) {
       actor->flags = 0;
 
       if (st->lane == 1 && actor->cullRadius == 0 &&
-          ((GetWorldChunkAnimState(4) >> 8) & 0xFF) > 0) {
+          CHUNK_ANIM_STEP(GetWorldChunkAnimState(4)) > 0) {
         actor->cullRadius = 0x28;
         g_pActorListBase[st->partner].cullRadius = 0x28;
       }
@@ -1694,7 +1694,7 @@ void Level33_UpdateActors(void) {
             actor->mode != 7) {
           FlyPath *t;
 
-          ModifyWorldChunkAnimFlags(1, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
           g_pActorListBase[st->key].subMode = 1;
           st->camTimer = 0xA0;
           st->vSpeed = 0;
@@ -2133,7 +2133,7 @@ void Level33_UpdateActors(void) {
           ANIM_GO(actor, 4);
         }
         if (IsPointInRotatedBox(&SPY.posX, st->box88) != 0) {
-          ModifyWorldChunkAnimFlags(0, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
           ANIM_GO(actor, 1);
           actor->mode = 6;
           continue;
@@ -2558,7 +2558,7 @@ void Level33_UpdateActors(void) {
 
       case 3:
         PlaySoundEffect(g_pLevelSampleBankHeader[0x3C], 0, SFX_MODE_PANNED, 0);
-        ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
+        ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
         g_nCameraScriptStickRequestY[1] = 0;
         g_nCameraScriptStickRequestY[0] = 0;
         g_nCameraScriptStickRequestY[-1] = 0;

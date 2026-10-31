@@ -684,10 +684,10 @@ void Level22_UpdateActors(void) {
       }
       if (st->init == 0) {
         st->init = 1;
-        ModifyWorldChunkAnimFlags(3, 0xFC, 0);
+        ModifyWorldChunkAnimFlags(3, CHUNK_ANIM_RESUME, 0);
         if (IsActorInRunningKillSet(actor) != 0) {
-          ModifyWorldChunkAnimFlags(4, 0xFC, 0);
-          ModifyWorldChunkAnimFlags(5, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(4, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(5, CHUNK_ANIM_RESUME, 0);
           OrPickupGroupActorFlags(0, 0x40000);
           OrPickupGroupActorFlags(1, 0x40000);
           DespawnPickupGroupActors(2);
@@ -727,13 +727,13 @@ void Level22_UpdateActors(void) {
         st->camTimer = 0x3C;
       }
       if (PickupGroupHasLiveActor(st->phase + 2) == 0 && actor->mode < 4) {
-        ModifyWorldChunkAnimFlags(st->phase + 4, 0xFC, 0);
+        ModifyWorldChunkAnimFlags(st->phase + 4, CHUNK_ANIM_RESUME, 0);
         actor->mode = 10;
         continue;
       }
       if (st->seen == 0 && dist < 0x6800) {
         st->seen = 1;
-        ModifyWorldChunkAnimFlags(3, 0xFC, 0);
+        ModifyWorldChunkAnimFlags(3, CHUNK_ANIM_RESUME, 0);
       }
 
       switch (actor->mode) {
@@ -955,7 +955,7 @@ void Level22_UpdateActors(void) {
       case 20:
         ANIM_GO(actor, 0xB);
         if (g_nActorAnimDone != 0) {
-          ModifyWorldChunkAnimFlags(3, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(3, CHUNK_ANIM_RESUME, 0);
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x40);
           g_bLevelBossDefeated = 1;
@@ -1263,7 +1263,7 @@ void Level22_UpdateActors(void) {
         }
         if (st->groupAlert != 0) {
           SetActorGroupSubstate(actor, 1);
-          ModifyWorldChunkAnimFlags(st->sound, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
         }
         if (st->flags & 1) {
           ENTER_POSE(actor, 5);
@@ -1647,7 +1647,7 @@ void Level22_UpdateActors(void) {
         }
         if (st->groupAlert != 0) {
           SetActorGroupSubstate(actor, 2);
-          ModifyWorldChunkAnimFlags(st->sound, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
         }
         actor->mode = 2;
         ANIM_RESET(actor, 2);

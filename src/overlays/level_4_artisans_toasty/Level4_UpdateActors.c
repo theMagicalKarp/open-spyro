@@ -2249,7 +2249,7 @@ void Level4_UpdateActors(void) {
       case 10:
         switch (st->stage) {
         case 0:
-          ModifyWorldChunkAnimFlags(0, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
           if (st->drop >= 0) {
             Actor *drop = &g_pActorListBase[st->drop];
 
@@ -2270,7 +2270,7 @@ void Level4_UpdateActors(void) {
           Actor *mate = &g_pActorListBase[st->partner];
           GuardState *ms = mate->state;
 
-          ModifyWorldChunkAnimFlags(1, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
           mate->mode = 0xB;
           mate->anim = 7;
           mate->nextAnim = 7;
@@ -2314,7 +2314,7 @@ void Level4_UpdateActors(void) {
           break;
 
         case 2:
-          ModifyWorldChunkAnimFlags(2, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
           BurstActorWithSound(actor, 0x20);

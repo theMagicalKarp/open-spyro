@@ -2145,7 +2145,7 @@ void Level32_UpdateActors(void) {
       if (actor->flags & ACTOR_HIT_FLAME) {
         PlayActorMeshVoice(actor, 0, &actor->sfxSlot);
         if (st->rearmTimer == 0) {
-          ModifyWorldChunkAnimFlags(0, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
           st->rearmTimer = 0x50;
           actor->mode = 1;
           ANIM_RESET(actor, 1);

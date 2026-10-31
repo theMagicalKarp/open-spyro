@@ -718,13 +718,13 @@ void Level0_UpdateActors(void) {
 
       if (st->started == 0) {
         if (g_abLevelVisitedFlag[4] != 0) {
-          ModifyWorldChunkAnimFlags(st->handle, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(st->handle, CHUNK_ANIM_RESUME, 0);
           SetWorldChunkAnimStep(st->handle, 0x3B, 0);
         }
         st->started = 1;
       }
 
-      marker = (GetWorldChunkAnimState(st->handle) >> 8) & 0xFF;
+      marker = CHUNK_ANIM_STEP(GetWorldChunkAnimState(st->handle));
 
       switch (marker) {
       case 0:
@@ -732,7 +732,7 @@ void Level0_UpdateActors(void) {
           /* Wake only once the linked actor is dormant and Spyro is near. */
           if (g_pActorListBase[st->idx].mode >= ACTOR_MODE_DORMANT &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
-            ModifyWorldChunkAnimFlags(st->handle, 0xFC, 0);
+            ModifyWorldChunkAnimFlags(st->handle, CHUNK_ANIM_RESUME, 0);
             actor->soundRange = 0x30;
             PlaySoundEffect(g_pLevelSampleBankHeader[0x41], actor, SFX_MODE_3D, &actor->sfxSlot);
           }
@@ -742,7 +742,7 @@ void Level0_UpdateActors(void) {
       case 0x3C:
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x4801) {
-          ModifyWorldChunkAnimFlags(st->handle, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(st->handle, CHUNK_ANIM_RESUME, 0);
         }
         break;
       }
@@ -2756,7 +2756,7 @@ void Level0_UpdateActors(void) {
       /* First tick: if already unlocked, skip to the finished state. */
       if (st->primed == 0) {
         if (g_abLevelVisitedFlag[5] != 0) {
-          ModifyWorldChunkAnimFlags(st->anim, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(st->anim, CHUNK_ANIM_RESUME, 0);
           SetWorldChunkAnimStep(st->anim, 0x77, 0);
           actor->mode = 0x63;
         }
@@ -2771,7 +2771,7 @@ void Level0_UpdateActors(void) {
         break;
 
       case 5:
-        ModifyWorldChunkAnimFlags(st->anim, 0xFC, 0);
+        ModifyWorldChunkAnimFlags(st->anim, CHUNK_ANIM_RESUME, 0);
         actor->mode = 0xA;
         st->timer = 0x1E;
         actor->soundRange = 0x30;
@@ -2779,7 +2779,7 @@ void Level0_UpdateActors(void) {
         break;
 
       case 0xA:
-        if ((GetWorldChunkAnimState(st->anim) & 2) != 0) {
+        if ((GetWorldChunkAnimState(st->anim) & CHUNK_ANIM_HALTED) != 0) {
           actor->mode = 0x63;
           break;
         }
@@ -2791,7 +2791,7 @@ void Level0_UpdateActors(void) {
         break;
 
       case 0xB:
-        if ((GetWorldChunkAnimState(st->anim) & 2) != 0) {
+        if ((GetWorldChunkAnimState(st->anim) & CHUNK_ANIM_HALTED) != 0) {
           actor->mode = 0x63;
           break;
         }

@@ -3052,7 +3052,7 @@ void Level10_UpdateActors(void) {
           if (st->phase == 2) {
             ANIM_SET(actor, 3);
             actor->rotZ += 0x80;
-            ModifyWorldChunkAnimFlags(2, 0xFC, 0);
+            ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
             actor->mode = 0x2D;
             continue;
           }
@@ -3090,9 +3090,9 @@ void Level10_UpdateActors(void) {
             }
           }
           if (!found) {
-            ModifyWorldChunkAnimFlags(0, 0xFC, 0);
-            ModifyWorldChunkAnimFlags(1, 0xFC, 0);
-            ModifyWorldChunkAnimFlags(2, 0xFC, 0);
+            ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
             CopyVector(&actor->posX,
                           (int *)(st->path + ((st->path[0] << 4) - 0x18)));
             DespawnActorRecord(actor);
@@ -3353,7 +3353,7 @@ void Level10_UpdateActors(void) {
           actor->rotZ += 0x80;
           ANIM_SET(actor, 0xE);
         }
-        ModifyWorldChunkAnimFlags(st->phase, 0xFC, 0);
+        ModifyWorldChunkAnimFlags(st->phase, CHUNK_ANIM_RESUME, 0);
         st->timer2 = 0x1E;
         st->phase++;
         actor->mode = 0x29;

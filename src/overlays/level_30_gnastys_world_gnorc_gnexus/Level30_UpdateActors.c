@@ -1749,21 +1749,21 @@ void Level30_UpdateActors(void) {
 
       if (st->started == 0) {
         if (g_bAmbienceChannelMask != 0) {
-          ModifyWorldChunkAnimFlags(0, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
           if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
             SetWorldChunkAnimStep(0, 0x3B, 0);
           }
         }
 
         if (g_abLevelVisitedFlag[0x21] != 0) {
-          ModifyWorldChunkAnimFlags(1, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
           if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
             SetWorldChunkAnimStep(1, 0x3B, 0);
           }
         }
 
         if (g_abLevelVisitedFlag[0x22] != 0) {
-          ModifyWorldChunkAnimFlags(2, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
           if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
             SetWorldChunkAnimStep(2, 0x3B, 0);
           }
@@ -1772,18 +1772,18 @@ void Level30_UpdateActors(void) {
         st->started = 1;
       }
 
-      if (!((GetWorldChunkAnimState(0) >> 8) & 0xFF) && g_abLevelExited[0x1F] != 0 &&
+      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(0)) && g_abLevelExited[0x1F] != 0 &&
           g_anLevelDragonsRescued[0x1E] > 0) {
-        ModifyWorldChunkAnimFlags(0, 0xFC, 0);
+        ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
       }
 
-      if (!((GetWorldChunkAnimState(1) >> 8) & 0xFF) && g_abLevelExited[0x20] != 0) {
-        ModifyWorldChunkAnimFlags(1, 0xFC, 0);
+      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(1)) && g_abLevelExited[0x20] != 0) {
+        ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
       }
 
-      if (!((GetWorldChunkAnimState(2) >> 8) & 0xFF) && g_nWorldTreasureCollected >= 0x2EE0 &&
+      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(2)) && g_nWorldTreasureCollected >= 0x2EE0 &&
           g_nWorldDragonsRescued >= 0x50 && g_nWorldEggsRecovered >= 0xC) {
-        ModifyWorldChunkAnimFlags(2, 0xFC, 0);
+        ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
       }
 
       break;

@@ -1937,7 +1937,7 @@ void Level11_UpdateActors(void) {
           reward->mode = 1;
         }
         if (st[2] >= 0) {
-          ModifyWorldChunkAnimFlags(st[2], 0xFC, 0);
+          ModifyWorldChunkAnimFlags(st[2], CHUNK_ANIM_RESUME, 0);
         }
         actor->type = ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT;
       }

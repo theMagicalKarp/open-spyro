@@ -3889,15 +3889,15 @@ void Level14_UpdateActors(void) {
           g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->spark]);
         }
         r = GetWorldChunkAnimState(st->chunk);
-        if (r & 2) {
-          r = (r >> 8) & 0xFF;
+        if (r & CHUNK_ANIM_HALTED) {
+          r = CHUNK_ANIM_STEP(r);
           if (r == 0 && d < 0x2000) {
-            ModifyWorldChunkAnimFlags(st->chunk, 0xFC, 0);
+            ModifyWorldChunkAnimFlags(st->chunk, CHUNK_ANIM_RESUME, 0);
             ENTER_POSE(actor, 2);
             continue;
           }
           if (r == 0xE && d > 0x3000) {
-            ModifyWorldChunkAnimFlags(st->chunk, 0xFC, 0);
+            ModifyWorldChunkAnimFlags(st->chunk, CHUNK_ANIM_RESUME, 0);
             ENTER_POSE(actor, 2);
             continue;
           }
@@ -3909,7 +3909,7 @@ void Level14_UpdateActors(void) {
         if (st->spark >= 0 && (GetRandomU32() & 1)) {
           g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->spark]);
         }
-        ModifyWorldChunkAnimFlags(st->chunk, 0xFC, 0);
+        ModifyWorldChunkAnimFlags(st->chunk, CHUNK_ANIM_RESUME, 0);
         break;
 
       case 2:
@@ -3928,10 +3928,10 @@ void Level14_UpdateActors(void) {
         if (st->riding == 0) {
           int r = GetWorldChunkAnimState(st->chunk);
 
-          if (r & 2) {
-            r = (r >> 8) & 0xFF;
+          if (r & CHUNK_ANIM_HALTED) {
+            r = CHUNK_ANIM_STEP(r);
             if (r == 0xE) {
-              ModifyWorldChunkAnimFlags(st->chunk, 0xFC, 0);
+              ModifyWorldChunkAnimFlags(st->chunk, CHUNK_ANIM_RESUME, 0);
             }
           }
         }
@@ -3950,7 +3950,7 @@ void Level14_UpdateActors(void) {
             g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->spark]);
           }
         }
-        ModifyWorldChunkAnimFlags(st->chunk, 0xFC, 0);
+        ModifyWorldChunkAnimFlags(st->chunk, CHUNK_ANIM_RESUME, 0);
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
           actor->mode = 1;

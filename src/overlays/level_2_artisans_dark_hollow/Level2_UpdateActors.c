@@ -1761,7 +1761,7 @@ void Level2_UpdateActors(void) {
     /* Type 157: starts its sound and animation when hit, then settles. */
     case ACTOR_TYPE_FLAME_CHUNK_TRIGGER:
       if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode == 0) {
-        ModifyWorldChunkAnimFlags(*(int *)actor->state, 0xFC, 0);
+        ModifyWorldChunkAnimFlags(*(int *)actor->state, CHUNK_ANIM_RESUME, 0);
         actor->mode = 1;
         ANIM_RESET(actor, 1);
       } else if (actor->mode == 1 && g_nActorAnimDone != 0) {

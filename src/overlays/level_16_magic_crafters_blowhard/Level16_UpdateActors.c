@@ -3213,7 +3213,7 @@ void Level16_UpdateActors(void) {
               DespawnActorRecord(a);
             }
             st->prev = *as;
-            ModifyWorldChunkAnimFlags(0, 0xFC, 0);
+            ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
             st->chan = -1;
           }
           if (g_nLevelProgressCheckpoint[0] >= 2) {
@@ -3258,8 +3258,8 @@ void Level16_UpdateActors(void) {
       case 2:
         if (g_nActorAnimDone != 0) {
           if (st->chan >= 0) {
-            if (GetWorldChunkAnimState(st->chan) & 2) {
-              ModifyWorldChunkAnimFlags(st->chan, 0xFC, 0);
+            if (GetWorldChunkAnimState(st->chan) & CHUNK_ANIM_HALTED) {
+              ModifyWorldChunkAnimFlags(st->chan, CHUNK_ANIM_RESUME, 0);
               actor->mode = 0x63;
               actor->flags = 0;
               st->chan = -1;
@@ -3499,9 +3499,9 @@ void Level16_UpdateActors(void) {
         case 3:
         case 4:
           r = GetWorldChunkAnimState(st->chan);
-          if (r & 2) {
-            if (((r >> 8) & 0xFF) != 0) {
-              ModifyWorldChunkAnimFlags(st->chan, 0xFC, 0);
+          if (r & CHUNK_ANIM_HALTED) {
+            if (CHUNK_ANIM_STEP(r) != 0) {
+              ModifyWorldChunkAnimFlags(st->chan, CHUNK_ANIM_RESUME, 0);
             } else if (actor->cullRadius == 0) {
               DespawnActorRecord(actor);
               continue;
@@ -3512,9 +3512,9 @@ void Level16_UpdateActors(void) {
         case 5:
         case 7:
           r = GetWorldChunkAnimState(st->chan);
-          if (r & 2) {
-            if (((r >> 8) & 0xFF) != 0) {
-              ModifyWorldChunkAnimFlags(st->chan, 0xFC, 0);
+          if (r & CHUNK_ANIM_HALTED) {
+            if (CHUNK_ANIM_STEP(r) != 0) {
+              ModifyWorldChunkAnimFlags(st->chan, CHUNK_ANIM_RESUME, 0);
             } else if (actor->cullRadius == 0) {
               DespawnActorRecord(actor);
               continue;
@@ -3529,12 +3529,12 @@ void Level16_UpdateActors(void) {
           g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->target]);
         }
         r = GetWorldChunkAnimState(st->chan);
-        if ((r & 2) && TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if ((r & CHUNK_ANIM_HALTED) && TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           st->timer = st->period;
-          if (st->chan >= 5 && ((r >> 8) & 0xFF) >= 0x65) {
+          if (st->chan >= 5 && CHUNK_ANIM_STEP(r) >= 0x65) {
             st->timer = 0;
           }
-          ModifyWorldChunkAnimFlags(st->chan, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(st->chan, CHUNK_ANIM_RESUME, 0);
         }
         break;
       }
