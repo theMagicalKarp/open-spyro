@@ -663,7 +663,7 @@ void Level1_BalloonistCutscene_Update(void)
         }
         TickLevelTransitionStream(1);
         CopyWords(g_abActorCutsceneActorSnapshot, g_pActorCutsceneRecord, 0x58);
-        g_pActorCutsceneRecord = (Actor *)g_abActorCutsceneActorSnapshot;
+        g_pActorCutsceneRecord = g_abActorCutsceneActorSnapshot;
         if (((unsigned int) g_pRenderScratchRegionBase) <= 0x801FFFFF)
         {
           bank = (int *) (g_pWorldRenderMeshChunkArray - 0x400C);

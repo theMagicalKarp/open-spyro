@@ -1319,7 +1319,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     CLAMP_FALL_SPEED();
     break;
   case SPYRO_ST_LIFT: {
-    int *actor;
+    Actor *actor;
     int reach;
     int *zb;
     int lift;
@@ -1329,13 +1329,13 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     int m;
 
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
-    actor = (int *)SPY[SPY_SCRIPTED_ACTOR];
+    actor = (Actor *)SPY[SPY_SCRIPTED_ACTOR];
     if (actor == 0) {
       break;
     }
     reach = 0x500;
-    if (((Actor *)actor)->type == ACTOR_TYPE_WHIRLWIND) {
-      reach = ((int **)actor)[0][1];
+    if (actor->type == ACTOR_TYPE_WHIRLWIND) {
+      reach = ((int *)actor->state)[1]; /* WhirlwindState.radius */
     }
     zb = &g_nSpyroWorldPosZ;
     OPAQUE(zb);
