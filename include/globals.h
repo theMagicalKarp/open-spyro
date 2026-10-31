@@ -1003,7 +1003,7 @@ extern int g_nSpyroRequestState;                        /* 0x80078c70 */
 extern void *g_pSpyroRequestCameraAnchor;               /* 0x80078c74 */
 extern void *g_pSpyroRequestCameraTargetParams;         /* 0x80078c78 */
 extern struct Actor *g_pScriptedCameraActor;                    /* 0x80078c7c */
-extern void *g_pPortalCamPathData;                   /* 0x80078c98 */
+extern struct PortalCamPath *g_pPortalCamPathData;      /* 0x80078c98: the active hub portal camera path (portal.h) */
 extern int g_nPortalCamPathMaxStep;                  /* 0x80078c9c */
 extern int g_nPortalCamPathReverseFlag;              /* 0x80078ca0 */
 extern int g_nSpyroFlightMode;                    /* 0x80078ca4: Spyro can fly: set on flight levels (and in Gnasty's Loot, LEVEL_GNASTYS_LOOT, once grounded), cleared on level exit. While set the glide/fly states take R1/L1 as substates 1/2 and the fall physics keeps tracking g_nSpyroFloorReferenceZ */

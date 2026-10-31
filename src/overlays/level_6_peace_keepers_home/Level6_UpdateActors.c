@@ -4226,7 +4226,7 @@ void Level6_UpdateActors(void) {
         SPY.otBinBias = 0x7F;
 
         p = st->desc;
-        AddVector(g392, p->posA, p->posB);
+        AddVector(g392, p->point[0].pos, p->point[1].pos);
         RShiftVector3(g392, 1);
 
         SubtractVector(&SPY.requestVelX, g392, &SPY.posX);

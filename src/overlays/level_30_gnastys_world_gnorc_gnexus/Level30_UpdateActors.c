@@ -2376,7 +2376,7 @@ void Level30_UpdateActors(void) {
         {
           PortalCamPath *pd = *(PortalCamPath **)st;
 
-          AddVector(m, pd->posA, pd->posB);
+          AddVector(m, pd->point[0].pos, pd->point[1].pos);
         }
         RShiftVector3(m, 1);
         aim = cf + 5;

@@ -11,6 +11,7 @@
 
 #include "actor_states.h"
 #include "cutscene_path.h"
+#include "portal.h"
 #include "model.h"
 
 /* The update list, and the per-actor values the loop publishes before it
@@ -168,17 +169,7 @@ typedef struct {
 
 extern CamObj g_anWorldToCameraRotMtx;
 
-/* A hub portal's path (type 398's desc; g_pPortalCamPathData): node count
- * and current node, then the two anchor positions whose midpoint Spyro is
- * pulled toward while UpdatePortalPathCamera walks the camera along it. */
-typedef struct PortalCamPath {
-  unsigned char count;    /* 0x00 */
-  unsigned char index;    /* 0x01 */
-  unsigned char pad02[6]; /* 0x02 */
-  int posA[3];            /* 0x08 */
-  int pad14;              /* 0x14 */
-  int posB[3];            /* 0x18 */
-} PortalCamPath;
+/* PortalCamPath (a hub portal's camera path) lives in portal.h. */
 
 extern void StubRewardHook(int script, int a);
 
@@ -666,7 +657,7 @@ typedef struct RideState {
  * portal record's word 6 names it; DispatchSpyroTriggerEvent wakes it when
  * Spyro enters the portal region (mode 1, subMode = which side he came from,
  * offset = half the portal normal toward that side, updateDist 0xFF). Mode 1
- * homes Spyro on the midpoint of the path's posA/posB (plus offset)
+ * homes Spyro on the midpoint of the path's first two waypoints (plus offset)
  * along the portal camera path; mode 2 glides him along it. When the camera
  * sphere touches a TRIGGER_PORTAL region it starts the level load. */
 typedef struct PortalState {
