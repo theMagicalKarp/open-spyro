@@ -510,7 +510,7 @@ void Level5_FlightResults_Draw(void)
         }
         else
         {
-          char *rec;
+          Actor *rec;
           int count;
           int blink;
           int *pp;
@@ -538,7 +538,7 @@ void Level5_FlightResults_Draw(void)
           pos[0] = 0x15C;
           pos[1] = 0xD2;
           pos[2] = 0x1100;
-          rec = g_pSpriteRecordWriteCursor;
+          rec = (Actor *)g_pSpriteRecordWriteCursor;
           pp = pos;
           if (g_nPauseMenuCursor == 1)
           {
@@ -550,7 +550,7 @@ void Level5_FlightResults_Draw(void)
           BuildTextSpriteChain("NO", pp, 0x12, (blink * 2) + 0xA);
           if (g_nPauseMenuCursor != 0)
           {
-            rec = g_pSpriteRecordWriteCursor;
+            rec = (Actor *)g_pSpriteRecordWriteCursor;
             count = 2;
           }
           i = 0;
@@ -561,9 +561,9 @@ void Level5_FlightResults_Draw(void)
             do
             {
               i += 1;
-              ((Actor *) rec)->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
+              rec->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
               ph += 0xC;
-              rec += ACTOR_SIZE;
+              rec++;
             }
             while (i < count);
           }
@@ -590,7 +590,7 @@ void Level5_FlightResults_Draw(void)
     }
     else
     {
-      char *rec;
+      Actor *rec;
       int count;
       int blink;
       int *pp;
@@ -624,7 +624,7 @@ void Level5_FlightResults_Draw(void)
       if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == 0x20)
       {
         count = g_pfnFlightTimeFormatter(g_nFlightRunClock, pos, snd);
-        rec = g_pSpriteRecordWriteCursor;
+        rec = (Actor *)g_pSpriteRecordWriteCursor;
         i = 0;
         if (count > 0)
         {
@@ -633,9 +633,9 @@ void Level5_FlightResults_Draw(void)
           do
           {
             i += 1;
-            ((Actor *) rec)->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
+            rec->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
             ph += 0xC;
-            rec += ACTOR_SIZE;
+            rec++;
           }
           while (i < count);
         }
@@ -659,7 +659,7 @@ void Level5_FlightResults_Draw(void)
         pos[1] = 0x96;
         pos[2] = 0xC00;
         BuildTextSpriteChain(buf, pos, 0x18, 0xB);
-        rec = g_pSpriteRecordWriteCursor;
+        rec = (Actor *)g_pSpriteRecordWriteCursor;
         i = 0;
         if (count > 0)
         {
@@ -668,9 +668,9 @@ void Level5_FlightResults_Draw(void)
           do
           {
             i += 1;
-            ((Actor *) rec)->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
+            rec->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
             ph += 0xC;
-            rec += ACTOR_SIZE;
+            rec++;
           }
           while (i < count);
         }
@@ -688,13 +688,13 @@ void Level5_FlightResults_Draw(void)
         i = 0;
         lut = (short *) g_anCosineLut;
         ph = 0;
-        rec = g_pSpriteRecordWriteCursor;
+        rec = (Actor *)g_pSpriteRecordWriteCursor;
         do
         {
           i += 1;
-          ((Actor *) rec)->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
+          rec->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
           ph += 0xC;
-          rec += ACTOR_SIZE;
+          rec++;
         }
         while (i < count);
       }
@@ -722,7 +722,7 @@ void Level5_FlightResults_Draw(void)
       pos[0] = 0x154;
       pos[1] = 0xD2;
       pos[2] = 0x1100;
-      rec = g_pSpriteRecordWriteCursor;
+      rec = (Actor *)g_pSpriteRecordWriteCursor;
       qq = pos;
       if (g_nPauseMenuCursor == 1)
       {
@@ -734,7 +734,7 @@ void Level5_FlightResults_Draw(void)
       BuildTextSpriteChain("NO", qq, 0x12, (blink * 2) + 0xA);
       if (g_nPauseMenuCursor != 0)
       {
-        rec = g_pSpriteRecordWriteCursor;
+        rec = (Actor *)g_pSpriteRecordWriteCursor;
         count = 2;
       }
       i = 0;
@@ -745,9 +745,9 @@ void Level5_FlightResults_Draw(void)
         do
         {
           i += 1;
-          ((Actor *) rec)->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
+          rec->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
           ph += 0xC;
-          rec += ACTOR_SIZE;
+          rec++;
         }
         while (i < count);
       }

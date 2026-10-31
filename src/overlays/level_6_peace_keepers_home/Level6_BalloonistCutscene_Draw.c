@@ -42,7 +42,7 @@ void Level6_BalloonistCutscene_Draw(void) {
   int askPos[3];
   int askColor[3];
   char dest[40];
-  unsigned char *rec;
+  Actor *rec;
   int cursor;
   int pageCursor;
   int titlePhase;
@@ -121,27 +121,27 @@ void Level6_BalloonistCutscene_Draw(void) {
           BuildTextSprites("WHERE TO, SPYRO?", menuPos, menuColor, 0x10, 0xB);
         }
         menuPos[0] = 0x110;
-        rec = (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
+        rec = (Actor *)g_pSpriteRecordWriteCursor - 1;
         menuPos[1] += 0x14;
         BuildTextSprites("STAY HERE", menuPos, menuColor, 0x10, 0xB);
         menuPos[1] += 0xF;
         if (g_nActorCutsceneSubstate[2] == 0) {
-          for (greetPhase = 0; rec >= (unsigned char *)g_pSpriteRecordWriteCursor;
-               rec -= ACTOR_SIZE, greetPhase += 1) {
-            ((Actor *)rec)->rotZ = g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + greetPhase * 0xC) & 0xFF] >> 8;
+          for (greetPhase = 0; rec >= (Actor *)g_pSpriteRecordWriteCursor;
+               rec--, greetPhase += 1) {
+            rec->rotZ = g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + greetPhase * 0xC) & 0xFF] >> 8;
           }
         }
         slot = 1;
         for (world = 0; world < 6; world++) {
           if (g_nActiveLevelId / 10 - 1 != world && g_abWorldBalloonistState[world] == 2) {
             menuPos[0] = 0x110;
-            rec = (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
+            rec = (Actor *)g_pSpriteRecordWriteCursor - 1;
             BuildTextSprites(g_apWorldNameByLevelTens[world], menuPos, menuColor, 0x10, 0xB);
             menuPos[1] += 0xF;
             if (g_nActorCutsceneSubstate[2] == slot) {
-              for (rosterPhase = 0; rec >= (unsigned char *)g_pSpriteRecordWriteCursor;
-                   rec -= ACTOR_SIZE, rosterPhase += 1) {
-                ((Actor *)rec)->rotZ = g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + rosterPhase * 0xC) & 0xFF] >> 8;
+              for (rosterPhase = 0; rec >= (Actor *)g_pSpriteRecordWriteCursor;
+                   rec--, rosterPhase += 1) {
+                rec->rotZ = g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + rosterPhase * 0xC) & 0xFF] >> 8;
               }
             }
             slot += 1;
@@ -172,18 +172,18 @@ void Level6_BalloonistCutscene_Draw(void) {
           BuildTextSprites("WOULD YOU LIKE TO GO?", askPos, askColor, 0x12, 0xB);
         }
         askPos[0] = 0x80;
-        rec = (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
+        rec = (Actor *)g_pSpriteRecordWriteCursor - 1;
         askPos[1] += 0x19;
         BuildTextSprites("STAY HERE", askPos, askColor, 0x12, 0xB);
         askPos[1] += 0x13;
         if (g_nActorCutsceneSubstate[2] == 0) {
-          for (promptPhase = 0; rec >= (unsigned char *)g_pSpriteRecordWriteCursor;
-               rec -= ACTOR_SIZE, promptPhase += 1) {
-            ((Actor *)rec)->rotZ = g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + promptPhase * 0xC) & 0xFF] >> 8;
+          for (promptPhase = 0; rec >= (Actor *)g_pSpriteRecordWriteCursor;
+               rec--, promptPhase += 1) {
+            rec->rotZ = g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + promptPhase * 0xC) & 0xFF] >> 8;
           }
         }
         askPos[0] = 0x80;
-        rec = (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
+        rec = (Actor *)g_pSpriteRecordWriteCursor - 1;
         if (g_nActorCutsceneSubstate[3] == 0x1F) {
           sprintf(dest, g_szGoTo, g_apWorldNameByLevelTens[g_nActiveLevelId / 10]);
         } else {
@@ -192,9 +192,9 @@ void Level6_BalloonistCutscene_Draw(void) {
         }
         BuildTextSprites(dest, askPos, askColor, 0x12, 0xB);
         if (g_nActorCutsceneSubstate[2] == 1) {
-          for (namePhase = 0; rec >= (unsigned char *)g_pSpriteRecordWriteCursor;
-               rec -= ACTOR_SIZE, namePhase += 1) {
-            ((Actor *)rec)->rotZ = g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + namePhase * 0xC) & 0xFF] >> 8;
+          for (namePhase = 0; rec >= (Actor *)g_pSpriteRecordWriteCursor;
+               rec--, namePhase += 1) {
+            rec->rotZ = g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + namePhase * 0xC) & 0xFF] >> 8;
           }
         }
       }
