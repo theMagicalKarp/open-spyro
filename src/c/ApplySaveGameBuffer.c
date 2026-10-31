@@ -59,7 +59,7 @@ int ApplySaveGameBuffer(unsigned char *buf) {
   g_nCdDaVolumeCurrent = mv << 0xB;
   g_nSpuCommonCdVolumeR = mv << 0xB;
   SetSpuCommonAttr(common);
-  cam = SAVE_RAW(buf, unsigned int, cameraOptions);
+  cam = ((SaveGameBuffer *)buf)->cameraOptions;
   g_nOptionVibrationEnabled = buf[SAVE_OFFSET(vibration)];
   g_dwActiveCameraOptions = cam;
   g_nSoundMonoMixFlag = buf[SAVE_OFFSET(monoMix)];
@@ -128,5 +128,5 @@ int ApplySaveGameBuffer(unsigned char *buf) {
     i += 1;
   } while (i < 6);
   CopyWords(g_anLevelKillBitmapTable, buf + SAVE_OFFSET(killBitmaps), 0x480);
-  return SAVE_RAW(buf, int, checksum) == ComputeSaveGameChecksum(start);
+  return ((SaveGameBuffer *)buf)->checksum == ComputeSaveGameChecksum(start);
 }

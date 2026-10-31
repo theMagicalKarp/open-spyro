@@ -35,7 +35,7 @@ SDATA(g_pSpyroContactActor, 4);
   {                                                                            \
                                                                                \
     SubtractVector(d, pos, from);                                              \
-    len = VectorLength(d, 1);                                                  \
+    len = VectorLength(d, VEC_LEN_XYZ);                                        \
     if (len > 0x140) {                                                         \
       ScaleVector3ByRatio(d, len, 0x140);                                      \
       AddVector(pos, from, d);                                                 \
@@ -65,7 +65,8 @@ SDATA(g_pSpyroContactActor, 4);
     g_nSpyroGroundProbeSuspendFlag = 0;                                        \
     keep##from : if ((signed char)ArcTan2(                                     \
                          g_anCollisionProbeVec[2],                             \
-                         VectorLength(g_anCollisionProbeVec, 0), 0) >= 0x17) { \
+                         VectorLength(g_anCollisionProbeVec, VEC_LEN_XY),      \
+                         0) >= 0x17) {                                         \
       int t = g_nGroundSurfaceType & 0x3F;                                     \
       unsigned char kind;                                                      \
                                                                                \
@@ -178,7 +179,7 @@ int AdvanceSpyroPhysics(void) {
           g_anSpyroVelocity[2] = g_anSpyroVelocityFp6[2] / g_nFrameStep;
         }
       }
-      g_nSpyroMotionSpeed = VectorLength((int *)(rq - 0x40), 0);
+      g_nSpyroMotionSpeed = VectorLength((int *)(rq - 0x40), VEC_LEN_XY);
     }
     rq2 = REQ;
     t = *rq2;
@@ -326,7 +327,7 @@ int AdvanceSpyroPhysics(void) {
     AddVector(g_anSpyroVelocityFp6 - SPY_VELOCITY_FP6,
               g_anSpyroVelocityFp6 - SPY_VELOCITY_FP6, g_anSpyroVelocityFp6);
   } else {
-    len = VectorLength(g_anSpyroVelocityFp6, 1);
+    len = VectorLength(g_anSpyroVelocityFp6, VEC_LEN_XYZ);
     steps = len / 340 + 1;
     if (steps >= 2) {
       g_anSpyroVelocityFp6[0] /= steps;
@@ -444,7 +445,7 @@ int AdvanceSpyroPhysics(void) {
   g_anSpyroMotionVec[0] /= g_nFrameStep;
   g_anSpyroMotionVec[1] /= g_nFrameStep;
   g_anSpyroMotionVec[2] /= g_nFrameStep;
-  g_nSpyroFrameMotionLength = VectorLength(g_anSpyroMotionVec, 1);
+  g_nSpyroFrameMotionLength = VectorLength(g_anSpyroMotionVec, VEC_LEN_XYZ);
   __asm__ volatile("" : : "g"(hole));
   return 1;
 }

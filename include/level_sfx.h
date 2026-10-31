@@ -37,6 +37,9 @@ enum LevelSfx {
   SFX_MENU_PAGE = 0x38,   /* inventory scrolls to another world */
   SFX_SPYRO_HURT_PINNED = 0x3A, /* SPYRO_ST_HURT_PINNED entry */
   SFX_SPYRO_HURT = 0x3B,        /* SPYRO_ST_HURT / KNOCKBACK entry */
+  SFX_SPYRO_HURT_EXIT = 0x1B,   /* leaving SPYRO_ST_HURT / HURT_TINT / HURT_LONG / KNOCKBACK(_2),
+                                 * the end of the HURT_PINNED animation, and SPYRO_ST_HAZARD
+                                 * entry (which has no exit sound of its own) */
 };
 
 #endif /* OPEN_SPYRO_LEVEL_SFX_H */

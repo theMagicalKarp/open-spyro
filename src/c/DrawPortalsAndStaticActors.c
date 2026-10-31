@@ -172,9 +172,9 @@ void DrawPortalsAndStaticActors(void) {
       if (maxX >= 0xf) {
         maxX >>= 1;
         RShiftVector3(vDelta, maxX);
-        dist = VectorLength(vDelta, 1) << maxX;
+        dist = VectorLength(vDelta, VEC_LEN_XYZ) << maxX;
       } else {
-        dist = VectorLength(vDelta, 1);
+        dist = VectorLength(vDelta, VEC_LEN_XYZ);
       }
       maxX = CountLeadingZeros(dist) - 0xd;
       if (maxX < 0) {

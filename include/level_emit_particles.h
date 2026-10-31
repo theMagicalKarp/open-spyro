@@ -8,6 +8,8 @@
 #ifndef OPEN_SPYRO_LEVEL_EMIT_PARTICLES_H
 #define OPEN_SPYRO_LEVEL_EMIT_PARTICLES_H
 
+#include "sparx.h"
+
 extern void *AllocEmitListRecord(int cls);
 
 extern void VectorToSVectorShr2(void *dst, int *src);          /* vector -> short[3] >>2 */

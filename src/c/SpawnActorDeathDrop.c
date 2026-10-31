@@ -16,11 +16,11 @@ struct Debris {
    1308 bytes).  `src` is the actor that died; `kind` selects how the drop is
    thrown.  An actor whose dropKind (low 7 bits) is 1..0x7e drops that actor
    type, once (killGroup bit 7 latches it).  Any other actor rolls: 2 in 25
-   an extra life (ACTOR_TYPE_EXTRA_LIFE); else, while g_nSparxHealth < 3,
-   10 in 25 a butterfly (ACTOR_TYPE_BUTTERFLY), or Sparx himself when he is
-   gone (no g_pSparxActor) and the health is not negative; else a Sparx food
-   (ACTOR_TYPE_SPARX_FOOD).  Extra lives, butterflies and Sparx are returned
-   as spawned.  Anything else is thrown by `kind` (enum DropThrow,
+   an extra life (ACTOR_TYPE_EXTRA_LIFE); else, while g_nSparxHealth <
+   SPARX_GOLD, 10 in 25 a butterfly (ACTOR_TYPE_BUTTERFLY), or Sparx himself
+   when he is gone (no g_pSparxActor) and the health is not negative; else a
+   Sparx food (ACTOR_TYPE_SPARX_FOOD).  Extra lives, butterflies and Sparx are
+   returned as spawned.  Anything else is thrown by `kind` (enum DropThrow,
    actor_type.h): DROP_HOP / DROP_AT_POINT land on the source (or `alt`)
    position, DROP_HIGH_HOP with a small XY jitter, DROP_SCATTER and a
    DROP_TUMBLE_IF_NEAR that fails its Spyro proximity test scatter over a
@@ -47,30 +47,30 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
 
   id = src->dropKind & 0x7f;
   if ((unsigned int)(id - 1) < 0x7e) {
-    if (src->killGroup & 0x80) {
+    if (src->killGroup & ACTOR_KILL_DROPPED) {
       return 0;
     }
-    src->killGroup |= 0x80;
+    src->killGroup |= ACTOR_KILL_DROPPED;
   } else {
     int roll;
     id = ACTOR_TYPE_SPARX_FOOD;
     roll = (int)(((GetRandomU32() & 0xfff) * 25) >> 10);
     if (roll < 2) {
       id = ACTOR_TYPE_EXTRA_LIFE;
-    } else if (g_nSparxHealth < 3 && roll < 0xc) {
+    } else if (g_nSparxHealth < SPARX_GOLD && roll < 0xc) {
       id = ACTOR_TYPE_BUTTERFLY;
     }
   }
 
   if (id == ACTOR_TYPE_BUTTERFLY) {
-    if (g_pSparxActor != 0 || g_anSparxHealthBlock[0] < 0) {
+    if (g_pSparxActor != 0 || g_anSparxHealthBlock[0] < SPARX_GONE) {
       rec = (*(struct Actor * (*)(int, struct Actor *))
                  g_pfnLevelSpawnActor)(ACTOR_TYPE_BUTTERFLY, src);
     } else {
       rec = (*(struct Actor * (*)(int, struct Actor *))
                  g_pfnLevelSpawnActor)(ACTOR_TYPE_SPARX, src);
       PlayActorMeshVoice(rec, 0, 0);
-      g_anSparxHealthBlock[0] = 1;
+      g_anSparxHealthBlock[0] = SPARX_GREEN;
       g_pSparxActor = rec;
     }
     return rec;
@@ -145,8 +145,9 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
   throw_[2] += 0x400;
   hit = FindGroundHeightBelow(throw_, 0x800);
   throw_[2] -= 0x400;
-  ang = (signed char)ArcTan2_8bit(g_anCollisionProbeVec[2],
-                                  VectorLength(g_anCollisionProbeVec, 0));
+  ang = (signed char)ArcTan2_8bit(
+      g_anCollisionProbeVec[2],
+      VectorLength(g_anCollisionProbeVec, VEC_LEN_XY));
   if (hit == 0 || ang >= 0x18 ||
       DispatchActorContactAtSphere(throw_, 0xc8, 0, 0, 0, 0) != 0) {
     CopyVector(throw_, &src->posX);

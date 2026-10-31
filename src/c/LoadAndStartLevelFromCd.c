@@ -33,5 +33,5 @@ void LoadAndStartLevelFromCd(void) {
     RestartSpyroAnimWithState(SPYRO_ST_IDLE);
   }
 
-  g_nSparxHealth = 3;
+  g_nSparxHealth = SPARX_GOLD;
 }

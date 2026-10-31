@@ -50,7 +50,7 @@ void Level15_AdvanceEmitList(int step) {
   int *dir;
   int step4;
 
-  if (CLASS == 0xFF) {
+  if (CLASS == EMIT_CLASS_END) {
     return;
   }
 
@@ -167,7 +167,7 @@ void Level15_AdvanceEmitList(int step) {
           }
           dv[2] += AGE << 5;
           SubtractVector(dir, dir, pt);
-          len = VectorLength(dir, 1);
+          len = VectorLength(dir, VEC_LEN_XYZ);
           if (len >= 0x81) {
             ScaleVector3ByRatio(dir, len, 0x80);
           }
@@ -180,7 +180,7 @@ void Level15_AdvanceEmitList(int step) {
         dv[1] += LookupSine(AGE << 7) >> 2;
         dv[2] += LookupCosine((AGE << 7) + 0x200) >> 2;
         SubtractVector(dir, dir, pt);
-        len = VectorLength(dir, 1);
+        len = VectorLength(dir, VEC_LEN_XYZ);
         if (len < 0x401 || AGE >= 0x41) {
           int *owner = *(int **)W(0x18);
 
@@ -205,7 +205,7 @@ void Level15_AdvanceEmitList(int step) {
       SubtractVector(dv, pt, g_anCameraPos);
       near = abs(dv[0]) + abs(dv[1]);
       len = near + abs(dv[2]);
-      if (CLASS == 3) {
+      if (CLASS == EMIT_CLASS_ALT_LIT_QUAD) {
         if (len >= 0x3001) {
           rec[0xC] = 0xFF;
           rec[0xD] = 0xFF;
@@ -319,7 +319,7 @@ void Level15_AdvanceEmitList(int step) {
 
     case EMIT_SPYRO_ORBIT_SPARKLE:  /* <- Level10_AdvanceEmitList */
       /* The homing sparkle: it only lives while Spyro is on screen. */
-      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < 0) || g_nSpyroDrawSuppressed != 0 ||
+      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < SPARX_GONE) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
         FreeEmitListRecord(rec);
       } else {
@@ -333,7 +333,7 @@ void Level15_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xb:  /* <- Level10_AdvanceEmitList */
+    case EMIT_BURST_SPARK:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, &HS(0x12));
       rec[0xC] -= 8;
       rec[0xD] -= 8;
@@ -764,5 +764,5 @@ void Level15_AdvanceEmitList(int step) {
     }
 
     rec += 0x20;
-  } while (CLASS != 0xFF);
+  } while (CLASS != EMIT_CLASS_END);
 }

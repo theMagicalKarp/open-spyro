@@ -117,8 +117,8 @@ void Level0_UpdateActors(void) {
 
     /* Publish this actor's animation flags and the frame delta for the
      * callees. */
-    g_nActorAnimDone = actor->animFlags & 2;
-    flag1 = actor->animFlags & 1;
+    g_nActorAnimDone = actor->animFlags & ACTOR_ANIM_DONE;
+    flag1 = actor->animFlags & ACTOR_ANIM_NEW_FRAME;
     g_nActorFrameDelta = g_nFrameStep;
     g_nActorAnimNewFrame = flag1;
 
@@ -367,17 +367,17 @@ void Level0_UpdateActors(void) {
     case ACTOR_TYPE_BUTTERFLY: {
       ChaseState *st = (ChaseState *)actor->state;
 
-      if (SPY.sparxHealth < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
+      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
 
         if (ABS2(actorZ - SPY.posZ) < 1800) {
           if (g_pSparxActor == 0) {
-            if (SPY.sparxHealth >= 0) {
+            if (SPY.sparxHealth >= SPARX_GONE) {
               g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
               PlayActorMeshVoice(g_pSparxActor, 0, 0);
 
-              SPY.sparxHealth = 1;
+              SPY.sparxHealth = SPARX_GREEN;
 
               DespawnActorRecord(actor);
               break;
@@ -718,13 +718,13 @@ void Level0_UpdateActors(void) {
 
       if (st->started == 0) {
         if (g_abLevelVisitedFlag[4] != 0) {
-          ModifyWorldChunkAnimFlags(st->handle, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(st->handle, CHUNK_ANIM_RESUME, 0);
           SetWorldChunkAnimStep(st->handle, 0x3B, 0);
         }
         st->started = 1;
       }
 
-      marker = (GetWorldChunkAnimState(st->handle) >> 8) & 0xFF;
+      marker = CHUNK_ANIM_STEP(GetWorldChunkAnimState(st->handle));
 
       switch (marker) {
       case 0:
@@ -732,7 +732,7 @@ void Level0_UpdateActors(void) {
           /* Wake only once the linked actor is dormant and Spyro is near. */
           if (g_pActorListBase[st->idx].mode >= ACTOR_MODE_DORMANT &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
-            ModifyWorldChunkAnimFlags(st->handle, 0xFC, 0);
+            ModifyWorldChunkAnimFlags(st->handle, CHUNK_ANIM_RESUME, 0);
             actor->soundRange = 0x30;
             PlaySoundEffect(g_pLevelSampleBankHeader[0x41], actor, SFX_MODE_3D, &actor->sfxSlot);
           }
@@ -742,7 +742,7 @@ void Level0_UpdateActors(void) {
       case 0x3C:
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x4801) {
-          ModifyWorldChunkAnimFlags(st->handle, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(st->handle, CHUNK_ANIM_RESUME, 0);
         }
         break;
       }
@@ -989,7 +989,7 @@ void Level0_UpdateActors(void) {
         ScaleVector3Sat(svG, st->vel, g_nFrameStep);
         RShiftVector3(svG, 1);
 
-        speed = VectorLength(svG, 1);
+        speed = VectorLength(svG, VEC_LEN_XYZ);
 
         if (220 < speed) {
           ScaleVector3ByRatio(svG, speed, 220);
@@ -1026,7 +1026,7 @@ void Level0_UpdateActors(void) {
             if (st->count == 0) {
               int groundHeight = FindGroundHeightBelow(svG, 0x400);
               int groundAngle =
-                  (signed char)ArcTan2_8bit(svH[2], VectorLength(svH, 0));
+                  (signed char)ArcTan2_8bit(svH[2], VectorLength(svH, VEC_LEN_XY));
 
               if ((svG[2] - 400) < groundHeight && groundAngle < 24) {
                 actor->subMode = 1;
@@ -1113,7 +1113,7 @@ void Level0_UpdateActors(void) {
           SubtractVector(svI, &SPY.posX, st->vel);
           RShiftVector3(svI, 5);
 
-          if (VectorLength(svI, 1) > 480) {
+          if (VectorLength(svI, VEC_LEN_XYZ) > 480) {
             CopyVector(&actor->posX, &SPY.posX);
             st->timer = 32;
           } else {
@@ -1235,7 +1235,7 @@ void Level0_UpdateActors(void) {
                 RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
                 FindGroundHeightBelow(&actor->posX, 0x1000);
                 EncodeCachedVecToActorDirCode(actor);
-                actor->groundCode |= 0x80000000;
+                actor->groundCode |= ACTOR_GROUND_VALID;
               }
             }
           }
@@ -1359,7 +1359,7 @@ void Level0_UpdateActors(void) {
 
           g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, (void *)0xC);
 
-          actor->groundCode &= 0x7FFFFFFF;
+          actor->groundCode &= ~ACTOR_GROUND_VALID;
         }
         break;
       }
@@ -1692,7 +1692,7 @@ void Level0_UpdateActors(void) {
       SparxState *st = (SparxState *)actor->state;
       char pitchAngle;
 
-      if (SPY.sparxHealth >= 2) {
+      if (SPY.sparxHealth >= SPARX_BLUE) {
 
         svF[0] = 0;
         svF[1] = 0x64;
@@ -1709,7 +1709,7 @@ void Level0_UpdateActors(void) {
         g_pfnLevelEmitParticles(2, EMIT_TWINKLE, svF, 0);
       }
 
-      if (SPY.sparxHealth >= 3) {
+      if (SPY.sparxHealth >= SPARX_GOLD) {
         if (st->glow == 0) {
           FxNode *g = AllocWorldSparkle();
           st->glow = g;
@@ -1738,7 +1738,7 @@ void Level0_UpdateActors(void) {
         }
       }
 
-      if (SPY.sparxHealth <= 0) {
+      if (SPY.sparxHealth <= SPARX_GONE) {
         Actor *target = st->target;
         if (target != 0 && target->type == ACTOR_TYPE_BUTTERFLY) {
           target->mode = 0;
@@ -1792,7 +1792,7 @@ void Level0_UpdateActors(void) {
           }
 
           SubtractVector(svA, svA, &actor->posX);
-          dist = VectorLength(svA, 1);
+          dist = VectorLength(svA, VEC_LEN_XYZ);
 
           if (isPickupAnimPhase == 0) {
             if (TickCountdownByFrameDelta(st, 4) != 0 ||
@@ -1813,7 +1813,7 @@ void Level0_UpdateActors(void) {
           }
           AddVector(&actor->posX, &actor->posX, svA);
           TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], 0), 0xA, 0, 0);
-          pitchAngle = ArcTan2(VectorLength(svA, 0), svA[2], 0);
+          pitchAngle = ArcTan2(VectorLength(svA, VEC_LEN_XY), svA[2], 0);
           actor->rotY = pitchAngle;
           actor->rotY = StepAngle8Toward(pitchAngle, 0, 0x30);
           break;
@@ -1841,7 +1841,7 @@ void Level0_UpdateActors(void) {
           int dist;
 
           SubtractVector(svJ, &st->target->posX, &actor->posX);
-          dist = VectorLength(svJ, 1);
+          dist = VectorLength(svJ, VEC_LEN_XYZ);
 
           if (dist < 512) {
             cp->timer = 0;
@@ -1876,7 +1876,7 @@ void Level0_UpdateActors(void) {
 
             AddVector(&actor->posX, &actor->posX, svJ);
             TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], 0), 0xA, 0, 0);
-            pitchAngle = ArcTan2(VectorLength(svJ, 0), svJ[2], 0);
+            pitchAngle = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], 0);
             actor->rotY = pitchAngle;
             actor->rotY = StepAngle8Toward(pitchAngle, 0, 0x30);
           }
@@ -1936,7 +1936,7 @@ void Level0_UpdateActors(void) {
         }
 
         switch (SPY.sparxHealth) {
-        case 1:
+        case SPARX_GREEN:
           if (actor->nextAnim != 0) {
             if (actor->anim != 0) {
               g_nActorAnimDone = 0;
@@ -1944,7 +1944,7 @@ void Level0_UpdateActors(void) {
             }
           }
           break;
-        case 2:
+        case SPARX_BLUE:
           if (actor->nextAnim != 2) {
             if (actor->anim != 2) {
               g_nActorAnimDone = 0;
@@ -1953,7 +1953,7 @@ void Level0_UpdateActors(void) {
           }
 
           break;
-        case 3:
+        case SPARX_GOLD:
           if (actor->nextAnim != 4) {
             if (actor->anim != 4) {
               g_nActorAnimDone = 0;
@@ -2166,7 +2166,7 @@ void Level0_UpdateActors(void) {
 
           SubtractVector(svK, &actor->posX, &SPY.posX);
           svK[2] = (svK[2] * 3) >> 2;
-          if (VectorLength(svK, 1) < 1088) {
+          if (VectorLength(svK, VEC_LEN_XYZ) < 1088) {
             int rotZ;
             int cutsceneId;
             if (st->partner != -1) {
@@ -2217,7 +2217,7 @@ void Level0_UpdateActors(void) {
                 RShiftVector3(&SPY.requestVelX, 6);
                 SPY.requestVelZ = 0;
                 if (SPY.requestVelX != 0 || SPY.requestVelY != 0) {
-                  ScaleVector3ByRatio(&SPY.requestVelX, VectorLength(&SPY.requestVelX, 0), 0x60);
+                  ScaleVector3ByRatio(&SPY.requestVelX, VectorLength(&SPY.requestVelX, VEC_LEN_XY), 0x60);
                 }
                 SPY.requestVelZ = 0;
               }
@@ -2439,7 +2439,7 @@ void Level0_UpdateActors(void) {
       if ((GetRandomU32() & 1) == 0)
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, (int *)actor, 0);
       SubtractVector(svK, &SPY.posX, &actor->posX);
-      distance = VectorLength(svK, 0);
+      distance = VectorLength(svK, VEC_LEN_XY);
       if (distance < st->radius && svK[2] >= -0x3FF && svK[2] < st->spanZ &&
           (SPY.state == SPYRO_ST_LIFT || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
         spyro = &SPY;
@@ -2491,7 +2491,7 @@ void Level0_UpdateActors(void) {
 
         CopyVector(&p->posX, p->state);
         InsertActorIntoSpatialGrid(p);
-        p->killGroup &= 0x7F;
+        p->killGroup &= ACTOR_KILL_GROUP_MASK;
         p->flags = 0;
         p->mode = 0;
         p->frameProgress = 0;
@@ -2756,7 +2756,7 @@ void Level0_UpdateActors(void) {
       /* First tick: if already unlocked, skip to the finished state. */
       if (st->primed == 0) {
         if (g_abLevelVisitedFlag[5] != 0) {
-          ModifyWorldChunkAnimFlags(st->anim, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(st->anim, CHUNK_ANIM_RESUME, 0);
           SetWorldChunkAnimStep(st->anim, 0x77, 0);
           actor->mode = 0x63;
         }
@@ -2771,7 +2771,7 @@ void Level0_UpdateActors(void) {
         break;
 
       case 5:
-        ModifyWorldChunkAnimFlags(st->anim, 0xFC, 0);
+        ModifyWorldChunkAnimFlags(st->anim, CHUNK_ANIM_RESUME, 0);
         actor->mode = 0xA;
         st->timer = 0x1E;
         actor->soundRange = 0x30;
@@ -2779,7 +2779,7 @@ void Level0_UpdateActors(void) {
         break;
 
       case 0xA:
-        if ((GetWorldChunkAnimState(st->anim) & 2) != 0) {
+        if ((GetWorldChunkAnimState(st->anim) & CHUNK_ANIM_HALTED) != 0) {
           actor->mode = 0x63;
           break;
         }
@@ -2791,7 +2791,7 @@ void Level0_UpdateActors(void) {
         break;
 
       case 0xB:
-        if ((GetWorldChunkAnimState(st->anim) & 2) != 0) {
+        if ((GetWorldChunkAnimState(st->anim) & CHUNK_ANIM_HALTED) != 0) {
           actor->mode = 0x63;
           break;
         }
@@ -2891,7 +2891,7 @@ void Level0_UpdateActors(void) {
         SubtractVector(&SPY.requestVelX, vec, &SPY.posX);
         AddVector(&SPY.requestVelX, &SPY.requestVelX, st->offset);
 
-        mag = VectorLength(&SPY.requestVelX, 1);
+        mag = VectorLength(&SPY.requestVelX, VEC_LEN_XYZ);
         if (mag > 128) {
           ScaleVector3ByRatio(&SPY.requestVelX, mag, 128);
         } else {

@@ -53,8 +53,11 @@ typedef struct Actor {
   unsigned char subMode; /* 0x49 sub-state */
   unsigned char visZone; /* 0x4A visibility-gate index into g_abVisZoneGates;
                           * 0xFF = always drawn (BuildRenderEntityLists) */
-  unsigned char renderList; /* 0x4B sign picks the BuildRenderEntityLists
-                             * bucket: 0, < 0, > 0 (default 0x20) */
+  unsigned char renderList; /* 0x4B signed; picks the BuildRenderEntityLists
+                             * list: > 0 the main mesh list (default 0x20,
+                             * BuildActorDrawList), < 0 (ACTOR_RENDER_SECONDARY)
+                             * g_apSecondaryDrawEntityList, 0 the sprite queue
+                             * g_apSpritePrimQueue */
   /* 0x4C..0x4F tint. Read as one word, 0x4C..0x4E pack three 6-bit levels
    * under a 0xA tag: 0xA << 20 | c2 << 12 | c1 << 6 | c0. SelectActorLodBand
    * builds it with 0x18 as neutral, which gives the 0xA18618 the overlays
@@ -100,6 +103,18 @@ typedef struct Actor {
  * the pool ends at the first record whose mode is 0xFF. */
 #define ACTOR_MODE_DORMANT 0x80
 #define ACTOR_MODE_END 0xFF
+
+/* Actor.animFlags bits (AdvanceActorAnimation). */
+#define ACTOR_ANIM_NEW_FRAME 0x01 /* stepped onto a new frame this tick */
+#define ACTOR_ANIM_DONE 0x02      /* the animation finished (g_nActorAnimDone) */
+/* Actor.groundCode bit 31: the packed contact is valid. */
+#define ACTOR_GROUND_VALID 0x80000000
+/* Actor.killGroup: the group number, and bit 7, which latches the death drop. */
+#define ACTOR_KILL_GROUP_MASK 0x7F
+#define ACTOR_KILL_DROPPED 0x80
+/* Actor.renderList sign bit: draw through BuildSecondaryActorDrawList, which
+ * builds the rotation from the euler bytes, instead of the main mesh list. */
+#define ACTOR_RENDER_SECONDARY 0x80
 
 #define ACTOR_SIZE 0x58
 typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
@@ -357,6 +372,7 @@ enum ActorType {
   ACTOR_TYPE_GRABBER = 476, /* level 20: carries Spyro off and throws him (GrabberState) */
   ACTOR_TYPE_HAZARD0_ENTER_FX = 477, /* g_anHazardEnterSpawnType[0]; both kind-0 effects snap to the ground under Spyro (or the parent) */
   ACTOR_TYPE_FLIGHT_CHEST_SHARD = 478, /* 478..483: flight chest burst */
+  ACTOR_TYPE_ONE_SHOT_PROP = 487, /* level 20: plays anim 1 -> 2 once set to mode 1, or anim 3 -> 4 when hit, then holds */
   ACTOR_TYPE_BELL_RIPPLE = 493, /* levels 7/8: ripple a charged bell (206/239/242) spawns; removed when its animation ends */
   ACTOR_TYPE_AIMED_BOLT = 494, /* level 19: bolt thrown by 35 and 467 (AimedBoltState) */
   ACTOR_TYPE_BLOWHARD = 495, /* level 16 boss: patrols three paths, drops type 37 riders */

@@ -187,22 +187,22 @@ void ActorCutscene_Update(void) {
            13);
       cam = g_anCameraPosBlock;
 
-      cam[0] = ((Actor *)g_pActorCutsceneRecord)->posX +
-               ((LookupCosine(yaw) * radius) >> 12);
-      g_anCameraPos[1] = ((Actor *)g_pActorCutsceneRecord)->posY +
-                         ((LookupSine(yaw) * radius) >> 12);
+      cam[0] =
+          g_pActorCutsceneRecord->posX + ((LookupCosine(yaw) * radius) >> 12);
+      g_anCameraPos[1] =
+          g_pActorCutsceneRecord->posY + ((LookupSine(yaw) * radius) >> 12);
       g_anCameraPos[2] =
           g_nActorCutsceneCamHeightStart +
           (((g_nActorCutsceneCamHeightGoal - g_nActorCutsceneCamHeightStart) *
             ease) >>
            13);
 
-      SubtractVector(&delta.vx, &((Actor *)g_pActorCutsceneRecord)->posX, cam);
+      SubtractVector(&delta.vx, &g_pActorCutsceneRecord->posX, cam);
       delta.vz += 0x200;
 
       if (g_nActorCutsceneTimer < 0x40) {
         aim.vx = 0;
-        aim.vy = ArcTan2(VectorLength(&delta.vx, 0), -delta.vz, 1);
+        aim.vy = ArcTan2(VectorLength(&delta.vx, VEC_LEN_XY), -delta.vz, 1);
         aim.vz = ArcTan2(delta.vx, delta.vy, 1);
         /* Unsigned view for the accumulate only: the call argument above is a
            signed read of the same halfword (lh), the fold back in is not. */
@@ -218,7 +218,8 @@ void ActorCutscene_Update(void) {
                               6)) &
                             0xFFF;
       } else {
-        g_nCameraEulerPitch = ArcTan2(VectorLength(&delta.vx, 0), -delta.vz, 1);
+        g_nCameraEulerPitch =
+            ArcTan2(VectorLength(&delta.vx, VEC_LEN_XY), -delta.vz, 1);
         g_nCameraEulerYaw = ArcTan2(delta.vx, delta.vy, 1);
       }
     } else if (g_nCdStreamState == 0xA) {
@@ -248,37 +249,36 @@ void ActorCutscene_Update(void) {
          force_reg'd fine; spelling this one differently does not help, as
          A[i + 3], (&A[i])[3] and *(A + i + 3) all parse to one tree. */
       lvl = g_anActorCutsceneTimerBlock[4];
-      ((Actor *)g_pActorCutsceneRecord)->rotZ =
-          (char)g_anLevelEntryPoints[lvl * 4 + 3];
+      g_pActorCutsceneRecord->rotZ = (char)g_anLevelEntryPoints[lvl * 4 + 3];
       CopyVector(g_anSpyroWorldPos,
                  (int *)((char *)g_anActorCutsceneTimerBlock[25] + 0xC));
       g_nSpyroWorldPosZ += 0x2D4;
 
-      g_abSpyroPersistentEuler[2] =
-          ((Actor *)g_pActorCutsceneRecord)->rotZ + 0x80;
+      g_abSpyroPersistentEuler[2] = g_pActorCutsceneRecord->rotZ + 0x80;
 
       /* Written back to the block before the cosine call so the angle is read
          once and reused as the sine argument. */
       g_anActorCutsceneTimerBlock[19] =
-          ((((Actor *)g_pActorCutsceneRecord)->rotZ << 4) + 0x390) & 0xFFF;
+          ((g_pActorCutsceneRecord->rotZ << 4) + 0x390) & 0xFFF;
 
       cam = g_anCameraPosBlock;
-      cam[0] = ((Actor *)g_pActorCutsceneRecord)->posX +
+      cam[0] = g_pActorCutsceneRecord->posX +
                ((LookupCosine(g_anActorCutsceneTimerBlock[19]) *
                  g_anActorCutsceneTimerBlock[20]) >>
                 12);
-      g_anCameraPos[1] = ((Actor *)g_pActorCutsceneRecord)->posY +
+      g_anCameraPos[1] = g_pActorCutsceneRecord->posY +
                          ((LookupSine(g_anActorCutsceneTimerBlock[19]) *
                            g_anActorCutsceneTimerBlock[20]) >>
                           12);
-      g_anCameraPos[2] = ((Actor *)g_pActorCutsceneRecord)->posZ + 0x200;
+      g_anCameraPos[2] = g_pActorCutsceneRecord->posZ + 0x200;
 
       SubtractVector(&settle.vx,
                      (int *)((char *)g_anActorCutsceneTimerBlock[25] + 0xC),
                      cam);
       settle.vz += 0x200;
 
-      g_nCameraEulerPitch = ArcTan2(VectorLength(&settle.vx, 0), -settle.vz, 1);
+      g_nCameraEulerPitch =
+          ArcTan2(VectorLength(&settle.vx, VEC_LEN_XY), -settle.vz, 1);
       g_nCameraEulerYaw = ArcTan2(settle.vx, settle.vy, 1);
 
       /* Named to pin the g_pActorCutsceneRecord load ahead of the g_anCameraPos
@@ -286,7 +286,7 @@ void ActorCutscene_Update(void) {
          needs no nop. Left inline in the [13] store, the scheduler hoists
          g_anCameraPos above the g_nCameraEulerYaw store instead and the nop
          costs one. */
-      face = ((Actor *)g_pActorCutsceneRecord)->rotZ;
+      face = g_pActorCutsceneRecord->rotZ;
       g_anActorCutsceneTimerBlock[21] = g_anCameraPos[2];
       g_anActorCutsceneTimerBlock[15] = g_anCameraPos[2] - 0xFCE;
       g_anActorCutsceneTimerBlock[13] = ((face << 4) + 0xBA0) & 0xFFF;

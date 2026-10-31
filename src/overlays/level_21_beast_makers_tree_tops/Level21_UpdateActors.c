@@ -171,8 +171,8 @@ void Level21_UpdateActors(void) {
       continue;
     }
 
-    g_nActorAnimDone = actor->animFlags & 2;
-    g_nActorAnimNewFrame = actor->animFlags & 1;
+    g_nActorAnimDone = actor->animFlags & ACTOR_ANIM_DONE;
+    g_nActorAnimNewFrame = actor->animFlags & ACTOR_ANIM_NEW_FRAME;
     dt = g_nFrameStep;
     g_nActorFrameDelta = dt;
 
@@ -378,17 +378,17 @@ void Level21_UpdateActors(void) {
     case ACTOR_TYPE_BUTTERFLY: {
       ChaseState *st = (ChaseState *)actor->state;
 
-      if (SPY.sparxHealth < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
+      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
 
         if (ABS2(actorZ - SPY.posZ) < 1800) {
           if (g_pSparxActor == 0) {
-            if (SPY.sparxHealth >= 0) {
+            if (SPY.sparxHealth >= SPARX_GONE) {
               g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
               PlayActorMeshVoice(g_pSparxActor, 0, 0);
 
-              SPY.sparxHealth = 1;
+              SPY.sparxHealth = SPARX_GREEN;
 
               DespawnActorRecord(actor);
               break;
@@ -887,7 +887,7 @@ void Level21_UpdateActors(void) {
         }
         if (st->groupAlert != 0) {
           SetActorGroupSubstate(actor, 1);
-          ModifyWorldChunkAnimFlags(st->sound, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
         }
         if (st->flags & 1) {
           ENTER_POSE(actor, 5);
@@ -1098,7 +1098,7 @@ void Level21_UpdateActors(void) {
                 AbsAngleDelta8(st->heading,
                               ArcTan2(o->posX - actor->posX,
                                             o->posY - actor->posY, 0)) < 0x28) {
-              o->flags |= 0xC0000;
+              o->flags |= ACTOR_HIT_BLAST | ACTOR_HIT_SUPER;
             }
           }
         }
@@ -1271,7 +1271,7 @@ void Level21_UpdateActors(void) {
         }
         if (st->groupAlert != 0) {
           SetActorGroupSubstate(actor, 2);
-          ModifyWorldChunkAnimFlags(st->sound, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
         }
         actor->mode = 2;
         ANIM_RESET(actor, 2);
@@ -1455,7 +1455,7 @@ void Level21_UpdateActors(void) {
                 AbsAngleDelta8(st->heading,
                               ArcTan2(o->posX - actor->posX,
                                             o->posY - actor->posY, 0)) < 0x28) {
-              o->flags |= 0xC0000;
+              o->flags |= ACTOR_HIT_BLAST | ACTOR_HIT_SUPER;
             }
           }
         }
@@ -1802,7 +1802,7 @@ void Level21_UpdateActors(void) {
         ScaleVector3Sat(svD, st->vel, g_nFrameStep);
         RShiftVector3(svD, 1);
 
-        speed = VectorLength(svD, 1);
+        speed = VectorLength(svD, VEC_LEN_XYZ);
 
         if (220 < speed) {
           ScaleVector3ByRatio(svD, speed, 220);
@@ -1839,7 +1839,7 @@ void Level21_UpdateActors(void) {
             if (st->count == 0) {
               int groundHeight = FindGroundHeightBelow(svD, 0x400);
               int groundAngle =
-                  (signed char)ArcTan2_8bit(pickupFloorDir[2], VectorLength(pickupFloorDir, 0));
+                  (signed char)ArcTan2_8bit(pickupFloorDir[2], VectorLength(pickupFloorDir, VEC_LEN_XY));
 
               if ((svD[2] - 400) < groundHeight && groundAngle < 24) {
                 actor->subMode = 1;
@@ -1926,7 +1926,7 @@ void Level21_UpdateActors(void) {
           SubtractVector(pickupToSpyro, &spy->posX, st->vel);
           RShiftVector3(pickupToSpyro, 5);
 
-          if (VectorLength(pickupToSpyro, 1) > 480) {
+          if (VectorLength(pickupToSpyro, VEC_LEN_XYZ) > 480) {
             CopyVector(&actor->posX, &spy->posX);
             st->timer = 32;
           } else {
@@ -2048,7 +2048,7 @@ void Level21_UpdateActors(void) {
                 RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
                 FindGroundHeightBelow(at, 0x1000);
                 EncodeCachedVecToActorDirCode(actor);
-                actor->groundCode |= 0x80000000;
+                actor->groundCode |= ACTOR_GROUND_VALID;
               }
             }
           }
@@ -2177,7 +2177,7 @@ void Level21_UpdateActors(void) {
           actor->mode = 2;
           st->timer = 0x10;
           g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, (int *)0xC);
-          actor->groundCode &= 0x7FFFFFFF;
+          actor->groundCode &= ~ACTOR_GROUND_VALID;
         }
         break;
       }
@@ -2190,7 +2190,7 @@ void Level21_UpdateActors(void) {
     case ACTOR_TYPE_SPARX: {
       SparxState *st = actor->state;
 
-      if (g_anSparxHealthBlock[0] >= 2) {
+      if (g_anSparxHealthBlock[0] >= SPARX_BLUE) {
         svF[0] = 0;
         svF[1] = 0x64;
         svF[2] = 0;
@@ -2205,7 +2205,7 @@ void Level21_UpdateActors(void) {
         g_pfnLevelEmitParticles(2, EMIT_TWINKLE, svF, 0);
       }
 
-      if (g_anSparxHealthBlock[0] >= 3) {
+      if (g_anSparxHealthBlock[0] >= SPARX_GOLD) {
         FxNode *fx = st->glow;
 
         if (fx == 0) {
@@ -2234,7 +2234,7 @@ void Level21_UpdateActors(void) {
         st->glow = 0;
       }
 
-      if (g_anSparxHealthBlock[0] <= 0) {
+      if (g_anSparxHealthBlock[0] <= SPARX_GONE) {
         if (st->target != 0 && st->target->type == ACTOR_TYPE_BUTTERFLY) {
           st->target->mode = 0;
         }
@@ -2296,7 +2296,7 @@ void Level21_UpdateActors(void) {
             }
 
             SubtractVector(svG, svG, &actor->posX);
-            dist = VectorLength(svG, 1);
+            dist = VectorLength(svG, VEC_LEN_XYZ);
 
             if (high == 0 &&
                 (TickCountdownByFrameDelta((void *)st, 4) != 0 ||
@@ -2320,7 +2320,7 @@ void Level21_UpdateActors(void) {
             }
             AddVector(&actor->posX, &actor->posX, svG);
             TurnActorYawTowardAngle(actor, ArcTan2(svG[0], svG[1], 0), 0xA, 0, 0);
-            actor->rotY = ArcTan2(VectorLength(svG, 0), svG[2], 0);
+            actor->rotY = ArcTan2(VectorLength(svG, VEC_LEN_XY), svG[2], 0);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
           }
@@ -2349,7 +2349,7 @@ void Level21_UpdateActors(void) {
             int dist;
 
             SubtractVector(sparxToTarget, &st->target->posX, &actor->posX);
-            dist = VectorLength(sparxToTarget, 1);
+            dist = VectorLength(sparxToTarget, VEC_LEN_XYZ);
 
             if (dist < 0x200) {
               pk->timer = 0;
@@ -2385,7 +2385,7 @@ void Level21_UpdateActors(void) {
               }
               AddVector(&actor->posX, &actor->posX, sparxToTarget);
               TurnActorYawTowardAngle(actor, ArcTan2(sparxToTarget[0], sparxToTarget[1], 0), 0xA, 0, 0);
-              actor->rotY = ArcTan2(VectorLength(sparxToTarget, 0), sparxToTarget[2], 0);
+              actor->rotY = ArcTan2(VectorLength(sparxToTarget, VEC_LEN_XY), sparxToTarget[2], 0);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
             break;
@@ -2452,21 +2452,21 @@ void Level21_UpdateActors(void) {
           }
 
           switch (SPY.sparxHealth) {
-          case 1:
+          case SPARX_GREEN:
             if (actor->nextAnim != 0 && actor->anim != 0) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, 0);
             }
             break;
 
-          case 2:
+          case SPARX_BLUE:
             if (actor->nextAnim != 2 && actor->anim != 2) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, 2);
             }
             break;
 
-          case 3:
+          case SPARX_GOLD:
             if (actor->nextAnim != 4 && actor->anim != 4) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, 4);
@@ -2927,7 +2927,7 @@ void Level21_UpdateActors(void) {
           SubtractVector(svH, at, &spy->posX);
           svH[2] = (svH[2] * 3) >> 2;
 
-          if (VectorLength(svH, 1) < 0x440) {
+          if (VectorLength(svH, VEC_LEN_XYZ) < 0x440) {
             int facing;
 
             facing =
@@ -2985,7 +2985,7 @@ void Level21_UpdateActors(void) {
               g_nSpyroRequestVelocityZ = 0;
 
               if (SPY.requestVelX != 0 || g_nSpyroRequestVelocityY != 0) {
-                ScaleVector3ByRatio(look, VectorLength(look, 0), 0x60);
+                ScaleVector3ByRatio(look, VectorLength(look, VEC_LEN_XY), 0x60);
                 goto clear_c68;
               }
             }
@@ -3525,7 +3525,7 @@ void Level21_UpdateActors(void) {
       if ((GetRandomU32() & 1) == 0)
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, (int *)actor, 0);
       SubtractVector(triggerToSpyro, &spy->posX, &actor->posX);
-      distance = VectorLength(triggerToSpyro, 0);
+      distance = VectorLength(triggerToSpyro, VEC_LEN_XY);
       if (distance < st->radius && triggerToSpyro[2] >= -0x3FF && triggerToSpyro[2] < st->spanZ &&
           (SPY.state == SPYRO_ST_LIFT || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
         spyro = &SPY;
@@ -3664,7 +3664,7 @@ void Level21_UpdateActors(void) {
             InsertActorIntoSpatialGrid(scan);
             scan->flags = 0;
             scan->mode = 0;
-            scan->killGroup &= 0x7F;
+            scan->killGroup &= ACTOR_KILL_GROUP_MASK;
             ANIM_RESET(scan, 0);
           }
         }
@@ -3802,7 +3802,7 @@ void Level21_UpdateActors(void) {
             g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, svJ, podSparkVel);
           }
           DespawnActorRecord(st->prize);
-          actor->killGroup &= 0x7F;
+          actor->killGroup &= ACTOR_KILL_GROUP_MASK;
           actor->updateDist = 0x10;
           actor->rotX = st->rotX;
           actor->rotY = st->rotY;
@@ -3958,7 +3958,7 @@ void Level21_UpdateActors(void) {
           SubtractVector(svI, &a->posX, &actor->posX);
           d = ABS2(svI[0]) + ABS2(svI[1]);
           if (d < 0x6000 &&
-              (unsigned int)(VectorLength(svI, 0) - 0x1000) <= 0x2000 &&
+              (unsigned int)(VectorLength(svI, VEC_LEN_XY) - 0x1000) <= 0x2000 &&
               (unsigned int)(svI[2] + 0x1000) <= 0x2000) {
             d = AbsAngleDelta12(ArcTan2(actor->posX - spy->posX,
                                             actor->posY - spy->posY, 1),
@@ -3976,7 +3976,7 @@ void Level21_UpdateActors(void) {
         } else {
           SubtractVector(st->vel, &actor->posX, &SPY.posX);
           st->vel[2] = 0;
-          ScaleVector3ByRatio(st->vel, VectorLength(st->vel, 0), 0x50);
+          ScaleVector3ByRatio(st->vel, VectorLength(st->vel, VEC_LEN_XY), 0x50);
         }
         st->vel[2] += 0xA0;
         st->timer = 0;

@@ -19,5 +19,5 @@ int MeasureOffsetToPathPoint(unsigned char *actor, unsigned char *path,
   idx = path[1];
   v[2] = *(int *)((idx << 4) + path + 0x10) - ACT->posZ;
 
-  return (int)VectorLength(v, 1) / divisor;
+  return (int)VectorLength(v, VEC_LEN_XYZ) / divisor;
 }

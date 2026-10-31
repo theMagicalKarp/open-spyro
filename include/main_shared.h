@@ -10,6 +10,8 @@
 #ifndef OPEN_SPYRO_MAIN_SHARED_H
 #define OPEN_SPYRO_MAIN_SHARED_H
 
+#include "sparx.h"
+
 extern void RestartStalledCdRead(void);
 
 extern int CallCdSync();

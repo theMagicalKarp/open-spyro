@@ -153,11 +153,32 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
   } u;
 } Emit;
 
+/* Record classes (Emit.cls): AllocEmitListRecord stamps one, and
+ * RasterizeEmitList picks the primitive by it. */
+enum EmitClass {
+  EMIT_CLASS_DOT = 0,      /* 1-pixel flat line (LINE_F2) at pos */
+  EMIT_CLASS_LINE = 1,     /* two-colour line between two endpoints */
+  EMIT_CLASS_LIT_QUAD = 2, /* lit spinning billboard (POLY_FT4) */
+  EMIT_CLASS_ALT_LIT_QUAD = 3, /* billboard with the alternate lighting */
+  EMIT_CLASS_LINE_ABS = 4, /* EMIT_CLASS_LINE with absolute positions */
+  EMIT_CLASS_FADED_QUAD = 5, /* depth-faded spinning billboard */
+  EMIT_CLASS_QUAD = 6,     /* plain spinning billboard */
+  EMIT_CLASS_END = 0xFF    /* list terminator (the loader seeds it) */
+};
+
+/* GPU command codes for the `fx` byte: it is the top byte of the colour
+ * word at +0x0C, which RasterizeEmitList copies into the primitive. */
+#define EMIT_FX_LINE 0x40       /* flat line */
+#define EMIT_FX_QUAD 0x2C       /* textured quad */
+#define EMIT_FX_QUAD_BLEND 0x2E /* textured quad, semi-transparent */
+
 /* Effect types for g_pfnLevelEmitParticles(count, type, pos, effectArg)
  * whose arm is the same in every level EmitParticles clone that has it.
- * 0xB, 0x45, 0x48 and 0x49 have only AdvanceEmitList arms (no level
- * EmitParticles creates them) and stay numeric. */
+ * EMIT_BURST_SPARK comes from main's BurstActorIntoSparks instead; 0x45,
+ * 0x48 and 0x49 have only AdvanceEmitList arms and stay numeric. */
 enum EmitEffect {
+  EMIT_BURST_SPARK = 0xB,   /* BurstActorIntoSparks: drifts by the velocity at +0x12 and fades
+                             * its RGB by 8 a tick until red reaches 0 */
   EMIT_SPARK_VEL = 0x0,     /* spark moving at the velocity effectArg points to, 0x18 frames
                              * (the flame breath's particles) */
   EMIT_SPARK_VEL_DIM = 0x1, /* dimmer, shorter EMIT_SPARK_VEL (8 frames during the dragon rescue;

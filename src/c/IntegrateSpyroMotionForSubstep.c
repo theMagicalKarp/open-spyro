@@ -274,7 +274,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     BuildSpyroVelocityFromBodyEuler();
     w = &SPY[SPY_WALL_SLIDE];
     OPAQUE(w);
-    WALL_SLIDE(w, g_nSpyroMotionSpeed = VectorLength(w, 1));
+    WALL_SLIDE(w, g_nSpyroMotionSpeed = VectorLength(w, VEC_LEN_XYZ));
     {
       register int *cb asm("$6") = &SPY[SPY_CLIFF];
 
@@ -366,7 +366,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     BuildSpyroVelocityFromBodyEuler();
     w = &SPY[SPY_WALL_SLIDE];
     OPAQUE(w);
-    WALL_SLIDE(w, g_nSpyroMotionSpeed = VectorLength(w, 1));
+    WALL_SLIDE(w, g_nSpyroMotionSpeed = VectorLength(w, VEC_LEN_XYZ));
     {
       register int *ab asm("$6") = &SPY[SPY_AIRBORNE];
 
@@ -397,7 +397,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         (g_nSpyroMotionSpeed * LookupSine(g_nSpyroMoveTargetYaw)) >> 12;
     SubtractVector(v10, cd + (SPY_CARRY - SPY_LOCKOUT), vel);
     v10[2] = 0;
-    l = VectorLength(v10, 0);
+    l = VectorLength(v10, VEC_LEN_XY);
     if (l > 0x280) {
       ScaleVector3ByRatio(v10, l, 0x280);
     }
@@ -466,7 +466,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     vel = &SPY[SPY_VELOCITY];
     SubtractVector(v20, v20, vel);
     v20[2] = 0;
-    l = VectorLength(v20, 0);
+    l = VectorLength(v20, VEC_LEN_XY);
     if (l > 0x40) {
       ScaleVector3ByRatio(v20, l, 0x40);
     }
@@ -564,7 +564,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           int l;
 
           SubtractVector(v30, (int *)g_pSpyroHomingTargetActor + 3, &SPY[0]);
-          l = VectorLength(v30, 1);
+          l = VectorLength(v30, VEC_LEN_XYZ);
           d = (ArcTan2(v30[0], v30[1], 1) - SPY[SPY_BODY_YAW]) & 0xFFF;
           if (d > 0x800) {
             d -= 0x1000;
@@ -618,7 +618,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         BuildSpyroVelocityFromBodyEuler();
         AddVector(carry, carry, vel);
         AddVector(carry, carry, ch + (0x34 - SPY_CHARGE_HOLD));
-        g_nSpyroMotionSpeed = VectorLength(carry, 1);
+        g_nSpyroMotionSpeed = VectorLength(carry, VEC_LEN_XYZ);
         AddVector(vel, carry, ch + (SPY_PLATFORM - SPY_CHARGE_HOLD));
       }
     } else {
@@ -630,7 +630,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       vel = &SPY[SPY_VELOCITY];
       BuildSpyroVelocityFromBodyEuler();
       AddVector(vel, vel, &SPY[0x34]);
-      l = VectorLength(vel, 1);
+      l = VectorLength(vel, VEC_LEN_XYZ);
       g_nSpyroMotionSpeed = l;
       if (l > 0x2300) {
         ScaleVector3ByRatio(vel, l, 0x2300);
@@ -850,7 +850,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           SubtractVector((int *)q, g_anFlightBoundsCenter + x * 3,
                          sp + (0 - SPY_SPEED));
           RShiftVector3((int *)q, 4);
-          y = VectorLength((int *)q, 0);
+          y = VectorLength((int *)q, VEC_LEN_XY);
           a = g_anFlightBoundsRadius[x * 3] >> 4;
           if (a < y) {
             z = y - a;
@@ -1372,8 +1372,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       v80[1] = (m * LookupSine(g_nSpyroBodyYaw)) >> 12;
       AddVector(v80, v80, zb + 0x5D);
     } else {
-      a = (g_nSpyroBodyYaw - (((Actor *)g_pScriptedCameraActor)->rotZ << 4)) &
-          0xFFF;
+      a = (g_nSpyroBodyYaw - (g_pScriptedCameraActor->rotZ << 4)) & 0xFFF;
       m = reach;
       if (a > 0x800) {
         a -= 0x1000;
@@ -1386,12 +1385,12 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       AddVector(v80, v80, zb + 0x5D);
       a = zb[0x54] - zb[0];
       lift = (a * 0x12C0) >> 10;
-      a = (((Actor *)g_pScriptedCameraActor)->rotZ << 4) - ((a * a) >> 11);
+      a = (g_pScriptedCameraActor->rotZ << 4) - ((a * a) >> 11);
       g_nSpyroMoveTargetMag = 0xC80;
     }
     v80[2] = 0;
     SubtractVector(v80, v80, g_anSpyroWorldPos);
-    m = VectorLength(v80, 0);
+    m = VectorLength(v80, VEC_LEN_XY);
     if (g_nSpyroMoveTargetMag < m) {
       ScaleVector3ByRatio(v80, m, g_nSpyroMoveTargetMag);
     }
@@ -1413,7 +1412,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
 
       ZeroVector(v90);
       SubtractVector(v90, v90, c2);
-      l = VectorLength(v90, 1);
+      l = VectorLength(v90, VEC_LEN_XYZ);
       if (l > 0x100) {
         ScaleVector3ByRatio(v90, l, 0x100);
       }
@@ -1421,7 +1420,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     }
     carry = g_anSpyroCarryMotionVec;
     AddVector(carry, carry, carry - 6);
-    l = VectorLength(carry, 1);
+    l = VectorLength(carry, VEC_LEN_XYZ);
     g_nSpyroMotionSpeed = l;
     if (l > 0x2300) {
       ScaleVector3ByRatio(carry, l, 0x2300);
@@ -1523,7 +1522,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     obj2 = obj;
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
     SubtractVector(vA0, (int *)g_pScriptedCameraActor + 3, &SPY[0]);
-    dist = VectorLength(vA0, 0);
+    dist = VectorLength(vA0, VEC_LEN_XY);
     ang = ArcTan2(vA0[0], vA0[1], 1);
     dt = (g_nSpyroSubstate == 1 ? -g_nSpyroTurnRateAccum
                                 : g_nSpyroTurnRateAccum) >>
@@ -1535,12 +1534,12 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       g_nSpyroTurnRateAccum = g_nSpyroSpeedTarget;
     }
     a = (ang + dt + 0x800) & 0xFFF;
-    if (((Actor *)g_pScriptedCameraActor)->type == 0xFF) {
+    if (g_pScriptedCameraActor->type == 0xFF) {
       v = obj2[5] = (obj2[5] + dt) & 0xFFF;
     } else {
       v = obj[5] = (obj[5] + dt) & 0xFFF;
     }
-    ((Actor *)g_pScriptedCameraActor)->rotZ = v >> 4;
+    g_pScriptedCameraActor->rotZ = v >> 4;
     SCHED_FENCE();
     vA0[0] = (dist * LookupCosine(a)) >> 12;
     {
@@ -1577,14 +1576,14 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     SubtractVector(vB0, vB0, vel);
     if (g_nSpyroAirborneFrames != 0) {
       vB0[2] = 0;
-      l = VectorLength(vB0, 0);
+      l = VectorLength(vB0, VEC_LEN_XY);
       if (l > 0x40) {
         ScaleVector3ByRatio(vB0, l, 0x40);
       }
       vB0[2] = -0xC0;
       AddVector(vel, vel, vB0);
     } else {
-      l = VectorLength(vB0, 1);
+      l = VectorLength(vB0, VEC_LEN_XYZ);
       if (l > 0x100) {
         ScaleVector3ByRatio(vB0, l, 0x100);
       }

@@ -410,7 +410,7 @@ void UpdateCameraSpringForMode(void) {
     int z;
 
     g_pCameraTargetParams = g_anCameraParamScriptedTarget;
-    actor = g_pScriptedCameraActor;
+    actor = (unsigned char *)g_pScriptedCameraActor;
     g_pCameraAnchorPos = g_anCameraScriptedTargetPos;
     g_pCameraAnchorPos[0] = ACTOR_X(actor);
     z = g_nSpyroWorldPosZ;
@@ -426,7 +426,7 @@ void UpdateCameraSpringForMode(void) {
     break;
   }
   case 0x8000000C: {
-    unsigned char *actor = g_pScriptedCameraActor;
+    unsigned char *actor = (unsigned char *)g_pScriptedCameraActor;
 
     g_pCameraAnchorPos = g_anSpyroWorldPos;
     g_nCameraTargetYawBiasFromMode =

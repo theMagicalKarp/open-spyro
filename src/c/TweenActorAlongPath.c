@@ -87,7 +87,7 @@ int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step,
     dir[2] = 0;
   }
   actor->rotZ = ArcTan2_8bit(dir[0], dir[1]);
-  x = ArcTan2_8bit(dir[2], VectorLength(dir, 0));
+  x = ArcTan2_8bit(dir[2], VectorLength(dir, VEC_LEN_XY));
   pos = &actor->posX;
   actor->rotY = -x + 0x40;
   AddVector(pos, pos, dir);

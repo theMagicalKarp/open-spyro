@@ -45,16 +45,16 @@ void SaveMenu_Update(void) {
   switch (SM[0]) {
   case 0:
     if (SM[1] < 0x40) {
-      unsigned char *actor;
+      Actor *actor;
 
       t = LookupSine((SM[1] << 5) - 0x400) + 0x1000;
-      actor =
-          (unsigned char *)g_pActorListBase + ((int *)ACT[0])[1] * ACTOR_SIZE;
-      if (((Actor *)actor)->mode == 2) {
-        ((Actor *)actor)->subMode += g_nFrameStep;
-        if (((Actor *)actor)->subMode >= 0x30) {
-          ((Actor *)actor)->mode = 0;
-          ((Actor *)actor)->anim = 0;
+      actor = (Actor *)((unsigned char *)g_pActorListBase +
+                        ((int *)ACT[0])[1] * ACTOR_SIZE);
+      if (actor->mode == 2) {
+        actor->subMode += g_nFrameStep;
+        if (actor->subMode >= 0x30) {
+          actor->mode = 0;
+          actor->anim = 0;
         }
       }
       a = LERP_ANGLE(SM[14], SM[11], t);
@@ -72,10 +72,9 @@ void SaveMenu_Update(void) {
         a = LERP_ANGLE(g_nSaveMenuSparxToAngle, g_nSaveMenuSparxFromAngle, t);
         d = g_nSaveMenuSparxFromDist +
             (((g_nSaveMenuSparxToDist - g_nSaveMenuSparxFromDist) * t) >> 13);
-        ((Actor *)g_pSparxActor)->posX =
+        g_pSparxActor->posX =
             g_anSpyroWorldPos[0] + ((LookupCosine(a) * d) >> 12);
-        ((Actor *)g_pSparxActor)->posY =
-            g_nSpyroWorldPosY + ((LookupSine(a) * d) >> 12);
+        g_pSparxActor->posY = g_nSpyroWorldPosY + ((LookupSine(a) * d) >> 12);
       }
       a = LERP_ANGLE(SM[24], SM[21], t);
       d = g_nSaveMenuCameraFromDist +
@@ -91,7 +90,7 @@ void SaveMenu_Update(void) {
       SubtractVector(vec, vec, g_anCameraPos);
       if (g_nSaveMenuAnimPhase < 0x20) {
         ang[0] = 0;
-        ang[1] = ArcTan2(VectorLength(vec, 0), -vec[2], 1);
+        ang[1] = ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], 1);
         ang[2] = ArcTan2(vec[0], vec[1], 1);
         g_nCameraEulerRoll = (g_nCameraEulerRoll +
                               ((SignedAngleDelta12(ang[0], g_nCameraEulerRoll) *
@@ -111,7 +110,8 @@ void SaveMenu_Update(void) {
                             0xFFF;
       } else {
         g_nCameraEulerRoll = 0;
-        g_nCameraEulerPitch = ArcTan2(VectorLength(vec, 0), -vec[2], 1);
+        g_nCameraEulerPitch =
+            ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], 1);
         g_nCameraEulerYaw = ArcTan2(vec[0], vec[1], 1);
       }
       if (((SM[28] - SM[27]) & 0xFFF) < 0x801) {
@@ -144,9 +144,9 @@ void SaveMenu_Update(void) {
             g_anSpyroWorldPos[0] - act[3], g_anSpyroWorldPos[1] - act[4], 0);
       }
       if (g_pSparxActor != 0) {
-        ((Actor *)g_pSparxActor)->posX =
+        g_pSparxActor->posX =
             g_anSpyroWorldPos[0] + ((LookupCosine(SM[19]) * SM[20]) >> 12);
-        ((Actor *)g_pSparxActor)->posY =
+        g_pSparxActor->posY =
             g_anSpyroWorldPos[1] + ((LookupSine(SM[19]) * SM[20]) >> 12);
       }
       g_anCameraPos[0] =
@@ -200,17 +200,17 @@ void SaveMenu_Update(void) {
             g_nSaveMenuSubstate = 1;
           }
         } else if (g_nSaveMenuCursor == 1) {
-          unsigned char *actor;
+          Actor *actor;
           int *path;
 
-          actor =
-              (unsigned char *)g_pActorListBase + *(int *)ACT[0] * ACTOR_SIZE;
+          actor = (Actor *)((unsigned char *)g_pActorListBase +
+                            *(int *)ACT[0] * ACTOR_SIZE);
           path = *(int **)actor;
           if (path[9] == -1 && path[6] != -1) {
             EndSaveMenuToWorld();
-            ((Actor *)actor)->mode = 2;
-            ((Actor *)actor)->collision = 0;
-            ((Actor *)actor)->gridCell = -1;
+            actor->mode = 2;
+            actor->collision = 0;
+            actor->gridCell = -1;
             BeginDragonRescue(actor);
             g_nWorldDragonsRescued--;
             g_anLevelDragonsRescued[g_nLevelIndex]--;

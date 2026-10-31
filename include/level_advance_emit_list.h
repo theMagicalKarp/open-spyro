@@ -7,6 +7,8 @@
 #ifndef OPEN_SPYRO_LEVEL_ADVANCE_EMIT_LIST_H
 #define OPEN_SPYRO_LEVEL_ADVANCE_EMIT_LIST_H
 
+#include "sparx.h"
+
 extern void AddSVector(short *dst, short *src, short *delta);
 
 extern void SVectorToVectorShl2(int *dst, short *src);

@@ -158,8 +158,8 @@ void Level5_UpdateActors(void) {
       continue;
     }
 
-    g_nActorAnimDone = actor->animFlags & 2;
-    g_nActorAnimNewFrame = actor->animFlags & 1;
+    g_nActorAnimDone = actor->animFlags & ACTOR_ANIM_DONE;
+    g_nActorAnimNewFrame = actor->animFlags & ACTOR_ANIM_NEW_FRAME;
     g_nActorFrameDelta = g_nFrameStep;
 
     switch (actor->type) {
@@ -167,12 +167,12 @@ void Level5_UpdateActors(void) {
     case ACTOR_TYPE_BUTTERFLY: {
       ChaseState *st = (ChaseState *)actor->state;
 
-      if (SPY.sparxHealth < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
+      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
 
         if (ABS2(actorZ - SPY.posZ) < 1800) {
           if (g_pSparxActor == 0) {
-            if (SPY.sparxHealth >= 0) {
+            if (SPY.sparxHealth >= SPARX_GONE) {
               g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
               PlayActorMeshVoice(g_pSparxActor, 0, 0);
@@ -744,7 +744,7 @@ void Level5_UpdateActors(void) {
         ScaleVector3Sat(svG, st->vel, g_nFrameStep);
         RShiftVector3(svG, 1);
 
-        speed = VectorLength(svG, 1);
+        speed = VectorLength(svG, VEC_LEN_XYZ);
 
         if (220 < speed) {
           ScaleVector3ByRatio(svG, speed, 220);
@@ -786,7 +786,7 @@ void Level5_UpdateActors(void) {
             if (st->count == 0) {
               int groundHeight = FindGroundHeightBelow(svG, 0x400);
               int groundAngle =
-                  (signed char)ArcTan2_8bit(svH[2], VectorLength(svH, 0));
+                  (signed char)ArcTan2_8bit(svH[2], VectorLength(svH, VEC_LEN_XY));
 
               if ((svG[2] - 400) < groundHeight && groundAngle < 24) {
                 actor->subMode = 1;
@@ -873,7 +873,7 @@ void Level5_UpdateActors(void) {
           SubtractVector(svI, &spy->posX, st->vel);
           RShiftVector3(svI, 5);
 
-          if (VectorLength(svI, 1) > 480) {
+          if (VectorLength(svI, VEC_LEN_XYZ) > 480) {
             CopyVector(&actor->posX, &spy->posX);
             st->timer = 32;
           } else {
@@ -969,7 +969,7 @@ void Level5_UpdateActors(void) {
         g_pfnLevelEmitParticles(2, EMIT_TWINKLE, svF, 0);
       }
 
-      if (SPY.sparxHealth >= 3) {
+      if (SPY.sparxHealth >= SPARX_GOLD) {
         if (st->glow == 0) {
           FxNode *g = AllocWorldSparkle();
           st->glow = g;
@@ -998,7 +998,7 @@ void Level5_UpdateActors(void) {
         }
       }
 
-      if (SPY.sparxHealth <= 0) {
+      if (SPY.sparxHealth <= SPARX_GONE) {
         Actor *target = st->target;
         if (target != 0 && target->type == ACTOR_TYPE_BUTTERFLY) {
           target->mode = 0;
@@ -1052,7 +1052,7 @@ void Level5_UpdateActors(void) {
           }
 
           SubtractVector(svA, svA, &actor->posX);
-          dist = VectorLength(svA, 1);
+          dist = VectorLength(svA, VEC_LEN_XYZ);
 
           if (isPickupAnimPhase == 0) {
             if (TickCountdownByFrameDelta(st, 4) != 0 ||
@@ -1073,7 +1073,7 @@ void Level5_UpdateActors(void) {
           }
           AddVector(&actor->posX, &actor->posX, svA);
           TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], 0), 0xA, 0, 0);
-          pitchAngle = ArcTan2(VectorLength(svA, 0), svA[2], 0);
+          pitchAngle = ArcTan2(VectorLength(svA, VEC_LEN_XY), svA[2], 0);
           actor->rotY = pitchAngle;
           actor->rotY = StepAngle8Toward(pitchAngle, 0, 0x30);
           break;
@@ -1101,7 +1101,7 @@ void Level5_UpdateActors(void) {
           int dist;
 
           SubtractVector(svJ, &st->target->posX, &actor->posX);
-          dist = VectorLength(svJ, 1);
+          dist = VectorLength(svJ, VEC_LEN_XYZ);
 
           if (dist < 512) {
             cp->timer = 0;
@@ -1136,7 +1136,7 @@ void Level5_UpdateActors(void) {
 
             AddVector(&actor->posX, &actor->posX, svJ);
             TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], 0), 0xA, 0, 0);
-            pitchAngle = ArcTan2(VectorLength(svJ, 0), svJ[2], 0);
+            pitchAngle = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], 0);
             actor->rotY = pitchAngle;
             actor->rotY = StepAngle8Toward(pitchAngle, 0, 0x30);
           }
@@ -1196,7 +1196,7 @@ void Level5_UpdateActors(void) {
         }
 
         switch (SPY.sparxHealth) {
-        case 1:
+        case SPARX_GREEN:
           if (actor->nextAnim != 0) {
             if (actor->anim != 0) {
               g_nActorAnimDone = 0;
@@ -1204,7 +1204,7 @@ void Level5_UpdateActors(void) {
             }
           }
           break;
-        case 2:
+        case SPARX_BLUE:
           if (actor->nextAnim != 2) {
             if (actor->anim != 2) {
               g_nActorAnimDone = 0;
@@ -1213,7 +1213,7 @@ void Level5_UpdateActors(void) {
           }
 
           break;
-        case 3:
+        case SPARX_GOLD:
           if (actor->nextAnim != 4) {
             if (actor->anim != 4) {
               g_nActorAnimDone = 0;
@@ -1529,7 +1529,7 @@ void Level5_UpdateActors(void) {
         svU[1] = 0x30;
         svU[2] = 0x157C;
         SubtractVector(svU, svU, &actor->posX);
-        d = VectorLength(svU, 1);
+        d = VectorLength(svU, VEC_LEN_XYZ);
         if (d < 0x20) {
           actor->mode = 3;
           actor->posX = 0x1A4;
@@ -1571,7 +1571,7 @@ void Level5_UpdateActors(void) {
           SubtractVector(svV, &actor->posX, &spy->posX);
           svW[2] = (svV[2] - 0xC0) * 4;
           svV[2] = (svW[2] - svV[2]) >> 2;
-          if (VectorLength(svV, 1) < 0x578 &&
+          if (VectorLength(svV, VEC_LEN_XYZ) < 0x578 &&
               PlaneDistanceAbs(&spy->posX, st) < 0x200) {
             int i;
 
@@ -2032,7 +2032,7 @@ void Level5_UpdateActors(void) {
         AddVector(&st->x, svW, &actor->posX);
         RShiftVector3(&st->x, 1);
         SubtractVector(svW, &st->x, &actor->posX);
-        st->radius = VectorLength(svW, 0);
+        st->radius = VectorLength(svW, VEC_LEN_XY);
         st->angle =
             ArcTan2(actor->posX - st->x, st->y - actor->posY, 1);
         st->phase = 0x800;
@@ -2057,7 +2057,7 @@ void Level5_UpdateActors(void) {
         AddVector(&st->x, svW, &actor->posX);
         RShiftVector3(&st->x, 1);
         SubtractVector(svW, &st->x, &actor->posX);
-        st->radius = VectorLength(svW, 0);
+        st->radius = VectorLength(svW, VEC_LEN_XY);
         st->angle =
             ArcTan2(actor->posX - st->x, st->y - actor->posY, 1);
         st->phase = 0x800;

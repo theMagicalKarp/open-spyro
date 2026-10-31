@@ -75,7 +75,7 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     rec->tint1 = 0;
     rec->tint2 = 0;
     rec->tintMode = 1;
-    rec->renderList |= 0x80;
+    rec->renderList |= ACTOR_RENDER_SECONDARY;
     break;
   }
 
@@ -109,7 +109,7 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     d[0] = g_anSpyroWorldPos[0] - rec->posX;
     d[1] = g_nSpyroWorldPosY - rec->posY;
     d[2] = g_nSpyroWorldPosZ - rec->posZ;
-    ScaleVector3ByRatio(d, VectorLength(d, 1), 0xA0);
+    ScaleVector3ByRatio(d, VectorLength(d, VEC_LEN_XYZ), 0xA0);
     InsertActorIntoSpatialGrid(rec);
     st = rec->state;
     CopyVector(st, d);
@@ -238,7 +238,7 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     st->life = 0x40 - (GetRandomU32() & 0xF);
     if ((unsigned int)((unsigned short)rec->type - 0x135) < 3) {
       *(int *)&rec->tint0 = 0xA18618;
-      rec->renderList |= 0x80;
+      rec->renderList |= ACTOR_RENDER_SECONDARY;
     }
     break;
   }

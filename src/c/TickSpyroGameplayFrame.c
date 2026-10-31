@@ -102,7 +102,7 @@ void TickSpyroGameplayFrame(void) {
   SampleSpyroShadowRingHeights(1);
   TickSpyroAttackEffects(g_nFrameStep);
   g_dwSpyroTriggerEventFlags = 0;
-  if (g_nSparxHealth < 0) {
+  if (g_nSparxHealth < SPARX_GONE) {
     switch (g_nSpyroState) {
     case SPYRO_ST_HAZARD:
       if (g_nSpyroHazardSinkDepth == 0x240) {

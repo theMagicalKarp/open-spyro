@@ -68,7 +68,7 @@ void ResetLevelState(void) {
 
   anchor = &g_nSpawnAnchorValid;
   v = 0;
-  g_nSparxHealth = 3;
+  g_nSparxHealth = SPARX_GOLD;
   g_nExtraLives = 4;
   g_nWorldTreasureCollected = 0;
   g_nWorldDragonsRescued = 0;

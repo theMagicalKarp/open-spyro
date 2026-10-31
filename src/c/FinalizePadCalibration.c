@@ -87,11 +87,11 @@ int FinalizePadCalibration(unsigned char *cal) {
   neutral = 0x7F;
   j = 3;
   fill = cal + 3;
-  PAD_STATE_RAW(cal, int, pressed) = 0;
-  PAD_STATE_RAW(cal, int, released) = 0;
-  PAD_STATE_RAW(cal, int, held) = 0;
-  PAD_STATE_RAW(cal, int, allInputIdle) = 1;
-  PAD_STATE_RAW(cal, int, directionalIdle) = 1;
+  ((PadState *)cal)->pressed = 0;
+  ((PadState *)cal)->released = 0;
+  ((PadState *)cal)->held = 0;
+  ((PadState *)cal)->allInputIdle = 1;
+  ((PadState *)cal)->directionalIdle = 1;
   do {
     do {
       do {

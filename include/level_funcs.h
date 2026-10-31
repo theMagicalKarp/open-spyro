@@ -74,7 +74,11 @@ extern void TickLevelTransitionStream();
 extern void TickSpyroAttackEffects(int a0);
 extern void UnpackWorldCollisionTri(int a, int *out);
 extern void UpdateCameraEulerAngles(void);
-extern int VectorLength(int *vec, int flag);
+#ifndef VEC_LEN_XY
+#define VEC_LEN_XY 0  /* VectorLength: X/Y only (Z ignored) */
+#define VEC_LEN_XYZ 1 /* VectorLength: all three components */
+#endif
+extern int VectorLength(int *vec, int withZ);
 extern int VSync();
 extern int WrapAngleDelta8(int a, int b);                    /* signed angle delta */
 

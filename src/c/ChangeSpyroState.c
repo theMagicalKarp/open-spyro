@@ -32,7 +32,7 @@ SDATA(g_nSpyroScriptedLiftTurn, 4);
     int v;                                                                     \
                                                                                \
     g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;                               \
-    v = VectorLength(vec, 1);                                                  \
+    v = VectorLength(vec, VEC_LEN_XYZ);                                        \
     if (v < 0x1F80) {                                                          \
       v = 0x1F80;                                                              \
     }                                                                          \
@@ -65,7 +65,8 @@ void ChangeSpyroState(int state) {
   case SPYRO_ST_KNOCKBACK:
   case SPYRO_ST_HURT_LONG:
   case SPYRO_ST_KNOCKBACK_2:
-    PlaySoundEffect(LEVEL_SFX(0x1B), g_anSpyroWorldPos, SFX_MODE_FLAT,
+    PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT_EXIT), g_anSpyroWorldPos,
+                    SFX_MODE_FLAT,
                     (unsigned char *)g_anSpyroWorldPos + SPYB_VOICE_MARKER);
     break;
   case SPYRO_ST_HURT_PINNED:
@@ -98,7 +99,7 @@ void ChangeSpyroState(int state) {
     if ((unsigned)(a - 0x401) < 0x7FF) {
       g_nSpyroMotionSpeed = 0;
     } else {
-      g_nSpyroMotionSpeed = VectorLength(&SPY[SPY_MOTION], 0);
+      g_nSpyroMotionSpeed = VectorLength(&SPY[SPY_MOTION], VEC_LEN_XY);
     }
     if (state == SPYRO_ST_STOP && SPY[SPY_SPEED] > 0x1400) {
       SPY[SPY_SPEED] = 0x1400;
@@ -250,7 +251,7 @@ void ChangeSpyroState(int state) {
 
             x = abs(x) + abs(y) + abs(z);
             if (x < 0x4000) {
-              x = VectorLength(d, 1);
+              x = VectorLength(d, VEC_LEN_XYZ);
               if (x < 0x1800) {
                 x += da * 4;
                 if (x < best) {
@@ -303,7 +304,7 @@ void ChangeSpyroState(int state) {
     SPY[SPY_SUBSTATE] = 0;
     ZeroVector(&SPY[SPY_VELOCITY]);
     SubtractVector(&SPY[SPY_VELOCITY], &SPY[SPY_VELOCITY], &SPY[SPY_MOTION]);
-    len = VectorLength(&SPY[SPY_VELOCITY], 1);
+    len = VectorLength(&SPY[SPY_VELOCITY], VEC_LEN_XYZ);
     if (len > 0x1E00) {
       ScaleVector3ByRatio(&SPY[SPY_VELOCITY], len, 0x1E00);
     }
@@ -324,7 +325,7 @@ void ChangeSpyroState(int state) {
     SPY[SPY_SUBSTATE] = 0;
     ZeroVector(&SPY[SPY_VELOCITY]);
     SubtractVector(&SPY[SPY_VELOCITY], &SPY[SPY_VELOCITY], &SPY[SPY_MOTION]);
-    len = VectorLength(&SPY[SPY_VELOCITY], 1);
+    len = VectorLength(&SPY[SPY_VELOCITY], VEC_LEN_XYZ);
     if (len > 0x1E00) {
       ScaleVector3ByRatio(&SPY[SPY_VELOCITY], len, 0x1E00);
     }
@@ -384,7 +385,8 @@ void ChangeSpyroState(int state) {
     if (g_nSpyroMotionZ > 0) {
       g_nSpyroMotionZ = 0;
     }
-    g_nSpyroMotionSpeed = VectorLength(&st[SPY_VELOCITY - SPY_STATE], 0);
+    g_nSpyroMotionSpeed =
+        VectorLength(&st[SPY_VELOCITY - SPY_STATE], VEC_LEN_XY);
     if (g_nSpyroMotionSpeed > 0x1900) {
       g_nSpyroMotionSpeed = 0x1900;
     }
@@ -416,10 +418,9 @@ void ChangeSpyroState(int state) {
       g_nSpyroScriptedLiftBaseZ = g_nSpyroWorldPosZ;
       g_nSpyroScriptedLiftTurn =
           ((g_nSpyroScriptedLiftRise << 10) >> 10) + 0x400;
-      g_nSpyroScriptedLiftTurn =
-          ((((Actor *)g_pScriptedCameraActor)->rotZ << 4) - g_nSpyroBodyYaw -
-           g_nSpyroScriptedLiftTurn) &
-          0xFFF;
+      g_nSpyroScriptedLiftTurn = ((g_pScriptedCameraActor->rotZ << 4) -
+                                  g_nSpyroBodyYaw - g_nSpyroScriptedLiftTurn) &
+                                 0xFFF;
       if (g_nSpyroScriptedLiftTurn > 0x800) {
         g_nSpyroScriptedLiftTurn -= 0x1000;
       }
@@ -492,7 +493,7 @@ void ChangeSpyroState(int state) {
                    0x401) < 0x7FF) {
       g_nSpyroMotionSpeed = 0;
     } else {
-      g_nSpyroMotionSpeed = VectorLength(&SPY[SPY_MOTION], 0);
+      g_nSpyroMotionSpeed = VectorLength(&SPY[SPY_MOTION], VEC_LEN_XY);
     }
     g_nSpyroGravityStep = -0xC00;
     ApplyGravityAlongSpyroSlopeNormal();
@@ -538,7 +539,7 @@ void ChangeSpyroState(int state) {
     me = SPY;
     PlaySoundEffect(LEVEL_SFX(SFX_SPLASH), me, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER);
-    PlaySoundEffect(LEVEL_SFX(0x1B), me, SFX_MODE_FLAT,
+    PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT_EXIT), me, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER);
     if (g_nHitRumbleTimer < 0xF) {
       g_nHitRumbleTimer = 0xF;

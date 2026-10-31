@@ -72,5 +72,5 @@ void BuildSaveGameBuffer(unsigned char *buf) {
     i += 1;
   } while (i < 6);
   CopyWords(buf + SAVE_OFFSET(killBitmaps), g_anLevelKillBitmapTable, 0x480);
-  SAVE_RAW(buf, unsigned int, checksum) = ComputeSaveGameChecksum(start);
+  ((SaveGameBuffer *)buf)->checksum = ComputeSaveGameChecksum(start);
 }

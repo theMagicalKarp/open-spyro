@@ -83,9 +83,9 @@ void StartCdReadAsync(int lbaBase, void *dst, int size, int offset, int marker);
 /* 0x80016784: Walks the per-depth OT slot table at g_pOtDepthBinArrayBase backward from index `depth_max` down to 0, splicing each slot's primitive head into the previous slot's tail via 24-bit OT next-addr tags, and returns the head of the finalized chain. The chain is terminated at 0x8006bbe0 (0xbbe0 written as the term tag). Called as `DrawOTag(LinkOTPrimitives(0x800))` from every Gamestate*_Draw. */
 void *LinkOTPrimitives(int depth_max);
 
-/* 0x800168a0: Appends primitive `param_1` to OT depth slot `param_2` (g_pOtDepthBinArrayBase[param_2*8]). Same head/tail-link logic as AddPrimToOT but takes an explicit slot index instead of using the active slot at g_pOtActiveDepthSlot. */
+/* 0x800168a0: Appends primitive `prim` to OT depth slot `slot` (g_pOtDepthBinArrayBase[slot*8]). Same head/tail-link logic as AddPrimToOT but takes an explicit slot index instead of using the active slot at g_pOtActiveDepthSlot. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined AddPrimToOTSlot(int param_1, int param_2);
+undefined AddPrimToOTSlot(int prim, int slot);
 
 /* 0x800168dc: Appends a primitive to the active OT depth slot (g_pOtActiveDepthSlot). If the slot already has a tail prim, patches its 24-bit next-addr tag to point at `prim`; else stores `prim` as the slot's head. PsyQ-style `addPrim` for this engine's per-depth OT slot table. */
 void AddPrimToOT(unsigned int prim);
@@ -98,7 +98,7 @@ void FillBlock16(void *dst, int value, int count);
 void CopyWords(void *dst, void *src, int byte_count);
 
 /* 0x800169ac: 2-arg arctan returning 8-bit angle (0..0xff = 0..360deg). Smaller, lower-precision sibling of ArcTan2 — uses byte-LUT at s__________________________________8006d82c. */
-int ArcTan2_8bit(int param_1, int param_2);
+int ArcTan2_8bit(int y, int x);
 
 int ArcTan2(int y, int x, int high_precision);
 
@@ -121,7 +121,11 @@ void ApplyActiveGteRotation(int *dst, int *src);
 /* 0x80017110: Rotate a 3-vector by the camera rotation matrix at g_anCameraViewMtx (5 packed 32-bit slots = 9 GTE short matrix entries). Y/Z sign-flipped on input/output (PSX up-coord convention). Output written to dst. */
 void WorldToCameraRotate(int *src, int *dst);
 
-int VectorLength(int *vec, int mode);
+#ifndef VEC_LEN_XY
+#define VEC_LEN_XY 0  /* VectorLength: X/Y only (Z ignored) */
+#define VEC_LEN_XYZ 1 /* VectorLength: all three components */
+#endif
+int VectorLength(int *vec, int withZ);
 
 /* 0x8001729c: One Newton-Raphson refinement step for sqrt(x^2+y^2[+z^2]). Loads vec into IR1/IR2/IR3 (Z skipped when mode==0), squares via gte_sqr0_b, uses GTE LZCS/LZCR to derive a half-bit-length shift, then returns refined estimate. Skips refinement when len^2 fits in <=12 bits. */
 int RefineSqrtEstimate(int *v, int len, int mode);
@@ -299,7 +303,7 @@ void RasterizeSpyroModel(void);
 /* 0x800258f0: World chunk renderer. Loads the camera GTE rotation matrix from g_anCameraViewMtx..df4, then iterates a chunk pointer table: if zone >= 0 it walks that visibility zone's chunk list at g_pVisZoneChunkLists + zone*4 (terminated by byte 0xff); if zone < 0 it walks the full visible-chunk list at g_pWorldChunkArray (length g_nWorldChunkCount). For each chunk, projects its anchor through gte_rtir_b, performs frustum/depth tests, and on visibility emits primitives into the OT depth bins via the scratch buffer at g_abVisZoneGates. Also called by Cutscene_Draw. */
 void RenderWorldChunks(int zone);
 
-/* 0x8002a6fc: Per-frame world chunk-animation driver — advances all 6 world chunk-anim tables by step ticks. Called once per game frame from GamestateUpdate. Each table has the layout: count at g_nWorldAnimMeshKeyframeCount/8/70/8/80/8 + ptr-array at g_pWorldAnimMeshKeyframeList/c/74/c/84/c (last pair = g_nWorldAnimVertexMorphCount/a4). Per-entry header bytes: [+1]=state-flags (bit 2=halt, bit 0=arm), [+2]=current step index, [+3]=delay counter, [+4]=target index. Each tick: skip if halted, else delay -= step → if expired advance state via the RLE/state table at +8 (4-byte step entries) or +0xc (8-byte step entries) following the (bit&1?next_b:next_a) successor links; arm new delay from step byte and write its payload to the world target. The 6 sub-tables drive: (1) full-mesh keyframe copy (0xa8-byte vertex blob at g_pWorldMeshVertexData + 0x10-byte header at g_pWorldMeshHeaderArray); (2) UV scroll/cycle that writes 6/12/8/8/8 byte UVs at fixed offsets in iVar3/iVar7 producing a rotating-byte pattern; (3..6) single-byte writes at offsets +0x18..+0x1b of section0-indexed targets (color cycle); (7) packed-21-bit-per-axis vertex morph at g_pWorldAnimVertexMorphList that decodes the source triplet then writes the dest triangle's packed-XY anchors (with optional GTE matrix interpolation when secondary keyframe selected by step byte). Skips advance if not yet due (just decrements delay counter). */
+/* 0x8002a6fc: Per-frame world chunk-animation driver — advances all 6 world chunk-anim tables by step ticks. Called once per game frame from GamestateUpdate. Each table has the layout: count at g_nWorldAnimMeshKeyframeCount/8/70/8/80/8 + ptr-array at g_pWorldAnimMeshKeyframeList/c/74/c/84/c (last pair = g_nWorldAnimVertexMorphCount/a4). Per-entry header bytes: [+1]=state-flags (CHUNK_ANIM_HALTED 0x2 = skip, CHUNK_ANIM_BRANCH 0x1 = follow next_b; a step entry's low two bits are copied in on arrival), [+2]=current step index, [+3]=delay counter, [+4]=target index. Each tick: skip if halted, else delay -= step → if expired advance state via the RLE/state table at +8 (4-byte step entries) or +0xc (8-byte step entries) following the (bit&1?next_b:next_a) successor links; arm new delay from step byte and write its payload to the world target. The 6 sub-tables drive: (1) full-mesh keyframe copy (0xa8-byte vertex blob at g_pWorldMeshVertexData + 0x10-byte header at g_pWorldMeshHeaderArray); (2) UV scroll/cycle that writes 6/12/8/8/8 byte UVs at fixed offsets in iVar3/iVar7 producing a rotating-byte pattern; (3..6) single-byte writes at offsets +0x18..+0x1b of section0-indexed targets (color cycle); (7) packed-21-bit-per-axis vertex morph at g_pWorldAnimVertexMorphList that decodes the source triplet then writes the dest triangle's packed-XY anchors (with optional GTE matrix interpolation when secondary keyframe selected by step byte). Skips advance if not yet due (just decrements delay counter). */
 void TickWorldChunkAnimations(int step);
 
 /* 0x8002b4ac: Sibling of TickWorldChunkAnimations that snaps every world chunk-anim table to its current keyframe state without advancing time (no delay decrement, no RLE walk). Same 6 tables: copies the current-keyframe full-mesh blob (0xa8 + 0x10), applies the current UV rotation pattern, writes the current step-index byte to each color-cycle target byte (+0x18..+0x1b), and rebuilds the packed-XY triangle anchors at g_pWorldCollisionHeader+0x10 from the source triplet. Used by the level-loader (BuildLoadedLevelRuntime) to seed all world animations to their initial keyframe before gameplay begins. */
@@ -675,7 +679,7 @@ undefined ClipAndEmitFogShadedActorTriangle(void);
 /* 0x80050bd0: Render stage 4 (formerly DrawActors). Draws each hub portal in g_apPortals[0..g_nPortalCount] whose vis-zone gate (g_abVisZoneGates) is open: a view matrix rebuilt from the camera euler angles plus the slow g_nPortalViewYawSpin / PitchTilt swirl, the portal's ring projected into g_aMobRingScreenPts, depth-cued (ComputeDepthCuedColor), its silhouette edges built in g_aMobSilhouetteEdges and emitted once as-is and, nearer than 0x4000, once fattened by 2 px. Then emits the static actor meshes (EmitStaticActorMeshList), at LOD -1 (full) unless g_nCameraVisZone is under g_nVisZoneCount. */
 void DrawPortalsAndStaticActors(void);
 
-/* 0x800521c0: Visible-entity-list builder. Walks the entity array starting at g_pActorListBase (stride 0x58, visibility byte at +0x48, link byte at +0xa9, next-entity flags in word at +0xf8) and sorts each visible entity into one of three OT/render buckets at g_pOtDepthBinHead0 / g_apSecondaryDrawEntityList / g_apSpritePrimQueue depending on its category flags. Hides entities whose mask byte at &g_abVisZoneGates + idx is zero. Terminates each list with a 0 entry. Called once at the top of every gameplay-frame render chain. */
+/* 0x800521c0: Visible-entity-list builder (hand-written asm). Walks the actor pool from g_pActorListBase (stride 0x58), reading the word at +0x48: mode byte >= 0x80 (dormant) is skipped and 0xFF ends the pool. The signed renderList byte (+0x4B) picks the list: > 0 the main mesh list at g_pOtDepthBinHead0 (BuildActorDrawList), < 0 (ACTOR_RENDER_SECONDARY) g_apSecondaryDrawEntityList, 0 the sprite queue g_apSpritePrimQueue. An actor whose visZone (+0x4A) is not 0xFF and whose g_abVisZoneGates byte is 0 is taken back off the list and gets drawn = 0. Each list ends with a 0 entry. Called once at the top of every gameplay-frame render chain. */
 void BuildRenderEntityLists(void);
 
 /* 0x800522c0: Actor animation tick for an actor-pointer list (mode = frame-step shift). Walks NULL-terminated actor-pointer list at *list, advances per-actor anim subframe at +0x40 by (DAT_1f800000._1_1_ >> mode), wraps to next animation frame when subframe overflows 0x40 (consulting the per-anim length at puVar15[0]), and on key-frame markers (+0x27 sound-trigger byte) queues PlaySoundEffect requests into a small queue at &g_pOtDepthBinHead0 + scratch. After the actor walk, drains the queue calling PlaySoundEffect(soundId, actorPtr, 8, actorPtr+0x54) for each queued trigger. Every level's UpdateActors runs it on g_apActiveActorList (the list BuildActiveActorList writes at g_apActiveActorList), twice on a long frame; SaveMenu_Update runs it on a one-actor list. Drives per-frame actor animation playback and the per-frame sound triggers. */
@@ -1961,7 +1965,7 @@ int DriveActorTrackedMove(Actor *actor, int *a, int heading, int *b, int c, int 
 void UpdateActorWander(Actor *actor, WanderBlock *wb);
 
 /* 0x8003a9ec: Nudges the actor's LOD band and points its mesh-table entry (+0x4C) at the matching VRAM page; returns the band. */
-int SelectActorLodBand(Actor *actor, int handle);
+int SelectActorLodBand(Actor *actor, int band);
 
 /* 0x8003b294: ORs `bits` into +0x18 of every non-dormant actor of pickup group `group` inside a box + facing cone around `actor`. */
 void OrActorGroupFlagsInCone(Actor *actor, int group, unsigned int bits, int distLim, int zLim, int xyLim, int angLim);

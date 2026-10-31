@@ -56,7 +56,7 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
     k = i * 4;
     switch (type) {
     case EMIT_SPARK_VEL: {
-      rec = (Emit *)AllocEmitListRecord(2);
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_LIT_QUAD);
       rec->type = type;
       rec->phase = 0;
       rec->visible = 1;
@@ -68,13 +68,13 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.r = 0x80;
       rec->u.spark.g = 0x80;
       rec->u.spark.b = 0x80;
-      rec->u.spark.fx = 0x2E;
+      rec->u.spark.fx = EMIT_FX_QUAD_BLEND;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
       break;
     }
     case EMIT_SPARK_VEL_DIM:
-      rec = (Emit *)AllocEmitListRecord(2);
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_LIT_QUAD);
       rec->type = type;
       rec->phase = 0;
       rec->visible = 1;
@@ -90,12 +90,12 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.r = 0x60;
       rec->u.spark.g = 0x60;
       rec->u.spark.b = 0x60;
-      rec->u.spark.fx = 0x2E;
+      rec->u.spark.fx = EMIT_FX_QUAD_BLEND;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
       break;
     case EMIT_SPARK_RISE: {
-      rec = (Emit *)AllocEmitListRecord(2);
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_LIT_QUAD);
       rec->type = type;
       rec->phase = 0;
       rec->visible = 1;
@@ -110,31 +110,31 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.r = 0x80;
       rec->u.spark.g = 0x80;
       rec->u.spark.b = 0x80;
-      rec->u.spark.fx = 0x2E;
+      rec->u.spark.fx = EMIT_FX_QUAD_BLEND;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
       break;
     }
     case EMIT_ACTOR_PLUME: {
       int *owner;
-      int t1, t2, t3;
-      int u1, u2, u3;
+      int jx, jy, jz;
+      int bx, by, bz;
       owner = ((Actor *)pos)->state;
-      rec = (Emit *)AllocEmitListRecord(3);
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_ALT_LIT_QUAD);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.plume.pos, &((Actor *)pos)->posX);
-      t1 = GetRandomU32() & 0x7E;
-      u1 = rec->u.plume.pos[0] - 0x3F;
-      rec->u.plume.pos[0] = u1 + t1;
-      t2 = GetRandomU32() & 0x7E;
-      u2 = rec->u.plume.pos[1] - 0x3F;
-      rec->u.plume.pos[1] = u2 + t2;
-      t3 = GetRandomU32() & 0x1FF;
-      u3 = rec->u.plume.pos[2] - 0x100;
+      jx = GetRandomU32() & 0x7E;
+      bx = rec->u.plume.pos[0] - 0x3F;
+      rec->u.plume.pos[0] = bx + jx;
+      jy = GetRandomU32() & 0x7E;
+      by = rec->u.plume.pos[1] - 0x3F;
+      rec->u.plume.pos[1] = by + jy;
+      jz = GetRandomU32() & 0x1FF;
+      bz = rec->u.plume.pos[2] - 0x100;
       rec->u.plume.src = &((Actor *)pos)->posX;
-      rec->u.plume.pos[2] = u3 + t3;
+      rec->u.plume.pos[2] = bz + jz;
       rec->u.plume.maxRadius = owner[1];
       rec->u.plume.rise = owner[0] >> 6;
       rec->u.plume.life = 0x20;
@@ -191,13 +191,13 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
         rec->u.plume.g = 0x80;
         rec->u.plume.b = 0x80;
       }
-      rec->u.plume.fx = 0x2C;
+      rec->u.plume.fx = EMIT_FX_QUAD;
       rec->u.plume.depthBias = 0;
       rec->u.plume.texIndex = 0;
       break;
     }
     case EMIT_SPEED_DUST: {
-      rec = (Emit *)AllocEmitListRecord(2);
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_LIT_QUAD);
       rec->type = type;
       rec->phase = 0;
       rec->visible = 1;
@@ -223,13 +223,13 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
         rec->u.spark.g = 0x80;
         rec->u.spark.b = 0x80;
       }
-      rec->u.spark.fx = 0x2E;
+      rec->u.spark.fx = EMIT_FX_QUAD_BLEND;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
       break;
     }
     case EMIT_SPYRO_ORBIT_SPARKLE: {
-      rec = (Emit *)AllocEmitListRecord(3);
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_ALT_LIT_QUAD);
       rec->type = type;
       rec->phase = GetRandomU32() & 0x1F;
       rec->visible = 1;
@@ -239,14 +239,14 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.r = g_abEmitTrailColors[k];
       rec->u.spark.g = g_abEmitTrailColorsG[k];
       rec->u.spark.b = g_abEmitTrailColorsB[k];
-      rec->u.spark.fx = 0x2C;
+      rec->u.spark.fx = EMIT_FX_QUAD;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
       rec->u.spark.vel[0] = ((count - i) << 12) / 5;
       break;
     }
     case EMIT_ACTOR_SPARK: {
-      rec = (Emit *)AllocEmitListRecord(2);
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_LIT_QUAD);
       rec->type = type;
       rec->visible = 1;
       rec->u.spark.depthBias = 4;
@@ -257,7 +257,7 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
           RotateVectorByMatrix(((Actor *)pos)->mtx, &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
           AddVector(v1, v1, &((Actor *)pos)->posX);
         } else {
-          rec->cls = 5;
+          rec->cls = EMIT_CLASS_FADED_QUAD;
           rec->u.spark.depthBias = 0x16;
           CopyVector(v1, &g_anEmitSlotOffsets[(effectArg >> 24) * 3]);
         }
@@ -272,14 +272,14 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.g = effectArg >> 8;
       rec->u.spark.r = effectArg;
       rec->u.spark.b = effectArg >> 16;
-      rec->u.spark.fx = 0x2E;
+      rec->u.spark.fx = EMIT_FX_QUAD_BLEND;
       rec->u.spark.life = (GetRandomU32() & 7) + 0x10;
       rec->u.spark.seed = GetRandomU32();
       rec->u.spark.texIndex = 0;
       break;
     }
     case EMIT_FADING_SPARK: {
-      rec = (Emit *)AllocEmitListRecord(2);
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_LIT_QUAD);
       rec->type = type;
       rec->phase = 0;
       rec->visible = 1;
@@ -290,7 +290,7 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.seed = GetRandomU32();
       c = ((int *)effectArg)[1] * 8;
       rec->u.spark.r = c;
-      rec->u.spark.fx = 0x2E;
+      rec->u.spark.fx = EMIT_FX_QUAD_BLEND;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
       rec->u.spark.g = c;
@@ -298,7 +298,7 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
       break;
     }
     case EMIT_SPARK_RGB: {
-      rec = (Emit *)AllocEmitListRecord(2);
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_LIT_QUAD);
       rec->type = type;
       rec->phase = 0;
       rec->visible = 1;
@@ -310,13 +310,13 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.r = ((int *)effectArg)[0];
       rec->u.spark.g = ((int *)effectArg)[1];
       rec->u.spark.b = ((int *)effectArg)[2];
-      rec->u.spark.fx = 0x2E;
+      rec->u.spark.fx = EMIT_FX_QUAD_BLEND;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
       break;
     }
     case EMIT_RESCUE_SWIRL: {
-      rec = (Emit *)AllocEmitListRecord(2);
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_LIT_QUAD);
       rec->type = type;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.band.pos, pos);
@@ -328,7 +328,7 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.band.g = 0x80;
       rec->u.band.b = 0x80;
       rec->u.band.seed = z;
-      rec->u.band.fx = 0x2E;
+      rec->u.band.fx = EMIT_FX_QUAD_BLEND;
       rec->u.band.depthBias = 8;
       rec->u.band.lift = i * 32;
       rec->u.band.texIndex = 0;
@@ -338,7 +338,7 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
       break;
     }
     case EMIT_DUST_PUFF: {
-      rec = (Emit *)AllocEmitListRecord(2);
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_LIT_QUAD);
       rec->type = type;
       rec->phase = 0;
       rec->visible = 1;
@@ -366,13 +366,13 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.r = 0x20;
       rec->u.spark.g = 0x20;
       rec->u.spark.b = 0x20;
-      rec->u.spark.fx = 0x2E;
+      rec->u.spark.fx = EMIT_FX_QUAD_BLEND;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
       break;
     }
     case EMIT_TWINKLE: {
-      rec = (Emit *)AllocEmitListRecord(0);
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_DOT);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;
@@ -383,7 +383,7 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.dust.vel[1] = 0;
       rec->u.dust.vel[2] = 0;
       rec->u.dust.life = 2;
-      if (effectArg == 1 || (effectArg == 0 && g_nSparxHealth >= 3)) {
+      if (effectArg == 1 || (effectArg == 0 && g_nSparxHealth >= SPARX_GOLD)) {
         rec->u.dust.r = 0xFF;
         rec->u.dust.g = 0xFF;
         rec->u.dust.b = 0;
@@ -431,11 +431,11 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
           break;
         }
       }
-      rec->u.dust.fx = 0x40;
+      rec->u.dust.fx = EMIT_FX_LINE;
       break;
     }
     case EMIT_STREAK_BURST: {
-      rec = (Emit *)AllocEmitListRecord(1);
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_LINE);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;
@@ -460,7 +460,7 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
       break;
     }
     case EMIT_STREAK_BURST_WHITE: {
-      rec = (Emit *)AllocEmitListRecord(1);
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_LINE);
       rec->type = type;
       rec->phase = GetRandomU32() & 7;
       rec->visible = 1;
@@ -484,7 +484,7 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
       break;
     }
     case EMIT_YELLOW_DUST: {
-      rec = (Emit *)AllocEmitListRecord(0);
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_DOT);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;
@@ -493,14 +493,14 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.dust.r = 0xFF;
       rec->u.dust.g = 0xFF;
       rec->u.dust.b = 0;
-      rec->u.dust.fx = 0x40;
+      rec->u.dust.fx = EMIT_FX_LINE;
       rec->u.dust.life = 4;
       break;
     }
     case EMIT_DRIFT_STREAK: {
       int t;
       int u;
-      rec = (Emit *)AllocEmitListRecord(4);
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_LINE_ABS);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       VectorToSVectorShr2(rec->u.line.b, pos);
@@ -521,22 +521,22 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
       break;
     }
     case EMIT_EMBER: {
-      int t1, t2, t3;
-      int u1, u2, u3;
-      rec = (Emit *)AllocEmitListRecord(0);
+      int jx, jy, jz;
+      int bx, by, bz;
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_DOT);
       rec->type = type;
       rec->phase = GetRandomU32() & 0x1F;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.dust.pos, pos);
-      t1 = GetRandomU32() & 0x3F;
-      u1 = rec->u.dust.pos[0] - 0x20;
-      rec->u.dust.pos[0] = u1 + t1;
-      t2 = GetRandomU32() & 0x3F;
-      u2 = rec->u.dust.pos[1] - 0x20;
-      rec->u.dust.pos[1] = u2 + t2;
-      t3 = GetRandomU32() & 0x3F;
-      u3 = rec->u.dust.pos[2] - 0x20;
-      rec->u.dust.pos[2] = u3 + t3;
+      jx = GetRandomU32() & 0x3F;
+      bx = rec->u.dust.pos[0] - 0x20;
+      rec->u.dust.pos[0] = bx + jx;
+      jy = GetRandomU32() & 0x3F;
+      by = rec->u.dust.pos[1] - 0x20;
+      rec->u.dust.pos[1] = by + jy;
+      jz = GetRandomU32() & 0x3F;
+      bz = rec->u.dust.pos[2] - 0x20;
+      rec->u.dust.pos[2] = bz + jz;
       rec->u.dust.vel[0] = (GetRandomU32() & 2) - 1;
       rec->u.dust.vel[1] = (GetRandomU32() & 2) - 1;
       rec->u.dust.vel[2] = -(GetRandomU32() & 1);
@@ -546,28 +546,28 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
         rec->u.dust.g = rec->u.dust.r;
       }
       rec->u.dust.b = (GetRandomU32() & 0x3F) + 0x40;
-      rec->u.dust.fx = 0x40;
+      rec->u.dust.fx = EMIT_FX_LINE;
       rec->u.dust.life = 2;
       break;
     }
     case EMIT_FLAME_STREAK: {
-      int t4, t5, t6;
-      int u4, u5, u6;
-      rec = (Emit *)AllocEmitListRecord(1);
+      int jx, jy, jz;
+      int bx, by, bz;
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_LINE);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.line.b, pos);
       AddVector(v3, pos, (int *)effectArg);
-      t4 = GetRandomU32() & 0x3F;
-      u4 = v3[0] - 0x20;
-      v3[0] = u4 + t4;
-      t5 = GetRandomU32() & 0x3F;
-      u5 = v3[1] - 0x20;
-      v3[1] = u5 + t5;
-      t6 = GetRandomU32() & 0x7F;
-      u6 = v3[2] - 0x40;
-      v3[2] = u6 + t6;
+      jx = GetRandomU32() & 0x3F;
+      bx = v3[0] - 0x20;
+      v3[0] = bx + jx;
+      jy = GetRandomU32() & 0x3F;
+      by = v3[1] - 0x20;
+      v3[1] = by + jy;
+      jz = GetRandomU32() & 0x7F;
+      bz = v3[2] - 0x40;
+      v3[2] = bz + jz;
       VectorToSVectorShr2(rec->u.line.a, v3);
       rec->u.line.c1[3] = 2;
       if (g_nSpyroFlameVariant == 0) {
@@ -589,7 +589,7 @@ void Level24_EmitParticles(int count, int type, int *pos, int effectArg) {
       break;
     }
     case EMIT_FALLING_STREAK_BURST: {
-      rec = (Emit *)AllocEmitListRecord(1);
+      rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_LINE);
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;

@@ -5,6 +5,8 @@
 #ifndef OPEN_SPYRO_GLOBALS_H
 #define OPEN_SPYRO_GLOBALS_H
 
+#include "sparx.h"
+
 #include "types.h"
 
 /* ---- MCTRL1 ---- */
@@ -635,7 +637,7 @@ extern DRAWENV *g_pActiveFrameDrawEnv;       /* 0x80075888 */
 extern int g_nCdStallWatchdogTicks;          /* 0x8007588c */
 extern void *g_pActorPoolDynBase;            /* 0x80075890 */
 extern int g_nCameraSpringReengageCountdown; /* 0x80075894 */
-extern void *g_pSparxActor;      /* 0x80075898: the Sparx actor (type 0x78, spawned by BuildLoadedLevelRuntime), or null while Sparx is gone */
+extern struct Actor *g_pSparxActor;      /* 0x80075898: the Sparx actor (type 0x78, spawned by BuildLoadedLevelRuntime), or null while Sparx is gone */
 extern int g_nSpyroTurnRateAccum;            /* 0x800758a0 */
 extern int g_nSpyroSuperflameTimerSave;     /* 0x800758a4 */
 extern int g_nReturnPortalLevelId;                /* 0x800758ac: level being left (0 = none); the hub places Spyro at the portal leading to it */
@@ -1000,7 +1002,7 @@ extern int g_anSpyroRequestVelocity[3];                 /* 0x80078c60 */
 extern int g_nSpyroRequestState;                        /* 0x80078c70 */
 extern void *g_pSpyroRequestCameraAnchor;               /* 0x80078c74 */
 extern void *g_pSpyroRequestCameraTargetParams;         /* 0x80078c78 */
-extern void *g_pScriptedCameraActor;                    /* 0x80078c7c */
+extern struct Actor *g_pScriptedCameraActor;                    /* 0x80078c7c */
 extern void *g_pPortalCamPathData;                   /* 0x80078c98 */
 extern int g_nPortalCamPathMaxStep;                  /* 0x80078c9c */
 extern int g_nPortalCamPathReverseFlag;              /* 0x80078ca0 */

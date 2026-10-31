@@ -20,7 +20,7 @@ void AimCameraStickTowardPoint(int *target) {
   RotateVectorByMatrix(inv, v, v);
 
   {
-    int ang = ArcTan2(VectorLength(v, 0), v[2], 1);
+    int ang = ArcTan2(VectorLength(v, VEC_LEN_XY), v[2], 1);
     g_nCameraScriptStickRequestY = ang;
     if ((unsigned int)(ang - 0x181) < 0x67F) {
       g_nCameraScriptStickRequestY = 0x180;

@@ -45,7 +45,7 @@ void Level30_AdvanceEmitList(int step) {
   unsigned char *rec = g_pEmitListBase;
   int v[3];
 
-  if (CLASS == 0xFF) {
+  if (CLASS == EMIT_CLASS_END) {
     return;
   }
 
@@ -114,7 +114,7 @@ void Level30_AdvanceEmitList(int step) {
 
     case EMIT_SPYRO_ORBIT_SPARKLE:
       /* The homing sparkle: it only lives while Spyro is on screen. */
-      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < 0) || g_nSpyroDrawSuppressed != 0 ||
+      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < SPARX_GONE) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
         FreeEmitListRecord(rec);
       } else {
@@ -128,7 +128,7 @@ void Level30_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xB:
+    case EMIT_BURST_SPARK:
       AddSVector(POS, POS, &HS(0x12));
       rec[0xC] -= 8;
       rec[0xD] -= 8;
@@ -484,5 +484,5 @@ void Level30_AdvanceEmitList(int step) {
     }
 
     rec += 0x20;
-  } while (CLASS != 0xFF);
+  } while (CLASS != EMIT_CLASS_END);
 }

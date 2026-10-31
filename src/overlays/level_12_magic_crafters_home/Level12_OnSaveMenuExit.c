@@ -15,13 +15,13 @@
 
 
 void Level12_OnSaveMenuExit(void) {
-  char *actor;
+  Actor *actor;
 
   EndSaveMenuToWorld();
   actor = g_pSparxActor;
   g_nSpyroSwingEulerPrev1 = 0;
   g_bSpyroSwingByteEuler1 = 0;
   if (actor != 0) {
-    ((Actor *)actor)->cullRadius = 0x10;
+    actor->cullRadius = 0x10;
   }
 }

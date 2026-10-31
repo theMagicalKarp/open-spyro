@@ -77,7 +77,7 @@ int MoveActorAlongHeading(Actor *actor, int speed, int group, int radius,
     }
   }
   if (flags & 0x40) {
-    t = VectorLength(g_anCollisionProbeVec, 0);
+    t = VectorLength(g_anCollisionProbeVec, VEC_LEN_XY);
     ang = ArcTan2(t, g_anCollisionProbeVec[2], 0);
     if (ang >= 0x81) {
       ang -= 0x100;

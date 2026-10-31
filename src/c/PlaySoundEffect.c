@@ -77,7 +77,7 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
     }
     SubtractVector(delta, &owner->posX, (int *)(cam - 0x14));
     RShiftVector3(delta, 4);
-    dist = VectorLength(delta, 1) * 16;
+    dist = VectorLength(delta, VEC_LEN_XYZ) * 16;
     range = owner->soundRange << 10;
     if (range == 0) {
       range = 0x4000;

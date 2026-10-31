@@ -309,7 +309,7 @@ void DispatchSpyroPhysicsByState(void) {
       n = *timer + 8;
       *timer = n;
       g_nSpyroWorldPosZ = g_nSpyroTriggerEntryZ + 0x164;
-      if (g_nSparxHealth >= 0) {
+      if (g_nSparxHealth >= SPARX_GONE) {
         if (n > 0x96) {
           *timer = 0x96;
         }

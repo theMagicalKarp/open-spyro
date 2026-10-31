@@ -39,11 +39,11 @@ void Level30_BeginActorCutscene(Actor *actor) {
   pos = g_anCameraPos;
   g_nGameplayBlocked = 1;
   g_nGamePaused = 1;
-  g_pActorCutsceneRecord = g_pActorListBase + count * ACTOR_SIZE;
+  g_pActorCutsceneRecord = (Actor *)(g_pActorListBase + count * ACTOR_SIZE);
   g_nActorCutsceneCamYawStart = ArcTan2(pos[0] - ACTOR_RAW(actor, int, posX),
                              g_nCameraPosY - ACTOR_RAW(actor, int, posY), 1);
   SubtractVector(vec, pos, &actor->posX);
-  g_nActorCutsceneCamRadiusStart = VectorLength(vec, 0);
+  g_nActorCutsceneCamRadiusStart = VectorLength(vec, VEC_LEN_XY);
   g_nActorCutsceneCamHeightStart = g_nCameraPosZ;
   b = actor->rotZ;
   g_nActorCutsceneCamRadiusGoal = 0x52E;

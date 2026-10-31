@@ -13,7 +13,7 @@ int CheckLineOfSightSegment(int *from, int *to) {
   int i;
 
   SubtractVector(&seg, to, from);
-  len = VectorLength(&seg, 1);
+  len = VectorLength(&seg, VEC_LEN_XYZ);
   steps = len >> 10;
   ScaleVector3ByRatio(&seg, len, 0x400);
   CopyVector(&cur, from);

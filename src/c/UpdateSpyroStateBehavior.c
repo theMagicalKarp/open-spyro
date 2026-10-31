@@ -494,7 +494,7 @@ void UpdateSpyroStateBehavior(void) {
         int v;
 
         g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;
-        v = VectorLength(&SPY[SPY_CARRY], 1);
+        v = VectorLength(&SPY[SPY_CARRY], VEC_LEN_XYZ);
         if (v < 0x1F80) {
           v = 0x1F80;
         }
@@ -568,7 +568,7 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer < 0x18) {
       break;
     }
-    if (g_nSparxHealth < 0) {
+    if (g_nSparxHealth < SPARX_GONE) {
       ChangeSpyroState(SPYRO_ST_DEATH);
       break;
     }
@@ -579,7 +579,7 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer < 0x18) {
       break;
     }
-    if (g_nSparxHealth < 0) {
+    if (g_nSparxHealth < SPARX_GONE) {
       ChangeSpyroState(SPYRO_ST_DEATH);
       break;
     }
@@ -588,7 +588,7 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer < 0x30) {
       break;
     }
-    if (g_nSparxHealth < 0) {
+    if (g_nSparxHealth < SPARX_GONE) {
       ChangeSpyroState(SPYRO_ST_DEATH);
       break;
     }
@@ -893,7 +893,7 @@ void UpdateSpyroStateBehavior(void) {
         break;
       }
     }
-    t = VectorLength(g_anSpyroVelocity, 1);
+    t = VectorLength(g_anSpyroVelocity, VEC_LEN_XYZ);
     if (t == 0) {
       t = 1;
     }
@@ -923,7 +923,7 @@ void UpdateSpyroStateBehavior(void) {
     if (g_nSpyroStateTimer < 0x18) {
       break;
     }
-    if (g_nSparxHealth < 0) {
+    if (g_nSparxHealth < SPARX_GONE) {
       ChangeSpyroState(SPYRO_ST_DEATH);
       break;
     }

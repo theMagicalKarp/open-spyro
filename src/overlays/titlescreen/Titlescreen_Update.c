@@ -19,6 +19,7 @@
  */
 
 #include "titlescreen.h"
+#include "sparx.h"
 
 static const char s_SaveFileName[20] = "BASCUS-94228SPYRO";
 
@@ -905,7 +906,7 @@ void Titlescreen_Update(void) {
             Titlescreen_PlayUiSound(0);
           }
         } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
-          g_nSparxHealth = 3;
+          g_nSparxHealth = SPARX_GOLD;
           g_nSparxFoodCount = 0;
           g_nSparxHealthStash = -1;
           ApplySaveGameBuffer(g_nTitleMode.apSaves[g_nTitleMode.selection]);

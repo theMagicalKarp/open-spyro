@@ -169,8 +169,8 @@ void Level24_UpdateActors(void) {
       continue;
     }
 
-    g_nActorAnimDone = actor->animFlags & 2;
-    g_nActorAnimNewFrame = actor->animFlags & 1;
+    g_nActorAnimDone = actor->animFlags & ACTOR_ANIM_DONE;
+    g_nActorAnimNewFrame = actor->animFlags & ACTOR_ANIM_NEW_FRAME;
     dt = g_nFrameStep;
     g_nActorFrameDelta = dt;
 
@@ -330,17 +330,17 @@ void Level24_UpdateActors(void) {
     case ACTOR_TYPE_BUTTERFLY: {
       ChaseState *st = (ChaseState *)actor->state;
 
-      if (SPY.sparxHealth < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
+      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
 
         if (ABS2(actorZ - SPY.posZ) < 1800) {
           if (g_pSparxActor == 0) {
-            if (SPY.sparxHealth >= 0) {
+            if (SPY.sparxHealth >= SPARX_GONE) {
               g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
               PlayActorMeshVoice(g_pSparxActor, 0, 0);
 
-              SPY.sparxHealth = 1;
+              SPY.sparxHealth = SPARX_GREEN;
 
               DespawnActorRecord(actor);
               break;
@@ -798,7 +798,7 @@ void Level24_UpdateActors(void) {
             continue;
           }
           if (d <= 0xBFFF) {
-            d = VectorLength(g152, 0);
+            d = VectorLength(g152, VEC_LEN_XY);
           } else {
             d = ApproxDist2D(&q->posX, &actor->posX);
           }
@@ -908,7 +908,7 @@ void Level24_UpdateActors(void) {
       SubtractVector(g104, &spy->posX, &actor->posX);
       dist = ApproxDist2D(&actor->posX, &g_anSpyroWorldPos);
       if (dist < 0x32C8) {
-        dist = VectorLength(g104, 0);
+        dist = VectorLength(g104, VEC_LEN_XY);
       }
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 3 &&
           (st->kind != 1 || !(actor->flags & ACTOR_HIT_CHARGE))) {
@@ -1475,7 +1475,7 @@ void Level24_UpdateActors(void) {
 
           ScaleVector3Sat(g272, (int *)st, g_nFrameStep);
           RShiftVector3(g272, 1);
-          dist = VectorLength(g272, 1);
+          dist = VectorLength(g272, VEC_LEN_XYZ);
 
           if (dist >= 0xDD) {
             ScaleVector3ByRatio(g272, dist, 0xDC);
@@ -1514,7 +1514,7 @@ void Level24_UpdateActors(void) {
             if (st->bounce == 0) {
               int floor = FindGroundHeightBelow(g272, 0x400);
               int slope =
-                  (signed char)ArcTan2_8bit(g288[2], VectorLength(g288, 0));
+                  (signed char)ArcTan2_8bit(g288[2], VectorLength(g288, VEC_LEN_XY));
 
               if ((g272[2] - 0x190) < floor && slope < 0x18) {
                 actor->subMode = 1;
@@ -1601,7 +1601,7 @@ void Level24_UpdateActors(void) {
             SubtractVector(g304, &spy->posX, (int *)st);
             RShiftVector3(g304, 5);
 
-            if (VectorLength(g304, 1) >= 0x1E1) {
+            if (VectorLength(g304, VEC_LEN_XYZ) >= 0x1E1) {
               CopyVector(&actor->posX, &spy->posX);
               st->timer = 0x20;
             } else {
@@ -1741,7 +1741,7 @@ void Level24_UpdateActors(void) {
                 RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
                 FindGroundHeightBelow(&actor->posX, 0x1000);
                 EncodeCachedVecToActorDirCode(actor);
-                actor->groundCode |= 0x80000000;
+                actor->groundCode |= ACTOR_GROUND_VALID;
               }
             }
           }
@@ -1865,7 +1865,7 @@ void Level24_UpdateActors(void) {
 
           g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, (void *)0xC);
 
-          actor->groundCode &= 0x7FFFFFFF;
+          actor->groundCode &= ~ACTOR_GROUND_VALID;
         }
         break;
       }
@@ -1879,7 +1879,7 @@ void Level24_UpdateActors(void) {
     case ACTOR_TYPE_SPARX: {
       SparxState *st = actor->state;
 
-      if (g_anSparxHealthBlock[0] >= 2) {
+      if (g_anSparxHealthBlock[0] >= SPARX_BLUE) {
         g136[0] = 0;
         g136[1] = 0x64;
         g136[2] = 0;
@@ -1894,7 +1894,7 @@ void Level24_UpdateActors(void) {
         g_pfnLevelEmitParticles(2, EMIT_TWINKLE, g136, 0);
       }
 
-      if (g_anSparxHealthBlock[0] >= 3) {
+      if (g_anSparxHealthBlock[0] >= SPARX_GOLD) {
         FxNode *fx = st->glow;
 
         if (fx == 0) {
@@ -1923,7 +1923,7 @@ void Level24_UpdateActors(void) {
         st->glow = 0;
       }
 
-      if (g_anSparxHealthBlock[0] <= 0) {
+      if (g_anSparxHealthBlock[0] <= SPARX_GONE) {
         if (st->target != 0 && st->target->type == ACTOR_TYPE_BUTTERFLY) {
           st->target->mode = 0;
         }
@@ -1985,7 +1985,7 @@ void Level24_UpdateActors(void) {
             }
 
             SubtractVector(g152, g152, &actor->posX);
-            dist = VectorLength(g152, 1);
+            dist = VectorLength(g152, VEC_LEN_XYZ);
 
             if (high == 0 &&
                 (TickCountdownByFrameDelta((void *)st, 4) != 0 ||
@@ -2009,7 +2009,7 @@ void Level24_UpdateActors(void) {
             }
             AddVector(&actor->posX, &actor->posX, g152);
             TurnActorYawTowardAngle(actor, ArcTan2(g152[0], g152[1], 0), 0xA, 0, 0);
-            actor->rotY = ArcTan2(VectorLength(g152, 0), g152[2], 0);
+            actor->rotY = ArcTan2(VectorLength(g152, VEC_LEN_XY), g152[2], 0);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
           }
@@ -2038,7 +2038,7 @@ void Level24_UpdateActors(void) {
             int dist;
 
             SubtractVector(g320, &st->target->posX, &actor->posX);
-            dist = VectorLength(g320, 1);
+            dist = VectorLength(g320, VEC_LEN_XYZ);
 
             if (dist < 0x200) {
               pk->timer = 0;
@@ -2074,7 +2074,7 @@ void Level24_UpdateActors(void) {
               }
               AddVector(&actor->posX, &actor->posX, g320);
               TurnActorYawTowardAngle(actor, ArcTan2(g320[0], g320[1], 0), 0xA, 0, 0);
-              actor->rotY = ArcTan2(VectorLength(g320, 0), g320[2], 0);
+              actor->rotY = ArcTan2(VectorLength(g320, VEC_LEN_XY), g320[2], 0);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
             break;
@@ -2141,21 +2141,21 @@ void Level24_UpdateActors(void) {
           }
 
           switch (SPY.sparxHealth) {
-          case 1:
+          case SPARX_GREEN:
             if (actor->nextAnim != 0 && actor->anim != 0) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, 0);
             }
             break;
 
-          case 2:
+          case SPARX_BLUE:
             if (actor->nextAnim != 2 && actor->anim != 2) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, 2);
             }
             break;
 
-          case 3:
+          case SPARX_GOLD:
             if (actor->nextAnim != 4 && actor->anim != 4) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, 4);
@@ -2306,7 +2306,7 @@ void Level24_UpdateActors(void) {
           case 0:
           case 1:
           case 3:
-            ModifyWorldChunkAnimFlags(st->sound, 0xFC, 0);
+            ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
             break;
           case 2:
             if (g_pActorListBase[st->partner].mode >= 6 &&
@@ -2314,18 +2314,18 @@ void Level24_UpdateActors(void) {
               st->flag = one;
             } else {
               st->timer = 0x1C2;
-              ModifyWorldChunkAnimFlags(st->sound, 0xFC, 0);
+              ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
             }
             break;
           case 4:
-            if (((GetWorldChunkAnimState(1) >> 8) & 0xFF) > 0 ||
-                !(GetWorldChunkAnimState(1) & 2)) {
+            if (CHUNK_ANIM_STEP(GetWorldChunkAnimState(1)) > 0 ||
+                !(GetWorldChunkAnimState(1) & CHUNK_ANIM_HALTED)) {
               st->timer = 0x1C2;
-              ModifyWorldChunkAnimFlags(2, 0xFC, 0);
+              ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
               st->sound = 2;
             } else {
               st->timer = 0x1C2;
-              ModifyWorldChunkAnimFlags(1, 0xFC, 0);
+              ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
               st->sound = one;
             }
             break;
@@ -2341,10 +2341,10 @@ void Level24_UpdateActors(void) {
         if (st->next == 0x63) {
           ENTER_POSE(actor, 0xC);
         }
-        if (st->flag != 0 && (GetWorldChunkAnimState(st->sound) & 2)) {
+        if (st->flag != 0 && (GetWorldChunkAnimState(st->sound) & CHUNK_ANIM_HALTED)) {
           st->flag = 0;
           st->timer = 0x14A;
-          ModifyWorldChunkAnimFlags(st->sound, 0xFC, 0);
+          ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           st->timer = 0x50;
@@ -2363,7 +2363,7 @@ void Level24_UpdateActors(void) {
         case 3:
         case 4:
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-            ModifyWorldChunkAnimFlags(st->sound, 0xFC, 0);
+            ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
             ENTER_POSE(actor, 0xC);
           }
           break;
@@ -2375,10 +2375,10 @@ void Level24_UpdateActors(void) {
               ((int *)g_pActorListBase[st->partner].state)[3] = 0x63;
             }
             s = GetWorldChunkAnimState(st->sound);
-            if ((s & 2) && ((s >> 8) & 0xFF) < 0x14) {
+            if ((s & CHUNK_ANIM_HALTED) && CHUNK_ANIM_STEP(s) < 0x14) {
               SetWorldChunkAnimStep(st->sound, 0x1E, 0);
             }
-            ModifyWorldChunkAnimFlags(st->sound, 0xFC, 0);
+            ModifyWorldChunkAnimFlags(st->sound, CHUNK_ANIM_RESUME, 0);
             ENTER_POSE(actor, 0xC);
           }
           break;
@@ -3028,7 +3028,7 @@ void Level24_UpdateActors(void) {
           SubtractVector(g408, at, &spy->posX);
           g408[2] = (g408[2] * 3) >> 2;
 
-          if (VectorLength(g408, 1) < 0x440) {
+          if (VectorLength(g408, VEC_LEN_XYZ) < 0x440) {
             int facing;
 
             facing =
@@ -3086,7 +3086,7 @@ void Level24_UpdateActors(void) {
               g_nSpyroRequestVelocityZ = 0;
 
               if (SPY.requestVelX != 0 || g_nSpyroRequestVelocityY != 0) {
-                ScaleVector3ByRatio(look, VectorLength(look, 0), 0x60);
+                ScaleVector3ByRatio(look, VectorLength(look, VEC_LEN_XY), 0x60);
                 goto clear_c68;
               }
             }
@@ -3315,7 +3315,7 @@ void Level24_UpdateActors(void) {
       if ((GetRandomU32() & 1) == 0)
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, (int *)actor, 0);
       SubtractVector(g408, &SPY.posX, &actor->posX);
-      distance = VectorLength(g408, 0);
+      distance = VectorLength(g408, VEC_LEN_XY);
       if (distance < st->radius && g408[2] >= -0x3FF && g408[2] < st->spanZ &&
           (SPY.state == SPYRO_ST_LIFT || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
         spyro = &SPY;
@@ -3608,7 +3608,7 @@ void Level24_UpdateActors(void) {
           g_nSpyroRequestVelocityZ = 0;
           g_nSpyroRequestVelocityY = SPY.posY - actor->posY;
           if (g_anSpyroRequestVelocity.x != 0 || g_nSpyroRequestVelocityY != 0) {
-            int len = VectorLength(&g_anSpyroRequestVelocity.x, 1);
+            int len = VectorLength(&g_anSpyroRequestVelocity.x, VEC_LEN_XYZ);
 
             ScaleVector3ByRatio(&g_anSpyroRequestVelocity.x, len,
                           (0x1000 - ApproxDist2D(&actor->posX, &SPY.posX)) /
@@ -3645,7 +3645,7 @@ void Level24_UpdateActors(void) {
             InsertActorIntoSpatialGrid(scan);
             scan->flags = 0;
             scan->mode = 0;
-            scan->killGroup &= 0x7F;
+            scan->killGroup &= ACTOR_KILL_GROUP_MASK;
             ANIM_RESET(scan, 0);
           }
         }
@@ -3783,7 +3783,7 @@ void Level24_UpdateActors(void) {
             g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, g496, g512);
           }
           DespawnActorRecord(st->prize);
-          actor->killGroup &= 0x7F;
+          actor->killGroup &= ACTOR_KILL_GROUP_MASK;
           actor->updateDist = 0x10;
           actor->rotX = st->rotX;
           actor->rotY = st->rotY;
@@ -3873,7 +3873,7 @@ void Level24_UpdateActors(void) {
         SubtractVector(&SPY.requestVelX, g480, &SPY.posX);
         AddVector(&SPY.requestVelX, &SPY.requestVelX, st->offset);
 
-        mag = VectorLength(&SPY.requestVelX, 1);
+        mag = VectorLength(&SPY.requestVelX, VEC_LEN_XYZ);
         if (mag > 128) {
           ScaleVector3ByRatio(&SPY.requestVelX, mag, 128);
         } else {

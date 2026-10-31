@@ -43,7 +43,8 @@ void ProbeSpyroGroundContact(void) {
     if (CastRayWorldAndActors(down, out) != 0) {
       CopyVector(&g_anSpyroAirborneFramesBlock[2], g_anCollisionProbeVec);
       t = (signed char)ArcTan2(g_anCollisionProbeVec[2],
-                               VectorLength(g_anCollisionProbeVec, 0), 0);
+                               VectorLength(g_anCollisionProbeVec, VEC_LEN_XY),
+                               0);
       g_nSpyroGroundSlope = t;
       if (t < 0) {
         g_nSpyroGroundSlope = 0x400;
@@ -85,7 +86,7 @@ void ProbeSpyroGroundContact(void) {
         CopyVector(&g_anSpyroAirborneFramesBlock[2], g_anCollisionProbeVec);
         t = (signed char)ArcTan2(
             g_anSpyroGroundNormal[2],
-            VectorLength(&g_anSpyroAirborneFramesBlock[2], 0), 0);
+            VectorLength(&g_anSpyroAirborneFramesBlock[2], VEC_LEN_XY), 0);
         g_nSpyroGroundSlope = t;
         if (t < 0) {
           g_nSpyroGroundSlope = 0x400;

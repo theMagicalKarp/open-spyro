@@ -451,7 +451,7 @@ sprites:
       if ((*((int *)(wi + row))) & b3) {
         if ((*(int *)((char *)g_anRunningKillBitmap + wi) & b3) == 0) {
           r = (char *)((i * ACTOR_SIZE) + ((int)rec));
-          if ((((Actor *)r)->killGroup & 0x7F) == 0x7D) {
+          if ((((Actor *)r)->killGroup & ACTOR_KILL_GROUP_MASK) == 0x7D) {
             DespawnActorRecord(r);
           } else {
             ((Actor *)r)->dropKind = 0xFF;

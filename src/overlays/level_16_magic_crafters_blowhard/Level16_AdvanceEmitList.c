@@ -59,7 +59,7 @@ void Level16_AdvanceEmitList(int step) {
   int *dir;
   int step4;
 
-  if (CLASS == 0xFF) {
+  if (CLASS == EMIT_CLASS_END) {
     return;
   }
 
@@ -177,7 +177,7 @@ void Level16_AdvanceEmitList(int step) {
         v[2] += LookupCosine((AGE << 7) - 0x100) >> 2;
         hold = p2;
         SubtractVector(dir, dir, hold);
-        len = VectorLength(dir, 1);
+        len = VectorLength(dir, VEC_LEN_XYZ);
         if (len < 0x401 || AGE >= 0x41) {
           FreeEmitListRecord(rec);
         } else {
@@ -189,7 +189,7 @@ void Level16_AdvanceEmitList(int step) {
           SubtractVector(v, p2, hold);
           c = abs(v[0]) + abs(v[1]);
           len = c + abs(v[2]);
-          if (CLASS == 3) {
+          if (CLASS == EMIT_CLASS_ALT_LIT_QUAD) {
             if (len >= 0x3001) {
               rec[0xA] = 4;
               rec[0xF] = 0x40;
@@ -231,7 +231,7 @@ void Level16_AdvanceEmitList(int step) {
 
     case EMIT_SPYRO_ORBIT_SPARKLE:
       /* The homing sparkle: it only lives while Spyro is on screen. */
-      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < 0) || g_nSpyroDrawSuppressed != 0 ||
+      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < SPARX_GONE) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
         FreeEmitListRecord(rec);
       } else {
@@ -245,7 +245,7 @@ void Level16_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xB:
+    case EMIT_BURST_SPARK:
       AddSVector(POS, POS, &HS(0x12));
       rec[0xC] -= 8;
       rec[0xD] -= 8;
@@ -697,5 +697,5 @@ void Level16_AdvanceEmitList(int step) {
     }
 
     rec += 0x20;
-  } while (CLASS != 0xFF);
+  } while (CLASS != EMIT_CLASS_END);
 }

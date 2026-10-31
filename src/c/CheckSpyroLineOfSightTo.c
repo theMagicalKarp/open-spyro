@@ -13,7 +13,7 @@ unsigned int CheckSpyroLineOfSightTo(int *target) {
   int i;
 
   SubtractVector(&seg, g_anSpyroWorldPos, target);
-  len = VectorLength(&seg, 1);
+  len = VectorLength(&seg, VEC_LEN_XYZ);
   RefineSqrtEstimate(&seg, len, 1);
   ScaleVector3ByRatio(&seg, len, 0x400);
   CopyVector(&cur, target);

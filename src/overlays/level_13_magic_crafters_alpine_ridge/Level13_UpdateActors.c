@@ -166,8 +166,8 @@ void Level13_UpdateActors(void) {
       continue;
     }
 
-    g_nActorAnimDone = actor->animFlags & 2;
-    g_nActorAnimNewFrame = actor->animFlags & 1;
+    g_nActorAnimDone = actor->animFlags & ACTOR_ANIM_DONE;
+    g_nActorAnimNewFrame = actor->animFlags & ACTOR_ANIM_NEW_FRAME;
     dt = g_nFrameStep;
     g_nActorFrameDelta = dt;
 
@@ -386,17 +386,17 @@ void Level13_UpdateActors(void) {
     case ACTOR_TYPE_BUTTERFLY: {
       ChaseState *st = (ChaseState *)actor->state;
 
-      if (SPY.sparxHealth < 3 && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
+      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
 
         if (ABS2(actorZ - SPY.posZ) < 1800) {
           if (g_pSparxActor == 0) {
-            if (SPY.sparxHealth >= 0) {
+            if (SPY.sparxHealth >= SPARX_GONE) {
               g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
               PlayActorMeshVoice(g_pSparxActor, 0, 0);
 
-              SPY.sparxHealth = 1;
+              SPY.sparxHealth = SPARX_GREEN;
 
               DespawnActorRecord(actor);
               break;
@@ -1646,7 +1646,7 @@ void Level13_UpdateActors(void) {
 
           ScaleVector3Sat(svG, (int *)st, g_nFrameStep);
           RShiftVector3(svG, 1);
-          dist = VectorLength(svG, 1);
+          dist = VectorLength(svG, VEC_LEN_XYZ);
 
           if (dist >= 0xDD) {
             ScaleVector3ByRatio(svG, dist, 0xDC);
@@ -1685,7 +1685,7 @@ void Level13_UpdateActors(void) {
             if (st->bounce == 0) {
               int floor = FindGroundHeightBelow(svG, 0x400);
               int slope =
-                  (signed char)ArcTan2_8bit(svH[2], VectorLength(svH, 0));
+                  (signed char)ArcTan2_8bit(svH[2], VectorLength(svH, VEC_LEN_XY));
 
               if ((svG[2] - 0x190) < floor && slope < 0x18) {
                 actor->subMode = 1;
@@ -1772,7 +1772,7 @@ void Level13_UpdateActors(void) {
             SubtractVector(svI, &spy->posX, (int *)st);
             RShiftVector3(svI, 5);
 
-            if (VectorLength(svI, 1) >= 0x1E1) {
+            if (VectorLength(svI, VEC_LEN_XYZ) >= 0x1E1) {
               CopyVector(&actor->posX, &spy->posX);
               st->timer = 0x20;
             } else {
@@ -1911,7 +1911,7 @@ void Level13_UpdateActors(void) {
                 RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
                 FindGroundHeightBelow(at, 0x1000);
                 EncodeCachedVecToActorDirCode(actor);
-                actor->groundCode |= 0x80000000;
+                actor->groundCode |= ACTOR_GROUND_VALID;
               }
             }
           }
@@ -2040,7 +2040,7 @@ void Level13_UpdateActors(void) {
           actor->mode = 2;
           st->timer = 0x10;
           g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, (int *)0xC);
-          actor->groundCode &= 0x7FFFFFFF;
+          actor->groundCode &= ~ACTOR_GROUND_VALID;
         }
         break;
       }
@@ -2053,7 +2053,7 @@ void Level13_UpdateActors(void) {
     case ACTOR_TYPE_SPARX: {
       SparxState *st = actor->state;
 
-      if (g_anSparxHealthBlock[0] >= 2) {
+      if (g_anSparxHealthBlock[0] >= SPARX_BLUE) {
         svF[0] = 0;
         svF[1] = 0x64;
         svF[2] = 0;
@@ -2068,7 +2068,7 @@ void Level13_UpdateActors(void) {
         g_pfnLevelEmitParticles(2, EMIT_TWINKLE, svF, 0);
       }
 
-      if (g_anSparxHealthBlock[0] >= 3) {
+      if (g_anSparxHealthBlock[0] >= SPARX_GOLD) {
         FxNode *fx = st->glow;
 
         if (fx == 0) {
@@ -2097,7 +2097,7 @@ void Level13_UpdateActors(void) {
         st->glow = 0;
       }
 
-      if (g_anSparxHealthBlock[0] <= 0) {
+      if (g_anSparxHealthBlock[0] <= SPARX_GONE) {
         if (st->target != 0 && st->target->type == ACTOR_TYPE_BUTTERFLY) {
           st->target->mode = 0;
         }
@@ -2159,7 +2159,7 @@ void Level13_UpdateActors(void) {
             }
 
             SubtractVector(svA, svA, &actor->posX);
-            dist = VectorLength(svA, 1);
+            dist = VectorLength(svA, VEC_LEN_XYZ);
 
             if (high == 0 &&
                 (TickCountdownByFrameDelta((void *)st, 4) != 0 ||
@@ -2183,7 +2183,7 @@ void Level13_UpdateActors(void) {
             }
             AddVector(&actor->posX, &actor->posX, svA);
             TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], 0), 0xA, 0, 0);
-            actor->rotY = ArcTan2(VectorLength(svA, 0), svA[2], 0);
+            actor->rotY = ArcTan2(VectorLength(svA, VEC_LEN_XY), svA[2], 0);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
           }
@@ -2212,7 +2212,7 @@ void Level13_UpdateActors(void) {
             int dist;
 
             SubtractVector(svJ, &st->target->posX, &actor->posX);
-            dist = VectorLength(svJ, 1);
+            dist = VectorLength(svJ, VEC_LEN_XYZ);
 
             if (dist < 0x200) {
               pk->timer = 0;
@@ -2248,7 +2248,7 @@ void Level13_UpdateActors(void) {
               }
               AddVector(&actor->posX, &actor->posX, svJ);
               TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], 0), 0xA, 0, 0);
-              actor->rotY = ArcTan2(VectorLength(svJ, 0), svJ[2], 0);
+              actor->rotY = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], 0);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
             break;
@@ -2315,21 +2315,21 @@ void Level13_UpdateActors(void) {
           }
 
           switch (SPY.sparxHealth) {
-          case 1:
+          case SPARX_GREEN:
             if (actor->nextAnim != 0 && actor->anim != 0) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, 0);
             }
             break;
 
-          case 2:
+          case SPARX_BLUE:
             if (actor->nextAnim != 2 && actor->anim != 2) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, 2);
             }
             break;
 
-          case 3:
+          case SPARX_GOLD:
             if (actor->nextAnim != 4 && actor->anim != 4) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, 4);
@@ -2619,7 +2619,7 @@ void Level13_UpdateActors(void) {
           SubtractVector(w296, at, &spy->posX);
           w296[2] = (w296[2] * 3) >> 2;
 
-          if (VectorLength(w296, 1) < 0x440) {
+          if (VectorLength(w296, VEC_LEN_XYZ) < 0x440) {
             int facing;
 
             facing =
@@ -2677,7 +2677,7 @@ void Level13_UpdateActors(void) {
               g_nSpyroRequestVelocityZ = 0;
 
               if (SPY.requestVelX != 0 || g_nSpyroRequestVelocityY != 0) {
-                ScaleVector3ByRatio(look, VectorLength(look, 0), 0x60);
+                ScaleVector3ByRatio(look, VectorLength(look, VEC_LEN_XY), 0x60);
                 goto clear_c68;
               }
             }
@@ -3004,7 +3004,7 @@ void Level13_UpdateActors(void) {
 
           SPY.triggerEvents |= (SPYRO_EV_HIT | SPYRO_EV_CONTACT);
           SubtractVector(v, &SPY.posX, &actor->posX);
-          ScaleVector3ByRatio(v, VectorLength(v, 0), 0x8C);
+          ScaleVector3ByRatio(v, VectorLength(v, VEC_LEN_XY), 0x8C);
           g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY);
           g_nSpyroRequestVelocityZ = 0x19;
           g_nSpyroRequestState = SPYRO_ST_FALL;
@@ -3154,7 +3154,7 @@ void Level13_UpdateActors(void) {
     case ACTOR_TYPE_VILLAGER: {
       VillagerState *st = actor->state;
       int pairGone;
-      int snd;
+      int animState;
 
       if (st->init == 0) {
         int gone;
@@ -3193,7 +3193,7 @@ void Level13_UpdateActors(void) {
             if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
               DespawnActorRecord(&g_pActorListBase[st->link]);
             }
-            ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
+            ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
           }
           StopSoundVoiceByIndex(actor->sfxSlot, 4);
           DespawnActorRecord(actor);
@@ -3215,7 +3215,7 @@ void Level13_UpdateActors(void) {
       switch (actor->mode) {
       case 0: {
         int dist;
-        int vsnd;
+        int animState;
         int marker;
         int range;
 
@@ -3225,8 +3225,8 @@ void Level13_UpdateActors(void) {
           g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, (int *)actor, &g_pActorListBase[st->friend]);
         }
         if (st->snd != -1) {
-          vsnd = GetWorldChunkAnimState(st->snd);
-          marker = (vsnd >> 8) & 0xFF;
+          animState = GetWorldChunkAnimState(st->snd);
+          marker = CHUNK_ANIM_STEP(animState);
         }
         if (dist < st->camDist << 10 && (st->camAlways != 0 || marker >= 2) &&
             SPY.state != SPYRO_ST_CHARGE && SPY.state != SPYRO_ST_CHARGE_AIR &&
@@ -3246,7 +3246,7 @@ void Level13_UpdateActors(void) {
         if (st->snd == -1) {
           break;
         }
-        if (st->snd == 0 && st->timer < 3 && (vsnd & 2) && g_nActiveLevelId == LEVEL_ALPINE_RIDGE) {
+        if (st->snd == 0 && st->timer < 3 && (animState & CHUNK_ANIM_HALTED) && g_nActiveLevelId == LEVEL_ALPINE_RIDGE) {
           Actor *f = &g_pActorListBase[st->friend];
 
           PlaySoundEffect(g_pLevelSampleBankHeader[0x2A], f, SFX_MODE_3D, &f->sfxSlot);
@@ -3264,8 +3264,8 @@ void Level13_UpdateActors(void) {
             if (dist < range) {
               if (st->timer == 0) {
                 st->timer = st->timerLong;
-              } else if (TickCountdownByFrameDelta(&st->timer, 4) == 2 && (vsnd & 2)) {
-                ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
+              } else if (TickCountdownByFrameDelta(&st->timer, 4) == 2 && (animState & CHUNK_ANIM_HALTED)) {
+                ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
               }
             } else {
               TickCountdownByFrameDelta(&st->timer, 4);
@@ -3277,8 +3277,8 @@ void Level13_UpdateActors(void) {
               PlayActorMeshVoice(actor, (GetRandomU32() & 1) | 4, 0);
             }
             ANIM_GO(actor, 4);
-            if (range + 0x800 < dist && (vsnd & 2)) {
-              ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
+            if (range + 0x800 < dist && (animState & CHUNK_ANIM_HALTED)) {
+              ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
               st->timer = 0x1E;
             }
           }
@@ -3299,7 +3299,7 @@ void Level13_UpdateActors(void) {
             break;
           }
           if ((st->fleeDist << 10) < dist && TickCountdownByFrameDelta(&st->timer, 4)) {
-            ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
+            ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
             if (marker >= 2) {
               st->timer = st->timerLong;
             } else {
@@ -3316,7 +3316,7 @@ void Level13_UpdateActors(void) {
           if (actor->subMode == 0 &&
               (ApproxDist2D(&actor->posX, &SPY.posX) < 0x3400 ||
                g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT)) {
-            ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
+            ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
             actor->subMode = 1;
             st->timer = 0x46;
           } else if (TickCountdownByFrameDelta(&st->timer, 4) == 2) {
@@ -3340,13 +3340,13 @@ void Level13_UpdateActors(void) {
           if (marker < 3) {
             if (TickCountdownByFrameDelta(&st->timer, 4) && ls->script[1] == 7) {
               st->timer = 0x12C;
-              ModifyWorldChunkAnimFlags(9, 0xFC, 0);
+              ModifyWorldChunkAnimFlags(9, CHUNK_ANIM_RESUME, 0);
               ls->mode = 8;
               ls->cue = 2;
             }
             if ((ANIM_WORD(lead) & 0xFF0000FF) == 0x04000004 &&
                 (int)(GetRandomU32() & 0xFF) >= 0xD3) {
-              ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
+              ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
               st->timer = 0x5A;
             }
             if ((ANIM_WORD(lead) & 0xFF0000FF) == 0x08000004 &&
@@ -3358,7 +3358,7 @@ void Level13_UpdateActors(void) {
               ANIM_GO(actor, 0);
             }
           } else if (TickCountdownByFrameDelta(&st->timer, 4)) {
-            ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
+            ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
           }
         }
         break;
@@ -3376,10 +3376,10 @@ void Level13_UpdateActors(void) {
           actor->cullRadius = 0;
         }
         if (st->snd != -1 && st->sndDone == 0) {
-          snd = GetWorldChunkAnimState(st->snd);
-          if (snd & 2) {
-            if (((snd >> 8) & 0xFF) >= 2) {
-              ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
+          animState = GetWorldChunkAnimState(st->snd);
+          if (animState & CHUNK_ANIM_HALTED) {
+            if (CHUNK_ANIM_STEP(animState) >= 2) {
+              ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
             } else {
               st->sndDone = one;
             }
@@ -3401,9 +3401,9 @@ void Level13_UpdateActors(void) {
         st->idleTimer = 0;
         SnapActorToGround(actor);
         if (st->stopVoice != 0) {
-          snd = GetWorldChunkAnimState(st->snd);
-          if ((snd & 2) && ((snd >> 8) & 0xFF) >= 2) {
-            ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
+          animState = GetWorldChunkAnimState(st->snd);
+          if ((animState & CHUNK_ANIM_HALTED) && CHUNK_ANIM_STEP(animState) >= 2) {
+            ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
           }
         }
         ANIM_GO(actor, 7);
@@ -3422,9 +3422,9 @@ void Level13_UpdateActors(void) {
         }
         SnapActorToGround(actor);
         if (st->stopVoice != 0) {
-          snd = GetWorldChunkAnimState(st->snd);
-          if ((snd & 2) && ((snd >> 8) & 0xFF) >= 2) {
-            ModifyWorldChunkAnimFlags(st->snd, 0xFC, 0);
+          animState = GetWorldChunkAnimState(st->snd);
+          if ((animState & CHUNK_ANIM_HALTED) && CHUNK_ANIM_STEP(animState) >= 2) {
+            ModifyWorldChunkAnimFlags(st->snd, CHUNK_ANIM_RESUME, 0);
           }
         }
         ANIM_GO(actor, 8);
@@ -4487,7 +4487,7 @@ void Level13_UpdateActors(void) {
           g_nSpyroRequestVelocityZ = 0;
           g_nSpyroRequestVelocityY = SPY.posY - actor->posY;
           if (g_anSpyroRequestVelocity.x != 0 || g_nSpyroRequestVelocityY != 0) {
-            int len = VectorLength(&g_anSpyroRequestVelocity.x, 1);
+            int len = VectorLength(&g_anSpyroRequestVelocity.x, VEC_LEN_XYZ);
 
             ScaleVector3ByRatio(&g_anSpyroRequestVelocity.x, len,
                           (0x1000 - ApproxDist2D(&actor->posX, &spy->posX)) /
@@ -4928,7 +4928,7 @@ void Level13_UpdateActors(void) {
             g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, x368, col2);
           }
           DespawnActorRecord(st->prize);
-          actor->killGroup &= 0x7F;
+          actor->killGroup &= ACTOR_KILL_GROUP_MASK;
           actor->updateDist = 0x10;
           actor->rotX = st->rotX;
           actor->rotY = st->rotY;
@@ -5092,7 +5092,7 @@ void Level13_UpdateActors(void) {
           SubtractVector(w408, &a->posX, &actor->posX);
           d = ABS2(w408[0]) + ABS2(w408[1]);
           if (d < 0x6000 &&
-              (unsigned int)(VectorLength(w408, 0) - 0x1000) <= 0x2000 &&
+              (unsigned int)(VectorLength(w408, VEC_LEN_XY) - 0x1000) <= 0x2000 &&
               (unsigned int)(w408[2] + 0x1000) <= 0x2000) {
             d = AbsAngleDelta12(ArcTan2(actor->posX - spy->posX,
                                             actor->posY - spy->posY, 1),
@@ -5110,7 +5110,7 @@ void Level13_UpdateActors(void) {
         } else {
           SubtractVector(st->vel, &actor->posX, &SPY.posX);
           st->vel[2] = 0;
-          ScaleVector3ByRatio(st->vel, VectorLength(st->vel, 0), 0x50);
+          ScaleVector3ByRatio(st->vel, VectorLength(st->vel, VEC_LEN_XY), 0x50);
         }
         st->vel[2] += 0xA0;
         st->timer = 0;
@@ -5188,7 +5188,7 @@ void Level13_UpdateActors(void) {
         SubtractVector(&SPY.requestVelX, x368, &SPY.posX);
         AddVector(&SPY.requestVelX, &SPY.requestVelX, st->offset);
 
-        mag = VectorLength(&SPY.requestVelX, 1);
+        mag = VectorLength(&SPY.requestVelX, VEC_LEN_XYZ);
         if (mag > 128) {
           ScaleVector3ByRatio(&SPY.requestVelX, mag, 128);
         } else {
