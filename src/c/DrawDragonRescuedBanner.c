@@ -1,3 +1,4 @@
+#include "actor_states.h"
 #include "funcs.h"
 #include "globals.h"
 
@@ -15,7 +16,9 @@ void DrawDragonRescuedBanner(void) {
   int w;
   int phase;
 
-  name = g_apDragonNames[*(int *)(*(char **)g_pDragonRescueSourceActor + 0x38)];
+  name =
+      g_apDragonNames[((DragonStatueState *)g_pDragonRescueSourceActor->state)
+                          ->dragonName];
   w = (strlen(name) - 1) * 13;
   rec = (unsigned char *)g_pSpriteRecordWriteCursor;
 

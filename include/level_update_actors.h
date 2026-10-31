@@ -357,23 +357,7 @@ typedef struct AmbientSoundState {
   int left;       /* 0x24 frames left on this leg */
 } AmbientSoundState;
 
-/* Case 250 — crystal dragon statue: shakes through its rest pose, then
- * counts the rescue (g_anLevelDragonsRescued) when Spyro is close. */
-typedef struct DragonStatueState {
-  char pad00[0x18];
-  int cutsceneId;   /* 0x18 rescue cutscene id; == reward (-1) when the
-                * statue has none and counts the rescue directly */
-  int facing;   /* 0x1C respawn heading when there is no partner */
-  int partner; /* 0x20 actor index of the other door half, -1 = none */
-  int reward;  /* 0x24 */
-  char pad28[0x10];
-  int dragonName; /* 0x38 g_apDragonNames index (DrawDragonRescuedBanner) */
-  char pad3C[0x8];
-  int phase; /* 0x44 open animation phase */
-  int rotX;  /* 0x48 rest pose */
-  int rotY;  /* 0x4C */
-  int restZ; /* 0x50 */
-} DragonStatueState;
+/* DragonStatueState (case 250) lives in actor_states.h: main reads it too. */
 
 extern struct {
   int x;

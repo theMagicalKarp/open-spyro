@@ -801,7 +801,7 @@ extern int g_nDragonRescueCameraTargetRadius;              /* 0x800770b0 */
 extern int g_nDragonRescueCameraTargetZ;                   /* 0x800770b4 */
 extern void *g_pDragonRescueStatueActor;                   /* 0x800770b8 */
 extern void *g_pDragonRescueSpyroMirrorActor;              /* 0x800770bc */
-extern void *g_pDragonRescueSourceActor;                   /* 0x800770c0 */
+extern struct Actor *g_pDragonRescueSourceActor;           /* 0x800770c0: the dragon statue being rescued (BeginDragonRescue) */
 extern int g_anWorldLightDirVec[6];                     /* 0x800770c8 */
 extern byte g_abBillboardBasisVectors[18];              /* 0x800770e0 */
 extern int g_nLightSweepAngle;                          /* 0x800770f4 */
