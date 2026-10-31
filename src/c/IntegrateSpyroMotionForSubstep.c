@@ -23,9 +23,6 @@ SDATA(g_pSpyroContactActor, 4);
 #define PADB ((unsigned char *)g_pPadSubstepState)
 #define RAMP ((signed char *)g_abSpyroEulerRateRampSigned)
 
-#define PARTICLE_SPAWN(a, b, c, d)                                             \
-  ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(a, b, c, d)
-
 /* Opaque copy: the result is a fresh value to cse, so a block address stays
    in its register and later fields are addressed off it. */
 static inline int OpaqueInt(int p) {
@@ -1121,7 +1118,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         v50[1] += g_nSpyroWorldPosY;
         v50[2] =
             g_nSpyroGroundHeightZ; /* last: keeps t0 live past the fn load */
-        PARTICLE_SPAWN(1, EMIT_FLIGHT_GROUND_WAKE, v50, n0);
+        g_pfnLevelEmitParticles(1, EMIT_FLIGHT_GROUND_WAKE, v50, n0);
       }
       moving = 0;
       if (g_anSpyroVelocityFp6[0] != 0 || g_anSpyroVelocityFp6[1] != 0) {
@@ -1161,7 +1158,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         CopyVector(p70, (int *)SPY_FROM_ANIM_PREV(ap, SPY_VELOCITY_FP6 * 4));
         RShiftVector3(p70, 6);
         AddVector(p60, p60, p70);
-        PARTICLE_SPAWN(1, EMIT_FLIGHT_TRAIL, p60, n);
+        g_pfnLevelEmitParticles(1, EMIT_FLIGHT_TRAIL, p60, n);
         k += 0x5B;
       }
     } else {

@@ -22,9 +22,6 @@ SDATA(g_nSpyroScriptedLiftYaw, 4);
 SDATA(g_pSpyroHomingTargetActor, 4);
 SDATA(g_nSpyroScriptedLiftTurn, 4);
 
-#define PARTICLE_SPAWN(a, b, c, d)                                             \
-  ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(a, b, c, d)
-
 /* Charge-speed latch: the first charge frame takes the carried speed, at
    least 0x1F80, as the speed target. */
 #define LATCH_CHARGE_SPEED(vec)                                                \
@@ -278,7 +275,7 @@ void ChangeSpyroState(int state) {
       v[1] = (short)(unsigned short)g_anCosineLut[ang] >> 7;
       v[2] = (short)g_anSineLut[ang] >> 7;
       RotateVectorByMatrix(g_anSpyroBodyMtx, v, v);
-      PARTICLE_SPAWN(1, EMIT_DUST_PUFF, v, 1);
+      g_pfnLevelEmitParticles(1, EMIT_DUST_PUFF, v, 1);
       ang = (ang + 0x40) & 0xFF;
     }
     SPY[SPY_SUBSTATE] = 0;
@@ -313,7 +310,7 @@ void ChangeSpyroState(int state) {
       ApplyGravityAlongSpyroSlopeNormal();
     }
     g_nSpyroGravityEnableFlag = 1;
-    PARTICLE_SPAWN(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
+    g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     if (g_nVibrationLevel < 0x2D) {
       g_nVibrationLevel = 0x2D;
     }
@@ -334,7 +331,7 @@ void ChangeSpyroState(int state) {
       ApplyGravityAlongSpyroSlopeNormal();
     }
     g_nSpyroGravityEnableFlag = 1;
-    PARTICLE_SPAWN(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
+    g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     if (g_nHitRumbleTimer < 0xF) {
       g_nHitRumbleTimer = 0xF;
     }
@@ -347,7 +344,7 @@ void ChangeSpyroState(int state) {
     ZeroVector(&SPY[SPY_VELOCITY]);
     g_anSpyroVelocity[2] = -0xC00;
     g_nSpyroGravityEnableFlag = 1;
-    PARTICLE_SPAWN(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
+    g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     if (g_nHitRumbleTimer < 0xF) {
       g_nHitRumbleTimer = 0xF;
     }
@@ -359,7 +356,7 @@ void ChangeSpyroState(int state) {
     ZeroVector(&SPY[SPY_VELOCITY]);
     g_nSpyroGravityStep = -0x300;
     g_nSpyroGravityEnableFlag = 1;
-    PARTICLE_SPAWN(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
+    g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     if (g_nHitRumbleTimer < 0xF) {
       g_nHitRumbleTimer = 0xF;
     }
@@ -517,7 +514,7 @@ void ChangeSpyroState(int state) {
       ApplyGravityAlongSpyroSlopeNormal();
     }
     g_nSpyroGravityEnableFlag = 1;
-    PARTICLE_SPAWN(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
+    g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT), SPY, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER);
     if (g_nHitRumbleTimer < 0xF) {
@@ -532,7 +529,7 @@ void ChangeSpyroState(int state) {
     g_nSpyroGravityStep = -0x80;
     g_nSpyroGravityEnableFlag = 1;
     if (g_nSpyroInputLockoutCountdown == 0) {
-      PARTICLE_SPAWN(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
+      g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     }
     g_pfnLevelSpawnActor(g_anHazardEnterSpawnType[g_nSpyroHazardKind], 0);
     me = SPY;
@@ -563,7 +560,7 @@ void ChangeSpyroState(int state) {
       ApplyGravityAlongSpyroSlopeNormal();
     }
     g_nSpyroGravityEnableFlag = 1;
-    PARTICLE_SPAWN(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
+    g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     break;
   case SPYRO_ST_SCRIPTED_HOLD:
     g_nSpyroGravityStep = -0x80;

@@ -17,8 +17,8 @@ void CollectPickupActor(Actor *actor) {
     g_nLevelKeyState = 3;
   }
   RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-  ((void (*)(int, int, Actor *, int))g_pfnLevelEmitParticles)(
-      6, EMIT_ACTOR_SPARK, actor, g_adwActorBurstColors[actor->type]);
+  g_pfnLevelEmitParticles(6, EMIT_ACTOR_SPARK, actor,
+                          g_adwActorBurstColors[actor->type]);
 
   kind = actor->type;
   if (kind == ACTOR_TYPE_GEM_1) {

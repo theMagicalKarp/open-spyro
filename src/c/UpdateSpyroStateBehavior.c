@@ -30,9 +30,6 @@ static inline int OpaqueInt(int p) {
   return q;
 }
 
-#define PARTICLE_SPAWN(a, b, c, d)                                             \
-  ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(a, b, c, d)
-
 /* Landing: pick the ground state from the speed target and current speed. */
 #define LAND_ON_GROUND()                                                       \
   if (g_nSpyroSpeedTarget > 0) {                                               \
@@ -69,7 +66,7 @@ static inline int OpaqueInt(int p) {
     for (i = 0; i < 4; i++) {                                                  \
       v[0] = (short)(unsigned short)g_anCosineLut[a] >> 7;                     \
       v[1] = (short)((unsigned short *)g_anSineLut)[a] >> 7;                   \
-      PARTICLE_SPAWN(1, EMIT_DUST_PUFF, v, 0);                                 \
+      g_pfnLevelEmitParticles(1, EMIT_DUST_PUFF, v, 0);                        \
       a = (a + 0x40) & 0xFF;                                                   \
     }                                                                          \
   }

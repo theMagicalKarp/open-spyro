@@ -650,7 +650,10 @@ extern int g_nVblankTickCount;               /* 0x800758c8 */
 extern struct Actor *(*g_pfnLevelSpawnActor)(int type, struct Actor *parent); /* 0x800758cc */
 extern byte g_abWorldBalloonistState[6];         /* 0x800758d0 per-homeworld balloonist progress: 0 unmet, 1 talked, 2 travel unlocked (ResetLevelState seeds [0] = 2, the unlock cheat fills all 2, homeworld UpdateActors steps it and picks the dialogue page) */
 extern int g_nPadActAlignedFlag;             /* 0x800758e0 */
-extern void *g_pfnLevelEmitParticles; /* 0x800758e4 */
+/* 0x800758e4: the level's EmitParticles(count, type, pos, effectArg). Left
+ * unprototyped: effectArg is a velocity vector, a packed colour, a scale or a
+ * flag depending on the effect, and main passes each shape. */
+extern void (*g_pfnLevelEmitParticles)();
 extern int g_nSparxFoodCount;                /* 0x800758e8: type-15 pickups collected; every 20 become an extra life (UpdateHudCounters) */
 extern int g_nLevelSelectWorldIndex;         /* 0x800758ec */
 extern int g_nLevelSelectSubIndex;           /* 0x800758f0 */

@@ -35,12 +35,10 @@ void TickStatueBurstShard(Actor *actor) {
       burst[0] = GetRandomU32() & 3;
       burst[1] = GetRandomU32() & 3;
       burst[2] = 0x14;
-      ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
-          1, EMIT_SPARK_VEL_DIM, &actor->posX, burst);
+      g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, burst);
     }
   } else {
-    ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(
-        3, EMIT_STREAK_BURST, &actor->posX, 0x10);
+    g_pfnLevelEmitParticles(3, EMIT_STREAK_BURST, &actor->posX, 0x10);
     DespawnActorRecord(actor);
   }
 }

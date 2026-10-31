@@ -695,8 +695,7 @@ void DragonRescue_Update(void) {
       g_bHudDragonRollPhase = 0;
       CopyVector((int *)ang, &g_pDragonRescueStatueActor->posX);
       ((int *)ang)[2] += 0x40;
-      ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(
-          0x20, EMIT_RESCUE_SWIRL, (int *)ang, 0);
+      g_pfnLevelEmitParticles(0x20, EMIT_RESCUE_SWIRL, (int *)ang, 0);
       CopyVector(g_anDragonRescueAuraStarAnchor, (int *)ang);
       DespawnActorRecord(STATUE);
       DespawnActorRecord(MIRROR);

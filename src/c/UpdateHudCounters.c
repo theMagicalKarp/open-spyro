@@ -311,8 +311,7 @@ void UpdateHudCounters(void) {
       av[0] = g_nHudWorldEggCachedCount * 0x144 - 0x9C4;
       av[1] = 0x3F0;
       av[2] = 0x1000;
-      (*(void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(
-          0x10, EMIT_DRIFT_STREAK, av, 0);
+      g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, av, 0);
     } else if (g_nHudWorldEggHoldTimer >= 9) {
       g_nHudWorldEggCachedCount += 1;
       g_nHudWorldEggHoldTimer = 0;
@@ -364,9 +363,9 @@ void UpdateHudCounters(void) {
       if (g_nHudKeyHoldTimer == 0) {
         i = 0;
         do {
-          (*(void (*)(int, int, unsigned char *, int))g_pfnLevelEmitParticles)(
-              1, EMIT_ACTOR_SPARK, HUD_ICON_SLOT(HUD_SLOT_KEY),
-              ((i + 6) << 24) + 0x8080);
+          g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK,
+                                  HUD_ICON_SLOT(HUD_SLOT_KEY),
+                                  ((i + 6) << 24) + 0x8080);
           i += 1;
         } while (i < 6);
       } else if (g_nHudKeyHoldTimer >= 0xC) {
