@@ -168,7 +168,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.depthBias = 4;
       if (((Actor *)pos)->type == ACTOR_TYPE_DRAGON_EGG) {
         CopyVector(v1, &((Actor *)pos)->posX);
-      } else if (((Actor *)pos)->type == ACTOR_TYPE_KEY || ((Actor *)pos)->type == 0xB5) {
+      } else if (((Actor *)pos)->type == ACTOR_TYPE_KEY || ((Actor *)pos)->type == ACTOR_TYPE_LOOT_VORTEX) {
         hi = effectArg >> 24;
         if (hi < 6) {
           RotateVectorByMatrix(((Actor *)pos)->mtx, &g_anEmitSlotOffsets[hi * 3], v1);
@@ -256,7 +256,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.ribbon.depthBias = 2;
       break;
     }
-    case 0x1A:
+    case EMIT_FLIGHT_TRAIL:
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
@@ -271,7 +271,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
       break;
-    case 0x1B: {
+    case EMIT_FLIGHT_GROUND_WAKE: {
       int w;
       int q;
       rec = (Emit *)AllocEmitListRecord(6);
@@ -296,7 +296,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0x21: {
+    case EMIT_DUST_PUFF: {
       int ta, tb;
       int ua, ub;
       rec = (Emit *)AllocEmitListRecord(2);

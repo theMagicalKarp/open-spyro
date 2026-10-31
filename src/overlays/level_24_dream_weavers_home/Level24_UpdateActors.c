@@ -250,7 +250,7 @@ void Level24_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -307,7 +307,7 @@ void Level24_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -618,19 +618,18 @@ void Level24_UpdateActors(void) {
       break;
     }
 
-    /* Type 168: counts its sub-state down, restarting its animation each
-     * time, then shares 363's exit. */
-    case 77:      if (actor->subMode != 0) {
+    /* Comet spark: replays its animation subMode times, then shares the
+     * one-shot effects' exit. */
+    case ACTOR_TYPE_COMET_SPARK:      if (actor->subMode != 0) {
         actor->subMode--;
         actor->frame = 0;
         actor->nextFrame = 1;
         actor->frameProgress = 0;
       }
 
-    /* Types 363/364: a one-shot effect that is removed when its animation
-     * ends. */
-    case 405:
-    case 477:      if (g_nActorAnimDone != 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -638,7 +637,7 @@ void Level24_UpdateActors(void) {
 
     /* Type 91: a cannon. Watches for Spyro to stand in its sights and
      * blasts him, or lobs a comet (104) at whatever its trigger names. */
-    case 91: {
+    case ACTOR_TYPE_COMET_CANNON: {
       CometCannonState *st = actor->state;
       Actor *p = &g_pActorListBase[st->link];
 
@@ -753,7 +752,7 @@ void Level24_UpdateActors(void) {
 
         PlayActorMeshVoice(actor, 1, 0);
         st->idx = (st->idx + 1) % 3;
-        o = g_pfnLevelSpawnActor(0x68, actor);
+        o = g_pfnLevelSpawnActor(ACTOR_TYPE_COMET, actor);
         cs = o->state;
         CopyVector(&o->posX, &actor->posX);
         o->rotZ = actor->rotZ;
@@ -779,7 +778,7 @@ void Level24_UpdateActors(void) {
           int d;
 
           if (q == actor || q->mode >= ACTOR_MODE_DORMANT || q->type == ACTOR_TYPE_DRAGON_STATUE ||
-              q->type == 0x6E || q->collision == 0 || q->collision >= 0) {
+              q->type == ACTOR_TYPE_SAVE_HOST || q->collision == 0 || q->collision >= 0) {
             continue;
           }
           SubtractVector(g152, &q->posX, &actor->posX);
@@ -821,7 +820,7 @@ void Level24_UpdateActors(void) {
         }
         if (best != 0) {
           CopyVector(g168, &best->posX);
-          if (best->type == 0x5C || best->type == 0x82) {
+          if (best->type == ACTOR_TYPE_LUNGING_GUARD || best->type == ACTOR_TYPE_BIG_LUNGING_GUARD) {
             g168[2] += 0x320;
           }
           o->rotZ = ArcTan2(best->posX - actor->posX,
@@ -861,7 +860,7 @@ void Level24_UpdateActors(void) {
           int i;
 
           CopyVector(g192, &g_pActorListBase[st->target].posX);
-          o = g_pfnLevelSpawnActor(0x68, actor);
+          o = g_pfnLevelSpawnActor(ACTOR_TYPE_COMET, actor);
           o->rotZ = ArcTan2(g192[0] - o->posX, g192[1] - o->posY, 0);
           CopyVector(&o->posX, &actor->posX);
           g192[2] += 0x320;
@@ -902,8 +901,8 @@ void Level24_UpdateActors(void) {
 
     /* Type 92: a guard. Wakes its partner when Spyro comes into range,
      * paces its path, lunges, and spins away when struck. */
-    case 92: {
-      L24Guard *st = actor->state;
+    case ACTOR_TYPE_LUNGING_GUARD: {
+      LungingGuardState *st = actor->state;
       int dist;
 
       SubtractVector(g104, &spy->posX, &actor->posX);
@@ -1149,7 +1148,7 @@ void Level24_UpdateActors(void) {
 
     /* Type 104: a comet. Flies its arc leaving a fading trail and drops a
      * spark (77) now and then; it is removed once the trail has faded. */
-    case 104: {
+    case ACTOR_TYPE_COMET: {
       CometState *st = actor->state;
       int s = actor->mode;
 
@@ -1163,7 +1162,7 @@ void Level24_UpdateActors(void) {
         if (s == 0) {
           st->spark += g_nFrameStep;
           if (st->spark >= 0xC) {
-            Actor *o = g_pfnLevelSpawnActor(0x4D, actor);
+            Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_COMET_SPARK, actor);
 
             CopyVector(&o->posX, &actor->posX);
             o->subMode = 7;
@@ -2174,7 +2173,7 @@ void Level24_UpdateActors(void) {
     /* Type 126: a path walker. Turns to face Spyro when he is near, walks
      * its path, sings its tune while it rests, and can be carried and
      * thrown by its rider. */
-    case 126: {
+    case ACTOR_TYPE_SINGING_PATH_WALKER: {
       PathWalkerState *st = actor->state;
 
       if (st->init == 0) {
@@ -2411,8 +2410,8 @@ void Level24_UpdateActors(void) {
 
     /* Type 130: the big guard (as type 92, plus two followers it wakes and
      * a growl while it lunges). */
-    case 130: {
-      L24Guard2 *st = actor->state;
+    case ACTOR_TYPE_BIG_LUNGING_GUARD: {
+      BigLungingGuardState *st = actor->state;
 
       TickActorFlameGlow(actor);
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != 3 &&
@@ -2696,7 +2695,7 @@ void Level24_UpdateActors(void) {
 
     /* Type 160: wandering critter; knocked away when hit. */
     case ACTOR_TYPE_WANDERING_CRITTER: {
-      L26Critter *st = actor->state;
+      CritterKnockState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
         actor->flags = 0;
@@ -2797,7 +2796,7 @@ void Level24_UpdateActors(void) {
 
     /* Type 191: a talking NPC. Starts a conversation when Spyro walks up
      * facing it; the line depends on how far through the level he is. */
-    case 191: {
+    case ACTOR_TYPE_HOME_TALKER + 4: {
       if (actor->mode == 0) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1000) {
           actor->mode = 1;
@@ -3441,7 +3440,7 @@ void Level24_UpdateActors(void) {
      * flame, then bursts into three rings of debris and knocks the camera
      * back. */
     case ACTOR_TYPE_CRACKING_BOULDER: {
-      L16Boulder *st = actor->state;
+      CrackingBoulderState *st = actor->state;
 
       switch (actor->subMode) {
       case 0:
@@ -3659,7 +3658,7 @@ void Level24_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -4006,7 +4005,7 @@ void Level24_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;

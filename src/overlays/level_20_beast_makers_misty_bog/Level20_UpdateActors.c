@@ -534,7 +534,7 @@ void Level20_UpdateActors(void) {
 
           if (z - h > 0 ? z - h < 0x64 : h - z < 0x64) {
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
-            g_pfnLevelSpawnActor(0x190, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
             st->timer = 0xA;
             actor->mode = 0xA;
             continue;
@@ -1670,8 +1670,8 @@ void Level20_UpdateActors(void) {
     /* Type 137: guard. Patrols, waits or lurks until Spyro comes within
      * range, then turns on him and charges; after a charge the camera is
      * pulled in on it, and a hit knocks it back. */
-    case 137: {
-      L18Guard *st = actor->state;
+    case ACTOR_TYPE_CHARGING_GUARD: {
+      ChargingGuardState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 2) {
         EBB_BREAK();
@@ -1835,7 +1835,7 @@ void Level20_UpdateActors(void) {
           while ((a = *pp++) != 0) {
             int d;
 
-            if (a->type == 0x193 || a->type == st->filter) {
+            if (a->type == ACTOR_TYPE_LURKER || a->type == st->filter) {
               d = actor->posX - a->posX;
               if (d > 0 ? d < 0xBB8 : a->posX - actor->posX < 0xBB8) {
                 d = actor->posY - a->posY;
@@ -2480,7 +2480,7 @@ void Level20_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -2669,10 +2669,10 @@ void Level20_UpdateActors(void) {
       }
       break;
 
-    /* Fade-out props: removed as soon as their animation finishes. */
-    case 400:
-    case 405:
-    case 477:      if (g_nActorAnimDone == 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_SPLASH:
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:      if (g_nActorAnimDone == 0) {
         break;
       }
       DespawnActorRecord(actor);
@@ -2681,7 +2681,7 @@ void Level20_UpdateActors(void) {
     /* Type 390: spinning chest. Each charge spins it faster (with a rising
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
-      L26Spinner *st = actor->state;
+      SpinChestState *st = actor->state;
       int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
@@ -2698,7 +2698,7 @@ void Level20_UpdateActors(void) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
       if (actor->subMode == 0) {
-        st->lid = g_pfnLevelSpawnActor(0x188, actor);
+        st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_SPARK, actor);
         st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
         actor->subMode = 1;
@@ -2752,7 +2752,7 @@ void Level20_UpdateActors(void) {
      * Spyro (or away from him when there is none), and bursts on what it
      * hits. */
     case ACTOR_TYPE_HOMING_SPARK: {
-      L26Spark *st = actor->state;
+      HomingSparkState *st = actor->state;
       int i;
 
       if (actor->subMode == 1) {
@@ -2894,7 +2894,7 @@ void Level20_UpdateActors(void) {
                                         spy->posY - actor->posY, 0)) < 0x14) {
           int k;
 
-          st->tether = g_pfnLevelSpawnActor(0x1F, actor);
+          st->tether = g_pfnLevelSpawnActor(ACTOR_TYPE_LURKER_TETHER, actor);
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 0, A336);
           GetActorAttachPoint(actor, 1, A352);
@@ -2954,7 +2954,7 @@ void Level20_UpdateActors(void) {
           int z = actor->posZ - actor->floorOffset;
 
           if (z - h > 0 ? z - h < 0x64 : h - z < 0x64) {
-            Actor *o = g_pfnLevelSpawnActor(0x190, actor);
+            Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
             o->scale = 0x34;
@@ -3103,7 +3103,7 @@ void Level20_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;
@@ -3561,7 +3561,7 @@ void Level20_UpdateActors(void) {
           }
           lp = g_apActiveActorList;
           while ((o = *lp++) != 0) {
-            if (o->type == 0x1C &&
+            if (o->type == ACTOR_TYPE_GUNNER &&
                 (actor->posX - o->posX > 0 ? actor->posX - o->posX < 0xBB8
                                            : o->posX - actor->posX < 0xBB8) &&
                 (actor->posY - o->posY > 0 ? actor->posY - o->posY < 0xBB8

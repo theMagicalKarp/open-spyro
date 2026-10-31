@@ -128,7 +128,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     HideActorRenderRecord(rec);
     break;
 
-  case 0x26: {
+  case ACTOR_TYPE_SPLIT_SHOT: {
     int *st = rec->state;
     int *pos;
     int turn;
@@ -205,7 +205,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     st->pitch = 0;
     st->yaw = 0;
     st->roll = 0;
-    if (parent->type == 0xD) {
+    if (parent->type == ACTOR_TYPE_FOLLOWER) {
       st->bounces = 2;
     } else {
       st->bounces = 3;
@@ -249,7 +249,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0xD7: {
+  case ACTOR_TYPE_RUBBLE_SHARD_B: {
     BatState *st;
     int speed;
     int dir;
@@ -304,7 +304,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     break;
 
   case 0x43 ... 0x45:
-  case 0x85:
+  case ACTOR_TYPE_RUBBLE_SHARD:
   case 0x97:
   case 0xFF ... 0x101:
   case 0x135 ... 0x137:
@@ -412,8 +412,8 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     InsertActorIntoSpatialGrid(rec);
     break;
 
-  case 0x195:
-  case 0x1DD: {
+  case ACTOR_TYPE_HAZARD0_DEATH_FX:
+  case ACTOR_TYPE_HAZARD0_ENTER_FX: {
     int ground;
     int z;
     int gap;
@@ -447,14 +447,14 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     HideActorRenderRecord(rec);
     break;
 
-  case 0x1CA ... 0x1CB: {
+  case ACTOR_TYPE_REBOUND_DEBRIS ... ACTOR_TYPE_REBOUND_DEBRIS + 1: {
     FragmentState *st = rec->state;
 
     InitActorRenderDefaults(rec);
     rec->cullRadius = 0x20;
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
-    if (parent->type == 0xB0) {
+    if (parent->type == ACTOR_TYPE_LOB_GUNNER_LOB) {
       st->vel[0] = RandomIntInRange(-0x64, 0x64);
       st->vel[1] = RandomIntInRange(-0x64, 0x64);
       st->vel[2] = RandomIntInRange(-0x3C, 0x6E);

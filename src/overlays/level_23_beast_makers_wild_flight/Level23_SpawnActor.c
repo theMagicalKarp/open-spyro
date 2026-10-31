@@ -105,7 +105,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x11:
+    case ACTOR_TYPE_AIMED_SHOT:
     {
       int *st;
       int dir;
@@ -154,7 +154,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       st->pitch = 0;
       st->yaw = 0;
       st->roll = 0;
-      if (parent->type == 0xD)
+      if (parent->type == ACTOR_TYPE_FOLLOWER)
       {
         st->bounces = 2;
       }
@@ -290,7 +290,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x167 ... 0x169:
+    case ACTOR_TYPE_TUMBLE_SHARD ... ACTOR_TYPE_TUMBLE_SHARD + 2:
     {
       FragmentState *st = rec->state;
       int seed;
@@ -429,11 +429,11 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       rec->tintMode = 0;
       break;
 
-    case 0x190:
+    case ACTOR_TYPE_SPLASH:
 
-    case 0x195:
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
 
-    case 0x1DD:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
     {
       int ground;
       int z;

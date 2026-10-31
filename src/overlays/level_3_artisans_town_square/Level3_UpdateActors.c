@@ -387,7 +387,7 @@ void Level3_UpdateActors(void) {
     }
 
     /* Patrol guard (WardState). */
-    case 23: {
+    case ACTOR_TYPE_PATROL_WARD: {
       WardState *st;
 
       EBB_BREAK();
@@ -2555,7 +2555,7 @@ void Level3_UpdateActors(void) {
       break;
     }
 
-    case 234:
+    case ACTOR_TYPE_REBOUND_FX:
       if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
       }
@@ -3000,7 +3000,7 @@ void Level3_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -3190,10 +3190,9 @@ void Level3_UpdateActors(void) {
       }
       break;
 
-    /* Types 363/364: a one-shot effect that is removed when its animation
-     * ends. */
-    case 405:
-    case 477:      if (g_nActorAnimDone != 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -3202,7 +3201,7 @@ void Level3_UpdateActors(void) {
     /* Type 390: spinning chest. Each charge spins it faster (with a rising
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
-      L26Spinner *st = actor->state;
+      SpinChestState *st = actor->state;
       int pitch = SAMPLE_PITCH(g_apActorMeshTable[390]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
@@ -3219,7 +3218,7 @@ void Level3_UpdateActors(void) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
       if (actor->subMode == 0) {
-        st->lid = g_pfnLevelSpawnActor(0x188, actor);
+        st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_SPARK, actor);
         st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
         actor->subMode = 1;
@@ -3273,7 +3272,7 @@ void Level3_UpdateActors(void) {
      * Spyro (or away from him when there is none), and bursts on what it
      * hits. */
     case ACTOR_TYPE_HOMING_SPARK: {
-      L26Spark *st = actor->state;
+      HomingSparkState *st = actor->state;
       int i;
 
       if (actor->subMode == 1) {
@@ -3363,7 +3362,7 @@ void Level3_UpdateActors(void) {
     }
 
     /* Follower (Follower). */
-    case 395: {
+    case ACTOR_TYPE_LINKED_FOLLOWER: {
       Follower *st = actor->state;
 
       if (actor->mode != 3 && (actor->flags & ACTOR_HITS_SPYRO)) {
@@ -3450,7 +3449,7 @@ void Level3_UpdateActors(void) {
 
     /* Grazing critter (GrazerState): roams and bleats, and bursts into
      * fluff when struck. */
-    case 413: {
+    case ACTOR_TYPE_GRAZING_CRITTER: {
       GrazerState *st = actor->state;
       int i;
 
@@ -3461,7 +3460,7 @@ void Level3_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x1F6, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SWAYING_DEBRIS, actor);
         }
         st->knock = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
@@ -3537,7 +3536,7 @@ void Level3_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;
@@ -3737,7 +3736,7 @@ void Level3_UpdateActors(void) {
     
 
     /* Bouncing debris (BounceState): sways as it falls. */
-    case 502: {
+    case ACTOR_TYPE_SWAYING_DEBRIS: {
       BounceState *st = actor->state;
 
       if (st->life == 0 || actor->drawn == 0) {

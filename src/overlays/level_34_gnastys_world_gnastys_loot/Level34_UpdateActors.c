@@ -323,7 +323,7 @@ void Level34_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -380,7 +380,7 @@ void Level34_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -546,7 +546,7 @@ void Level34_UpdateActors(void) {
 
     /* Type 17: bolt. Flies along its velocity until its timer runs out or it
      * hits the world, then despawns. */
-    case 17: {
+    case ACTOR_TYPE_AIMED_SHOT: {
       BoltFlight *st = actor->state;
       int *pos;
 
@@ -1548,7 +1548,7 @@ void Level34_UpdateActors(void) {
     }
 
     /* Type 177: treasure thief (LootThiefState). */
-    case 177: {
+    case ACTOR_TYPE_LOOT_THIEF: {
       LootThiefState *st = actor->state;
       int speed;
       int n;
@@ -1864,7 +1864,7 @@ void Level34_UpdateActors(void) {
     }
 
     /* Type 179: loot critter (CritterState). */
-    case 179: {
+    case ACTOR_TYPE_LOOT_CRITTER: {
       CritterState *st = actor->state;
       int speed;
       int *pos;
@@ -2462,7 +2462,7 @@ void Level34_UpdateActors(void) {
     /* Type 217: vault timer. While Spyro rides the vault lift it counts the
      * vault down on the HUD, then flags the vault cleared and cues the
      * exit. */
-    case 217: {
+    case ACTOR_TYPE_VAULT_TIMER: {
       int *t = actor->state;
 
       if (g_nWorldTreasureCollected == 0x36B0 && SPY.state == SPYRO_ST_LIFT) {
@@ -2751,7 +2751,7 @@ void Level34_UpdateActors(void) {
      * flame, then bursts into three rings of debris and knocks the camera
      * back. */
     case ACTOR_TYPE_CRACKING_BOULDER: {
-      L16Boulder *st = actor->state;
+      CrackingBoulderState *st = actor->state;
 
       switch (actor->subMode) {
       case 0:
@@ -2942,7 +2942,7 @@ void Level34_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -3085,13 +3085,12 @@ void Level34_UpdateActors(void) {
       break;
     }
 
-    /* Types 363/364: a one-shot effect that is removed when its animation
-     * ends. */
-    case 400:
-    case 405:
-    case 477:
-    case 507:
-    case 508:      if (g_nActorAnimDone != 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_SPLASH:
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
+    case ACTOR_TYPE_HAZARD2_ENTER_FX:
+    case ACTOR_TYPE_HAZARD2_DEATH_FX:      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -3100,7 +3099,7 @@ void Level34_UpdateActors(void) {
     /* Type 390: spinning chest. Each charge spins it faster (with a rising
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
-      L26Spinner *st = actor->state;
+      SpinChestState *st = actor->state;
       int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
@@ -3117,7 +3116,7 @@ void Level34_UpdateActors(void) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
       if (actor->subMode == 0) {
-        st->lid = g_pfnLevelSpawnActor(0x188, actor);
+        st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_SPARK, actor);
         st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
         actor->subMode = 1;
@@ -3171,7 +3170,7 @@ void Level34_UpdateActors(void) {
      * Spyro (or away from him when there is none), and bursts on what it
      * hits. */
     case ACTOR_TYPE_HOMING_SPARK: {
-      L26Spark *st = actor->state;
+      HomingSparkState *st = actor->state;
       int i;
 
       if (actor->subMode == 1) {
@@ -3263,7 +3262,7 @@ void Level34_UpdateActors(void) {
     /* Type 401: breakable rock. Shakes when struck; a charge shatters it
      * into rubble and dust and removes it. */
     case ACTOR_TYPE_BREAKABLE_ROCK: {
-      L31Rock *st = actor->state;
+      BreakableRockState *st = actor->state;
 
       if (st->shake != 0) {
         st->shake += g_nFrameStep;
@@ -3330,7 +3329,7 @@ void Level34_UpdateActors(void) {
     /* Type 402: cannon. Smokes while it builds up, fires, then flies its
      * ball along a path to the target, waking the linked actor. */
     case ACTOR_TYPE_CANNON: {
-      L25Shot *st = actor->state;
+      CannonState *st = actor->state;
 
       if (st->init == 1) {
         int pitch;

@@ -74,8 +74,8 @@ void TickSpyroAttackEffects(int steps) {
     flame[2] = ((flame[0] >> 1) + (GetRandomU32() & 0x3f)) - 0x60;
     RotateVectorByMatrix(g_anSpyroBodyMtxBlock, flame, flame);
     AddVector(flame, flame, &g_anSpyroBodyMtxBlock[-13]);
-    ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(1, 0x1e, flame,
-                                                                0);
+    ((void (*)(int, int, int *, int *))g_pfnLevelEmitParticles)(
+        1, EMIT_RISING_PUFF, flame, 0);
     g_abSpyroTintRgba[0] = 0x90;
     g_abSpyroTintRgba[1] = 0x20;
     g_abSpyroTintRgba[2] = 0x10;

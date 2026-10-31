@@ -126,7 +126,7 @@ void DispatchSpyroPhysicsByState(void) {
     if (SPY[SPY_STATE] == SPYRO_ST_STOP) {
       CopyVector(puff, &SPY[SPY_MOTION]);
       RShiftVector3(puff, 6);
-      ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, 0x21, puff, 0);
+      ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, EMIT_DUST_PUFF, puff, 0);
     }
   } break;
   case SPYRO_ST_TURN_AROUND:
@@ -138,7 +138,7 @@ void DispatchSpyroPhysicsByState(void) {
     dir[1] = 0;
     dir[2] = 0;
     RotateVectorByMatrix(g_anSpyroBodyMtx, dir, dir);
-    ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, 0x21, dir, 0);
+    ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, EMIT_DUST_PUFF, dir, 0);
     break;
   case SPYRO_ST_HURT_TINT: {
     unsigned char frame;

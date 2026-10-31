@@ -1,3 +1,4 @@
+#include "emit_record.h"
 #include "funcs.h"
 #include "globals.h"
 #include "level_sfx.h"
@@ -232,8 +233,7 @@ void ChangeSpyroState(int state) {
       int *from = me;
 
       do {
-        if (ACTOR_RAW(actor, unsigned char, mode) < 0x7F &&
-            ((Actor *)actor)->collision != 0) {
+        if (((Actor *)actor)->mode < 0x7F && ((Actor *)actor)->collision != 0) {
           int a;
           int da;
 
@@ -277,7 +277,7 @@ void ChangeSpyroState(int state) {
       v[1] = (short)(unsigned short)g_anCosineLut[ang] >> 7;
       v[2] = (short)g_anSineLut[ang] >> 7;
       RotateVectorByMatrix(g_anSpyroBodyMtx, v, v);
-      PARTICLE_SPAWN(1, 0x21, v, 1);
+      PARTICLE_SPAWN(1, EMIT_DUST_PUFF, v, 1);
       ang = (ang + 0x40) & 0xFF;
     }
     SPY[SPY_SUBSTATE] = 0;
@@ -312,7 +312,7 @@ void ChangeSpyroState(int state) {
       ApplyGravityAlongSpyroSlopeNormal();
     }
     g_nSpyroGravityEnableFlag = 1;
-    PARTICLE_SPAWN(5, 0xA, 0, 0);
+    PARTICLE_SPAWN(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     if (g_nVibrationLevel < 0x2D) {
       g_nVibrationLevel = 0x2D;
     }
@@ -333,7 +333,7 @@ void ChangeSpyroState(int state) {
       ApplyGravityAlongSpyroSlopeNormal();
     }
     g_nSpyroGravityEnableFlag = 1;
-    PARTICLE_SPAWN(5, 0xA, 0, 0);
+    PARTICLE_SPAWN(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     if (g_nHitRumbleTimer < 0xF) {
       g_nHitRumbleTimer = 0xF;
     }
@@ -346,7 +346,7 @@ void ChangeSpyroState(int state) {
     ZeroVector(&SPY[SPY_VELOCITY]);
     g_anSpyroVelocity[2] = -0xC00;
     g_nSpyroGravityEnableFlag = 1;
-    PARTICLE_SPAWN(5, 0xA, 0, 0);
+    PARTICLE_SPAWN(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     if (g_nHitRumbleTimer < 0xF) {
       g_nHitRumbleTimer = 0xF;
     }
@@ -358,7 +358,7 @@ void ChangeSpyroState(int state) {
     ZeroVector(&SPY[SPY_VELOCITY]);
     g_nSpyroGravityStep = -0x300;
     g_nSpyroGravityEnableFlag = 1;
-    PARTICLE_SPAWN(5, 0xA, 0, 0);
+    PARTICLE_SPAWN(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     if (g_nHitRumbleTimer < 0xF) {
       g_nHitRumbleTimer = 0xF;
     }
@@ -376,7 +376,7 @@ void ChangeSpyroState(int state) {
       break;
     }
     g_nSpyroSubstate = 0;
-    g_nSpyroGroundRunFlag = 1;
+    g_nSpyroGlideEnteredLatch = 1;
     g_nSpyroBodyYawStep = 0;
     g_nSpyroPitchRateAccum = 0;
     g_nSpyroTurnRateAccum = 0;
@@ -417,8 +417,8 @@ void ChangeSpyroState(int state) {
       g_nSpyroScriptedLiftTurn =
           ((g_nSpyroScriptedLiftRise << 10) >> 10) + 0x400;
       g_nSpyroScriptedLiftTurn =
-          ((((unsigned char *)g_pScriptedCameraActor)[0x46] << 4) -
-           g_nSpyroBodyYaw - g_nSpyroScriptedLiftTurn) &
+          ((((Actor *)g_pScriptedCameraActor)->rotZ << 4) - g_nSpyroBodyYaw -
+           g_nSpyroScriptedLiftTurn) &
           0xFFF;
       if (g_nSpyroScriptedLiftTurn > 0x800) {
         g_nSpyroScriptedLiftTurn -= 0x1000;
@@ -516,7 +516,7 @@ void ChangeSpyroState(int state) {
       ApplyGravityAlongSpyroSlopeNormal();
     }
     g_nSpyroGravityEnableFlag = 1;
-    PARTICLE_SPAWN(5, 0xA, 0, 0);
+    PARTICLE_SPAWN(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT), SPY, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER);
     if (g_nHitRumbleTimer < 0xF) {
@@ -531,7 +531,7 @@ void ChangeSpyroState(int state) {
     g_nSpyroGravityStep = -0x80;
     g_nSpyroGravityEnableFlag = 1;
     if (g_nSpyroInputLockoutCountdown == 0) {
-      PARTICLE_SPAWN(5, 0xA, 0, 0);
+      PARTICLE_SPAWN(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     }
     ((void (*)(int, int))g_pfnLevelSpawnActor)(
         g_anHazardEnterSpawnType[g_nSpyroHazardKind], 0);
@@ -563,7 +563,7 @@ void ChangeSpyroState(int state) {
       ApplyGravityAlongSpyroSlopeNormal();
     }
     g_nSpyroGravityEnableFlag = 1;
-    PARTICLE_SPAWN(5, 0xA, 0, 0);
+    PARTICLE_SPAWN(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     break;
   case SPYRO_ST_SCRIPTED_HOLD:
     g_nSpyroGravityStep = -0x80;

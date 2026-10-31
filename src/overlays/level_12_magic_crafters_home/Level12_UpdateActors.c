@@ -216,7 +216,7 @@ void Level12_UpdateActors(void) {
       if (TickCountdownByFrameDelta(st, 4) == 0) {
         break;
       }
-      g_pfnLevelEmitParticles(1, 0x16, &actor->posX, 0);
+      g_pfnLevelEmitParticles(1, EMIT_DRIFTING_MOTE, &actor->posX, 0);
       *st = GetRandomU32() & 0xE;
       break;
     }
@@ -257,7 +257,7 @@ void Level12_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -314,7 +314,7 @@ void Level12_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -1362,9 +1362,10 @@ void Level12_UpdateActors(void) {
       break;
     }
 
-    /* Bubble vent: rises out of the ground and pops into four bubbles when it
-     * reaches the surface. */
-    case 38: {
+    /* Split shot: launched at Spyro on the thrower's release frame, it
+     * splits into four more of itself when it reaches him, and fizzles out
+     * on a timer or against a wall. */
+    case ACTOR_TYPE_SPLIT_SHOT: {
       int *st = actor->state;
 
       switch (actor->mode) {
@@ -1393,7 +1394,7 @@ void Level12_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x26, actor)->rotX = a;
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor)->rotX = a;
           }
           DespawnActorRecord(actor);
           continue;
@@ -2611,7 +2612,7 @@ void Level12_UpdateActors(void) {
     /* Type 189: talking dragon. When Spyro faces it up close, start its
      * dialogue; the first visit and the post-boss visit pick their own
      * lines. */
-    case 189: {
+    case ACTOR_TYPE_HOME_TALKER + 2: {
       if (actor->mode == 0) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1000) {
           actor->mode = 1;
@@ -3392,7 +3393,7 @@ void Level12_UpdateActors(void) {
             continue;
           }
           if (g_nActorAnimNewFrame != 0 && actor->nextFrame == 0xE) {
-            Actor *c = g_pfnLevelSpawnActor(0x13B, actor);
+            Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_SHEPHERD_THROW, actor);
             CrookState *cs = c->state;
 
             GetActorAttachPoint(actor, 0, &c->posX);
@@ -3433,7 +3434,7 @@ void Level12_UpdateActors(void) {
             }
           }
           if (g_nActorAnimNewFrame != 0 && actor->nextFrame == 0xE) {
-            Actor *c = g_pfnLevelSpawnActor(0x13B, actor);
+            Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_SHEPHERD_THROW, actor);
             CrookState *cs = c->state;
 
             GetActorAttachPoint(actor, 0, &c->posX);
@@ -3530,7 +3531,7 @@ void Level12_UpdateActors(void) {
               actor->subMode = 1;
             }
             if (g_nActorAnimNewFrame != 0 && actor->nextFrame == 0xE) {
-              Actor *c = g_pfnLevelSpawnActor(0x13B, actor);
+              Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_SHEPHERD_THROW, actor);
               CrookState *cs = c->state;
 
               GetActorAttachPoint(actor, 0, &c->posX);
@@ -3869,7 +3870,7 @@ void Level12_UpdateActors(void) {
      * rears up (and calls for help) when Spyro comes near, and is knocked
      * away when hit. */
     case ACTOR_TYPE_PATH_GUARD: {
-      L16Guard *st = actor->state;
+      PathGuardState *st = actor->state;
 
       if (actor->mode != 2) {
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_WHITE_STREAK, actor, 0);
@@ -3925,7 +3926,7 @@ void Level12_UpdateActors(void) {
             }
           }
           if (st->flags == 1) {
-            L16Guard *ps = g_pActorListBase[st->partner].state;
+            PathGuardState *ps = g_pActorListBase[st->partner].state;
 
             st->path->cur = 0;
             if (st->dist == 0) {
@@ -3978,13 +3979,13 @@ void Level12_UpdateActors(void) {
         }
         if (st->timer <= 0) {
           st->timer = 1;
-          g_pfnLevelSpawnActor(0x26, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         } else if (st->timer < 2 && actor->nextFrame >= 2) {
           st->timer = 2;
-          g_pfnLevelSpawnActor(0x26, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         } else if (st->timer < 0x3C && actor->nextFrame >= 6) {
           st->timer = 0x3C;
-          g_pfnLevelSpawnActor(0x26, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         }
         break;
 
@@ -4240,7 +4241,7 @@ void Level12_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -4416,10 +4417,9 @@ void Level12_UpdateActors(void) {
       }
       break;
 
-    /* Types 363/364: a one-shot effect that is removed when its animation
-     * ends. */
-    case 405:
-    case 477:      if (g_nActorAnimDone != 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -4428,7 +4428,7 @@ void Level12_UpdateActors(void) {
     /* Type 390: spinning chest. Each charge spins it faster (with a rising
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
-      L26Spinner *st = actor->state;
+      SpinChestState *st = actor->state;
       int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
@@ -4445,7 +4445,7 @@ void Level12_UpdateActors(void) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
       if (actor->subMode == 0) {
-        st->lid = g_pfnLevelSpawnActor(0x188, actor);
+        st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_SPARK, actor);
         st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
         actor->subMode = 1;
@@ -4499,7 +4499,7 @@ void Level12_UpdateActors(void) {
      * Spyro (or away from him when there is none), and bursts on what it
      * hits. */
     case ACTOR_TYPE_HOMING_SPARK: {
-      L26Spark *st = actor->state;
+      HomingSparkState *st = actor->state;
       int i;
 
       if (actor->subMode == 1) {
@@ -4707,7 +4707,7 @@ void Level12_UpdateActors(void) {
     /* Type 401: breakable rock. Shakes when struck; a charge shatters it
      * into rubble and dust and removes it. */
     case ACTOR_TYPE_BREAKABLE_ROCK: {
-      L31Rock *st = actor->state;
+      BreakableRockState *st = actor->state;
 
       if (st->shake != 0) {
         st->shake += g_nFrameStep;
@@ -4812,7 +4812,7 @@ void Level12_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;

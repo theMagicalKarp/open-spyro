@@ -1,3 +1,4 @@
+#include "actor_type.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "match_asm.h"
@@ -30,9 +31,10 @@ typedef struct {
    2 = inside). The region record's type byte (TriggerRegionType) picks the
    action: hazard and lift regions hand their data to Spyro and raise their
    event bit, the ground latch arms a proximity flag, charge-hold / rebound /
-   damage raise their trigger-event bits (rebound also spawns type 0xEA), and
-   the portal region warps: it either starts the level transition or
-   repositions the destination actor on the near side of its portal plane. */
+   damage raise their trigger-event bits (rebound also spawns
+   ACTOR_TYPE_REBOUND_FX), and the portal region warps: it either starts the
+   level transition or repositions the destination actor on the near side of its
+   portal plane. */
 void DispatchSpyroTriggerEvent(int idx, int event) {
   int tmp[3];
   unsigned char *rec;
@@ -74,7 +76,7 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
     break;
   case TRIGGER_REBOUND:
     FLAGS = (FLAGS & 0x3FF) | SPYRO_EV_REBOUND;
-    ((void (*)(int, int))g_pfnLevelSpawnActor)(0xEA, 0);
+    ((void (*)(int, int))g_pfnLevelSpawnActor)(ACTOR_TYPE_REBOUND_FX, 0);
     break;
   case TRIGGER_PORTAL:
     ready = g_anSparxHealthBlock;

@@ -128,7 +128,7 @@ Actor *Level18_SpawnActor(int type, Actor *parent) {
     st->pitch = 0;
     st->yaw = 0;
     st->roll = 0;
-    if (parent->type == 0xD) {
+    if (parent->type == ACTOR_TYPE_FOLLOWER) {
       st->bounces = 2;
     } else {
       st->bounces = 3;
@@ -323,7 +323,7 @@ Actor *Level18_SpawnActor(int type, Actor *parent) {
     rec->tintMode = 0;
     break;
 
-  case 0x1FB ... 0x1FC: {
+  case ACTOR_TYPE_HAZARD2_ENTER_FX ... ACTOR_TYPE_HAZARD2_DEATH_FX: {
     int ground;
     int z;
     int gap;

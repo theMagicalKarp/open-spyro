@@ -265,7 +265,7 @@ void Level18_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -322,7 +322,7 @@ void Level18_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -1575,8 +1575,8 @@ void Level18_UpdateActors(void) {
     /* Type 137: guard. Patrols, waits or lurks until Spyro comes within
      * range, then turns on him and charges; after a charge the camera is
      * pulled in on it, and a hit knocks it back. */
-    case 137: {
-      L18Guard *st = actor->state;
+    case ACTOR_TYPE_CHARGING_GUARD: {
+      ChargingGuardState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 2) {
         EBB_BREAK();
@@ -1740,7 +1740,7 @@ void Level18_UpdateActors(void) {
           while ((a = *pp++) != 0) {
             int d;
 
-            if (a->type == 0x193 || a->type == st->filter) {
+            if (a->type == ACTOR_TYPE_LURKER || a->type == st->filter) {
               d = actor->posX - a->posX;
               if (d > 0 ? d < 0xBB8 : a->posX - actor->posX < 0xBB8) {
                 d = actor->posY - a->posY;
@@ -2202,7 +2202,7 @@ void Level18_UpdateActors(void) {
     }
 
     /* Talking dragon: when Spyro faces it up close, start its dialogue. */
-    case 190: {
+    case ACTOR_TYPE_HOME_TALKER + 3: {
       if (actor->mode == 0) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1000) {
           actor->mode = 1;
@@ -2846,7 +2846,7 @@ void Level18_UpdateActors(void) {
      * flame, then bursts into three rings of debris and knocks the camera
      * back. */
     case ACTOR_TYPE_CRACKING_BOULDER: {
-      L16Boulder *st = actor->state;
+      CrackingBoulderState *st = actor->state;
 
       switch (actor->subMode) {
       case 0:
@@ -3037,7 +3037,7 @@ void Level18_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -3227,9 +3227,9 @@ void Level18_UpdateActors(void) {
       }
       break;
 
-    /* Fade-out props: removed as soon as their animation finishes. */
-    case 507:
-    case 508:      if (g_nActorAnimDone == 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD2_ENTER_FX:
+    case ACTOR_TYPE_HAZARD2_DEATH_FX:      if (g_nActorAnimDone == 0) {
         break;
       }
       DespawnActorRecord(actor);
@@ -3238,7 +3238,7 @@ void Level18_UpdateActors(void) {
     /* Type 390: spinning chest. Each charge spins it faster (with a rising
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
-      L26Spinner *st = actor->state;
+      SpinChestState *st = actor->state;
       int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
@@ -3256,7 +3256,7 @@ void Level18_UpdateActors(void) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
       if (actor->subMode == 0) {
-        st->lid = g_pfnLevelSpawnActor(0x188, actor);
+        st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_SPARK, actor);
         st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
         actor->subMode = 1;
@@ -3310,7 +3310,7 @@ void Level18_UpdateActors(void) {
      * Spyro (or away from him when there is none), and bursts on what it
      * hits. */
     case ACTOR_TYPE_HOMING_SPARK: {
-      L26Spark *st = actor->state;
+      HomingSparkState *st = actor->state;
       int i;
 
       if (actor->subMode == 1) {
@@ -3575,7 +3575,7 @@ void Level18_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;
@@ -3776,7 +3776,7 @@ void Level18_UpdateActors(void) {
 
     /* Type 461: war drum. Beats on a timer (with its own voice), and is
      * knocked away when hit. */
-    case 461: {
+    case ACTOR_TYPE_WAR_DRUM: {
       WarDrumState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && (unsigned int)(actor->mode - 3) >= 2) {
@@ -4007,7 +4007,7 @@ void Level18_UpdateActors(void) {
 
     /* Type 475: bell post. Rung by a charge (or a flame), rings out, and
      * resets once its animation ends. */
-    case 475:
+    case ACTOR_TYPE_BELL_POST:
       switch (actor->mode) {
       case 0:
         if (actor->flags & ACTOR_HIT_CHARGE) {

@@ -288,7 +288,7 @@ void Level7_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -345,7 +345,7 @@ void Level7_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -2560,7 +2560,7 @@ void Level7_UpdateActors(void) {
         st->flag = one;
         if (g_nActorAnimNewFrame != 0 && actor->frame == 0x11) {
           int h = WrapAddAngle8(actor->rotZ, 0xFD);
-          Actor *c = g_pfnLevelSpawnActor(0xB7, actor);
+          Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_BRAWLER_SPAWN, actor);
           BrawlerSpawnState *cs = c->state;
 
           CopyVector(&c->posX, &actor->posX);
@@ -2646,8 +2646,8 @@ void Level7_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            p = g_pfnLevelSpawnActor(0x121, c);
-            g_pfnLevelSpawnActor(0x120, c);
+            p = g_pfnLevelSpawnActor(ACTOR_TYPE_BOUNCE_DEBRIS + 1, c);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_BOUNCE_DEBRIS, c);
             if (GetRandomU32() & 1) {
               p->mode = 1;
               ANIM_RESET(p, 1);
@@ -2923,8 +2923,8 @@ void Level7_UpdateActors(void) {
     }
 
     /* Type 160: wandering critter; knocked away when hit. */
-    case 193: {
-      L26Critter *st = actor->state;
+    case ACTOR_TYPE_WANDERING_CRITTER_B: {
+      CritterKnockState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
         actor->flags = 0;
@@ -3120,8 +3120,8 @@ void Level7_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x1CA, actor);
-          g_pfnLevelSpawnActor(0x1CB, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_REBOUND_DEBRIS, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_REBOUND_DEBRIS + 1, actor);
         }
         for (i = 0; i < 8; i++) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
@@ -3144,9 +3144,9 @@ void Level7_UpdateActors(void) {
     }
 
     /* Bell prop: rings when charged, spawning a ripple, and settles. */
-    case 206:
-    case 239:
-    case 242:      if (actor->flags != 0) {
+    case ACTOR_TYPE_BELL_A:
+    case ACTOR_TYPE_BELL_B:
+    case ACTOR_TYPE_BELL_C:      if (actor->flags != 0) {
         if (actor->flags == ACTOR_HIT_FLAME && actor->subMode == 0) {
           actor->subMode = 0x50;
           ANIM_SET(actor, 2);
@@ -3158,7 +3158,7 @@ void Level7_UpdateActors(void) {
       if (g_nActorAnimDone != 0) {
         switch (actor->nextAnim) {
         case 2: {
-          Actor *p = g_pfnLevelSpawnActor(0x1ED, actor);
+          Actor *p = g_pfnLevelSpawnActor(ACTOR_TYPE_BELL_RIPPLE, actor);
 
           p->rotZ = ((unsigned short)g_nCameraEulerYaw << 16 >> 18) - 0x80;
           CopyVector(&p->posX, &actor->posX);
@@ -3199,8 +3199,8 @@ void Level7_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x120, actor);
-            p = g_pfnLevelSpawnActor(0x121, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_BOUNCE_DEBRIS, actor);
+            p = g_pfnLevelSpawnActor(ACTOR_TYPE_BOUNCE_DEBRIS + 1, actor);
             if (GetRandomU32() & 1) {
               p->mode = 1;
               ANIM_RESET(p, 1);
@@ -3773,8 +3773,8 @@ void Level7_UpdateActors(void) {
     }
 
     /* Bouncing debris (BounceState). */
-    case 288:
-    case 289: {
+    case ACTOR_TYPE_BOUNCE_DEBRIS:
+    case ACTOR_TYPE_BOUNCE_DEBRIS + 1: {
       BounceState *st = actor->state;
 
       if (st->life == 0 || actor->drawn == 0) {
@@ -3789,7 +3789,7 @@ void Level7_UpdateActors(void) {
         st->vy = 0;
         st->vz = 0;
       }
-      if (actor->type == 0x120) {
+      if (actor->type == ACTOR_TYPE_BOUNCE_DEBRIS) {
         actor->rotX += st->rx;
         actor->rotY += st->ry;
         actor->rotZ += st->rz;
@@ -3920,7 +3920,7 @@ void Level7_UpdateActors(void) {
      * flame, then bursts into three rings of debris and knocks the camera
      * back. */
     case ACTOR_TYPE_CRACKING_BOULDER: {
-      L16Boulder *st = actor->state;
+      CrackingBoulderState *st = actor->state;
 
       switch (actor->subMode) {
       case 0:
@@ -4138,7 +4138,7 @@ void Level7_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -4330,7 +4330,7 @@ void Level7_UpdateActors(void) {
     /* Type 390: spinning chest. Each charge spins it faster (with a rising
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
-      L26Spinner *st = actor->state;
+      SpinChestState *st = actor->state;
       int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
@@ -4347,7 +4347,7 @@ void Level7_UpdateActors(void) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
       if (actor->subMode == 0) {
-        st->lid = g_pfnLevelSpawnActor(0x188, actor);
+        st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_SPARK, actor);
         st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
         actor->subMode = 1;
@@ -4401,7 +4401,7 @@ void Level7_UpdateActors(void) {
      * Spyro (or away from him when there is none), and bursts on what it
      * hits. */
     case ACTOR_TYPE_HOMING_SPARK: {
-      L26Spark *st = actor->state;
+      HomingSparkState *st = actor->state;
       int i;
 
       if (actor->subMode == 1) {
@@ -4531,7 +4531,7 @@ void Level7_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;
@@ -4730,8 +4730,8 @@ void Level7_UpdateActors(void) {
     }
 
     /* Bouncing shard without the trail (ShardState). */
-    case 458:
-    case 459: {
+    case ACTOR_TYPE_REBOUND_DEBRIS:
+    case ACTOR_TYPE_REBOUND_DEBRIS + 1: {
       ShardState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {
@@ -4773,11 +4773,10 @@ void Level7_UpdateActors(void) {
 
     
 
-    /* Types 363/364: a one-shot effect that is removed when its animation
-     * ends. */
-    case 363:
-    case 364:
-    case 493:      if (g_nActorAnimDone != 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD1_ENTER_FX:
+    case ACTOR_TYPE_HAZARD1_DEATH_FX:
+    case ACTOR_TYPE_BELL_RIPPLE:      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }

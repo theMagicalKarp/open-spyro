@@ -302,7 +302,7 @@ void Level22_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -359,7 +359,7 @@ void Level22_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -824,7 +824,7 @@ void Level22_UpdateActors(void) {
       case 2:
         ANIM_GO(actor, 0xC);
         if ((unsigned)(actor->nextFrame - 5) < 0x10) {
-          Actor *o = g_pfnLevelSpawnActor(0x52, actor);
+          Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_POD_SHOT, actor);
           PodShotState *sh = o->state;
           int d;
 
@@ -860,7 +860,7 @@ void Level22_UpdateActors(void) {
       case 3:
         ANIM_GO(actor, 0xD);
         if ((unsigned)(actor->nextFrame - 4) < 5 && st->count >= 7) {
-          Actor *o = g_pfnLevelSpawnActor(0x46, actor);
+          Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_LOBBED_BOLT, actor);
           LobbedBoltState *b;
 
           CopyVector(&o->posX, st->hand);
@@ -969,7 +969,7 @@ void Level22_UpdateActors(void) {
 
     /* Type 57: boulder. Rolls down to the floor and bursts into shards
      * (more type-57 actors in state 1) that bounce off the scenery. */
-    case 57: {
+    case ACTOR_TYPE_ROLLING_BOULDER: {
       BoulderState *st = actor->state;
 
       switch (actor->mode) {
@@ -1017,7 +1017,7 @@ void Level22_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          o = g_pfnLevelSpawnActor(0x39, actor);
+          o = g_pfnLevelSpawnActor(ACTOR_TYPE_ROLLING_BOULDER, actor);
           o->mode = 1;
           if (o->anim != 1) {
             ANIM_RESET(o, 1);
@@ -1087,7 +1087,7 @@ void Level22_UpdateActors(void) {
 
     /* Type 70: a lobbed bolt. Arcs along its heading and bursts into
      * sparks when it lands. */
-    case 70: {
+    case ACTOR_TYPE_LOBBED_BOLT: {
       LobbedBoltState *st = actor->state;
       int i;
 
@@ -1131,7 +1131,7 @@ void Level22_UpdateActors(void) {
 
     /* Type 82: a thrown shot. Flies until it hits the floor, a wall or
      * times out. */
-    case 82: {
+    case ACTOR_TYPE_POD_SHOT: {
       PodShotState *st = actor->state;
 
       CopyVector(g168, &actor->posX);
@@ -1162,16 +1162,16 @@ void Level22_UpdateActors(void) {
 
     /* Type 100 (and 102): boulder thrower. Patrols its path, picks up a
      * boulder (57) and hurls it, rides its partner, and charges Spyro. */
-    case 102: {
+    case ACTOR_TYPE_BOULDER_THROWER_B: {
       BoulderThrowerState *st = actor->state;
       int f;
 
-      if (actor->type == 0x66) {
+      if (actor->type == ACTOR_TYPE_BOULDER_THROWER_B) {
         TickActorFlameGlow(actor);
       }
       f = actor->flags;
       if ((f & 0xF0000) && actor->mode != 3 &&
-          (actor->type != 0x66 || f != 0x10000)) {
+          (actor->type != ACTOR_TYPE_BOULDER_THROWER_B || f != 0x10000)) {
         Actor *c;
 
         if (f & 0x40000) {
@@ -1312,7 +1312,7 @@ void Level22_UpdateActors(void) {
       case 4:
         TrackEntityYawTowardSpyro(actor, 8, 0, 0);
         if ((unsigned)(actor->nextFrame - 3) < 5 && st->rock == 0) {
-          st->rock = g_pfnLevelSpawnActor(0x39, actor);
+          st->rock = g_pfnLevelSpawnActor(ACTOR_TYPE_ROLLING_BOULDER, actor);
           st->rock->subMode = 0;
         }
         if (st->rock != 0 && st->rock->subMode == 0) {
@@ -1336,7 +1336,7 @@ void Level22_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           st->timer = 0x78;
-          if (actor->type == 0x66) {
+          if (actor->type == ACTOR_TYPE_BOULDER_THROWER_B) {
             st->timer = 0x50;
           }
           st->rock = 0;
@@ -1465,7 +1465,7 @@ void Level22_UpdateActors(void) {
           Actor *o;
 
           while ((o = *lp++) != 0) {
-            if (o->type == 0x41 &&
+            if (o->type == ACTOR_TYPE_PLATFORM_POD &&
                 (actor->posX - o->posX > 0 ? actor->posX - o->posX < 0xBB8
                                            : o->posX - actor->posX < 0xBB8) &&
                 (actor->posY - o->posY > 0 ? actor->posY - o->posY < 0xBB8
@@ -1567,7 +1567,7 @@ void Level22_UpdateActors(void) {
 
     /* Type 101: gatekeeper. Guards a run of keys (g_pActorListBase actors) and
      * releases them as Spyro approaches; rides its partner and charges. */
-    case 170: {
+    case ACTOR_TYPE_GATEKEEPER_B: {
       GatekeeperState *st = actor->state;
       int f = actor->flags;
 
@@ -1634,7 +1634,7 @@ void Level22_UpdateActors(void) {
         if (actor->subMode == 0 && st->idlePose2 == 0) {
           break;
         }
-        if (actor->type == 0xAA) {
+        if (actor->type == ACTOR_TYPE_GATEKEEPER_B) {
           actor->mode = 2;
           ANIM_RESET(actor, 2);
           continue;
@@ -1822,7 +1822,7 @@ void Level22_UpdateActors(void) {
           Actor *o;
 
           while ((o = *lp++) != 0) {
-            if (o->type == 0x41 &&
+            if (o->type == ACTOR_TYPE_PLATFORM_POD &&
                 (actor->posX - o->posX > 0 ? actor->posX - o->posX < 0xBB8
                                            : o->posX - actor->posX < 0xBB8) &&
                 (actor->posY - o->posY > 0 ? actor->posY - o->posY < 0xBB8
@@ -1935,7 +1935,7 @@ void Level22_UpdateActors(void) {
     /* Type 65: a pod. Raises a ring of four bobbing platforms (210) and
      * lobs shots (82) at the spot its partner watches; a charge or a
      * flame-and-charge pops it. */
-    case 65: {
+    case ACTOR_TYPE_PLATFORM_POD: {
       PlatformPodState *st = actor->state;
       int n = 4;
       int i;
@@ -1948,7 +1948,7 @@ void Level22_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x5D, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_GROUND_BOUNCE_SHARD, actor);
         }
         (*st->counter)--;
         for (i = 0; i < n; i++) {
@@ -1966,7 +1966,7 @@ void Level22_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x5D, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_GROUND_BOUNCE_SHARD, actor);
         }
         (*st->counter)--;
         for (i = 0; i < n; i++) {
@@ -2003,7 +2003,7 @@ void Level22_UpdateActors(void) {
           for (i = 0; i < n; i++) {
             BobbingPlatformState *b;
 
-            st->kids[i] = g_pfnLevelSpawnActor(0xD2, actor);
+            st->kids[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_BOBBING_PLATFORM, actor);
             st->kids[i]->cullRadius = 0;
             b = st->kids[i]->state;
             CopyVector(&st->kids[i]->posX, &actor->posX);
@@ -2024,7 +2024,7 @@ void Level22_UpdateActors(void) {
       case 2:
         if (*(int *)g_pActorListBase[st->partner].state == actor->group - 2 &&
             TickCountdownByFrameDelta(&st->shotTimer, 4) != 0) {
-          Actor *o = g_pfnLevelSpawnActor(0x52, actor);
+          Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_POD_SHOT, actor);
           PodShotState *sh = o->state;
           int d;
 
@@ -2070,7 +2070,7 @@ void Level22_UpdateActors(void) {
     /* Explosion shard with a ground bounce (ShardState). */
     case ACTOR_TYPE_SEED_POD_SHARD:
     case ACTOR_TYPE_SEED_POD_SHARD + 1:
-    case 93:
+    case ACTOR_TYPE_GROUND_BOUNCE_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1:
     case ACTOR_TYPE_LIFE_CHEST_SHARD:
@@ -3404,7 +3404,7 @@ void Level22_UpdateActors(void) {
     }
 
     /* Type 210: a spinning platform that bobs on a fixed period. */
-    case 210: {
+    case ACTOR_TYPE_BOBBING_PLATFORM: {
       BobbingPlatformState *st = actor->state;
 
       actor->cullRadius = 0x20;
@@ -3787,7 +3787,7 @@ void Level22_UpdateActors(void) {
      * flame, then bursts into three rings of debris and knocks the camera
      * back. */
     case ACTOR_TYPE_CRACKING_BOULDER: {
-      L16Boulder *st = actor->state;
+      CrackingBoulderState *st = actor->state;
 
       switch (actor->subMode) {
       case 0:
@@ -4005,7 +4005,7 @@ void Level22_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -4194,9 +4194,9 @@ void Level22_UpdateActors(void) {
       }
       break;
 
-    /* Fade-out props: removed as soon as their animation finishes. */
-    case 507:
-    case 508:      if (g_nActorAnimDone == 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD2_ENTER_FX:
+    case ACTOR_TYPE_HAZARD2_DEATH_FX:      if (g_nActorAnimDone == 0) {
         break;
       }
       DespawnActorRecord(actor);
@@ -4228,7 +4228,7 @@ void Level22_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;

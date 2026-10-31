@@ -105,7 +105,7 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
     st->pitch = 0;
     st->yaw = 0;
     st->roll = 0;
-    if (parent->type == 0xD) {
+    if (parent->type == ACTOR_TYPE_FOLLOWER) {
       st->bounces = 2;
     } else {
       st->bounces = 3;
@@ -275,7 +275,7 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x120 ... 0x121: {
+  case ACTOR_TYPE_BOUNCE_DEBRIS ... ACTOR_TYPE_BOUNCE_DEBRIS + 1: {
     ShardState *st = rec->state;
     int yaw;
     int pitch;
@@ -341,7 +341,7 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
     InsertActorIntoSpatialGrid(rec);
     break;
 
-  case 0x16B ... 0x16C: {
+  case ACTOR_TYPE_HAZARD1_ENTER_FX ... ACTOR_TYPE_HAZARD1_DEATH_FX: {
     int ground;
     int z;
     int gap;
@@ -375,14 +375,14 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
     HideActorRenderRecord(rec);
     break;
 
-  case 0x1CA ... 0x1CB: {
+  case ACTOR_TYPE_REBOUND_DEBRIS ... ACTOR_TYPE_REBOUND_DEBRIS + 1: {
     FragmentState *st = rec->state;
 
     InitActorRenderDefaults(rec);
     rec->cullRadius = 0x20;
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
-    if (parent->type == 0xB0) {
+    if (parent->type == ACTOR_TYPE_LOB_GUNNER_LOB) {
       st->vel[0] = RandomIntInRange(-0x64, 0x64);
       st->vel[1] = RandomIntInRange(-0x64, 0x64);
       st->vel[2] = RandomIntInRange(-0x3C, 0x6E);

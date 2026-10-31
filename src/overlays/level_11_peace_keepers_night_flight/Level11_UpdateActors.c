@@ -1346,7 +1346,7 @@ void Level11_UpdateActors(void) {
     }
     /* Flight-level target (ring/chest) that hands a helper to its owner and
      * pays out when Spyro flies through it. */
-    case 0x154: {
+    case ACTOR_TYPE_FLIGHT_RING: {
       TargetState *st = actor->state;
 
       if (g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0 && st->helper == 0) {
@@ -1544,7 +1544,7 @@ void Level11_UpdateActors(void) {
         g_nFlightTallyShownClass = -1;
 
         for (i = 3; i >= 0; i--) {
-          st->digit[i] = g_pfnLevelSpawnActor(0x147, actor);
+          st->digit[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_HUD_CLOCK_SEPARATOR, actor);
           st->digit[i]->cullRadius = 0xFF;
           st->digit[i]->otBias = 0x20;
           st->digit[i]->posZ = 0x1000;
@@ -1561,7 +1561,7 @@ void Level11_UpdateActors(void) {
 
         if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
           for (i = 4; i < 8; i++) {
-            st->digit[i] = g_pfnLevelSpawnActor(0x147, actor);
+            st->digit[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_HUD_CLOCK_SEPARATOR, actor);
             st->digit[i]->cullRadius = 0xFF;
             st->digit[i]->otBias = 0x20;
             st->digit[i]->rotZ = 0;
@@ -1644,7 +1644,7 @@ void Level11_UpdateActors(void) {
         t = g_nFlightRunClock;
         i = t / 3600;
         if (i != 0) {
-          st->digit[6]->type = i + 0x104;
+          st->digit[6]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
           st->digit[4]->cullRadius = 0xFF;
           st->digit[5]->cullRadius = 0xFF;
           st->digit[6]->cullRadius = 0xFF;
@@ -1654,7 +1654,7 @@ void Level11_UpdateActors(void) {
           st->digit[6]->cullRadius = 0;
         }
         i = t * 10 / 6 % 10;
-        st->digit[7]->type = i + 0x104;
+        st->digit[7]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
         st->digit[7]->cullRadius = 0xFF;
       } else {
         t = g_nFlightTimeRemaining;
@@ -1666,7 +1666,7 @@ void Level11_UpdateActors(void) {
       i = t / 600;
       if (i != 0) {
         i = i % 6;
-        st->digit[0]->type = i + 0x104;
+        st->digit[0]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
         st->digit[0]->cullRadius = 0xFF;
       } else {
         st->digit[0]->cullRadius = 0;
@@ -1676,9 +1676,9 @@ void Level11_UpdateActors(void) {
         int min = t / 60;
 
         i = min % 10;
-        st->digit[1]->type = i + 0x104;
+        st->digit[1]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
         i = t / 6 - min * 10;
-        st->digit[3]->type = i + 0x104;
+        st->digit[3]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
 
         if (g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0) {
           i = min;
@@ -1800,9 +1800,9 @@ void Level11_UpdateActors(void) {
       }
       break;
     }
-    /* Fade-out props: removed as soon as their animation finishes. */
-    case 405:
-    case 477:
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
       if (g_nActorAnimDone == 0) {
         break;
       }
@@ -1923,12 +1923,12 @@ void Level11_UpdateActors(void) {
       break;
     }
     /* Flight trigger: when hit, plays its sound, spawns its reward and
-     * retires itself as type 0x18F. */
-    case 0x18D:
-    case 0x18F: {
+     * retires itself as ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT. */
+    case ACTOR_TYPE_FLAME_FLIGHT_TARGET:
+    case ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT: {
       int *st = actor->state;
 
-      if (actor->type == 0x18D && (actor->flags & ACTOR_HIT_FLAME)) {
+      if (actor->type == ACTOR_TYPE_FLAME_FLIGHT_TARGET && (actor->flags & ACTOR_HIT_FLAME)) {
         Actor *reward;
 
         TallyFlightTarget(st[0]);
@@ -1939,7 +1939,7 @@ void Level11_UpdateActors(void) {
         if (st[2] >= 0) {
           ModifyWorldChunkAnimFlags(st[2], 0xFC, 0);
         }
-        actor->type = 0x18F;
+        actor->type = ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT;
       }
       break;
     }

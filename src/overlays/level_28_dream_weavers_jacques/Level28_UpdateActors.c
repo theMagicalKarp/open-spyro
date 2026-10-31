@@ -305,7 +305,7 @@ void Level28_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -362,7 +362,7 @@ void Level28_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -676,8 +676,8 @@ void Level28_UpdateActors(void) {
     /* Types 45/46: a charging ram. Paces, charges when Spyro comes close
      * and is not looking, and walks home if it overshoots; 45 is the big
      * one (shorter reach, only a charge or a flame-charge hurts it). */
-    case 45:
-    case 46: {
+    case ACTOR_TYPE_BIG_CHARGING_RAM:
+    case ACTOR_TYPE_CHARGING_RAM: {
       ChargingRamState *st = actor->state;
       int range = 0x708;
       int dist;
@@ -687,7 +687,7 @@ void Level28_UpdateActors(void) {
       if (dist < 0x32C8) {
         dist = VectorLength(g104, 0);
       }
-      if (actor->type == 0x2D) {
+      if (actor->type == ACTOR_TYPE_BIG_CHARGING_RAM) {
         range = 0x5DC;
       }
       if (st->init == 0) {
@@ -699,12 +699,12 @@ void Level28_UpdateActors(void) {
           actor->anim = 2;
         }
       }
-      if (actor->type == 0x2D) {
+      if (actor->type == ACTOR_TYPE_BIG_CHARGING_RAM) {
         TickActorFlameGlow(actor);
       }
       if (actor->mode != 4 &&
-          ((actor->type == 0x2D && (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER))) ||
-           (actor->type == 0x2E && (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER))))) {
+          ((actor->type == ACTOR_TYPE_BIG_CHARGING_RAM && (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER))) ||
+           (actor->type == ACTOR_TYPE_CHARGING_RAM && (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER))))) {
         st->knock = 0x190;
         st->lift = 0xAA;
         st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
@@ -731,7 +731,7 @@ void Level28_UpdateActors(void) {
       case 0:
       case 2:
         TickCountdownByFrameDelta(&st->timer, 4);
-        if (st->timer == 0 && dist < 0x2000 && actor->type == 0x2E &&
+        if (st->timer == 0 && dist < 0x2000 && actor->type == ACTOR_TYPE_CHARGING_RAM &&
             st->mode != 0 &&
             AbsAngleDelta8(spy->bodyRotZ,
                           ArcTan2(actor->posX - spy->posX,
@@ -763,7 +763,7 @@ void Level28_UpdateActors(void) {
         if (actor->nextFrame < 10) {
           int h = actor->rotZ;
 
-          if (actor->type == 0x2D) {
+          if (actor->type == ACTOR_TYPE_BIG_CHARGING_RAM) {
             h = (h + 0x1E) & 0xFF;
           }
           g_anSpyroRequestVelocity.x = (g_anCosineLut[h] * 5) >> 8;
@@ -858,7 +858,7 @@ void Level28_UpdateActors(void) {
 
     /* Type 47: a rock. Rides between its thrower's hands, is thrown at
      * Spyro's feet and smashes on landing. */
-    case 47: {
+    case ACTOR_TYPE_THROWN_ROCK: {
       CarriedRockState *st = actor->state;
 
       if (st->mode != 0x63) {
@@ -990,8 +990,8 @@ void Level28_UpdateActors(void) {
       continue;
     }
 
-    case 507:
-    case 508:
+    case ACTOR_TYPE_HAZARD2_ENTER_FX:
+    case ACTOR_TYPE_HAZARD2_DEATH_FX:
       if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
@@ -1934,7 +1934,7 @@ void Level28_UpdateActors(void) {
     /* Type 126: a path walker. Turns to face Spyro when he is near, walks
      * its path, sings its tune while it rests, and can be carried and
      * thrown by its rider. */
-    case 126: {
+    case ACTOR_TYPE_SINGING_PATH_WALKER: {
       PathWalkerState *st = actor->state;
 
       if (st->init == 0) {
@@ -2171,7 +2171,7 @@ void Level28_UpdateActors(void) {
 
     /* Type 150: Jacques. Hops from stop to stop around his path ring,
      * throwing rocks (47) when Spyro looks at him from afar. */
-    case 150: {
+    case ACTOR_TYPE_JACQUES: {
       JacquesState *st = actor->state;
 
       if (st->init == 0) {
@@ -2247,7 +2247,7 @@ void Level28_UpdateActors(void) {
           ENTER_POSE(actor, 0);
         }
         if (actor->nextFrame == 0 && st->child == 0) {
-          st->child = g_pfnLevelSpawnActor(0x2F, actor);
+          st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_THROWN_ROCK, actor);
           st->child->groundCode = -1;
           ((CarriedRockState *)st->child->state)->partner = actor;
           ((CarriedRockState *)st->child->state)->mode = 1;
@@ -2304,7 +2304,7 @@ void Level28_UpdateActors(void) {
 
     /* Type 160: wandering critter; knocked away when hit. */
     case ACTOR_TYPE_WANDERING_CRITTER: {
-      L26Critter *st = actor->state;
+      CritterKnockState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
         EBB_BREAK();
@@ -2725,7 +2725,7 @@ void Level28_UpdateActors(void) {
       break;
     }
 
-    case 234:
+    case ACTOR_TYPE_REBOUND_FX:
       if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
@@ -3102,7 +3102,7 @@ void Level28_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -3304,7 +3304,7 @@ void Level28_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;

@@ -248,7 +248,7 @@ void Level30_UpdateActors(void) {
 
           for (; parent < g_pActorPoolDynBase; parent++) {
             if (parent != actor && parent->mode < ACTOR_MODE_DORMANT &&
-                parent->type == 13) {
+                parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -305,7 +305,7 @@ void Level30_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -1592,7 +1592,7 @@ void Level30_UpdateActors(void) {
 
     /* Boss-door trigger: opens the gnexus door when Spyro walks up facing it.
      */
-    case 192:
+    case ACTOR_TYPE_HOME_TALKER + 5:
       if (actor->mode == 0) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
           break;
@@ -1744,7 +1744,7 @@ void Level30_UpdateActors(void) {
 
     /* Hub ambience (MusicState): starts the three voice channels and keeps
      * them alive. */
-    case 208: {
+    case ACTOR_TYPE_HUB_AMBIENCE: {
       MusicState *st = actor->state;
 
       if (st->started == 0) {
@@ -1789,9 +1789,10 @@ void Level30_UpdateActors(void) {
       break;
     }
 
-    /* Charging gnorc (ChargeState): winds up when hit, dashes, recovers. */
-    case 236: {
-      ChargeState *st;
+    /* Wandering critter (WanderKnockState): roams (UpdateActorWander); struck, it
+     * is knocked away with a death drop. */
+    case ACTOR_TYPE_WANDERING_CRITTER_C: {
+      WanderKnockState *st;
 
       EBB_BREAK();
       st = actor->state;
@@ -2343,9 +2344,9 @@ void Level30_UpdateActors(void) {
       }
       break;
 
-    /* Fade-out props: removed as soon as their animation finishes. */
-    case 405:
-    case 477:
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
       if (g_nActorAnimDone == 0) {
         break;
       }

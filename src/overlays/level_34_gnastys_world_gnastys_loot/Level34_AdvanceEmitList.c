@@ -30,8 +30,8 @@
  * The ground-level arm set: it drops the flight classes 0xD/0x13/0x1A/0x1B
  * and adds 0x6 (the orbiting spark, which reads a world point through the
  * pointer at +0x18), 0x15 and 0x4C (the two unit-circle swirls, which share
- * a cross-jumped sine tail), 0x18 (the fire jet, whose amplitude tracks the
- * global heat level g_nDragonRescueTimer), 0x46 and 0x50 (two midpoint-relaxation
+ * a cross-jumped sine tail), 0x18 (EMIT_RESCUE_SWIRL, whose radius and height track
+ * g_nDragonRescueTimer), 0x46 and 0x50 (two midpoint-relaxation
  * classes).  Word-identical (bar the jump-table symbol and branch
  * displacements) to the copies in level_1 / level_4 / level_10 / level_28.
  *
@@ -53,6 +53,7 @@
 #include "level_globals.h"
 #include "level_advance_emit_list.h"
 #include "spyro_state.h"
+#include "emit_record.h"
 
 
 void Level34_AdvanceEmitList(int step) {
@@ -65,7 +66,7 @@ void Level34_AdvanceEmitList(int step) {
 
   do {
     switch (rec[0]) {
-    case 0x0:
+    case EMIT_SPARK_VEL:
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -81,7 +82,7 @@ void Level34_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x1:
+    case EMIT_SPARK_VEL_DIM:
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -97,7 +98,7 @@ void Level34_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x2:
+    case EMIT_SPARK_RISE:
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -113,7 +114,7 @@ void Level34_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x9:
+    case EMIT_SPEED_DUST:
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -126,7 +127,7 @@ void Level34_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xA:
+    case EMIT_SPYRO_ORBIT_SPARKLE:
       /* The homing sparkle: it only lives while Spyro is on screen. */
       if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < 0) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
@@ -152,7 +153,7 @@ void Level34_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xC:
+    case EMIT_ACTOR_SPARK:
       rec[0xB] += 8;
       rec[0xA] += 2;
       if (rec[0xC] != 0) {
@@ -169,7 +170,7 @@ void Level34_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x10:
+    case EMIT_FADING_SPARK:
       /* Gnasty's cauldron drip: a slow ember that dies when its red
        * channel bottoms out. */
       AddSVector(POS, POS, VEL);
@@ -186,7 +187,7 @@ void Level34_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x11:
+    case EMIT_SPARK_RGB:
       /* The same ember with a late red cut-off at age 9. */
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
@@ -205,7 +206,7 @@ void Level34_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x15: {
+    case EMIT_RISING_SPIRAL: {
       int s;
 
       rec[0x18] += g_nFrameStep * 4;
@@ -221,7 +222,7 @@ void Level34_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x1A:
+    case EMIT_FLIGHT_TRAIL:
       rec[0xC] -= 8;
       rec[0xD] -= 8;
       rec[0xE] -= 8;
@@ -230,7 +231,7 @@ void Level34_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x1B:
+    case EMIT_FLIGHT_GROUND_WAKE:
       rec[0xC] -= 8;
       rec[0xD] -= 8;
       rec[0xE] -= 8;
@@ -240,7 +241,7 @@ void Level34_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x21: {
+    case EMIT_DUST_PUFF: {
       int c;
 
       AddSVector(POS, POS, VEL);
@@ -271,7 +272,7 @@ void Level34_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x42: {
+    case EMIT_TWINKLE: {
       int i;
       int j;
       int r;
@@ -307,7 +308,7 @@ void Level34_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x46: {
+    case EMIT_STREAK_BURST: {
       unsigned short d[3];
       int j;
       int r;
@@ -361,7 +362,7 @@ void Level34_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x47: {
+    case EMIT_STREAK_BURST_WHITE: {
       int d[3];
       int j;
       int r;
@@ -435,7 +436,7 @@ void Level34_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4A:
+    case EMIT_YELLOW_DUST:
       /* The drifting mote: no colour ramp, dies on the alive byte first. */
       HU(0x4) += HU(0x10);
       HU(0x6) += HU(0x12);
@@ -447,7 +448,7 @@ void Level34_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x4C: {
+    case EMIT_RISING_SPIRAL_SMEAR: {
       int s;
 
       rec[0x18] += g_nFrameStep * 4;
@@ -462,7 +463,7 @@ void Level34_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4D: {
+    case EMIT_DRIFT_STREAK: {
       short d[3];
 
       d[0] = (HS(0xA) - HS(0x4)) >> 1;
@@ -482,7 +483,7 @@ void Level34_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4E: {
+    case EMIT_EMBER: {
       int j;
       int k;
       int r;
@@ -519,7 +520,7 @@ void Level34_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4F: {
+    case EMIT_FLAME_STREAK: {
       short d[3];
 
       d[0] = (HS(0xA) - HS(0x4)) >> 1;

@@ -274,7 +274,7 @@ void Level11_FlightResults_Draw(void)
         ACTOR_RAW(r, int, posX) = 0x1CC;
         ACTOR_RAW(r, int, posY) = 0x28;
         ACTOR_RAW(r, int, posZ) = 0xC00;
-        ACTOR_RAW(r, unsigned char, rotY) = ((short) g_anCosineLut[g_dwHudBobSinePhase]) >> 9;
+        ((Actor *)r)->rotY = ((short) g_anCosineLut[g_dwHudBobSinePhase]) >> 9;
       }
       ((Actor *) g_pSpriteRecordWriteCursor)->rotZ = g_dwHudBobSinePhase;
       ((Actor *) g_pSpriteRecordWriteCursor)->otBias = 0x7F;

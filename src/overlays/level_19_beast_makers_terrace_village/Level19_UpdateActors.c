@@ -367,7 +367,7 @@ void Level19_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -424,7 +424,7 @@ void Level19_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -592,7 +592,7 @@ void Level19_UpdateActors(void) {
 
     /* Type 32: rides its carrier until the carrier reaches pose 4, then
      * behaves as a dragon egg. */
-    case 32: {
+    case ACTOR_TYPE_CARRIED_EGG: {
       Actor **st = actor->state;
 
       if (actor->subMode != 0 || (*st)->mode != 4) {
@@ -774,7 +774,7 @@ void Level19_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x5D, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_GROUND_BOUNCE_SHARD, actor);
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
@@ -936,7 +936,7 @@ void Level19_UpdateActors(void) {
     /* Explosion shard with a ground bounce (ShardState). */
     case ACTOR_TYPE_SEED_POD_SHARD:
     case ACTOR_TYPE_SEED_POD_SHARD + 1:
-    case 93:
+    case ACTOR_TYPE_GROUND_BOUNCE_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1:
     case ACTOR_TYPE_LIFE_CHEST_SHARD:
@@ -2044,9 +2044,8 @@ void Level19_UpdateActors(void) {
 
     
 
-    /* Types 363/364: a one-shot effect that is removed when its animation
-     * ends. */
-    case 234:      if (g_nActorAnimDone != 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_REBOUND_FX:      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -2422,7 +2421,7 @@ void Level19_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -2650,10 +2649,9 @@ void Level19_UpdateActors(void) {
 
     
 
-    /* Types 363/364: a one-shot effect that is removed when its animation
-     * ends. */
-    case 507:
-    case 508:      if (g_nActorAnimDone != 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD2_ENTER_FX:
+    case ACTOR_TYPE_HAZARD2_DEATH_FX:      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -2662,7 +2660,7 @@ void Level19_UpdateActors(void) {
     /* Type 390: spinning chest. Each charge spins it faster (with a rising
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
-      L26Spinner *st = actor->state;
+      SpinChestState *st = actor->state;
       int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
@@ -2679,7 +2677,7 @@ void Level19_UpdateActors(void) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
       if (actor->subMode == 0) {
-        st->lid = g_pfnLevelSpawnActor(0x188, actor);
+        st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_SPARK, actor);
         st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
         actor->subMode = 1;
@@ -2733,7 +2731,7 @@ void Level19_UpdateActors(void) {
      * Spyro (or away from him when there is none), and bursts on what it
      * hits. */
     case ACTOR_TYPE_HOMING_SPARK: {
-      L26Spark *st = actor->state;
+      HomingSparkState *st = actor->state;
       int i;
 
       if (actor->subMode == 1) {
@@ -2825,7 +2823,7 @@ void Level19_UpdateActors(void) {
     /* Type 401: breakable rock. Shakes when struck; a charge shatters it
      * into rubble and dust and removes it. */
     case ACTOR_TYPE_BREAKABLE_ROCK: {
-      L31Rock *st = actor->state;
+      BreakableRockState *st = actor->state;
 
       if (st->shake != 0) {
         st->shake += g_nFrameStep;
@@ -2892,7 +2890,7 @@ void Level19_UpdateActors(void) {
     /* Type 402: cannon. Smokes while it builds up, fires, then flies its
      * ball along a path to the target, waking the linked actor. */
     case ACTOR_TYPE_CANNON: {
-      L25Shot *st = actor->state;
+      CannonState *st = actor->state;
 
       if (st->init == 1) {
         int pitch;
@@ -3040,7 +3038,7 @@ void Level19_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;
@@ -3242,7 +3240,7 @@ void Level19_UpdateActors(void) {
 
     /* Type 461: war drum. Beats on a timer (with its own voice), and is
      * knocked away when hit. */
-    case 461: {
+    case ACTOR_TYPE_WAR_DRUM: {
       WarDrumState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && (unsigned int)(actor->mode - 3) >= 2) {
@@ -3556,7 +3554,7 @@ void Level19_UpdateActors(void) {
       case 4:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (st->fx == 0 && actor->nextFrame - 2U < 0x1A) {
-          st->fx = g_pfnLevelSpawnActor(0x20, actor);
+          st->fx = g_pfnLevelSpawnActor(ACTOR_TYPE_CARRIED_EGG, actor);
         }
         if (st->bolt == 0 && actor->nextFrame - 0xFU < 3 &&
             ApproxDist2D(&actor->posX, spy) < 0x1194) {

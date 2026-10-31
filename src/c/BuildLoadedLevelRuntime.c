@@ -332,7 +332,7 @@ sprites:
   p = (int *)(((char *)base) + (*base));
   g_pActorPoolDynBase = ((char *)g_pActorListBase) + (i * ACTOR_SIZE);
   g_pActorPoolFreeHead = g_pActorPoolDynBase;
-  ((char *)g_pActorPoolDynBase)[0x48] = 0xFF;
+  ((Actor *)g_pActorPoolDynBase)->mode = ACTOR_MODE_END;
   g_nActorPoolLiveCount = 0;
   g_pActorAuxPoolTop = p;
   g_pActorAuxPoolFreeHead = p;
@@ -400,10 +400,10 @@ sprites:
   mask = 0;
   i = 0;
   rec = (char *)g_pActorListBase;
-  if (ACTOR_RAW(rec, unsigned char, mode) != ACTOR_MODE_END) {
+  if (((Actor *)rec)->mode != ACTOR_MODE_END) {
     do {
       r = (char *)((i * ACTOR_SIZE) + ((int)rec));
-      if (((int *)(&g_apActorMeshTable))[ACTOR_RAW(r, short, type)] < 0) {
+      if (((int *)(&g_apActorMeshTable))[((Actor *)r)->type] < 0) {
         InsertActorIntoSpatialGrid(r);
       } else {
         HideActorRenderRecord(r);
@@ -437,7 +437,7 @@ sprites:
     rec = *(char *volatile *)&g_pActorListBase;
   }
   i = 0;
-  if (ACTOR_RAW(rec, unsigned char, mode) != ACTOR_MODE_END) {
+  if (((Actor *)rec)->mode != ACTOR_MODE_END) {
     do {
       register int sh2 asm("$5");
       register int tbl asm("$3");
@@ -451,10 +451,10 @@ sprites:
       if ((*((int *)(wi + row))) & b3) {
         if ((*(int *)((char *)g_anRunningKillBitmap + wi) & b3) == 0) {
           r = (char *)((i * ACTOR_SIZE) + ((int)rec));
-          if ((ACTOR_RAW(r, unsigned char, killGroup) & 0x7F) == 0x7D) {
+          if ((((Actor *)r)->killGroup & 0x7F) == 0x7D) {
             DespawnActorRecord(r);
           } else {
-            ACTOR_RAW(r, unsigned char, dropKind) = 0xFF;
+            ((Actor *)r)->dropKind = 0xFF;
           }
         } else {
           {

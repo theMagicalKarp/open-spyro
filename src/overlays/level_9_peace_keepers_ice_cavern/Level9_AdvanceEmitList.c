@@ -30,8 +30,8 @@
  * The ground-level arm set: it drops the flight classes 0xD/0x13/0x1A/0x1B
  * and adds 0x6 (the orbiting spark, which reads a world point through the
  * pointer at +0x18), 0x15 and 0x4C (the two unit-circle swirls, which share
- * a cross-jumped sine tail), 0x18 (the fire jet, whose amplitude tracks the
- * global heat level g_nDragonRescueTimer), 0x46 and 0x50 (two midpoint-relaxation
+ * a cross-jumped sine tail), 0x18 (EMIT_RESCUE_SWIRL, whose radius and height track
+ * g_nDragonRescueTimer), 0x46 and 0x50 (two midpoint-relaxation
  * classes).  Word-identical (bar the jump-table symbol and branch
  * displacements) to the copies in level_1 / level_4 / level_10 / level_28.
  *
@@ -53,6 +53,7 @@
 #include "level_globals.h"
 #include "level_advance_emit_list.h"
 #include "spyro_state.h"
+#include "emit_record.h"
 
 
 
@@ -66,7 +67,7 @@ void Level9_AdvanceEmitList(int step) {
 
   do {
     switch (rec[0]) {
-    case 0x0:  /* <- Level10_AdvanceEmitList */
+    case EMIT_SPARK_VEL:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -82,7 +83,7 @@ void Level9_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x1:  /* <- Level10_AdvanceEmitList */
+    case EMIT_SPARK_VEL_DIM:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -98,7 +99,7 @@ void Level9_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x2:  /* <- Level10_AdvanceEmitList */
+    case EMIT_SPARK_RISE:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -114,7 +115,7 @@ void Level9_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x9:  /* <- Level10_AdvanceEmitList */
+    case EMIT_SPEED_DUST:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -127,7 +128,7 @@ void Level9_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xa:  /* <- Level10_AdvanceEmitList */
+    case EMIT_SPYRO_ORBIT_SPARKLE:  /* <- Level10_AdvanceEmitList */
       /* The homing sparkle: it only lives while Spyro is on screen. */
       if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < 0) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
@@ -153,7 +154,7 @@ void Level9_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xc:  /* <- Level10_AdvanceEmitList */
+    case EMIT_ACTOR_SPARK:  /* <- Level10_AdvanceEmitList */
       rec[0xB] += 8;
       rec[0xA] += 2;
       if (rec[0xC] != 0) {
@@ -170,7 +171,7 @@ void Level9_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x0F: {
+    case EMIT_JITTER_BURST: {
       int a[3];
       int b[3];
       int rq;
@@ -204,7 +205,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x15:  /* <- Level10_AdvanceEmitList */
+    case EMIT_RISING_SPIRAL:  /* <- Level10_AdvanceEmitList */
     {
       int s;
 
@@ -221,7 +222,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x18:  /* <- Level10_AdvanceEmitList */
+    case EMIT_RESCUE_SWIRL:  /* <- Level10_AdvanceEmitList */
     {
       int heat;
 
@@ -247,7 +248,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x21:  /* <- Level10_AdvanceEmitList */
+    case EMIT_DUST_PUFF:  /* <- Level10_AdvanceEmitList */
     {
       int c;
 
@@ -279,7 +280,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x42:  /* <- Level10_AdvanceEmitList */
+    case EMIT_TWINKLE:  /* <- Level10_AdvanceEmitList */
     {
       int i;
       int j;
@@ -316,7 +317,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x46:  /* <- Level10_AdvanceEmitList */
+    case EMIT_STREAK_BURST:  /* <- Level10_AdvanceEmitList */
     {
       unsigned short d[3];
       int j;
@@ -371,7 +372,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x47:  /* <- Level10_AdvanceEmitList */
+    case EMIT_STREAK_BURST_WHITE:  /* <- Level10_AdvanceEmitList */
     {
       int d[3];
       int j;
@@ -481,7 +482,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4c:  /* <- Level10_AdvanceEmitList */
+    case EMIT_RISING_SPIRAL_SMEAR:  /* <- Level10_AdvanceEmitList */
     {
       int s;
 
@@ -497,7 +498,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4d:  /* <- Level10_AdvanceEmitList */
+    case EMIT_DRIFT_STREAK:  /* <- Level10_AdvanceEmitList */
     {
       short d[3];
 
@@ -518,7 +519,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4e:  /* <- Level10_AdvanceEmitList */
+    case EMIT_EMBER:  /* <- Level10_AdvanceEmitList */
     {
       int j;
       int k;
@@ -556,7 +557,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4f:  /* <- Level10_AdvanceEmitList */
+    case EMIT_FLAME_STREAK:  /* <- Level10_AdvanceEmitList */
     {
       short d[3];
 
@@ -584,7 +585,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x50:  /* <- Level10_AdvanceEmitList */
+    case EMIT_FALLING_STREAK_BURST:  /* <- Level10_AdvanceEmitList */
     {
       short d[3];
 

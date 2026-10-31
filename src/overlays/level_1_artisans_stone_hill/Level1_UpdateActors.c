@@ -490,7 +490,7 @@ void Level1_UpdateActors(void) {
                 int nb;
               }
             }
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -553,7 +553,7 @@ void Level1_UpdateActors(void) {
                 int nb;
               }
             }
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -1505,7 +1505,7 @@ void Level1_UpdateActors(void) {
     }
 
     /* Sentry (SentryState). */
-    case 121: {
+    case ACTOR_TYPE_SENTRY: {
       SentryState *st;
 
       EBB_BREAK();
@@ -2328,7 +2328,7 @@ void Level1_UpdateActors(void) {
 
     /* Rearing critter (RearState): idles, rears up at Spyro, and spins away
      * when knocked back. */
-    case 113: {
+    case ACTOR_TYPE_REARING_CRITTER: {
       RearState *st;
 
       EBB_BREAK();
@@ -3156,9 +3156,9 @@ void Level1_UpdateActors(void) {
     }
 
     /* Camera-facing prop: turns toward the view once, on its first frame. */
-    case 222:
-    case 223:
-    case 224: {
+    case ACTOR_TYPE_CAMERA_FACING_PROP:
+    case ACTOR_TYPE_CAMERA_FACING_PROP + 1:
+    case ACTOR_TYPE_CAMERA_FACING_PROP + 2: {
       int *st = actor->state;
       int *view;
 
@@ -3173,8 +3173,8 @@ void Level1_UpdateActors(void) {
       break;
     }
 
-    /* Fade-out prop: removed as soon as its animation finishes. */
-    case 234:
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_REBOUND_FX:
       if (g_nActorAnimDone == 0) {
         break;
       }
@@ -3731,10 +3731,9 @@ void Level1_UpdateActors(void) {
       }
       break;
 
-    /* Types 363/364: a one-shot effect that is removed when its animation
-     * ends. */
-    case 405:
-    case 477:      if (g_nActorAnimDone != 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -3781,7 +3780,7 @@ void Level1_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;

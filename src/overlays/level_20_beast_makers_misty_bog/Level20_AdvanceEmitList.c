@@ -29,8 +29,8 @@
  *
  * The ground-level arm set: it drops the flight classes 0xD/0x13/0x1A/0x1B
  * and the orbiting-spark class 0x6, and adds 0x15 and 0x4C (the two unit-circle swirls, which share
- * a cross-jumped sine tail), 0x18 (the fire jet, whose amplitude tracks the
- * global heat level g_nDragonRescueTimer), 0x46 and 0x50 (two midpoint-relaxation
+ * a cross-jumped sine tail), 0x18 (EMIT_RESCUE_SWIRL, whose radius and height track
+ * g_nDragonRescueTimer), 0x46 and 0x50 (two midpoint-relaxation
  * classes).  This is the level_2 variant minus class 0x6; dropping that arm
  * also drops the only use of the second stack vector, and the array must go
  * with it -- left declared, its address wins a callee-saved register and the
@@ -56,6 +56,7 @@
 #include "level_globals.h"
 #include "level_advance_emit_list.h"
 #include "spyro_state.h"
+#include "emit_record.h"
 
 
 void Level20_AdvanceEmitList(int step) {
@@ -68,7 +69,7 @@ void Level20_AdvanceEmitList(int step) {
 
   do {
     switch (rec[0]) {
-    case 0x0:
+    case EMIT_SPARK_VEL:
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -84,7 +85,7 @@ void Level20_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x1:
+    case EMIT_SPARK_VEL_DIM:
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -100,7 +101,7 @@ void Level20_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x2:
+    case EMIT_SPARK_RISE:
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -116,7 +117,7 @@ void Level20_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x9:
+    case EMIT_SPEED_DUST:
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -129,7 +130,7 @@ void Level20_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xA:
+    case EMIT_SPYRO_ORBIT_SPARKLE:
       /* The homing sparkle: it only lives while Spyro is on screen. */
       if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < 0) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
@@ -155,7 +156,7 @@ void Level20_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xC:
+    case EMIT_ACTOR_SPARK:
       rec[0xB] += 8;
       rec[0xA] += 2;
       if (rec[0xC] != 0) {
@@ -172,7 +173,7 @@ void Level20_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x15: {
+    case EMIT_RISING_SPIRAL: {
       int s;
 
       rec[0x18] += g_nFrameStep * 4;
@@ -188,7 +189,7 @@ void Level20_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x18: {
+    case EMIT_RESCUE_SWIRL: {
       int heat;
 
       if (rec[0xC] < 0xF0) {
@@ -213,7 +214,7 @@ void Level20_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x21: {
+    case EMIT_DUST_PUFF: {
       int c;
 
       AddSVector(POS, POS, VEL);
@@ -244,7 +245,7 @@ void Level20_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x42: {
+    case EMIT_TWINKLE: {
       int i;
       int j;
       int r;
@@ -280,7 +281,7 @@ void Level20_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x46: {
+    case EMIT_STREAK_BURST: {
       unsigned short d[3];
       int j;
       int r;
@@ -334,7 +335,7 @@ void Level20_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x47: {
+    case EMIT_STREAK_BURST_WHITE: {
       int d[3];
       int j;
       int r;
@@ -408,7 +409,7 @@ void Level20_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4C: {
+    case EMIT_RISING_SPIRAL_SMEAR: {
       int s;
 
       rec[0x18] += g_nFrameStep * 4;
@@ -423,7 +424,7 @@ void Level20_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4D: {
+    case EMIT_DRIFT_STREAK: {
       short d[3];
 
       d[0] = (HS(0xA) - HS(0x4)) >> 1;
@@ -443,7 +444,7 @@ void Level20_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4E: {
+    case EMIT_EMBER: {
       int j;
       int k;
       int r;
@@ -480,7 +481,7 @@ void Level20_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4F: {
+    case EMIT_FLAME_STREAK: {
       short d[3];
 
       d[0] = (HS(0xA) - HS(0x4)) >> 1;
@@ -507,7 +508,7 @@ void Level20_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x50: {
+    case EMIT_FALLING_STREAK_BURST: {
       short d[3];
 
       d[0] = HU(0xA) - HU(0x4);

@@ -18,7 +18,7 @@
 #include "actor.h"
 #include "level_emit_particles.h"
 
-/* Barrel state block (types 0xCA / 0xCF; L31Barrel in the updater). */
+/* Barrel state block (types 0xCA / 0xCF; FloatingBarrelState in the updater). */
 typedef struct SeekState {
   short pad00;
   short blast;  /* 0x02 blast pushed Spyro */
@@ -116,7 +116,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     st->pitch = 0;
     st->yaw = 0;
     st->roll = 0;
-    if (parent->type == 0xD) {
+    if (parent->type == ACTOR_TYPE_FOLLOWER) {
       st->bounces = 2;
     } else {
       st->bounces = 3;
@@ -189,7 +189,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     rec->tintMode = 0xD;
     break;
 
-  case 0xCA: {
+  case ACTOR_TYPE_FLOATING_BARREL: {
     SeekState *st = rec->state;
     int *pos;
     int probe[3];
@@ -213,7 +213,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0xCF: {
+  case ACTOR_TYPE_FLOATING_MINE: {
     SeekState *st = rec->state;
     int *pos;
     int probe[3];
@@ -336,10 +336,10 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x16B ... 0x16C:
-  case 0x190:
-  case 0x195:
-  case 0x1DD: {
+  case ACTOR_TYPE_HAZARD1_ENTER_FX ... ACTOR_TYPE_HAZARD1_DEATH_FX:
+  case ACTOR_TYPE_SPLASH:
+  case ACTOR_TYPE_HAZARD0_DEATH_FX:
+  case ACTOR_TYPE_HAZARD0_ENTER_FX: {
     int ground;
     int z;
     int gap;

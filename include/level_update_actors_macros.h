@@ -184,13 +184,13 @@
 /* Burst a barrel: splash, release its rider, and remove it. */
 #define BARREL_BURST(a, st)                                                    \
   {                                                                            \
-    Actor *sp_ = g_pfnLevelSpawnActor(0x190, a);                                         \
+    Actor *sp_ = g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, a);                                         \
     Actor *w_;                                                                 \
                                                                                \
     StopSoundVoicesByOwner(a, VOICE_STOP_ALL);                                                       \
     PlaySoundEffect(g_apActorMeshTable[(a)->type]->m_Sounds[3], sp_, SFX_MODE_3D, &sp_->sfxSlot);    \
     w_ = (st)->rider;                                                          \
-    if (w_ != 0 && w_->type == 0x9A && w_->mode == 2) {                       \
+    if (w_ != 0 && w_->type == ACTOR_TYPE_HATCH && w_->mode == 2) {                       \
       w_->subMode = 1;                                                           \
     }                                                                          \
     DespawnActorRecord(a);                                                          \

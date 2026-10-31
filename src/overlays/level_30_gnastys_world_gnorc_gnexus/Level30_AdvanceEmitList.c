@@ -38,6 +38,7 @@
 #include "level_globals.h"
 #include "level_advance_emit_list.h"
 #include "spyro_state.h"
+#include "emit_record.h"
 
 
 void Level30_AdvanceEmitList(int step) {
@@ -50,7 +51,7 @@ void Level30_AdvanceEmitList(int step) {
 
   do {
     switch (rec[0]) {
-    case 0x0:
+    case EMIT_SPARK_VEL:
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -66,7 +67,7 @@ void Level30_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x1:
+    case EMIT_SPARK_VEL_DIM:
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -82,7 +83,7 @@ void Level30_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x2:
+    case EMIT_SPARK_RISE:
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -98,7 +99,7 @@ void Level30_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x9:
+    case EMIT_SPEED_DUST:
       AddSVector(POS, POS, VEL);
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
@@ -111,7 +112,7 @@ void Level30_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xA:
+    case EMIT_SPYRO_ORBIT_SPARKLE:
       /* The homing sparkle: it only lives while Spyro is on screen. */
       if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < 0) || g_nSpyroDrawSuppressed != 0 ||
           g_nSpyroInputLockoutCountdown[0] <= 0) {
@@ -137,7 +138,7 @@ void Level30_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0xC:
+    case EMIT_ACTOR_SPARK:
       rec[0xB] += 8;
       rec[0xA] += 2;
       if (rec[0xC] != 0) {
@@ -154,7 +155,7 @@ void Level30_AdvanceEmitList(int step) {
       }
       break;
 
-    case 0x18: {
+    case EMIT_RESCUE_SWIRL: {
       int heat;
 
       if (rec[0xC] < 0xF0) {
@@ -179,7 +180,7 @@ void Level30_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x21: {
+    case EMIT_DUST_PUFF: {
       int c;
 
       AddSVector(POS, POS, VEL);
@@ -210,7 +211,7 @@ void Level30_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x42: {
+    case EMIT_TWINKLE: {
       int i;
       int j;
       int r;
@@ -246,7 +247,7 @@ void Level30_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x46: {
+    case EMIT_STREAK_BURST: {
       unsigned short d[3];
       int j;
       int r;
@@ -300,7 +301,7 @@ void Level30_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x47: {
+    case EMIT_STREAK_BURST_WHITE: {
       int d[3];
       int j;
       int r;
@@ -374,7 +375,7 @@ void Level30_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4D: {
+    case EMIT_DRIFT_STREAK: {
       short d[3];
 
       d[0] = (HS(0xA) - HS(0x4)) >> 1;
@@ -394,7 +395,7 @@ void Level30_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4E: {
+    case EMIT_EMBER: {
       int j;
       int k;
       int r;
@@ -431,7 +432,7 @@ void Level30_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4F: {
+    case EMIT_FLAME_STREAK: {
       short d[3];
 
       d[0] = (HS(0xA) - HS(0x4)) >> 1;
@@ -458,7 +459,7 @@ void Level30_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x50: {
+    case EMIT_FALLING_STREAK_BURST: {
       short d[3];
 
       d[0] = HU(0xA) - HU(0x4);

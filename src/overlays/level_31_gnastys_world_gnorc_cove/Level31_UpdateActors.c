@@ -311,7 +311,7 @@ void Level31_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -368,7 +368,7 @@ void Level31_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -1647,8 +1647,8 @@ void Level31_UpdateActors(void) {
     /* Type 154: hatch. Opens when struck (a charge or flame, or only a
      * charge for the sealed kind), releasing its occupant, and closes again
      * once Spyro and the camera have moved away. */
-    case 154: {
-      L31Hatch *st = actor->state;
+    case ACTOR_TYPE_HATCH: {
+      HatchState *st = actor->state;
       int kind;
       int mask;
 
@@ -1660,9 +1660,9 @@ void Level31_UpdateActors(void) {
       }
       if ((actor->flags & mask) && actor->mode != 2) {
         if (kind != 0) {
-          st->child = g_pfnLevelSpawnActor(0xCF, actor);
+          st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_FLOATING_MINE, actor);
         } else {
-          st->child = g_pfnLevelSpawnActor(0xCA, actor);
+          st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_FLOATING_BARREL, actor);
         }
         st->child->posZ += 0x233;
         st->child->flags = actor->flags;
@@ -2118,8 +2118,8 @@ void Level31_UpdateActors(void) {
 
     /* Type 199: mount. Carries a rider actor; knocked away (and the rider
      * dropped) when struck, or when its rider is knocked off. */
-    case 199: {
-      L31Mount *st = actor->state;
+    case ACTOR_TYPE_MOUNT: {
+      MountState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
         ((int *)g_pActorListBase[st->rider].state)[4] = -1;
@@ -2202,8 +2202,8 @@ void Level31_UpdateActors(void) {
     /* Type 200: carrier. Waits by its hatch until the hatch opens, lifts
      * the occupant out, carries it along its two hand bones and throws it;
      * knocked away when struck. */
-    case 200: {
-      L31Carrier *st = actor->state;
+    case ACTOR_TYPE_HATCH_CARRIER: {
+      HatchCarrierState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 3) {
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
@@ -2229,7 +2229,7 @@ void Level31_UpdateActors(void) {
 
       case 1:
         if (st->held == 0 && actor->nextFrame >= 4) {
-          L31Hatch *hs = g_pActorListBase[st->hatch].state;
+          HatchState *hs = g_pActorListBase[st->hatch].state;
 
           if (hs->child != 0) {
             st->held = hs->child;
@@ -2297,8 +2297,8 @@ void Level31_UpdateActors(void) {
     /* Type 201: thrower. Waits for Spyro, walks up, winds up and throws the
      * actor it carries in its hands (a charge makes it duck and try again);
      * knocked away by a charge while exposed. */
-    case 201: {
-      L31Thrower *st = actor->state;
+    case ACTOR_TYPE_CARRIED_THROWER: {
+      CarriedThrowerState *st = actor->state;
       int thrown = 0;
 
       TickActorFlameGlow(actor);
@@ -2499,8 +2499,8 @@ void Level31_UpdateActors(void) {
     /* Type 202: floating barrel. Bobs on the water; struck, it bursts into
      * staves and splinters and its blast pushes Spyro back, then it sinks
      * and is removed. */
-    case 202: {
-      L31Barrel *st = actor->state;
+    case ACTOR_TYPE_FLOATING_BARREL: {
+      FloatingBarrelState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) &&
           (unsigned int)(actor->mode - 2) >= 2) {
@@ -2615,7 +2615,7 @@ void Level31_UpdateActors(void) {
           }
         }
         w = st->rider;
-        if (w != 0 && w->type == 0x9A && w->mode == 2) {
+        if (w != 0 && w->type == ACTOR_TYPE_HATCH && w->mode == 2) {
           w->subMode = 1;
         }
         st->timer = 0;
@@ -2695,8 +2695,8 @@ void Level31_UpdateActors(void) {
     /* Type 207: floating mine. Drifts like the barrel; a flame sets it
      * running at the nearest target in front of it, and it bursts on
      * whatever it hits. */
-    case 207: {
-      L31Barrel *st = actor->state;
+    case ACTOR_TYPE_FLOATING_MINE: {
+      FloatingBarrelState *st = actor->state;
       int i;
       unsigned char s;
 
@@ -2865,7 +2865,7 @@ void Level31_UpdateActors(void) {
           }
         }
         w = st->rider;
-        if (w != 0 && w->type == 0x9A && w->mode == 2) {
+        if (w != 0 && w->type == ACTOR_TYPE_HATCH && w->mode == 2) {
           w->subMode = 1;
         }
         st->timer = 0;
@@ -2977,8 +2977,8 @@ void Level31_UpdateActors(void) {
 
     /* Type 236: wandering critter. Roams its patch, pauses now and then, and
      * is knocked away and removed when struck. */
-    case 236: {
-      L31Critter *st = actor->state;
+    case ACTOR_TYPE_WANDERING_CRITTER_C: {
+      RoamingCritterState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
@@ -3507,7 +3507,7 @@ void Level31_UpdateActors(void) {
      * flame, then bursts into three rings of debris and knocks the camera
      * back. */
     case ACTOR_TYPE_CRACKING_BOULDER: {
-      L16Boulder *st = actor->state;
+      CrackingBoulderState *st = actor->state;
 
       switch (actor->subMode) {
       case 0:
@@ -3725,7 +3725,7 @@ void Level31_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -3915,13 +3915,12 @@ void Level31_UpdateActors(void) {
       }
       break;
 
-    /* Types 363/364: a one-shot effect that is removed when its animation
-     * ends. */
-    case 363:
-    case 364:
-    case 400:
-    case 405:
-    case 477:      if (g_nActorAnimDone != 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD1_ENTER_FX:
+    case ACTOR_TYPE_HAZARD1_DEATH_FX:
+    case ACTOR_TYPE_SPLASH:
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -3930,7 +3929,7 @@ void Level31_UpdateActors(void) {
     /* Type 401: breakable rock. Shakes when struck; a charge shatters it
      * into rubble and dust and removes it. */
     case ACTOR_TYPE_BREAKABLE_ROCK: {
-      L31Rock *st = actor->state;
+      BreakableRockState *st = actor->state;
 
       if (st->shake != 0) {
         st->shake += g_nFrameStep;
@@ -4020,7 +4019,7 @@ void Level31_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;

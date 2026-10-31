@@ -154,8 +154,9 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
 } Emit;
 
 /* Effect types for g_pfnLevelEmitParticles(count, type, pos, effectArg)
- * whose arm is the same in every level EmitParticles clone that has it. The
- * rest stay numeric. */
+ * whose arm is the same in every level EmitParticles clone that has it.
+ * 0xB, 0x45, 0x48 and 0x49 have only AdvanceEmitList arms (no level
+ * EmitParticles creates them) and stay numeric. */
 enum EmitEffect {
   EMIT_SPARK_VEL = 0x0,     /* spark moving at the velocity effectArg points to, 0x18 frames
                              * (the flame breath's particles) */
@@ -202,6 +203,36 @@ enum EmitEffect {
   EMIT_YELLOW_DUST = 0x4A,   /* class-0 yellow dust at pos moving at the velocity effectArg points to */
   EMIT_FALLING_STREAK_BURST = 0x50, /* EMIT_STREAK_BURST whose streaks keep their speed
                                      * and fall instead of easing out */
+
+  /* Named from the arm pair as above; most live in only a few levels. */
+  EMIT_HOMING_ORB = 0x4,     /* class-3 orb jittered around pos that homes on the Actor *
+                              * effectArg, orbits, or trails (flag halfword +0x1E) */
+  EMIT_JITTER_DRIFT = 0x5,   /* class-3 point jittered within 0x1F of pos that wanders and
+                              * sinks; 0x30 frames */
+  EMIT_SLOWING_SPARK = 0xE,  /* grey spark at the velocity effectArg points to, slowing in x/y and
+                              * fading with camera distance; 0x80 frames */
+  EMIT_JITTER_BURST = 0xF,   /* EMIT_JITTER_DRIFT thrown out at a random velocity */
+  EMIT_SMOKE_PUFF = 0x13,    /* grey puff that rises, slows, grows and fades with camera
+                              * distance; 0x80 frames */
+  EMIT_DRIFTING_MOTE = 0x16, /* blue mote within 300 of pos drifting along heading effectArg,
+                              * slowing and fading; 0x40 frames */
+  EMIT_SCATTER_MOTE = 0x17,  /* grey mote thrown out at a random velocity; 0x30 frames */
+  EMIT_RESCUE_SWIRL = 0x18,  /* the dragon rescue's departing swirl: `count` segments circling
+                              * pos, radius and height driven by g_nDragonRescueTimer */
+  EMIT_HEAT_SPARK = 0x19,    /* spark from pos[0..2] at velocity pos[3..5], grey / yellow /
+                              * orange / red as pos[6] passes 321 / 401 / 461; 0x20 frames */
+  EMIT_FLIGHT_TRAIL = 0x1A,  /* flight trail spark left at Spyro's two trail points, grey
+                              * effectArg * 8, fading 8 a frame */
+  EMIT_FLIGHT_GROUND_WAKE = 0x1B, /* flight wake under Spyro when he skims a trigger region
+                                   * within 0xC00 of the ground; effectArg = {life, grey} */
+  EMIT_ACTOR_RING_SPARK = 0x1C, /* spark flung out at radius effectArg in the YZ plane of the
+                                 * Actor * in pos; 0x20 frames */
+  EMIT_PATH_WISP = 0x1D,     /* green wisp that walks the waypoint list of the Actor * effectArg
+                              * and wakes the last node's actor */
+  EMIT_RISING_PUFF = 0x1E,   /* grey puff that rises, grows and fades; 0x20 frames */
+  EMIT_SPREAD_MOTE = 0x1F,   /* mote thrown out on a random heading, rising; 0x40 frames */
+  EMIT_DUST_PUFF = 0x21,     /* Spyro's dust puff (landing, skid, turn, bonk) at his feet, or
+                              * 0x164 ahead of his body for effectArg 1, moving at pos */
 };
 
 #endif /* OPEN_SPYRO_EMIT_RECORD_H */

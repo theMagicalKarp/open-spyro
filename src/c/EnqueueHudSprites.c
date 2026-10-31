@@ -83,7 +83,7 @@ void EnqueueHudSprites(void) {
         rec -= ACTOR_SIZE;
         phase = 0;
         while ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
-          ACTOR_RAW(rec, unsigned char, rotZ) =
+          ((Actor *)rec)->rotZ =
               ((unsigned short *)
                    g_anCosineLut)[(GEM_HOLD_TIMER * 4 + phase) & 0xFF] >>
               7;

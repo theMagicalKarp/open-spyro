@@ -351,7 +351,7 @@ void Gamestate02_03_06_Draw(void) {
             i++;
             v1 = lut1[(g_nPauseMenuTransitionFrames * 8 + phase1) & 0xff];
             phase1 += 0xc;
-            ACTOR_RAW(rec, unsigned char, rotZ) = v1 * 3 >> 9;
+            ((Actor *)rec)->rotZ = v1 * 3 >> 9;
             rec += ACTOR_SIZE;
           } while (i < n1);
         }
@@ -420,7 +420,7 @@ void Gamestate02_03_06_Draw(void) {
             i++;
             v2 = lut2[(g_nPauseMenuTransitionFrames * 8 + phase2) & 0xff];
             phase2 += 0xc;
-            ACTOR_RAW(rec, unsigned char, rotZ) = v2 * 3 >> 9;
+            ((Actor *)rec)->rotZ = v2 * 3 >> 9;
             rec += ACTOR_SIZE;
           } while (i < n2);
         }
@@ -438,7 +438,7 @@ void Gamestate02_03_06_Draw(void) {
               v3 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase3) &
                                  0xff];
               phase3 += 0xc;
-              ACTOR_RAW(rec, unsigned char, rotZ) = v3 * 3 >> 9;
+              ((Actor *)rec)->rotZ = v3 * 3 >> 9;
               rec += ACTOR_SIZE;
             } while (i < 3);
           }
@@ -489,7 +489,7 @@ void Gamestate02_03_06_Draw(void) {
               v4 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase5) &
                                  0xff];
               phase5 += 0xc;
-              ACTOR_RAW(rec, unsigned char, rotZ) = v4 * 3 >> 9;
+              ((Actor *)rec)->rotZ = v4 * 3 >> 9;
               rec += ACTOR_SIZE;
             } while (i < 3);
           }
@@ -546,7 +546,7 @@ void Gamestate02_03_06_Draw(void) {
               i++;
               v5 = lut7[(g_nPauseMenuTransitionFrames * 8 + phase7) & 0xff];
               phase7 += 0xc;
-              ACTOR_RAW(rec, unsigned char, rotZ) = v5 * 3 >> 9;
+              ((Actor *)rec)->rotZ = v5 * 3 >> 9;
               rec += ACTOR_SIZE;
             } while (i < n3);
           }
@@ -572,7 +572,7 @@ void Gamestate02_03_06_Draw(void) {
                 i++;
                 v6 = lut8[(g_nPauseMenuTransitionFrames * 8 + phase8) & 0xff];
                 phase8 += 0xc;
-                ACTOR_RAW(rec, unsigned char, rotZ) = v6 * 3 >> 9;
+                ((Actor *)rec)->rotZ = v6 * 3 >> 9;
                 rec += ACTOR_SIZE;
               } while (i < n4);
             }
@@ -598,7 +598,7 @@ void Gamestate02_03_06_Draw(void) {
               i++;
               v7 = lut9[(g_nPauseMenuTransitionFrames * 8 + phase9) & 0xff];
               phase9 += 0xc;
-              ACTOR_RAW(rec, unsigned char, rotZ) = v7 * 3 >> 9;
+              ((Actor *)rec)->rotZ = v7 * 3 >> 9;
               rec += ACTOR_SIZE;
             } while (i < n5);
           }
@@ -670,7 +670,7 @@ void Gamestate02_03_06_Draw(void) {
             i++;
             v8 = lut3[(g_nPauseMenuTransitionFrames * 8 + phase10) & 0xff];
             phase10 += 0xc;
-            ACTOR_RAW(rec, unsigned char, rotZ) = v8 * 3 >> 9;
+            ((Actor *)rec)->rotZ = v8 * 3 >> 9;
             rec += ACTOR_SIZE;
           } while (i < n6);
         }
@@ -722,9 +722,9 @@ void Gamestate02_03_06_Draw(void) {
           (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       SREC->type = 0x1d7;
-      ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posX) = 0x2e;
-      ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posY) = 0x2e;
-      ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posZ) = 0xc00;
+      ((Actor *)g_pSpriteRecordWriteCursor)->posX = 0x2e;
+      ((Actor *)g_pSpriteRecordWriteCursor)->posY = 0x2e;
+      ((Actor *)g_pSpriteRecordWriteCursor)->posZ = 0xc00;
       SREC->rotY =
           ((unsigned short *)g_anCosineLut)[g_adwHudBobSinePhaseBlock[0]]
               << 0x10 >>
@@ -737,15 +737,15 @@ void Gamestate02_03_06_Draw(void) {
           (unsigned char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       SREC->type = 0x1fa;
-      ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posX) = 0x12c;
+      ((Actor *)g_pSpriteRecordWriteCursor)->posX = 0x12c;
       if (g_nWorldDragonsRescued >= 0xa) {
-        ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posX) = 0x111;
+        ((Actor *)g_pSpriteRecordWriteCursor)->posX = 0x111;
       }
       {
         int bob;
         bob = (g_nPauseMenuTransitionFrames * 0x10 & 0x1f0) >> 1;
-        ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posY) = 0x2e;
-        ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posZ) = 0x780;
+        ((Actor *)g_pSpriteRecordWriteCursor)->posY = 0x2e;
+        ((Actor *)g_pSpriteRecordWriteCursor)->posZ = 0x780;
         SREC->rotZ = ((unsigned short *)g_anCosineLut)[bob] >> 8;
       }
       SREC->otBias = 0x7f;
@@ -833,7 +833,7 @@ void Gamestate02_03_06_Draw(void) {
       phase = 0;
       while (i < (int)g_abWorldTitleGlyphBlock[g_nSubMenuCursor]) {
         i++;
-        ACTOR_RAW(rec, unsigned char, rotZ) =
+        ((Actor *)rec)->rotZ =
             g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff] *
                 3 >>
             9;
@@ -846,7 +846,7 @@ void Gamestate02_03_06_Draw(void) {
       SREC->type = 0x1d7;
       {
         int bF = bias + 0x15a;
-        ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posX) =
+        ((Actor *)g_pSpriteRecordWriteCursor)->posX =
             g_nSubMenuScrollOffset + bF;
       }
       SCHED_FENCE();
@@ -876,7 +876,7 @@ void Gamestate02_03_06_Draw(void) {
           SREC->type = 0x1fa;
           bob = (fr * 0x10 & 0x1f0) >> 1;
         }
-        ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posZ) = 0x780;
+        ((Actor *)g_pSpriteRecordWriteCursor)->posZ = 0x780;
         SREC->rotZ = ((unsigned short *)g_anCosineLut)[bob] >> 8;
       }
       SREC->otBias = 0x7f;
@@ -983,7 +983,7 @@ void Gamestate02_03_06_Draw(void) {
             if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
               phase = 0;
               do {
-                ACTOR_RAW(rec, unsigned char, rotZ) =
+                ((Actor *)rec)->rotZ =
                     g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 +
                                    phase * 0xc) &
                                   0xff] *

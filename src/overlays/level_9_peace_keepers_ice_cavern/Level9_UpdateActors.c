@@ -299,7 +299,7 @@ void Level9_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -356,7 +356,7 @@ void Level9_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -1981,8 +1981,8 @@ void Level9_UpdateActors(void) {
 
     /* Type 198: charging yak. Grazes, lowers its horns and charges when
      * Spyro comes near, and is knocked away when flamed or charged. */
-    case 198: {
-      L9Yak *st = actor->state;
+    case ACTOR_TYPE_CHARGING_YAK: {
+      ChargingYakState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 6) {
         st->speed = 0xF0;
@@ -2092,7 +2092,7 @@ void Level9_UpdateActors(void) {
 
     /* Type 205: snowball thrower. Holds its snowball overhead, throws it at
      * Spyro on its throw frame and is stunned when hit. */
-    case 205: {
+    case ACTOR_TYPE_OVERHEAD_THROWER: {
       int *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != 1) {
@@ -2112,7 +2112,7 @@ void Level9_UpdateActors(void) {
       }
       if (actor->mode == 1) {
         if (*st >= 0) {
-          L9Snowball *ball = g_pActorListBase[*st].state;
+          ThrownSnowballState *ball = g_pActorListBase[*st].state;
           int ang = ArcTan2(spy->posX - actor->posX,
                                   spy->posY - actor->posY, 0) *
                     16;
@@ -2134,22 +2134,22 @@ void Level9_UpdateActors(void) {
 
     /* Type 209: thrown snowball. Flies along its arc and bursts on a timer,
      * on landing or when it reaches Spyro. */
-    case 209: {
-      L9Snowball *st = actor->state;
+    case ACTOR_TYPE_THROWN_SNOWBALL: {
+      ThrownSnowballState *st = actor->state;
 
       if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-        g_pfnLevelEmitParticles(0x10, 0xF, &actor->posX, 0);
+        g_pfnLevelEmitParticles(0x10, EMIT_JITTER_BURST, &actor->posX, 0);
         DespawnActorRecord(actor);
         continue;
       }
       if (MoveActorByDelta(actor, st->vx, st->vy, st->vz, 0, 0xC8, 0) != 0) {
-        g_pfnLevelEmitParticles(0x10, 0xF, &actor->posX, 0);
+        g_pfnLevelEmitParticles(0x10, EMIT_JITTER_BURST, &actor->posX, 0);
         DespawnActorRecord(actor);
         continue;
       }
       if (RaiseSpyroTriggerInRadius(&actor->posX, 0x80, 1) != 0) {
         PlayActorMeshVoice(actor, 0, 0);
-        g_pfnLevelEmitParticles(0x10, 0xF, &actor->posX, 0);
+        g_pfnLevelEmitParticles(0x10, EMIT_JITTER_BURST, &actor->posX, 0);
         DespawnActorRecord(actor);
         continue;
       }
@@ -2160,9 +2160,9 @@ void Level9_UpdateActors(void) {
     /* Types 211/212: snowball thrower on a patrol path. Walks its path,
      * turns to face Spyro and throws a type 209 snowball when he is in
      * line, and is knocked away when flamed or charged. */
-    case 211:
-    case 212: {
-      L9Thrower *st = actor->state;
+    case ACTOR_TYPE_PATH_SNOWBALL_THROWER:
+    case ACTOR_TYPE_PATH_SNOWBALL_THROWER + 1: {
+      SnowballThrowerState *st = actor->state;
       int r;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 3) {
@@ -2226,7 +2226,7 @@ void Level9_UpdateActors(void) {
         break;
 
       case 2: {
-        int frame = actor->type == 0xD3 ? 0x17 : 0x13;
+        int frame = actor->type == ACTOR_TYPE_PATH_SNOWBALL_THROWER ? 0x17 : 0x13;
 
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (g_nActorAnimNewFrame != 0 && actor->frame == frame) {
@@ -2234,14 +2234,14 @@ void Level9_UpdateActors(void) {
           int *bv;
 
           WrapAddAngle8(actor->rotZ, 0xE0);
-          ball = g_pfnLevelSpawnActor(0xD1, actor);
+          ball = g_pfnLevelSpawnActor(ACTOR_TYPE_THROWN_SNOWBALL, actor);
           bv = ball->state;
           ball->rotZ = actor->rotZ;
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 0, &ball->posX);
           SubtractVector(bv, &SPY.posX, &ball->posX);
           ScaleVector3ByRatio(bv, VectorLength(bv, 1), 0xC8);
-          ((L9Snowball *)bv)->timer = 0x8C;
+          ((ThrownSnowballState *)bv)->timer = 0x8C;
           st->knock = WrapAddAngle8(actor->rotZ, 0x80);
           st->speed = 0;
           st->throwT = 0x1E;
@@ -2337,8 +2337,8 @@ void Level9_UpdateActors(void) {
 
     /* Type 213: circling bird. Waits for Spyro, circles over him, then
      * flies back to its perch; knocked out of the air when hit. */
-    case 213: {
-      L9Bird *st = actor->state;
+    case ACTOR_TYPE_CIRCLING_BIRD: {
+      CirclingBirdState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4) {
         if (actor->mode != 1 || st->timer == 0) {
@@ -2420,8 +2420,8 @@ void Level9_UpdateActors(void) {
 
     /* Type 231: ram. Like the yak, but takes four hits to knock away and
      * is thrown into the air by each one. */
-    case 231: {
-      L9Ram *st = actor->state;
+    case ACTOR_TYPE_TOUGH_RAM: {
+      ToughRamState *st = actor->state;
 
       TickActorFlameGlow(actor);
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != 6) {
@@ -3024,7 +3024,7 @@ void Level9_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -3201,10 +3201,9 @@ void Level9_UpdateActors(void) {
       }
       break;
 
-    /* Types 363/364: a one-shot effect that is removed when its animation
-     * ends. */
-    case 363:
-    case 364:
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD1_ENTER_FX:
+    case ACTOR_TYPE_HAZARD1_DEATH_FX:
       if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
@@ -3237,7 +3236,7 @@ void Level9_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;

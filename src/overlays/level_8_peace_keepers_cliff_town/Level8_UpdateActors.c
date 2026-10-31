@@ -306,7 +306,7 @@ void Level8_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -363,7 +363,7 @@ void Level8_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -2420,9 +2420,9 @@ void Level8_UpdateActors(void) {
     }
 
     /* Bell prop: rings when charged, spawning a ripple, and settles. */
-    case 206:
-    case 239:
-    case 242:
+    case ACTOR_TYPE_BELL_A:
+    case ACTOR_TYPE_BELL_B:
+    case ACTOR_TYPE_BELL_C:
       if (actor->flags != 0) {
         if (actor->flags == ACTOR_HIT_FLAME && actor->subMode == 0) {
           actor->subMode = 0x50;
@@ -2435,7 +2435,7 @@ void Level8_UpdateActors(void) {
       if (g_nActorAnimDone != 0) {
         switch (actor->nextAnim) {
         case 2: {
-          Actor *p = g_pfnLevelSpawnActor(0x1ED, actor);
+          Actor *p = g_pfnLevelSpawnActor(ACTOR_TYPE_BELL_RIPPLE, actor);
 
           p->rotZ = ((unsigned short)g_nCameraEulerYaw << 16 >> 18) - 0x80;
           CopyVector(&p->posX, &actor->posX);
@@ -2454,7 +2454,7 @@ void Level8_UpdateActors(void) {
       break;
 
     /* Catapult (CatapultState). */
-    case 218: {
+    case ACTOR_TYPE_CATAPULT: {
       CatapultState *st = actor->state;
 
       if (actor->flags & ACTOR_HIT_FLAME) {
@@ -2547,7 +2547,7 @@ void Level8_UpdateActors(void) {
     }
 
     /* Two-path patroller (RunnerState). */
-    case 226: {
+    case ACTOR_TYPE_TWO_PATH_RUNNER: {
       RunnerState *st = actor->state;
       int r;
 
@@ -2677,7 +2677,7 @@ void Level8_UpdateActors(void) {
 
     /* Lookout (LookoutState): watches over the guard it is linked to, rouses
      * it when Spyro comes into range, and swipes at him up close. */
-    case 229: {
+    case ACTOR_TYPE_GUARD_LOOKOUT: {
       LookoutState *st = actor->state;
       Actor *link;
       int d;
@@ -2883,8 +2883,8 @@ void Level8_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x120, actor);
-            p = g_pfnLevelSpawnActor(0x121, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_BOUNCE_DEBRIS, actor);
+            p = g_pfnLevelSpawnActor(ACTOR_TYPE_BOUNCE_DEBRIS + 1, actor);
             if (GetRandomU32() & 1) {
               p->mode = 1;
               ANIM_RESET(p, 1);
@@ -3142,10 +3142,10 @@ void Level8_UpdateActors(void) {
       break;
     }
 
-    /* Wandering critter (L31Critter): roams its patch, and is knocked away
+    /* Wandering critter (RoamingCritterState): roams its patch, and is knocked away
      * (or stunned, when charged) when struck. */
-    case 238: {
-      L31Critter *st = actor->state;
+    case ACTOR_TYPE_ROAMING_CRITTER: {
+      RoamingCritterState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 5 && actor->mode != 6) {
         st->knock = StepAndLerpAngle8(
@@ -3517,8 +3517,8 @@ void Level8_UpdateActors(void) {
     }
 
     /* Bouncing debris (BounceState). */
-    case 288:
-    case 289: {
+    case ACTOR_TYPE_BOUNCE_DEBRIS:
+    case ACTOR_TYPE_BOUNCE_DEBRIS + 1: {
       BounceState *st = actor->state;
 
       if (st->life == 0 || actor->drawn == 0) {
@@ -3533,7 +3533,7 @@ void Level8_UpdateActors(void) {
         st->vy = 0;
         st->vz = 0;
       }
-      if (actor->type == 0x120) {
+      if (actor->type == ACTOR_TYPE_BOUNCE_DEBRIS) {
         actor->rotX += st->rx;
         actor->rotY += st->ry;
         actor->rotZ += st->rz;
@@ -3791,7 +3791,7 @@ void Level8_UpdateActors(void) {
     /* Type 401: breakable rock. Shakes when struck; a charge shatters it
      * into rubble and dust and removes it. */
     case ACTOR_TYPE_BREAKABLE_ROCK: {
-      L31Rock *st = actor->state;
+      BreakableRockState *st = actor->state;
 
       if (st->shake != 0) {
         st->shake += g_nFrameStep;
@@ -3858,7 +3858,7 @@ void Level8_UpdateActors(void) {
     /* Type 402: cannon. Smokes while it builds up, fires, then flies its
      * ball along a path to the target, waking the linked actor. */
     case ACTOR_TYPE_CANNON: {
-      L25Shot *st = actor->state;
+      CannonState *st = actor->state;
 
       if (st->init == 1) {
         int pitch;
@@ -4021,7 +4021,7 @@ void Level8_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;
@@ -4220,12 +4220,11 @@ void Level8_UpdateActors(void) {
     }
     
 
-    /* Types 363/364: a one-shot effect that is removed when its animation
-     * ends. */
-    case 234:
-    case 363:
-    case 364:
-    case 493:      if (g_nActorAnimDone != 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_REBOUND_FX:
+    case ACTOR_TYPE_HAZARD1_ENTER_FX:
+    case ACTOR_TYPE_HAZARD1_DEATH_FX:
+    case ACTOR_TYPE_BELL_RIPPLE:      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }

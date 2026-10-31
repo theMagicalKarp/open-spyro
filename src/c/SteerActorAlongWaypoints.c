@@ -73,7 +73,7 @@ int SteerActorAlongWaypoints(char *actor, unsigned char *path, int radius,
   ret = 0;
   SubtractVector(vec, &path[path[1] * 0x10 + 8], actor + 0xC);
   if (((int)VectorLength(vec, 1)) < radius) {
-    ACTOR_RAW(actor, unsigned char, subMode) = 0;
+    ((Actor *)actor)->subMode = 0;
     path[1] += 1;
     if (path[1] == path[0]) {
       path[1] = 0;

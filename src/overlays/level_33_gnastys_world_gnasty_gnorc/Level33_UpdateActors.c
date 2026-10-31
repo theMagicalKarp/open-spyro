@@ -330,7 +330,7 @@ void Level33_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -387,7 +387,7 @@ void Level33_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -691,9 +691,9 @@ void Level33_UpdateActors(void) {
       break;
     }
 
-    /* Type 168: counts its sub-state down, restarting its animation each
-     * time, then shares 363's exit. */
-    case 168:
+    /* Trail-bomb puff: replays its animation subMode times, then shares the
+     * one-shot effects' exit. */
+    case ACTOR_TYPE_TRAIL_BOMB_PUFF:
       if (actor->subMode != 0) {
         actor->subMode--;
         actor->frame = 0;
@@ -701,12 +701,11 @@ void Level33_UpdateActors(void) {
         actor->frameProgress = 0;
       }
 
-    /* Types 363/364: a one-shot effect that is removed when its animation
-     * ends. */
-    case 363:
-    case 364:
-    case 507:
-    case 508:      if (g_nActorAnimDone != 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD1_ENTER_FX:
+    case ACTOR_TYPE_HAZARD1_DEATH_FX:
+    case ACTOR_TYPE_HAZARD2_ENTER_FX:
+    case ACTOR_TYPE_HAZARD2_DEATH_FX:      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -2067,7 +2066,7 @@ void Level33_UpdateActors(void) {
           st->drop[2] = -1;
         }
         if (g_nSpyroDrawSuppressed == 0 && actor->nextFrame >= 0xE) {
-          Actor *o = g_pfnLevelSpawnActor(0x19E, actor);
+          Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_FOLLOW_FACER, actor);
 
           *(Actor **)o->state = actor;
           CopyVector(&o->posX, &SPY.posX);
@@ -2227,7 +2226,7 @@ void Level33_UpdateActors(void) {
         if (actor->mode == 0) {
           st->spawnTimer += g_nFrameStep;
           if (st->spawnTimer >= 0xA) {
-            Actor *o = g_pfnLevelSpawnActor(0xA8, actor);
+            Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_TRAIL_BOMB_PUFF, actor);
 
             CopyVector(&o->posX, &actor->posX);
             o->subMode = 0;
@@ -2860,7 +2859,7 @@ void Level33_UpdateActors(void) {
      * flame, then bursts into three rings of debris and knocks the camera
      * back. */
     case ACTOR_TYPE_CRACKING_BOULDER: {
-      L16Boulder *st = actor->state;
+      CrackingBoulderState *st = actor->state;
 
       switch (actor->subMode) {
       case 0:
@@ -3051,7 +3050,7 @@ void Level33_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -3195,7 +3194,7 @@ void Level33_UpdateActors(void) {
     }
 
     /* Type 414: turns toward the actor it follows. */
-    case 414: {
+    case ACTOR_TYPE_FOLLOW_FACER: {
       Actor **st = actor->state;
 
       TurnActorYawTowardAngle(actor,

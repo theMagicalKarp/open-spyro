@@ -258,7 +258,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.depthBias = 4;
       if (((Actor *)pos)->type == ACTOR_TYPE_DRAGON_EGG) {
         CopyVector(v1, &((Actor *)pos)->posX);
-      } else if (((Actor *)pos)->type == ACTOR_TYPE_KEY || ((Actor *)pos)->type == 0xB5) {
+      } else if (((Actor *)pos)->type == ACTOR_TYPE_KEY || ((Actor *)pos)->type == ACTOR_TYPE_LOOT_VORTEX) {
         if ((effectArg >> 24) < 6) {
           RotateVectorByMatrix(((Actor *)pos)->mtx, &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
           AddVector(v1, v1, &((Actor *)pos)->posX);
@@ -284,7 +284,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0xE: {
+    case EMIT_SLOWING_SPARK: {
       int d;
       d = ApproxDist2D(pos, g_anCameraPos);
       if (d > 0x7FFF) {
@@ -312,7 +312,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0x16: {
+    case EMIT_DRIFTING_MOTE: {
       int d;
       d = ApproxDist2D(pos, g_anCameraPos);
       if (d > 0x7FFF) {
@@ -345,7 +345,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0x18: {
+    case EMIT_RESCUE_SWIRL: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->visible = 1;
@@ -367,7 +367,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.band.segment = i;
       break;
     }
-    case 0x1E: {
+    case EMIT_RISING_PUFF: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;
@@ -384,7 +384,7 @@ void Level0_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case 0x21: {
+    case EMIT_DUST_PUFF: {
       rec = (Emit *)AllocEmitListRecord(2);
       rec->type = type;
       rec->phase = 0;

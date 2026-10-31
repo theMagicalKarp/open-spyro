@@ -24,7 +24,7 @@ int IsActorInRunningKillSet(unsigned char *actor) {
     int bit = idx & 0x1F;
     int t = g_anRunningKillBitmap[word] & (1 << bit);
     if (t != 0) {
-      hit = ACTOR_RAW(actor, unsigned char, dropKind) == 0xFF;
+      hit = ((Actor *)actor)->dropKind == 0xFF;
     }
   }
   return hit;

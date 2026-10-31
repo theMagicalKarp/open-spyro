@@ -1292,9 +1292,10 @@ void Level15_UpdateActors(void) {
       break;
     }
 
-    /* Bubble vent: rises out of the ground and pops into four bubbles when it
-     * reaches the surface. */
-    case 38: {
+    /* Split shot: launched at Spyro on the thrower's release frame, it
+     * splits into four more of itself when it reaches him, and fizzles out
+     * on a timer or against a wall. */
+    case ACTOR_TYPE_SPLIT_SHOT: {
       int *st = actor->state;
 
       switch (actor->mode) {
@@ -1323,7 +1324,7 @@ void Level15_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x26, actor)->rotX = a;
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor)->rotX = a;
           }
           DespawnActorRecord(actor);
           continue;
@@ -1344,7 +1345,7 @@ void Level15_UpdateActors(void) {
     }
 
     /* Tethered guard (TetherState). */
-    case 66: {
+    case ACTOR_TYPE_TETHERED_GUARD: {
       TetherState *st = actor->state;
 
       if (st->mode == 1) {
@@ -2885,7 +2886,7 @@ void Level15_UpdateActors(void) {
      * rears up (and calls for help) when Spyro comes near, and is knocked
      * away when hit. */
     case ACTOR_TYPE_PATH_GUARD: {
-      L16Guard *st = actor->state;
+      PathGuardState *st = actor->state;
 
       if (actor->mode != 2) {
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_WHITE_STREAK, actor, 0);
@@ -2941,7 +2942,7 @@ void Level15_UpdateActors(void) {
             }
           }
           if (st->flags == 1) {
-            L16Guard *ps = g_pActorListBase[st->partner].state;
+            PathGuardState *ps = g_pActorListBase[st->partner].state;
 
             st->path->cur = 0;
             if (st->dist == 0) {
@@ -2994,13 +2995,13 @@ void Level15_UpdateActors(void) {
         }
         if (st->timer <= 0) {
           st->timer = 1;
-          g_pfnLevelSpawnActor(0x26, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         } else if (st->timer < 2 && actor->nextFrame >= 2) {
           st->timer = 2;
-          g_pfnLevelSpawnActor(0x26, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         } else if (st->timer < 0x3C && actor->nextFrame >= 6) {
           st->timer = 0x3C;
-          g_pfnLevelSpawnActor(0x26, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         }
         break;
 
@@ -3019,7 +3020,7 @@ void Level15_UpdateActors(void) {
     }
 
     /* Tether keeper (KeeperState). */
-    case 284: {
+    case ACTOR_TYPE_TETHER_KEEPER: {
       KeeperState *st = actor->state;
 
       TickActorFlameGlow(actor);
@@ -3186,7 +3187,7 @@ void Level15_UpdateActors(void) {
     }
 
     /* Sentinel (SentinelState). */
-    case 285: {
+    case ACTOR_TYPE_SENTINEL: {
       SentinelState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode < 6) {
@@ -3204,7 +3205,7 @@ void Level15_UpdateActors(void) {
           ChainState *cs = g_pActorListBase[st->link].state;
 
           if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
-            g_pfnLevelEmitParticles(5, 4, &g_pActorListBase[st->link].posX, &g_pActorListBase[st->link]);
+            g_pfnLevelEmitParticles(5, EMIT_HOMING_ORB, &g_pActorListBase[st->link].posX, &g_pActorListBase[st->link]);
           }
           st->timer = 0x20;
           st->link = cs->link;
@@ -3400,7 +3401,7 @@ void Level15_UpdateActors(void) {
           ApplyEulerRotation(&actor->rotX, x272, 0);
           RotateVectorByMatrix(x272, x256, x256);
           AddVector(x256, x256, &actor->posX);
-          g_pfnLevelEmitParticles(3, 4, x256, &g_pActorListBase[st->link]);
+          g_pfnLevelEmitParticles(3, EMIT_HOMING_ORB, x256, &g_pActorListBase[st->link]);
         }
         if (g_nActorAnimDone == 0) {
           break;
@@ -3609,7 +3610,7 @@ void Level15_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x13E, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_DEBRIS, actor);
         }
         g_anSpyroRequestVelocity.x = g_anCosineLut[actor->rotZ] >> 5;
         g_nSpyroRequestVelocityY = g_anSineLut[actor->rotZ] >> 5;
@@ -3631,7 +3632,7 @@ void Level15_UpdateActors(void) {
               if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
                 break;
               }
-              g_pfnLevelSpawnActor(0x13E, actor);
+              g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_DEBRIS, actor);
             }
             st->target->flags |= 1;
             DespawnActorRecord(actor);
@@ -3639,7 +3640,7 @@ void Level15_UpdateActors(void) {
           }
         }
       } else {
-        g_pfnLevelEmitParticles(1, 5, &actor->posX, 0);
+        g_pfnLevelEmitParticles(1, EMIT_JITTER_DRIFT, &actor->posX, 0);
       }
       if (CastRayWorldAndActors(x288, &actor->posX) != 0) {
         DespawnActorRecord(actor);
@@ -3811,7 +3812,7 @@ void Level15_UpdateActors(void) {
 
     /* Falling debris: tumbles along its velocity while on screen and is
      * removed once its timer runs out or it goes off screen. */
-    case 318: {
+    case ACTOR_TYPE_FALLING_DEBRIS: {
       int *st = actor->state;
 
       if (TickCountdownByFrameDelta(&st[3], 4) != 0 || actor->drawn == 0) {
@@ -3859,7 +3860,7 @@ void Level15_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -4035,9 +4036,9 @@ void Level15_UpdateActors(void) {
       }
       break;
 
-    /* Water bubbles and splash. */
-    case 405:
-    case 477:
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
       /* Removed as soon as the animation finishes. */
       if (g_nActorAnimDone == 0) {
         break;
@@ -4048,7 +4049,7 @@ void Level15_UpdateActors(void) {
     /* Type 390: spinning chest. Each charge spins it faster (with a rising
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
-      L26Spinner *st = actor->state;
+      SpinChestState *st = actor->state;
       int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
@@ -4065,7 +4066,7 @@ void Level15_UpdateActors(void) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
       if (actor->subMode == 0) {
-        st->lid = g_pfnLevelSpawnActor(0x188, actor);
+        st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_SPARK, actor);
         st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
         actor->subMode = 1;
@@ -4119,7 +4120,7 @@ void Level15_UpdateActors(void) {
      * Spyro (or away from him when there is none), and bursts on what it
      * hits. */
     case ACTOR_TYPE_HOMING_SPARK: {
-      L26Spark *st = actor->state;
+      HomingSparkState *st = actor->state;
       int i;
 
       if (actor->subMode == 1) {
@@ -4211,7 +4212,7 @@ void Level15_UpdateActors(void) {
     /* Type 401: breakable rock. Shakes when struck; a charge shatters it
      * into rubble and dust and removes it. */
     case ACTOR_TYPE_BREAKABLE_ROCK: {
-      L31Rock *st = actor->state;
+      BreakableRockState *st = actor->state;
 
       if (st->shake != 0) {
         st->shake += g_nFrameStep;
@@ -4301,7 +4302,7 @@ void Level15_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;

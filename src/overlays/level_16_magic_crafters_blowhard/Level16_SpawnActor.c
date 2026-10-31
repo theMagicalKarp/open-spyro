@@ -145,7 +145,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       HideActorRenderRecord(rec);
       break;
 
-    case 0x25:
+    case ACTOR_TYPE_RIM_RIDER:
     {
       WindState *st = rec->state;
       int probe[3];
@@ -196,7 +196,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x26:
+    case ACTOR_TYPE_SPLIT_SHOT:
     {
       int *st = rec->state;
       int *pos;
@@ -204,7 +204,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       InitActorRenderDefaults(rec);
       pos = &rec->posX;
       CopyVector(pos, &parent->posX);
-      if (parent->type == 0x26)
+      if (parent->type == ACTOR_TYPE_SPLIT_SHOT)
       {
         rec->rotZ = parent->rotZ;
         rec->mode = 3;
@@ -268,7 +268,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x27:
+    case ACTOR_TYPE_RIM_RIDER_HELPER:
     {
       AimState *st = rec->state;
       InitActorRenderDefaults(rec);
@@ -298,7 +298,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       st->pitch = 0;
       st->yaw = 0;
       st->roll = 0;
-      if (parent->type == 0xD)
+      if (parent->type == ACTOR_TYPE_FOLLOWER)
       {
         st->bounces = 2;
       }
@@ -488,9 +488,9 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x195:
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
 
-    case 0x1DD:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
     {
       int ground;
       int z;

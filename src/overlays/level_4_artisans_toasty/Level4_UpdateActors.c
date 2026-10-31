@@ -311,7 +311,7 @@ void Level4_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -368,7 +368,7 @@ void Level4_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -1782,8 +1782,8 @@ void Level4_UpdateActors(void) {
       break;
     }
 
-    /* Fade-out prop: removed as soon as its animation finishes. */
-    case 234:
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_REBOUND_FX:
       if (g_nActorAnimDone == 0) {
         break;
       }
@@ -2200,7 +2200,7 @@ void Level4_UpdateActors(void) {
 
     /* Post guard (GuardState): patrols between posts, raises the alarm when
      * Spyro gets close, and hands off to its partner when knocked down. */
-    case 314: {
+    case ACTOR_TYPE_ALARM_POST_GUARD: {
       GuardState *st = actor->state;
       unsigned char c;
 
@@ -2443,7 +2443,7 @@ void Level4_UpdateActors(void) {
 
     /* Lunging enemy (LungeState): charges when Spyro comes close, leaps at
      * him, and takes a few hits before it goes down. */
-    case 335: {
+    case ACTOR_TYPE_LUNGER: {
       int *pos = &actor->posX;
       LungeState *st;
       int dist;
@@ -2691,7 +2691,7 @@ void Level4_UpdateActors(void) {
 
     /* Spinning enemy (SpinnerState): idles, rears up at Spyro, and spins
      * away when knocked back. */
-    case 349: {
+    case ACTOR_TYPE_SPINNER: {
       SpinnerState *st;
 
       EBB_BREAK();
@@ -2832,9 +2832,9 @@ void Level4_UpdateActors(void) {
       break;
     }
 
-    /* Fade-out props: removed as soon as their animation finishes. */
-    case 507:
-    case 508:
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD2_ENTER_FX:
+    case ACTOR_TYPE_HAZARD2_DEATH_FX:
       if (g_nActorAnimDone == 0) {
         break;
       }

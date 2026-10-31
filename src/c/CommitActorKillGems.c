@@ -54,7 +54,7 @@ void CommitActorKillGems(int value, unsigned char *actor) {
     g_anCommittedKillBitmap[word] |= 1 << id;
     id = raw;
   } else {
-    id = ACTOR_RAW(actor, unsigned char, poolIndex);
+    id = ((Actor *)actor)->poolIndex;
   }
 
   word = id >> 5;

@@ -298,7 +298,7 @@ void Level21_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -355,7 +355,7 @@ void Level21_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -668,7 +668,7 @@ void Level21_UpdateActors(void) {
 
     /* Type 57: boulder. Rolls down to the floor and bursts into shards
      * (more type-57 actors in state 1) that bounce off the scenery. */
-    case 57: {
+    case ACTOR_TYPE_ROLLING_BOULDER: {
       BoulderState *st = actor->state;
 
       switch (actor->mode) {
@@ -716,7 +716,7 @@ void Level21_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          o = g_pfnLevelSpawnActor(0x39, actor);
+          o = g_pfnLevelSpawnActor(ACTOR_TYPE_ROLLING_BOULDER, actor);
           o->mode = 1;
           if (o->anim != 1) {
             ANIM_RESET(o, 1);
@@ -786,16 +786,16 @@ void Level21_UpdateActors(void) {
 
     /* Type 100 (and 102): boulder thrower. Patrols its path, picks up a
      * boulder (57) and hurls it, rides its partner, and charges Spyro. */
-    case 100: {
+    case ACTOR_TYPE_BOULDER_THROWER: {
       BoulderThrowerState *st = actor->state;
       int f;
 
-      if (actor->type == 0x66) {
+      if (actor->type == ACTOR_TYPE_BOULDER_THROWER_B) {
         TickActorFlameGlow(actor);
       }
       f = actor->flags;
       if ((f & 0xF0000) && actor->mode != 3 &&
-          (actor->type != 0x66 || f != 0x10000)) {
+          (actor->type != ACTOR_TYPE_BOULDER_THROWER_B || f != 0x10000)) {
         Actor *c;
 
         if (f & 0x40000) {
@@ -936,7 +936,7 @@ void Level21_UpdateActors(void) {
       case 4:
         TrackEntityYawTowardSpyro(actor, 8, 0, 0);
         if ((unsigned)(actor->nextFrame - 3) < 5 && st->rock == 0) {
-          st->rock = g_pfnLevelSpawnActor(0x39, actor);
+          st->rock = g_pfnLevelSpawnActor(ACTOR_TYPE_ROLLING_BOULDER, actor);
           st->rock->subMode = 0;
         }
         if (st->rock != 0 && st->rock->subMode == 0) {
@@ -960,7 +960,7 @@ void Level21_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           st->timer = 0x78;
-          if (actor->type == 0x66) {
+          if (actor->type == ACTOR_TYPE_BOULDER_THROWER_B) {
             st->timer = 0x50;
           }
           st->rock = 0;
@@ -1089,7 +1089,7 @@ void Level21_UpdateActors(void) {
           Actor *o;
 
           while ((o = *lp++) != 0) {
-            if (o->type == 0x41 &&
+            if (o->type == ACTOR_TYPE_PLATFORM_POD &&
                 (actor->posX - o->posX > 0 ? actor->posX - o->posX < 0xBB8
                                            : o->posX - actor->posX < 0xBB8) &&
                 (actor->posY - o->posY > 0 ? actor->posY - o->posY < 0xBB8
@@ -1191,7 +1191,7 @@ void Level21_UpdateActors(void) {
 
     /* Type 101: gatekeeper. Guards a run of keys (g_pActorListBase actors) and
      * releases them as Spyro approaches; rides its partner and charges. */
-    case 101: {
+    case ACTOR_TYPE_GATEKEEPER: {
       GatekeeperState *st = actor->state;
       int f = actor->flags;
 
@@ -1258,7 +1258,7 @@ void Level21_UpdateActors(void) {
         if (actor->subMode == 0 && st->idlePose2 == 0) {
           break;
         }
-        if (actor->type == 0xAA) {
+        if (actor->type == ACTOR_TYPE_GATEKEEPER_B) {
           actor->mode = 2;
           ANIM_RESET(actor, 2);
           continue;
@@ -1446,7 +1446,7 @@ void Level21_UpdateActors(void) {
           Actor *o;
 
           while ((o = *lp++) != 0) {
-            if (o->type == 0x41 &&
+            if (o->type == ACTOR_TYPE_PLATFORM_POD &&
                 (actor->posX - o->posX > 0 ? actor->posX - o->posX < 0xBB8
                                            : o->posX - actor->posX < 0xBB8) &&
                 (actor->posY - o->posY > 0 ? actor->posY - o->posY < 0xBB8
@@ -3067,8 +3067,8 @@ void Level21_UpdateActors(void) {
 
     /* Types 293/294: path runner. Runs its path ahead of Spyro and raises
      * its goal flag on arrival; struck, it is knocked away. */
-    case 293:
-    case 294: {
+    case ACTOR_TYPE_PATH_RUNNER:
+    case ACTOR_TYPE_PATH_RUNNER + 1: {
       PathRunnerState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode >= 3 &&
@@ -3347,7 +3347,7 @@ void Level21_UpdateActors(void) {
             LShiftVector3(svH, 3);
             AddVector(runnerSpark, runnerSpark, svH);
             runnerSpark[6] = spd;
-            g_pfnLevelEmitParticles(1, 0x19, runnerSpark, 0);
+            g_pfnLevelEmitParticles(1, EMIT_HEAT_SPARK, runnerSpark, 0);
           } while (k < 3);
         }
         last = st->mode < 2 ? st->path[0] - 1 : 0;
@@ -3677,7 +3677,7 @@ void Level21_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -3869,7 +3869,7 @@ void Level21_UpdateActors(void) {
     /* Type 390: spinning chest. Each charge spins it faster (with a rising
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
-      L26Spinner *st = actor->state;
+      SpinChestState *st = actor->state;
       int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
       int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
       int i;
@@ -3886,7 +3886,7 @@ void Level21_UpdateActors(void) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
       if (actor->subMode == 0) {
-        st->lid = g_pfnLevelSpawnActor(0x188, actor);
+        st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_SPARK, actor);
         st->lid->cullRadius = 0x1A;
         actor->updateDist = 0x10;
         actor->subMode = 1;
@@ -3940,7 +3940,7 @@ void Level21_UpdateActors(void) {
      * Spyro (or away from him when there is none), and bursts on what it
      * hits. */
     case ACTOR_TYPE_HOMING_SPARK: {
-      L26Spark *st = actor->state;
+      HomingSparkState *st = actor->state;
       int i;
 
       if (actor->subMode == 1) {
@@ -4032,7 +4032,7 @@ void Level21_UpdateActors(void) {
     /* Type 401: breakable rock. Shakes when struck; a charge shatters it
      * into rubble and dust and removes it. */
     case ACTOR_TYPE_BREAKABLE_ROCK: {
-      L31Rock *st = actor->state;
+      BreakableRockState *st = actor->state;
 
       if (st->shake != 0) {
         st->shake += g_nFrameStep;
@@ -4122,7 +4122,7 @@ void Level21_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;

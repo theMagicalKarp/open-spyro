@@ -75,13 +75,12 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   rec = (char *)(*(int *)(owner + 4) * sizeof(Actor) + (int)g_pActorListBase);
   {
     register int ry asm("$2");
-    ry = ACTOR_RAW(rec, int, posY);
+    ry = ((Actor *)rec)->posY;
     g_nSaveMenuSpyroToYaw =
-        ArcTan2(ACTOR_RAW(rec, int, posX) - SPY_PREV[-6], ry - py, 1);
+        ArcTan2(((Actor *)rec)->posX - SPY_PREV[-6], ry - py, 1);
   }
-  g_nSaveMenuHostFromAngle =
-      ArcTan2(ACTOR_RAW(actor, int, posX) - SPY_PREV[-6],
-              ACTOR_RAW(actor, int, posY) - g_nSpyroWorldPosY, 1);
+  g_nSaveMenuHostFromAngle = ArcTan2(ACTOR_RAW(actor, int, posX) - SPY_PREV[-6],
+                                     actor->posY - g_nSpyroWorldPosY, 1);
   SubtractVector(vec, &actor->posX, &SPY_PREV[-6]);
   g_nSaveMenuHostFromDist = VectorLength(vec, 0);
   z = ACTOR_RAW(actor, int, posZ);

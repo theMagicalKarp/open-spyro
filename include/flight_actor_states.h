@@ -43,7 +43,7 @@ typedef struct ShardState {
   int floor; /* 0x10 */
 } ShardState;
 
-/* Flight targets (0x154 / 0x161): a helper actor spawned alongside, and the
+/* Flight rings (ACTOR_TYPE_FLIGHT_RING): a helper actor spawned alongside, and the
  * sound to play when Spyro flies through. */
 typedef struct TargetState {
   int pad00;
@@ -91,7 +91,7 @@ typedef struct HudState {
   int hurry;        /* 0x9C under a minute left */
 } HudState;
 
-/* Type 0x11: a drifting shard. Moves by ->vel until its timer runs out or
+/* ACTOR_TYPE_AIMED_SHOT: moves by ->vel until its timer runs out or
  * it hits something. */
 typedef struct DriftState {
   int vel[3]; /* 0x00 */
@@ -105,7 +105,7 @@ typedef struct EmberState {
   int life;      /* 0x0C */
 } EmberState;
 
-/* Type 0x4E: a rider that sits on its host actor; when hit it pays out,
+/* ACTOR_TYPE_RIDING_FLIGHT_TARGET: a rider that sits on its host actor; when hit it pays out,
  * bursts and retires. */
 typedef struct Rot3 {
   unsigned char r[3];
@@ -118,7 +118,7 @@ typedef struct RiderState {
   int timer;  /* 0x0C */
 } RiderState;
 
-/* Type 0x134: a path walker that rolls with its turns and, when flamed,
+/* ACTOR_TYPE_BANKING_FLIGHT_TARGET: a path walker that rolls with its turns and, when flamed,
  * spawns its reward and three embers and runs off. */
 typedef struct RollerState {
   unsigned char *path; /* 0x00 [0]=node count, [1]=nearest node */
@@ -134,7 +134,7 @@ typedef struct RollerState {
   int ready;           /* 0x30 nearest node found */
 } RollerState;
 
-/* Types 0x197/0x198: a smoking walker. */
+/* ACTOR_TYPE_BLASTABLE_PATH_SMOKER / _PROP: path tweeners a blast wrecks. */
 typedef struct SmokerState {
   unsigned char *path; /* 0x00 */
   int legStep;           /* 0x04 */

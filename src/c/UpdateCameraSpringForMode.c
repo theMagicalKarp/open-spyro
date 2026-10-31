@@ -32,7 +32,7 @@
 
 /* World x/y of a scripted camera actor. */
 #define ACTOR_X(a) ACTOR_RAW(a, int, posX)
-#define ACTOR_Y(a) ACTOR_RAW(a, int, posY)
+#define ACTOR_Y(a) ((Actor *)a)->posY
 
 SDATA(g_nCameraLosClear, 4);
 SDATA(g_nCameraManualYawInput, 4);
@@ -417,7 +417,7 @@ void UpdateCameraSpringForMode(void) {
     y = ACTOR_Y(actor);
     g_anCameraScriptedTargetPos[2] = z;
     g_anCameraScriptedTargetPos[1] = y;
-    g_nCameraTargetYawBiasFromMode = ACTOR_RAW(actor, unsigned char, rotZ) << 4;
+    g_nCameraTargetYawBiasFromMode = ((Actor *)actor)->rotZ << 4;
     g_nCameraTargetInverted = ComputeCameraToTargetAngle(&s[S_POS]);
     g_nCameraSpringYaw = g_nCameraYaw;
     g_nCameraSpringPitch = g_nCameraPitch;

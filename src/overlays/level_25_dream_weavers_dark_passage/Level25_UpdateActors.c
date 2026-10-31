@@ -324,7 +324,7 @@ void Level25_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -381,7 +381,7 @@ void Level25_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -692,8 +692,8 @@ void Level25_UpdateActors(void) {
 
     /* Type 50: grabber. Seizes Spyro when he wanders close in front of it,
      * holds him under a scripted camera, then walks back to its post. */
-    case 50: {
-      L25Grabber *st = actor->state;
+    case ACTOR_TYPE_POST_GRABBER: {
+      PostGrabberState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 5 && actor->mode != 1) {
         if (*st->slot == actor) {
@@ -889,8 +889,8 @@ void Level25_UpdateActors(void) {
 
     /* Type 51: lookout. Shares the grabber's slot; bolts when struck and
      * turns into type 50 once its partner is roused. */
-    case 51: {
-      L25Grabber *st = actor->state;
+    case ACTOR_TYPE_GRABBER_LOOKOUT: {
+      PostGrabberState *st = actor->state;
 
       if (actor->flags & ACTOR_HITS_SPYRO) {
         if (actor->mode != 3) {
@@ -1012,8 +1012,8 @@ void Level25_UpdateActors(void) {
 
     /* Type 52: bomb-lobbing lizard. Hides until Spyro is in range, then
      * lobs type 55 bombs at him; knocked away when hit. */
-    case 52: {
-      L26Lobber *st = actor->state;
+    case ACTOR_TYPE_BOMB_LOBBER: {
+      BombLobberState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 2) {
         st->speed = 0xF0;
@@ -1044,7 +1044,7 @@ void Level25_UpdateActors(void) {
         }
         if (actor->nextFrame >= 6 && st->timer == 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          g_pfnLevelEmitParticles(0x10, 0x1C, g_pfnLevelSpawnActor(0x37, actor), (void *)0x10);
+          g_pfnLevelEmitParticles(0x10, EMIT_ACTOR_RING_SPARK, g_pfnLevelSpawnActor(ACTOR_TYPE_LOBBED_BOMB, actor), (void *)0x10);
           st->timer = st->reload;
         }
         break;
@@ -1067,8 +1067,8 @@ void Level25_UpdateActors(void) {
 
     /* Type 53: sentry. Watches for Spyro in front of it and raises the
      * alarm; turns into type 54 once its partner is roused. */
-    case 53: {
-      L25Sentry *st = actor->state;
+    case ACTOR_TYPE_ALARM_SENTRY: {
+      AlarmSentryState *st = actor->state;
 
       TickActorFlameGlow(actor);
       actor->flags = 0;
@@ -1131,7 +1131,7 @@ void Level25_UpdateActors(void) {
           Actor *shot;
 
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          shot = g_pfnLevelSpawnActor(0x9B, actor);
+          shot = g_pfnLevelSpawnActor(ACTOR_TYPE_FLYING_EMBER, actor);
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xC00) {
             CopyVector(&shot->posX, &SPY.posX);
           }
@@ -1160,8 +1160,8 @@ void Level25_UpdateActors(void) {
 
     /* Type 54: roused sentry. Backs away when struck; otherwise watches and
      * fires like type 53. */
-    case 54: {
-      L25Sentry *st = actor->state;
+    case ACTOR_TYPE_ROUSED_SENTRY: {
+      AlarmSentryState *st = actor->state;
 
       TickActorFlameGlow(actor);
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode < 2) {
@@ -1228,7 +1228,7 @@ void Level25_UpdateActors(void) {
           break;
         }
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-        g_pfnLevelSpawnActor(0x9B, actor);
+        g_pfnLevelSpawnActor(ACTOR_TYPE_FLYING_EMBER, actor);
         st->timer = 0;
         break;
 
@@ -1264,7 +1264,7 @@ void Level25_UpdateActors(void) {
 
     /* Type 55: lobbed bomb. Bursts on landing, on a timer or against
      * Spyro, then plays its burst and is removed. */
-    case 55: {
+    case ACTOR_TYPE_LOBBED_BOMB: {
       int *st = actor->state;
 
       switch (actor->mode) {
@@ -1284,11 +1284,11 @@ void Level25_UpdateActors(void) {
             CastRayWorldAndActors(svA, &actor->posX) != 0) {
           actor->mode = 1;
         }
-        g_pfnLevelEmitParticles(1, 0x1C, actor, (void *)8);
+        g_pfnLevelEmitParticles(1, EMIT_ACTOR_RING_SPARK, actor, (void *)8);
         break;
 
       case 1:
-        g_pfnLevelEmitParticles(0x10, 0x1C, actor, (void *)0x10);
+        g_pfnLevelEmitParticles(0x10, EMIT_ACTOR_RING_SPARK, actor, (void *)0x10);
         DespawnActorRecord(actor);
         continue;
       }
@@ -1297,7 +1297,7 @@ void Level25_UpdateActors(void) {
 
     /* Type 56: falling rock. Drops until it lands, hits Spyro or times
      * out, then shatters. */
-    case 56: {
+    case ACTOR_TYPE_FALLING_ROCK: {
       int *st = actor->state;
 
       switch (actor->mode) {
@@ -1323,9 +1323,9 @@ void Level25_UpdateActors(void) {
       continue;
     }
 
-    /* Water bubbles and splash. */
-    case 405:
-    case 477:
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
       /* Removed as soon as the animation finishes. */
       if (g_nActorAnimDone == 0) {
         break;
@@ -2267,14 +2267,14 @@ void Level25_UpdateActors(void) {
 
     /* Type 122: lantern. Lit and snuffed by Spyro; the glow node grows and
      * fades with it. */
-    case 122: {
-      L25Lantern *st = actor->state;
+    case ACTOR_TYPE_LANTERN: {
+      LanternState *st = actor->state;
 
       if (actor->flags & ACTOR_HITS_SPYRO) {
         actor->flags = 0;
         actor->subMode |= 3;
         if (actor->mode < 3) {
-          g_pfnLevelSpawnActor(0x7C, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_LANTERN_FLAME, actor);
           actor->mode = 3;
           ANIM_RESET(actor, 3);
           continue;
@@ -2379,7 +2379,7 @@ void Level25_UpdateActors(void) {
           break;
         }
         {
-          Actor *flame = g_pfnLevelSpawnActor(0x7C, actor);
+          Actor *flame = g_pfnLevelSpawnActor(ACTOR_TYPE_LANTERN_FLAME, actor);
 
           actor->mode = 5;
           flame->mode = 1;
@@ -2396,7 +2396,7 @@ void Level25_UpdateActors(void) {
 
     /* Type 124: lantern flame. Removes itself when its animation ends,
      * restarting the lantern's idle animation the second time. */
-    case 124: {
+    case ACTOR_TYPE_LANTERN_FLAME: {
       Actor **st = actor->state;
 
       if (actor->mode == 0) {
@@ -2413,8 +2413,8 @@ void Level25_UpdateActors(void) {
       continue;
     }
 
-    /* Type 129: flame-lit switch. */
-    case 129:
+    /* Charge-reactive prop: a charge plays its reaction animation once. */
+    case ACTOR_TYPE_CHARGE_REACT_PROP:
       switch (actor->mode) {
       case 0:
         if (!(actor->flags & ACTOR_HIT_CHARGE)) {
@@ -2466,7 +2466,7 @@ void Level25_UpdateActors(void) {
 
     /* Type 155: flying ember. Rides the floor, trails sparks, and bursts
      * when it lands, hits Spyro, times out or leaves the level. */
-    case 155: {
+    case ACTOR_TYPE_FLYING_EMBER: {
       int *st = actor->state;
       int i;
 
@@ -2525,7 +2525,7 @@ void Level25_UpdateActors(void) {
 
     /* Type 160: wandering critter; knocked away when hit. */
     case ACTOR_TYPE_WANDERING_CRITTER: {
-      L26Critter *st = actor->state;
+      CritterKnockState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
         actor->flags = 0;
@@ -3112,7 +3112,7 @@ void Level25_UpdateActors(void) {
      * flame, then bursts into three rings of debris and knocks the camera
      * back. */
     case ACTOR_TYPE_CRACKING_BOULDER: {
-      L16Boulder *st = actor->state;
+      CrackingBoulderState *st = actor->state;
 
       switch (actor->subMode) {
       case 0:
@@ -3330,7 +3330,7 @@ void Level25_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -3523,7 +3523,7 @@ void Level25_UpdateActors(void) {
     /* Type 401: breakable rock. Shakes when struck; a charge shatters it
      * into rubble and dust and removes it. */
     case ACTOR_TYPE_BREAKABLE_ROCK: {
-      L31Rock *st = actor->state;
+      BreakableRockState *st = actor->state;
 
       if (st->shake != 0) {
         st->shake += g_nFrameStep;
@@ -3590,7 +3590,7 @@ void Level25_UpdateActors(void) {
     /* Type 402: cannon. Smokes while it builds up, fires, then flies its
      * ball along a path to the target, waking the linked actor. */
     case ACTOR_TYPE_CANNON: {
-      L25Shot *st = actor->state;
+      CannonState *st = actor->state;
 
       if (st->init == 1) {
         int pitch;
@@ -3738,7 +3738,7 @@ void Level25_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;

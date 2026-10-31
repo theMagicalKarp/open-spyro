@@ -324,7 +324,7 @@ void Level23_UpdateActors(void) {
 
       break;
     }
-    case 0x11: {
+    case ACTOR_TYPE_AIMED_SHOT: {
       DriftState *st = actor->state;
 
       if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
@@ -1191,7 +1191,7 @@ void Level23_UpdateActors(void) {
       break;
     }
 
-    case 0xA2: {
+    case ACTOR_TYPE_CYCLING_FLIGHT_TARGET: {
       CyclerState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode == 0) {
@@ -1212,9 +1212,9 @@ void Level23_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x167, actor);
-          g_pfnLevelSpawnActor(0x168, actor);
-          g_pfnLevelSpawnActor(0x169, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_TUMBLE_SHARD, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_TUMBLE_SHARD + 1, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_TUMBLE_SHARD + 2, actor);
         }
         PlayActorMeshVoice(actor, 0, 0);
         actor->mode = 1;
@@ -1290,7 +1290,7 @@ void Level23_UpdateActors(void) {
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
-          g_pfnLevelSpawnActor(0x190, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
           DespawnActorRecord(actor);
           continue;
         }
@@ -1465,7 +1465,7 @@ void Level23_UpdateActors(void) {
       }
       break;
     }
-    case 0x134: {
+    case ACTOR_TYPE_BANKING_FLIGHT_TARGET: {
       RollerState *st = actor->state;
 
       if (st->ready == 0) {
@@ -1542,7 +1542,7 @@ void Level23_UpdateActors(void) {
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
-          g_pfnLevelSpawnActor(0x190, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
           DespawnActorRecord(actor);
           continue;
         }
@@ -1555,7 +1555,7 @@ void Level23_UpdateActors(void) {
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
-          g_pfnLevelSpawnActor(0x190, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
           DespawnActorRecord(actor);
           continue;
         }
@@ -1727,7 +1727,7 @@ void Level23_UpdateActors(void) {
         g_nFlightTallyShownClass = -1;
 
         for (i = 3; i >= 0; i--) {
-          st->digit[i] = g_pfnLevelSpawnActor(0x147, actor);
+          st->digit[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_HUD_CLOCK_SEPARATOR, actor);
           st->digit[i]->cullRadius = 0xFF;
           st->digit[i]->otBias = 0x20;
           st->digit[i]->posZ = 0x1000;
@@ -1744,7 +1744,7 @@ void Level23_UpdateActors(void) {
 
         if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
           for (i = 4; i < 8; i++) {
-            st->digit[i] = g_pfnLevelSpawnActor(0x147, actor);
+            st->digit[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_HUD_CLOCK_SEPARATOR, actor);
             st->digit[i]->cullRadius = 0xFF;
             st->digit[i]->otBias = 0x20;
             st->digit[i]->rotZ = 0;
@@ -1827,7 +1827,7 @@ void Level23_UpdateActors(void) {
         t = g_nFlightRunClock;
         i = t / 3600;
         if (i != 0) {
-          st->digit[6]->type = i + 0x104;
+          st->digit[6]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
           st->digit[4]->cullRadius = 0xFF;
           st->digit[5]->cullRadius = 0xFF;
           st->digit[6]->cullRadius = 0xFF;
@@ -1837,7 +1837,7 @@ void Level23_UpdateActors(void) {
           st->digit[6]->cullRadius = 0;
         }
         i = t * 10 / 6 % 10;
-        st->digit[7]->type = i + 0x104;
+        st->digit[7]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
         st->digit[7]->cullRadius = 0xFF;
       } else {
         t = g_nFlightTimeRemaining;
@@ -1849,7 +1849,7 @@ void Level23_UpdateActors(void) {
       i = t / 600;
       if (i != 0) {
         i = i % 6;
-        st->digit[0]->type = i + 0x104;
+        st->digit[0]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
         st->digit[0]->cullRadius = 0xFF;
       } else {
         st->digit[0]->cullRadius = 0;
@@ -1859,9 +1859,9 @@ void Level23_UpdateActors(void) {
         int min = t / 60;
 
         i = min % 10;
-        st->digit[1]->type = i + 0x104;
+        st->digit[1]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
         i = t / 6 - min * 10;
-        st->digit[3]->type = i + 0x104;
+        st->digit[3]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
 
         if (g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0) {
           i = min;
@@ -1983,9 +1983,9 @@ void Level23_UpdateActors(void) {
       }
       break;
     }
-    case 0x167:
-    case 0x168:
-    case 0x169: {
+    case ACTOR_TYPE_TUMBLE_SHARD:
+    case ACTOR_TYPE_TUMBLE_SHARD + 1:
+    case ACTOR_TYPE_TUMBLE_SHARD + 2: {
       TumbleState *st = actor->state;
 
       if (st->life > 0 && actor->drawn) {
@@ -2009,9 +2009,9 @@ void Level23_UpdateActors(void) {
       }
       break;
     }
-    case 0x190:
-    case 405:
-    case 477:
+    case ACTOR_TYPE_SPLASH:
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
       if (g_nActorAnimDone == 0) {
         break;
       }

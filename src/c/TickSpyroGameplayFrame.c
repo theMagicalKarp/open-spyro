@@ -185,7 +185,7 @@ done:
   key2 =
       FRAME_KEY(FRAMEREC(g_bSpyroAnimLayer1Prev * 4 + (int)g_apActorMeshTable,
                          g_bSpyroAnimLayer1FramePrev * 4));
-  g_dwSpyroRequestMask &= 0x7FFFFFFF;
+  g_dwSpyroRequestMask &= ~SPYRO_RQ_PENDING;
   g_dwSpyroFootstepSecondarySfxKey = key2;
   if (g_bSpyroPadSnapshotReverseFlag != 0) {
     SnapshotPadInputState(&g_dwPad2Buttons, &g_dwPadPressed);

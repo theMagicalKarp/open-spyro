@@ -307,7 +307,7 @@ void Level16_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -364,7 +364,7 @@ void Level16_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -676,7 +676,7 @@ void Level16_UpdateActors(void) {
     /* Type 37: a rider on its parent's rim. Drifts out toward where Spyro
      * was when it last finished an animation, and spawns its type 39 helper
      * when he comes close. */
-    case 37: {
+    case ACTOR_TYPE_RIM_RIDER: {
       RimState *st = actor->state;
 
       CopyVector(svD, &actor->posX);
@@ -724,7 +724,7 @@ void Level16_UpdateActors(void) {
 
         case 3:
           if (st->child == 0) {
-            st->child = g_pfnLevelSpawnActor(0x27, actor);
+            st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER_HELPER, actor);
             PlayActorMeshVoice(actor, 1, 0);
           }
         case 2: {
@@ -767,7 +767,7 @@ void Level16_UpdateActors(void) {
         break;
 
       case 4:
-        st->child = g_pfnLevelSpawnActor(0x27, actor);
+        st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER_HELPER, actor);
         PlayActorMeshVoice(actor, 1, 0);
         ENTER_POSE(actor, 5);
 
@@ -780,9 +780,10 @@ void Level16_UpdateActors(void) {
       break;
     }
 
-    /* Type 38: a thrown bomb. Bursts into four type 38 fragments when it
-     * lands on something, and fizzles out on a timer. */
-    case 38: {
+    /* Split shot: launched at Spyro on the thrower's release frame, it
+     * splits into four more of itself when it reaches him, and fizzles out
+     * on a timer or against a wall. */
+    case ACTOR_TYPE_SPLIT_SHOT: {
       int *st = actor->state;
 
       switch (actor->mode) {
@@ -809,7 +810,7 @@ void Level16_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(0x26, actor)->rotX = ang;
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor)->rotX = ang;
             ang += 0x40;
           }
           DespawnActorRecord(actor);
@@ -831,7 +832,7 @@ void Level16_UpdateActors(void) {
 
     /* Type 39: the rim rider's helper. Follows its owner and faces the
      * camera until the owner lets it go. */
-    case 39: {
+    case ACTOR_TYPE_RIM_RIDER_HELPER: {
       HelperState *st = actor->state;
 
       if (((RimState *)st->owner->state)->child == 0) {
@@ -2193,7 +2194,7 @@ void Level16_UpdateActors(void) {
      * rears up (and calls for help) when Spyro comes near, and is knocked
      * away when hit. */
     case ACTOR_TYPE_PATH_GUARD: {
-      L16Guard *st = actor->state;
+      PathGuardState *st = actor->state;
 
       if (actor->mode != 2) {
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_WHITE_STREAK, actor, 0);
@@ -2249,7 +2250,7 @@ void Level16_UpdateActors(void) {
             }
           }
           if (st->flags == 1) {
-            L16Guard *ps = g_pActorListBase[st->partner].state;
+            PathGuardState *ps = g_pActorListBase[st->partner].state;
 
             st->path->cur = 0;
             if (st->dist == 0) {
@@ -2302,13 +2303,13 @@ void Level16_UpdateActors(void) {
         }
         if (st->timer <= 0) {
           st->timer = 1;
-          g_pfnLevelSpawnActor(0x26, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         } else if (st->timer < 2 && actor->nextFrame >= 2) {
           st->timer = 2;
-          g_pfnLevelSpawnActor(0x26, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         } else if (st->timer < 0x3C && actor->nextFrame >= 6) {
           st->timer = 0x3C;
-          g_pfnLevelSpawnActor(0x26, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         }
         break;
 
@@ -2600,7 +2601,7 @@ void Level16_UpdateActors(void) {
      * flame, then bursts into three rings of debris and knocks the camera
      * back. */
     case ACTOR_TYPE_CRACKING_BOULDER: {
-      L16Boulder *st = actor->state;
+      CrackingBoulderState *st = actor->state;
 
       switch (actor->subMode) {
       case 0:
@@ -2826,7 +2827,7 @@ void Level16_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -3003,9 +3004,9 @@ void Level16_UpdateActors(void) {
       }
       break;
 
-    /* Water bubbles and splash. */
-    case 405:
-    case 477:
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD0_DEATH_FX:
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
       /* Removed as soon as the animation finishes. */
       if (g_nActorAnimDone == 0) {
         break;
@@ -3113,7 +3114,7 @@ void Level16_UpdateActors(void) {
      * type 37 rider on Spyro when he is in front of it; each hit sends it
      * to the next path, and the third ends the fight. */
     case ACTOR_TYPE_BLOWHARD: {
-      L16Boss *st = actor->state;
+      BlowhardState *st = actor->state;
       int dist = ApproxDist2D(&actor->posX, &SPY.posX);
       int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
@@ -3302,7 +3303,7 @@ void Level16_UpdateActors(void) {
           CopyVector(v, &actor->posX);
           v[2] += 0x400;
           if (CheckLineOfSightSegment(v, &SPY.posX) != 0) {
-            st->minion = g_pfnLevelSpawnActor(0x25, actor);
+            st->minion = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER, actor);
             PlayActorMeshVoice(st->minion, 0, 0);
           }
         }
@@ -3356,7 +3357,7 @@ void Level16_UpdateActors(void) {
           CopyVector(v, &actor->posX);
           v[2] += 0x400;
           if (CheckLineOfSightSegment(v, &SPY.posX) != 0) {
-            st->minion = g_pfnLevelSpawnActor(0x25, actor);
+            st->minion = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER, actor);
             PlayActorMeshVoice(st->minion, 0, 0);
           }
         }
@@ -3417,7 +3418,7 @@ void Level16_UpdateActors(void) {
           CopyVector(v, &actor->posX);
           v[2] += 0x400;
           if (CheckLineOfSightSegment(v, &SPY.posX) != 0) {
-            st->minion = g_pfnLevelSpawnActor(0x25, actor);
+            st->minion = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER, actor);
             PlayActorMeshVoice(st->minion, 0, 0);
           }
         }
@@ -3469,8 +3470,8 @@ void Level16_UpdateActors(void) {
 
     /* Type 497: humming bell. Rings a looping voice while it is alive,
      * rings out when struck, and is removed once the voice has died away. */
-    case 497: {
-      L16Bell *st = actor->state;
+    case ACTOR_TYPE_HUMMING_BELL: {
+      HummingBellState *st = actor->state;
       int r;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 1) {

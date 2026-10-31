@@ -297,7 +297,7 @@ void Level10_UpdateActors(void) {
                 int nb;
               }
             }
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -360,7 +360,7 @@ void Level10_UpdateActors(void) {
                 int nb;
               }
             }
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -1983,7 +1983,7 @@ void Level10_UpdateActors(void) {
 
     /* Type 205: snowball thrower. Holds its snowball overhead, throws it at
      * Spyro on its throw frame and is stunned when hit. */
-    case 205: {
+    case ACTOR_TYPE_OVERHEAD_THROWER: {
       int *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != 1) {
@@ -2003,7 +2003,7 @@ void Level10_UpdateActors(void) {
       }
       if (actor->mode == 1) {
         if (*st >= 0) {
-          L9Snowball *ball = g_pActorListBase[*st].state;
+          ThrownSnowballState *ball = g_pActorListBase[*st].state;
           int ang = ArcTan2(spy->posX - actor->posX,
                                   spy->posY - actor->posY, 0) *
                     16;
@@ -2503,7 +2503,7 @@ void Level10_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -2681,10 +2681,9 @@ void Level10_UpdateActors(void) {
       }
       break;
 
-    /* Types 363/364: a one-shot effect that is removed when its animation
-     * ends. */
-    case 363:
-    case 364:
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD1_ENTER_FX:
+    case ACTOR_TYPE_HAZARD1_DEATH_FX:
       if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
@@ -2694,7 +2693,7 @@ void Level10_UpdateActors(void) {
     /* Doctor Shemp's guard: patrols, closes on Spyro and swings; a flame
      * or charge from the front knocks it back. */
     case ACTOR_TYPE_SHEMP_GUARD: {
-      GuardState370 *st = actor->state;
+      ShempGuardState *st = actor->state;
       int d;
       int g;
 
@@ -3611,7 +3610,7 @@ void Level10_UpdateActors(void) {
           ANIM_GO(actor, 8);
         }
         if (actor->anim == 8 && g_nActorAnimNewFrame != 0 && actor->frame == 5) {
-          GuardState370 *ls = link->state;
+          ShempGuardState *ls = link->state;
 
           if (link->mode < 0x7F && link->nextAnim != 3) {
             link->mode = 1;

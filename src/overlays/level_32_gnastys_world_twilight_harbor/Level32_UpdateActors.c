@@ -295,7 +295,7 @@ void Level32_UpdateActors(void) {
           parent = g_pActorListBase;
 
           for (; parent < g_pActorPoolDynBase; parent++) {
-            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == 13) {
+            if (parent != actor && parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER) {
               FollowState *other = parent->state;
 
               if (other->parent == st->parent) {
@@ -352,7 +352,7 @@ void Level32_UpdateActors(void) {
           st->count = 1;
 
           for (parent = g_pActorListBase; parent < actor; parent++) {
-            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == 13 &&
+            if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
                 *(int *)parent->state == st->parent) {
               st->release += 9;
               st->count += 1;
@@ -1700,7 +1700,7 @@ void Level32_UpdateActors(void) {
           int z = actor->posZ - actor->floorOffset;
 
           if (z - h > 0 ? z - h < 0x64 : h - z < 0x64) {
-            Actor *o = g_pfnLevelSpawnActor(0x1FB, actor);
+            Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_HAZARD2_ENTER_FX, actor);
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
             o->otBias = 0xFE;
@@ -1867,7 +1867,7 @@ void Level32_UpdateActors(void) {
           int z = actor->posZ - actor->floorOffset;
 
           if (ABS2(z - h) < 0x64) {
-            Actor *o = g_pfnLevelSpawnActor(0x1FB, actor);
+            Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_HAZARD2_ENTER_FX, actor);
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
             o->otBias = 0xFE;
@@ -1922,7 +1922,7 @@ void Level32_UpdateActors(void) {
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
         actor->flags = 0;
         c = st->heldLob;
-        if (c != 0 && c != (Actor *)-1 && c->type == 0xB0 && c->subMode == 0 &&
+        if (c != 0 && c != (Actor *)-1 && c->type == ACTOR_TYPE_LOB_GUNNER_LOB && c->subMode == 0 &&
             c->mode < ACTOR_MODE_DORMANT) {
           c->subMode = 1;
           st->heldLob->mode = 2;
@@ -1995,7 +1995,7 @@ void Level32_UpdateActors(void) {
           int z = actor->posZ - actor->floorOffset;
 
           if (z - h > 0 ? z - h < 0x64 : h - z < 0x64) {
-            Actor *o = g_pfnLevelSpawnActor(0x1FB, actor);
+            Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_HAZARD2_ENTER_FX, actor);
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
             o->otBias = 0xFE;
@@ -2077,7 +2077,7 @@ void Level32_UpdateActors(void) {
 
     /* Type 156: the shot thrown by type 145. */
     case ACTOR_TYPE_BURST_GUNNER_SHOT: {
-      L32Shot *st = actor->state;
+      BurstGunnerShotState *st = actor->state;
 
       switch (actor->mode) {
       case 0: {
@@ -2139,8 +2139,8 @@ void Level32_UpdateActors(void) {
     }
 
     /* Type 171. */
-    case 171: {
-      L32Timer *st = actor->state;
+    case ACTOR_TYPE_FLAME_CHUNK_SWITCH: {
+      FlameChunkSwitchState *st = actor->state;
 
       if (actor->flags & ACTOR_HIT_FLAME) {
         PlayActorMeshVoice(actor, 0, &actor->sfxSlot);
@@ -2275,8 +2275,8 @@ void Level32_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(0x1CA, actor);
-          g_pfnLevelSpawnActor(0x1CB, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_REBOUND_DEBRIS, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_REBOUND_DEBRIS + 1, actor);
         }
         for (i = 0; i < 0x2A; i++) {
           int a = GetRandomU32() & 0xFF;
@@ -2421,7 +2421,7 @@ void Level32_UpdateActors(void) {
     }
 
     /* Type 236. */
-    case 236: {
+    case ACTOR_TYPE_WANDERING_CRITTER_C: {
       WandererState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
@@ -2866,7 +2866,7 @@ void Level32_UpdateActors(void) {
      * above itself; Spyro takes the prize by touching it (or by being in a
      * grab state), otherwise the pod settles back after a while. */
     case ACTOR_TYPE_SEED_POD: {
-      L16Pod *st = actor->state;
+      SeedPodState *st = actor->state;
 
       actor->soundRange = 0x20;
       switch (actor->mode) {
@@ -3055,10 +3055,9 @@ void Level32_UpdateActors(void) {
       }
       break;
 
-    /* Types 363/364: a one-shot effect that is removed when its animation
-     * ends. */
-    case 507:
-    case 508:      if (g_nActorAnimDone != 0) {
+    /* One-shot effects: removed as soon as their animation ends. */
+    case ACTOR_TYPE_HAZARD2_ENTER_FX:
+    case ACTOR_TYPE_HAZARD2_DEATH_FX:      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -3067,7 +3066,7 @@ void Level32_UpdateActors(void) {
     /* Type 401: breakable rock. Shakes when struck; a charge shatters it
      * into rubble and dust and removes it. */
     case ACTOR_TYPE_BREAKABLE_ROCK: {
-      L31Rock *st = actor->state;
+      BreakableRockState *st = actor->state;
 
       if (st->shake != 0) {
         st->shake += g_nFrameStep;
@@ -3157,7 +3156,7 @@ void Level32_UpdateActors(void) {
           actor->frameRate = 8;
           actor->nextAnim = 1;
 
-          st->passenger = g_pfnLevelSpawnActor(0x1A6, actor);
+          st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;
@@ -3356,8 +3355,8 @@ void Level32_UpdateActors(void) {
     }
 
     /* Bouncing shard without the trail (ShardState). */
-    case 458:
-    case 459: {
+    case ACTOR_TYPE_REBOUND_DEBRIS:
+    case ACTOR_TYPE_REBOUND_DEBRIS + 1: {
       ShardState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {
