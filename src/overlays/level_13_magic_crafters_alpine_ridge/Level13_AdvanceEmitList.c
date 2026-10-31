@@ -290,7 +290,7 @@ void Level13_AdvanceEmitList(int step) {
       int *bolt;
 
       /* The wizard's homing bolt: it spirals around the line to its owner
-       * actor (g_pActorListBase + owner * 0x58), and switches to its burst state
+       * actor (pool slot `owner`), and switches to its burst state
        * (class byte 3) once it closes inside 0x2800. */
       KEEP_IN_REG(burst);
       SVectorToVectorShl2(p, POS);
@@ -299,7 +299,7 @@ void Level13_AdvanceEmitList(int step) {
         goto expire;
       } else {
         bolt = v;
-        CopyVector(bolt, (int *)(g_pActorListBase + rec[0x1E] * ACTOR_SIZE + ACTOR_OFFSET(posX)));
+        CopyVector(bolt, &((Actor *)g_pActorListBase)[rec[0x1E]].posX);
         v[0] += LookupCosine(AGE << 7) >> 1;
         v[1] += LookupSine(AGE << 7) >> 1;
         v[2] += LookupCosine((AGE << 7) - 0x100) >> 2;

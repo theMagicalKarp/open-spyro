@@ -2,7 +2,7 @@
  *
  * Begin the level's gem/dragon cutscene focused on `actor`: enter gamestate
  * 0xC, clear the cutscene timers (g_nActorCutsceneSubstate..F0), record the focus actor
- * (g_pActorCutsceneActor) and its path end (g_pActorCutsceneRecord = actor pool + count*0x58),
+ * (g_pActorCutsceneActor) and its path end (g_pActorCutsceneRecord = pool slot `count`),
  * then aim the cutscene camera: yaw from the XY delta between the camera
  * anchor (g_anCameraPos..) and the actor position (arctan via ArcTan2),
  * pitch/roll from the transformed offset (SubtractVector + VectorLength),
@@ -39,7 +39,7 @@ void Level1_BeginActorCutscene(Actor *actor) {
   pos = g_anCameraPos;
   g_nGameplayBlocked = 1;
   g_nGamePaused = 1;
-  g_pActorCutsceneRecord = (Actor *)(g_pActorListBase + count * ACTOR_SIZE);
+  g_pActorCutsceneRecord = &((Actor *)g_pActorListBase)[count];
   g_nActorCutsceneCamYawStart = ArcTan2(pos[0] - ACTOR_RAW(actor, int, posX),
                              g_nCameraPosY - ACTOR_RAW(actor, int, posY), 1);
   SubtractVector(vec, pos, &actor->posX);

@@ -28,7 +28,7 @@
  * in turn carries the level_6 / level_2 donors).  Three are new:
  *   0x7   the rune orbit -- a triangular height ramp off the age byte;
  *   0x8   the wizard's homing bolt, the only arm in the family that reads
- *         the owner ACTOR (g_pActorListBase + owner * 0x58) and spirals around
+ *         the owner ACTOR (pool slot `owner`) and spirals around
  *         the line to it, switching to its burst state (class byte 3) once
  *         it closes inside 0x2800;
  *   0x41  a short-lived midpoint relaxation -- the 0x46 shape with only two
@@ -149,13 +149,13 @@ void Level12_AdvanceEmitList(int step) {
       int len;
 
       /* The wizard's homing bolt: it spirals around the line to its owner
-       * actor (g_pActorListBase + owner * 0x58), and switches to its burst state
+       * actor (pool slot `owner`), and switches to its burst state
        * (class byte 3) once it closes inside 0x2800. */
       SVectorToVectorShl2(p, POS);
       if (ALIVE == 0) {
         FreeEmitListRecord(rec);
       } else {
-        CopyVector(dir, (int *)(g_pActorListBase + rec[0x1E] * ACTOR_SIZE + ACTOR_OFFSET(posX)));
+        CopyVector(dir, &((Actor *)g_pActorListBase)[rec[0x1E]].posX);
         v[0] += LookupCosine(AGE << 7) >> 1;
         v[1] += LookupSine(AGE << 7) >> 1;
         v[2] += LookupCosine((AGE << 7) - 0x100) >> 2;
