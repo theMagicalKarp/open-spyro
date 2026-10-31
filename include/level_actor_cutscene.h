@@ -13,6 +13,6 @@ extern int g_nActorCutsceneSubstate;
 extern int g_nActorCutsceneTimer;
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
-extern char *g_pActorListBase;
+extern struct Actor *g_pActorListBase; /* level actor pool */
 
 #endif /* OPEN_SPYRO_LEVEL_ACTOR_CUTSCENE_H */

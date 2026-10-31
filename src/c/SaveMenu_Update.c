@@ -49,7 +49,7 @@ void SaveMenu_Update(void) {
       Actor *actor;
 
       t = LookupSine((SM[1] << 5) - 0x400) + 0x1000;
-      actor = &((Actor *)g_pActorListBase)[((int *)ACT->state)[1]];
+      actor = &g_pActorListBase[((int *)ACT->state)[1]];
       if (actor->mode == 2) {
         actor->subMode += g_nFrameStep;
         if (actor->subMode >= 0x30) {
@@ -129,7 +129,7 @@ void SaveMenu_Update(void) {
       TickSpyroAnimLayer1();
       TickSpyroAnimLayer2();
       TickSpyroAttackEffects(g_nFrameStep);
-      ((void (*)(int))g_pfnLevelAdvanceEmitList)(g_nFrameStep);
+      g_pfnLevelAdvanceEmitList(g_nFrameStep);
     } else {
       ACTOR_RAW(ACT, int, posX) =
           g_anSpyroWorldPos[0] +
@@ -176,7 +176,7 @@ void SaveMenu_Update(void) {
     TickSpyroAnimLayer1();
     TickSpyroAnimLayer2();
     g_dwGamestateFrames++;
-    ((void (*)(int))g_pfnLevelAdvanceEmitList)(g_nFrameStep);
+    g_pfnLevelAdvanceEmitList(g_nFrameStep);
     switch (SM[3]) {
     case 0:
       if (g_dwPadPressed & PAD_DOWN) {
@@ -205,7 +205,7 @@ void SaveMenu_Update(void) {
           Actor *actor;
           int *path;
 
-          actor = &((Actor *)g_pActorListBase)[*(int *)ACT->state];
+          actor = &g_pActorListBase[*(int *)ACT->state];
           path = *(int **)actor;
           if (path[9] == -1 && path[6] != -1) {
             EndSaveMenuToWorld();

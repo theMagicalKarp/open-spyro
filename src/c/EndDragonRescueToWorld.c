@@ -1,3 +1,4 @@
+#include "actor_states.h"
 #include "camera.h"
 #include "funcs.h"
 #include "globals.h"
@@ -22,12 +23,11 @@ void EndDragonRescueToWorld(void) {
   Actor *rec;
   int timer;
 
-  /* the statue's DragonStatueState.partner (+0x20), -1 = none */
-  id = ((int *)(*(void **)g_pDragonRescueSourceActor))[8];
+  id = ((DragonStatueState *)g_pDragonRescueSourceActor->state)->partner;
   g_nGamestate = GS_GAMEPLAY;
   g_nGameplayBlocked = 0;
   if (id != -1) {
-    rec = &((Actor *)g_pActorListBase)[id];
+    rec = &g_pActorListBase[id];
     rec->anim = 0;
     rec->mode = 1;
   }

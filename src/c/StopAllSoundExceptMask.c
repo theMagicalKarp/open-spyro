@@ -2,15 +2,16 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "spu.h"
+#include "spyro_block.h"
 
 /* 0x80056b28 (0x15c) — stop every active software voice whose bit is NOT set
    in `mask` (low 24 bits). Each stopped voice is accumulated into the pending
    hardware key-off word; mode-4 (one-shot) and mode-8 (owner-attached) rows
-   also silence the owner's live sample byte (owner byte +0x2A0 / Actor
-   voiceRow). The row is then parked idle exactly like StopSoundVoicesByOwner
-   (flags 0x40, owner and sample pointer cleared, priority 0xFF). Finally the
-   pending key-on word is dropped and the music engine is told to stop (command
-   4). */
+   also silence the owner's live sample byte (Spyro's g_bSpyroSfxVoiceMarker /
+   Actor voiceRow). The row is then parked idle exactly like
+   StopSoundVoicesByOwner (flags 0x40, owner and sample pointer cleared,
+   priority 0xFF). Finally the pending key-on word is dropped and the music
+   engine is told to stop (command 4). */
 /* The row bit is computed BETWEEN the two guards rather than inside the body:
    it is what reorg puts in the second beqz's delay slot, and it can only get
    there from the guard block. Written inside the body it never reaches the
@@ -58,7 +59,8 @@ top:
         if (m == 4) {
           owner = VOICE_ROW_RAW(o, unsigned char *, pOwner);
           if (owner != 0) {
-            owner[0x2A0] = sil;
+            owner[SPYB_VOICE_MARKER] = sil; /* every SFX_MODE_FLAT caller owns
+                                               the row by Spyro's block */
           }
         }
       }

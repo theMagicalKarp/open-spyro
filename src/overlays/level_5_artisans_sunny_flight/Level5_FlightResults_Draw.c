@@ -123,7 +123,7 @@ void Level5_FlightResults_Draw(void)
     char *env;
     char *cur;
     char *p;
-    char *fp;
+    Actor *fp;
     char *next;
     char *tv;
     int allclear;
@@ -162,8 +162,8 @@ void Level5_FlightResults_Draw(void)
     tv = f0 + bias;
     }
     }
-    g_pSpriteRecordBufferTop = tv;
-    g_pSpriteRecordWriteCursor = tv;
+    g_pSpriteRecordBufferTop = (Actor *)tv;
+    g_pSpriteRecordWriteCursor = (Actor *)tv;
     quad:
     {
     register int xx asm("$3");
@@ -263,21 +263,21 @@ void Level5_FlightResults_Draw(void)
       pos[1] = 0x1E;
       pos[2] = 0xC00;
       BuildTextSpriteChain(buf, pos, 0x18, 0xB);
-      fp = g_pSpriteRecordWriteCursor - ACTOR_SIZE;
+      fp = g_pSpriteRecordWriteCursor - 1;
       g_pSpriteRecordWriteCursor = fp;
       FillWord(fp, 0, 0x58);
       {
-        char *r = g_pSpriteRecordWriteCursor;
-        ACTOR_RAW(r, short, type) = 0x1D7;
+        char *r = (char *)g_pSpriteRecordWriteCursor;
+        ACTOR_RAW(r, short, type) = ACTOR_TYPE_HUD_GEM_ICON;
         ACTOR_RAW(r, int, posX) = 0x1CC;
         ACTOR_RAW(r, int, posY) = 0x28;
         ACTOR_RAW(r, int, posZ) = 0xC00;
         ((Actor *)r)->rotY = ((short) g_anCosineLut[g_dwHudBobSinePhase]) >> 9;
       }
-      ((Actor *) g_pSpriteRecordWriteCursor)->rotZ = g_dwHudBobSinePhase;
-      ((Actor *) g_pSpriteRecordWriteCursor)->otBias = 0x7F;
-      ((Actor *) g_pSpriteRecordWriteCursor)->tintMode = 0xB;
-      ((Actor *) g_pSpriteRecordWriteCursor)->cullRadius = 0xFF;
+      g_pSpriteRecordWriteCursor->rotZ = g_dwHudBobSinePhase;
+      g_pSpriteRecordWriteCursor->otBias = 0x7F;
+      g_pSpriteRecordWriteCursor->tintMode = 0xB;
+      g_pSpriteRecordWriteCursor->cullRadius = 0xFF;
       EmitRadialShadedLine(0x3C, 0x2E, 0x1C4, 0x2E);
       pos[0] = 0x64;
       pos[1] = 0x3C;
@@ -538,7 +538,7 @@ void Level5_FlightResults_Draw(void)
           pos[0] = 0x15C;
           pos[1] = 0xD2;
           pos[2] = 0x1100;
-          rec = (Actor *)g_pSpriteRecordWriteCursor;
+          rec = g_pSpriteRecordWriteCursor;
           pp = pos;
           if (g_nPauseMenuCursor == 1)
           {
@@ -550,7 +550,7 @@ void Level5_FlightResults_Draw(void)
           BuildTextSpriteChain("NO", pp, 0x12, (blink * 2) + 0xA);
           if (g_nPauseMenuCursor != 0)
           {
-            rec = (Actor *)g_pSpriteRecordWriteCursor;
+            rec = g_pSpriteRecordWriteCursor;
             count = 2;
           }
           i = 0;
@@ -624,7 +624,7 @@ void Level5_FlightResults_Draw(void)
       if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == 0x20)
       {
         count = g_pfnFlightTimeFormatter(g_nFlightRunClock, pos, snd);
-        rec = (Actor *)g_pSpriteRecordWriteCursor;
+        rec = g_pSpriteRecordWriteCursor;
         i = 0;
         if (count > 0)
         {
@@ -659,7 +659,7 @@ void Level5_FlightResults_Draw(void)
         pos[1] = 0x96;
         pos[2] = 0xC00;
         BuildTextSpriteChain(buf, pos, 0x18, 0xB);
-        rec = (Actor *)g_pSpriteRecordWriteCursor;
+        rec = g_pSpriteRecordWriteCursor;
         i = 0;
         if (count > 0)
         {
@@ -688,7 +688,7 @@ void Level5_FlightResults_Draw(void)
         i = 0;
         lut = (short *) g_anCosineLut;
         ph = 0;
-        rec = (Actor *)g_pSpriteRecordWriteCursor;
+        rec = g_pSpriteRecordWriteCursor;
         do
         {
           i += 1;
@@ -722,7 +722,7 @@ void Level5_FlightResults_Draw(void)
       pos[0] = 0x154;
       pos[1] = 0xD2;
       pos[2] = 0x1100;
-      rec = (Actor *)g_pSpriteRecordWriteCursor;
+      rec = g_pSpriteRecordWriteCursor;
       qq = pos;
       if (g_nPauseMenuCursor == 1)
       {
@@ -734,7 +734,7 @@ void Level5_FlightResults_Draw(void)
       BuildTextSpriteChain("NO", qq, 0x12, (blink * 2) + 0xA);
       if (g_nPauseMenuCursor != 0)
       {
-        rec = (Actor *)g_pSpriteRecordWriteCursor;
+        rec = g_pSpriteRecordWriteCursor;
         count = 2;
       }
       i = 0;

@@ -2477,7 +2477,7 @@ void Level34_UpdateActors(void) {
           g_nCutsceneId[0] = 3;
           g_nGamestate = GS_CUTSCENE;
           g_nGamePaused = one;
-          *g_pPathTableHead = 0;
+          g_pPathTableHead->frame = 0;
         }
       }
     }
@@ -3454,7 +3454,7 @@ void Level34_UpdateActors(void) {
     /* Name letter (NameLetterState): one letter of a floating name
      * (SpawnNameLetterActors), riding its sign at a fixed radius, or just
      * spinning in place behind a non-spinner. */
-    case ACTOR_TYPE_LETTER_OTHER:
+    case ACTOR_TYPE_GLYPH_COMMA:
     case ACTOR_TYPE_LETTER_A:
     case ACTOR_TYPE_LETTER_A + 1:
     case ACTOR_TYPE_LETTER_A + 2:

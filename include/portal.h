@@ -9,6 +9,22 @@
 #ifndef OPEN_SPYRO_PORTAL_H
 #define OPEN_SPYRO_PORTAL_H
 
+/* A hub portal's camera path (type 398's desc; g_pPortalCamPathData): node
+ * count and current node, then `count` waypoints. UpdatePortalPathCamera walks
+ * the camera along them (SelectCameraMode seeds `index` at either end); the
+ * portal actors pull Spyro toward the midpoint of the first two. */
+typedef struct PortalCamPoint {
+  int pos[3]; /* 0x00 */
+  int pad0C;  /* 0x0C */
+} PortalCamPoint;
+
+typedef struct PortalCamPath {
+  unsigned char count;    /* 0x00 waypoints */
+  unsigned char index;    /* 0x01 the waypoint the camera is heading for */
+  unsigned char pad02[6]; /* 0x02 */
+  PortalCamPoint point[2]; /* 0x08 `count` of them */
+} PortalCamPath;
+
 /* One portal mesh header; only the tint word at +0x10 is read here. */
 typedef struct PortalMesh {
   int pad00;

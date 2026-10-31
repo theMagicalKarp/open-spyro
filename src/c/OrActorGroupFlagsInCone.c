@@ -16,10 +16,10 @@ void OrActorGroupFlagsInCone(Actor *actor, int group, unsigned int bits,
   int d;
 
   if (group < g_nLevelPickupTableCount) {
-    ptr = ((unsigned short **)g_pLevelPickupTableEntries)[group];
+    ptr = g_pLevelPickupTableEntries[group];
     do {
       idx = *ptr & 0x7FFF;
-      rec = &((Actor *)g_pActorListBase)[idx];
+      rec = &g_pActorListBase[idx];
       if (rec->mode < ACTOR_MODE_DORMANT) {
         d = actor->posX - rec->posX;
         if (d > 0) {

@@ -24,7 +24,6 @@
 
 
 /* The sprite record being written (Actor layout). */
-#define SREC ((Actor *)g_pSpriteRecordWriteCursor)
 
 void Credits_Draw(void) {
   int i;
@@ -62,24 +61,24 @@ void Credits_Draw(void) {
   for (i = 0; i < g_nCreditsGlyphCount; i++) {
     {
       CredGlyph *glyph;
-      char *prim = g_pSpriteRecordWriteCursor - ACTOR_SIZE;
+      Actor *prim = g_pSpriteRecordWriteCursor - 1;
       g_pSpriteRecordWriteCursor = prim;
       glyph = (CredGlyph *)(g_pCreditsGlyphPool + i * 0x1C);
       FillWord(prim, 0, 0x58);
-      SREC->posX = glyph->x;
-      SREC->posY = glyph->y;
-      SREC->posZ = glyph->z;
-      SREC->rotX = glyph->r;
+      g_pSpriteRecordWriteCursor->posX = glyph->x;
+      g_pSpriteRecordWriteCursor->posY = glyph->y;
+      g_pSpriteRecordWriteCursor->posZ = glyph->z;
+      g_pSpriteRecordWriteCursor->rotX = glyph->r;
       if (glyph->glyph == 0x115) {
-        SREC->rotX += 0x29;
-        SREC->posZ = 0x1C00;
+        g_pSpriteRecordWriteCursor->rotX += 0x29;
+        g_pSpriteRecordWriteCursor->posZ = 0x1C00;
       }
-      SREC->rotY = glyph->g;
-      SREC->rotZ = glyph->b;
-      SREC->type = (unsigned short)glyph->glyph;
-      SREC->tintMode = 0xB;
-      SREC->cullRadius = 0xFF;
-      SREC->otBias = 0x7F;
+      g_pSpriteRecordWriteCursor->rotY = glyph->g;
+      g_pSpriteRecordWriteCursor->rotZ = glyph->b;
+      g_pSpriteRecordWriteCursor->type = (unsigned short)glyph->glyph;
+      g_pSpriteRecordWriteCursor->tintMode = 0xB;
+      g_pSpriteRecordWriteCursor->cullRadius = 0xFF;
+      g_pSpriteRecordWriteCursor->otBias = 0x7F;
     }
   }
   {

@@ -44,8 +44,8 @@ void GamestateDraw(void) {
   g_pOtDepthBinArrayBase = otbase;
   g_pOtActiveDepthSlot = otslot;
   g_pPrimBufferLimit = limit;
-  g_pSpriteRecordBufferTop = limit;
-  g_pSpriteRecordWriteCursor = limit;
+  g_pSpriteRecordBufferTop = (Actor *)limit;
+  g_pSpriteRecordWriteCursor = (Actor *)limit;
   BuildCameraViewMatrix();
 
   if (g_nGamestate != GS_GAMEPLAY) {
@@ -62,7 +62,7 @@ void GamestateDraw(void) {
     } else if (g_nGamestate == GS_OVERLAY_SCREEN) {
       Gamestate02_03_06_Draw();
     } else if (g_nGamestate == GS_OVERLAY_HOOK) {
-      (*(void (*)())g_pfnGamestate7DrawHook)();
+      g_pfnGamestate7DrawHook();
     } else if (g_nGamestate == GS_DRAGON_RESCUE) {
       DragonRescue_Draw();
     } else if (g_nGamestate == GS_ARRIVAL_CAMERA) {

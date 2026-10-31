@@ -34,6 +34,6 @@ void FollowActorWaypointPath(Actor *actor, PathData *path, int threshold,
   if (cap < dist) {
     dist = cap;
   }
-  SteerActorTowardPoint((int)actor, &path->nodes[path->cur].x, dist, yawLim,
+  SteerActorTowardPoint(actor, &path->nodes[path->cur].x, dist, yawLim,
                         pitchLim, radius);
 }

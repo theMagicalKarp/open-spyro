@@ -3422,7 +3422,7 @@ void Level18_UpdateActors(void) {
         {
           PortalCamPath *pd = *(PortalCamPath **)st;
 
-          AddVector(m, pd->posA, pd->posB);
+          AddVector(m, pd->point[0].pos, pd->point[1].pos);
         }
         RShiftVector3(m, 1);
         aim = cf + 5;
@@ -3681,7 +3681,7 @@ void Level18_UpdateActors(void) {
     /* Name letter (NameLetterState): one letter of a floating name
      * (SpawnNameLetterActors), riding its sign at a fixed radius, or just
      * spinning in place behind a non-spinner. */
-    case ACTOR_TYPE_LETTER_OTHER:
+    case ACTOR_TYPE_GLYPH_COMMA:
     case ACTOR_TYPE_LETTER_A:
     case ACTOR_TYPE_LETTER_A + 1:
     case ACTOR_TYPE_LETTER_A + 2:

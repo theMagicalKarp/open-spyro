@@ -8,8 +8,6 @@
 #include "spyro_block.h"
 #include "spyro_state.h"
 
-typedef void (*ParticleSpawnFn)(int kind, int type, int *pos, int *vel);
-
 /* Pulls the floor reference toward the fall reference, at most 64 up and
    16 down per frame. */
 #define TRACK_FLOOR_REFERENCE()                                                \
@@ -126,7 +124,7 @@ void DispatchSpyroPhysicsByState(void) {
     if (SPY[SPY_STATE] == SPYRO_ST_STOP) {
       CopyVector(puff, &SPY[SPY_MOTION]);
       RShiftVector3(puff, 6);
-      ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, EMIT_DUST_PUFF, puff, 0);
+      g_pfnLevelEmitParticles(1, EMIT_DUST_PUFF, puff, 0);
     }
   } break;
   case SPYRO_ST_TURN_AROUND:
@@ -138,7 +136,7 @@ void DispatchSpyroPhysicsByState(void) {
     dir[1] = 0;
     dir[2] = 0;
     RotateVectorByMatrix(g_anSpyroBodyMtx, dir, dir);
-    ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, EMIT_DUST_PUFF, dir, 0);
+    g_pfnLevelEmitParticles(1, EMIT_DUST_PUFF, dir, 0);
     break;
   case SPYRO_ST_HURT_TINT: {
     unsigned char frame;
@@ -224,7 +222,7 @@ void DispatchSpyroPhysicsByState(void) {
         TRACK_FLOOR_REFERENCE();
         if (g_nSpyroSubstate == 3 &&
             CollideSphereWithWorldAndActors(&SPY[0], 0x164, 0x164) != 0) {
-          ((void (*)(void))g_pfnLevelFallImpactCallback)();
+          g_pfnLevelFallImpactCallback();
         }
       } else {
         CLAMP_FALL_REFERENCE();
@@ -284,8 +282,7 @@ void DispatchSpyroPhysicsByState(void) {
       dust[1] += (GetRandomU32() & 0xFE) - 0x7F;
       CopyVector(dustVel, &SPY[SPY_MOTION]);
       RShiftVector3(dustVel, 6);
-      ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, EMIT_SPEED_DUST, dust,
-                                                 dustVel);
+      g_pfnLevelEmitParticles(1, EMIT_SPEED_DUST, dust, dustVel);
     }
     break;
   case SPYRO_ST_SIDESTEP_L1:
@@ -332,8 +329,7 @@ void DispatchSpyroPhysicsByState(void) {
     trail[2] -= 0x164;
     CopyVector(trailVel, &SPY[SPY_MOTION]);
     RShiftVector3(trailVel, 6);
-    ((ParticleSpawnFn)g_pfnLevelEmitParticles)(1, EMIT_SPEED_DUST, trail,
-                                               trailVel);
+    g_pfnLevelEmitParticles(1, EMIT_SPEED_DUST, trail, trailVel);
     break;
   }
   if (SPY[SPY_STATE] == SPYRO_ST_HAZARD) {

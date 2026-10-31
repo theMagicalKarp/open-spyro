@@ -56,7 +56,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
   rec->poolIndex = owner;
 
   switch (type) {
-  case 0xF: {
+  case ACTOR_TYPE_SPARX_FOOD: {
     PickupDropState *st = rec->state;
 
     InitActorRenderDefaults(rec);
@@ -88,7 +88,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x10: {
+  case ACTOR_TYPE_BUTTERFLY: {
     ButterflyState *st = rec->state;
     int *pos;
 
@@ -104,7 +104,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x22:
+  case ACTOR_TYPE_DRAGON_EGG:
     InitActorRenderDefaults(rec);
     rec->cullRadius = 0x20;
     rec->updateDist = 0xFF;
@@ -119,8 +119,8 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     InsertActorIntoSpatialGrid(rec);
     break;
 
-  case 0xE:
-  case 0x53 ... 0x57: {
+  case ACTOR_TYPE_EXTRA_LIFE:
+  case ACTOR_TYPE_GEM_1 ... ACTOR_TYPE_GEM_25: {
     PickupDropState *st = rec->state;
     int *pos;
     int probe[3];
@@ -178,7 +178,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x78: {
+  case ACTOR_TYPE_SPARX: {
     SparxState *st = rec->state;
 
     InitActorRenderDefaults(rec);
@@ -213,7 +213,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x1DE ... 0x1E0: {
+  case ACTOR_TYPE_FLIGHT_CHEST_SHARD ... ACTOR_TYPE_FLIGHT_CHEST_SHARD + 2: {
     FragmentState *st = rec->state;
     int yaw;
     int pitch;
@@ -356,9 +356,9 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     return rec;
   }
 
-  case 0x104 ... 0x10D:
-  case 0x115:
-  case 0x147: {
+  case ACTOR_TYPE_GEM_DIGIT_0 ... ACTOR_TYPE_GEM_DIGIT_0 + 9:
+  case ACTOR_TYPE_GLYPH_SLASH:
+  case ACTOR_TYPE_GLYPH_PERIOD: {
     int *st = rec->state;
 
     InitActorRenderDefaults(rec);
@@ -371,7 +371,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x159 ... 0x15B:
+  case ACTOR_TYPE_TIME_BONUS ... ACTOR_TYPE_TIME_BONUS + 2:
     if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
       HideActorRenderRecord(rec);
       DespawnActorRecord(rec);
@@ -448,8 +448,8 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x4C:
-  case 0x1AA ... 0x1C3:
+  case ACTOR_TYPE_GLYPH_COMMA:
+  case ACTOR_TYPE_LETTER_A ... ACTOR_TYPE_LETTER_A + 25:
     InitActorRenderDefaults(rec);
     rec->cullRadius = 0x20;
     rec->updateDist = 0xFF;

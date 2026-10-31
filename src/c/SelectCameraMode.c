@@ -4,6 +4,7 @@
 #include "main_shared.h"
 #include "match_asm.h"
 #include "pad_buttons.h"
+#include "portal.h"
 #include "sdata.h"
 #include "spyro_block.h"
 #include "spyro_state.h"
@@ -104,10 +105,9 @@ void SelectCameraMode(void) {
       *nextp = table;
     } else if (CAM[CAM_CURRENT_MODE] != mode) {
       if (g_nPortalCamPathReverseFlag != 0) {
-        ((unsigned char *)g_pPortalCamPathData)[1] =
-            ((unsigned char *)g_pPortalCamPathData)[0] - 1;
+        g_pPortalCamPathData->index = g_pPortalCamPathData->count - 1;
       } else {
-        ((unsigned char *)g_pPortalCamPathData)[1] = 0;
+        g_pPortalCamPathData->index = 0;
       }
     }
   } else if (mode == (CAM_HELD | CAM_MODE_PASSIVE)) {

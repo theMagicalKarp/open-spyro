@@ -1,3 +1,4 @@
+#include "cutscene_path.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -48,7 +49,7 @@ void TickCutsceneBundleLoadStream(void) {
   void *volatile *buf;
   int *ent;
   int *head;
-  unsigned char *actor;
+  Actor *actor;
   RestartStalledCdRead();
   if ((*((volatile int *)g_anCdReadInFlightBlock)) != 0) {
     return;
@@ -118,7 +119,7 @@ void TickCutsceneBundleLoadStream(void) {
     unpacked = UnpackWorldDataChunks(g_pDrawBufB, 1);
     *((struct SECTION4HDR *)(&g_nWorldRenderMeshChunkCount)) =
         *((struct SECTION4HDR *)(&g_nWorldCollisionTriCount));
-    g_pWorldUnpackHead = unpacked;
+    g_pWorldUnpackHead = (char *)unpacked;
     if (g_nCutsceneId == 1) {
       g_nCdStreamState = 6;
       extSize = g_nWorldDataExtChunkSize - 0x60000;
@@ -153,10 +154,9 @@ void TickCutsceneBundleLoadStream(void) {
     if (g_anActorMeshOffsetBlock[0] > 0) {
       i = 0;
       do {
-        g_apActorMeshTableBlock[i + 1] =
-            RelocateActorMeshHeader((int *)(((char *)g_pWorldUnpackHead) +
-                                            (g_anActorMeshOffsetBlock[i] -
-                                             g_anActorMeshOffsetBlock[-16])));
+        g_apActorMeshTableBlock[i + 1] = RelocateActorMeshHeader(
+            (int *)((g_pWorldUnpackHead) + (g_anActorMeshOffsetBlock[i] -
+                                            g_anActorMeshOffsetBlock[-16])));
         i++;
       } while (g_anActorMeshOffsetBlock[i] > 0);
     }
@@ -186,7 +186,7 @@ void TickCutsceneBundleLoadStream(void) {
     i = 0;
     buf = g_apPathTableBufferBlock;
     ent = buf[0];
-    g_pPathTableHead = ent;
+    g_pPathTableHead = (CutscenePath *)ent;
     ent[4] = ((int)ent) + ent[4];
     if (ent[3] > 0) {
       void *volatile *bp = buf;
@@ -200,23 +200,24 @@ void TickCutsceneBundleLoadStream(void) {
         goto entry_loop;
       }
     }
-    g_pActorListBase = ((char *)g_pPathTableBuffer) + g_nLevelArchiveByteSize;
+    g_pActorListBase =
+        (Actor *)(((char *)g_pPathTableBuffer) + g_nLevelArchiveByteSize);
     i = 0;
-    if (((int *)g_pPathTableHead)[3] > 0) {
+    if (g_pPathTableHead->actorCount > 0) {
       def = 0x20;
     actor_loop:
-      InitActorRenderDefaults(((int)g_pActorListBase) + (i * ACTOR_SIZE));
+      InitActorRenderDefaults(&g_pActorListBase[i]);
 
-      actor = (unsigned char *)((i * ACTOR_SIZE) + ((int)g_pActorListBase));
-      ((Actor *)actor)->cullRadius = def;
-      ((Actor *)actor)->type = i + 1;
+      /* int sum, not &g_pActorListBase[i]: that swaps the addu operands */
+      actor = (Actor *)((i * ACTOR_SIZE) + (int)g_pActorListBase);
+      actor->cullRadius = def;
+      actor->type = i + 1;
       i += 1;
-      if (i < ((int *)g_pPathTableHead)[3]) {
+      if (i < g_pPathTableHead->actorCount) {
         goto actor_loop;
       }
     }
-    (((unsigned char *)g_pActorListBase) +
-     (((int *)g_pPathTableHead)[3] * 0x58))[0x48] = 0xFF;
+    g_pActorListBase[g_pPathTableHead->actorCount].mode = ACTOR_MODE_END;
     g_nCdStreamState = 0xA;
   }
 }

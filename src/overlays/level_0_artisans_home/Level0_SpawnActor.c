@@ -55,7 +55,7 @@ Actor *Level0_SpawnActor(int type, Actor *parent) {
   rec->poolIndex = owner;
 
   switch (type) {
-  case 0xF: {
+  case ACTOR_TYPE_SPARX_FOOD: {
     PickupDropState *st = rec->state;
 
     InitActorRenderDefaults(rec);
@@ -87,7 +87,7 @@ Actor *Level0_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x10: {
+  case ACTOR_TYPE_BUTTERFLY: {
     ButterflyState *st = rec->state;
     int *pos;
 
@@ -103,7 +103,7 @@ Actor *Level0_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x22:
+  case ACTOR_TYPE_DRAGON_EGG:
     InitActorRenderDefaults(rec);
     rec->cullRadius = 0x20;
     rec->updateDist = 0xFF;
@@ -113,8 +113,8 @@ Actor *Level0_SpawnActor(int type, Actor *parent) {
     HideActorRenderRecord(rec);
     break;
 
-  case 0xE:
-  case 0x53 ... 0x57: {
+  case ACTOR_TYPE_EXTRA_LIFE:
+  case ACTOR_TYPE_GEM_1 ... ACTOR_TYPE_GEM_25: {
     PickupDropState *st = rec->state;
     int *pos;
     int probe[3];
@@ -172,7 +172,7 @@ Actor *Level0_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x78: {
+  case ACTOR_TYPE_SPARX: {
     SparxState *st = rec->state;
 
     InitActorRenderDefaults(rec);
@@ -190,8 +190,8 @@ Actor *Level0_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0xFF ... 0x101:
-  case 0x1A7 ... 0x1A9: {
+  case ACTOR_TYPE_WOOD_CHEST_SHARD ... ACTOR_TYPE_WOOD_CHEST_SHARD + 2:
+  case ACTOR_TYPE_LIFE_CHEST_SHARD ... ACTOR_TYPE_LIFE_CHEST_SHARD + 2: {
     FragmentState *st = rec->state;
     int yaw;
     int pitch;
@@ -225,7 +225,7 @@ Actor *Level0_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0xFB: {
+  case ACTOR_TYPE_STATUE_SHARD: {
     BurstShardState *st = rec->state;
     int dir[3];
     int unused[2];
@@ -269,9 +269,9 @@ Actor *Level0_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x104 ... 0x10D:
-  case 0x115:
-  case 0x147: {
+  case ACTOR_TYPE_GEM_DIGIT_0 ... ACTOR_TYPE_GEM_DIGIT_0 + 9:
+  case ACTOR_TYPE_GLYPH_SLASH:
+  case ACTOR_TYPE_GLYPH_PERIOD: {
     int *st = rec->state;
 
     InitActorRenderDefaults(rec);
@@ -284,7 +284,7 @@ Actor *Level0_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x18E:
+  case ACTOR_TYPE_PORTAL_GUIDE:
     InitActorRenderDefaults(rec);
     rec->cullRadius = 0xFF;
     rec->posX = 0x1CC;
@@ -325,8 +325,8 @@ Actor *Level0_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x4C:
-  case 0x1AA ... 0x1C3:
+  case ACTOR_TYPE_GLYPH_COMMA:
+  case ACTOR_TYPE_LETTER_A ... ACTOR_TYPE_LETTER_A + 25:
     InitActorRenderDefaults(rec);
     rec->cullRadius = 0x20;
     rec->updateDist = 0xFF;

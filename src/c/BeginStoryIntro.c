@@ -1,3 +1,4 @@
+#include "cutscene_path.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -30,6 +31,6 @@ void BeginStoryIntro(void) {
   g_pStoryIntroStreamCursor = ((char *)g_pRenderScratchRegionBase) - 0x2000;
   SetSpuCommonAttr(blk - 200);
   g_nLevelStormFlag = 0;
-  *((int *)g_pPathTableHead) = 0;
+  g_pPathTableHead->frame = 0;
   srand(0x159);
 }

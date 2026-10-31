@@ -2885,7 +2885,7 @@ void Level0_UpdateActors(void) {
         SPY.otBinBias = 0x7F;
 
         p = st->desc;
-        AddVector(vec, p->posA, p->posB);
+        AddVector(vec, p->point[0].pos, p->point[1].pos);
         RShiftVector3(vec, 1);
 
         SubtractVector(&SPY.requestVelX, vec, &SPY.posX);
@@ -3129,7 +3129,7 @@ void Level0_UpdateActors(void) {
     }
 
     /* Floating-word letters (OrbitState). */
-    case ACTOR_TYPE_LETTER_OTHER:
+    case ACTOR_TYPE_GLYPH_COMMA:
     case ACTOR_TYPE_LETTER_A:
     case ACTOR_TYPE_LETTER_A + 1:
     case ACTOR_TYPE_LETTER_A + 2:

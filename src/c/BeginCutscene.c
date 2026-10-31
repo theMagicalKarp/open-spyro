@@ -1,3 +1,4 @@
+#include "cutscene_path.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -13,14 +14,14 @@
    dragon-rescue voice marker. */
 void BeginCutscene(void) {
   register int id;
-  int *head;
+  CutscenePath *head;
   int *entry;
 
   g_nGamestate = GS_CUTSCENE;
   g_nScreenFadeLevel = 0;
-  head = (int *)g_pPathTableHead;
+  head = g_pPathTableHead;
   id = g_nCutsceneId;
-  *head = 0;
+  head->frame = 0;
   if (id == 1) {
     g_nLevelStormFlag = 1;
   }

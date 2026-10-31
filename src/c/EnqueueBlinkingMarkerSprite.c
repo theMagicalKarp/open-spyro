@@ -3,8 +3,6 @@
 #include "globals.h"
 #include "vecmath.h"
 
-#define SPR ((Actor *)g_pSpriteRecordWriteCursor)
-
 /* Push a blinking SPRT_16 marker onto the front of the sprite queue
    (0x80018534): g_pSpriteRecordWriteCursor bumps down 0x58 bytes. Gated by
    (frame & 0x1f) < 0x10 so it shows for half of each 32-frame cycle;
@@ -13,18 +11,17 @@ void EnqueueBlinkingMarkerSprite(int *pos, int frame, int tile) {
   int *dst;
 
   if ((frame & 0x1f) < 0x10) {
-    g_pSpriteRecordWriteCursor =
-        (void *)((int)g_pSpriteRecordWriteCursor - ACTOR_SIZE);
+    g_pSpriteRecordWriteCursor--;
     FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
-    dst = &SPR->posX;
-    SPR->type = 0x105;
+    dst = &g_pSpriteRecordWriteCursor->posX;
+    g_pSpriteRecordWriteCursor->type = 0x105;
     CopyVector(dst, pos);
     if (tile < 2) {
-      SPR->rotX = 0x40;
-      SPR->rotZ = tile << 7;
+      g_pSpriteRecordWriteCursor->rotX = 0x40;
+      g_pSpriteRecordWriteCursor->rotZ = tile << 7;
     }
-    SPR->otBias = 0x7f;
-    SPR->tintMode = 0xb;
-    SPR->cullRadius = 0xff;
+    g_pSpriteRecordWriteCursor->otBias = 0x7f;
+    g_pSpriteRecordWriteCursor->tintMode = 0xb;
+    g_pSpriteRecordWriteCursor->cullRadius = 0xff;
   }
 }

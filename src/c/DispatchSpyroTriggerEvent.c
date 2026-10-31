@@ -76,7 +76,7 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
     break;
   case TRIGGER_REBOUND:
     FLAGS = (FLAGS & 0x3FF) | SPYRO_EV_REBOUND;
-    ((void (*)(int, int))g_pfnLevelSpawnActor)(ACTOR_TYPE_REBOUND_FX, 0);
+    g_pfnLevelSpawnActor(ACTOR_TYPE_REBOUND_FX, 0);
     break;
   case TRIGGER_PORTAL:
     ready = g_anSparxHealthBlock;

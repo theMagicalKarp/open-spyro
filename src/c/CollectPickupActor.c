@@ -13,23 +13,23 @@ void CollectPickupActor(Actor *actor) {
 
   g_abGemTallyIconUvTable[g_nGemTallyIconCount & 0x1F] = actor->type;
   g_nGemTallyIconCount += 1;
-  if ((unsigned char *)actor == g_pLockedChestReward) {
+  if (actor == g_pLockedChestReward) {
     g_nLevelKeyState = 3;
   }
   RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-  ((void (*)(int, int, Actor *, int))g_pfnLevelEmitParticles)(
-      6, EMIT_ACTOR_SPARK, actor, g_adwActorBurstColors[actor->type]);
+  g_pfnLevelEmitParticles(6, EMIT_ACTOR_SPARK, actor,
+                          g_adwActorBurstColors[actor->type]);
 
   kind = actor->type;
   if (kind == ACTOR_TYPE_GEM_1) {
-    CommitActorKillGems(1, (unsigned char *)actor);
+    CommitActorKillGems(1, actor);
   } else if (kind == ACTOR_TYPE_GEM_2) {
-    CommitActorKillGems(2, (unsigned char *)actor);
+    CommitActorKillGems(2, actor);
   } else if (kind == ACTOR_TYPE_GEM_5) {
-    CommitActorKillGems(5, (unsigned char *)actor);
+    CommitActorKillGems(5, actor);
   } else if (kind == ACTOR_TYPE_GEM_10) {
-    CommitActorKillGems(0xA, (unsigned char *)actor);
+    CommitActorKillGems(0xA, actor);
   } else if (kind == ACTOR_TYPE_GEM_25) {
-    CommitActorKillGems(0x19, (unsigned char *)actor);
+    CommitActorKillGems(0x19, actor);
   }
 }

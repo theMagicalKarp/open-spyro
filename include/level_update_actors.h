@@ -10,6 +10,8 @@
 #include "sparx.h"
 
 #include "actor_states.h"
+#include "cutscene_path.h"
+#include "portal.h"
 #include "model.h"
 
 /* The update list, and the per-actor values the loop publishes before it
@@ -167,17 +169,7 @@ typedef struct {
 
 extern CamObj g_anWorldToCameraRotMtx;
 
-/* A hub portal's path (type 398's desc; g_pPortalCamPathData): node count
- * and current node, then the two anchor positions whose midpoint Spyro is
- * pulled toward while UpdatePortalPathCamera walks the camera along it. */
-typedef struct PortalCamPath {
-  unsigned char count;    /* 0x00 */
-  unsigned char index;    /* 0x01 */
-  unsigned char pad02[6]; /* 0x02 */
-  int posA[3];            /* 0x08 */
-  int pad14;              /* 0x14 */
-  int posB[3];            /* 0x18 */
-} PortalCamPath;
+/* PortalCamPath (a hub portal's camera path) lives in portal.h. */
 
 extern void StubRewardHook(int script, int a);
 
@@ -357,23 +349,7 @@ typedef struct AmbientSoundState {
   int left;       /* 0x24 frames left on this leg */
 } AmbientSoundState;
 
-/* Case 250 — crystal dragon statue: shakes through its rest pose, then
- * counts the rescue (g_anLevelDragonsRescued) when Spyro is close. */
-typedef struct DragonStatueState {
-  char pad00[0x18];
-  int cutsceneId;   /* 0x18 rescue cutscene id; == reward (-1) when the
-                * statue has none and counts the rescue directly */
-  int facing;   /* 0x1C respawn heading when there is no partner */
-  int partner; /* 0x20 actor index of the other door half, -1 = none */
-  int reward;  /* 0x24 */
-  char pad28[0x10];
-  int dragonName; /* 0x38 g_apDragonNames index (DrawDragonRescuedBanner) */
-  char pad3C[0x8];
-  int phase; /* 0x44 open animation phase */
-  int rotX;  /* 0x48 rest pose */
-  int rotY;  /* 0x4C */
-  int restZ; /* 0x50 */
-} DragonStatueState;
+/* DragonStatueState (case 250) lives in actor_states.h: main reads it too. */
 
 extern struct {
   int x;
@@ -383,7 +359,7 @@ extern struct {
 /* ==== Globals shared with level 4 ==== */
 extern void RefreshHudLevelGemCounter(void);
 
-extern void ResetSpyroEntity(int a0);
+extern void ResetSpyroEntity(int full);
 
 /* Case 9 -- level-exit whirlwind: shows its name letters near the camera,
  * sparkles, lifts Spyro (SPYRO_EV_LIFT toward its z + 0x4000) and, once he
@@ -681,7 +657,7 @@ typedef struct RideState {
  * portal record's word 6 names it; DispatchSpyroTriggerEvent wakes it when
  * Spyro enters the portal region (mode 1, subMode = which side he came from,
  * offset = half the portal normal toward that side, updateDist 0xFF). Mode 1
- * homes Spyro on the midpoint of the path's posA/posB (plus offset)
+ * homes Spyro on the midpoint of the path's first two waypoints (plus offset)
  * along the portal camera path; mode 2 glides him along it. When the camera
  * sphere touches a TRIGGER_PORTAL region it starts the level load. */
 typedef struct PortalState {
@@ -1646,7 +1622,7 @@ extern int g_nMotionTrailRibbonCount;
 extern int g_nVblankTickCount;
 extern Xform *g_pCameraTargetParams;
 extern PortalCamPath *volatile g_pPortalCamPathData;
-extern int *g_pPathTableHead;
+extern struct CutscenePath *g_pPathTableHead;
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
 extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);

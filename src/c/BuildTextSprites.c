@@ -5,8 +5,7 @@
 
 /* The sprite-record cursor as an Actor, read through a volatile view or
    plainly (see note 3 below). */
-#define CURSOR_V ((Actor *)*(void *volatile *)&g_pSpriteRecordWriteCursor)
-#define CURSOR ((Actor *)g_pSpriteRecordWriteCursor)
+#define CURSOR_V (*(Actor *volatile *)&g_pSpriteRecordWriteCursor)
 
 /* Emit a glyph-sprite chain for a UI string, tracking per-glyph kerning: per
    non-space byte allocate a 0x58-byte SPRT slot at g_pSpriteRecordWriteCursor
@@ -63,20 +62,20 @@ void *BuildTextSprites(char *text, int *pos, int *attr, int spacing,
       }
       ch = *text;
       if (((unsigned int)(ch - 0x30)) < 10) {
-        CURSOR->type = ch + 0xd4;
+        g_pSpriteRecordWriteCursor->type = ACTOR_TYPE_DIGIT_GLYPH(ch);
       } else if (((unsigned int)(ch - 0x41)) < 0x1a) {
-        CURSOR->type = ch + 0x169;
+        g_pSpriteRecordWriteCursor->type = ACTOR_TYPE_LETTER_GLYPH(ch);
       } else if ((ch & 0xFF) == 0x21) {
-        CURSOR_V->type = 0x4b;
+        CURSOR_V->type = ACTOR_TYPE_GLYPH_BANG;
       } else if ((ch & 0xFF) == 0x2c) {
-        CURSOR_V->type = 0x4c;
+        CURSOR_V->type = ACTOR_TYPE_GLYPH_COMMA;
       } else if ((ch & 0xFF) == 0x3f) {
-        CURSOR_V->type = 0x116;
+        CURSOR_V->type = ACTOR_TYPE_GLYPH_QUESTION;
       } else if ((ch & 0xFF) == 0x2e) {
-        CURSOR_V->type = 0x147;
+        CURSOR_V->type = ACTOR_TYPE_GLYPH_PERIOD;
       } else {
         Actor *r = CURSOR_V;
-        r->type = 0x4c;
+        r->type = ACTOR_TYPE_GLYPH_COMMA;
         r->posY = (r->posY) - ((attr[0] * 2) / 3);
       }
       CURSOR_V->otBias = 0x7f;

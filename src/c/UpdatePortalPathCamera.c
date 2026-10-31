@@ -1,11 +1,11 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "portal.h"
 
 /* The path block is re-read from the global on every use (the overlay can
    swap it out under us). */
-#define PATH (*(unsigned char *volatile *)&g_pPortalCamPathData)
-#define PATHDATA ((unsigned char *)g_pPortalCamPathData)
+#define PATH (*(PortalCamPath *volatile *)&g_pPortalCamPathData)
 
 /* Camera updater for mode 0x8000000b (portal spline path). Walks
    g_anCameraPos along the overlay-provided path at g_pPortalCamPathData:
@@ -19,33 +19,33 @@ void UpdatePortalPathCamera(void) {
   VECTOR tangent;
   VECTOR toPlayer;
   VECTOR toWaypoint;
-  unsigned char *path;
+  PortalCamPath *path;
   int idx;
   int dist;
   int span;
   int step;
   int quot;
 
-  idx = PATH[1];
-  SubtractVector(&toWaypoint, PATH + (idx * 0x10 + 8), g_anCameraPos);
+  idx = PATH->index;
+  SubtractVector(&toWaypoint, PATH->point[idx].pos, g_anCameraPos);
   dist = VectorLength(&toWaypoint, VEC_LEN_XYZ);
   if (dist < 0x200) {
     if (g_nPortalCamPathReverseFlag != 0) {
       path = PATH;
-      if (path[1] != 0) {
-        path[1] = path[1] - 1;
+      if (path->index != 0) {
+        path->index = path->index - 1;
       }
     } else {
       path = PATH;
-      if (path[1] < path[0] - 1) {
-        path[1] = path[1] + 1;
+      if (path->index < path->count - 1) {
+        path->index = path->index + 1;
       }
     }
   }
 
   step = 0;
   if (g_nPortalCamPathReverseFlag != 0) {
-    step = idx < PATH[0] - 1;
+    step = idx < PATH->count - 1;
   } else if (idx != 0) {
     step = 1;
   }
@@ -62,11 +62,11 @@ void UpdatePortalPathCamera(void) {
       ScaleVector3ByRatio(&toPlayer, span, step);
       span = step;
       if (g_nPortalCamPathReverseFlag != 0) {
-        SubtractVector(&tangent, PATHDATA + (idx * 0x10 + 8),
-                       PATHDATA + (idx * 0x10 + 0x18));
+        SubtractVector(&tangent, g_pPortalCamPathData->point[idx].pos,
+                       g_pPortalCamPathData->point[idx + 1].pos);
       } else {
-        SubtractVector(&tangent, PATHDATA + (idx * 0x10 + 8),
-                       PATHDATA + (idx * 0x10 - 8));
+        SubtractVector(&tangent, g_pPortalCamPathData->point[idx].pos,
+                       g_pPortalCamPathData->point[idx - 1].pos);
       }
       SetVector3Magnitude(&tangent, 0x1000);
       quot = (tangent.vx * toPlayer.vx + tangent.vy * toPlayer.vy +

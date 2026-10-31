@@ -18,8 +18,18 @@
 
 /* Icon actor record `slot` (a constant slot folds to the same address). */
 #define HUD_ICON_SLOT(slot) HUD_ICON((slot) * ACTOR_SIZE)
-#define HUD_SLOT_BUTTERFLY 10 /* the sparx-food butterflies are laid out around it */
-#define HUD_SLOT_KEY 11       /* the level key icon (ACTOR_TYPE_KEY) */
+
+/* The 12 icon slots, one counter per run: digits first, then its icon
+ * (InitHudCounters types the icons, SetHudCounterDigits fills the digits,
+ * OffsetHudIconRollAxis rolls a digit run plus its icon in and out). */
+#define HUD_SLOT_GEM_DIGITS 0    /* 4 level-gem digits */
+#define HUD_SLOT_GEMS 4          /* gem icon (ACTOR_TYPE_HUD_GEM_ICON), spun and tilted */
+#define HUD_SLOT_DRAGON_DIGITS 5 /* 2 dragons-rescued digits */
+#define HUD_SLOT_DRAGONS 7       /* dragon icon (ACTOR_TYPE_HUD_DRAGON_ICON) */
+#define HUD_SLOT_LIVES_DIGITS 8  /* 2 extra-life digits */
+#define HUD_SLOT_LIVES 10        /* lives icon (ACTOR_TYPE_HUD_LIVES_ICON); the
+                                  * sparx-food butterflies ring it */
+#define HUD_SLOT_KEY 11          /* the level key icon (ACTOR_TYPE_KEY) */
 
 /* RECT at byte offset `off` (slot * 8) of a HUD rect table
  * (g_anHudSpriteRects, g_anHudDigitRestRects). */

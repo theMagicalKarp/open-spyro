@@ -544,19 +544,19 @@ extern char g_szUiSlot2[7];                 /* 0x80075638 */
 /* ---- .sbss ---- */
 extern int g_nCutsceneId;                /* 0x8007566c: scripted cutscene / bundle id: 0 title backdrop, 1 opening story, 2/3 endings (BeginCutscene) */
 extern int g_nGnastyLootFallRefZCap;         /* 0x80075678 */
-extern void *g_pfnGamestate7DrawHook;        /* 0x8007567c */
-extern void *g_pPathTableHead;               /* 0x80075680 */
+extern void (*g_pfnGamestate7DrawHook)(void); /* 0x8007567c: flight levels' FlightResults_Draw */
+extern struct CutscenePath *g_pPathTableHead; /* 0x80075680: the cutscene path table (cutscene_path.h) */
 extern int g_nMotionTrailRibbonCount;        /* 0x80075684 */
 extern int g_nPrevLevelIndex;           /* 0x80075688 */
 extern int g_nPauseMenuIdleFrames;           /* 0x8007568c */
 extern int g_nFlightLevelActive;             /* 0x80075690 */
-extern void *g_pfnLevelFallImpactCallback;   /* 0x80075694 */
+extern void (*g_pfnLevelFallImpactCallback)(void); /* 0x80075694: flight levels' FlightEndHook, else null */
 extern int g_nActorPoolLiveCount;            /* 0x800756a4 */
 extern int g_nActorPoolCapacity;             /* 0x800756a8 */
 extern int g_nLevelTransitionPhase;          /* 0x800756ac */
 extern int g_nLevelTransitionTallyActive;    /* 0x800756b0 */
 extern int g_nCameraLosClear;                /* 0x800756b8 */
-extern void *g_pfnLevelAdvanceEmitList;        /* 0x800756bc */
+extern void (*g_pfnLevelAdvanceEmitList)(int frameStep); /* 0x800756bc */
 extern int g_nLetterboxBarHeight;            /* 0x800756c0 */
 extern int g_nGemTallyIconCount;             /* 0x800756c8 */
 extern int g_nFrameStep;                     /* 0x800756cc */
@@ -568,19 +568,19 @@ extern int g_nCdStallMarker;                 /* 0x800756e0 */
 extern void *g_pActorAuxPoolTop;             /* 0x800756e8 */
 extern int g_anSecondaryActorTexWords[2];    /* 0x800756f0 */
 extern int g_nReturningHomePhase;            /* 0x800756f8 */
-extern void *g_pSpriteRecordBufferTop;       /* 0x800756fc */
+extern struct Actor *g_pSpriteRecordBufferTop; /* 0x800756fc: top of this frame's sprite-record queue (g_pSpriteRecordWriteCursor grows down from it) */
 extern int g_nCreditsMode;               /* 0x80075704 */
 extern int g_nGameplayBlocked;               /* 0x8007570c */
-extern void *g_pSpriteRecordWriteCursor;     /* 0x80075710 */
+extern struct Actor *g_pSpriteRecordWriteCursor; /* 0x80075710: sprite-record queue tail; Actor-sized records, grows down from g_pSpriteRecordBufferTop */
 extern int g_nDemoMode;                    /* 0x80075714: attract demo: 0 off, 1 playback (set by Title_Update), 2 record into 0x80600000 */
 extern int g_nGroundSurfaceType;             /* 0x80075718 */
 extern void *g_pGemTallyParticleRecords;     /* 0x8007571c */
 extern int g_nPauseMenuCursor;               /* 0x80075720 */
 extern uint g_dwGamestateFrames;             /* 0x8007572c */
 extern int g_nPadSetMainModePending;         /* 0x80075730 */
-extern void *g_pfnLevelUpdateActors;       /* 0x80075734 */
+extern void (*g_pfnLevelUpdateActors)(void); /* 0x80075734 */
 extern void *g_pEmitListWriteCursor;         /* 0x80075738 */
-extern void *g_pActorPoolFreeHead;           /* 0x8007573c */
+extern struct Actor *g_pActorPoolFreeHead;   /* 0x8007573c: lowest free slot of the level actor pool (AllocActorRecordSlot) */
 extern int g_nGemTallyHoldEndPhase;          /* 0x80075740 */
 extern int g_nSubMenuCursor;                 /* 0x80075744 */
 extern int g_nMusicVolume;                   /* 0x80075748 */
@@ -600,16 +600,16 @@ extern int g_nOptionVibrationEnabled;        /* 0x800757a4 */
 extern void *g_pPrimBufferWriteCursor;       /* 0x800757b0 */
 extern int g_nLevelPickupTableCount;         /* 0x800757b4 */
 extern int g_nDemoIndex;                 /* 0x800757b8: which of the 4 attract demos plays next (cycles &3) */
-extern void *g_pfnGamestate7Handler;         /* 0x800757c0 */
+extern void (*g_pfnGamestate7Handler)(void);  /* 0x800757c0: flight levels' FlightResultsMenu_Update */
 extern int g_nPauseMenuSubstate;             /* 0x800757c8 */
 extern int g_nSubMenuScrollOffset;           /* 0x800757cc */
 extern int g_nPulseRumbleTimer;              /* 0x800757d0 */
 extern uint g_dwActorMeshFadeColor;          /* 0x800757d4 */
 extern int g_nGamestate;                     /* 0x800757d8 */
-extern void *g_pPadSubstepState;             /* 0x800757e0 */
+extern struct PadSubstep *g_pPadSubstepState; /* 0x800757e0: this substep's g_anPadSubstepRing entry (pad.h) */
 extern void *g_pCollisionHitActor;           /* 0x800757e4 */
 extern int g_nGameOverLevelIntroIndex;       /* 0x800757e8 */
-extern void *g_pLevelPickupTableEntries;     /* 0x800757f8 */
+extern unsigned short **g_pLevelPickupTableEntries; /* 0x800757f8: per pickup group, its actor-id list (bit 15 marks the last) */
 extern byte g_abPadActCommand[2];            /* 0x80075800 */
 extern struct Actor *g_pSpyroContactActor;           /* 0x80075804 */
 extern int g_nLastCollisionHitChunkId;       /* 0x80075808 */
@@ -620,7 +620,7 @@ extern int g_nCreditsReturnLevelId;          /* 0x80075818 */
 extern int *g_pOtActiveDepthSlot;            /* 0x8007581c */
 extern void *g_pOtDepthBinArrayBase;         /* 0x80075820 */
 extern void *g_pEmitListBase;                /* 0x80075824 */
-extern void *g_pActorListBase;               /* 0x80075828 */
+extern struct Actor *g_pActorListBase;       /* 0x80075828: the level actor pool (0x58-byte Actor records, mode 0xFF ends it) */
 extern int g_nExtraLives;                    /* 0x8007582c */
 extern int g_nLevelKeyState;                 /* 0x80075830: the level key: 0 none, 1 carried (key 173 picked up), 2 locked chest (174) opened, 3 its reward collected; shown as HUD counter 4 */
 extern int g_nCameraShakePeakAmplitude;      /* 0x80075848 */
@@ -635,7 +635,7 @@ extern int g_nLevelSelectModeActive;         /* 0x80075880 */
 extern int g_nDemoExitFadeFrame;                /* 0x80075884: demo-end fade frame, 0 until the demo ends; at 0x10 the demo tears down */
 extern DRAWENV *g_pActiveFrameDrawEnv;       /* 0x80075888 */
 extern int g_nCdStallWatchdogTicks;          /* 0x8007588c */
-extern void *g_pActorPoolDynBase;            /* 0x80075890 */
+extern struct Actor *g_pActorPoolDynBase;    /* 0x80075890: end of the loaded actors, start of the dynamically spawned ones */
 extern int g_nCameraSpringReengageCountdown; /* 0x80075894 */
 extern struct Actor *g_pSparxActor;      /* 0x80075898: the Sparx actor (type 0x78, spawned by BuildLoadedLevelRuntime), or null while Sparx is gone */
 extern int g_nSpyroTurnRateAccum;            /* 0x800758a0 */
@@ -647,10 +647,13 @@ extern int g_nPauseMenuTransitionFrames;     /* 0x800758b8 */
 extern int g_nPortalCount;              /* 0x800758bc */
 extern int g_nSpyroFallReferenceZ;           /* 0x800758c0 */
 extern int g_nVblankTickCount;               /* 0x800758c8 */
-extern void *g_pfnLevelSpawnActor;      /* 0x800758cc */
+extern struct Actor *(*g_pfnLevelSpawnActor)(int type, struct Actor *parent); /* 0x800758cc */
 extern byte g_abWorldBalloonistState[6];         /* 0x800758d0 per-homeworld balloonist progress: 0 unmet, 1 talked, 2 travel unlocked (ResetLevelState seeds [0] = 2, the unlock cheat fills all 2, homeworld UpdateActors steps it and picks the dialogue page) */
 extern int g_nPadActAlignedFlag;             /* 0x800758e0 */
-extern void *g_pfnLevelEmitParticles; /* 0x800758e4 */
+/* 0x800758e4: the level's EmitParticles(count, type, pos, effectArg). Left
+ * unprototyped: effectArg is a velocity vector, a packed colour, a scale or a
+ * flag depending on the effect, and main passes each shape. */
+extern void (*g_pfnLevelEmitParticles)();
 extern int g_nSparxFoodCount;                /* 0x800758e8: type-15 pickups collected; every 20 become an extra life (UpdateHudCounters) */
 extern int g_nLevelSelectWorldIndex;         /* 0x800758ec */
 extern int g_nLevelSelectSubIndex;           /* 0x800758f0 */
@@ -799,9 +802,9 @@ extern int g_nDragonRescueCameraStartZ;                    /* 0x800770a8 */
 extern int g_nDragonRescueCameraTargetYaw;                 /* 0x800770ac */
 extern int g_nDragonRescueCameraTargetRadius;              /* 0x800770b0 */
 extern int g_nDragonRescueCameraTargetZ;                   /* 0x800770b4 */
-extern void *g_pDragonRescueStatueActor;                   /* 0x800770b8 */
-extern void *g_pDragonRescueSpyroMirrorActor;              /* 0x800770bc */
-extern void *g_pDragonRescueSourceActor;                   /* 0x800770c0 */
+extern struct Actor *g_pDragonRescueStatueActor;           /* 0x800770b8: the freed dragon (ACTOR_TYPE_RESCUED_DRAGON) */
+extern struct Actor *g_pDragonRescueSpyroMirrorActor;      /* 0x800770bc: Spyro's stand-in (ACTOR_TYPE_RESCUE_SPYRO) */
+extern struct Actor *g_pDragonRescueSourceActor;           /* 0x800770c0: the dragon statue being rescued (BeginDragonRescue) */
 extern int g_anWorldLightDirVec[6];                     /* 0x800770c8 */
 extern byte g_abBillboardBasisVectors[18];              /* 0x800770e0 */
 extern int g_nLightSweepAngle;                          /* 0x800770f4 */
@@ -888,7 +891,7 @@ extern int g_nWorldMeshCount;                           /* 0x800785c8 */
 extern void *g_pWorldCollisionHeader;                   /* 0x800785d4 */
 extern void *g_pDrawBufA;                               /* 0x800785d8 */
 extern void *g_pDrawBufB;                               /* 0x800785dc */
-extern void *g_pWorldUnpackHead;                        /* 0x800785e0 */
+extern char *g_pWorldUnpackHead;                        /* 0x800785e0 */
 extern void *g_pPathTableBuffer;                        /* 0x800785e4 */
 extern void *g_pRenderScratchRegionBase;                /* 0x800785e8 */
 extern void *g_pRenderScratchPrimBase1;                 /* 0x800785ec */
@@ -1003,7 +1006,7 @@ extern int g_nSpyroRequestState;                        /* 0x80078c70 */
 extern void *g_pSpyroRequestCameraAnchor;               /* 0x80078c74 */
 extern void *g_pSpyroRequestCameraTargetParams;         /* 0x80078c78 */
 extern struct Actor *g_pScriptedCameraActor;                    /* 0x80078c7c */
-extern void *g_pPortalCamPathData;                   /* 0x80078c98 */
+extern struct PortalCamPath *g_pPortalCamPathData;      /* 0x80078c98: the active hub portal camera path (portal.h) */
 extern int g_nPortalCamPathMaxStep;                  /* 0x80078c9c */
 extern int g_nPortalCamPathReverseFlag;              /* 0x80078ca0 */
 extern int g_nSpyroFlightMode;                    /* 0x80078ca4: Spyro can fly: set on flight levels (and in Gnasty's Loot, LEVEL_GNASTYS_LOOT, once grounded), cleared on level exit. While set the glide/fly states take R1/L1 as substates 1/2 and the fall physics keeps tracking g_nSpyroFloorReferenceZ */
@@ -1246,22 +1249,22 @@ extern unsigned char g_abWorldTitleGlyphBlock[]; /* 0x8007555c: held-base view (
 extern int g_nLevelVortexSeen1; /* 0x80075670: a loot vortex (levels 33/34, LootVortexState.seen 1) was entered this visit; read as g_nCutsceneId[1] */
 extern int g_nLevelVortexSeen2; /* 0x80075674: the same for seen 2 (g_nCutsceneId[2]) */
 extern int g_nLevelLoadUnreadWord; /* 0x80075698 */
-extern void *g_pfnActorCutsceneSubstateUpdate; /* 0x8007574c: per-level handler for the other 0xC substates (ApplyPerLevelGlobalsTable) */
-extern unsigned char *g_pLockedChestReward; /* 0x80075758 */
+extern void (*g_pfnActorCutsceneSubstateUpdate)(void); /* 0x8007574c: per-level handler for the other 0xC substates (ApplyPerLevelGlobalsTable) */
+extern struct Actor *g_pLockedChestReward; /* 0x80075758: the reward the opened locked chest dropped (key state 3 once collected) */
 extern int g_pCreditsScratchBuf; /* 0x80075768 */
 extern int g_bLevelUseShortReleaseAnim; /* 0x8007577c */
 extern struct Actor *g_pSpyroHomingTargetActor; /* 0x80075790: charge homing target (ChangeSpyroState) */
 extern int g_nActorAnimDone; /* 0x80075794 */
-extern void *g_pfnLevelBeginActorCutscene; /* 0x800757a0 */
-extern void *g_pfnLevelHandleFlightResults; /* 0x800757a8 */
+extern void (*g_pfnLevelBeginActorCutscene)(struct Actor *actor); /* 0x800757a0 */
+extern void (*g_pfnLevelHandleFlightResults)(int reload); /* 0x800757a8 */
 extern int g_pCreditsScrollHeader; /* 0x800757bc */
 extern int g_nWorldFloorVisZone; /* 0x80075844 */
 extern int g_bLevelPhasedBossKilled; /* 0x80075850 */
 extern int g_bLevelBossDefeated; /* 0x80075854: cleared on level load */
 extern int g_anLevelRunnerArrived; /* 0x80075870 */
 extern int g_nLevelRunnerArrivedGoal1; /* 0x80075874 */
-extern void *g_pfnLevelOnSaveMenuExit; /* 0x800758a8 */
-extern void *g_pfnFlightTimeFormatter; /* 0x800758c4 */
+extern void (*g_pfnLevelOnSaveMenuExit)(void); /* 0x800758a8 */
+extern int (*g_pfnFlightTimeFormatter)(int time, int *pos, int palette); /* 0x800758c4: flight levels' DrawFlightRaceTime */
 extern int g_nFlightQuitFlag; /* 0x80075900: flight-level quit flag */
 extern int g_nSpyroScriptedAlignFrames; /* 0x80075948 */
 extern int g_nActiveWorldIndex; /* 0x8007595c: current world index */

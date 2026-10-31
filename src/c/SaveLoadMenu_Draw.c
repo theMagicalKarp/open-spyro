@@ -29,7 +29,8 @@ void SaveLoadMenu_Draw(void) {
   int i;
 
   if (g_pSpriteRecordBufferTop == g_pRenderScratchPrimTop) {
-    g_pSpriteRecordBufferTop = (char *)g_pPrimBufferWriteCursor + 0x1BA00;
+    g_pSpriteRecordBufferTop =
+        (Actor *)((char *)g_pPrimBufferWriteCursor + 0x1BA00);
     g_pSpriteRecordWriteCursor = g_pSpriteRecordBufferTop;
   }
   if (g_nSaveMenuMode == 1) {
@@ -52,20 +53,20 @@ void SaveLoadMenu_Draw(void) {
       BuildTextSprites(g_szSaveGame, pos, size, 0x12, 0xB);
       pos[1] += 0x13;
       if (SM[2] == 0) {
-        rec = g_pSpriteRecordWriteCursor;
+        rec = (unsigned char *)g_pSpriteRecordWriteCursor;
         n = 8;
       }
       pos[0] = SM[4] + 0x4C;
       BuildTextSprites(g_szReplayDragon, pos, size, 0x12, 0xB);
       pos[1] += 0x13;
       if (SM[2] == 1) {
-        rec = g_pSpriteRecordWriteCursor;
+        rec = (unsigned char *)g_pSpriteRecordWriteCursor;
         n = 0xC;
       }
       pos[0] = SM[4] + 0x4C;
       BuildTextSprites(g_szContinue, pos, size, 0x12, 0xB);
       if (SM[2] == 2) {
-        rec = g_pSpriteRecordWriteCursor;
+        rec = (unsigned char *)g_pSpriteRecordWriteCursor;
         n = 8;
       }
       WAVE(rec, n, SM[1]);
@@ -74,7 +75,7 @@ void SaveLoadMenu_Draw(void) {
       pos[1] = 0x32;
       pos[0] = SM[4] + 0x52;
       BuildTextSprites(g_szNoSaveFile, pos, size, 0x12, 0xB);
-      rec = g_pSpriteRecordWriteCursor;
+      rec = (unsigned char *)g_pSpriteRecordWriteCursor;
       pos[1] += 0x1A;
       WAVE(rec, 10, SM[1]);
       size[0] = 0xE;
@@ -94,7 +95,7 @@ void SaveLoadMenu_Draw(void) {
       pos[1] = 0x52;
       pos[0] = SM[4] + 0x6A;
       BuildTextSprites(g_szSaving, pos, size, 0x12, 0xB);
-      rec = g_pSpriteRecordWriteCursor;
+      rec = (unsigned char *)g_pSpriteRecordWriteCursor;
       WAVE(rec, 9, SM[1]);
       break;
     case 3:
@@ -109,7 +110,7 @@ void SaveLoadMenu_Draw(void) {
         BuildTextSprites(g_szNoSaveFile, pos, size, 0x12, 0xB);
         n = 0xA;
       }
-      rec = g_pSpriteRecordWriteCursor;
+      rec = (unsigned char *)g_pSpriteRecordWriteCursor;
       pos[1] += 0x1A;
       WAVE(rec, n, SM[1]);
       size[0] = 0xE;
@@ -129,7 +130,7 @@ void SaveLoadMenu_Draw(void) {
       pos[1] = 0x32;
       pos[0] = SM[4] + 0x5E;
       BuildTextSprites(g_szSaveError, pos, size, 0x12, 0xB);
-      rec = g_pSpriteRecordWriteCursor;
+      rec = (unsigned char *)g_pSpriteRecordWriteCursor;
       pos[1] += 0x1A;
       WAVE(rec, 9, SM[1]);
       size[0] = 0xE;
@@ -154,13 +155,13 @@ void SaveLoadMenu_Draw(void) {
       BuildTextSprites(g_szUiRetry, pos, size, 0x12, 0xB);
       pos[1] += 0x13;
       if (SM[2] == 0) {
-        rec = g_pSpriteRecordWriteCursor;
+        rec = (unsigned char *)g_pSpriteRecordWriteCursor;
         n = 5;
       }
       pos[0] = SM[4] + 0x87;
       BuildTextSprites(g_szUiAbort, pos, size, 0x12, 0xB);
       if (SM[2] == 1) {
-        rec = g_pSpriteRecordWriteCursor;
+        rec = (unsigned char *)g_pSpriteRecordWriteCursor;
         n = 5;
       }
       WAVE(rec, n, SM[1]);
@@ -169,7 +170,7 @@ void SaveLoadMenu_Draw(void) {
       pos[1] = 0x52;
       pos[0] = SM[4] + 0x5E;
       BuildTextSprites(g_szGameSaved, pos, size, 0x12, 0xB);
-      rec = g_pSpriteRecordWriteCursor;
+      rec = (unsigned char *)g_pSpriteRecordWriteCursor;
       WAVE(rec, 9, SM[1]);
       break;
     }

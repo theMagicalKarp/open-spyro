@@ -37,7 +37,7 @@ extern int g_nSpyroWorldPosY;
 extern Actor *g_pActorListBase;                              /* level actor pool */
 extern Actor *g_pActorPoolDynBase;                           /* end of the level actor pool */
 extern void (*g_pfnLevelBeginActorCutscene)(Actor *actor);
-extern void (*g_pfnLevelEmitParticles)(int a, int effect, int *pos, void *c);
+extern void (*g_pfnLevelEmitParticles)(int count, int type, int *pos, void *effectArg);
 extern void (*g_pfnLevelFallImpactCallback)(void);           /* out-of-time handler */
 extern Actor *(*g_pfnLevelSpawnActor)(int type, Actor *parent);
 extern Actor *g_pSparxActor;                     /* Sparx, or null when absent */

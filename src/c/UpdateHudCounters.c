@@ -82,8 +82,8 @@ void UpdateHudCounters(void) {
   g_nHudFrameCycleMod9 = t - q9;
   SCHED_FENCE();
   nCos = g_anCosineLut[idx];
-  g_abHudIconActorRecords[0x1A6] = nPhase;
-  g_abHudIconActorRecords[0x1A5] = nCos >> 9;
+  HUD_ICON_SLOT(HUD_SLOT_GEMS)->rotZ = nPhase;
+  HUD_ICON_SLOT(HUD_SLOT_GEMS)->rotY = nCos >> 9;
 
   /* --- counter 0: level gems ------------------------------------------ */
   if (GEM_STATE == 0) {
@@ -102,7 +102,7 @@ void UpdateHudCounters(void) {
       }
     } else {
       FIELD(g_bHudLevelGemRollPhase) = p + 1;
-      OffsetHudIconRollAxis(0, 5, g_anHudRollInStepTable[p]);
+      OffsetHudIconRollAxis(HUD_SLOT_GEM_DIGITS, 5, g_anHudRollInStepTable[p]);
     }
   } else if (GEM_STATE == 2) {
     if (GEM_CACHED == g_anLevelGemsCollected[g_nLevelIndex] && GEM_PHASE == 0) {
@@ -124,7 +124,7 @@ void UpdateHudCounters(void) {
         int *gc;
 
         OPAQUE_COPY(gc, &GEMCACHE);
-        SetHudCounterDigits(0, 4, gc[0] + 1, 0);
+        SetHudCounterDigits(HUD_SLOT_GEM_DIGITS, 4, gc[0] + 1, 0);
         CommitHudCounterAnimState(0, 4, ((unsigned char *)gc)[-0x1B]);
         nDelta = g_anLevelGemsCollected[g_nLevelIndex] - gc[0];
         if (nDelta >= 0xC9) {
@@ -147,7 +147,8 @@ void UpdateHudCounters(void) {
       {
         unsigned char t = g_bHudLevelGemRollPhase - 1;
         FIELD(g_bHudLevelGemRollPhase) = t;
-        OffsetHudIconRollAxis(0, 5, g_anHudRollOutStepTable[t]);
+        OffsetHudIconRollAxis(HUD_SLOT_GEM_DIGITS, 5,
+                              g_anHudRollOutStepTable[t]);
       }
     }
   } else if (GEM_STATE == 4) {
@@ -159,9 +160,12 @@ void UpdateHudCounters(void) {
   }
 
   /* --- counter 1: dragons --------------------------------------------- */
-  g_abHudIconActorRecords[0x2B1] += 8;
-  g_abHudIconActorRecords[0x2AE] =
-      (unsigned short)g_anCosineLut[g_abHudIconActorRecords[0x2B1]] >> 8;
+  /* the RMWs stay byte-indexed: through the struct form gcc holds the
+     address in a register instead of re-forming %hi/%lo for the store */
+  g_abHudIconActorRecords[0x2B1] += 8; /* dragon icon ->subMode */
+  HUD_ICON_SLOT(HUD_SLOT_DRAGONS)->rotZ =
+      (unsigned short)g_anCosineLut[HUD_ICON_SLOT(HUD_SLOT_DRAGONS)->subMode] >>
+      8;
   if (g_abHudCounterDisplayState[1] == 1) {
     p = g_bHudDragonRollPhase;
     if (p == 0xD) {
@@ -170,7 +174,8 @@ void UpdateHudCounters(void) {
       g_nHudDragonHoldTimer = -0x28;
     } else {
       FIELD(g_bHudDragonRollPhase) = p + 1;
-      OffsetHudIconRollAxis(5, 3, g_anHudRollInStepTable[p]);
+      OffsetHudIconRollAxis(HUD_SLOT_DRAGON_DIGITS, 3,
+                            g_anHudRollInStepTable[p]);
     }
   } else if (g_abHudCounterDisplayState[1] == 2) {
     g_nHudDragonHoldTimer = g_nHudDragonHoldTimer + 1;
@@ -185,13 +190,14 @@ void UpdateHudCounters(void) {
       {
         unsigned char t = g_bHudDragonRollPhase - 1;
         FIELD(g_bHudDragonRollPhase) = t;
-        OffsetHudIconRollAxis(5, 3, g_anHudRollOutStepTable[t]);
+        OffsetHudIconRollAxis(HUD_SLOT_DRAGON_DIGITS, 3,
+                              g_anHudRollOutStepTable[t]);
       }
     }
   }
 
   /* --- counter 2: lives + sparx butterflies ---------------------------- */
-  g_abHudIconActorRecords[0x3B6] = g_dwHudBobSinePhase;
+  HUD_ICON_SLOT(HUD_SLOT_LIVES)->rotZ = g_dwHudBobSinePhase;
   if (g_abHudCounterDisplayState[2] == 0) {
     if (g_nHudLivesCachedCount != g_nExtraLives ||
         g_nHudButterflyCachedCount != g_nSparxFoodCount) {
@@ -210,7 +216,8 @@ void UpdateHudCounters(void) {
       }
     } else {
       FIELD(g_bHudLivesRollPhase) = p + 1;
-      OffsetHudIconRollAxis(8, 3, g_anHudRollInStepTable[p]);
+      OffsetHudIconRollAxis(HUD_SLOT_LIVES_DIGITS, 3,
+                            g_anHudRollInStepTable[p]);
     }
   } else if (g_abHudCounterDisplayState[2] == 2) {
     if (g_nHudLivesCachedCount == g_nExtraLives && g_bHudLivesRollPhase == 0) {
@@ -227,7 +234,8 @@ void UpdateHudCounters(void) {
     } else {
       g_nHudLivesHoldTimer = 0;
       g_bHudLivesRollPhase -= 0x10;
-      SetHudCounterDigits(8, 2, g_nHudLivesCachedCount + 1, 0);
+      SetHudCounterDigits(HUD_SLOT_LIVES_DIGITS, 2, g_nHudLivesCachedCount + 1,
+                          0);
       CommitHudCounterAnimState(8, 2, g_bHudLivesRollPhase);
       if (g_bHudLivesRollPhase == 0xC0) {
         g_nHudLivesCachedCount += 1;
@@ -244,7 +252,8 @@ void UpdateHudCounters(void) {
       {
         unsigned char t = g_bHudLivesRollPhase - 1;
         FIELD(g_bHudLivesRollPhase) = t;
-        OffsetHudIconRollAxis(8, 3, g_anHudRollOutStepTable[t]);
+        OffsetHudIconRollAxis(HUD_SLOT_LIVES_DIGITS, 3,
+                              g_anHudRollOutStepTable[t]);
       }
     }
   }
@@ -302,8 +311,7 @@ void UpdateHudCounters(void) {
       av[0] = g_nHudWorldEggCachedCount * 0x144 - 0x9C4;
       av[1] = 0x3F0;
       av[2] = 0x1000;
-      (*(void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(
-          0x10, EMIT_DRIFT_STREAK, av, 0);
+      g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, av, 0);
     } else if (g_nHudWorldEggHoldTimer >= 9) {
       g_nHudWorldEggCachedCount += 1;
       g_nHudWorldEggHoldTimer = 0;
@@ -347,7 +355,7 @@ void UpdateHudCounters(void) {
       }
     } else {
       FIELD(g_bHudKeyRollPhase) = p + 1;
-      OffsetHudIconRollAxis(0xB, 1, -g_anHudRollInStepTable[p]);
+      OffsetHudIconRollAxis(HUD_SLOT_KEY, 1, -g_anHudRollInStepTable[p]);
     }
     break;
   case 2:
@@ -355,13 +363,13 @@ void UpdateHudCounters(void) {
       if (g_nHudKeyHoldTimer == 0) {
         i = 0;
         do {
-          (*(void (*)(int, int, unsigned char *, int))g_pfnLevelEmitParticles)(
-              1, EMIT_ACTOR_SPARK, &g_abHudIconActorRecords[0x3C8],
-              ((i + 6) << 24) + 0x8080);
+          g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK,
+                                  HUD_ICON_SLOT(HUD_SLOT_KEY),
+                                  ((i + 6) << 24) + 0x8080);
           i += 1;
         } while (i < 6);
       } else if (g_nHudKeyHoldTimer >= 0xC) {
-        g_abHudIconActorRecords[0x411] = 0x40;
+        HUD_ICON_SLOT(HUD_SLOT_KEY)->subMode = 0x40;
         g_nHudKeyHoldTimer = 0;
         g_nHudKeyCachedState = g_nLevelKeyState;
       }
@@ -381,18 +389,19 @@ void UpdateHudCounters(void) {
       {
         unsigned char t = g_bHudKeyRollPhase - 1;
         FIELD(g_bHudKeyRollPhase) = t;
-        OffsetHudIconRollAxis(0xB, 1, -g_anHudRollOutStepTable[t]);
+        OffsetHudIconRollAxis(HUD_SLOT_KEY, 1, -g_anHudRollOutStepTable[t]);
       }
     }
     break;
   }
 
   /* --- the key icon spin, and butterflies -> extra lives -------------- */
-  g_abHudIconActorRecords[0x411] += 4;
-  g_abHudIconActorRecords[0x40C] =
-      (unsigned short)g_anCosineLut[g_abHudIconActorRecords[0x411]] >> 7;
-  g_abHudIconActorRecords[0x40D] =
-      (unsigned short)g_anSineLut[g_abHudIconActorRecords[0x411]] >> 7;
+  g_abHudIconActorRecords[0x411] +=
+      4; /* key icon ->subMode (byte-indexed RMW) */
+  HUD_ICON_SLOT(HUD_SLOT_KEY)->rotX =
+      (unsigned short)g_anCosineLut[HUD_ICON_SLOT(HUD_SLOT_KEY)->subMode] >> 7;
+  HUD_ICON_SLOT(HUD_SLOT_KEY)->rotY =
+      (unsigned short)g_anSineLut[HUD_ICON_SLOT(HUD_SLOT_KEY)->subMode] >> 7;
   if (g_nSparxFoodCount >= 0x14) {
     g_nExtraLives = g_nExtraLives + 1;
     if (g_nExtraLives >= 0x64) {

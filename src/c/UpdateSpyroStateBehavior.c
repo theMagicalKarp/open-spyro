@@ -5,6 +5,7 @@
 #include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "pad.h"
 #include "pad_buttons.h"
 #include "sdata.h"
 #include "spyro_block.h"
@@ -28,9 +29,6 @@ static inline int OpaqueInt(int p) {
   OPAQUE_COPY(q, p);
   return q;
 }
-
-#define PARTICLE_SPAWN(a, b, c, d)                                             \
-  ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(a, b, c, d)
 
 /* Landing: pick the ground state from the speed target and current speed. */
 #define LAND_ON_GROUND()                                                       \
@@ -68,7 +66,7 @@ static inline int OpaqueInt(int p) {
     for (i = 0; i < 4; i++) {                                                  \
       v[0] = (short)(unsigned short)g_anCosineLut[a] >> 7;                     \
       v[1] = (short)((unsigned short *)g_anSineLut)[a] >> 7;                   \
-      PARTICLE_SPAWN(1, EMIT_DUST_PUFF, v, 0);                                 \
+      g_pfnLevelEmitParticles(1, EMIT_DUST_PUFF, v, 0);                        \
       a = (a + 0x40) & 0xFF;                                                   \
     }                                                                          \
   }
@@ -389,8 +387,8 @@ void UpdateSpyroStateBehavior(void) {
   fall_timeout:
     if (g_nSpyroStateTimer > 0x12C) {
       if (g_nFlightLevelActive != 0) {
-        ((void (*)(void))g_pfnLevelFallImpactCallback)();
-        ((void (*)(void))g_pfnLevelUpdateActors)();
+        g_pfnLevelFallImpactCallback();
+        g_pfnLevelUpdateActors();
       } else {
         g_nExtraLives++;
         TriggerRespawnOrGameOver();
@@ -630,7 +628,7 @@ void UpdateSpyroStateBehavior(void) {
         ChangeSpyroState(SPYRO_ST_FALL);
         break;
       }
-      pad = ((int *)g_pPadSubstepState)[1];
+      pad = g_pPadSubstepState->held;
       if (pad & 8) {
         g_nSpyroSubstate = 1;
       } else if (pad & 4) {
@@ -768,8 +766,8 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_nSpyroStateTimer > 0x12C) {
       if (g_nFlightLevelActive != 0) {
-        ((void (*)(void))g_pfnLevelFallImpactCallback)();
-        ((void (*)(void))g_pfnLevelUpdateActors)();
+        g_pfnLevelFallImpactCallback();
+        g_pfnLevelUpdateActors();
       } else {
         g_nExtraLives++;
         TriggerRespawnOrGameOver();
@@ -967,8 +965,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_nSpyroStateTimer > 0x3C) {
       SPY[SPY_SPARX_HEALTH] = -1;
-      ((void (*)(int, int))g_pfnLevelSpawnActor)(
-          g_anHazardTimeoutSpawnType[g_nSpyroHazardKind], 0);
+      g_pfnLevelSpawnActor(g_anHazardTimeoutSpawnType[g_nSpyroHazardKind], 0);
       break;
     }
     if (g_nSpyroStateTimer >= 0x10 && (g_dwPadHeld & PAD_CROSS)) {
@@ -998,7 +995,7 @@ void UpdateSpyroStateBehavior(void) {
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
         ChangeSpyroState(SPYRO_ST_FALL);
       } else {
-        int pad = ((int *)g_pPadSubstepState)[1];
+        int pad = g_pPadSubstepState->held;
 
         if (pad & 8) {
           g_nSpyroSubstate = 1;
@@ -1040,7 +1037,7 @@ void UpdateSpyroStateBehavior(void) {
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
         ChangeSpyroState(SPYRO_ST_FALL);
       } else {
-        int pad = ((int *)g_pPadSubstepState)[1];
+        int pad = g_pPadSubstepState->held;
 
         if (pad & 8) {
           SPY[SPY_SUBSTATE] = 1;
@@ -1084,7 +1081,7 @@ void UpdateSpyroStateBehavior(void) {
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
         ChangeSpyroState(SPYRO_ST_FALL);
       } else {
-        int pad = ((int *)g_pPadSubstepState)[1];
+        int pad = g_pPadSubstepState->held;
 
         if (pad & 8) {
           SPY[SPY_SUBSTATE] = 1;

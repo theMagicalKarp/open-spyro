@@ -34,10 +34,11 @@ extern int g_dwHudBobSinePhase;
 extern char g_pOtDepthBinHead0[];
 extern char *g_pRenderScratchPrimTop[];
 extern char *g_pRenderScratchRegionBase;
-extern char *g_pSpriteRecordWriteCursor;
+extern struct Actor *g_pSpriteRecordWriteCursor; /* sprite-record queue tail (grows down) */
 
 /* Attach-point lookup the particle clones aim from. */
 struct Actor;
 extern void GetActorAttachPoint(struct Actor *parent, int slot, int *dst);
+extern struct Actor *g_pActorListBase; /* level actor pool (tracking sparks store an owner index) */
 
 #endif /* OPEN_SPYRO_LEVEL_EMIT_PARTICLES_H */

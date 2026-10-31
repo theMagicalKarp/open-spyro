@@ -103,9 +103,9 @@ void SpawnNameLetterActors(Actor *sign, int named) {
         if ((unsigned int)(raw - 'A') < 26) {
           ch = ch + (ACTOR_TYPE_LETTER_A - 'A');
         } else {
-          ch = ACTOR_TYPE_LETTER_OTHER;
+          ch = ACTOR_TYPE_GLYPH_COMMA;
         }
-        letter = (*(Actor * (*)(int, Actor *)) g_pfnLevelSpawnActor)(ch, sign);
+        letter = g_pfnLevelSpawnActor(ch, sign);
         REC(letter)->owner = sign;
         REC(letter)->count = len;
         REC(letter)->index = i;
@@ -124,7 +124,7 @@ void SpawnNameLetterActors(Actor *sign, int named) {
         SubtractVector(pos, pos, cursor);
 
         pos[2] = pos[2] + ((LookupCosine(t) * 3) >> 3);
-        if (letter->type == ACTOR_TYPE_LETTER_OTHER) {
+        if (letter->type == ACTOR_TYPE_GLYPH_COMMA) {
           pos[2] = pos[2] + 0x100;
         }
         letter->rotZ = yaw;

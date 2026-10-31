@@ -292,7 +292,7 @@ void ActorCutscene_Update(void) {
       g_anActorCutsceneTimerBlock[13] = ((face << 4) + 0xBA0) & 0xFFF;
     }
   } else {
-    (*(void (*)(void))g_pfnActorCutsceneSubstateUpdate)();
+    g_pfnActorCutsceneSubstateUpdate();
   }
 
   AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);

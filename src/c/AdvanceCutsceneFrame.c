@@ -1,4 +1,5 @@
 #include "actor_type.h"
+#include "cutscene_path.h"
 #include "globals.h"
 #include "model.h"
 
@@ -13,8 +14,8 @@
    else /2), writes the seg/60 keyframe split into the actor record and lerps
    the packed 10-bit path points into the actor position. */
 void AdvanceCutsceneFrame(int timer) {
-  int *path;
-  int *hdr;
+  CutscenePath *path;
+  CutscenePath *hdr;
   int i;
   int seg;
   int frac;
@@ -25,55 +26,55 @@ void AdvanceCutsceneFrame(int timer) {
   int pad[2];
   unsigned char type;
 
-  path = (int *)g_pPathTableHead;
-  g_anCameraPos[0] = ((int *)path[4])[(path[0] >> 1) * 6];
-  g_anCameraPos[1] = ((int *)path[4])[(path[0] >> 1) * 6 + 1];
-  g_anCameraPos[2] = ((int *)path[4])[(path[0] >> 1) * 6 + 2];
-  g_anCameraEulerRollBlock[0] = ((int *)path[4])[(path[0] >> 1) * 6 + 3];
-  g_anCameraEulerRollBlock[1] = ((int *)path[4])[(path[0] >> 1) * 6 + 4];
-  g_anCameraEulerRollBlock[2] = ((int *)path[4])[(path[0] >> 1) * 6 + 5];
+  path = g_pPathTableHead;
+  g_anCameraPos[0] = path->camera[(path->frame >> 1) * 6];
+  g_anCameraPos[1] = path->camera[(path->frame >> 1) * 6 + 1];
+  g_anCameraPos[2] = path->camera[(path->frame >> 1) * 6 + 2];
+  g_anCameraEulerRollBlock[0] = path->camera[(path->frame >> 1) * 6 + 3];
+  g_anCameraEulerRollBlock[1] = path->camera[(path->frame >> 1) * 6 + 4];
+  g_anCameraEulerRollBlock[2] = path->camera[(path->frame >> 1) * 6 + 5];
 
   i = 0;
-  if (path[3] > 0) {
+  if (path->actorCount > 0) {
     do {
       type = ((Model *)g_apActorMeshTable_1[i])
                  ->m_Animations[0]
                  ->m_ProgressPerTick;
       if (type == 0x10) {
-        int t = *(int *)g_pPathTableHead;
+        int t = g_pPathTableHead->frame;
         seg = t >> 3;
         frac = (t & 7) << 3;
       } else if (type == 0x15) {
-        int t = *(int *)g_pPathTableHead;
+        int t = g_pPathTableHead->frame;
         seg = t / 6;
         frac = (t % 6) * 10;
       } else if (type == 0x20) {
-        int t = *(int *)g_pPathTableHead;
+        int t = g_pPathTableHead->frame;
         seg = t >> 2;
         frac = (t & 3) << 4;
       } else {
-        int t = *(int *)g_pPathTableHead;
+        int t = g_pPathTableHead->frame;
         seg = t >> 1;
         frac = (t & 1) << 5;
       }
-      ((Actor *)g_pActorListBase)[i].anim = seg / 60;
-      ((Actor *)g_pActorListBase)[i].frame = seg % 60;
-      ((Actor *)g_pActorListBase)[i].nextAnim = (seg + 1) / 60;
-      ((Actor *)g_pActorListBase)[i].nextFrame = (seg + 1) % 60;
-      ((Actor *)g_pActorListBase)[i].frameProgress = frac;
-      hdr = (int *)g_pPathTableHead;
-      a[0] = (((int **)hdr)[i + 5][seg] & 0x3FF00000) >> 12;
-      a[1] = (((int **)hdr)[i + 5][seg] & 0xFFC00) >> 2;
-      a[2] = (((int **)hdr)[i + 5][seg] & 0x3FF) << 8;
-      b[0] = (((int **)hdr)[i + 5][seg + 1] & 0x3FF00000) >> 12;
-      b[1] = (((int **)hdr)[i + 5][seg + 1] & 0xFFC00) >> 2;
-      b[2] = (((int **)hdr)[i + 5][seg + 1] & 0x3FF) << 8;
+      g_pActorListBase[i].anim = seg / 60;
+      g_pActorListBase[i].frame = seg % 60;
+      g_pActorListBase[i].nextAnim = (seg + 1) / 60;
+      g_pActorListBase[i].nextFrame = (seg + 1) % 60;
+      g_pActorListBase[i].frameProgress = frac;
+      hdr = g_pPathTableHead;
+      a[0] = (hdr->track[i][seg] & 0x3FF00000) >> 12;
+      a[1] = (hdr->track[i][seg] & 0xFFC00) >> 2;
+      a[2] = (hdr->track[i][seg] & 0x3FF) << 8;
+      b[0] = (hdr->track[i][seg + 1] & 0x3FF00000) >> 12;
+      b[1] = (hdr->track[i][seg + 1] & 0xFFC00) >> 2;
+      b[2] = (hdr->track[i][seg + 1] & 0x3FF) << 8;
       inv = 0x40 - frac;
-      ap = (Actor *)g_pActorListBase;
+      ap = g_pActorListBase;
       ap[i].posX = (a[0] * inv + b[0] * frac) >> 6;
       ap[i].posY = (a[1] * inv + b[1] * frac) >> 6;
       ap[i].posZ = (a[2] * inv + b[2] * frac) >> 6;
       i++;
-    } while (i < hdr[3]);
+    } while (i < hdr->actorCount);
   }
 }

@@ -14,8 +14,8 @@ int IsPickupGroupAllInMode(int group, int mode) {
   if (group >= g_nLevelPickupTableCount) {
     return 0;
   }
-  ptr = ((unsigned short **)g_pLevelPickupTableEntries)[group];
-  base = (Actor *)g_pActorListBase;
+  ptr = g_pLevelPickupTableEntries[group];
+  base = g_pActorListBase;
   do {
     id = *ptr;
     idx = id & 0x7FFF;

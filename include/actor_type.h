@@ -177,13 +177,17 @@ enum ActorType {
   ACTOR_TYPE_LOBBED_BOMB = 55, /* levels 25/26: bursts on landing, on a timer or against Spyro */
   ACTOR_TYPE_FALLING_ROCK = 56, /* level 25: drops until it lands, hits Spyro or times out, then shatters */
   ACTOR_TYPE_ROLLING_BOULDER = 57, /* levels 21/22: rolls to the floor and bursts into more of itself (state 1) (BoulderState) */
+  ACTOR_TYPE_HUD_LIVES_ICON = 58, /* HUD lives icon (slot HUD_SLOT_LIVES, InitHudCounters); the sparx-food butterflies ring it */
   ACTOR_TYPE_SINKING_BLOCK = 61, /* level 26: struck, frees its partner and sinks into the floor */
   ACTOR_TYPE_CHASING_PATH_GUARD = 62, /* level 26: patrols its path, turns on Spyro and chases; knocked away when hit */
   ACTOR_TYPE_PLATFORM_POD = 65, /* level 22: raises four ACTOR_TYPE_BOBBING_PLATFORMs and lobs ACTOR_TYPE_POD_SHOTs (PlatformPodState) */
   ACTOR_TYPE_TETHERED_GUARD = 66, /* level 15: tethered guard (TetherState) */
   ACTOR_TYPE_SEED_POD_SHARD = 67,    /* 67..69: seed pod burst (67/68 bounce, 69 tumbles) */
   ACTOR_TYPE_LOBBED_BOLT = 70, /* level 22: arcs along its heading, bursts into sparks on landing (LobbedBoltState) */
-  ACTOR_TYPE_LETTER_OTHER = 0x4C,  /* a non-A..Z glyph of a floating name */
+  ACTOR_TYPE_GLYPH_BANG = 0x4B,   /* text glyph '!' (BuildTextSprites) */
+  ACTOR_TYPE_GLYPH_COMMA = 0x4C,  /* text glyph ','; BuildTextSprites also draws any other
+                                   * non-alphanumeric raised as an apostrophe, and floating
+                                   * names use it for their non-A..Z characters */
   ACTOR_TYPE_COMET_SPARK = 77, /* level 24: dropped by ACTOR_TYPE_COMET; replays its animation subMode times, then is removed */
   ACTOR_TYPE_RIDING_FLIGHT_TARGET = 78, /* flight levels 5/29: rides its host's attach point 0; flamed, pays out its reward, tallies, blasts (ACTOR_HIT_SUPER) and bursts into tumble shards (RiderState) */
   ACTOR_TYPE_POD_SHOT = 82, /* level 22: flies until it hits the floor, a wall or times out (PodShotState) */
@@ -294,9 +298,13 @@ enum ActorType {
   ACTOR_TYPE_STATUE_SHARD = 0xFB,  /* its burst shards (BurstShardState) */
   ACTOR_TYPE_GUARD_CAPTAIN = 253, /* level 13: guard captain (CaptainState) */
   ACTOR_TYPE_WOOD_CHEST_SHARD = 255, /* 255..257: wood chest burst (255/256 bounce, 257 tumbles) */
-  ACTOR_TYPE_GEM_DIGIT_0 = 0x104,  /* floating gem-value digits 0..9: 0x104..0x10D */
+  ACTOR_TYPE_GEM_DIGIT_0 = 0x104,  /* digit glyphs 0..9 (0x104..0x10D): floating gem values,
+                                    * HUD counters, text (ACTOR_TYPE_DIGIT_GLYPH) */
   ACTOR_TYPE_VILLAGER = 270, /* levels 12/13 (VillagerState) */
   ACTOR_TYPE_SHEPHERD = 271, /* levels 12/13 (ShepherdState) */
+  ACTOR_TYPE_GLYPH_PERCENT = 0x110, /* text glyph '%' (BuildTextSpriteChain) */
+  ACTOR_TYPE_GLYPH_SLASH = 0x115, /* text glyph '/' (BuildTextSpriteChain); spawned with the digits by the flight HUD */
+  ACTOR_TYPE_GLYPH_QUESTION = 0x116, /* text glyph '?' (BuildTextSprites) */
   ACTOR_TYPE_PATH_GUARD = 283, /* walks its waypoint ring, waits on its partner */
   ACTOR_TYPE_TETHER_KEEPER = 284, /* level 15: tether keeper (KeeperState) */
   ACTOR_TYPE_SENTINEL = 285, /* level 15: sentinel (SentinelState) */
@@ -320,10 +328,12 @@ enum ActorType {
   ACTOR_TYPE_CRACKING_BOULDER = 312, /* shakes and smokes when hit, then bursts */
   ACTOR_TYPE_ALARM_POST_GUARD = 314, /* level 4: patrols between posts, raises the alarm, hands off to its partner (GuardState) */
   ACTOR_TYPE_SHEPHERD_THROW = 315, /* levels 12/13: the shepherd releases it on frame 0xE; once live it flies its heading under gravity until its timer runs out (CrookState / FallState) */
+  ACTOR_TYPE_GLYPH_PLUS = 0x13D, /* text glyph '+' (BuildTextSpriteChain) */
   ACTOR_TYPE_FALLING_DEBRIS = 318, /* levels 13/14/15: tumbles along its velocity until its timer runs out or it leaves the screen */
+  ACTOR_TYPE_GLYPH_CARET = 0x141, /* text glyph '^' (BuildTextSpriteChain) */
   ACTOR_TYPE_RESPAWNER = 323,      /* puts dormant actors of one type back once Spyro is far (RespawnState) */
   ACTOR_TYPE_SORCERER = 326, /* level 13 (SorcererState) */
-  ACTOR_TYPE_HUD_CLOCK_SEPARATOR = 327, /* flight clock separator glyph; every clock slot spawns as one and the digit slots are re-typed to ACTOR_TYPE_GEM_DIGIT_0 + n */
+  ACTOR_TYPE_GLYPH_PERIOD = 327, /* text glyph '.' (BuildTextSprites); also the flight clock separator: every clock slot spawns as one and the digit slots are re-typed to ACTOR_TYPE_GEM_DIGIT_0 + n */
   ACTOR_TYPE_FLOOR_MARKER = 328, /* drops onto the floor triangle under it once, then sits there */
   ACTOR_TYPE_SEED_POD = 329,         /* wobbles when struck, holds a floating prize above itself */
   ACTOR_TYPE_CHECKPOINT = 331,     /* 331..333: sets the respawn anchor (SetSpawnAnchorFromActor) */
@@ -368,13 +378,15 @@ enum ActorType {
   ACTOR_TYPE_LIFE_CHEST = 421,       /* shakes and pops its lid on a timer, spawning a 0x1A6 rider (LiftState) */
   ACTOR_TYPE_LIFE_CHEST_RIDER = 422, /* shown while ACTOR_TYPE_LIFE_CHEST's lid is up, then despawned; no UpdateActors arm */
   ACTOR_TYPE_LIFE_CHEST_SHARD = 423, /* 423..425: life chest burst (423/424 bounce, 425 tumbles) */
-  ACTOR_TYPE_LETTER_A = 0x1AA,     /* floating-name letters A..Z: 0x1AA..0x1C3 */
+  ACTOR_TYPE_LETTER_A = 0x1AA,     /* letter glyphs A..Z (0x1AA..0x1C3): floating names, text
+                                    * (ACTOR_TYPE_LETTER_GLYPH) */
   ACTOR_TYPE_ROAMING_RAM_QUIET = 453, /* ACTOR_TYPE_ROAMING_RAM without the voice channel (level 21) */
   ACTOR_TYPE_FALLING_SPARK = 454, /* 454..456, level 6: fall until they land, time out or leave the visible set */
   ACTOR_TYPE_REBOUND_DEBRIS = 458, /* 458..459, levels 6/7/27/32: rebounds off walls and floors, spinning until its life runs out */
   ACTOR_TYPE_WAR_DRUM = 461, /* levels 18/19: beats on a timer with its own voice; knocked away when hit (WarDrumState) */
   ACTOR_TYPE_ROAMING_RAM = 466, /* wanders its waypoint ring away from Spyro, charges down its path (RoamingRamState) */
   ACTOR_TYPE_BOLT_SENTRY = 467, /* level 19: bolt-throwing sentry with three guards (BoltSentryState) */
+  ACTOR_TYPE_HUD_GEM_ICON = 471, /* gem icon beside a gem count: HUD slot HUD_SLOT_GEMS, inventory screen, flight results */
   ACTOR_TYPE_BELL_POST = 475, /* level 18: rung by a charge or flame; resets once its animation ends */
   ACTOR_TYPE_GRABBER = 476, /* level 20: carries Spyro off and throws him (GrabberState) */
   ACTOR_TYPE_HAZARD0_ENTER_FX = 477, /* g_anHazardEnterSpawnType[0]; both kind-0 effects snap to the ground under Spyro (or the parent) */
@@ -384,10 +396,18 @@ enum ActorType {
   ACTOR_TYPE_AIMED_BOLT = 494, /* level 19: bolt thrown by 35 and 467 (AimedBoltState) */
   ACTOR_TYPE_BLOWHARD = 495, /* level 16 boss: patrols three paths, drops type 37 riders */
   ACTOR_TYPE_HUMMING_BELL = 497, /* level 16: loops a voice while alive, rings out when struck */
+  ACTOR_TYPE_HUD_DRAGON_ICON = 506, /* dragon icon beside a dragons-rescued count: HUD slot HUD_SLOT_DRAGONS, inventory screen */
   ACTOR_TYPE_SWAYING_DEBRIS = 502, /* level 3: bouncing debris that sways as it falls (BounceState) */
   ACTOR_TYPE_HAZARD2_ENTER_FX = 507, /* g_anHazardEnterSpawnType[2]; level 32 also spawns it where a knocked actor lands on ground surface 1..2 */
   ACTOR_TYPE_HAZARD2_DEATH_FX = 508, /* g_anHazardTimeoutSpawnType[2] */
+  ACTOR_TYPE_RESCUED_DRAGON = 510, /* the freed dragon DragonRescue_Update puts in the statue's place (g_pDragonRescueStatueActor) */
+  ACTOR_TYPE_RESCUE_SPYRO = 511, /* Spyro's stand-in during the rescue cutscene (g_pDragonRescueSpyroMirrorActor) */
 };
+
+/* Text glyph types: BuildTextSprites / BuildTextSpriteChain map '0'..'9' and
+ * 'A'..'Z' onto the digit and letter glyph runs. */
+#define ACTOR_TYPE_DIGIT_GLYPH(ch) ((ch) + (ACTOR_TYPE_GEM_DIGIT_0 - '0'))
+#define ACTOR_TYPE_LETTER_GLYPH(ch) ((ch) + (ACTOR_TYPE_LETTER_A - 'A'))
 
 /* RefreshActorDerivedState's mode bits. */
 #define ACTOR_REFRESH_COLLISION 1 /* ->collision from the current animation frame's record */

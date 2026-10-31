@@ -1,4 +1,5 @@
 #include "actor.h"
+#include "actor_states.h"
 #include "emit_record.h"
 #include "funcs.h"
 #include "globals.h"
@@ -55,6 +56,8 @@ typedef struct CamPathKey {
 #define H16(p, off) (*(short *)((char *)(p) + (off)))
 #define U8(p, off) (*(unsigned char *)((char *)(p) + (off)))
 #define REC(p) (*(int **)(p))
+/* The source statue's DragonStatueState (REC(p) as the typed record). */
+#define STATUE_ST(p) ((DragonStatueState *)REC(p))
 #define SRCS (((struct { char *volatile p; } *)&g_pDragonRescueSourceActor)->p)
 #define OTY ((int)g_dwDragonRescueOrbitTargetYaw)
 
@@ -98,7 +101,7 @@ void DragonRescue_Update(void) {
     int now;
 
     g_dwGamestateFrames++;
-    ((void (*)(void))g_pfnLevelUpdateActors)();
+    g_pfnLevelUpdateActors();
     TickSpyroGameplayFrame();
     UpdateCameraFrame();
     g_nDragonRescueAuraStarEnabled = 1;
@@ -135,8 +138,8 @@ void DragonRescue_Update(void) {
       {
         Actor *src = SRC;
 
-        g_dwDragonRescueOrbitTargetYaw = W32(REC(src), 0x28);
-        g_nDragonRescueOrbitTargetRadius = W32(REC(src), 0x2c);
+        g_dwDragonRescueOrbitTargetYaw = STATUE_ST(src)->orbitYaw;
+        g_nDragonRescueOrbitTargetRadius = STATUE_ST(src)->orbitRadius;
         g_nDragonRescueCameraStartYaw =
             ArcTan2(*(int *)(int)g_anCameraPos - ACTOR_RAW(src, int, posX),
                     g_anCameraPos[1] - ACTOR_RAW(src, int, posY), 1);
@@ -147,7 +150,7 @@ void DragonRescue_Update(void) {
       {
         Actor *src = SRC;
 
-        rec = REC(src);
+        rec = REC(src); /* DragonStatueState.camPos */
         g_nDragonRescueCameraTargetYaw =
             ArcTan2(W32(rec, 0) - src->posX, W32(rec, 4) - src->posY, 1);
       }
@@ -213,8 +216,7 @@ void DragonRescue_Update(void) {
       g_nPulseRumbleTimer = 8;
     }
     g_nPulseRumbleAmount = 0x46;
-    ((void (*)(int, void *))g_pfnLevelSpawnActor)(ACTOR_TYPE_STATUE_SHARD,
-                                                  g_pDragonRescueSourceActor);
+    g_pfnLevelSpawnActor(ACTOR_TYPE_STATUE_SHARD, g_pDragonRescueSourceActor);
     if (g_nDragonRescueTimer < g_nDragonRescueSweepDurationFrames) {
       t = LookupSine((g_nDragonRescueTimer << 11) /
                          g_nDragonRescueSweepDurationFrames -
@@ -364,6 +366,8 @@ void DragonRescue_Update(void) {
             ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], 1);
         g_nCameraEulerYaw = ArcTan2(vec[0], vec[1], 1);
       } else {
+        /* DragonStatueState.camEuler (+0x0C..+0x14) as byte-offset ints: the
+           struct member form reschedules the three blends (A400) */
         int *rec = REC(SRC);
 
         ang[0] = 0;
@@ -428,8 +432,7 @@ void DragonRescue_Update(void) {
       g_nPulseRumbleTimer = 8;
     }
     g_nPulseRumbleAmount = 0x46;
-    ((void (*)(int, void *))g_pfnLevelSpawnActor)(ACTOR_TYPE_STATUE_SHARD,
-                                                  g_pDragonRescueSourceActor);
+    g_pfnLevelSpawnActor(ACTOR_TYPE_STATUE_SHARD, g_pDragonRescueSourceActor);
     if (g_nDragonRescueTimer < 0x10 || g_nDragonRescueStreamState < 3) {
       AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
       TickSpyroAnimLayer1();
@@ -442,13 +445,13 @@ void DragonRescue_Update(void) {
         int five;
 
         for (n = 0; n < 0x20; n++) {
-          ((void (*)(int, void *))g_pfnLevelSpawnActor)(
-              ACTOR_TYPE_STATUE_SHARD, g_pDragonRescueSourceActor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_STATUE_SHARD,
+                               g_pDragonRescueSourceActor);
         }
         OPAQUE_COPY(five, 5);
         GB[24] = (int)AllocActorRecordSlot();
         InitActorRenderDefaults((void *)GB[24]);
-        ACTOR_RAW(STATUE, short, type) = 0x1FE;
+        ACTOR_RAW(STATUE, short, type) = ACTOR_TYPE_RESCUED_DRAGON;
         CopyVector(&((Actor *)GB[24])->posX, &SRC->posX);
         {
           Actor *s = SRC;
@@ -466,7 +469,7 @@ void DragonRescue_Update(void) {
         InsertActorIntoSpatialGrid((void *)GB[24]);
         g_pDragonRescueSpyroMirrorActor = AllocActorRecordSlot();
         InitActorRenderDefaults(g_pDragonRescueSpyroMirrorActor);
-        ACTOR_RAW(MIRROR, short, type) = 0x1FF;
+        ACTOR_RAW(MIRROR, short, type) = ACTOR_TYPE_RESCUE_SPYRO;
         CopyVector(&MIRROR->posX, g_anSpyroWorldPos);
         MIRROR->otBias = five;
         InsertActorIntoSpatialGrid(MIRROR);
@@ -485,7 +488,8 @@ void DragonRescue_Update(void) {
         Actor *s = SRC;
         int turn;
 
-        turn = SignedAngleDelta8(W32(REC(s), 0x30) >> 4, s->rotZ) * GB[5] / 24;
+        turn = SignedAngleDelta8(STATUE_ST(s)->dragonYaw >> 4, s->rotZ) *
+               GB[5] / 24;
         {
           Actor *s2 = SRC;
           Actor *t = STATUE;
@@ -500,7 +504,7 @@ void DragonRescue_Update(void) {
       g_nDragonRescueSubstate = 4;
       GB[5] = 0;
       t = STATUE;
-      t->rotZ = W32(REC(s), 0x30) >> 4;
+      t->rotZ = STATUE_ST(s)->dragonYaw >> 4;
       STATUE->scale = 0;
       MIRROR->rotX = g_abSpyroPersistentEuler[0];
       MIRROR->rotY = g_abSpyroPersistentEuler[1];
@@ -513,13 +517,14 @@ void DragonRescue_Update(void) {
 
     done = 0;
     if (GB[5] < g_nDragonRescueCameraPathCount * 2) {
-      if (g_nDragonRescueAudioFiredFlag == 0 && GB[5] >= W32(REC(SRC), 0x40)) {
+      if (g_nDragonRescueAudioFiredFlag == 0 &&
+          GB[5] >= STATUE_ST(SRC)->speechFrame) {
         CopyWords(save, *(void *volatile *)g_apSampleBankEntriesBlock, 0x14);
         SBE->nSampleAddr = 0x80000 - g_nDragonRescueAudioSampleSize;
         SBE->nLoopAddr = -1;
         SBE->nVolume = 0x32;
         {
-          int rate = (W32(REC(SRCS), 0x3c) << 10) / 11025;
+          int rate = (STATUE_ST(SRCS)->speechRate << 10) / 11025;
 
           SBE->nPitch = rate;
         }
@@ -584,7 +589,7 @@ void DragonRescue_Update(void) {
         }
       }
       if (g_dwPadPressed & PAD_CROSS) {
-        if (W32(REC(SRC), 0x34) != 0) {
+        if (STATUE_ST(SRC)->noSkip != 0) {
           if (g_nDragonRescuePadHoldTimer == 0) {
             g_nDragonRescuePadHoldTimer = 1;
           }
@@ -629,8 +634,7 @@ void DragonRescue_Update(void) {
       TickSpuPerFrame();
       if (g_nDragonRescueSplitFlag == 0) {
         SetSpuTransferStartAddr(0x80000 - g_nDragonRescueAudioSampleSize);
-        WriteSpuRam((char *)g_pWorldUnpackHead +
-                        g_nDragonRescueAudioSampleOffset,
+        WriteSpuRam(g_pWorldUnpackHead + g_nDragonRescueAudioSampleOffset,
                     g_nDragonRescueAudioSampleSize);
         while (GetSpuTransferStatus(0) == 0) {
         }
@@ -665,7 +669,7 @@ void DragonRescue_Update(void) {
     AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
     i = 0;
     done = (int)g_anHudRollInStepTable; /* shares s4 with case 4 */
-    icon = &HUD_ICON_SLOT(5)->posY;
+    icon = &HUD_ICON_SLOT(HUD_SLOT_DRAGON_DIGITS)->posY;
     k = 0;
     off = 0;
     TickSpyroAnimLayer1();
@@ -689,10 +693,9 @@ void DragonRescue_Update(void) {
       g_nDragonRescueSubstate = 6;
       GB[5] = 0;
       g_bHudDragonRollPhase = 0;
-      CopyVector((int *)ang, &((Actor *)g_pDragonRescueStatueActor)->posX);
+      CopyVector((int *)ang, &g_pDragonRescueStatueActor->posX);
       ((int *)ang)[2] += 0x40;
-      ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(
-          0x20, EMIT_RESCUE_SWIRL, (int *)ang, 0);
+      g_pfnLevelEmitParticles(0x20, EMIT_RESCUE_SWIRL, (int *)ang, 0);
       CopyVector(g_anDragonRescueAuraStarAnchor, (int *)ang);
       DespawnActorRecord(STATUE);
       DespawnActorRecord(MIRROR);
@@ -707,7 +710,8 @@ void DragonRescue_Update(void) {
     if (g_anHudDragonCachedCountBlock[0] != g_nWorldDragonsRescued ||
         g_bHudDragonRollPhase != 0) {
       g_bHudDragonRollPhase += 0x10;
-      SetHudCounterDigits(5, 2, g_anHudDragonCachedCountBlock[0] + 1, 0);
+      SetHudCounterDigits(HUD_SLOT_DRAGON_DIGITS, 2,
+                          g_anHudDragonCachedCountBlock[0] + 1, 0);
       CommitHudCounterAnimState(5, 2, g_bHudDragonRollPhase);
       if (g_bHudDragonRollPhase == 0xC0) {
         g_anHudDragonCachedCountBlock[0]++;
@@ -738,7 +742,7 @@ void DragonRescue_Update(void) {
       int off;
 
       n = 0;
-      icon = &HUD_ICON_SLOT(5)->posY;
+      icon = &HUD_ICON_SLOT(HUD_SLOT_DRAGON_DIGITS)->posY;
       j = 0;
       off = 0;
     roll_out:
@@ -769,7 +773,7 @@ void DragonRescue_Update(void) {
     }
   } break;
   }
-  ((void (*)(int))g_pfnLevelAdvanceEmitList)(g_nFrameStep);
+  g_pfnLevelAdvanceEmitList(g_nFrameStep);
   if (g_nDragonRescueSubstate > 0) {
     TickDragonRescueAssetStream();
   }

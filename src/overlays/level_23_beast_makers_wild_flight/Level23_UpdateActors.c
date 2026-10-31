@@ -1727,7 +1727,7 @@ void Level23_UpdateActors(void) {
         g_nFlightTallyShownClass = -1;
 
         for (i = 3; i >= 0; i--) {
-          st->digit[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_HUD_CLOCK_SEPARATOR, actor);
+          st->digit[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_GLYPH_PERIOD, actor);
           st->digit[i]->cullRadius = 0xFF;
           st->digit[i]->otBias = 0x20;
           st->digit[i]->posZ = 0x1000;
@@ -1744,7 +1744,7 @@ void Level23_UpdateActors(void) {
 
         if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
           for (i = 4; i < 8; i++) {
-            st->digit[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_HUD_CLOCK_SEPARATOR, actor);
+            st->digit[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_GLYPH_PERIOD, actor);
             st->digit[i]->cullRadius = 0xFF;
             st->digit[i]->otBias = 0x20;
             st->digit[i]->rotZ = 0;
@@ -2132,7 +2132,7 @@ void Level23_UpdateActors(void) {
       }
       break;
     }
-    case ACTOR_TYPE_LETTER_OTHER:
+    case ACTOR_TYPE_GLYPH_COMMA:
     case ACTOR_TYPE_LETTER_A:
     case ACTOR_TYPE_LETTER_A + 1:
     case ACTOR_TYPE_LETTER_A + 2:

@@ -77,7 +77,7 @@ typedef struct ShardState {
 
 extern int FindGroundHeightBelow(int *pos, int drop);
 
-extern void (*g_pfnLevelEmitParticles)(int kind, int count, int *pos, int spread); /* SpawnPuff */
+extern void (*g_pfnLevelEmitParticles)(int count, int type, int *pos, int effectArg);
 
 extern short g_anCosineLut[]; /* unit-circle x table (8-bit angle) */
 
@@ -95,6 +95,6 @@ extern char *g_apSpritePrimQueue[];
 extern int g_dwHudBobSinePhase;
 extern char g_pOtDepthBinHead0[];
 extern char *g_pRenderScratchRegionBase;
-extern char *g_pSpriteRecordWriteCursor;
+extern struct Actor *g_pSpriteRecordWriteCursor; /* sprite-record queue tail (grows down) */
 
 #endif /* OPEN_SPYRO_LEVEL_SPAWN_ACTOR_H */

@@ -113,12 +113,12 @@ void TickDragonRescueAssetStream(void) {
         SetSpuTransferStartAddr(top + (CHUNK << 15) -
                                 g_nDragonRescueAudioSampleSize);
       }
-      WriteSpuRam((char *)g_pWorldUnpackHead +
-                      g_nDragonRescueAudioSampleOffset + (CHUNK << 15),
+      WriteSpuRam(g_pWorldUnpackHead + g_nDragonRescueAudioSampleOffset +
+                      (CHUNK << 15),
                   n);
       while (GetSpuTransferStatus(0) == 0) {
       }
-      CopyWords((char *)g_pWorldUnpackHead + g_nDragonRescueAudioSampleOffset +
+      CopyWords(g_pWorldUnpackHead + g_nDragonRescueAudioSampleOffset +
                     (g_nDragonRescueSpuChunkIndex << 15),
                 buf, n);
       g_nDragonRescueSpuChunkIndex++;
@@ -205,8 +205,8 @@ void TickDragonRescueAssetStream(void) {
       if (list[i] <= 0) {
         break;
       }
-      mesh[*slot++] = RelocateActorMeshHeader((char *)g_pWorldUnpackHead +
-                                              (list[i] - list[-16]));
+      mesh[*slot++] =
+          RelocateActorMeshHeader(g_pWorldUnpackHead + (list[i] - list[-16]));
     }
     break;
   default:

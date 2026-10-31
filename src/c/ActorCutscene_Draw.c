@@ -37,7 +37,7 @@ void ActorCutscene_Draw(void) {
   int level;
   int phase;
   int variant;
-  char *rec;
+  Actor *rec;
 
   if (g_nActorCutsceneSubstate >= 4) {
     if (g_nActorCutsceneSubstate < 6) {
@@ -73,17 +73,17 @@ void ActorCutscene_Draw(void) {
       attr[0] = 0xE;
       attr[1] = 1;
       attr[2] = 0x1600;
-      rec = (char *)g_pSpriteRecordWriteCursor;
+      rec = g_pSpriteRecordWriteCursor;
       BuildTextSprites(buf, pos, attr, 0x10, 2);
 
-      rec -= ACTOR_SIZE;
+      rec--;
       phase = 0;
       if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
         int *fade = g_anActorCutsceneTimerBlock;
         unsigned short *cos = (unsigned short *)g_anCosineLut;
         do {
-          ((Actor *)rec)->rotZ = cos[(*fade * 2 + phase) & 0xFF] >> 7;
-          rec -= ACTOR_SIZE;
+          rec->rotZ = cos[(*fade * 2 + phase) & 0xFF] >> 7;
+          rec--;
           phase += 0xC;
         } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);
       }
@@ -122,10 +122,10 @@ void ActorCutscene_Draw(void) {
         }
       }
     } else {
-      (*(void (*)())g_pfnActorCutsceneSubstateDraw)();
+      g_pfnActorCutsceneSubstateDraw();
     }
   } else {
-    (*(void (*)())g_pfnActorCutsceneSubstateDraw)();
+    g_pfnActorCutsceneSubstateDraw();
   }
 
   DrawCinematicLetterbox();

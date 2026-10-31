@@ -4226,7 +4226,7 @@ void Level6_UpdateActors(void) {
         SPY.otBinBias = 0x7F;
 
         p = st->desc;
-        AddVector(g392, p->posA, p->posB);
+        AddVector(g392, p->point[0].pos, p->point[1].pos);
         RShiftVector3(g392, 1);
 
         SubtractVector(&SPY.requestVelX, g392, &SPY.posX);
@@ -4574,7 +4574,7 @@ void Level6_UpdateActors(void) {
     /* Name letter (NameLetterState): one letter of a floating name
      * (SpawnNameLetterActors), riding its sign at a fixed radius, or just
      * spinning in place behind a non-spinner. */
-    case ACTOR_TYPE_LETTER_OTHER:
+    case ACTOR_TYPE_GLYPH_COMMA:
     case ACTOR_TYPE_LETTER_A:
     case ACTOR_TYPE_LETTER_A + 1:
     case ACTOR_TYPE_LETTER_A + 2:

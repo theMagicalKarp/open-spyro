@@ -170,7 +170,7 @@ void Level16_AdvanceEmitList(int step) {
       if (ALIVE == 0) {
         FreeEmitListRecord(rec);
       } else {
-        CopyVector(dir, &((Actor *)g_pActorListBase)[rec[0x1E]].posX);
+        CopyVector(dir, &g_pActorListBase[rec[0x1E]].posX);
         EBB_BREAK();
         v[0] += LookupCosine(AGE << 7) >> 1;
         v[1] += LookupSine(AGE << 7) >> 1;

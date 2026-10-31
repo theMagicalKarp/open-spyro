@@ -61,7 +61,7 @@ void SpawnFloatingDigitActors(int value, Actor *src) {
       d = value % 10;
       q = value / 10;
       prod = d + ACTOR_TYPE_GEM_DIGIT_0;
-      rec = (*(Actor * (*)(int, int)) g_pfnLevelSpawnActor)(prod, 0);
+      rec = g_pfnLevelSpawnActor(prod, 0);
       rec->posX = x;
       rec->posY = y;
       z = src->posZ;
