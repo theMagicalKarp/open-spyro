@@ -258,4 +258,28 @@ enum BlowhardMode {
   BLOWHARD_NEXT_PHASE = 0x63,   /* phase + 1, next path, back to START_PHASE */
 };
 
+/* ->mode of Doctor Shemp, the level 10 boss (ACTOR_TYPE_DOCTOR_SHEMP,
+ * ShempState). SHEMP_IDLE starts the routine for ShempState.phase 0..2;
+ * a flame or charge from behind (or into the phase-2 slam) stuns him and he
+ * retreats along his path to the next phase's node; stunned in phase 3 he
+ * is beaten. */
+enum ShempMode {
+  SHEMP_IDLE = 0,
+  SHEMP_P2_TAUNT = 1,    /* above Spyro: taunts until he comes close */
+  SHEMP_P2_SLAM = 2,     /* staff slam; pins Spyro when it lands near him */
+  SHEMP_P1_START = 11,
+  SHEMP_P1_CIRCLE = 12,  /* circles his node to face Spyro */
+  SHEMP_P1_WINDUP = 13,
+  SHEMP_P1_CHARGE = 14,  /* runs at Spyro */
+  SHEMP_P1_STRIKE = 15,  /* staff strike; pins Spyro on contact */
+  SHEMP_P1_RETURN = 16,  /* back to his node */
+  SHEMP_P3_TAUNT = 21,
+  SHEMP_P3_TURN = 22,    /* turns to line up the sweep */
+  SHEMP_P3_SWEEP = 23,   /* spinning staff sweep; knocks Spyro back */
+  SHEMP_STUNNED = 40,    /* next phase, release that phase's chunk animation */
+  SHEMP_RETREAT = 41,    /* walks his path to the next node, camera on him */
+  SHEMP_ARRIVE = 42,     /* turns to Spyro, back to SHEMP_IDLE */
+  SHEMP_DYING = 45,      /* stunned in phase 3: bursts and drops his loot */
+};
+
 #endif

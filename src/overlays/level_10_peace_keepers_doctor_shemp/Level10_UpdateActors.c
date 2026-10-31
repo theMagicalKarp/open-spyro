@@ -3038,22 +3038,22 @@ void Level10_UpdateActors(void) {
 
       near = ApproxDist2D(&actor->posX, &spy->posX);
       TickActorFlameGlow(actor);
-      if (near < 0x2000 && actor->mode != 0x29 && g_nSpyroState != SPYRO_ST_CHARGE &&
+      if (near < 0x2000 && actor->mode != SHEMP_RETREAT && g_nSpyroState != SPYRO_ST_CHARGE &&
           g_nSpyroState != SPYRO_ST_CHARGE_AIR) {
         SPY.pScriptedActor = actor;
         g_dwSpyroRequestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_FOLLOW_CAMERA);
       }
-      if (actor->mode < 0x28 && (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER))) {
+      if (actor->mode < SHEMP_STUNNED && (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER))) {
         actor->flags = 0;
         if (AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
                                         spy->posY - actor->posY, 0)) >= 0x55 ||
-            (actor->mode == 2 && actor->nextFrame >= 0x16 && actor->nextFrame < 0x30)) {
+            (actor->mode == SHEMP_P2_SLAM && actor->nextFrame >= 0x16 && actor->nextFrame < 0x30)) {
           if (st->phase == 2) {
             ANIM_SET(actor, 3);
             actor->rotZ += 0x80;
             ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
-            actor->mode = 0x2D;
+            actor->mode = SHEMP_DYING;
             continue;
           }
           if (st->chain >= 0) {
@@ -3066,7 +3066,7 @@ void Level10_UpdateActors(void) {
             st->chain = *ls;
             DespawnActorRecord(link);
           }
-          actor->mode = 0x28;
+          actor->mode = SHEMP_STUNNED;
           continue;
         }
       }
@@ -3101,7 +3101,7 @@ void Level10_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case SHEMP_IDLE:
         st->ang = actor->rotZ * 16;
         d = SteerActorYawTowardSpyro(actor, &st->turnDir, &st->ang, 0x20, 0x280, 1);
         if (ABS(d) < 0x80) {
@@ -3111,7 +3111,7 @@ void Level10_UpdateActors(void) {
         switch (st->phase) {
         case 0:
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x2328) {
-            actor->mode = 0xB;
+            actor->mode = SHEMP_P1_START;
             continue;
           }
           break;
@@ -3119,7 +3119,7 @@ void Level10_UpdateActors(void) {
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
               ApproxDist2D(&actor->posX, &spy->posX) < 0x1964 &&
               actor->posZ - actor->floorOffset - SPY.posZ < 0) {
-            actor->mode = 1;
+            actor->mode = SHEMP_P2_TAUNT;
             continue;
           }
           break;
@@ -3127,14 +3127,14 @@ void Level10_UpdateActors(void) {
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
               ApproxDist2D(&actor->posX, &spy->posX) < 0x1964 &&
               actor->posZ - actor->floorOffset - SPY.posZ < 0) {
-            actor->mode = 0x15;
+            actor->mode = SHEMP_P3_TAUNT;
             continue;
           }
           break;
         }
         break;
 
-      case 1:
+      case SHEMP_P2_TAUNT:
         if (st->flag == 0) {
           ANIM_GO(actor, 7);
           st->flag = 1;
@@ -3151,12 +3151,12 @@ void Level10_UpdateActors(void) {
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < 0x16A8) {
           ANIM_GO(actor, sixteen);
-          actor->mode = 2;
+          actor->mode = SHEMP_P2_SLAM;
           continue;
         }
         break;
 
-      case 2:
+      case SHEMP_P2_SLAM:
         TrackEntityYawTowardSpyro(actor, 8, 0, 0);
         ANIM_GO(actor, sixteen);
         if (actor->nextFrame >= 0x34 && actor->nextFrame < 0x38 &&
@@ -3168,18 +3168,18 @@ void Level10_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           st->timer = 0xA0;
           ANIM_GO(actor, 0x12);
-          actor->mode = 1;
+          actor->mode = SHEMP_P2_TAUNT;
           continue;
         }
         break;
 
-      case 11:
+      case SHEMP_P1_START:
         st->timer = 0x5A;
         st->flag = 0;
-        actor->mode = 0xC;
+        actor->mode = SHEMP_P1_CIRCLE;
         continue;
 
-      case 12:
+      case SHEMP_P1_CIRCLE:
         off = st->node[0] << 4;
         ha = ArcTan2(*(int *)(st->path + off + 8) - spy->posX,
                           *(int *)(st->path + off + 0xC) - spy->posY, 0);
@@ -3212,24 +3212,24 @@ void Level10_UpdateActors(void) {
             AbsAngleDelta8(actor->rotZ,
                           ArcTan2(SPY.posX - actor->posX,
                                         SPY.posY - actor->posY, 0)) < 4) {
-          actor->mode = 0xD;
+          actor->mode = SHEMP_P1_WINDUP;
           continue;
         }
         break;
 
-      case 13:
+      case SHEMP_P1_WINDUP:
         if (st->flag == 0) {
           ANIM_GO(actor, 0xA);
         }
         if (g_nActorAnimDone != 0 || st->flag != 0) {
           st->flag = 1;
           st->timer = 0x32;
-          actor->mode = 0xE;
+          actor->mode = SHEMP_P1_CHARGE;
           continue;
         }
         break;
 
-      case 14:
+      case SHEMP_P1_CHARGE:
         ANIM_GO(actor, 9);
         if (MoveActorAlongHeading(actor, 0xAA, 0, 0, 0x11) != 0 ||
             TickCountdownByFrameDelta(&st->timer, 4) != 0 ||
@@ -3237,12 +3237,12 @@ void Level10_UpdateActors(void) {
                            ArcTan2(spy->posX - actor->posX,
                                          spy->posY - actor->posY, 0)) < 0xA &&
              ApproxDist2D(&actor->posX, &spy->posX) < 0x9C4)) {
-          actor->mode = 0xF;
+          actor->mode = SHEMP_P1_STRIKE;
           continue;
         }
         break;
 
-      case 15:
+      case SHEMP_P1_STRIKE:
         ANIM_GO(actor, 0xF);
         if (AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
@@ -3254,12 +3254,12 @@ void Level10_UpdateActors(void) {
           SPY.triggerEvents |= (SPYRO_EV_HIT | SPYRO_EV_CONTACT_FRONT | SPYRO_EV_HIT_PINNED);
         }
         if (g_nActorAnimDone != 0) {
-          actor->mode = sixteen;
+          actor->mode = sixteen; /* SHEMP_P1_RETURN */
           continue;
         }
         break;
 
-      case 16:
+      case SHEMP_P1_RETURN:
         off = st->node[0] << 4;
         a = ArcTan2(*(int *)(st->path + off + 8) - spy->posX,
                           *(int *)(st->path + off + 0xC) - spy->posY, 0);
@@ -3275,12 +3275,12 @@ void Level10_UpdateActors(void) {
         }
         if (ApproxDist2D(&actor->posX, tgt371) < 0x100) {
           st->timer = 0x8C;
-          actor->mode = 0xC;
+          actor->mode = SHEMP_P1_CIRCLE;
           continue;
         }
         break;
 
-      case 21:
+      case SHEMP_P3_TAUNT:
         if (st->flag == 0) {
           ANIM_GO(actor, 0xA);
           st->flag = 1;
@@ -3296,12 +3296,12 @@ void Level10_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < 0x1388) {
-          actor->mode = 0x16;
+          actor->mode = SHEMP_P3_TURN;
           continue;
         }
         break;
 
-      case 22:
+      case SHEMP_P3_TURN:
         ANIM_GO(actor, 0xB);
         st->timer = 0;
         actor->subMode = actor->rotZ;
@@ -3311,12 +3311,12 @@ void Level10_UpdateActors(void) {
                            0x1E) &
                               0xFF,
                           6, 2, 1) != 0) {
-          actor->mode = 0x17;
+          actor->mode = SHEMP_P3_SWEEP;
           continue;
         }
         break;
 
-      case 23:
+      case SHEMP_P3_SWEEP:
         if (g_nActorAnimDone != 0) {
           actor->frame = 0x14;
           actor->nextFrame = 0x15;
@@ -3339,13 +3339,13 @@ void Level10_UpdateActors(void) {
           if (st->timer >> 4 >= 0x105) {
             st->timer = 0x3C;
             ANIM_BLEND(actor, 0x12);
-            actor->mode = 0x15;
+            actor->mode = SHEMP_P3_TAUNT;
             continue;
           }
         }
         break;
 
-      case 40:
+      case SHEMP_STUNNED:
         st->timer = 0xC8;
         if (st->phase == 0) {
           ANIM_GO(actor, 0xE);
@@ -3356,10 +3356,10 @@ void Level10_UpdateActors(void) {
         ModifyWorldChunkAnimFlags(st->phase, CHUNK_ANIM_RESUME, 0);
         st->timer2 = 0x1E;
         st->phase++;
-        actor->mode = 0x29;
+        actor->mode = SHEMP_RETREAT;
         continue;
 
-      case 41:
+      case SHEMP_RETREAT:
         off = st->node[st->phase - 1] << 4;
         ca = (ArcTan2(*(int *)(st->path + off + 8) -
                                PATH_X(st->cam, st->phase - 1),
@@ -3413,13 +3413,13 @@ void Level10_UpdateActors(void) {
           }
           if (PivotActorAlongPath(actor, st->path, 0x118, 0xA0, 0, 4, 0x14, 0xFF,
                             5) == st->node[st->phase] + 0x101) {
-            actor->mode = 0x2A;
+            actor->mode = SHEMP_ARRIVE;
             continue;
           }
         }
         break;
 
-      case 42:
+      case SHEMP_ARRIVE:
         if (g_nActorAnimDone != 0) {
           actor->frame = 0xF;
           actor->nextFrame = sixteen;
@@ -3428,12 +3428,12 @@ void Level10_UpdateActors(void) {
         if (TrackEntityYawTowardSpyro(actor, 6, 0xA, 1) != 0 && g_nActorAnimDone != 0) {
           st->count = 0;
           ANIM_GO(actor, 0);
-          actor->mode = 0;
+          actor->mode = SHEMP_IDLE;
           continue;
         }
         break;
 
-      case 45:
+      case SHEMP_DYING:
         ANIM_GO(actor, 3);
         if (g_nActorAnimDone != 0) {
           g_bLevelPhasedBossKilled = 1;
