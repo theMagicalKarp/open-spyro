@@ -115,7 +115,7 @@
 /* ==== Camera and Spyro globals used by the camera arms ==== */
 
 
-extern void ApplyEulerRotation(void *a, int *b, int c);
+extern void ApplyEulerRotation(void *euler, int *mtx, int base);
 
 
 #define sixteen 0x10

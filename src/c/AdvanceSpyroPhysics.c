@@ -27,7 +27,6 @@ SDATA(g_pSpyroContactActor, 4);
 #define REQ g_adwSpyroRequestMaskBlock
 #define WS g_anSpyroWallSlideBlock
 
-#define ACTOR_YAW(a) (((unsigned char *)(a))[0x46])
 #define ACTOR_POS(a) (&((Actor *)a)->posX)
 
 /* Pull `pos` back to at most 0x140 from `from`. */
@@ -209,8 +208,7 @@ int AdvanceSpyroPhysics(void) {
         int a;
         unsigned int lock;
 
-        a = (ACTOR_YAW(g_pScriptedCameraActor) - (g_nCameraEulerYaw >> 4)) &
-            0xFF;
+        a = (g_pScriptedCameraActor->rotZ - (g_nCameraEulerYaw >> 4)) & 0xFF;
         if (a > 0x80) {
           a -= 0x100;
         }
@@ -223,8 +221,7 @@ int AdvanceSpyroPhysics(void) {
 
               SubtractVector(e, (int *)&rq2[-SPY_REQUEST],
                              ACTOR_POS(g_pScriptedCameraActor));
-              a = ((ArcTan2(e[0], e[1], 0) -
-                    ACTOR_YAW(g_pScriptedCameraActor)) +
+              a = ((ArcTan2(e[0], e[1], 0) - g_pScriptedCameraActor->rotZ) +
                    0x80) &
                   0xFF;
               if (a > 0x80) {
@@ -249,7 +246,7 @@ int AdvanceSpyroPhysics(void) {
 
                 SubtractVector(e, ACTOR_POS(SPY[SPY_SCRIPTED_ACTOR]), SPY);
                 a = ArcTan2(e[0], e[1], 1);
-                h = ACTOR_YAW(g_pScriptedCameraActor);
+                h = g_pScriptedCameraActor->rotZ;
                 a = (a - (h << 4)) & 0xFFF;
                 if (a < 0x800) {
                   side = 1;
@@ -300,7 +297,7 @@ int AdvanceSpyroPhysics(void) {
         CopyVector(g_anCameraLatchedAnchorPos,
                    ACTOR_POS(g_pScriptedCameraActor));
         g_anCameraLatchedAnchorPos[2] += 0x200;
-        g_nCameraTargetYawBiasFromMode = ACTOR_YAW(g_pScriptedCameraActor) << 4;
+        g_nCameraTargetYawBiasFromMode = g_pScriptedCameraActor->rotZ << 4;
         g_pCameraTargetParams = g_anCameraParamEnemyLock;
         g_nCameraNextMode = (CAM_HELD | CAM_MODE_REQUEST);
         g_nSpyroMoveTargetYaw = keepYaw;
