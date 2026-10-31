@@ -361,7 +361,7 @@ void Level10_UpdateActors(void) {
               }
             }
             if (parent->mode < ACTOR_MODE_DORMANT && parent->type == ACTOR_TYPE_FOLLOWER &&
-                *(int *)parent->state == st->parent) {
+                ((FollowState *)parent->state)->parent == st->parent) {
               st->release += 9;
               st->count += 1;
             }

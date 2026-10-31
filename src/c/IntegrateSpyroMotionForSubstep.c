@@ -1,3 +1,4 @@
+#include "actor_states.h"
 #include "emit_record.h"
 #include "funcs.h"
 #include "globals.h"
@@ -1335,7 +1336,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     }
     reach = 0x500;
     if (actor->type == ACTOR_TYPE_WHIRLWIND) {
-      reach = ((int *)actor->state)[1]; /* WhirlwindState.radius */
+      reach = ((WhirlwindState *)actor->state)->radius;
     }
     zb = &g_nSpyroWorldPosZ;
     OPAQUE(zb);
