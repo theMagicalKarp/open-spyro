@@ -1,15 +1,16 @@
+#include "actor_type.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
 
-/* Rotate entity `e`'s byte yaw (+0x46) toward an explicit `target` angle,
+/* Rotate `actor`'s byte yaw (rotZ) toward an explicit `target` angle,
    stepping by at most `step` (boosted 1.5x in camera mode 3, 2x in mode 4) but
    never past the actual delta. Returns 0 while still outside the `threshold`
    dead-band (and keeps turning); returns 1 once within it, applying one more
    step when `flag` is set. */
-int TurnActorYawTowardAngle(int *e, int target, int step, int threshold,
+int TurnActorYawTowardAngle(Actor *actor, int target, int step, int threshold,
                             int flag) {
-  int delta = AbsAngleDelta8(target, ((unsigned char *)e)[0x46]);
+  int delta = AbsAngleDelta8(target, actor->rotZ);
 
   if (g_nActorFrameDelta == 3) {
     step += step >> 1;
@@ -20,13 +21,11 @@ int TurnActorYawTowardAngle(int *e, int target, int step, int threshold,
     step = delta;
   }
   if (delta >= threshold) {
-    ((char *)e)[0x46] = ApproachAngle8(target, ((unsigned char *)e)[0x46], step,
-                                       (step >> 1) + 1);
+    actor->rotZ = ApproachAngle8(target, actor->rotZ, step, (step >> 1) + 1);
     return 0;
   }
   if (flag) {
-    ((char *)e)[0x46] = ApproachAngle8(target, ((unsigned char *)e)[0x46], step,
-                                       (step >> 1) + 1);
+    actor->rotZ = ApproachAngle8(target, actor->rotZ, step, (step >> 1) + 1);
   }
   return 1;
 }

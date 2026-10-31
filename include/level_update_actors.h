@@ -74,9 +74,9 @@ extern struct {
 
 extern void AimCameraStickTowardPoint(int *pos);
 
-extern void SVectorToVectorShl2(int *d, int *s);
+extern void SVectorToVectorShl2(int *dst, int *s);
 
-extern void CommitActorKillGems(int a, void *b);
+extern void CommitActorKillGems(int value, void *actor);
 
 /* Types 260..269: a floating gem-value digit (0x104 + digit), spawned by
  * SpawnFloatingDigitActors when a kill pays out gems. */
@@ -94,7 +94,7 @@ typedef struct {
   int v;
 } I32;
 
-extern int CollideSphereWithWorldAndActors(int *pos, int a, int b); /* ground/wall probe */
+extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2); /* ground/wall probe */
 
 /* g_aRotBillboards records (SpawnActorRotBillboard) used as sparkles around items. */
 typedef struct RotBillboard {
@@ -182,9 +182,9 @@ typedef struct PortalCamPath {
 extern void StubRewardHook(int script, int a);
 
 /* Callees used by the collectible and fairy behaviours. */
-extern void UnpackWorldCollisionTri(int a, int *out);
+extern void UnpackWorldCollisionTri(int chunk, int *out);
 
-extern int CheckLineOfSightSegment(int *a, int *b);
+extern int CheckLineOfSightSegment(int *from, int *to);
 
 extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 
@@ -208,7 +208,7 @@ extern FxNode *AllocWorldSparkle(void);
 
 extern void ClearWord(FxNode *node);
 
-extern int StepAngle8Toward(int a, int b, int c);
+extern int StepAngle8Toward(int to, int from, int maxStep);
 extern int ApproachAngle8(int target, int cur, int step, int lim);
 
 /* Types 257/425: falling chest fragments. Integrate until life, visibility
@@ -393,10 +393,9 @@ typedef struct ExitWhirlState {
   int depth; /* 0x0C lift height that triggers the exit, 0 = 0x2000 */
 } ExitWhirlState;
 
-extern int PivotActorAlongPath(Actor *actor, void *path, int a, int b, int c, int d,
-                          int e, int f, int g);
+extern int PivotActorAlongPath(Actor *actor, void *path, int thresh, int speed, int group, int step, int lim, int f, int g);
 
-extern int RaiseSpyroTriggerInRadius(int *pos, int a, int b);
+extern int RaiseSpyroTriggerInRadius(int *pos, int radius, int flags);
 
 /* Cases 152/153 -- sparking debris. */
 typedef struct DebrisFallState {
@@ -432,7 +431,7 @@ typedef struct SeedPodState {
 
 extern int CheckSpyroLineOfSightTo(int *pos);
 
-extern int IsPointInRotatedBox(int *a, int *b);
+extern int IsPointInRotatedBox(int *pos, int *rec);
 
 /* Case 174 -- the locked chest (ACTOR_TYPE_LOCKED_CHEST): with the key held,
  * Spyro facing it up close freezes, the key flies into its lock, and it
@@ -446,9 +445,9 @@ typedef struct LockedChestState {
   int handle; /* 0x14 for SelectActorLodBand */
 } LockedChestState;
 
-extern void DivideVector3(int *d, int *s, int k);
+extern void DivideVector3(int *dst, int *s, int k);
 
-extern void GetActorAttachPoint(Actor *actor, int a, int *pos);
+extern void GetActorAttachPoint(Actor *actor, int slot, int *pos);
 
 /* Type 33: egg thief. Carries a stolen egg (a type 0x22 actor it spawns),
  * runs a looping path away from Spyro, digs between path sections, and drops
@@ -971,8 +970,7 @@ typedef struct PostPath {
 extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
 
 /* Path tweens used by the patrol/post classes. */
-extern int TweenActorAlongPath(Actor *actor, PathData *path, int *a, int *b, int c,
-                               int d);
+extern int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legs, int flags);
 
 typedef struct PostState {
   PostPath *path; /* 0x00 */
@@ -1148,11 +1146,9 @@ typedef struct ChainState {
   int stop;  /* 0x18 path node where it waits */
 } ChainState;
 
-extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, int c,
-                         int d, int e, int f);
+extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist, int cap, int contactRadius, int maxTurn, int stallAngle, int f);
 
-extern int SteerActorAlongWaypoints(Actor *actor, PathData *path, int a, int b, int c,
-                         int d, int e, int *f);
+extern int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius, int speed, int contact, int clamp, int limit, int *f);
 
 typedef struct CannonState {
   int link;            /* 0x00 index of the actor it wakes on arrival */
@@ -1629,10 +1625,10 @@ extern int FindFarthestPathPointFromSpyro(PathData *path);
 extern int ComputeLobVelocityZ(int *from, int *to, int speed, int g, int *out);
 
 /* Declared identically by two or more *_UpdateActors.c files; hoisted here. */
-extern void ChangeSpyroState(int a);
+extern void ChangeSpyroState(int state);
 extern void ComputeCameraOrbitOffset(int *out);
-extern void ProjectWorldPointGTEUnscaled(int *d, int *s);
-extern void StopSoundVoiceByIndex(int ch, int a);
+extern void ProjectWorldPointGTEUnscaled(int *out, int *s);
+extern void StopSoundVoiceByIndex(int ch, int mode);
 extern void TallyFlightTarget(int tallyClass);
 extern void UpdateCameraEulerAngles(void);
 extern Xform g_aCameraXformPresets[];

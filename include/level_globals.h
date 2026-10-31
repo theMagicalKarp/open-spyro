@@ -213,19 +213,19 @@ extern void (*g_pfnLevelHandleFlightResults)();
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
 extern void BuildActiveActorList(void);
-extern int CheckLineOfSightSegment(int *a, int *b);
+extern int CheckLineOfSightSegment(int *from, int *to);
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
-extern void CommitActorKillGems(int a, void *b);
+extern void CommitActorKillGems(int value, void *actor);
 extern int FindGroundHeightBelow(int *pos, int depth);
-extern int IsPointInRotatedBox(int *a, int *b);
-extern int RaiseSpyroTriggerInRadius(int *pos, int a, int b);
+extern int IsPointInRotatedBox(int *pos, int *rec);
+extern int RaiseSpyroTriggerInRadius(int *pos, int radius, int flags);
 extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 extern void RefreshHudLevelGemCounter(void);
 extern void ResetSpyroEntity(int hard);
 extern void ResetSpyroLinearMotion(void);
-extern int StepAngle8Toward(int a, int b, int c);
+extern int StepAngle8Toward(int to, int from, int maxStep);
 extern void StubRewardHook(int script, int a);
-extern void UnpackWorldCollisionTri(int a, int *out);
+extern void UnpackWorldCollisionTri(int chunk, int *out);
 extern int WrapAngleDelta8(int a, int b);
 extern unsigned char g_abLevelVisitedFlag[];
 extern int g_anLevelTriggerStateSlots[];

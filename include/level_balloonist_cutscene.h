@@ -12,7 +12,7 @@
 
 extern void CopyWords(void *dst, void *src, int len);
 
-extern void ApplyEulerRotation(int *a, int *b, int c);
+extern void ApplyEulerRotation(int *euler, int *mtx, int base);
 
 extern void ComputeCameraToTargetAngle(int *a0);
 

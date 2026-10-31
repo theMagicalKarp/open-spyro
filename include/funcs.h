@@ -768,7 +768,7 @@ void StopAllSoundExceptMask(int mask);
 void ComputeVoicePanAndFalloff(short *vol, int dist, unsigned char bearing, unsigned int range, short *cached);
 
 /* 0x80056dc4: Looks up the SPU voice currently playing for a given (owner-key, marker-byte) pair. Walks all 24 voice rows at &g_aSpuVoiceRows matching (actor == row+0x00 = owner-key) AND (a == row+0x0d = marker). Returns: 0 = no match (sound not playing for this owner/marker); 1 = found, one-shot (flags +0x0e bit 0x100 clear); 2 = found, looping (flags +0x0e bit 0x100 set). Sole caller: PlaySoundEffect (used to skip re-triggering an already-playing sound). */
-int GetSoundVoiceStatusByOwner(Actor *actor, int a);
+int GetSoundVoiceStatusByOwner(Actor *actor, int subId);
 
 /* 0x80056e3c: Reconciles software voice state with hardware. Probes the SPU via GetAllSpuVoiceKeyStatus into a 24-byte local buffer; for any voice whose hardware status code is 1 (SPU_ON) but whose software flags +0x0e have neither bit 0x1 (active) nor bit 0x40 (idle) set (i.e., software thinks the row is stale), marks the row idle (flags=0x40) and ORs the bit into g_dwSpuPendingKeyOff (pending hardware-keyoff mask consumed by SetSpuKeyMask). Sole caller: TickSpuPerFrame (runs once every 64 frames via g_dwGamestateFrames & 0x3f). */
 void SyncSoundVoicesWithHardware(void);
@@ -1899,7 +1899,7 @@ int TickCountdownByFrameDelta(void *pValue, int width);
 int WrapAddAngle8(int a, int b);
 
 /* 0x80038098: Steps 8-bit angle b toward a by at most c (via WrapAngleDelta8 / WrapAddAngle8); returns a once within range. */
-int StepAngle8Toward(int a, int b, int c, int d);
+int StepAngle8Toward(int to, int from, int maxStep, int unused);
 
 /* 0x800381bc: Signed 8-bit angle delta (b - a) wrapped into [-0x80, 0x80]. Argument order is the reverse of SignedAngleDelta8. */
 int WrapAngleDelta8(int a, int b);
@@ -1911,7 +1911,7 @@ int ProbeActorGroundHeight(Actor *actor);
 int IsActorGroundFlat(Actor *actor);
 
 /* 0x80038400: ProbeActorGroundHeight with a caller-supplied Z bias (also added to the probe ceiling). */
-int ProbeActorGroundHeightRaised(Actor *actor, int a);
+int ProbeActorGroundHeightRaised(Actor *actor, int delta);
 
 /* 0x80038458: Sets the actor's Z to ProbeActorGroundHeight + its signed +0x38 floor offset, then re-encodes its direction code. */
 void SnapActorToGround(Actor *actor);
@@ -1923,7 +1923,7 @@ int IsActorInRunningKillSet(Actor *actor);
 void PlayActorMeshVoice(Actor *actor, int voiceOffset, void *owner);
 
 /* 0x80038ee0: Turns the actor's 8-bit yaw (+0x46) toward `target` by at most `step` (x1.5 / x2 at frame delta 3 / 4); returns 1 once within `threshold`. */
-int TurnActorYawTowardAngle(Actor *actor, int heading, int a, int b, int c);
+int TurnActorYawTowardAngle(Actor *actor, int heading, int step, int threshold, int flag);
 
 /* 0x8003aaec: Allocates a rotating-billboard particle (24-byte records at g_aRotBillboards), places it at the actor's matrix-rotated offset, white, with fixed life/size bytes; returns the record index or < 0. */
 /* 0x8005882c (hand-written asm): scans the 8 records of g_aRotBillboards (0x18 stride) for one whose life byte (+0xC) is 0 and returns its index, or -1 when all are live. Caller: SpawnActorRotBillboard. */
@@ -1947,19 +1947,19 @@ void MarkActorCommittedKill(Actor *actor);
 void CollectPickupActor(Actor *actor);
 
 /* 0x80038fc8: Steers the tracked yaw *yawp toward the ArcTan2 bearing to Spyro with a held turn direction (*dirp, flips past `thresh`) and frame-scaled `speed`; swaps the turn anim pair while far off-bearing; stores the coarse yaw at +0x46 and returns the delta. */
-int SteerActorYawTowardSpyro(Actor *actor, int *a, int *b, int c, int d, int e);
+int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed, int thresh, int animId);
 
 /* 0x80039228: Moves the actor by an explicit delta (x1.5/x2 at frame delta 3/4) with actor-contact and world-collision checks; returns 1 contact, 2 collision, 0 committed. */
-int MoveActorByDelta(Actor *actor, int vx, int vy, int vz, int a, int b, int c);
+int MoveActorByDelta(Actor *actor, int vx, int vy, int vz, int group, int radius, int flags);
 
 /* 0x80039398: Guided-move step along the actor's own heading byte (+0x46): contact, world collision, ground probe, step-height and slope rejects per `flags`; returns 1 contact, 2 rejected, 0 committed. Sibling of MoveActorAlongAngle. */
-int MoveActorAlongHeading(Actor *actor, int a, int b, int c, int d);
+int MoveActorAlongHeading(Actor *actor, int speed, int group, int radius, int flags);
 
 /* 0x80039688: Guided-move step along an explicit `angle`, same checks and return codes as MoveActorAlongHeading. */
-int MoveActorAlongAngle(Actor *actor, int a, int b, int c, int d, int e);
+int MoveActorAlongAngle(Actor *actor, int angle, int speed, int group, int radius, int flags);
 
 /* 0x80039910: Runs MoveActorAlongAngle while *counter is live, then applies the vertical timer decay to +0x14 and floor-snaps when *timer runs out; returns the move result or 3 on landing. */
-int DriveActorTrackedMove(Actor *actor, int *a, int heading, int *b, int c, int d);
+int DriveActorTrackedMove(Actor *actor, int *counter, int heading, int *timer, int step, int decay);
 
 /* 0x80039aa8: Wander/patrol step: re-picks a jittered heading on a countdown, adds a weave, leashes to the home point, turns and takes a guided-move step (behaviour block layout in the C doc). */
 void UpdateActorWander(Actor *actor, WanderBlock *wb);
@@ -1974,16 +1974,16 @@ void OrActorGroupFlagsInCone(Actor *actor, int group, unsigned int bits, int dis
 void SetActorGroupStateExcept(Actor *actor, int value, int match);
 
 /* 0x8003bccc: Trial-moves the actor `speed` along its facing and commits unless blocked by contact, world collision or a ground step >= 0xC9; returns 1 / 2 / 0. */
-int TryMoveActorForward(Actor *actor, int a, int b, int c, int d);
+int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR, int flags);
 
 /* 0x8003c994: Advances an actor along its waypoint path record (0x10-byte waypoints from +8), wrapping the index forward or back, and steers toward the current waypoint with speed dist>>4 capped. */
 void FollowActorWaypointPath(Actor *actor, PathData *path, int threshold, int cap, int radius, int yawLim, int pitchLim);
 
 /* 0x80038120: Moves 8-bit angle b toward a by the fraction c/256 of the shortest delta. */
-int LerpAngle8(int a, int b, unsigned char c);
+int LerpAngle8(int to, int from, unsigned char frac);
 
 /* 0x80038178: StepAngle8Toward(a, b, c) then LerpAngle8 by d/256. */
-int StepAndLerpAngle8(int a, int b, int c, int d);
+int StepAndLerpAngle8(int to, int from, int maxStep, int frac);
 
 /* 0x800381e8: True when the actor's yaw byte (+0x46) is within `threshold` of the bearing to Spyro. */
 int IsActorFacingSpyro(int *e, int threshold);
@@ -2062,7 +2062,7 @@ int PlaneDistanceAbs(int *p, int *plane);
 
 /* 0x80038638: Steer an actor around a target point (aims `radius` off it on the
  * side it is already turning toward); returns the residual heading error. */
-int SteerActorAroundPoint(int *actor, int *tgt, int radius, int face, int deadzone, int speed, int p6, int p7, int blockA, int blockB, int p10, int p11, int flags);
+int SteerActorAroundPoint(int *actor, int *tgt, int radius, int face, int deadzone, int speed, int turnStep, int turnThreshold, int blockA, int blockB, int moveGroup, int moveRadius, int flags);
 
 /* 0x80039e94: Path-follow that turns in place while the heading error exceeds
  * `lim`, then walks; returns 0x100 + node index on arrival. */
@@ -2143,7 +2143,7 @@ void SetSpawnAnchorFromActor(Actor *actor, int heading);
 
 /* 0x800385bc: Play the level's burst sample (sample bank +0x26) keyed to the actor
  * (positionless for NULL), then BurstActorIntoSparks(actor, arg). */
-void BurstActorWithSound(Actor *actor, int a);
+void BurstActorWithSound(Actor *actor, int mode);
 
 /* 0x800530c0: Load the actor's matrix/position into the GTE, decode its current
  * mesh frame's packed vertices and emit class-2 spark records (AllocEmitListRecord)
