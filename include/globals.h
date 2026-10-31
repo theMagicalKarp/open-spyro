@@ -611,7 +611,7 @@ extern void *g_pCollisionHitActor;           /* 0x800757e4 */
 extern int g_nGameOverLevelIntroIndex;       /* 0x800757e8 */
 extern void *g_pLevelPickupTableEntries;     /* 0x800757f8 */
 extern byte g_abPadActCommand[2];            /* 0x80075800 */
-extern void *g_pSpyroContactActor;           /* 0x80075804 */
+extern struct Actor *g_pSpyroContactActor;           /* 0x80075804 */
 extern int g_nLastCollisionHitChunkId;       /* 0x80075808 */
 extern int g_nSparxHealthStash;           /* 0x8007580c: saved g_nSparxHealth; -1 = none (ResetLevelState, new game) */
 extern int g_nWorldEggsRecovered;            /* 0x80075810 */
@@ -1250,7 +1250,7 @@ extern void *g_pfnActorCutsceneSubstateUpdate; /* 0x8007574c: per-level handler 
 extern unsigned char *g_pLockedChestReward; /* 0x80075758 */
 extern int g_pCreditsScratchBuf; /* 0x80075768 */
 extern int g_bLevelUseShortReleaseAnim; /* 0x8007577c */
-extern void *g_pSpyroHomingTargetActor; /* 0x80075790: charge homing target (ChangeSpyroState) */
+extern struct Actor *g_pSpyroHomingTargetActor; /* 0x80075790: charge homing target (ChangeSpyroState) */
 extern int g_nActorAnimDone; /* 0x80075794 */
 extern void *g_pfnLevelBeginActorCutscene; /* 0x800757a0 */
 extern void *g_pfnLevelHandleFlightResults; /* 0x800757a8 */

@@ -325,10 +325,10 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     if (g_nPadDirectionalIdleFlag != 0 && g_nSpyroSubstate == 7) {
       g_nSpyroSpeedTarget = 0;
       if (g_pSpyroContactActor != 0) {
-        int *a = g_pSpyroContactActor;
+        Actor *a = g_pSpyroContactActor;
 
-        g_nSpyroMoveTargetYaw =
-            ArcTan2(a[3] - g_anSpyroWorldPos[0], a[4] - g_nSpyroWorldPosY, 1);
+        g_nSpyroMoveTargetYaw = ArcTan2(a->posX - g_anSpyroWorldPos[0],
+                                        a->posY - g_nSpyroWorldPosY, 1);
       }
     } else {
       ComputeSpyroMoveTargetFromPad(g_nSpyroMoveTargetMag);
@@ -563,7 +563,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (abs(d) >= 0x200) {
           int l;
 
-          SubtractVector(v30, (int *)g_pSpyroHomingTargetActor + 3, &SPY[0]);
+          SubtractVector(v30, &g_pSpyroHomingTargetActor->posX, &SPY[0]);
           l = VectorLength(v30, VEC_LEN_XYZ);
           d = (ArcTan2(v30[0], v30[1], 1) - SPY[SPY_BODY_YAW]) & 0xFFF;
           if (d > 0x800) {
