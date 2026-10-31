@@ -3029,7 +3029,7 @@ void Level12_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != 3) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != VILLAGER_KNOCKED) {
         st->speed = 0xFA;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
@@ -3037,11 +3037,11 @@ void Level12_UpdateActors(void) {
         StopSoundVoiceByIndex(actor->voiceRow, 4);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 3);
+        ENTER_POSE(actor, VILLAGER_KNOCKED);
       }
 
       switch (actor->mode) {
-      case 0: {
+      case VILLAGER_IDLE: {
         int dist;
         int animState;
         int marker;
@@ -3135,10 +3135,10 @@ void Level12_UpdateActors(void) {
             }
           } else if (dist < st->fleeDist << 10) {
             if (actor->group == 0xFF) {
-              actor->mode = 0x5A;
+              actor->mode = VILLAGER_PANIC;
               continue;
             }
-            SetActorGroupStateExcept(actor, 0x5A, 3);
+            SetActorGroupStateExcept(actor, VILLAGER_PANIC, VILLAGER_KNOCKED);
           }
         } else if (st->mode == 2) {
           if (actor->subMode == 0 &&
@@ -3153,7 +3153,7 @@ void Level12_UpdateActors(void) {
           if ((g_pActorListBase[st->link].nextAnim == 3 || g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) &&
               ApproxDist2D(&actor->posX, &SPY.posX) <
                   (st->fleeDist << 10) + 0x7D0) {
-            actor->mode = 0x5A;
+            actor->mode = VILLAGER_PANIC;
             continue;
           }
         } else if (st->mode == 3) {
@@ -3192,7 +3192,7 @@ void Level12_UpdateActors(void) {
         break;
       }
 
-      case 3:
+      case VILLAGER_KNOCKED:
         if (st->speed != 0) {
           MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x2BC, 5);
           st->speed -= 0x14;
@@ -3224,7 +3224,7 @@ void Level12_UpdateActors(void) {
         }
         break;
 
-      case 0x5A:
+      case VILLAGER_PANIC:
         StopSoundVoiceByIndex(actor->voiceRow, 4);
         st->idleTimer = 0;
         SnapActorToGround(actor);
@@ -3238,12 +3238,12 @@ void Level12_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           st->speed = 0x5F;
           st->timer = RandomIntInRange(0xF0, 0x168);
-          actor->mode = 0x5B;
+          actor->mode = VILLAGER_RUN;
           continue;
         }
         break;
 
-      case 0x5B:
+      case VILLAGER_RUN:
         if (TickCountdownByFrameDelta(&st->idleTimer, 4)) {
           st->idleTimer = (GetRandomU32() & 0x2F) + 0x5A;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 4, 0);
@@ -3275,25 +3275,25 @@ void Level12_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >
                 (st->fleeDist << 10) + 0x1388 &&
             (st->mode != 2 || g_pActorListBase[st->link].nextAnim != 3)) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, VILLAGER_IDLE);
         }
         if (TickCountdownByFrameDelta(&st->timer, 4)) {
           st->idleTimer = 0x1E;
           st->runFrom = ApproxDist2D(&actor->posX, &SPY.posX);
           ANIM_BLEND(actor, 4);
-          actor->mode = 0x5C;
+          actor->mode = VILLAGER_STOP;
           continue;
         }
         break;
 
-      case 0x5C:
+      case VILLAGER_STOP:
         if (TickCountdownByFrameDelta(&st->idleTimer, 4)) {
           st->idleTimer = (GetRandomU32() & 0x2F) + 0x3C;
           PlayActorMeshVoice(actor, (GetRandomU32() & 1) | 4, 0);
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (ApproxDist2D(&actor->posX, &SPY.posX) < st->runFrom - 0x80) {
-          actor->mode = 0x5A;
+          actor->mode = VILLAGER_PANIC;
           continue;
         }
         break;
@@ -3315,7 +3315,7 @@ void Level12_UpdateActors(void) {
             spy->bodyRotZ, 0x20, 0x40);
         st->knockSpin = 0x8C;
         actor->flags = 0;
-        ((unsigned char *)SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0)->state)[0xE] = 1;
+        ((CollectibleState *)SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0)->state)->mode = 1;
         MarkActorCommittedKill(actor);
         PlayActorMeshVoice(actor, 0, 0);
         ENTER_POSE(actor, SHEPHERD_KNOCKED);

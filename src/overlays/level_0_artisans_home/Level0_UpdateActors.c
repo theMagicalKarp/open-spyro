@@ -20,6 +20,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_update_actors.h"
+#include "level_actor_states.h"
 #include "level_update_actors_macros.h"
 #include "gamestate.h"
 #include "pad_buttons.h"
@@ -3085,7 +3086,7 @@ void Level0_UpdateActors(void) {
 
       rider = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
       if (st->rideMode == 1) {
-        ((unsigned char *)rider->state)[0xE] = 1;
+        ((CollectibleState *)rider->state)->mode = 1;
       }
 
       actor->soundRange = 0x20;

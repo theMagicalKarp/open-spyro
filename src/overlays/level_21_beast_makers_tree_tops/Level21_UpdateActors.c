@@ -3071,8 +3071,8 @@ void Level21_UpdateActors(void) {
     case ACTOR_TYPE_PATH_RUNNER + 1: {
       PathRunnerState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode >= 3 &&
-          actor->mode != 4) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode >= RUNNER_WAIT &&
+          actor->mode != RUNNER_FLEE) {
         st->knock = 0x3C;
         if (actor->flags & ACTOR_HIT_CHARGE) {
           st->knock = 0x55;
@@ -3083,7 +3083,7 @@ void Level21_UpdateActors(void) {
                                      spy->bodyRotZ, 0x20, 0x40);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, RUNNER_KNOCKED);
       }
       actor->flags = 0;
 
@@ -3122,14 +3122,14 @@ void Level21_UpdateActors(void) {
           if (g_anLevelRunnerArrived[st->mode] != 0) {
             CopyVector(&actor->posX,
                           (int *)(st->path + (st->path[0] * 16 - 8)));
-            ENTER_POSE(actor, 3);
+            ENTER_POSE(actor, RUNNER_WAIT);
           }
           st->path = st->home;
           st->path[1] = st->path[0] - 1;
           CopyVector(&actor->posX,
                         (int *)(st->path + (st->path[0] * 16 - 0x18)));
           SnapActorToGround(actor);
-          actor->mode = 5;
+          actor->mode = RUNNER_DODGE;
           continue;
         }
       }
@@ -3144,17 +3144,17 @@ void Level21_UpdateActors(void) {
           if (g_anLevelRunnerArrived[st->mode] != 0) {
             CopyVector(&actor->posX, PATH_PT(st->home, 0));
             SnapActorToGround(actor);
-            ENTER_POSE(actor, 3);
+            ENTER_POSE(actor, RUNNER_WAIT);
           }
           st->path = st->home;
           st->path[1] = st->path[0] - 1;
           CopyVector(&actor->posX,
                         (int *)(st->path + (st->path[0] * 16 - 0x18)));
           SnapActorToGround(actor);
-          actor->mode = 5;
+          actor->mode = RUNNER_DODGE;
           continue;
         }
-        actor->mode = 0x14;
+        actor->mode = RUNNER_LURK;
         continue;
       }
 
@@ -3190,7 +3190,7 @@ void Level21_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0: {
+      case RUNNER_RUN: {
         int spd;
         int t;
         int r;
@@ -3232,19 +3232,19 @@ void Level21_UpdateActors(void) {
             if (g_anLevelRunnerArrived[1] == 0) {
               st->path = st->home;
               st->path[1] = 0;
-              actor->mode = 4;
+              actor->mode = RUNNER_FLEE;
               continue;
             }
-            actor->mode = 10;
+            actor->mode = RUNNER_LOOKOUT;
             continue;
           } else if (st->mode == 0) {
             if (g_anLevelRunnerArrived[0] != 0) {
-              actor->mode = 3;
+              actor->mode = RUNNER_WAIT;
               continue;
             }
             st->path = st->home;
             st->path[1] = 0;
-            actor->mode = 4;
+            actor->mode = RUNNER_FLEE;
             continue;
           }
         } else if (r & 0x100) {
@@ -3260,13 +3260,13 @@ void Level21_UpdateActors(void) {
         if (st->target != -1 && actor->posZ == floor &&
             ApproxDist2D(&actor->posX, &g_pActorListBase[st->target].posX) <
                 0x9C4) {
-          actor->mode = 1;
+          actor->mode = RUNNER_PROD;
           continue;
         }
         continue;
       }
 
-      case 1:
+      case RUNNER_PROD:
         ANIM_GO(actor, 3);
         TurnActorYawTowardAngle(actor,
                       ArcTan2(g_pActorListBase[st->target].posX - actor->posX,
@@ -3276,11 +3276,11 @@ void Level21_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           g_pActorListBase[st->target].subMode = 1;
           st->target = *(int *)g_pActorListBase[st->target].state;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, RUNNER_RUN);
         }
         continue;
 
-      case 2:
+      case RUNNER_KNOCKED:
         DriveActorTrackedMove(actor, &st->knock, st->knockAng, &st->lift, 0xC, 0xC);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -3290,7 +3290,7 @@ void Level21_UpdateActors(void) {
         }
         continue;
 
-      case 3:
+      case RUNNER_WAIT:
         ANIM_GO(actor, 4);
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (ApproxDist2D(&actor->posX, &spy->posX) < st->range &&
@@ -3300,12 +3300,12 @@ void Level21_UpdateActors(void) {
           st->path = st->home;
           st->path[1] = 0;
           st->lift = 0;
-          actor->mode = 4;
+          actor->mode = RUNNER_FLEE;
           continue;
         }
         continue;
 
-      case 4: {
+      case RUNNER_FLEE: {
         int spd;
         int t;
         int r;
@@ -3356,17 +3356,17 @@ void Level21_UpdateActors(void) {
           CopyVector(&actor->posX,
                         (int *)(st->path + (st->path[0] * 16 - 0x18)));
           SnapActorToGround(actor);
-          actor->mode = 5;
+          actor->mode = RUNNER_DODGE;
           continue;
         }
         if (r == last + 0x100) {
           if (st->mode < 2) {
             st->path[1] = st->path[0] - 1;
-            actor->mode = 5;
+            actor->mode = RUNNER_DODGE;
             continue;
           }
           st->range = 0;
-          actor->mode = 3;
+          actor->mode = RUNNER_WAIT;
           continue;
         }
         if (r & 0x100) {
@@ -3389,7 +3389,7 @@ void Level21_UpdateActors(void) {
         continue;
       }
 
-      case 5: {
+      case RUNNER_DODGE: {
         int r;
 
         ANIM_GO(actor, 0);
@@ -3403,7 +3403,7 @@ void Level21_UpdateActors(void) {
         SnapActorToGround(actor);
         if (r < 0x23 && spy->state != SPYRO_ST_CHARGE && spy->state != SPYRO_ST_CHARGE_AIR) {
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-            actor->mode = 6;
+            actor->mode = RUNNER_CREEP;
             continue;
           }
           continue;
@@ -3412,7 +3412,7 @@ void Level21_UpdateActors(void) {
         continue;
       }
 
-      case 6: {
+      case RUNNER_CREEP: {
         int r;
 
         ANIM_GO(actor, 0);
@@ -3423,62 +3423,62 @@ void Level21_UpdateActors(void) {
             5, 0xC8, 0xF, 0x20, 0xFF, 0xFF, 0, 0, 0);
         SnapActorToGround(actor);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0xFA0) {
-          actor->mode = 5;
+          actor->mode = RUNNER_DODGE;
           continue;
         }
         if (g_nSpyroState == SPYRO_ST_CHARGE || g_nSpyroState == SPYRO_ST_CHARGE_AIR) {
-          actor->mode = 5;
+          actor->mode = RUNNER_DODGE;
           continue;
         }
         if (r < 0x46) {
-          actor->mode = 7;
+          actor->mode = RUNNER_TAUNT;
           continue;
         }
         continue;
       }
 
-      case 7:
+      case RUNNER_TAUNT:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         ANIM_GO(actor, 4);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x12C0) {
-          actor->mode = 5;
+          actor->mode = RUNNER_DODGE;
           continue;
         }
         if (g_nSpyroState == SPYRO_ST_CHARGE || g_nSpyroState == SPYRO_ST_CHARGE_AIR) {
-          actor->mode = 5;
+          actor->mode = RUNNER_DODGE;
           continue;
         }
         continue;
 
-      case 10:
+      case RUNNER_LOOKOUT:
         ANIM_GO(actor, 4);
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (SPY_DZ(actor) < 0 &&
             ApproxDist2D(&actor->posX, (int *)(base - 8)) < 0x1964) {
-          actor->mode = 11;
+          actor->mode = RUNNER_RETURN;
           continue;
         }
         continue;
 
-      case 11:
+      case RUNNER_RETURN:
         ANIM_GO(actor, 0);
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(PATH_X(st->home, 0) - actor->posX,
                                         PATH_Y(st->home, 0) - actor->posY, 0),
                           8, 0x14, 1) != 0) {
           if (ApproxDist2D(&actor->posX, PATH_PT(st->home, 0)) < 0x12C) {
-            actor->mode = 3;
+            actor->mode = RUNNER_WAIT;
             continue;
           }
           MoveActorAlongHeading(actor, 0x118, 0, 0, 5);
         }
         continue;
 
-      case 20:
+      case RUNNER_LURK:
         ANIM_GO(actor, 4);
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->volA) != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, RUNNER_RUN);
         }
         continue;
       }

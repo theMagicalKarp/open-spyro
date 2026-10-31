@@ -468,4 +468,115 @@ enum RunnerMode {
   RUNNER_LURK = 20,    /* waits for Spyro to enter PathRunnerState.volA, then RUN */
 };
 
+/* ->mode of a swooping guard (ACTOR_TYPE_SWOOPER, SwoopState; levels 7/8).
+ * SwoopState.alert is shared: one swoops at a time. */
+enum SwoopMode {
+  SWOOP_PERCH = 0,   /* hovers at home; Spyro in range, in sight, facing it: SWOOP */
+  SWOOP_DIVE = 1,    /* weaves in at Spyro; a hit, a miss or losing him: RETURN */
+  SWOOP_RETURN = 2,  /* flies back home, then PERCH */
+  SWOOP_KNOCKED = 4, /* flamed or charged: drifts down and bursts */
+};
+
+/* ->mode of a villager (ACTOR_TYPE_VILLAGER, VillagerState; levels 12/13).
+ * VILLAGER_IDLE runs VillagerState.mode's role (talker, lookout, paired,
+ * follower of a leader); Spyro too close sends it running. */
+enum VillagerMode {
+  VILLAGER_IDLE = 0,
+  VILLAGER_KNOCKED = 3, /* flamed or charged: knocked away; bursts once its chunk anim is done */
+  VILLAGER_PANIC = 90,  /* cowers, then RUN */
+  VILLAGER_RUN = 91,    /* runs between random path points; far enough: IDLE */
+  VILLAGER_STOP = 92,   /* catches its breath facing Spyro; he comes closer: PANIC */
+};
+
+/* ->mode of a post guard (ACTOR_TYPE_POST_GUARD, PostState; level 2).
+ * POSTGUARD_IDLE runs PostState.mode's role (waits between its two posts,
+ * patrols, lookout, or ambushes with its partner). */
+enum PostGuardMode {
+  POSTGUARD_IDLE = 0,
+  POSTGUARD_HOP = 1,      /* faces Spyro, hopping at him when he is close and level */
+  POSTGUARD_KNOCKED = 2,  /* flamed or charged: spins away, then bursts */
+  POSTGUARD_TO_POST = 3,  /* steps out to the post nearer Spyro, then HOP */
+  POSTGUARD_ALERTED = 20, /* set group-wide by a patroller: turns to Spyro */
+  POSTGUARD_SHOUT = 21,   /* shouts, then HOP */
+};
+
+/* ->mode of a patrol ward (ACTOR_TYPE_PATROL_WARD, WardState; level 3).
+ * WARD_IDLE runs WardState.mode's role (sentry, node patrol, partner ring);
+ * its shove (animation 8) knocks Spyro back. */
+enum WardMode {
+  WARD_IDLE = 0,
+  WARD_ADVANCE = 1,    /* walks at Spyro, shoving when close (or rings its partner's node) */
+  WARD_TURN = 2,       /* at a node: turns about, picks the next node */
+  WARD_KNOCKED = 4,    /* charged: knocked spinning, then DAZED */
+  WARD_DAZED = 5,      /* lies dazed; a flame burns it, Spyro leaving bursts it */
+  WARD_BURN = 9,       /* flamed: bursts */
+  WARD_TO_NODE = 98,   /* walks to its next path node, then TURN */
+  WARD_GO_HOME = 100,  /* walks back home, then IDLE */
+};
+
+/* ->mode of a shooter sentry (ACTOR_TYPE_SHOOTER, ShooterState; level 7).
+ * Flames bounce off while it hides behind its shield (SHOOTER_SHIELD,
+ * frames 4..30). */
+enum ShooterMode {
+  SHOOTER_IDLE = 0,     /* blinks; Spyro in range: WAKE */
+  SHOOTER_FIRE = 1,     /* fires an ACTOR_TYPE_SHOOTER_SHOT at Spyro, then SHIELD */
+  SHOOTER_LOWER = 2,    /* drops its shield, then AIM */
+  SHOOTER_KNOCKED = 3,  /* knocked away, then bursts */
+  SHOOTER_GO_HOME = 4,  /* walks back home, then IDLE */
+  SHOOTER_AIM = 6,      /* tracks Spyro; in sight: FIRE, else back to SHIELD */
+  SHOOTER_SHIELD = 7,   /* behind its shield until its timer runs out */
+  SHOOTER_RISE = 9,     /* plays out, then WAKE */
+  SHOOTER_WAKE = 11,    /* wakes and turns to Spyro; ADVANCE if it has a range */
+  SHOOTER_ADVANCE = 20, /* walks its path toward Spyro, then SHIELD */
+};
+
+/* ->mode of Metalhead, the level 22 boss (ACTOR_TYPE_METALHEAD,
+ * MetalheadState). Clearing the current phase's pickup group starts
+ * METALHEAD_PHASE_TURN; the run steps through the phase modes with
+ * mode++. */
+enum MetalheadMode {
+  METALHEAD_IDLE = 0,         /* picks STOMP / SPRAY / LOB by Spyro's range */
+  METALHEAD_STOMP = 1,
+  METALHEAD_SPRAY = 2,        /* sprays ACTOR_TYPE_POD_SHOTs ahead of him */
+  METALHEAD_LOB = 3,          /* lobs an ACTOR_TYPE_LOBBED_BOLT at Spyro's spot */
+  METALHEAD_PHASE_TURN = 10,  /* turns onto his path (in the last phase: DYING) */
+  METALHEAD_PHASE_ROAR = 11,
+  METALHEAD_PHASE_STAGGER = 12, /* staggers along the path a while */
+  METALHEAD_PHASE_RECOVER = 13,
+  METALHEAD_PHASE_RUN = 14,   /* runs to the next phase's path node */
+  METALHEAD_PHASE_ARRIVE = 15, /* turns to Spyro, wakes the next group, IDLE */
+  METALHEAD_DYING = 20,       /* bursts; sets g_bLevelBossDefeated */
+};
+
+/* ->mode of a lunger (ACTOR_TYPE_LUNGER, LungeState; level 4). It takes
+ * LungeState.hits hits (each one switches its animation set, anim += 7)
+ * before a flame knocks it away; hits are ignored while it recoils. */
+enum LungerMode {
+  LUNGER_IDLE = 0,       /* waits; Spyro close: AIM at his spot */
+  LUNGER_AIM = 1,        /* turns to the target point, then LEAP */
+  LUNGER_LEAP = 2,       /* leaps at the point, pinning Spyro under it; then GO_HOME */
+  LUNGER_KNOCKED = 4,    /* last hit: knocked away, then bursts */
+  LUNGER_BURST = 10,     /* bursts and drops its loot (no writer in the C sources) */
+  LUNGER_RECOIL = 13,    /* flinches from a hit, re-aims, then AIM */
+  LUNGER_RECOIL_B = 14,  /* recoil variants (no writer in the C sources) */
+  LUNGER_RECOIL_C = 15,
+  LUNGER_ALERTED = 20,   /* marks LungeState.alerted, then IDLE */
+  LUNGER_GO_HOME = 100,  /* walks back home and faces its heading, then IDLE */
+};
+
+/* ->mode of an alarm post guard (ACTOR_TYPE_ALARM_POST_GUARD, GuardState;
+ * level 4). It falls back post by post (GuardState.stage 0..2); the
+ * stage-1 hit hands it off to its partner. Hits are ignored in 10..19 and
+ * APGUARD_HANDED_OFF. */
+enum AlarmGuardMode {
+  APGUARD_HOLD = 0,        /* keeps between its post and Spyro; group cleared: WATCH */
+  APGUARD_HIT = 10,        /* reacts per stage (stage 1 wakes the partner at APGUARD_HIT_PLAYOUT) */
+  APGUARD_HIT_PLAYOUT = 11, /* plays out the hit; stage 2 bursts */
+  APGUARD_RECOVER = 12,    /* rearms its alarm timer */
+  APGUARD_TO_POST = 13,    /* walks to the next stage's post, then HOLD */
+  APGUARD_WATCH = 20,      /* faces Spyro; close when its timer runs out: SHOVE */
+  APGUARD_SHOVE = 21,      /* shoves Spyro back, then WATCH */
+  APGUARD_HANDED_OFF = 98, /* hidden after the hand-off; no collision */
+};
+
 #endif
