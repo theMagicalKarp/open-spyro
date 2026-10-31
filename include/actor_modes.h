@@ -282,4 +282,22 @@ enum ShempMode {
   SHEMP_DYING = 45,      /* stunned in phase 3: bursts and drops his loot */
 };
 
+/* ->mode of a shepherd (ACTOR_TYPE_SHEPHERD, ShepherdState; levels 12/13).
+ * SHEPHERD_IDLE runs ShepherdState.phase's waiting behaviour; shepherds
+ * work in pairs (ShepherdState.partner), one riding the other's shoulders. */
+enum ShepherdMode {
+  SHEPHERD_IDLE = 0,
+  SHEPHERD_CHASE = 2,     /* heads for Spyro's side; too far from home: GO_HOME */
+  SHEPHERD_KNOCKED = 3,   /* charged: tumbles away and bursts */
+  SHEPHERD_SWING = 4,     /* crook swing (nudges the camera look) */
+  SHEPHERD_WATCH = 6,     /* faces Spyro; the partner was knocked: RECOVER */
+  SHEPHERD_RECOVER = 7,   /* plays out its animation, back to SHEPHERD_IDLE */
+  SHEPHERD_ROUSE = 10,    /* turns to Spyro and shouts, then CHASE */
+  SHEPHERD_ALERTED = 11,  /* straight to CHASE */
+  SHEPHERD_LEAP_ON = 16,  /* jumps onto the partner's attach point */
+  SHEPHERD_RIDE = 17,     /* rides the partner (which goes ALERTED) */
+  SHEPHERD_THROWN = 18,   /* the partner was knocked: falls off */
+  SHEPHERD_GO_HOME = 100, /* walks back to its home point */
+};
+
 #endif

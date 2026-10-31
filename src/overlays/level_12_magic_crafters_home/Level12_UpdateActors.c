@@ -3308,7 +3308,7 @@ void Level12_UpdateActors(void) {
       int near = 0x4B0;
 
       TickActorFlameGlow(actor);
-      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) != 0 && actor->mode != 3) {
+      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) != 0 && actor->mode != SHEPHERD_KNOCKED) {
         st->knockSpeed = 0x1C2;
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
@@ -3318,12 +3318,12 @@ void Level12_UpdateActors(void) {
         ((unsigned char *)SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0)->state)[0xE] = 1;
         MarkActorCommittedKill(actor);
         PlayActorMeshVoice(actor, 0, 0);
-        ENTER_POSE(actor, 3);
+        ENTER_POSE(actor, SHEPHERD_KNOCKED);
       }
       actor->flags = 0;
 
       switch (actor->mode) {
-      case 0:
+      case SHEPHERD_IDLE:
         switch (st->phase) {
         case 0: {
           char *base = (char *)&g_nSpyroWorldPosZ;
@@ -3334,7 +3334,7 @@ void Level12_UpdateActors(void) {
           if (TickCountdownByFrameDelta(&st->timer, 4) &&
               ApproxDist2D(&actor->posX, (int *)(base - 8)) < 0x898 &&
               h < 0 && h > -0x7D0) {
-            ENTER_POSE(actor, 4);
+            ENTER_POSE(actor, SHEPHERD_SWING);
           }
           break;
         }
@@ -3370,7 +3370,7 @@ void Level12_UpdateActors(void) {
           if (TickCountdownByFrameDelta(&st->timer, 4) &&
               ApproxDist2D(&actor->posX, &spy->posX) < near &&
               ABS2(SPY_DZ(actor)) < 0x320) {
-            ENTER_POSE(actor, 4);
+            ENTER_POSE(actor, SHEPHERD_SWING);
           }
           break;
 
@@ -3384,12 +3384,12 @@ void Level12_UpdateActors(void) {
             Actor *p = &g_pActorListBase[st->partner];
             ShepherdState *ps;
 
-            p->mode = 2;
+            p->mode = SHEPHERD_CHASE;
             ps = p->state;
             ps->vz = 0x14;
             ps->side = 0;
             ANIM_GO(actor, 0xD);
-            actor->mode = 6;
+            actor->mode = SHEPHERD_WATCH;
             continue;
           }
           if (g_nActorAnimNewFrame != 0 && actor->nextFrame == 0xE) {
@@ -3418,7 +3418,7 @@ void Level12_UpdateActors(void) {
                 actor->nextFrame = 0;
                 OnActorAnimQueued(actor);
               }
-              actor->mode = 2;
+              actor->mode = SHEPHERD_CHASE;
               continue;
             }
             ANIM_GO(actor, 2);
@@ -3428,9 +3428,9 @@ void Level12_UpdateActors(void) {
                 g_nSpyroAirborneFrames == 0 && SPY.posZ - PATH_Z(st->path, 0) > 0) {
               Actor *p = &g_pActorListBase[st->partner];
 
-              p->mode = 0xA;
+              p->mode = SHEPHERD_ROUSE;
               st->vz = 0xD2;
-              ENTER_POSE(actor, 0x10);
+              ENTER_POSE(actor, SHEPHERD_LEAP_ON);
             }
           }
           if (g_nActorAnimNewFrame != 0 && actor->nextFrame == 0xE) {
@@ -3496,7 +3496,7 @@ void Level12_UpdateActors(void) {
           if (TickCountdownByFrameDelta(&st->timer2, 4) &&
               ABS2(SPY_DZ(actor)) < 0x320 &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x1C00) {
-            actor->mode = 2;
+            actor->mode = SHEPHERD_CHASE;
             continue;
           }
           ANIM_GO(actor, 1);
@@ -3507,7 +3507,7 @@ void Level12_UpdateActors(void) {
           TrackEntityYawTowardSpyro(actor, 4, 0, 0);
           if (g_nSpyroAirborneFrames == 0 && ABS2(SPY_DZ(actor)) < 0x320 &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
-            actor->mode = 2;
+            actor->mode = SHEPHERD_CHASE;
             continue;
           }
           break;
@@ -3518,7 +3518,7 @@ void Level12_UpdateActors(void) {
 
           if (p->nextAnim == 3 || q->nextAnim == 3) {
             st->phase = 9;
-            ENTER_POSE(actor, 7);
+            ENTER_POSE(actor, SHEPHERD_RECOVER);
           }
           switch (actor->subMode) {
           case 0: {
@@ -3556,7 +3556,7 @@ void Level12_UpdateActors(void) {
             if (TickCountdownByFrameDelta(&st->timer, 4) &&
                 ApproxDist2D(pos, &spy->posX) < near &&
                 ABS2(SPY_DZ(actor)) < 0x320) {
-              ENTER_POSE(actor, 4);
+              ENTER_POSE(actor, SHEPHERD_SWING);
             }
             break;
           }
@@ -3566,7 +3566,7 @@ void Level12_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case SHEPHERD_CHASE:
         ANIM_GO(actor, 1);
         switch (st->phase) {
         case 1:
@@ -3576,7 +3576,7 @@ void Level12_UpdateActors(void) {
             st->done = one;
             *st->doneFlag = one;
             st->phase = 0;
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, SHEPHERD_IDLE);
           }
           break;
 
@@ -3603,16 +3603,16 @@ void Level12_UpdateActors(void) {
               TurnActorYawTowardAngle(actor, ang, 6, 0x14, one) &&
               SPY_FACING(actor) < 0x32 &&
               MoveActorAlongHeading(actor, 0x32, 0x12C, 0x1F4, 0x17)) {
-            actor->mode = 0x64;
+            actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
           if (st->phase == 2 && SPY_FACING(actor) > 0x40) {
-            actor->mode = 0x64;
+            actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
           if (st->phase == 2 &&
               ApproxDist2D(&actor->posX, st->home) > 0x1800) {
-            actor->mode = 0x64;
+            actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
           if (st->phase == 6 || st->phase == 7) {
@@ -3621,7 +3621,7 @@ void Level12_UpdateActors(void) {
                 st->path[1] = idx271[0];
                 CopyVector(st->home, PATH_PT(st->path, idx271[0]));
               }
-              actor->mode = 0x64;
+              actor->mode = SHEPHERD_GO_HOME;
               continue;
             }
           }
@@ -3629,7 +3629,7 @@ void Level12_UpdateActors(void) {
               ApproxDist2D(&actor->posX, &spy->posX) < near &&
               g_nSpyroAirborneFrames == 0 && SPY_DZ(actor) < 0xC8 &&
               ABS2(SPY_DZ(actor)) < 0x3E8) {
-            ENTER_POSE(actor, 4);
+            ENTER_POSE(actor, SHEPHERD_SWING);
           }
           break;
         }
@@ -3643,19 +3643,19 @@ void Level12_UpdateActors(void) {
             }
             if (SPY_FACING(actor) < 0x32 &&
                 MoveActorAlongHeading(actor, 0x32, 0, 0x1F4, 0x37)) {
-              actor->mode = 0x64;
+              actor->mode = SHEPHERD_GO_HOME;
               continue;
             }
           }
           pos = &actor->posX;
           if (ApproxDist2D(pos, st->home) > 0x2000) {
-            actor->mode = 0x64;
+            actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
           if (TickCountdownByFrameDelta(&st->timer, 4) && SPY_FACING(actor) < 0x32 &&
               ApproxDist2D(pos, &spy->posX) < near && SPY_DZ(actor) < 0xC8 &&
               ABS2(SPY_DZ(actor)) < 0x3E8) {
-            ENTER_POSE(actor, 4);
+            ENTER_POSE(actor, SHEPHERD_SWING);
           }
           break;
         }
@@ -3665,24 +3665,24 @@ void Level12_UpdateActors(void) {
 
           if (TrackEntityYawTowardSpyro(actor, 6, 0x14, 1) && SPY_FACING(actor) < 0x32 &&
               MoveActorAlongHeading(actor, 0x32, 0x12C, 0x1F4, 0x15)) {
-            actor->mode = 0x64;
+            actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
           pos = &actor->posX;
           if (ApproxDist2D(pos, st->home) > 0x1800) {
-            actor->mode = 0x64;
+            actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
           if (TickCountdownByFrameDelta(&st->timer, 4) && SPY_FACING(actor) < 0x32 &&
               ApproxDist2D(pos, &spy->posX) < near && SPY_DZ(actor) < 0xC8) {
-            ENTER_POSE(actor, 4);
+            ENTER_POSE(actor, SHEPHERD_SWING);
           }
           break;
         }
         }
         break;
 
-      case 3:
+      case SHEPHERD_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockSpin,
                       0x12, 0xC);
         if (g_nActorAnimDone != 0) {
@@ -3693,16 +3693,16 @@ void Level12_UpdateActors(void) {
         }
         break;
 
-      case 4:
+      case SHEPHERD_SWING:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         SnapActorToGround(actor);
         if (actor->nextFrame >= 0x1C) {
           if (st->phase == 2) {
-            actor->mode = 0x64;
+            actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
           st->timer = 0xA0;
-          actor->mode = 0;
+          actor->mode = SHEPHERD_IDLE;
           continue;
         }
         CAM_LOOK.x = (g_anSineLut[actor->rotZ] << 7) >> 12;
@@ -3710,7 +3710,7 @@ void Level12_UpdateActors(void) {
         CAM_LOOK.z = 0;
         break;
 
-      case 6: {
+      case SHEPHERD_WATCH: {
         Actor *p = &g_pActorListBase[st->partner];
 
         if (g_nActorAnimDone != 0) {
@@ -3720,23 +3720,23 @@ void Level12_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0xC00 &&
             ABS2(SPY_DZ(actor)) < 0x258) {
           st->phase = 0;
-          actor->mode = 0;
+          actor->mode = SHEPHERD_IDLE;
           continue;
         }
         if (p->anim == 3) {
-          ENTER_POSE(actor, 7);
+          ENTER_POSE(actor, SHEPHERD_RECOVER);
         }
         break;
       }
 
-      case 7:
+      case SHEPHERD_RECOVER:
         if (g_nActorAnimDone != 0) {
           st->phase = 0;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, SHEPHERD_IDLE);
         }
         break;
 
-      case 0xA:
+      case SHEPHERD_ROUSE:
         if (TrackEntityYawTowardSpyro(actor, 8, 0x23, 1) == 0) {
           break;
         }
@@ -3745,12 +3745,12 @@ void Level12_UpdateActors(void) {
           break;
         }
         /* fall through */
-      case 0xB:
+      case SHEPHERD_ALERTED:
         st->timer2 = 0xB4;
-        actor->mode = 2;
+        actor->mode = SHEPHERD_CHASE;
         continue;
 
-      case 0x10: {
+      case SHEPHERD_LEAP_ON: {
         Actor *p = &g_pActorListBase[st->partner];
         int d;
 
@@ -3760,18 +3760,18 @@ void Level12_UpdateActors(void) {
         if (st->vz < -0x12C) {
           st->vz = -0x12C;
         }
-        if (p->mode == 3) {
+        if (p->mode == SHEPHERD_KNOCKED) {
           st->vz = 0xC8;
           st->knockSpeed = 0x190;
           st->knockHeading = ArcTan2(actor->posX - spy->posX,
                                            actor->posY - spy->posY, 0);
-          actor->mode = 0x12;
+          actor->mode = SHEPHERD_THROWN;
           continue;
         }
         if (st->vz < 0 &&
             actor->posZ - actor->floorOffset - tgt271[2] <= ABS(st->vz)) {
-          p->mode = 0xB;
-          actor->mode = 0x11;
+          p->mode = SHEPHERD_ALERTED;
+          actor->mode = SHEPHERD_RIDE;
           continue;
         }
         actor->posZ += st->vz;
@@ -3793,7 +3793,7 @@ void Level12_UpdateActors(void) {
         break;
       }
 
-      case 0x11: {
+      case SHEPHERD_RIDE: {
         Actor *p = &g_pActorListBase[st->partner];
 
         ((ShepherdState *)p->state)->timer = 0xA;
@@ -3803,7 +3803,7 @@ void Level12_UpdateActors(void) {
           st->knockSpeed = 0x190;
           st->knockHeading = ArcTan2(actor->posX - spy->posX,
                                            actor->posY - spy->posY, 0);
-          actor->mode = 0x12;
+          actor->mode = SHEPHERD_THROWN;
           continue;
         }
         RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
@@ -3812,7 +3812,7 @@ void Level12_UpdateActors(void) {
         break;
       }
 
-      case 0x12: {
+      case SHEPHERD_THROWN: {
         int floor = ProbeActorGroundHeight(actor);
         int z = actor->posZ + st->vz;
 
@@ -3839,13 +3839,13 @@ void Level12_UpdateActors(void) {
           CopyVector(st->home, PATH_PT(st->path, 0));
           st->timer = 0x14;
           actor->subMode = 1;
-          actor->mode = 2;
+          actor->mode = SHEPHERD_CHASE;
           continue;
         }
         break;
       }
 
-      case 0x64: {
+      case SHEPHERD_GO_HOME: {
         int ang = ArcTan2(st->home[0] - actor->posX,
                                 st->home[1] - actor->posY, 0);
 
@@ -3856,7 +3856,7 @@ void Level12_UpdateActors(void) {
             actor->subMode = 1;
             st->timer = 0x3C;
             st->vz = 0;
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, SHEPHERD_IDLE);
           }
         }
         break;
