@@ -153,6 +153,24 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
   } u;
 } Emit;
 
+/* Record classes (Emit.cls): AllocEmitListRecord stamps one, and
+ * RasterizeEmitList picks the primitive by it. */
+enum EmitClass {
+  EMIT_CLASS_DOT = 0,      /* 1-pixel flat line (LINE_F2) at pos */
+  EMIT_CLASS_LINE = 1,     /* two-colour line between two endpoints */
+  EMIT_CLASS_LIT_QUAD = 2, /* lit spinning billboard (POLY_FT4) */
+  EMIT_CLASS_ALT_LIT_QUAD = 3, /* billboard with the alternate lighting */
+  EMIT_CLASS_LINE_ABS = 4, /* EMIT_CLASS_LINE with absolute positions */
+  EMIT_CLASS_FADED_QUAD = 5, /* depth-faded spinning billboard */
+  EMIT_CLASS_QUAD = 6      /* plain spinning billboard */
+};
+
+/* GPU command codes for the `fx` byte: it is the top byte of the colour
+ * word at +0x0C, which RasterizeEmitList copies into the primitive. */
+#define EMIT_FX_LINE 0x40       /* flat line */
+#define EMIT_FX_QUAD 0x2C       /* textured quad */
+#define EMIT_FX_QUAD_BLEND 0x2E /* textured quad, semi-transparent */
+
 /* Effect types for g_pfnLevelEmitParticles(count, type, pos, effectArg)
  * whose arm is the same in every level EmitParticles clone that has it.
  * 0xB, 0x45, 0x48 and 0x49 have only AdvanceEmitList arms (no level
