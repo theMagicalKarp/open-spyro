@@ -65,6 +65,8 @@ int TickDemoPlayback(void) {
       g_nScreenFadeLevel = 0xf;
       BeginStoryIntro();
       if ((int)g_dwGamestateFrames >= g_anDemoLengthFrames[g_nDemoIndex]) {
+        /* CutscenePath.frame as a plain int store: the member store
+           reschedules the SPU attribute block below (A400) */
         *(int *)g_pPathTableHead = 0x2d0;
         g_pLevelSampleBankEntries = g_CutsceneSoundDef;
         SAMPLE_RAW(BANK, int, nSampleAddr) = 0x262d0;

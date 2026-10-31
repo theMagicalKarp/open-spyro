@@ -16,7 +16,7 @@ void SetActorGroupState(Actor *actor, int value) {
       actor->mode = value;
     }
   } else {
-    ptr = ((unsigned short **)g_pLevelPickupTableEntries)[group];
+    ptr = g_pLevelPickupTableEntries[group];
     do {
       idx = *ptr & 0x7FFF;
       if ((unsigned int)g_pActorListBase[idx].mode < ACTOR_MODE_DORMANT) {

@@ -10,6 +10,7 @@
 #include "sparx.h"
 
 #include "actor_states.h"
+#include "cutscene_path.h"
 #include "model.h"
 
 /* The update list, and the per-actor values the loop publishes before it
@@ -1630,7 +1631,7 @@ extern int g_nMotionTrailRibbonCount;
 extern int g_nVblankTickCount;
 extern Xform *g_pCameraTargetParams;
 extern PortalCamPath *volatile g_pPortalCamPathData;
-extern int *g_pPathTableHead;
+extern struct CutscenePath *g_pPathTableHead;
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
 extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);

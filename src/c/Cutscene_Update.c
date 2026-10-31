@@ -1,3 +1,4 @@
+#include "cutscene_path.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -11,13 +12,13 @@
    press to skip ahead, then hand off to DispatchSpecialCutscene at the end. */
 void Cutscene_Update(void) {
   RECT rect;
-  int *path;
+  CutscenePath *path;
   int t;
   int end;
-  int *p;
+  CutscenePath *p;
   int cur;
 
-  if (g_nCutsceneId >= 2 && *(int *)g_pPathTableHead == 0) {
+  if (g_nCutsceneId >= 2 && g_pPathTableHead->frame == 0) {
     StopAllSoundExceptMask(0);
     TickSpuPerFrame();
     rect.w = 0x200;
@@ -40,10 +41,10 @@ void Cutscene_Update(void) {
     BeginCutscene();
   }
 
-  path = (int *)g_pPathTableHead;
-  t = path[0] + g_nFrameStep;
-  end = path[2] << 1;
-  path[0] = t;
+  path = g_pPathTableHead;
+  t = path->frame + g_nFrameStep;
+  end = path->length << 1;
+  path->frame = t;
   if (t < end) {
     if (t < 0x10 || (t = end - t, t < 0x10)) {
       g_nScreenFadeLevel = 0x10 - t;
@@ -54,13 +55,13 @@ void Cutscene_Update(void) {
       g_nScreenFadeLevel = 0xF;
     }
     if (g_nCutsceneId == 1 && (g_dwPadHeld & (PAD_CROSS | PAD_START))) {
-      p = (int *)g_pPathTableHead;
-      cur = p[0];
-      if (cur >= 0xF1 && cur < (p[2] << 1) - 0x20) {
-        p[2] = (cur >> 1) + 0x10;
+      p = g_pPathTableHead;
+      cur = p->frame;
+      if (cur >= 0xF1 && cur < (p->length << 1) - 0x20) {
+        p->length = (cur >> 1) + 0x10;
       }
     }
-    AdvanceCutsceneFrame(*(int *)g_pPathTableHead);
+    AdvanceCutsceneFrame(g_pPathTableHead->frame);
   } else {
     DispatchSpecialCutscene();
   }

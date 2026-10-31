@@ -93,6 +93,7 @@ enum {
 enum { Mode_0x00 = 0, Mode_0x01 = 1, Mode_0x02 = 2, Mode_0x03 = 3 };
 
 /* ---- save file: the 0x600-byte image (save_game.h) ---- */
+#include "cutscene_path.h"
 #include "fog_color.h"
 #include "save_game.h"
 
@@ -137,14 +138,7 @@ typedef struct {
 extern TitleState g_nTitleMode;
 
 /* ---- cutscene layout ---- */
-typedef struct {
-  int introFrame; /* 0x00 */
-  int pad04;
-  int pad08;
-  int pad0C;
-} PathTableHead;
-
-extern PathTableHead *g_pPathTableHead;
+extern CutscenePath *g_pPathTableHead; /* the intro loops through its frame */
 
 /* ---- misc main-EXE state the overlay touches ---- */
 extern u_char g_abTitleSlideInCurve[16];

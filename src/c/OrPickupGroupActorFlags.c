@@ -11,7 +11,7 @@ void OrPickupGroupActorFlags(int group, int bits) {
   Actor *base;
 
   if (group < g_nLevelPickupTableCount) {
-    ptr = ((unsigned short **)g_pLevelPickupTableEntries)[group];
+    ptr = g_pLevelPickupTableEntries[group];
     base = g_pActorListBase;
     do {
       idx = *ptr & 0x7FFF;

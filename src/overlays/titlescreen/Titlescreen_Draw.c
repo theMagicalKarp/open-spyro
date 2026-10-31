@@ -34,7 +34,7 @@ void Titlescreen_Draw(void) {
 
     if (g_nTitleMode.subState == 2) {
       /* spyro landed, logo incoming */
-      if (g_pPathTableHead->introFrame >= 1170)
+      if (g_pPathTableHead->frame >= 1170)
         Titlescreen_EmitSpriteQuad(128, g_abTitleSlideInCurve[g_nTitleMode.animTimer] - 128,
                               Sprite_0x00, Color_0x00);
     } else if (g_nTitleMode.subState == 3) {

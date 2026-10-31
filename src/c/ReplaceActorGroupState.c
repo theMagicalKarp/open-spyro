@@ -18,7 +18,7 @@ void ReplaceActorGroupState(Actor *actor, int value, int match) {
       actor->mode = value;
     }
   } else {
-    ptr = ((unsigned short **)g_pLevelPickupTableEntries)[group];
+    ptr = g_pLevelPickupTableEntries[group];
     do {
       idx = *ptr & 0x7FFF;
       type = g_pActorListBase[idx].mode;

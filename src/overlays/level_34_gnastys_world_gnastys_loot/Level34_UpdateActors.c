@@ -2477,7 +2477,7 @@ void Level34_UpdateActors(void) {
           g_nCutsceneId[0] = 3;
           g_nGamestate = GS_CUTSCENE;
           g_nGamePaused = one;
-          *g_pPathTableHead = 0;
+          g_pPathTableHead->frame = 0;
         }
       }
     }

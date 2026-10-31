@@ -634,8 +634,7 @@ void DragonRescue_Update(void) {
       TickSpuPerFrame();
       if (g_nDragonRescueSplitFlag == 0) {
         SetSpuTransferStartAddr(0x80000 - g_nDragonRescueAudioSampleSize);
-        WriteSpuRam((char *)g_pWorldUnpackHead +
-                        g_nDragonRescueAudioSampleOffset,
+        WriteSpuRam(g_pWorldUnpackHead + g_nDragonRescueAudioSampleOffset,
                     g_nDragonRescueAudioSampleSize);
         while (GetSpuTransferStatus(0) == 0) {
         }

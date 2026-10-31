@@ -12,7 +12,7 @@ int PickupGroupHasLiveActor(int group) {
   Actor *base;
 
   if (group < g_nLevelPickupTableCount) {
-    ptr = ((unsigned short **)g_pLevelPickupTableEntries)[group];
+    ptr = g_pLevelPickupTableEntries[group];
     base = g_pActorListBase;
     do {
       id = *ptr;

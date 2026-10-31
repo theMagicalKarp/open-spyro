@@ -10,7 +10,7 @@ void DespawnPickupGroupActors(int a0) {
   int idx;
 
   if (a0 < g_nLevelPickupTableCount) {
-    ptr = ((unsigned short **)g_pLevelPickupTableEntries)[a0];
+    ptr = g_pLevelPickupTableEntries[a0];
     do {
       idx = *ptr & 0x7FFF;
       if ((unsigned int)g_pActorListBase[idx].mode < ACTOR_MODE_DORMANT) {

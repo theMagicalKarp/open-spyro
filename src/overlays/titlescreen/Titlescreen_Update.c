@@ -48,27 +48,27 @@ void Titlescreen_Update(void) {
   int old_state =
       g_nTitleMode.mode < 2 ? g_nTitleMode.subState : g_nTitleMode.menuState;
 
-  g_pPathTableHead->introFrame += 2;
+  g_pPathTableHead->frame += 2;
 
-  if (g_pPathTableHead->introFrame < 1100) {
+  if (g_pPathTableHead->frame < 1100) {
     g_nTitleMode.idleFrames = 0;
-    if (g_nTitleMode.subState == 2 && g_pPathTableHead->introFrame >= 300 &&
+    if (g_nTitleMode.subState == 2 && g_pPathTableHead->frame >= 300 &&
         (g_dwPadPressed.held & (PAD_START | PAD_CROSS)) != 0) {
       StopSoundVoiceByIndex(g_bDragonRescueSfxVoiceMarker, 4); /* StopSound(voice) */
-      g_pPathTableHead->introFrame = 1170;
+      g_pPathTableHead->frame = 1170;
     }
   } else {
-    if (g_pPathTableHead->introFrame == 1344 && (GetRandomU32() & 3) != 0) {
-      g_pPathTableHead->introFrame = 1172;
-    } else if (g_pPathTableHead->introFrame >= 1530) {
-      g_pPathTableHead->introFrame = 1172;
+    if (g_pPathTableHead->frame == 1344 && (GetRandomU32() & 3) != 0) {
+      g_pPathTableHead->frame = 1172;
+    } else if (g_pPathTableHead->frame >= 1530) {
+      g_pPathTableHead->frame = 1172;
     }
   }
 
   if (g_nScreenFadeLevel)
     --g_nScreenFadeLevel;
 
-  AdvanceCutsceneFrame(g_pPathTableHead->introFrame);
+  AdvanceCutsceneFrame(g_pPathTableHead->frame);
 
   g_nCameraEulerRoll.x = 0;
   g_nCameraEulerRoll.y += 16;
@@ -103,7 +103,7 @@ void Titlescreen_Update(void) {
       }
     } else if (g_nTitleMode.subState == 2) {
       /* titlescreen sequence is playing, just waiting for a bit */
-      if (g_pPathTableHead->introFrame < 1169) {
+      if (g_pPathTableHead->frame < 1169) {
         g_nTitleMode.animTimer = 0;
       } else {
         if (g_nTitleMode.animTimer == 1) {

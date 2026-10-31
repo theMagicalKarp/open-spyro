@@ -545,7 +545,7 @@ extern char g_szUiSlot2[7];                 /* 0x80075638 */
 extern int g_nCutsceneId;                /* 0x8007566c: scripted cutscene / bundle id: 0 title backdrop, 1 opening story, 2/3 endings (BeginCutscene) */
 extern int g_nGnastyLootFallRefZCap;         /* 0x80075678 */
 extern void (*g_pfnGamestate7DrawHook)(void); /* 0x8007567c: flight levels' FlightResults_Draw */
-extern void *g_pPathTableHead;               /* 0x80075680 */
+extern struct CutscenePath *g_pPathTableHead; /* 0x80075680: the cutscene path table (cutscene_path.h) */
 extern int g_nMotionTrailRibbonCount;        /* 0x80075684 */
 extern int g_nPrevLevelIndex;           /* 0x80075688 */
 extern int g_nPauseMenuIdleFrames;           /* 0x8007568c */
@@ -609,7 +609,7 @@ extern int g_nGamestate;                     /* 0x800757d8 */
 extern void *g_pPadSubstepState;             /* 0x800757e0 */
 extern void *g_pCollisionHitActor;           /* 0x800757e4 */
 extern int g_nGameOverLevelIntroIndex;       /* 0x800757e8 */
-extern void *g_pLevelPickupTableEntries;     /* 0x800757f8 */
+extern unsigned short **g_pLevelPickupTableEntries; /* 0x800757f8: per pickup group, its actor-id list (bit 15 marks the last) */
 extern byte g_abPadActCommand[2];            /* 0x80075800 */
 extern struct Actor *g_pSpyroContactActor;           /* 0x80075804 */
 extern int g_nLastCollisionHitChunkId;       /* 0x80075808 */
@@ -888,7 +888,7 @@ extern int g_nWorldMeshCount;                           /* 0x800785c8 */
 extern void *g_pWorldCollisionHeader;                   /* 0x800785d4 */
 extern void *g_pDrawBufA;                               /* 0x800785d8 */
 extern void *g_pDrawBufB;                               /* 0x800785dc */
-extern void *g_pWorldUnpackHead;                        /* 0x800785e0 */
+extern char *g_pWorldUnpackHead;                        /* 0x800785e0 */
 extern void *g_pPathTableBuffer;                        /* 0x800785e4 */
 extern void *g_pRenderScratchRegionBase;                /* 0x800785e8 */
 extern void *g_pRenderScratchPrimBase1;                 /* 0x800785ec */

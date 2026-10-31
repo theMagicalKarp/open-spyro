@@ -1,3 +1,4 @@
+#include "cutscene_path.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -118,7 +119,7 @@ void TickCutsceneBundleLoadStream(void) {
     unpacked = UnpackWorldDataChunks(g_pDrawBufB, 1);
     *((struct SECTION4HDR *)(&g_nWorldRenderMeshChunkCount)) =
         *((struct SECTION4HDR *)(&g_nWorldCollisionTriCount));
-    g_pWorldUnpackHead = unpacked;
+    g_pWorldUnpackHead = (char *)unpacked;
     if (g_nCutsceneId == 1) {
       g_nCdStreamState = 6;
       extSize = g_nWorldDataExtChunkSize - 0x60000;
@@ -153,10 +154,9 @@ void TickCutsceneBundleLoadStream(void) {
     if (g_anActorMeshOffsetBlock[0] > 0) {
       i = 0;
       do {
-        g_apActorMeshTableBlock[i + 1] =
-            RelocateActorMeshHeader((int *)(((char *)g_pWorldUnpackHead) +
-                                            (g_anActorMeshOffsetBlock[i] -
-                                             g_anActorMeshOffsetBlock[-16])));
+        g_apActorMeshTableBlock[i + 1] = RelocateActorMeshHeader(
+            (int *)((g_pWorldUnpackHead) + (g_anActorMeshOffsetBlock[i] -
+                                            g_anActorMeshOffsetBlock[-16])));
         i++;
       } while (g_anActorMeshOffsetBlock[i] > 0);
     }
@@ -186,7 +186,7 @@ void TickCutsceneBundleLoadStream(void) {
     i = 0;
     buf = g_apPathTableBufferBlock;
     ent = buf[0];
-    g_pPathTableHead = ent;
+    g_pPathTableHead = (CutscenePath *)ent;
     ent[4] = ((int)ent) + ent[4];
     if (ent[3] > 0) {
       void *volatile *bp = buf;
@@ -203,7 +203,7 @@ void TickCutsceneBundleLoadStream(void) {
     g_pActorListBase =
         (Actor *)(((char *)g_pPathTableBuffer) + g_nLevelArchiveByteSize);
     i = 0;
-    if (((int *)g_pPathTableHead)[3] > 0) {
+    if (g_pPathTableHead->actorCount > 0) {
       def = 0x20;
     actor_loop:
       InitActorRenderDefaults(&g_pActorListBase[i]);
@@ -213,11 +213,11 @@ void TickCutsceneBundleLoadStream(void) {
       actor->cullRadius = def;
       actor->type = i + 1;
       i += 1;
-      if (i < ((int *)g_pPathTableHead)[3]) {
+      if (i < g_pPathTableHead->actorCount) {
         goto actor_loop;
       }
     }
-    g_pActorListBase[((int *)g_pPathTableHead)[3]].mode = ACTOR_MODE_END;
+    g_pActorListBase[g_pPathTableHead->actorCount].mode = ACTOR_MODE_END;
     g_nCdStreamState = 0xA;
   }
 }

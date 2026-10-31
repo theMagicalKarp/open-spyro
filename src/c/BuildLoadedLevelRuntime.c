@@ -345,7 +345,7 @@ sprites:
   p++;
   count = *p;
   p++;
-  g_pLevelPickupTableEntries = p;
+  g_pLevelPickupTableEntries = (unsigned short **)p;
   g_nLevelPickupTableCount = count;
   i = count - 1;
   if (i >= 0) {

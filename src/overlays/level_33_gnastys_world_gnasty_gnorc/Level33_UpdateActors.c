@@ -2103,7 +2103,7 @@ void Level33_UpdateActors(void) {
           g_nGamePaused = 1;
           g_nGameplayBlocked = 0;
           g_nSpyroDrawSuppressed = 0;
-          *g_pPathTableHead = 0;
+          g_pPathTableHead->frame = 0;
         }
         break;
 

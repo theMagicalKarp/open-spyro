@@ -236,9 +236,8 @@ void TickLevelTransitionStream(int full) {
     void **mesh;
 
     if (full) {
-      RelocateMobActorTable(
-          (char *)g_pWorldUnpackHead +
-          (g_anActorMeshOffsetList - g_nWorldDataExtChunkOffset));
+      RelocateMobActorTable(g_pWorldUnpackHead + (g_anActorMeshOffsetList -
+                                                  g_nWorldDataExtChunkOffset));
     }
     for (i = 0; i < 0x200; i++) {
       if (((int)g_apActorMeshTableBlock[i] & 0xFFFFFF) <
@@ -254,10 +253,10 @@ void TickLevelTransitionStream(int full) {
       if (list[i] <= 0) {
         break;
       }
-      mesh[*slot++] = RelocateActorMeshHeader((char *)g_pWorldUnpackHead +
-                                              (list[i] - list[-16]));
+      mesh[*slot++] =
+          RelocateActorMeshHeader(g_pWorldUnpackHead + (list[i] - list[-16]));
     }
-    g_pPathTableBuffer = (char *)g_pWorldUnpackHead + list[-15];
+    g_pPathTableBuffer = g_pWorldUnpackHead + list[-15];
     g_nLevelArchiveByteSize = list[-13];
     g_nLevelArchiveBaseLba = list[-14];
     g_nCdStreamState++;
