@@ -355,7 +355,7 @@ void Level16_UpdateActors(void) {
             g_nSfxOverridePitch.v =
                 SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]) +
                 st->count;
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->voiceRow);
             DespawnActorRecord(actor);
             continue;
           }
@@ -375,7 +375,7 @@ void Level16_UpdateActors(void) {
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
                 SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]);
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->voiceRow);
           }
         }
       }
@@ -1168,7 +1168,7 @@ void Level16_UpdateActors(void) {
               g_nSfxOverrideVolL = 0x3CCC >> (3 - st->count);
               g_nSfxOverrideVolR = 0x3CCC >> (3 - st->count);
 
-              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
 
               if (ReflectVectorOffNormal(st->vel, svJ, st->vel)) {
                 st->count--;
@@ -1668,7 +1668,7 @@ void Level16_UpdateActors(void) {
                 g_nSfxOverrideFlags = 1;
                 g_nSfxOverrideVolR = 0x3600;
                 g_nSfxOverrideVolL = 0x3600;
-                PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
+                PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
               }
             } else {
               int lim = 0x136;
@@ -2206,7 +2206,7 @@ void Level16_UpdateActors(void) {
           if (actor->flags & ACTOR_HIT_CHARGE) {
             st->speed += 0x8C;
           }
-          StopSoundVoiceByIndex(actor->sfxSlot, 4);
+          StopSoundVoiceByIndex(actor->voiceRow, 4);
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorCommittedKill(actor);
           ENTER_POSE(actor, 2);
@@ -2383,7 +2383,7 @@ void Level16_UpdateActors(void) {
                 st->step, st->speed);
           }
 
-          if (actor->sfxSlot == 0x7F && st->left == (st->left / 48) * 48) {
+          if (actor->voiceRow == VOICE_ROW_NONE && st->left == (st->left / 48) * 48) {
             voice = 0xE;
           }
           break;
@@ -2430,7 +2430,7 @@ void Level16_UpdateActors(void) {
       }
 
       if (voice >= 0) {
-        PlaySoundEffect(g_pLevelSampleBankHeader[voice], actor, SFX_MODE_3D, &actor->sfxSlot);
+        PlaySoundEffect(g_pLevelSampleBankHeader[voice], actor, SFX_MODE_3D, &actor->voiceRow);
       }
 
       break;
@@ -2472,7 +2472,7 @@ void Level16_UpdateActors(void) {
       }
       if (flags & 0x10)
         actor->subMode = 1;
-      PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->sfxSlot);
+      PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->voiceRow);
       if ((GetRandomU32() & 1) == 0)
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, (int *)actor, 0);
       SubtractVector(svN, &SPY.posX, &actor->posX);
@@ -2677,7 +2677,7 @@ void Level16_UpdateActors(void) {
           svQ[0] = (GetRandomU32() & 7) + 0x10;
           svQ[1] = (GetRandomU32() & 7) + 6;
           g_pfnLevelEmitParticles(1, EMIT_FADING_SPARK, ps, svQ);
-          if (actor->sfxSlot == 0x7F) {
+          if (actor->voiceRow == VOICE_ROW_NONE) {
             PlayActorMeshVoice(actor, 0, 0);
           }
         }
@@ -3154,7 +3154,7 @@ void Level16_UpdateActors(void) {
             }
             if (actor->mode == 0x5B || actor->mode == 0x5C ||
                 actor->mode == 0x5D) {
-              StopSoundVoiceByIndex(actor->sfxSlot, 4);
+              StopSoundVoiceByIndex(actor->voiceRow, 4);
               ENTER_POSE(actor, 7);
             }
             if (st->prev >= 0) {
@@ -3475,7 +3475,7 @@ void Level16_UpdateActors(void) {
       int r;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 1) {
-        StopSoundVoiceByIndex(actor->sfxSlot, 4);
+        StopSoundVoiceByIndex(actor->voiceRow, 4);
         SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
         MarkActorCommittedKill(actor);
         GetWorldChunkAnimState(st->chunkAnim);

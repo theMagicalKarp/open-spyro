@@ -378,7 +378,7 @@ void Level33_UpdateActors(void) {
             g_nSfxOverridePitch.v =
                 SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]) +
                 st->count;
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->voiceRow);
             DespawnActorRecord(actor);
             continue;
           }
@@ -398,7 +398,7 @@ void Level33_UpdateActors(void) {
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
                 SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]);
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->voiceRow);
           }
         }
       }
@@ -1010,7 +1010,7 @@ void Level33_UpdateActors(void) {
             g_nSfxOverrideFlags = 1;
             g_nSfxOverrideVolL = 0x3CCC >> (3 - st->bounce);
             g_nSfxOverrideVolR = 0x3CCC >> (3 - st->bounce);
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
 
             if (ReflectVectorOffNormal((int *)st, svH, (int *)st) != 0) {
               st->bounce -= 1;
@@ -1345,7 +1345,7 @@ void Level33_UpdateActors(void) {
                 g_nSfxOverrideFlags = 1;
                 g_nSfxOverrideVolR = 0x3600;
                 g_nSfxOverrideVolL = 0x3600;
-                PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
+                PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
               }
             } else {
               int lim = 0x136;
@@ -2935,7 +2935,7 @@ void Level33_UpdateActors(void) {
           s448[0] = (GetRandomU32() & 7) + 0x10;
           s448[1] = (GetRandomU32() & 7) + 6;
           g_pfnLevelEmitParticles(1, EMIT_FADING_SPARK, ps, s448);
-          if (actor->sfxSlot == 0x7F) {
+          if (actor->voiceRow == VOICE_ROW_NONE) {
             PlayActorMeshVoice(actor, 0, 0);
           }
         }

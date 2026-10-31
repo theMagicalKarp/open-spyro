@@ -174,7 +174,7 @@ void DragonRescue_Update(void) {
       g_bSpyroSubFrameTimer = 0;
       g_pEmitListWriteCursor = g_pEmitListBase;
       ((unsigned char *)g_pEmitListBase)[1] = 0xFF;
-      StopAllSoundExceptMask(1 << SRC->sfxSlot);
+      StopAllSoundExceptMask(1 << SRC->voiceRow);
       PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_SWEEP), 0, SFX_MODE_PANNED, &GB[11]);
     }
   } break;

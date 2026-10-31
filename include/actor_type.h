@@ -77,13 +77,17 @@ typedef struct Actor {
   unsigned char dropKind; /* 0x53 death-drop item id (& 0x7F, 1..0x7E fixed;
                            * 0xFF = random gem roll) — SpawnActorDeathDrop,
                            * IsActorInRunningKillSet */
-  unsigned char sfxSlot; /* 0x54 sound owner key (PlaySoundEffect) */
+  unsigned char voiceRow; /* 0x54 voice row playing its sound (PlaySoundEffect pPlaying),
+                           * VOICE_ROW_NONE when silent */
   unsigned char soundRange; /* 0x55 voice audible range >> 10 (TickActiveSoundVoices) */
   unsigned char poolIndex; /* 0x56 id byte for actors outside the pool */
   unsigned char scale; /* 0x57 draw scale override, 0 = mesh default (likely; overlay
                         * grow/shrink tweens drive it 0x20..0x60, BuildActorDrawList
                         * packs it into the draw word) */
 } Actor; /* 0x58 */
+
+/* Actor.voiceRow while no voice row plays the actor's sound. */
+#define VOICE_ROW_NONE 0x7F
 
 /* Actor.flags hit bits that Spyro's attacks raise through
  * DispatchActorContactAtSphere (AdvanceSpyroPhysics, TickSpyroAttackEffects). */

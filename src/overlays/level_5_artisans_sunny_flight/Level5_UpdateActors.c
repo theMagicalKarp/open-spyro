@@ -816,7 +816,7 @@ void Level5_UpdateActors(void) {
               g_nSfxOverrideVolL = 0x3CCC >> (3 - st->count);
               g_nSfxOverrideVolR = 0x3CCC >> (3 - st->count);
 
-              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
 
               if (ReflectVectorOffNormal(st->vel, svH, st->vel)) {
                 st->count--;
@@ -1124,7 +1124,7 @@ void Level5_UpdateActors(void) {
               g_nSfxOverrideFlags = 1;
               g_nSfxOverrideVolR = 0x3600;
               g_nSfxOverrideVolL = 0x3600;
-              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
+              PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
             }
           } else {
             int dcheck = 310;
@@ -1388,7 +1388,7 @@ void Level5_UpdateActors(void) {
 
         if (GetSoundVoiceStatusByOwner(actor, g_pLevelSoundIds[5]) == 0 && g_nGamestate == GS_GAMEPLAY) {
           PlaySoundEffect(models[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
-                        &actor->sfxSlot);
+                        &actor->voiceRow);
         }
       }
       break;
@@ -1469,7 +1469,7 @@ void Level5_UpdateActors(void) {
       case 1:
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
           DespawnActorRecord(actor);
           continue;
@@ -1482,7 +1482,7 @@ void Level5_UpdateActors(void) {
       case 2:
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
-          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->sfxSlot);
+          PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
           DespawnActorRecord(actor);
           continue;

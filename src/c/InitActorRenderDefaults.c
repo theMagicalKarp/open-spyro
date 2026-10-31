@@ -6,7 +6,7 @@
    nextFrame 1, euler bytes and mode/subMode zeroed, flags/groundCode/tint
    words cleared, otBias 4, renderList 0x20, cullRadius 0x10, group, visZone,
    updateDist and dropKind 0xFF (visZone 0xFF = always drawn, updateDist the
-   widest activation radius, dropKind the random gem roll) and sfxSlot 0x7F. */
+   widest activation radius, dropKind the random gem roll) and voiceRow 0x7F. */
 void InitActorRenderDefaults(Actor *a) {
   a->cullRadius = 0x10;
   a->updateDist = 0xff;
@@ -28,7 +28,7 @@ void InitActorRenderDefaults(Actor *a) {
   a->rotZ = 0;
   a->groundCode = 0;
   a->scale = 0;
-  a->sfxSlot = 0x7f;
+  a->voiceRow = VOICE_ROW_NONE;
   a->floorOffset = 0;
   a->renderList = 0x20;
   *(int *)&a->tint0 = 0;

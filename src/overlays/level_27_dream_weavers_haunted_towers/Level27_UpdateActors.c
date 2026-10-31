@@ -353,7 +353,7 @@ void Level27_UpdateActors(void) {
             g_nSfxOverridePitch.v =
                 SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]) +
                 st->count;
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->voiceRow);
             DespawnActorRecord(actor);
             continue;
           }
@@ -373,7 +373,7 @@ void Level27_UpdateActors(void) {
             g_nSfxOverrideFlags = 2;
             g_nSfxOverridePitch.v =
                 SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]);
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->voiceRow);
           }
         }
       }
@@ -1026,7 +1026,7 @@ void Level27_UpdateActors(void) {
             g_nSfxOverrideFlags = 1;
             g_nSfxOverrideVolL = 0x3CCC >> (3 - st->bounce);
             g_nSfxOverrideVolR = 0x3CCC >> (3 - st->bounce);
-            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
+            PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
 
             if (ReflectVectorOffNormal((int *)st, g208, (int *)st) != 0) {
               st->bounce -= 1;
@@ -1546,7 +1546,7 @@ void Level27_UpdateActors(void) {
                 g_nSfxOverrideFlags = 1;
                 g_nSfxOverrideVolR = 0x3600;
                 g_nSfxOverrideVolL = 0x3600;
-                PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->sfxSlot);
+                PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
               }
             } else {
               int lim = 0x136;
@@ -3068,7 +3068,7 @@ void Level27_UpdateActors(void) {
       }
       if (flags & 0x10)
         actor->subMode = 1;
-      PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->sfxSlot);
+      PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->voiceRow);
       if ((GetRandomU32() & 1) == 0)
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, (int *)actor, 0);
       SubtractVector(g392, &SPY.posX, &actor->posX);
@@ -3273,7 +3273,7 @@ void Level27_UpdateActors(void) {
           g496[0] = (GetRandomU32() & 7) + 0x10;
           g496[1] = (GetRandomU32() & 7) + 6;
           g_pfnLevelEmitParticles(1, EMIT_FADING_SPARK, g472, g496);
-          if (actor->sfxSlot == 0x7F) {
+          if (actor->voiceRow == VOICE_ROW_NONE) {
             PlayActorMeshVoice(actor, 0, 0);
           }
         }
@@ -3617,15 +3617,15 @@ void Level27_UpdateActors(void) {
     case ACTOR_TYPE_SPIN_CHEST: {
       SpinChestState *st = actor->state;
       int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
-      int cur = g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0];
+      int cur = g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0];
       int i;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == 0x10000) {
         actor->updateDist = 0xFF;
         PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
-                      &actor->sfxSlot);
-        if (actor->sfxSlot != 0x7F) {
-          g_anSpuVoiceRowPitch[actor->sfxSlot & 0x7F][0] = pitch + st->speed * 4;
+                      &actor->voiceRow);
+        if (actor->voiceRow != VOICE_ROW_NONE) {
+          g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0] = pitch + st->speed * 4;
         }
       }
       if (st->speed < 0x19) {
@@ -3646,8 +3646,8 @@ void Level27_UpdateActors(void) {
       }
       st->handle = SelectActorLodBand(actor, st->handle);
       st->speed -= 1;
-      if (pitch < cur && actor->sfxSlot != 0x7F) {
-        g_anSpuVoiceRowPitchStep[actor->sfxSlot & 0x7F][0] = -4;
+      if (pitch < cur && actor->voiceRow != VOICE_ROW_NONE) {
+        g_anSpuVoiceRowPitchStep[actor->voiceRow & 0x7F][0] = -4;
       }
       if (st->speed < 0x18) {
         st->speed = 0x18;
@@ -3892,7 +3892,7 @@ void Level27_UpdateActors(void) {
           }
           actor->posZ = st->savedPosZ + (a + b) * 6;
 
-          if (actor->sfxSlot == 0x7F) {
+          if (actor->voiceRow == VOICE_ROW_NONE) {
             PlayActorMeshVoice(actor, 1, 0);
           }
         } else if (st->phase >= 0x19C) {
@@ -3918,7 +3918,7 @@ void Level27_UpdateActors(void) {
           actor->frameRate = 8;
           actor->mode = 0;
           actor->nextAnim = 0;
-          if (actor->sfxSlot == 0x7F) {
+          if (actor->voiceRow == VOICE_ROW_NONE) {
             PlayActorMeshVoice(actor, 3, 0);
           }
         }
@@ -3966,7 +3966,7 @@ void Level27_UpdateActors(void) {
       }
 
       PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[2], actor, SFX_MODE_3D,
-                    (void *)(long)actor->sfxSlot);
+                    (void *)(long)actor->voiceRow);
       DespawnActorRecord(actor);
       continue;
     }
