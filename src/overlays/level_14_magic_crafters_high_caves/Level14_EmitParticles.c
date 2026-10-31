@@ -186,13 +186,15 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       break;
     }
     case EMIT_TRACKING_SPARK: {
+      Actor *src = (Actor *)pos;
+
       int jx, jy, jz;
       int bx, by, bz;
       rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_ALT_LIT_QUAD);
       rec->type = type;
       rec->phase = GetRandomU32() & 3;
       rec->visible = 1;
-      GetActorAttachPoint((Actor *)pos, GetRandomU32() & 1, vt);
+      GetActorAttachPoint(src, GetRandomU32() & 1, vt);
       VectorToSVectorShr2(rec->u.track.pos, vt);
       jx = GetRandomU32() & 0xE;
       bx = rec->u.track.pos[0] - 7;
@@ -203,7 +205,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       jz = GetRandomU32() & 0xE;
       bz = rec->u.track.pos[2] - 7;
       rec->u.track.pos[2] = bz + jz;
-      SubtractVector(vt, vt, &((Actor *)pos)->posX);
+      SubtractVector(vt, vt, &src->posX);
       vt[2] = vt[2] - 0x384;
       SetVector3Magnitude(vt, 0x80);
       VectorToSVectorShr2(rec->u.track.vel, vt);
@@ -284,27 +286,29 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       break;
     }
     case EMIT_ACTOR_SPARK: {
+      Actor *src = (Actor *)pos;
+
       rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_LIT_QUAD);
       rec->type = type;
       rec->visible = 1;
       rec->u.spark.depthBias = 4;
-      if (((Actor *)pos)->type == ACTOR_TYPE_DRAGON_EGG) {
-        CopyVector(v1, &((Actor *)pos)->posX);
-      } else if (((Actor *)pos)->type == ACTOR_TYPE_KEY || ((Actor *)pos)->type == ACTOR_TYPE_LOOT_VORTEX) {
+      if (src->type == ACTOR_TYPE_DRAGON_EGG) {
+        CopyVector(v1, &src->posX);
+      } else if (src->type == ACTOR_TYPE_KEY || src->type == ACTOR_TYPE_LOOT_VORTEX) {
         if ((effectArg >> 24) < 6) {
-          RotateVectorByMatrix(((Actor *)pos)->mtx, &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
-          AddVector(v1, v1, &((Actor *)pos)->posX);
+          RotateVectorByMatrix(src->mtx, &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
+          AddVector(v1, v1, &src->posX);
         } else {
           rec->cls = EMIT_CLASS_FADED_QUAD;
           rec->u.spark.depthBias = 0x16;
           CopyVector(v1, &g_anEmitSlotOffsets[(effectArg >> 24) * 3]);
         }
-      } else if (((Actor *)pos)->type == ACTOR_TYPE_SPARX) {
-        RotateVectorByMatrix(((Actor *)pos)->mtx, g_anSparxEmitOffset, v1);
-        AddVector(v1, v1, &((Actor *)pos)->posX);
+      } else if (src->type == ACTOR_TYPE_SPARX) {
+        RotateVectorByMatrix(src->mtx, g_anSparxEmitOffset, v1);
+        AddVector(v1, v1, &src->posX);
       } else {
-        RotateVectorByMatrix(((Actor *)pos)->mtx, &g_anEmitStepOffsets[i * 3], v1);
-        AddVector(v1, v1, &((Actor *)pos)->posX);
+        RotateVectorByMatrix(src->mtx, &g_anEmitStepOffsets[i * 3], v1);
+        AddVector(v1, v1, &src->posX);
       }
       VectorToSVectorShr2(rec->u.spark.pos, v1);
       rec->u.spark.g = effectArg >> 8;
