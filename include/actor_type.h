@@ -70,8 +70,11 @@ typedef struct Actor {
   unsigned char tint1; /* 0x4D */
   unsigned char tint2; /* 0x4E */
   unsigned char tintMode; /* 0x4F */
-  unsigned char cullRadius; /* 0x50 view-space cull bound >> 8 (BuildActorDrawList
-                            * loads it as the halfword with ->drawn) */
+  unsigned char cullRadius; /* 0x50 view-space cull bound >> 8: BuildActorDrawList
+                            * loads it as a halfword with ->drawn and tests each
+                            * axis against (cullRadius << 8) + (drawn & 1) * 0x200,
+                            * so 0 hides the actor. The renderer gives bit 7 no
+                            * meaning of its own; overlays test it as "large". */
   unsigned char drawn; /* 0x51 drawn last frame: always kept active */
   unsigned char updateDist; /* 0x52 activation radius >> 10 */
   unsigned char dropKind; /* 0x53 death-drop item id (& 0x7F, 1..0x7E fixed;

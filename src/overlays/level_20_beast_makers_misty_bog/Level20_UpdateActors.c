@@ -3490,7 +3490,7 @@ void Level20_UpdateActors(void) {
       actor->flags = 0;
       if (actor->nextAnim == 1 &&
           GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[2]) == 0) {
-        PlayActorMeshVoice(actor, 2, (int)&st->voice);
+        PlayActorMeshVoice(actor, 2, &st->voice);
       }
 
       switch (actor->mode) {

@@ -3358,7 +3358,7 @@ void Level6_UpdateActors(void) {
 
       case 1:
         st->timer = 0x3C;
-        PlayActorMeshVoice(actor, 0, (int)&st->voice);
+        PlayActorMeshVoice(actor, 0, &st->voice);
         actor->mode = 2;
         continue;
 

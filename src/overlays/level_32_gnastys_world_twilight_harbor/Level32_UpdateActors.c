@@ -1625,8 +1625,8 @@ void Level32_UpdateActors(void) {
       if (st->initialised == 0) {
         st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->flags == 1 && (IsPointInRotatedBox((int *)spy, st->box1) != 0 ||
-                             IsPointInRotatedBox((int *)spy, st->box2) != 0)) {
+        if (st->flags == 1 && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
+                             IsPointInRotatedBox(&spy->posX, st->box2) != 0)) {
           st->flags &= ~1;
           ENTER_POSE(actor, 2);
         }
@@ -1761,8 +1761,8 @@ void Level32_UpdateActors(void) {
       if (st->initialised == 0) {
         st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->flags == 1 && (IsPointInRotatedBox((int *)spy, st->box1) != 0 ||
-                             IsPointInRotatedBox((int *)spy, st->box2) != 0)) {
+        if (st->flags == 1 && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
+                             IsPointInRotatedBox(&spy->posX, st->box2) != 0)) {
           st->flags &= ~1;
           ENTER_POSE(actor, 2);
         }
@@ -1935,8 +1935,8 @@ void Level32_UpdateActors(void) {
       if (st->initialised == 0) {
         st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->flags == 1 && (IsPointInRotatedBox((int *)spy, st->box1) != 0 ||
-                             IsPointInRotatedBox((int *)spy, st->box2) != 0)) {
+        if (st->flags == 1 && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
+                             IsPointInRotatedBox(&spy->posX, st->box2) != 0)) {
           st->flags &= ~1;
           ENTER_POSE(actor, 2);
         }

@@ -939,7 +939,7 @@ void Level24_UpdateActors(void) {
       if (actor->mode < 3 && (st->range != 0 || (actor->flags & ACTOR_HIT_BLAST))) {
         if (st->range > 0 && actor->mode == 0 &&
             (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range ||
-             IsPointInRotatedBox((int *)spy, st->vol) != 0) &&
+             IsPointInRotatedBox(&spy->posX, st->vol) != 0) &&
             TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
           st->range = -st->range;
           if (st->range == 0) {
@@ -2448,7 +2448,7 @@ void Level24_UpdateActors(void) {
       if (actor->mode < 3 && (st->range != 0 || (actor->flags & ACTOR_HIT_BLAST))) {
         if (st->range > 0 && (actor->mode == 0 || actor->mode == 2) &&
             (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range ||
-             IsPointInRotatedBox((int *)spy, st->vol) != 0) &&
+             IsPointInRotatedBox(&spy->posX, st->vol) != 0) &&
             TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
           st->range = -st->range;
           if (st->range == 0) {
@@ -2563,7 +2563,7 @@ void Level24_UpdateActors(void) {
           }
           if (actor->nextFrame == 6 &&
               GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[0]) == 0) {
-            PlayActorMeshVoice(actor, 0, (int)&st->sound);
+            PlayActorMeshVoice(actor, 0, &st->sound);
           }
           break;
         }

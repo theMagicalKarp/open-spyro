@@ -752,7 +752,7 @@ void Level19_UpdateActors(void) {
       int *v = svD;
       int d;
 
-      SubtractVector(v, (int *)spy, &actor->posX);
+      SubtractVector(v, &spy->posX, &actor->posX);
       d = ApproxDist2D(&actor->posX, spy);
       if (d < 0x32C8) {
         d = VectorLength(v, VEC_LEN_XY);
@@ -788,7 +788,7 @@ void Level19_UpdateActors(void) {
       case 0:
         ANIM_GO(actor, 0);
         if (st->mode == one &&
-            (IsPointInRotatedBox((int *)spy, st->box) != 0 || d < st->range << 10) &&
+            (IsPointInRotatedBox(&spy->posX, st->box) != 0 || d < st->range << 10) &&
             ABS2(SPY_DZ(actor)) < 0xBB8) {
           if (actor->group != 0xFF) {
             SetActorGroupStateExcept(actor, 0xA, 3);
@@ -3702,7 +3702,7 @@ void Level19_UpdateActors(void) {
                                      spy->posY - actor->posY, 0);
         actor->rotY = ArcTan2(ApproxDist2D(&actor->posX, spy),
                                      SPY.posZ - actor->posZ, 0);
-        SubtractVector(v, (int *)spy, &actor->posX);
+        SubtractVector(v, &spy->posX, &actor->posX);
         k = 0x14 - VectorLength(v, VEC_LEN_XYZ) * 0x1A / 1400;
         if (k < -0x14) {
           k = -0x14;

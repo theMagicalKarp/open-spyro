@@ -3110,7 +3110,7 @@ void Level21_UpdateActors(void) {
         if (g_nSpawnAnchorValid[0] != 0) {
           st->camTimer = 0;
         }
-        if (IsPointInRotatedBox((int *)spy, st->volB) != 0) {
+        if (IsPointInRotatedBox(&spy->posX, st->volB) != 0) {
           actor->group = 0;
           SetActorGroupSubstate(actor, 2);
           actor->group = 1;
@@ -3135,7 +3135,7 @@ void Level21_UpdateActors(void) {
       }
       if (st->mode == 1 && st->pathInit == 0) {
         st->pathInit = 1;
-        if (IsPointInRotatedBox((int *)spy, st->volB) != 0) {
+        if (IsPointInRotatedBox(&spy->posX, st->volB) != 0) {
           actor->group = 2;
           SetActorGroupSubstate(actor, 2);
           actor->group = 0xFF;

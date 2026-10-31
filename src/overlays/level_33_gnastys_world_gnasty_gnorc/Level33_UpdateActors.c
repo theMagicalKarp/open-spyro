@@ -1882,7 +1882,7 @@ void Level33_UpdateActors(void) {
           q->lifeTimer = 0xA0;
           q->landDelay = n - 1;
           st->throws++;
-          PlayActorMeshVoice(actor, 0, (int)&st->voice);
+          PlayActorMeshVoice(actor, 0, &st->voice);
           if (st->phase == 2 && st->throws >= 2) {
             actor->mode = 5;
             continue;
