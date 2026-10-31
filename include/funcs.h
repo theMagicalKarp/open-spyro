@@ -2079,8 +2079,8 @@ int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist, int ca
 /* 0x8003abc0: Spawn the drop a broken or flamed actor leaves: its fixed dropKind type, or a rolled extra life / butterfly / Sparx food. */
 Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt);
 
-/* 0x8003b0dc: True when any actor of pickup group `group` has type byte (+0x48) < 0x80. */
-int PickupGroupHasLiveActor(int a0);
+/* 0x8003b0dc: True when any actor of pickup group `group` is not dormant (mode < ACTOR_MODE_DORMANT). */
+int PickupGroupHasLiveActor(int group);
 
 /* 0x8003b854: Bank `value` gems for an actor kill/pickup and set its committed-kill
  * and per-level kill bits, then play the pickup sound on the actor. */

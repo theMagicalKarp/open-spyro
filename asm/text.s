@@ -46402,11 +46402,11 @@ glabel PickupGroupHasLiveActor
 endlabel PickupGroupHasLiveActor
 .endif
 
-.section .text.IsPickupGroupAllType, "ax"
-.ifndef HAVE_C_IsPickupGroupAllType
-nonmatching IsPickupGroupAllType, 0x88
+.section .text.IsPickupGroupAllInMode, "ax"
+.ifndef HAVE_C_IsPickupGroupAllInMode
+nonmatching IsPickupGroupAllInMode, 0x88
 
-glabel IsPickupGroupAllType
+glabel IsPickupGroupAllInMode
     /* 2B960 8003B160 0780023C */  lui        $v0, %hi(g_nLevelPickupTableCount)
     /* 2B964 8003B164 B457428C */  lw         $v0, %lo(g_nLevelPickupTableCount)($v0)
     /* 2B968 8003B168 00000000 */  nop
@@ -46444,7 +46444,7 @@ glabel IsPickupGroupAllType
   .L8003B1E0:
     /* 2B9E0 8003B1E0 0800E003 */  jr         $ra
     /* 2B9E4 8003B1E4 00000000 */   nop
-endlabel IsPickupGroupAllType
+endlabel IsPickupGroupAllInMode
 .endif
 
 .section .text.SetActorGroupState, "ax"

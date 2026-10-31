@@ -44,27 +44,27 @@ void DragonRescue_Draw(void) {
       DrawCinematicLetterbox();
     }
   } else if (g_nDragonRescueSubstate < 4) {
-    unsigned char *act;
+    Actor *act;
     unsigned char id;
     void **ot;
     void **q;
     ot = g_apOtDepthBinBlock;
-    if (((Actor *)g_pDragonRescueSourceActor)->mode < 0x80) {
+    if (((Actor *)g_pDragonRescueSourceActor)->mode < ACTOR_MODE_DORMANT) {
       *ot++ = g_pDragonRescueSourceActor;
     }
     if (g_nDragonRescueSubstate == 3) {
       *ot++ = g_pDragonRescueStatueActor;
     }
     *ot = 0;
-    act = (unsigned char *)g_pActorListBase;
+    act = (Actor *)g_pActorListBase;
     q = &g_apOtDepthBinBlock[2304];
-    id = ((Actor *)act)->mode;
-    while (id != 0xFF) {
-      if (((Actor *)act)->type == ACTOR_TYPE_STATUE_SHARD && id < 0x80) {
+    id = act->mode;
+    while (id != ACTOR_MODE_END) {
+      if (act->type == ACTOR_TYPE_STATUE_SHARD && id < ACTOR_MODE_DORMANT) {
         *q++ = act;
       }
-      act += ACTOR_SIZE;
-      id = ((Actor *)act)->mode;
+      act++;
+      id = act->mode;
     }
     *q = 0;
     DrawDragonRescuedBanner();
@@ -89,7 +89,7 @@ void DragonRescue_Draw(void) {
       DrawCinematicLetterbox();
     }
   } else if (g_nDragonRescueSubstate == 4) {
-    unsigned char *act;
+    Actor *act;
     unsigned char id;
     void **ot;
     void **q;
@@ -98,14 +98,14 @@ void DragonRescue_Draw(void) {
     *ot++ = g_pDragonRescueSpyroMirrorActor;
     *ot = 0;
     q = &g_apOtDepthBinBlock[2304];
-    act = (unsigned char *)g_pActorListBase;
-    id = ((Actor *)act)->mode;
-    while (id != 0xFF) {
-      if (((Actor *)act)->type == ACTOR_TYPE_STATUE_SHARD && id < 0x80) {
+    act = (Actor *)g_pActorListBase;
+    id = act->mode;
+    while (id != ACTOR_MODE_END) {
+      if (act->type == ACTOR_TYPE_STATUE_SHARD && id < ACTOR_MODE_DORMANT) {
         *q++ = act;
       }
-      act += ACTOR_SIZE;
-      id = ((Actor *)act)->mode;
+      act++;
+      id = act->mode;
     }
     *q = 0;
     if (g_nDragonRescueTimer < 0x3C) {

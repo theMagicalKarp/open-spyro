@@ -74,7 +74,7 @@ extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int speed);
 extern int g_anSparxHealthBlock[]; /* == g_nSparxHealth (SPY.sparxHealth): 3 gold .. 1 green, 0 Sparx gone, -1 the fatal hit was taken */
 extern int GetWorldChunkAnimState(int handle); /* flags | step << 8 | delay << 16 */
 extern void ModifyWorldChunkAnimFlags(int handle, int andMask, int orMask);
-extern int PickupGroupHasLiveActor(int stage);
+extern int PickupGroupHasLiveActor(int group);
 extern int PlaneDistanceAbs(int *pos, void *st);
 extern void SetWorldChunkAnimStep(int handle, int step, int fire);
 extern int WrapAddAngle8(int a, int b);

@@ -314,7 +314,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8003aaec` | SpawnActorRotBillboard | main | 212 | matched | game |
 | `0x8003abc0` | SpawnActorDeathDrop | main | 1308 | matched | game |
 | `0x8003b0dc` | PickupGroupHasLiveActor | main | 132 | matched | game |
-| `0x8003b160` | IsPickupGroupAllType | main | 136 | matched | game |
+| `0x8003b160` | IsPickupGroupAllInMode | main | 136 | matched | game |
 | `0x8003b1e8` | SetActorGroupState | main | 172 | matched | game |
 | `0x8003b294` | OrActorGroupFlagsInCone | main | 488 | matched | game |
 | `0x8003b47c` | SetActorGroupStateExcept | main | 188 | matched | game |

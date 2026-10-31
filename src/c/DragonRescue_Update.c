@@ -774,14 +774,14 @@ void DragonRescue_Update(void) {
     TickDragonRescueAssetStream();
   }
   {
-    char *actor = g_pActorListBase;
+    Actor *actor = g_pActorListBase;
 
-    while (((Actor *)actor)->mode != ACTOR_MODE_END) {
-      if (((Actor *)actor)->type == ACTOR_TYPE_STATUE_SHARD &&
-          ((Actor *)actor)->mode < ACTOR_MODE_DORMANT) {
+    while (actor->mode != ACTOR_MODE_END) {
+      if (actor->type == ACTOR_TYPE_STATUE_SHARD &&
+          actor->mode < ACTOR_MODE_DORMANT) {
         TickStatueBurstShard(actor);
       }
-      actor += ACTOR_SIZE;
+      actor++;
     }
   }
 }

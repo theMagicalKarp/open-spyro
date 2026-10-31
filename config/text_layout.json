@@ -1161,7 +1161,7 @@
    "size": 132
   },
   {
-   "name": "IsPickupGroupAllType",
+   "name": "IsPickupGroupAllInMode",
    "vram": 2147725664,
    "size": 136
   },

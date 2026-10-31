@@ -1,22 +1,22 @@
 #include "actor_type.h"
 #include "globals.h"
 
-/* Walk pickup group `a0`'s actor-id list (0x8003b5f4); for every actor whose
-   type byte (+0x48) is < 0x80, OR the flag bits `a1` into its +0x18 word. The
-   |= store may alias the id list, so the bit-15 last-entry test reloads *ptr as
-   a signed halfword. No-op when the group index is out of range. */
-void OrPickupGroupActorFlags(int a0, int a1) {
+/* Walk pickup group `group`'s actor-id list (0x8003b5f4); for every actor not
+   dormant (mode < ACTOR_MODE_DORMANT), OR `bits` into its flags. The |= store
+   may alias the id list, so the bit-15 last-entry test reloads *ptr as a signed
+   halfword. No-op when the group index is out of range. */
+void OrPickupGroupActorFlags(int group, int bits) {
   unsigned short *ptr;
   int idx;
-  unsigned char *base;
+  Actor *base;
 
-  if (a0 < g_nLevelPickupTableCount) {
-    ptr = ((unsigned short **)g_pLevelPickupTableEntries)[a0];
-    base = (unsigned char *)g_pActorListBase;
+  if (group < g_nLevelPickupTableCount) {
+    ptr = ((unsigned short **)g_pLevelPickupTableEntries)[group];
+    base = (Actor *)g_pActorListBase;
     do {
       idx = *ptr & 0x7FFF;
-      if ((unsigned int)base[idx * ACTOR_SIZE + ACTOR_OFFSET(mode)] < 0x80) {
-        ((Actor *)(base + idx * ACTOR_SIZE))->flags |= a1;
+      if ((unsigned int)base[idx].mode < ACTOR_MODE_DORMANT) {
+        base[idx].flags |= bits;
       }
     } while ((short)*ptr++ >= 0);
   }

@@ -2,9 +2,9 @@
 #include "globals.h"
 
 /* Walk pickup group `a0`'s actor-id list (0x8003b688) and despawn every actor
-   whose type byte (+0x48) is < 0x80. The call clobbers the id load, so the
-   bit-15 last-entry test reloads *ptr as a signed halfword. No-op when the
-   group index is out of range. */
+   whose mode is < ACTOR_MODE_DORMANT (not dormant). The call clobbers the id
+   load, so the bit-15 last-entry test reloads *ptr as a signed halfword. No-op
+   when the group index is out of range. */
 void DespawnPickupGroupActors(int a0) {
   unsigned short *ptr;
   int idx;

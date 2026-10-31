@@ -413,7 +413,7 @@
 <rect x="256.76" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EnqueuePendingSpritePrims  ·  136 bytes  ·  matched</title></rect>
 <rect x="265.19" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>StepAngle8Toward  ·  136 bytes  ·  matched</title></rect>
 <rect x="273.62" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>IsActorInRunningKillSet  ·  136 bytes  ·  matched</title></rect>
-<rect x="282.06" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>IsPickupGroupAllType  ·  136 bytes  ·  matched</title></rect>
+<rect x="282.06" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>IsPickupGroupAllInMode  ·  136 bytes  ·  matched</title></rect>
 <rect x="290.49" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>AdvanceSpyroAnimLayer1Frame  ·  136 bytes  ·  matched</title></rect>
 <rect x="298.93" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RefreshHudLevelGemCounter  ·  136 bytes  ·  matched</title></rect>
 <rect x="307.36" y="655.50" width="8.43" height="8.81" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>WriteSpuRamInternal  ·  136 bytes  ·  library</title></rect>
