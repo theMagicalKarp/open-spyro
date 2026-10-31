@@ -483,7 +483,7 @@ void UpdateLevelTransitionCamera(void);
 void UpdateCameraFrame(void);
 
 /* 0x80038dc0: Turns an actor's byte yaw (Actor.rotZ) toward Spyro (ArcTan2 of g_anSpyroWorldPos - actor position). Camera-mode boost: g_nActorFrameDelta == 3 → step *= 1.5; == 4 → step *= 2. Returns 1 once within threshold deadzone (flag != 0 still applies one ApproachAngle8 step at lock-on); returns 0 while still rotating. Callers: the level actor updates (actors that face Spyro) and SaveMenu_Update. */
-int TrackEntityYawTowardSpyro(int *e, int step, int threshold, int flag);
+int TrackEntityYawTowardSpyro(Actor *actor, int step, int threshold, int flag);
 
 /* 0x8003a720: Zero/default initializer for an actor's render-state block (offsets +0x18..+0x57 from record base). Sets two PsyQ POLY_F3 prim-type tags (0x20) at +0x41 and +0x4b, full-bright RGB intensities (0xff) at +0x43/+0x4a/+0x52/+0x53, fade level 0x7f at +0x54, default counters 0x10 at +0x50 + 4 at +0x47 + 1 at +0x3f, and clears byte yaw/pitch/roll at +0x44..+0x46 plus all state words at +0x18/+0x1c/+0x38/+0x4c. Callers: TickWorldBundleLoadStream (level loader, M09) + DragonRescue_Update. */
 void InitActorRenderDefaults(Actor *actor);
@@ -1986,7 +1986,7 @@ int LerpAngle8(int to, int from, unsigned char frac);
 int StepAndLerpAngle8(int to, int from, int maxStep, int frac);
 
 /* 0x800381e8: True when the actor's yaw byte (+0x46) is within `threshold` of the bearing to Spyro. */
-int IsActorFacingSpyro(int *e, int threshold);
+int IsActorFacingSpyro(Actor *actor, int threshold);
 
 /* 0x80038250: Ray-march occlusion probe from g_anSpyroWorldPos toward a point; the Spyro-sourced sibling of CheckLineOfSightSegment. */
 unsigned int CheckSpyroLineOfSightTo(int *target);

@@ -7,29 +7,29 @@
    words cleared, otBias 4, renderList 0x20, cullRadius 0x10, group, visZone,
    updateDist and dropKind 0xFF (visZone 0xFF = always drawn, updateDist the
    widest activation radius, dropKind the random gem roll) and voiceRow 0x7F. */
-void InitActorRenderDefaults(Actor *a) {
-  a->cullRadius = 0x10;
-  a->updateDist = 0xff;
-  a->otBias = 4;
-  a->nextFrame = 1;
-  a->mode = 0;
-  a->subMode = 0;
-  a->anim = 0;
-  a->nextAnim = 0;
-  a->frame = 0;
-  a->frameProgress = 0;
-  a->frameRate = 0x20;
-  a->group = 0xff;
-  a->visZone = 0xff;
-  a->dropKind = 0xff;
-  a->flags = 0;
-  a->rotX = 0;
-  a->rotY = 0;
-  a->rotZ = 0;
-  a->groundCode = 0;
-  a->scale = 0;
-  a->voiceRow = VOICE_ROW_NONE;
-  a->floorOffset = 0;
-  a->renderList = 0x20;
-  *(int *)&a->tint0 = 0;
+void InitActorRenderDefaults(Actor *actor) {
+  actor->cullRadius = 0x10;
+  actor->updateDist = 0xff;
+  actor->otBias = 4;
+  actor->nextFrame = 1;
+  actor->mode = 0;
+  actor->subMode = 0;
+  actor->anim = 0;
+  actor->nextAnim = 0;
+  actor->frame = 0;
+  actor->frameProgress = 0;
+  actor->frameRate = 0x20;
+  actor->group = 0xff;
+  actor->visZone = 0xff;
+  actor->dropKind = 0xff;
+  actor->flags = 0;
+  actor->rotX = 0;
+  actor->rotY = 0;
+  actor->rotZ = 0;
+  actor->groundCode = 0;
+  actor->scale = 0;
+  actor->voiceRow = VOICE_ROW_NONE;
+  actor->floorOffset = 0;
+  actor->renderList = 0x20;
+  *(int *)&actor->tint0 = 0;
 }
