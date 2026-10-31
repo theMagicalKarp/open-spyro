@@ -366,7 +366,9 @@ typedef struct DragonStatueState {
   int facing;   /* 0x1C respawn heading when there is no partner */
   int partner; /* 0x20 actor index of the other door half, -1 = none */
   int reward;  /* 0x24 */
-  char pad28[0x1C];
+  char pad28[0x10];
+  int dragonName; /* 0x38 g_apDragonNames index (DrawDragonRescuedBanner) */
+  char pad3C[0x8];
   int phase; /* 0x44 open animation phase */
   int rotX;  /* 0x48 rest pose */
   int rotY;  /* 0x4C */

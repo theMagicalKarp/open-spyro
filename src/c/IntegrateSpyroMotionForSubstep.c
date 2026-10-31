@@ -1521,7 +1521,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     obj = ((int **)g_pScriptedCameraActor)[0];
     obj2 = obj;
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
-    SubtractVector(vA0, (int *)g_pScriptedCameraActor + 3, &SPY[0]);
+    SubtractVector(vA0, &g_pScriptedCameraActor->posX, &SPY[0]);
     dist = VectorLength(vA0, VEC_LEN_XY);
     ang = ArcTan2(vA0[0], vA0[1], 1);
     dt = (g_nSpyroSubstate == 1 ? -g_nSpyroTurnRateAccum
