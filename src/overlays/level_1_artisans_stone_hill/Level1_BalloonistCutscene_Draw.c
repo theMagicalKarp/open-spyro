@@ -69,7 +69,7 @@ void Level1_BalloonistCutscene_Draw(void) {
       BuildTextSprites(title, titlePos, titleColor, 0x12, 0xB);
       for (cursor -= ACTOR_SIZE, titlePhase = 0; cursor >= g_pSpriteRecordWriteCursor;
            cursor -= ACTOR_SIZE, titlePhase += 1) {
-        ((unsigned char *)cursor)[0x46] =
+        ((Actor *)cursor)->rotZ =
             g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + titlePhase * 0xC) & 0xFF] >> 8;
       }
     }
@@ -97,7 +97,7 @@ void Level1_BalloonistCutscene_Draw(void) {
         }
         for (pageCursor -= ACTOR_SIZE, pagePhase = 0; pageCursor >= g_pSpriteRecordWriteCursor;
              pageCursor -= ACTOR_SIZE, pagePhase += 1) {
-          ((unsigned char *)pageCursor)[0x46] =
+          ((Actor *)pageCursor)->rotZ =
               g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + pagePhase * 0xC) & 0xFF] >> 8;
         }
         if (g_nActorCutsceneSubstate[1] >= 0x50) {
