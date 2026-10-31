@@ -400,6 +400,8 @@ enum ActorType {
   ACTOR_TYPE_SWAYING_DEBRIS = 502, /* level 3: bouncing debris that sways as it falls (BounceState) */
   ACTOR_TYPE_HAZARD2_ENTER_FX = 507, /* g_anHazardEnterSpawnType[2]; level 32 also spawns it where a knocked actor lands on ground surface 1..2 */
   ACTOR_TYPE_HAZARD2_DEATH_FX = 508, /* g_anHazardTimeoutSpawnType[2] */
+  ACTOR_TYPE_RESCUED_DRAGON = 510, /* the freed dragon DragonRescue_Update puts in the statue's place (g_pDragonRescueStatueActor) */
+  ACTOR_TYPE_RESCUE_SPYRO = 511, /* Spyro's stand-in during the rescue cutscene (g_pDragonRescueSpyroMirrorActor) */
 };
 
 /* Text glyph types: BuildTextSprites / BuildTextSpriteChain map '0'..'9' and

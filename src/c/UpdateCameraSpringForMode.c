@@ -329,7 +329,7 @@ void UpdateCameraSpringForMode(void) {
       unsigned char *pad;
 
       LoadCameraTargetAnglesFromMode();
-      pad = g_pPadSubstepState;
+      pad = (unsigned char *)g_pPadSubstepState;
       if (((PadSubstep *)pad)->padType == 3 &&
           (((PadSubstep *)pad)->analog & 0xFFFF0000) != 0x7F7F0000) {
         g_anCameraScriptStickIntegrator[0] += (pad[0x16] - 0x7F) >> 1;

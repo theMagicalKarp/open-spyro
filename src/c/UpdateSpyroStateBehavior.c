@@ -5,6 +5,7 @@
 #include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "pad.h"
 #include "pad_buttons.h"
 #include "sdata.h"
 #include "spyro_block.h"
@@ -630,7 +631,7 @@ void UpdateSpyroStateBehavior(void) {
         ChangeSpyroState(SPYRO_ST_FALL);
         break;
       }
-      pad = ((int *)g_pPadSubstepState)[1];
+      pad = g_pPadSubstepState->held;
       if (pad & 8) {
         g_nSpyroSubstate = 1;
       } else if (pad & 4) {
@@ -997,7 +998,7 @@ void UpdateSpyroStateBehavior(void) {
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
         ChangeSpyroState(SPYRO_ST_FALL);
       } else {
-        int pad = ((int *)g_pPadSubstepState)[1];
+        int pad = g_pPadSubstepState->held;
 
         if (pad & 8) {
           g_nSpyroSubstate = 1;
@@ -1039,7 +1040,7 @@ void UpdateSpyroStateBehavior(void) {
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
         ChangeSpyroState(SPYRO_ST_FALL);
       } else {
-        int pad = ((int *)g_pPadSubstepState)[1];
+        int pad = g_pPadSubstepState->held;
 
         if (pad & 8) {
           SPY[SPY_SUBSTATE] = 1;
@@ -1083,7 +1084,7 @@ void UpdateSpyroStateBehavior(void) {
       if (d - g_nSpyroFloorReferenceZ > 0x200) {
         ChangeSpyroState(SPYRO_ST_FALL);
       } else {
-        int pad = ((int *)g_pPadSubstepState)[1];
+        int pad = g_pPadSubstepState->held;
 
         if (pad & 8) {
           SPY[SPY_SUBSTATE] = 1;

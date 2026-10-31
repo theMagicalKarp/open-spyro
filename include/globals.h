@@ -606,7 +606,7 @@ extern int g_nSubMenuScrollOffset;           /* 0x800757cc */
 extern int g_nPulseRumbleTimer;              /* 0x800757d0 */
 extern uint g_dwActorMeshFadeColor;          /* 0x800757d4 */
 extern int g_nGamestate;                     /* 0x800757d8 */
-extern void *g_pPadSubstepState;             /* 0x800757e0 */
+extern struct PadSubstep *g_pPadSubstepState; /* 0x800757e0: this substep's g_anPadSubstepRing entry (pad.h) */
 extern void *g_pCollisionHitActor;           /* 0x800757e4 */
 extern int g_nGameOverLevelIntroIndex;       /* 0x800757e8 */
 extern unsigned short **g_pLevelPickupTableEntries; /* 0x800757f8: per pickup group, its actor-id list (bit 15 marks the last) */
@@ -799,8 +799,8 @@ extern int g_nDragonRescueCameraStartZ;                    /* 0x800770a8 */
 extern int g_nDragonRescueCameraTargetYaw;                 /* 0x800770ac */
 extern int g_nDragonRescueCameraTargetRadius;              /* 0x800770b0 */
 extern int g_nDragonRescueCameraTargetZ;                   /* 0x800770b4 */
-extern void *g_pDragonRescueStatueActor;                   /* 0x800770b8 */
-extern void *g_pDragonRescueSpyroMirrorActor;              /* 0x800770bc */
+extern struct Actor *g_pDragonRescueStatueActor;           /* 0x800770b8: the freed dragon (ACTOR_TYPE_RESCUED_DRAGON) */
+extern struct Actor *g_pDragonRescueSpyroMirrorActor;      /* 0x800770bc: Spyro's stand-in (ACTOR_TYPE_RESCUE_SPYRO) */
 extern struct Actor *g_pDragonRescueSourceActor;           /* 0x800770c0: the dragon statue being rescued (BeginDragonRescue) */
 extern int g_anWorldLightDirVec[6];                     /* 0x800770c8 */
 extern byte g_abBillboardBasisVectors[18];              /* 0x800770e0 */

@@ -451,7 +451,7 @@ void DragonRescue_Update(void) {
         OPAQUE_COPY(five, 5);
         GB[24] = (int)AllocActorRecordSlot();
         InitActorRenderDefaults((void *)GB[24]);
-        ACTOR_RAW(STATUE, short, type) = 0x1FE;
+        ACTOR_RAW(STATUE, short, type) = ACTOR_TYPE_RESCUED_DRAGON;
         CopyVector(&((Actor *)GB[24])->posX, &SRC->posX);
         {
           Actor *s = SRC;
@@ -469,7 +469,7 @@ void DragonRescue_Update(void) {
         InsertActorIntoSpatialGrid((void *)GB[24]);
         g_pDragonRescueSpyroMirrorActor = AllocActorRecordSlot();
         InitActorRenderDefaults(g_pDragonRescueSpyroMirrorActor);
-        ACTOR_RAW(MIRROR, short, type) = 0x1FF;
+        ACTOR_RAW(MIRROR, short, type) = ACTOR_TYPE_RESCUE_SPYRO;
         CopyVector(&MIRROR->posX, g_anSpyroWorldPos);
         MIRROR->otBias = five;
         InsertActorIntoSpatialGrid(MIRROR);
@@ -693,7 +693,7 @@ void DragonRescue_Update(void) {
       g_nDragonRescueSubstate = 6;
       GB[5] = 0;
       g_bHudDragonRollPhase = 0;
-      CopyVector((int *)ang, &((Actor *)g_pDragonRescueStatueActor)->posX);
+      CopyVector((int *)ang, &g_pDragonRescueStatueActor->posX);
       ((int *)ang)[2] += 0x40;
       ((void (*)(int, int, int *, int))g_pfnLevelEmitParticles)(
           0x20, EMIT_RESCUE_SWIRL, (int *)ang, 0);

@@ -4,6 +4,7 @@
 #include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "pad.h"
 #include "sdata.h"
 #include "spyro_block.h"
 #include "spyro_state.h"
@@ -20,7 +21,6 @@ SDATA(g_pSpyroContactActor, 4);
 /* One view of the Spyro record from its world position (0x80078a58). */
 
 #define PADB ((unsigned char *)g_pPadSubstepState)
-#define PADW ((int *)g_pPadSubstepState)
 #define RAMP ((signed char *)g_abSpyroEulerRateRampSigned)
 
 #define PARTICLE_SPAWN(a, b, c, d)                                             \
@@ -55,19 +55,19 @@ static inline int *Opaque(int *p) {
 
 /* Analog stick (or d-pad) as signed x/y in -0x7F..0x7F. */
 #define READ_STICK(x, y)                                                       \
-  if (PADW[4] != 0) {                                                          \
+  if (g_pPadSubstepState->stickActive != 0) {                                  \
     x = PADB[0x16] - 0x7F;                                                     \
     y = 0x7F - PADB[0x17];                                                     \
   } else {                                                                     \
-    if (PADW[1] & 0x1000) {                                                    \
+    if (g_pPadSubstepState->held & 0x1000) {                                   \
       y = 0x7F;                                                                \
     } else {                                                                   \
-      y = (PADW[1] & 0x4000) ? -0x7F : 0;                                      \
+      y = (g_pPadSubstepState->held & 0x4000) ? -0x7F : 0;                     \
     }                                                                          \
-    if (PADW[1] & 0x2000) {                                                    \
+    if (g_pPadSubstepState->held & 0x2000) {                                   \
       x = 0x7F;                                                                \
     } else {                                                                   \
-      x = (PADW[1] & 0x8000) ? -0x7F : 0;                                      \
+      x = (g_pPadSubstepState->held & 0x8000) ? -0x7F : 0;                     \
     }                                                                          \
   }
 
@@ -195,7 +195,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
   int t;
   int *sp;
 
-  g_pPadSubstepState = &g_anPadSubstepRing[substep * 6];
+  g_pPadSubstepState = (PadSubstep *)&g_anPadSubstepRing[substep * 6];
   t = g_nSpyroStateTimer + substep;
   if (g_nGamestate == GS_GAMEPLAY && g_nActiveLevelId == LEVEL_GNASTYS_LOOT &&
       g_nSpyroAirborneFrames == 0) {
@@ -416,7 +416,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       }
     }
     if (t < 0xD && g_nSpyroSubstate == 0 &&
-        ((PADW[1] & 0x40) || g_bSpyroJumpHoldForced != 0)) {
+        ((g_pPadSubstepState->held & 0x40) || g_bSpyroJumpHoldForced != 0)) {
       int c;
       int v;
 
@@ -708,16 +708,16 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         register int nx asm("$17");
         register int *sp asm("$21");
 
-        if (PADW[4] != 0) {
+        if (g_pPadSubstepState->stickActive != 0) {
           x = PADB[0x16] - 0x7F;
           y = 0x7F - PADB[0x17];
         } else {
-          if (PADW[1] & 0x1000) {
+          if (g_pPadSubstepState->held & 0x1000) {
             g_nSpyroMotionAux += 0x10;
             if (g_nSpyroMotionAux >= 0x80) {
               g_nSpyroMotionAux = 0x7F;
             }
-          } else if (PADW[1] & 0x4000) {
+          } else if (g_pPadSubstepState->held & 0x4000) {
             g_nSpyroMotionAux -= 0x10;
             if (g_nSpyroMotionAux < -0x7F) {
               g_nSpyroMotionAux = -0x7F;
@@ -733,12 +733,12 @@ void IntegrateSpyroMotionForSubstep(int substep) {
             g_nSpyroMotionAux += x;
           }
           y = g_nSpyroMotionAux;
-          if (PADW[1] & 0x2000) {
+          if (g_pPadSubstepState->held & 0x2000) {
             g_nSpyroTurnRateAccum += 0x10;
             if (g_nSpyroTurnRateAccum >= 0x80) {
               g_nSpyroTurnRateAccum = 0x7F;
             }
-          } else if (PADW[1] & 0x8000) {
+          } else if (g_pPadSubstepState->held & 0x8000) {
             g_nSpyroTurnRateAccum -= 0x10;
             if (g_nSpyroTurnRateAccum < -0x7F) {
               g_nSpyroTurnRateAccum = -0x7F;
@@ -1620,7 +1620,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     int *vel;
 
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
-    if (PADW[4] != 0) {
+    if (g_pPadSubstepState->stickActive != 0) {
       g_nSpyroBodyYawStep = (0x7F - PADB[0x16]) >> 1;
       if (g_nSpyroBodyYawStep < RAMP[0]) {
         g_nSpyroBodyYawStep = RAMP[0];
@@ -1629,14 +1629,14 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       }
       a = g_nSpyroBodyYawStep;
     } else {
-      if (PADW[1] & 0x8000) {
+      if (g_pPadSubstepState->held & 0x8000) {
         if (g_nSpyroBodyYawStep < 0) {
           g_nSpyroBodyYawStep = 0;
         }
         if (g_nSpyroBodyYawStep < 6) {
           g_nSpyroBodyYawStep++;
         }
-      } else if (PADW[1] & 0x2000) {
+      } else if (g_pPadSubstepState->held & 0x2000) {
         if (g_nSpyroBodyYawStep > 0) {
           g_nSpyroBodyYawStep = 0;
         }
