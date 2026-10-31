@@ -16,6 +16,11 @@
 /* Icon actor record at byte offset `o` (slot * 0x58) of g_abHudIconActorRecords. */
 #define HUD_ICON(o) ((Actor *)((char *)g_abHudIconActorRecords + (o)))
 
+/* Icon actor record `slot` (a constant slot folds to the same address). */
+#define HUD_ICON_SLOT(slot) HUD_ICON((slot) * ACTOR_SIZE)
+#define HUD_SLOT_BUTTERFLY 10 /* the sparx-food butterflies are laid out around it */
+#define HUD_SLOT_KEY 11       /* the level key icon (ACTOR_TYPE_KEY) */
+
 /* RECT at byte offset `off` (slot * 8) of a HUD rect table
  * (g_anHudSpriteRects, g_anHudDigitRestRects). */
 #define HUD_RECT(tbl, off) ((RECT *)((char *)(tbl) + (off)))

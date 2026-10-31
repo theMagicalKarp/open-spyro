@@ -665,7 +665,7 @@ void DragonRescue_Update(void) {
     AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
     i = 0;
     done = (int)g_anHudRollInStepTable; /* shares s4 with case 4 */
-    icon = &HUD_ICON(5 * ACTOR_SIZE)->posY;
+    icon = &HUD_ICON_SLOT(5)->posY;
     k = 0;
     off = 0;
     TickSpyroAnimLayer1();
@@ -738,7 +738,7 @@ void DragonRescue_Update(void) {
       int off;
 
       n = 0;
-      icon = &HUD_ICON(5 * ACTOR_SIZE)->posY;
+      icon = &HUD_ICON_SLOT(5)->posY;
       j = 0;
       off = 0;
     roll_out:
