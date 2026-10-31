@@ -426,26 +426,6 @@ enum ActorType {
 
 /* SpawnActorDeathDrop's `kind`: how a thrown drop leaves its source. Rolled
  * extra lives, butterflies and Sparx ignore it. */
-/* ->subMode of a collectible (extra life, Sparx food, gems; CollectibleState),
- * as the level UpdateActors clones step it. */
-enum CollectSubMode {
-  COLLECT_SETTLE = 0, /* fresh: sample the floor normal, face along it, then rest */
-  COLLECT_REST = 1,   /* on the ground; calls Sparx over when Spyro is near */
-  COLLECT_BOUNCE = 2, /* knocked loose: arcs and bounces until it settles */
-  COLLECT_HOMING = 3, /* pulled toward Spyro (fetched, or a DROP_TUMBLE), then collected */
-  COLLECT_INERT = 4,  /* skipped entirely */
-};
-
-/* Sparx's ->subMode while he has a target (SparxState.target); with none he
- * hovers beside Spyro. */
-enum SparxSubMode {
-  SPARX_SUB_CHASE = 0,    /* closing in on a butterfly (set by the butterfly) */
-  SPARX_SUB_EAT = 1,      /* caught it: +1 health, despawn the butterfly */
-  SPARX_SUB_EAT_DONE = 2, /* back to the hover animation, drop the target */
-  SPARX_SUB_FETCH = 4,    /* flying to a pickup, which he sends COLLECT_HOMING */
-  SPARX_SUB_PARKED = 99,  /* takes no targets (no writer in the C sources) */
-};
-
 enum DropThrow {
   DROP_HOP = 0,             /* lands on the source with a low hop */
   DROP_SCATTER = 1,         /* lands at a random point within 0x200 of the source */
@@ -498,5 +478,7 @@ typedef struct WanderBlock {
   unsigned char contactCooldown; /* 0x1D moves ignore the contact group while set */
   short weave;                   /* 0x1E current weave offset */
 } WanderBlock; /* 0x20 */
+
+#include "actor_modes.h"
 
 #endif /* OPEN_SPYRO_ACTOR_TYPE_H */

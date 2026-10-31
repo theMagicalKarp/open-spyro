@@ -345,10 +345,10 @@ void Level23_UpdateActors(void) {
 
       st = (ShotState *)actor->state;
 
-      if (actor->mode != 0 && actor->mode < 5) {
+      if (actor->mode != EGG_CARRIED && actor->mode < EGG_COLLECTED) {
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         if (SPY.state != SPYRO_ST_IDLE && SPY.state != SPYRO_ST_CHARGE_BONK) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
       }
       if ((unsigned int)(actor->mode - 2) < 3) {
@@ -357,7 +357,7 @@ void Level23_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 1:
+      case EGG_RELEASED:
         g_nGameplayBlocked = 1;
         VectorToSVectorShr2(st->from, &actor->posX);
         st->heading =
@@ -371,7 +371,7 @@ void Level23_UpdateActors(void) {
         actor->mode = actor->mode + 1;
         break;
 
-      case 2:
+      case EGG_SPIRAL_UP:
         st->phase = st->phase + g_nFrameStep;
         if (st->phase < 0x80) {
           int step = g_nFrameStep << 2;
@@ -408,11 +408,11 @@ void Level23_UpdateActors(void) {
           actor->mode = actor->mode + 1;
         }
         if ((g_dwPadPressed & PAD_CROSS) != 0) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
         break;
 
-      case 3:
+      case EGG_TO_SPYRO:
         st->phase = st->phase + g_nFrameStep;
         if (st->phase < 0x40) {
           SVectorToVectorShl2(svB, st->from);
@@ -434,11 +434,11 @@ void Level23_UpdateActors(void) {
           actor->mode = actor->mode + 1;
         }
         if ((g_dwPadPressed & PAD_CROSS) != 0) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
         break;
 
-      case 4:
+      case EGG_SPIRAL_DOWN:
         st->phase = st->phase + g_nFrameStep;
         if (st->phase < 0x80) {
           int step = g_nFrameStep << 2;
@@ -456,11 +456,11 @@ void Level23_UpdateActors(void) {
           actor->mode = actor->mode + 1;
         }
         if ((g_dwPadPressed & PAD_CROSS) != 0) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
         break;
 
-      case 5:
+      case EGG_COLLECTED:
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);

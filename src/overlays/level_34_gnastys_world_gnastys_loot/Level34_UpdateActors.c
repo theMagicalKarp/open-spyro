@@ -572,7 +572,7 @@ void Level34_UpdateActors(void) {
       if (phase != 0 && phase < 5) {
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         if (g_nSpyroState != SPYRO_ST_IDLE && g_nSpyroState != SPYRO_ST_CHARGE_BONK) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
       }
 
@@ -582,7 +582,7 @@ void Level34_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 1:
+      case EGG_RELEASED:
         g_nGameplayBlocked = 1;
         VectorToSVectorShr2(st->centre, &actor->posX);
         st->angle =
@@ -596,7 +596,7 @@ void Level34_UpdateActors(void) {
         actor->mode += 1;
         break;
 
-      case 2: {
+      case EGG_SPIRAL_UP: {
         st->phase += g_nFrameStep;
 
         if (st->phase < 0x80) {
@@ -634,12 +634,12 @@ void Level34_UpdateActors(void) {
           actor->mode += 1;
         }
         if (g_dwPadPressed & PAD_CROSS) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
         break;
       }
 
-      case 3: {
+      case EGG_TO_SPYRO: {
         st->phase += g_nFrameStep;
 
         if (st->phase < 0x40) {
@@ -662,12 +662,12 @@ void Level34_UpdateActors(void) {
           actor->mode += 1;
         }
         if (g_dwPadPressed & PAD_CROSS) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
         break;
       }
 
-      case 4: {
+      case EGG_SPIRAL_DOWN: {
         st->phase += g_nFrameStep;
 
         if (st->phase < 0x80) {
@@ -686,12 +686,12 @@ void Level34_UpdateActors(void) {
           actor->mode += 1;
         }
         if (g_dwPadPressed & PAD_CROSS) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
         break;
       }
 
-      case 5: {
+      case EGG_COLLECTED: {
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);

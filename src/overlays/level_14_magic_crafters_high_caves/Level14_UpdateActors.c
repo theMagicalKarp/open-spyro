@@ -938,7 +938,7 @@ void Level14_UpdateActors(void) {
         if (st->egg != 0) {
           g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
           if (actor->nextAnim == 3 && actor->nextFrame >= 5) {
-            st->egg->mode = 1;
+            st->egg->mode = EGG_RELEASED;
             st->egg->otBias = 4;
             st->egg = 0;
           }
@@ -1269,7 +1269,7 @@ void Level14_UpdateActors(void) {
       if (phase != 0 && phase < 5) {
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         if (g_nSpyroState != SPYRO_ST_IDLE && g_nSpyroState != SPYRO_ST_CHARGE_BONK) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
       }
 
@@ -1279,7 +1279,7 @@ void Level14_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 1:
+      case EGG_RELEASED:
         g_nGameplayBlocked = 1;
         VectorToSVectorShr2(st->centre, &actor->posX);
         st->angle =
@@ -1293,7 +1293,7 @@ void Level14_UpdateActors(void) {
         actor->mode += 1;
         break;
 
-      case 2: {
+      case EGG_SPIRAL_UP: {
         st->phase += g_nFrameStep;
 
         if (st->phase < 0x80) {
@@ -1331,12 +1331,12 @@ void Level14_UpdateActors(void) {
           actor->mode += 1;
         }
         if (g_dwPadPressed & PAD_CROSS) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
         break;
       }
 
-      case 3: {
+      case EGG_TO_SPYRO: {
         st->phase += g_nFrameStep;
 
         if (st->phase < 0x40) {
@@ -1359,12 +1359,12 @@ void Level14_UpdateActors(void) {
           actor->mode += 1;
         }
         if (g_dwPadPressed & PAD_CROSS) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
         break;
       }
 
-      case 4: {
+      case EGG_SPIRAL_DOWN: {
         st->phase += g_nFrameStep;
 
         if (st->phase < 0x80) {
@@ -1383,12 +1383,12 @@ void Level14_UpdateActors(void) {
           actor->mode += 1;
         }
         if (g_dwPadPressed & PAD_CROSS) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
         break;
       }
 
-      case 5: {
+      case EGG_COLLECTED: {
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
@@ -2433,24 +2433,24 @@ void Level14_UpdateActors(void) {
       Actor *tgtB = &g_pActorListBase[st->anchor];
 
       switch (actor->mode) {
-      case 0: {
+      case SAVEHOST_WAIT_AWAY: {
         actor->collision = 0;
         if (ApproxDist2D(&tgtB->posX, &SPY.posX) > 2560) {
-          actor->mode = 1;
+          actor->mode = SAVEHOST_WAIT_ARMED;
         }
         break;
       }
 
-      case 1: {
+      case SAVEHOST_WAIT_ARMED: {
         if (tgtA->mode >= 0x80u) {
-          actor->mode = 2;
+          actor->mode = SAVEHOST_HIDDEN;
           st->timer = 16;
           st->baseZ = actor->posZ;
         }
         break;
       }
 
-      case 2: {
+      case SAVEHOST_HIDDEN: {
         if (st->timer != 0) {
           st->timer--;
         } else {
@@ -2465,7 +2465,7 @@ void Level14_UpdateActors(void) {
                                              SPY.posY - actor->posY, 0) -
                                128;
                 actor->cullRadius = 0x20;
-                actor->mode = 3;
+                actor->mode = SAVEHOST_POP_IN;
                 actor->scale = 0x60;
 
                 g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, (void *)0xC);
@@ -2481,19 +2481,19 @@ void Level14_UpdateActors(void) {
         break;
       }
 
-      case 3: {
+      case SAVEHOST_POP_IN: {
         if (actor->scale >= 0x21) {
           actor->scale -= 4;
           actor->rotZ = actor->rotZ + 8;
         } else {
-          actor->mode = 4;
+          actor->mode = SAVEHOST_HOVER;
           st->timer = 0;
           st->wanderTimer = 30;
         }
         break;
       }
 
-      case 4: {
+      case SAVEHOST_HOVER: {
         st->timer++;
         actor->posZ = st->baseZ + (LookupCosine(st->timer << 7) >> 6);
 
@@ -2502,7 +2502,7 @@ void Level14_UpdateActors(void) {
             ABS2(tgtB->posZ - tgtB->floorOffset - SPY.posZ) < 512) {
 
           if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_TEETER) && SPY.stateTimer > 0) {
-            actor->mode = 6;
+            actor->mode = SAVEHOST_POP_OUT;
             st->prompted = 1;
             BeginSaveMenuFromWorld(actor);
             break;
@@ -2511,7 +2511,7 @@ void Level14_UpdateActors(void) {
 
         if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x2400 ||
             (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) > 0xC00)) {
-          actor->mode = 6;
+          actor->mode = SAVEHOST_POP_OUT;
         } else {
           st->wanderTimer--;
           if (st->wanderTimer == 0) {
@@ -2522,7 +2522,7 @@ void Level14_UpdateActors(void) {
 
             CopyVector(st->wanderTo, &tgtB->posX);
 
-            actor->mode = 5;
+            actor->mode = SAVEHOST_WANDER;
 
             st->wanderTo[0] -= (LookupCosine(finalAngle * 0x10) * baseDistance) >> 12;
             st->wanderTo[1] -= (LookupSine(finalAngle * 0x10) * baseDistance) >> 12;
@@ -2534,7 +2534,7 @@ void Level14_UpdateActors(void) {
         }
         break;
       }
-      case 5: {
+      case SAVEHOST_WANDER: {
         st->timer++;
         actor->posZ = st->baseZ + (LookupCosine(st->timer << 7) >> 6);
 
@@ -2543,7 +2543,7 @@ void Level14_UpdateActors(void) {
             ABS2(tgtB->posZ - tgtB->floorOffset - SPY.posZ) < 512) {
 
           if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_TEETER) && SPY.stateTimer > 0) {
-            actor->mode = 6;
+            actor->mode = SAVEHOST_POP_OUT;
             st->prompted = 1;
             BeginSaveMenuFromWorld(actor);
             break;
@@ -2552,7 +2552,7 @@ void Level14_UpdateActors(void) {
 
         if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x2800 ||
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) >= 0xC01) {
-          actor->mode = 6;
+          actor->mode = SAVEHOST_POP_OUT;
         } else {
           int angleDiff;
           int cosWeight1;
@@ -2577,7 +2577,7 @@ void Level14_UpdateActors(void) {
           EncodeCachedVecToActorDirCode(actor);
 
           if (st->wanderTimer == 0x10) {
-            actor->mode = 4;
+            actor->mode = SAVEHOST_HOVER;
             st->wanderTimer = (GetRandomU32() & 0x1F) + 0x1E;
           }
         }
@@ -2585,14 +2585,14 @@ void Level14_UpdateActors(void) {
         break;
       }
 
-      case 6: {
+      case SAVEHOST_POP_OUT: {
         if (actor->scale < 96) {
           actor->scale += 4;
           actor->rotZ = actor->rotZ + 8;
         } else {
           actor->cullRadius = 0;
           actor->drawn = 0;
-          actor->mode = 2;
+          actor->mode = SAVEHOST_HIDDEN;
           st->timer = 16;
 
           g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, (void *)0xC);
@@ -3320,16 +3320,16 @@ void Level14_UpdateActors(void) {
     case ACTOR_TYPE_DRAGON_STATUE: {
       RideState *st = (RideState *)actor->state;
 
-      if (actor->mode == 0) {
+      if (actor->mode == STATUE_INIT) {
         int padIdx = st->partner;
         if (padIdx != -1) {
           g_pActorListBase[padIdx].mode = 3;
         }
-        actor->mode = 1;
+        actor->mode = STATUE_IDLE;
         st->savedRotX = actor->rotX;
         st->savedRotY = actor->rotY;
         st->savedPosZ = actor->posZ;
-      } else if (actor->mode == 1) {
+      } else if (actor->mode == STATUE_IDLE) {
         st->phase += g_nFrameStep;
         if (st->phase > 256) {
           st->phase = 0;
@@ -3402,7 +3402,7 @@ void Level14_UpdateActors(void) {
               DespawnActorRecord(actor);
               continue;
             } else {
-              actor->mode = 2;
+              actor->mode = STATUE_RESCUING;
               actor->rotX = st->savedRotX;
               actor->rotY = st->savedRotY;
               actor->posZ = st->savedPosZ;

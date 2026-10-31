@@ -209,7 +209,7 @@ void SaveMenu_Update(void) {
           path = *(int **)actor;
           if (path[9] == -1 && path[6] != -1) {
             EndSaveMenuToWorld();
-            actor->mode = 2;
+            actor->mode = STATUE_RESCUING;
             actor->collision = 0;
             actor->gridCell = -1;
             BeginDragonRescue(actor);

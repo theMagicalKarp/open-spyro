@@ -610,7 +610,7 @@ void Level19_UpdateActors(void) {
       if (phase != 0 && phase < 5) {
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         if (g_nSpyroState != SPYRO_ST_IDLE && g_nSpyroState != SPYRO_ST_CHARGE_BONK) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
       }
 
@@ -620,7 +620,7 @@ void Level19_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 1:
+      case EGG_RELEASED:
         g_nGameplayBlocked = 1;
         VectorToSVectorShr2(st->centre, &actor->posX);
         st->angle =
@@ -634,7 +634,7 @@ void Level19_UpdateActors(void) {
         actor->mode += 1;
         break;
 
-      case 2: {
+      case EGG_SPIRAL_UP: {
         st->phase += g_nFrameStep;
 
         if (st->phase < 0x80) {
@@ -672,12 +672,12 @@ void Level19_UpdateActors(void) {
           actor->mode += 1;
         }
         if (g_dwPadPressed & PAD_CROSS) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
         break;
       }
 
-      case 3: {
+      case EGG_TO_SPYRO: {
         st->phase += g_nFrameStep;
 
         if (st->phase < 0x40) {
@@ -700,12 +700,12 @@ void Level19_UpdateActors(void) {
           actor->mode += 1;
         }
         if (g_dwPadPressed & PAD_CROSS) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
         break;
       }
 
-      case 4: {
+      case EGG_SPIRAL_DOWN: {
         st->phase += g_nFrameStep;
 
         if (st->phase < 0x80) {
@@ -724,12 +724,12 @@ void Level19_UpdateActors(void) {
           actor->mode += 1;
         }
         if (g_dwPadPressed & PAD_CROSS) {
-          actor->mode = 5;
+          actor->mode = EGG_COLLECTED;
         }
         break;
       }
 
-      case 5: {
+      case EGG_COLLECTED: {
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
@@ -1394,22 +1394,22 @@ void Level19_UpdateActors(void) {
       Actor *rider = &g_pActorListBase[st->anchor];
 
       switch (actor->mode) {
-      case 0:
+      case SAVEHOST_WAIT_AWAY:
         actor->collision = 0;
         if (ApproxDist2D(&rider->posX, &SPY.posX) > 0xA00) {
-          actor->mode = 1;
+          actor->mode = SAVEHOST_WAIT_ARMED;
         }
         continue;
 
-      case 1:
+      case SAVEHOST_WAIT_ARMED:
         if (trigger->mode >= ACTOR_MODE_DORMANT) {
-          actor->mode = 2;
+          actor->mode = SAVEHOST_HIDDEN;
           st->timer = 0x10;
           st->baseZ = actor->posZ;
         }
         break;
 
-      case 2:
+      case SAVEHOST_HIDDEN:
         if (st->timer != 0) {
           st->timer -= 1;
         } else {
@@ -1428,7 +1428,7 @@ void Level19_UpdateActors(void) {
                                              spy->posY - actor->posY, 0) -
                                0x80;
                 actor->cullRadius = 0x20;
-                actor->mode = 3;
+                actor->mode = SAVEHOST_POP_IN;
                 actor->scale = 0x60;
                 g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, at, (int *)0xC);
                 RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
@@ -1441,18 +1441,18 @@ void Level19_UpdateActors(void) {
         }
         break;
 
-      case 3:
+      case SAVEHOST_POP_IN:
         if (actor->scale >= 0x21) {
           actor->scale -= 4;
           actor->rotZ += 8;
         } else {
-          actor->mode = 4;
+          actor->mode = SAVEHOST_HOVER;
           st->timer = 0;
           st->wanderTimer = 0x1E;
         }
         break;
 
-      case 4: {
+      case SAVEHOST_HOVER: {
         int height;
         int drop;
         int close;
@@ -1466,7 +1466,7 @@ void Level19_UpdateActors(void) {
             (height = rider->posZ - rider->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
             (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
-          actor->mode = 6;
+          actor->mode = SAVEHOST_POP_OUT;
           st->prompted = 1;
           BeginSaveMenuFromWorld(actor);
           break;
@@ -1476,7 +1476,7 @@ void Level19_UpdateActors(void) {
             (height = actor->posZ - actor->floorOffset, drop = height - SPY.posZ,
              close = drop > 0 ? drop < 0xC01 : (SPY.posZ - height) < 0xC01,
              close == 0)) {
-          actor->mode = 6;
+          actor->mode = SAVEHOST_POP_OUT;
           break;
         }
 
@@ -1491,7 +1491,7 @@ void Level19_UpdateActors(void) {
           CopyVector(st->wanderTo, &rider->posX);
           aim &= 0xFF;
           aim *= 0x10;
-          actor->mode = 5;
+          actor->mode = SAVEHOST_WANDER;
           st->wanderTo[0] -= (LookupCosine(aim) * reach) >> 12;
           st->wanderTo[1] -= (LookupSine(aim) * reach) >> 12;
           st->faceYaw = ArcTan2(spy->posX - st->wanderTo[0],
@@ -1501,7 +1501,7 @@ void Level19_UpdateActors(void) {
         break;
       }
 
-      case 5: {
+      case SAVEHOST_WANDER: {
         int height;
         int drop;
 
@@ -1514,7 +1514,7 @@ void Level19_UpdateActors(void) {
             (height = rider->posZ - rider->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
             (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
-          actor->mode = 6;
+          actor->mode = SAVEHOST_POP_OUT;
           st->prompted = 1;
           BeginSaveMenuFromWorld(actor);
           break;
@@ -1523,7 +1523,7 @@ void Level19_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &spy->posX) >= 0x2801 ||
             (height = actor->posZ - actor->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop >= 0xC01 : (SPY.posZ - height) >= 0xC01)) {
-          actor->mode = 6;
+          actor->mode = SAVEHOST_POP_OUT;
           break;
         }
         {
@@ -1546,21 +1546,21 @@ void Level19_UpdateActors(void) {
           EncodeCachedVecToActorDirCode(actor);
 
           if (st->wanderTimer == 0x10) {
-            actor->mode = 4;
+            actor->mode = SAVEHOST_HOVER;
             st->wanderTimer = (GetRandomU32() & 0x1F) + 0x1E;
           }
         }
         break;
       }
 
-      case 6:
+      case SAVEHOST_POP_OUT:
         if (actor->scale < 0x60) {
           actor->scale += 4;
           actor->rotZ += 8;
         } else {
           actor->cullRadius = 0;
           actor->drawn = 0;
-          actor->mode = 2;
+          actor->mode = SAVEHOST_HIDDEN;
           st->timer = 0x10;
           g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, (int *)0xC);
           actor->groundCode &= ~ACTOR_GROUND_VALID;
@@ -2056,18 +2056,18 @@ void Level19_UpdateActors(void) {
       DragonStatueState *st = actor->state;
       int *at;
 
-      if (actor->mode == 0) {
+      if (actor->mode == STATUE_INIT) {
         if (st->partner != -1) {
           g_pActorListBase[st->partner].mode = 3;
         }
-        actor->mode = 1;
+        actor->mode = STATUE_IDLE;
         st->rotX = actor->rotX;
         st->rotY = actor->rotY;
         st->restZ = actor->posZ;
         break;
       }
 
-      if (actor->mode == 1) {
+      if (actor->mode == STATUE_IDLE) {
         st->phase += g_nFrameStep;
 
         if (st->phase >= 0x101) {
@@ -2149,7 +2149,7 @@ void Level19_UpdateActors(void) {
               continue;
             }
 
-            actor->mode = 2;
+            actor->mode = STATUE_RESCUING;
             actor->rotX = st->rotX;
             actor->rotY = st->rotY;
             actor->posZ = st->restZ;
