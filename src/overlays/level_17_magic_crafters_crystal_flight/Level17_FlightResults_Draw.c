@@ -164,7 +164,7 @@ void Level17_FlightResults_Draw(void)
     tv = f0 + bias;
     }
     }
-    g_pSpriteRecordBufferTop = tv;
+    g_pSpriteRecordBufferTop = (Actor *)tv;
     g_pSpriteRecordWriteCursor = (Actor *)tv;
     quad:
     {

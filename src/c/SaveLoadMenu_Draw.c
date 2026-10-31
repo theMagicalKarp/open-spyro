@@ -29,7 +29,8 @@ void SaveLoadMenu_Draw(void) {
   int i;
 
   if (g_pSpriteRecordBufferTop == g_pRenderScratchPrimTop) {
-    g_pSpriteRecordBufferTop = (char *)g_pPrimBufferWriteCursor + 0x1BA00;
+    g_pSpriteRecordBufferTop =
+        (Actor *)((char *)g_pPrimBufferWriteCursor + 0x1BA00);
     g_pSpriteRecordWriteCursor = g_pSpriteRecordBufferTop;
   }
   if (g_nSaveMenuMode == 1) {

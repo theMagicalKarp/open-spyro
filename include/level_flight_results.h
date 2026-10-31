@@ -20,7 +20,7 @@ extern char *g_pActiveFrameDrawEnv;
 extern unsigned char *g_pLevelSampleBankHeader;
 extern char *g_pPrimBufferLimit;
 extern char *g_pPrimBufferWriteCursor;
-extern char *g_pSpriteRecordBufferTop;
+extern struct Actor *g_pSpriteRecordBufferTop;
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
 extern int g_anFlightTargetTally;

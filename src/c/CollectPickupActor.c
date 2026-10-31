@@ -13,7 +13,7 @@ void CollectPickupActor(Actor *actor) {
 
   g_abGemTallyIconUvTable[g_nGemTallyIconCount & 0x1F] = actor->type;
   g_nGemTallyIconCount += 1;
-  if ((unsigned char *)actor == g_pLockedChestReward) {
+  if (actor == g_pLockedChestReward) {
     g_nLevelKeyState = 3;
   }
   RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

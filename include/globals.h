@@ -568,7 +568,7 @@ extern int g_nCdStallMarker;                 /* 0x800756e0 */
 extern void *g_pActorAuxPoolTop;             /* 0x800756e8 */
 extern int g_anSecondaryActorTexWords[2];    /* 0x800756f0 */
 extern int g_nReturningHomePhase;            /* 0x800756f8 */
-extern void *g_pSpriteRecordBufferTop;       /* 0x800756fc */
+extern struct Actor *g_pSpriteRecordBufferTop; /* 0x800756fc: top of this frame's sprite-record queue (g_pSpriteRecordWriteCursor grows down from it) */
 extern int g_nCreditsMode;               /* 0x80075704 */
 extern int g_nGameplayBlocked;               /* 0x8007570c */
 extern struct Actor *g_pSpriteRecordWriteCursor; /* 0x80075710: sprite-record queue tail; Actor-sized records, grows down from g_pSpriteRecordBufferTop */
@@ -1250,7 +1250,7 @@ extern int g_nLevelVortexSeen1; /* 0x80075670: a loot vortex (levels 33/34, Loot
 extern int g_nLevelVortexSeen2; /* 0x80075674: the same for seen 2 (g_nCutsceneId[2]) */
 extern int g_nLevelLoadUnreadWord; /* 0x80075698 */
 extern void (*g_pfnActorCutsceneSubstateUpdate)(void); /* 0x8007574c: per-level handler for the other 0xC substates (ApplyPerLevelGlobalsTable) */
-extern unsigned char *g_pLockedChestReward; /* 0x80075758 */
+extern struct Actor *g_pLockedChestReward; /* 0x80075758: the reward the opened locked chest dropped (key state 3 once collected) */
 extern int g_pCreditsScratchBuf; /* 0x80075768 */
 extern int g_bLevelUseShortReleaseAnim; /* 0x8007577c */
 extern struct Actor *g_pSpyroHomingTargetActor; /* 0x80075790: charge homing target (ChangeSpyroState) */
