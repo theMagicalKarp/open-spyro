@@ -2363,7 +2363,7 @@ void Level1_UpdateActors(void) {
           }
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
-        if (TickCountdownByFrameDelta(&st->t04, 4) != 0 &&
+        if (TickCountdownByFrameDelta(&st->hitCooldown, 4) != 0 &&
             ApproxDist2D(&actor->posX, &spy->posX) < 0x2000) {
           int height = actor->posZ - actor->floorOffset;
           int drop = height - SPY.posZ;
@@ -2429,10 +2429,10 @@ void Level1_UpdateActors(void) {
       case 5:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (g_nSpyroState == SPYRO_ST_KNOCKBACK) {
-          st->t04 = 0x8C;
+          st->hitCooldown = 0x8C;
         }
         if (g_nActorAnimDone != 0) {
-          if (st->t04 != 0) {
+          if (st->hitCooldown != 0) {
             ENTER_POSE4(actor, 8);
           }
           goto rear_pose;
@@ -2465,7 +2465,7 @@ void Level1_UpdateActors(void) {
         break;
 
       case 8:
-        if (actor->frame >= 0x1C && TickCountdownByFrameDelta(&st->t04, 4) != 0) {
+        if (actor->frame >= 0x1C && TickCountdownByFrameDelta(&st->hitCooldown, 4) != 0) {
           actor->frame = 0xF;
         }
       rear_wait:

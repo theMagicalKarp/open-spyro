@@ -3242,15 +3242,15 @@ void Level16_UpdateActors(void) {
         switch (st->phase) {
         case 0:
           actor->mode = 0x46;
-          st->p24 = 0;
+          st->tweenStep = 0;
           break;
         case 1:
           actor->mode = 0x50;
-          st->p24 = 0;
+          st->tweenStep = 0;
           break;
         case 2:
           actor->mode = 0x5A;
-          st->p24 = 0;
+          st->tweenStep = 0;
           break;
         }
         break;
@@ -3320,7 +3320,7 @@ void Level16_UpdateActors(void) {
         break;
 
       case 0x50:
-        if (TweenActorAlongPath(actor, st->path, st->p18, &st->p24, 0x20, 4) == 2) {
+        if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->tweenStep, 0x20, 4) == 2) {
           actor->mode = 0x51;
           actor->soundRange = 0;
           st->floorZ = actor->posZ + 0x578;
@@ -3382,7 +3382,7 @@ void Level16_UpdateActors(void) {
         break;
 
       case 0x5A:
-        if (TweenActorAlongPath(actor, st->path, st->p18, &st->p24, 0x20, 4) == 2) {
+        if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->tweenStep, 0x20, 4) == 2) {
           actor->mode = 0x5B;
           st->floorZ = actor->posZ + 0x578;
           st->path = st->paths[4];

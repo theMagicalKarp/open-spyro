@@ -1458,7 +1458,7 @@ void Level26_UpdateActors(void) {
         break;
 
       case 1:
-        if (TweenActorAlongPath(actor, st->path, st->p0C, &st->timer, 0x20, 4) == 2) {
+        if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->timer, 0x20, 4) == 2) {
           actor->mode = 2;
         }
         break;

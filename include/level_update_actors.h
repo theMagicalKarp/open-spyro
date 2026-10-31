@@ -560,7 +560,7 @@ typedef struct ShooterState {
   int heading;   /* 0x1C */
   int speed;     /* 0x20 */
   int blinks;    /* 0x24 */
-  int u28;       /* 0x28 */
+  int pad28;       /* 0x28 */
   int turn;      /* 0x2C */
   int range;     /* 0x30 */
   int spawned;   /* 0x34 */
@@ -918,8 +918,8 @@ typedef struct BlowhardState {
   char pad00[0x10];
   int chunkAnim;           /* 0x10 world chunk-anim handle (GetWorldChunkAnimState) */
   PathData *path;     /* 0x14 path in use */
-  int p18[3];         /* 0x18 */
-  int p24;            /* 0x24 */
+  int tweenLeg[3];    /* 0x18 TweenActorAlongPath prev leg */
+  int tweenStep;       /* 0x24 TweenActorAlongPath step counter */
   int p28;            /* 0x28 */
   int p2C;            /* 0x2C */
   PathData *paths[5]; /* 0x30 */
@@ -1050,8 +1050,8 @@ typedef struct SnowballThrowerState {
   int turn4;      /* 0x18 */
   int knock;      /* 0x1C knock-back heading */
   int speed;      /* 0x20 knock-back speed */
-  int p24;        /* 0x24 */
-  int p28;        /* 0x28 */
+  int blockHeadingA; /* 0x24 SteerActorAroundPoint blocked heading */
+  int blockHeadingB; /* 0x28 SteerActorAroundPoint blocked heading */
   int throwT;     /* 0x2C */
 } SnowballThrowerState;
 
@@ -1063,7 +1063,7 @@ typedef struct {
 
 typedef struct RearState {
   int timer;   /* 0x00 idle-hop countdown */
-  int t04;     /* 0x04 */
+  int hitCooldown; /* 0x04 frames before it rears again after knocking Spyro back */
   int heading; /* 0x08 knockback heading */
   int speed;   /* 0x0C knockback speed */
   int spin;    /* 0x10 per-frame yaw while tumbling */
@@ -1460,7 +1460,7 @@ typedef struct FormationEscortState {
   int leader;     /* 0x00 index into g_pActorListBase */
   int partner;    /* 0x04 index into g_pActorListBase, -1 = none */
   PathData *path; /* 0x08 */
-  int p0C[3];     /* 0x0C */
+  int tweenLeg[3]; /* 0x0C TweenActorAlongPath prev leg */
   int timer;      /* 0x18 */
   int slot;       /* 0x1C place in the ring */
   int speed;      /* 0x20 */
