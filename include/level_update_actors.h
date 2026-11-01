@@ -834,7 +834,7 @@ typedef struct HelperState {
 /* Case 283 -- path guard. */
 typedef struct PathGuardState {
   PathData *path; /* 0x00 */
-  int flags;      /* 0x04 bit 1: on watch */
+  int flags;      /* 0x04 PATHGUARD_F_* */
   int dist;       /* 0x08 */
   int angle;      /* 0x0C heading offset */
   int timer;      /* 0x10 */
@@ -844,6 +844,10 @@ typedef struct PathGuardState {
   int speed;      /* 0x20 knock-back speed */
   int knock;      /* 0x24 knock-back heading */
 } PathGuardState;
+
+/* PathGuardState.flags. */
+#define PATHGUARD_F_RING 1 /* circles path node 0 opposite its partner */
+#define PATHGUARD_F_HOLD 2 /* saw Spyro: holds at `node`, throwing, until the timer runs out */
 
 /* Case 497 -- humming bell. */
 typedef struct HummingBellState {
@@ -1364,7 +1368,7 @@ typedef struct LootVortexState {
   unsigned char spark;  /* 0x03 0xFF = none */
   int chunkAnim;              /* 0x04 world chunk-anim handle (GetWorldChunkAnimState) */
   int pad[6];           /* 0x08 trigger volume */
-  int mode;             /* 0x20 */
+  int mode;             /* 0x20 LootVortexStage */
   int key;              /* 0x24 actor index */
   int target;           /* 0x28 actor index */
   int seen;             /* 0x2C 1/2 picks g_nLevelVortexSeen1/2 (read as g_nCutsceneId[seen]), 0 = none */

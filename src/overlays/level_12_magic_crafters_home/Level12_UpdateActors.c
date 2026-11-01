@@ -3891,7 +3891,7 @@ void Level12_UpdateActors(void) {
 
       switch (actor->mode) {
       case PATHGUARD_WALK:
-        if (st->flags & 2) {
+        if (st->flags & PATHGUARD_F_HOLD) {
           st->path->cur = st->node;
           if (ApproxDist2D(&actor->posX,
                             &st->path->nodes[st->path->cur].x) <= 0x100) {
@@ -3907,7 +3907,7 @@ void Level12_UpdateActors(void) {
               }
             }
             if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-              st->flags &= 1;
+              st->flags &= PATHGUARD_F_RING;
             }
             break;
           }
@@ -3919,13 +3919,13 @@ void Level12_UpdateActors(void) {
                        : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x800) {
               TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
               if (st->timer == 0 || --st->timer <= 0) {
-                st->flags |= 2;
+                st->flags |= PATHGUARD_F_HOLD;
                 ENTER_POSE(actor, PATHGUARD_THROW);
               }
               break;
             }
           }
-          if (st->flags == 1) {
+          if (st->flags == PATHGUARD_F_RING) {
             PathGuardState *ps = g_pActorListBase[st->partner].state;
 
             st->path->cur = 0;

@@ -1575,4 +1575,12 @@ enum PathRunnerRun {
   PRUN_SECOND = 1, /* drives goal flag 1 */
 };
 
+/* LootVortexState.mode (ACTOR_TYPE_LOOT_VORTEX; levels 33/34). */
+enum LootVortexStage {
+  LVORTEX_LOCKED = 0, /* hidden until its key's loot thief is beaten: OPEN (key carried) */
+  LVORTEX_OPEN = 1,   /* Spyro walks into its pad facing the target: ACTIVE */
+  LVORTEX_ACTIVE = 2, /* freezes Spyro and plays its sequence; when he is free again: FINISH */
+  LVORTEX_FINISH = 3, /* runs its chunk anim, resets the camera stick and the key state */
+};
+
 #endif

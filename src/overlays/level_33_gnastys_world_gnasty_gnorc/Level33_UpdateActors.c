@@ -2407,7 +2407,7 @@ void Level33_UpdateActors(void) {
           actor->scale = 0x40;
           actor->visZone = 0xFF;
           actor->subMode = 1;
-          st->mode = 1;
+          st->mode = LVORTEX_OPEN;
         }
         if (st->spark != 0xFF && actor->cullRadius != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -2429,7 +2429,7 @@ void Level33_UpdateActors(void) {
       }
 
       switch (st->mode) {
-      case 0: {
+      case LVORTEX_LOCKED: {
         if (g_pActorListBase[st->key].type != ACTOR_TYPE_LOOT_THIEF) {
           break;
         }
@@ -2443,12 +2443,12 @@ void Level33_UpdateActors(void) {
           break;
         }
         actor->subMode = 1;
-        st->mode = 1;
+        st->mode = LVORTEX_OPEN;
         g_nLevelKeyState = KEYSTATE_CARRIED;
         break;
       }
 
-      case 1:
+      case LVORTEX_OPEN:
         if (((unsigned)SPY.state < 2 || SPY.state == SPYRO_ST_JOG || SPY.state == SPYRO_ST_RUN) &&
             IsPointInRotatedBox(&SPY.posX, st->pad) &&
             AbsAngleDelta8(g_bSpyroPersistentEulerZ,
@@ -2464,7 +2464,7 @@ void Level33_UpdateActors(void) {
           actor->rotZ = g_bSpyroPersistentEulerZ + 0x80;
           actor->drawn = 1;
           actor->cullRadius = 0x18;
-          st->mode = 2;
+          st->mode = LVORTEX_ACTIVE;
           st->timer = 0;
           if (st->seen != 0) {
             if (g_nCutsceneId[st->seen] != 0) {
@@ -2485,7 +2485,7 @@ void Level33_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case LVORTEX_ACTIVE:
         if (g_dwPadPressed & PAD_CROSS) {
           st->timer = 0xD2;
         }
@@ -2548,7 +2548,7 @@ void Level33_UpdateActors(void) {
           g_nGameplayBlocked = 0;
           g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, (void *)0x18);
           MarkActorCommittedKill(actor);
-          st->mode = 3;
+          st->mode = LVORTEX_FINISH;
         }
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         if ((short)(st->timer % 4) < 2) {
@@ -2558,7 +2558,7 @@ void Level33_UpdateActors(void) {
         }
         break;
 
-      case 3:
+      case LVORTEX_FINISH:
         PlaySoundEffect(g_pLevelSampleBankHeader[0x3C], 0, SFX_MODE_PANNED, 0);
         ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         g_nCameraScriptStickRequestY[1] = 0;
