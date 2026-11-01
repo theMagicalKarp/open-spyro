@@ -21,7 +21,7 @@ int main(void);
 /* 0x800122a8: Stage-1 graphics bring-up, first call from Initialize. ResetGraph(0), then fills the two 0x84-stride frame-DB structs: DRAWENVs g_abFrameDrawEnv0/1 (clip y=8 / y=0xf8, ofs y forced 0 / 0xf0, dtd=1, isbg=1) via InitDefaultDrawEnv and DISPENVs g_abFrameDispEnv0/1 (disp y=0xf0 / y=0 — each shows the half the OTHER DB draws) via InitDefaultDispEnv; clears full 512x512 VRAM, display on. (Old plate had DRAWENV/DISPENV roles swapped.) */
 void InitGraphicsHardware(void);
 
-/* 0x800123c8: Pad subsystem init. PadInitDirect with the two raw report buffers g_abPadRawReport (port 1) / g_abPad2RawReport (port 2), seeds both pads' calibration blocks (ResetPadStickCalibrationDefaults + FinalizePadCalibration on the g_dwPadPressed block and the pad-2 mirror g_dwPadStash), zeros the rumble timers, sets g_nPadSetMainModePending, PadStartCom, one priming PollPadAndDistributeInput call, then registers PollPadAndDistributeInput as the per-VBlank callback via InstallVSyncCallback. */
+/* 0x800123c8: Pad subsystem init. PadInitDirect with the two raw report buffers g_abPadRawReport (port 1) / g_abPad2RawReport (port 2), seeds both pads' calibration blocks (ResetPadStickCalibrationDefaults + FinalizePadCalibration on the g_dwPadPressed block and its stash copy g_dwPadStash (MovePadInputState swaps whole blocks, so both need valid calibration)), zeros the rumble timers, sets g_nPadSetMainModePending, PadStartCom, one priming PollPadAndDistributeInput call, then registers PollPadAndDistributeInput as the per-VBlank callback via InstallVSyncCallback. */
 void InitPadSystem(void);
 
 /* 0x80012460: Possible UT_ROFF.OBJ/SsUtReverbOff */
