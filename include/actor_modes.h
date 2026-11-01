@@ -928,6 +928,18 @@ enum RockThrowerMode {
   ROCKTHROW_TURN = 10,   /* turns to Spyro, then WATCH */
 };
 
+/* ->mode / ->subMode of a thrown boulder (ACTOR_TYPE_ROLLING_BOULDER,
+ * BoulderState; levels 21/22). */
+enum RollingBoulderMode {
+  BOULDER_WHOLE = 0, /* held, thrown or dropped (->subMode), then bursts into SHARDs */
+  BOULDER_SHARD = 1, /* tumbles and bounces until its life or view runs out */
+};
+enum RollingBoulderSub {
+  BOULDER_HELD = 0,    /* in the thrower's hands; the thrower moves it */
+  BOULDER_THROWN = 1,  /* rolls along its velocity; bursts on Spyro, a wall or its timer */
+  BOULDER_DROPPED = 2, /* its thrower was knocked: bursts at once, shards along the knock */
+};
+
 /* ->mode of a boulder thrower (ACTOR_TYPE_BOULDER_THROWER / _B,
  * BoulderThrowerState; levels 21/22). Modes 40-43 are the paired charge
  * (wait on the partner, circle it, launch at Spyro); 50-54 the ride, where a

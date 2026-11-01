@@ -975,10 +975,10 @@ void Level22_UpdateActors(void) {
       BoulderState *st = actor->state;
 
       switch (actor->mode) {
-      case 0: {
+      case BOULDER_WHOLE: {
         int n;
 
-        if (actor->subMode == 0) {
+        if (actor->subMode == BOULDER_HELD) {
           continue;
         }
         {
@@ -1007,7 +1007,7 @@ void Level22_UpdateActors(void) {
         actor->rotY += st->spin[1];
         actor->rotZ += st->spin[2];
         st->life += g_nFrameStep;
-        if (actor->subMode != 2 && st->life < 0x79 &&
+        if (actor->subMode != BOULDER_DROPPED && st->life < 0x79 &&
             RaiseSpyroTriggerInRadius(&actor->posX, 0xDC, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) == 0 &&
             CastRayWorldAndActors(g136, &actor->posX) == 0) {
           continue;
@@ -1020,12 +1020,12 @@ void Level22_UpdateActors(void) {
             break;
           }
           o = g_pfnLevelSpawnActor(ACTOR_TYPE_ROLLING_BOULDER, actor);
-          o->mode = 1;
+          o->mode = BOULDER_SHARD;
           if (o->anim != 1) {
             ANIM_RESET(o, 1);
           }
           q = o->state;
-          if (actor->subMode == 2) {
+          if (actor->subMode == BOULDER_DROPPED) {
             int a = (st->heading + RandomIntInRange(-0x28, 0x28)) & 0xFF;
             int s = RandomIntInRange(0x96, 0xFA);
 
@@ -1051,7 +1051,7 @@ void Level22_UpdateActors(void) {
         continue;
       }
 
-      case 1:
+      case BOULDER_SHARD:
         if (actor->drawn == 0) {
           DespawnActorRecord(actor);
           continue;
@@ -1194,8 +1194,8 @@ void Level22_UpdateActors(void) {
         }
         actor->flags = 0;
         c = st->rock;
-        if (c != 0 && c->subMode == 0) {
-          c->subMode = 2;
+        if (c != 0 && c->subMode == BOULDER_HELD) {
+          c->subMode = BOULDER_DROPPED;
           {
             BoulderState *r = c->state;
 
@@ -1315,9 +1315,9 @@ void Level22_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 8, 0, YAW_HOLD_IN_BAND);
         if ((unsigned)(actor->nextFrame - 3) < 5 && st->rock == 0) {
           st->rock = g_pfnLevelSpawnActor(ACTOR_TYPE_ROLLING_BOULDER, actor);
-          st->rock->subMode = 0;
+          st->rock->subMode = BOULDER_HELD;
         }
-        if (st->rock != 0 && st->rock->subMode == 0) {
+        if (st->rock != 0 && st->rock->subMode == BOULDER_HELD) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 0, &st->rock->posX);
           st->rock->rotZ = ArcTan2(spy->posX - st->rock->posX,
@@ -1329,7 +1329,7 @@ void Level22_UpdateActors(void) {
             q->vx = (g_anCosineLut[st->rock->rotZ] * 0x4B) >> 10;
             q->vy = (g_anSineLut[st->rock->rotZ] * 0x4B) >> 10;
             q->vz = 0;
-            st->rock->subMode = 1;
+            st->rock->subMode = BOULDER_THROWN;
             st->rock = 0;
             q->spin[0] = RandomSignedInRange(7, 0xF);
             q->spin[1] = RandomSignedInRange(7, 0xF);
