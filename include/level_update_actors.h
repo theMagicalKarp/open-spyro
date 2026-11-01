@@ -1468,7 +1468,7 @@ typedef struct L31Debris {
 
 typedef struct CarriedThrowerState {
   int held;  /* 0x00 index of the carried actor in g_pActorListBase, -1 = none */
-  int duck;  /* 0x04 Spyro charged: duck instead of throwing */
+  int scored; /* 0x04 the swing hit Spyro: gloat after it */
   int timer; /* 0x08 */
   int knock; /* 0x0C knock-back heading */
   int speed; /* 0x10 */

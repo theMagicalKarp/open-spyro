@@ -1511,7 +1511,7 @@ void Level1_UpdateActors(void) {
       EBB_BREAK();
       st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != 2) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != SENTRY_KNOCKED) {
         st->heading = StepAngle8Toward(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20);
@@ -1521,12 +1521,12 @@ void Level1_UpdateActors(void) {
           st->speed = 0x1C2;
         }
         st->spin = 0;
-        if (actor->mode != 0) {
+        if (actor->mode != SENTRY_WATCH) {
           *st->alert = 0;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, SENTRY_KNOCKED);
       }
 
       if (TickCountdownByFrameDelta(&st->camTimer, 4) == 0) {
@@ -1543,19 +1543,19 @@ void Level1_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case SENTRY_WATCH:
         TrackEntityYawTowardSpyro(actor, 10, 0, 0);
         if (*st->alert == 0 &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x5DC &&
             ApproxDist2D(&actor->posX, &SPY.posX) < 0x2800) {
           *st->alert = 1;
           st->timer = 0;
-          actor->mode = 1;
+          actor->mode = SENTRY_CIRCLE;
           continue;
         }
         break;
 
-      case 1: {
+      case SENTRY_CIRCLE: {
         int d;
 
         if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
@@ -1580,7 +1580,7 @@ void Level1_UpdateActors(void) {
         if (MoveActorAlongHeading(actor, 0x64, 0, 0x12C, 5) != 0) {
         flee:
           *st->alert = 0;
-          actor->mode = 0x64;
+          actor->mode = SENTRY_GO_HOME;
           continue;
         }
         if (AbsAngleDelta8(spy->bodyRotZ,
@@ -1595,12 +1595,12 @@ void Level1_UpdateActors(void) {
                                         SPY.posY - actor->posY, 0)) < 0x14) {
           st->speed = 0x64;
           st->camStage = 0;
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, SENTRY_LUNGE);
         }
         break;
       }
 
-      case 2:
+      case SENTRY_KNOCKED:
         if (actor->frame < 5) {
           actor->rotZ += st->spin;
         }
@@ -1616,7 +1616,7 @@ void Level1_UpdateActors(void) {
         DespawnActorRecord(actor);
         continue;
 
-      case 3:
+      case SENTRY_LUNGE:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         MoveActorAlongHeading(actor, st->speed, 0, 0x12C, 5);
         if (actor->frame >= 5 && st->speed >= 0x51) {
@@ -1649,10 +1649,10 @@ void Level1_UpdateActors(void) {
           }
         }
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, SENTRY_RECOVER);
         }
 
-      case 4:
+      case SENTRY_RECOVER:
         if (g_nActorAnimNewFrame != 0 && actor->frame >= 6) {
           if (st->speed >= 0xD) {
             st->speed -= 0xC;
@@ -1666,14 +1666,14 @@ void Level1_UpdateActors(void) {
         }
         actor->rotZ = WrapAddAngle8(actor->rotZ, 0x80);
         if (st->camStage == 0) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, SENTRY_CIRCLE);
         }
         *st->alert = 0;
         ANIM_GO(actor, 1);
-        actor->mode = 0x64;
+        actor->mode = SENTRY_GO_HOME;
         continue;
 
-      case 0x64:
+      case SENTRY_GO_HOME:
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2_8bit(st->homeX - actor->posX,
                                         st->homeY - actor->posY),
@@ -1682,7 +1682,7 @@ void Level1_UpdateActors(void) {
         }
         ANIM_GO(actor, 1);
         if (ApproxDist2D(&actor->posX, &st->homeX) < 0x80) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, SENTRY_WATCH);
         }
         break;
       }
@@ -2334,7 +2334,7 @@ void Level1_UpdateActors(void) {
       EBB_BREAK();
       st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 7) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != REAR_KNOCKED) {
         st->heading = StepAngle8Toward(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20);
@@ -2348,11 +2348,11 @@ void Level1_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE4(actor, 7);
+        ENTER_POSE4(actor, REAR_KNOCKED);
       }
 
       switch (actor->mode) {
-      case 0:
+      case REAR_IDLE:
         if (g_nActorAnimDone != 0) {
           if (st->timer == 0) {
             st->timer = RandomIntInRange(3, 6);
@@ -2370,25 +2370,25 @@ void Level1_UpdateActors(void) {
 
           if (drop > 0 ? drop < 0x5DC : (SPY.posZ - height) < 0x5DC) {
             if (actor->anim == 0) {
-              ENTER_POSE4(actor, 2);
+              ENTER_POSE4(actor, REAR_NOTICE);
             }
-            ENTER_POSE4(actor, 3);
+            ENTER_POSE4(actor, REAR_REAR);
           }
         }
         break;
 
-      case 2:
+      case REAR_NOTICE:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE4(actor, 3);
+          ENTER_POSE4(actor, REAR_REAR);
         }
         break;
 
-      case 3:
+      case REAR_REAR:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         goto rear_wait;
 
-      case 4: {
+      case REAR_REARED: {
         int dist = ApproxDist2D(&actor->posX, &SPY.posX);
 
         if (g_nActorAnimDone != 0) {
@@ -2410,7 +2410,7 @@ void Level1_UpdateActors(void) {
           int drop = height - SPY.posZ;
 
           if (drop > 0 ? drop < 0x4B0 : (SPY.posZ - height) < 0x4B0) {
-            ENTER_POSE4(actor, 5);
+            ENTER_POSE4(actor, REAR_SHOVE);
           }
         }
         if (dist < 0x2401) {
@@ -2423,17 +2423,17 @@ void Level1_UpdateActors(void) {
           break;
         }
       pose6:
-        ENTER_POSE4(actor, 6);
+        ENTER_POSE4(actor, REAR_DROP);
       }
 
-      case 5:
+      case REAR_SHOVE:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (g_nSpyroState == SPYRO_ST_KNOCKBACK) {
           st->hitCooldown = 0x8C;
         }
         if (g_nActorAnimDone != 0) {
           if (st->hitCooldown != 0) {
-            ENTER_POSE4(actor, 8);
+            ENTER_POSE4(actor, REAR_GLOAT);
           }
           goto rear_pose;
         }
@@ -2442,13 +2442,13 @@ void Level1_UpdateActors(void) {
         g_nSpyroRequestVelocityZ = 0;
         break;
 
-      case 6:
+      case REAR_DROP:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE4(actor, 0);
+          ENTER_POSE4(actor, REAR_IDLE);
         }
         break;
 
-      case 7:
+      case REAR_KNOCKED:
         if (actor->frame < 0xA) {
           actor->rotZ += st->spin;
         }
@@ -2464,14 +2464,14 @@ void Level1_UpdateActors(void) {
         }
         break;
 
-      case 8:
+      case REAR_GLOAT:
         if (actor->frame >= 0x1C && TickCountdownByFrameDelta(&st->hitCooldown, 4) != 0) {
           actor->frame = 0xF;
         }
       rear_wait:
         if (g_nActorAnimDone != 0) {
         rear_pose:
-          ENTER_POSE4(actor, 4);
+          ENTER_POSE4(actor, REAR_REARED);
         }
         break;
       }

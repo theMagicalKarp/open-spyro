@@ -854,4 +854,212 @@ enum SentinelMode {
   SENTINEL_RELAY_TRACK = 0x63,      /* group cue: TRACK once back at animation 0 */
 };
 
+/* ->mode of a mount (ACTOR_TYPE_MOUNT, MountState; level 31); the mode is
+ * also the animation index. Its rider is a floating barrel or mine
+ * (FloatingBarrelMode), dropped when the mount is struck. */
+enum MountMode {
+  MOUNT_IDLE = 0,    /* faces Spyro; close: REACT */
+  MOUNT_REACT = 1,   /* reacts to Spyro, then IDLE */
+  MOUNT_KNOCKED = 2, /* struck, or its rider burst or ran: knocked away, then bursts */
+};
+
+/* ->mode of a hatch carrier (ACTOR_TYPE_HATCH_CARRIER, HatchCarrierState;
+ * level 31); the mode is also the animation index. */
+enum HatchCarrierMode {
+  HCARRIER_WAIT = 0,    /* on the timer, if its hatch waits: LIFT */
+  HCARRIER_LIFT = 1,    /* lifts the hatch's barrel or mine out on frame 4 */
+  HCARRIER_THROW = 2,   /* throws it on frame 6, then WAIT */
+  HCARRIER_KNOCKED = 3, /* flamed: knocked away, then bursts */
+};
+
+/* ->mode of a carried-prop thrower (ACTOR_TYPE_CARRIED_THROWER,
+ * CarriedThrowerState; level 31); the mode is also the animation index.
+ * Modes 0-5 hold a barrel or mine in both hands (the swing hits Spyro with
+ * it); 6-10 are the empty-handed set, where flame can knock it away. */
+enum CarriedThrowerMode {
+  CTHROW_HELD_WAIT = 0,  /* Spyro near: RISE after a delay */
+  CTHROW_HELD_RISE = 1,  /* rising animation, then READY */
+  CTHROW_HELD_READY = 2, /* close: SWING; far: LOWER */
+  CTHROW_HELD_SWING = 3, /* swings the held prop at Spyro; scored: GLOAT */
+  CTHROW_HELD_LOWER = 4, /* lowers, then WAIT */
+  CTHROW_HELD_GLOAT = 5, /* the swing hit Spyro: gloats, then WAIT */
+  CTHROW_BARE_WAIT = 6,  /* the empty-handed set of the above */
+  CTHROW_BARE_RISE = 7,
+  CTHROW_BARE_READY = 8,
+  CTHROW_BARE_SWING = 9,
+  CTHROW_BARE_GLOAT = 10,
+  CTHROW_DROP = 11,      /* its prop burst or ran: drop animation, then BARE_WAIT */
+  CTHROW_KNOCKED = 12,   /* flamed while bare: knocked away, then bursts */
+};
+
+/* ->mode of a floating barrel or mine (ACTOR_TYPE_FLOATING_BARREL /
+ * ACTOR_TYPE_FLOATING_MINE, FloatingBarrelState; level 31). Mounts, hatch
+ * carriers and carried-prop throwers hold them (FloatingBarrelState.link). */
+enum FloatingBarrelMode {
+  FLOATBARREL_FLOAT = 0, /* bobs; its holder gone dormant: despawn */
+  FLOATBARREL_FUSE = 1,  /* the barrel was flamed: bursts after a delay */
+  FLOATBARREL_BURST = 2, /* bursts into staves and splinters, then BLAST */
+  FLOATBARREL_BLAST = 3, /* the push-back blast grows for 8 frames, then despawn */
+  FLOATBARREL_RUN = 4,   /* the mine was charged: runs at the nearest target, then BURST */
+};
+
+/* ->mode of a level 0 path enemy (ACTOR_TYPE_PATH_ENEMY, WalkerState); the
+ * mode is also the animation index. It flees from Spyro along its path. */
+enum PathEnemyMode {
+  PENEMY_IDLE = 0,         /* Spyro near: SPOT; on the timer: FIDGET or FACE_PARTNER */
+  PENEMY_FIDGET = 1,       /* idle variant, then IDLE */
+  PENEMY_FACE_PARTNER = 2, /* turns to its partner (WalkerState.tgtIdx), then IDLE */
+  PENEMY_RETURN = 3,       /* walks its path back to node 0, then IDLE */
+  PENEMY_SPOT = 4,         /* faces Spyro, then FLEE (or COWER while he charges) */
+  PENEMY_FLEE = 5,         /* runs its path; at the end: HIDE */
+  PENEMY_HIDE = 6,         /* waits out of Spyro's reach, then RETURN */
+  PENEMY_FLAMED = 7,       /* knocked spinning into the air, then FALL */
+  PENEMY_CHARGED = 8,      /* charged: knocked away, then bursts */
+  PENEMY_FALL = 9,         /* lands, then bursts */
+  PENEMY_COWER = 0x14,     /* while Spyro charges, then FLEE */
+};
+
+/* ->mode of a flock leader (ACTOR_TYPE_FLOCK_LEADER, FlockState; level 0);
+ * the mode is also the animation index. Each hit costs it one follower
+ * (FlockState.chainA) until none are left. */
+enum FlockLeaderMode {
+  FLOCK_IDLE = 0,     /* faces Spyro; close: ROUSE */
+  FLOCK_ROUSE = 1,    /* rousing animation, then RUN */
+  FLOCK_RUN = 2,      /* runs its looped path away from Spyro; far: IDLE */
+  FLOCK_RUN_ALT = 3,  /* RUN with the other animation (the two alternate) */
+  FLOCK_BOLT = 4,     /* lost a follower: runs fast */
+  FLOCK_KNOCKED = 5,  /* the last hit: drops its flock's prizes, then bursts */
+};
+
+/* ->mode of a sequenced prop (ACTOR_TYPE_SEQUENCED_PROP, PropAnimState;
+ * level 0): a world-chunk animation started by a subMode cue. */
+enum SequencedPropMode {
+  SEQPROP_WAIT = 0,      /* until cued (subMode 0x1F) */
+  SEQPROP_START = 5,     /* resumes the chunk animation and its sound */
+  SEQPROP_RUN = 0xA,     /* the two RUN modes alternate every 30 frames */
+  SEQPROP_RUN_ALT = 0xB,
+  SEQPROP_DONE = 0x63,   /* the animation halted (or was already done) */
+};
+
+/* ->mode of a charging yak (ACTOR_TYPE_CHARGING_YAK, ChargingYakState; level
+ * 9); the mode is also the animation index. */
+enum ChargingYakMode {
+  YAK_GRAZE = 0,     /* grazes; Spyro near: ROUSE */
+  YAK_ROUSE = 2,     /* rousing animation, then WATCH */
+  YAK_WATCH = 3,     /* faces Spyro; close: BUTT; far: SETTLE */
+  YAK_BUTT = 4,      /* butts Spyro; pinned him: BUTT_HOLD */
+  YAK_SETTLE = 5,    /* settles back, then GRAZE */
+  YAK_KNOCKED = 6,   /* flamed: knocked away, then bursts */
+  YAK_BUTT_HOLD = 7, /* holds after pinning Spyro, then GRAZE */
+};
+
+/* ->mode of a tough ram (ACTOR_TYPE_TOUGH_RAM, ToughRamState; level 9); the
+ * mode is also the animation index. The yak's machine, but four hits. */
+enum ToughRamMode {
+  TRAM_GRAZE = 0,     /* grazes; Spyro near: ROUSE */
+  TRAM_ROUSE = 1,     /* rousing animation, then WATCH */
+  TRAM_WATCH = 2,     /* faces Spyro; close: BUTT; far: GRAZE */
+  TRAM_BUTT = 3,      /* butts Spyro; pinned him: BUTT_HOLD */
+  TRAM_SETTLE = 4,    /* back to GRAZE (no writer in the C sources) */
+  TRAM_STAGGER = 5,   /* hit: thrown up and back, then GRAZE */
+  TRAM_KNOCKED = 6,   /* the fourth hit (or thrown off a ledge): falls, then bursts */
+  TRAM_BUTT_HOLD = 7, /* holds after pinning Spyro, then GRAZE */
+};
+
+/* ->mode of a path snowball thrower (ACTOR_TYPE_PATH_SNOWBALL_THROWER / +1,
+ * SnowballThrowerState; level 9). */
+enum SnowballThrowerMode {
+  SNOWTHROW_WAIT = 0,      /* Spyro near: wakes its group, then ADVANCE */
+  SNOWTHROW_ADVANCE = 1,   /* circles its post toward Spyro; in sight: THROW */
+  SNOWTHROW_THROW = 2,     /* throws an ACTOR_TYPE_THROWN_SNOWBALL, then RETREAT */
+  SNOWTHROW_KNOCKED = 3,   /* knocked away, then bursts */
+  SNOWTHROW_RETREAT = 4,   /* circles away from Spyro, then AIM or TURN_AWAY */
+  SNOWTHROW_AIM = 5,       /* faces Spyro; in sight on the timer: THROW */
+  SNOWTHROW_TURN_AWAY = 6, /* faces away from Spyro, then WAIT */
+};
+
+/* ->mode of a circling bird (ACTOR_TYPE_CIRCLING_BIRD, CirclingBirdState;
+ * level 9); the mode is also the animation index. */
+enum CirclingBirdMode {
+  CBIRD_PERCH = 0,    /* Spyro near: TAKE_OFF */
+  CBIRD_CIRCLE = 1,   /* circles over Spyro, then flies home and LANDs */
+  CBIRD_TAKE_OFF = 2, /* take-off animation, then CIRCLE */
+  CBIRD_LAND = 3,     /* landing animation, then PERCH */
+  CBIRD_KNOCKED = 4,  /* hit: falls out of the air and despawns */
+};
+
+/* ->mode of a lob gunner (ACTOR_TYPE_LOB_GUNNER, LobGunnerState; level 32);
+ * the mode is also the animation index. */
+enum LobGunnerMode {
+  LOBGUN_WATCH = 0,   /* faces Spyro; close: SWIPE; far, on the timer: LOB */
+  LOBGUN_WALK = 2,    /* Spyro tripped its box: walks its path, then TURN */
+  LOBGUN_SWIPE = 3,   /* close swipe, then WATCH */
+  LOBGUN_KNOCKED = 4, /* drops its lob, knocked away (into water: SINK), then bursts */
+  LOBGUN_LOB = 5,     /* lobs an ACTOR_TYPE_LOB_GUNNER_LOB along its target path */
+  LOBGUN_TURN = 10,   /* turns to Spyro, then WATCH */
+  LOBGUN_SINK = 20,   /* splashed down: despawns after a delay */
+};
+
+/* ->mode of a burst gunner (ACTOR_TYPE_BURST_GUNNER, BurstGunnerState; level
+ * 32); the mode is also the animation index. */
+enum BurstGunnerMode {
+  BURSTGUN_WATCH = 0,   /* faces Spyro; in range: FIRE */
+  BURSTGUN_WALK = 2,    /* walks its path, then TURN */
+  BURSTGUN_FIRE = 3,    /* fires ACTOR_TYPE_BURST_GUNNER_SHOTs, then WATCH */
+  BURSTGUN_KNOCKED = 4, /* knocked away (into water: SINK), then bursts */
+  BURSTGUN_TURN = 10,   /* turns to Spyro, then WATCH */
+  BURSTGUN_SINK = 20,   /* splashed down: despawns after a delay */
+};
+
+/* ->mode of a bolt guard (ACTOR_TYPE_BOLT_GUARD, BoltGuardState; level 19).
+ * BoltGuardState.mode picks its trigger: 1 runs its path when Spyro trips its
+ * box (cueing the group), 2 fires at the linked actor (BoltGuardState.link). */
+enum BoltGuardMode {
+  BGUARD_WATCH = 0,        /* faces Spyro; close on the timer: WIND_UP */
+  BGUARD_ROUSE = 1,        /* rousing animation, then WIND_UP */
+  BGUARD_FIRE = 2,         /* fires ACTOR_TYPE_AIMED_BOLT pairs, then WATCH */
+  BGUARD_KNOCKED = 3,      /* charged: shatters, tumbles away, then bursts */
+  BGUARD_WIND_UP = 5,      /* wind-up animation, then FIRE */
+  BGUARD_RUN = 10,         /* runs its path; done or Spyro near: WATCH */
+  BGUARD_FACE_LINK = 20,   /* faces its link, then FIRE_AT_LINK */
+  BGUARD_FIRE_AT_LINK = 21, /* fires bolt pairs at its link, then the next link */
+};
+
+/* ->mode of a bolt caster (ACTOR_TYPE_BOLT_CASTER, BoltCasterState; level
+ * 14); the mode is also the animation index. With no Spyro about it practises
+ * on its target actor (BoltCasterState.target). */
+enum BoltCasterMode {
+  BCASTER_IDLE = 0,    /* Spyro near: NOTICE (then AIM); on the timer: AIM at its target */
+  BCASTER_NOTICE = 1,  /* notices Spyro, then IDLE */
+  BCASTER_AIM = 2,     /* faces Spyro or its target, then CAST */
+  BCASTER_CAST = 3,    /* casts up to 3 ACTOR_TYPE_HOMING_WISPs */
+  BCASTER_KNOCKED = 4, /* flamed: bursts */
+  BCASTER_FLINCH = 5,  /* flinch animation (flag bit 0), then IDLE */
+};
+
+/* ->mode of a rearing critter (ACTOR_TYPE_REARING_CRITTER, RearState; level
+ * 1); the mode is also the animation index. */
+enum RearingCritterMode {
+  REAR_IDLE = 0,    /* faces Spyro; near: NOTICE (or straight to REAR) */
+  REAR_NOTICE = 2,  /* notices Spyro, then REAR */
+  REAR_REAR = 3,    /* rears up, then REARED */
+  REAR_REARED = 4,  /* stands reared; close: SHOVE; far or out of reach: DROP */
+  REAR_SHOVE = 5,   /* shoves Spyro back; knocked him: GLOAT */
+  REAR_DROP = 6,    /* drops back down, then IDLE */
+  REAR_KNOCKED = 7, /* spins away, then bursts */
+  REAR_GLOAT = 8,   /* after knocking Spyro back, then REARED */
+};
+
+/* ->mode of a sentry (ACTOR_TYPE_SENTRY, SentryState; level 1). Only one
+ * sentry engages at a time (*SentryState.alert); it pulls the camera toward
+ * itself while it does. */
+enum SentryMode {
+  SENTRY_WATCH = 0,      /* faces Spyro; near and none engaged: CIRCLE */
+  SENTRY_CIRCLE = 1,     /* circles in on Spyro's flank; lined up: LUNGE; lost: GO_HOME */
+  SENTRY_KNOCKED = 2,    /* spins away, then bursts */
+  SENTRY_LUNGE = 3,      /* lunges at Spyro, then RECOVER */
+  SENTRY_RECOVER = 4,    /* slides to a stop, then CIRCLE */
+  SENTRY_GO_HOME = 0x64, /* walks home, then WATCH */
+};
+
 #endif

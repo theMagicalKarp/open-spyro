@@ -3692,35 +3692,35 @@ void Level14_UpdateActors(void) {
     case ACTOR_TYPE_BOLT_CASTER: {
       BoltCasterState *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 4) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != BCASTER_KNOCKED) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        actor->mode = 4;
+        actor->mode = BCASTER_KNOCKED;
         ANIM_RESET(actor, 4);
         continue;
       }
-      if ((actor->flags & 1) && actor->mode < 4) {
-        actor->mode = 5;
+      if ((actor->flags & 1) && actor->mode < BCASTER_KNOCKED) {
+        actor->mode = BCASTER_FLINCH;
         ANIM_RESET(actor, 5);
         continue;
       }
       switch (actor->mode) {
-      case 0:
+      case BCASTER_IDLE:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000 &&
             ABS2(SPY_DZ(actor)) < 0xC00) {
           if (st->flags & 1) {
             st->flags |= 2;
-            ENTER_POSE(actor, 2);
+            ENTER_POSE(actor, BCASTER_AIM);
             continue;
           }
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, BCASTER_NOTICE);
           continue;
         }
         if (st->target >= 0) {
           if (g_pActorListBase[st->target].mode >= ACTOR_MODE_DORMANT) {
             st->target = -1;
           } else if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-            ENTER_POSE(actor, 2);
+            ENTER_POSE(actor, BCASTER_AIM);
             continue;
           } else {
             TurnActorYawTowardAngle(actor,
@@ -3732,24 +3732,24 @@ void Level14_UpdateActors(void) {
         }
         break;
 
-      case 1:
+      case BCASTER_NOTICE:
         TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
         if (g_nActorAnimDone != 0) {
           st->flags |= 1;
-          actor->mode = 0;
+          actor->mode = BCASTER_IDLE;
           ANIM_RESET(actor, 0);
           continue;
         }
         break;
 
-      case 2:
+      case BCASTER_AIM:
         if (st->flags & 2) {
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800 &&
               ABS2(SPY_DZ(actor)) < 0xC00) {
             TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
           } else {
             st->flags &= ~2;
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, BCASTER_IDLE);
             continue;
           }
         } else {
@@ -3762,13 +3762,13 @@ void Level14_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           st->timer = 0;
           st->count = 0;
-          actor->mode = 3;
+          actor->mode = BCASTER_CAST;
           ANIM_RESET(actor, 3);
           continue;
         }
         break;
 
-      case 3:
+      case BCASTER_CAST:
         if (TickCountdownByFrameDelta(&st->timer, 4) && actor->nextFrame >= 4 &&
             st->count < 3) {
           Actor *b = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_WISP, actor);
@@ -3797,19 +3797,19 @@ void Level14_UpdateActors(void) {
           if ((st->flags & 2) &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000 &&
               ABS2(SPY_DZ(actor)) < 0xC00) {
-            actor->mode = 2;
+            actor->mode = BCASTER_AIM;
             ANIM_RESET(actor, 2);
             continue;
           }
           st->flags &= ~2;
           st->timer = (GetRandomU32() & 0x1F) + 0x20;
-          actor->mode = 0;
+          actor->mode = BCASTER_IDLE;
           ANIM_RESET(actor, 0);
           continue;
         }
         break;
 
-      case 4:
+      case BCASTER_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x30);
@@ -3818,10 +3818,10 @@ void Level14_UpdateActors(void) {
         }
         break;
 
-      case 5:
+      case BCASTER_FLINCH:
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
-          actor->mode = 0;
+          actor->mode = BCASTER_IDLE;
           ANIM_RESET(actor, 0);
           continue;
         }

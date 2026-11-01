@@ -1984,17 +1984,17 @@ void Level9_UpdateActors(void) {
     case ACTOR_TYPE_CHARGING_YAK: {
       ChargingYakState *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 6) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != YAK_KNOCKED) {
         st->speed = 0xF0;
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 6);
+        ENTER_POSE(actor, YAK_KNOCKED);
       }
 
       switch (actor->mode) {
-      case 0:
+      case YAK_GRAZE:
         if (g_nActorAnimDone != 0) {
           if (actor->anim == 8) {
             ANIM_GO(actor, 9);
@@ -2012,20 +2012,20 @@ void Level9_UpdateActors(void) {
 
           if (dz > 0 ? dz < 0x5DC : SPY.posZ - actor->posZ < 0x5DC) {
             st->speed = 0x48;
-            ENTER_POSE(actor, 2);
+            ENTER_POSE(actor, YAK_ROUSE);
           }
         }
         break;
 
-      case 2:
+      case YAK_ROUSE:
         if (g_nActorAnimDone != 0) {
-          actor->mode = 3;
+          actor->mode = YAK_WATCH;
           ANIM_RESET(actor, 3);
           continue;
         }
         break;
 
-      case 3: {
+      case YAK_WATCH: {
         int dist = ApproxDist2D(&actor->posX, &spy->posX);
 
         TrackEntityYawTowardSpyro(actor, 3, 0, 0);
@@ -2035,39 +2035,39 @@ void Level9_UpdateActors(void) {
           if (dz > 0 ? dz < 0x5DC : SPY.posZ - actor->posZ < 0x5DC) {
             st->speed = 0x48;
             st->rest = 0;
-            ENTER_POSE(actor, 4);
+            ENTER_POSE(actor, YAK_BUTT);
           }
         }
         if (dist > 0x2000) {
-          ENTER_POSE(actor, 5);
+          ENTER_POSE(actor, YAK_SETTLE);
         }
         break;
       }
 
-      case 4:
+      case YAK_BUTT:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (g_nSpyroState == SPYRO_ST_HURT_PINNED) {
           st->rest = 3;
         }
         if (g_nActorAnimDone != 0) {
           if (st->rest != 0) {
-            actor->mode = 7;
+            actor->mode = YAK_BUTT_HOLD;
             ANIM_RESET(actor, 7);
             continue;
           }
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, YAK_GRAZE);
         }
         break;
 
-      case 5:
+      case YAK_SETTLE:
         if (g_nActorAnimDone != 0) {
-          actor->mode = 0;
+          actor->mode = YAK_GRAZE;
           ANIM_RESET(actor, 0);
           continue;
         }
         break;
 
-      case 6:
+      case YAK_KNOCKED:
         if (st->speed > 0) {
           MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 1);
           st->speed -= 0x10;
@@ -2080,9 +2080,9 @@ void Level9_UpdateActors(void) {
         }
         break;
 
-      case 7:
+      case YAK_BUTT_HOLD:
         if (g_nActorAnimDone != 0 && TickCountdownByFrameDelta(&st->rest, 4) != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, YAK_GRAZE);
         }
         break;
       }
@@ -2165,7 +2165,7 @@ void Level9_UpdateActors(void) {
       SnowballThrowerState *st = actor->state;
       int r;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 3) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != SNOWTHROW_KNOCKED) {
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
                                   spy->bodyRotZ, 0x20, 0x40);
@@ -2175,11 +2175,11 @@ void Level9_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 3);
+        ENTER_POSE(actor, SNOWTHROW_KNOCKED);
       }
 
       switch (actor->mode) {
-      case 0:
+      case SNOWTHROW_WAIT:
         if (st->dist == 0) {
           st->dist = ApproxDist2D(&actor->posX,
                                    &st->path->nodes[st->path->cur].x);
@@ -2191,18 +2191,18 @@ void Level9_UpdateActors(void) {
         }
         if (st->wake != 0) {
           if (ApproxDist2D(&actor->posX, &SPY.posX) < st->wake << 10) {
-            SetActorGroupState(actor, 1);
-            ENTER_POSE(actor, 1);
+            SetActorGroupState(actor, SNOWTHROW_ADVANCE);
+            ENTER_POSE(actor, SNOWTHROW_ADVANCE);
           }
           break;
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x3800) {
-          SetActorGroupState(actor, 1);
-          ENTER_POSE(actor, 1);
+          SetActorGroupState(actor, SNOWTHROW_ADVANCE);
+          ENTER_POSE(actor, SNOWTHROW_ADVANCE);
         }
         break;
 
-      case 1:
+      case SNOWTHROW_ADVANCE:
         r = SteerActorAroundPoint(
             actor, &st->path->nodes[0].x, st->dist,
             ArcTan2(spy->posX - st->path->nodes[st->path->cur].x,
@@ -2216,7 +2216,7 @@ void Level9_UpdateActors(void) {
           svK[2] = actor->posZ + 0x2BC;
           if (CheckSpyroLineOfSightTo(svK) != 0 && actor->drawn != 0) {
             if (TickCountdownByFrameDelta(&st->throwT, 4) != 0) {
-              ENTER_POSE(actor, 2);
+              ENTER_POSE(actor, SNOWTHROW_THROW);
             }
           } else {
             st->throwT = 0x1E;
@@ -2225,7 +2225,7 @@ void Level9_UpdateActors(void) {
         ANIM_GO(actor, 1);
         break;
 
-      case 2: {
+      case SNOWTHROW_THROW: {
         int frame = actor->type == ACTOR_TYPE_PATH_SNOWBALL_THROWER ? 0x17 : 0x13;
 
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
@@ -2254,13 +2254,13 @@ void Level9_UpdateActors(void) {
           }
         }
         if (g_nActorAnimDone != 0) {
-          actor->mode = 4;
+          actor->mode = SNOWTHROW_RETREAT;
           continue;
         }
         break;
       }
 
-      case 3:
+      case SNOWTHROW_KNOCKED:
         if (st->speed != 0) {
           MoveActorAlongAngle(actor, st->knock, st->speed, 0x12C, 0x12C, 1);
           st->speed -= 0xC;
@@ -2276,7 +2276,7 @@ void Level9_UpdateActors(void) {
         }
         break;
 
-      case 4:
+      case SNOWTHROW_RETREAT:
         r = SteerActorAroundPoint(
             actor, &st->path->nodes[0].x, st->dist,
             ArcTan2(st->path->nodes[st->path->cur].x - spy->posX,
@@ -2285,18 +2285,18 @@ void Level9_UpdateActors(void) {
         if (r < 0xA) {
           st->timer = 0x5A;
           ANIM_GO(actor, 0);
-          actor->mode = 6;
+          actor->mode = SNOWTHROW_TURN_AWAY;
           continue;
         }
         if (r == 0x100) {
           st->timer = 0x78;
-          actor->mode = 5;
+          actor->mode = SNOWTHROW_AIM;
           continue;
         }
         ANIM_GO(actor, 1);
         break;
 
-      case 5:
+      case SNOWTHROW_AIM:
         TrackEntityYawTowardSpyro(actor, 5, 0, 0);
         if (AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
@@ -2312,7 +2312,7 @@ void Level9_UpdateActors(void) {
           if (CheckSpyroLineOfSightTo(svK) != 0 && actor->drawn != 0) {
             if (TickCountdownByFrameDelta(&st->throwT, 4) != 0) {
               st->timer = 0x78;
-              ENTER_POSE(actor, 2);
+              ENTER_POSE(actor, SNOWTHROW_THROW);
             }
           } else {
             st->throwT = 0x1E;
@@ -2320,9 +2320,9 @@ void Level9_UpdateActors(void) {
         }
         break;
 
-      case 6:
+      case SNOWTHROW_TURN_AWAY:
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, SNOWTHROW_WAIT);
         }
         TurnActorYawTowardAngle(actor,
                       WrapAddAngle8(ArcTan2(spy->posX - actor->posX,
@@ -2340,38 +2340,38 @@ void Level9_UpdateActors(void) {
     case ACTOR_TYPE_CIRCLING_BIRD: {
       CirclingBirdState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4) {
-        if (actor->mode != 1 || st->timer == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CBIRD_KNOCKED) {
+        if (actor->mode != CBIRD_CIRCLE || st->timer == 0) {
           SubtractVector(svK, &SPY.posX, &actor->posX);
           RShiftVector3(svK, 2);
           AddVector(&actor->posX, svK, &actor->posX);
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        actor->mode = 4;
+        actor->mode = CBIRD_KNOCKED;
         ANIM_RESET(actor, 4);
         continue;
       }
 
       switch (actor->mode) {
-      case 0:
+      case CBIRD_PERCH:
         if (st->timer != 0) {
           st->timer--;
           break;
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x800) {
           st->timer = 0x78;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, CBIRD_TAKE_OFF);
         }
         break;
 
-      case 1:
+      case CBIRD_CIRCLE:
         if (st->timer == 0) {
           SteerActorTowardPoint(actor, st->home, 0x40, 8, 8, 0);
           SubtractVector(svL, st->home, &actor->posX);
           if (VectorLength(svL, VEC_LEN_XYZ) < 0x200) {
             st->timer = 0x78;
-            ENTER_POSE(actor, 3);
+            ENTER_POSE(actor, CBIRD_LAND);
           }
         } else {
           svL[0] = (st->radius * LookupCosine(st->angle)) >> 12;
@@ -2390,24 +2390,24 @@ void Level9_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case CBIRD_TAKE_OFF:
         if (g_nActorAnimDone != 0) {
           st->angle = SPY.bodyYaw;
           st->radius = (GetRandomU32() & 0x1FF) + 0x400;
           st->height = 0;
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, CBIRD_CIRCLE);
         }
         break;
 
-      case 3:
+      case CBIRD_LAND:
         if (g_nActorAnimDone != 0) {
-          actor->mode = 0;
+          actor->mode = CBIRD_PERCH;
           ANIM_RESET(actor, 0);
           continue;
         }
         break;
 
-      case 4:
+      case CBIRD_KNOCKED:
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);
           continue;
@@ -2424,7 +2424,7 @@ void Level9_UpdateActors(void) {
       ToughRamState *st = actor->state;
 
       TickActorFlameGlow(actor);
-      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != 6) {
+      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != TRAM_KNOCKED) {
         st->heading = SPY.bodyRotZ;
         st->speed = 0x80;
         st->rest = 0x80;
@@ -2432,19 +2432,19 @@ void Level9_UpdateActors(void) {
         if (++st->hits == 4) {
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorCommittedKill(actor);
-          ENTER_POSE(actor, 6);
+          ENTER_POSE(actor, TRAM_KNOCKED);
         }
         if (actor->anim == 5) {
           actor->frame = 0;
           actor->nextFrame = 1;
           actor->frameProgress = 0;
         }
-        ENTER_POSE(actor, 5);
+        ENTER_POSE(actor, TRAM_STAGGER);
       }
       actor->flags = 0;
 
       switch (actor->mode) {
-      case 0:
+      case TRAM_GRAZE:
         if (g_nActorAnimDone != 0) {
           if (actor->anim == 8) {
             ANIM_GO(actor, 9);
@@ -2462,20 +2462,20 @@ void Level9_UpdateActors(void) {
 
           if (dz > 0 ? dz < 0x5DC : SPY.posZ - actor->posZ < 0x5DC) {
             st->speed = 0x48;
-            ENTER_POSE(actor, 1);
+            ENTER_POSE(actor, TRAM_ROUSE);
           }
         }
         break;
 
-      case 1:
+      case TRAM_ROUSE:
         if (g_nActorAnimDone != 0) {
-          actor->mode = 2;
+          actor->mode = TRAM_WATCH;
           ANIM_RESET(actor, 2);
           continue;
         }
         break;
 
-      case 2: {
+      case TRAM_WATCH: {
         int dist = ApproxDist2D(&actor->posX, &spy->posX);
 
         TrackEntityYawTowardSpyro(actor, 3, 0, 0);
@@ -2485,37 +2485,37 @@ void Level9_UpdateActors(void) {
           if (dz > 0 ? dz < 0x5DC : SPY.posZ - actor->posZ < 0x5DC) {
             st->speed = 0x48;
             st->rest = 0;
-            ENTER_POSE(actor, 3);
+            ENTER_POSE(actor, TRAM_BUTT);
           }
         }
         if (dist > 0x2000) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, TRAM_GRAZE);
         }
         break;
       }
 
-      case 3:
+      case TRAM_BUTT:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (g_nSpyroState == SPYRO_ST_HURT_PINNED) {
           st->rest = 3;
         }
         if (g_nActorAnimDone != 0) {
           if (st->rest != 0) {
-            actor->mode = 7;
+            actor->mode = TRAM_BUTT_HOLD;
             ANIM_RESET(actor, 7);
             continue;
           }
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, TRAM_GRAZE);
         }
         break;
 
-      case 4:
+      case TRAM_SETTLE:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, TRAM_GRAZE);
         }
         break;
 
-      case 5: {
+      case TRAM_STAGGER: {
         int z;
 
         if (st->rest != 0) {
@@ -2533,17 +2533,17 @@ void Level9_UpdateActors(void) {
           MarkActorCommittedKill(actor);
           actor->posZ -= 0x200;
           st->rest = 0;
-          ENTER_POSE(actor, 6);
+          ENTER_POSE(actor, TRAM_KNOCKED);
         }
         actor->posZ = z + 0x10;
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, TRAM_GRAZE);
         }
         break;
       }
 
-      case 6: {
+      case TRAM_KNOCKED: {
         int z;
 
         if (g_nActorAnimDone != 0) {
@@ -2575,9 +2575,9 @@ void Level9_UpdateActors(void) {
         break;
       }
 
-      case 7:
+      case TRAM_BUTT_HOLD:
         if (g_nActorAnimDone != 0 && TickCountdownByFrameDelta(&st->rest, 4) != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, TRAM_GRAZE);
         }
         break;
       }
