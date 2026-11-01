@@ -1348,7 +1348,7 @@ void Level15_UpdateActors(void) {
     case ACTOR_TYPE_TETHERED_GUARD: {
       TetherState *st = actor->state;
 
-      if (st->mode == 1) {
+      if (st->mode == TCMD_BOUND) {
         if (actor->mode != TGUARD_BOUND) {
           actor->mode = TGUARD_BOUND;
           actor->anim = 7;
@@ -1360,11 +1360,11 @@ void Level15_UpdateActors(void) {
         }
         RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
         if (g_pActorListBase[st->owner].mode >= ACTOR_MODE_DORMANT) {
-          st->mode = 2;
+          st->mode = TCMD_FREED;
         }
         continue;
       }
-      if (st->mode == 2) {
+      if (st->mode == TCMD_FREED) {
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           actor->cullRadius = 0x20;
           actor->frameRate = 0x10;
@@ -1379,7 +1379,7 @@ void Level15_UpdateActors(void) {
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != TGUARD_KNOCKED) {
         st->speed = 0xC8;
         st->heading = SPY.bodyRotZ;
-        st->mode = 0;
+        st->mode = TCMD_NONE;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
@@ -1388,13 +1388,13 @@ void Level15_UpdateActors(void) {
 
       switch (actor->mode) {
       case TGUARD_IDLE:
-        if (st->mode == 4) {
+        if (st->mode == TCMD_SWAT) {
           ENTER_POSE(actor, TGUARD_SIGNAL);
         }
-        if (st->mode == 5) {
+        if (st->mode == TCMD_WATCH) {
           ENTER_POSE(actor, TGUARD_LOOK);
         }
-        if (st->mode == 6) {
+        if (st->mode == TCMD_RISE) {
           ENTER_POSE(actor, TGUARD_RISE);
         }
         TrackEntityYawTowardSpyro(actor, 3, 0x10, 0);
@@ -1439,9 +1439,9 @@ void Level15_UpdateActors(void) {
           st->timer = 0;
           ENTER_POSE(actor, TGUARD_STRIKE);
         }
-        if (st->mode >= 5) {
+        if (st->mode >= TCMD_WATCH) {
           if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {
-            st->mode = 0;
+            st->mode = TCMD_NONE;
             ENTER_POSE(actor, TGUARD_IDLE);
           }
           if (d < 0x1770 && ABS2(actor->posZ - SPY.posZ) < 0x5DC) {
@@ -1512,15 +1512,15 @@ void Level15_UpdateActors(void) {
 
       case TGUARD_BOUND:
         if (g_nActorAnimDone != 0) {
-          st->mode = 3;
+          st->mode = TCMD_READY;
           ANIM_QUEUE(actor, TGUARD_IDLE);
         }
         break;
 
       case TGUARD_LOOK:
-        if (st->mode >= 5 && st->link >= 0) {
+        if (st->mode >= TCMD_WATCH && st->link >= 0) {
           if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {
-            st->mode = 0;
+            st->mode = TCMD_NONE;
             ENTER_POSE(actor, TGUARD_IDLE);
           }
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1770 &&
@@ -1543,15 +1543,15 @@ void Level15_UpdateActors(void) {
         break;
 
       case TGUARD_SIGNAL:
-        if (st->mode == 4) {
+        if (st->mode == TCMD_SWAT) {
           if (g_nActorAnimDone != 0) {
             st->timer = 3;
-            st->mode = 0;
+            st->mode = TCMD_NONE;
             ANIM_QUEUE(actor, TGUARD_IDLE);
           }
           break;
         }
-        if (st->mode < 5) {
+        if (st->mode < TCMD_WATCH) {
           break;
         }
         TurnActorYawTowardAngle(actor,
@@ -3039,17 +3039,17 @@ void Level15_UpdateActors(void) {
         ENTER_POSE(actor, KEEPER_KNOCKED);
       }
       actor->flags = 0;
-      if (st->mode != 0 && st->link >= 0) {
+      if (st->mode != TCMD_NONE && st->link >= 0) {
         TetherState *ts = g_pActorListBase[st->link].state;
 
-        if (ts->mode == 3 && actor->mode < KEEPER_KNOCKED) {
+        if (ts->mode == TCMD_READY && actor->mode < KEEPER_KNOCKED) {
           ts->link = actor - g_pActorListBase;
           ts->mode = st->mode;
           ENTER_POSE(actor, KEEPER_COMMAND);
         }
         if (g_pActorListBase[st->link].mode == TGUARD_SIGNAL) {
           switch (st->mode) {
-          case 4:
+          case TCMD_SWAT:
             if (actor->mode < KEEPER_KNOCKED && g_pActorListBase[st->link].nextFrame >= 4) {
               st->timer = 0x15E;
               st->heading = g_pActorListBase[st->link].rotZ;
@@ -3058,9 +3058,9 @@ void Level15_UpdateActors(void) {
               ENTER_POSE(actor, KEEPER_STRUCK);
             }
             break;
-          case 5:
+          case TCMD_WATCH:
             break;
-          case 6:
+          case TCMD_RISE:
             if (actor->mode < KEEPER_STEP_OUT && ts->mode == st->mode) {
               ENTER_POSE(actor, KEEPER_STEP_OUT);
             }
@@ -3075,15 +3075,15 @@ void Level15_UpdateActors(void) {
 
         if (d < 0x1000) {
           TrackEntityYawTowardSpyro(actor, 6, 0, 0);
-        } else if (st->mode == 0 && st->link >= 0) {
+        } else if (st->mode == TCMD_NONE && st->link >= 0) {
           if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
             ENTER_POSE(actor, KEEPER_WATCH_GUARD);
           }
           st->link = -1;
-        } else if (st->mode == 5) {
+        } else if (st->mode == TCMD_WATCH) {
           TetherState *ts = g_pActorListBase[st->link].state;
 
-          if (g_pActorListBase[st->link].mode < TGUARD_BOUND && ts->mode == 5) {
+          if (g_pActorListBase[st->link].mode < TGUARD_BOUND && ts->mode == TCMD_WATCH) {
             ENTER_POSE(actor, KEEPER_WATCH_GUARD);
           }
         }

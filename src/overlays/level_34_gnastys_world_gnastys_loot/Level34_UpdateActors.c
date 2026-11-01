@@ -2189,7 +2189,7 @@ void Level34_UpdateActors(void) {
 
       switch (st->mode) {
       case 0: {
-        if (g_pActorListBase[st->key].type != 0xB1) {
+        if (g_pActorListBase[st->key].type != ACTOR_TYPE_LOOT_THIEF) {
           break;
         }
         if (g_pActorListBase[st->key].mode < 0x7F) {

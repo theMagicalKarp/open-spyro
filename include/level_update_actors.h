@@ -1053,7 +1053,7 @@ typedef struct TetherState {
                 * a sentinel powering a chain of guards reads it as the next
                 * guard (ending the chain when that isn't a tethered guard) */
   int owner;   /* 0x10 actor whose loss frees this one */
-  int mode;    /* 0x14 */
+  int mode;    /* 0x14 TetherCommand */
   int stop;    /* 0x18 node of the sentinel's path where it powers this guard */
 } TetherState;
 
@@ -1067,7 +1067,7 @@ typedef struct KeeperState {
   int heading; /* 0x04 knockback heading */
   int count;   /* 0x08 idle countdown */
   int link;    /* 0x0C linked guard (index into g_pActorListBase), or -1 */
-  int mode;    /* 0x10 command passed to the guard */
+  int mode;    /* 0x10 TetherCommand passed to the guard */
   int baseX;   /* 0x14 post position */
   int baseY;   /* 0x18 */
 } KeeperState;

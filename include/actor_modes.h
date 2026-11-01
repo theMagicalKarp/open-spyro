@@ -809,7 +809,7 @@ enum GatekeeperMode {
 };
 
 /* ->mode of a tethered guard (ACTOR_TYPE_TETHERED_GUARD, TetherState; level
- * 15); the mode is also the animation index. TetherState.mode is the command
+ * 15); the mode is also the animation index. TetherState.mode is the TetherCommand
  * a tether keeper or sentinel hands it (1 bound to its owner, 4-6 keeper
  * cues). */
 enum TetheredGuardMode {
@@ -823,6 +823,18 @@ enum TetheredGuardMode {
   TGUARD_BOUND = 7,       /* frozen until its owner goes dormant */
   TGUARD_LOOK = 8,        /* looks about (or toward its keeper), then RISE */
   TGUARD_SIGNAL = 9,      /* cues its keeper (who watches for this mode) */
+};
+
+/* TetherState.mode / KeeperState.mode: the command a tether keeper hands its
+ * tethered guard once the guard reports READY. */
+enum TetherCommand {
+  TCMD_NONE = 0,
+  TCMD_BOUND = 1, /* frozen (TGUARD_BOUND) until its owner goes dormant */
+  TCMD_FREED = 2, /* owner gone: plays out the bound pose, then READY */
+  TCMD_READY = 3, /* waiting for its keeper's command */
+  TCMD_SWAT = 4,  /* signals once; the swing knocks its keeper away (KEEPER_STRUCK) */
+  TCMD_WATCH = 5, /* guards facing its keeper, signalling it between looks */
+  TCMD_RISE = 6,  /* rises at once; its signal sends the keeper out (KEEPER_STEP_OUT) */
 };
 
 /* ->mode of a tether keeper (ACTOR_TYPE_TETHER_KEEPER, KeeperState; level
