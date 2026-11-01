@@ -88,30 +88,30 @@ void PollPadAndDistributeInput(void) {
 
   if (g_abPadRawReport[0] != 0) {
     g_nPadSetMainModePending = 1;
-    padType = 0;
+    padType = PAD_TYPE_NONE;
   } else {
     switch (g_abPadRawReport[1]) {
     case 0x41:
-      padType = 2;
+      padType = PAD_TYPE_DIGITAL;
       break;
     case 0x53:
     case 0x73:
-      if (g_anPadTypeBlock[0] != 3) {
+      if (g_anPadTypeBlock[0] != PAD_TYPE_ANALOG) {
         ResetPadStickCalibrationDefaults((int)&g_anPadTypeBlock[-3]);
         g_dwPadAnalogRawSnapshot = *(unsigned int *)&g_abPadRawReport[4];
         FinalizePadCalibration((unsigned int *)&g_anPadTypeBlock[-3]);
       }
-      padType = 3;
+      padType = PAD_TYPE_ANALOG;
       break;
     default:
-      padType = 1;
+      padType = PAD_TYPE_UNSUPPORTED;
       break;
     }
   }
 
   stick = (int *)&g_adwPadHeldBlock[2];
   stick[0] = 0;
-  if (padType >= 2) {
+  if (padType >= PAD_TYPE_DIGITAL) {
     unsigned int buttons;
     unsigned int pressed;
     unsigned int released;
@@ -119,7 +119,7 @@ void PollPadAndDistributeInput(void) {
     unsigned int *pad;
 
     buttons = ~((g_abPadRawReport[2] << 8) | g_abPadRawReport[3]);
-    if (padType == 3) {
+    if (padType == PAD_TYPE_ANALOG) {
       *(unsigned int *)cal = *(unsigned int *)&g_abPadRawReport[4];
       MapPadAxisToCalibratedRange(cal, (int)&stick[-4]);
       if (g_abPadRawReport[1] == 0x53) {
@@ -184,8 +184,9 @@ void PollPadAndDistributeInput(void) {
       g_dwPadAnalogCalibrated = *(unsigned int *)cal;
       if (g_nPadAllInputIdleFlag != 0) {
         if ((g_dwPadHeld & PAD_DPAD) != 0 ||
-            (padType == 3 && (cal[PAD_AXIS_LX] != 0x7F ||
-                              cal[PAD_AXIS_LY] != cal[PAD_AXIS_LX]))) {
+            (padType == PAD_TYPE_ANALOG &&
+             (cal[PAD_AXIS_LX] != 0x7F ||
+              cal[PAD_AXIS_LY] != cal[PAD_AXIS_LX]))) {
           g_nPadDirectionalIdleFlag = 0;
         }
         if (g_nPadDirectionalIdleFlag == 0 ||
@@ -193,7 +194,7 @@ void PollPadAndDistributeInput(void) {
           g_nPadAllInputIdleFlag = 0;
         }
       }
-    } else if (g_nPadType < 2) {
+    } else if (g_nPadType < PAD_TYPE_DIGITAL) {
       g_nPadType = padType;
     }
 

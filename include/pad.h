@@ -10,6 +10,15 @@
 
 #include "pad_buttons.h"
 
+/* g_nPadType / PadSubstep.padType, from the report's id byte
+ * (PollPadAndDistributeInput). Below PAD_TYPE_DIGITAL gameplay auto-pauses. */
+enum PadType {
+  PAD_TYPE_NONE = 0,        /* no controller (status byte nonzero) */
+  PAD_TYPE_UNSUPPORTED = 1, /* any other id */
+  PAD_TYPE_DIGITAL = 2,     /* id 0x41, standard digital pad */
+  PAD_TYPE_ANALOG = 3,      /* id 0x73 DualShock / 0x53 analog joystick */
+};
+
 /* Stick axis bytes of the analog word, in controller-report order (right
  * stick first). 0x7F is centred; X grows rightward, Y grows downward
  * (PollPadAndDistributeInput maps the left stick onto the D-pad bits). */

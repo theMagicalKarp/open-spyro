@@ -13,6 +13,7 @@ typedef unsigned char u_char;
 typedef unsigned short u_short;
 typedef unsigned int u_int;
 
+#include "pad.h"
 #include "title_state.h"
 
 /* ---- titlescreen sprite ids (Titlescreen_EmitSpriteQuad; a negative id

@@ -955,7 +955,7 @@ void Titlescreen_Update(void) {
   }
 
   RotateLightVectorXZ(3); /* SpecularUpdate */
-  if (g_dwPadPressed.padType >= 2 && (u_short)g_dwPadPressed.held != 0) {
+  if (g_dwPadPressed.padType >= PAD_TYPE_DIGITAL && (u_short)g_dwPadPressed.held != 0) {
     g_nTitleMode.idleFrames = 0;
   } else {
     g_nTitleMode.idleFrames++;

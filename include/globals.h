@@ -814,7 +814,7 @@ extern int g_anCollisionProbeVec[3];                    /* 0x80077368 */
 extern uint g_dwPadPressed;                             /* 0x80077378 */
 extern uint g_dwPadReleased;                            /* 0x8007737c */
 extern uint g_dwPadHeld;                                /* 0x80077380 */
-extern int g_nPadType;                                  /* 0x80077384 */
+extern int g_nPadType;                                  /* 0x80077384: enum PadType (pad.h) */
 extern int g_nPadStickActiveFlag;                       /* 0x80077388 */
 extern uint g_dwPadAnalogCalibrated;                    /* 0x8007738c */
 extern int g_nPadAllInputIdleFlag;                      /* 0x80077390 */

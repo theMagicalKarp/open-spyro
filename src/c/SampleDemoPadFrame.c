@@ -48,7 +48,7 @@ int SampleDemoPadFrame(void) {
   }
   frame &= 0xFFFF;
   held = g_dwPadHeld;
-  g_nPadType = 3;
+  g_nPadType = PAD_TYPE_ANALOG;
   g_dwPadPressed = ~held & frame;
   rel = held & ~frame;
   g_dwPadHeld = frame;

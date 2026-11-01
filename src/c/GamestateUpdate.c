@@ -4,6 +4,7 @@
 #include "gamestate.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "pad.h"
 #include "pad_buttons.h"
 #include "title_state.h"
 
@@ -106,7 +107,8 @@ void GamestateUpdate(void) {
     if (g_nGamestate == GS_GAMEPLAY && g_nCinematicActive == 0 &&
         g_nSparxHealth >= SPARX_GONE &&
         g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
-      if ((unsigned int)g_nPadType < 2 || (g_dwPadPressed & PAD_START)) {
+      if ((unsigned int)g_nPadType < PAD_TYPE_DIGITAL ||
+          (g_dwPadPressed & PAD_START)) {
         EnterPauseMenu(1);
       } else if (g_dwPadPressed & PAD_SELECT) {
         EnterInventoryMenu(1);
