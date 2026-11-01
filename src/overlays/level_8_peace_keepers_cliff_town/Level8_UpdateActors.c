@@ -2552,7 +2552,7 @@ void Level8_UpdateActors(void) {
       int r;
 
       TickActorFlameGlow(actor);
-      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != 5) {
+      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != TPRUNNER_KNOCKED) {
         st->knockTimer = 0x190;
         st->knockSpeed = 0xAA;
         st->heading = StepAndLerpAngle8(
@@ -2562,31 +2562,31 @@ void Level8_UpdateActors(void) {
         actor->probeDist = 0x64;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 5);
+        ENTER_POSE(actor, TPRUNNER_KNOCKED);
       }
       actor->flags = 0;
 
       switch (actor->mode) {
-      case 0:
+      case TPRUNNER_IDLE:
         if (st->mode == 1 || st->mode == 2) {
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, TPRUNNER_GUARD);
         }
         break;
 
-      case 4: {
+      case TPRUNNER_GUARD: {
         int d = ApproxDist2D(&actor->posX, &spy->posX);
 
         if (st->mode == 2) {
           if (ApproxDist2D(&spy->posX, &st->pathA->nodes[st->node].x) <
               st->range << 10) {
             st->which = 1;
-            actor->mode = 0x14;
+            actor->mode = TPRUNNER_RUN;
             continue;
           }
           if (ApproxDist2D(&spy->posX, &st->pathB->nodes[st->node].x) <
               st->range << 10) {
             st->which = 2;
-            actor->mode = 0x14;
+            actor->mode = TPRUNNER_RUN;
             continue;
           }
         }
@@ -2594,12 +2594,12 @@ void Level8_UpdateActors(void) {
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && d < 0x44C &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x2BC) {
           st->timer = 0x78;
-          ENTER_POSE(actor, 8);
+          ENTER_POSE(actor, TPRUNNER_SWIPE);
         }
         break;
       }
 
-      case 5:
+      case TPRUNNER_KNOCKED:
         r = DriveActorTrackedMove(actor, &st->knockTimer, st->heading, &st->knockSpeed,
                           0xC, 0x10);
         if (r == 3 && st->cried == 0) {
@@ -2617,20 +2617,20 @@ void Level8_UpdateActors(void) {
         }
         break;
 
-      case 6:
+      case TPRUNNER_REACT:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, TPRUNNER_GUARD);
         }
         break;
 
-      case 8:
+      case TPRUNNER_SWIPE:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, TPRUNNER_GUARD);
         }
         break;
 
-      case 10:
+      case TPRUNNER_WALK_BACK:
         TurnActorYawTowardAngle(actor,
                       ArcTan2(st->pathA->nodes[st->pathA->cur].x -
                                         actor->posX,
@@ -2641,11 +2641,11 @@ void Level8_UpdateActors(void) {
         MoveActorAlongHeading(actor, 0x6E, 0, 0, 5);
         if (ApproxDist2D(&actor->posX,
                           &st->pathA->nodes[st->pathA->cur].x) < 0x80) {
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, TPRUNNER_GUARD);
         }
         break;
 
-      case 0x14:
+      case TPRUNNER_RUN:
         ANIM_GO(actor, 7);
         if (st->which == 1) {
           if (PivotActorAlongPath(actor, st->pathA, 0x80,
@@ -2658,7 +2658,7 @@ void Level8_UpdateActors(void) {
             break;
           }
           st->mode = 1;
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, TPRUNNER_GUARD);
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x5DC &&
             PivotActorAlongPath(actor, st->pathB, 0x80, 0x50, 0, 4, 0x14, 0xFF, 5) ==
@@ -2669,7 +2669,7 @@ void Level8_UpdateActors(void) {
           break;
         }
         st->mode = 1;
-        ENTER_POSE(actor, 4);
+        ENTER_POSE(actor, TPRUNNER_GUARD);
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       break;

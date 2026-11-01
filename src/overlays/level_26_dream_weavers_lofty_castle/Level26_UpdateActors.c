@@ -678,16 +678,16 @@ void Level26_UpdateActors(void) {
     case ACTOR_TYPE_BOMB_LOBBER: {
       BombLobberState *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 2) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != BLOBBER_KNOCKED) {
         st->speed = 0xF0;
         st->heading = SPY.bodyRotZ;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, BLOBBER_KNOCKED);
       }
 
       switch (actor->mode) {
-      case 0:
+      case BLOBBER_WATCH:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && actor->drawn != 0 &&
             ApproxDist2D(&actor->posX, &spy->posX) < 0x2800) {
@@ -695,15 +695,15 @@ void Level26_UpdateActors(void) {
 
           if (dz > 0 ? dz < 0xA00
                      : SPY.posZ - (actor->posZ - actor->floorOffset) < 0xA00) {
-            ENTER_POSE(actor, 1);
+            ENTER_POSE(actor, BLOBBER_LOB);
           }
         }
         break;
 
-      case 1:
+      case BLOBBER_LOB:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, BLOBBER_WATCH);
         }
         if (actor->nextFrame >= 6 && st->timer == 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -712,7 +712,7 @@ void Level26_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case BLOBBER_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x28);

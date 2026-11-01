@@ -1038,7 +1038,8 @@ enum BoltCasterMode {
 };
 
 /* ->mode of a rearing critter (ACTOR_TYPE_REARING_CRITTER, RearState; level
- * 1); the mode is also the animation index. */
+ * 1) and the level 4 spinner (ACTOR_TYPE_SPINNER, SpinnerState), which runs
+ * the same machine; the mode is also the animation index. */
 enum RearingCritterMode {
   REAR_IDLE = 0,    /* faces Spyro; near: NOTICE (or straight to REAR) */
   REAR_NOTICE = 2,  /* notices Spyro, then REAR */
@@ -1060,6 +1061,85 @@ enum SentryMode {
   SENTRY_LUNGE = 3,      /* lunges at Spyro, then RECOVER */
   SENTRY_RECOVER = 4,    /* slides to a stop, then CIRCLE */
   SENTRY_GO_HOME = 0x64, /* walks home, then WATCH */
+};
+
+/* ->mode of a post grabber (ACTOR_TYPE_POST_GRABBER, PostGrabberState; level
+ * 25); the mode is also the animation index. A grabber and its lookout are
+ * one actor that swaps ->type: a lookout whose partner is roused becomes a
+ * grabber in PGRAB_EMERGE, and a grabber standing down becomes a lookout in
+ * LOOKOUT_CHASE. PostGrabberState.slot holds the one actor allowed to engage. */
+enum PostGrabberMode {
+  PGRAB_WAIT = 0,       /* faces Spyro; close in front and the slot free: CHASE */
+  PGRAB_GRAB = 1,       /* seizes Spyro, holds him, then throws him back out */
+  PGRAB_CHASE = 2,      /* closes on Spyro (close: GRAB); subMode 1: walks back to its post */
+  PGRAB_STAND_DOWN = 3, /* partner signalled (subMode 3): becomes a lookout */
+  PGRAB_EMERGE = 4,     /* just turned grabber: sweeps a growing contact sphere */
+  PGRAB_KNOCKED = 5,    /* flamed: bursts */
+};
+
+/* ->mode of a grabber lookout (ACTOR_TYPE_GRABBER_LOOKOUT, PostGrabberState;
+ * level 25); the mode is also the animation index. See PostGrabberMode. */
+enum GrabberLookoutMode {
+  LOOKOUT_WAIT = 0,    /* faces Spyro; close in front and the slot free: CHASE */
+  LOOKOUT_CHASE = 1,   /* closes on Spyro (close: SNAP); subMode 1: walks back to its post */
+  LOOKOUT_SNAP = 2,    /* snaps at Spyro, then CHASE back home */
+  LOOKOUT_KNOCKED = 3, /* knocked away, then bursts */
+};
+
+/* ->mode of a bomb lobber (ACTOR_TYPE_BOMB_LOBBER, BombLobberState; levels
+ * 25/26); the mode is also the animation index. */
+enum BombLobberMode {
+  BLOBBER_WATCH = 0,   /* faces Spyro; in range on the timer: LOB */
+  BLOBBER_LOB = 1,     /* lobs an ACTOR_TYPE_LOBBED_BOMB on frame 6, then WATCH */
+  BLOBBER_KNOCKED = 2, /* flamed: knocked away, then bursts */
+};
+
+/* ->mode of an alarm sentry (ACTOR_TYPE_ALARM_SENTRY, AlarmSentryState; level
+ * 25); the mode is also the animation index. Like the grabber pair, an alarm
+ * sentry and a roused sentry are one actor that swaps ->type. */
+enum AlarmSentryMode {
+  ASENTRY_WATCH = 0,  /* faces Spyro; in front: FIRE after a delay */
+  ASENTRY_FIRE = 1,   /* fires an ACTOR_TYPE_FLYING_EMBER, then WATCH */
+  ASENTRY_ROUSE = 2,  /* partner signalled (subMode 3): becomes a roused sentry */
+  ASENTRY_SETTLE = 3, /* just turned back from roused, then WATCH */
+};
+
+/* ->mode of a roused sentry (ACTOR_TYPE_ROUSED_SENTRY, AlarmSentryState;
+ * level 25); the mode is also the animation index. */
+enum RousedSentryMode {
+  RSENTRY_WATCH = 0,   /* as ASENTRY_WATCH */
+  RSENTRY_FIRE = 1,    /* as ASENTRY_FIRE */
+  RSENTRY_KNOCKED = 2, /* charged: knocked spinning into the air, then FALL */
+  RSENTRY_FALL = 3,    /* falls; landed: BURST */
+  RSENTRY_BURST = 4,   /* bursts */
+};
+
+/* ->mode of a loot critter (ACTOR_TYPE_LOOT_CRITTER, CritterState; level
+ * 34); the mode is also the animation index. */
+enum LootCritterMode {
+  LCRITTER_WATCH = 0,   /* faces Spyro; near: FLEE */
+  LCRITTER_FLEE = 1,    /* runs from Spyro around its home or along its path */
+  LCRITTER_KNOCKED = 2, /* knocked away (dropping its loot once), then bursts */
+};
+
+/* ->mode of a loot thief (ACTOR_TYPE_LOOT_THIEF, LootThiefState; level 34);
+ * the mode is also the animation index. LootThiefState.leg steps its run. */
+enum LootThiefMode {
+  LTHIEF_RUN = 0,     /* runs its ring and spur paths away from Spyro */
+  LTHIEF_KNOCKED = 1, /* flamed: shatters into chest shards */
+};
+
+/* ->mode of a two-path runner (ACTOR_TYPE_TWO_PATH_RUNNER, RunnerState; level
+ * 8); the mode is also the animation index. With RunnerState.mode 2 it runs
+ * whichever of its two paths ends nearer Spyro (RunnerState.which). */
+enum TwoPathRunnerMode {
+  TPRUNNER_IDLE = 0,       /* until RunnerState.mode arms it: GUARD */
+  TPRUNNER_GUARD = 4,      /* faces Spyro; close on the timer: SWIPE; armed: RUN */
+  TPRUNNER_KNOCKED = 5,    /* charged: knocked away, then bursts */
+  TPRUNNER_REACT = 6,      /* faces Spyro, then GUARD (no writer in the C sources) */
+  TPRUNNER_SWIPE = 8,      /* swipes, then GUARD */
+  TPRUNNER_WALK_BACK = 10, /* walks to its path node, then GUARD (a level 8 lookout sets its linked guard to 10) */
+  TPRUNNER_RUN = 0x14,     /* runs its chosen path to RunnerState.node, then GUARD */
 };
 
 #endif

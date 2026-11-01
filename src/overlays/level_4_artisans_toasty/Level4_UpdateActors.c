@@ -2697,7 +2697,7 @@ void Level4_UpdateActors(void) {
       EBB_BREAK();
       st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 7) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != REAR_KNOCKED) {
         SetActorGroupSubstate(actor, 1);
         st->angle = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
@@ -2712,11 +2712,11 @@ void Level4_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE4(actor, 7);
+        ENTER_POSE4(actor, REAR_KNOCKED);
       }
 
       switch (actor->mode) {
-      case 0:
+      case REAR_IDLE:
         if (g_nActorAnimDone != 0) {
           if (st->count == 0) {
             st->count = RandomIntInRange(3, 6);
@@ -2730,24 +2730,24 @@ void Level4_UpdateActors(void) {
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
           if (actor->anim == 0) {
-            ENTER_POSE4(actor, 2);
+            ENTER_POSE4(actor, REAR_NOTICE);
           }
-          ENTER_POSE4(actor, 3);
+          ENTER_POSE4(actor, REAR_REAR);
         }
         break;
 
-      case 2:
+      case REAR_NOTICE:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE4(actor, 3);
+          ENTER_POSE4(actor, REAR_REAR);
         }
         break;
 
-      case 3:
+      case REAR_REAR:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         goto spin_wait;
 
-      case 4: {
+      case REAR_REARED: {
         int dist = ApproxDist2D(&actor->posX, &SPY.posX);
 
         if (g_nActorAnimDone != 0) {
@@ -2769,23 +2769,23 @@ void Level4_UpdateActors(void) {
           int drop = height - SPY.posZ;
 
           if (drop > 0 ? drop < 0x4B0 : (SPY.posZ - height) < 0x4B0) {
-            ENTER_POSE4(actor, 5);
+            ENTER_POSE4(actor, REAR_SHOVE);
           }
         }
         if (dist > 0x2400) {
-          ENTER_POSE4(actor, 6);
+          ENTER_POSE4(actor, REAR_DROP);
         }
         break;
       }
 
-      case 5:
+      case REAR_SHOVE:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (g_nSpyroState == SPYRO_ST_KNOCKBACK) {
           st->timer = 0x8C;
         }
         if (g_nActorAnimDone != 0) {
           if (st->timer != 0) {
-            ENTER_POSE4(actor, 8);
+            ENTER_POSE4(actor, REAR_GLOAT);
           }
           goto spin_pose;
         }
@@ -2794,13 +2794,13 @@ void Level4_UpdateActors(void) {
         g_nSpyroRequestVelocityZ = 0;
         break;
 
-      case 6:
+      case REAR_DROP:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE4(actor, 0);
+          ENTER_POSE4(actor, REAR_IDLE);
         }
         break;
 
-      case 7:
+      case REAR_KNOCKED:
         if (actor->frame < 0xA) {
           actor->rotZ += st->spin;
         }
@@ -2816,14 +2816,14 @@ void Level4_UpdateActors(void) {
         }
         break;
 
-      case 8:
+      case REAR_GLOAT:
         if (actor->frame >= 0x1C && TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           actor->frame = 0xF;
         }
       spin_wait:
         if (g_nActorAnimDone != 0) {
         spin_pose:
-          ENTER_POSE4(actor, 4);
+          ENTER_POSE4(actor, REAR_REARED);
         }
         break;
       }
