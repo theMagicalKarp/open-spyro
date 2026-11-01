@@ -527,7 +527,7 @@ void Level11_FlightResults_Draw(void)
           pos[2] = 0x1100;
           pp = pos;
           q3 = pp;
-          if (g_nPauseMenuCursor == 0)
+          if (g_nPauseMenuCursor == FLIGHT_RETRY_YES)
           {
             if ((g_nPauseMenuIdleFrames % 0x10) < 6)
             {
@@ -542,7 +542,7 @@ void Level11_FlightResults_Draw(void)
           pos[2] = 0x1100;
           rec = g_pSpriteRecordWriteCursor;
           pp = pos;
-          if (g_nPauseMenuCursor == 1)
+          if (g_nPauseMenuCursor == FLIGHT_RETRY_NO)
           {
             if ((g_nPauseMenuIdleFrames % 0x10) < 6)
             {
@@ -550,7 +550,7 @@ void Level11_FlightResults_Draw(void)
             }
           }
           BuildTextSpriteChain("NO", pp, 0x12, (blink * 2) + 0xA);
-          if (g_nPauseMenuCursor != 0)
+          if (g_nPauseMenuCursor != FLIGHT_RETRY_YES)
           {
             rec = g_pSpriteRecordWriteCursor;
             count = 2;
@@ -711,7 +711,7 @@ void Level11_FlightResults_Draw(void)
       pos[1] = 0xBE;
       pos[2] = 0x1100;
       q2 = pp;
-      if (g_nPauseMenuCursor == 0)
+      if (g_nPauseMenuCursor == FLIGHT_RETRY_YES)
       {
         if ((g_nPauseMenuIdleFrames % 0x10) < 6)
         {
@@ -726,7 +726,7 @@ void Level11_FlightResults_Draw(void)
       pos[2] = 0x1100;
       rec = g_pSpriteRecordWriteCursor;
       qq = pos;
-      if (g_nPauseMenuCursor == 1)
+      if (g_nPauseMenuCursor == FLIGHT_RETRY_NO)
       {
         if ((g_nPauseMenuIdleFrames % 0x10) < 6)
         {
@@ -734,7 +734,7 @@ void Level11_FlightResults_Draw(void)
         }
       }
       BuildTextSpriteChain("NO", qq, 0x12, (blink * 2) + 0xA);
-      if (g_nPauseMenuCursor != 0)
+      if (g_nPauseMenuCursor != FLIGHT_RETRY_YES)
       {
         rec = g_pSpriteRecordWriteCursor;
         count = 2;

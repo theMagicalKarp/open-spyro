@@ -65,11 +65,11 @@ void Level17_FlightResultsMenu_Update(void) {
           (g_anFlightTargetTally + g_nFlightTargetTally1 + g_nFlightTargetTally2 + g_nFlightTargetTally3 < 0x20 &&
            g_anFlightClearTimes[g_nActiveWorldIndex] == 0)) {
         switch (g_nPauseMenuCursor) {
-        case 0:
+        case FLIGHT_RETRY_YES:
           g_pfnLevelHandleFlightResults(1);
           LoadAndStartLevelFromCd();
           break;
-        case 1:
+        case FLIGHT_RETRY_NO:
           g_pfnLevelHandleFlightResults(0);
           BeginPauseToMenuTransition();
           break;

@@ -33,4 +33,10 @@ extern int g_anFlightTargetTally;
 #define COURSE_ALL_CLEAR_BONUS(off) \
   (*(int *)((char *)g_anFlightCourseBonusTable_r4 + (off)))
 
+/* g_nPauseMenuCursor on the results screen's "TRY AGAIN?" prompt. */
+enum FlightRetryRow {
+  FLIGHT_RETRY_YES = 0, /* HandleFlightResults(1), reload the level */
+  FLIGHT_RETRY_NO = 1,  /* HandleFlightResults(0), back to the hub */
+};
+
 #endif /* OPEN_SPYRO_LEVEL_FLIGHT_RESULTS_H */
