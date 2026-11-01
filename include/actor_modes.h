@@ -1548,4 +1548,24 @@ enum FlameChunkSwitchMode {
   FCSWITCH_TRIPPED = 1, /* flamed: resumes chunk 0's animation; re-arms after 0x50 frames */
 };
 
+/* BreakableWallState.kind (ACTOR_TYPE_BREAKABLE_WALL; level 27). */
+enum BreakableWallKind {
+  BWALL_PLAIN = 0,   /* any hit on a part breaks it */
+  BWALL_ARMORED = 1, /* only a supercharge or superflame (ACTOR_HIT_SUPER) breaks it */
+};
+
+/* SuperflameGiverState.kind: how long the granted superflame lasts. */
+enum SuperflameGiverKind {
+  SFKIND_TIMED = 0,       /* 0x384 frames */
+  SFKIND_ENDLESS = 1,     /* g_nSpyroSuperflameTimer 0x9450C00: effectively for good */
+  SFKIND_SHORT = 2,       /* 0x30C frames */
+  SFKIND_ENDLESS_FAR = 3, /* ENDLESS, granted from a wider range (0xD48) */
+};
+
+/* PathRunnerState.mode: which of its two runs a path runner makes. */
+enum PathRunnerRun {
+  PRUN_FIRST = 0,  /* drives goal flag 0 */
+  PRUN_SECOND = 1, /* drives goal flag 1 */
+};
+
 #endif

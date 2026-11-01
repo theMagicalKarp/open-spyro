@@ -3090,12 +3090,12 @@ void Level21_UpdateActors(void) {
       if (st->init == 0) {
         st->init = 1;
         if (IsActorInRunningKillSet(actor) != 0) {
-          if (st->mode == 0) {
+          if (st->mode == PRUN_FIRST) {
             actor->group = 0;
             SetActorGroupSubstate(actor, 2);
             actor->group = 1;
             SetActorGroupSubstate(actor, 2);
-          } else if (st->mode == 1) {
+          } else if (st->mode == PRUN_SECOND) {
             actor->group = 2;
             SetActorGroupSubstate(actor, 2);
           }
@@ -3105,7 +3105,7 @@ void Level21_UpdateActors(void) {
         }
       }
 
-      if (st->mode == 0 && st->pathInit == 0) {
+      if (st->mode == PRUN_FIRST && st->pathInit == 0) {
         st->pathInit = 1;
         if (g_nSpawnAnchorValid[0] != 0) {
           st->camTimer = 0;
@@ -3133,7 +3133,7 @@ void Level21_UpdateActors(void) {
           continue;
         }
       }
-      if (st->mode == 1 && st->pathInit == 0) {
+      if (st->mode == PRUN_SECOND && st->pathInit == 0) {
         st->pathInit = 1;
         if (IsPointInRotatedBox(&spy->posX, st->volB) != 0) {
           actor->group = 2;
@@ -3217,18 +3217,18 @@ void Level21_UpdateActors(void) {
         } else {
           actor->posZ = z;
         }
-        if (st->mode == 0 && r == 0x11C &&
+        if (st->mode == PRUN_FIRST && r == 0x11C &&
             ApproxDist2D(&actor->posX, &spy->posX) < 0x1C00 &&
             ABS2(SPY_DZ(actor)) < 0x898) {
           g_anLevelRunnerArrived[st->mode] = 1;
         }
-        if (st->mode == 1 && r == 0x10A &&
+        if (st->mode == PRUN_SECOND && r == 0x10A &&
             ApproxDist2D(&actor->posX, &spy->posX) < 0x1D4C &&
             ABS2(SPY_DZ(actor)) < 0xBB8) {
           g_anLevelRunnerArrived[st->mode] = 1;
         }
         if (r == 0x100) {
-          if (st->mode == 1) {
+          if (st->mode == PRUN_SECOND) {
             if (g_anLevelRunnerArrived[1] == 0) {
               st->path = st->home;
               st->path[1] = 0;
@@ -3237,7 +3237,7 @@ void Level21_UpdateActors(void) {
             }
             actor->mode = RUNNER_LOOKOUT;
             continue;
-          } else if (st->mode == 0) {
+          } else if (st->mode == PRUN_FIRST) {
             if (g_anLevelRunnerArrived[0] != 0) {
               actor->mode = RUNNER_WAIT;
               continue;
@@ -3351,7 +3351,7 @@ void Level21_UpdateActors(void) {
           } while (k < 3);
         }
         last = st->mode < 2 ? st->path[0] - 1 : 0;
-        if (r == 0x103 && st->mode == 0 && g_anLevelRunnerArrived[0] == 0) {
+        if (r == 0x103 && st->mode == PRUN_FIRST && g_anLevelRunnerArrived[0] == 0) {
           st->path[1] = st->path[0] - 1;
           CopyVector(&actor->posX,
                         (int *)(st->path + (st->path[0] * 16 - 0x18)));
@@ -3375,9 +3375,9 @@ void Level21_UpdateActors(void) {
             st->lift = 0x17C;
             break;
           case 2:
-            if (st->mode == 0) {
+            if (st->mode == PRUN_FIRST) {
               st->lift = 0x104;
-            } else if (st->mode == 1) {
+            } else if (st->mode == PRUN_SECOND) {
               st->lift = 0xD2;
             }
             break;

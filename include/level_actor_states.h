@@ -50,7 +50,7 @@ typedef struct SuperflameGiverState {
   int timer;      /* 0x0C */
   int cam[3];     /* 0x10 camera anchor */
   int pad1C;      /* 0x1C */
-  int kind;       /* 0x20 */
+  int kind;       /* 0x20 SuperflameGiverKind */
   int count;      /* 0x24 */
   PathData *path; /* 0x28 */
   int cool;       /* 0x2C */
@@ -255,7 +255,7 @@ typedef struct PathRunnerState {
   int target;          /* 0x18 index into g_pActorListBase, -1 none */
   int pathInit;        /* 0x1C */
   int camTimer;        /* 0x20 */
-  unsigned int mode;   /* 0x24 0/1 = which goal flag it drives */
+  unsigned int mode;   /* 0x24 PathRunnerRun: which goal flag it drives */
   int range;           /* 0x28 */
   int timer;           /* 0x2C */
   int init;            /* 0x30 */
@@ -509,7 +509,7 @@ typedef struct FallingChunkState {
 /* Type 136 state: a breakable wall made of four parts. */
 typedef struct BreakableWallState {
   Actor *part[4]; /* 0x00 */
-  int kind;       /* 0x10 1 = only a flame-charge breaks it */
+  int kind;       /* 0x10 BreakableWallKind */
   int init;       /* 0x14 */
   int lodHandle;        /* 0x18 */
 } BreakableWallState;

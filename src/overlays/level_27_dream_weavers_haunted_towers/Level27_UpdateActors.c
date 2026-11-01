@@ -1917,25 +1917,25 @@ void Level27_UpdateActors(void) {
           m--;
           RefreshActorDerivedState(st->part[i], ACTOR_REFRESH_GRID);
         }
-        if (st->kind == 1) {
+        if (st->kind == BWALL_ARMORED) {
           ANIM_SET(actor, 1);
         }
       }
-      if (st->kind == 1) {
+      if (st->kind == BWALL_ARMORED) {
         st->lodHandle = SelectActorLodBand(actor, st->lodHandle);
       }
       actor->flags = 0;
       for (i = 0; i < 4; i++) {
         actor->flags |= st->part[i]->flags;
         if (st->part[i]->flags != 0 &&
-            (st->kind != 1 || (st->part[i]->flags & ACTOR_HIT_SUPER))) {
+            (st->kind != BWALL_ARMORED || (st->part[i]->flags & ACTOR_HIT_SUPER))) {
           int h = actor->rotZ;
           int spd = 0x64;
           short *cp;
           short *sp2;
           int j;
 
-          if (st->kind == 1) {
+          if (st->kind == BWALL_ARMORED) {
             PlayActorMeshVoice(actor, 1, 0);
           } else {
             PlayActorMeshVoice(actor, 0, 0);
@@ -1962,7 +1962,7 @@ void Level27_UpdateActors(void) {
             int a;
             int dd;
 
-            if (st->kind == 1) {
+            if (st->kind == BWALL_ARMORED) {
               if (o->anim != 1) {
                 ANIM_RESET(o, 1);
               }
@@ -2013,7 +2013,7 @@ void Level27_UpdateActors(void) {
       case SFGIVER_IDLE: {
         int range = 0xA8C;
 
-        if (st->kind == 3) {
+        if (st->kind == SFKIND_ENDLESS_FAR) {
           range = 0xD48;
         }
         if (st->alert != 0) {
@@ -2127,9 +2127,9 @@ void Level27_UpdateActors(void) {
             f = 0xE;
           }
           if (actor->nextFrame >= f && *(p = &g_nSpyroSuperflameTimer) == 0) {
-            if (st->kind == 1 || st->kind == 3) {
+            if (st->kind == SFKIND_ENDLESS || st->kind == SFKIND_ENDLESS_FAR) {
               *p = 0x9450C00;
-            } else if (st->kind == 2) {
+            } else if (st->kind == SFKIND_SHORT) {
               *p = 0x30C;
             } else {
               *p = 0x384;

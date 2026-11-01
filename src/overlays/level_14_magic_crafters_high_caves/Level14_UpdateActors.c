@@ -2920,7 +2920,7 @@ void Level14_UpdateActors(void) {
       case SFGIVER_IDLE: {
         int range = 0xA8C;
 
-        if (st->kind == 3) {
+        if (st->kind == SFKIND_ENDLESS_FAR) {
           range = 0xD48;
         }
         if (st->alert != 0) {
@@ -3034,9 +3034,9 @@ void Level14_UpdateActors(void) {
             f = 0xE;
           }
           if (actor->nextFrame >= f && *(p = &g_nSpyroSuperflameTimer) == 0) {
-            if (st->kind == 1 || st->kind == 3) {
+            if (st->kind == SFKIND_ENDLESS || st->kind == SFKIND_ENDLESS_FAR) {
               *p = 0x9450C00;
-            } else if (st->kind == 2) {
+            } else if (st->kind == SFKIND_SHORT) {
               *p = 0x30C;
             } else {
               *p = 0x384;
