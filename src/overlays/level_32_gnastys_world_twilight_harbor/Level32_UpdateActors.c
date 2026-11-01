@@ -1625,18 +1625,18 @@ void Level32_UpdateActors(void) {
       if (st->initialised == 0) {
         st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->flags == 1 && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
+        if (st->flags == GUNNER_F_ARMED && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
                              IsPointInRotatedBox(&spy->posX, st->box2) != 0)) {
-          st->flags &= ~1;
+          st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, BURSTGUN_WALK);
         }
       }
 
       switch (actor->mode) {
       case BURSTGUN_WATCH:
-        if (st->flags == 1 &&
+        if (st->flags == GUNNER_F_ARMED &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
-          st->flags &= ~1;
+          st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, BURSTGUN_WALK);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
@@ -1761,22 +1761,22 @@ void Level32_UpdateActors(void) {
       if (st->initialised == 0) {
         st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->flags == 1 && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
+        if (st->flags == GUNNER_F_ARMED && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
                              IsPointInRotatedBox(&spy->posX, st->box2) != 0)) {
-          st->flags &= ~1;
+          st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, SWEEPGUN_ADVANCE);
         }
       }
 
       switch (actor->mode) {
       case SWEEPGUN_IDLE:
-        if (st->flags == 1 &&
+        if (st->flags == GUNNER_F_ARMED &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
-          st->flags &= ~1;
+          st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, SWEEPGUN_ADVANCE);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if (st->flags != 1 && dist < 0x3400 && ABS2(SPY_DZ(actor)) < 0x5DC) {
+        if (st->flags != GUNNER_F_ARMED && dist < 0x3400 && ABS2(SPY_DZ(actor)) < 0x5DC) {
           st->yawToSpyro = actor->rotZ;
           st->sweepYaw = actor->rotZ << 4;
           actor->subMode = 0;
@@ -1935,18 +1935,18 @@ void Level32_UpdateActors(void) {
       if (st->initialised == 0) {
         st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->flags == 1 && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
+        if (st->flags == GUNNER_F_ARMED && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
                              IsPointInRotatedBox(&spy->posX, st->box2) != 0)) {
-          st->flags &= ~1;
+          st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, LOBGUN_WALK);
         }
       }
 
       switch (actor->mode) {
       case LOBGUN_WATCH:
-        if (st->flags == 1 &&
+        if (st->flags == GUNNER_F_ARMED &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
-          st->flags &= ~1;
+          st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, LOBGUN_WALK);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
@@ -1954,7 +1954,7 @@ void Level32_UpdateActors(void) {
             ABS2(SPY_DZ(actor)) < 0x258) {
           ENTER_POSE_B(actor, LOBGUN_SWIPE);
         }
-        if (st->flags != 1 && dist > 0x9C4 && TickCountdownByFrameDelta(&st->throwTimer, 4) != 0) {
+        if (st->flags != GUNNER_F_ARMED && dist > 0x9C4 && TickCountdownByFrameDelta(&st->throwTimer, 4) != 0) {
           if (st->aimRange < dist) {
             unsigned char *p = st->targetPath;
 

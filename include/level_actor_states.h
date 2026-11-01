@@ -570,9 +570,12 @@ typedef struct FenceCaptainState {
   TriggerBox all2;         /* 0x14C */
 } FenceCaptainState;
 
+/* Burst/sweep/lob gunner flags (level 32). */
+#define GUNNER_F_ARMED 1 /* waits for Spyro to enter a trigger box, then ADVANCE */
+
 /* Type 145 state (level 32): gunner that fires bursts of type 156 shots. */
 typedef struct BurstGunnerState {
-  int flags;     /* 0x00 flags; bit 0 armed */
+  int flags;     /* 0x00 GUNNER_F_ARMED */
   int knockSpeed;     /* 0x04 knock-back speed */
   int knockHeading;     /* 0x08 knock-back heading */
   int knockZSpeed;     /* 0x0C */
@@ -592,7 +595,7 @@ typedef struct BurstGunnerState {
 /* Type 147 state (level 32): gunner that sweeps its aim between two yaw
  * limits. */
 typedef struct SweepGunnerState {
-  int flags;     /* 0x00 flags; bit 0 armed */
+  int flags;     /* 0x00 GUNNER_F_ARMED */
   void *path;   /* 0x04 path */
   int knockSpeed;     /* 0x08 knock-back speed */
   int knockHeading;     /* 0x0C knock-back heading */
@@ -613,7 +616,7 @@ typedef struct SweepGunnerState {
 
 /* Type 148 state (level 32): gunner that throws a held type 176 lob. */
 typedef struct LobGunnerState {
-  int flags;              /* 0x00 flags; bit 0 armed */
+  int flags;              /* 0x00 GUNNER_F_ARMED */
   int knockSpeed;              /* 0x04 knock-back speed */
   int knockHeading;              /* 0x08 knock-back heading */
   int knockZSpeed;              /* 0x0C */

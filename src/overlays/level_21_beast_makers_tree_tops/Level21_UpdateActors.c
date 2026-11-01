@@ -794,15 +794,15 @@ void Level21_UpdateActors(void) {
         TickActorFlameGlow(actor);
       }
       f = actor->flags;
-      if ((f & 0xF0000) && actor->mode != BTHROW_KNOCKED &&
-          (actor->type != ACTOR_TYPE_BOULDER_THROWER_B || f != 0x10000)) {
+      if ((f & ACTOR_HIT_ANY) && actor->mode != BTHROW_KNOCKED &&
+          (actor->type != ACTOR_TYPE_BOULDER_THROWER_B || f != ACTOR_HIT_FLAME)) {
         Actor *c;
 
-        if (f & 0x40000) {
+        if (f & ACTOR_HIT_BLAST) {
           st->speed = 0;
           st->zSpeed = 0x28;
         } else {
-          if (f == 0x20000) {
+          if (f == ACTOR_HIT_CHARGE) {
             st->speed = 0x15E;
           } else {
             st->speed = 0x118;
@@ -1195,8 +1195,8 @@ void Level21_UpdateActors(void) {
       GatekeeperState *st = actor->state;
       int f = actor->flags;
 
-      if ((f & 0xD0000) && actor->mode != GATEKEEPER_KNOCKED) {
-        if (f & 0x40000) {
+      if ((f & (ACTOR_HIT_FLAME | ACTOR_HIT_BLAST | ACTOR_HIT_SUPER)) && actor->mode != GATEKEEPER_KNOCKED) {
+        if (f & ACTOR_HIT_BLAST) {
           st->speed = 0;
           st->zSpeed = 0x28;
         } else {

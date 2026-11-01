@@ -1654,9 +1654,9 @@ void Level31_UpdateActors(void) {
 
       st->handle = SelectActorLodBand(actor, st->handle);
       kind = st->kind;
-      mask = 0xF0000;
+      mask = ACTOR_HIT_ANY;
       if (kind != 0) {
-        mask = 0xA0000;
+        mask = ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER;
       }
       if ((actor->flags & mask) && actor->mode != HATCH_OPEN) {
         if (kind != 0) {

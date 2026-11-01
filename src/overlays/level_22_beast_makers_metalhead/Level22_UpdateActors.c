@@ -688,8 +688,8 @@ void Level22_UpdateActors(void) {
         if (IsActorInRunningKillSet(actor) != 0) {
           ModifyWorldChunkAnimFlags(4, CHUNK_ANIM_RESUME, 0);
           ModifyWorldChunkAnimFlags(5, CHUNK_ANIM_RESUME, 0);
-          OrPickupGroupActorFlags(0, 0x40000);
-          OrPickupGroupActorFlags(1, 0x40000);
+          OrPickupGroupActorFlags(0, ACTOR_HIT_BLAST);
+          OrPickupGroupActorFlags(1, ACTOR_HIT_BLAST);
           DespawnPickupGroupActors(2);
           DespawnPickupGroupActors(3);
           CopyVector(&actor->posX,
@@ -891,7 +891,7 @@ void Level22_UpdateActors(void) {
         int h = ArcTan2(PATH_X(st->path, st->path[1]) - actor->posX,
                               PATH_Y(st->path, st->path[1]) - actor->posY, 0);
 
-        OrPickupGroupActorFlags(st->phase, 0x40000);
+        OrPickupGroupActorFlags(st->phase, ACTOR_HIT_BLAST);
         if (st->phase == 1) {
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
@@ -1100,7 +1100,7 @@ void Level22_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        OrActorGroupFlagsInCone(actor, st->heading, 0xC0000, 0x258, 0x4B0, 0x4B0, 0x28);
+        OrActorGroupFlagsInCone(actor, st->heading, (ACTOR_HIT_BLAST | ACTOR_HIT_SUPER), 0x258, 0x4B0, 0x4B0, 0x28);
         if (CollideSphereWithWorldAndActors(&actor->posX, 0x168, 0x168) != 0) {
           DespawnActorRecord(actor);
           continue;
@@ -1156,7 +1156,7 @@ void Level22_UpdateActors(void) {
         DespawnActorRecord(actor);
         continue;
       }
-      OrActorGroupFlagsInCone(actor, st->heading, 0xC0000, 0x12C, 0x4B0, 0x258, 0x32);
+      OrActorGroupFlagsInCone(actor, st->heading, (ACTOR_HIT_BLAST | ACTOR_HIT_SUPER), 0x12C, 0x4B0, 0x258, 0x32);
       continue;
     }
 
@@ -1170,15 +1170,15 @@ void Level22_UpdateActors(void) {
         TickActorFlameGlow(actor);
       }
       f = actor->flags;
-      if ((f & 0xF0000) && actor->mode != BTHROW_KNOCKED &&
-          (actor->type != ACTOR_TYPE_BOULDER_THROWER_B || f != 0x10000)) {
+      if ((f & ACTOR_HIT_ANY) && actor->mode != BTHROW_KNOCKED &&
+          (actor->type != ACTOR_TYPE_BOULDER_THROWER_B || f != ACTOR_HIT_FLAME)) {
         Actor *c;
 
-        if (f & 0x40000) {
+        if (f & ACTOR_HIT_BLAST) {
           st->speed = 0;
           st->zSpeed = 0x28;
         } else {
-          if (f == 0x20000) {
+          if (f == ACTOR_HIT_CHARGE) {
             st->speed = 0x15E;
           } else {
             st->speed = 0x118;
@@ -1571,8 +1571,8 @@ void Level22_UpdateActors(void) {
       GatekeeperState *st = actor->state;
       int f = actor->flags;
 
-      if ((f & 0xD0000) && actor->mode != GATEKEEPER_KNOCKED) {
-        if (f & 0x40000) {
+      if ((f & (ACTOR_HIT_FLAME | ACTOR_HIT_BLAST | ACTOR_HIT_SUPER)) && actor->mode != GATEKEEPER_KNOCKED) {
+        if (f & ACTOR_HIT_BLAST) {
           st->speed = 0;
           st->zSpeed = 0x28;
         } else {
@@ -1959,7 +1959,7 @@ void Level22_UpdateActors(void) {
         DespawnActorRecord(actor);
         continue;
       }
-      if ((actor->flags & (ACTOR_HIT_BLAST | ACTOR_HIT_SUPER)) == 0xC0000) {
+      if ((actor->flags & (ACTOR_HIT_BLAST | ACTOR_HIT_SUPER)) == (ACTOR_HIT_BLAST | ACTOR_HIT_SUPER)) {
         PlayActorMeshVoice(actor, 0, 0);
         actor->posZ -= 0x190;
         for (i = 0; i < 6; i++) {
