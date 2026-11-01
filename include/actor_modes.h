@@ -198,6 +198,12 @@ enum ThiefMode {
   THIEF_STAND = 0x3C,       /* stands facing Spyro */
 };
 
+/* ->subMode of an egg thief that keeps away around its home node. */
+enum ThiefSubMode {
+  THIEFSUB_ORBIT = 0, /* circles path node 0 keeping it between itself and Spyro */
+  THIEFSUB_BREAK = 1, /* stuck or cornered: runs straight past, then ORBIT */
+};
+
 /* ->mode of a roaming ram (ACTOR_TYPE_ROAMING_RAM, RoamingRamState). */
 enum RoamingRamMode {
   RAM_GRAZE = 0,     /* calls; Spyro near: picks the node facing away from him */

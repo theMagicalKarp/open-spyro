@@ -716,7 +716,7 @@ void Level14_UpdateActors(void) {
           if (spd > 0xF0) {
             spd = 0xF0;
           }
-          if (actor->subMode == 0) {
+          if (actor->subMode == THIEFSUB_ORBIT) {
             int home = ArcTan2(st->path->nodes[0].x - actor->posX,
                                      st->path->nodes[0].y - actor->posY, 0);
 
@@ -758,7 +758,7 @@ void Level14_UpdateActors(void) {
                   AbsAngleDelta8(home, ArcTan2(spy->posX - actor->posX,
                                                     spy->posY - actor->posY,
                                                     0)) > 0x20) {
-                actor->subMode = 1;
+                actor->subMode = THIEFSUB_BREAK;
               }
             }
           } else {
@@ -770,10 +770,10 @@ void Level14_UpdateActors(void) {
             TurnActorYawTowardAngle(actor, a, 8, 0, 0);
             MoveActorAlongHeading(actor, spd, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             if (AbsAngleDelta8(a, b) > 0x50) {
-              actor->subMode = 0;
+              actor->subMode = THIEFSUB_ORBIT;
             }
             if (ApproxDist2D(&actor->posX, &st->path->nodes[0].x) > 0x1800) {
-              actor->subMode = 0;
+              actor->subMode = THIEFSUB_ORBIT;
             }
           }
         } else if (st->mode == THIEFKIND_LEDGE) {
