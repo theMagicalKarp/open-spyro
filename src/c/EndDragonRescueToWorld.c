@@ -33,7 +33,7 @@ void EndDragonRescueToWorld(void) {
   }
   ResetSpyroEntity(1);
   cam = g_apCameraAnchorBlock;
-  snap = g_anSpyroPadSnapshotBlock;
+  snap = g_anSpyroInputBlankBlock;
   snap[0] = 0xC;
   cam[0] = &snap[-0x7C];
   timer = g_nSpyroSuperflameTimerSave;

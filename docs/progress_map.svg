@@ -525,7 +525,7 @@
 <rect x="235.62" y="745.09" width="6.64" height="7.24" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>MemCardInitCard  ·  88 bytes  ·  library</title></rect>
 <rect x="235.62" y="752.34" width="6.64" height="7.24" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADPORTD_OBJ_4A8  ·  88 bytes  ·  library</title></rect>
 <rect x="235.62" y="759.58" width="6.64" height="6.92" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>CopyWords  ·  84 bytes  ·  handwritten</title></rect>
-<rect x="235.62" y="766.50" width="6.64" height="6.92" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SnapshotPadInputState  ·  84 bytes  ·  matched</title></rect>
+<rect x="235.62" y="766.50" width="6.64" height="6.92" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MovePadInputState  ·  84 bytes  ·  matched</title></rect>
 <rect x="242.26" y="694.38" width="6.78" height="6.45" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ApplyActiveGteRotation  ·  80 bytes  ·  handwritten</title></rect>
 <rect x="249.04" y="694.38" width="6.78" height="6.45" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>GetWorldChunkAnimState  ·  80 bytes  ·  handwritten</title></rect>
 <rect x="255.82" y="694.38" width="6.78" height="6.45" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>QuiesceHardwareForExec  ·  80 bytes  ·  matched</title></rect>

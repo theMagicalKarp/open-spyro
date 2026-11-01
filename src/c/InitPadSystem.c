@@ -6,7 +6,7 @@
    state, then start pad comms, do a first poll, and install the per-VSync poll
    callback. (0x800123c8, 152 bytes.) */
 void InitPadSystem(void) {
-  unsigned int *pad = &g_dwPad2Buttons;
+  unsigned int *pad = &g_dwPadStash;
   PadInitDirect(g_abPadRawReport, g_abPad2RawReport);
   ResetPadStickCalibrationDefaults((int)pad);
   FinalizePadCalibration(pad);

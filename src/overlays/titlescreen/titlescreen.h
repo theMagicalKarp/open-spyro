@@ -249,7 +249,7 @@ extern int g_nGamePaused;
 extern int g_nSparxFoodCount;
 extern int g_nSparxHealthStash;
 extern int g_nSparxHealth;
-extern int g_bDragonRescueSfxVoiceMarker;
+extern int g_bSceneSfxVoiceMarker;
 extern u_char g_abSaveFileHeaderTemplate[512];
 extern char *g_pRenderScratchRegionBase;
 extern int g_nTitleSceneSectorOffset;

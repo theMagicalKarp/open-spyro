@@ -43,5 +43,5 @@ void BeginCutscene(void) {
   g_nSfxOverrideVolR = 0x3FFF;
   g_nSfxOverrideFlags = 1;
 
-  PlaySoundEffect(0, 0, SFX_MODE_PANNED, &g_bDragonRescueSfxVoiceMarker);
+  PlaySoundEffect(0, 0, SFX_MODE_PANNED, &g_bSceneSfxVoiceMarker);
 }

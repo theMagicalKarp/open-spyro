@@ -14707,11 +14707,11 @@ dlabel g_pCollisionHitActor
     /* 65FE4 800757E4 00000000 */ .word 0x00000000
 enddlabel g_pCollisionHitActor
 
-nonmatching g_nGameOverLevelIntroIndex
+nonmatching g_nGameOverLevelIndex
 
-dlabel g_nGameOverLevelIntroIndex
+dlabel g_nGameOverLevelIndex
     /* 65FE8 800757E8 00000000 */ .word 0x00000000
-enddlabel g_nGameOverLevelIntroIndex
+enddlabel g_nGameOverLevelIndex
 
 nonmatching g_pCreditsLoadBuf
 

@@ -817,7 +817,7 @@ void Level1_BalloonistCutscene_Update(void)
       {
         CopyVector(g_anSpyroWorldPos, &g_nActorCutsceneTimer[8]);
         ResetSpyroEntity(1);
-        g_nSpyroPadSnapshotCountdown = 0x10;
+        g_nSpyroInputBlankCountdown = 0x10;
         *((int *) ((char *) g_pCameraAnchorPos)) = (int) g_anSpyroWorldPos;
         g_nCameraCurrentMode = CAM_MODE_STAND;
         g_nCameraNextMode = CAM_MODE_STAND;

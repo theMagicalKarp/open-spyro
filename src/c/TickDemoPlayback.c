@@ -80,7 +80,7 @@ int TickDemoPlayback(void) {
         g_nSfxOverrideFlags = 1;
         g_nSfxOverrideVolL = 0x3fff;
         g_nSfxOverrideVolR = 0x3fff;
-        PlaySoundEffect(0, 0, SFX_MODE_PANNED, &g_bDragonRescueSfxVoiceMarker);
+        PlaySoundEffect(0, 0, SFX_MODE_PANNED, &g_bSceneSfxVoiceMarker);
       } else {
         *(int *)g_pPathTableHead = 0x490;
       }

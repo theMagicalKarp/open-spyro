@@ -93,12 +93,12 @@ void BuildLoadedLevelRuntime(int fullSetup) {
         (g_nGamestate != GS_ACTOR_CUTSCENE)) {
       if (((g_nGamestate == GS_GAME_OVER) &&
            (((unsigned int)(g_nActiveLevelId - 0x28)) < 0x14)) &&
-          ((gidx = g_nGameOverLevelIntroIndex - 0x12,
+          ((gidx = g_nGameOverLevelIndex - 0x12,
             g_anGameOverRespawnPosTable[gidx * 3] != 0))) {
         CopyVector(
             g_anSpyroWorldPos,
-            &g_anGameOverRespawnPosVirtualBase[g_nGameOverLevelIntroIndex * 3]);
-        yaw = g_abGameOverRespawnYawVirtualBase[g_nGameOverLevelIntroIndex];
+            &g_anGameOverRespawnPosVirtualBase[g_nGameOverLevelIndex * 3]);
+        yaw = g_abGameOverRespawnYawVirtualBase[g_nGameOverLevelIndex];
       } else {
         CopyVector(g_anSpyroWorldPos, g_anLevelSpawnPos);
         yaw = g_nLevelSpawnYaw;
@@ -109,7 +109,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   g_nSparxHealth = g_nSparxHealthStash;
   if (g_nGamestate != GS_ACTOR_CUTSCENE) {
     ResetSpyroEntity(0);
-    g_nSpyroPadSnapshotCountdown = 0xC;
+    g_nSpyroInputBlankCountdown = 0xC;
   }
   if ((g_nActiveLevelId % 10) == 5) {
     g_nFlightLevelActive = 1;

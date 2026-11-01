@@ -184,7 +184,7 @@ extern int g_nSpyroGroundHeightZ;                        /* g_nSpyroGroundHeight
 extern int g_nSpyroFlameVariant;
 extern int g_nSpyroMotionSpeed;
 extern int g_nSpyroMotionZ;
-extern int g_nSpyroPadSnapshotCountdown;
+extern int g_nSpyroInputBlankCountdown;
 extern int g_nSpyroRequestState;                         /* scripted camera mode */
 extern int g_nSpyroRequestVelocityZ;
 extern int g_nSpyroState;                                /* Spyro's state */

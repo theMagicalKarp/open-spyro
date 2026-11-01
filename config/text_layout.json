@@ -1681,7 +1681,7 @@
    "size": 100
   },
   {
-   "name": "SnapshotPadInputState",
+   "name": "MovePadInputState",
    "vram": 2147825416,
    "size": 84
   },

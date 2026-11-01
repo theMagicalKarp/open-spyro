@@ -608,7 +608,7 @@ extern uint g_dwActorMeshFadeColor;          /* 0x800757d4 */
 extern int g_nGamestate;                     /* 0x800757d8 */
 extern struct PadSubstep *g_pPadSubstepState; /* 0x800757e0: this substep's g_anPadSubstepRing entry (pad.h) */
 extern void *g_pCollisionHitActor;           /* 0x800757e4 */
-extern int g_nGameOverLevelIntroIndex;       /* 0x800757e8 */
+extern int g_nGameOverLevelIndex;       /* 0x800757e8: g_nLevelIndex at game over; picks the continue spawn in g_anGameOverRespawnPosTable / g_abGameOverRespawnYawTable (BuildLoadedLevelRuntime) */
 extern unsigned short **g_pLevelPickupTableEntries; /* 0x800757f8: per pickup group, its actor-id list (bit 15 marks the last) */
 extern byte g_abPadActCommand[2];            /* 0x80075800 */
 extern struct Actor *g_pSpyroContactActor;           /* 0x80075804 */
@@ -671,7 +671,7 @@ extern int g_nActorMeshOtDepthBin;           /* 0x80075934 */
 extern int g_nCameraPassiveModeHoldTimer;    /* 0x80075938 */
 extern int g_nRespawnOrGameOverFrame;             /* 0x8007593c: frame counter of the respawn / game-over sequence (RespawnOrGameOver_Update / _Draw) */
 extern int g_nRespawnOrGameOverMode;              /* 0x80075940: respawn / game-over sub-mode: 0 load frame (respawn returns here), 1 game-over presentation, 2 wait for the level stream (RespawnOrGameOver_Update) */
-extern byte g_bSpyroPadSnapshotReverseFlag;  /* 0x80075944 */
+extern byte g_bPadInputStashed;  /* 0x80075944: 1 while live pad input sits in g_dwPadStash (toggled by MovePadInputState); the frame tick restores it when set */
 extern int g_nVsyncFramePaceAnchor;          /* 0x80075950 */
 extern int g_nVsyncFrameEndCount;            /* 0x80075954 */
 extern int g_nSpyroPitchRateAccum;           /* 0x80075960 */
@@ -789,7 +789,7 @@ extern int g_nDragonRescueFullscreenTintLevel;             /* 0x80077074 */
 extern void *g_pDragonRescueCameraPath;                    /* 0x80077078 */
 extern int g_nDragonRescueCameraPathCount;                 /* 0x8007707c */
 extern int g_nDragonRescueSecondaryTimer;                  /* 0x80077080 */
-extern byte g_bDragonRescueSfxVoiceMarker;                 /* 0x80077084 */
+extern byte g_bSceneSfxVoiceMarker;                 /* 0x80077084: PlaySoundEffect voice marker shared by the non-gameplay scene sounds: dragon-rescue count blip, opening/demo stream sample (BeginCutscene, TickDemoPlayback), titlescreen UI sound */
 extern int g_nDragonRescueAudioFiredFlag;                  /* 0x80077088 */
 extern int g_nDragonRescuePadHoldTimer;                    /* 0x8007708c */
 extern int g_nDragonRescueOrbitStartYaw;                   /* 0x80077090 */
@@ -828,7 +828,7 @@ extern int g_anMusicTrackLbaTable[64];                  /* 0x800774b8 */
 extern uint g_dwCdMusicReadHead;                        /* 0x800776b8 */
 extern int g_nLastCdMusicCommand;                       /* 0x800776c4 */
 extern int g_nPendingMusicCommand;                      /* 0x800776c8 */
-extern uint g_dwPad2Buttons;                            /* 0x800776d8 */
+extern uint g_dwPadStash;                            /* 0x800776d8: first word of a 0xA4-byte stash of the pad state block (g_dwPadPressed..); MovePadInputState parks live input here to blank it for a frame */
 extern int g_nWorldCollisionTriCount;                   /* 0x80077780 */
 extern void *g_pWorldCollisionTriArray;                 /* 0x80077784 */
 extern int g_nWorldMeshIndexCount;                      /* 0x80077788 */
@@ -997,7 +997,7 @@ extern int g_nSpyroSwingEulerTargetZ;                /* 0x80078c04: swing-euler 
 extern int g_anSpyroSwingEulerPrev[3];                  /* 0x80078c08 */
 extern int g_anSpyroSwingEulerSpringAccum[3];           /* 0x80078c14 */
 extern int g_anSpyroComposedBodyMtx[5];                 /* 0x80078c20 */
-extern int g_nSpyroPadSnapshotCountdown;                /* 0x80078c48 */
+extern int g_nSpyroInputBlankCountdown;                /* 0x80078c48: frames left during which Spyro's frame tick stashes the pad (no input): 0xC after a level load, >= 2 while SPYRO_RQ_FREEZE_INPUT or a scripted move holds */
 extern uint g_dwSpyroRequestMask;                       /* 0x80078c4c */
 extern int g_anSpyroRequestTargetPos[3];                /* 0x80078c50 */
 extern byte g_abSpyroRequestEuler[3];                   /* 0x80078c5c */

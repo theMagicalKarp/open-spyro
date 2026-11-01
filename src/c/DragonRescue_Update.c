@@ -630,7 +630,7 @@ void DragonRescue_Update(void) {
       g_nSpyroAnimPlayRate = 4;
       TickSpyroAnimLayer1();
       TickSpyroAnimLayer2();
-      StopSoundVoiceByIndex(*(int *)&g_bDragonRescueSfxVoiceMarker, 2);
+      StopSoundVoiceByIndex(*(int *)&g_bSceneSfxVoiceMarker, 2);
       TickSpuPerFrame();
       if (g_nDragonRescueSplitFlag == 0) {
         SetSpuTransferStartAddr(0x80000 - g_nDragonRescueAudioSampleSize);
@@ -718,7 +718,7 @@ void DragonRescue_Update(void) {
       }
       if (g_bHudDragonRollPhase == 0) {
         PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_COUNT), 0, SFX_MODE_PANNED,
-                        &g_bDragonRescueSfxVoiceMarker);
+                        &g_bSceneSfxVoiceMarker);
       }
     }
     if (GB[5] >= 0x60 && g_nDragonRescueStreamState == 6) {

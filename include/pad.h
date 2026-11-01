@@ -53,7 +53,7 @@ typedef struct PadSubstep {
   (*(type *)((char *)(p) + PAD_SUBSTEP_OFFSET(field)))
 
 /* One controller's live state + stick calibration block: pad 1 at
- * g_dwPadPressed (0x80077378), pad 2 mirrored at g_dwPad2Buttons
+ * g_dwPadPressed (0x80077378), pad 2 mirrored at g_dwPadStash
  * (0x800776d8). The head words are the per-frame pad globals
  * (g_dwPadPressed .. g_dwPadAnalogRawSnapshot); the calibration tables are
  * filled by ResetPadStickCalibrationDefaults / FinalizePadCalibration and

@@ -1091,8 +1091,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           SPY[SPY_ROLL] -= 0x1000;
         }
         BuildSpyroVelocityFromBodyEuler();
-        if (g_nSpyroPadSnapshotCountdown <= 0) {
-          g_nSpyroPadSnapshotCountdown = 1;
+        if (g_nSpyroInputBlankCountdown <= 0) {
+          g_nSpyroInputBlankCountdown = 1;
         }
         p = (-g_nSpyroBodyYawStep * 8 - g_nSpyroBodyPitch) & 0xFFF;
         if (p > 0x800) {
@@ -1224,8 +1224,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         BuildSpyroVelocityFromBodyEuler();
         g_nSpyroVelocityZ = 0;
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_NO_CLIP);
-        if (g_nSpyroPadSnapshotCountdown <= 0) {
-          g_nSpyroPadSnapshotCountdown = 1;
+        if (g_nSpyroInputBlankCountdown <= 0) {
+          g_nSpyroInputBlankCountdown = 1;
         }
         if (ApproxDist2D(&SPY[0], &SPY[0x7E]) < 0x300) {
           LEVEL_GLIDE_HANDOFF();
@@ -1239,8 +1239,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           g_nSpyroVelocityZ = -0x780;
         }
         g_nSpyroBodyRoll = 0;
-        if (g_nSpyroPadSnapshotCountdown <= 0) {
-          g_nSpyroPadSnapshotCountdown = 1;
+        if (g_nSpyroInputBlankCountdown <= 0) {
+          g_nSpyroInputBlankCountdown = 1;
         }
       } else if (g_nSpyroSubstate == SPYRO_SUB_GLIDE_ARRIVE) {
 
@@ -1298,8 +1298,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           SPY[SPY_ROLL] -= 0x1000;
         }
         BuildSpyroVelocityFromBodyEuler();
-        if (g_nSpyroPadSnapshotCountdown <= 0) {
-          g_nSpyroPadSnapshotCountdown = 1;
+        if (g_nSpyroInputBlankCountdown <= 0) {
+          g_nSpyroInputBlankCountdown = 1;
         }
       } else {
         BuildSpyroVelocityFromBodyEuler();

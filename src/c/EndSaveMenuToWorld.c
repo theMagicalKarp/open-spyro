@@ -23,7 +23,7 @@ void EndSaveMenuToWorld(void) {
 
   g_nSpyroSwingEulerPrev1 = 0x100;
   g_bSpyroSwingByteEuler1 = 0x10;
-  g_nSpyroPadSnapshotCountdown = 8;
+  g_nSpyroInputBlankCountdown = 8;
   g_apCameraAnchorBlock[0] = &g_anSpyroSwingTargetBlock[-105];
 
   dyn = g_anCameraDynamicTargetParams;

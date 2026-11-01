@@ -20,9 +20,9 @@ void UpdateCameraFrame(void) {
   } else {
     g_nCameraLookAroundActive = 0;
   }
-  g_bSpyroPadSnapshotReverseFlag = 0;
-  if (g_nSpyroPadSnapshotCountdown != 0) {
-    SnapshotPadInputState(&g_dwPadPressed, &g_dwPad2Buttons);
+  g_bPadInputStashed = 0;
+  if (g_nSpyroInputBlankCountdown != 0) {
+    MovePadInputState(&g_dwPadPressed, &g_dwPadStash);
   }
   if (g_nSpyroScriptedMoveMode != 0) {
     g_nCameraNextMode = CAM_MODE_STAND;
@@ -71,7 +71,7 @@ void UpdateCameraFrame(void) {
       g_apScriptedCameraViewBlock[0] = 0;
     }
   }
-  if (g_bSpyroPadSnapshotReverseFlag != 0) {
-    SnapshotPadInputState(&g_dwPad2Buttons, &g_dwPadPressed);
+  if (g_bPadInputStashed != 0) {
+    MovePadInputState(&g_dwPadStash, &g_dwPadPressed);
   }
 }

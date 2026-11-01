@@ -54,7 +54,7 @@ void Titlescreen_Update(void) {
     g_nTitleMode.idleFrames = 0;
     if (g_nTitleMode.subState == 2 && g_pPathTableHead->frame >= 300 &&
         (g_dwPadPressed.held & (PAD_START | PAD_CROSS)) != 0) {
-      StopSoundVoiceByIndex(g_bDragonRescueSfxVoiceMarker, 4); /* StopSound(voice) */
+      StopSoundVoiceByIndex(g_bSceneSfxVoiceMarker, 4); /* StopSound(voice) */
       g_pPathTableHead->frame = 1170;
     }
   } else {

@@ -112,7 +112,7 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_WALK);
       break;
     }
-    if (g_nSpyroPadSnapshotCountdown != 0) {
+    if (g_nSpyroInputBlankCountdown != 0) {
       break;
     }
     if (g_nSpyroCliffEdgeHint != 0) {
@@ -548,7 +548,7 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_WALK);
       break;
     }
-    if (g_nSpyroPadSnapshotCountdown != 0) {
+    if (g_nSpyroInputBlankCountdown != 0) {
       ChangeSpyroState(SPYRO_ST_IDLE);
       break;
     }
@@ -697,7 +697,7 @@ void UpdateSpyroStateBehavior(void) {
         RestartSpyroAnimWithState(SPYRO_ST_TEETER);
         break;
       }
-      if (g_nSpyroPadSnapshotCountdown == 0) {
+      if (g_nSpyroInputBlankCountdown == 0) {
         unsigned char *b = (unsigned char *)air;
 
         if (b[SPYB_ANIM_CURRENT - 4 * SPY_AIRBORNE] ==
@@ -730,8 +730,8 @@ void UpdateSpyroStateBehavior(void) {
       } else {
         ChangeSpyroState(SPYRO_ST_IDLE);
       }
-      if (SPY[SPY_COUNTDOWN] < 8) {
-        SPY[SPY_COUNTDOWN] = 8;
+      if (SPY[SPY_INPUT_BLANK] < 8) {
+        SPY[SPY_INPUT_BLANK] = 8;
       }
       ResetSpyroLinearMotion();
     }
@@ -932,8 +932,8 @@ void UpdateSpyroStateBehavior(void) {
       next = OpaqueInt(SPYRO_ST_IDLE);
     }
     ChangeSpyroState(next);
-    if (SPY[SPY_COUNTDOWN] < 0xC) {
-      SPY[SPY_COUNTDOWN] = 0xC;
+    if (SPY[SPY_INPUT_BLANK] < 0xC) {
+      SPY[SPY_INPUT_BLANK] = 0xC;
     }
     break;
   }

@@ -418,7 +418,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80053570` | AllocEmitListRecord | main | 152 | asm | handwritten |
 | `0x80053608` | FreeEmitListRecord | main | 156 | asm | handwritten |
 | `0x800536a4` | ResetPadFrameSubstepTable | main | 100 | matched | game |
-| `0x80053708` | SnapshotPadInputState | main | 84 | matched | game |
+| `0x80053708` | MovePadInputState | main | 84 | matched | game |
 | `0x8005375c` | ResetPadStickCalibrationDefaults | main | 52 | matched | game |
 | `0x80053790` | FinalizePadCalibration | main | 432 | matched | game |
 | `0x80053940` | MapPadAxisToCalibratedRange | main | 188 | matched | game |

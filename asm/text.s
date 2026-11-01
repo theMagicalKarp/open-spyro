@@ -161,8 +161,8 @@ glabel InitPadSystem
     /* 2BDC 800123DC 1400BFAF */  sw         $ra, 0x14($sp)
     /* 2BE0 800123E0 04AC010C */  jal        PadInitDirect
     /* 2BE4 800123E4 1000B0AF */   sw        $s0, 0x10($sp)
-    /* 2BE8 800123E8 0780103C */  lui        $s0, %hi(g_dwPad2Buttons)
-    /* 2BEC 800123EC D8761026 */  addiu      $s0, $s0, %lo(g_dwPad2Buttons)
+    /* 2BE8 800123E8 0780103C */  lui        $s0, %hi(g_dwPadStash)
+    /* 2BEC 800123EC D8761026 */  addiu      $s0, $s0, %lo(g_dwPadStash)
     /* 2BF0 800123F0 D74D010C */  jal        ResetPadStickCalibrationDefaults
     /* 2BF4 800123F4 21200002 */   addu      $a0, $s0, $zero
     /* 2BF8 800123F8 E44D010C */  jal        FinalizePadCalibration
@@ -1604,8 +1604,8 @@ glabel BuildLoadedLevelRuntime
     /* 3FE8 800137E8 1400422C */  sltiu      $v0, $v0, 0x14
     /* 3FEC 800137EC 1D004010 */  beqz       $v0, .L80013864
     /* 3FF0 800137F0 00000000 */   nop
-    /* 3FF4 800137F4 0780063C */  lui        $a2, %hi(g_nGameOverLevelIntroIndex)
-    /* 3FF8 800137F8 E857C68C */  lw         $a2, %lo(g_nGameOverLevelIntroIndex)($a2)
+    /* 3FF4 800137F4 0780063C */  lui        $a2, %hi(g_nGameOverLevelIndex)
+    /* 3FF8 800137F8 E857C68C */  lw         $a2, %lo(g_nGameOverLevelIndex)($a2)
     /* 3FFC 800137FC 00000000 */  nop
     /* 4000 80013800 EEFFC224 */  addiu      $v0, $a2, -0x12
     /* 4004 80013804 40180200 */  sll        $v1, $v0, 1
@@ -1625,8 +1625,8 @@ glabel BuildLoadedLevelRuntime
     /* 403C 8001383C 40F14224 */  addiu      $v0, $v0, %lo(g_anGameOverRespawnPosVirtualBase)
     /* 4040 80013840 C05D000C */  jal        CopyVector
     /* 4044 80013844 2128A200 */   addu      $a1, $a1, $v0
-    /* 4048 80013848 0780023C */  lui        $v0, %hi(g_nGameOverLevelIntroIndex)
-    /* 404C 8001384C E857428C */  lw         $v0, %lo(g_nGameOverLevelIntroIndex)($v0)
+    /* 4048 80013848 0780023C */  lui        $v0, %hi(g_nGameOverLevelIndex)
+    /* 404C 8001384C E857428C */  lw         $v0, %lo(g_nGameOverLevelIndex)($v0)
     /* 4050 80013850 0780013C */  lui        $at, %hi(g_abGameOverRespawnYawVirtualBase)
     /* 4054 80013854 21082200 */  addu       $at, $at, $v0
     /* 4058 80013858 96F22290 */  lbu        $v0, %lo(g_abGameOverRespawnYawVirtualBase)($at)
@@ -1656,8 +1656,8 @@ glabel BuildLoadedLevelRuntime
     /* 40AC 800138AC 6666023C */   lui       $v0, (0x66666667 >> 16)
     /* 40B0 800138B0 092B010C */  jal        ResetSpyroEntity
     /* 40B4 800138B4 21200000 */   addu      $a0, $zero, $zero
-    /* 40B8 800138B8 0880013C */  lui        $at, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 40BC 800138BC 488C31AC */  sw         $s1, %lo(g_nSpyroPadSnapshotCountdown)($at)
+    /* 40B8 800138B8 0880013C */  lui        $at, %hi(g_nSpyroInputBlankCountdown)
+    /* 40BC 800138BC 488C31AC */  sw         $s1, %lo(g_nSpyroInputBlankCountdown)($at)
     /* 40C0 800138C0 6666023C */  lui        $v0, (0x66666667 >> 16)
   .L800138C4:
     /* 40C4 800138C4 0780043C */  lui        $a0, %hi(g_nActiveLevelId)
@@ -30044,8 +30044,8 @@ glabel EndDragonRescueToWorld
     /* 1D3D4 8002CBD4 01000424 */   addiu     $a0, $zero, 0x1
     /* 1D3D8 8002CBD8 0780113C */  lui        $s1, %hi(g_pCameraAnchorPos)
     /* 1D3DC 8002CBDC A06E3126 */  addiu      $s1, $s1, %lo(g_pCameraAnchorPos)
-    /* 1D3E0 8002CBE0 0880023C */  lui        $v0, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 1D3E4 8002CBE4 488C4224 */  addiu      $v0, $v0, %lo(g_nSpyroPadSnapshotCountdown)
+    /* 1D3E0 8002CBE0 0880023C */  lui        $v0, %hi(g_nSpyroInputBlankCountdown)
+    /* 1D3E4 8002CBE4 488C4224 */  addiu      $v0, $v0, %lo(g_nSpyroInputBlankCountdown)
     /* 1D3E8 8002CBE8 0C000324 */  addiu      $v1, $zero, 0xC
     /* 1D3EC 8002CBEC 000043AC */  sw         $v1, 0x0($v0)
     /* 1D3F0 8002CBF0 10FE4224 */  addiu      $v0, $v0, -0x1F0
@@ -30364,8 +30364,8 @@ glabel EndSaveMenuToWorld
     /* 1D884 8002D084 0880013C */  lui        $at, %hi(g_bSpyroSwingByteEuler1)
     /* 1D888 8002D088 698A22A0 */  sb         $v0, %lo(g_bSpyroSwingByteEuler1)($at)
     /* 1D88C 8002D08C 08000224 */  addiu      $v0, $zero, 0x8
-    /* 1D890 8002D090 0880013C */  lui        $at, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 1D894 8002D094 488C22AC */  sw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($at)
+    /* 1D890 8002D090 0880013C */  lui        $at, %hi(g_nSpyroInputBlankCountdown)
+    /* 1D894 8002D094 488C22AC */  sw         $v0, %lo(g_nSpyroInputBlankCountdown)($at)
     /* 1D898 8002D098 0780023C */  lui        $v0, %hi(g_nSpyroSuperflameTimerSave)
     /* 1D89C 8002D09C A458428C */  lw         $v0, %lo(g_nSpyroSuperflameTimerSave)($v0)
     /* 1D8A0 8002D0A0 5CFE1026 */  addiu      $s0, $s0, -0x1A4
@@ -30607,8 +30607,8 @@ glabel BeginCutscene
     /* 1DBE4 8002D3E4 0C0040A4 */  sh         $zero, 0xC($v0)
     /* 1DBE8 8002D3E8 0780023C */  lui        $v0, %hi(g_pLevelSampleBankEntries)
     /* 1DBEC 8002D3EC D061428C */  lw         $v0, %lo(g_pLevelSampleBankEntries)($v0)
-    /* 1DBF0 8002D3F0 0780073C */  lui        $a3, %hi(g_bDragonRescueSfxVoiceMarker)
-    /* 1DBF4 8002D3F4 8470E724 */  addiu      $a3, $a3, %lo(g_bDragonRescueSfxVoiceMarker)
+    /* 1DBF0 8002D3F0 0780073C */  lui        $a3, %hi(g_bSceneSfxVoiceMarker)
+    /* 1DBF4 8002D3F4 8470E724 */  addiu      $a3, $a3, %lo(g_bSceneSfxVoiceMarker)
     /* 1DBF8 8002D3F8 0E0040A4 */  sh         $zero, 0xE($v0)
     /* 1DBFC 8002D3FC 0780023C */  lui        $v0, %hi(g_pLevelSampleBankEntries)
     /* 1DC00 8002D400 D061428C */  lw         $v0, %lo(g_pLevelSampleBankEntries)($v0)
@@ -32633,8 +32633,8 @@ glabel RespawnOrGameOver_Update
     /* 1F834 8002F034 D05620AC */  sw         $zero, %lo(g_nPortalTransitionActive)($at)
     /* 1F838 8002F038 0780013C */  lui        $at, %hi(g_nReturnPortalLevelId)
     /* 1F83C 8002F03C AC5820AC */  sw         $zero, %lo(g_nReturnPortalLevelId)($at)
-    /* 1F840 8002F040 0780013C */  lui        $at, %hi(g_nGameOverLevelIntroIndex)
-    /* 1F844 8002F044 E85723AC */  sw         $v1, %lo(g_nGameOverLevelIntroIndex)($at)
+    /* 1F840 8002F040 0780013C */  lui        $at, %hi(g_nGameOverLevelIndex)
+    /* 1F844 8002F044 E85723AC */  sw         $v1, %lo(g_nGameOverLevelIndex)($at)
     /* 1F848 8002F048 455A000C */  jal        FillWord
     /* 1F84C 8002F04C 68000624 */   addiu     $a2, $zero, 0x68
     /* 1F850 8002F050 6666023C */  lui        $v0, (0x66666667 >> 16)
@@ -34668,8 +34668,8 @@ glabel DragonRescue_Update
     /* 21678 80030E78 00000000 */   nop
     /* 2167C 80030E7C A327010C */  jal        TickSpyroAnimLayer2
     /* 21680 80030E80 00000000 */   nop
-    /* 21684 80030E84 0780043C */  lui        $a0, %hi(g_bDragonRescueSfxVoiceMarker)
-    /* 21688 80030E88 8470848C */  lw         $a0, %lo(g_bDragonRescueSfxVoiceMarker)($a0)
+    /* 21684 80030E84 0780043C */  lui        $a0, %hi(g_bSceneSfxVoiceMarker)
+    /* 21688 80030E88 8470848C */  lw         $a0, %lo(g_bSceneSfxVoiceMarker)($a0)
     /* 2168C 80030E8C 8058010C */  jal        StopSoundVoiceByIndex
     /* 21690 80030E90 02000524 */   addiu     $a1, $zero, 0x2
     /* 21694 80030E94 B55B010C */  jal        TickSpuPerFrame
@@ -34912,8 +34912,8 @@ glabel DragonRescue_Update
     /* 21A1C 8003121C D461428C */  lw         $v0, %lo(g_pLevelSampleBankHeader)($v0)
     /* 21A20 80031220 00000000 */  nop
     /* 21A24 80031224 35004490 */  lbu        $a0, 0x35($v0)
-    /* 21A28 80031228 0780073C */  lui        $a3, %hi(g_bDragonRescueSfxVoiceMarker)
-    /* 21A2C 8003122C 8470E724 */  addiu      $a3, $a3, %lo(g_bDragonRescueSfxVoiceMarker)
+    /* 21A28 80031228 0780073C */  lui        $a3, %hi(g_bSceneSfxVoiceMarker)
+    /* 21A2C 8003122C 8470E724 */  addiu      $a3, $a3, %lo(g_bSceneSfxVoiceMarker)
     /* 21A30 80031230 9E56010C */  jal        PlaySoundEffect
     /* 21A34 80031234 10000624 */   addiu     $a2, $zero, 0x10
   .L80031238:
@@ -34944,8 +34944,8 @@ glabel DragonRescue_Update
     /* 21A98 80031298 10000624 */  addiu      $a2, $zero, 0x10
     /* 21A9C 8003129C 33004490 */  lbu        $a0, 0x33($v0)
   .L800312A0:
-    /* 21AA0 800312A0 0780073C */  lui        $a3, %hi(g_bDragonRescueSfxVoiceMarker)
-    /* 21AA4 800312A4 8470E724 */  addiu      $a3, $a3, %lo(g_bDragonRescueSfxVoiceMarker)
+    /* 21AA0 800312A0 0780073C */  lui        $a3, %hi(g_bSceneSfxVoiceMarker)
+    /* 21AA4 800312A4 8470E724 */  addiu      $a3, $a3, %lo(g_bSceneSfxVoiceMarker)
     /* 21AA8 800312A8 9E56010C */  jal        PlaySoundEffect
     /* 21AAC 800312AC 00000000 */   nop
     /* 21AB0 800312B0 FEC40008 */  j          .L800313F8
@@ -37478,8 +37478,8 @@ glabel TickDemoPlayback
     /* 23F80 80033780 0C0040A4 */  sh         $zero, 0xC($v0)
     /* 23F84 80033784 0780023C */  lui        $v0, %hi(g_pLevelSampleBankEntries)
     /* 23F88 80033788 D061428C */  lw         $v0, %lo(g_pLevelSampleBankEntries)($v0)
-    /* 23F8C 8003378C 0780073C */  lui        $a3, %hi(g_bDragonRescueSfxVoiceMarker)
-    /* 23F90 80033790 8470E724 */  addiu      $a3, $a3, %lo(g_bDragonRescueSfxVoiceMarker)
+    /* 23F8C 8003378C 0780073C */  lui        $a3, %hi(g_bSceneSfxVoiceMarker)
+    /* 23F90 80033790 8470E724 */  addiu      $a3, $a3, %lo(g_bSceneSfxVoiceMarker)
     /* 23F94 80033794 0E0040A4 */  sh         $zero, 0xE($v0)
     /* 23F98 80033798 0780023C */  lui        $v0, %hi(g_pLevelSampleBankEntries)
     /* 23F9C 8003379C D061428C */  lw         $v0, %lo(g_pLevelSampleBankEntries)($v0)
@@ -42342,17 +42342,17 @@ glabel UpdateCameraFrame
     /* 28400 80037C00 0780013C */  lui        $at, %hi(g_nCameraLookAroundActive)
     /* 28404 80037C04 2C5920AC */  sw         $zero, %lo(g_nCameraLookAroundActive)($at)
   .L80037C08:
-    /* 28408 80037C08 0880023C */  lui        $v0, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 2840C 80037C0C 488C428C */  lw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($v0)
-    /* 28410 80037C10 0780013C */  lui        $at, %hi(g_bSpyroPadSnapshotReverseFlag)
-    /* 28414 80037C14 445920A0 */  sb         $zero, %lo(g_bSpyroPadSnapshotReverseFlag)($at)
+    /* 28408 80037C08 0880023C */  lui        $v0, %hi(g_nSpyroInputBlankCountdown)
+    /* 2840C 80037C0C 488C428C */  lw         $v0, %lo(g_nSpyroInputBlankCountdown)($v0)
+    /* 28410 80037C10 0780013C */  lui        $at, %hi(g_bPadInputStashed)
+    /* 28414 80037C14 445920A0 */  sb         $zero, %lo(g_bPadInputStashed)($at)
     /* 28418 80037C18 07004010 */  beqz       $v0, .L80037C38
     /* 2841C 80037C1C 00000000 */   nop
     /* 28420 80037C20 0780043C */  lui        $a0, %hi(g_dwPadPressed)
     /* 28424 80037C24 78738424 */  addiu      $a0, $a0, %lo(g_dwPadPressed)
-    /* 28428 80037C28 0780053C */  lui        $a1, %hi(g_dwPad2Buttons)
-    /* 2842C 80037C2C D876A524 */  addiu      $a1, $a1, %lo(g_dwPad2Buttons)
-    /* 28430 80037C30 C24D010C */  jal        SnapshotPadInputState
+    /* 28428 80037C28 0780053C */  lui        $a1, %hi(g_dwPadStash)
+    /* 2842C 80037C2C D876A524 */  addiu      $a1, $a1, %lo(g_dwPadStash)
+    /* 28430 80037C30 C24D010C */  jal        MovePadInputState
     /* 28434 80037C34 00000000 */   nop
   .L80037C38:
     /* 28438 80037C38 0880023C */  lui        $v0, %hi(g_nSpyroScriptedMoveMode)
@@ -42507,16 +42507,16 @@ glabel UpdateCameraFrame
     /* 28654 80037E54 0780013C */  lui        $at, %hi(g_apScriptedCameraViewBlock)
     /* 28658 80037E58 BC6E20AC */  sw         $zero, %lo(g_apScriptedCameraViewBlock)($at)
   .L80037E5C:
-    /* 2865C 80037E5C 0780023C */  lui        $v0, %hi(g_bSpyroPadSnapshotReverseFlag)
-    /* 28660 80037E60 44594290 */  lbu        $v0, %lo(g_bSpyroPadSnapshotReverseFlag)($v0)
+    /* 2865C 80037E5C 0780023C */  lui        $v0, %hi(g_bPadInputStashed)
+    /* 28660 80037E60 44594290 */  lbu        $v0, %lo(g_bPadInputStashed)($v0)
     /* 28664 80037E64 00000000 */  nop
     /* 28668 80037E68 07004010 */  beqz       $v0, .L80037E88
     /* 2866C 80037E6C 00000000 */   nop
-    /* 28670 80037E70 0780043C */  lui        $a0, %hi(g_dwPad2Buttons)
-    /* 28674 80037E74 D8768424 */  addiu      $a0, $a0, %lo(g_dwPad2Buttons)
+    /* 28670 80037E70 0780043C */  lui        $a0, %hi(g_dwPadStash)
+    /* 28674 80037E74 D8768424 */  addiu      $a0, $a0, %lo(g_dwPadStash)
     /* 28678 80037E78 0780053C */  lui        $a1, %hi(g_dwPadPressed)
     /* 2867C 80037E7C 7873A524 */  addiu      $a1, $a1, %lo(g_dwPadPressed)
-    /* 28680 80037E80 C24D010C */  jal        SnapshotPadInputState
+    /* 28680 80037E80 C24D010C */  jal        MovePadInputState
     /* 28684 80037E84 00000000 */   nop
   .L80037E88:
     /* 28688 80037E88 1000BF8F */  lw         $ra, 0x10($sp)
@@ -52445,16 +52445,16 @@ glabel AdvanceSpyroPhysics
     /* 30CAC 800404AC 37010108 */  j          .L800404DC
     /* 30CB0 800404B0 00000000 */   nop
   .L800404B4:
-    /* 30CB4 800404B4 0880023C */  lui        $v0, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 30CB8 800404B8 488C428C */  lw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($v0)
+    /* 30CB4 800404B4 0880023C */  lui        $v0, %hi(g_nSpyroInputBlankCountdown)
+    /* 30CB8 800404B8 488C428C */  lw         $v0, %lo(g_nSpyroInputBlankCountdown)($v0)
     /* 30CBC 800404BC 0780013C */  lui        $at, %hi(g_nSpyroTurnRateAccum)
     /* 30CC0 800404C0 A05820AC */  sw         $zero, %lo(g_nSpyroTurnRateAccum)($at)
     /* 30CC4 800404C4 02004228 */  slti       $v0, $v0, 0x2
     /* 30CC8 800404C8 04004010 */  beqz       $v0, .L800404DC
     /* 30CCC 800404CC 000023AE */   sw        $v1, 0x0($s1)
     /* 30CD0 800404D0 02000224 */  addiu      $v0, $zero, 0x2
-    /* 30CD4 800404D4 0880013C */  lui        $at, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 30CD8 800404D8 488C22AC */  sw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($at)
+    /* 30CD4 800404D4 0880013C */  lui        $at, %hi(g_nSpyroInputBlankCountdown)
+    /* 30CD8 800404D8 488C22AC */  sw         $v0, %lo(g_nSpyroInputBlankCountdown)($at)
   .L800404DC:
     /* 30CDC 800404DC E406828F */  lw         $v0, %gp_rel(g_nSpyroScriptedAlignFrames)($gp)
     /* 30CE0 800404E0 0780033C */  lui        $v1, %hi(g_nFrameStep)
@@ -52465,15 +52465,15 @@ glabel AdvanceSpyroPhysics
     /* 30CF4 800404F4 48010108 */  j          .L80040520
     /* 30CF8 800404F8 00000000 */   nop
   .L800404FC:
-    /* 30CFC 800404FC 0880023C */  lui        $v0, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 30D00 80040500 488C428C */  lw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($v0)
+    /* 30CFC 800404FC 0880023C */  lui        $v0, %hi(g_nSpyroInputBlankCountdown)
+    /* 30D00 80040500 488C428C */  lw         $v0, %lo(g_nSpyroInputBlankCountdown)($v0)
     /* 30D04 80040504 E40680AF */  sw         $zero, %gp_rel(g_nSpyroScriptedAlignFrames)($gp)
     /* 30D08 80040508 02004228 */  slti       $v0, $v0, 0x2
     /* 30D0C 8004050C 04004010 */  beqz       $v0, .L80040520
     /* 30D10 80040510 000023AE */   sw        $v1, 0x0($s1)
     /* 30D14 80040514 02000224 */  addiu      $v0, $zero, 0x2
-    /* 30D18 80040518 0880013C */  lui        $at, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 30D1C 8004051C 488C22AC */  sw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($at)
+    /* 30D18 80040518 0880013C */  lui        $at, %hi(g_nSpyroInputBlankCountdown)
+    /* 30D1C 8004051C 488C22AC */  sw         $v0, %lo(g_nSpyroInputBlankCountdown)($at)
   .L80040520:
     /* 30D20 80040520 0880053C */  lui        $a1, %hi(g_pScriptedCameraActor)
     /* 30D24 80040524 7C8CA58C */  lw         $a1, %lo(g_pScriptedCameraActor)($a1)
@@ -53799,8 +53799,8 @@ glabel UpdateSpyroStateBehavior
     /* 31F88 80041788 00000000 */  nop
     /* 31F8C 8004178C 0C0A4010 */  beqz       $v0, .L80043FC0
     /* 31F90 80041790 01000424 */   addiu     $a0, $zero, 0x1
-    /* 31F94 80041794 0880023C */  lui        $v0, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 31F98 80041798 488C428C */  lw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($v0)
+    /* 31F94 80041794 0880023C */  lui        $v0, %hi(g_nSpyroInputBlankCountdown)
+    /* 31F98 80041798 488C428C */  lw         $v0, %lo(g_nSpyroInputBlankCountdown)($v0)
     /* 31F9C 8004179C 00000000 */  nop
     /* 31FA0 800417A0 090A4014 */  bnez       $v0, .L80043FC8
     /* 31FA4 800417A4 00000000 */   nop
@@ -54872,8 +54872,8 @@ glabel UpdateSpyroStateBehavior
     /* 32F68 80042768 00000000 */  nop
     /* 32F6C 8004276C 14064010 */  beqz       $v0, .L80043FC0
     /* 32F70 80042770 01000424 */   addiu     $a0, $zero, 0x1
-    /* 32F74 80042774 0880023C */  lui        $v0, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 32F78 80042778 488C428C */  lw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($v0)
+    /* 32F74 80042774 0880023C */  lui        $v0, %hi(g_nSpyroInputBlankCountdown)
+    /* 32F78 80042778 488C428C */  lw         $v0, %lo(g_nSpyroInputBlankCountdown)($v0)
     /* 32F7C 8004277C 00000000 */  nop
     /* 32F80 80042780 0F064014 */  bnez       $v0, .L80043FC0
     /* 32F84 80042784 21200000 */   addu      $a0, $zero, $zero
@@ -55168,8 +55168,8 @@ glabel UpdateSpyroStateBehavior
     /* 333B8 80042BB8 F20F0108 */  j          .L80043FC8
     /* 333BC 80042BBC 00000000 */   nop
   .L80042BC0:
-    /* 333C0 80042BC0 0880023C */  lui        $v0, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 333C4 80042BC4 488C428C */  lw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($v0)
+    /* 333C0 80042BC0 0880023C */  lui        $v0, %hi(g_nSpyroInputBlankCountdown)
+    /* 333C4 80042BC4 488C428C */  lw         $v0, %lo(g_nSpyroInputBlankCountdown)($v0)
     /* 333C8 80042BC8 00000000 */  nop
     /* 333CC 80042BCC 17004014 */  bnez       $v0, .L80042C2C
     /* 333D0 80042BD0 00000000 */   nop
@@ -55248,8 +55248,8 @@ glabel UpdateSpyroStateBehavior
     /* 334E0 80042CE0 9AFA000C */  jal        ChangeSpyroState
     /* 334E4 80042CE4 21200000 */   addu      $a0, $zero, $zero
   .L80042CE8:
-    /* 334E8 80042CE8 0880033C */  lui        $v1, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 334EC 80042CEC 488C6324 */  addiu      $v1, $v1, %lo(g_nSpyroPadSnapshotCountdown)
+    /* 334E8 80042CE8 0880033C */  lui        $v1, %hi(g_nSpyroInputBlankCountdown)
+    /* 334EC 80042CEC 488C6324 */  addiu      $v1, $v1, %lo(g_nSpyroInputBlankCountdown)
     /* 334F0 80042CF0 0000628C */  lw         $v0, 0x0($v1)
     /* 334F4 80042CF4 00000000 */  nop
     /* 334F8 80042CF8 08004228 */  slti       $v0, $v0, 0x8
@@ -55830,8 +55830,8 @@ glabel UpdateSpyroStateBehavior
   .L80043570:
     /* 33D70 80043570 9AFA000C */  jal        ChangeSpyroState
     /* 33D74 80043574 00000000 */   nop
-    /* 33D78 80043578 0880033C */  lui        $v1, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 33D7C 8004357C 488C6324 */  addiu      $v1, $v1, %lo(g_nSpyroPadSnapshotCountdown)
+    /* 33D78 80043578 0880033C */  lui        $v1, %hi(g_nSpyroInputBlankCountdown)
+    /* 33D7C 8004357C 488C6324 */  addiu      $v1, $v1, %lo(g_nSpyroInputBlankCountdown)
     /* 33D80 80043580 0000628C */  lw         $v0, 0x0($v1)
     /* 33D84 80043584 00000000 */  nop
     /* 33D88 80043588 0C004228 */  slti       $v0, $v0, 0xC
@@ -58859,13 +58859,13 @@ glabel IntegrateSpyroMotionForSubstep
   .L800460F4:
     /* 368F4 800460F4 5EF6000C */  jal        BuildSpyroVelocityFromBodyEuler
     /* 368F8 800460F8 00000000 */   nop
-    /* 368FC 800460FC 0880023C */  lui        $v0, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 36900 80046100 488C428C */  lw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($v0)
+    /* 368FC 800460FC 0880023C */  lui        $v0, %hi(g_nSpyroInputBlankCountdown)
+    /* 36900 80046100 488C428C */  lw         $v0, %lo(g_nSpyroInputBlankCountdown)($v0)
     /* 36904 80046104 00000000 */  nop
     /* 36908 80046108 0300401C */  bgtz       $v0, .L80046118
     /* 3690C 8004610C 01000224 */   addiu     $v0, $zero, 0x1
-    /* 36910 80046110 0880013C */  lui        $at, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 36914 80046114 488C22AC */  sw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($at)
+    /* 36910 80046110 0880013C */  lui        $at, %hi(g_nSpyroInputBlankCountdown)
+    /* 36914 80046114 488C22AC */  sw         $v0, %lo(g_nSpyroInputBlankCountdown)($at)
   .L80046118:
     /* 36918 80046118 0880023C */  lui        $v0, %hi(g_nSpyroBodyYawStep)
     /* 3691C 8004611C A08B428C */  lw         $v0, %lo(g_nSpyroBodyYawStep)($v0)
@@ -59253,8 +59253,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 36E98 80046698 5EF6000C */  jal        BuildSpyroVelocityFromBodyEuler
     /* 36E9C 8004669C 00000000 */   nop
     /* 36EA0 800466A0 0080023C */  lui        $v0, (0x80004000 >> 16)
-    /* 36EA4 800466A4 0880033C */  lui        $v1, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 36EA8 800466A8 488C638C */  lw         $v1, %lo(g_nSpyroPadSnapshotCountdown)($v1)
+    /* 36EA4 800466A4 0880033C */  lui        $v1, %hi(g_nSpyroInputBlankCountdown)
+    /* 36EA8 800466A8 488C638C */  lw         $v1, %lo(g_nSpyroInputBlankCountdown)($v1)
     /* 36EAC 800466AC 00404234 */  ori        $v0, $v0, (0x80004000 & 0xFFFF)
     /* 36EB0 800466B0 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
     /* 36EB4 800466B4 548B20AC */  sw         $zero, %lo(g_nSpyroVelocityZ)($at)
@@ -59263,8 +59263,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 36EC0 800466C0 0400601C */  bgtz       $v1, .L800466D4
     /* 36EC4 800466C4 E8FE0426 */   addiu     $a0, $s0, -0x118
     /* 36EC8 800466C8 01000224 */  addiu      $v0, $zero, 0x1
-    /* 36ECC 800466CC 0880013C */  lui        $at, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 36ED0 800466D0 488C22AC */  sw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($at)
+    /* 36ECC 800466CC 0880013C */  lui        $at, %hi(g_nSpyroInputBlankCountdown)
+    /* 36ED0 800466D0 488C22AC */  sw         $v0, %lo(g_nSpyroInputBlankCountdown)($at)
   .L800466D4:
     /* 36ED4 800466D4 645E000C */  jal        ApproxDist2D
     /* 36ED8 800466D8 E0000526 */   addiu     $a1, $s0, 0xE0
@@ -59305,8 +59305,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 36F60 80046760 0880013C */  lui        $at, %hi(g_nSpyroVelocityZ)
     /* 36F64 80046764 548B22AC */  sw         $v0, %lo(g_nSpyroVelocityZ)($at)
   .L80046768:
-    /* 36F68 80046768 0880023C */  lui        $v0, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 36F6C 8004676C 488C428C */  lw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($v0)
+    /* 36F68 80046768 0880023C */  lui        $v0, %hi(g_nSpyroInputBlankCountdown)
+    /* 36F6C 8004676C 488C428C */  lw         $v0, %lo(g_nSpyroInputBlankCountdown)($v0)
     /* 36F70 80046770 0880013C */  lui        $at, %hi(g_nSpyroBodyRoll)
     /* 36F74 80046774 788B20AC */  sw         $zero, %lo(g_nSpyroBodyRoll)($at)
     /* 36F78 80046778 5C1A0108 */  j          .L80046970
@@ -59446,14 +59446,14 @@ glabel IntegrateSpyroMotionForSubstep
   .L80046960:
     /* 37160 80046960 5EF6000C */  jal        BuildSpyroVelocityFromBodyEuler
     /* 37164 80046964 00000000 */   nop
-    /* 37168 80046968 0880023C */  lui        $v0, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 3716C 8004696C 488C428C */  lw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($v0)
+    /* 37168 80046968 0880023C */  lui        $v0, %hi(g_nSpyroInputBlankCountdown)
+    /* 3716C 8004696C 488C428C */  lw         $v0, %lo(g_nSpyroInputBlankCountdown)($v0)
   .L80046970:
     /* 37170 80046970 00000000 */  nop
     /* 37174 80046974 1700401C */  bgtz       $v0, .L800469D4
     /* 37178 80046978 01000224 */   addiu     $v0, $zero, 0x1
-    /* 3717C 8004697C 0880013C */  lui        $at, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 37180 80046980 488C22AC */  sw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($at)
+    /* 3717C 8004697C 0880013C */  lui        $at, %hi(g_nSpyroInputBlankCountdown)
+    /* 37180 80046980 488C22AC */  sw         $v0, %lo(g_nSpyroInputBlankCountdown)($at)
     /* 37184 80046984 751A0108 */  j          .L800469D4
     /* 37188 80046988 00000000 */   nop
   .L8004698C:
@@ -63455,27 +63455,27 @@ glabel TickSpyroGameplayFrame
     /* 3AA2C 8004A22C 09004010 */  beqz       $v0, .L8004A254
     /* 3AA30 8004A230 00000000 */   nop
   .L8004A234:
-    /* 3AA34 8004A234 0880023C */  lui        $v0, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 3AA38 8004A238 488C428C */  lw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($v0)
+    /* 3AA34 8004A234 0880023C */  lui        $v0, %hi(g_nSpyroInputBlankCountdown)
+    /* 3AA38 8004A238 488C428C */  lw         $v0, %lo(g_nSpyroInputBlankCountdown)($v0)
     /* 3AA3C 8004A23C 00000000 */  nop
     /* 3AA40 8004A240 02004228 */  slti       $v0, $v0, 0x2
     /* 3AA44 8004A244 03004010 */  beqz       $v0, .L8004A254
     /* 3AA48 8004A248 02000224 */   addiu     $v0, $zero, 0x2
-    /* 3AA4C 8004A24C 0880013C */  lui        $at, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 3AA50 8004A250 488C22AC */  sw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($at)
+    /* 3AA4C 8004A24C 0880013C */  lui        $at, %hi(g_nSpyroInputBlankCountdown)
+    /* 3AA50 8004A250 488C22AC */  sw         $v0, %lo(g_nSpyroInputBlankCountdown)($at)
   .L8004A254:
-    /* 3AA54 8004A254 0880103C */  lui        $s0, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 3AA58 8004A258 488C1026 */  addiu      $s0, $s0, %lo(g_nSpyroPadSnapshotCountdown)
+    /* 3AA54 8004A254 0880103C */  lui        $s0, %hi(g_nSpyroInputBlankCountdown)
+    /* 3AA58 8004A258 488C1026 */  addiu      $s0, $s0, %lo(g_nSpyroInputBlankCountdown)
     /* 3AA5C 8004A25C 0000028E */  lw         $v0, 0x0($s0)
-    /* 3AA60 8004A260 0780013C */  lui        $at, %hi(g_bSpyroPadSnapshotReverseFlag)
-    /* 3AA64 8004A264 445920A0 */  sb         $zero, %lo(g_bSpyroPadSnapshotReverseFlag)($at)
+    /* 3AA60 8004A260 0780013C */  lui        $at, %hi(g_bPadInputStashed)
+    /* 3AA64 8004A264 445920A0 */  sb         $zero, %lo(g_bPadInputStashed)($at)
     /* 3AA68 8004A268 0B004010 */  beqz       $v0, .L8004A298
     /* 3AA6C 8004A26C 00000000 */   nop
     /* 3AA70 8004A270 0780043C */  lui        $a0, %hi(g_dwPadPressed)
     /* 3AA74 8004A274 78738424 */  addiu      $a0, $a0, %lo(g_dwPadPressed)
-    /* 3AA78 8004A278 0780053C */  lui        $a1, %hi(g_dwPad2Buttons)
-    /* 3AA7C 8004A27C D876A524 */  addiu      $a1, $a1, %lo(g_dwPad2Buttons)
-    /* 3AA80 8004A280 C24D010C */  jal        SnapshotPadInputState
+    /* 3AA78 8004A278 0780053C */  lui        $a1, %hi(g_dwPadStash)
+    /* 3AA7C 8004A27C D876A524 */  addiu      $a1, $a1, %lo(g_dwPadStash)
+    /* 3AA80 8004A280 C24D010C */  jal        MovePadInputState
     /* 3AA84 8004A284 00000000 */   nop
     /* 3AA88 8004A288 0000028E */  lw         $v0, 0x0($s0)
     /* 3AA8C 8004A28C 00000000 */  nop
@@ -63823,8 +63823,8 @@ glabel TickSpyroGameplayFrame
     /* 3AF8C 8004A78C 2400448C */  lw         $a0, 0x24($v0)
     /* 3AF90 8004A790 0880023C */  lui        $v0, %hi(g_dwSpyroRequestMask)
     /* 3AF94 8004A794 4C8C428C */  lw         $v0, %lo(g_dwSpyroRequestMask)($v0)
-    /* 3AF98 8004A798 0780033C */  lui        $v1, %hi(g_bSpyroPadSnapshotReverseFlag)
-    /* 3AF9C 8004A79C 44596390 */  lbu        $v1, %lo(g_bSpyroPadSnapshotReverseFlag)($v1)
+    /* 3AF98 8004A798 0780033C */  lui        $v1, %hi(g_bPadInputStashed)
+    /* 3AF9C 8004A79C 44596390 */  lbu        $v1, %lo(g_bPadInputStashed)($v1)
     /* 3AFA0 8004A7A0 24104500 */  and        $v0, $v0, $a1
     /* 3AFA4 8004A7A4 0880013C */  lui        $at, %hi(g_dwSpyroRequestMask)
     /* 3AFA8 8004A7A8 4C8C22AC */  sw         $v0, %lo(g_dwSpyroRequestMask)($at)
@@ -63832,11 +63832,11 @@ glabel TickSpyroGameplayFrame
     /* 3AFB0 8004A7B0 C08C24AC */  sw         $a0, %lo(g_dwSpyroFootstepSecondarySfxKey)($at)
     /* 3AFB4 8004A7B4 07006010 */  beqz       $v1, .L8004A7D4
     /* 3AFB8 8004A7B8 00000000 */   nop
-    /* 3AFBC 8004A7BC 0780043C */  lui        $a0, %hi(g_dwPad2Buttons)
-    /* 3AFC0 8004A7C0 D8768424 */  addiu      $a0, $a0, %lo(g_dwPad2Buttons)
+    /* 3AFBC 8004A7BC 0780043C */  lui        $a0, %hi(g_dwPadStash)
+    /* 3AFC0 8004A7C0 D8768424 */  addiu      $a0, $a0, %lo(g_dwPadStash)
     /* 3AFC4 8004A7C4 0780053C */  lui        $a1, %hi(g_dwPadPressed)
     /* 3AFC8 8004A7C8 7873A524 */  addiu      $a1, $a1, %lo(g_dwPadPressed)
-    /* 3AFCC 8004A7CC C24D010C */  jal        SnapshotPadInputState
+    /* 3AFCC 8004A7CC C24D010C */  jal        MovePadInputState
     /* 3AFD0 8004A7D0 00000000 */   nop
   .L8004A7D4:
     /* 3AFD4 8004A7D4 5000BF8F */  lw         $ra, 0x50($sp)
@@ -63856,14 +63856,14 @@ glabel TickSpyroFrameGlideHold
     /* 3AFEC 8004A7EC A8FFBD27 */  addiu      $sp, $sp, -0x58
     /* 3AFF0 8004A7F0 0780043C */  lui        $a0, %hi(g_dwPadPressed)
     /* 3AFF4 8004A7F4 78738424 */  addiu      $a0, $a0, %lo(g_dwPadPressed)
-    /* 3AFF8 8004A7F8 0780053C */  lui        $a1, %hi(g_dwPad2Buttons)
-    /* 3AFFC 8004A7FC D876A524 */  addiu      $a1, $a1, %lo(g_dwPad2Buttons)
+    /* 3AFF8 8004A7F8 0780053C */  lui        $a1, %hi(g_dwPadStash)
+    /* 3AFFC 8004A7FC D876A524 */  addiu      $a1, $a1, %lo(g_dwPadStash)
     /* 3B000 8004A800 5000BFAF */  sw         $ra, 0x50($sp)
     /* 3B004 8004A804 4C00B1AF */  sw         $s1, 0x4C($sp)
     /* 3B008 8004A808 4800B0AF */  sw         $s0, 0x48($sp)
-    /* 3B00C 8004A80C 0780013C */  lui        $at, %hi(g_bSpyroPadSnapshotReverseFlag)
-    /* 3B010 8004A810 445920A0 */  sb         $zero, %lo(g_bSpyroPadSnapshotReverseFlag)($at)
-    /* 3B014 8004A814 C24D010C */  jal        SnapshotPadInputState
+    /* 3B00C 8004A80C 0780013C */  lui        $at, %hi(g_bPadInputStashed)
+    /* 3B010 8004A810 445920A0 */  sb         $zero, %lo(g_bPadInputStashed)($at)
+    /* 3B014 8004A814 C24D010C */  jal        MovePadInputState
     /* 3B018 8004A818 00000000 */   nop
     /* 3B01C 8004A81C 0880103C */  lui        $s0, %hi(g_nSpyroState)
     /* 3B020 8004A820 D08A1026 */  addiu      $s0, $s0, %lo(g_nSpyroState)
@@ -63874,15 +63874,15 @@ glabel TickSpyroFrameGlideHold
     /* 3B034 8004A834 9AFA000C */  jal        ChangeSpyroState
     /* 3B038 8004A838 0F000424 */   addiu     $a0, $zero, 0xF
   .L8004A83C:
-    /* 3B03C 8004A83C 0880033C */  lui        $v1, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 3B040 8004A840 488C638C */  lw         $v1, %lo(g_nSpyroPadSnapshotCountdown)($v1)
+    /* 3B03C 8004A83C 0880033C */  lui        $v1, %hi(g_nSpyroInputBlankCountdown)
+    /* 3B040 8004A840 488C638C */  lw         $v1, %lo(g_nSpyroInputBlankCountdown)($v1)
     /* 3B044 8004A844 08000224 */  addiu      $v0, $zero, 0x8
     /* 3B048 8004A848 0880013C */  lui        $at, %hi(g_nSpyroSubstate)
     /* 3B04C 8004A84C D48A22AC */  sw         $v0, %lo(g_nSpyroSubstate)($at)
     /* 3B050 8004A850 0300601C */  bgtz       $v1, .L8004A860
     /* 3B054 8004A854 01000224 */   addiu     $v0, $zero, 0x1
-    /* 3B058 8004A858 0880013C */  lui        $at, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 3B05C 8004A85C 488C22AC */  sw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($at)
+    /* 3B058 8004A858 0880013C */  lui        $at, %hi(g_nSpyroInputBlankCountdown)
+    /* 3B05C 8004A85C 488C22AC */  sw         $v0, %lo(g_nSpyroInputBlankCountdown)($at)
   .L8004A860:
     /* 3B060 8004A860 BC5D000C */  jal        ZeroVector
     /* 3B064 8004A864 88000426 */   addiu     $a0, $s0, 0x88
@@ -63983,13 +63983,13 @@ glabel TickSpyroFrameGlideHold
     /* 3B1C8 8004A9C8 21280002 */  addu       $a1, $s0, $zero
     /* 3B1CC 8004A9CC F688010C */  jal        MulMatrix0
     /* 3B1D0 8004A9D0 2130A000 */   addu      $a2, $a1, $zero
-    /* 3B1D4 8004A9D4 0780043C */  lui        $a0, %hi(g_dwPad2Buttons)
-    /* 3B1D8 8004A9D8 D8768424 */  addiu      $a0, $a0, %lo(g_dwPad2Buttons)
+    /* 3B1D4 8004A9D4 0780043C */  lui        $a0, %hi(g_dwPadStash)
+    /* 3B1D8 8004A9D8 D8768424 */  addiu      $a0, $a0, %lo(g_dwPadStash)
     /* 3B1DC 8004A9DC 0780053C */  lui        $a1, %hi(g_dwPadPressed)
     /* 3B1E0 8004A9E0 7873A524 */  addiu      $a1, $a1, %lo(g_dwPadPressed)
     /* 3B1E4 8004A9E4 0880013C */  lui        $at, %hi(g_dwSpyroRequestMask)
     /* 3B1E8 8004A9E8 4C8C20AC */  sw         $zero, %lo(g_dwSpyroRequestMask)($at)
-    /* 3B1EC 8004A9EC C24D010C */  jal        SnapshotPadInputState
+    /* 3B1EC 8004A9EC C24D010C */  jal        MovePadInputState
     /* 3B1F0 8004A9F0 00000000 */   nop
     /* 3B1F4 8004A9F4 5000BF8F */  lw         $ra, 0x50($sp)
     /* 3B1F8 8004A9F8 4C00B18F */  lw         $s1, 0x4C($sp)
@@ -64008,14 +64008,14 @@ glabel TickSpyroFrameNoInput
     /* 3B20C 8004AA0C A8FFBD27 */  addiu      $sp, $sp, -0x58
     /* 3B210 8004AA10 0780043C */  lui        $a0, %hi(g_dwPadPressed)
     /* 3B214 8004AA14 78738424 */  addiu      $a0, $a0, %lo(g_dwPadPressed)
-    /* 3B218 8004AA18 0780053C */  lui        $a1, %hi(g_dwPad2Buttons)
-    /* 3B21C 8004AA1C D876A524 */  addiu      $a1, $a1, %lo(g_dwPad2Buttons)
+    /* 3B218 8004AA18 0780053C */  lui        $a1, %hi(g_dwPadStash)
+    /* 3B21C 8004AA1C D876A524 */  addiu      $a1, $a1, %lo(g_dwPadStash)
     /* 3B220 8004AA20 5000BFAF */  sw         $ra, 0x50($sp)
     /* 3B224 8004AA24 4C00B1AF */  sw         $s1, 0x4C($sp)
     /* 3B228 8004AA28 4800B0AF */  sw         $s0, 0x48($sp)
-    /* 3B22C 8004AA2C 0780013C */  lui        $at, %hi(g_bSpyroPadSnapshotReverseFlag)
-    /* 3B230 8004AA30 445920A0 */  sb         $zero, %lo(g_bSpyroPadSnapshotReverseFlag)($at)
-    /* 3B234 8004AA34 C24D010C */  jal        SnapshotPadInputState
+    /* 3B22C 8004AA2C 0780013C */  lui        $at, %hi(g_bPadInputStashed)
+    /* 3B230 8004AA30 445920A0 */  sb         $zero, %lo(g_bPadInputStashed)($at)
+    /* 3B234 8004AA34 C24D010C */  jal        MovePadInputState
     /* 3B238 8004AA38 00000000 */   nop
     /* 3B23C 8004AA3C 0880043C */  lui        $a0, %hi(g_nSpyroState)
     /* 3B240 8004AA40 D08A8424 */  addiu      $a0, $a0, %lo(g_nSpyroState)
@@ -64026,13 +64026,13 @@ glabel TickSpyroFrameNoInput
     /* 3B254 8004AA54 0880013C */  lui        $at, %hi(g_nSpyroSubstate)
     /* 3B258 8004AA58 D48A22AC */  sw         $v0, %lo(g_nSpyroSubstate)($at)
   .L8004AA5C:
-    /* 3B25C 8004AA5C 0880023C */  lui        $v0, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 3B260 8004AA60 488C428C */  lw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($v0)
+    /* 3B25C 8004AA5C 0880023C */  lui        $v0, %hi(g_nSpyroInputBlankCountdown)
+    /* 3B260 8004AA60 488C428C */  lw         $v0, %lo(g_nSpyroInputBlankCountdown)($v0)
     /* 3B264 8004AA64 00000000 */  nop
     /* 3B268 8004AA68 0300401C */  bgtz       $v0, .L8004AA78
     /* 3B26C 8004AA6C 01000224 */   addiu     $v0, $zero, 0x1
-    /* 3B270 8004AA70 0880013C */  lui        $at, %hi(g_nSpyroPadSnapshotCountdown)
-    /* 3B274 8004AA74 488C22AC */  sw         $v0, %lo(g_nSpyroPadSnapshotCountdown)($at)
+    /* 3B270 8004AA70 0880013C */  lui        $at, %hi(g_nSpyroInputBlankCountdown)
+    /* 3B274 8004AA74 488C22AC */  sw         $v0, %lo(g_nSpyroInputBlankCountdown)($at)
   .L8004AA78:
     /* 3B278 8004AA78 BC5D000C */  jal        ZeroVector
     /* 3B27C 8004AA7C 88008424 */   addiu     $a0, $a0, 0x88
@@ -64133,13 +64133,13 @@ glabel TickSpyroFrameNoInput
     /* 3B3E0 8004ABE0 21280002 */  addu       $a1, $s0, $zero
     /* 3B3E4 8004ABE4 F688010C */  jal        MulMatrix0
     /* 3B3E8 8004ABE8 2130A000 */   addu      $a2, $a1, $zero
-    /* 3B3EC 8004ABEC 0780043C */  lui        $a0, %hi(g_dwPad2Buttons)
-    /* 3B3F0 8004ABF0 D8768424 */  addiu      $a0, $a0, %lo(g_dwPad2Buttons)
+    /* 3B3EC 8004ABEC 0780043C */  lui        $a0, %hi(g_dwPadStash)
+    /* 3B3F0 8004ABF0 D8768424 */  addiu      $a0, $a0, %lo(g_dwPadStash)
     /* 3B3F4 8004ABF4 0780053C */  lui        $a1, %hi(g_dwPadPressed)
     /* 3B3F8 8004ABF8 7873A524 */  addiu      $a1, $a1, %lo(g_dwPadPressed)
     /* 3B3FC 8004ABFC 0880013C */  lui        $at, %hi(g_dwSpyroRequestMask)
     /* 3B400 8004AC00 4C8C20AC */  sw         $zero, %lo(g_dwSpyroRequestMask)($at)
-    /* 3B404 8004AC04 C24D010C */  jal        SnapshotPadInputState
+    /* 3B404 8004AC04 C24D010C */  jal        MovePadInputState
     /* 3B408 8004AC08 00000000 */   nop
     /* 3B40C 8004AC0C 5000BF8F */  lw         $ra, 0x50($sp)
     /* 3B410 8004AC10 4C00B18F */  lw         $s1, 0x4C($sp)
@@ -73929,23 +73929,23 @@ glabel ResetPadFrameSubstepTable
 endlabel ResetPadFrameSubstepTable
 .endif
 
-.section .text.SnapshotPadInputState, "ax"
-.ifndef HAVE_C_SnapshotPadInputState
-nonmatching SnapshotPadInputState, 0x54
+.section .text.MovePadInputState, "ax"
+.ifndef HAVE_C_MovePadInputState
+nonmatching MovePadInputState, 0x54
 
-glabel SnapshotPadInputState
+glabel MovePadInputState
     /* 43F08 80053708 E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 43F0C 8005370C 1000B0AF */  sw         $s0, 0x10($sp)
     /* 43F10 80053710 21808000 */  addu       $s0, $a0, $zero
     /* 43F14 80053714 2120A000 */  addu       $a0, $a1, $zero
     /* 43F18 80053718 01000224 */  addiu      $v0, $zero, 0x1
     /* 43F1C 8005371C 21280002 */  addu       $a1, $s0, $zero
-    /* 43F20 80053720 0780033C */  lui        $v1, %hi(g_bSpyroPadSnapshotReverseFlag)
-    /* 43F24 80053724 44596390 */  lbu        $v1, %lo(g_bSpyroPadSnapshotReverseFlag)($v1)
+    /* 43F20 80053720 0780033C */  lui        $v1, %hi(g_bPadInputStashed)
+    /* 43F24 80053724 44596390 */  lbu        $v1, %lo(g_bPadInputStashed)($v1)
     /* 43F28 80053728 1400BFAF */  sw         $ra, 0x14($sp)
     /* 43F2C 8005372C 23104300 */  subu       $v0, $v0, $v1
-    /* 43F30 80053730 0780013C */  lui        $at, %hi(g_bSpyroPadSnapshotReverseFlag)
-    /* 43F34 80053734 445922A0 */  sb         $v0, %lo(g_bSpyroPadSnapshotReverseFlag)($at)
+    /* 43F30 80053730 0780013C */  lui        $at, %hi(g_bPadInputStashed)
+    /* 43F34 80053734 445922A0 */  sb         $v0, %lo(g_bPadInputStashed)($at)
     /* 43F38 80053738 565A000C */  jal        CopyWords
     /* 43F3C 8005373C A4000624 */   addiu     $a2, $zero, 0xA4
     /* 43F40 80053740 A94D010C */  jal        ResetPadFrameSubstepTable
@@ -73955,7 +73955,7 @@ glabel SnapshotPadInputState
     /* 43F50 80053750 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 43F54 80053754 0800E003 */  jr         $ra
     /* 43F58 80053758 00000000 */   nop
-endlabel SnapshotPadInputState
+endlabel MovePadInputState
 .endif
 
 .section .text.ResetPadStickCalibrationDefaults, "ax"
