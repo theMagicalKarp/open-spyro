@@ -262,7 +262,7 @@ void Level2_UpdateActors(void) {
                 g_nCurrentLevelId = g_nActiveLevelId / 10 * 10;
                 g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
                 g_dwSpyroRequestMask = 0;
-                ResetSpyroEntity(0);
+                ResetSpyroEntity(RESET_SPYRO_SOFT);
                 g_nSpyroFlightMode = 0;
                 g_nSpyroSuperflameTimer = 0;
               }
@@ -470,7 +470,7 @@ void Level2_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(80, 140);
           }
 
-          rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
+          rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, YAW_STEP_IN_BAND);
           moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
@@ -1331,7 +1331,7 @@ void Level2_UpdateActors(void) {
       case GPAIR_IDLE: {
         int dz;
 
-        TrackEntityYawTowardSpyro(actor, 3, 0x10, 0);
+        TrackEntityYawTowardSpyro(actor, 3, 0x10, YAW_HOLD_IN_BAND);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000 &&
             ((dz = actor->posZ - SPY.posZ) > 0 ? dz < 0x5DC
                                                : SPY.posZ - actor->posZ < 0x5DC)) {
@@ -1363,7 +1363,7 @@ void Level2_UpdateActors(void) {
         int dist = ApproxDist2D(&actor->posX, &spy->posX);
         int dz;
 
-        TrackEntityYawTowardSpyro(actor, 3, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
         if (dist < 0xBB8 &&
             ((dz = actor->posZ - SPY.posZ) > 0 ? dz < 0x5DC
                                                : SPY.posZ - actor->posZ < 0x5DC)) {
@@ -1377,7 +1377,7 @@ void Level2_UpdateActors(void) {
         break;
       }
       case GPAIR_SWING:
-        TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (SPY.state == SPYRO_ST_HURT_PINNED) {
           st->flag = 2;
         }
@@ -1581,7 +1581,7 @@ void Level2_UpdateActors(void) {
               ScaleVector3ByRatio(svA, dist, reach - 5);
             }
             AddVector(&actor->posX, &actor->posX, svA);
-            TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], ATAN_ANGLE8), 0xA, 0, 0);
+            TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
             actor->rotY = ArcTan2(VectorLength(svA, VEC_LEN_XY), svA[2], ATAN_ANGLE8);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
@@ -1646,7 +1646,7 @@ void Level2_UpdateActors(void) {
                 ScaleVector3ByRatio(svJ, dist, 0x122);
               }
               AddVector(&actor->posX, &actor->posX, svJ);
-              TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], ATAN_ANGLE8), 0xA, 0, 0);
+              TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
               actor->rotY = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], ATAN_ANGLE8);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
@@ -1710,7 +1710,7 @@ void Level2_UpdateActors(void) {
 
             actor->rotX = 0;
             actor->rotY = svF[2];
-            TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, 0);
+            TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, YAW_HOLD_IN_BAND);
           }
 
           switch (SPY.sparxHealth) {
@@ -1840,7 +1840,7 @@ void Level2_UpdateActors(void) {
           }
           break;
         case POSTGUARD_POST_WATCH:
-          TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+          TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
           if (g_nActorAnimDone != 0) {
             ANIM_GO(actor, 0);
           }
@@ -1854,7 +1854,7 @@ void Level2_UpdateActors(void) {
         case POSTGUARD_POST_AMBUSH:
           switch (st->phase) {
           case POSTGUARD_AMBUSH_WAIT:
-            TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+            TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
             if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000 &&
                 actor->posZ - actor->floorOffset - SPY.posZ < 0 && SPY.airborneFrames == 0) {
               PostState *other = g_pActorListBase[st->partner].state;
@@ -1883,7 +1883,7 @@ void Level2_UpdateActors(void) {
             }
             break;
           case POSTGUARD_AMBUSH_FACE:
-            if (TrackEntityYawTowardSpyro(actor, 6, 0xA, 1)) {
+            if (TrackEntityYawTowardSpyro(actor, 6, 0xA, YAW_STEP_IN_BAND)) {
               actor->mode = POSTGUARD_HOP;
               continue;
             }
@@ -1894,7 +1894,7 @@ void Level2_UpdateActors(void) {
         break;
 
       case POSTGUARD_HOP:
-        TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         switch (st->sub) {
         case 0:
           ANIM_GO(actor, 4);
@@ -1969,7 +1969,7 @@ void Level2_UpdateActors(void) {
         break;
 
       case POSTGUARD_ALERTED:
-        if (TrackEntityYawTowardSpyro(actor, 7, 0x14, 1)) {
+        if (TrackEntityYawTowardSpyro(actor, 7, 0x14, YAW_STEP_IN_BAND)) {
           actor->mode = POSTGUARD_SHOUT;
           continue;
         }
@@ -2018,7 +2018,7 @@ void Level2_UpdateActors(void) {
         turned = 0;
 
         if (AbsAngleDelta8(ang, actor->rotZ) < 0x10) {
-          TurnActorYawTowardAngle(actor, ang, 5, 0, 0);
+          TurnActorYawTowardAngle(actor, ang, 5, 0, YAW_HOLD_IN_BAND);
           MoveActorAlongAngle(actor, ang, 0x50, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (st->flag != 0 ||
               ApproxDist2D(&actor->posX,
@@ -2042,7 +2042,7 @@ void Level2_UpdateActors(void) {
             }
           }
         } else {
-          TurnActorYawTowardAngle(actor, ang, 5, 0, 0);
+          TurnActorYawTowardAngle(actor, ang, 5, 0, YAW_HOLD_IN_BAND);
         }
 
         if (turned) {
@@ -2105,7 +2105,7 @@ void Level2_UpdateActors(void) {
           int dist = ApproxDist2D(&actor->posX, &spy->posX);
           int ang;
 
-          if (!TrackEntityYawTowardSpyro(actor, 5, 0x14, 1)) {
+          if (!TrackEntityYawTowardSpyro(actor, 5, 0x14, YAW_STEP_IN_BAND)) {
             continue;
           }
           if (MoveActorAlongHeading(actor, 0x78, 0, 0x1F4, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT)) {
@@ -2155,7 +2155,7 @@ void Level2_UpdateActors(void) {
 
       case PCHARGER_TAUNT:
       case PCHARGER_TAUNT_ALT:
-        TrackEntityYawTowardSpyro(actor, 5, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 5, 0, YAW_HOLD_IN_BAND);
         if (g_nActorAnimDone != 0) {
           ENTER_POSE(actor, PCHARGER_PATROL);
         }

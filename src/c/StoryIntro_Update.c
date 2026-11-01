@@ -52,7 +52,7 @@ void StoryIntro_Update(void) {
       g_anCameraPos[0] = 0x2000;
       g_anCameraPos[1] = 0;
       g_anCameraPos[2] = 0x2000;
-      ResetSpyroEntity(1);
+      ResetSpyroEntity(RESET_SPYRO_FULL);
       g_anSpyroWorldPos[0] = 0x2780;
       g_anSpyroWorldPos[1] = 0xf00;
       g_anSpyroWorldPos[2] = 0x29a0;
@@ -157,7 +157,7 @@ void StoryIntro_Update(void) {
               g_nDemoMode = DEMO_PLAYBACK;
               g_nDemoExitFadeFrame = 0;
             }
-            ResetSpyroEntity(1);
+            ResetSpyroEntity(RESET_SPYRO_FULL);
             TickLevelTransitionStream(1);
             return;
           }

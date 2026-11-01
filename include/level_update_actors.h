@@ -341,6 +341,10 @@ extern struct {
 /* ==== Globals shared with level 4 ==== */
 extern void RefreshHudLevelGemCounter(void);
 
+#ifndef RESET_SPYRO_SOFT
+#define RESET_SPYRO_SOFT 0 /* clears input/charge flags, rebuilds body angles */
+#define RESET_SPYRO_FULL 1 /* wipes the Spyro block (keeps pos, euler, Sparx), state IDLE */
+#endif
 extern void ResetSpyroEntity(int full);
 
 /* Case 9 -- level-exit whirlwind: shows its name letters near the camera,

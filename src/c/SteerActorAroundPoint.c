@@ -120,11 +120,12 @@ int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face,
   if (flags & MOVE_STRAFE) {
     TurnActorYawTowardAngle(
         actor, ArcTan2(tgt[0] - actor->posX, tgt[1] - actor->posY, ATAN_ANGLE8),
-        turnStep, 0, 0);
+        turnStep, 0, YAW_HOLD_IN_BAND);
     r = MoveActorAlongAngle(actor, heading, speed, moveGroup, moveRadius,
                             flags);
   } else {
-    r = TurnActorYawTowardAngle(actor, heading, turnStep, turnThreshold, 1);
+    r = TurnActorYawTowardAngle(actor, heading, turnStep, turnThreshold,
+                                YAW_STEP_IN_BAND);
     if (r == 0) {
       goto stalled;
     }

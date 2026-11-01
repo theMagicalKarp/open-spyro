@@ -110,7 +110,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   }
   g_nSparxHealth = g_nSparxHealthStash;
   if (g_nGamestate != GS_ACTOR_CUTSCENE) {
-    ResetSpyroEntity(0);
+    ResetSpyroEntity(RESET_SPYRO_SOFT);
     g_nSpyroInputBlankCountdown = 0xC;
   }
   if ((g_nActiveLevelId % 10) == 5) {

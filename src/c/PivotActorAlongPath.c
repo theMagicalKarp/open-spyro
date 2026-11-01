@@ -70,7 +70,7 @@ int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed,
 
   if (AbsAngleDelta8(ang, actor->rotZ) <= lim) {
     actor->subMode = 1;
-    TurnActorYawTowardAngle(actor, ang, step, lim, 1);
+    TurnActorYawTowardAngle(actor, ang, step, lim, YAW_STEP_IN_BAND);
     MoveActorAlongHeading(actor, speed, group, 0, flags);
     goto done;
   }

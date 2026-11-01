@@ -88,6 +88,10 @@ extern void GetActorAttachPoint(Actor *actor, int slot, int *pos);
 extern int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int deadzone, int speed, int turnStep, int turnThreshold, int blockA, int blockB, int moveGroup, int moveRadius, int flags);
 extern int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim, int pitchLim, int radius);
 extern void SVectorToVectorShl2(int *dst, int *s);
+#ifndef YAW_HOLD_IN_BAND
+#define YAW_HOLD_IN_BAND 0 /* inside the threshold band: stop turning */
+#define YAW_STEP_IN_BAND 1 /* inside the band: keep stepping onto the target */
+#endif
 extern int TrackEntityYawTowardSpyro(Actor *actor, int step, int threshold, int flag);
 extern int g_anCameraPos[];
 

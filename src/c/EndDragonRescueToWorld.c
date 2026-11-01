@@ -33,7 +33,7 @@ void EndDragonRescueToWorld(void) {
     rec->anim = 0;
     rec->mode = 1;
   }
-  ResetSpyroEntity(1);
+  ResetSpyroEntity(RESET_SPYRO_FULL);
   cam = g_apCameraAnchorBlock;
   snap = g_anSpyroInputBlankBlock;
   snap[0] = 0xC;

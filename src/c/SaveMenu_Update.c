@@ -69,7 +69,7 @@ void SaveMenu_Update(void) {
       ACTOR_RAW(ACT, int, posZ) =
           g_nSaveMenuHostFromZ +
           (((g_nSaveMenuHostToZ - g_nSaveMenuHostFromZ) * t) >> 13);
-      TrackEntityYawTowardSpyro(ACT, 3, 0, 0);
+      TrackEntityYawTowardSpyro(ACT, 3, 0, YAW_HOLD_IN_BAND);
       FindGroundHeightBelow(&ACT->posX, 0x1000);
       EncodeCachedVecToActorDirCode(ACT);
       if (g_pSparxActor != 0) {

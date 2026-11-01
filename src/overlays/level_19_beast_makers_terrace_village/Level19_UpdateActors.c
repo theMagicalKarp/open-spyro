@@ -321,7 +321,7 @@ void Level19_UpdateActors(void) {
                 g_nCurrentLevelId = g_nActiveLevelId / 10 * 10;
                 g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
                 g_dwSpyroRequestMask = 0;
-                ResetSpyroEntity(0);
+                ResetSpyroEntity(RESET_SPYRO_SOFT);
                 g_nSpyroFlightMode = 0;
                 g_nSpyroSuperflameTimer = 0;
               }
@@ -529,7 +529,7 @@ void Level19_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(80, 140);
           }
 
-          rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
+          rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, YAW_STEP_IN_BAND);
           moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
@@ -804,7 +804,7 @@ void Level19_UpdateActors(void) {
           actor->mode = BGUARD_FACE_LINK;
           continue;
         }
-        TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && d < 0xFA0 &&
             ABS2(SPY_DZ(actor)) < 0x320 && TickCountdownByFrameDelta(&st->countdown, 4) != 0) {
           ENTER_POSE(actor, BGUARD_WIND_UP);
@@ -818,7 +818,7 @@ void Level19_UpdateActors(void) {
         break;
 
       case BGUARD_FIRE:
-        TrackEntityYawTowardSpyro(actor, 0xE, 0, 1);
+        TrackEntityYawTowardSpyro(actor, 0xE, 0, YAW_STEP_IN_BAND);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           int i;
 
@@ -884,7 +884,7 @@ void Level19_UpdateActors(void) {
         TurnActorYawTowardAngle(actor,
                       ArcTan2(g_pActorListBase[st->link].posX - actor->posX,
                                     g_pActorListBase[st->link].posY - actor->posY, ATAN_ANGLE8),
-                      6, 0, 0);
+                      6, 0, YAW_HOLD_IN_BAND);
         if (TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
           st->timer2 = 0x19;
           actor->mode = BGUARD_FIRE_AT_LINK;
@@ -897,7 +897,7 @@ void Level19_UpdateActors(void) {
         TurnActorYawTowardAngle(actor,
                       ArcTan2(g_pActorListBase[st->link].posX - actor->posX,
                                     g_pActorListBase[st->link].posY - actor->posY, ATAN_ANGLE8),
-                      6, 0, 0);
+                      6, 0, YAW_HOLD_IN_BAND);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           int i;
 
@@ -1707,7 +1707,7 @@ void Level19_UpdateActors(void) {
               ScaleVector3ByRatio(o256, dist, reach - 5);
             }
             AddVector(&actor->posX, &actor->posX, o256);
-            TurnActorYawTowardAngle(actor, ArcTan2(o256[0], o256[1], ATAN_ANGLE8), 0xA, 0, 0);
+            TurnActorYawTowardAngle(actor, ArcTan2(o256[0], o256[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
             actor->rotY = ArcTan2(VectorLength(o256, VEC_LEN_XY), o256[2], ATAN_ANGLE8);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
@@ -1772,7 +1772,7 @@ void Level19_UpdateActors(void) {
                 ScaleVector3ByRatio(o272, dist, 0x122);
               }
               AddVector(&actor->posX, &actor->posX, o272);
-              TurnActorYawTowardAngle(actor, ArcTan2(o272[0], o272[1], ATAN_ANGLE8), 0xA, 0, 0);
+              TurnActorYawTowardAngle(actor, ArcTan2(o272[0], o272[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
               actor->rotY = ArcTan2(VectorLength(o272, VEC_LEN_XY), o272[2], ATAN_ANGLE8);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
@@ -1836,7 +1836,7 @@ void Level19_UpdateActors(void) {
 
             actor->rotX = 0;
             actor->rotY = svF[2];
-            TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, 0);
+            TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, YAW_HOLD_IN_BAND);
           }
 
           switch (SPY.sparxHealth) {
@@ -3411,7 +3411,7 @@ void Level19_UpdateActors(void) {
           st->call = (GetRandomU32() & 0x1F) + 0x50;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
-        if (TurnActorYawTowardAngle(actor, ang, 6, 0x14, 1) != 0) {
+        if (TurnActorYawTowardAngle(actor, ang, 6, 0x14, YAW_STEP_IN_BAND) != 0) {
           MoveActorAlongAngle(actor, ang, 0x50, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (ApproxDist2D(&actor->posX,
                             &st->path->nodes[st->path->cur].x) < 0x100) {
@@ -3505,7 +3505,7 @@ void Level19_UpdateActors(void) {
           ENTER_POSE(actor, BSENTRY_SUMMON);
         }
         ANIM_GO(actor, 0);
-        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (ApproxDist2D(&actor->posX, spy) < 0x1C00 &&
             ABS2(actor->posZ - SPY.posZ) < 0x44C) {
           ENTER_POSE_BRK(actor, BSENTRY_ROUSE);
@@ -3543,7 +3543,7 @@ void Level19_UpdateActors(void) {
             ApproxDist2D(&actor->posX, spy) < st->range << 10) {
           ENTER_POSE(actor, BSENTRY_SUMMON);
         }
-        TrackEntityYawTowardSpyro(actor, 3, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && d < 0xFA0 &&
             ABS2(actor->posZ - SPY.posZ) < 0x44C) {
           ENTER_POSE_BRK_B(actor, BSENTRY_THROW);
@@ -3555,7 +3555,7 @@ void Level19_UpdateActors(void) {
       }
 
       case BSENTRY_THROW:
-        TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (st->fx == 0 && actor->nextFrame - 2U < 0x1A) {
           st->fx = g_pfnLevelSpawnActor(ACTOR_TYPE_CARRIED_EGG, actor);
         }
@@ -3661,7 +3661,7 @@ void Level19_UpdateActors(void) {
         int d = ApproxDist2D(&actor->posX, &st->path[6]);
 
         ProbeActorGroundHeight(actor);
-        TrackEntityYawTowardSpyro(actor, 3, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
         if (g_nActorAnimDone != 0) {
           if (st->guards == 0) {
             ANIM_QUEUE(actor, BSENTRY_SUMMON);

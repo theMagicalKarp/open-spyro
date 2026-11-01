@@ -312,7 +312,7 @@ void Level0_UpdateActors(void) {
           }
         }
 
-        if (TurnActorYawTowardAngle(actor, st->heading, 6, 0x14, 1) != 0) {
+        if (TurnActorYawTowardAngle(actor, st->heading, 6, 0x14, YAW_STEP_IN_BAND) != 0) {
           if (MoveActorAlongHeading(actor, st->speed, 0x12C, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0) {
             st->successCount++;
           } else {
@@ -448,7 +448,7 @@ void Level0_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(80, 140);
           }
 
-          rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
+          rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, YAW_STEP_IN_BAND);
           moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
@@ -1487,7 +1487,7 @@ void Level0_UpdateActors(void) {
                       ArcTan2(g_pActorListBase[st->tgtIdx].posX - actor->posX,
                                     g_pActorListBase[st->tgtIdx].posY - actor->posY,
                                     ATAN_ANGLE8),
-                      8, 0x10, 1);
+                      8, 0x10, YAW_STEP_IN_BAND);
 
         if (g_nActorAnimDone != 0) {
           st->timer = (GetRandomU32() & 0x3F) + 0x20;
@@ -1566,7 +1566,7 @@ void Level0_UpdateActors(void) {
           ENTER_POSE(actor, PENEMY_FLEE);
         }
 
-        TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
+        TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
         break;
       }
 
@@ -1622,7 +1622,7 @@ void Level0_UpdateActors(void) {
         if (distance < 0x4000 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < 0x2800 &&
             ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < 0x800) {
-          TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
+          TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
           st->timer = 0x78;
           break;
         }
@@ -1640,7 +1640,7 @@ void Level0_UpdateActors(void) {
         }
 
         actor->rotY += 4;
-        TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, 1);
+        TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, YAW_STEP_IN_BAND);
         DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC, 0xC);
         break;
       }
@@ -1654,7 +1654,7 @@ void Level0_UpdateActors(void) {
         }
 
         DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC, 0xC);
-        TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, 1);
+        TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, YAW_STEP_IN_BAND);
         break;
       }
 
@@ -1667,12 +1667,12 @@ void Level0_UpdateActors(void) {
           continue;
         }
 
-        TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, 1);
+        TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, YAW_STEP_IN_BAND);
         break;
       }
 
       case PENEMY_COWER: {
-        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
 
         if (SPY.state != SPYRO_ST_CHARGE && SPY.state != SPYRO_ST_CHARGE_AIR) {
           ENTER_POSE(actor, PENEMY_FLEE);
@@ -1815,7 +1815,7 @@ void Level0_UpdateActors(void) {
             ScaleVector3ByRatio(svA, dist, targetSpeed - 5);
           }
           AddVector(&actor->posX, &actor->posX, svA);
-          TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], ATAN_ANGLE8), 0xA, 0, 0);
+          TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
           pitchAngle = ArcTan2(VectorLength(svA, VEC_LEN_XY), svA[2], ATAN_ANGLE8);
           actor->rotY = pitchAngle;
           actor->rotY = StepAngle8Toward(pitchAngle, 0, 0x30);
@@ -1878,7 +1878,7 @@ void Level0_UpdateActors(void) {
               ScaleVector3ByRatio(svJ, dist, 290);
 
             AddVector(&actor->posX, &actor->posX, svJ);
-            TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], ATAN_ANGLE8), 0xA, 0, 0);
+            TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
             pitchAngle = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], ATAN_ANGLE8);
             actor->rotY = pitchAngle;
             actor->rotY = StepAngle8Toward(pitchAngle, 0, 0x30);
@@ -1935,7 +1935,7 @@ void Level0_UpdateActors(void) {
             svF[2] = -32;
           actor->rotX = 0;
           actor->rotY = svF[2];
-          TurnActorYawTowardAngle(actor, SPY.bodyRotZ, 4, 0, 0);
+          TurnActorYawTowardAngle(actor, SPY.bodyRotZ, 4, 0, YAW_HOLD_IN_BAND);
         }
 
         switch (SPY.sparxHealth) {
@@ -2641,13 +2641,13 @@ void Level0_UpdateActors(void) {
         }
 
         if (distance < 0x2800) {
-          TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
+          TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
         }
         break;
       }
 
       case FLOCK_ROUSE: {
-        TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
+        TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
 
         if (g_nActorAnimDone != 0) {
           ENTER_POSE(actor, FLOCK_RUN);

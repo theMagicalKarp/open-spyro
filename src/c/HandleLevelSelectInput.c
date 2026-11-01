@@ -66,7 +66,7 @@ void HandleLevelSelectInput(void) {
           InitLightVectorConstants();
           g_nReturnPortalLevelId = 0;
           g_nEnteredPortalIdx = -1;
-          ResetSpyroEntity(0);
+          ResetSpyroEntity(RESET_SPYRO_SOFT);
           RestartSpyroAnimWithState(SPYRO_ST_GLIDE);
           g_nGamestate = GS_LEVEL_LOAD;
           g_nCdStreamState = LSTREAM_FRESH;

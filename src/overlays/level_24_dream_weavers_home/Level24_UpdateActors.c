@@ -412,7 +412,7 @@ void Level24_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(80, 140);
           }
 
-          rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
+          rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, YAW_STEP_IN_BAND);
           moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
@@ -987,7 +987,7 @@ void Level24_UpdateActors(void) {
           actor->mode = LGUARD_PACE;
           continue;
         }
-        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x190
                                : -SPY_DZ(actor) < 0x190)) {
@@ -1018,7 +1018,7 @@ void Level24_UpdateActors(void) {
       case LGUARD_LUNGE:
         if (st->kind == LGKIND_SMALL) {
           ANIM_GO(actor, st->base + 2);
-          TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+          TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
           g_anSpyroRequestVelocity.x = (g_anCosineLut[actor->rotZ] * 0x23) >> 10;
           g_nSpyroRequestVelocityY = (g_anSineLut[actor->rotZ] * 0x23) >> 10;
           g_nSpyroRequestVelocityZ = 0x46;
@@ -1031,7 +1031,7 @@ void Level24_UpdateActors(void) {
           break;
         }
         ANIM_GO(actor, st->base + 2);
-        TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (g_nActorAnimDone != 0 || dist > 0x2328) {
           st->timer = 0x96;
           ANIM_GO(actor, st->base);
@@ -1136,7 +1136,7 @@ void Level24_UpdateActors(void) {
                       4, 0x32, 0xE, 0x80, 0xFF, 0xFF, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
         if (p->mode != 0xA) {
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-            TurnActorYawTowardAngle(p, h, 4, 0, 0);
+            TurnActorYawTowardAngle(p, h, 4, 0, YAW_HOLD_IN_BAND);
           }
           break;
         }
@@ -2010,7 +2010,7 @@ void Level24_UpdateActors(void) {
               ScaleVector3ByRatio(g152, dist, reach - 5);
             }
             AddVector(&actor->posX, &actor->posX, g152);
-            TurnActorYawTowardAngle(actor, ArcTan2(g152[0], g152[1], ATAN_ANGLE8), 0xA, 0, 0);
+            TurnActorYawTowardAngle(actor, ArcTan2(g152[0], g152[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
             actor->rotY = ArcTan2(VectorLength(g152, VEC_LEN_XY), g152[2], ATAN_ANGLE8);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
@@ -2075,7 +2075,7 @@ void Level24_UpdateActors(void) {
                 ScaleVector3ByRatio(g320, dist, 0x122);
               }
               AddVector(&actor->posX, &actor->posX, g320);
-              TurnActorYawTowardAngle(actor, ArcTan2(g320[0], g320[1], ATAN_ANGLE8), 0xA, 0, 0);
+              TurnActorYawTowardAngle(actor, ArcTan2(g320[0], g320[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
               actor->rotY = ArcTan2(VectorLength(g320, VEC_LEN_XY), g320[2], ATAN_ANGLE8);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
@@ -2139,7 +2139,7 @@ void Level24_UpdateActors(void) {
 
             actor->rotX = 0;
             actor->rotY = g136[2];
-            TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, 0);
+            TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, YAW_HOLD_IN_BAND);
           }
 
           switch (SPY.sparxHealth) {
@@ -2228,7 +2228,7 @@ void Level24_UpdateActors(void) {
         continue;
 
       case SINGER_REST:
-        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (st->mode != SINGER_ROLE_CARRIED) {
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1000) {
             ENTER_POSE(actor, SINGER_WALK);
@@ -2280,7 +2280,7 @@ void Level24_UpdateActors(void) {
         continue;
 
       case SINGER_WATCH:
-        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1000) {
           ENTER_POSE(actor, SINGER_WALK);
         }
@@ -2300,7 +2300,7 @@ void Level24_UpdateActors(void) {
         if ((unsigned)(FindGroundHeightBelow(&actor->posX, 0x10000) - 0x81) < 0x177F) {
           actor->posZ -= 0x40;
         }
-        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
         if (g_nActorAnimDone != 0) {
           st->timer = st->period;
@@ -2338,7 +2338,7 @@ void Level24_UpdateActors(void) {
         continue;
 
       case SINGER_SING:
-        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
         if (st->next == SINGER_CUE_STOP) {
           ENTER_POSE(actor, SINGER_SETTLE);
@@ -2499,7 +2499,7 @@ void Level24_UpdateActors(void) {
           actor->mode = LGUARD_PACE;
           continue;
         }
-        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x190
                                : -SPY_DZ(actor) < 0x190)) {
@@ -2530,7 +2530,7 @@ void Level24_UpdateActors(void) {
       case LGUARD_LUNGE:
         if (st->kind == LGKIND_SMALL) {
           ANIM_GO(actor, st->base + 2);
-          TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+          TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
           g_anSpyroRequestVelocity.x = (g_anCosineLut[actor->rotZ] * 0x23) >> 10;
           g_nSpyroRequestVelocityY = (g_anSineLut[actor->rotZ] * 0x23) >> 10;
           g_nSpyroRequestVelocityZ = 0x46;
@@ -2545,7 +2545,7 @@ void Level24_UpdateActors(void) {
           int dist = ApproxDist2D(&actor->posX, &g_anSpyroWorldPos);
 
           ANIM_GO(actor, st->base + 2);
-          TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+          TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
           if (g_nActorAnimDone != 0 || dist > 0x2710) {
             st->timer = 0x96;
             ANIM_GO(actor, st->base);
@@ -2654,7 +2654,7 @@ void Level24_UpdateActors(void) {
                                                   g_nSpyroWorldPosY - p->posY, ATAN_ANGLE8),
                                     0x80),
                       4, 0x32, 0xE, 0x80, 0xFF, 0xFF, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
-        TurnActorYawTowardAngle(p, h, 4, 0, 0);
+        TurnActorYawTowardAngle(p, h, 4, 0, YAW_HOLD_IN_BAND);
         break;
       }
       }

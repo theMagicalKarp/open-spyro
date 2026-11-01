@@ -135,7 +135,7 @@ void Level24_BalloonistCutscene_Update(void)
             }
           }
           g_nSpyroSuperflameTimerSave = g_nSpyroSuperflameTimer;
-          ResetSpyroEntity(1);
+          ResetSpyroEntity(RESET_SPYRO_FULL);
           g_bSpyroAnimPrev[0] = 1;
           g_bSpyroAnimCurrent = 1;
           g_bSpyroAnimFrame = 1;
@@ -818,7 +818,7 @@ void Level24_BalloonistCutscene_Update(void)
       else
       {
         CopyVector(g_anSpyroWorldPos, &g_nActorCutsceneTimer[8]);
-        ResetSpyroEntity(1);
+        ResetSpyroEntity(RESET_SPYRO_FULL);
         g_nSpyroInputBlankCountdown = 0x10;
         *((int *) ((char *) g_pCameraAnchorPos)) = (int) g_anSpyroWorldPos;
         g_nCameraCurrentMode = CAM_MODE_STAND;

@@ -38,6 +38,10 @@ void SnapActorToGround(Actor *actor);
 int IsActorInRunningKillSet(Actor *actor);
 void PlayActorMeshVoice(Actor *actor, int voiceOffset, void *owner);
 void BurstActorWithSound(Actor *actor, int mode);
+#ifndef YAW_HOLD_IN_BAND
+#define YAW_HOLD_IN_BAND 0 /* inside the threshold band: stop turning */
+#define YAW_STEP_IN_BAND 1 /* inside the band: keep stepping onto the target */
+#endif
 int TurnActorYawTowardAngle(Actor *actor, int heading, int step, int threshold, int flag);
 int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed, int thresh, int animId);
 int MoveActorByDelta(Actor *actor, int vx, int vy, int vz, int group, int radius, int flags);

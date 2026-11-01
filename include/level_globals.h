@@ -223,6 +223,10 @@ extern int IsPointInRotatedBox(int *pos, int *rec);
 extern int RaiseSpyroTriggerInRadius(int *pos, int radius, int flags);
 extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 extern void RefreshHudLevelGemCounter(void);
+#ifndef RESET_SPYRO_SOFT
+#define RESET_SPYRO_SOFT 0 /* clears input/charge flags, rebuilds body angles */
+#define RESET_SPYRO_FULL 1 /* wipes the Spyro block (keeps pos, euler, Sparx), state IDLE */
+#endif
 extern void ResetSpyroEntity(int hard);
 extern void ResetSpyroLinearMotion(void);
 extern int StepAngle8Toward(int to, int from, int maxStep);

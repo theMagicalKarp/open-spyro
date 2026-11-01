@@ -21,7 +21,7 @@ void EndSaveMenuToWorld(void) {
   g_nCinematicActive = 0;
   InitLightVectorConstants();
   ZeroVector(g_anSpyroSwingTargetBlock);
-  ResetSpyroEntity(1);
+  ResetSpyroEntity(RESET_SPYRO_FULL);
 
   g_nSpyroSwingEulerPrev1 = 0x100;
   g_bSpyroSwingByteEuler1 = 0x10;

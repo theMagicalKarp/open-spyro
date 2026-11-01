@@ -491,6 +491,10 @@ void UpdateLevelTransitionCamera(void);
 void UpdateCameraFrame(void);
 
 /* 0x80038dc0: Turns an actor's byte yaw (Actor.rotZ) toward Spyro (ArcTan2 of g_anSpyroWorldPos - actor position). Camera-mode boost: g_nActorFrameDelta == 3 → step *= 1.5; == 4 → step *= 2. Returns 1 once within threshold deadzone (flag != 0 still applies one ApproachAngle8 step at lock-on); returns 0 while still rotating. Callers: the level actor updates (actors that face Spyro) and SaveMenu_Update. */
+#ifndef YAW_HOLD_IN_BAND
+#define YAW_HOLD_IN_BAND 0 /* inside the threshold band: stop turning */
+#define YAW_STEP_IN_BAND 1 /* inside the band: keep stepping onto the target */
+#endif
 int TrackEntityYawTowardSpyro(Actor *actor, int step, int threshold, int flag);
 
 /* 0x8003a720: Zero/default initializer for an actor's render-state block (offsets +0x18..+0x57 from record base). Sets two PsyQ POLY_F3 prim-type tags (0x20) at +0x41 and +0x4b, full-bright RGB intensities (0xff) at +0x43/+0x4a/+0x52/+0x53, fade level 0x7f at +0x54, default counters 0x10 at +0x50 + 4 at +0x47 + 1 at +0x3f, and clears byte yaw/pitch/roll at +0x44..+0x46 plus all state words at +0x18/+0x1c/+0x38/+0x4c. Callers: TickCutsceneBundleLoadStream (level loader, M09) + DragonRescue_Update. */
@@ -635,6 +639,10 @@ void TickSpyroFrameGlideHold(void);
 void TickSpyroFrameNoInput(void);
 
 /* 0x8004ac24: Reset Spyro entity state. State 7 → clear high byte of g_abSpyroTintRgba. States 0xb/0xf/0x20/0x2c → StopSoundVoicesByOwner(audio reset). full==0 = soft reset (clear input/charge flags g_abSpyroTintRgba/84/88/ca4/ca8/cac/bc0 + rebuild g_nSpyroBodyPitch/78/74 from byte Euler snapshots). full!=0 = hard reset: save pos+euler+g_nSparxHealth, FillWord(g_anSpyroWorldPos, 0, 0x2a4) wiping the whole Spyro state block, restore saved fields, ChangeSpyroState(SPYRO_ST_IDLE). Always sets g_nSpyroFirstContactChunkId=0xff (sentinel surface-type) and g_nSpyroSuperflameTimer=0. Called from BeginCreditsSequence/BeginPauseToMenuTransition/EndDragonRescueToWorld/EndSaveMenuToWorld/LevelIntro_Update/StoryIntro_Update/HandleLevelSelectInput/DragonRescue_Update + level loader BuildLoadedLevelRuntime. */
+#ifndef RESET_SPYRO_SOFT
+#define RESET_SPYRO_SOFT 0 /* clears input/charge flags, rebuilds body angles */
+#define RESET_SPYRO_FULL 1 /* wipes the Spyro block (keeps pos, euler, Sparx), state IDLE */
+#endif
 void ResetSpyroEntity(int full);
 
 /* 0x8004ae38: Ray cast against world geometry + dynamic actor meshes. Args: ray-start (vec3), ray-end (vec3), unused, scratch buffer. Walks the 4-cell actor grid at g_pActorSpatialGridBase+0x1000 (testing each actor's local-frame mesh via the per-actor-mesh table at &g_apActorMeshTable[idx]+0x38) and the world-chunk index at g_pWorldCollisionHeader. On hit writes: g_anCollisionResolvedPos..b88 = hit point, g_anCollisionProbeVec..70 = hit normal (or surface vector), g_pCollisionHitActor = hit actor ptr (NULL = world hit), g_nLastCollisionHitChunkId = hit triangle index (-1 = actor hit). Returns 1 on hit, 0 otherwise. Shared by every M05 line probe (LedgeForward / GroundContact / OntoLocalFloor / WallProbes) and M06 CheckLineOfSightSegment. */

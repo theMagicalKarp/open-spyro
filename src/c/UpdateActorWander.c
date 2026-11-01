@@ -69,7 +69,7 @@ void UpdateActorWander(Actor *actor, WanderBlock *wb) {
       wb->weaveDir = -(int)wb->weaveDir;
     }
   }
-  if (TurnActorYawTowardAngle(actor, heading, turn, 5, 1) == 0) {
+  if (TurnActorYawTowardAngle(actor, heading, turn, 5, YAW_STEP_IN_BAND) == 0) {
     aligned = 0;
   }
 

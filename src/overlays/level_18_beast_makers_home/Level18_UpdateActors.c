@@ -427,7 +427,7 @@ void Level18_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(80, 140);
           }
 
-          rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
+          rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, YAW_STEP_IN_BAND);
           moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
@@ -1412,7 +1412,7 @@ void Level18_UpdateActors(void) {
               ScaleVector3ByRatio(svA, dist, reach - 5);
             }
             AddVector(&actor->posX, &actor->posX, svA);
-            TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], ATAN_ANGLE8), 0xA, 0, 0);
+            TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
             actor->rotY = ArcTan2(VectorLength(svA, VEC_LEN_XY), svA[2], ATAN_ANGLE8);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
@@ -1477,7 +1477,7 @@ void Level18_UpdateActors(void) {
                 ScaleVector3ByRatio(svJ, dist, 0x122);
               }
               AddVector(&actor->posX, &actor->posX, svJ);
-              TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], ATAN_ANGLE8), 0xA, 0, 0);
+              TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
               actor->rotY = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], ATAN_ANGLE8);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
@@ -1541,7 +1541,7 @@ void Level18_UpdateActors(void) {
 
             actor->rotX = 0;
             actor->rotY = svF[2];
-            TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, 0);
+            TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, YAW_HOLD_IN_BAND);
           }
 
           switch (SPY.sparxHealth) {
@@ -1625,7 +1625,7 @@ void Level18_UpdateActors(void) {
         TickCountdownByFrameDelta(&st->timer2, 4);
         switch (st->mode) {
         case CHARGER_ROLE_STAND:
-          TrackEntityYawTowardSpyro(actor, 0xA, 0, 0);
+          TrackEntityYawTowardSpyro(actor, 0xA, 0, YAW_HOLD_IN_BAND);
           break;
 
         case CHARGER_ROLE_PATROL:
@@ -1651,7 +1651,7 @@ void Level18_UpdateActors(void) {
                   ArcTan2(
                       st->path->nodes[st->path->cur].x - actor->posX,
                       st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8),
-                  6, 0x1E, 1) != 0) {
+                  6, 0x1E, YAW_STEP_IN_BAND) != 0) {
             MoveActorAlongHeading(actor, st->speed, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           }
           break;
@@ -1676,7 +1676,7 @@ void Level18_UpdateActors(void) {
                         ArcTan2(g_pActorListBase[st->target].posX - actor->posX,
                                       g_pActorListBase[st->target].posY - actor->posY,
                                       ATAN_ANGLE8),
-                        4, 0, 0);
+                        4, 0, YAW_HOLD_IN_BAND);
           MoveActorAlongHeading(actor, spd, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           break;
         }
@@ -1771,7 +1771,7 @@ void Level18_UpdateActors(void) {
                                                       spy->posY - actor->posY,
                                                       ATAN_ANGLE8),
                                         st->turn),
-                          5, 0x1E, 1) == 0) {
+                          5, 0x1E, YAW_STEP_IN_BAND) == 0) {
           if (st->charging == 0) {
             break;
           }
@@ -1823,7 +1823,7 @@ void Level18_UpdateActors(void) {
         break;
 
       case CHARGER_RAM:
-        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (MoveActorAlongHeading(actor, st->speed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == 2) {
           *st->flag = 0;
           st->timer2 = 0x78;
@@ -1896,7 +1896,7 @@ void Level18_UpdateActors(void) {
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2_8bit(st->vec[0] - actor->posX,
                                         st->vec[1] - actor->posY),
-                          4, 0x14, 1) != 0) {
+                          4, 0x14, YAW_STEP_IN_BAND) != 0) {
           MoveActorAlongHeading(actor, 0xA0, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (ApproxDist2D(&actor->posX, st->vec) < 0xB4) {
@@ -3948,7 +3948,7 @@ void Level18_UpdateActors(void) {
           st->call = (GetRandomU32() & 0x1F) + 0x50;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
-        if (TurnActorYawTowardAngle(actor, ang, 6, 0x14, 1) != 0) {
+        if (TurnActorYawTowardAngle(actor, ang, 6, 0x14, YAW_STEP_IN_BAND) != 0) {
           MoveActorAlongAngle(actor, ang, 0x50, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (ApproxDist2D(&actor->posX,
                             &st->path->nodes[st->path->cur].x) < 0x100) {

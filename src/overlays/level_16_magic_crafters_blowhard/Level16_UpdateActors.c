@@ -261,7 +261,7 @@ void Level16_UpdateActors(void) {
                 g_nCurrentLevelId = g_nActiveLevelId / 10 * 10;
                 g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
                 g_dwSpyroRequestMask = 0;
-                ResetSpyroEntity(0);
+                ResetSpyroEntity(RESET_SPYRO_SOFT);
                 g_nSpyroFlightMode = 0;
                 g_nSpyroSuperflameTimer = 0;
               }
@@ -467,7 +467,7 @@ void Level16_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(80, 140);
           }
 
-          rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
+          rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, YAW_STEP_IN_BAND);
           moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
@@ -696,7 +696,7 @@ void Level16_UpdateActors(void) {
             st->parent->posX + (g_anCosineLut[st->parent->rotZ] << 16 >> 19);
         actor->posY =
             st->parent->posY + (g_anSineLut[st->parent->rotZ] << 16 >> 19);
-        TrackEntityYawTowardSpyro(actor, 8, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 8, 0, YAW_HOLD_IN_BAND);
         if (g_nActorAnimDone != 0) {
           st->x = SPY.posX >> 4;
           st->y = SPY.posY >> 4;
@@ -1616,7 +1616,7 @@ void Level16_UpdateActors(void) {
               ScaleVector3ByRatio(svL, dist, reach - 5);
             }
             AddVector(&actor->posX, &actor->posX, svL);
-            TurnActorYawTowardAngle(actor, ArcTan2(svL[0], svL[1], ATAN_ANGLE8), 0xA, 0, 0);
+            TurnActorYawTowardAngle(actor, ArcTan2(svL[0], svL[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
             actor->rotY = ArcTan2(VectorLength(svL, VEC_LEN_XY), svL[2], ATAN_ANGLE8);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
@@ -1681,7 +1681,7 @@ void Level16_UpdateActors(void) {
                 ScaleVector3ByRatio(svM, dist, 0x122);
               }
               AddVector(&actor->posX, &actor->posX, svM);
-              TurnActorYawTowardAngle(actor, ArcTan2(svM[0], svM[1], ATAN_ANGLE8), 0xA, 0, 0);
+              TurnActorYawTowardAngle(actor, ArcTan2(svM[0], svM[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
               actor->rotY = ArcTan2(VectorLength(svM, VEC_LEN_XY), svM[2], ATAN_ANGLE8);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
@@ -1745,7 +1745,7 @@ void Level16_UpdateActors(void) {
 
             actor->rotX = 0;
             actor->rotY = svG[2];
-            TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, 0);
+            TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, YAW_HOLD_IN_BAND);
           }
 
           switch (SPY.sparxHealth) {
@@ -2223,7 +2223,7 @@ void Level16_UpdateActors(void) {
                             &st->path->nodes[st->path->cur].x) <= 0x100) {
             int dz;
 
-            TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
+            TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
             if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
               dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
               if (dz > 0 ? dz < 0x800
@@ -2243,7 +2243,7 @@ void Level16_UpdateActors(void) {
 
             if (dz > 0 ? dz < 0x800
                        : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x800) {
-              TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
+              TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
               if (st->timer == 0 || --st->timer <= 0) {
                 st->flags |= PATHGUARD_F_HOLD;
                 ENTER_POSE(actor, PATHGUARD_THROW);
@@ -2292,12 +2292,12 @@ void Level16_UpdateActors(void) {
             actor,
             ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                           st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8),
-            8, 0x10, 1);
+            8, 0x10, YAW_STEP_IN_BAND);
         MoveActorAlongHeading(actor, 0x60, 0x180, 0x180, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
         break;
 
       case PATHGUARD_THROW:
-        TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
+        TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
         if (g_nActorAnimDone != 0) {
           actor->mode = PATHGUARD_WALK;
           ANIM_RESET(actor, 0);
@@ -3289,7 +3289,7 @@ void Level16_UpdateActors(void) {
         break;
 
       case BLOWHARD_P1_HOVER:
-        TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
+        TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
         if (dist < 0x2800 && st->minion == 0 && st->floorZ == -1) {
           actor->mode = BLOWHARD_P1_DROP_RIDER;
           st->floorZ = actor->posZ - 0x578;
@@ -3298,7 +3298,7 @@ void Level16_UpdateActors(void) {
         break;
 
       case BLOWHARD_P1_DROP_RIDER:
-        TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
+        TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
         if (actor->anim == 5 && actor->frame >= 6 && st->minion == 0) {
           int v[3];
 
@@ -3345,11 +3345,11 @@ void Level16_UpdateActors(void) {
           }
           break;
         }
-        TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
+        TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
         break;
 
       case BLOWHARD_P2_DROP_RIDER:
-        TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
+        TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
         if (AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(actor->posX - SPY.posX,
                                         actor->posY - SPY.posY, ATAN_ANGLE8)) < 0x30 &&
@@ -3406,11 +3406,11 @@ void Level16_UpdateActors(void) {
           }
           break;
         }
-        TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
+        TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
         break;
 
       case BLOWHARD_P3_DROP_RIDER:
-        TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
+        TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
         if (AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(actor->posX - SPY.posX,
                                         actor->posY - SPY.posY, ATAN_ANGLE8)) < 0x30 &&

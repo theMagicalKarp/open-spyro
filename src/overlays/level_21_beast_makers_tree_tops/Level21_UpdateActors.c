@@ -252,7 +252,7 @@ void Level21_UpdateActors(void) {
                 g_nCurrentLevelId = g_nActiveLevelId / 10 * 10;
                 g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
                 g_dwSpyroRequestMask = 0;
-                ResetSpyroEntity(0);
+                ResetSpyroEntity(RESET_SPYRO_SOFT);
                 g_nSpyroFlightMode = 0;
                 g_nSpyroSuperflameTimer = 0;
               }
@@ -460,7 +460,7 @@ void Level21_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(80, 140);
           }
 
-          rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
+          rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, YAW_STEP_IN_BAND);
           moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
@@ -899,7 +899,7 @@ void Level21_UpdateActors(void) {
         continue;
 
       case BTHROW_WATCH:
-        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if ((st->flags & THROWER_F_ADVANCE) &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x1F4
                                : -SPY_DZ(actor) < 0x1F4) &&
@@ -936,7 +936,7 @@ void Level21_UpdateActors(void) {
         break;
 
       case BTHROW_THROW:
-        TrackEntityYawTowardSpyro(actor, 8, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 8, 0, YAW_HOLD_IN_BAND);
         if ((unsigned)(actor->nextFrame - 3) < 5 && st->rock == 0) {
           st->rock = g_pfnLevelSpawnActor(ACTOR_TYPE_ROLLING_BOULDER, actor);
           st->rock->subMode = 0;
@@ -1006,7 +1006,7 @@ void Level21_UpdateActors(void) {
 
       case BTHROW_PAIR_READY:
         ANIM_GO(actor, 2);
-        TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (actor->subMode != 0) {
           int d = ApproxDist2D(&actor->posX, &spy->posX);
 
@@ -1056,7 +1056,7 @@ void Level21_UpdateActors(void) {
         }
         actor->updateDist = 0xFF;
         actor->probeDist = 0xFF;
-        TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
+        TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
         ANIM_GO(actor, 7);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2BC &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x2BC
@@ -1140,14 +1140,14 @@ void Level21_UpdateActors(void) {
         TurnActorYawTowardAngle(actor,
                       ArcTan2(p->posX - actor->posX,
                                     p->posY - actor->posY, ATAN_ANGLE8),
-                      6, 0, 0);
+                      6, 0, YAW_HOLD_IN_BAND);
         break;
       }
 
       case BTHROW_RIDE_LEAP: {
         Actor *p = &g_pActorListBase[st->rider];
 
-        TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
+        TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
         ANIM_GO(actor, 6);
         RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(p, 0, svD);
@@ -1165,7 +1165,7 @@ void Level21_UpdateActors(void) {
       case BTHROW_RIDE_HELD: {
         Actor *p = &g_pActorListBase[st->rider];
 
-        TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
+        TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
         RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(p, 0, svE);
         GetActorAttachPoint(p, 1, svF);
@@ -1280,7 +1280,7 @@ void Level21_UpdateActors(void) {
         continue;
 
       case GATEKEEPER_WATCH:
-        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x1C00) {
           ENTER_POSE(actor, GATEKEEPER_STALK);
         }
@@ -1290,7 +1290,7 @@ void Level21_UpdateActors(void) {
         int d = ApproxDist2D(&actor->posX, &spy->posX);
         int dz = SPY_DZ(actor);
 
-        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (d > 0x2400) {
           ENTER_POSE(actor, GATEKEEPER_WATCH);
         }
@@ -1304,7 +1304,7 @@ void Level21_UpdateActors(void) {
       case GATEKEEPER_SWIPE: {
         int d = ApproxDist2D(&actor->posX, &spy->posX);
 
-        TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if ((unsigned)(actor->nextFrame - 6) < 4) {
           int r = (actor->nextFrame - 5) * 0x3E8;
 
@@ -1340,7 +1340,7 @@ void Level21_UpdateActors(void) {
 
       case GATEKEEPER_KEYS_ARM:
         ANIM_GO(actor, 2);
-        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (st->idx < st->count &&
             ApproxDist2D(&actor->posX, &spy->posX) <
                 (st->range[0] + 6) << 10 &&
@@ -1360,7 +1360,7 @@ void Level21_UpdateActors(void) {
 
       case GATEKEEPER_KEYS_WAIT:
         ANIM_GO(actor, 2);
-        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (actor->subMode == 0) {
           break;
         }
@@ -1387,7 +1387,7 @@ void Level21_UpdateActors(void) {
         int k;
 
         ANIM_GO(actor, 4);
-        TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (actor->nextFrame < 6) {
           break;
         }
@@ -1415,7 +1415,7 @@ void Level21_UpdateActors(void) {
         }
         ANIM_GO(actor, 8);
         actor->probeDist = 0xFF;
-        TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
+        TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x3E8 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x320
                                : -SPY_DZ(actor) < 0x320)) {
@@ -1507,14 +1507,14 @@ void Level21_UpdateActors(void) {
         TurnActorYawTowardAngle(actor,
                       ArcTan2(p->posX - actor->posX,
                                     p->posY - actor->posY, ATAN_ANGLE8),
-                      6, 0, 0);
+                      6, 0, YAW_HOLD_IN_BAND);
         break;
       }
 
       case GATEKEEPER_RIDE_LEAP: {
         Actor *p = &g_pActorListBase[st->rider];
 
-        TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
+        TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
         ANIM_GO(actor, 7);
         RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(p, 0, svD);
@@ -1532,7 +1532,7 @@ void Level21_UpdateActors(void) {
       case GATEKEEPER_RIDE_HELD: {
         Actor *p = &g_pActorListBase[st->rider];
 
-        TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
+        TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
         RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(p, 0, svG);
         GetActorAttachPoint(p, 1, keepCarryHand1);
@@ -2321,7 +2321,7 @@ void Level21_UpdateActors(void) {
               ScaleVector3ByRatio(svG, dist, reach - 5);
             }
             AddVector(&actor->posX, &actor->posX, svG);
-            TurnActorYawTowardAngle(actor, ArcTan2(svG[0], svG[1], ATAN_ANGLE8), 0xA, 0, 0);
+            TurnActorYawTowardAngle(actor, ArcTan2(svG[0], svG[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
             actor->rotY = ArcTan2(VectorLength(svG, VEC_LEN_XY), svG[2], ATAN_ANGLE8);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
@@ -2386,7 +2386,7 @@ void Level21_UpdateActors(void) {
                 ScaleVector3ByRatio(sparxToTarget, dist, 0x122);
               }
               AddVector(&actor->posX, &actor->posX, sparxToTarget);
-              TurnActorYawTowardAngle(actor, ArcTan2(sparxToTarget[0], sparxToTarget[1], ATAN_ANGLE8), 0xA, 0, 0);
+              TurnActorYawTowardAngle(actor, ArcTan2(sparxToTarget[0], sparxToTarget[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
               actor->rotY = ArcTan2(VectorLength(sparxToTarget, VEC_LEN_XY), sparxToTarget[2], ATAN_ANGLE8);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
@@ -2450,7 +2450,7 @@ void Level21_UpdateActors(void) {
 
             actor->rotX = 0;
             actor->rotY = svF[2];
-            TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, 0);
+            TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, YAW_HOLD_IN_BAND);
           }
 
           switch (SPY.sparxHealth) {
@@ -3274,7 +3274,7 @@ void Level21_UpdateActors(void) {
                       ArcTan2(g_pActorListBase[st->target].posX - actor->posX,
                                     g_pActorListBase[st->target].posY - actor->posY,
                                     ATAN_ANGLE8),
-                      6, 0, 0);
+                      6, 0, YAW_HOLD_IN_BAND);
         if (g_nActorAnimDone != 0) {
           g_pActorListBase[st->target].subMode = 1;
           st->target = *(int *)g_pActorListBase[st->target].state;
@@ -3294,7 +3294,7 @@ void Level21_UpdateActors(void) {
 
       case RUNNER_WAIT:
         ANIM_GO(actor, 4);
-        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (ApproxDist2D(&actor->posX, &spy->posX) < st->range &&
             AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(actor->posX - spy->posX,
@@ -3440,7 +3440,7 @@ void Level21_UpdateActors(void) {
       }
 
       case RUNNER_TAUNT:
-        TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         ANIM_GO(actor, 4);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x12C0) {
           actor->mode = RUNNER_DODGE;
@@ -3454,7 +3454,7 @@ void Level21_UpdateActors(void) {
 
       case RUNNER_LOOKOUT:
         ANIM_GO(actor, 4);
-        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (SPY_DZ(actor) < 0 &&
             ApproxDist2D(&actor->posX, (int *)(base - 8)) < 0x1964) {
           actor->mode = RUNNER_RETURN;
@@ -3467,7 +3467,7 @@ void Level21_UpdateActors(void) {
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(PATH_X(st->home, 0) - actor->posX,
                                         PATH_Y(st->home, 0) - actor->posY, ATAN_ANGLE8),
-                          8, 0x14, 1) != 0) {
+                          8, 0x14, YAW_STEP_IN_BAND) != 0) {
           if (ApproxDist2D(&actor->posX, PATH_PT(st->home, 0)) < 0x12C) {
             actor->mode = RUNNER_WAIT;
             continue;
@@ -3478,7 +3478,7 @@ void Level21_UpdateActors(void) {
 
       case RUNNER_LURK:
         ANIM_GO(actor, 4);
-        TrackEntityYawTowardSpyro(actor, 4, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->volA) != 0) {
           ENTER_POSE(actor, RUNNER_RUN);
         }
@@ -4408,7 +4408,7 @@ void Level21_UpdateActors(void) {
           st->call = (GetRandomU32() & 0x1F) + 0x50;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
-        if (TurnActorYawTowardAngle(actor, ang, 6, 0x14, 1) != 0) {
+        if (TurnActorYawTowardAngle(actor, ang, 6, 0x14, YAW_STEP_IN_BAND) != 0) {
           MoveActorAlongAngle(actor, ang, 0x50, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (ApproxDist2D(&actor->posX,
                             &st->path->nodes[st->path->cur].x) < 0x100) {
