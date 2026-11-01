@@ -651,6 +651,17 @@ enum MetalheadMode {
   METALHEAD_DYING = 20,       /* bursts; sets g_bLevelBossDefeated */
 };
 
+/* MetalheadState.choice: the attack Metalhead picks while METALHEAD_IDLE
+ * (random: 60% stomp, 25% spray, 15% lob; spray or lob only when Spyro is
+ * out of stomp reach). Back to NONE when its pose ends or the pick's range
+ * test fails. */
+enum MetalheadAttack {
+  METALHEAD_ATTACK_NONE = 0,
+  METALHEAD_ATTACK_STOMP = 1, /* waits for Spyro in range, then METALHEAD_STOMP */
+  METALHEAD_ATTACK_SPRAY = 2, /* METALHEAD_SPRAY */
+  METALHEAD_ATTACK_LOB = 3,   /* METALHEAD_LOB */
+};
+
 /* ->mode of a lunger (ACTOR_TYPE_LUNGER, LungeState; level 4). It takes
  * LungeState.hits hits (each one switches its animation set, anim += 7)
  * before a flame knocks it away; hits are ignored while it recoils. */
@@ -1242,6 +1253,16 @@ enum LootCritterMode {
   LCRITTER_WATCH = 0,   /* faces Spyro; near: FLEE */
   LCRITTER_FLEE = 1,    /* runs from Spyro around its home or along its path */
   LCRITTER_KNOCKED = 2, /* knocked away (dropping its loot once), then bursts */
+};
+
+/* CritterState.mode: how a homeless loot critter (no CritterState.hasHome)
+ * runs its path during LCRITTER_FLEE. Spyro within 0x1800 always restarts at
+ * PICK; reaching a path end drops it to LCRITTER_WATCH. */
+enum LootCritterRun {
+  LCRITTER_RUN_PICK = 0,     /* sets the path direction away from Spyro, then DASH */
+  LCRITTER_RUN_OPPOSITE = 1, /* heads for the path point opposite Spyro; far off: WANDER */
+  LCRITTER_RUN_WANDER = 2,   /* walks the path */
+  LCRITTER_RUN_DASH = 3,     /* runs fast; once clear of Spyro: OPPOSITE */
 };
 
 /* ->mode of a loot thief (ACTOR_TYPE_LOOT_THIEF, LootThiefState; level 34);

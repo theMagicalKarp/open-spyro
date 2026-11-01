@@ -1353,7 +1353,7 @@ typedef struct CritterState {
   FlyPath *path;    /* 0x00 */
   int attach;       /* 0x04 actor it rides, 0 = none */
   int hasHome;      /* 0x08 */
-  int mode;         /* 0x0C */
+  int mode;         /* 0x0C enum LootCritterRun */
   int knockSpin;    /* 0x10 */
   int knockHeading; /* 0x14 */
   int knockSpeed;   /* 0x18 */

@@ -2002,7 +2002,7 @@ void Level34_UpdateActors(void) {
           }
         } else {
           switch (st->mode) {
-          case 0: {
+          case LCRITTER_RUN_PICK: {
             int dir;
 
             FindNearestPathPointToSpyro(st->path, &n179);
@@ -2021,16 +2021,16 @@ void Level34_UpdateActors(void) {
             if (dir != st->path->dir) {
               st->path->dir = dir;
             }
-            st->mode = 3;
+            st->mode = LCRITTER_RUN_DASH;
             break;
           }
 
-          case 1: {
+          case LCRITTER_RUN_OPPOSITE: {
             int dir;
             int r;
 
             if (FindNearestPathPointToSpyro(st->path, &m179) > 0x3000) {
-              st->mode = 2;
+              st->mode = LCRITTER_RUN_WANDER;
             }
             m179 = (m179 + (st->path->count >> 1)) % st->path->count;
             if (st->path->cur == m179) {
@@ -2060,12 +2060,12 @@ void Level34_UpdateActors(void) {
               }
             }
             if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
-              st->mode = 0;
+              st->mode = LCRITTER_RUN_PICK;
             }
             break;
           }
 
-          case 2: {
+          case LCRITTER_RUN_WANDER: {
             int r = PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 8, 0x1E,
                                   0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
@@ -2080,12 +2080,12 @@ void Level34_UpdateActors(void) {
               }
             }
             if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
-              st->mode = 0;
+              st->mode = LCRITTER_RUN_PICK;
             }
             break;
           }
 
-          case 3:
+          case LCRITTER_RUN_DASH:
             if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x2800) {
               st->mode = one;
             }

@@ -319,7 +319,7 @@ typedef struct MetalheadState {
   int timer2;           /* 0x0C */
   int pathEnd[2];       /* 0x10 per-phase last path node */
   int range[2];         /* 0x18 per-phase stomp range (units of 0x400) */
-  int choice;           /* 0x20 0 none, 1 stomp, 2 shots, 3 bolt */
+  int choice;           /* 0x20 enum MetalheadAttack */
   int shots;            /* 0x24 */
   int count;            /* 0x28 */
   int aim[3];           /* 0x2C */
