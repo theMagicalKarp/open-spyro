@@ -1685,7 +1685,7 @@ void Level27_UpdateActors(void) {
         c->spin[1] = RandomSignedInRange(7, 0xF);
         c->spin[2] = RandomSignedInRange(7, 0xF);
         c->grav = -0xC;
-        if (st->flags & 2) {
+        if (st->flags & ROCKTHROW_F_ESCORT) {
           g_pActorListBase[st->partner].subMode = 1;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -1697,7 +1697,7 @@ void Level27_UpdateActors(void) {
       switch (actor->mode) {
       case ROCKTHROW_WATCH:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if ((st->flags & 1) &&
+        if ((st->flags & THROWER_F_ADVANCE) &&
             (((SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x1F4
                                  : -SPY_DZ(actor) < 0x1F4) &&
               ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range) ||
@@ -1705,7 +1705,7 @@ void Level27_UpdateActors(void) {
              IsPointInRotatedBox(&g_anSpyroWorldPos, st->vol) != 0)) {
           ENTER_POSE(actor, ROCKTHROW_WALK);
         }
-        if (st->flags & 2) {
+        if (st->flags & ROCKTHROW_F_ESCORT) {
           actor->mode = ROCKTHROW_ESCORT;
           continue;
         }
@@ -1719,7 +1719,7 @@ void Level27_UpdateActors(void) {
         break;
 
       case ROCKTHROW_WALK:
-        st->flags &= ~1;
+        st->flags &= ~THROWER_F_ADVANCE;
         if (st->range != 0 &&
             ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1400) {
           actor->subMode = 0;

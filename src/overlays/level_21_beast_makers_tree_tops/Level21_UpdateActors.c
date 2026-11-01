@@ -854,7 +854,7 @@ void Level21_UpdateActors(void) {
         continue;
       }
 
-      if (st->flags == 2) {
+      if (st->flags == BTHROW_F_HOP) {
         if (st->path->cur != 0 &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
           st->path->cur = 0;
@@ -889,7 +889,7 @@ void Level21_UpdateActors(void) {
           SetActorGroupSubstate(actor, 1);
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
-        if (st->flags & 1) {
+        if (st->flags & THROWER_F_ADVANCE) {
           ENTER_POSE(actor, BTHROW_PATROL);
         }
         actor->mode = BTHROW_WATCH;
@@ -898,7 +898,7 @@ void Level21_UpdateActors(void) {
 
       case BTHROW_WATCH:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if ((st->flags & 1) &&
+        if ((st->flags & THROWER_F_ADVANCE) &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x1F4
                                : -SPY_DZ(actor) < 0x1F4) &&
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < st->throwRange) {
@@ -969,7 +969,7 @@ void Level21_UpdateActors(void) {
         break;
 
       case BTHROW_PATROL:
-        st->flags &= ~1;
+        st->flags &= ~THROWER_F_ADVANCE;
         if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x1400) {
           ENTER_POSE(actor, BTHROW_THROW);
         }

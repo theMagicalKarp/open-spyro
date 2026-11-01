@@ -3698,7 +3698,7 @@ void Level14_UpdateActors(void) {
               }
               g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_DEBRIS, actor);
             }
-            st->target->flags |= 1;
+            st->target->flags |= ACTOR_NUDGED;
             DespawnActorRecord(actor);
             continue;
           }
@@ -3723,7 +3723,7 @@ void Level14_UpdateActors(void) {
         ANIM_RESET(actor, 4);
         continue;
       }
-      if ((actor->flags & 1) && actor->mode < BCASTER_KNOCKED) {
+      if ((actor->flags & ACTOR_NUDGED) && actor->mode < BCASTER_KNOCKED) {
         actor->mode = BCASTER_FLINCH;
         ANIM_RESET(actor, 5);
         continue;
@@ -3895,7 +3895,7 @@ void Level14_UpdateActors(void) {
         ENTER_POSE(actor, CHUNKOP_KNOCKED);
         continue;
       }
-      if ((actor->flags & 1) && actor->mode < CHUNKOP_KNOCKED) {
+      if ((actor->flags & ACTOR_NUDGED) && actor->mode < CHUNKOP_KNOCKED) {
         ENTER_POSE(actor, CHUNKOP_FLINCH);
         continue;
       }
@@ -3996,7 +3996,7 @@ void Level14_UpdateActors(void) {
         ENTER_POSE(actor, RSPAWNER_KNOCKED);
         continue;
       }
-      if ((actor->flags & 1) && actor->mode != RSPAWNER_FLINCH && actor->mode != RSPAWNER_KNOCKED) {
+      if ((actor->flags & ACTOR_NUDGED) && actor->mode != RSPAWNER_FLINCH && actor->mode != RSPAWNER_KNOCKED) {
         ENTER_POSE(actor, RSPAWNER_FLINCH);
         continue;
       }
@@ -4085,7 +4085,7 @@ void Level14_UpdateActors(void) {
         if (st->target >= 0 && g_pActorListBase[st->target].mode < ACTOR_MODE_DORMANT &&
             ApproxDist2D(pos, &g_pActorListBase[st->target].posX) < 0x280) {
           ((RunnerSpawnerState *)st->link->state)->flags &= ~1;
-          g_pActorListBase[st->target].flags |= 1;
+          g_pActorListBase[st->target].flags |= ACTOR_NUDGED;
           ENTER_POSE(actor, WPRUNNER_POP);
           continue;
         }

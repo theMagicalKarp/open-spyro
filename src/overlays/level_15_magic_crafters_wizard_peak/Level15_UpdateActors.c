@@ -3634,7 +3634,7 @@ void Level15_UpdateActors(void) {
               }
               g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_DEBRIS, actor);
             }
-            st->target->flags |= 1;
+            st->target->flags |= ACTOR_NUDGED;
             DespawnActorRecord(actor);
             continue;
           }

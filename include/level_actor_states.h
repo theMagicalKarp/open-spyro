@@ -184,6 +184,11 @@ typedef struct BoulderState {
   unsigned char heading;   /* 0x0F */
 } BoulderState;
 
+/* Boulder / rock thrower flags (levels 21/22/27). */
+#define THROWER_F_ADVANCE 1  /* roused or Spyro in throw range: walks its path once (cleared on entry) */
+#define BTHROW_F_HOP 2       /* boulder thrower: jumps to path point 0 / 1 as Spyro enters box0 / box1 */
+#define ROCKTHROW_F_ESCORT 2 /* rock thrower: escorts its partner, who it rouses when knocked */
+
 /* Type 100 state (boulder thrower). */
 typedef struct BoulderThrowerState {
   int partner;     /* 0x00 index into g_pActorListBase, -1 none */
@@ -194,7 +199,7 @@ typedef struct BoulderThrowerState {
   int partnerSignal; /* 0x14 set to 1 by the partner (its state word 5) */
   int pad18[3];      /* 0x18 */
   FlyPath *path;   /* 0x24 */
-  int flags;         /* 0x28 flags */
+  int flags;         /* 0x28 THROWER_F_ADVANCE, BTHROW_F_HOP */
   int timer;         /* 0x2C timer */
   int heading;         /* 0x30 heading */
   int speed;         /* 0x34 speed */
@@ -524,7 +529,7 @@ typedef struct RockThrowerState {
   int heading;          /* 0x00 knock-back heading */
   int speed;            /* 0x04 */
   int lift;             /* 0x08 */
-  int flags;            /* 0x0C bit 0 = watch, bit 1 = escort */
+  int flags;            /* 0x0C THROWER_F_ADVANCE, ROCKTHROW_F_ESCORT */
   int vol[6];           /* 0x10 trigger box */
   int timer;            /* 0x28 */
   int range;            /* 0x2C */
