@@ -3538,9 +3538,9 @@ void Level18_UpdateActors(void) {
     case ACTOR_TYPE_BALLOON: {
       BobState *st = actor->state;
 
-      if (actor->mode == 0) {
+      if (actor->mode == BALLOON_INIT) {
         st->restZ = actor->posZ;
-        actor->mode = 1;
+        actor->mode = BALLOON_BOB;
       } else {
         actor->posZ =
             st->restZ + ((unsigned short)g_anSineLut[actor->subMode] << 16 >> 20);
@@ -3796,7 +3796,7 @@ void Level18_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         PlayActorMeshVoice(actor, 0, 0);
-        ENTER_POSE(actor, 3);
+        ENTER_POSE(actor, WARDRUM_KNOCKED);
       }
       if (TickCountdownByFrameDelta(&st->beat, 4) == 2) {
         st->fade = 0x14;
@@ -3811,13 +3811,13 @@ void Level18_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case WARDRUM_WAIT:
         if (TickCountdownByFrameDelta(&st->wait, 4) == 2) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, WARDRUM_BEAT);
         }
         break;
 
-      case 2:
+      case WARDRUM_BEAT:
         if (actor->nextFrame >= 6 && st->beat == 0) {
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
           st->beat = 0x64;
@@ -3826,11 +3826,11 @@ void Level18_UpdateActors(void) {
                         &st->voice);
         }
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, WARDRUM_WAIT);
         }
         break;
 
-      case 3:
+      case WARDRUM_KNOCKED:
         actor->rotY += g_nFrameStep * 2;
         if (TickCountdownByFrameDelta(&st->life, 4) != 0 ||
             DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, 0xC) ==
@@ -3838,12 +3838,12 @@ void Level18_UpdateActors(void) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
           actor->cullRadius = 0;
-          actor->mode = 4;
+          actor->mode = WARDRUM_GONE;
           continue;
         }
         break;
 
-      case 4:
+      case WARDRUM_GONE:
         if (GetWorldChunkAnimState(st->chunkAnim) & CHUNK_ANIM_HALTED) {
           DespawnActorRecord(actor);
           continue;

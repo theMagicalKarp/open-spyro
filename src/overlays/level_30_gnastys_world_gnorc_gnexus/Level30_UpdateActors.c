@@ -2488,9 +2488,9 @@ void Level30_UpdateActors(void) {
     case ACTOR_TYPE_BALLOON: {
       BobState *st = actor->state;
 
-      if (actor->mode == 0) {
+      if (actor->mode == BALLOON_INIT) {
         st->restZ = actor->posZ;
-        actor->mode = 1;
+        actor->mode = BALLOON_BOB;
       } else {
         actor->posZ =
             st->restZ + ((unsigned short)g_anSineLut[actor->subMode] << 16 >> 20);

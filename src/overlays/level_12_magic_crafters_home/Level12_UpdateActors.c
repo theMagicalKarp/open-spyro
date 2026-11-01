@@ -4776,9 +4776,9 @@ void Level12_UpdateActors(void) {
     case ACTOR_TYPE_BALLOON: {
       int *base = actor->state;
 
-      if (actor->mode == 0) {
+      if (actor->mode == BALLOON_INIT) {
         *base = actor->posZ;
-        actor->mode = 1;
+        actor->mode = BALLOON_BOB;
         break;
       }
 

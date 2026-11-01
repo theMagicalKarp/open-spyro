@@ -867,24 +867,24 @@ void Level28_UpdateActors(void) {
         EncodeCachedVecToActorDirCode(actor);
         CopyVector(g056, &actor->posX);
         g056[2] += 0xC8;
-        if ((actor->mode == 0 || actor->mode == 9) &&
+        if ((actor->mode == TROCK_HELD || actor->mode == TROCK_FLY) &&
             RaiseSpyroTriggerInRadius(g056, 0xDC, 1) != 0) {
           PlayActorMeshVoice(actor, 0, 0);
-          actor->mode = 1;
+          actor->mode = TROCK_BREAK;
           ANIM_RESET(actor, 1);
           continue;
         }
       }
 
       switch (actor->mode) {
-      case 0: {
+      case TROCK_HELD: {
         int d;
 
         if (st->partner->mode == JACQUES_HOP) {
           ((JacquesState *)st->partner->state)->timer = 0;
           ((JacquesState *)st->partner->state)->u54 = 0;
           ((JacquesState *)st->partner->state)->child = 0;
-          actor->mode = 1;
+          actor->mode = TROCK_BREAK;
           ANIM_RESET(actor, 1);
           continue;
         }
@@ -904,7 +904,7 @@ void Level28_UpdateActors(void) {
         }
         CopyVector(g168, &spy->posX);
         if (actor->posX < 0x400 || actor->posY < 0x400 || actor->posZ < 0x400) {
-          actor->mode = 1;
+          actor->mode = TROCK_BREAK;
           ANIM_RESET(actor, 1);
           continue;
         }
@@ -935,11 +935,11 @@ void Level28_UpdateActors(void) {
           st->u06 = 0;
           st->spinX = 1;
         }
-        actor->mode = 9;
+        actor->mode = TROCK_FLY;
         continue;
       }
 
-      case 1:
+      case TROCK_BREAK:
         RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);
@@ -947,7 +947,7 @@ void Level28_UpdateActors(void) {
         }
         continue;
 
-      case 2:
+      case TROCK_SMASH:
         RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);
@@ -955,7 +955,7 @@ void Level28_UpdateActors(void) {
         }
         continue;
 
-      case 9:
+      case TROCK_FLY:
         actor->posX += (st->speed * g_anCosineLut[actor->rotZ]) >> 12;
         actor->posY += (st->speed * g_anSineLut[actor->rotZ]) >> 12;
         actor->posZ += st->vz;
@@ -970,7 +970,7 @@ void Level28_UpdateActors(void) {
             st->spinX = 0;
             st->spinY = 0;
             PlayActorMeshVoice(actor, 0, 0);
-            actor->mode = 2;
+            actor->mode = TROCK_SMASH;
             ANIM_RESET(actor, 2);
             continue;
           }
@@ -981,7 +981,7 @@ void Level28_UpdateActors(void) {
           st->spinX = 0;
           st->spinY = 0;
           PlayActorMeshVoice(actor, 0, 0);
-          actor->mode = 2;
+          actor->mode = TROCK_SMASH;
           ANIM_RESET(actor, 2);
           continue;
         }

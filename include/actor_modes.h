@@ -194,6 +194,7 @@ enum ThiefMode {
 enum RoamingRamMode {
   RAM_GRAZE = 0,     /* calls; Spyro near: picks the node facing away from him */
   RAM_WANDER = 1,    /* walks to that node */
+  RAM_QUIET_KNOCKED = 2, /* the quiet kind (ACTOR_TYPE_ROAMING_RAM_QUIET)'s KNOCKED */
   RAM_KNOCKED = 3,   /* hit: tumbles away and bursts */
   RAM_TRAPPED = 4,   /* inside its trigger box while the trigger is set */
   RAM_RUN_PATH = 10, /* path rammer (RoamingRamState.mode 1): runs its path */
@@ -1236,6 +1237,94 @@ enum LinkedFollowerMode {
   LFOLLOW_KNOCKED = 3, /* knocked spinning into the air, then bursts */
   LFOLLOW_SET_OFF = 5, /* turns to the leader's heading, then FOLLOW */
   LFOLLOW_TAUNT = 8,   /* faces Spyro, then IDLE */
+};
+
+/* ->mode of a balloon (ACTOR_TYPE_BALLOON). */
+enum BalloonMode {
+  BALLOON_INIT = 0, /* records its rest height */
+  BALLOON_BOB = 1,  /* bobs about it (subMode is the phase) */
+};
+
+/* ->mode of a war drum (ACTOR_TYPE_WAR_DRUM, WarDrumState; levels 18/19); the
+ * mode is also the animation index. */
+enum WarDrumMode {
+  WARDRUM_WAIT = 0,    /* until WarDrumState.wait runs out: BEAT */
+  WARDRUM_BEAT = 2,    /* beats on frame 6 (resuming its chunk animation), then WAIT */
+  WARDRUM_KNOCKED = 3, /* knocked spinning away, then bursts: GONE */
+  WARDRUM_GONE = 4,    /* burst; despawns once its chunk animation halts */
+};
+
+/* ->mode of a lantern (ACTOR_TYPE_LANTERN, LanternState; level 25); the mode
+ * is also the animation index. subMode bit 0 is lit, bit 1 settled, bit 2
+ * holds it as is. */
+enum LanternMode {
+  LANTERN_IDLE = 0,     /* on the timer, toggles: lit ones SNUFF, dark ones LIGHT */
+  LANTERN_SNUFF = 1,    /* goes out, then IDLE */
+  LANTERN_LIGHT = 2,    /* lights up, then IDLE */
+  LANTERN_STRUCK = 3,   /* Spyro hit it: lit for good, with an ACTOR_TYPE_LANTERN_FLAME */
+  LANTERN_HOLD_LIT = 4, /* stays lit, then spawns the closing flame: DONE */
+  LANTERN_DONE = 5,
+};
+
+/* ->mode of Jacques' thrown rock (ACTOR_TYPE_THROWN_ROCK, CarriedRockState;
+ * level 28). CarriedRockState.mode 1 rides between the thrower's hands. */
+enum ThrownRockMode {
+  TROCK_HELD = 0,    /* carried; released on the throw frame: aims at Spyro, FLY */
+  TROCK_BREAK = 1,   /* touched Spyro (or dropped): break animation, then despawn */
+  TROCK_SMASH = 2,   /* hit the ground or timed out: smash animation, then despawn */
+  TROCK_FLY = 9,     /* flies its arc toward Spyro's feet */
+};
+
+/* ->mode of a comet cannon (ACTOR_TYPE_COMET_CANNON, CometCannonState; level
+ * 24). */
+enum CometCannonMode {
+  CCANNON_WATCH = 0,  /* lit by Spyro's flame from behind it: ARM; cued (subMode): LOB */
+  CCANNON_ARM = 1,    /* sets the fuse, then FIRE */
+  CCANNON_FUSE = 2,   /* smokes until the fuse runs out, then FIRE (no writer in the C sources) */
+  CCANNON_FIRE = 3,   /* fires an ACTOR_TYPE_COMET at the best target ahead, then WATCH */
+  CCANNON_LOB = 10,   /* turns to the cued target and lobs a comet at it, then WATCH */
+};
+
+/* ->mode of a comet (ACTOR_TYPE_COMET, CometState; level 24). */
+enum CometMode {
+  COMET_FLY = 0,  /* flies its arc, dropping sparks and laying its trail */
+  COMET_HIT = 1,  /* hit something or timed out: hides, then FADE */
+  COMET_FADE = 2, /* the trail fades out, then despawn */
+};
+
+/* ->mode of a trail bomb (ACTOR_TYPE_TRAIL_BOMB, TrailBombState; level 33,
+ * thrown by Gnasty); the comet's machine. */
+enum TrailBombMode {
+  TRAILBOMB_FLY = 0,  /* flies, laying its trail; landing spawns an ACTOR_TYPE_SHOCKWAVE */
+  TRAILBOMB_HIT = 1,  /* landed or timed out: hides, then FADE */
+  TRAILBOMB_FADE = 2, /* the trail fades out, then despawn */
+};
+
+/* ->mode of a lane patroller (ACTOR_TYPE_LANE_PATROLLER, LanePatrollerState;
+ * level 33); the mode is also the animation index. */
+enum LanePatrollerMode {
+  LANEPAT_WATCH = 0,   /* faces Spyro; near: RUN its lane */
+  LANEPAT_RUN = 1,     /* runs its lane path, turning back at Spyro, to the far end */
+  LANEPAT_KNOCKED = 2, /* knocked away, then bursts */
+};
+
+/* ->mode of a runner spawner (ACTOR_TYPE_RUNNER_SPAWNER, RunnerSpawnerState;
+ * level 14); the mode is also the animation index. */
+enum RunnerSpawnerMode {
+  RSPAWNER_IDLE = 0,    /* on the timer, with no runner out: RELEASE; else FIDGET */
+  RSPAWNER_FIDGET = 1,  /* idle variant, then IDLE */
+  RSPAWNER_FLINCH = 2,  /* flinch animation (flag bit 0), then IDLE */
+  RSPAWNER_RELEASE = 3, /* sends out an ACTOR_TYPE_WAYPOINT_RUNNER on frame 5 */
+  RSPAWNER_KNOCKED = 4, /* bursts */
+};
+
+/* ->mode of a waypoint runner (ACTOR_TYPE_WAYPOINT_RUNNER,
+ * WaypointRunnerState; level 14). On reaching its target it makes the
+ * target flinch (flag bit 0). */
+enum WaypointRunnerMode {
+  WPRUNNER_EMERGE = 0, /* emerge animation (gone if its spawner is), then RUN */
+  WPRUNNER_RUN = 1,    /* runs its waypoints; touching Spyro or its target: POP */
+  WPRUNNER_POP = 2,    /* pops and despawns, freeing its spawner */
 };
 
 #endif

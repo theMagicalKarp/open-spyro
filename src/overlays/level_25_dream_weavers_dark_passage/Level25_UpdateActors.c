@@ -2273,9 +2273,9 @@ void Level25_UpdateActors(void) {
       if (actor->flags & ACTOR_HITS_SPYRO) {
         actor->flags = 0;
         actor->subMode |= 3;
-        if (actor->mode < 3) {
+        if (actor->mode < LANTERN_STRUCK) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_LANTERN_FLAME, actor);
-          actor->mode = 3;
+          actor->mode = LANTERN_STRUCK;
           ANIM_RESET(actor, 3);
           continue;
         }
@@ -2327,7 +2327,7 @@ void Level25_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case LANTERN_IDLE:
         if (st->held == 0) {
           if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
             break;
@@ -2341,22 +2341,22 @@ void Level25_UpdateActors(void) {
             if (st->chunkAnim >= 0) {
               ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             }
-            ENTER_POSE(actor, 1);
+            ENTER_POSE(actor, LANTERN_SNUFF);
           }
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, LANTERN_LIGHT);
         }
         actor->subMode |= 2;
         break;
 
-      case 1:
+      case LANTERN_SNUFF:
         actor->subMode &= 0xFE;
         if (g_nActorAnimDone == 0) {
           break;
         }
         actor->subMode |= 2;
-        ENTER_POSE(actor, 0);
+        ENTER_POSE(actor, LANTERN_IDLE);
 
-      case 2:
+      case LANTERN_LIGHT:
         actor->subMode |= 1;
         if (g_nActorAnimDone == 0) {
           break;
@@ -2365,29 +2365,29 @@ void Level25_UpdateActors(void) {
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
         actor->subMode |= 2;
-        ENTER_POSE(actor, 0);
+        ENTER_POSE(actor, LANTERN_IDLE);
 
-      case 3:
+      case LANTERN_STRUCK:
         if (g_nActorAnimDone == 0) {
           break;
         }
         st->timer = 0x1C2;
-        ANIM_QUEUE(actor, 4);
+        ANIM_QUEUE(actor, LANTERN_HOLD_LIT);
 
-      case 4:
+      case LANTERN_HOLD_LIT:
         if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
           break;
         }
         {
           Actor *flame = g_pfnLevelSpawnActor(ACTOR_TYPE_LANTERN_FLAME, actor);
 
-          actor->mode = 5;
+          actor->mode = LANTERN_DONE;
           flame->mode = 1;
           ANIM_RESET(flame, 1);
         }
         continue;
 
-      case 5:
+      case LANTERN_DONE:
         break;
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);

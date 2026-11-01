@@ -655,12 +655,12 @@ void Level24_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case CCANNON_WATCH:
         if (actor->subMode != 0 && p->mode < 0x7F) {
           st->target = actor->subMode;
           actor->subMode = 0;
           st->idx = (st->idx + 1) % 3;
-          actor->mode = 10;
+          actor->mode = CCANNON_LOB;
           continue;
         }
         if (p->mode >= ACTOR_MODE_DORMANT) {
@@ -686,7 +686,7 @@ void Level24_UpdateActors(void) {
             AddVector(g104, g104, &actor->posX);
             h = ArcTan2(g104[0] - g_anSpyroWorldPos, g104[1] - g_nSpyroWorldPosY, 0);
             if (st->timer == 0 && AbsAngleDelta8(h, g_bSpyroPersistentEulerZ) < 0x30) {
-              actor->mode = 1;
+              actor->mode = CCANNON_ARM;
               continue;
             }
           }
@@ -712,12 +712,12 @@ void Level24_UpdateActors(void) {
         actor->flags = 0;
         break;
 
-      case 1:
+      case CCANNON_ARM:
         st->timer = 0x4B;
-        actor->mode = 3;
+        actor->mode = CCANNON_FIRE;
         continue;
 
-      case 2:
+      case CCANNON_FUSE:
         if (st->timer >= 0xB) {
           int i;
 
@@ -738,12 +738,12 @@ void Level24_UpdateActors(void) {
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           StopSoundVoicesByOwner(actor, VOICE_STOP_LOOPING);
-          actor->mode = 3;
+          actor->mode = CCANNON_FIRE;
           continue;
         }
         break;
 
-      case 3: {
+      case CCANNON_FIRE: {
         Actor *o;
         CometState *cs;
         Actor *best;
@@ -835,11 +835,11 @@ void Level24_UpdateActors(void) {
           }
         }
         ANIM_GO(actor, 3);
-        actor->mode = 0;
+        actor->mode = CCANNON_WATCH;
         continue;
       }
 
-      case 10:
+      case CCANNON_LOB:
         if (actor->nextAnim == 3) {
           g_nActorAnimDone = 0;
           actor->anim = 3;
@@ -890,7 +890,7 @@ void Level24_UpdateActors(void) {
           }
           SubtractVector(g216, g192, g216);
           AddVector(&o->posX, &o->posX, g216);
-          actor->mode = 0;
+          actor->mode = CCANNON_WATCH;
           continue;
         }
         continue;
@@ -1159,7 +1159,7 @@ void Level24_UpdateActors(void) {
         if (s < 0) {
           goto out104;
         }
-        if (s == 0) {
+        if (s == COMET_FLY) {
           st->spark += g_nFrameStep;
           if (st->spark >= 0xC) {
             Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_COMET_SPARK, actor);
@@ -1181,31 +1181,31 @@ void Level24_UpdateActors(void) {
             }
             if (st->lifeOn != 0) {
               if (st->life == 0) {
-                actor->mode = 1;
+                actor->mode = COMET_HIT;
               }
               st->life--;
             }
           } while (st->steps != 0);
           if (TickCountdownByFrameDelta(&st->timer, 2) != 0) {
-            actor->mode = 1;
+            actor->mode = COMET_HIT;
           }
           if (actor->posX < 0 || actor->posY < 0 || actor->posZ < 0) {
             actor->cullRadius = 0;
             actor->drawn = 0;
-            actor->mode = 1;
+            actor->mode = COMET_HIT;
             continue;
           }
           DispatchActorContactAtSphere(&actor->posX, 0x258, 0, ACTOR_HIT_BLAST, actor, 2);
           if (CollideSphereWithWorldAndActors(&actor->posX, 0x168, 0x168) != 0) {
-            actor->mode = 1;
+            actor->mode = COMET_HIT;
           }
-          if (actor->mode == 1) {
+          if (actor->mode == COMET_HIT) {
             actor->cullRadius = 0;
             actor->drawn = 0;
           }
         }
         n = 0;
-        if (actor->mode < 2 && g_nMotionTrailRibbonCount < 3 && st->count < 0x78) {
+        if (actor->mode < COMET_FADE && g_nMotionTrailRibbonCount < 3 && st->count < 0x78) {
           int k = st->count;
 
           CopyVector(st->trail[k].pos, &actor->posX);
@@ -1218,7 +1218,7 @@ void Level24_UpdateActors(void) {
             n++;
           }
         }
-        if (n == 0 && actor->mode != 0) {
+        if (n == 0 && actor->mode != COMET_FLY) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -1229,8 +1229,8 @@ void Level24_UpdateActors(void) {
           g_nMotionTrailRibbonCount = k + 1;
           g_apMotionTrailSlices[k] = st->trail;
         }
-        if (actor->mode == 1) {
-          actor->mode = 2;
+        if (actor->mode == COMET_HIT) {
+          actor->mode = COMET_FADE;
         }
       }
     out104:
@@ -3968,9 +3968,9 @@ void Level24_UpdateActors(void) {
     case ACTOR_TYPE_BALLOON: {
       int *base = actor->state;
 
-      if (actor->mode == 0) {
+      if (actor->mode == BALLOON_INIT) {
         *base = actor->posZ;
-        actor->mode = 1;
+        actor->mode = BALLOON_BOB;
         break;
       }
 
