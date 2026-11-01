@@ -470,8 +470,8 @@ typedef struct SwoopState {
   int weaving;   /* 0x1C */
   int sway;      /* 0x20 */
   int swayDir;   /* 0x24 1 out, -1 back, 0 done */
-  int side;      /* 0x28 */
-  int kind;      /* 0x2C 2 = dives to Spyro's height, -1 = random side */
+  int side;      /* 0x28 weave side of this dive: 0, 1 or SWOOP_KIND_STRAIGHT */
+  int kind;      /* 0x2C SwoopKind, or a fixed side 0/1 */
   int *alert;    /* 0x30 shared by the guards of one group */
   int count;     /* 0x34 */
 } SwoopState;
@@ -514,7 +514,7 @@ typedef struct ShooterState {
   int home[3];   /* 0x00 */
   void *path;    /* 0x0C */
   int triggered; /* 0x10 */
-  int mode;      /* 0x14 */
+  int mode;      /* 0x14 ShooterRole */
   int timer;     /* 0x18 */
   int heading;   /* 0x1C */
   int speed;     /* 0x20 */
@@ -1270,11 +1270,11 @@ typedef struct SorcererState {
   int count;           /* 0x04 bolts thrown this volley */
   int target;          /* 0x08 actor index */
   unsigned char *path; /* 0x0C { count, cur }, points at +8 */
-  int mode;            /* 0x10 */
+  int mode;            /* 0x10 SorcererRole */
   int pad14;
   int range;           /* 0x18 */
   int angry;           /* 0x1C */
-  int sub;             /* 0x20 */
+  int sub;             /* 0x20 SorcererCasterStep */
   int pad24[3];
   int rest;            /* 0x30 */
 } SorcererState;

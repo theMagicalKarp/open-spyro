@@ -4554,7 +4554,7 @@ void Level13_UpdateActors(void) {
       int dist = ApproxDist2D(&actor->posX, &SPY.posX);
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) != 0 && actor->mode != SORCERER_KNOCKED) {
-        if (st->mode == 1) {
+        if (st->mode == SORCERER_ROLE_CASTER) {
           actor->mode = SORCERER_BREAK_LINK;
         } else {
           StopSoundVoiceByIndex(actor->voiceRow, 4);
@@ -4571,7 +4571,7 @@ void Level13_UpdateActors(void) {
 
       switch (actor->mode) {
       case SORCERER_IDLE:
-        if (st->mode == 0) {
+        if (st->mode == SORCERER_ROLE_SENTRY) {
           TrackEntityYawTowardSpyro(actor, 8, 0, 0);
           if ((TickCountdownByFrameDelta(&st->timer, 4) &&
                ApproxDist2D(&SPY.posX, PATH_PT(st->path, 0)) < st->range) ||
@@ -4582,20 +4582,20 @@ void Level13_UpdateActors(void) {
               ENTER_POSE(actor, SORCERER_CONJURE);
             }
           }
-        } else if (st->mode == 1) {
+        } else if (st->mode == SORCERER_ROLE_CASTER) {
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2800 &&
               g_nSpyroAirborneFrames == 0 && actor->nextAnim != 7) {
             actor->mode = SORCERER_BREAK_LINK;
             continue;
           }
           switch (st->sub) {
-          case 0: {
+          case SORCERER_STEP_WALK: {
             int r = PivotActorAlongPath(actor, st->path, 0x200, 0x6E, 0, 8, 0x80,
                                   0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
             ANIM_GO(actor, 1);
             if (r == 0x108) {
-              st->sub = 1;
+              st->sub = SORCERER_STEP_CAST;
               st->timer = 0;
               st->count = 0;
               ANIM_GO(actor, 4);
@@ -4603,7 +4603,7 @@ void Level13_UpdateActors(void) {
             break;
           }
 
-          case 1: {
+          case SORCERER_STEP_CAST: {
             Actor *t = &g_pActorListBase[st->target];
 
             TurnActorYawTowardAngle(actor,
@@ -4628,12 +4628,12 @@ void Level13_UpdateActors(void) {
               st->count++;
             }
             if (g_nActorAnimDone != 0) {
-              st->sub = 0;
+              st->sub = SORCERER_STEP_WALK;
             }
             break;
           }
 
-          case 2:
+          case SORCERER_STEP_REST:
             if (TickCountdownByFrameDelta(&st->timer, 4)) {
               if (actor->nextAnim != 6 && actor->anim != 7) {
                 g_nActorAnimDone = 0;
@@ -4641,7 +4641,7 @@ void Level13_UpdateActors(void) {
               }
               if (g_nActorAnimDone != 0) {
                 ANIM_SET(actor, 1);
-                st->sub = 0;
+                st->sub = SORCERER_STEP_WALK;
               }
             }
             break;
@@ -4723,9 +4723,9 @@ void Level13_UpdateActors(void) {
         Actor *m = &g_pActorListBase[ts->target];
         int *tri = m->state;
 
-        st->mode = 0;
+        st->mode = SORCERER_ROLE_SENTRY;
         st->timer = 0x3C;
-        ts->mode = 0;
+        ts->mode = SORCERER_ROLE_SENTRY;
         ts->range = 0x3C;
         CopyVector(&m->posX, &t->posX);
         m->posZ += 0x200;

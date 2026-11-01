@@ -2934,7 +2934,7 @@ void Level8_UpdateActors(void) {
             st->sway = 0;
             st->speed = 0;
             st->weaving = 0;
-            if (st->kind == -1) {
+            if (st->kind == SWOOP_KIND_RANDOM) {
               if (((int)GetRandomU32() & 0xFF) >= 0x80) {
                 st->side = 1;
               } else {
@@ -2982,7 +2982,7 @@ void Level8_UpdateActors(void) {
         actor->posZ += 0x5DC;
         target = FindGroundHeightBelow(&actor->posX, 0x1000) + 0x226;
         actor->posZ -= 0x5DC;
-        if (st->kind == 2) {
+        if (st->kind == SWOOP_KIND_STRAIGHT) {
           target = SPY.posZ + 0x12C;
         }
         if (d < 0xFA0) {
@@ -2996,7 +2996,7 @@ void Level8_UpdateActors(void) {
         if (st->speed < 0xAA) {
           st->speed += 0xA;
         }
-        if (d < 0x4000 && st->side != 2) {
+        if (d < 0x4000 && st->side != SWOOP_KIND_STRAIGHT) {
           st->weaving = 1;
         }
         if (st->weaving != 0) {
@@ -3105,7 +3105,7 @@ void Level8_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           ANIM_GO(actor, 2);
         }
-        if (st->kind == 2) {
+        if (st->kind == SWOOP_KIND_STRAIGHT) {
           TurnActorYawTowardAngle(actor, a, 7, 0, 0);
         } else {
           TurnActorYawTowardAngle(actor, a, 2, 0, 0);

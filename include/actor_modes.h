@@ -546,6 +546,14 @@ enum SwoopMode {
   SWOOP_KNOCKED = 4, /* flamed or charged: drifts down and bursts */
 };
 
+/* SwoopState.kind: how a dive is flown. 0 and 1 are fixed weave sides and
+ * are copied straight into SwoopState.side (0 sways the heading negative,
+ * 1 positive), so they stay literal. */
+enum SwoopKind {
+  SWOOP_KIND_RANDOM = -1, /* each dive picks side 0 or 1 at random */
+  SWOOP_KIND_STRAIGHT = 2, /* no weave; dives to Spyro's height and turns back sharply */
+};
+
 /* ->mode of a villager (ACTOR_TYPE_VILLAGER, VillagerState; levels 12/13).
  * VILLAGER_IDLE runs VillagerState.mode's role (talker, lookout, paired,
  * follower of a leader); Spyro too close sends it running. */
@@ -631,6 +639,13 @@ enum ShooterMode {
   SHOOTER_RISE = 9,     /* plays out, then WAKE */
   SHOOTER_WAKE = 11,    /* wakes and turns to Spyro; ADVANCE if it has a range */
   SHOOTER_ADVANCE = 20, /* walks its path toward Spyro, then SHIELD */
+};
+
+/* ShooterState.mode: the sentry's role. */
+enum ShooterRole {
+  SHOOTER_ROLE_DOZER = 0, /* blinks in SHOOTER_IDLE until Spyro comes near; fires inside 0x2800 */
+  SHOOTER_ROLE_GUARD = 1, /* starts behind its shield; ducks while Spyro is 0x2000..0x3C00 away,
+                           * fires once he is inside 0x2000 */
 };
 
 /* ->mode of Metalhead, the level 22 boss (ACTOR_TYPE_METALHEAD,
@@ -753,6 +768,21 @@ enum SorcererMode {
   SORCERER_WAIT_CONJURE = 97, /* waits, then CONJURE */
   SORCERER_CUE = 98,         /* takes the queued pose (no writer in the C sources) */
   SORCERER_ALERTED = 99,     /* set group-wide: turns angry, takes the queued pose */
+};
+
+/* SorcererState.mode: the sorcerer's role, read in SORCERER_IDLE. Flaming a
+ * CASTER does not kill it: SORCERER_BREAK_LINK demotes it (and its target)
+ * to SENTRY. */
+enum SorcererRole {
+  SORCERER_ROLE_SENTRY = 0, /* faces Spyro; casts when he nears its path start or comes close */
+  SORCERER_ROLE_CASTER = 1, /* walks its path, casting wisps at SorcererState.target (->sub) */
+};
+
+/* SorcererState.sub: a SORCERER_ROLE_CASTER's step. */
+enum SorcererCasterStep {
+  SORCERER_STEP_WALK = 0, /* pivots along its path; the path's cast cue (0x108): CAST */
+  SORCERER_STEP_CAST = 1, /* turns to its target, three wisps, then WALK */
+  SORCERER_STEP_REST = 2, /* waits out its timer, plays pose 7, then WALK (no writer) */
 };
 
 /* ->mode of a hatch (ACTOR_TYPE_HATCH, HatchState; level 31); the mode is

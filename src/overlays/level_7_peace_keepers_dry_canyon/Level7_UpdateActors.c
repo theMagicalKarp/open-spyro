@@ -2699,7 +2699,7 @@ void Level7_UpdateActors(void) {
       actor->flags = 0;
       switch (actor->mode) {
       case SHOOTER_IDLE:
-        if (st->mode == 0) {
+        if (st->mode == SHOOTER_ROLE_DOZER) {
           if (st->triggered == 0) {
             if (actor->anim == 0) {
               ANIM_GO(actor, 8);
@@ -2775,7 +2775,7 @@ void Level7_UpdateActors(void) {
 
       case SHOOTER_LOWER:
         if (g_nActorAnimDone != 0) {
-          if (st->mode == 0 && ApproxDist2D(&actor->posX, &SPY.posX) > 0x2800) {
+          if (st->mode == SHOOTER_ROLE_DOZER && ApproxDist2D(&actor->posX, &SPY.posX) > 0x2800) {
             st->timer = 0x3C;
           }
           actor->mode = SHOOTER_AIM;
@@ -2808,7 +2808,7 @@ void Level7_UpdateActors(void) {
 
       case SHOOTER_AIM:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if (st->mode == 0) {
+        if (st->mode == SHOOTER_ROLE_DOZER) {
           if (g_nCinematicActive != 0 || TickCountdownByFrameDelta(&st->timer, 4) == 0 ||
               g_nActorAnimDone == 0) {
             break;
@@ -3251,7 +3251,7 @@ void Level7_UpdateActors(void) {
             st->sway = 0;
             st->speed = 0;
             st->weaving = 0;
-            if (st->kind == -1) {
+            if (st->kind == SWOOP_KIND_RANDOM) {
               if (((int)GetRandomU32() & 0xFF) >= 0x80) {
                 st->side = 1;
               } else {
@@ -3299,7 +3299,7 @@ void Level7_UpdateActors(void) {
         actor->posZ += 0x5DC;
         target = FindGroundHeightBelow(&actor->posX, 0x1000) + 0x226;
         actor->posZ -= 0x5DC;
-        if (st->kind == 2) {
+        if (st->kind == SWOOP_KIND_STRAIGHT) {
           target = SPY.posZ + 0x12C;
         }
         if (d < 0xFA0) {
@@ -3313,7 +3313,7 @@ void Level7_UpdateActors(void) {
         if (st->speed < 0xAA) {
           st->speed += 0xA;
         }
-        if (d < 0x4000 && st->side != 2) {
+        if (d < 0x4000 && st->side != SWOOP_KIND_STRAIGHT) {
           st->weaving = 1;
         }
         if (st->weaving != 0) {
@@ -3422,7 +3422,7 @@ void Level7_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           ANIM_GO(actor, 2);
         }
-        if (st->kind == 2) {
+        if (st->kind == SWOOP_KIND_STRAIGHT) {
           TurnActorYawTowardAngle(actor, a, 7, 0, 0);
         } else {
           TurnActorYawTowardAngle(actor, a, 2, 0, 0);
