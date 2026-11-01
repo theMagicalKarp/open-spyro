@@ -387,7 +387,7 @@ void UpdateSpyroStateBehavior(void) {
   fall_timeout:
     if (g_nSpyroStateTimer > 0x12C) {
       if (g_nFlightLevelActive != 0) {
-        g_pfnLevelFallImpactCallback();
+        g_pfnLevelEndFlightRun();
         g_pfnLevelUpdateActors();
       } else {
         g_nExtraLives++;
@@ -766,7 +766,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_nSpyroStateTimer > 0x12C) {
       if (g_nFlightLevelActive != 0) {
-        g_pfnLevelFallImpactCallback();
+        g_pfnLevelEndFlightRun();
         g_pfnLevelUpdateActors();
       } else {
         g_nExtraLives++;

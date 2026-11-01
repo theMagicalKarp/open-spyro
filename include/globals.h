@@ -550,7 +550,7 @@ extern int g_nMotionTrailRibbonCount;        /* 0x80075684 */
 extern int g_nPrevLevelIndex;           /* 0x80075688: the level index being left, for the tally (TickLevelTransitionStream) */
 extern int g_nMenuTickFrames;           /* 0x8007568c: update-side frame clock shared by the menu gamestates: the pause menu resets it on each cursor move, flight results blink on it (% 0x10 < 6), MenuTransition_Draw sweeps the backdrop CLUT load with it, SpyroStateDelay_Update counts 0x20-frame passes on it */
 extern int g_nFlightLevelActive;             /* 0x80075690 */
-extern void (*g_pfnLevelFallImpactCallback)(void); /* 0x80075694: flight levels' FlightEndHook, else null */
+extern void (*g_pfnLevelEndFlightRun)(void); /* 0x80075694: flight levels' FlightEndHook, else null: ends the run (crash, hazard sink, fall or time-out) into GS_FLIGHT_RESULTS */
 extern int g_nActorPoolLiveCount;            /* 0x800756a4 */
 extern int g_nActorPoolCapacity;             /* 0x800756a8 */
 #ifndef ACTOR_POOL_RESERVE

@@ -14195,11 +14195,11 @@ dlabel g_nFlightLevelActive
     /* 65E90 80075690 00000000 */ .word 0x00000000
 enddlabel g_nFlightLevelActive
 
-nonmatching g_pfnLevelFallImpactCallback
+nonmatching g_pfnLevelEndFlightRun
 
-dlabel g_pfnLevelFallImpactCallback
+dlabel g_pfnLevelEndFlightRun
     /* 65E94 80075694 00000000 */ .word 0x00000000
-enddlabel g_pfnLevelFallImpactCallback
+enddlabel g_pfnLevelEndFlightRun
 
 nonmatching g_nLevelLoadUnreadWord
 

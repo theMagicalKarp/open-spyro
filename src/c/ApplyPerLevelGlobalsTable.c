@@ -112,7 +112,7 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelUpdateActors = Level5_UpdateActors;
     g_pfnLevelEmitParticles = Level5_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level5_AdvanceEmitList;
-    g_pfnLevelFallImpactCallback = Level5_FlightEndHook;
+    g_pfnLevelEndFlightRun = Level5_FlightEndHook;
     g_pfnLevelHandleFlightResults = Level5_HandleFlightResults;
     g_pfnFlightResultsUpdate = Level5_FlightResultsMenu_Update;
     g_pfnFlightResultsDraw = Level5_FlightResults_Draw;
@@ -171,7 +171,7 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelUpdateActors = Level11_UpdateActors;
     g_pfnLevelEmitParticles = Level11_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level11_AdvanceEmitList;
-    g_pfnLevelFallImpactCallback = Level11_FlightEndHook;
+    g_pfnLevelEndFlightRun = Level11_FlightEndHook;
     g_pfnLevelHandleFlightResults = Level11_HandleFlightResults;
     g_pfnFlightResultsUpdate = Level11_FlightResultsMenu_Update;
     g_pfnFlightResultsDraw = Level11_FlightResults_Draw;
@@ -222,7 +222,7 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelUpdateActors = Level17_UpdateActors;
     g_pfnLevelEmitParticles = Level17_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level17_AdvanceEmitList;
-    g_pfnLevelFallImpactCallback = Level17_FlightEndHook;
+    g_pfnLevelEndFlightRun = Level17_FlightEndHook;
     g_pfnLevelHandleFlightResults = Level17_HandleFlightResults;
     g_pfnFlightResultsUpdate = Level17_FlightResultsMenu_Update;
     g_pfnFlightResultsDraw = Level17_FlightResults_Draw;
@@ -273,7 +273,7 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelUpdateActors = Level23_UpdateActors;
     g_pfnLevelEmitParticles = Level23_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level23_AdvanceEmitList;
-    g_pfnLevelFallImpactCallback = Level23_FlightEndHook;
+    g_pfnLevelEndFlightRun = Level23_FlightEndHook;
     g_pfnLevelHandleFlightResults = Level23_HandleFlightResults;
     g_pfnFlightResultsUpdate = Level23_FlightResultsMenu_Update;
     g_pfnFlightResultsDraw = Level23_FlightResults_Draw;
@@ -324,7 +324,7 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelUpdateActors = Level29_UpdateActors;
     g_pfnLevelEmitParticles = Level29_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level29_AdvanceEmitList;
-    g_pfnLevelFallImpactCallback = Level29_FlightEndHook;
+    g_pfnLevelEndFlightRun = Level29_FlightEndHook;
     g_pfnLevelHandleFlightResults = Level29_HandleFlightResults;
     g_pfnFlightResultsUpdate = Level29_FlightResultsMenu_Update;
     g_pfnFlightResultsDraw = Level29_FlightResults_Draw;

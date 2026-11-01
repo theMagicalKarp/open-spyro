@@ -1674,7 +1674,7 @@ void Level29_UpdateActors(void) {
           g_nFlightTimeBonus -= g_nFrameStep;
           g_nFlightTimeRemaining -= g_nFrameStep;
           if (g_nFlightTimeBonus < 0) {
-            g_pfnLevelFallImpactCallback();
+            g_pfnLevelEndFlightRun();
           }
         }
         g_nFlightRunClock += g_nFrameStep;
@@ -1777,7 +1777,7 @@ void Level29_UpdateActors(void) {
         int s = st->slot[0]->mode;
 
         if (s == TALLY_ICON_PARKED || (g_dwPadPressed & PAD_CROSS)) {
-          g_pfnLevelFallImpactCallback();
+          g_pfnLevelEndFlightRun();
         } else if (s == TALLY_ICON_LIT) {
           for (i = 0; i < 4; i++) {
             st->slot[i]->subMode = i;

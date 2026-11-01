@@ -55377,8 +55377,8 @@ glabel UpdateSpyroStateBehavior
     /* 336C0 80042EC0 0D004010 */  beqz       $v0, .L80042EF8
     /* 336C4 80042EC4 00000000 */   nop
   .L80042EC8:
-    /* 336C8 80042EC8 0780023C */  lui        $v0, %hi(g_pfnLevelFallImpactCallback)
-    /* 336CC 80042ECC 9456428C */  lw         $v0, %lo(g_pfnLevelFallImpactCallback)($v0)
+    /* 336C8 80042EC8 0780023C */  lui        $v0, %hi(g_pfnLevelEndFlightRun)
+    /* 336CC 80042ECC 9456428C */  lw         $v0, %lo(g_pfnLevelEndFlightRun)($v0)
     /* 336D0 80042ED0 00000000 */  nop
     /* 336D4 80042ED4 09F84000 */  jalr       $v0
     /* 336D8 80042ED8 00000000 */   nop
@@ -61222,8 +61222,8 @@ glabel DispatchSpyroPhysicsByState
     /* 38AF4 800482F4 64010624 */   addiu     $a2, $zero, 0x164
     /* 38AF8 800482F8 A7004010 */  beqz       $v0, .L80048598
     /* 38AFC 800482FC 00000000 */   nop
-    /* 38B00 80048300 0780023C */  lui        $v0, %hi(g_pfnLevelFallImpactCallback)
-    /* 38B04 80048304 9456428C */  lw         $v0, %lo(g_pfnLevelFallImpactCallback)($v0)
+    /* 38B00 80048300 0780023C */  lui        $v0, %hi(g_pfnLevelEndFlightRun)
+    /* 38B04 80048304 9456428C */  lw         $v0, %lo(g_pfnLevelEndFlightRun)($v0)
     /* 38B08 80048308 00000000 */  nop
     /* 38B0C 8004830C 09F84000 */  jalr       $v0
     /* 38B10 80048310 00000000 */   nop
@@ -63611,8 +63611,8 @@ glabel TickSpyroGameplayFrame
     /* 3AC74 8004A474 00000000 */  nop
     /* 3AC78 8004A478 17004010 */  beqz       $v0, .L8004A4D8
     /* 3AC7C 8004A47C 00000000 */   nop
-    /* 3AC80 8004A480 0780023C */  lui        $v0, %hi(g_pfnLevelFallImpactCallback)
-    /* 3AC84 8004A484 9456428C */  lw         $v0, %lo(g_pfnLevelFallImpactCallback)($v0)
+    /* 3AC80 8004A480 0780023C */  lui        $v0, %hi(g_pfnLevelEndFlightRun)
+    /* 3AC84 8004A484 9456428C */  lw         $v0, %lo(g_pfnLevelEndFlightRun)($v0)
     /* 3AC88 8004A488 00000000 */  nop
     /* 3AC8C 8004A48C 09F84000 */  jalr       $v0
     /* 3AC90 8004A490 00000000 */   nop
@@ -82084,8 +82084,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B1CC 8005A9CC BC5622AC */  sw         $v0, %lo(g_pfnLevelAdvanceEmitList)($at)
     /* 4B1D0 8005A9D0 0880023C */  lui        $v0, %hi(D_8007AE08_lv25)
     /* 4B1D4 8005A9D4 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08_lv25)
-    /* 4B1D8 8005A9D8 0780013C */  lui        $at, %hi(g_pfnLevelFallImpactCallback)
-    /* 4B1DC 8005A9DC 945622AC */  sw         $v0, %lo(g_pfnLevelFallImpactCallback)($at)
+    /* 4B1D8 8005A9D8 0780013C */  lui        $at, %hi(g_pfnLevelEndFlightRun)
+    /* 4B1DC 8005A9DC 945622AC */  sw         $v0, %lo(g_pfnLevelEndFlightRun)($at)
     /* 4B1E0 8005A9E0 0880023C */  lui        $v0, %hi(D_8007AEDC_lv25)
     /* 4B1E4 8005A9E4 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC_lv25)
     /* 4B1E8 8005A9E8 0780013C */  lui        $at, %hi(g_pfnLevelHandleFlightResults)
@@ -82286,8 +82286,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B4DC 8005ACDC BC5622AC */  sw         $v0, %lo(g_pfnLevelAdvanceEmitList)($at)
     /* 4B4E0 8005ACE0 0880023C */  lui        $v0, %hi(D_8007AE08_lv25)
     /* 4B4E4 8005ACE4 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08_lv25)
-    /* 4B4E8 8005ACE8 0780013C */  lui        $at, %hi(g_pfnLevelFallImpactCallback)
-    /* 4B4EC 8005ACEC 945622AC */  sw         $v0, %lo(g_pfnLevelFallImpactCallback)($at)
+    /* 4B4E8 8005ACE8 0780013C */  lui        $at, %hi(g_pfnLevelEndFlightRun)
+    /* 4B4EC 8005ACEC 945622AC */  sw         $v0, %lo(g_pfnLevelEndFlightRun)($at)
     /* 4B4F0 8005ACF0 0880023C */  lui        $v0, %hi(D_8007AEDC_lv25)
     /* 4B4F4 8005ACF4 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC_lv25)
     /* 4B4F8 8005ACF8 0780013C */  lui        $at, %hi(g_pfnLevelHandleFlightResults)
@@ -82452,8 +82452,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B75C 8005AF5C BC5622AC */  sw         $v0, %lo(g_pfnLevelAdvanceEmitList)($at)
     /* 4B760 8005AF60 0880023C */  lui        $v0, %hi(D_8007AE08_lv25)
     /* 4B764 8005AF64 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08_lv25)
-    /* 4B768 8005AF68 0780013C */  lui        $at, %hi(g_pfnLevelFallImpactCallback)
-    /* 4B76C 8005AF6C 945622AC */  sw         $v0, %lo(g_pfnLevelFallImpactCallback)($at)
+    /* 4B768 8005AF68 0780013C */  lui        $at, %hi(g_pfnLevelEndFlightRun)
+    /* 4B76C 8005AF6C 945622AC */  sw         $v0, %lo(g_pfnLevelEndFlightRun)($at)
     /* 4B770 8005AF70 0880023C */  lui        $v0, %hi(D_8007AEDC_lv25)
     /* 4B774 8005AF74 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC_lv25)
     /* 4B778 8005AF78 0780013C */  lui        $at, %hi(g_pfnLevelHandleFlightResults)
@@ -82618,8 +82618,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B9DC 8005B1DC BC5622AC */  sw         $v0, %lo(g_pfnLevelAdvanceEmitList)($at)
     /* 4B9E0 8005B1E0 0880023C */  lui        $v0, %hi(D_8007AE08_lv25)
     /* 4B9E4 8005B1E4 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08_lv25)
-    /* 4B9E8 8005B1E8 0780013C */  lui        $at, %hi(g_pfnLevelFallImpactCallback)
-    /* 4B9EC 8005B1EC 945622AC */  sw         $v0, %lo(g_pfnLevelFallImpactCallback)($at)
+    /* 4B9E8 8005B1E8 0780013C */  lui        $at, %hi(g_pfnLevelEndFlightRun)
+    /* 4B9EC 8005B1EC 945622AC */  sw         $v0, %lo(g_pfnLevelEndFlightRun)($at)
     /* 4B9F0 8005B1F0 0880023C */  lui        $v0, %hi(D_8007AEDC_lv25)
     /* 4B9F4 8005B1F4 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC_lv25)
     /* 4B9F8 8005B1F8 0780013C */  lui        $at, %hi(g_pfnLevelHandleFlightResults)
@@ -82784,8 +82784,8 @@ glabel ApplyPerLevelGlobalsTable
     /* 4BC5C 8005B45C BC5622AC */  sw         $v0, %lo(g_pfnLevelAdvanceEmitList)($at)
     /* 4BC60 8005B460 0880023C */  lui        $v0, %hi(D_8007AE08_lv25)
     /* 4BC64 8005B464 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08_lv25)
-    /* 4BC68 8005B468 0780013C */  lui        $at, %hi(g_pfnLevelFallImpactCallback)
-    /* 4BC6C 8005B46C 945622AC */  sw         $v0, %lo(g_pfnLevelFallImpactCallback)($at)
+    /* 4BC68 8005B468 0780013C */  lui        $at, %hi(g_pfnLevelEndFlightRun)
+    /* 4BC6C 8005B46C 945622AC */  sw         $v0, %lo(g_pfnLevelEndFlightRun)($at)
     /* 4BC70 8005B470 0880023C */  lui        $v0, %hi(D_8007AEDC_lv25)
     /* 4BC74 8005B474 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC_lv25)
     /* 4BC78 8005B478 0780013C */  lui        $at, %hi(g_pfnLevelHandleFlightResults)
