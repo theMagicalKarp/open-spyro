@@ -63,7 +63,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       st->pitch = 0;
       st->yaw = 0;
       st->roll = 0;
-      rec->subMode = 2;
+      rec->subMode = COLLECT_BOUNCE;
       rec->cullRadius = 0x18;
       rec->updateDist = 0x10;
       rec->rotX = 0x20;
@@ -135,7 +135,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       }
       pos = &rec->posX;
       st->sparkle = 0xFF;
-      rec->subMode = 2;
+      rec->subMode = COLLECT_BOUNCE;
       rec->cullRadius = 0x18;
       rec->updateDist = 0x40;
       rec->rotX = 0x20;
