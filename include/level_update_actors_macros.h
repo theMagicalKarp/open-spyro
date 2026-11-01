@@ -6,6 +6,30 @@
 #ifndef OPEN_SPYRO_LEVEL_UPDATE_ACTORS_MACROS_H
 #define OPEN_SPYRO_LEVEL_UPDATE_ACTORS_MACROS_H
 
+/* The 0x10 frame progress / rate an ANIM_ADVANCE starts with. Each
+ * UpdateActors defines ANIM_RATE16: 0x10, or `sixteen` in the clones that pin
+ * the constant in a register (cookbook A374). */
+#define ANIM_ADVANCE(a, next)                                                  \
+  (a)->frameProgress = ANIM_RATE16;                                            \
+  (a)->frameRate = ANIM_RATE16;                                                \
+  (a)->anim = (a)->nextAnim;                                                   \
+  (a)->nextAnim = (next);                                                      \
+  (a)->frame = (a)->nextFrame;                                                 \
+  (a)->nextFrame = 0;                                                          \
+  OnActorAnimQueued(a);
+
+/* Enter mode `n` (also its animation index) and move on to the next actor.
+ * It ends in a bare `continue`, so use it only inside braces. */
+#define ENTER_POSE(a, n)                                                       \
+  (a)->mode = (n);                                                             \
+  if ((a)->nextAnim != (n)) {                                                  \
+    ANIM_ADVANCE(a, n)                                                         \
+  }                                                                            \
+  continue
+
+/* Spyro's world block as the actor arms read it (SPY.posX, SPY.state, ...). */
+#define SPY g_anSpyroWorldPosBlock
+
 /* Node accessors for paths held as byte pointers (type 286). */
 #define PATH_X(p, i) (*(int *)((p) + ((i) << 4) + 0x8))
 
