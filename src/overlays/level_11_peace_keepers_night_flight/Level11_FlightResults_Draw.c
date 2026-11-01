@@ -298,7 +298,7 @@ void Level11_FlightResults_Draw(void)
         if (g_anFlightTargetTally == 8)
         {
           int k = g_nActiveWorldIndex * 5;
-          if (g_abWorldPerLevelByteTable[k] != 0)
+          if (g_abFlightBonusPaid[k] != 0)
           {
             sprintf(buf, "^");
           }
@@ -341,7 +341,7 @@ void Level11_FlightResults_Draw(void)
         if (g_nFlightTargetTally1 == 8)
         {
           int k = g_nActiveWorldIndex * 5;
-          if (g_abWorldPerLevelByteTable_r1[k] != 0)
+          if (g_abFlightBonusPaid_r1[k] != 0)
           {
             sprintf(buf, "^");
           }
@@ -384,7 +384,7 @@ void Level11_FlightResults_Draw(void)
         if (g_nFlightTargetTally2 == 8)
         {
           int k = g_nActiveWorldIndex * 5;
-          if (g_abWorldPerLevelByteTable_r2[k] != 0)
+          if (g_abFlightBonusPaid_r2[k] != 0)
           {
             sprintf(buf, "^");
           }
@@ -427,7 +427,7 @@ void Level11_FlightResults_Draw(void)
         if (g_nFlightTargetTally3 == 8)
         {
           int k = g_nActiveWorldIndex * 5;
-          if (g_abWorldPerLevelByteTable_r3[k] != 0)
+          if (g_abFlightBonusPaid_r3[k] != 0)
           {
             sprintf(buf, "^");
           }
@@ -462,7 +462,7 @@ void Level11_FlightResults_Draw(void)
         if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == 0x20)
         {
           int k = g_nActiveWorldIndex * 5;
-          if (g_abWorldPerLevelByteTable_r4[k] != 0)
+          if (g_abFlightBonusPaid_r4[k] != 0)
           {
             sprintf(buf, "^");
           }
@@ -501,7 +501,7 @@ void Level11_FlightResults_Draw(void)
       EmitRadialShadedLine(0x3C, 0xB0, 0x1C4, 0xB0);
       if (g_nSubMenuCursor >= 9)
       {
-        if ((allclear != 0) || (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0))
+        if ((allclear != 0) || (g_anFlightClearTimes[g_nActiveWorldIndex] != 0))
         {
           pos[0] = 0x50;
           pos[1] = 0xD2;
@@ -610,7 +610,7 @@ void Level11_FlightResults_Draw(void)
       pos[0] = 0x191;
       pos[1] = 0x64;
       pos[2] = 0x1100;
-      g_pfnFlightTimeFormatter(g_anWorldPersistentFlags[g_nActiveWorldIndex], pos, 0xB);
+      g_pfnFlightTimeFormatter(g_anFlightClearTimes[g_nActiveWorldIndex], pos, 0xB);
       pos[0] = 0x38;
       pos[1] = 0x50;
       pos[2] = 0x1100;
@@ -619,7 +619,7 @@ void Level11_FlightResults_Draw(void)
       pos[1] = 0x64;
       pos[2] = 0x1100;
       snd = 0xB;
-      if (g_anWorldPersistentFlags[g_nActiveWorldIndex] >= g_nFlightRunClock)
+      if (g_anFlightClearTimes[g_nActiveWorldIndex] >= g_nFlightRunClock)
       {
         snd = 8;
       }
@@ -678,7 +678,7 @@ void Level11_FlightResults_Draw(void)
         }
       }
       else
-        if (g_anWorldPersistentFlags[g_nActiveWorldIndex] >= g_nFlightRunClock)
+        if (g_anFlightClearTimes[g_nActiveWorldIndex] >= g_nFlightRunClock)
       {
         int ph;
         short *lut;

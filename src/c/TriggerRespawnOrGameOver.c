@@ -9,6 +9,6 @@ void TriggerRespawnOrGameOver(void) {
   } else {
     g_nGamestate = GS_GAME_OVER;
   }
-  g_nGameplayDrawMode = 0;
-  g_nGameplayDrawFrame = 0;
+  g_nRespawnOrGameOverMode = 0;
+  g_nRespawnOrGameOverFrame = 0;
 }

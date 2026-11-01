@@ -377,11 +377,11 @@ glabel ResetLevelState
     /* 2E88 80012688 02000224 */  addiu      $v0, $zero, 0x2
     /* 2E8C 8001268C 0780013C */  lui        $at, %hi(g_abWorldBalloonistState)
     /* 2E90 80012690 D05822A0 */  sb         $v0, %lo(g_abWorldBalloonistState)($at)
-    /* 2E94 80012694 0880063C */  lui        $a2, %hi(g_abWorldPerLevelByteTable)
-    /* 2E98 80012698 8086C624 */  addiu      $a2, $a2, %lo(g_abWorldPerLevelByteTable)
+    /* 2E94 80012694 0880063C */  lui        $a2, %hi(g_abFlightBonusPaid)
+    /* 2E98 80012698 8086C624 */  addiu      $a2, $a2, %lo(g_abFlightBonusPaid)
     /* 2E9C 8001269C 21280000 */  addu       $a1, $zero, $zero
-    /* 2EA0 800126A0 0880043C */  lui        $a0, %hi(g_anWorldPersistentFlags)
-    /* 2EA4 800126A4 18868424 */  addiu      $a0, $a0, %lo(g_anWorldPersistentFlags)
+    /* 2EA0 800126A0 0880043C */  lui        $a0, %hi(g_anFlightClearTimes)
+    /* 2EA4 800126A4 18868424 */  addiu      $a0, $a0, %lo(g_anFlightClearTimes)
   .L800126A8:
     /* 2EA8 800126A8 000080AC */  sw         $zero, 0x0($a0)
     /* 2EAC 800126AC 04000324 */  addiu      $v1, $zero, 0x4
@@ -1532,13 +1532,13 @@ glabel BuildLoadedLevelRuntime
     /* 3EDC 800136DC 00000000 */   nop
   .L800136E0:
     /* 3EE0 800136E0 01000224 */  addiu      $v0, $zero, 0x1
-    /* 3EE4 800136E4 0780013C */  lui        $at, %hi(g_nLevelStormFlag)
-    /* 3EE8 800136E8 1C5922AC */  sw         $v0, %lo(g_nLevelStormFlag)($at)
+    /* 3EE4 800136E4 0780013C */  lui        $at, %hi(g_nPortalDistanceFogEnabled)
+    /* 3EE8 800136E8 1C5922AC */  sw         $v0, %lo(g_nPortalDistanceFogEnabled)($at)
     /* 3EEC 800136EC BF4D0008 */  j          .L800136FC
     /* 3EF0 800136F0 00000000 */   nop
   .L800136F4:
-    /* 3EF4 800136F4 0780013C */  lui        $at, %hi(g_nLevelStormFlag)
-    /* 3EF8 800136F8 1C5920AC */  sw         $zero, %lo(g_nLevelStormFlag)($at)
+    /* 3EF4 800136F4 0780013C */  lui        $at, %hi(g_nPortalDistanceFogEnabled)
+    /* 3EF8 800136F8 1C5920AC */  sw         $zero, %lo(g_nPortalDistanceFogEnabled)($at)
   .L800136FC:
     /* 3EFC 800136FC 0780043C */  lui        $a0, %hi(g_dwPadPressed)
     /* 3F00 80013700 78738424 */  addiu      $a0, $a0, %lo(g_dwPadPressed)
@@ -1829,8 +1829,8 @@ glabel BuildLoadedLevelRuntime
     /* 434C 80013B4C D85720AC */  sw         $zero, %lo(g_nGamestate)($at)
     /* 4350 80013B50 0780013C */  lui        $at, %hi(g_nGamePaused)
     /* 4354 80013B54 9C5722AC */  sw         $v0, %lo(g_nGamePaused)($at)
-    /* 4358 80013B58 0780013C */  lui        $at, %hi(g_nGameplayBlocked)
-    /* 435C 80013B5C 0C5720AC */  sw         $zero, %lo(g_nGameplayBlocked)($at)
+    /* 4358 80013B58 0780013C */  lui        $at, %hi(g_nCinematicActive)
+    /* 435C 80013B5C 0C5720AC */  sw         $zero, %lo(g_nCinematicActive)($at)
     /* 4360 80013B60 0780013C */  lui        $at, %hi(g_nLetterboxBarHeight)
     /* 4364 80013B64 C05620AC */  sw         $zero, %lo(g_nLetterboxBarHeight)($at)
   .L80013B68:
@@ -8210,8 +8210,8 @@ endlabel DrawMotionTrailRibbons
 nonmatching DrawCinematicLetterbox, 0x1A4
 
 glabel DrawCinematicLetterbox
-    /* 9730 80018F30 0780023C */  lui        $v0, %hi(g_nGameplayBlocked)
-    /* 9734 80018F34 0C57428C */  lw         $v0, %lo(g_nGameplayBlocked)($v0)
+    /* 9730 80018F30 0780023C */  lui        $v0, %hi(g_nCinematicActive)
+    /* 9734 80018F34 0C57428C */  lw         $v0, %lo(g_nCinematicActive)($v0)
     /* 9738 80018F38 D8FFBD27 */  addiu      $sp, $sp, -0x28
     /* 973C 80018F3C 2000BFAF */  sw         $ra, 0x20($sp)
     /* 9740 80018F40 1C00B3AF */  sw         $s3, 0x1C($sp)
@@ -12236,8 +12236,8 @@ endlabel MenuTransition_Draw
 nonmatching RespawnOrGameOver_Draw, 0x5A4
 
 glabel RespawnOrGameOver_Draw
-    /* D238 8001CA38 0780023C */  lui        $v0, %hi(g_nGameplayDrawMode)
-    /* D23C 8001CA3C 4059428C */  lw         $v0, %lo(g_nGameplayDrawMode)($v0)
+    /* D238 8001CA38 0780023C */  lui        $v0, %hi(g_nRespawnOrGameOverMode)
+    /* D23C 8001CA3C 4059428C */  lw         $v0, %lo(g_nRespawnOrGameOverMode)($v0)
     /* D240 8001CA40 A8FFBD27 */  addiu      $sp, $sp, -0x58
     /* D244 8001CA44 5000BFAF */  sw         $ra, 0x50($sp)
     /* D248 8001CA48 4C00B3AF */  sw         $s3, 0x4C($sp)
@@ -12245,8 +12245,8 @@ glabel RespawnOrGameOver_Draw
     /* D250 8001CA50 4400B1AF */  sw         $s1, 0x44($sp)
     /* D254 8001CA54 2E004014 */  bnez       $v0, .L8001CB10
     /* D258 8001CA58 4000B0AF */   sw        $s0, 0x40($sp)
-    /* D25C 8001CA5C 0780033C */  lui        $v1, %hi(g_nGameplayDrawFrame)
-    /* D260 8001CA60 3C59638C */  lw         $v1, %lo(g_nGameplayDrawFrame)($v1)
+    /* D25C 8001CA5C 0780033C */  lui        $v1, %hi(g_nRespawnOrGameOverFrame)
+    /* D260 8001CA60 3C59638C */  lw         $v1, %lo(g_nRespawnOrGameOverFrame)($v1)
     /* D264 8001CA64 00000000 */  nop
     /* D268 8001CA68 21006014 */  bnez       $v1, .L8001CAF0
     /* D26C 8001CA6C 10006228 */   slti      $v0, $v1, 0x10
@@ -12295,8 +12295,8 @@ glabel RespawnOrGameOver_Draw
     /* D310 8001CB10 01000424 */  addiu      $a0, $zero, 0x1
     /* D314 8001CB14 CA004414 */  bne        $v0, $a0, .L8001CE40
     /* D318 8001CB18 00000000 */   nop
-    /* D31C 8001CB1C 0780023C */  lui        $v0, %hi(g_nGameplayDrawFrame)
-    /* D320 8001CB20 3C59428C */  lw         $v0, %lo(g_nGameplayDrawFrame)($v0)
+    /* D31C 8001CB1C 0780023C */  lui        $v0, %hi(g_nRespawnOrGameOverFrame)
+    /* D320 8001CB20 3C59428C */  lw         $v0, %lo(g_nRespawnOrGameOverFrame)($v0)
     /* D324 8001CB24 00000000 */  nop
     /* D328 8001CB28 3C004228 */  slti       $v0, $v0, 0x3C
     /* D32C 8001CB2C 91004014 */  bnez       $v0, .L8001CD74
@@ -12309,8 +12309,8 @@ glabel RespawnOrGameOver_Draw
     /* D344 8001CB44 0780013C */  lui        $at, %hi(g_abGameOverLetterDelay)
     /* D348 8001CB48 21083100 */  addu       $at, $at, $s1
     /* D34C 8001CB4C E0522290 */  lbu        $v0, %lo(g_abGameOverLetterDelay)($at)
-    /* D350 8001CB50 0780033C */  lui        $v1, %hi(g_nGameplayDrawFrame)
-    /* D354 8001CB54 3C59638C */  lw         $v1, %lo(g_nGameplayDrawFrame)($v1)
+    /* D350 8001CB50 0780033C */  lui        $v1, %hi(g_nRespawnOrGameOverFrame)
+    /* D354 8001CB54 3C59638C */  lw         $v1, %lo(g_nRespawnOrGameOverFrame)($v1)
     /* D358 8001CB58 3C004224 */  addiu      $v0, $v0, 0x3C
     /* D35C 8001CB5C 23806200 */  subu       $s0, $v1, $v0
     /* D360 8001CB60 38000006 */  bltz       $s0, .L8001CC44
@@ -12383,8 +12383,8 @@ glabel RespawnOrGameOver_Draw
     /* D460 8001CC60 0B004228 */  slti       $v0, $v0, 0xB
     /* D464 8001CC64 31004014 */  bnez       $v0, .L8001CD2C
     /* D468 8001CC68 00000000 */   nop
-    /* D46C 8001CC6C 0780023C */  lui        $v0, %hi(g_nGameplayDrawFrame)
-    /* D470 8001CC70 3C59428C */  lw         $v0, %lo(g_nGameplayDrawFrame)($v0)
+    /* D46C 8001CC6C 0780023C */  lui        $v0, %hi(g_nRespawnOrGameOverFrame)
+    /* D470 8001CC70 3C59428C */  lw         $v0, %lo(g_nRespawnOrGameOverFrame)($v0)
     /* D474 8001CC74 00000000 */  nop
     /* D478 8001CC78 A5014228 */  slti       $v0, $v0, 0x1A5
     /* D47C 8001CC7C 2B004014 */  bnez       $v0, .L8001CD2C
@@ -12415,8 +12415,8 @@ glabel RespawnOrGameOver_Draw
     /* D4E0 8001CCE0 0780043C */  lui        $a0, %hi(g_pSpriteRecordWriteCursor)
     /* D4E4 8001CCE4 1057848C */  lw         $a0, %lo(g_pSpriteRecordWriteCursor)($a0)
   .L8001CCE8:
-    /* D4E8 8001CCE8 0780023C */  lui        $v0, %hi(g_nGameplayDrawFrame)
-    /* D4EC 8001CCEC 3C59428C */  lw         $v0, %lo(g_nGameplayDrawFrame)($v0)
+    /* D4E8 8001CCE8 0780023C */  lui        $v0, %hi(g_nRespawnOrGameOverFrame)
+    /* D4EC 8001CCEC 3C59428C */  lw         $v0, %lo(g_nRespawnOrGameOverFrame)($v0)
     /* D4F0 8001CCF0 01003126 */  addiu      $s1, $s1, 0x1
     /* D4F4 8001CCF4 80100200 */  sll        $v0, $v0, 2
     /* D4F8 8001CCF8 21104500 */  addu       $v0, $v0, $a1
@@ -12443,8 +12443,8 @@ glabel RespawnOrGameOver_Draw
     /* D548 8001CD48 00090624 */   addiu     $a2, $zero, 0x900
     /* D54C 8001CD4C 8B8A000C */  jal        RasterizeSpritePrimQueue
     /* D550 8001CD50 00000000 */   nop
-    /* D554 8001CD54 0780023C */  lui        $v0, %hi(g_nGameplayDrawFrame)
-    /* D558 8001CD58 3C59428C */  lw         $v0, %lo(g_nGameplayDrawFrame)($v0)
+    /* D554 8001CD54 0780023C */  lui        $v0, %hi(g_nRespawnOrGameOverFrame)
+    /* D558 8001CD58 3C59428C */  lw         $v0, %lo(g_nRespawnOrGameOverFrame)($v0)
     /* D55C 8001CD5C 00000000 */  nop
     /* D560 8001CD60 B5004228 */  slti       $v0, $v0, 0xB5
     /* D564 8001CD64 03004014 */  bnez       $v0, .L8001CD74
@@ -12471,8 +12471,8 @@ glabel RespawnOrGameOver_Draw
     /* D5B4 8001CDB4 D8524294 */  lhu        $v0, %lo(g_anGameOverCameraEuler)($v0)
     /* D5B8 8001CDB8 0780033C */  lui        $v1, %hi(g_anGameOverCameraEuler + 0x2)
     /* D5BC 8001CDBC DA526394 */  lhu        $v1, %lo(g_anGameOverCameraEuler + 0x2)($v1)
-    /* D5C0 8001CDC0 0780063C */  lui        $a2, %hi(g_nGameplayDrawFrame)
-    /* D5C4 8001CDC4 3C59C68C */  lw         $a2, %lo(g_nGameplayDrawFrame)($a2)
+    /* D5C0 8001CDC0 0780063C */  lui        $a2, %hi(g_nRespawnOrGameOverFrame)
+    /* D5C4 8001CDC4 3C59C68C */  lw         $a2, %lo(g_nRespawnOrGameOverFrame)($a2)
     /* D5C8 8001CDC8 000002A6 */  sh         $v0, 0x0($s0)
     /* D5CC 8001CDCC 2000C228 */  slti       $v0, $a2, 0x20
     /* D5D0 8001CDD0 0780013C */  lui        $at, %hi(g_nCameraEulerYaw)
@@ -12505,8 +12505,8 @@ glabel RespawnOrGameOver_Draw
     /* D638 8001CE38 EF730008 */  j          .L8001CFBC
     /* D63C 8001CE3C 00000000 */   nop
   .L8001CE40:
-    /* D640 8001CE40 0780033C */  lui        $v1, %hi(g_nGameplayDrawFrame)
-    /* D644 8001CE44 3C59638C */  lw         $v1, %lo(g_nGameplayDrawFrame)($v1)
+    /* D640 8001CE40 0780033C */  lui        $v1, %hi(g_nRespawnOrGameOverFrame)
+    /* D644 8001CE44 3C59638C */  lw         $v1, %lo(g_nRespawnOrGameOverFrame)($v1)
     /* D648 8001CE48 00000000 */  nop
     /* D64C 8001CE4C 1B006014 */  bnez       $v1, .L8001CEBC
     /* D650 8001CE50 10006228 */   slti      $v0, $v1, 0x10
@@ -12571,8 +12571,8 @@ glabel RespawnOrGameOver_Draw
     /* D728 8001CF28 00080424 */   addiu     $a0, $zero, 0x800
     /* D72C 8001CF2C 597F010C */  jal        DrawOTag
     /* D730 8001CF30 21204000 */   addu      $a0, $v0, $zero
-    /* D734 8001CF34 0780033C */  lui        $v1, %hi(g_nGameplayDrawFrame)
-    /* D738 8001CF38 3C59638C */  lw         $v1, %lo(g_nGameplayDrawFrame)($v1)
+    /* D734 8001CF34 0780033C */  lui        $v1, %hi(g_nRespawnOrGameOverFrame)
+    /* D738 8001CF38 3C59638C */  lw         $v1, %lo(g_nRespawnOrGameOverFrame)($v1)
     /* D73C 8001CF3C 0F000224 */  addiu      $v0, $zero, 0xF
     /* D740 8001CF40 1E006214 */  bne        $v1, $v0, .L8001CFBC
     /* D744 8001CF44 21200000 */   addu      $a0, $zero, $zero
@@ -12961,8 +12961,8 @@ glabel DragonRescue_Draw
     /* DCD0 8001D4D0 F25C010C */  jal        RasterizeEmitList
     /* DCD4 8001D4D4 00000000 */   nop
   .L8001D4D8:
-    /* DCD8 8001D4D8 0780023C */  lui        $v0, %hi(g_nGameplayBlocked)
-    /* DCDC 8001D4DC 0C57428C */  lw         $v0, %lo(g_nGameplayBlocked)($v0)
+    /* DCD8 8001D4D8 0780023C */  lui        $v0, %hi(g_nCinematicActive)
+    /* DCDC 8001D4DC 0C57428C */  lw         $v0, %lo(g_nCinematicActive)($v0)
     /* DCE0 8001D4E0 00000000 */  nop
     /* DCE4 8001D4E4 06004014 */  bnez       $v0, .L8001D500
     /* DCE8 8001D4E8 00000000 */   nop
@@ -13037,8 +13037,8 @@ glabel DragonRescue_Draw
     /* DDE8 8001D5E8 00000000 */   nop
     /* DDEC 8001D5EC F25C010C */  jal        RasterizeEmitList
     /* DDF0 8001D5F0 00000000 */   nop
-    /* DDF4 8001D5F4 0780023C */  lui        $v0, %hi(g_nGameplayBlocked)
-    /* DDF8 8001D5F8 0C57428C */  lw         $v0, %lo(g_nGameplayBlocked)($v0)
+    /* DDF4 8001D5F4 0780023C */  lui        $v0, %hi(g_nCinematicActive)
+    /* DDF8 8001D5F8 0C57428C */  lw         $v0, %lo(g_nCinematicActive)($v0)
     /* DDFC 8001D5FC 00000000 */  nop
     /* DE00 8001D600 06004014 */  bnez       $v0, .L8001D61C
     /* DE04 8001D604 00000000 */   nop
@@ -14862,8 +14862,8 @@ glabel GamestateDraw
     /* F844 8001F044 3564000C */  jal        DrawFullscreenTint
     /* F848 8001F048 2138A000 */   addu      $a3, $a1, $zero
   .L8001F04C:
-    /* F84C 8001F04C 0780023C */  lui        $v0, %hi(g_nGameplayBlocked)
-    /* F850 8001F050 0C57428C */  lw         $v0, %lo(g_nGameplayBlocked)($v0)
+    /* F84C 8001F04C 0780023C */  lui        $v0, %hi(g_nCinematicActive)
+    /* F850 8001F050 0C57428C */  lw         $v0, %lo(g_nCinematicActive)($v0)
     /* F854 8001F054 00000000 */  nop
     /* F858 8001F058 06004014 */  bnez       $v0, .L8001F074
     /* F85C 8001F05C 00000000 */   nop
@@ -29785,10 +29785,10 @@ glabel TriggerRespawnOrGameOver
   .L8002C884:
     /* 1D084 8002C884 0780013C */  lui        $at, %hi(g_nGamestate)
     /* 1D088 8002C888 D85722AC */  sw         $v0, %lo(g_nGamestate)($at)
-    /* 1D08C 8002C88C 0780013C */  lui        $at, %hi(g_nGameplayDrawMode)
-    /* 1D090 8002C890 405920AC */  sw         $zero, %lo(g_nGameplayDrawMode)($at)
-    /* 1D094 8002C894 0780013C */  lui        $at, %hi(g_nGameplayDrawFrame)
-    /* 1D098 8002C898 3C5920AC */  sw         $zero, %lo(g_nGameplayDrawFrame)($at)
+    /* 1D08C 8002C88C 0780013C */  lui        $at, %hi(g_nRespawnOrGameOverMode)
+    /* 1D090 8002C890 405920AC */  sw         $zero, %lo(g_nRespawnOrGameOverMode)($at)
+    /* 1D094 8002C894 0780013C */  lui        $at, %hi(g_nRespawnOrGameOverFrame)
+    /* 1D098 8002C898 3C5920AC */  sw         $zero, %lo(g_nRespawnOrGameOverFrame)($at)
     /* 1D09C 8002C89C 0800E003 */  jr         $ra
     /* 1D0A0 8002C8A0 00000000 */   nop
 endlabel TriggerRespawnOrGameOver
@@ -29944,8 +29944,8 @@ glabel BeginDragonRescue
     /* 1D26C 8002CA6C 0780013C */  lui        $at, %hi(g_nHudDragonCachedCount)
     /* 1D270 8002CA70 CC7F25AC */  sw         $a1, %lo(g_nHudDragonCachedCount)($at)
     /* 1D274 8002CA74 0000628C */  lw         $v0, 0x0($v1)
-    /* 1D278 8002CA78 0780013C */  lui        $at, %hi(g_nGameplayBlocked)
-    /* 1D27C 8002CA7C 0C5724AC */  sw         $a0, %lo(g_nGameplayBlocked)($at)
+    /* 1D278 8002CA78 0780013C */  lui        $at, %hi(g_nCinematicActive)
+    /* 1D27C 8002CA7C 0C5724AC */  sw         $a0, %lo(g_nCinematicActive)($at)
     /* 1D280 8002CA80 0780013C */  lui        $at, %hi(g_nGamePaused)
     /* 1D284 8002CA84 9C5724AC */  sw         $a0, %lo(g_nGamePaused)($at)
     /* 1D288 8002CA88 01004224 */  addiu      $v0, $v0, 0x1
@@ -30023,8 +30023,8 @@ glabel EndDragonRescueToWorld
     /* 1D384 8002CB84 0000428C */  lw         $v0, 0x0($v0)
     /* 1D388 8002CB88 0780013C */  lui        $at, %hi(g_nGamestate)
     /* 1D38C 8002CB8C D85720AC */  sw         $zero, %lo(g_nGamestate)($at)
-    /* 1D390 8002CB90 0780013C */  lui        $at, %hi(g_nGameplayBlocked)
-    /* 1D394 8002CB94 0C5720AC */  sw         $zero, %lo(g_nGameplayBlocked)($at)
+    /* 1D390 8002CB90 0780013C */  lui        $at, %hi(g_nCinematicActive)
+    /* 1D394 8002CB94 0C5720AC */  sw         $zero, %lo(g_nCinematicActive)($at)
     /* 1D398 8002CB98 2000438C */  lw         $v1, 0x20($v0)
     /* 1D39C 8002CB9C FFFF0224 */  addiu      $v0, $zero, -0x1
     /* 1D3A0 8002CBA0 0B006210 */  beq        $v1, $v0, .L8002CBD0
@@ -30123,8 +30123,8 @@ glabel BeginSaveMenuFromWorld
     /* 1D4F0 8002CCF0 0780013C */  lui        $at, %hi(g_nGamestate)
     /* 1D4F4 8002CCF4 D85722AC */  sw         $v0, %lo(g_nGamestate)($at)
     /* 1D4F8 8002CCF8 01000224 */  addiu      $v0, $zero, 0x1
-    /* 1D4FC 8002CCFC 0780013C */  lui        $at, %hi(g_nGameplayBlocked)
-    /* 1D500 8002CD00 0C5722AC */  sw         $v0, %lo(g_nGameplayBlocked)($at)
+    /* 1D4FC 8002CCFC 0780013C */  lui        $at, %hi(g_nCinematicActive)
+    /* 1D500 8002CD00 0C5722AC */  sw         $v0, %lo(g_nCinematicActive)($at)
     /* 1D504 8002CD04 0780013C */  lui        $at, %hi(g_nGamePaused)
     /* 1D508 8002CD08 9C5722AC */  sw         $v0, %lo(g_nGamePaused)($at)
     /* 1D50C 8002CD0C 0880013C */  lui        $at, %hi(g_nSaveMenuMode)
@@ -30345,12 +30345,12 @@ glabel EndSaveMenuToWorld
     /* 1D838 8002D038 1000B0AF */  sw         $s0, 0x10($sp)
     /* 1D83C 8002D03C 0780013C */  lui        $at, %hi(g_nGamestate)
     /* 1D840 8002D040 D85720AC */  sw         $zero, %lo(g_nGamestate)($at)
-    /* 1D844 8002D044 0780013C */  lui        $at, %hi(g_nGameplayBlocked)
-    /* 1D848 8002D048 0C5720AC */  sw         $zero, %lo(g_nGameplayBlocked)($at)
+    /* 1D844 8002D044 0780013C */  lui        $at, %hi(g_nCinematicActive)
+    /* 1D848 8002D048 0C5720AC */  sw         $zero, %lo(g_nCinematicActive)($at)
     /* 1D84C 8002D04C 1F63010C */  jal        InitLightVectorConstants
     /* 1D850 8002D050 00000000 */   nop
-    /* 1D854 8002D054 0880103C */  lui        $s0, %hi(g_nSpyroSwingEulerPitchTarget)
-    /* 1D858 8002D058 FC8B1026 */  addiu      $s0, $s0, %lo(g_nSpyroSwingEulerPitchTarget)
+    /* 1D854 8002D054 0880103C */  lui        $s0, %hi(g_nSpyroSwingEulerTargetX)
+    /* 1D858 8002D058 FC8B1026 */  addiu      $s0, $s0, %lo(g_nSpyroSwingEulerTargetX)
     /* 1D85C 8002D05C BC5D000C */  jal        ZeroVector
     /* 1D860 8002D060 21200002 */   addu      $a0, $s0, $zero
     /* 1D864 8002D064 092B010C */  jal        ResetSpyroEntity
@@ -30466,8 +30466,8 @@ glabel BeginStoryIntro
     /* 1D9FC 8002D1FC 0780023C */  lui        $v0, %hi(g_pPathTableHead)
     /* 1DA00 8002D200 8056428C */  lw         $v0, %lo(g_pPathTableHead)($v0)
     /* 1DA04 8002D204 59010424 */  addiu      $a0, $zero, 0x159
-    /* 1DA08 8002D208 0780013C */  lui        $at, %hi(g_nLevelStormFlag)
-    /* 1DA0C 8002D20C 1C5920AC */  sw         $zero, %lo(g_nLevelStormFlag)($at)
+    /* 1DA08 8002D208 0780013C */  lui        $at, %hi(g_nPortalDistanceFogEnabled)
+    /* 1DA0C 8002D20C 1C5920AC */  sw         $zero, %lo(g_nPortalDistanceFogEnabled)($at)
     /* 1DA10 8002D210 D789010C */  jal        srand
     /* 1DA14 8002D214 000040AC */   sw        $zero, 0x0($v0)
     /* 1DA18 8002D218 1000BF8F */  lw         $ra, 0x10($sp)
@@ -30574,8 +30574,8 @@ glabel BeginCutscene
     /* 1DB64 8002D364 185920AC */  sw         $zero, %lo(g_nScreenFadeLevel)($at)
     /* 1DB68 8002D368 03008514 */  bne        $a0, $a1, .L8002D378
     /* 1DB6C 8002D36C 000060AC */   sw        $zero, 0x0($v1)
-    /* 1DB70 8002D370 0780013C */  lui        $at, %hi(g_nLevelStormFlag)
-    /* 1DB74 8002D374 1C5925AC */  sw         $a1, %lo(g_nLevelStormFlag)($at)
+    /* 1DB70 8002D370 0780013C */  lui        $at, %hi(g_nPortalDistanceFogEnabled)
+    /* 1DB74 8002D374 1C5925AC */  sw         $a1, %lo(g_nPortalDistanceFogEnabled)($at)
   .L8002D378:
     /* 1DB78 8002D378 0780023C */  lui        $v0, %hi(g_CutsceneSoundDef)
     /* 1DB7C 8002D37C F0784224 */  addiu      $v0, $v0, %lo(g_CutsceneSoundDef)
@@ -32245,8 +32245,8 @@ glabel PauseMenu_Update
     /* 1F2A4 8002EAA4 C5BA0008 */  j          .L8002EB14
     /* 1F2A8 8002EAA8 00000000 */   nop
   .L8002EAAC:
-    /* 1F2AC 8002EAAC 0880043C */  lui        $a0, %hi(g_nSpyroSwingEulerPitchTarget)
-    /* 1F2B0 8002EAB0 FC8B8424 */  addiu      $a0, $a0, %lo(g_nSpyroSwingEulerPitchTarget)
+    /* 1F2AC 8002EAAC 0880043C */  lui        $a0, %hi(g_nSpyroSwingEulerTargetX)
+    /* 1F2B0 8002EAB0 FC8B8424 */  addiu      $a0, $a0, %lo(g_nSpyroSwingEulerTargetX)
     /* 1F2B4 8002EAB4 BC5D000C */  jal        ZeroVector
     /* 1F2B8 8002EAB8 00000000 */   nop
     /* 1F2BC 8002EABC 0780023C */  lui        $v0, %hi(g_nFlightLevelActive)
@@ -32481,8 +32481,8 @@ endlabel SubMenu_Update
 nonmatching RespawnOrGameOver_Update, 0x5D4
 
 glabel RespawnOrGameOver_Update
-    /* 1F5F0 8002EDF0 0780023C */  lui        $v0, %hi(g_nGameplayDrawFrame)
-    /* 1F5F4 8002EDF4 3C59428C */  lw         $v0, %lo(g_nGameplayDrawFrame)($v0)
+    /* 1F5F0 8002EDF0 0780023C */  lui        $v0, %hi(g_nRespawnOrGameOverFrame)
+    /* 1F5F4 8002EDF4 3C59428C */  lw         $v0, %lo(g_nRespawnOrGameOverFrame)($v0)
     /* 1F5F8 8002EDF8 B0FFBD27 */  addiu      $sp, $sp, -0x50
     /* 1F5FC 8002EDFC 4800BFAF */  sw         $ra, 0x48($sp)
     /* 1F600 8002EE00 4400B3AF */  sw         $s3, 0x44($sp)
@@ -32493,21 +32493,21 @@ glabel RespawnOrGameOver_Update
     /* 1F614 8002EE14 CA5A010C */  jal        StopAllSoundExceptMask
     /* 1F618 8002EE18 21200000 */   addu      $a0, $zero, $zero
   .L8002EE1C:
-    /* 1F61C 8002EE1C 0780023C */  lui        $v0, %hi(g_nGameplayDrawFrame)
-    /* 1F620 8002EE20 3C59428C */  lw         $v0, %lo(g_nGameplayDrawFrame)($v0)
+    /* 1F61C 8002EE1C 0780023C */  lui        $v0, %hi(g_nRespawnOrGameOverFrame)
+    /* 1F620 8002EE20 3C59428C */  lw         $v0, %lo(g_nRespawnOrGameOverFrame)($v0)
     /* 1F624 8002EE24 00000000 */  nop
     /* 1F628 8002EE28 01004224 */  addiu      $v0, $v0, 0x1
-    /* 1F62C 8002EE2C 0780013C */  lui        $at, %hi(g_nGameplayDrawFrame)
-    /* 1F630 8002EE30 3C5922AC */  sw         $v0, %lo(g_nGameplayDrawFrame)($at)
+    /* 1F62C 8002EE2C 0780013C */  lui        $at, %hi(g_nRespawnOrGameOverFrame)
+    /* 1F630 8002EE30 3C5922AC */  sw         $v0, %lo(g_nRespawnOrGameOverFrame)($at)
     /* 1F634 8002EE34 3063010C */  jal        RotateLightVectorXZ
     /* 1F638 8002EE38 03000424 */   addiu     $a0, $zero, 0x3
-    /* 1F63C 8002EE3C 0780123C */  lui        $s2, %hi(g_nGameplayDrawMode)
-    /* 1F640 8002EE40 4059528E */  lw         $s2, %lo(g_nGameplayDrawMode)($s2)
+    /* 1F63C 8002EE3C 0780123C */  lui        $s2, %hi(g_nRespawnOrGameOverMode)
+    /* 1F640 8002EE40 4059528E */  lw         $s2, %lo(g_nRespawnOrGameOverMode)($s2)
     /* 1F644 8002EE44 00000000 */  nop
     /* 1F648 8002EE48 9E004016 */  bnez       $s2, .L8002F0C4
     /* 1F64C 8002EE4C 01000224 */   addiu     $v0, $zero, 0x1
-    /* 1F650 8002EE50 0780023C */  lui        $v0, %hi(g_nGameplayDrawFrame)
-    /* 1F654 8002EE54 3C59428C */  lw         $v0, %lo(g_nGameplayDrawFrame)($v0)
+    /* 1F650 8002EE50 0780023C */  lui        $v0, %hi(g_nRespawnOrGameOverFrame)
+    /* 1F654 8002EE54 3C59428C */  lw         $v0, %lo(g_nRespawnOrGameOverFrame)($v0)
     /* 1F658 8002EE58 00000000 */  nop
     /* 1F65C 8002EE5C 10004228 */  slti       $v0, $v0, 0x10
     /* 1F660 8002EE60 50014014 */  bnez       $v0, .L8002F3A4
@@ -32670,8 +32670,8 @@ glabel RespawnOrGameOver_Update
   .L8002F0C4:
     /* 1F8C4 8002F0C4 A8004216 */  bne        $s2, $v0, .L8002F368
     /* 1F8C8 8002F0C8 00000000 */   nop
-    /* 1F8CC 8002F0CC 0780023C */  lui        $v0, %hi(g_nGameplayDrawFrame)
-    /* 1F8D0 8002F0D0 3C59428C */  lw         $v0, %lo(g_nGameplayDrawFrame)($v0)
+    /* 1F8CC 8002F0CC 0780023C */  lui        $v0, %hi(g_nRespawnOrGameOverFrame)
+    /* 1F8D0 8002F0D0 3C59428C */  lw         $v0, %lo(g_nRespawnOrGameOverFrame)($v0)
     /* 1F8D4 8002F0D4 00000000 */  nop
     /* 1F8D8 8002F0D8 4CFF5324 */  addiu      $s3, $v0, -0xB4
     /* 1F8DC 8002F0DC C000622E */  sltiu      $v0, $s3, 0xC0
@@ -32720,8 +32720,8 @@ glabel RespawnOrGameOver_Update
     /* 1F988 8002F188 0880013C */  lui        $at, %hi(g_abSpyroPersistentEuler + 0x1)
     /* 1F98C 8002F18C 658A20A0 */  sb         $zero, %lo(g_abSpyroPersistentEuler + 0x1)($at)
     /* 1F990 8002F190 03130400 */  sra        $v0, $a0, 12
-    /* 1F994 8002F194 0780043C */  lui        $a0, %hi(g_nGameplayDrawFrame)
-    /* 1F998 8002F198 3C59848C */  lw         $a0, %lo(g_nGameplayDrawFrame)($a0)
+    /* 1F994 8002F194 0780043C */  lui        $a0, %hi(g_nRespawnOrGameOverFrame)
+    /* 1F998 8002F198 3C59848C */  lw         $a0, %lo(g_nRespawnOrGameOverFrame)($a0)
     /* 1F99C 8002F19C 000C4224 */  addiu      $v0, $v0, 0xC00
     /* 1F9A0 8002F1A0 0880013C */  lui        $at, %hi(g_nSpyroWorldPosY)
     /* 1F9A4 8002F1A4 5C8A22AC */  sw         $v0, %lo(g_nSpyroWorldPosY)($at)
@@ -32767,8 +32767,8 @@ glabel RespawnOrGameOver_Update
     /* 1FA38 8002F238 A327010C */  jal        TickSpyroAnimLayer2
     /* 1FA3C 8002F23C 00000000 */   nop
   .L8002F240:
-    /* 1FA40 8002F240 0780033C */  lui        $v1, %hi(g_nGameplayDrawFrame)
-    /* 1FA44 8002F244 3C59638C */  lw         $v1, %lo(g_nGameplayDrawFrame)($v1)
+    /* 1FA40 8002F240 0780033C */  lui        $v1, %hi(g_nRespawnOrGameOverFrame)
+    /* 1FA44 8002F244 3C59638C */  lw         $v1, %lo(g_nRespawnOrGameOverFrame)($v1)
     /* 1FA48 8002F248 00000000 */  nop
     /* 1FA4C 8002F24C 74016228 */  slti       $v0, $v1, 0x174
     /* 1FA50 8002F250 26004014 */  bnez       $v0, .L8002F2EC
@@ -32823,8 +32823,8 @@ glabel RespawnOrGameOver_Update
     /* 1FB0C 8002F30C E9BC0008 */  j          .L8002F3A4
     /* 1FB10 8002F310 00000000 */   nop
   .L8002F314:
-    /* 1FB14 8002F314 0780023C */  lui        $v0, %hi(g_nGameplayDrawFrame)
-    /* 1FB18 8002F318 3C59428C */  lw         $v0, %lo(g_nGameplayDrawFrame)($v0)
+    /* 1FB14 8002F314 0780023C */  lui        $v0, %hi(g_nRespawnOrGameOverFrame)
+    /* 1FB18 8002F318 3C59428C */  lw         $v0, %lo(g_nRespawnOrGameOverFrame)($v0)
     /* 1FB1C 8002F31C 00000000 */  nop
     /* 1FB20 8002F320 69014228 */  slti       $v0, $v0, 0x169
     /* 1FB24 8002F324 1F004014 */  bnez       $v0, .L8002F3A4
@@ -32839,15 +32839,15 @@ glabel RespawnOrGameOver_Update
     /* 1FB48 8002F348 21200000 */   addu      $a0, $zero, $zero
     /* 1FB4C 8002F34C 02000224 */  addiu      $v0, $zero, 0x2
   .L8002F350:
-    /* 1FB50 8002F350 0780013C */  lui        $at, %hi(g_nGameplayDrawMode)
-    /* 1FB54 8002F354 405922AC */  sw         $v0, %lo(g_nGameplayDrawMode)($at)
-    /* 1FB58 8002F358 0780013C */  lui        $at, %hi(g_nGameplayDrawFrame)
-    /* 1FB5C 8002F35C 3C5920AC */  sw         $zero, %lo(g_nGameplayDrawFrame)($at)
+    /* 1FB50 8002F350 0780013C */  lui        $at, %hi(g_nRespawnOrGameOverMode)
+    /* 1FB54 8002F354 405922AC */  sw         $v0, %lo(g_nRespawnOrGameOverMode)($at)
+    /* 1FB58 8002F358 0780013C */  lui        $at, %hi(g_nRespawnOrGameOverFrame)
+    /* 1FB5C 8002F35C 3C5920AC */  sw         $zero, %lo(g_nRespawnOrGameOverFrame)($at)
     /* 1FB60 8002F360 E9BC0008 */  j          .L8002F3A4
     /* 1FB64 8002F364 00000000 */   nop
   .L8002F368:
-    /* 1FB68 8002F368 0780023C */  lui        $v0, %hi(g_nGameplayDrawFrame)
-    /* 1FB6C 8002F36C 3C59428C */  lw         $v0, %lo(g_nGameplayDrawFrame)($v0)
+    /* 1FB68 8002F368 0780023C */  lui        $v0, %hi(g_nRespawnOrGameOverFrame)
+    /* 1FB6C 8002F36C 3C59428C */  lw         $v0, %lo(g_nRespawnOrGameOverFrame)($v0)
     /* 1FB70 8002F370 00000000 */  nop
     /* 1FB74 8002F374 11004228 */  slti       $v0, $v0, 0x11
     /* 1FB78 8002F378 0A004014 */  bnez       $v0, .L8002F3A4
@@ -37771,8 +37771,8 @@ glabel GamestateUpdate
     /* 24398 80033B98 00000000 */  nop
     /* 2439C 80033B9C 24004014 */  bnez       $v0, .L80033C30
     /* 243A0 80033BA0 00000000 */   nop
-    /* 243A4 80033BA4 0780023C */  lui        $v0, %hi(g_nGameplayBlocked)
-    /* 243A8 80033BA8 0C57428C */  lw         $v0, %lo(g_nGameplayBlocked)($v0)
+    /* 243A4 80033BA4 0780023C */  lui        $v0, %hi(g_nCinematicActive)
+    /* 243A8 80033BA8 0C57428C */  lw         $v0, %lo(g_nCinematicActive)($v0)
     /* 243AC 80033BAC 00000000 */  nop
     /* 243B0 80033BB0 1F004014 */  bnez       $v0, .L80033C30
     /* 243B4 80033BB4 00000000 */   nop
@@ -39821,12 +39821,12 @@ glabel SelectCameraMode
     /* 26020 80035820 906E22AC */  sw         $v0, %lo(g_nCameraNextMode)($at)
     /* 26024 80035824 2D000224 */  addiu      $v0, $zero, 0x2D
     /* 26028 80035828 D40682AF */  sw         $v0, %gp_rel(g_nCameraPassiveModeHoldTimer)($gp)
-    /* 2602C 8003582C 0880013C */  lui        $at, %hi(g_nSpyroSwingEulerPitchTarget)
-    /* 26030 80035830 FC8B20AC */  sw         $zero, %lo(g_nSpyroSwingEulerPitchTarget)($at)
-    /* 26034 80035834 0880013C */  lui        $at, %hi(g_nCameraScriptStickRequestY)
-    /* 26038 80035838 008C20AC */  sw         $zero, %lo(g_nCameraScriptStickRequestY)($at)
-    /* 2603C 8003583C 0880013C */  lui        $at, %hi(g_nCameraScriptStickRequestX)
-    /* 26040 80035840 048C20AC */  sw         $zero, %lo(g_nCameraScriptStickRequestX)($at)
+    /* 2602C 8003582C 0880013C */  lui        $at, %hi(g_nSpyroSwingEulerTargetX)
+    /* 26030 80035830 FC8B20AC */  sw         $zero, %lo(g_nSpyroSwingEulerTargetX)($at)
+    /* 26034 80035834 0880013C */  lui        $at, %hi(g_nSpyroSwingEulerTargetY)
+    /* 26038 80035838 008C20AC */  sw         $zero, %lo(g_nSpyroSwingEulerTargetY)($at)
+    /* 2603C 8003583C 0880013C */  lui        $at, %hi(g_nSpyroSwingEulerTargetZ)
+    /* 26040 80035840 048C20AC */  sw         $zero, %lo(g_nSpyroSwingEulerTargetZ)($at)
     /* 26044 80035844 71D70008 */  j          .L80035DC4
     /* 26048 80035848 00000000 */   nop
   .L8003584C:
@@ -39847,12 +39847,12 @@ glabel SelectCameraMode
     /* 26080 80035880 0780013C */  lui        $at, %hi(g_abSpyroStateCameraMode)
     /* 26084 80035884 21082200 */  addu       $at, $at, $v0
     /* 26088 80035888 88C52290 */  lbu        $v0, %lo(g_abSpyroStateCameraMode)($at)
-    /* 2608C 8003588C 0880013C */  lui        $at, %hi(g_nSpyroSwingEulerPitchTarget)
-    /* 26090 80035890 FC8B20AC */  sw         $zero, %lo(g_nSpyroSwingEulerPitchTarget)($at)
-    /* 26094 80035894 0880013C */  lui        $at, %hi(g_nCameraScriptStickRequestY)
-    /* 26098 80035898 008C20AC */  sw         $zero, %lo(g_nCameraScriptStickRequestY)($at)
-    /* 2609C 8003589C 0880013C */  lui        $at, %hi(g_nCameraScriptStickRequestX)
-    /* 260A0 800358A0 048C20AC */  sw         $zero, %lo(g_nCameraScriptStickRequestX)($at)
+    /* 2608C 8003588C 0880013C */  lui        $at, %hi(g_nSpyroSwingEulerTargetX)
+    /* 26090 80035890 FC8B20AC */  sw         $zero, %lo(g_nSpyroSwingEulerTargetX)($at)
+    /* 26094 80035894 0880013C */  lui        $at, %hi(g_nSpyroSwingEulerTargetY)
+    /* 26098 80035898 008C20AC */  sw         $zero, %lo(g_nSpyroSwingEulerTargetY)($at)
+    /* 2609C 8003589C 0880013C */  lui        $at, %hi(g_nSpyroSwingEulerTargetZ)
+    /* 260A0 800358A0 048C20AC */  sw         $zero, %lo(g_nSpyroSwingEulerTargetZ)($at)
     /* 260A4 800358A4 71D70008 */  j          .L80035DC4
     /* 260A8 800358A8 000002AE */   sw        $v0, 0x0($s0)
   .L800358AC:
@@ -41347,8 +41347,8 @@ glabel UpdateCameraSpringForMode
   .L80036DFC:
     /* 275FC 80036DFC 0780023C */  lui        $v0, %hi(g_anCameraScriptStickIntegrator + 0x4)
     /* 27600 80036E00 B06E428C */  lw         $v0, %lo(g_anCameraScriptStickIntegrator + 0x4)($v0)
-    /* 27604 80036E04 0880013C */  lui        $at, %hi(g_nCameraScriptStickRequestX)
-    /* 27608 80036E08 048C23AC */  sw         $v1, %lo(g_nCameraScriptStickRequestX)($at)
+    /* 27604 80036E04 0880013C */  lui        $at, %hi(g_nSpyroSwingEulerTargetZ)
+    /* 27608 80036E08 048C23AC */  sw         $v1, %lo(g_nSpyroSwingEulerTargetZ)($at)
     /* 2760C 80036E0C 23180200 */  negu       $v1, $v0
     /* 27610 80036E10 00FE6228 */  slti       $v0, $v1, -0x200
     /* 27614 80036E14 03004010 */  beqz       $v0, .L80036E24
@@ -41360,8 +41360,8 @@ glabel UpdateCameraSpringForMode
     /* 27628 80036E28 00000000 */   nop
     /* 2762C 80036E2C 00020324 */  addiu      $v1, $zero, 0x200
   .L80036E30:
-    /* 27630 80036E30 0880013C */  lui        $at, %hi(g_nCameraScriptStickRequestY)
-    /* 27634 80036E34 008C23AC */  sw         $v1, %lo(g_nCameraScriptStickRequestY)($at)
+    /* 27630 80036E30 0880013C */  lui        $at, %hi(g_nSpyroSwingEulerTargetY)
+    /* 27634 80036E34 008C23AC */  sw         $v1, %lo(g_nSpyroSwingEulerTargetY)($at)
     /* 27638 80036E38 5FDC0008 */  j          .L8003717C
     /* 2763C 80036E3C 05001424 */   addiu     $s4, $zero, 0x5
   .L80036E40:
@@ -48164,8 +48164,8 @@ glabel AimCameraStickTowardPoint
     /* 2D0FC 8003C8FC 21184000 */  addu       $v1, $v0, $zero
     /* 2D100 8003C900 7FFE6224 */  addiu      $v0, $v1, -0x181
     /* 2D104 8003C904 7F06422C */  sltiu      $v0, $v0, 0x67F
-    /* 2D108 8003C908 0880013C */  lui        $at, %hi(g_nCameraScriptStickRequestY)
-    /* 2D10C 8003C90C 008C23AC */  sw         $v1, %lo(g_nCameraScriptStickRequestY)($at)
+    /* 2D108 8003C908 0880013C */  lui        $at, %hi(g_nSpyroSwingEulerTargetY)
+    /* 2D10C 8003C90C 008C23AC */  sw         $v1, %lo(g_nSpyroSwingEulerTargetY)($at)
     /* 2D110 8003C910 05004014 */  bnez       $v0, .L8003C928
     /* 2D114 8003C914 80010224 */   addiu     $v0, $zero, 0x180
     /* 2D118 8003C918 00F86224 */  addiu      $v0, $v1, -0x800
@@ -48173,16 +48173,16 @@ glabel AimCameraStickTowardPoint
     /* 2D120 8003C920 03004010 */  beqz       $v0, .L8003C930
     /* 2D124 8003C924 800E0224 */   addiu     $v0, $zero, 0xE80
   .L8003C928:
-    /* 2D128 8003C928 0880013C */  lui        $at, %hi(g_nCameraScriptStickRequestY)
-    /* 2D12C 8003C92C 008C22AC */  sw         $v0, %lo(g_nCameraScriptStickRequestY)($at)
+    /* 2D128 8003C928 0880013C */  lui        $at, %hi(g_nSpyroSwingEulerTargetY)
+    /* 2D12C 8003C92C 008C22AC */  sw         $v0, %lo(g_nSpyroSwingEulerTargetY)($at)
   .L8003C930:
     /* 2D130 8003C930 3000A48F */  lw         $a0, 0x30($sp)
     /* 2D134 8003C934 3400A58F */  lw         $a1, 0x34($sp)
     /* 2D138 8003C938 AD5A000C */  jal        ArcTan2
     /* 2D13C 8003C93C 01000624 */   addiu     $a2, $zero, 0x1
     /* 2D140 8003C940 21184000 */  addu       $v1, $v0, $zero
-    /* 2D144 8003C944 0880043C */  lui        $a0, %hi(g_nCameraScriptStickRequestX)
-    /* 2D148 8003C948 048C8424 */  addiu      $a0, $a0, %lo(g_nCameraScriptStickRequestX)
+    /* 2D144 8003C944 0880043C */  lui        $a0, %hi(g_nSpyroSwingEulerTargetZ)
+    /* 2D148 8003C948 048C8424 */  addiu      $a0, $a0, %lo(g_nSpyroSwingEulerTargetZ)
     /* 2D14C 8003C94C FFFD6224 */  addiu      $v0, $v1, -0x201
     /* 2D150 8003C950 FF05422C */  sltiu      $v0, $v0, 0x5FF
     /* 2D154 8003C954 03004010 */  beqz       $v0, .L8003C964
@@ -62075,13 +62075,13 @@ glabel TickSpyroAttackEffects
     /* 396F0 80048EF0 00010224 */   addiu     $v0, $zero, 0x100
     /* 396F4 80048EF4 23104300 */  subu       $v0, $v0, $v1
     /* 396F8 80048EF8 C0100200 */  sll        $v0, $v0, 3
-    /* 396FC 80048EFC 0880013C */  lui        $at, %hi(g_nCameraScriptStickRequestY)
-    /* 39700 80048F00 008C22AC */  sw         $v0, %lo(g_nCameraScriptStickRequestY)($at)
+    /* 396FC 80048EFC 0880013C */  lui        $at, %hi(g_nSpyroSwingEulerTargetY)
+    /* 39700 80048F00 008C22AC */  sw         $v0, %lo(g_nSpyroSwingEulerTargetY)($at)
     /* 39704 80048F04 C5230108 */  j          .L80048F14
     /* 39708 80048F08 00000000 */   nop
   .L80048F0C:
-    /* 3970C 80048F0C 0880013C */  lui        $at, %hi(g_nCameraScriptStickRequestY)
-    /* 39710 80048F10 008C20AC */  sw         $zero, %lo(g_nCameraScriptStickRequestY)($at)
+    /* 3970C 80048F0C 0880013C */  lui        $at, %hi(g_nSpyroSwingEulerTargetY)
+    /* 39710 80048F10 008C20AC */  sw         $zero, %lo(g_nSpyroSwingEulerTargetY)($at)
   .L80048F14:
     /* 39714 80048F14 2E00C01B */  blez       $fp, .L80048FD0
     /* 39718 80048F18 21380000 */   addu      $a3, $zero, $zero
@@ -62748,8 +62748,8 @@ endlabel TickSpyroAnimLayer1
 nonmatching SmoothSpyroByteEulerSpring, 0x140
 
 glabel SmoothSpyroByteEulerSpring
-    /* 3A080 80049880 0880023C */  lui        $v0, %hi(g_nSpyroSwingEulerPitchTarget)
-    /* 3A084 80049884 FC8B428C */  lw         $v0, %lo(g_nSpyroSwingEulerPitchTarget)($v0)
+    /* 3A080 80049880 0880023C */  lui        $v0, %hi(g_nSpyroSwingEulerTargetX)
+    /* 3A084 80049884 FC8B428C */  lw         $v0, %lo(g_nSpyroSwingEulerTargetX)($v0)
     /* 3A088 80049888 0880063C */  lui        $a2, %hi(g_anSpyroSwingEulerPrev)
     /* 3A08C 8004988C 088CC68C */  lw         $a2, %lo(g_anSpyroSwingEulerPrev)($a2)
     /* 3A090 80049890 00000000 */  nop
@@ -62761,8 +62761,8 @@ glabel SmoothSpyroByteEulerSpring
     /* 3A0A8 800498A8 00F0A524 */  addiu      $a1, $a1, -0x1000
     /* 3A0AC 800498AC C0210500 */  sll        $a0, $a1, 7
   .L800498B0:
-    /* 3A0B0 800498B0 0880033C */  lui        $v1, %hi(g_nCameraScriptStickRequestY)
-    /* 3A0B4 800498B4 008C638C */  lw         $v1, %lo(g_nCameraScriptStickRequestY)($v1)
+    /* 3A0B0 800498B0 0880033C */  lui        $v1, %hi(g_nSpyroSwingEulerTargetY)
+    /* 3A0B4 800498B4 008C638C */  lw         $v1, %lo(g_nSpyroSwingEulerTargetY)($v1)
     /* 3A0B8 800498B8 0880073C */  lui        $a3, %hi(g_nSpyroSwingEulerPrev1)
     /* 3A0BC 800498BC 0C8CE78C */  lw         $a3, %lo(g_nSpyroSwingEulerPrev1)($a3)
     /* 3A0C0 800498C0 0880023C */  lui        $v0, %hi(g_anSpyroSwingEulerSpringAccum)
@@ -62785,8 +62785,8 @@ glabel SmoothSpyroByteEulerSpring
     /* 3A104 80049904 00F0A524 */  addiu      $a1, $a1, -0x1000
     /* 3A108 80049908 C0210500 */  sll        $a0, $a1, 7
   .L8004990C:
-    /* 3A10C 8004990C 0880033C */  lui        $v1, %hi(g_nCameraScriptStickRequestX)
-    /* 3A110 80049910 048C638C */  lw         $v1, %lo(g_nCameraScriptStickRequestX)($v1)
+    /* 3A10C 8004990C 0880033C */  lui        $v1, %hi(g_nSpyroSwingEulerTargetZ)
+    /* 3A110 80049910 048C638C */  lw         $v1, %lo(g_nSpyroSwingEulerTargetZ)($v1)
     /* 3A114 80049914 0880083C */  lui        $t0, %hi(g_nSpyroSwingEulerPrev2)
     /* 3A118 80049918 108C088D */  lw         $t0, %lo(g_nSpyroSwingEulerPrev2)($t0)
     /* 3A11C 8004991C 0880023C */  lui        $v0, %hi(g_nSpyroSwingEulerSpringAccum1)
@@ -63108,8 +63108,8 @@ glabel TickSpyroFlameAttack
     /* 3A5AC 80049DAC 05004310 */  beq        $v0, $v1, .L80049DC4
     /* 3A5B0 80049DB0 00000000 */   nop
   .L80049DB4:
-    /* 3A5B4 80049DB4 0880043C */  lui        $a0, %hi(g_nSpyroSwingEulerPitchTarget)
-    /* 3A5B8 80049DB8 FC8B8424 */  addiu      $a0, $a0, %lo(g_nSpyroSwingEulerPitchTarget)
+    /* 3A5B4 80049DB4 0880043C */  lui        $a0, %hi(g_nSpyroSwingEulerTargetX)
+    /* 3A5B8 80049DB8 FC8B8424 */  addiu      $a0, $a0, %lo(g_nSpyroSwingEulerTargetX)
   .L80049DBC:
     /* 3A5BC 80049DBC BC5D000C */  jal        ZeroVector
     /* 3A5C0 80049DC0 00000000 */   nop
@@ -71098,8 +71098,8 @@ glabel DrawPortalsAndStaticActors
     /* 417C0 80050FC0 00000000 */   nop
     /* 417C4 80050FC4 21A00000 */  addu       $s4, $zero, $zero
   .L80050FC8:
-    /* 417C8 80050FC8 0780023C */  lui        $v0, %hi(g_nLevelStormFlag)
-    /* 417CC 80050FCC 1C59428C */  lw         $v0, %lo(g_nLevelStormFlag)($v0)
+    /* 417C8 80050FC8 0780023C */  lui        $v0, %hi(g_nPortalDistanceFogEnabled)
+    /* 417CC 80050FCC 1C59428C */  lw         $v0, %lo(g_nPortalDistanceFogEnabled)($v0)
     /* 417D0 80050FD0 00000000 */  nop
     /* 417D4 80050FD4 15004010 */  beqz       $v0, .L8005102C
     /* 417D8 80050FD8 00000000 */   nop
@@ -80780,15 +80780,15 @@ glabel ApplySaveGameBuffer
     /* 49EAC 800596AC 0780013C */  lui        $at, %hi(g_nExtraLives)
     /* 49EB0 800596B0 2C5822AC */  sw         $v0, %lo(g_nExtraLives)($at)
   .L800596B4:
-    /* 49EB4 800596B4 0880043C */  lui        $a0, %hi(g_anWorldPersistentFlags)
-    /* 49EB8 800596B8 18868424 */  addiu      $a0, $a0, %lo(g_anWorldPersistentFlags)
+    /* 49EB4 800596B4 0880043C */  lui        $a0, %hi(g_anFlightClearTimes)
+    /* 49EB8 800596B8 18868424 */  addiu      $a0, $a0, %lo(g_anFlightClearTimes)
     /* 49EBC 800596BC 10000526 */  addiu      $a1, $s0, 0x10
     /* 49EC0 800596C0 565A000C */  jal        CopyWords
     /* 49EC4 800596C4 14000624 */   addiu     $a2, $zero, 0x14
     /* 49EC8 800596C8 21400000 */  addu       $t0, $zero, $zero
     /* 49ECC 800596CC 21380002 */  addu       $a3, $s0, $zero
-    /* 49ED0 800596D0 0880053C */  lui        $a1, %hi(g_abWorldPerLevelByteTable)
-    /* 49ED4 800596D4 8086A524 */  addiu      $a1, $a1, %lo(g_abWorldPerLevelByteTable)
+    /* 49ED0 800596D0 0880053C */  lui        $a1, %hi(g_abFlightBonusPaid)
+    /* 49ED4 800596D4 8086A524 */  addiu      $a1, $a1, %lo(g_abFlightBonusPaid)
   .L800596D8:
     /* 49ED8 800596D8 2118A000 */  addu       $v1, $a1, $zero
     /* 49EDC 800596DC 2400E424 */  addiu      $a0, $a3, 0x24
@@ -80939,8 +80939,8 @@ glabel BuildSaveGameBuffer
     /* 4A0F0 800598F0 090002A2 */  sb         $v0, 0x9($s0)
     /* 4A0F4 800598F4 0780023C */  lui        $v0, %hi(g_nLevelEscapeRunCountLane1)
     /* 4A0F8 800598F8 3C58428C */  lw         $v0, %lo(g_nLevelEscapeRunCountLane1)($v0)
-    /* 4A0FC 800598FC 0880053C */  lui        $a1, %hi(g_anWorldPersistentFlags)
-    /* 4A100 80059900 1886A524 */  addiu      $a1, $a1, %lo(g_anWorldPersistentFlags)
+    /* 4A0FC 800598FC 0880053C */  lui        $a1, %hi(g_anFlightClearTimes)
+    /* 4A100 80059900 1886A524 */  addiu      $a1, $a1, %lo(g_anFlightClearTimes)
     /* 4A104 80059904 0A0002A2 */  sb         $v0, 0xA($s0)
     /* 4A108 80059908 0780023C */  lui        $v0, %hi(g_nExtraLives)
     /* 4A10C 8005990C 2C58428C */  lw         $v0, %lo(g_nExtraLives)($v0)
@@ -80948,8 +80948,8 @@ glabel BuildSaveGameBuffer
     /* 4A114 80059914 565A000C */  jal        CopyWords
     /* 4A118 80059918 0B0002A2 */   sb        $v0, 0xB($s0)
     /* 4A11C 8005991C 21400000 */  addu       $t0, $zero, $zero
-    /* 4A120 80059920 0880073C */  lui        $a3, %hi(g_abWorldPerLevelByteTable)
-    /* 4A124 80059924 8086E724 */  addiu      $a3, $a3, %lo(g_abWorldPerLevelByteTable)
+    /* 4A120 80059920 0880073C */  lui        $a3, %hi(g_abFlightBonusPaid)
+    /* 4A124 80059924 8086E724 */  addiu      $a3, $a3, %lo(g_abFlightBonusPaid)
     /* 4A128 80059928 21280002 */  addu       $a1, $s0, $zero
   .L8005992C:
     /* 4A12C 8005992C 2400A324 */  addiu      $v1, $a1, 0x24

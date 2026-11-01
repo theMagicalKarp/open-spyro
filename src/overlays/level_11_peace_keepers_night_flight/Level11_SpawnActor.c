@@ -251,7 +251,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
     }
 
     case 0x159 ... 0x15B:
-      if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0)
+      if (g_anFlightClearTimes[g_nActiveWorldIndex] != 0)
     {
       HideActorRenderRecord(rec);
       DespawnActorRecord(rec);

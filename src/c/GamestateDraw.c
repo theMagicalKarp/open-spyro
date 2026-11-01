@@ -113,7 +113,7 @@ void GamestateDraw(void) {
       tint = g_nScreenFadeLevel << 3;
       DrawFullscreenTint(2, tint, tint, tint);
     }
-    if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
+    if (g_nCinematicActive != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
     DrawMotionTrailRibbons();

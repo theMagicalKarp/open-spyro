@@ -67,7 +67,7 @@ void SmoothSpyroByteEulerSpring(void) {
   int acc2;
 
   do {
-    d = (g_nSpyroSwingEulerPitchTarget - g_nSpyroSwingEulerPrev0) & 0xFFF;
+    d = (g_nSpyroSwingEulerTargetX - g_nSpyroSwingEulerPrev0) & 0xFFF;
   } while (0);
   f = d << 7;
   if (d > 0x800) {
@@ -75,7 +75,7 @@ void SmoothSpyroByteEulerSpring(void) {
     f = d << 7;
   }
 
-  d = (g_nCameraScriptStickRequestY - g_nSpyroSwingEulerPrev1) & 0xFFF;
+  d = (g_nSpyroSwingEulerTargetY - g_nSpyroSwingEulerPrev1) & 0xFFF;
   acc0 = g_nSpyroSwingEulerSpringAccum0;
   f = f - (acc0 << 4);
   do {
@@ -91,7 +91,7 @@ void SmoothSpyroByteEulerSpring(void) {
     f = d << 7;
   }
 
-  d = (g_nCameraScriptStickRequestX - g_nSpyroSwingEulerPrev2) & 0xFFF;
+  d = (g_nSpyroSwingEulerTargetZ - g_nSpyroSwingEulerPrev2) & 0xFFF;
   acc1 = g_nSpyroSwingEulerSpringAccum1;
   f = f - (acc1 << 4);
   f = f >> 6;

@@ -41,7 +41,7 @@ void DragonRescue_Draw(void) {
         DrawFullscreenTint(1, tint, tint, tint);
       }
     }
-    if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
+    if (g_nCinematicActive != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
   } else if (g_nDragonRescueSubstate < 4) {
@@ -86,7 +86,7 @@ void DragonRescue_Draw(void) {
         DrawFullscreenTint(1, tint, tint, tint);
       }
     }
-    if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
+    if (g_nCinematicActive != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
   } else if (g_nDragonRescueSubstate == 4) {
@@ -122,7 +122,7 @@ void DragonRescue_Draw(void) {
     SetupFrameOT();
     DrawPortalsAndStaticActors();
     RasterizeEmitList();
-    if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
+    if (g_nCinematicActive != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
   } else if (g_nDragonRescueSubstate == 5) {
@@ -167,7 +167,7 @@ void DragonRescue_Draw(void) {
     SetupFrameOT();
     DrawPortalsAndStaticActors();
     RasterizeEmitList();
-    if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
+    if (g_nCinematicActive != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
   } else if (g_nDragonRescueSubstate == 6) {
@@ -192,7 +192,7 @@ void DragonRescue_Draw(void) {
     SetupFrameOT();
     DrawPortalsAndStaticActors();
     RasterizeEmitList();
-    if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
+    if (g_nCinematicActive != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
   } else if (g_nDragonRescueSubstate == 7) {
@@ -227,7 +227,7 @@ void DragonRescue_Draw(void) {
     SetupFrameOT();
     DrawPortalsAndStaticActors();
     RasterizeEmitList();
-    if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
+    if (g_nCinematicActive != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
     {

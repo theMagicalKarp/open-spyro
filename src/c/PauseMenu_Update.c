@@ -235,7 +235,7 @@ void PauseMenu_Update(void) {
       g_nPauseMenuSubstate = 2;
       return;
     }
-    ZeroVector(&g_nSpyroSwingEulerPitchTarget);
+    ZeroVector(&g_nSpyroSwingEulerTargetX);
     g_nSpyroScriptedMoveMode = 0;
     if (g_nFlightLevelActive) {
       g_nGamestate = GS_OVERLAY_HOOK;

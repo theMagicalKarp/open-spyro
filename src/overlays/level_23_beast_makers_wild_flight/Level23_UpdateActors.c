@@ -358,7 +358,7 @@ void Level23_UpdateActors(void) {
 
       switch (actor->mode) {
       case EGG_RELEASED:
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
         VectorToSVectorShr2(st->from, &actor->posX);
         st->heading =
             ArcTan2_8bit(actor->posX - spy->posX, actor->posY - spy->posY) +
@@ -464,7 +464,7 @@ void Level23_UpdateActors(void) {
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
-        g_nGameplayBlocked = 0;
+        g_nCinematicActive = 0;
         ZeroVector(&SPY.headLook);
         CommitActorKillGems(0, st->killActor);
         g_nWorldEggsRecovered = g_nWorldEggsRecovered + 1;
@@ -1572,7 +1572,7 @@ void Level23_UpdateActors(void) {
 
       switch (actor->mode) {
       case TIMEBONUS_WAIT:
-        if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
+        if (g_anFlightClearTimes[g_nActiveWorldIndex] != 0) {
           DespawnActorRecord(actor);
           break;
         }
@@ -1631,7 +1631,7 @@ void Level23_UpdateActors(void) {
     case ACTOR_TYPE_FLIGHT_TARGET: {
       TargetState *st = actor->state;
 
-      if (g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0 && st->helper == 0) {
+      if (g_anFlightClearTimes[g_nActiveWorldIndex] == 0 && st->helper == 0) {
         st->helper = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st->helperType), actor);
       }
 
@@ -1742,7 +1742,7 @@ void Level23_UpdateActors(void) {
         st->digit[3]->posX = 0x1C4;
         st->digit[3]->posY = 0x1E;
 
-        if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
+        if (g_anFlightClearTimes[g_nActiveWorldIndex] != 0) {
           for (i = 4; i < 8; i++) {
             st->digit[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_GLYPH_PERIOD, actor);
             st->digit[i]->cullRadius = 0xFF;
@@ -1792,7 +1792,7 @@ void Level23_UpdateActors(void) {
         }
       }
 
-      if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
+      if (g_anFlightClearTimes[g_nActiveWorldIndex] != 0) {
         t = g_nFlightRunClock;
       } else {
         t = g_nFlightTimeRemaining;
@@ -1806,7 +1806,7 @@ void Level23_UpdateActors(void) {
       if (g_anFlightTargetTally[0] + g_anFlightTargetTally[1] + g_anFlightTargetTally[2] + g_anFlightTargetTally[3] !=
           0x20) {
         if (g_bDebugNoDepletion == 0 && g_nSpyroSubstate < SPYRO_SUB_SCRIPTED &&
-            g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0) {
+            g_anFlightClearTimes[g_nActiveWorldIndex] == 0) {
           g_nFlightTimeBonus -= g_nFrameStep;
           g_nFlightTimeRemaining -= g_nFrameStep;
           if (g_nFlightTimeBonus < 0) {
@@ -1823,7 +1823,7 @@ void Level23_UpdateActors(void) {
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_NO_CLIP);
       }
 
-      if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
+      if (g_anFlightClearTimes[g_nActiveWorldIndex] != 0) {
         t = g_nFlightRunClock;
         i = t / 3600;
         if (i != 0) {
@@ -1863,7 +1863,7 @@ void Level23_UpdateActors(void) {
         i = t / 6 - min * 10;
         st->digit[3]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
 
-        if (g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0) {
+        if (g_anFlightClearTimes[g_nActiveWorldIndex] == 0) {
           i = min;
           if (i < prevMin) {
             if (i < 6) {

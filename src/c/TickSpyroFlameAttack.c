@@ -91,7 +91,7 @@ void TickSpyroFlameAttack(void) {
           g_nSpyroFlameVariant = 0;
         }
         FillWord(g_abSpyroFlameSlotAge, 0, 8);
-        ZeroVector(&g_nSpyroSwingEulerPitchTarget);
+        ZeroVector(&g_nSpyroSwingEulerTargetX);
       }
       break;
 
@@ -159,7 +159,7 @@ void TickSpyroFlameAttack(void) {
 
     default:
       if (g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_FREE_LOOK)) {
-        ZeroVector(&g_nSpyroSwingEulerPitchTarget);
+        ZeroVector(&g_nSpyroSwingEulerTargetX);
       }
       break;
     }

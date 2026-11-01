@@ -12,7 +12,7 @@
  * LoadAndStartLevelFromCd/LoadAndStartLevelFromCd, 1 = exit via g_pfnLevelHandleFlightResults(0) +
  * BeginPauseToMenuTransition/BeginPauseToMenuTransition) or, when the course was
  * completed (collectible tallies g_anFlightTargetTally..3C >= 0x20 and the world
- * flag g_anWorldPersistentFlags[g_nActiveWorldIndex] set) locks the timer at 0x64. Before
+ * flag g_anFlightClearTimes[g_nActiveWorldIndex] set) locks the timer at 0x64. Before
  * reveal, confirm fast-forwards the timer to 9.
  * Identical body in the five flight-level overlays.
  */
@@ -63,7 +63,7 @@ void Level17_FlightResultsMenu_Update(void) {
     if (pad[0] & (PAD_CROSS | PAD_START)) {
       if (g_nSubMenuCursor >= 0x64 ||
           (g_anFlightTargetTally + g_nFlightTargetTally1 + g_nFlightTargetTally2 + g_nFlightTargetTally3 < 0x20 &&
-           g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0)) {
+           g_anFlightClearTimes[g_nActiveWorldIndex] == 0)) {
         switch (g_nPauseMenuCursor) {
         case 0:
           g_pfnLevelHandleFlightResults(1);

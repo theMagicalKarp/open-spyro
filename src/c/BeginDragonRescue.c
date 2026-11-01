@@ -55,7 +55,7 @@ void BeginDragonRescue(Actor *actor) {
   dragons = &g_anLevelDragonsRescued[g_nLevelIndex];
   prevDragons = *dragons;
   one = 1;
-  g_nGameplayBlocked = one;
+  g_nCinematicActive = one;
   g_nGamePaused = one;
   *dragons = prevDragons + 1;
   g_anDragonRescueBlock[0] = 0;

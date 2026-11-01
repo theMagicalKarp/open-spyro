@@ -1304,7 +1304,7 @@ void Level14_UpdateActors(void) {
 
       switch (actor->mode) {
       case EGG_RELEASED:
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
         VectorToSVectorShr2(st->centre, &actor->posX);
         st->angle =
             ArcTan2_8bit(actor->posX - SPY.posX, actor->posY - SPY.posY) +
@@ -1416,8 +1416,8 @@ void Level14_UpdateActors(void) {
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
-        g_nGameplayBlocked = 0;
-        ZeroVector(&g_nSpyroSwingEulerPitchTarget);
+        g_nCinematicActive = 0;
+        ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
         g_nWorldEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
@@ -2956,7 +2956,7 @@ void Level14_UpdateActors(void) {
 
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         CopyVector(x288, &SPY.posX);
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
         x288[0] += (g_anCosineLut[SPY.bodyRotZ] * 0xE1) >> 10;
         x288[1] += (g_anSineLut[SPY.bodyRotZ] * 0xE1) >> 10;
         x288[2] -= 0x17C;
@@ -3060,7 +3060,7 @@ void Level14_UpdateActors(void) {
       case SFGIVER_RETURN: {
         int dz;
 
-        g_nGameplayBlocked = 0;
+        g_nCinematicActive = 0;
         dz = st->home[2] - actor->posZ;
         if (st->link != -1 && g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
           TurnActorYawTowardAngle(actor,

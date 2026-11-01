@@ -570,7 +570,7 @@ extern int g_anSecondaryActorTexWords[2];    /* 0x800756f0 */
 extern int g_nReturningHomePhase;            /* 0x800756f8 */
 extern struct Actor *g_pSpriteRecordBufferTop; /* 0x800756fc: top of this frame's sprite-record queue (g_pSpriteRecordWriteCursor grows down from it) */
 extern int g_nCreditsMode;               /* 0x80075704 */
-extern int g_nGameplayBlocked;               /* 0x8007570c */
+extern int g_nCinematicActive;               /* 0x8007570c: nonzero while a cinematic holds the player (dragon rescue, actor/balloonist cutscenes, boss intros): closes the letterbox (DrawCinematicLetterbox), blocks Start/Select menus (GamestateUpdate) and freezes some enemy timers */
 extern struct Actor *g_pSpriteRecordWriteCursor; /* 0x80075710: sprite-record queue tail; Actor-sized records, grows down from g_pSpriteRecordBufferTop */
 extern int g_nDemoMode;                    /* 0x80075714: attract demo: 0 off, 1 playback (set by Title_Update), 2 record into 0x80600000 */
 extern int g_nGroundSurfaceType;             /* 0x80075718 */
@@ -662,15 +662,15 @@ extern int g_nHitRumbleTimer;                /* 0x80075904 */
 extern int g_nCameraShakeDuration;           /* 0x8007590c */
 extern uint g_dwActiveCameraOptions;         /* 0x80075914 */
 extern int g_nScreenFadeLevel;              /* 0x80075918: fade-to-black level (drawn as a subtractive fullscreen tint, decays by g_nFrameStep in gameplay) */
-extern int g_nLevelStormFlag;                /* 0x8007591c */
+extern int g_nPortalDistanceFogEnabled;                /* 0x8007591c: portals beyond 0x4000 fade into g_dwWorldFogColor (DrawPortalsAndStaticActors); set for Beast Makers home + Misty Bog and the opening-story cutscene */
 extern int g_nCameraManualYawInput;          /* 0x80075924 */
 extern int g_nPadHistoryIndex;               /* 0x80075928 */
 extern int g_nCameraLookAroundActive;        /* 0x8007592c */
 extern void *g_pActorAuxPoolFreeHead;        /* 0x80075930 */
 extern int g_nActorMeshOtDepthBin;           /* 0x80075934 */
 extern int g_nCameraPassiveModeHoldTimer;    /* 0x80075938 */
-extern int g_nGameplayDrawFrame;             /* 0x8007593c */
-extern int g_nGameplayDrawMode;              /* 0x80075940 */
+extern int g_nRespawnOrGameOverFrame;             /* 0x8007593c: frame counter of the respawn / game-over sequence (RespawnOrGameOver_Update / _Draw) */
+extern int g_nRespawnOrGameOverMode;              /* 0x80075940: respawn / game-over sub-mode: 0 load frame (respawn returns here), 1 game-over presentation, 2 wait for the level stream (RespawnOrGameOver_Update) */
 extern byte g_bSpyroPadSnapshotReverseFlag;  /* 0x80075944 */
 extern int g_nVsyncFramePaceAnchor;          /* 0x80075950 */
 extern int g_nVsyncFrameEndCount;            /* 0x80075954 */
@@ -901,10 +901,10 @@ extern void *g_pEmitListBuffer;                         /* 0x800785f8 */
 extern void *g_pWorkAreaTop;                            /* 0x800785fc */
 extern int g_nLevelArchiveBaseLba;                      /* 0x80078600 */
 extern int g_nLevelArchiveByteSize;                     /* 0x80078604 */
-extern int g_anWorldPersistentFlags[6];                 /* 0x80078618 */
+extern int g_anFlightClearTimes[6];                 /* 0x80078618: per flight level (world 0..4): run time of the first all-targets clear, 0 = not yet cleared (FlightEndHook); saved */
 extern struct Portal *g_apPortals[];     /* 0x80078640 (portal.h) */
 extern int g_anCameraActiveTargetParams[6];             /* 0x80078668 */
-extern byte g_abWorldPerLevelByteTable[30];             /* 0x80078680 */
+extern byte g_abFlightBonusPaid[30];             /* 0x80078680: per flight level, 5 bytes: [0..3] target-class bonus paid, [4] all-clear bonus paid (HandleFlightResults); saved */
 extern byte g_abPadRawReport[34];                       /* 0x800786a0 */
 extern int g_anSpyroFlameAnchorPos[3];             /* 0x800786c8 */
 extern byte g_abSpyroFlameAnchorEuler[3];          /* 0x800786d4 */
@@ -991,9 +991,9 @@ extern int g_anSpyroFirstContactNormal[3];              /* 0x80078be0 */
 extern int g_nSpyroScriptedMoveMode;                    /* 0x80078bec */
 extern int g_nSpyroFlameState;                     /* 0x80078bf0 */
 extern int g_nSpyroFlameTimer;                     /* 0x80078bf8 */
-extern int g_nSpyroSwingEulerPitchTarget;               /* 0x80078bfc */
-extern int g_nCameraScriptStickRequestY;                /* 0x80078c00 */
-extern int g_nCameraScriptStickRequestX;                /* 0x80078c04 */
+extern int g_nSpyroSwingEulerTargetX;               /* 0x80078bfc: spring targets of Spyro's swing euler (x, y, z = this and the next two words), smoothed into g_abSpyroSwingByteEuler by SmoothSpyroByteEulerSpring */
+extern int g_nSpyroSwingEulerTargetY;                /* 0x80078c00: swing-euler y target: free-look stick pitch (camera mode 9, +-0x200), carried-prop shake in the levels */
+extern int g_nSpyroSwingEulerTargetZ;                /* 0x80078c04: swing-euler z target: free-look stick yaw (camera mode 9, +-0x300) */
 extern int g_anSpyroSwingEulerPrev[3];                  /* 0x80078c08 */
 extern int g_anSpyroSwingEulerSpringAccum[3];           /* 0x80078c14 */
 extern int g_anSpyroComposedBodyMtx[5];                 /* 0x80078c20 */

@@ -3,7 +3,7 @@
  * Flight-level end hook. Once per attempt (guarded by gamestate != 7): enter
  * gamestate 7, clear the six in-flight progress globals, scale the run score
  * (g_nFlightRunClock) by ten, and if this level's best-score slot
- * (g_anWorldPersistentFlags[g_nActiveWorldIndex]) is empty and all four objective counters
+ * (g_anFlightClearTimes[g_nActiveWorldIndex]) is empty and all four objective counters
  * (g_anFlightTargetTally..3C) sum to 0x20, record the score there.
  * Identical body in the five flight-level overlays (level_5/11/17/23/29).
  */
@@ -26,7 +26,7 @@ void Level5_FlightEndHook(void) {
     g_nGamestate = GS_OVERLAY_HOOK;
     five = score * 5;
     idx = g_nActiveWorldIndex;
-    base = g_anWorldPersistentFlags;
+    base = g_anFlightClearTimes;
     g_nPauseMenuCursor = 0;
     g_nPauseMenuIdleFrames = 0;
     g_nPauseMenuTransitionFrames = 0;

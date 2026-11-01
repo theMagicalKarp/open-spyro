@@ -49,9 +49,9 @@ void ResetLevelState(void) {
   } while (n >= 0);
   g_abWorldBalloonistState[0] = 2;
 
-  row = g_abWorldPerLevelByteTable;
+  row = g_abFlightBonusPaid;
   off = 0;
-  flags = g_anWorldPersistentFlags;
+  flags = g_anFlightClearTimes;
   do {
     *flags = 0;
     n = 4;

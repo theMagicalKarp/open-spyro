@@ -100,7 +100,7 @@ void GamestateUpdate(void) {
       }
     }
 
-    if (g_nGamestate == GS_GAMEPLAY && g_nGameplayBlocked == 0 &&
+    if (g_nGamestate == GS_GAMEPLAY && g_nCinematicActive == 0 &&
         g_nSparxHealth >= SPARX_GONE &&
         g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
       if ((unsigned int)g_nPadType < 2 || (g_dwPadPressed & PAD_START)) {

@@ -25,7 +25,7 @@ void EndDragonRescueToWorld(void) {
 
   id = ((DragonStatueState *)g_pDragonRescueSourceActor->state)->partner;
   g_nGamestate = GS_GAMEPLAY;
-  g_nGameplayBlocked = 0;
+  g_nCinematicActive = 0;
   if (id != -1) {
     rec = &g_pActorListBase[id];
     rec->anim = 0;

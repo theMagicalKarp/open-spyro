@@ -830,7 +830,7 @@ void Level12_BalloonistCutscene_Update(void)
         InitHudCounters(0);
         g_nGamestate = GS_GAMEPLAY;
         g_nGamePaused = 1;
-        g_nGameplayBlocked = 0;
+        g_nCinematicActive = 0;
         InitLightVectorConstants();
       }
         break;

@@ -49,9 +49,9 @@ void SelectCameraMode(void) {
         if (!(g_dwPadHeld & PAD_TRIANGLE)) {
           g_nCameraNextMode = (CAM_HELD | CAM_MODE_PASSIVE);
           g_nCameraPassiveModeHoldTimer = 0x2D;
-          g_nSpyroSwingEulerPitchTarget = 0;
-          g_nCameraScriptStickRequestY = 0;
-          g_nCameraScriptStickRequestX = 0;
+          g_nSpyroSwingEulerTargetX = 0;
+          g_nSpyroSwingEulerTargetY = 0;
+          g_nSpyroSwingEulerTargetZ = 0;
         }
         goto done;
       }
@@ -61,9 +61,9 @@ void SelectCameraMode(void) {
     {
       int t = STATE_MODE();
 
-      g_nSpyroSwingEulerPitchTarget = 0;
-      g_nCameraScriptStickRequestY = 0;
-      g_nCameraScriptStickRequestX = 0;
+      g_nSpyroSwingEulerTargetX = 0;
+      g_nSpyroSwingEulerTargetY = 0;
+      g_nSpyroSwingEulerTargetZ = 0;
       *nextp = t;
     }
   } else if (mode == (CAM_HELD | CAM_MODE_REQUEST)) {

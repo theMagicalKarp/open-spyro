@@ -180,7 +180,7 @@ void DrawPortalsAndStaticActors(void) {
       if (maxX < 0) {
         maxX = 0;
       }
-      if (g_nLevelStormFlag != 0 && dist >= 0x4001) {
+      if (g_nPortalDistanceFogEnabled != 0 && dist >= 0x4001) {
         j = (0x8000 - dist) >> 2;
         if (j < 0) {
           j = 0;

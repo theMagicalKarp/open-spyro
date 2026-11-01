@@ -635,7 +635,7 @@ BeginCutscene:
   note: >-
     264 B, was a 4/66 park that survived a 90k-iteration permuter sweep. Two
     coupled ties, both settled with the -dl/-dg probe: (1) the guarded
-    `g_nLevelStormFlag = 1` store takes whichever of {const 1, world id} cse
+    `g_nPortalDistanceFogEnabled = 1` store takes whichever of {const 1, world id} cse
     calls canonical, and the world id only wins that when it outlives the const
     — so it must NOT be reused as the call's arg0 (A171); (2) with the reuse
     gone the const (R=4, L=50, pri 1600) outranks the world id (R=3, L=20, pri
@@ -2590,7 +2590,7 @@ ApplySaveGameBuffer:
   note: >-
     720 B, improved 11/180 -> 6/180 this session (the header's old "15/180" was
     stale). Five insns fell to plain A164 straggler order in the world-table
-    copy loop: declare `row = buf;` before `tbl = g_abWorldPerLevelByteTable;`
+    copy loop: declare `row = buf;` before `tbl = g_abFlightBonusPaid;`
     and increment `row += 5;` before `tbl += 5;` (neither half alone works, 8
     and 9). The remaining 6 are one allocation decision, all positions correct:
     d is 6 refs/6 insns (priority 20000) and g is 6 refs/5 (24000), so g is

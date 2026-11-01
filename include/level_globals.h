@@ -64,10 +64,10 @@ extern unsigned char g_abHudIconActorRecords_rotZ[];
 extern int g_anFlightTallyActiveSlots_e1; /* queue slots 1..3, shifted down as each class is shown */
 extern int g_anFlightTallyActiveSlots_e2;
 extern int g_anFlightTallyActiveSlots_e3;
-extern unsigned char g_abWorldPerLevelByteTable_r1[];
-extern unsigned char g_abWorldPerLevelByteTable_r2[];
-extern unsigned char g_abWorldPerLevelByteTable_r3[];
-extern unsigned char g_abWorldPerLevelByteTable_r4[];
+extern unsigned char g_abFlightBonusPaid_r1[];
+extern unsigned char g_abFlightBonusPaid_r2[];
+extern unsigned char g_abFlightBonusPaid_r3[];
+extern unsigned char g_abFlightBonusPaid_r4[];
 extern int g_nSpyroMotionY;
 extern int g_nSpyroRequestTargetZ;
 extern unsigned char g_abBalloonistDialoguePageStarts[]; /* dialogue page first line */
@@ -79,7 +79,7 @@ extern unsigned char g_abHudCounterDisplayState;
 extern unsigned char g_abLevelExited[];              /* per-level "left through the exit" flags */
 extern unsigned char g_abWorldBalloonistState[];             /* per-world balloonist progress 0/1/2 */
 extern unsigned char g_abSpyroStateCameraMode[];
-extern unsigned char g_abWorldPerLevelByteTable[];       /* per-course claim flags */
+extern unsigned char g_abFlightBonusPaid[];       /* per flight level bonus-paid flags */
 extern void *g_adwActorBurstColors[];
 extern int g_anEmitSlotOffsets[];                        /* per-slot offsets, stride 3 ints */
 extern int g_anEmitStepOffsets[];                        /* per-step offsets, stride 3 ints */
@@ -120,7 +120,7 @@ extern short g_nCameraEulerYaw;                          /* camera yaw, as the b
 extern int g_nCameraNextMode;
 extern int g_nCameraPosY;                                /* turret aim target Y */
 extern int g_nCameraPosZ;
-extern int g_nCameraScriptStickRequestX;
+extern int g_nSpyroSwingEulerTargetZ;
 extern int g_nCameraTargetYawBiasFromMode;
 extern int g_nCdStreamState;
 extern int g_nCollisionProbeVecY;
@@ -141,7 +141,7 @@ extern int g_nFlightTimeBonus;                           /* time bonus accumulat
 extern int g_nFlightTimeRemaining;                       /* time remaining */
 extern int g_nFrameStep;                                 /* frame delta in ticks */
 extern int g_nGamePaused;
-extern int g_nGameplayBlocked;
+extern int g_nCinematicActive;
 extern int g_nGamestate;                                 /* g_nGamestate */
 extern int g_nActorCutsceneCamHeightGoal;
 extern int g_nActorCutsceneCamHeightStart;
@@ -190,7 +190,7 @@ extern int g_nSpyroRequestVelocityZ;
 extern int g_nSpyroState;                                /* Spyro's state */
 extern int g_nSpyroSubstate;
 extern int g_nSpyroStateTimer;
-extern int g_nSpyroSwingEulerPitchTarget;
+extern int g_nSpyroSwingEulerTargetX;
 extern int g_nSpyroSwingEulerPrev1;
 extern int g_nSpyroWorldPosZ;                            /* SPY.posZ, absolute form */
 extern int g_nSubMenuCursor;                             /* reveal timer */
@@ -232,7 +232,7 @@ extern int WrapAngleDelta8(int a, int b);
 extern unsigned char g_abLevelVisitedFlag[];
 extern int g_anLevelTriggerStateSlots[];
 extern int g_anRunningKillBitmap[];
-extern int g_anWorldPersistentFlags[];
+extern int g_anFlightClearTimes[];
 extern int g_nCutsceneId[]; /* [0] the cutscene id; [1]/[2] are g_nLevelVortexSeen1/2, indexed by LootVortexState.seen */
 extern int g_nCreditsMode;
 extern int g_nScreenFadeLevel;

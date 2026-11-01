@@ -27,11 +27,11 @@ extern int g_anLevelEggsRecovered[];
 extern short g_anSineLut[];
 extern int g_anSpyroMotionVec;                               /* look-at offset */
 extern int g_anSpyroWorldPos;                                /* Spyro, as a plain symbol (the loop's spy carrier) */
-extern int g_anWorldPersistentFlags[];                       /* per-mode "time attack" flag */
+extern int g_anFlightClearTimes[];                       /* per flight level first-clear time */
 extern Actor *g_apActiveActorList[];                   /* live actor list, 0-terminated */
 extern int g_dwPadPressed;                                   /* pad buttons pressed; 0x40 skips the egg */
 extern short g_nCameraEulerPitch;
-extern int g_nCameraScriptStickRequestY[];
+extern int g_nSpyroSwingEulerTargetY[];
 extern int g_nCollisionResolvedZ;                            /* ..z */
 extern int g_nSpyroWorldPosY;
 extern Actor *g_pActorListBase;                              /* level actor pool */

@@ -9,9 +9,9 @@
 #define TOTAL_LEVEL_COUNT 36
 
 typedef struct {
-  int worldFlags[5];                      /* 0x00 g_anWorldPersistentFlags */
-  unsigned char worldLevelBytes[5][5];    /* 0x14 g_abWorldPerLevelByteTable */
-} SaveGameWorlds;                         /* 0x30 */
+  int clearTimes[5];                      /* 0x00 g_anFlightClearTimes: per flight level */
+  unsigned char bonusPaid[5][5];          /* 0x14 g_abFlightBonusPaid */
+} SaveGameFlight;                         /* 0x30 */
 
 typedef struct {
   unsigned char levelId;                  /* 0x00 g_nActiveLevelId */
@@ -24,7 +24,7 @@ typedef struct {
   unsigned char escapeRunCountLane1;      /* 0x0A g_nLevelEscapeRunCountLane1 */
   unsigned char extraLives;               /* 0x0B */
   int pad0C;                              /* 0x0C never written (FillWord zeroes it) */
-  SaveGameWorlds worlds;                  /* 0x10 */
+  SaveGameFlight flight;                  /* 0x10 */
   unsigned char levelVisited[TOTAL_LEVEL_COUNT];    /* 0x40 */
   unsigned char levelExited[TOTAL_LEVEL_COUNT]; /* 0x64 */
   unsigned char levelDragons[TOTAL_LEVEL_COUNT];    /* 0x88 */

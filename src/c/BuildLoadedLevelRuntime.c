@@ -72,9 +72,9 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   g_nLevelLoadUnreadWord = 0;
   if ((g_nActiveLevelId == LEVEL_BEAST_MAKERS) ||
       (g_nActiveLevelId == LEVEL_MISTY_BOG)) {
-    g_nLevelStormFlag = 1;
+    g_nPortalDistanceFogEnabled = 1;
   } else {
-    g_nLevelStormFlag = 0;
+    g_nPortalDistanceFogEnabled = 0;
   }
   ResetPadFrameSubstepTable(&g_dwPadPressed);
   if (g_nFlightLevelActive == 0) {
@@ -164,7 +164,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   if (g_nGamestate != GS_ACTOR_CUTSCENE) {
     g_nGamestate = GS_GAMEPLAY;
     g_nGamePaused = 1;
-    g_nGameplayBlocked = 0;
+    g_nCinematicActive = 0;
     g_nLetterboxBarHeight = 0;
   }
 emitlist:

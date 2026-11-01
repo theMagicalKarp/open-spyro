@@ -16,7 +16,7 @@ void EndSaveMenuToWorld(void) {
   int *dyn;
 
   g_nGamestate = GS_GAMEPLAY;
-  g_nGameplayBlocked = 0;
+  g_nCinematicActive = 0;
   InitLightVectorConstants();
   ZeroVector(g_anSpyroSwingTargetBlock);
   ResetSpyroEntity(1);

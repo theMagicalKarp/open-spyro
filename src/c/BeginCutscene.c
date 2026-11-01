@@ -23,7 +23,7 @@ void BeginCutscene(void) {
   id = g_nCutsceneId;
   head->frame = 0;
   if (id == 1) {
-    g_nLevelStormFlag = 1;
+    g_nPortalDistanceFogEnabled = 1;
   }
 
   entry = g_CutsceneSoundDef;

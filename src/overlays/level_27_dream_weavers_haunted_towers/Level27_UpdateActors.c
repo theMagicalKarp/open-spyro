@@ -547,7 +547,7 @@ void Level27_UpdateActors(void) {
 
       switch (actor->mode) {
       case EGG_RELEASED:
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
         VectorToSVectorShr2(st->from, &actor->posX);
         st->heading =
             ArcTan2_8bit(actor->posX - SPY.posX, actor->posY - SPY.posY) +
@@ -653,7 +653,7 @@ void Level27_UpdateActors(void) {
         SubtractVector(g120, &actor->posX, &CAM.posX);
         WorldToCameraRotate(g120, g120);
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, g120, 0);
-        g_nGameplayBlocked = 0;
+        g_nCinematicActive = 0;
         ZeroVector(&SPY.headLook);
         CommitActorKillGems(0, st->killActor);
         g_nWorldEggsRecovered = g_nWorldEggsRecovered + 1;
@@ -1709,7 +1709,7 @@ void Level27_UpdateActors(void) {
           actor->mode = ROCKTHROW_ESCORT;
           continue;
         }
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && g_nGameplayBlocked == 0 &&
+        if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && g_nCinematicActive == 0 &&
             ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range2 &&
             SPY_DZ(actor) < 0xC8 && CheckSpyroLineOfSightTo(&actor->posX) != 0) {
           actor->subMode = 0;
@@ -1734,7 +1734,7 @@ void Level27_UpdateActors(void) {
 
       case ROCKTHROW_THROW:
         TrackEntityYawTowardSpyro(actor, 8, 0, 0);
-        if (actor->nextFrame >= 0x1A && g_nGameplayBlocked == 0 && actor->subMode == 0) {
+        if (actor->nextFrame >= 0x1A && g_nCinematicActive == 0 && actor->subMode == 0) {
           Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_CHUNK, actor);
           FallingChunkState *c;
 
@@ -2049,7 +2049,7 @@ void Level27_UpdateActors(void) {
 
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         CopyVector(g272, &SPY.posX);
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
         g272[0] += (g_anCosineLut[SPY.bodyRotZ] * 0xE1) >> 10;
         g272[1] += (g_anSineLut[SPY.bodyRotZ] * 0xE1) >> 10;
         g272[2] -= 0x17C;
@@ -2153,7 +2153,7 @@ void Level27_UpdateActors(void) {
       case SFGIVER_RETURN: {
         int dz;
 
-        g_nGameplayBlocked = 0;
+        g_nCinematicActive = 0;
         dz = st->home[2] - actor->posZ;
         if (st->link != -1 && g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
           TurnActorYawTowardAngle(actor,

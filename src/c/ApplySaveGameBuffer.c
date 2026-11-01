@@ -71,14 +71,14 @@ int ApplySaveGameBuffer(unsigned char *buf) {
   if (lives < 4) {
     g_nExtraLives = 4;
   }
-  CopyWords(g_anWorldPersistentFlags, buf + SAVE_OFFSET(worlds), 0x14);
+  CopyWords(g_anFlightClearTimes, buf + SAVE_OFFSET(flight), 0x14);
   off = SAVE_OFFSET(levelExited);
   w = 0;
   row = buf;
-  tbl = g_abWorldPerLevelByteTable;
+  tbl = g_abFlightBonusPaid;
   do {
     dst = tbl;
-    src = row + SAVE_OFFSET(worlds.worldLevelBytes);
+    src = row + SAVE_OFFSET(flight.bonusPaid);
     end = tbl + 5;
     do {
       *(dst++) = *(src++);

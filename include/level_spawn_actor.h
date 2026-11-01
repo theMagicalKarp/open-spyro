@@ -83,7 +83,7 @@ extern short g_anCosineLut[]; /* unit-circle x table (8-bit angle) */
 
 extern short g_anSineLut[]; /* unit-circle y table (8-bit angle) */
 
-extern int g_anWorldPersistentFlags[];   /* per-slot flight-race object table */
+extern int g_anFlightClearTimes[];   /* per flight level first-clear time */
 
 extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
 extern int RandomSignedInRange(int lo, int hi);

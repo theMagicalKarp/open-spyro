@@ -91,10 +91,10 @@ void TickSpyroAttackEffects(int steps) {
     wp = g_anSpyroWorldPos;
     if ((g_nSpyroAirborneFrames == 0) &&
         (g_abSpyroPersistentEulerBlock[1] >= 0x81)) {
-      g_nCameraScriptStickRequestY =
+      g_nSpyroSwingEulerTargetY =
           (0x100 - g_abSpyroPersistentEulerBlock[1]) * 8;
     } else {
-      g_nCameraScriptStickRequestY = 0;
+      g_nSpyroSwingEulerTargetY = 0;
     }
     n = 0;
     if (steps > 0) {

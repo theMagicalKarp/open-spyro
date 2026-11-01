@@ -46,7 +46,7 @@ void BeginSaveMenuFromWorld(Actor *actor) {
 
   owner = ACTOR_RAW(actor, int, state); /* actor->state moves the load (A400) */
   g_nGamestate = GS_SAVE_MENU;
-  g_nGameplayBlocked = 1;
+  g_nCinematicActive = 1;
   g_nGamePaused = 1;
   g_nSaveMenuMode = 0;
   g_nSaveMenuAnimPhase = 0;

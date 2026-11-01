@@ -376,7 +376,7 @@ void UpdateCameraSpringForMode(void) {
       if (r > 0x300) {
         r = 0x300;
       }
-      g_nCameraScriptStickRequestX = r;
+      g_nSpyroSwingEulerTargetZ = r;
       r = -g_anCameraScriptStickIntegrator[1];
       if (r < -0x200) {
         r = -0x200;
@@ -384,7 +384,7 @@ void UpdateCameraSpringForMode(void) {
       if (r > 0x200) {
         r = 0x200;
       }
-      g_nCameraScriptStickRequestY = r;
+      g_nSpyroSwingEulerTargetY = r;
     }
     column = 5;
     break;
