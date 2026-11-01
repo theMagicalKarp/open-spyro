@@ -1197,7 +1197,7 @@ void Level24_UpdateActors(void) {
             actor->mode = COMET_HIT;
             continue;
           }
-          DispatchActorContactAtSphere(&actor->posX, 0x258, 0, ACTOR_HIT_BLAST, actor, 2);
+          DispatchActorContactAtSphere(&actor->posX, 0x258, 0, ACTOR_HIT_BLAST, actor, CONTACT_ALL);
           if (CollideSphereWithWorldAndActors(&actor->posX, 0x168, 0x168) != 0) {
             actor->mode = COMET_HIT;
           }
@@ -3618,7 +3618,7 @@ void Level24_UpdateActors(void) {
           }
           g_nSpyroRequestVelocityZ = 0x46;
         }
-        DispatchActorContactAtSphere(&actor->posX, (st->timer + 1) << 8, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_BLAST), actor, 0);
+        DispatchActorContactAtSphere(&actor->posX, (st->timer + 1) << 8, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_BLAST), actor, CONTACT_STOP_AT_SOLID);
         if (++st->timer >= 8) {
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);

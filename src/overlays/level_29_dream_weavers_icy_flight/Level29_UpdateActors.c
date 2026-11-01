@@ -579,7 +579,7 @@ void Level29_UpdateActors(void) {
             reward->mode = TIMEBONUS_COLLECT;
           }
           TallyFlightTarget(st->tally);
-          DispatchActorContactAtSphere(&actor->posX, 0x1000, 0, ACTOR_HIT_SUPER, actor, 2);
+          DispatchActorContactAtSphere(&actor->posX, 0x1000, 0, ACTOR_HIT_SUPER, actor, CONTACT_ALL);
           for (i = 0; i < 3; i++) {
             if (ACTOR_POOL_LOW()) {
               break;

@@ -58,7 +58,8 @@ int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius,
   RotateVectorByMatrix(mtx, vec, vec);
   AddVector(vec, &actor->posX, vec);
   if (contact != 0) {
-    DispatchActorContactAtSphere(vec, contact, 0, 0, actor, 0);
+    DispatchActorContactAtSphere(vec, contact, 0, 0, actor,
+                                 CONTACT_STOP_AT_SOLID);
   }
   vec[2] += 0x400;
   d = FindGroundHeightBelow(vec, 0x400);

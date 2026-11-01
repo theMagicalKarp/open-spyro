@@ -2804,8 +2804,8 @@ void Level19_UpdateActors(void) {
         actor->posZ += 0xB4;
         if (st->timer >= 5 &&
             (CollideSphereWithWorldAndActors(&actor->posX, 0xB4, 0xB4) != 0 ||
-             DispatchActorContactAtSphere(&actor->posX, 0x100, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, 0) != 0)) {
-          DispatchActorContactAtSphere(&actor->posX, 0x400, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, 0);
+             DispatchActorContactAtSphere(&actor->posX, 0x100, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, CONTACT_STOP_AT_SOLID) != 0)) {
+          DispatchActorContactAtSphere(&actor->posX, 0x400, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, CONTACT_STOP_AT_SOLID);
           for (i = 0; i < 2; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
@@ -3759,7 +3759,7 @@ void Level19_UpdateActors(void) {
         continue;
       }
       if (st->mode == AIMBOLT_AT_LINK &&
-          DispatchActorContactAtSphere(&actor->posX, 0x15E, 0, ACTOR_HIT_BLAST, actor, 0) != 0) {
+          DispatchActorContactAtSphere(&actor->posX, 0x15E, 0, ACTOR_HIT_BLAST, actor, CONTACT_STOP_AT_SOLID) != 0) {
         DespawnActorRecord(actor);
         continue;
       }

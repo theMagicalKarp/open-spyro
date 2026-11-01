@@ -11,6 +11,14 @@
    on world collision, 0 when the move was committed. */
 /* Local prototypes, not funcs.h: its caller-side MoveActorByDelta splits the
    DeltaVec into three ints and conflicts with the definition below. */
+#ifndef CONTACT_STOP_AT_SOLID
+#define CONTACT_STOP_AT_SOLID                                                  \
+  0 /* stop at the first solid shape; returns the last actor touched */
+#define CONTACT_PUSH_OUT                                                       \
+  1 /* push pos out of the first solid shape (written back); returns that      \
+       actor */
+#define CONTACT_ALL 2 /* keep testing past solid shapes */
+#endif
 extern int DispatchActorContactAtSphere(int *pos, int radius, int events,
                                         int hitBits, Actor *self, int mode);
 extern void RefreshActorDerivedState(Actor *actor, int mode);
@@ -47,8 +55,8 @@ int MoveActorByDelta(Actor *actor, DeltaVec delta, int contactRadius,
     newpos[2] = t + radius;
   }
   if (contactRadius != 0) {
-    if (DispatchActorContactAtSphere(newpos, contactRadius, 0, 0, actor, 0) !=
-        0) {
+    if (DispatchActorContactAtSphere(newpos, contactRadius, 0, 0, actor,
+                                     CONTACT_STOP_AT_SOLID) != 0) {
       return 1;
     }
   }

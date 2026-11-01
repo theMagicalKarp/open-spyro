@@ -2651,7 +2651,7 @@ void Level31_UpdateActors(void) {
           }
         }
         DispatchActorContactAtSphere(&actor->posX, (st->timer + 2) << 8, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER), actor,
-                      2);
+                      CONTACT_ALL);
         if (++st->timer >= 8) {
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
@@ -2903,7 +2903,7 @@ void Level31_UpdateActors(void) {
           }
         }
         DispatchActorContactAtSphere(&actor->posX, (st->timer + 2) << 8, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER), actor,
-                      2);
+                      CONTACT_ALL);
         if (++st->timer >= 8) {
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
@@ -3689,7 +3689,7 @@ void Level31_UpdateActors(void) {
           }
           g_nSpyroRequestVelocityZ = 0x46;
         }
-        DispatchActorContactAtSphere(&actor->posX, (st->timer + 1) << 8, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_BLAST), actor, 0);
+        DispatchActorContactAtSphere(&actor->posX, (st->timer + 1) << 8, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_BLAST), actor, CONTACT_STOP_AT_SOLID);
         if (++st->timer >= 8) {
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);

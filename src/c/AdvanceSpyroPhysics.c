@@ -356,9 +356,9 @@ int AdvanceSpyroPhysics(void) {
           switch (*st) {
           case SPYRO_ST_CHARGE_AIR:
             if (st[1] & SPYRO_SUB_SUPERCHARGE) {
-              hit = DispatchActorContactAtSphere(pos, 0x164,
-                                                 &g_dwSpyroTriggerEventFlags,
-                                                 ACTOR_HIT_SUPER, 0, 0);
+              hit = DispatchActorContactAtSphere(
+                  pos, 0x164, &g_dwSpyroTriggerEventFlags, ACTOR_HIT_SUPER, 0,
+                  CONTACT_STOP_AT_SOLID);
               if (hit == 0) {
                 goto collide;
               }
@@ -388,8 +388,9 @@ int AdvanceSpyroPhysics(void) {
           case SPYRO_ST_SUPERCHARGE_AIR:
           case SPYRO_ST_SUPERCHARGE:
             mask |= ACTOR_HIT_SUPER;
-            hit = DispatchActorContactAtSphere(
-                pos, 0x164, &g_dwSpyroTriggerEventFlags, mask, 0, 0);
+            hit = DispatchActorContactAtSphere(pos, 0x164,
+                                               &g_dwSpyroTriggerEventFlags,
+                                               mask, 0, CONTACT_STOP_AT_SOLID);
             if (hit == 0) {
               goto collide;
             }

@@ -63,7 +63,8 @@ int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim,
       CopyVector(pos, g_anCollisionResolvedPos);
       moved = 1;
     }
-    if (DispatchActorContactAtSphere(pos, radius, 0, 0, actor, 1) != 0) {
+    if (DispatchActorContactAtSphere(pos, radius, 0, 0, actor,
+                                     CONTACT_PUSH_OUT) != 0) {
       moved = 1;
     }
   }

@@ -83,7 +83,12 @@ extern int g_anMotionTrailSliceCounts[];       /* trail lengths */
 extern signed char g_bSpyroRequestYaw; /* g_abSpyroRequestEuler[2]: requested yaw */
 
 /* Engine helpers every actor family calls; parameter names follow the main definitions. */
-extern int DispatchActorContactAtSphere(int *pos, int radius, int events, int mask, Actor *actor, int flag);
+#ifndef CONTACT_STOP_AT_SOLID
+#define CONTACT_STOP_AT_SOLID 0 /* stop at the first solid shape; returns the last actor touched */
+#define CONTACT_PUSH_OUT      1 /* push pos out of the first solid shape (written back); returns that actor */
+#define CONTACT_ALL           2 /* keep testing past solid shapes */
+#endif
+extern int DispatchActorContactAtSphere(int *pos, int radius, int events, int hitBits, Actor *self, int mode);
 extern void GetActorAttachPoint(Actor *actor, int slot, int *pos);
 extern int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int deadzone, int speed, int turnStep, int turnThreshold, int blockA, int blockB, int moveGroup, int moveRadius, int flags);
 extern int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim, int pitchLim, int radius);

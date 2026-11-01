@@ -69,7 +69,8 @@ int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist,
     AddVector(vec, &actor->posX, vec);
   }
   if (contactRadius != 0) {
-    DispatchActorContactAtSphere(vec, contactRadius, 0, 0, (int)actor, 0);
+    DispatchActorContactAtSphere(vec, contactRadius, 0, 0, (int)actor,
+                                 CONTACT_STOP_AT_SOLID);
   }
   vec[2] += 0x400;
   {

@@ -38,11 +38,13 @@ int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR,
   }
   if (contactR != 0) {
     if ((flags & MOVE_PASS_ACTORS) == 0) {
-      if (DispatchActorContactAtSphere(vec, contactR, 0, 0, actor, 0) != 0) {
+      if (DispatchActorContactAtSphere(vec, contactR, 0, 0, actor,
+                                       CONTACT_STOP_AT_SOLID) != 0) {
         return 1;
       }
     } else {
-      DispatchActorContactAtSphere(vec, contactR, 0, 0, actor, 3);
+      DispatchActorContactAtSphere(vec, contactR, 0, 0, actor,
+                                   CONTACT_PUSH_OUT | CONTACT_ALL);
     }
   }
   if (collideR != 0) {

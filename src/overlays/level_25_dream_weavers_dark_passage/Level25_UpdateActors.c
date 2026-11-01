@@ -868,7 +868,7 @@ void Level25_UpdateActors(void) {
         if (reach > 0x500) {
           reach = 0x500;
         }
-        DispatchActorContactAtSphere(&actor->posX, reach, 0, 0, actor, 1);
+        DispatchActorContactAtSphere(&actor->posX, reach, 0, 0, actor, CONTACT_PUSH_OUT);
         if (g_nActorAnimDone == 0) {
           break;
         }
@@ -1278,7 +1278,7 @@ void Level25_UpdateActors(void) {
         }
         CopyVector(svA, &actor->posX);
         if (*st < 0x64) {
-          DispatchActorContactAtSphere(&actor->posX, 0x64, 0, ACTOR_HIT_CHARGE, actor, 0);
+          DispatchActorContactAtSphere(&actor->posX, 0x64, 0, ACTOR_HIT_CHARGE, actor, CONTACT_STOP_AT_SOLID);
         }
         if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT) != 0 ||
             TickCountdownByFrameDelta(st, 4) != 0 ||
@@ -1306,7 +1306,7 @@ void Level25_UpdateActors(void) {
       case SHOT_FLY:
         CopyVector(svZ, &actor->posX);
         if (*st < 0xC8) {
-          DispatchActorContactAtSphere(&actor->posX, 0x64, 0, ACTOR_HIT_CHARGE, actor, 0);
+          DispatchActorContactAtSphere(&actor->posX, 0x64, 0, ACTOR_HIT_CHARGE, actor, CONTACT_STOP_AT_SOLID);
         }
         if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT) || TickCountdownByFrameDelta(st, 4) ||
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) ||
@@ -2498,7 +2498,7 @@ void Level25_UpdateActors(void) {
         }
         CopyVector(svW, &actor->posX);
         if (*st < 0xC8) {
-          DispatchActorContactAtSphere(&actor->posX, 0x64, 0, ACTOR_HIT_CHARGE, actor, 0);
+          DispatchActorContactAtSphere(&actor->posX, 0x64, 0, ACTOR_HIT_CHARGE, actor, CONTACT_STOP_AT_SOLID);
         }
         if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT) || TickCountdownByFrameDelta(st, 4) ||
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) ||
@@ -3290,7 +3290,7 @@ void Level25_UpdateActors(void) {
           }
           g_nSpyroRequestVelocityZ = 0x46;
         }
-        DispatchActorContactAtSphere(&actor->posX, (st->timer + 1) << 8, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_BLAST), actor, 0);
+        DispatchActorContactAtSphere(&actor->posX, (st->timer + 1) << 8, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_BLAST), actor, CONTACT_STOP_AT_SOLID);
         if (++st->timer >= 8) {
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
