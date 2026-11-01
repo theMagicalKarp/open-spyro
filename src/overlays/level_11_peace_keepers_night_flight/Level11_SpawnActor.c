@@ -49,7 +49,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
   rec->poolIndex = owner;
   switch (type)
   {
-    case 0xF:
+    case ACTOR_TYPE_SPARX_FOOD:
     {
       PickupDropState *st = rec->state;
       InitActorRenderDefaults(rec);
@@ -82,7 +82,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x10:
+    case ACTOR_TYPE_BUTTERFLY:
     {
       ButterflyState *st = rec->state;
       int *pos;
@@ -98,7 +98,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x22:
+    case ACTOR_TYPE_DRAGON_EGG:
       InitActorRenderDefaults(rec);
       rec->cullRadius = 0x20;
       rec->updateDist = 0xFF;
@@ -109,9 +109,9 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       HideActorRenderRecord(rec);
       break;
 
-    case 0xE:
+    case ACTOR_TYPE_EXTRA_LIFE:
 
-    case 0x53 ... 0x57:
+    case ACTOR_TYPE_GEM_1 ... ACTOR_TYPE_GEM_25:
     {
       PickupDropState *st = rec->state;
       int *pos;
@@ -178,7 +178,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x78:
+    case ACTOR_TYPE_SPARX:
     {
       SparxState *st = rec->state;
       InitActorRenderDefaults(rec);
@@ -197,7 +197,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x1DE ... 0x1E0:
+    case ACTOR_TYPE_FLIGHT_CHEST_SHARD ... ACTOR_TYPE_FLIGHT_CHEST_SHARD + 2:
     {
       FragmentState *st = rec->state;
       int yaw;
@@ -250,7 +250,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x159 ... 0x15B:
+    case ACTOR_TYPE_TIME_BONUS ... ACTOR_TYPE_TIME_BONUS + 2:
       if (g_anFlightClearTimes[g_nActiveWorldIndex] != 0)
     {
       HideActorRenderRecord(rec);
@@ -273,7 +273,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
     }
       break;
 
-    case 0x176:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD:
     {
       int dx;
       int dy;
@@ -298,7 +298,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x177 ... 0x182:
+    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 1 ... ACTOR_TYPE_FLIGHT_TARGET_SHARD + 12:
     {
       int dx;
       int dy;
@@ -317,7 +317,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x183 ... 0x185:
+    case 0x183 ... 0x185: /* flight tally icons */
 
     case 0x1EB:
       InitActorRenderDefaults(rec);
@@ -383,9 +383,9 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x4C:
+    case ACTOR_TYPE_GLYPH_COMMA:
 
-    case 0x1AA ... 0x1C3:
+    case ACTOR_TYPE_LETTER_A ... ACTOR_TYPE_LETTER_A + 25:
       InitActorRenderDefaults(rec);
       rec->cullRadius = 0x20;
       rec->updateDist = 0xFF;
