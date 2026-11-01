@@ -866,6 +866,13 @@ enum GunnerMode {
   GUNNER_SINK = 10,    /* knocked into the water: sinks and despawns */
 };
 
+/* GunnerState.mode: a gunner's role while GUNNER_IDLE (spawn record). */
+enum GunnerRole {
+  GUNNER_ROLE_GUARD = 0,   /* straight to GUNNER_GUARD */
+  GUNNER_ROLE_PATROL = 1,  /* walks its path until its partner leaves idle, then GUARD */
+  GUNNER_ROLE_LOOKOUT = 2, /* Spyro close (partner idle): STARTLE; cued (subMode): WAKE */
+};
+
 /* ->mode of a charging ram (ACTOR_TYPE_CHARGING_RAM / _BIG_, ChargingRamState;
  * level 28); the mode is also the animation index. A butt returns to the
  * mode saved in ChargingRamState.saved. */
@@ -1164,6 +1171,14 @@ enum BoltGuardMode {
   BGUARD_RUN = 10,         /* runs its path; done or Spyro near: WATCH */
   BGUARD_FACE_LINK = 20,   /* faces its link, then FIRE_AT_LINK */
   BGUARD_FIRE_AT_LINK = 21, /* fires bolt pairs at its link, then the next link */
+};
+
+/* BoltGuardState.mode: the one-shot cue a bolt guard waits on in
+ * BGUARD_WATCH (spawn record); cleared once played out. */
+enum BoltGuardCue {
+  BGUARD_CUE_NONE = 0,
+  BGUARD_CUE_RUN = 1,  /* Spyro in its box or range: BGUARD_RUN (the whole group) */
+  BGUARD_CUE_LINK = 2, /* Spyro in range: fires along its link chain (BGUARD_FACE_LINK) */
 };
 
 /* ->mode of a bolt caster (ACTOR_TYPE_BOLT_CASTER, BoltCasterState; level
