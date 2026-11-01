@@ -623,7 +623,7 @@ typedef struct PickupState {
   unsigned char pitch; /* 0x11 */
   unsigned char yaw;   /* 0x12 */
   unsigned char roll;  /* 0x13 */
-  unsigned char anim;  /* 0x14 0xFF == none */
+  unsigned char sparkle; /* 0x14 g_aRotBillboards handle, 0xFF = none */
 } PickupState;
 
 /* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,

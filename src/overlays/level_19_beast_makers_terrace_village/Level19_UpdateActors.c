@@ -166,8 +166,14 @@ typedef struct AimedBoltState {
   Actor *parent; /* 0x00 */
   int target[3]; /* 0x04 */
   short timer;   /* 0x10 */
-  short mode;    /* 0x12 */
+  short mode;    /* 0x12 AimedBoltMode */
 } AimedBoltState;
+
+enum AimedBoltMode {
+  AIMBOLT_HELD = 0,     /* rides the thrower's attach point, aimed at Spyro, growing */
+  AIMBOLT_AT_SPYRO = 1, /* flies straight on; touching Spyro shoves him and despawns */
+  AIMBOLT_AT_LINK = 2,  /* steers toward `target` (the guard's link) and hits actors there */
+};
 
 /* ENTER_POSE_BRK with the pose constant split from the queue store (A285). */
 #define ENTER_POSE_BRK_B(a, n)                                                 \
@@ -830,7 +836,7 @@ void Level19_UpdateActors(void) {
             c->scale = 0x48;
             c->rotZ = actor->rotZ;
             cs = c->state;
-            cs->mode = one;
+            cs->mode = one; /* AIMBOLT_AT_SPYRO */
             cs->timer = 0x1E;
             GetActorAttachPoint(actor, i, &c->posX);
           }
@@ -909,7 +915,7 @@ void Level19_UpdateActors(void) {
             c->scale = 0x48;
             cs = c->state;
             c->rotZ = actor->rotZ;
-            cs->mode = 2;
+            cs->mode = AIMBOLT_AT_LINK;
             cs->timer = 0x2D;
             CopyVector(cs->target, &g_pActorListBase[st->link].posX);
             cs->target[2] += 0xFA;
@@ -3566,7 +3572,7 @@ void Level19_UpdateActors(void) {
           st->bolt = g_pfnLevelSpawnActor(ACTOR_TYPE_AIMED_BOLT, actor);
           st->bolt->rotZ = actor->rotZ;
           bs = st->bolt->state;
-          bs->mode = 0;
+          bs->mode = AIMBOLT_HELD;
           g_dwSpyroTriggerEventFlags = SPY.triggerEvents | 0x26;
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 0, &st->bolt->posX);
@@ -3695,7 +3701,7 @@ void Level19_UpdateActors(void) {
         DespawnActorRecord(actor);
         continue;
       }
-      if (st->mode == 0) {
+      if (st->mode == AIMBOLT_HELD) {
         int *v = o528;
         int k;
 
@@ -3713,7 +3719,7 @@ void Level19_UpdateActors(void) {
         actor->scale = k + 0x20;
         continue;
       }
-      if (st->mode == 2) {
+      if (st->mode == AIMBOLT_AT_LINK) {
         int t = (ArcTan2(st->target[0] - actor->posX,
                                st->target[1] - actor->posY, ATAN_ANGLE8) -
                  actor->rotZ) &
@@ -3745,14 +3751,14 @@ void Level19_UpdateActors(void) {
         actor->rotY += t;
       }
       CopyVector(o480, &actor->posX);
-      if (st->mode == one && RaiseSpyroTriggerInRadius(&actor->posX, 0xFA, SPYRO_EV_HIT_TINT | SPYRO_EV_CHARGE_HIT) != 0) {
+      if (st->mode == one /* AIMBOLT_AT_SPYRO */ && RaiseSpyroTriggerInRadius(&actor->posX, 0xFA, SPYRO_EV_HIT_TINT | SPYRO_EV_CHARGE_HIT) != 0) {
         g_anSpyroRequestVelocity.x = (short)((unsigned short *)g_anCosineLut)[actor->rotZ] >> 5;
         g_nSpyroRequestVelocityY = (short)((unsigned short *)g_anSineLut)[actor->rotZ] >> 5;
         g_nSpyroRequestVelocityZ = 0;
         DespawnActorRecord(actor);
         continue;
       }
-      if (st->mode == 2 &&
+      if (st->mode == AIMBOLT_AT_LINK &&
           DispatchActorContactAtSphere(&actor->posX, 0x15E, 0, ACTOR_HIT_BLAST, actor, 0) != 0) {
         DespawnActorRecord(actor);
         continue;

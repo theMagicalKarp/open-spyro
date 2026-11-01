@@ -2859,7 +2859,7 @@ void Level7_UpdateActors(void) {
           actor->frameRate = TYPE_DESC(actor, actor->anim);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (st->mode == one &&
+        if (st->mode == one /* SHOOTER_ROLE_GUARD */ &&
             ApproxDist2D(&actor->posX, &SPY.posX) - 0x2001U < 0x1BFF) {
           actor->frame = 0x12;
           actor->nextFrame = 0x13;
