@@ -1620,4 +1620,17 @@ enum LootVortexStage {
   LVORTEX_FINISH = 3, /* runs its chunk anim, resets the camera stick and the key state */
 };
 
+/* ->mode of a flight-level HUD tally icon (the per-class icon types the
+ * flight HUD controller's HudState.types lists; TallyState). */
+enum TallyIconMode {
+  TALLY_ICON_UNLIT = 0,  /* class target not hit yet */
+  TALLY_ICON_LIT = 1,    /* hit: tinted and spinning (also a filled finish slot) */
+  TALLY_ICON_SPEND = 2,  /* row complete: set off toward the finish slot */
+  TALLY_ICON_TO_SLOT = 3,/* swinging onto g_nFlightTallySlot's slot */
+  TALLY_ICON_PARKED = 4, /* arrived (slot, or the end of the finale) */
+  TALLY_ICON_FINALE = 5, /* all four slots filled: set off toward the results ring */
+  TALLY_ICON_TO_RING = 6,
+  TALLY_ICON_SPIRAL = 7, /* spirals into the centre, then PARKED */
+};
+
 #endif

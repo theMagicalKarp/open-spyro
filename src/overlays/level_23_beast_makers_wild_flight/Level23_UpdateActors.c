@@ -1887,20 +1887,20 @@ void Level23_UpdateActors(void) {
       if (st->spent[0] != 0) {
         if (st->count != 0 && TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           st->count--;
-          st->spent[st->count]->mode = 2;
+          st->spent[st->count]->mode = TALLY_ICON_SPEND;
           st->timer = 0x10;
           PlaySoundEffect(AS_PTRU8(g_pLevelSampleBankHeader)[SFX_FLIGHT_TALLY], actor, SFX_MODE_PANNED, 0);
         }
         for (i = 0; i < 8; i++) {
           Actor *a = st->spent[i];
 
-          if (a != 0 && a->mode == 4) {
+          if (a != 0 && a->mode == TALLY_ICON_PARKED) {
             if (st->slot[g_nFlightTallySlot] == 0) {
               st->slot[g_nFlightTallySlot] = a;
               a->posX = g_nFlightTallySlot * 50 + 0x1E;
               st->slot[g_nFlightTallySlot]->posY = 0xC8;
               st->slot[g_nFlightTallySlot]->posZ = 0x1000;
-              st->slot[g_nFlightTallySlot]->mode = 1;
+              st->slot[g_nFlightTallySlot]->mode = TALLY_ICON_LIT;
             } else {
               DespawnActorRecord(a);
             }
@@ -1912,12 +1912,12 @@ void Level23_UpdateActors(void) {
                  st->slot[3] != 0) {
         int s = st->slot[0]->mode;
 
-        if (s == 4 || (g_dwPadPressed & PAD_CROSS)) {
+        if (s == TALLY_ICON_PARKED || (g_dwPadPressed & PAD_CROSS)) {
           g_pfnLevelFallImpactCallback();
-        } else if (s == 1) {
+        } else if (s == TALLY_ICON_LIT) {
           for (i = 0; i < 4; i++) {
             st->slot[i]->subMode = i;
-            st->slot[i]->mode = 5;
+            st->slot[i]->mode = TALLY_ICON_FINALE;
           }
         }
       } else {
@@ -1934,12 +1934,12 @@ void Level23_UpdateActors(void) {
                 st->icon[i]->posX = x;
                 st->icon[i]->tintMode = 0;
                 st->icon[i]->rotZ = 0;
-                st->icon[i]->mode = 0;
+                st->icon[i]->mode = TALLY_ICON_UNLIT;
               } else {
                 st->icon[i]->cullRadius = 0xFF;
                 st->icon[i]->posX = x;
                 st->icon[i]->tintMode = g_nFlightTallyShownClass + 3;
-                st->icon[i]->mode = 1;
+                st->icon[i]->mode = TALLY_ICON_LIT;
               }
               x += 0x1E;
             }
@@ -2054,12 +2054,12 @@ void Level23_UpdateActors(void) {
       TallyState *st = actor->state;
 
       switch (actor->mode) {
-      case 0:
+      case TALLY_ICON_UNLIT:
         break;
-      case 1:
+      case TALLY_ICON_LIT:
         actor->rotZ += 8;
         break;
-      case 2:
+      case TALLY_ICON_SPEND:
         svW[0] = g_nFlightTallySlot * 50 + 0x1E;
         svW[1] = 0xC8;
         svW[2] = 0x1000;
@@ -2070,10 +2070,10 @@ void Level23_UpdateActors(void) {
         st->angle =
             ArcTan2(actor->posX - st->x, st->y - actor->posY, 1);
         st->phase = 0x800;
-        actor->mode = 3;
+        actor->mode = TALLY_ICON_TO_SLOT;
         actor->rotZ += 8;
         break;
-      case 3:
+      case TALLY_ICON_TO_SLOT:
         st->phase -= 0x40;
         actor->posX =
             st->x - ((st->radius * LookupCosine(st->angle + st->phase)) >> 12);
@@ -2081,10 +2081,10 @@ void Level23_UpdateActors(void) {
             st->y + ((st->radius * LookupSine(st->angle + st->phase)) >> 12);
         actor->rotZ += 8;
         if (st->phase <= 0) {
-          actor->mode = 4;
+          actor->mode = TALLY_ICON_PARKED;
         }
         break;
-      case 5:
+      case TALLY_ICON_FINALE:
         svW[0] = (g_anCosineLut[actor->subMode * 64] >> sh6) + 0x100;
         svW[1] = ((g_anSineLut[actor->subMode * 64] * 5) >> 9) + 0x78;
         svW[2] = 0x1000;
@@ -2095,10 +2095,10 @@ void Level23_UpdateActors(void) {
         st->angle =
             ArcTan2(actor->posX - st->x, st->y - actor->posY, 1);
         st->phase = 0x800;
-        actor->mode = 6;
+        actor->mode = TALLY_ICON_TO_RING;
         actor->rotZ += 8;
         break;
-      case 6:
+      case TALLY_ICON_TO_RING:
         st->phase -= 0x40;
         actor->posX =
             st->x - ((st->radius * LookupCosine(st->angle + st->phase)) >> 12);
@@ -2110,10 +2110,10 @@ void Level23_UpdateActors(void) {
               ArcTan2(actor->posX - 0x100, actor->posY - 0x78, 1);
           st->phase = -0x3000;
           st->radius = 0x40;
-          actor->mode = 7;
+          actor->mode = TALLY_ICON_SPIRAL;
         }
         break;
-      case 7:
+      case TALLY_ICON_SPIRAL:
         st->phase += 0x80;
         st->radius -= 2;
         actor->posX =
@@ -2126,7 +2126,7 @@ void Level23_UpdateActors(void) {
         }
         actor->rotZ += 8;
         if (st->phase >= 0) {
-          actor->mode = 4;
+          actor->mode = TALLY_ICON_PARKED;
         }
         break;
       }
