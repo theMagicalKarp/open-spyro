@@ -4673,7 +4673,7 @@ void Level6_UpdateActors(void) {
     case ACTOR_TYPE_FALLING_SPARK:
     case ACTOR_TYPE_FALLING_SPARK + 1:
     case ACTOR_TYPE_FALLING_SPARK + 2: {
-      SparkState *st = actor->state;
+      ChestShardState *st = actor->state;
 
       if (TickCountdownByFrameDelta(&st->life, 4) == 0 && actor->posZ >= 0x7D0 &&
           actor->drawn) {
@@ -4698,7 +4698,7 @@ void Level6_UpdateActors(void) {
      * falling and spinning until its life runs out. */
     case ACTOR_TYPE_REBOUND_DEBRIS:
     case ACTOR_TYPE_REBOUND_DEBRIS + 1: {
-      SparkState *st = actor->state;
+      ChestShardState *st = actor->state;
 
       if (st->life > 0 && actor->drawn) {
         if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100)) {

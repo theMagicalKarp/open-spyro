@@ -3342,9 +3342,9 @@ void Level14_UpdateActors(void) {
       break;
     }
 
-    /* Crystal dragon (RideState). */
+    /* Crystal dragon (CrystalDragonState). */
     case ACTOR_TYPE_DRAGON_STATUE: {
-      RideState *st = (RideState *)actor->state;
+      CrystalDragonState *st = (CrystalDragonState *)actor->state;
 
       if (actor->mode == STATUE_INIT) {
         int padIdx = st->partner;

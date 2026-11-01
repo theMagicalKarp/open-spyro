@@ -329,11 +329,11 @@ void Level29_UpdateActors(void) {
 
       break;
     }
-    /* Dragon egg (ShotState). */
+    /* Dragon egg (EggFlightState). */
     case ACTOR_TYPE_DRAGON_EGG: {
-      ShotState *st;
+      EggFlightState *st;
 
-      st = (ShotState *)actor->state;
+      st = (EggFlightState *)actor->state;
 
       if (actor->mode != EGG_CARRIED && actor->mode < EGG_COLLECTED) {
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
@@ -469,10 +469,10 @@ void Level29_UpdateActors(void) {
       break;
     }
 
-    /* Bouncing chest fragments (SparkState). */
+    /* Bouncing chest fragments (ChestShardState). */
     case ACTOR_TYPE_FLIGHT_CHEST_SHARD:
     case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 1: {
-      SparkState *st = actor->state;
+      ChestShardState *st = actor->state;
 
       if (st->life > 0 && actor->drawn) {
         if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100)) {

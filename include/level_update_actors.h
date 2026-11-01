@@ -571,15 +571,16 @@ typedef struct AmbientSoundBytesState {
   int count;           /* 0x24 frames left on the current leg */
 } AmbientSoundBytesState;
 
-/* Type 34: dragon egg. Spirals up, flies to Spyro and is collected. */
-typedef struct ShotState {
+/* Type 34: dragon egg. Spirals up, flies to Spyro and is collected (the
+ * same record as level_actor_states.h EggRiseState). */
+typedef struct EggFlightState {
   void *killActor;        /* 0x00 actor handed to CommitActorKillGems on collection */
   short from[3];         /* 0x04 launch point */
   short to[3];           /* 0x0A destination */
   short speed;           /* 0x10 */
   unsigned char phase;   /* 0x12 timer */
   unsigned char heading; /* 0x13 */
-} ShotState;
+} EggFlightState;
 
 /* Type 18: pressure switch. Toggles one bit in a linked actor's sub-state. */
 typedef struct SwitchState {
@@ -597,7 +598,7 @@ typedef struct AnimState {
 
 /* Types 255/256/423/424: chest fragments that bounce, reflecting their
  * velocity about the surface normal. */
-typedef struct SparkState {
+typedef struct ChestShardState {
   short vel[3];        /* 0x00 */
   unsigned char spin0; /* 0x06 */
   unsigned char pad07;
@@ -606,7 +607,7 @@ typedef struct SparkState {
   unsigned char spin2; /* 0x0A */
   unsigned char pad0B;
   int life; /* 0x0C */
-} SparkState;
+} ChestShardState;
 
 typedef struct {
   unsigned char *v;
@@ -628,7 +629,7 @@ typedef struct PickupState {
 
 /* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
  * saves a checkpoint and starts the rescue. */
-typedef struct RideState {
+typedef struct CrystalDragonState {
   int pad00[6]; /* 0x00 */
   int cutsceneId;    /* 0x18 rescue cutscene id (see DragonStatueState) */
   int fallbackHeading;    /* 0x1C fallback heading when ->partner is unset */
@@ -639,7 +640,7 @@ typedef struct RideState {
   int savedRotX;    /* 0x48 saved actor->rotX */
   int savedRotY;    /* 0x4C saved actor->rotY */
   int savedPosZ;    /* 0x50 saved actor->posZ */
-} RideState;
+} CrystalDragonState;
 
 /* Type 398 (ACTOR_TYPE_PORTAL_GUIDE): flies Spyro through a portal. The
  * portal record's word 6 names it; DispatchSpyroTriggerEvent wakes it when

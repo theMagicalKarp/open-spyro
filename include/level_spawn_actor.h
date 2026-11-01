@@ -53,7 +53,7 @@ typedef struct ButterflyState {
 } ButterflyState;
 
 /* Chest / object fragment (types 0x43..0x45, 0xFF..0x101, 0x135..0x137 and
- * per-level ranges) — UpdateActors' SparkState / TumbleState. */
+ * per-level ranges) — UpdateActors' ChestShardState / TumbleState. */
 typedef struct FragmentState {
   short vel[3]; /* 0x00 */
   short spinX;  /* 0x06 */
