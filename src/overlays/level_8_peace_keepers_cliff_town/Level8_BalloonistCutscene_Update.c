@@ -297,7 +297,7 @@ void Level8_BalloonistCutscene_Update(void)
           else
             if (n < 3)
           {
-            if ((t < 3) && (g_bWorldBalloonistState1 < 2))
+            if ((t < 3) && (g_bWorldBalloonistState1 < BALLOONIST_OPEN))
             {
               g_pfnLevelOnSaveMenuExit();
             }

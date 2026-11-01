@@ -29,6 +29,7 @@
 #include "level_sfx.h"
 #include "emit_record.h"
 #include "cd_stream.h"
+#include "actor_cutscene.h"
 
 
 /* Type 286: ambient sound source (AmbientSoundState) with the path seen as
@@ -2051,19 +2052,19 @@ void Level0_UpdateActors(void) {
         g_pfnLevelBeginActorCutscene(actor);
 
         if (g_nWorldDragonsRescued < 10) {
-          if (g_abWorldBalloonistState[1] == 0) {
+          if (g_abWorldBalloonistState[1] == BALLOONIST_UNMET) {
             g_nActorCutsceneDialogPage = 0;
-            g_abWorldBalloonistState[1] = 1;
+            g_abWorldBalloonistState[1] = BALLOONIST_TALKED;
           } else {
             g_nActorCutsceneDialogPage = 2;
           }
-        } else if (g_abWorldBalloonistState[1] < 2) {
-          if (g_abWorldBalloonistState[1] == 0) {
+        } else if (g_abWorldBalloonistState[1] < BALLOONIST_OPEN) {
+          if (g_abWorldBalloonistState[1] == BALLOONIST_UNMET) {
             g_nActorCutsceneDialogPage = 3;
           } else {
             g_nActorCutsceneDialogPage = 4;
           }
-          g_abWorldBalloonistState[1] = 2;
+          g_abWorldBalloonistState[1] = BALLOONIST_OPEN;
         } else {
           g_nActorCutsceneDialogPage = 0x1E;
           g_nActorCutsceneDialogVariant = (int)GetRandomU32() % 3;

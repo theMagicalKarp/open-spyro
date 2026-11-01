@@ -17,4 +17,11 @@ enum ActorCutsceneSubstate {
   ACS_LAND = 7,        /* Spyro steps out; back to gameplay */
 };
 
+/* g_abWorldBalloonistState[world]: a homeworld balloonist's progress. */
+enum BalloonistState {
+  BALLOONIST_UNMET = 0,
+  BALLOONIST_TALKED = 1,
+  BALLOONIST_OPEN = 2, /* travel to this world unlocked (world 0 starts open) */
+};
+
 #endif /* OPEN_SPYRO_ACTOR_CUTSCENE_H */

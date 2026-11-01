@@ -648,7 +648,7 @@ extern int g_nPortalCount;              /* 0x800758bc */
 extern int g_nSpyroFallReferenceZ;           /* 0x800758c0 */
 extern int g_nVblankTickCount;               /* 0x800758c8 */
 extern struct Actor *(*g_pfnLevelSpawnActor)(int type, struct Actor *parent); /* 0x800758cc */
-extern byte g_abWorldBalloonistState[6];         /* 0x800758d0 per-homeworld balloonist progress: 0 unmet, 1 talked, 2 travel unlocked (ResetLevelState seeds [0] = 2, the unlock cheat fills all 2, homeworld UpdateActors steps it and picks the dialogue page) */
+extern byte g_abWorldBalloonistState[6];         /* 0x800758d0 per-homeworld balloonist progress, enum BalloonistState (actor_cutscene.h): unmet / talked / travel unlocked (ResetLevelState seeds [0] = 2, the unlock cheat fills all 2, homeworld UpdateActors steps it and picks the dialogue page) */
 extern int g_nPadActAlignedFlag;             /* 0x800758e0 */
 /* 0x800758e4: the level's EmitParticles(count, type, pos, effectArg). Left
  * unprototyped: effectArg is a velocity vector, a packed colour, a scale or a

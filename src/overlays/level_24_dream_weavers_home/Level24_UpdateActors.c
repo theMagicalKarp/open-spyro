@@ -32,6 +32,7 @@
 #include "level_sfx.h"
 #include "emit_record.h"
 #include "cd_stream.h"
+#include "actor_cutscene.h"
 
 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
@@ -2818,25 +2819,25 @@ void Level24_UpdateActors(void) {
         ResetSpyroLinearMotion();
         ZeroVector(&spy->headLook);
         g_pfnLevelBeginActorCutscene(actor);
-        g_abWorldBalloonistState[1] = 2;
-        g_abWorldBalloonistState[2] = 2;
-        g_abWorldBalloonistState[3] = 2;
-        g_abWorldBalloonistState[4] = 2;
+        g_abWorldBalloonistState[1] = BALLOONIST_OPEN;
+        g_abWorldBalloonistState[2] = BALLOONIST_OPEN;
+        g_abWorldBalloonistState[3] = BALLOONIST_OPEN;
+        g_abWorldBalloonistState[4] = BALLOONIST_OPEN;
 
         if (g_nTotalTreasureCollected < 0x1770) {
-          if (g_abWorldBalloonistState[5] == 0) {
+          if (g_abWorldBalloonistState[5] == BALLOONIST_UNMET) {
             g_nActorCutsceneDialogPage = 0x18;
-            g_abWorldBalloonistState[5] = 1;
+            g_abWorldBalloonistState[5] = BALLOONIST_TALKED;
           } else {
             g_nActorCutsceneDialogPage = 0x1A;
           }
-        } else if (g_abWorldBalloonistState[5] < 2) {
-          if (g_abWorldBalloonistState[5] == 0) {
+        } else if (g_abWorldBalloonistState[5] < BALLOONIST_OPEN) {
+          if (g_abWorldBalloonistState[5] == BALLOONIST_UNMET) {
             g_nActorCutsceneDialogPage = 0x1B;
           } else {
             g_nActorCutsceneDialogPage = 0x1C;
           }
-          g_abWorldBalloonistState[5] = 2;
+          g_abWorldBalloonistState[5] = BALLOONIST_OPEN;
         } else {
           g_nActorCutsceneDialogPage = 0x1E;
           g_nActorCutsceneDialogVariant = (int)GetRandomU32() % 3;

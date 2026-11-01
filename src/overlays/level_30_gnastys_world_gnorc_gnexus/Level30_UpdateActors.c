@@ -41,6 +41,7 @@
 #include "level_sfx.h"
 #include "emit_record.h"
 #include "cd_stream.h"
+#include "actor_cutscene.h"
 
 /* Level30_UpdateActors -- per-frame actor update for level 30 (Gnorc Gnexus).
  *
@@ -1619,9 +1620,9 @@ void Level30_UpdateActors(void) {
         g_nActorCutsceneDialogPage = 0x1E;
         g_bWorldBalloonistState1 = two;
         g_abWorldBalloonistState[2] = two;
-        g_abWorldBalloonistState[3] = 2;
-        g_abWorldBalloonistState[4] = 2;
-        g_abWorldBalloonistState[5] = 2;
+        g_abWorldBalloonistState[3] = BALLOONIST_OPEN;
+        g_abWorldBalloonistState[4] = BALLOONIST_OPEN;
+        g_abWorldBalloonistState[5] = BALLOONIST_OPEN;
       }
       break;
 

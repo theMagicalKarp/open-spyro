@@ -133,7 +133,7 @@ void Level30_BalloonistCutscene_Draw(void) {
         }
         slot = 1;
         for (world = 0; world < 6; world++) {
-          if (g_nActiveLevelId / 10 - 1 != world && g_abWorldBalloonistState[world] == 2) {
+          if (g_nActiveLevelId / 10 - 1 != world && g_abWorldBalloonistState[world] == BALLOONIST_OPEN) {
             menuPos[0] = 0x110;
             rec = (Actor *)g_pSpriteRecordWriteCursor - 1;
             BuildTextSprites(g_apWorldNameByLevelTens[world], menuPos, menuColor, 0x10, 0xB);

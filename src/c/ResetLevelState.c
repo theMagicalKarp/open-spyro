@@ -1,3 +1,4 @@
+#include "actor_cutscene.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -47,7 +48,7 @@ void ResetLevelState(void) {
     n -= 1;
     p -= 1;
   } while (n >= 0);
-  g_abWorldBalloonistState[0] = 2;
+  g_abWorldBalloonistState[0] = BALLOONIST_OPEN;
 
   row = g_abFlightBonusPaid;
   off = 0;

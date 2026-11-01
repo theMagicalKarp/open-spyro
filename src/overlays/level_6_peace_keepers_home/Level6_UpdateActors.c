@@ -32,6 +32,7 @@
 #include "level_sfx.h"
 #include "emit_record.h"
 #include "cd_stream.h"
+#include "actor_cutscene.h"
 
 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
@@ -2557,22 +2558,22 @@ void Level6_UpdateActors(void) {
         ResetSpyroLinearMotion();
         ZeroVector(&spy->headLook);
         g_pfnLevelBeginActorCutscene(actor);
-        g_abWorldBalloonistState[1] = 2;
+        g_abWorldBalloonistState[1] = BALLOONIST_OPEN;
 
         if (g_nTotalTreasureCollected < 0x4B0) {
-          if (g_abWorldBalloonistState[2] == 0) {
+          if (g_abWorldBalloonistState[2] == BALLOONIST_UNMET) {
             g_nActorCutsceneDialogPage = 6;
-            g_abWorldBalloonistState[2] = 1;
+            g_abWorldBalloonistState[2] = BALLOONIST_TALKED;
           } else {
             g_nActorCutsceneDialogPage = 8;
           }
-        } else if (g_abWorldBalloonistState[2] < 2) {
-          if (g_abWorldBalloonistState[2] == 0) {
+        } else if (g_abWorldBalloonistState[2] < BALLOONIST_OPEN) {
+          if (g_abWorldBalloonistState[2] == BALLOONIST_UNMET) {
             g_nActorCutsceneDialogPage = 9;
           } else {
             g_nActorCutsceneDialogPage = 0xA;
           }
-          g_abWorldBalloonistState[2] = 2;
+          g_abWorldBalloonistState[2] = BALLOONIST_OPEN;
         } else {
           g_nActorCutsceneDialogPage = 0x1E;
           g_nActorCutsceneDialogVariant = (int)GetRandomU32() % 3;
