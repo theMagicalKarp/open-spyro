@@ -6,6 +6,8 @@
 #ifndef OPEN_SPYRO_LEVEL_ACTOR_CUTSCENE_H
 #define OPEN_SPYRO_LEVEL_ACTOR_CUTSCENE_H
 
+#include "actor_cutscene.h"
+
 /* Declared identically by two or more *_BeginActorCutscene.c files; hoisted here. */
 extern int g_nActorCutsceneCamYawGoal;
 extern int g_nActorCutsceneMenuCursor;

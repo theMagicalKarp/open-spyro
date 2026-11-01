@@ -31,7 +31,7 @@ void Level3_BeginActorCutscene(Actor *actor) {
 
   p = actor->state;
   g_nGamestate = GS_ACTOR_CUTSCENE;
-  g_nActorCutsceneSubstate = 0;
+  g_nActorCutsceneSubstate = ACS_APPROACH;
   g_nActorCutsceneTimer = 0;
   g_nActorCutsceneMenuCursor = 0;
   g_pActorCutsceneActor = actor;

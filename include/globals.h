@@ -835,7 +835,7 @@ extern int g_nWorldMeshIndexCount;                      /* 0x80077788 */
 extern void *g_pWorldMeshIndexTable;                    /* 0x8007778c */
 extern int g_anCameraLatchedAnchorPos[3];               /* 0x80077798 */
 extern int g_anLevelTriggerStateSlots[10];              /* 0x800777c0 */
-extern int g_nActorCutsceneSubstate;                      /* 0x800777e8 */
+extern int g_nActorCutsceneSubstate;                      /* 0x800777e8: enum ActorCutsceneSubstate (actor_cutscene.h) */
 extern int g_anCollisionContactPoint[3];                /* 0x80077858 */
 extern int g_nSpawnAnchorValid;                         /* 0x80077888 */
 extern int g_anRunningKillBitmap[8];                    /* 0x80077898 */

@@ -107,7 +107,7 @@ void Level0_BalloonistCutscene_Update(void)
   }
   switch (st[0])
   {
-    case 0:
+    case ACS_APPROACH:
     {
       int t;
       int cn;
@@ -268,7 +268,7 @@ void Level0_BalloonistCutscene_Update(void)
         g_bSpyroAnimCurrent = 0;
         g_bSpyroAnimFrame = 0;
         g_bSpyroSubFrameTimer = 0;
-        g_nActorCutsceneSubstate[0] = 1;
+        g_nActorCutsceneSubstate[0] = ACS_DIALOGUE;
         g_nActorCutsceneTimer[0] = 0;
         g_bSpyroPersistentEulerZ = g_nActorCutsceneSpyroYawGoal >> 4;
         g_bSpyroFramePrev = n;
@@ -276,7 +276,7 @@ void Level0_BalloonistCutscene_Update(void)
         break;
     }
 
-    case 1:
+    case ACS_DIALOGUE:
     {
       int t;
       int n;
@@ -405,7 +405,7 @@ void Level0_BalloonistCutscene_Update(void)
           return;
         }
         StopAllSoundExceptMask(0);
-        g_nActorCutsceneSubstate[0] = 2;
+        g_nActorCutsceneSubstate[0] = ACS_BOARD;
         g_nActorCutsceneTimer[0] = 0;
         g_nCurrentLevelId = g_nActorCutsceneTimer[1] * 0xA;
         if (g_nCurrentLevelId >= g_nActiveLevelId)
@@ -444,7 +444,7 @@ void Level0_BalloonistCutscene_Update(void)
           return;
         }
         StopAllSoundExceptMask(0);
-        g_nActorCutsceneSubstate[0] = 2;
+        g_nActorCutsceneSubstate[0] = ACS_BOARD;
         g_nActorCutsceneTimer[0] = 0;
         if (g_nActorCutsceneDialogPage[0] == 0x1F)
         {
@@ -491,7 +491,7 @@ void Level0_BalloonistCutscene_Update(void)
         break;
     }
 
-    case 2:
+    case ACS_BOARD:
     {
       int t;
       int cn;
@@ -589,13 +589,13 @@ void Level0_BalloonistCutscene_Update(void)
       }
       else
       {
-        g_nActorCutsceneSubstate[0] = 3;
+        g_nActorCutsceneSubstate[0] = ACS_LIFT_OFF;
         g_nActorCutsceneTimer[0] = 0;
       }
         break;
     }
 
-    case 3:
+    case ACS_LIFT_OFF:
     {
       int z;
       int k;
@@ -658,7 +658,7 @@ void Level0_BalloonistCutscene_Update(void)
         {
           int m;
         m = ACTOR_RAW(g_pActorCutsceneRecord, int, posZ);
-        g_nActorCutsceneSubstate[0] = 4;
+        g_nActorCutsceneSubstate[0] = ACS_STREAM_WAIT;
         g_nActorCutsceneTimer[0] = 0;
         g_nActorCutsceneCamHeightGoal = m + 0x200;
         }
@@ -687,7 +687,7 @@ void Level0_BalloonistCutscene_Update(void)
         break;
     }
 
-    case 5:
+    case ACS_CRUISE:
     {
       int t;
       int cn;
@@ -722,14 +722,14 @@ void Level0_BalloonistCutscene_Update(void)
       else
         if (g_nCdStreamState == LSTREAM_FINALIZE)
       {
-        g_nActorCutsceneSubstate[0] = 6;
+        g_nActorCutsceneSubstate[0] = ACS_DESCEND;
         g_nActorCutsceneTimer[0] = 0;
         TickLevelTransitionStream(1);
       }
         break;
     }
 
-    case 6:
+    case ACS_DESCEND:
     {
       int t;
       int n;
@@ -773,7 +773,7 @@ void Level0_BalloonistCutscene_Update(void)
       }
       else
       {
-        g_nActorCutsceneSubstate[0] = 7;
+        g_nActorCutsceneSubstate[0] = ACS_LAND;
         g_nActorCutsceneTimer[0] = 0;
         CopyVector(&g_nActorCutsceneTimer[5], g_anSpyroWorldPos);
         {
@@ -796,7 +796,7 @@ void Level0_BalloonistCutscene_Update(void)
         break;
     }
 
-    case 7:
+    case ACS_LAND:
     {
       int t;
 

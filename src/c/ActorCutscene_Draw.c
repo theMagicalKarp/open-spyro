@@ -1,4 +1,5 @@
 #include "actor.h"
+#include "actor_cutscene.h"
 #include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
@@ -39,8 +40,8 @@ void ActorCutscene_Draw(void) {
   int variant;
   Actor *rec;
 
-  if (g_nActorCutsceneSubstate >= 4) {
-    if (g_nActorCutsceneSubstate < 6) {
+  if (g_nActorCutsceneSubstate >= ACS_STREAM_WAIT) {
+    if (g_nActorCutsceneSubstate < ACS_DESCEND) {
       {
         register void **ot asm("$3");
         register void *h asm("$2");
@@ -96,9 +97,9 @@ void ActorCutscene_Draw(void) {
       RasterizeSpritePrimQueue();
       RasterizeSpyroModel();
 
-      if (g_nActorCutsceneSubstate < 6) {
+      if (g_nActorCutsceneSubstate < ACS_DESCEND) {
         g_dwActorMeshFadeColor = 0x401010;
-        if (g_nActorCutsceneSubstate == 4) {
+        if (g_nActorCutsceneSubstate == ACS_STREAM_WAIT) {
           g_nFadeProgress = g_anActorCutsceneTimerBlock[0] * 0x10;
         } else {
           g_nFadeProgress = (0x100 - g_anActorCutsceneTimerBlock[0]) * 0x10;
