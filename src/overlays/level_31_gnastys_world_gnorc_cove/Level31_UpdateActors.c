@@ -3349,7 +3349,7 @@ void Level31_UpdateActors(void) {
       int distance;
       int flags;
       st = (WhirlwindState *)actor->state;
-      if (st->flags & 8) {
+      if (st->flags & WHIRL_F_GATED) {
         if (g_pActorListBase[st->idx].type == ACTOR_TYPE_KEY) {
           if (g_pActorListBase[st->idx].subMode == 0)
             break;
@@ -3364,10 +3364,10 @@ void Level31_UpdateActors(void) {
         }
       }
       flags = st->flags;
-      if (flags & 2) {
+      if (flags & WHIRL_F_IDLE) {
         if (st->timer != 0) {
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0)
-            st->flags = (st->flags & ~2) | 4;
+            st->flags = (st->flags & ~WHIRL_F_IDLE) | WHIRL_F_WOKEN;
           break;
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000 &&
@@ -3376,7 +3376,7 @@ void Level31_UpdateActors(void) {
         }
         break;
       }
-      if (flags & 0x10)
+      if (flags & WHIRL_F_MARK)
         actor->subMode = 1;
       PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->voiceRow);
       if ((GetRandomU32() & 1) == 0)
@@ -3391,7 +3391,7 @@ void Level31_UpdateActors(void) {
         SPY.triggerEvents |= SPYRO_EV_LIFT;
         SPY.requestTargetZ = actor->posZ + st->spanZ;
         CopyVector(SPY.firstContactPoint, &actor->posX);
-        if (st->flags & 1) {
+        if (st->flags & WHIRL_F_TARGET_CAM) {
           spyro->requestMask |= SPYRO_RQ_TARGET_CAMERA;
         } else {
           g_anCameraActiveTargetParams = g_anCameraParamMode2Front;
@@ -3403,9 +3403,9 @@ void Level31_UpdateActors(void) {
         st->timer = 0x78;
         break;
       }
-      if ((st->flags & ~1) == 4 && st->timer != 0 &&
+      if ((st->flags & ~WHIRL_F_TARGET_CAM) == WHIRL_F_WOKEN && st->timer != 0 &&
           TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-        st->flags = (st->flags & ~4) | 2;
+        st->flags = (st->flags & ~WHIRL_F_WOKEN) | WHIRL_F_IDLE;
       }
       break;
     }
