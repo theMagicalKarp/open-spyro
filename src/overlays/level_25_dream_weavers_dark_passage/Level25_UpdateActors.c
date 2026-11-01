@@ -483,7 +483,7 @@ void Level25_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -816,14 +816,14 @@ void Level25_UpdateActors(void) {
           if (TurnActorYawTowardAngle(actor, heading, 4, 0x18, 1) == 0) {
             break;
           }
-          MoveActorAlongHeading(actor, dist, 0x500, 0x500, 0x37);
+          MoveActorAlongHeading(actor, dist, 0x500, 0x500, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE);
           break;
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         MoveActorAlongAngle(actor,
                       ArcTan2(SPY.posX - actor->posX,
                                     SPY.posY - actor->posY, 0),
-                      0x200, 0x500, 0x500, 0x37);
+                      0x200, 0x500, 0x500, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE);
         if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
           if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x5DC) {
             break;
@@ -961,14 +961,14 @@ void Level25_UpdateActors(void) {
           if (TurnActorYawTowardAngle(actor, heading, 4, 0x18, 1) == 0) {
             break;
           }
-          MoveActorAlongHeading(actor, dist, 0x200, 0x200, 0x37);
+          MoveActorAlongHeading(actor, dist, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE);
           break;
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         MoveActorAlongAngle(actor,
                       ArcTan2(SPY.posX - actor->posX,
                                     SPY.posY - actor->posY, 0),
-                      0xF0, 0x200, 0x200, 0x37);
+                      0xF0, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE);
         if (TickCountdownByFrameDelta(&st->timer, 4)) {
           *st->slot = 0;
           actor->subMode = 1;
@@ -1057,7 +1057,7 @@ void Level25_UpdateActors(void) {
           continue;
         }
         if (st->speed > 0) {
-          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 1);
+          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, MOVE_LIFT);
           st->speed -= 0x10;
         }
         break;
@@ -1278,7 +1278,7 @@ void Level25_UpdateActors(void) {
         if (*st < 0x64) {
           DispatchActorContactAtSphere(&actor->posX, 0x64, 0, ACTOR_HIT_CHARGE, actor, 0);
         }
-        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, 7) != 0 ||
+        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT) != 0 ||
             TickCountdownByFrameDelta(st, 4) != 0 ||
             TryMoveActorForward(actor, 0xE0, 0, 0x100, 0) != 0 ||
             CastRayWorldAndActors(svA, &actor->posX) != 0) {
@@ -1301,20 +1301,20 @@ void Level25_UpdateActors(void) {
       int *st = actor->state;
 
       switch (actor->mode) {
-      case 0:
+      case SHOT_FLY:
         CopyVector(svZ, &actor->posX);
         if (*st < 0xC8) {
           DispatchActorContactAtSphere(&actor->posX, 0x64, 0, ACTOR_HIT_CHARGE, actor, 0);
         }
-        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, 7) || TickCountdownByFrameDelta(st, 4) ||
+        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT) || TickCountdownByFrameDelta(st, 4) ||
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) ||
             CastRayWorldAndActors(svZ, &actor->posX)) {
-          actor->mode = 1;
+          actor->mode = SHOT_BURST;
           ANIM_RESET(actor, 1);
         }
         continue;
 
-      case 1:
+      case SHOT_BURST:
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);
         }
@@ -1471,7 +1471,7 @@ void Level25_UpdateActors(void) {
       }
 
       if (actor->drawn != 0 || toSpyro <= 0x2000 || actor->subMode != COLLECT_REST ||
-          st->mode != 0) {
+          st->mode != COLLREST_STILL) {
         switch (actor->subMode) {
         case COLLECT_SETTLE:
           /* Idle: sample the floor normal and face along it. */
@@ -1495,8 +1495,8 @@ void Level25_UpdateActors(void) {
 
         case COLLECT_REST: {
 
-          if (st->mode == 0) {
-          } else if (st->mode == 1) {
+          if (st->mode == COLLREST_STILL) {
+          } else if (st->mode == COLLREST_SNAP) {
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
             if (actor->type >= ACTOR_TYPE_GEM_1) {
@@ -1510,7 +1510,7 @@ void Level25_UpdateActors(void) {
                 st->roll = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
               }
             }
-          } else if (st->mode == 2) {
+          } else if (st->mode == COLLREST_ON_TRI) {
             UnpackWorldCollisionTri(st->groundTri, acc[0]);
             AddVector(acc[0], acc[0], acc[1]);
             AddVector(acc[0], acc[0], acc[2]);
@@ -1520,13 +1520,13 @@ void Level25_UpdateActors(void) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
-          } else if (st->mode == 3) {
+          } else if (st->mode == COLLREST_FIND_TRI) {
             CopyVector(s184, &actor->posX);
             s184[2] += 0x400;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             if (FindGroundHeightBelow(s184, 0x1000) > 0) {
               st->groundTri = g_nLastCollisionHitChunkId;
-              st->mode = 2;
+              st->mode = COLLREST_ON_TRI;
             }
           }
 
@@ -2407,7 +2407,7 @@ void Level25_UpdateActors(void) {
       }
       if (actor->mode == 1 && g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
-        (*st)->mode = 0;
+        (*st)->mode = LANTERN_IDLE;
         ANIM_RESET(*st, 0);
       }
       continue;
@@ -2471,10 +2471,10 @@ void Level25_UpdateActors(void) {
       int i;
 
       switch (actor->mode) {
-      case 0:
+      case SHOT_FLY:
         if (actor->posX < 0x400 || actor->posY < 0x400 ||
             actor->posZ < 0x400) {
-          actor->mode = 1;
+          actor->mode = SHOT_BURST;
           continue;
         }
         {
@@ -2498,16 +2498,16 @@ void Level25_UpdateActors(void) {
         if (*st < 0xC8) {
           DispatchActorContactAtSphere(&actor->posX, 0x64, 0, ACTOR_HIT_CHARGE, actor, 0);
         }
-        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, 7) || TickCountdownByFrameDelta(st, 4) ||
+        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT) || TickCountdownByFrameDelta(st, 4) ||
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) ||
             CastRayWorldAndActors(svW, &actor->posX)) {
-          actor->mode = 1;
+          actor->mode = SHOT_BURST;
         }
         ZeroVector(svW);
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, svW);
         continue;
 
-      case 1:
+      case SHOT_BURST:
         for (i = 0; i < 16; i++) {
           svW[0] = RandomIntInRange(-0x5A, 0x5A);
           svW[1] = RandomIntInRange(-0x5A, 0x5A);
@@ -2554,7 +2554,7 @@ void Level25_UpdateActors(void) {
       case CRITTER_KNOCKED:
         if (st->speed >= 0x10) {
           st->speed -= 0xF;
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x2BC, 5);
+          MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);
@@ -2954,7 +2954,7 @@ void Level25_UpdateActors(void) {
       int distance;
       int flags;
       st = (WhirlwindState *)actor->state;
-      if (st->flags & 8) {
+      if (st->flags & WHIRL_F_GATED) {
         if (g_pActorListBase[st->idx].type == ACTOR_TYPE_KEY) {
           if (g_pActorListBase[st->idx].subMode == 0)
             break;
@@ -2969,10 +2969,10 @@ void Level25_UpdateActors(void) {
         }
       }
       flags = st->flags;
-      if (flags & 2) {
+      if (flags & WHIRL_F_IDLE) {
         if (st->timer != 0) {
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0)
-            st->flags = (st->flags & ~2) | 4;
+            st->flags = (st->flags & ~WHIRL_F_IDLE) | WHIRL_F_WOKEN;
           break;
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000 &&
@@ -2981,7 +2981,7 @@ void Level25_UpdateActors(void) {
         }
         break;
       }
-      if (flags & 0x10)
+      if (flags & WHIRL_F_MARK)
         actor->subMode = 1;
       PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->voiceRow);
       if ((GetRandomU32() & 1) == 0)
@@ -2996,7 +2996,7 @@ void Level25_UpdateActors(void) {
         SPY.triggerEvents |= SPYRO_EV_LIFT;
         SPY.requestTargetZ = actor->posZ + st->spanZ;
         CopyVector(SPY.firstContactPoint, &actor->posX);
-        if (st->flags & 1) {
+        if (st->flags & WHIRL_F_TARGET_CAM) {
           spyro->requestMask |= SPYRO_RQ_TARGET_CAMERA;
         } else {
           g_anCameraActiveTargetParams = g_anCameraParamMode2Front;
@@ -3008,9 +3008,9 @@ void Level25_UpdateActors(void) {
         st->timer = 0x78;
         break;
       }
-      if ((st->flags & ~1) == 4 && st->timer != 0 &&
+      if ((st->flags & ~WHIRL_F_TARGET_CAM) == WHIRL_F_WOKEN && st->timer != 0 &&
           TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-        st->flags = (st->flags & ~4) | 2;
+        st->flags = (st->flags & ~WHIRL_F_WOKEN) | WHIRL_F_IDLE;
       }
       break;
     }
@@ -3274,7 +3274,7 @@ void Level25_UpdateActors(void) {
           }
         }
         if (st->pushed == 0 &&
-            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, 0x86) != 0) {
+            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
           st->pushed = 1;
           g_anSpyroRequestVelocity.x = SPY.posX - actor->posX;
           g_nSpyroRequestVelocityZ = 0;

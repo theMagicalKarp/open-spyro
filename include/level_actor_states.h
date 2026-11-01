@@ -25,7 +25,7 @@ typedef struct EggRiseState {
 typedef struct CollectibleState {
   int vel[3];           /* 0x00 velocity, also read as a vector */
   short groundTri;      /* 0x0C collision triangle it rests on */
-  unsigned char mode;   /* 0x0E resting sub-state within ->subMode */
+  unsigned char mode;   /* 0x0E CollectRestMode while COLLECT_REST */
   unsigned char timer;  /* 0x0F */
   unsigned char bounce; /* 0x10 bounces left */
   signed char lean;     /* 0x11 body pitch */
@@ -50,7 +50,7 @@ typedef struct SuperflameGiverState {
   int timer;      /* 0x0C */
   int cam[3];     /* 0x10 camera anchor */
   int pad1C;      /* 0x1C */
-  int kind;       /* 0x20 */
+  int kind;       /* 0x20 SuperflameGiverKind */
   int count;      /* 0x24 */
   PathData *path; /* 0x28 */
   int cool;       /* 0x2C */
@@ -184,6 +184,11 @@ typedef struct BoulderState {
   unsigned char heading;   /* 0x0F */
 } BoulderState;
 
+/* Boulder / rock thrower flags (levels 21/22/27). */
+#define THROWER_F_ADVANCE 1  /* roused or Spyro in throw range: walks its path once (cleared on entry) */
+#define BTHROW_F_HOP 2       /* boulder thrower: jumps to path point 0 / 1 as Spyro enters box0 / box1 */
+#define ROCKTHROW_F_ESCORT 2 /* rock thrower: escorts its partner, who it rouses when knocked */
+
 /* Type 100 state (boulder thrower). */
 typedef struct BoulderThrowerState {
   int partner;     /* 0x00 index into g_pActorListBase, -1 none */
@@ -194,7 +199,7 @@ typedef struct BoulderThrowerState {
   int partnerSignal; /* 0x14 set to 1 by the partner (its state word 5) */
   int pad18[3];      /* 0x18 */
   FlyPath *path;   /* 0x24 */
-  int flags;         /* 0x28 flags */
+  int flags;         /* 0x28 THROWER_F_ADVANCE, BTHROW_F_HOP */
   int timer;         /* 0x2C timer */
   int heading;         /* 0x30 heading */
   int speed;         /* 0x34 speed */
@@ -255,7 +260,7 @@ typedef struct PathRunnerState {
   int target;          /* 0x18 index into g_pActorListBase, -1 none */
   int pathInit;        /* 0x1C */
   int camTimer;        /* 0x20 */
-  unsigned int mode;   /* 0x24 0/1 = which goal flag it drives */
+  unsigned int mode;   /* 0x24 PathRunnerRun: which goal flag it drives */
   int range;           /* 0x28 */
   int timer;           /* 0x2C */
   int init;            /* 0x30 */
@@ -445,17 +450,22 @@ typedef struct CometCannonState {
   char trails[1]; /* 0x28 */
 } CometCannonState;
 
+/* LungingGuardState / BigLungingGuardState flags (level 24). */
+#define LGUARD_F_ESCORT 1 /* cued: ESCORT (cleared on entry) */
+#define LGUARD_F_PACE 2   /* paces its path once Spyro is inside range2 */
+#define LGUARD_F_REARM 4  /* a blast re-arms its trigger instead of clearing it */
+
 /* Types 92/130 state: a guard whose animations start at `base`. */
 typedef struct LungingGuardState {
   int knock;           /* 0x00 knock-back speed */
   int heading;         /* 0x04 knock-back heading */
   int lift;            /* 0x08 */
   int base;            /* 0x0C first animation */
-  int kind;            /* 0x10 */
+  int kind;            /* 0x10 LungingGuardKind */
   int timer;           /* 0x14 */
   int vol[6];          /* 0x18 trigger box */
   unsigned char *path; /* 0x30 */
-  int flags;           /* 0x34 */
+  int flags;           /* 0x34 LGUARD_F_* */
   int init;            /* 0x38 */
   int range;           /* 0x3C <0 = waiting */
   int partner;         /* 0x40 index into g_pActorListBase */
@@ -472,11 +482,11 @@ typedef struct BigLungingGuardState {
   int heading;         /* 0x04 */
   int lift;            /* 0x08 */
   int base;            /* 0x0C */
-  int kind;            /* 0x10 */
+  int kind;            /* 0x10 LungingGuardKind */
   int timer;           /* 0x14 */
   int vol[6];          /* 0x18 */
   unsigned char *path; /* 0x30 */
-  int flags;           /* 0x34 */
+  int flags;           /* 0x34 LGUARD_F_* */
   int init;            /* 0x38 */
   int range;           /* 0x3C */
   int partner;         /* 0x40 */
@@ -509,7 +519,7 @@ typedef struct FallingChunkState {
 /* Type 136 state: a breakable wall made of four parts. */
 typedef struct BreakableWallState {
   Actor *part[4]; /* 0x00 */
-  int kind;       /* 0x10 1 = only a flame-charge breaks it */
+  int kind;       /* 0x10 BreakableWallKind */
   int init;       /* 0x14 */
   int lodHandle;        /* 0x18 */
 } BreakableWallState;
@@ -519,7 +529,7 @@ typedef struct RockThrowerState {
   int heading;          /* 0x00 knock-back heading */
   int speed;            /* 0x04 */
   int lift;             /* 0x08 */
-  int flags;            /* 0x0C bit 0 = watch, bit 1 = escort */
+  int flags;            /* 0x0C THROWER_F_ADVANCE, ROCKTHROW_F_ESCORT */
   int vol[6];           /* 0x10 trigger box */
   int timer;            /* 0x28 */
   int range;            /* 0x2C */
@@ -570,9 +580,12 @@ typedef struct FenceCaptainState {
   TriggerBox all2;         /* 0x14C */
 } FenceCaptainState;
 
+/* Burst/sweep/lob gunner flags (level 32). */
+#define GUNNER_F_ARMED 1 /* waits for Spyro to enter a trigger box, then ADVANCE */
+
 /* Type 145 state (level 32): gunner that fires bursts of type 156 shots. */
 typedef struct BurstGunnerState {
-  int flags;     /* 0x00 flags; bit 0 armed */
+  int flags;     /* 0x00 GUNNER_F_ARMED */
   int knockSpeed;     /* 0x04 knock-back speed */
   int knockHeading;     /* 0x08 knock-back heading */
   int knockZSpeed;     /* 0x0C */
@@ -592,7 +605,7 @@ typedef struct BurstGunnerState {
 /* Type 147 state (level 32): gunner that sweeps its aim between two yaw
  * limits. */
 typedef struct SweepGunnerState {
-  int flags;     /* 0x00 flags; bit 0 armed */
+  int flags;     /* 0x00 GUNNER_F_ARMED */
   void *path;   /* 0x04 path */
   int knockSpeed;     /* 0x08 knock-back speed */
   int knockHeading;     /* 0x0C knock-back heading */
@@ -613,7 +626,7 @@ typedef struct SweepGunnerState {
 
 /* Type 148 state (level 32): gunner that throws a held type 176 lob. */
 typedef struct LobGunnerState {
-  int flags;              /* 0x00 flags; bit 0 armed */
+  int flags;              /* 0x00 GUNNER_F_ARMED */
   int knockSpeed;              /* 0x04 knock-back speed */
   int knockHeading;              /* 0x08 knock-back heading */
   int knockZSpeed;              /* 0x0C */

@@ -472,7 +472,7 @@ void Level4_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -810,7 +810,7 @@ void Level4_UpdateActors(void) {
       }
 
       if (actor->drawn != 0 || toSpyro <= 0x2000 || actor->subMode != COLLECT_REST ||
-          st->mode != 0) {
+          st->mode != COLLREST_STILL) {
         switch (actor->subMode) {
         case COLLECT_SETTLE:
           /* Idle: sample the floor normal and face along it. */
@@ -834,8 +834,8 @@ void Level4_UpdateActors(void) {
 
         case COLLECT_REST: {
 
-          if (st->mode == 0) {
-          } else if (st->mode == 1) {
+          if (st->mode == COLLREST_STILL) {
+          } else if (st->mode == COLLREST_SNAP) {
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
             if (actor->type >= ACTOR_TYPE_GEM_1) {
@@ -849,7 +849,7 @@ void Level4_UpdateActors(void) {
                 st->roll = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
               }
             }
-          } else if (st->mode == 2) {
+          } else if (st->mode == COLLREST_ON_TRI) {
             UnpackWorldCollisionTri(st->groundTri, acc[0]);
             AddVector(acc[0], acc[0], acc[1]);
             AddVector(acc[0], acc[0], acc[2]);
@@ -859,13 +859,13 @@ void Level4_UpdateActors(void) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
-          } else if (st->mode == 3) {
+          } else if (st->mode == COLLREST_FIND_TRI) {
             CopyVector(svF, &actor->posX);
             svF[2] += 0x400;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             if (FindGroundHeightBelow(svF, 0x1000) > 0) {
               st->groundTri = g_nLastCollisionHitChunkId;
-              st->mode = 2;
+              st->mode = COLLREST_ON_TRI;
             }
           }
 
@@ -2336,7 +2336,7 @@ void Level4_UpdateActors(void) {
           actor->mode = APGUARD_HOLD;
           continue;
         }
-        PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 9, 0x14, 0xFF, 5);
+        PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 9, 0x14, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         break;
 
       case APGUARD_WATCH: {
@@ -2663,7 +2663,7 @@ void Level4_UpdateActors(void) {
                             ArcTan2(st->home[0] - actor->posX,
                                           st->home[1] - actor->posY, 0),
                             6, 0x14, 1) != 0) {
-            MoveActorAlongHeading(actor, 0x82, 0, 0, 5);
+            MoveActorAlongHeading(actor, 0x82, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           }
         }
         break;
@@ -2806,7 +2806,7 @@ void Level4_UpdateActors(void) {
         }
         if (st->speed > 0x1E) {
           st->speed -= 0x1E;
-          MoveActorAlongAngle(actor, st->angle, st->speed, 0, 0x12C, 1);
+          MoveActorAlongAngle(actor, st->angle, st->speed, 0, 0x12C, MOVE_LIFT);
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

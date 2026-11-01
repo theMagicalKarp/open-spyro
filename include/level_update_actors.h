@@ -834,7 +834,7 @@ typedef struct HelperState {
 /* Case 283 -- path guard. */
 typedef struct PathGuardState {
   PathData *path; /* 0x00 */
-  int flags;      /* 0x04 bit 1: on watch */
+  int flags;      /* 0x04 PATHGUARD_F_* */
   int dist;       /* 0x08 */
   int angle;      /* 0x0C heading offset */
   int timer;      /* 0x10 */
@@ -844,6 +844,10 @@ typedef struct PathGuardState {
   int speed;      /* 0x20 knock-back speed */
   int knock;      /* 0x24 knock-back heading */
 } PathGuardState;
+
+/* PathGuardState.flags. */
+#define PATHGUARD_F_RING 1 /* circles path node 0 opposite its partner */
+#define PATHGUARD_F_HOLD 2 /* saw Spyro: holds at `node`, throwing, until the timer runs out */
 
 /* Case 497 -- humming bell. */
 typedef struct HummingBellState {
@@ -1049,9 +1053,12 @@ typedef struct TetherState {
   int timer;   /* 0x00 */
   int speed;   /* 0x04 knockback speed */
   int heading; /* 0x08 knockback heading */
-  int link;    /* 0x0C walker to follow (index into g_pActorListBase), or -1 */
+  int link;    /* 0x0C walker to follow (index into g_pActorListBase), or -1;
+                * a sentinel powering a chain of guards reads it as the next
+                * guard (ending the chain when that isn't a tethered guard) */
   int owner;   /* 0x10 actor whose loss frees this one */
-  int mode;    /* 0x14 */
+  int mode;    /* 0x14 TetherCommand */
+  int stop;    /* 0x18 node of the sentinel's path where it powers this guard */
 } TetherState;
 
 typedef struct LeadState {
@@ -1064,7 +1071,7 @@ typedef struct KeeperState {
   int heading; /* 0x04 knockback heading */
   int count;   /* 0x08 idle countdown */
   int link;    /* 0x0C linked guard (index into g_pActorListBase), or -1 */
-  int mode;    /* 0x10 command passed to the guard */
+  int mode;    /* 0x10 TetherCommand passed to the guard */
   int baseX;   /* 0x14 post position */
   int baseY;   /* 0x18 */
 } KeeperState;
@@ -1074,7 +1081,7 @@ typedef struct SentinelState {
   int count;        /* 0x04 bolts fired this volley */
   int link;         /* 0x08 next guard in the chain, or -1 */
   PathData *path;   /* 0x0C */
-  int flags;        /* 0x10 bit 0 alerted, 1 on patrol, 2 at end, 3 aim */
+  int flags;        /* 0x10 SENTINEL_F_* */
   int heading;      /* 0x14 */
   int range;        /* 0x18 */
   int knockTimer;   /* 0x1C */
@@ -1082,12 +1089,12 @@ typedef struct SentinelState {
   int knockSpeed;   /* 0x24 */
 } SentinelState;
 
-typedef struct ChainState {
-  int pad00[3];
-  int link;  /* 0x0C next in chain */
-  int pad10[2];
-  int stop;  /* 0x18 path node where it waits */
-} ChainState;
+/* SentinelState.flags. */
+#define SENTINEL_F_ALERTED 1 /* has seen Spyro: TRACK rather than ALERT */
+#define SENTINEL_F_PATROL 2  /* walks its waypoints instead of standing */
+#define SENTINEL_F_AT_END 4  /* reached its path's end */
+#define SENTINEL_F_AIM 8     /* standing: watches for Spyro inside `range` */
+
 
 extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist, int cap, int contactRadius, int maxTurn, int stallAngle, int f);
 
@@ -1169,7 +1176,7 @@ typedef struct RunnerState {
   int pad10;
   int heading;     /* 0x14 knockback heading */
   int timer;       /* 0x18 */
-  int mode;        /* 0x1C */
+  int mode;        /* 0x1C TwoPathRunnerArm */
   int pad20;
   int which;       /* 0x24 path in use, 1 or 2 */
   int range;       /* 0x28 in 1024s */
@@ -1185,7 +1192,7 @@ typedef struct VillagerState {
   int chunkAnim;             /* 0x04 world chunk-anim handle (GetWorldChunkAnimState) */
   int friend;          /* 0x08 actor it faces / sparkles at, -1 = none */
   int link;            /* 0x0C partner actor */
-  int mode;            /* 0x10 */
+  int mode;            /* 0x10 VillagerRole */
   int timer;           /* 0x14 voice timer */
   int timerLong;       /* 0x18 */
   int timerShort;      /* 0x1C */
@@ -1361,7 +1368,7 @@ typedef struct LootVortexState {
   unsigned char spark;  /* 0x03 0xFF = none */
   int chunkAnim;              /* 0x04 world chunk-anim handle (GetWorldChunkAnimState) */
   int pad[6];           /* 0x08 trigger volume */
-  int mode;             /* 0x20 */
+  int mode;             /* 0x20 LootVortexStage */
   int key;              /* 0x24 actor index */
   int target;           /* 0x28 actor index */
   int seen;             /* 0x2C 1/2 picks g_nLevelVortexSeen1/2 (read as g_nCutsceneId[seen]), 0 = none */

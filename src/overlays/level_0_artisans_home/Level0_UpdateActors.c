@@ -311,7 +311,7 @@ void Level0_UpdateActors(void) {
         }
 
         if (TurnActorYawTowardAngle(actor, st->heading, 6, 0x14, 1) != 0) {
-          if (MoveActorAlongHeading(actor, st->speed, 0x12C, 0x12C, 0x15) != 0) {
+          if (MoveActorAlongHeading(actor, st->speed, 0x12C, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0) {
             st->successCount++;
           } else {
             st->successCount = 0;
@@ -335,7 +335,7 @@ void Level0_UpdateActors(void) {
       case PATROLLER_KNOCKED: {
         if (st->speed >= 0x10) {
           st->speed -= 0xF;
-          MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x2BC, 5);
+          MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
 
         if (g_nActorAnimDone != 0) {
@@ -447,7 +447,7 @@ void Level0_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -539,7 +539,7 @@ void Level0_UpdateActors(void) {
 
       if (g_pActorListBase[st->idx].mode == 10) {
         if ((actor->mode & 1) == 0) {
-          actor->mode = 1;
+          actor->mode = PSWITCH_DOWN;
           ANIM_RESET(actor, 1);
         }
         break;
@@ -547,7 +547,7 @@ void Level0_UpdateActors(void) {
 
       if (g_pActorListBase[st->idx].mode == 11) {
         if ((actor->mode & 1) != 0) {
-          actor->mode = 0;
+          actor->mode = PSWITCH_UP;
           ANIM_RESET(actor, 0);
         }
         break;
@@ -563,10 +563,10 @@ void Level0_UpdateActors(void) {
           PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[0], actor, SFX_MODE_3D,
                         &actor->voiceRow);
         }
-        actor->mode = 1;
+        actor->mode = PSWITCH_DOWN;
         ANIM_RESET(actor, 1);
       } else if ((actor->mode & 1) != 0) {
-        actor->mode = 0;
+        actor->mode = PSWITCH_UP;
         ANIM_RESET(actor, 0);
       }
       break;
@@ -1536,7 +1536,7 @@ void Level0_UpdateActors(void) {
         }
 
         if (ABS2(angleDelta) < 0x20) {
-          MoveActorAlongHeading(actor, 0x40, 0x200, 0x200, 0x27);
+          MoveActorAlongHeading(actor, 0x40, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
         }
 
         if (angleDelta < -8) {
@@ -1590,7 +1590,7 @@ void Level0_UpdateActors(void) {
         }
 
         if (ABS2(angleDelta) < 0x20) {
-          MoveActorAlongHeading(actor, 0x82, 0x200, 0x200, 0x27);
+          MoveActorAlongHeading(actor, 0x82, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
         }
 
         if (angleDelta < -8) {
@@ -2028,9 +2028,9 @@ void Level0_UpdateActors(void) {
 
     /* Talking dragon: when Spyro faces it up close, start its dialogue. */
     case ACTOR_TYPE_HOME_TALKER: {
-      if (actor->mode == 0) {
+      if (actor->mode == TALKER_REARM) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1000) {
-          actor->mode = 1;
+          actor->mode = TALKER_READY;
         }
       } else if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
                   SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_CHARGE) &&
@@ -2043,7 +2043,7 @@ void Level0_UpdateActors(void) {
                                ArcTan2(SPY.posX - actor->posX,
                                              SPY.posY - actor->posY, 0)) <
                      0x28) {
-        actor->mode = 0;
+        actor->mode = TALKER_REARM;
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         ResetSpyroLinearMotion();
         ZeroVector(&SPY.headLook);
@@ -2407,7 +2407,7 @@ void Level0_UpdateActors(void) {
       int distance;
       int flags;
       st = (WhirlwindState *)actor->state;
-      if (st->flags & 8) {
+      if (st->flags & WHIRL_F_GATED) {
         if (g_pActorListBase[st->idx].type == ACTOR_TYPE_KEY) {
           if (g_pActorListBase[st->idx].subMode == 0)
             break;
@@ -2422,10 +2422,10 @@ void Level0_UpdateActors(void) {
         }
       }
       flags = st->flags;
-      if (flags & 2) {
+      if (flags & WHIRL_F_IDLE) {
         if (st->timer != 0) {
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0)
-            st->flags = (st->flags & ~2) | 4;
+            st->flags = (st->flags & ~WHIRL_F_IDLE) | WHIRL_F_WOKEN;
           break;
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000 &&
@@ -2434,7 +2434,7 @@ void Level0_UpdateActors(void) {
         }
         break;
       }
-      if (flags & 0x10)
+      if (flags & WHIRL_F_MARK)
         actor->subMode = 1;
       PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->voiceRow);
       if ((GetRandomU32() & 1) == 0)
@@ -2449,7 +2449,7 @@ void Level0_UpdateActors(void) {
         SPY.triggerEvents |= SPYRO_EV_LIFT;
         SPY.requestTargetZ = actor->posZ + st->spanZ;
         CopyVector(SPY.firstContactPoint, &actor->posX);
-        if (st->flags & 1) {
+        if (st->flags & WHIRL_F_TARGET_CAM) {
           spyro->requestMask |= SPYRO_RQ_TARGET_CAMERA;
         } else {
           g_anCameraActiveTargetParams = g_anCameraParamMode2Front;
@@ -2461,9 +2461,9 @@ void Level0_UpdateActors(void) {
         st->timer = 0x78;
         break;
       }
-      if ((st->flags & ~1) == 4 && st->timer != 0 &&
+      if ((st->flags & ~WHIRL_F_TARGET_CAM) == WHIRL_F_WOKEN && st->timer != 0 &&
           TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-        st->flags = (st->flags & ~4) | 2;
+        st->flags = (st->flags & ~WHIRL_F_WOKEN) | WHIRL_F_IDLE;
       }
       break;
     }
@@ -2509,30 +2509,30 @@ void Level0_UpdateActors(void) {
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
     case ACTOR_TYPE_CHECKPOINT: {
       switch (actor->mode) {
-      case 0: {
+      case CHECKPT_REARM: {
         if (ApproxDist2D(&actor->posX, &SPY.posX) > 2560) {
-          actor->mode = 1;
+          actor->mode = CHECKPT_ARMED;
         }
         break;
       }
 
-      case 1: {
+      case CHECKPT_ARMED: {
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 896 &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 512) {
 
           SetSpawnAnchorFromActor(actor, actor->rotZ);
-          actor->mode = 2;
+          actor->mode = CHECKPT_FLASH;
           actor->anim = 1;
           actor->subMode = 0;
         }
         break;
       }
 
-      case 2: {
+      case CHECKPT_FLASH: {
         actor->subMode += g_nFrameStep;
 
         if (actor->subMode >= 0x30) {
-          actor->mode = 0;
+          actor->mode = CHECKPT_REARM;
           actor->anim = 0;
         }
         break;
@@ -2713,9 +2713,9 @@ void Level0_UpdateActors(void) {
 
         if (ABS2(nextAngle) < 0x20) {
           if (actor->mode == FLOCK_BOLT) {
-            MoveActorAlongHeading(actor, 0xD2, 0x200, 0x200, 0x27);
+            MoveActorAlongHeading(actor, 0xD2, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
           } else {
-            MoveActorAlongHeading(actor, 0x60, 0x200, 0x200, 0x27);
+            MoveActorAlongHeading(actor, 0x60, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
           }
         }
 
@@ -3086,7 +3086,7 @@ void Level0_UpdateActors(void) {
 
       rider = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
       if (st->rideMode == 1) {
-        ((CollectibleState *)rider->state)->mode = 1;
+        ((CollectibleState *)rider->state)->mode = COLLREST_SNAP;
       }
 
       actor->soundRange = 0x20;

@@ -460,7 +460,7 @@ void Level9_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -804,7 +804,7 @@ void Level9_UpdateActors(void) {
       }
 
       if (actor->drawn != 0 || toSpyro <= 0x2000 || actor->subMode != COLLECT_REST ||
-          st->mode != 0) {
+          st->mode != COLLREST_STILL) {
         switch (actor->subMode) {
         case COLLECT_SETTLE:
           /* Idle: sample the floor normal and face along it. */
@@ -828,8 +828,8 @@ void Level9_UpdateActors(void) {
 
         case COLLECT_REST: {
 
-          if (st->mode == 0) {
-          } else if (st->mode == 1) {
+          if (st->mode == COLLREST_STILL) {
+          } else if (st->mode == COLLREST_SNAP) {
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
             if (actor->type >= ACTOR_TYPE_GEM_1) {
@@ -843,7 +843,7 @@ void Level9_UpdateActors(void) {
                 st->roll = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
               }
             }
-          } else if (st->mode == 2) {
+          } else if (st->mode == COLLREST_ON_TRI) {
             UnpackWorldCollisionTri(st->groundTri, acc[0]);
             AddVector(acc[0], acc[0], acc[1]);
             AddVector(acc[0], acc[0], acc[2]);
@@ -853,13 +853,13 @@ void Level9_UpdateActors(void) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
-          } else if (st->mode == 3) {
+          } else if (st->mode == COLLREST_FIND_TRI) {
             CopyVector(svF, &actor->posX);
             svF[2] += 0x400;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             if (FindGroundHeightBelow(svF, 0x1000) > 0) {
               st->groundTri = g_nLastCollisionHitChunkId;
-              st->mode = 2;
+              st->mode = COLLREST_ON_TRI;
             }
           }
 
@@ -2069,7 +2069,7 @@ void Level9_UpdateActors(void) {
 
       case YAK_KNOCKED:
         if (st->speed > 0) {
-          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 1);
+          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, MOVE_LIFT);
           st->speed -= 0x10;
         }
         if (g_nActorAnimDone != 0) {
@@ -2095,8 +2095,8 @@ void Level9_UpdateActors(void) {
     case ACTOR_TYPE_OVERHEAD_THROWER: {
       int *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != 1) {
-        ENTER_POSE(actor, 1);
+      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != OTHROW_HIT) {
+        ENTER_POSE(actor, OTHROW_HIT);
       }
       if (*st >= 0) {
         if (g_pActorListBase[*st].mode >= ACTOR_MODE_DORMANT) {
@@ -2110,7 +2110,7 @@ void Level9_UpdateActors(void) {
           g_pActorListBase[*st].rotZ += 8;
         }
       }
-      if (actor->mode == 1) {
+      if (actor->mode == OTHROW_HIT) {
         if (*st >= 0) {
           ThrownSnowballState *ball = g_pActorListBase[*st].state;
           int ang = ArcTan2(spy->posX - actor->posX,
@@ -2126,7 +2126,7 @@ void Level9_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, OTHROW_HOLD);
         }
       }
       break;
@@ -2147,13 +2147,13 @@ void Level9_UpdateActors(void) {
         DespawnActorRecord(actor);
         continue;
       }
-      if (RaiseSpyroTriggerInRadius(&actor->posX, 0x80, 1) != 0) {
+      if (RaiseSpyroTriggerInRadius(&actor->posX, 0x80, SPYRO_EV_HIT) != 0) {
         PlayActorMeshVoice(actor, 0, 0);
         g_pfnLevelEmitParticles(0x10, EMIT_JITTER_BURST, &actor->posX, 0);
         DespawnActorRecord(actor);
         continue;
       }
-      g_pfnLevelEmitParticles(1, 0x4B, &actor->posX, 0);
+      g_pfnLevelEmitParticles(1, EMIT_JITTER_SPARKLE, &actor->posX, 0);
       break;
     }
 
@@ -2207,7 +2207,7 @@ void Level9_UpdateActors(void) {
             actor, &st->path->nodes[0].x, st->dist,
             ArcTan2(spy->posX - st->path->nodes[st->path->cur].x,
                           spy->posY - st->path->nodes[st->path->cur].y, 0),
-            8, st->turn1, 0xE, 0x80, st->blockHeadingA, st->blockHeadingB, 0, 0, 4);
+            8, st->turn1, 0xE, 0x80, st->blockHeadingA, st->blockHeadingB, 0, 0, MOVE_FOLLOW_FLOOR);
         if (r == 0x100 || r < 0x40) {
           int ang = WrapAddAngle8(actor->rotZ, 0xE0);
 
@@ -2247,7 +2247,7 @@ void Level9_UpdateActors(void) {
           st->throwT = 0x1E;
         }
         if (st->speed != 0) {
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0x12C, 0x12C, 1);
+          MoveActorAlongAngle(actor, st->knock, st->speed, 0x12C, 0x12C, MOVE_LIFT);
           st->speed -= 0x14;
           if (st->speed < 0) {
             st->speed = 0;
@@ -2262,7 +2262,7 @@ void Level9_UpdateActors(void) {
 
       case SNOWTHROW_KNOCKED:
         if (st->speed != 0) {
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0x12C, 0x12C, 1);
+          MoveActorAlongAngle(actor, st->knock, st->speed, 0x12C, 0x12C, MOVE_LIFT);
           st->speed -= 0xC;
           if (st->speed < 0) {
             st->speed = 0;
@@ -2281,7 +2281,7 @@ void Level9_UpdateActors(void) {
             actor, &st->path->nodes[0].x, st->dist,
             ArcTan2(st->path->nodes[st->path->cur].x - spy->posX,
                           st->path->nodes[st->path->cur].y - spy->posY, 0),
-            8, st->turn4, 0xE, 0x80, st->blockHeadingA, st->blockHeadingB, 0, 0, 4);
+            8, st->turn4, 0xE, 0x80, st->blockHeadingA, st->blockHeadingB, 0, 0, MOVE_FOLLOW_FLOOR);
         if (r < 0xA) {
           st->timer = 0x5A;
           ANIM_GO(actor, 0);

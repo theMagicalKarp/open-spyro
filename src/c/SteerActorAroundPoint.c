@@ -117,7 +117,7 @@ int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face,
   } else if (g_nActorFrameDelta == 4) {
     speed = speed * 2;
   }
-  if (flags & 8) {
+  if (flags & MOVE_STRAFE) {
     TurnActorYawTowardAngle(
         actor, ArcTan2(tgt[0] - actor->posX, tgt[1] - actor->posY, 0), turnStep,
         0, 0);

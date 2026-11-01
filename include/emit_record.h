@@ -241,6 +241,8 @@ enum EmitEffect {
   EMIT_SLOWING_SPARK = 0xE,  /* grey spark at the velocity effectArg points to, slowing in x/y and
                               * fading with camera distance; 0x80 frames */
   EMIT_JITTER_BURST = 0xF,   /* EMIT_JITTER_DRIFT thrown out at a random velocity */
+  EMIT_JITTER_SPARKLE = 0x4B, /* level 9: white dot within 0x1F of pos, no velocity, life 4;
+                              * advanced like EMIT_JITTER_BURST (the thrown snowball's trail) */
   EMIT_SMOKE_PUFF = 0x13,    /* grey puff that rises, slows, grows and fades with camera
                               * distance; 0x80 frames */
   EMIT_DRIFTING_MOTE = 0x16, /* blue mote within 300 of pos drifting along heading effectArg,

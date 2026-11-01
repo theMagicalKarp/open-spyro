@@ -448,7 +448,7 @@ void Level9_AdvanceEmitList(int step) {
       break;
     }
 
-    case 0x4B: {
+    case EMIT_JITTER_SPARKLE: {
       int a[3];
       int b[3];
       int rq;

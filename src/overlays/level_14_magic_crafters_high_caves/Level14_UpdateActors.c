@@ -149,10 +149,14 @@ typedef struct ChunkOperatorState {
  * bolts at him. */
 typedef struct BoltCasterState {
   int target; /* 0x00 pool index of the actor it fires at, -1 = none */
-  int flags;  /* 0x04 bit 0: woken, bit 1: Spyro in range */
+  int flags;  /* 0x04 BCASTER_F_* */
   int timer;  /* 0x08 */
   int count;  /* 0x0C bolts fired */
 } BoltCasterState;
+
+/* BoltCasterState.flags. */
+#define BCASTER_F_WOKEN 1    /* has noticed Spyro once: goes straight to AIM */
+#define BCASTER_F_IN_RANGE 2 /* Spyro in range: keeps aiming and casting */
 
 
 /* Type 305: a critter that walks one of three paths and flees Spyro. */
@@ -161,8 +165,7 @@ typedef struct FleeingWalkerState {
   PathData *pathA; /* 0x04 */
   PathData *pathB; /* 0x08 */
   PathData *pathC; /* 0x0C */
-  int mode;        /* 0x10 bits 0-1 path, 2 fleeing, 3 Spyro close, 4 hold,
-                      5 restart, 6 pause, 7 reverse */
+  int mode;        /* 0x10 FWALK_F_* flags */
   int vel[3];      /* 0x14 */
   int timer;       /* 0x20 */
   int heading;     /* 0x24 */
@@ -170,6 +173,15 @@ typedef struct FleeingWalkerState {
   int speed;       /* 0x2C */
   int range;       /* 0x30 */
 } FleeingWalkerState;
+
+/* FleeingWalkerState.mode flags. */
+#define FWALK_F_PATH 3       /* bits 0-1: furthest path reached (0 = A .. 3) */
+#define FWALK_F_HOME 4       /* Spyro at path A's end: walk back to it */
+#define FWALK_F_CLOSE 8      /* Spyro close (same height, within range): flee */
+#define FWALK_F_HOLD 0x10    /* Spyro hurt: stand still for the timer */
+#define FWALK_F_RESTART 0x20 /* rewind the path on the next home tick */
+#define FWALK_F_PAUSE 0x40   /* paused at a path end */
+#define FWALK_F_REVERSE 0x80 /* walking the path backwards */
 
 #define PATH_END(p) (&(p)->nodes[(p)->count - 1].x)
 #define PATH_CUR(p) (&(p)->nodes[(p)->cur].x)
@@ -181,9 +193,7 @@ typedef struct Cam5 {
 
 /* Type 109: flying carrier. Follows Spyro and can be ridden. */
 typedef struct CarrierState {
-  int mode;        /* 0x00 bits 0-1 riding (1/2 = side), 2 to dest, 3 path0,
-                      4 follow Spyro, 5 return along cur, 6 back down cur,
-                      7 camera hold; 0x2C = carried */
+  int mode;        /* 0x00 CARRIER_F_* flags */
   PathData *pathA; /* 0x04 */
   PathData *pathB; /* 0x08 */
   PathData *pathC; /* 0x0C */
@@ -195,10 +205,24 @@ typedef struct CarrierState {
   int vz;          /* 0x2C */
 } CarrierState;
 
+/* CarrierState.mode flags. With CARRIER_F_SIDE clear the carrier is the
+ * lead: it flies to Spyro (PICKUP), lifts him (SPYRO_ST_LIFT) along the
+ * nearest path to its end (TO_PATH), on to `dest` (TO_DEST) and along path0
+ * (PATH0), then back-tracks (BACK). Escorts (SIDE 1/2) fly beside Spyro while
+ * their lead (`rider`) is carrying. */
+#define CARRIER_F_SIDE 3          /* escort side: 1 left, 2 right; 0 = lead */
+#define CARRIER_F_TO_DEST 4       /* carrying Spyro to `dest`, then PATH0 */
+#define CARRIER_F_PATH0 8         /* carrying Spyro along path0, then BACK | CAM_HOLD */
+#define CARRIER_F_PICKUP 0x10     /* flying to Spyro, then TO_PATH / TO_DEST */
+#define CARRIER_F_TO_PATH 0x20    /* carrying Spyro along the nearest path, then TO_DEST */
+#define CARRIER_F_BACK 0x40       /* back down `cur`, then home to `dest` */
+#define CARRIER_F_CAM_HOLD 0x80   /* holds the camera while Spyro is still airborne */
+#define CARRIER_F_CARRYING (CARRIER_F_TO_DEST | CARRIER_F_PATH0 | CARRIER_F_TO_PATH)
+
 /* Turn toward `h`; walk at `d`, slowed by the remaining turn. */
 #define STEER(a, h, d, k1, k2, sh)                                             \
   if (TurnActorYawTowardAngle(a, h, k1, k2, 1) != 0) {                                   \
-    MoveActorAlongHeading(a, d, 0, 0x200, 0x20);                                       \
+    MoveActorAlongHeading(a, d, 0, 0x200, MOVE_SLIDE);                                       \
   } else {                                                                     \
     h = ((h) - (a)->rotZ) & 0xFF;                                             \
     if (h > 0x80) {                                                            \
@@ -206,7 +230,7 @@ typedef struct CarrierState {
     }                                                                          \
     d -= ABS2(h) << (sh);                                                      \
     if (d > 0) {                                                               \
-      MoveActorAlongHeading(a, d, 0, 0x200, 0x20);                                     \
+      MoveActorAlongHeading(a, d, 0, 0x200, MOVE_SLIDE);                                     \
     }                                                                          \
   }
 
@@ -555,7 +579,7 @@ void Level14_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -692,7 +716,7 @@ void Level14_UpdateActors(void) {
           if (spd > 0xF0) {
             spd = 0xF0;
           }
-          if (actor->subMode == 0) {
+          if (actor->subMode == THIEFSUB_ORBIT) {
             int home = ArcTan2(st->path->nodes[0].x - actor->posX,
                                      st->path->nodes[0].y - actor->posY, 0);
 
@@ -701,7 +725,7 @@ void Level14_UpdateActors(void) {
                             ArcTan2(actor->posX - spy->posX,
                                           actor->posY - SPY.posY, 0),
                             8, 0, 0);
-              MoveActorAlongHeading(actor, spd, 0, 0, 5);
+              MoveActorAlongHeading(actor, spd, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             } else {
               int lim = 10;
               int r;
@@ -717,7 +741,7 @@ void Level14_UpdateActors(void) {
               if (AbsAngleDelta8(a, b) > lim &&
                   ApproxDist2D(&actor->posX, &spy->posX) < 0x3000) {
                 r = SteerActorAroundPoint(actor, &st->path->nodes[0].x, 0x1800, a, 5,
-                                  spd, 0xE, 0x14, 0xFF, 0xFF, 0, 0, 4);
+                                  spd, 0xE, 0x14, 0xFF, 0xFF, 0, 0, MOVE_FOLLOW_FLOOR);
               }
               if (r > 0x5A) {
                 st->stuck++;
@@ -734,7 +758,7 @@ void Level14_UpdateActors(void) {
                   AbsAngleDelta8(home, ArcTan2(spy->posX - actor->posX,
                                                     spy->posY - actor->posY,
                                                     0)) > 0x20) {
-                actor->subMode = 1;
+                actor->subMode = THIEFSUB_BREAK;
               }
             }
           } else {
@@ -744,12 +768,12 @@ void Level14_UpdateActors(void) {
                                   st->path->nodes[0].y - actor->posY, 0);
 
             TurnActorYawTowardAngle(actor, a, 8, 0, 0);
-            MoveActorAlongHeading(actor, spd, 0, 0, 5);
+            MoveActorAlongHeading(actor, spd, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             if (AbsAngleDelta8(a, b) > 0x50) {
-              actor->subMode = 0;
+              actor->subMode = THIEFSUB_ORBIT;
             }
             if (ApproxDist2D(&actor->posX, &st->path->nodes[0].x) > 0x1800) {
-              actor->subMode = 0;
+              actor->subMode = THIEFSUB_ORBIT;
             }
           }
         } else if (st->mode == THIEFKIND_LEDGE) {
@@ -848,7 +872,7 @@ void Level14_UpdateActors(void) {
                                     st->path->nodes[st->path->cur].y - actor->posY,
                                     0),
                       6, 0, 0);
-        MoveActorAlongHeading(actor, 0x96, 0, 0, 1);
+        MoveActorAlongHeading(actor, 0x96, 0, 0, MOVE_LIFT);
         if (ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x) <
             0x100) {
           actor->mode = THIEF_PERCH;
@@ -890,7 +914,7 @@ void Level14_UpdateActors(void) {
                             st->path->nodes[k].y - actor->posY, 0);
           if (ApproxDist2D(&actor->posX, &st->path->nodes[k].x) > 0x100) {
             if (TurnActorYawTowardAngle(actor, h, 8, 0x14, 1) != 0) {
-              MoveActorAlongHeading(actor, 0x96, 0, 0, 5);
+              MoveActorAlongHeading(actor, 0x96, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             }
           } else if (ApproxDist2D(&spy->posX, &st->path->nodes[6].x) < 0x800 ||
                      ApproxDist2D(&spy->posX, &st->path->nodes[7].x) < 0x800) {
@@ -910,7 +934,7 @@ void Level14_UpdateActors(void) {
                                     st->path->nodes[0].y - actor->posY, 0),
                       6, 0, 0);
         if (ApproxDist2D(&actor->posX, &st->path->nodes[0].x) > 0x100) {
-          MoveActorAlongHeading(actor, 0x82, 0, 0, 1);
+          MoveActorAlongHeading(actor, 0x82, 0, 0, MOVE_LIFT);
         }
         actor->posZ += st->vz;
         st->vz -= 0x14;
@@ -944,7 +968,7 @@ void Level14_UpdateActors(void) {
           }
         }
         if (st->knock != 0) {
-          MoveActorAlongAngle(actor, st->heading, st->knock, 0, 0x12C, 5);
+          MoveActorAlongAngle(actor, st->heading, st->knock, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           st->knock -= 0x10;
           if (st->knock < 0) {
             st->knock = 0;
@@ -962,7 +986,7 @@ void Level14_UpdateActors(void) {
       case THIEF_LEDGE_RUN:
         ANIM_GO(actor, 1);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0xF0, 0, 8, sixteen, 0xFF,
-                          5) == 0x103) {
+                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x103) {
           actor->mode = THIEF_LEDGE_WAIT;
           continue;
         }
@@ -984,7 +1008,7 @@ void Level14_UpdateActors(void) {
       case THIEF_LEDGE_RUN_ON:
         ANIM_GO(actor, 1);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0xDA, 0, 0xA, 0x30, 0xFF,
-                          5) == 0x101) {
+                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x101) {
           actor->mode = THIEF_LEDGE_TAUNT;
           continue;
         }
@@ -1091,7 +1115,7 @@ void Level14_UpdateActors(void) {
             st->path->cur = next;
           }
         }
-        r = PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x1E, 0xFF, 5);
+        r = PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x1E, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         if (r & 0x100) {
           if ((r & ~0x100) ==
               (st->node - st->path->reversed) % st->path->count) {
@@ -1114,7 +1138,7 @@ void Level14_UpdateActors(void) {
           st->speed = st->path->nodes[st->path->cur].speed;
         }
         if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, 0xFF,
-                          5) == 0x10B) {
+                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x10B) {
           st->vz = 0x96;
           actor->mode = THIEF_CLIMB_HOP;
           continue;
@@ -1135,7 +1159,7 @@ void Level14_UpdateActors(void) {
                                     0),
                       6, 0, 0);
         if (d > 0x100) {
-          MoveActorAlongHeading(actor, 0x96, 0, 0, 1);
+          MoveActorAlongHeading(actor, 0x96, 0, 0, MOVE_LIFT);
         }
         if (d < 0x100 && actor->posZ == g) {
           if (++st->path->cur == 0xD) {
@@ -1187,7 +1211,7 @@ void Level14_UpdateActors(void) {
                                     0),
                       6, 0, 0);
         if (d > 0x100) {
-          MoveActorAlongHeading(actor, 0x96, 0, 0, 1);
+          MoveActorAlongHeading(actor, 0x96, 0, 0, MOVE_LIFT);
         }
         if (d < 0x100 && actor->posZ == g) {
           st->path->reversed = -st->path->reversed;
@@ -1214,7 +1238,7 @@ void Level14_UpdateActors(void) {
           SnapActorToGround(actor);
         }
         if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, 0xFF,
-                          5) == st->path->count + 0xFF) {
+                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == st->path->count + 0xFF) {
           st->path->reversed = -st->path->reversed;
           st->path->cur = 1;
           actor->mode = THIEF_IDLE;
@@ -1483,7 +1507,7 @@ void Level14_UpdateActors(void) {
                                             actor->posY,
                                         0),
                           8, 0x20, 1) != 0) {
-          MoveActorAlongHeading(actor, 0x60, 0x200, 0x200, 0x27);
+          MoveActorAlongHeading(actor, 0x60, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
         }
         break;
 
@@ -1946,9 +1970,9 @@ void Level14_UpdateActors(void) {
       int d;
       int h;
 
-      switch (st->mode & 3) {
+      switch (st->mode & CARRIER_F_SIDE) {
       case 0:
-        if (st->mode & 0x80) {
+        if (st->mode & CARRIER_F_CAM_HOLD) {
           if (g_nSpyroAirborneFrames != 0) {
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
             if (g_nSpyroState == SPYRO_ST_08) {
@@ -1967,10 +1991,10 @@ void Level14_UpdateActors(void) {
             g_nCameraActiveTargetPitchBias = g_anCameraParamMode2Front.w[4];
             g_nCameraActiveTargetYawBias = g_anCameraParamMode2Front.w[5];
           } else {
-            st->mode &= ~0x80;
+            st->mode &= ~CARRIER_F_CAM_HOLD;
           }
         }
-        if (st->mode & 0x2C) {
+        if (st->mode & CARRIER_F_CARRYING) {
           int *cf = &g_dwSpyroRequestMask;
 
           *cf = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_YAW | SPYRO_RQ_VEL_Z | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
@@ -2003,7 +2027,7 @@ void Level14_UpdateActors(void) {
           g_anCameraActiveTargetParams.w[3] = g_anCameraParamMode2Front.w[3];
           g_anCameraActiveTargetParams.w[4] = g_anCameraParamMode2Front.w[4];
           g_anCameraActiveTargetParams.w[5] = g_anCameraParamMode2Front.w[5];
-        } else if (st->mode & 0x10) {
+        } else if (st->mode & CARRIER_F_PICKUP) {
           int *cf = &g_dwSpyroRequestMask;
 
           *cf = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_YAW | SPYRO_RQ_VEL_Z | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
@@ -2031,10 +2055,10 @@ void Level14_UpdateActors(void) {
           g_anCameraActiveTargetParams.w[5] = g_anCameraParamMode2Front.w[5];
         }
 
-        if (st->mode & 4) {
+        if (st->mode & CARRIER_F_TO_DEST) {
           d = ApproxDist2D(&actor->posX, st->dest);
           if (d < 0x200) {
-            st->mode = (st->mode & ~4) | 8;
+            st->mode = (st->mode & ~CARRIER_F_TO_DEST) | CARRIER_F_PATH0;
             (st->cur = st->path0)->cur = 0;
             st->vz = 0;
             continue;
@@ -2060,12 +2084,12 @@ void Level14_UpdateActors(void) {
           continue;
         }
 
-        if (st->mode & 8) {
+        if (st->mode & CARRIER_F_PATH0) {
           d = 0x140;
           h = ArcTan2(NODE_PT(st->cur)[0] - actor->posX,
                             NODE_PT(st->cur)[1] - actor->posY, 0);
           if (TurnActorYawTowardAngle(actor, h, 8, 0x30, 1) != 0) {
-            MoveActorAlongHeading(actor, 0x140, 0, 0x200, 0x20);
+            MoveActorAlongHeading(actor, 0x140, 0, 0x200, MOVE_SLIDE);
           } else {
             h = (h - actor->rotZ) & 0xFF;
             if (h > 0x80) {
@@ -2073,7 +2097,7 @@ void Level14_UpdateActors(void) {
             }
             d -= ABS2(h) << 4;
             if (d > 0) {
-              MoveActorAlongHeading(actor, d, 0, 0x200, 0x20);
+              MoveActorAlongHeading(actor, d, 0, 0x200, MOVE_SLIDE);
             }
           }
           d = (NODE_PT(st->cur)[2] - actor->posZ) >> 2;
@@ -2095,7 +2119,7 @@ void Level14_UpdateActors(void) {
           if (ApproxDist2D(&actor->posX, PATH_CUR(st->cur)) < 0x200 &&
               ++st->cur->cur >= st->cur->count) {
             st->cur->cur = st->cur->count - 2;
-            st->mode = (st->mode & ~8) | 0xC0;
+            st->mode = (st->mode & ~CARRIER_F_PATH0) | CARRIER_F_BACK | CARRIER_F_CAM_HOLD;
             EBB_BREAK();
             g_nSpyroRequestState = SPYRO_ST_08;
             g_nSpyroMoveTargetYaw = 0x290;
@@ -2103,7 +2127,7 @@ void Level14_UpdateActors(void) {
           continue;
         }
 
-        if (st->mode & 0x10) {
+        if (st->mode & CARRIER_F_PICKUP) {
           int done = 1;
 
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->voiceRow);
@@ -2151,7 +2175,7 @@ void Level14_UpdateActors(void) {
             int i;
             int which;
 
-            st->mode &= ~0x10;
+            st->mode &= ~CARRIER_F_PICKUP;
             d = ApproxDist2D(&actor->posX, st->dest);
             which = 0;
             for (i = 0; i < st->pathA->count; i++) {
@@ -2183,18 +2207,18 @@ void Level14_UpdateActors(void) {
             }
             switch (which) {
             case 0:
-              st->mode |= 4;
+              st->mode |= CARRIER_F_TO_DEST;
               break;
             case 1:
-              st->mode |= 0x20;
+              st->mode |= CARRIER_F_TO_PATH;
               st->cur = st->pathA;
               break;
             case 2:
-              st->mode |= 0x20;
+              st->mode |= CARRIER_F_TO_PATH;
               st->cur = st->pathB;
               break;
             case 3:
-              st->mode |= 0x20;
+              st->mode |= CARRIER_F_TO_PATH;
               st->cur = st->pathC;
               break;
             }
@@ -2202,12 +2226,12 @@ void Level14_UpdateActors(void) {
           continue;
         }
 
-        if (st->mode & 0x20) {
+        if (st->mode & CARRIER_F_TO_PATH) {
           d = 0x140;
           h = ArcTan2(NODE_PT(st->cur)[0] - actor->posX,
                             NODE_PT(st->cur)[1] - actor->posY, 0);
           if (TurnActorYawTowardAngle(actor, h, 8, 0x30, 1) != 0) {
-            MoveActorAlongHeading(actor, 0x140, 0, 0x200, 0x20);
+            MoveActorAlongHeading(actor, 0x140, 0, 0x200, MOVE_SLIDE);
           } else {
             h = (h - actor->rotZ) & 0xFF;
             if (h > 0x80) {
@@ -2215,7 +2239,7 @@ void Level14_UpdateActors(void) {
             }
             d -= ABS2(h) << 4;
             if (d > 0) {
-              MoveActorAlongHeading(actor, d, 0, 0x200, 0x20);
+              MoveActorAlongHeading(actor, d, 0, 0x200, MOVE_SLIDE);
             }
           }
           d = (NODE_PT(st->cur)[2] - actor->posZ) >> 1;
@@ -2229,12 +2253,12 @@ void Level14_UpdateActors(void) {
           if (ApproxDist2D(&actor->posX, PATH_CUR(st->cur)) < 0x200 &&
               ++st->cur->cur >= st->cur->count) {
             st->cur->cur = 0;
-            st->mode = (st->mode & ~0x20) | 4;
+            st->mode = (st->mode & ~CARRIER_F_TO_PATH) | CARRIER_F_TO_DEST;
           }
           continue;
         }
 
-        if (st->mode & 0x40) {
+        if (st->mode & CARRIER_F_BACK) {
           if (st->cur->cur > st->cur->count) {
             d = ApproxDist2D(&actor->posX, st->dest);
             if (d > 0x140) {
@@ -2246,7 +2270,7 @@ void Level14_UpdateActors(void) {
             d = (st->dest[2] - actor->posZ) >> 1;
             if (ABS2(d) < 0x80) {
               st->cur->cur = 0;
-              st->mode &= ~0x40;
+              st->mode &= ~CARRIER_F_BACK;
             }
             if (d > 0x80) {
               d = 0x80;
@@ -2261,7 +2285,7 @@ void Level14_UpdateActors(void) {
           h = ArcTan2(NODE_PT(st->cur)[0] - actor->posX,
                             NODE_PT(st->cur)[1] - actor->posY, 0);
           if (TurnActorYawTowardAngle(actor, h, 8, 0x30, 1) != 0) {
-            MoveActorAlongHeading(actor, 0x140, 0, 0x200, 0x20);
+            MoveActorAlongHeading(actor, 0x140, 0, 0x200, MOVE_SLIDE);
           } else {
             h = (h - actor->rotZ) & 0xFF;
             if (h > 0x80) {
@@ -2269,7 +2293,7 @@ void Level14_UpdateActors(void) {
             }
             d -= ABS2(h) << 4;
             if (d > 0) {
-              MoveActorAlongHeading(actor, d, 0, 0x200, 0x20);
+              MoveActorAlongHeading(actor, d, 0, 0x200, MOVE_SLIDE);
             }
           }
           d = (NODE_PT(st->cur)[2] - actor->posZ) >> 1;
@@ -2353,24 +2377,24 @@ void Level14_UpdateActors(void) {
             actor->posZ += d;
           }
           if (SPY.posZ < 0x9358) {
-            st->mode |= 0x10;
+            st->mode |= CARRIER_F_PICKUP;
           }
           continue;
         }
 
       case 1:
       case 2: {
-        if (*(int *)g_pActorListBase[st->rider].state & 0x2C) {
+        if (((CarrierState *)g_pActorListBase[st->rider].state)->mode & CARRIER_F_CARRYING) {
           int side = -0x40;
 
-          if ((st->mode & 3) == 1) {
+          if ((st->mode & CARRIER_F_SIDE) == 1) {
             side = 0x40;
           }
           CopyVector(svF, &SPY.posX);
           if (actor->mode != st->mode) {
-            actor->mode = st->mode & 3;
+            actor->mode = st->mode & CARRIER_F_SIDE;
             if (actor->nextAnim != st->mode) {
-              ANIM_ADVANCE(actor, st->mode & 3);
+              ANIM_ADVANCE(actor, st->mode & CARRIER_F_SIDE);
             }
             continue;
           }
@@ -2386,7 +2410,7 @@ void Level14_UpdateActors(void) {
         } else {
           int side = -0x50;
 
-          if ((st->mode & 3) == 1) {
+          if ((st->mode & CARRIER_F_SIDE) == 1) {
             side = 0x50;
           }
           CopyVector(svF, &g_pActorListBase[st->rider].posX);
@@ -2896,7 +2920,7 @@ void Level14_UpdateActors(void) {
       case SFGIVER_IDLE: {
         int range = 0xA8C;
 
-        if (st->kind == 3) {
+        if (st->kind == SFKIND_ENDLESS_FAR) {
           range = 0xD48;
         }
         if (st->alert != 0) {
@@ -3010,9 +3034,9 @@ void Level14_UpdateActors(void) {
             f = 0xE;
           }
           if (actor->nextFrame >= f && *(p = &g_nSpyroSuperflameTimer) == 0) {
-            if (st->kind == 1 || st->kind == 3) {
+            if (st->kind == SFKIND_ENDLESS || st->kind == SFKIND_ENDLESS_FAR) {
               *p = 0x9450C00;
-            } else if (st->kind == 2) {
+            } else if (st->kind == SFKIND_SHORT) {
               *p = 0x30C;
             } else {
               *p = 0x384;
@@ -3645,7 +3669,7 @@ void Level14_UpdateActors(void) {
         actor->rotZ += d;
       }
       CopyVector(svL, &actor->posX);
-      if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, 0x86) != 0) {
+      if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
         for (i = 0; i < 3; i++) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
@@ -3674,7 +3698,7 @@ void Level14_UpdateActors(void) {
               }
               g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_DEBRIS, actor);
             }
-            st->target->flags |= 1;
+            st->target->flags |= ACTOR_NUDGED;
             DespawnActorRecord(actor);
             continue;
           }
@@ -3699,7 +3723,7 @@ void Level14_UpdateActors(void) {
         ANIM_RESET(actor, 4);
         continue;
       }
-      if ((actor->flags & 1) && actor->mode < BCASTER_KNOCKED) {
+      if ((actor->flags & ACTOR_NUDGED) && actor->mode < BCASTER_KNOCKED) {
         actor->mode = BCASTER_FLINCH;
         ANIM_RESET(actor, 5);
         continue;
@@ -3708,8 +3732,8 @@ void Level14_UpdateActors(void) {
       case BCASTER_IDLE:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000 &&
             ABS2(SPY_DZ(actor)) < 0xC00) {
-          if (st->flags & 1) {
-            st->flags |= 2;
+          if (st->flags & BCASTER_F_WOKEN) {
+            st->flags |= BCASTER_F_IN_RANGE;
             ENTER_POSE(actor, BCASTER_AIM);
             continue;
           }
@@ -3735,7 +3759,7 @@ void Level14_UpdateActors(void) {
       case BCASTER_NOTICE:
         TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
         if (g_nActorAnimDone != 0) {
-          st->flags |= 1;
+          st->flags |= BCASTER_F_WOKEN;
           actor->mode = BCASTER_IDLE;
           ANIM_RESET(actor, 0);
           continue;
@@ -3743,12 +3767,12 @@ void Level14_UpdateActors(void) {
         break;
 
       case BCASTER_AIM:
-        if (st->flags & 2) {
+        if (st->flags & BCASTER_F_IN_RANGE) {
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800 &&
               ABS2(SPY_DZ(actor)) < 0xC00) {
             TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
           } else {
-            st->flags &= ~2;
+            st->flags &= ~BCASTER_F_IN_RANGE;
             ENTER_POSE(actor, BCASTER_IDLE);
             continue;
           }
@@ -3773,7 +3797,7 @@ void Level14_UpdateActors(void) {
             st->count < 3) {
           Actor *b = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_WISP, actor);
 
-          if (st->flags & 2) {
+          if (st->flags & BCASTER_F_IN_RANGE) {
             if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xA00 &&
                 ABS2(SPY_DZ(actor)) < 0x400) {
               CopyVector(&b->posX, &SPY.posX);
@@ -3794,14 +3818,14 @@ void Level14_UpdateActors(void) {
           st->count++;
         }
         if (g_nActorAnimDone != 0) {
-          if ((st->flags & 2) &&
+          if ((st->flags & BCASTER_F_IN_RANGE) &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000 &&
               ABS2(SPY_DZ(actor)) < 0xC00) {
             actor->mode = BCASTER_AIM;
             ANIM_RESET(actor, 2);
             continue;
           }
-          st->flags &= ~2;
+          st->flags &= ~BCASTER_F_IN_RANGE;
           st->timer = (GetRandomU32() & 0x1F) + 0x20;
           actor->mode = BCASTER_IDLE;
           ANIM_RESET(actor, 0);
@@ -3859,29 +3883,29 @@ void Level14_UpdateActors(void) {
           st->node = -1;
         }
       }
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 3) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CHUNKOP_KNOCKED) {
         Actor *hit;
 
         StopSoundVoiceByIndex(actor->voiceRow, 4);
         hit = SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
         if (hit != 0) {
-          ((CollectibleState *)hit->state)->mode = 3;
+          ((CollectibleState *)hit->state)->mode = COLLREST_FIND_TRI;
         }
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 3);
+        ENTER_POSE(actor, CHUNKOP_KNOCKED);
         continue;
       }
-      if ((actor->flags & 1) && actor->mode < 3) {
-        ENTER_POSE(actor, 4);
+      if ((actor->flags & ACTOR_NUDGED) && actor->mode < CHUNKOP_KNOCKED) {
+        ENTER_POSE(actor, CHUNKOP_FLINCH);
         continue;
       }
       switch (actor->mode) {
-      case 0: {
+      case CHUNKOP_WAIT: {
         int d;
         int r;
 
         if (st->riding != 0) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, CHUNKOP_RUN);
           continue;
         }
         d = ApproxDist2D(&SPY.posX, (int *)(st->anchor + 0x18));
@@ -3893,28 +3917,28 @@ void Level14_UpdateActors(void) {
           r = CHUNK_ANIM_STEP(r);
           if (r == 0 && d < 0x2000) {
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
-            ENTER_POSE(actor, 2);
+            ENTER_POSE(actor, CHUNKOP_START);
             continue;
           }
           if (r == 0xE && d > 0x3000) {
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
-            ENTER_POSE(actor, 2);
+            ENTER_POSE(actor, CHUNKOP_START);
             continue;
           }
         }
         break;
       }
 
-      case 1:
+      case CHUNKOP_RUN:
         if (st->spark >= 0 && (GetRandomU32() & 1)) {
           g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->spark]);
         }
         ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         break;
 
-      case 2:
+      case CHUNKOP_START:
         if (g_nActorAnimDone != 0) {
-          actor->mode = 0;
+          actor->mode = CHUNKOP_WAIT;
           ANIM_RESET(actor, 0);
           continue;
         }
@@ -3924,7 +3948,7 @@ void Level14_UpdateActors(void) {
         }
         break;
 
-      case 3:
+      case CHUNKOP_KNOCKED:
         if (st->riding == 0) {
           int r = GetWorldChunkAnimState(st->chunkAnim);
 
@@ -3944,7 +3968,7 @@ void Level14_UpdateActors(void) {
         RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
         break;
 
-      case 4:
+      case CHUNKOP_FLINCH:
         if (st->spark >= 0) {
           if (GetRandomU32() & 1) {
             g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->spark]);
@@ -3953,7 +3977,7 @@ void Level14_UpdateActors(void) {
         ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
-          actor->mode = 1;
+          actor->mode = CHUNKOP_RUN;
           ANIM_RESET(actor, 1);
           continue;
         }
@@ -3972,7 +3996,7 @@ void Level14_UpdateActors(void) {
         ENTER_POSE(actor, RSPAWNER_KNOCKED);
         continue;
       }
-      if ((actor->flags & 1) && actor->mode != RSPAWNER_FLINCH && actor->mode != RSPAWNER_KNOCKED) {
+      if ((actor->flags & ACTOR_NUDGED) && actor->mode != RSPAWNER_FLINCH && actor->mode != RSPAWNER_KNOCKED) {
         ENTER_POSE(actor, RSPAWNER_FLINCH);
         continue;
       }
@@ -4047,7 +4071,7 @@ void Level14_UpdateActors(void) {
       case WPRUNNER_RUN: {
         int *pos = &actor->posX;
 
-        if (RaiseSpyroTriggerInRadius(pos, 0x280, 0x46) != 0) {
+        if (RaiseSpyroTriggerInRadius(pos, 0x280, SPYRO_EV_HIT_LONG | SPYRO_EV_CHARGE_HIT) != 0) {
           ((RunnerSpawnerState *)st->link->state)->flags &= ~1;
           ENTER_POSE(actor, WPRUNNER_POP);
           continue;
@@ -4061,7 +4085,7 @@ void Level14_UpdateActors(void) {
         if (st->target >= 0 && g_pActorListBase[st->target].mode < ACTOR_MODE_DORMANT &&
             ApproxDist2D(pos, &g_pActorListBase[st->target].posX) < 0x280) {
           ((RunnerSpawnerState *)st->link->state)->flags &= ~1;
-          g_pActorListBase[st->target].flags |= 1;
+          g_pActorListBase[st->target].flags |= ACTOR_NUDGED;
           ENTER_POSE(actor, WPRUNNER_POP);
           continue;
         }
@@ -4085,7 +4109,7 @@ void Level14_UpdateActors(void) {
       FleeingWalkerState *st = actor->state;
 
       TickActorFlameGlow(actor);
-      if (actor->mode == 2) {
+      if (actor->mode == FLEEWALK_KNOCKED) {
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x30);
@@ -4104,28 +4128,28 @@ void Level14_UpdateActors(void) {
         st->speed = SPY.frameMotionLength >> 5;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, FLEEWALK_KNOCKED);
         continue;
       }
       actor->flags = 0;
       if (SPY.state == SPYRO_ST_HURT) {
         st->timer = 0x78;
-        st->mode |= 0x10;
+        st->mode |= FWALK_F_HOLD;
       }
       if (g_nSpyroAirborneFrames == 0) {
         if (ABS2(actor->posZ - SPY.posZ + 0x164) < 0x140 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < st->range) {
-          st->mode |= 8;
+          st->mode |= FWALK_F_CLOSE;
           ZeroVector(st->vel);
         } else {
-          st->mode &= ~8;
+          st->mode &= ~FWALK_F_CLOSE;
         }
-        switch (st->mode & 3) {
+        switch (st->mode & FWALK_F_PATH) {
         case 0:
           if (ApproxDist2D(&SPY.posX, PATH_END(st->pathA)) < 0xC00) {
             st->pathA->cur = st->pathA->count - 1;
             st->cur = st->pathA;
-            st->mode |= 4;
+            st->mode |= FWALK_F_HOME;
           }
           break;
 
@@ -4133,7 +4157,7 @@ void Level14_UpdateActors(void) {
           if (ApproxDist2D(&SPY.posX, PATH_END(st->pathA)) < 0xC00) {
             st->pathA->cur = st->pathA->count - 1;
             st->cur = st->pathA;
-            st->mode = (st->mode | 4) & ~3;
+            st->mode = (st->mode | FWALK_F_HOME) & ~FWALK_F_PATH;
           }
           break;
 
@@ -4141,11 +4165,11 @@ void Level14_UpdateActors(void) {
           if (ApproxDist2D(&SPY.posX, PATH_END(st->pathA)) < 0xC00) {
             st->pathA->cur = st->pathA->count - 1;
             st->cur = st->pathA;
-            st->mode = (st->mode | 4) & ~3;
+            st->mode = (st->mode | FWALK_F_HOME) & ~FWALK_F_PATH;
           } else if (ApproxDist2D(&SPY.posX, PATH_END(st->pathB)) < 0xC00) {
             st->cur = st->pathA;
             st->cur->cur = 0;
-            st->mode = (st->mode & ~3) | 1;
+            st->mode = (st->mode & ~FWALK_F_PATH) | 1;
           }
           break;
 
@@ -4153,37 +4177,37 @@ void Level14_UpdateActors(void) {
           if (ApproxDist2D(&SPY.posX, PATH_END(st->pathA)) < 0xC00) {
             st->pathA->cur = st->pathA->count - 1;
             st->cur = st->pathA;
-            st->mode = (st->mode | 4) & ~3;
+            st->mode = (st->mode | FWALK_F_HOME) & ~FWALK_F_PATH;
           } else if (ApproxDist2D(&SPY.posX, PATH_END(st->pathB)) < 0xC00) {
             st->cur = st->pathA;
             st->cur->cur = 0;
-            st->mode = (st->mode & ~3) | 1;
+            st->mode = (st->mode & ~FWALK_F_PATH) | 1;
           } else if (ApproxDist2D(&SPY.posX, PATH_END(st->pathC)) < 0xC00) {
             st->cur = st->pathB;
             st->cur->cur = 0;
-            st->mode = (st->mode & ~3) | 2;
+            st->mode = (st->mode & ~FWALK_F_PATH) | 2;
           }
           break;
         }
       }
-      if (st->mode & 0x10) {
+      if (st->mode & FWALK_F_HOLD) {
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-          st->mode &= ~0x10;
+          st->mode &= ~FWALK_F_HOLD;
         }
-        if (actor->mode != 0) {
-          ENTER_POSE(actor, 0);
+        if (actor->mode != FLEEWALK_WALK) {
+          ENTER_POSE(actor, FLEEWALK_WALK);
           continue;
         }
-      } else if (st->mode & 8) {
-        RaiseSpyroTriggerInRadius(&actor->posX, 0x540, 7);
-        if (actor->mode != 3) {
-          ENTER_POSE(actor, 3);
+      } else if (st->mode & FWALK_F_CLOSE) {
+        RaiseSpyroTriggerInRadius(&actor->posX, 0x540, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT);
+        if (actor->mode != FLEEWALK_FLEE) {
+          ENTER_POSE(actor, FLEEWALK_FLEE);
           continue;
         }
         actor->frameRate = 0x10;
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           if (TrackEntityYawTowardSpyro(actor, 8, 0x30, 1) != 0 &&
-              MoveActorAlongHeading(actor, st->speed, 0, 0x400, 0x15) == 2) {
+              MoveActorAlongHeading(actor, st->speed, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == 2) {
             st->timer = 0x12;
             st->heading = ArcTan2(g_anCollisionContactPoint[0] - actor->posX,
                                         g_anCollisionContactPoint[1] - actor->posY, 0);
@@ -4195,16 +4219,16 @@ void Level14_UpdateActors(void) {
           }
         } else {
           TurnActorYawTowardAngle(actor, st->heading, 8, 0x30, 1);
-          MoveActorAlongHeading(actor, st->speed, 0, 0x400, 0x15);
+          MoveActorAlongHeading(actor, st->speed, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT);
         }
-      } else if (st->mode & 4) {
+      } else if (st->mode & FWALK_F_HOME) {
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-          if (st->mode & 0x20) {
+          if (st->mode & FWALK_F_RESTART) {
             st->cur->cur = 0;
           }
           if (ApproxDist2D(&actor->posX, PATH_CUR(st->cur)) > 0x100) {
-            if (actor->mode != 0) {
-              ENTER_POSE(actor, 0);
+            if (actor->mode != FLEEWALK_WALK) {
+              ENTER_POSE(actor, FLEEWALK_WALK);
               continue;
             }
             actor->frameRate = 8;
@@ -4213,7 +4237,7 @@ void Level14_UpdateActors(void) {
                                             NODE_PT(st->cur)[1] - actor->posY,
                                             0),
                               8, 0x30, 1) != 0 &&
-                MoveActorAlongHeading(actor, 0x60, 0, 0x400, 0x15) == 2) {
+                MoveActorAlongHeading(actor, 0x60, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == 2) {
               st->timer = 0x12;
               st->heading = ArcTan2(g_anCollisionContactPoint[0] - actor->posX,
                                           g_anCollisionContactPoint[1] - actor->posY, 0);
@@ -4224,42 +4248,42 @@ void Level14_UpdateActors(void) {
               }
             }
           } else {
-            if (actor->mode != 1) {
-              ENTER_POSE(actor, 1);
+            if (actor->mode != FLEEWALK_STAND) {
+              ENTER_POSE(actor, FLEEWALK_STAND);
               continue;
             }
             actor->frameRate = 0x10;
           }
         } else {
           TurnActorYawTowardAngle(actor, st->heading, 8, 0x30, 1);
-          MoveActorAlongHeading(actor, 0x80, 0, 0x400, 0x15);
+          MoveActorAlongHeading(actor, 0x80, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT);
         }
-      } else if (st->mode & 3) {
-        if (st->mode & 0x40) {
-          if (actor->mode != 1) {
-            ENTER_POSE(actor, 1);
+      } else if (st->mode & FWALK_F_PATH) {
+        if (st->mode & FWALK_F_PAUSE) {
+          if (actor->mode != FLEEWALK_STAND) {
+            ENTER_POSE(actor, FLEEWALK_STAND);
             continue;
           }
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-            st->mode &= ~0x40;
+            st->mode &= ~FWALK_F_PAUSE;
           }
         } else {
-          if (actor->mode != 0) {
-            ENTER_POSE(actor, 0);
+          if (actor->mode != FLEEWALK_WALK) {
+            ENTER_POSE(actor, FLEEWALK_WALK);
             continue;
           }
           actor->frameRate = 8;
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
             if (ApproxDist2D(&actor->posX, PATH_CUR(st->cur)) < 0x100) {
-              if (st->mode & 0x80) {
+              if (st->mode & FWALK_F_REVERSE) {
                 if (st->cur->cur != 0) {
                   st->cur->cur--;
                 } else {
-                  st->mode = (st->mode & ~0x80) | 0x40;
+                  st->mode = (st->mode & ~FWALK_F_REVERSE) | FWALK_F_PAUSE;
                   st->timer = 0x3C;
                 }
               } else if (st->cur->cur >= st->cur->count - 2) {
-                st->mode |= 0xC0;
+                st->mode |= FWALK_F_REVERSE | FWALK_F_PAUSE;
                 st->timer = 0x3C;
               } else {
                 st->cur->cur++;
@@ -4270,7 +4294,7 @@ void Level14_UpdateActors(void) {
                                             NODE_PT(st->cur)[1] - actor->posY,
                                             0),
                               8, 0x30, 1) != 0 &&
-                MoveActorAlongHeading(actor, 0x60, 0, 0x400, 0x15) == 2) {
+                MoveActorAlongHeading(actor, 0x60, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == 2) {
               st->timer = 0x12;
               st->heading = ArcTan2(g_anCollisionContactPoint[0] - actor->posX,
                                           g_anCollisionContactPoint[1] - actor->posY, 0);
@@ -4282,14 +4306,14 @@ void Level14_UpdateActors(void) {
             }
           } else {
             TurnActorYawTowardAngle(actor, st->heading, 8, 0x30, 1);
-            MoveActorAlongHeading(actor, 0x60, 0, 0x400, 0x15);
+            MoveActorAlongHeading(actor, 0x60, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT);
           }
         }
       } else {
         st->cur->cur = 0;
         if (ApproxDist2D(&actor->posX, PATH_CUR(st->cur)) > 0x100) {
-          if (actor->mode != 0) {
-            ENTER_POSE(actor, 0);
+          if (actor->mode != FLEEWALK_WALK) {
+            ENTER_POSE(actor, FLEEWALK_WALK);
             continue;
           }
           actor->frameRate = 8;
@@ -4299,7 +4323,7 @@ void Level14_UpdateActors(void) {
                                             NODE_PT(st->cur)[1] - actor->posY,
                                             0),
                               8, 0x30, 1) != 0 &&
-                MoveActorAlongHeading(actor, 0x60, 0, 0x400, 0x15) == 2) {
+                MoveActorAlongHeading(actor, 0x60, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == 2) {
               st->timer = 0x12;
               st->heading = ArcTan2(g_anCollisionContactPoint[0] - actor->posX,
                                           g_anCollisionContactPoint[1] - actor->posY, 0);
@@ -4311,11 +4335,11 @@ void Level14_UpdateActors(void) {
             }
           } else {
             TurnActorYawTowardAngle(actor, st->heading, 8, 0x30, 1);
-            MoveActorAlongHeading(actor, 0x60, 0, 0x400, 0x15);
+            MoveActorAlongHeading(actor, 0x60, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT);
           }
         } else {
-          if (actor->mode != 1) {
-            ENTER_POSE(actor, 1);
+          if (actor->mode != FLEEWALK_STAND) {
+            ENTER_POSE(actor, FLEEWALK_STAND);
             continue;
           }
           actor->frameRate = 0x10;
@@ -4584,7 +4608,7 @@ void Level14_UpdateActors(void) {
           }
         }
         if (st->pushed == 0 &&
-            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, 0x86) != 0) {
+            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
           st->pushed = 1;
           g_anSpyroRequestVelocity.x = SPY.posX - actor->posX;
           g_nSpyroRequestVelocityZ = 0;
@@ -4848,30 +4872,30 @@ void Level14_UpdateActors(void) {
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
     case ACTOR_TYPE_CHECKPOINT + 2: {
       switch (actor->mode) {
-      case 0: {
+      case CHECKPT_REARM: {
         if (ApproxDist2D(&actor->posX, &SPY.posX) > 2560) {
-          actor->mode = 1;
+          actor->mode = CHECKPT_ARMED;
         }
         break;
       }
 
-      case 1: {
+      case CHECKPT_ARMED: {
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 896 &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 512) {
 
           SetSpawnAnchorFromActor(actor, actor->rotZ);
-          actor->mode = 2;
+          actor->mode = CHECKPT_FLASH;
           actor->anim = 1;
           actor->subMode = 0;
         }
         break;
       }
 
-      case 2: {
+      case CHECKPT_FLASH: {
         actor->subMode += g_nFrameStep;
 
         if (actor->subMode >= 0x30) {
-          actor->mode = 0;
+          actor->mode = CHECKPT_REARM;
           actor->anim = 0;
         }
         break;

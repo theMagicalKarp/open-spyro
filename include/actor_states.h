@@ -82,13 +82,16 @@ typedef struct SaveHostState {
 typedef struct WhirlwindState {
   int spanZ; /* 0x00 height; Spyro is lifted to posZ + spanZ */
   int radius; /* 0x04 horizontal radius */
-  int flags; /* 0x08 bit0 target camera (else the front spring camera),
-              * bit1 idle (wakes 0xB4 frames after Spyro comes near),
-              * bit2 woken (idles again 0x78 frames after a lift),
-              * bit3 owner-gated,
-              * bit4 also stamps actor->subMode */
+  int flags; /* 0x08 WHIRL_F_* */
   int timer; /* 0x0C wake / idle countdown */
   int idx;   /* 0x10 owner: index into the actor pool at g_pActorListBase */
 } WhirlwindState;
+
+/* WhirlwindState.flags. */
+#define WHIRL_F_TARGET_CAM 0x01 /* lift with the target camera (else the front spring camera) */
+#define WHIRL_F_IDLE 0x02       /* idle: wakes 0xB4 frames after Spyro comes near */
+#define WHIRL_F_WOKEN 0x04      /* woken: idles again 0x78 frames after a lift */
+#define WHIRL_F_GATED 0x08      /* waits on its owner (`idx`: a key's subMode, a statue or gem gone) */
+#define WHIRL_F_MARK 0x10       /* also sets ->subMode to 1 while active */
 
 #endif /* OPEN_SPYRO_ACTOR_STATES_H */

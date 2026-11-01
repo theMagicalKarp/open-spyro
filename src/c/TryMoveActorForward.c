@@ -32,12 +32,12 @@ int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR,
   RotateVectorByMatrix(mtx, vec, vec);
   AddVector(vec, vec, &actor->posX);
 
-  if (flags & 1) {
+  if (flags & MOVE_LIFT) {
     d = vec[2] + 0x12C;
     vec[2] = d + collideR;
   }
   if (contactR != 0) {
-    if ((flags & 2) == 0) {
+    if ((flags & MOVE_PASS_ACTORS) == 0) {
       if (DispatchActorContactAtSphere(vec, contactR, 0, 0, actor, 0) != 0) {
         return 1;
       }
@@ -50,15 +50,15 @@ int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR,
       goto blocked;
     }
   }
-  if (flags & 1) {
+  if (flags & MOVE_LIFT) {
     d = vec[2] - 0x12C;
     vec[2] = d - collideR;
   }
-  if (flags & 0x14) {
+  if (flags & (MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT)) {
     vec[2] += 0x400;
     ground = FindGroundHeightBelow(vec, 0x800);
   }
-  if (flags & 0x10) {
+  if (flags & MOVE_STEP_LIMIT) {
     d = ground - actor->posZ;
     if (d > 0) {
       if (d >= 0xC9) {

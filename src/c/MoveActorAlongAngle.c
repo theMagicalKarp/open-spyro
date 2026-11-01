@@ -32,7 +32,7 @@ int MoveActorAlongAngle(Actor *actor, int angle, int speed, int group,
   newpos[1] = actor->posY + ((g_anSineLut[angle] * speed) >> 12);
   newpos[2] = actor->posZ;
   if (group != 0) {
-    if (!(flags & 2)) {
+    if (!(flags & MOVE_PASS_ACTORS)) {
       if (DispatchActorContactAtSphere(newpos, group, 0, 0, actor, 0) != 0) {
         return 1;
       }
@@ -40,23 +40,23 @@ int MoveActorAlongAngle(Actor *actor, int angle, int speed, int group,
       DispatchActorContactAtSphere(newpos, group, 0, 0, actor, 3);
     }
   }
-  if (flags & 1) {
+  if (flags & MOVE_LIFT) {
     t = newpos[2] + 0x12C;
     newpos[2] = t + radius;
   }
   if (radius != 0) {
     if (CollideSphereWithWorldAndActors(newpos, radius, radius) != 0) {
-      if (!(flags & 0x20)) {
+      if (!(flags & MOVE_SLIDE)) {
         return 2;
       }
       CopyVector(newpos, g_anCollisionResolvedPos);
     }
   }
-  if (flags & 0x14) {
+  if (flags & (MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT)) {
     newpos[2] += 0x400;
     ground = FindGroundHeightBelow(newpos, 0x1388);
   }
-  if (flags & 0x10) {
+  if (flags & MOVE_STEP_LIMIT) {
     floorz = ground + actor->floorOffset;
     step = floorz - actor->posZ;
     if (step > 0) {
@@ -73,7 +73,7 @@ int MoveActorAlongAngle(Actor *actor, int angle, int speed, int group,
 commit:
   actor->posX = newpos[0];
   actor->posY = newpos[1];
-  if (flags & 4) {
+  if (flags & MOVE_FOLLOW_FLOOR) {
     d = (ground + actor->floorOffset) - actor->posZ;
     newpos[2] += 0x400;
     if (abs(d) >= 0x259) {
@@ -86,7 +86,7 @@ commit:
       actor->posZ = ground + actor->floorOffset;
     }
   }
-  if (flags & 0x54) {
+  if (flags & MOVE_PROBES_FLOOR) {
     EncodeCachedVecToActorDirCode(actor);
   }
   RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);

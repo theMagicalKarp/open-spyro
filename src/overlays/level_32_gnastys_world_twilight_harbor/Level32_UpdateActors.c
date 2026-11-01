@@ -456,7 +456,7 @@ void Level32_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -799,7 +799,7 @@ void Level32_UpdateActors(void) {
       }
 
       if (actor->drawn != 0 || toSpyro <= 0x2000 || actor->subMode != COLLECT_REST ||
-          st->mode != 0) {
+          st->mode != COLLREST_STILL) {
         switch (actor->subMode) {
         case COLLECT_SETTLE:
           /* Idle: sample the floor normal and face along it. */
@@ -822,8 +822,8 @@ void Level32_UpdateActors(void) {
 
         case COLLECT_REST: {
 
-          if (st->mode == 0) {
-          } else if (st->mode == 1) {
+          if (st->mode == COLLREST_STILL) {
+          } else if (st->mode == COLLREST_SNAP) {
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
             if (actor->type >= ACTOR_TYPE_GEM_1) {
@@ -836,7 +836,7 @@ void Level32_UpdateActors(void) {
                 st->roll = -ArcTan2_8bit(g_nCollisionProbeVecZ, g_nCollisionProbeVecX);
               }
             }
-          } else if (st->mode == 2) {
+          } else if (st->mode == COLLREST_ON_TRI) {
             UnpackWorldCollisionTri(st->groundTri, acc[0]);
             AddVector(acc[0], acc[0], acc[1]);
             AddVector(acc[0], acc[0], acc[2]);
@@ -846,13 +846,13 @@ void Level32_UpdateActors(void) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
-          } else if (st->mode == 3) {
+          } else if (st->mode == COLLREST_FIND_TRI) {
             CopyVector(svF, &actor->posX);
             svF[2] += 0x400;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             if (FindGroundHeightBelow(svF, 0x1000) > 0) {
               st->groundTri = g_nLastCollisionHitChunkId;
-              st->mode = 2;
+              st->mode = COLLREST_ON_TRI;
             }
           }
 
@@ -1625,18 +1625,18 @@ void Level32_UpdateActors(void) {
       if (st->initialised == 0) {
         st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->flags == 1 && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
+        if (st->flags == GUNNER_F_ARMED && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
                              IsPointInRotatedBox(&spy->posX, st->box2) != 0)) {
-          st->flags &= ~1;
+          st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, BURSTGUN_WALK);
         }
       }
 
       switch (actor->mode) {
       case BURSTGUN_WATCH:
-        if (st->flags == 1 &&
+        if (st->flags == GUNNER_F_ARMED &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
-          st->flags &= ~1;
+          st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, BURSTGUN_WALK);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
@@ -1659,7 +1659,7 @@ void Level32_UpdateActors(void) {
           actor->mode = BURSTGUN_WATCH;
           continue;
         }
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, 5) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           actor->mode = BURSTGUN_TURN;
         }
@@ -1761,22 +1761,22 @@ void Level32_UpdateActors(void) {
       if (st->initialised == 0) {
         st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->flags == 1 && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
+        if (st->flags == GUNNER_F_ARMED && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
                              IsPointInRotatedBox(&spy->posX, st->box2) != 0)) {
-          st->flags &= ~1;
+          st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, SWEEPGUN_ADVANCE);
         }
       }
 
       switch (actor->mode) {
       case SWEEPGUN_IDLE:
-        if (st->flags == 1 &&
+        if (st->flags == GUNNER_F_ARMED &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
-          st->flags &= ~1;
+          st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, SWEEPGUN_ADVANCE);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if (st->flags != 1 && dist < 0x3400 && ABS2(SPY_DZ(actor)) < 0x5DC) {
+        if (st->flags != GUNNER_F_ARMED && dist < 0x3400 && ABS2(SPY_DZ(actor)) < 0x5DC) {
           st->yawToSpyro = actor->rotZ;
           st->sweepYaw = actor->rotZ << 4;
           actor->subMode = 0;
@@ -1786,7 +1786,7 @@ void Level32_UpdateActors(void) {
         continue;
 
       case SWEEPGUN_ADVANCE:
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0xA0, 0, 8, 0x28, 0xFF, 5) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0xA0, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           actor->mode = SWEEPGUN_IDLE;
         }
@@ -1925,7 +1925,7 @@ void Level32_UpdateActors(void) {
         if (c != 0 && c != (Actor *)-1 && c->type == ACTOR_TYPE_LOB_GUNNER_LOB && c->subMode == 0 &&
             c->mode < ACTOR_MODE_DORMANT) {
           c->subMode = 1;
-          st->heldLob->mode = 2;
+          st->heldLob->mode = LGLOB_DESPAWN;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
@@ -1935,18 +1935,18 @@ void Level32_UpdateActors(void) {
       if (st->initialised == 0) {
         st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->flags == 1 && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
+        if (st->flags == GUNNER_F_ARMED && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
                              IsPointInRotatedBox(&spy->posX, st->box2) != 0)) {
-          st->flags &= ~1;
+          st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, LOBGUN_WALK);
         }
       }
 
       switch (actor->mode) {
       case LOBGUN_WATCH:
-        if (st->flags == 1 &&
+        if (st->flags == GUNNER_F_ARMED &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
-          st->flags &= ~1;
+          st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, LOBGUN_WALK);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
@@ -1954,7 +1954,7 @@ void Level32_UpdateActors(void) {
             ABS2(SPY_DZ(actor)) < 0x258) {
           ENTER_POSE_B(actor, LOBGUN_SWIPE);
         }
-        if (st->flags != 1 && dist > 0x9C4 && TickCountdownByFrameDelta(&st->throwTimer, 4) != 0) {
+        if (st->flags != GUNNER_F_ARMED && dist > 0x9C4 && TickCountdownByFrameDelta(&st->throwTimer, 4) != 0) {
           if (st->aimRange < dist) {
             unsigned char *p = st->targetPath;
 
@@ -1973,7 +1973,7 @@ void Level32_UpdateActors(void) {
         break;
 
       case LOBGUN_WALK:
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0xAA, 0, 8, 0x28, 0xFF, 5) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0xAA, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           actor->mode = LOBGUN_TURN;
           continue;
@@ -2038,7 +2038,7 @@ void Level32_UpdateActors(void) {
             q->h4 = 0x104;
             q->h6 = ComputeLobVelocityZ(&st->heldLob->posX, o150, 0x104, q->h8, (int *)q);
             if (q->flightTime == 0) {
-              st->heldLob->mode = 2;
+              st->heldLob->mode = LGLOB_DESPAWN;
             }
             q->bD = RandomSignedInRange(7, 0xF);
             q->bE = RandomSignedInRange(7, 0xF);
@@ -2080,7 +2080,7 @@ void Level32_UpdateActors(void) {
       BurstGunnerShotState *st = actor->state;
 
       switch (actor->mode) {
-      case 0: {
+      case SHOT_FLY: {
         int reach = 0x12C;
         int high = 0x384;
 
@@ -2104,7 +2104,7 @@ void Level32_UpdateActors(void) {
           continue;
         }
         if (CastRayWorldAndActors(o140, &actor->posX) != 0) {
-          actor->mode = 1;
+          actor->mode = SHOT_BURST;
           actor->cullRadius = 0;
           actor->drawn = 0;
           continue;
@@ -2116,7 +2116,7 @@ void Level32_UpdateActors(void) {
           g_anSpyroRequestVelocity.x = (st->vel[0] * 2) >> 3;
           g_nSpyroRequestVelocityZ = 0x28;
           g_nSpyroRequestVelocityY = (st->vel[1] * 2) >> 3;
-          actor->mode = 1;
+          actor->mode = SHOT_BURST;
           continue;
         }
         if (TickCountdownByFrameDelta(&st->life, 2) != 0) {
@@ -2125,7 +2125,7 @@ void Level32_UpdateActors(void) {
         continue;
       }
 
-      case 1:
+      case SHOT_BURST:
         o160[0] = 0;
         o160[1] = 0;
         o160[2] = 0xC;
@@ -2147,14 +2147,14 @@ void Level32_UpdateActors(void) {
         if (st->rearmTimer == 0) {
           ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
           st->rearmTimer = 0x50;
-          actor->mode = 1;
+          actor->mode = FCSWITCH_TRIPPED;
           ANIM_RESET(actor, 1);
           continue;
         }
       }
       if (TickCountdownByFrameDelta(&st->rearmTimer, 4) != 0 && g_nActorAnimDone != 0) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        actor->mode = 0;
+        actor->mode = FCSWITCH_IDLE;
         ANIM_RESET(actor, 0);
         continue;
       }
@@ -2229,17 +2229,17 @@ void Level32_UpdateActors(void) {
         continue;
       }
       switch (actor->mode) {
-      case 0:
+      case LGLOB_FLY:
         CopyVector(o140, &actor->posX);
         actor->posX += (q->h4 * g_anCosineLut[q->bC]) >> 12;
         actor->posY += (q->h4 * g_anSineLut[q->bC]) >> 12;
         actor->posZ += q->h6;
         q->h6 += q->h8;
         if (CastRayWorldAndActors(o140, &actor->posX) != 0) {
-          actor->mode = 1;
+          actor->mode = LGLOB_BURST;
         }
         if (TickCountdownByFrameDelta(&q->hA, 2) != 0) {
-          actor->mode = 1;
+          actor->mode = LGLOB_BURST;
         }
         o140[0] = 0;
         o140[1] = 0;
@@ -2251,9 +2251,9 @@ void Level32_UpdateActors(void) {
         q->hA += g_nFrameStep;
         continue;
 
-      case 1:
+      case LGLOB_BURST:
         EBB_BREAK();
-        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x8CA, 0x86) != 0) {
+        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x8CA, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
           int n;
           int x;
           int y;
@@ -2268,7 +2268,7 @@ void Level32_UpdateActors(void) {
           o150[1] = y;
           spy->requestVelX = x;
           spy->requestVelY = y;
-          actor->mode = 1;
+          actor->mode = LGLOB_BURST;
         }
         PlayActorMeshVoice(actor, 0, 0);
         for (i = 0; i < 7; i++) {
@@ -2296,7 +2296,7 @@ void Level32_UpdateActors(void) {
         DespawnActorRecord(actor);
         continue;
 
-      case 2:
+      case LGLOB_DESPAWN:
         DespawnActorRecord(actor);
         continue;
       }
@@ -2450,7 +2450,7 @@ void Level32_UpdateActors(void) {
       case CRITTER_KNOCKED:
         if (st->knockSpeed >= 0x10) {
           st->knockSpeed -= 0xF;
-          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x1F4, 5);
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x1F4, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -2682,7 +2682,7 @@ void Level32_UpdateActors(void) {
       int distance;
       int flags;
       st = (WhirlwindState *)actor->state;
-      if (st->flags & 8) {
+      if (st->flags & WHIRL_F_GATED) {
         if (g_pActorListBase[st->idx].type == ACTOR_TYPE_KEY) {
           if (g_pActorListBase[st->idx].subMode == 0)
             break;
@@ -2697,10 +2697,10 @@ void Level32_UpdateActors(void) {
         }
       }
       flags = st->flags;
-      if (flags & 2) {
+      if (flags & WHIRL_F_IDLE) {
         if (st->timer != 0) {
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0)
-            st->flags = (st->flags & ~2) | 4;
+            st->flags = (st->flags & ~WHIRL_F_IDLE) | WHIRL_F_WOKEN;
           break;
         }
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1000 &&
@@ -2709,7 +2709,7 @@ void Level32_UpdateActors(void) {
         }
         break;
       }
-      if (flags & 0x10)
+      if (flags & WHIRL_F_MARK)
         actor->subMode = 1;
       PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->voiceRow);
       if ((GetRandomU32() & 1) == 0)
@@ -2724,7 +2724,7 @@ void Level32_UpdateActors(void) {
         SPY.triggerEvents |= SPYRO_EV_LIFT;
         SPY.requestTargetZ = actor->posZ + st->spanZ;
         CopyVector(spy->firstContactPoint, &actor->posX);
-        if (st->flags & 1) {
+        if (st->flags & WHIRL_F_TARGET_CAM) {
           spyro->requestMask |= SPYRO_RQ_TARGET_CAMERA;
         } else {
           g_anCameraActiveTargetParams = g_anCameraParamMode2Front;
@@ -2736,9 +2736,9 @@ void Level32_UpdateActors(void) {
         st->timer = 0x78;
         break;
       }
-      if ((st->flags & ~1) == 4 && st->timer != 0 &&
+      if ((st->flags & ~WHIRL_F_TARGET_CAM) == WHIRL_F_WOKEN && st->timer != 0 &&
           TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-        st->flags = (st->flags & ~4) | 2;
+        st->flags = (st->flags & ~WHIRL_F_WOKEN) | WHIRL_F_IDLE;
       }
       break;
     }

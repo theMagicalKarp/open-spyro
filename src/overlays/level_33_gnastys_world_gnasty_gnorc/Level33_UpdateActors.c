@@ -490,7 +490,7 @@ void Level33_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -847,7 +847,7 @@ void Level33_UpdateActors(void) {
       }
 
       if (actor->drawn != 0 || toSpyro <= 0x2000 || actor->subMode != COLLECT_REST ||
-          st->mode != 0) {
+          st->mode != COLLREST_STILL) {
         switch (actor->subMode) {
         case COLLECT_SETTLE:
           /* Idle: sample the floor normal and face along it. */
@@ -871,8 +871,8 @@ void Level33_UpdateActors(void) {
 
         case COLLECT_REST: {
 
-          if (st->mode == 0) {
-          } else if (st->mode == 1) {
+          if (st->mode == COLLREST_STILL) {
+          } else if (st->mode == COLLREST_SNAP) {
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
             if (actor->type >= ACTOR_TYPE_GEM_1) {
@@ -885,7 +885,7 @@ void Level33_UpdateActors(void) {
                 st->roll = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
               }
             }
-          } else if (st->mode == 2) {
+          } else if (st->mode == COLLREST_ON_TRI) {
             UnpackWorldCollisionTri(st->groundTri, acc[0]);
             AddVector(acc[0], acc[0], acc[1]);
             AddVector(acc[0], acc[0], acc[2]);
@@ -895,13 +895,13 @@ void Level33_UpdateActors(void) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
-          } else if (st->mode == 3) {
+          } else if (st->mode == COLLREST_FIND_TRI) {
             CopyVector(svF, &actor->posX);
             svF[2] += 0x400;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             if (FindGroundHeightBelow(svF, 0x1000) > 0) {
               st->groundTri = g_nLastCollisionHitChunkId;
-              st->mode = 2;
+              st->mode = COLLREST_ON_TRI;
             }
           }
 
@@ -1466,7 +1466,7 @@ void Level33_UpdateActors(void) {
         actor->scale = 0x7F;
       }
       if (st->timer != 0) {
-        RaiseSpyroTriggerInRadius(&actor->posX, st->radius, 7);
+        RaiseSpyroTriggerInRadius(&actor->posX, st->radius, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT);
       }
       if (actor->nextAnim == 1 && g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
@@ -1603,7 +1603,7 @@ void Level33_UpdateActors(void) {
         if (FLY_FLAGS(st->path, st->path->cur) & 0xFFC) {
           spd = FLY_FLAGS(st->path, st->path->cur) & 0xFFC;
         }
-        r = PivotActorAlongPath(actor, st->path, 0x1C2, spd, 0, 0xA, 0x28, 0xFF, 1);
+        r = PivotActorAlongPath(actor, st->path, 0x1C2, spd, 0, 0xA, 0x28, 0xFF, MOVE_LIFT);
         h = ProbeActorGroundHeightRaised(actor, 0xBB8);
         st->vSpeed -= 0x1E;
         if (st->vSpeed < -0x190) {
@@ -2119,7 +2119,7 @@ void Level33_UpdateActors(void) {
                                   actor->posY,
                               0),
                           7, 0x14, 1) != 0) {
-          MoveActorAlongHeading(actor, 0xF0, 0, 0, 5);
+          MoveActorAlongHeading(actor, 0xF0, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (ApproxDist2D(&actor->posX, PATH_PT((unsigned char *)st->path, 1)) <
             0x320) {
@@ -2407,7 +2407,7 @@ void Level33_UpdateActors(void) {
           actor->scale = 0x40;
           actor->visZone = 0xFF;
           actor->subMode = 1;
-          st->mode = 1;
+          st->mode = LVORTEX_OPEN;
         }
         if (st->spark != 0xFF && actor->cullRadius != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -2429,8 +2429,8 @@ void Level33_UpdateActors(void) {
       }
 
       switch (st->mode) {
-      case 0: {
-        if (g_pActorListBase[st->key].type != 0xB1) {
+      case LVORTEX_LOCKED: {
+        if (g_pActorListBase[st->key].type != ACTOR_TYPE_LOOT_THIEF) {
           break;
         }
         if (g_pActorListBase[st->key].mode < 0x7F) {
@@ -2443,13 +2443,13 @@ void Level33_UpdateActors(void) {
           break;
         }
         actor->subMode = 1;
-        st->mode = 1;
+        st->mode = LVORTEX_OPEN;
         g_nLevelKeyState = KEYSTATE_CARRIED;
         break;
       }
 
-      case 1:
-        if (((unsigned)SPY.state < 2 || SPY.state == SPYRO_ST_JOG || SPY.state == SPYRO_ST_RUN) &&
+      case LVORTEX_OPEN:
+        if (((unsigned)SPY.state <= SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG || SPY.state == SPYRO_ST_RUN) &&
             IsPointInRotatedBox(&SPY.posX, st->pad) &&
             AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(g_pActorListBase[st->target].posX - SPY.posX,
@@ -2464,7 +2464,7 @@ void Level33_UpdateActors(void) {
           actor->rotZ = g_bSpyroPersistentEulerZ + 0x80;
           actor->drawn = 1;
           actor->cullRadius = 0x18;
-          st->mode = 2;
+          st->mode = LVORTEX_ACTIVE;
           st->timer = 0;
           if (st->seen != 0) {
             if (g_nCutsceneId[st->seen] != 0) {
@@ -2485,7 +2485,7 @@ void Level33_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case LVORTEX_ACTIVE:
         if (g_dwPadPressed & PAD_CROSS) {
           st->timer = 0xD2;
         }
@@ -2541,14 +2541,14 @@ void Level33_UpdateActors(void) {
           RotateVectorByMatrix(actor->mtx, w, w);
           AddVector(&actor->posX, w, &g_pActorListBase[st->target].posX);
         }
-        if (st->timer >= 0xD0 || !((unsigned)SPY.state < 2 || SPY.state == SPYRO_ST_JOG ||
+        if (st->timer >= 0xD0 || !((unsigned)SPY.state <= SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
                                     SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_STOP)) {
           actor->cullRadius = 0;
           actor->drawn = 0;
           g_nGameplayBlocked = 0;
           g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, (void *)0x18);
           MarkActorCommittedKill(actor);
-          st->mode = 3;
+          st->mode = LVORTEX_FINISH;
         }
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         if ((short)(st->timer % 4) < 2) {
@@ -2558,7 +2558,7 @@ void Level33_UpdateActors(void) {
         }
         break;
 
-      case 3:
+      case LVORTEX_FINISH:
         PlaySoundEffect(g_pLevelSampleBankHeader[0x3C], 0, SFX_MODE_PANNED, 0);
         ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         g_nCameraScriptStickRequestY[1] = 0;
@@ -3023,7 +3023,7 @@ void Level33_UpdateActors(void) {
           }
         }
         if (st->pushed == 0 &&
-            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, 0x86) != 0) {
+            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
           st->pushed = 1;
           g_anSpyroRequestVelocity.x = SPY.posX - actor->posX;
           g_nSpyroRequestVelocityZ = 0;

@@ -100,8 +100,25 @@ typedef struct Actor {
                                   * burst (with FLAME), level 19's aimed bolt; boulders and
                                   * roaming rams react to it */
 #define ACTOR_HIT_SUPER 0x80000  /* a supercharge; a superflame breath adds it to FLAME */
+/* Actor.flags bit 0: another actor reached it (a homing wisp or a waypoint
+ * runner arriving at its target; levels 13-15); level 14's bolt caster,
+ * chunk operator and runner spawner flinch on it. */
+#define ACTOR_NUDGED 0x1
 #define ACTOR_HITS_SPYRO (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)
 #define ACTOR_HIT_ANY (ACTOR_HITS_SPYRO | ACTOR_HIT_BLAST)
+
+/* `flags` of the actor movers (MoveActorAlongHeading, MoveActorAlongAngle,
+ * MoveActorByDelta, which reads only MOVE_LIFT, TryMoveActorForward), passed
+ * through by SteerActorAroundPoint and PivotActorAlongPath. */
+#define MOVE_LIFT 0x01         /* probe the world 0x12C + radius higher (undone after) */
+#define MOVE_PASS_ACTORS 0x02  /* actor contact only notifies (mode 3), never blocks */
+#define MOVE_FOLLOW_FLOOR 0x04 /* ease Z toward the probed floor (snap when close) */
+#define MOVE_STEP_LIMIT 0x10   /* reject a step up or down past the step height */
+#define MOVE_SLIDE 0x20        /* world contact: slide to the resolved point, don't reject */
+#define MOVE_SLOPE_LIMIT 0x40  /* reject a near-vertical floor (MoveActorAlongHeading) */
+#define MOVE_STRAFE 0x08       /* SteerActorAroundPoint: face the target, move along the heading */
+#define MOVE_CHECK_Z 0x100     /* PivotActorAlongPath: arrival also needs Z within `thresh` */
+#define MOVE_PROBES_FLOOR (MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLOPE_LIMIT)
 
 /* Size of one actor record: the stride of the actor pool, the sprite-record
  * queue and the HUD icon table. (The typedef fails to compile if the struct

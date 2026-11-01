@@ -459,7 +459,7 @@ void Level21_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -705,7 +705,7 @@ void Level21_UpdateActors(void) {
         actor->rotZ += st->spin[2];
         st->life += g_nFrameStep;
         if (actor->subMode != 2 && st->life < 0x79 &&
-            RaiseSpyroTriggerInRadius(&actor->posX, 0xDC, 0x86) == 0 &&
+            RaiseSpyroTriggerInRadius(&actor->posX, 0xDC, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) == 0 &&
             CastRayWorldAndActors(svB, &actor->posX) == 0) {
           continue;
         }
@@ -794,15 +794,15 @@ void Level21_UpdateActors(void) {
         TickActorFlameGlow(actor);
       }
       f = actor->flags;
-      if ((f & 0xF0000) && actor->mode != BTHROW_KNOCKED &&
-          (actor->type != ACTOR_TYPE_BOULDER_THROWER_B || f != 0x10000)) {
+      if ((f & ACTOR_HIT_ANY) && actor->mode != BTHROW_KNOCKED &&
+          (actor->type != ACTOR_TYPE_BOULDER_THROWER_B || f != ACTOR_HIT_FLAME)) {
         Actor *c;
 
-        if (f & 0x40000) {
+        if (f & ACTOR_HIT_BLAST) {
           st->speed = 0;
           st->zSpeed = 0x28;
         } else {
-          if (f == 0x20000) {
+          if (f == ACTOR_HIT_CHARGE) {
             st->speed = 0x15E;
           } else {
             st->speed = 0x118;
@@ -854,7 +854,7 @@ void Level21_UpdateActors(void) {
         continue;
       }
 
-      if (st->flags == 2) {
+      if (st->flags == BTHROW_F_HOP) {
         if (st->path->cur != 0 &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
           st->path->cur = 0;
@@ -889,7 +889,7 @@ void Level21_UpdateActors(void) {
           SetActorGroupSubstate(actor, 1);
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
-        if (st->flags & 1) {
+        if (st->flags & THROWER_F_ADVANCE) {
           ENTER_POSE(actor, BTHROW_PATROL);
         }
         actor->mode = BTHROW_WATCH;
@@ -898,7 +898,7 @@ void Level21_UpdateActors(void) {
 
       case BTHROW_WATCH:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if ((st->flags & 1) &&
+        if ((st->flags & THROWER_F_ADVANCE) &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x1F4
                                : -SPY_DZ(actor) < 0x1F4) &&
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < st->throwRange) {
@@ -969,11 +969,11 @@ void Level21_UpdateActors(void) {
         break;
 
       case BTHROW_PATROL:
-        st->flags &= ~1;
+        st->flags &= ~THROWER_F_ADVANCE;
         if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x1400) {
           ENTER_POSE(actor, BTHROW_THROW);
         }
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, 5) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           ENTER_POSE(actor, BTHROW_WATCH);
         }
@@ -1113,7 +1113,7 @@ void Level21_UpdateActors(void) {
         break;
 
       case BTHROW_RIDE_WALK: {
-        int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, 0xFF, 5);
+        int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
         ANIM_GO(actor, 5);
         if (r == 0x100) {
@@ -1195,8 +1195,8 @@ void Level21_UpdateActors(void) {
       GatekeeperState *st = actor->state;
       int f = actor->flags;
 
-      if ((f & 0xD0000) && actor->mode != GATEKEEPER_KNOCKED) {
-        if (f & 0x40000) {
+      if ((f & (ACTOR_HIT_FLAME | ACTOR_HIT_BLAST | ACTOR_HIT_SUPER)) && actor->mode != GATEKEEPER_KNOCKED) {
+        if (f & ACTOR_HIT_BLAST) {
           st->speed = 0;
           st->zSpeed = 0x28;
         } else {
@@ -1480,7 +1480,7 @@ void Level21_UpdateActors(void) {
         break;
 
       case GATEKEEPER_RIDE_WALK: {
-        int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, 0xFF, 5);
+        int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
         ANIM_GO(actor, 6);
         if (r == 0x100) {
@@ -3090,12 +3090,12 @@ void Level21_UpdateActors(void) {
       if (st->init == 0) {
         st->init = 1;
         if (IsActorInRunningKillSet(actor) != 0) {
-          if (st->mode == 0) {
+          if (st->mode == PRUN_FIRST) {
             actor->group = 0;
             SetActorGroupSubstate(actor, 2);
             actor->group = 1;
             SetActorGroupSubstate(actor, 2);
-          } else if (st->mode == 1) {
+          } else if (st->mode == PRUN_SECOND) {
             actor->group = 2;
             SetActorGroupSubstate(actor, 2);
           }
@@ -3105,7 +3105,7 @@ void Level21_UpdateActors(void) {
         }
       }
 
-      if (st->mode == 0 && st->pathInit == 0) {
+      if (st->mode == PRUN_FIRST && st->pathInit == 0) {
         st->pathInit = 1;
         if (g_nSpawnAnchorValid[0] != 0) {
           st->camTimer = 0;
@@ -3133,7 +3133,7 @@ void Level21_UpdateActors(void) {
           continue;
         }
       }
-      if (st->mode == 1 && st->pathInit == 0) {
+      if (st->mode == PRUN_SECOND && st->pathInit == 0) {
         st->pathInit = 1;
         if (IsPointInRotatedBox(&spy->posX, st->volB) != 0) {
           actor->group = 2;
@@ -3217,18 +3217,18 @@ void Level21_UpdateActors(void) {
         } else {
           actor->posZ = z;
         }
-        if (st->mode == 0 && r == 0x11C &&
+        if (st->mode == PRUN_FIRST && r == 0x11C &&
             ApproxDist2D(&actor->posX, &spy->posX) < 0x1C00 &&
             ABS2(SPY_DZ(actor)) < 0x898) {
           g_anLevelRunnerArrived[st->mode] = 1;
         }
-        if (st->mode == 1 && r == 0x10A &&
+        if (st->mode == PRUN_SECOND && r == 0x10A &&
             ApproxDist2D(&actor->posX, &spy->posX) < 0x1D4C &&
             ABS2(SPY_DZ(actor)) < 0xBB8) {
           g_anLevelRunnerArrived[st->mode] = 1;
         }
         if (r == 0x100) {
-          if (st->mode == 1) {
+          if (st->mode == PRUN_SECOND) {
             if (g_anLevelRunnerArrived[1] == 0) {
               st->path = st->home;
               st->path[1] = 0;
@@ -3237,7 +3237,7 @@ void Level21_UpdateActors(void) {
             }
             actor->mode = RUNNER_LOOKOUT;
             continue;
-          } else if (st->mode == 0) {
+          } else if (st->mode == PRUN_FIRST) {
             if (g_anLevelRunnerArrived[0] != 0) {
               actor->mode = RUNNER_WAIT;
               continue;
@@ -3351,7 +3351,7 @@ void Level21_UpdateActors(void) {
           } while (k < 3);
         }
         last = st->mode < 2 ? st->path[0] - 1 : 0;
-        if (r == 0x103 && st->mode == 0 && g_anLevelRunnerArrived[0] == 0) {
+        if (r == 0x103 && st->mode == PRUN_FIRST && g_anLevelRunnerArrived[0] == 0) {
           st->path[1] = st->path[0] - 1;
           CopyVector(&actor->posX,
                         (int *)(st->path + (st->path[0] * 16 - 0x18)));
@@ -3375,9 +3375,9 @@ void Level21_UpdateActors(void) {
             st->lift = 0x17C;
             break;
           case 2:
-            if (st->mode == 0) {
+            if (st->mode == PRUN_FIRST) {
               st->lift = 0x104;
-            } else if (st->mode == 1) {
+            } else if (st->mode == PRUN_SECOND) {
               st->lift = 0xD2;
             }
             break;
@@ -3470,7 +3470,7 @@ void Level21_UpdateActors(void) {
             actor->mode = RUNNER_WAIT;
             continue;
           }
-          MoveActorAlongHeading(actor, 0x118, 0, 0, 5);
+          MoveActorAlongHeading(actor, 0x118, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         continue;
 
@@ -3492,7 +3492,7 @@ void Level21_UpdateActors(void) {
       int distance;
       int flags;
       st = (WhirlwindState *)actor->state;
-      if (st->flags & 8) {
+      if (st->flags & WHIRL_F_GATED) {
         if (g_pActorListBase[st->idx].type == ACTOR_TYPE_KEY) {
           if (g_pActorListBase[st->idx].subMode == 0)
             break;
@@ -3507,10 +3507,10 @@ void Level21_UpdateActors(void) {
         }
       }
       flags = st->flags;
-      if (flags & 2) {
+      if (flags & WHIRL_F_IDLE) {
         if (st->timer != 0) {
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0)
-            st->flags = (st->flags & ~2) | 4;
+            st->flags = (st->flags & ~WHIRL_F_IDLE) | WHIRL_F_WOKEN;
           break;
         }
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1000 &&
@@ -3519,7 +3519,7 @@ void Level21_UpdateActors(void) {
         }
         break;
       }
-      if (flags & 0x10)
+      if (flags & WHIRL_F_MARK)
         actor->subMode = 1;
       PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->voiceRow);
       if ((GetRandomU32() & 1) == 0)
@@ -3534,7 +3534,7 @@ void Level21_UpdateActors(void) {
         SPY.triggerEvents |= SPYRO_EV_LIFT;
         SPY.requestTargetZ = actor->posZ + st->spanZ;
         CopyVector(spy->firstContactPoint, &actor->posX);
-        if (st->flags & 1) {
+        if (st->flags & WHIRL_F_TARGET_CAM) {
           spyro->requestMask |= SPYRO_RQ_TARGET_CAMERA;
         } else {
           g_anCameraActiveTargetParams = g_anCameraParamMode2Front;
@@ -3546,9 +3546,9 @@ void Level21_UpdateActors(void) {
         st->timer = 0x78;
         break;
       }
-      if ((st->flags & ~1) == 4 && st->timer != 0 &&
+      if ((st->flags & ~WHIRL_F_TARGET_CAM) == WHIRL_F_WOKEN && st->timer != 0 &&
           TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-        st->flags = (st->flags & ~4) | 2;
+        st->flags = (st->flags & ~WHIRL_F_WOKEN) | WHIRL_F_IDLE;
       }
       break;
     }
@@ -4407,7 +4407,7 @@ void Level21_UpdateActors(void) {
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
         if (TurnActorYawTowardAngle(actor, ang, 6, 0x14, 1) != 0) {
-          MoveActorAlongAngle(actor, ang, 0x50, 0, 0x12C, 5);
+          MoveActorAlongAngle(actor, ang, 0x50, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (ApproxDist2D(&actor->posX,
                             &st->path->nodes[st->path->cur].x) < 0x100) {
             ENTER_POSE(actor, RAM_GRAZE);
@@ -4431,7 +4431,7 @@ void Level21_UpdateActors(void) {
           break;
         }
         ANIM_GO(actor, 1);
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x28, 0xFF, 5) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           g_pActorListBase[st->partner].subMode = 1;
           actor->mode = RAM_PATH_END;

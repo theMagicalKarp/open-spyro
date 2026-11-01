@@ -16,6 +16,14 @@ enum CollectSubMode {
   COLLECT_INERT = 4,  /* skipped: a seed pod's displayed prize (the pod moves it) */
 };
 
+/* CollectibleState.mode: how a COLLECT_REST collectible holds its place. */
+enum CollectRestMode {
+  COLLREST_STILL = 0,    /* stays put */
+  COLLREST_SNAP = 1,     /* snaps to the floor every frame (gems lean along it) */
+  COLLREST_ON_TRI = 2,   /* rides the centroid of its ground triangle (a moving chunk) */
+  COLLREST_FIND_TRI = 3, /* looks for the triangle below it, then ON_TRI */
+};
+
 /* Sparx's ->subMode while he has a target (SparxState.target); with none he
  * hovers beside Spyro. */
 enum SparxSubMode {
@@ -188,6 +196,12 @@ enum ThiefMode {
   THIEF_CLIMB_RUN_BACK = 0x2C, /* runs the path back to its start */
   THIEF_CIRCLE = 0x32,      /* circles the current node away from Spyro */
   THIEF_STAND = 0x3C,       /* stands facing Spyro */
+};
+
+/* ->subMode of an egg thief that keeps away around its home node. */
+enum ThiefSubMode {
+  THIEFSUB_ORBIT = 0, /* circles path node 0 keeping it between itself and Spyro */
+  THIEFSUB_BREAK = 1, /* stuck or cornered: runs straight past, then ORBIT */
 };
 
 /* ->mode of a roaming ram (ACTOR_TYPE_ROAMING_RAM, RoamingRamState). */
@@ -490,6 +504,14 @@ enum VillagerMode {
   VILLAGER_STOP = 92,   /* catches its breath facing Spyro; he comes closer: PANIC */
 };
 
+/* VillagerState.mode: the villager's role. */
+enum VillagerRole {
+  VROLE_CHAT = 0,   /* faces Spyro; talks (its chunk anim) when he is in talk range */
+  VROLE_FACE = 1,   /* faces its friend; Spyro too close: PANIC */
+  VROLE_PAIR = 2,   /* waits on its partner (link), cueing it via subMode */
+  VROLE_LEADER = 3, /* watches its leader (LeaderState) */
+};
+
 /* ->mode of a post guard (ACTOR_TYPE_POST_GUARD, PostState; level 2).
  * POSTGUARD_IDLE runs PostState.mode's role (waits between its two posts,
  * patrols, lookout, or ambushes with its partner). */
@@ -601,6 +623,13 @@ enum LungingGuardMode {
   LGUARD_SHRINK = 10,  /* scales down to the other kind, then IDLE */
   LGUARD_GROW = 20,    /* scales up and bursts into the other kind, then IDLE */
   LGUARD_ESCORT = 30,  /* keeps its partner between itself and Spyro */
+};
+
+/* LungingGuardState.kind: the guard's current size (a big guard toggles it
+ * as it shrinks and grows back). */
+enum LungingGuardKind {
+  LGKIND_SMALL = 0, /* lunges from close; a blast shrinks it away */
+  LGKIND_BIG = 1,   /* lunges from far; shrugs off a plain charge; a blast grows it */
 };
 
 /* ->mode of a grabber (ACTOR_TYPE_GRABBER, GrabberState; level 20).
@@ -809,7 +838,7 @@ enum GatekeeperMode {
 };
 
 /* ->mode of a tethered guard (ACTOR_TYPE_TETHERED_GUARD, TetherState; level
- * 15); the mode is also the animation index. TetherState.mode is the command
+ * 15); the mode is also the animation index. TetherState.mode is the TetherCommand
  * a tether keeper or sentinel hands it (1 bound to its owner, 4-6 keeper
  * cues). */
 enum TetheredGuardMode {
@@ -823,6 +852,18 @@ enum TetheredGuardMode {
   TGUARD_BOUND = 7,       /* frozen until its owner goes dormant */
   TGUARD_LOOK = 8,        /* looks about (or toward its keeper), then RISE */
   TGUARD_SIGNAL = 9,      /* cues its keeper (who watches for this mode) */
+};
+
+/* TetherState.mode / KeeperState.mode: the command a tether keeper hands its
+ * tethered guard once the guard reports READY. */
+enum TetherCommand {
+  TCMD_NONE = 0,
+  TCMD_BOUND = 1, /* frozen (TGUARD_BOUND) until its owner goes dormant */
+  TCMD_FREED = 2, /* owner gone: plays out the bound pose, then READY */
+  TCMD_READY = 3, /* waiting for its keeper's command */
+  TCMD_SWAT = 4,  /* signals once; the swing knocks its keeper away (KEEPER_STRUCK) */
+  TCMD_WATCH = 5, /* guards facing its keeper, signalling it between looks */
+  TCMD_RISE = 6,  /* rises at once; its signal sends the keeper out (KEEPER_STEP_OUT) */
 };
 
 /* ->mode of a tether keeper (ACTOR_TYPE_TETHER_KEEPER, KeeperState; level
@@ -1132,7 +1173,7 @@ enum LootThiefMode {
 };
 
 /* ->mode of a two-path runner (ACTOR_TYPE_TWO_PATH_RUNNER, RunnerState; level
- * 8); the mode is also the animation index. With RunnerState.mode 2 it runs
+ * 8); the mode is also the animation index. With RunnerState.mode TPARM_RUN it runs
  * whichever of its two paths ends nearer Spyro (RunnerState.which). */
 enum TwoPathRunnerMode {
   TPRUNNER_IDLE = 0,       /* until RunnerState.mode arms it: GUARD */
@@ -1140,8 +1181,15 @@ enum TwoPathRunnerMode {
   TPRUNNER_KNOCKED = 5,    /* charged: knocked away, then bursts */
   TPRUNNER_REACT = 6,      /* faces Spyro, then GUARD (no writer in the C sources) */
   TPRUNNER_SWIPE = 8,      /* swipes, then GUARD */
-  TPRUNNER_WALK_BACK = 10, /* walks to its path node, then GUARD (a level 8 lookout sets its linked guard to 10) */
+  TPRUNNER_WALK_BACK = 10, /* walks to its path node, then GUARD (a level 8 lookout, GLOOK_ROUSE, sets its linked runner to 10) */
   TPRUNNER_RUN = 0x14,     /* runs its chosen path to RunnerState.node, then GUARD */
+};
+
+/* RunnerState.mode: how far a two-path runner is armed. */
+enum TwoPathRunnerArm {
+  TPARM_NONE = 0,  /* stays IDLE */
+  TPARM_GUARD = 1, /* GUARD only (set again once a run ends) */
+  TPARM_RUN = 2,   /* GUARD, and RUN when Spyro nears a path's node */
 };
 
 /* ->mode of a rim rider (ACTOR_TYPE_RIM_RIDER, RimState; level 16); the mode
@@ -1367,6 +1415,178 @@ enum GrazerMode {
 enum LobbedBombMode {
   LOBBOMB_FLY = 0,   /* flies; landing, the timer, a wall or Spyro: BURST */
   LOBBOMB_BURST = 1, /* sparks and despawns */
+};
+
+/* ->mode of the level 14 fleeing walker (ACTOR_TYPE_FLEEING_WALKER,
+ * FleeingWalkerState); the mode is also the animation index. */
+enum FleeingWalkerMode {
+  FLEEWALK_WALK = 0,    /* walks its path (also held while Spyro is hurt) */
+  FLEEWALK_STAND = 1,   /* at a path node / end: stands */
+  FLEEWALK_KNOCKED = 2, /* supercharged: slides off along Spyro's heading, then bursts */
+  FLEEWALK_FLEE = 3,    /* Spyro close: runs from him, steering off walls */
+};
+
+/* ->mode of the level 14 chunk operator (ACTOR_TYPE_CHUNK_OPERATOR,
+ * ChunkOperatorState); the mode is also the animation index. */
+enum ChunkOperatorMode {
+  CHUNKOP_WAIT = 0,    /* waits for its chunk to halt at step 0 (Spyro near) or 0xE (far): START */
+  CHUNKOP_RUN = 1,     /* keeps the chunk running (riding operators, after a FLINCH) */
+  CHUNKOP_START = 2,   /* restarted the chunk; when the animation ends: WAIT */
+  CHUNKOP_KNOCKED = 3, /* hit: finishes the chunk's run and bursts */
+  CHUNKOP_FLINCH = 4,  /* flamed: flinches, then RUN */
+};
+
+/* ->mode of the overhead thrower (ACTOR_TYPE_OVERHEAD_THROWER; levels 9/10);
+ * the mode is also the animation index. */
+enum OverheadThrowerMode {
+  OTHROW_HOLD = 0, /* holds its snowball (state word 0) overhead */
+  OTHROW_HIT = 1,  /* charged or supercharged: lets the snowball fly at Spyro, then HOLD */
+};
+
+/* ->mode of the level 8 roaming critter (ACTOR_TYPE_ROAMING_CRITTER,
+ * RoamingCritterState). A hit always lands in DYING; KNOCKED's slide only
+ * runs when entered directly. */
+enum RoamingCritterMode {
+  ROAMCRIT_WANDER = 0,  /* UpdateActorWander */
+  ROAMCRIT_KNOCKED = 5, /* slides along the knock heading, bursts; falls into DYING */
+  ROAMCRIT_DYING = 6,   /* death animation 6 (wandering its first frames), then 7; despawns */
+};
+
+/* ->mode of a checkpoint (ACTOR_TYPE_CHECKPOINT .. + 2; levels 0/14). */
+enum CheckpointMode {
+  CHECKPT_REARM = 0,     /* waits for Spyro to walk away (> 2560), then ARMED */
+  CHECKPT_ARMED = 1,     /* Spyro touches it: sets the respawn anchor, FLASH */
+  CHECKPT_FLASH = 2,     /* subMode counts frames to 0x30, then REARM */
+};
+
+/* ->mode of a lookout (LookoutState): ACTOR_TYPE_GUARD_LOOKOUT (level 8) and
+ * ACTOR_TYPE_SHEMP_LOOKOUT (level 10); the update switches on a local copy. */
+enum GuardLookoutMode {
+  GLOOK_WATCH = 0,   /* idles facing home / Spyro; rouses its idle guard when Spyro is in range */
+  GLOOK_SWIPE = 6,   /* Spyro close below it: swipes him away, then WATCH */
+  GLOOK_KNOCKED = 7, /* flamed or supercharged: knocked away, then bursts */
+  GLOOK_ROUSE = 10,  /* turns to its guard and wakes it on frame 5, then WATCH */
+};
+
+/* ->mode of the level 16 humming bell (ACTOR_TYPE_HUMMING_BELL,
+ * HummingBellState). */
+enum HummingBellMode {
+  HBELL_INIT = 0,   /* first frame: HUM */
+  HBELL_STRUCK = 1, /* flamed or supercharged: bursts, runs its chunk to step 0, despawns */
+  HBELL_HUM = 2,    /* sparks at its target and restarts its chunk every period */
+};
+
+/* ->mode of an attach bead (ACTOR_TYPE_ATTACH_BEAD, AttachBeadState; level
+ * 19), one of the three kids a bead sentry keeps streaming between its two
+ * attach points; ->subMode is its index. */
+enum AttachBeadMode {
+  BEAD_INIT = 0,    /* staggers its start by its index, then DELAY */
+  BEAD_DELAY = 1,   /* counts up to 0, then STREAM */
+  BEAD_STREAM = 2,  /* slides attach point 1 -> 0, scaling up */
+  BEAD_DESPAWN = 3, /* set by the sentry when it is knocked */
+};
+
+/* ->mode of the lob gunner's lob (ACTOR_TYPE_LOB_GUNNER_LOB, LobState;
+ * level 32). It waits in the gunner's hand until ->subMode is set. */
+enum LobGunnerLobMode {
+  LGLOB_FLY = 0,     /* flies its arc; hitting something or its timer: BURST */
+  LGLOB_BURST = 1,   /* knocks Spyro back when near, sparks, despawns */
+  LGLOB_DESPAWN = 2, /* set by the gunner: knocked holding it, or no arc to the target */
+};
+
+/* ->mode of the level 22 platform pod (ACTOR_TYPE_PLATFORM_POD,
+ * PlatformPodState); the mode is also the animation index. */
+enum PlatformPodMode {
+  PPOD_WAIT = 0, /* closed; on its timer: OPEN */
+  PPOD_OPEN = 1, /* opens; when done, raises its ACTOR_TYPE_BOBBING_PLATFORMs: UP */
+  PPOD_UP = 2,   /* lobs ACTOR_TYPE_POD_SHOTs at its partner; on its timer drops them, WAIT */
+};
+
+/* ->mode of the level 6 breakable prop (ACTOR_TYPE_BREAKABLE_PROP); the mode
+ * is also the animation index. */
+enum BreakablePropMode {
+  BPROP_IDLE = 0,
+  BPROP_WOBBLE = 1, /* plays out, then IDLE (no writer in this block) */
+  BPROP_BREAK = 2,  /* flamed, or supercharged twice in half a second: breaks, despawns */
+};
+
+/* ->mode of the level 7 shooter's shot (ACTOR_TYPE_SHOOTER_SHOT,
+ * ShooterShotState). */
+enum ShooterShotMode {
+  SSHOT_FLY = 0,   /* flies; hitting a wall, Spyro (knocked back) or its timer: BURST */
+  SSHOT_BURST = 1, /* debris and sparks, despawns */
+};
+
+/* ->mode of the level 0 pressure switch (ACTOR_TYPE_PRESSURE_SWITCH,
+ * SwitchState); the mode is also the animation index, and ->subMode tracks
+ * Spyro standing on it. */
+enum PressureSwitchMode {
+  PSWITCH_UP = 0,
+  PSWITCH_DOWN = 1, /* its bit in the linked actor's subMode is set */
+};
+
+/* ->mode of the simple two-mode projectiles: ACTOR_TYPE_FLYING_EMBER and
+ * ACTOR_TYPE_FALLING_ROCK (level 25), ACTOR_TYPE_BURST_GUNNER_SHOT (level 32),
+ * ACTOR_TYPE_LOBBED_BOLT (level 22) and ACTOR_TYPE_FIREBALL (level 6). */
+enum ShotMode {
+  SHOT_FLY = 0,   /* moves; landing, a wall, Spyro or its timer: BURST */
+  SHOT_BURST = 1, /* bursts (or plays its shatter), then despawns */
+};
+
+/* ->mode of the level 26 partner platform (ACTOR_TYPE_PARTNER_PLATFORM,
+ * PartnerPlatformState); the mode is also the animation index. */
+enum PartnerPlatformMode {
+  PPLAT_BOB = 0,   /* bobs on its phase, flagging its partner's subMode near the top */
+  PPLAT_BREAK = 1, /* flamed or supercharged: breaks, then despawns */
+};
+
+/* ->mode of the level 26 sinking block (ACTOR_TYPE_SINKING_BLOCK,
+ * SinkingBlockState); the mode is also the animation index. */
+enum SinkingBlockMode {
+  SINKBLK_IDLE = 0,
+  SINKBLK_SINK = 1, /* struck: sets its partner's mode to 1 and sinks into the floor */
+};
+
+/* ->mode of a homeworld talker (ACTOR_TYPE_HOME_TALKER .. + 4; levels
+ * 0/6/12/18/24). */
+enum HomeTalkerMode {
+  TALKER_REARM = 0, /* waits for Spyro to walk away (>= 0x1000), then READY */
+  TALKER_READY = 1, /* Spyro walks up facing it: starts its actor cutscene, REARM */
+};
+
+/* ->mode of the level 32 flame chunk switch (ACTOR_TYPE_FLAME_CHUNK_SWITCH,
+ * FlameChunkSwitchState); the mode is also the animation index. */
+enum FlameChunkSwitchMode {
+  FCSWITCH_IDLE = 0,
+  FCSWITCH_TRIPPED = 1, /* flamed: resumes chunk 0's animation; re-arms after 0x50 frames */
+};
+
+/* BreakableWallState.kind (ACTOR_TYPE_BREAKABLE_WALL; level 27). */
+enum BreakableWallKind {
+  BWALL_PLAIN = 0,   /* any hit on a part breaks it */
+  BWALL_ARMORED = 1, /* only a supercharge or superflame (ACTOR_HIT_SUPER) breaks it */
+};
+
+/* SuperflameGiverState.kind: how long the granted superflame lasts. */
+enum SuperflameGiverKind {
+  SFKIND_TIMED = 0,       /* 0x384 frames */
+  SFKIND_ENDLESS = 1,     /* g_nSpyroSuperflameTimer 0x9450C00: effectively for good */
+  SFKIND_SHORT = 2,       /* 0x30C frames */
+  SFKIND_ENDLESS_FAR = 3, /* ENDLESS, granted from a wider range (0xD48) */
+};
+
+/* PathRunnerState.mode: which of its two runs a path runner makes. */
+enum PathRunnerRun {
+  PRUN_FIRST = 0,  /* drives goal flag 0 */
+  PRUN_SECOND = 1, /* drives goal flag 1 */
+};
+
+/* LootVortexState.mode (ACTOR_TYPE_LOOT_VORTEX; levels 33/34). */
+enum LootVortexStage {
+  LVORTEX_LOCKED = 0, /* hidden until its key's loot thief is beaten: OPEN (key carried) */
+  LVORTEX_OPEN = 1,   /* Spyro walks into its pad facing the target: ACTIVE */
+  LVORTEX_ACTIVE = 2, /* freezes Spyro and plays its sequence; when he is free again: FINISH */
+  LVORTEX_FINISH = 3, /* runs its chunk anim, resets the camera stick and the key state */
 };
 
 #endif

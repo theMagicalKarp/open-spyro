@@ -469,7 +469,7 @@ void Level2_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -810,7 +810,7 @@ void Level2_UpdateActors(void) {
       }
 
       if (actor->drawn != 0 || toSpyro <= 0x2000 || actor->subMode != COLLECT_REST ||
-          st->mode != 0) {
+          st->mode != COLLREST_STILL) {
         switch (actor->subMode) {
         case COLLECT_SETTLE:
           /* Idle: sample the floor normal and face along it. */
@@ -834,8 +834,8 @@ void Level2_UpdateActors(void) {
 
         case COLLECT_REST: {
 
-          if (st->mode == 0) {
-          } else if (st->mode == 1) {
+          if (st->mode == COLLREST_STILL) {
+          } else if (st->mode == COLLREST_SNAP) {
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
             if (actor->type >= ACTOR_TYPE_GEM_1) {
@@ -849,7 +849,7 @@ void Level2_UpdateActors(void) {
                 st->roll = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
               }
             }
-          } else if (st->mode == 2) {
+          } else if (st->mode == COLLREST_ON_TRI) {
             UnpackWorldCollisionTri(st->groundTri, acc[0]);
             AddVector(acc[0], acc[0], acc[1]);
             AddVector(acc[0], acc[0], acc[2]);
@@ -859,13 +859,13 @@ void Level2_UpdateActors(void) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
-          } else if (st->mode == 3) {
+          } else if (st->mode == COLLREST_FIND_TRI) {
             CopyVector(svF, &actor->posX);
             svF[2] += 0x400;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             if (FindGroundHeightBelow(svF, 0x1000) > 0) {
               st->groundTri = g_nLastCollisionHitChunkId;
-              st->mode = 2;
+              st->mode = COLLREST_ON_TRI;
             }
           }
 
@@ -1832,7 +1832,7 @@ void Level2_UpdateActors(void) {
         case 1:
           ANIM_GO(actor, 1);
           PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0xC8, 5, 0xA, actor->group,
-                        5);
+                        MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400) {
             SetActorGroupState(actor, POSTGUARD_ALERTED);
           }
@@ -1876,7 +1876,7 @@ void Level2_UpdateActors(void) {
           case 3:
             ANIM_GO(actor, 1);
             if (PivotActorAlongPath(actor, st->path, 0x100, 0x96, 0, 8, 0x32, 0xFF,
-                              5) == 0x100) {
+                              MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x100) {
               st->phase++;
             }
             break;
@@ -1956,7 +1956,7 @@ void Level2_UpdateActors(void) {
                 ArcTan2(st->path->pts[st->path->sel].x - actor->posX,
                               st->path->pts[st->path->sel].y - actor->posY, 0),
                 6, 0x14, one)) {
-          MoveActorAlongHeading(actor, 0x8C, 0, 0, 5);
+          MoveActorAlongHeading(actor, 0x8C, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (ApproxDist2D(&actor->posX, &st->path->pts[st->path->sel]) < 0x100 ||
             ApproxDist2D(&actor->posX, &SPY.posX) < 0xC00) {
@@ -2017,7 +2017,7 @@ void Level2_UpdateActors(void) {
 
         if (AbsAngleDelta8(ang, actor->rotZ) < 0x10) {
           TurnActorYawTowardAngle(actor, ang, 5, 0, 0);
-          MoveActorAlongAngle(actor, ang, 0x50, 0, 0, 5);
+          MoveActorAlongAngle(actor, ang, 0x50, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (st->flag != 0 ||
               ApproxDist2D(&actor->posX,
                             (int *)&st->path->pts[st->path->sel]) < 0x80) {
@@ -2106,7 +2106,7 @@ void Level2_UpdateActors(void) {
           if (!TrackEntityYawTowardSpyro(actor, 5, 0x14, 1)) {
             continue;
           }
-          if (MoveActorAlongHeading(actor, 0x78, 0, 0x1F4, 0x15)) {
+          if (MoveActorAlongHeading(actor, 0x78, 0, 0x1F4, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT)) {
             st->timer = 0x78;
             ENTER_POSE(actor, PCHARGER_PATROL);
           }
