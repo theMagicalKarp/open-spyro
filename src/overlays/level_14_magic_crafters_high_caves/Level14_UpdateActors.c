@@ -189,9 +189,7 @@ typedef struct Cam5 {
 
 /* Type 109: flying carrier. Follows Spyro and can be ridden. */
 typedef struct CarrierState {
-  int mode;        /* 0x00 bits 0-1 riding (1/2 = side), 2 to dest, 3 path0,
-                      4 follow Spyro, 5 return along cur, 6 back down cur,
-                      7 camera hold; 0x2C = carried */
+  int mode;        /* 0x00 CARRIER_F_* flags */
   PathData *pathA; /* 0x04 */
   PathData *pathB; /* 0x08 */
   PathData *pathC; /* 0x0C */
@@ -202,6 +200,20 @@ typedef struct CarrierState {
   int bob;         /* 0x28 */
   int vz;          /* 0x2C */
 } CarrierState;
+
+/* CarrierState.mode flags. With CARRIER_F_SIDE clear the carrier is the
+ * lead: it flies to Spyro (PICKUP), lifts him (SPYRO_ST_LIFT) along the
+ * nearest path to its end (TO_PATH), on to `dest` (TO_DEST) and along path0
+ * (PATH0), then back-tracks (BACK). Escorts (SIDE 1/2) fly beside Spyro while
+ * their lead (`rider`) is carrying. */
+#define CARRIER_F_SIDE 3          /* escort side: 1 left, 2 right; 0 = lead */
+#define CARRIER_F_TO_DEST 4       /* carrying Spyro to `dest`, then PATH0 */
+#define CARRIER_F_PATH0 8         /* carrying Spyro along path0, then BACK | CAM_HOLD */
+#define CARRIER_F_PICKUP 0x10     /* flying to Spyro, then TO_PATH / TO_DEST */
+#define CARRIER_F_TO_PATH 0x20    /* carrying Spyro along the nearest path, then TO_DEST */
+#define CARRIER_F_BACK 0x40       /* back down `cur`, then home to `dest` */
+#define CARRIER_F_CAM_HOLD 0x80   /* holds the camera while Spyro is still airborne */
+#define CARRIER_F_CARRYING (CARRIER_F_TO_DEST | CARRIER_F_PATH0 | CARRIER_F_TO_PATH)
 
 /* Turn toward `h`; walk at `d`, slowed by the remaining turn. */
 #define STEER(a, h, d, k1, k2, sh)                                             \
@@ -1954,9 +1966,9 @@ void Level14_UpdateActors(void) {
       int d;
       int h;
 
-      switch (st->mode & 3) {
+      switch (st->mode & CARRIER_F_SIDE) {
       case 0:
-        if (st->mode & 0x80) {
+        if (st->mode & CARRIER_F_CAM_HOLD) {
           if (g_nSpyroAirborneFrames != 0) {
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
             if (g_nSpyroState == SPYRO_ST_08) {
@@ -1975,10 +1987,10 @@ void Level14_UpdateActors(void) {
             g_nCameraActiveTargetPitchBias = g_anCameraParamMode2Front.w[4];
             g_nCameraActiveTargetYawBias = g_anCameraParamMode2Front.w[5];
           } else {
-            st->mode &= ~0x80;
+            st->mode &= ~CARRIER_F_CAM_HOLD;
           }
         }
-        if (st->mode & 0x2C) {
+        if (st->mode & CARRIER_F_CARRYING) {
           int *cf = &g_dwSpyroRequestMask;
 
           *cf = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_YAW | SPYRO_RQ_VEL_Z | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
@@ -2011,7 +2023,7 @@ void Level14_UpdateActors(void) {
           g_anCameraActiveTargetParams.w[3] = g_anCameraParamMode2Front.w[3];
           g_anCameraActiveTargetParams.w[4] = g_anCameraParamMode2Front.w[4];
           g_anCameraActiveTargetParams.w[5] = g_anCameraParamMode2Front.w[5];
-        } else if (st->mode & 0x10) {
+        } else if (st->mode & CARRIER_F_PICKUP) {
           int *cf = &g_dwSpyroRequestMask;
 
           *cf = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_YAW | SPYRO_RQ_VEL_Z | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
@@ -2039,10 +2051,10 @@ void Level14_UpdateActors(void) {
           g_anCameraActiveTargetParams.w[5] = g_anCameraParamMode2Front.w[5];
         }
 
-        if (st->mode & 4) {
+        if (st->mode & CARRIER_F_TO_DEST) {
           d = ApproxDist2D(&actor->posX, st->dest);
           if (d < 0x200) {
-            st->mode = (st->mode & ~4) | 8;
+            st->mode = (st->mode & ~CARRIER_F_TO_DEST) | CARRIER_F_PATH0;
             (st->cur = st->path0)->cur = 0;
             st->vz = 0;
             continue;
@@ -2068,7 +2080,7 @@ void Level14_UpdateActors(void) {
           continue;
         }
 
-        if (st->mode & 8) {
+        if (st->mode & CARRIER_F_PATH0) {
           d = 0x140;
           h = ArcTan2(NODE_PT(st->cur)[0] - actor->posX,
                             NODE_PT(st->cur)[1] - actor->posY, 0);
@@ -2103,7 +2115,7 @@ void Level14_UpdateActors(void) {
           if (ApproxDist2D(&actor->posX, PATH_CUR(st->cur)) < 0x200 &&
               ++st->cur->cur >= st->cur->count) {
             st->cur->cur = st->cur->count - 2;
-            st->mode = (st->mode & ~8) | 0xC0;
+            st->mode = (st->mode & ~CARRIER_F_PATH0) | CARRIER_F_BACK | CARRIER_F_CAM_HOLD;
             EBB_BREAK();
             g_nSpyroRequestState = SPYRO_ST_08;
             g_nSpyroMoveTargetYaw = 0x290;
@@ -2111,7 +2123,7 @@ void Level14_UpdateActors(void) {
           continue;
         }
 
-        if (st->mode & 0x10) {
+        if (st->mode & CARRIER_F_PICKUP) {
           int done = 1;
 
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->voiceRow);
@@ -2159,7 +2171,7 @@ void Level14_UpdateActors(void) {
             int i;
             int which;
 
-            st->mode &= ~0x10;
+            st->mode &= ~CARRIER_F_PICKUP;
             d = ApproxDist2D(&actor->posX, st->dest);
             which = 0;
             for (i = 0; i < st->pathA->count; i++) {
@@ -2191,18 +2203,18 @@ void Level14_UpdateActors(void) {
             }
             switch (which) {
             case 0:
-              st->mode |= 4;
+              st->mode |= CARRIER_F_TO_DEST;
               break;
             case 1:
-              st->mode |= 0x20;
+              st->mode |= CARRIER_F_TO_PATH;
               st->cur = st->pathA;
               break;
             case 2:
-              st->mode |= 0x20;
+              st->mode |= CARRIER_F_TO_PATH;
               st->cur = st->pathB;
               break;
             case 3:
-              st->mode |= 0x20;
+              st->mode |= CARRIER_F_TO_PATH;
               st->cur = st->pathC;
               break;
             }
@@ -2210,7 +2222,7 @@ void Level14_UpdateActors(void) {
           continue;
         }
 
-        if (st->mode & 0x20) {
+        if (st->mode & CARRIER_F_TO_PATH) {
           d = 0x140;
           h = ArcTan2(NODE_PT(st->cur)[0] - actor->posX,
                             NODE_PT(st->cur)[1] - actor->posY, 0);
@@ -2237,12 +2249,12 @@ void Level14_UpdateActors(void) {
           if (ApproxDist2D(&actor->posX, PATH_CUR(st->cur)) < 0x200 &&
               ++st->cur->cur >= st->cur->count) {
             st->cur->cur = 0;
-            st->mode = (st->mode & ~0x20) | 4;
+            st->mode = (st->mode & ~CARRIER_F_TO_PATH) | CARRIER_F_TO_DEST;
           }
           continue;
         }
 
-        if (st->mode & 0x40) {
+        if (st->mode & CARRIER_F_BACK) {
           if (st->cur->cur > st->cur->count) {
             d = ApproxDist2D(&actor->posX, st->dest);
             if (d > 0x140) {
@@ -2254,7 +2266,7 @@ void Level14_UpdateActors(void) {
             d = (st->dest[2] - actor->posZ) >> 1;
             if (ABS2(d) < 0x80) {
               st->cur->cur = 0;
-              st->mode &= ~0x40;
+              st->mode &= ~CARRIER_F_BACK;
             }
             if (d > 0x80) {
               d = 0x80;
@@ -2361,24 +2373,24 @@ void Level14_UpdateActors(void) {
             actor->posZ += d;
           }
           if (SPY.posZ < 0x9358) {
-            st->mode |= 0x10;
+            st->mode |= CARRIER_F_PICKUP;
           }
           continue;
         }
 
       case 1:
       case 2: {
-        if (*(int *)g_pActorListBase[st->rider].state & 0x2C) {
+        if (((CarrierState *)g_pActorListBase[st->rider].state)->mode & CARRIER_F_CARRYING) {
           int side = -0x40;
 
-          if ((st->mode & 3) == 1) {
+          if ((st->mode & CARRIER_F_SIDE) == 1) {
             side = 0x40;
           }
           CopyVector(svF, &SPY.posX);
           if (actor->mode != st->mode) {
-            actor->mode = st->mode & 3;
+            actor->mode = st->mode & CARRIER_F_SIDE;
             if (actor->nextAnim != st->mode) {
-              ANIM_ADVANCE(actor, st->mode & 3);
+              ANIM_ADVANCE(actor, st->mode & CARRIER_F_SIDE);
             }
             continue;
           }
@@ -2394,7 +2406,7 @@ void Level14_UpdateActors(void) {
         } else {
           int side = -0x50;
 
-          if ((st->mode & 3) == 1) {
+          if ((st->mode & CARRIER_F_SIDE) == 1) {
             side = 0x50;
           }
           CopyVector(svF, &g_pActorListBase[st->rider].posX);
