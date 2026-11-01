@@ -861,7 +861,7 @@ undefined __do_global_dtors(void);
 /* 0x8005ba60: PSY-Q SpuInit equivalent (S_I.OBJ/SpuInit signature match). Trivial 1-line wrapper: calls InitSpuSubsystem(0) (full-init path that re-seeds voice-table shadow, opens VBlank event, zeros DMA tracking state). No other callers under this address — game routes SPU subsystem init through this single entry. */
 void InitSpu(void);
 
-/* 0x8005ba80: SPU subsystem init worker — the public InitSpu wraps with (0). Sequence: (1) FUN_8005ddc8 vtable callback (pre-init hook through PTR_PTR_800749ac+0xc), (2) InitSpuHardware(`param_1`) — hardware reset + per-voice register seed, (3) when `param_1`==0: fills all 24 entries of g_anSpuVoiceNoteShadow with 0xc000 (default note shadow), (4) InstallSpuDmaEventHandler — opens VBlank event 0xf0000009 for SPU DMA completion, (5) zeros DMA-tracking state (0x800730f4/f8/104/108/10a/10c/110), (6) saves g_nSpuReverbEsaDefault -> g_nSpuReverbEsaShadow (transfer-control default), (7) WriteSpuRegister(0xd1, g_nSpuReverbEsaDefault, 0) — direct SPU register write at slot 0xd1, (8) zeros more SPU tracking state (0x800735b0/b4/b8, g_nSpuTransferMode/ec/118/114). `param_1` selects full reset (0) vs minimal re-init (!=0; skips voice-shadow seed). Sole caller: InitSpu. */
+/* 0x8005ba80: SPU subsystem init worker — the public InitSpu wraps with (0). Sequence: (1) FUN_8005ddc8 vtable callback (pre-init hook through PTR_PTR_800749ac+0xc), (2) InitSpuHardware(param_1) — hardware reset + per-voice register seed, (3) when param_1==0: fills all 24 entries of g_anSpuVoiceNoteShadow with 0xc000 (default note shadow), (4) InstallSpuDmaEventHandler — opens VBlank event 0xf0000009 for SPU DMA completion, (5) zeros DMA-tracking state (0x800730f4/f8/104/108/10a/10c/110), (6) saves g_nSpuReverbEsaDefault -> g_nSpuReverbEsaShadow (transfer-control default), (7) WriteSpuRegister(0xd1, g_nSpuReverbEsaDefault, 0) — direct SPU register write at slot 0xd1, (8) zeros more SPU tracking state (0x800735b0/b4/b8, g_nSpuTransferMode/ec/118/114). param_1 selects full reset (0) vs minimal re-init (!=0; skips voice-shadow seed). Sole caller: InitSpu. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined InitSpuSubsystem(int param_1);
 
@@ -869,15 +869,15 @@ undefined InitSpuSubsystem(int param_1);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined InstallSpuDmaEventHandler(void);
 
-/* 0x8005bbf4: PSY-Q SpuInit-equivalent SPU hardware reset. Clears main/reverb vol, sets transfer mode=4, key-offs all 24 voices, waits SPUSTAT lower 11 bits to settle. When `param_1`==0 (full-init path): clears FM/Noise/reverb-config regs, calls WriteSpuRamPio(shadow+0x14, 0x10) to seed reverb work area, writes default voice register set (VolL=0/VolR=0/Pitch=0x3fff/StartAddr=0x200/ADSR1=0/ADSR2=0) to all 24 voices, then key-on-all-24 followed by key-off-all-24 to flush key state. Finally sets SPUCNT (+0x1aa) = 0xc000 (SPU enable + IRQ unmask). `param_1` selects full reset (0) vs minimal re-init (!=0). Sole caller: InitSpuSubsystem (InitSpu wrapper). */
+/* 0x8005bbf4: PSY-Q SpuInit-equivalent SPU hardware reset. Clears main/reverb vol, sets transfer mode=4, key-offs all 24 voices, waits SPUSTAT lower 11 bits to settle. When param_1==0 (full-init path): clears FM/Noise/reverb-config regs, calls WriteSpuRamPio(shadow+0x14, 0x10) to seed reverb work area, writes default voice register set (VolL=0/VolR=0/Pitch=0x3fff/StartAddr=0x200/ADSR1=0/ADSR2=0) to all 24 voices, then key-on-all-24 followed by key-off-all-24 to flush key state. Finally sets SPUCNT (+0x1aa) = 0xc000 (SPU enable + IRQ unmask). param_1 selects full reset (0) vs minimal re-init (!=0). Sole caller: InitSpuSubsystem (InitSpu wrapper). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 InitSpuHardware(int param_1);
 
-/* 0x8005be88: PSY-Q SpuWrite-style PIO upload to SPU sound RAM via the data register at SPU_BASE+0x1a8. Stamps the SPU transfer-address register (+0x1a6) from the shadow at the top. Chunks `param_2` bytes into batches of up to 0x40 bytes, writing 2 bytes per store, then sets SPUCNT transfer-mode bits (+0x1aa & 0xffcf | 0x10), and waits for SPUSTAT (+0x1ae) bit 0x400 (write-FIFO ready) to clear. Loops until `param_2` reaches 0; on entry with `param_2`==0, finalizes by clearing the SPUCNT transfer-mode bits and waiting SPUSTAT lower 11 bits to return to the saved value. Used by both the SPU init path (seeding the reverb work area) and the PIO branch of the DMA/PIO dispatcher WriteSpuRamInternal. Logs "SPU:T/O [...]" on timeout. Callers: InitSpuHardware, WriteSpuRamInternal. */
+/* 0x8005be88: PSY-Q SpuWrite-style PIO upload to SPU sound RAM via the data register at SPU_BASE+0x1a8. Stamps the SPU transfer-address register (+0x1a6) from the shadow at the top. Chunks param_2 bytes into batches of up to 0x40 bytes, writing 2 bytes per store, then sets SPUCNT transfer-mode bits (+0x1aa & 0xffcf | 0x10), and waits for SPUSTAT (+0x1ae) bit 0x400 (write-FIFO ready) to clear. Loops until param_2 reaches 0; on entry with param_2==0, finalizes by clearing the SPUCNT transfer-mode bits and waiting SPUSTAT lower 11 bits to return to the saved value. Used by both the SPU init path (seeding the reverb work area) and the PIO branch of the DMA/PIO dispatcher WriteSpuRamInternal. Logs "SPU:T/O [...]" on timeout. Callers: InitSpuHardware, WriteSpuRamInternal. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined WriteSpuRamPio(undefined2 *param_1, uint param_2);
 
-/* 0x8005c1c0: PSY-Q-style multi-mode SPU DMA transfer controller. `param_1` = subcommand: 0 = start READ transfer (SPU→CPU; waits for SPU transfer-addr register at +0x1a6 to match shadow, then sets SPUCNT (+0x1aa) transfer-mode bits = 0x30 = DMA-read, sets pending-read flag g_nSpuPendingDmaDirection=1 so subcmd 3 will issue CHCR=0x1000200); 1 = start WRITE transfer (CPU→SPU; same wait, sets SPUCNT transfer-mode bits = 0x20 = DMA-write, g_nSpuPendingDmaDirection=0 → CHCR=0x1000201); 2 = set transfer-address shadow + immediately stamp encoded form to SPU +0x1a6 register; 3 = wait for transfer-mode bits to settle, fire pre-kick state-bit callback (SetSpuDmaReadStateBits if read / SetSpuDmaWriteStateBits if write), then kick DMA controller via DPCR-shadow at SPU-state+0x3c (byte addr), +0x40 (chunk count = (`param_3`>>6 round-up) | 0x10), +0x44 (control word 0x1000200 read / 0x1000201 write). Returns 0xfffffffe on timeout, 0 otherwise. Used by both ReadSpuRamDma and the DMA path of WriteSpuRamInternal. */
+/* 0x8005c1c0: PSY-Q-style multi-mode SPU DMA transfer controller. param_1 = subcommand: 0 = start READ transfer (SPU→CPU; waits for SPU transfer-addr register at +0x1a6 to match shadow, then sets SPUCNT (+0x1aa) transfer-mode bits = 0x30 = DMA-read, sets pending-read flag g_nSpuPendingDmaDirection=1 so subcmd 3 will issue CHCR=0x1000200); 1 = start WRITE transfer (CPU→SPU; same wait, sets SPUCNT transfer-mode bits = 0x20 = DMA-write, g_nSpuPendingDmaDirection=0 → CHCR=0x1000201); 2 = set transfer-address shadow + immediately stamp encoded form to SPU +0x1a6 register; 3 = wait for transfer-mode bits to settle, fire pre-kick state-bit callback (SetSpuDmaReadStateBits if read / SetSpuDmaWriteStateBits if write), then kick DMA controller via DPCR-shadow at SPU-state+0x3c (byte addr), +0x40 (chunk count = (param_3>>6 round-up) | 0x10), +0x44 (control word 0x1000200 read / 0x1000201 write). Returns 0xfffffffe on timeout, 0 otherwise. Used by both ReadSpuRamDma and the DMA path of WriteSpuRamInternal. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 ControlSpuDmaTransfer(int param_1, uint param_2, uint param_3);
 
@@ -885,14 +885,14 @@ undefined4 ControlSpuDmaTransfer(int param_1, uint param_2, uint param_3);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 uint WriteSpuRamInternal(undefined2 *param_1, uint param_2, uint param_3);
 
-/* 0x8005c4d8: DMA SPU→CPU read implementation (no PIO fallback). Re-stamps the current transfer-addr shadow (encoded back to a byte address via the SPU address shift) into the DMA controller via ControlSpuDmaTransfer subcmd 2 (set addr), switches direction to "read SPU→CPU" via subcmd 0 (SPUCNT |= 0x30 / pending-read flag g_nSpuPendingDmaDirection=1 → CHCR=0x1000200), then subcmd 3 kicks the DMA controller with (`param_1`=CPU buffer addr, `param_2`=byte count). Returns `param_2`. Sole caller: ReadSpuRam (public size-clamping entry). */
+/* 0x8005c4d8: DMA SPU→CPU read implementation (no PIO fallback). Re-stamps the current transfer-addr shadow (encoded back to a byte address via the SPU address shift) into the DMA controller via ControlSpuDmaTransfer subcmd 2 (set addr), switches direction to "read SPU→CPU" via subcmd 0 (SPUCNT |= 0x30 / pending-read flag g_nSpuPendingDmaDirection=1 → CHCR=0x1000200), then subcmd 3 kicks the DMA controller with (param_1=CPU buffer addr, param_2=byte count). Returns param_2. Sole caller: ReadSpuRam (public size-clamping entry). */
 uint ReadSpuRamDma(uint param_1, uint param_2, uint param_3);
 
-/* 0x8005c540: Write one short into an arbitrary SPU register slot. Address = (`param_1`*2) + SPU register base ptr at SPU-state-struct+24. When `param_3`==0 writes `param_2` raw; otherwise writes (`param_2` >> g_nSpuAddrShift) — used to encode byte-addresses into SPU register units. Used by InitSpuSubsystem to seed the SPU control word at slot 0xd1 with g_nSpuReverbEsaDefault. */
+/* 0x8005c540: Write one short into an arbitrary SPU register slot. Address = (param_1*2) + SPU register base ptr at SPU-state-struct+24. When param_3==0 writes param_2 raw; otherwise writes (param_2 >> g_nSpuAddrShift) — used to encode byte-addresses into SPU register units. Used by InitSpuSubsystem to seed the SPU control word at slot 0xd1 with g_nSpuReverbEsaDefault. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined WriteSpuRegister(int param_1, uint param_2, int param_3);
 
-/* 0x8005c588: Encodes a byte-address into SPU register units and writes it to one voice's address slot. Aligns up by g_nSpuAddrAlignUnit (8) if g_nSpuAddrAlignEnable alignment-enable is set; shifts down by g_nSpuAddrShift (=3, since SPU memory is addressed in 8-byte blocks); writes the result short to D_80073554 (0x1F801C00, the SPU voice registers) + `param_1`*2 when `param_1`>=0. Sentinels: `param_1`==-1 returns the encoded value (no write), `param_1`==-2 returns the aligned byte address unchanged. Used by ApplySpuVoiceAttrRange for sample-start (slot voice*8|3) and loop-start (slot voice*8|7) writes. */
+/* 0x8005c588: Encodes a byte-address into SPU register units and writes it to one voice's address slot. Aligns up by g_nSpuAddrAlignUnit (8) if g_nSpuAddrAlignEnable alignment-enable is set; shifts down by g_nSpuAddrShift (=3, since SPU memory is addressed in 8-byte blocks); writes the result short to D_80073554 (0x1F801C00, the SPU voice registers) + param_1*2 when param_1>=0. Sentinels: param_1==-1 returns the encoded value (no write), param_1==-2 returns the aligned byte address unchanged. Used by ApplySpuVoiceAttrRange for sample-start (slot voice*8|3) and loop-start (slot voice*8|7) writes. */
 uint WriteSpuVoiceAddrRegister(int param_1, uint param_2);
 
 /* 0x8005c6c8: Pre-DMA-kick CHCR state-bit prep for SPU writes (CPU -> SPU). Clears CHCR upper-byte lower nibble (bits 24-27 — busy + reserved) and sets bit 29 as a software sentinel. Called by ControlSpuDmaTransfer subcmd 3 immediately before the real CHCR write (0x1000201) so the channel is in a known state when the new transfer is triggered. */
@@ -939,14 +939,14 @@ long GetSpuTransferStatus(int mode);
 /* 0x8005cc58: PSY-Q SpuSetCommonAttr equivalent. From SpuCommonAttr*: bit0/bit2 = mvol L/L_mode, bit1/bit3 = mvol R/R_mode (ADSR-style mode codes 1..7 select preset slopes 0x8000..0xe000 ORed into top nibble, raw values clamped to [0,0x7f]); bit0x40/0x80 = rvol L/R; bit0x100 = CD enable (SPUCNT bit2); bit0x200 = ext enable (SPUCNT bit0); bit0x1000/0x2000 = CD-input vol L/R reverb-on enable (SPUCNT bits3/1); bit0x400/0x800 = CD vol L/R. mask=0 in attr[0] applies every field (full-init path used by InitSoundEngine). */
 void SetSpuCommonAttr(unsigned char *attr);
 
-/* 0x8005cfec: Per-voice SpuVoiceAttr writeback worker over voice range [`param_2`..`param_3`]. `param_1` points to a SpuVoiceAttr struct (PSY-Q libspu layout): [0]=voice mask, [1]=field mask, +0x08 volL, +0x0a volR, +0x0c volmodeL, +0x0e volmodeR, +0x14 pitch, +0x16 sample_note, +0x18 note, +0x1c sample addr, +0x20 loop addr, +0x24 a_mode, +0x28 s_mode, +0x2c r_mode, +0x30 ar/dr/sr/rr/sl, +0x3a adsr1, +0x3c adsr2. For each selected voice (bit set in `param_1`[0], or `param_2`==`param_3` forces "all"), writes the fields permitted by `param_1`[1] into the SPU voice registers (base pointer D_80073554 = 0x1F801C00)+voice*0x10. ADSR mode values 1..7 select preset slope codes (0x8000..0xe000) ORed into the volume/sweep register top nibble. Pitch uses raw `param_1`[5] when note==sample_note, else ComputeSpuPitchFromNoteDelta. Sample/loop addresses go through WriteSpuVoiceAddrRegister. When `param_4`==0, finishes with DelaySpuRegisterWrite flush. Returns 0 on success, 0xfffffffd if range is invalid. Sole caller: ApplySpuVoiceAttr wraps with (attr, 0, 0x17, 0). */
+/* 0x8005cfec: Per-voice SpuVoiceAttr writeback worker over voice range [param_2..param_3]. param_1 points to a SpuVoiceAttr struct (PSY-Q libspu layout): [0]=voice mask, [1]=field mask, +0x08 volL, +0x0a volR, +0x0c volmodeL, +0x0e volmodeR, +0x14 pitch, +0x16 sample_note, +0x18 note, +0x1c sample addr, +0x20 loop addr, +0x24 a_mode, +0x28 s_mode, +0x2c r_mode, +0x30 ar/dr/sr/rr/sl, +0x3a adsr1, +0x3c adsr2. For each selected voice (bit set in param_1[0], or param_2==param_3 forces "all"), writes the fields permitted by param_1[1] into the SPU voice registers (base pointer D_80073554 = 0x1F801C00)+voice*0x10. ADSR mode values 1..7 select preset slope codes (0x8000..0xe000) ORed into the volume/sweep register top nibble. Pitch uses raw param_1[5] when note==sample_note, else ComputeSpuPitchFromNoteDelta. Sample/loop addresses go through WriteSpuVoiceAddrRegister. When param_4==0, finishes with DelaySpuRegisterWrite flush. Returns 0 on success, 0xfffffffd if range is invalid. Sole caller: ApplySpuVoiceAttr wraps with (attr, 0, 0x17, 0). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 ApplySpuVoiceAttrRange(uint *param_1, uint param_2, uint param_3, int param_4);
 
-/* 0x8005d6b8: Computes the SPU pitch register value from a note delta — PSY-Q SpuFsetNToP equivalent. Each note is packed as (semitone, fraction-of-semitone) pairs; delta = (`param_3`*128 + `param_4`) - (`param_1`*128 + `param_2`) gives 128ths of a semitone. Divides by 0x600 (=12 semitones * 128 = one octave) into octave count + intra-octave remainder. Base pitch 0x1000 shifts left (positive delta = higher) or right (negative) by octave count. Within the octave, multiplies repeatedly by 0x103b (=4155 ≈ 4096 * 2^(1/12), the semitone ratio in 12.0 fixed point) for each 32-unit chunk of fractional remainder, then linearly interpolates the last 5 bits. Result clamped to 0x3fff. Sole caller: ApplySpuVoiceAttrRange (when SpuVoiceAttr.note differs from sample_note). */
+/* 0x8005d6b8: Computes the SPU pitch register value from a note delta — PSY-Q SpuFsetNToP equivalent. Each note is packed as (semitone, fraction-of-semitone) pairs; delta = (param_3*128 + param_4) - (param_1*128 + param_2) gives 128ths of a semitone. Divides by 0x600 (=12 semitones * 128 = one octave) into octave count + intra-octave remainder. Base pitch 0x1000 shifts left (positive delta = higher) or right (negative) by octave count. Within the octave, multiplies repeatedly by 0x103b (=4155 ≈ 4096 * 2^(1/12), the semitone ratio in 12.0 fixed point) for each 32-unit chunk of fractional remainder, then linearly interpolates the last 5 bits. Result clamped to 0x3fff. Sole caller: ApplySpuVoiceAttrRange (when SpuVoiceAttr.note differs from sample_note). */
 uint ComputeSpuPitchFromNoteDelta(uint param_1, uint param_2, uint param_3, uint param_4);
 
-/* 0x8005d9ec: PSY-Q SpuGetAllKeysStatus equivalent. Fills `param_1`[0..23] with each voice's key/envelope status code: 0 = SPU_OFF (key clear, env=0); 1 = SPU_ON (key set, env>0); 2 = SPU_ON_ENV_OFF (key clear, env still > 0 — release tail); 3 = SPU_OFF_ENV_ON (key set, env=0 — attack ramp). Per voice: reads envelope short at (SPU register base + 0x10*idx + 0xc) and probes live key-on mask g_dwSpuLiveKeyOnMask bit idx. Sole caller: SyncSoundVoicesWithHardware (drift-reconciliation probe). */
+/* 0x8005d9ec: PSY-Q SpuGetAllKeysStatus equivalent. Fills param_1[0..23] with each voice's key/envelope status code: 0 = SPU_OFF (key clear, env=0); 1 = SPU_ON (key set, env>0); 2 = SPU_ON_ENV_OFF (key clear, env still > 0 — release tail); 3 = SPU_OFF_ENV_ON (key set, env=0 — attack ramp). Per voice: reads envelope short at (SPU register base + 0x10*idx + 0xc) and probes live key-on mask g_dwSpuLiveKeyOnMask bit idx. Sole caller: SyncSoundVoicesWithHardware (drift-reconciliation probe). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined GetAllSpuVoiceKeyStatus(undefined1 *param_1);
 
@@ -1026,7 +1026,7 @@ undefined2 *ResetCallback(void);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined HandleHardwareInterrupt(void);
 
-/* 0x8005e224: PSY-Q InterruptCallback equivalent — install or uninstall a per-IRQ callback. `param_1` = IRQ number (0..10), `param_2` = callback fn (NULL to uninstall). Updates the dispatch entry at &g_apfnIrqHandlers[irq], toggles the corresponding bit in I_MASK + g_nIrqEnableMask enable shadow. Special cases: irq==0 (VBlank) also calls ChangeClearPAD(uninstall ? 1 : 0) + ChangeClearRCnt(); irq==4/5/6 (RCnt0/1/2) also call ChangeClearRCnt(). Returns previous callback. Bracketed by I_MASK=0 critical section. */
+/* 0x8005e224: PSY-Q InterruptCallback equivalent — install or uninstall a per-IRQ callback. param_1 = IRQ number (0..10), param_2 = callback fn (NULL to uninstall). Updates the dispatch entry at &g_apfnIrqHandlers[irq], toggles the corresponding bit in I_MASK + g_nIrqEnableMask enable shadow. Special cases: irq==0 (VBlank) also calls ChangeClearPAD(uninstall ? 1 : 0) + ChangeClearRCnt(); irq==4/5/6 (RCnt0/1/2) also call ChangeClearRCnt(). Returns previous callback. Bracketed by I_MASK=0 critical section. */
 int InstallInterruptCallback(uint param_1, int param_2);
 
 /* 0x8005e4ac: Zero-words helper used by ResetCallback to clear the 0x41a-word libapi callback registry at &g_nLibapiCallbackInstalled (install flag + dispatch table + enable shadow + setjmp buffer + auxiliary state). Identical loop to ClearRootCounterCallbackTable + ClearDmaCallbackTable — three separate compiler emissions across libapi OBJs. SDK internal — plate-only. */
@@ -1087,15 +1087,15 @@ void SetDispMask(int on);
 
 int DrawSync(int mode);
 
-/* 0x8005f7d0: libgpu debug helper called by ClearImage/LoadImage/StoreImage/MoveImage. Validates that RECT `param_2` fits within the framebuffer bounds (g_nGpuScreenWidth/6a). Prints '%s:bad RECT' via the debug printf hook (PTR_WritePrintf_80074a60) when verbose mode (g_bGpuDebugLevel) is set. */
+/* 0x8005f7d0: libgpu debug helper called by ClearImage/LoadImage/StoreImage/MoveImage. Validates that RECT param_2 fits within the framebuffer bounds (g_nGpuScreenWidth/6a). Prints '%s:bad RECT' via the debug printf hook (PTR_WritePrintf_80074a60) when verbose mode (g_bGpuDebugLevel) is set. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined ValidateGpuRect(undefined4 param_1, short *param_2);
 
-/* 0x8005f8f8: libgpu ClearImage. Fills VRAM rect `param_1` with packed 24-bit color (R=`param_2`, G=`param_3`, B=`param_4`) via the GPU command-dispatch table at PTR_PTR_80074a5c. */
+/* 0x8005f8f8: libgpu ClearImage. Fills VRAM rect param_1 with packed 24-bit color (R=param_2, G=param_3, B=param_4) via the GPU command-dispatch table at PTR_PTR_80074a5c. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined ClearImage(short *param_1, uint param_2, uint param_3, uint param_4);
 
-/* 0x8005fa28: libgpu LoadImage. Transfers CPU memory at `param_2` into VRAM rect `param_1` via the GPU command-dispatch table at PTR_PTR_80074a5c. */
+/* 0x8005fa28: libgpu LoadImage. Transfers CPU memory at param_2 into VRAM rect param_1 via the GPU command-dispatch table at PTR_PTR_80074a5c. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined LoadImage(short *param_1, undefined4 param_2);
 
@@ -1111,11 +1111,11 @@ void PutDrawEnv(void *env);
 
 DISPENV *PutDispEnv(DISPENV *env);
 
-/* 0x80060670: libgpu SetDrawMode primitive. Initializes DR_MODE at `param_1` (tag length = 2 words): code[0] = GP0(0xe1) draw-mode word built from dfe (force-bg, `param_2`), dtd (dither, `param_3`) and tpage bits (`param_4`); code[1] = clip-area word from optional RECT* `param_5` (NULL = no clip). */
+/* 0x80060670: libgpu SetDrawMode primitive. Initializes DR_MODE at param_1 (tag length = 2 words): code[0] = GP0(0xe1) draw-mode word built from dfe (force-bg, param_2), dtd (dither, param_3) and tpage bits (param_4); code[1] = clip-area word from optional RECT* param_5 (NULL = no clip). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined SetDrawMode(int param_1, int param_2, int param_3, uint param_4, byte *param_5);
 
-/* 0x800608e0: libgpu SetDrawEnv: packs a DRAWENV (RECT clip + offset + tpage + dtd + isbg + RGB clear color) into a primitive chain at `param_1`: GP0(0xe3) area-TL + GP0(0xe4) area-BR + GP0(0xe5) offset + GP0(0xe1) drawmode + GP0(0xe2) texwin + GP0(0xe6) + optional 0x02 background-fill rect. Length byte set to 7 (or 10 with bg fill). */
+/* 0x800608e0: libgpu SetDrawEnv: packs a DRAWENV (RECT clip + offset + tpage + dtd + isbg + RGB clear color) into a primitive chain at param_1: GP0(0xe3) area-TL + GP0(0xe4) area-BR + GP0(0xe5) offset + GP0(0xe1) drawmode + GP0(0xe2) texwin + GP0(0xe6) + optional 0x02 background-fill rect. Length byte set to 7 (or 10 with bg fill). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined SetDrawEnv(int param_1, ushort *param_2);
 
@@ -1202,7 +1202,7 @@ undefined FUN_80062648(void);
 
 void FlushCache(void);
 
-/* 0x800626f8: libc memcpy: byte copy of `param_3` bytes from `param_2` to `param_1`. Returns dest (or NULL if dest is NULL). */
+/* 0x800626f8: libc memcpy: byte copy of param_3 bytes from param_2 to param_1. Returns dest (or NULL if dest is NULL). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined1 *memcpy(undefined1 *param_1, undefined1 *param_2, int param_3);
 
@@ -1212,7 +1212,7 @@ unsigned int GetRandomU32(void);
 /* 0x8006275c: libc srand: sets g_dwRandSeed. */
 void srand(unsigned int seed);
 
-/* 0x8006276c: libc strlen clone. Returns 0 for NULL pointer; otherwise length of null-terminated string at `param_1`. */
+/* 0x8006276c: libc strlen clone. Returns 0 for NULL pointer; otherwise length of null-terminated string at param_1. */
 int strlen(char *param_1);
 
 int WritePrintf(char *fmt, ...);
@@ -1325,7 +1325,7 @@ undefined4 CdProcessInterrupt(void);
 
 int CdSync(int mode, u_char *result);
 
-/* 0x80064cec: libcd CdControl primitive: parks the optional ready-callback (0x80074e34) to NULL, optionally pre-issues sub-command 1 (CdlNop) if previous mode bit 0x10 is set, then writes the command + N parameters into the libcd command FIFO (count from 0x8007507c[cmd]). If blocking flag (`param_4`) == 0 also drives a VSync-bounded wait for 0x80075114 != 0 (the libcd "ready" status); on timeout calls CdResetController and prints "CD timeout: %s (%s) Sync=%s, Ready=%s". Per-iteration polls CdProcessInterrupt to drain the response queue and dispatches the stored callbacks 0x80074e34/e38 if present. Used by CdControl / CdControlBlocking and game-side wrappers. */
+/* 0x80064cec: libcd CdControl primitive: parks the optional ready-callback (0x80074e34) to NULL, optionally pre-issues sub-command 1 (CdlNop) if previous mode bit 0x10 is set, then writes the command + N parameters into the libcd command FIFO (count from 0x8007507c[cmd]). If blocking flag (param_4) == 0 also drives a VSync-bounded wait for 0x80075114 != 0 (the libcd "ready" status); on timeout calls CdResetController and prints "CD timeout: %s (%s) Sync=%s, Ready=%s". Per-iteration polls CdProcessInterrupt to drain the response queue and dispatches the stored callbacks 0x80074e34/e38 if present. Used by CdControl / CdControlBlocking and game-side wrappers. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 int CdCommandSync(byte param_1, undefined1 *param_2, undefined1 *param_3, int param_4);
 
@@ -1350,7 +1350,7 @@ int CdInitDriver(void);
 
 int CdDataSync(int mode);
 
-/* 0x8006570c: Sony SDK internal — libcd DMA-channel-3 sync sector read. Configures CDIO command 0x80, DPCR = 0x20943, CDIO config = 0x1323, latch=0x8000, programs MADR=`param_1` BCR=(`param_2`|0x10000), waits for *0x800750fc bit 0x40, kicks DICR=0x11000000 then waits ACK bit 0x1000000. Wrapped by CdGetSector. */
+/* 0x8006570c: Sony SDK internal — libcd DMA-channel-3 sync sector read. Configures CDIO command 0x80, DPCR = 0x20943, CDIO config = 0x1323, latch=0x8000, programs MADR=param_1 BCR=(param_2|0x10000), waits for *0x800750fc bit 0x40, kicks DICR=0x11000000 then waits ACK bit 0x1000000. Wrapped by CdGetSector. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 FUN_8006570c(undefined4 param_1, uint param_2);
 
@@ -1358,7 +1358,7 @@ undefined4 FUN_8006570c(undefined4 param_1, uint param_2);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 FUN_8006580c(undefined4 param_1, uint param_2);
 
-/* 0x80065dbc: libcd internal: kicks the CD read state machine. Disables sync/ready callbacks, optionally aborts in-flight via CdControl(CdlPause)+CdControl(CdlSetloc), issues CdControl(CdlSetmode), installs 0x800659f0 as sector-ready callback, then CdControlForce(CdlReadN). `param_1` != 0 = retry path with 'CdRead: retry...' message. */
+/* 0x80065dbc: libcd internal: kicks the CD read state machine. Disables sync/ready callbacks, optionally aborts in-flight via CdControl(CdlPause)+CdControl(CdlSetloc), issues CdControl(CdlSetmode), installs 0x800659f0 as sector-ready callback, then CdControlForce(CdlReadN). param_1 != 0 = retry path with 'CdRead: retry...' message. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 CdReadStart(int param_1);
 
@@ -1398,7 +1398,7 @@ int MemCardSync(int mode, int *cmd, int *result);
 /* 0x80067c7c: libmcrd channel-to-event-index map. Maps SIO0 access codes to libmcrd event-table indices: 0→0, 1→2, 2→1, 4→3. Any other input returns (code | 0x8000) — high bit signals "invalid channel" to the caller. Called by MemCardOpenSession + the three public memcard APIs (Load/Read/Write) when looking up which BIOS event handle to wait on. */
 uint MapMemCardAccessCode(uint param_1);
 
-/* 0x80067d74: libmcrd path-prefix formatter. Writes the 6-byte template "bu00:" (loaded from g_szMemCardPathTemplate..c5) into `param_2`'s buffer, then overwrites bytes [2..3] with `param_1` formatted as 2 decimal digits — producing "bu00:", "bu01:" … "bu15:" memcard file paths. Called by MemCardRead and MemCardWrite to construct the filename argument to _card_read/_card_write. */
+/* 0x80067d74: libmcrd path-prefix formatter. Writes the 6-byte template "bu00:" (loaded from g_szMemCardPathTemplate..c5) into param_2's buffer, then overwrites bytes [2..3] with param_1 formatted as 2 decimal digits — producing "bu00:", "bu01:" … "bu15:" memcard file paths. Called by MemCardRead and MemCardWrite to construct the filename argument to _card_read/_card_write. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FormatMemCardPath(int param_1, uint param_2);
 
@@ -1500,7 +1500,7 @@ undefined FIRST_OBJ_25C(void);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined firstfile2(void);
 
-/* 0x800687d4: libc strcat: appends src (`param_2`) to dst (`param_1`). NULL-safe — returns NULL if either is NULL or if buffers overlap end-to-end. Walks dst to find its terminator, then byte-copies src including its null. */
+/* 0x800687d4: libc strcat: appends src (param_2) to dst (param_1). NULL-safe — returns NULL if either is NULL or if buffers overlap end-to-end. Walks dst to find its terminator, then byte-copies src including its null. */
 char *strcat(char *param_1, char *param_2);
 
 /* 0x8006887c: libc strcmp: null-terminated byte compare. Returns (unsigned char) diff at first mismatch, 0 on equal, with NULL handling: NULL == NULL = 0, NULL < non-NULL. */
@@ -1593,7 +1593,7 @@ undefined StopCARD2(void);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined ResetMemCardEventStack(void);
 
-/* 0x80068f44: libmcrd event-tracking registration: pushes the BIOS event handle in `param_1` onto the 4-slot tracking ring at 0x80075c48 and zero-fills the matching 0x10-byte state record at 0x80075c14+i*0x10. Index counter at 0x800751b0; overflow (>=4 slots) prints "libmcrd: event overflow" via WritePrintf instead of trampling the ring. */
+/* 0x80068f44: libmcrd event-tracking registration: pushes the BIOS event handle in param_1 onto the 4-slot tracking ring at 0x80075c48 and zero-fills the matching 0x10-byte state record at 0x80075c14+i*0x10. Index counter at 0x800751b0; overflow (>=4 slots) prints "libmcrd: event overflow" via WritePrintf instead of trampling the ring. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined RegisterMemCardEvent(undefined4 param_1);
 
@@ -1686,10 +1686,10 @@ undefined8 FUN_8006992c(int param_1);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_80069b40(void);
 
-/* 0x80069c08: Sony SDK internal — libmcrd SIO0 byte exchange variant. `param_2`<0 = END-of-frame path (writes ~`param_2` after waiting for ACK rise, then for timeout via IsSioTimeoutExpired); otherwise same as FUN_80069de0 but without the cmd-0x88 acknowledge gating. Returns received byte or 0xffffffec on timeout. Not investigated — pure libmcrd internal. */
+/* 0x80069c08: Sony SDK internal — libmcrd SIO0 byte exchange variant. param_2<0 = END-of-frame path (writes ~param_2 after waiting for ACK rise, then for timeout via IsSioTimeoutExpired); otherwise same as FUN_80069de0 but without the cmd-0x88 acknowledge gating. Returns received byte or 0xffffffec on timeout. Not investigated — pure libmcrd internal. */
 uint FUN_80069c08(int param_1, int param_2);
 
-/* 0x80069de0: Sony SDK internal — libmcrd SIO0 byte exchange. Waits for SIO0 STAT TX-ready bit, optionally pauses for cmd-0x88 acknowledge, writes byte, waits for STAT RX-ready (with SetSioTimeoutDeadline/IsSioTimeoutExpired guard), stores received byte into request struct at `param_1`+0x44/45/3c. Returns received byte or 0xfffffffe on timeout. Not investigated — pure libmcrd internal. */
+/* 0x80069de0: Sony SDK internal — libmcrd SIO0 byte exchange. Waits for SIO0 STAT TX-ready bit, optionally pauses for cmd-0x88 acknowledge, writes byte, waits for STAT RX-ready (with SetSioTimeoutDeadline/IsSioTimeoutExpired guard), stores received byte into request struct at param_1+0x44/45/3c. Returns received byte or 0xfffffffe on timeout. Not investigated — pure libmcrd internal. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 uint FUN_80069de0(int param_1, undefined1 param_2);
 
@@ -1896,7 +1896,7 @@ undefined PADSEQD_OBJ_438(void);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 PADSEQD_OBJ_448(int param_1);
 
-/* 0x8006bb20: libcomb/libcard timeout-deadline setup. Stores `param_1` (tick budget) at 0x80078e9c and the current free-running TMR_SYSCLOCK_VAL at 0x80076b78 — IsSioTimeoutExpired reads the same pair to test if (now - start) (optionally >>3 when TMR_SYSCLOCK_MODE bit 0x200 is clear) has reached the budget. Used by the SIO0 controller/memcard byte exchange (FUN_80069de0) to bound the response-ready spin. */
+/* 0x8006bb20: libcomb/libcard timeout-deadline setup. Stores param_1 (tick budget) at 0x80078e9c and the current free-running TMR_SYSCLOCK_VAL at 0x80076b78 — IsSioTimeoutExpired reads the same pair to test if (now - start) (optionally >>3 when TMR_SYSCLOCK_MODE bit 0x200 is clear) has reached the budget. Used by the SIO0 controller/memcard byte exchange (FUN_80069de0) to bound the response-ready spin. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined SetSioTimeoutDeadline(undefined4 param_1);
 
