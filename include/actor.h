@@ -37,7 +37,7 @@ int ProbeActorGroundHeightRaised(Actor *actor, int delta);
 void SnapActorToGround(Actor *actor);
 int IsActorInRunningKillSet(Actor *actor);
 void PlayActorMeshVoice(Actor *actor, int voiceOffset, void *owner);
-void BurstActorWithSound(Actor *actor, int mode);
+void BurstActorWithSound(Actor *actor, int sparkLife);
 #ifndef YAW_HOLD_IN_BAND
 #define YAW_HOLD_IN_BAND 0 /* inside the threshold band: stop turning */
 #define YAW_STEP_IN_BAND 1 /* inside the band: keep stepping onto the target */

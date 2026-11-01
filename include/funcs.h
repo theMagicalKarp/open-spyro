@@ -2165,13 +2165,13 @@ void ClearWord(int *p);
 void SetSpawnAnchorFromActor(Actor *actor, int heading);
 
 /* 0x800385bc: Play the level's burst sample (sample bank +0x26) keyed to the actor
- * (positionless for NULL), then BurstActorIntoSparks(actor, arg). */
-void BurstActorWithSound(Actor *actor, int mode);
+ * (positionless for NULL), then BurstActorIntoSparks(actor, sparkLife). */
+void BurstActorWithSound(Actor *actor, int sparkLife);
 
 /* 0x800530c0: Load the actor's matrix/position into the GTE, decode its current
  * mesh frame's packed vertices and emit class-2 spark records (AllocEmitListRecord)
- * at them; `arg` lands in GTE RBK and seeds the spark colour. */
-void BurstActorIntoSparks(Actor *actor, int arg);
+ * at them; `life` (parked in GTE RBK) plus 0..3 random is each spark's Emit.life. */
+void BurstActorIntoSparks(Actor *actor, int life);
 
 /* 0x80016fd0: Transpose the packed 3x3 short matrix at src into dst (three
  * halfword-field swaps; the 5th word passes through). */
