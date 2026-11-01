@@ -25,7 +25,7 @@ typedef struct EggRiseState {
 typedef struct CollectibleState {
   int vel[3];           /* 0x00 velocity, also read as a vector */
   short groundTri;      /* 0x0C collision triangle it rests on */
-  unsigned char mode;   /* 0x0E resting sub-state within ->subMode */
+  unsigned char mode;   /* 0x0E CollectRestMode while COLLECT_REST */
   unsigned char timer;  /* 0x0F */
   unsigned char bounce; /* 0x10 bounces left */
   signed char lean;     /* 0x11 body pitch */

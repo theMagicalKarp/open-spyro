@@ -1128,7 +1128,7 @@ void Level26_UpdateActors(void) {
       }
 
       if (actor->drawn != 0 || toSpyro <= 0x2000 || actor->subMode != COLLECT_REST ||
-          st->mode != 0) {
+          st->mode != COLLREST_STILL) {
         switch (actor->subMode) {
         case COLLECT_SETTLE:
           /* Idle: sample the floor normal and face along it. */
@@ -1152,8 +1152,8 @@ void Level26_UpdateActors(void) {
 
         case COLLECT_REST: {
 
-          if (st->mode == 0) {
-          } else if (st->mode == 1) {
+          if (st->mode == COLLREST_STILL) {
+          } else if (st->mode == COLLREST_SNAP) {
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
             if (actor->type >= ACTOR_TYPE_GEM_1) {
@@ -1167,7 +1167,7 @@ void Level26_UpdateActors(void) {
                 st->roll = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
               }
             }
-          } else if (st->mode == 2) {
+          } else if (st->mode == COLLREST_ON_TRI) {
             UnpackWorldCollisionTri(st->groundTri, acc[0]);
             AddVector(acc[0], acc[0], acc[1]);
             AddVector(acc[0], acc[0], acc[2]);
@@ -1177,13 +1177,13 @@ void Level26_UpdateActors(void) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
-          } else if (st->mode == 3) {
+          } else if (st->mode == COLLREST_FIND_TRI) {
             CopyVector(t160, &actor->posX);
             t160[2] += 0x400;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             if (FindGroundHeightBelow(t160, 0x1000) > 0) {
               st->groundTri = g_nLastCollisionHitChunkId;
-              st->mode = 2;
+              st->mode = COLLREST_ON_TRI;
             }
           }
 

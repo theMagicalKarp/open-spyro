@@ -3885,7 +3885,7 @@ void Level14_UpdateActors(void) {
         StopSoundVoiceByIndex(actor->voiceRow, 4);
         hit = SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
         if (hit != 0) {
-          ((CollectibleState *)hit->state)->mode = 3;
+          ((CollectibleState *)hit->state)->mode = COLLREST_FIND_TRI;
         }
         MarkActorCommittedKill(actor);
         ENTER_POSE(actor, CHUNKOP_KNOCKED);

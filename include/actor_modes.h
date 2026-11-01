@@ -16,6 +16,14 @@ enum CollectSubMode {
   COLLECT_INERT = 4,  /* skipped: a seed pod's displayed prize (the pod moves it) */
 };
 
+/* CollectibleState.mode: how a COLLECT_REST collectible holds its place. */
+enum CollectRestMode {
+  COLLREST_STILL = 0,    /* stays put */
+  COLLREST_SNAP = 1,     /* snaps to the floor every frame (gems lean along it) */
+  COLLREST_ON_TRI = 2,   /* rides the centroid of its ground triangle (a moving chunk) */
+  COLLREST_FIND_TRI = 3, /* looks for the triangle below it, then ON_TRI */
+};
+
 /* Sparx's ->subMode while he has a target (SparxState.target); with none he
  * hovers beside Spyro. */
 enum SparxSubMode {

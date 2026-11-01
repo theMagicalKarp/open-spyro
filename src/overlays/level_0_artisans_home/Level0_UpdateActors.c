@@ -3086,7 +3086,7 @@ void Level0_UpdateActors(void) {
 
       rider = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
       if (st->rideMode == 1) {
-        ((CollectibleState *)rider->state)->mode = 1;
+        ((CollectibleState *)rider->state)->mode = COLLREST_SNAP;
       }
 
       actor->soundRange = 0x20;
