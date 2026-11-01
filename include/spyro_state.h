@@ -82,6 +82,12 @@ typedef enum SpyroState
                                          * each shape record's event word in): the shape stays solid to a supercharge,
                                          * which re-dispatches as a solid contact (AdvanceSpyroPhysics) */
 #define SPYRO_EV_REBOUND 0x8000       /* bounce off g_anSpyroFirstContactNormal */
+/* Bits above 0xFFFF reach the event word only through RaiseSpyroTriggerInRadius
+ * callers, and every dispatcher masks the word with 0xFFFF (or less), so
+ * nothing reads them: */
+#define SPYRO_EV_UNREAD_20000 0x20000 /* with HIT_TINT: the split-shot projectiles (levels 12/15/16/27) */
+#define SPYRO_EV_UNREAD_40000 0x40000 /* with 0x80000: level 31's floating barrel / mine blasts */
+#define SPYRO_EV_UNREAD_80000 0x80000
 #define SPYRO_EV_HITS 0x01F1        /* every hit bit (HIT, PINNED .. KNOCKBACK) */
 
 /* Masks the states pass to DispatchSpyroPadStateChanges: everything but the

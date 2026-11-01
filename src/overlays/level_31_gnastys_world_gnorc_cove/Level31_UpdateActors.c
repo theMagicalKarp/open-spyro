@@ -2628,7 +2628,9 @@ void Level31_UpdateActors(void) {
 
       case FLOATBARREL_BLAST:
         if (st->blast == 0) {
-          if (RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 3) * 0x90, 0xC0086) !=
+          if (RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 3) * 0x90,
+                                        SPYRO_EV_UNREAD_80000 | SPYRO_EV_UNREAD_40000 |
+                                            SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) !=
               0) {
             int x;
             int y;
@@ -2878,7 +2880,9 @@ void Level31_UpdateActors(void) {
 
       case FLOATBARREL_BLAST:
         if (st->blast == 0) {
-          if (RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 3) * 0x90, 0xC0086) !=
+          if (RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 3) * 0x90,
+                                        SPYRO_EV_UNREAD_80000 | SPYRO_EV_UNREAD_40000 |
+                                            SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) !=
               0) {
             int x;
             int y;
