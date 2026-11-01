@@ -3202,14 +3202,14 @@ void Level15_UpdateActors(void) {
           st->knockSpeed = 0x5A;
         }
         while (st->link >= 0) {
-          ChainState *cs = g_pActorListBase[st->link].state;
+          TetherState *cs = g_pActorListBase[st->link].state;
 
           if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
             g_pfnLevelEmitParticles(5, EMIT_HOMING_ORB, &g_pActorListBase[st->link].posX, &g_pActorListBase[st->link]);
           }
           st->timer = 0x20;
           st->link = cs->link;
-          if (st->link >= 0 && g_pActorListBase[st->link].type != 0x42) {
+          if (st->link >= 0 && g_pActorListBase[st->link].type != ACTOR_TYPE_TETHERED_GUARD) {
             st->link = -1;
           }
         }
@@ -3224,13 +3224,13 @@ void Level15_UpdateActors(void) {
 
       switch (actor->mode) {
       case SENTINEL_IDLE:
-        if (!(st->flags & 2)) {
-          if (st->flags & 8) {
+        if (!(st->flags & SENTINEL_F_PATROL)) {
+          if (st->flags & SENTINEL_F_AIM) {
             if (ApproxDist2D(&actor->posX, &spy->posX) < st->range) {
               int dz = actor->posZ - SPY.posZ;
 
               if (g_nSpyroAirborneFrames == 0 && ABS(dz) < 0x200) {
-                if (st->flags & 1) {
+                if (st->flags & SENTINEL_F_ALERTED) {
                   ENTER_POSE(actor, SENTINEL_TRACK);
                 }
                 ENTER_POSE(actor, SENTINEL_ALERT);
@@ -3239,7 +3239,7 @@ void Level15_UpdateActors(void) {
                                 ArcTan2(spy->posX - actor->posX,
                                               spy->posY - actor->posY, 0)) < 0x30 &&
                   dz < 0 && dz > -0x1000) {
-                if (st->flags & 1) {
+                if (st->flags & SENTINEL_F_ALERTED) {
                   ENTER_POSE(actor, SENTINEL_TRACK);
                 }
                 ENTER_POSE(actor, SENTINEL_ALERT);
@@ -3248,7 +3248,7 @@ void Level15_UpdateActors(void) {
               break;
             }
             FACE4(actor, st->heading, 4, 0x10);
-            st->flags &= ~1;
+            st->flags &= ~SENTINEL_F_ALERTED;
             break;
           }
           if (ApproxDist2D(&actor->posX, &spy->posX) < st->range) {
@@ -3256,7 +3256,7 @@ void Level15_UpdateActors(void) {
 
             if (dz < 0 && dz > -0x1000) {
               TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
-              if (st->flags & 1) {
+              if (st->flags & SENTINEL_F_ALERTED) {
                 if (actor->group >= 0xFF) {
                   ENTER_POSE(actor, SENTINEL_TRACK);
                 }
@@ -3272,12 +3272,12 @@ void Level15_UpdateActors(void) {
           }
           break;
         }
-        if (st->flags & 1) {
-          if (st->flags & 4) {
+        if (st->flags & SENTINEL_F_ALERTED) {
+          if (st->flags & SENTINEL_F_AT_END) {
             if (st->link >= 0) {
               ENTER_POSE(actor, SENTINEL_POWER_GUARD);
             }
-            st->flags = (st->flags & ~6) | 1;
+            st->flags = (st->flags & ~(SENTINEL_F_PATROL | SENTINEL_F_AT_END)) | SENTINEL_F_ALERTED;
             break;
           }
           ENTER_POSE(actor, SENTINEL_WALK);
@@ -3290,23 +3290,23 @@ void Level15_UpdateActors(void) {
           if (st->link >= 0) {
             if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
               st->heading = actor->rotZ;
-              st->flags = (st->flags & ~2) | 5;
+              st->flags = (st->flags & ~SENTINEL_F_PATROL) | SENTINEL_F_AT_END | SENTINEL_F_ALERTED;
               ENTER_POSE(actor, SENTINEL_POWER_GUARD);
             }
-            st->link = ((ChainState *)g_pActorListBase[st->link].state)->link;
+            st->link = ((TetherState *)g_pActorListBase[st->link].state)->link;
             break;
           }
-          st->flags = (st->flags & ~6) | 1;
+          st->flags = (st->flags & ~(SENTINEL_F_PATROL | SENTINEL_F_AT_END)) | SENTINEL_F_ALERTED;
           ENTER_POSE(actor, SENTINEL_IDLE);
         }
         if (st->link >= 0) {
           if (st->path->cur >=
-              ((ChainState *)g_pActorListBase[st->link].state)->stop) {
+              ((TetherState *)g_pActorListBase[st->link].state)->stop) {
             if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
               st->heading = actor->rotZ;
               ENTER_POSE(actor, SENTINEL_POWER_GUARD);
             }
-            st->link = ((ChainState *)g_pActorListBase[st->link].state)->link;
+            st->link = ((TetherState *)g_pActorListBase[st->link].state)->link;
           }
         }
         break;
@@ -3315,8 +3315,8 @@ void Level15_UpdateActors(void) {
         if (g_nActorAnimDone == 0) {
           break;
         }
-        st->flags |= 1;
-        if (st->flags & 2) {
+        st->flags |= SENTINEL_F_ALERTED;
+        if (st->flags & SENTINEL_F_PATROL) {
           ENTER_POSE(actor, SENTINEL_WALK);
         }
         RESET_IDLE(actor);
@@ -3358,7 +3358,7 @@ void Level15_UpdateActors(void) {
           if (!(dz < 0 && dz > -0x1000)) {
             RESET_IDLE(actor);
           }
-          if (st->flags & 2) {
+          if (st->flags & SENTINEL_F_PATROL) {
             ENTER_POSE(actor, SENTINEL_TRACK);
           }
           if (actor->group >= 0xFF) {
@@ -3389,10 +3389,10 @@ void Level15_UpdateActors(void) {
           d = 8;
         }
         actor->rotZ += d;
-        if (!(st->flags & 4) &&
+        if (!(st->flags & SENTINEL_F_AT_END) &&
             SteerActorAlongWaypoints(actor, st->path, 0x200, 0x80, 0x300, 8, 0x10,
                           &st->heading) == 0x100) {
-          st->flags |= 4;
+          st->flags |= SENTINEL_F_AT_END;
         }
         if (actor->nextFrame >= 9) {
           x256[0] = 0x800;
@@ -3407,11 +3407,11 @@ void Level15_UpdateActors(void) {
           break;
         }
         {
-          ChainState *cs = g_pActorListBase[st->link].state;
+          TetherState *cs = g_pActorListBase[st->link].state;
 
           st->timer = 0x20;
           st->link = cs->link;
-          if (st->link >= 0 && g_pActorListBase[st->link].type != 0x42) {
+          if (st->link >= 0 && g_pActorListBase[st->link].type != ACTOR_TYPE_TETHERED_GUARD) {
             st->link = -1;
           }
         }

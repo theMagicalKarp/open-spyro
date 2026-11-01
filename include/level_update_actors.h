@@ -1049,9 +1049,12 @@ typedef struct TetherState {
   int timer;   /* 0x00 */
   int speed;   /* 0x04 knockback speed */
   int heading; /* 0x08 knockback heading */
-  int link;    /* 0x0C walker to follow (index into g_pActorListBase), or -1 */
+  int link;    /* 0x0C walker to follow (index into g_pActorListBase), or -1;
+                * a sentinel powering a chain of guards reads it as the next
+                * guard (ending the chain when that isn't a tethered guard) */
   int owner;   /* 0x10 actor whose loss frees this one */
   int mode;    /* 0x14 */
+  int stop;    /* 0x18 node of the sentinel's path where it powers this guard */
 } TetherState;
 
 typedef struct LeadState {
@@ -1074,7 +1077,7 @@ typedef struct SentinelState {
   int count;        /* 0x04 bolts fired this volley */
   int link;         /* 0x08 next guard in the chain, or -1 */
   PathData *path;   /* 0x0C */
-  int flags;        /* 0x10 bit 0 alerted, 1 on patrol, 2 at end, 3 aim */
+  int flags;        /* 0x10 SENTINEL_F_* */
   int heading;      /* 0x14 */
   int range;        /* 0x18 */
   int knockTimer;   /* 0x1C */
@@ -1082,12 +1085,12 @@ typedef struct SentinelState {
   int knockSpeed;   /* 0x24 */
 } SentinelState;
 
-typedef struct ChainState {
-  int pad00[3];
-  int link;  /* 0x0C next in chain */
-  int pad10[2];
-  int stop;  /* 0x18 path node where it waits */
-} ChainState;
+/* SentinelState.flags. */
+#define SENTINEL_F_ALERTED 1 /* has seen Spyro: TRACK rather than ALERT */
+#define SENTINEL_F_PATROL 2  /* walks its waypoints instead of standing */
+#define SENTINEL_F_AT_END 4  /* reached its path's end */
+#define SENTINEL_F_AIM 8     /* standing: watches for Spyro inside `range` */
+
 
 extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist, int cap, int contactRadius, int maxTurn, int stallAngle, int f);
 
