@@ -2529,7 +2529,7 @@ void Level7_UpdateActors(void) {
     case ACTOR_TYPE_BRAWLER: {
       BrawlerState *st = actor->state;
 
-      if (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER) && actor->mode != 6) {
+      if (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER) && actor->mode != BRAWLER_KNOCKED) {
         st->heading =
             StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                         actor->posY - spy->posY, 0),
@@ -2537,12 +2537,12 @@ void Level7_UpdateActors(void) {
         st->speed = 0xFA;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
-        actor->mode = 6;
+        actor->mode = BRAWLER_KNOCKED;
         ANIM_RESET(actor, 6);
         continue;
       }
       switch (actor->mode) {
-      case 0: {
+      case BRAWLER_IDLE: {
         int d = ApproxDist2D(&actor->posX, spy);
 
         TurnActorYawTowardAngle(actor,
@@ -2551,12 +2551,12 @@ void Level7_UpdateActors(void) {
                                     -5),
                       5, 0, 0);
         if (d < 0x2000 && ABS2(SPY_DZ(actor)) < 0x3E8) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, BRAWLER_RAISE);
         }
         break;
       }
 
-      case 1:
+      case BRAWLER_SEND:
         st->flag = one;
         if (g_nActorAnimNewFrame != 0 && actor->frame == 0x11) {
           int h = WrapAddAngle8(actor->rotZ, 0xFD);
@@ -2577,49 +2577,49 @@ void Level7_UpdateActors(void) {
           st->u08 = 0x78;
         }
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, BRAWLER_IDLE);
         }
         break;
 
-      case 2:
+      case BRAWLER_RAISE:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, BRAWLER_GUARD);
         }
         break;
 
-      case 3: {
+      case BRAWLER_GUARD: {
         int d = ApproxDist2D(&actor->posX, spy);
 
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && d < 0x9C4 &&
             ABS2(SPY_DZ(actor)) < 0x320) {
           st->timer = 0;
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, BRAWLER_PUNCH);
         }
         if (d > 0x2400) {
-          ENTER_POSE(actor, 5);
+          ENTER_POSE(actor, BRAWLER_LOWER);
         }
         break;
       }
 
-      case 4:
+      case BRAWLER_PUNCH:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (g_nSpyroState == SPYRO_ST_HURT) {
           st->timer = 0x8C;
         }
         if (g_nActorAnimDone != 0) {
           st->timer = 0x8C;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, BRAWLER_RAISE);
         }
         break;
 
-      case 5:
+      case BRAWLER_LOWER:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, BRAWLER_IDLE);
         }
         break;
 
-      case 6:
+      case BRAWLER_KNOCKED:
         if (actor->subMode == 0) {
           int h = WrapAddAngle8(actor->rotZ, -0x40);
           Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_SWOOPER, actor);
@@ -2636,7 +2636,7 @@ void Level7_UpdateActors(void) {
           if (c->anim != 4) {
             ANIM_RESET(c, 4);
           }
-          c->mode = 4;
+          c->mode = SWOOP_KNOCKED;
           cs->speed = 0x12C;
           cs->heading = g_bSpyroPersistentEulerZ;
           c->rotZ = actor->rotZ;
@@ -2926,7 +2926,7 @@ void Level7_UpdateActors(void) {
     case ACTOR_TYPE_WANDERING_CRITTER_B: {
       CritterKnockState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         actor->flags = 0;
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
@@ -2940,17 +2940,17 @@ void Level7_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        actor->mode = 1;
+        actor->mode = CRITTER_KNOCKED;
         ANIM_RESET(actor, 1);
         continue;
       }
 
       switch (actor->mode) {
-      case 0:
+      case CRITTER_WANDER:
         UpdateActorWander(actor, st);
         break;
 
-      case 1:
+      case CRITTER_KNOCKED:
         if (st->speed >= 0x10) {
           st->speed -= 0xF;
           MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x2BC, 5);

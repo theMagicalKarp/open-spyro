@@ -685,10 +685,10 @@ void Level16_UpdateActors(void) {
       EncodeCachedVecToActorDirCode(actor);
 
       switch (actor->mode) {
-      case 0:
+      case RIMRIDER_EMERGE:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x200 &&
             actor->frame >= 0xF) {
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, RIMRIDER_SPAWN);
         }
         actor->posX =
             st->parent->posX + (g_anCosineLut[st->parent->rotZ] << 16 >> 19);
@@ -698,12 +698,12 @@ void Level16_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           st->x = SPY.posX >> 4;
           st->y = SPY.posY >> 4;
-          actor->mode = 1;
+          actor->mode = RIMRIDER_DRIFT;
           ANIM_RESET(actor, 1);
         }
         break;
 
-      case 1:
+      case RIMRIDER_DRIFT:
         switch (st->mode) {
         case 1: {
           int d = ApproxDist2D(&actor->posX, &st->parent->posX);
@@ -712,7 +712,7 @@ void Level16_UpdateActors(void) {
             d = st->range;
           }
           if (d >= st->range) {
-            ENTER_POSE(actor, 3);
+            ENTER_POSE(actor, RIMRIDER_STOP);
           }
           d += st->reach;
           actor->posX = st->parent->posX +
@@ -731,7 +731,7 @@ void Level16_UpdateActors(void) {
           int d;
 
           if (ApproxDist2D(&actor->posX, &st->parent->posX) > st->range) {
-            ENTER_POSE(actor, 3);
+            ENTER_POSE(actor, RIMRIDER_STOP);
           }
           svD[0] = st->x << 4;
           svD[1] = st->y << 4;
@@ -740,7 +740,7 @@ void Level16_UpdateActors(void) {
             d = 0x3000;
           }
           if ((short)st->reach >> 1 >= d) {
-            ENTER_POSE(actor, 3);
+            ENTER_POSE(actor, RIMRIDER_STOP);
           }
           actor->posX += (st->reach * g_anCosineLut[actor->rotZ]) >> 12;
           actor->posY += (st->reach * g_anSineLut[actor->rotZ]) >> 12;
@@ -748,11 +748,11 @@ void Level16_UpdateActors(void) {
         }
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x200) {
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, RIMRIDER_SPAWN);
         }
         break;
 
-      case 2:
+      case RIMRIDER_SINK:
         st->child = 0;
         if (g_nActorAnimDone != 0) {
           ((RimParent *)st->parent->state)->busy = 0;
@@ -760,20 +760,20 @@ void Level16_UpdateActors(void) {
         }
         break;
 
-      case 3:
+      case RIMRIDER_STOP:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, RIMRIDER_SPAWN);
         }
         break;
 
-      case 4:
+      case RIMRIDER_SPAWN:
         st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER_HELPER, actor);
         PlayActorMeshVoice(actor, 1, 0);
-        ENTER_POSE(actor, 5);
+        ENTER_POSE(actor, RIMRIDER_POP);
 
-      case 5:
+      case RIMRIDER_POP:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, RIMRIDER_SINK);
         }
         break;
       }

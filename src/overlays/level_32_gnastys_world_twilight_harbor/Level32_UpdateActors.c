@@ -2424,7 +2424,7 @@ void Level32_UpdateActors(void) {
     case ACTOR_TYPE_WANDERING_CRITTER_C: {
       WandererState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, 0),
                                 spy->bodyRotZ, 0x20, 0x40);
@@ -2436,18 +2436,18 @@ void Level32_UpdateActors(void) {
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 1);
+        ENTER_POSE(actor, CRITTER_KNOCKED);
       }
 
       switch (actor->mode) {
-      case 0:
+      case CRITTER_WANDER:
         UpdateActorWander(actor, st);
         if (TickCountdownByFrameDelta(&st->idleTimer, 4) != 0) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, CRITTER_REST);
         }
         break;
 
-      case 1:
+      case CRITTER_KNOCKED:
         if (st->knockSpeed >= 0x10) {
           st->knockSpeed -= 0xF;
           MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x1F4, 5);
@@ -2460,10 +2460,10 @@ void Level32_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case CRITTER_REST:
         if (g_nActorAnimDone != 0) {
           st->idleTimer = RandomIntInRange(0x5A, 0x12C);
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, CRITTER_WANDER);
         }
         break;
       }

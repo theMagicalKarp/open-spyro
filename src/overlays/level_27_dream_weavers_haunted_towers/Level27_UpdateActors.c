@@ -2518,7 +2518,7 @@ void Level27_UpdateActors(void) {
           o->rotZ = actor->rotZ;
           o->rotX = 0;
           o->rotY = 0;
-          if (actor->mode == 0) {
+          if (actor->mode == FGUARD_ASLEEP) {
             c->lift -= 0x1E;
           }
           if (o->anim != i) {
@@ -2531,11 +2531,11 @@ void Level27_UpdateActors(void) {
       actor->flags = 0;
       if (actor->subMode == 2) {
         actor->subMode = 0;
-        actor->mode = 0;
+        actor->mode = FGUARD_ASLEEP;
         ANIM_RESET(actor, 0);
         continue;
       }
-      if (actor->mode >= 2 && st->onPath == 1) {
+      if (actor->mode >= FGUARD_WATCH && st->onPath == 1) {
         int dy, dx, len, k, n;
 
         dy = st->path[7] - st->path[3];
@@ -2596,18 +2596,18 @@ void Level27_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case FGUARD_ASLEEP:
         if (actor->subMode == 1 || st->wake != 0) {
           actor->subMode = 0;
-          actor->mode = 1;
+          actor->mode = FGUARD_WAKE;
           ANIM_RESET(actor, 1);
           continue;
         }
         break;
 
-      case 1:
+      case FGUARD_WAKE:
         if (g_nActorAnimDone != 0) {
-          actor->mode = 2;
+          actor->mode = FGUARD_WATCH;
           if (actor->nextAnim != 2) {
             actor->frameProgress = sixteen;
             actor->frameRate = sixteen;
@@ -2619,17 +2619,17 @@ void Level27_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case FGUARD_WATCH:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         TickCountdownByFrameDelta(&st->timer, 4);
         if (st->onPath == 0 && st->timer < 0x3C && dist < 0x1194 &&
             (st->link == -1 || g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) &&
             CheckSpyroLineOfSightTo(&actor->posX) != 0) {
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, FGUARD_ATTACK);
         }
         break;
 
-      case 3: {
+      case FGUARD_ATTACK: {
         int range = 0xAF0;
 
         if (AbsAngleDelta8(g_bSpyroPersistentEulerZ,
@@ -2645,7 +2645,7 @@ void Level27_UpdateActors(void) {
         } else {
           st->timer = 0xB4;
         }
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, FGUARD_WATCH);
       near3:
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && dist < range &&
             DZ203(actor) < 0x320 && actor->nextFrame < 0x1C) {
@@ -2678,10 +2678,10 @@ void Level27_UpdateActors(void) {
       FenceCaptainState *st = actor->state;
       int i;
 
-      if (actor->mode != 4) {
+      if (actor->mode != FCAPTAIN_KNOCKED) {
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_WHITE_STREAK, (int *)actor, 0);
       }
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != FCAPTAIN_KNOCKED) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         st->speed = 0xF0;
@@ -2692,7 +2692,7 @@ void Level27_UpdateActors(void) {
                                                   actor->posY - g_nSpyroWorldPosY, 0),
                                     g_bSpyroPersistentEulerZ, 0x20, 0x40);
         st->zSpeed = 0x28;
-        ENTER_POSE(actor, 4);
+        ENTER_POSE(actor, FCAPTAIN_KNOCKED);
       }
       if (st->all1.halfWidth == 0 &&
           (g_nSpyroWorldPosZ - st->all1.z > 0 ? g_nSpyroWorldPosZ - st->all1.z < 0x7D0
@@ -2735,24 +2735,24 @@ void Level27_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case FCAPTAIN_WATCH:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (st->timer == 0 && st->link[st->cur] != -1 &&
             st->hit[st->cur] != 0) {
           st->timer =
               ((FenceGuardState *)g_pActorListBase[st->link[st->cur]].state)->reactDelay;
           st->puff = 0x32;
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, FCAPTAIN_SUMMON);
         }
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0xDAC &&
             (DZ203(actor) > 0 ? DZ203(actor) < 0x418
                               : -DZ203(actor) < 0x418)) {
           st->stage = 0;
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, FCAPTAIN_VOLLEY);
         }
         break;
 
-      case 1:
+      case FCAPTAIN_SUMMON:
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         if (TickCountdownByFrameDelta(&st->puff, 4) == 0) {
           int k;
@@ -2772,11 +2772,11 @@ void Level27_UpdateActors(void) {
         if ((st->timer == 0 && st->hit[st->cur + 1] != 0) ||
             g_nActorAnimDone != 0) {
           st->cur++;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, FCAPTAIN_WATCH);
         }
         break;
 
-      case 3:
+      case FCAPTAIN_VOLLEY:
         TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
         if (g_nActorAnimDone != 0) {
           unsigned char *p = st->path;
@@ -2786,7 +2786,7 @@ void Level27_UpdateActors(void) {
             st->path[1] = RandomIntInRange(1, p[0]) - 1;
             p = st->path;
           } while (p[1] == b);
-          actor->mode = 5;
+          actor->mode = FCAPTAIN_RELOCATE;
           continue;
         }
         if (st->stage <= 0) {
@@ -2801,7 +2801,7 @@ void Level27_UpdateActors(void) {
         }
         break;
 
-      case 4:
+      case FCAPTAIN_KNOCKED:
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xA, 0x10);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -2811,14 +2811,14 @@ void Level27_UpdateActors(void) {
         }
         break;
 
-      case 5: {
+      case FCAPTAIN_RELOCATE: {
         int b = st->path[1];
 
         ANIM_GO(actor, 1);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0xA0, 0, 8, 0x28, 0xFF, 5) &
             0x100) {
           st->path[1] = b;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, FCAPTAIN_WATCH);
         }
         break;
       }

@@ -806,7 +806,7 @@ void Level26_UpdateActors(void) {
       int ang;
       int a;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CPGUARD_KNOCKED) {
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
                                   spy->bodyRotZ, 0x20, 0x40);
@@ -822,7 +822,7 @@ void Level26_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 4);
+        ENTER_POSE(actor, CPGUARD_KNOCKED);
       }
       if (st->node < 0) {
         if (st->onPath != 0) {
@@ -832,7 +832,7 @@ void Level26_UpdateActors(void) {
           st->node = 0;
         }
       }
-      if (TickCountdownByFrameDelta(&st->sndTimer, 4) != 0 && actor->mode < 3) {
+      if (TickCountdownByFrameDelta(&st->sndTimer, 4) != 0 && actor->mode < CPGUARD_ATTACK) {
         int s = (int)GetRandomU32() % 3;
 
         while (s == st->lastSnd) {
@@ -844,7 +844,7 @@ void Level26_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case CPGUARD_PATROL:
         if (st->onPath != 0) {
           FollowActorWaypointPath(actor, st->path, 0x400, 0x5C, 0x180, 4, 2);
         } else {
@@ -877,17 +877,17 @@ void Level26_UpdateActors(void) {
                   0x20 &&
               CheckSpyroLineOfSightTo(&actor->posX) != 0) {
             st->timer = 0x78;
-            ENTER_POSE(actor, 2);
+            ENTER_POSE(actor, CPGUARD_CHASE);
           }
         }
         break;
 
-      case 1:
+      case CPGUARD_RETURN:
         if (st->onPath != 0) {
           d = FindNearestPathPointToActor(actor, (PostPath *)st->path, idx);
           st->path->cur = idx[0];
           if (d < 0x200) {
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, CPGUARD_PATROL);
           }
           ang = ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                               st->path->nodes[st->path->cur].y - actor->posY,
@@ -918,7 +918,7 @@ void Level26_UpdateActors(void) {
           SubtractVector(svA, &actor->posX, st->home);
           d = VectorLength(svA, VEC_LEN_XYZ);
           if (d < 0x200) {
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, CPGUARD_PATROL);
           }
           ang = ArcTan2(st->home[0] - actor->posX,
                               st->home[1] - actor->posY, 0);
@@ -946,31 +946,31 @@ void Level26_UpdateActors(void) {
         TurnActorYawTowardAngle(actor, ang, 4, 0, 0);
         break;
 
-      case 2:
+      case CPGUARD_CHASE:
         SteerActorTowardPoint(actor, &spy->posX, 0x80, 4, 2, 0x180);
         if (actor->drawn != 0 && CheckSpyroLineOfSightTo(&actor->posX) != 0) {
           if (AbsAngleDelta8(actor->rotZ,
                             ArcTan2(spy->posX - actor->posX,
                                           SPY.posY - actor->posY, 0)) < 0x18) {
-            ENTER_POSE(actor, 3);
+            ENTER_POSE(actor, CPGUARD_ATTACK);
           }
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
             st->timer = 0x3C;
-            ENTER_POSE(actor, 1);
+            ENTER_POSE(actor, CPGUARD_RETURN);
           }
           break;
         }
-        ENTER_POSE(actor, 1);
+        ENTER_POSE(actor, CPGUARD_RETURN);
 
-      case 3:
+      case CPGUARD_ATTACK:
         SteerActorTowardPoint(actor, &SPY.posX, 0x40, 4, 2, 0x180);
         if (g_nActorAnimDone != 0) {
           st->timer = 0x3C;
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, CPGUARD_RETURN);
         }
         break;
 
-      case 4:
+      case CPGUARD_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -1450,34 +1450,34 @@ void Level26_UpdateActors(void) {
       FormationEscortState *st = actor->state;
 
       switch (actor->mode) {
-      case 0:
+      case ESCORT_WAIT:
         if (actor->dropKind != 0) {
           CopyVector(&actor->posX, &g_pActorListBase[st->leader].posX);
-          actor->mode = 2;
+          actor->mode = ESCORT_JOIN;
         }
         break;
 
-      case 1:
+      case ESCORT_TWEEN_IN:
         if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->timer, 0x20, 4) == 2) {
-          actor->mode = 2;
+          actor->mode = ESCORT_JOIN;
         }
         break;
 
-      case 2: {
+      case ESCORT_JOIN: {
         int ang = st->slot * 0x55;
 
         if (SteerActorAroundPoint(actor, &g_pActorListBase[st->leader].posX, 0x600, ang, 0,
                           0x80, 3, 0, 0xFF, 0xFF, 0, 0, 8) < 0x10) {
-          actor->mode = 3;
+          actor->mode = ESCORT_HOLD;
         }
         goto follow;
       }
 
-      case 3:
+      case ESCORT_HOLD:
         if (st->partner >= 0) {
           g_pActorListBase[st->partner].subMode |= 1 << st->slot;
           if (g_pActorListBase[st->partner].mode == 4) {
-            actor->mode = 4;
+            actor->mode = ESCORT_BREAK_AWAY;
             st->speed = 0x20;
             st->timer = 0x78;
           }
@@ -1486,7 +1486,7 @@ void Level26_UpdateActors(void) {
                        0x1800) {
           int *ls = g_pActorListBase[st->leader].state;
 
-          actor->mode = 4;
+          actor->mode = ESCORT_BREAK_AWAY;
           ls[2] = 0x10;
           st->speed = 0x20;
           st->timer = 0x78;
@@ -1511,7 +1511,7 @@ void Level26_UpdateActors(void) {
         break;
       }
 
-      case 4:
+      case ESCORT_BREAK_AWAY:
         SteerActorAroundPoint(
             actor, &g_pActorListBase[st->leader].posX, 0x600,
             (ArcTan2(actor->posX - g_pActorListBase[st->leader].posX,
@@ -2728,7 +2728,7 @@ void Level26_UpdateActors(void) {
       PartnerBouncerState *st = actor->state;
 
       TickActorFlameGlow(actor);
-      if (actor->mode < 2) {
+      if (actor->mode < PBOUNCER_THROWN) {
         if (actor->flags & ACTOR_HIT_SUPER) {
           g_pActorListBase[st->partner].flags |= actor->flags;
           st->speed = (SPY.motionSpeed >> 6) + 0x1C2;
@@ -2738,7 +2738,7 @@ void Level26_UpdateActors(void) {
           st->lift = 0x50;
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           MarkActorCommittedKill(actor);
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, PBOUNCER_THROWN);
         }
         if (g_pActorListBase[st->partner].mode != 0) {
           st->heading = actor->rotZ;
@@ -2746,7 +2746,7 @@ void Level26_UpdateActors(void) {
           st->lift = 0;
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           MarkActorCommittedKill(actor);
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, PBOUNCER_THROWN);
         }
         GetActorAttachPoint(&g_pActorListBase[st->partner], 0, &actor->posX);
         *(L26Rot *)&actor->rotX = *(L26Rot *)&g_pActorListBase[st->partner].rotX;
@@ -2754,21 +2754,21 @@ void Level26_UpdateActors(void) {
       actor->flags = 0;
 
       switch (actor->mode) {
-      case 0:
+      case PBOUNCER_RIDE:
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0xC00 &&
             (unsigned int)(actor->posZ - SPY.posZ - 1) < 0xBFF &&
             actor->subMode != 0) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, PBOUNCER_BOUNCE);
         }
         break;
 
-      case 1:
+      case PBOUNCER_BOUNCE:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, PBOUNCER_RIDE);
         }
         break;
 
-      case 2:
+      case PBOUNCER_THROWN:
         if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC,
                           0x10) != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -2777,7 +2777,7 @@ void Level26_UpdateActors(void) {
           continue;
         }
         if (g_nActorAnimDone != 0) {
-          actor->mode = 3;
+          actor->mode = PBOUNCER_FALL;
           if (actor->nextAnim != 3) {
             actor->frameProgress = 0x10;
             actor->frameRate = 0x10;
@@ -2789,7 +2789,7 @@ void Level26_UpdateActors(void) {
         }
         break;
 
-      case 3:
+      case PBOUNCER_FALL:
         if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC,
                           0x10) != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

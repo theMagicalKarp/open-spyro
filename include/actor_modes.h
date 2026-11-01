@@ -207,11 +207,12 @@ enum PathWalkerMode {
   PATHWALK_DYING = 2, /* hit: plays out its death animation */
 };
 
-/* ->mode of a wandering critter (ACTOR_TYPE_WANDERING_CRITTER,
- * CritterKnockState). */
+/* ->mode of a wandering critter (ACTOR_TYPE_WANDERING_CRITTER / _B / _C,
+ * CritterKnockState / WanderKnockState). */
 enum WanderingCritterMode {
-  CRITTER_WANDER = 0,  /* UpdateActorWander */
+  CRITTER_WANDER = 0,  /* UpdateActorWander; the _C kind rests on a timer */
   CRITTER_KNOCKED = 1, /* hit: slides away and despawns */
+  CRITTER_REST = 2,    /* the _C kind's pause, then WANDER */
 };
 
 /* ->mode of Gnasty Gnorc (ACTOR_TYPE_GNASTY_GNORC, GnastyState). GnastyState
@@ -1140,6 +1141,101 @@ enum TwoPathRunnerMode {
   TPRUNNER_SWIPE = 8,      /* swipes, then GUARD */
   TPRUNNER_WALK_BACK = 10, /* walks to its path node, then GUARD (a level 8 lookout sets its linked guard to 10) */
   TPRUNNER_RUN = 0x14,     /* runs its chosen path to RunnerState.node, then GUARD */
+};
+
+/* ->mode of a rim rider (ACTOR_TYPE_RIM_RIDER, RimState; level 16); the mode
+ * is also the animation index. RimState.mode picks how it drifts. */
+enum RimRiderMode {
+  RIMRIDER_EMERGE = 0,  /* rises on its parent's rim, facing Spyro, then DRIFT */
+  RIMRIDER_DRIFT = 1,   /* drifts out toward Spyro's last position; Spyro close: POP */
+  RIMRIDER_SINK = 2,    /* sinks back and despawns, freeing its parent */
+  RIMRIDER_STOP = 3,    /* reached its range, then POP */
+  RIMRIDER_SPAWN = 4,   /* spawns its ACTOR_TYPE_RIM_RIDER_HELPER, then POP */
+  RIMRIDER_POP = 5,     /* pop animation, then SINK */
+};
+
+/* ->mode of a brawler (ACTOR_TYPE_BRAWLER, BrawlerState; level 7); the mode
+ * is also the animation index. It carries a swooper, which flies off
+ * knocked (SWOOP_KNOCKED) when the brawler goes down. */
+enum BrawlerMode {
+  BRAWLER_IDLE = 0,    /* faces Spyro; near: RAISE */
+  BRAWLER_SEND = 1,    /* sends an ACTOR_TYPE_BRAWLER_SPAWN out on frame 0x11 (no writer in the C sources) */
+  BRAWLER_RAISE = 2,   /* raises its fists, then GUARD */
+  BRAWLER_GUARD = 3,   /* faces Spyro; close on the timer: PUNCH; far: LOWER */
+  BRAWLER_PUNCH = 4,   /* punches, then RAISE */
+  BRAWLER_LOWER = 5,   /* lowers its fists, then IDLE */
+  BRAWLER_KNOCKED = 6, /* flamed: its swooper flies off, then it bursts */
+};
+
+/* ->mode of a chasing path guard (ACTOR_TYPE_CHASING_PATH_GUARD,
+ * ChasingPathGuardState; level 26); the mode is also the animation index. */
+enum ChasingPathGuardMode {
+  CPGUARD_PATROL = 0,  /* walks its waypoints (or faces Spyro at home); sees him: CHASE */
+  CPGUARD_RETURN = 1,  /* back to its path or home, then PATROL */
+  CPGUARD_CHASE = 2,   /* runs at Spyro; facing him: ATTACK; lost him: RETURN */
+  CPGUARD_ATTACK = 3,  /* lunges, then RETURN */
+  CPGUARD_KNOCKED = 4, /* knocked away, then bursts */
+};
+
+/* ->mode of a formation escort (ACTOR_TYPE_FORMATION_ESCORT,
+ * FormationEscortState; level 26). */
+enum FormationEscortMode {
+  ESCORT_WAIT = 0,     /* until released (dropKind set): JOIN at its leader */
+  ESCORT_TWEEN_IN = 1, /* tweens in along its path, then JOIN */
+  ESCORT_JOIN = 2,     /* steers to its slot around the leader, then HOLD */
+  ESCORT_HOLD = 3,     /* holds formation; the formation breaks: BREAK_AWAY */
+  ESCORT_BREAK_AWAY = 4, /* spirals up and away, then bursts into streaks */
+};
+
+/* ->mode of a partner bouncer (ACTOR_TYPE_PARTNER_BOUNCER,
+ * PartnerBouncerState; level 26); the mode is also the animation index. */
+enum PartnerBouncerMode {
+  PBOUNCER_RIDE = 0,   /* rides its partner's attach point; cued and Spyro near: BOUNCE */
+  PBOUNCER_BOUNCE = 1, /* bounce animation, then RIDE */
+  PBOUNCER_THROWN = 2, /* superflamed, or its partner went: thrown off, then FALL */
+  PBOUNCER_FALL = 3,   /* falls until it lands (burst) or drops out of the level */
+};
+
+/* ->mode of a fence captain (ACTOR_TYPE_FENCE_CAPTAIN, FenceCaptainState;
+ * level 27); the mode is also the animation index. */
+enum FenceCaptainMode {
+  FCAPTAIN_WATCH = 0,    /* faces Spyro; next guard's box tripped: SUMMON; close: VOLLEY */
+  FCAPTAIN_SUMMON = 1,   /* sends path wisps to wake its next fence guard */
+  FCAPTAIN_VOLLEY = 3,   /* fires three ACTOR_TYPE_SPLIT_SHOTs, then RELOCATE */
+  FCAPTAIN_KNOCKED = 4,  /* knocked away, then bursts */
+  FCAPTAIN_RELOCATE = 5, /* walks to a random node of its path, then WATCH */
+};
+
+/* ->mode of a fence guard (ACTOR_TYPE_FENCE_GUARD, FenceGuardState; level
+ * 27); the mode is also the animation index. subMode 1 wakes it, 2 (the
+ * captain's reset) puts it back to sleep. */
+enum FenceGuardMode {
+  FGUARD_ASLEEP = 0, /* until woken */
+  FGUARD_WAKE = 1,   /* waking animation, then WATCH */
+  FGUARD_WATCH = 2,  /* faces Spyro along its fence; close and in sight: ATTACK */
+  FGUARD_ATTACK = 3, /* swings, pinning Spyro on frames 0x2D-0x32 */
+};
+
+/* ->mode of a path charger (ACTOR_TYPE_PATH_CHARGER, PatrolState; level 2);
+ * the mode is also the animation index. Only a flame from behind or the side
+ * knocks it away. */
+enum PathChargerMode {
+  PCHARGER_PATROL = 0,  /* walks its path back and forth; Spyro ahead: CHARGE */
+  PCHARGER_KNOCKED = 1, /* flamed: bursts */
+  PCHARGER_CHARGE = 2,  /* charges down the path; reaching Spyro, butts him off it */
+  PCHARGER_TAUNT = 6,   /* at a turn with Spyro ahead: faces him, then PATROL */
+  PCHARGER_TAUNT_ALT = 7, /* the same (no writer in the C sources) */
+};
+
+/* ->mode of a linked follower (ACTOR_TYPE_LINKED_FOLLOWER, Follower; level
+ * 3); the mode is also the animation index. It trails its leader
+ * (Follower.link) while the leader is active. */
+enum LinkedFollowerMode {
+  LFOLLOW_IDLE = 0,    /* faces Spyro; leader near: SET_OFF; Spyro close: TAUNT */
+  LFOLLOW_FOLLOW = 1,  /* runs its path after the leader, then IDLE */
+  LFOLLOW_KNOCKED = 3, /* knocked spinning into the air, then bursts */
+  LFOLLOW_SET_OFF = 5, /* turns to the leader's heading, then FOLLOW */
+  LFOLLOW_TAUNT = 8,   /* faces Spyro, then IDLE */
 };
 
 #endif

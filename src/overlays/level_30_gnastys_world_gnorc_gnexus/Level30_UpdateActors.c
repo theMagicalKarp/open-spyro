@@ -1796,7 +1796,7 @@ void Level30_UpdateActors(void) {
 
       EBB_BREAK();
       st = actor->state;
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20, 0x40);
@@ -1808,17 +1808,17 @@ void Level30_UpdateActors(void) {
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        actor->mode = 1;
+        actor->mode = CRITTER_KNOCKED;
 
         if (actor->nextAnim != 1) {
           ANIM_ADVANCE(actor, 1);
         }
       } else {
         switch (actor->mode) {
-        case 0:
+        case CRITTER_WANDER:
           UpdateActorWander(actor, st);
           if (TickCountdownByFrameDelta(&st->rest, 4) != 0) {
-            actor->mode = 2;
+            actor->mode = CRITTER_REST;
             if (actor->nextAnim != 2) {
               ANIM_ADVANCE(actor, 2);
             }
@@ -1827,7 +1827,7 @@ void Level30_UpdateActors(void) {
           }
           break;
 
-        case 1:
+        case CRITTER_KNOCKED:
           if (st->speed >= 0x10) {
             st->speed -= 0xF;
             MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x1F4, 5);
@@ -1841,10 +1841,10 @@ void Level30_UpdateActors(void) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
           break;
 
-        case 2:
+        case CRITTER_REST:
           if (g_nActorAnimDone != 0) {
             st->rest = RandomIntInRange(0x5A, 0x12C);
-            actor->mode = 0;
+            actor->mode = CRITTER_WANDER;
             if (actor->nextAnim != 0) {
               ANIM_ADVANCE(actor, 0);
             }
