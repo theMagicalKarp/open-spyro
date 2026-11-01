@@ -22,7 +22,7 @@ void UpdateLevelTransitionCamera(void) {
   g_nCameraTargetYawBiasFromMode = yaw;
   if (g_nReturnPortalLevelId != 0) {
     if (g_nCdStreamState >= LSTREAM_RELOCATE) {
-      g_pCameraTargetParams = g_anCameraParamMode2Reverse;
+      g_pCameraTargetParams = g_anCameraParamFollowFacing;
     } else {
       g_pCameraTargetParams = g_anCameraParamTransitionStreaming;
     }

@@ -25,10 +25,10 @@ typedef struct CameraAngles {
 enum CameraMode {
   CAM_MODE_STAND = 0,             /* idle, teeter, hurt */
   CAM_MODE_MOVE = 1,              /* walk/run/jog, jump, slide, lift */
-  CAM_MODE_SIDESTEP = 2,          /* sidestep, knockback (Mode2Front/Reverse) */
+  CAM_MODE_SIDESTEP = 2,          /* sidestep, knockback (FollowBehind/Facing, as MOVE) */
   CAM_MODE_CHARGE = 3,            /* the charge states */
   CAM_MODE_FALL = 4,
-  CAM_MODE_GLIDE = 5,             /* glide and flight (Mode5 bias pair) */
+  CAM_MODE_GLIDE = 5,             /* glide and flight (GlideLeft/RightBias) */
   CAM_MODE_HAZARD = 6,
   CAM_MODE_SCRIPTED_TARGET = 7,   /* SPYRO_RQ_TARGET_CAMERA */
   CAM_MODE_FREE_LOOK = 9,         /* Triangle held while idle */

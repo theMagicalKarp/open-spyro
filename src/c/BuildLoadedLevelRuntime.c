@@ -153,7 +153,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
       goto emitlist;
     }
     *((struct CameraParamBlock *)g_anCameraActiveTargetParams) =
-        *((struct CameraParamBlock *)g_anCameraParamMode2Front);
+        *((struct CameraParamBlock *)g_anCameraParamFollowBehind);
     g_pCameraAnchorPos = g_anSpyroWorldPos;
     g_nCameraCurrentMode = CAM_MODE_STAND;
     g_nCameraNextMode = CAM_MODE_STAND;

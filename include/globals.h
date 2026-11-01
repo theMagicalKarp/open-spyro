@@ -335,14 +335,14 @@ extern short g_anCameraSpringSnapThresholds[36];             /* 0x8006c7e4 */
 extern int g_anCameraEscapeOffsets[36];                    /* 0x8006c82c */
 extern int g_anCameraDynamicTargetParams[6];                 /* 0x8006c8bc */
 extern int g_anCameraParamDefault[6];                        /* 0x8006c8d4 */
-extern int g_anCameraParamMode2Front[6];                     /* 0x8006c934 */
-extern int g_anCameraParamMode5RightBias[6];                 /* 0x8006c94c */
-extern int g_anCameraParamMode2Reverse[6];                   /* 0x8006c964 */
-extern int g_anCameraParamMode5LeftBias[6];                  /* 0x8006c97c */
-extern int g_anCameraParamMode3[6];                          /* 0x8006c994 */
-extern int g_anCameraParamMode4Front[6];                     /* 0x8006c9ac */
-extern int g_anCameraParamMode4Reverse[6];                   /* 0x8006c9dc */
-extern int g_anCameraParamMode9ScriptStick[6];               /* 0x8006ca0c */
+extern int g_anCameraParamFollowBehind[6];                     /* 0x8006c934 */
+extern int g_anCameraParamGlideRightBias[6];                 /* 0x8006c94c */
+extern int g_anCameraParamFollowFacing[6];                   /* 0x8006c964 */
+extern int g_anCameraParamGlideLeftBias[6];                  /* 0x8006c97c */
+extern int g_anCameraParamCharge[6];                          /* 0x8006c994 */
+extern int g_anCameraParamFallBehind[6];                     /* 0x8006c9ac */
+extern int g_anCameraParamFallFacing[6];                   /* 0x8006c9dc */
+extern int g_anCameraParamFreeLook[6];               /* 0x8006ca0c */
 extern int g_anCameraParamTransitionYawBelow[6];              /* 0x8006ca3c */
 extern int g_anCameraParamTransitionStreaming[6];             /* 0x8006ca54 */
 extern int g_anCameraParamTransitionYawAbove[6];              /* 0x8006ca6c */
@@ -350,7 +350,7 @@ extern int g_anCameraMode12Params[6];                        /* 0x8006ca84 */
 extern int g_anCameraStuckReseatParams[30];                  /* 0x8006cab4 */
 extern int g_anCameraParamEnemyLock[6];                      /* 0x8006cb2c */
 extern int g_anCameraParamScriptedTarget[6];                 /* 0x8006cb5c */
-extern int g_anCameraParamModeC_ScriptedFollow[6];           /* 0x8006cb74 */
+extern int g_anCameraParamScriptedFollow[6];           /* 0x8006cb74 */
 extern int g_anFogFullScreenTriPairSxy[6];                   /* 0x8006cb8c */
 extern short g_anSineLut[321];                               /* 0x8006cbf8 */
 extern short g_anCosineLut[]; /* 0x8006cc78: g_anSineLut + 0x80 (quarter turn); a distinct symbol so cse cannot derive the sine base from it */

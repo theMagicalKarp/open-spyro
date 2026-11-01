@@ -665,7 +665,7 @@ typedef struct Xform6 {
 
 extern Xform6 g_anCameraActiveTargetParams; /* live camera transform */
 
-extern Xform6 g_anCameraParamMode2Front; /* template it is seeded from */
+extern Xform6 g_anCameraParamFollowBehind; /* template it is seeded from */
 
 /* Type 323: respawner. It rides on Spyro and, every `period` frames, puts
  * each dormant actor of `type` farther than 0x6000 from him back at its home

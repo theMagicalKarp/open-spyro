@@ -1978,20 +1978,20 @@ void Level14_UpdateActors(void) {
           if (g_nSpyroAirborneFrames != 0) {
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
             if (g_nSpyroState == SPYRO_ST_FACE_TARGET) {
-              g_anCameraActiveTargetParams.w[0] = (g_anCameraParamMode2Front.w[0] - g_nSpyroMoveTargetYaw) & 0xFFF;
+              g_anCameraActiveTargetParams.w[0] = (g_anCameraParamFollowBehind.w[0] - g_nSpyroMoveTargetYaw) & 0xFFF;
             } else {
-              g_anCameraActiveTargetParams.w[0] = (g_anCameraParamMode2Front.w[0] - g_nSpyroBodyYaw) & 0xFFF;
+              g_anCameraActiveTargetParams.w[0] = (g_anCameraParamFollowBehind.w[0] - g_nSpyroBodyYaw) & 0xFFF;
             }
             {
               int *w1 = &g_anCameraActiveTargetParams.w[1];
 
               g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
-              *w1 = g_anCameraParamMode2Front.w[1];
+              *w1 = g_anCameraParamFollowBehind.w[1];
             }
-            g_nCameraActiveTargetDistance = g_anCameraParamMode2Front.w[2];
-            g_nCameraActiveTargetRoll = g_anCameraParamMode2Front.w[3];
-            g_nCameraActiveTargetPitchBias = g_anCameraParamMode2Front.w[4];
-            g_nCameraActiveTargetYawBias = g_anCameraParamMode2Front.w[5];
+            g_nCameraActiveTargetDistance = g_anCameraParamFollowBehind.w[2];
+            g_nCameraActiveTargetRoll = g_anCameraParamFollowBehind.w[3];
+            g_nCameraActiveTargetPitchBias = g_anCameraParamFollowBehind.w[4];
+            g_nCameraActiveTargetYawBias = g_anCameraParamFollowBehind.w[5];
           } else {
             st->mode &= ~CARRIER_F_CAM_HOLD;
           }
@@ -2023,12 +2023,12 @@ void Level14_UpdateActors(void) {
           g_pSpyroRequestCameraAnchor = &SPY.posX;
           g_pScriptedCameraActor = 0;
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
-          g_anCameraActiveTargetParams.w[0] = (g_anCameraParamMode2Front.w[0] - g_nSpyroBodyYaw) & 0xFFF;
-          g_anCameraActiveTargetParams.w[1] = g_anCameraParamMode2Front.w[1];
-          g_anCameraActiveTargetParams.w[2] = g_anCameraParamMode2Front.w[2];
-          g_anCameraActiveTargetParams.w[3] = g_anCameraParamMode2Front.w[3];
-          g_anCameraActiveTargetParams.w[4] = g_anCameraParamMode2Front.w[4];
-          g_anCameraActiveTargetParams.w[5] = g_anCameraParamMode2Front.w[5];
+          g_anCameraActiveTargetParams.w[0] = (g_anCameraParamFollowBehind.w[0] - g_nSpyroBodyYaw) & 0xFFF;
+          g_anCameraActiveTargetParams.w[1] = g_anCameraParamFollowBehind.w[1];
+          g_anCameraActiveTargetParams.w[2] = g_anCameraParamFollowBehind.w[2];
+          g_anCameraActiveTargetParams.w[3] = g_anCameraParamFollowBehind.w[3];
+          g_anCameraActiveTargetParams.w[4] = g_anCameraParamFollowBehind.w[4];
+          g_anCameraActiveTargetParams.w[5] = g_anCameraParamFollowBehind.w[5];
         } else if (st->mode & CARRIER_F_PICKUP) {
           int *cf = &g_dwSpyroRequestMask;
 
@@ -2049,12 +2049,12 @@ void Level14_UpdateActors(void) {
           g_pSpyroRequestCameraAnchor = &SPY.posX;
           g_pScriptedCameraActor = 0;
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
-          g_anCameraActiveTargetParams.w[0] = (g_anCameraParamMode2Front.w[0] - g_nSpyroBodyYaw) & 0xFFF;
-          g_anCameraActiveTargetParams.w[1] = g_anCameraParamMode2Front.w[1];
-          g_anCameraActiveTargetParams.w[2] = g_anCameraParamMode2Front.w[2];
-          g_anCameraActiveTargetParams.w[3] = g_anCameraParamMode2Front.w[3];
-          g_anCameraActiveTargetParams.w[4] = g_anCameraParamMode2Front.w[4];
-          g_anCameraActiveTargetParams.w[5] = g_anCameraParamMode2Front.w[5];
+          g_anCameraActiveTargetParams.w[0] = (g_anCameraParamFollowBehind.w[0] - g_nSpyroBodyYaw) & 0xFFF;
+          g_anCameraActiveTargetParams.w[1] = g_anCameraParamFollowBehind.w[1];
+          g_anCameraActiveTargetParams.w[2] = g_anCameraParamFollowBehind.w[2];
+          g_anCameraActiveTargetParams.w[3] = g_anCameraParamFollowBehind.w[3];
+          g_anCameraActiveTargetParams.w[4] = g_anCameraParamFollowBehind.w[4];
+          g_anCameraActiveTargetParams.w[5] = g_anCameraParamFollowBehind.w[5];
         }
 
         if (st->mode & CARRIER_F_TO_DEST) {

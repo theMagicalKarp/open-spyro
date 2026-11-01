@@ -1783,8 +1783,8 @@ glabel BuildLoadedLevelRuntime
     /* 4298 80013A98 00000000 */   nop
     /* 429C 80013A9C 0880043C */  lui        $a0, %hi(g_anCameraActiveTargetParams)
     /* 42A0 80013AA0 68868424 */  addiu      $a0, $a0, %lo(g_anCameraActiveTargetParams)
-    /* 42A4 80013AA4 0780063C */  lui        $a2, %hi(g_anCameraParamMode2Front)
-    /* 42A8 80013AA8 34C9C624 */  addiu      $a2, $a2, %lo(g_anCameraParamMode2Front)
+    /* 42A4 80013AA4 0780063C */  lui        $a2, %hi(g_anCameraParamFollowBehind)
+    /* 42A8 80013AA8 34C9C624 */  addiu      $a2, $a2, %lo(g_anCameraParamFollowBehind)
     /* 42AC 80013AAC 0000C28C */  lw         $v0, 0x0($a2)
     /* 42B0 80013AB0 0400C38C */  lw         $v1, 0x4($a2)
     /* 42B4 80013AB4 0800C58C */  lw         $a1, 0x8($a2)
@@ -40679,8 +40679,8 @@ glabel UpdateCameraSpringForMode
     /* 26C4C 8003644C 79054228 */  slti       $v0, $v0, 0x579
     /* 26C50 80036450 07004014 */  bnez       $v0, .L80036470
     /* 26C54 80036454 00000000 */   nop
-    /* 26C58 80036458 0780023C */  lui        $v0, %hi(g_anCameraParamMode2Reverse)
-    /* 26C5C 8003645C 64C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode2Reverse)
+    /* 26C58 80036458 0780023C */  lui        $v0, %hi(g_anCameraParamFollowFacing)
+    /* 26C5C 8003645C 64C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFollowFacing)
     /* 26C60 80036460 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 26C64 80036464 A86E22AC */  sw         $v0, %lo(g_pCameraTargetParams)($at)
     /* 26C68 80036468 2DD90008 */  j          .L800364B4
@@ -40688,8 +40688,8 @@ glabel UpdateCameraSpringForMode
   .L80036470:
     /* 26C70 80036470 0780023C */  lui        $v0, %hi(g_dwActiveCameraOptions)
     /* 26C74 80036474 1459428C */  lw         $v0, %lo(g_dwActiveCameraOptions)($v0)
-    /* 26C78 80036478 0780033C */  lui        $v1, %hi(g_anCameraParamMode2Front)
-    /* 26C7C 8003647C 34C96324 */  addiu      $v1, $v1, %lo(g_anCameraParamMode2Front)
+    /* 26C78 80036478 0780033C */  lui        $v1, %hi(g_anCameraParamFollowBehind)
+    /* 26C7C 8003647C 34C96324 */  addiu      $v1, $v1, %lo(g_anCameraParamFollowBehind)
     /* 26C80 80036480 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 26C84 80036484 A86E23AC */  sw         $v1, %lo(g_pCameraTargetParams)($at)
     /* 26C88 80036488 40004230 */  andi       $v0, $v0, 0x40
@@ -40737,8 +40737,8 @@ glabel UpdateCameraSpringForMode
   .L8003652C:
     /* 26D2C 8003652C 0880033C */  lui        $v1, %hi(g_nSpyroBodyYaw)
     /* 26D30 80036530 748B638C */  lw         $v1, %lo(g_nSpyroBodyYaw)($v1)
-    /* 26D34 80036534 0780023C */  lui        $v0, %hi(g_anCameraParamMode3)
-    /* 26D38 80036538 94C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode3)
+    /* 26D34 80036534 0780023C */  lui        $v0, %hi(g_anCameraParamCharge)
+    /* 26D38 80036538 94C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamCharge)
     /* 26D3C 8003653C 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 26D40 80036540 A86E22AC */  sw         $v0, %lo(g_pCameraTargetParams)($at)
     /* 26D44 80036544 0880023C */  lui        $v0, %hi(g_anSpyroWorldPos)
@@ -40806,13 +40806,13 @@ glabel UpdateCameraSpringForMode
   .L80036638:
     /* 26E38 80036638 05008018 */  blez       $a0, .L80036650
     /* 26E3C 8003663C 00000000 */   nop
-    /* 26E40 80036640 0780023C */  lui        $v0, %hi(g_anCameraParamMode5RightBias)
-    /* 26E44 80036644 4CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode5RightBias)
+    /* 26E40 80036640 0780023C */  lui        $v0, %hi(g_anCameraParamGlideRightBias)
+    /* 26E44 80036644 4CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamGlideRightBias)
     /* 26E48 80036648 97D90008 */  j          .L8003665C
     /* 26E4C 8003664C 100042AE */   sw        $v0, 0x10($s2)
   .L80036650:
-    /* 26E50 80036650 0780023C */  lui        $v0, %hi(g_anCameraParamMode5LeftBias)
-    /* 26E54 80036654 7CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode5LeftBias)
+    /* 26E50 80036650 0780023C */  lui        $v0, %hi(g_anCameraParamGlideLeftBias)
+    /* 26E54 80036654 7CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamGlideLeftBias)
     /* 26E58 80036658 100042AE */  sw         $v0, 0x10($s2)
   .L8003665C:
     /* 26E5C 8003665C 0780023C */  lui        $v0, %hi(g_nCameraTargetYawBiasFromMode)
@@ -40840,20 +40840,20 @@ glabel UpdateCameraSpringForMode
   .L800366B0:
     /* 26EB0 800366B0 05004014 */  bnez       $v0, .L800366C8
     /* 26EB4 800366B4 00FF8228 */   slti      $v0, $a0, -0x100
-    /* 26EB8 800366B8 0780023C */  lui        $v0, %hi(g_anCameraParamMode5RightBias)
-    /* 26EBC 800366BC 4CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode5RightBias)
+    /* 26EB8 800366B8 0780023C */  lui        $v0, %hi(g_anCameraParamGlideRightBias)
+    /* 26EBC 800366BC 4CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamGlideRightBias)
     /* 26EC0 800366C0 BAD90008 */  j          .L800366E8
     /* 26EC4 800366C4 00000000 */   nop
   .L800366C8:
     /* 26EC8 800366C8 05004010 */  beqz       $v0, .L800366E0
     /* 26ECC 800366CC 00000000 */   nop
-    /* 26ED0 800366D0 0780023C */  lui        $v0, %hi(g_anCameraParamMode5LeftBias)
-    /* 26ED4 800366D4 7CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode5LeftBias)
+    /* 26ED0 800366D0 0780023C */  lui        $v0, %hi(g_anCameraParamGlideLeftBias)
+    /* 26ED4 800366D4 7CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamGlideLeftBias)
     /* 26ED8 800366D8 BAD90008 */  j          .L800366E8
     /* 26EDC 800366DC 00000000 */   nop
   .L800366E0:
-    /* 26EE0 800366E0 0780023C */  lui        $v0, %hi(g_anCameraParamMode2Front)
-    /* 26EE4 800366E4 34C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode2Front)
+    /* 26EE0 800366E0 0780023C */  lui        $v0, %hi(g_anCameraParamFollowBehind)
+    /* 26EE4 800366E4 34C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFollowBehind)
   .L800366E8:
     /* 26EE8 800366E8 0780043C */  lui        $a0, %hi(g_anCameraPos)
     /* 26EEC 800366EC F86D8424 */  addiu      $a0, $a0, %lo(g_anCameraPos)
@@ -40869,8 +40869,8 @@ glabel UpdateCameraSpringForMode
     /* 26F14 80036714 0080023C */   lui       $v0, (0x80000009 >> 16)
   .L80036718:
     /* 26F18 80036718 21200002 */  addu       $a0, $s0, $zero
-    /* 26F1C 8003671C 0780023C */  lui        $v0, %hi(g_anCameraParamMode2Front)
-    /* 26F20 80036720 34C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode2Front)
+    /* 26F1C 8003671C 0780023C */  lui        $v0, %hi(g_anCameraParamFollowBehind)
+    /* 26F20 80036720 34C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFollowBehind)
     /* 26F24 80036724 C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 26F28 80036728 100042AE */   sw        $v0, 0x10($s2)
     /* 26F2C 8003672C C8FF438E */  lw         $v1, -0x38($s2)
@@ -40923,8 +40923,8 @@ glabel UpdateCameraSpringForMode
     /* 26FE4 800367E4 79058228 */   slti      $v0, $a0, 0x579
     /* 26FE8 800367E8 07004014 */  bnez       $v0, .L80036808
     /* 26FEC 800367EC 00000000 */   nop
-    /* 26FF0 800367F0 0780023C */  lui        $v0, %hi(g_anCameraParamMode2Reverse)
-    /* 26FF4 800367F4 64C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode2Reverse)
+    /* 26FF0 800367F0 0780023C */  lui        $v0, %hi(g_anCameraParamFollowFacing)
+    /* 26FF4 800367F4 64C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFollowFacing)
     /* 26FF8 800367F8 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 26FFC 800367FC A86E22AC */  sw         $v0, %lo(g_pCameraTargetParams)($at)
     /* 27000 80036800 13DA0008 */  j          .L8003684C
@@ -40933,8 +40933,8 @@ glabel UpdateCameraSpringForMode
     /* 27008 80036808 0780033C */  lui        $v1, %hi(g_pCameraTargetParams)
     /* 2700C 8003680C A86E6324 */  addiu      $v1, $v1, %lo(g_pCameraTargetParams)
     /* 27010 80036810 50FF6424 */  addiu      $a0, $v1, -0xB0
-    /* 27014 80036814 0780023C */  lui        $v0, %hi(g_anCameraParamMode2Front)
-    /* 27018 80036818 34C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode2Front)
+    /* 27014 80036814 0780023C */  lui        $v0, %hi(g_anCameraParamFollowBehind)
+    /* 27018 80036818 34C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFollowBehind)
     /* 2701C 8003681C C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 27020 80036820 000062AC */   sw        $v0, 0x0($v1)
     /* 27024 80036824 0780033C */  lui        $v1, %hi(g_nCameraYaw)
@@ -41128,15 +41128,15 @@ glabel UpdateCameraSpringForMode
     /* 272D8 80036AD8 79054228 */  slti       $v0, $v0, 0x579
     /* 272DC 80036ADC 05004014 */  bnez       $v0, .L80036AF4
     /* 272E0 80036AE0 00000000 */   nop
-    /* 272E4 80036AE4 0780023C */  lui        $v0, %hi(g_anCameraParamMode4Reverse)
-    /* 272E8 80036AE8 DCC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode4Reverse)
+    /* 272E4 80036AE4 0780023C */  lui        $v0, %hi(g_anCameraParamFallFacing)
+    /* 272E8 80036AE8 DCC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFallFacing)
     /* 272EC 80036AEC A9DB0008 */  j          .L80036EA4
     /* 272F0 80036AF0 00000000 */   nop
   .L80036AF4:
     /* 272F4 80036AF4 0780023C */  lui        $v0, %hi(g_dwActiveCameraOptions)
     /* 272F8 80036AF8 1459428C */  lw         $v0, %lo(g_dwActiveCameraOptions)($v0)
-    /* 272FC 80036AFC 0780033C */  lui        $v1, %hi(g_anCameraParamMode4Front)
-    /* 27300 80036B00 ACC96324 */  addiu      $v1, $v1, %lo(g_anCameraParamMode4Front)
+    /* 272FC 80036AFC 0780033C */  lui        $v1, %hi(g_anCameraParamFallBehind)
+    /* 27300 80036B00 ACC96324 */  addiu      $v1, $v1, %lo(g_anCameraParamFallBehind)
     /* 27304 80036B04 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 27308 80036B08 A86E23AC */  sw         $v1, %lo(g_pCameraTargetParams)($at)
     /* 2730C 80036B0C 40004230 */  andi       $v0, $v0, 0x40
@@ -41159,8 +41159,8 @@ glabel UpdateCameraSpringForMode
   .L80036B48:
     /* 27348 80036B48 0880033C */  lui        $v1, %hi(g_nSpyroBodyYaw)
     /* 2734C 80036B4C 748B638C */  lw         $v1, %lo(g_nSpyroBodyYaw)($v1)
-    /* 27350 80036B50 0780023C */  lui        $v0, %hi(g_anCameraParamMode9ScriptStick)
-    /* 27354 80036B54 0CCA4224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode9ScriptStick)
+    /* 27350 80036B50 0780023C */  lui        $v0, %hi(g_anCameraParamFreeLook)
+    /* 27354 80036B54 0CCA4224 */  addiu      $v0, $v0, %lo(g_anCameraParamFreeLook)
     /* 27358 80036B58 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 2735C 80036B5C A86E22AC */  sw         $v0, %lo(g_pCameraTargetParams)($at)
     /* 27360 80036B60 0880023C */  lui        $v0, %hi(g_anSpyroWorldPos)
@@ -41384,13 +41384,13 @@ glabel UpdateCameraSpringForMode
     /* 27680 80036E80 79054228 */  slti       $v0, $v0, 0x579
     /* 27684 80036E84 05004014 */  bnez       $v0, .L80036E9C
     /* 27688 80036E88 00000000 */   nop
-    /* 2768C 80036E8C 0780023C */  lui        $v0, %hi(g_anCameraParamMode2Reverse)
-    /* 27690 80036E90 64C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode2Reverse)
+    /* 2768C 80036E8C 0780023C */  lui        $v0, %hi(g_anCameraParamFollowFacing)
+    /* 27690 80036E90 64C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFollowFacing)
     /* 27694 80036E94 A9DB0008 */  j          .L80036EA4
     /* 27698 80036E98 00000000 */   nop
   .L80036E9C:
-    /* 2769C 80036E9C 0780023C */  lui        $v0, %hi(g_anCameraParamMode2Front)
-    /* 276A0 80036EA0 34C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode2Front)
+    /* 2769C 80036E9C 0780023C */  lui        $v0, %hi(g_anCameraParamFollowBehind)
+    /* 276A0 80036EA0 34C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFollowBehind)
   .L80036EA4:
     /* 276A4 80036EA4 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 276A8 80036EA8 A86E22AC */  sw         $v0, %lo(g_pCameraTargetParams)($at)
@@ -41467,8 +41467,8 @@ glabel UpdateCameraSpringForMode
     /* 277B4 80036FB4 A46E22AC */  sw         $v0, %lo(g_nCameraTargetYawBiasFromMode)($at)
     /* 277B8 80036FB8 71006014 */  bnez       $v1, .L80037180
     /* 277BC 80036FBC 0080023C */   lui       $v0, (0x80000009 >> 16)
-    /* 277C0 80036FC0 0780023C */  lui        $v0, %hi(g_anCameraParamModeC_ScriptedFollow)
-    /* 277C4 80036FC4 74CB4224 */  addiu      $v0, $v0, %lo(g_anCameraParamModeC_ScriptedFollow)
+    /* 277C0 80036FC0 0780023C */  lui        $v0, %hi(g_anCameraParamScriptedFollow)
+    /* 277C4 80036FC4 74CB4224 */  addiu      $v0, $v0, %lo(g_anCameraParamScriptedFollow)
     /* 277C8 80036FC8 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 277CC 80036FCC A86E22AC */  sw         $v0, %lo(g_pCameraTargetParams)($at)
     /* 277D0 80036FD0 C2CF000C */  jal        ComputeCameraToTargetAngle
@@ -42224,8 +42224,8 @@ glabel UpdateLevelTransitionCamera
     /* 28268 80037A68 0A004228 */  slti       $v0, $v0, 0xA
     /* 2826C 80037A6C 05004014 */  bnez       $v0, .L80037A84
     /* 28270 80037A70 00000000 */   nop
-    /* 28274 80037A74 0780023C */  lui        $v0, %hi(g_anCameraParamMode2Reverse)
-    /* 28278 80037A78 64C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode2Reverse)
+    /* 28274 80037A74 0780023C */  lui        $v0, %hi(g_anCameraParamFollowFacing)
+    /* 28278 80037A78 64C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFollowFacing)
     /* 2827C 80037A7C B6DE0008 */  j          .L80037AD8
     /* 28280 80037A80 00000000 */   nop
   .L80037A84:

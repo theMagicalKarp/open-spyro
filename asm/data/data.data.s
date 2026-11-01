@@ -1344,71 +1344,71 @@ dlabel D_8006C8EC
     /* 5D130 8006C930 00000000 */ .word 0x00000000
 enddlabel D_8006C8EC
 
-nonmatching g_anCameraParamMode2Front
+nonmatching g_anCameraParamFollowBehind
 
-dlabel g_anCameraParamMode2Front
+dlabel g_anCameraParamFollowBehind
     /* 5D134 8006C934 00080000 */ .word 0x00000800
     /* 5D138 8006C938 A0000000 */ .word 0x000000A0
     /* 5D13C 8006C93C 000A0000 */ .word 0x00000A00
     /* 5D140 8006C940 00000000 */ .word 0x00000000
     /* 5D144 8006C944 00000000 */ .word 0x00000000
     /* 5D148 8006C948 00000000 */ .word 0x00000000
-enddlabel g_anCameraParamMode2Front
+enddlabel g_anCameraParamFollowBehind
 
-nonmatching g_anCameraParamMode5RightBias
+nonmatching g_anCameraParamGlideRightBias
 
-dlabel g_anCameraParamMode5RightBias
+dlabel g_anCameraParamGlideRightBias
     /* 5D14C 8006C94C 00070000 */ .word 0x00000700
     /* 5D150 8006C950 90000000 */ .word 0x00000090
     /* 5D154 8006C954 000B0000 */ .word 0x00000B00
     /* 5D158 8006C958 00000000 */ .word 0x00000000
     /* 5D15C 8006C95C 30000000 */ .word 0x00000030
     /* 5D160 8006C960 00000000 */ .word 0x00000000
-enddlabel g_anCameraParamMode5RightBias
+enddlabel g_anCameraParamGlideRightBias
 
-nonmatching g_anCameraParamMode2Reverse
+nonmatching g_anCameraParamFollowFacing
 
-dlabel g_anCameraParamMode2Reverse
+dlabel g_anCameraParamFollowFacing
     /* 5D164 8006C964 00000000 */ .word 0x00000000
     /* 5D168 8006C968 80000000 */ .word 0x00000080
     /* 5D16C 8006C96C 000C0000 */ .word 0x00000C00
     /* 5D170 8006C970 00000000 */ .word 0x00000000
     /* 5D174 8006C974 60000000 */ .word 0x00000060
     /* 5D178 8006C978 00000000 */ .word 0x00000000
-enddlabel g_anCameraParamMode2Reverse
+enddlabel g_anCameraParamFollowFacing
 
-nonmatching g_anCameraParamMode5LeftBias
+nonmatching g_anCameraParamGlideLeftBias
 
-dlabel g_anCameraParamMode5LeftBias
+dlabel g_anCameraParamGlideLeftBias
     /* 5D17C 8006C97C 00090000 */ .word 0x00000900
     /* 5D180 8006C980 90000000 */ .word 0x00000090
     /* 5D184 8006C984 000B0000 */ .word 0x00000B00
     /* 5D188 8006C988 00000000 */ .word 0x00000000
     /* 5D18C 8006C98C 30000000 */ .word 0x00000030
     /* 5D190 8006C990 00000000 */ .word 0x00000000
-enddlabel g_anCameraParamMode5LeftBias
+enddlabel g_anCameraParamGlideLeftBias
 
-nonmatching g_anCameraParamMode3
+nonmatching g_anCameraParamCharge
 
-dlabel g_anCameraParamMode3
+dlabel g_anCameraParamCharge
     /* 5D194 8006C994 00080000 */ .word 0x00000800
     /* 5D198 8006C998 E0000000 */ .word 0x000000E0
     /* 5D19C 8006C99C 60060000 */ .word 0x00000660
     /* 5D1A0 8006C9A0 00000000 */ .word 0x00000000
     /* 5D1A4 8006C9A4 C0FFFFFF */ .word 0xFFFFFFC0
     /* 5D1A8 8006C9A8 00000000 */ .word 0x00000000
-enddlabel g_anCameraParamMode3
+enddlabel g_anCameraParamCharge
 
-nonmatching g_anCameraParamMode4Front
+nonmatching g_anCameraParamFallBehind
 
-dlabel g_anCameraParamMode4Front
+dlabel g_anCameraParamFallBehind
     /* 5D1AC 8006C9AC 00080000 */ .word 0x00000800
     /* 5D1B0 8006C9B0 00040000 */ .word 0x00000400
     /* 5D1B4 8006C9B4 000A0000 */ .word 0x00000A00
     /* 5D1B8 8006C9B8 00000000 */ .word 0x00000000
     /* 5D1BC 8006C9BC 00000000 */ .word 0x00000000
     /* 5D1C0 8006C9C0 00000000 */ .word 0x00000000
-enddlabel g_anCameraParamMode4Front
+enddlabel g_anCameraParamFallBehind
 
 nonmatching D_8006C9C4
 
@@ -1422,16 +1422,16 @@ dlabel D_8006C9C4
     /* 5D1D8 8006C9D8 00000000 */ .word 0x00000000
 enddlabel D_8006C9C4
 
-nonmatching g_anCameraParamMode4Reverse
+nonmatching g_anCameraParamFallFacing
 
-dlabel g_anCameraParamMode4Reverse
+dlabel g_anCameraParamFallFacing
     /* 5D1DC 8006C9DC 00000000 */ .word 0x00000000
     /* 5D1E0 8006C9E0 00040000 */ .word 0x00000400
     /* 5D1E4 8006C9E4 000C0000 */ .word 0x00000C00
     /* 5D1E8 8006C9E8 00000000 */ .word 0x00000000
     /* 5D1EC 8006C9EC 60000000 */ .word 0x00000060
     /* 5D1F0 8006C9F0 00000000 */ .word 0x00000000
-enddlabel g_anCameraParamMode4Reverse
+enddlabel g_anCameraParamFallFacing
 
 nonmatching D_8006C9F4
 
@@ -1445,16 +1445,16 @@ dlabel D_8006C9F4
     /* 5D208 8006CA08 00000000 */ .word 0x00000000
 enddlabel D_8006C9F4
 
-nonmatching g_anCameraParamMode9ScriptStick
+nonmatching g_anCameraParamFreeLook
 
-dlabel g_anCameraParamMode9ScriptStick
+dlabel g_anCameraParamFreeLook
     /* 5D20C 8006CA0C 00080000 */ .word 0x00000800
     /* 5D210 8006CA10 F0000000 */ .word 0x000000F0
     /* 5D214 8006CA14 00030000 */ .word 0x00000300
     /* 5D218 8006CA18 00000000 */ .word 0x00000000
     /* 5D21C 8006CA1C 80FFFFFF */ .word 0xFFFFFF80
     /* 5D220 8006CA20 00000000 */ .word 0x00000000
-enddlabel g_anCameraParamMode9ScriptStick
+enddlabel g_anCameraParamFreeLook
 
 nonmatching g_aCameraXformPresets
 
@@ -1593,16 +1593,16 @@ dlabel g_anCameraParamScriptedTarget
     /* 5D370 8006CB70 00000000 */ .word 0x00000000
 enddlabel g_anCameraParamScriptedTarget
 
-nonmatching g_anCameraParamModeC_ScriptedFollow
+nonmatching g_anCameraParamScriptedFollow
 
-dlabel g_anCameraParamModeC_ScriptedFollow
+dlabel g_anCameraParamScriptedFollow
     /* 5D374 8006CB74 00080000 */ .word 0x00000800
     /* 5D378 8006CB78 80000000 */ .word 0x00000080
     /* 5D37C 8006CB7C 000C0000 */ .word 0x00000C00
     /* 5D380 8006CB80 00000000 */ .word 0x00000000
     /* 5D384 8006CB84 00000000 */ .word 0x00000000
     /* 5D388 8006CB88 00000000 */ .word 0x00000000
-enddlabel g_anCameraParamModeC_ScriptedFollow
+enddlabel g_anCameraParamScriptedFollow
 
 nonmatching g_anFogFullScreenTriPairSxy
 
