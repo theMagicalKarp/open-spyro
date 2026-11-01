@@ -90,7 +90,10 @@ extern signed char g_bSpyroRequestYaw; /* g_abSpyroRequestEuler[2]: requested ya
 #endif
 extern int DispatchActorContactAtSphere(int *pos, int radius, int events, int hitBits, Actor *self, int mode);
 extern void GetActorAttachPoint(Actor *actor, int slot, int *pos);
-extern int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int deadzone, int speed, int turnStep, int turnThreshold, int blockA, int blockB, int moveGroup, int moveRadius, int flags);
+#ifndef STEER_NO_BLOCK
+#define STEER_NO_BLOCK 0xFF /* blockA / blockB: no blocked heading */
+#endif
+extern int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int deadzone, int speed, int turnStep, int turnThreshold, int blockA, int blockB, int contactRadius, int wallRadius, int flags);
 extern int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim, int pitchLim, int radius);
 extern void SVectorToVectorShl2(int *dst, int *s);
 #ifndef YAW_HOLD_IN_BAND

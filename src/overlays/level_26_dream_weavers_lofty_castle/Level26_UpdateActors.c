@@ -493,7 +493,7 @@ void Level26_UpdateActors(void) {
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
                                     st->dir * 8),
-                      8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
+                      8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
           actor->mode = BUTTERFLY_FLUTTER;
@@ -1469,7 +1469,7 @@ void Level26_UpdateActors(void) {
         int ang = st->slot * 0x55;
 
         if (SteerActorAroundPoint(actor, &g_pActorListBase[st->leader].posX, 0x600, ang, 0,
-                          0x80, 3, 0, 0xFF, 0xFF, 0, 0, MOVE_STRAFE) < 0x10) {
+                          0x80, 3, 0, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_STRAFE) < 0x10) {
           actor->mode = ESCORT_HOLD;
         }
         goto follow;
@@ -1520,7 +1520,7 @@ void Level26_UpdateActors(void) {
                            actor->posY - g_pActorListBase[st->leader].posY, ATAN_ANGLE8) +
              0x78) &
                 0xFF,
-            0, st->speed, 0x10, 0, 0xFF, 0xFF, 0, 0, MOVE_STRAFE);
+            0, st->speed, 0x10, 0, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_STRAFE);
         actor->posZ += (st->speed - 0x20) >> 3;
         st->speed += g_nFrameStep * 2;
         if (st->speed > 0x100) {

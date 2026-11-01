@@ -371,7 +371,7 @@ void Level20_UpdateActors(void) {
                         WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                     actor->posY - spy->posY, ATAN_ANGLE8),
                                       st->turn * 8),
-                        8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
+                        8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
           if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
             actor->mode = BUTTERFLY_FLUTTER;
@@ -1822,7 +1822,7 @@ void Level20_UpdateActors(void) {
           SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist2,
                         ArcTan2(spy->posX - st->path->nodes[0].x,
                                       SPY.posY - st->path->nodes[0].y, ATAN_ANGLE8),
-                        8, 0x12C, 0xE, 8, 0xFF, 0xFF, 0, 0, 0);
+                        8, 0x12C, 0xE, 8, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
           if (dist < 0xED8) {
             st->speed = 0xE6;
             st->cam = 0;
@@ -1982,7 +1982,7 @@ void Level20_UpdateActors(void) {
           SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist2,
                         ArcTan2(st->vec[0] - st->path->nodes[0].x,
                                       st->vec[1] - st->path->nodes[0].y, ATAN_ANGLE8),
-                        1, 0xC8, 0xE, 8, 0xFF, 0xFF, 0, 0, 0);
+                        1, 0xC8, 0xE, 8, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
           if (ApproxDist2D(&actor->posX, st->vec) < 0x200) {
             ENTER_POSE(actor, CHARGER_IDLE);
           }

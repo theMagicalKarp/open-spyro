@@ -2086,7 +2086,10 @@ int PlaneDistanceAbs(int *p, int *plane);
 
 /* 0x80038638: Steer an actor around a target point (aims `radius` off it on the
  * side it is already turning toward); returns the residual heading error. */
-int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int deadzone, int speed, int turnStep, int turnThreshold, int blockA, int blockB, int moveGroup, int moveRadius, int flags);
+#ifndef STEER_NO_BLOCK
+#define STEER_NO_BLOCK 0xFF /* blockA / blockB: no blocked heading */
+#endif
+int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int deadzone, int speed, int turnStep, int turnThreshold, int blockA, int blockB, int contactRadius, int wallRadius, int flags);
 
 /* 0x80039e94: Path-follow that turns in place while the heading error exceeds
  * `lim`, then walks; returns 0x100 + node index on arrival. */

@@ -510,7 +510,7 @@ void Level34_UpdateActors(void) {
                       WrapAddAngle8(ArcTan2(actor->posX - SPY.posX,
                                                   actor->posY - SPY.posY, ATAN_ANGLE8),
                                     st->dir * 8),
-                      8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
+                      8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
           actor->mode = BUTTERFLY_FLUTTER;
@@ -1964,7 +1964,7 @@ void Level34_UpdateActors(void) {
             if (AbsAngleDelta8(a, b) > lim &&
                 ApproxDist2D(pos, &SPY.posX) < 0x3000) {
               turn = SteerActorAroundPoint(actor, FP_PT(st->path, 0), 0x1800, a, 5,
-                                   speed, 0xE, 0x14, 0xFF, 0xFF, 0, 0, MOVE_FOLLOW_FLOOR);
+                                   speed, 0xE, 0x14, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_FOLLOW_FLOOR);
             }
             if (turn > 0x5A) {
               st->stuck++;

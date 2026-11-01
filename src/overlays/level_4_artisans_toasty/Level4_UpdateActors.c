@@ -499,7 +499,7 @@ void Level4_UpdateActors(void) {
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
                                     st->dir * 8),
-                      8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
+                      8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
           actor->mode = BUTTERFLY_FLUTTER;
@@ -2234,7 +2234,7 @@ void Level4_UpdateActors(void) {
 
         if (limit < AbsAngleDelta8(toSpy, toMe)) {
           SteerActorAroundPoint(actor, &st->posts->nodes[st->stage].x, 0x1388, toSpy, 6,
-                        speed, 6, 0x14, 0xFF, 0xFF, 0, 0, 0);
+                        speed, 6, 0x14, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
           ANIM_GO(actor, st->anim + 1);
         } else {
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);

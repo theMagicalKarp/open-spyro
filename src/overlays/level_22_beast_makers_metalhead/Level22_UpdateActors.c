@@ -490,7 +490,7 @@ void Level22_UpdateActors(void) {
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
                                     st->dir * 8),
-                      8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
+                      8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
           actor->mode = BUTTERFLY_FLUTTER;
@@ -1371,7 +1371,7 @@ void Level22_UpdateActors(void) {
 
         ANIM_GO(actor, 5);
         if (SteerActorAroundPoint(actor, &g_pActorListBase[st->partner].posX, st->orbitRadius, h, 4,
-                          0x64, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0) < 6) {
+                          0x64, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0) < 6) {
           g_pActorListBase[st->partner].subMode = 1;
           actor->subMode = 0;
           actor->mode = BTHROW_PAIR_READY;

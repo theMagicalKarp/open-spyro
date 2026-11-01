@@ -486,7 +486,7 @@ void Level21_UpdateActors(void) {
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
                                     st->dir * 8),
-                      8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
+                      8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
           actor->mode = BUTTERFLY_FLUTTER;
@@ -995,7 +995,7 @@ void Level21_UpdateActors(void) {
 
         ANIM_GO(actor, 5);
         if (SteerActorAroundPoint(actor, &g_pActorListBase[st->partner].posX, st->orbitRadius, h, 4,
-                          0x64, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0) < 6) {
+                          0x64, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0) < 6) {
           g_pActorListBase[st->partner].subMode = 1;
           actor->subMode = 0;
           actor->mode = BTHROW_PAIR_READY;
@@ -3401,7 +3401,7 @@ void Level21_UpdateActors(void) {
                            spy->posY - PATH_Y(st->path, st->path[1]), ATAN_ANGLE8) +
              0x80) &
                 0xFF,
-            0x1E, 0x64, 0xF, 0x20, 0xFF, 0xFF, 0, 0, 0);
+            0x1E, 0x64, 0xF, 0x20, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
         SnapActorToGround(actor);
         if (r < 0x23 && spy->state != SPYRO_ST_CHARGE && spy->state != SPYRO_ST_CHARGE_AIR) {
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
@@ -3422,7 +3422,7 @@ void Level21_UpdateActors(void) {
             actor, PATH_PT(st->path, st->path[1]), st->speed,
             ArcTan2(spy->posX - PATH_X(st->path, st->path[1]),
                           spy->posY - PATH_Y(st->path, st->path[1]), ATAN_ANGLE8),
-            5, 0xC8, 0xF, 0x20, 0xFF, 0xFF, 0, 0, 0);
+            5, 0xC8, 0xF, 0x20, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
         SnapActorToGround(actor);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0xFA0) {
           actor->mode = RUNNER_DODGE;

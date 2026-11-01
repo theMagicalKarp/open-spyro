@@ -351,7 +351,7 @@ void Level3_UpdateActors(void) {
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
                                     st->dir * 8),
-                      8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
+                      8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
           actor->mode = BUTTERFLY_FLUTTER;
@@ -518,7 +518,7 @@ void Level3_UpdateActors(void) {
                                ATAN_ANGLE8) -
                  3) &
                     0xFF,
-                0, st->speed, 0x1E, 0x80, 0xFF, 0xFF, 0, 0, MOVE_FOLLOW_FLOOR);
+                0, st->speed, 0x1E, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_FOLLOW_FLOOR);
             if (st->camLock == 0 &&
                 ApproxDist2D(&actor->posX, &spy->posX) < 0x800 &&
                 AbsAngleDelta8(actor->rotZ,
@@ -763,7 +763,7 @@ void Level3_UpdateActors(void) {
               if (AbsAngleDelta8(a, b) > lim &&
                   ApproxDist2D(&actor->posX, &spy->posX) < 0x3000) {
                 r = SteerActorAroundPoint(actor, &st->path->nodes[0].x, 0x1800, a, 5,
-                                  spd, 0xE, 0x14, 0xFF, 0xFF, 0, 0, MOVE_FOLLOW_FLOOR);
+                                  spd, 0xE, 0x14, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_FOLLOW_FLOOR);
               }
               if (r > 0x5A) {
                 st->stuck++;
@@ -1274,7 +1274,7 @@ void Level3_UpdateActors(void) {
                   0xFF;
 
           SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist, a, 8,
-                        st->speed, 0xF, 0x40, 0xFF, 0xFF, 0, 0, 0);
+                        st->speed, 0xF, 0x40, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
           a = (a - ArcTan2(actor->posX - st->path->nodes[st->path->cur].x,
                                  actor->posY - st->path->nodes[st->path->cur].y,
                                  ATAN_ANGLE8)) &
@@ -3410,7 +3410,7 @@ void Level3_UpdateActors(void) {
             ArcTan2(actor->posX - st->path->nodes[st->path->cur].x,
                           actor->posY - st->path->nodes[st->path->cur].y, ATAN_ANGLE8) -
                 3,
-            0, st->vz, 0x1E, 0x80, 0xFF, 0xFF, 0, 0, MOVE_FOLLOW_FLOOR);
+            0, st->vz, 0x1E, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_FOLLOW_FLOOR);
         break;
 
       case LFOLLOW_KNOCKED:

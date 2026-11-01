@@ -31,13 +31,14 @@
    nothing moved, 0x100 when the approach is refused because the target
    direction is within 5 of one of the two blocked headings `blockA`/`blockB`
    on the same side as the turn, and the negated move result otherwise.
-   Camera mode g_nActorFrameDelta scales the turn speed by 1.5x / 2x.
+   The frame delta (g_nActorFrameDelta 3 / 4) scales the turn speed by 1.5x /
+   2x; blockA/blockB STEER_NO_BLOCK (0xFF) disables a blocked heading.
    (0x80038638, 740 bytes.) */
 
 int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face,
                           int deadzone, int speed, int turnStep,
                           int turnThreshold, int blockA, int blockB,
-                          int moveGroup, int moveRadius, int flags) {
+                          int contactRadius, int wallRadius, int flags) {
   int pt[3];
   int dir;
   int t;
@@ -82,7 +83,7 @@ int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face,
   if (t < deadzone) {
     return t;
   }
-  if (blockA != 0xff) {
+  if (blockA != STEER_NO_BLOCK) {
     if (AbsAngleDelta8(dir, blockA) < 5) {
       e = WrapAngleDelta8(blockA, dir);
       if ((face < 0) && (e < 0)) {
@@ -93,7 +94,7 @@ int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face,
       }
     }
   }
-  if (blockB != 0xff) {
+  if (blockB != STEER_NO_BLOCK) {
     if (AbsAngleDelta8(dir, blockB) < 5) {
       e = WrapAngleDelta8(blockB, dir);
       if ((face < 0) && (e < 0)) {
@@ -121,7 +122,7 @@ int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face,
     TurnActorYawTowardAngle(
         actor, ArcTan2(tgt[0] - actor->posX, tgt[1] - actor->posY, ATAN_ANGLE8),
         turnStep, 0, YAW_HOLD_IN_BAND);
-    r = MoveActorAlongAngle(actor, heading, speed, moveGroup, moveRadius,
+    r = MoveActorAlongAngle(actor, heading, speed, contactRadius, wallRadius,
                             flags);
   } else {
     r = TurnActorYawTowardAngle(actor, heading, turnStep, turnThreshold,
@@ -129,7 +130,7 @@ int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face,
     if (r == 0) {
       goto stalled;
     }
-    r = MoveActorAlongHeading(actor, speed, moveGroup, moveRadius, flags);
+    r = MoveActorAlongHeading(actor, speed, contactRadius, wallRadius, flags);
   }
   if (r != 0) {
     return -r;
