@@ -32,7 +32,7 @@ typedef struct PickupDropState {
   int velZ;              /* 0x08 */
   unsigned char pad0C;   /* 0x0C (PickupState: groundTri, a short) */
   unsigned char pad0D;
-  unsigned char sub;     /* 0x0E resting sub-state */
+  unsigned char restMode; /* 0x0E CollectRestMode */
   unsigned char timer;   /* 0x0F sparkle timer */
   unsigned char bounces; /* 0x10 bounces left */
   unsigned char pitch;   /* 0x11 ground-normal tilt */

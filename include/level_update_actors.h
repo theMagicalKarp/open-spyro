@@ -617,7 +617,7 @@ typedef struct {
 typedef struct PickupState {
   int vel[3];          /* 0x00 */
   short groundTri;         /* 0x0C collision triangle it rests on (UnpackWorldCollisionTri) */
-  unsigned char sub;   /* 0x0E resting sub-state, 0..3 */
+  unsigned char restMode; /* 0x0E CollectRestMode while COLLECT_REST */
   unsigned char timer; /* 0x0F */
   unsigned char count; /* 0x10 bounces left */
   unsigned char pitch; /* 0x11 */

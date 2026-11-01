@@ -79,7 +79,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     st->sparkle = 0xFF;
     st->velX = 0;
     st->velY = 0;
-    st->sub = 0;
+    st->restMode = COLLREST_STILL;
     st->timer = 0;
     st->pitch = 0;
     st->yaw = 0;
@@ -200,7 +200,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     st->velX = 0;
     st->velY = 0;
     st->velZ = 0x8C;
-    st->sub = 0;
+    st->restMode = COLLREST_STILL;
     st->timer = 0;
     st->pitch = 0;
     st->yaw = 0;
