@@ -32,13 +32,13 @@ void Level29_FlightResultsMenu_Update(void) {
   unsigned char *rec;
   int i;
 
-  if (g_nPauseMenuIdleFrames == 0) {
+  if (g_nMenuTickFrames == 0) {
     StopAllSoundExceptMask(0);
   }
   bob = g_dwHudBobSinePhase;
   *bob = (*bob - 4) & 0xFF;
   RotateLightVectorXZ(3);
-  g_nPauseMenuIdleFrames += 1;
+  g_nMenuTickFrames += 1;
   g_nSubMenuScrollOffset += 1;
   if (g_nSubMenuScrollOffset >= 5) {
     if (g_nSubMenuCursor < FLIGHT_REVEAL_ALL) {
@@ -56,7 +56,7 @@ void Level29_FlightResultsMenu_Update(void) {
   if (g_nSubMenuCursor >= FLIGHT_REVEAL_ALL) {
     unsigned int *pad = g_dwPadPressed;
     if (pad[0] & (PAD_UP | PAD_DOWN)) {
-      g_nPauseMenuIdleFrames = 0;
+      g_nMenuTickFrames = 0;
       g_nPauseMenuCursor = 1 - g_nPauseMenuCursor;
       PlaySoundEffect(g_pLevelSampleBankHeader[SFX_MENU_MOVE], 0, SFX_MODE_PANNED, 0);
     }

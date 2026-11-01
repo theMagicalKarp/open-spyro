@@ -16,9 +16,9 @@ void SubMenu_Update(void) {
   g_nHudFrameCycleMod9 = (g_nHudFrameCycleMod9 + 1) % 9;
   g_adwHudBobSinePhaseBlock[0] =
       (g_adwHudBobSinePhaseBlock[0] - g_nFrameStep) & 0xFF;
-  g_nPauseMenuIdleFrames += g_nFrameStep;
+  g_nMenuTickFrames += g_nFrameStep;
   RotateLightVectorXZ(3);
-  if (g_nPauseMenuTransitionFrames < 5) {
+  if (g_nMenuDrawFrames < 5) {
     return;
   }
   if (g_nLevelSelectModeActive != 0) {

@@ -21,16 +21,16 @@ void EnterPauseMenu(int fromGameplay) {
   g_nGamestate = GS_PAUSE_MENU;
   g_nPauseMenuCursor = PAUSE_ROW_CONTINUE;
   g_nPauseMenuSubstate = PAUSE_PAGE_MAIN;
-  g_nPauseMenuIdleFrames = 0;
+  g_nMenuTickFrames = 0;
   if (g_nFlightLevelActive != 0) {
     if (fromGameplay != 0) {
-      g_nPauseMenuTransitionFrames = 0;
+      g_nMenuDrawFrames = 0;
     }
     return;
   }
   InitHudCounters(0);
   if (fromGameplay != 0) {
-    g_nPauseMenuTransitionFrames = 0;
+    g_nMenuDrawFrames = 0;
   } else {
     g_abHudCounterDisplayState[HUD_CTR_GEMS] = HUD_CTR_ROLL_IN;
     g_abHudCounterDisplayState[HUD_CTR_DRAGONS] = HUD_CTR_ROLL_IN;
@@ -40,7 +40,7 @@ void EnterPauseMenu(int fromGameplay) {
     g_bHudLevelGemRollPhase = 0xC;
     g_bHudDragonRollPhase = 0xC;
     g_bHudLivesRollPhase = 0xC;
-    g_bHudWorldEggRollPhase = 0xC;
+    g_bHudEggRollPhase = 0xC;
     g_bHudKeyRollPhase = 0xC;
   }
   UpdateHudCounters();

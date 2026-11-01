@@ -709,7 +709,7 @@ void DragonRescue_Update(void) {
     AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
     TickSpyroAnimLayer1();
     TickSpyroAnimLayer2();
-    if (g_anHudDragonCachedCountBlock[0] != g_nWorldDragonsRescued ||
+    if (g_anHudDragonCachedCountBlock[0] != g_nTotalDragonsRescued ||
         g_bHudDragonRollPhase != 0) {
       g_bHudDragonRollPhase += 0x10;
       SetHudCounterDigits(HUD_SLOT_DRAGON_DIGITS, 2,

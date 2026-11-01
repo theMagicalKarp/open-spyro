@@ -7,8 +7,8 @@
 /* 0x80059594 (720 bytes) — memcard save-block deserializer: the inverse of
    BuildSaveGameBuffer.  Unpacks a 0x600-byte save buffer back into live game
    state (options bytes, scaled SPU/CD volumes, per-world tables, per-level
-   tallies with recomputed world totals, kill bitmaps) and returns whether the
-   stored checksum matches.
+   tallies with recomputed game-wide totals, kill bitmaps) and returns whether
+   the stored checksum matches.
 
    The SpuCommonAttr block at -0x320 is reached through the g_nSfxMixVolume_blk
    incomplete-array alias (A20).  In the tally loop, the egg-guard compare `c`
@@ -94,17 +94,17 @@ int ApplySaveGameBuffer(unsigned char *buf) {
   gems = g_anLevelGemsCollected;
   half = buf;
   dragons = g_anLevelDragonsRescued;
-  g_nWorldDragonsRescued = 0;
+  g_nTotalDragonsRescued = 0;
   g_nTotalTreasureCollected = 0;
-  g_nWorldEggsRecovered = 0;
+  g_nTotalEggsRecovered = 0;
   do {
     row2 = buf + i;
     d = row2[SAVE_OFFSET(levelDragons)];
-    wd = g_nWorldDragonsRescued;
+    wd = g_nTotalDragonsRescued;
     wt = g_nTotalTreasureCollected;
     *dragons = d;
     g = SAVE_RAW(half, short, levelGems);
-    g_nWorldDragonsRescued = wd + d;
+    g_nTotalDragonsRescued = wd + d;
     c = i < 0x12;
     t = wt + g;
     EBB_BREAK();
@@ -112,9 +112,9 @@ int ApplySaveGameBuffer(unsigned char *buf) {
     g_nTotalTreasureCollected = t;
     if (c) {
       e = row2[SAVE_OFFSET(levelEggs)];
-      we = g_nWorldEggsRecovered;
+      we = g_nTotalEggsRecovered;
       *eggs = e;
-      g_nWorldEggsRecovered = we + e;
+      g_nTotalEggsRecovered = we + e;
     }
     eggs += 1;
     gems += 1;

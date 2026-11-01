@@ -22,7 +22,7 @@
    hold timer cleared), snapshots the live gem/dragon/life/egg/butterfly
    counts, and draws the initial digits for the gem, dragon and life counters.
 
-   With `layout_butterflies` set it also clears the world-egg roll request and
+   With `layout_butterflies` set it also clears the egg roll request and
    lays the sparx-food butterflies out around the lives icon's (slot 10) screen
    position (records +0x37C/+0x380) using the g_abHudButterflyRingXY ring
    offsets. */
@@ -98,24 +98,24 @@ icon_slot:
   VOL(g_abHudCounterDisplayState[HUD_CTR_LIVES]) = HUD_CTR_ROLL_IN;
   VOL(g_abHudCounterDisplayState[HUD_CTR_EGGS]) = HUD_CTR_ROLL_IN;
   VOL(g_abHudCounterDisplayState[HUD_CTR_KEY]) = HUD_CTR_ROLL_IN;
-  dragons = VOL(g_nWorldDragonsRescued);
-  worldEggs = VOL(g_nWorldEggsRecovered);
+  dragons = VOL(g_nTotalDragonsRescued);
+  worldEggs = VOL(g_nTotalEggsRecovered);
   keyState = VOL(g_nLevelKeyState);
   food = VOL(g_nSparxFoodCount);
   VOL(g_bHudLevelGemRollPhase) = 0;
   VOL(g_bHudDragonRollPhase) = 0;
   VOL(g_bHudLivesRollPhase) = 0;
-  VOL(g_bHudWorldEggRollPhase) = 0;
+  VOL(g_bHudEggRollPhase) = 0;
   VOL(g_bHudKeyRollPhase) = 0;
   VOL(g_nHudLevelGemHoldTimer) = 0;
   VOL(g_nHudDragonHoldTimer) = 0;
   VOL(g_nHudLivesHoldTimer) = 0;
-  VOL(g_nHudWorldEggHoldTimer) = 0;
+  VOL(g_nHudEggHoldTimer) = 0;
   VOL(g_nHudKeyHoldTimer) = 0;
   gems = g_anLevelGemsCollected[idx];
   lives = VOL(g_nExtraLives);
   g_nHudDragonCachedCount = dragons;
-  g_nHudWorldEggCachedCount = worldEggs;
+  g_nHudEggCachedCount = worldEggs;
   g_nHudKeyCachedState = keyState;
   g_nHudButterflyCachedCount = food;
   g_nHudLivesCachedCount = lives;
@@ -124,7 +124,7 @@ icon_slot:
   SetHudCounterDigits(HUD_SLOT_DRAGON_DIGITS, 2, g_nHudDragonCachedCount, 1);
   SetHudCounterDigits(HUD_SLOT_LIVES_DIGITS, 2, g_nHudLivesCachedCount, 1);
   if (layout_butterflies != 0) {
-    g_nHudWorldEggRollRequest = 0;
+    g_nHudEggRollRequest = 0;
     i = 0;
     count = g_nSparxFoodCount;
     if (count > 0) {

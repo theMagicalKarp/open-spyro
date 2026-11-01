@@ -28,8 +28,8 @@ void Level29_FlightEndHook(void) {
     idx = g_nActiveWorldIndex;
     base = g_anFlightClearTimes;
     g_nPauseMenuCursor = 0;
-    g_nPauseMenuIdleFrames = 0;
-    g_nPauseMenuTransitionFrames = 0;
+    g_nMenuTickFrames = 0;
+    g_nMenuDrawFrames = 0;
     g_nSubMenuCursor = 0;
     g_nSubMenuScrollOffset = 0;
     g_nFlightResultsRevealStep = 0;

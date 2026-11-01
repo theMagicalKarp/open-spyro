@@ -548,7 +548,7 @@ extern void (*g_pfnGamestate7DrawHook)(void); /* 0x8007567c: flight levels' Flig
 extern struct CutscenePath *g_pPathTableHead; /* 0x80075680: the cutscene path table (cutscene_path.h) */
 extern int g_nMotionTrailRibbonCount;        /* 0x80075684 */
 extern int g_nPrevLevelIndex;           /* 0x80075688: the level index being left, for the tally (TickLevelTransitionStream) */
-extern int g_nPauseMenuIdleFrames;           /* 0x8007568c */
+extern int g_nMenuTickFrames;           /* 0x8007568c: update-side frame clock shared by the menu gamestates: the pause menu resets it on each cursor move, flight results blink on it (% 0x10 < 6), MenuTransition_Draw sweeps the backdrop CLUT load with it, SpyroStateDelay_Update counts 0x20-frame passes on it */
 extern int g_nFlightLevelActive;             /* 0x80075690 */
 extern void (*g_pfnLevelFallImpactCallback)(void); /* 0x80075694: flight levels' FlightEndHook, else null */
 extern int g_nActorPoolLiveCount;            /* 0x800756a4 */
@@ -584,7 +584,7 @@ extern struct Actor *g_pActorPoolFreeHead;   /* 0x8007573c: lowest free slot of 
 extern int g_nGemTallyHoldEndPhase;          /* 0x80075740: tally phase where the TREASURE FOUND hold ends: 0x8C + 2 per icon, capped at 0xC0 */
 extern int g_nSubMenuCursor;                 /* 0x80075744 */
 extern int g_nMusicVolume;                   /* 0x80075748 */
-extern int g_nWorldDragonsRescued;           /* 0x80075750 */
+extern int g_nTotalDragonsRescued;           /* 0x80075750: game-wide dragons freed (ApplySaveGameBuffer sums all 36 levels; ComputeInventoryProgressPercent: 80 = 40%) */
 extern int g_nSfxVolume;                     /* 0x80075754 */
 extern int g_nFadeProgress;                  /* 0x8007575c */
 extern int g_nFrameTicks;                    /* 0x80075760 */
@@ -614,7 +614,7 @@ extern byte g_abPadActCommand[2];            /* 0x80075800 */
 extern struct Actor *g_pSpyroContactActor;           /* 0x80075804 */
 extern int g_nLastCollisionHitChunkId;       /* 0x80075808 */
 extern int g_nSparxHealthStash;           /* 0x8007580c: saved g_nSparxHealth; -1 = none (ResetLevelState, new game) */
-extern int g_nWorldEggsRecovered;            /* 0x80075810 */
+extern int g_nTotalEggsRecovered;            /* 0x80075810: game-wide eggs recovered (ApplySaveGameBuffer sums g_anLevelEggsRecovered; 12 = 10%) */
 extern int g_nSpyroDrawSuppressed;           /* 0x80075814 */
 extern int g_nCreditsReturnLevelId;          /* 0x80075818 */
 extern int *g_pOtActiveDepthSlot;            /* 0x8007581c */
@@ -643,7 +643,7 @@ extern int g_nSpyroSuperflameTimerSave;     /* 0x800758a4 */
 extern int g_nReturnPortalLevelId;                /* 0x800758ac: level being left (0 = none); the hub places Spyro at the portal leading to it */
 extern int g_nPrimBufferOverflowFlag;        /* 0x800758b0 */
 extern int g_nCurrentLevelId;                /* 0x800758b4 */
-extern int g_nPauseMenuTransitionFrames;     /* 0x800758b8 */
+extern int g_nMenuDrawFrames;     /* 0x800758b8: frames the menu (Gamestate02_03_06_Draw) has drawn since entry; 0 = the entry frame, pause/sub menu input waits for 5, MenuTransition_Draw switches on it; drives the menu bob/blink phases. SpyroStateDelay_Update reuses it as its pass count */
 extern int g_nPortalCount;              /* 0x800758bc */
 extern int g_nSpyroFallReferenceZ;           /* 0x800758c0 */
 extern int g_nVblankTickCount;               /* 0x800758c8 */
@@ -849,19 +849,19 @@ extern byte g_abHudCounterDisplayState[5];              /* 0x80077fa8: per HudCo
 extern byte g_bHudLevelGemRollPhase;                    /* 0x80077fad */
 extern byte g_bHudDragonRollPhase;                      /* 0x80077fae */
 extern byte g_bHudLivesRollPhase;                       /* 0x80077faf */
-extern byte g_bHudWorldEggRollPhase;                    /* 0x80077fb0 */
+extern byte g_bHudEggRollPhase;                    /* 0x80077fb0 */
 extern byte g_bHudKeyRollPhase;                    /* 0x80077fb1 */
 extern int g_nHudLevelGemHoldTimer;                     /* 0x80077fb4 */
 extern int g_nHudDragonHoldTimer;                       /* 0x80077fb8 */
 extern int g_nHudLivesHoldTimer;                        /* 0x80077fbc */
-extern int g_nHudWorldEggHoldTimer;                     /* 0x80077fc0 */
+extern int g_nHudEggHoldTimer;                     /* 0x80077fc0 */
 extern int g_nHudKeyHoldTimer;                     /* 0x80077fc4 */
 extern int g_nHudLevelGemCachedCount;                   /* 0x80077fc8 */
 extern int g_nHudDragonCachedCount;                     /* 0x80077fcc */
 extern int g_nHudLivesCachedCount;                      /* 0x80077fd0 */
-extern int g_nHudWorldEggCachedCount;                   /* 0x80077fd4 */
+extern int g_nHudEggCachedCount;                   /* 0x80077fd4 */
 extern int g_nHudKeyCachedState;                   /* 0x80077fd8 */
-extern int g_nHudWorldEggRollRequest;                   /* 0x80077fdc */
+extern int g_nHudEggRollRequest;                   /* 0x80077fdc */
 extern int g_nHudButterflyCachedCount;                  /* 0x80077fe0 */
 extern uint g_dwHudBobSinePhase;                        /* 0x80077fe4 */
 extern int g_nHudFrameCycleMod9;                        /* 0x80077fe8 */
@@ -1346,10 +1346,10 @@ extern byte g_abHudGemRollBlock[]; /* 0x80077fa8: +0: roll timer at +0xC */
 extern byte g_abHudDragonCounterBlock[]; /* 0x80077fa9: +1: records at +0x1FB */
 extern byte g_abHudButterflyRingBlock[]; /* 0x80077faa: +2: butterfly quads at +0x4C2 */
 extern byte g_abHudLivesCounterBlock[]; /* 0x80077faa: +2: records at +0x302 */
-extern unsigned char g_abHudWorldEggIconBlock[]; /* 0x80077fab: world-egg HUD state byte; its quads at +0x461 */
+extern unsigned char g_abHudEggIconBlock[]; /* 0x80077fab: egg HUD state byte; its quads at +0x461 */
 extern unsigned char g_abHudKeyCounterBlock[]; /* 0x80077fac: level-key HUD state byte; its record at +0x408 */
 extern unsigned char g_abHudGemRollPhaseBlock[]; /* 0x80077fad */
-extern int g_anHudWorldEggTimerBlock[]; /* 0x80077fc0 */
+extern int g_anHudEggTimerBlock[]; /* 0x80077fc0 */
 extern int g_anHudKeyTimerBlock[]; /* 0x80077fc4 */
 extern int g_anHudLevelGemCachedBlock[]; /* 0x80077fc8: held-base view of the cached level gem count */
 extern int g_anHudDragonCachedCountBlock[]; /* 0x80077fcc */

@@ -72,7 +72,7 @@ extern struct {
  * shift, sine and cosine. */
 extern struct {
   int v;
-} g_nHudWorldEggRollRequest;
+} g_nHudEggRollRequest;
 
 extern void AimCameraStickTowardPoint(int *pos);
 

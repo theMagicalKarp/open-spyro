@@ -29,7 +29,7 @@ void ExitPauseMenuToGame(int resumeMusic) {
   g_bHudLevelGemRollPhase = 0xD;
   g_bHudDragonRollPhase = 0xD;
   g_bHudLivesRollPhase = 0xD;
-  g_bHudWorldEggRollPhase = 0xD;
+  g_bHudEggRollPhase = 0xD;
   g_bHudKeyRollPhase = 0xD;
   if (resumeMusic != 0) {
     HandleMusicCommand(g_nCurrentMusicTrack, MUSIC_CMD_RESUME);

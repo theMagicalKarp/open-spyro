@@ -7,8 +7,8 @@
 void BeginPauseToMenuTransition(void) {
   StopAllSoundExceptMask(0);
   g_nGamestate = GS_MENU_TRANSITION;
-  g_nPauseMenuIdleFrames = 0;
-  g_nPauseMenuTransitionFrames = 0;
+  g_nMenuTickFrames = 0;
+  g_nMenuDrawFrames = 0;
   ResetSpyroEntity(0);
   ChangeSpyroState(SPYRO_ST_IDLE);
 }

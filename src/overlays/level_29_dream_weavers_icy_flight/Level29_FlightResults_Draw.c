@@ -1,7 +1,7 @@
 /* Level29_FlightResults_Draw (0x8007B68C, level_29_dream_weavers_icy_flight overlay, 6440 bytes).
  *
  * Flight-level end-of-run results/time-attack screen draw. First frame
- * (g_nPauseMenuTransitionFrames == 0): runs the render pipeline once, then captures the frame
+ * (g_nMenuDrawFrames == 0): runs the render pipeline once, then captures the frame
  * into VRAM strips (4x MoveImage columns + LoadImage of the backdrop strip
  * and CLUT row). Later frames: rebuilds the frozen backdrop as 4 POLY_FT4
  * quads (clut 0x3820) plus a black TILE bar, then draws either the results
@@ -48,7 +48,7 @@ void Level29_FlightResults_Draw(void)
   } rect;
   int buf[8];
   int pos[3];
-  if (g_nPauseMenuTransitionFrames == 0)
+  if (g_nMenuDrawFrames == 0)
   {
     int i;
     int h;
@@ -527,7 +527,7 @@ void Level29_FlightResults_Draw(void)
           q3 = pp;
           if (g_nPauseMenuCursor == FLIGHT_RETRY_YES)
           {
-            if ((g_nPauseMenuIdleFrames % 0x10) < 6)
+            if ((g_nMenuTickFrames % 0x10) < 6)
             {
               blink = 1;
             }
@@ -542,7 +542,7 @@ void Level29_FlightResults_Draw(void)
           pp = pos;
           if (g_nPauseMenuCursor == FLIGHT_RETRY_NO)
           {
-            if ((g_nPauseMenuIdleFrames % 0x10) < 6)
+            if ((g_nMenuTickFrames % 0x10) < 6)
             {
               blink = 1;
             }
@@ -561,7 +561,7 @@ void Level29_FlightResults_Draw(void)
             do
             {
               i += 1;
-              rec->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
+              rec->rotZ = (lut[((g_nMenuDrawFrames * 8) + ph) & 0xFF] * 3) >> 9;
               ph += 0xC;
               rec++;
             }
@@ -633,7 +633,7 @@ void Level29_FlightResults_Draw(void)
           do
           {
             i += 1;
-            rec->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
+            rec->rotZ = (lut[((g_nMenuDrawFrames * 8) + ph) & 0xFF] * 3) >> 9;
             ph += 0xC;
             rec++;
           }
@@ -668,7 +668,7 @@ void Level29_FlightResults_Draw(void)
           do
           {
             i += 1;
-            rec->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
+            rec->rotZ = (lut[((g_nMenuDrawFrames * 8) + ph) & 0xFF] * 3) >> 9;
             ph += 0xC;
             rec++;
           }
@@ -692,7 +692,7 @@ void Level29_FlightResults_Draw(void)
         do
         {
           i += 1;
-          rec->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
+          rec->rotZ = (lut[((g_nMenuDrawFrames * 8) + ph) & 0xFF] * 3) >> 9;
           ph += 0xC;
           rec++;
         }
@@ -711,7 +711,7 @@ void Level29_FlightResults_Draw(void)
       q2 = pp;
       if (g_nPauseMenuCursor == FLIGHT_RETRY_YES)
       {
-        if ((g_nPauseMenuIdleFrames % 0x10) < 6)
+        if ((g_nMenuTickFrames % 0x10) < 6)
         {
           blink = 1;
         }
@@ -726,7 +726,7 @@ void Level29_FlightResults_Draw(void)
       qq = pos;
       if (g_nPauseMenuCursor == FLIGHT_RETRY_NO)
       {
-        if ((g_nPauseMenuIdleFrames % 0x10) < 6)
+        if ((g_nMenuTickFrames % 0x10) < 6)
         {
           blink = 1;
         }
@@ -745,7 +745,7 @@ void Level29_FlightResults_Draw(void)
         do
         {
           i += 1;
-          rec->rotZ = (lut[((g_nPauseMenuTransitionFrames * 8) + ph) & 0xFF] * 3) >> 9;
+          rec->rotZ = (lut[((g_nMenuDrawFrames * 8) + ph) & 0xFF] * 3) >> 9;
           ph += 0xC;
           rec++;
         }
@@ -754,7 +754,7 @@ void Level29_FlightResults_Draw(void)
       g_apSpritePrimQueue[0] = 0;
     }
   }
-  if (g_nPauseMenuTransitionFrames > 0)
+  if (g_nMenuDrawFrames > 0)
   {
     EnqueuePendingSpritePrims();
     FillWord(g_pOtDepthBinHead0, 0, 0x900);
@@ -782,5 +782,5 @@ void Level29_FlightResults_Draw(void)
   }
   g_nVsyncFramePaceAnchor = VSync(-1);
   PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
-  g_nPauseMenuTransitionFrames += 1;
+  g_nMenuDrawFrames += 1;
 }

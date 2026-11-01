@@ -31,11 +31,11 @@ void PauseMenu_Update(void) {
   g_nHudLevelGemHoldTimer = 0;
   g_nHudDragonHoldTimer = 0;
   g_nHudLivesHoldTimer = 0;
-  g_nHudWorldEggHoldTimer = 0;
+  g_nHudEggHoldTimer = 0;
   g_nHudKeyHoldTimer = 0;
-  g_nPauseMenuIdleFrames++;
+  g_nMenuTickFrames++;
   RotateLightVectorXZ(3);
-  if (g_nPauseMenuTransitionFrames < 5) {
+  if (g_nMenuDrawFrames < 5) {
     return;
   }
 
@@ -95,7 +95,7 @@ void PauseMenu_Update(void) {
     if (pad & PAD_DOWN) {
       SFX(SFX_MENU_MOVE);
       c = g_nPauseMenuCursor;
-      g_nPauseMenuIdleFrames = 0;
+      g_nMenuTickFrames = 0;
       g_nPauseMenuCursor = c + 1;
       if (c + 1 >= OPTIONS_ROW_COUNT) {
         g_nPauseMenuCursor = OPTIONS_ROW_SFX_VOLUME;
@@ -105,7 +105,7 @@ void PauseMenu_Update(void) {
     } else if (pad & PAD_UP) {
       SFX(SFX_MENU_MOVE);
       c = g_nPauseMenuCursor;
-      g_nPauseMenuIdleFrames = 0;
+      g_nMenuTickFrames = 0;
       g_nPauseMenuCursor = c - 1;
       if (c - 1 < 0) {
         g_nPauseMenuCursor = OPTIONS_ROW_DONE;
@@ -205,13 +205,13 @@ void PauseMenu_Update(void) {
   last = PAUSE_ROW_EXIT;
   if (pad & PAD_DOWN) {
     SFX(SFX_MENU_MOVE);
-    g_nPauseMenuIdleFrames = 0;
+    g_nMenuTickFrames = 0;
     if (last < ++g_nPauseMenuCursor) {
       g_nPauseMenuCursor = PAUSE_ROW_CONTINUE;
     }
   } else if (pad & PAD_UP) {
     SFX(SFX_MENU_MOVE);
-    g_nPauseMenuIdleFrames = 0;
+    g_nMenuTickFrames = 0;
     if (--g_nPauseMenuCursor < 0) {
       g_nPauseMenuCursor = last;
     }
@@ -244,7 +244,7 @@ void PauseMenu_Update(void) {
     if (g_nFlightLevelActive) {
       g_nGamestate = GS_OVERLAY_HOOK;
       g_nPauseMenuCursor = 0;
-      g_nPauseMenuIdleFrames = 0;
+      g_nMenuTickFrames = 0;
       g_nFlightQuitFlag = 1;
       g_pfnLevelUpdateActors();
     } else {

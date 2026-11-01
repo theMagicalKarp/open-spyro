@@ -556,7 +556,7 @@ void Level26_UpdateActors(void) {
             0x40;
         st->radius = 0;
         st->phase = 0;
-        g_nHudWorldEggRollRequest.v = 1;
+        g_nHudEggRollRequest.v = 1;
         actor->rotX = 0;
         actor->rotY = 8;
         actor->mode += 1;
@@ -664,9 +664,9 @@ void Level26_UpdateActors(void) {
         g_nCinematicActive = 0;
         ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
-        g_nWorldEggsRecovered += 1;
+        g_nTotalEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
-        g_nHudWorldEggRollRequest.v = 0;
+        g_nHudEggRollRequest.v = 0;
         DespawnActorRecord(actor);
         continue;
       }
@@ -2552,7 +2552,7 @@ void Level26_UpdateActors(void) {
 
             if (st->reward != -1) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
               StubRewardHook(st->reward, 0);
 
               if (st->partner != -1) {
@@ -2564,7 +2564,7 @@ void Level26_UpdateActors(void) {
 
             if (st->cutsceneId == st->reward) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
 
               if (st->partner != -1) {
                 g_pActorListBase[st->partner].mode = 1;
