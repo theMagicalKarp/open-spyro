@@ -863,10 +863,16 @@ enum GuardPairMode {
 enum SweepGunnerMode {
   SWEEPGUN_IDLE = 0,     /* faces Spyro; in range and level: SWEEP */
   SWEEPGUN_ADVANCE = 2,  /* Spyro entered its trigger box: walks its path, then IDLE */
-  SWEEPGUN_SWEEP = 3,    /* sprays shots, sweeping between its yaw limits (subMode 1: reverses) */
+  SWEEPGUN_SWEEP = 3,    /* sprays shots, sweeping between its yaw limits (SweepGunnerSweepStep) */
   SWEEPGUN_KNOCKED = 4,  /* flamed: knocked away; bursts, or sinks on water */
   SWEEPGUN_TURN = 10,    /* turns to Spyro, then IDLE */
   SWEEPGUN_SINK = 20,    /* knocked into the water: despawns after a moment */
+};
+
+/* ->subMode while SWEEPGUN_SWEEP. */
+enum SweepGunnerSweepStep {
+  SWEEPGUN_STEP_FIRE = 0,    /* sweeps toward Spyro's bearing, a shot every other frame */
+  SWEEPGUN_STEP_REVERSE = 1, /* overshot him: plays its turn, reverses sweepRate, FIRE */
 };
 
 /* ->mode of a lurker (ACTOR_TYPE_LURKER, LurkerState; level 20). */

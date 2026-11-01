@@ -1781,7 +1781,7 @@ void Level32_UpdateActors(void) {
         if (st->flags != GUNNER_F_ARMED && dist < 0x3400 && ABS2(SPY_DZ(actor)) < 0x5DC) {
           st->yawToSpyro = actor->rotZ;
           st->sweepYaw = actor->rotZ << 4;
-          actor->subMode = 0;
+          actor->subMode = SWEEPGUN_STEP_FIRE;
           ENTER_POSE_B(actor, SWEEPGUN_SWEEP);
         }
         ANIM_GO(actor, 0);
@@ -1796,7 +1796,7 @@ void Level32_UpdateActors(void) {
 
       case SWEEPGUN_SWEEP:
         switch (actor->subMode) {
-        case 0: {
+        case SWEEPGUN_STEP_FIRE: {
           int t;
           int d;
 
@@ -1818,7 +1818,7 @@ void Level32_UpdateActors(void) {
           d = WrapAngleDelta8(st->yawToSpyro, st->sweepYaw >> 4);
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && ABS(d) > 0x1A &&
               ((d < 0 && st->sweepRate < 0) || (d > 0 && st->sweepRate > 0))) {
-            actor->subMode = 1;
+            actor->subMode = SWEEPGUN_STEP_REVERSE;
           }
           actor->rotZ = st->sweepYaw >> 4;
           if (g_dwGamestateFrames & 1) {
@@ -1843,7 +1843,7 @@ void Level32_UpdateActors(void) {
           continue;
         }
 
-        case 1:
+        case SWEEPGUN_STEP_REVERSE:
           ANIM_GO(actor, 5);
           if (g_nActorAnimDone != 0) {
             if (actor->nextAnim != 3) {
@@ -1855,7 +1855,7 @@ void Level32_UpdateActors(void) {
               OnActorAnimQueued(actor);
             }
             st->timer = 0x1E;
-            actor->subMode = 0;
+            actor->subMode = SWEEPGUN_STEP_FIRE;
             st->sweepRate = -st->sweepRate;
           }
           continue;
