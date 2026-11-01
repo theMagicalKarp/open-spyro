@@ -5787,9 +5787,9 @@ dlabel g_apDragonNames
     /* 5FFCC 8006F7CC E8520780 */ .word D_800752E8
 enddlabel g_apDragonNames
 
-nonmatching g_apTitleCardNames
+nonmatching g_apWorldNames
 
-dlabel g_apTitleCardNames
+dlabel g_apWorldNames
     /* 5FFD0 8006F7D0 00000180 */ .word D_80010000
     /* 5FFD4 8006F7D4 6C000180 */ .word 0x8001006C
     /* 5FFD8 8006F7D8 5C000180 */ .word 0x8001005C
@@ -5798,7 +5798,7 @@ dlabel g_apTitleCardNames
     /* 5FFE4 8006F7E4 2C000180 */ .word 0x8001002C
     /* 5FFE8 8006F7E8 1C000180 */ .word 0x8001001C
     /* 5FFEC 8006F7EC 0C000180 */ .word 0x8001000C
-enddlabel g_apTitleCardNames
+enddlabel g_apWorldNames
 
 nonmatching g_apLevelNameStrings
 

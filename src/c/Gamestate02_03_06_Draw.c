@@ -812,7 +812,7 @@ void Gamestate02_03_06_Draw(void) {
       }
       i = 0;
       bias = (g_nSubMenuCursor < 3) * 8;
-      v = strlen((&g_apTitleCardNames[1])[g_nSubMenuCursor]);
+      v = strlen((&g_apWorldNames[1])[g_nSubMenuCursor]);
       pos[1] = 0x5c;
       pos[2] = 0xe00;
       styD[0] = 0x14;
@@ -820,8 +820,8 @@ void Gamestate02_03_06_Draw(void) {
       styD[2] = 0x1000;
       v = (v - 1) * 0xa - 0x9e;
       pos[0] = g_nSubMenuScrollOffset - v;
-      BuildTextSprites((&g_apTitleCardNames[1])[g_nSubMenuCursor], pos, styD,
-                       0x17, 2);
+      BuildTextSprites((&g_apWorldNames[1])[g_nSubMenuCursor], pos, styD, 0x17,
+                       2);
       rec = g_pSpriteRecordWriteCursor;
       phase = 0;
       while (i < (int)g_abWorldTitleGlyphBlock[g_nSubMenuCursor]) {

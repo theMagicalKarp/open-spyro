@@ -11247,9 +11247,9 @@ glabel Gamestate02_03_06_Draw
     /* C378 8001BB78 21980000 */  addu       $s3, $zero, $zero
     /* C37C 8001BB7C 80180200 */  sll        $v1, $v0, 2
     /* C380 8001BB80 03004228 */  slti       $v0, $v0, 0x3
-    /* C384 8001BB84 0780013C */  lui        $at, %hi(g_apTitleCardNames + 0x4)
+    /* C384 8001BB84 0780013C */  lui        $at, %hi(g_apWorldNames + 0x4)
     /* C388 8001BB88 21082300 */  addu       $at, $at, $v1
-    /* C38C 8001BB8C D4F7248C */  lw         $a0, %lo(g_apTitleCardNames + 0x4)($at)
+    /* C38C 8001BB8C D4F7248C */  lw         $a0, %lo(g_apWorldNames + 0x4)($at)
     /* C390 8001BB90 DB89010C */  jal        strlen
     /* C394 8001BB94 C0B80200 */   sll       $s7, $v0, 3
     /* C398 8001BB98 4000A527 */  addiu      $a1, $sp, 0x40
@@ -11277,9 +11277,9 @@ glabel Gamestate02_03_06_Draw
     /* C3F0 8001BBF0 80200400 */  sll        $a0, $a0, 2
     /* C3F4 8001BBF4 4000A2AF */  sw         $v0, 0x40($sp)
     /* C3F8 8001BBF8 1000A7AF */  sw         $a3, 0x10($sp)
-    /* C3FC 8001BBFC 0780013C */  lui        $at, %hi(g_apTitleCardNames + 0x4)
+    /* C3FC 8001BBFC 0780013C */  lui        $at, %hi(g_apWorldNames + 0x4)
     /* C400 8001BC00 21082400 */  addu       $at, $at, $a0
-    /* C404 8001BC04 D4F7248C */  lw         $a0, %lo(g_apTitleCardNames + 0x4)($at)
+    /* C404 8001BC04 D4F7248C */  lw         $a0, %lo(g_apWorldNames + 0x4)($at)
     /* C408 8001BC08 6B60000C */  jal        BuildTextSprites
     /* C40C 8001BC0C 17000724 */   addiu     $a3, $zero, 0x17
     /* C410 8001BC10 0780023C */  lui        $v0, %hi(g_nSubMenuCursor)
@@ -13912,9 +13912,9 @@ glabel ActorCutscene_Draw
     /* EABC 8001E2BC 83100800 */  sra        $v0, $t0, 2
     /* EAC0 8001E2C0 23104300 */  subu       $v0, $v0, $v1
     /* EAC4 8001E2C4 80100200 */  sll        $v0, $v0, 2
-    /* EAC8 8001E2C8 0780013C */  lui        $at, %hi(g_apTitleCardNames)
+    /* EAC8 8001E2C8 0780013C */  lui        $at, %hi(g_apWorldNames)
     /* EACC 8001E2CC 21082200 */  addu       $at, $at, $v0
-    /* EAD0 8001E2D0 D0F7268C */  lw         $a2, %lo(g_apTitleCardNames)($at)
+    /* EAD0 8001E2D0 D0F7268C */  lw         $a2, %lo(g_apWorldNames)($at)
     /* EAD4 8001E2D4 0180053C */  lui        $a1, %hi(g_szEnteringWorldFmt)
     /* EAD8 8001E2D8 D00CA524 */  addiu      $a1, $a1, %lo(g_szEnteringWorldFmt)
     /* EADC 8001E2DC E1780008 */  j          .L8001E384
@@ -13932,9 +13932,9 @@ glabel ActorCutscene_Draw
     /* EB08 8001E308 83100800 */  sra        $v0, $t0, 2
     /* EB0C 8001E30C 23104300 */  subu       $v0, $v0, $v1
     /* EB10 8001E310 80100200 */  sll        $v0, $v0, 2
-    /* EB14 8001E314 0780013C */  lui        $at, %hi(g_apTitleCardNames)
+    /* EB14 8001E314 0780013C */  lui        $at, %hi(g_apWorldNames)
     /* EB18 8001E318 21082200 */  addu       $at, $at, $v0
-    /* EB1C 8001E31C D0F7268C */  lw         $a2, %lo(g_apTitleCardNames)($at)
+    /* EB1C 8001E31C D0F7268C */  lw         $a2, %lo(g_apWorldNames)($at)
     /* EB20 8001E320 DF780008 */  j          .L8001E37C
     /* EB24 8001E324 3800A427 */   addiu     $a0, $sp, 0x38
   .L8001E328:
@@ -13956,9 +13956,9 @@ glabel ActorCutscene_Draw
     /* EB64 8001E364 40100200 */  sll        $v0, $v0, 1
     /* EB68 8001E368 21104500 */  addu       $v0, $v0, $a1
     /* EB6C 8001E36C 80100200 */  sll        $v0, $v0, 2
-    /* EB70 8001E370 0780013C */  lui        $at, %hi(g_apTitleCardNames + 0x8)
+    /* EB70 8001E370 0780013C */  lui        $at, %hi(g_apWorldNames + 0x8)
     /* EB74 8001E374 21082200 */  addu       $at, $at, $v0
-    /* EB78 8001E378 D8F7268C */  lw         $a2, %lo(g_apTitleCardNames + 0x8)($at)
+    /* EB78 8001E378 D8F7268C */  lw         $a2, %lo(g_apWorldNames + 0x8)($at)
   .L8001E37C:
     /* EB7C 8001E37C 0180053C */  lui        $a1, %hi(g_szEnteringFmt)
     /* EB80 8001E380 E40CA524 */  addiu      $a1, $a1, %lo(g_szEnteringFmt)

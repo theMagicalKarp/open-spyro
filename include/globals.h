@@ -408,8 +408,8 @@ extern byte g_abLevelTotalDragonsTable[36];                  /* 0x8006f414 */
 extern short g_anLevelTotalGemsTable[35];                    /* 0x8006f438 */
 extern byte g_abLevelTotalEggsTable[18];                     /* 0x8006f480 */
 extern char *g_apDragonNames[79];                            /* 0x8006f694 */
-extern char *g_apTitleCardNames[8];                          /* 0x8006f7d0 */
-extern char *g_apLevelNameStrings[36];                       /* 0x8006f7f0 */
+extern char *g_apWorldNames[8];                          /* 0x8006f7d0 [1..6] the world names ARTISANS..GNASTY'S WORLD by level id / 10; [0] "DRAGON X" and [7] "THIGH MASTERS" are reached by no world (world 6 has no balloonist to ask for [7]). g_apLevelNameStrings follows directly, so [world * 6 + level + 2] is that level's name */
+extern char *g_apLevelNameStrings[36];                       /* 0x8006f7f0 [(world - 1) * 6 + level] level names, HOME..GNASTY'S LOOT (35 used) */
 extern char *g_apBalloonistNames[7];                         /* 0x8006f880 [0] "RETURN HOME" (level-exit letters), [1..6] the per-world balloonists MARCO..HAK, indexed by level id / 10 */
 extern byte g_abBalloonistDialoguePageStarts[40];            /* 0x8006f89c */
 extern char *g_apBalloonistDialogueLines[108];               /* 0x8006f8c4 */
@@ -1157,7 +1157,7 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_bWorldBalloonistState1 0x800758d1  g_abWorldBalloonistState[1] (scalar view)
  *   g_nLevelEggsRecovered1/7/8/12/15 0x80076fec..0x80077024  g_anLevelEggsRecovered[n] views; a zero one
  *       (or < 2 for [12]) unlocks hint pages 0x21..0x25
- *   g_apWorldNameByLevelTens 0x8006f7d4  &g_apTitleCardNames[1], indexed by level id / 10 (world name)
+ *   g_apWorldNameByLevelTens 0x8006f7d4  &g_apWorldNames[1], takes a 0-based world index, so [level id / 10] is the NEXT world (the balloonist's GO TO destination)
  *   g_apLevelNameByWorldRow  0x8006f7d8  indexed (level id / 10) * 6 + level id % 10 (lands in
  *       g_apLevelNameStrings from world 1)
  *   g_abBalloonistDialoguePageEnds 0x8006f89d  &g_abBalloonistDialoguePageStarts[1]: page m ends where m + 1 starts
