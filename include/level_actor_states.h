@@ -445,17 +445,22 @@ typedef struct CometCannonState {
   char trails[1]; /* 0x28 */
 } CometCannonState;
 
+/* LungingGuardState / BigLungingGuardState flags (level 24). */
+#define LGUARD_F_ESCORT 1 /* cued: ESCORT (cleared on entry) */
+#define LGUARD_F_PACE 2   /* paces its path once Spyro is inside range2 */
+#define LGUARD_F_REARM 4  /* a blast re-arms its trigger instead of clearing it */
+
 /* Types 92/130 state: a guard whose animations start at `base`. */
 typedef struct LungingGuardState {
   int knock;           /* 0x00 knock-back speed */
   int heading;         /* 0x04 knock-back heading */
   int lift;            /* 0x08 */
   int base;            /* 0x0C first animation */
-  int kind;            /* 0x10 */
+  int kind;            /* 0x10 LungingGuardKind */
   int timer;           /* 0x14 */
   int vol[6];          /* 0x18 trigger box */
   unsigned char *path; /* 0x30 */
-  int flags;           /* 0x34 */
+  int flags;           /* 0x34 LGUARD_F_* */
   int init;            /* 0x38 */
   int range;           /* 0x3C <0 = waiting */
   int partner;         /* 0x40 index into g_pActorListBase */
@@ -472,11 +477,11 @@ typedef struct BigLungingGuardState {
   int heading;         /* 0x04 */
   int lift;            /* 0x08 */
   int base;            /* 0x0C */
-  int kind;            /* 0x10 */
+  int kind;            /* 0x10 LungingGuardKind */
   int timer;           /* 0x14 */
   int vol[6];          /* 0x18 */
   unsigned char *path; /* 0x30 */
-  int flags;           /* 0x34 */
+  int flags;           /* 0x34 LGUARD_F_* */
   int init;            /* 0x38 */
   int range;           /* 0x3C */
   int partner;         /* 0x40 */

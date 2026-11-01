@@ -911,7 +911,7 @@ void Level24_UpdateActors(void) {
         dist = VectorLength(g104, VEC_LEN_XY);
       }
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != LGUARD_KNOCKED &&
-          (st->kind != 1 || !(actor->flags & ACTOR_HIT_CHARGE))) {
+          (st->kind != LGKIND_BIG || !(actor->flags & ACTOR_HIT_CHARGE))) {
         st->lift = 0;
         st->knock = 0xC8;
         if (actor->flags & ACTOR_HIT_CHARGE) {
@@ -931,7 +931,7 @@ void Level24_UpdateActors(void) {
       }
       if (st->init == 0) {
         st->init = one;
-        if (st->kind == 0) {
+        if (st->kind == LGKIND_SMALL) {
           st->base = 4;
           ANIM_SET(actor, st->base);
         }
@@ -950,12 +950,12 @@ void Level24_UpdateActors(void) {
           st->timer2 = st->reload;
         } else if (actor->flags & ACTOR_HIT_BLAST) {
           actor->flags = 0;
-          if (st->flags & 4) {
+          if (st->flags & LGUARD_F_REARM) {
             st->range = -st->range;
           } else {
             st->range = 0;
           }
-          if (st->kind != 0) {
+          if (st->kind != LGKIND_SMALL) {
             actor->scale = 0x20;
             actor->mode = LGUARD_GROW;
             continue;
@@ -971,7 +971,7 @@ void Level24_UpdateActors(void) {
         }
       }
       actor->flags = 0;
-      if (st->flags == 1) {
+      if (st->flags == LGUARD_F_ESCORT) {
         st->flags = 0;
         actor->mode = LGUARD_ESCORT;
         continue;
@@ -979,7 +979,7 @@ void Level24_UpdateActors(void) {
 
       switch (actor->mode) {
       case LGUARD_IDLE:
-        if ((st->flags & 2) &&
+        if ((st->flags & LGUARD_F_PACE) &&
             ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range2) {
           ANIM_GO(actor, st->base + 1);
           actor->mode = LGUARD_PACE;
@@ -989,12 +989,12 @@ void Level24_UpdateActors(void) {
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x190
                                : -SPY_DZ(actor) < 0x190)) {
-          if (st->kind == 0) {
+          if (st->kind == LGKIND_SMALL) {
             if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x5DC) {
               actor->mode = LGUARD_LUNGE;
               continue;
             }
-          } else if (st->kind == 1 &&
+          } else if (st->kind == LGKIND_BIG &&
                      ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1F40) {
             actor->mode = LGUARD_LUNGE;
             continue;
@@ -1003,7 +1003,7 @@ void Level24_UpdateActors(void) {
         break;
 
       case LGUARD_PACE:
-        st->flags &= ~2;
+        st->flags &= ~LGUARD_F_PACE;
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0xC00 ||
             PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, one) ==
                 0x100) {
@@ -1014,7 +1014,7 @@ void Level24_UpdateActors(void) {
         break;
 
       case LGUARD_LUNGE:
-        if (st->kind == 0) {
+        if (st->kind == LGKIND_SMALL) {
           ANIM_GO(actor, st->base + 2);
           TrackEntityYawTowardSpyro(actor, 6, 0, 0);
           g_anSpyroRequestVelocity.x = (g_anCosineLut[actor->rotZ] * 0x23) >> 10;
@@ -1073,7 +1073,7 @@ void Level24_UpdateActors(void) {
           continue;
         }
         r = DriveActorTrackedMove(actor, &st->knock, st->heading, &st->lift, 0xC, 0x10);
-        if (st->kind == 0) {
+        if (st->kind == LGKIND_SMALL) {
           if (r == 3 && (unsigned)(actor->nextFrame - 0xB) < 9) {
             g_nActorAnimDone = 0;
             actor->frameProgress = 0x20;
@@ -2415,7 +2415,7 @@ void Level24_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != LGUARD_KNOCKED &&
-          (st->kind != 1 || !(actor->flags & ACTOR_HIT_CHARGE))) {
+          (st->kind != LGKIND_BIG || !(actor->flags & ACTOR_HIT_CHARGE))) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         st->lift = 0x96;
         st->knock = 0x118;
@@ -2440,7 +2440,7 @@ void Level24_UpdateActors(void) {
         if (st->flip != 0 && actor->dropKind == 0xFF) {
           st->kind = !st->kind;
         }
-        if (st->kind == 0) {
+        if (st->kind == LGKIND_SMALL) {
           st->base = 4;
           ANIM_SET(actor, st->base);
         }
@@ -2465,12 +2465,12 @@ void Level24_UpdateActors(void) {
           }
         } else if (actor->flags & ACTOR_HIT_BLAST) {
           actor->flags = 0;
-          if (st->flags & 4) {
+          if (st->flags & LGUARD_F_REARM) {
             st->range = -st->range;
           } else {
             st->range = 0;
           }
-          if (st->kind == 0) {
+          if (st->kind == LGKIND_SMALL) {
             st->kind = !st->kind;
             BurstActorWithSound(actor, 0x28);
             actor->scale = 0x40;
@@ -2491,7 +2491,7 @@ void Level24_UpdateActors(void) {
 
       switch (actor->mode) {
       case LGUARD_IDLE:
-        if ((st->flags & 2) &&
+        if ((st->flags & LGUARD_F_PACE) &&
             ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range2) {
           ANIM_GO(actor, st->base + 1);
           actor->mode = LGUARD_PACE;
@@ -2501,12 +2501,12 @@ void Level24_UpdateActors(void) {
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x190
                                : -SPY_DZ(actor) < 0x190)) {
-          if (st->kind == 0) {
+          if (st->kind == LGKIND_SMALL) {
             if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x4B0) {
               actor->mode = LGUARD_LUNGE;
               continue;
             }
-          } else if (st->kind == 1 &&
+          } else if (st->kind == LGKIND_BIG &&
                      ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1F40) {
             actor->mode = LGUARD_LUNGE;
             continue;
@@ -2515,7 +2515,7 @@ void Level24_UpdateActors(void) {
         break;
 
       case LGUARD_PACE:
-        st->flags &= ~2;
+        st->flags &= ~LGUARD_F_PACE;
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0xC00 ||
             PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, 5) ==
                 0x100) {
@@ -2526,7 +2526,7 @@ void Level24_UpdateActors(void) {
         break;
 
       case LGUARD_LUNGE:
-        if (st->kind == 0) {
+        if (st->kind == LGKIND_SMALL) {
           ANIM_GO(actor, st->base + 2);
           TrackEntityYawTowardSpyro(actor, 6, 0, 0);
           g_anSpyroRequestVelocity.x = (g_anCosineLut[actor->rotZ] * 0x23) >> 10;

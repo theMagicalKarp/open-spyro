@@ -619,6 +619,13 @@ enum LungingGuardMode {
   LGUARD_ESCORT = 30,  /* keeps its partner between itself and Spyro */
 };
 
+/* LungingGuardState.kind: the guard's current size (a big guard toggles it
+ * as it shrinks and grows back). */
+enum LungingGuardKind {
+  LGKIND_SMALL = 0, /* lunges from close; a blast shrinks it away */
+  LGKIND_BIG = 1,   /* lunges from far; shrugs off a plain charge; a blast grows it */
+};
+
 /* ->mode of a grabber (ACTOR_TYPE_GRABBER, GrabberState; level 20).
  * GrabberState.held is shared: one grabber goes for Spyro at a time. */
 enum GrabberMode {
