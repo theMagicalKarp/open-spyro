@@ -2822,7 +2822,7 @@ void Level24_UpdateActors(void) {
         g_abWorldBalloonistState[3] = 2;
         g_abWorldBalloonistState[4] = 2;
 
-        if (g_nWorldTreasureCollected < 0x1770) {
+        if (g_nTotalTreasureCollected < 0x1770) {
           if (g_abWorldBalloonistState[5] == 0) {
             g_nActorCutsceneDialogPage = 0x18;
             g_abWorldBalloonistState[5] = 1;

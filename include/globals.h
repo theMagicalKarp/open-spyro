@@ -627,7 +627,7 @@ extern int g_nCameraShakePeakAmplitude;      /* 0x80075848 */
 extern int g_nPulseRumbleAmount;             /* 0x8007584c */
 extern int g_nPortalViewYawSpin;        /* 0x80075858: portal-surface view spin, +2 a frame (DrawPortalsAndStaticActors) */
 extern void *g_pDemoPadCursor;           /* 0x8007585c: read/write cursor into the recorded demo pad stream (SampleDemoPadFrame) */
-extern int g_nWorldTreasureCollected;        /* 0x80075860 */
+extern int g_nTotalTreasureCollected;        /* 0x80075860: game-wide treasure (gem) total: pickups, flight bonuses; 14000 (0x36B0) picks the post-game credits return */
 extern int g_nCdStreamState;                 /* 0x80075864 */
 extern int g_nInGameTick;                    /* 0x80075868 */
 extern int g_nLevelGemsAtEntry;              /* 0x8007587c */
@@ -660,12 +660,12 @@ extern int g_nLevelSelectSubIndex;           /* 0x800758f0 */
 extern int g_nPortalViewPitchTilt;      /* 0x800758fc: portal-surface view tilt, +2 a frame (DrawPortalsAndStaticActors) */
 extern int g_nHitRumbleTimer;                /* 0x80075904 */
 extern int g_nCameraShakeDuration;           /* 0x8007590c */
-extern uint g_dwActiveCameraOptions;         /* 0x80075914 */
+extern uint g_dwActiveCameraOptions;         /* 0x80075914: camera option word, CAM_OPT_ACTIVE or CAM_OPT_PASSIVE (camera.h); saved */
 extern int g_nScreenFadeLevel;              /* 0x80075918: fade-to-black level (drawn as a subtractive fullscreen tint, decays by g_nFrameStep in gameplay) */
 extern int g_nPortalDistanceFogEnabled;                /* 0x8007591c: portals beyond 0x4000 fade into g_dwWorldFogColor (DrawPortalsAndStaticActors); set for Beast Makers home + Misty Bog and the opening-story cutscene */
 extern int g_nCameraManualYawInput;          /* 0x80075924 */
 extern int g_nPadHistoryIndex;               /* 0x80075928 */
-extern int g_nCameraLookAroundActive;        /* 0x8007592c */
+extern int g_nCameraForcePassiveFollow;        /* 0x8007592c: 1 while Spyro is in SPYRO_ST_HURT_LONG (UpdateCameraFrame): the camera behaves as if CAM_OPT_PASSIVE_FOLLOW were set */
 extern void *g_pActorAuxPoolFreeHead;        /* 0x80075930 */
 extern int g_nActorMeshOtDepthBin;           /* 0x80075934 */
 extern int g_nCameraPassiveModeHoldTimer;    /* 0x80075938 */

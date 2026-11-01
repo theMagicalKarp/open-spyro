@@ -2558,7 +2558,7 @@ void Level6_UpdateActors(void) {
         g_pfnLevelBeginActorCutscene(actor);
         g_abWorldBalloonistState[1] = 2;
 
-        if (g_nWorldTreasureCollected < 0x4B0) {
+        if (g_nTotalTreasureCollected < 0x4B0) {
           if (g_abWorldBalloonistState[2] == 0) {
             g_nActorCutsceneDialogPage = 6;
             g_abWorldBalloonistState[2] = 1;

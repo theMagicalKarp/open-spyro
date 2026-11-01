@@ -2699,7 +2699,7 @@ void Level8_UpdateActors(void) {
       if (TickCountdownByFrameDelta(&st->camTimer, 4) == 0) {
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FREEZE_INPUT);
       }
-      if (!(g_dwActiveCameraOptions & 0x10) && TickCountdownByFrameDelta(&st->camTimer2, 4) == 0) {
+      if (!(g_dwActiveCameraOptions & CAM_OPT_PASSIVE_FOLLOW) && TickCountdownByFrameDelta(&st->camTimer2, 4) == 0) {
         int cd = ApproxDist2D(&actor->posX, &spy->posX) + 0xC00;
 
         if (st->camDist < cd) {

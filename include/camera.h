@@ -43,4 +43,13 @@ enum CameraMode {
 };
 #define CAM_HELD 0x80000000
 
+/* g_dwActiveCameraOptions (saved in SaveGameBuffer.cameraOptions). The pause
+ * menu's Camera option toggles the whole word between CAM_OPT_ACTIVE and
+ * CAM_OPT_PASSIVE (new games start passive); only bits 0x10 / 0x40 are tested. */
+#define CAM_OPT_ACTIVE 0x02          /* the "Active" setting (bit never tested) */
+#define CAM_OPT_PASSIVE_FOLLOW 0x10  /* idle Spyro: drift into CAM_MODE_PASSIVE */
+#define CAM_OPT_SMOOTH_SWING 0x40    /* clamp free-look/charge spring deltas to
+                                      * +-0x2000; keep the yaw on sidestep/fall entry */
+#define CAM_OPT_PASSIVE (CAM_OPT_ACTIVE | CAM_OPT_PASSIVE_FOLLOW | CAM_OPT_SMOOTH_SWING)
+
 #endif /* OPEN_SPYRO_CAMERA_H */

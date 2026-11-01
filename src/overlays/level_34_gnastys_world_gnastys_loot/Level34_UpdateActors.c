@@ -2467,7 +2467,7 @@ void Level34_UpdateActors(void) {
     case ACTOR_TYPE_VAULT_TIMER: {
       int *t = actor->state;
 
-      if (g_nWorldTreasureCollected == 0x36B0 && SPY.state == SPYRO_ST_LIFT) {
+      if (g_nTotalTreasureCollected == 0x36B0 && SPY.state == SPYRO_ST_LIFT) {
         if (*t < 0x10) {
           g_nScreenFadeLevel = 0x10 - *t;
           if (g_nScreenFadeLevel >= 0x10) {

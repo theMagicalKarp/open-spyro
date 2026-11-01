@@ -95,13 +95,13 @@ int ApplySaveGameBuffer(unsigned char *buf) {
   half = buf;
   dragons = g_anLevelDragonsRescued;
   g_nWorldDragonsRescued = 0;
-  g_nWorldTreasureCollected = 0;
+  g_nTotalTreasureCollected = 0;
   g_nWorldEggsRecovered = 0;
   do {
     row2 = buf + i;
     d = row2[SAVE_OFFSET(levelDragons)];
     wd = g_nWorldDragonsRescued;
-    wt = g_nWorldTreasureCollected;
+    wt = g_nTotalTreasureCollected;
     *dragons = d;
     g = SAVE_RAW(half, short, levelGems);
     g_nWorldDragonsRescued = wd + d;
@@ -109,7 +109,7 @@ int ApplySaveGameBuffer(unsigned char *buf) {
     t = wt + g;
     EBB_BREAK();
     *gems = g;
-    g_nWorldTreasureCollected = t;
+    g_nTotalTreasureCollected = t;
     if (c) {
       e = row2[SAVE_OFFSET(levelEggs)];
       we = g_nWorldEggsRecovered;

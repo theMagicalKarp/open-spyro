@@ -32,9 +32,9 @@ void CommitActorKillGems(int value, Actor *actor) {
       SpawnFloatingDigitActors(value, actor);
     }
     gems = &g_anLevelGemsCollected[g_nLevelIndex];
-    w = g_nWorldTreasureCollected + value;
+    w = g_nTotalTreasureCollected + value;
     g = *gems + value;
-    g_nWorldTreasureCollected = w;
+    g_nTotalTreasureCollected = w;
     *gems = g;
   }
 

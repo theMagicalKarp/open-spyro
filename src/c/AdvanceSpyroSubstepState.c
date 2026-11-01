@@ -38,7 +38,7 @@ void AdvanceSpyroSubstepState(void) {
       }
     } else {
       g_nSpyroAnimPlayRate = 4;
-      if (g_dwActiveCameraOptions & 0x10) {
+      if (g_dwActiveCameraOptions & CAM_OPT_PASSIVE_FOLLOW) {
         int *cam = g_nCameraNextMode_blk;
         int m = (CAM_HELD | CAM_MODE_STAND);
         if (*cam >= 0) {

@@ -115,7 +115,7 @@ void DrawLevelTransitionOverlay(void) {
   }
 
   if (g_nLevelTransitionPhase >= 0x40) {
-    i = g_nWorldTreasureCollected;
+    i = g_nTotalTreasureCollected;
     x0 = 0x28;
     while (i >= 10) {
       i /= 10;
@@ -191,7 +191,7 @@ void DrawLevelTransitionOverlay(void) {
           (g_anLevelGemsCollected[g_nPrevLevelIndex] - g_nLevelGemsAtEntry) *
           shown / span;
     } else if (g_nLevelTransitionPhase < 0x110) {
-      value = g_nWorldTreasureCollected -
+      value = g_nTotalTreasureCollected -
               (g_anLevelGemsCollected[g_nPrevLevelIndex] - g_nLevelGemsAtEntry);
     } else {
       span = (g_nGemTallyIconCount + 1) * 2;
@@ -207,7 +207,7 @@ void DrawLevelTransitionOverlay(void) {
         shown = span;
       }
       value =
-          g_nWorldTreasureCollected -
+          g_nTotalTreasureCollected -
           (g_anLevelGemsCollected[g_nPrevLevelIndex] - g_nLevelGemsAtEntry) *
               shown / span;
     }

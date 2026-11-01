@@ -62,7 +62,8 @@ SDATA(g_nCameraSpringReengageCountdown, 4);
   }
 
 #define PASSIVE_HOLD()                                                         \
-  (((g_dwActiveCameraOptions & 0x10) || g_nCameraLookAroundActive) &&          \
+  (((g_dwActiveCameraOptions & CAM_OPT_PASSIVE_FOLLOW) ||                      \
+    g_nCameraForcePassiveFollow) &&                                            \
    g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_PASSIVE_SETTLE))
 
 /* Per-frame 6-axis camera spring step (0x80034ce8, 2748 bytes). `column` picks
@@ -85,9 +86,9 @@ void AdvanceCameraSpringStep(int column) {
   } else {
     if (PASSIVE_HOLD() && g_nCameraLosClear != 0) {
       delta = 0;
-    } else if ((((g_dwActiveCameraOptions & 0x10) &&
+    } else if ((((g_dwActiveCameraOptions & CAM_OPT_PASSIVE_FOLLOW) &&
                  (unsigned)(g_nSpyroState - 5) < 2) ||
-                g_nCameraLookAroundActive) &&
+                g_nCameraForcePassiveFollow) &&
                g_nSpyroMotionSpeed < 0x400 && g_nCameraCollisionRetries == 0 &&
                g_nCameraSpringSuppressFlag == 0) {
       delta = 0;
@@ -110,12 +111,14 @@ void AdvanceCameraSpringStep(int column) {
       *p = 0x800;
     }
   }
-  if ((g_dwActiveCameraOptions & 0x40) && g_nCameraCollisionRetries == 0 &&
+  if ((g_dwActiveCameraOptions & CAM_OPT_SMOOTH_SWING) &&
+      g_nCameraCollisionRetries == 0 &&
       (g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_FREE_LOOK) ||
        g_nCameraCurrentMode == CAM_MODE_CHARGE)) {
     CLAMP_STATE(g_nCameraSpringYawDelta, 0x2000);
   }
-  if (((g_dwActiveCameraOptions & 0x10) || g_nCameraLookAroundActive) &&
+  if (((g_dwActiveCameraOptions & CAM_OPT_PASSIVE_FOLLOW) ||
+       g_nCameraForcePassiveFollow) &&
       g_nCameraSpringReengageCountdown == 0 && g_nCameraLosClear != 0 &&
       g_nCameraSpringSuppressFlag == 0 &&
       (g_nCameraCurrentMode == CAM_MODE_STAND ||
@@ -127,8 +130,8 @@ void AdvanceCameraSpringStep(int column) {
   if (PASSIVE_HOLD()) {
     goto hold;
   }
-  if ((g_dwActiveCameraOptions & 0x10) && g_nSpyroState == SPYRO_ST_FALL &&
-      g_nCameraCollisionRetries == 0) {
+  if ((g_dwActiveCameraOptions & CAM_OPT_PASSIVE_FOLLOW) &&
+      g_nSpyroState == SPYRO_ST_FALL && g_nCameraCollisionRetries == 0) {
     delta = 0;
     g_anCameraSpringDeltaState[1] = 0;
   } else if (g_nCameraCurrentMode == CAM_MODE_HAZARD) {
@@ -139,7 +142,7 @@ void AdvanceCameraSpringStep(int column) {
   }
   drive = g_anCameraSpringDriveGains[6 + column];
   SPRING(1);
-  if ((g_dwActiveCameraOptions & 0x40) &&
+  if ((g_dwActiveCameraOptions & CAM_OPT_SMOOTH_SWING) &&
       g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_FREE_LOOK) &&
       g_nCameraCollisionRetries == 0) {
     CLAMP_STATE(g_nCameraSpringPitchDelta, 0x2000);

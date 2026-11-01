@@ -18,7 +18,7 @@ void CreditsSequence_Update(void) {
       g_nCurrentLevelId = g_nCreditsReturnLevelId;
       g_nCreditsReturnLevelId = -1;
     } else {
-      if (g_nWorldTreasureCollected == 0x36B0) {
+      if (g_nTotalTreasureCollected == 0x36B0) {
         g_nCurrentLevelId = 0xA;
       } else {
         g_nCurrentLevelId = 0x3C;

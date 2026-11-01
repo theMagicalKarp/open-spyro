@@ -1,4 +1,5 @@
 #include "actor.h"
+#include "camera.h"
 #include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
@@ -579,7 +580,7 @@ void Gamestate02_03_06_Draw(void) {
         pos[0] = 0x142;
         pos[1] = rows * 0x10 + 0x9c;
         pos[2] = 0x1400;
-        if (g_dwActiveCameraOptions == 2) {
+        if (g_dwActiveCameraOptions == CAM_OPT_ACTIVE) {
           BuildTextSprites(g_szUiActive, pos, styB, 0x10, 0xb);
           n5 = 6;
         } else {
@@ -706,7 +707,7 @@ void Gamestate02_03_06_Draw(void) {
       pos[0] = 0x5a;
       pos[1] = 0x24;
       pos[2] = 0xb40;
-      sprintf(buf, fmt, g_nWorldTreasureCollected);
+      sprintf(buf, fmt, g_nTotalTreasureCollected);
       BuildTextSpriteChain(buf, pos, 0x1b, 2);
       pos[0] = 0x14d;
       pos[1] = 0x24;

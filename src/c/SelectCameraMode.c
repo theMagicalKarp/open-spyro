@@ -44,7 +44,7 @@ void SelectCameraMode(void) {
   unsigned int opts;
 
   if (mode == (CAM_HELD | CAM_MODE_FREE_LOOK)) {
-    if (g_dwActiveCameraOptions & 0x10) {
+    if (g_dwActiveCameraOptions & CAM_OPT_PASSIVE_FOLLOW) {
       if (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) {
         if (!(g_dwPadHeld & PAD_TRIANGLE)) {
           g_nCameraNextMode = (CAM_HELD | CAM_MODE_PASSIVE);
@@ -74,7 +74,7 @@ void SelectCameraMode(void) {
       SCHED_FENCE();
       opts = g_dwActiveCameraOptions;
       *(CameraAngles *)&g_nCameraSpringYaw = *(CameraAngles *)&g_nCameraYaw;
-      if (((opts & 0x10) || g_nCameraLookAroundActive) &&
+      if (((opts & CAM_OPT_PASSIVE_FOLLOW) || g_nCameraForcePassiveFollow) &&
           CAM[CAM_NEXT_MODE] == 0 && g_nCameraSpringSuppressFlag == 0) {
         CAM[CAM_NEXT_MODE] = (CAM_HELD | CAM_MODE_PASSIVE);
         goto hold;
@@ -135,7 +135,8 @@ void SelectCameraMode(void) {
       }
     }
   } else if (mode == 0 && SPY[SPY_SCRIPTED_MOVE] == 0 &&
-             ((g_dwActiveCameraOptions & 0x10) || g_nCameraLookAroundActive) &&
+             ((g_dwActiveCameraOptions & CAM_OPT_PASSIVE_FOLLOW) ||
+              g_nCameraForcePassiveFollow) &&
              g_nCameraSpringSuppressFlag == 0) {
     ProjectWorldPointGTEUnscaled(pt, SPY);
     pt[0] -= 0x100;
@@ -154,7 +155,8 @@ void SelectCameraMode(void) {
   }
 done:
   if (CAM[CAM_NEXT_MODE] != g_nCameraCurrentMode) {
-    if (((g_dwActiveCameraOptions & 0x10) || g_nCameraLookAroundActive) &&
+    if (((g_dwActiveCameraOptions & CAM_OPT_PASSIVE_FOLLOW) ||
+         g_nCameraForcePassiveFollow) &&
         SPY[SPY_SCRIPTED_MOVE] == 0 && g_nCameraSpringSuppressFlag == 0 &&
         (CAM[CAM_NEXT_MODE] == 0 || CAM[CAM_NEXT_MODE] == CAM_HELD) &&
         g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_PASSIVE_SETTLE) &&

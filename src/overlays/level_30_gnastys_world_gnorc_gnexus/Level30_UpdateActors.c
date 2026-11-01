@@ -1781,7 +1781,7 @@ void Level30_UpdateActors(void) {
         ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
       }
 
-      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(2)) && g_nWorldTreasureCollected >= 0x2EE0 &&
+      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(2)) && g_nTotalTreasureCollected >= 0x2EE0 &&
           g_nWorldDragonsRescued >= 0x50 && g_nWorldEggsRecovered >= 0xC) {
         ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
       }

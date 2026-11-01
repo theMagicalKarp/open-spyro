@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "cutscene_id.h"
 #include "funcs.h"
 #include "globals.h"
@@ -179,10 +180,10 @@ void PauseMenu_Update(void) {
     case 4:
       if (g_dwPadPressed & (PAD_CROSS | PAD_RIGHT | PAD_LEFT)) {
         SFX(0x2E);
-        if (g_dwActiveCameraOptions == 2) {
-          g_dwActiveCameraOptions = 0x52;
+        if (g_dwActiveCameraOptions == CAM_OPT_ACTIVE) {
+          g_dwActiveCameraOptions = CAM_OPT_PASSIVE;
         } else {
-          g_dwActiveCameraOptions = 2;
+          g_dwActiveCameraOptions = CAM_OPT_ACTIVE;
         }
       }
       return;

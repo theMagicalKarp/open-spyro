@@ -4320,7 +4320,7 @@ func_80059594_2026_09_20:
     says, with the insn map read off the RTL (307 = `sw a0,0(t0)`,
     300 = `lh a1,172(t1)`, 320/322 = the dragons add+store, 338 = `sw a1,0(t2)`
     i.e. `*gems = g`, 341 = `addu v1,v1,a1`, 343 = `sw v1,
-    g_nWorldTreasureCollected`, 346 = the `slti`, 347 = the branch):
+    g_nTotalTreasureCollected`, 346 = the `slti`, 347 = the branch):
     the only `potential_hazard` override in the block is
     `;; ready list at T-2: 343 (2) 346 (2) ... insn 343 has a greater potential
     hazard`, which is the 343/346 pair -- NOT the R2 pair. R2 (346 vs 338) is
@@ -4331,11 +4331,11 @@ func_80059594_2026_09_20:
     So the original's RTL did not carry that link, and R2 is an aliasing/
     dependence question, not a scheduler tie with "no source dial". Measured
     this session and REJECTED: swapping the two source statements
-    (`g_nWorldTreasureCollected = wt + g;` above `*gems = g;`) removes the link
+    (`g_nTotalTreasureCollected = wt + g;` above `*gems = g;`) removes the link
     but re-tiles the whole loop, 4/180 -> 50/180. The aimable objective is now
     exactly "emit 341 without a LOG_LINK on 338 while keeping the register
     map", and the next probe is where that link comes from -- 341 has no MEM in
-    its pattern, only a `REG_EQUIV (mem (symbol_ref g_nWorldTreasureCollected))`
+    its pattern, only a `REG_EQUIV (mem (symbol_ref g_nTotalTreasureCollected))`
     note, so read `sched_analyze_insn`'s note handling before trying more
     spellings. R1 (307 vs 300) is unchanged and is still the store/load pair
     whose emitted order is the source order.
