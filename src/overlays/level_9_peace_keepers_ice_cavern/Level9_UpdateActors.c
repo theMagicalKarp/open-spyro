@@ -2153,7 +2153,7 @@ void Level9_UpdateActors(void) {
         DespawnActorRecord(actor);
         continue;
       }
-      g_pfnLevelEmitParticles(1, 0x4B, &actor->posX, 0);
+      g_pfnLevelEmitParticles(1, EMIT_JITTER_SPARKLE, &actor->posX, 0);
       break;
     }
 

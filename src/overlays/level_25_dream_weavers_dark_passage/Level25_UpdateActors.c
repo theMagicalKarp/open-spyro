@@ -2407,7 +2407,7 @@ void Level25_UpdateActors(void) {
       }
       if (actor->mode == 1 && g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
-        (*st)->mode = 0;
+        (*st)->mode = LANTERN_IDLE;
         ANIM_RESET(*st, 0);
       }
       continue;

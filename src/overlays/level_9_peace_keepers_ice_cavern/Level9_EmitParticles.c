@@ -410,7 +410,7 @@ void Level9_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.line.c0[3] = 0x50;
       break;
     }
-    case 0x4B: {
+    case EMIT_JITTER_SPARKLE: {
       rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_DOT);
       rec->type = type;
       rec->phase = GetRandomU32() & 7;
