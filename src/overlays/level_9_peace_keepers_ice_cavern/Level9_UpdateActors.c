@@ -2095,8 +2095,8 @@ void Level9_UpdateActors(void) {
     case ACTOR_TYPE_OVERHEAD_THROWER: {
       int *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != 1) {
-        ENTER_POSE(actor, 1);
+      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != OTHROW_HIT) {
+        ENTER_POSE(actor, OTHROW_HIT);
       }
       if (*st >= 0) {
         if (g_pActorListBase[*st].mode >= ACTOR_MODE_DORMANT) {
@@ -2110,7 +2110,7 @@ void Level9_UpdateActors(void) {
           g_pActorListBase[*st].rotZ += 8;
         }
       }
-      if (actor->mode == 1) {
+      if (actor->mode == OTHROW_HIT) {
         if (*st >= 0) {
           ThrownSnowballState *ball = g_pActorListBase[*st].state;
           int ang = ArcTan2(spy->posX - actor->posX,
@@ -2126,7 +2126,7 @@ void Level9_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, OTHROW_HOLD);
         }
       }
       break;

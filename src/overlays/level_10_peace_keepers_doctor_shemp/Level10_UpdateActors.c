@@ -1986,8 +1986,8 @@ void Level10_UpdateActors(void) {
     case ACTOR_TYPE_OVERHEAD_THROWER: {
       int *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != 1) {
-        ENTER_POSE(actor, 1);
+      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != OTHROW_HIT) {
+        ENTER_POSE(actor, OTHROW_HIT);
       }
       if (*st >= 0) {
         if (g_pActorListBase[*st].mode >= ACTOR_MODE_DORMANT) {
@@ -2001,7 +2001,7 @@ void Level10_UpdateActors(void) {
           g_pActorListBase[*st].rotZ += 8;
         }
       }
-      if (actor->mode == 1) {
+      if (actor->mode == OTHROW_HIT) {
         if (*st >= 0) {
           ThrownSnowballState *ball = g_pActorListBase[*st].state;
           int ang = ArcTan2(spy->posX - actor->posX,
@@ -2017,7 +2017,7 @@ void Level10_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, OTHROW_HOLD);
         }
       }
       break;
@@ -3465,13 +3465,13 @@ void Level10_UpdateActors(void) {
       if (st->link != -1) {
         link = &g_pActorListBase[st->link];
       }
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 7) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != GLOOK_KNOCKED) {
         st->speed = 0xF0;
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 7);
+        ENTER_POSE(actor, GLOOK_KNOCKED);
       }
       if (TickCountdownByFrameDelta(&st->camTimer, 4) == 0) {
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT);
@@ -3501,19 +3501,19 @@ void Level10_UpdateActors(void) {
 
       mode = actor->mode;
       switch (mode) {
-      case 0:
+      case GLOOK_WATCH:
         d = ApproxDist2D(&actor->posX, &spy->posX);
         if (st->init == 0) {
           st->init = 1;
           st->home = actor->rotZ;
         }
         if (link != 0 && TickCountdownByFrameDelta(&st->wait, 4) != 0 &&
-            actor->subMode == 0 && link->mode == 0 && d < st->range << 10 &&
+            actor->subMode == 0 && link->mode == SGUARD_IDLE && d < st->range << 10 &&
             actor->posZ < SPY.posZ &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x5DC) {
           actor->subMode = 1;
           ANIM_GO(actor, 4);
-          actor->mode = 0xA;
+          actor->mode = GLOOK_ROUSE;
           continue;
         }
         if (d > 0x2000) {
@@ -3560,11 +3560,11 @@ void Level10_UpdateActors(void) {
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && d < 0x9C4 &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x3E8 &&
             actor->posZ - actor->floorOffset - SPY.posZ < 0) {
-          ENTER_POSE(actor, 6);
+          ENTER_POSE(actor, GLOOK_SWIPE);
         }
         break;
 
-      case 6:
+      case GLOOK_SWIPE:
         TurnActorYawTowardAngle(actor,
                       WrapAddAngle8(ArcTan2(spy->posX - actor->posX,
                                                   spy->posY - actor->posY, 0),
@@ -3585,11 +3585,11 @@ void Level10_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           st->timer = 0x8C;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, GLOOK_WATCH);
         }
         break;
 
-      case 7:
+      case GLOOK_KNOCKED:
         if (st->speed > 0) {
           MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 1);
           st->speed -= 0x10;
@@ -3602,7 +3602,7 @@ void Level10_UpdateActors(void) {
         }
         break;
 
-      case 10:
+      case GLOOK_ROUSE:
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(link->posX - actor->posX,
                                         link->posY - actor->posY, 0),
@@ -3613,7 +3613,7 @@ void Level10_UpdateActors(void) {
           ShempGuardState *ls = link->state;
 
           if (link->mode < 0x7F && link->nextAnim != 3) {
-            link->mode = 1;
+            link->mode = SGUARD_CHASE;
           }
           ls->timer04 = 0x1A;
           if (ls->watch != -1) {
@@ -3630,7 +3630,7 @@ void Level10_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0 && actor->anim == 8) {
           ANIM_GO(actor, 4);
-          actor->mode = 0;
+          actor->mode = GLOOK_WATCH;
           continue;
         }
         break;

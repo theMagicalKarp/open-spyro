@@ -2688,13 +2688,13 @@ void Level8_UpdateActors(void) {
       if (st->link != -1) {
         link = &g_pActorListBase[st->link];
       }
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 7) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != GLOOK_KNOCKED) {
         st->speed = 0xF0;
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 7);
+        ENTER_POSE(actor, GLOOK_KNOCKED);
       }
       if (TickCountdownByFrameDelta(&st->camTimer, 4) == 0) {
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FREEZE_INPUT);
@@ -2724,18 +2724,18 @@ void Level8_UpdateActors(void) {
 
       mode = actor->mode;
       switch (mode) {
-      case 0:
+      case GLOOK_WATCH:
         d = ApproxDist2D(&actor->posX, &spy->posX);
         if (st->init == 0) {
           st->init = 1;
           st->home = actor->rotZ;
         }
-        if (link != 0 && actor->subMode == 0 && link->mode == 0 &&
+        if (link != 0 && actor->subMode == 0 && link->mode == TPRUNNER_IDLE &&
             d < st->range << 10 && actor->posZ < SPY.posZ &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x5DC) {
           actor->subMode = 1;
           ANIM_GO(actor, 4);
-          actor->mode = 0xA;
+          actor->mode = GLOOK_ROUSE;
           continue;
         }
         if (d > 0x2000) {
@@ -2792,11 +2792,11 @@ void Level8_UpdateActors(void) {
         }
         if (d < 0xA8C && ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x3E8 &&
             actor->posZ - actor->floorOffset - SPY.posZ < 0) {
-          ENTER_POSE(actor, 6);
+          ENTER_POSE(actor, GLOOK_SWIPE);
         }
         break;
 
-      case 6:
+      case GLOOK_SWIPE:
         TurnActorYawTowardAngle(actor,
                       WrapAddAngle8(ArcTan2(spy->posX - actor->posX,
                                                   spy->posY - actor->posY, 0),
@@ -2819,11 +2819,11 @@ void Level8_UpdateActors(void) {
           }
         }
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, GLOOK_WATCH);
         }
         break;
 
-      case 7:
+      case GLOOK_KNOCKED:
         if (st->speed > 0) {
           MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 1);
           st->speed -= 0x10;
@@ -2836,7 +2836,7 @@ void Level8_UpdateActors(void) {
         }
         break;
 
-      case 10:
+      case GLOOK_ROUSE:
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(link->posX - actor->posX,
                                         link->posY - actor->posY, 0),
@@ -2847,11 +2847,11 @@ void Level8_UpdateActors(void) {
           if (link->nextAnim != 7) {
             ANIM_ADVANCE(link, 7);
           }
-          link->mode = 0xA;
+          link->mode = TPRUNNER_WALK_BACK;
         }
         if (g_nActorAnimDone != 0 && actor->anim == 8) {
           ANIM_GO(actor, 4);
-          actor->mode = 0;
+          actor->mode = GLOOK_WATCH;
           continue;
         }
         break;
@@ -3147,7 +3147,7 @@ void Level8_UpdateActors(void) {
     case ACTOR_TYPE_ROAMING_CRITTER: {
       RoamingCritterState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 5 && actor->mode != 6) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != ROAMCRIT_KNOCKED && actor->mode != ROAMCRIT_DYING) {
         st->knock = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20, 0x40);
@@ -3160,19 +3160,19 @@ void Level8_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         if (st->speed != 0) {
-          ENTER_POSE(actor, 5);
+          ENTER_POSE(actor, ROAMCRIT_KNOCKED);
         }
-        actor->mode = 6;
+        actor->mode = ROAMCRIT_DYING;
         ANIM_RESET(actor, 6);
         continue;
       }
 
       switch (actor->mode) {
-      case 0:
+      case ROAMCRIT_WANDER:
         UpdateActorWander(actor, st);
         break;
 
-      case 5:
+      case ROAMCRIT_KNOCKED:
         if (st->speed >= 0x10) {
           st->speed -= 0xF;
           MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x2BC, 5);
@@ -3184,7 +3184,7 @@ void Level8_UpdateActors(void) {
           continue;
         }
 
-      case 6:
+      case ROAMCRIT_DYING:
         if (actor->anim == 6 && actor->frame < 8) {
           UpdateActorWander(actor, st);
         }

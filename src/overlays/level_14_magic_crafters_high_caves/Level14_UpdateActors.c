@@ -161,8 +161,7 @@ typedef struct FleeingWalkerState {
   PathData *pathA; /* 0x04 */
   PathData *pathB; /* 0x08 */
   PathData *pathC; /* 0x0C */
-  int mode;        /* 0x10 bits 0-1 path, 2 fleeing, 3 Spyro close, 4 hold,
-                      5 restart, 6 pause, 7 reverse */
+  int mode;        /* 0x10 FWALK_F_* flags */
   int vel[3];      /* 0x14 */
   int timer;       /* 0x20 */
   int heading;     /* 0x24 */
@@ -170,6 +169,15 @@ typedef struct FleeingWalkerState {
   int speed;       /* 0x2C */
   int range;       /* 0x30 */
 } FleeingWalkerState;
+
+/* FleeingWalkerState.mode flags. */
+#define FWALK_F_PATH 3       /* bits 0-1: furthest path reached (0 = A .. 3) */
+#define FWALK_F_HOME 4       /* Spyro at path A's end: walk back to it */
+#define FWALK_F_CLOSE 8      /* Spyro close (same height, within range): flee */
+#define FWALK_F_HOLD 0x10    /* Spyro hurt: stand still for the timer */
+#define FWALK_F_RESTART 0x20 /* rewind the path on the next home tick */
+#define FWALK_F_PAUSE 0x40   /* paused at a path end */
+#define FWALK_F_REVERSE 0x80 /* walking the path backwards */
 
 #define PATH_END(p) (&(p)->nodes[(p)->count - 1].x)
 #define PATH_CUR(p) (&(p)->nodes[(p)->cur].x)
@@ -3859,7 +3867,7 @@ void Level14_UpdateActors(void) {
           st->node = -1;
         }
       }
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 3) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CHUNKOP_KNOCKED) {
         Actor *hit;
 
         StopSoundVoiceByIndex(actor->voiceRow, 4);
@@ -3868,20 +3876,20 @@ void Level14_UpdateActors(void) {
           ((CollectibleState *)hit->state)->mode = 3;
         }
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 3);
+        ENTER_POSE(actor, CHUNKOP_KNOCKED);
         continue;
       }
-      if ((actor->flags & 1) && actor->mode < 3) {
-        ENTER_POSE(actor, 4);
+      if ((actor->flags & 1) && actor->mode < CHUNKOP_KNOCKED) {
+        ENTER_POSE(actor, CHUNKOP_FLINCH);
         continue;
       }
       switch (actor->mode) {
-      case 0: {
+      case CHUNKOP_WAIT: {
         int d;
         int r;
 
         if (st->riding != 0) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, CHUNKOP_RUN);
           continue;
         }
         d = ApproxDist2D(&SPY.posX, (int *)(st->anchor + 0x18));
@@ -3893,28 +3901,28 @@ void Level14_UpdateActors(void) {
           r = CHUNK_ANIM_STEP(r);
           if (r == 0 && d < 0x2000) {
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
-            ENTER_POSE(actor, 2);
+            ENTER_POSE(actor, CHUNKOP_START);
             continue;
           }
           if (r == 0xE && d > 0x3000) {
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
-            ENTER_POSE(actor, 2);
+            ENTER_POSE(actor, CHUNKOP_START);
             continue;
           }
         }
         break;
       }
 
-      case 1:
+      case CHUNKOP_RUN:
         if (st->spark >= 0 && (GetRandomU32() & 1)) {
           g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->spark]);
         }
         ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         break;
 
-      case 2:
+      case CHUNKOP_START:
         if (g_nActorAnimDone != 0) {
-          actor->mode = 0;
+          actor->mode = CHUNKOP_WAIT;
           ANIM_RESET(actor, 0);
           continue;
         }
@@ -3924,7 +3932,7 @@ void Level14_UpdateActors(void) {
         }
         break;
 
-      case 3:
+      case CHUNKOP_KNOCKED:
         if (st->riding == 0) {
           int r = GetWorldChunkAnimState(st->chunkAnim);
 
@@ -3944,7 +3952,7 @@ void Level14_UpdateActors(void) {
         RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
         break;
 
-      case 4:
+      case CHUNKOP_FLINCH:
         if (st->spark >= 0) {
           if (GetRandomU32() & 1) {
             g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->spark]);
@@ -3953,7 +3961,7 @@ void Level14_UpdateActors(void) {
         ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
-          actor->mode = 1;
+          actor->mode = CHUNKOP_RUN;
           ANIM_RESET(actor, 1);
           continue;
         }
@@ -4085,7 +4093,7 @@ void Level14_UpdateActors(void) {
       FleeingWalkerState *st = actor->state;
 
       TickActorFlameGlow(actor);
-      if (actor->mode == 2) {
+      if (actor->mode == FLEEWALK_KNOCKED) {
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x30);
@@ -4104,28 +4112,28 @@ void Level14_UpdateActors(void) {
         st->speed = SPY.frameMotionLength >> 5;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, FLEEWALK_KNOCKED);
         continue;
       }
       actor->flags = 0;
       if (SPY.state == SPYRO_ST_HURT) {
         st->timer = 0x78;
-        st->mode |= 0x10;
+        st->mode |= FWALK_F_HOLD;
       }
       if (g_nSpyroAirborneFrames == 0) {
         if (ABS2(actor->posZ - SPY.posZ + 0x164) < 0x140 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < st->range) {
-          st->mode |= 8;
+          st->mode |= FWALK_F_CLOSE;
           ZeroVector(st->vel);
         } else {
-          st->mode &= ~8;
+          st->mode &= ~FWALK_F_CLOSE;
         }
-        switch (st->mode & 3) {
+        switch (st->mode & FWALK_F_PATH) {
         case 0:
           if (ApproxDist2D(&SPY.posX, PATH_END(st->pathA)) < 0xC00) {
             st->pathA->cur = st->pathA->count - 1;
             st->cur = st->pathA;
-            st->mode |= 4;
+            st->mode |= FWALK_F_HOME;
           }
           break;
 
@@ -4133,7 +4141,7 @@ void Level14_UpdateActors(void) {
           if (ApproxDist2D(&SPY.posX, PATH_END(st->pathA)) < 0xC00) {
             st->pathA->cur = st->pathA->count - 1;
             st->cur = st->pathA;
-            st->mode = (st->mode | 4) & ~3;
+            st->mode = (st->mode | FWALK_F_HOME) & ~FWALK_F_PATH;
           }
           break;
 
@@ -4141,11 +4149,11 @@ void Level14_UpdateActors(void) {
           if (ApproxDist2D(&SPY.posX, PATH_END(st->pathA)) < 0xC00) {
             st->pathA->cur = st->pathA->count - 1;
             st->cur = st->pathA;
-            st->mode = (st->mode | 4) & ~3;
+            st->mode = (st->mode | FWALK_F_HOME) & ~FWALK_F_PATH;
           } else if (ApproxDist2D(&SPY.posX, PATH_END(st->pathB)) < 0xC00) {
             st->cur = st->pathA;
             st->cur->cur = 0;
-            st->mode = (st->mode & ~3) | 1;
+            st->mode = (st->mode & ~FWALK_F_PATH) | 1;
           }
           break;
 
@@ -4153,31 +4161,31 @@ void Level14_UpdateActors(void) {
           if (ApproxDist2D(&SPY.posX, PATH_END(st->pathA)) < 0xC00) {
             st->pathA->cur = st->pathA->count - 1;
             st->cur = st->pathA;
-            st->mode = (st->mode | 4) & ~3;
+            st->mode = (st->mode | FWALK_F_HOME) & ~FWALK_F_PATH;
           } else if (ApproxDist2D(&SPY.posX, PATH_END(st->pathB)) < 0xC00) {
             st->cur = st->pathA;
             st->cur->cur = 0;
-            st->mode = (st->mode & ~3) | 1;
+            st->mode = (st->mode & ~FWALK_F_PATH) | 1;
           } else if (ApproxDist2D(&SPY.posX, PATH_END(st->pathC)) < 0xC00) {
             st->cur = st->pathB;
             st->cur->cur = 0;
-            st->mode = (st->mode & ~3) | 2;
+            st->mode = (st->mode & ~FWALK_F_PATH) | 2;
           }
           break;
         }
       }
-      if (st->mode & 0x10) {
+      if (st->mode & FWALK_F_HOLD) {
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-          st->mode &= ~0x10;
+          st->mode &= ~FWALK_F_HOLD;
         }
-        if (actor->mode != 0) {
-          ENTER_POSE(actor, 0);
+        if (actor->mode != FLEEWALK_WALK) {
+          ENTER_POSE(actor, FLEEWALK_WALK);
           continue;
         }
-      } else if (st->mode & 8) {
+      } else if (st->mode & FWALK_F_CLOSE) {
         RaiseSpyroTriggerInRadius(&actor->posX, 0x540, 7);
-        if (actor->mode != 3) {
-          ENTER_POSE(actor, 3);
+        if (actor->mode != FLEEWALK_FLEE) {
+          ENTER_POSE(actor, FLEEWALK_FLEE);
           continue;
         }
         actor->frameRate = 0x10;
@@ -4197,14 +4205,14 @@ void Level14_UpdateActors(void) {
           TurnActorYawTowardAngle(actor, st->heading, 8, 0x30, 1);
           MoveActorAlongHeading(actor, st->speed, 0, 0x400, 0x15);
         }
-      } else if (st->mode & 4) {
+      } else if (st->mode & FWALK_F_HOME) {
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-          if (st->mode & 0x20) {
+          if (st->mode & FWALK_F_RESTART) {
             st->cur->cur = 0;
           }
           if (ApproxDist2D(&actor->posX, PATH_CUR(st->cur)) > 0x100) {
-            if (actor->mode != 0) {
-              ENTER_POSE(actor, 0);
+            if (actor->mode != FLEEWALK_WALK) {
+              ENTER_POSE(actor, FLEEWALK_WALK);
               continue;
             }
             actor->frameRate = 8;
@@ -4224,8 +4232,8 @@ void Level14_UpdateActors(void) {
               }
             }
           } else {
-            if (actor->mode != 1) {
-              ENTER_POSE(actor, 1);
+            if (actor->mode != FLEEWALK_STAND) {
+              ENTER_POSE(actor, FLEEWALK_STAND);
               continue;
             }
             actor->frameRate = 0x10;
@@ -4234,32 +4242,32 @@ void Level14_UpdateActors(void) {
           TurnActorYawTowardAngle(actor, st->heading, 8, 0x30, 1);
           MoveActorAlongHeading(actor, 0x80, 0, 0x400, 0x15);
         }
-      } else if (st->mode & 3) {
-        if (st->mode & 0x40) {
-          if (actor->mode != 1) {
-            ENTER_POSE(actor, 1);
+      } else if (st->mode & FWALK_F_PATH) {
+        if (st->mode & FWALK_F_PAUSE) {
+          if (actor->mode != FLEEWALK_STAND) {
+            ENTER_POSE(actor, FLEEWALK_STAND);
             continue;
           }
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-            st->mode &= ~0x40;
+            st->mode &= ~FWALK_F_PAUSE;
           }
         } else {
-          if (actor->mode != 0) {
-            ENTER_POSE(actor, 0);
+          if (actor->mode != FLEEWALK_WALK) {
+            ENTER_POSE(actor, FLEEWALK_WALK);
             continue;
           }
           actor->frameRate = 8;
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
             if (ApproxDist2D(&actor->posX, PATH_CUR(st->cur)) < 0x100) {
-              if (st->mode & 0x80) {
+              if (st->mode & FWALK_F_REVERSE) {
                 if (st->cur->cur != 0) {
                   st->cur->cur--;
                 } else {
-                  st->mode = (st->mode & ~0x80) | 0x40;
+                  st->mode = (st->mode & ~FWALK_F_REVERSE) | FWALK_F_PAUSE;
                   st->timer = 0x3C;
                 }
               } else if (st->cur->cur >= st->cur->count - 2) {
-                st->mode |= 0xC0;
+                st->mode |= FWALK_F_REVERSE | FWALK_F_PAUSE;
                 st->timer = 0x3C;
               } else {
                 st->cur->cur++;
@@ -4288,8 +4296,8 @@ void Level14_UpdateActors(void) {
       } else {
         st->cur->cur = 0;
         if (ApproxDist2D(&actor->posX, PATH_CUR(st->cur)) > 0x100) {
-          if (actor->mode != 0) {
-            ENTER_POSE(actor, 0);
+          if (actor->mode != FLEEWALK_WALK) {
+            ENTER_POSE(actor, FLEEWALK_WALK);
             continue;
           }
           actor->frameRate = 8;
@@ -4314,8 +4322,8 @@ void Level14_UpdateActors(void) {
             MoveActorAlongHeading(actor, 0x60, 0, 0x400, 0x15);
           }
         } else {
-          if (actor->mode != 1) {
-            ENTER_POSE(actor, 1);
+          if (actor->mode != FLEEWALK_STAND) {
+            ENTER_POSE(actor, FLEEWALK_STAND);
             continue;
           }
           actor->frameRate = 0x10;
@@ -4848,30 +4856,30 @@ void Level14_UpdateActors(void) {
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
     case ACTOR_TYPE_CHECKPOINT + 2: {
       switch (actor->mode) {
-      case 0: {
+      case CHECKPT_REARM: {
         if (ApproxDist2D(&actor->posX, &SPY.posX) > 2560) {
-          actor->mode = 1;
+          actor->mode = CHECKPT_ARMED;
         }
         break;
       }
 
-      case 1: {
+      case CHECKPT_ARMED: {
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 896 &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 512) {
 
           SetSpawnAnchorFromActor(actor, actor->rotZ);
-          actor->mode = 2;
+          actor->mode = CHECKPT_FLASH;
           actor->anim = 1;
           actor->subMode = 0;
         }
         break;
       }
 
-      case 2: {
+      case CHECKPT_FLASH: {
         actor->subMode += g_nFrameStep;
 
         if (actor->subMode >= 0x30) {
-          actor->mode = 0;
+          actor->mode = CHECKPT_REARM;
           actor->anim = 0;
         }
         break;

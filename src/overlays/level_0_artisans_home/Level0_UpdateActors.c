@@ -2509,30 +2509,30 @@ void Level0_UpdateActors(void) {
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
     case ACTOR_TYPE_CHECKPOINT: {
       switch (actor->mode) {
-      case 0: {
+      case CHECKPT_REARM: {
         if (ApproxDist2D(&actor->posX, &SPY.posX) > 2560) {
-          actor->mode = 1;
+          actor->mode = CHECKPT_ARMED;
         }
         break;
       }
 
-      case 1: {
+      case CHECKPT_ARMED: {
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 896 &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 512) {
 
           SetSpawnAnchorFromActor(actor, actor->rotZ);
-          actor->mode = 2;
+          actor->mode = CHECKPT_FLASH;
           actor->anim = 1;
           actor->subMode = 0;
         }
         break;
       }
 
-      case 2: {
+      case CHECKPT_FLASH: {
         actor->subMode += g_nFrameStep;
 
         if (actor->subMode >= 0x30) {
-          actor->mode = 0;
+          actor->mode = CHECKPT_REARM;
           actor->anim = 0;
         }
         break;

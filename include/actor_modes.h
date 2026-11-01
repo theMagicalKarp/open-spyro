@@ -1140,7 +1140,7 @@ enum TwoPathRunnerMode {
   TPRUNNER_KNOCKED = 5,    /* charged: knocked away, then bursts */
   TPRUNNER_REACT = 6,      /* faces Spyro, then GUARD (no writer in the C sources) */
   TPRUNNER_SWIPE = 8,      /* swipes, then GUARD */
-  TPRUNNER_WALK_BACK = 10, /* walks to its path node, then GUARD (a level 8 lookout sets its linked guard to 10) */
+  TPRUNNER_WALK_BACK = 10, /* walks to its path node, then GUARD (a level 8 lookout, GLOOK_ROUSE, sets its linked runner to 10) */
   TPRUNNER_RUN = 0x14,     /* runs its chosen path to RunnerState.node, then GUARD */
 };
 
@@ -1367,6 +1367,57 @@ enum GrazerMode {
 enum LobbedBombMode {
   LOBBOMB_FLY = 0,   /* flies; landing, the timer, a wall or Spyro: BURST */
   LOBBOMB_BURST = 1, /* sparks and despawns */
+};
+
+/* ->mode of the level 14 fleeing walker (ACTOR_TYPE_FLEEING_WALKER,
+ * FleeingWalkerState); the mode is also the animation index. */
+enum FleeingWalkerMode {
+  FLEEWALK_WALK = 0,    /* walks its path (also held while Spyro is hurt) */
+  FLEEWALK_STAND = 1,   /* at a path node / end: stands */
+  FLEEWALK_KNOCKED = 2, /* supercharged: slides off along Spyro's heading, then bursts */
+  FLEEWALK_FLEE = 3,    /* Spyro close: runs from him, steering off walls */
+};
+
+/* ->mode of the level 14 chunk operator (ACTOR_TYPE_CHUNK_OPERATOR,
+ * ChunkOperatorState); the mode is also the animation index. */
+enum ChunkOperatorMode {
+  CHUNKOP_WAIT = 0,    /* waits for its chunk to halt at step 0 (Spyro near) or 0xE (far): START */
+  CHUNKOP_RUN = 1,     /* keeps the chunk running (riding operators, after a FLINCH) */
+  CHUNKOP_START = 2,   /* restarted the chunk; when the animation ends: WAIT */
+  CHUNKOP_KNOCKED = 3, /* hit: finishes the chunk's run and bursts */
+  CHUNKOP_FLINCH = 4,  /* flamed: flinches, then RUN */
+};
+
+/* ->mode of the overhead thrower (ACTOR_TYPE_OVERHEAD_THROWER; levels 9/10);
+ * the mode is also the animation index. */
+enum OverheadThrowerMode {
+  OTHROW_HOLD = 0, /* holds its snowball (state word 0) overhead */
+  OTHROW_HIT = 1,  /* charged or supercharged: lets the snowball fly at Spyro, then HOLD */
+};
+
+/* ->mode of the level 8 roaming critter (ACTOR_TYPE_ROAMING_CRITTER,
+ * RoamingCritterState). A hit always lands in DYING; KNOCKED's slide only
+ * runs when entered directly. */
+enum RoamingCritterMode {
+  ROAMCRIT_WANDER = 0,  /* UpdateActorWander */
+  ROAMCRIT_KNOCKED = 5, /* slides along the knock heading, bursts; falls into DYING */
+  ROAMCRIT_DYING = 6,   /* death animation 6 (wandering its first frames), then 7; despawns */
+};
+
+/* ->mode of a checkpoint (ACTOR_TYPE_CHECKPOINT .. + 2; levels 0/14). */
+enum CheckpointMode {
+  CHECKPT_REARM = 0,     /* waits for Spyro to walk away (> 2560), then ARMED */
+  CHECKPT_ARMED = 1,     /* Spyro touches it: sets the respawn anchor, FLASH */
+  CHECKPT_FLASH = 2,     /* subMode counts frames to 0x30, then REARM */
+};
+
+/* ->mode of a lookout (LookoutState): ACTOR_TYPE_GUARD_LOOKOUT (level 8) and
+ * ACTOR_TYPE_SHEMP_LOOKOUT (level 10); the update switches on a local copy. */
+enum GuardLookoutMode {
+  GLOOK_WATCH = 0,   /* idles facing home / Spyro; rouses its idle guard when Spyro is in range */
+  GLOOK_SWIPE = 6,   /* Spyro close below it: swipes him away, then WATCH */
+  GLOOK_KNOCKED = 7, /* flamed or supercharged: knocked away, then bursts */
+  GLOOK_ROUSE = 10,  /* turns to its guard and wakes it on frame 5, then WATCH */
 };
 
 #endif
