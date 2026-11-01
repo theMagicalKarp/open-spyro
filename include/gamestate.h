@@ -21,7 +21,7 @@ typedef enum Gamestate
   GS_MENU_TRANSITION = 10, /* BeginPauseToMenuTransition (pause -> world map) */
   GS_SAVE_MENU = 11,      /* SaveLoadMenu_Draw */
   GS_ACTOR_CUTSCENE = 12, /* BeginActorCutscene: balloonist / fly-in cutscenes */
-  GS_TITLE = 13,          /* title screen; g_nTitleMode 3 is the story intro */
+  GS_TITLE = 13,          /* title screen; g_nTitleMode TITLE_MODE_STORY_INTRO is the story intro */
   GS_CUTSCENE = 14,   /* BeginCutscene */
   GS_CREDITS = 15,        /* BeginCreditsSequence; mode >= 0x63 is ReturningHome */
 } Gamestate;

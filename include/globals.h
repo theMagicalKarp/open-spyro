@@ -572,7 +572,7 @@ extern struct Actor *g_pSpriteRecordBufferTop; /* 0x800756fc: top of this frame'
 extern int g_nCreditsMode;               /* 0x80075704 */
 extern int g_nCinematicActive;               /* 0x8007570c: nonzero while a cinematic holds the player (dragon rescue, actor/balloonist cutscenes, boss intros): closes the letterbox (DrawCinematicLetterbox), blocks Start/Select menus (GamestateUpdate) and freezes some enemy timers */
 extern struct Actor *g_pSpriteRecordWriteCursor; /* 0x80075710: sprite-record queue tail; Actor-sized records, grows down from g_pSpriteRecordBufferTop */
-extern int g_nDemoMode;                    /* 0x80075714: attract demo: 0 off, 1 playback (set by Title_Update), 2 record into 0x80600000 */
+extern int g_nDemoMode;                    /* 0x80075714: attract demo: 0 off, 1 playback (set by StoryIntro_Update), 2 record into 0x80600000 */
 extern int g_nGroundSurfaceType;             /* 0x80075718 */
 extern void *g_pGemTallyParticleRecords;     /* 0x8007571c */
 extern int g_nPauseMenuCursor;               /* 0x80075720 */
@@ -1024,10 +1024,10 @@ extern int g_nSaveMenuCursor;                           /* 0x80078d08 */
 extern int g_nSaveMenuSubstate;                         /* 0x80078d0c */
 extern int g_nSaveMenuXOffset;                          /* 0x80078d10 */
 extern int g_nSaveSlotSelected;                         /* 0x80078d18 */
-extern int g_nTitleMode;                          /* 0x80078d78 */
-extern int g_nStoryIntroSubstate;                       /* 0x80078d7c */
-extern int g_nStoryIntroTimer;                          /* 0x80078d80 */
-extern int g_nStoryIntroMessage;                        /* 0x80078d94 */
+extern int g_nTitleMode;                          /* 0x80078d78: title state block word 0: enum TitleMode (title_state.h); TITLE_MODE_STORY_INTRO hands GS_TITLE to StoryIntro_Update/_Draw */
+extern int g_nStoryIntroSubstate;                       /* 0x80078d7c: title state +0x04: StoryIntro_Update step (0 arm, 1 stream, 2 fly-in) */
+extern int g_nStoryIntroTimer;                          /* 0x80078d80: title state +0x08: StoryIntro_Update frame timer */
+extern int g_nTitleExitPath;                        /* 0x80078d94: title state +0x1C: enum TitleExitPath — new game (opening story), loaded save, or attract demo (StoryIntro_Update) */
 extern byte g_abPad2RawReport[34];                      /* 0x80078e50 */
 extern unsigned char g_abLevelVisitedFlagVirtualBase[]; /* FIXME: type/size unrecovered @ 0x80078e72 */
 extern byte g_abLevelVisitedFlag[36];                   /* 0x80078e78 */
@@ -1230,7 +1230,7 @@ extern int g_anHazardEnterSpawnType[]; /* 0x8006ea34 */
 extern int g_anHazardTimeoutSpawnType[]; /* 0x8006ea40 */
 extern int g_anLevelEntryPoints[]; /* 0x8006ea4c: entry points, 4 words per level */
 extern int g_anScriptedCameraPresetRecords[]; /* 0x8006eb24 */
-extern int g_anDemoLevelIds[]; /* 0x8006ee7c: level id per attract demo (Title_Update) */
+extern int g_anDemoLevelIds[]; /* 0x8006ee7c: level id per attract demo (StoryIntro_Update) */
 extern int g_anLevelMusicPickTable[]; /* 0x8006f05c */
 extern int g_anGameOverRespawnPosVirtualBase[]; /* 0x8006f140 */
 extern unsigned char g_abGameOverGlyphs[]; /* 0x8006f304: GAMEOVER letter glyph indices */
@@ -1426,7 +1426,7 @@ extern int g_nSaveMenuCameraFromAngle; /* 0x80078d54 */
 extern int g_nSaveMenuCameraFromDist; /* 0x80078d58 */
 extern int g_nSaveMenuSpyroFromYaw; /* 0x80078d6c */
 extern struct Actor *volatile g_pSaveMenuHostActor; /* 0x80078d74: the save host (type 110) the save menu pans around Spyro */
-extern int g_anStoryIntroMessageBlock[]; /* 0x80078d94: held-base view of the message id */
+extern int g_anTitleExitPathBlock[]; /* 0x80078d94: held-base view of the message id */
 extern volatile int g_nMemCardRingIndex; /* 0x80078da4 */
 extern volatile int g_anMemCardSyncRing[]; /* 0x80078da8 */
 extern char *g_pStoryIntroStreamCursor; /* 0x80078dc4 */

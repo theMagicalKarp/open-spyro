@@ -37,7 +37,7 @@ extern void *g_apActorMeshTableBlock[]; /* incomplete-array view of
 
 /* Held-base alias of g_anCameraPos (0x80076df8): the [0] store and the
    SubtractVector argument share one base register while [1] and [2] stay
-   absolute — same split as g_anSpyroWorldPosBlock in Title_Update. */
+   absolute — same split as g_anSpyroWorldPosBlock in StoryIntro_Update. */
 extern int g_anCameraPosBlock[];
 
 /* Held-base views of the Spyro record, the request mask and the camera's

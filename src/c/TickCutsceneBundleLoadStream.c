@@ -6,7 +6,7 @@
 
 /* 0x80014564, 1548 bytes — the id-bundle CD streaming state machine.
    Ticked from Initialize, PauseMenu_Update, Cutscene_Update,
-   Title_Update and TickDemoPlayback; each tick services the stall
+   StoryIntro_Update and TickDemoPlayback; each tick services the stall
    watchdog, then gates on the drive being idle (no read in flight,
    CdSync == 2, music stream table built) and runs exactly one stage of
    g_nCdStreamState:

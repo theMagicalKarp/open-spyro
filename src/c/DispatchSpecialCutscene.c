@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "level_id.h"
 #include "main_shared.h"
+#include "title_state.h"
 
 /* Special-cutscene dispatcher (0x8002d440), by g_nCutsceneId. Cutscene 1: full
    story-intro restart — clear VRAM, silence sound, reload actor meshes,
@@ -26,9 +27,9 @@ void DispatchSpecialCutscene(void) {
     LoadActorMeshTables();
     g_nGamestate = GS_TITLE;
     FillWord(mode, 0, 0x5C);
-    mode[0] = 3;
+    mode[0] = TITLE_MODE_STORY_INTRO;
     g_nStoryIntroSubstate = 0;
-    g_nStoryIntroMessage = 1;
+    g_nTitleExitPath = TITLE_EXIT_LOADED_GAME;
     InitNewGameState();
     g_nActiveLevelId = LEVEL_ARTISANS;
     g_nGamePaused = 1;

@@ -14206,8 +14206,8 @@ glabel StoryIntro_Draw
     /* EEF8 8001E6F8 0E000224 */  addiu      $v0, $zero, 0xE
     /* EEFC 8001E6FC 0780103C */  lui        $s0, %hi(g_pSpriteRecordWriteCursor)
     /* EF00 8001E700 1057108E */  lw         $s0, %lo(g_pSpriteRecordWriteCursor)($s0)
-    /* EF04 8001E704 0880033C */  lui        $v1, %hi(g_nStoryIntroMessage)
-    /* EF08 8001E708 948D638C */  lw         $v1, %lo(g_nStoryIntroMessage)($v1)
+    /* EF04 8001E704 0880033C */  lui        $v1, %hi(g_nTitleExitPath)
+    /* EF08 8001E708 948D638C */  lw         $v1, %lo(g_nTitleExitPath)($v1)
     /* EF0C 8001E70C 01000424 */  addiu      $a0, $zero, 0x1
     /* EF10 8001E710 2800A2AF */  sw         $v0, 0x28($sp)
     /* EF14 8001E714 00160224 */  addiu      $v0, $zero, 0x1600
@@ -30675,8 +30675,8 @@ glabel DispatchSpecialCutscene
     /* 1DCD4 8002D4D4 000002AE */  sw         $v0, 0x0($s0)
     /* 1DCD8 8002D4D8 0880013C */  lui        $at, %hi(g_nStoryIntroSubstate)
     /* 1DCDC 8002D4DC 7C8D20AC */  sw         $zero, %lo(g_nStoryIntroSubstate)($at)
-    /* 1DCE0 8002D4E0 0880013C */  lui        $at, %hi(g_nStoryIntroMessage)
-    /* 1DCE4 8002D4E4 948D31AC */  sw         $s1, %lo(g_nStoryIntroMessage)($at)
+    /* 1DCE0 8002D4E0 0880013C */  lui        $at, %hi(g_nTitleExitPath)
+    /* 1DCE4 8002D4E4 948D31AC */  sw         $s1, %lo(g_nTitleExitPath)($at)
     /* 1DCE8 8002D4E8 DF49000C */  jal        InitNewGameState
     /* 1DCEC 8002D4EC 00000000 */   nop
     /* 1DCF0 8002D4F0 0A000224 */  addiu      $v0, $zero, 0xA
@@ -36570,11 +36570,11 @@ glabel PollMemCardSyncRing
 endlabel PollMemCardSyncRing
 .endif
 
-.section .text.ArmStoryIntroOnStart, "ax"
-.ifndef HAVE_C_ArmStoryIntroOnStart
-nonmatching ArmStoryIntroOnStart, 0x58
+.section .text.RestartTitleCardCheckOnTriangle, "ax"
+.ifndef HAVE_C_RestartTitleCardCheckOnTriangle
+nonmatching RestartTitleCardCheckOnTriangle, 0x58
 
-glabel ArmStoryIntroOnStart
+glabel RestartTitleCardCheckOnTriangle
     /* 232B0 80032AB0 0780023C */  lui        $v0, %hi(g_dwPadPressed)
     /* 232B4 80032AB4 7873428C */  lw         $v0, %lo(g_dwPadPressed)($v0)
     /* 232B8 80032AB8 E8FFBD27 */  addiu      $sp, $sp, -0x18
@@ -36598,14 +36598,14 @@ glabel ArmStoryIntroOnStart
     /* 232FC 80032AFC 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 23300 80032B00 0800E003 */  jr         $ra
     /* 23304 80032B04 00000000 */   nop
-endlabel ArmStoryIntroOnStart
+endlabel RestartTitleCardCheckOnTriangle
 .endif
 
-.section .text.Title_Update, "ax"
-.ifndef HAVE_C_Title_Update
-nonmatching Title_Update, 0x6A4
+.section .text.StoryIntro_Update, "ax"
+.ifndef HAVE_C_StoryIntro_Update
+nonmatching StoryIntro_Update, 0x6A4
 
-glabel Title_Update
+glabel StoryIntro_Update
     /* 23308 80032B08 C8FFBD27 */  addiu      $sp, $sp, -0x38
     /* 2330C 80032B0C 0880033C */  lui        $v1, %hi(g_nTitleMode)
     /* 23310 80032B10 788D638C */  lw         $v1, %lo(g_nTitleMode)($v1)
@@ -36624,8 +36624,8 @@ glabel Title_Update
     /* 23344 80032B44 21200000 */   addu      $a0, $zero, $zero
     /* 23348 80032B48 B55B010C */  jal        TickSpuPerFrame
     /* 2334C 80032B4C 01001024 */   addiu     $s0, $zero, 0x1
-    /* 23350 80032B50 0880033C */  lui        $v1, %hi(g_nStoryIntroMessage)
-    /* 23354 80032B54 948D638C */  lw         $v1, %lo(g_nStoryIntroMessage)($v1)
+    /* 23350 80032B50 0880033C */  lui        $v1, %hi(g_nTitleExitPath)
+    /* 23354 80032B54 948D638C */  lw         $v1, %lo(g_nTitleExitPath)($v1)
     /* 23358 80032B58 0880013C */  lui        $at, %hi(g_nStoryIntroSubstate)
     /* 2335C 80032B5C 7C8D30AC */  sw         $s0, %lo(g_nStoryIntroSubstate)($at)
     /* 23360 80032B60 0D006014 */  bnez       $v1, .L80032B98
@@ -36727,8 +36727,8 @@ glabel Title_Update
   .L80032CD0:
     /* 234D0 80032CD0 28006214 */  bne        $v1, $v0, .L80032D74
     /* 234D4 80032CD4 02000224 */   addiu     $v0, $zero, 0x2
-    /* 234D8 80032CD8 0880023C */  lui        $v0, %hi(g_nStoryIntroMessage)
-    /* 234DC 80032CDC 948D428C */  lw         $v0, %lo(g_nStoryIntroMessage)($v0)
+    /* 234D8 80032CD8 0880023C */  lui        $v0, %hi(g_nTitleExitPath)
+    /* 234DC 80032CDC 948D428C */  lw         $v0, %lo(g_nTitleExitPath)($v0)
     /* 234E0 80032CE0 00000000 */  nop
     /* 234E4 80032CE4 17004014 */  bnez       $v0, .L80032D44
     /* 234E8 80032CE8 00000000 */   nop
@@ -36936,8 +36936,8 @@ glabel Title_Update
     /* 237E0 80032FE0 00000000 */   nop
     /* 237E4 80032FE4 A327010C */  jal        TickSpyroAnimLayer2
     /* 237E8 80032FE8 00000000 */   nop
-    /* 237EC 80032FEC 0880103C */  lui        $s0, %hi(g_nStoryIntroMessage)
-    /* 237F0 80032FF0 948D1026 */  addiu      $s0, $s0, %lo(g_nStoryIntroMessage)
+    /* 237EC 80032FEC 0880103C */  lui        $s0, %hi(g_nTitleExitPath)
+    /* 237F0 80032FF0 948D1026 */  addiu      $s0, $s0, %lo(g_nTitleExitPath)
     /* 237F4 80032FF4 0000028E */  lw         $v0, 0x0($s0)
     /* 237F8 80032FF8 00000000 */  nop
     /* 237FC 80032FFC 3B004014 */  bnez       $v0, .L800330EC
@@ -37056,7 +37056,7 @@ glabel Title_Update
     /* 239A0 800331A0 3800BD27 */  addiu      $sp, $sp, 0x38
     /* 239A4 800331A4 0800E003 */  jr         $ra
     /* 239A8 800331A8 00000000 */   nop
-endlabel Title_Update
+endlabel StoryIntro_Update
 .endif
 
 .section .text.Cutscene_Update, "ax"
@@ -37654,7 +37654,7 @@ glabel GamestateUpdate
     /* 241E4 800339E4 0CCF0008 */  j          .L80033C30
     /* 241E8 800339E8 00000000 */   nop
   .L800339EC:
-    /* 241EC 800339EC C2CA000C */  jal        Title_Update
+    /* 241EC 800339EC C2CA000C */  jal        StoryIntro_Update
     /* 241F0 800339F0 00000000 */   nop
     /* 241F4 800339F4 0CCF0008 */  j          .L80033C30
     /* 241F8 800339F8 00000000 */   nop

@@ -2,6 +2,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "title_state.h"
 
 /* Per-frame top-level draw dispatcher (0x8001ED5C, 0x3fc).
 
@@ -74,7 +75,7 @@ void GamestateDraw(void) {
     } else if (g_nGamestate == GS_ACTOR_CUTSCENE) {
       ActorCutscene_Draw();
     } else if (g_nGamestate == GS_TITLE) {
-      if (g_nTitleMode == 3) {
+      if (g_nTitleMode == TITLE_MODE_STORY_INTRO) {
         StoryIntro_Draw();
       } else {
         Titlescreen_Draw();

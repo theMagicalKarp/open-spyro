@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "pad_buttons.h"
+#include "title_state.h"
 
 /* Per-frame top-level update dispatcher (0x8003385C, 0x3f4).
 
@@ -51,10 +52,10 @@ void GamestateUpdate(void) {
     } else if (g_nGamestate == GS_ACTOR_CUTSCENE) {
       ActorCutscene_Update();
     } else if (g_nGamestate == GS_TITLE) {
-      if (g_nTitleMode != 3) {
+      if (g_nTitleMode != TITLE_MODE_STORY_INTRO) {
         Titlescreen_Update();
       } else {
-        Title_Update();
+        StoryIntro_Update();
       }
     } else if (g_nGamestate == GS_CUTSCENE) {
       Cutscene_Update();

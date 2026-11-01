@@ -4,7 +4,7 @@
  * image (SaveGame) is named from BuildSaveGameBuffer's field order and the
  * memory-card file header (McFileHeader) follows the standard PS1 save-block
  * header; TitleState fields are named from their use in Titlescreen_Update /
- * _Draw. Unread fields are padNN; the Sprite_0x.. ids keep their value names.
+ * _Draw. Unread fields are padNN; sprite and state ids are in this header and title_state.h.
  */
 #ifndef OVL_TITLESCREEN_H
 #define OVL_TITLESCREEN_H
@@ -13,84 +13,67 @@ typedef unsigned char u_char;
 typedef unsigned short u_short;
 typedef unsigned int u_int;
 
-/* ---- titlescreen sprite / color ids ---- */
+#include "title_state.h"
+
+/* ---- titlescreen sprite ids (Titlescreen_EmitSpriteQuad; a negative id
+ * draws the sprite mirrored). The text sprites are named from the dialog
+ * that shows them and the choice each option leads to. ---- */
 enum {
-  Sprite_0x00 = 0,
-  Sprite_0x01 = 1,
-  Sprite_0x02 = 2,
-  Sprite_0x08 = 8,
-  Sprite_0x09 = 9,
-  Sprite_0x0A = 10,
-  Sprite_0x0B = 11,
-  Sprite_0x0D = 13,
-  Sprite_0x17 = 23,
-  Sprite_0x18 = 24,
-  Sprite_0x19 = 25,
-  Sprite_0x1A = 26,
-  Sprite_0x1B = 27,
-  Sprite_0x1C = 28,
-  Sprite_0x1D = 29,
-  Sprite_0x1E = 30,
-  Sprite_0x1F = 31,
-  Sprite_0x21 = 33,
-  Sprite_0x22 = 34,
-  Sprite_0x23 = 35,
-  Sprite_0x24 = 36,
-  Sprite_0x25 = 37,
-  Sprite_0x26 = 38,
-  Sprite_0x27 = 39,
-  Sprite_0x28 = 40,
-  Sprite_0x29 = 41,
-  Sprite_0x2A = 42,
-  Sprite_0x2B = 43,
-  Sprite_0x2C = 44,
-  Sprite_0x2D = 45,
-  Sprite_0x2E = 46,
-  Sprite_0x2F = 47,
-  Sprite_0x31 = 49,
-  Sprite_0x33 = 51,
-  Sprite_0x34 = 52,
-  Sprite_0x35 = 53,
-  Sprite_0x36 = 54,
-  Sprite_0x37 = 55,
-  Sprite_0x38 = 56,
-  Sprite_0x39 = 57,
-  Sprite_0x3A = 58,
-  Sprite_0x3B = 59,
-  Sprite_0x3C = 60,
-  Sprite_0x3D = 61,
-  Sprite_0x3E = 62,
-  Sprite_0x3F = 63
+  TITLE_SPR_LOGO = 0,
+  TITLE_SPR_BORDER = 1,              /* left half; -1 = mirrored right half */
+  TITLE_SPR_WORLD_NAME = 2,          /* + world index (save's levelId / 10 - 1) */
+  TITLE_SPR_EMPTY_SLOT = 8,
+  TITLE_SPR_SLOT_CURSOR = 9,
+  TITLE_SPR_SLOT_MARK = 10,          /* under the cursor while confirming overwrite */
+  TITLE_SPR_PRESS_START = 11,
+  TITLE_SPR_DIGIT0 = 13,             /* + digit, the save's dragon count */
+  TITLE_SPR_DRAGON_ICON = 23,
+  TITLE_SPR_MSG_CHECKING = 24,       /* TITLE_CARD_PROBE / _READ */
+  TITLE_SPR_MSG_NO_CARD = 25,        /* TITLE_CARD_NONE */
+  TITLE_SPR_MSG_CARD_UNUSABLE = 26,  /* TITLE_CARD_UNUSABLE */
+  TITLE_SPR_MSG_WARNING = 27,        /* first line of NO_SAVE_WARNING and FORMAT_CONFIRM */
+  TITLE_SPR_MSG_NO_SAVE_L2 = 28,
+  TITLE_SPR_MSG_NO_SAVE_L3 = 29,
+  TITLE_SPR_MSG_NO_SAVE_L4 = 30,
+  TITLE_SPR_MSG_CARD_IN_SLOT = 31,   /* + card port */
+  TITLE_SPR_MSG_UNFORMATTED_L1 = 33,
+  TITLE_SPR_MSG_UNFORMATTED_L2 = 34,
+  TITLE_SPR_MSG_FORMAT_SURE_L1 = 35,
+  TITLE_SPR_MSG_FORMAT_SURE_L2 = 36,
+  TITLE_SPR_MSG_FORMATTING = 37,
+  TITLE_SPR_MSG_FORMAT_DONE = 38,
+  TITLE_SPR_MSG_FORMAT_FAILED = 39,
+  TITLE_SPR_MSG_NO_FILE_L1 = 40,     /* TITLE_CARD_CREATE_ASK */
+  TITLE_SPR_MSG_NO_FILE_L2 = 41,
+  TITLE_SPR_MSG_CREATING = 42,
+  TITLE_SPR_MSG_CARD_FULL_L1 = 43,
+  TITLE_SPR_MSG_CARD_FULL_L2 = 44,
+  TITLE_SPR_MSG_CREATE_FAILED = 45,
+  TITLE_SPR_MSG_PICK_NEW_SLOT = 46,  /* TITLE_MENU_NEW_SLOT */
+  TITLE_SPR_MSG_PICK_LOAD_SLOT = 47, /* TITLE_MENU_LOAD_SLOT */
+  TITLE_SPR_CARD_SLOT_LABEL = 49,    /* + card port */
+  TITLE_SPR_MSG_PICK_CARD = 51,      /* TITLE_CARD_PICK_SLOT */
+  TITLE_SPR_OPT_NO_SAVE = 52,        /* continue without saving */
+  TITLE_SPR_OPT_RETRY = 53,
+  TITLE_SPR_OPT_CANCEL = 54,
+  TITLE_SPR_OPT_FORMAT = 55,
+  TITLE_SPR_OPT_CREATE = 56,
+  TITLE_SPR_OPT_CONTINUE = 57,       /* single "continue" prompt */
+  TITLE_SPR_OPT_LOAD_GAME = 58,
+  TITLE_SPR_OPT_NEW_GAME = 59,
+  TITLE_SPR_OPT_SLOT1 = 60,
+  TITLE_SPR_OPT_SLOT2 = 61,
+  TITLE_SPR_OPT_OVERWRITE = 62,
+  TITLE_SPR_MSG_CARD_FULL_L3 = 63
 };
 
+/* sprite color/flash variants */
 enum {
-  Color_0x00 = 0,
-  Color_0x01 = 1,
-  Color_0x02 = 2,
-  Color_0x03 = 3
+  TITLE_COLOR_NORMAL = 0,
+  TITLE_COLOR_HIGHLIGHT = 1,         /* selected option, blinking */
+  TITLE_COLOR_PROMPT = 2,            /* "press start" blink */
+  TITLE_COLOR_DIMMED = 3             /* save slots outside the active picker */
 };
-
-/* menu substates */
-enum {
-  SubState_0x00 = 0,
-  SubState_0x01 = 1,
-  SubState_0x02 = 2,
-  SubState_0x03 = 3,
-  SubState_0x04 = 4,
-  SubState_0x05 = 5,
-  SubState_0x06 = 6,
-  SubState_0x07 = 7,
-  SubState_0x08 = 8,
-  SubState_0x09 = 9,
-  SubState_0x0A = 10,
-  SubState_0x0B = 11,
-  SubState_0x0C = 12,
-  SubState_0x0D = 13,
-  SubState_0x0F = 15
-};
-
-/* top-level titlescreen modes */
-enum { Mode_0x00 = 0, Mode_0x01 = 1, Mode_0x02 = 2, Mode_0x03 = 3 };
 
 /* ---- save file: the 0x600-byte image (save_game.h) ---- */
 #include "cutscene_path.h"
@@ -121,7 +104,7 @@ typedef struct {
   int subState;             /* 0x10 */
   int selection;       /* 0x14 */
   int yesNoChoice;                 /* 0x18 load-confirm toggle: 0 yes, 1 no */
-  int demoType;                 /* 0x1C */
+  int exitPath;                 /* 0x1C enum TitleExitPath (g_nTitleExitPath) */
   int savedSelection;/* 0x20 */
   int retryCount;        /* 0x24 */
   int cardPort;         /* 0x28 */
@@ -282,7 +265,7 @@ extern void PollMemCardSyncRing(void);
 extern void CopyWords(void *, void *, int);
 extern int ReadRootCounter2(void);
 extern void InitNewGameState(void);
-extern int ArmStoryIntroOnStart(void);
+extern int RestartTitleCardCheckOnTriangle(void);
 extern void AdvanceCutsceneFrame(int);
 extern void RotateLightVectorXZ(int);
 

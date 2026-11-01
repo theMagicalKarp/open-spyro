@@ -29,14 +29,14 @@ static const char s_SaveFileName[20] = "BASCUS-94228SPYRO";
   Titlescreen_PlayUiSound(0);
 
 #define RELOAD_MEMCARDS                                                        \
-  g_nTitleMode.subState = SubState_0x00;                            \
+  g_nTitleMode.subState = TITLE_CARD_PROBE;                            \
   g_nTitleMode.menuState = 0;                                                      \
   MemCardSync(0, (long *)&g_nTitleMode.mcCmd,                    \
                 (long *)&g_nTitleMode.mcResult);
 
-#define START_DEMO(DEMO_TYPE)                                                  \
-  g_nTitleMode.menuState = 5;                                                      \
-  g_nTitleMode.demoType = DEMO_TYPE;                                           \
+#define START_GAME(EXIT_PATH)                                                  \
+  g_nTitleMode.menuState = TITLE_MENU_FADE_OUT;                                                      \
+  g_nTitleMode.exitPath = EXIT_PATH;                                           \
   g_nSaveSlotLoaded_s.fileTag = g_nTitleMode.file->header.clut[15];         \
   g_nSaveSlotLoaded_s.loaded = 1;                                              \
   g_nSaveSlotLoaded_s.cardPort = g_nTitleMode.cardPort << 4;                \
@@ -46,13 +46,13 @@ static const char s_SaveFileName[20] = "BASCUS-94228SPYRO";
 
 void Titlescreen_Update(void) {
   int old_state =
-      g_nTitleMode.mode < 2 ? g_nTitleMode.subState : g_nTitleMode.menuState;
+      g_nTitleMode.mode < TITLE_MODE_SAVE_SELECT ? g_nTitleMode.subState : g_nTitleMode.menuState;
 
   g_pPathTableHead->frame += 2;
 
   if (g_pPathTableHead->frame < 1100) {
     g_nTitleMode.idleFrames = 0;
-    if (g_nTitleMode.subState == 2 && g_pPathTableHead->frame >= 300 &&
+    if (g_nTitleMode.subState == TITLE_ATTRACT_FLY_IN && g_pPathTableHead->frame >= 300 &&
         (g_dwPadPressed.held & (PAD_START | PAD_CROSS)) != 0) {
       StopSoundVoiceByIndex(g_bSceneSfxVoiceMarker, 4); /* StopSound(voice) */
       g_pPathTableHead->frame = 1170;
@@ -74,15 +74,15 @@ void Titlescreen_Update(void) {
   g_nCameraEulerRoll.y += 16;
 
   switch (g_nTitleMode.mode) {
-  case Mode_0x00: {
-    if (g_nTitleMode.subState < 2) {
+  case TITLE_MODE_ATTRACT: {
+    if (g_nTitleMode.subState < TITLE_ATTRACT_FLY_IN) {
       /* kick out while we're still loading from the CD */
       RestartStalledCdRead();
       if (g_nCdBaseLba.readInFlight != 0 || CallCdSync(1, 0) != 2 ||
           (g_nCurrentMusicTrack.streamStatus & 0x40) == 0)
         break;
 
-      if (g_nTitleMode.subState == 0) {
+      if (g_nTitleMode.subState == TITLE_ATTRACT_LOAD) {
         /* kick off loading titlescreen data from the CD */
         register int cd asm("$4");
         register int t asm("$7");
@@ -90,8 +90,8 @@ void Titlescreen_Update(void) {
         t = g_nTitleSceneSectorOffset;
         StartCdReadAsync(cd, g_pRenderScratchRegionBase - 0x40000, 0x40000,
                       t, 600);
-        g_nTitleMode.subState = 1;
-      } else if (g_nTitleMode.subState == 1) {
+        g_nTitleMode.subState = TITLE_ATTRACT_LOAD_WAIT;
+      } else if (g_nTitleMode.subState == TITLE_ATTRACT_LOAD_WAIT) {
         /* once loaded, initialize music and upload the sprite sheet to vram */
         RECT rc;
         g_nCurrentMusicTrack.track = 20;
@@ -99,9 +99,9 @@ void Titlescreen_Update(void) {
         HandleMusicCommand(20, 1);
         setRECT(&rc, 512, 256, 512, 256);
         LoadImage(&rc, g_pRenderScratchRegionBase - 0x40000);
-        g_nTitleMode.subState = 2;
+        g_nTitleMode.subState = TITLE_ATTRACT_FLY_IN;
       }
-    } else if (g_nTitleMode.subState == 2) {
+    } else if (g_nTitleMode.subState == TITLE_ATTRACT_FLY_IN) {
       /* titlescreen sequence is playing, just waiting for a bit */
       if (g_pPathTableHead->frame < 1169) {
         g_nTitleMode.animTimer = 0;
@@ -110,9 +110,9 @@ void Titlescreen_Update(void) {
           Titlescreen_PlayUiSound(6);
         }
         if (g_nTitleMode.animTimer >= 16)
-          g_nTitleMode.subState = 3;
+          g_nTitleMode.subState = TITLE_ATTRACT_PRESS_START;
       }
-    } else if (g_nTitleMode.subState == 3) {
+    } else if (g_nTitleMode.subState == TITLE_ATTRACT_PRESS_START) {
       /* ready for button inputs or to time out to show the demo */
       if ((g_dwPadPressed.held & (PAD_L1 | PAD_TRIANGLE)) ==
           (PAD_L1 | PAD_TRIANGLE)) {
@@ -127,23 +127,23 @@ void Titlescreen_Update(void) {
         }
         LaunchCrashDemo(); /* crash-demo launch */
       } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
-        g_nTitleMode.subState = 4;
+        g_nTitleMode.subState = TITLE_ATTRACT_LOGO_OUT;
         Titlescreen_PlayUiSound(7);
       } else if (g_nTitleMode.idleFrames >= 990) {
-        g_nTitleMode.subState = 5;
+        g_nTitleMode.subState = TITLE_ATTRACT_IDLE_FADE;
       }
-    } else if (g_nTitleMode.subState == 4) {
+    } else if (g_nTitleMode.subState == TITLE_ATTRACT_LOGO_OUT) {
       /* animate out the logo, move to mem card screen */
       if (g_nTitleMode.animTimer == 16) {
         Titlescreen_PlayUiSound(8);
       }
       if (g_nTitleMode.animTimer >= 32) {
-        g_nTitleMode.mode = Mode_0x01;
-        g_nTitleMode.subState = SubState_0x00;
+        g_nTitleMode.mode = TITLE_MODE_CARD_CHECK;
+        g_nTitleMode.subState = TITLE_CARD_PROBE;
         g_nTitleMode.menuState = 0;
         MemCardOpenSession(); /* MemCardStart */
       }
-    } else if (g_nTitleMode.subState == 5) {
+    } else if (g_nTitleMode.subState == TITLE_ATTRACT_IDLE_FADE) {
       /* timed out: fade out for 16 ticks and then move to demo mode */
       if (g_nTitleMode.animTimer == 0) {
         Titlescreen_PlayUiSound(5);
@@ -153,9 +153,9 @@ void Titlescreen_Update(void) {
         g_nScreenFadeLevel = 15;
       if (g_nTitleMode.animTimer >= 16) {
         RECT rc;
-        g_nTitleMode.mode = Mode_0x03;
+        g_nTitleMode.mode = TITLE_MODE_STORY_INTRO;
         g_nTitleMode.menuState = 0;
-        g_nTitleMode.demoType = 2;
+        g_nTitleMode.exitPath = TITLE_EXIT_DEMO;
         setRECT(&rc, 0, 0, 512, 480);
         ClearImage(&rc, 0, 0, 0);
         DrawSync(0); /* DrawSync */
@@ -163,9 +163,9 @@ void Titlescreen_Update(void) {
     }
     break;
   }
-  case Mode_0x01: {
+  case TITLE_MODE_CARD_CHECK: {
     switch (g_nTitleMode.subState) {
-    case SubState_0x00: {
+    case TITLE_CARD_PROBE: {
       /* wait for async mem card function to finish */
       if (MemCardSync(1, (long *)&g_nTitleMode.mcCmd,
                         (long *)&g_nTitleMode.mcResult) == 0)
@@ -208,13 +208,13 @@ void Titlescreen_Update(void) {
         if (g_nTitleMode.cardStatus[0] == McErrNone &&
             g_nTitleMode.cardStatus[1] == McErrNone) {
           /* both ports have a valid, formatted memcard, go to select menu */
-          g_nTitleMode.subState = SubState_0x0F;
+          g_nTitleMode.subState = TITLE_CARD_PICK_SLOT;
           g_nTitleMode.selection = 0;
         } else if (g_nTitleMode.cardStatus[0] == McErrNone &&
                    !g_nTitleMode.needsFormat[0]) {
           /* port A is valid and doesn't need formatting: select it */
           g_nTitleMode.cardPort = 0;
-          g_nTitleMode.subState = SubState_0x01;
+          g_nTitleMode.subState = TITLE_CARD_READ;
           g_nTitleMode.menuState = 0;
           g_nTitleMode.retryCount = 0;
           g_nTitleMode.selection = 0;
@@ -222,7 +222,7 @@ void Titlescreen_Update(void) {
                    !g_nTitleMode.needsFormat[1]) {
           /* port B is valid and doesn't need formatting: select it */
           g_nTitleMode.cardPort = 1;
-          g_nTitleMode.subState = SubState_0x01;
+          g_nTitleMode.subState = TITLE_CARD_READ;
           g_nTitleMode.menuState = 0;
           g_nTitleMode.retryCount = 0;
           g_nTitleMode.selection = 0;
@@ -230,24 +230,24 @@ void Titlescreen_Update(void) {
                    g_nTitleMode.needsFormat[0]) {
           /* port A is valid but needs a format, ask if that's ok */
           g_nTitleMode.cardPort = 0;
-          g_nTitleMode.subState = SubState_0x05;
+          g_nTitleMode.subState = TITLE_CARD_FORMAT_ASK;
           g_nTitleMode.selection = 0;
         } else if (g_nTitleMode.cardStatus[1] == McErrNone &&
                    g_nTitleMode.needsFormat[1]) {
           /* port B is valid but needs a format, ask if that's ok */
           g_nTitleMode.cardPort = 1;
-          g_nTitleMode.subState = SubState_0x05;
+          g_nTitleMode.subState = TITLE_CARD_FORMAT_ASK;
           g_nTitleMode.selection = 0;
         } else {
           /* no valid cards found */
           g_nTitleMode.cardPort = -1;
-          g_nTitleMode.subState = SubState_0x02;
+          g_nTitleMode.subState = TITLE_CARD_NONE;
           g_nTitleMode.selection = 0;
         }
       }
       break;
     }
-    case SubState_0x01: {
+    case TITLE_CARD_READ: {
       /* wait for async mem card function to finish */
       if (MemCardSync(1, (long *)&g_nTitleMode.mcCmd,
                         (long *)&g_nTitleMode.mcResult) == 0)
@@ -273,8 +273,8 @@ void Titlescreen_Update(void) {
                   (u_char *)&g_nTitleMode.file->saves[2]) ==
                   g_nTitleMode.file->saves[2].checksum) {
             /* save checksums matched, go to save file picker */
-            g_nTitleMode.mode = Mode_0x02;
-            g_nTitleMode.menuState = 4;
+            g_nTitleMode.mode = TITLE_MODE_SAVE_SELECT;
+            g_nTitleMode.menuState = TITLE_MENU_NEW_OR_LOAD;
             g_nTitleMode.selection = 1;
             g_nGamePaused = 1;
             Titlescreen_PlayUiSound(9);
@@ -299,25 +299,25 @@ void Titlescreen_Update(void) {
               BuildSaveGameBuffer(&g_nTitleMode.file->saves[2]);
 
             /* go to the save file picker */
-            g_nTitleMode.mode = Mode_0x02;
-            g_nTitleMode.menuState = 4;
+            g_nTitleMode.mode = TITLE_MODE_SAVE_SELECT;
+            g_nTitleMode.menuState = TITLE_MENU_NEW_OR_LOAD;
             g_nTitleMode.selection = 1;
             g_nGamePaused = 1;
             Titlescreen_PlayUiSound(9);
           }
         } else if (g_nTitleMode.mcResult == McErrFileNotExist) {
           /* no save file, ask if we can create one */
-          g_nTitleMode.subState = SubState_0x0A;
+          g_nTitleMode.subState = TITLE_CARD_CREATE_ASK;
           g_nTitleMode.selection = 0;
         } else {
           /* no memory card available anymore */
-          g_nTitleMode.subState = SubState_0x03;
+          g_nTitleMode.subState = TITLE_CARD_UNUSABLE;
           g_nTitleMode.selection = 0;
         }
       }
       break;
     }
-    case SubState_0x02: {
+    case TITLE_CARD_NONE: {
       PollMemCardSyncRing();
 
       if (g_nTitleMode.cardStatus[0] == McErrNone ||
@@ -333,13 +333,13 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nTitleMode.animTimer >= 8) {
-        if (ArmStoryIntroOnStart()) {
-          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
+        if (RestartTitleCardCheckOnTriangle()) {
+          /* triangle was pushed, RestartTitleCardCheckOnTriangle already took care of it */
         } else if (g_dwPadPressed.pressed & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
         } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
           if (g_nTitleMode.selection == 0) {
-            g_nTitleMode.subState = SubState_0x04;
+            g_nTitleMode.subState = TITLE_CARD_NO_SAVE_WARNING;
             Titlescreen_PlayUiSound(3);
           } else {
             RELOAD_MEMCARDS
@@ -348,7 +348,7 @@ void Titlescreen_Update(void) {
       }
       break;
     }
-    case SubState_0x03: {
+    case TITLE_CARD_UNUSABLE: {
       PollMemCardSyncRing();
 
       if (g_nTitleMode.cardPort >= 0) {
@@ -369,13 +369,13 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nTitleMode.animTimer >= 8) {
-        if (ArmStoryIntroOnStart()) {
-          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
+        if (RestartTitleCardCheckOnTriangle()) {
+          /* triangle was pushed, RestartTitleCardCheckOnTriangle already took care of it */
         } else if (g_dwPadPressed.pressed & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
         } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
           if (g_nTitleMode.selection == 0) {
-            g_nTitleMode.subState = SubState_0x04;
+            g_nTitleMode.subState = TITLE_CARD_NO_SAVE_WARNING;
             Titlescreen_PlayUiSound(3);
           } else {
             RELOAD_MEMCARDS
@@ -384,7 +384,7 @@ void Titlescreen_Update(void) {
       }
       break;
     }
-    case SubState_0x04: {
+    case TITLE_CARD_NO_SAVE_WARNING: {
       PollMemCardSyncRing();
 
       if (g_nTitleMode.cardPort >= 0) {
@@ -406,16 +406,16 @@ void Titlescreen_Update(void) {
 
       /* mem card states still the same, process buttons after a few ticks */
       if (g_nTitleMode.animTimer >= 8) {
-        if (ArmStoryIntroOnStart()) {
-          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
+        if (RestartTitleCardCheckOnTriangle()) {
+          /* triangle was pushed, RestartTitleCardCheckOnTriangle already took care of it */
         } else if (g_dwPadPressed.pressed & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
         } else if (g_dwPadPressed.pressed & (PAD_CROSS | PAD_START)) {
           if (g_nTitleMode.selection == 0) {
             InitNewGameState();
-            g_nTitleMode.mode = Mode_0x02;
-            g_nTitleMode.menuState = 5;
-            g_nTitleMode.demoType = 0;
+            g_nTitleMode.mode = TITLE_MODE_SAVE_SELECT;
+            g_nTitleMode.menuState = TITLE_MENU_FADE_OUT;
+            g_nTitleMode.exitPath = TITLE_EXIT_NEW_GAME;
             g_nSaveSlotLoaded_s.loaded = 0;
           } else {
             RELOAD_MEMCARDS
@@ -424,8 +424,8 @@ void Titlescreen_Update(void) {
       }
       break;
     }
-    case SubState_0x05:
-    case SubState_0x06: {
+    case TITLE_CARD_FORMAT_ASK:
+    case TITLE_CARD_FORMAT_CONFIRM: {
       PollMemCardSyncRing();
 
       if (g_nTitleMode.cardStatus[g_nTitleMode.cardPort] != McErrNone ||
@@ -440,23 +440,23 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nTitleMode.animTimer >= 8) {
-        if (ArmStoryIntroOnStart()) {
-          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
+        if (RestartTitleCardCheckOnTriangle()) {
+          /* triangle was pushed, RestartTitleCardCheckOnTriangle already took care of it */
         } else if (g_dwPadPressed.pressed & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
         } else if (g_dwPadPressed.pressed & (PAD_CROSS | PAD_START)) {
           if (g_nTitleMode.selection == 0) {
-            if (g_nTitleMode.subState == SubState_0x05) {
-              g_nTitleMode.subState = SubState_0x06;
+            if (g_nTitleMode.subState == TITLE_CARD_FORMAT_ASK) {
+              g_nTitleMode.subState = TITLE_CARD_FORMAT_CONFIRM;
               g_nTitleMode.selection = 1;
             } else {
-              g_nTitleMode.subState = SubState_0x07;
+              g_nTitleMode.subState = TITLE_CARD_FORMATTING;
               MemCardSync(0, (long *)&g_nTitleMode.mcCmd,
                             (long *)&g_nTitleMode.mcResult);
               Titlescreen_PlayUiSound(2);
             }
           } else {
-            g_nTitleMode.subState = SubState_0x03;
+            g_nTitleMode.subState = TITLE_CARD_UNUSABLE;
             g_nTitleMode.selection = 0;
             Titlescreen_PlayUiSound(3);
           }
@@ -464,24 +464,24 @@ void Titlescreen_Update(void) {
       }
       break;
     }
-    case SubState_0x07: {
+    case TITLE_CARD_FORMATTING: {
       if (g_nTitleMode.animTimer >= 2) {
         g_nTitleMode.mcResult =
             MemCardFormat(g_nTitleMode.cardPort << 4);
         if (g_nTitleMode.mcResult == McErrNone) {
           g_nTitleMode.cardStatus[g_nTitleMode.cardPort] = McErrNone;
-          g_nTitleMode.subState = SubState_0x08;
+          g_nTitleMode.subState = TITLE_CARD_FORMAT_DONE;
           g_nTitleMode.selection = 0; /* continue */
           Titlescreen_PlayUiSound(9);
         } else {
-          g_nTitleMode.subState = SubState_0x09;
+          g_nTitleMode.subState = TITLE_CARD_FORMAT_FAILED;
           g_nTitleMode.selection = 1; /* cancel */
           Titlescreen_PlayUiSound(4);
         }
       }
       break;
     }
-    case SubState_0x08: {
+    case TITLE_CARD_FORMAT_DONE: {
       PollMemCardSyncRing();
 
       if (g_nTitleMode.cardStatus[g_nTitleMode.cardPort] != McErrNone ||
@@ -492,11 +492,11 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nTitleMode.animTimer >= 8) {
-        if (ArmStoryIntroOnStart()) {
-          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
+        if (RestartTitleCardCheckOnTriangle()) {
+          /* triangle was pushed, RestartTitleCardCheckOnTriangle already took care of it */
         } else if (g_dwPadPressed.pressed & (PAD_CROSS | PAD_START)) {
           Titlescreen_PlayUiSound(1);
-          g_nTitleMode.subState = SubState_0x01;
+          g_nTitleMode.subState = TITLE_CARD_READ;
           g_nTitleMode.menuState = 0;
           g_nTitleMode.retryCount = 0;
           g_nTitleMode.selection = 1;
@@ -505,7 +505,7 @@ void Titlescreen_Update(void) {
 
       break;
     }
-    case SubState_0x09: {
+    case TITLE_CARD_FORMAT_FAILED: {
       PollMemCardSyncRing();
 
       if (g_nTitleMode.cardStatus[g_nTitleMode.cardPort] != McErrNone ||
@@ -516,19 +516,19 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nTitleMode.animTimer >= 8) {
-        if (ArmStoryIntroOnStart()) {
-          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
+        if (RestartTitleCardCheckOnTriangle()) {
+          /* triangle was pushed, RestartTitleCardCheckOnTriangle already took care of it */
         } else if (g_dwPadPressed.pressed & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
         } else if (g_dwPadPressed.pressed & (PAD_CROSS | PAD_START)) {
           if (g_nTitleMode.selection == 0) {
             /* retry format */
-            g_nTitleMode.subState = SubState_0x07;
+            g_nTitleMode.subState = TITLE_CARD_FORMATTING;
             MemCardSync(0, (long *)&g_nTitleMode.mcCmd,
                           (long *)&g_nTitleMode.mcResult);
             Titlescreen_PlayUiSound(2);
           } else {
-            g_nTitleMode.subState = SubState_0x03;
+            g_nTitleMode.subState = TITLE_CARD_UNUSABLE;
             g_nTitleMode.selection = 0;
             Titlescreen_PlayUiSound(3);
           }
@@ -536,7 +536,7 @@ void Titlescreen_Update(void) {
       }
       break;
     }
-    case SubState_0x0A: {
+    case TITLE_CARD_CREATE_ASK: {
       PollMemCardSyncRing();
 
       if (g_nTitleMode.cardStatus[g_nTitleMode.cardPort] != McErrNone ||
@@ -551,20 +551,20 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nTitleMode.animTimer >= 8) {
-        if (ArmStoryIntroOnStart()) {
-          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
+        if (RestartTitleCardCheckOnTriangle()) {
+          /* triangle was pushed, RestartTitleCardCheckOnTriangle already took care of it */
         } else if (g_dwPadPressed.pressed & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
         } else if (g_dwPadPressed.pressed & (PAD_CROSS | PAD_START)) {
           if (g_nTitleMode.selection == 0) {
-            g_nTitleMode.subState = SubState_0x0B;
+            g_nTitleMode.subState = TITLE_CARD_CREATING;
             g_nTitleMode.menuState = 0;
             g_nTitleMode.retryCount = 0;
             MemCardSync(0, (long *)&g_nTitleMode.mcCmd,
                           (long *)&g_nTitleMode.mcResult);
             Titlescreen_PlayUiSound(2);
           } else {
-            g_nTitleMode.subState = SubState_0x03;
+            g_nTitleMode.subState = TITLE_CARD_UNUSABLE;
             g_nTitleMode.selection = 0;
             Titlescreen_PlayUiSound(3);
           }
@@ -573,7 +573,7 @@ void Titlescreen_Update(void) {
 
       break;
     }
-    case SubState_0x0B: {
+    case TITLE_CARD_CREATING: {
       int i;
       if (g_nTitleMode.menuState == 0) {
         g_nTitleMode.menuState = 1; /* ok ... */
@@ -604,10 +604,10 @@ void Titlescreen_Update(void) {
 
           g_nTitleMode.menuState = 2;
         } else if (g_nTitleMode.mcResult == McErrBlockFull) {
-          g_nTitleMode.subState = SubState_0x0C;
+          g_nTitleMode.subState = TITLE_CARD_FULL;
           g_nTitleMode.selection = 0;
         } else {
-          g_nTitleMode.subState = SubState_0x0D;
+          g_nTitleMode.subState = TITLE_CARD_CREATE_FAILED;
           g_nTitleMode.selection = 0;
         }
       } else if (g_nTitleMode.menuState == 2) {
@@ -618,7 +618,7 @@ void Titlescreen_Update(void) {
 
         /* write is done, check to see if it was successful */
         if (g_nTitleMode.mcResult != McErrNone) {
-          g_nTitleMode.subState = SubState_0x0D;
+          g_nTitleMode.subState = TITLE_CARD_CREATE_FAILED;
           g_nTitleMode.selection = 0;
         } else {
           /* save succeeded, let's re-read it off the card */
@@ -639,8 +639,8 @@ void Titlescreen_Update(void) {
               ComputeSaveGameChecksum(
                   (u_char *)&g_nTitleMode.file->saves[2]) ==
                   g_nTitleMode.file->saves[2].checksum) {
-            g_nTitleMode.mode = Mode_0x02;
-            g_nTitleMode.menuState = 4;
+            g_nTitleMode.mode = TITLE_MODE_SAVE_SELECT;
+            g_nTitleMode.menuState = TITLE_MENU_NEW_OR_LOAD;
             g_nTitleMode.selection = 0;
             g_nGamePaused = 1;
             Titlescreen_PlayUiSound(9);
@@ -662,21 +662,21 @@ void Titlescreen_Update(void) {
                       (u_char *)&g_nTitleMode.file->saves[2]) !=
                   g_nTitleMode.file->saves[2].checksum)
                 BuildSaveGameBuffer(&g_nTitleMode.file->saves[2]);
-              g_nTitleMode.mode = Mode_0x02;
-              g_nTitleMode.menuState = 4;
+              g_nTitleMode.mode = TITLE_MODE_SAVE_SELECT;
+              g_nTitleMode.menuState = TITLE_MENU_NEW_OR_LOAD;
               g_nTitleMode.selection = 0;
               g_nGamePaused = 1;
               Titlescreen_PlayUiSound(9);
             }
           }
         } else {
-          g_nTitleMode.subState = SubState_0x0D;
+          g_nTitleMode.subState = TITLE_CARD_CREATE_FAILED;
           g_nTitleMode.selection = 0;
         }
       }
       break;
     }
-    case SubState_0x0C: {
+    case TITLE_CARD_FULL: {
       PollMemCardSyncRing();
 
       if (g_nTitleMode.cardStatus[g_nTitleMode.cardPort] != McErrNone ||
@@ -691,17 +691,17 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nTitleMode.animTimer >= 8) {
-        if (ArmStoryIntroOnStart()) {
-          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
+        if (RestartTitleCardCheckOnTriangle()) {
+          /* triangle was pushed, RestartTitleCardCheckOnTriangle already took care of it */
         } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
           Titlescreen_PlayUiSound(3);
-          g_nTitleMode.subState = SubState_0x03;
+          g_nTitleMode.subState = TITLE_CARD_UNUSABLE;
           g_nTitleMode.selection = 0;
         }
       }
       break;
     }
-    case SubState_0x0D: {
+    case TITLE_CARD_CREATE_FAILED: {
       PollMemCardSyncRing();
 
       if (g_nTitleMode.cardStatus[g_nTitleMode.cardPort] != McErrNone ||
@@ -716,20 +716,20 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nTitleMode.animTimer >= 8) {
-        if (ArmStoryIntroOnStart()) {
-          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
+        if (RestartTitleCardCheckOnTriangle()) {
+          /* triangle was pushed, RestartTitleCardCheckOnTriangle already took care of it */
         } else if (g_dwPadPressed.pressed & (PAD_LEFT | PAD_RIGHT)) {
           SWAP_MENU_SELECTION
         } else if (g_dwPadPressed.pressed & (PAD_CROSS | PAD_START)) {
           if (g_nTitleMode.selection == 0) {
-            g_nTitleMode.subState = SubState_0x0B;
+            g_nTitleMode.subState = TITLE_CARD_CREATING;
             g_nTitleMode.menuState = 0;
             g_nTitleMode.retryCount = 0;
             MemCardSync(0, (long *)&g_nTitleMode.mcCmd,
                           (long *)&g_nTitleMode.mcResult);
             Titlescreen_PlayUiSound(2);
           } else {
-            g_nTitleMode.subState = SubState_0x03;
+            g_nTitleMode.subState = TITLE_CARD_UNUSABLE;
             g_nTitleMode.selection = 0;
             Titlescreen_PlayUiSound(3);
           }
@@ -737,7 +737,7 @@ void Titlescreen_Update(void) {
       }
       break;
     }
-    case SubState_0x0F: {
+    case TITLE_CARD_PICK_SLOT: {
       PollMemCardSyncRing();
 
       if (g_nTitleMode.cardStatus[0] == McErrCardNotExist ||
@@ -758,10 +758,10 @@ void Titlescreen_Update(void) {
         } else if (g_dwPadPressed.pressed & (PAD_CROSS | PAD_START)) {
           g_nTitleMode.cardPort = g_nTitleMode.selection;
           if (g_nTitleMode.needsFormat[g_nTitleMode.selection]) {
-            g_nTitleMode.subState = SubState_0x05;
+            g_nTitleMode.subState = TITLE_CARD_FORMAT_ASK;
             g_nTitleMode.selection = 0;
           } else {
-            g_nTitleMode.subState = SubState_0x01;
+            g_nTitleMode.subState = TITLE_CARD_READ;
             g_nTitleMode.menuState = 0;
             g_nTitleMode.retryCount = 0;
             g_nTitleMode.selection = 1;
@@ -774,16 +774,16 @@ void Titlescreen_Update(void) {
     }
     break;
   }
-  case Mode_0x02: {
+  case TITLE_MODE_SAVE_SELECT: {
     /* while not transitioning to the demo, keep checking our card states */
-    if (g_nTitleMode.menuState < 5) {
+    if (g_nTitleMode.menuState < TITLE_MENU_FADE_OUT) {
       PollMemCardSyncRing();
 
       if (g_nTitleMode.cardStatus[g_nTitleMode.cardPort] != McErrNone ||
           g_nTitleMode.cardStatus[1 - g_nTitleMode.cardPort] ==
               McErrNewCard) {
-        g_nTitleMode.mode = Mode_0x01;
-        g_nTitleMode.subState = SubState_0x00;
+        g_nTitleMode.mode = TITLE_MODE_CARD_CHECK;
+        g_nTitleMode.subState = TITLE_CARD_PROBE;
         g_nTitleMode.menuState = 0;
         MemCardSync(0, (long *)&g_nTitleMode.mcCmd,
                       (long *)&g_nTitleMode.mcResult);
@@ -803,9 +803,9 @@ void Titlescreen_Update(void) {
       g_nTitleMode.anySaveUsed = 1;
     }
 
-    if (g_nTitleMode.menuState == 0) {
+    if (g_nTitleMode.menuState == TITLE_MENU_ROUTE) {
       if (g_nTitleMode.savedSelection == 0) {
-        g_nTitleMode.menuState = 1;
+        g_nTitleMode.menuState = TITLE_MENU_NEW_SLOT;
         if (!g_nTitleMode.apSaves[0]->levelVisited[0]) {
           g_nTitleMode.selection = 0;
         } else if (!g_nTitleMode.apSaves[1]->levelVisited[0]) {
@@ -816,7 +816,7 @@ void Titlescreen_Update(void) {
           g_nTitleMode.selection = 0;
         }
       } else if (g_nTitleMode.anySaveUsed) {
-        g_nTitleMode.menuState = 3;
+        g_nTitleMode.menuState = TITLE_MENU_LOAD_SLOT;
         if (g_nTitleMode.apSaves[0]->levelVisited[0]) {
           g_nTitleMode.selection = 0;
         } else if (g_nTitleMode.apSaves[1]->levelVisited[0]) {
@@ -826,13 +826,13 @@ void Titlescreen_Update(void) {
         }
       } else {
         g_nTitleMode.selection = 1;
-        g_nTitleMode.menuState = 4;
+        g_nTitleMode.menuState = TITLE_MENU_NEW_OR_LOAD;
       }
-    } else if (g_nTitleMode.menuState == 1) {
+    } else if (g_nTitleMode.menuState == TITLE_MENU_NEW_SLOT) {
       if (g_nTitleMode.animTimer >= 8) {
         if (g_dwPadPressed.pressed & (PAD_DOWN | PAD_TRIANGLE)) {
           Titlescreen_PlayUiSound(9);
-          g_nTitleMode.menuState = 4;
+          g_nTitleMode.menuState = TITLE_MENU_NEW_OR_LOAD;
           g_nTitleMode.selection = 0;
         } else if (g_dwPadPressed.pressed & PAD_LEFT) {
           g_nTitleMode.animTimer = 16;
@@ -850,15 +850,15 @@ void Titlescreen_Update(void) {
           if (g_nTitleMode.apSaves[g_nTitleMode.selection]
                   ->levelVisited[0]) {
             Titlescreen_PlayUiSound(3);
-            g_nTitleMode.menuState = 2;
+            g_nTitleMode.menuState = TITLE_MENU_OVERWRITE;
             g_nTitleMode.yesNoChoice = 1;
           } else {
             InitNewGameState();
-            START_DEMO(0)
+            START_GAME(TITLE_EXIT_NEW_GAME)
           }
         }
       }
-    } else if (g_nTitleMode.menuState == 2) {
+    } else if (g_nTitleMode.menuState == TITLE_MENU_OVERWRITE) {
       if (g_nTitleMode.animTimer >= 8) {
         if ((g_dwPadPressed.pressed & (PAD_RIGHT | PAD_LEFT))) {
           g_nTitleMode.animTimer = 16;
@@ -867,19 +867,19 @@ void Titlescreen_Update(void) {
         } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS | PAD_TRIANGLE)) {
           if (g_nTitleMode.yesNoChoice == 1 ||
               (g_dwPadPressed.pressed & PAD_TRIANGLE) != 0) {
-            g_nTitleMode.menuState = 1;
+            g_nTitleMode.menuState = TITLE_MENU_NEW_SLOT;
             Titlescreen_PlayUiSound(4);
           } else {
             InitNewGameState();
-            START_DEMO(0)
+            START_GAME(TITLE_EXIT_NEW_GAME)
           }
         }
       }
-    } else if (g_nTitleMode.menuState == 3) {
+    } else if (g_nTitleMode.menuState == TITLE_MENU_LOAD_SLOT) {
       if (g_nTitleMode.animTimer >= 8) {
         if (g_dwPadPressed.pressed & (PAD_DOWN | PAD_TRIANGLE)) {
           Titlescreen_PlayUiSound(9);
-          g_nTitleMode.menuState = 4;
+          g_nTitleMode.menuState = TITLE_MENU_NEW_OR_LOAD;
           g_nTitleMode.selection = 1;
         } else if (g_dwPadPressed.pressed & PAD_LEFT) {
           int i;
@@ -910,13 +910,13 @@ void Titlescreen_Update(void) {
           g_nSparxFoodCount = 0;
           g_nSparxHealthStash = -1;
           ApplySaveGameBuffer(g_nTitleMode.apSaves[g_nTitleMode.selection]);
-          START_DEMO(1)
+          START_GAME(TITLE_EXIT_LOADED_GAME)
         }
       }
-    } else if (g_nTitleMode.menuState == 4) {
+    } else if (g_nTitleMode.menuState == TITLE_MENU_NEW_OR_LOAD) {
       if (g_nTitleMode.animTimer >= 8) {
-        if (ArmStoryIntroOnStart()) {
-          /* triangle was pushed, ArmStoryIntroOnStart already took care of it */
+        if (RestartTitleCardCheckOnTriangle()) {
+          /* triangle was pushed, RestartTitleCardCheckOnTriangle already took care of it */
         } else if (g_dwPadPressed.pressed & (PAD_RIGHT | PAD_LEFT)) {
           SWAP_MENU_SELECTION
         } else if (g_dwPadPressed.pressed & (PAD_UP | PAD_START | PAD_CROSS)) {
@@ -924,14 +924,14 @@ void Titlescreen_Update(void) {
             g_nTitleMode.animTimer = 16;
             Titlescreen_PlayUiSound(4);
           } else {
-            g_nTitleMode.menuState = 0;
+            g_nTitleMode.menuState = TITLE_MENU_ROUTE;
             g_nGamePaused = 1;
             g_nTitleMode.savedSelection = g_nTitleMode.selection;
             Titlescreen_PlayUiSound(1);
           }
         }
       }
-    } else if (g_nTitleMode.menuState == 5) {
+    } else if (g_nTitleMode.menuState == TITLE_MENU_FADE_OUT) {
       if (g_nTitleMode.animTimer == 0) {
         Titlescreen_PlayUiSound(5);
       }
@@ -943,7 +943,7 @@ void Titlescreen_Update(void) {
       if (g_nTitleMode.animTimer >= 16) {
         RECT rc;
         MemCardCloseSession(); /* MemCardStop */
-        g_nTitleMode.mode = Mode_0x03;
+        g_nTitleMode.mode = TITLE_MODE_STORY_INTRO;
         g_nTitleMode.menuState = 0;
         setRECT(&rc, 0, 0, 512, 480);
         ClearImage(&rc, 0, 0, 0);
@@ -961,7 +961,7 @@ void Titlescreen_Update(void) {
     g_nTitleMode.idleFrames++;
   }
 
-  if (g_nTitleMode.mode < 2) {
+  if (g_nTitleMode.mode < TITLE_MODE_SAVE_SELECT) {
     if (g_nTitleMode.subState != old_state)
       g_nTitleMode.animTimer = 0;
     else
