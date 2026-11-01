@@ -794,7 +794,7 @@ void Level21_UpdateActors(void) {
         TickActorFlameGlow(actor);
       }
       f = actor->flags;
-      if ((f & 0xF0000) && actor->mode != 3 &&
+      if ((f & 0xF0000) && actor->mode != BTHROW_KNOCKED &&
           (actor->type != ACTOR_TYPE_BOULDER_THROWER_B || f != 0x10000)) {
         Actor *c;
 
@@ -810,7 +810,7 @@ void Level21_UpdateActors(void) {
           st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
                                   spy->bodyRotZ, 0x20, 0x40);
-          if (actor->mode != 0x2B) {
+          if (actor->mode != BTHROW_HURTLE) {
             st->zSpeed = 0x1E;
           }
         }
@@ -827,14 +827,14 @@ void Level21_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 3);
+        ENTER_POSE(actor, BTHROW_KNOCKED);
       }
       actor->flags = 0;
 
       if (st->command != 0) {
         if (st->command == 1) {
           st->command = 0;
-          actor->mode = 0x28;
+          actor->mode = BTHROW_PAIR_WAIT;
           continue;
         }
         if (actor->group != 0 && actor->subMode == 0) {
@@ -850,7 +850,7 @@ void Level21_UpdateActors(void) {
           st->path->cur++;
         }
         st->command = 0;
-        actor->mode = 0x32;
+        actor->mode = BTHROW_RIDE_WAIT;
         continue;
       }
 
@@ -872,16 +872,16 @@ void Level21_UpdateActors(void) {
 
       actor->flags = 0;
       switch (actor->mode) {
-      case 0:
+      case BTHROW_IDLE:
         if (actor->subMode != 0) {
           ENTER_POSE(actor, actor->subMode);
         }
         if (st->idlePose2 != 0) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, BTHROW_WATCH);
         }
         break;
 
-      case 1:
+      case BTHROW_ROUSE:
         if (g_nActorAnimDone == 0) {
           break;
         }
@@ -890,13 +890,13 @@ void Level21_UpdateActors(void) {
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
         if (st->flags & 1) {
-          ENTER_POSE(actor, 5);
+          ENTER_POSE(actor, BTHROW_PATROL);
         }
-        actor->mode = 2;
+        actor->mode = BTHROW_WATCH;
         ANIM_RESET(actor, 2);
         continue;
 
-      case 2:
+      case BTHROW_WATCH:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if ((st->flags & 1) &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x1F4
@@ -907,18 +907,18 @@ void Level21_UpdateActors(void) {
         if (st->box0HalfWidth != 0 &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
         pose5:
-          ENTER_POSE(actor, 5);
+          ENTER_POSE(actor, BTHROW_PATROL);
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
             ApproxDist2D(&actor->posX, &spy->posX) < st->sightRange &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x1F4
                                : -SPY_DZ(actor) < 0x1F4) &&
             CheckSpyroLineOfSightTo(&actor->posX) != 0) {
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, BTHROW_THROW);
         }
         break;
 
-      case 3:
+      case BTHROW_KNOCKED:
         if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC, 0xA) ==
                 3 &&
             st->speed == 0 && st->landSoundPlayed == 0) {
@@ -933,7 +933,7 @@ void Level21_UpdateActors(void) {
         }
         break;
 
-      case 4:
+      case BTHROW_THROW:
         TrackEntityYawTowardSpyro(actor, 8, 0, 0);
         if ((unsigned)(actor->nextFrame - 3) < 5 && st->rock == 0) {
           st->rock = g_pfnLevelSpawnActor(ACTOR_TYPE_ROLLING_BOULDER, actor);
@@ -964,31 +964,31 @@ void Level21_UpdateActors(void) {
             st->timer = 0x50;
           }
           st->rock = 0;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, BTHROW_WATCH);
         }
         break;
 
-      case 5:
+      case BTHROW_PATROL:
         st->flags &= ~1;
         if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x1400) {
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, BTHROW_THROW);
         }
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, 5) ==
             0x100) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, BTHROW_WATCH);
         }
         break;
 
-      case 40:
+      case BTHROW_PAIR_WAIT:
         ANIM_GO(actor, 2);
         if (actor->subMode == 0) {
           break;
         }
         st->orbitRadius = ApproxDist2D(&actor->posX, &g_pActorListBase[st->partner].posX);
-        actor->mode = 0x29;
+        actor->mode = BTHROW_PAIR_CIRCLE;
         continue;
 
-      case 41: {
+      case BTHROW_PAIR_CIRCLE: {
         int h = g_pActorListBase[st->partner].rotZ;
 
         ANIM_GO(actor, 5);
@@ -996,13 +996,13 @@ void Level21_UpdateActors(void) {
                           0x64, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0) < 6) {
           g_pActorListBase[st->partner].subMode = 1;
           actor->subMode = 0;
-          actor->mode = 0x2A;
+          actor->mode = BTHROW_PAIR_READY;
           continue;
         }
         break;
       }
 
-      case 42:
+      case BTHROW_PAIR_READY:
         ANIM_GO(actor, 2);
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (actor->subMode != 0) {
@@ -1024,7 +1024,7 @@ void Level21_UpdateActors(void) {
           st->jitterA = RandomSignedInRange(8, 0xF);
           st->jitterB = RandomSignedInRange(8, 0xF);
           st->timer = 0xF0;
-          actor->mode = 0x2B;
+          actor->mode = BTHROW_HURTLE;
           continue;
         } else {
           int h;
@@ -1040,11 +1040,11 @@ void Level21_UpdateActors(void) {
             break;
           }
           g_pActorListBase[st->partner].subMode = 0;
-          actor->mode = 0x29;
+          actor->mode = BTHROW_PAIR_CIRCLE;
           continue;
         }
 
-      case 43: {
+      case BTHROW_HURTLE: {
         int r;
 
         CopyVector(svC, &actor->posX);
@@ -1074,7 +1074,7 @@ void Level21_UpdateActors(void) {
           st->speed = 0xDC;
           st->zSpeed = 0x3C;
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, BTHROW_KNOCKED);
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 || r == 2 ||
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > 0x9470) {
@@ -1105,14 +1105,14 @@ void Level21_UpdateActors(void) {
         break;
       }
 
-      case 50:
+      case BTHROW_RIDE_WAIT:
         if (st->partnerSignal != 0) {
           actor->cullRadius = 0x28;
           actor->mode++;
         }
         break;
 
-      case 51: {
+      case BTHROW_RIDE_WALK: {
         int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, 0xFF, 5);
 
         ANIM_GO(actor, 5);
@@ -1122,7 +1122,7 @@ void Level21_UpdateActors(void) {
         break;
       }
 
-      case 52: {
+      case BTHROW_RIDE_FACE: {
         Actor *p = &g_pActorListBase[st->rider];
 
         if (p->subMode != 0) {
@@ -1142,7 +1142,7 @@ void Level21_UpdateActors(void) {
         break;
       }
 
-      case 53: {
+      case BTHROW_RIDE_LEAP: {
         Actor *p = &g_pActorListBase[st->rider];
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
@@ -1160,7 +1160,7 @@ void Level21_UpdateActors(void) {
         break;
       }
 
-      case 54: {
+      case BTHROW_RIDE_HELD: {
         Actor *p = &g_pActorListBase[st->rider];
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
@@ -1180,7 +1180,7 @@ void Level21_UpdateActors(void) {
           st->speed = 0x1C2;
           st->timer = 0xB4;
           st->zSpeed = 0;
-          actor->mode = 0x2B;
+          actor->mode = BTHROW_HURTLE;
         }
         break;
       }
@@ -1195,7 +1195,7 @@ void Level21_UpdateActors(void) {
       GatekeeperState *st = actor->state;
       int f = actor->flags;
 
-      if ((f & 0xD0000) && actor->mode != 5) {
+      if ((f & 0xD0000) && actor->mode != GATEKEEPER_KNOCKED) {
         if (f & 0x40000) {
           st->speed = 0;
           st->zSpeed = 0x28;
@@ -1205,19 +1205,19 @@ void Level21_UpdateActors(void) {
                                                 actor->posY - spy->posY, 0),
                                   spy->bodyRotZ, 0x20, 0x40);
         }
-        if (actor->mode != 0x2B) {
+        if (actor->mode != GATEKEEPER_HURTLE) {
           st->zSpeed = 0x1E;
         }
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 5);
+        ENTER_POSE(actor, GATEKEEPER_KNOCKED);
       }
 
       if (st->command != 0) {
         if (st->command == 1) {
           st->command = 0;
-          actor->mode = 0x28;
+          actor->mode = GATEKEEPER_KEYS_ARM;
           continue;
         }
         if (actor->group != 0 && actor->subMode == 0) {
@@ -1233,7 +1233,7 @@ void Level21_UpdateActors(void) {
           st->path->cur++;
         }
         st->command = 0;
-        actor->mode = 0x32;
+        actor->mode = GATEKEEPER_RIDE_WAIT;
         continue;
       }
 
@@ -1254,18 +1254,18 @@ void Level21_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case GATEKEEPER_IDLE:
         if (actor->subMode == 0 && st->idlePose2 == 0) {
           break;
         }
         if (actor->type == ACTOR_TYPE_GATEKEEPER_B) {
-          actor->mode = 2;
+          actor->mode = GATEKEEPER_WATCH;
           ANIM_RESET(actor, 2);
           continue;
         }
-        ENTER_POSE(actor, 1);
+        ENTER_POSE(actor, GATEKEEPER_ROUSE);
 
-      case 1:
+      case GATEKEEPER_ROUSE:
         if (g_nActorAnimDone == 0) {
           break;
         }
@@ -1273,33 +1273,33 @@ void Level21_UpdateActors(void) {
           SetActorGroupSubstate(actor, 2);
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
-        actor->mode = 2;
+        actor->mode = GATEKEEPER_WATCH;
         ANIM_RESET(actor, 2);
         continue;
 
-      case 2:
+      case GATEKEEPER_WATCH:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x1C00) {
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, GATEKEEPER_STALK);
         }
         break;
 
-      case 3: {
+      case GATEKEEPER_STALK: {
         int d = ApproxDist2D(&actor->posX, &spy->posX);
         int dz = SPY_DZ(actor);
 
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (d > 0x2400) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, GATEKEEPER_WATCH);
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && d < 0xD48 &&
             (unsigned)(dz + 0x577) < 0x4AF) {
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, GATEKEEPER_SWIPE);
         }
         break;
       }
 
-      case 4: {
+      case GATEKEEPER_SWIPE: {
         int d = ApproxDist2D(&actor->posX, &spy->posX);
 
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
@@ -1321,12 +1321,12 @@ void Level21_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           st->timer = 0x78;
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, GATEKEEPER_STALK);
         }
         break;
       }
 
-      case 5:
+      case GATEKEEPER_KNOCKED:
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xE, 0xA);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -1336,7 +1336,7 @@ void Level21_UpdateActors(void) {
         }
         break;
 
-      case 40:
+      case GATEKEEPER_KEYS_ARM:
         ANIM_GO(actor, 2);
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (st->idx < st->count &&
@@ -1354,9 +1354,9 @@ void Level21_UpdateActors(void) {
         if (st->idx < st->count) {
           break;
         }
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, GATEKEEPER_WATCH);
 
-      case 41:
+      case GATEKEEPER_KEYS_WAIT:
         ANIM_GO(actor, 2);
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (actor->subMode == 0) {
@@ -1381,7 +1381,7 @@ void Level21_UpdateActors(void) {
         actor->mode++;
         break;
 
-      case 42: {
+      case GATEKEEPER_KEYS_RELEASE: {
         int k;
 
         ANIM_GO(actor, 4);
@@ -1398,11 +1398,11 @@ void Level21_UpdateActors(void) {
         if (++st->idx < st->count) {
           g_pActorListBase[st->keys[st->idx]].subMode = 1;
         }
-        actor->mode = 0x2C;
+        actor->mode = GATEKEEPER_KEYS_RECOVER;
         continue;
       }
 
-      case 43: {
+      case GATEKEEPER_HURTLE: {
         int r;
 
         CopyVector(svC, &actor->posX);
@@ -1431,7 +1431,7 @@ void Level21_UpdateActors(void) {
           st->speed = 0xF0;
           st->zSpeed = 0x3C;
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
-          ENTER_POSE(actor, 5);
+          ENTER_POSE(actor, GATEKEEPER_KNOCKED);
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 || r == 2 ||
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > 0x9470) {
@@ -1462,24 +1462,24 @@ void Level21_UpdateActors(void) {
         break;
       }
 
-      case 44:
+      case GATEKEEPER_KEYS_RECOVER:
         if (g_nActorAnimDone == 0) {
           break;
         }
         if (st->idx < st->count) {
-          actor->mode = 0x29;
+          actor->mode = GATEKEEPER_KEYS_WAIT;
           continue;
         }
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, GATEKEEPER_WATCH);
 
-      case 50:
+      case GATEKEEPER_RIDE_WAIT:
         if (st->partnerSignal != 0) {
           actor->cullRadius = 0x28;
           actor->mode++;
         }
         break;
 
-      case 51: {
+      case GATEKEEPER_RIDE_WALK: {
         int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, 0xFF, 5);
 
         ANIM_GO(actor, 6);
@@ -1489,7 +1489,7 @@ void Level21_UpdateActors(void) {
         break;
       }
 
-      case 52: {
+      case GATEKEEPER_RIDE_FACE: {
         Actor *p = &g_pActorListBase[st->rider];
 
         if (p->subMode != 0) {
@@ -1509,7 +1509,7 @@ void Level21_UpdateActors(void) {
         break;
       }
 
-      case 53: {
+      case GATEKEEPER_RIDE_LEAP: {
         Actor *p = &g_pActorListBase[st->rider];
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
@@ -1527,7 +1527,7 @@ void Level21_UpdateActors(void) {
         break;
       }
 
-      case 54: {
+      case GATEKEEPER_RIDE_HELD: {
         Actor *p = &g_pActorListBase[st->rider];
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, 0);
@@ -1547,7 +1547,7 @@ void Level21_UpdateActors(void) {
           st->speed = 0x1F4;
           st->timer = 0xB4;
           st->zSpeed = 0;
-          actor->mode = 0x2B;
+          actor->mode = GATEKEEPER_HURTLE;
         }
         break;
       }
@@ -4327,7 +4327,7 @@ void Level21_UpdateActors(void) {
     case ACTOR_TYPE_ROAMING_RAM_QUIET: {
       RoamingRamState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HIT_ANY) && actor->mode != 2) {
+      if ((actor->flags & ACTOR_HIT_ANY) && actor->mode != RAM_QUIET_KNOCKED) {
         if (actor->flags & ACTOR_HIT_BLAST) {
           st->knock = ArcTan2(actor->posX - g_pActorListBase[st->target].posX,
                                     actor->posY - g_pActorListBase[st->target].posY,
@@ -4355,18 +4355,18 @@ void Level21_UpdateActors(void) {
           actor->nextFrame = 0;
           OnActorAnimQueued(actor);
         }
-        actor->mode = 2;
+        actor->mode = RAM_QUIET_KNOCKED;
         continue;
       }
       actor->flags = 0;
       switch (actor->mode) {
-      case 0:
+      case RAM_GRAZE:
         if (TickCountdownByFrameDelta(&st->call, 4) != 0) {
           st->call = (GetRandomU32() & 0x1F) + 0x50;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
         if (st->mode == 1 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
-          actor->mode = 10;
+          actor->mode = RAM_RUN_PATH;
           continue;
         }
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1388) {
@@ -4392,12 +4392,12 @@ void Level21_UpdateActors(void) {
           }
           if (best > 0x40) {
             st->path->cur = sel;
-            ENTER_POSE(actor, 1);
+            ENTER_POSE(actor, RAM_WANDER);
           }
         }
         break;
 
-      case 1: {
+      case RAM_WANDER: {
         int ang =
             ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                           st->path->nodes[st->path->cur].y - actor->posY, 0);
@@ -4410,13 +4410,13 @@ void Level21_UpdateActors(void) {
           MoveActorAlongAngle(actor, ang, 0x50, 0, 0x12C, 5);
           if (ApproxDist2D(&actor->posX,
                             &st->path->nodes[st->path->cur].x) < 0x100) {
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, RAM_GRAZE);
           }
         }
         break;
       }
 
-      case 2:
+      case RAM_QUIET_KNOCKED:
         DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, 0x10);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -4426,7 +4426,7 @@ void Level21_UpdateActors(void) {
         }
         break;
 
-      case 10:
+      case RAM_RUN_PATH:
         if (SPY.airborneFrames != 0) {
           break;
         }
@@ -4434,12 +4434,12 @@ void Level21_UpdateActors(void) {
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x28, 0xFF, 5) ==
             0x100) {
           g_pActorListBase[st->partner].subMode = 1;
-          actor->mode = 11;
+          actor->mode = RAM_PATH_END;
           continue;
         }
         break;
 
-      case 11:
+      case RAM_PATH_END:
         if (TickCountdownByFrameDelta(&st->call, 4) != 0) {
           st->call = (GetRandomU32() & 0x3F) + 0x78;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);

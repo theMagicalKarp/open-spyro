@@ -262,13 +262,13 @@ enum ActorType {
   ACTOR_TYPE_CHARGING_YAK = 198, /* level 9: grazes, lowers its horns and charges when Spyro comes near */
   ACTOR_TYPE_MOUNT = 199, /* level 31: carries a rider; knocked away (dropping it) when struck */
   ACTOR_TYPE_HATCH_CARRIER = 200, /* level 31: lifts ACTOR_TYPE_HATCH's occupant out and throws it */
-  ACTOR_TYPE_CARRIED_THROWER = 201, /* level 31: walks up and throws the actor in its hands */
+  ACTOR_TYPE_CARRIED_THROWER = 201, /* level 31: swings the floating barrel or mine it holds at Spyro (CarriedThrowerMode) */
   ACTOR_TYPE_FLOATING_BARREL = 202, /* level 31: bobs on the water; struck, bursts with a push-back blast and sinks */
   ACTOR_TYPE_FENCE_GUARD = 203, /* level 27: sent in by ACTOR_TYPE_FENCE_CAPTAIN (FenceGuardState) */
   ACTOR_TYPE_FENCE_CAPTAIN = 204, /* level 27: wakes and recalls its fence guards (FenceCaptainState) */
   ACTOR_TYPE_OVERHEAD_THROWER = 205, /* levels 9/10: holds its projectile overhead, throws it at Spyro on its throw frame; stunned when hit */
   ACTOR_TYPE_BELL_A = 206, /* levels 7/8: rings when charged, spawning ACTOR_TYPE_BELL_RIPPLE (also 239/242) */
-  ACTOR_TYPE_FLOATING_MINE = 207, /* level 31: drifts like the barrel; flamed, runs at the nearest target and bursts */
+  ACTOR_TYPE_FLOATING_MINE = 207, /* level 31: drifts like the barrel; charged, runs at the nearest target and bursts */
   ACTOR_TYPE_HUB_AMBIENCE = 208, /* level 30: starts and keeps alive three voice channels (MusicState) */
   ACTOR_TYPE_THROWN_SNOWBALL = 209, /* level 9: flies its arc; bursts on a timer, landing or reaching Spyro */
   ACTOR_TYPE_BOBBING_PLATFORM = 210, /* level 22: spinning platform that bobs on a fixed period (BobbingPlatformState) */

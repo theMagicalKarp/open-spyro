@@ -1349,8 +1349,8 @@ void Level15_UpdateActors(void) {
       TetherState *st = actor->state;
 
       if (st->mode == 1) {
-        if (actor->mode != 7) {
-          actor->mode = 7;
+        if (actor->mode != TGUARD_BOUND) {
+          actor->mode = TGUARD_BOUND;
           actor->anim = 7;
           actor->nextAnim = 7;
           actor->frameProgress = 0;
@@ -1372,35 +1372,35 @@ void Level15_UpdateActors(void) {
           actor->frameRate = 0;
           actor->flags = 0;
         }
-        if (actor->mode != 7 && actor->mode != 5) {
-          ANIM_QUEUE(actor, 7);
+        if (actor->mode != TGUARD_BOUND && actor->mode != TGUARD_KNOCKED) {
+          ANIM_QUEUE(actor, TGUARD_BOUND);
         }
       }
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 5) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != TGUARD_KNOCKED) {
         st->speed = 0xC8;
         st->heading = SPY.bodyRotZ;
         st->mode = 0;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 5);
+        ENTER_POSE(actor, TGUARD_KNOCKED);
       }
 
       switch (actor->mode) {
-      case 0:
+      case TGUARD_IDLE:
         if (st->mode == 4) {
-          ENTER_POSE(actor, 9);
+          ENTER_POSE(actor, TGUARD_SIGNAL);
         }
         if (st->mode == 5) {
-          ENTER_POSE(actor, 8);
+          ENTER_POSE(actor, TGUARD_LOOK);
         }
         if (st->mode == 6) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, TGUARD_RISE);
         }
         TrackEntityYawTowardSpyro(actor, 3, 0x10, 0);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1770 &&
             ABS2(actor->posZ - SPY.posZ) < 0x5DC) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, TGUARD_RISE);
         }
         if (st->link >= 0) {
           if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
@@ -1421,10 +1421,10 @@ void Level15_UpdateActors(void) {
         }
         break;
 
-      case 1:
+      case TGUARD_RISE:
         if (g_nActorAnimDone != 0) {
           st->timer = 0x40;
-          ANIM_QUEUE(actor, 2);
+          ANIM_QUEUE(actor, TGUARD_GUARD);
         }
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1770 &&
             ABS2(actor->posZ - SPY.posZ) < 0x5DC) {
@@ -1432,17 +1432,17 @@ void Level15_UpdateActors(void) {
         }
         break;
 
-      case 2: {
+      case TGUARD_GUARD: {
         int d = ApproxDist2D(&actor->posX, &spy->posX);
 
         if (d < 0xFA0 && ABS2(actor->posZ - SPY.posZ) < 0x5DC) {
           st->timer = 0;
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, TGUARD_STRIKE);
         }
         if (st->mode >= 5) {
           if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {
             st->mode = 0;
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, TGUARD_IDLE);
           }
           if (d < 0x1770 && ABS2(actor->posZ - SPY.posZ) < 0x5DC) {
             TrackEntityYawTowardSpyro(actor, 3, 0, 0);
@@ -1454,21 +1454,21 @@ void Level15_UpdateActors(void) {
                                       0),
                         8, 0, 0);
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-            ENTER_POSE(actor, 9);
+            ENTER_POSE(actor, TGUARD_SIGNAL);
           }
           break;
         }
         TrackEntityYawTowardSpyro(actor, 3, 0, 0);
         if (d > 0x1B58) {
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, TGUARD_LOWER);
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-          ENTER_POSE(actor, 8);
+          ENTER_POSE(actor, TGUARD_LOOK);
         }
         break;
       }
 
-      case 3:
+      case TGUARD_STRIKE:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (SPY.state == SPYRO_ST_HURT_PINNED) {
           st->timer = 3;
@@ -1477,21 +1477,21 @@ void Level15_UpdateActors(void) {
           break;
         }
         if (st->timer != 0) {
-          ANIM_QUEUE(actor, 6);
+          ANIM_QUEUE(actor, TGUARD_STRIKE_HOLD);
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1770 &&
             ABS2(actor->posZ - SPY.posZ) < 0x5DC) {
-          ANIM_QUEUE(actor, 1);
+          ANIM_QUEUE(actor, TGUARD_RISE);
         }
-        ANIM_QUEUE(actor, 0);
+        ANIM_QUEUE(actor, TGUARD_IDLE);
 
-      case 4:
+      case TGUARD_LOWER:
         if (g_nActorAnimDone != 0) {
-          ANIM_QUEUE(actor, 0);
+          ANIM_QUEUE(actor, TGUARD_IDLE);
         }
         break;
 
-      case 5:
+      case TGUARD_KNOCKED:
         if (st->speed > 0) {
           MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 0);
           st->speed -= 0x10;
@@ -1504,29 +1504,29 @@ void Level15_UpdateActors(void) {
         DespawnActorRecord(actor);
         continue;
 
-      case 6:
+      case TGUARD_STRIKE_HOLD:
         if (g_nActorAnimDone != 0 && TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, TGUARD_IDLE);
         }
         break;
 
-      case 7:
+      case TGUARD_BOUND:
         if (g_nActorAnimDone != 0) {
           st->mode = 3;
-          ANIM_QUEUE(actor, 0);
+          ANIM_QUEUE(actor, TGUARD_IDLE);
         }
         break;
 
-      case 8:
+      case TGUARD_LOOK:
         if (st->mode >= 5 && st->link >= 0) {
           if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {
             st->mode = 0;
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, TGUARD_IDLE);
           }
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1770 &&
               ABS2(actor->posZ - SPY.posZ) < 0x5DC) {
             TrackEntityYawTowardSpyro(actor, 3, 0, 0);
-            ENTER_POSE(actor, 1);
+            ENTER_POSE(actor, TGUARD_RISE);
           }
           TurnActorYawTowardAngle(actor,
                         ArcTan2(g_pActorListBase[st->link].posX - actor->posX,
@@ -1538,16 +1538,16 @@ void Level15_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 3, 0, 0);
         if (g_nActorAnimDone != 0) {
           st->timer = 0x5A;
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, TGUARD_RISE);
         }
         break;
 
-      case 9:
+      case TGUARD_SIGNAL:
         if (st->mode == 4) {
           if (g_nActorAnimDone != 0) {
             st->timer = 3;
             st->mode = 0;
-            ANIM_QUEUE(actor, 0);
+            ANIM_QUEUE(actor, TGUARD_IDLE);
           }
           break;
         }
@@ -1559,7 +1559,7 @@ void Level15_UpdateActors(void) {
                                     g_pActorListBase[st->link].posY - actor->posY, 0),
                       8, 0, 0);
         if (g_nActorAnimDone != 0) {
-          ANIM_QUEUE(actor, 1);
+          ANIM_QUEUE(actor, TGUARD_RISE);
         }
         break;
       }
@@ -3024,7 +3024,7 @@ void Level15_UpdateActors(void) {
       KeeperState *st = actor->state;
 
       TickActorFlameGlow(actor);
-      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode < 5) {
+      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode < KEEPER_KNOCKED) {
         st->timer = 0x15E;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
@@ -3034,35 +3034,35 @@ void Level15_UpdateActors(void) {
         MarkActorCommittedKill(actor);
         PlayActorMeshVoice(actor, 0, 0);
         if (GetRandomU32() & 1) {
-          ENTER_POSE(actor, 6);
+          ENTER_POSE(actor, KEEPER_KNOCKED_ALT);
         }
-        ENTER_POSE(actor, 5);
+        ENTER_POSE(actor, KEEPER_KNOCKED);
       }
       actor->flags = 0;
       if (st->mode != 0 && st->link >= 0) {
         TetherState *ts = g_pActorListBase[st->link].state;
 
-        if (ts->mode == 3 && actor->mode < 5) {
+        if (ts->mode == 3 && actor->mode < KEEPER_KNOCKED) {
           ts->link = actor - g_pActorListBase;
           ts->mode = st->mode;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, KEEPER_COMMAND);
         }
-        if (g_pActorListBase[st->link].mode == 9) {
+        if (g_pActorListBase[st->link].mode == TGUARD_SIGNAL) {
           switch (st->mode) {
           case 4:
-            if (actor->mode < 5 && g_pActorListBase[st->link].nextFrame >= 4) {
+            if (actor->mode < KEEPER_KNOCKED && g_pActorListBase[st->link].nextFrame >= 4) {
               st->timer = 0x15E;
               st->heading = g_pActorListBase[st->link].rotZ;
               SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
               MarkActorCommittedKill(actor);
-              ENTER_POSE(actor, 7);
+              ENTER_POSE(actor, KEEPER_STRUCK);
             }
             break;
           case 5:
             break;
           case 6:
-            if (actor->mode < 4 && ts->mode == st->mode) {
-              ENTER_POSE(actor, 4);
+            if (actor->mode < KEEPER_STEP_OUT && ts->mode == st->mode) {
+              ENTER_POSE(actor, KEEPER_STEP_OUT);
             }
             break;
           }
@@ -3070,21 +3070,21 @@ void Level15_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0: {
+      case KEEPER_IDLE: {
         int d = ApproxDist2D(&actor->posX, &SPY.posX);
 
         if (d < 0x1000) {
           TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         } else if (st->mode == 0 && st->link >= 0) {
           if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
-            ENTER_POSE(actor, 3);
+            ENTER_POSE(actor, KEEPER_WATCH_GUARD);
           }
           st->link = -1;
         } else if (st->mode == 5) {
           TetherState *ts = g_pActorListBase[st->link].state;
 
-          if (g_pActorListBase[st->link].mode < 7 && ts->mode == 5) {
-            ENTER_POSE(actor, 3);
+          if (g_pActorListBase[st->link].mode < TGUARD_BOUND && ts->mode == 5) {
+            ENTER_POSE(actor, KEEPER_WATCH_GUARD);
           }
         }
         if (st->count != 0) {
@@ -3092,36 +3092,36 @@ void Level15_UpdateActors(void) {
           break;
         }
         if (d < 0x898 && actor->posZ - actor->floorOffset - SPY.posZ < 0x190) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, KEEPER_REACT);
         }
         break;
       }
 
-      case 1:
+      case KEEPER_REACT:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (g_nActorAnimDone != 0) {
           st->count = 0x78;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, KEEPER_IDLE);
         }
         break;
 
-      case 2:
+      case KEEPER_COMMAND:
         TurnActorYawTowardAngle(actor,
                       ArcTan2(g_pActorListBase[st->link].posX - actor->posX,
                                     g_pActorListBase[st->link].posY - actor->posY, 0),
                       0x10, 0, 0);
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, KEEPER_IDLE);
         }
         break;
 
-      case 3:
+      case KEEPER_WATCH_GUARD:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, KEEPER_IDLE);
         }
         if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {
           st->link = -1;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, KEEPER_IDLE);
         }
         TurnActorYawTowardAngle(actor,
                       ArcTan2(g_pActorListBase[st->link].posX - actor->posX,
@@ -3129,11 +3129,11 @@ void Level15_UpdateActors(void) {
                       6, 0, 0);
         break;
 
-      case 4: {
+      case KEEPER_STEP_OUT: {
         int v;
 
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, KEEPER_WATCH_GUARD);
         }
         v = (actor->nextFrame << 7) + (actor->frameProgress << 1);
         if (v > 0x780) {
@@ -3152,7 +3152,7 @@ void Level15_UpdateActors(void) {
         break;
       }
 
-      case 5:
+      case KEEPER_KNOCKED:
         DriveActorTrackedMove(actor, &st->timer, st->heading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -3162,7 +3162,7 @@ void Level15_UpdateActors(void) {
         }
         break;
 
-      case 6:
+      case KEEPER_KNOCKED_ALT:
         DriveActorTrackedMove(actor, &st->timer, st->heading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -3172,7 +3172,7 @@ void Level15_UpdateActors(void) {
         }
         break;
 
-      case 7:
+      case KEEPER_STRUCK:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -3190,7 +3190,7 @@ void Level15_UpdateActors(void) {
     case ACTOR_TYPE_SENTINEL: {
       SentinelState *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode < 6) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode < SENTINEL_KNOCKED) {
         st->knockTimer = (g_nSpyroMotionSpeed >> 6) + 0x1C2;
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - ((SpyroObj *)&g_anSpyroWorldPos)->posX,
@@ -3217,13 +3217,13 @@ void Level15_UpdateActors(void) {
         actor->updateDist = 0x20;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        actor->mode = 6;
+        actor->mode = SENTINEL_KNOCKED;
         ANIM_RESET(actor, 6);
         continue;
       }
 
       switch (actor->mode) {
-      case 0:
+      case SENTINEL_IDLE:
         if (!(st->flags & 2)) {
           if (st->flags & 8) {
             if (ApproxDist2D(&actor->posX, &spy->posX) < st->range) {
@@ -3231,18 +3231,18 @@ void Level15_UpdateActors(void) {
 
               if (g_nSpyroAirborneFrames == 0 && ABS(dz) < 0x200) {
                 if (st->flags & 1) {
-                  ENTER_POSE(actor, 3);
+                  ENTER_POSE(actor, SENTINEL_TRACK);
                 }
-                ENTER_POSE(actor, 2);
+                ENTER_POSE(actor, SENTINEL_ALERT);
               }
               if (AbsAngleDelta8(actor->rotZ,
                                 ArcTan2(spy->posX - actor->posX,
                                               spy->posY - actor->posY, 0)) < 0x30 &&
                   dz < 0 && dz > -0x1000) {
                 if (st->flags & 1) {
-                  ENTER_POSE(actor, 3);
+                  ENTER_POSE(actor, SENTINEL_TRACK);
                 }
-                ENTER_POSE(actor, 2);
+                ENTER_POSE(actor, SENTINEL_ALERT);
               }
               FACE4(actor, st->heading, 4, 0x10);
               break;
@@ -3258,16 +3258,16 @@ void Level15_UpdateActors(void) {
               TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
               if (st->flags & 1) {
                 if (actor->group >= 0xFF) {
-                  ENTER_POSE(actor, 3);
+                  ENTER_POSE(actor, SENTINEL_TRACK);
                 }
-                SetActorGroupState(actor, 0x63);
+                SetActorGroupState(actor, SENTINEL_RELAY_TRACK);
                 break;
               }
               if (actor->group < 0xFF) {
-                SetActorGroupState(actor, 0x62);
+                SetActorGroupState(actor, SENTINEL_RELAY_ALERT);
                 break;
               }
-              ENTER_POSE(actor, 2);
+              ENTER_POSE(actor, SENTINEL_ALERT);
             }
           }
           break;
@@ -3275,53 +3275,53 @@ void Level15_UpdateActors(void) {
         if (st->flags & 1) {
           if (st->flags & 4) {
             if (st->link >= 0) {
-              ENTER_POSE(actor, 5);
+              ENTER_POSE(actor, SENTINEL_POWER_GUARD);
             }
             st->flags = (st->flags & ~6) | 1;
             break;
           }
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, SENTINEL_WALK);
         }
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, SENTINEL_ALERT);
 
-      case 1:
+      case SENTINEL_WALK:
         if (WalkActorAlongWaypoints(actor, st->path, 0x200, 0x80, 0x300, 8, 0x10, 0) ==
             0x100) {
           if (st->link >= 0) {
             if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
               st->heading = actor->rotZ;
               st->flags = (st->flags & ~2) | 5;
-              ENTER_POSE(actor, 5);
+              ENTER_POSE(actor, SENTINEL_POWER_GUARD);
             }
             st->link = ((ChainState *)g_pActorListBase[st->link].state)->link;
             break;
           }
           st->flags = (st->flags & ~6) | 1;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, SENTINEL_IDLE);
         }
         if (st->link >= 0) {
           if (st->path->cur >=
               ((ChainState *)g_pActorListBase[st->link].state)->stop) {
             if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
               st->heading = actor->rotZ;
-              ENTER_POSE(actor, 5);
+              ENTER_POSE(actor, SENTINEL_POWER_GUARD);
             }
             st->link = ((ChainState *)g_pActorListBase[st->link].state)->link;
           }
         }
         break;
 
-      case 2:
+      case SENTINEL_ALERT:
         if (g_nActorAnimDone == 0) {
           break;
         }
         st->flags |= 1;
         if (st->flags & 2) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, SENTINEL_WALK);
         }
         RESET_IDLE(actor);
 
-      case 3:
+      case SENTINEL_TRACK:
         TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
         if (g_nActorAnimDone == 0) {
           break;
@@ -3331,11 +3331,11 @@ void Level15_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= st->range) {
           RESET_IDLE(actor);
         }
-        actor->mode = 4;
+        actor->mode = SENTINEL_CAST;
         ANIM_RESET(actor, 4);
         continue;
 
-      case 4:
+      case SENTINEL_CAST:
         TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && actor->nextFrame >= 7 &&
             st->count < 3) {
@@ -3359,21 +3359,21 @@ void Level15_UpdateActors(void) {
             RESET_IDLE(actor);
           }
           if (st->flags & 2) {
-            ENTER_POSE(actor, 3);
+            ENTER_POSE(actor, SENTINEL_TRACK);
           }
           if (actor->group >= 0xFF) {
-            ENTER_POSE(actor, 3);
+            ENTER_POSE(actor, SENTINEL_TRACK);
           }
-          SetActorGroupState(actor, 0x63);
+          SetActorGroupState(actor, SENTINEL_RELAY_TRACK);
           RESET_IDLE(actor);
         }
         if (actor->nextFrame < 5 &&
             st->range < ApproxDist2D(&actor->posX, &SPY.posX)) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, SENTINEL_IDLE);
         }
         break;
 
-      case 5: {
+      case SENTINEL_POWER_GUARD: {
         int d = (ArcTan2(g_pActorListBase[st->link].posX - actor->posX,
                                g_pActorListBase[st->link].posY - actor->posY, 0) -
                  actor->rotZ) &
@@ -3418,7 +3418,7 @@ void Level15_UpdateActors(void) {
         RESET_IDLE(actor);
       }
 
-      case 6:
+      case SENTINEL_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockTimer, st->knockHeading,
                       &st->knockSpeed, 0xC, 0xC);
         if (g_nActorAnimDone != 0) {
@@ -3429,31 +3429,31 @@ void Level15_UpdateActors(void) {
         }
         break;
 
-      case 0x60:
+      case SENTINEL_RELAY_ALERT_WAIT:
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, SENTINEL_ALERT);
         }
         break;
 
-      case 0x61:
+      case SENTINEL_RELAY_TRACK_WAIT:
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, SENTINEL_TRACK);
         }
         break;
 
-      case 0x62:
+      case SENTINEL_RELAY_ALERT:
         if (actor->nextAnim == 0) {
           st->timer = GetRandomU32() & 0x1F;
-          actor->mode = 0x60;
+          actor->mode = SENTINEL_RELAY_ALERT_WAIT;
           continue;
         }
         actor->mode = actor->nextAnim;
         break;
 
-      case 0x63:
+      case SENTINEL_RELAY_TRACK:
         if (actor->nextAnim == 0) {
           st->timer = GetRandomU32() & 0x1F;
-          actor->mode = 0x61;
+          actor->mode = SENTINEL_RELAY_TRACK_WAIT;
           continue;
         }
         actor->mode = actor->nextAnim;

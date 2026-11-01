@@ -2121,7 +2121,7 @@ void Level31_UpdateActors(void) {
     case ACTOR_TYPE_MOUNT: {
       MountState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != MOUNT_KNOCKED) {
         ((int *)g_pActorListBase[st->rider].state)[4] = -1;
         st->rider = -1;
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
@@ -2135,26 +2135,26 @@ void Level31_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, MOUNT_KNOCKED);
       }
       if (st->rider >= 0) {
         unsigned char s = g_pActorListBase[st->rider].mode;
 
-        if (s == 3) {
+        if (s == FLOATBARREL_BLAST) {
           st->rider = -1;
           st->speed = 0;
           st->lift = 0xF0;
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorCommittedKill(actor);
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, MOUNT_KNOCKED);
         }
-        if (s == 4) {
+        if (s == FLOATBARREL_RUN) {
           st->rider = -1;
           st->speed = 0;
           st->lift = 0x78;
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorCommittedKill(actor);
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, MOUNT_KNOCKED);
         }
       }
       if (st->init == 0) {
@@ -2165,27 +2165,27 @@ void Level31_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case MOUNT_IDLE:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x800) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
           if (dz > 0 ? dz < 0x800
                      : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x800) {
-            ENTER_POSE(actor, 1);
+            ENTER_POSE(actor, MOUNT_REACT);
           }
         }
         break;
 
-      case 1:
+      case MOUNT_REACT:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, MOUNT_IDLE);
         }
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         break;
 
-      case 2:
+      case MOUNT_KNOCKED:
         DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -2205,7 +2205,7 @@ void Level31_UpdateActors(void) {
     case ACTOR_TYPE_HATCH_CARRIER: {
       HatchCarrierState *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 3) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != HCARRIER_KNOCKED) {
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, 0),
                                   SPY.bodyRotZ, 0x20, 0x40);
@@ -2213,42 +2213,42 @@ void Level31_UpdateActors(void) {
         st->speed = 0x78;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 3);
+        ENTER_POSE(actor, HCARRIER_KNOCKED);
       }
 
       switch (actor->mode) {
-      case 0:
+      case HCARRIER_WAIT:
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           unsigned char s = g_pActorListBase[st->hatch].mode;
 
-          if (s == 1 || s == 4) {
-            ENTER_POSE(actor, 1);
+          if (s == HATCH_WAIT || s == HATCH_SEALED_WAIT) {
+            ENTER_POSE(actor, HCARRIER_LIFT);
           }
         }
         break;
 
-      case 1:
+      case HCARRIER_LIFT:
         if (st->held == 0 && actor->nextFrame >= 4) {
           HatchState *hs = g_pActorListBase[st->hatch].state;
 
           if (hs->child != 0) {
             st->held = hs->child;
           } else {
-            int t = 0xCA;
+            int t = ACTOR_TYPE_FLOATING_BARREL;
 
             if (hs->kind == 1) {
-              t = 0xCF;
+              t = ACTOR_TYPE_FLOATING_MINE;
             }
             st->held = g_pfnLevelSpawnActor(t, actor);
           }
           g_pActorListBase[st->hatch].subMode = 1;
         }
         if (g_nActorAnimDone != 0) {
-          ANIM_QUEUE(actor, 2);
+          ANIM_QUEUE(actor, HCARRIER_THROW);
         }
         break;
 
-      case 2: {
+      case HCARRIER_THROW: {
         Actor *h = st->held;
 
         if (h != 0 && actor->nextFrame >= 6) {
@@ -2262,12 +2262,12 @@ void Level31_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           st->timer = 0x1E;
-          ANIM_QUEUE(actor, 0);
+          ANIM_QUEUE(actor, HCARRIER_WAIT);
         }
         break;
       }
 
-      case 3:
+      case HCARRIER_KNOCKED:
         DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -2279,7 +2279,7 @@ void Level31_UpdateActors(void) {
       }
       if (st->held != 0) {
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-        if (st->held->mode >= 2) {
+        if (st->held->mode >= FLOATBARREL_BURST) {
           st->held = 0;
           break;
         }
@@ -2294,9 +2294,9 @@ void Level31_UpdateActors(void) {
       break;
     }
 
-    /* Type 201: thrower. Waits for Spyro, walks up, winds up and throws the
-     * actor it carries in its hands (a charge makes it duck and try again);
-     * knocked away by a charge while exposed. */
+    /* Type 201: thrower. Holds a floating barrel or mine in both hands and
+     * swings it at Spyro (gloating when the swing lands); once the prop
+     * bursts or runs it fights bare-handed, and a flame knocks it away. */
     case ACTOR_TYPE_CARRIED_THROWER: {
       CarriedThrowerState *st = actor->state;
       int thrown = 0;
@@ -2310,18 +2310,18 @@ void Level31_UpdateActors(void) {
         st->speed = 0x78;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 0xC);
+        ENTER_POSE(actor, CTHROW_KNOCKED);
       }
       actor->flags = 0;
-      if (actor->mode < 0xB) {
+      if (actor->mode < CTHROW_DROP) {
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
       }
 
       switch (actor->mode) {
-      case 0:
+      case CTHROW_HELD_WAIT:
         if (st->timer != 0) {
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-            ENTER_POSE(actor, 1);
+            ENTER_POSE(actor, CTHROW_HELD_RISE);
           }
         } else if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
@@ -2333,19 +2333,19 @@ void Level31_UpdateActors(void) {
         }
         break;
 
-      case 1:
+      case CTHROW_HELD_RISE:
         if (g_nActorAnimDone != 0) {
-          ANIM_QUEUE(actor, 2);
+          ANIM_QUEUE(actor, CTHROW_HELD_READY);
         }
         break;
 
-      case 2:
+      case CTHROW_HELD_READY:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xE00) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
           if (dz > 0 ? dz < 0x800
                      : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x800) {
-            ENTER_POSE(actor, 3);
+            ENTER_POSE(actor, CTHROW_HELD_SWING);
           }
         }
         {
@@ -2355,58 +2355,58 @@ void Level31_UpdateActors(void) {
               ((dz = (actor->posZ - actor->floorOffset) - SPY.posZ) > 0
                    ? dz >= 0x1001
                    : SPY.posZ - (actor->posZ - actor->floorOffset) >= 0x1001)) {
-            ENTER_POSE(actor, 4);
+            ENTER_POSE(actor, CTHROW_HELD_LOWER);
           }
         }
         break;
 
-      case 3:
+      case CTHROW_HELD_SWING:
         if (g_nSpyroState == SPYRO_ST_HURT_PINNED || g_nSpyroState == SPYRO_ST_DEATH_PINNED) {
-          st->duck = 1;
+          st->scored = 1;
         }
-        if (st->duck == 0) {
+        if (st->scored == 0) {
           thrown = 1;
         }
         if (g_nActorAnimDone != 0) {
-          if (st->duck != 0) {
-            st->duck = 0;
-            ANIM_QUEUE(actor, 5);
+          if (st->scored != 0) {
+            st->scored = 0;
+            ANIM_QUEUE(actor, CTHROW_HELD_GLOAT);
           }
-          ANIM_QUEUE(actor, 0);
+          ANIM_QUEUE(actor, CTHROW_HELD_WAIT);
         }
         break;
 
-      case 4:
+      case CTHROW_HELD_LOWER:
         if (g_nActorAnimDone != 0) {
-          ANIM_QUEUE(actor, 0);
+          ANIM_QUEUE(actor, CTHROW_HELD_WAIT);
         }
         break;
 
-      case 5:
+      case CTHROW_HELD_GLOAT:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, CTHROW_HELD_WAIT);
         }
         break;
 
-      case 6:
+      case CTHROW_BARE_WAIT:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
           if (dz > 0 ? dz < 0xC00
                      : SPY.posZ - (actor->posZ - actor->floorOffset) < 0xC00) {
-            ENTER_POSE(actor, 7);
+            ENTER_POSE(actor, CTHROW_BARE_RISE);
           }
         }
         break;
 
-      case 7:
+      case CTHROW_BARE_RISE:
         if (g_nActorAnimDone != 0) {
           st->timer = 0;
-          ANIM_QUEUE(actor, 8);
+          ANIM_QUEUE(actor, CTHROW_BARE_READY);
         }
         break;
 
-      case 8:
+      case CTHROW_BARE_READY:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
@@ -2414,7 +2414,7 @@ void Level31_UpdateActors(void) {
                      : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x800) {
             if (st->timer != 0) {
               if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-                ENTER_POSE(actor, 9);
+                ENTER_POSE(actor, CTHROW_BARE_SWING);
               }
             } else {
               st->timer = 0x2D;
@@ -2429,37 +2429,37 @@ void Level31_UpdateActors(void) {
               ((dz = (actor->posZ - actor->floorOffset) - SPY.posZ) > 0
                    ? dz >= 0x1001
                    : SPY.posZ - (actor->posZ - actor->floorOffset) >= 0x1001)) {
-            ENTER_POSE(actor, 6);
+            ENTER_POSE(actor, CTHROW_BARE_WAIT);
           }
         }
         break;
 
-      case 9:
+      case CTHROW_BARE_SWING:
         if (g_nSpyroState == SPYRO_ST_HURT || g_nSpyroState == SPYRO_ST_DEATH) {
-          st->duck = 1;
+          st->scored = 1;
         }
         if (g_nActorAnimDone != 0) {
-          if (st->duck != 0) {
-            st->duck = 0;
-            ANIM_QUEUE(actor, 0xA);
+          if (st->scored != 0) {
+            st->scored = 0;
+            ANIM_QUEUE(actor, CTHROW_BARE_GLOAT);
           }
-          ANIM_QUEUE(actor, 6);
+          ANIM_QUEUE(actor, CTHROW_BARE_WAIT);
         }
         break;
 
-      case 10:
+      case CTHROW_BARE_GLOAT:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 6);
+          ENTER_POSE(actor, CTHROW_BARE_WAIT);
         }
         break;
 
-      case 11:
+      case CTHROW_DROP:
         if (g_nActorAnimDone != 0) {
-          ANIM_QUEUE(actor, 6);
+          ANIM_QUEUE(actor, CTHROW_BARE_WAIT);
         }
         break;
 
-      case 12:
+      case CTHROW_KNOCKED:
         DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -2471,10 +2471,10 @@ void Level31_UpdateActors(void) {
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
       if (st->held >= 0) {
-        if (g_pActorListBase[st->held].mode >= 2) {
+        if (g_pActorListBase[st->held].mode >= FLOATBARREL_BURST) {
           ((int *)g_pActorListBase[st->held].state)[4] = -1;
           st->held = -1;
-          actor->mode = 0xB;
+          actor->mode = CTHROW_DROP;
           ANIM_RESET(actor, 0xB);
           continue;
         }
@@ -2504,30 +2504,30 @@ void Level31_UpdateActors(void) {
 
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) &&
           (unsigned int)(actor->mode - 2) >= 2) {
-        actor->mode = 2;
-      } else if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode == 0) {
+        actor->mode = FLOATBARREL_BURST;
+      } else if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode == FLOATBARREL_FLOAT) {
         st->timer = 0x3C;
-        actor->mode = 1;
+        actor->mode = FLOATBARREL_FUSE;
         ANIM_RESET(actor, 1);
         continue;
       }
       actor->flags = 0;
 
       switch (actor->mode) {
-      case 0:
+      case FLOATBARREL_FLOAT:
         if (st->link >= 0 && g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {
           DespawnActorRecord(actor);
           continue;
         }
         break;
 
-      case 1:
+      case FLOATBARREL_FUSE:
         if (TickCountdownByFrameDelta((int *)st, 2) != 0) {
-          actor->mode = 2;
+          actor->mode = FLOATBARREL_BURST;
         }
         break;
 
-      case 2: {
+      case FLOATBARREL_BURST: {
         Actor *w;
 
         actor->posZ -= 0x1CD;
@@ -2615,18 +2615,18 @@ void Level31_UpdateActors(void) {
           }
         }
         w = st->rider;
-        if (w != 0 && w->type == ACTOR_TYPE_HATCH && w->mode == 2) {
+        if (w != 0 && w->type == ACTOR_TYPE_HATCH && w->mode == HATCH_OPEN) {
           w->subMode = 1;
         }
         st->timer = 0;
         actor->cullRadius = 0;
         actor->drawn = 0;
-        actor->mode = 3;
+        actor->mode = FLOATBARREL_BLAST;
         actor->subMode = 0;
         break;
       }
 
-      case 3:
+      case FLOATBARREL_BLAST:
         if (st->blast == 0) {
           if (RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 3) * 0x90, 0xC0086) !=
               0) {
@@ -2675,13 +2675,13 @@ void Level31_UpdateActors(void) {
         }
         if (MoveActorAlongAngle(actor, (actor->rotZ - 0x40) & 0xFF, 0x80, 0x200,
                           0x200, 1) != 0) {
-          actor->mode = 2;
+          actor->mode = FLOATBARREL_BURST;
         }
         if (actor->posZ - SPY.posZ < 0x80) {
           RaiseSpyroTriggerInRadius(&actor->posX, 0x200, 0x10);
         }
         if (TickCountdownByFrameDelta((int *)st, 2) != 0) {
-          actor->mode = 2;
+          actor->mode = FLOATBARREL_BURST;
         }
         if (g_nSpyroState == SPYRO_ST_HURT_PINNED || g_nSpyroState == SPYRO_ST_DEATH_PINNED) {
           actor->collision = 0;
@@ -2692,7 +2692,7 @@ void Level31_UpdateActors(void) {
       break;
     }
 
-    /* Type 207: floating mine. Drifts like the barrel; a flame sets it
+    /* Type 207: floating mine. Drifts like the barrel; a charge sets it
      * running at the nearest target in front of it, and it bursts on
      * whatever it hits. */
     case ACTOR_TYPE_FLOATING_MINE: {
@@ -2702,8 +2702,8 @@ void Level31_UpdateActors(void) {
 
       st->handle = SelectActorLodBand(actor, st->handle);
       if ((actor->flags & ACTOR_HIT_CHARGE) &&
-          (unsigned char)(actor->mode - 2) >= 2 && actor->mode != 4) {
-        if (st->link < 0 || g_pActorListBase[st->link].type != 0xC9) {
+          (unsigned char)(actor->mode - 2) >= 2 && actor->mode != FLOATBARREL_RUN) {
+        if (st->link < 0 || g_pActorListBase[st->link].type != ACTOR_TYPE_CARRIED_THROWER) {
           Actor *best;
           Actor *a;
 
@@ -2713,7 +2713,7 @@ void Level31_UpdateActors(void) {
           st->sink = 0x80;
           st->timer = 0;
           actor->subMode = 0;
-          actor->mode = 4;
+          actor->mode = FLOATBARREL_RUN;
           actor->posZ += 0xC8;
           PlayActorMeshVoice(actor, 1, 0);
           best = 0;
@@ -2765,20 +2765,20 @@ void Level31_UpdateActors(void) {
           }
         }
       } else if ((actor->flags & ACTOR_HIT_SUPER) &&
-                 (unsigned char)(actor->mode - 2) >= 2 && actor->mode != 4) {
-        actor->mode = 2;
+                 (unsigned char)(actor->mode - 2) >= 2 && actor->mode != FLOATBARREL_RUN) {
+        actor->mode = FLOATBARREL_BURST;
       }
       actor->flags = 0;
 
       switch (actor->mode) {
-      case 0:
+      case FLOATBARREL_FLOAT:
         if (st->link >= 0 && g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {
           DespawnActorRecord(actor);
           continue;
         }
         break;
 
-      case 2: {
+      case FLOATBARREL_BURST: {
         Actor *w;
 
         actor->posZ -= 0x1CD;
@@ -2865,18 +2865,18 @@ void Level31_UpdateActors(void) {
           }
         }
         w = st->rider;
-        if (w != 0 && w->type == ACTOR_TYPE_HATCH && w->mode == 2) {
+        if (w != 0 && w->type == ACTOR_TYPE_HATCH && w->mode == HATCH_OPEN) {
           w->subMode = 1;
         }
         st->timer = 0;
         actor->cullRadius = 0;
         actor->drawn = 0;
-        actor->mode = 3;
+        actor->mode = FLOATBARREL_BLAST;
         actor->subMode = 0;
         break;
       }
 
-      case 3:
+      case FLOATBARREL_BLAST:
         if (st->blast == 0) {
           if (RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 3) * 0x90, 0xC0086) !=
               0) {
@@ -2904,7 +2904,7 @@ void Level31_UpdateActors(void) {
           continue;
         }
         break;
-      case 4: {
+      case FLOATBARREL_RUN: {
         int r;
 
         actor->posZ += st->sink;
@@ -2915,7 +2915,7 @@ void Level31_UpdateActors(void) {
             if (r == 2 && (g_nGroundSurfaceType & 0x3F) == 0) {
               BARREL_BURST(actor, st);
             }
-            actor->mode = 2;
+            actor->mode = FLOATBARREL_BURST;
           }
         } else {
           r = MoveActorAlongAngle(actor, st->heading, 0xF0, 0, 0x200, 0);
@@ -2923,7 +2923,7 @@ void Level31_UpdateActors(void) {
             if (r == 2 && (g_nGroundSurfaceType & 0x3F) == 0) {
               BARREL_BURST(actor, st);
             }
-            actor->mode = 2;
+            actor->mode = FLOATBARREL_BURST;
           }
         }
         actor->rotX += 7;
@@ -2958,13 +2958,13 @@ void Level31_UpdateActors(void) {
         }
         if (MoveActorAlongAngle(actor, (actor->rotZ - 0x40) & 0xFF, 0x80, 0x200,
                           0x200, 1) != 0) {
-          actor->mode = 2;
+          actor->mode = FLOATBARREL_BURST;
         }
         if (actor->posZ - SPY.posZ < 0x80) {
           RaiseSpyroTriggerInRadius(&actor->posX, 0x200, 0x10);
         }
         if (TickCountdownByFrameDelta((int *)st, 2) != 0) {
-          actor->mode = 2;
+          actor->mode = FLOATBARREL_BURST;
         }
         if (g_nSpyroState == SPYRO_ST_HURT_PINNED || g_nSpyroState == SPYRO_ST_DEATH_PINNED) {
           actor->collision = 0;
@@ -2980,7 +2980,7 @@ void Level31_UpdateActors(void) {
     case ACTOR_TYPE_WANDERING_CRITTER_C: {
       RoamingCritterState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, 0),
                                   SPY.bodyRotZ, 0x20, 0x40);
@@ -2992,18 +2992,18 @@ void Level31_UpdateActors(void) {
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 1);
+        ENTER_POSE(actor, CRITTER_KNOCKED);
       }
 
       switch (actor->mode) {
-      case 0:
+      case CRITTER_WANDER:
         UpdateActorWander(actor, st);
         if (TickCountdownByFrameDelta(&st->wait, 4) != 0) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, CRITTER_REST);
         }
         break;
 
-      case 1:
+      case CRITTER_KNOCKED:
         if (st->speed > 0xF) {
           st->speed -= 0xF;
           MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x1F4, 5);
@@ -3016,10 +3016,10 @@ void Level31_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case CRITTER_REST:
         if (g_nActorAnimDone != 0) {
           st->wait = RandomIntInRange(0x5A, 0x12C);
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, CRITTER_WANDER);
         }
         break;
       }

@@ -3366,18 +3366,18 @@ void Level3_UpdateActors(void) {
     case ACTOR_TYPE_LINKED_FOLLOWER: {
       Follower *st = actor->state;
 
-      if (actor->mode != 3 && (actor->flags & ACTOR_HITS_SPYRO)) {
+      if (actor->mode != LFOLLOW_KNOCKED && (actor->flags & ACTOR_HITS_SPYRO)) {
         st->vz = 0xC8;
         st->spinX = RandomIntInRange(-10, 10);
         st->spinY = RandomIntInRange(-10, 10);
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 3);
+        ENTER_POSE(actor, LFOLLOW_KNOCKED);
       }
 
       switch (actor->mode) {
-      case 0: {
+      case LFOLLOW_IDLE: {
         int d = ApproxDist2D(&actor->posX, &SPY.posX);
 
         if (d < 0x2000) {
@@ -3385,23 +3385,23 @@ void Level3_UpdateActors(void) {
         }
         if (g_pActorListBase[st->link].mode < 5) {
           if (ApproxDist2D(&actor->posX, &g_pActorListBase[st->link].posX) < 0x1000) {
-            ENTER_POSE(actor, 5);
+            ENTER_POSE(actor, LFOLLOW_SET_OFF);
           }
           break;
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && d < 0x800) {
-          ENTER_POSE(actor, 8);
+          ENTER_POSE(actor, LFOLLOW_TAUNT);
         }
         break;
       }
 
-      case 1:
+      case LFOLLOW_FOLLOW:
         if (g_pActorListBase[st->link].mode >= 4) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, LFOLLOW_IDLE);
         }
         if (TickCountdownByFrameDelta(&st->hold, 2) != 0 &&
             ApproxDist2D(&actor->posX, st->target) < 0xDD) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, LFOLLOW_IDLE);
         }
         SteerActorAroundPoint(
             actor, &st->path->nodes[0].x, st->pathDist,
@@ -3411,7 +3411,7 @@ void Level3_UpdateActors(void) {
             0, st->vz, 0x1E, 0x80, 0xFF, 0xFF, 0, 0, 4);
         break;
 
-      case 3:
+      case LFOLLOW_KNOCKED:
         if (actor->anim == 3 && g_nActorAnimDone != 0) {
           ANIM_GO(actor, 4);
         }
@@ -3427,20 +3427,20 @@ void Level3_UpdateActors(void) {
         st->vz -= 0xF;
         break;
 
-      case 5:
+      case LFOLLOW_SET_OFF:
         TurnActorYawTowardAngle(actor, g_pActorListBase[st->link].rotZ, 0x1E, 0, 0);
         if (g_nActorAnimDone != 0) {
           st->vz = 0xA0;
           st->hold = 0x3C;
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, LFOLLOW_FOLLOW);
         }
         break;
 
-      case 8:
+      case LFOLLOW_TAUNT:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (g_nActorAnimDone != 0) {
           st->timer = 0x96;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, LFOLLOW_IDLE);
         }
         break;
       }
@@ -3456,7 +3456,7 @@ void Level3_UpdateActors(void) {
 
       SnapActorToGround(actor);
       EncodeCachedVecToActorDirCode(actor);
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != GRAZER_KNOCKED) {
         for (i = 0; i < 6; i++) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
@@ -3469,14 +3469,14 @@ void Level3_UpdateActors(void) {
         st->speed = 0xFA;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, GRAZER_KNOCKED);
       }
       actor->flags = 0;
 
       switch (actor->mode) {
-      case 0:
+      case GRAZER_WANDER:
         if (TickCountdownByFrameDelta(&st->wait, 4) != 0) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, GRAZER_PAUSE);
         }
         UpdateActorWander(actor, st);
         if (TickCountdownByFrameDelta(&st->voice, 4) != 0) {
@@ -3485,7 +3485,7 @@ void Level3_UpdateActors(void) {
         }
         break;
 
-      case 1:
+      case GRAZER_PAUSE:
         if (TickCountdownByFrameDelta(&st->voice, 4) != 0) {
           st->voice = (GetRandomU32() & 0x1F) + 0x50;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
@@ -3493,11 +3493,11 @@ void Level3_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           st->wait = RandomIntInRange(0x78, 0xF0);
           st->voice = 0;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, GRAZER_WANDER);
         }
         break;
 
-      case 2:
+      case GRAZER_KNOCKED:
         DriveActorTrackedMove(actor, &st->speed, st->knock, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

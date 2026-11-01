@@ -555,21 +555,21 @@ void Level29_UpdateActors(void) {
     case ACTOR_TYPE_RIDING_FLIGHT_TARGET: {
       RiderState *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 1) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != FTARGET_STRUCK) {
         if (actor->flags & ACTOR_HIT_SUPER) {
           st->timer = 0xA;
         } else {
           st->timer = 0;
         }
-        actor->mode = 1;
+        actor->mode = FTARGET_STRUCK;
       }
       GetActorAttachPoint(&g_pActorListBase[st->host], 0, &actor->posX);
       *(Rot3 *)&actor->rotX = *(Rot3 *)&g_pActorListBase[st->host].rotX;
       RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
       switch (actor->mode) {
-      case 0:
+      case FTARGET_ACTIVE:
         break;
-      case 1:
+      case FTARGET_STRUCK:
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           Actor *reward;
           int i;
@@ -1248,7 +1248,7 @@ void Level29_UpdateActors(void) {
     case ACTOR_TYPE_BOBBING_FLIGHT_TARGET: {
       BobberState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode == 0) {
+      if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode == FTARGET_ACTIVE) {
         Actor *reward;
 
         TallyFlightTarget(st->tally);
@@ -1263,13 +1263,13 @@ void Level29_UpdateActors(void) {
             SPY.bodyRotZ, 0x28, 0x40);
         PlayActorMeshVoice(actor, 0, 0);
         g_pfnLevelSpawnActor(ACTOR_TYPE_BOBBER_SPINOFF, actor);
-        actor->mode = 1;
+        actor->mode = FTARGET_STRUCK;
         ANIM_RESET(actor, 1);
         break;
       }
 
       switch (actor->mode) {
-      case 0:
+      case FTARGET_ACTIVE:
         PlayActorMeshVoice(actor, 0, &actor->voiceRow);
         st->phase += g_nFrameStep;
         if (st->phase >= 0x1E0) {
@@ -1278,9 +1278,9 @@ void Level29_UpdateActors(void) {
         actor->posZ =
             st->baseZ + (g_anCosineLut[(st->phase << 8) / 480] >> 1) + 0x800;
         break;
-      case 1:
+      case FTARGET_STRUCK:
         if (g_nActorAnimDone != 0) {
-          actor->mode = 2;
+          actor->mode = FTARGET_SPENT;
           if (actor->nextAnim != 2) {
             actor->frameProgress = 0x10;
             actor->frameRate = 0x10;
@@ -1291,7 +1291,7 @@ void Level29_UpdateActors(void) {
           break;
         }
         /* fall through */
-      case 2:
+      case FTARGET_SPENT:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {
@@ -2042,9 +2042,9 @@ void Level29_UpdateActors(void) {
       int svZ[3];
       int i;
 
-      if ((actor->flags & ACTOR_HIT_SUPER) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HIT_SUPER) && actor->mode != FTARGET_STRUCK) {
         st->timer = 0x14;
-        actor->mode = 1;
+        actor->mode = FTARGET_STRUCK;
       }
       if (g_nSpyroSubstate < SPYRO_SUB_SCRIPTED) {
         TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, 4);
@@ -2055,9 +2055,9 @@ void Level29_UpdateActors(void) {
         }
       }
       switch (actor->mode) {
-      case 0:
+      case FTARGET_ACTIVE:
         break;
-      case 1:
+      case FTARGET_STRUCK:
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           for (i = 0; i < 3; i++) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
@@ -2078,17 +2078,17 @@ void Level29_UpdateActors(void) {
       SmokerState *st = actor->state;
       int i;
 
-      if ((actor->flags & ACTOR_HIT_SUPER) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HIT_SUPER) && actor->mode != FTARGET_STRUCK) {
         st->timer = 0xF;
-        actor->mode = 1;
+        actor->mode = FTARGET_STRUCK;
       }
       if (g_nSpyroSubstate < SPYRO_SUB_SCRIPTED) {
         TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, 4);
       }
       switch (actor->mode) {
-      case 0:
+      case FTARGET_ACTIVE:
         break;
-      case 1:
+      case FTARGET_STRUCK:
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           for (i = 0; i < 3; i++) {

@@ -139,7 +139,7 @@ typedef struct FireballCannonState {
 typedef struct SoldierState {
   char pad00[0x20];
   unsigned char *path; /* 0x20 */
-  int kind;            /* 0x24 */
+  int kind;            /* 0x24 SoldierKind */
   int timer;           /* 0x28 */
   int timer2;          /* 0x2C */
   int home[4];         /* 0x30 */
@@ -2584,7 +2584,7 @@ void Level6_UpdateActors(void) {
     case ACTOR_TYPE_WANDERING_CRITTER_B: {
       CritterKnockState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         actor->flags = 0;
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
@@ -2598,17 +2598,17 @@ void Level6_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        actor->mode = 1;
+        actor->mode = CRITTER_KNOCKED;
         ANIM_RESET(actor, 1);
         continue;
       }
 
       switch (actor->mode) {
-      case 0:
+      case CRITTER_WANDER:
         UpdateActorWander(actor, st);
         break;
 
-      case 1:
+      case CRITTER_KNOCKED:
         if (st->speed >= 0x10) {
           st->speed -= 0xF;
           MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x2BC, 5);
@@ -2761,14 +2761,14 @@ void Level6_UpdateActors(void) {
                             0),
               g_bSpyroPersistentEulerZ, 0x20, 0x40);
           st->knock = 0xFA;
-          if ((unsigned)(st->kind - 2) < 2 || st->kind == 8) {
+          if ((unsigned)(st->kind - 2) < 2 || st->kind == SOLDIERKIND_GUNNER) {
             Actor *a = &g_pActorListBase[st->link];
 
             if (a->nextAnim != 0) {
               ANIM_ADVANCE(a, 0);
             }
           }
-          if (actor->mode < SOLDIER_TO_POST && (st->kind == 4 || st->kind == 10)) {
+          if (actor->mode < SOLDIER_TO_POST && (st->kind == SOLDIERKIND_BOUNDED_PATROL || st->kind == SOLDIERKIND_BOUNDED_SENTRY)) {
             ReplaceActorGroupState(actor, SOLDIER_TO_POST, SOLDIER_IDLE);
             ReplaceActorGroupState(actor, SOLDIER_TO_POST, SOLDIER_SHOVE);
             ReplaceActorGroupState(actor, SOLDIER_TO_POST, SOLDIER_ALERT);
@@ -2801,7 +2801,7 @@ void Level6_UpdateActors(void) {
       switch (actor->mode) {
       case SOLDIER_IDLE:
         switch (st->kind) {
-        case 0:
+        case SOLDIERKIND_PATROL:
           if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
             TrackEntityYawTowardSpyro(actor, 4, 0, 0);
           } else {
@@ -2817,17 +2817,17 @@ void Level6_UpdateActors(void) {
             continue;
           }
           break;
-        case 1:
-        case 2:
+        case SOLDIERKIND_SENTRY:
+        case SOLDIERKIND_CANNON_RUNNER:
           if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2800) {
             SetActorGroupStateExcept(actor, SOLDIER_ALERT, SOLDIER_KNOCKED);
           }
           break;
-        case 3:
+        case SOLDIERKIND_DUELIST:
           ANIM_GO(actor, 8);
           actor->mode = SOLDIER_DUEL;
           continue;
-        case 4:
+        case SOLDIERKIND_BOUNDED_PATROL:
           if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
             TrackEntityYawTowardSpyro(actor, 4, 0, 0);
           } else {
@@ -2842,8 +2842,8 @@ void Level6_UpdateActors(void) {
             ReplaceActorGroupState(actor, SOLDIER_ALERT, SOLDIER_IDLE);
           }
           break;
-        case 5:
-        case 6:
+        case SOLDIERKIND_WANDER_TO_POST:
+        case SOLDIERKIND_WANDER_TO_CANNON:
           ANIM_GO(actor, 1);
           SnapActorToGround(actor);
           UpdateActorWander(actor, st);
@@ -2851,21 +2851,21 @@ void Level6_UpdateActors(void) {
             ReplaceActorGroupState(actor, SOLDIER_TO_POST, SOLDIER_IDLE);
           }
           break;
-        case 8:
+        case SOLDIERKIND_GUNNER:
           actor->mode = SOLDIER_GUNNER;
           continue;
-        case 9:
+        case SOLDIERKIND_SHORT_LEASH:
           TrackEntityYawTowardSpyro(actor, 4, 0, 0);
           if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1800) {
             ReplaceActorGroupState(actor, SOLDIER_CHASE, SOLDIER_IDLE);
           }
           break;
-        case 10:
+        case SOLDIERKIND_BOUNDED_SENTRY:
           if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
             ReplaceActorGroupState(actor, SOLDIER_ALERT, SOLDIER_IDLE);
           }
           break;
-        case 11:
+        case SOLDIERKIND_SHOVER:
           TrackEntityYawTowardSpyro(actor, 4, 0, 0);
           if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x44C) {
             ENTER_POSE(actor, SOLDIER_SHOVE);
@@ -2876,9 +2876,9 @@ void Level6_UpdateActors(void) {
 
       case SOLDIER_CHASE:
         switch (st->kind) {
-        case 0:
-        case 1:
-        case 9: {
+        case SOLDIERKIND_PATROL:
+        case SOLDIERKIND_SENTRY:
+        case SOLDIERKIND_SHORT_LEASH: {
           int d = ApproxDist2D(&actor->posX, &g_anSpyroWorldPos);
 
           ANIM_GO(actor, 1);
@@ -2891,7 +2891,7 @@ void Level6_UpdateActors(void) {
             if (d < 0x44C) {
               ENTER_POSE(actor, SOLDIER_SHOVE);
             }
-            if (st->kind == 9) {
+            if (st->kind == SOLDIERKIND_SHORT_LEASH) {
               if (ApproxDist2D(&actor->posX, st->home) > 0x1000) {
                 actor->mode = SOLDIER_GO_HOME;
                 continue;
@@ -2903,7 +2903,7 @@ void Level6_UpdateActors(void) {
           }
           break;
         }
-        case 2: {
+        case SOLDIERKIND_CANNON_RUNNER: {
           Actor *a = &g_pActorListBase[st->link];
           int h = ArcTan2(a->posX - actor->posX, a->posY - actor->posY, 0);
           int d = ApproxDist2D(&actor->posX, &a->posX);
@@ -2925,8 +2925,8 @@ void Level6_UpdateActors(void) {
           }
           break;
         }
-        case 4:
-        case 10: {
+        case SOLDIERKIND_BOUNDED_PATROL:
+        case SOLDIERKIND_BOUNDED_SENTRY: {
           int d = ApproxDist2D(&actor->posX, &g_anSpyroWorldPos);
 
           if (TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
@@ -2980,11 +2980,11 @@ void Level6_UpdateActors(void) {
         break;
 
       case SOLDIER_ALERT:
-        if (st->kind == 2) {
+        if (st->kind == SOLDIERKIND_CANNON_RUNNER) {
           actor->frameRate = 0x30;
         }
         if (TrackEntityYawTowardSpyro(actor, 6, 0xF, 1) != 0) {
-          if (st->kind == 10) {
+          if (st->kind == SOLDIERKIND_BOUNDED_SENTRY) {
             ANIM_GO(actor, 0xF);
           } else {
             ANIM_GO(actor, 4);
@@ -3157,8 +3157,8 @@ void Level6_UpdateActors(void) {
           ANIM_RESET(actor, 0xB);
           continue;
         }
-        if (st->kind == 6 && actor->type == ACTOR_TYPE_SOLDIER) {
-          st->kind = 2;
+        if (st->kind == SOLDIERKIND_WANDER_TO_CANNON && actor->type == ACTOR_TYPE_SOLDIER) {
+          st->kind = SOLDIERKIND_CANNON_RUNNER;
           actor->mode = SOLDIER_CHASE;
           continue;
         }
@@ -4394,9 +4394,9 @@ void Level6_UpdateActors(void) {
     case ACTOR_TYPE_BALLOON: {
       int *base = actor->state;
 
-      if (actor->mode == 0) {
+      if (actor->mode == BALLOON_INIT) {
         *base = actor->posZ;
-        actor->mode = 1;
+        actor->mode = BALLOON_BOB;
         break;
       }
 

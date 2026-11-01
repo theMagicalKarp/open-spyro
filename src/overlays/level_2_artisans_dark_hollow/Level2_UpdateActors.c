@@ -1995,19 +1995,19 @@ void Level2_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       EBB_BREAK();
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 1 &&
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != PCHARGER_KNOCKED &&
           AbsAngleDelta8(actor->rotZ,
                         ArcTan2(spy->posX - actor->posX,
                                       spy->posY - actor->posY, 0)) >= 0x47) {
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 1);
+        ENTER_POSE(actor, PCHARGER_KNOCKED);
       }
 
       actor->flags = 0;
       switch (actor->mode) {
-      case 0: {
+      case PCHARGER_PATROL: {
         int turned;
         int ang = ArcTan2(
             st->path->pts[st->path->sel].x - actor->posX,
@@ -2055,7 +2055,7 @@ void Level2_UpdateActors(void) {
                                           SPY.posY - actor->posY, 0)) < 0x40 &&
               (st->mode == 0 || RandomIntInRange(0, 2) == 0)) {
             st->mode = 2;
-            ENTER_POSE(actor, 6);
+            ENTER_POSE(actor, PCHARGER_TAUNT);
           }
           st->mode = 1;
         }
@@ -2082,13 +2082,13 @@ void Level2_UpdateActors(void) {
                                 st->path->pts[st->path->sel].y - actor->posY,
                                 0)) < 0x20) {
             actor->subMode = 0;
-            ENTER_POSE(actor, 2);
+            ENTER_POSE(actor, PCHARGER_CHARGE);
           }
         }
         break;
       }
 
-      case 1:
+      case PCHARGER_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x48);
@@ -2097,7 +2097,7 @@ void Level2_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case PCHARGER_CHARGE:
         st->flag = 1;
         if (actor->subMode == 0) {
           int dist = ApproxDist2D(&actor->posX, &spy->posX);
@@ -2108,7 +2108,7 @@ void Level2_UpdateActors(void) {
           }
           if (MoveActorAlongHeading(actor, 0x78, 0, 0x1F4, 0x15)) {
             st->timer = 0x78;
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, PCHARGER_PATROL);
           }
           if (dist < 0x5DC) {
             actor->subMode++;
@@ -2124,7 +2124,7 @@ void Level2_UpdateActors(void) {
                                                  SPY.posY - actor->posY, 0)) <
                     0x20) {
               st->timer = 0x78;
-              ENTER_POSE(actor, 0);
+              ENTER_POSE(actor, PCHARGER_PATROL);
             }
           }
         } else {
@@ -2146,16 +2146,16 @@ void Level2_UpdateActors(void) {
             }
           }
           if (g_nActorAnimDone != 0) {
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, PCHARGER_PATROL);
           }
         }
         break;
 
-      case 6:
-      case 7:
+      case PCHARGER_TAUNT:
+      case PCHARGER_TAUNT_ALT:
         TrackEntityYawTowardSpyro(actor, 5, 0, 0);
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, PCHARGER_PATROL);
         }
         break;
       }
@@ -2960,7 +2960,7 @@ void Level2_UpdateActors(void) {
     case ACTOR_TYPE_HOPPING_CRITTER: {
       HopState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != GRAZER_KNOCKED) {
         EBB_BREAK();
         actor->flags = 0;
         st->heading = StepAndLerpAngle8(
@@ -2973,27 +2973,27 @@ void Level2_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, GRAZER_KNOCKED);
       }
 
       SnapActorToGround(actor);
       EncodeCachedVecToActorDirCode(actor);
 
       switch (actor->mode) {
-      case 0:
+      case GRAZER_WANDER:
         if (TickCountdownByFrameDelta(&st->timer, 4)) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, GRAZER_PAUSE);
         }
         UpdateActorWander(actor, st);
         break;
-      case 1:
+      case GRAZER_PAUSE:
         SnapActorToGround(actor);
         if (g_nActorAnimDone != 0) {
           st->timer = RandomIntInRange(0x78, 0xF0);
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, GRAZER_WANDER);
         }
         break;
-      case 2:
+      case GRAZER_KNOCKED:
         DriveActorTrackedMove(actor, &st->time, st->heading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

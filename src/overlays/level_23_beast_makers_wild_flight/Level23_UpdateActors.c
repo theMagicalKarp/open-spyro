@@ -1194,7 +1194,7 @@ void Level23_UpdateActors(void) {
     case ACTOR_TYPE_CYCLING_FLIGHT_TARGET: {
       CyclerState *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode == 0) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode == FTARGET_ACTIVE) {
         Actor *reward;
         int i;
 
@@ -1217,13 +1217,13 @@ void Level23_UpdateActors(void) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_TUMBLE_SHARD + 2, actor);
         }
         PlayActorMeshVoice(actor, 0, 0);
-        actor->mode = 1;
+        actor->mode = FTARGET_STRUCK;
         ANIM_RESET(actor, 1);
         break;
       }
 
       switch (actor->mode) {
-      case 0: {
+      case FTARGET_ACTIVE: {
         int d;
 
         if (st->legStep == 0xFF) {
@@ -1272,9 +1272,9 @@ void Level23_UpdateActors(void) {
         actor->rotX = st->roll >> 4;
         break;
       }
-      case 1:
+      case FTARGET_STRUCK:
         if (g_nActorAnimDone != 0) {
-          actor->mode = 2;
+          actor->mode = FTARGET_SPENT;
           if (actor->nextAnim != 2) {
             actor->frameProgress = 0x10;
             actor->frameRate = 0x10;
@@ -1285,7 +1285,7 @@ void Level23_UpdateActors(void) {
           continue;
         }
         /* fall through */
-      case 2:
+      case FTARGET_SPENT:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0xC) == 3) {

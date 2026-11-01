@@ -1604,8 +1604,8 @@ void Level32_UpdateActors(void) {
         dist = VectorLength(o100, VEC_LEN_XY);
       }
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4 &&
-          actor->mode != 0x14) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != BURSTGUN_KNOCKED &&
+          actor->mode != BURSTGUN_SINK) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         st->knockSpeed = 0xDC;
         if (actor->flags & ACTOR_HIT_CHARGE) {
@@ -1619,7 +1619,7 @@ void Level32_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         EBB_BREAK();
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 4);
+        ENTER_POSE(actor, BURSTGUN_KNOCKED);
       }
 
       if (st->initialised == 0) {
@@ -1628,16 +1628,16 @@ void Level32_UpdateActors(void) {
         if (st->flags == 1 && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
                              IsPointInRotatedBox(&spy->posX, st->box2) != 0)) {
           st->flags &= ~1;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, BURSTGUN_WALK);
         }
       }
 
       switch (actor->mode) {
-      case 0:
+      case BURSTGUN_WATCH:
         if (st->flags == 1 &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
           st->flags &= ~1;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, BURSTGUN_WALK);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (TickCountdownByFrameDelta(&st->shotTimer, 4) != 0 && dist < 0x1388 &&
@@ -1649,23 +1649,23 @@ void Level32_UpdateActors(void) {
             TickCountdownByFrameDelta(&st->countdown, 4) != 0) {
           st->shotGap = 0;
           st->shotTimer = st->shotReload;
-          ENTER_POSE_B(actor, 3);
+          ENTER_POSE_B(actor, BURSTGUN_FIRE);
         }
         ANIM_GO(actor, 0);
         continue;
 
-      case 2:
+      case BURSTGUN_WALK:
         if (dist < 0x9C4) {
-          actor->mode = 0;
+          actor->mode = BURSTGUN_WATCH;
           continue;
         }
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, 5) ==
             0x100) {
-          actor->mode = 0xA;
+          actor->mode = BURSTGUN_TURN;
         }
         continue;
 
-      case 3:
+      case BURSTGUN_FIRE:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         st->shotGap += g_nFrameStep;
         if ((unsigned)(actor->nextFrame - 0x10) < 0xA && st->shotGap >= 4) {
@@ -1689,11 +1689,11 @@ void Level32_UpdateActors(void) {
           st->shotGap = 0;
         }
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, BURSTGUN_WATCH);
         }
         continue;
 
-      case 4:
+      case BURSTGUN_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, sixteen);
         if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
@@ -1705,7 +1705,7 @@ void Level32_UpdateActors(void) {
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
             o->otBias = 0xFE;
             st->sinkTimer = 0xA;
-            actor->mode = 0x14;
+            actor->mode = BURSTGUN_SINK;
             continue;
           }
         }
@@ -1716,13 +1716,13 @@ void Level32_UpdateActors(void) {
         }
         continue;
 
-      case 10:
+      case BURSTGUN_TURN:
         if (TrackEntityYawTowardSpyro(actor, 6, 0, 0) != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, BURSTGUN_WATCH);
         }
         continue;
 
-      case 20:
+      case BURSTGUN_SINK:
         if (TickCountdownByFrameDelta(&st->sinkTimer, 4) != 0) {
           DespawnActorRecord(actor);
           continue;
@@ -1910,8 +1910,8 @@ void Level32_UpdateActors(void) {
         dist = VectorLength(o130, VEC_LEN_XY);
       }
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 4 &&
-          actor->mode != 0x14) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != LOBGUN_KNOCKED &&
+          actor->mode != LOBGUN_SINK) {
         Actor *c;
 
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
@@ -1929,7 +1929,7 @@ void Level32_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 4);
+        ENTER_POSE(actor, LOBGUN_KNOCKED);
       }
 
       if (st->initialised == 0) {
@@ -1938,21 +1938,21 @@ void Level32_UpdateActors(void) {
         if (st->flags == 1 && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
                              IsPointInRotatedBox(&spy->posX, st->box2) != 0)) {
           st->flags &= ~1;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, LOBGUN_WALK);
         }
       }
 
       switch (actor->mode) {
-      case 0:
+      case LOBGUN_WATCH:
         if (st->flags == 1 &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
           st->flags &= ~1;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, LOBGUN_WALK);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && dist < 0x9C4 &&
             ABS2(SPY_DZ(actor)) < 0x258) {
-          ENTER_POSE_B(actor, 3);
+          ENTER_POSE_B(actor, LOBGUN_SWIPE);
         }
         if (st->flags != 1 && dist > 0x9C4 && TickCountdownByFrameDelta(&st->throwTimer, 4) != 0) {
           if (st->aimRange < dist) {
@@ -1961,7 +1961,7 @@ void Level32_UpdateActors(void) {
             p[1] = (p[1] + p[0] + 1) % p[0];
           }
           st->heldLob = 0;
-          ENTER_POSE(actor, 5);
+          ENTER_POSE(actor, LOBGUN_LOB);
         }
         if (g_nActorAnimDone != 0) {
           if (GetRandomU32() & 1) {
@@ -1972,23 +1972,23 @@ void Level32_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case LOBGUN_WALK:
         if (PivotActorAlongPath(actor, st->path, 0x100, 0xAA, 0, 8, 0x28, 0xFF, 5) ==
             0x100) {
-          actor->mode = 0xA;
+          actor->mode = LOBGUN_TURN;
           continue;
         }
         break;
 
-      case 3:
+      case LOBGUN_SWIPE:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (g_nActorAnimDone != 0) {
           st->timer = 0x64;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, LOBGUN_WATCH);
         }
         break;
 
-      case 4:
+      case LOBGUN_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0x16);
         if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
@@ -2000,7 +2000,7 @@ void Level32_UpdateActors(void) {
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
             o->otBias = 0xFE;
             st->timer = 0xA;
-            actor->mode = 0x14;
+            actor->mode = LOBGUN_SINK;
             continue;
           }
         }
@@ -2012,7 +2012,7 @@ void Level32_UpdateActors(void) {
         }
         break;
 
-      case 5: {
+      case LOBGUN_LOB: {
         unsigned char *p = st->targetPath;
 
         if (st->heldLob == 0 && actor->nextFrame >= 5) {
@@ -2052,18 +2052,18 @@ void Level32_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           st->throwTimer = 0x3C;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, LOBGUN_WATCH);
         }
         break;
       }
 
-      case 10:
+      case LOBGUN_TURN:
         if (TrackEntityYawTowardSpyro(actor, 6, 0, 0) != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, LOBGUN_WATCH);
         }
         break;
 
-      case 20:
+      case LOBGUN_SINK:
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           DespawnActorRecord(actor);
           continue;
@@ -2424,7 +2424,7 @@ void Level32_UpdateActors(void) {
     case ACTOR_TYPE_WANDERING_CRITTER_C: {
       WandererState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, 0),
                                 spy->bodyRotZ, 0x20, 0x40);
@@ -2436,18 +2436,18 @@ void Level32_UpdateActors(void) {
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 1);
+        ENTER_POSE(actor, CRITTER_KNOCKED);
       }
 
       switch (actor->mode) {
-      case 0:
+      case CRITTER_WANDER:
         UpdateActorWander(actor, st);
         if (TickCountdownByFrameDelta(&st->idleTimer, 4) != 0) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, CRITTER_REST);
         }
         break;
 
-      case 1:
+      case CRITTER_KNOCKED:
         if (st->knockSpeed >= 0x10) {
           st->knockSpeed -= 0xF;
           MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x1F4, 5);
@@ -2460,10 +2460,10 @@ void Level32_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case CRITTER_REST:
         if (g_nActorAnimDone != 0) {
           st->idleTimer = RandomIntInRange(0x5A, 0x12C);
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, CRITTER_WANDER);
         }
         break;
       }

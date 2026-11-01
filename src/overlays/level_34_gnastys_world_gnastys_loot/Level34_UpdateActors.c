@@ -1596,13 +1596,13 @@ void Level34_UpdateActors(void) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 5, actor);
         }
         PlayActorMeshVoice(actor, 0, 0);
-        actor->mode = 1;
+        actor->mode = LTHIEF_KNOCKED;
         ANIM_RESET(actor, 1);
         continue;
       }
 
       switch (actor->mode) {
-      case 0:
+      case LTHIEF_RUN:
         if (st->onRing != 0) {
           speed = 0x190 - st->laps * 10;
           switch (st->leg) {
@@ -1852,7 +1852,7 @@ void Level34_UpdateActors(void) {
         }
         break;
 
-      case 1:
+      case LTHIEF_KNOCKED:
         if (DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->knockSpin,
                           0xC, 0xC) == 3) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -1872,7 +1872,7 @@ void Level34_UpdateActors(void) {
       int *pos;
       int turn;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != 2) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != LCRITTER_KNOCKED) {
         st->knockSpeed = 0x96;
         if (actor->flags & ACTOR_HIT_CHARGE) {
           st->knockSpeed = 0xE1;
@@ -1886,7 +1886,7 @@ void Level34_UpdateActors(void) {
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorCommittedKill(actor);
         }
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, LCRITTER_KNOCKED);
       }
       if (TickCountdownByFrameDelta(&st->voiceTimer, 4) && actor->mode == one) {
         int v;
@@ -1916,15 +1916,15 @@ void Level34_UpdateActors(void) {
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
 
       switch (actor->mode) {
-      case 0:
+      case LCRITTER_WATCH:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
           actor->subMode = 0;
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, LCRITTER_FLEE);
         }
         break;
 
-      case 1:
+      case LCRITTER_FLEE:
         if (st->hasHome != 0) {
           pos = &actor->posX;
           speed = 0x154;
@@ -1970,7 +1970,7 @@ void Level34_UpdateActors(void) {
               st->stuck = 0;
             }
             if (turn < 0x1E) {
-              ENTER_POSE(actor, 0);
+              ENTER_POSE(actor, LCRITTER_WATCH);
             }
             if (st->stuck >= 0x1E &&
                 AbsAngleDelta8(home, ArcTan2(SPY.posX - actor->posX,
@@ -2051,10 +2051,10 @@ void Level34_UpdateActors(void) {
               r &= ~0x100;
               if (st->path->dir == -1) {
                 if (r == one) {
-                  ENTER_POSE(actor, 0);
+                  ENTER_POSE(actor, LCRITTER_WATCH);
                 }
               } else if (r == st->path->count - 1) {
-                ENTER_POSE(actor, 0);
+                ENTER_POSE(actor, LCRITTER_WATCH);
               }
             }
             if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
@@ -2071,10 +2071,10 @@ void Level34_UpdateActors(void) {
               r &= ~0x100;
               if (st->path->dir == -1) {
                 if (r == one) {
-                  ENTER_POSE(actor, 0);
+                  ENTER_POSE(actor, LCRITTER_WATCH);
                 }
               } else if (r == st->path->count - 1) {
-                ENTER_POSE(actor, 0);
+                ENTER_POSE(actor, LCRITTER_WATCH);
               }
             }
             if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
@@ -2093,7 +2093,7 @@ void Level34_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case LCRITTER_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockSpin,
                       0xC, 0x10);
         if (g_nActorAnimDone != 0) {

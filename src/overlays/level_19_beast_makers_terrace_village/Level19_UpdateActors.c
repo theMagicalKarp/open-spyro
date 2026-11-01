@@ -758,7 +758,7 @@ void Level19_UpdateActors(void) {
         d = VectorLength(v, VEC_LEN_XY);
       }
       TickActorFlameGlow(actor);
-      if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER) && actor->mode != 3) {
+      if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER) && actor->mode != BGUARD_KNOCKED) {
         int i;
 
         st->turn = 0xE6;
@@ -780,42 +780,42 @@ void Level19_UpdateActors(void) {
         MarkActorCommittedKill(actor);
         ANIM_SET(actor, 6);
         PlayActorMeshVoice(actor, 0, 0);
-        actor->mode = 3;
+        actor->mode = BGUARD_KNOCKED;
         continue;
       }
       actor->flags = 0;
       switch (actor->mode) {
-      case 0:
+      case BGUARD_WATCH:
         ANIM_GO(actor, 0);
         if (st->mode == one &&
             (IsPointInRotatedBox(&spy->posX, st->box) != 0 || d < st->range << 10) &&
             ABS2(SPY_DZ(actor)) < 0xBB8) {
           if (actor->group != 0xFF) {
-            SetActorGroupStateExcept(actor, 0xA, 3);
+            SetActorGroupStateExcept(actor, BGUARD_RUN, BGUARD_KNOCKED);
           }
-          actor->mode = 0xA;
+          actor->mode = BGUARD_RUN;
           continue;
         }
         if (st->mode == 2 && st->link != -1 && d < st->range << 10 &&
             ABS2(SPY_DZ(actor)) < 0xBB8) {
           st->timer2 = 0x3C;
-          actor->mode = 0x14;
+          actor->mode = BGUARD_FACE_LINK;
           continue;
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && d < 0xFA0 &&
             ABS2(SPY_DZ(actor)) < 0x320 && TickCountdownByFrameDelta(&st->countdown, 4) != 0) {
-          ENTER_POSE(actor, 5);
+          ENTER_POSE(actor, BGUARD_WIND_UP);
         }
         break;
 
-      case 1:
+      case BGUARD_ROUSE:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 5);
+          ENTER_POSE(actor, BGUARD_WIND_UP);
         }
         break;
 
-      case 2:
+      case BGUARD_FIRE:
         TrackEntityYawTowardSpyro(actor, 0xE, 0, 1);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           int i;
@@ -836,11 +836,11 @@ void Level19_UpdateActors(void) {
         }
         if (TickCountdownByFrameDelta(&st->timer2, 4) != 0 && g_nActorAnimDone != 0) {
           st->timer = 0xB4;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, BGUARD_WATCH);
         }
         break;
 
-      case 3:
+      case BGUARD_KNOCKED:
         actor->rotX += st->spinX;
         actor->rotY += st->spinY;
         if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->turn, 0xC,
@@ -852,32 +852,32 @@ void Level19_UpdateActors(void) {
         }
         break;
 
-      case 5:
+      case BGUARD_WIND_UP:
         if (g_nActorAnimDone != 0) {
           st->timer2 = 0x28;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, BGUARD_FIRE);
         }
         break;
 
-      case 10:
+      case BGUARD_RUN:
         ANIM_GO(actor, 4);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0, 8, 0x10, 0xFF, 5) ==
             0x100) {
           st->mode = 0;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, BGUARD_WATCH);
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xC00) {
           st->mode = 0;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, BGUARD_WATCH);
         }
         break;
 
-      case 20:
+      case BGUARD_FACE_LINK:
         ANIM_GO(actor, 0);
         if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT ||
             ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400 || st->link == -1) {
           st->mode = 0;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, BGUARD_WATCH);
         }
         TurnActorYawTowardAngle(actor,
                       ArcTan2(g_pActorListBase[st->link].posX - actor->posX,
@@ -885,12 +885,12 @@ void Level19_UpdateActors(void) {
                       6, 0, 0);
         if (TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
           st->timer2 = 0x19;
-          actor->mode = 0x15;
+          actor->mode = BGUARD_FIRE_AT_LINK;
           continue;
         }
         break;
 
-      case 21:
+      case BGUARD_FIRE_AT_LINK:
         ANIM_GO(actor, 2);
         TurnActorYawTowardAngle(actor,
                       ArcTan2(g_pActorListBase[st->link].posX - actor->posX,
@@ -920,11 +920,11 @@ void Level19_UpdateActors(void) {
 
           if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT || st->link == -1) {
             st->mode = 0;
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, BGUARD_WATCH);
           }
           st->link = ts->range;
           st->timer2 = 0x3C;
-          actor->mode = 0x14;
+          actor->mode = BGUARD_FACE_LINK;
           continue;
         }
         break;
@@ -3260,7 +3260,7 @@ void Level19_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         PlayActorMeshVoice(actor, 0, 0);
-        ENTER_POSE(actor, 3);
+        ENTER_POSE(actor, WARDRUM_KNOCKED);
       }
       if (TickCountdownByFrameDelta(&st->beat, 4) == 2) {
         st->fade = 0x14;
@@ -3275,13 +3275,13 @@ void Level19_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case WARDRUM_WAIT:
         if (TickCountdownByFrameDelta(&st->wait, 4) == 2) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, WARDRUM_BEAT);
         }
         break;
 
-      case 2:
+      case WARDRUM_BEAT:
         if (actor->nextFrame >= 6 && st->beat == 0) {
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
           st->beat = 0x64;
@@ -3290,11 +3290,11 @@ void Level19_UpdateActors(void) {
                         &st->voice);
         }
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, WARDRUM_WAIT);
         }
         break;
 
-      case 3:
+      case WARDRUM_KNOCKED:
         actor->rotY += g_nFrameStep * 2;
         if (TickCountdownByFrameDelta(&st->life, 4) != 0 ||
             DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, 0xC) ==
@@ -3302,12 +3302,12 @@ void Level19_UpdateActors(void) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
           actor->cullRadius = 0;
-          actor->mode = 4;
+          actor->mode = WARDRUM_GONE;
           continue;
         }
         break;
 
-      case 4:
+      case WARDRUM_GONE:
         if (GetWorldChunkAnimState(st->chunkAnim) & CHUNK_ANIM_HALTED) {
           DespawnActorRecord(actor);
           continue;

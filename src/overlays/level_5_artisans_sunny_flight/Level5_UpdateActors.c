@@ -539,21 +539,21 @@ void Level5_UpdateActors(void) {
     case ACTOR_TYPE_RIDING_FLIGHT_TARGET: {
       RiderState *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 1) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != FTARGET_STRUCK) {
         if (actor->flags & ACTOR_HIT_SUPER) {
           st->timer = 0xA;
         } else {
           st->timer = 0;
         }
-        actor->mode = 1;
+        actor->mode = FTARGET_STRUCK;
       }
       GetActorAttachPoint(&g_pActorListBase[st->host], 0, &actor->posX);
       *(Rot3 *)&actor->rotX = *(Rot3 *)&g_pActorListBase[st->host].rotX;
       RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
       switch (actor->mode) {
-      case 0:
+      case FTARGET_ACTIVE:
         break;
-      case 1:
+      case FTARGET_STRUCK:
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           Actor *reward;
           int i;
@@ -2103,9 +2103,9 @@ void Level5_UpdateActors(void) {
       int svZ[3];
       int i;
 
-      if ((actor->flags & ACTOR_HIT_SUPER) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HIT_SUPER) && actor->mode != FTARGET_STRUCK) {
         st->timer = 0x14;
-        actor->mode = 1;
+        actor->mode = FTARGET_STRUCK;
       }
       if (g_nSpyroSubstate < SPYRO_SUB_SCRIPTED) {
         TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, 4);
@@ -2116,9 +2116,9 @@ void Level5_UpdateActors(void) {
         }
       }
       switch (actor->mode) {
-      case 0:
+      case FTARGET_ACTIVE:
         break;
-      case 1:
+      case FTARGET_STRUCK:
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           for (i = 0; i < 3; i++) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
@@ -2139,17 +2139,17 @@ void Level5_UpdateActors(void) {
       SmokerState *st = actor->state;
       int i;
 
-      if ((actor->flags & ACTOR_HIT_SUPER) && actor->mode != 1) {
+      if ((actor->flags & ACTOR_HIT_SUPER) && actor->mode != FTARGET_STRUCK) {
         st->timer = 0xF;
-        actor->mode = 1;
+        actor->mode = FTARGET_STRUCK;
       }
       if (g_nSpyroSubstate < SPYRO_SUB_SCRIPTED) {
         TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, 4);
       }
       switch (actor->mode) {
-      case 0:
+      case FTARGET_ACTIVE:
         break;
-      case 1:
+      case FTARGET_STRUCK:
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           for (i = 0; i < 3; i++) {

@@ -1522,7 +1522,7 @@ void Level33_UpdateActors(void) {
         dist = VectorLength(o128, VEC_LEN_XY);
       }
 
-      if (actor->flags != 0 && actor->mode != 2) {
+      if (actor->flags != 0 && actor->mode != LANEPAT_KNOCKED) {
         st->knockSpeed = 0xFA;
         if (actor->flags & ACTOR_HIT_CHARGE) {
           st->knockSpeed = 0x145;
@@ -1531,7 +1531,7 @@ void Level33_UpdateActors(void) {
                                               actor->posY - SPY.posY, 0),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
         st->vSpeed = 0x28;
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, LANEPAT_KNOCKED);
       }
       actor->flags = 0;
 
@@ -1553,7 +1553,7 @@ void Level33_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case LANEPAT_WATCH:
         TrackEntityYawTowardSpyro(actor, 5, 0, 0);
         if (dist < 0x1964 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x578
@@ -1575,11 +1575,11 @@ void Level33_UpdateActors(void) {
           } else {
             st->path->cur = st->endNodeFwd;
           }
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, LANEPAT_RUN);
         }
         break;
 
-      case 1: {
+      case LANEPAT_RUN: {
         FlyPath *p;
         int spd;
         int r;
@@ -1624,7 +1624,7 @@ void Level33_UpdateActors(void) {
           if (g_anLevelEscapeRunCount[st->lane] >= 6) {
             g_anLevelEscapeRunCount[st->lane] = 5;
           }
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, LANEPAT_WATCH);
         }
         FindFarthestPathPointFromSpyro((PathData *)st->path);
         FindNearestPathPointToSpyro(st->path, o138);
@@ -1658,7 +1658,7 @@ void Level33_UpdateActors(void) {
         break;
       }
 
-      case 2:
+      case LANEPAT_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->vSpeed, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -1669,7 +1669,7 @@ void Level33_UpdateActors(void) {
         break;
       }
 
-      if (actor->mode != 2 && st->partner != -1) {
+      if (actor->mode != LANEPAT_KNOCKED && st->partner != -1) {
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(actor, 0, &g_pActorListBase[st->partner].posX);
         ProbeActorGroundHeight(&g_pActorListBase[st->partner]);
@@ -2225,7 +2225,7 @@ void Level33_UpdateActors(void) {
         }
 
         CopyVector(o150, &actor->posX);
-        if (actor->mode == 0) {
+        if (actor->mode == TRAILBOMB_FLY) {
           st->spawnTimer += g_nFrameStep;
           if (st->spawnTimer >= 0xA) {
             Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_TRAIL_BOMB_PUFF, actor);
@@ -2241,12 +2241,12 @@ void Level33_UpdateActors(void) {
           actor->posY += (st->speed * g_anSineLut[actor->rotZ]) >> 12;
           actor->posZ += st->climb;
           if (TickCountdownByFrameDelta(&st->lifeTimer, 2) != 0) {
-            actor->mode = 1;
+            actor->mode = TRAILBOMB_HIT;
           }
           if (actor->posX < 0 || actor->posY < 0 || actor->posZ < 0) {
             actor->cullRadius = 0;
             actor->drawn = 0;
-            actor->mode = 1;
+            actor->mode = TRAILBOMB_HIT;
             continue;
           }
           if (--st->landDelay < 0) {
@@ -2265,16 +2265,16 @@ void Level33_UpdateActors(void) {
             if (o->scale >= 0x80) {
               o->scale = 0x7F;
             }
-            actor->mode = 1;
+            actor->mode = TRAILBOMB_HIT;
             PlayActorMeshVoice(actor, 0, 0);
           }
-          if (actor->mode == 1) {
+          if (actor->mode == TRAILBOMB_HIT) {
             actor->cullRadius = 0;
             actor->drawn = 0;
           }
         }
         n = 0;
-        if (actor->mode == 0 && g_nMotionTrailRibbonCount < 3 && st->trailLen < 0x78) {
+        if (actor->mode == TRAILBOMB_FLY && g_nMotionTrailRibbonCount < 3 && st->trailLen < 0x78) {
           int k = st->trailLen;
 
           CopyVector(st->trail[k].pos, &actor->posX);
@@ -2287,7 +2287,7 @@ void Level33_UpdateActors(void) {
             n++;
           }
         }
-        if (n == 0 && actor->mode != 0) {
+        if (n == 0 && actor->mode != TRAILBOMB_FLY) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -2298,8 +2298,8 @@ void Level33_UpdateActors(void) {
           g_nMotionTrailRibbonCount = k + 1;
           g_apMotionTrailSlices[k] = st->trail;
         }
-        if (actor->mode == 1) {
-          actor->mode = 2;
+        if (actor->mode == TRAILBOMB_HIT) {
+          actor->mode = TRAILBOMB_FADE;
         }
       }
     out169:

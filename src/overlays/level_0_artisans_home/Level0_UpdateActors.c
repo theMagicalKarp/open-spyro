@@ -1385,7 +1385,7 @@ void Level0_UpdateActors(void) {
           st->heading = StepAndLerpAngle8(
               ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, 0),
               SPY.bodyRotZ, 0x28, 0x80);
-          ENTER_POSE(actor, 8);
+          ENTER_POSE(actor, PENEMY_CHARGED);
         }
 
         PlaySoundEffect(g_pLevelSampleBankHeader[0x27], actor, SFX_MODE_3D, &actor->voiceRow);
@@ -1394,7 +1394,7 @@ void Level0_UpdateActors(void) {
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, 0),
             SPY.bodyRotZ, 0x20, 0x40);
-        ENTER_POSE(actor, 7);
+        ENTER_POSE(actor, PENEMY_FLAMED);
       }
 
       if (st->tgtIdx >= 0 && g_pActorListBase[st->tgtIdx].mode >= ACTOR_MODE_DORMANT) {
@@ -1402,7 +1402,7 @@ void Level0_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0: {
+      case PENEMY_IDLE: {
         int xyDistance;
         int deltaY;
         int deltaZ;
@@ -1418,22 +1418,22 @@ void Level0_UpdateActors(void) {
         if (distance < 0x4000 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < 0x2800 &&
             ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < 0x800) {
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, PENEMY_SPOT);
         }
 
         if (st->tgtIdx >= 0 && TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           if (ApproxDist2D(&actor->posX, &g_pActorListBase[st->tgtIdx].posX) <
               0x1000) {
-            ENTER_POSE(actor, 2);
+            ENTER_POSE(actor, PENEMY_FACE_PARTNER);
           }
 
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, PENEMY_FIDGET);
         }
 
         SnapActorToGround(actor);
         break;
       }
-      case 1: {
+      case PENEMY_FIDGET: {
         int xyDistance;
         int deltaY;
         int deltaZ;
@@ -1450,19 +1450,19 @@ void Level0_UpdateActors(void) {
         if (distance < 0x1800 &&
             ApproxDist2D(&actor->posX, &g_pActorListBase[st->tgtIdx].posX) <
                 0x1000) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, PENEMY_FACE_PARTNER);
         }
 
         if (g_nActorAnimDone != 0) {
           st->timer = (GetRandomU32() & 0x3F) + 0x20;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, PENEMY_IDLE);
         }
 
         SnapActorToGround(actor);
         break;
       }
 
-      case 2: {
+      case PENEMY_FACE_PARTNER: {
         int xyDistance;
         int deltaY;
         int deltaZ;
@@ -1478,7 +1478,7 @@ void Level0_UpdateActors(void) {
         if (distance < 0x4000 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < 0x2800 &&
             ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < 0x800) {
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, PENEMY_SPOT);
         }
 
         TurnActorYawTowardAngle(actor,
@@ -1489,14 +1489,14 @@ void Level0_UpdateActors(void) {
 
         if (g_nActorAnimDone != 0) {
           st->timer = (GetRandomU32() & 0x3F) + 0x20;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, PENEMY_IDLE);
         }
 
         SnapActorToGround(actor);
         break;
       }
 
-      case 3: {
+      case PENEMY_RETURN: {
         int angle;
         int angleDelta;
         int xyDistance;
@@ -1517,13 +1517,13 @@ void Level0_UpdateActors(void) {
           if (st->path->cur < st->path->count - 1) {
             st->path->cur++;
           }
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, PENEMY_SPOT);
         }
 
         if (ApproxDist2D(&actor->posX,
                           (int *)&st->path->nodes[st->path->cur]) < 0x200) {
           if (st->path->cur == 0) {
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, PENEMY_IDLE);
           }
           st->path->cur--;
         }
@@ -1550,25 +1550,25 @@ void Level0_UpdateActors(void) {
         break;
       }
 
-      case 4: {
+      case PENEMY_SPOT: {
         if (g_nActorAnimDone != 0) {
           if (SPY.state == SPYRO_ST_CHARGE || SPY.state == SPYRO_ST_CHARGE_AIR) {
             if (actor->anim != 6) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, 6);
             }
-            actor->mode = 0x14;
+            actor->mode = PENEMY_COWER;
             continue;
           }
 
-          ENTER_POSE(actor, 5);
+          ENTER_POSE(actor, PENEMY_FLEE);
         }
 
         TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
         break;
       }
 
-      case 5: {
+      case PENEMY_FLEE: {
         int angle;
         int angleDelta;
 
@@ -1578,7 +1578,7 @@ void Level0_UpdateActors(void) {
             st->path->cur++;
           } else {
             st->timer = 0x78;
-            ENTER_POSE(actor, 6);
+            ENTER_POSE(actor, PENEMY_HIDE);
           }
         }
 
@@ -1604,7 +1604,7 @@ void Level0_UpdateActors(void) {
         break;
       }
 
-      case 6: {
+      case PENEMY_HIDE: {
         int xyDistance;
         int deltaY;
         int deltaZ;
@@ -1627,14 +1627,14 @@ void Level0_UpdateActors(void) {
 
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           st->path->cur = st->path->count - 1;
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, PENEMY_RETURN);
         }
 
         break;
       }
-      case 7: {
+      case PENEMY_FLAMED: {
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 9);
+          ENTER_POSE(actor, PENEMY_FALL);
         }
 
         actor->rotY += 4;
@@ -1643,7 +1643,7 @@ void Level0_UpdateActors(void) {
         break;
       }
 
-      case 8: {
+      case PENEMY_CHARGED: {
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x1C);
@@ -1656,7 +1656,7 @@ void Level0_UpdateActors(void) {
         break;
       }
 
-      case 9: {
+      case PENEMY_FALL: {
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
                           0x10) == 3) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -1669,11 +1669,11 @@ void Level0_UpdateActors(void) {
         break;
       }
 
-      case 0x14: {
+      case PENEMY_COWER: {
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
 
         if (SPY.state != SPYRO_ST_CHARGE && SPY.state != SPYRO_ST_CHARGE_AIR) {
-          ENTER_POSE(actor, 5);
+          ENTER_POSE(actor, PENEMY_FLEE);
         }
 
         break;
@@ -2577,7 +2577,7 @@ void Level0_UpdateActors(void) {
     case ACTOR_TYPE_FLOCK_LEADER: {
       FlockState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode < 4) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode < FLOCK_BOLT) {
         while (st->chainA >= 0 && g_pActorListBase[st->chainA].mode >= ACTOR_MODE_DORMANT) {
           st->chainA = *(int *)g_pActorListBase[st->chainA].state;
         }
@@ -2592,7 +2592,7 @@ void Level0_UpdateActors(void) {
           st->chainA = *link;
           DespawnActorRecord(p);
           actor->flags = 0;
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, FLOCK_BOLT);
         } else {
           int n = 0;
 
@@ -2623,19 +2623,19 @@ void Level0_UpdateActors(void) {
           st->knockAngle = StepAndLerpAngle8(
               ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, 0),
               SPY.bodyRotZ, 0x20, 0x40);
-          actor->mode = 5;
+          actor->mode = FLOCK_KNOCKED;
           ANIM_RESET(actor, 5);
           continue;
         }
       }
 
       switch (actor->mode) {
-      case 0: {
+      case FLOCK_IDLE: {
         int distance = ApproxDist2D(&actor->posX, &SPY.posX);
 
         if (distance < 0x1400 &&
             ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < 0x400) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, FLOCK_ROUSE);
         }
 
         if (distance < 0x2800) {
@@ -2644,18 +2644,18 @@ void Level0_UpdateActors(void) {
         break;
       }
 
-      case 1: {
+      case FLOCK_ROUSE: {
         TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
 
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, FLOCK_RUN);
         }
         break;
       }
 
-      case 2:
-      case 3:
-      case 4: {
+      case FLOCK_RUN:
+      case FLOCK_RUN_ALT:
+      case FLOCK_BOLT: {
         int spyroAngle;
         int angle;
         int previousAngle;
@@ -2663,7 +2663,7 @@ void Level0_UpdateActors(void) {
         int previousNode;
         int nextAngle;
 
-        if (actor->mode == 4) {
+        if (actor->mode == FLOCK_BOLT) {
           actor->flags = 0;
         }
 
@@ -2671,7 +2671,7 @@ void Level0_UpdateActors(void) {
                           (int *)&st->path->nodes[st->path->cur]) < 0x400) {
           if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x1400 ||
               ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) > 0x800) {
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, FLOCK_IDLE);
           } else {
             spyroAngle =
                 ArcTan2(SPY.posX - actor->posX, SPY.posY - actor->posY, 0);
@@ -2712,7 +2712,7 @@ void Level0_UpdateActors(void) {
         actor->rotZ += previousAngle;
 
         if (ABS2(nextAngle) < 0x20) {
-          if (actor->mode == 4) {
+          if (actor->mode == FLOCK_BOLT) {
             MoveActorAlongHeading(actor, 0xD2, 0x200, 0x200, 0x27);
           } else {
             MoveActorAlongHeading(actor, 0x60, 0x200, 0x200, 0x27);
@@ -2720,11 +2720,11 @@ void Level0_UpdateActors(void) {
         }
 
         if (g_nActorAnimDone != 0) {
-          if (actor->mode == 2) {
-            actor->mode = 3;
+          if (actor->mode == FLOCK_RUN) {
+            actor->mode = FLOCK_RUN_ALT;
             ANIM_RESET(actor, 3);
           } else {
-            actor->mode = 2;
+            actor->mode = FLOCK_RUN;
             if (actor->nextAnim != 2) {
               ANIM_ADVANCE(actor, 2);
             }
@@ -2733,7 +2733,7 @@ void Level0_UpdateActors(void) {
         }
         break;
       }
-      case 5: {
+      case FLOCK_KNOCKED: {
         RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
 
         if (g_nActorAnimDone != 0) {
@@ -2759,51 +2759,51 @@ void Level0_UpdateActors(void) {
         if (g_abLevelVisitedFlag[5] != 0) {
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
           SetWorldChunkAnimStep(st->chunkAnim, 0x77, 0);
-          actor->mode = 0x63;
+          actor->mode = SEQPROP_DONE;
         }
         st->primed = 1;
       }
 
       switch (actor->mode) {
-      case 0:
+      case SEQPROP_WAIT:
         if (actor->subMode == 0x1F) {
-          actor->mode = 5;
+          actor->mode = SEQPROP_START;
         }
         break;
 
-      case 5:
+      case SEQPROP_START:
         ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
-        actor->mode = 0xA;
+        actor->mode = SEQPROP_RUN;
         st->timer = 0x1E;
         actor->soundRange = 0x30;
         PlaySoundEffect(g_pLevelSampleBankHeader[0x41], actor, SFX_MODE_3D, &actor->voiceRow);
         break;
 
-      case 0xA:
+      case SEQPROP_RUN:
         if ((GetWorldChunkAnimState(st->chunkAnim) & CHUNK_ANIM_HALTED) != 0) {
-          actor->mode = 0x63;
+          actor->mode = SEQPROP_DONE;
           break;
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
           break;
         }
-        actor->mode = 0xB;
+        actor->mode = SEQPROP_RUN_ALT;
         st->timer = 0x1E;
         break;
 
-      case 0xB:
+      case SEQPROP_RUN_ALT:
         if ((GetWorldChunkAnimState(st->chunkAnim) & CHUNK_ANIM_HALTED) != 0) {
-          actor->mode = 0x63;
+          actor->mode = SEQPROP_DONE;
           break;
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
           break;
         }
-        actor->mode = 0xA;
+        actor->mode = SEQPROP_RUN;
         st->timer = 0x1E;
         break;
 
-      case 0x63:
+      case SEQPROP_DONE:
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         break;
       }
@@ -2987,9 +2987,9 @@ void Level0_UpdateActors(void) {
     case ACTOR_TYPE_BALLOON: {
       int *base = actor->state;
 
-      if (actor->mode == 0) {
+      if (actor->mode == BALLOON_INIT) {
         *base = actor->posZ;
-        actor->mode = 1;
+        actor->mode = BALLOON_BOB;
         break;
       }
 

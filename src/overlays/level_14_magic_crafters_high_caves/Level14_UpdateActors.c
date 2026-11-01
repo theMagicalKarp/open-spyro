@@ -119,7 +119,7 @@ typedef struct RunnerSpawnerState {
   int flags;           /* 0x04 bit 0: spawned */
   int wait;            /* 0x08 */
   int timer;           /* 0x0C */
-  int value;           /* 0x10 copied to the spawn's state +0x14 */
+  int value;           /* 0x10 copied to the spawn's WaypointRunnerState.target */
 } RunnerSpawnerState;
 
 /* Type 304: waypoint runner. Walks `path` until it reaches Spyro, the path
@@ -3692,35 +3692,35 @@ void Level14_UpdateActors(void) {
     case ACTOR_TYPE_BOLT_CASTER: {
       BoltCasterState *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 4) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != BCASTER_KNOCKED) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        actor->mode = 4;
+        actor->mode = BCASTER_KNOCKED;
         ANIM_RESET(actor, 4);
         continue;
       }
-      if ((actor->flags & 1) && actor->mode < 4) {
-        actor->mode = 5;
+      if ((actor->flags & 1) && actor->mode < BCASTER_KNOCKED) {
+        actor->mode = BCASTER_FLINCH;
         ANIM_RESET(actor, 5);
         continue;
       }
       switch (actor->mode) {
-      case 0:
+      case BCASTER_IDLE:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000 &&
             ABS2(SPY_DZ(actor)) < 0xC00) {
           if (st->flags & 1) {
             st->flags |= 2;
-            ENTER_POSE(actor, 2);
+            ENTER_POSE(actor, BCASTER_AIM);
             continue;
           }
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, BCASTER_NOTICE);
           continue;
         }
         if (st->target >= 0) {
           if (g_pActorListBase[st->target].mode >= ACTOR_MODE_DORMANT) {
             st->target = -1;
           } else if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-            ENTER_POSE(actor, 2);
+            ENTER_POSE(actor, BCASTER_AIM);
             continue;
           } else {
             TurnActorYawTowardAngle(actor,
@@ -3732,24 +3732,24 @@ void Level14_UpdateActors(void) {
         }
         break;
 
-      case 1:
+      case BCASTER_NOTICE:
         TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
         if (g_nActorAnimDone != 0) {
           st->flags |= 1;
-          actor->mode = 0;
+          actor->mode = BCASTER_IDLE;
           ANIM_RESET(actor, 0);
           continue;
         }
         break;
 
-      case 2:
+      case BCASTER_AIM:
         if (st->flags & 2) {
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800 &&
               ABS2(SPY_DZ(actor)) < 0xC00) {
             TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
           } else {
             st->flags &= ~2;
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, BCASTER_IDLE);
             continue;
           }
         } else {
@@ -3762,13 +3762,13 @@ void Level14_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           st->timer = 0;
           st->count = 0;
-          actor->mode = 3;
+          actor->mode = BCASTER_CAST;
           ANIM_RESET(actor, 3);
           continue;
         }
         break;
 
-      case 3:
+      case BCASTER_CAST:
         if (TickCountdownByFrameDelta(&st->timer, 4) && actor->nextFrame >= 4 &&
             st->count < 3) {
           Actor *b = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_WISP, actor);
@@ -3797,19 +3797,19 @@ void Level14_UpdateActors(void) {
           if ((st->flags & 2) &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000 &&
               ABS2(SPY_DZ(actor)) < 0xC00) {
-            actor->mode = 2;
+            actor->mode = BCASTER_AIM;
             ANIM_RESET(actor, 2);
             continue;
           }
           st->flags &= ~2;
           st->timer = (GetRandomU32() & 0x1F) + 0x20;
-          actor->mode = 0;
+          actor->mode = BCASTER_IDLE;
           ANIM_RESET(actor, 0);
           continue;
         }
         break;
 
-      case 4:
+      case BCASTER_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x30);
@@ -3818,10 +3818,10 @@ void Level14_UpdateActors(void) {
         }
         break;
 
-      case 5:
+      case BCASTER_FLINCH:
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
-          actor->mode = 0;
+          actor->mode = BCASTER_IDLE;
           ANIM_RESET(actor, 0);
           continue;
         }
@@ -3965,57 +3965,57 @@ void Level14_UpdateActors(void) {
     case ACTOR_TYPE_RUNNER_SPAWNER: {
       RunnerSpawnerState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != RSPAWNER_KNOCKED) {
         StopSoundVoiceByIndex(actor->voiceRow, 4);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 4);
+        ENTER_POSE(actor, RSPAWNER_KNOCKED);
         continue;
       }
-      if ((actor->flags & 1) && actor->mode != 2 && actor->mode != 4) {
-        ENTER_POSE(actor, 2);
+      if ((actor->flags & 1) && actor->mode != RSPAWNER_FLINCH && actor->mode != RSPAWNER_KNOCKED) {
+        ENTER_POSE(actor, RSPAWNER_FLINCH);
         continue;
       }
       TickCountdownByFrameDelta(&st->timer, 4);
       switch (actor->mode) {
-      case 0:
+      case RSPAWNER_IDLE:
         if (st->timer == 0 && !(st->flags & 1)) {
           st->timer = 0xB4;
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, RSPAWNER_RELEASE);
           continue;
         }
         if (TickCountdownByFrameDelta(&st->wait, 4) != 0) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, RSPAWNER_FIDGET);
           continue;
         }
         break;
 
-      case 1:
+      case RSPAWNER_FIDGET:
         if (g_nActorAnimDone != 0) {
           st->wait = (GetRandomU32() & 0x1F) + 0x30;
-          ANIM_QUEUE(actor, 0);
+          ANIM_QUEUE(actor, RSPAWNER_IDLE);
         }
         break;
 
-      case 2:
+      case RSPAWNER_FLINCH:
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
-          ANIM_QUEUE(actor, 0);
+          ANIM_QUEUE(actor, RSPAWNER_IDLE);
         }
         break;
 
-      case 3:
+      case RSPAWNER_RELEASE:
         if (actor->nextFrame >= 5 && !(st->flags & 1)) {
           st->link[1] = 0;
-          ((short *)g_pfnLevelSpawnActor(ACTOR_TYPE_WAYPOINT_RUNNER, actor)->state)[10] = st->value;
+          ((WaypointRunnerState *)g_pfnLevelSpawnActor(ACTOR_TYPE_WAYPOINT_RUNNER, actor)->state)->target = st->value;
           st->flags |= 1;
         }
         if (g_nActorAnimDone != 0) {
-          ANIM_QUEUE(actor, 0);
+          ANIM_QUEUE(actor, RSPAWNER_IDLE);
         }
         break;
 
-      case 4:
+      case RSPAWNER_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -4032,43 +4032,43 @@ void Level14_UpdateActors(void) {
       WaypointRunnerState *st = actor->state;
 
       switch (actor->mode) {
-      case 0:
+      case WPRUNNER_EMERGE:
         if (g_nActorAnimDone != 0) {
-          actor->mode = 1;
+          actor->mode = WPRUNNER_RUN;
           ANIM_RESET(actor, 1);
           continue;
         }
-        if (st->link->mode >= 4) {
+        if (st->link->mode >= RSPAWNER_KNOCKED) {
           DespawnActorRecord(actor);
           continue;
         }
         break;
 
-      case 1: {
+      case WPRUNNER_RUN: {
         int *pos = &actor->posX;
 
         if (RaiseSpyroTriggerInRadius(pos, 0x280, 0x46) != 0) {
-          ((int *)st->link->state)[1] &= ~1;
-          ENTER_POSE(actor, 2);
+          ((RunnerSpawnerState *)st->link->state)->flags &= ~1;
+          ENTER_POSE(actor, WPRUNNER_POP);
           continue;
         }
         if (WalkActorAlongWaypoints(actor, st->path, 0x100, 0x40, 0, 0x20, 0xFF,
                           &st->hold) == 0x100) {
-          ((int *)st->link->state)[1] &= ~1;
-          ENTER_POSE(actor, 2);
+          ((RunnerSpawnerState *)st->link->state)->flags &= ~1;
+          ENTER_POSE(actor, WPRUNNER_POP);
           continue;
         }
         if (st->target >= 0 && g_pActorListBase[st->target].mode < ACTOR_MODE_DORMANT &&
             ApproxDist2D(pos, &g_pActorListBase[st->target].posX) < 0x280) {
-          ((int *)st->link->state)[1] &= ~1;
+          ((RunnerSpawnerState *)st->link->state)->flags &= ~1;
           g_pActorListBase[st->target].flags |= 1;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, WPRUNNER_POP);
           continue;
         }
         break;
       }
 
-      case 2:
+      case WPRUNNER_POP:
         if (g_nActorAnimDone != 0) {
           StopSoundVoicesByOwner(actor, VOICE_STOP_LOOPING);
           DespawnActorRecord(actor);

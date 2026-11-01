@@ -695,32 +695,32 @@ void Level25_UpdateActors(void) {
     case ACTOR_TYPE_POST_GRABBER: {
       PostGrabberState *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 5 && actor->mode != 1) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != PGRAB_KNOCKED && actor->mode != PGRAB_GRAB) {
         if (*st->slot == actor) {
           L25_DROP(st);
         }
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 5);
+        ENTER_POSE(actor, PGRAB_KNOCKED);
       }
       actor->flags = 0;
       if (st->link >= 0) {
-        if (actor->mode != 3 && actor->mode != 5 &&
+        if (actor->mode != PGRAB_STAND_DOWN && actor->mode != PGRAB_KNOCKED &&
             g_pActorListBase[st->link].subMode == 3) {
           if (*st->slot == actor) {
             L25_DROP(st);
           }
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, PGRAB_STAND_DOWN);
         }
       } else {
         actor->type = ACTOR_TYPE_GRABBER_LOOKOUT;
-        actor->mode = 0;
+        actor->mode = LOOKOUT_WAIT;
         ANIM_RESET(actor, 0);
         continue;
       }
 
       switch (actor->mode) {
-      case 0:
+      case PGRAB_WAIT:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (*st->slot == actor && TickCountdownByFrameDelta(&st->hold, 4)) {
           L25_DROP(st);
@@ -749,14 +749,14 @@ void Level25_UpdateActors(void) {
         *st->slot = actor;
         st->hold = 0x3C;
         st->timer = 0x3C;
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, PGRAB_CHASE);
 
-      case 1:
+      case PGRAB_GRAB:
         if (g_nActorAnimDone != 0) {
           actor->subMode = 1;
           L25_UNLINK(st);
           st->timer = 0xF0;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, PGRAB_CHASE);
         }
         if (g_nSpyroDrawSuppressed != 0 && actor->nextFrame >= 0x20) {
           SubtractVector((int *)&g_anSpyroRequestVelocity, st->grip, &actor->posX);
@@ -795,7 +795,7 @@ void Level25_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case PGRAB_CHASE:
         if (actor->subMode != 0) {
           int heading;
           int dist;
@@ -808,7 +808,7 @@ void Level25_UpdateActors(void) {
           dist = ApproxDist2D(&actor->posX, &st->homeX);
           if (TickCountdownByFrameDelta(&st->timer, 4) || dist < 0x20) {
             st->timer = 0x3C;
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, PGRAB_WAIT);
           }
           if (dist > 0x80) {
             dist = 0x80;
@@ -845,22 +845,22 @@ void Level25_UpdateActors(void) {
         break;
       grab:
         g_pActorListBase[st->link].subMode |= 4;
-        ENTER_POSE(actor, 1);
+        ENTER_POSE(actor, PGRAB_GRAB);
       pose1:
-        ENTER_POSE(actor, 1);
+        ENTER_POSE(actor, PGRAB_GRAB);
 
-      case 3:
+      case PGRAB_STAND_DOWN:
         if (g_nActorAnimDone == 0) {
           break;
         }
         actor->type = ACTOR_TYPE_GRABBER_LOOKOUT;
         actor->subMode = 1;
         st->timer = 0xF0;
-        actor->mode = 1;
+        actor->mode = LOOKOUT_CHASE;
         ANIM_RESET(actor, 1);
         continue;
 
-      case 4: {
+      case PGRAB_EMERGE: {
         int reach = (actor->nextFrame << 7) + 0x200;
 
         if (reach > 0x500) {
@@ -871,10 +871,10 @@ void Level25_UpdateActors(void) {
           break;
         }
         st->timer = 0;
-        ANIM_QUEUE(actor, 0);
+        ANIM_QUEUE(actor, PGRAB_WAIT);
       }
 
-      case 5:
+      case PGRAB_KNOCKED:
         if (g_nActorAnimDone == 0) {
           break;
         }
@@ -893,7 +893,7 @@ void Level25_UpdateActors(void) {
       PostGrabberState *st = actor->state;
 
       if (actor->flags & ACTOR_HITS_SPYRO) {
-        if (actor->mode != 3) {
+        if (actor->mode != LOOKOUT_KNOCKED) {
           if (*st->slot == actor) {
             *st->slot = 0;
           }
@@ -908,26 +908,26 @@ void Level25_UpdateActors(void) {
                                       g_bSpyroPersistentEulerZ, 0x20, 0x40);
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorCommittedKill(actor);
-          actor->mode = 3;
+          actor->mode = LOOKOUT_KNOCKED;
           actor->flags = 0;
           if (actor->nextAnim != 3) {
             ANIM_ADVANCE(actor, 3);
           }
           continue;
         }
-      } else if (actor->mode != 3 && st->link >= 0 &&
+      } else if (actor->mode != LOOKOUT_KNOCKED && st->link >= 0 &&
                  g_pActorListBase[st->link].subMode == 2) {
         if (*st->slot == actor) {
           *st->slot = 0;
         }
         actor->type = ACTOR_TYPE_POST_GRABBER;
-        actor->mode = 4;
+        actor->mode = PGRAB_EMERGE;
         ANIM_RESET(actor, 4);
         continue;
       }
 
       switch (actor->mode) {
-      case 0:
+      case LOOKOUT_WAIT:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (TickCountdownByFrameDelta(&st->timer, 4) &&
             ApproxDist2D(&actor->posX, &SPY.posX) < 0xC00 &&
@@ -939,11 +939,11 @@ void Level25_UpdateActors(void) {
           actor->subMode = 0;
           *st->slot = actor;
           st->timer = 0x3C;
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, LOOKOUT_CHASE);
         }
         break;
 
-      case 1:
+      case LOOKOUT_CHASE:
         if (actor->subMode != 0) {
           int heading;
           int dist;
@@ -953,7 +953,7 @@ void Level25_UpdateActors(void) {
           dist = ApproxDist2D(&actor->posX, &st->homeX);
           if (TickCountdownByFrameDelta(&st->timer, 4) || dist < 0x20) {
             st->timer = 0x3C;
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, LOOKOUT_WAIT);
           }
           if (dist > 0x80) {
             dist = 0x80;
@@ -977,7 +977,7 @@ void Level25_UpdateActors(void) {
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x300 &&
             ABS2(actor->posZ - actor->floorOffset - g_nSpyroWorldPosZ) < 0x320) {
-          actor->mode = 2;
+          actor->mode = LOOKOUT_SNAP;
           actor->subMode = 0;
           if (actor->nextAnim != 2) {
             ANIM_ADVANCE(actor, 2);
@@ -986,16 +986,16 @@ void Level25_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case LOOKOUT_SNAP:
         if (g_nActorAnimDone == 0) {
           break;
         }
         actor->subMode = 1;
         *st->slot = 0;
         st->timer = 0xF0;
-        ENTER_POSE(actor, 1);
+        ENTER_POSE(actor, LOOKOUT_CHASE);
 
-      case 3:
+      case LOOKOUT_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -1015,16 +1015,16 @@ void Level25_UpdateActors(void) {
     case ACTOR_TYPE_BOMB_LOBBER: {
       BombLobberState *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 2) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != BLOBBER_KNOCKED) {
         st->speed = 0xF0;
         st->heading = SPY.bodyRotZ;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, BLOBBER_KNOCKED);
       }
 
       switch (actor->mode) {
-      case 0:
+      case BLOBBER_WATCH:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && actor->drawn != 0 &&
             ApproxDist2D(&actor->posX, &spy->posX) < 0x2800) {
@@ -1032,15 +1032,15 @@ void Level25_UpdateActors(void) {
 
           if (dz > 0 ? dz < 0xA00
                      : SPY.posZ - (actor->posZ - actor->floorOffset) < 0xA00) {
-            ENTER_POSE(actor, 1);
+            ENTER_POSE(actor, BLOBBER_LOB);
           }
         }
         break;
 
-      case 1:
+      case BLOBBER_LOB:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, BLOBBER_WATCH);
         }
         if (actor->nextFrame >= 6 && st->timer == 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -1049,7 +1049,7 @@ void Level25_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case BLOBBER_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x28);
@@ -1073,18 +1073,18 @@ void Level25_UpdateActors(void) {
       TickActorFlameGlow(actor);
       actor->flags = 0;
       if (st->link >= 0) {
-        if (actor->mode != 2 && g_pActorListBase[st->link].subMode == 3) {
-          ENTER_POSE(actor, 2);
+        if (actor->mode != ASENTRY_ROUSE && g_pActorListBase[st->link].subMode == 3) {
+          ENTER_POSE(actor, ASENTRY_ROUSE);
         }
       } else {
         actor->type = ACTOR_TYPE_ROUSED_SENTRY;
-        actor->mode = 0;
+        actor->mode = RSENTRY_WATCH;
         ANIM_RESET(actor, 0);
         continue;
       }
 
       switch (actor->mode) {
-      case 0:
+      case ASENTRY_WATCH:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (st->timer != 0) {
           if (actor->subMode < 2 && g_nSpyroState == SPYRO_ST_HURT) {
@@ -1098,7 +1098,7 @@ void Level25_UpdateActors(void) {
             break;
           }
           st->timer = 1;
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, ASENTRY_FIRE);
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400 &&
             ABS2(actor->posZ - actor->floorOffset - g_nSpyroWorldPosZ) < 0x800 &&
@@ -1116,10 +1116,10 @@ void Level25_UpdateActors(void) {
         actor->subMode = 0;
         break;
 
-      case 1:
+      case ASENTRY_FIRE:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, ASENTRY_WATCH);
         }
         if (actor->nextFrame < 5) {
           break;
@@ -1139,20 +1139,20 @@ void Level25_UpdateActors(void) {
         st->timer = 0;
         break;
 
-      case 2:
+      case ASENTRY_ROUSE:
         if (g_nActorAnimDone == 0) {
           break;
         }
         actor->type = ACTOR_TYPE_ROUSED_SENTRY;
-        actor->mode = 0;
+        actor->mode = RSENTRY_WATCH;
         ANIM_RESET(actor, 0);
         continue;
 
-      case 3:
+      case ASENTRY_SETTLE:
         if (g_nActorAnimDone == 0) {
           break;
         }
-        ANIM_QUEUE(actor, 0);
+        ANIM_QUEUE(actor, ASENTRY_WATCH);
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       break;
@@ -1164,7 +1164,7 @@ void Level25_UpdateActors(void) {
       AlarmSentryState *st = actor->state;
 
       TickActorFlameGlow(actor);
-      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode < 2) {
+      if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode < RSENTRY_KNOCKED) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         st->speed = 0x190;
@@ -1172,19 +1172,19 @@ void Level25_UpdateActors(void) {
         st->dir = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                               actor->posY - SPY.posY, 0),
                                 g_bSpyroPersistentEulerZ, 0x28, 0x80);
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, RSENTRY_KNOCKED);
       }
       actor->flags = 0;
-      if (actor->mode < 2 && st->link >= 0 &&
+      if (actor->mode < RSENTRY_KNOCKED && st->link >= 0 &&
           g_pActorListBase[st->link].subMode == 2) {
         actor->type = ACTOR_TYPE_ALARM_SENTRY;
-        actor->mode = 3;
+        actor->mode = ASENTRY_SETTLE;
         ANIM_RESET(actor, 3);
         continue;
       }
 
       switch (actor->mode) {
-      case 0:
+      case RSENTRY_WATCH:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (st->timer != 0) {
           if (actor->subMode < 2 && g_nSpyroState == SPYRO_ST_HURT) {
@@ -1198,7 +1198,7 @@ void Level25_UpdateActors(void) {
             break;
           }
           st->timer = 1;
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, RSENTRY_FIRE);
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400 &&
             ABS2(actor->posZ - actor->floorOffset - g_nSpyroWorldPosZ) < 0x800 &&
@@ -1216,10 +1216,10 @@ void Level25_UpdateActors(void) {
         actor->subMode = 0;
         break;
 
-      case 1:
+      case RSENTRY_FIRE:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, RSENTRY_WATCH);
         }
         if (actor->nextFrame < 2) {
           break;
@@ -1232,24 +1232,24 @@ void Level25_UpdateActors(void) {
         st->timer = 0;
         break;
 
-      case 2:
+      case RSENTRY_KNOCKED:
         if (g_nActorAnimDone != 0) {
-          ANIM_QUEUE(actor, 3);
+          ANIM_QUEUE(actor, RSENTRY_FALL);
         }
         actor->rotY += 4;
         TurnActorYawTowardAngle(actor, (st->dir + 0x80) & 0xFF, 0x10, 0x20, 1);
         DriveActorTrackedMove(actor, &st->speed, st->dir, &st->step, 0xC, 0xC);
         break;
 
-      case 3:
+      case RSENTRY_FALL:
         if (DriveActorTrackedMove(actor, &st->speed, st->dir, &st->step, 0xC, 0x10) ==
             3) {
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, RSENTRY_BURST);
         }
         TurnActorYawTowardAngle(actor, (st->dir + 0x80) & 0xFF, 0x10, 0x20, 1);
         break;
 
-      case 4:
+      case RSENTRY_BURST:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -1268,10 +1268,10 @@ void Level25_UpdateActors(void) {
       int *st = actor->state;
 
       switch (actor->mode) {
-      case 0:
+      case LOBBOMB_FLY:
         if (actor->posX < 0x400 || actor->posY < 0x400 ||
             actor->posZ < 0x400) {
-          actor->mode = 1;
+          actor->mode = LOBBOMB_BURST;
           break;
         }
         CopyVector(svA, &actor->posX);
@@ -1282,12 +1282,12 @@ void Level25_UpdateActors(void) {
             TickCountdownByFrameDelta(st, 4) != 0 ||
             TryMoveActorForward(actor, 0xE0, 0, 0x100, 0) != 0 ||
             CastRayWorldAndActors(svA, &actor->posX) != 0) {
-          actor->mode = 1;
+          actor->mode = LOBBOMB_BURST;
         }
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_RING_SPARK, actor, (void *)8);
         break;
 
-      case 1:
+      case LOBBOMB_BURST:
         g_pfnLevelEmitParticles(0x10, EMIT_ACTOR_RING_SPARK, actor, (void *)0x10);
         DespawnActorRecord(actor);
         continue;
@@ -2273,9 +2273,9 @@ void Level25_UpdateActors(void) {
       if (actor->flags & ACTOR_HITS_SPYRO) {
         actor->flags = 0;
         actor->subMode |= 3;
-        if (actor->mode < 3) {
+        if (actor->mode < LANTERN_STRUCK) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_LANTERN_FLAME, actor);
-          actor->mode = 3;
+          actor->mode = LANTERN_STRUCK;
           ANIM_RESET(actor, 3);
           continue;
         }
@@ -2327,7 +2327,7 @@ void Level25_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case LANTERN_IDLE:
         if (st->held == 0) {
           if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
             break;
@@ -2341,22 +2341,22 @@ void Level25_UpdateActors(void) {
             if (st->chunkAnim >= 0) {
               ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             }
-            ENTER_POSE(actor, 1);
+            ENTER_POSE(actor, LANTERN_SNUFF);
           }
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, LANTERN_LIGHT);
         }
         actor->subMode |= 2;
         break;
 
-      case 1:
+      case LANTERN_SNUFF:
         actor->subMode &= 0xFE;
         if (g_nActorAnimDone == 0) {
           break;
         }
         actor->subMode |= 2;
-        ENTER_POSE(actor, 0);
+        ENTER_POSE(actor, LANTERN_IDLE);
 
-      case 2:
+      case LANTERN_LIGHT:
         actor->subMode |= 1;
         if (g_nActorAnimDone == 0) {
           break;
@@ -2365,29 +2365,29 @@ void Level25_UpdateActors(void) {
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
         actor->subMode |= 2;
-        ENTER_POSE(actor, 0);
+        ENTER_POSE(actor, LANTERN_IDLE);
 
-      case 3:
+      case LANTERN_STRUCK:
         if (g_nActorAnimDone == 0) {
           break;
         }
         st->timer = 0x1C2;
-        ANIM_QUEUE(actor, 4);
+        ANIM_QUEUE(actor, LANTERN_HOLD_LIT);
 
-      case 4:
+      case LANTERN_HOLD_LIT:
         if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
           break;
         }
         {
           Actor *flame = g_pfnLevelSpawnActor(ACTOR_TYPE_LANTERN_FLAME, actor);
 
-          actor->mode = 5;
+          actor->mode = LANTERN_DONE;
           flame->mode = 1;
           ANIM_RESET(flame, 1);
         }
         continue;
 
-      case 5:
+      case LANTERN_DONE:
         break;
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
