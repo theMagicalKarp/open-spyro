@@ -1743,8 +1743,8 @@ void Level32_UpdateActors(void) {
         dist = VectorLength(o120, VEC_LEN_XY);
       }
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 4 &&
-          actor->mode != 0x14) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != SWEEPGUN_KNOCKED &&
+          actor->mode != SWEEPGUN_SINK) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         st->knockSpeed = 0xC8;
         st->knockZSpeed = 0x104;
@@ -1755,7 +1755,7 @@ void Level32_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         EBB_BREAK();
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 4);
+        ENTER_POSE(actor, SWEEPGUN_KNOCKED);
       }
 
       if (st->initialised == 0) {
@@ -1764,42 +1764,42 @@ void Level32_UpdateActors(void) {
         if (st->flags == 1 && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
                              IsPointInRotatedBox(&spy->posX, st->box2) != 0)) {
           st->flags &= ~1;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, SWEEPGUN_ADVANCE);
         }
       }
 
       switch (actor->mode) {
-      case 0:
+      case SWEEPGUN_IDLE:
         if (st->flags == 1 &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
           st->flags &= ~1;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, SWEEPGUN_ADVANCE);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (st->flags != 1 && dist < 0x3400 && ABS2(SPY_DZ(actor)) < 0x5DC) {
           st->yawToSpyro = actor->rotZ;
           st->sweepYaw = actor->rotZ << 4;
           actor->subMode = 0;
-          ENTER_POSE_B(actor, 3);
+          ENTER_POSE_B(actor, SWEEPGUN_SWEEP);
         }
         ANIM_GO(actor, 0);
         continue;
 
-      case 2:
+      case SWEEPGUN_ADVANCE:
         if (PivotActorAlongPath(actor, st->path, 0x100, 0xA0, 0, 8, 0x28, 0xFF, 5) ==
             0x100) {
-          actor->mode = 0;
+          actor->mode = SWEEPGUN_IDLE;
         }
         continue;
 
-      case 3:
+      case SWEEPGUN_SWEEP:
         switch (actor->subMode) {
         case 0: {
           int t;
           int d;
 
           if (dist > 0x4000 || ABS2(SPY_DZ(actor)) > 0x898) {
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, SWEEPGUN_IDLE);
           }
           t = ApproachAngle8(ArcTan2(spy->posX - actor->posX,
                                           spy->posY - actor->posY, 0),
@@ -1860,7 +1860,7 @@ void Level32_UpdateActors(void) {
         }
         continue;
 
-      case 4:
+      case SWEEPGUN_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0x16);
         if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
@@ -1872,7 +1872,7 @@ void Level32_UpdateActors(void) {
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
             o->otBias = 0xFE;
             st->timer = 0xA;
-            actor->mode = 0x14;
+            actor->mode = SWEEPGUN_SINK;
             continue;
           }
         }
@@ -1883,13 +1883,13 @@ void Level32_UpdateActors(void) {
         }
         continue;
 
-      case 10:
+      case SWEEPGUN_TURN:
         if (TrackEntityYawTowardSpyro(actor, 6, 0, 0) != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, SWEEPGUN_IDLE);
         }
         continue;
 
-      case 20:
+      case SWEEPGUN_SINK:
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           DespawnActorRecord(actor);
           continue;

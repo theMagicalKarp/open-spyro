@@ -124,7 +124,7 @@ typedef struct FireballState {
 /* Type 225 state: a cannon. */
 typedef struct FireballCannonState {
   int link;    /* 0x00 index into g_pActorListBase (its trigger) */
-  int u04;     /* 0x04 */
+  int rival;   /* 0x04 index into g_pActorListBase: the cannon it duels */
   int u08;     /* 0x08 */
   int hold;    /* 0x0C ticks until the trigger is released */
   int u10;     /* 0x10 */
@@ -2749,13 +2749,13 @@ void Level6_UpdateActors(void) {
     case ACTOR_TYPE_SOLDIER_B: {
       SoldierState *st = actor->state;
 
-      if (actor->flags != 0 && actor->mode == 0xB &&
+      if (actor->flags != 0 && actor->mode == SOLDIER_IN_POST &&
           g_pActorListBase[st->link].collision != 0) {
         actor->flags = 0;
       }
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 3) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != SOLDIER_KNOCKED) {
         actor->flags = 0;
-        if (actor->mode != 0xB || actor->cullRadius != 0) {
+        if (actor->mode != SOLDIER_IN_POST || actor->cullRadius != 0) {
           st->knockDir = StepAndLerpAngle8(
               ArcTan2(actor->posX - g_anSpyroWorldPos, actor->posY - g_nSpyroWorldPosY,
                             0),
@@ -2768,16 +2768,16 @@ void Level6_UpdateActors(void) {
               ANIM_ADVANCE(a, 0);
             }
           }
-          if (actor->mode < 0xA && (st->kind == 4 || st->kind == 10)) {
-            ReplaceActorGroupState(actor, 0xA, 0);
-            ReplaceActorGroupState(actor, 0xA, 2);
-            ReplaceActorGroupState(actor, 0xA, 4);
-            ReplaceActorGroupState(actor, 0xA, 1);
-            ReplaceActorGroupState(actor, 0xA, 0x64);
+          if (actor->mode < SOLDIER_TO_POST && (st->kind == 4 || st->kind == 10)) {
+            ReplaceActorGroupState(actor, SOLDIER_TO_POST, SOLDIER_IDLE);
+            ReplaceActorGroupState(actor, SOLDIER_TO_POST, SOLDIER_SHOVE);
+            ReplaceActorGroupState(actor, SOLDIER_TO_POST, SOLDIER_ALERT);
+            ReplaceActorGroupState(actor, SOLDIER_TO_POST, SOLDIER_CHASE);
+            ReplaceActorGroupState(actor, SOLDIER_TO_POST, SOLDIER_GO_HOME);
           }
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorCommittedKill(actor);
-          actor->mode = 3;
+          actor->mode = SOLDIER_KNOCKED;
           ANIM_RESET(actor, 3);
           continue;
         }
@@ -2799,7 +2799,7 @@ void Level6_UpdateActors(void) {
       EncodeCachedVecToActorDirCode(actor);
 
       switch (actor->mode) {
-      case 0:
+      case SOLDIER_IDLE:
         switch (st->kind) {
         case 0:
           if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
@@ -2813,19 +2813,19 @@ void Level6_UpdateActors(void) {
             }
           }
           if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
-            actor->mode = 4;
+            actor->mode = SOLDIER_ALERT;
             continue;
           }
           break;
         case 1:
         case 2:
           if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2800) {
-            SetActorGroupStateExcept(actor, 4, 3);
+            SetActorGroupStateExcept(actor, SOLDIER_ALERT, SOLDIER_KNOCKED);
           }
           break;
         case 3:
           ANIM_GO(actor, 8);
-          actor->mode = 9;
+          actor->mode = SOLDIER_DUEL;
           continue;
         case 4:
           if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
@@ -2839,7 +2839,7 @@ void Level6_UpdateActors(void) {
             }
           }
           if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
-            ReplaceActorGroupState(actor, 4, 0);
+            ReplaceActorGroupState(actor, SOLDIER_ALERT, SOLDIER_IDLE);
           }
           break;
         case 5:
@@ -2848,33 +2848,33 @@ void Level6_UpdateActors(void) {
           SnapActorToGround(actor);
           UpdateActorWander(actor, st);
           if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
-            ReplaceActorGroupState(actor, 0xA, 0);
+            ReplaceActorGroupState(actor, SOLDIER_TO_POST, SOLDIER_IDLE);
           }
           break;
         case 8:
-          actor->mode = 8;
+          actor->mode = SOLDIER_GUNNER;
           continue;
         case 9:
           TrackEntityYawTowardSpyro(actor, 4, 0, 0);
           if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1800) {
-            ReplaceActorGroupState(actor, 1, 0);
+            ReplaceActorGroupState(actor, SOLDIER_CHASE, SOLDIER_IDLE);
           }
           break;
         case 10:
           if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
-            ReplaceActorGroupState(actor, 4, 0);
+            ReplaceActorGroupState(actor, SOLDIER_ALERT, SOLDIER_IDLE);
           }
           break;
         case 11:
           TrackEntityYawTowardSpyro(actor, 4, 0, 0);
           if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x44C) {
-            ENTER_POSE(actor, 2);
+            ENTER_POSE(actor, SOLDIER_SHOVE);
           }
           break;
         }
         break;
 
-      case 1:
+      case SOLDIER_CHASE:
         switch (st->kind) {
         case 0:
         case 1:
@@ -2885,19 +2885,19 @@ void Level6_UpdateActors(void) {
           if (TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
             TrackEntityYawTowardSpyro(actor, 4, 0, 0);
             if (MoveActorAlongHeading(actor, 0x46, 0x12C, 0x12C, 0x15) != 0) {
-              actor->mode = 100;
+              actor->mode = SOLDIER_GO_HOME;
               continue;
             }
             if (d < 0x44C) {
-              ENTER_POSE(actor, 2);
+              ENTER_POSE(actor, SOLDIER_SHOVE);
             }
             if (st->kind == 9) {
               if (ApproxDist2D(&actor->posX, st->home) > 0x1000) {
-                actor->mode = 100;
+                actor->mode = SOLDIER_GO_HOME;
                 continue;
               }
             } else if (ApproxDist2D(&actor->posX, st->home) > 0x1800) {
-              actor->mode = 100;
+              actor->mode = SOLDIER_GO_HOME;
               continue;
             }
           }
@@ -2919,7 +2919,7 @@ void Level6_UpdateActors(void) {
             MoveActorAlongHeading(actor, st->speed, 0, 0, 5);
             if (d < 0x5DC) {
               st->timer = 0x50;
-              actor->mode = 8;
+              actor->mode = SOLDIER_GUNNER;
               continue;
             }
           }
@@ -2931,19 +2931,19 @@ void Level6_UpdateActors(void) {
 
           if (TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
             if (IsPointInRotatedBox(&actor->posX, st->vol) != 0) {
-              actor->mode = 100;
+              actor->mode = SOLDIER_GO_HOME;
               continue;
             }
             TrackEntityYawTowardSpyro(actor, 4, 0, 0);
             if (MoveActorAlongHeading(actor, 0x46, 0x12C, 0x12C, 5) != 0) {
-              actor->mode = 100;
+              actor->mode = SOLDIER_GO_HOME;
               continue;
             }
             if (d < 0x44C) {
-              ENTER_POSE(actor, 2);
+              ENTER_POSE(actor, SOLDIER_SHOVE);
             }
             if (ApproxDist2D(&actor->posX, st->home) > 0x3000) {
-              actor->mode = 100;
+              actor->mode = SOLDIER_GO_HOME;
               continue;
             }
           }
@@ -2952,10 +2952,10 @@ void Level6_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case SOLDIER_SHOVE:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (g_nActorAnimDone != 0) {
-          actor->mode = 100;
+          actor->mode = SOLDIER_GO_HOME;
           continue;
         }
         g_anSpyroRequestVelocity.x = -(g_anSineLut[actor->rotZ] << 7) >> 12;
@@ -2963,7 +2963,7 @@ void Level6_UpdateActors(void) {
         g_nSpyroRequestVelocityZ = 0;
         break;
 
-      case 3:
+      case SOLDIER_KNOCKED:
         if (st->knock != 0) {
           MoveActorAlongAngle(actor, st->knockDir, st->knock, 0x12C, 0x12C, 5);
           st->knock -= 0x14;
@@ -2979,7 +2979,7 @@ void Level6_UpdateActors(void) {
         }
         break;
 
-      case 4:
+      case SOLDIER_ALERT:
         if (st->kind == 2) {
           actor->frameRate = 0x30;
         }
@@ -2991,11 +2991,11 @@ void Level6_UpdateActors(void) {
           }
         }
         if ((g_nActorAnimDone != 0 && actor->anim == 4) || actor->anim == 0xF) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, SOLDIER_CHASE);
         }
         break;
 
-      case 8: {
+      case SOLDIER_GUNNER: {
         Actor *a = &g_pActorListBase[st->link];
         int h;
         int h2;
@@ -3064,7 +3064,7 @@ void Level6_UpdateActors(void) {
             if (st->link2 != -1) {
               Actor *b = &g_pActorListBase[st->link2];
 
-              ((int *)b->state)[10] = 0x5A;
+              ((SoldierState *)b->state)->timer = 0x5A;
             }
             if (a->anim != 3) {
               ANIM_RESET(a, 3);
@@ -3074,7 +3074,7 @@ void Level6_UpdateActors(void) {
         break;
       }
 
-      case 9: {
+      case SOLDIER_DUEL: {
         Actor *a = &g_pActorListBase[st->link];
         Actor *b = &g_pActorListBase[st->link2];
 
@@ -3084,18 +3084,18 @@ void Level6_UpdateActors(void) {
                       4, 0, 0);
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
           if (b->mode < ACTOR_MODE_DORMANT) {
-            ((int *)b->state)[10] = 0xB4;
+            ((SoldierState *)b->state)->timer = 0xB4;
             if (b->nextAnim != 8) {
               ANIM_ADVANCE(b, 8);
             }
-            b->mode = 8;
+            b->mode = SOLDIER_GUNNER;
           }
           st->timer = 0xB4;
-          ENTER_POSE(actor, 8);
+          ENTER_POSE(actor, SOLDIER_GUNNER);
         }
         if (st->volley != 0) {
-          Actor *c = &g_pActorListBase[((int *)a->state)[1]];
-          int *cs = c->state;
+          Actor *c = &g_pActorListBase[((FireballCannonState *)a->state)->rival];
+          FireballCannonState *cs = c->state;
 
           if (TickCountdownByFrameDelta(&st->volley, 4) == 2) {
             int h = ArcTan2(c->posX - actor->posX, c->posY - actor->posY,
@@ -3119,7 +3119,7 @@ void Level6_UpdateActors(void) {
             fs->link = -1;
             fs->delay = 0;
             o->cullRadius = 0x30;
-            cs[3] = g320[0] + 1;
+            cs->hold = g320[0] + 1;
             if (a->anim != 3) {
               ANIM_RESET(a, 3);
             }
@@ -3128,7 +3128,7 @@ void Level6_UpdateActors(void) {
         break;
       }
 
-      case 10: {
+      case SOLDIER_TO_POST: {
         Actor *a = &g_pActorListBase[st->link];
 
         if (st->phase == 0) {
@@ -3153,13 +3153,13 @@ void Level6_UpdateActors(void) {
         }
         if (actor->type == ACTOR_TYPE_SOLDIER_B && a->mode >= ACTOR_MODE_DORMANT) {
           actor->subMode = 1;
-          actor->mode = 0xB;
+          actor->mode = SOLDIER_IN_POST;
           ANIM_RESET(actor, 0xB);
           continue;
         }
         if (st->kind == 6 && actor->type == ACTOR_TYPE_SOLDIER) {
           st->kind = 2;
-          actor->mode = 1;
+          actor->mode = SOLDIER_CHASE;
           continue;
         }
         CopyVector(g304, &a->posX);
@@ -3171,7 +3171,7 @@ void Level6_UpdateActors(void) {
                                           a->posY - actor->posY, 0),
                             6, 6, 1) != 0) {
             actor->subMode = 0;
-            actor->mode = 0x10;
+            actor->mode = SOLDIER_ENTER_POST;
             ANIM_RESET(actor, 0x10);
             continue;
           }
@@ -3187,7 +3187,7 @@ void Level6_UpdateActors(void) {
         break;
       }
 
-      case 11: {
+      case SOLDIER_IN_POST: {
         Actor *a = &g_pActorListBase[st->link];
 
         if (a->anim < 2) {
@@ -3238,12 +3238,12 @@ void Level6_UpdateActors(void) {
         break;
       }
 
-      case 16: {
+      case SOLDIER_ENTER_POST: {
         Actor *a = &g_pActorListBase[st->link];
 
         if (actor->nextFrame == 0xB) {
           actor->cullRadius = 0;
-          actor->mode = 0xB;
+          actor->mode = SOLDIER_IN_POST;
           ANIM_RESET(actor, 0xB);
           continue;
         }
@@ -3264,7 +3264,7 @@ void Level6_UpdateActors(void) {
         break;
       }
 
-      case 100:
+      case SOLDIER_GO_HOME:
         ANIM_GO(actor, 1);
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(st->home[0] - actor->posX,
@@ -3273,7 +3273,7 @@ void Level6_UpdateActors(void) {
           MoveActorAlongHeading(actor, 0x5A, 0, 0, 5);
         }
         if (ApproxDist2D(&actor->posX, st->home) < 0x80) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, SOLDIER_IDLE);
         }
         break;
       }
@@ -3292,7 +3292,7 @@ void Level6_UpdateActors(void) {
 
       RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
       if (st->hold != 0 && --st->hold == 0) {
-        ((int *)p->state)[19] = 0x3C;
+        ((SoldierState *)p->state)->volley = 0x3C;
         ANIM_GO(actor, 3);
       }
       if (actor->nextAnim >= 3 && actor->nextFrame >= 8) {
@@ -3308,7 +3308,7 @@ void Level6_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case FBCANNON_IDLE:
         if (p->mode >= ACTOR_MODE_DORMANT || (p->nextAnim == 3 && p->nextFrame >= 0x15)) {
           int range = 0x4E2;
           int a = 0x20;
@@ -3330,7 +3330,7 @@ void Level6_UpdateActors(void) {
             if (AbsAngleDelta8(ArcTan2(g304[0] - g_anSpyroWorldPos,
                                             g304[1] - g_nSpyroWorldPosY, 0),
                               g_bSpyroPersistentEulerZ) < 0x30) {
-              actor->mode = 1;
+              actor->mode = FBCANNON_LIT;
               continue;
             }
           }
@@ -3356,13 +3356,13 @@ void Level6_UpdateActors(void) {
         }
         break;
 
-      case 1:
+      case FBCANNON_LIT:
         st->timer = 0x3C;
         PlayActorMeshVoice(actor, 0, &st->voice);
-        actor->mode = 2;
+        actor->mode = FBCANNON_FUSE;
         continue;
 
-      case 2:
+      case FBCANNON_FUSE:
         if (st->timer >= 0xB) {
           int i;
 
@@ -3383,12 +3383,12 @@ void Level6_UpdateActors(void) {
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-          actor->mode = 3;
+          actor->mode = FBCANNON_FIRE;
           continue;
         }
         break;
 
-      case 3: {
+      case FBCANNON_FIRE: {
         Actor *o;
         FireballState *cs;
         Actor *best;
@@ -3485,7 +3485,7 @@ void Level6_UpdateActors(void) {
           }
         }
         ANIM_GO(actor, 3);
-        actor->mode = 0;
+        actor->mode = FBCANNON_IDLE;
         continue;
       }
       }

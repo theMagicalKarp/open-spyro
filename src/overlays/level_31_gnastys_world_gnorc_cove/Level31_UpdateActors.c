@@ -1658,7 +1658,7 @@ void Level31_UpdateActors(void) {
       if (kind != 0) {
         mask = 0xA0000;
       }
-      if ((actor->flags & mask) && actor->mode != 2) {
+      if ((actor->flags & mask) && actor->mode != HATCH_OPEN) {
         if (kind != 0) {
           st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_FLOATING_MINE, actor);
         } else {
@@ -1667,7 +1667,7 @@ void Level31_UpdateActors(void) {
         st->child->posZ += 0x233;
         st->child->flags = actor->flags;
         st->child->rotY = 0x40;
-        actor->mode = 2;
+        actor->mode = HATCH_OPEN;
         actor->flags = 0;
         actor->subMode = 0;
         ANIM_RESET(actor, 2);
@@ -1676,58 +1676,58 @@ void Level31_UpdateActors(void) {
       actor->flags = 0;
 
       switch (actor->mode) {
-      case 0:
+      case HATCH_IDLE:
         if (st->kind == 1) {
-          actor->mode = 3;
+          actor->mode = HATCH_SEALED_IDLE;
           ANIM_RESET(actor, 3);
           continue;
         }
         if (g_nActorAnimDone != 0) {
           actor->subMode = 0;
-          actor->mode = 1;
+          actor->mode = HATCH_WAIT;
           ANIM_RESET(actor, 1);
           continue;
         }
         break;
 
-      case 1:
+      case HATCH_WAIT:
         if (actor->subMode == 1) {
-          actor->mode = 0;
+          actor->mode = HATCH_IDLE;
           ANIM_RESET(actor, 0);
           continue;
         }
         break;
 
-      case 2:
+      case HATCH_OPEN:
         if (actor->subMode == 1 &&
             ApproxDist2D(&actor->posX, &SPY.posX) > 0x400 &&
             ApproxDist2D(&actor->posX, &CAM.posX) > 0xA00) {
           st->child = 0;
           if (st->kind == 1) {
-            actor->mode = 3;
+            actor->mode = HATCH_SEALED_IDLE;
             ANIM_RESET(actor, 3);
             continue;
           }
-          actor->mode = 0;
+          actor->mode = HATCH_IDLE;
           ANIM_RESET(actor, 0);
           continue;
         }
         break;
 
-      case 3:
+      case HATCH_SEALED_IDLE:
         actor->renderList = 0xA0;
         *(int *)&actor->tint0 = 0xA18618;
         if (g_nActorAnimDone != 0) {
           actor->subMode = 0;
-          actor->mode = 4;
+          actor->mode = HATCH_SEALED_WAIT;
           ANIM_RESET(actor, 4);
           continue;
         }
         break;
 
-      case 4:
+      case HATCH_SEALED_WAIT:
         if (actor->subMode == 1) {
-          actor->mode = 3;
+          actor->mode = HATCH_SEALED_IDLE;
           ANIM_RESET(actor, 3);
           continue;
         }

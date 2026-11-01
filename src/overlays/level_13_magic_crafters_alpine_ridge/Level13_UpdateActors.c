@@ -2700,7 +2700,7 @@ void Level13_UpdateActors(void) {
     case ACTOR_TYPE_GUARD_CAPTAIN: {
       CaptainState *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) != 0 && actor->mode != 3) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) != 0 && actor->mode != CAPTAIN_KNOCKED) {
         actor->flags = 0;
         st->knockSpeed = 0x96;
         st->knockHeading = StepAndLerpAngle8(
@@ -2709,14 +2709,14 @@ void Level13_UpdateActors(void) {
         StopSoundVoiceByIndex(actor->voiceRow, 4);
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 3);
+        ENTER_POSE(actor, CAPTAIN_KNOCKED);
       }
       if (TickCountdownByFrameDelta(&st->camTimer, 4) == 0) {
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY);
       }
 
       switch (actor->mode) {
-      case 0:
+      case CAPTAIN_IDLE:
         switch (st->mode) {
         case 0: {
           Actor *p = &g_pActorListBase[st->partner];
@@ -2727,7 +2727,7 @@ void Level13_UpdateActors(void) {
           }
           if (p->mode == 3 || p->mode >= ACTOR_MODE_DORMANT ||
               ApproxDist2D(&actor->posX, &SPY.posX) <= 0x1400) {
-            actor->mode = 6;
+            actor->mode = CAPTAIN_FIGHT;
             continue;
           }
           if (TurnActorYawTowardAngle(actor, st->heading, 6, 0xA, 1)) {
@@ -2748,9 +2748,9 @@ void Level13_UpdateActors(void) {
           if (ApproxDist2D(&actor->posX, &SPY.posX) < st->range << 10) {
             if (actor->group != 0xFF) {
               st->timer = RandomIntInRange(0xF, 0x1E);
-              SetActorGroupState(actor, 0x15);
+              SetActorGroupState(actor, CAPTAIN_ALERTED);
             } else {
-              actor->mode = 0x15;
+              actor->mode = CAPTAIN_ALERTED;
               continue;
             }
           }
@@ -2765,7 +2765,7 @@ void Level13_UpdateActors(void) {
             if (TickCountdownByFrameDelta(&st->timer, 4) &&
                 ApproxDist2D(&actor->posX, &spy->posX) < 0x2800 &&
                 g_nSpyroAirborneFrames == 0 && SPY.posZ - PATH_Z(st->path, 0) > 0) {
-              actor->mode = 0xB;
+              actor->mode = CAPTAIN_STALK;
               continue;
             }
           } else if (st->posed == 0 && actor->anim == 0) {
@@ -2777,7 +2777,7 @@ void Level13_UpdateActors(void) {
           break;
 
         case 3:
-          actor->mode = 6;
+          actor->mode = CAPTAIN_FIGHT;
           continue;
 
         case 4: {
@@ -2795,11 +2795,11 @@ void Level13_UpdateActors(void) {
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1800 &&
               ABS2(SPY_DZ(actor)) < 0x320) {
             if (actor->anim != 0xB) {
-              actor->mode = 6;
+              actor->mode = CAPTAIN_FIGHT;
               continue;
             }
             ANIM_GO(actor, 0xC);
-            actor->mode = 0x14;
+            actor->mode = CAPTAIN_DRAW;
             continue;
           }
           if (actor->subMode == 0) {
@@ -2841,7 +2841,7 @@ void Level13_UpdateActors(void) {
         }
         break;
 
-      case 1:
+      case CAPTAIN_ADVANCE:
         switch (st->mode) {
         case 0: {
           int *pos;
@@ -2851,17 +2851,17 @@ void Level13_UpdateActors(void) {
             break;
           }
           if (MoveActorAlongHeading(actor, 0x96, 0, 0x1F4, 0x15)) {
-            actor->mode = 0x64;
+            actor->mode = CAPTAIN_GO_HOME;
             continue;
           }
           pos = &actor->posX;
           if (ApproxDist2D(pos, st->home) > 0x2800) {
-            actor->mode = 0x64;
+            actor->mode = CAPTAIN_GO_HOME;
             continue;
           }
           if (ApproxDist2D(pos, &spy->posX) < 0x7D0 &&
               ABS2(SPY_DZ(actor)) < 0x320) {
-            actor->mode = 7;
+            actor->mode = CAPTAIN_BASH;
             continue;
           }
           break;
@@ -2873,30 +2873,30 @@ void Level13_UpdateActors(void) {
             break;
           }
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xC00) {
-            actor->mode = 6;
+            actor->mode = CAPTAIN_FIGHT;
             continue;
           }
           if (PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0, 4, 0x40, 0xFF,
                             5) == 0x100) {
-            actor->mode = 6;
+            actor->mode = CAPTAIN_FIGHT;
             continue;
           }
           break;
         }
         break;
 
-      case 2:
+      case CAPTAIN_ROUSE:
         if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
           break;
         }
         ANIM_GO(actor, 9);
         if (actor->nextFrame >= 7) {
-          actor->mode = 1;
+          actor->mode = CAPTAIN_ADVANCE;
           continue;
         }
         break;
 
-      case 3:
+      case CAPTAIN_KNOCKED:
         if (st->knockSpeed != 0) {
           MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x2BC, 5);
           st->knockSpeed -= 0xE;
@@ -2912,7 +2912,7 @@ void Level13_UpdateActors(void) {
         }
         break;
 
-      case 6: {
+      case CAPTAIN_FIGHT: {
         int d = ApproxDist2D(&actor->posX, &SPY.posX);
 
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
@@ -2997,7 +2997,7 @@ void Level13_UpdateActors(void) {
         break;
       }
 
-      case 7:
+      case CAPTAIN_BASH:
         ANIM_GO(actor, 0xA);
         if (st->camTimer == 0 && actor->nextFrame >= 6) {
           int *v = w296;
@@ -3013,63 +3013,63 @@ void Level13_UpdateActors(void) {
           st->camTimer = 0x28;
         }
         if (g_nActorAnimDone != 0) {
-          actor->mode = 0x64;
+          actor->mode = CAPTAIN_GO_HOME;
           continue;
         }
         break;
 
-      case 10:
+      case CAPTAIN_SET_HOME:
         ANIM_GO(actor, 7);
         CopyVector(st->home, PATH_PT(st->path, 0));
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         st->step = 1;
         break;
 
-      case 11: {
+      case CAPTAIN_STALK: {
         int *pos;
 
         ANIM_GO(actor, 7);
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         pos = &actor->posX;
         if (ApproxDist2D(pos, &SPY.posX) < 0x7D0) {
-          actor->mode = 7;
+          actor->mode = CAPTAIN_BASH;
           continue;
         }
         if (MoveActorAlongHeading(actor, 0x6E, 0, 0, 0x15)) {
           st->timer = 0xF0;
-          actor->mode = 0x64;
+          actor->mode = CAPTAIN_GO_HOME;
           continue;
         }
         if (ApproxDist2D(pos, st->home) > 0x2000) {
-          actor->mode = 0x64;
+          actor->mode = CAPTAIN_GO_HOME;
           continue;
         }
         break;
       }
 
-      case 20:
+      case CAPTAIN_DRAW:
         if (g_nActorAnimDone != 0) {
-          actor->mode = 6;
+          actor->mode = CAPTAIN_FIGHT;
           continue;
         }
         break;
 
-      case 21:
+      case CAPTAIN_ALERTED:
         if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
           break;
         }
         ANIM_GO(actor, 0xC);
-        actor->mode = 0x16;
+        actor->mode = CAPTAIN_DRAW_ADVANCE;
         continue;
 
-      case 22:
+      case CAPTAIN_DRAW_ADVANCE:
         if (g_nActorAnimNewFrame != 0 && actor->nextFrame >= 0xE) {
-          actor->mode = 1;
+          actor->mode = CAPTAIN_ADVANCE;
           continue;
         }
         break;
 
-      case 100: {
+      case CAPTAIN_GO_HOME: {
         int ang = ArcTan2(st->home[0] - actor->posX,
                                 st->home[1] - actor->posY, 0);
 
@@ -3077,7 +3077,7 @@ void Level13_UpdateActors(void) {
         if (TurnActorYawTowardAngle(actor, ang, 6, 0x14, 1)) {
           MoveActorAlongHeading(actor, 0x6E, 0, 0, 5);
           if (ApproxDist2D(&actor->posX, st->home) < 0x80) {
-            actor->mode = 0;
+            actor->mode = CAPTAIN_IDLE;
             continue;
           }
         }
@@ -3201,7 +3201,7 @@ void Level13_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != 3) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != VILLAGER_KNOCKED) {
         st->speed = 0xFA;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
@@ -3209,11 +3209,11 @@ void Level13_UpdateActors(void) {
         StopSoundVoiceByIndex(actor->voiceRow, 4);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 3);
+        ENTER_POSE(actor, VILLAGER_KNOCKED);
       }
 
       switch (actor->mode) {
-      case 0: {
+      case VILLAGER_IDLE: {
         int dist;
         int animState;
         int marker;
@@ -3307,10 +3307,10 @@ void Level13_UpdateActors(void) {
             }
           } else if (dist < st->fleeDist << 10) {
             if (actor->group == 0xFF) {
-              actor->mode = 0x5A;
+              actor->mode = VILLAGER_PANIC;
               continue;
             }
-            SetActorGroupStateExcept(actor, 0x5A, 3);
+            SetActorGroupStateExcept(actor, VILLAGER_PANIC, VILLAGER_KNOCKED);
           }
         } else if (st->mode == 2) {
           if (actor->subMode == 0 &&
@@ -3325,7 +3325,7 @@ void Level13_UpdateActors(void) {
           if ((g_pActorListBase[st->link].nextAnim == 3 || g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) &&
               ApproxDist2D(&actor->posX, &SPY.posX) <
                   (st->fleeDist << 10) + 0x7D0) {
-            actor->mode = 0x5A;
+            actor->mode = VILLAGER_PANIC;
             continue;
           }
         } else if (st->mode == 3) {
@@ -3364,7 +3364,7 @@ void Level13_UpdateActors(void) {
         break;
       }
 
-      case 3:
+      case VILLAGER_KNOCKED:
         if (st->speed != 0) {
           MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x2BC, 5);
           st->speed -= 0x14;
@@ -3396,7 +3396,7 @@ void Level13_UpdateActors(void) {
         }
         break;
 
-      case 0x5A:
+      case VILLAGER_PANIC:
         StopSoundVoiceByIndex(actor->voiceRow, 4);
         st->idleTimer = 0;
         SnapActorToGround(actor);
@@ -3410,12 +3410,12 @@ void Level13_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           st->speed = 0x5F;
           st->timer = RandomIntInRange(0xF0, 0x168);
-          actor->mode = 0x5B;
+          actor->mode = VILLAGER_RUN;
           continue;
         }
         break;
 
-      case 0x5B:
+      case VILLAGER_RUN:
         if (TickCountdownByFrameDelta(&st->idleTimer, 4)) {
           st->idleTimer = (GetRandomU32() & 0x2F) + 0x5A;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 4, 0);
@@ -3447,25 +3447,25 @@ void Level13_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >
                 (st->fleeDist << 10) + 0x1388 &&
             (st->mode != 2 || g_pActorListBase[st->link].nextAnim != 3)) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, VILLAGER_IDLE);
         }
         if (TickCountdownByFrameDelta(&st->timer, 4)) {
           st->idleTimer = 0x1E;
           st->runFrom = ApproxDist2D(&actor->posX, &SPY.posX);
           ANIM_BLEND(actor, 4);
-          actor->mode = 0x5C;
+          actor->mode = VILLAGER_STOP;
           continue;
         }
         break;
 
-      case 0x5C:
+      case VILLAGER_STOP:
         if (TickCountdownByFrameDelta(&st->idleTimer, 4)) {
           st->idleTimer = (GetRandomU32() & 0x2F) + 0x3C;
           PlayActorMeshVoice(actor, (GetRandomU32() & 1) | 4, 0);
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (ApproxDist2D(&actor->posX, &SPY.posX) < st->runFrom - 0x80) {
-          actor->mode = 0x5A;
+          actor->mode = VILLAGER_PANIC;
           continue;
         }
         break;
@@ -3487,7 +3487,7 @@ void Level13_UpdateActors(void) {
             spy->bodyRotZ, 0x20, 0x40);
         st->knockSpin = 0x8C;
         actor->flags = 0;
-        ((unsigned char *)SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0)->state)[0xE] = 1;
+        ((CollectibleState *)SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0)->state)->mode = 1;
         MarkActorCommittedKill(actor);
         PlayActorMeshVoice(actor, 0, 0);
         ENTER_POSE(actor, SHEPHERD_KNOCKED);
@@ -4551,14 +4551,14 @@ void Level13_UpdateActors(void) {
       SorcererState *st = actor->state;
       int dist = ApproxDist2D(&actor->posX, &SPY.posX);
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) != 0 && actor->mode != 6) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) != 0 && actor->mode != SORCERER_KNOCKED) {
         if (st->mode == 1) {
-          actor->mode = 0xA;
+          actor->mode = SORCERER_BREAK_LINK;
         } else {
           StopSoundVoiceByIndex(actor->voiceRow, 4);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
-          actor->mode = 6;
+          actor->mode = SORCERER_KNOCKED;
           ANIM_RESET(actor, 6);
           continue;
         }
@@ -4568,22 +4568,22 @@ void Level13_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case SORCERER_IDLE:
         if (st->mode == 0) {
           TrackEntityYawTowardSpyro(actor, 8, 0, 0);
           if ((TickCountdownByFrameDelta(&st->timer, 4) &&
                ApproxDist2D(&SPY.posX, PATH_PT(st->path, 0)) < st->range) ||
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
             if (actor->group < 0xFF) {
-              SetActorGroupStateExcept(actor, 0x63, 6);
+              SetActorGroupStateExcept(actor, SORCERER_ALERTED, SORCERER_KNOCKED);
             } else {
-              ENTER_POSE(actor, 3);
+              ENTER_POSE(actor, SORCERER_CONJURE);
             }
           }
         } else if (st->mode == 1) {
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2800 &&
               g_nSpyroAirborneFrames == 0 && actor->nextAnim != 7) {
-            actor->mode = 0xA;
+            actor->mode = SORCERER_BREAK_LINK;
             continue;
           }
           switch (st->sub) {
@@ -4647,42 +4647,42 @@ void Level13_UpdateActors(void) {
         }
         break;
 
-      case 1:
+      case SORCERER_SETTLE:
         if (g_nActorAnimDone != 0) {
           ANIM_GO(actor, 0);
-          actor->mode = 0;
+          actor->mode = SORCERER_IDLE;
           continue;
         }
         break;
 
-      case 2:
+      case SORCERER_TAUNT:
         ANIM_GO(actor, 2);
         if (g_nActorAnimDone != 0) {
           st->angry = 1;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, SORCERER_IDLE);
         }
         break;
 
-      case 3:
+      case SORCERER_CONJURE:
         TrackEntityYawTowardSpyro(actor, 8, 0, 0);
         ANIM_GO(actor, 3);
         if (g_nActorAnimDone != 0) {
           st->timer = 0;
           st->count = 0;
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, SORCERER_CAST);
         }
         break;
 
-      case 4:
+      case SORCERER_CAST:
         TrackEntityYawTowardSpyro(actor, 8, 0, 0);
         if (ApproxDist2D(&spy->posX, PATH_PT(st->path, 0)) > st->range + 0x400 &&
             ApproxDist2D(&actor->posX, &spy->posX) > 0x1800) {
           if (st->angry != 0) {
             st->timer = 0x5A;
-            actor->mode = 0x61;
+            actor->mode = SORCERER_WAIT_CONJURE;
             continue;
           }
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, SORCERER_IDLE);
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) && actor->nextFrame >= 6 &&
             st->count < 3) {
@@ -4698,15 +4698,15 @@ void Level13_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           if (ApproxDist2D(&actor->posX, &SPY.posX) < st->range) {
             if (actor->group == 0xFF) {
-              ENTER_POSE(actor, 3);
+              ENTER_POSE(actor, SORCERER_CONJURE);
             }
-            SetActorGroupStateExcept(actor, 0x63, 6);
+            SetActorGroupStateExcept(actor, SORCERER_ALERTED, SORCERER_KNOCKED);
           }
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, SORCERER_IDLE);
         }
         break;
 
-      case 6:
+      case SORCERER_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x30);
@@ -4715,7 +4715,7 @@ void Level13_UpdateActors(void) {
         }
         break;
 
-      case 10: {
+      case SORCERER_BREAK_LINK: {
         Actor *t = &g_pActorListBase[st->target];
         SorcererState *ts = t->state;
         Actor *m = &g_pActorListBase[ts->target];
@@ -4728,36 +4728,36 @@ void Level13_UpdateActors(void) {
         CopyVector(&m->posX, &t->posX);
         m->posZ += 0x200;
         *tri = -1;
-        actor->mode = 1;
+        actor->mode = SORCERER_SETTLE;
         continue;
       }
 
-      case 0x60:
+      case SORCERER_WAIT_TAUNT:
         if (TickCountdownByFrameDelta(&st->timer, 4)) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, SORCERER_TAUNT);
         }
         break;
 
-      case 0x61:
+      case SORCERER_WAIT_CONJURE:
         if (TickCountdownByFrameDelta(&st->timer, 4)) {
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, SORCERER_CONJURE);
         }
         break;
 
-      case 0x62:
+      case SORCERER_CUE:
         if (actor->nextAnim == 0) {
           st->timer = GetRandomU32() & 0xF;
-          actor->mode = 0x60;
+          actor->mode = SORCERER_WAIT_TAUNT;
           continue;
         }
         actor->mode = actor->nextAnim;
         break;
 
-      case 0x63:
+      case SORCERER_ALERTED:
         st->angry = 1;
         if (actor->nextAnim == 0) {
           st->timer = st->rest;
-          actor->mode = 0x61;
+          actor->mode = SORCERER_WAIT_CONJURE;
           continue;
         }
         actor->mode = actor->nextAnim;

@@ -2908,7 +2908,7 @@ void Level19_UpdateActors(void) {
       }
 
       switch (actor->subMode) {
-      case 0:
+      case CANNON_UNLIT:
         if (st->link >= 0 && g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {
           DespawnActorRecord(actor);
           continue;
@@ -2916,12 +2916,12 @@ void Level19_UpdateActors(void) {
         if (!(actor->flags & ACTOR_HIT_FLAME)) {
           continue;
         }
-        actor->subMode = 1;
+        actor->subMode = CANNON_FUSE;
         actor->updateDist = 0xFF;
         actor->cullRadius = 0x7F;
         continue;
 
-      case 1:
+      case CANNON_FUSE:
         st->timer += g_nFrameStep;
         if (st->timer < 0x5A) {
           o432[0] = 0;
@@ -2964,7 +2964,7 @@ void Level19_UpdateActors(void) {
         if (st->timer <= 0xB4) {
           continue;
         }
-        actor->subMode = 2;
+        actor->subMode = CANNON_FLIGHT;
         actor->cullRadius = 0x40;
         actor->updateDist = 0x40;
         st->path[1] = 1;
@@ -2973,7 +2973,7 @@ void Level19_UpdateActors(void) {
         PlayActorMeshVoice(actor, 1, 0);
         continue;
 
-      case 2:
+      case CANNON_FLIGHT:
         if (st->timer == 4) {
           SubtractVector(o464, PATH_PT(st->path, st->path[1]), &actor->posX);
           CopyVector(st->vel, o464);
@@ -3474,14 +3474,14 @@ void Level19_UpdateActors(void) {
       int i;
 
       if (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER) && ApproxDist2D(&actor->posX, spy) < 0xE10 &&
-          actor->mode != 6) {
+          actor->mode != BSENTRY_KNOCKED) {
         st->speed = 0xF0;
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
         StopSoundVoicesByOwner(actor, VOICE_STOP_LOOPING);
-        ENTER_POSE(actor, 6);
+        ENTER_POSE(actor, BSENTRY_KNOCKED);
       }
       if (st->guards != 0) {
         for (i = 0; i < 3; i++) {
@@ -3494,65 +3494,65 @@ void Level19_UpdateActors(void) {
         }
       }
       switch (actor->mode) {
-      case 0:
+      case BSENTRY_IDLE:
         if (st->mode != 0) {
-          ENTER_POSE(actor, 8);
+          ENTER_POSE(actor, BSENTRY_CUE);
         }
         if (st->guards == 0 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < st->range << 10) {
-          ENTER_POSE(actor, 0xA);
+          ENTER_POSE(actor, BSENTRY_SUMMON);
         }
         ANIM_GO(actor, 0);
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (ApproxDist2D(&actor->posX, spy) < 0x1C00 &&
             ABS2(actor->posZ - SPY.posZ) < 0x44C) {
-          ENTER_POSE_BRK(actor, 2);
+          ENTER_POSE_BRK(actor, BSENTRY_ROUSE);
         }
         break;
 
-      case 1:
+      case BSENTRY_PATROL:
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x6E, 0, 8, 0x28, 0xFF, 5) ==
             0x100) {
           if (ApproxDist2D(&actor->posX, spy) < 0x1C00 &&
               ABS2(actor->posZ - SPY.posZ) < 0x44C) {
-            ENTER_POSE_BRK(actor, 2);
+            ENTER_POSE_BRK(actor, BSENTRY_ROUSE);
           }
-          ENTER_POSE_BRK(actor, 0);
+          ENTER_POSE_BRK(actor, BSENTRY_IDLE);
         }
         if (ApproxDist2D(&actor->posX, spy) < 0x1194 &&
             AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
                                         g_nSpyroWorldPosY - actor->posY, 0)) < 0x40) {
-          ENTER_POSE_BRK_B(actor, 4);
+          ENTER_POSE_BRK_B(actor, BSENTRY_THROW);
         }
         break;
 
-      case 2:
+      case BSENTRY_ROUSE:
         if (g_nActorAnimDone != 0) {
-          actor->mode = 3;
+          actor->mode = BSENTRY_WATCH;
           ANIM_RESET(actor, 3);
         }
         break;
 
-      case 3: {
+      case BSENTRY_WATCH: {
         int d = ApproxDist2D(&actor->posX, spy);
 
         if (st->guards == 0 &&
             ApproxDist2D(&actor->posX, spy) < st->range << 10) {
-          ENTER_POSE(actor, 0xA);
+          ENTER_POSE(actor, BSENTRY_SUMMON);
         }
         TrackEntityYawTowardSpyro(actor, 3, 0, 0);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && d < 0xFA0 &&
             ABS2(actor->posZ - SPY.posZ) < 0x44C) {
-          ENTER_POSE_BRK_B(actor, 4);
+          ENTER_POSE_BRK_B(actor, BSENTRY_THROW);
         }
         if (d > 0x2000) {
-          ENTER_POSE_BRK(actor, 5);
+          ENTER_POSE_BRK(actor, BSENTRY_LOWER);
         }
         break;
       }
 
-      case 4:
+      case BSENTRY_THROW:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (st->fx == 0 && actor->nextFrame - 2U < 0x1A) {
           st->fx = g_pfnLevelSpawnActor(ACTOR_TYPE_CARRIED_EGG, actor);
@@ -3585,24 +3585,24 @@ void Level19_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           if (st->timer != 0) {
-            actor->mode = 7;
+            actor->mode = BSENTRY_RECOVER;
             ANIM_RESET(actor, 7);
             break;
           }
           st->timer = 0x3C;
-          actor->mode = 0;
+          actor->mode = BSENTRY_IDLE;
           ANIM_RESET(actor, 0);
         }
         break;
 
-      case 5:
+      case BSENTRY_LOWER:
         if (g_nActorAnimDone != 0) {
-          actor->mode = 0;
+          actor->mode = BSENTRY_IDLE;
           ANIM_RESET(actor, 0);
         }
         break;
 
-      case 6:
+      case BSENTRY_KNOCKED:
         if (st->bolt != 0) {
           st->bolt->subMode = 1;
           st->bolt = 0;
@@ -3624,13 +3624,13 @@ void Level19_UpdateActors(void) {
         }
         break;
 
-      case 7:
+      case BSENTRY_RECOVER:
         if (g_nActorAnimDone != 0 && TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-          ENTER_POSE_BRK(actor, 0);
+          ENTER_POSE_BRK(actor, BSENTRY_IDLE);
         }
         break;
 
-      case 8:
+      case BSENTRY_CUE:
         switch (st->mode) {
         case 1:
           if (ApproxDist2D(&actor->posX, spy) < st->range << 10 &&
@@ -3638,7 +3638,7 @@ void Level19_UpdateActors(void) {
             st->mode = 0;
             st->speed = ApproxDist2D(&actor->posX, &st->path[6]) / 12;
             st->u24 = 0x6E;
-            ENTER_POSE_BRK(actor, 9);
+            ENTER_POSE_BRK(actor, BSENTRY_LEAP);
           }
           break;
         case 2:
@@ -3647,13 +3647,13 @@ void Level19_UpdateActors(void) {
                             ArcTan2(spy->posX - actor->posX,
                                           g_nSpyroWorldPosY - actor->posY, 0)) < 0x40) {
             st->mode = 0;
-            ENTER_POSE_BRK(actor, 1);
+            ENTER_POSE_BRK(actor, BSENTRY_PATROL);
           }
           break;
         }
         break;
 
-      case 9: {
+      case BSENTRY_LEAP: {
         int h = ArcTan2(st->path[6] - actor->posX,
                               st->path[7] - actor->posY, 0);
         int d = ApproxDist2D(&actor->posX, &st->path[6]);
@@ -3662,9 +3662,9 @@ void Level19_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 3, 0, 0);
         if (g_nActorAnimDone != 0) {
           if (st->guards == 0) {
-            ANIM_QUEUE(actor, 0xA);
+            ANIM_QUEUE(actor, BSENTRY_SUMMON);
           }
-          ANIM_QUEUE(actor, 0);
+          ANIM_QUEUE(actor, BSENTRY_IDLE);
         }
         if (actor->nextFrame - 8U < 7 && st->speed < d) {
           MoveActorAlongAngle(actor, h, st->speed, 0, 0, 0);
@@ -3672,12 +3672,12 @@ void Level19_UpdateActors(void) {
         break;
       }
 
-      case 10:
+      case BSENTRY_SUMMON:
         if (actor->nextFrame >= 4) {
           st->guards = one;
         }
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE_BRK(actor, 0);
+          ENTER_POSE_BRK(actor, BSENTRY_IDLE);
         }
         break;
       }

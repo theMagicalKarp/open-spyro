@@ -138,7 +138,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     CopyVector(pos, &parent->posX);
     if (parent->type == type) {
       rec->rotZ = parent->rotZ;
-      rec->mode = 3;
+      rec->mode = SPLITSHOT_FRAGMENT;
       rec->frameProgress = 0;
       rec->frameRate = g_apActorMeshTable[rec->type][0x11][0xC];
       rec->anim = 3;
@@ -164,7 +164,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
       }
       rec->rotY = parent->rotY + turn;
       *st = 0x80;
-      rec->mode = 2;
+      rec->mode = SPLITSHOT_FLY;
       rec->frameProgress = 0;
       rec->frameRate = g_apActorMeshTable[rec->type][0x10][0xC];
       rec->anim = 2;
@@ -176,7 +176,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
       if (parent->nextFrame >= 2) {
         rec->posZ += 0x12C;
         rec->rotZ = parent->rotZ;
-        rec->mode = 1;
+        rec->mode = SPLITSHOT_RAISE;
         rec->frameProgress = 0;
         rec->frameRate = g_apActorMeshTable[rec->type][0xF][0xC];
         rec->anim = 1;

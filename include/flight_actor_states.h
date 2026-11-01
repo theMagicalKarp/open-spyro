@@ -51,7 +51,7 @@ typedef struct TargetState {
   int pad08;
   int pad0C;
   Actor *helper;  /* 0x10 */
-  int helperType; /* 0x14, spawned as helperType + 0x158 */
+  int helperType; /* 0x14 its time bonus, spawned as TIME_BONUS_TYPE(helperType) */
   int tallyClass;      /* 0x18 flight target class 0..3 (TallyFlightTarget) */
 } TargetState;
 

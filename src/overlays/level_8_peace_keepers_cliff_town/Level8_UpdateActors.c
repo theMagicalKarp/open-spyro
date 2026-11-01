@@ -2864,12 +2864,12 @@ void Level8_UpdateActors(void) {
     case ACTOR_TYPE_SWOOPER: {
       SwoopState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != SWOOP_KNOCKED) {
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20, 0x40);
         st->speed = 0x12C;
-        if (actor->mode != 0) {
+        if (actor->mode != SWOOP_PERCH) {
           *st->alert = 0;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2891,13 +2891,13 @@ void Level8_UpdateActors(void) {
             }
           }
         }
-        actor->mode = 4;
+        actor->mode = SWOOP_KNOCKED;
         ANIM_RESET(actor, 4);
         continue;
       }
 
       switch (actor->mode) {
-      case 0: {
+      case SWOOP_PERCH: {
         int d = ApproxDist2D(&actor->posX, &SPY.posX);
         int dz = st->home[2] - actor->posZ;
 
@@ -2952,7 +2952,7 @@ void Level8_UpdateActors(void) {
               actor->nextFrame = 0;
               OnActorAnimQueued(actor);
             }
-            actor->mode = 1;
+            actor->mode = SWOOP_DIVE;
             continue;
           }
           st->timer = 0x28;
@@ -2960,7 +2960,7 @@ void Level8_UpdateActors(void) {
         break;
       }
 
-      case 1: {
+      case SWOOP_DIVE: {
         int d;
         int step;
         int a;
@@ -3025,7 +3025,7 @@ void Level8_UpdateActors(void) {
                           ArcTan2(spy->posX - actor->posX,
                                         spy->posY - actor->posY, 0)) >= 0x3D) {
           *st->alert = 0;
-          actor->mode = 2;
+          actor->mode = SWOOP_RETURN;
           continue;
         }
         if (AbsAngleDelta8(spy->bodyRotZ,
@@ -3033,7 +3033,7 @@ void Level8_UpdateActors(void) {
                                         actor->posY - spy->posY, 0)) >= 0x51 &&
             actor->drawn == 0) {
           *st->alert = 0;
-          actor->mode = 2;
+          actor->mode = SWOOP_RETURN;
           continue;
         }
         if (st->side != 0) {
@@ -3043,13 +3043,13 @@ void Level8_UpdateActors(void) {
         }
         if (MoveActorAlongHeading(actor, st->speed, 0, 0x15E, 1) != 0) {
           *st->alert = 0;
-          actor->mode = 2;
+          actor->mode = SWOOP_RETURN;
           continue;
         }
         if (st->count >= 0x3D && d < 0x2710 &&
             CheckSpyroLineOfSightTo(&actor->posX) == 0) {
           *st->alert = 0;
-          actor->mode = 2;
+          actor->mode = SWOOP_RETURN;
           continue;
         }
         if (d < 0x578 &&
@@ -3059,12 +3059,12 @@ void Level8_UpdateActors(void) {
             ABS2(actor->posZ - actor->floorOffset - spy->posZ) < 0x258) {
           SPY.triggerEvents |= SPYRO_EV_HIT;
           *st->alert = 0;
-          actor->mode = 2;
+          actor->mode = SWOOP_RETURN;
           continue;
         }
         if (ApproxDist2D(&actor->posX, st->home) > (st->range << 10) + 0x800) {
           *st->alert = 0;
-          actor->mode = 2;
+          actor->mode = SWOOP_RETURN;
           continue;
         }
         CopyVector(y304, &actor->posX);
@@ -3084,7 +3084,7 @@ void Level8_UpdateActors(void) {
         break;
       }
 
-      case 2: {
+      case SWOOP_RETURN: {
         int a = ArcTan2(st->home[0] - actor->posX,
                               st->home[1] - actor->posY, 0);
         int d = ApproxDist2D(&actor->posX, st->home);
@@ -3113,12 +3113,12 @@ void Level8_UpdateActors(void) {
           st->speed -= 5;
         }
         if (d < 0x80) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, SWOOP_PERCH);
         }
         break;
       }
 
-      case 4:
+      case SWOOP_KNOCKED:
         if (st->speed > 0) {
           MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0, 0);
           st->speed -= 0x10;
@@ -3875,7 +3875,7 @@ void Level8_UpdateActors(void) {
       }
 
       switch (actor->subMode) {
-      case 0:
+      case CANNON_UNLIT:
         if (st->link >= 0 && g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {
           DespawnActorRecord(actor);
           continue;
@@ -3883,12 +3883,12 @@ void Level8_UpdateActors(void) {
         if (!(actor->flags & ACTOR_HIT_FLAME)) {
           continue;
         }
-        actor->subMode = 1;
+        actor->subMode = CANNON_FUSE;
         actor->updateDist = 0xFF;
         actor->cullRadius = 0x7F;
         continue;
 
-      case 1:
+      case CANNON_FUSE:
         st->timer += g_nFrameStep;
         if (st->timer < 0x5A) {
           y368[0] = 0;
@@ -3931,7 +3931,7 @@ void Level8_UpdateActors(void) {
         if (st->timer <= 0xB4) {
           continue;
         }
-        actor->subMode = 2;
+        actor->subMode = CANNON_FLIGHT;
         actor->cullRadius = 0x40;
         actor->updateDist = 0x40;
         st->path[1] = 1;
@@ -3940,7 +3940,7 @@ void Level8_UpdateActors(void) {
         PlayActorMeshVoice(actor, 1, 0);
         continue;
 
-      case 2:
+      case CANNON_FLIGHT:
         if (st->timer == 4) {
           SubtractVector(y400, PATH_PT(st->path, st->path[1]), &actor->posX);
           CopyVector(st->vel, y400);

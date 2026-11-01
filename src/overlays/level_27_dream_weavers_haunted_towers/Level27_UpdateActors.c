@@ -675,16 +675,16 @@ void Level27_UpdateActors(void) {
       int *st = actor->state;
 
       switch (actor->mode) {
-      case 0:
-      case 1:
-      case 3:
+      case SPLITSHOT_GATHER:
+      case SPLITSHOT_RAISE:
+      case SPLITSHOT_FRAGMENT:
         if (g_nActorAnimDone != 0 && TickCountdownByFrameDelta(st, 4) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
         break;
 
-      case 2: {
+      case SPLITSHOT_FLY: {
         int i;
         int a;
 
@@ -1660,7 +1660,7 @@ void Level27_UpdateActors(void) {
       RockThrowerState *st = actor->state;
 
       TickActorFlameGlow(actor);
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 3) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != ROCKTHROW_KNOCKED) {
         Actor *o;
         FallingChunkState *c;
 
@@ -1690,12 +1690,12 @@ void Level27_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 3);
+        ENTER_POSE(actor, ROCKTHROW_KNOCKED);
       }
       actor->flags = 0;
 
       switch (actor->mode) {
-      case 0:
+      case ROCKTHROW_WATCH:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if ((st->flags & 1) &&
             (((SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x1F4
@@ -1703,36 +1703,36 @@ void Level27_UpdateActors(void) {
               ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range) ||
              (st->link != -1 && g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) ||
              IsPointInRotatedBox(&g_anSpyroWorldPos, st->vol) != 0)) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, ROCKTHROW_WALK);
         }
         if (st->flags & 2) {
-          actor->mode = 4;
+          actor->mode = ROCKTHROW_ESCORT;
           continue;
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && g_nGameplayBlocked == 0 &&
             ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range2 &&
             SPY_DZ(actor) < 0xC8 && CheckSpyroLineOfSightTo(&actor->posX) != 0) {
           actor->subMode = 0;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, ROCKTHROW_THROW);
         }
         ANIM_GO(actor, 0);
         break;
 
-      case 1:
+      case ROCKTHROW_WALK:
         st->flags &= ~1;
         if (st->range != 0 &&
             ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1400) {
           actor->subMode = 0;
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, ROCKTHROW_THROW);
         }
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, 5) ==
             0x100) {
-          actor->mode = 10;
+          actor->mode = ROCKTHROW_TURN;
           continue;
         }
         break;
 
-      case 2:
+      case ROCKTHROW_THROW:
         TrackEntityYawTowardSpyro(actor, 8, 0, 0);
         if (actor->nextFrame >= 0x1A && g_nGameplayBlocked == 0 && actor->subMode == 0) {
           Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_CHUNK, actor);
@@ -1757,11 +1757,11 @@ void Level27_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           actor->subMode = 0;
           st->timer = 0x28;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, ROCKTHROW_WATCH);
         }
         break;
 
-      case 3:
+      case ROCKTHROW_KNOCKED:
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC, 0x10);
         if (g_nActorAnimDone != 0 && actor->nextAnim == 3) {
           ANIM_SET(actor, 4);
@@ -1774,7 +1774,7 @@ void Level27_UpdateActors(void) {
         }
         break;
 
-      case 4: {
+      case ROCKTHROW_ESCORT: {
         int spd = 0x78;
         int d = ApproxDist2D(&actor->posX, &g_pActorListBase[st->partner].posX);
 
@@ -1796,15 +1796,15 @@ void Level27_UpdateActors(void) {
         if (st->trig != 0) {
           st->flags = one;
           g_pActorListBase[st->partner].subMode = 1;
-          actor->mode = 0;
+          actor->mode = ROCKTHROW_WATCH;
           continue;
         }
         break;
       }
 
-      case 10:
+      case ROCKTHROW_TURN:
         if (TrackEntityYawTowardSpyro(actor, 5, 2, 1) != 0) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, ROCKTHROW_WATCH);
         }
         break;
       }
@@ -2010,21 +2010,21 @@ void Level27_UpdateActors(void) {
         st->heading = actor->rotZ;
       }
       switch (actor->mode) {
-      case 0: {
+      case SFGIVER_IDLE: {
         int range = 0xA8C;
 
         if (st->kind == 3) {
           range = 0xD48;
         }
         if (st->alert != 0) {
-          actor->mode = 4;
+          actor->mode = SFGIVER_CIRCLE;
           actor->posZ -= 0x1F4;
           continue;
         }
         if (actor->subMode != 0) {
           actor->subMode = 0;
           st->cool = 0;
-          actor->mode = 3;
+          actor->mode = SFGIVER_WALK;
           continue;
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
@@ -2037,13 +2037,13 @@ void Level27_UpdateActors(void) {
                                         actor->posY - SPY.posY, 0)) < 0x1E) {
           st->timer = 0x4B;
           actor->subMode = 0;
-          actor->mode = 1;
+          actor->mode = SFGIVER_GRANT;
           continue;
         }
         break;
       }
 
-      case 1: {
+      case SFGIVER_GRANT: {
         int dz;
         short *nv;
 
@@ -2069,7 +2069,7 @@ void Level27_UpdateActors(void) {
         SPY.requestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
         g_anCameraActiveTargetParams.w[0] = -(SPY.bodyRotZ + 0x40) << 4;
         switch (actor->subMode) {
-        case 0:
+        case SFGIVER_SUB_APPROACH:
           if (ApproxDist2D(&actor->posX, g272) > 0x50) {
             MoveActorAlongAngle(actor,
                           ArcTan2(g272[0] - actor->posX,
@@ -2094,11 +2094,11 @@ void Level27_UpdateActors(void) {
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
             ANIM_GO(actor, 1);
             st->count = 0;
-            actor->subMode = 1;
+            actor->subMode = SFGIVER_SUB_CAST;
           }
           break;
 
-        case 1: {
+        case SFGIVER_SUB_CAST: {
           int f;
           int *p;
           int *q;
@@ -2119,7 +2119,7 @@ void Level27_UpdateActors(void) {
           if (g_nActorAnimDone != 0) {
             ANIM_GO(actor, 0);
             st->timer = 0xA;
-            actor->subMode = 2;
+            actor->subMode = SFGIVER_SUB_LINGER;
             PlayActorMeshVoice(actor, 0, 0);
           }
           f = 7;
@@ -2140,9 +2140,9 @@ void Level27_UpdateActors(void) {
           break;
         }
 
-        case 2:
+        case SFGIVER_SUB_LINGER:
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-            actor->mode = 2;
+            actor->mode = SFGIVER_RETURN;
             continue;
           }
           break;
@@ -2150,7 +2150,7 @@ void Level27_UpdateActors(void) {
         break;
       }
 
-      case 2: {
+      case SFGIVER_RETURN: {
         int dz;
 
         g_nGameplayBlocked = 0;
@@ -2184,23 +2184,23 @@ void Level27_UpdateActors(void) {
         }
         if (ApproxDist2D(&actor->posX, st->home) < 0x51 && ABS2(dz) < 0x29) {
           actor->subMode = 0;
-          actor->mode = 0;
+          actor->mode = SFGIVER_IDLE;
           continue;
         }
         break;
       }
 
-      case 3:
+      case SFGIVER_WALK:
         if (WalkActorAlongWaypoints(actor, st->path, 0x200, 0x96, 0, 6, 0x10, 0) ==
             0x100) {
           actor->subMode = 0;
           CopyVector(st->home, &actor->posX);
-          actor->mode = 0;
+          actor->mode = SFGIVER_IDLE;
           continue;
         }
         break;
 
-      case 4: {
+      case SFGIVER_CIRCLE: {
         int h = (ArcTan2(actor->posX - st->path->nodes[0].x,
                                actor->posY - st->path->nodes[0].y, 0) +
                  8) &
@@ -2211,7 +2211,7 @@ void Level27_UpdateActors(void) {
           actor->subMode = 0;
           st->alert = 0;
           ANIM_GO(actor, 0);
-          actor->mode = 2;
+          actor->mode = SFGIVER_RETURN;
           continue;
         }
         SteerActorAroundPoint(actor, &st->path->nodes[0].x, 0xBB8, h, 8, 0x78, 0xE,

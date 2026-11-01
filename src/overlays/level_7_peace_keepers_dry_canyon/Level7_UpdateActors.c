@@ -2675,10 +2675,10 @@ void Level7_UpdateActors(void) {
       ShooterState *st = actor->state;
 
       TickActorFlameGlow(actor);
-      if (actor->flags & ACTOR_HITS_SPYRO && actor->mode != 3) {
+      if (actor->flags & ACTOR_HITS_SPYRO && actor->mode != SHOOTER_KNOCKED) {
         if (actor->flags == ACTOR_HIT_CHARGE) {
           st->speed = 0x15E;
-        } else if (actor->mode == 7 && actor->frame - 4U < 0x1B) {
+        } else if (actor->mode == SHOOTER_SHIELD && actor->frame - 4U < 0x1B) {
           goto idle;
         } else {
           st->speed = 0x118;
@@ -2691,12 +2691,12 @@ void Level7_UpdateActors(void) {
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 3);
+        ENTER_POSE(actor, SHOOTER_KNOCKED);
       }
     idle:
       actor->flags = 0;
       switch (actor->mode) {
-      case 0:
+      case SHOOTER_IDLE:
         if (st->mode == 0) {
           if (st->triggered == 0) {
             if (actor->anim == 0) {
@@ -2726,21 +2726,21 @@ void Level7_UpdateActors(void) {
           if (ApproxDist2D(&actor->posX, &SPY.posX) < st->range << 10 &&
               st->triggered == 0) {
             st->triggered = one;
-            ENTER_POSE(actor, 11);
+            ENTER_POSE(actor, SHOOTER_WAKE);
           }
           if (ApproxDist2D(&actor->posX, spy) < 0x2800 &&
               ABS2(SPY_DZ(actor)) < 0x3E8 && st->triggered == 0) {
             st->triggered = one;
-            ENTER_POSE(actor, 11);
+            ENTER_POSE(actor, SHOOTER_WAKE);
           }
           break;
         }
         st->timer = 0x78;
-        actor->mode = 7;
+        actor->mode = SHOOTER_SHIELD;
         ANIM_RESET(actor, 7);
         continue;
 
-      case 1:
+      case SHOOTER_FIRE:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (st->spawned == 0) {
           Actor *c;
@@ -2765,24 +2765,24 @@ void Level7_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           st->spawned = 0;
-          actor->mode = 7;
+          actor->mode = SHOOTER_SHIELD;
           ANIM_RESET(actor, 7);
           continue;
         }
         break;
 
-      case 2:
+      case SHOOTER_LOWER:
         if (g_nActorAnimDone != 0) {
           if (st->mode == 0 && ApproxDist2D(&actor->posX, &SPY.posX) > 0x2800) {
             st->timer = 0x3C;
           }
-          actor->mode = 6;
+          actor->mode = SHOOTER_AIM;
           ANIM_RESET(actor, 6);
           continue;
         }
         break;
 
-      case 3:
+      case SHOOTER_KNOCKED:
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->turn, 0xC, 0xA);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -2792,9 +2792,9 @@ void Level7_UpdateActors(void) {
         }
         break;
 
-      case 4:
+      case SHOOTER_GO_HOME:
         if (ApproxDist2D(&actor->posX, st->home) < 0x100) {
-          actor->mode = 0;
+          actor->mode = SHOOTER_IDLE;
           continue;
         }
         TurnActorYawTowardAngle(actor,
@@ -2804,7 +2804,7 @@ void Level7_UpdateActors(void) {
         MoveActorAlongHeading(actor, 0x3C, 0, 0, 5);
         break;
 
-      case 6:
+      case SHOOTER_AIM:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (st->mode == 0) {
           if (g_nGameplayBlocked != 0 || TickCountdownByFrameDelta(&st->timer, 4) == 0 ||
@@ -2814,7 +2814,7 @@ void Level7_UpdateActors(void) {
           if (actor->drawn != 0 &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x2800 &&
               CheckSpyroLineOfSightTo(&actor->posX) != 0) {
-            ENTER_POSE(actor, 1);
+            ENTER_POSE(actor, SHOOTER_FIRE);
           }
           g_nActorAnimDone = 0;
           actor->frameProgress = 10;
@@ -2824,7 +2824,7 @@ void Level7_UpdateActors(void) {
           actor->frame = actor->nextFrame;
           actor->nextFrame = 5;
           OnActorAnimQueued(actor);
-          actor->mode = 7;
+          actor->mode = SHOOTER_SHIELD;
           continue;
         } else {
           int d = ApproxDist2D(&actor->posX, &SPY.posX);
@@ -2835,7 +2835,7 @@ void Level7_UpdateActors(void) {
               break;
             }
             if (d < 0x2000) {
-              ENTER_POSE(actor, 1);
+              ENTER_POSE(actor, SHOOTER_FIRE);
             }
             g_nActorAnimDone = 0;
             actor->frameProgress = 10;
@@ -2845,14 +2845,14 @@ void Level7_UpdateActors(void) {
             actor->frame = actor->nextFrame;
             actor->nextFrame = 5;
             OnActorAnimQueued(actor);
-            actor->mode = 7;
+            actor->mode = SHOOTER_SHIELD;
             continue;
           }
           st->timer = 0;
         }
         break;
 
-      case 7:
+      case SHOOTER_SHIELD:
         if (ABS2(actor->nextFrame - actor->frame) < 3) {
           actor->frameRate = TYPE_DESC(actor, actor->anim);
         }
@@ -2873,25 +2873,25 @@ void Level7_UpdateActors(void) {
         }
         if (actor->frame >= 0x12) {
           st->timer = 0x3C;
-          actor->mode = 2;
+          actor->mode = SHOOTER_LOWER;
           ANIM_RESET(actor, 2);
           continue;
         }
         break;
 
-      case 9:
+      case SHOOTER_RISE:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 11);
+          ENTER_POSE(actor, SHOOTER_WAKE);
         }
         break;
 
-      case 11:
+      case SHOOTER_WAKE:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (g_nActorAnimNewFrame == 0 || actor->frame < 9) {
           break;
         }
         if (st->range != 0) {
-          actor->mode = 20;
+          actor->mode = SHOOTER_ADVANCE;
           continue;
         }
         st->timer = 0x3C;
@@ -2900,10 +2900,10 @@ void Level7_UpdateActors(void) {
         actor->frame = 3;
         actor->nextFrame = 4;
         actor->frameProgress = 0x20;
-        actor->mode = 7;
+        actor->mode = SHOOTER_SHIELD;
         break;
 
-      case 20:
+      case SHOOTER_ADVANCE:
         ANIM_GO(actor, 4);
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x800 ||
             PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0, 8, 0x28, 0xFF, 5) ==
@@ -2914,7 +2914,7 @@ void Level7_UpdateActors(void) {
           actor->frame = 3;
           actor->nextFrame = 4;
           actor->frameProgress = 0x20;
-          actor->mode = 7;
+          actor->mode = SHOOTER_SHIELD;
         }
         break;
       }
@@ -3181,12 +3181,12 @@ void Level7_UpdateActors(void) {
     case ACTOR_TYPE_SWOOPER: {
       SwoopState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != SWOOP_KNOCKED) {
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20, 0x40);
         st->speed = 0x12C;
-        if (actor->mode != 0) {
+        if (actor->mode != SWOOP_PERCH) {
           *st->alert = 0;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -3208,13 +3208,13 @@ void Level7_UpdateActors(void) {
             }
           }
         }
-        actor->mode = 4;
+        actor->mode = SWOOP_KNOCKED;
         ANIM_RESET(actor, 4);
         continue;
       }
 
       switch (actor->mode) {
-      case 0: {
+      case SWOOP_PERCH: {
         int d = ApproxDist2D(&actor->posX, &SPY.posX);
         int dz = st->home[2] - actor->posZ;
 
@@ -3269,7 +3269,7 @@ void Level7_UpdateActors(void) {
               actor->nextFrame = 0;
               OnActorAnimQueued(actor);
             }
-            actor->mode = 1;
+            actor->mode = SWOOP_DIVE;
             continue;
           }
           st->timer = 0x28;
@@ -3277,7 +3277,7 @@ void Level7_UpdateActors(void) {
         break;
       }
 
-      case 1: {
+      case SWOOP_DIVE: {
         int d;
         int step;
         int a;
@@ -3342,7 +3342,7 @@ void Level7_UpdateActors(void) {
                           ArcTan2(spy->posX - actor->posX,
                                         spy->posY - actor->posY, 0)) >= 0x3D) {
           *st->alert = 0;
-          actor->mode = 2;
+          actor->mode = SWOOP_RETURN;
           continue;
         }
         if (AbsAngleDelta8(spy->bodyRotZ,
@@ -3350,7 +3350,7 @@ void Level7_UpdateActors(void) {
                                         actor->posY - spy->posY, 0)) >= 0x51 &&
             actor->drawn == 0) {
           *st->alert = 0;
-          actor->mode = 2;
+          actor->mode = SWOOP_RETURN;
           continue;
         }
         if (st->side != 0) {
@@ -3360,13 +3360,13 @@ void Level7_UpdateActors(void) {
         }
         if (MoveActorAlongHeading(actor, st->speed, 0, 0x15E, 1) != 0) {
           *st->alert = 0;
-          actor->mode = 2;
+          actor->mode = SWOOP_RETURN;
           continue;
         }
         if (st->count >= 0x3D && d < 0x2710 &&
             CheckSpyroLineOfSightTo(&actor->posX) == 0) {
           *st->alert = 0;
-          actor->mode = 2;
+          actor->mode = SWOOP_RETURN;
           continue;
         }
         if (d < 0x578 &&
@@ -3376,12 +3376,12 @@ void Level7_UpdateActors(void) {
             ABS2(actor->posZ - actor->floorOffset - spy->posZ) < 0x258) {
           SPY.triggerEvents |= SPYRO_EV_HIT;
           *st->alert = 0;
-          actor->mode = 2;
+          actor->mode = SWOOP_RETURN;
           continue;
         }
         if (ApproxDist2D(&actor->posX, st->home) > (st->range << 10) + 0x800) {
           *st->alert = 0;
-          actor->mode = 2;
+          actor->mode = SWOOP_RETURN;
           continue;
         }
         CopyVector(s344, &actor->posX);
@@ -3401,7 +3401,7 @@ void Level7_UpdateActors(void) {
         break;
       }
 
-      case 2: {
+      case SWOOP_RETURN: {
         int a = ArcTan2(st->home[0] - actor->posX,
                               st->home[1] - actor->posY, 0);
         int d = ApproxDist2D(&actor->posX, st->home);
@@ -3430,12 +3430,12 @@ void Level7_UpdateActors(void) {
           st->speed -= 5;
         }
         if (d < 0x80) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, SWOOP_PERCH);
         }
         break;
       }
 
-      case 4:
+      case SWOOP_KNOCKED:
         if (st->speed > 0) {
           MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0, 0);
           st->speed -= 0x10;

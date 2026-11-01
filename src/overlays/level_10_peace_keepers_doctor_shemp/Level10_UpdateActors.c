@@ -2699,7 +2699,7 @@ void Level10_UpdateActors(void) {
 
       EBB_BREAK();
       TickActorFlameGlow(actor);
-      if (actor->mode != 1 && actor->mode != 3 && actor->flags != 0 &&
+      if (actor->mode != SGUARD_CHASE && actor->mode != SGUARD_KNOCKED && actor->flags != 0 &&
           ((actor->flags & ACTOR_HIT_CHARGE) ||
            AbsAngleDelta8(actor->rotZ,
                          ArcTan2(spy->posX - actor->posX,
@@ -2711,16 +2711,16 @@ void Level10_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        ENTER_POSE(actor, 3);
+        ENTER_POSE(actor, SGUARD_KNOCKED);
       }
       actor->flags = 0;
 
       switch (actor->mode) {
-      case 0:
+      case SGUARD_IDLE:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (st->mode == 0) {
           if (st->guard != -1 && g_pActorListBase[st->guard].mode >= ACTOR_MODE_DORMANT) {
-            actor->mode = 8;
+            actor->mode = SGUARD_GUARD;
             continue;
           }
           if (actor->drawn != 0 &&
@@ -2728,15 +2728,15 @@ void Level10_UpdateActors(void) {
               ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x800) {
             st->accel = 0;
             if (actor->group == 0xFF) {
-              ENTER_POSE(actor, 2);
+              ENTER_POSE(actor, SGUARD_ROUSE);
             }
-            SetActorGroupStateExcept(actor, 1, 3);
+            SetActorGroupStateExcept(actor, SGUARD_CHASE, SGUARD_KNOCKED);
           }
           if (st->watch != -1 && g_pActorListBase[st->watch].nextAnim == 7) {
             st->done = 1;
             st->watch = -1;
             PlayActorMeshVoice(actor, 1, 0);
-            ENTER_POSE(actor, 1);
+            ENTER_POSE(actor, SGUARD_CHASE);
           }
         } else if (st->mode == 1) {
           if (AbsAngleDelta8(
@@ -2745,19 +2745,19 @@ void Level10_UpdateActors(void) {
                   ArcTan2(spy->posX - actor->posX,
                                 spy->posY - actor->posY, 0)) < 0x40) {
             if (ApproxDist2D(&spy->posX, &st->target->posX) < 0x898) {
-              actor->mode = 0x1E;
+              actor->mode = SGUARD_PATH_RUSH;
               continue;
             }
           } else if (actor->drawn != 0 &&
                      ApproxDist2D(&actor->posX, &spy->posX) < st->range << 10 &&
                      ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x800) {
             st->accel = 0;
-            ENTER_POSE(actor, 2);
+            ENTER_POSE(actor, SGUARD_ROUSE);
           }
         }
         break;
 
-      case 1:
+      case SGUARD_CHASE:
         d = ApproxDist2D(&actor->posX, &spy->posX);
         if (TickCountdownByFrameDelta(&st->timer38, 4) != 0) {
           ANIM_GO(actor, 1);
@@ -2765,19 +2765,19 @@ void Level10_UpdateActors(void) {
             PlayActorMeshVoice(actor, 1, 0);
           }
           if (st->done != 0) {
-            actor->mode = 0x1E;
+            actor->mode = SGUARD_PATH_RUSH;
             continue;
           }
           if (IsPointInRotatedBox(&actor->posX, st->boxA) != 0 ||
               IsPointInRotatedBox(&actor->posX, st->boxB) != 0) {
-            actor->mode = 5;
+            actor->mode = SGUARD_BRAKE_AIM;
             continue;
           }
           if (d < 0xC00 &&
               AbsAngleDelta8(actor->rotZ,
                             ArcTan2(spy->posX - actor->posX,
                                           SPY.posY - actor->posY, 0)) < 8) {
-            actor->mode = 4;
+            actor->mode = SGUARD_RUSH;
             continue;
           }
           if (st->accel < 0xC8) {
@@ -2800,20 +2800,20 @@ void Level10_UpdateActors(void) {
             st->timer24 = 0x3C;
             actor->subMode = 0;
             PlayActorMeshVoice(actor, 0, 0);
-            actor->mode = 0xA;
+            actor->mode = SGUARD_FALL;
             continue;
           }
           actor->posZ = actor->floorOffset + g;
         }
         break;
 
-      case 2:
+      case SGUARD_ROUSE:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, SGUARD_CHASE);
         }
         break;
 
-      case 3:
+      case SGUARD_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -2842,7 +2842,7 @@ void Level10_UpdateActors(void) {
         }
         break;
 
-      case 4: {
+      case SGUARD_RUSH: {
         int g4;
 
         if (st->accel < 0xC8) {
@@ -2860,13 +2860,13 @@ void Level10_UpdateActors(void) {
           st->timer24 = 0x3C;
           actor->subMode = 0;
           PlayActorMeshVoice(actor, 0, 0);
-          actor->mode = 0xA;
+          actor->mode = SGUARD_FALL;
           continue;
         }
         actor->posZ = actor->floorOffset + g4;
         if (IsPointInRotatedBox(&actor->posX, st->boxA) != 0 ||
             IsPointInRotatedBox(&actor->posX, st->boxB) != 0) {
-          actor->mode = 5;
+          actor->mode = SGUARD_BRAKE_AIM;
           continue;
         }
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x4B0 &&
@@ -2879,27 +2879,27 @@ void Level10_UpdateActors(void) {
           spy->triggerEvents = (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
           spy->requestVelX = 0;
           spy->requestVelY = 0;
-          actor->mode = 5;
+          actor->mode = SGUARD_BRAKE_AIM;
           continue;
         }
         if (AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
                                         spy->posY - actor->posY, 0)) >= 0x41) {
-          actor->mode = 5;
+          actor->mode = SGUARD_BRAKE_AIM;
           continue;
         }
         break;
       }
 
-      case 5:
+      case SGUARD_BRAKE_AIM:
         st->timer24 = 0xB4;
         FindNearestPathPointToActor(actor, (PostPath *)st->path, &idx370[0]);
         st->turn = ArcTan2(PATH_X(st->path, idx370[0]) - actor->posX,
                                  PATH_Y(st->path, idx370[0]) - actor->posY, 0);
-        actor->mode = 6;
+        actor->mode = SGUARD_BRAKE;
         continue;
 
-      case 6: {
+      case SGUARD_BRAKE: {
         int h = ProbeActorGroundHeight(actor);
 
         if (st->timer24 < 0xA5) {
@@ -2913,7 +2913,7 @@ void Level10_UpdateActors(void) {
         }
         if (st->accel == 0) {
           st->timer24 = 0x3C;
-          actor->mode = 7;
+          actor->mode = SGUARD_RECOVER;
           continue;
         }
         if (actor->posZ - (h + actor->floorOffset) > 0x320 ||
@@ -2927,7 +2927,7 @@ void Level10_UpdateActors(void) {
           st->timer24 = 0x3C;
           actor->subMode = 0;
           PlayActorMeshVoice(actor, 0, 0);
-          actor->mode = 0xA;
+          actor->mode = SGUARD_FALL;
           continue;
         }
         actor->posZ = h + actor->floorOffset;
@@ -2935,37 +2935,37 @@ void Level10_UpdateActors(void) {
         break;
       }
 
-      case 7:
+      case SGUARD_RECOVER:
         ANIM_GO(actor, 0);
         if (TickCountdownByFrameDelta(&st->timer24, 4) != 0) {
           ANIM_GO(actor, 4);
-          actor->mode = 8;
+          actor->mode = SGUARD_GUARD;
           continue;
         }
         break;
 
-      case 8: {
+      case SGUARD_GUARD: {
         int e = ApproxDist2D(&actor->posX, &SPY.posX);
 
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (TickCountdownByFrameDelta(&st->timer04, 4) != 0 && e < 0x578) {
           st->timer04 = 0x78;
           ANIM_GO(actor, 5);
-          actor->mode = 9;
+          actor->mode = SGUARD_SWIPE;
           continue;
         }
         break;
       }
 
-      case 9:
+      case SGUARD_SWIPE:
         if (g_nActorAnimDone != 0) {
           ANIM_GO(actor, 4);
-          actor->mode = 8;
+          actor->mode = SGUARD_GUARD;
           continue;
         }
         break;
 
-      case 10:
+      case SGUARD_FALL:
         ANIM_GO(actor, 6);
         if (TickCountdownByFrameDelta(&st->timer24, 4) != 0) {
           DespawnActorRecord(actor);
@@ -2980,17 +2980,17 @@ void Level10_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC, 0xC);
         break;
 
-      case 20:
+      case SGUARD_PATH_CHASE:
         st->accel = 0xA0;
         if (PivotActorAlongPath(actor, st->target, 0x12C, st->accel, 0, 8, 0x40, 0xFF,
                           5) == 0x100) {
           st->done = 0;
-          actor->mode = 1;
+          actor->mode = SGUARD_CHASE;
           continue;
         }
         break;
 
-      case 30:
+      case SGUARD_PATH_RUSH:
         ANIM_GO(actor, 1);
         if (TickCountdownByFrameDelta(&st->timer04, 4) == 2) {
           PlayActorMeshVoice(actor, 1, 0);
@@ -2998,7 +2998,7 @@ void Level10_UpdateActors(void) {
         st->accel = 0xB4;
         if (PivotActorAlongPath(actor, st->target, 0x100, st->accel, 0, 8, 0x40, 0xFF,
                           5) == 0x100) {
-          actor->mode = 5;
+          actor->mode = SGUARD_BRAKE_AIM;
           continue;
         }
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x4B0 &&

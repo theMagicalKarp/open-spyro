@@ -1316,17 +1316,17 @@ void Level2_UpdateActors(void) {
     case ACTOR_TYPE_GUARD_PAIR: {
       GuardPairState *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 6) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != GPAIR_KNOCKED) {
         st->speed = 0xF0;
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE_B(actor, 6);
+        ENTER_POSE_B(actor, GPAIR_KNOCKED);
       }
 
       switch (actor->mode) {
-      case 0: {
+      case GPAIR_IDLE: {
         int dz;
 
         TrackEntityYawTowardSpyro(actor, 3, 0x10, 0);
@@ -1334,7 +1334,7 @@ void Level2_UpdateActors(void) {
             ((dz = actor->posZ - SPY.posZ) > 0 ? dz < 0x5DC
                                                : SPY.posZ - actor->posZ < 0x5DC)) {
           st->speed = 0x48;
-          ENTER_POSE_B(actor, 2);
+          ENTER_POSE_B(actor, GPAIR_ROUSE);
         }
 
         if (st->partner != -1 && TickCountdownByFrameDelta(&st->timer, 4)) {
@@ -1346,18 +1346,18 @@ void Level2_UpdateActors(void) {
                                  actor->rotZ) +
                              0x20) < 7) {
             actor->subMode = 0;
-            actor->mode = 10;
+            actor->mode = GPAIR_CUE;
             continue;
           }
         }
         break;
       }
-      case 2:
+      case GPAIR_ROUSE:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE_B(actor, 3);
+          ENTER_POSE_B(actor, GPAIR_WATCH);
         }
         break;
-      case 3: {
+      case GPAIR_WATCH: {
         int dist = ApproxDist2D(&actor->posX, &spy->posX);
         int dz;
 
@@ -1367,31 +1367,31 @@ void Level2_UpdateActors(void) {
                                                : SPY.posZ - actor->posZ < 0x5DC)) {
           st->speed = 0x48;
           st->flag = 0;
-          ENTER_POSE_B(actor, 4);
+          ENTER_POSE_B(actor, GPAIR_SWING);
         }
         if (dist > 0x2400) {
-          ENTER_POSE_B(actor, 5);
+          ENTER_POSE_B(actor, GPAIR_LOWER);
         }
         break;
       }
-      case 4:
+      case GPAIR_SWING:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (SPY.state == SPYRO_ST_HURT_PINNED) {
           st->flag = 2;
         }
         if (g_nActorAnimDone != 0) {
           if (st->flag != 0) {
-            ENTER_POSE_B(actor, 7);
+            ENTER_POSE_B(actor, GPAIR_GLOAT);
           }
-          ENTER_POSE_B(actor, 3);
+          ENTER_POSE_B(actor, GPAIR_WATCH);
         }
         break;
-      case 5:
+      case GPAIR_LOWER:
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE_B(actor, 0);
+          ENTER_POSE_B(actor, GPAIR_IDLE);
         }
         break;
-      case 6:
+      case GPAIR_KNOCKED:
         if (st->speed > 0) {
           MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 0);
           st->speed -= 0x10;
@@ -1403,12 +1403,12 @@ void Level2_UpdateActors(void) {
           continue;
         }
         break;
-      case 7:
+      case GPAIR_GLOAT:
         if (g_nActorAnimDone != 0 && TickCountdownByFrameDelta(&st->flag, 4)) {
-          ENTER_POSE_B(actor, 0);
+          ENTER_POSE_B(actor, GPAIR_IDLE);
         }
         break;
-      case 10:
+      case GPAIR_CUE:
         switch (actor->subMode) {
         case 0:
           ANIM_GO(actor, 2);
@@ -1434,7 +1434,7 @@ void Level2_UpdateActors(void) {
           ANIM_GO(actor, 5);
           if (g_nActorAnimDone != 0) {
             st->timer = 0x258;
-            ENTER_POSE_B(actor, 0);
+            ENTER_POSE_B(actor, GPAIR_IDLE);
           }
           break;
         }
@@ -1777,7 +1777,7 @@ void Level2_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       EBB_BREAK();
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2 &&
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != POSTGUARD_KNOCKED &&
           (actor->flags != ACTOR_HIT_FLAME || st->flag == 0)) {
         st->time = 0x8C;
         st->speed = 0x118;
@@ -1795,12 +1795,12 @@ void Level2_UpdateActors(void) {
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, POSTGUARD_KNOCKED);
       }
 
       actor->flags = 0;
       switch (actor->mode) {
-      case 0:
+      case POSTGUARD_IDLE:
         switch (st->mode) {
         case 0:
           if (ApproxDist2D(&spy->posX, &st->path->pts[0]) < 0x1C00) {
@@ -1812,7 +1812,7 @@ void Level2_UpdateActors(void) {
                 ApproxDist2D(&actor->posX, &spy->posX) >
                     ApproxDist2D(&actor->posX, &st->path->pts[0])) {
               st->path->sel = 0;
-              actor->mode = 3;
+              actor->mode = POSTGUARD_TO_POST;
               continue;
             }
           } else if (ApproxDist2D(&spy->posX, &st->path->pts[1]) < 0x1C00) {
@@ -1824,7 +1824,7 @@ void Level2_UpdateActors(void) {
                 ApproxDist2D(&actor->posX, &spy->posX) >
                     ApproxDist2D(&actor->posX, &st->path->pts[1])) {
               st->path->sel = 1;
-              actor->mode = 3;
+              actor->mode = POSTGUARD_TO_POST;
               continue;
             }
           }
@@ -1834,7 +1834,7 @@ void Level2_UpdateActors(void) {
           PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0xC8, 5, 0xA, actor->group,
                         5);
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400) {
-            SetActorGroupState(actor, 0x14);
+            SetActorGroupState(actor, POSTGUARD_ALERTED);
           }
           break;
         case 2:
@@ -1845,7 +1845,7 @@ void Level2_UpdateActors(void) {
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
             actor->subMode = 0;
             st->timer = RandomIntInRange(0x8C, 0xC8);
-            actor->mode = 1;
+            actor->mode = POSTGUARD_HOP;
             continue;
           }
           break;
@@ -1882,7 +1882,7 @@ void Level2_UpdateActors(void) {
             break;
           case 4:
             if (TrackEntityYawTowardSpyro(actor, 6, 0xA, 1)) {
-              actor->mode = 1;
+              actor->mode = POSTGUARD_HOP;
               continue;
             }
             break;
@@ -1891,7 +1891,7 @@ void Level2_UpdateActors(void) {
         }
         break;
 
-      case 1:
+      case POSTGUARD_HOP:
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         switch (st->sub) {
         case 0:
@@ -1928,12 +1928,12 @@ void Level2_UpdateActors(void) {
           break;
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x2000) {
-          actor->mode = 0;
+          actor->mode = POSTGUARD_IDLE;
           continue;
         }
         break;
 
-      case 2:
+      case POSTGUARD_KNOCKED:
         actor->rotX += st->spinX;
         actor->rotY += st->spinY;
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->time, 0xC, 0xC);
@@ -1949,7 +1949,7 @@ void Level2_UpdateActors(void) {
         }
         break;
 
-      case 3:
+      case POSTGUARD_TO_POST:
         ANIM_GO(actor, 1);
         if (TurnActorYawTowardAngle(
                 actor,
@@ -1961,24 +1961,24 @@ void Level2_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &st->path->pts[st->path->sel]) < 0x100 ||
             ApproxDist2D(&actor->posX, &SPY.posX) < 0xC00) {
           ANIM_BLEND(actor, 4);
-          actor->mode = 1;
+          actor->mode = POSTGUARD_HOP;
           continue;
         }
         break;
 
-      case 20:
+      case POSTGUARD_ALERTED:
         if (TrackEntityYawTowardSpyro(actor, 7, 0x14, 1)) {
-          actor->mode = 0x15;
+          actor->mode = POSTGUARD_SHOUT;
           continue;
         }
         break;
 
-      case 21:
+      case POSTGUARD_SHOUT:
         ANIM_GO(actor, 7);
         if (g_nActorAnimDone != 0) {
           st->sub = 0;
           ANIM_BLEND(actor, 4);
-          actor->mode = 1;
+          actor->mode = POSTGUARD_HOP;
           continue;
         }
         break;

@@ -2893,21 +2893,21 @@ void Level14_UpdateActors(void) {
         st->heading = actor->rotZ;
       }
       switch (actor->mode) {
-      case 0: {
+      case SFGIVER_IDLE: {
         int range = 0xA8C;
 
         if (st->kind == 3) {
           range = 0xD48;
         }
         if (st->alert != 0) {
-          actor->mode = 4;
+          actor->mode = SFGIVER_CIRCLE;
           actor->posZ -= 0x1F4;
           continue;
         }
         if (actor->subMode != 0) {
           actor->subMode = 0;
           st->cool = 0;
-          actor->mode = 3;
+          actor->mode = SFGIVER_WALK;
           continue;
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
@@ -2920,13 +2920,13 @@ void Level14_UpdateActors(void) {
                                         actor->posY - SPY.posY, 0)) < 0x1E) {
           st->timer = 0x4B;
           actor->subMode = 0;
-          actor->mode = 1;
+          actor->mode = SFGIVER_GRANT;
           continue;
         }
         break;
       }
 
-      case 1: {
+      case SFGIVER_GRANT: {
         int dz;
         short *nv;
 
@@ -2952,7 +2952,7 @@ void Level14_UpdateActors(void) {
         SPY.requestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
         g_anCameraActiveTargetParams.w[0] = -(SPY.bodyRotZ + 0x40) << 4;
         switch (actor->subMode) {
-        case 0:
+        case SFGIVER_SUB_APPROACH:
           if (ApproxDist2D(&actor->posX, x288) > 0x50) {
             MoveActorAlongAngle(actor,
                           ArcTan2(x288[0] - actor->posX,
@@ -2977,11 +2977,11 @@ void Level14_UpdateActors(void) {
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
             ANIM_GO(actor, 1);
             st->count = 0;
-            actor->subMode = 1;
+            actor->subMode = SFGIVER_SUB_CAST;
           }
           break;
 
-        case 1: {
+        case SFGIVER_SUB_CAST: {
           int f;
           int *p;
           int *q;
@@ -3002,7 +3002,7 @@ void Level14_UpdateActors(void) {
           if (g_nActorAnimDone != 0) {
             ANIM_GO(actor, 0);
             st->timer = 0xA;
-            actor->subMode = 2;
+            actor->subMode = SFGIVER_SUB_LINGER;
             PlayActorMeshVoice(actor, 0, 0);
           }
           f = 7;
@@ -3023,9 +3023,9 @@ void Level14_UpdateActors(void) {
           break;
         }
 
-        case 2:
+        case SFGIVER_SUB_LINGER:
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-            actor->mode = 2;
+            actor->mode = SFGIVER_RETURN;
             continue;
           }
           break;
@@ -3033,7 +3033,7 @@ void Level14_UpdateActors(void) {
         break;
       }
 
-      case 2: {
+      case SFGIVER_RETURN: {
         int dz;
 
         g_nGameplayBlocked = 0;
@@ -3067,23 +3067,23 @@ void Level14_UpdateActors(void) {
         }
         if (ApproxDist2D(&actor->posX, st->home) < 0x51 && ABS2(dz) < 0x29) {
           actor->subMode = 0;
-          actor->mode = 0;
+          actor->mode = SFGIVER_IDLE;
           continue;
         }
         break;
       }
 
-      case 3:
+      case SFGIVER_WALK:
         if (WalkActorAlongWaypoints(actor, st->path, 0x200, 0x96, 0, 6, 0x10, 0) ==
             0x100) {
           actor->subMode = 0;
           CopyVector(st->home, &actor->posX);
-          actor->mode = 0;
+          actor->mode = SFGIVER_IDLE;
           continue;
         }
         break;
 
-      case 4: {
+      case SFGIVER_CIRCLE: {
         int h = (ArcTan2(actor->posX - st->path->nodes[0].x,
                                actor->posY - st->path->nodes[0].y, 0) +
                  8) &
@@ -3094,7 +3094,7 @@ void Level14_UpdateActors(void) {
           actor->subMode = 0;
           st->alert = 0;
           ANIM_GO(actor, 0);
-          actor->mode = 2;
+          actor->mode = SFGIVER_RETURN;
           continue;
         }
         SteerActorAroundPoint(actor, &st->path->nodes[0].x, 0xBB8, h, 8, 0x78, 0xE,
@@ -3865,7 +3865,7 @@ void Level14_UpdateActors(void) {
         StopSoundVoiceByIndex(actor->voiceRow, 4);
         hit = SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
         if (hit != 0) {
-          ((unsigned char *)hit->state)[0xE] = 3;
+          ((CollectibleState *)hit->state)->mode = 3;
         }
         MarkActorCommittedKill(actor);
         ENTER_POSE(actor, 3);

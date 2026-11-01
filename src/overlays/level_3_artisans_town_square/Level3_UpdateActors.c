@@ -393,8 +393,8 @@ void Level3_UpdateActors(void) {
       EBB_BREAK();
       st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 4 && actor->mode != 5 &&
-          actor->mode != 9) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != WARD_KNOCKED && actor->mode != WARD_DAZED &&
+          actor->mode != WARD_BURN) {
         st->heading = StepAngle8Toward(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
             spy->bodyRotZ, 0x20);
@@ -405,7 +405,7 @@ void Level3_UpdateActors(void) {
           st->speed = 0xFA;
         }
         if (actor->flags & ACTOR_HIT_FLAME) {
-          actor->mode = 9;
+          actor->mode = WARD_BURN;
           { int na; { int nb; } }
           { int na; { int nb; } }
           { int na; { int nb; } }
@@ -416,7 +416,7 @@ void Level3_UpdateActors(void) {
           ANIM_RESET(actor, 9);
           continue;
         }
-        ENTER_POSE(actor, 4);
+        ENTER_POSE(actor, WARD_KNOCKED);
       }
 
       TickCountdownByFrameDelta(&st->camLock, 4);
@@ -439,29 +439,29 @@ void Level3_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case WARD_IDLE:
         switch (st->mode) {
         case 0:
           TrackEntityYawTowardSpyro(actor, 10, 0, 0);
           if (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x320 &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
             st->timer = 0;
-            ENTER_POSE(actor, 1);
+            ENTER_POSE(actor, WARD_ADVANCE);
           }
           break;
         case 1:
           st->speed = 0x64;
           ANIM_GO(actor, 1);
-          actor->mode = 0x62;
+          actor->mode = WARD_TO_NODE;
           continue;
         case 2:
           st->speed = 0x64;
           st->path->cur = 0;
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, WARD_ADVANCE);
         }
         break;
 
-      case 1:
+      case WARD_ADVANCE:
         switch (st->mode) {
         case 0:
           if (TickCountdownByFrameDelta(&st->retarget, 4) != 0) {
@@ -478,7 +478,7 @@ void Level3_UpdateActors(void) {
             if (st->timer != 0) {
               if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
                 st->timer = 0;
-                actor->mode = 0x64;
+                actor->mode = WARD_GO_HOME;
                 continue;
               }
             } else {
@@ -489,7 +489,7 @@ void Level3_UpdateActors(void) {
           }
           if (MoveActorAlongHeading(actor, 0x64, 0x300, 0x200, 0x25) != 0 ||
               ApproxDist2D(&actor->posX, &st->homeX) >= 0x2801) {
-            actor->mode = 0x64;
+            actor->mode = WARD_GO_HOME;
             continue;
           }
           if (st->camLock == 0 &&
@@ -502,7 +502,7 @@ void Level3_UpdateActors(void) {
             ANIM_GO(actor, 8);
           }
           if (actor->anim == 8 && g_nActorAnimDone != 0) {
-            actor->mode = 0x64;
+            actor->mode = WARD_GO_HOME;
             ANIM_GO(actor, 1);
           }
           break;
@@ -533,11 +533,11 @@ void Level3_UpdateActors(void) {
           }
           st->mode = 1;
           st->path->cur = 1;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, WARD_IDLE);
         }
         break;
 
-      case 2:
+      case WARD_TURN:
         if (st->speed > 0) {
           MoveActorAlongHeading(actor, st->speed, 0x300, 0x200, 0x27);
           st->speed -= 8;
@@ -550,15 +550,15 @@ void Level3_UpdateActors(void) {
         if (st->path->cur == 0 && st->path->count >= 3) {
           st->path->cur++;
         }
-        ENTER_POSE(actor, 0);
+        ENTER_POSE(actor, WARD_IDLE);
 
-      case 4:
+      case WARD_KNOCKED:
         if (actor->flags & ACTOR_HIT_FLAME) {
           goto pose9;
         }
         if (g_nActorAnimDone != 0) {
           st->timer = (GetRandomU32() & 0x3F) + 0x40;
-          actor->mode = 5;
+          actor->mode = WARD_DAZED;
           ANIM_RESET(actor, 5);
           continue;
         }
@@ -571,15 +571,15 @@ void Level3_UpdateActors(void) {
         }
         break;
 
-      case 5:
+      case WARD_DAZED:
         if (actor->flags & ACTOR_HIT_FLAME) {
         pose9:
-          ANIM_QUEUE(actor, 9);
+          ANIM_QUEUE(actor, WARD_BURN);
         }
         switch (actor->anim) {
         case 4:
           if (g_nActorAnimDone != 0) {
-            actor->mode = 5;
+            actor->mode = WARD_DAZED;
             ANIM_RESET(actor, 5);
             continue;
           }
@@ -609,7 +609,7 @@ void Level3_UpdateActors(void) {
         }
         break;
 
-      case 9:
+      case WARD_BURN:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x20);
@@ -618,10 +618,10 @@ void Level3_UpdateActors(void) {
         }
         break;
 
-      case 0x62:
+      case WARD_TO_NODE:
         if (ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x) <
             0x80) {
-          ENTER_POSE(actor, 2);
+          ENTER_POSE(actor, WARD_TURN);
         }
         TurnActorYawTowardAngle(actor,
                       ArcTan2(st->path->nodes[st->path->cur].x -
@@ -645,7 +645,7 @@ void Level3_UpdateActors(void) {
         }
         break;
 
-      case 0x64:
+      case WARD_GO_HOME:
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2_8bit(st->homeX - actor->posX,
                                         st->homeY - actor->posY),
@@ -654,7 +654,7 @@ void Level3_UpdateActors(void) {
         }
         ANIM_GO(actor, 1);
         if (ApproxDist2D(&actor->posX, &st->homeX) < 0x80) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, WARD_IDLE);
         }
         break;
       }

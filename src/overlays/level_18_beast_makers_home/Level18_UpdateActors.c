@@ -1578,19 +1578,19 @@ void Level18_UpdateActors(void) {
     case ACTOR_TYPE_CHARGING_GUARD: {
       ChargingGuardState *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 2) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != CHARGER_KNOCKED) {
         EBB_BREAK();
         st->knock = StepAngle8Toward(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, 0),
                                   spy->bodyRotZ, 0x20);
         st->speed = 0xFA;
         st->turn = 0;
-        if (actor->mode != 0) {
+        if (actor->mode != CHARGER_IDLE) {
           *st->flag = 0;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, CHARGER_KNOCKED);
       }
       if (st->init == 0) {
         st->init = 1;
@@ -1617,16 +1617,16 @@ void Level18_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0: {
+      case CHARGER_IDLE: {
         int *p;
 
         TickCountdownByFrameDelta(&st->timer2, 4);
         switch (st->mode) {
-        case 0:
+        case CHARGER_ROLE_STAND:
           TrackEntityYawTowardSpyro(actor, 0xA, 0, 0);
           break;
 
-        case 1:
+        case CHARGER_ROLE_PATROL:
           ANIM_GO(actor, 1);
           if (st->speed < 0x96) {
             st->speed = 0x96;
@@ -1654,13 +1654,13 @@ void Level18_UpdateActors(void) {
           }
           break;
 
-        case 2:
+        case CHARGER_ROLE_POST:
           if (st->dist2 == 0) {
             st->dist2 = ApproxDist2D(&actor->posX, &st->path->nodes[0].x);
           }
           break;
 
-        case 3: {
+        case CHARGER_ROLE_FOLLOW: {
           int spd = 0xA0;
           int d = ApproxDist2D(&actor->posX, &g_pActorListBase[st->target].posX);
 
@@ -1679,16 +1679,16 @@ void Level18_UpdateActors(void) {
           break;
         }
         }
-        if (st->mode == 1 || st->mode == 3) {
+        if (st->mode == CHARGER_ROLE_PATROL || st->mode == CHARGER_ROLE_FOLLOW) {
           p = &st->path->nodes[0].x;
         } else {
           p = &actor->posX;
         }
-        if (st->mode == 2) {
+        if (st->mode == CHARGER_ROLE_POST) {
           if (ApproxDist2D(&spy->posX, &st->path->nodes[1].x) < 0x5DC ||
               ApproxDist2D(&spy->posX, &st->path->nodes[2].x) < 0x5DC) {
             st->charging = 0;
-            actor->mode = 1;
+            actor->mode = CHARGER_CHARGE;
             continue;
           }
           break;
@@ -1702,18 +1702,18 @@ void Level18_UpdateActors(void) {
             *st->flag = 1;
             st->timer = 0;
             st->charging = 0;
-            if (st->mode == 3) {
-              st->mode = 1;
+            if (st->mode == CHARGER_ROLE_FOLLOW) {
+              st->mode = CHARGER_ROLE_PATROL;
               CopyVector(st->vec, p);
             }
-            actor->mode = 1;
+            actor->mode = CHARGER_CHARGE;
             continue;
           }
         }
         break;
       }
 
-      case 1: {
+      case CHARGER_CHARGE: {
         int s137;
         int dist = ApproxDist2D(&actor->posX, &spy->posX);
 
@@ -1721,7 +1721,7 @@ void Level18_UpdateActors(void) {
           break;
         }
         ANIM_GO(actor, 1);
-        if (st->mode == 2) {
+        if (st->mode == CHARGER_ROLE_POST) {
           SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist2,
                         ArcTan2(spy->posX - st->path->nodes[0].x,
                                       SPY.posY - st->path->nodes[0].y, 0),
@@ -1729,7 +1729,7 @@ void Level18_UpdateActors(void) {
           if (dist < 0xED8) {
             st->speed = 0xE6;
             st->cam = 0;
-            ENTER_POSE(actor, 3);
+            ENTER_POSE(actor, CHARGER_RAM);
           }
           break;
         }
@@ -1784,7 +1784,7 @@ void Level18_UpdateActors(void) {
         reset137:
           *st->flag = 0;
           st->timer2 = 0x78;
-          actor->mode = 0x64;
+          actor->mode = CHARGER_GO_HOME;
           continue;
         }
         if (AbsAngleDelta8(spy->bodyRotZ,
@@ -1799,12 +1799,12 @@ void Level18_UpdateActors(void) {
                                         spy->posY - actor->posY, 0)) < 0x14) {
           st->speed = 0xFA;
           st->cam = 0;
-          ENTER_POSE(actor, 3);
+          ENTER_POSE(actor, CHARGER_RAM);
         }
         break;
       }
 
-      case 2:
+      case CHARGER_KNOCKED:
         if (actor->frame < 5) {
           actor->rotZ += st->turn;
         }
@@ -1820,12 +1820,12 @@ void Level18_UpdateActors(void) {
         }
         break;
 
-      case 3:
+      case CHARGER_RAM:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (MoveActorAlongHeading(actor, st->speed, 0, 0x12C, 0x15) == 2) {
           *st->flag = 0;
           st->timer2 = 0x78;
-          actor->mode = 0x64;
+          actor->mode = CHARGER_GO_HOME;
           continue;
         }
         if (actor->frame >= 4 && st->speed > 0x28) {
@@ -1862,32 +1862,32 @@ void Level18_UpdateActors(void) {
           }
         }
         if (g_nActorAnimDone != 0) {
-          ENTER_POSE(actor, 4);
+          ENTER_POSE(actor, CHARGER_TURN_BACK);
         }
         break;
 
-      case 4:
+      case CHARGER_TURN_BACK:
         if (g_nActorAnimDone != 0) {
           actor->rotZ = WrapAddAngle8(actor->rotZ, 0x80);
           if (st->cam == 0) {
-            ENTER_POSE(actor, 1);
+            ENTER_POSE(actor, CHARGER_CHARGE);
           }
           *st->flag = 0;
           ANIM_GO(actor, 1);
-          actor->mode = 0x64;
+          actor->mode = CHARGER_GO_HOME;
           continue;
         }
         break;
 
-      case 0x64:
+      case CHARGER_GO_HOME:
         ANIM_GO(actor, 1);
-        if (st->mode == 2) {
+        if (st->mode == CHARGER_ROLE_POST) {
           SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist2,
                         ArcTan2(st->vec[0] - st->path->nodes[0].x,
                                       st->vec[1] - st->path->nodes[0].y, 0),
                         1, 0xC8, 0xE, 8, 0xFF, 0xFF, 0, 0, 0);
           if (ApproxDist2D(&actor->posX, st->vec) < 0x200) {
-            ENTER_POSE(actor, 0);
+            ENTER_POSE(actor, CHARGER_IDLE);
           }
           break;
         }
@@ -1898,7 +1898,7 @@ void Level18_UpdateActors(void) {
           MoveActorAlongHeading(actor, 0xA0, 0, 0, 5);
         }
         if (ApproxDist2D(&actor->posX, st->vec) < 0xB4) {
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, CHARGER_IDLE);
         }
         break;
       }
