@@ -1467,7 +1467,7 @@ void Level26_UpdateActors(void) {
         int ang = st->slot * 0x55;
 
         if (SteerActorAroundPoint(actor, &g_pActorListBase[st->leader].posX, 0x600, ang, 0,
-                          0x80, 3, 0, 0xFF, 0xFF, 0, 0, 8) < 0x10) {
+                          0x80, 3, 0, 0xFF, 0xFF, 0, 0, MOVE_STRAFE) < 0x10) {
           actor->mode = ESCORT_HOLD;
         }
         goto follow;
@@ -1518,7 +1518,7 @@ void Level26_UpdateActors(void) {
                            actor->posY - g_pActorListBase[st->leader].posY, 0) +
              0x78) &
                 0xFF,
-            0, st->speed, 0x10, 0, 0xFF, 0xFF, 0, 0, 8);
+            0, st->speed, 0x10, 0, 0xFF, 0xFF, 0, 0, MOVE_STRAFE);
         actor->posZ += (st->speed - 0x20) >> 3;
         st->speed += g_nFrameStep * 2;
         if (st->speed > 0x100) {

@@ -973,7 +973,7 @@ void Level21_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x1400) {
           ENTER_POSE(actor, BTHROW_THROW);
         }
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, 5) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           ENTER_POSE(actor, BTHROW_WATCH);
         }
@@ -1113,7 +1113,7 @@ void Level21_UpdateActors(void) {
         break;
 
       case BTHROW_RIDE_WALK: {
-        int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, 0xFF, 5);
+        int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
         ANIM_GO(actor, 5);
         if (r == 0x100) {
@@ -1480,7 +1480,7 @@ void Level21_UpdateActors(void) {
         break;
 
       case GATEKEEPER_RIDE_WALK: {
-        int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, 0xFF, 5);
+        int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
         ANIM_GO(actor, 6);
         if (r == 0x100) {
@@ -4431,7 +4431,7 @@ void Level21_UpdateActors(void) {
           break;
         }
         ANIM_GO(actor, 1);
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x28, 0xFF, 5) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           g_pActorListBase[st->partner].subMode = 1;
           actor->mode = RAM_PATH_END;

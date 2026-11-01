@@ -1832,7 +1832,7 @@ void Level2_UpdateActors(void) {
         case 1:
           ANIM_GO(actor, 1);
           PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0xC8, 5, 0xA, actor->group,
-                        5);
+                        MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400) {
             SetActorGroupState(actor, POSTGUARD_ALERTED);
           }
@@ -1876,7 +1876,7 @@ void Level2_UpdateActors(void) {
           case 3:
             ANIM_GO(actor, 1);
             if (PivotActorAlongPath(actor, st->path, 0x100, 0x96, 0, 8, 0x32, 0xFF,
-                              5) == 0x100) {
+                              MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x100) {
               st->phase++;
             }
             break;

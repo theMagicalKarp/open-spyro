@@ -616,7 +616,7 @@ void Level6_UpdateActors(void) {
               if (AbsAngleDelta8(a, b) > lim &&
                   ApproxDist2D(&actor->posX, &spy->posX) < 0x3000) {
                 r = SteerActorAroundPoint(actor, &st->path->nodes[0].x, 0x1800, a, 5,
-                                  spd, 0xE, 0x14, 0xFF, 0xFF, 0, 0, 4);
+                                  spd, 0xE, 0x14, 0xFF, 0xFF, 0, 0, MOVE_FOLLOW_FLOOR);
               }
               if (r > 0x5A) {
                 st->stuck++;
@@ -861,7 +861,7 @@ void Level6_UpdateActors(void) {
       case THIEF_LEDGE_RUN:
         ANIM_GO(actor, 1);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0xF0, 0, 8, sixteen, 0xFF,
-                          5) == 0x103) {
+                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x103) {
           actor->mode = THIEF_LEDGE_WAIT;
           continue;
         }
@@ -883,7 +883,7 @@ void Level6_UpdateActors(void) {
       case THIEF_LEDGE_RUN_ON:
         ANIM_GO(actor, 1);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0xDA, 0, 0xA, 0x30, 0xFF,
-                          5) == 0x101) {
+                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x101) {
           actor->mode = THIEF_LEDGE_TAUNT;
           continue;
         }
@@ -990,7 +990,7 @@ void Level6_UpdateActors(void) {
             st->path->cur = next;
           }
         }
-        r = PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x1E, 0xFF, 5);
+        r = PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x1E, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         if (r & 0x100) {
           if ((r & ~0x100) ==
               (st->node - st->path->reversed) % st->path->count) {
@@ -1013,7 +1013,7 @@ void Level6_UpdateActors(void) {
           st->speed = st->path->nodes[st->path->cur].speed;
         }
         if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, 0xFF,
-                          5) == 0x10B) {
+                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x10B) {
           st->vz = 0x96;
           actor->mode = THIEF_CLIMB_HOP;
           continue;
@@ -1110,7 +1110,7 @@ void Level6_UpdateActors(void) {
           SnapActorToGround(actor);
         }
         if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, 0xFF,
-                          5) == st->path->count + 0xFF) {
+                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == st->path->count + 0xFF) {
           st->path->reversed = -st->path->reversed;
           st->path->cur = 1;
           actor->mode = THIEF_IDLE;
@@ -2807,7 +2807,7 @@ void Level6_UpdateActors(void) {
           } else {
             ANIM_GO(actor, 1);
             if (PivotActorAlongPath(actor, st->path, 0x80, 0x46, 0, 4, 0x14, 0xFF,
-                              5) != 0) {
+                              MOVE_LIFT | MOVE_FOLLOW_FLOOR) != 0) {
               st->timer = RandomIntInRange(0x78, 0xB4);
               ANIM_GO(actor, 6);
             }
@@ -2833,7 +2833,7 @@ void Level6_UpdateActors(void) {
           } else {
             ANIM_GO(actor, 1);
             if (PivotActorAlongPath(actor, st->path, 0x80, 0x46, 0, 4, 0x14, 0xFF,
-                              5) != 0) {
+                              MOVE_LIFT | MOVE_FOLLOW_FLOOR) != 0) {
               st->timer = RandomIntInRange(0x78, 0xB4);
               ANIM_GO(actor, 6);
             }
@@ -3006,7 +3006,7 @@ void Level6_UpdateActors(void) {
         h2 = WrapAddAngle8(
             ArcTan2(g_anSpyroWorldPos - a->posX, g_nSpyroWorldPosY - a->posY, 0), 0x80);
         r = SteerActorAroundPoint(actor, &a->posX, 0x5DC, h2, 4, 0x32, 0xE, 0x80, 0xFF,
-                          0xFF, 0, 0, 0xD);
+                          0xFF, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
         TurnActorYawTowardAngle(a, h, 4, 0, 0);
         if (r < 0xA) {
           ANIM_GO(actor, 0);

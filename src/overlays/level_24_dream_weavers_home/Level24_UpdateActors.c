@@ -1131,7 +1131,7 @@ void Level24_UpdateActors(void) {
                       WrapAddAngle8(ArcTan2(g_anSpyroWorldPos - p->posX,
                                                   g_nSpyroWorldPosY - p->posY, 0),
                                     0x80),
-                      4, 0x32, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0xD);
+                      4, 0x32, 0xE, 0x80, 0xFF, 0xFF, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
         if (p->mode != 0xA) {
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
             TurnActorYawTowardAngle(p, h, 4, 0, 0);
@@ -2517,7 +2517,7 @@ void Level24_UpdateActors(void) {
       case LGUARD_PACE:
         st->flags &= ~LGUARD_F_PACE;
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0xC00 ||
-            PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, 5) ==
+            PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
                 0x100) {
           ANIM_GO(actor, st->base);
           actor->mode = LGUARD_IDLE;
@@ -2651,7 +2651,7 @@ void Level24_UpdateActors(void) {
                       WrapAddAngle8(ArcTan2(g_anSpyroWorldPos - p->posX,
                                                   g_nSpyroWorldPosY - p->posY, 0),
                                     0x80),
-                      4, 0x32, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0xD);
+                      4, 0x32, 0xE, 0x80, 0xFF, 0xFF, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
         TurnActorYawTowardAngle(p, h, 4, 0, 0);
         break;
       }

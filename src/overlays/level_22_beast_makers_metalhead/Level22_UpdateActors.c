@@ -918,7 +918,7 @@ void Level22_UpdateActors(void) {
         continue;
 
       case METALHEAD_PHASE_STAGGER:
-        PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 3, 5, 0xFF, 5);
+        PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 3, 5, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         if (TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
           actor->mode++;
           continue;
@@ -935,7 +935,7 @@ void Level22_UpdateActors(void) {
         continue;
 
       case METALHEAD_PHASE_RUN:
-        if (PivotActorAlongPath(actor, st->path, 0x15E, 0x118, 0, 8, 0x80, 0xFF, 5) ==
+        if (PivotActorAlongPath(actor, st->path, 0x15E, 0x118, 0, 8, 0x80, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             st->pathEnd[st->phase] + 0x100) {
           actor->mode++;
           continue;
@@ -1349,7 +1349,7 @@ void Level22_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x1400) {
           ENTER_POSE(actor, BTHROW_THROW);
         }
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, 5) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           ENTER_POSE(actor, BTHROW_WATCH);
         }
@@ -1489,7 +1489,7 @@ void Level22_UpdateActors(void) {
         break;
 
       case BTHROW_RIDE_WALK: {
-        int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, 0xFF, 5);
+        int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
         ANIM_GO(actor, 5);
         if (r == 0x100) {
@@ -1856,7 +1856,7 @@ void Level22_UpdateActors(void) {
         break;
 
       case GATEKEEPER_RIDE_WALK: {
-        int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, 0xFF, 5);
+        int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
         ANIM_GO(actor, 6);
         if (r == 0x100) {
@@ -4558,7 +4558,7 @@ void Level22_UpdateActors(void) {
           break;
         }
         ANIM_GO(actor, 1);
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x28, 0xFF, 5) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           g_pActorListBase[st->partner].subMode = 1;
           actor->mode = RAM_PATH_END;

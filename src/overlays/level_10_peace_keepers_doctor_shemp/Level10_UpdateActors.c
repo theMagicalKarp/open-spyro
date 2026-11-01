@@ -2983,7 +2983,7 @@ void Level10_UpdateActors(void) {
       case SGUARD_PATH_CHASE:
         st->accel = 0xA0;
         if (PivotActorAlongPath(actor, st->target, 0x12C, st->accel, 0, 8, 0x40, 0xFF,
-                          5) == 0x100) {
+                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x100) {
           st->done = 0;
           actor->mode = SGUARD_CHASE;
           continue;
@@ -2997,7 +2997,7 @@ void Level10_UpdateActors(void) {
         }
         st->accel = 0xB4;
         if (PivotActorAlongPath(actor, st->target, 0x100, st->accel, 0, 8, 0x40, 0xFF,
-                          5) == 0x100) {
+                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x100) {
           actor->mode = SGUARD_BRAKE_AIM;
           continue;
         }
@@ -3412,7 +3412,7 @@ void Level10_UpdateActors(void) {
             actor->frameProgress = 0;
           }
           if (PivotActorAlongPath(actor, st->path, 0x118, 0xA0, 0, 4, 0x14, 0xFF,
-                            5) == st->node[st->phase] + 0x101) {
+                            MOVE_LIFT | MOVE_FOLLOW_FLOOR) == st->node[st->phase] + 0x101) {
             actor->mode = SHEMP_ARRIVE;
             continue;
           }

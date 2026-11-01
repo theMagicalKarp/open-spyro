@@ -2207,7 +2207,7 @@ void Level9_UpdateActors(void) {
             actor, &st->path->nodes[0].x, st->dist,
             ArcTan2(spy->posX - st->path->nodes[st->path->cur].x,
                           spy->posY - st->path->nodes[st->path->cur].y, 0),
-            8, st->turn1, 0xE, 0x80, st->blockHeadingA, st->blockHeadingB, 0, 0, 4);
+            8, st->turn1, 0xE, 0x80, st->blockHeadingA, st->blockHeadingB, 0, 0, MOVE_FOLLOW_FLOOR);
         if (r == 0x100 || r < 0x40) {
           int ang = WrapAddAngle8(actor->rotZ, 0xE0);
 
@@ -2281,7 +2281,7 @@ void Level9_UpdateActors(void) {
             actor, &st->path->nodes[0].x, st->dist,
             ArcTan2(st->path->nodes[st->path->cur].x - spy->posX,
                           st->path->nodes[st->path->cur].y - spy->posY, 0),
-            8, st->turn4, 0xE, 0x80, st->blockHeadingA, st->blockHeadingB, 0, 0, 4);
+            8, st->turn4, 0xE, 0x80, st->blockHeadingA, st->blockHeadingB, 0, 0, MOVE_FOLLOW_FLOOR);
         if (r < 0xA) {
           st->timer = 0x5A;
           ANIM_GO(actor, 0);

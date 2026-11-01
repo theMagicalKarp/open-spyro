@@ -861,7 +861,7 @@ void Level19_UpdateActors(void) {
 
       case BGUARD_RUN:
         ANIM_GO(actor, 4);
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0, 8, 0x10, 0xFF, 5) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0, 8, 0x10, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           st->mode = 0;
           ENTER_POSE(actor, BGUARD_WATCH);
@@ -3449,7 +3449,7 @@ void Level19_UpdateActors(void) {
           break;
         }
         ANIM_GO(actor, 1);
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x28, 0xFF, 5) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           g_pActorListBase[st->partner].subMode = 1;
           actor->mode = RAM_PATH_END;
@@ -3511,7 +3511,7 @@ void Level19_UpdateActors(void) {
         break;
 
       case BSENTRY_PATROL:
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x6E, 0, 8, 0x28, 0xFF, 5) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0x6E, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           if (ApproxDist2D(&actor->posX, spy) < 0x1C00 &&
               ABS2(actor->posZ - SPY.posZ) < 0x44C) {

@@ -1603,7 +1603,7 @@ void Level33_UpdateActors(void) {
         if (FLY_FLAGS(st->path, st->path->cur) & 0xFFC) {
           spd = FLY_FLAGS(st->path, st->path->cur) & 0xFFC;
         }
-        r = PivotActorAlongPath(actor, st->path, 0x1C2, spd, 0, 0xA, 0x28, 0xFF, 1);
+        r = PivotActorAlongPath(actor, st->path, 0x1C2, spd, 0, 0xA, 0x28, 0xFF, MOVE_LIFT);
         h = ProbeActorGroundHeightRaised(actor, 0xBB8);
         st->vSpeed -= 0x1E;
         if (st->vSpeed < -0x190) {

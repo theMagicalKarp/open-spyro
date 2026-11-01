@@ -2264,7 +2264,7 @@ void Level16_UpdateActors(void) {
               st->heading = (ps->heading + 0x80) & 0xFF;
               SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist,
                             st->heading, 8, 0x40, 0xE, 0x80, 0xFF, 0xFF, 0x180,
-                            0x15C, 0x27);
+                            0x15C, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
               st->heading = 0;
               ps->heading = 0;
             } else {
@@ -2276,7 +2276,7 @@ void Level16_UpdateActors(void) {
                   0xFF;
               SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist,
                             st->heading, 8, 0x40, 0xE, 0x80, 0xFF, 0xFF, 0, 0,
-                            4);
+                            MOVE_FOLLOW_FLOOR);
             }
             break;
           }
@@ -3333,7 +3333,7 @@ void Level16_UpdateActors(void) {
         if (dist < 0x2800 && st->floorZ == -1) {
           if (st->pathDone == 0) {
             if (PivotActorAlongPath(actor, st->path, 0x80, 0xB4, 0, 8, 0x28, 0xFF,
-                              1) != 0) {
+                              MOVE_LIFT) != 0) {
               st->pathDone = 1;
             }
           } else if (st->minion == 0 && dist > 0x1000) {
@@ -3394,7 +3394,7 @@ void Level16_UpdateActors(void) {
         if (dist < 0x2800 && st->floorZ == -1) {
           if (st->pathDone == 0) {
             if (PivotActorAlongPath(actor, st->path, 0x80, 0xB4, 0, 8, 0x28, 0xFF,
-                              1) != 0) {
+                              MOVE_LIFT) != 0) {
               st->pathDone = 1;
             }
           } else if (st->minion == 0 && dist > 0x1000) {

@@ -1768,7 +1768,7 @@ void Level34_UpdateActors(void) {
 
           case 5:
             if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, 0xFF,
-                              0x100) == 0x100) {
+                              MOVE_CHECK_Z) == 0x100) {
               st->leg = 0;
             }
             d = (FLY_Z(st->cur, st->cur->cur) - actor->posZ) >> 3;
@@ -1962,7 +1962,7 @@ void Level34_UpdateActors(void) {
             if (AbsAngleDelta8(a, b) > lim &&
                 ApproxDist2D(pos, &SPY.posX) < 0x3000) {
               turn = SteerActorAroundPoint(actor, FP_PT(st->path, 0), 0x1800, a, 5,
-                                   speed, 0xE, 0x14, 0xFF, 0xFF, 0, 0, 4);
+                                   speed, 0xE, 0x14, 0xFF, 0xFF, 0, 0, MOVE_FOLLOW_FLOOR);
             }
             if (turn > 0x5A) {
               st->stuck++;
@@ -2046,7 +2046,7 @@ void Level34_UpdateActors(void) {
             if (dir != st->path->dir) {
               st->path->dir = dir;
             }
-            r = PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 8, 0x1E, 0xFF, 5);
+            r = PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 8, 0x1E, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             if (r & 0x100) {
               r &= ~0x100;
               if (st->path->dir == -1) {
@@ -2065,7 +2065,7 @@ void Level34_UpdateActors(void) {
 
           case 2: {
             int r = PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 8, 0x1E,
-                                  0xFF, 5);
+                                  0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
             if (r & 0x100) {
               r &= ~0x100;
@@ -2087,7 +2087,7 @@ void Level34_UpdateActors(void) {
             if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x2800) {
               st->mode = one;
             }
-            PivotActorAlongPath(actor, st->path, 0x200, 0xF0, 0, 8, 0x1E, 0xFF, 5);
+            PivotActorAlongPath(actor, st->path, 0x200, 0xF0, 0, 8, 0x1E, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             break;
           }
         }

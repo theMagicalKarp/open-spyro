@@ -39,7 +39,7 @@ int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed,
   }
 
   ret = 0;
-  if (flags & 0x100) {
+  if (flags & MOVE_CHECK_Z) {
     zclose = abs(actor->posZ - path->nodes[path->cur].z) < thresh;
   } else {
     zclose = 1;
