@@ -410,7 +410,7 @@ enum ActorType {
   ACTOR_TYPE_FOLLOW_FACER = 414, /* level 33: turns toward the actor it follows */
   ACTOR_TYPE_BALLOON = 416,        /* bobs about its rest height; only in balloonist levels */
   ACTOR_TYPE_REWARD_BURST = 417, /* level 6: once triggered, plays its sound and throws up to four sets of sparks */
-  ACTOR_TYPE_LIFE_CHEST = 421,       /* shakes and pops its lid on a timer, spawning a 0x1A6 rider (LiftState) */
+  ACTOR_TYPE_LIFE_CHEST = 421,       /* shakes and pops its lid on a timer, spawning a 0x1A6 rider (LifeChestState) */
   ACTOR_TYPE_LIFE_CHEST_RIDER = 422, /* shown while ACTOR_TYPE_LIFE_CHEST's lid is up, then despawned; no UpdateActors arm */
   ACTOR_TYPE_LIFE_CHEST_SHARD = 423, /* 423..425: life chest burst (423/424 bounce, 425 tumbles) */
   ACTOR_TYPE_LETTER_A = 0x1AA,     /* letter glyphs A..Z (0x1AA..0x1C3): floating names, text

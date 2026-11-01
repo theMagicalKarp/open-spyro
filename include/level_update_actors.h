@@ -125,16 +125,18 @@ typedef struct AngPair {
 
 extern AngPair g_aShakeRotOffsets[];
 
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-typedef struct LiftState {
+/* Type 421: life chest. Shakes and pops its lid on a timer, showing its
+ * rider (ACTOR_TYPE_LIFE_CHEST_RIDER); breaks into fragments and drops its
+ * prize when hit. */
+typedef struct LifeChestState {
   Actor *passenger; /* 0x00 the spawned passenger, valid once ->mode is 1 */
   int phase;    /* 0x04 phase */
   int savedRotX;    /* 0x08 saved actor->rotX */
   int savedRotY;    /* 0x0C saved actor->rotY */
   int savedPosZ;    /* 0x10 saved actor->posZ */
-  int rideMode;    /* 0x14 mode; 1 selects the extra tick and the rearm */
-} LiftState;
+  int restMode;    /* 0x14 CollectRestMode: COLLREST_SNAP keeps it on the floor, never
+                    * lets it shake open, and is handed to the prize it drops */
+} LifeChestState;
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 typedef struct Xform {

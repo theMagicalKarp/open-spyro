@@ -75,7 +75,7 @@ enum SeedPodMode {
   SEEDPOD_OPEN = 1,   /* shakes with the prize floating above; closes after a while */
 };
 
-/* ->mode of a life chest (ACTOR_TYPE_LIFE_CHEST, LiftState). */
+/* ->mode of a life chest (ACTOR_TYPE_LIFE_CHEST, LifeChestState). */
 enum LifeChestMode {
   LIFECHEST_CLOSED = 0, /* shakes on a timer, then lifts its lid */
   LIFECHEST_OPEN = 1,   /* lid up, its rider showing; closes after 0xE6 frames */
