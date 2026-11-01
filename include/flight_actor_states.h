@@ -65,7 +65,7 @@ typedef struct BurstState {
   int life;             /* 0x10 */
 } BurstState;
 
-/* HUD tally icon flight (0x183..0x185 / 0x1EB): pivot, radius, angle and the
+/* HUD tally icon flight (ACTOR_TYPE_TALLY_ICON_*): pivot, radius, angle and the
  * swept phase. */
 typedef struct TallyState {
   int x;        /* 0x00 pivot */
@@ -85,7 +85,8 @@ typedef struct HudState {
   Actor *spent[8];  /* 0x44 a completed row flying to its slot */
   Actor *slot[4];   /* 0x64 finish slots */
   int types[4];     /* 0x74 icon actor type per class */
-  int pad84[4];     /* 0x84 */
+  int tint[4];      /* 0x84 per-class icon tint word (0xA tag, see Actor tint0), copied to
+                     * tint presets 3..6 (g_anFlightTallyTintPresets); icons use tintMode class + 3 */
   int timer;        /* 0x94 */
   int count;        /* 0x98 icons still to spend */
   int hurry;        /* 0x9C under a minute left */
@@ -98,7 +99,7 @@ typedef struct DriftState {
   int timer;  /* 0x0C */
 } DriftState;
 
-/* Types 0x1E1..0x1E3: the walker's embers. */
+/* ACTOR_TYPE_SPARK_DEBRIS (481..483). */
 typedef struct EmberState {
   short vel[3];  /* 0x00 */
   short spin[3]; /* 0x06 */

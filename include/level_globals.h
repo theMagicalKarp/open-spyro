@@ -12,9 +12,9 @@
 #include "actor_type.h"
 
 extern int g_anSparkleGlowDesc;
-extern int g_anFlightHudClassWords[];
-extern void *g_dwBurstColorType15;
-extern void *g_dwBurstColorType14;
+extern int g_anFlightTallyTintPresets[];
+extern void *g_dwBurstColorSparxFood;
+extern void *g_dwBurstColorExtraLife;
 extern int g_anTintByDropKind[]; /* packed Actor tint word per dropKind (see actor.h) */
 /* Flight results board rows, indexed world * 4 (titles) or world * 5 (bonus
  * values / claimed flags); _rN is row N of the same table, declared as its
@@ -161,8 +161,8 @@ extern int g_nLevelIntroParallaxCountdown;
 extern int g_nLevelTransitionPhase;
 extern int g_nLevelTransitionTallyActive;
 extern int g_nPauseMenuCursor;                           /* menu cursor */
-extern int g_nPauseMenuIdleFrames;                       /* idle/blink counter */
-extern int g_nPauseMenuTransitionFrames;                 /* results frame counter */
+extern int g_nMenuTickFrames;                       /* idle/blink counter */
+extern int g_nMenuDrawFrames;                 /* results frame counter */
 extern int g_nEnteredPortalIdx;
 extern int g_nPrimBufferOverflowFlag;
 extern int g_nReturnPortalLevelId;
@@ -196,8 +196,8 @@ extern int g_nSpyroWorldPosZ;                            /* SPY.posZ, absolute f
 extern int g_nSubMenuCursor;                             /* reveal timer */
 extern int g_nSubMenuScrollOffset;
 extern int g_nVsyncFramePaceAnchor;
-extern int g_nWorldDragonsRescued;
-extern int g_nWorldEggsRecovered;
+extern int g_nTotalDragonsRescued;
+extern int g_nTotalEggsRecovered;
 extern int g_nTotalTreasureCollected;                    /* gem total shown on the balloon */
 extern struct Actor *g_pActorCutsceneActor;  /* focus actor (BeginActorCutscene) */
 extern unsigned char *g_pLevelSoundIds;                  /* level sound ids */

@@ -5,8 +5,8 @@
    12000-gem cap (100%+ via cheats) it counts single percent per 100 extra
    gems above 0x2EE0. */
 int ComputeInventoryProgressPercent(void) {
-  int pct = (g_nTotalTreasureCollected * 50 + g_nWorldDragonsRescued * 6000 +
-             g_nWorldEggsRecovered * 10000) /
+  int pct = (g_nTotalTreasureCollected * 50 + g_nTotalDragonsRescued * 6000 +
+             g_nTotalEggsRecovered * 10000) /
             12000;
   if (g_nTotalTreasureCollected >= 0x2EE1) {
     pct = (g_nTotalTreasureCollected - 0x2EE0) / 100 + 100;

@@ -30,7 +30,7 @@ typedef struct BackdropTail {
 /* Draw for gamestates 2 (pause menu), 3 (inventory) and 6 (dialog overlay)
    — 0x8001a40c, 8840 bytes.
 
-   On the entry frame (g_nPauseMenuTransitionFrames == 0) it renders one last
+   On the entry frame (g_nMenuDrawFrames == 0) it renders one last
    full gameplay scene, then freezes it: StoreImage pulls the frame back out
    of VRAM, ConvertRGB15ToLuma8 packs it to 8bpp luma four 0x80-wide strips at
    a time, each strip is re-uploaded at x=0x200 and the gray CLUT is loaded at
@@ -64,7 +64,7 @@ void Gamestate02_03_06_Draw(void) {
   unsigned char rows; /* spA0 */
   int h0, h1, h2, h3, h4, h5, h6, h7;
 
-  if (g_nPauseMenuTransitionFrames == 0) {
+  if (g_nMenuDrawFrames == 0) {
     int i;
     int h;
     int strip;
@@ -351,7 +351,7 @@ void Gamestate02_03_06_Draw(void) {
           phase1 = 0;
           do {
             i++;
-            v1 = lut1[(g_nPauseMenuTransitionFrames * 8 + phase1) & 0xff];
+            v1 = lut1[(g_nMenuDrawFrames * 8 + phase1) & 0xff];
             phase1 += 0xc;
             rec->rotZ = v1 * 3 >> 9;
             rec++;
@@ -420,7 +420,7 @@ void Gamestate02_03_06_Draw(void) {
           phase2 = 0;
           do {
             i++;
-            v2 = lut2[(g_nPauseMenuTransitionFrames * 8 + phase2) & 0xff];
+            v2 = lut2[(g_nMenuDrawFrames * 8 + phase2) & 0xff];
             phase2 += 0xc;
             rec->rotZ = v2 * 3 >> 9;
             rec++;
@@ -437,8 +437,7 @@ void Gamestate02_03_06_Draw(void) {
             i = 0;
             do {
               i++;
-              v3 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase3) &
-                                 0xff];
+              v3 = g_anCosineLut[(g_nMenuDrawFrames * 8 + phase3) & 0xff];
               phase3 += 0xc;
               rec->rotZ = v3 * 3 >> 9;
               rec++;
@@ -461,9 +460,7 @@ void Gamestate02_03_06_Draw(void) {
               rp->posZ = 0x1400;
               if (cur == OPTIONS_ROW_SFX_VOLUME) {
                 rp->rotZ =
-                    lut4[(g_nPauseMenuTransitionFrames * 8 + phase4) & 0xff] *
-                        3 >>
-                    9;
+                    lut4[(g_nMenuDrawFrames * 8 + phase4) & 0xff] * 3 >> 9;
               } else {
                 rp->rotZ = 0;
               }
@@ -487,8 +484,7 @@ void Gamestate02_03_06_Draw(void) {
             i = 0;
             do {
               i++;
-              v4 = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase5) &
-                                 0xff];
+              v4 = g_anCosineLut[(g_nMenuDrawFrames * 8 + phase5) & 0xff];
               phase5 += 0xc;
               rec->rotZ = v4 * 3 >> 9;
               rec++;
@@ -511,9 +507,7 @@ void Gamestate02_03_06_Draw(void) {
               rp->posX = x;
               if (cur == OPTIONS_ROW_MUSIC_VOLUME) {
                 rp->rotZ =
-                    lut6[(g_nPauseMenuTransitionFrames * 8 + phase6) & 0xff] *
-                        3 >>
-                    9;
+                    lut6[(g_nMenuDrawFrames * 8 + phase6) & 0xff] * 3 >> 9;
               } else {
                 rp->rotZ = 0;
               }
@@ -544,7 +538,7 @@ void Gamestate02_03_06_Draw(void) {
             phase7 = 0;
             do {
               i++;
-              v5 = lut7[(g_nPauseMenuTransitionFrames * 8 + phase7) & 0xff];
+              v5 = lut7[(g_nMenuDrawFrames * 8 + phase7) & 0xff];
               phase7 += 0xc;
               rec->rotZ = v5 * 3 >> 9;
               rec++;
@@ -570,7 +564,7 @@ void Gamestate02_03_06_Draw(void) {
               phase8 = 0;
               do {
                 i++;
-                v6 = lut8[(g_nPauseMenuTransitionFrames * 8 + phase8) & 0xff];
+                v6 = lut8[(g_nMenuDrawFrames * 8 + phase8) & 0xff];
                 phase8 += 0xc;
                 rec->rotZ = v6 * 3 >> 9;
                 rec++;
@@ -596,7 +590,7 @@ void Gamestate02_03_06_Draw(void) {
             phase9 = 0;
             do {
               i++;
-              v7 = lut9[(g_nPauseMenuTransitionFrames * 8 + phase9) & 0xff];
+              v7 = lut9[(g_nMenuDrawFrames * 8 + phase9) & 0xff];
               phase9 += 0xc;
               rec->rotZ = v7 * 3 >> 9;
               rec++;
@@ -668,7 +662,7 @@ void Gamestate02_03_06_Draw(void) {
           phase10 = 0;
           do {
             i++;
-            v8 = lut3[(g_nPauseMenuTransitionFrames * 8 + phase10) & 0xff];
+            v8 = lut3[(g_nMenuDrawFrames * 8 + phase10) & 0xff];
             phase10 += 0xc;
             rec->rotZ = v8 * 3 >> 9;
             rec++;
@@ -713,10 +707,10 @@ void Gamestate02_03_06_Draw(void) {
       pos[0] = 0x14d;
       pos[1] = 0x24;
       pos[2] = 0xb40;
-      if (g_nWorldDragonsRescued >= 0xa) {
+      if (g_nTotalDragonsRescued >= 0xa) {
         pos[0] = 0x132;
       }
-      sprintf(buf, fmt, g_nWorldDragonsRescued);
+      sprintf(buf, fmt, g_nTotalDragonsRescued);
       BuildTextSpriteChain(buf, pos, 0x1b, 2);
       g_pSpriteRecordWriteCursor--;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
@@ -736,12 +730,12 @@ void Gamestate02_03_06_Draw(void) {
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       g_pSpriteRecordWriteCursor->type = ACTOR_TYPE_HUD_DRAGON_ICON;
       g_pSpriteRecordWriteCursor->posX = 0x12c;
-      if (g_nWorldDragonsRescued >= 0xa) {
+      if (g_nTotalDragonsRescued >= 0xa) {
         g_pSpriteRecordWriteCursor->posX = 0x111;
       }
       {
         int bob;
-        bob = (g_nPauseMenuTransitionFrames * 0x10 & 0x1f0) >> 1;
+        bob = (g_nMenuDrawFrames * 0x10 & 0x1f0) >> 1;
         g_pSpriteRecordWriteCursor->posY = 0x2e;
         g_pSpriteRecordWriteCursor->posZ = 0x780;
         g_pSpriteRecordWriteCursor->rotZ =
@@ -753,14 +747,14 @@ void Gamestate02_03_06_Draw(void) {
       {
         int x3;
         x3 = 0x24;
-        if (g_nWorldEggsRecovered > 0) {
+        if (g_nTotalEggsRecovered > 0) {
           i = 0;
           do {
             quad[1] = 0x32;
             quad[2] = 0x18;
             quad[0] = i * 0x1b + 0x18;
             quad[3] = 0x10;
-            if (i >= g_nWorldEggsRecovered) {
+            if (i >= g_nTotalEggsRecovered) {
               pos[1] = 0x3a;
               pos[0] = x3;
               pos[2] = 0x1800;
@@ -805,7 +799,7 @@ void Gamestate02_03_06_Draw(void) {
         pos[0] = 0x28;
         pos[1] = 0x48;
         pos[2] = 0x1100;
-        EnqueueBlinkingMarkerSprite(pos, g_nPauseMenuTransitionFrames * 2, 1);
+        EnqueueBlinkingMarkerSprite(pos, g_nMenuDrawFrames * 2, 1);
       }
       if (g_nSubMenuCursor < 5) {
         int *pa = pos;
@@ -813,7 +807,7 @@ void Gamestate02_03_06_Draw(void) {
           pos[0] = 0x1d7;
           pos[1] = 0x48;
           pos[2] = 0x1100;
-          EnqueueBlinkingMarkerSprite(pa, g_nPauseMenuTransitionFrames * 2, 0);
+          EnqueueBlinkingMarkerSprite(pa, g_nMenuDrawFrames * 2, 0);
         }
       }
       i = 0;
@@ -833,9 +827,7 @@ void Gamestate02_03_06_Draw(void) {
       while (i < (int)g_abWorldTitleGlyphBlock[g_nSubMenuCursor]) {
         i++;
         rec->rotZ =
-            g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 + phase) & 0xff] *
-                3 >>
-            9;
+            g_anCosineLut[(g_nMenuDrawFrames * 8 + phase) & 0xff] * 3 >> 9;
         phase += 0xc;
         rec++;
       }
@@ -868,7 +860,7 @@ void Gamestate02_03_06_Draw(void) {
         ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posY) = 0x6e;
         {
           register int fr asm("$2");
-          fr = g_nPauseMenuTransitionFrames;
+          fr = g_nMenuDrawFrames;
           g_pSpriteRecordWriteCursor->type = ACTOR_TYPE_HUD_DRAGON_ICON;
           bob = (fr * 0x10 & 0x1f0) >> 1;
         }
@@ -980,17 +972,17 @@ void Gamestate02_03_06_Draw(void) {
             if ((int)rec >= (int)g_pSpriteRecordWriteCursor) {
               phase = 0;
               do {
-                rec->rotZ = g_anCosineLut[(g_nPauseMenuTransitionFrames * 8 +
-                                           phase * 0xc) &
-                                          0xff] *
-                                3 >>
-                            9;
+                rec->rotZ =
+                    g_anCosineLut[(g_nMenuDrawFrames * 8 + phase * 0xc) &
+                                  0xff] *
+                        3 >>
+                    9;
                 rec--;
                 phase++;
               } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);
             }
           }
-          if (g_nWorldEggsRecovered > 0 && g_nSubMenuCursor < 3) {
+          if (g_nTotalEggsRecovered > 0 && g_nSubMenuCursor < 3) {
             int e = 0;
             while (e < (int)g_abLevelTotalEggsTable[g_nSubMenuCursor * 6 + i]) {
               int gx2;
@@ -1061,5 +1053,5 @@ void Gamestate02_03_06_Draw(void) {
                    :
                    : "g"(h0), "g"(h1), "g"(h2), "g"(h3), "g"(h4), "g"(h5),
                      "g"(h6), "g"(h7));
-  g_nPauseMenuTransitionFrames++;
+  g_nMenuDrawFrames++;
 }

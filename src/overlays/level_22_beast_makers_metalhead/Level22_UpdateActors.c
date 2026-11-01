@@ -553,7 +553,7 @@ void Level22_UpdateActors(void) {
             0x40;
         st->radius = 0;
         st->phase = 0;
-        g_nHudWorldEggRollRequest.v = 1;
+        g_nHudEggRollRequest.v = 1;
         actor->rotX = 0;
         actor->rotY = 8;
         actor->mode += 1;
@@ -661,9 +661,9 @@ void Level22_UpdateActors(void) {
         g_nCinematicActive = 0;
         ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
-        g_nWorldEggsRecovered += 1;
+        g_nTotalEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
-        g_nHudWorldEggRollRequest.v = 0;
+        g_nHudEggRollRequest.v = 0;
         DespawnActorRecord(actor);
         continue;
       }
@@ -749,30 +749,30 @@ void Level22_UpdateActors(void) {
               (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x385
                                  : -SPY_DZ(actor) < 0x385))) {
           sel = 2;
-          if (st->choice == 1) {
-            st->choice = 0;
+          if (st->choice == METALHEAD_ATTACK_STOMP) {
+            st->choice = METALHEAD_ATTACK_NONE;
           }
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if (st->choice == 0) {
+        if (st->choice == METALHEAD_ATTACK_NONE) {
           int r = RandomIntInRange(0, 100);
 
           if (sel >= 2) {
             r = RandomIntInRange(0x3C, 100);
           }
           if (r < 0x3C) {
-            st->choice = 1;
+            st->choice = METALHEAD_ATTACK_STOMP;
           } else if (r < 0x55) {
-            st->choice = 2;
+            st->choice = METALHEAD_ATTACK_SPRAY;
           } else {
-            st->choice = 3;
+            st->choice = METALHEAD_ATTACK_LOB;
           }
         }
         if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
           continue;
         }
         switch (st->choice) {
-        case 1:
+        case METALHEAD_ATTACK_STOMP:
           if (d < st->range[st->phase] << 10 && d > 0x2000 &&
               (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x320
                                  : -SPY_DZ(actor) < 0x320)) {
@@ -788,7 +788,7 @@ void Level22_UpdateActors(void) {
           }
           continue;
 
-        case 2:
+        case METALHEAD_ATTACK_SPRAY:
           if (d > 0x800 && d < 0x7000 &&
               (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x3E8
                                  : -SPY_DZ(actor) < 0x3E8)) {
@@ -796,10 +796,10 @@ void Level22_UpdateActors(void) {
             actor->mode = METALHEAD_SPRAY;
             continue;
           }
-          st->choice = 0;
+          st->choice = METALHEAD_ATTACK_NONE;
           continue;
 
-        case 3:
+        case METALHEAD_ATTACK_LOB:
           if (d > 0x2800 && d < 0x7000 &&
               (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x3E8
                                  : -SPY_DZ(actor) < 0x3E8)) {
@@ -808,7 +808,7 @@ void Level22_UpdateActors(void) {
             actor->mode = METALHEAD_LOB;
             continue;
           }
-          st->choice = 0;
+          st->choice = METALHEAD_ATTACK_NONE;
           continue;
         }
         continue;
@@ -818,7 +818,7 @@ void Level22_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         if (g_nActorAnimDone != 0) {
           st->timer = 0x50;
-          st->choice = 0;
+          st->choice = METALHEAD_ATTACK_NONE;
           ENTER_POSE(actor, METALHEAD_IDLE);
         }
         continue;
@@ -854,7 +854,7 @@ void Level22_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           st->timer = 0x50;
-          st->choice = 0;
+          st->choice = METALHEAD_ATTACK_NONE;
           ENTER_POSE(actor, METALHEAD_IDLE);
         }
         continue;
@@ -884,7 +884,7 @@ void Level22_UpdateActors(void) {
         st->count += g_nFrameStep;
         if (g_nActorAnimDone != 0) {
           st->timer = 0x50;
-          st->choice = 0;
+          st->choice = METALHEAD_ATTACK_NONE;
           ENTER_POSE(actor, METALHEAD_IDLE);
         }
         continue;
@@ -2872,9 +2872,9 @@ void Level22_UpdateActors(void) {
               st->target->subMode = COLLECT_HOMING;
 
               if (st->target->type == ACTOR_TYPE_EXTRA_LIFE) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType14);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorExtraLife);
               } else if (st->target->type == ACTOR_TYPE_SPARX_FOOD) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType15);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorSparxFood);
               } else {
                 g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_adwActorBurstColors[st->target->type]);
               }
@@ -3496,7 +3496,7 @@ void Level22_UpdateActors(void) {
 
             if (st->reward != -1) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
               StubRewardHook(st->reward, 0);
 
               if (st->partner != -1) {
@@ -3508,7 +3508,7 @@ void Level22_UpdateActors(void) {
 
             if (st->cutsceneId == st->reward) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
 
               if (st->partner != -1) {
                 g_pActorListBase[st->partner].mode = 1;

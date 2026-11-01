@@ -215,7 +215,7 @@ void SaveMenu_Update(void) {
             actor->collision = 0;
             actor->gridCell = -1;
             BeginDragonRescue(actor);
-            g_nWorldDragonsRescued--;
+            g_nTotalDragonsRescued--;
             g_anLevelDragonsRescued[g_nLevelIndex]--;
           }
         } else {

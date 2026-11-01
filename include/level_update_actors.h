@@ -72,7 +72,7 @@ extern struct {
  * shift, sine and cosine. */
 extern struct {
   int v;
-} g_nHudWorldEggRollRequest;
+} g_nHudEggRollRequest;
 
 extern void AimCameraStickTowardPoint(int *pos);
 
@@ -921,7 +921,7 @@ extern int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *ste
 
 typedef struct PostState {
   PostPath *path; /* 0x00 */
-  int mode;       /* 0x04 idle sub-state */
+  int mode;       /* 0x04 enum PostGuardPost */
   int timer;      /* 0x08 */
   int heading;    /* 0x0C knock-back heading */
   int speed;      /* 0x10 knock-back speed */
@@ -930,7 +930,7 @@ typedef struct PostState {
   short spinX;    /* 0x1C */
   short spinY;    /* 0x1E */
   int sub;        /* 0x20 */
-  int phase;      /* 0x24 */
+  int phase;      /* 0x24 enum PostGuardAmbush */
   int partner;    /* 0x28 index into g_pActorListBase */
 } PostState;
 
@@ -1221,14 +1221,14 @@ typedef struct LeaderState {
   int cue;                /* 0x20 */
 } LeaderState;
 
-/* Type 271: shepherd. Guards a flock with a partner shepherd: watches Spyro
- * (state 0, by phase), circles to block him (state 2, by phase), climbs and
- * drops back down (states 0x10-0x12), and walks home (0x64). */
+/* Type 271: shepherd. Guards a flock with a partner shepherd: keeps its post
+ * while SHEPHERD_IDLE, flanks or chases Spyro in SHEPHERD_CHASE (also by post),
+ * climbs onto and drops off a partner (0x10-0x12), and walks home (0x64). */
 typedef struct ShepherdState {
   unsigned char *path; /* 0x00 { count, cur }, points at +8 */
   int home[3];         /* 0x04 */
   int heading;         /* 0x10 -1 = take the actor's own */
-  int phase;           /* 0x14 */
+  int post;            /* 0x14 enum ShepherdPost (from its spawn record) */
   int knockSpeed;      /* 0x18 */
   int knockHeading;    /* 0x1C */
   int knockSpin;       /* 0x20 */
@@ -1353,7 +1353,7 @@ typedef struct CritterState {
   FlyPath *path;    /* 0x00 */
   int attach;       /* 0x04 actor it rides, 0 = none */
   int hasHome;      /* 0x08 */
-  int mode;         /* 0x0C */
+  int mode;         /* 0x0C enum LootCritterRun */
   int knockSpin;    /* 0x10 */
   int knockHeading; /* 0x14 */
   int knockSpeed;   /* 0x18 */
@@ -1493,7 +1493,7 @@ typedef struct WardState {
   int timer;      /* 0x1C */
   int camLock;    /* 0x20 */
   int pad24[4];
-  int mode;       /* 0x34 0 = post, 1 = chase, 2 = patrol */
+  int mode;       /* 0x34 enum WardRole */
   PathData *path; /* 0x38 */
   int pathDist;   /* 0x3C */
   int link;       /* 0x40 actor that frees the patrol (index into g_pActorListBase) */
@@ -1528,7 +1528,7 @@ typedef struct ShempState {
   int timer;           /* 0x10 */
   int pad14;           /* 0x14 */
   int turnDir;           /* 0x18 passed by address to SteerActorYawTowardSpyro */
-  int phase;           /* 0x1C 0..2 */
+  int phase;           /* 0x1C enum ShempPhase */
   unsigned char *path; /* 0x20 byte 0 = node count */
   unsigned char *cam;  /* 0x24 camera anchors, one per phase */
   int node[3];         /* 0x28 path node per phase */
@@ -1615,11 +1615,11 @@ extern int g_dwActiveCameraOptions;
 extern int g_nPortalCamPathReverseFlag;
 extern int g_nSpyroMoveTargetYaw; /* camera yaw override */
 
-/* Word at byte offset `off` of g_anFlightHudClassWords (the flight HUD's
- * per-class display words). The flight UpdateActors clones fill it with a
+/* Word at byte offset `off` of g_anFlightTallyTintPresets (tint presets 3..6,
+ * filled from HudState.tint). The flight UpdateActors clones fill it with a
  * byte-offset induction variable next to the source pointer; an int index
  * gives loop.c a different giv set. */
-#define FLIGHT_HUD_CLASS_WORD(off) \
-  (*(int *)((char *)g_anFlightHudClassWords + (off)))
+#define FLIGHT_TALLY_TINT_PRESET(off) \
+  (*(int *)((char *)g_anFlightTallyTintPresets + (off)))
 
 #endif /* OPEN_SPYRO_LEVEL_UPDATE_ACTORS_H */

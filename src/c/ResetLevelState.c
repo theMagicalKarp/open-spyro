@@ -72,8 +72,8 @@ void ResetLevelState(void) {
   g_nSparxHealth = SPARX_GOLD;
   g_nExtraLives = 4;
   g_nTotalTreasureCollected = 0;
-  g_nWorldDragonsRescued = 0;
-  g_nWorldEggsRecovered = 0;
+  g_nTotalDragonsRescued = 0;
+  g_nTotalEggsRecovered = 0;
   g_nLevelGemsAtEntry = 0;
   g_nGemTallyIconCount = 0;
   g_nLevelKeyState = KEYSTATE_NONE;

@@ -593,7 +593,7 @@ void Level34_UpdateActors(void) {
             0x40;
         st->radius = 0;
         st->phase = 0;
-        g_nHudWorldEggRollRequest.v = 1;
+        g_nHudEggRollRequest.v = 1;
         actor->rotX = 0;
         actor->rotY = 8;
         actor->mode += 1;
@@ -701,9 +701,9 @@ void Level34_UpdateActors(void) {
         g_nCinematicActive = 0;
         ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
-        g_nWorldEggsRecovered += 1;
+        g_nTotalEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
-        g_nHudWorldEggRollRequest.v = 0;
+        g_nHudEggRollRequest.v = 0;
         DespawnActorRecord(actor);
         continue;
       }
@@ -1338,9 +1338,9 @@ void Level34_UpdateActors(void) {
               st->target->subMode = COLLECT_HOMING;
 
               if (st->target->type == ACTOR_TYPE_EXTRA_LIFE) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType14);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorExtraLife);
               } else if (st->target->type == ACTOR_TYPE_SPARX_FOOD) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType15);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorSparxFood);
               } else {
                 g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_adwActorBurstColors[st->target->type]);
               }
@@ -1593,9 +1593,9 @@ void Level34_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3, actor);
-          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4, actor);
-          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 5, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS + 1, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS + 2, actor);
         }
         PlayActorMeshVoice(actor, 0, 0);
         actor->mode = LTHIEF_KNOCKED;
@@ -2002,7 +2002,7 @@ void Level34_UpdateActors(void) {
           }
         } else {
           switch (st->mode) {
-          case 0: {
+          case LCRITTER_RUN_PICK: {
             int dir;
 
             FindNearestPathPointToSpyro(st->path, &n179);
@@ -2021,16 +2021,16 @@ void Level34_UpdateActors(void) {
             if (dir != st->path->dir) {
               st->path->dir = dir;
             }
-            st->mode = 3;
+            st->mode = LCRITTER_RUN_DASH;
             break;
           }
 
-          case 1: {
+          case LCRITTER_RUN_OPPOSITE: {
             int dir;
             int r;
 
             if (FindNearestPathPointToSpyro(st->path, &m179) > 0x3000) {
-              st->mode = 2;
+              st->mode = LCRITTER_RUN_WANDER;
             }
             m179 = (m179 + (st->path->count >> 1)) % st->path->count;
             if (st->path->cur == m179) {
@@ -2060,12 +2060,12 @@ void Level34_UpdateActors(void) {
               }
             }
             if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
-              st->mode = 0;
+              st->mode = LCRITTER_RUN_PICK;
             }
             break;
           }
 
-          case 2: {
+          case LCRITTER_RUN_WANDER: {
             int r = PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 8, 0x1E,
                                   0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
@@ -2080,12 +2080,12 @@ void Level34_UpdateActors(void) {
               }
             }
             if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
-              st->mode = 0;
+              st->mode = LCRITTER_RUN_PICK;
             }
             break;
           }
 
-          case 3:
+          case LCRITTER_RUN_DASH:
             if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x2800) {
               st->mode = one;
             }
@@ -3551,12 +3551,12 @@ void Level34_UpdateActors(void) {
       break;
     }
 
-    /* Types 481-483: debris. Tumbles under gravity, shedding sparks, until
+    /* ACTOR_TYPE_SPARK_DEBRIS (481..483). Tumbles under gravity, shedding sparks, until
      * its life runs out or it leaves the drawn set, then bursts and is
      * removed. */
-    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3:
-    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4:
-    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 5: {
+    case ACTOR_TYPE_SPARK_DEBRIS:
+    case ACTOR_TYPE_SPARK_DEBRIS + 1:
+    case ACTOR_TYPE_SPARK_DEBRIS + 2: {
       Debris *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {

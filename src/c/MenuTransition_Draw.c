@@ -52,7 +52,7 @@ void MenuTransition_Draw(void) {
   g_nPrimBufferOverflowFlag = 0;
   g_pPrimBufferWriteCursor = g_pRenderScratchRegionBase;
   g_pPrimBufferLimit = (char *)g_pRenderScratchRegionBase + 0x1C000;
-  switch (g_nPauseMenuTransitionFrames) {
+  switch (g_nMenuDrawFrames) {
   case 0: {
     DRAWENV *env;
 
@@ -64,8 +64,8 @@ void MenuTransition_Draw(void) {
     PutDrawEnv(env);
     rect.y = 0xE0;
     rect.h = 1;
-    rect.x = g_nPauseMenuIdleFrames + 0x200;
-    rect.w = 0x20 - g_nPauseMenuIdleFrames;
+    rect.x = g_nMenuTickFrames + 0x200;
+    rect.w = 0x20 - g_nMenuTickFrames;
     LoadImage(&rect, g_anMenuBackdropGrayClut);
     DrawSync(0);
     slot = 0x3FF;
@@ -125,7 +125,7 @@ void MenuTransition_Draw(void) {
     register DRAWENV *env asm("$4");
 
     g_dwActorMeshFadeColor = 0;
-    prog = (0x20 - g_nPauseMenuIdleFrames) << 7;
+    prog = (0x20 - g_nMenuTickFrames) << 7;
     g_nFadeProgress = prog;
     *(volatile int *)&color = ComputeDepthCuedColor(g_dwWorldFogColor, 0, prog);
     env = &g_abFrameDrawEnv0;

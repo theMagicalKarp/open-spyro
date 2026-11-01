@@ -441,18 +441,18 @@ void Level20_UpdateActors(void) {
 
       switch (actor->mode) {
       case GUNNER_IDLE:
-        if (st->mode == 0) {
+        if (st->mode == GUNNER_ROLE_GUARD) {
           ENTER_POSE(actor, GUNNER_GUARD);
-        } else if (st->mode == 1) {
+        } else if (st->mode == GUNNER_ROLE_PATROL) {
           Actor *p = &g_pActorListBase[st->partner];
 
           if (p->mode != 0) {
-            st->mode = 0;
+            st->mode = GUNNER_ROLE_GUARD;
             ENTER_POSE(actor, GUNNER_GUARD);
           }
           ANIM_GO(actor, 7);
           PivotActorAlongPath(actor, st->path, 0x100, 0xA0, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-        } else if (st->mode == 2) {
+        } else if (st->mode == GUNNER_ROLE_LOOKOUT) {
           ANIM_GO(actor, 0);
           if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x640 &&
               g_pActorListBase[st->partner].mode == 0) {
@@ -619,7 +619,7 @@ void Level20_UpdateActors(void) {
             0x40;
         st->radius = 0;
         st->phase = 0;
-        g_nHudWorldEggRollRequest.v = 1;
+        g_nHudEggRollRequest.v = 1;
         actor->rotX = 0;
         actor->rotY = 8;
         actor->mode += 1;
@@ -727,9 +727,9 @@ void Level20_UpdateActors(void) {
         g_nCinematicActive = 0;
         ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
-        g_nWorldEggsRecovered += 1;
+        g_nTotalEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
-        g_nHudWorldEggRollRequest.v = 0;
+        g_nHudEggRollRequest.v = 0;
         DespawnActorRecord(actor);
         continue;
       }
@@ -1548,9 +1548,9 @@ void Level20_UpdateActors(void) {
               st->target->subMode = COLLECT_HOMING;
 
               if (st->target->type == ACTOR_TYPE_EXTRA_LIFE) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType14);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorExtraLife);
               } else if (st->target->type == ACTOR_TYPE_SPARX_FOOD) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType15);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorSparxFood);
               } else {
                 g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_adwActorBurstColors[st->target->type]);
               }
@@ -2256,7 +2256,7 @@ void Level20_UpdateActors(void) {
 
             if (st->reward != -1) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
               StubRewardHook(st->reward, 0);
 
               if (st->partner != -1) {
@@ -2268,7 +2268,7 @@ void Level20_UpdateActors(void) {
 
             if (st->cutsceneId == st->reward) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
 
               if (st->partner != -1) {
                 g_pActorListBase[st->partner].mode = 1;

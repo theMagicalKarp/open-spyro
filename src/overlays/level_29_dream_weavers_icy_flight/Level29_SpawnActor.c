@@ -247,7 +247,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x1E1 ... 0x1E2: {
+  case ACTOR_TYPE_SPARK_DEBRIS ... ACTOR_TYPE_SPARK_DEBRIS + 1: {
     FragmentState *st = rec->state;
     int yaw;
     int pitch;
@@ -390,9 +390,9 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     }
     break;
 
-  case 0x185:
-  case 0x18A:
-  case 0x1EA ... 0x1EB:
+  case ACTOR_TYPE_TALLY_ICON_CHEST:
+  case ACTOR_TYPE_TALLY_ICON_BOBBER:
+  case ACTOR_TYPE_TALLY_ICON_RIDER ... ACTOR_TYPE_TALLY_ICON_FLAME:
     InitActorRenderDefaults(rec);
     rec->cullRadius = 0;
     rec->posX = -0x64;

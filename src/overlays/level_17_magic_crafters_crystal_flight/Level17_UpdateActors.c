@@ -350,7 +350,7 @@ void Level17_UpdateActors(void) {
             0x40;
         st->speed = 0;
         st->phase = 0;
-        g_nHudWorldEggRollRequest.v = 1;
+        g_nHudEggRollRequest.v = 1;
         actor->rotX = 0;
         actor->rotY = 8;
         actor->mode = actor->mode + 1;
@@ -452,9 +452,9 @@ void Level17_UpdateActors(void) {
         g_nCinematicActive = 0;
         ZeroVector(&SPY.headLook);
         CommitActorKillGems(0, st->killActor);
-        g_nWorldEggsRecovered = g_nWorldEggsRecovered + 1;
+        g_nTotalEggsRecovered = g_nTotalEggsRecovered + 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
-        g_nHudWorldEggRollRequest.v = 0;
+        g_nHudEggRollRequest.v = 0;
         DespawnActorRecord(actor);
         break;
 
@@ -1070,9 +1070,9 @@ void Level17_UpdateActors(void) {
             st->target->subMode = COLLECT_HOMING;
 
             if (st->target->type == ACTOR_TYPE_EXTRA_LIFE)
-              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_dwBurstColorType14);
+              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_dwBurstColorExtraLife);
             else if (st->target->type == ACTOR_TYPE_SPARX_FOOD)
-              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_dwBurstColorType15);
+              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_dwBurstColorSparxFood);
             else
               g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_adwActorBurstColors[st->target->type]);
 
@@ -1386,9 +1386,9 @@ void Level17_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3, actor);
-          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4, actor);
-          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 5, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS + 1, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS + 2, actor);
         }
         PlayActorMeshVoice(actor, 0, 0);
         actor->mode = BANKER_STRUCK;
@@ -1694,7 +1694,7 @@ void Level17_UpdateActors(void) {
           int off;
 
           for (i = 0, src = (int *)st, off = 0; i < 4; i++) {
-            FLIGHT_HUD_CLASS_WORD(off) = src[0x21];
+            FLIGHT_TALLY_TINT_PRESET(off) = src[0x21];
             src++;
             off += 4;
           }
@@ -1943,10 +1943,10 @@ void Level17_UpdateActors(void) {
     }
     /* HUD collectible icon: swings from where it was picked up onto its
      * slot in the flight tally, spinning all the way (TallyState). */
-    case 0x183:
-    case 0x184:
-    case 0x185:
-    case 0x189: {
+    case ACTOR_TYPE_TALLY_ICON_RING:
+    case ACTOR_TYPE_TALLY_ICON_TARGET:
+    case ACTOR_TYPE_TALLY_ICON_CHEST:
+    case ACTOR_TYPE_TALLY_ICON_BANKER: {
       TallyState *st = actor->state;
 
       switch (actor->mode) {
@@ -2113,9 +2113,9 @@ void Level17_UpdateActors(void) {
     }
     break;
 
-    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3:
-    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4:
-    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 5: {
+    case ACTOR_TYPE_SPARK_DEBRIS:
+    case ACTOR_TYPE_SPARK_DEBRIS + 1:
+    case ACTOR_TYPE_SPARK_DEBRIS + 2: {
       EmberState *st = actor->state;
       int trail[3];
 

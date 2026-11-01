@@ -554,7 +554,7 @@ void Level10_UpdateActors(void) {
             0x40;
         st->radius = 0;
         st->phase = 0;
-        g_nHudWorldEggRollRequest.v = 1;
+        g_nHudEggRollRequest.v = 1;
         actor->rotX = 0;
         actor->rotY = 8;
         actor->mode += 1;
@@ -662,9 +662,9 @@ void Level10_UpdateActors(void) {
         g_nCinematicActive = 0;
         ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
-        g_nWorldEggsRecovered += 1;
+        g_nTotalEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
-        g_nHudWorldEggRollRequest.v = 0;
+        g_nHudEggRollRequest.v = 0;
         DespawnActorRecord(actor);
         continue;
       }
@@ -1483,9 +1483,9 @@ void Level10_UpdateActors(void) {
               st->target->subMode = COLLECT_HOMING;
 
               if (st->target->type == ACTOR_TYPE_EXTRA_LIFE) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType14);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorExtraLife);
               } else if (st->target->type == ACTOR_TYPE_SPARX_FOOD) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType15);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorSparxFood);
               } else {
                 g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_adwActorBurstColors[st->target->type]);
               }
@@ -2102,7 +2102,7 @@ void Level10_UpdateActors(void) {
 
             if (st->reward != -1) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
               StubRewardHook(st->reward, 0);
 
               if (st->partner != -1) {
@@ -2114,7 +2114,7 @@ void Level10_UpdateActors(void) {
 
             if (st->cutsceneId == st->reward) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
 
               if (st->partner != -1) {
                 g_pActorListBase[st->partner].mode = 1;
@@ -3051,7 +3051,7 @@ void Level10_UpdateActors(void) {
                           ArcTan2(spy->posX - actor->posX,
                                         spy->posY - actor->posY, 0)) >= 0x55 ||
             (actor->mode == SHEMP_P2_SLAM && actor->nextFrame >= 0x16 && actor->nextFrame < 0x30)) {
-          if (st->phase == 2) {
+          if (st->phase == SHEMP_PHASE_3) {
             ANIM_SET(actor, 3);
             actor->rotZ += 0x80;
             ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
@@ -3111,13 +3111,13 @@ void Level10_UpdateActors(void) {
         }
         st->flag = 0;
         switch (st->phase) {
-        case 0:
+        case SHEMP_PHASE_1:
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x2328) {
             actor->mode = SHEMP_P1_START;
             continue;
           }
           break;
-        case 1:
+        case SHEMP_PHASE_2:
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
               ApproxDist2D(&actor->posX, &spy->posX) < 0x1964 &&
               actor->posZ - actor->floorOffset - SPY.posZ < 0) {
@@ -3125,7 +3125,7 @@ void Level10_UpdateActors(void) {
             continue;
           }
           break;
-        case 2:
+        case SHEMP_PHASE_3:
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
               ApproxDist2D(&actor->posX, &spy->posX) < 0x1964 &&
               actor->posZ - actor->floorOffset - SPY.posZ < 0) {
@@ -3349,7 +3349,7 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_STUNNED:
         st->timer = 0xC8;
-        if (st->phase == 0) {
+        if (st->phase == SHEMP_PHASE_1) {
           ANIM_GO(actor, 0xE);
         } else {
           actor->rotZ += 0x80;

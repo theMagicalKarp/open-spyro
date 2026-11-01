@@ -191,7 +191,7 @@ Actor *Level2_SpawnActor(int type, Actor *parent) {
   }
 
   case ACTOR_TYPE_WOOD_CHEST_SHARD ... ACTOR_TYPE_WOOD_CHEST_SHARD + 2:
-  case ACTOR_TYPE_SPARKLE_SHARD ... ACTOR_TYPE_SPARKLE_SHARD + 2:
+  case ACTOR_TYPE_SPARKLE_SHARD ... ACTOR_TYPE_WOOD_SHARD + 1:
   case ACTOR_TYPE_LIFE_CHEST_SHARD ... ACTOR_TYPE_LIFE_CHEST_SHARD + 2: {
     FragmentState *st = rec->state;
     int yaw;

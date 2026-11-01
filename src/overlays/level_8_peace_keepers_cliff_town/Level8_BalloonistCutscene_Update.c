@@ -285,79 +285,79 @@ void Level8_BalloonistCutscene_Update(void)
       int i;
 
         t = g_nActorCutsceneDialogPage[0];
-        if (t < 0x1E)
+        if (t < BPAGE_ROSTER)
       {
         if ((g_dwPadPressed[0] & (PAD_CROSS | PAD_START | PAD_RIGHT | PAD_DOWN)) && (g_anActorCutsceneTimerBlock_s >= 0x51))
         {
-          n = t % 6;
-          if (n == 0)
+          n = t % BPAGES_PER_WORLD;
+          if (n == BPAGE_LOCKED_FIRST)
           {
             g_nActorCutsceneDialogPage[0] = t + 1;
           }
           else
-            if (n < 3)
+            if (n < BPAGE_UNLOCK_FIRST)
           {
-            if ((t < 3) && (g_bWorldBalloonistState1 < BALLOONIST_OPEN))
+            if ((t < BALLOONIST_PAGE(0, BPAGE_UNLOCK_FIRST)) && (g_bWorldBalloonistState1 < BALLOONIST_OPEN))
             {
               g_pfnLevelOnSaveMenuExit();
             }
             else
-              if (g_nActorCutsceneDialogPage[0] == 0xE)
+              if (g_nActorCutsceneDialogPage[0] == BALLOONIST_PAGE(2, BPAGE_LOCKED_AGAIN))
             {
               do
               {
                 k = ((int) GetRandomU32()) % 5;
                 if ((k == 0) && (g_nLevelEggsRecovered1 == 0))
                 {
-                  g_nActorCutsceneDialogPage_s = 0x21;
+                  g_nActorCutsceneDialogPage_s = BPAGE_HINT_STONE_HILL;
                 }
                 else
                   if ((k == 1) && (g_nLevelEggsRecovered7 == 0))
                 {
-                  g_nActorCutsceneDialogPage_s = 0x22;
+                  g_nActorCutsceneDialogPage_s = BPAGE_HINT_DRY_CANYON;
                 }
                 else
                   if ((k == 2) && (g_nLevelEggsRecovered8 == 0))
                 {
-                  g_nActorCutsceneDialogPage_s = 0x23;
+                  g_nActorCutsceneDialogPage_s = BPAGE_HINT_CLIFF_TOWN;
                 }
                 else
                   if ((k == 3) && (g_nLevelEggsRecovered12 < 2))
                 {
-                  g_nActorCutsceneDialogPage_s = 0x24;
+                  g_nActorCutsceneDialogPage_s = BPAGE_HINT_MC_HOME;
                 }
                 else
                   if ((k == 4) && (g_nLevelEggsRecovered15 == 0))
                 {
-                  g_nActorCutsceneDialogPage_s = 0x25;
+                  g_nActorCutsceneDialogPage_s = BPAGE_HINT_WIZARD_PEAK;
                 }
               }
-              while (g_nActorCutsceneDialogPage_s == 0xE);
+              while (g_nActorCutsceneDialogPage_s == BALLOONIST_PAGE(2, BPAGE_LOCKED_AGAIN));
             }
             else
             {
-              g_nActorCutsceneDialogPage[0] = 0x1E;
+              g_nActorCutsceneDialogPage[0] = BPAGE_ROSTER;
             }
           }
           else
-            if (n == 3)
+            if (n == BPAGE_UNLOCK_FIRST)
           {
             g_nActorCutsceneDialogPage[0] = t + 2;
           }
           else
-            if (n == 4)
+            if (n == BPAGE_UNLOCK_AGAIN)
           {
             g_nActorCutsceneDialogPage[0] = t + 1;
           }
           else
           {
-            g_nActorCutsceneDialogPage[0] = 0x1F;
+            g_nActorCutsceneDialogPage[0] = BPAGE_CONFIRM_NEXT;
           }
           g_nActorCutsceneTimer[0] = 0;
         }
       }
       else
-        if (t == 0x1E)
+        if (t == BPAGE_ROSTER)
       {
         i = 1;
         k = 2;
@@ -416,7 +416,7 @@ void Level8_BalloonistCutscene_Update(void)
         g_nActorCutsceneCardVariant = (g_nCurrentLevelId / 10) - 1;
       }
       else
-        if (((unsigned int) (t - 0x1F)) < 2)
+        if (((unsigned int) (t - BPAGE_CONFIRM_NEXT)) < 2)
       {
         if (g_dwPadPressed[0] & (PAD_UP | PAD_DOWN))
         {
@@ -434,12 +434,12 @@ void Level8_BalloonistCutscene_Update(void)
         }
         if (g_nActorCutsceneDialogPage[-1] == 0)
         {
-          if (g_nActorCutsceneDialogPage[0] == 0x1F)
+          if (g_nActorCutsceneDialogPage[0] == BPAGE_CONFIRM_NEXT)
           {
             g_pfnLevelOnSaveMenuExit();
             return;
           }
-          g_nActorCutsceneDialogPage[0] = 0x1E;
+          g_nActorCutsceneDialogPage[0] = BPAGE_ROSTER;
           g_nActorCutsceneDialogPage[-1] = 0;
           g_nActorCutsceneDialogVariant = 1;
           return;
@@ -447,7 +447,7 @@ void Level8_BalloonistCutscene_Update(void)
         StopAllSoundExceptMask(0);
         g_nActorCutsceneSubstate[0] = ACS_BOARD;
         g_nActorCutsceneTimer[0] = 0;
-        if (g_nActorCutsceneDialogPage[0] == 0x1F)
+        if (g_nActorCutsceneDialogPage[0] == BPAGE_CONFIRM_NEXT)
         {
           g_nCurrentLevelId = g_nActiveLevelId + 0xA;
           g_nActorCutsceneCardVariant = (g_nCurrentLevelId / 10) - 1;
@@ -456,35 +456,35 @@ void Level8_BalloonistCutscene_Update(void)
       else
         if ((g_dwPadPressed[0] & (PAD_CROSS | PAD_START | PAD_RIGHT | PAD_DOWN)) && (g_nActorCutsceneDialogPage[-2] >= 0x51))
       {
-        if ((t == 0x24) || (t == 0x26))
+        if ((t == BPAGE_HINT_MC_HOME) || (t == BPAGE_HINT_WIZARD_PEAK_2))
         {
-          g_nActorCutsceneDialogPage[0] = 0x1E;
+          g_nActorCutsceneDialogPage[0] = BPAGE_ROSTER;
           g_nActorCutsceneMenuCursor[0] = 0;
           g_nActorCutsceneDialogVariant = 1;
           return;
         }
-        if (t == 0x25)
+        if (t == BPAGE_HINT_WIZARD_PEAK)
         {
-          g_nActorCutsceneDialogPage[0] = 0x26;
+          g_nActorCutsceneDialogPage[0] = BPAGE_HINT_WIZARD_PEAK_2;
           g_nActorCutsceneDialogPage[-2] = 0;
           return;
         }
-        if (t == 0x21)
+        if (t == BPAGE_HINT_STONE_HILL)
         {
           g_nCurrentLevelId = LEVEL_STONE_HILL;
         }
         else
-          if (t == 0x22)
+          if (t == BPAGE_HINT_DRY_CANYON)
         {
           g_nCurrentLevelId = LEVEL_DRY_CANYON;
         }
         else
-          if (t == 0x23)
+          if (t == BPAGE_HINT_CLIFF_TOWN)
         {
           g_nCurrentLevelId = LEVEL_CLIFF_TOWN;
         }
         n = g_nActorCutsceneDialogPage_s;
-        g_nActorCutsceneDialogPage_s = 0x20;
+        g_nActorCutsceneDialogPage_s = BPAGE_CONFIRM_HINT;
         g_nActorCutsceneTimer[0] = 0;
         n -= 0x1B;
         g_nActorCutsceneCardVariant = n;

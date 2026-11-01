@@ -14183,11 +14183,11 @@ dlabel g_nPrevLevelIndex
     /* 65E88 80075688 00000000 */ .word 0x00000000
 enddlabel g_nPrevLevelIndex
 
-nonmatching g_nPauseMenuIdleFrames
+nonmatching g_nMenuTickFrames
 
-dlabel g_nPauseMenuIdleFrames
+dlabel g_nMenuTickFrames
     /* 65E8C 8007568C 00000000 */ .word 0x00000000
-enddlabel g_nPauseMenuIdleFrames
+enddlabel g_nMenuTickFrames
 
 nonmatching g_nFlightLevelActive
 
@@ -14470,11 +14470,11 @@ dlabel g_pfnActorCutsceneSubstateUpdate
     /* 65F4C 8007574C 00000000 */ .word 0x00000000
 enddlabel g_pfnActorCutsceneSubstateUpdate
 
-nonmatching g_nWorldDragonsRescued
+nonmatching g_nTotalDragonsRescued
 
-dlabel g_nWorldDragonsRescued
+dlabel g_nTotalDragonsRescued
     /* 65F50 80075750 00000000 */ .word 0x00000000
-enddlabel g_nWorldDragonsRescued
+enddlabel g_nTotalDragonsRescued
 
 nonmatching g_nSfxVolume
 

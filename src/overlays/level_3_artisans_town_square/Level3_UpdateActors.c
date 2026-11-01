@@ -443,7 +443,7 @@ void Level3_UpdateActors(void) {
       switch (actor->mode) {
       case WARD_IDLE:
         switch (st->mode) {
-        case 0:
+        case WARD_ROLE_SENTRY:
           TrackEntityYawTowardSpyro(actor, 10, 0, 0);
           if (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x320 &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
@@ -451,12 +451,12 @@ void Level3_UpdateActors(void) {
             ENTER_POSE(actor, WARD_ADVANCE);
           }
           break;
-        case 1:
+        case WARD_ROLE_PATROL:
           st->speed = 0x64;
           ANIM_GO(actor, 1);
           actor->mode = WARD_TO_NODE;
           continue;
-        case 2:
+        case WARD_ROLE_RING:
           st->speed = 0x64;
           st->path->cur = 0;
           ENTER_POSE(actor, WARD_ADVANCE);
@@ -465,7 +465,7 @@ void Level3_UpdateActors(void) {
 
       case WARD_ADVANCE:
         switch (st->mode) {
-        case 0:
+        case WARD_ROLE_SENTRY:
           if (TickCountdownByFrameDelta(&st->retarget, 4) != 0) {
             st->retarget = 0x1E;
             st->heading = *(unsigned char *)&g_bSpyroPersistentEulerZ;
@@ -508,7 +508,7 @@ void Level3_UpdateActors(void) {
             ANIM_GO(actor, 1);
           }
           break;
-        case 2:
+        case WARD_ROLE_RING:
           if (!(g_pActorListBase[st->link].mode & 0x80) ||
               ApproxDist2D(&actor->posX, &st->homeX) >= 0x401) {
             SteerActorAroundPoint(
@@ -533,7 +533,7 @@ void Level3_UpdateActors(void) {
             }
             break;
           }
-          st->mode = 1;
+          st->mode = WARD_ROLE_PATROL;
           st->path->cur = 1;
           ENTER_POSE(actor, WARD_IDLE);
         }
@@ -1329,7 +1329,7 @@ void Level3_UpdateActors(void) {
             0x40;
         st->radius = 0;
         st->phase = 0;
-        g_nHudWorldEggRollRequest.v = 1;
+        g_nHudEggRollRequest.v = 1;
         actor->rotX = 0;
         actor->rotY = 8;
         actor->mode += 1;
@@ -1437,9 +1437,9 @@ void Level3_UpdateActors(void) {
         g_nCinematicActive = 0;
         ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
-        g_nWorldEggsRecovered += 1;
+        g_nTotalEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
-        g_nHudWorldEggRollRequest.v = 0;
+        g_nHudEggRollRequest.v = 0;
         DespawnActorRecord(actor);
         continue;
       }
@@ -2261,9 +2261,9 @@ void Level3_UpdateActors(void) {
               st->target->subMode = COLLECT_HOMING;
 
               if (st->target->type == ACTOR_TYPE_EXTRA_LIFE) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType14);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorExtraLife);
               } else if (st->target->type == ACTOR_TYPE_SPARX_FOOD) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType15);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorSparxFood);
               } else {
                 g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_adwActorBurstColors[st->target->type]);
               }
@@ -2640,7 +2640,7 @@ void Level3_UpdateActors(void) {
 
             if (st->reward != -1) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
               StubRewardHook(st->reward, 0);
 
               if (st->partner != -1) {
@@ -2652,7 +2652,7 @@ void Level3_UpdateActors(void) {
 
             if (st->cutsceneId == st->reward) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
 
               if (st->partner != -1) {
                 g_pActorListBase[st->partner].mode = 1;

@@ -600,7 +600,7 @@ void Level0_UpdateActors(void) {
             0x40;
         st->speed = 0;
         st->phase = 0;
-        g_nHudWorldEggRollRequest.v = 1;
+        g_nHudEggRollRequest.v = 1;
         actor->rotX = 0;
         actor->rotY = 8;
         actor->mode = actor->mode + 1;
@@ -702,9 +702,9 @@ void Level0_UpdateActors(void) {
         g_nCinematicActive = 0;
         ZeroVector(&SPY.headLook);
         CommitActorKillGems(0, st->killActor);
-        g_nWorldEggsRecovered = g_nWorldEggsRecovered + 1;
+        g_nTotalEggsRecovered = g_nTotalEggsRecovered + 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
-        g_nHudWorldEggRollRequest.v = 0;
+        g_nHudEggRollRequest.v = 0;
         DespawnActorRecord(actor);
         break;
 
@@ -1856,9 +1856,9 @@ void Level0_UpdateActors(void) {
             st->target->subMode = COLLECT_HOMING;
 
             if (st->target->type == ACTOR_TYPE_EXTRA_LIFE)
-              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_dwBurstColorType14);
+              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_dwBurstColorExtraLife);
             else if (st->target->type == ACTOR_TYPE_SPARX_FOOD)
-              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_dwBurstColorType15);
+              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_dwBurstColorSparxFood);
             else
               g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_adwActorBurstColors[st->target->type]);
 
@@ -2051,22 +2051,22 @@ void Level0_UpdateActors(void) {
         ZeroVector(&SPY.headLook);
         g_pfnLevelBeginActorCutscene(actor);
 
-        if (g_nWorldDragonsRescued < 10) {
+        if (g_nTotalDragonsRescued < 10) {
           if (g_abWorldBalloonistState[1] == BALLOONIST_UNMET) {
-            g_nActorCutsceneDialogPage = 0;
+            g_nActorCutsceneDialogPage = BALLOONIST_PAGE(0, BPAGE_LOCKED_FIRST);
             g_abWorldBalloonistState[1] = BALLOONIST_TALKED;
           } else {
-            g_nActorCutsceneDialogPage = 2;
+            g_nActorCutsceneDialogPage = BALLOONIST_PAGE(0, BPAGE_LOCKED_AGAIN);
           }
         } else if (g_abWorldBalloonistState[1] < BALLOONIST_OPEN) {
           if (g_abWorldBalloonistState[1] == BALLOONIST_UNMET) {
-            g_nActorCutsceneDialogPage = 3;
+            g_nActorCutsceneDialogPage = BALLOONIST_PAGE(0, BPAGE_UNLOCK_FIRST);
           } else {
-            g_nActorCutsceneDialogPage = 4;
+            g_nActorCutsceneDialogPage = BALLOONIST_PAGE(0, BPAGE_UNLOCK_AGAIN);
           }
           g_abWorldBalloonistState[1] = BALLOONIST_OPEN;
         } else {
-          g_nActorCutsceneDialogPage = 0x1E;
+          g_nActorCutsceneDialogPage = BPAGE_ROSTER;
           g_nActorCutsceneDialogVariant = (int)GetRandomU32() % 3;
         }
       }
@@ -2182,7 +2182,7 @@ void Level0_UpdateActors(void) {
 
             if (st->rewardScript != -1) {
               g_anLevelDragonsRescued[g_nLevelIndex]++;
-              g_nWorldDragonsRescued++;
+              g_nTotalDragonsRescued++;
               StubRewardHook(st->rewardScript, 0);
               if (st->partner != -1) {
                 g_pActorListBase[st->partner].mode = 1;
@@ -2191,7 +2191,7 @@ void Level0_UpdateActors(void) {
               continue;
             } else if (cutsceneId = st->cutsceneId, cutsceneId == st->rewardScript) {
               g_anLevelDragonsRescued[g_nLevelIndex]++;
-              g_nWorldDragonsRescued++;
+              g_nTotalDragonsRescued++;
               if (st->partner != cutsceneId) {
                 g_pActorListBase[st->partner].mode = 1;
               }

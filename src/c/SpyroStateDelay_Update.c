@@ -12,18 +12,18 @@ void SpyroStateDelay_Update(void) {
   int frames;
   TickSpyroFrameNoInput();
   UpdateCameraFrame();
-  frames = g_nPauseMenuIdleFrames + 1;
-  g_nPauseMenuIdleFrames = frames;
+  frames = g_nMenuTickFrames + 1;
+  g_nMenuTickFrames = frames;
   if (frames >= 0x20) {
     int passes;
-    g_nPauseMenuIdleFrames = 0;
-    passes = g_nPauseMenuTransitionFrames + 1;
-    g_nPauseMenuTransitionFrames = passes;
+    g_nMenuTickFrames = 0;
+    passes = g_nMenuDrawFrames + 1;
+    g_nMenuDrawFrames = passes;
     if (passes == 2) {
       BeginWorldHubReturn();
     }
   } else if (frames == 0x10) {
-    if (g_nPauseMenuTransitionFrames == 0) {
+    if (g_nMenuDrawFrames == 0) {
       ChangeSpyroState(SPYRO_ST_GLIDE);
     }
   }

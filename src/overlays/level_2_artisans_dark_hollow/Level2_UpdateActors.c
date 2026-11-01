@@ -559,7 +559,7 @@ void Level2_UpdateActors(void) {
             0x40;
         st->radius = 0;
         st->phase = 0;
-        g_nHudWorldEggRollRequest.v = 1;
+        g_nHudEggRollRequest.v = 1;
         actor->rotX = 0;
         actor->rotY = 8;
         actor->mode += 1;
@@ -667,9 +667,9 @@ void Level2_UpdateActors(void) {
         g_nCinematicActive = 0;
         ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
-        g_nWorldEggsRecovered += 1;
+        g_nTotalEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
-        g_nHudWorldEggRollRequest.v = 0;
+        g_nHudEggRollRequest.v = 0;
         DespawnActorRecord(actor);
         continue;
       }
@@ -1622,9 +1622,9 @@ void Level2_UpdateActors(void) {
               st->target->subMode = COLLECT_HOMING;
 
               if (st->target->type == ACTOR_TYPE_EXTRA_LIFE) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType14);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorExtraLife);
               } else if (st->target->type == ACTOR_TYPE_SPARX_FOOD) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType15);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorSparxFood);
               } else {
                 g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_adwActorBurstColors[st->target->type]);
               }
@@ -1804,7 +1804,7 @@ void Level2_UpdateActors(void) {
       switch (actor->mode) {
       case POSTGUARD_IDLE:
         switch (st->mode) {
-        case 0:
+        case POSTGUARD_POST_PICK:
           if (ApproxDist2D(&spy->posX, &st->path->pts[0]) < 0x1C00) {
             if (AbsAngleDelta8(ArcTan2(spy->posX - actor->posX,
                                             SPY.posY - actor->posY, 0),
@@ -1831,7 +1831,7 @@ void Level2_UpdateActors(void) {
             }
           }
           break;
-        case 1:
+        case POSTGUARD_POST_PATROL:
           ANIM_GO(actor, 1);
           PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0xC8, 5, 0xA, actor->group,
                         MOVE_LIFT | MOVE_FOLLOW_FLOOR);
@@ -1839,7 +1839,7 @@ void Level2_UpdateActors(void) {
             SetActorGroupState(actor, POSTGUARD_ALERTED);
           }
           break;
-        case 2:
+        case POSTGUARD_POST_WATCH:
           TrackEntityYawTowardSpyro(actor, 4, 0, 0);
           if (g_nActorAnimDone != 0) {
             ANIM_GO(actor, 0);
@@ -1851,38 +1851,38 @@ void Level2_UpdateActors(void) {
             continue;
           }
           break;
-        case 3:
+        case POSTGUARD_POST_AMBUSH:
           switch (st->phase) {
-          case 0:
+          case POSTGUARD_AMBUSH_WAIT:
             TrackEntityYawTowardSpyro(actor, 4, 0, 0);
             if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000 &&
                 actor->posZ - actor->floorOffset - SPY.posZ < 0 && SPY.airborneFrames == 0) {
               PostState *other = g_pActorListBase[st->partner].state;
 
-              st->phase = 1;
+              st->phase = POSTGUARD_AMBUSH_DELAY;
               other->timer = RandomIntInRange(0, 0xF);
-              other->phase = 1;
+              other->phase = POSTGUARD_AMBUSH_DELAY;
             }
             break;
-          case 1:
+          case POSTGUARD_AMBUSH_DELAY:
             if (TickCountdownByFrameDelta(&st->timer, 4)) {
               st->phase++;
             }
             break;
-          case 2:
+          case POSTGUARD_AMBUSH_ROUSE:
             ANIM_GO(actor, 7);
             if (g_nActorAnimDone != 0) {
               st->phase++;
             }
             break;
-          case 3:
+          case POSTGUARD_AMBUSH_RUN:
             ANIM_GO(actor, 1);
             if (PivotActorAlongPath(actor, st->path, 0x100, 0x96, 0, 8, 0x32, 0xFF,
                               MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x100) {
               st->phase++;
             }
             break;
-          case 4:
+          case POSTGUARD_AMBUSH_FACE:
             if (TrackEntityYawTowardSpyro(actor, 6, 0xA, 1)) {
               actor->mode = POSTGUARD_HOP;
               continue;
@@ -2544,7 +2544,7 @@ void Level2_UpdateActors(void) {
 
             if (st->reward != -1) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
               StubRewardHook(st->reward, 0);
 
               if (st->partner != -1) {
@@ -2556,7 +2556,7 @@ void Level2_UpdateActors(void) {
 
             if (st->cutsceneId == st->reward) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
 
               if (st->partner != -1) {
                 g_pActorListBase[st->partner].mode = 1;

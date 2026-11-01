@@ -1199,7 +1199,7 @@ void Level13_UpdateActors(void) {
             0x40;
         st->radius = 0;
         st->phase = 0;
-        g_nHudWorldEggRollRequest.v = 1;
+        g_nHudEggRollRequest.v = 1;
         actor->rotX = 0;
         actor->rotY = 8;
         actor->mode += 1;
@@ -1307,9 +1307,9 @@ void Level13_UpdateActors(void) {
         g_nCinematicActive = 0;
         ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
-        g_nWorldEggsRecovered += 1;
+        g_nTotalEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
-        g_nHudWorldEggRollRequest.v = 0;
+        g_nHudEggRollRequest.v = 0;
         DespawnActorRecord(actor);
         continue;
       }
@@ -2225,9 +2225,9 @@ void Level13_UpdateActors(void) {
               st->target->subMode = COLLECT_HOMING;
 
               if (st->target->type == ACTOR_TYPE_EXTRA_LIFE) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType14);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorExtraLife);
               } else if (st->target->type == ACTOR_TYPE_SPARX_FOOD) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType15);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorSparxFood);
               } else {
                 g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_adwActorBurstColors[st->target->type]);
               }
@@ -2631,7 +2631,7 @@ void Level13_UpdateActors(void) {
 
             if (st->reward != -1) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
               StubRewardHook(st->reward, 0);
 
               if (st->partner != -1) {
@@ -2643,7 +2643,7 @@ void Level13_UpdateActors(void) {
 
             if (st->cutsceneId == st->reward) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
 
               if (st->partner != -1) {
                 g_pActorListBase[st->partner].mode = 1;
@@ -3498,8 +3498,8 @@ void Level13_UpdateActors(void) {
 
       switch (actor->mode) {
       case SHEPHERD_IDLE:
-        switch (st->phase) {
-        case 0: {
+        switch (st->post) {
+        case SHEPHERD_POST_GUARD: {
           int h = actor->posZ - actor->floorOffset - *(int *)base;
 
           ANIM_GO(actor, 0);
@@ -3512,16 +3512,16 @@ void Level13_UpdateActors(void) {
           break;
         }
 
-        case 1:
+        case SHEPHERD_POST_RUN_PATH:
           ANIM_GO(actor, 1);
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x3800) {
             st->done = 0;
             *st->doneFlag = 0;
-            SetActorGroupStateExcept(actor, 2, 3);
+            SetActorGroupStateExcept(actor, SHEPHERD_CHASE, SHEPHERD_KNOCKED);
           }
           break;
 
-        case 2:
+        case SHEPHERD_POST_LOITER:
           if (actor->nextAnim != 6) {
             g_nActorAnimDone = 0;
             ANIM_ADVANCE(actor, 6);
@@ -3532,11 +3532,11 @@ void Level13_UpdateActors(void) {
           }
           TurnActorYawTowardAngle(actor, st->heading, 4, 0, 0);
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1C00) {
-            SetActorGroupStateExcept(actor, 2, 3);
+            SetActorGroupStateExcept(actor, SHEPHERD_CHASE, SHEPHERD_KNOCKED);
           }
           break;
 
-        case 3:
+        case SHEPHERD_POST_GUARD_LEVEL:
           ANIM_GO(actor, 0);
           TrackEntityYawTowardSpyro(actor, 6, 0, 0);
           SnapActorToGround(actor);
@@ -3547,7 +3547,7 @@ void Level13_UpdateActors(void) {
           }
           break;
 
-        case 4:
+        case SHEPHERD_POST_THROWER:
           if (st->heading == -1) {
             st->heading = actor->rotZ;
           }
@@ -3579,7 +3579,7 @@ void Level13_UpdateActors(void) {
           }
           break;
 
-        case 5:
+        case SHEPHERD_POST_LEAPER:
           if (actor->subMode != 0) {
             TrackEntityYawTowardSpyro(actor, 4, 0, 0);
             if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1C00) {
@@ -3620,7 +3620,7 @@ void Level13_UpdateActors(void) {
           }
           break;
 
-        case 6: {
+        case SHEPHERD_POST_PAIR_PATROL: {
           Actor *p = &g_pActorListBase[st->partner];
 
           if (TickCountdownByFrameDelta(&st->timer2, 4) &&
@@ -3638,7 +3638,7 @@ void Level13_UpdateActors(void) {
               st->side = one;
               ps->side = 2;
             }
-            SetActorGroupStateExcept(actor, 0xB, 3);
+            SetActorGroupStateExcept(actor, SHEPHERD_ALERTED, SHEPHERD_KNOCKED);
           }
           if (st->sub == 0) {
             ANIM_GO(actor, 1);
@@ -3665,7 +3665,7 @@ void Level13_UpdateActors(void) {
           break;
         }
 
-        case 7:
+        case SHEPHERD_POST_PATROL:
           if (TickCountdownByFrameDelta(&st->timer2, 4) &&
               ABS2(SPY_DZ(actor)) < 0x320 &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x1C00) {
@@ -3676,7 +3676,7 @@ void Level13_UpdateActors(void) {
           PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0xC8, 6, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           break;
 
-        case 9:
+        case SHEPHERD_POST_WATCH:
           TrackEntityYawTowardSpyro(actor, 4, 0, 0);
           if (g_nSpyroAirborneFrames == 0 && ABS2(SPY_DZ(actor)) < 0x320 &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
@@ -3685,12 +3685,12 @@ void Level13_UpdateActors(void) {
           }
           break;
 
-        case 10: {
+        case SHEPHERD_POST_COVER: {
           Actor *p = &g_pActorListBase[st->partner];
           Actor *q = &g_pActorListBase[st->partner2];
 
           if (p->nextAnim == 3 || q->nextAnim == 3) {
-            st->phase = 9;
+            st->post = SHEPHERD_POST_WATCH;
             ENTER_POSE(actor, SHEPHERD_RECOVER);
           }
           switch (actor->subMode) {
@@ -3741,21 +3741,21 @@ void Level13_UpdateActors(void) {
 
       case SHEPHERD_CHASE:
         ANIM_GO(actor, 1);
-        switch (st->phase) {
-        case 1:
+        switch (st->post) {
+        case SHEPHERD_POST_RUN_PATH:
           if (st->done == 0 &&
               PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 0x10, 0x80, 0xFF,
                             MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x100) {
             st->done = one;
             *st->doneFlag = one;
-            st->phase = 0;
+            st->post = SHEPHERD_POST_GUARD;
             ENTER_POSE(actor, SHEPHERD_IDLE);
           }
           break;
 
-        case 2:
-        case 6:
-        case 7: {
+        case SHEPHERD_POST_LOITER:
+        case SHEPHERD_POST_PAIR_PATROL:
+        case SHEPHERD_POST_PATROL: {
           int side = st->side;
           int ang;
 
@@ -3779,18 +3779,18 @@ void Level13_UpdateActors(void) {
             actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
-          if (st->phase == 2 && SPY_FACING(actor) > 0x40) {
+          if (st->post == SHEPHERD_POST_LOITER && SPY_FACING(actor) > 0x40) {
             actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
-          if (st->phase == 2 &&
+          if (st->post == SHEPHERD_POST_LOITER &&
               ApproxDist2D(&actor->posX, st->home) > 0x1800) {
             actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
-          if (st->phase == 6 || st->phase == 7) {
+          if (st->post == SHEPHERD_POST_PAIR_PATROL || st->post == SHEPHERD_POST_PATROL) {
             if (FindNearestPathPointToActor(actor, st->path, idx271) > 0x1000) {
-              if (st->phase == 7) {
+              if (st->post == SHEPHERD_POST_PATROL) {
                 st->path[1] = idx271[0];
                 CopyVector(st->home, PATH_PT(st->path, idx271[0]));
               }
@@ -3807,7 +3807,7 @@ void Level13_UpdateActors(void) {
           break;
         }
 
-        case 5: {
+        case SHEPHERD_POST_LEAPER: {
           int *pos;
 
           if (TrackEntityYawTowardSpyro(actor, 6, 0x14, 1)) {
@@ -3833,7 +3833,7 @@ void Level13_UpdateActors(void) {
           break;
         }
 
-        case 9: {
+        case SHEPHERD_POST_WATCH: {
           int *pos;
 
           if (TrackEntityYawTowardSpyro(actor, 6, 0x14, 1) && SPY_FACING(actor) < 0x32 &&
@@ -3870,7 +3870,7 @@ void Level13_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         SnapActorToGround(actor);
         if (actor->nextFrame >= 0x1C) {
-          if (st->phase == 2) {
+          if (st->post == SHEPHERD_POST_LOITER) {
             actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
@@ -3892,7 +3892,7 @@ void Level13_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0xC00 &&
             ABS2(SPY_DZ(actor)) < 0x258) {
-          st->phase = 0;
+          st->post = SHEPHERD_POST_GUARD;
           actor->mode = SHEPHERD_IDLE;
           continue;
         }
@@ -3904,7 +3904,7 @@ void Level13_UpdateActors(void) {
 
       case SHEPHERD_RECOVER:
         if (g_nActorAnimDone != 0) {
-          st->phase = 0;
+          st->post = SHEPHERD_POST_GUARD;
           ENTER_POSE(actor, SHEPHERD_IDLE);
         }
         break;

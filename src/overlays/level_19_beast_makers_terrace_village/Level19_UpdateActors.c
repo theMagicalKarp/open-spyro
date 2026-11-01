@@ -119,7 +119,7 @@
 
 /* Type 35 state: a guard that scatters when hit and fires type 494 bolts. */
 typedef struct BoltGuardState {
-  int mode;    /* 0x00 1 = guards, 2 = follows a linked actor */
+  int mode;    /* 0x00 enum BoltGuardCue */
   int timer;   /* 0x04 */
   int timer2;  /* 0x08 */
   int heading; /* 0x0C */
@@ -144,7 +144,7 @@ typedef struct AttachBeadState {
 
 /* Type 467 state: a bolt-throwing sentry with three guards (`kids`). */
 typedef struct BoltSentryState {
-  int mode;      /* 0x00 */
+  int mode;      /* 0x00 enum BoltSentryCue */
   int *path;     /* 0x04 */
   int range;     /* 0x08 in 1024s */
   int timer;     /* 0x0C */
@@ -630,7 +630,7 @@ void Level19_UpdateActors(void) {
             0x40;
         st->radius = 0;
         st->phase = 0;
-        g_nHudWorldEggRollRequest.v = 1;
+        g_nHudEggRollRequest.v = 1;
         actor->rotX = 0;
         actor->rotY = 8;
         actor->mode += 1;
@@ -738,9 +738,9 @@ void Level19_UpdateActors(void) {
         g_nCinematicActive = 0;
         ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
-        g_nWorldEggsRecovered += 1;
+        g_nTotalEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
-        g_nHudWorldEggRollRequest.v = 0;
+        g_nHudEggRollRequest.v = 0;
         DespawnActorRecord(actor);
         continue;
       }
@@ -789,7 +789,7 @@ void Level19_UpdateActors(void) {
       switch (actor->mode) {
       case BGUARD_WATCH:
         ANIM_GO(actor, 0);
-        if (st->mode == one &&
+        if (st->mode == one /* BGUARD_CUE_RUN */ &&
             (IsPointInRotatedBox(&spy->posX, st->box) != 0 || d < st->range << 10) &&
             ABS2(SPY_DZ(actor)) < 0xBB8) {
           if (actor->group != 0xFF) {
@@ -798,7 +798,7 @@ void Level19_UpdateActors(void) {
           actor->mode = BGUARD_RUN;
           continue;
         }
-        if (st->mode == 2 && st->link != -1 && d < st->range << 10 &&
+        if (st->mode == BGUARD_CUE_LINK && st->link != -1 && d < st->range << 10 &&
             ABS2(SPY_DZ(actor)) < 0xBB8) {
           st->timer2 = 0x3C;
           actor->mode = BGUARD_FACE_LINK;
@@ -865,11 +865,11 @@ void Level19_UpdateActors(void) {
         ANIM_GO(actor, 4);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0, 8, 0x10, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
-          st->mode = 0;
+          st->mode = BGUARD_CUE_NONE;
           ENTER_POSE(actor, BGUARD_WATCH);
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xC00) {
-          st->mode = 0;
+          st->mode = BGUARD_CUE_NONE;
           ENTER_POSE(actor, BGUARD_WATCH);
         }
         break;
@@ -878,7 +878,7 @@ void Level19_UpdateActors(void) {
         ANIM_GO(actor, 0);
         if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT ||
             ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400 || st->link == -1) {
-          st->mode = 0;
+          st->mode = BGUARD_CUE_NONE;
           ENTER_POSE(actor, BGUARD_WATCH);
         }
         TurnActorYawTowardAngle(actor,
@@ -921,7 +921,7 @@ void Level19_UpdateActors(void) {
           BoltGuardState *ts = g_pActorListBase[st->link].state;
 
           if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT || st->link == -1) {
-            st->mode = 0;
+            st->mode = BGUARD_CUE_NONE;
             ENTER_POSE(actor, BGUARD_WATCH);
           }
           st->link = ts->range;
@@ -1748,9 +1748,9 @@ void Level19_UpdateActors(void) {
               st->target->subMode = COLLECT_HOMING;
 
               if (st->target->type == ACTOR_TYPE_EXTRA_LIFE) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType14);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorExtraLife);
               } else if (st->target->type == ACTOR_TYPE_SPARX_FOOD) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType15);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorSparxFood);
               } else {
                 g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_adwActorBurstColors[st->target->type]);
               }
@@ -2130,7 +2130,7 @@ void Level19_UpdateActors(void) {
 
             if (st->reward != -1) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
               StubRewardHook(st->reward, 0);
 
               if (st->partner != -1) {
@@ -2142,7 +2142,7 @@ void Level19_UpdateActors(void) {
 
             if (st->cutsceneId == st->reward) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
 
               if (st->partner != -1) {
                 g_pActorListBase[st->partner].mode = 1;
@@ -3497,7 +3497,7 @@ void Level19_UpdateActors(void) {
       }
       switch (actor->mode) {
       case BSENTRY_IDLE:
-        if (st->mode != 0) {
+        if (st->mode != BSENTRY_CUE_NONE) {
           ENTER_POSE(actor, BSENTRY_CUE);
         }
         if (st->guards == 0 &&
@@ -3634,21 +3634,21 @@ void Level19_UpdateActors(void) {
 
       case BSENTRY_CUE:
         switch (st->mode) {
-        case 1:
+        case BSENTRY_CUE_LEAP:
           if (ApproxDist2D(&actor->posX, spy) < st->range << 10 &&
               ABS2(SPY_DZ(actor)) < 0x3E8) {
-            st->mode = 0;
+            st->mode = BSENTRY_CUE_NONE;
             st->speed = ApproxDist2D(&actor->posX, &st->path[6]) / 12;
             st->u24 = 0x6E;
             ENTER_POSE_BRK(actor, BSENTRY_LEAP);
           }
           break;
-        case 2:
+        case BSENTRY_CUE_PATROL:
           if (ApproxDist2D(&actor->posX, spy) < 0x3000 &&
               AbsAngleDelta8(actor->rotZ,
                             ArcTan2(spy->posX - actor->posX,
                                           g_nSpyroWorldPosY - actor->posY, 0)) < 0x40) {
-            st->mode = 0;
+            st->mode = BSENTRY_CUE_NONE;
             ENTER_POSE_BRK(actor, BSENTRY_PATROL);
           }
           break;

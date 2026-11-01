@@ -10,7 +10,7 @@
 
 /* Begins the dragon-rescue statue cutscene overlay (GS_DRAGON_RESCUE): seeds
    the cutscene substate/timer globals, bumps both dragon counters (per-level +
-   world total, priming the HUD cache), blocks gameplay, flags the linked
+   game-wide total, priming the HUD cache), blocks gameplay, flags the linked
    actor's anim byte, anchors the aura star, and fires the rescue
    chime. Two statues are rewritten first: in Artisans home, rescue cutscene
    1 becomes 2 once Stone Hill, Dark Hollow, Town Square or Sunny Flight has
@@ -51,7 +51,7 @@ void BeginDragonRescue(Actor *actor) {
     }
   }
   g_nGamestate = GS_DRAGON_RESCUE;
-  world = g_nWorldDragonsRescued;
+  world = g_nTotalDragonsRescued;
   g_nHudDragonCachedCount = world;
   dragons = &g_anLevelDragonsRescued[g_nLevelIndex];
   prevDragons = *dragons;
@@ -67,7 +67,7 @@ void BeginDragonRescue(Actor *actor) {
   g_anDragonRescueBlock[13] = 0; /* g_nDragonRescuePadHoldTimer */
   g_anDragonRescueBlock[12] = 0; /* g_nDragonRescueAudioFiredFlag */
   g_anDragonRescueBlock[0x1a] = (int)actor;
-  g_nWorldDragonsRescued = world + 1;
+  g_nTotalDragonsRescued = world + 1;
   g_anDragonRescueBlock[-1] = st->cutsceneId; /* g_nDragonRescueTypeSnapshot */
   if (st->partner != (-1)) {
     g_pActorListBase[st->partner].anim = 1;

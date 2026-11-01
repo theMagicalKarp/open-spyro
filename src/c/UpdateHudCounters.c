@@ -25,7 +25,7 @@
    g_anHudRollInStepTable), 2 hold/ratchet (advance the cached count toward the
    live one, driving the digit glyphs through SetHudCounterDigits +
    CommitHudCounterAnimState), 3 roll-out (14 steps off
-   g_anHudRollOutStepTable).  Between the lives and world-egg machines it lays
+   g_anHudRollOutStepTable).  Between the lives and egg machines it lays
    the sparx-food butterflies out around their ring, and it closes by converting
    every 20 butterflies into an extra life (capped at 99). */
 
@@ -51,7 +51,7 @@
 /* the sprite-rect walk is a BYTE offset off the array, which keeps one
    scaled index register and the field constant in %lo(sym+K) (A179/A35) */
 
-#define EGG_STATE (g_abHudWorldEggIconBlock[0])
+#define EGG_STATE (g_abHudEggIconBlock[0])
 #define KEY_STATE (g_abHudKeyCounterBlock[0])
 
 void UpdateHudCounters(void) {
@@ -279,55 +279,55 @@ void UpdateHudCounters(void) {
   /* --- counter 3: world eggs ------------------------------------------ */
   switch (EGG_STATE) {
   case HUD_CTR_HIDDEN:
-    if (g_nHudWorldEggCachedCount != g_nWorldEggsRecovered ||
-        g_nHudWorldEggRollRequest != 0) {
+    if (g_nHudEggCachedCount != g_nTotalEggsRecovered ||
+        g_nHudEggRollRequest != 0) {
       EGG_STATE = HUD_CTR_ROLL_IN;
-      g_bHudWorldEggRollPhase = 0;
+      g_bHudEggRollPhase = 0;
     }
     break;
   case HUD_CTR_ROLL_IN:
-    p = g_bHudWorldEggRollPhase;
+    p = g_bHudEggRollPhase;
     if (p == 0xD) {
       EGG_STATE = HUD_CTR_SHOWN;
-      g_nHudWorldEggHoldTimer = 0;
-      if (g_nHudWorldEggCachedCount == g_nWorldEggsRecovered &&
-          g_nHudWorldEggRollRequest == 0) {
-        g_nHudWorldEggHoldTimer = -0x28;
+      g_nHudEggHoldTimer = 0;
+      if (g_nHudEggCachedCount == g_nTotalEggsRecovered &&
+          g_nHudEggRollRequest == 0) {
+        g_nHudEggHoldTimer = -0x28;
       }
     } else {
-      FIELD(g_bHudWorldEggRollPhase) = p + 1;
+      FIELD(g_bHudEggRollPhase) = p + 1;
       OffsetHudDigitRollAxis(0, 0xC, -g_anHudRollInStepTable[p]);
     }
     break;
   case HUD_CTR_SHOWN:
-    if (g_nHudWorldEggCachedCount == g_nWorldEggsRecovered) {
-      if (g_nHudWorldEggRollRequest != 0) {
-        g_nHudWorldEggHoldTimer = 0;
-      } else if (g_nHudWorldEggHoldTimer == 0x14) {
+    if (g_nHudEggCachedCount == g_nTotalEggsRecovered) {
+      if (g_nHudEggRollRequest != 0) {
+        g_nHudEggHoldTimer = 0;
+      } else if (g_nHudEggHoldTimer == 0x14) {
         EGG_STATE = HUD_CTR_ROLL_OUT;
-        g_bHudWorldEggRollPhase = 0xD;
+        g_bHudEggRollPhase = 0xD;
       }
-    } else if (g_nHudWorldEggHoldTimer == 1) {
-      av[0] = g_nHudWorldEggCachedCount * 0x144 - 0x9C4;
+    } else if (g_nHudEggHoldTimer == 1) {
+      av[0] = g_nHudEggCachedCount * 0x144 - 0x9C4;
       av[1] = 0x3F0;
       av[2] = 0x1000;
       g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, av, 0);
-    } else if (g_nHudWorldEggHoldTimer >= 9) {
-      g_nHudWorldEggCachedCount += 1;
-      g_nHudWorldEggHoldTimer = 0;
+    } else if (g_nHudEggHoldTimer >= 9) {
+      g_nHudEggCachedCount += 1;
+      g_nHudEggHoldTimer = 0;
     }
-    g_anHudWorldEggTimerBlock[0] = g_anHudWorldEggTimerBlock[0] + 1;
+    g_anHudEggTimerBlock[0] = g_anHudEggTimerBlock[0] + 1;
     break;
   case HUD_CTR_ROLL_OUT:
-    if (g_nHudWorldEggCachedCount != g_nWorldEggsRecovered ||
-        g_nHudWorldEggRollRequest != 0) {
+    if (g_nHudEggCachedCount != g_nTotalEggsRecovered ||
+        g_nHudEggRollRequest != 0) {
       EGG_STATE = HUD_CTR_ROLL_IN;
-    } else if (g_bHudWorldEggRollPhase == 0) {
+    } else if (g_bHudEggRollPhase == 0) {
       EGG_STATE = HUD_CTR_HIDDEN;
     } else {
       {
-        unsigned char t = g_bHudWorldEggRollPhase - 1;
-        FIELD(g_bHudWorldEggRollPhase) = t;
+        unsigned char t = g_bHudEggRollPhase - 1;
+        FIELD(g_bHudEggRollPhase) = t;
         OffsetHudDigitRollAxis(0, 0xC, -g_anHudRollOutStepTable[t]);
       }
     }

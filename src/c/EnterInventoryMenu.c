@@ -21,7 +21,7 @@ void EnterInventoryMenu(int fromGameplay) {
   g_nGamestate = GS_INVENTORY;
   g_nSubMenuCursor = g_nLevelIndex / 6;
   if (fromGameplay != 0) {
-    g_nPauseMenuTransitionFrames = 0;
+    g_nMenuDrawFrames = 0;
   }
   ClearPadHistoryRing();
 }

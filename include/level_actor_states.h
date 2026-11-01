@@ -134,7 +134,7 @@ typedef struct GunnerState {
   int knockZSpeed;     /* 0x0C */
   int knockHeading;     /* 0x10 knock-back heading */
   int timer;   /* 0x14 */
-  int mode;    /* 0x18 role while GUNNER_IDLE: 0 guard, 1 patrol, 2 lookout */
+  int mode;    /* 0x18 enum GunnerRole */
   int hit;     /* 0x1C */
   int range;   /* 0x20 sight range (< 0x20: in units of 0x400) */
 } GunnerState;
@@ -319,7 +319,7 @@ typedef struct MetalheadState {
   int timer2;           /* 0x0C */
   int pathEnd[2];       /* 0x10 per-phase last path node */
   int range[2];         /* 0x18 per-phase stomp range (units of 0x400) */
-  int choice;           /* 0x20 0 none, 1 stomp, 2 shots, 3 bolt */
+  int choice;           /* 0x20 enum MetalheadAttack */
   int shots;            /* 0x24 */
   int count;            /* 0x28 */
   int aim[3];           /* 0x2C */

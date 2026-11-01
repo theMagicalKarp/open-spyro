@@ -243,7 +243,7 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x1E1 ... 0x1E3: {
+  case ACTOR_TYPE_SPARK_DEBRIS ... ACTOR_TYPE_SPARK_DEBRIS + 2: {
     FragmentState *st = rec->state;
     int yaw;
     int pitch;
@@ -411,7 +411,7 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x177 ... 0x182: {
+  case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 1 ... ACTOR_TYPE_FLIGHT_TARGET_SHARD + 12: {
     int dx;
     int dy;
     int dz;
@@ -435,9 +435,9 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x183 ... 0x185:
-  case 0x189:
-  case 0x1EA:
+  case ACTOR_TYPE_TALLY_ICON_RING ... ACTOR_TYPE_TALLY_ICON_CHEST:
+  case ACTOR_TYPE_TALLY_ICON_BANKER:
+  case ACTOR_TYPE_TALLY_ICON_RIDER:
     InitActorRenderDefaults(rec);
     rec->posX = -0x64;
     rec->posY = 0x1E;

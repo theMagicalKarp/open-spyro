@@ -501,7 +501,7 @@ void Level24_UpdateActors(void) {
             0x40;
         st->radius = 0;
         st->phase = 0;
-        g_nHudWorldEggRollRequest.v = 1;
+        g_nHudEggRollRequest.v = 1;
         actor->rotX = 0;
         actor->rotY = 8;
         actor->mode += 1;
@@ -609,9 +609,9 @@ void Level24_UpdateActors(void) {
         g_nCinematicActive = 0;
         ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
-        g_nWorldEggsRecovered += 1;
+        g_nTotalEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
-        g_nHudWorldEggRollRequest.v = 0;
+        g_nHudEggRollRequest.v = 0;
         DespawnActorRecord(actor);
         continue;
       }
@@ -2051,9 +2051,9 @@ void Level24_UpdateActors(void) {
               st->target->subMode = COLLECT_HOMING;
 
               if (st->target->type == ACTOR_TYPE_EXTRA_LIFE) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType14);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorExtraLife);
               } else if (st->target->type == ACTOR_TYPE_SPARX_FOOD) {
-                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorType15);
+                g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorSparxFood);
               } else {
                 g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_adwActorBurstColors[st->target->type]);
               }
@@ -2826,20 +2826,20 @@ void Level24_UpdateActors(void) {
 
         if (g_nTotalTreasureCollected < 0x1770) {
           if (g_abWorldBalloonistState[5] == BALLOONIST_UNMET) {
-            g_nActorCutsceneDialogPage = 0x18;
+            g_nActorCutsceneDialogPage = BALLOONIST_PAGE(4, BPAGE_LOCKED_FIRST);
             g_abWorldBalloonistState[5] = BALLOONIST_TALKED;
           } else {
-            g_nActorCutsceneDialogPage = 0x1A;
+            g_nActorCutsceneDialogPage = BALLOONIST_PAGE(4, BPAGE_LOCKED_AGAIN);
           }
         } else if (g_abWorldBalloonistState[5] < BALLOONIST_OPEN) {
           if (g_abWorldBalloonistState[5] == BALLOONIST_UNMET) {
-            g_nActorCutsceneDialogPage = 0x1B;
+            g_nActorCutsceneDialogPage = BALLOONIST_PAGE(4, BPAGE_UNLOCK_FIRST);
           } else {
-            g_nActorCutsceneDialogPage = 0x1C;
+            g_nActorCutsceneDialogPage = BALLOONIST_PAGE(4, BPAGE_UNLOCK_AGAIN);
           }
           g_abWorldBalloonistState[5] = BALLOONIST_OPEN;
         } else {
-          g_nActorCutsceneDialogPage = 0x1E;
+          g_nActorCutsceneDialogPage = BPAGE_ROSTER;
           g_nActorCutsceneDialogVariant = (int)GetRandomU32() % 3;
         }
       }
@@ -3040,7 +3040,7 @@ void Level24_UpdateActors(void) {
 
             if (st->reward != -1) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
               StubRewardHook(st->reward, 0);
 
               if (st->partner != -1) {
@@ -3052,7 +3052,7 @@ void Level24_UpdateActors(void) {
 
             if (st->cutsceneId == st->reward) {
               g_anLevelDragonsRescued[g_nLevelIndex] += 1;
-              g_nWorldDragonsRescued += 1;
+              g_nTotalDragonsRescued += 1;
 
               if (st->partner != -1) {
                 g_pActorListBase[st->partner].mode = 1;

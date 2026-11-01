@@ -9,7 +9,7 @@
    to +0x46), then three dragon records, three life records and the level-egg
    record, terminated with a NULL slot. Skipped wholesale on flight levels.
 
-   Always (flight levels included) the sparx-food butterflies and the world-egg
+   Always (flight levels included) the sparx-food butterflies and the egg
    icons are emitted directly as textured quads: the butterflies get a swept
    cosine shade (one 1/20th-turn phase step per butterfly), the eggs cycle
    through nine UV pairs.
@@ -28,9 +28,9 @@
 #define BUTTERFLY_COUNT                                                        \
   (*(int *)&g_abHudButterflyRingBlock[0x36]) /* g_nHudButterflyCachedCount */
 #define EGG_COUNT                                                              \
-  (*(int *)&g_abHudWorldEggIconBlock[0x29]) /* g_nHudWorldEggCachedCount */
+  (*(int *)&g_abHudEggIconBlock[0x29]) /* g_nHudEggCachedCount */
 #define FRAME_CYCLE                                                            \
-  (*(int *)&g_abHudWorldEggIconBlock[0x3D]) /* g_nHudFrameCycleMod9 */
+  (*(int *)&g_abHudEggIconBlock[0x3D]) /* g_nHudFrameCycleMod9 */
 
 void EnqueueHudSprites(void) {
   void **slot;
@@ -149,15 +149,15 @@ void EnqueueHudSprites(void) {
     }
   }
 
-  ring = g_abHudWorldEggIconBlock;
+  ring = g_abHudEggIconBlock;
   if (ring[0] != 0) {
     i = 0;
-    if (g_nHudWorldEggCachedCount > 0) {
+    if (g_nHudEggCachedCount > 0) {
       do {
-        quad = g_abHudWorldEggIconBlock + 0x461 + i * 8;
+        quad = g_abHudEggIconBlock + 0x461 + i * 8;
         step = FRAME_CYCLE + i;
-        EmitTexturedQuad(
-            quad, (step % 9) * 8 + (g_abHudWorldEggIconBlock + 0x569), 0);
+        EmitTexturedQuad(quad, (step % 9) * 8 + (g_abHudEggIconBlock + 0x569),
+                         0);
         i += 1;
       } while (i < EGG_COUNT);
     }

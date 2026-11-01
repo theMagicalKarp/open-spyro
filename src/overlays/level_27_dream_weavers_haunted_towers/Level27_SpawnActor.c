@@ -292,7 +292,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x98 ... 0x99:
+  case ACTOR_TYPE_BOULDER_DEBRIS + 1 ... ACTOR_TYPE_BOULDER_DEBRIS + 2:
     InitActorRenderDefaults(rec);
     rec->cullRadius = 0x20;
     rec->updateDist = 0xFF;
@@ -307,7 +307,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
   case ACTOR_TYPE_RUBBLE_SHARD:
   case ACTOR_TYPE_BOULDER_DEBRIS:
   case ACTOR_TYPE_WOOD_CHEST_SHARD ... ACTOR_TYPE_WOOD_CHEST_SHARD + 2:
-  case ACTOR_TYPE_SPARKLE_SHARD ... ACTOR_TYPE_SPARKLE_SHARD + 2:
+  case ACTOR_TYPE_SPARKLE_SHARD ... ACTOR_TYPE_WOOD_SHARD + 1:
   case ACTOR_TYPE_LIFE_CHEST_SHARD ... ACTOR_TYPE_LIFE_CHEST_SHARD + 2: {
     FragmentState *st = rec->state;
     int yaw;

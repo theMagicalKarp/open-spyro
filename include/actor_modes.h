@@ -298,8 +298,17 @@ enum ShempMode {
   SHEMP_DYING = 45,      /* stunned in phase 3: bursts and drops his loot */
 };
 
+/* ShempState.phase: which of Doctor Shemp's three fights is running; also
+ * indexes his path nodes, camera anchors and the world chunk anim a stun
+ * resumes. */
+enum ShempPhase {
+  SHEMP_PHASE_1 = 0, /* close: SHEMP_P1_START */
+  SHEMP_PHASE_2 = 1, /* Spyro near and above: SHEMP_P2_TAUNT */
+  SHEMP_PHASE_3 = 2, /* same, SHEMP_P3_TAUNT; stunned here he is beaten */
+};
+
 /* ->mode of a shepherd (ACTOR_TYPE_SHEPHERD, ShepherdState; levels 12/13).
- * SHEPHERD_IDLE runs ShepherdState.phase's waiting behaviour; shepherds
+ * SHEPHERD_IDLE runs ShepherdState.post's waiting behaviour; shepherds
  * work in pairs (ShepherdState.partner), one riding the other's shoulders. */
 enum ShepherdMode {
   SHEPHERD_IDLE = 0,
@@ -314,6 +323,26 @@ enum ShepherdMode {
   SHEPHERD_RIDE = 17,     /* rides the partner (which goes ALERTED) */
   SHEPHERD_THROWN = 18,   /* the partner was knocked: falls off */
   SHEPHERD_GO_HOME = 100, /* walks back to its home point */
+};
+
+/* ShepherdState.post: what a shepherd does while SHEPHERD_IDLE, and how it
+ * chases in SHEPHERD_CHASE (the spawn record sets it; 8 is never used). Like
+ * CaptainPost. */
+enum ShepherdPost {
+  SHEPHERD_POST_GUARD = 0,       /* faces Spyro; swings when he is close and just above */
+  SHEPHERD_POST_RUN_PATH = 1,    /* Spyro near: clears its done flag and rouses the group; CHASE runs
+                                  * its path once, sets the flag and drops to POST_GUARD */
+  SHEPHERD_POST_LOITER = 2,      /* holds its heading; Spyro near: rouses the group. CHASE flanks him
+                                  * and gives up when he turns away or it strays from home */
+  SHEPHERD_POST_GUARD_LEVEL = 3, /* POST_GUARD on the ground, Spyro at its own height */
+  SHEPHERD_POST_THROWER = 4,     /* throws crooks; Spyro near: sends the partner to CHASE, then WATCH */
+  SHEPHERD_POST_LEAPER = 5,      /* throws crooks; Spyro above its path: LEAP_ON the partner (ROUSE) */
+  SHEPHERD_POST_PAIR_PATROL = 6, /* patrols, stopping to face the partner; Spyro near: the pair split
+                                  * sides (ShepherdState.side) and go ALERTED */
+  SHEPHERD_POST_PATROL = 7,      /* patrols its path; Spyro near: CHASE, re-homing at the nearest point */
+  SHEPHERD_POST_WATCH = 9,       /* faces Spyro; he lands near: CHASE */
+  SHEPHERD_POST_COVER = 10,      /* throws toward its partners, guards when Spyro is close; a
+                                  * partner knocked: POST_WATCH and RECOVER */
 };
 
 /* ->mode of a singing path walker (ACTOR_TYPE_SINGING_PATH_WALKER,
@@ -548,6 +577,24 @@ enum PostGuardMode {
   POSTGUARD_SHOUT = 21,   /* shouts, then HOP */
 };
 
+/* PostState.mode: what a post guard does while POSTGUARD_IDLE (from its
+ * spawn record). */
+enum PostGuardPost {
+  POSTGUARD_POST_PICK = 0,   /* Spyro near one of its two posts: TO_POST that one */
+  POSTGUARD_POST_PATROL = 1, /* walks its path; Spyro near: alerts the group (ALERTED) */
+  POSTGUARD_POST_WATCH = 2,  /* faces Spyro; close: HOP */
+  POSTGUARD_POST_AMBUSH = 3, /* PostState.phase: waits for Spyro, then runs its path at him */
+};
+
+/* PostState.phase on POSTGUARD_POST_AMBUSH. */
+enum PostGuardAmbush {
+  POSTGUARD_AMBUSH_WAIT = 0,  /* Spyro near, grounded and above it: cues itself and its partner */
+  POSTGUARD_AMBUSH_DELAY = 1, /* random stagger (the partner's), then ROUSE */
+  POSTGUARD_AMBUSH_ROUSE = 2, /* rouse animation */
+  POSTGUARD_AMBUSH_RUN = 3,   /* runs its path to the end */
+  POSTGUARD_AMBUSH_FACE = 4,  /* turns to Spyro, then HOP */
+};
+
 /* ->mode of a patrol ward (ACTOR_TYPE_PATROL_WARD, WardState; level 3).
  * WARD_IDLE runs WardState.mode's role (sentry, node patrol, partner ring);
  * its shove (animation 8) knocks Spyro back. */
@@ -560,6 +607,14 @@ enum WardMode {
   WARD_BURN = 9,       /* flamed: bursts */
   WARD_TO_NODE = 98,   /* walks to its next path node, then TURN */
   WARD_GO_HOME = 100,  /* walks back home, then IDLE */
+};
+
+/* WardState.mode: a patrol ward's role (from its spawn record). */
+enum WardRole {
+  WARD_ROLE_SENTRY = 0, /* faces Spyro; close and level: ADVANCE at him until he turns away or it strays */
+  WARD_ROLE_PATROL = 1, /* walks its path nodes (WARD_TO_NODE) */
+  WARD_ROLE_RING = 2,   /* circles path node 0 while its link (WardState.link) is live and it stays
+                         * near home; then becomes ROLE_PATROL */
 };
 
 /* ->mode of a shooter sentry (ACTOR_TYPE_SHOOTER, ShooterState; level 7).
@@ -594,6 +649,17 @@ enum MetalheadMode {
   METALHEAD_PHASE_RUN = 14,   /* runs to the next phase's path node */
   METALHEAD_PHASE_ARRIVE = 15, /* turns to Spyro, wakes the next group, IDLE */
   METALHEAD_DYING = 20,       /* bursts; sets g_bLevelBossDefeated */
+};
+
+/* MetalheadState.choice: the attack Metalhead picks while METALHEAD_IDLE
+ * (random: 60% stomp, 25% spray, 15% lob; spray or lob only when Spyro is
+ * out of stomp reach). Back to NONE when its pose ends or the pick's range
+ * test fails. */
+enum MetalheadAttack {
+  METALHEAD_ATTACK_NONE = 0,
+  METALHEAD_ATTACK_STOMP = 1, /* waits for Spyro in range, then METALHEAD_STOMP */
+  METALHEAD_ATTACK_SPRAY = 2, /* METALHEAD_SPRAY */
+  METALHEAD_ATTACK_LOB = 3,   /* METALHEAD_LOB */
 };
 
 /* ->mode of a lunger (ACTOR_TYPE_LUNGER, LungeState; level 4). It takes
@@ -741,6 +807,14 @@ enum BoltSentryMode {
   BSENTRY_SUMMON = 10, /* summons its guards, then IDLE */
 };
 
+/* BoltSentryState.mode: the cue a bolt sentry waits on (spawn record);
+ * cleared once it fires. */
+enum BoltSentryCue {
+  BSENTRY_CUE_NONE = 0,
+  BSENTRY_CUE_LEAP = 1,   /* Spyro in range and level: BSENTRY_LEAP down its path */
+  BSENTRY_CUE_PATROL = 2, /* Spyro ahead within 0x3000: BSENTRY_PATROL */
+};
+
 /* ->mode of a paired guard (ACTOR_TYPE_GUARD_PAIR, GuardPairState; level 2);
  * the mode is also the animation index. */
 enum GuardPairMode {
@@ -790,6 +864,13 @@ enum GunnerMode {
   GUNNER_FIRE = 8,     /* fires, then GUARD */
   GUNNER_STARTLE = 9,  /* the lookout jumps at Spyro, then GUARD */
   GUNNER_SINK = 10,    /* knocked into the water: sinks and despawns */
+};
+
+/* GunnerState.mode: a gunner's role while GUNNER_IDLE (spawn record). */
+enum GunnerRole {
+  GUNNER_ROLE_GUARD = 0,   /* straight to GUNNER_GUARD */
+  GUNNER_ROLE_PATROL = 1,  /* walks its path until its partner leaves idle, then GUARD */
+  GUNNER_ROLE_LOOKOUT = 2, /* Spyro close (partner idle): STARTLE; cued (subMode): WAKE */
 };
 
 /* ->mode of a charging ram (ACTOR_TYPE_CHARGING_RAM / _BIG_, ChargingRamState;
@@ -1092,6 +1173,14 @@ enum BoltGuardMode {
   BGUARD_FIRE_AT_LINK = 21, /* fires bolt pairs at its link, then the next link */
 };
 
+/* BoltGuardState.mode: the one-shot cue a bolt guard waits on in
+ * BGUARD_WATCH (spawn record); cleared once played out. */
+enum BoltGuardCue {
+  BGUARD_CUE_NONE = 0,
+  BGUARD_CUE_RUN = 1,  /* Spyro in its box or range: BGUARD_RUN (the whole group) */
+  BGUARD_CUE_LINK = 2, /* Spyro in range: fires along its link chain (BGUARD_FACE_LINK) */
+};
+
 /* ->mode of a bolt caster (ACTOR_TYPE_BOLT_CASTER, BoltCasterState; level
  * 14); the mode is also the animation index. With no Spyro about it practises
  * on its target actor (BoltCasterState.target). */
@@ -1187,6 +1276,16 @@ enum LootCritterMode {
   LCRITTER_WATCH = 0,   /* faces Spyro; near: FLEE */
   LCRITTER_FLEE = 1,    /* runs from Spyro around its home or along its path */
   LCRITTER_KNOCKED = 2, /* knocked away (dropping its loot once), then bursts */
+};
+
+/* CritterState.mode: how a homeless loot critter (no CritterState.hasHome)
+ * runs its path during LCRITTER_FLEE. Spyro within 0x1800 always restarts at
+ * PICK; reaching a path end drops it to LCRITTER_WATCH. */
+enum LootCritterRun {
+  LCRITTER_RUN_PICK = 0,     /* sets the path direction away from Spyro, then DASH */
+  LCRITTER_RUN_OPPOSITE = 1, /* heads for the path point opposite Spyro; far off: WANDER */
+  LCRITTER_RUN_WANDER = 2,   /* walks the path */
+  LCRITTER_RUN_DASH = 3,     /* runs fast; once clear of Spyro: OPPOSITE */
 };
 
 /* ->mode of a loot thief (ACTOR_TYPE_LOOT_THIEF, LootThiefState; level 34);
