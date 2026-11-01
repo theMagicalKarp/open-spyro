@@ -144,4 +144,23 @@ enum TriggerRegionType {
   TRIGGER_DAMAGE = 7,       /* while its g_anLevelTriggerStateSlots slot is set: a charge-proof hit */
 };
 
+/* Spyro animation transition styles: the bytes of the state transition
+ * matrix (g_abSpyroStateTransitionAnimMatrix[prev][state]), and the matching
+ * g_nSpyroAnimMode that ApplySpyroStateTransition leaves for
+ * TickSpyroAnimStateMachine. Named from what the two functions do; the anim
+ * descriptor bytes are [0] loop start, [1] loop end. */
+enum SpyroAnimMode {
+  SPYRO_ANIM_PLAY = 0,             /* mode: no transition in progress */
+  SPYRO_ANIM_BLEND_IN = 1,         /* new anim from frame 0, sub-frame +2 to 0x10 */
+  SPYRO_ANIM_LOOP_WRAP = 2,        /* once past loop end: wrap to loop start, +2 */
+  SPYRO_ANIM_FINISH = 3,           /* play the old anim out, then commit */
+  SPYRO_ANIM_HOLD_END = 4,         /* hold the loop-end frame, then FINISH (landings) */
+  SPYRO_ANIM_BLEND_KEEP_FRAME = 5, /* new anim at the old frame + 1, sub-frame +4 */
+  SPYRO_ANIM_BLEND_LOOP_START = 6, /* new anim from its loop start, +2 */
+  SPYRO_ANIM_CUT = 7,              /* style only: switch at frame 1, no blend */
+  SPYRO_ANIM_BLEND_FAST = 8,       /* new anim from frame 0, one 2-step advance */
+  SPYRO_ANIM_FINISH_10 = 10,       /* style treated as FINISH */
+  SPYRO_ANIM_CUT_LOOP_START = 11,  /* style only: switch at loop start + 1 */
+};
+
 #endif /* OPEN_SPYRO_SPYRO_STATE_H */

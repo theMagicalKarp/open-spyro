@@ -941,7 +941,7 @@ extern byte g_abSpyroTintRgba[4];                 /* 0x80078a80: Spyro's model t
 extern uint g_dwSpyroTriggerEventFlags;                 /* 0x80078a84 */
 extern int g_nSpyroHazardFloorZ;                     /* 0x80078a88 */
 extern int g_anSpyroBodyMtx[5];                         /* 0x80078a8c */
-extern int g_nSpyroAnimMode;                            /* 0x80078aac */
+extern int g_nSpyroAnimMode;                            /* 0x80078aac: enum SpyroAnimMode (spyro_state.h): the transition TickSpyroAnimStateMachine is playing */
 extern int g_nSpyroAnimPlayRate;                        /* 0x80078ab0 */
 extern int g_nSpyroPrevState;                           /* 0x80078ab4 */
 extern int g_nSpyroFlamePhase;                /* 0x80078ab8 */

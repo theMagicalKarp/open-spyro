@@ -49,7 +49,7 @@ void AdvanceSpyroSubstepState(void) {
     break;
   case SPYRO_ST_JUMP:
     UpdateSpyroFlightAttitudeNearGround();
-    if (g_nSpyroAnimMode == 0) {
+    if (g_nSpyroAnimMode == SPYRO_ANIM_PLAY) {
       if (g_nSpyroSubstate == 0) {
         frame = g_bSpyroAnimFrame;
         if (frame < 3) {
