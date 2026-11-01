@@ -1,5 +1,7 @@
+#include "cd_music.h"
 #include "funcs.h"
 #include "globals.h"
+#include "libcd.h"
 #include "main_shared.h"
 
 /* 0x80016500 — blocking CD sector read, StartCdReadAsync's synchronous twin.
@@ -21,10 +23,10 @@ void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset,
 
   inflight = &g_nCdReadInFlight;
   idle = 2;
-  mode[0] = 0x80;
+  mode[0] = CdlModeSpeed;
   for (;;) {
     if (*inflight == 0 && CallCdSync(1, 0) == idle &&
-        (g_dwMusicStreamStatus & 0x40)) {
+        (g_dwMusicStreamStatus & MUSIC_ST_IDLE)) {
       break;
     }
     RestartStalledCdRead();
@@ -32,20 +34,20 @@ void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset,
     TickCdMusicStream();
   }
 
-  CdControl(0xE, mode, 0);
+  CdControl(CdlSetmode, mode, 0);
   g_nCdStallMarker = marker;
   g_nCdStallWatchdogTicks = 0;
 
   pos = lbaBase + offset / 0x800;
   loc = g_abCdlLocScratchBlock;
   CdIntToPos(pos, loc);
-  CdControl(2, loc, 0);
+  CdControl(CdlSetloc, loc, 0);
 
   sectors = (size + 0x7FF) / 0x800;
   g_nCdReadSectorCount = sectors;
   g_pCdReadDstBuffer = dst;
   g_nCdReadInFlight = 1;
-  CdRead(sectors, dst, 0x80);
+  CdRead(sectors, dst, CdlModeSpeed);
 
   flag = (int *)(loc + 0x20); /* g_nCdReadInFlight */
   for (;;) {

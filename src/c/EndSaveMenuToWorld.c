@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "cd_music.h"
 #include "funcs.h"
 #include "globals.h"
 #include "hud_counter.h"
@@ -47,7 +48,7 @@ void EndSaveMenuToWorld(void) {
   g_abHudCounterDisplayState[HUD_CTR_EGGS] = HUD_CTR_HIDDEN;
   g_abHudCounterDisplayState[HUD_CTR_KEY] = HUD_CTR_HIDDEN;
 
-  HandleMusicCommand(g_nCurrentMusicTrack, 8);
+  HandleMusicCommand(g_nCurrentMusicTrack, MUSIC_CMD_RESUME);
 }
 
 /* The yaw read goes through the g_anSpyroMoveTargetYawBlock alias (+0x50 ==

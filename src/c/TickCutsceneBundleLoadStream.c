@@ -1,3 +1,4 @@
+#include "cd_music.h"
 #include "cd_stream.h"
 #include "cutscene_id.h"
 #include "cutscene_path.h"
@@ -59,7 +60,7 @@ void TickCutsceneBundleLoadStream(void) {
   if (CallCdSync(1, 0) != 2) {
     return;
   }
-  if ((g_dwMusicStreamStatus & 0x40) == 0) {
+  if ((g_dwMusicStreamStatus & MUSIC_ST_IDLE) == 0) {
     return;
   }
   state = g_nCdStreamState;

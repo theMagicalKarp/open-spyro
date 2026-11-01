@@ -11,6 +11,7 @@
    the chunk itself. */
 
 #include "camera.h"
+#include "cd_music.h"
 #include "funcs.h"
 #include "gamestate.h"
 #include "globals.h"
@@ -504,5 +505,5 @@ sprites:
     g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, 0);
     InitHudCounters(1);
   }
-  HandleMusicCommand(g_nCurrentMusicTrack, 1);
+  HandleMusicCommand(g_nCurrentMusicTrack, MUSIC_CMD_PLAY);
 }

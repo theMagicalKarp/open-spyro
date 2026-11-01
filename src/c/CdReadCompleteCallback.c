@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "libcd.h"
 
 /* CD read-completion callback (registered via CdReadCallback). On CdlComplete
    (intr == 2) the read finished cleanly, so clear the in-flight flag and the
@@ -11,7 +12,7 @@ void CdReadCompleteCallback(unsigned char intr) {
     g_nCdStallWatchdogTicks = 0;
     g_nCdStallMarker = 0;
   } else {
-    CdControl(2, &g_abCdlLocScratch, 0);
-    CdRead(g_nCdReadSectorCount, g_pCdReadDstBuffer, 0x80);
+    CdControl(CdlSetloc, &g_abCdlLocScratch, 0);
+    CdRead(g_nCdReadSectorCount, g_pCdReadDstBuffer, CdlModeSpeed);
   }
 }

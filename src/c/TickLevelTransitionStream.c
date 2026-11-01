@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "cd_music.h"
 #include "cd_stream.h"
 #include "funcs.h"
 #include "globals.h"
@@ -55,7 +56,7 @@ void TickLevelTransitionStream(int full) {
     if (CallCdSync(1, 0) != 2) {
       return;
     }
-    if (!(g_dwMusicStreamStatus & 0x40)) {
+    if (!(g_dwMusicStreamStatus & MUSIC_ST_IDLE)) {
       return;
     }
   }

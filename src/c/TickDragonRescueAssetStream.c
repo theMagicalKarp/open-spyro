@@ -1,3 +1,4 @@
+#include "cd_music.h"
 #include "dragon_rescue.h"
 #include "funcs.h"
 #include "globals.h"
@@ -37,7 +38,7 @@ void TickDragonRescueAssetStream(void) {
   if (CallCdSync(1, 0) != 2) {
     return;
   }
-  if (!(g_dwMusicStreamStatus & 0x40)) {
+  if (!(g_dwMusicStreamStatus & MUSIC_ST_IDLE)) {
     return;
   }
 

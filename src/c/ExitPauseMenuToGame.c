@@ -1,3 +1,4 @@
+#include "cd_music.h"
 #include "funcs.h"
 #include "globals.h"
 #include "hud_counter.h"
@@ -31,6 +32,6 @@ void ExitPauseMenuToGame(int resumeMusic) {
   g_bHudWorldEggRollPhase = 0xD;
   g_bHudKeyRollPhase = 0xD;
   if (resumeMusic != 0) {
-    HandleMusicCommand(g_nCurrentMusicTrack, 8);
+    HandleMusicCommand(g_nCurrentMusicTrack, MUSIC_CMD_RESUME);
   }
 }

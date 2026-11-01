@@ -823,11 +823,11 @@ extern uint g_dwPadAnalogRawSnapshot;                   /* 0x80077398 */
 extern int g_anPadSubstepRing[24];                      /* 0x800773bc */
 extern int g_anLevelGemsCollected[36];                  /* 0x80077420 */
 extern int g_nCurrentMusicTrack;                        /* 0x800774b0 */
-extern uint g_dwMusicStreamStatus;                      /* 0x800774b4 */
+extern uint g_dwMusicStreamStatus;                      /* 0x800774b4: XA music stream state, MUSIC_ST_* (cd_music.h); data reads wait for MUSIC_ST_IDLE */
 extern int g_anMusicTrackLbaTable[64];                  /* 0x800774b8 */
 extern uint g_dwCdMusicReadHead;                        /* 0x800776b8 */
-extern int g_nLastCdMusicCommand;                       /* 0x800776c4 */
-extern int g_nPendingMusicCommand;                      /* 0x800776c8 */
+extern int g_nLastCdMusicCommand;                       /* 0x800776c4: libcd command the music stream is waiting on: CdlReadS while starting, CdlPause queued for the end of a fade-out (CdlStop/CdlPause handled alike) */
+extern int g_nPendingMusicCommand;                      /* 0x800776c8: MUSIC_CMD_* to retry on the next TickCdMusicStream (the drive was busy) */
 extern uint g_dwPadStash;                            /* 0x800776d8: first word of a 0xA4-byte stash of the pad state block (g_dwPadPressed..); MovePadInputState parks live input here to blank it for a frame */
 extern int g_nWorldCollisionTriCount;                   /* 0x80077780 */
 extern void *g_pWorldCollisionTriArray;                 /* 0x80077784 */

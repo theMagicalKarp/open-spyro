@@ -1,3 +1,4 @@
+#include "cd_music.h"
 #include "funcs.h"
 #include "globals.h"
 #include "hud_counter.h"
@@ -22,5 +23,5 @@ void ExitSubMenuToTitle(void) {
   g_abHudCounterDisplayState[HUD_CTR_LIVES] = HUD_CTR_HIDDEN;
   g_abHudCounterDisplayState[HUD_CTR_EGGS] = HUD_CTR_HIDDEN;
   g_abHudCounterDisplayState[HUD_CTR_KEY] = HUD_CTR_HIDDEN;
-  HandleMusicCommand(g_nCurrentMusicTrack, 8);
+  HandleMusicCommand(g_nCurrentMusicTrack, MUSIC_CMD_RESUME);
 }

@@ -1,3 +1,4 @@
+#include "cd_music.h"
 #include "globals.h"
 
 /* One 8-byte entry of g_anMusicTrackLbaTable, addressed by its byte offset
@@ -32,6 +33,6 @@ int BuildAudioTrackTable(void) {
     lengths += 8;
   }
 
-  g_dwMusicStreamStatus = 0x40;
+  g_dwMusicStreamStatus = MUSIC_ST_IDLE;
   return 1;
 }

@@ -1,5 +1,7 @@
+#include "cd_music.h"
 #include "funcs.h"
 #include "globals.h"
+#include "libcd.h"
 #include "main_shared.h"
 
 /* The CdMix attenuation bytes (g_bCdMixLeftToLeft.., 0x800776d0) reached
@@ -12,11 +14,11 @@
    (0x80012480, 140 bytes.) */
 void InitCdSystem(void) {
   unsigned char mode;
-  mode = 0x80;
+  mode = CdlModeSpeed;
   CdInit();
-  CdControl(0xE, &mode, 0);
+  CdControl(CdlSetmode, &mode, 0);
   CdReadCallback((unsigned int)CdReadCompleteCallback);
-  g_anMusicStreamBlock[0] = 0x40;
+  g_anMusicStreamBlock[0] = MUSIC_ST_IDLE;
   g_nLastCdMusicCommand = 0;
   g_nPendingMusicCommand = 0;
   g_bCdMixRightToRight = 0x7F;

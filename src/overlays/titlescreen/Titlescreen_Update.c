@@ -79,7 +79,7 @@ void Titlescreen_Update(void) {
       /* kick out while we're still loading from the CD */
       RestartStalledCdRead();
       if (g_nCdBaseLba.readInFlight != 0 || CallCdSync(1, 0) != 2 ||
-          (g_nCurrentMusicTrack.streamStatus & 0x40) == 0)
+          (g_nCurrentMusicTrack.streamStatus & MUSIC_ST_IDLE) == 0)
         break;
 
       if (g_nTitleMode.subState == TITLE_ATTRACT_LOAD) {
@@ -96,7 +96,7 @@ void Titlescreen_Update(void) {
         RECT rc;
         g_nCurrentMusicTrack.track = 20;
         g_nCurrentMusicTrack.streamTimeout = 155520000;
-        HandleMusicCommand(20, 1);
+        HandleMusicCommand(20, MUSIC_CMD_PLAY);
         setRECT(&rc, 512, 256, 512, 256);
         LoadImage(&rc, g_pRenderScratchRegionBase - 0x40000);
         g_nTitleMode.subState = TITLE_ATTRACT_FLY_IN;
@@ -120,7 +120,7 @@ void Titlescreen_Update(void) {
         Titlescreen_PlayUiSound(TITLE_SFX_SUCCESS);
         TickSpuPerFrame();
         while (g_nCdBaseLba.readInFlight != 0 || CallCdSync(1, 0) != 2 ||
-               (g_nCurrentMusicTrack.streamStatus & 0x40) == 0) {
+               (g_nCurrentMusicTrack.streamStatus & MUSIC_ST_IDLE) == 0) {
           RestartStalledCdRead();
           TickActiveSoundVoices(); /* update sounds */
           TickCdMusicStream();
