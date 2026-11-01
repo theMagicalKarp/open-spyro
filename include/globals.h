@@ -628,7 +628,7 @@ extern int g_nPulseRumbleAmount;             /* 0x8007584c */
 extern int g_nPortalViewYawSpin;        /* 0x80075858: portal-surface view spin, +2 a frame (DrawPortalsAndStaticActors) */
 extern void *g_pDemoPadCursor;           /* 0x8007585c: read/write cursor into the recorded demo pad stream (SampleDemoPadFrame) */
 extern int g_nTotalTreasureCollected;        /* 0x80075860: game-wide treasure (gem) total: pickups, flight bonuses; 14000 (0x36B0) picks the post-game credits return */
-extern int g_nCdStreamState;                 /* 0x80075864 */
+extern int g_nCdStreamState;                 /* 0x80075864: enum CutsceneStreamState or LevelStreamState (cd_stream.h), by which machine runs */
 extern int g_nInGameTick;                    /* 0x80075868 */
 extern int g_nLevelGemsAtEntry;              /* 0x8007587c */
 extern int g_nLevelSelectModeActive;         /* 0x80075880 */

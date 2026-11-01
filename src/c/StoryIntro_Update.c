@@ -1,3 +1,4 @@
+#include "cd_stream.h"
 #include "cutscene_id.h"
 #include "funcs.h"
 #include "gamestate.h"
@@ -27,19 +28,19 @@ void StoryIntro_Update(void) {
       g_nStoryIntroSubstate = 1;
       if (g_nTitleExitPath == TITLE_EXIT_NEW_GAME) {
         g_nCutsceneId = CUTSCENE_OPENING;
-        g_nCdStreamState = 0;
+        g_nCdStreamState = CSTREAM_READ_HEADER;
         g_pDrawBufA = g_pSharedLoadBuffer;
         g_pDrawBufB = g_pSharedLoadBuffer;
       } else if (g_nTitleExitPath == TITLE_EXIT_LOADED_GAME) {
         g_nFlightLevelActive = 0;
-        g_nCdStreamState = 1;
+        g_nCdStreamState = LSTREAM_FRESH;
         g_nReturnPortalLevelId = 0;
         g_nPortalTransitionActive = 0;
         g_nCurrentLevelId = g_nActiveLevelId;
       } else if (g_nTitleExitPath == TITLE_EXIT_DEMO) {
         InitNewGameState();
         g_nFlightLevelActive = 0;
-        g_nCdStreamState = 1;
+        g_nCdStreamState = LSTREAM_FRESH;
         g_nReturnPortalLevelId = 0;
         g_nPortalTransitionActive = 0;
         g_nActiveLevelId = g_anDemoLevelIds[g_nDemoIndex];
@@ -63,12 +64,12 @@ void StoryIntro_Update(void) {
       g_bSpyroAnimFrame = 1;
     } else if (g_nStoryIntroSubstate == 1) {
       if (g_nTitleExitPath == TITLE_EXIT_NEW_GAME) {
-        while (g_nCdStreamState < 3) {
+        while (g_nCdStreamState < CSTREAM_READ_AUDIO) {
           TickCutsceneBundleLoadStream();
           TickCdMusicStream();
         }
       } else {
-        while (g_nCdStreamState < 6) {
+        while (g_nCdStreamState < LSTREAM_UPLOAD_AUDIO) {
           TickLevelTransitionStream(1);
           TickCdMusicStream();
         }
@@ -125,10 +126,11 @@ void StoryIntro_Update(void) {
         int *path = g_anTitleExitPathBlock;
 
         if (path[0] == TITLE_EXIT_NEW_GAME) {
-          if (g_nCdStreamState < 7) {
+          if (g_nCdStreamState < CSTREAM_EXT_SECOND_HALF) {
             TickCutsceneBundleLoadStream();
           }
-          if (g_nStoryIntroTimer >= 0x180 && g_nCdStreamState == 7) {
+          if (g_nStoryIntroTimer >= 0x180 &&
+              g_nCdStreamState == CSTREAM_EXT_SECOND_HALF) {
             clear.x = 0;
             clear.y = 0;
             clear.w = 0x200;
@@ -137,7 +139,7 @@ void StoryIntro_Update(void) {
             DrawSync(0);
             g_pWorkAreaTop = (void *)(0x80200000 - g_nCrt0StackSize);
             InitActorMeshScratchRegions(1);
-            while (g_nCdStreamState < 0xa) {
+            while (g_nCdStreamState < CSTREAM_DONE) {
               TickCutsceneBundleLoadStream();
               TickCdMusicStream();
             }
@@ -146,10 +148,11 @@ void StoryIntro_Update(void) {
             return;
           }
         } else {
-          if (g_nCdStreamState < 0xd) {
+          if (g_nCdStreamState < LSTREAM_FINALIZE) {
             TickLevelTransitionStream(1);
           }
-          if (g_nStoryIntroTimer >= 0x180 && g_nCdStreamState == 0xd) {
+          if (g_nStoryIntroTimer >= 0x180 &&
+              g_nCdStreamState == LSTREAM_FINALIZE) {
             if (path[0] == TITLE_EXIT_DEMO) {
               g_nDemoMode = DEMO_PLAYBACK;
               g_nDemoExitFadeFrame = 0;

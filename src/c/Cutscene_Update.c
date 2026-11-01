@@ -1,3 +1,4 @@
+#include "cd_stream.h"
 #include "cutscene_id.h"
 #include "cutscene_path.h"
 #include "funcs.h"
@@ -28,14 +29,14 @@ void Cutscene_Update(void) {
     rect.h = 0x1E0;
     ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
-    g_nCdStreamState = 0;
+    g_nCdStreamState = CSTREAM_READ_HEADER;
     g_pDrawBufA = g_pSharedLoadBuffer;
     g_pDrawBufB = g_pSharedLoadBuffer;
     if (g_nCutsceneId == CUTSCENE_LOOT_ENDING) {
       g_pWorkAreaTop = (void *)(0x80200000 - g_nCrt0StackSize);
       InitActorMeshScratchRegions(1);
     }
-    while (g_nCdStreamState < 0xA) {
+    while (g_nCdStreamState < CSTREAM_DONE) {
       TickCutsceneBundleLoadStream();
       TickCdMusicStream();
     }

@@ -1,3 +1,4 @@
+#include "cd_stream.h"
 #include "cutscene_id.h"
 #include "funcs.h"
 #include "gamestate.h"
@@ -48,7 +49,7 @@ int TickDemoPlayback(void) {
       g_nPulseRumbleTimer = 0;
       g_nPulseRumbleAmount = 0;
       g_nDemoMode = DEMO_OFF;
-      g_nCdStreamState = 0;
+      g_nCdStreamState = CSTREAM_READ_HEADER;
       g_nCutsceneId = CUTSCENE_TITLE_BACKDROP;
       g_nFlightLevelActive = 0;
       g_nDemoActive = 0;
@@ -59,7 +60,7 @@ int TickDemoPlayback(void) {
         void *dst = *(void *volatile *)&g_pSharedLoadBuffer;
         CdReadSyncSectors(lba, dst, count, offset, 600);
       }
-      while (g_nCdStreamState < 10) {
+      while (g_nCdStreamState < CSTREAM_DONE) {
         TickCutsceneBundleLoadStream();
         TickCdMusicStream();
       }

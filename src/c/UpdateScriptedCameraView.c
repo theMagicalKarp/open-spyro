@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "cd_stream.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -10,11 +11,11 @@
 #define CAMPOS ((int *)&g_apScriptedCameraViewBlock[-49])
 
 /* Camera updater for mode 0x8000000e (scripted vantage triplet). While the
-   level-load state machine is finished (g_nCdStreamState < 0) it just re-picks
-   the per-state camera mode, unless Spyro is in one of the states that own the
-   camera themselves. Otherwise it retires the active record when the player has
-   walked past its range (field 0x34) or left its screen window (projected
-   y > 0xf0), draws one of the three ROM records at
+   level-load state machine is finished (g_nCdStreamState < LSTREAM_PRESERVE) it
+   just re-picks the per-state camera mode, unless Spyro is in one of the states
+   that own the camera themselves. Otherwise it retires the active record when
+   the player has walked past its range (field 0x34) or left its screen window
+   (projected y > 0xf0), draws one of the three ROM records at
    g_anScriptedCameraPresetRecords (avoiding an immediate repeat) and re-seats
    Spyro's body angles from it. Records whose type field (0x30) is 1 also
    refresh the camera euler angles. (0x800377a8, 632 bytes.) */
@@ -24,7 +25,7 @@ void UpdateScriptedCameraView(void) {
   int n;
 
   n = 0;
-  if (g_nCdStreamState < 0) {
+  if (g_nCdStreamState < LSTREAM_PRESERVE) {
     if (g_nSpyroState != SPYRO_ST_FALL &&
         g_nSpyroState != SPYRO_ST_GLIDE_DROP && g_nSpyroState != SPYRO_ST_FLY &&
         g_nSpyroState != SPYRO_ST_FLY_CLIMB &&

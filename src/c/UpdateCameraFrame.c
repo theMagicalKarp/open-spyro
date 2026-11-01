@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "cd_stream.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -61,7 +62,7 @@ void UpdateCameraFrame(void) {
     } else {
       g_nCameraShakePeakAmplitude = 0;
     }
-    if (g_nCdStreamState < 0) {
+    if (g_nCdStreamState < LSTREAM_PRESERVE) {
       if (FindWorldFloorBelowPoint((uint *)g_anCameraPos) != 0) {
         g_nCameraVisZone = g_nWorldFloorVisZone;
       }

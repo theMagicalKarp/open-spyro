@@ -1,3 +1,4 @@
+#include "cd_stream.h"
 #include "credits_mode.h"
 #include "funcs.h"
 #include "globals.h"
@@ -14,7 +15,7 @@ void CreditsSequence_Update(void) {
   RotateLightVectorXZ(3);
   switch (g_nCreditsMode) {
   case CREDITS_MODE_RETURN_HOME:
-    g_nCdStreamState = 1;
+    g_nCdStreamState = LSTREAM_FRESH;
     if (g_nCreditsReturnLevelId != -1) {
       g_nCurrentLevelId = g_nCreditsReturnLevelId;
       g_nCreditsReturnLevelId = -1;

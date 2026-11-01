@@ -1,3 +1,4 @@
+#include "cd_stream.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -90,10 +91,10 @@ void RespawnOrGameOver_Update(void) {
         FillWord(&g_nSpawnAnchorValid, 0, 0x68);
         if (g_nActiveLevelId != (((lba = g_nActiveLevelId) / 10) * 10)) {
           g_nCurrentLevelId = (g_nActiveLevelId / 10) * 10;
-          g_nCdStreamState = 2;
+          g_nCdStreamState = LSTREAM_SELECT_LEVEL;
           g_nEnteredPortalIdx = -1;
         } else {
-          g_nCdStreamState = 0xb;
+          g_nCdStreamState = LSTREAM_READ_PATHS;
         }
         g_nRespawnOrGameOverMode = 1;
         g_nRespawnOrGameOverFrame = 0;
@@ -142,7 +143,7 @@ void RespawnOrGameOver_Update(void) {
       TickSpyroAnimLayer1();
       TickSpyroAnimLayer2();
     }
-    if (g_nCdStreamState < 0xb) {
+    if (g_nCdStreamState < LSTREAM_READ_PATHS) {
       TickLevelTransitionStream(1);
     } else if ((g_nRespawnOrGameOverFrame >= 0x169) &&
                ((g_dwPadHeld & PAD_START) != 0)) {
@@ -152,7 +153,7 @@ void RespawnOrGameOver_Update(void) {
     }
   } else if (g_nRespawnOrGameOverFrame >= 0x11) {
     TickLevelTransitionStream(1);
-    if (g_nCdStreamState < 0) {
+    if (g_nCdStreamState < LSTREAM_PRESERVE) {
       EndRespawnToGameplay();
     }
   }

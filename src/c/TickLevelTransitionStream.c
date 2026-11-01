@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "cd_stream.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -46,7 +47,7 @@ void TickLevelTransitionStream(int full) {
   int size;
   int i;
 
-  if (g_nCdStreamState > 1) {
+  if (g_nCdStreamState > LSTREAM_FRESH) {
     RestartStalledCdRead();
     if (*(volatile int *)g_anCdReadInFlightBlock != 0) {
       return;
@@ -60,7 +61,7 @@ void TickLevelTransitionStream(int full) {
   }
 
   switch (g_nCdStreamState) {
-  case 0: {
+  case LSTREAM_PRESERVE: {
     int *p;
     char *base;
     int n;
@@ -107,14 +108,14 @@ void TickLevelTransitionStream(int full) {
     CopyWords(p, g_pLevelSampleBankHeader, g_nLevelSampleBankCount);
     RelocateLevelSampleBank(p, 0);
     g_nCameraVisZone = -1;
-    g_nCdStreamState = 2;
+    g_nCdStreamState = LSTREAM_SELECT_LEVEL;
   } break;
-  case 1:
+  case LSTREAM_FRESH:
     StopAllSoundExceptMask(0);
     g_nWorldRenderMeshChunkCount = 0;
     g_nCameraVisZone = -1;
     g_nCdStreamState++;
-  case 2: {
+  case LSTREAM_SELECT_LEVEL: {
     int world;
     int intro;
 
@@ -137,7 +138,7 @@ void TickLevelTransitionStream(int full) {
     }
     g_nCdStreamState++;
   } break;
-  case 3: {
+  case LSTREAM_READ_HEADER: {
     int lba = *(volatile int *)&g_nCdBaseLba;
     int intro = *(volatile int *)&g_nLevelIndex;
     void *dst = *(void *volatile *)&g_pDrawBufB;
@@ -147,7 +148,7 @@ void TickLevelTransitionStream(int full) {
   }
     g_nCdStreamState++;
     break;
-  case 4:
+  case LSTREAM_READ_TIM:
     CopyWords(g_anWorldTimAudioChunkOffsetBlock, DRAWBUF_B, 0x1D0);
     {
       int lba = *(volatile int *)&g_nCdBaseLba;
@@ -161,7 +162,7 @@ void TickLevelTransitionStream(int full) {
     g_nEnteredPortalIdx = 0;
     g_nCdStreamState++;
     break;
-  case 5:
+  case LSTREAM_UPLOAD_TIM:
     rect.x = 0x200;
     rect.w = 0x200;
     rect.h = 0x100;
@@ -180,17 +181,17 @@ void TickLevelTransitionStream(int full) {
                        off + LEVEL_ARCHIVE_OFFSET(intro) + 0x80000, 0x258);
     }
     break;
-  case 6:
+  case LSTREAM_UPLOAD_AUDIO:
     SetSpuTransferStartAddr(0x1010);
     WriteSpuRam(g_pDrawBufB, 0x7EFF0);
     g_nCdStreamState++;
     break;
-  case 7:
+  case LSTREAM_WAIT_AUDIO:
     if (GetSpuTransferStatus(0) != 0) {
       g_nCdStreamState++;
     }
     break;
-  case 8: {
+  case LSTREAM_READ_BUNDLE: {
     int lba = *(volatile int *)&g_nCdBaseLba;
     void *dst = *(void *volatile *)&g_pDrawBufB;
     int intro = *(volatile int *)&g_nLevelIndex;
@@ -201,7 +202,7 @@ void TickLevelTransitionStream(int full) {
   }
     g_nCdStreamState++;
     break;
-  case 9:
+  case LSTREAM_UNPACK:
     g_pWorldUnpackHead = UnpackWorldDataChunks(g_pDrawBufB, 0);
     if (MESH[0] != 0 && g_nGamestate != GS_GAME_OVER &&
         g_nGamestate != GS_ACTOR_CUTSCENE) {
@@ -230,7 +231,7 @@ void TickLevelTransitionStream(int full) {
     }
     g_nCdStreamState++;
     break;
-  case 10: {
+  case LSTREAM_RELOCATE: {
     int *list;
     short *slot;
     void **mesh;
@@ -261,7 +262,7 @@ void TickLevelTransitionStream(int full) {
     g_nLevelArchiveBaseLba = list[-14];
     g_nCdStreamState++;
   } break;
-  case 11: {
+  case LSTREAM_READ_PATHS: {
     int lba = *(volatile int *)&g_nCdBaseLba;
     void *dst = *(void *volatile *)&g_pPathTableBuffer;
     int intro = *(volatile int *)&g_nLevelIndex;
@@ -272,7 +273,7 @@ void TickLevelTransitionStream(int full) {
   }
     g_nCdStreamState++;
     break;
-  case 12: {
+  case LSTREAM_WAIT_SPIN: {
     int d;
 
     if (g_nPortalTransitionActive == 0) {
@@ -300,7 +301,7 @@ void TickLevelTransitionStream(int full) {
       }
     }
   } break;
-  case 13: {
+  case LSTREAM_FINALIZE: {
     if (g_abLevelVisitedFlag[g_nLevelIndex] == 0) {
       g_nCdMusicStreamTimeout = 0xA8C0;
     } else {
@@ -433,7 +434,7 @@ void TickLevelTransitionStream(int full) {
     g_bLevelBossDefeated = 0;
     g_bLevelPhasedBossKilled = 0;
     g_nCreditsReturnLevelId = -1;
-    g_nCdStreamState = -1;
+    g_nCdStreamState = LSTREAM_DONE;
   } break;
   }
 }

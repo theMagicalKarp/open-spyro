@@ -48,6 +48,7 @@
 #include "camera.h"
 #include "level_sfx.h"
 #include "emit_record.h"
+#include "cd_stream.h"
 
 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
@@ -308,7 +309,7 @@ void Level19_UpdateActors(void) {
               }
               if (yaw < -0x200) {
                 g_abLevelExited[g_nLevelIndex] = 1;
-                g_nCdStreamState = 0;
+                g_nCdStreamState = LSTREAM_PRESERVE;
                 g_nEnteredPortalIdx = -1;
                 g_nPortalTransitionActive = one;
                 g_nLevelTransitionTallyActive = 1;

@@ -1,4 +1,5 @@
 #include "actor.h"
+#include "cd_stream.h"
 #include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
@@ -142,7 +143,8 @@ void RespawnOrGameOver_Draw(void) {
         i += 1;
         k += 4;
       } while (i < 8);
-      if (g_nCdStreamState >= 0xB && g_nRespawnOrGameOverFrame >= 0x1A5) {
+      if (g_nCdStreamState >= LSTREAM_READ_PATHS &&
+          g_nRespawnOrGameOverFrame >= 0x1A5) {
         size[0] = 0x10;
         size[1] = 1;
         size[2] = 0x1400;

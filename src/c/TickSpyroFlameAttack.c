@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "cd_stream.h"
 #include "emit_record.h"
 #include "funcs.h"
 #include "globals.h"
@@ -102,7 +103,7 @@ void TickSpyroFlameAttack(void) {
       }
       if ((((g_nSpyroFlameTimer & 3) == 0) &&
            (((unsigned int)(g_nSpyroFlameTimer - 0xC)) < 0x11)) &&
-          (g_nCdStreamState < 0)) {
+          (g_nCdStreamState < LSTREAM_PRESERVE)) {
         {
           int *tip = g_anSpyroFlameTipOffsets;
           RotateVectorByMatrix(&strike[0xC], tip, pos);

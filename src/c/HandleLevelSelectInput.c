@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "cd_stream.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -67,7 +68,7 @@ void HandleLevelSelectInput(void) {
           ResetSpyroEntity(0);
           RestartSpyroAnimWithState(SPYRO_ST_GLIDE);
           g_nGamestate = GS_LEVEL_LOAD;
-          g_nCdStreamState = 1;
+          g_nCdStreamState = LSTREAM_FRESH;
           g_nPortalTransitionActive = 0;
           g_nLevelTransitionTallyActive = 0;
           g_nGamePaused = 1;

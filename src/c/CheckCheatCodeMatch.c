@@ -1,3 +1,4 @@
+#include "cd_stream.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -24,7 +25,7 @@ void CheckCheatCodeMatch(void) {
   int i;
   int match;
   int code;
-  if (g_nCdStreamState < 0) {
+  if (g_nCdStreamState < LSTREAM_PRESERVE) {
     code = g_dwPadPressed;
     if (code != 0) {
       idx = g_nPadHistoryIndex;

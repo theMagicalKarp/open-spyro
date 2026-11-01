@@ -1,4 +1,5 @@
 #include "actor_type.h"
+#include "cd_stream.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "match_asm.h"
@@ -99,7 +100,7 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
     d = -tmp[0] * ENT[2] - tmp[1] * ENT[3] - tmp[2] * ENT[4];
     a = ENT[6];
     if (a < 0) {
-      g_nCdStreamState = 0;
+      g_nCdStreamState = LSTREAM_PRESERVE;
       g_nGamestate = one;
       g_nLevelTransitionTallyActive = one;
       g_nLevelTransitionPhase = 0;

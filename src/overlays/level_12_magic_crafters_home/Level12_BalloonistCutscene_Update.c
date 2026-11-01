@@ -85,6 +85,7 @@
 #include "camera.h"
 #include "pad_buttons.h"
 #include "level_sfx.h"
+#include "cd_stream.h"
 
 
 void Level12_BalloonistCutscene_Update(void)
@@ -649,7 +650,7 @@ void Level12_BalloonistCutscene_Update(void)
         g_nActorCutsceneCamHeightStart = g_nCameraPosZ;
         n = g_pActorCutsceneRecord->rotZ;
         g_nActorCutsceneCamRadiusGoal = 0x800;
-        g_nCdStreamState = 0;
+        g_nCdStreamState = LSTREAM_PRESERVE;
         g_nEnteredPortalIdx = -1;
         g_nPortalTransitionActive = 0;
         g_nReturnPortalLevelId = 0;
@@ -693,7 +694,7 @@ void Level12_BalloonistCutscene_Update(void)
       int yaw;
       int cz;
 
-        if (g_nCdStreamState < 0xD)
+        if (g_nCdStreamState < LSTREAM_FINALIZE)
       {
         TickLevelTransitionStream(1);
       }
@@ -719,7 +720,7 @@ void Level12_BalloonistCutscene_Update(void)
         g_nCameraEulerYaw = ArcTan2(vecD[0], vecD[1], 1);
       }
       else
-        if (g_nCdStreamState == 0xD)
+        if (g_nCdStreamState == LSTREAM_FINALIZE)
       {
         g_nActorCutsceneSubstate[0] = 6;
         g_nActorCutsceneTimer[0] = 0;

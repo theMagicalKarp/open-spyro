@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "cd_stream.h"
 #include "cutscene_id.h"
 #include "funcs.h"
 #include "globals.h"
@@ -70,7 +71,7 @@ void PauseMenu_Update(void) {
     DrawSync(0);
     g_pDrawBufA = g_abDrawBufPool;
     g_pDrawBufB = g_abDrawBufPool;
-    g_nCdStreamState = 0;
+    g_nCdStreamState = CSTREAM_READ_HEADER;
     g_nCutsceneId = CUTSCENE_TITLE_BACKDROP;
     {
       int lba = *(volatile int *)&g_nCdBaseLba;
@@ -80,7 +81,7 @@ void PauseMenu_Update(void) {
 
       CdReadSyncSectors(lba, dst, count, offset, 600);
     }
-    while (g_nCdStreamState < 10) {
+    while (g_nCdStreamState < CSTREAM_DONE) {
       TickCutsceneBundleLoadStream();
       TickCdMusicStream();
     }
