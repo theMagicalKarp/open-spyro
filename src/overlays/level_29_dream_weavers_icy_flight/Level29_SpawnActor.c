@@ -247,7 +247,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x1E1 ... 0x1E2: {
+  case ACTOR_TYPE_SPARK_DEBRIS ... ACTOR_TYPE_SPARK_DEBRIS + 1: {
     FragmentState *st = rec->state;
     int yaw;
     int pitch;

@@ -190,7 +190,7 @@ Actor *Level34_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x98 ... 0x99:
+  case ACTOR_TYPE_BOULDER_DEBRIS + 1 ... ACTOR_TYPE_BOULDER_DEBRIS + 2:
     InitActorRenderDefaults(rec);
     rec->cullRadius = 0x20;
     rec->updateDist = 0xFF;
@@ -238,7 +238,7 @@ Actor *Level34_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x1E1 ... 0x1E3: {
+  case ACTOR_TYPE_SPARK_DEBRIS ... ACTOR_TYPE_SPARK_DEBRIS + 2: {
     FragmentState *st = rec->state;
     int yaw;
     int pitch;

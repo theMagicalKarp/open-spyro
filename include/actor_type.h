@@ -425,7 +425,10 @@ enum ActorType {
   ACTOR_TYPE_BELL_POST = 475, /* level 18: rung by a charge or flame; resets once its animation ends */
   ACTOR_TYPE_GRABBER = 476, /* level 20: carries Spyro off and throws him (GrabberState) */
   ACTOR_TYPE_HAZARD0_ENTER_FX = 477, /* g_anHazardEnterSpawnType[0]; both kind-0 effects snap to the ground under Spyro (or the parent) */
-  ACTOR_TYPE_FLIGHT_CHEST_SHARD = 478, /* 478..483: flight chest burst */
+  ACTOR_TYPE_FLIGHT_CHEST_SHARD = 478, /* 478..480: flight chest burst */
+  ACTOR_TYPE_SPARK_DEBRIS = 481, /* 481..483: tumbling debris shedding sparks, then a streak burst;
+                                  * thrown by flamed banking targets (5/17/23), struck blastable path
+                                  * props (5/29) and level 34's loot thieves (EmberState) */
   ACTOR_TYPE_ONE_SHOT_PROP = 487, /* level 20: plays anim 1 -> 2 once set to mode 1, or anim 3 -> 4 when hit, then holds */
   ACTOR_TYPE_TALLY_ICON_RIDER = 490,  /* flight HUD icon for ACTOR_TYPE_RIDING_FLIGHT_TARGET */
   ACTOR_TYPE_TALLY_ICON_FLAME = 491,  /* flight HUD icon for ACTOR_TYPE_FLAME_FLIGHT_TARGET */

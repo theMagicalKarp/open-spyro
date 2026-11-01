@@ -1501,9 +1501,9 @@ void Level23_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3, actor);
-          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4, actor);
-          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 5, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS + 1, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS + 2, actor);
         }
         PlayActorMeshVoice(actor, 0, 0);
         actor->mode = BANKER_STRUCK;
@@ -2216,9 +2216,9 @@ void Level23_UpdateActors(void) {
     }
     break;
 
-    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3:
-    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4:
-    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 5: {
+    case ACTOR_TYPE_SPARK_DEBRIS:
+    case ACTOR_TYPE_SPARK_DEBRIS + 1:
+    case ACTOR_TYPE_SPARK_DEBRIS + 2: {
       EmberState *st = actor->state;
       int trail[3];
 

@@ -258,7 +258,7 @@ Actor *Level17_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3 ... ACTOR_TYPE_FLIGHT_CHEST_SHARD + 5:
+    case ACTOR_TYPE_SPARK_DEBRIS ... ACTOR_TYPE_SPARK_DEBRIS + 2:
     {
       FragmentState *st = rec->state;
       int yaw;

@@ -1593,9 +1593,9 @@ void Level34_UpdateActors(void) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
           }
-          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3, actor);
-          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4, actor);
-          g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 5, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS + 1, actor);
+          g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS + 2, actor);
         }
         PlayActorMeshVoice(actor, 0, 0);
         actor->mode = LTHIEF_KNOCKED;
@@ -3551,12 +3551,12 @@ void Level34_UpdateActors(void) {
       break;
     }
 
-    /* Types 481-483: debris. Tumbles under gravity, shedding sparks, until
+    /* ACTOR_TYPE_SPARK_DEBRIS (481..483). Tumbles under gravity, shedding sparks, until
      * its life runs out or it leaves the drawn set, then bursts and is
      * removed. */
-    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3:
-    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4:
-    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 5: {
+    case ACTOR_TYPE_SPARK_DEBRIS:
+    case ACTOR_TYPE_SPARK_DEBRIS + 1:
+    case ACTOR_TYPE_SPARK_DEBRIS + 2: {
       Debris *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {

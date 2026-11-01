@@ -2063,8 +2063,8 @@ void Level29_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3, actor);
-            g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS + 1, actor);
           }
           g_pfnLevelSpawnActor(ACTOR_TYPE_WRECK_EMBER, actor);
           DespawnActorRecord(actor);
@@ -2095,8 +2095,8 @@ void Level29_UpdateActors(void) {
             if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
               break;
             }
-            g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3, actor);
-            g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS, actor);
+            g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS + 1, actor);
           }
           g_pfnLevelSpawnActor(ACTOR_TYPE_WRECK_EMBER, actor);
           DespawnActorRecord(actor);
@@ -2192,8 +2192,8 @@ void Level29_UpdateActors(void) {
     }
     break;
 
-    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 3:
-    case ACTOR_TYPE_FLIGHT_CHEST_SHARD + 4: {
+    case ACTOR_TYPE_SPARK_DEBRIS:
+    case ACTOR_TYPE_SPARK_DEBRIS + 1: {
       EmberState *st = actor->state;
       int trail[3];
 

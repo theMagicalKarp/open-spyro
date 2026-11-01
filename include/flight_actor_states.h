@@ -98,7 +98,7 @@ typedef struct DriftState {
   int timer;  /* 0x0C */
 } DriftState;
 
-/* Types 0x1E1..0x1E3: the walker's embers. */
+/* ACTOR_TYPE_SPARK_DEBRIS (481..483). */
 typedef struct EmberState {
   short vel[3];  /* 0x00 */
   short spin[3]; /* 0x06 */
