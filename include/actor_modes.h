@@ -298,6 +298,15 @@ enum ShempMode {
   SHEMP_DYING = 45,      /* stunned in phase 3: bursts and drops his loot */
 };
 
+/* ShempState.phase: which of Doctor Shemp's three fights is running; also
+ * indexes his path nodes, camera anchors and the world chunk anim a stun
+ * resumes. */
+enum ShempPhase {
+  SHEMP_PHASE_1 = 0, /* close: SHEMP_P1_START */
+  SHEMP_PHASE_2 = 1, /* Spyro near and above: SHEMP_P2_TAUNT */
+  SHEMP_PHASE_3 = 2, /* same, SHEMP_P3_TAUNT; stunned here he is beaten */
+};
+
 /* ->mode of a shepherd (ACTOR_TYPE_SHEPHERD, ShepherdState; levels 12/13).
  * SHEPHERD_IDLE runs ShepherdState.post's waiting behaviour; shepherds
  * work in pairs (ShepherdState.partner), one riding the other's shoulders. */
@@ -568,6 +577,24 @@ enum PostGuardMode {
   POSTGUARD_SHOUT = 21,   /* shouts, then HOP */
 };
 
+/* PostState.mode: what a post guard does while POSTGUARD_IDLE (from its
+ * spawn record). */
+enum PostGuardPost {
+  POSTGUARD_POST_PICK = 0,   /* Spyro near one of its two posts: TO_POST that one */
+  POSTGUARD_POST_PATROL = 1, /* walks its path; Spyro near: alerts the group (ALERTED) */
+  POSTGUARD_POST_WATCH = 2,  /* faces Spyro; close: HOP */
+  POSTGUARD_POST_AMBUSH = 3, /* PostState.phase: waits for Spyro, then runs its path at him */
+};
+
+/* PostState.phase on POSTGUARD_POST_AMBUSH. */
+enum PostGuardAmbush {
+  POSTGUARD_AMBUSH_WAIT = 0,  /* Spyro near, grounded and above it: cues itself and its partner */
+  POSTGUARD_AMBUSH_DELAY = 1, /* random stagger (the partner's), then ROUSE */
+  POSTGUARD_AMBUSH_ROUSE = 2, /* rouse animation */
+  POSTGUARD_AMBUSH_RUN = 3,   /* runs its path to the end */
+  POSTGUARD_AMBUSH_FACE = 4,  /* turns to Spyro, then HOP */
+};
+
 /* ->mode of a patrol ward (ACTOR_TYPE_PATROL_WARD, WardState; level 3).
  * WARD_IDLE runs WardState.mode's role (sentry, node patrol, partner ring);
  * its shove (animation 8) knocks Spyro back. */
@@ -580,6 +607,14 @@ enum WardMode {
   WARD_BURN = 9,       /* flamed: bursts */
   WARD_TO_NODE = 98,   /* walks to its next path node, then TURN */
   WARD_GO_HOME = 100,  /* walks back home, then IDLE */
+};
+
+/* WardState.mode: a patrol ward's role (from its spawn record). */
+enum WardRole {
+  WARD_ROLE_SENTRY = 0, /* faces Spyro; close and level: ADVANCE at him until he turns away or it strays */
+  WARD_ROLE_PATROL = 1, /* walks its path nodes (WARD_TO_NODE) */
+  WARD_ROLE_RING = 2,   /* circles path node 0 while its link (WardState.link) is live and it stays
+                         * near home; then becomes ROLE_PATROL */
 };
 
 /* ->mode of a shooter sentry (ACTOR_TYPE_SHOOTER, ShooterState; level 7).

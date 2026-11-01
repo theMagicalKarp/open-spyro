@@ -3051,7 +3051,7 @@ void Level10_UpdateActors(void) {
                           ArcTan2(spy->posX - actor->posX,
                                         spy->posY - actor->posY, 0)) >= 0x55 ||
             (actor->mode == SHEMP_P2_SLAM && actor->nextFrame >= 0x16 && actor->nextFrame < 0x30)) {
-          if (st->phase == 2) {
+          if (st->phase == SHEMP_PHASE_3) {
             ANIM_SET(actor, 3);
             actor->rotZ += 0x80;
             ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
@@ -3111,13 +3111,13 @@ void Level10_UpdateActors(void) {
         }
         st->flag = 0;
         switch (st->phase) {
-        case 0:
+        case SHEMP_PHASE_1:
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x2328) {
             actor->mode = SHEMP_P1_START;
             continue;
           }
           break;
-        case 1:
+        case SHEMP_PHASE_2:
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
               ApproxDist2D(&actor->posX, &spy->posX) < 0x1964 &&
               actor->posZ - actor->floorOffset - SPY.posZ < 0) {
@@ -3125,7 +3125,7 @@ void Level10_UpdateActors(void) {
             continue;
           }
           break;
-        case 2:
+        case SHEMP_PHASE_3:
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
               ApproxDist2D(&actor->posX, &spy->posX) < 0x1964 &&
               actor->posZ - actor->floorOffset - SPY.posZ < 0) {
@@ -3349,7 +3349,7 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_STUNNED:
         st->timer = 0xC8;
-        if (st->phase == 0) {
+        if (st->phase == SHEMP_PHASE_1) {
           ANIM_GO(actor, 0xE);
         } else {
           actor->rotZ += 0x80;
