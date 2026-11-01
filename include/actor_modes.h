@@ -1279,6 +1279,13 @@ enum FenceCaptainMode {
   FCAPTAIN_RELOCATE = 5, /* walks to a random node of its path, then WATCH */
 };
 
+/* FenceCaptainState.shots: one FCAPTAIN_VOLLEY fires three split shots, on
+ * entry and at animation frames 2 and 6. */
+#define FCAPTAIN_SHOTS_NONE 0
+#define FCAPTAIN_SHOTS_1 1
+#define FCAPTAIN_SHOTS_2 2
+#define FCAPTAIN_SHOTS_3 0x3C
+
 /* ->mode of a fence guard (ACTOR_TYPE_FENCE_GUARD, FenceGuardState; level
  * 27); the mode is also the animation index. subMode 1 wakes it, 2 (the
  * captain's reset) puts it back to sleep. */

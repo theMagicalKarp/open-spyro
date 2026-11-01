@@ -574,7 +574,7 @@ typedef struct FenceCaptainState {
   int zSpeed;            /* 0x10C */
   TriggerBox reset;        /* 0x110 */
   int timer;           /* 0x128 */
-  int stage;           /* 0x12C */
+  int shots;           /* 0x12C FCAPTAIN_SHOTS_*: split shots fired this volley */
   int puff;            /* 0x130 */
   TriggerBox all1;         /* 0x134 */
   TriggerBox all2;         /* 0x14C */

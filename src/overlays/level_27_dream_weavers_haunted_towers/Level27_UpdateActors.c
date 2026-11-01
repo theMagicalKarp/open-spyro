@@ -2749,7 +2749,7 @@ void Level27_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0xDAC &&
             (DZ203(actor) > 0 ? DZ203(actor) < 0x418
                               : -DZ203(actor) < 0x418)) {
-          st->stage = 0;
+          st->shots = FCAPTAIN_SHOTS_NONE;
           ENTER_POSE(actor, FCAPTAIN_VOLLEY);
         }
         break;
@@ -2791,14 +2791,14 @@ void Level27_UpdateActors(void) {
           actor->mode = FCAPTAIN_RELOCATE;
           continue;
         }
-        if (st->stage <= 0) {
-          st->stage = 1;
+        if (st->shots <= FCAPTAIN_SHOTS_NONE) {
+          st->shots = FCAPTAIN_SHOTS_1;
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
-        } else if (st->stage < 2 && actor->nextFrame >= 2) {
-          st->stage = 2;
+        } else if (st->shots < FCAPTAIN_SHOTS_2 && actor->nextFrame >= 2) {
+          st->shots = FCAPTAIN_SHOTS_2;
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
-        } else if (st->stage < 0x3C && actor->nextFrame >= 6) {
-          st->stage = 0x3C;
+        } else if (st->shots < FCAPTAIN_SHOTS_3 && actor->nextFrame >= 6) {
+          st->shots = FCAPTAIN_SHOTS_3;
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         }
         break;
