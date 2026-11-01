@@ -5,6 +5,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "pad_buttons.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 /* Flame-breath driver (0x800499c0, 1084 bytes).
@@ -73,11 +74,11 @@ void TickSpyroFlameAttack(void) {
     register int *strike asm("$17") = g_anSpyroFlameStateBlock;
 
     switch (strike[0]) {
-    case 0:
+    case SPYRO_FLAME_IDLE:
       anchor = g_abSpyroFlameAnchorModeBlock;
       anchor[0] = 0;
       if ((g_dwPadPressed & PAD_CIRCLE) && (g_bSpyroFlameActive == 0)) {
-        strike[0] = 1;
+        strike[0] = SPYRO_FLAME_BREATHING;
         g_nSpyroFlameTimer = -1;
         g_nSpyroFlamePhase = 0;
         g_nSpyroFlameAnimRate = g_abSpyroAnimDescTable
@@ -96,7 +97,7 @@ void TickSpyroFlameAttack(void) {
       }
       break;
 
-    case 1:
+    case SPYRO_FLAME_BREATHING:
       if (g_nSpyroFlameTimer == 0x10) {
         anchor = g_abSpyroFlameAnchorModeBlock;
         anchor[0] = 0;
@@ -149,7 +150,7 @@ void TickSpyroFlameAttack(void) {
           live = g_abSpyroFlameActiveBlock;
           live[0] = 0;
           FillWord(((char *)live) - 0x78, 0, 8);
-          g_nSpyroFlameState = 0;
+          g_nSpyroFlameState = SPYRO_FLAME_IDLE;
           g_anSpyroFlameTimerBlock[0] = -1;
           g_nSpyroFlameAnimRate = g_abSpyroAnimDescTable
               [(g_abSpyroFlameAnimTable[g_nSpyroFlameState] * 4) + 3];

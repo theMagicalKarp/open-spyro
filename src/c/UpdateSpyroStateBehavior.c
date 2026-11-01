@@ -120,7 +120,7 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_nSpyroStateTimer >= g_nSpyroIdleAnimTimeout &&
-        g_nSpyroFlameState != 1) {
+        g_nSpyroFlameState != SPYRO_FLAME_BREATHING) {
       CycleSpyroIdleAnim();
     }
     break;
@@ -710,7 +710,7 @@ void UpdateSpyroStateBehavior(void) {
           ChangeSpyroState(SPYRO_ST_IDLE);
           break;
         }
-        if (g_nSpyroFlameState != 1) {
+        if (g_nSpyroFlameState != SPYRO_FLAME_BREATHING) {
           break;
         }
       }

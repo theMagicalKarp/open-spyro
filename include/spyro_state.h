@@ -163,4 +163,10 @@ enum SpyroAnimMode {
   SPYRO_ANIM_CUT_LOOP_START = 11,  /* style only: switch at loop start + 1 */
 };
 
+/* g_nSpyroFlameState: the flame-breath machine (TickSpyroFlameAttack). */
+enum SpyroFlameState {
+  SPYRO_FLAME_IDLE = 0,
+  SPYRO_FLAME_BREATHING = 1,
+};
+
 #endif /* OPEN_SPYRO_SPYRO_STATE_H */
