@@ -807,6 +807,14 @@ enum BoltSentryMode {
   BSENTRY_SUMMON = 10, /* summons its guards, then IDLE */
 };
 
+/* BoltSentryState.mode: the cue a bolt sentry waits on (spawn record);
+ * cleared once it fires. */
+enum BoltSentryCue {
+  BSENTRY_CUE_NONE = 0,
+  BSENTRY_CUE_LEAP = 1,   /* Spyro in range and level: BSENTRY_LEAP down its path */
+  BSENTRY_CUE_PATROL = 2, /* Spyro ahead within 0x3000: BSENTRY_PATROL */
+};
+
 /* ->mode of a paired guard (ACTOR_TYPE_GUARD_PAIR, GuardPairState; level 2);
  * the mode is also the animation index. */
 enum GuardPairMode {

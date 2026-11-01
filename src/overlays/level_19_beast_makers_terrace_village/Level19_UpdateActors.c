@@ -144,7 +144,7 @@ typedef struct AttachBeadState {
 
 /* Type 467 state: a bolt-throwing sentry with three guards (`kids`). */
 typedef struct BoltSentryState {
-  int mode;      /* 0x00 */
+  int mode;      /* 0x00 enum BoltSentryCue */
   int *path;     /* 0x04 */
   int range;     /* 0x08 in 1024s */
   int timer;     /* 0x0C */
@@ -3497,7 +3497,7 @@ void Level19_UpdateActors(void) {
       }
       switch (actor->mode) {
       case BSENTRY_IDLE:
-        if (st->mode != 0) {
+        if (st->mode != BSENTRY_CUE_NONE) {
           ENTER_POSE(actor, BSENTRY_CUE);
         }
         if (st->guards == 0 &&
@@ -3634,21 +3634,21 @@ void Level19_UpdateActors(void) {
 
       case BSENTRY_CUE:
         switch (st->mode) {
-        case 1:
+        case BSENTRY_CUE_LEAP:
           if (ApproxDist2D(&actor->posX, spy) < st->range << 10 &&
               ABS2(SPY_DZ(actor)) < 0x3E8) {
-            st->mode = 0;
+            st->mode = BSENTRY_CUE_NONE;
             st->speed = ApproxDist2D(&actor->posX, &st->path[6]) / 12;
             st->u24 = 0x6E;
             ENTER_POSE_BRK(actor, BSENTRY_LEAP);
           }
           break;
-        case 2:
+        case BSENTRY_CUE_PATROL:
           if (ApproxDist2D(&actor->posX, spy) < 0x3000 &&
               AbsAngleDelta8(actor->rotZ,
                             ArcTan2(spy->posX - actor->posX,
                                           g_nSpyroWorldPosY - actor->posY, 0)) < 0x40) {
-            st->mode = 0;
+            st->mode = BSENTRY_CUE_NONE;
             ENTER_POSE_BRK(actor, BSENTRY_PATROL);
           }
           break;
