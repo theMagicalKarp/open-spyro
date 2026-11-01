@@ -12,6 +12,7 @@
 
 #include "camera.h"
 #include "funcs.h"
+#include "gamestate.h"
 #include "globals.h"
 #include "level_id.h"
 #include "main_shared.h"
@@ -372,7 +373,7 @@ sprites:
       p++;
     } while (i < (*base));
   }
-  if (g_nDemoMode != 0) {
+  if (g_nDemoMode != DEMO_OFF) {
     {
       register int kk asm("$3");
       register int dd asm("$2");
@@ -390,7 +391,7 @@ sprites:
       g_abSpyroPersistentEuler[2] = dd;
       g_nSpyroBodyYaw = (dd & 0xFF) * 0x10;
     }
-    if (g_nDemoMode == 1) {
+    if (g_nDemoMode == DEMO_PLAYBACK) {
       g_pDemoPadCursor = p;
     } else {
       g_pDemoPadCursor = (void *)0x80600000;

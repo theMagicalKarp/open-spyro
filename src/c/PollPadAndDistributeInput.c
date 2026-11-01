@@ -1,4 +1,5 @@
 #include "funcs.h"
+#include "gamestate.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "match_asm.h"
@@ -24,7 +25,7 @@ void PollPadAndDistributeInput(void) {
   if (g_nCdStallMarker != 0) {
     g_nCdStallWatchdogTicks += 1;
   }
-  if (g_nDemoMode != 0) {
+  if (g_nDemoMode != DEMO_OFF) {
     return;
   }
 

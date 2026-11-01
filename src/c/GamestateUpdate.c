@@ -1,5 +1,7 @@
 #include "camera.h"
+#include "credits_mode.h"
 #include "funcs.h"
+#include "gamestate.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "pad_buttons.h"
@@ -60,7 +62,7 @@ void GamestateUpdate(void) {
     } else if (g_nGamestate == GS_CUTSCENE) {
       Cutscene_Update();
     } else if (g_nGamestate == GS_CREDITS) {
-      if (g_nCreditsMode >= 0x63) {
+      if (g_nCreditsMode >= CREDITS_MODE_RETURN_HOME) {
         CreditsSequence_Update();
       } else {
         Credits_Update();
@@ -68,7 +70,7 @@ void GamestateUpdate(void) {
     }
   } else {
     g_dwGamestateFrames += 1;
-    if (g_nDemoMode != 0) {
+    if (g_nDemoMode != DEMO_OFF) {
       if (TickDemoPlayback()) {
         return;
       }

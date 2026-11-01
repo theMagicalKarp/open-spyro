@@ -1,3 +1,4 @@
+#include "credits_mode.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -12,7 +13,7 @@
 void CreditsSequence_Update(void) {
   RotateLightVectorXZ(3);
   switch (g_nCreditsMode) {
-  case 0x63:
+  case CREDITS_MODE_RETURN_HOME:
     g_nCdStreamState = 1;
     if (g_nCreditsReturnLevelId != -1) {
       g_nCurrentLevelId = g_nCreditsReturnLevelId;
@@ -29,7 +30,7 @@ void CreditsSequence_Update(void) {
     g_nReturningHomePhase = 0;
     g_nCreditsMode += 1;
     break;
-  case 0x64:
+  case CREDITS_MODE_RETURN_HOME_STREAM:
     g_nReturningHomePhase += g_nFrameStep;
     TickLevelTransitionStream(1);
     break;

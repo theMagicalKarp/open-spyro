@@ -1,5 +1,6 @@
 #include "cutscene_id.h"
 #include "funcs.h"
+#include "gamestate.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "title_state.h"
@@ -150,7 +151,7 @@ void StoryIntro_Update(void) {
           }
           if (g_nStoryIntroTimer >= 0x180 && g_nCdStreamState == 0xd) {
             if (path[0] == TITLE_EXIT_DEMO) {
-              g_nDemoMode = 1;
+              g_nDemoMode = DEMO_PLAYBACK;
               g_nDemoExitFadeFrame = 0;
             }
             ResetSpyroEntity(1);

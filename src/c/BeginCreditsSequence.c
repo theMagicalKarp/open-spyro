@@ -1,3 +1,4 @@
+#include "credits_mode.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -25,7 +26,7 @@ void BeginCreditsSequence(int reloadMeshes) {
   }
   ResetSpyroEntity(1);
   g_nGamestate = GS_CREDITS;
-  g_nCreditsMode = -1;
+  g_nCreditsMode = CREDITS_MODE_BUILD;
   g_nCreditsFirstVisibleLine = 0;
   g_nCreditsLastVisibleLine = 0;
   g_nCreditsLineCount = 0;

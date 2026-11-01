@@ -569,10 +569,10 @@ extern void *g_pActorAuxPoolTop;             /* 0x800756e8 */
 extern int g_anSecondaryActorTexWords[2];    /* 0x800756f0 */
 extern int g_nReturningHomePhase;            /* 0x800756f8 */
 extern struct Actor *g_pSpriteRecordBufferTop; /* 0x800756fc: top of this frame's sprite-record queue (g_pSpriteRecordWriteCursor grows down from it) */
-extern int g_nCreditsMode;               /* 0x80075704 */
+extern int g_nCreditsMode;               /* 0x80075704: enum CreditsMode (credits_mode.h) */
 extern int g_nCinematicActive;               /* 0x8007570c: nonzero while a cinematic holds the player (dragon rescue, actor/balloonist cutscenes, boss intros): closes the letterbox (DrawCinematicLetterbox), blocks Start/Select menus (GamestateUpdate) and freezes some enemy timers */
 extern struct Actor *g_pSpriteRecordWriteCursor; /* 0x80075710: sprite-record queue tail; Actor-sized records, grows down from g_pSpriteRecordBufferTop */
-extern int g_nDemoMode;                    /* 0x80075714: attract demo: 0 off, 1 playback (set by StoryIntro_Update), 2 record into 0x80600000 */
+extern int g_nDemoMode;                    /* 0x80075714: attract demo, enum DemoMode (gamestate.h) */
 extern int g_nGroundSurfaceType;             /* 0x80075718 */
 extern void *g_pGemTallyParticleRecords;     /* 0x8007571c */
 extern int g_nPauseMenuCursor;               /* 0x80075720: row on the pause page (enum PauseMainRow / PauseOptionsRow / PauseQuitRow); flight results menu reuses it */

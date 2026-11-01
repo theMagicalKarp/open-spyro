@@ -1,5 +1,7 @@
+#include "credits_mode.h"
 #include "frame_db.h"
 #include "funcs.h"
+#include "gamestate.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "title_state.h"
@@ -83,7 +85,7 @@ void GamestateDraw(void) {
     } else if (g_nGamestate == GS_CUTSCENE) {
       Cutscene_Draw();
     } else if (g_nGamestate == GS_CREDITS) {
-      if (g_nCreditsMode < 0x63) {
+      if (g_nCreditsMode < CREDITS_MODE_RETURN_HOME) {
         Credits_Draw();
       } else {
         ReturningHome_Draw();
@@ -103,7 +105,7 @@ void GamestateDraw(void) {
     if (g_nFlightLevelActive == 0) {
       EnqueueHudSprites();
     }
-    if (g_nDemoMode != 0) {
+    if (g_nDemoMode != DEMO_OFF) {
       DrawDemoModeOverlay();
     }
     ComposeFrameScene();

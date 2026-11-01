@@ -23,7 +23,14 @@ typedef enum Gamestate
   GS_ACTOR_CUTSCENE = 12, /* BeginActorCutscene: balloonist / fly-in cutscenes */
   GS_TITLE = 13,          /* title screen; g_nTitleMode TITLE_MODE_STORY_INTRO is the story intro */
   GS_CUTSCENE = 14,   /* BeginCutscene */
-  GS_CREDITS = 15,        /* BeginCreditsSequence; mode >= 0x63 is ReturningHome */
+  GS_CREDITS = 15,        /* BeginCreditsSequence; mode >= CREDITS_MODE_RETURN_HOME is ReturningHome */
 } Gamestate;
+
+/* g_nDemoMode: the attract demo. */
+enum DemoMode {
+  DEMO_OFF = 0,
+  DEMO_PLAYBACK = 1, /* replay the bundle's recorded pad stream (StoryIntro_Update) */
+  DEMO_RECORD = 2,   /* sample the real pad into a buffer at 0x80600000 */
+};
 
 #endif /* OPEN_SPYRO_GAMESTATE_H */
