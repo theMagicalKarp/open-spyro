@@ -22,10 +22,10 @@ void StoryIntro_Update(void) {
   RECT clear;
 
   if (g_nTitleMode == TITLE_MODE_STORY_INTRO) {
-    if (g_nStoryIntroSubstate == 0) {
+    if (g_nStoryIntroSubstate == STORY_INTRO_ARM) {
       StopAllSoundExceptMask(0);
       TickSpuPerFrame();
-      g_nStoryIntroSubstate = 1;
+      g_nStoryIntroSubstate = STORY_INTRO_STREAM;
       if (g_nTitleExitPath == TITLE_EXIT_NEW_GAME) {
         g_nCutsceneId = CUTSCENE_OPENING;
         g_nCdStreamState = CSTREAM_READ_HEADER;
@@ -62,7 +62,7 @@ void StoryIntro_Update(void) {
       g_abSpyroPersistentEuler[1] = 0;
       g_abSpyroPersistentEuler[2] = 0;
       g_bSpyroAnimFrame = 1;
-    } else if (g_nStoryIntroSubstate == 1) {
+    } else if (g_nStoryIntroSubstate == STORY_INTRO_STREAM) {
       if (g_nTitleExitPath == TITLE_EXIT_NEW_GAME) {
         while (g_nCdStreamState < CSTREAM_READ_AUDIO) {
           TickCutsceneBundleLoadStream();
@@ -74,9 +74,9 @@ void StoryIntro_Update(void) {
           TickCdMusicStream();
         }
       }
-      g_nStoryIntroSubstate = 2;
+      g_nStoryIntroSubstate = STORY_INTRO_FLY;
       g_nStoryIntroTimer = 0;
-    } else if (g_nStoryIntroSubstate == 2) {
+    } else if (g_nStoryIntroSubstate == STORY_INTRO_FLY) {
       int *pos = g_anSpyroWorldPosBlock;
 
       CopyVector(&delta, (VECTOR *)pos);

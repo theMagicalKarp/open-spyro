@@ -62,4 +62,11 @@ enum TitleExitPath {
   TITLE_EXIT_DEMO = 2,           /* attract demo level */
 };
 
+/* g_nStoryIntroSubstate (title state +0x04): StoryIntro_Update's steps. */
+enum StoryIntroStep {
+  STORY_INTRO_ARM = 0,    /* silence audio, pick the destination, park the camera */
+  STORY_INTRO_STREAM = 1, /* block on the CD stream until the world is in RAM */
+  STORY_INTRO_FLY = 2,    /* fly Spyro along the intro path, then hand off */
+};
+
 #endif

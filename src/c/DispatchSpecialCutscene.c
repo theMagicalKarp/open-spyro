@@ -28,7 +28,7 @@ void DispatchSpecialCutscene(void) {
     g_nGamestate = GS_TITLE;
     FillWord(mode, 0, 0x5C);
     mode[0] = TITLE_MODE_STORY_INTRO;
-    g_nStoryIntroSubstate = 0;
+    g_nStoryIntroSubstate = STORY_INTRO_ARM;
     g_nTitleExitPath = TITLE_EXIT_LOADED_GAME;
     InitNewGameState();
     g_nActiveLevelId = LEVEL_ARTISANS;

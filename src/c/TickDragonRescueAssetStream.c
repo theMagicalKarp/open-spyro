@@ -42,7 +42,7 @@ void TickDragonRescueAssetStream(void) {
   }
 
   switch (g_nDragonRescueStreamState) {
-  case 0:
+  case RESCUE_STREAM_READ:
     avail = g_nWorldUnpackLimit - (int)g_pWorldUnpackHead;
     size = DRAGON_ASSET_SIZE(g_nDragonRescueTypeSnapshot);
     if (avail >= size) {
@@ -59,7 +59,7 @@ void TickDragonRescueAssetStream(void) {
                      600);
     g_nDragonRescueStreamState++;
     return;
-  case 1:
+  case RESCUE_STREAM_RELOCATE:
     CopyWords(g_abDragonRescueAssetHeader, HEAD, 0x24);
     if (g_nDragonRescueSplitFlag == 0) {
       g_pDragonRescueCameraPath = HEAD + g_nDragonRescueCameraPathOffset;
@@ -85,7 +85,7 @@ void TickDragonRescueAssetStream(void) {
                        600);
     }
     break;
-  case 2:
+  case RESCUE_STREAM_UPLOAD_VOICE:
     if (g_nDragonRescueSubstate < DRAGON_RESCUE_LOAD_WAIT) {
       return;
     }
@@ -144,7 +144,7 @@ void TickDragonRescueAssetStream(void) {
     }
     g_nDragonRescueStreamState++;
     return;
-  case 3:
+  case RESCUE_STREAM_RELOAD_LEVEL:
     if (g_nDragonRescueSubstate < DRAGON_RESCUE_COUNT) {
       return;
     }
@@ -168,7 +168,7 @@ void TickDragonRescueAssetStream(void) {
       g_nDragonRescueSplitFlag = 0;
     }
     break;
-  case 4:
+  case RESCUE_STREAM_LEVEL_AUDIO:
     if (g_nDragonRescueSplitFlag == 1) {
       SetSpuTransferStartAddr(0x81010 - g_nDragonRescueReadByteCount);
       {
@@ -189,7 +189,7 @@ void TickDragonRescueAssetStream(void) {
       StartCdReadAsync(lba, dst, size, off + LEVEL_ARCHIVE_OFFSET(intro), 600);
     }
     break;
-  case 5:
+  case RESCUE_STREAM_LEVEL_MESHES:
     RelocateMobActorTable(
         HEAD + (g_anActorMeshOffsetList - g_nWorldDataExtChunkOffset));
     for (i = 0; i < 0x200; i++) {

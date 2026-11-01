@@ -14,7 +14,7 @@ void RestartTitleCardCheckOnTriangle(void) {
   if (g_dwPadPressed & PAD_TRIANGLE) {
     g_anTitleModeBlock[0] = TITLE_MODE_CARD_CHECK;
     g_nTitleSubState = TITLE_CARD_PROBE;
-    g_nStoryIntroSubstate = 0;
+    g_nStoryIntroSubstate = STORY_INTRO_ARM;
     MemCardSync(0, &g_anTitleModeBlock[0x10], &g_anTitleModeBlock[0x11]);
   }
 }

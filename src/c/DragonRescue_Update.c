@@ -434,7 +434,8 @@ void DragonRescue_Update(void) {
     }
     g_nPulseRumbleAmount = 0x46;
     g_pfnLevelSpawnActor(ACTOR_TYPE_STATUE_SHARD, g_pDragonRescueSourceActor);
-    if (g_nDragonRescueTimer < 0x10 || g_nDragonRescueStreamState < 3) {
+    if (g_nDragonRescueTimer < 0x10 ||
+        g_nDragonRescueStreamState < RESCUE_STREAM_RELOAD_LEVEL) {
       AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
       TickSpyroAnimLayer1();
       TickSpyroAnimLayer2();
@@ -722,7 +723,7 @@ void DragonRescue_Update(void) {
                         &g_bSceneSfxVoiceMarker);
       }
     }
-    if (GB[5] >= 0x60 && g_nDragonRescueStreamState == 6) {
+    if (GB[5] >= 0x60 && g_nDragonRescueStreamState == RESCUE_STREAM_DONE) {
       g_nDragonRescueSubstate = DRAGON_RESCUE_FADE_OUT;
       GB[5] = 0;
       g_pEmitListWriteCursor = g_pEmitListBase;

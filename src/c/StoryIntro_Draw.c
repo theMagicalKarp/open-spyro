@@ -30,7 +30,7 @@ void StoryIntro_Draw(void) {
   int *tp;
   unsigned short *cosp;
 
-  if (g_nStoryIntroSubstate == 2 && g_nStoryIntroTimer >= 0x8C) {
+  if (g_nStoryIntroSubstate == STORY_INTRO_FLY && g_nStoryIntroTimer >= 0x8C) {
     pos[1] = 0x78;
     pos[2] = 0x1400;
     rec = (int)g_pSpriteRecordWriteCursor;
@@ -96,7 +96,7 @@ void StoryIntro_Draw(void) {
   FillWord(&g_apSpritePrimQueue[-0x900], 0, 0x900);
   RasterizeSpritePrimQueue();
 
-  if (g_nStoryIntroSubstate == 2) {
+  if (g_nStoryIntroSubstate == STORY_INTRO_FLY) {
     RasterizeSpyroModel();
     ((int *)g_pOtDepthBinArrayBase)[0x40] = g_pOtActiveDepthSlot[0];
     ((int *)g_pOtDepthBinArrayBase)[0x41] = g_pOtActiveDepthSlot[1];
