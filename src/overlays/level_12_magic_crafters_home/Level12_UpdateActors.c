@@ -3001,7 +3001,7 @@ void Level12_UpdateActors(void) {
         if (g_anRunningKillBitmap[word] & (one << bit)) {
           gone = actor->dropKind == 0xFF;
         }
-        if (st->mode == 2) {
+        if (st->mode == VROLE_PAIR) {
           Actor *pair = &g_pActorListBase[st->link];
 
           pairGone = 0;
@@ -3013,11 +3013,11 @@ void Level12_UpdateActors(void) {
             pairGone = 1;
           }
         }
-        if (st->mode == 2 && pairGone == 0) {
+        if (st->mode == VROLE_PAIR && pairGone == 0) {
           continue;
         }
         if (gone) {
-          if (st->mode == 2 && pairGone) {
+          if (st->mode == VROLE_PAIR && pairGone) {
             if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
               DespawnActorRecord(&g_pActorListBase[st->link]);
             }
@@ -3048,7 +3048,7 @@ void Level12_UpdateActors(void) {
         int range;
 
         dist = ApproxDist2D(&actor->posX, &SPY.posX);
-        if (st->friend >= 0 && (st->mode != 2 || actor->subMode == 0) &&
+        if (st->friend >= 0 && (st->mode != VROLE_PAIR || actor->subMode == 0) &&
             (GetRandomU32() & 1)) {
           g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, (int *)actor, &g_pActorListBase[st->friend]);
         }
@@ -3079,7 +3079,7 @@ void Level12_UpdateActors(void) {
 
           PlaySoundEffect(g_pLevelSampleBankHeader[0x2A], f, SFX_MODE_3D, &f->voiceRow);
         }
-        if (st->mode == 0) {
+        if (st->mode == VROLE_CHAT) {
           range = st->talkDist << 10;
 
           if (SPY.state != SPYRO_ST_CHARGE || st->noBoost == 0) {
@@ -3110,7 +3110,7 @@ void Level12_UpdateActors(void) {
               st->timer = 0x1E;
             }
           }
-        } else if (st->mode == 1) {
+        } else if (st->mode == VROLE_FACE) {
           if (st->friend > 0) {
             TurnActorYawTowardAngle(actor,
                           ArcTan2(g_pActorListBase[st->friend].posX - actor->posX,
@@ -3140,7 +3140,7 @@ void Level12_UpdateActors(void) {
             }
             SetActorGroupStateExcept(actor, VILLAGER_PANIC, VILLAGER_KNOCKED);
           }
-        } else if (st->mode == 2) {
+        } else if (st->mode == VROLE_PAIR) {
           if (actor->subMode == 0 &&
               (ApproxDist2D(&actor->posX, &SPY.posX) < 0x3400 ||
                g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT)) {
@@ -3156,7 +3156,7 @@ void Level12_UpdateActors(void) {
             actor->mode = VILLAGER_PANIC;
             continue;
           }
-        } else if (st->mode == 3) {
+        } else if (st->mode == VROLE_LEADER) {
           Actor *lead = &g_pActorListBase[st->link];
           LeaderState *ls = lead->state;
 
@@ -3274,7 +3274,7 @@ void Level12_UpdateActors(void) {
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) >
                 (st->fleeDist << 10) + 0x1388 &&
-            (st->mode != 2 || g_pActorListBase[st->link].nextAnim != 3)) {
+            (st->mode != VROLE_PAIR || g_pActorListBase[st->link].nextAnim != 3)) {
           ENTER_POSE(actor, VILLAGER_IDLE);
         }
         if (TickCountdownByFrameDelta(&st->timer, 4)) {

@@ -2568,7 +2568,7 @@ void Level8_UpdateActors(void) {
 
       switch (actor->mode) {
       case TPRUNNER_IDLE:
-        if (st->mode == 1 || st->mode == 2) {
+        if (st->mode == TPARM_GUARD || st->mode == TPARM_RUN) {
           ENTER_POSE(actor, TPRUNNER_GUARD);
         }
         break;
@@ -2576,7 +2576,7 @@ void Level8_UpdateActors(void) {
       case TPRUNNER_GUARD: {
         int d = ApproxDist2D(&actor->posX, &spy->posX);
 
-        if (st->mode == 2) {
+        if (st->mode == TPARM_RUN) {
           if (ApproxDist2D(&spy->posX, &st->pathA->nodes[st->node].x) <
               st->range << 10) {
             st->which = 1;
@@ -2657,7 +2657,7 @@ void Level8_UpdateActors(void) {
               st->pathA->cur != st->node) {
             break;
           }
-          st->mode = 1;
+          st->mode = TPARM_GUARD;
           ENTER_POSE(actor, TPRUNNER_GUARD);
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x5DC &&
@@ -2668,7 +2668,7 @@ void Level8_UpdateActors(void) {
         if (st->pathB->cur != st->node) {
           break;
         }
-        st->mode = 1;
+        st->mode = TPARM_GUARD;
         ENTER_POSE(actor, TPRUNNER_GUARD);
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);

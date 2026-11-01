@@ -498,6 +498,14 @@ enum VillagerMode {
   VILLAGER_STOP = 92,   /* catches its breath facing Spyro; he comes closer: PANIC */
 };
 
+/* VillagerState.mode: the villager's role. */
+enum VillagerRole {
+  VROLE_CHAT = 0,   /* faces Spyro; talks (its chunk anim) when he is in talk range */
+  VROLE_FACE = 1,   /* faces its friend; Spyro too close: PANIC */
+  VROLE_PAIR = 2,   /* waits on its partner (link), cueing it via subMode */
+  VROLE_LEADER = 3, /* watches its leader (LeaderState) */
+};
+
 /* ->mode of a post guard (ACTOR_TYPE_POST_GUARD, PostState; level 2).
  * POSTGUARD_IDLE runs PostState.mode's role (waits between its two posts,
  * patrols, lookout, or ambushes with its partner). */
@@ -1152,7 +1160,7 @@ enum LootThiefMode {
 };
 
 /* ->mode of a two-path runner (ACTOR_TYPE_TWO_PATH_RUNNER, RunnerState; level
- * 8); the mode is also the animation index. With RunnerState.mode 2 it runs
+ * 8); the mode is also the animation index. With RunnerState.mode TPARM_RUN it runs
  * whichever of its two paths ends nearer Spyro (RunnerState.which). */
 enum TwoPathRunnerMode {
   TPRUNNER_IDLE = 0,       /* until RunnerState.mode arms it: GUARD */
@@ -1162,6 +1170,13 @@ enum TwoPathRunnerMode {
   TPRUNNER_SWIPE = 8,      /* swipes, then GUARD */
   TPRUNNER_WALK_BACK = 10, /* walks to its path node, then GUARD (a level 8 lookout, GLOOK_ROUSE, sets its linked runner to 10) */
   TPRUNNER_RUN = 0x14,     /* runs its chosen path to RunnerState.node, then GUARD */
+};
+
+/* RunnerState.mode: how far a two-path runner is armed. */
+enum TwoPathRunnerArm {
+  TPARM_NONE = 0,  /* stays IDLE */
+  TPARM_GUARD = 1, /* GUARD only (set again once a run ends) */
+  TPARM_RUN = 2,   /* GUARD, and RUN when Spyro nears a path's node */
 };
 
 /* ->mode of a rim rider (ACTOR_TYPE_RIM_RIDER, RimState; level 16); the mode

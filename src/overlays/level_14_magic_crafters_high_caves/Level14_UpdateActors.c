@@ -149,10 +149,14 @@ typedef struct ChunkOperatorState {
  * bolts at him. */
 typedef struct BoltCasterState {
   int target; /* 0x00 pool index of the actor it fires at, -1 = none */
-  int flags;  /* 0x04 bit 0: woken, bit 1: Spyro in range */
+  int flags;  /* 0x04 BCASTER_F_* */
   int timer;  /* 0x08 */
   int count;  /* 0x0C bolts fired */
 } BoltCasterState;
+
+/* BoltCasterState.flags. */
+#define BCASTER_F_WOKEN 1    /* has noticed Spyro once: goes straight to AIM */
+#define BCASTER_F_IN_RANGE 2 /* Spyro in range: keeps aiming and casting */
 
 
 /* Type 305: a critter that walks one of three paths and flees Spyro. */
@@ -3728,8 +3732,8 @@ void Level14_UpdateActors(void) {
       case BCASTER_IDLE:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000 &&
             ABS2(SPY_DZ(actor)) < 0xC00) {
-          if (st->flags & 1) {
-            st->flags |= 2;
+          if (st->flags & BCASTER_F_WOKEN) {
+            st->flags |= BCASTER_F_IN_RANGE;
             ENTER_POSE(actor, BCASTER_AIM);
             continue;
           }
@@ -3755,7 +3759,7 @@ void Level14_UpdateActors(void) {
       case BCASTER_NOTICE:
         TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
         if (g_nActorAnimDone != 0) {
-          st->flags |= 1;
+          st->flags |= BCASTER_F_WOKEN;
           actor->mode = BCASTER_IDLE;
           ANIM_RESET(actor, 0);
           continue;
@@ -3763,12 +3767,12 @@ void Level14_UpdateActors(void) {
         break;
 
       case BCASTER_AIM:
-        if (st->flags & 2) {
+        if (st->flags & BCASTER_F_IN_RANGE) {
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800 &&
               ABS2(SPY_DZ(actor)) < 0xC00) {
             TrackEntityYawTowardSpyro(actor, 8, 0x10, 1);
           } else {
-            st->flags &= ~2;
+            st->flags &= ~BCASTER_F_IN_RANGE;
             ENTER_POSE(actor, BCASTER_IDLE);
             continue;
           }
@@ -3793,7 +3797,7 @@ void Level14_UpdateActors(void) {
             st->count < 3) {
           Actor *b = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_WISP, actor);
 
-          if (st->flags & 2) {
+          if (st->flags & BCASTER_F_IN_RANGE) {
             if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xA00 &&
                 ABS2(SPY_DZ(actor)) < 0x400) {
               CopyVector(&b->posX, &SPY.posX);
@@ -3814,14 +3818,14 @@ void Level14_UpdateActors(void) {
           st->count++;
         }
         if (g_nActorAnimDone != 0) {
-          if ((st->flags & 2) &&
+          if ((st->flags & BCASTER_F_IN_RANGE) &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000 &&
               ABS2(SPY_DZ(actor)) < 0xC00) {
             actor->mode = BCASTER_AIM;
             ANIM_RESET(actor, 2);
             continue;
           }
-          st->flags &= ~2;
+          st->flags &= ~BCASTER_F_IN_RANGE;
           st->timer = (GetRandomU32() & 0x1F) + 0x20;
           actor->mode = BCASTER_IDLE;
           ANIM_RESET(actor, 0);

@@ -1172,7 +1172,7 @@ typedef struct RunnerState {
   int pad10;
   int heading;     /* 0x14 knockback heading */
   int timer;       /* 0x18 */
-  int mode;        /* 0x1C */
+  int mode;        /* 0x1C TwoPathRunnerArm */
   int pad20;
   int which;       /* 0x24 path in use, 1 or 2 */
   int range;       /* 0x28 in 1024s */
@@ -1188,7 +1188,7 @@ typedef struct VillagerState {
   int chunkAnim;             /* 0x04 world chunk-anim handle (GetWorldChunkAnimState) */
   int friend;          /* 0x08 actor it faces / sparkles at, -1 = none */
   int link;            /* 0x0C partner actor */
-  int mode;            /* 0x10 */
+  int mode;            /* 0x10 VillagerRole */
   int timer;           /* 0x14 voice timer */
   int timerLong;       /* 0x18 */
   int timerShort;      /* 0x1C */
