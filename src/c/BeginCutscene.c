@@ -1,3 +1,4 @@
+#include "cutscene_id.h"
 #include "cutscene_path.h"
 #include "funcs.h"
 #include "globals.h"
@@ -22,7 +23,7 @@ void BeginCutscene(void) {
   head = g_pPathTableHead;
   id = g_nCutsceneId;
   head->frame = 0;
-  if (id == 1) {
+  if (id == CUTSCENE_OPENING) {
     g_nPortalDistanceFogEnabled = 1;
   }
 

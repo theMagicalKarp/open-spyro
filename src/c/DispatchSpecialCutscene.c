@@ -1,20 +1,22 @@
+#include "cutscene_id.h"
 #include "funcs.h"
 #include "globals.h"
 #include "level_id.h"
 #include "main_shared.h"
 #include "title_state.h"
 
-/* Special-cutscene dispatcher (0x8002d440), by g_nCutsceneId. Cutscene 1: full
-   story-intro restart — clear VRAM, silence sound, reload actor meshes,
-   gamestate 0xD with the 0x5C-byte mode block zeroed (mode 3 = intro message
-   1), fresh game state, level 0xA. Cutscene 2: credits without a mesh reload.
-   Cutscene 3: credits with a mesh reload, seeding g_nCreditsPageIndex = 0xA so
+/* Special-cutscene dispatcher (0x8002d440), by g_nCutsceneId, at the end of a
+   cutscene. The opening: full story-intro restart — clear VRAM, silence sound,
+   reload actor meshes, gamestate 0xD with the 0x5C-byte mode block zeroed
+   (TITLE_MODE_STORY_INTRO, exit path TITLE_EXIT_LOADED_GAME), fresh game state,
+   level 0xA. The Gnasty ending: credits without a mesh reload. The Loot ending:
+   credits with a mesh reload, seeding g_nCreditsPageIndex = 0xA so
    BeginCreditsSequence keeps it. */
 
 void DispatchSpecialCutscene(void) {
   RECT rect;
   int id = g_nCutsceneId;
-  if (id == 1) {
+  if (id == CUTSCENE_OPENING) {
     int *mode = g_anTitleModeBlock;
     rect.w = 0x200;
     rect.x = 0;
@@ -33,10 +35,10 @@ void DispatchSpecialCutscene(void) {
     InitNewGameState();
     g_nActiveLevelId = LEVEL_ARTISANS;
     g_nGamePaused = 1;
-  } else if (id == 2) {
+  } else if (id == CUTSCENE_GNASTY_ENDING) {
     BeginCreditsSequence(0);
     g_nGamePaused = 1;
-  } else if (id == 3) {
+  } else if (id == CUTSCENE_LOOT_ENDING) {
     g_nCreditsPageIndex = 0xA;
     BeginCreditsSequence(1);
     g_nGamePaused = 1;
