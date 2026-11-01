@@ -1,5 +1,6 @@
 #include "actor.h"
 #include "funcs.h"
+#include "gem_tally.h"
 #include "globals.h"
 #include "level_id.h"
 #include "main_shared.h"
@@ -29,21 +30,6 @@
    EnqueuePendingSpritePrims, then rasterize. */
 
 typedef struct {
-  short x;              /* 0x00 */
-  short y;              /* 0x02 */
-  short vx;             /* 0x04 */
-  short vy;             /* 0x06 */
-  unsigned char live;   /* 0x08 */
-  unsigned char phase;  /* 0x09 */
-  unsigned char driftx; /* 0x0a */
-  unsigned char drifty; /* 0x0b */
-  unsigned char spin;   /* 0x0c */
-  unsigned char signx;  /* 0x0d */
-  unsigned char signy;  /* 0x0e */
-  unsigned char spinv;  /* 0x0f */
-} GemTallyParticle;
-
-typedef struct {
   int pad00[3];    /* 0x00 */
   int x;           /* 0x0c */
   int y;           /* 0x10 */
@@ -56,7 +42,6 @@ typedef struct {
 } TallySprite;
 
 #define SPR ((TallySprite *)g_pSpriteRecordWriteCursor)
-#define PARTICLES ((GemTallyParticle *)g_pGemTallyParticleRecords)
 
 void DrawLevelTransitionOverlay(void) {
   int pos[3];

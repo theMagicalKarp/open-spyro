@@ -547,18 +547,18 @@ extern int g_nGnastyLootFallRefZCap;         /* 0x80075678 */
 extern void (*g_pfnGamestate7DrawHook)(void); /* 0x8007567c: flight levels' FlightResults_Draw */
 extern struct CutscenePath *g_pPathTableHead; /* 0x80075680: the cutscene path table (cutscene_path.h) */
 extern int g_nMotionTrailRibbonCount;        /* 0x80075684 */
-extern int g_nPrevLevelIndex;           /* 0x80075688 */
+extern int g_nPrevLevelIndex;           /* 0x80075688: the level index being left, for the tally (TickLevelTransitionStream) */
 extern int g_nPauseMenuIdleFrames;           /* 0x8007568c */
 extern int g_nFlightLevelActive;             /* 0x80075690 */
 extern void (*g_pfnLevelFallImpactCallback)(void); /* 0x80075694: flight levels' FlightEndHook, else null */
 extern int g_nActorPoolLiveCount;            /* 0x800756a4 */
 extern int g_nActorPoolCapacity;             /* 0x800756a8 */
-extern int g_nLevelTransitionPhase;          /* 0x800756ac */
-extern int g_nLevelTransitionTallyActive;    /* 0x800756b0 */
+extern int g_nLevelTransitionPhase;          /* 0x800756ac: frame clock of the level-transition banner and treasure tally (DrawLevelTransitionOverlay): 0x40 results panel in, 0x80 gems fly, 0x1A0 tally over */
+extern int g_nLevelTransitionTallyActive;    /* 0x800756b0: 1 while the post-level treasure tally plays (set on a level exit / hub return); LevelLoad_Update holds the final stream stages until it clears */
 extern int g_nCameraLosClear;                /* 0x800756b8 */
 extern void (*g_pfnLevelAdvanceEmitList)(int frameStep); /* 0x800756bc */
 extern int g_nLetterboxBarHeight;            /* 0x800756c0 */
-extern int g_nGemTallyIconCount;             /* 0x800756c8 */
+extern int g_nGemTallyIconCount;             /* 0x800756c8: gems picked up this level visit (CollectPickupActor logs each type in g_abGemTallyIconUvTable[n & 0x1F]); flight bonuses add 0xC; the tally flies in up to 0x20 */
 extern int g_nFrameStep;                     /* 0x800756cc */
 extern int g_nPortalTransitionActive;           /* 0x800756d0: set by a portal exit or hub return, cleared when TickLevelTransitionStream finishes; Spyro takes the scripted arrival (the hub portal glide-out, or the exit nudge) instead of the plain level spawn, and cannot bonk meanwhile */
 extern int g_nSubMenuScrollDelta;            /* 0x800756d4 */
@@ -574,14 +574,14 @@ extern int g_nCinematicActive;               /* 0x8007570c: nonzero while a cine
 extern struct Actor *g_pSpriteRecordWriteCursor; /* 0x80075710: sprite-record queue tail; Actor-sized records, grows down from g_pSpriteRecordBufferTop */
 extern int g_nDemoMode;                    /* 0x80075714: attract demo, enum DemoMode (gamestate.h) */
 extern int g_nGroundSurfaceType;             /* 0x80075718 */
-extern void *g_pGemTallyParticleRecords;     /* 0x8007571c */
+extern void *g_pGemTallyParticleRecords;     /* 0x8007571c: the tally particle pool (GemTallyParticle, gem_tally.h), borrowed from g_apSecondaryEntityList */
 extern int g_nPauseMenuCursor;               /* 0x80075720: row on the pause page (enum PauseMainRow / PauseOptionsRow / PauseQuitRow); flight results menu reuses it */
 extern uint g_dwGamestateFrames;             /* 0x8007572c */
 extern int g_nPadSetMainModePending;         /* 0x80075730 */
 extern void (*g_pfnLevelUpdateActors)(void); /* 0x80075734 */
 extern void *g_pEmitListWriteCursor;         /* 0x80075738 */
 extern struct Actor *g_pActorPoolFreeHead;   /* 0x8007573c: lowest free slot of the level actor pool (AllocActorRecordSlot) */
-extern int g_nGemTallyHoldEndPhase;          /* 0x80075740 */
+extern int g_nGemTallyHoldEndPhase;          /* 0x80075740: tally phase where the TREASURE FOUND hold ends: 0x8C + 2 per icon, capped at 0xC0 */
 extern int g_nSubMenuCursor;                 /* 0x80075744 */
 extern int g_nMusicVolume;                   /* 0x80075748 */
 extern int g_nWorldDragonsRescued;           /* 0x80075750 */
@@ -630,7 +630,7 @@ extern void *g_pDemoPadCursor;           /* 0x8007585c: read/write cursor into t
 extern int g_nTotalTreasureCollected;        /* 0x80075860: game-wide treasure (gem) total: pickups, flight bonuses; 14000 (0x36B0) picks the post-game credits return */
 extern int g_nCdStreamState;                 /* 0x80075864: enum CutsceneStreamState or LevelStreamState (cd_stream.h), by which machine runs */
 extern int g_nInGameTick;                    /* 0x80075868 */
-extern int g_nLevelGemsAtEntry;              /* 0x8007587c */
+extern int g_nLevelGemsAtEntry;              /* 0x8007587c: g_anLevelGemsCollected[level] on entry; the tally shows the difference */
 extern int g_nLevelSelectModeActive;         /* 0x80075880 */
 extern int g_nDemoExitFadeFrame;                /* 0x80075884: demo-end fade frame, 0 until the demo ends; at 0x10 the demo tears down */
 extern DRAWENV *g_pActiveFrameDrawEnv;       /* 0x80075888 */
