@@ -44,9 +44,9 @@ void BurstActorWithSound(Actor *actor, int mode);
 #endif
 int TurnActorYawTowardAngle(Actor *actor, int heading, int step, int threshold, int flag);
 int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed, int thresh, int animId);
-int MoveActorByDelta(Actor *actor, int vx, int vy, int vz, int group, int radius, int flags);
-int MoveActorAlongHeading(Actor *actor, int speed, int group, int radius, int flags);
-int MoveActorAlongAngle(Actor *actor, int angle, int speed, int group, int radius, int flags);
+int MoveActorByDelta(Actor *actor, int vx, int vy, int vz, int contactRadius, int radius, int flags);
+int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius, int radius, int flags);
+int MoveActorAlongAngle(Actor *actor, int angle, int speed, int contactRadius, int radius, int flags);
 int DriveActorTrackedMove(Actor *actor, int *counter, int heading, int *timer, int step, int decay);
 void UpdateActorWander(Actor *actor, WanderBlock *wb);
 int SelectActorLodBand(Actor *actor, int band);

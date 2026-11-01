@@ -4,10 +4,11 @@
 #include "vecmath.h"
 
 /* Move an actor by a delta with contact/collision checks (0x80039228,
-   0x170). In gamestate 3 the delta is scaled by 1.5x (half added), in
-   state 4 doubled. flags bit 0 lifts the probe point by 0x12C+radius
-   during the checks. Returns 1 on actor contact, 2 on world collision,
-   0 when the move was committed. */
+   0x170). At frame delta 3 the delta is scaled by 1.5x (half added), at
+   4 doubled. Actors inside the `contactRadius` sphere get their contact
+   handlers (0 skips the test); MOVE_LIFT lifts the probe point by
+   0x12C+radius during the world-collision check. Returns 1 on actor contact, 2
+   on world collision, 0 when the move was committed. */
 /* Local prototypes, not funcs.h: its caller-side MoveActorByDelta splits the
    DeltaVec into three ints and conflicts with the definition below. */
 extern int DispatchActorContactAtSphere(int *pos, int radius, int events,
@@ -23,8 +24,8 @@ typedef struct {
 /* The delta stays a by-value struct: all three words are homed together,
    which the in-place scaling below relies on (three int parameters would
    only home the one whose address is taken). */
-int MoveActorByDelta(Actor *actor, DeltaVec delta, int group, int radius,
-                     int flags) {
+int MoveActorByDelta(Actor *actor, DeltaVec delta, int contactRadius,
+                     int radius, int flags) {
   int newpos[4];
   int half[4];
   int *h;
@@ -45,8 +46,9 @@ int MoveActorByDelta(Actor *actor, DeltaVec delta, int group, int radius,
     t = newpos[2] + 0x12C;
     newpos[2] = t + radius;
   }
-  if (group != 0) {
-    if (DispatchActorContactAtSphere(newpos, group, 0, 0, actor, 0) != 0) {
+  if (contactRadius != 0) {
+    if (DispatchActorContactAtSphere(newpos, contactRadius, 0, 0, actor, 0) !=
+        0) {
       return 1;
     }
   }

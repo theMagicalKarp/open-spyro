@@ -7,9 +7,9 @@
 /* Guided-move step along the actor's own heading (0x80039398, 0x2f0).
    Sibling of MoveActorAlongAngle, but the direction comes from the actor's dir
    byte (+0x46) instead of an angle param. Advances the cached position
-   (+0xC/+0x10) by `speed` (scaled 1.5x/2x in gamestates 3/4), then runs
-   the contact/collision checks: actor contact against `group` (flags
-   bit 1 makes it notify-only), an optional +0x12C+radius Z bias around
+   (+0xC/+0x10) by `speed` (scaled 1.5x/2x at frame delta 3/4), then runs
+   the contact/collision checks: actor contact over a `contactRadius` sphere
+   (flags bit 1 makes it notify-only), an optional +0x12C+radius Z bias around
    the world collision (flags bit 0, undone after), world collision over
    `radius` (flags bit 5 slides to the resolved contact), a ground probe
    (flags bits 2/4/6), a step-height reject >= 0x191 (bit 4), and a
@@ -17,8 +17,8 @@
    on actor contact, 2 on world/step/slope rejection, 0 when the move
    was committed. */
 
-int MoveActorAlongHeading(Actor *actor, int speed, int group, int radius,
-                          int flags) {
+int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius,
+                          int radius, int flags) {
   int newpos[3];
   int ground;
   int t;
@@ -36,13 +36,14 @@ int MoveActorAlongHeading(Actor *actor, int speed, int group, int radius,
   newpos[0] = actor->posX + ((g_anCosineLut[actor->rotZ] * speed) >> 12);
   newpos[1] = actor->posY + ((g_anSineLut[actor->rotZ] * speed) >> 12);
   newpos[2] = actor->posZ;
-  if (group != 0) {
+  if (contactRadius != 0) {
     if (!(flags & MOVE_PASS_ACTORS)) {
-      if (DispatchActorContactAtSphere(newpos, group, 0, 0, actor, 0) != 0) {
+      if (DispatchActorContactAtSphere(newpos, contactRadius, 0, 0, actor, 0) !=
+          0) {
         return 1;
       }
     } else {
-      DispatchActorContactAtSphere(newpos, group, 0, 0, actor, 3);
+      DispatchActorContactAtSphere(newpos, contactRadius, 0, 0, actor, 3);
     }
   }
   if (flags & MOVE_LIFT) {

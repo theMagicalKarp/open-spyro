@@ -357,7 +357,7 @@ typedef struct ExitWhirlState {
   int depth; /* 0x0C lift height that triggers the exit, 0 = 0x2000 */
 } ExitWhirlState;
 
-extern int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed, int group, int step, int lim, int kind, int flags);
+extern int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed, int contactRadius, int step, int lim, int turnGroup, int flags);
 
 extern int RaiseSpyroTriggerInRadius(int *pos, int radius, int flags);
 

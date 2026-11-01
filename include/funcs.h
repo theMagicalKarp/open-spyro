@@ -1969,13 +1969,13 @@ void CollectPickupActor(Actor *actor);
 int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed, int thresh, int animId);
 
 /* 0x80039228: Moves the actor by an explicit delta (x1.5/x2 at frame delta 3/4) with actor-contact and world-collision checks; returns 1 contact, 2 collision, 0 committed. */
-int MoveActorByDelta(Actor *actor, int vx, int vy, int vz, int group, int radius, int flags);
+int MoveActorByDelta(Actor *actor, int vx, int vy, int vz, int contactRadius, int radius, int flags);
 
 /* 0x80039398: Guided-move step along the actor's own heading byte (+0x46): contact, world collision, ground probe, step-height and slope rejects per `flags`; returns 1 contact, 2 rejected, 0 committed. Sibling of MoveActorAlongAngle. */
-int MoveActorAlongHeading(Actor *actor, int speed, int group, int radius, int flags);
+int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius, int radius, int flags);
 
 /* 0x80039688: Guided-move step along an explicit `angle`, same checks and return codes as MoveActorAlongHeading. */
-int MoveActorAlongAngle(Actor *actor, int angle, int speed, int group, int radius, int flags);
+int MoveActorAlongAngle(Actor *actor, int angle, int speed, int contactRadius, int radius, int flags);
 
 /* 0x80039910: Runs MoveActorAlongAngle while *counter is live, then applies the vertical timer decay to +0x14 and floor-snaps when *timer runs out; returns the move result or 3 on landing. */
 int DriveActorTrackedMove(Actor *actor, int *counter, int heading, int *timer, int step, int decay);
@@ -2085,7 +2085,7 @@ int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int dead
 
 /* 0x80039e94: Path-follow that turns in place while the heading error exceeds
  * `lim`, then walks; returns 0x100 + node index on arrival. */
-int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed, int group, int step, int lim, int kind, int flags);
+int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed, int contactRadius, int step, int lim, int turnGroup, int flags);
 
 /* 0x8003a16c: Path-follow steering step with clamped yaw, pitch toward the
  * waypoint, optional contact probe and ground snap; returns 0x100 + index on arrival. */
