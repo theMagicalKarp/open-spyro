@@ -31,6 +31,8 @@
 #include "camera.h"
 #include "level_sfx.h"
 #include "emit_record.h"
+#include "cd_stream.h"
+#include "actor_cutscene.h"
 
 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
@@ -492,7 +494,7 @@ void Level24_UpdateActors(void) {
 
       switch (actor->mode) {
       case EGG_RELEASED:
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
         VectorToSVectorShr2(st->centre, &actor->posX);
         st->angle =
             ArcTan2_8bit(actor->posX - SPY.posX, actor->posY - SPY.posY) +
@@ -604,8 +606,8 @@ void Level24_UpdateActors(void) {
         SubtractVector(g120, &actor->posX, &CAM.posX);
         WorldToCameraRotate(g120, g120);
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, g120, 0);
-        g_nGameplayBlocked = 0;
-        ZeroVector(&g_nSpyroSwingEulerPitchTarget);
+        g_nCinematicActive = 0;
+        ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
         g_nWorldEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
@@ -2817,25 +2819,25 @@ void Level24_UpdateActors(void) {
         ResetSpyroLinearMotion();
         ZeroVector(&spy->headLook);
         g_pfnLevelBeginActorCutscene(actor);
-        g_abWorldBalloonistState[1] = 2;
-        g_abWorldBalloonistState[2] = 2;
-        g_abWorldBalloonistState[3] = 2;
-        g_abWorldBalloonistState[4] = 2;
+        g_abWorldBalloonistState[1] = BALLOONIST_OPEN;
+        g_abWorldBalloonistState[2] = BALLOONIST_OPEN;
+        g_abWorldBalloonistState[3] = BALLOONIST_OPEN;
+        g_abWorldBalloonistState[4] = BALLOONIST_OPEN;
 
-        if (g_nWorldTreasureCollected < 0x1770) {
-          if (g_abWorldBalloonistState[5] == 0) {
+        if (g_nTotalTreasureCollected < 0x1770) {
+          if (g_abWorldBalloonistState[5] == BALLOONIST_UNMET) {
             g_nActorCutsceneDialogPage = 0x18;
-            g_abWorldBalloonistState[5] = 1;
+            g_abWorldBalloonistState[5] = BALLOONIST_TALKED;
           } else {
             g_nActorCutsceneDialogPage = 0x1A;
           }
-        } else if (g_abWorldBalloonistState[5] < 2) {
-          if (g_abWorldBalloonistState[5] == 0) {
+        } else if (g_abWorldBalloonistState[5] < BALLOONIST_OPEN) {
+          if (g_abWorldBalloonistState[5] == BALLOONIST_UNMET) {
             g_nActorCutsceneDialogPage = 0x1B;
           } else {
             g_nActorCutsceneDialogPage = 0x1C;
           }
-          g_abWorldBalloonistState[5] = 2;
+          g_abWorldBalloonistState[5] = BALLOONIST_OPEN;
         } else {
           g_nActorCutsceneDialogPage = 0x1E;
           g_nActorCutsceneDialogVariant = (int)GetRandomU32() % 3;
@@ -3804,14 +3806,14 @@ void Level24_UpdateActors(void) {
     /* Checkpoint: Spyro reaching it sets the respawn anchor
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
     case ACTOR_TYPE_CHECKPOINT:      switch (actor->mode) {
-      case 0:
+      case CHECKPT_REARM:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xA01) {
           break;
         }
-        actor->mode = 1;
+        actor->mode = CHECKPT_ARMED;
         continue;
 
-      case 1: {
+      case CHECKPT_ARMED: {
         int height;
         int drop;
 
@@ -3824,7 +3826,7 @@ void Level24_UpdateActors(void) {
 
         if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
           SetSpawnAnchorFromActor(actor, actor->rotZ);
-          actor->mode = 2;
+          actor->mode = CHECKPT_FLASH;
           actor->anim = 1;
           actor->subMode = 0;
           continue;
@@ -3832,7 +3834,7 @@ void Level24_UpdateActors(void) {
         break;
       }
 
-      case 2: {
+      case CHECKPT_FLASH: {
         int d = g_nFrameStep;
         int tick = actor->subMode + d;
 
@@ -3840,7 +3842,7 @@ void Level24_UpdateActors(void) {
         if ((unsigned char)tick < 0x30) {
           break;
         }
-        actor->mode = 0;
+        actor->mode = CHECKPT_REARM;
         actor->anim = 0;
         continue;
       }
@@ -3893,7 +3895,7 @@ void Level24_UpdateActors(void) {
           actor->mode = PORTALGUIDE_IDLE;
           CAM.nextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
           SPY.requestState = SPYRO_ST_GLIDE;
-          g_nCdStreamState = 0;
+          g_nCdStreamState = LSTREAM_PRESERVE;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
           g_nGamestate = GS_LEVEL_LOAD;
@@ -3932,7 +3934,7 @@ void Level24_UpdateActors(void) {
             (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == TRIGGER_PORTAL) {
           actor->mode = PORTALGUIDE_IDLE;
           CAM.nextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
-          g_nCdStreamState = 0;
+          g_nCdStreamState = LSTREAM_PRESERVE;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
           g_nGamestate = GS_LEVEL_LOAD;

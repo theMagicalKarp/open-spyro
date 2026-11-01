@@ -38,7 +38,7 @@ void AdvanceSpyroSubstepState(void) {
       }
     } else {
       g_nSpyroAnimPlayRate = 4;
-      if (g_dwActiveCameraOptions & 0x10) {
+      if (g_dwActiveCameraOptions & CAM_OPT_PASSIVE_FOLLOW) {
         int *cam = g_nCameraNextMode_blk;
         int m = (CAM_HELD | CAM_MODE_STAND);
         if (*cam >= 0) {
@@ -49,7 +49,7 @@ void AdvanceSpyroSubstepState(void) {
     break;
   case SPYRO_ST_JUMP:
     UpdateSpyroFlightAttitudeNearGround();
-    if (g_nSpyroAnimMode == 0) {
+    if (g_nSpyroAnimMode == SPYRO_ANIM_PLAY) {
       if (g_nSpyroSubstate == 0) {
         frame = g_bSpyroAnimFrame;
         if (frame < 3) {
@@ -106,7 +106,7 @@ void AdvanceSpyroSubstepState(void) {
   case SPYRO_ST_STOP:
   case SPYRO_ST_TURN_AROUND:
   case SPYRO_ST_HURT_TINT:
-  case SPYRO_ST_08:
+  case SPYRO_ST_FACE_TARGET:
   case SPYRO_ST_SIDESTEP_L1:
   case SPYRO_ST_SIDESTEP_R1:
   case SPYRO_ST_CHARGE_BONK:

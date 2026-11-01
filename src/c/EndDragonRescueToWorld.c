@@ -1,7 +1,9 @@
 #include "actor_states.h"
 #include "camera.h"
+#include "cd_music.h"
 #include "funcs.h"
 #include "globals.h"
+#include "hud_counter.h"
 #include "main_shared.h"
 
 /* Leave the dragon-rescue / dragon-rescue overlay back into the world
@@ -25,7 +27,7 @@ void EndDragonRescueToWorld(void) {
 
   id = ((DragonStatueState *)g_pDragonRescueSourceActor->state)->partner;
   g_nGamestate = GS_GAMEPLAY;
-  g_nGameplayBlocked = 0;
+  g_nCinematicActive = 0;
   if (id != -1) {
     rec = &g_pActorListBase[id];
     rec->anim = 0;
@@ -33,7 +35,7 @@ void EndDragonRescueToWorld(void) {
   }
   ResetSpyroEntity(1);
   cam = g_apCameraAnchorBlock;
-  snap = g_anSpyroPadSnapshotBlock;
+  snap = g_anSpyroInputBlankBlock;
   snap[0] = 0xC;
   cam[0] = &snap[-0x7C];
   timer = g_nSpyroSuperflameTimerSave;
@@ -48,10 +50,10 @@ void EndDragonRescueToWorld(void) {
   dyn[0] = (dyn[0] + g_nCameraTargetYawBiasFromMode) & 0xFFF;
   ResetCameraStateToTarget();
   InitHudCounters(0);
-  g_abHudCounterDisplayState[0] = 0;
-  g_abHudCounterDisplayState[1] = 0;
-  g_abHudCounterDisplayState[2] = 0;
-  g_abHudCounterDisplayState[3] = 0;
-  g_abHudCounterDisplayState[4] = 0;
-  HandleMusicCommand(g_nCurrentMusicTrack, 8);
+  g_abHudCounterDisplayState[HUD_CTR_GEMS] = HUD_CTR_HIDDEN;
+  g_abHudCounterDisplayState[HUD_CTR_DRAGONS] = HUD_CTR_HIDDEN;
+  g_abHudCounterDisplayState[HUD_CTR_LIVES] = HUD_CTR_HIDDEN;
+  g_abHudCounterDisplayState[HUD_CTR_EGGS] = HUD_CTR_HIDDEN;
+  g_abHudCounterDisplayState[HUD_CTR_KEY] = HUD_CTR_HIDDEN;
+  HandleMusicCommand(g_nCurrentMusicTrack, MUSIC_CMD_RESUME);
 }

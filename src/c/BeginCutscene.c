@@ -1,3 +1,4 @@
+#include "cutscene_id.h"
 #include "cutscene_path.h"
 #include "funcs.h"
 #include "globals.h"
@@ -22,8 +23,8 @@ void BeginCutscene(void) {
   head = g_pPathTableHead;
   id = g_nCutsceneId;
   head->frame = 0;
-  if (id == 1) {
-    g_nLevelStormFlag = 1;
+  if (id == CUTSCENE_OPENING) {
+    g_nPortalDistanceFogEnabled = 1;
   }
 
   entry = g_CutsceneSoundDef;
@@ -43,5 +44,5 @@ void BeginCutscene(void) {
   g_nSfxOverrideVolR = 0x3FFF;
   g_nSfxOverrideFlags = 1;
 
-  PlaySoundEffect(0, 0, SFX_MODE_PANNED, &g_bDragonRescueSfxVoiceMarker);
+  PlaySoundEffect(0, 0, SFX_MODE_PANNED, &g_bSceneSfxVoiceMarker);
 }

@@ -1,3 +1,4 @@
+#include "dragon_rescue.h"
 #include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
@@ -29,7 +30,7 @@ void DragonRescue_Draw(void) {
     DrawDragonRescueAuraStar();
   }
 
-  if (g_nDragonRescueSubstate == 0) {
+  if (g_nDragonRescueSubstate == DRAGON_RESCUE_AURA) {
     BuildRenderEntityLists();
     ComposeFrameScene();
     SetupFrameOT();
@@ -41,10 +42,10 @@ void DragonRescue_Draw(void) {
         DrawFullscreenTint(1, tint, tint, tint);
       }
     }
-    if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
+    if (g_nCinematicActive != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
-  } else if (g_nDragonRescueSubstate < 4) {
+  } else if (g_nDragonRescueSubstate < DRAGON_RESCUE_CAMERA_PATH) {
     Actor *act;
     unsigned char id;
     void **ot;
@@ -53,7 +54,7 @@ void DragonRescue_Draw(void) {
     if (((Actor *)g_pDragonRescueSourceActor)->mode < ACTOR_MODE_DORMANT) {
       *ot++ = g_pDragonRescueSourceActor;
     }
-    if (g_nDragonRescueSubstate == 3) {
+    if (g_nDragonRescueSubstate == DRAGON_RESCUE_TURN) {
       *ot++ = g_pDragonRescueStatueActor;
     }
     *ot = 0;
@@ -86,10 +87,10 @@ void DragonRescue_Draw(void) {
         DrawFullscreenTint(1, tint, tint, tint);
       }
     }
-    if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
+    if (g_nCinematicActive != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
-  } else if (g_nDragonRescueSubstate == 4) {
+  } else if (g_nDragonRescueSubstate == DRAGON_RESCUE_CAMERA_PATH) {
     Actor *act;
     unsigned char id;
     void **ot;
@@ -122,10 +123,10 @@ void DragonRescue_Draw(void) {
     SetupFrameOT();
     DrawPortalsAndStaticActors();
     RasterizeEmitList();
-    if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
+    if (g_nCinematicActive != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
-  } else if (g_nDragonRescueSubstate == 5) {
+  } else if (g_nDragonRescueSubstate == DRAGON_RESCUE_LIGHT_UP) {
     void **ot;
     void **q;
     int i;
@@ -167,10 +168,10 @@ void DragonRescue_Draw(void) {
     SetupFrameOT();
     DrawPortalsAndStaticActors();
     RasterizeEmitList();
-    if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
+    if (g_nCinematicActive != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
-  } else if (g_nDragonRescueSubstate == 6) {
+  } else if (g_nDragonRescueSubstate == DRAGON_RESCUE_COUNT) {
     unsigned char *icon;
     void **q;
     int i;
@@ -192,10 +193,10 @@ void DragonRescue_Draw(void) {
     SetupFrameOT();
     DrawPortalsAndStaticActors();
     RasterizeEmitList();
-    if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
+    if (g_nCinematicActive != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
-  } else if (g_nDragonRescueSubstate == 7) {
+  } else if (g_nDragonRescueSubstate == DRAGON_RESCUE_FADE_OUT) {
     if (g_nDragonRescueTimer < 0x10) {
       int i;
       void **q;
@@ -227,7 +228,7 @@ void DragonRescue_Draw(void) {
     SetupFrameOT();
     DrawPortalsAndStaticActors();
     RasterizeEmitList();
-    if (g_nGameplayBlocked != 0 || g_nLetterboxBarHeight != 0) {
+    if (g_nCinematicActive != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
     }
     {

@@ -25,15 +25,15 @@ void TickSpyroFrameGlideHold(void) {
   int y;
   int pad[8];
 
-  g_bSpyroPadSnapshotReverseFlag = 0;
-  SnapshotPadInputState(&g_dwPadPressed, &g_dwPad2Buttons);
+  g_bPadInputStashed = 0;
+  MovePadInputState(&g_dwPadPressed, &g_dwPadStash);
   sblock = g_anSpyroStateBlock;
   if (sblock[0] != SPYRO_ST_GLIDE) {
     ChangeSpyroState(SPYRO_ST_GLIDE);
   }
   g_nSpyroSubstate = SPYRO_SUB_GLIDE_HOLD;
-  if (g_nSpyroPadSnapshotCountdown <= 0) {
-    g_nSpyroPadSnapshotCountdown = 1;
+  if (g_nSpyroInputBlankCountdown <= 0) {
+    g_nSpyroInputBlankCountdown = 1;
   }
   ZeroVector(&sblock[34]);
   for (i = 0; i < g_nFrameStep; i++) {
@@ -66,5 +66,5 @@ void TickSpyroFrameGlideHold(void) {
   ApplyEulerRotation(euler + 4, m, 0);
   MulMatrix0(e28, m, m);
   g_dwSpyroRequestMask = 0;
-  SnapshotPadInputState(&g_dwPad2Buttons, &g_dwPadPressed);
+  MovePadInputState(&g_dwPadStash, &g_dwPadPressed);
 }

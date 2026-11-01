@@ -28,6 +28,8 @@
 #include "camera.h"
 #include "level_sfx.h"
 #include "emit_record.h"
+#include "cd_stream.h"
+#include "actor_cutscene.h"
 
 
 /* Type 286: ambient sound source (AmbientSoundState) with the path seen as
@@ -591,7 +593,7 @@ void Level0_UpdateActors(void) {
 
       switch (actor->mode) {
       case EGG_RELEASED:
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
         VectorToSVectorShr2(st->from, &actor->posX);
         st->heading =
             ArcTan2_8bit(actor->posX - SPY.posX, actor->posY - SPY.posY) +
@@ -697,7 +699,7 @@ void Level0_UpdateActors(void) {
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
-        g_nGameplayBlocked = 0;
+        g_nCinematicActive = 0;
         ZeroVector(&SPY.headLook);
         CommitActorKillGems(0, st->killActor);
         g_nWorldEggsRecovered = g_nWorldEggsRecovered + 1;
@@ -2050,19 +2052,19 @@ void Level0_UpdateActors(void) {
         g_pfnLevelBeginActorCutscene(actor);
 
         if (g_nWorldDragonsRescued < 10) {
-          if (g_abWorldBalloonistState[1] == 0) {
+          if (g_abWorldBalloonistState[1] == BALLOONIST_UNMET) {
             g_nActorCutsceneDialogPage = 0;
-            g_abWorldBalloonistState[1] = 1;
+            g_abWorldBalloonistState[1] = BALLOONIST_TALKED;
           } else {
             g_nActorCutsceneDialogPage = 2;
           }
-        } else if (g_abWorldBalloonistState[1] < 2) {
-          if (g_abWorldBalloonistState[1] == 0) {
+        } else if (g_abWorldBalloonistState[1] < BALLOONIST_OPEN) {
+          if (g_abWorldBalloonistState[1] == BALLOONIST_UNMET) {
             g_nActorCutsceneDialogPage = 3;
           } else {
             g_nActorCutsceneDialogPage = 4;
           }
-          g_abWorldBalloonistState[1] = 2;
+          g_abWorldBalloonistState[1] = BALLOONIST_OPEN;
         } else {
           g_nActorCutsceneDialogPage = 0x1E;
           g_nActorCutsceneDialogVariant = (int)GetRandomU32() % 3;
@@ -2912,7 +2914,7 @@ void Level0_UpdateActors(void) {
           actor->mode = PORTALGUIDE_IDLE;
           CAM.nextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
           SPY.requestState = SPYRO_ST_GLIDE;
-          g_nCdStreamState = 0;
+          g_nCdStreamState = LSTREAM_PRESERVE;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
           g_nGamestate = GS_LEVEL_LOAD;
@@ -2951,7 +2953,7 @@ void Level0_UpdateActors(void) {
             (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == TRIGGER_PORTAL) {
           actor->mode = PORTALGUIDE_IDLE;
           CAM.nextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
-          g_nCdStreamState = 0;
+          g_nCdStreamState = LSTREAM_PRESERVE;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
           g_nGamestate = GS_LEVEL_LOAD;

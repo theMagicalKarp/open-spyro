@@ -1,3 +1,4 @@
+#include "cd_stream.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -10,7 +11,8 @@ void LevelLoad_Update(void) {
   TickSpyroFrameGlideHold();
   UpdateCameraFrame();
   AnimateGemTallyParticles();
-  if (g_nCdStreamState < 0xB || g_nLevelTransitionTallyActive == 0) {
+  if (g_nCdStreamState < LSTREAM_READ_PATHS ||
+      g_nLevelTransitionTallyActive == 0) {
     TickLevelTransitionStream(1);
   }
 }

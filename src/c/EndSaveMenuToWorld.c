@@ -1,6 +1,8 @@
 #include "camera.h"
+#include "cd_music.h"
 #include "funcs.h"
 #include "globals.h"
+#include "hud_counter.h"
 #include "main_shared.h"
 #include "vecmath.h"
 
@@ -16,14 +18,14 @@ void EndSaveMenuToWorld(void) {
   int *dyn;
 
   g_nGamestate = GS_GAMEPLAY;
-  g_nGameplayBlocked = 0;
+  g_nCinematicActive = 0;
   InitLightVectorConstants();
   ZeroVector(g_anSpyroSwingTargetBlock);
   ResetSpyroEntity(1);
 
   g_nSpyroSwingEulerPrev1 = 0x100;
   g_bSpyroSwingByteEuler1 = 0x10;
-  g_nSpyroPadSnapshotCountdown = 8;
+  g_nSpyroInputBlankCountdown = 8;
   g_apCameraAnchorBlock[0] = &g_anSpyroSwingTargetBlock[-105];
 
   dyn = g_anCameraDynamicTargetParams;
@@ -40,13 +42,13 @@ void EndSaveMenuToWorld(void) {
   ResetCameraStateToTarget();
   InitHudCounters(0);
 
-  g_abHudCounterDisplayState[0] = 0;
-  g_abHudCounterDisplayState[1] = 0;
-  g_abHudCounterDisplayState[2] = 0;
-  g_abHudCounterDisplayState[3] = 0;
-  g_abHudCounterDisplayState[4] = 0;
+  g_abHudCounterDisplayState[HUD_CTR_GEMS] = HUD_CTR_HIDDEN;
+  g_abHudCounterDisplayState[HUD_CTR_DRAGONS] = HUD_CTR_HIDDEN;
+  g_abHudCounterDisplayState[HUD_CTR_LIVES] = HUD_CTR_HIDDEN;
+  g_abHudCounterDisplayState[HUD_CTR_EGGS] = HUD_CTR_HIDDEN;
+  g_abHudCounterDisplayState[HUD_CTR_KEY] = HUD_CTR_HIDDEN;
 
-  HandleMusicCommand(g_nCurrentMusicTrack, 8);
+  HandleMusicCommand(g_nCurrentMusicTrack, MUSIC_CMD_RESUME);
 }
 
 /* The yaw read goes through the g_anSpyroMoveTargetYawBlock alias (+0x50 ==

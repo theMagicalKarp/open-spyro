@@ -1,5 +1,8 @@
+#include "cd_stream.h"
+#include "credits_mode.h"
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "main_shared.h"
 
 /* Gamestate 0x0F updater (0x800333dc) — the credits/return-home transition.
@@ -12,16 +15,16 @@
 void CreditsSequence_Update(void) {
   RotateLightVectorXZ(3);
   switch (g_nCreditsMode) {
-  case 0x63:
-    g_nCdStreamState = 1;
+  case CREDITS_MODE_RETURN_HOME:
+    g_nCdStreamState = LSTREAM_FRESH;
     if (g_nCreditsReturnLevelId != -1) {
       g_nCurrentLevelId = g_nCreditsReturnLevelId;
       g_nCreditsReturnLevelId = -1;
     } else {
-      if (g_nWorldTreasureCollected == 0x36B0) {
-        g_nCurrentLevelId = 0xA;
+      if (g_nTotalTreasureCollected == 0x36B0) {
+        g_nCurrentLevelId = LEVEL_ARTISANS;
       } else {
-        g_nCurrentLevelId = 0x3C;
+        g_nCurrentLevelId = LEVEL_GNORC_GNEXUS;
       }
     }
     g_nReturnPortalLevelId = 0;
@@ -29,7 +32,7 @@ void CreditsSequence_Update(void) {
     g_nReturningHomePhase = 0;
     g_nCreditsMode += 1;
     break;
-  case 0x64:
+  case CREDITS_MODE_RETURN_HOME_STREAM:
     g_nReturningHomePhase += g_nFrameStep;
     TickLevelTransitionStream(1);
     break;

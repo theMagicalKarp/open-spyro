@@ -247,9 +247,9 @@ Actor *Level1_SpawnActor(int type, Actor *parent) {
     rec->tint1 = 0;
     rec->tint2 = 0;
     rec->tintMode = 0xE;
-    if (g_nDragonRescueSubstate == 3) {
+    if (g_nDragonRescueSubstate == DRAGON_RESCUE_TURN) {
       rec->scale = 0x14;
-    } else if (g_nDragonRescueSubstate == 1) {
+    } else if (g_nDragonRescueSubstate == DRAGON_RESCUE_SWEEP) {
       rec->scale = 0x30;
     }
     i = GetRandomU32() & 7;

@@ -296,7 +296,7 @@ typedef struct CamTrack {
 void Credits_Update(void) {
   short rect0[4];
 
-  if (g_nCreditsMode == -1) {
+  if (g_nCreditsMode == CREDITS_MODE_BUILD) {
     char *pool = Credits_OverlayEnd;
     int sector;
     if (g_pCreditsScratchBuf == 0) {
@@ -382,7 +382,7 @@ void Credits_Update(void) {
         }
       }
     }
-    g_nCreditsMode = 0;
+    g_nCreditsMode = CREDITS_MODE_FETCH_HEADER;
     g_nCreditsPageIndex += 1;
   }
   if (g_pCreditsScrollHeader != 0) {
@@ -437,7 +437,7 @@ void Credits_Update(void) {
         g_nScreenFadeLevel = 0xF;
       }
       if (g_nScreenFadeLevel == 0xF) {
-        g_nCreditsMode = 0x63;
+        g_nCreditsMode = CREDITS_MODE_RETURN_HOME;
       }
     }
   }
@@ -453,15 +453,15 @@ void Credits_Update(void) {
       do {
         int cur = -1;
         if (TickCountdownByFrameDelta(&LINES[line].showTimer, 2) != 0) {
-          LINES[line].state = 2;
+          LINES[line].state = CRED_LINE_SCROLLED;
           if (LINES[line].nextDelay == 0 && line == g_nCreditsFirstVisibleLine) {
             g_nCreditsFirstVisibleLine = line + 1;
           }
         }
-        if (LINES[0].state == 0) {
+        if (LINES[0].state == CRED_LINE_PENDING) {
           cur = 0;
         } else if (TickCountdownByFrameDelta(&LINES[line].nextDelay, 2) != 0 &&
-                   LINES[line + 1].state == 0 &&
+                   LINES[line + 1].state == CRED_LINE_PENDING &&
                    line < g_nCreditsLineCount - 1) {
           cur = line + 1;
         }
@@ -483,7 +483,7 @@ void Credits_Update(void) {
           unsigned char *s;
           int c;
           int x0;
-          LINES[cur].state = 1;
+          LINES[cur].state = CRED_LINE_LAID_OUT;
           lift = 0x10;
           if (g_nCreditsLastVisibleLine < cur) {
             g_nCreditsLastVisibleLine = cur;
@@ -509,7 +509,7 @@ void Credits_Update(void) {
               i = slot;
               if (i < n) {
                 while (i < n) {
-                  if (POOL[i].state == 0) {
+                  if (POOL[i].state == CRED_GLYPH_FREE) {
                     break;
                   }
                   i += 1;
@@ -531,7 +531,7 @@ void Credits_Update(void) {
               if ((unsigned int)(c - 0x61) < 0x1A) {
                 upper = 0;
               }
-              g->state = 1;
+              g->state = CRED_GLYPH_FLY_IN;
               g->line = cur;
               if (g_nCreditsGlyphCount >= 0x65) {
                 exit(0);
@@ -634,9 +634,9 @@ void Credits_Update(void) {
         int st = LINES[POOL[i].line].state;
         if (st == 2) {
           if (POOL[i].state == st) {
-            POOL[i].state = 3;
-          } else if (POOL[i].state == 4) {
-            POOL[i].state = 0;
+            POOL[i].state = CRED_GLYPH_FALL_OUT;
+          } else if (POOL[i].state == CRED_GLYPH_DONE) {
+            POOL[i].state = CRED_GLYPH_FREE;
           }
         }
         i += 1;
@@ -646,7 +646,7 @@ void Credits_Update(void) {
       {
         CredGlyph *g = (CredGlyph *)(i * 0x1C + (int)g_pCreditsGlyphPool);
         switch (g->state) {
-        case 1:
+        case CRED_GLYPH_FLY_IN:
           g->x =
               g->x + g->dx;
           g->r = g->r + g->dr;
@@ -656,7 +656,7 @@ void Credits_Update(void) {
           POOL[i].b = POOL[i].b + POOL[i].db;
           if ((unsigned char)(POOL[i].timer =
                                   POOL[i].timer - 1) == 0) {
-            POOL[i].state = 2;
+            POOL[i].state = CRED_GLYPH_SETTLED;
             POOL[i].dx = RandomSignedInRange(3, 0xB);
             POOL[i].dy = -RandomIntInRange(6, 0xA);
             POOL[i].dz = RandomIntInRange(-0x23, 0x23);
@@ -665,7 +665,7 @@ void Credits_Update(void) {
             POOL[i].db = RandomSignedInRange(4, 9);
           }
           break;
-        case 3:
+        case CRED_GLYPH_FALL_OUT:
           g->x =
               g->x + g->dx;
           g->y =
@@ -680,7 +680,7 @@ void Credits_Update(void) {
             POOL[i].dy = 0x14;
           }
           if (POOL[i].y >= 0x119) {
-            POOL[i].state = 4;
+            POOL[i].state = CRED_GLYPH_DONE;
           }
           break;
         }
@@ -705,7 +705,7 @@ void Credits_Update(void) {
   }
   {
     int st = g_nCreditsMode;
-    if (st != -1) {
+    if (st != CREDITS_MODE_BUILD) {
       if (st > 0) {
         RestartStalledCdRead();
         if (g_nCdReadInFlight[0] != 0) {
@@ -718,19 +718,19 @@ void Credits_Update(void) {
       }
       if ((unsigned int)st < 5) {
         switch (st) {
-        case 0: {
+        case CREDITS_MODE_FETCH_HEADER: {
           int sector = g_anCreditsPageSectors[g_nCreditsPageIndex * 2];
           StartCdReadAsync(g_nCdBaseLba[0], g_pCreditsLoadBuf, 0x800, sector, 0x258);
           g_nCreditsMode = g_nCreditsMode + 1;
           break;
         }
-        case 1:
+        case CREDITS_MODE_FETCH_TEXTURES:
           CopyWords(g_nWorldTimAudioChunkOffset, g_pCreditsLoadBuf, 0x1D0);
           StartCdReadAsync(g_nCdBaseLba[0], g_pCreditsLoadBuf, 0x20000,
                         g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], 0x258);
           g_nCreditsMode = g_nCreditsMode + 1;
           break;
-        case 2: {
+        case CREDITS_MODE_FETCH_SCENE: {
           short rect[4];
           int span;
           rect[0] = 0x200;
@@ -751,10 +751,10 @@ void Credits_Update(void) {
           g_nCreditsMode = g_nCreditsMode + 1;
           break;
         }
-        case 3:
+        case CREDITS_MODE_WAIT_SCROLL:
           g_nEnteredPortalIdx = 0;
           break;
-        case 4: {
+        case CREDITS_MODE_SWAP_SCENE: {
           short rect[4];
           rect[0] = 0x200;
           rect[1] = 0x80;
@@ -782,9 +782,9 @@ void Credits_Update(void) {
           g_nLevelArchiveByteSize = g_nLevelArchiveChunkSize;
           g_nLevelArchiveBaseLba = g_nLevelArchiveChunkOffset;
           if (g_nCreditsPageIndex % 10 < 9) {
-            g_nCreditsMode = 0;
+            g_nCreditsMode = CREDITS_MODE_FETCH_HEADER;
           } else {
-            g_nCreditsMode = 3;
+            g_nCreditsMode = CREDITS_MODE_WAIT_SCROLL;
           }
           g_nCreditsPageIndex += 1;
           break;

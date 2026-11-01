@@ -1,5 +1,7 @@
+#include "cd_stream.h"
 #include "cutscene_id.h"
 #include "funcs.h"
+#include "gamestate.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "sample_bank.h"
@@ -10,7 +12,7 @@
    address. */
 #define BANK (*(char *volatile *)&g_pLevelSampleBankEntries)
 
-/* Attract-demo watcher (gameplay path, g_nDemoMode != 0). Plays back the
+/* Attract-demo watcher (gameplay path, g_nDemoMode != DEMO_OFF). Plays back the
    recorded pad; once the demo runs out (or a real button is pressed) it ramps
    the fade, and at 16 tears down the level, sync-loads cutscene bundle 0 (the
    title backdrop), enters GS_CUTSCENE and advances g_nDemoIndex. Returns 1
@@ -20,7 +22,7 @@ int TickDemoPlayback(void) {
   short rect[8];
 
   SampleDemoPadFrame();
-  if (g_nDemoMode != 2) {
+  if (g_nDemoMode != DEMO_RECORD) {
     if (g_nDemoExitFadeFrame == 0) {
       if (g_anDemoLengthFrames[g_nDemoIndex] - 8 <= (int)g_dwGamestateFrames ||
           ((int)g_dwGamestateFrames > 0xf && g_abPadRawReport[0] == 0 &&
@@ -46,8 +48,8 @@ int TickDemoPlayback(void) {
       g_nVibrationLevel = 0;
       g_nPulseRumbleTimer = 0;
       g_nPulseRumbleAmount = 0;
-      g_nDemoMode = 0;
-      g_nCdStreamState = 0;
+      g_nDemoMode = DEMO_OFF;
+      g_nCdStreamState = CSTREAM_READ_HEADER;
       g_nCutsceneId = CUTSCENE_TITLE_BACKDROP;
       g_nFlightLevelActive = 0;
       g_nDemoActive = 0;
@@ -58,7 +60,7 @@ int TickDemoPlayback(void) {
         void *dst = *(void *volatile *)&g_pSharedLoadBuffer;
         CdReadSyncSectors(lba, dst, count, offset, 600);
       }
-      while (g_nCdStreamState < 10) {
+      while (g_nCdStreamState < CSTREAM_DONE) {
         TickCutsceneBundleLoadStream();
         TickCdMusicStream();
       }
@@ -80,7 +82,7 @@ int TickDemoPlayback(void) {
         g_nSfxOverrideFlags = 1;
         g_nSfxOverrideVolL = 0x3fff;
         g_nSfxOverrideVolR = 0x3fff;
-        PlaySoundEffect(0, 0, SFX_MODE_PANNED, &g_bDragonRescueSfxVoiceMarker);
+        PlaySoundEffect(0, 0, SFX_MODE_PANNED, &g_bSceneSfxVoiceMarker);
       } else {
         *(int *)g_pPathTableHead = 0x490;
       }

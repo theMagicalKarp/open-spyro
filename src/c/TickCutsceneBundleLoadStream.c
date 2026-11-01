@@ -1,3 +1,5 @@
+#include "cd_music.h"
+#include "cd_stream.h"
 #include "cutscene_id.h"
 #include "cutscene_path.h"
 #include "funcs.h"
@@ -6,7 +8,7 @@
 
 /* 0x80014564, 1548 bytes — the id-bundle CD streaming state machine.
    Ticked from Initialize, PauseMenu_Update, Cutscene_Update,
-   Title_Update and TickDemoPlayback; each tick services the stall
+   StoryIntro_Update and TickDemoPlayback; each tick services the stall
    watchdog, then gates on the drive being idle (no read in flight,
    CdSync == 2, music stream table built) and runs exactly one stage of
    g_nCdStreamState:
@@ -58,18 +60,18 @@ void TickCutsceneBundleLoadStream(void) {
   if (CallCdSync(1, 0) != 2) {
     return;
   }
-  if ((g_dwMusicStreamStatus & 0x40) == 0) {
+  if ((g_dwMusicStreamStatus & MUSIC_ST_IDLE) == 0) {
     return;
   }
   state = g_nCdStreamState;
-  if (state == 0) {
+  if (state == CSTREAM_READ_HEADER) {
     int lba = *((volatile int *)(&g_nCdBaseLba));
     int id = *((volatile int *)(&g_nCutsceneId));
     void *dst = *((void *volatile *)(&g_pDrawBufA));
     archiveOff = (&g_nCutsceneArchiveOffset)[id * 2];
     StartCdReadAsync(lba, dst, 0x800, archiveOff, 0x258);
-    g_nCdStreamState = 1;
-  } else if (state == 1) {
+    g_nCdStreamState = CSTREAM_READ_TIM;
+  } else if (state == CSTREAM_READ_TIM) {
     int lba;
     int id;
     void *dst;
@@ -81,16 +83,16 @@ void TickCutsceneBundleLoadStream(void) {
                      g_anWorldTimAudioChunkOffsetBlock[0] +
                          (&g_nCutsceneArchiveOffset)[id * 2],
                      0x258);
-    g_nCdStreamState = 2;
+    g_nCdStreamState = CSTREAM_UPLOAD_TIM;
     return;
-  } else if (state == 2) {
+  } else if (state == CSTREAM_UPLOAD_TIM) {
     tim.x = 0x200;
     tim.y = 0;
     tim.w = 0x200;
     tim.h = (&g_nCutsceneHeaderChunkSize)[g_nCutsceneId] >> 10;
     LoadImage(&tim, g_pDrawBufA);
-    g_nCdStreamState = 3;
-  } else if (state == 3) {
+    g_nCdStreamState = CSTREAM_READ_AUDIO;
+  } else if (state == CSTREAM_READ_AUDIO) {
     int lba = *((volatile int *)(&g_nCdBaseLba));
     void *dst = *((void *volatile *)(&g_pDrawBufA));
     int size = (*((volatile int *)(&g_nWorldTimAudioChunkSize))) - 0x80000;
@@ -99,8 +101,8 @@ void TickCutsceneBundleLoadStream(void) {
     StartCdReadAsync(lba, dst, size,
                      (off + (&g_nCutsceneArchiveOffset)[id * 2]) + 0x80000,
                      0x258);
-    g_nCdStreamState = 4;
-  } else if (state == 4) {
+    g_nCdStreamState = CSTREAM_UPLOAD_AUDIO;
+  } else if (state == CSTREAM_UPLOAD_AUDIO) {
     SetSpuTransferStartAddr(0x1010);
     WriteSpuRam(g_pDrawBufA, 0x7EFF0);
     while (GetSpuTransferStatus(0) == 0) {
@@ -115,18 +117,18 @@ void TickCutsceneBundleLoadStream(void) {
       StartCdReadAsync(lba, dst, size,
                        off + (&g_nCutsceneArchiveOffset)[id * 2], 0x258);
     }
-    g_nCdStreamState = 5;
-  } else if (state == 5) {
+    g_nCdStreamState = CSTREAM_UNPACK;
+  } else if (state == CSTREAM_UNPACK) {
     unpacked = UnpackWorldDataChunks(g_pDrawBufB, 1);
     *((struct SECTION4HDR *)(&g_nWorldRenderMeshChunkCount)) =
         *((struct SECTION4HDR *)(&g_nWorldCollisionTriCount));
     g_pWorldUnpackHead = (char *)unpacked;
     if (g_nCutsceneId == CUTSCENE_OPENING) {
-      g_nCdStreamState = 6;
+      g_nCdStreamState = CSTREAM_EXT_WAIT;
       extSize = g_nWorldDataExtChunkSize - 0x60000;
     } else {
       extSize = g_nWorldDataExtChunkSize;
-      g_nCdStreamState = 8;
+      g_nCdStreamState = CSTREAM_RELOCATE;
     }
     {
       int lba = *((volatile int *)(&g_nCdBaseLba));
@@ -138,9 +140,9 @@ void TickCutsceneBundleLoadStream(void) {
                        off + (&g_nCutsceneArchiveOffset)[id * 2], 0x258);
     }
     return;
-  } else if (state == 6) {
-    g_nCdStreamState = 7;
-  } else if (state == 7) {
+  } else if (state == CSTREAM_EXT_WAIT) {
+    g_nCdStreamState = CSTREAM_EXT_SECOND_HALF;
+  } else if (state == CSTREAM_EXT_SECOND_HALF) {
     void *head2 = *((void *volatile *)(&g_pWorldUnpackHead));
     int size = *((volatile int *)(&g_nWorldDataExtChunkSize));
     int lba = *((volatile int *)(&g_nCdBaseLba));
@@ -150,8 +152,8 @@ void TickCutsceneBundleLoadStream(void) {
     int arch = (&g_nCutsceneArchiveOffset)[id * 2] - 0x60000;
     StartCdReadAsync(lba, (((char *)head2) + size) - 0x60000, 0x60000,
                      (off + size) + arch, 0x258);
-    g_nCdStreamState = 8;
-  } else if (state == 8) {
+    g_nCdStreamState = CSTREAM_RELOCATE;
+  } else if (state == CSTREAM_RELOCATE) {
     if (g_anActorMeshOffsetBlock[0] > 0) {
       i = 0;
       do {
@@ -182,8 +184,8 @@ void TickCutsceneBundleLoadStream(void) {
       StartCdReadAsync(lba, dst, count,
                        off + (&g_nCutsceneArchiveOffset)[id * 2], 0x258);
     }
-    g_nCdStreamState = 9;
-  } else if (state == 9) {
+    g_nCdStreamState = CSTREAM_REBASE_PATHS;
+  } else if (state == CSTREAM_REBASE_PATHS) {
     i = 0;
     buf = g_apPathTableBufferBlock;
     ent = buf[0];
@@ -219,6 +221,6 @@ void TickCutsceneBundleLoadStream(void) {
       }
     }
     g_pActorListBase[g_pPathTableHead->actorCount].mode = ACTOR_MODE_END;
-    g_nCdStreamState = 0xA;
+    g_nCdStreamState = CSTREAM_DONE;
   }
 }

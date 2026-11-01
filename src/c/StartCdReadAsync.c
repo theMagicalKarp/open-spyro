@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "libcd.h"
 
 /* 0x80016698 — fire an async CD sector read without waiting: set 2x speed
    (CdlSetmode 0x80), seek to lbaBase + offset/0x800, then CdRead
@@ -13,19 +14,19 @@ void StartCdReadAsync(int lbaBase, void *dst, int size, int offset,
   int pos;
   int sectors;
 
-  mode[0] = 0x80;
-  CdControl(0xE, mode, 0);
+  mode[0] = CdlModeSpeed;
+  CdControl(CdlSetmode, mode, 0);
   g_nCdStallWatchdogTicks = 0;
   g_nCdStallMarker = marker;
 
   pos = lbaBase + offset / 0x800;
   loc = &g_abCdlLocScratch;
   CdIntToPos(pos, loc);
-  CdControl(2, loc, 0);
+  CdControl(CdlSetloc, loc, 0);
 
   sectors = (size + 0x7FF) / 0x800;
   g_nCdReadSectorCount = sectors;
   g_pCdReadDstBuffer = dst;
   g_nCdReadInFlight = 1;
-  CdRead(sectors, dst, 0x80);
+  CdRead(sectors, dst, CdlModeSpeed);
 }

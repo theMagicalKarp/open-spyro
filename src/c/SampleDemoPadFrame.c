@@ -1,10 +1,11 @@
+#include "gamestate.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "pad.h"
 #include "pad_buttons.h"
 
 /* Pad sampler for the attract demo (0x800539fc, 0x26C). While a demo is
-   being recorded (g_nDemoMode == 2) it samples the real
+   being recorded (g_nDemoMode == DEMO_RECORD) it samples the real
    pad — inverted button halfword plus the calibrated right-stick bytes —
    and appends the packed frame at g_pDemoPadCursor; otherwise it
    plays the next recorded frame back into the pad state (stick centered
@@ -22,7 +23,7 @@ int SampleDemoPadFrame(void) {
   unsigned int *p;
   unsigned int *heldp;
 
-  if (g_nDemoMode == 2) {
+  if (g_nDemoMode == DEMO_RECORD) {
     unsigned char *cal = g_abPadAnalogCalibratedBlock;
     unsigned char *cur;
     frame = ~((g_abPadRawReport[2] << 8) | g_abPadRawReport[3]);
@@ -47,7 +48,7 @@ int SampleDemoPadFrame(void) {
   }
   frame &= 0xFFFF;
   held = g_dwPadHeld;
-  g_nPadType = 3;
+  g_nPadType = PAD_TYPE_ANALOG;
   g_dwPadPressed = ~held & frame;
   rel = held & ~frame;
   g_dwPadHeld = frame;

@@ -372,7 +372,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
   }
 
   case ACTOR_TYPE_TIME_BONUS ... ACTOR_TYPE_TIME_BONUS + 2:
-    if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
+    if (g_anFlightClearTimes[g_nActiveWorldIndex] != 0) {
       HideActorRenderRecord(rec);
       DespawnActorRecord(rec);
       rec = 0;

@@ -12,7 +12,7 @@
 void ApplySpyroStateTransition(void) {
   switch (
       g_abSpyroStateTransitionMatrixBlock[g_nSpyroPrevState][g_nSpyroState]) {
-  case 1: {
+  case SPYRO_ANIM_BLEND_IN: {
     unsigned char cur;
     unsigned char frame;
     unsigned char next;
@@ -21,7 +21,7 @@ void ApplySpyroStateTransition(void) {
     cur = g_bSpyroAnimCurrent;
     frame = g_bSpyroAnimFrame;
     state = g_nSpyroState;
-    g_nSpyroAnimMode = 1;
+    g_nSpyroAnimMode = SPYRO_ANIM_BLEND_IN;
     g_bSpyroAnimPrev = cur;
     g_bSpyroFramePrev = frame;
     next = g_abSpyroStateAnimIndexMap[state];
@@ -30,7 +30,7 @@ void ApplySpyroStateTransition(void) {
     g_nSpyroPrevState = state;
     g_bSpyroAnimCurrent = next;
   } break;
-  case 8: {
+  case SPYRO_ANIM_BLEND_FAST: {
     unsigned char cur;
     unsigned char frame;
     unsigned char next;
@@ -39,7 +39,7 @@ void ApplySpyroStateTransition(void) {
     cur = g_bSpyroAnimCurrent;
     frame = g_bSpyroAnimFrame;
     state = g_nSpyroState;
-    g_nSpyroAnimMode = 8;
+    g_nSpyroAnimMode = SPYRO_ANIM_BLEND_FAST;
     g_bSpyroAnimPrev = cur;
     g_bSpyroFramePrev = frame;
     next = g_abSpyroStateAnimIndexMap[state];
@@ -48,7 +48,7 @@ void ApplySpyroStateTransition(void) {
     g_nSpyroPrevState = state;
     g_bSpyroAnimCurrent = next;
   } break;
-  case 2: {
+  case SPYRO_ANIM_LOOP_WRAP: {
     unsigned char *pf;
     unsigned char cur;
     unsigned char frame;
@@ -59,17 +59,17 @@ void ApplySpyroStateTransition(void) {
     frame = *pf;
     idx = cur * 4;
     if (frame >= g_abSpyroAnimDescTable[idx + 1]) {
-      g_nSpyroAnimMode = 2;
+      g_nSpyroAnimMode = SPYRO_ANIM_LOOP_WRAP;
       g_bSpyroAnimPrev = cur;
       g_bSpyroFramePrev = frame;
       frame = g_abSpyroAnimDescTable[idx];
       g_bSpyroSubFrameTimer = 2;
       *pf = frame;
     } else {
-      g_nSpyroAnimMode = 0;
+      g_nSpyroAnimMode = SPYRO_ANIM_PLAY;
     }
   } break;
-  case 5: {
+  case SPYRO_ANIM_BLEND_KEEP_FRAME: {
     unsigned char cur;
     unsigned char frame;
     unsigned char next;
@@ -89,14 +89,14 @@ void ApplySpyroStateTransition(void) {
       g_bSpyroAnimFrame = g_abSpyroAnimDescTable[idx];
     }
     g_bSpyroSubFrameTimer = 4;
-    g_nSpyroAnimMode = 5;
+    g_nSpyroAnimMode = SPYRO_ANIM_BLEND_KEEP_FRAME;
     g_nSpyroPrevState = state;
   } break;
-  case 3:
-  case 10:
-    g_nSpyroAnimMode = 3;
+  case SPYRO_ANIM_FINISH:
+  case SPYRO_ANIM_FINISH_10:
+    g_nSpyroAnimMode = SPYRO_ANIM_FINISH;
     break;
-  case 4: {
+  case SPYRO_ANIM_HOLD_END: {
     unsigned char next;
     int state;
 
@@ -104,7 +104,7 @@ void ApplySpyroStateTransition(void) {
     g_bSpyroFramePrev = g_bSpyroAnimFrame;
     if (g_nSpyroPrevState == SPYRO_ST_FALL && g_nSpyroPrevStateTimer < 0x18) {
       state = g_nSpyroState;
-      g_nSpyroAnimMode = 1;
+      g_nSpyroAnimMode = SPYRO_ANIM_BLEND_IN;
       next = g_abSpyroStateAnimIndexMap[state];
       g_bSpyroAnimFrame = 0;
       g_bSpyroSubFrameTimer = 2;
@@ -116,7 +116,7 @@ void ApplySpyroStateTransition(void) {
       unsigned char end = g_abSpyroAnimDescTable[g_bSpyroAnimCurrent * 4 + 1];
 
       g_bSpyroSubFrameTimer = 4;
-      g_nSpyroAnimMode = 4;
+      g_nSpyroAnimMode = SPYRO_ANIM_HOLD_END;
       g_bSpyroAnimFrame = end;
     }
     if (g_nSpyroPrevState == SPYRO_ST_FALL) {
@@ -126,7 +126,7 @@ void ApplySpyroStateTransition(void) {
       }
     }
   } break;
-  case 6: {
+  case SPYRO_ANIM_BLEND_LOOP_START: {
     unsigned char cur;
     unsigned char frame;
     unsigned char next;
@@ -136,7 +136,7 @@ void ApplySpyroStateTransition(void) {
     cur = g_bSpyroAnimCurrent;
     frame = g_bSpyroAnimFrame;
     state = g_nSpyroState;
-    g_nSpyroAnimMode = 6;
+    g_nSpyroAnimMode = SPYRO_ANIM_BLEND_LOOP_START;
     g_bSpyroAnimPrev = cur;
     g_bSpyroFramePrev = frame;
     next = g_abSpyroStateAnimIndexMap[state];
@@ -146,7 +146,7 @@ void ApplySpyroStateTransition(void) {
     g_nSpyroPrevState = state;
     g_bSpyroAnimFrame = first;
   } break;
-  case 7: {
+  case SPYRO_ANIM_CUT: {
     unsigned char *map;
     unsigned char first;
     unsigned char next;
@@ -160,11 +160,11 @@ void ApplySpyroStateTransition(void) {
     next = *map;
     g_bSpyroAnimFrame = 1;
     g_bSpyroSubFrameTimer = 0;
-    g_nSpyroAnimMode = 0;
+    g_nSpyroAnimMode = SPYRO_ANIM_PLAY;
     g_nSpyroPrevState = state;
     g_bSpyroAnimCurrent = next;
   } break;
-  case 11: {
+  case SPYRO_ANIM_CUT_LOOP_START: {
     unsigned char *map;
     unsigned char next;
     unsigned char first;
@@ -180,7 +180,7 @@ void ApplySpyroStateTransition(void) {
     g_bSpyroAnimCurrent = *map;
     first = g_abSpyroAnimDescTable[idx];
     g_bSpyroSubFrameTimer = 0;
-    g_nSpyroAnimMode = 0;
+    g_nSpyroAnimMode = SPYRO_ANIM_PLAY;
     g_nSpyroPrevState = state;
     g_bSpyroAnimFrame = first + 1;
   } break;

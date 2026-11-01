@@ -18,7 +18,7 @@
  *     (&g_anSpyroWorldPos) and the small constants are hoisted and spilled.
  *   - The frame is laid out in the original's slot order (s328..s512 are
  *     slots shared by several arms; cases rename into them).
- *   - Case 197's camera grab writes g_dwSpyroRequestMask as g_nCameraScriptStickRequestY[19] so the
+ *   - Case 197's camera grab writes g_dwSpyroRequestMask as g_nSpyroSwingEulerTargetY[19] so the
  *     st->vel loads stay behind it (aggregate MEMs alias the state reads);
  *     case 184 writes the spawned swooper's heading from the scalar
  *     g_bSpyroPersistentEulerZ so that load can issue ahead of the struct store.
@@ -40,6 +40,8 @@
 #include "camera.h"
 #include "level_sfx.h"
 #include "emit_record.h"
+#include "cd_stream.h"
+#include "hud_counter.h"
 
 
 /* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
@@ -212,7 +214,7 @@ void Level7_UpdateActors(void) {
           }
 
           if (g_nSpyroState == SPYRO_ST_LIFT || top + 0xC00 < z + depth) {
-            if (g_abHudCounterDisplayState == 2) {
+            if (g_abHudCounterDisplayState == HUD_CTR_SHOWN) {
               RefreshHudLevelGemCounter();
             }
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_TARGET_CAMERA);
@@ -229,7 +231,7 @@ void Level7_UpdateActors(void) {
               }
               if (yaw < -0x200) {
                 g_abLevelExited[g_nLevelIndex] = 1;
-                g_nCdStreamState = 0;
+                g_nCdStreamState = LSTREAM_PRESERVE;
                 g_nEnteredPortalIdx = -1;
                 g_nPortalTransitionActive = 1;
                 g_nLevelTransitionTallyActive = 1;
@@ -1170,7 +1172,7 @@ void Level7_UpdateActors(void) {
 
       switch (actor->mode) {
       case EGG_RELEASED:
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
         VectorToSVectorShr2(st->centre, &actor->posX);
         st->angle =
             ArcTan2_8bit(actor->posX - spy->posX, actor->posY - spy->posY) +
@@ -1282,8 +1284,8 @@ void Level7_UpdateActors(void) {
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
-        g_nGameplayBlocked = 0;
-        ZeroVector(&g_nSpyroSwingEulerPitchTarget);
+        g_nCinematicActive = 0;
+        ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
         g_nWorldEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
@@ -2425,7 +2427,7 @@ void Level7_UpdateActors(void) {
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         key->cullRadius = 0x18;
         st->shake += g_nFrameStep;
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
 
         if (st->shake < 0xC0) {
           t352[0] = 0x200;
@@ -2442,7 +2444,7 @@ void Level7_UpdateActors(void) {
           t352[2] += 0x100;
           t352[2] += g_anSineLut[(st->shake << 7) / 192] >> 3;
           CopyVector(&key->posX, t352);
-          g_nCameraScriptStickRequestY[0] = g_anSineLut[(st->shake << 7) / 192] >> 3;
+          g_nSpyroSwingEulerTargetY[0] = g_anSineLut[(st->shake << 7) / 192] >> 3;
 
           if (st->shake < 0x40) {
             int rot;
@@ -2482,7 +2484,7 @@ void Level7_UpdateActors(void) {
           key->cullRadius = 0;
           key->updateDist = 0;
           key->drawn = 0;
-          g_nGameplayBlocked = 0;
+          g_nCinematicActive = 0;
           actor->soundRange = 0x20;
           PlayActorMeshVoice(actor, 0, 0);
 
@@ -2506,9 +2508,9 @@ void Level7_UpdateActors(void) {
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
           g_nLevelKeyState = KEYSTATE_CHEST_OPENED;
-          g_nCameraScriptStickRequestX = 0;
-          g_nCameraScriptStickRequestY[0] = 0;
-          g_nSpyroSwingEulerPitchTarget = 0;
+          g_nSpyroSwingEulerTargetZ = 0;
+          g_nSpyroSwingEulerTargetY[0] = 0;
+          g_nSpyroSwingEulerTargetX = 0;
         }
 
         RefreshActorDerivedState(key, ACTOR_REFRESH_MATRIX);
@@ -2807,7 +2809,7 @@ void Level7_UpdateActors(void) {
       case SHOOTER_AIM:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         if (st->mode == 0) {
-          if (g_nGameplayBlocked != 0 || TickCountdownByFrameDelta(&st->timer, 4) == 0 ||
+          if (g_nCinematicActive != 0 || TickCountdownByFrameDelta(&st->timer, 4) == 0 ||
               g_nActorAnimDone == 0) {
             break;
           }
@@ -3103,7 +3105,7 @@ void Level7_UpdateActors(void) {
           actor->mode = SSHOT_BURST;
         } else if (ApproxDist2D(&actor->posX, spy) < 0xC8 &&
                    ABS2(SPY_DZ(actor)) < 0x384) {
-          g_nCameraScriptStickRequestY[19] = /* g_dwSpyroRequestMask */
+          g_nSpyroSwingEulerTargetY[19] = /* g_dwSpyroRequestMask */
               (SPYRO_RQ_PENDING | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_VEL_Z | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
           SPY.triggerEvents |= (SPYRO_EV_HIT | SPYRO_EV_CONTACT);
           g_anSpyroRequestVelocity.x = (-st->vel[0] * 3) >> 2;
@@ -4285,14 +4287,14 @@ void Level7_UpdateActors(void) {
     /* Checkpoint: Spyro reaching it sets the respawn anchor
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
     case ACTOR_TYPE_CHECKPOINT + 1:      switch (actor->mode) {
-      case 0:
+      case CHECKPT_REARM:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xA01) {
           break;
         }
-        actor->mode = 1;
+        actor->mode = CHECKPT_ARMED;
         continue;
 
-      case 1: {
+      case CHECKPT_ARMED: {
         int height;
         int drop;
 
@@ -4305,7 +4307,7 @@ void Level7_UpdateActors(void) {
 
         if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
           SetSpawnAnchorFromActor(actor, actor->rotZ);
-          actor->mode = 2;
+          actor->mode = CHECKPT_FLASH;
           actor->anim = 1;
           actor->subMode = 0;
           continue;
@@ -4313,7 +4315,7 @@ void Level7_UpdateActors(void) {
         break;
       }
 
-      case 2: {
+      case CHECKPT_FLASH: {
         int d = g_nFrameStep;
         int tick = actor->subMode + d;
 
@@ -4321,7 +4323,7 @@ void Level7_UpdateActors(void) {
         if ((unsigned char)tick < 0x30) {
           break;
         }
-        actor->mode = 0;
+        actor->mode = CHECKPT_REARM;
         actor->anim = 0;
         continue;
       }

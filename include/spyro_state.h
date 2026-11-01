@@ -19,7 +19,7 @@ typedef enum SpyroState
   SPYRO_ST_JUMP = 5,          /* Cross */
   SPYRO_ST_FALL = 6,          /* airborne >= 4 frames or on a too-steep slope */
   SPYRO_ST_HURT_TINT = 7,     /* hit, event 0x20: flashes white/dark (g_abSpyroTintRgba) for 10 frames; exit clears the tint */
-  SPYRO_ST_08 = 8,            /* reached only as g_nSpyroRequestState (level 14 type 109 sets it at its path end); after 0x14 frames snaps yaw to g_nSpyroMoveTargetYaw, negates pitch/roll, then idles or walks */
+  SPYRO_ST_FACE_TARGET = 8,   /* stands still; reached only as g_nSpyroRequestState (the level 14 carrier, ACTOR_TYPE_CARRIER, sets it at its ride path end); after 0x14 frames snaps yaw to g_nSpyroMoveTargetYaw, negates pitch/roll, then idles or walks */
   SPYRO_ST_SIDESTEP_L1 = 9,   /* L1 */
   SPYRO_ST_SIDESTEP_R1 = 10,  /* R1 */
   SPYRO_ST_CHARGE = 11,       /* Square held, on the ground */
@@ -82,6 +82,12 @@ typedef enum SpyroState
                                          * each shape record's event word in): the shape stays solid to a supercharge,
                                          * which re-dispatches as a solid contact (AdvanceSpyroPhysics) */
 #define SPYRO_EV_REBOUND 0x8000       /* bounce off g_anSpyroFirstContactNormal */
+/* Bits above 0xFFFF reach the event word only through RaiseSpyroTriggerInRadius
+ * callers, and every dispatcher masks the word with 0xFFFF (or less), so
+ * nothing reads them: */
+#define SPYRO_EV_UNREAD_20000 0x20000 /* with HIT_TINT: the split-shot projectiles (levels 12/15/16/27) */
+#define SPYRO_EV_UNREAD_40000 0x40000 /* with 0x80000: level 31's floating barrel / mine blasts */
+#define SPYRO_EV_UNREAD_80000 0x80000
 #define SPYRO_EV_HITS 0x01F1        /* every hit bit (HIT, PINNED .. KNOCKBACK) */
 
 /* Masks the states pass to DispatchSpyroPadStateChanges: everything but the
@@ -136,6 +142,31 @@ enum TriggerRegionType {
   TRIGGER_REBOUND = 5,      /* raises SPYRO_EV_REBOUND and spawns ACTOR_TYPE_REBOUND_FX */
   TRIGGER_PORTAL = 6,       /* level warp: data[0] level id, [1] portal index */
   TRIGGER_DAMAGE = 7,       /* while its g_anLevelTriggerStateSlots slot is set: a charge-proof hit */
+};
+
+/* Spyro animation transition styles: the bytes of the state transition
+ * matrix (g_abSpyroStateTransitionAnimMatrix[prev][state]), and the matching
+ * g_nSpyroAnimMode that ApplySpyroStateTransition leaves for
+ * TickSpyroAnimStateMachine. Named from what the two functions do; the anim
+ * descriptor bytes are [0] loop start, [1] loop end. */
+enum SpyroAnimMode {
+  SPYRO_ANIM_PLAY = 0,             /* mode: no transition in progress */
+  SPYRO_ANIM_BLEND_IN = 1,         /* new anim from frame 0, sub-frame +2 to 0x10 */
+  SPYRO_ANIM_LOOP_WRAP = 2,        /* once past loop end: wrap to loop start, +2 */
+  SPYRO_ANIM_FINISH = 3,           /* play the old anim out, then commit */
+  SPYRO_ANIM_HOLD_END = 4,         /* hold the loop-end frame, then FINISH (landings) */
+  SPYRO_ANIM_BLEND_KEEP_FRAME = 5, /* new anim at the old frame + 1, sub-frame +4 */
+  SPYRO_ANIM_BLEND_LOOP_START = 6, /* new anim from its loop start, +2 */
+  SPYRO_ANIM_CUT = 7,              /* style only: switch at frame 1, no blend */
+  SPYRO_ANIM_BLEND_FAST = 8,       /* new anim from frame 0, one 2-step advance */
+  SPYRO_ANIM_FINISH_10 = 10,       /* style treated as FINISH */
+  SPYRO_ANIM_CUT_LOOP_START = 11,  /* style only: switch at loop start + 1 */
+};
+
+/* g_nSpyroFlameState: the flame-breath machine (TickSpyroFlameAttack). */
+enum SpyroFlameState {
+  SPYRO_FLAME_IDLE = 0,
+  SPYRO_FLAME_BREATHING = 1,
 };
 
 #endif /* OPEN_SPYRO_SPYRO_STATE_H */

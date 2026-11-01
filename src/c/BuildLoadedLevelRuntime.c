@@ -11,7 +11,9 @@
    the chunk itself. */
 
 #include "camera.h"
+#include "cd_music.h"
 #include "funcs.h"
+#include "gamestate.h"
 #include "globals.h"
 #include "level_id.h"
 #include "main_shared.h"
@@ -72,9 +74,9 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   g_nLevelLoadUnreadWord = 0;
   if ((g_nActiveLevelId == LEVEL_BEAST_MAKERS) ||
       (g_nActiveLevelId == LEVEL_MISTY_BOG)) {
-    g_nLevelStormFlag = 1;
+    g_nPortalDistanceFogEnabled = 1;
   } else {
-    g_nLevelStormFlag = 0;
+    g_nPortalDistanceFogEnabled = 0;
   }
   ResetPadFrameSubstepTable(&g_dwPadPressed);
   if (g_nFlightLevelActive == 0) {
@@ -93,12 +95,12 @@ void BuildLoadedLevelRuntime(int fullSetup) {
         (g_nGamestate != GS_ACTOR_CUTSCENE)) {
       if (((g_nGamestate == GS_GAME_OVER) &&
            (((unsigned int)(g_nActiveLevelId - 0x28)) < 0x14)) &&
-          ((gidx = g_nGameOverLevelIntroIndex - 0x12,
+          ((gidx = g_nGameOverLevelIndex - 0x12,
             g_anGameOverRespawnPosTable[gidx * 3] != 0))) {
         CopyVector(
             g_anSpyroWorldPos,
-            &g_anGameOverRespawnPosVirtualBase[g_nGameOverLevelIntroIndex * 3]);
-        yaw = g_abGameOverRespawnYawVirtualBase[g_nGameOverLevelIntroIndex];
+            &g_anGameOverRespawnPosVirtualBase[g_nGameOverLevelIndex * 3]);
+        yaw = g_abGameOverRespawnYawVirtualBase[g_nGameOverLevelIndex];
       } else {
         CopyVector(g_anSpyroWorldPos, g_anLevelSpawnPos);
         yaw = g_nLevelSpawnYaw;
@@ -109,7 +111,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   g_nSparxHealth = g_nSparxHealthStash;
   if (g_nGamestate != GS_ACTOR_CUTSCENE) {
     ResetSpyroEntity(0);
-    g_nSpyroPadSnapshotCountdown = 0xC;
+    g_nSpyroInputBlankCountdown = 0xC;
   }
   if ((g_nActiveLevelId % 10) == 5) {
     g_nFlightLevelActive = 1;
@@ -164,7 +166,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   if (g_nGamestate != GS_ACTOR_CUTSCENE) {
     g_nGamestate = GS_GAMEPLAY;
     g_nGamePaused = 1;
-    g_nGameplayBlocked = 0;
+    g_nCinematicActive = 0;
     g_nLetterboxBarHeight = 0;
   }
 emitlist:
@@ -372,7 +374,7 @@ sprites:
       p++;
     } while (i < (*base));
   }
-  if (g_nDemoMode != 0) {
+  if (g_nDemoMode != DEMO_OFF) {
     {
       register int kk asm("$3");
       register int dd asm("$2");
@@ -390,7 +392,7 @@ sprites:
       g_abSpyroPersistentEuler[2] = dd;
       g_nSpyroBodyYaw = (dd & 0xFF) * 0x10;
     }
-    if (g_nDemoMode == 1) {
+    if (g_nDemoMode == DEMO_PLAYBACK) {
       g_pDemoPadCursor = p;
     } else {
       g_pDemoPadCursor = (void *)0x80600000;
@@ -503,5 +505,5 @@ sprites:
     g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, 0);
     InitHudCounters(1);
   }
-  HandleMusicCommand(g_nCurrentMusicTrack, 1);
+  HandleMusicCommand(g_nCurrentMusicTrack, MUSIC_CMD_PLAY);
 }

@@ -30,7 +30,7 @@ void BeginStoryIntro(void) {
   blk[-back] = (short)0xC0;
   g_pStoryIntroStreamCursor = ((char *)g_pRenderScratchRegionBase) - 0x2000;
   SetSpuCommonAttr(blk - 200);
-  g_nLevelStormFlag = 0;
+  g_nPortalDistanceFogEnabled = 0;
   g_pPathTableHead->frame = 0;
   srand(0x159);
 }

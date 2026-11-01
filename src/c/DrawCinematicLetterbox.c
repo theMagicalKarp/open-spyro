@@ -4,7 +4,7 @@
 
 /* Draw two stacked black POLY_F4 cinematic bars (top y=0..h, bottom
    y=240-h..240) where h = g_nLetterboxBarHeight animates 0..0x16 driven by
-   g_nGameplayBlocked — the "letterbox close"/"open" cutscene transition.
+   g_nCinematicActive — the "letterbox close"/"open" cutscene transition.
    Submits both bars via AddPrimToOT (0x80018f30, 0x1a4). */
 void DrawCinematicLetterbox(void) {
   PolyF4 *q;
@@ -12,7 +12,7 @@ void DrawCinematicLetterbox(void) {
   int h2;
   int tag;
   int code;
-  if (g_nGameplayBlocked != 0) {
+  if (g_nCinematicActive != 0) {
     if (g_nLetterboxBarHeight < 0x16) {
       g_nLetterboxBarHeight += g_nFrameStep;
     }

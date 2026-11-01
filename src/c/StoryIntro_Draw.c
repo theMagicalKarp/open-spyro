@@ -2,6 +2,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "title_state.h"
 
 /* 0x8001e6b8: Draw routine for the story intro (gamestate 0xD). While substate
  * 2 is past frame 0x8C it lays out one of four message strings with
@@ -29,18 +30,18 @@ void StoryIntro_Draw(void) {
   int *tp;
   unsigned short *cosp;
 
-  if (g_nStoryIntroSubstate == 2 && g_nStoryIntroTimer >= 0x8C) {
+  if (g_nStoryIntroSubstate == STORY_INTRO_FLY && g_nStoryIntroTimer >= 0x8C) {
     pos[1] = 0x78;
     pos[2] = 0x1400;
     rec = (int)g_pSpriteRecordWriteCursor;
     col[0] = 0xE;
     col[1] = 1;
     col[2] = 0x1600;
-    if (g_nStoryIntroMessage == 0) {
+    if (g_nTitleExitPath == TITLE_EXIT_NEW_GAME) {
       pos[0] = 0x5C;
       BuildTextSprites(g_szInTheWorldOfDragons, pos, col, 0x10, 0xB);
       limit = 0xB8;
-    } else if (g_nStoryIntroMessage == 1) {
+    } else if (g_nTitleExitPath == TITLE_EXIT_LOADED_GAME) {
       if (g_abLevelVisitedFlag[0] != 0) {
         pos[0] = 0x50;
         BuildTextSprites(g_szTheAdventureContinues, pos, col, 0x10, 0xB);
@@ -95,7 +96,7 @@ void StoryIntro_Draw(void) {
   FillWord(&g_apSpritePrimQueue[-0x900], 0, 0x900);
   RasterizeSpritePrimQueue();
 
-  if (g_nStoryIntroSubstate == 2) {
+  if (g_nStoryIntroSubstate == STORY_INTRO_FLY) {
     RasterizeSpyroModel();
     ((int *)g_pOtDepthBinArrayBase)[0x40] = g_pOtActiveDepthSlot[0];
     ((int *)g_pOtDepthBinArrayBase)[0x41] = g_pOtActiveDepthSlot[1];

@@ -59,14 +59,14 @@ void TickSpyroGameplayFrame(void) {
 
   if (((g_dwSpyroRequestMask & SPYRO_RQ_FREEZE_INPUT) != 0) ||
       (g_nSpyroScriptedMoveMode != 0)) {
-    if (g_nSpyroPadSnapshotCountdown < 2) {
-      g_nSpyroPadSnapshotCountdown = 2;
+    if (g_nSpyroInputBlankCountdown < 2) {
+      g_nSpyroInputBlankCountdown = 2;
     }
   }
-  countdown = g_anSpyroPadSnapshotBlock;
-  g_bSpyroPadSnapshotReverseFlag = 0;
+  countdown = g_anSpyroInputBlankBlock;
+  g_bPadInputStashed = 0;
   if (countdown[0] != 0) {
-    SnapshotPadInputState(&g_dwPadPressed, &g_dwPad2Buttons);
+    MovePadInputState(&g_dwPadPressed, &g_dwPadStash);
     countdown[0] -= 1;
   }
   AdvanceSpyroFrameMotion();
@@ -187,7 +187,7 @@ done:
                          g_bSpyroAnimLayer1FramePrev * 4));
   g_dwSpyroRequestMask &= ~SPYRO_RQ_PENDING;
   g_dwSpyroFootstepSecondarySfxKey = key2;
-  if (g_bSpyroPadSnapshotReverseFlag != 0) {
-    SnapshotPadInputState(&g_dwPad2Buttons, &g_dwPadPressed);
+  if (g_bPadInputStashed != 0) {
+    MovePadInputState(&g_dwPadStash, &g_dwPadPressed);
   }
 }

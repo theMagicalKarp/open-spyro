@@ -1,5 +1,7 @@
+#include "cd_music.h"
 #include "funcs.h"
 #include "globals.h"
+#include "libcd.h"
 #include "main_shared.h"
 
 /* 0x800163e4: watchdog-driven CD stall recovery. If a stall marker is armed
@@ -14,7 +16,7 @@ void RestartStalledCdRead(void) {
     if (marker < g_nCdStallWatchdogTicks) {
       CdInit();
       CdReadCallback(CdReadCompleteCallback);
-      g_dwMusicStreamStatus = 0x40;
+      g_dwMusicStreamStatus = MUSIC_ST_IDLE;
       g_nLastCdMusicCommand = 0;
       g_nPendingMusicCommand = 0;
 
@@ -22,7 +24,7 @@ void RestartStalledCdRead(void) {
       } while (CallCdSync(1, 0) != 2);
 
       g_nCdStallWatchdogTicks = 0;
-      CdRead(g_nCdReadSectorCount, g_pCdReadDstBuffer, 0x80);
+      CdRead(g_nCdReadSectorCount, g_pCdReadDstBuffer, CdlModeSpeed);
     }
   }
 }

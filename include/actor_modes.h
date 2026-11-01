@@ -450,6 +450,30 @@ enum CaptainMode {
   CAPTAIN_GO_HOME = 100,     /* walks back to CaptainState.home, then IDLE */
 };
 
+/* CaptainState.mode: the post a guard captain keeps while CAPTAIN_IDLE (from
+ * its spawn record). */
+enum CaptainPost {
+  CAPTAIN_POST_SENTRY = 0,       /* holds its heading beside a partner; fights when close or the partner falls */
+  CAPTAIN_POST_LOOKOUT = 1,      /* within range: alerts its group (CAPTAIN_ALERTED) */
+  CAPTAIN_POST_LEDGE = 2,        /* once armed (step), stalks Spyro when he is above its path */
+  CAPTAIN_POST_FIGHTER = 3,      /* fights straight away */
+  CAPTAIN_POST_PATROL = 4,       /* walks between path points once its partner calls */
+  CAPTAIN_POST_LEDGE_WAIT = 5,   /* faces Spyro until cued, then arms as POST_LEDGE */
+};
+
+/* CaptainState.step during CAPTAIN_FIGHT: the sword-fight sequence. */
+enum CaptainFightStep {
+  CAPTAIN_STEP_GUARD = 0,    /* waits for Spyro within 0x1800 */
+  CAPTAIN_STEP_DRAW = 1,     /* draw animation */
+  CAPTAIN_STEP_SPAR = 2,     /* close: STRIKE; far: SHEATHE_RESET; timer2 out: SHEATHE */
+  CAPTAIN_STEP_STRIKE = 3,   /* the swing; hits on frames 0x25..0x28 */
+  CAPTAIN_STEP_SHEATHE_RESET = 4, /* puts the sword away, back to GUARD */
+  CAPTAIN_STEP_SHEATHE = 5,  /* puts the sword away, then REST */
+  CAPTAIN_STEP_REST = 6,     /* close: STRIKE; rested: DRAW again */
+};
+/* CaptainState.step on a ledge post instead: nonzero once armed. */
+#define CAPTAIN_LEDGE_ARMED 1
+
 /* ->mode of Doctor Shemp's guard (ACTOR_TYPE_SHEMP_GUARD, ShempGuardState;
  * level 10). A charge, or a flame from outside its front, knocks it away. */
 enum ShempGuardMode {
@@ -1255,6 +1279,13 @@ enum FenceCaptainMode {
   FCAPTAIN_RELOCATE = 5, /* walks to a random node of its path, then WATCH */
 };
 
+/* FenceCaptainState.shots: one FCAPTAIN_VOLLEY fires three split shots, on
+ * entry and at animation frames 2 and 6. */
+#define FCAPTAIN_SHOTS_NONE 0
+#define FCAPTAIN_SHOTS_1 1
+#define FCAPTAIN_SHOTS_2 2
+#define FCAPTAIN_SHOTS_3 0x3C
+
 /* ->mode of a fence guard (ACTOR_TYPE_FENCE_GUARD, FenceGuardState; level
  * 27); the mode is also the animation index. subMode 1 wakes it, 2 (the
  * captain's reset) puts it back to sleep. */
@@ -1452,7 +1483,7 @@ enum RoamingCritterMode {
   ROAMCRIT_DYING = 6,   /* death animation 6 (wandering its first frames), then 7; despawns */
 };
 
-/* ->mode of a checkpoint (ACTOR_TYPE_CHECKPOINT .. + 2; levels 0/14). */
+/* ->mode of a checkpoint (ACTOR_TYPE_CHECKPOINT .. + 2; every ground level). */
 enum CheckpointMode {
   CHECKPT_REARM = 0,     /* waits for Spyro to walk away (> 2560), then ARMED */
   CHECKPT_ARMED = 1,     /* Spyro touches it: sets the respawn anchor, FLASH */
@@ -1587,6 +1618,19 @@ enum LootVortexStage {
   LVORTEX_OPEN = 1,   /* Spyro walks into its pad facing the target: ACTIVE */
   LVORTEX_ACTIVE = 2, /* freezes Spyro and plays its sequence; when he is free again: FINISH */
   LVORTEX_FINISH = 3, /* runs its chunk anim, resets the camera stick and the key state */
+};
+
+/* ->mode of a flight-level HUD tally icon (the per-class icon types the
+ * flight HUD controller's HudState.types lists; TallyState). */
+enum TallyIconMode {
+  TALLY_ICON_UNLIT = 0,  /* class target not hit yet */
+  TALLY_ICON_LIT = 1,    /* hit: tinted and spinning (also a filled finish slot) */
+  TALLY_ICON_SPEND = 2,  /* row complete: set off toward the finish slot */
+  TALLY_ICON_TO_SLOT = 3,/* swinging onto g_nFlightTallySlot's slot */
+  TALLY_ICON_PARKED = 4, /* arrived (slot, or the end of the finale) */
+  TALLY_ICON_FINALE = 5, /* all four slots filled: set off toward the results ring */
+  TALLY_ICON_TO_RING = 6,
+  TALLY_ICON_SPIRAL = 7, /* spirals into the centre, then PARKED */
 };
 
 #endif

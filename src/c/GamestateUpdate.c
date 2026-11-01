@@ -1,8 +1,12 @@
 #include "camera.h"
+#include "credits_mode.h"
 #include "funcs.h"
+#include "gamestate.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "pad.h"
 #include "pad_buttons.h"
+#include "title_state.h"
 
 /* Per-frame top-level update dispatcher (0x8003385C, 0x3f4).
 
@@ -51,15 +55,15 @@ void GamestateUpdate(void) {
     } else if (g_nGamestate == GS_ACTOR_CUTSCENE) {
       ActorCutscene_Update();
     } else if (g_nGamestate == GS_TITLE) {
-      if (g_nTitleMode != 3) {
+      if (g_nTitleMode != TITLE_MODE_STORY_INTRO) {
         Titlescreen_Update();
       } else {
-        Title_Update();
+        StoryIntro_Update();
       }
     } else if (g_nGamestate == GS_CUTSCENE) {
       Cutscene_Update();
     } else if (g_nGamestate == GS_CREDITS) {
-      if (g_nCreditsMode >= 0x63) {
+      if (g_nCreditsMode >= CREDITS_MODE_RETURN_HOME) {
         CreditsSequence_Update();
       } else {
         Credits_Update();
@@ -67,7 +71,7 @@ void GamestateUpdate(void) {
     }
   } else {
     g_dwGamestateFrames += 1;
-    if (g_nDemoMode != 0) {
+    if (g_nDemoMode != DEMO_OFF) {
       if (TickDemoPlayback()) {
         return;
       }
@@ -100,10 +104,11 @@ void GamestateUpdate(void) {
       }
     }
 
-    if (g_nGamestate == GS_GAMEPLAY && g_nGameplayBlocked == 0 &&
+    if (g_nGamestate == GS_GAMEPLAY && g_nCinematicActive == 0 &&
         g_nSparxHealth >= SPARX_GONE &&
         g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
-      if ((unsigned int)g_nPadType < 2 || (g_dwPadPressed & PAD_START)) {
+      if ((unsigned int)g_nPadType < PAD_TYPE_DIGITAL ||
+          (g_dwPadPressed & PAD_START)) {
         EnterPauseMenu(1);
       } else if (g_dwPadPressed & PAD_SELECT) {
         EnterInventoryMenu(1);

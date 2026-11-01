@@ -1,5 +1,7 @@
+#include "cd_music.h"
 #include "funcs.h"
 #include "globals.h"
+#include "hud_counter.h"
 #include "main_shared.h"
 
 /* Leave the pause menu back to gameplay (0x8002c534). Blit the saved 0x200x0xE1
@@ -19,17 +21,17 @@ void ExitPauseMenuToGame(int resumeMusic) {
   DrawSync(0);
   g_nGamestate = GS_GAMEPLAY;
   InitLightVectorConstants();
-  g_abHudCounterDisplayState[0] = 3;
-  g_abHudCounterDisplayState[1] = 3;
-  g_abHudCounterDisplayState[2] = 3;
-  g_abHudCounterDisplayState[3] = 3;
-  g_abHudCounterDisplayState[4] = 3;
+  g_abHudCounterDisplayState[HUD_CTR_GEMS] = HUD_CTR_ROLL_OUT;
+  g_abHudCounterDisplayState[HUD_CTR_DRAGONS] = HUD_CTR_ROLL_OUT;
+  g_abHudCounterDisplayState[HUD_CTR_LIVES] = HUD_CTR_ROLL_OUT;
+  g_abHudCounterDisplayState[HUD_CTR_EGGS] = HUD_CTR_ROLL_OUT;
+  g_abHudCounterDisplayState[HUD_CTR_KEY] = HUD_CTR_ROLL_OUT;
   g_bHudLevelGemRollPhase = 0xD;
   g_bHudDragonRollPhase = 0xD;
   g_bHudLivesRollPhase = 0xD;
   g_bHudWorldEggRollPhase = 0xD;
   g_bHudKeyRollPhase = 0xD;
   if (resumeMusic != 0) {
-    HandleMusicCommand(g_nCurrentMusicTrack, 8);
+    HandleMusicCommand(g_nCurrentMusicTrack, MUSIC_CMD_RESUME);
   }
 }

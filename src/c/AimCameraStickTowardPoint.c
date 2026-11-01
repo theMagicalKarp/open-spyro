@@ -21,11 +21,11 @@ void AimCameraStickTowardPoint(int *target) {
 
   {
     int ang = ArcTan2(VectorLength(v, VEC_LEN_XY), v[2], 1);
-    g_nCameraScriptStickRequestY = ang;
+    g_nSpyroSwingEulerTargetY = ang;
     if ((unsigned int)(ang - 0x181) < 0x67F) {
-      g_nCameraScriptStickRequestY = 0x180;
+      g_nSpyroSwingEulerTargetY = 0x180;
     } else if ((unsigned int)(ang - 0x800) < 0x680) {
-      g_nCameraScriptStickRequestY = 0xE80;
+      g_nSpyroSwingEulerTargetY = 0xE80;
     }
   }
 

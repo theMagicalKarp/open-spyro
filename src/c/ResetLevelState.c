@@ -1,3 +1,4 @@
+#include "actor_cutscene.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -47,11 +48,11 @@ void ResetLevelState(void) {
     n -= 1;
     p -= 1;
   } while (n >= 0);
-  g_abWorldBalloonistState[0] = 2;
+  g_abWorldBalloonistState[0] = BALLOONIST_OPEN;
 
-  row = g_abWorldPerLevelByteTable;
+  row = g_abFlightBonusPaid;
   off = 0;
-  flags = g_anWorldPersistentFlags;
+  flags = g_anFlightClearTimes;
   do {
     *flags = 0;
     n = 4;
@@ -70,7 +71,7 @@ void ResetLevelState(void) {
   v = 0;
   g_nSparxHealth = SPARX_GOLD;
   g_nExtraLives = 4;
-  g_nWorldTreasureCollected = 0;
+  g_nTotalTreasureCollected = 0;
   g_nWorldDragonsRescued = 0;
   g_nWorldEggsRecovered = 0;
   g_nLevelGemsAtEntry = 0;

@@ -249,7 +249,7 @@ void DispatchSpyroPhysicsByState(void) {
       g_nSpyroGroundHeightZ = FindGroundHeightBelow(&SPY[0], 0x10000);
     }
     break;
-  case SPYRO_ST_08:
+  case SPYRO_ST_FACE_TARGET:
     AverageSpyroPlatformMotion();
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();

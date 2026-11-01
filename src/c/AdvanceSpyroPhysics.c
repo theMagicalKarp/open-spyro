@@ -281,16 +281,16 @@ int AdvanceSpyroPhysics(void) {
           } else {
             g_nSpyroTurnRateAccum = 0;
             *rq2 = lock;
-            if (g_nSpyroPadSnapshotCountdown < 2) {
-              g_nSpyroPadSnapshotCountdown = 2;
+            if (g_nSpyroInputBlankCountdown < 2) {
+              g_nSpyroInputBlankCountdown = 2;
             }
           }
           g_nSpyroScriptedAlignFrames += g_nFrameStep;
         } else {
           g_nSpyroScriptedAlignFrames = 0;
           *rq2 = lock;
-          if (g_nSpyroPadSnapshotCountdown < 2) {
-            g_nSpyroPadSnapshotCountdown = 2;
+          if (g_nSpyroInputBlankCountdown < 2) {
+            g_nSpyroInputBlankCountdown = 2;
           }
         }
         g_pCameraAnchorPos = g_anCameraLatchedAnchorPos;

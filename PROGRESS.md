@@ -245,8 +245,8 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x800314b4` | SaveMenu_Update | main | 4132 | matched | game |
 | `0x800324d8` | ActorCutscene_Update | main | 1352 | matched | game |
 | `0x80032a20` | PollMemCardSyncRing | main | 144 | matched | game |
-| `0x80032ab0` | ArmStoryIntroOnStart | main | 88 | matched | game |
-| `0x80032b08` | Title_Update | main | 1700 | matched | game |
+| `0x80032ab0` | RestartTitleCardCheckOnTriangle | main | 88 | matched | game |
+| `0x80032b08` | StoryIntro_Update | main | 1700 | matched | game |
 | `0x800331ac` | Cutscene_Update | main | 560 | matched | game |
 | `0x800333dc` | CreditsSequence_Update | main | 248 | matched | game |
 | `0x800334d4` | TickDemoPlayback | main | 904 | matched | game |
@@ -418,7 +418,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80053570` | AllocEmitListRecord | main | 152 | asm | handwritten |
 | `0x80053608` | FreeEmitListRecord | main | 156 | asm | handwritten |
 | `0x800536a4` | ResetPadFrameSubstepTable | main | 100 | matched | game |
-| `0x80053708` | SnapshotPadInputState | main | 84 | matched | game |
+| `0x80053708` | MovePadInputState | main | 84 | matched | game |
 | `0x8005375c` | ResetPadStickCalibrationDefaults | main | 52 | matched | game |
 | `0x80053790` | FinalizePadCalibration | main | 432 | matched | game |
 | `0x80053940` | MapPadAxisToCalibratedRange | main | 188 | matched | game |

@@ -4,19 +4,35 @@
 #ifndef OPEN_SPYRO_CREDITS_H
 #define OPEN_SPYRO_CREDITS_H
 
+#include "credits_mode.h"
+
+enum CredLineState {
+  CRED_LINE_PENDING = 0,
+  CRED_LINE_LAID_OUT = 1,   /* glyphs allocated */
+  CRED_LINE_SCROLLED = 2,   /* showTimer expired */
+};
+
+enum CredGlyphState {
+  CRED_GLYPH_FREE = 0,
+  CRED_GLYPH_FLY_IN = 1,
+  CRED_GLYPH_SETTLED = 2,
+  CRED_GLYPH_FALL_OUT = 3,
+  CRED_GLYPH_DONE = 4,      /* freed on the next pass */
+};
+
 /* One 0xC-byte line record of the credits script (table at g_pCreditsLineTable). */
 typedef struct CredLine {
   unsigned char *text;
   short y;
   short showTimer; /* countdown; expiry marks the line scrolled past */
   short nextDelay; /* countdown before the next line starts */
-  short state; /* 1 = laid out, 2 = scrolled past */
+  short state; /* enum CredLineState */
 } CredLine;
 
 /* One 0x1C-byte glyph record of the credits text pool. */
 typedef struct CredGlyph {
   int pad00;
-  unsigned char state; /* 0 free, 1 fly in, 2 settled, 3 fall out, 4 done */
+  unsigned char state; /* enum CredGlyphState */
   unsigned char r, g, b;
   unsigned char dr, dg, db;
   unsigned char timer;

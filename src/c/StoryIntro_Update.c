@@ -1,43 +1,46 @@
+#include "cd_stream.h"
 #include "cutscene_id.h"
 #include "funcs.h"
+#include "gamestate.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "title_state.h"
 
 /* Update for gamestate 0xd (story-intro / new-game transition, 0x80032b08,
-   0x6a4). Only runs its body while g_nTitleMode is 3; three substates:
-   0 arms the transition (silences audio, picks the destination level from the
-   message id — title screen, resume, or the attract demo's level — and parks
-   the camera on the intro shot), 1 blocks on the CD stream until the world is
-   in RAM, 2 flies Spyro along the scripted intro path (two cosine sweeps with
-   a hold and a linear drift between them), aiming him down the motion delta
-   each frame, and hands off either to the title cutscene (title path) or back
-   to the level (resume path). Every substate falls through to the shared light
-   rotation + timer tick. */
+   0x6a4). Only runs its body while g_nTitleMode is TITLE_MODE_STORY_INTRO;
+   three substates: 0 arms the transition (silences audio, picks the destination
+   level from the message id — title screen, resume, or the attract demo's level
+   — and parks the camera on the intro shot), 1 blocks on the CD stream until
+   the world is in RAM, 2 flies Spyro along the scripted intro path (two cosine
+   sweeps with a hold and a linear drift between them), aiming him down the
+   motion delta each frame, and hands off either to the title cutscene (title
+   path) or back to the level (resume path). Every substate falls through to the
+   shared light rotation + timer tick. */
 
-void Title_Update(void) {
+void StoryIntro_Update(void) {
   VECTOR delta;
   RECT clear;
 
-  if (g_nTitleMode == 3) {
-    if (g_nStoryIntroSubstate == 0) {
+  if (g_nTitleMode == TITLE_MODE_STORY_INTRO) {
+    if (g_nStoryIntroSubstate == STORY_INTRO_ARM) {
       StopAllSoundExceptMask(0);
       TickSpuPerFrame();
-      g_nStoryIntroSubstate = 1;
-      if (g_nStoryIntroMessage == 0) {
+      g_nStoryIntroSubstate = STORY_INTRO_STREAM;
+      if (g_nTitleExitPath == TITLE_EXIT_NEW_GAME) {
         g_nCutsceneId = CUTSCENE_OPENING;
-        g_nCdStreamState = 0;
+        g_nCdStreamState = CSTREAM_READ_HEADER;
         g_pDrawBufA = g_pSharedLoadBuffer;
         g_pDrawBufB = g_pSharedLoadBuffer;
-      } else if (g_nStoryIntroMessage == 1) {
+      } else if (g_nTitleExitPath == TITLE_EXIT_LOADED_GAME) {
         g_nFlightLevelActive = 0;
-        g_nCdStreamState = 1;
+        g_nCdStreamState = LSTREAM_FRESH;
         g_nReturnPortalLevelId = 0;
         g_nPortalTransitionActive = 0;
         g_nCurrentLevelId = g_nActiveLevelId;
-      } else if (g_nStoryIntroMessage == 2) {
+      } else if (g_nTitleExitPath == TITLE_EXIT_DEMO) {
         InitNewGameState();
         g_nFlightLevelActive = 0;
-        g_nCdStreamState = 1;
+        g_nCdStreamState = LSTREAM_FRESH;
         g_nReturnPortalLevelId = 0;
         g_nPortalTransitionActive = 0;
         g_nActiveLevelId = g_anDemoLevelIds[g_nDemoIndex];
@@ -59,21 +62,21 @@ void Title_Update(void) {
       g_abSpyroPersistentEuler[1] = 0;
       g_abSpyroPersistentEuler[2] = 0;
       g_bSpyroAnimFrame = 1;
-    } else if (g_nStoryIntroSubstate == 1) {
-      if (g_nStoryIntroMessage == 0) {
-        while (g_nCdStreamState < 3) {
+    } else if (g_nStoryIntroSubstate == STORY_INTRO_STREAM) {
+      if (g_nTitleExitPath == TITLE_EXIT_NEW_GAME) {
+        while (g_nCdStreamState < CSTREAM_READ_AUDIO) {
           TickCutsceneBundleLoadStream();
           TickCdMusicStream();
         }
       } else {
-        while (g_nCdStreamState < 6) {
+        while (g_nCdStreamState < LSTREAM_UPLOAD_AUDIO) {
           TickLevelTransitionStream(1);
           TickCdMusicStream();
         }
       }
-      g_nStoryIntroSubstate = 2;
+      g_nStoryIntroSubstate = STORY_INTRO_FLY;
       g_nStoryIntroTimer = 0;
-    } else if (g_nStoryIntroSubstate == 2) {
+    } else if (g_nStoryIntroSubstate == STORY_INTRO_FLY) {
       int *pos = g_anSpyroWorldPosBlock;
 
       CopyVector(&delta, (VECTOR *)pos);
@@ -120,13 +123,14 @@ void Title_Update(void) {
       TickSpyroAnimLayer2();
 
       {
-        int *msg = g_anStoryIntroMessageBlock;
+        int *path = g_anTitleExitPathBlock;
 
-        if (msg[0] == 0) {
-          if (g_nCdStreamState < 7) {
+        if (path[0] == TITLE_EXIT_NEW_GAME) {
+          if (g_nCdStreamState < CSTREAM_EXT_SECOND_HALF) {
             TickCutsceneBundleLoadStream();
           }
-          if (g_nStoryIntroTimer >= 0x180 && g_nCdStreamState == 7) {
+          if (g_nStoryIntroTimer >= 0x180 &&
+              g_nCdStreamState == CSTREAM_EXT_SECOND_HALF) {
             clear.x = 0;
             clear.y = 0;
             clear.w = 0x200;
@@ -135,7 +139,7 @@ void Title_Update(void) {
             DrawSync(0);
             g_pWorkAreaTop = (void *)(0x80200000 - g_nCrt0StackSize);
             InitActorMeshScratchRegions(1);
-            while (g_nCdStreamState < 0xa) {
+            while (g_nCdStreamState < CSTREAM_DONE) {
               TickCutsceneBundleLoadStream();
               TickCdMusicStream();
             }
@@ -144,12 +148,13 @@ void Title_Update(void) {
             return;
           }
         } else {
-          if (g_nCdStreamState < 0xd) {
+          if (g_nCdStreamState < LSTREAM_FINALIZE) {
             TickLevelTransitionStream(1);
           }
-          if (g_nStoryIntroTimer >= 0x180 && g_nCdStreamState == 0xd) {
-            if (msg[0] == 2) {
-              g_nDemoMode = 1;
+          if (g_nStoryIntroTimer >= 0x180 &&
+              g_nCdStreamState == LSTREAM_FINALIZE) {
+            if (path[0] == TITLE_EXIT_DEMO) {
+              g_nDemoMode = DEMO_PLAYBACK;
               g_nDemoExitFadeFrame = 0;
             }
             ResetSpyroEntity(1);

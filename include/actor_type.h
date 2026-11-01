@@ -442,6 +442,7 @@ enum ActorType {
 #define SFX_MODE_3D 8       /* panned and attenuated from the owner's position; dropped
                              * outside its audible range */
 #define SFX_MODE_PANNED 0x10 /* pan supplied by the caller */
+#define SFX_MODE_MASK 0x1C   /* the mode group within a voice row's nFlags */
 
 /* StopSoundVoicesByOwner's mode: which of the owner's voices to stop. */
 #define VOICE_STOP_ALL 1     /* every voice it owns */

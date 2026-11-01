@@ -19,8 +19,8 @@
  *     stage itself is read through the scalar g_nSparxHealth view.
  *   - Gnasty's camera blocks read the anchor path through a scalar view of
  *     the state block so the loads stay behind the scalar flag stores
- *     (A297/A302); state 8 writes the C4C flag word as g_nCameraScriptStickRequestY[19] so
- *     only the g_nGameplayBlocked store sinks to the jal.
+ *     (A297/A302); state 8 writes the C4C flag word as g_nSpyroSwingEulerTargetY[19] so
+ *     only the g_nCinematicActive store sinks to the jal.
  */
 
 #include "actor.h"
@@ -571,7 +571,7 @@ void Level33_UpdateActors(void) {
 
       switch (actor->mode) {
       case EGG_RELEASED:
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
         VectorToSVectorShr2(st->from, &actor->posX);
         st->heading =
             ArcTan2_8bit(actor->posX - SPY.posX, actor->posY - SPY.posY) +
@@ -677,7 +677,7 @@ void Level33_UpdateActors(void) {
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
-        g_nGameplayBlocked = 0;
+        g_nCinematicActive = 0;
         ZeroVector(&SPY.headLook);
         CommitActorKillGems(0, st->killActor);
         g_nWorldEggsRecovered = g_nWorldEggsRecovered + 1;
@@ -1777,10 +1777,10 @@ void Level33_UpdateActors(void) {
           g_nCameraActiveTargetRoll = 0;
           g_nCameraActiveTargetPitchBias = -0x32;
           g_nCameraActiveTargetYawBias = 0;
-          g_nGameplayBlocked = 1;
+          g_nCinematicActive = 1;
           g_pSpyroRequestCameraAnchor = anc;
         } else {
-          g_nGameplayBlocked = 0;
+          g_nCinematicActive = 0;
         }
       }
 
@@ -2051,9 +2051,9 @@ void Level33_UpdateActors(void) {
         break;
 
       case GNASTY_DEFEATED:
-        g_nCameraScriptStickRequestY[19] = /* g_dwSpyroRequestMask */
+        g_nSpyroSwingEulerTargetY[19] = /* g_dwSpyroRequestMask */
             g_dwSpyroRequestMask | (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
         DriveActorTrackedMove(actor, &st->speed, st->knockHeading, 0, 0xC, 0);
         if (st->drop[0] != -1 && actor->nextFrame >= 6) {
           g_pActorListBase[st->drop[0]].subMode = 1;
@@ -2103,7 +2103,7 @@ void Level33_UpdateActors(void) {
           g_nCutsceneId[0] = CUTSCENE_GNASTY_ENDING;
           g_nGamestate = GS_CUTSCENE;
           g_nGamePaused = 1;
-          g_nGameplayBlocked = 0;
+          g_nCinematicActive = 0;
           g_nSpyroDrawSuppressed = 0;
           g_pPathTableHead->frame = 0;
         }
@@ -2492,7 +2492,7 @@ void Level33_UpdateActors(void) {
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         actor->cullRadius = 0x18;
         st->timer += g_nFrameStep;
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
         if (st->timer < 0xC0) {
           int *v = o150;
 
@@ -2510,7 +2510,7 @@ void Level33_UpdateActors(void) {
           v[2] += 0x100;
           v[2] += (unsigned short)g_anSineLut_s[(st->timer << 7) / 192] << 16 >> 19;
           CopyVector(&actor->posX, v);
-          g_nCameraScriptStickRequestY[0] =
+          g_nSpyroSwingEulerTargetY[0] =
               (unsigned short)g_anSineLut_s[(st->timer << 7) / 192] << 16 >> 19;
           if (st->timer < 0x40) {
             int r;
@@ -2545,7 +2545,7 @@ void Level33_UpdateActors(void) {
                                     SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_STOP)) {
           actor->cullRadius = 0;
           actor->drawn = 0;
-          g_nGameplayBlocked = 0;
+          g_nCinematicActive = 0;
           g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, (void *)0x18);
           MarkActorCommittedKill(actor);
           st->mode = LVORTEX_FINISH;
@@ -2561,9 +2561,9 @@ void Level33_UpdateActors(void) {
       case LVORTEX_FINISH:
         PlaySoundEffect(g_pLevelSampleBankHeader[0x3C], 0, SFX_MODE_PANNED, 0);
         ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
-        g_nCameraScriptStickRequestY[1] = 0;
-        g_nCameraScriptStickRequestY[0] = 0;
-        g_nCameraScriptStickRequestY[-1] = 0;
+        g_nSpyroSwingEulerTargetY[1] = 0;
+        g_nSpyroSwingEulerTargetY[0] = 0;
+        g_nSpyroSwingEulerTargetY[-1] = 0;
         g_nLevelKeyState = KEYSTATE_NONE;
         switch (st->chunkAnim) {
         case 0:

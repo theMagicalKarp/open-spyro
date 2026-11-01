@@ -1,3 +1,4 @@
+#include "cd_stream.h"
 #include "cutscene_id.h"
 #include "funcs.h"
 #include "globals.h"
@@ -165,11 +166,11 @@ fade_in_splash:
     goto fade_in_splash;
   }
 
-  g_nCdStreamState = 3;
+  g_nCdStreamState = CSTREAM_READ_AUDIO;
   g_nCutsceneId = CUTSCENE_TITLE_BACKDROP;
 stream_world:
   TickCutsceneBundleLoadStream();
-  if (g_nCdStreamState < 0xA) {
+  if (g_nCdStreamState < CSTREAM_DONE) {
     goto stream_world;
   }
 hold_splash:

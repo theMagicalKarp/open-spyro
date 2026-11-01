@@ -16,8 +16,16 @@ typedef struct {
   /* 0x0A */ unsigned short nPitch;
   /* 0x0C */ unsigned short nPitchSpread;
   /* 0x0E */ unsigned short nPitchStep;
-  /* 0x10 */ int nPitchMode;
+  /* 0x10 */ int nPitchMode;             /* enum SamplePitchMode */
 } SAMPLEENTRY;
+
+/* How PlaySoundEffect randomises a sample's pitch when nPitchSpread != 0:
+ * a random multiple (0..spread-1) of nPitchStep is ... */
+enum SamplePitchMode {
+  SAMPLE_PITCH_AROUND = 0, /* ... added after dropping spread/2 steps: centred on nPitch */
+  SAMPLE_PITCH_UP = 1,     /* ... added */
+  SAMPLE_PITCH_DOWN = 2,   /* ... subtracted */
+};
 
 /* Byte offset of a SAMPLEENTRY field, and that field accessed as a plain
  * byte-offset reference from `entry` (any pointer). */

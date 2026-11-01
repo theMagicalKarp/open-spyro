@@ -1,5 +1,7 @@
 #include "actor.h"
+#include "actor_cutscene.h"
 #include "actor_type.h"
+#include "cd_stream.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -148,8 +150,8 @@ void ActorCutscene_Update(void) {
    */
   EBB_BREAK();
 
-  if (g_anActorCutsceneTimerBlock[-1] == 4) {
-    if (g_nCdStreamState < 0xA) {
+  if (g_anActorCutsceneTimerBlock[-1] == ACS_STREAM_WAIT) {
+    if (g_nCdStreamState < LSTREAM_RELOCATE) {
       TickLevelTransitionStream(1);
     }
 
@@ -222,7 +224,7 @@ void ActorCutscene_Update(void) {
             ArcTan2(VectorLength(&delta.vx, VEC_LEN_XY), -delta.vz, 1);
         g_nCameraEulerYaw = ArcTan2(delta.vx, delta.vy, 1);
       }
-    } else if (g_nCdStreamState == 0xA) {
+    } else if (g_nCdStreamState == LSTREAM_RELOCATE) {
       int *cam; /* see the approach arm: block-scoped per arm on purpose */
       int face;
       int lvl;
@@ -235,7 +237,7 @@ void ActorCutscene_Update(void) {
       *(WORLDCOUNTERS *)&g_nWorldRenderMeshChunkCount =
           *(WORLDCOUNTERS *)&g_nWorldCollisionTriCount;
 
-      g_anActorCutsceneTimerBlock[-1] = 5;
+      g_anActorCutsceneTimerBlock[-1] = ACS_CRUISE;
       g_anActorCutsceneTimerBlock[0] = 0;
       CopyVector((int *)((char *)g_anActorCutsceneTimerBlock[25] + 0xC),
                  &g_anLevelEntryPoints[g_anActorCutsceneTimerBlock[4] * 4]);

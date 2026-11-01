@@ -12,7 +12,7 @@
  * LoadAndStartLevelFromCd/LoadAndStartLevelFromCd, 1 = exit via g_pfnLevelHandleFlightResults(0) +
  * BeginPauseToMenuTransition/BeginPauseToMenuTransition) or, when the course was
  * completed (collectible tallies g_anFlightTargetTally..3C >= 0x20 and the world
- * flag g_anWorldPersistentFlags[g_nActiveWorldIndex] set) locks the timer at 0x64. Before
+ * flag g_anFlightClearTimes[g_nActiveWorldIndex] set) locks the timer at 0x64. Before
  * reveal, confirm fast-forwards the timer to 9.
  * Identical body in the five flight-level overlays.
  */
@@ -41,7 +41,7 @@ void Level23_FlightResultsMenu_Update(void) {
   g_nPauseMenuIdleFrames += 1;
   g_nSubMenuScrollOffset += 1;
   if (g_nSubMenuScrollOffset >= 5) {
-    if (g_nSubMenuCursor < 9) {
+    if (g_nSubMenuCursor < FLIGHT_REVEAL_ALL) {
       g_nSubMenuCursor += 1;
     }
     g_nSubMenuScrollOffset = 0;
@@ -53,7 +53,7 @@ void Level23_FlightResultsMenu_Update(void) {
     i += 1;
     rec += ACTOR_SIZE;
   } while (i < 4);
-  if (g_nSubMenuCursor >= 9) {
+  if (g_nSubMenuCursor >= FLIGHT_REVEAL_ALL) {
     unsigned int *pad = g_dwPadPressed;
     if (pad[0] & (PAD_UP | PAD_DOWN)) {
       g_nPauseMenuIdleFrames = 0;
@@ -61,27 +61,27 @@ void Level23_FlightResultsMenu_Update(void) {
       PlaySoundEffect(g_pLevelSampleBankHeader[SFX_MENU_MOVE], 0, SFX_MODE_PANNED, 0);
     }
     if (pad[0] & (PAD_CROSS | PAD_START)) {
-      if (g_nSubMenuCursor >= 0x64 ||
+      if (g_nSubMenuCursor >= FLIGHT_REVEAL_TIME_BOARD ||
           (g_anFlightTargetTally + g_nFlightTargetTally1 + g_nFlightTargetTally2 + g_nFlightTargetTally3 < 0x20 &&
-           g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0)) {
+           g_anFlightClearTimes[g_nActiveWorldIndex] == 0)) {
         switch (g_nPauseMenuCursor) {
-        case 0:
+        case FLIGHT_RETRY_YES:
           g_pfnLevelHandleFlightResults(1);
           LoadAndStartLevelFromCd();
           break;
-        case 1:
+        case FLIGHT_RETRY_NO:
           g_pfnLevelHandleFlightResults(0);
           BeginPauseToMenuTransition();
           break;
         }
         PlaySoundEffect(g_pLevelSampleBankHeader[SFX_MENU_MOVE], 0, SFX_MODE_PANNED, 0);
       } else {
-        g_nSubMenuCursor = 0x64;
+        g_nSubMenuCursor = FLIGHT_REVEAL_TIME_BOARD;
         PlaySoundEffect(g_pLevelSampleBankHeader[SFX_MENU_MOVE], 0, SFX_MODE_PANNED, 0);
       }
     }
   } else if (g_dwPadPressed[0] & (PAD_CROSS | PAD_START)) {
-    g_nSubMenuCursor = 9;
+    g_nSubMenuCursor = FLIGHT_REVEAL_ALL;
     g_nSubMenuScrollOffset = 0;
     PlaySoundEffect(g_pLevelSampleBankHeader[SFX_MENU_MOVE], 0, SFX_MODE_PANNED, 0);
   }

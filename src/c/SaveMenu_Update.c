@@ -5,6 +5,7 @@
 #include "main_shared.h"
 #include "pad_buttons.h"
 #include "sample_bank.h"
+#include "save_menu.h"
 #include "spyro_block.h"
 #include "vecmath.h"
 
@@ -45,7 +46,7 @@ void SaveMenu_Update(void) {
   g_apActiveActorListBlock[1] = 0;
   TickActorAnims(g_apActiveActorListBlock, 0);
   switch (SM[0]) {
-  case 0:
+  case SAVE_MODE_SWING_IN:
     if (SM[1] < 0x40) {
       Actor *actor;
 
@@ -163,7 +164,7 @@ void SaveMenu_Update(void) {
         SPYB[SPYB_ANIM_CURRENT] = 0;
         SPYB[SPYB_ANIM_FRAME] = 0;
         g_anSpyroWorldPosBlock[0x16] = 4;
-        SM[0] = 1;
+        SM[0] = SAVE_MODE_MENU;
         SM[1] = 0;
         g_anCameraPos[2] = g_nSaveMenuCameraToZ;
         SPYB[SPYB_EULER_Z] = g_nSaveMenuSpyroToYaw >> 4;
@@ -172,37 +173,37 @@ void SaveMenu_Update(void) {
       }
     }
     break;
-  case 1:
+  case SAVE_MODE_MENU:
     AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
     TickSpyroAnimLayer1();
     TickSpyroAnimLayer2();
     g_dwGamestateFrames++;
     g_pfnLevelAdvanceEmitList(g_nFrameStep);
     switch (SM[3]) {
-    case 0:
+    case SAVE_SCREEN_MAIN:
       if (g_dwPadPressed & PAD_DOWN) {
         PlaySoundEffect(LEVEL_SFX(SFX_MENU_MOVE), 0, SFX_MODE_PANNED, 0);
         g_nSaveMenuAnimPhase = 0;
-        if (++g_nSaveMenuCursor >= 3) {
-          g_nSaveMenuCursor = 0;
+        if (++g_nSaveMenuCursor >= SAVE_ROW_COUNT) {
+          g_nSaveMenuCursor = SAVE_ROW_SAVE;
         }
       } else if (g_dwPadPressed & PAD_UP) {
         PlaySoundEffect(LEVEL_SFX(SFX_MENU_MOVE), 0, SFX_MODE_PANNED, 0);
         g_nSaveMenuAnimPhase = 0;
         if (--g_nSaveMenuCursor < 0) {
-          g_nSaveMenuCursor = 2;
+          g_nSaveMenuCursor = SAVE_ROW_CONTINUE;
         }
       }
       if (SM[1] >= 8 && (g_dwPadPressed & PAD_CROSS)) {
         PlaySoundEffect(LEVEL_SFX(SFX_MENU_SELECT), 0, SFX_MODE_PANNED, 0);
-        if (g_nSaveMenuCursor == 0) {
+        if (g_nSaveMenuCursor == SAVE_ROW_SAVE) {
           SM[1] = 0;
           if (g_nSaveSlotLoaded != 0) {
-            g_nSaveMenuSubstate = 2;
+            g_nSaveMenuSubstate = SAVE_SCREEN_SAVING;
           } else {
-            g_nSaveMenuSubstate = 1;
+            g_nSaveMenuSubstate = SAVE_SCREEN_NO_SESSION;
           }
-        } else if (g_nSaveMenuCursor == 1) {
+        } else if (g_nSaveMenuCursor == SAVE_ROW_REPLAY_DRAGON) {
           Actor *actor;
           DragonStatueState *statue;
 
@@ -223,49 +224,50 @@ void SaveMenu_Update(void) {
         }
       }
       break;
-    case 1:
+    case SAVE_SCREEN_NO_SESSION:
       if (SM[1] >= 0x3C && (g_dwPadPressed & PAD_CROSS)) {
         PlaySoundEffect(LEVEL_SFX(SFX_MENU_SELECT), 0, SFX_MODE_PANNED, 0);
         SM[1] = 0;
-        g_nSaveMenuSubstate = 0;
-        g_nSaveMenuCursor = 2;
+        g_nSaveMenuSubstate = SAVE_SCREEN_MAIN;
+        g_nSaveMenuCursor = SAVE_ROW_CONTINUE;
       }
       break;
-    case 2: {
+    case SAVE_SCREEN_SAVING: {
       int *cur = &SM[2];
 
-      if (*cur == 0) {
+      if (*cur == SAVE_STEP_OPEN) {
         MemCardOpenSession();
         MemCardLoad(g_nSaveSlotSelected);
-        *cur = 1;
+        *cur = SAVE_STEP_READ_HEADER;
         break;
       }
-      if (*cur == 1) {
+      if (*cur == SAVE_STEP_READ_HEADER) {
         int st;
 
         if (MemCardSync(1, &SM[9], &SM[10]) == 0) {
           break;
         }
         st = SM[10];
-        if (st == 0 || st == 3) {
+        if (st == McErrNone || st == McErrNewCard) {
           MemCardRead(g_nSaveSlotSelected, g_szMemCardSaveName,
                       (char *)g_pRenderScratchPrimTop - 0x600, 0, 0x80);
-          *cur = 2;
+          *cur = SAVE_STEP_WRITE;
           break;
         }
-        if (st == 4) {
+        if (st == McErrNotFormat) {
+          /* McErrNotFormat == SAVE_SCREEN_NO_FILE: the original stores st */
           g_nSaveMenuSubstate = st;
         } else {
-          g_nSaveMenuSubstate = 3;
+          g_nSaveMenuSubstate = SAVE_SCREEN_NO_CARD;
         }
-      } else if (*cur == 2) {
+      } else if (*cur == SAVE_STEP_WRITE) {
         int st;
 
         if (MemCardSync(1, &SM[9], &SM[10]) == 0) {
           break;
         }
         st = SM[10];
-        if (st == 0) {
+        if (st == McErrNone) {
           if (g_nSaveFileTag ==
               *(unsigned short *)((char *)g_pRenderScratchPrimTop - 0x582)) {
             BuildSaveGameBuffer((char *)g_apRenderScratchPrimTopBlock[0] -
@@ -273,74 +275,74 @@ void SaveMenu_Update(void) {
             MemCardWrite(g_nSaveSlotSelected, g_szMemCardSaveName,
                          (char *)g_apRenderScratchPrimTopBlock[0] - 0x600,
                          g_nSaveSlotIndex * 0x600 + 0x200, 0x600);
-            *cur = 3;
+            *cur = SAVE_STEP_READ_BACK;
             break;
           }
-          g_nSaveMenuSubstate = 4;
-        } else if (st == 5) {
-          g_nSaveMenuSubstate = 4;
+          g_nSaveMenuSubstate = SAVE_SCREEN_NO_FILE;
+        } else if (st == McErrFileNotExist) {
+          g_nSaveMenuSubstate = SAVE_SCREEN_NO_FILE;
         } else {
-          g_nSaveMenuSubstate = 5;
+          g_nSaveMenuSubstate = SAVE_SCREEN_ERROR;
         }
-      } else if (*cur == 3) {
+      } else if (*cur == SAVE_STEP_READ_BACK) {
         if (MemCardSync(1, &SM[9], &SM[10]) == 0) {
           break;
         }
-        if (SM[10] == 0) {
+        if (SM[10] == McErrNone) {
           MemCardRead(g_nSaveSlotSelected, g_szMemCardSaveName,
                       (char *)g_pRenderScratchPrimTop - 0x600,
                       g_nSaveSlotIndex * 0x600 + 0x200, 0x600);
-          *cur = 4;
+          *cur = SAVE_STEP_VERIFY;
           break;
         }
-        g_nSaveMenuSubstate = 5;
+        g_nSaveMenuSubstate = SAVE_SCREEN_ERROR;
       } else {
         int v;
 
         if (MemCardSync(1, &SM[9], &SM[10]) == 0) {
           break;
         }
-        if (SM[10] == 0 &&
+        if (SM[10] == McErrNone &&
             ComputeSaveGameChecksum((unsigned char *)g_pRenderScratchPrimTop -
                                     0x600) ==
                 *(int *)((char *)g_pRenderScratchPrimTop - 0x74)) {
-          v = 7;
+          v = SAVE_SCREEN_SAVED;
         } else {
-          v = 5;
+          v = SAVE_SCREEN_ERROR;
         }
         g_nSaveMenuSubstate = v;
       }
       g_nSaveMenuAnimPhase = 0;
     } break;
-    case 3:
-    case 4:
-    case 5:
+    case SAVE_SCREEN_NO_CARD:
+    case SAVE_SCREEN_NO_FILE:
+    case SAVE_SCREEN_ERROR:
       if (SM[1] >= 0x3C && (g_dwPadPressed & PAD_CROSS)) {
         PlaySoundEffect(LEVEL_SFX(SFX_MENU_SELECT), 0, SFX_MODE_PANNED, 0);
         SM[1] = 0;
-        g_nSaveMenuSubstate = 6;
-        g_nSaveMenuCursor = 0;
+        g_nSaveMenuSubstate = SAVE_SCREEN_FAILED;
+        g_nSaveMenuCursor = SAVE_FAILED_RETRY;
       }
       break;
-    case 6:
+    case SAVE_SCREEN_FAILED:
       if (g_adwPadPressedBlock[0] & (PAD_UP | PAD_DOWN)) {
         PlaySoundEffect(LEVEL_SFX(SFX_MENU_MOVE), 0, SFX_MODE_PANNED, 0);
         SM[2] = 1 - SM[2];
       }
       if (SM[1] >= 0x20 && (g_adwPadPressedBlock[0] & PAD_CROSS)) {
         MemCardCloseSession();
-        if (g_nSaveMenuCursor == 0) {
+        if (g_nSaveMenuCursor == SAVE_FAILED_RETRY) {
           PlaySoundEffect(LEVEL_SFX(SFX_MENU_SELECT), 0, SFX_MODE_PANNED, 0);
           SM[1] = 0;
-          g_nSaveMenuSubstate = 2;
-          g_nSaveMenuCursor = 0;
+          g_nSaveMenuSubstate = SAVE_SCREEN_SAVING;
+          g_nSaveMenuCursor = SAVE_STEP_OPEN;
         } else {
           EndSaveMenuToWorld();
           PlaySoundEffect(LEVEL_SFX(SFX_MENU_SELECT), 0, SFX_MODE_PANNED, 0);
         }
       }
       break;
-    case 7:
+    case SAVE_SCREEN_SAVED:
       if (g_nSaveMenuAnimPhase >= 8 && (g_dwPadPressed & PAD_CROSS)) {
         MemCardCloseSession();
         EndSaveMenuToWorld();

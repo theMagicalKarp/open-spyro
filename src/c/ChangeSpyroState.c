@@ -565,7 +565,7 @@ void ChangeSpyroState(int state) {
   case SPYRO_ST_SCRIPTED_HOLD:
     g_nSpyroGravityStep = -0x80;
     /* FALLTHROUGH */
-  case SPYRO_ST_08:
+  case SPYRO_ST_FACE_TARGET:
   stand:
     g_nSpyroSubstate = 0;
     g_nSpyroGravityEnableFlag = 1;

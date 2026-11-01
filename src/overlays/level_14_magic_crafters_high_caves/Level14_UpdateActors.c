@@ -47,6 +47,8 @@
 #include "camera.h"
 #include "level_sfx.h"
 #include "emit_record.h"
+#include "cd_stream.h"
+#include "hud_counter.h"
 
 /* ==== Per-class state blocks ====
  *
@@ -344,7 +346,7 @@ void Level14_UpdateActors(void) {
           }
 
           if (g_nSpyroState == SPYRO_ST_LIFT || top + 0xC00 < z + depth) {
-            if (g_abHudCounterDisplayState == 2) {
+            if (g_abHudCounterDisplayState == HUD_CTR_SHOWN) {
               RefreshHudLevelGemCounter();
             }
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_TARGET_CAMERA);
@@ -361,7 +363,7 @@ void Level14_UpdateActors(void) {
               }
               if (yaw < -0x200) {
                 g_abLevelExited[g_nLevelIndex] = 1;
-                g_nCdStreamState = 0;
+                g_nCdStreamState = LSTREAM_PRESERVE;
                 g_nEnteredPortalIdx = -1;
                 g_nPortalTransitionActive = one;
                 g_nLevelTransitionTallyActive = 1;
@@ -1304,7 +1306,7 @@ void Level14_UpdateActors(void) {
 
       switch (actor->mode) {
       case EGG_RELEASED:
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
         VectorToSVectorShr2(st->centre, &actor->posX);
         st->angle =
             ArcTan2_8bit(actor->posX - SPY.posX, actor->posY - SPY.posY) +
@@ -1416,8 +1418,8 @@ void Level14_UpdateActors(void) {
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
-        g_nGameplayBlocked = 0;
-        ZeroVector(&g_nSpyroSwingEulerPitchTarget);
+        g_nCinematicActive = 0;
+        ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
         g_nWorldEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
@@ -1975,7 +1977,7 @@ void Level14_UpdateActors(void) {
         if (st->mode & CARRIER_F_CAM_HOLD) {
           if (g_nSpyroAirborneFrames != 0) {
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
-            if (g_nSpyroState == SPYRO_ST_08) {
+            if (g_nSpyroState == SPYRO_ST_FACE_TARGET) {
               g_anCameraActiveTargetParams.w[0] = (g_anCameraParamMode2Front.w[0] - g_nSpyroMoveTargetYaw) & 0xFFF;
             } else {
               g_anCameraActiveTargetParams.w[0] = (g_anCameraParamMode2Front.w[0] - g_nSpyroBodyYaw) & 0xFFF;
@@ -2121,7 +2123,7 @@ void Level14_UpdateActors(void) {
             st->cur->cur = st->cur->count - 2;
             st->mode = (st->mode & ~CARRIER_F_PATH0) | CARRIER_F_BACK | CARRIER_F_CAM_HOLD;
             EBB_BREAK();
-            g_nSpyroRequestState = SPYRO_ST_08;
+            g_nSpyroRequestState = SPYRO_ST_FACE_TARGET;
             g_nSpyroMoveTargetYaw = 0x290;
           }
           continue;
@@ -2956,7 +2958,7 @@ void Level14_UpdateActors(void) {
 
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         CopyVector(x288, &SPY.posX);
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
         x288[0] += (g_anCosineLut[SPY.bodyRotZ] * 0xE1) >> 10;
         x288[1] += (g_anSineLut[SPY.bodyRotZ] * 0xE1) >> 10;
         x288[2] -= 0x17C;
@@ -3060,7 +3062,7 @@ void Level14_UpdateActors(void) {
       case SFGIVER_RETURN: {
         int dz;
 
-        g_nGameplayBlocked = 0;
+        g_nCinematicActive = 0;
         dz = st->home[2] - actor->posZ;
         if (st->link != -1 && g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
           TurnActorYawTowardAngle(actor,

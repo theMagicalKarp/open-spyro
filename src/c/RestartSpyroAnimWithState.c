@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "spyro_state.h"
 
 /* 0x8003fdc8 (0x78) — switch Spyro to `state` and restart his animation from
    that state's default clip: frame 1, sub-frame timer and anim mode cleared,
@@ -20,7 +21,7 @@ void RestartSpyroAnimWithState(int state) {
   anim = g_abSpyroStateAnimIndexMap[g_nSpyroState];
   g_bSpyroAnimFrame = 1;
   g_bSpyroSubFrameTimer = 0;
-  g_nSpyroAnimMode = 0;
+  g_nSpyroAnimMode = SPYRO_ANIM_PLAY;
   g_nSpyroPrevState = g_nSpyroState;
   g_bSpyroAnimCurrent = anim;
 }

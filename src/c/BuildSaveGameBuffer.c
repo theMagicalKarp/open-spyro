@@ -35,14 +35,14 @@ void BuildSaveGameBuffer(unsigned char *buf) {
   buf[SAVE_OFFSET(escapeRunCount)] = g_anLevelEscapeRunCount;
   buf[SAVE_OFFSET(escapeRunCountLane1)] = g_nLevelEscapeRunCountLane1;
   buf[SAVE_OFFSET(extraLives)] = g_nExtraLives;
-  CopyWords(buf + SAVE_OFFSET(worlds), g_anWorldPersistentFlags, 0x14);
+  CopyWords(buf + SAVE_OFFSET(flight), g_anFlightClearTimes, 0x14);
   w = 0;
-  tbl = g_abWorldPerLevelByteTable;
+  tbl = g_abFlightBonusPaid;
   row = buf;
   do {
-    dst = row + SAVE_OFFSET(worlds.worldLevelBytes);
+    dst = row + SAVE_OFFSET(flight.bonusPaid);
     src = tbl;
-    end = row + SAVE_OFFSET(worlds.worldLevelBytes[1]);
+    end = row + SAVE_OFFSET(flight.bonusPaid[1]);
     do {
       *dst++ = *src++;
     } while ((int)dst < (int)end);

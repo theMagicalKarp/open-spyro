@@ -1,6 +1,8 @@
 #include "camera.h"
+#include "cd_stream.h"
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "main_shared.h"
 #include "pad_buttons.h"
 #include "spyro_state.h"
@@ -47,7 +49,7 @@ void HandleLevelSelectInput(void) {
         g_nCurrentLevelId = (g_nCurrentLevelId / 10 + 1) * 10;
       }
       if ((unsigned int)(g_nCurrentLevelId - 10) >= 0x37U) {
-        g_nCurrentLevelId = 10;
+        g_nCurrentLevelId = LEVEL_ARTISANS;
       }
       g_nLevelSelectWorldIndex = g_nCurrentLevelId / 10;
       sel = g_nCurrentLevelId % 10;
@@ -67,7 +69,7 @@ void HandleLevelSelectInput(void) {
           ResetSpyroEntity(0);
           RestartSpyroAnimWithState(SPYRO_ST_GLIDE);
           g_nGamestate = GS_LEVEL_LOAD;
-          g_nCdStreamState = 1;
+          g_nCdStreamState = LSTREAM_FRESH;
           g_nPortalTransitionActive = 0;
           g_nLevelTransitionTallyActive = 0;
           g_nGamePaused = 1;

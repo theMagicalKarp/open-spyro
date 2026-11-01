@@ -56,7 +56,7 @@
 <rect x="14.00" y="425.50" width="33.20" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DragonRescue_Draw  ·  1852 bytes  ·  matched</title></rect>
 <rect x="47.20" y="425.50" width="32.41" height="30.49" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_8004CEDC  ·  1808 bytes  ·  handwritten</title></rect>
 <rect x="79.61" y="425.50" width="32.41" height="30.49" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DrawSpyroFlameTrails  ·  1808 bytes  ·  handwritten</title></rect>
-<rect x="112.02" y="425.50" width="30.47" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Title_Update  ·  1700 bytes  ·  matched</title></rect>
+<rect x="112.02" y="425.50" width="30.47" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>StoryIntro_Update  ·  1700 bytes  ·  matched</title></rect>
 <rect x="142.49" y="425.50" width="29.97" height="30.49" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FormatAndWrite  ·  1672 bytes  ·  library</title></rect>
 <rect x="172.46" y="425.50" width="29.76" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>PollPadAndDistributeInput  ·  1660 bytes  ·  matched</title></rect>
 <rect x="202.22" y="425.50" width="28.68" height="30.49" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>BuildActorDrawList  ·  1600 bytes  ·  handwritten</title></rect>
@@ -514,7 +514,7 @@
 <rect x="287.37" y="687.54" width="7.35" height="6.85" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADPORTD_OBJ_23C  ·  92 bytes  ·  library</title></rect>
 <rect x="294.72" y="687.54" width="7.03" height="6.85" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>LookupSine  ·  88 bytes  ·  handwritten</title></rect>
 <rect x="301.74" y="687.54" width="7.03" height="6.85" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>LookupCosine  ·  88 bytes  ·  handwritten</title></rect>
-<rect x="308.77" y="687.54" width="7.03" height="6.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ArmStoryIntroOnStart  ·  88 bytes  ·  matched</title></rect>
+<rect x="308.77" y="687.54" width="7.03" height="6.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RestartTitleCardCheckOnTriangle  ·  88 bytes  ·  matched</title></rect>
 <rect x="235.62" y="694.38" width="6.64" height="7.24" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>LerpAngle8  ·  88 bytes  ·  matched</title></rect>
 <rect x="235.62" y="701.63" width="6.64" height="7.24" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ProbeActorGroundHeightRaised  ·  88 bytes  ·  matched</title></rect>
 <rect x="235.62" y="708.87" width="6.64" height="7.24" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>SetSpuTransferStartAddr  ·  88 bytes  ·  library</title></rect>
@@ -525,7 +525,7 @@
 <rect x="235.62" y="745.09" width="6.64" height="7.24" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>MemCardInitCard  ·  88 bytes  ·  library</title></rect>
 <rect x="235.62" y="752.34" width="6.64" height="7.24" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADPORTD_OBJ_4A8  ·  88 bytes  ·  library</title></rect>
 <rect x="235.62" y="759.58" width="6.64" height="6.92" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>CopyWords  ·  84 bytes  ·  handwritten</title></rect>
-<rect x="235.62" y="766.50" width="6.64" height="6.92" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SnapshotPadInputState  ·  84 bytes  ·  matched</title></rect>
+<rect x="235.62" y="766.50" width="6.64" height="6.92" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MovePadInputState  ·  84 bytes  ·  matched</title></rect>
 <rect x="242.26" y="694.38" width="6.78" height="6.45" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ApplyActiveGteRotation  ·  80 bytes  ·  handwritten</title></rect>
 <rect x="249.04" y="694.38" width="6.78" height="6.45" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>GetWorldChunkAnimState  ·  80 bytes  ·  handwritten</title></rect>
 <rect x="255.82" y="694.38" width="6.78" height="6.45" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>QuiesceHardwareForExec  ·  80 bytes  ·  matched</title></rect>

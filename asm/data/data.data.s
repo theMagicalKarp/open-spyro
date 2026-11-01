@@ -14368,11 +14368,11 @@ dlabel g_pCreditsLineTable
     /* 65F08 80075708 00000000 */ .word 0x00000000
 enddlabel g_pCreditsLineTable
 
-nonmatching g_nGameplayBlocked
+nonmatching g_nCinematicActive
 
-dlabel g_nGameplayBlocked
+dlabel g_nCinematicActive
     /* 65F0C 8007570C 00000000 */ .word 0x00000000
-enddlabel g_nGameplayBlocked
+enddlabel g_nCinematicActive
 
 nonmatching g_pSpriteRecordWriteCursor
 
@@ -14707,11 +14707,11 @@ dlabel g_pCollisionHitActor
     /* 65FE4 800757E4 00000000 */ .word 0x00000000
 enddlabel g_pCollisionHitActor
 
-nonmatching g_nGameOverLevelIntroIndex
+nonmatching g_nGameOverLevelIndex
 
-dlabel g_nGameOverLevelIntroIndex
+dlabel g_nGameOverLevelIndex
     /* 65FE8 800757E8 00000000 */ .word 0x00000000
-enddlabel g_nGameOverLevelIntroIndex
+enddlabel g_nGameOverLevelIndex
 
 nonmatching g_pCreditsLoadBuf
 

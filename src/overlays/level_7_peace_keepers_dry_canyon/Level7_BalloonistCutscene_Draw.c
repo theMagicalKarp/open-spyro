@@ -56,8 +56,8 @@ void Level7_BalloonistCutscene_Draw(void) {
   int limit;
   int slot;
 
-  if (g_nActorCutsceneSubstate[0] < 4) {
-    if (g_nActorCutsceneSubstate[0] < 2) {
+  if (g_nActorCutsceneSubstate[0] < ACS_STREAM_WAIT) {
+    if (g_nActorCutsceneSubstate[0] < ACS_BOARD) {
       cursor = g_pSpriteRecordWriteCursor;
       sprintf(title, "%s THE BALLOONIST", g_apBalloonistNames[g_nActiveLevelId / 10]);
       titlePos[0] = 0x108 - strlen(title) * 8;
@@ -73,7 +73,7 @@ void Level7_BalloonistCutscene_Draw(void) {
             g_anCosineLut[(g_nActorCutsceneSubstate[1] * 4 + titlePhase * 0xC) & 0xFF] >> 8;
       }
     }
-    if (g_nActorCutsceneSubstate[0] == 1) {
+    if (g_nActorCutsceneSubstate[0] == ACS_DIALOGUE) {
       if (g_nActorCutsceneSubstate[3] < 0x1E || g_nActorCutsceneSubstate[3] > 0x20) {
         DrawShadedMenuBox(0x48, 0x1B8, 0x1C, 0x68);
         pagePos[1] = 0x2C;
@@ -133,7 +133,7 @@ void Level7_BalloonistCutscene_Draw(void) {
         }
         slot = 1;
         for (world = 0; world < 6; world++) {
-          if (g_nActiveLevelId / 10 - 1 != world && g_abWorldBalloonistState[world] == 2) {
+          if (g_nActiveLevelId / 10 - 1 != world && g_abWorldBalloonistState[world] == BALLOONIST_OPEN) {
             menuPos[0] = 0x110;
             rec = (Actor *)g_pSpriteRecordWriteCursor - 1;
             BuildTextSprites(g_apWorldNameByLevelTens[world], menuPos, menuColor, 0x10, 0xB);
@@ -201,7 +201,7 @@ void Level7_BalloonistCutscene_Draw(void) {
     }
     BuildRenderEntityLists();
     ComposeFrameScene();
-    if (g_nActorCutsceneSubstate[0] < 2) {
+    if (g_nActorCutsceneSubstate[0] < ACS_BOARD) {
       g_apSpritePrimQueue = 0;
       EnqueuePendingSpritePrims();
       RasterizeSpritePrimQueue();

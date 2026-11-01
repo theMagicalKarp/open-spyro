@@ -1,5 +1,6 @@
 #include "actor.h"
 #include "actor_states.h"
+#include "dragon_rescue.h"
 #include "emit_record.h"
 #include "funcs.h"
 #include "globals.h"
@@ -97,7 +98,7 @@ void DragonRescue_Update(void) {
   GB[5] += g_nFrameStep;
   g_nDragonRescueSecondaryTimer += g_nFrameStep;
   switch (g_nDragonRescueSubstate) {
-  case 0: {
+  case DRAGON_RESCUE_AURA: {
     int now;
 
     g_dwGamestateFrames++;
@@ -123,7 +124,7 @@ void DragonRescue_Update(void) {
     if (now >= 0x30) {
       int *rec;
 
-      g_nDragonRescueSubstate = 1;
+      g_nDragonRescueSubstate = DRAGON_RESCUE_SWEEP;
       *(int *)i = 0;
       g_nDragonRescueFullscreenTintLevel = 0xFF;
       ACTOR_RAW(SRC, int, posZ) -= 0x78;
@@ -181,7 +182,7 @@ void DragonRescue_Update(void) {
       PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_SWEEP), 0, SFX_MODE_PANNED, &GB[11]);
     }
   } break;
-  case 1:
+  case DRAGON_RESCUE_SWEEP:
     if (g_nDragonRescueTimer < 0x20) {
       int k = 0x20 - g_nDragonRescueTimer;
 
@@ -326,7 +327,7 @@ void DragonRescue_Update(void) {
       g_abSpyroPersistentEuler[2] = a >> 4;
       g_nSpyroAnimPlayRate = 8;
     } else {
-      g_nDragonRescueSubstate = 2;
+      g_nDragonRescueSubstate = DRAGON_RESCUE_LOAD_WAIT;
       g_bSpyroSubFrameTimer = 4;
       g_nDragonRescueTimer = 0;
       g_bSpyroAnimCurrent = 0;
@@ -334,7 +335,7 @@ void DragonRescue_Update(void) {
       g_nSpyroAnimPlayRate = 4;
       g_abSpyroPersistentEuler[2] = (int)g_dwDragonRescueOrbitTargetYaw >> 4;
     }
-    if (g_nDragonRescueSubstate == 1) {
+    if (g_nDragonRescueSubstate == DRAGON_RESCUE_SWEEP) {
 
       AddVector(vec, g_anSpyroWorldPos, &SRC->posX);
       RShiftVector3(vec, 1);
@@ -413,7 +414,7 @@ void DragonRescue_Update(void) {
       SampleSpyroShadowRingHeights(0);
     }
     break;
-  case 2: {
+  case DRAGON_RESCUE_LOAD_WAIT: {
     Actor *s = SRC;
 
     s->subMode = (s->subMode + 1) & 3;
@@ -433,12 +434,13 @@ void DragonRescue_Update(void) {
     }
     g_nPulseRumbleAmount = 0x46;
     g_pfnLevelSpawnActor(ACTOR_TYPE_STATUE_SHARD, g_pDragonRescueSourceActor);
-    if (g_nDragonRescueTimer < 0x10 || g_nDragonRescueStreamState < 3) {
+    if (g_nDragonRescueTimer < 0x10 ||
+        g_nDragonRescueStreamState < RESCUE_STREAM_RELOAD_LEVEL) {
       AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
       TickSpyroAnimLayer1();
       TickSpyroAnimLayer2();
     } else {
-      g_nDragonRescueSubstate = 3;
+      g_nDragonRescueSubstate = DRAGON_RESCUE_TURN;
       g_nDragonRescueTimer = 0;
       {
         int n;
@@ -481,7 +483,7 @@ void DragonRescue_Update(void) {
       }
     }
     break;
-  case 3:
+  case DRAGON_RESCUE_TURN:
     if (GB[5] < 0x18) {
       STATUE->scale = 0x60 - GB[5] * 3;
       {
@@ -501,7 +503,7 @@ void DragonRescue_Update(void) {
       Actor *s = SRC;
       Actor *t;
 
-      g_nDragonRescueSubstate = 4;
+      g_nDragonRescueSubstate = DRAGON_RESCUE_CAMERA_PATH;
       GB[5] = 0;
       t = STATUE;
       t->rotZ = STATUE_ST(s)->dragonYaw >> 4;
@@ -511,7 +513,7 @@ void DragonRescue_Update(void) {
       MIRROR->rotZ = g_abSpyroPersistentEuler[2];
     }
     break;
-  case 4: {
+  case DRAGON_RESCUE_CAMERA_PATH: {
     int save[5];
     int step;
 
@@ -602,7 +604,7 @@ void DragonRescue_Update(void) {
         g_nDragonRescueTimer >= g_nDragonRescueCameraPathCount * 2) {
       int *p;
 
-      g_nDragonRescueSubstate = 5;
+      g_nDragonRescueSubstate = DRAGON_RESCUE_LIGHT_UP;
       g_nDragonRescueTimer = 0;
       p = (int *)(g_nDragonRescueCameraPathCount * 0x18 +
                   (int)g_pDragonRescueCameraPath);
@@ -630,7 +632,7 @@ void DragonRescue_Update(void) {
       g_nSpyroAnimPlayRate = 4;
       TickSpyroAnimLayer1();
       TickSpyroAnimLayer2();
-      StopSoundVoiceByIndex(*(int *)&g_bDragonRescueSfxVoiceMarker, 2);
+      StopSoundVoiceByIndex(*(int *)&g_bSceneSfxVoiceMarker, 2);
       TickSpuPerFrame();
       if (g_nDragonRescueSplitFlag == 0) {
         SetSpuTransferStartAddr(0x80000 - g_nDragonRescueAudioSampleSize);
@@ -647,7 +649,7 @@ void DragonRescue_Update(void) {
       }
     }
   } break;
-  case 5: {
+  case DRAGON_RESCUE_LIGHT_UP: {
     int *icon;
     int k;
     int off;
@@ -690,7 +692,7 @@ void DragonRescue_Update(void) {
       goto roll_in;
     }
     if (GB[5] >= 0x19) {
-      g_nDragonRescueSubstate = 6;
+      g_nDragonRescueSubstate = DRAGON_RESCUE_COUNT;
       GB[5] = 0;
       g_bHudDragonRollPhase = 0;
       CopyVector((int *)ang, &g_pDragonRescueStatueActor->posX);
@@ -703,7 +705,7 @@ void DragonRescue_Update(void) {
                       &GB[11]);
     }
   } break;
-  case 6:
+  case DRAGON_RESCUE_COUNT:
     AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
     TickSpyroAnimLayer1();
     TickSpyroAnimLayer2();
@@ -718,18 +720,18 @@ void DragonRescue_Update(void) {
       }
       if (g_bHudDragonRollPhase == 0) {
         PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_COUNT), 0, SFX_MODE_PANNED,
-                        &g_bDragonRescueSfxVoiceMarker);
+                        &g_bSceneSfxVoiceMarker);
       }
     }
-    if (GB[5] >= 0x60 && g_nDragonRescueStreamState == 6) {
-      g_nDragonRescueSubstate = 7;
+    if (GB[5] >= 0x60 && g_nDragonRescueStreamState == RESCUE_STREAM_DONE) {
+      g_nDragonRescueSubstate = DRAGON_RESCUE_FADE_OUT;
       GB[5] = 0;
       g_pEmitListWriteCursor = g_pEmitListBase;
       ((unsigned char *)g_pEmitListBase)[1] = 0xFF;
       PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_FADE), 0, SFX_MODE_PANNED, &GB[11]);
     }
     break;
-  case 7: {
+  case DRAGON_RESCUE_FADE_OUT: {
     int k;
 
     AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
@@ -774,7 +776,7 @@ void DragonRescue_Update(void) {
   } break;
   }
   g_pfnLevelAdvanceEmitList(g_nFrameStep);
-  if (g_nDragonRescueSubstate > 0) {
+  if (g_nDragonRescueSubstate > DRAGON_RESCUE_AURA) {
     TickDragonRescueAssetStream();
   }
   {

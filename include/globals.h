@@ -547,18 +547,18 @@ extern int g_nGnastyLootFallRefZCap;         /* 0x80075678 */
 extern void (*g_pfnGamestate7DrawHook)(void); /* 0x8007567c: flight levels' FlightResults_Draw */
 extern struct CutscenePath *g_pPathTableHead; /* 0x80075680: the cutscene path table (cutscene_path.h) */
 extern int g_nMotionTrailRibbonCount;        /* 0x80075684 */
-extern int g_nPrevLevelIndex;           /* 0x80075688 */
+extern int g_nPrevLevelIndex;           /* 0x80075688: the level index being left, for the tally (TickLevelTransitionStream) */
 extern int g_nPauseMenuIdleFrames;           /* 0x8007568c */
 extern int g_nFlightLevelActive;             /* 0x80075690 */
 extern void (*g_pfnLevelFallImpactCallback)(void); /* 0x80075694: flight levels' FlightEndHook, else null */
 extern int g_nActorPoolLiveCount;            /* 0x800756a4 */
 extern int g_nActorPoolCapacity;             /* 0x800756a8 */
-extern int g_nLevelTransitionPhase;          /* 0x800756ac */
-extern int g_nLevelTransitionTallyActive;    /* 0x800756b0 */
+extern int g_nLevelTransitionPhase;          /* 0x800756ac: frame clock of the level-transition banner and treasure tally (DrawLevelTransitionOverlay): 0x40 results panel in, 0x80 gems fly, 0x1A0 tally over */
+extern int g_nLevelTransitionTallyActive;    /* 0x800756b0: 1 while the post-level treasure tally plays (set on a level exit / hub return); LevelLoad_Update holds the final stream stages until it clears */
 extern int g_nCameraLosClear;                /* 0x800756b8 */
 extern void (*g_pfnLevelAdvanceEmitList)(int frameStep); /* 0x800756bc */
 extern int g_nLetterboxBarHeight;            /* 0x800756c0 */
-extern int g_nGemTallyIconCount;             /* 0x800756c8 */
+extern int g_nGemTallyIconCount;             /* 0x800756c8: gems picked up this level visit (CollectPickupActor logs each type in g_abGemTallyIconUvTable[n & 0x1F]); flight bonuses add 0xC; the tally flies in up to 0x20 */
 extern int g_nFrameStep;                     /* 0x800756cc */
 extern int g_nPortalTransitionActive;           /* 0x800756d0: set by a portal exit or hub return, cleared when TickLevelTransitionStream finishes; Spyro takes the scripted arrival (the hub portal glide-out, or the exit nudge) instead of the plain level spawn, and cannot bonk meanwhile */
 extern int g_nSubMenuScrollDelta;            /* 0x800756d4 */
@@ -569,19 +569,19 @@ extern void *g_pActorAuxPoolTop;             /* 0x800756e8 */
 extern int g_anSecondaryActorTexWords[2];    /* 0x800756f0 */
 extern int g_nReturningHomePhase;            /* 0x800756f8 */
 extern struct Actor *g_pSpriteRecordBufferTop; /* 0x800756fc: top of this frame's sprite-record queue (g_pSpriteRecordWriteCursor grows down from it) */
-extern int g_nCreditsMode;               /* 0x80075704 */
-extern int g_nGameplayBlocked;               /* 0x8007570c */
+extern int g_nCreditsMode;               /* 0x80075704: enum CreditsMode (credits_mode.h) */
+extern int g_nCinematicActive;               /* 0x8007570c: nonzero while a cinematic holds the player (dragon rescue, actor/balloonist cutscenes, boss intros): closes the letterbox (DrawCinematicLetterbox), blocks Start/Select menus (GamestateUpdate) and freezes some enemy timers */
 extern struct Actor *g_pSpriteRecordWriteCursor; /* 0x80075710: sprite-record queue tail; Actor-sized records, grows down from g_pSpriteRecordBufferTop */
-extern int g_nDemoMode;                    /* 0x80075714: attract demo: 0 off, 1 playback (set by Title_Update), 2 record into 0x80600000 */
+extern int g_nDemoMode;                    /* 0x80075714: attract demo, enum DemoMode (gamestate.h) */
 extern int g_nGroundSurfaceType;             /* 0x80075718 */
-extern void *g_pGemTallyParticleRecords;     /* 0x8007571c */
-extern int g_nPauseMenuCursor;               /* 0x80075720 */
+extern void *g_pGemTallyParticleRecords;     /* 0x8007571c: the tally particle pool (GemTallyParticle, gem_tally.h), borrowed from g_apSecondaryEntityList */
+extern int g_nPauseMenuCursor;               /* 0x80075720: row on the pause page (enum PauseMainRow / PauseOptionsRow / PauseQuitRow); flight results menu reuses it */
 extern uint g_dwGamestateFrames;             /* 0x8007572c */
 extern int g_nPadSetMainModePending;         /* 0x80075730 */
 extern void (*g_pfnLevelUpdateActors)(void); /* 0x80075734 */
 extern void *g_pEmitListWriteCursor;         /* 0x80075738 */
 extern struct Actor *g_pActorPoolFreeHead;   /* 0x8007573c: lowest free slot of the level actor pool (AllocActorRecordSlot) */
-extern int g_nGemTallyHoldEndPhase;          /* 0x80075740 */
+extern int g_nGemTallyHoldEndPhase;          /* 0x80075740: tally phase where the TREASURE FOUND hold ends: 0x8C + 2 per icon, capped at 0xC0 */
 extern int g_nSubMenuCursor;                 /* 0x80075744 */
 extern int g_nMusicVolume;                   /* 0x80075748 */
 extern int g_nWorldDragonsRescued;           /* 0x80075750 */
@@ -601,14 +601,14 @@ extern void *g_pPrimBufferWriteCursor;       /* 0x800757b0 */
 extern int g_nLevelPickupTableCount;         /* 0x800757b4 */
 extern int g_nDemoIndex;                 /* 0x800757b8: which of the 4 attract demos plays next (cycles &3) */
 extern void (*g_pfnGamestate7Handler)(void);  /* 0x800757c0: flight levels' FlightResultsMenu_Update */
-extern int g_nPauseMenuSubstate;             /* 0x800757c8 */
+extern int g_nPauseMenuSubstate;             /* 0x800757c8: pause menu page, enum PausePage (pause_menu.h) */
 extern int g_nSubMenuScrollOffset;           /* 0x800757cc */
 extern int g_nPulseRumbleTimer;              /* 0x800757d0 */
 extern uint g_dwActorMeshFadeColor;          /* 0x800757d4 */
 extern int g_nGamestate;                     /* 0x800757d8 */
 extern struct PadSubstep *g_pPadSubstepState; /* 0x800757e0: this substep's g_anPadSubstepRing entry (pad.h) */
 extern void *g_pCollisionHitActor;           /* 0x800757e4 */
-extern int g_nGameOverLevelIntroIndex;       /* 0x800757e8 */
+extern int g_nGameOverLevelIndex;       /* 0x800757e8: g_nLevelIndex at game over; picks the continue spawn in g_anGameOverRespawnPosTable / g_abGameOverRespawnYawTable (BuildLoadedLevelRuntime) */
 extern unsigned short **g_pLevelPickupTableEntries; /* 0x800757f8: per pickup group, its actor-id list (bit 15 marks the last) */
 extern byte g_abPadActCommand[2];            /* 0x80075800 */
 extern struct Actor *g_pSpyroContactActor;           /* 0x80075804 */
@@ -627,10 +627,10 @@ extern int g_nCameraShakePeakAmplitude;      /* 0x80075848 */
 extern int g_nPulseRumbleAmount;             /* 0x8007584c */
 extern int g_nPortalViewYawSpin;        /* 0x80075858: portal-surface view spin, +2 a frame (DrawPortalsAndStaticActors) */
 extern void *g_pDemoPadCursor;           /* 0x8007585c: read/write cursor into the recorded demo pad stream (SampleDemoPadFrame) */
-extern int g_nWorldTreasureCollected;        /* 0x80075860 */
-extern int g_nCdStreamState;                 /* 0x80075864 */
+extern int g_nTotalTreasureCollected;        /* 0x80075860: game-wide treasure (gem) total: pickups, flight bonuses; 14000 (0x36B0) picks the post-game credits return */
+extern int g_nCdStreamState;                 /* 0x80075864: enum CutsceneStreamState or LevelStreamState (cd_stream.h), by which machine runs */
 extern int g_nInGameTick;                    /* 0x80075868 */
-extern int g_nLevelGemsAtEntry;              /* 0x8007587c */
+extern int g_nLevelGemsAtEntry;              /* 0x8007587c: g_anLevelGemsCollected[level] on entry; the tally shows the difference */
 extern int g_nLevelSelectModeActive;         /* 0x80075880 */
 extern int g_nDemoExitFadeFrame;                /* 0x80075884: demo-end fade frame, 0 until the demo ends; at 0x10 the demo tears down */
 extern DRAWENV *g_pActiveFrameDrawEnv;       /* 0x80075888 */
@@ -648,7 +648,7 @@ extern int g_nPortalCount;              /* 0x800758bc */
 extern int g_nSpyroFallReferenceZ;           /* 0x800758c0 */
 extern int g_nVblankTickCount;               /* 0x800758c8 */
 extern struct Actor *(*g_pfnLevelSpawnActor)(int type, struct Actor *parent); /* 0x800758cc */
-extern byte g_abWorldBalloonistState[6];         /* 0x800758d0 per-homeworld balloonist progress: 0 unmet, 1 talked, 2 travel unlocked (ResetLevelState seeds [0] = 2, the unlock cheat fills all 2, homeworld UpdateActors steps it and picks the dialogue page) */
+extern byte g_abWorldBalloonistState[6];         /* 0x800758d0 per-homeworld balloonist progress, enum BalloonistState (actor_cutscene.h): unmet / talked / travel unlocked (ResetLevelState seeds [0] = 2, the unlock cheat fills all 2, homeworld UpdateActors steps it and picks the dialogue page) */
 extern int g_nPadActAlignedFlag;             /* 0x800758e0 */
 /* 0x800758e4: the level's EmitParticles(count, type, pos, effectArg). Left
  * unprototyped: effectArg is a velocity vector, a packed colour, a scale or a
@@ -660,18 +660,18 @@ extern int g_nLevelSelectSubIndex;           /* 0x800758f0 */
 extern int g_nPortalViewPitchTilt;      /* 0x800758fc: portal-surface view tilt, +2 a frame (DrawPortalsAndStaticActors) */
 extern int g_nHitRumbleTimer;                /* 0x80075904 */
 extern int g_nCameraShakeDuration;           /* 0x8007590c */
-extern uint g_dwActiveCameraOptions;         /* 0x80075914 */
+extern uint g_dwActiveCameraOptions;         /* 0x80075914: camera option word, CAM_OPT_ACTIVE or CAM_OPT_PASSIVE (camera.h); saved */
 extern int g_nScreenFadeLevel;              /* 0x80075918: fade-to-black level (drawn as a subtractive fullscreen tint, decays by g_nFrameStep in gameplay) */
-extern int g_nLevelStormFlag;                /* 0x8007591c */
+extern int g_nPortalDistanceFogEnabled;                /* 0x8007591c: portals beyond 0x4000 fade into g_dwWorldFogColor (DrawPortalsAndStaticActors); set for Beast Makers home + Misty Bog and the opening-story cutscene */
 extern int g_nCameraManualYawInput;          /* 0x80075924 */
 extern int g_nPadHistoryIndex;               /* 0x80075928 */
-extern int g_nCameraLookAroundActive;        /* 0x8007592c */
+extern int g_nCameraForcePassiveFollow;        /* 0x8007592c: 1 while Spyro is in SPYRO_ST_HURT_LONG (UpdateCameraFrame): the camera behaves as if CAM_OPT_PASSIVE_FOLLOW were set */
 extern void *g_pActorAuxPoolFreeHead;        /* 0x80075930 */
 extern int g_nActorMeshOtDepthBin;           /* 0x80075934 */
 extern int g_nCameraPassiveModeHoldTimer;    /* 0x80075938 */
-extern int g_nGameplayDrawFrame;             /* 0x8007593c */
-extern int g_nGameplayDrawMode;              /* 0x80075940 */
-extern byte g_bSpyroPadSnapshotReverseFlag;  /* 0x80075944 */
+extern int g_nRespawnOrGameOverFrame;             /* 0x8007593c: frame counter of the respawn / game-over sequence (RespawnOrGameOver_Update / _Draw) */
+extern int g_nRespawnOrGameOverMode;              /* 0x80075940: respawn / game-over sub-mode: 0 load frame (respawn returns here), 1 game-over presentation, 2 wait for the level stream (RespawnOrGameOver_Update) */
+extern byte g_bPadInputStashed;  /* 0x80075944: 1 while live pad input sits in g_dwPadStash (toggled by MovePadInputState); the frame tick restores it when set */
 extern int g_nVsyncFramePaceAnchor;          /* 0x80075950 */
 extern int g_nVsyncFrameEndCount;            /* 0x80075954 */
 extern int g_nSpyroPitchRateAccum;           /* 0x80075960 */
@@ -778,7 +778,7 @@ extern int g_nDragonRescueMirrorMeshOffset;                /* 0x80077044 */
 extern int g_nDragonRescueCameraPathOffset;                /* 0x8007704c */
 extern int g_nDragonRescueCameraPathSize;                  /* 0x80077050 */
 extern int g_nDragonRescueTypeSnapshot;                    /* 0x80077054 */
-extern int g_nDragonRescueSubstate;                        /* 0x80077058 */
+extern int g_nDragonRescueSubstate;                        /* 0x80077058: enum DragonRescueSubstate (dragon_rescue.h) */
 extern int g_nDragonRescueStreamState;                     /* 0x8007705c */
 extern int g_nDragonRescueSpuChunkIndex;                   /* 0x80077060 */
 extern int g_nDragonRescueSplitFlag;                       /* 0x80077064 */
@@ -789,7 +789,7 @@ extern int g_nDragonRescueFullscreenTintLevel;             /* 0x80077074 */
 extern void *g_pDragonRescueCameraPath;                    /* 0x80077078 */
 extern int g_nDragonRescueCameraPathCount;                 /* 0x8007707c */
 extern int g_nDragonRescueSecondaryTimer;                  /* 0x80077080 */
-extern byte g_bDragonRescueSfxVoiceMarker;                 /* 0x80077084 */
+extern byte g_bSceneSfxVoiceMarker;                 /* 0x80077084: PlaySoundEffect voice marker shared by the non-gameplay scene sounds: dragon-rescue count blip, opening/demo stream sample (BeginCutscene, TickDemoPlayback), titlescreen UI sound */
 extern int g_nDragonRescueAudioFiredFlag;                  /* 0x80077088 */
 extern int g_nDragonRescuePadHoldTimer;                    /* 0x8007708c */
 extern int g_nDragonRescueOrbitStartYaw;                   /* 0x80077090 */
@@ -814,7 +814,7 @@ extern int g_anCollisionProbeVec[3];                    /* 0x80077368 */
 extern uint g_dwPadPressed;                             /* 0x80077378 */
 extern uint g_dwPadReleased;                            /* 0x8007737c */
 extern uint g_dwPadHeld;                                /* 0x80077380 */
-extern int g_nPadType;                                  /* 0x80077384 */
+extern int g_nPadType;                                  /* 0x80077384: enum PadType (pad.h) */
 extern int g_nPadStickActiveFlag;                       /* 0x80077388 */
 extern uint g_dwPadAnalogCalibrated;                    /* 0x8007738c */
 extern int g_nPadAllInputIdleFlag;                      /* 0x80077390 */
@@ -823,19 +823,19 @@ extern uint g_dwPadAnalogRawSnapshot;                   /* 0x80077398 */
 extern int g_anPadSubstepRing[24];                      /* 0x800773bc */
 extern int g_anLevelGemsCollected[36];                  /* 0x80077420 */
 extern int g_nCurrentMusicTrack;                        /* 0x800774b0 */
-extern uint g_dwMusicStreamStatus;                      /* 0x800774b4 */
+extern uint g_dwMusicStreamStatus;                      /* 0x800774b4: XA music stream state, MUSIC_ST_* (cd_music.h); data reads wait for MUSIC_ST_IDLE */
 extern int g_anMusicTrackLbaTable[64];                  /* 0x800774b8 */
 extern uint g_dwCdMusicReadHead;                        /* 0x800776b8 */
-extern int g_nLastCdMusicCommand;                       /* 0x800776c4 */
-extern int g_nPendingMusicCommand;                      /* 0x800776c8 */
-extern uint g_dwPad2Buttons;                            /* 0x800776d8 */
+extern int g_nLastCdMusicCommand;                       /* 0x800776c4: libcd command the music stream is waiting on: CdlReadS while starting, CdlPause queued for the end of a fade-out (CdlStop/CdlPause handled alike) */
+extern int g_nPendingMusicCommand;                      /* 0x800776c8: MUSIC_CMD_* to retry on the next TickCdMusicStream (the drive was busy) */
+extern uint g_dwPadStash;                            /* 0x800776d8: first word of a 0xA4-byte stash of the pad state block (g_dwPadPressed..); MovePadInputState parks live input here to blank it for a frame */
 extern int g_nWorldCollisionTriCount;                   /* 0x80077780 */
 extern void *g_pWorldCollisionTriArray;                 /* 0x80077784 */
 extern int g_nWorldMeshIndexCount;                      /* 0x80077788 */
 extern void *g_pWorldMeshIndexTable;                    /* 0x8007778c */
 extern int g_anCameraLatchedAnchorPos[3];               /* 0x80077798 */
 extern int g_anLevelTriggerStateSlots[10];              /* 0x800777c0 */
-extern int g_nActorCutsceneSubstate;                      /* 0x800777e8 */
+extern int g_nActorCutsceneSubstate;                      /* 0x800777e8: enum ActorCutsceneSubstate (actor_cutscene.h) */
 extern int g_anCollisionContactPoint[3];                /* 0x80077858 */
 extern int g_nSpawnAnchorValid;                         /* 0x80077888 */
 extern int g_anRunningKillBitmap[8];                    /* 0x80077898 */
@@ -845,7 +845,7 @@ extern int g_nLevelSpawnYaw;                            /* 0x800778e4 */
 extern int g_anLevelKillBitmapTable[288];               /* 0x80077908 */
 extern byte g_abGemTallyIconUvTable[32];                /* 0x80077db8 */
 extern int g_anStaticRegSaveArea[19];                   /* 0x80077dd8 */
-extern byte g_abHudCounterDisplayState[5];              /* 0x80077fa8 */
+extern byte g_abHudCounterDisplayState[5];              /* 0x80077fa8: per HudCounter, a HudCounterState (hud_counter.h) */
 extern byte g_bHudLevelGemRollPhase;                    /* 0x80077fad */
 extern byte g_bHudDragonRollPhase;                      /* 0x80077fae */
 extern byte g_bHudLivesRollPhase;                       /* 0x80077faf */
@@ -901,10 +901,10 @@ extern void *g_pEmitListBuffer;                         /* 0x800785f8 */
 extern void *g_pWorkAreaTop;                            /* 0x800785fc */
 extern int g_nLevelArchiveBaseLba;                      /* 0x80078600 */
 extern int g_nLevelArchiveByteSize;                     /* 0x80078604 */
-extern int g_anWorldPersistentFlags[6];                 /* 0x80078618 */
+extern int g_anFlightClearTimes[6];                 /* 0x80078618: per flight level (world 0..4): run time of the first all-targets clear, 0 = not yet cleared (FlightEndHook); saved */
 extern struct Portal *g_apPortals[];     /* 0x80078640 (portal.h) */
 extern int g_anCameraActiveTargetParams[6];             /* 0x80078668 */
-extern byte g_abWorldPerLevelByteTable[30];             /* 0x80078680 */
+extern byte g_abFlightBonusPaid[30];             /* 0x80078680: per flight level, 5 bytes: [0..3] target-class bonus paid, [4] all-clear bonus paid (HandleFlightResults); saved */
 extern byte g_abPadRawReport[34];                       /* 0x800786a0 */
 extern int g_anSpyroFlameAnchorPos[3];             /* 0x800786c8 */
 extern byte g_abSpyroFlameAnchorEuler[3];          /* 0x800786d4 */
@@ -941,7 +941,7 @@ extern byte g_abSpyroTintRgba[4];                 /* 0x80078a80: Spyro's model t
 extern uint g_dwSpyroTriggerEventFlags;                 /* 0x80078a84 */
 extern int g_nSpyroHazardFloorZ;                     /* 0x80078a88 */
 extern int g_anSpyroBodyMtx[5];                         /* 0x80078a8c */
-extern int g_nSpyroAnimMode;                            /* 0x80078aac */
+extern int g_nSpyroAnimMode;                            /* 0x80078aac: enum SpyroAnimMode (spyro_state.h): the transition TickSpyroAnimStateMachine is playing */
 extern int g_nSpyroAnimPlayRate;                        /* 0x80078ab0 */
 extern int g_nSpyroPrevState;                           /* 0x80078ab4 */
 extern int g_nSpyroFlamePhase;                /* 0x80078ab8 */
@@ -991,13 +991,13 @@ extern int g_anSpyroFirstContactNormal[3];              /* 0x80078be0 */
 extern int g_nSpyroScriptedMoveMode;                    /* 0x80078bec */
 extern int g_nSpyroFlameState;                     /* 0x80078bf0 */
 extern int g_nSpyroFlameTimer;                     /* 0x80078bf8 */
-extern int g_nSpyroSwingEulerPitchTarget;               /* 0x80078bfc */
-extern int g_nCameraScriptStickRequestY;                /* 0x80078c00 */
-extern int g_nCameraScriptStickRequestX;                /* 0x80078c04 */
+extern int g_nSpyroSwingEulerTargetX;               /* 0x80078bfc: spring targets of Spyro's swing euler (x, y, z = this and the next two words), smoothed into g_abSpyroSwingByteEuler by SmoothSpyroByteEulerSpring */
+extern int g_nSpyroSwingEulerTargetY;                /* 0x80078c00: swing-euler y target: free-look stick pitch (camera mode 9, +-0x200), carried-prop shake in the levels */
+extern int g_nSpyroSwingEulerTargetZ;                /* 0x80078c04: swing-euler z target: free-look stick yaw (camera mode 9, +-0x300) */
 extern int g_anSpyroSwingEulerPrev[3];                  /* 0x80078c08 */
 extern int g_anSpyroSwingEulerSpringAccum[3];           /* 0x80078c14 */
 extern int g_anSpyroComposedBodyMtx[5];                 /* 0x80078c20 */
-extern int g_nSpyroPadSnapshotCountdown;                /* 0x80078c48 */
+extern int g_nSpyroInputBlankCountdown;                /* 0x80078c48: frames left during which Spyro's frame tick stashes the pad (no input): 0xC after a level load, >= 2 while SPYRO_RQ_FREEZE_INPUT or a scripted move holds */
 extern uint g_dwSpyroRequestMask;                       /* 0x80078c4c */
 extern int g_anSpyroRequestTargetPos[3];                /* 0x80078c50 */
 extern byte g_abSpyroRequestEuler[3];                   /* 0x80078c5c */
@@ -1018,16 +1018,16 @@ extern int g_nSpyroGroundChunkId;                       /* 0x80078ccc */
 extern int g_anSpyroGroundChunkVerts[9];                /* 0x80078cd0 */
 extern void *g_pSpyroHazardRegionData;                /* 0x80078cf4 */
 extern byte g_bSpyroSfxVoiceMarker;                     /* 0x80078cf8 */
-extern int g_nSaveMenuMode;                             /* 0x80078d00 */
-extern int g_nSaveMenuAnimPhase;                        /* 0x80078d04 */
-extern int g_nSaveMenuCursor;                           /* 0x80078d08 */
-extern int g_nSaveMenuSubstate;                         /* 0x80078d0c */
+extern int g_nSaveMenuMode;                             /* 0x80078d00: enum SaveMenuMode (save_menu.h) */
+extern int g_nSaveMenuAnimPhase;                        /* 0x80078d04: frames since the screen changed (input waits on it) */
+extern int g_nSaveMenuCursor;                           /* 0x80078d08: SaveMenuRow / SaveFailedRow, or the SaveStep while saving */
+extern int g_nSaveMenuSubstate;                         /* 0x80078d0c: enum SaveMenuScreen (save_menu.h) */
 extern int g_nSaveMenuXOffset;                          /* 0x80078d10 */
 extern int g_nSaveSlotSelected;                         /* 0x80078d18 */
-extern int g_nTitleMode;                          /* 0x80078d78 */
-extern int g_nStoryIntroSubstate;                       /* 0x80078d7c */
-extern int g_nStoryIntroTimer;                          /* 0x80078d80 */
-extern int g_nStoryIntroMessage;                        /* 0x80078d94 */
+extern int g_nTitleMode;                          /* 0x80078d78: title state block word 0: enum TitleMode (title_state.h); TITLE_MODE_STORY_INTRO hands GS_TITLE to StoryIntro_Update/_Draw */
+extern int g_nStoryIntroSubstate;                       /* 0x80078d7c: title state +0x04: StoryIntro_Update step (0 arm, 1 stream, 2 fly-in) */
+extern int g_nStoryIntroTimer;                          /* 0x80078d80: title state +0x08: StoryIntro_Update frame timer */
+extern int g_nTitleExitPath;                        /* 0x80078d94: title state +0x1C: enum TitleExitPath — new game (opening story), loaded save, or attract demo (StoryIntro_Update) */
 extern byte g_abPad2RawReport[34];                      /* 0x80078e50 */
 extern unsigned char g_abLevelVisitedFlagVirtualBase[]; /* FIXME: type/size unrecovered @ 0x80078e72 */
 extern byte g_abLevelVisitedFlag[36];                   /* 0x80078e78 */
@@ -1230,7 +1230,7 @@ extern int g_anHazardEnterSpawnType[]; /* 0x8006ea34 */
 extern int g_anHazardTimeoutSpawnType[]; /* 0x8006ea40 */
 extern int g_anLevelEntryPoints[]; /* 0x8006ea4c: entry points, 4 words per level */
 extern int g_anScriptedCameraPresetRecords[]; /* 0x8006eb24 */
-extern int g_anDemoLevelIds[]; /* 0x8006ee7c: level id per attract demo (Title_Update) */
+extern int g_anDemoLevelIds[]; /* 0x8006ee7c: level id per attract demo (StoryIntro_Update) */
 extern int g_anLevelMusicPickTable[]; /* 0x8006f05c */
 extern int g_anGameOverRespawnPosVirtualBase[]; /* 0x8006f140 */
 extern unsigned char g_abGameOverGlyphs[]; /* 0x8006f304: GAMEOVER letter glyph indices */
@@ -1426,7 +1426,7 @@ extern int g_nSaveMenuCameraFromAngle; /* 0x80078d54 */
 extern int g_nSaveMenuCameraFromDist; /* 0x80078d58 */
 extern int g_nSaveMenuSpyroFromYaw; /* 0x80078d6c */
 extern struct Actor *volatile g_pSaveMenuHostActor; /* 0x80078d74: the save host (type 110) the save menu pans around Spyro */
-extern int g_anStoryIntroMessageBlock[]; /* 0x80078d94: held-base view of the message id */
+extern int g_anTitleExitPathBlock[]; /* 0x80078d94: held-base view of the message id */
 extern volatile int g_nMemCardRingIndex; /* 0x80078da4 */
 extern volatile int g_anMemCardSyncRing[]; /* 0x80078da8 */
 extern char *g_pStoryIntroStreamCursor; /* 0x80078dc4 */

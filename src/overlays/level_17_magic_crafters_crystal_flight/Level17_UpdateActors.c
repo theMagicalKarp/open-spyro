@@ -343,7 +343,7 @@ void Level17_UpdateActors(void) {
 
       switch (actor->mode) {
       case EGG_RELEASED:
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
         VectorToSVectorShr2(st->from, &actor->posX);
         st->heading =
             ArcTan2_8bit(actor->posX - spy->posX, actor->posY - spy->posY) +
@@ -449,7 +449,7 @@ void Level17_UpdateActors(void) {
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
-        g_nGameplayBlocked = 0;
+        g_nCinematicActive = 0;
         ZeroVector(&SPY.headLook);
         CommitActorKillGems(0, st->killActor);
         g_nWorldEggsRecovered = g_nWorldEggsRecovered + 1;
@@ -1453,7 +1453,7 @@ void Level17_UpdateActors(void) {
     case ACTOR_TYPE_FLIGHT_RING: {
       TargetState *st = actor->state;
 
-      if (g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0 && st->helper == 0) {
+      if (g_anFlightClearTimes[g_nActiveWorldIndex] == 0 && st->helper == 0) {
         st->helper = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st->helperType), actor);
         actor->rotX = -actor->anim << 6;
       }
@@ -1494,7 +1494,7 @@ void Level17_UpdateActors(void) {
 
       switch (actor->mode) {
       case TIMEBONUS_WAIT:
-        if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
+        if (g_anFlightClearTimes[g_nActiveWorldIndex] != 0) {
           DespawnActorRecord(actor);
           break;
         }
@@ -1553,7 +1553,7 @@ void Level17_UpdateActors(void) {
     case ACTOR_TYPE_FLIGHT_TARGET: {
       TargetState *st = actor->state;
 
-      if (g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0 && st->helper == 0) {
+      if (g_anFlightClearTimes[g_nActiveWorldIndex] == 0 && st->helper == 0) {
         st->helper = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st->helperType), actor);
       }
 
@@ -1664,7 +1664,7 @@ void Level17_UpdateActors(void) {
         st->digit[3]->posX = 0x1C4;
         st->digit[3]->posY = 0x1E;
 
-        if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
+        if (g_anFlightClearTimes[g_nActiveWorldIndex] != 0) {
           for (i = 4; i < 8; i++) {
             st->digit[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_GLYPH_PERIOD, actor);
             st->digit[i]->cullRadius = 0xFF;
@@ -1714,7 +1714,7 @@ void Level17_UpdateActors(void) {
         }
       }
 
-      if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
+      if (g_anFlightClearTimes[g_nActiveWorldIndex] != 0) {
         t = g_nFlightRunClock;
       } else {
         t = g_nFlightTimeRemaining;
@@ -1728,7 +1728,7 @@ void Level17_UpdateActors(void) {
       if (g_anFlightTargetTally[0] + g_anFlightTargetTally[1] + g_anFlightTargetTally[2] + g_anFlightTargetTally[3] !=
           0x20) {
         if (g_bDebugNoDepletion == 0 && g_nSpyroSubstate < SPYRO_SUB_SCRIPTED &&
-            g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0) {
+            g_anFlightClearTimes[g_nActiveWorldIndex] == 0) {
           g_nFlightTimeBonus -= g_nFrameStep;
           g_nFlightTimeRemaining -= g_nFrameStep;
           if (g_nFlightTimeBonus < 0) {
@@ -1745,7 +1745,7 @@ void Level17_UpdateActors(void) {
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_NO_CLIP);
       }
 
-      if (g_anWorldPersistentFlags[g_nActiveWorldIndex] != 0) {
+      if (g_anFlightClearTimes[g_nActiveWorldIndex] != 0) {
         t = g_nFlightRunClock;
         i = t / 3600;
         if (i != 0) {
@@ -1785,7 +1785,7 @@ void Level17_UpdateActors(void) {
         i = t / 6 - min * 10;
         st->digit[3]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
 
-        if (g_anWorldPersistentFlags[g_nActiveWorldIndex] == 0) {
+        if (g_anFlightClearTimes[g_nActiveWorldIndex] == 0) {
           i = min;
           if (i < prevMin) {
             if (i < 6) {
@@ -1809,20 +1809,20 @@ void Level17_UpdateActors(void) {
       if (st->spent[0] != 0) {
         if (st->count != 0 && TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           st->count--;
-          st->spent[st->count]->mode = 2;
+          st->spent[st->count]->mode = TALLY_ICON_SPEND;
           st->timer = 0x10;
           PlaySoundEffect(AS_PTRU8(g_pLevelSampleBankHeader)[SFX_FLIGHT_TALLY], actor, SFX_MODE_PANNED, 0);
         }
         for (i = 0; i < 8; i++) {
           Actor *a = st->spent[i];
 
-          if (a != 0 && a->mode == 4) {
+          if (a != 0 && a->mode == TALLY_ICON_PARKED) {
             if (st->slot[g_nFlightTallySlot] == 0) {
               st->slot[g_nFlightTallySlot] = a;
               a->posX = g_nFlightTallySlot * 50 + 0x1E;
               st->slot[g_nFlightTallySlot]->posY = 0xC8;
               st->slot[g_nFlightTallySlot]->posZ = 0x1000;
-              st->slot[g_nFlightTallySlot]->mode = 1;
+              st->slot[g_nFlightTallySlot]->mode = TALLY_ICON_LIT;
             } else {
               DespawnActorRecord(a);
             }
@@ -1834,12 +1834,12 @@ void Level17_UpdateActors(void) {
                  st->slot[3] != 0) {
         int s = st->slot[0]->mode;
 
-        if (s == 4 || (g_dwPadPressed & PAD_CROSS)) {
+        if (s == TALLY_ICON_PARKED || (g_dwPadPressed & PAD_CROSS)) {
           g_pfnLevelFallImpactCallback();
-        } else if (s == 1) {
+        } else if (s == TALLY_ICON_LIT) {
           for (i = 0; i < 4; i++) {
             st->slot[i]->subMode = i;
-            st->slot[i]->mode = 5;
+            st->slot[i]->mode = TALLY_ICON_FINALE;
           }
         }
       } else {
@@ -1856,12 +1856,12 @@ void Level17_UpdateActors(void) {
                 st->icon[i]->posX = x;
                 st->icon[i]->tintMode = 0;
                 st->icon[i]->rotZ = 0;
-                st->icon[i]->mode = 0;
+                st->icon[i]->mode = TALLY_ICON_UNLIT;
               } else {
                 st->icon[i]->cullRadius = 0xFF;
                 st->icon[i]->posX = x;
                 st->icon[i]->tintMode = g_nFlightTallyShownClass + 3;
-                st->icon[i]->mode = 1;
+                st->icon[i]->mode = TALLY_ICON_LIT;
               }
               x += 0x1E;
             }
@@ -1950,12 +1950,12 @@ void Level17_UpdateActors(void) {
       TallyState *st = actor->state;
 
       switch (actor->mode) {
-      case 0:
+      case TALLY_ICON_UNLIT:
         break;
-      case 1:
+      case TALLY_ICON_LIT:
         actor->rotZ += 8;
         break;
-      case 2:
+      case TALLY_ICON_SPEND:
         svW[0] = g_nFlightTallySlot * 50 + 0x1E;
         svW[1] = 0xC8;
         svW[2] = 0x1000;
@@ -1966,10 +1966,10 @@ void Level17_UpdateActors(void) {
         st->angle =
             ArcTan2(actor->posX - st->x, st->y - actor->posY, 1);
         st->phase = 0x800;
-        actor->mode = 3;
+        actor->mode = TALLY_ICON_TO_SLOT;
         actor->rotZ += 8;
         break;
-      case 3:
+      case TALLY_ICON_TO_SLOT:
         st->phase -= 0x40;
         actor->posX =
             st->x - ((st->radius * LookupCosine(st->angle + st->phase)) >> 12);
@@ -1977,10 +1977,10 @@ void Level17_UpdateActors(void) {
             st->y + ((st->radius * LookupSine(st->angle + st->phase)) >> 12);
         actor->rotZ += 8;
         if (st->phase <= 0) {
-          actor->mode = 4;
+          actor->mode = TALLY_ICON_PARKED;
         }
         break;
-      case 5:
+      case TALLY_ICON_FINALE:
         svW[0] = (g_anCosineLut[actor->subMode * 64] >> sh6) + 0x100;
         svW[1] = ((g_anSineLut[actor->subMode * 64] * 5) >> 9) + 0x78;
         svW[2] = 0x1000;
@@ -1991,10 +1991,10 @@ void Level17_UpdateActors(void) {
         st->angle =
             ArcTan2(actor->posX - st->x, st->y - actor->posY, 1);
         st->phase = 0x800;
-        actor->mode = 6;
+        actor->mode = TALLY_ICON_TO_RING;
         actor->rotZ += 8;
         break;
-      case 6:
+      case TALLY_ICON_TO_RING:
         st->phase -= 0x40;
         actor->posX =
             st->x - ((st->radius * LookupCosine(st->angle + st->phase)) >> 12);
@@ -2006,10 +2006,10 @@ void Level17_UpdateActors(void) {
               ArcTan2(actor->posX - 0x100, actor->posY - 0x78, 1);
           st->phase = -0x3000;
           st->radius = 0x40;
-          actor->mode = 7;
+          actor->mode = TALLY_ICON_SPIRAL;
         }
         break;
-      case 7:
+      case TALLY_ICON_SPIRAL:
         st->phase += 0x80;
         st->radius -= 2;
         actor->posX =
@@ -2022,7 +2022,7 @@ void Level17_UpdateActors(void) {
         }
         actor->rotZ += 8;
         if (st->phase >= 0) {
-          actor->mode = 4;
+          actor->mode = TALLY_ICON_PARKED;
         }
         break;
       }

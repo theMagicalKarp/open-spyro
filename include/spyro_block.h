@@ -41,7 +41,7 @@
 #define SPY_FIRST_POINT    0x5F /* g_anSpyroFirstContactPoint */
 #define SPY_FIRST_NORMAL   0x62 /* g_anSpyroFirstContactNormal */
 #define SPY_SCRIPTED_MOVE  0x65 /* g_nSpyroScriptedMoveMode */
-#define SPY_COUNTDOWN      0x7C /* g_nSpyroPadSnapshotCountdown */
+#define SPY_INPUT_BLANK      0x7C /* g_nSpyroInputBlankCountdown */
 #define SPY_REQUEST        0x7D /* g_dwSpyroRequestMask */
 #define SPY_REQUEST_TARGET 0x7E /* g_anSpyroRequestTargetPos */
 #define SPY_REQUEST_STATE  0x86 /* g_nSpyroRequestState */

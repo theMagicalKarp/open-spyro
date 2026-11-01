@@ -1,5 +1,7 @@
+#include "cd_music.h"
 #include "funcs.h"
 #include "globals.h"
+#include "libcd.h"
 #include "main_shared.h"
 #include "match_asm.h"
 #include "vecmath.h"
@@ -56,15 +58,15 @@ void TickCdMusicStream(void) {
   cmd = g_nLastCdMusicCommand;
   if (cmd != 0) {
     switch ((unsigned int)cmd) {
-    case 8:
-    case 9:
-      if ((g_dwMusicStreamStatus & 0x200) == 0 && sync == 2) {
-        g_dwMusicStreamStatus = 0x40;
+    case CdlStop:
+    case CdlPause:
+      if ((g_dwMusicStreamStatus & MUSIC_ST_FADING) == 0 && sync == 2) {
+        g_dwMusicStreamStatus = MUSIC_ST_IDLE;
         g_nLastCdMusicCommand = 0;
       }
       break;
-    case 0x1B:
-      g_dwMusicStreamStatus = 0x10;
+    case CdlReadS:
+      g_dwMusicStreamStatus = MUSIC_ST_PLAYING;
       g_nLastCdMusicCommand = 0;
       break;
     }
@@ -73,13 +75,13 @@ void TickCdMusicStream(void) {
     g_nPendingMusicCommand = 0;
   }
 
-  if (g_adwMusicStreamBlock[0] & 0x10) {
+  if (g_adwMusicStreamBlock[0] & MUSIC_ST_PLAYING) {
     if (sync != 2) {
       if (sync == 5) {
         CdIntToPos(g_anMusicTrackLbaTable[g_nCurrentMusicTrack * 2], pos);
-        CdControl(0x1B, pos, 0);
+        CdControl(CdlReadS, pos, 0);
         trk = g_nCurrentMusicTrack;
-        ((struct { int v; } *)&g_nLastCdMusicCommand)->v = 0x1B;
+        ((struct { int v; } *)&g_nLastCdMusicCommand)->v = CdlReadS;
         g_dwCdMusicReadHead = g_anMusicTrackLbaTablePost[trk * 2];
       }
     } else {
@@ -98,8 +100,8 @@ void TickCdMusicStream(void) {
         CdIntToPos(g_dwCdMusicReadHead, pos);
         filt[0] = 1;
         filt[1] = g_nCurrentMusicTrack & 7;
-        CdControlBlocking(0xD, filt, 0);
-        CdControl(0x1B, pos, 0);
+        CdControlBlocking(CdlSetfilter, filt, 0);
+        CdControl(CdlReadS, pos, 0);
       } else {
         if (GetCdStatusByte() == 0x11) {
           r = CdPosToInt(CD_MUSIC_POS);
@@ -107,7 +109,7 @@ void TickCdMusicStream(void) {
             g_dwCdMusicReadHead = r;
           }
         }
-        CdControlForce(0x11, 0);
+        CdControlForce(CdlGetlocP, 0);
       }
     }
   }
@@ -125,13 +127,13 @@ void TickCdMusicStream(void) {
       }
       if (target == 0) {
         switch ((unsigned int)g_nLastCdMusicCommand) {
-        case 8:
-        case 9:
+        case CdlStop:
+        case CdlPause:
           CdControl(g_nLastCdMusicCommand, 0, 0);
-          g_dwMusicStreamStatus = 0x100;
+          g_dwMusicStreamStatus = MUSIC_ST_PAUSED;
           break;
-        case 0x1B:
-          g_dwMusicStreamStatus = 0x10;
+        case CdlReadS:
+          g_dwMusicStreamStatus = MUSIC_ST_PLAYING;
           break;
         }
       }
@@ -156,8 +158,8 @@ void TickCdMusicStream(void) {
     *(unsigned int *)g_abSpuCommonAttr = 0xC0;
     SetSpuCommonAttr((unsigned int *)g_abSpuCommonAttr);
   } else {
-    if (g_adwMusicStreamBlock[0] & 0x200) {
-      g_adwMusicStreamBlock[0] = 0x100;
+    if (g_adwMusicStreamBlock[0] & MUSIC_ST_FADING) {
+      g_adwMusicStreamBlock[0] = MUSIC_ST_PAUSED;
     }
   }
 }

@@ -39,6 +39,8 @@
 #include "camera.h"
 #include "level_sfx.h"
 #include "emit_record.h"
+#include "cd_stream.h"
+#include "hud_counter.h"
 
 
 /* Type 286: ambient sound source (AmbientSoundState) with the path seen as
@@ -227,7 +229,7 @@ void Level15_UpdateActors(void) {
           }
 
           if (g_nSpyroState == SPYRO_ST_LIFT || top + 0xC00 < z + depth) {
-            if (g_abHudCounterDisplayState == 2) {
+            if (g_abHudCounterDisplayState == HUD_CTR_SHOWN) {
               RefreshHudLevelGemCounter();
             }
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_TARGET_CAMERA);
@@ -244,7 +246,7 @@ void Level15_UpdateActors(void) {
               }
               if (yaw < -0x200) {
                 g_abLevelExited[g_nLevelIndex] = 1;
-                g_nCdStreamState = 0;
+                g_nCdStreamState = LSTREAM_PRESERVE;
                 g_nEnteredPortalIdx = -1;
                 g_nPortalTransitionActive = one;
                 g_nLevelTransitionTallyActive = 1;
@@ -1073,7 +1075,7 @@ void Level15_UpdateActors(void) {
 
       switch (actor->mode) {
       case EGG_RELEASED:
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
         VectorToSVectorShr2(st->centre, &actor->posX);
         st->angle =
             ArcTan2_8bit(actor->posX - spy->posX, actor->posY - spy->posY) +
@@ -1185,8 +1187,8 @@ void Level15_UpdateActors(void) {
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
-        g_nGameplayBlocked = 0;
-        ZeroVector(&g_nSpyroSwingEulerPitchTarget);
+        g_nCinematicActive = 0;
+        ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
         g_nWorldEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
@@ -1317,7 +1319,7 @@ void Level15_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x80, 0x20020) != 0) {
+        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x80, SPYRO_EV_HIT_TINT | SPYRO_EV_UNREAD_20000) != 0) {
           i = 0;
           a = GetRandomU32() & 0x3F;
           for (; i < 4; i++, a += 0x40) {
@@ -4006,30 +4008,30 @@ void Level15_UpdateActors(void) {
     /* Checkpoint: Spyro reaching it sets the respawn anchor
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
     case ACTOR_TYPE_CHECKPOINT + 2:      switch (actor->mode) {
-      case 0:
+      case CHECKPT_REARM:
         if (ApproxDist2D(&actor->posX, &SPY.posX) > 0xA00) {
-          actor->mode = 1;
+          actor->mode = CHECKPT_ARMED;
         }
         break;
 
-      case 1:
+      case CHECKPT_ARMED:
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x380) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
           if (dz > 0 ? dz < 0x200
                      : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x200) {
             SetSpawnAnchorFromActor(actor, actor->rotZ);
-            actor->mode = 2;
+            actor->mode = CHECKPT_FLASH;
             actor->anim = 1;
             actor->subMode = 0;
           }
         }
         break;
 
-      case 2:
+      case CHECKPT_FLASH:
         actor->subMode += g_nFrameStep;
         if (actor->subMode >= 0x30) {
-          actor->mode = 0;
+          actor->mode = CHECKPT_REARM;
           actor->anim = 0;
         }
         break;

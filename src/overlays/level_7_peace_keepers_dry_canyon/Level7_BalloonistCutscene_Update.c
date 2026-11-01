@@ -85,6 +85,8 @@
 #include "camera.h"
 #include "pad_buttons.h"
 #include "level_sfx.h"
+#include "cd_stream.h"
+#include "level_id.h"
 
 
 void Level7_BalloonistCutscene_Update(void)
@@ -106,7 +108,7 @@ void Level7_BalloonistCutscene_Update(void)
   }
   switch (st[0])
   {
-    case 0:
+    case ACS_APPROACH:
     {
       int t;
       int cn;
@@ -267,7 +269,7 @@ void Level7_BalloonistCutscene_Update(void)
         g_bSpyroAnimCurrent = 0;
         g_bSpyroAnimFrame = 0;
         g_bSpyroSubFrameTimer = 0;
-        g_nActorCutsceneSubstate[0] = 1;
+        g_nActorCutsceneSubstate[0] = ACS_DIALOGUE;
         g_nActorCutsceneTimer[0] = 0;
         g_bSpyroPersistentEulerZ = g_nActorCutsceneSpyroYawGoal >> 4;
         g_bSpyroFramePrev = n;
@@ -275,7 +277,7 @@ void Level7_BalloonistCutscene_Update(void)
         break;
     }
 
-    case 1:
+    case ACS_DIALOGUE:
     {
       int t;
       int n;
@@ -295,7 +297,7 @@ void Level7_BalloonistCutscene_Update(void)
           else
             if (n < 3)
           {
-            if ((t < 3) && (g_bWorldBalloonistState1 < 2))
+            if ((t < 3) && (g_bWorldBalloonistState1 < BALLOONIST_OPEN))
             {
               g_pfnLevelOnSaveMenuExit();
             }
@@ -404,7 +406,7 @@ void Level7_BalloonistCutscene_Update(void)
           return;
         }
         StopAllSoundExceptMask(0);
-        g_nActorCutsceneSubstate[0] = 2;
+        g_nActorCutsceneSubstate[0] = ACS_BOARD;
         g_nActorCutsceneTimer[0] = 0;
         g_nCurrentLevelId = g_nActorCutsceneTimer[1] * 0xA;
         if (g_nCurrentLevelId >= g_nActiveLevelId)
@@ -443,7 +445,7 @@ void Level7_BalloonistCutscene_Update(void)
           return;
         }
         StopAllSoundExceptMask(0);
-        g_nActorCutsceneSubstate[0] = 2;
+        g_nActorCutsceneSubstate[0] = ACS_BOARD;
         g_nActorCutsceneTimer[0] = 0;
         if (g_nActorCutsceneDialogPage[0] == 0x1F)
         {
@@ -469,17 +471,17 @@ void Level7_BalloonistCutscene_Update(void)
         }
         if (t == 0x21)
         {
-          g_nCurrentLevelId = 0xB;
+          g_nCurrentLevelId = LEVEL_STONE_HILL;
         }
         else
           if (t == 0x22)
         {
-          g_nCurrentLevelId = 0x15;
+          g_nCurrentLevelId = LEVEL_DRY_CANYON;
         }
         else
           if (t == 0x23)
         {
-          g_nCurrentLevelId = 0x16;
+          g_nCurrentLevelId = LEVEL_CLIFF_TOWN;
         }
         n = g_nActorCutsceneDialogPage_s;
         g_nActorCutsceneDialogPage_s = 0x20;
@@ -490,7 +492,7 @@ void Level7_BalloonistCutscene_Update(void)
         break;
     }
 
-    case 2:
+    case ACS_BOARD:
     {
       int t;
       int cn;
@@ -588,13 +590,13 @@ void Level7_BalloonistCutscene_Update(void)
       }
       else
       {
-        g_nActorCutsceneSubstate[0] = 3;
+        g_nActorCutsceneSubstate[0] = ACS_LIFT_OFF;
         g_nActorCutsceneTimer[0] = 0;
       }
         break;
     }
 
-    case 3:
+    case ACS_LIFT_OFF:
     {
       int z;
       int k;
@@ -649,7 +651,7 @@ void Level7_BalloonistCutscene_Update(void)
         g_nActorCutsceneCamHeightStart = g_nCameraPosZ;
         n = g_pActorCutsceneRecord->rotZ;
         g_nActorCutsceneCamRadiusGoal = 0x800;
-        g_nCdStreamState = 0;
+        g_nCdStreamState = LSTREAM_PRESERVE;
         g_nEnteredPortalIdx = -1;
         g_nPortalTransitionActive = 0;
         g_nReturnPortalLevelId = 0;
@@ -657,7 +659,7 @@ void Level7_BalloonistCutscene_Update(void)
         {
           int m;
         m = ACTOR_RAW(g_pActorCutsceneRecord, int, posZ);
-        g_nActorCutsceneSubstate[0] = 4;
+        g_nActorCutsceneSubstate[0] = ACS_STREAM_WAIT;
         g_nActorCutsceneTimer[0] = 0;
         g_nActorCutsceneCamHeightGoal = m + 0x200;
         }
@@ -686,14 +688,14 @@ void Level7_BalloonistCutscene_Update(void)
         break;
     }
 
-    case 5:
+    case ACS_CRUISE:
     {
       int t;
       int cn;
       int yaw;
       int cz;
 
-        if (g_nCdStreamState < 0xD)
+        if (g_nCdStreamState < LSTREAM_FINALIZE)
       {
         TickLevelTransitionStream(1);
       }
@@ -719,16 +721,16 @@ void Level7_BalloonistCutscene_Update(void)
         g_nCameraEulerYaw = ArcTan2(vecD[0], vecD[1], 1);
       }
       else
-        if (g_nCdStreamState == 0xD)
+        if (g_nCdStreamState == LSTREAM_FINALIZE)
       {
-        g_nActorCutsceneSubstate[0] = 6;
+        g_nActorCutsceneSubstate[0] = ACS_DESCEND;
         g_nActorCutsceneTimer[0] = 0;
         TickLevelTransitionStream(1);
       }
         break;
     }
 
-    case 6:
+    case ACS_DESCEND:
     {
       int t;
       int n;
@@ -772,7 +774,7 @@ void Level7_BalloonistCutscene_Update(void)
       }
       else
       {
-        g_nActorCutsceneSubstate[0] = 7;
+        g_nActorCutsceneSubstate[0] = ACS_LAND;
         g_nActorCutsceneTimer[0] = 0;
         CopyVector(&g_nActorCutsceneTimer[5], g_anSpyroWorldPos);
         {
@@ -795,7 +797,7 @@ void Level7_BalloonistCutscene_Update(void)
         break;
     }
 
-    case 7:
+    case ACS_LAND:
     {
       int t;
 
@@ -817,7 +819,7 @@ void Level7_BalloonistCutscene_Update(void)
       {
         CopyVector(g_anSpyroWorldPos, &g_nActorCutsceneTimer[8]);
         ResetSpyroEntity(1);
-        g_nSpyroPadSnapshotCountdown = 0x10;
+        g_nSpyroInputBlankCountdown = 0x10;
         *((int *) ((char *) g_pCameraAnchorPos)) = (int) g_anSpyroWorldPos;
         g_nCameraCurrentMode = CAM_MODE_STAND;
         g_nCameraNextMode = CAM_MODE_STAND;
@@ -830,7 +832,7 @@ void Level7_BalloonistCutscene_Update(void)
         InitHudCounters(0);
         g_nGamestate = GS_GAMEPLAY;
         g_nGamePaused = 1;
-        g_nGameplayBlocked = 0;
+        g_nCinematicActive = 0;
         InitLightVectorConstants();
       }
         break;

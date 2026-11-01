@@ -1,3 +1,4 @@
+#include "cd_stream.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -20,7 +21,7 @@ void UpdateLevelTransitionCamera(void) {
   g_pCameraAnchorPos = g_anSpyroWorldPos;
   g_nCameraTargetYawBiasFromMode = yaw;
   if (g_nReturnPortalLevelId != 0) {
-    if (g_nCdStreamState >= 10) {
+    if (g_nCdStreamState >= LSTREAM_RELOCATE) {
       g_pCameraTargetParams = g_anCameraParamMode2Reverse;
     } else {
       g_pCameraTargetParams = g_anCameraParamTransitionStreaming;

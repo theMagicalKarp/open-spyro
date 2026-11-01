@@ -40,6 +40,8 @@
 #include "camera.h"
 #include "level_sfx.h"
 #include "emit_record.h"
+#include "cd_stream.h"
+#include "actor_cutscene.h"
 
 /* Level30_UpdateActors -- per-frame actor update for level 30 (Gnorc Gnexus).
  *
@@ -503,7 +505,7 @@ void Level30_UpdateActors(void) {
 
       switch (actor->mode) {
       case EGG_RELEASED:
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
         VectorToSVectorShr2(st->centre, &actor->posX);
         st->angle =
             ArcTan2_8bit(actor->posX - spy->posX, actor->posY - spy->posY) +
@@ -615,8 +617,8 @@ void Level30_UpdateActors(void) {
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
-        g_nGameplayBlocked = 0;
-        ZeroVector(&g_nSpyroSwingEulerPitchTarget);
+        g_nCinematicActive = 0;
+        ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
         g_nWorldEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
@@ -1618,9 +1620,9 @@ void Level30_UpdateActors(void) {
         g_nActorCutsceneDialogPage = 0x1E;
         g_bWorldBalloonistState1 = two;
         g_abWorldBalloonistState[2] = two;
-        g_abWorldBalloonistState[3] = 2;
-        g_abWorldBalloonistState[4] = 2;
-        g_abWorldBalloonistState[5] = 2;
+        g_abWorldBalloonistState[3] = BALLOONIST_OPEN;
+        g_abWorldBalloonistState[4] = BALLOONIST_OPEN;
+        g_abWorldBalloonistState[5] = BALLOONIST_OPEN;
       }
       break;
 
@@ -1781,7 +1783,7 @@ void Level30_UpdateActors(void) {
         ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
       }
 
-      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(2)) && g_nWorldTreasureCollected >= 0x2EE0 &&
+      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(2)) && g_nTotalTreasureCollected >= 0x2EE0 &&
           g_nWorldDragonsRescued >= 0x50 && g_nWorldEggsRecovered >= 0xC) {
         ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
       }
@@ -2302,14 +2304,14 @@ void Level30_UpdateActors(void) {
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
     case ACTOR_TYPE_CHECKPOINT:
       switch (actor->mode) {
-      case 0:
+      case CHECKPT_REARM:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xA01) {
           break;
         }
-        actor->mode = 1;
+        actor->mode = CHECKPT_ARMED;
         continue;
 
-      case 1: {
+      case CHECKPT_ARMED: {
         int height;
         int drop;
 
@@ -2322,7 +2324,7 @@ void Level30_UpdateActors(void) {
 
         if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
           SetSpawnAnchorFromActor(actor, actor->rotZ);
-          actor->mode = 2;
+          actor->mode = CHECKPT_FLASH;
           actor->anim = 1;
           actor->subMode = 0;
           continue;
@@ -2330,14 +2332,14 @@ void Level30_UpdateActors(void) {
         break;
       }
 
-      case 2: {
+      case CHECKPT_FLASH: {
         int tick = actor->subMode + g_nFrameStep;
 
         actor->subMode = tick;
         if ((unsigned char)tick < 0x30) {
           break;
         }
-        actor->mode = 0;
+        actor->mode = CHECKPT_REARM;
         actor->anim = 0;
         continue;
       }
@@ -2406,7 +2408,7 @@ void Level30_UpdateActors(void) {
           actor->mode = PORTALGUIDE_IDLE;
           AS_I32(g_nCameraNextMode) = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
           SPY.requestState = SPYRO_ST_GLIDE;
-          g_nCdStreamState = 0;
+          g_nCdStreamState = LSTREAM_PRESERVE;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
           g_nGamestate = GS_LEVEL_LOAD;
@@ -2449,7 +2451,7 @@ void Level30_UpdateActors(void) {
             (g_nGroundSurfaceType & 0x3F) < 0x3F && *g_pTriggerRegionTable[g_nGroundSurfaceType] == 6) {
           actor->mode = PORTALGUIDE_IDLE;
           AS_I32(g_nCameraNextMode) = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
-          g_nCdStreamState = 0;
+          g_nCdStreamState = LSTREAM_PRESERVE;
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
           g_nGamestate = GS_LEVEL_LOAD;

@@ -1,3 +1,4 @@
+#include "actor_type.h"
 #include "funcs.h"
 #include "globals.h"
 #include "sample_bank.h"
@@ -66,12 +67,12 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
   cam = g_anCameraEulerYawBlock;
   voice = -1;
   switch (mode) {
-  case 4:
+  case SFX_MODE_FLAT:
     if (GetSoundVoiceStatusByOwner(owner, sampleId) == 2) {
       return 0;
     }
     break;
-  case 8:
+  case SFX_MODE_3D:
     if (GetSoundVoiceStatusByOwner(owner, sampleId) == 2) {
       return 0;
     }
@@ -89,7 +90,7 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
       return 0x7F;
     }
     break;
-  case 0x10:
+  case SFX_MODE_PANNED:
     break;
   }
 
@@ -126,25 +127,25 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
       attr.pitch = ENT->nPitch;
       if (ENT->nPitchSpread != 0) {
         switch (ENT->nPitchMode) {
-        case 0:
+        case SAMPLE_PITCH_AROUND:
           attr.pitch = attr.pitch - ENT->nPitchStep * (ENT->nPitchSpread >> 1);
           attr.pitch = attr.pitch + ((int)GetRandomU32() % ENT->nPitchSpread) *
                                         ENT->nPitchStep;
           break;
-        case 1:
+        case SAMPLE_PITCH_UP:
           attr.pitch = attr.pitch + ((int)GetRandomU32() % ENT->nPitchSpread) *
                                         ENT->nPitchStep;
           break;
-        case 2:
+        case SAMPLE_PITCH_DOWN:
           attr.pitch = attr.pitch - ((int)GetRandomU32() % ENT->nPitchSpread) *
                                         ENT->nPitchStep;
           break;
         }
       }
       attr.loop_addr = ENT->nLoopAddr;
-      switch (g_aSpuVoiceRows[i].nFlags & 0x1C) {
-      case 4:
-      case 0x10: {
+      switch (g_aSpuVoiceRows[i].nFlags & SFX_MODE_MASK) {
+      case SFX_MODE_FLAT:
+      case SFX_MODE_PANNED: {
         int *ovr = g_nSfxOverrideFlags;
         int pending = ovr[0];
 
@@ -166,7 +167,7 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
         }
         break;
       }
-      case 8: {
+      case SFX_MODE_3D: {
         int *ovr = g_nSfxOverrideFlags;
         int pending = ovr[0];
 

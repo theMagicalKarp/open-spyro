@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "funcs.h"
 #include "globals.h"
 #include "level_id.h"
@@ -7,6 +8,6 @@
 void InitNewGameState(void) {
   g_nActiveLevelId = LEVEL_ARTISANS;
   g_nOptionVibrationEnabled = 1;
-  g_dwActiveCameraOptions = 0x52;
+  g_dwActiveCameraOptions = CAM_OPT_PASSIVE;
   ResetLevelState();
 }

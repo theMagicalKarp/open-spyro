@@ -816,12 +816,12 @@
    "size": 144
   },
   {
-   "name": "ArmStoryIntroOnStart",
+   "name": "RestartTitleCardCheckOnTriangle",
    "vram": 2147691184,
    "size": 88
   },
   {
-   "name": "Title_Update",
+   "name": "StoryIntro_Update",
    "vram": 2147691272,
    "size": 1700
   },
@@ -1681,7 +1681,7 @@
    "size": 100
   },
   {
-   "name": "SnapshotPadInputState",
+   "name": "MovePadInputState",
    "vram": 2147825416,
    "size": 84
   },

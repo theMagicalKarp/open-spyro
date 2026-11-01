@@ -1,4 +1,5 @@
 #include "actor.h"
+#include "cd_stream.h"
 #include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
@@ -17,14 +18,14 @@ typedef struct LetterPos {
 
 /* Game-over camera euler snapshot, read unsigned (lhu). */
 
-/* Draw for GS_GAME_OVER (5): three sub-modes driven by g_nGameplayDrawMode.
-   Mode 0 = death fade-out: frame 0 renders one full gameplay frame then
-   snapshots half the framebuffer (MoveImage) as a frozen backdrop; frames
-   1..15 darken it with fullscreen tints, frame 15 switches both DRAWENVs to
-   black-clear and wipes VRAM. Mode 1 = GAME OVER screen: letter sprites
-   revealed on a per-letter delay ramp from frame 0x3C, prompt text + sine
-   wave from frame 0x1A5, over a scripted-camera world render. Mode >= 2
-   mirrors mode 0 without the initial render (0x8001ca38, 1444 bytes). */
+/* Draw for GS_GAME_OVER (5): three sub-modes driven by
+   g_nRespawnOrGameOverMode. Mode 0 = death fade-out: frame 0 renders one full
+   gameplay frame then snapshots half the framebuffer (MoveImage) as a frozen
+   backdrop; frames 1..15 darken it with fullscreen tints, frame 15 switches
+   both DRAWENVs to black-clear and wipes VRAM. Mode 1 = GAME OVER screen:
+   letter sprites revealed on a per-letter delay ramp from frame 0x3C, prompt
+   text + sine wave from frame 0x1A5, over a scripted-camera world render. Mode
+   >= 2 mirrors mode 0 without the initial render (0x8001ca38, 1444 bytes). */
 
 /* Returns its argument through an empty asm so cse/reload cannot fold the
    frame-15 DRAWENV block base back into absolute addresses. Inline, so both
@@ -54,8 +55,8 @@ void RespawnOrGameOver_Draw(void) {
   Actor *sc;
   short *sbase;
 
-  if (g_nGameplayDrawMode == 0) {
-    if (g_nGameplayDrawFrame == 0) {
+  if (g_nRespawnOrGameOverMode == 0) {
+    if (g_nRespawnOrGameOverFrame == 0) {
       BuildRenderEntityLists();
       ComposeFrameScene();
       RasterizeEmitList();
@@ -80,8 +81,8 @@ void RespawnOrGameOver_Draw(void) {
       DrawSync(0);
       g_abFrameDrawEnv0.isbg = 0;
       g_abFrameDrawEnv1.isbg = 0;
-    } else if (g_nGameplayDrawFrame < 0x10) {
-      if (g_nGameplayDrawFrame == 1) {
+    } else if (g_nRespawnOrGameOverFrame < 0x10) {
+      if (g_nRespawnOrGameOverFrame == 1) {
         DrawFullscreenTint(2, 0x10, 0x10, 0x10);
       } else {
         DrawFullscreenTint(2, 0x20, 0x20, 0x20);
@@ -91,7 +92,7 @@ void RespawnOrGameOver_Draw(void) {
       PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
       PutDrawEnv(g_pActiveFrameDrawEnv);
       DrawOTag(LinkOTPrimitives(0x800));
-      if (g_nGameplayDrawFrame == 0xF) {
+      if (g_nRespawnOrGameOverFrame == 0xF) {
         {
           unsigned char *e = Opaque(g_abFrameDrawEnvIsbgBlock);
 
@@ -113,14 +114,14 @@ void RespawnOrGameOver_Draw(void) {
         ClearImage(rect, 0, 0, 0);
       }
     }
-  } else if (g_nGameplayDrawMode == 1) {
-    if (g_nGameplayDrawFrame >= 0x3C) {
+  } else if (g_nRespawnOrGameOverMode == 1) {
+    if (g_nRespawnOrGameOverFrame >= 0x3C) {
       i = 0;
       ramp = g_anGameOverRevealScaleRamp;
       k = 0;
       do {
         d = g_abGameOverLetterDelay[i] + 0x3C;
-        t = g_nGameplayDrawFrame - d;
+        t = g_nRespawnOrGameOverFrame - d;
         if (t >= 0) {
           rec = (char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
           g_pSpriteRecordWriteCursor = (Actor *)rec;
@@ -142,7 +143,8 @@ void RespawnOrGameOver_Draw(void) {
         i += 1;
         k += 4;
       } while (i < 8);
-      if (g_nCdStreamState >= 0xB && g_nGameplayDrawFrame >= 0x1A5) {
+      if (g_nCdStreamState >= LSTREAM_READ_PATHS &&
+          g_nRespawnOrGameOverFrame >= 0x1A5) {
         size[0] = 0x10;
         size[1] = 1;
         size[2] = 0x1400;
@@ -156,7 +158,7 @@ void RespawnOrGameOver_Draw(void) {
         sc = g_pSpriteRecordWriteCursor;
         do {
           i += 1;
-          st = sbase[((g_nGameplayDrawFrame * 4) + sk) & 0xFF];
+          st = sbase[((g_nRespawnOrGameOverFrame * 4) + sk) & 0xFF];
           sk += 0xC;
           sc->rotZ = (st * 3) >> 9;
           sc++;
@@ -167,7 +169,7 @@ void RespawnOrGameOver_Draw(void) {
       EnqueuePendingSpritePrims();
       FillWord((char *)q - 0x2400, 0, 0x900);
       RasterizeSpritePrimQueue();
-      if (g_nGameplayDrawFrame >= 0xB5) {
+      if (g_nRespawnOrGameOverFrame >= 0xB5) {
         RasterizeSpyroModel();
       }
     }
@@ -178,8 +180,8 @@ void RespawnOrGameOver_Draw(void) {
                             (char *)g_anCameraEulerPitchBlock - 0x4E);
     g_anCameraEulerPitchBlock[0] = g_anGameOverCameraEulerU[0];
     g_nCameraEulerYaw = g_anGameOverCameraEulerU[1];
-    if (g_nGameplayDrawFrame < 0x20) {
-      f = (0x1F - g_nGameplayDrawFrame) * 8;
+    if (g_nRespawnOrGameOverFrame < 0x20) {
+      f = (0x1F - g_nRespawnOrGameOverFrame) * 8;
       DrawFullscreenTint(2, f, f, f);
     }
     DrawSync(0);
@@ -188,7 +190,7 @@ void RespawnOrGameOver_Draw(void) {
     PutDrawEnv(g_pActiveFrameDrawEnv);
     DrawOTag(LinkOTPrimitives(0x800));
   } else {
-    if (g_nGameplayDrawFrame == 0) {
+    if (g_nRespawnOrGameOverFrame == 0) {
       bright = 8;
       rect[0] = 0;
       if (g_pActiveFrameDrawEnv != &g_abFrameDrawEnv0) {
@@ -201,8 +203,8 @@ void RespawnOrGameOver_Draw(void) {
       DrawSync(0);
       g_abFrameDrawEnv0.isbg = 0;
       g_abFrameDrawEnv1.isbg = 0;
-    } else if (g_nGameplayDrawFrame < 0x10) {
-      if (g_nGameplayDrawFrame == 1) {
+    } else if (g_nRespawnOrGameOverFrame < 0x10) {
+      if (g_nRespawnOrGameOverFrame == 1) {
         DrawFullscreenTint(2, 0x10, 0x10, 0x10);
       } else {
         DrawFullscreenTint(2, 0x20, 0x20, 0x20);
@@ -212,7 +214,7 @@ void RespawnOrGameOver_Draw(void) {
       PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
       PutDrawEnv(g_pActiveFrameDrawEnv);
       DrawOTag(LinkOTPrimitives(0x800));
-      if (g_nGameplayDrawFrame == 0xF) {
+      if (g_nRespawnOrGameOverFrame == 0xF) {
         {
           unsigned char *e = Opaque(g_abFrameDrawEnvIsbgBlock);
 

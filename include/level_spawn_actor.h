@@ -8,6 +8,7 @@
 #define OPEN_SPYRO_LEVEL_SPAWN_ACTOR_H
 
 #include "actor_states.h"
+#include "dragon_rescue.h"
 
 /* The level actor pool, by struct tag so files that carry their own Actor
  * view (A400) can include this header too. */
@@ -83,7 +84,7 @@ extern short g_anCosineLut[]; /* unit-circle x table (8-bit angle) */
 
 extern short g_anSineLut[]; /* unit-circle y table (8-bit angle) */
 
-extern int g_anWorldPersistentFlags[];   /* per-slot flight-race object table */
+extern int g_anFlightClearTimes[];   /* per flight level first-clear time */
 
 extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
 extern int RandomSignedInRange(int lo, int hi);

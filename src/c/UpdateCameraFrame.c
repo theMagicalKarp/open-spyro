@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "cd_stream.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -16,13 +17,13 @@ SDATA(g_nCameraSpringReengageCountdown, 4);
    lookup under the camera. Pad snapshots bracket the frame. */
 void UpdateCameraFrame(void) {
   if (g_nSpyroState == SPYRO_ST_HURT_LONG) {
-    g_nCameraLookAroundActive = 1;
+    g_nCameraForcePassiveFollow = 1;
   } else {
-    g_nCameraLookAroundActive = 0;
+    g_nCameraForcePassiveFollow = 0;
   }
-  g_bSpyroPadSnapshotReverseFlag = 0;
-  if (g_nSpyroPadSnapshotCountdown != 0) {
-    SnapshotPadInputState(&g_dwPadPressed, &g_dwPad2Buttons);
+  g_bPadInputStashed = 0;
+  if (g_nSpyroInputBlankCountdown != 0) {
+    MovePadInputState(&g_dwPadPressed, &g_dwPadStash);
   }
   if (g_nSpyroScriptedMoveMode != 0) {
     g_nCameraNextMode = CAM_MODE_STAND;
@@ -61,7 +62,7 @@ void UpdateCameraFrame(void) {
     } else {
       g_nCameraShakePeakAmplitude = 0;
     }
-    if (g_nCdStreamState < 0) {
+    if (g_nCdStreamState < LSTREAM_PRESERVE) {
       if (FindWorldFloorBelowPoint((uint *)g_anCameraPos) != 0) {
         g_nCameraVisZone = g_nWorldFloorVisZone;
       }
@@ -71,7 +72,7 @@ void UpdateCameraFrame(void) {
       g_apScriptedCameraViewBlock[0] = 0;
     }
   }
-  if (g_bSpyroPadSnapshotReverseFlag != 0) {
-    SnapshotPadInputState(&g_dwPad2Buttons, &g_dwPadPressed);
+  if (g_bPadInputStashed != 0) {
+    MovePadInputState(&g_dwPadStash, &g_dwPadPressed);
   }
 }

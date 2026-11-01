@@ -1,3 +1,4 @@
+#include "cd_music.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -88,5 +89,5 @@ top:
     goto top;
   }
   g_dwSpuPendingKeyOn = 0;
-  HandleMusicCommand(0, 4);
+  HandleMusicCommand(0, MUSIC_CMD_STOP_4);
 }

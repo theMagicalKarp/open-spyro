@@ -22,13 +22,13 @@
  *   - Single-set temps (cookbook F14d): case 177's case-0 clamp uses its
  *     own `d0`; case 181 reads `SPY.bodyRotZ` (a struct MEM, so it depends
  *     on the preceding `st->timer` store) and writes the BFC..C04 triple as
- *     `g_nCameraScriptStickRequestY[-1..1]` so the `st->chunkAnim` load waits for them; the w181
+ *     `g_nSpyroSwingEulerTargetY[-1..1]` so the `st->chunkAnim` load waits for them; the w181
  *     init stores `w[0]` (the timer read) first.
  *
  *   - Case 177's camera block writes every camera word as an aggregate
- *     element (g_nCameraScriptStickRequestY[k], g_anCameraActiveTargetParams.w[k]): array/struct MEMs may alias
+ *     element (g_nSpyroSwingEulerTargetY[k], g_anCameraActiveTargetParams.w[k]): array/struct MEMs may alias
  *     the `st->path` arg load, so they all stay ahead of it, while the
- *     scalar `g_nGameplayBlocked = one` store is free to sink next to the call.
+ *     scalar `g_nCinematicActive = one` store is free to sink next to the call.
  */
 
 #include "actor.h"
@@ -46,6 +46,8 @@
 #include "camera.h"
 #include "level_sfx.h"
 #include "emit_record.h"
+#include "cd_stream.h"
+#include "hud_counter.h"
 
 
 /* Type 286: ambient sound source (AmbientSoundState) with the path seen as
@@ -248,7 +250,7 @@ void Level34_UpdateActors(void) {
           }
 
           if (g_nSpyroState == SPYRO_ST_LIFT || top + 0xC00 < z + depth) {
-            if (g_abHudCounterDisplayState == 2) {
+            if (g_abHudCounterDisplayState == HUD_CTR_SHOWN) {
               RefreshHudLevelGemCounter();
             }
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_TARGET_CAMERA);
@@ -265,7 +267,7 @@ void Level34_UpdateActors(void) {
               }
               if (yaw < -0x200) {
                 g_abLevelExited[g_nLevelIndex] = 1;
-                g_nCdStreamState = 0;
+                g_nCdStreamState = LSTREAM_PRESERVE;
                 g_nEnteredPortalIdx = -1;
                 g_nPortalTransitionActive = one;
                 g_nLevelTransitionTallyActive = 1;
@@ -584,7 +586,7 @@ void Level34_UpdateActors(void) {
 
       switch (actor->mode) {
       case EGG_RELEASED:
-        g_nGameplayBlocked = 1;
+        g_nCinematicActive = 1;
         VectorToSVectorShr2(st->centre, &actor->posX);
         st->angle =
             ArcTan2_8bit(actor->posX - SPY.posX, actor->posY - SPY.posY) +
@@ -696,8 +698,8 @@ void Level34_UpdateActors(void) {
         SubtractVector(svE, &actor->posX, &CAM.posX);
         WorldToCameraRotate(svE, svE);
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
-        g_nGameplayBlocked = 0;
-        ZeroVector(&g_nSpyroSwingEulerPitchTarget);
+        g_nCinematicActive = 0;
+        ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
         g_nWorldEggsRecovered += 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
@@ -1807,12 +1809,12 @@ void Level34_UpdateActors(void) {
           } else {
             int r;
 
-            g_nGameplayBlocked = one;
+            g_nCinematicActive = one;
             /* g_pSpyroRequestCameraAnchor / g_pSpyroRequestCameraTargetParams / g_dwSpyroRequestMask as array elements (see the
              * header): the camera anchor, target and control word. */
-            g_nCameraScriptStickRequestY[29] = (int)&spyc->posX;
-            g_nCameraScriptStickRequestY[30] = (int)&g_anCameraActiveTargetParams;
-            g_nCameraScriptStickRequestY[19] = /* g_dwSpyroRequestMask */
+            g_nSpyroSwingEulerTargetY[29] = (int)&spyc->posX;
+            g_nSpyroSwingEulerTargetY[30] = (int)&g_anCameraActiveTargetParams;
+            g_nSpyroSwingEulerTargetY[19] = /* g_dwSpyroRequestMask */
                 (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT | SPYRO_RQ_CAMERA);
             g_anCameraActiveTargetParams.w[2] = 0xC00;
             g_anCameraActiveTargetParams.w[1] = 0x80;
@@ -1824,7 +1826,7 @@ void Level34_UpdateActors(void) {
                               st->speed, 4);
             if (r == 2) {
               st->cur->cur = 2;
-              g_nGameplayBlocked = 0;
+              g_nCinematicActive = 0;
               actor->subMode = 1;
             } else if (r == one) {
               st->speed -= 8;
@@ -2251,7 +2253,7 @@ void Level34_UpdateActors(void) {
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         actor->cullRadius = 0x18;
         st->timer += g_nFrameStep;
-        g_nGameplayBlocked = one;
+        g_nCinematicActive = one;
         if (st->timer < 0xC0) {
           int *v = v181;
 
@@ -2269,7 +2271,7 @@ void Level34_UpdateActors(void) {
           v[2] += 0x100;
           v[2] += (unsigned short)g_anSineLut[(st->timer << 7) / 192] << 16 >> 19;
           CopyVector(&actor->posX, v);
-          g_nCameraScriptStickRequestY[0] =
+          g_nSpyroSwingEulerTargetY[0] =
               (unsigned short)g_anSineLut[(st->timer << 7) / 192] << 16 >> 19;
           if (st->timer < 0x40) {
             int r;
@@ -2304,7 +2306,7 @@ void Level34_UpdateActors(void) {
                                     SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_STOP)) {
           actor->cullRadius = 0;
           actor->drawn = 0;
-          g_nGameplayBlocked = 0;
+          g_nCinematicActive = 0;
           g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, (void *)0x18);
           MarkActorCommittedKill(actor);
           st->mode = LVORTEX_FINISH;
@@ -2320,9 +2322,9 @@ void Level34_UpdateActors(void) {
       case LVORTEX_FINISH:
         PlaySoundEffect(g_pLevelSampleBankHeader[0x3C], 0, SFX_MODE_PANNED, 0);
         ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
-        g_nCameraScriptStickRequestY[1] = 0;
-        g_nCameraScriptStickRequestY[0] = 0;
-        g_nCameraScriptStickRequestY[-1] = 0;
+        g_nSpyroSwingEulerTargetY[1] = 0;
+        g_nSpyroSwingEulerTargetY[0] = 0;
+        g_nSpyroSwingEulerTargetY[-1] = 0;
         g_nLevelKeyState = KEYSTATE_NONE;
         switch (st->chunkAnim) {
         case 0:
@@ -2467,7 +2469,7 @@ void Level34_UpdateActors(void) {
     case ACTOR_TYPE_VAULT_TIMER: {
       int *t = actor->state;
 
-      if (g_nWorldTreasureCollected == 0x36B0 && SPY.state == SPYRO_ST_LIFT) {
+      if (g_nTotalTreasureCollected == 0x36B0 && SPY.state == SPYRO_ST_LIFT) {
         if (*t < 0x10) {
           g_nScreenFadeLevel = 0x10 - *t;
           if (g_nScreenFadeLevel >= 0x10) {

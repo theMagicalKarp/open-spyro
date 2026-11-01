@@ -1,11 +1,21 @@
+#include "actor_cutscene.h"
 #include "funcs.h"
 #include "globals.h"
 #include "level_sfx.h"
 #include "sample_bank.h"
 
-/* Apply a matched cheat code (0x8002d810). 2 = jump to the credits (remembering
-   the level to return to); 3 = unlock: mark levels 0..0x1F visited and set all
-   six save-options slots to 2, then play the confirm sound; 4 = 99 lives. */
+/* g_anCheatCodeSequences slots that do something (CheckCheatCodeMatch passes
+   the matched slot); the other slots' sequences are empty or unhandled. */
+enum CheatCode {
+  CHEAT_CREDITS = 2,    /* roll the credits, then return to this level */
+  CHEAT_ALL_WORLDS = 3, /* every level visited, every balloonist open */
+  CHEAT_99_LIVES = 4,
+};
+
+/* Apply a matched cheat code (0x8002d810): CHEAT_CREDITS jumps to the credits
+   (remembering the level to return to); CHEAT_ALL_WORLDS marks levels 0..0x1F
+   visited and every world's balloonist state 2, then plays the reward sound;
+   CHEAT_99_LIVES sets 99 lives. */
 
 void ApplyCheatCodeEffect(int code) {
   unsigned char val;
@@ -13,12 +23,12 @@ void ApplyCheatCodeEffect(int code) {
   unsigned char *p;
   unsigned char *q;
   switch (code) {
-  case 2:
+  case CHEAT_CREDITS:
     g_nCreditsReturnLevelId = g_nActiveLevelId;
     BeginCreditsSequence(0);
     PlaySoundEffect(LEVEL_SFX(SFX_REWARD), 0, SFX_MODE_PANNED, 0);
     break;
-  case 3:
+  case CHEAT_ALL_WORLDS:
     val = 1;
     n = 0x1F;
     p = &g_abLevelVisitedFlag[0x1F];
@@ -27,7 +37,7 @@ void ApplyCheatCodeEffect(int code) {
       n -= 1;
       p -= 1;
     } while (n >= 0);
-    val = 2;
+    val = BALLOONIST_OPEN;
     n = 5;
     q = &g_abWorldBalloonistState[5];
     do {
@@ -37,8 +47,8 @@ void ApplyCheatCodeEffect(int code) {
     } while (n >= 0);
     PlaySoundEffect(LEVEL_SFX(SFX_REWARD), 0, SFX_MODE_PANNED, 0);
     break;
-  case 4:
-    g_nExtraLives = 0x63;
+  case CHEAT_99_LIVES:
+    g_nExtraLives = 99;
     break;
   }
 }
