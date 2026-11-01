@@ -845,7 +845,7 @@ extern int g_nLevelSpawnYaw;                            /* 0x800778e4 */
 extern int g_anLevelKillBitmapTable[288];               /* 0x80077908 */
 extern byte g_abGemTallyIconUvTable[32];                /* 0x80077db8 */
 extern int g_anStaticRegSaveArea[19];                   /* 0x80077dd8 */
-extern byte g_abHudCounterDisplayState[5];              /* 0x80077fa8 */
+extern byte g_abHudCounterDisplayState[5];              /* 0x80077fa8: per HudCounter, a HudCounterState (hud_counter.h) */
 extern byte g_bHudLevelGemRollPhase;                    /* 0x80077fad */
 extern byte g_bHudDragonRollPhase;                      /* 0x80077fae */
 extern byte g_bHudLivesRollPhase;                       /* 0x80077faf */

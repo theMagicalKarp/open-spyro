@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "hud_counter.h"
 #include "main_shared.h"
 
 /* Tear down a sub-menu and return to the title: blit the saved framebuffer
@@ -16,10 +17,10 @@ void ExitSubMenuToTitle(void) {
   DrawSync(0);
   g_nGamestate = GS_GAMEPLAY;
   InitLightVectorConstants();
-  g_abHudCounterDisplayState[0] = 0;
-  g_abHudCounterDisplayState[1] = 0;
-  g_abHudCounterDisplayState[2] = 0;
-  g_abHudCounterDisplayState[3] = 0;
-  g_abHudCounterDisplayState[4] = 0;
+  g_abHudCounterDisplayState[HUD_CTR_GEMS] = HUD_CTR_HIDDEN;
+  g_abHudCounterDisplayState[HUD_CTR_DRAGONS] = HUD_CTR_HIDDEN;
+  g_abHudCounterDisplayState[HUD_CTR_LIVES] = HUD_CTR_HIDDEN;
+  g_abHudCounterDisplayState[HUD_CTR_EGGS] = HUD_CTR_HIDDEN;
+  g_abHudCounterDisplayState[HUD_CTR_KEY] = HUD_CTR_HIDDEN;
   HandleMusicCommand(g_nCurrentMusicTrack, 8);
 }

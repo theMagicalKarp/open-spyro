@@ -1,6 +1,7 @@
 #include "camera.h"
 #include "funcs.h"
 #include "globals.h"
+#include "hud_counter.h"
 #include "main_shared.h"
 #include "vecmath.h"
 
@@ -40,11 +41,11 @@ void EndSaveMenuToWorld(void) {
   ResetCameraStateToTarget();
   InitHudCounters(0);
 
-  g_abHudCounterDisplayState[0] = 0;
-  g_abHudCounterDisplayState[1] = 0;
-  g_abHudCounterDisplayState[2] = 0;
-  g_abHudCounterDisplayState[3] = 0;
-  g_abHudCounterDisplayState[4] = 0;
+  g_abHudCounterDisplayState[HUD_CTR_GEMS] = HUD_CTR_HIDDEN;
+  g_abHudCounterDisplayState[HUD_CTR_DRAGONS] = HUD_CTR_HIDDEN;
+  g_abHudCounterDisplayState[HUD_CTR_LIVES] = HUD_CTR_HIDDEN;
+  g_abHudCounterDisplayState[HUD_CTR_EGGS] = HUD_CTR_HIDDEN;
+  g_abHudCounterDisplayState[HUD_CTR_KEY] = HUD_CTR_HIDDEN;
 
   HandleMusicCommand(g_nCurrentMusicTrack, 8);
 }

@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "hud_counter.h"
 #include "level_sfx.h"
 #include "main_shared.h"
 #include "pause_menu.h"
@@ -31,11 +32,11 @@ void EnterPauseMenu(int fromGameplay) {
   if (fromGameplay != 0) {
     g_nPauseMenuTransitionFrames = 0;
   } else {
-    g_abHudCounterDisplayState[0] = 1;
-    g_abHudCounterDisplayState[1] = 1;
-    g_abHudCounterDisplayState[2] = 1;
-    g_abHudCounterDisplayState[3] = 1;
-    g_abHudCounterDisplayState[4] = 1;
+    g_abHudCounterDisplayState[HUD_CTR_GEMS] = HUD_CTR_ROLL_IN;
+    g_abHudCounterDisplayState[HUD_CTR_DRAGONS] = HUD_CTR_ROLL_IN;
+    g_abHudCounterDisplayState[HUD_CTR_LIVES] = HUD_CTR_ROLL_IN;
+    g_abHudCounterDisplayState[HUD_CTR_EGGS] = HUD_CTR_ROLL_IN;
+    g_abHudCounterDisplayState[HUD_CTR_KEY] = HUD_CTR_ROLL_IN;
     g_bHudLevelGemRollPhase = 0xC;
     g_bHudDragonRollPhase = 0xC;
     g_bHudLivesRollPhase = 0xC;

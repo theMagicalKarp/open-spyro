@@ -93,11 +93,11 @@ icon_slot:
   VOL(HUD_ICON_SLOT(HUD_SLOT_LIVES)->type) = ACTOR_TYPE_HUD_LIVES_ICON;
   VOL(HUD_ICON_SLOT(HUD_SLOT_KEY)->type) = ACTOR_TYPE_KEY;
   VOL(HUD_ICON_SLOT(HUD_SLOT_KEY)->rotZ) = 0x40;
-  VOL(g_abHudCounterDisplayState[0]) = 1;
-  VOL(g_abHudCounterDisplayState[1]) = 1;
-  VOL(g_abHudCounterDisplayState[2]) = 1;
-  VOL(g_abHudCounterDisplayState[3]) = 1;
-  VOL(g_abHudCounterDisplayState[4]) = 1;
+  VOL(g_abHudCounterDisplayState[HUD_CTR_GEMS]) = HUD_CTR_ROLL_IN;
+  VOL(g_abHudCounterDisplayState[HUD_CTR_DRAGONS]) = HUD_CTR_ROLL_IN;
+  VOL(g_abHudCounterDisplayState[HUD_CTR_LIVES]) = HUD_CTR_ROLL_IN;
+  VOL(g_abHudCounterDisplayState[HUD_CTR_EGGS]) = HUD_CTR_ROLL_IN;
+  VOL(g_abHudCounterDisplayState[HUD_CTR_KEY]) = HUD_CTR_ROLL_IN;
   dragons = VOL(g_nWorldDragonsRescued);
   worldEggs = VOL(g_nWorldEggsRecovered);
   keyState = VOL(g_nLevelKeyState);

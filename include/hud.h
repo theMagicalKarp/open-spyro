@@ -12,6 +12,7 @@
 
 #include "actor_type.h"
 #include "globals.h"
+#include "hud_counter.h"
 
 /* Icon actor record at byte offset `o` (slot * 0x58) of g_abHudIconActorRecords. */
 #define HUD_ICON(o) ((Actor *)((char *)g_abHudIconActorRecords + (o)))
