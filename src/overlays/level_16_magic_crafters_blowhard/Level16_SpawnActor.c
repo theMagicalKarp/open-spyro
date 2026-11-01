@@ -161,19 +161,19 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       switch (parent->mode)
       {
         case 0x48:
-          st->mode = 1;
+          st->mode = RIMDRIFT_TETHERED;
           st->reach = 0x40;
           st->range = 0xE00;
           break;
 
         case 0x52:
-          st->mode = 2;
+          st->mode = RIMDRIFT_CHASE;
           st->reach = 0x100;
           st->range = 0x2000;
           break;
 
         case 0x5C:
-          st->mode = 3;
+          st->mode = RIMDRIFT_CHASE_HELPER;
           st->reach = 0x140;
           st->range = 0x2000;
           break;

@@ -823,7 +823,7 @@ typedef struct RimState {
   short x;        /* 0x08 Spyro's position when last seen, >> 4 */
   short y;        /* 0x0A */
   Actor *child;   /* 0x0C its type 39 helper */
-  unsigned char mode; /* 0x10 */
+  unsigned char mode; /* 0x10 RimRiderDrift */
 } RimState;
 
 typedef struct RimParent {

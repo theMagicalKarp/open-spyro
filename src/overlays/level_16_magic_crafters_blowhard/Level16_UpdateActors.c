@@ -707,7 +707,7 @@ void Level16_UpdateActors(void) {
 
       case RIMRIDER_DRIFT:
         switch (st->mode) {
-        case 1: {
+        case RIMDRIFT_TETHERED: {
           int d = ApproxDist2D(&actor->posX, &st->parent->posX);
 
           if (d > st->range) {
@@ -724,12 +724,12 @@ void Level16_UpdateActors(void) {
           break;
         }
 
-        case 3:
+        case RIMDRIFT_CHASE_HELPER:
           if (st->child == 0) {
             st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER_HELPER, actor);
             PlayActorMeshVoice(actor, 1, 0);
           }
-        case 2: {
+        case RIMDRIFT_CHASE: {
           int d;
 
           if (ApproxDist2D(&actor->posX, &st->parent->posX) > st->range) {

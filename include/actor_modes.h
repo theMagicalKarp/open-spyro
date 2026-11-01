@@ -1363,6 +1363,14 @@ enum RimRiderMode {
   RIMRIDER_POP = 5,     /* pop animation, then SINK */
 };
 
+/* RimState.mode: how RIMRIDER_DRIFT moves, picked at spawn from the
+ * parent's mode (0x48 / 0x52 / 0x5C). */
+enum RimRiderDrift {
+  RIMDRIFT_TETHERED = 1, /* slides out along the parent's heading, reach..range from it */
+  RIMDRIFT_CHASE = 2,    /* runs along its own heading at Spyro's last-seen spot */
+  RIMDRIFT_CHASE_HELPER = 3, /* CHASE, first spawning its ACTOR_TYPE_RIM_RIDER_HELPER */
+};
+
 /* ->mode of a brawler (ACTOR_TYPE_BRAWLER, BrawlerState; level 7); the mode
  * is also the animation index. It carries a swooper, which flies off
  * knocked (SWOOP_KNOCKED) when the brawler goes down. */
