@@ -42,6 +42,7 @@ void ResetLevelState(void);
 /* 0x8001277c: Fresh-game state initializer. Sets g_nActiveLevelId=10 (the Artisans hub, where a new game starts) / g_nOptionVibrationEnabled=1 / g_dwActiveCameraOptions=0x52, then calls ResetLevelState. Called from Title_Update (StoryIntro) and DispatchSpecialCutscene — runs once at the start of a new game. */
 void InitNewGameState(void);
 
+/* 0x800127c0: Boot bring-up and title sequence: GPU / SPU / pad / sound / CD / GTE init, both draw buffers, then four 8-frame fades (AddBiasToColorRuns) of the title and splash art around the boot CD loads, and the hand-off to the story intro. */
 void Initialize(void);
 
 /* 0x80012cf0: Sets up the per-level SPU sample-bank header pointers and rebases the per-sample SPU-RAM offset of each entry by adding the SPU RAM start address (0x1010). header=header base; g_pLevelSampleBankHeader = header, g_pLevelSampleBankEntries = header+0x104 (entry array), entry count at header+0x100, entry size 0x14. When relocate!=0, walks entries[count-1..0] adding 0x1010 to entry[i].first_int (the sample's SPU RAM byte offset). Called by UnpackWorldDataChunks (initial level load — relocate=1) and the level-transition state machine TickLevelTransitionStream (re-init path). */
@@ -89,11 +90,13 @@ void AddPrimToOTSlot(void *prim, int slot);
 /* 0x800168dc: Appends a primitive to the active OT depth slot (g_pOtActiveDepthSlot). If the slot already has a tail prim, patches its 24-bit next-addr tag to point at `prim`; else stores `prim` as the slot's head. PsyQ-style `addPrim` for this engine's per-depth OT slot table. */
 void AddPrimToOT(unsigned int prim);
 
+/* 0x80016914 (hand-written): Stores `value` to every word of [dst, dst + byte_count); byte_count is a non-zero multiple of 4 (the loop runs at least once). */
 void FillWord(void *dst, unsigned int value, int byte_count);
 
 /* 0x80016930: Unrolled memset that writes a 32-bit value to byte_count bytes in 16-byte (4-word) chunks. byte_count must be a multiple of 16. SetupFrameOT uses it to zero the 0x1c00-byte OT buffer at g_pOtDepthBinHead0. */
 void FillBlock16(void *dst, int value, int count);
 
+/* 0x80016958 (hand-written): Copies byte_count bytes (a non-zero multiple of 4) word by word; reads the source four words at a time, so it may read up to 12 bytes past its end. */
 void CopyWords(void *dst, void *src, int byte_count);
 
 /* 0x800169ac: 2-arg arctan returning 8-bit angle (0..0xff = 0..360deg). Smaller, lower-precision sibling of ArcTan2 — uses byte-LUT at s__________________________________8006d82c. */
@@ -206,6 +209,7 @@ void AddBiasToColorRuns(void *dst, void *src, int bias);
 /* 0x80017fe4: Emits a glyph-sprite chain for a string: per non-space byte allocates a 0x58-byte slot at g_pSpriteRecordWriteCursor (queue tail, grows down), maps '0'-'9' and 'A'-'Z' (+ a few specials: '/', '?', '%', '^', '+') to font tile indices, copies the cursor position from pPen and advances *pPen by nAdvance between glyphs. Sibling of BuildTextSprites. */
 void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance, int nPalette);
 
+/* 0x800181ac: Queues one glyph sprite record per non-space character of `text` at g_pSpriteRecordWriteCursor, advancing the pen from *pos by the glyph width attr[0] (digits / '!' / '?' by `spacing`, spaces by 3/4 width). Returns the cursor. */
 void *BuildTextSprites(char *text, int *pos, int *attr, int spacing, int flags);
 
 /* 0x8001844c: Emits a 2-point gradient line (LineG2) into the OT. Each endpoint's RGB is tinted by the angular distance between its screen-relative angle (vs (256,120)) and a reference angle in g_nLightSweepAngle — radial-light effect for menu borders. Called by Gamestate02_03_06_Draw and DrawShadedMenuBox. */
@@ -433,6 +437,7 @@ void BuildCameraViewMatrix(void);
 /* 0x80033e40: Line-of-sight segment test. Marches from from toward to in 0x400-length steps (segment length / 0x400 iterations) and calls CastRayWorldAndActors (world collision query) at each step. Returns 1 if every step is clear, 0 on the first hit. Shared by UpdateGameplayCamera for camera occlusion tests; M07 will likely reuse for projectile and entity LOS. */
 int CheckLineOfSightSegment(int *from, int *to);
 
+/* 0x80033f08: Derives the camera pitch / yaw from the anchor -> `target` delta; when the inverted heading is closer (or the mode / target asks for it) flips the framing half a turn and returns 1, else commits the plain yaw and returns 0. */
 int ComputeCameraToTargetAngle(int *target);
 
 /* 0x80034198: Loads the current camera-mode's 6-int parameter block from g_pCameraTargetParams into the g_nCameraTarget* set (Yaw, Pitch, Distance, Roll, PitchBias, YawBias). The yaw is biased by -g_nCameraTargetYawBiasFromMode & 0xfff so the params can be stored in world-space yaw. */
@@ -690,6 +695,7 @@ void InsertActorIntoSpatialGrid(Actor *actor);
 /* 0x800529cc: Hides an actor: clears prim-type tag bytes at +0x41/+0x4b (preventing render submission), clears the first dword of the bound-vec at +0x8, and writes 0xffff to the spatial-grid cell index at +0x34 (the "not in grid" sentinel). Caller-driven inverse of InsertActorIntoSpatialGrid; does NOT walk the per-cell linked list (the caller is responsible for unlinking, or the actor was never linked). Used by HUD init (UpdateHudCounters' setup pass over the 12 icon slots) and by the M09 level loader to reset stale slots. */
 void HideActorRenderRecord(Actor *actor);
 
+/* 0x80052f38 (hand-written): Adds animation `anim`/`sub`'s root-motion step for `frame` (from Spyro's mesh record in g_apActorMeshTable and g_anAnimRootMotionDeltaLut) to the vector `out`. Called twice per substep by IntegrateSpyroMotionForSubstep (body and second layer). */
 void AccumulateAnimRootMotionDelta(int frame, int *out, int anim, int sub);
 
 /* 0x800533d0: Encodes the cached probe vector at g_anCollisionProbeVec/6c/70 (X/Y/Z, the collision-system scratch vector written by FindGroundHeightBelow / CastRayWorldAndActors / sphere-probe paths) plus a 14-bit scalar at g_nCollisionResolvedZ into a packed direction code at actor+0x1c. Only re-encodes when bit 31 of the existing field is set (caller flips bit 31 as a "needs recompute" sentinel). Magnitude path: gte_sqr0 on (X,Z), sqrt-LUT lookup at g_anSqrtLUT → 2D XZ-plane magnitude. Then two arctan2 quadrant-decompositions: (XZmag vs Y) → pitch byte angle, (Z vs X) → yaw byte angle (each = quadrant + 5-bit frac, packed to 6 bits via >>2). Output layout: bit 31 set + pitch<<22 + yaw<<16 + (g_nCollisionResolvedZ>>2) in low 14 bits. Callers: BuildLoadedLevelRuntime (level loader, spawn-time encoding), SaveMenu_Update (save-host pan re-encode), DragonRescue_Update (per-frame burst direction). */
@@ -740,6 +746,7 @@ void SpawnFloatingDigitActors(int value, Actor *src);
 /* 0x8005595c: Top-level music/sound state init called from Initialize after SpuInit. Calls InitSpu (sound channel reset), seeds master volume + CD-DA mix words at g_abSpuCommonAttr..g_nSoundMonoMixFlag, then SetSpuCommonAttr / ApplySpuVoiceAttr / SetSpuKeyMask / SetSpuTransferMode (sound-bank registration), FillWord(g_aSpuVoiceRows, 0, 0x2a0) zeros the channel-state block. Body internals deferred to M10. */
 void InitSoundEngine(void);
 
+/* 0x80055a78: Starts sample `sampleId` on a free mixer row owned by `owner`. `mode` is SFX_MODE_FLAT / SFX_MODE_3D (positional; dropped outside owner->soundRange) / SFX_MODE_PANNED; FLAT and 3D refuse to retrigger a sample the owner is already playing. The row index (0x7F when dropped) goes to *pPlaying. */
 unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner, unsigned int mode, unsigned char *pPlaying);
 
 /* 0x80056200: Stops one SPU voice by index. index = voice index (low 7 bits, 0..23). Sets bit index of g_dwSpuPendingKeyOff (pending hardware-keyoff mask), then if mode is 2 or 4: resets the table row at &g_aSpuVoiceRows + (idx*0x1c) — writes 0x7f to the busy-marker via the writeback pointer at +0x18, zeros owner-key +0x00 + writeback ptr +0x18 + interp delta +0x14, sets flags ushort +0x0e=0x40 (idle), sets byte +0x0d=0xff (alignment). The 24-entry × 0x1c table at &g_aSpuVoiceRows holds per-voice runtime state. Sole caller: DragonRescue_Update. */
@@ -769,13 +776,16 @@ void SyncSoundVoicesWithHardware(void);
 /* 0x80056ed4: Per-frame SPU update tick. Every 64 frames (g_dwGamestateFrames & 0x3f == 0) runs SyncSoundVoicesWithHardware to reconcile drift. Then drains the two pending hardware-key masks: if g_dwSpuPendingKeyOn (pending keyon mask) != 0, calls SetSpuKeyMask(1, mask) and clears it; if g_dwSpuPendingKeyOff (pending keyoff mask) != 0, calls SetSpuKeyMask(0, mask) and clears it. Callers: GamestateUpdate + every per-state Update that may set/clear voices (PauseMenu_Update, Cutscene_Update, etc.). */
 void TickSpuPerFrame(void);
 
+/* 0x80056f64: Fires trigger region `idx` for `event` (1 enter, 2 inside): the region's TriggerRegionType picks hazard / lift / ground latch / charge-hold / rebound / damage event bits, or a portal warp. */
 void DispatchSpyroTriggerEvent(int idx, int event);
 
 /* 0x800573c8: Emit-list rasterizer (hand-asm GTE core; saves s-regs to scratchpad 1f800000, gp anchor g_abSpyroFlameTransitionModes). Walks the per-level particle/billboard emit list at g_pEmitListBase: linear 0x20-byte records, capacity 0x2000 (256 records), list empty when a record's opcode byte is 0xff (loader seeds this; DragonRescue_Update resets it during the rescue cutscene; records are appended by overlay code via g_pfnLevelEmitParticles). RECORD FORMAT: +0 short header {lo byte = index into g_apMobEntryTable (texture source), hi byte = opcode; hi<0 = skip record, 0xff = end}; +3 byte = written back each frame (1 = prim emitted, 0 = culled) so game logic can poll visibility; +4/+8 packed world pos (x,y,z halfwords, transformed camera-relative via g_anCameraPos>>2 and g_anWorldToCameraRotMtx); for opcodes 2/5/6+: +8 bits 16-23 = brightness (IR0), bits 23+ = spin phase into g_anSineLut; +0xc = packed RGB/mode color word; +0x10 ushort {lo = 8-byte sub-record index into the mob's table (+4/+8 = texpage/UV words), hi = OT depth-bin bias subtracted from sz>>5}; +0x14 = texword for flat opcodes. OPCODES: 0 = 1px line dot (0x03-len prim), 1/4 = flat 2-vert prim (0x04-len; 4 = absolute-pos variant via gte_ldtr), 2 = lit spinning billboard quad, 3 = alt-lit billboard, 5 = depth-faded spinning billboard, 6+ = default spinning billboard (all 0x09-len POLY_FT4, 0x28 bytes). Links prims into g_pOtDepthBinArrayBase bins; bails with g_nPrimBufferOverflowFlag=1 at g_pPrimBufferLimit-0x400. */
 void RasterizeEmitList(void);
 
+/* 0x800580f4 (hand-written): Projects and emits the world sparkle particles in g_abWorldSparkleParticleTable into the OT at g_pPrimBufferWriteCursor. First half of DrawWorldParticleEmitters. */
 void DrawWorldSparkleParticles(void);
 
+/* 0x800584c4 (hand-written): Ages by `frameStep`, projects and emits the rotating billboards in g_aRotBillboards (SpawnActorRotBillboard). Second half of DrawWorldParticleEmitters. */
 void DrawWorldRotatingBillboards(int frameStep);
 
 /* 0x80058864: Dragon-rescue aura emitter — 8-pointed semitransparent star burst billboard around the gem position. Loads view matrix at g_anWorldToCameraRotMtx..de0, computes camera-relative anchor (g_anDragonRescueAuraStarAnchor/dfc/e00 minus camera g_anCameraPos/250/254), then loads billboard rotation matrix at g_anDragonRescueAuraStarMtx..68 (filled by ApplyEulerRotation from byte-angles at g_abDragonRescueAuraStarEuler by caller). Projects center vertex + 8 inner-ring verts (radius scale = g_nDragonRescueAuraStarRadius >> 0xc, angles from sin/cos LUTs at &g_anSineLut/&g_anCosineLut stride 0x40 = 45°) + 8 outer-ring verts (radius 4x larger via >> 0xa, angles offset by 22.5°). Inner ring is closed (vertex[0] = vertex[N]). Emits drawmode prim (0xe1000620 untextured + 0x2000000 semi-trans), then loops 8 times emitting 2 POLY_F3 per slice: outer-spike triangle (inner[i], inner[i+1], outer[i]) + inner-fan triangle (inner[i], inner[i+1], center) for 16 triangles total. Color byte applied to all 6 color slots from g_bDragonRescueAuraStarColor. Each prim inserts into OT via g_pOtActiveDepthSlot head-ptr. Sole caller: DragonRescue_Draw, conditional on g_nDragonRescueAuraStarEnabled trigger flag. */
@@ -808,6 +818,7 @@ void BuildSaveGameBuffer(unsigned char *buf);
 /* 0x80059a48: Spyro drop-shadow renderer. Emits a 16-segment subtractive-blend polygon ring (texpage 0xe1000640, blend mode 2 = B-F, darkens framebuffer) anchored at g_anSpyroShadowPos, rotated to Spyro's yaw (g_abSpyroPersistentEuler[2] through g_anSpyroShadowCircleTable 16-gon). Silhouette extents come from per-anim-keyframe bytes (mesh +0x38 anim table, +0x24 frame entry) interpolated by g_bSpyroSubFrameTimer in GTE scratchpad; vertex Z lift from g_abSpyroShadowRingHeights; if any g_abSpyroShadowRingNoGroundFlags byte is set the silhouette shrinks x3/4. Per-segment OT bin = depth>>9 - g_nSpyroShadowOtBinBias (skip if negative). Early-out while g_nSpyroShadowHiddenFlag >= 1 (over water/abyss or trigger event). Was misnamed DrawSunFlareBillboard until the 36th M14 sweep. */
 void DrawSpyroDropShadow(void);
 
+/* 0x80059f8c (hand-written): Emits the textured directional spike sprites (g_anEntitySpikeTexWords) through the camera rotation into the OT. Called from ComposeFrameScene and DragonRescue_Draw. */
 void DrawEntityDirectionalSpikes(void);
 
 /* 0x8005a470: Points the level hooks at the overlay just loaded for g_nActiveLevelId (43 cases). Every level sets g_pDrawBufA (the overlay's end, where free RAM starts) and g_pfnLevelSpawnActor / UpdateActors / EmitParticles / AdvanceEmitList. The 11 levels with a balloonist or fly-in cutscene also set g_pfnLevelBeginActorCutscene, g_pfnLevelOnSaveMenuExit and the GS_ACTOR_CUTSCENE substate hooks (g_pfnActorCutsceneSubstateUpdate / Draw); the 5 flight levels set g_pfnLevelHandleFlightResults, g_pfnFlightTimeFormatter, g_pfnLevelFallImpactCallback and the gamestate-7 handler pair. Ends with g_pDrawBufB = g_pDrawBufA. Sole caller TickLevelTransitionStream, once per level entry. */
@@ -1177,6 +1188,7 @@ void FlushCache(void);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined1 *memcpy(undefined1 *param_1, undefined1 *param_2, int param_3);
 
+/* 0x8006272c: libc rand(): g_dwRandSeed = g_dwRandSeed * 0x41C64E6D + 0x3039; returns bits 16..30 (0..0x7FFF), not a full 32-bit value. Seeded by srand. */
 unsigned int GetRandomU32(void);
 
 /* 0x8006275c: libc srand: sets g_dwRandSeed. */
@@ -1922,6 +1934,7 @@ int TurnActorYawTowardAngle(Actor *actor, int heading, int step, int threshold, 
 /* 0x8005882c (hand-written asm): scans the 8 records of g_aRotBillboards (0x18 stride) for one whose life byte (+0xC) is 0 and returns its index, or -1 when all are live. Caller: SpawnActorRotBillboard. */
 int FindFreeRotBillboardSlot(void);
 
+/* 0x8003aaec: Allocates a g_aRotBillboards record, seeds it white at `offset` rotated by the actor's matrix plus its position, and returns the record index (negative when the table is full). */
 int SpawnActorRotBillboard(Actor *actor, int *offset);
 
 /* 0x8003b1e8: Writes state byte +0x48 = a1 on every non-dormant (< 0x80) actor of a0's pickup group (+0x43), or on a0 alone when the group index is out of range. */
