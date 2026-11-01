@@ -2338,7 +2338,7 @@ void Level4_UpdateActors(void) {
           actor->mode = APGUARD_HOLD;
           continue;
         }
-        PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 9, 0x14, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 9, 0x14, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         break;
 
       case APGUARD_WATCH: {

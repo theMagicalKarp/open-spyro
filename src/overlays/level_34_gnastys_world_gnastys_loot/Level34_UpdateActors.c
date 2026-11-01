@@ -1641,7 +1641,7 @@ void Level34_UpdateActors(void) {
             break;
 
           case 1:
-            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, 0xFF,
+            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               0) == ((st->cur->count - 1) | 0x100)) {
               if (st->cur == st->pathB) {
                 st->ring->dir = one;
@@ -1669,7 +1669,7 @@ void Level34_UpdateActors(void) {
             if (st->ring->dir > 0) {
               n = (st->cur->count - 1) | 0x100;
             }
-            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, 0xFF,
+            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               0) == n) {
               st->path->dir = -st->ring->dir;
               if (st->path->dir > 0) {
@@ -1702,7 +1702,7 @@ void Level34_UpdateActors(void) {
             if (st->ring->dir > 0) {
               n = (st->cur->count - 1) | 0x100;
             }
-            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, 0xFF,
+            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               0) == n) {
               st->ring->dir = -st->path->dir;
               if (st->ring->dir > 0) {
@@ -1740,7 +1740,7 @@ void Level34_UpdateActors(void) {
             if (st->ring->dir > 0) {
               n = (st->cur->count - 1) | 0x100;
             }
-            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, 0xFF,
+            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               0) == n) {
               if (st->ring->dir > 0) {
                 st->cur = st->pathA;
@@ -1769,7 +1769,7 @@ void Level34_UpdateActors(void) {
             break;
 
           case 5:
-            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, 0xFF,
+            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               MOVE_CHECK_Z) == 0x100) {
               st->leg = 0;
             }
@@ -1823,7 +1823,7 @@ void Level34_UpdateActors(void) {
             g_anCameraActiveTargetParams.w[5] = 0;
             g_anCameraActiveTargetParams.w[0] = 0x800 - g_bSpyroPersistentEulerZ * 16;
             r = TweenActorAlongPath(actor, (PathData *)st->path, st->look, &st->laps,
-                              st->speed, 4);
+                              st->speed, TWEEN_FLY);
             if (r == 2) {
               st->cur->cur = 2;
               g_nCinematicActive = 0;
@@ -2048,7 +2048,7 @@ void Level34_UpdateActors(void) {
             if (dir != st->path->dir) {
               st->path->dir = dir;
             }
-            r = PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 8, 0x1E, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+            r = PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             if (r & 0x100) {
               r &= ~0x100;
               if (st->path->dir == -1) {
@@ -2067,7 +2067,7 @@ void Level34_UpdateActors(void) {
 
           case LCRITTER_RUN_WANDER: {
             int r = PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 8, 0x1E,
-                                  0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+                                  PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
             if (r & 0x100) {
               r &= ~0x100;
@@ -2089,7 +2089,7 @@ void Level34_UpdateActors(void) {
             if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x2800) {
               st->mode = one;
             }
-            PivotActorAlongPath(actor, st->path, 0x200, 0xF0, 0, 8, 0x1E, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+            PivotActorAlongPath(actor, st->path, 0x200, 0xF0, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             break;
           }
         }

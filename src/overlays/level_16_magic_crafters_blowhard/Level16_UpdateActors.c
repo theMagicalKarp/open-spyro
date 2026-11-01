@@ -3322,7 +3322,7 @@ void Level16_UpdateActors(void) {
         break;
 
       case BLOWHARD_P2_TRAVEL:
-        if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->tweenStep, 0x20, 4) == 2) {
+        if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->tweenStep, 0x20, TWEEN_FLY) == 2) {
           actor->mode = BLOWHARD_P2_PATROL;
           actor->soundRange = 0;
           st->floorZ = actor->posZ + 0x578;
@@ -3334,7 +3334,7 @@ void Level16_UpdateActors(void) {
       case BLOWHARD_P2_PATROL:
         if (dist < 0x2800 && st->floorZ == -1) {
           if (st->pathDone == 0) {
-            if (PivotActorAlongPath(actor, st->path, 0x80, 0xB4, 0, 8, 0x28, 0xFF,
+            if (PivotActorAlongPath(actor, st->path, 0x80, 0xB4, 0, 8, 0x28, PIVOT_TURN_ANY,
                               MOVE_LIFT) != 0) {
               st->pathDone = 1;
             }
@@ -3384,7 +3384,7 @@ void Level16_UpdateActors(void) {
         break;
 
       case BLOWHARD_P3_TRAVEL:
-        if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->tweenStep, 0x20, 4) == 2) {
+        if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->tweenStep, 0x20, TWEEN_FLY) == 2) {
           actor->mode = BLOWHARD_P3_PATROL;
           st->floorZ = actor->posZ + 0x578;
           st->path = st->paths[4];
@@ -3395,7 +3395,7 @@ void Level16_UpdateActors(void) {
       case BLOWHARD_P3_PATROL:
         if (dist < 0x2800 && st->floorZ == -1) {
           if (st->pathDone == 0) {
-            if (PivotActorAlongPath(actor, st->path, 0x80, 0xB4, 0, 8, 0x28, 0xFF,
+            if (PivotActorAlongPath(actor, st->path, 0x80, 0xB4, 0, 8, 0x28, PIVOT_TURN_ANY,
                               MOVE_LIFT) != 0) {
               st->pathDone = 1;
             }

@@ -2047,7 +2047,7 @@ void Level29_UpdateActors(void) {
         actor->mode = FTARGET_STRUCK;
       }
       if (g_nSpyroSubstate < SPYRO_SUB_SCRIPTED) {
-        TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, 4);
+        TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, TWEEN_FLY);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         if ((g_dwGamestateFrames & 3) == 0) {
           GetActorAttachPoint(actor, 3, svZ);
@@ -2083,7 +2083,7 @@ void Level29_UpdateActors(void) {
         actor->mode = FTARGET_STRUCK;
       }
       if (g_nSpyroSubstate < SPYRO_SUB_SCRIPTED) {
-        TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, 4);
+        TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, TWEEN_FLY);
       }
       switch (actor->mode) {
       case FTARGET_ACTIVE:

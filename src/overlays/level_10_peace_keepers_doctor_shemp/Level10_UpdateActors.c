@@ -2984,7 +2984,7 @@ void Level10_UpdateActors(void) {
 
       case SGUARD_PATH_CHASE:
         st->accel = 0xA0;
-        if (PivotActorAlongPath(actor, st->target, 0x12C, st->accel, 0, 8, 0x40, 0xFF,
+        if (PivotActorAlongPath(actor, st->target, 0x12C, st->accel, 0, 8, 0x40, PIVOT_TURN_ANY,
                           MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x100) {
           st->done = 0;
           actor->mode = SGUARD_CHASE;
@@ -2998,7 +2998,7 @@ void Level10_UpdateActors(void) {
           PlayActorMeshVoice(actor, 1, 0);
         }
         st->accel = 0xB4;
-        if (PivotActorAlongPath(actor, st->target, 0x100, st->accel, 0, 8, 0x40, 0xFF,
+        if (PivotActorAlongPath(actor, st->target, 0x100, st->accel, 0, 8, 0x40, PIVOT_TURN_ANY,
                           MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x100) {
           actor->mode = SGUARD_BRAKE_AIM;
           continue;
@@ -3413,7 +3413,7 @@ void Level10_UpdateActors(void) {
             actor->nextFrame = sixteen;
             actor->frameProgress = 0;
           }
-          if (PivotActorAlongPath(actor, st->path, 0x118, 0xA0, 0, 4, 0x14, 0xFF,
+          if (PivotActorAlongPath(actor, st->path, 0x118, 0xA0, 0, 4, 0x14, PIVOT_TURN_ANY,
                             MOVE_LIFT | MOVE_FOLLOW_FLOOR) == st->node[st->phase] + 0x101) {
             actor->mode = SHEMP_ARRIVE;
             continue;

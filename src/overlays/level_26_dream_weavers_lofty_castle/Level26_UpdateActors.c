@@ -1460,7 +1460,7 @@ void Level26_UpdateActors(void) {
         break;
 
       case ESCORT_TWEEN_IN:
-        if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->timer, 0x20, 4) == 2) {
+        if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->timer, 0x20, TWEEN_FLY) == 2) {
           actor->mode = ESCORT_JOIN;
         }
         break;

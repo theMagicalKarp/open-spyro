@@ -1603,7 +1603,7 @@ void Level33_UpdateActors(void) {
         if (FLY_FLAGS(st->path, st->path->cur) & 0xFFC) {
           spd = FLY_FLAGS(st->path, st->path->cur) & 0xFFC;
         }
-        r = PivotActorAlongPath(actor, st->path, 0x1C2, spd, 0, 0xA, 0x28, 0xFF, MOVE_LIFT);
+        r = PivotActorAlongPath(actor, st->path, 0x1C2, spd, 0, 0xA, 0x28, PIVOT_TURN_ANY, MOVE_LIFT);
         h = ProbeActorGroundHeightRaised(actor, 0xBB8);
         st->vSpeed -= 0x1E;
         if (st->vSpeed < -0x190) {
@@ -1951,7 +1951,7 @@ void Level33_UpdateActors(void) {
           }
         }
         st->speed = spd;
-        r = PivotActorAlongPath(actor, st->path, 0x200, spd, 0, 7, 0x28, 0xFF, 0);
+        r = PivotActorAlongPath(actor, st->path, 0x200, spd, 0, 7, 0x28, PIVOT_TURN_ANY, 0);
         GNASTY_FALL(actor, st);
         if (r == 0x101 && ApproxDist2D(&actor->posX, &SPY.posX) > 0x2000) {
           ENTER_POSE(actor, GNASTY_LOOKOUT);
@@ -2012,7 +2012,7 @@ void Level33_UpdateActors(void) {
         if (FLY_FLAGS(st->path, st->path->cur) & 0xFFC) {
           spd = FLY_FLAGS(st->path, st->path->cur) & 0xFFC;
         }
-        r = PivotActorAlongPath(actor, st->path, 0x12C, spd, 0, 0xA, 0x28, 0xFF, 0);
+        r = PivotActorAlongPath(actor, st->path, 0x12C, spd, 0, 0xA, 0x28, PIVOT_TURN_ANY, 0);
         GNASTY_FALL(actor, st);
         if (r == 0x100) {
           actor->mode = GNASTY_STAND;

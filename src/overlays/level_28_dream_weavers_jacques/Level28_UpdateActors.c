@@ -2160,7 +2160,7 @@ void Level28_UpdateActors(void) {
         continue;
 
       case SINGER_RETURN:
-        if (TweenActorAlongPath(actor, st->path, st->prevLeg, st->legStep, sixteen, 4) == 2) {
+        if (TweenActorAlongPath(actor, st->path, st->prevLeg, st->legStep, sixteen, TWEEN_FLY) == 2) {
           st->rideMode = 0;
           actor->rotY = 0;
           ((int *)g_pActorListBase[st->rider].state)[16] = one;
@@ -2270,7 +2270,7 @@ void Level28_UpdateActors(void) {
           g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         }
         if (st->path->cur != st->stops[st->idx]) {
-          TweenActorAlongPath(actor, st->path, st->prevLeg, st->legStep, 8, 4);
+          TweenActorAlongPath(actor, st->path, st->prevLeg, st->legStep, 8, TWEEN_FLY);
           continue;
         }
         ZeroVector(st->prevLeg);

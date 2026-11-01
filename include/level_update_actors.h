@@ -359,6 +359,9 @@ typedef struct ExitWhirlState {
   int depth; /* 0x0C lift height that triggers the exit, 0 = 0x2000 */
 } ExitWhirlState;
 
+#ifndef PIVOT_TURN_ANY
+#define PIVOT_TURN_ANY 0xFF /* turnGroup: turn without waiting on a group peer */
+#endif
 extern int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed, int contactRadius, int step, int lim, int turnGroup, int flags);
 
 extern int RaiseSpyroTriggerInRadius(int *pos, int radius, int flags);
@@ -924,6 +927,9 @@ typedef struct PostPath {
 extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *out_index);
 
 /* Path tweens used by the patrol/post classes. */
+#ifndef TWEEN_FLY
+#define TWEEN_FLY 0x04 /* keep each leg's Z step (fly); without it the step is flattened */
+#endif
 extern int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legs, int flags);
 
 typedef struct PostState {

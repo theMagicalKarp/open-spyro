@@ -1236,7 +1236,7 @@ void Level23_UpdateActors(void) {
         }
         d = actor->rotZ;
         if (g_nSpyroSubstate < SPYRO_SUB_SCRIPTED &&
-            TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0xA, 4) == 2) {
+            TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0xA, TWEEN_FLY) == 2) {
           st->pathIdx = (st->pathIdx + 1) & 3;
           switch (st->pathIdx) {
           case 0:
@@ -1516,7 +1516,7 @@ void Level23_UpdateActors(void) {
         int d = actor->rotZ;
 
         if (g_nActiveLevelId == LEVEL_SUNNY_FLIGHT || g_nActiveLevelId == LEVEL_WILD_FLIGHT) {
-          TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0xC, 4);
+          TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0xC, TWEEN_FLY);
         } else {
           TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x16, 0);
         }

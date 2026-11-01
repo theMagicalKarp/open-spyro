@@ -2090,6 +2090,9 @@ int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int dead
 
 /* 0x80039e94: Path-follow that turns in place while the heading error exceeds
  * `lim`, then walks; returns 0x100 + node index on arrival. */
+#ifndef PIVOT_TURN_ANY
+#define PIVOT_TURN_ANY 0xFF /* turnGroup: turn without waiting on a group peer */
+#endif
 int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed, int contactRadius, int step, int lim, int turnGroup, int flags);
 
 /* 0x8003a16c: Path-follow steering step with clamped yaw, pitch toward the
@@ -2116,6 +2119,9 @@ int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim, int 
 
 /* 0x8003bfc0: Move an actor along a path in fixed-length legs, cross-fading the
  * first steps of each leg with the previous leg vector; re-aims yaw/pitch. */
+#ifndef TWEEN_FLY
+#define TWEEN_FLY 0x04 /* keep each leg's Z step (fly); without it the step is flattened */
+#endif
 int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legs, int flags);
 
 /* 0x8003c358: Spell a level name (portal signs) or "RETURN HOME" (level exits) in floating letter actors around a sign. */

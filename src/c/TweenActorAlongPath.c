@@ -83,7 +83,7 @@ int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step,
     *step = *step + 1;
   }
 
-  if (!(flags & 4)) {
+  if (!(flags & TWEEN_FLY)) {
     dir[2] = 0;
   }
   actor->rotZ = ArcTan2_8bit(dir[0], dir[1]);

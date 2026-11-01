@@ -1401,7 +1401,7 @@ void Level17_UpdateActors(void) {
         int d = actor->rotZ;
 
         if (g_nActiveLevelId == LEVEL_SUNNY_FLIGHT || g_nActiveLevelId == LEVEL_WILD_FLIGHT) {
-          TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0xC, 4);
+          TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0xC, TWEEN_FLY);
         } else {
           TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x16, 0);
         }

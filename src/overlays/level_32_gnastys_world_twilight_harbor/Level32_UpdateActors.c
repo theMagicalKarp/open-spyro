@@ -1661,7 +1661,7 @@ void Level32_UpdateActors(void) {
           actor->mode = BURSTGUN_WATCH;
           continue;
         }
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           actor->mode = BURSTGUN_TURN;
         }
@@ -1788,7 +1788,7 @@ void Level32_UpdateActors(void) {
         continue;
 
       case SWEEPGUN_ADVANCE:
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0xA0, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0xA0, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           actor->mode = SWEEPGUN_IDLE;
         }
@@ -1975,7 +1975,7 @@ void Level32_UpdateActors(void) {
         break;
 
       case LOBGUN_WALK:
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0xAA, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0xAA, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           actor->mode = LOBGUN_TURN;
           continue;

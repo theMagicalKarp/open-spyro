@@ -875,7 +875,7 @@ void Level13_UpdateActors(void) {
 
       case THIEF_LEDGE_RUN:
         ANIM_GO(actor, 1);
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0xF0, 0, 8, sixteen, 0xFF,
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0xF0, 0, 8, sixteen, PIVOT_TURN_ANY,
                           MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x103) {
           actor->mode = THIEF_LEDGE_WAIT;
           continue;
@@ -897,7 +897,7 @@ void Level13_UpdateActors(void) {
 
       case THIEF_LEDGE_RUN_ON:
         ANIM_GO(actor, 1);
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0xDA, 0, 0xA, 0x30, 0xFF,
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0xDA, 0, 0xA, 0x30, PIVOT_TURN_ANY,
                           MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x101) {
           actor->mode = THIEF_LEDGE_TAUNT;
           continue;
@@ -1005,7 +1005,7 @@ void Level13_UpdateActors(void) {
             st->path->cur = next;
           }
         }
-        r = PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x1E, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        r = PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         if (r & 0x100) {
           if ((r & ~0x100) ==
               (st->node - st->path->reversed) % st->path->count) {
@@ -1027,7 +1027,7 @@ void Level13_UpdateActors(void) {
         if (st->path->nodes[st->path->cur].speed > 0) {
           st->speed = st->path->nodes[st->path->cur].speed;
         }
-        if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, 0xFF,
+        if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, PIVOT_TURN_ANY,
                           MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x10B) {
           st->vz = 0x96;
           actor->mode = THIEF_CLIMB_HOP;
@@ -1125,7 +1125,7 @@ void Level13_UpdateActors(void) {
           CopyVector(&actor->posX, &st->path->nodes[st->path->cur].x);
           SnapActorToGround(actor);
         }
-        if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, 0xFF,
+        if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, PIVOT_TURN_ANY,
                           MOVE_LIFT | MOVE_FOLLOW_FLOOR) == st->path->count + 0xFF) {
           st->path->reversed = -st->path->reversed;
           st->path->cur = 1;
@@ -2878,7 +2878,7 @@ void Level13_UpdateActors(void) {
             actor->mode = CAPTAIN_FIGHT;
             continue;
           }
-          if (PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0, 4, 0x40, 0xFF,
+          if (PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0, 4, 0x40, PIVOT_TURN_ANY,
                             MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x100) {
             actor->mode = CAPTAIN_FIGHT;
             continue;
@@ -3673,7 +3673,7 @@ void Level13_UpdateActors(void) {
             continue;
           }
           ANIM_GO(actor, 1);
-          PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0xC8, 6, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0xC8, 6, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           break;
 
         case SHEPHERD_POST_WATCH:
@@ -3744,7 +3744,7 @@ void Level13_UpdateActors(void) {
         switch (st->post) {
         case SHEPHERD_POST_RUN_PATH:
           if (st->done == 0 &&
-              PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 0x10, 0x80, 0xFF,
+              PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 0x10, 0x80, PIVOT_TURN_ANY,
                             MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x100) {
             st->done = one;
             *st->doneFlag = one;
@@ -4591,7 +4591,7 @@ void Level13_UpdateActors(void) {
           switch (st->sub) {
           case SORCERER_STEP_WALK: {
             int r = PivotActorAlongPath(actor, st->path, 0x200, 0x6E, 0, 8, 0x80,
-                                  0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+                                  PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
             ANIM_GO(actor, 1);
             if (r == 0x108) {

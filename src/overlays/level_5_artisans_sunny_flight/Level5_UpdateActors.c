@@ -1444,7 +1444,7 @@ void Level5_UpdateActors(void) {
         int d = actor->rotZ;
 
         if (g_nActiveLevelId == LEVEL_SUNNY_FLIGHT || g_nActiveLevelId == LEVEL_WILD_FLIGHT) {
-          TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0xC, 4);
+          TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0xC, TWEEN_FLY);
         } else {
           TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x16, 0);
         }
@@ -2108,7 +2108,7 @@ void Level5_UpdateActors(void) {
         actor->mode = FTARGET_STRUCK;
       }
       if (g_nSpyroSubstate < SPYRO_SUB_SCRIPTED) {
-        TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, 4);
+        TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, TWEEN_FLY);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         if ((g_dwGamestateFrames & 3) == 0) {
           GetActorAttachPoint(actor, 3, svZ);
@@ -2144,7 +2144,7 @@ void Level5_UpdateActors(void) {
         actor->mode = FTARGET_STRUCK;
       }
       if (g_nSpyroSubstate < SPYRO_SUB_SCRIPTED) {
-        TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, 4);
+        TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x10, TWEEN_FLY);
       }
       switch (actor->mode) {
       case FTARGET_ACTIVE:

@@ -451,7 +451,7 @@ void Level20_UpdateActors(void) {
             ENTER_POSE(actor, GUNNER_GUARD);
           }
           ANIM_GO(actor, 7);
-          PivotActorAlongPath(actor, st->path, 0x100, 0xA0, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          PivotActorAlongPath(actor, st->path, 0x100, 0xA0, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         } else if (st->mode == GUNNER_ROLE_LOOKOUT) {
           ANIM_GO(actor, 0);
           if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x640 &&
@@ -3436,7 +3436,7 @@ void Level20_UpdateActors(void) {
           break;
         }
         ANIM_GO(actor, 1);
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           g_pActorListBase[st->partner].subMode = 1;
           actor->mode = RAM_PATH_END;

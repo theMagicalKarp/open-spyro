@@ -1007,7 +1007,7 @@ void Level24_UpdateActors(void) {
       case LGUARD_PACE:
         st->flags &= ~LGUARD_F_PACE;
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0xC00 ||
-            PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, one) ==
+            PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, PIVOT_TURN_ANY, one) ==
                 0x100) {
           ANIM_GO(actor, st->base);
           actor->mode = LGUARD_IDLE;
@@ -2399,7 +2399,7 @@ void Level24_UpdateActors(void) {
         continue;
 
       case SINGER_RETURN:
-        if (TweenActorAlongPath(actor, st->path, st->prevLeg, st->legStep, sixteen, 4) == 2) {
+        if (TweenActorAlongPath(actor, st->path, st->prevLeg, st->legStep, sixteen, TWEEN_FLY) == 2) {
           st->rideMode = 0;
           actor->rotY = 0;
           ((int *)g_pActorListBase[st->rider].state)[16] = one;
@@ -2519,7 +2519,7 @@ void Level24_UpdateActors(void) {
       case LGUARD_PACE:
         st->flags &= ~LGUARD_F_PACE;
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0xC00 ||
-            PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+            PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
                 0x100) {
           ANIM_GO(actor, st->base);
           actor->mode = LGUARD_IDLE;

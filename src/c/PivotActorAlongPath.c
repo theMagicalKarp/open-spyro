@@ -77,7 +77,7 @@ int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed,
     goto done;
   }
 
-  if (actor->subMode == 0 && turnGroup != 0xFF) {
+  if (actor->subMode == 0 && turnGroup != PIVOT_TURN_ANY) {
     /* Only one actor of this turn group turns at a time — if a peer is already
        mid-turn (state 1), defer to it. */
     list = g_apActiveActorListBlock;
