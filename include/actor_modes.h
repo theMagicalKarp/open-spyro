@@ -1483,7 +1483,7 @@ enum RoamingCritterMode {
   ROAMCRIT_DYING = 6,   /* death animation 6 (wandering its first frames), then 7; despawns */
 };
 
-/* ->mode of a checkpoint (ACTOR_TYPE_CHECKPOINT .. + 2; levels 0/14). */
+/* ->mode of a checkpoint (ACTOR_TYPE_CHECKPOINT .. + 2; every ground level). */
 enum CheckpointMode {
   CHECKPT_REARM = 0,     /* waits for Spyro to walk away (> 2560), then ARMED */
   CHECKPT_ARMED = 1,     /* Spyro touches it: sets the respawn anchor, FLASH */
