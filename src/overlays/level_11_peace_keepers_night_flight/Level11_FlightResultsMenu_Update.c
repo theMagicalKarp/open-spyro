@@ -41,7 +41,7 @@ void Level11_FlightResultsMenu_Update(void) {
   g_nPauseMenuIdleFrames += 1;
   g_nSubMenuScrollOffset += 1;
   if (g_nSubMenuScrollOffset >= 5) {
-    if (g_nSubMenuCursor < 9) {
+    if (g_nSubMenuCursor < FLIGHT_REVEAL_ALL) {
       g_nSubMenuCursor += 1;
     }
     g_nSubMenuScrollOffset = 0;
@@ -53,7 +53,7 @@ void Level11_FlightResultsMenu_Update(void) {
     i += 1;
     rec += ACTOR_SIZE;
   } while (i < 4);
-  if (g_nSubMenuCursor >= 9) {
+  if (g_nSubMenuCursor >= FLIGHT_REVEAL_ALL) {
     unsigned int *pad = g_dwPadPressed;
     if (pad[0] & (PAD_UP | PAD_DOWN)) {
       g_nPauseMenuIdleFrames = 0;
@@ -61,7 +61,7 @@ void Level11_FlightResultsMenu_Update(void) {
       PlaySoundEffect(g_pLevelSampleBankHeader[SFX_MENU_MOVE], 0, SFX_MODE_PANNED, 0);
     }
     if (pad[0] & (PAD_CROSS | PAD_START)) {
-      if (g_nSubMenuCursor >= 0x64 ||
+      if (g_nSubMenuCursor >= FLIGHT_REVEAL_TIME_BOARD ||
           (g_anFlightTargetTally + g_nFlightTargetTally1 + g_nFlightTargetTally2 + g_nFlightTargetTally3 < 0x20 &&
            g_anFlightClearTimes[g_nActiveWorldIndex] == 0)) {
         switch (g_nPauseMenuCursor) {
@@ -76,12 +76,12 @@ void Level11_FlightResultsMenu_Update(void) {
         }
         PlaySoundEffect(g_pLevelSampleBankHeader[SFX_MENU_MOVE], 0, SFX_MODE_PANNED, 0);
       } else {
-        g_nSubMenuCursor = 0x64;
+        g_nSubMenuCursor = FLIGHT_REVEAL_TIME_BOARD;
         PlaySoundEffect(g_pLevelSampleBankHeader[SFX_MENU_MOVE], 0, SFX_MODE_PANNED, 0);
       }
     }
   } else if (g_dwPadPressed[0] & (PAD_CROSS | PAD_START)) {
-    g_nSubMenuCursor = 9;
+    g_nSubMenuCursor = FLIGHT_REVEAL_ALL;
     g_nSubMenuScrollOffset = 0;
     PlaySoundEffect(g_pLevelSampleBankHeader[SFX_MENU_MOVE], 0, SFX_MODE_PANNED, 0);
   }

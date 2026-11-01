@@ -239,7 +239,7 @@ void Level23_FlightResults_Draw(void)
     TILE->b0 = 0;
     AddPrimToOT(next);
     g_pPrimBufferWriteCursor = p + 0x38;
-    if (g_nSubMenuCursor < 0x64)
+    if (g_nSubMenuCursor < FLIGHT_REVEAL_TIME_BOARD)
     {
       bonus = 0;
       if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == 0x20)
@@ -457,7 +457,7 @@ void Level23_FlightResults_Draw(void)
       pos[1] = 0x8C;
       pos[2] = 0x1100;
       BuildTextSpriteChain("ALL IN ONE", pos, 0x12, 0xB);
-      if (g_nSubMenuCursor >= 9)
+      if (g_nSubMenuCursor >= FLIGHT_REVEAL_ALL)
       {
         if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == 0x20)
         {
@@ -499,7 +499,7 @@ void Level23_FlightResults_Draw(void)
       pos[2] = 0x1100;
       BuildTextSpriteChain(buf, pos, 0x12, 0xB);
       EmitRadialShadedLine(0x3C, 0xB0, 0x1C4, 0xB0);
-      if (g_nSubMenuCursor >= 9)
+      if (g_nSubMenuCursor >= FLIGHT_REVEAL_ALL)
       {
         if ((allclear != 0) || (g_anFlightClearTimes[g_nActiveWorldIndex] != 0))
         {

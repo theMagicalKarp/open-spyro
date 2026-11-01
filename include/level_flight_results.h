@@ -33,6 +33,10 @@ extern int g_anFlightTargetTally;
 #define COURSE_ALL_CLEAR_BONUS(off) \
   (*(int *)((char *)g_anFlightCourseBonusTable_r4 + (off)))
 
+/* g_nSubMenuCursor on the results screen: rows revealed so far (0..8), then */
+#define FLIGHT_REVEAL_ALL 9           /* every row shown; TRY AGAIN? is live */
+#define FLIGHT_REVEAL_TIME_BOARD 0x64 /* the TIME ATTACK board after a first all-clear */
+
 /* g_nPauseMenuCursor on the results screen's "TRY AGAIN?" prompt. */
 enum FlightRetryRow {
   FLIGHT_RETRY_YES = 0, /* HandleFlightResults(1), reload the level */
