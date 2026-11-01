@@ -1466,7 +1466,7 @@ void Level33_UpdateActors(void) {
         actor->scale = 0x7F;
       }
       if (st->timer != 0) {
-        RaiseSpyroTriggerInRadius(&actor->posX, st->radius, 7);
+        RaiseSpyroTriggerInRadius(&actor->posX, st->radius, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT);
       }
       if (actor->nextAnim == 1 && g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
@@ -3023,7 +3023,7 @@ void Level33_UpdateActors(void) {
           }
         }
         if (st->pushed == 0 &&
-            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, 0x86) != 0) {
+            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
           st->pushed = 1;
           g_anSpyroRequestVelocity.x = SPY.posX - actor->posX;
           g_nSpyroRequestVelocityZ = 0;

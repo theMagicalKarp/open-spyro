@@ -2253,7 +2253,7 @@ void Level32_UpdateActors(void) {
 
       case LGLOB_BURST:
         EBB_BREAK();
-        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x8CA, 0x86) != 0) {
+        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x8CA, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
           int n;
           int x;
           int y;

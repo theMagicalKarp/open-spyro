@@ -3653,7 +3653,7 @@ void Level14_UpdateActors(void) {
         actor->rotZ += d;
       }
       CopyVector(svL, &actor->posX);
-      if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, 0x86) != 0) {
+      if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
         for (i = 0; i < 3; i++) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
@@ -4055,7 +4055,7 @@ void Level14_UpdateActors(void) {
       case WPRUNNER_RUN: {
         int *pos = &actor->posX;
 
-        if (RaiseSpyroTriggerInRadius(pos, 0x280, 0x46) != 0) {
+        if (RaiseSpyroTriggerInRadius(pos, 0x280, SPYRO_EV_HIT_LONG | SPYRO_EV_CHARGE_HIT) != 0) {
           ((RunnerSpawnerState *)st->link->state)->flags &= ~1;
           ENTER_POSE(actor, WPRUNNER_POP);
           continue;
@@ -4183,7 +4183,7 @@ void Level14_UpdateActors(void) {
           continue;
         }
       } else if (st->mode & FWALK_F_CLOSE) {
-        RaiseSpyroTriggerInRadius(&actor->posX, 0x540, 7);
+        RaiseSpyroTriggerInRadius(&actor->posX, 0x540, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT);
         if (actor->mode != FLEEWALK_FLEE) {
           ENTER_POSE(actor, FLEEWALK_FLEE);
           continue;
@@ -4592,7 +4592,7 @@ void Level14_UpdateActors(void) {
           }
         }
         if (st->pushed == 0 &&
-            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, 0x86) != 0) {
+            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
           st->pushed = 1;
           g_anSpyroRequestVelocity.x = SPY.posX - actor->posX;
           g_nSpyroRequestVelocityZ = 0;

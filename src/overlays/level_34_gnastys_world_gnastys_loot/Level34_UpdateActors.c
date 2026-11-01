@@ -557,7 +557,7 @@ void Level34_UpdateActors(void) {
       }
       pos = &actor->posX;
       AddVector(svA, pos, st->vel);
-      if (CastRayWorldAndActors(pos, svA) || RaiseSpyroTriggerInRadius(pos, 0, 1)) {
+      if (CastRayWorldAndActors(pos, svA) || RaiseSpyroTriggerInRadius(pos, 0, SPYRO_EV_HIT)) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -2915,7 +2915,7 @@ void Level34_UpdateActors(void) {
           }
         }
         if (st->pushed == 0 &&
-            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, 0x86) != 0) {
+            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
           st->pushed = 1;
           g_anSpyroRequestVelocity.x = SPY.posX - actor->posX;
           g_nSpyroRequestVelocityZ = 0;

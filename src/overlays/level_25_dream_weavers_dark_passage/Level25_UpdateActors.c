@@ -1278,7 +1278,7 @@ void Level25_UpdateActors(void) {
         if (*st < 0x64) {
           DispatchActorContactAtSphere(&actor->posX, 0x64, 0, ACTOR_HIT_CHARGE, actor, 0);
         }
-        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, 7) != 0 ||
+        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT) != 0 ||
             TickCountdownByFrameDelta(st, 4) != 0 ||
             TryMoveActorForward(actor, 0xE0, 0, 0x100, 0) != 0 ||
             CastRayWorldAndActors(svA, &actor->posX) != 0) {
@@ -1306,7 +1306,7 @@ void Level25_UpdateActors(void) {
         if (*st < 0xC8) {
           DispatchActorContactAtSphere(&actor->posX, 0x64, 0, ACTOR_HIT_CHARGE, actor, 0);
         }
-        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, 7) || TickCountdownByFrameDelta(st, 4) ||
+        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT) || TickCountdownByFrameDelta(st, 4) ||
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) ||
             CastRayWorldAndActors(svZ, &actor->posX)) {
           actor->mode = SHOT_BURST;
@@ -2498,7 +2498,7 @@ void Level25_UpdateActors(void) {
         if (*st < 0xC8) {
           DispatchActorContactAtSphere(&actor->posX, 0x64, 0, ACTOR_HIT_CHARGE, actor, 0);
         }
-        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, 7) || TickCountdownByFrameDelta(st, 4) ||
+        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT) || TickCountdownByFrameDelta(st, 4) ||
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) ||
             CastRayWorldAndActors(svW, &actor->posX)) {
           actor->mode = SHOT_BURST;
@@ -3274,7 +3274,7 @@ void Level25_UpdateActors(void) {
           }
         }
         if (st->pushed == 0 &&
-            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, 0x86) != 0) {
+            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
           st->pushed = 1;
           g_anSpyroRequestVelocity.x = SPY.posX - actor->posX;
           g_nSpyroRequestVelocityZ = 0;

@@ -849,7 +849,7 @@ void Level16_UpdateActors(void) {
         actor->rotZ = ArcTan2(CAM.posX - actor->posX,
                                      CAM.posY - actor->posY, 0);
         CopyVector(svA, &st->owner->posX);
-        if (TickCountdownByFrameDelta(st, 4) != 0 || RaiseSpyroTriggerInRadius(svA, 0x140, 0x26) != 0) {
+        if (TickCountdownByFrameDelta(st, 4) != 0 || RaiseSpyroTriggerInRadius(svA, 0x140, SPYRO_EV_HIT_TINT | SPYRO_EV_CHARGE_HIT) != 0) {
           ((RimState *)st->owner->state)->child = 0;
           DespawnActorRecord(actor);
         }
@@ -2763,7 +2763,7 @@ void Level16_UpdateActors(void) {
           }
         }
         if (st->pushed == 0 &&
-            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, 0x86) != 0) {
+            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
           st->pushed = 1;
           g_anSpyroRequestVelocity.x = SPY.posX - actor->posX;
           g_nSpyroRequestVelocityZ = 0;

@@ -3743,7 +3743,7 @@ void Level19_UpdateActors(void) {
         actor->rotY += t;
       }
       CopyVector(o480, &actor->posX);
-      if (st->mode == one && RaiseSpyroTriggerInRadius(&actor->posX, 0xFA, 0x26) != 0) {
+      if (st->mode == one && RaiseSpyroTriggerInRadius(&actor->posX, 0xFA, SPYRO_EV_HIT_TINT | SPYRO_EV_CHARGE_HIT) != 0) {
         g_anSpyroRequestVelocity.x = (short)((unsigned short *)g_anCosineLut)[actor->rotZ] >> 5;
         g_nSpyroRequestVelocityY = (short)((unsigned short *)g_anSineLut)[actor->rotZ] >> 5;
         g_nSpyroRequestVelocityZ = 0;

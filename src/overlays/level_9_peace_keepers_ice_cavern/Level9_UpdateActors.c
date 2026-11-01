@@ -2147,7 +2147,7 @@ void Level9_UpdateActors(void) {
         DespawnActorRecord(actor);
         continue;
       }
-      if (RaiseSpyroTriggerInRadius(&actor->posX, 0x80, 1) != 0) {
+      if (RaiseSpyroTriggerInRadius(&actor->posX, 0x80, SPYRO_EV_HIT) != 0) {
         PlayActorMeshVoice(actor, 0, 0);
         g_pfnLevelEmitParticles(0x10, EMIT_JITTER_BURST, &actor->posX, 0);
         DespawnActorRecord(actor);

@@ -3605,7 +3605,7 @@ void Level15_UpdateActors(void) {
         actor->rotZ += d;
       }
       CopyVector(x288, &actor->posX);
-      if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, 0x86) != 0) {
+      if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
         for (i = 0; i < 3; i++) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;

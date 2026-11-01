@@ -1006,7 +1006,7 @@ void Level22_UpdateActors(void) {
         actor->rotZ += st->spin[2];
         st->life += g_nFrameStep;
         if (actor->subMode != 2 && st->life < 0x79 &&
-            RaiseSpyroTriggerInRadius(&actor->posX, 0xDC, 0x86) == 0 &&
+            RaiseSpyroTriggerInRadius(&actor->posX, 0xDC, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) == 0 &&
             CastRayWorldAndActors(g136, &actor->posX) == 0) {
           continue;
         }
@@ -1096,7 +1096,7 @@ void Level22_UpdateActors(void) {
         actor->posX += (st->speed * g_anCosineLut[actor->rotZ]) >> 12;
         actor->posY += (st->speed * g_anSineLut[actor->rotZ]) >> 12;
         if (TickCountdownByFrameDelta(&st->timer, 2) != 0 ||
-            RaiseSpyroTriggerInRadius(&actor->posX, 0xC8, 0x26) != 0) {
+            RaiseSpyroTriggerInRadius(&actor->posX, 0xC8, SPYRO_EV_HIT_TINT | SPYRO_EV_CHARGE_HIT) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -1143,7 +1143,7 @@ void Level22_UpdateActors(void) {
         }
         continue;
       }
-      if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, 0x26) != 0) {
+      if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_HIT_TINT | SPYRO_EV_CHARGE_HIT) != 0) {
         g_nSpyroRequestVelocityZ = 0;
         DespawnActorRecord(actor);
         continue;
@@ -3949,7 +3949,7 @@ void Level22_UpdateActors(void) {
           }
         }
         if (st->pushed == 0 &&
-            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, 0x86) != 0) {
+            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
           st->pushed = 1;
           g_anSpyroRequestVelocity.x = SPY.posX - actor->posX;
           g_nSpyroRequestVelocityZ = 0;

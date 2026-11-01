@@ -868,7 +868,7 @@ void Level28_UpdateActors(void) {
         CopyVector(g056, &actor->posX);
         g056[2] += 0xC8;
         if ((actor->mode == TROCK_HELD || actor->mode == TROCK_FLY) &&
-            RaiseSpyroTriggerInRadius(g056, 0xDC, 1) != 0) {
+            RaiseSpyroTriggerInRadius(g056, 0xDC, SPYRO_EV_HIT) != 0) {
           PlayActorMeshVoice(actor, 0, 0);
           actor->mode = TROCK_BREAK;
           ANIM_RESET(actor, 1);

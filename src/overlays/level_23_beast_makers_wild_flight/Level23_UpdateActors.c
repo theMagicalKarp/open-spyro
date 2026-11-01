@@ -330,7 +330,7 @@ void Level23_UpdateActors(void) {
       if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
         AddVector(svX, &actor->posX, st->vel);
         if (CastRayWorldAndActors(&actor->posX, svX) == 0 &&
-            RaiseSpyroTriggerInRadius(&actor->posX, 0, 1) == 0) {
+            RaiseSpyroTriggerInRadius(&actor->posX, 0, SPYRO_EV_HIT) == 0) {
           CopyVector(&actor->posX, svX);
           break;
         }

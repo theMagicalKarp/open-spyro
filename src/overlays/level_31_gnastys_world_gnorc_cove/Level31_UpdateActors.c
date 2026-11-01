@@ -2487,10 +2487,10 @@ void Level31_UpdateActors(void) {
         RShiftVector3(v201b, 1);
         AddVector(&g_pActorListBase[st->held].posX, v201a, v201b);
         if (thrown) {
-          RaiseSpyroTriggerInRadius(&g_pActorListBase[st->held].posX, 0x200, 0x16);
+          RaiseSpyroTriggerInRadius(&g_pActorListBase[st->held].posX, 0x200, SPYRO_EV_HIT_PINNED | SPYRO_EV_CHARGE_HIT);
           AddVector(v201a, &g_pActorListBase[st->held].posX, &actor->posX);
           RShiftVector3(v201a, 1);
-          RaiseSpyroTriggerInRadius(v201a, 0x200, 0x16);
+          RaiseSpyroTriggerInRadius(v201a, 0x200, SPYRO_EV_HIT_PINNED | SPYRO_EV_CHARGE_HIT);
         }
       }
       break;
@@ -2678,7 +2678,7 @@ void Level31_UpdateActors(void) {
           actor->mode = FLOATBARREL_BURST;
         }
         if (actor->posZ - SPY.posZ < 0x80) {
-          RaiseSpyroTriggerInRadius(&actor->posX, 0x200, 0x10);
+          RaiseSpyroTriggerInRadius(&actor->posX, 0x200, SPYRO_EV_HIT_PINNED);
         }
         if (TickCountdownByFrameDelta((int *)st, 2) != 0) {
           actor->mode = FLOATBARREL_BURST;
@@ -2961,7 +2961,7 @@ void Level31_UpdateActors(void) {
           actor->mode = FLOATBARREL_BURST;
         }
         if (actor->posZ - SPY.posZ < 0x80) {
-          RaiseSpyroTriggerInRadius(&actor->posX, 0x200, 0x10);
+          RaiseSpyroTriggerInRadius(&actor->posX, 0x200, SPYRO_EV_HIT_PINNED);
         }
         if (TickCountdownByFrameDelta((int *)st, 2) != 0) {
           actor->mode = FLOATBARREL_BURST;
@@ -3669,7 +3669,7 @@ void Level31_UpdateActors(void) {
           }
         }
         if (st->pushed == 0 &&
-            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, 0x86) != 0) {
+            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
           st->pushed = 1;
           g_anSpyroRequestVelocity.x = SPY.posX - actor->posX;
           g_nSpyroRequestVelocityZ = 0;

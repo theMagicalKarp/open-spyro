@@ -705,7 +705,7 @@ void Level21_UpdateActors(void) {
         actor->rotZ += st->spin[2];
         st->life += g_nFrameStep;
         if (actor->subMode != 2 && st->life < 0x79 &&
-            RaiseSpyroTriggerInRadius(&actor->posX, 0xDC, 0x86) == 0 &&
+            RaiseSpyroTriggerInRadius(&actor->posX, 0xDC, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) == 0 &&
             CastRayWorldAndActors(svB, &actor->posX) == 0) {
           continue;
         }

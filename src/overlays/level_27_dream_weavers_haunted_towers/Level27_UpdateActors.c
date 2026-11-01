@@ -1858,7 +1858,7 @@ void Level27_UpdateActors(void) {
       actor->rotZ += st->spin[2];
       st->age += g_nFrameStep;
       if (st->noFloor == 0) {
-        hit = RaiseSpyroTriggerInRadius(&actor->posX, 0xDC, 0x86);
+        hit = RaiseSpyroTriggerInRadius(&actor->posX, 0xDC, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT);
       }
       if (actor->subMode != 2 && st->age < 0x5B && hit == 0 &&
           CastRayWorldAndActors(g256, &actor->posX) == 0) {
@@ -3359,7 +3359,7 @@ void Level27_UpdateActors(void) {
           }
         }
         if (st->pushed == 0 &&
-            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, 0x86) != 0) {
+            RaiseSpyroTriggerInRadius(&actor->posX, (st->timer + 1) << 8, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
           st->pushed = 1;
           g_anSpyroRequestVelocity.x = SPY.posX - actor->posX;
           g_nSpyroRequestVelocityZ = 0;
