@@ -3,6 +3,10 @@
 #include "globals.h"
 #include "main_shared.h"
 
+/* Leave a level for its world's home (0x8002c664): the hub id is the level
+   id rounded down to a multiple of 10. Starts the GS_LEVEL_LOAD stream in its
+   preserve phase with the level-transition camera, remembers the level as the
+   return portal (g_nReturnPortalLevelId) and pauses the game while it loads. */
 void BeginWorldHubReturn(void) {
   int hub;
   InitLightVectorConstants();

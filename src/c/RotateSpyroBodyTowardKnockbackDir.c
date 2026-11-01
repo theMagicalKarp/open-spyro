@@ -1,6 +1,9 @@
 #include "vecmath.h"
 
 #include "globals.h"
+/* Turn Spyro's byte yaw toward his motion vector (0x8003dfec): nothing inside
+   +-`band`, a snap when within +-`step`, else one `step`; g_nSpyroBodyYaw is
+   rebuilt from the byte. */
 void RotateSpyroBodyTowardKnockbackDir(int step, int band) {
   int ret;
   int yaw;
