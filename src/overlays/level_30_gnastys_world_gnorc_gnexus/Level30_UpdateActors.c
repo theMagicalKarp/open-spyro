@@ -1601,7 +1601,7 @@ void Level30_UpdateActors(void) {
         continue;
       }
 
-      if (((unsigned int)g_nSpyroState < 2 || g_nSpyroState == SPYRO_ST_JOG ||
+      if (((unsigned int)g_nSpyroState <= SPYRO_ST_WALK || g_nSpyroState == SPYRO_ST_JOG ||
            g_nSpyroState == SPYRO_ST_RUN || g_nSpyroState == SPYRO_ST_CHARGE) &&
           ApproxDist2D(&actor->posX, &spy->posX) < 0x780 &&
           AbsAngleDelta8(g_bSpyroPersistentEulerZ,

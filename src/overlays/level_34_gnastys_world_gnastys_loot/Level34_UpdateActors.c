@@ -2208,7 +2208,7 @@ void Level34_UpdateActors(void) {
       }
 
       case LVORTEX_OPEN:
-        if (((unsigned)SPY.state < 2 || SPY.state == SPYRO_ST_JOG || SPY.state == SPYRO_ST_RUN) &&
+        if (((unsigned)SPY.state <= SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG || SPY.state == SPYRO_ST_RUN) &&
             IsPointInRotatedBox(&SPY.posX, st->pad) &&
             AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(g_pActorListBase[st->target].posX - SPY.posX,
@@ -2300,7 +2300,7 @@ void Level34_UpdateActors(void) {
           RotateVectorByMatrix(actor->mtx, w, w);
           AddVector(&actor->posX, w, &g_pActorListBase[st->target].posX);
         }
-        if (st->timer >= 0xD0 || !((unsigned)SPY.state < 2 || SPY.state == SPYRO_ST_JOG ||
+        if (st->timer >= 0xD0 || !((unsigned)SPY.state <= SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
                                     SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_STOP)) {
           actor->cullRadius = 0;
           actor->drawn = 0;
