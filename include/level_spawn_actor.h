@@ -8,6 +8,7 @@
 #define OPEN_SPYRO_LEVEL_SPAWN_ACTOR_H
 
 #include "actor_states.h"
+#include "dragon_rescue.h"
 
 /* The level actor pool, by struct tag so files that carry their own Actor
  * view (A400) can include this header too. */

@@ -1,3 +1,4 @@
+#include "dragon_rescue.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -85,7 +86,7 @@ void TickDragonRescueAssetStream(void) {
     }
     break;
   case 2:
-    if (g_nDragonRescueSubstate < 2) {
+    if (g_nDragonRescueSubstate < DRAGON_RESCUE_LOAD_WAIT) {
       return;
     }
     if (g_nDragonRescueSplitFlag == 0) {
@@ -144,7 +145,7 @@ void TickDragonRescueAssetStream(void) {
     g_nDragonRescueStreamState++;
     return;
   case 3:
-    if (g_nDragonRescueSubstate < 6) {
+    if (g_nDragonRescueSubstate < DRAGON_RESCUE_COUNT) {
       return;
     }
     if (g_nDragonRescueSplitFlag != 1) {

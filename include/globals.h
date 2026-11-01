@@ -778,7 +778,7 @@ extern int g_nDragonRescueMirrorMeshOffset;                /* 0x80077044 */
 extern int g_nDragonRescueCameraPathOffset;                /* 0x8007704c */
 extern int g_nDragonRescueCameraPathSize;                  /* 0x80077050 */
 extern int g_nDragonRescueTypeSnapshot;                    /* 0x80077054 */
-extern int g_nDragonRescueSubstate;                        /* 0x80077058 */
+extern int g_nDragonRescueSubstate;                        /* 0x80077058: enum DragonRescueSubstate (dragon_rescue.h) */
 extern int g_nDragonRescueStreamState;                     /* 0x8007705c */
 extern int g_nDragonRescueSpuChunkIndex;                   /* 0x80077060 */
 extern int g_nDragonRescueSplitFlag;                       /* 0x80077064 */

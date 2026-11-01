@@ -1,4 +1,5 @@
 #include "actor_states.h"
+#include "dragon_rescue.h"
 #include "funcs.h"
 #include "globals.h"
 #include "level_id.h"
@@ -58,7 +59,7 @@ void BeginDragonRescue(Actor *actor) {
   g_nCinematicActive = one;
   g_nGamePaused = one;
   *dragons = prevDragons + 1;
-  g_anDragonRescueBlock[0] = 0;
+  g_anDragonRescueBlock[0] = DRAGON_RESCUE_AURA; /* g_nDragonRescueSubstate */
   g_anDragonRescueBlock[1] = 0;  /* g_nDragonRescueStreamState */
   g_anDragonRescueBlock[5] = 0;  /* g_nDragonRescueTimer */
   g_anDragonRescueBlock[10] = 0; /* g_nDragonRescueSecondaryTimer */
