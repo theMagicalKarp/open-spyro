@@ -156,9 +156,20 @@ typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
 /* Actor->type values: one global g_apActorMeshTable index space. Every type
  * handled by more than one level's UpdateActors runs the same body in each,
  * up to statement order (checked arm by arm, e.g. 38, 236), so a name holds
- * in every level even where its comment cites the levels that use it. Only
- * the flight tally icons (their types come from level data) and level 20's
- * type 487 stay numeric. */
+ * in every level even where its comment cites the levels that use it.
+ *
+ * ACTOR_TYPE_TALLY_ICON_*: the flight HUD's per-class tally icons. The HUD
+ * controller (ACTOR_TYPE_FLIGHT_HUD) reads them from HudState.types[] in level
+ * data, and each target carries its class index there too. Across the five
+ * flight levels, every class holds 8 targets of one type, and every icon type
+ * always goes with the same target type:
+ *   level  5: RIDER  TARGET BANKER CHEST
+ *   level 11: RING   CHEST  TARGET FLAME
+ *   level 17: RING   TARGET BANKER CHEST
+ *   level 23: CYCLER TARGET BANKER CHEST
+ *   level 29: FLAME  CHEST  RIDER  BOBBER
+ * (Level 23's class 0 is CYCLER by elimination: its other three classes are
+ * TARGET, BANKER and CHEST.) */
 enum ActorType {
   ACTOR_TYPE_PORTAL_NAME = 1,          /* hub portal name text, shown while the camera faces the portal */
   ACTOR_TYPE_LEVEL_EXIT = 9,       /* exit whirlwind: lifts Spyro back to the hub */
@@ -373,11 +384,17 @@ enum ActorType {
   ACTOR_TYPE_DOCTOR_SHEMP = 371, /* level 10 boss (ShempState) */
   ACTOR_TYPE_SHEMP_LOOKOUT = 372, /* level 10: Doctor Shemp's lookout (LookoutState) */
   ACTOR_TYPE_FLIGHT_TARGET_SHARD = 374, /* 374..386: a flight target's burst shards */
+  ACTOR_TYPE_TALLY_ICON_RING = 387,   /* flight HUD icon for ACTOR_TYPE_FLIGHT_RING */
+  ACTOR_TYPE_TALLY_ICON_TARGET = 388, /* flight HUD icon for ACTOR_TYPE_FLIGHT_TARGET */
+  ACTOR_TYPE_TALLY_ICON_CHEST = 389,  /* flight HUD icon for ACTOR_TYPE_FLIGHT_CHEST */
   ACTOR_TYPE_SPIN_CHEST = 390,       /* each charge spins it faster; spun fast enough, or flamed, it bursts */
   ACTOR_TYPE_PATCH_RIDER = 391, /* level 0: rides a collision triangle (PatchRideState) */
   ACTOR_TYPE_SPIN_CHEST_LID = 392,   /* spins on ACTOR_TYPE_SPIN_CHEST; launched at the nearest enemy
                                       * in front of Spyro when the chest bursts */
+  ACTOR_TYPE_TALLY_ICON_BANKER = 393, /* flight HUD icon for ACTOR_TYPE_BANKING_FLIGHT_TARGET */
+  ACTOR_TYPE_TALLY_ICON_BOBBER = 394, /* flight HUD icon for ACTOR_TYPE_BOBBING_FLIGHT_TARGET */
   ACTOR_TYPE_LINKED_FOLLOWER = 395, /* level 3: follows its linked actor's mode; knocked away when hit (Follower) */
+  ACTOR_TYPE_TALLY_ICON_CYCLER = 396, /* flight HUD icon for ACTOR_TYPE_CYCLING_FLIGHT_TARGET */
   ACTOR_TYPE_FLAME_FLIGHT_TARGET = 397, /* flight levels 11/29: flamed, tallies, pays out and becomes ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT */
   ACTOR_TYPE_PORTAL_GUIDE = 398,   /* flies Spyro through a portal (PortalState) */
   ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT = 399, /* the flame flight target after it paid out */
@@ -410,6 +427,8 @@ enum ActorType {
   ACTOR_TYPE_HAZARD0_ENTER_FX = 477, /* g_anHazardEnterSpawnType[0]; both kind-0 effects snap to the ground under Spyro (or the parent) */
   ACTOR_TYPE_FLIGHT_CHEST_SHARD = 478, /* 478..483: flight chest burst */
   ACTOR_TYPE_ONE_SHOT_PROP = 487, /* level 20: plays anim 1 -> 2 once set to mode 1, or anim 3 -> 4 when hit, then holds */
+  ACTOR_TYPE_TALLY_ICON_RIDER = 490,  /* flight HUD icon for ACTOR_TYPE_RIDING_FLIGHT_TARGET */
+  ACTOR_TYPE_TALLY_ICON_FLAME = 491,  /* flight HUD icon for ACTOR_TYPE_FLAME_FLIGHT_TARGET */
   ACTOR_TYPE_BELL_RIPPLE = 493, /* levels 7/8: ripple a charged bell (206/239/242) spawns; removed when its animation ends */
   ACTOR_TYPE_AIMED_BOLT = 494, /* level 19: bolt thrown by 35 and 467 (AimedBoltState) */
   ACTOR_TYPE_BLOWHARD = 495, /* level 16 boss: patrols three paths, drops type 37 riders */

@@ -2231,20 +2231,20 @@ void Level18_UpdateActors(void) {
         g_abWorldBalloonistState[3] = BALLOONIST_OPEN;
         if (g_nWorldDragonsRescued < 0x32) {
           if (g_abWorldBalloonistState[4] == BALLOONIST_UNMET) {
-            g_nActorCutsceneDialogPage = 0x12;
+            g_nActorCutsceneDialogPage = BALLOONIST_PAGE(3, BPAGE_LOCKED_FIRST);
             g_abWorldBalloonistState[4] = BALLOONIST_TALKED;
           } else {
-            g_nActorCutsceneDialogPage = 0x14;
+            g_nActorCutsceneDialogPage = BALLOONIST_PAGE(3, BPAGE_LOCKED_AGAIN);
           }
         } else if (g_abWorldBalloonistState[4] < BALLOONIST_OPEN) {
           if (g_abWorldBalloonistState[4] == BALLOONIST_UNMET) {
-            g_nActorCutsceneDialogPage = 0x15;
+            g_nActorCutsceneDialogPage = BALLOONIST_PAGE(3, BPAGE_UNLOCK_FIRST);
           } else {
-            g_nActorCutsceneDialogPage = 0x16;
+            g_nActorCutsceneDialogPage = BALLOONIST_PAGE(3, BPAGE_UNLOCK_AGAIN);
           }
           g_abWorldBalloonistState[4] = BALLOONIST_OPEN;
         } else {
-          g_nActorCutsceneDialogPage = 0x1E;
+          g_nActorCutsceneDialogPage = BPAGE_ROSTER;
           g_nActorCutsceneDialogVariant = (int)GetRandomU32() % 3;
         }
       }

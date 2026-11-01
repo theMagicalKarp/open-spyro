@@ -317,9 +317,9 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x183 ... 0x185: /* flight tally icons */
+    case ACTOR_TYPE_TALLY_ICON_RING ... ACTOR_TYPE_TALLY_ICON_CHEST: /* flight tally icons */
 
-    case 0x1EB:
+    case ACTOR_TYPE_TALLY_ICON_FLAME:
       InitActorRenderDefaults(rec);
       rec->cullRadius = 0;
       rec->posX = -0x64;

@@ -299,7 +299,7 @@ enum ShempMode {
 };
 
 /* ->mode of a shepherd (ACTOR_TYPE_SHEPHERD, ShepherdState; levels 12/13).
- * SHEPHERD_IDLE runs ShepherdState.phase's waiting behaviour; shepherds
+ * SHEPHERD_IDLE runs ShepherdState.post's waiting behaviour; shepherds
  * work in pairs (ShepherdState.partner), one riding the other's shoulders. */
 enum ShepherdMode {
   SHEPHERD_IDLE = 0,
@@ -314,6 +314,26 @@ enum ShepherdMode {
   SHEPHERD_RIDE = 17,     /* rides the partner (which goes ALERTED) */
   SHEPHERD_THROWN = 18,   /* the partner was knocked: falls off */
   SHEPHERD_GO_HOME = 100, /* walks back to its home point */
+};
+
+/* ShepherdState.post: what a shepherd does while SHEPHERD_IDLE, and how it
+ * chases in SHEPHERD_CHASE (the spawn record sets it; 8 is never used). Like
+ * CaptainPost. */
+enum ShepherdPost {
+  SHEPHERD_POST_GUARD = 0,       /* faces Spyro; swings when he is close and just above */
+  SHEPHERD_POST_RUN_PATH = 1,    /* Spyro near: clears its done flag and rouses the group; CHASE runs
+                                  * its path once, sets the flag and drops to POST_GUARD */
+  SHEPHERD_POST_LOITER = 2,      /* holds its heading; Spyro near: rouses the group. CHASE flanks him
+                                  * and gives up when he turns away or it strays from home */
+  SHEPHERD_POST_GUARD_LEVEL = 3, /* POST_GUARD on the ground, Spyro at its own height */
+  SHEPHERD_POST_THROWER = 4,     /* throws crooks; Spyro near: sends the partner to CHASE, then WATCH */
+  SHEPHERD_POST_LEAPER = 5,      /* throws crooks; Spyro above its path: LEAP_ON the partner (ROUSE) */
+  SHEPHERD_POST_PAIR_PATROL = 6, /* patrols, stopping to face the partner; Spyro near: the pair split
+                                  * sides (ShepherdState.side) and go ALERTED */
+  SHEPHERD_POST_PATROL = 7,      /* patrols its path; Spyro near: CHASE, re-homing at the nearest point */
+  SHEPHERD_POST_WATCH = 9,       /* faces Spyro; he lands near: CHASE */
+  SHEPHERD_POST_COVER = 10,      /* throws toward its partners, guards when Spyro is close; a
+                                  * partner knocked: POST_WATCH and RECOVER */
 };
 
 /* ->mode of a singing path walker (ACTOR_TYPE_SINGING_PATH_WALKER,

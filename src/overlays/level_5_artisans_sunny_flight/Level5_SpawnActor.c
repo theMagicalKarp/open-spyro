@@ -435,9 +435,9 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case 0x183 ... 0x185:
-  case 0x189:
-  case 0x1EA:
+  case ACTOR_TYPE_TALLY_ICON_RING ... ACTOR_TYPE_TALLY_ICON_CHEST:
+  case ACTOR_TYPE_TALLY_ICON_BANKER:
+  case ACTOR_TYPE_TALLY_ICON_RIDER:
     InitActorRenderDefaults(rec);
     rec->posX = -0x64;
     rec->posY = 0x1E;

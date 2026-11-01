@@ -368,9 +368,9 @@ Actor *Level17_SpawnActor(int type, Actor *parent)
       break;
     }
 
-    case 0x183 ... 0x185: /* flight tally icons */
+    case ACTOR_TYPE_TALLY_ICON_RING ... ACTOR_TYPE_TALLY_ICON_CHEST: /* flight tally icons */
 
-    case 0x189:
+    case ACTOR_TYPE_TALLY_ICON_BANKER:
       InitActorRenderDefaults(rec);
       rec->posX = -0x64;
       rec->posY = 0x1E;

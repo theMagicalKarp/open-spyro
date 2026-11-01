@@ -65,7 +65,7 @@ typedef struct BurstState {
   int life;             /* 0x10 */
 } BurstState;
 
-/* HUD tally icon flight (0x183..0x185 / 0x1EB): pivot, radius, angle and the
+/* HUD tally icon flight (ACTOR_TYPE_TALLY_ICON_*): pivot, radius, angle and the
  * swept phase. */
 typedef struct TallyState {
   int x;        /* 0x00 pivot */

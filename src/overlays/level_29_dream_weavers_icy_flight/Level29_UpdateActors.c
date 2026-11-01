@@ -1931,10 +1931,10 @@ void Level29_UpdateActors(void) {
 
     /* HUD collectible icon: swings from where it was picked up onto its
      * slot in the flight tally, spinning all the way (TallyState). */
-    case 0x185:
-    case 0x18A:
-    case 0x1EA:
-    case 0x1EB: {
+    case ACTOR_TYPE_TALLY_ICON_CHEST:
+    case ACTOR_TYPE_TALLY_ICON_BOBBER:
+    case ACTOR_TYPE_TALLY_ICON_RIDER:
+    case ACTOR_TYPE_TALLY_ICON_FLAME: {
       TallyState *st = actor->state;
 
       switch (actor->mode) {

@@ -1617,7 +1617,7 @@ void Level30_UpdateActors(void) {
         ResetSpyroLinearMotion();
         ZeroVector(&spy->headLook);
         g_pfnLevelBeginActorCutscene(actor);
-        g_nActorCutsceneDialogPage = 0x1E;
+        g_nActorCutsceneDialogPage = BPAGE_ROSTER;
         g_bWorldBalloonistState1 = two;
         g_abWorldBalloonistState[2] = two;
         g_abWorldBalloonistState[3] = BALLOONIST_OPEN;

@@ -1221,14 +1221,14 @@ typedef struct LeaderState {
   int cue;                /* 0x20 */
 } LeaderState;
 
-/* Type 271: shepherd. Guards a flock with a partner shepherd: watches Spyro
- * (state 0, by phase), circles to block him (state 2, by phase), climbs and
- * drops back down (states 0x10-0x12), and walks home (0x64). */
+/* Type 271: shepherd. Guards a flock with a partner shepherd: keeps its post
+ * while SHEPHERD_IDLE, flanks or chases Spyro in SHEPHERD_CHASE (also by post),
+ * climbs onto and drops off a partner (0x10-0x12), and walks home (0x64). */
 typedef struct ShepherdState {
   unsigned char *path; /* 0x00 { count, cur }, points at +8 */
   int home[3];         /* 0x04 */
   int heading;         /* 0x10 -1 = take the actor's own */
-  int phase;           /* 0x14 */
+  int post;            /* 0x14 enum ShepherdPost (from its spawn record) */
   int knockSpeed;      /* 0x18 */
   int knockHeading;    /* 0x1C */
   int knockSpin;       /* 0x20 */
