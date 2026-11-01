@@ -1925,7 +1925,7 @@ void Level32_UpdateActors(void) {
         if (c != 0 && c != (Actor *)-1 && c->type == ACTOR_TYPE_LOB_GUNNER_LOB && c->subMode == 0 &&
             c->mode < ACTOR_MODE_DORMANT) {
           c->subMode = 1;
-          st->heldLob->mode = 2;
+          st->heldLob->mode = LGLOB_DESPAWN;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
@@ -2038,7 +2038,7 @@ void Level32_UpdateActors(void) {
             q->h4 = 0x104;
             q->h6 = ComputeLobVelocityZ(&st->heldLob->posX, o150, 0x104, q->h8, (int *)q);
             if (q->flightTime == 0) {
-              st->heldLob->mode = 2;
+              st->heldLob->mode = LGLOB_DESPAWN;
             }
             q->bD = RandomSignedInRange(7, 0xF);
             q->bE = RandomSignedInRange(7, 0xF);
@@ -2229,17 +2229,17 @@ void Level32_UpdateActors(void) {
         continue;
       }
       switch (actor->mode) {
-      case 0:
+      case LGLOB_FLY:
         CopyVector(o140, &actor->posX);
         actor->posX += (q->h4 * g_anCosineLut[q->bC]) >> 12;
         actor->posY += (q->h4 * g_anSineLut[q->bC]) >> 12;
         actor->posZ += q->h6;
         q->h6 += q->h8;
         if (CastRayWorldAndActors(o140, &actor->posX) != 0) {
-          actor->mode = 1;
+          actor->mode = LGLOB_BURST;
         }
         if (TickCountdownByFrameDelta(&q->hA, 2) != 0) {
-          actor->mode = 1;
+          actor->mode = LGLOB_BURST;
         }
         o140[0] = 0;
         o140[1] = 0;
@@ -2251,7 +2251,7 @@ void Level32_UpdateActors(void) {
         q->hA += g_nFrameStep;
         continue;
 
-      case 1:
+      case LGLOB_BURST:
         EBB_BREAK();
         if (RaiseSpyroTriggerInRadius(&actor->posX, 0x8CA, 0x86) != 0) {
           int n;
@@ -2268,7 +2268,7 @@ void Level32_UpdateActors(void) {
           o150[1] = y;
           spy->requestVelX = x;
           spy->requestVelY = y;
-          actor->mode = 1;
+          actor->mode = LGLOB_BURST;
         }
         PlayActorMeshVoice(actor, 0, 0);
         for (i = 0; i < 7; i++) {
@@ -2296,7 +2296,7 @@ void Level32_UpdateActors(void) {
         DespawnActorRecord(actor);
         continue;
 
-      case 2:
+      case LGLOB_DESPAWN:
         DespawnActorRecord(actor);
         continue;
       }

@@ -3090,7 +3090,7 @@ void Level7_UpdateActors(void) {
       actor->soundRange = 0x20;
       actor->rotY = WrapAddAngle8(actor->rotY, 3);
       switch (actor->mode) {
-      case 0: {
+      case SSHOT_FLY: {
         int fade;
 
         s328[0] = 0;
@@ -3100,7 +3100,7 @@ void Level7_UpdateActors(void) {
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, s328);
         if (MoveActorByDelta(actor, st->vel[0], st->vel[1], st->vel[2], fade,
                           0x12C, one) != 0) {
-          actor->mode = 1;
+          actor->mode = SSHOT_BURST;
         } else if (ApproxDist2D(&actor->posX, spy) < 0xC8 &&
                    ABS2(SPY_DZ(actor)) < 0x384) {
           g_nCameraScriptStickRequestY[19] = /* g_dwSpyroRequestMask */
@@ -3109,14 +3109,14 @@ void Level7_UpdateActors(void) {
           g_anSpyroRequestVelocity.x = (-st->vel[0] * 3) >> 2;
           g_nSpyroRequestVelocityZ = 0x50;
           g_nSpyroRequestVelocityY = (-st->vel[1] * 3) >> 2;
-          actor->mode = 1;
+          actor->mode = SSHOT_BURST;
         } else if (TickCountdownByFrameDelta(&st->countdown0, 2) != 0) {
-          actor->mode = 1;
+          actor->mode = SSHOT_BURST;
         }
         break;
       }
 
-      case 1:
+      case SSHOT_BURST:
         for (i = 0; i < 6; i++) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;

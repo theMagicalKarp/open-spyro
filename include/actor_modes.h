@@ -1420,4 +1420,61 @@ enum GuardLookoutMode {
   GLOOK_ROUSE = 10,  /* turns to its guard and wakes it on frame 5, then WATCH */
 };
 
+/* ->mode of the level 16 humming bell (ACTOR_TYPE_HUMMING_BELL,
+ * HummingBellState). */
+enum HummingBellMode {
+  HBELL_INIT = 0,   /* first frame: HUM */
+  HBELL_STRUCK = 1, /* flamed or supercharged: bursts, runs its chunk to step 0, despawns */
+  HBELL_HUM = 2,    /* sparks at its target and restarts its chunk every period */
+};
+
+/* ->mode of an attach bead (ACTOR_TYPE_ATTACH_BEAD, AttachBeadState; level
+ * 19), one of the three kids a bead sentry keeps streaming between its two
+ * attach points; ->subMode is its index. */
+enum AttachBeadMode {
+  BEAD_INIT = 0,    /* staggers its start by its index, then DELAY */
+  BEAD_DELAY = 1,   /* counts up to 0, then STREAM */
+  BEAD_STREAM = 2,  /* slides attach point 1 -> 0, scaling up */
+  BEAD_DESPAWN = 3, /* set by the sentry when it is knocked */
+};
+
+/* ->mode of the lob gunner's lob (ACTOR_TYPE_LOB_GUNNER_LOB, LobState;
+ * level 32). It waits in the gunner's hand until ->subMode is set. */
+enum LobGunnerLobMode {
+  LGLOB_FLY = 0,     /* flies its arc; hitting something or its timer: BURST */
+  LGLOB_BURST = 1,   /* knocks Spyro back when near, sparks, despawns */
+  LGLOB_DESPAWN = 2, /* set by the gunner: knocked holding it, or no arc to the target */
+};
+
+/* ->mode of the level 22 platform pod (ACTOR_TYPE_PLATFORM_POD,
+ * PlatformPodState); the mode is also the animation index. */
+enum PlatformPodMode {
+  PPOD_WAIT = 0, /* closed; on its timer: OPEN */
+  PPOD_OPEN = 1, /* opens; when done, raises its ACTOR_TYPE_BOBBING_PLATFORMs: UP */
+  PPOD_UP = 2,   /* lobs ACTOR_TYPE_POD_SHOTs at its partner; on its timer drops them, WAIT */
+};
+
+/* ->mode of the level 6 breakable prop (ACTOR_TYPE_BREAKABLE_PROP); the mode
+ * is also the animation index. */
+enum BreakablePropMode {
+  BPROP_IDLE = 0,
+  BPROP_WOBBLE = 1, /* plays out, then IDLE (no writer in this block) */
+  BPROP_BREAK = 2,  /* flamed, or supercharged twice in half a second: breaks, despawns */
+};
+
+/* ->mode of the level 7 shooter's shot (ACTOR_TYPE_SHOOTER_SHOT,
+ * ShooterShotState). */
+enum ShooterShotMode {
+  SSHOT_FLY = 0,   /* flies; hitting a wall, Spyro (knocked back) or its timer: BURST */
+  SSHOT_BURST = 1, /* debris and sparks, despawns */
+};
+
+/* ->mode of the level 0 pressure switch (ACTOR_TYPE_PRESSURE_SWITCH,
+ * SwitchState); the mode is also the animation index, and ->subMode tracks
+ * Spyro standing on it. */
+enum PressureSwitchMode {
+  PSWITCH_UP = 0,
+  PSWITCH_DOWN = 1, /* its bit in the linked actor's subMode is set */
+};
+
 #endif

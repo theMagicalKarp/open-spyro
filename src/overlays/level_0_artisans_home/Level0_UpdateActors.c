@@ -539,7 +539,7 @@ void Level0_UpdateActors(void) {
 
       if (g_pActorListBase[st->idx].mode == 10) {
         if ((actor->mode & 1) == 0) {
-          actor->mode = 1;
+          actor->mode = PSWITCH_DOWN;
           ANIM_RESET(actor, 1);
         }
         break;
@@ -547,7 +547,7 @@ void Level0_UpdateActors(void) {
 
       if (g_pActorListBase[st->idx].mode == 11) {
         if ((actor->mode & 1) != 0) {
-          actor->mode = 0;
+          actor->mode = PSWITCH_UP;
           ANIM_RESET(actor, 0);
         }
         break;
@@ -563,10 +563,10 @@ void Level0_UpdateActors(void) {
           PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[0], actor, SFX_MODE_3D,
                         &actor->voiceRow);
         }
-        actor->mode = 1;
+        actor->mode = PSWITCH_DOWN;
         ANIM_RESET(actor, 1);
       } else if ((actor->mode & 1) != 0) {
-        actor->mode = 0;
+        actor->mode = PSWITCH_UP;
         ANIM_RESET(actor, 0);
       }
       break;

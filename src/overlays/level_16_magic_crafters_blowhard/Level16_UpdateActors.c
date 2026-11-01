@@ -3474,21 +3474,21 @@ void Level16_UpdateActors(void) {
       HummingBellState *st = actor->state;
       int r;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != 1) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != HBELL_STRUCK) {
         StopSoundVoiceByIndex(actor->voiceRow, 4);
         SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
         MarkActorCommittedKill(actor);
         GetWorldChunkAnimState(st->chunkAnim);
-        ENTER_POSE(actor, 1);
+        ENTER_POSE(actor, HBELL_STRUCK);
       }
 
       switch (actor->mode) {
-      case 0:
-        actor->mode = 2;
+      case HBELL_INIT:
+        actor->mode = HBELL_HUM;
         ANIM_RESET(actor, 2);
         continue;
 
-      case 1:
+      case HBELL_STRUCK:
         if (g_nActorAnimDone != 0 && actor->cullRadius != 0) {
           actor->cullRadius = 0;
           actor->frameRate = 0;
@@ -3524,7 +3524,7 @@ void Level16_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case HBELL_HUM:
         if (g_dwGamestateFrames & 1) {
           g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, &g_pActorListBase[st->target]);
         }

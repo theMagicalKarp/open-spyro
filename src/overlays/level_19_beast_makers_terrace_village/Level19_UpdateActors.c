@@ -2601,20 +2601,20 @@ void Level19_UpdateActors(void) {
       AttachBeadState *st = actor->state;
 
       switch (actor->mode) {
-      case 0:
+      case BEAD_INIT:
         st->t = -(actor->subMode * 10) - actor->subMode * 32;
-        actor->mode = 1;
+        actor->mode = BEAD_DELAY;
         actor->cullRadius = 0;
         continue;
 
-      case 1:
+      case BEAD_DELAY:
         st->t += g_nFrameStep;
         if (st->t >= 0) {
-          actor->mode = 2;
+          actor->mode = BEAD_STREAM;
         }
         continue;
 
-      case 2: {
+      case BEAD_STREAM: {
         int *a = o352;
         int *b = o384;
         int *c = o336;
@@ -2640,7 +2640,7 @@ void Level19_UpdateActors(void) {
         continue;
       }
 
-      case 3:
+      case BEAD_DESPAWN:
         DespawnActorRecord(actor);
         continue;
       }
@@ -3614,7 +3614,7 @@ void Level19_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           for (i = 0; i < 3; i++) {
             if (st->kids[i] != 0) {
-              st->kids[i]->mode = 3;
+              st->kids[i]->mode = BEAD_DESPAWN;
             }
           }
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

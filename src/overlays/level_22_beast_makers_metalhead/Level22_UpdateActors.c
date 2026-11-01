@@ -1941,7 +1941,7 @@ void Level22_UpdateActors(void) {
       int i;
 
       TickActorFlameGlow(actor);
-      if ((actor->flags & ACTOR_HIT_CHARGE) && actor->mode < 2) {
+      if ((actor->flags & ACTOR_HIT_CHARGE) && actor->mode < PPOD_UP) {
         PlayActorMeshVoice(actor, 0, 0);
         actor->posZ -= 0x190;
         for (i = 0; i < 6; i++) {
@@ -1985,16 +1985,16 @@ void Level22_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case PPOD_WAIT:
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           st->timer = 0x46;
-          actor->mode = 1;
+          actor->mode = PPOD_OPEN;
           ANIM_RESET(actor, 1);
           continue;
         }
         break;
 
-      case 1:
+      case PPOD_OPEN:
         if (TickCountdownByFrameDelta(&st->timer, 4) == 0 || g_nActorAnimDone == 0) {
           break;
         }
@@ -2017,11 +2017,11 @@ void Level22_UpdateActors(void) {
             st->kids[i]->subMode = RandomSignedInRange(10, 0x12);
           }
         }
-        actor->mode = 2;
+        actor->mode = PPOD_UP;
         ANIM_RESET(actor, 2);
         continue;
 
-      case 2:
+      case PPOD_UP:
         if (*(int *)g_pActorListBase[st->partner].state == actor->group - 2 &&
             TickCountdownByFrameDelta(&st->shotTimer, 4) != 0) {
           Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_POD_SHOT, actor);

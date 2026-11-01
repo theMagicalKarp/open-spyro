@@ -2238,15 +2238,15 @@ void Level6_UpdateActors(void) {
     case ACTOR_TYPE_BREAKABLE_PROP: {
       int *st = actor->state;
 
-      if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode < 2) {
-        actor->mode = 2;
+      if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode < BPROP_BREAK) {
+        actor->mode = BPROP_BREAK;
         ANIM_RESET(actor, 2);
         continue;
       }
-      if ((actor->flags & ACTOR_HIT_SUPER) && actor->mode < 2) {
+      if ((actor->flags & ACTOR_HIT_SUPER) && actor->mode < BPROP_BREAK) {
         if (st[0] != 0) {
           if (TickCountdownByFrameDelta(st, 4) != 0) {
-            actor->mode = 2;
+            actor->mode = BPROP_BREAK;
             ANIM_RESET(actor, 2);
             continue;
           }
@@ -2255,14 +2255,14 @@ void Level6_UpdateActors(void) {
         }
       }
       switch (actor->mode) {
-      case 1:
+      case BPROP_WOBBLE:
         if (g_nActorAnimDone != 0) {
-          actor->mode = 0;
+          actor->mode = BPROP_IDLE;
           ANIM_RESET(actor, 0);
           continue;
         }
         break;
-      case 2:
+      case BPROP_BREAK:
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);
           continue;
