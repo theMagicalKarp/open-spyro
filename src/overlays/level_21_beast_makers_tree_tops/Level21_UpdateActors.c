@@ -888,7 +888,7 @@ void Level21_UpdateActors(void) {
           break;
         }
         if (st->groupAlert != 0) {
-          SetActorGroupSubstate(actor, 1);
+          SetActorGroupSubstate(actor, BTHROW_ROUSE);
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
         if (st->flags & THROWER_F_ADVANCE) {
@@ -1272,7 +1272,7 @@ void Level21_UpdateActors(void) {
           break;
         }
         if (st->groupAlert != 0) {
-          SetActorGroupSubstate(actor, 2);
+          SetActorGroupSubstate(actor, BTHROW_WATCH);
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
         actor->mode = GATEKEEPER_WATCH;
@@ -3094,12 +3094,12 @@ void Level21_UpdateActors(void) {
         if (IsActorInRunningKillSet(actor) != 0) {
           if (st->mode == PRUN_FIRST) {
             actor->group = 0;
-            SetActorGroupSubstate(actor, 2);
+            SetActorGroupSubstate(actor, BTHROW_WATCH);
             actor->group = 1;
-            SetActorGroupSubstate(actor, 2);
+            SetActorGroupSubstate(actor, BTHROW_WATCH);
           } else if (st->mode == PRUN_SECOND) {
             actor->group = 2;
-            SetActorGroupSubstate(actor, 2);
+            SetActorGroupSubstate(actor, BTHROW_WATCH);
           }
           actor->group = 0xFF;
           DespawnActorRecord(actor);
@@ -3114,9 +3114,9 @@ void Level21_UpdateActors(void) {
         }
         if (IsPointInRotatedBox(&spy->posX, st->volB) != 0) {
           actor->group = 0;
-          SetActorGroupSubstate(actor, 2);
+          SetActorGroupSubstate(actor, BTHROW_WATCH);
           actor->group = 1;
-          SetActorGroupSubstate(actor, 2);
+          SetActorGroupSubstate(actor, BTHROW_WATCH);
           actor->group = 0xFF;
           actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                        SPY.posY - actor->posY, ATAN_ANGLE8);
@@ -3139,7 +3139,7 @@ void Level21_UpdateActors(void) {
         st->pathInit = 1;
         if (IsPointInRotatedBox(&spy->posX, st->volB) != 0) {
           actor->group = 2;
-          SetActorGroupSubstate(actor, 2);
+          SetActorGroupSubstate(actor, BTHROW_WATCH);
           actor->group = 0xFF;
           actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                        SPY.posY - actor->posY, ATAN_ANGLE8);

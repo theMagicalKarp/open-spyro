@@ -931,7 +931,14 @@ enum RockThrowerMode {
 /* ->mode of a boulder thrower (ACTOR_TYPE_BOULDER_THROWER / _B,
  * BoulderThrowerState; levels 21/22). Modes 40-43 are the paired charge
  * (wait on the partner, circle it, launch at Spyro); 50-54 the ride, where a
- * partner (BoulderThrowerState.rider) catches and flings it. */
+ * partner (BoulderThrowerState.rider) catches and flings it.
+ *
+ * Group wake (SetActorGroupSubstate): a thrower in BTHROW_IDLE takes a
+ * non-zero ->subMode as the mode to enter, so the signal value is a thrower
+ * mode: ROUSE from a rousing thrower, WATCH (skip the rouse) from a
+ * gatekeeper or the level 21 egg runner. Gatekeepers share these groups
+ * (level data: groups 0..4 in level 21, 0..1 in level 22) and treat any
+ * non-zero value as "rouse". */
 enum BoulderThrowerMode {
   BTHROW_IDLE = 0,          /* holds its spawn pose until roused */
   BTHROW_ROUSE = 1,         /* rousing animation (may alert its group), then WATCH */

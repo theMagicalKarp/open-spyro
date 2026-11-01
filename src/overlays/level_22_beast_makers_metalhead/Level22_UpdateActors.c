@@ -1264,7 +1264,7 @@ void Level22_UpdateActors(void) {
           break;
         }
         if (st->groupAlert != 0) {
-          SetActorGroupSubstate(actor, 1);
+          SetActorGroupSubstate(actor, BTHROW_ROUSE);
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
         if (st->flags & THROWER_F_ADVANCE) {
@@ -1648,7 +1648,7 @@ void Level22_UpdateActors(void) {
           break;
         }
         if (st->groupAlert != 0) {
-          SetActorGroupSubstate(actor, 2);
+          SetActorGroupSubstate(actor, BTHROW_WATCH);
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
         actor->mode = GATEKEEPER_WATCH;
