@@ -1,3 +1,4 @@
+#include "actor_type.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -104,15 +105,15 @@ int TickActiveSoundVoices(void) {
     if (!(g_aSpuVoiceRows[i].nFlags & 1)) {
       continue;
     }
-    mode = g_aSpuVoiceRows[i].nFlags & 0x1C;
+    mode = g_aSpuVoiceRows[i].nFlags & SFX_MODE_MASK;
     switch (mode) {
-    case 4:
+    case SFX_MODE_FLAT:
       yc = 0x2000;
       attr.volR = yc;
       attr.volL = yc;
       break;
 
-    case 8:
+    case SFX_MODE_3D:
       pVol = &g_aSpuVoiceRows[i].nVolL;
       SpuGetVoiceVolume(i, pVol, pVol + 1);
       owner = g_aSpuVoiceRows[i].pOwner;
@@ -163,7 +164,7 @@ int TickActiveSoundVoices(void) {
           range, g_aSpuVoiceRows[i].anPanCache);
       break;
 
-    case 0x10:
+    case SFX_MODE_PANNED:
       attr.volR = g_aSpuVoiceRows[i].nVolR;
       attr.volL = g_aSpuVoiceRows[i].nVolL;
       break;
