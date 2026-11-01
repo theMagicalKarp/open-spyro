@@ -75,7 +75,8 @@ void SelectCameraMode(void) {
       opts = g_dwActiveCameraOptions;
       *(CameraAngles *)&g_nCameraSpringYaw = *(CameraAngles *)&g_nCameraYaw;
       if (((opts & CAM_OPT_PASSIVE_FOLLOW) || g_nCameraForcePassiveFollow) &&
-          CAM[CAM_NEXT_MODE] == 0 && g_nCameraSpringSuppressFlag == 0) {
+          CAM[CAM_NEXT_MODE] == CAM_MODE_STAND &&
+          g_nCameraSpringSuppressFlag == 0) {
         CAM[CAM_NEXT_MODE] = (CAM_HELD | CAM_MODE_PASSIVE);
         goto hold;
       }
@@ -158,13 +159,14 @@ done:
     if (((g_dwActiveCameraOptions & CAM_OPT_PASSIVE_FOLLOW) ||
          g_nCameraForcePassiveFollow) &&
         SPY[SPY_SCRIPTED_MOVE] == 0 && g_nCameraSpringSuppressFlag == 0 &&
-        (CAM[CAM_NEXT_MODE] == 0 || CAM[CAM_NEXT_MODE] == CAM_HELD) &&
+        (CAM[CAM_NEXT_MODE] == CAM_MODE_STAND ||
+         CAM[CAM_NEXT_MODE] == (CAM_HELD | CAM_MODE_STAND)) &&
         g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_PASSIVE_SETTLE) &&
         *(int **)&CAM[CAM_ANCHOR] == SPY) {
       g_nCameraPassiveModeHoldTimer = 8;
       CAM[CAM_NEXT_MODE] = (CAM_HELD | CAM_MODE_PASSIVE_SETTLE);
       g_nCameraSpringReengageCountdown = 0x5A;
-    } else if (CAM[CAM_CURRENT_MODE] == 2 ||
+    } else if (CAM[CAM_CURRENT_MODE] == CAM_MODE_SIDESTEP ||
                CAM[CAM_CURRENT_MODE] ==
                    (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
       REBASE();
