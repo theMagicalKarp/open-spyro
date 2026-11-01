@@ -74,7 +74,7 @@ void Level0_BalloonistCutscene_Draw(void) {
       }
     }
     if (g_nActorCutsceneSubstate[0] == ACS_DIALOGUE) {
-      if (g_nActorCutsceneSubstate[3] < 0x1E || g_nActorCutsceneSubstate[3] > 0x20) {
+      if (g_nActorCutsceneSubstate[3] < BPAGE_ROSTER || g_nActorCutsceneSubstate[3] > BPAGE_CONFIRM_HINT) {
         DrawShadedMenuBox(0x48, 0x1B8, 0x1C, 0x68);
         pagePos[1] = 0x2C;
         pagePos[2] = 0x1100;
@@ -106,7 +106,7 @@ void Level0_BalloonistCutscene_Draw(void) {
           pagePos[2] = 0x1100;
           EnqueueBlinkingMarkerSprite(pagePos, g_nActorCutsceneSubstate[1], 0);
         }
-      } else if (g_nActorCutsceneSubstate[3] == 0x1E) {
+      } else if (g_nActorCutsceneSubstate[3] == BPAGE_ROSTER) {
         menuColor[0] = 0xE;
         menuColor[2] = 0x1600;
         menuPos[2] = 0x1400;
@@ -153,7 +153,7 @@ void Level0_BalloonistCutscene_Draw(void) {
         menuPos[2] = 0x1100;
         menuPos[1] = g_nActorCutsceneSubstate[2] * 0xF + 0x36;
         EnqueueBlinkingMarkerSprite(menuPos, g_nActorCutsceneSubstate[1], 0);
-      } else if (g_nActorCutsceneSubstate[3] == 0x1F || g_nActorCutsceneSubstate[3] == 0x20) {
+      } else if (g_nActorCutsceneSubstate[3] == BPAGE_CONFIRM_NEXT || g_nActorCutsceneSubstate[3] == BPAGE_CONFIRM_HINT) {
         DrawShadedMenuBox(0x48, 0x1B8, 0x1C, 0x66);
         EmitRadialShadedLine(0x64, 0x37, 0x184, 0x37);
         askPos[0] = 0x60;
@@ -166,7 +166,7 @@ void Level0_BalloonistCutscene_Draw(void) {
         askColor[1] = 1;
         askPos[2] = 0x1100;
         askPos[0] = 0x60;
-        if (g_nActorCutsceneSubstate[3] == 0x1F) {
+        if (g_nActorCutsceneSubstate[3] == BPAGE_CONFIRM_NEXT) {
           BuildTextSprites("ARE YOU READY TO GO?", askPos, askColor, 0x12, 0xB);
         } else {
           BuildTextSprites("WOULD YOU LIKE TO GO?", askPos, askColor, 0x12, 0xB);
@@ -184,7 +184,7 @@ void Level0_BalloonistCutscene_Draw(void) {
         }
         askPos[0] = 0x80;
         rec = (Actor *)g_pSpriteRecordWriteCursor - 1;
-        if (g_nActorCutsceneSubstate[3] == 0x1F) {
+        if (g_nActorCutsceneSubstate[3] == BPAGE_CONFIRM_NEXT) {
           sprintf(dest, g_szGoTo, g_apWorldNameByLevelTens[g_nActiveLevelId / 10]);
         } else {
           sprintf(dest, g_szGoTo,

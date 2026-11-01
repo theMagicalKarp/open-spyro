@@ -3517,7 +3517,7 @@ void Level13_UpdateActors(void) {
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x3800) {
             st->done = 0;
             *st->doneFlag = 0;
-            SetActorGroupStateExcept(actor, 2, 3);
+            SetActorGroupStateExcept(actor, SHEPHERD_CHASE, SHEPHERD_KNOCKED);
           }
           break;
 
@@ -3532,7 +3532,7 @@ void Level13_UpdateActors(void) {
           }
           TurnActorYawTowardAngle(actor, st->heading, 4, 0, 0);
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1C00) {
-            SetActorGroupStateExcept(actor, 2, 3);
+            SetActorGroupStateExcept(actor, SHEPHERD_CHASE, SHEPHERD_KNOCKED);
           }
           break;
 
@@ -3638,7 +3638,7 @@ void Level13_UpdateActors(void) {
               st->side = one;
               ps->side = 2;
             }
-            SetActorGroupStateExcept(actor, 0xB, 3);
+            SetActorGroupStateExcept(actor, SHEPHERD_ALERTED, SHEPHERD_KNOCKED);
           }
           if (st->sub == 0) {
             ANIM_GO(actor, 1);
