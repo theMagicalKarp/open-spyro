@@ -1136,8 +1136,8 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_anSpuVoiceRowPitch / PitchStep 0x80075f38 / 0x80075f44  nPitch / nPitchStep columns of g_aSpuVoiceRows
  *   g_pLockedChestReward         0x80075758  reward the locked chest drops; collecting it sets g_nLevelKeyState = 3 (CollectPickupActor)
  *   g_anRotBillboardOffsetsRand 0x8006e5c4  int[4][3] spawn offsets picked at random, after g_anRotBillboardOffset5
- *   g_dwBurstColorType15 / Type14 0x8006e490 / 0x8006e494  0x2C-coded colour words (0x808080 / 0x008080)
- *       UpdateActors passes to emit effect 0xC for actor types 15 / 14 in place of g_adwActorBurstColors;
+ *   g_dwBurstColorSparxFood / ExtraLife 0x8006e490 / 0x8006e494  0x2C-coded colour words (0x808080 / 0x008080)
+ *       UpdateActors passes to emit effect 0xC for ACTOR_TYPE_SPARX_FOOD / EXTRA_LIFE in place of g_adwActorBurstColors;
  *       entries 5 and 6 of a 7-word colour table at 0x8006e47c
  *   g_anSparkleGlowDesc     0x8006e390  descriptor installed as FxNode.desc on every kind-9 sparkle from
  *       AllocWorldSparkle (UpdateActors smoke/glow nodes); 42 small signed words, likely shape offsets

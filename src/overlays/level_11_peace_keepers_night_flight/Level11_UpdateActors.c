@@ -1064,9 +1064,9 @@ void Level11_UpdateActors(void) {
             st->target->subMode = COLLECT_HOMING;
 
             if (st->target->type == ACTOR_TYPE_EXTRA_LIFE)
-              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_dwBurstColorType14);
+              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_dwBurstColorExtraLife);
             else if (st->target->type == ACTOR_TYPE_SPARX_FOOD)
-              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_dwBurstColorType15);
+              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_dwBurstColorSparxFood);
             else
               g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_adwActorBurstColors[st->target->type]);
 
@@ -1589,7 +1589,7 @@ void Level11_UpdateActors(void) {
           int off;
 
           for (i = 0, src = (int *)st, off = 0; i < 4; i++) {
-            FLIGHT_HUD_CLASS_WORD(off) = src[0x21];
+            FLIGHT_TALLY_TINT_PRESET(off) = src[0x21];
             src++;
             off += 4;
           }

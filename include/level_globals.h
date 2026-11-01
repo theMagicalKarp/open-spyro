@@ -12,9 +12,9 @@
 #include "actor_type.h"
 
 extern int g_anSparkleGlowDesc;
-extern int g_anFlightHudClassWords[];
-extern void *g_dwBurstColorType15;
-extern void *g_dwBurstColorType14;
+extern int g_anFlightTallyTintPresets[];
+extern void *g_dwBurstColorSparxFood;
+extern void *g_dwBurstColorExtraLife;
 extern int g_anTintByDropKind[]; /* packed Actor tint word per dropKind (see actor.h) */
 /* Flight results board rows, indexed world * 4 (titles) or world * 5 (bonus
  * values / claimed flags); _rN is row N of the same table, declared as its

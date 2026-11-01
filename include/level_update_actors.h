@@ -1615,11 +1615,11 @@ extern int g_dwActiveCameraOptions;
 extern int g_nPortalCamPathReverseFlag;
 extern int g_nSpyroMoveTargetYaw; /* camera yaw override */
 
-/* Word at byte offset `off` of g_anFlightHudClassWords (the flight HUD's
- * per-class display words). The flight UpdateActors clones fill it with a
+/* Word at byte offset `off` of g_anFlightTallyTintPresets (tint presets 3..6,
+ * filled from HudState.tint). The flight UpdateActors clones fill it with a
  * byte-offset induction variable next to the source pointer; an int index
  * gives loop.c a different giv set. */
-#define FLIGHT_HUD_CLASS_WORD(off) \
-  (*(int *)((char *)g_anFlightHudClassWords + (off)))
+#define FLIGHT_TALLY_TINT_PRESET(off) \
+  (*(int *)((char *)g_anFlightTallyTintPresets + (off)))
 
 #endif /* OPEN_SPYRO_LEVEL_UPDATE_ACTORS_H */
