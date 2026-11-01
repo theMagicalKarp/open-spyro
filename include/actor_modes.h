@@ -1327,4 +1327,21 @@ enum WaypointRunnerMode {
   WPRUNNER_POP = 2,    /* pops and despawns, freeing its spawner */
 };
 
+/* SoldierState.kind of a level 6 soldier (ACTOR_TYPE_SOLDIER / _B): which
+ * behaviour its SOLDIER_IDLE and SOLDIER_CHASE run. SoldierState.link is the
+ * soldier's cannon for the cannon kinds. */
+enum SoldierKind {
+  SOLDIERKIND_PATROL = 0,        /* walks its path; Spyro near: ALERT, then chases him */
+  SOLDIERKIND_SENTRY = 1,        /* stands; Spyro near: alerts its group, then chases */
+  SOLDIERKIND_CANNON_RUNNER = 2, /* alerts its group, runs to its cannon, then GUNNER */
+  SOLDIERKIND_DUELIST = 3,       /* fires its cannon at a rival (SOLDIER_DUEL) */
+  SOLDIERKIND_BOUNDED_PATROL = 4, /* patrols; chases until it enters SoldierState.vol */
+  SOLDIERKIND_WANDER_TO_POST = 5, /* wanders; Spyro near: its group heads TO_POST */
+  SOLDIERKIND_WANDER_TO_CANNON = 6, /* the same; with its post gone becomes CANNON_RUNNER */
+  SOLDIERKIND_GUNNER = 8,        /* mans its cannon from the start (SOLDIER_GUNNER) */
+  SOLDIERKIND_SHORT_LEASH = 9,   /* faces Spyro; chases him only near home */
+  SOLDIERKIND_BOUNDED_SENTRY = 10, /* stands; chases until it enters SoldierState.vol */
+  SOLDIERKIND_SHOVER = 11,       /* faces Spyro; shoves him when close */
+};
+
 #endif
