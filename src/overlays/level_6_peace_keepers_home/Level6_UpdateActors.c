@@ -2536,9 +2536,9 @@ void Level6_UpdateActors(void) {
     }
 
     case ACTOR_TYPE_HOME_TALKER + 1: {
-      if (actor->mode == 0) {
+      if (actor->mode == TALKER_REARM) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1000) {
-          actor->mode = 1;
+          actor->mode = TALKER_READY;
         }
       } else if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
                   SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_CHARGE) &&
@@ -2551,7 +2551,7 @@ void Level6_UpdateActors(void) {
                                ArcTan2(spy->posX - actor->posX,
                                              g_nSpyroWorldPosY - actor->posY, 0)) <
                      0x28) {
-        actor->mode = 0;
+        actor->mode = TALKER_REARM;
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         ResetSpyroLinearMotion();
         ZeroVector(&spy->headLook);
@@ -3501,7 +3501,7 @@ void Level6_UpdateActors(void) {
 
       actor->rotY = WrapAddAngle8(actor->rotY, 3);
       switch (actor->mode) {
-      case 0:
+      case SHOT_FLY:
         actor->posX += (st->speed * g_anCosineLut[actor->rotZ]) >> 12;
         actor->posY += (st->speed * g_anSineLut[actor->rotZ]) >> 12;
         if (st->spent != 0) {
@@ -3521,7 +3521,7 @@ void Level6_UpdateActors(void) {
           }
           if (CollideSphereWithWorldAndActors(&actor->posX, 0x168, 0x168) != 0) {
             PlayActorMeshVoice(actor, 0, 0);
-            actor->mode = 1;
+            actor->mode = SHOT_BURST;
             if (st->link != -1) {
               g_pActorListBase[st->link].subMode = 1;
             }
@@ -3529,7 +3529,7 @@ void Level6_UpdateActors(void) {
           if (st->age >= 9 && st->delay == 0 &&
               DispatchActorContactAtSphere(&actor->posX, 0x400, 0, ACTOR_HIT_SUPER, actor, 2) != 0) {
             PlayActorMeshVoice(actor, 0, 0);
-            actor->mode = 1;
+            actor->mode = SHOT_BURST;
             if (st->link != -1) {
               g_pActorListBase[st->link].subMode = 1;
             }
@@ -3543,7 +3543,7 @@ void Level6_UpdateActors(void) {
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, g304);
         break;
 
-      case 1:
+      case SHOT_BURST:
         for (i = 0; i < 6; i++) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;

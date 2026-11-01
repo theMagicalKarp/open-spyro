@@ -1092,7 +1092,7 @@ void Level22_UpdateActors(void) {
       int i;
 
       switch (actor->mode) {
-      case 0:
+      case SHOT_FLY:
         actor->posX += (st->speed * g_anCosineLut[actor->rotZ]) >> 12;
         actor->posY += (st->speed * g_anSineLut[actor->rotZ]) >> 12;
         if (TickCountdownByFrameDelta(&st->timer, 2) != 0 ||
@@ -1110,7 +1110,7 @@ void Level22_UpdateActors(void) {
         actor->rotY = ArcTan2(st->speed, st->vz, 0);
         break;
 
-      case 1:
+      case SHOT_BURST:
         i = 0;
         do {
           i++;

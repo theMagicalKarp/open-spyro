@@ -2797,9 +2797,9 @@ void Level24_UpdateActors(void) {
     /* Type 191: a talking NPC. Starts a conversation when Spyro walks up
      * facing it; the line depends on how far through the level he is. */
     case ACTOR_TYPE_HOME_TALKER + 4: {
-      if (actor->mode == 0) {
+      if (actor->mode == TALKER_REARM) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1000) {
-          actor->mode = 1;
+          actor->mode = TALKER_READY;
         }
       } else if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
                   SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_CHARGE) &&
@@ -2812,7 +2812,7 @@ void Level24_UpdateActors(void) {
                                ArcTan2(spy->posX - actor->posX,
                                              g_nSpyroWorldPosY - actor->posY, 0)) <
                      0x28) {
-        actor->mode = 0;
+        actor->mode = TALKER_REARM;
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         ResetSpyroLinearMotion();
         ZeroVector(&spy->headLook);

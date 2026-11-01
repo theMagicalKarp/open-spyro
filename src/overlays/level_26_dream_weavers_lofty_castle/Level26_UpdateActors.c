@@ -766,7 +766,7 @@ void Level26_UpdateActors(void) {
     case ACTOR_TYPE_SINKING_BLOCK: {
       SinkingBlockState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode == 0) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode == SINKBLK_IDLE) {
         st->depth = 0;
         g_pActorListBase[st->partner].mode = 1;
         PlayActorMeshVoice(&g_pActorListBase[st->partner], 0, 0);
@@ -774,11 +774,11 @@ void Level26_UpdateActors(void) {
         CommitActorKillGems(0, &g_pActorListBase[st->partner]);
         MarkActorCommittedKill(actor);
         CommitActorKillGems(0, actor);
-        actor->mode = 1;
+        actor->mode = SINKBLK_SINK;
         ANIM_RESET(actor, 1);
         continue;
       }
-      if (actor->mode == 1) {
+      if (actor->mode == SINKBLK_SINK) {
         int z;
         int t;
 
@@ -2683,8 +2683,8 @@ void Level26_UpdateActors(void) {
     case ACTOR_TYPE_PARTNER_PLATFORM: {
       PartnerPlatformState *st = actor->state;
 
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode == 0) {
-        actor->mode = 1;
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode == PPLAT_BOB) {
+        actor->mode = PPLAT_BREAK;
         ANIM_RESET(actor, 1);
         continue;
       }
@@ -2694,7 +2694,7 @@ void Level26_UpdateActors(void) {
       }
 
       switch (actor->mode) {
-      case 0:
+      case PPLAT_BOB:
         TrackEntityYawTowardSpyro(actor, 3, 0, 0);
         if (st->big != 0) {
           actor->posZ = st->baseZ + ((g_anCosineLut[st->phase] + 0x1000) >> 1);
@@ -2711,7 +2711,7 @@ void Level26_UpdateActors(void) {
         }
         break;
 
-      case 1:
+      case PPLAT_BREAK:
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);
           continue;

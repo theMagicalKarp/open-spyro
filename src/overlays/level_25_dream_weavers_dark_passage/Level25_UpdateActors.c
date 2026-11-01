@@ -1301,7 +1301,7 @@ void Level25_UpdateActors(void) {
       int *st = actor->state;
 
       switch (actor->mode) {
-      case 0:
+      case SHOT_FLY:
         CopyVector(svZ, &actor->posX);
         if (*st < 0xC8) {
           DispatchActorContactAtSphere(&actor->posX, 0x64, 0, ACTOR_HIT_CHARGE, actor, 0);
@@ -1309,12 +1309,12 @@ void Level25_UpdateActors(void) {
         if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, 7) || TickCountdownByFrameDelta(st, 4) ||
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) ||
             CastRayWorldAndActors(svZ, &actor->posX)) {
-          actor->mode = 1;
+          actor->mode = SHOT_BURST;
           ANIM_RESET(actor, 1);
         }
         continue;
 
-      case 1:
+      case SHOT_BURST:
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);
         }
@@ -2471,10 +2471,10 @@ void Level25_UpdateActors(void) {
       int i;
 
       switch (actor->mode) {
-      case 0:
+      case SHOT_FLY:
         if (actor->posX < 0x400 || actor->posY < 0x400 ||
             actor->posZ < 0x400) {
-          actor->mode = 1;
+          actor->mode = SHOT_BURST;
           continue;
         }
         {
@@ -2501,13 +2501,13 @@ void Level25_UpdateActors(void) {
         if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, 7) || TickCountdownByFrameDelta(st, 4) ||
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) ||
             CastRayWorldAndActors(svW, &actor->posX)) {
-          actor->mode = 1;
+          actor->mode = SHOT_BURST;
         }
         ZeroVector(svW);
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, svW);
         continue;
 
-      case 1:
+      case SHOT_BURST:
         for (i = 0; i < 16; i++) {
           svW[0] = RandomIntInRange(-0x5A, 0x5A);
           svW[1] = RandomIntInRange(-0x5A, 0x5A);

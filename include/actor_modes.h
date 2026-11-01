@@ -1477,4 +1477,40 @@ enum PressureSwitchMode {
   PSWITCH_DOWN = 1, /* its bit in the linked actor's subMode is set */
 };
 
+/* ->mode of the simple two-mode projectiles: ACTOR_TYPE_FLYING_EMBER and
+ * ACTOR_TYPE_FALLING_ROCK (level 25), ACTOR_TYPE_BURST_GUNNER_SHOT (level 32),
+ * ACTOR_TYPE_LOBBED_BOLT (level 22) and ACTOR_TYPE_FIREBALL (level 6). */
+enum ShotMode {
+  SHOT_FLY = 0,   /* moves; landing, a wall, Spyro or its timer: BURST */
+  SHOT_BURST = 1, /* bursts (or plays its shatter), then despawns */
+};
+
+/* ->mode of the level 26 partner platform (ACTOR_TYPE_PARTNER_PLATFORM,
+ * PartnerPlatformState); the mode is also the animation index. */
+enum PartnerPlatformMode {
+  PPLAT_BOB = 0,   /* bobs on its phase, flagging its partner's subMode near the top */
+  PPLAT_BREAK = 1, /* flamed or supercharged: breaks, then despawns */
+};
+
+/* ->mode of the level 26 sinking block (ACTOR_TYPE_SINKING_BLOCK,
+ * SinkingBlockState); the mode is also the animation index. */
+enum SinkingBlockMode {
+  SINKBLK_IDLE = 0,
+  SINKBLK_SINK = 1, /* struck: sets its partner's mode to 1 and sinks into the floor */
+};
+
+/* ->mode of a homeworld talker (ACTOR_TYPE_HOME_TALKER .. + 4; levels
+ * 0/6/12/18/24). */
+enum HomeTalkerMode {
+  TALKER_REARM = 0, /* waits for Spyro to walk away (>= 0x1000), then READY */
+  TALKER_READY = 1, /* Spyro walks up facing it: starts its actor cutscene, REARM */
+};
+
+/* ->mode of the level 32 flame chunk switch (ACTOR_TYPE_FLAME_CHUNK_SWITCH,
+ * FlameChunkSwitchState); the mode is also the animation index. */
+enum FlameChunkSwitchMode {
+  FCSWITCH_IDLE = 0,
+  FCSWITCH_TRIPPED = 1, /* flamed: resumes chunk 0's animation; re-arms after 0x50 frames */
+};
+
 #endif

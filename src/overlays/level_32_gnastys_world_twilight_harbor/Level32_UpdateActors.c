@@ -2080,7 +2080,7 @@ void Level32_UpdateActors(void) {
       BurstGunnerShotState *st = actor->state;
 
       switch (actor->mode) {
-      case 0: {
+      case SHOT_FLY: {
         int reach = 0x12C;
         int high = 0x384;
 
@@ -2104,7 +2104,7 @@ void Level32_UpdateActors(void) {
           continue;
         }
         if (CastRayWorldAndActors(o140, &actor->posX) != 0) {
-          actor->mode = 1;
+          actor->mode = SHOT_BURST;
           actor->cullRadius = 0;
           actor->drawn = 0;
           continue;
@@ -2116,7 +2116,7 @@ void Level32_UpdateActors(void) {
           g_anSpyroRequestVelocity.x = (st->vel[0] * 2) >> 3;
           g_nSpyroRequestVelocityZ = 0x28;
           g_nSpyroRequestVelocityY = (st->vel[1] * 2) >> 3;
-          actor->mode = 1;
+          actor->mode = SHOT_BURST;
           continue;
         }
         if (TickCountdownByFrameDelta(&st->life, 2) != 0) {
@@ -2125,7 +2125,7 @@ void Level32_UpdateActors(void) {
         continue;
       }
 
-      case 1:
+      case SHOT_BURST:
         o160[0] = 0;
         o160[1] = 0;
         o160[2] = 0xC;
@@ -2147,14 +2147,14 @@ void Level32_UpdateActors(void) {
         if (st->rearmTimer == 0) {
           ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
           st->rearmTimer = 0x50;
-          actor->mode = 1;
+          actor->mode = FCSWITCH_TRIPPED;
           ANIM_RESET(actor, 1);
           continue;
         }
       }
       if (TickCountdownByFrameDelta(&st->rearmTimer, 4) != 0 && g_nActorAnimDone != 0) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        actor->mode = 0;
+        actor->mode = FCSWITCH_IDLE;
         ANIM_RESET(actor, 0);
         continue;
       }

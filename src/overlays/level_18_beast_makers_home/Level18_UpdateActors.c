@@ -2203,9 +2203,9 @@ void Level18_UpdateActors(void) {
 
     /* Talking dragon: when Spyro faces it up close, start its dialogue. */
     case ACTOR_TYPE_HOME_TALKER + 3: {
-      if (actor->mode == 0) {
+      if (actor->mode == TALKER_REARM) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1000) {
-          actor->mode = 1;
+          actor->mode = TALKER_READY;
         }
       } else if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
                   SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_CHARGE) &&
@@ -2218,7 +2218,7 @@ void Level18_UpdateActors(void) {
                                ArcTan2(SPY.posX - actor->posX,
                                              SPY.posY - actor->posY, 0)) <
                      0x28) {
-        actor->mode = 0;
+        actor->mode = TALKER_REARM;
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         ResetSpyroLinearMotion();
         ZeroVector(&SPY.headLook);
