@@ -469,7 +469,7 @@ void Level2_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -1956,7 +1956,7 @@ void Level2_UpdateActors(void) {
                 ArcTan2(st->path->pts[st->path->sel].x - actor->posX,
                               st->path->pts[st->path->sel].y - actor->posY, 0),
                 6, 0x14, one)) {
-          MoveActorAlongHeading(actor, 0x8C, 0, 0, 5);
+          MoveActorAlongHeading(actor, 0x8C, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (ApproxDist2D(&actor->posX, &st->path->pts[st->path->sel]) < 0x100 ||
             ApproxDist2D(&actor->posX, &SPY.posX) < 0xC00) {
@@ -2017,7 +2017,7 @@ void Level2_UpdateActors(void) {
 
         if (AbsAngleDelta8(ang, actor->rotZ) < 0x10) {
           TurnActorYawTowardAngle(actor, ang, 5, 0, 0);
-          MoveActorAlongAngle(actor, ang, 0x50, 0, 0, 5);
+          MoveActorAlongAngle(actor, ang, 0x50, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (st->flag != 0 ||
               ApproxDist2D(&actor->posX,
                             (int *)&st->path->pts[st->path->sel]) < 0x80) {
@@ -2106,7 +2106,7 @@ void Level2_UpdateActors(void) {
           if (!TrackEntityYawTowardSpyro(actor, 5, 0x14, 1)) {
             continue;
           }
-          if (MoveActorAlongHeading(actor, 0x78, 0, 0x1F4, 0x15)) {
+          if (MoveActorAlongHeading(actor, 0x78, 0, 0x1F4, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT)) {
             st->timer = 0x78;
             ENTER_POSE(actor, PCHARGER_PATROL);
           }

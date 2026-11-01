@@ -37,7 +37,7 @@ int MoveActorAlongHeading(Actor *actor, int speed, int group, int radius,
   newpos[1] = actor->posY + ((g_anSineLut[actor->rotZ] * speed) >> 12);
   newpos[2] = actor->posZ;
   if (group != 0) {
-    if (!(flags & 2)) {
+    if (!(flags & MOVE_PASS_ACTORS)) {
       if (DispatchActorContactAtSphere(newpos, group, 0, 0, actor, 0) != 0) {
         return 1;
       }
@@ -45,27 +45,27 @@ int MoveActorAlongHeading(Actor *actor, int speed, int group, int radius,
       DispatchActorContactAtSphere(newpos, group, 0, 0, actor, 3);
     }
   }
-  if (flags & 1) {
+  if (flags & MOVE_LIFT) {
     t = newpos[2] + 0x12C;
     newpos[2] = t + radius;
   }
   if (radius != 0) {
     if (CollideSphereWithWorldAndActors(newpos, radius, radius) != 0) {
-      if (!(flags & 0x20)) {
+      if (!(flags & MOVE_SLIDE)) {
         return 2;
       }
       CopyVector(newpos, g_anCollisionResolvedPos);
     }
   }
-  if (flags & 1) {
+  if (flags & MOVE_LIFT) {
     t = newpos[2] - 0x12C;
     newpos[2] = t - radius;
   }
-  if (flags & 0x54) {
+  if (flags & MOVE_PROBES_FLOOR) {
     newpos[2] += 0x400;
     ground = FindGroundHeightBelow(newpos, 0x1388);
   }
-  if (flags & 0x10) {
+  if (flags & MOVE_STEP_LIMIT) {
     floorz = ground + actor->floorOffset;
     step = floorz - actor->posZ;
     if (step > 0) {
@@ -76,7 +76,7 @@ int MoveActorAlongHeading(Actor *actor, int speed, int group, int radius,
       goto blocked;
     }
   }
-  if (flags & 0x40) {
+  if (flags & MOVE_SLOPE_LIMIT) {
     t = VectorLength(g_anCollisionProbeVec, VEC_LEN_XY);
     ang = ArcTan2(t, g_anCollisionProbeVec[2], 0);
     if (ang >= 0x81) {
@@ -89,7 +89,7 @@ int MoveActorAlongHeading(Actor *actor, int speed, int group, int radius,
   }
   actor->posX = newpos[0];
   actor->posY = newpos[1];
-  if (flags & 4) {
+  if (flags & MOVE_FOLLOW_FLOOR) {
     snapz = ground + actor->floorOffset;
     d = snapz - actor->posZ;
     if (abs(d) >= 0x259) {
@@ -102,7 +102,7 @@ int MoveActorAlongHeading(Actor *actor, int speed, int group, int radius,
       actor->posZ = snapz;
     }
   }
-  if (flags & 0x54) {
+  if (flags & MOVE_PROBES_FLOOR) {
     EncodeCachedVecToActorDirCode(actor);
   }
   RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);

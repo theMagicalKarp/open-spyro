@@ -459,7 +459,7 @@ void Level21_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -3470,7 +3470,7 @@ void Level21_UpdateActors(void) {
             actor->mode = RUNNER_WAIT;
             continue;
           }
-          MoveActorAlongHeading(actor, 0x118, 0, 0, 5);
+          MoveActorAlongHeading(actor, 0x118, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         continue;
 
@@ -4407,7 +4407,7 @@ void Level21_UpdateActors(void) {
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
         if (TurnActorYawTowardAngle(actor, ang, 6, 0x14, 1) != 0) {
-          MoveActorAlongAngle(actor, ang, 0x50, 0, 0x12C, 5);
+          MoveActorAlongAngle(actor, ang, 0x50, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (ApproxDist2D(&actor->posX,
                             &st->path->nodes[st->path->cur].x) < 0x100) {
             ENTER_POSE(actor, RAM_GRAZE);

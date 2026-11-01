@@ -490,7 +490,7 @@ void Level33_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -2119,7 +2119,7 @@ void Level33_UpdateActors(void) {
                                   actor->posY,
                               0),
                           7, 0x14, 1) != 0) {
-          MoveActorAlongHeading(actor, 0xF0, 0, 0, 5);
+          MoveActorAlongHeading(actor, 0xF0, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (ApproxDist2D(&actor->posX, PATH_PT((unsigned char *)st->path, 1)) <
             0x320) {

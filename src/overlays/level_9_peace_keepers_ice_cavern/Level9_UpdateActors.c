@@ -460,7 +460,7 @@ void Level9_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -2069,7 +2069,7 @@ void Level9_UpdateActors(void) {
 
       case YAK_KNOCKED:
         if (st->speed > 0) {
-          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 1);
+          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, MOVE_LIFT);
           st->speed -= 0x10;
         }
         if (g_nActorAnimDone != 0) {
@@ -2247,7 +2247,7 @@ void Level9_UpdateActors(void) {
           st->throwT = 0x1E;
         }
         if (st->speed != 0) {
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0x12C, 0x12C, 1);
+          MoveActorAlongAngle(actor, st->knock, st->speed, 0x12C, 0x12C, MOVE_LIFT);
           st->speed -= 0x14;
           if (st->speed < 0) {
             st->speed = 0;
@@ -2262,7 +2262,7 @@ void Level9_UpdateActors(void) {
 
       case SNOWTHROW_KNOCKED:
         if (st->speed != 0) {
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0x12C, 0x12C, 1);
+          MoveActorAlongAngle(actor, st->knock, st->speed, 0x12C, 0x12C, MOVE_LIFT);
           st->speed -= 0xC;
           if (st->speed < 0) {
             st->speed = 0;

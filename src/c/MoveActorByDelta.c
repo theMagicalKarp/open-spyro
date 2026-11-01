@@ -41,7 +41,7 @@ int MoveActorByDelta(Actor *actor, DeltaVec delta, int group, int radius,
     LShiftVector3((int *)&delta, 1);
   }
   AddVector(newpos, &actor->posX, (int *)&delta);
-  if (flags & 1) {
+  if (flags & MOVE_LIFT) {
     t = newpos[2] + 0x12C;
     newpos[2] = t + radius;
   }
@@ -55,7 +55,7 @@ int MoveActorByDelta(Actor *actor, DeltaVec delta, int group, int radius,
       return 2;
     }
   }
-  if (flags & 1) {
+  if (flags & MOVE_LIFT) {
     t = newpos[2] - 0x12C;
     newpos[2] = t - radius;
   }

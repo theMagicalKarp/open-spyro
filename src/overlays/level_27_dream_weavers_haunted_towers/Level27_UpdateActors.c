@@ -466,7 +466,7 @@ void Level27_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -1789,7 +1789,7 @@ void Level27_UpdateActors(void) {
                                     g_pActorListBase[st->partner].posY - actor->posY,
                                     0),
                       4, 0, 0);
-        MoveActorAlongHeading(actor, spd, 0, 0, 5);
+        MoveActorAlongHeading(actor, spd, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         if (IsPointInRotatedBox(&g_anSpyroWorldPos, st->vol) != 0) {
           st->trig = one;
         }
@@ -2289,7 +2289,7 @@ void Level27_UpdateActors(void) {
       case CRITTER_KNOCKED:
         if (st->speed >= 0x10) {
           st->speed -= 0xF;
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x2BC, 5);
+          MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);

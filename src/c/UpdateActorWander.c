@@ -74,9 +74,13 @@ void UpdateActorWander(Actor *actor, WanderBlock *wb) {
   }
 
   if (wb->contactCooldown != 0) {
-    hit = MoveActorAlongHeading(actor, speed, 0, wb->contact, 0x55);
+    hit = MoveActorAlongHeading(actor, speed, 0, wb->contact,
+                                MOVE_LIFT | MOVE_FOLLOW_FLOOR |
+                                    MOVE_STEP_LIMIT | MOVE_SLOPE_LIMIT);
   } else {
-    hit = MoveActorAlongHeading(actor, speed, wb->contact, wb->contact, 0x55);
+    hit = MoveActorAlongHeading(actor, speed, wb->contact, wb->contact,
+                                MOVE_LIFT | MOVE_FOLLOW_FLOOR |
+                                    MOVE_STEP_LIMIT | MOVE_SLOPE_LIMIT);
   }
 
   if (hit != 0) {

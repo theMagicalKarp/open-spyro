@@ -472,7 +472,7 @@ void Level31_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -2674,7 +2674,7 @@ void Level31_UpdateActors(void) {
           actor->posZ = f + 0x180;
         }
         if (MoveActorAlongAngle(actor, (actor->rotZ - 0x40) & 0xFF, 0x80, 0x200,
-                          0x200, 1) != 0) {
+                          0x200, MOVE_LIFT) != 0) {
           actor->mode = FLOATBARREL_BURST;
         }
         if (actor->posZ - SPY.posZ < 0x80) {
@@ -2957,7 +2957,7 @@ void Level31_UpdateActors(void) {
           actor->posZ = f + 0x180;
         }
         if (MoveActorAlongAngle(actor, (actor->rotZ - 0x40) & 0xFF, 0x80, 0x200,
-                          0x200, 1) != 0) {
+                          0x200, MOVE_LIFT) != 0) {
           actor->mode = FLOATBARREL_BURST;
         }
         if (actor->posZ - SPY.posZ < 0x80) {
@@ -3006,7 +3006,7 @@ void Level31_UpdateActors(void) {
       case CRITTER_KNOCKED:
         if (st->speed > 0xF) {
           st->speed -= 0xF;
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x1F4, 5);
+          MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x1F4, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

@@ -311,7 +311,7 @@ void Level0_UpdateActors(void) {
         }
 
         if (TurnActorYawTowardAngle(actor, st->heading, 6, 0x14, 1) != 0) {
-          if (MoveActorAlongHeading(actor, st->speed, 0x12C, 0x12C, 0x15) != 0) {
+          if (MoveActorAlongHeading(actor, st->speed, 0x12C, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0) {
             st->successCount++;
           } else {
             st->successCount = 0;
@@ -335,7 +335,7 @@ void Level0_UpdateActors(void) {
       case PATROLLER_KNOCKED: {
         if (st->speed >= 0x10) {
           st->speed -= 0xF;
-          MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x2BC, 5);
+          MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
 
         if (g_nActorAnimDone != 0) {
@@ -447,7 +447,7 @@ void Level0_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -1536,7 +1536,7 @@ void Level0_UpdateActors(void) {
         }
 
         if (ABS2(angleDelta) < 0x20) {
-          MoveActorAlongHeading(actor, 0x40, 0x200, 0x200, 0x27);
+          MoveActorAlongHeading(actor, 0x40, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
         }
 
         if (angleDelta < -8) {
@@ -1590,7 +1590,7 @@ void Level0_UpdateActors(void) {
         }
 
         if (ABS2(angleDelta) < 0x20) {
-          MoveActorAlongHeading(actor, 0x82, 0x200, 0x200, 0x27);
+          MoveActorAlongHeading(actor, 0x82, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
         }
 
         if (angleDelta < -8) {
@@ -2713,9 +2713,9 @@ void Level0_UpdateActors(void) {
 
         if (ABS2(nextAngle) < 0x20) {
           if (actor->mode == FLOCK_BOLT) {
-            MoveActorAlongHeading(actor, 0xD2, 0x200, 0x200, 0x27);
+            MoveActorAlongHeading(actor, 0xD2, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
           } else {
-            MoveActorAlongHeading(actor, 0x60, 0x200, 0x200, 0x27);
+            MoveActorAlongHeading(actor, 0x60, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
           }
         }
 

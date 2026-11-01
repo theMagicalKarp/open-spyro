@@ -483,7 +483,7 @@ void Level25_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -816,14 +816,14 @@ void Level25_UpdateActors(void) {
           if (TurnActorYawTowardAngle(actor, heading, 4, 0x18, 1) == 0) {
             break;
           }
-          MoveActorAlongHeading(actor, dist, 0x500, 0x500, 0x37);
+          MoveActorAlongHeading(actor, dist, 0x500, 0x500, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE);
           break;
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         MoveActorAlongAngle(actor,
                       ArcTan2(SPY.posX - actor->posX,
                                     SPY.posY - actor->posY, 0),
-                      0x200, 0x500, 0x500, 0x37);
+                      0x200, 0x500, 0x500, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE);
         if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
           if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x5DC) {
             break;
@@ -961,14 +961,14 @@ void Level25_UpdateActors(void) {
           if (TurnActorYawTowardAngle(actor, heading, 4, 0x18, 1) == 0) {
             break;
           }
-          MoveActorAlongHeading(actor, dist, 0x200, 0x200, 0x37);
+          MoveActorAlongHeading(actor, dist, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE);
           break;
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, 0);
         MoveActorAlongAngle(actor,
                       ArcTan2(SPY.posX - actor->posX,
                                     SPY.posY - actor->posY, 0),
-                      0xF0, 0x200, 0x200, 0x37);
+                      0xF0, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE);
         if (TickCountdownByFrameDelta(&st->timer, 4)) {
           *st->slot = 0;
           actor->subMode = 1;
@@ -1057,7 +1057,7 @@ void Level25_UpdateActors(void) {
           continue;
         }
         if (st->speed > 0) {
-          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 1);
+          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, MOVE_LIFT);
           st->speed -= 0x10;
         }
         break;
@@ -2554,7 +2554,7 @@ void Level25_UpdateActors(void) {
       case CRITTER_KNOCKED:
         if (st->speed >= 0x10) {
           st->speed -= 0xF;
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x2BC, 5);
+          MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);

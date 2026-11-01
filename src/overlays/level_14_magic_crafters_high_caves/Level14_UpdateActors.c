@@ -206,7 +206,7 @@ typedef struct CarrierState {
 /* Turn toward `h`; walk at `d`, slowed by the remaining turn. */
 #define STEER(a, h, d, k1, k2, sh)                                             \
   if (TurnActorYawTowardAngle(a, h, k1, k2, 1) != 0) {                                   \
-    MoveActorAlongHeading(a, d, 0, 0x200, 0x20);                                       \
+    MoveActorAlongHeading(a, d, 0, 0x200, MOVE_SLIDE);                                       \
   } else {                                                                     \
     h = ((h) - (a)->rotZ) & 0xFF;                                             \
     if (h > 0x80) {                                                            \
@@ -214,7 +214,7 @@ typedef struct CarrierState {
     }                                                                          \
     d -= ABS2(h) << (sh);                                                      \
     if (d > 0) {                                                               \
-      MoveActorAlongHeading(a, d, 0, 0x200, 0x20);                                     \
+      MoveActorAlongHeading(a, d, 0, 0x200, MOVE_SLIDE);                                     \
     }                                                                          \
   }
 
@@ -563,7 +563,7 @@ void Level14_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -709,7 +709,7 @@ void Level14_UpdateActors(void) {
                             ArcTan2(actor->posX - spy->posX,
                                           actor->posY - SPY.posY, 0),
                             8, 0, 0);
-              MoveActorAlongHeading(actor, spd, 0, 0, 5);
+              MoveActorAlongHeading(actor, spd, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             } else {
               int lim = 10;
               int r;
@@ -752,7 +752,7 @@ void Level14_UpdateActors(void) {
                                   st->path->nodes[0].y - actor->posY, 0);
 
             TurnActorYawTowardAngle(actor, a, 8, 0, 0);
-            MoveActorAlongHeading(actor, spd, 0, 0, 5);
+            MoveActorAlongHeading(actor, spd, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             if (AbsAngleDelta8(a, b) > 0x50) {
               actor->subMode = 0;
             }
@@ -856,7 +856,7 @@ void Level14_UpdateActors(void) {
                                     st->path->nodes[st->path->cur].y - actor->posY,
                                     0),
                       6, 0, 0);
-        MoveActorAlongHeading(actor, 0x96, 0, 0, 1);
+        MoveActorAlongHeading(actor, 0x96, 0, 0, MOVE_LIFT);
         if (ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x) <
             0x100) {
           actor->mode = THIEF_PERCH;
@@ -898,7 +898,7 @@ void Level14_UpdateActors(void) {
                             st->path->nodes[k].y - actor->posY, 0);
           if (ApproxDist2D(&actor->posX, &st->path->nodes[k].x) > 0x100) {
             if (TurnActorYawTowardAngle(actor, h, 8, 0x14, 1) != 0) {
-              MoveActorAlongHeading(actor, 0x96, 0, 0, 5);
+              MoveActorAlongHeading(actor, 0x96, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             }
           } else if (ApproxDist2D(&spy->posX, &st->path->nodes[6].x) < 0x800 ||
                      ApproxDist2D(&spy->posX, &st->path->nodes[7].x) < 0x800) {
@@ -918,7 +918,7 @@ void Level14_UpdateActors(void) {
                                     st->path->nodes[0].y - actor->posY, 0),
                       6, 0, 0);
         if (ApproxDist2D(&actor->posX, &st->path->nodes[0].x) > 0x100) {
-          MoveActorAlongHeading(actor, 0x82, 0, 0, 1);
+          MoveActorAlongHeading(actor, 0x82, 0, 0, MOVE_LIFT);
         }
         actor->posZ += st->vz;
         st->vz -= 0x14;
@@ -952,7 +952,7 @@ void Level14_UpdateActors(void) {
           }
         }
         if (st->knock != 0) {
-          MoveActorAlongAngle(actor, st->heading, st->knock, 0, 0x12C, 5);
+          MoveActorAlongAngle(actor, st->heading, st->knock, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           st->knock -= 0x10;
           if (st->knock < 0) {
             st->knock = 0;
@@ -1143,7 +1143,7 @@ void Level14_UpdateActors(void) {
                                     0),
                       6, 0, 0);
         if (d > 0x100) {
-          MoveActorAlongHeading(actor, 0x96, 0, 0, 1);
+          MoveActorAlongHeading(actor, 0x96, 0, 0, MOVE_LIFT);
         }
         if (d < 0x100 && actor->posZ == g) {
           if (++st->path->cur == 0xD) {
@@ -1195,7 +1195,7 @@ void Level14_UpdateActors(void) {
                                     0),
                       6, 0, 0);
         if (d > 0x100) {
-          MoveActorAlongHeading(actor, 0x96, 0, 0, 1);
+          MoveActorAlongHeading(actor, 0x96, 0, 0, MOVE_LIFT);
         }
         if (d < 0x100 && actor->posZ == g) {
           st->path->reversed = -st->path->reversed;
@@ -1491,7 +1491,7 @@ void Level14_UpdateActors(void) {
                                             actor->posY,
                                         0),
                           8, 0x20, 1) != 0) {
-          MoveActorAlongHeading(actor, 0x60, 0x200, 0x200, 0x27);
+          MoveActorAlongHeading(actor, 0x60, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
         }
         break;
 
@@ -2073,7 +2073,7 @@ void Level14_UpdateActors(void) {
           h = ArcTan2(NODE_PT(st->cur)[0] - actor->posX,
                             NODE_PT(st->cur)[1] - actor->posY, 0);
           if (TurnActorYawTowardAngle(actor, h, 8, 0x30, 1) != 0) {
-            MoveActorAlongHeading(actor, 0x140, 0, 0x200, 0x20);
+            MoveActorAlongHeading(actor, 0x140, 0, 0x200, MOVE_SLIDE);
           } else {
             h = (h - actor->rotZ) & 0xFF;
             if (h > 0x80) {
@@ -2081,7 +2081,7 @@ void Level14_UpdateActors(void) {
             }
             d -= ABS2(h) << 4;
             if (d > 0) {
-              MoveActorAlongHeading(actor, d, 0, 0x200, 0x20);
+              MoveActorAlongHeading(actor, d, 0, 0x200, MOVE_SLIDE);
             }
           }
           d = (NODE_PT(st->cur)[2] - actor->posZ) >> 2;
@@ -2215,7 +2215,7 @@ void Level14_UpdateActors(void) {
           h = ArcTan2(NODE_PT(st->cur)[0] - actor->posX,
                             NODE_PT(st->cur)[1] - actor->posY, 0);
           if (TurnActorYawTowardAngle(actor, h, 8, 0x30, 1) != 0) {
-            MoveActorAlongHeading(actor, 0x140, 0, 0x200, 0x20);
+            MoveActorAlongHeading(actor, 0x140, 0, 0x200, MOVE_SLIDE);
           } else {
             h = (h - actor->rotZ) & 0xFF;
             if (h > 0x80) {
@@ -2223,7 +2223,7 @@ void Level14_UpdateActors(void) {
             }
             d -= ABS2(h) << 4;
             if (d > 0) {
-              MoveActorAlongHeading(actor, d, 0, 0x200, 0x20);
+              MoveActorAlongHeading(actor, d, 0, 0x200, MOVE_SLIDE);
             }
           }
           d = (NODE_PT(st->cur)[2] - actor->posZ) >> 1;
@@ -2269,7 +2269,7 @@ void Level14_UpdateActors(void) {
           h = ArcTan2(NODE_PT(st->cur)[0] - actor->posX,
                             NODE_PT(st->cur)[1] - actor->posY, 0);
           if (TurnActorYawTowardAngle(actor, h, 8, 0x30, 1) != 0) {
-            MoveActorAlongHeading(actor, 0x140, 0, 0x200, 0x20);
+            MoveActorAlongHeading(actor, 0x140, 0, 0x200, MOVE_SLIDE);
           } else {
             h = (h - actor->rotZ) & 0xFF;
             if (h > 0x80) {
@@ -2277,7 +2277,7 @@ void Level14_UpdateActors(void) {
             }
             d -= ABS2(h) << 4;
             if (d > 0) {
-              MoveActorAlongHeading(actor, d, 0, 0x200, 0x20);
+              MoveActorAlongHeading(actor, d, 0, 0x200, MOVE_SLIDE);
             }
           }
           d = (NODE_PT(st->cur)[2] - actor->posZ) >> 1;
@@ -4191,7 +4191,7 @@ void Level14_UpdateActors(void) {
         actor->frameRate = 0x10;
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           if (TrackEntityYawTowardSpyro(actor, 8, 0x30, 1) != 0 &&
-              MoveActorAlongHeading(actor, st->speed, 0, 0x400, 0x15) == 2) {
+              MoveActorAlongHeading(actor, st->speed, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == 2) {
             st->timer = 0x12;
             st->heading = ArcTan2(g_anCollisionContactPoint[0] - actor->posX,
                                         g_anCollisionContactPoint[1] - actor->posY, 0);
@@ -4203,7 +4203,7 @@ void Level14_UpdateActors(void) {
           }
         } else {
           TurnActorYawTowardAngle(actor, st->heading, 8, 0x30, 1);
-          MoveActorAlongHeading(actor, st->speed, 0, 0x400, 0x15);
+          MoveActorAlongHeading(actor, st->speed, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT);
         }
       } else if (st->mode & FWALK_F_HOME) {
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
@@ -4221,7 +4221,7 @@ void Level14_UpdateActors(void) {
                                             NODE_PT(st->cur)[1] - actor->posY,
                                             0),
                               8, 0x30, 1) != 0 &&
-                MoveActorAlongHeading(actor, 0x60, 0, 0x400, 0x15) == 2) {
+                MoveActorAlongHeading(actor, 0x60, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == 2) {
               st->timer = 0x12;
               st->heading = ArcTan2(g_anCollisionContactPoint[0] - actor->posX,
                                           g_anCollisionContactPoint[1] - actor->posY, 0);
@@ -4240,7 +4240,7 @@ void Level14_UpdateActors(void) {
           }
         } else {
           TurnActorYawTowardAngle(actor, st->heading, 8, 0x30, 1);
-          MoveActorAlongHeading(actor, 0x80, 0, 0x400, 0x15);
+          MoveActorAlongHeading(actor, 0x80, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT);
         }
       } else if (st->mode & FWALK_F_PATH) {
         if (st->mode & FWALK_F_PAUSE) {
@@ -4278,7 +4278,7 @@ void Level14_UpdateActors(void) {
                                             NODE_PT(st->cur)[1] - actor->posY,
                                             0),
                               8, 0x30, 1) != 0 &&
-                MoveActorAlongHeading(actor, 0x60, 0, 0x400, 0x15) == 2) {
+                MoveActorAlongHeading(actor, 0x60, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == 2) {
               st->timer = 0x12;
               st->heading = ArcTan2(g_anCollisionContactPoint[0] - actor->posX,
                                           g_anCollisionContactPoint[1] - actor->posY, 0);
@@ -4290,7 +4290,7 @@ void Level14_UpdateActors(void) {
             }
           } else {
             TurnActorYawTowardAngle(actor, st->heading, 8, 0x30, 1);
-            MoveActorAlongHeading(actor, 0x60, 0, 0x400, 0x15);
+            MoveActorAlongHeading(actor, 0x60, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT);
           }
         }
       } else {
@@ -4307,7 +4307,7 @@ void Level14_UpdateActors(void) {
                                             NODE_PT(st->cur)[1] - actor->posY,
                                             0),
                               8, 0x30, 1) != 0 &&
-                MoveActorAlongHeading(actor, 0x60, 0, 0x400, 0x15) == 2) {
+                MoveActorAlongHeading(actor, 0x60, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == 2) {
               st->timer = 0x12;
               st->heading = ArcTan2(g_anCollisionContactPoint[0] - actor->posX,
                                           g_anCollisionContactPoint[1] - actor->posY, 0);
@@ -4319,7 +4319,7 @@ void Level14_UpdateActors(void) {
             }
           } else {
             TurnActorYawTowardAngle(actor, st->heading, 8, 0x30, 1);
-            MoveActorAlongHeading(actor, 0x60, 0, 0x400, 0x15);
+            MoveActorAlongHeading(actor, 0x60, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT);
           }
         } else {
           if (actor->mode != FLEEWALK_STAND) {

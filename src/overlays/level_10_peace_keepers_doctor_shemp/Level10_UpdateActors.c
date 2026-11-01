@@ -464,7 +464,7 @@ void Level10_UpdateActors(void) {
           }
 
           rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-          moved = MoveActorAlongHeading(actor, 30, 0, 50, 1);
+          moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
             st->heading = WrapAddAngle8(st->heading, RandomIntInRange(98, 158));
@@ -2787,7 +2787,7 @@ void Level10_UpdateActors(void) {
                             ArcTan2(spy->posX - actor->posX,
                                           spy->posY - actor->posY, 0),
                             8, 0x26, 1) != 0) {
-            MoveActorAlongHeading(actor, st->accel, 0x200, 0x200, 0x23);
+            MoveActorAlongHeading(actor, st->accel, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_SLIDE);
           }
           g = ProbeActorGroundHeight(actor);
           if (actor->posZ - g > 0x1F4) {
@@ -2848,7 +2848,7 @@ void Level10_UpdateActors(void) {
         if (st->accel < 0xC8) {
           st->accel += 0x14;
         }
-        MoveActorAlongHeading(actor, st->accel, 0x200, 0x200, 0x23);
+        MoveActorAlongHeading(actor, st->accel, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_SLIDE);
         g4 = ProbeActorGroundHeight(actor);
         if (actor->posZ - g4 > 0x1F4) {
           st->heading = 0x4D;
@@ -2931,7 +2931,7 @@ void Level10_UpdateActors(void) {
           continue;
         }
         actor->posZ = h + actor->floorOffset;
-        MoveActorAlongHeading(actor, st->accel, 0x200, 0x200, 0x23);
+        MoveActorAlongHeading(actor, st->accel, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_SLIDE);
         break;
       }
 
@@ -3231,7 +3231,7 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_P1_CHARGE:
         ANIM_GO(actor, 9);
-        if (MoveActorAlongHeading(actor, 0xAA, 0, 0, 0x11) != 0 ||
+        if (MoveActorAlongHeading(actor, 0xAA, 0, 0, MOVE_LIFT | MOVE_STEP_LIMIT) != 0 ||
             TickCountdownByFrameDelta(&st->timer, 4) != 0 ||
             (AbsAngleDelta8(actor->rotZ,
                            ArcTan2(spy->posX - actor->posX,
@@ -3271,7 +3271,7 @@ void Level10_UpdateActors(void) {
                           ArcTan2(tgt371[0] - actor->posX,
                                         tgt371[1] - actor->posY, 0),
                           4, 0x1E, 1) != 0) {
-          MoveActorAlongHeading(actor, 0x5A, 0, 0, 1);
+          MoveActorAlongHeading(actor, 0x5A, 0, 0, MOVE_LIFT);
         }
         if (ApproxDist2D(&actor->posX, tgt371) < 0x100) {
           st->timer = 0x8C;
@@ -3591,7 +3591,7 @@ void Level10_UpdateActors(void) {
 
       case GLOOK_KNOCKED:
         if (st->speed > 0) {
-          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 1);
+          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, MOVE_LIFT);
           st->speed -= 0x10;
         }
         if (g_nActorAnimDone != 0) {

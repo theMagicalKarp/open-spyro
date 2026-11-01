@@ -343,7 +343,7 @@ void Level20_UpdateActors(void) {
             }
 
             moved = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-            blocked = MoveActorAlongHeading(actor, 0x1E, 0, 0x32, 1);
+            blocked = MoveActorAlongHeading(actor, 0x1E, 0, 0x32, MOVE_LIFT);
 
             if (moved != 0) {
               if (blocked != 0) {
@@ -561,7 +561,7 @@ void Level20_UpdateActors(void) {
           ENTER_POSE_B(actor, GUNNER_FIRE);
         }
         if (TrackEntityYawTowardSpyro(actor, 6, 0x14, 1) != 0 &&
-            MoveActorAlongHeading(actor, 0xA0, 0x12C, 0x12C, 0x15) != 0) {
+            MoveActorAlongHeading(actor, 0xA0, 0x12C, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0) {
           st->timer = 0;
           ENTER_POSE(actor, GUNNER_GUARD);
         }
@@ -1745,7 +1745,7 @@ void Level20_UpdateActors(void) {
                       st->path->nodes[st->path->cur].x - actor->posX,
                       st->path->nodes[st->path->cur].y - actor->posY, 0),
                   6, 0x1E, 1) != 0) {
-            MoveActorAlongHeading(actor, st->speed, 0, 0, 5);
+            MoveActorAlongHeading(actor, st->speed, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           }
           break;
 
@@ -1770,7 +1770,7 @@ void Level20_UpdateActors(void) {
                                       g_pActorListBase[st->target].posY - actor->posY,
                                       0),
                         4, 0, 0);
-          MoveActorAlongHeading(actor, spd, 0, 0, 5);
+          MoveActorAlongHeading(actor, spd, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           break;
         }
         }
@@ -1875,7 +1875,7 @@ void Level20_UpdateActors(void) {
         if (st->speedOverride != 0) {
           s137 = st->speedOverride;
         }
-        if (MoveActorAlongHeading(actor, s137, 0, 0x12C, 0x15) != 0) {
+        if (MoveActorAlongHeading(actor, s137, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0) {
         reset137:
           *st->flag = 0;
           st->timer2 = 0x78;
@@ -1905,7 +1905,7 @@ void Level20_UpdateActors(void) {
         }
         if (st->speed > 0xF) {
           st->speed -= 0xF;
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x12C, 5);
+          MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -1917,7 +1917,7 @@ void Level20_UpdateActors(void) {
 
       case CHARGER_RAM:
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        if (MoveActorAlongHeading(actor, st->speed, 0, 0x12C, 0x15) == 2) {
+        if (MoveActorAlongHeading(actor, st->speed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == 2) {
           *st->flag = 0;
           st->timer2 = 0x78;
           actor->mode = CHARGER_GO_HOME;
@@ -1990,7 +1990,7 @@ void Level20_UpdateActors(void) {
                           ArcTan2_8bit(st->vec[0] - actor->posX,
                                         st->vec[1] - actor->posY),
                           4, 0x14, 1) != 0) {
-          MoveActorAlongHeading(actor, 0xA0, 0, 0, 5);
+          MoveActorAlongHeading(actor, 0xA0, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (ApproxDist2D(&actor->posX, st->vec) < 0xB4) {
           ENTER_POSE(actor, CHARGER_IDLE);
@@ -3001,7 +3001,7 @@ void Level20_UpdateActors(void) {
         break;
 
       case LURKER_HOP:
-        MoveActorAlongHeading(actor, st->hopSpeed, 0, 0, 5);
+        MoveActorAlongHeading(actor, st->hopSpeed, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         if (g_nActorAnimDone != 0) {
           st->roamTimer = RandomIntInRange(0x28, 0x5A);
           ENTER_POSE(actor, LURKER_WATCH);
@@ -3395,7 +3395,7 @@ void Level20_UpdateActors(void) {
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
         if (TurnActorYawTowardAngle(actor, ang, 6, 0x14, 1) != 0) {
-          MoveActorAlongAngle(actor, ang, 0x50, 0, 0x12C, 5);
+          MoveActorAlongAngle(actor, ang, 0x50, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (ApproxDist2D(&actor->posX,
                             &st->path->nodes[st->path->cur].x) < 0x100) {
             ENTER_POSE(actor, RAM_GRAZE);
@@ -3555,7 +3555,7 @@ void Level20_UpdateActors(void) {
           if (MoveActorAlongAngle(actor,
                             ArcTan2(spy->posX - actor->posX,
                                           spy->posY - actor->posY, 0),
-                            0x15E, 0, 0, 0x15) != 0 ||
+                            0x15E, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0 ||
               spy->triggerEventId != 0) {
             actor->mode = GRABBER_RETREAT;
             continue;
@@ -3592,7 +3592,7 @@ void Level20_UpdateActors(void) {
           MoveActorAlongAngle(actor,
                         ArcTan2(st->home[0] - actor->posX,
                                       st->home[1] - actor->posY, 0),
-                        0xC8, 0, 0, 5);
+                        0xC8, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (ApproxDist2D(&actor->posX, st->home) < 0x100) {
           *st->held = 0;
@@ -3640,7 +3640,7 @@ void Level20_UpdateActors(void) {
             if (MoveActorAlongAngle(actor,
                               ArcTan2(spy->posX - actor->posX,
                                             SPY.posY - actor->posY, 0),
-                              lim, 0, 0, 0x15) != 0 &&
+                              lim, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0 &&
                 g_nSpyroDrawSuppressed == 0) {
               actor->mode = GRABBER_RETREAT;
               continue;

@@ -414,7 +414,7 @@ void Level30_UpdateActors(void) {
             }
 
             moved = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
-            blocked = MoveActorAlongHeading(actor, 0x1E, 0, 0x32, 1);
+            blocked = MoveActorAlongHeading(actor, 0x1E, 0, 0x32, MOVE_LIFT);
 
             if (moved != 0) {
               if (blocked != 0) {
@@ -1830,7 +1830,7 @@ void Level30_UpdateActors(void) {
         case CRITTER_KNOCKED:
           if (st->speed >= 0x10) {
             st->speed -= 0xF;
-            MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x1F4, 5);
+            MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x1F4, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           }
           if (g_nActorAnimDone != 0) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
