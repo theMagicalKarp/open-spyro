@@ -2,6 +2,7 @@
 #include "cd_stream.h"
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "main_shared.h"
 #include "pad_buttons.h"
 #include "spyro_state.h"
@@ -48,7 +49,7 @@ void HandleLevelSelectInput(void) {
         g_nCurrentLevelId = (g_nCurrentLevelId / 10 + 1) * 10;
       }
       if ((unsigned int)(g_nCurrentLevelId - 10) >= 0x37U) {
-        g_nCurrentLevelId = 10;
+        g_nCurrentLevelId = LEVEL_ARTISANS;
       }
       g_nLevelSelectWorldIndex = g_nCurrentLevelId / 10;
       sel = g_nCurrentLevelId % 10;

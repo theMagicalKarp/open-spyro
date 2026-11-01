@@ -1,6 +1,7 @@
 #include "actor_type.h"
 #include "cd_stream.h"
 #include "globals.h"
+#include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
 #include "spyro_state.h"
@@ -85,7 +86,7 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
       break;
     }
     g_nCurrentLevelId = data[0];
-    if (g_nCurrentLevelId > 0x40) {
+    if (g_nCurrentLevelId > LEVEL_GNASTYS_LOOT) {
       g_nCurrentLevelId = g_nActiveLevelId;
       break;
     }

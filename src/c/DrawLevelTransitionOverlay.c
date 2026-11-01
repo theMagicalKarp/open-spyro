@@ -79,7 +79,7 @@ void DrawLevelTransitionOverlay(void) {
   sub = g_nCurrentLevelId % 10;
   if (sub == 0) {
     sprintf(buf, g_szReturningHome);
-  } else if ((g_nCurrentLevelId < 0x3c && sub == 4) ||
+  } else if ((g_nCurrentLevelId < LEVEL_GNORC_GNEXUS && sub == 4) ||
              g_nCurrentLevelId == LEVEL_GNASTY_GNORC) {
     sprintf(buf, g_szConfrontingFmt, g_apLevelNameStrings[idx]);
   } else {

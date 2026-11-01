@@ -2,6 +2,7 @@
 #include "credits_mode.h"
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "main_shared.h"
 
 /* Gamestate 0x0F updater (0x800333dc) — the credits/return-home transition.
@@ -21,9 +22,9 @@ void CreditsSequence_Update(void) {
       g_nCreditsReturnLevelId = -1;
     } else {
       if (g_nTotalTreasureCollected == 0x36B0) {
-        g_nCurrentLevelId = 0xA;
+        g_nCurrentLevelId = LEVEL_ARTISANS;
       } else {
-        g_nCurrentLevelId = 0x3C;
+        g_nCurrentLevelId = LEVEL_GNORC_GNEXUS;
       }
     }
     g_nReturnPortalLevelId = 0;

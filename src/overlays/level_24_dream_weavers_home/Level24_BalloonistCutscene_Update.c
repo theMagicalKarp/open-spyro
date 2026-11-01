@@ -86,6 +86,7 @@
 #include "pad_buttons.h"
 #include "level_sfx.h"
 #include "cd_stream.h"
+#include "level_id.h"
 
 
 void Level24_BalloonistCutscene_Update(void)
@@ -470,17 +471,17 @@ void Level24_BalloonistCutscene_Update(void)
         }
         if (t == 0x21)
         {
-          g_nCurrentLevelId = 0xB;
+          g_nCurrentLevelId = LEVEL_STONE_HILL;
         }
         else
           if (t == 0x22)
         {
-          g_nCurrentLevelId = 0x15;
+          g_nCurrentLevelId = LEVEL_DRY_CANYON;
         }
         else
           if (t == 0x23)
         {
-          g_nCurrentLevelId = 0x16;
+          g_nCurrentLevelId = LEVEL_CLIFF_TOWN;
         }
         n = g_nActorCutsceneDialogPage_s;
         g_nActorCutsceneDialogPage_s = 0x20;
