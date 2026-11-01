@@ -1291,13 +1291,13 @@ typedef struct BoltState {
 typedef struct CaptainState {
   int home[3];         /* 0x00 */
   unsigned char *path; /* 0x0C { count, cur }, points at +8 */
-  int mode;            /* 0x10 */
+  int mode;            /* 0x10 enum CaptainPost */
   int heading;         /* 0x14 -1 = take the actor's own */
   int knockSpeed;      /* 0x18 */
   int knockHeading;    /* 0x1C */
   int partner;         /* 0x20 actor index, -1 = none */
   int camTimer;        /* 0x24 */
-  int step;            /* 0x28 */
+  int step;            /* 0x28 CaptainFightStep; on a ledge post CAPTAIN_LEDGE_ARMED */
   int pad2C;
   int timer;           /* 0x30 */
   int posed;           /* 0x34 */

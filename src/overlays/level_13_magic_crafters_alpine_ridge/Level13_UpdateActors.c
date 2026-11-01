@@ -2720,7 +2720,7 @@ void Level13_UpdateActors(void) {
       switch (actor->mode) {
       case CAPTAIN_IDLE:
         switch (st->mode) {
-        case 0: {
+        case CAPTAIN_POST_SENTRY: {
           Actor *p = &g_pActorListBase[st->partner];
 
           ANIM_GO(actor, 0);
@@ -2746,7 +2746,7 @@ void Level13_UpdateActors(void) {
           break;
         }
 
-        case 1:
+        case CAPTAIN_POST_LOOKOUT:
           if (ApproxDist2D(&actor->posX, &SPY.posX) < st->range << 10) {
             if (actor->group != 0xFF) {
               st->timer = RandomIntInRange(0xF, 0x1E);
@@ -2758,7 +2758,7 @@ void Level13_UpdateActors(void) {
           }
           break;
 
-        case 2:
+        case CAPTAIN_POST_LEDGE:
           SnapActorToGround(actor);
           if (st->step != 0) {
             if (TrackEntityYawTowardSpyro(actor, 4, 0x14, 1)) {
@@ -2778,11 +2778,11 @@ void Level13_UpdateActors(void) {
           }
           break;
 
-        case 3:
+        case CAPTAIN_POST_FIGHTER:
           actor->mode = CAPTAIN_FIGHT;
           continue;
 
-        case 4: {
+        case CAPTAIN_POST_PATROL: {
           Actor *p = &g_pActorListBase[st->partner];
 
           if (p->nextAnim == 3) {
@@ -2831,12 +2831,12 @@ void Level13_UpdateActors(void) {
           break;
         }
 
-        case 5:
+        case CAPTAIN_POST_LEDGE_WAIT:
           SnapActorToGround(actor);
           TrackEntityYawTowardSpyro(actor, 6, 0, 0);
           if (actor->subMode != 0) {
-            st->mode = 2;
-            st->step = 1;
+            st->mode = CAPTAIN_POST_LEDGE;
+            st->step = CAPTAIN_LEDGE_ARMED;
             actor->otBias = 4;
           }
           break;
@@ -2845,7 +2845,7 @@ void Level13_UpdateActors(void) {
 
       case CAPTAIN_ADVANCE:
         switch (st->mode) {
-        case 0: {
+        case CAPTAIN_POST_SENTRY: {
           int *pos;
 
           ANIM_GO(actor, 7);
@@ -2869,7 +2869,7 @@ void Level13_UpdateActors(void) {
           break;
         }
 
-        case 1:
+        case CAPTAIN_POST_LOOKOUT:
           ANIM_GO(actor, 7);
           if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
             break;
@@ -2919,33 +2919,33 @@ void Level13_UpdateActors(void) {
 
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
         switch (st->step) {
-        case 0:
+        case CAPTAIN_STEP_GUARD:
           ANIM_GO(actor, 2);
           if (d < 0x1800) {
-            st->step = 1;
+            st->step = CAPTAIN_STEP_DRAW;
           }
           break;
 
-        case 1:
+        case CAPTAIN_STEP_DRAW:
           ANIM_GO8(actor, 6);
           ANIM_RETIME(actor);
           if (actor->anim == 6 && g_nActorAnimNewFrame != 0 && actor->frame >= 0xA) {
             st->timer2 = RandomIntInRange(0x96, 0x15E);
-            st->step = 2;
+            st->step = CAPTAIN_STEP_SPAR;
           }
           break;
 
-        case 2:
+        case CAPTAIN_STEP_SPAR:
           if (TickCountdownByFrameDelta(&st->timer, 4) && d < 0x1000 &&
               ABS2(SPY_DZ(actor)) < 0x384) {
             StopSoundVoiceByIndex(actor->voiceRow, 4);
-            st->step = 3;
+            st->step = CAPTAIN_STEP_STRIKE;
           }
           if (TickCountdownByFrameDelta(&st->timer2, 4) && actor->frame >= 0x19) {
-            st->step = 5;
+            st->step = CAPTAIN_STEP_SHEATHE;
           }
           if (d > 0x1C00) {
-            st->step = 4;
+            st->step = CAPTAIN_STEP_SHEATHE_RESET;
           }
           if (g_nActorAnimNewFrame != 0 && actor->frame >= 0x1A) {
             ANIM_JUMP(actor, 6, 9);
@@ -2953,9 +2953,9 @@ void Level13_UpdateActors(void) {
           ANIM_RETIME(actor);
           break;
 
-        case 3:
+        case CAPTAIN_STEP_STRIKE:
           if (g_nActorAnimDone != 0) {
-            st->step = 2;
+            st->step = CAPTAIN_STEP_SPAR;
             st->timer = 0xB4;
           }
           if (actor->nextFrame < 0x1A) {
@@ -2969,30 +2969,30 @@ void Level13_UpdateActors(void) {
           }
           break;
 
-        case 4:
+        case CAPTAIN_STEP_SHEATHE_RESET:
           ANIM_GO(actor, 8);
           if (g_nActorAnimNewFrame != 0 && actor->nextFrame >= 8) {
-            st->step = 0;
+            st->step = CAPTAIN_STEP_GUARD;
           }
           break;
 
-        case 5:
+        case CAPTAIN_STEP_SHEATHE:
           ANIM_GO(actor, 8);
           if (g_nActorAnimNewFrame != 0 && actor->nextFrame >= 8) {
             ANIM_GO(actor, 2);
-            st->step = 6;
+            st->step = CAPTAIN_STEP_REST;
             st->timer2 = RandomIntInRange(0x3C, 0x78);
           }
           break;
 
-        case 6:
+        case CAPTAIN_STEP_REST:
           if (TickCountdownByFrameDelta(&st->timer, 4) && d < 0x1000 &&
               ABS2(SPY_DZ(actor)) < 0x384) {
             StopSoundVoiceByIndex(actor->voiceRow, 4);
-            st->step = 3;
+            st->step = CAPTAIN_STEP_STRIKE;
           }
           if (TickCountdownByFrameDelta(&st->timer2, 4) && g_nActorAnimDone != 0) {
-            st->step = 1;
+            st->step = CAPTAIN_STEP_DRAW;
           }
           break;
         }
@@ -3024,7 +3024,7 @@ void Level13_UpdateActors(void) {
         ANIM_GO(actor, 7);
         CopyVector(st->home, PATH_PT(st->path, 0));
         TrackEntityYawTowardSpyro(actor, 4, 0, 0);
-        st->step = 1;
+        st->step = CAPTAIN_LEDGE_ARMED;
         break;
 
       case CAPTAIN_STALK: {

@@ -450,6 +450,30 @@ enum CaptainMode {
   CAPTAIN_GO_HOME = 100,     /* walks back to CaptainState.home, then IDLE */
 };
 
+/* CaptainState.mode: the post a guard captain keeps while CAPTAIN_IDLE (from
+ * its spawn record). */
+enum CaptainPost {
+  CAPTAIN_POST_SENTRY = 0,       /* holds its heading beside a partner; fights when close or the partner falls */
+  CAPTAIN_POST_LOOKOUT = 1,      /* within range: alerts its group (CAPTAIN_ALERTED) */
+  CAPTAIN_POST_LEDGE = 2,        /* once armed (step), stalks Spyro when he is above its path */
+  CAPTAIN_POST_FIGHTER = 3,      /* fights straight away */
+  CAPTAIN_POST_PATROL = 4,       /* walks between path points once its partner calls */
+  CAPTAIN_POST_LEDGE_WAIT = 5,   /* faces Spyro until cued, then arms as POST_LEDGE */
+};
+
+/* CaptainState.step during CAPTAIN_FIGHT: the sword-fight sequence. */
+enum CaptainFightStep {
+  CAPTAIN_STEP_GUARD = 0,    /* waits for Spyro within 0x1800 */
+  CAPTAIN_STEP_DRAW = 1,     /* draw animation */
+  CAPTAIN_STEP_SPAR = 2,     /* close: STRIKE; far: SHEATHE_RESET; timer2 out: SHEATHE */
+  CAPTAIN_STEP_STRIKE = 3,   /* the swing; hits on frames 0x25..0x28 */
+  CAPTAIN_STEP_SHEATHE_RESET = 4, /* puts the sword away, back to GUARD */
+  CAPTAIN_STEP_SHEATHE = 5,  /* puts the sword away, then REST */
+  CAPTAIN_STEP_REST = 6,     /* close: STRIKE; rested: DRAW again */
+};
+/* CaptainState.step on a ledge post instead: nonzero once armed. */
+#define CAPTAIN_LEDGE_ARMED 1
+
 /* ->mode of Doctor Shemp's guard (ACTOR_TYPE_SHEMP_GUARD, ShempGuardState;
  * level 10). A charge, or a flame from outside its front, knocks it away. */
 enum ShempGuardMode {
