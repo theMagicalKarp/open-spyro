@@ -14719,8 +14719,8 @@ glabel GamestateDraw
   .L8001EE44:
     /* F644 8001EE44 08006214 */  bne        $v1, $v0, .L8001EE68
     /* F648 8001EE48 08000224 */   addiu     $v0, $zero, 0x8
-    /* F64C 8001EE4C 0780023C */  lui        $v0, %hi(g_pfnGamestate7DrawHook)
-    /* F650 8001EE50 7C56428C */  lw         $v0, %lo(g_pfnGamestate7DrawHook)($v0)
+    /* F64C 8001EE4C 0780023C */  lui        $v0, %hi(g_pfnFlightResultsDraw)
+    /* F650 8001EE50 7C56428C */  lw         $v0, %lo(g_pfnFlightResultsDraw)($v0)
     /* F654 8001EE54 00000000 */  nop
     /* F658 8001EE58 09F84000 */  jalr       $v0
     /* F65C 8001EE5C 00000000 */   nop
@@ -32873,11 +32873,11 @@ glabel RespawnOrGameOver_Update
 endlabel RespawnOrGameOver_Update
 .endif
 
-.section .text.OverlayScreen_Update, "ax"
-.ifndef HAVE_C_OverlayScreen_Update
-nonmatching OverlayScreen_Update, 0x20
+.section .text.Gamestate06_Update, "ax"
+.ifndef HAVE_C_Gamestate06_Update
+nonmatching Gamestate06_Update, 0x20
 
-glabel OverlayScreen_Update
+glabel Gamestate06_Update
     /* 1FBC4 8002F3C4 E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 1FBC8 8002F3C8 1000BFAF */  sw         $ra, 0x10($sp)
     /* 1FBCC 8002F3CC 47B2000C */  jal        Gamestate06SubstateStub_Noop
@@ -32886,7 +32886,7 @@ glabel OverlayScreen_Update
     /* 1FBD8 8002F3D8 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 1FBDC 8002F3DC 0800E003 */  jr         $ra
     /* 1FBE0 8002F3E0 00000000 */   nop
-endlabel OverlayScreen_Update
+endlabel Gamestate06_Update
 .endif
 
 .section .text.DragonRescue_Update, "ax"
@@ -37589,15 +37589,15 @@ glabel GamestateUpdate
   .L80033900:
     /* 24100 80033900 05006214 */  bne        $v1, $v0, .L80033918
     /* 24104 80033904 07000224 */   addiu     $v0, $zero, 0x7
-    /* 24108 80033908 F1BC000C */  jal        OverlayScreen_Update
+    /* 24108 80033908 F1BC000C */  jal        Gamestate06_Update
     /* 2410C 8003390C 00000000 */   nop
     /* 24110 80033910 0CCF0008 */  j          .L80033C30
     /* 24114 80033914 00000000 */   nop
   .L80033918:
     /* 24118 80033918 08006214 */  bne        $v1, $v0, .L8003393C
     /* 2411C 8003391C 08000224 */   addiu     $v0, $zero, 0x8
-    /* 24120 80033920 0780023C */  lui        $v0, %hi(g_pfnGamestate7Handler)
-    /* 24124 80033924 C057428C */  lw         $v0, %lo(g_pfnGamestate7Handler)($v0)
+    /* 24120 80033920 0780023C */  lui        $v0, %hi(g_pfnFlightResultsUpdate)
+    /* 24124 80033924 C057428C */  lw         $v0, %lo(g_pfnFlightResultsUpdate)($v0)
     /* 24128 80033928 00000000 */  nop
     /* 2412C 8003392C 09F84000 */  jalr       $v0
     /* 24130 80033930 00000000 */   nop
@@ -82092,12 +82092,12 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B1EC 8005A9EC A85722AC */  sw         $v0, %lo(g_pfnLevelHandleFlightResults)($at)
     /* 4B1F0 8005A9F0 0880023C */  lui        $v0, %hi(D_8007B1FC_lv25)
     /* 4B1F4 8005A9F4 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC_lv25)
-    /* 4B1F8 8005A9F8 0780013C */  lui        $at, %hi(g_pfnGamestate7Handler)
-    /* 4B1FC 8005A9FC C05722AC */  sw         $v0, %lo(g_pfnGamestate7Handler)($at)
+    /* 4B1F8 8005A9F8 0780013C */  lui        $at, %hi(g_pfnFlightResultsUpdate)
+    /* 4B1FC 8005A9FC C05722AC */  sw         $v0, %lo(g_pfnFlightResultsUpdate)($at)
     /* 4B200 8005AA00 0880023C */  lui        $v0, %hi(D_8007B68C_lv25)
     /* 4B204 8005AA04 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C_lv25)
-    /* 4B208 8005AA08 0780013C */  lui        $at, %hi(g_pfnGamestate7DrawHook)
-    /* 4B20C 8005AA0C 7C5622AC */  sw         $v0, %lo(g_pfnGamestate7DrawHook)($at)
+    /* 4B208 8005AA08 0780013C */  lui        $at, %hi(g_pfnFlightResultsDraw)
+    /* 4B20C 8005AA0C 7C5622AC */  sw         $v0, %lo(g_pfnFlightResultsDraw)($at)
     /* 4B210 8005AA10 0880023C */  lui        $v0, %hi(D_8007B4B0_lv25)
     /* 4B214 8005AA14 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0_lv25)
     /* 4B218 8005AA18 0780013C */  lui        $at, %hi(g_pfnFlightTimeFormatter)
@@ -82294,12 +82294,12 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B4FC 8005ACFC A85722AC */  sw         $v0, %lo(g_pfnLevelHandleFlightResults)($at)
     /* 4B500 8005AD00 0880023C */  lui        $v0, %hi(D_8007B1FC_lv25)
     /* 4B504 8005AD04 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC_lv25)
-    /* 4B508 8005AD08 0780013C */  lui        $at, %hi(g_pfnGamestate7Handler)
-    /* 4B50C 8005AD0C C05722AC */  sw         $v0, %lo(g_pfnGamestate7Handler)($at)
+    /* 4B508 8005AD08 0780013C */  lui        $at, %hi(g_pfnFlightResultsUpdate)
+    /* 4B50C 8005AD0C C05722AC */  sw         $v0, %lo(g_pfnFlightResultsUpdate)($at)
     /* 4B510 8005AD10 0880023C */  lui        $v0, %hi(D_8007B68C_lv25)
     /* 4B514 8005AD14 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C_lv25)
-    /* 4B518 8005AD18 0780013C */  lui        $at, %hi(g_pfnGamestate7DrawHook)
-    /* 4B51C 8005AD1C 7C5622AC */  sw         $v0, %lo(g_pfnGamestate7DrawHook)($at)
+    /* 4B518 8005AD18 0780013C */  lui        $at, %hi(g_pfnFlightResultsDraw)
+    /* 4B51C 8005AD1C 7C5622AC */  sw         $v0, %lo(g_pfnFlightResultsDraw)($at)
     /* 4B520 8005AD20 0880023C */  lui        $v0, %hi(D_8007B4B0_lv25)
     /* 4B524 8005AD24 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0_lv25)
     /* 4B528 8005AD28 0780013C */  lui        $at, %hi(g_pfnFlightTimeFormatter)
@@ -82460,12 +82460,12 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B77C 8005AF7C A85722AC */  sw         $v0, %lo(g_pfnLevelHandleFlightResults)($at)
     /* 4B780 8005AF80 0880023C */  lui        $v0, %hi(D_8007B1FC_lv25)
     /* 4B784 8005AF84 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC_lv25)
-    /* 4B788 8005AF88 0780013C */  lui        $at, %hi(g_pfnGamestate7Handler)
-    /* 4B78C 8005AF8C C05722AC */  sw         $v0, %lo(g_pfnGamestate7Handler)($at)
+    /* 4B788 8005AF88 0780013C */  lui        $at, %hi(g_pfnFlightResultsUpdate)
+    /* 4B78C 8005AF8C C05722AC */  sw         $v0, %lo(g_pfnFlightResultsUpdate)($at)
     /* 4B790 8005AF90 0880023C */  lui        $v0, %hi(D_8007B68C_lv25)
     /* 4B794 8005AF94 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C_lv25)
-    /* 4B798 8005AF98 0780013C */  lui        $at, %hi(g_pfnGamestate7DrawHook)
-    /* 4B79C 8005AF9C 7C5622AC */  sw         $v0, %lo(g_pfnGamestate7DrawHook)($at)
+    /* 4B798 8005AF98 0780013C */  lui        $at, %hi(g_pfnFlightResultsDraw)
+    /* 4B79C 8005AF9C 7C5622AC */  sw         $v0, %lo(g_pfnFlightResultsDraw)($at)
     /* 4B7A0 8005AFA0 0880023C */  lui        $v0, %hi(D_8007B4B0_lv25)
     /* 4B7A4 8005AFA4 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0_lv25)
     /* 4B7A8 8005AFA8 0780013C */  lui        $at, %hi(g_pfnFlightTimeFormatter)
@@ -82626,12 +82626,12 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B9FC 8005B1FC A85722AC */  sw         $v0, %lo(g_pfnLevelHandleFlightResults)($at)
     /* 4BA00 8005B200 0880023C */  lui        $v0, %hi(D_8007B1FC_lv25)
     /* 4BA04 8005B204 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC_lv25)
-    /* 4BA08 8005B208 0780013C */  lui        $at, %hi(g_pfnGamestate7Handler)
-    /* 4BA0C 8005B20C C05722AC */  sw         $v0, %lo(g_pfnGamestate7Handler)($at)
+    /* 4BA08 8005B208 0780013C */  lui        $at, %hi(g_pfnFlightResultsUpdate)
+    /* 4BA0C 8005B20C C05722AC */  sw         $v0, %lo(g_pfnFlightResultsUpdate)($at)
     /* 4BA10 8005B210 0880023C */  lui        $v0, %hi(D_8007B68C_lv25)
     /* 4BA14 8005B214 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C_lv25)
-    /* 4BA18 8005B218 0780013C */  lui        $at, %hi(g_pfnGamestate7DrawHook)
-    /* 4BA1C 8005B21C 7C5622AC */  sw         $v0, %lo(g_pfnGamestate7DrawHook)($at)
+    /* 4BA18 8005B218 0780013C */  lui        $at, %hi(g_pfnFlightResultsDraw)
+    /* 4BA1C 8005B21C 7C5622AC */  sw         $v0, %lo(g_pfnFlightResultsDraw)($at)
     /* 4BA20 8005B220 0880023C */  lui        $v0, %hi(D_8007B4B0_lv25)
     /* 4BA24 8005B224 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0_lv25)
     /* 4BA28 8005B228 0780013C */  lui        $at, %hi(g_pfnFlightTimeFormatter)
@@ -82792,12 +82792,12 @@ glabel ApplyPerLevelGlobalsTable
     /* 4BC7C 8005B47C A85722AC */  sw         $v0, %lo(g_pfnLevelHandleFlightResults)($at)
     /* 4BC80 8005B480 0880023C */  lui        $v0, %hi(D_8007B1FC_lv25)
     /* 4BC84 8005B484 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC_lv25)
-    /* 4BC88 8005B488 0780013C */  lui        $at, %hi(g_pfnGamestate7Handler)
-    /* 4BC8C 8005B48C C05722AC */  sw         $v0, %lo(g_pfnGamestate7Handler)($at)
+    /* 4BC88 8005B488 0780013C */  lui        $at, %hi(g_pfnFlightResultsUpdate)
+    /* 4BC8C 8005B48C C05722AC */  sw         $v0, %lo(g_pfnFlightResultsUpdate)($at)
     /* 4BC90 8005B490 0880023C */  lui        $v0, %hi(D_8007B68C_lv25)
     /* 4BC94 8005B494 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C_lv25)
-    /* 4BC98 8005B498 0780013C */  lui        $at, %hi(g_pfnGamestate7DrawHook)
-    /* 4BC9C 8005B49C 7C5622AC */  sw         $v0, %lo(g_pfnGamestate7DrawHook)($at)
+    /* 4BC98 8005B498 0780013C */  lui        $at, %hi(g_pfnFlightResultsDraw)
+    /* 4BC9C 8005B49C 7C5622AC */  sw         $v0, %lo(g_pfnFlightResultsDraw)($at)
     /* 4BCA0 8005B4A0 0880023C */  lui        $v0, %hi(D_8007B4B0_lv25)
     /* 4BCA4 8005B4A4 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0_lv25)
     /* 4BCA8 8005B4A8 0780013C */  lui        $at, %hi(g_pfnFlightTimeFormatter)

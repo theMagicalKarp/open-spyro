@@ -62,10 +62,10 @@ void GamestateDraw(void) {
       RespawnOrGameOver_Draw();
     } else if (g_nGamestate == GS_GAME_OVER) {
       RespawnOrGameOver_Draw();
-    } else if (g_nGamestate == GS_OVERLAY_SCREEN) {
+    } else if (g_nGamestate == GS_UNUSED_6) {
       Gamestate02_03_06_Draw();
-    } else if (g_nGamestate == GS_OVERLAY_HOOK) {
-      g_pfnGamestate7DrawHook();
+    } else if (g_nGamestate == GS_FLIGHT_RESULTS) {
+      g_pfnFlightResultsDraw();
     } else if (g_nGamestate == GS_DRAGON_RESCUE) {
       DragonRescue_Draw();
     } else if (g_nGamestate == GS_ARRIVAL_CAMERA) {

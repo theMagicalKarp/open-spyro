@@ -14159,11 +14159,11 @@ dlabel g_nGnastyLootFallRefZCap
     /* 65E78 80075678 00000000 */ .word 0x00000000
 enddlabel g_nGnastyLootFallRefZCap
 
-nonmatching g_pfnGamestate7DrawHook
+nonmatching g_pfnFlightResultsDraw
 
-dlabel g_pfnGamestate7DrawHook
+dlabel g_pfnFlightResultsDraw
     /* 65E7C 8007567C 00000000 */ .word 0x00000000
-enddlabel g_pfnGamestate7DrawHook
+enddlabel g_pfnFlightResultsDraw
 
 nonmatching g_pPathTableHead
 
@@ -14646,11 +14646,11 @@ dlabel g_pCreditsScrollHeader
     /* 65FBC 800757BC 00000000 */ .word 0x00000000
 enddlabel g_pCreditsScrollHeader
 
-nonmatching g_pfnGamestate7Handler
+nonmatching g_pfnFlightResultsUpdate
 
-dlabel g_pfnGamestate7Handler
+dlabel g_pfnFlightResultsUpdate
     /* 65FC0 800757C0 00000000 */ .word 0x00000000
-enddlabel g_pfnGamestate7Handler
+enddlabel g_pfnFlightResultsUpdate
 
 nonmatching g_nFlightTallySlot
 

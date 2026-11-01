@@ -544,7 +544,7 @@ extern char g_szUiSlot2[7];                 /* 0x80075638 */
 /* ---- .sbss ---- */
 extern int g_nCutsceneId;                /* 0x8007566c: scripted cutscene / bundle id (enum CutsceneId, cutscene_id.h): title backdrop, opening story, the two endings (BeginCutscene) */
 extern int g_nGnastyLootFallRefZCap;         /* 0x80075678 */
-extern void (*g_pfnGamestate7DrawHook)(void); /* 0x8007567c: flight levels' FlightResults_Draw */
+extern void (*g_pfnFlightResultsDraw)(void); /* 0x8007567c: flight levels' FlightResults_Draw */
 extern struct CutscenePath *g_pPathTableHead; /* 0x80075680: the cutscene path table (cutscene_path.h) */
 extern int g_nMotionTrailRibbonCount;        /* 0x80075684 */
 extern int g_nPrevLevelIndex;           /* 0x80075688: the level index being left, for the tally (TickLevelTransitionStream) */
@@ -607,7 +607,7 @@ extern int g_nOptionVibrationEnabled;        /* 0x800757a4 */
 extern void *g_pPrimBufferWriteCursor;       /* 0x800757b0 */
 extern int g_nLevelPickupTableCount;         /* 0x800757b4 */
 extern int g_nDemoIndex;                 /* 0x800757b8: which of the 4 attract demos plays next (cycles &3) */
-extern void (*g_pfnGamestate7Handler)(void);  /* 0x800757c0: flight levels' FlightResultsMenu_Update */
+extern void (*g_pfnFlightResultsUpdate)(void);  /* 0x800757c0: flight levels' FlightResultsMenu_Update */
 extern int g_nPauseMenuSubstate;             /* 0x800757c8: pause menu page, enum PausePage (pause_menu.h) */
 extern int g_nSubMenuScrollOffset;           /* 0x800757cc */
 extern int g_nPulseRumbleTimer;              /* 0x800757d0 */

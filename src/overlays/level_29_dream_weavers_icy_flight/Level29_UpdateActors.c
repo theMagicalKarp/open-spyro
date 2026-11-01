@@ -1827,7 +1827,7 @@ void Level29_UpdateActors(void) {
         g_nFlightTallyShownClass = -1;
       }
 
-      if (g_nGamestate == GS_OVERLAY_HOOK) {
+      if (g_nGamestate == GS_FLIGHT_RESULTS) {
         for (i = 0; i < 8; i++) {
           if (st->icon[i] != 0) {
             st->icon[i]->cullRadius = 0;

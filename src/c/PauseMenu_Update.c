@@ -242,7 +242,7 @@ void PauseMenu_Update(void) {
     ZeroVector(&g_nSpyroSwingEulerTargetX);
     g_nSpyroScriptedMoveMode = 0;
     if (g_nFlightLevelActive) {
-      g_nGamestate = GS_OVERLAY_HOOK;
+      g_nGamestate = GS_FLIGHT_RESULTS;
       g_nPauseMenuCursor = 0;
       g_nMenuTickFrames = 0;
       g_nFlightQuitFlag = 1;

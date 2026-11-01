@@ -40,10 +40,10 @@ void GamestateUpdate(void) {
       RespawnOrGameOver_Update();
     } else if (g_nGamestate == GS_GAME_OVER) {
       RespawnOrGameOver_Update();
-    } else if (g_nGamestate == GS_OVERLAY_SCREEN) {
-      OverlayScreen_Update();
-    } else if (g_nGamestate == GS_OVERLAY_HOOK) {
-      g_pfnGamestate7Handler();
+    } else if (g_nGamestate == GS_UNUSED_6) {
+      Gamestate06_Update();
+    } else if (g_nGamestate == GS_FLIGHT_RESULTS) {
+      g_pfnFlightResultsUpdate();
     } else if (g_nGamestate == GS_DRAGON_RESCUE) {
       DragonRescue_Update();
     } else if (g_nGamestate == GS_ARRIVAL_CAMERA) {
@@ -81,12 +81,12 @@ void GamestateUpdate(void) {
     g_pfnLevelUpdateActors();
 
     if (g_nGamestate == GS_SAVE_MENU || g_nGamestate == GS_ACTOR_CUTSCENE ||
-        g_nGamestate == GS_OVERLAY_HOOK || g_nGamestate == GS_LEVEL_LOAD) {
+        g_nGamestate == GS_FLIGHT_RESULTS || g_nGamestate == GS_LEVEL_LOAD) {
       return;
     }
     TickSpyroGameplayFrame();
     if (g_nGamestate == GS_RESPAWN || g_nGamestate == GS_GAME_OVER ||
-        g_nGamestate == GS_OVERLAY_HOOK || g_nGamestate == GS_LEVEL_LOAD) {
+        g_nGamestate == GS_FLIGHT_RESULTS || g_nGamestate == GS_LEVEL_LOAD) {
       return;
     }
 

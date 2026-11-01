@@ -14,7 +14,7 @@
 
 
 void Level23_FlightEndHook(void) {
-  if (g_nGamestate != GS_OVERLAY_HOOK) {
+  if (g_nGamestate != GS_FLIGHT_RESULTS) {
     int score = g_nFlightRunClock;
     int five;
     int idx;
@@ -23,7 +23,7 @@ void Level23_FlightEndHook(void) {
     int cur;
     int ten;
 
-    g_nGamestate = GS_OVERLAY_HOOK;
+    g_nGamestate = GS_FLIGHT_RESULTS;
     five = score * 5;
     idx = g_nActiveWorldIndex;
     base = g_anFlightClearTimes;
