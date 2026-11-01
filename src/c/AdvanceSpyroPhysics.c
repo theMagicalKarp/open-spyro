@@ -361,7 +361,7 @@ int AdvanceSpyroPhysics(void) {
               if (hit == 0) {
                 goto collide;
               }
-              if (st[SPY_TRIGGER_FLAGS - SPY_STATE] & 0x4000) {
+              if (st[SPY_TRIGGER_FLAGS - SPY_STATE] & SPYRO_EV_BLOCKS_SUPER) {
                 hit = DispatchActorContactAtSphere(pos, 0x164,
                                                    &g_dwSpyroTriggerEventFlags,
                                                    ACTOR_HIT_SUPER, 0, one);
@@ -392,7 +392,7 @@ int AdvanceSpyroPhysics(void) {
             if (hit == 0) {
               goto collide;
             }
-            if (!(g_dwSpyroTriggerEventFlags & 0x4000)) {
+            if (!(g_dwSpyroTriggerEventFlags & SPYRO_EV_BLOCKS_SUPER)) {
               break;
             }
             /* FALLTHROUGH */

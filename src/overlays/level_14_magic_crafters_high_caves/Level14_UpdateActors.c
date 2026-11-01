@@ -119,7 +119,7 @@ typedef struct RunnerSpawnerState {
   int flags;           /* 0x04 bit 0: spawned */
   int wait;            /* 0x08 */
   int timer;           /* 0x0C */
-  int value;           /* 0x10 copied to the spawn's state +0x14 */
+  int value;           /* 0x10 copied to the spawn's WaypointRunnerState.target */
 } RunnerSpawnerState;
 
 /* Type 304: waypoint runner. Walks `path` until it reaches Spyro, the path
@@ -4007,7 +4007,7 @@ void Level14_UpdateActors(void) {
       case RSPAWNER_RELEASE:
         if (actor->nextFrame >= 5 && !(st->flags & 1)) {
           st->link[1] = 0;
-          ((short *)g_pfnLevelSpawnActor(ACTOR_TYPE_WAYPOINT_RUNNER, actor)->state)[10] = st->value;
+          ((WaypointRunnerState *)g_pfnLevelSpawnActor(ACTOR_TYPE_WAYPOINT_RUNNER, actor)->state)->target = st->value;
           st->flags |= 1;
         }
         if (g_nActorAnimDone != 0) {
@@ -4048,19 +4048,19 @@ void Level14_UpdateActors(void) {
         int *pos = &actor->posX;
 
         if (RaiseSpyroTriggerInRadius(pos, 0x280, 0x46) != 0) {
-          ((int *)st->link->state)[1] &= ~1;
+          ((RunnerSpawnerState *)st->link->state)->flags &= ~1;
           ENTER_POSE(actor, WPRUNNER_POP);
           continue;
         }
         if (WalkActorAlongWaypoints(actor, st->path, 0x100, 0x40, 0, 0x20, 0xFF,
                           &st->hold) == 0x100) {
-          ((int *)st->link->state)[1] &= ~1;
+          ((RunnerSpawnerState *)st->link->state)->flags &= ~1;
           ENTER_POSE(actor, WPRUNNER_POP);
           continue;
         }
         if (st->target >= 0 && g_pActorListBase[st->target].mode < ACTOR_MODE_DORMANT &&
             ApproxDist2D(pos, &g_pActorListBase[st->target].posX) < 0x280) {
-          ((int *)st->link->state)[1] &= ~1;
+          ((RunnerSpawnerState *)st->link->state)->flags &= ~1;
           g_pActorListBase[st->target].flags |= 1;
           ENTER_POSE(actor, WPRUNNER_POP);
           continue;

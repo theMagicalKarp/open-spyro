@@ -78,6 +78,9 @@ typedef enum SpyroState
 #define SPYRO_EV_HAZARD 0x0400        /* SPYRO_ST_HAZARD */
 #define SPYRO_EV_LIFT 0x0800          /* SPYRO_ST_LIFT while raised */
 #define SPYRO_EV_CHARGE_HOLD 0x2000   /* latches g_nSpyroChargeHoldFlag */
+#define SPYRO_EV_BLOCKS_SUPER 0x4000  /* from the contacted actor's collision shape (DispatchActorContactAtSphere ORs
+                                         * each shape record's event word in): the shape stays solid to a supercharge,
+                                         * which re-dispatches as a solid contact (AdvanceSpyroPhysics) */
 #define SPYRO_EV_REBOUND 0x8000       /* bounce off g_anSpyroFirstContactNormal */
 #define SPYRO_EV_HITS 0x01F1        /* every hit bit (HIT, PINNED .. KNOCKBACK) */
 
