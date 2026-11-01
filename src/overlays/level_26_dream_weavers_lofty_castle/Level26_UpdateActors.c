@@ -734,10 +734,10 @@ void Level26_UpdateActors(void) {
       int *st = actor->state;
 
       switch (actor->mode) {
-      case 0:
+      case LOBBOMB_FLY:
         if (actor->posX < 0x400 || actor->posY < 0x400 ||
             actor->posZ < 0x400) {
-          actor->mode = 1;
+          actor->mode = LOBBOMB_BURST;
           break;
         }
         CopyVector(svD, &actor->posX);
@@ -748,12 +748,12 @@ void Level26_UpdateActors(void) {
             TickCountdownByFrameDelta(st, 4) != 0 ||
             TryMoveActorForward(actor, 0xE0, 0, 0x100, 0) != 0 ||
             CastRayWorldAndActors(svD, &actor->posX) != 0) {
-          actor->mode = 1;
+          actor->mode = LOBBOMB_BURST;
         }
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_RING_SPARK, actor, (void *)8);
         break;
 
-      case 1:
+      case LOBBOMB_BURST:
         g_pfnLevelEmitParticles(0x10, EMIT_ACTOR_RING_SPARK, actor, (void *)0x10);
         DespawnActorRecord(actor);
         continue;

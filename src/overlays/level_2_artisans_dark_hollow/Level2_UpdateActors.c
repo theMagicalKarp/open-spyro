@@ -2960,7 +2960,7 @@ void Level2_UpdateActors(void) {
     case ACTOR_TYPE_HOPPING_CRITTER: {
       HopState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != GRAZER_KNOCKED) {
         EBB_BREAK();
         actor->flags = 0;
         st->heading = StepAndLerpAngle8(
@@ -2973,27 +2973,27 @@ void Level2_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, GRAZER_KNOCKED);
       }
 
       SnapActorToGround(actor);
       EncodeCachedVecToActorDirCode(actor);
 
       switch (actor->mode) {
-      case 0:
+      case GRAZER_WANDER:
         if (TickCountdownByFrameDelta(&st->timer, 4)) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, GRAZER_PAUSE);
         }
         UpdateActorWander(actor, st);
         break;
-      case 1:
+      case GRAZER_PAUSE:
         SnapActorToGround(actor);
         if (g_nActorAnimDone != 0) {
           st->timer = RandomIntInRange(0x78, 0xF0);
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, GRAZER_WANDER);
         }
         break;
-      case 2:
+      case GRAZER_KNOCKED:
         DriveActorTrackedMove(actor, &st->time, st->heading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

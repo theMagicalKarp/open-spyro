@@ -1344,4 +1344,29 @@ enum SoldierKind {
   SOLDIERKIND_SHOVER = 11,       /* faces Spyro; shoves him when close */
 };
 
+/* ->mode of the simple flight-level targets: ACTOR_TYPE_RIDING_FLIGHT_TARGET,
+ * ACTOR_TYPE_BLASTABLE_PATH_SMOKER / _PROP (levels 5/29),
+ * ACTOR_TYPE_CYCLING_FLIGHT_TARGET (23) and ACTOR_TYPE_BOBBING_FLIGHT_TARGET
+ * (29). */
+enum FlightTargetMode {
+  FTARGET_ACTIVE = 0, /* moves or idles until struck */
+  FTARGET_STRUCK = 1, /* struck: pays out (or bursts and despawns) */
+  FTARGET_SPENT = 2,  /* the cycling and bobbing kinds: faces Spyro afterwards */
+};
+
+/* ->mode of the level 2 hopping critter (ACTOR_TYPE_HOPPING_CRITTER) and the
+ * level 3 grazing critter (ACTOR_TYPE_GRAZING_CRITTER, GrazerState); the mode
+ * is also the animation index. */
+enum GrazerMode {
+  GRAZER_WANDER = 0,  /* UpdateActorWander; on its timer: PAUSE */
+  GRAZER_PAUSE = 1,   /* idle animation, then WANDER */
+  GRAZER_KNOCKED = 2, /* hit: bursts */
+};
+
+/* ->mode of a lobbed bomb (ACTOR_TYPE_LOBBED_BOMB; levels 25/26). */
+enum LobbedBombMode {
+  LOBBOMB_FLY = 0,   /* flies; landing, the timer, a wall or Spyro: BURST */
+  LOBBOMB_BURST = 1, /* sparks and despawns */
+};
+
 #endif

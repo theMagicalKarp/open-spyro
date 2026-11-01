@@ -3456,7 +3456,7 @@ void Level3_UpdateActors(void) {
 
       SnapActorToGround(actor);
       EncodeCachedVecToActorDirCode(actor);
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != 2) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != GRAZER_KNOCKED) {
         for (i = 0; i < 6; i++) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
             break;
@@ -3469,14 +3469,14 @@ void Level3_UpdateActors(void) {
         st->speed = 0xFA;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, GRAZER_KNOCKED);
       }
       actor->flags = 0;
 
       switch (actor->mode) {
-      case 0:
+      case GRAZER_WANDER:
         if (TickCountdownByFrameDelta(&st->wait, 4) != 0) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, GRAZER_PAUSE);
         }
         UpdateActorWander(actor, st);
         if (TickCountdownByFrameDelta(&st->voice, 4) != 0) {
@@ -3485,7 +3485,7 @@ void Level3_UpdateActors(void) {
         }
         break;
 
-      case 1:
+      case GRAZER_PAUSE:
         if (TickCountdownByFrameDelta(&st->voice, 4) != 0) {
           st->voice = (GetRandomU32() & 0x1F) + 0x50;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
@@ -3493,11 +3493,11 @@ void Level3_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           st->wait = RandomIntInRange(0x78, 0xF0);
           st->voice = 0;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, GRAZER_WANDER);
         }
         break;
 
-      case 2:
+      case GRAZER_KNOCKED:
         DriveActorTrackedMove(actor, &st->speed, st->knock, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
