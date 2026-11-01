@@ -42,7 +42,7 @@ void BurstActorWithSound(Actor *actor, int mode);
 #define YAW_HOLD_IN_BAND 0 /* inside the threshold band: stop turning */
 #define YAW_STEP_IN_BAND 1 /* inside the band: keep stepping onto the target */
 #endif
-int TurnActorYawTowardAngle(Actor *actor, int heading, int step, int threshold, int flag);
+int TurnActorYawTowardAngle(Actor *actor, int target, int step, int threshold, int flag);
 int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed, int thresh, int animId);
 int MoveActorByDelta(Actor *actor, int vx, int vy, int vz, int contactRadius, int radius, int flags);
 int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius, int radius, int flags);
@@ -61,7 +61,11 @@ void SetActorGroupSubstate(Actor *actor, int value);
 void MarkActorCommittedKill(Actor *actor);
 void CollectPickupActor(Actor *actor);
 int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR, int flags);
-void SpawnNameLetterActors(Actor *actor, int mode);
+#ifndef NAME_LETTERS_RETURN_HOME
+#define NAME_LETTERS_RETURN_HOME 0 /* "RETURN HOME", facing Spyro (level exits) */
+#define NAME_LETTERS_LEVEL       1 /* the sign's level name, along its yaw (portals) */
+#endif
+void SpawnNameLetterActors(Actor *actor, int named);
 void FollowActorWaypointPath(Actor *actor, PathData *path, int threshold, int cap, int radius, int yawLim, int pitchLim);
 void RefreshActorDerivedState(Actor *actor, int mode);
 void SetSpawnAnchorFromActor(Actor *actor, int heading);

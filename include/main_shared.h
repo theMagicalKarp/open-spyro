@@ -224,7 +224,7 @@ extern void DrawFullscreenTint(int slot, int r, int g, int b);
 extern void EmitStaticActorMeshListFogged(void);
 extern void EnqueueHudSprites(void);
 extern long GetSpuTransferStatus(int mode);
-extern void InitActorMeshScratchRegions(int mode);
+extern void InitActorMeshScratchRegions(int split);
 extern void InitNewGameState(void);
 extern void RelocateMobActorTable(void *table);
 extern void RotateLightVectorXZ(int steps);

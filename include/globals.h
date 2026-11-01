@@ -410,7 +410,7 @@ extern byte g_abLevelTotalEggsTable[18];                     /* 0x8006f480 */
 extern char *g_apDragonNames[79];                            /* 0x8006f694 */
 extern char *g_apTitleCardNames[8];                          /* 0x8006f7d0 */
 extern char *g_apLevelNameStrings[36];                       /* 0x8006f7f0 */
-extern char *g_apBalloonistNames[7];                         /* 0x8006f880 */
+extern char *g_apBalloonistNames[7];                         /* 0x8006f880 [0] "RETURN HOME" (level-exit letters), [1..6] the per-world balloonists MARCO..HAK, indexed by level id / 10 */
 extern byte g_abBalloonistDialoguePageStarts[40];            /* 0x8006f89c */
 extern char *g_apBalloonistDialogueLines[108];               /* 0x8006f8c4 */
 extern byte g_abPadActAlignTable[6];                         /* 0x8006fccc */

@@ -838,7 +838,7 @@ void DrawEntityDirectionalSpikes(void);
 void ApplyPerLevelGlobalsTable(void);
 
 /* 0x8005b6f8: Carves the per-frame render scratch out of the top of the work area: g_pEmitListBuffer = top-0x2000, OT depth-bin base = top-0x6000 (g_pFrameOtDepthBinBase0/1 + published g_pRenderScratchOtBase, 0x4000 zeroed), OT merged-chain slot = top-0x6008 (g_pFrameOtMergedChainSlot0/1, 8 bytes zeroed), then two prim-buffer halves of 0x1c000 (param=0, in-game) or 0x13000 (cutscene) growing down: g_pFramePrimBufferBase1 then g_pFramePrimBufferBase0. Publishes the bounds at g_pRenderScratchRegionBase/PrimBase1/PrimTop/OtBase. Callers: StoryIntro_Update, Cutscene_Update, LoadActorMeshTables. */
-void InitActorMeshScratchRegions(int mode);
+void InitActorMeshScratchRegions(int split);
 
 /* 0x8005b7d8: Loads the actor mesh table from CD into the top of the boot-load region. CdReadSyncSectors pulls a directory (size g_nActorMeshDirByteSize, sector g_nActorMeshDirSectorOffset) into a buffer below 0x80200000 - g_nCrt0StackSize; iterates up to 64 entries; for each: RelocateActorMeshHeader (anim/mesh header relocator - M09) and stores the resolved pointer at g_apActorMeshTable + slot*4. Finishes with InitActorMeshScratchRegions(0) to post-init the actor system. Body internals deferred to M09. */
 void LoadActorMeshTables(void);
@@ -1941,7 +1941,7 @@ int IsActorInRunningKillSet(Actor *actor);
 void PlayActorMeshVoice(Actor *actor, int voiceOffset, void *owner);
 
 /* 0x80038ee0: Turns the actor's 8-bit yaw (+0x46) toward `target` by at most `step` (x1.5 / x2 at frame delta 3 / 4); returns 1 once within `threshold`. */
-int TurnActorYawTowardAngle(Actor *actor, int heading, int step, int threshold, int flag);
+int TurnActorYawTowardAngle(Actor *actor, int target, int step, int threshold, int flag);
 
 /* 0x8003aaec: Allocates a rotating-billboard particle (24-byte records at g_aRotBillboards), places it at the actor's matrix-rotated offset, white, with fixed life/size bytes; returns the record index or < 0. */
 /* 0x8005882c (hand-written asm): scans the 8 records of g_aRotBillboards (0x18 stride) for one whose life byte (+0xC) is 0 and returns its index, or -1 when all are live. Caller: SpawnActorRotBillboard. */
@@ -2113,8 +2113,12 @@ int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim, int 
  * first steps of each leg with the previous leg vector; re-aims yaw/pitch. */
 int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legs, int flags);
 
-/* 0x8003c358: Spell a level or balloonist name in floating letter actors around a sign. */
-void SpawnNameLetterActors(Actor *actor, int mode);
+/* 0x8003c358: Spell a level name (portal signs) or "RETURN HOME" (level exits) in floating letter actors around a sign. */
+#ifndef NAME_LETTERS_RETURN_HOME
+#define NAME_LETTERS_RETURN_HOME 0 /* "RETURN HOME", facing Spyro (level exits) */
+#define NAME_LETTERS_LEVEL       1 /* the sign's level name, along its yaw (portals) */
+#endif
+void SpawnNameLetterActors(Actor *actor, int named);
 
 /* 0x8003c85c: Convert the bearing from Spyro to `target` into scripted-camera stick requests. */
 void AimCameraStickTowardPoint(int *target);

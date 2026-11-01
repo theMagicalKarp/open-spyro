@@ -918,7 +918,7 @@ typedef struct PostPath {
 } PostPath;
 
 /* Index of the path point nearest the actor (written to *idx). */
-extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
+extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *out_index);
 
 /* Path tweens used by the patrol/post classes. */
 extern int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legs, int flags);

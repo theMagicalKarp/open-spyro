@@ -55,7 +55,7 @@ extern int RandomIntInRange(int lo, int hi);                 /* random in [lo, h
 extern int RandomSignedInRange(int lo, int hi);
 extern int StepAndLerpAngle8(int ang, int facing, int maxStep, int frac);
 extern int TickCountdownByFrameDelta(void *timer, int step);
-extern void VectorToSVectorShr2(short *dst, int *s);
+extern void VectorToSVectorShr2(short *dst, int *src);
 
 /* World chunk-animation flags (byte [1] of a chunk-anim entry; each step
  * entry's low two bits are copied into it on arrival, TickWorldChunkAnimations). */
