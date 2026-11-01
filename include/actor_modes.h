@@ -762,4 +762,96 @@ enum RockThrowerMode {
   ROCKTHROW_TURN = 10,   /* turns to Spyro, then WATCH */
 };
 
+/* ->mode of a boulder thrower (ACTOR_TYPE_BOULDER_THROWER / _B,
+ * BoulderThrowerState; levels 21/22). Modes 40-43 are the paired charge
+ * (wait on the partner, circle it, launch at Spyro); 50-54 the ride, where a
+ * partner (BoulderThrowerState.rider) catches and flings it. */
+enum BoulderThrowerMode {
+  BTHROW_IDLE = 0,          /* holds its spawn pose until roused */
+  BTHROW_ROUSE = 1,         /* rousing animation (may alert its group), then WATCH */
+  BTHROW_WATCH = 2,         /* faces Spyro; in range and sight: THROW */
+  BTHROW_KNOCKED = 3,       /* drops its boulder, knocked away, then bursts */
+  BTHROW_THROW = 4,         /* picks up an ACTOR_TYPE_ROLLING_BOULDER and hurls it */
+  BTHROW_PATROL = 5,        /* walks its path; Spyro close: THROW */
+  BTHROW_PAIR_WAIT = 40,    /* waits for the partner's go (subMode) */
+  BTHROW_PAIR_CIRCLE = 41,  /* circles the partner */
+  BTHROW_PAIR_READY = 42,   /* faces Spyro until signalled, then HURTLE */
+  BTHROW_HURTLE = 43,       /* flies at Spyro, knocking him back; bursts on a timer */
+  BTHROW_RIDE_WAIT = 50,    /* waits for BoulderThrowerState.partnerSignal */
+  BTHROW_RIDE_WALK = 51,    /* walks its path to the catcher */
+  BTHROW_RIDE_FACE = 52,    /* faces the catcher until it is ready, then jumps */
+  BTHROW_RIDE_LEAP = 53,    /* jumps into the catcher's hands */
+  BTHROW_RIDE_HELD = 54,    /* held; flung at Spyro (HURTLE) on the throw frame */
+};
+
+/* ->mode of a gatekeeper (ACTOR_TYPE_GATEKEEPER / _B, GatekeeperState;
+ * levels 21/22). Modes 40-44 hand out its run of keys (GatekeeperState.keys)
+ * one at a time; 43 and 50-54 match the boulder thrower's. */
+enum GatekeeperMode {
+  GATEKEEPER_IDLE = 0,         /* holds its spawn pose until roused */
+  GATEKEEPER_ROUSE = 1,        /* rousing animation (may alert its group), then WATCH */
+  GATEKEEPER_WATCH = 2,        /* faces Spyro; close: STALK */
+  GATEKEEPER_STALK = 3,        /* faces Spyro; in reach on the timer: SWIPE; far: WATCH */
+  GATEKEEPER_SWIPE = 4,        /* knocks Spyro back during frames 6-9, then STALK */
+  GATEKEEPER_KNOCKED = 5,      /* knocked away, then bursts */
+  GATEKEEPER_KEYS_ARM = 40,    /* Spyro near: readies the next key */
+  GATEKEEPER_KEYS_WAIT = 41,   /* waits for Spyro in range, facing it, in sight */
+  GATEKEEPER_KEYS_RELEASE = 42, /* releases the key on frame 6, then KEYS_RECOVER */
+  GATEKEEPER_HURTLE = 43,      /* flies at Spyro, knocking him back; bursts on a timer */
+  GATEKEEPER_KEYS_RECOVER = 44, /* back to KEYS_WAIT while keys remain */
+  GATEKEEPER_RIDE_WAIT = 50,   /* waits for GatekeeperState.partnerSignal */
+  GATEKEEPER_RIDE_WALK = 51,   /* walks its path to the catcher */
+  GATEKEEPER_RIDE_FACE = 52,   /* faces the catcher until it is ready, then jumps */
+  GATEKEEPER_RIDE_LEAP = 53,   /* jumps into the catcher's hands */
+  GATEKEEPER_RIDE_HELD = 54,   /* held; flung at Spyro (HURTLE) on the throw frame */
+};
+
+/* ->mode of a tethered guard (ACTOR_TYPE_TETHERED_GUARD, TetherState; level
+ * 15); the mode is also the animation index. TetherState.mode is the command
+ * a tether keeper or sentinel hands it (1 bound to its owner, 4-6 keeper
+ * cues). */
+enum TetheredGuardMode {
+  TGUARD_IDLE = 0,        /* faces Spyro (or turns along its leader's path); near: RISE */
+  TGUARD_RISE = 1,        /* rising animation, then GUARD */
+  TGUARD_GUARD = 2,       /* faces Spyro; close: STRIKE; far: LOWER; on the timer: LOOK */
+  TGUARD_STRIKE = 3,      /* strikes; Spyro pinned: STRIKE_HOLD */
+  TGUARD_LOWER = 4,       /* lowers, then IDLE */
+  TGUARD_KNOCKED = 5,     /* flamed: knocked away, then bursts */
+  TGUARD_STRIKE_HOLD = 6, /* holds after pinning Spyro, then IDLE */
+  TGUARD_BOUND = 7,       /* frozen until its owner goes dormant */
+  TGUARD_LOOK = 8,        /* looks about (or toward its keeper), then RISE */
+  TGUARD_SIGNAL = 9,      /* cues its keeper (who watches for this mode) */
+};
+
+/* ->mode of a tether keeper (ACTOR_TYPE_TETHER_KEEPER, KeeperState; level
+ * 15); the mode is also the animation index. */
+enum TetherKeeperMode {
+  KEEPER_IDLE = 0,       /* faces Spyro when near; may start WATCH_GUARD; close: REACT */
+  KEEPER_REACT = 1,      /* reacts to Spyro, then IDLE after a pause */
+  KEEPER_COMMAND = 2,    /* turns to its guard after handing it KeeperState.mode */
+  KEEPER_WATCH_GUARD = 3, /* faces its guard until Spyro comes near */
+  KEEPER_STEP_OUT = 4,   /* steps out from its post and back (guard cue 6) */
+  KEEPER_KNOCKED = 5,    /* charged: knocked away, then bursts */
+  KEEPER_KNOCKED_ALT = 6, /* the same, with the other animation */
+  KEEPER_STRUCK = 7,     /* struck by its guard's SIGNAL (cue 4), then bursts */
+};
+
+/* ->mode of a sentinel (ACTOR_TYPE_SENTINEL, SentinelState; level 15); the
+ * mode is also the animation index. A sentinel walks its waypoints past a
+ * chain of tethered guards (SentinelState.link), powering each with homing
+ * orbs. The 0x60 modes are the group-alert relay (SetActorGroupState). */
+enum SentinelMode {
+  SENTINEL_IDLE = 0,       /* waits (or aims along its heading) for Spyro in range */
+  SENTINEL_WALK = 1,       /* walks its waypoints; at a guard's stop: POWER_GUARD */
+  SENTINEL_ALERT = 2,      /* alerted animation, then WALK or IDLE */
+  SENTINEL_TRACK = 3,      /* faces Spyro, then CAST */
+  SENTINEL_CAST = 4,       /* fires up to 3 ACTOR_TYPE_HOMING_WISPs */
+  SENTINEL_POWER_GUARD = 5, /* faces its guard, sending homing orbs at it */
+  SENTINEL_KNOCKED = 6,    /* flamed: knocked away, then bursts */
+  SENTINEL_RELAY_ALERT_WAIT = 0x60, /* random delay, then ALERT */
+  SENTINEL_RELAY_TRACK_WAIT = 0x61, /* random delay, then TRACK */
+  SENTINEL_RELAY_ALERT = 0x62,      /* group cue: ALERT once back at animation 0 */
+  SENTINEL_RELAY_TRACK = 0x63,      /* group cue: TRACK once back at animation 0 */
+};
+
 #endif
