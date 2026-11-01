@@ -43,7 +43,8 @@ void ComputeSpyroMoveTargetFromPad(int speed) {
           PAD_LEFT_STICK_CENTERED) {
     k = 0x7f;
     yaw = ArcTan2(k - ((PadSubstep *)pad)->analog.axis[PAD_AXIS_LY],
-                  k - ((PadSubstep *)pad)->analog.axis[PAD_AXIS_LX], 1);
+                  k - ((PadSubstep *)pad)->analog.axis[PAD_AXIS_LX],
+                  ATAN_ANGLE12);
     target = (volatile int *)g_anSpyroMoveTargetYawBlock;
     *target = yaw;
     *(int *)target = (yaw + g_nCameraEulerYaw) & 0xfff;

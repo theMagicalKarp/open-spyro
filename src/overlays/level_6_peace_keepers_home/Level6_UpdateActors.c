@@ -232,7 +232,7 @@ void Level6_UpdateActors(void) {
 
         cameraAngleDiff = AbsAngleDelta8(
             actor->rotZ,
-            ArcTan2(CAM.posX - actor->posX, CAM.posY - actor->posY, 0));
+            ArcTan2(CAM.posX - actor->posX, CAM.posY - actor->posY, ATAN_ANGLE8));
 
         if (cameraAngleDiff <= 56) {
           if (actor->subMode == NAMESIDE_BACK) {
@@ -395,7 +395,7 @@ void Level6_UpdateActors(void) {
             if (cs->owner == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
-                                              actor->posY - spy->posY, 0)) <
+                                              actor->posY - spy->posY, ATAN_ANGLE8)) <
                   0) {
                 st->dir = 1;
               } else {
@@ -464,7 +464,7 @@ void Level6_UpdateActors(void) {
 
           if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
             int angle = ArcTan2(st->tgtX - actor->posX,
-                                      st->tgtY - actor->posY, 0);
+                                      st->tgtY - actor->posY, ATAN_ANGLE8);
 
             st->heading = angle;
             st->headingTimer = 40;
@@ -478,7 +478,7 @@ void Level6_UpdateActors(void) {
       case BUTTERFLY_CIRCLE: {
         SteerActorAroundPoint(actor, &spy->posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
-                                                  actor->posY - spy->posY, 0),
+                                                  actor->posY - spy->posY, ATAN_ANGLE8),
                                     st->dir * 8),
                       8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
 
@@ -531,7 +531,7 @@ void Level6_UpdateActors(void) {
           st->knock = 0xE1;
         }
         st->heading = StepAndLerpAngle8(
-            ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
+            ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         if (actor->dropKind == 0xFF) {
           actor->dropKind = 0xF;
@@ -595,12 +595,12 @@ void Level6_UpdateActors(void) {
           }
           if (actor->subMode == THIEFSUB_ORBIT) {
             int home = ArcTan2(st->path->nodes[0].x - actor->posX,
-                                     st->path->nodes[0].y - actor->posY, 0);
+                                     st->path->nodes[0].y - actor->posY, ATAN_ANGLE8);
 
             if (ApproxDist2D(&actor->posX, &st->path->nodes[0].x) < 0x1000) {
               TurnActorYawTowardAngle(actor,
                             ArcTan2(actor->posX - spy->posX,
-                                          actor->posY - SPY.posY, 0),
+                                          actor->posY - SPY.posY, ATAN_ANGLE8),
                             8, 0, 0);
               MoveActorAlongHeading(actor, spd, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             } else {
@@ -608,9 +608,9 @@ void Level6_UpdateActors(void) {
               int r;
               int a = ArcTan2(
                   st->path->nodes[st->path->cur].x - spy->posX,
-                  st->path->nodes[st->path->cur].y - SPY.posY, 0);
+                  st->path->nodes[st->path->cur].y - SPY.posY, ATAN_ANGLE8);
               int b = ArcTan2(actor->posX - st->path->nodes[0].x,
-                                    actor->posY - st->path->nodes[0].y, 0);
+                                    actor->posY - st->path->nodes[0].y, ATAN_ANGLE8);
 
               if (actor->nextAnim == 4) {
                 lim = 0x28;
@@ -634,15 +634,15 @@ void Level6_UpdateActors(void) {
               if (st->stuck >= 0x1E &&
                   AbsAngleDelta8(home, ArcTan2(spy->posX - actor->posX,
                                                     spy->posY - actor->posY,
-                                                    0)) > 0x20) {
+                                                    ATAN_ANGLE8)) > 0x20) {
                 actor->subMode = THIEFSUB_BREAK;
               }
             }
           } else {
             int a = ArcTan2(st->path->nodes[0].x - spy->posX,
-                                  st->path->nodes[0].y - SPY.posY, 0);
+                                  st->path->nodes[0].y - SPY.posY, ATAN_ANGLE8);
             int b = ArcTan2(st->path->nodes[0].x - actor->posX,
-                                  st->path->nodes[0].y - actor->posY, 0);
+                                  st->path->nodes[0].y - actor->posY, ATAN_ANGLE8);
 
             TurnActorYawTowardAngle(actor, a, 8, 0, 0);
             MoveActorAlongHeading(actor, spd, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
@@ -701,10 +701,10 @@ void Level6_UpdateActors(void) {
           }
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000) {
             int d = ArcTan2(spy->posX - st->path->nodes[st->path->cur].x,
-                                  SPY.posY - st->path->nodes[st->path->cur].y, 0);
+                                  SPY.posY - st->path->nodes[st->path->cur].y, ATAN_ANGLE8);
             int b = ArcTan2(actor->posX - st->path->nodes[st->path->cur].x,
                                   actor->posY - st->path->nodes[st->path->cur].y,
-                                  0) -
+                                  ATAN_ANGLE8) -
                     0x80;
 
             d = (d - b) & 0xFF;
@@ -747,7 +747,7 @@ void Level6_UpdateActors(void) {
         TurnActorYawTowardAngle(actor,
                       ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                                     st->path->nodes[st->path->cur].y - actor->posY,
-                                    0),
+                                    ATAN_ANGLE8),
                       6, 0, 0);
         MoveActorAlongHeading(actor, 0x96, 0, 0, MOVE_LIFT);
         if (ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x) <
@@ -788,7 +788,7 @@ void Level6_UpdateActors(void) {
             k = 5;
           }
           h = ArcTan2(st->path->nodes[k].x - actor->posX,
-                            st->path->nodes[k].y - actor->posY, 0);
+                            st->path->nodes[k].y - actor->posY, ATAN_ANGLE8);
           if (ApproxDist2D(&actor->posX, &st->path->nodes[k].x) > 0x100) {
             if (TurnActorYawTowardAngle(actor, h, 8, 0x14, 1) != 0) {
               MoveActorAlongHeading(actor, 0x96, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
@@ -808,7 +808,7 @@ void Level6_UpdateActors(void) {
 
         TurnActorYawTowardAngle(actor,
                       ArcTan2(st->path->nodes[0].x - actor->posX,
-                                    st->path->nodes[0].y - actor->posY, 0),
+                                    st->path->nodes[0].y - actor->posY, ATAN_ANGLE8),
                       6, 0, 0);
         if (ApproxDist2D(&actor->posX, &st->path->nodes[0].x) > 0x100) {
           MoveActorAlongHeading(actor, 0x82, 0, 0, MOVE_LIFT);
@@ -914,7 +914,7 @@ void Level6_UpdateActors(void) {
         ANIM_GO(actor, 1);
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(st->path->nodes[2].x - actor->posX,
-                                        st->path->nodes[2].y - actor->posY, 0),
+                                        st->path->nodes[2].y - actor->posY, ATAN_ANGLE8),
                           8, 0x1E, 1) == 0) {
           break;
         }
@@ -972,11 +972,11 @@ void Level6_UpdateActors(void) {
         if (dCur > 0x190 && dNext > 0x190) {
           int aCur = ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                                    st->path->nodes[st->path->cur].y - actor->posY,
-                                   0);
+                                   ATAN_ANGLE8);
           int aNext = ArcTan2(st->path->nodes[next].x - actor->posX,
-                                    st->path->nodes[next].y - actor->posY, 0);
+                                    st->path->nodes[next].y - actor->posY, ATAN_ANGLE8);
           int aSpy =
-              ArcTan2(spy->posX - actor->posX, spy->posY - actor->posY, 0);
+              ArcTan2(spy->posX - actor->posX, spy->posY - actor->posY, ATAN_ANGLE8);
           int dA = AbsAngleDelta8(aCur, aSpy);
           int dB = AbsAngleDelta8(aNext, aSpy);
 
@@ -987,7 +987,7 @@ void Level6_UpdateActors(void) {
                      AbsAngleDelta8(actor->rotZ,
                                    ArcTan2(spy->posX - actor->posX,
                                                  spy->posY - actor->posY,
-                                                 0)) < 0x3C) {
+                                                 ATAN_ANGLE8)) < 0x3C) {
             st->path->reversed = -st->path->reversed;
             st->path->cur = next;
           }
@@ -1033,7 +1033,7 @@ void Level6_UpdateActors(void) {
         TurnActorYawTowardAngle(actor,
                       ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                                     st->path->nodes[st->path->cur].y - actor->posY,
-                                    0),
+                                    ATAN_ANGLE8),
                       6, 0, 0);
         if (d > 0x100) {
           MoveActorAlongHeading(actor, 0x96, 0, 0, MOVE_LIFT);
@@ -1082,7 +1082,7 @@ void Level6_UpdateActors(void) {
         TurnActorYawTowardAngle(actor,
                       ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                                     st->path->nodes[st->path->cur].y - actor->posY,
-                                    0),
+                                    ATAN_ANGLE8),
                       6, 0, 0);
         if (d > 0x100) {
           MoveActorAlongHeading(actor, 0x96, 0, 0, MOVE_LIFT);
@@ -1125,7 +1125,7 @@ void Level6_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000) {
           int a = (ArcTan2(spy->posX - st->path->nodes[st->path->cur].x,
                                  SPY.posY - st->path->nodes[st->path->cur].y,
-                                 0) +
+                                 ATAN_ANGLE8) +
                    0x80) &
                   0xFF;
 
@@ -1133,7 +1133,7 @@ void Level6_UpdateActors(void) {
                         st->speed, 0xF, 0x40, 0xFF, 0xFF, 0, 0, 0);
           a = (a - ArcTan2(actor->posX - st->path->nodes[st->path->cur].x,
                                  actor->posY - st->path->nodes[st->path->cur].y,
-                                 0)) &
+                                 ATAN_ANGLE8)) &
               0xFF;
           if (a > 0x80) {
             a -= 0x100;
@@ -1795,7 +1795,7 @@ void Level6_UpdateActors(void) {
                 st->prompted = 0;
                 actor->posZ = st->baseZ + 0x80;
                 actor->rotZ = ArcTan2(SPY.posX - actor->posX,
-                                             SPY.posY - actor->posY, 0) -
+                                             SPY.posY - actor->posY, ATAN_ANGLE8) -
                                128;
                 actor->cullRadius = 0x20;
                 actor->mode = SAVEHOST_POP_IN;
@@ -1850,7 +1850,7 @@ void Level6_UpdateActors(void) {
           if (st->wanderTimer == 0) {
             int baseDistance = (GetRandomU32() & 0x3F) + 0x140;
             char finalAngle = (ArcTan2(SPY.posX - tgtB->posX,
-                                             SPY.posY - tgtB->posY, 0) +
+                                             SPY.posY - tgtB->posY, ATAN_ANGLE8) +
                                (GetRandomU32() & 0xF) - 8);
 
             CopyVector(st->wanderTo, &tgtB->posX);
@@ -1861,7 +1861,7 @@ void Level6_UpdateActors(void) {
             st->wanderTo[1] -= (LookupSine(finalAngle * 0x10) * baseDistance) >> 12;
 
             st->faceYaw = ArcTan2(SPY.posX - st->wanderTo[0],
-                                      SPY.posY - st->wanderTo[1], 0);
+                                      SPY.posY - st->wanderTo[1], ATAN_ANGLE8);
             st->wanderTimer = 0;
           }
         }
@@ -2073,8 +2073,8 @@ void Level6_UpdateActors(void) {
               ScaleVector3ByRatio(g056, dist, reach - 5);
             }
             AddVector(&actor->posX, &actor->posX, g056);
-            TurnActorYawTowardAngle(actor, ArcTan2(g056[0], g056[1], 0), 0xA, 0, 0);
-            actor->rotY = ArcTan2(VectorLength(g056, VEC_LEN_XY), g056[2], 0);
+            TurnActorYawTowardAngle(actor, ArcTan2(g056[0], g056[1], ATAN_ANGLE8), 0xA, 0, 0);
+            actor->rotY = ArcTan2(VectorLength(g056, VEC_LEN_XY), g056[2], ATAN_ANGLE8);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
           }
@@ -2138,8 +2138,8 @@ void Level6_UpdateActors(void) {
                 ScaleVector3ByRatio(g240, dist, 0x122);
               }
               AddVector(&actor->posX, &actor->posX, g240);
-              TurnActorYawTowardAngle(actor, ArcTan2(g240[0], g240[1], 0), 0xA, 0, 0);
-              actor->rotY = ArcTan2(VectorLength(g240, VEC_LEN_XY), g240[2], 0);
+              TurnActorYawTowardAngle(actor, ArcTan2(g240[0], g240[1], ATAN_ANGLE8), 0xA, 0, 0);
+              actor->rotY = ArcTan2(VectorLength(g240, VEC_LEN_XY), g240[2], ATAN_ANGLE8);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
             break;
@@ -2408,10 +2408,10 @@ void Level6_UpdateActors(void) {
           if ((drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
               AbsAngleDelta8(spy->bodyRotZ,
                             ArcTan2(actor->posX - spy->posX,
-                                          actor->posY - spy->posY, 0)) < 0x30 &&
+                                          actor->posY - spy->posY, ATAN_ANGLE8)) < 0x30 &&
               AbsAngleDelta8(actor->rotZ,
                             ArcTan2(spy->posX - actor->posX,
-                                          spy->posY - actor->posY, 0)) < 0x30) {
+                                          spy->posY - actor->posY, ATAN_ANGLE8)) < 0x30) {
             spy->requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
             ResetSpyroLinearMotion();
             ZeroVector(&spy->headLook);
@@ -2547,11 +2547,11 @@ void Level6_UpdateActors(void) {
                  ApproxDist2D(&actor->posX, &spy->posX) < 0x780 &&
                  AbsAngleDelta8(SPY.bodyRotZ,
                                ArcTan2(actor->posX - spy->posX,
-                                             actor->posY - g_nSpyroWorldPosY, 0)) <
+                                             actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8)) <
                      0x20 &&
                  AbsAngleDelta8(actor->rotZ,
                                ArcTan2(spy->posX - actor->posX,
-                                             g_nSpyroWorldPosY - actor->posY, 0)) <
+                                             g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8)) <
                      0x28) {
         actor->mode = TALKER_REARM;
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
@@ -2589,7 +2589,7 @@ void Level6_UpdateActors(void) {
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         actor->flags = 0;
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
-                                                actor->posY - spy->posY, 0),
+                                                actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, 0x20, 0x40);
         {
           if (actor->flags & ACTOR_HIT_FLAME) {
@@ -2760,7 +2760,7 @@ void Level6_UpdateActors(void) {
         if (actor->mode != SOLDIER_IN_POST || actor->cullRadius != 0) {
           st->knockDir = StepAndLerpAngle8(
               ArcTan2(actor->posX - g_anSpyroWorldPos, actor->posY - g_nSpyroWorldPosY,
-                            0),
+                            ATAN_ANGLE8),
               g_bSpyroPersistentEulerZ, 0x20, 0x40);
           st->knock = 0xFA;
           if ((unsigned)(st->kind - 2) < 2 || st->kind == SOLDIERKIND_GUNNER) {
@@ -2907,7 +2907,7 @@ void Level6_UpdateActors(void) {
         }
         case SOLDIERKIND_CANNON_RUNNER: {
           Actor *a = &g_pActorListBase[st->link];
-          int h = ArcTan2(a->posX - actor->posX, a->posY - actor->posY, 0);
+          int h = ArcTan2(a->posX - actor->posX, a->posY - actor->posY, ATAN_ANGLE8);
           int d = ApproxDist2D(&actor->posX, &a->posX);
 
           if (actor->subMode == 0) {
@@ -3004,9 +3004,9 @@ void Level6_UpdateActors(void) {
         int r;
 
         ApproxDist2D(&actor->posX, &g_anSpyroWorldPos);
-        h = ArcTan2(a->posX - actor->posX, a->posY - actor->posY, 0);
+        h = ArcTan2(a->posX - actor->posX, a->posY - actor->posY, ATAN_ANGLE8);
         h2 = WrapAddAngle8(
-            ArcTan2(g_anSpyroWorldPos - a->posX, g_nSpyroWorldPosY - a->posY, 0), 0x80);
+            ArcTan2(g_anSpyroWorldPos - a->posX, g_nSpyroWorldPosY - a->posY, ATAN_ANGLE8), 0x80);
         r = SteerActorAroundPoint(actor, &a->posX, 0x5DC, h2, 4, 0x32, 0xE, 0x80, 0xFF,
                           0xFF, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
         TurnActorYawTowardAngle(a, h, 4, 0, 0);
@@ -3052,7 +3052,7 @@ void Level6_UpdateActors(void) {
             MoveActorAlongHeading(o, 0x5DC, 0, 0, 0);
             o->posZ += 0x4E2;
             o->rotZ = ArcTan2(spy->posX - o->posX,
-                                     spy->posY - o->posY, 0);
+                                     spy->posY - o->posY, ATAN_ANGLE8);
             CopyVector(g304, &spy->posX);
             g304[2] -= 0x12C;
             fs->speed = 0xB4;
@@ -3082,7 +3082,7 @@ void Level6_UpdateActors(void) {
 
         TurnActorYawTowardAngle(actor,
                       ArcTan2(a->posX - actor->posX,
-                                    a->posY - actor->posY, 0),
+                                    a->posY - actor->posY, ATAN_ANGLE8),
                       4, 0, 0);
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
           if (b->mode < ACTOR_MODE_DORMANT) {
@@ -3101,7 +3101,7 @@ void Level6_UpdateActors(void) {
 
           if (TickCountdownByFrameDelta(&st->volley, 4) == 2) {
             int h = ArcTan2(c->posX - actor->posX, c->posY - actor->posY,
-                                  0);
+                                  ATAN_ANGLE8);
             Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_FIREBALL, actor);
             FireballState *fs = o->state;
 
@@ -3170,7 +3170,7 @@ void Level6_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, g304) < 0x200) {
           if (TurnActorYawTowardAngle(actor,
                             ArcTan2(a->posX - actor->posX,
-                                          a->posY - actor->posY, 0),
+                                          a->posY - actor->posY, ATAN_ANGLE8),
                             6, 6, 1) != 0) {
             actor->subMode = 0;
             actor->mode = SOLDIER_ENTER_POST;
@@ -3179,7 +3179,7 @@ void Level6_UpdateActors(void) {
           }
         } else if (TurnActorYawTowardAngle(actor,
                                  ArcTan2(g304[0] - actor->posX,
-                                               g304[1] - actor->posY, 0),
+                                               g304[1] - actor->posY, ATAN_ANGLE8),
                                  6, 0x14, 1) != 0) {
           if (st->speed < 0x82) {
             st->speed += 0x14;
@@ -3202,13 +3202,13 @@ void Level6_UpdateActors(void) {
           actor->cullRadius = 0x20;
           actor->subMode = 1;
           actor->rotZ = ArcTan2(g_anSpyroWorldPos - actor->posX,
-                                       g_nSpyroWorldPosY - actor->posY, 0);
+                                       g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8);
           ANIM_SET(actor, 0xC);
         }
         if (actor->anim == 0x11) {
           if (AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                             ArcTan2(actor->posX - g_anSpyroWorldPos,
-                                          actor->posY - g_nSpyroWorldPosY, 0)) >=
+                                          actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8)) >=
                   0x17 ||
               st->bold != 0) {
             if (g_nActorAnimNewFrame != 0 && actor->nextFrame >= 0x32) {
@@ -3229,7 +3229,7 @@ void Level6_UpdateActors(void) {
         } else if (g_nActorAnimDone != 0 &&
                    (AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                                   ArcTan2(actor->posX - g_anSpyroWorldPos,
-                                                actor->posY - g_nSpyroWorldPosY, 0)) >=
+                                                actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8)) >=
                         0x17 ||
                     st->bold != 0)) {
           ANIM_SET(actor, 0x11);
@@ -3252,7 +3252,7 @@ void Level6_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &a->posX) > 0x64) {
           MoveActorAlongAngle(actor,
                         ArcTan2(a->posX - actor->posX,
-                                      a->posY - actor->posY, 0),
+                                      a->posY - actor->posY, ATAN_ANGLE8),
                         0x64, 0, 0, 0);
         } else {
           CopyVector(&actor->posX, &a->posX);
@@ -3270,7 +3270,7 @@ void Level6_UpdateActors(void) {
         ANIM_GO(actor, 1);
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(st->home[0] - actor->posX,
-                                        st->home[1] - actor->posY, 0),
+                                        st->home[1] - actor->posY, ATAN_ANGLE8),
                           4, 0x14, 1) != 0) {
           MoveActorAlongHeading(actor, 0x5A, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
@@ -3330,7 +3330,7 @@ void Level6_UpdateActors(void) {
             RotateVectorByMatrix(actor->mtx, g304, g304);
             AddVector(g304, g304, &actor->posX);
             if (AbsAngleDelta8(ArcTan2(g304[0] - g_anSpyroWorldPos,
-                                            g304[1] - g_nSpyroWorldPosY, 0),
+                                            g304[1] - g_nSpyroWorldPosY, ATAN_ANGLE8),
                               g_bSpyroPersistentEulerZ) < 0x30) {
               actor->mode = FBCANNON_LIT;
               continue;
@@ -3343,7 +3343,7 @@ void Level6_UpdateActors(void) {
 
             if (0x40 - a < ad && ad < a + 0x40) {
               int d2 = WrapAngleDelta8(ArcTan2(g_anSpyroWorldPos - actor->posX,
-                                                   g_nSpyroWorldPosY - actor->posY, 0),
+                                                   g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8),
                                      actor->rotZ);
 
               if (b < ABS(d2) &&
@@ -3435,7 +3435,7 @@ void Level6_UpdateActors(void) {
             continue;
           }
           ang = (ArcTan2(q->posX - actor->posX, q->posY - actor->posY,
-                               0) -
+                               ATAN_ANGLE8) -
                  actor->rotZ) &
                 0xFF;
           if (ang > 0x80) {
@@ -3467,7 +3467,7 @@ void Level6_UpdateActors(void) {
         }
         if (best != 0) {
           o->rotZ = ArcTan2(best->posX - actor->posX,
-                                   best->posY - actor->posY, 0);
+                                   best->posY - actor->posY, ATAN_ANGLE8);
           cs->grav = -5;
           SubtractVector(g360, &best->posX, &o->posX);
           ang = VectorLength(g360, VEC_LEN_XY);
@@ -4627,7 +4627,7 @@ void Level6_UpdateActors(void) {
 
           actor->subMode += 8;
           bearing = ArcTan2(SPY.posX - st->parent->posX,
-                                  SPY.posY - st->parent->posY, 0);
+                                  SPY.posY - st->parent->posY, ATAN_ANGLE8);
           g408[0] = (g_anCosineLut[bearing] * 3) >> 4;
           g408[1] = (g_anSineLut[bearing] * 3) >> 4;
           g408[2] = 0;

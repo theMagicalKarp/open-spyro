@@ -28,7 +28,7 @@ void AlignSpyroBodyToVelocity(void) {
   d[0] = 0;
   len = VectorLength(g_anSpyroVelocity, VEC_LEN_XY);
   d[2] = len;
-  d[1] = ArcTan2(len, g_anSpyroVelocity[2], 1) + 0x8E;
+  d[1] = ArcTan2(len, g_anSpyroVelocity[2], ATAN_ANGLE12) + 0x8E;
   v = d[0];
   pitch = g_nSpyroBodyPitch;
   v -= pitch;

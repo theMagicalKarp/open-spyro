@@ -53,7 +53,7 @@ void SpawnNameLetterActors(Actor *sign, int named) {
   } else {
     name = g_apBalloonistNames[0];
     yaw = ArcTan2(g_anSpyroWorldPos[0] - sign->posX,
-                  g_nSpyroWorldPosY - sign->posY, 0);
+                  g_nSpyroWorldPosY - sign->posY, ATAN_ANGLE8);
   }
   a = yaw & 0xff;
   ang = a * 16;

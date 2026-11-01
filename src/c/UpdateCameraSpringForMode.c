@@ -56,8 +56,8 @@ SDATA(g_nCameraSpringReengageCountdown, 4);
                     g_bCameraLookaheadMotionScale);                            \
     RShiftVector3(ahead, shift);                                               \
     AddVector(ahead, rel, ahead);                                              \
-    a = ArcTan2(rel[0], rel[1], 1);                                            \
-    out = (a - ArcTan2(ahead[0], ahead[1], 1)) & 0xFFF;                        \
+    a = ArcTan2(rel[0], rel[1], ATAN_ANGLE12);                                 \
+    out = (a - ArcTan2(ahead[0], ahead[1], ATAN_ANGLE12)) & 0xFFF;             \
   }
 
 /* Per-frame camera spring driver (0x80035fb4, 5208 bytes). Picks the target
@@ -435,7 +435,7 @@ void UpdateCameraSpringForMode(void) {
     g_pCameraAnchorPos = g_anSpyroWorldPos;
     g_nCameraTargetYawBiasFromMode =
         ArcTan2(ACTOR_X(actor) - g_pCameraAnchorPos[0],
-                actor->posY - g_nSpyroWorldPosY, 1);
+                actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE12);
     if (g_nCameraCollisionRetries != 0) {
       break;
     }

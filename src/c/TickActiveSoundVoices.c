@@ -159,7 +159,7 @@ int TickActiveSoundVoices(void) {
                                   g_anCameraPos[0],
                               ((int *)(g_aSpuVoiceRows[i].pOwner + 0xC))[1] -
                                   g_anCameraPos[1],
-                              0) -
+                              ATAN_ANGLE8) -
                           yaw),
           range, g_aSpuVoiceRows[i].anPanCache);
       break;

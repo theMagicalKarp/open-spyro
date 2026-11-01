@@ -205,7 +205,7 @@ void Level23_UpdateActors(void) {
             if (cs->owner == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
-                                              actor->posY - spy->posY, 0)) < 0) {
+                                              actor->posY - spy->posY, ATAN_ANGLE8)) < 0) {
                 st->dir = 1;
               } else {
                 st->dir = -1;
@@ -272,7 +272,7 @@ void Level23_UpdateActors(void) {
 
           if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
             int angle = ArcTan2(st->tgtX - actor->posX,
-                                      st->tgtY - actor->posY, 0);
+                                      st->tgtY - actor->posY, ATAN_ANGLE8);
 
             st->heading = angle;
             st->headingTimer = 40;
@@ -286,7 +286,7 @@ void Level23_UpdateActors(void) {
       case BUTTERFLY_CIRCLE: {
         SteerActorAroundPoint(actor, &spy->posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
-                                                  actor->posY - spy->posY, 0),
+                                                  actor->posY - spy->posY, ATAN_ANGLE8),
                                     st->dir * 8),
                       8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
 
@@ -1036,8 +1036,8 @@ void Level23_UpdateActors(void) {
             ScaleVector3ByRatio(svA, dist, targetSpeed - 5);
           }
           AddVector(&actor->posX, &actor->posX, svA);
-          TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], 0), 0xA, 0, 0);
-          pitchAngle = ArcTan2(VectorLength(svA, VEC_LEN_XY), svA[2], 0);
+          TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], ATAN_ANGLE8), 0xA, 0, 0);
+          pitchAngle = ArcTan2(VectorLength(svA, VEC_LEN_XY), svA[2], ATAN_ANGLE8);
           actor->rotY = pitchAngle;
           actor->rotY = StepAngle8Toward(pitchAngle, 0, 0x30);
           break;
@@ -1099,8 +1099,8 @@ void Level23_UpdateActors(void) {
               ScaleVector3ByRatio(svJ, dist, 290);
 
             AddVector(&actor->posX, &actor->posX, svJ);
-            TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], 0), 0xA, 0, 0);
-            pitchAngle = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], 0);
+            TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], ATAN_ANGLE8), 0xA, 0, 0);
+            pitchAngle = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], ATAN_ANGLE8);
             actor->rotY = pitchAngle;
             actor->rotY = StepAngle8Toward(pitchAngle, 0, 0x30);
           }
@@ -1206,7 +1206,7 @@ void Level23_UpdateActors(void) {
         st->zVel = 0xC8;
         st->moveSpeed = 0x15E;
         st->heading = StepAndLerpAngle8(
-            ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
+            ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x28, 0x40);
         for (i = 0; i < 3; i++) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
@@ -1495,7 +1495,7 @@ void Level23_UpdateActors(void) {
         st->zVel = 0;
         st->moveSpeed = 0x15E;
         st->heading = StepAndLerpAngle8(
-            ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
+            ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x28, 0x40);
         for (i = 0; i < 3; i++) {
           if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
@@ -1579,7 +1579,7 @@ void Level23_UpdateActors(void) {
         EBB_BREAK();
         TurnActorYawTowardAngle(actor,
                       WrapAddAngle8(ArcTan2(spy->posX - actor->posX,
-                                                  spy->posY - actor->posY, 0),
+                                                  spy->posY - actor->posY, ATAN_ANGLE8),
                                     0x40),
                       4, 0, 0);
         break;
@@ -2068,7 +2068,7 @@ void Level23_UpdateActors(void) {
         SubtractVector(svW, &st->x, &actor->posX);
         st->radius = VectorLength(svW, VEC_LEN_XY);
         st->angle =
-            ArcTan2(actor->posX - st->x, st->y - actor->posY, 1);
+            ArcTan2(actor->posX - st->x, st->y - actor->posY, ATAN_ANGLE12);
         st->phase = 0x800;
         actor->mode = TALLY_ICON_TO_SLOT;
         actor->rotZ += 8;
@@ -2093,7 +2093,7 @@ void Level23_UpdateActors(void) {
         SubtractVector(svW, &st->x, &actor->posX);
         st->radius = VectorLength(svW, VEC_LEN_XY);
         st->angle =
-            ArcTan2(actor->posX - st->x, st->y - actor->posY, 1);
+            ArcTan2(actor->posX - st->x, st->y - actor->posY, ATAN_ANGLE12);
         st->phase = 0x800;
         actor->mode = TALLY_ICON_TO_RING;
         actor->rotZ += 8;
@@ -2107,7 +2107,7 @@ void Level23_UpdateActors(void) {
         actor->rotZ += 8;
         if (st->phase <= 0) {
           st->angle =
-              ArcTan2(actor->posX - 0x100, actor->posY - 0x78, 1);
+              ArcTan2(actor->posX - 0x100, actor->posY - 0x78, ATAN_ANGLE12);
           st->phase = -0x3000;
           st->radius = 0x40;
           actor->mode = TALLY_ICON_SPIRAL;
@@ -2179,7 +2179,7 @@ void Level23_UpdateActors(void) {
 
           actor->subMode += 8;
           anglespyro = ArcTan2(spy->posX - st->owner->posX,
-                                     SPY.posY - st->owner->posY, 0);
+                                     SPY.posY - st->owner->posY, ATAN_ANGLE8);
           vecA[0] = g_anCosineLut[anglespyro] * 3 >> 4;
           vecA[1] = g_anSineLut[anglespyro] * 3 >> 4;
           vecA[2] = 0;

@@ -66,7 +66,7 @@ int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed,
   }
 
   node = (int *)((char *)path + (path->cur << 4)); /* node x/y at [2]/[3] */
-  ang = ArcTan2(node[2] - actor->posX, node[3] - actor->posY, 0);
+  ang = ArcTan2(node[2] - actor->posX, node[3] - actor->posY, ATAN_ANGLE8);
 
   if (AbsAngleDelta8(ang, actor->rotZ) <= lim) {
     actor->subMode = 1;

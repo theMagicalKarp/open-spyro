@@ -78,10 +78,11 @@ void BeginSaveMenuFromWorld(Actor *actor) {
     register int ry asm("$2");
     ry = ((Actor *)rec)->posY;
     g_nSaveMenuSpyroToYaw =
-        ArcTan2(((Actor *)rec)->posX - SPY_PREV[-6], ry - py, 1);
+        ArcTan2(((Actor *)rec)->posX - SPY_PREV[-6], ry - py, ATAN_ANGLE12);
   }
-  g_nSaveMenuHostFromAngle = ArcTan2(ACTOR_RAW(actor, int, posX) - SPY_PREV[-6],
-                                     actor->posY - g_nSpyroWorldPosY, 1);
+  g_nSaveMenuHostFromAngle =
+      ArcTan2(ACTOR_RAW(actor, int, posX) - SPY_PREV[-6],
+              actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE12);
   SubtractVector(vec, &actor->posX, &SPY_PREV[-6]);
   g_nSaveMenuHostFromDist = VectorLength(vec, VEC_LEN_XY);
   z = ACTOR_RAW(actor, int, posZ);
@@ -94,14 +95,15 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   if (g_pSparxActor != 0) {
     g_nSaveMenuSparxFromAngle =
         ArcTan2(g_pSparxActor->posX - SPY_PREV[-6],
-                g_pSparxActor->posY - g_nSpyroWorldPosY, 1);
+                g_pSparxActor->posY - g_nSpyroWorldPosY, ATAN_ANGLE12);
     SubtractVector(vec, &g_pSparxActor->posX, &SPY_PREV[-6]);
     g_nSaveMenuSparxFromDist = VectorLength(vec, VEC_LEN_XY);
     g_nSaveMenuSparxToDist = 0x600;
     g_nSaveMenuSparxToAngle = (g_nSaveMenuSpyroToYaw + 0x800) & 0xFFF;
   }
-  g_nSaveMenuCameraFromAngle = ArcTan2(g_anCameraPos[0] - SPY_PREV[-6],
-                                       g_anCameraPos[1] - g_nSpyroWorldPosY, 1);
+  g_nSaveMenuCameraFromAngle =
+      ArcTan2(g_anCameraPos[0] - SPY_PREV[-6],
+              g_anCameraPos[1] - g_nSpyroWorldPosY, ATAN_ANGLE12);
   SubtractVector(vec, g_anCameraPos, &SPY_PREV[-6]);
   g_nSaveMenuCameraFromDist = VectorLength(vec, VEC_LEN_XY);
   g_nSaveMenuXOffset = 0xB0;

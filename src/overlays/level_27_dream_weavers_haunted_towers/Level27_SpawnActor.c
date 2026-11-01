@@ -150,7 +150,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
       rec->posZ += 0x12C;
       rec->rotZ = parent->rotZ;
       turn = (ArcTan2(ApproxDist2D(pos, g_anSpyroWorldPos), g_nSpyroWorldPosZ - rec->posZ,
-                            0) -
+                            ATAN_ANGLE8) -
               parent->rotY) &
              0xFF;
       if (turn > 0x80) {

@@ -22,12 +22,12 @@ int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius,
   int ret;
   SubtractVector(vec, &path->nodes[path->cur].x, &actor->posX);
   eul[0] = 0;
-  eul[1] = ArcTan2(VectorLength(vec, VEC_LEN_XY), vec[2], 0);
+  eul[1] = ArcTan2(VectorLength(vec, VEC_LEN_XY), vec[2], ATAN_ANGLE8);
   if (((int)VectorLength(vec, VEC_LEN_XY)) < radius) {
     eul[2] = *yawp;
   } else {
     int yaw;
-    d = ArcTan2(vec[0], vec[1], 0);
+    d = ArcTan2(vec[0], vec[1], ATAN_ANGLE8);
     yaw = *yawp;
     d = (d - yaw) & 0xFF;
     if (d >= 0x81) {

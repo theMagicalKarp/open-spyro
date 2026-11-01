@@ -23,8 +23,8 @@ int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim,
   moved = 0;
   pos = &actor->posX;
   SubtractVector(dv, target, pos);
-  yaw = ArcTan2(dv[0], dv[1], 0);
-  pitch = ArcTan2(VectorLength(dv, VEC_LEN_XY), dv[2], 0);
+  yaw = ArcTan2(dv[0], dv[1], ATAN_ANGLE8);
+  pitch = ArcTan2(VectorLength(dv, VEC_LEN_XY), dv[2], ATAN_ANGLE8);
 
   heading = actor->rotZ;
   yaw = (yaw - heading) & 0xFF;

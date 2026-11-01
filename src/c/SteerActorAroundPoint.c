@@ -44,7 +44,7 @@ int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face,
   int e;
   int heading;
   int r;
-  dir = ArcTan2(actor->posX - tgt[0], actor->posY - tgt[1], 0);
+  dir = ArcTan2(actor->posX - tgt[0], actor->posY - tgt[1], ATAN_ANGLE8);
   face = WrapAngleDelta8(face, dir);
   do {
     do {
@@ -111,7 +111,7 @@ int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face,
   }
   pt[0] = tgt[0] + ((g_anCosineLut[dir] * radius) >> 12);
   pt[1] = tgt[1] + ((g_anSineLut[dir] * radius) >> 12);
-  heading = ArcTan2(pt[0] - actor->posX, pt[1] - actor->posY, 0);
+  heading = ArcTan2(pt[0] - actor->posX, pt[1] - actor->posY, ATAN_ANGLE8);
   if (g_nActorFrameDelta == 3) {
     speed = speed + (speed >> 1);
   } else if (g_nActorFrameDelta == 4) {
@@ -119,8 +119,8 @@ int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face,
   }
   if (flags & MOVE_STRAFE) {
     TurnActorYawTowardAngle(
-        actor, ArcTan2(tgt[0] - actor->posX, tgt[1] - actor->posY, 0), turnStep,
-        0, 0);
+        actor, ArcTan2(tgt[0] - actor->posX, tgt[1] - actor->posY, ATAN_ANGLE8),
+        turnStep, 0, 0);
     r = MoveActorAlongAngle(actor, heading, speed, moveGroup, moveRadius,
                             flags);
   } else {

@@ -116,8 +116,8 @@ void StoryIntro_Update(void) {
 
       SubtractVector(&delta, (VECTOR *)g_anSpyroWorldPos, &delta);
       g_abSpyroPersistentEuler[1] =
-          ArcTan2(VectorLength(&delta, VEC_LEN_XY), delta.vz, 0);
-      g_abSpyroPersistentEuler[2] = ArcTan2(delta.vx, delta.vy, 0);
+          ArcTan2(VectorLength(&delta, VEC_LEN_XY), delta.vz, ATAN_ANGLE8);
+      g_abSpyroPersistentEuler[2] = ArcTan2(delta.vx, delta.vy, ATAN_ANGLE8);
       AdvanceSpyroAnimFrame(3);
       TickSpyroAnimLayer1();
       TickSpyroAnimLayer2();

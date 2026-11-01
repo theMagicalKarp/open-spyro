@@ -102,7 +102,12 @@ void CopyWords(void *dst, void *src, int byte_count);
 /* 0x800169ac: 2-arg arctan returning 8-bit angle (0..0xff = 0..360deg). Smaller, lower-precision sibling of ArcTan2 — uses byte-LUT at s__________________________________8006d82c. */
 int ArcTan2_8bit(int y, int x);
 
-int ArcTan2(int y, int x, int high_precision);
+#ifndef ATAN_ANGLE8
+#define ATAN_ANGLE8 0  /* ArcTan2: 8-bit angle, 0..0xFF per turn */
+#define ATAN_ANGLE12 1 /* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */
+#endif
+/* 0x80016ab4: Angle of (y, x) in the scale ATAN_ANGLE8 (0..0xFF) or ATAN_ANGLE12 (0..0xFFF, GTE-normalized LUT with one division of interpolation). */
+int ArcTan2(int y, int x, int scale);
 
 int LookupSine(int angle);
 

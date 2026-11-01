@@ -191,7 +191,7 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
                             *(int *)(g_aSpuVoiceRows[voice].pOwner + 0xC),
                         g_anCameraPos[1] -
                             *(int *)(g_aSpuVoiceRows[voice].pOwner + 0x10),
-                        0) &
+                        ATAN_ANGLE8) &
                     0xFF) &
                 0xFF,
             range, &g_aSpuVoiceRows[voice].anPanCache[0]);

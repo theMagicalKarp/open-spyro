@@ -10,7 +10,7 @@
    step when `flag` is set. */
 int TrackEntityYawTowardSpyro(Actor *actor, int step, int threshold, int flag) {
   int target = ArcTan2(g_anSpyroWorldPos[0] - actor->posX,
-                       g_anSpyroWorldPos[1] - actor->posY, 0);
+                       g_anSpyroWorldPos[1] - actor->posY, ATAN_ANGLE8);
   int delta = AbsAngleDelta8(target, actor->rotZ);
 
   if (g_nActorFrameDelta == 3) {

@@ -190,7 +190,7 @@ void Level24_UpdateActors(void) {
 
         cameraAngleDiff = AbsAngleDelta8(
             actor->rotZ,
-            ArcTan2(CAM.posX - actor->posX, CAM.posY - actor->posY, 0));
+            ArcTan2(CAM.posX - actor->posX, CAM.posY - actor->posY, ATAN_ANGLE8));
 
         if (cameraAngleDiff <= 56) {
           if (actor->subMode == NAMESIDE_BACK) {
@@ -353,7 +353,7 @@ void Level24_UpdateActors(void) {
             if (cs->owner == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
-                                              actor->posY - spy->posY, 0)) <
+                                              actor->posY - spy->posY, ATAN_ANGLE8)) <
                   0) {
                 st->dir = 1;
               } else {
@@ -422,7 +422,7 @@ void Level24_UpdateActors(void) {
 
           if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
             int angle = ArcTan2(st->tgtX - actor->posX,
-                                      st->tgtY - actor->posY, 0);
+                                      st->tgtY - actor->posY, ATAN_ANGLE8);
 
             st->heading = angle;
             st->headingTimer = 40;
@@ -436,7 +436,7 @@ void Level24_UpdateActors(void) {
       case BUTTERFLY_CIRCLE: {
         SteerActorAroundPoint(actor, &spy->posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
-                                                  actor->posY - spy->posY, 0),
+                                                  actor->posY - spy->posY, ATAN_ANGLE8),
                                     st->dir * 8),
                       8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
 
@@ -686,7 +686,7 @@ void Level24_UpdateActors(void) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
             RotateVectorByMatrix(actor->mtx, g104, g104);
             AddVector(g104, g104, &actor->posX);
-            h = ArcTan2(g104[0] - g_anSpyroWorldPos, g104[1] - g_nSpyroWorldPosY, 0);
+            h = ArcTan2(g104[0] - g_anSpyroWorldPos, g104[1] - g_nSpyroWorldPosY, ATAN_ANGLE8);
             if (st->timer == 0 && AbsAngleDelta8(h, g_bSpyroPersistentEulerZ) < 0x30) {
               actor->mode = CCANNON_ARM;
               continue;
@@ -699,7 +699,7 @@ void Level24_UpdateActors(void) {
 
             if (0x40 - a < ad && ad < a + 0x40) {
               int d2 = WrapAngleDelta8(ArcTan2(g_anSpyroWorldPos - actor->posX,
-                                                   g_nSpyroWorldPosY - actor->posY, 0),
+                                                   g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8),
                                      actor->rotZ);
 
               if (b < ABS(d2) &&
@@ -789,7 +789,7 @@ void Level24_UpdateActors(void) {
             continue;
           }
           ang = (ArcTan2(q->posX - actor->posX, q->posY - actor->posY,
-                               0) -
+                               ATAN_ANGLE8) -
                  actor->rotZ) &
                 0xFF;
           if (ang > 0x80) {
@@ -826,7 +826,7 @@ void Level24_UpdateActors(void) {
             g168[2] += 0x320;
           }
           o->rotZ = ArcTan2(best->posX - actor->posX,
-                                   best->posY - actor->posY, 0);
+                                   best->posY - actor->posY, ATAN_ANGLE8);
           cs->dvz = -8;
           cs->speed = 0x258;
           {
@@ -854,7 +854,7 @@ void Level24_UpdateActors(void) {
             TurnActorYawTowardAngle(actor,
                           ArcTan2(g_pActorListBase[st->target].posX - actor->posX,
                                         g_pActorListBase[st->target].posY - actor->posY,
-                                        0),
+                                        ATAN_ANGLE8),
                           6, 0x14, one) != 0) {
           Actor *o;
           CometState *cs;
@@ -863,7 +863,7 @@ void Level24_UpdateActors(void) {
 
           CopyVector(g192, &g_pActorListBase[st->target].posX);
           o = g_pfnLevelSpawnActor(ACTOR_TYPE_COMET, actor);
-          o->rotZ = ArcTan2(g192[0] - o->posX, g192[1] - o->posY, 0);
+          o->rotZ = ArcTan2(g192[0] - o->posX, g192[1] - o->posY, ATAN_ANGLE8);
           CopyVector(&o->posX, &actor->posX);
           g192[2] += 0x320;
           cs = o->state;
@@ -920,7 +920,7 @@ void Level24_UpdateActors(void) {
           st->knock = 0x15E;
         }
         st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
-                                                  actor->posY - g_nSpyroWorldPosY, 0),
+                                                  actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
                                     g_bSpyroPersistentEulerZ, 0x20, 0x40);
         actor->flags = 0;
         st->spin = RandomSignedInRange(8, 0xE);
@@ -1127,11 +1127,11 @@ void Level24_UpdateActors(void) {
 
       case LGUARD_ESCORT: {
         Actor *p = &g_pActorListBase[st->partner];
-        int h = ArcTan2(p->posX - actor->posX, p->posY - actor->posY, 0);
+        int h = ArcTan2(p->posX - actor->posX, p->posY - actor->posY, ATAN_ANGLE8);
 
         SteerActorAroundPoint(actor, &p->posX, 0x5DC,
                       WrapAddAngle8(ArcTan2(g_anSpyroWorldPos - p->posX,
-                                                  g_nSpyroWorldPosY - p->posY, 0),
+                                                  g_nSpyroWorldPosY - p->posY, ATAN_ANGLE8),
                                     0x80),
                       4, 0x32, 0xE, 0x80, 0xFF, 0xFF, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
         if (p->mode != 0xA) {
@@ -1168,7 +1168,7 @@ void Level24_UpdateActors(void) {
 
             CopyVector(&o->posX, &actor->posX);
             o->subMode = 7;
-            o->rotY = ArcTan2(st->speed, st->vz, 0);
+            o->rotY = ArcTan2(st->speed, st->vz, ATAN_ANGLE8);
             o->rotZ = actor->rotZ;
             o->cullRadius = 0x50;
             st->spark = 0;
@@ -1732,7 +1732,7 @@ void Level24_UpdateActors(void) {
                 st->prompted = 0;
                 actor->posZ = st->baseZ + 0x80;
                 actor->rotZ = ArcTan2(SPY.posX - actor->posX,
-                                             SPY.posY - actor->posY, 0) -
+                                             SPY.posY - actor->posY, ATAN_ANGLE8) -
                                128;
                 actor->cullRadius = 0x20;
                 actor->mode = SAVEHOST_POP_IN;
@@ -1787,7 +1787,7 @@ void Level24_UpdateActors(void) {
           if (st->wanderTimer == 0) {
             int baseDistance = (GetRandomU32() & 0x3F) + 0x140;
             char finalAngle = (ArcTan2(SPY.posX - tgtB->posX,
-                                             SPY.posY - tgtB->posY, 0) +
+                                             SPY.posY - tgtB->posY, ATAN_ANGLE8) +
                                (GetRandomU32() & 0xF) - 8);
 
             CopyVector(st->wanderTo, &tgtB->posX);
@@ -1798,7 +1798,7 @@ void Level24_UpdateActors(void) {
             st->wanderTo[1] -= (LookupSine(finalAngle * 0x10) * baseDistance) >> 12;
 
             st->faceYaw = ArcTan2(SPY.posX - st->wanderTo[0],
-                                      SPY.posY - st->wanderTo[1], 0);
+                                      SPY.posY - st->wanderTo[1], ATAN_ANGLE8);
             st->wanderTimer = 0;
           }
         }
@@ -2010,8 +2010,8 @@ void Level24_UpdateActors(void) {
               ScaleVector3ByRatio(g152, dist, reach - 5);
             }
             AddVector(&actor->posX, &actor->posX, g152);
-            TurnActorYawTowardAngle(actor, ArcTan2(g152[0], g152[1], 0), 0xA, 0, 0);
-            actor->rotY = ArcTan2(VectorLength(g152, VEC_LEN_XY), g152[2], 0);
+            TurnActorYawTowardAngle(actor, ArcTan2(g152[0], g152[1], ATAN_ANGLE8), 0xA, 0, 0);
+            actor->rotY = ArcTan2(VectorLength(g152, VEC_LEN_XY), g152[2], ATAN_ANGLE8);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
           }
@@ -2075,8 +2075,8 @@ void Level24_UpdateActors(void) {
                 ScaleVector3ByRatio(g320, dist, 0x122);
               }
               AddVector(&actor->posX, &actor->posX, g320);
-              TurnActorYawTowardAngle(actor, ArcTan2(g320[0], g320[1], 0), 0xA, 0, 0);
-              actor->rotY = ArcTan2(VectorLength(g320, VEC_LEN_XY), g320[2], 0);
+              TurnActorYawTowardAngle(actor, ArcTan2(g320[0], g320[1], ATAN_ANGLE8), 0xA, 0, 0);
+              actor->rotY = ArcTan2(VectorLength(g320, VEC_LEN_XY), g320[2], ATAN_ANGLE8);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
             break;
@@ -2247,7 +2247,7 @@ void Level24_UpdateActors(void) {
           actor->posZ = g336[2] + ((g352[2] - g336[2]) >> 1);
           actor->rotZ =
               ArcTan2(actor->posX - g_pActorListBase[st->rider].posX,
-                            actor->posY - g_pActorListBase[st->rider].posY, 0);
+                            actor->posY - g_pActorListBase[st->rider].posY, ATAN_ANGLE8);
           continue;
         }
         if (st->rideMode == 2) {
@@ -2425,7 +2425,7 @@ void Level24_UpdateActors(void) {
           st->knock = 0x17C;
         }
         st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
-                                                  actor->posY - g_nSpyroWorldPosY, 0),
+                                                  actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
                                     g_bSpyroPersistentEulerZ, 0x20, 0x40);
         actor->flags = 0;
         actor->probeDist = 0xFF;
@@ -2648,10 +2648,10 @@ void Level24_UpdateActors(void) {
 
         p = &g_pActorListBase[st->partner];
         ApproxDist2D(&actor->posX, &g_anSpyroWorldPos);
-        h = ArcTan2(p->posX - actor->posX, p->posY - actor->posY, 0);
+        h = ArcTan2(p->posX - actor->posX, p->posY - actor->posY, ATAN_ANGLE8);
         SteerActorAroundPoint(actor, &p->posX, 0x5DC,
                       WrapAddAngle8(ArcTan2(g_anSpyroWorldPos - p->posX,
-                                                  g_nSpyroWorldPosY - p->posY, 0),
+                                                  g_nSpyroWorldPosY - p->posY, ATAN_ANGLE8),
                                     0x80),
                       4, 0x32, 0xE, 0x80, 0xFF, 0xFF, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
         TurnActorYawTowardAngle(p, h, 4, 0, 0);
@@ -2702,7 +2702,7 @@ void Level24_UpdateActors(void) {
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         actor->flags = 0;
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
-                                                actor->posY - spy->posY, 0),
+                                                actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, 0x20, 0x40);
         {
           if (actor->flags & ACTOR_HIT_FLAME) {
@@ -2808,11 +2808,11 @@ void Level24_UpdateActors(void) {
                  ApproxDist2D(&actor->posX, &spy->posX) < 0x780 &&
                  AbsAngleDelta8(SPY.bodyRotZ,
                                ArcTan2(actor->posX - spy->posX,
-                                             actor->posY - g_nSpyroWorldPosY, 0)) <
+                                             actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8)) <
                      0x20 &&
                  AbsAngleDelta8(actor->rotZ,
                                ArcTan2(spy->posX - actor->posX,
-                                             g_nSpyroWorldPosY - actor->posY, 0)) <
+                                             g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8)) <
                      0x28) {
         actor->mode = TALKER_REARM;
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
@@ -4164,7 +4164,7 @@ void Level24_UpdateActors(void) {
 
           actor->subMode += 8;
           bearing = ArcTan2(spy->posX - st->parent->posX,
-                                  SPY.posY - st->parent->posY, 0);
+                                  SPY.posY - st->parent->posY, ATAN_ANGLE8);
           g496[0] = (g_anCosineLut[bearing] * 3) >> 4;
           g496[1] = (g_anSineLut[bearing] * 3) >> 4;
           g496[2] = 0;

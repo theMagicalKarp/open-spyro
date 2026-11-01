@@ -283,7 +283,7 @@ void Level20_UpdateActors(void) {
             if (sparx->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
-                                              actor->posY - spy->posY, 0)) <
+                                              actor->posY - spy->posY, ATAN_ANGLE8)) <
                   0) {
                 st->turn = 1;
               } else {
@@ -357,7 +357,7 @@ void Level20_UpdateActors(void) {
 
             if (ApproxDist2D(&actor->posX, st->home) >= 0x7D1) {
               st->heading = ArcTan2(st->home[0] - actor->posX,
-                                          st->home[1] - actor->posY, 0);
+                                          st->home[1] - actor->posY, ATAN_ANGLE8);
               st->reTurn = 0x28;
             }
           } else {
@@ -369,7 +369,7 @@ void Level20_UpdateActors(void) {
         case BUTTERFLY_CIRCLE:
           SteerActorAroundPoint(actor, &spy->posX, 0x320,
                         WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
-                                                    actor->posY - spy->posY, 0),
+                                                    actor->posY - spy->posY, ATAN_ANGLE8),
                                       st->turn * 8),
                         8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
 
@@ -429,7 +429,7 @@ void Level20_UpdateActors(void) {
           st->knockSpeed = 0x190;
           st->knockZSpeed = 0xAA;
           st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
-                                                actor->posY - spy->posY, 0),
+                                                actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, 0x20, 0x40);
         }
         actor->flags = 0;
@@ -477,7 +477,7 @@ void Level20_UpdateActors(void) {
         TurnActorYawTowardAngle(
             actor,
             ArcTan2(g_pActorListBase[st->partner].posX - actor->posX,
-                          g_pActorListBase[st->partner].posY - actor->posY, 0),
+                          g_pActorListBase[st->partner].posY - actor->posY, ATAN_ANGLE8),
             4, 0, 0);
         if (g_nActorAnimDone != 0) {
           st->timer = 0x78;
@@ -489,7 +489,7 @@ void Level20_UpdateActors(void) {
         TurnActorYawTowardAngle(
             actor,
             ArcTan2(g_pActorListBase[st->partner].posX - actor->posX,
-                          g_pActorListBase[st->partner].posY - actor->posY, 0),
+                          g_pActorListBase[st->partner].posY - actor->posY, ATAN_ANGLE8),
             6, 0, 0);
         if ((TickCountdownByFrameDelta(&st->timer, 4) != 0 ||
              ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x514) &&
@@ -1227,7 +1227,7 @@ void Level20_UpdateActors(void) {
                 st->prompted = 0;
                 actor->posZ = st->baseZ + 0x80;
                 actor->rotZ = ArcTan2(spy->posX - actor->posX,
-                                             spy->posY - actor->posY, 0) -
+                                             spy->posY - actor->posY, ATAN_ANGLE8) -
                                0x80;
                 actor->cullRadius = 0x20;
                 actor->mode = SAVEHOST_POP_IN;
@@ -1286,7 +1286,7 @@ void Level20_UpdateActors(void) {
         if (st->wanderTimer == 0) {
           int reach = (GetRandomU32() & 0x3F) + 0x140;
           int bearing = ArcTan2(spy->posX - rider->posX,
-                                      spy->posY - rider->posY, 0);
+                                      spy->posY - rider->posY, ATAN_ANGLE8);
           int aim = (bearing + (GetRandomU32() & 0xF)) - 8;
 
           EBB_BREAK();
@@ -1297,7 +1297,7 @@ void Level20_UpdateActors(void) {
           st->wanderTo[0] -= (LookupCosine(aim) * reach) >> 12;
           st->wanderTo[1] -= (LookupSine(aim) * reach) >> 12;
           st->faceYaw = ArcTan2(spy->posX - st->wanderTo[0],
-                                  spy->posY - st->wanderTo[1], 0);
+                                  spy->posY - st->wanderTo[1], ATAN_ANGLE8);
           st->wanderTimer = 0;
         }
         break;
@@ -1507,8 +1507,8 @@ void Level20_UpdateActors(void) {
               ScaleVector3ByRatio(svA, dist, reach - 5);
             }
             AddVector(&actor->posX, &actor->posX, svA);
-            TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], 0), 0xA, 0, 0);
-            actor->rotY = ArcTan2(VectorLength(svA, VEC_LEN_XY), svA[2], 0);
+            TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], ATAN_ANGLE8), 0xA, 0, 0);
+            actor->rotY = ArcTan2(VectorLength(svA, VEC_LEN_XY), svA[2], ATAN_ANGLE8);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
           }
@@ -1572,8 +1572,8 @@ void Level20_UpdateActors(void) {
                 ScaleVector3ByRatio(svJ, dist, 0x122);
               }
               AddVector(&actor->posX, &actor->posX, svJ);
-              TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], 0), 0xA, 0, 0);
-              actor->rotY = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], 0);
+              TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], ATAN_ANGLE8), 0xA, 0, 0);
+              actor->rotY = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], ATAN_ANGLE8);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
             break;
@@ -1678,7 +1678,7 @@ void Level20_UpdateActors(void) {
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != CHARGER_KNOCKED) {
         EBB_BREAK();
         st->knock = StepAngle8Toward(ArcTan2(actor->posX - spy->posX,
-                                                actor->posY - spy->posY, 0),
+                                                actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, 0x20);
         st->speed = 0xFA;
         st->turn = 0;
@@ -1708,7 +1708,7 @@ void Level20_UpdateActors(void) {
         }
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
         g_anCameraActiveTargetParams.w[0] = -ArcTan2(spy->posX - actor->posX,
-                                         SPY.posY - actor->posY, 0) *
+                                         SPY.posY - actor->posY, ATAN_ANGLE8) *
                           16;
         g_anCameraActiveTargetParams.w[2] = st->camDist;
       }
@@ -1745,7 +1745,7 @@ void Level20_UpdateActors(void) {
                   actor,
                   ArcTan2(
                       st->path->nodes[st->path->cur].x - actor->posX,
-                      st->path->nodes[st->path->cur].y - actor->posY, 0),
+                      st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8),
                   6, 0x1E, 1) != 0) {
             MoveActorAlongHeading(actor, st->speed, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           }
@@ -1770,7 +1770,7 @@ void Level20_UpdateActors(void) {
           TurnActorYawTowardAngle(actor,
                         ArcTan2(g_pActorListBase[st->target].posX - actor->posX,
                                       g_pActorListBase[st->target].posY - actor->posY,
-                                      0),
+                                      ATAN_ANGLE8),
                         4, 0, 0);
           MoveActorAlongHeading(actor, spd, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           break;
@@ -1821,7 +1821,7 @@ void Level20_UpdateActors(void) {
         if (st->mode == CHARGER_ROLE_POST) {
           SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist2,
                         ArcTan2(spy->posX - st->path->nodes[0].x,
-                                      SPY.posY - st->path->nodes[0].y, 0),
+                                      SPY.posY - st->path->nodes[0].y, ATAN_ANGLE8),
                         8, 0x12C, 0xE, 8, 0xFF, 0xFF, 0, 0, 0);
           if (dist < 0xED8) {
             st->speed = 0xE6;
@@ -1845,7 +1845,7 @@ void Level20_UpdateActors(void) {
                     ApproxDist2D(&actor->posX, &a->posX) < 0x7D0 &&
                     AbsAngleDelta8(actor->rotZ,
                                   ArcTan2(a->posX - actor->posX,
-                                                a->posY - actor->posY, 0)) <
+                                                a->posY - actor->posY, ATAN_ANGLE8)) <
                         0x19) {
                   a->flags |= ACTOR_HIT_SUPER;
                 }
@@ -1858,13 +1858,13 @@ void Level20_UpdateActors(void) {
           st->timer2 = 0x1E;
         }
         st->turn = (ArcTan2(actor->posX - spy->posX,
-                                  actor->posY - spy->posY, 0) -
+                                  actor->posY - spy->posY, ATAN_ANGLE8) -
                     st->knock + 0x100) %
                    0x100;
         if (TurnActorYawTowardAngle(actor,
                           WrapAddAngle8(ArcTan2(spy->posX - actor->posX,
                                                       spy->posY - actor->posY,
-                                                      0),
+                                                      ATAN_ANGLE8),
                                         st->turn),
                           5, 0x1E, 1) == 0) {
           if (st->charging == 0) {
@@ -1886,14 +1886,14 @@ void Level20_UpdateActors(void) {
         }
         if (AbsAngleDelta8(spy->bodyRotZ,
                           ArcTan2(actor->posX - spy->posX,
-                                        actor->posY - spy->posY, 0)) >= 0x3D ||
+                                        actor->posY - spy->posY, ATAN_ANGLE8)) >= 0x3D ||
             ApproxDist2D(&actor->posX, st->vec) >= 0x4001) {
           goto reset137;
         }
         if (dist < 0xED8 &&
             AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
-                                        spy->posY - actor->posY, 0)) < 0x14) {
+                                        spy->posY - actor->posY, ATAN_ANGLE8)) < 0x14) {
           st->speed = 0xFA;
           st->cam = 0;
           ENTER_POSE(actor, CHARGER_RAM);
@@ -1947,7 +1947,7 @@ void Level20_UpdateActors(void) {
               SPY.pCamAnchor = &actor->posX;
               SPY.pCamTarget = &g_anCameraActiveTargetParams;
               g_anCameraActiveTargetParams.w[0] = -ArcTan2(SPY.posX - actor->posX,
-                                               SPY.posY - actor->posY, 0) *
+                                               SPY.posY - actor->posY, ATAN_ANGLE8) *
                                 16;
               g_anCameraActiveTargetParams.w[2] =
                   ApproxDist2D(&actor->posX, &SPY.posX) + 0xC00;
@@ -1981,7 +1981,7 @@ void Level20_UpdateActors(void) {
         if (st->mode == CHARGER_ROLE_POST) {
           SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist2,
                         ArcTan2(st->vec[0] - st->path->nodes[0].x,
-                                      st->vec[1] - st->path->nodes[0].y, 0),
+                                      st->vec[1] - st->path->nodes[0].y, ATAN_ANGLE8),
                         1, 0xC8, 0xE, 8, 0xFF, 0xFF, 0, 0, 0);
           if (ApproxDist2D(&actor->posX, st->vec) < 0x200) {
             ENTER_POSE(actor, CHARGER_IDLE);
@@ -2776,8 +2776,8 @@ void Level20_UpdateActors(void) {
               (unsigned int)(VectorLength(A288, VEC_LEN_XY) - 0x1000) <= 0x2000 &&
               (unsigned int)(A288[2] + 0x1000) <= 0x2000) {
             d = AbsAngleDelta12(ArcTan2(actor->posX - spy->posX,
-                                            actor->posY - spy->posY, 1),
-                              ArcTan2(A288[0], A288[1], 1));
+                                            actor->posY - spy->posY, ATAN_ANGLE12),
+                              ArcTan2(A288[0], A288[1], ATAN_ANGLE12));
             if (d < bestAng) {
               bestAng = d;
               best = a;
@@ -2862,7 +2862,7 @@ void Level20_UpdateActors(void) {
         actor->flags = 0;
         st->stunTimer = 0x50;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
-                                              actor->posY - SPY.posY, 0),
+                                              actor->posY - SPY.posY, ATAN_ANGLE8),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
         st->knockZSpeed = 0x64;
         if (actor->flags & ACTOR_HIT_FLAME) {
@@ -2889,12 +2889,12 @@ void Level20_UpdateActors(void) {
                                : -SPY_DZ(actor) < 0x5DC) &&
             AbsAngleDelta8(((unsigned short)g_nCameraEulerYaw << 16 >> 20),
                           ArcTan2(actor->posX - g_anCameraPos[0],
-                                        actor->posY - g_anCameraPos[1], 0)) <
+                                        actor->posY - g_anCameraPos[1], ATAN_ANGLE8)) <
                 0x28 &&
             dist < 0xC80 &&
             AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
-                                        spy->posY - actor->posY, 0)) < 0x14) {
+                                        spy->posY - actor->posY, ATAN_ANGLE8)) < 0x14) {
           int k;
 
           st->tether = g_pfnLevelSpawnActor(ACTOR_TYPE_LURKER_TETHER, actor);
@@ -2944,7 +2944,7 @@ void Level20_UpdateActors(void) {
         }
         if (AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
-                                        spy->posY - actor->posY, 0)) >= 0x13) {
+                                        spy->posY - actor->posY, ATAN_ANGLE8)) >= 0x13) {
           actor->mode = LURKER_FACE;
           continue;
         }
@@ -2991,7 +2991,7 @@ void Level20_UpdateActors(void) {
                 actor,
                 ArcTan2(FLY_X(st->path, st->path->cur) - actor->posX,
                               FLY_Y(st->path, st->path->cur) - actor->posY,
-                              0),
+                              ATAN_ANGLE8),
                 3, 2, 1) != 0 &&
             g_nActorAnimDone != 0) {
           st->hopSpeed = ApproxDist2D(&actor->posX,
@@ -3052,12 +3052,12 @@ void Level20_UpdateActors(void) {
           SPY.triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_HIT);
         }
         actor->rotZ = ArcTan2(spy->posX - actor->posX,
-                                     spy->posY - actor->posY, 0);
+                                     spy->posY - actor->posY, ATAN_ANGLE8);
         st->tether->rotZ = ArcTan2(spy->posX - actor->posX,
-                                          spy->posY - actor->posY, 0);
+                                          spy->posY - actor->posY, ATAN_ANGLE8);
         st->tether->rotY =
             ArcTan2(ApproxDist2D(&st->tether->posX, &spy->posX),
-                          SPY.posZ - st->tether->posZ, 0);
+                          SPY.posZ - st->tether->posZ, ATAN_ANGLE8);
         st->tether->rotY = StepAngle8Toward(st->tether->rotY, 0, 0x20);
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(st->tether);
@@ -3263,7 +3263,7 @@ void Level20_UpdateActors(void) {
 
           actor->subMode += 8;
           bearing = ArcTan2(spy->posX - st->parent->posX,
-                                  SPY.posY - st->parent->posY, 0);
+                                  SPY.posY - st->parent->posY, ATAN_ANGLE8);
           A376[0] = (g_anCosineLut[bearing] * 3) >> 4;
           A376[1] = (g_anSineLut[bearing] * 3) >> 4;
           A376[2] = 0;
@@ -3315,12 +3315,12 @@ void Level20_UpdateActors(void) {
         if (actor->flags & ACTOR_HIT_BLAST) {
           st->knock = ArcTan2(actor->posX - g_pActorListBase[st->target].posX,
                                     actor->posY - g_pActorListBase[st->target].posY,
-                                    0);
+                                    ATAN_ANGLE8);
           st->speed = 0x8C;
           st->lift = 0x23;
         } else {
           st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
-                                                  actor->posY - spy->posY, 0),
+                                                  actor->posY - spy->posY, ATAN_ANGLE8),
                                     spy->bodyRotZ, 0x20, 0x40);
           st->speed = 0xC8;
           st->lift = 0x32;
@@ -3361,7 +3361,7 @@ void Level20_UpdateActors(void) {
         }
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1388) {
           int ang = ArcTan2(spy->posX - actor->posX,
-                                  SPY.posY - actor->posY, 0);
+                                  SPY.posY - actor->posY, ATAN_ANGLE8);
           int best = 0;
           int sel;
           int k;
@@ -3374,7 +3374,7 @@ void Level20_UpdateActors(void) {
             d = AbsAngleDelta8(ang,
                               ArcTan2(st->path->nodes[k].x - actor->posX,
                                             st->path->nodes[k].y - actor->posY,
-                                            0));
+                                            ATAN_ANGLE8));
             if (best < d) {
               best = d;
               sel = k;
@@ -3390,7 +3390,7 @@ void Level20_UpdateActors(void) {
       case RAM_WANDER: {
         int ang =
             ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
-                          st->path->nodes[st->path->cur].y - actor->posY, 0);
+                          st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8);
 
         if (TickCountdownByFrameDelta(&st->call, 4) != 0) {
           st->call = (GetRandomU32() & 0x1F) + 0x50;
@@ -3479,7 +3479,7 @@ void Level20_UpdateActors(void) {
           g_nSpyroDrawSuppressed = 0;
         }
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
-                                              actor->posY - SPY.posY, 0),
+                                              actor->posY - SPY.posY, ATAN_ANGLE8),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
         st->knockZSpeed = 0xF0;
         if (actor->mode != GRABBER_LURK) {
@@ -3525,7 +3525,7 @@ void Level20_UpdateActors(void) {
           if (TickCountdownByFrameDelta(&st->grabCoolDown, 4) != 0 && *st->held == 0 && r < k &&
               AbsAngleDelta8(((unsigned short)g_nCameraEulerYaw << 16 >> 20),
                             ArcTan2(actor->posX - g_anCameraPos[0],
-                                          actor->posY - g_anCameraPos[1], 0)) <
+                                          actor->posY - g_anCameraPos[1], ATAN_ANGLE8)) <
                   0x28 &&
               SPY_DZ(actor) >= -0x1F3 &&
               (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x578
@@ -3556,7 +3556,7 @@ void Level20_UpdateActors(void) {
 
           if (MoveActorAlongAngle(actor,
                             ArcTan2(spy->posX - actor->posX,
-                                          spy->posY - actor->posY, 0),
+                                          spy->posY - actor->posY, ATAN_ANGLE8),
                             0x15E, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0 ||
               spy->triggerEventId != 0) {
             actor->mode = GRABBER_RETREAT;
@@ -3572,7 +3572,7 @@ void Level20_UpdateActors(void) {
                 ApproxDist2D(&actor->posX, &o->posX) < 0x7D0 &&
                 AbsAngleDelta8(actor->rotZ,
                               ArcTan2(o->posX - actor->posX,
-                                            o->posY - actor->posY, 0)) < 0x19) {
+                                            o->posY - actor->posY, ATAN_ANGLE8)) < 0x19) {
               o->flags |= ACTOR_HIT_SUPER;
             }
           }
@@ -3589,11 +3589,11 @@ void Level20_UpdateActors(void) {
         ANIM_GO(actor, 3);
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(st->home[0] - actor->posX,
-                                        st->home[1] - actor->posY, 0),
+                                        st->home[1] - actor->posY, ATAN_ANGLE8),
                           6, 0x14, 1) != 0) {
           MoveActorAlongAngle(actor,
                         ArcTan2(st->home[0] - actor->posX,
-                                      st->home[1] - actor->posY, 0),
+                                      st->home[1] - actor->posY, ATAN_ANGLE8),
                         0xC8, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (ApproxDist2D(&actor->posX, st->home) < 0x100) {
@@ -3641,7 +3641,7 @@ void Level20_UpdateActors(void) {
             TrackEntityYawTowardSpyro(actor, 6, 0, 0);
             if (MoveActorAlongAngle(actor,
                               ArcTan2(spy->posX - actor->posX,
-                                            SPY.posY - actor->posY, 0),
+                                            SPY.posY - actor->posY, ATAN_ANGLE8),
                               lim, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0 &&
                 g_nSpyroDrawSuppressed == 0) {
               actor->mode = GRABBER_RETREAT;

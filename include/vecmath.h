@@ -17,7 +17,11 @@ int LookupCosine(int angle);
 
 /* 2-arg arctangent: 12-bit angle (`mode` is a third, still-unanalysed
  * argument), and the byte-LUT 8-bit sibling. */
-int ArcTan2(int x, int y, int mode);
+#ifndef ATAN_ANGLE8
+#define ATAN_ANGLE8 0  /* ArcTan2: 8-bit angle, 0..0xFF per turn */
+#define ATAN_ANGLE12 1 /* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */
+#endif
+int ArcTan2(int x, int y, int scale);
 int ArcTan2_8bit(int x, int y);
 
 /* libc abs (gcc expands it inline). */

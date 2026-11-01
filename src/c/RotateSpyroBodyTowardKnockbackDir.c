@@ -6,7 +6,7 @@ void RotateSpyroBodyTowardKnockbackDir(int step, int band) {
   int yaw;
   int cur;
   int diff;
-  ret = ArcTan2(g_anSpyroMotionVec[0], g_anSpyroMotionVec[1], 0);
+  ret = ArcTan2(g_anSpyroMotionVec[0], g_anSpyroMotionVec[1], ATAN_ANGLE8);
   cur = g_abSpyroPersistentEuler[2];
   diff = ret - cur;
   diff = diff & 0xFF;

@@ -32,8 +32,8 @@ int ComputeCameraToTargetAngle(int *target) {
   g_nCameraDistance = RefineSqrtEstimate(vec, dist, 1);
   dist = VectorLength(vec, VEC_LEN_XY);
   dist = RefineSqrtEstimate(vec, dist, 0);
-  g_nCameraPitch = ArcTan2(dist, vec[2], 1);
-  yaw = ArcTan2(vec[0], -vec[1], 1);
+  g_nCameraPitch = ArcTan2(dist, vec[2], ATAN_ANGLE12);
+  yaw = ArcTan2(vec[0], -vec[1], ATAN_ANGLE12);
   old = g_nCameraYaw;
   d1 = (yaw - old) & 0xFFF;
   if (d1 >= 0x801) {

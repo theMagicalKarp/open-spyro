@@ -47,9 +47,9 @@ void UpdateSpyroFlightAttitudeNearGround(void) {
         (g_anSpyroGroundNormalPost[1] * c - g_anSpyroGroundNormalPost[0] * s) >>
         12;
     vec[2] = g_anSpyroGroundNormalPost[2];
-    ang[0] =
-        -ArcTan2(IntegerSqrt(vec[0] * vec[0] + vec[2] * vec[2]), vec[1], 1);
-    ang[1] = -ArcTan2(vec[2], vec[0], 1);
+    ang[0] = -ArcTan2(IntegerSqrt(vec[0] * vec[0] + vec[2] * vec[2]), vec[1],
+                      ATAN_ANGLE12);
+    ang[1] = -ArcTan2(vec[2], vec[0], ATAN_ANGLE12);
     ang[0] = (ang[0] - g_nSpyroBodyPitch) & 0xfff;
     if (ang[0] > 0x800) {
       ang[0] -= 0x1000;

@@ -125,7 +125,7 @@ Actor *Level26_SpawnActor(int type, Actor *parent) {
     GetActorAttachPoint(parent, 0, pos);
     rec->rotX = 0;
     turn = ArcTan2(ApproxDist2D(pos, (int *)g_anSpyroWorldPos),
-                         g_nSpyroWorldPosZ - rec->posZ, 0);
+                         g_nSpyroWorldPosZ - rec->posZ, ATAN_ANGLE8);
     if (turn > 0x80) {
       turn -= 0x100;
     }
@@ -136,7 +136,7 @@ Actor *Level26_SpawnActor(int type, Actor *parent) {
       turn = 0x10;
     }
     rec->rotY = turn;
-    rec->rotZ = ArcTan2(g_anSpyroWorldPos[0] - rec->posX, g_nSpyroWorldPosY - rec->posY, 0);
+    rec->rotZ = ArcTan2(g_anSpyroWorldPos[0] - rec->posX, g_nSpyroWorldPosY - rec->posY, ATAN_ANGLE8);
     InsertActorIntoSpatialGrid(rec);
     st->velX = 0x8C;
     break;

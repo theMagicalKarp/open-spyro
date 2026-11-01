@@ -30,7 +30,7 @@ int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed,
   int t;
 
   ret = ArcTan2(g_anSpyroWorldPos[0] - actor->posX,
-                g_anSpyroWorldPos[1] - actor->posY, 1);
+                g_anSpyroWorldPos[1] - actor->posY, ATAN_ANGLE12);
   yaw = *yawp;
   d = (ret - yaw) & 0xFFF;
   ret -= 0x800;
