@@ -581,7 +581,7 @@ void Level29_UpdateActors(void) {
           TallyFlightTarget(st->tally);
           DispatchActorContactAtSphere(&actor->posX, 0x1000, 0, ACTOR_HIT_SUPER, actor, 2);
           for (i = 0; i < 3; i++) {
-            if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
+            if (ACTOR_POOL_LOW()) {
               break;
             }
             g_pfnLevelSpawnActor(ACTOR_TYPE_TUMBLE_SHARD, actor);
@@ -1465,14 +1465,14 @@ void Level29_UpdateActors(void) {
         }
 
         for (i = 0; i < 2; i++) {
-          if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
+          if (ACTOR_POOL_LOW()) {
             break;
           }
           g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD, actor);
           g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 1, actor);
         }
         for (i = 0; i < 6; i++) {
-          if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
+          if (ACTOR_POOL_LOW()) {
             break;
           }
           g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 2, actor);
@@ -2060,7 +2060,7 @@ void Level29_UpdateActors(void) {
       case FTARGET_STRUCK:
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           for (i = 0; i < 3; i++) {
-            if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
+            if (ACTOR_POOL_LOW()) {
               break;
             }
             g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS, actor);
@@ -2092,7 +2092,7 @@ void Level29_UpdateActors(void) {
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           for (i = 0; i < 3; i++) {
-            if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
+            if (ACTOR_POOL_LOW()) {
               break;
             }
             g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS, actor);

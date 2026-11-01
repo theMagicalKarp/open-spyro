@@ -113,6 +113,13 @@ extern int g_nActiveWorldIndex;                          /* course index */
 extern int g_nActorAnimDone;                             /* current actor's animation finished */
 extern int g_nActorAnimNewFrame;                         /* current actor's new-frame flag */
 extern int g_nActorPoolCapacity;
+#ifndef ACTOR_POOL_RESERVE
+/* Optional spawns (shards, debris, sparkles) are skipped once fewer than this
+ * many pool slots are free, keeping room for the actors that matter. */
+#define ACTOR_POOL_RESERVE 0x15
+#define ACTOR_POOL_LOW() (g_nActorPoolCapacity - g_nActorPoolLiveCount < ACTOR_POOL_RESERVE)
+#define ACTOR_POOL_HAS_ROOM() (g_nActorPoolCapacity - g_nActorPoolLiveCount >= ACTOR_POOL_RESERVE)
+#endif
 extern int g_nActorPoolLiveCount;
 extern int g_nCameraCurrentMode;                         /* camera mode */
 extern short g_nCameraEulerRoll;

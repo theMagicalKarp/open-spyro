@@ -1315,14 +1315,14 @@ void Level11_UpdateActors(void) {
         }
 
         for (i = 0; i < 2; i++) {
-          if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
+          if (ACTOR_POOL_LOW()) {
             break;
           }
           g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD, actor);
           g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 1, actor);
         }
         for (i = 0; i < 6; i++) {
-          if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
+          if (ACTOR_POOL_LOW()) {
             break;
           }
           g_pfnLevelSpawnActor(ACTOR_TYPE_FLIGHT_CHEST_SHARD + 2, actor);
@@ -1473,7 +1473,7 @@ void Level11_UpdateActors(void) {
               Actor *shard;
               BurstState *ss;
 
-              if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
+              if (ACTOR_POOL_LOW()) {
                 break;
               }
               shard = g_pfnLevelSpawnActor(i + ACTOR_TYPE_FLIGHT_TARGET_SHARD, actor);

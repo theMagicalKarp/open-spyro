@@ -553,6 +553,13 @@ extern int g_nFlightLevelActive;             /* 0x80075690 */
 extern void (*g_pfnLevelFallImpactCallback)(void); /* 0x80075694: flight levels' FlightEndHook, else null */
 extern int g_nActorPoolLiveCount;            /* 0x800756a4 */
 extern int g_nActorPoolCapacity;             /* 0x800756a8 */
+#ifndef ACTOR_POOL_RESERVE
+/* Optional spawns (shards, debris, sparkles) are skipped once fewer than this
+ * many pool slots are free, keeping room for the actors that matter. */
+#define ACTOR_POOL_RESERVE 0x15
+#define ACTOR_POOL_LOW() (g_nActorPoolCapacity - g_nActorPoolLiveCount < ACTOR_POOL_RESERVE)
+#define ACTOR_POOL_HAS_ROOM() (g_nActorPoolCapacity - g_nActorPoolLiveCount >= ACTOR_POOL_RESERVE)
+#endif
 extern int g_nLevelTransitionPhase;          /* 0x800756ac: frame clock of the level-transition banner and treasure tally (DrawLevelTransitionOverlay): 0x40 results panel in, 0x80 gems fly, 0x1A0 tally over */
 extern int g_nLevelTransitionTallyActive;    /* 0x800756b0: 1 while the post-level treasure tally plays (set on a level exit / hub return); LevelLoad_Update holds the final stream stages until it clears */
 extern int g_nCameraLosClear;                /* 0x800756b8 */
