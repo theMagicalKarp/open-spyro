@@ -1977,7 +1977,7 @@ void Level14_UpdateActors(void) {
         if (st->mode & CARRIER_F_CAM_HOLD) {
           if (g_nSpyroAirborneFrames != 0) {
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
-            if (g_nSpyroState == SPYRO_ST_08) {
+            if (g_nSpyroState == SPYRO_ST_FACE_TARGET) {
               g_anCameraActiveTargetParams.w[0] = (g_anCameraParamMode2Front.w[0] - g_nSpyroMoveTargetYaw) & 0xFFF;
             } else {
               g_anCameraActiveTargetParams.w[0] = (g_anCameraParamMode2Front.w[0] - g_nSpyroBodyYaw) & 0xFFF;
@@ -2123,7 +2123,7 @@ void Level14_UpdateActors(void) {
             st->cur->cur = st->cur->count - 2;
             st->mode = (st->mode & ~CARRIER_F_PATH0) | CARRIER_F_BACK | CARRIER_F_CAM_HOLD;
             EBB_BREAK();
-            g_nSpyroRequestState = SPYRO_ST_08;
+            g_nSpyroRequestState = SPYRO_ST_FACE_TARGET;
             g_nSpyroMoveTargetYaw = 0x290;
           }
           continue;

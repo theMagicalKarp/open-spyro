@@ -395,7 +395,7 @@ void UpdateSpyroStateBehavior(void) {
       }
     }
     break;
-  case SPYRO_ST_08:
+  case SPYRO_ST_FACE_TARGET:
     if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_NO_HAZARD)) {
       if (g_nSpyroStateTimer >= 0xD) {
         g_nSpyroBodyYaw = g_nSpyroMoveTargetYaw;

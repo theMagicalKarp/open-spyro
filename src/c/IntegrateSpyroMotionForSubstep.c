@@ -1609,7 +1609,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     FINISH_VELOCITY();
     break;
   }
-  case SPYRO_ST_08:
+  case SPYRO_ST_FACE_TARGET:
   case SPYRO_ST_SCRIPTED_HOLD:
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
     break;

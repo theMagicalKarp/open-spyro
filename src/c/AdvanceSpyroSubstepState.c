@@ -106,7 +106,7 @@ void AdvanceSpyroSubstepState(void) {
   case SPYRO_ST_STOP:
   case SPYRO_ST_TURN_AROUND:
   case SPYRO_ST_HURT_TINT:
-  case SPYRO_ST_08:
+  case SPYRO_ST_FACE_TARGET:
   case SPYRO_ST_SIDESTEP_L1:
   case SPYRO_ST_SIDESTEP_R1:
   case SPYRO_ST_CHARGE_BONK:
