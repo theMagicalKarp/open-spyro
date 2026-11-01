@@ -4,6 +4,7 @@
 #include "main_shared.h"
 #include "match_asm.h"
 #include "sample_bank.h"
+#include "save_menu.h"
 #include "spyro_block.h"
 #include "vecmath.h"
 
@@ -48,13 +49,13 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   g_nGamestate = GS_SAVE_MENU;
   g_nCinematicActive = 1;
   g_nGamePaused = 1;
-  g_nSaveMenuMode = 0;
+  g_nSaveMenuMode = SAVE_MODE_SWING_IN;
   g_nSaveMenuAnimPhase = 0;
-  g_nSaveMenuSubstate = 0;
+  g_nSaveMenuSubstate = SAVE_SCREEN_MAIN;
   if (g_nSaveSlotLoaded != 0) {
-    g_nSaveMenuCursor = 0;
+    g_nSaveMenuCursor = SAVE_ROW_SAVE;
   } else {
-    g_nSaveMenuCursor = 2;
+    g_nSaveMenuCursor = SAVE_ROW_CONTINUE;
   }
   g_pSaveMenuHostActor = actor;
   g_nSpyroSuperflameTimerSave = g_nSpyroSuperflameTimer;

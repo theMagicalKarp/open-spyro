@@ -193,12 +193,7 @@ extern struct {
 } g_dwPadPressed;
 
 /* ---- memory card error codes (PSY-Q libmcrd) ---- */
-#define McErrNone 0
-#define McErrCardNotExist 1
-#define McErrNewCard 3
-#define McErrNotFormat 4
-#define McErrFileNotExist 5
-#define McErrBlockFull 7
+#include "memcard.h"
 
 /* ---- CD / music state ---- */
 extern struct {

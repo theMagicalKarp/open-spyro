@@ -1018,10 +1018,10 @@ extern int g_nSpyroGroundChunkId;                       /* 0x80078ccc */
 extern int g_anSpyroGroundChunkVerts[9];                /* 0x80078cd0 */
 extern void *g_pSpyroHazardRegionData;                /* 0x80078cf4 */
 extern byte g_bSpyroSfxVoiceMarker;                     /* 0x80078cf8 */
-extern int g_nSaveMenuMode;                             /* 0x80078d00 */
-extern int g_nSaveMenuAnimPhase;                        /* 0x80078d04 */
-extern int g_nSaveMenuCursor;                           /* 0x80078d08 */
-extern int g_nSaveMenuSubstate;                         /* 0x80078d0c */
+extern int g_nSaveMenuMode;                             /* 0x80078d00: enum SaveMenuMode (save_menu.h) */
+extern int g_nSaveMenuAnimPhase;                        /* 0x80078d04: frames since the screen changed (input waits on it) */
+extern int g_nSaveMenuCursor;                           /* 0x80078d08: SaveMenuRow / SaveFailedRow, or the SaveStep while saving */
+extern int g_nSaveMenuSubstate;                         /* 0x80078d0c: enum SaveMenuScreen (save_menu.h) */
 extern int g_nSaveMenuXOffset;                          /* 0x80078d10 */
 extern int g_nSaveSlotSelected;                         /* 0x80078d18 */
 extern int g_nTitleMode;                          /* 0x80078d78: title state block word 0: enum TitleMode (title_state.h); TITLE_MODE_STORY_INTRO hands GS_TITLE to StoryIntro_Update/_Draw */

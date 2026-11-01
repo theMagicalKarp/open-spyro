@@ -2,6 +2,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "save_menu.h"
 
 typedef struct {
   short x, y, w, h;
@@ -33,7 +34,7 @@ void SaveLoadMenu_Draw(void) {
         (Actor *)((char *)g_pPrimBufferWriteCursor + 0x1BA00);
     g_pSpriteRecordWriteCursor = g_pSpriteRecordBufferTop;
   }
-  if (g_nSaveMenuMode == 1) {
+  if (g_nSaveMenuMode == SAVE_MODE_MENU) {
     DrawShadedMenuBox(
         g_nSaveMenuXOffset + g_aSaveMenuBoxes[g_nSaveMenuSubstate].x,
         g_nSaveMenuXOffset + g_aSaveMenuBoxes[g_nSaveMenuSubstate].y,
@@ -44,7 +45,7 @@ void SaveLoadMenu_Draw(void) {
     size[1] = 1;
     pos[2] = 0x1100;
     switch (g_nSaveMenuSubstate) {
-    case 0:
+    case SAVE_SCREEN_MAIN:
       pos[1] = 0x32;
       pos[0] = SM[4] + 0x40;
       BuildTextSprites(g_szHiSpyro, pos, size, 0x12, 0xB);
@@ -52,26 +53,26 @@ void SaveLoadMenu_Draw(void) {
       pos[0] = SM[4] + 0x4C;
       BuildTextSprites(g_szSaveGame, pos, size, 0x12, 0xB);
       pos[1] += 0x13;
-      if (SM[2] == 0) {
+      if (SM[2] == SAVE_ROW_SAVE) {
         rec = (unsigned char *)g_pSpriteRecordWriteCursor;
         n = 8;
       }
       pos[0] = SM[4] + 0x4C;
       BuildTextSprites(g_szReplayDragon, pos, size, 0x12, 0xB);
       pos[1] += 0x13;
-      if (SM[2] == 1) {
+      if (SM[2] == SAVE_ROW_REPLAY_DRAGON) {
         rec = (unsigned char *)g_pSpriteRecordWriteCursor;
         n = 0xC;
       }
       pos[0] = SM[4] + 0x4C;
       BuildTextSprites(g_szContinue, pos, size, 0x12, 0xB);
-      if (SM[2] == 2) {
+      if (SM[2] == SAVE_ROW_CONTINUE) {
         rec = (unsigned char *)g_pSpriteRecordWriteCursor;
         n = 8;
       }
       WAVE(rec, n, SM[1]);
       break;
-    case 1:
+    case SAVE_SCREEN_NO_SESSION:
       pos[1] = 0x32;
       pos[0] = SM[4] + 0x52;
       BuildTextSprites(g_szNoSaveFile, pos, size, 0x12, 0xB);
@@ -91,17 +92,17 @@ void SaveLoadMenu_Draw(void) {
       pos[0] = SM[4] + 0x38;
       BuildTextSprites(g_szEnableGameSaves, pos, size, 0x10, 0xB);
       break;
-    case 2:
+    case SAVE_SCREEN_SAVING:
       pos[1] = 0x52;
       pos[0] = SM[4] + 0x6A;
       BuildTextSprites(g_szSaving, pos, size, 0x12, 0xB);
       rec = (unsigned char *)g_pSpriteRecordWriteCursor;
       WAVE(rec, 9, SM[1]);
       break;
-    case 3:
-    case 4:
+    case SAVE_SCREEN_NO_CARD:
+    case SAVE_SCREEN_NO_FILE:
       pos[1] = 0x32;
-      if (g_nSaveMenuSubstate == 3) {
+      if (g_nSaveMenuSubstate == SAVE_SCREEN_NO_CARD) {
         pos[0] = g_nSaveMenuXOffset + 0x42;
         BuildTextSprites(g_szNoMemoryCard, pos, size, 0x12, 0xB);
         n = 0xC;
@@ -126,7 +127,7 @@ void SaveLoadMenu_Draw(void) {
       pos[0] = SM[4] + 0x2D;
       BuildTextSprites(g_szThisGameSaveFile, pos, size, 0x10, 0xB);
       break;
-    case 5:
+    case SAVE_SCREEN_ERROR:
       pos[1] = 0x32;
       pos[0] = SM[4] + 0x5E;
       BuildTextSprites(g_szSaveError, pos, size, 0x12, 0xB);
@@ -146,7 +147,7 @@ void SaveLoadMenu_Draw(void) {
       pos[0] = SM[4] + 0x36;
       BuildTextSprites(g_szIsStillInPlace, pos, size, 0x10, 0xB);
       break;
-    case 6:
+    case SAVE_SCREEN_FAILED:
       pos[1] = 0x35;
       pos[0] = SM[4] + 0x56;
       BuildTextSprites(g_szSaveFailed, pos, size, 0x12, 0xB);
@@ -154,19 +155,19 @@ void SaveLoadMenu_Draw(void) {
       pos[0] = SM[4] + 0x87;
       BuildTextSprites(g_szUiRetry, pos, size, 0x12, 0xB);
       pos[1] += 0x13;
-      if (SM[2] == 0) {
+      if (SM[2] == SAVE_FAILED_RETRY) {
         rec = (unsigned char *)g_pSpriteRecordWriteCursor;
         n = 5;
       }
       pos[0] = SM[4] + 0x87;
       BuildTextSprites(g_szUiAbort, pos, size, 0x12, 0xB);
-      if (SM[2] == 1) {
+      if (SM[2] == SAVE_FAILED_ABORT) {
         rec = (unsigned char *)g_pSpriteRecordWriteCursor;
         n = 5;
       }
       WAVE(rec, n, SM[1]);
       break;
-    case 7:
+    case SAVE_SCREEN_SAVED:
       pos[1] = 0x52;
       pos[0] = SM[4] + 0x5E;
       BuildTextSprites(g_szGameSaved, pos, size, 0x12, 0xB);
@@ -174,7 +175,7 @@ void SaveLoadMenu_Draw(void) {
       WAVE(rec, 9, SM[1]);
       break;
     }
-    if (g_nSaveMenuSubstate >= 2) {
+    if (g_nSaveMenuSubstate >= SAVE_SCREEN_SAVING) {
       size[0] = 0xD;
       size[1] = 1;
       size[2] = 0x1A00;
@@ -191,7 +192,7 @@ void SaveLoadMenu_Draw(void) {
   }
   BuildRenderEntityLists();
   ComposeFrameScene();
-  if (g_nSaveMenuMode == 1) {
+  if (g_nSaveMenuMode == SAVE_MODE_MENU) {
     g_apSpritePrimQueue[0] = 0;
     EnqueuePendingSpritePrims();
     RasterizeSpritePrimQueue();
