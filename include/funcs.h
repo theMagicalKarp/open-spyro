@@ -768,7 +768,7 @@ void StopAllSoundExceptMask(int mask);
 void ComputeVoicePanAndFalloff(short *vol, int dist, unsigned char bearing, unsigned int range, short *cached);
 
 /* 0x80056dc4: Looks up the SPU voice currently playing for a given (owner-key, marker-byte) pair. Walks all 24 voice rows at &g_aSpuVoiceRows matching (actor == row+0x00 = owner-key) AND (a == row+0x0d = marker). Returns: 0 = no match (sound not playing for this owner/marker); 1 = found, one-shot (flags +0x0e bit 0x100 clear); 2 = found, looping (flags +0x0e bit 0x100 set). Sole caller: PlaySoundEffect (used to skip re-triggering an already-playing sound). */
-int GetSoundVoiceStatusByOwner(Actor *actor, int subId);
+int GetSoundVoiceStatusByOwner(Actor *actor, int sampleId);
 
 /* 0x80056e3c: Reconciles software voice state with hardware. Probes the SPU via GetAllSpuVoiceKeyStatus into a 24-byte local buffer; for any voice whose hardware status code is 1 (SPU_ON) but whose software flags +0x0e have neither bit 0x1 (active) nor bit 0x40 (idle) set (i.e., software thinks the row is stale), marks the row idle (flags=0x40) and ORs the bit into g_dwSpuPendingKeyOff (pending hardware-keyoff mask consumed by SetSpuKeyMask). Sole caller: TickSpuPerFrame (runs once every 64 frames via g_dwGamestateFrames & 0x3f). */
 void SyncSoundVoicesWithHardware(void);
