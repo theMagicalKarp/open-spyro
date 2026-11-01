@@ -86,7 +86,7 @@ extern short g_anSineLut[]; /* unit-circle y table (8-bit angle) */
 
 extern int g_anFlightClearTimes[];   /* per flight level first-clear time */
 
-extern int RandomIntInRange(int lo, int hi);       /* RandomInRange */
+extern int RandomIntInRange(int lo, int hi);
 extern int RandomSignedInRange(int lo, int hi);
 extern int StepAndLerpAngle8(int ang, int facing, int maxStep, int frac);
 

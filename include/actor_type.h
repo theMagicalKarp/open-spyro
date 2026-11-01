@@ -128,7 +128,7 @@ typedef struct Actor {
 #define ACTOR_MODE_DORMANT 0x80
 #define ACTOR_MODE_END 0xFF
 
-/* Actor.animFlags bits (AdvanceActorAnimation). */
+/* Actor.animFlags bits (TickActorAnims). */
 #define ACTOR_ANIM_NEW_FRAME 0x01 /* stepped onto a new frame this tick */
 #define ACTOR_ANIM_DONE 0x02      /* the animation finished (g_nActorAnimDone) */
 /* Actor.groundCode bit 31: the packed contact is valid. */

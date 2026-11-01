@@ -20,7 +20,7 @@ typedef enum Gamestate
   GS_ARRIVAL_CAMERA = 9,  /* CameraSettle_Update after a level transition */
   GS_MENU_TRANSITION = 10, /* BeginPauseToMenuTransition (pause -> world map) */
   GS_SAVE_MENU = 11,      /* SaveLoadMenu_Draw */
-  GS_ACTOR_CUTSCENE = 12, /* BeginActorCutscene: balloonist / fly-in cutscenes */
+  GS_ACTOR_CUTSCENE = 12, /* LevelN_BeginActorCutscene: balloonist / fly-in cutscenes */
   GS_TITLE = 13,          /* title screen; g_nTitleMode TITLE_MODE_STORY_INTRO is the story intro */
   GS_CUTSCENE = 14,   /* BeginCutscene */
   GS_CREDITS = 15,        /* BeginCreditsSequence; mode >= CREDITS_MODE_RETURN_HOME is ReturningHome */
