@@ -2519,10 +2519,10 @@ void Level8_UpdateActors(void) {
           DivideVector3(y256, y256, n);
           y256[2] = 0xB4;
           CopyVector(fs->vel, y256);
-          fs->mode = 0;
+          fs->mode = COLLREST_STILL;
           fs->timer = 0;
           fs->bounce = 3;
-          t->subMode = 2;
+          t->subMode = COLLECT_BOUNCE;
           t->cullRadius = 0x18;
           t->updateDist = 0x40;
           st->flung = t;
@@ -2536,7 +2536,7 @@ void Level8_UpdateActors(void) {
         break;
       }
       if (st->flung != 0) {
-        if (st->flung->mode >= ACTOR_MODE_DORMANT || st->flung->subMode != 2) {
+        if (st->flung->mode >= ACTOR_MODE_DORMANT || st->flung->subMode != COLLECT_BOUNCE) {
           st->flung = 0;
           break;
         }
