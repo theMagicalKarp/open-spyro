@@ -2,7 +2,9 @@
 #include "cutscene_id.h"
 #include "funcs.h"
 #include "globals.h"
+#include "level_sfx.h"
 #include "pad_buttons.h"
+#include "pause_menu.h"
 #include "sample_bank.h"
 #include "vecmath.h"
 
@@ -42,23 +44,23 @@ void PauseMenu_Update(void) {
     return;
   }
 
-  if (g_nPauseMenuSubstate == 2) {
+  if (g_nPauseMenuSubstate == PAUSE_PAGE_QUIT_CONFIRM) {
     if (pad & (PAD_RIGHT | PAD_LEFT)) {
-      SFX(0x2E);
+      SFX(SFX_MENU_SELECT);
       g_nPauseMenuCursor = 1 - g_nPauseMenuCursor;
       return;
     }
     if (!(pad & (PAD_TRIANGLE | PAD_CROSS))) {
       return;
     }
-    if (g_nPauseMenuCursor == 1 || (pad & PAD_TRIANGLE)) {
-      SFX(0x2D);
-      g_nPauseMenuSubstate = 0;
-      g_nPauseMenuCursor = 3;
+    if (g_nPauseMenuCursor == PAUSE_QUIT_NO || (pad & PAD_TRIANGLE)) {
+      SFX(SFX_MENU_MOVE);
+      g_nPauseMenuSubstate = PAUSE_PAGE_MAIN;
+      g_nPauseMenuCursor = PAUSE_ROW_EXIT;
       return;
     }
     StopAllSoundExceptMask(0);
-    SFX(0x2D);
+    SFX(SFX_MENU_MOVE);
     TickSpuPerFrame();
     r.x = 0;
     r.y = 0;
@@ -88,25 +90,25 @@ void PauseMenu_Update(void) {
     return;
   }
 
-  if (g_nPauseMenuSubstate == 1) {
+  if (g_nPauseMenuSubstate == PAUSE_PAGE_OPTIONS) {
     if (pad & PAD_DOWN) {
-      SFX(0x2D);
+      SFX(SFX_MENU_MOVE);
       c = g_nPauseMenuCursor;
       g_nPauseMenuIdleFrames = 0;
       g_nPauseMenuCursor = c + 1;
-      if (c + 1 >= 6) {
-        g_nPauseMenuCursor = 0;
-      } else if (c + 1 == 3 && !g_nPadIsDualshockFlag) {
+      if (c + 1 >= OPTIONS_ROW_COUNT) {
+        g_nPauseMenuCursor = OPTIONS_ROW_SFX_VOLUME;
+      } else if (c + 1 == OPTIONS_ROW_VIBRATION && !g_nPadIsDualshockFlag) {
         g_nPauseMenuCursor = c + 2;
       }
     } else if (pad & PAD_UP) {
-      SFX(0x2D);
+      SFX(SFX_MENU_MOVE);
       c = g_nPauseMenuCursor;
       g_nPauseMenuIdleFrames = 0;
       g_nPauseMenuCursor = c - 1;
       if (c - 1 < 0) {
-        g_nPauseMenuCursor = 5;
-      } else if (c - 1 == 3 && !g_nPadIsDualshockFlag) {
+        g_nPauseMenuCursor = OPTIONS_ROW_DONE;
+      } else if (c - 1 == OPTIONS_ROW_VIBRATION && !g_nPadIsDualshockFlag) {
         g_nPauseMenuCursor = c - 2;
       }
     }
@@ -114,23 +116,23 @@ void PauseMenu_Update(void) {
       goto back;
     }
     switch (g_nPauseMenuCursor) {
-    case 0:
+    case OPTIONS_ROW_SFX_VOLUME:
       if ((g_dwPadPressed & PAD_LEFT) && g_nSfxVolume > 0) {
-        SFX(0x2E);
+        SFX(SFX_MENU_SELECT);
         g_nSfxVolume--;
       } else if ((g_dwPadPressed & PAD_RIGHT) && g_nSfxVolume < 10) {
-        SFX(0x2E);
+        SFX(SFX_MENU_SELECT);
         g_nSfxVolume++;
       }
       g_nSfxMixVolume_blk[0] = g_nSfxVolume * 0x3FFF / 10;
       g_nSoundMasterVolume = (g_nSfxMixVolume_blk[0] << 12) / 0x3FFF;
       return;
-    case 1:
+    case OPTIONS_ROW_MUSIC_VOLUME:
       if ((g_dwPadPressed & PAD_LEFT) && g_nMusicVolume > 0) {
-        SFX(0x2E);
+        SFX(SFX_MENU_SELECT);
         g_nMusicVolume--;
       } else if ((g_dwPadPressed & PAD_RIGHT) && g_nMusicVolume < 10) {
-        SFX(0x2E);
+        SFX(SFX_MENU_SELECT);
         g_nMusicVolume++;
       }
       {
@@ -146,9 +148,9 @@ void PauseMenu_Update(void) {
         SetSpuCommonAttr(common);
       }
       return;
-    case 2:
+    case OPTIONS_ROW_SPEAKERS:
       if (g_dwPadPressed & (PAD_CROSS | PAD_RIGHT | PAD_LEFT)) {
-        SFX(0x2E);
+        SFX(SFX_MENU_SELECT);
         if ((*g_anSoundMonoMixFlagBlock = 1 - *g_anSoundMonoMixFlagBlock) !=
             0) {
           g_bCdMixRightToLeft = 0x3F;
@@ -164,22 +166,22 @@ void PauseMenu_Update(void) {
         CdMix(&g_bCdMixLeftToLeft);
       }
       return;
-    case 3:
+    case OPTIONS_ROW_VIBRATION:
       if (g_nPadIsDualshockFlag) {
         if (g_dwPadPressed & (PAD_CROSS | PAD_RIGHT | PAD_LEFT)) {
-          SFX(0x2E);
+          SFX(SFX_MENU_SELECT);
           g_nOptionVibrationEnabled = 1 - g_nOptionVibrationEnabled;
           if (g_nOptionVibrationEnabled && g_nVibrationLevel < 10) {
             g_nVibrationLevel = 10;
           }
         }
       } else {
-        g_nPauseMenuCursor = 4;
+        g_nPauseMenuCursor = OPTIONS_ROW_CAMERA;
       }
       return;
-    case 4:
+    case OPTIONS_ROW_CAMERA:
       if (g_dwPadPressed & (PAD_CROSS | PAD_RIGHT | PAD_LEFT)) {
-        SFX(0x2E);
+        SFX(SFX_MENU_SELECT);
         if (g_dwActiveCameraOptions == CAM_OPT_ACTIVE) {
           g_dwActiveCameraOptions = CAM_OPT_PASSIVE;
         } else {
@@ -187,27 +189,27 @@ void PauseMenu_Update(void) {
         }
       }
       return;
-    case 5:
+    case OPTIONS_ROW_DONE:
       if (g_dwPadPressed & PAD_CROSS) {
       back:
-        SFX(0x2E);
-        g_nPauseMenuSubstate = 0;
-        g_nPauseMenuCursor = 0;
+        SFX(SFX_MENU_SELECT);
+        g_nPauseMenuSubstate = PAUSE_PAGE_MAIN;
+        g_nPauseMenuCursor = PAUSE_ROW_CONTINUE;
       }
       return;
     }
     return;
   }
 
-  last = 3;
+  last = PAUSE_ROW_EXIT;
   if (pad & PAD_DOWN) {
-    SFX(0x2D);
+    SFX(SFX_MENU_MOVE);
     g_nPauseMenuIdleFrames = 0;
     if (last < ++g_nPauseMenuCursor) {
-      g_nPauseMenuCursor = 0;
+      g_nPauseMenuCursor = PAUSE_ROW_CONTINUE;
     }
   } else if (pad & PAD_UP) {
-    SFX(0x2D);
+    SFX(SFX_MENU_MOVE);
     g_nPauseMenuIdleFrames = 0;
     if (--g_nPauseMenuCursor < 0) {
       g_nPauseMenuCursor = last;
@@ -217,23 +219,23 @@ void PauseMenu_Update(void) {
     return;
   }
   switch (g_nPauseMenuCursor) {
-  case 0:
-    SFX(0x2E);
+  case PAUSE_ROW_CONTINUE:
+    SFX(SFX_MENU_SELECT);
     ExitPauseMenuToGame(1);
     return;
-  case 1:
-    SFX(0x2E);
-    g_nPauseMenuSubstate = 1;
-    g_nPauseMenuCursor = 0;
+  case PAUSE_ROW_OPTIONS:
+    SFX(SFX_MENU_SELECT);
+    g_nPauseMenuSubstate = PAUSE_PAGE_OPTIONS;
+    g_nPauseMenuCursor = OPTIONS_ROW_SFX_VOLUME;
     return;
-  case 2:
+  case PAUSE_ROW_INVENTORY:
     EnterInventoryMenu(0);
     return;
-  case 3:
-    SFX(0x2E);
+  case PAUSE_ROW_EXIT:
+    SFX(SFX_MENU_SELECT);
     if (g_nActiveLevelId % 10 == 0) {
-      g_nPauseMenuCursor = 1;
-      g_nPauseMenuSubstate = 2;
+      g_nPauseMenuCursor = PAUSE_QUIT_NO;
+      g_nPauseMenuSubstate = PAUSE_PAGE_QUIT_CONFIRM;
       return;
     }
     ZeroVector(&g_nSpyroSwingEulerTargetX);

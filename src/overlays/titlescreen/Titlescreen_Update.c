@@ -26,7 +26,7 @@ static const char s_SaveFileName[20] = "BASCUS-94228SPYRO";
 #define SWAP_MENU_SELECTION                                                    \
   g_nTitleMode.animTimer = 16;                                                   \
   g_nTitleMode.selection = 1 - g_nTitleMode.selection;               \
-  Titlescreen_PlayUiSound(0);
+  Titlescreen_PlayUiSound(TITLE_SFX_MOVE);
 
 #define RELOAD_MEMCARDS                                                        \
   g_nTitleMode.subState = TITLE_CARD_PROBE;                            \
@@ -107,7 +107,7 @@ void Titlescreen_Update(void) {
         g_nTitleMode.animTimer = 0;
       } else {
         if (g_nTitleMode.animTimer == 1) {
-          Titlescreen_PlayUiSound(6);
+          Titlescreen_PlayUiSound(TITLE_SFX_LOGO_IN);
         }
         if (g_nTitleMode.animTimer >= 16)
           g_nTitleMode.subState = TITLE_ATTRACT_PRESS_START;
@@ -117,7 +117,7 @@ void Titlescreen_Update(void) {
       if ((g_dwPadPressed.held & (PAD_L1 | PAD_TRIANGLE)) ==
           (PAD_L1 | PAD_TRIANGLE)) {
         StopAllSoundExceptMask(0); /* stop all sounds */
-        Titlescreen_PlayUiSound(9);
+        Titlescreen_PlayUiSound(TITLE_SFX_SUCCESS);
         TickSpuPerFrame();
         while (g_nCdBaseLba.readInFlight != 0 || CallCdSync(1, 0) != 2 ||
                (g_nCurrentMusicTrack.streamStatus & 0x40) == 0) {
@@ -128,14 +128,14 @@ void Titlescreen_Update(void) {
         LaunchCrashDemo(); /* crash-demo launch */
       } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
         g_nTitleMode.subState = TITLE_ATTRACT_LOGO_OUT;
-        Titlescreen_PlayUiSound(7);
+        Titlescreen_PlayUiSound(TITLE_SFX_START);
       } else if (g_nTitleMode.idleFrames >= 990) {
         g_nTitleMode.subState = TITLE_ATTRACT_IDLE_FADE;
       }
     } else if (g_nTitleMode.subState == TITLE_ATTRACT_LOGO_OUT) {
       /* animate out the logo, move to mem card screen */
       if (g_nTitleMode.animTimer == 16) {
-        Titlescreen_PlayUiSound(8);
+        Titlescreen_PlayUiSound(TITLE_SFX_LOGO_OUT);
       }
       if (g_nTitleMode.animTimer >= 32) {
         g_nTitleMode.mode = TITLE_MODE_CARD_CHECK;
@@ -146,7 +146,7 @@ void Titlescreen_Update(void) {
     } else if (g_nTitleMode.subState == TITLE_ATTRACT_IDLE_FADE) {
       /* timed out: fade out for 16 ticks and then move to demo mode */
       if (g_nTitleMode.animTimer == 0) {
-        Titlescreen_PlayUiSound(5);
+        Titlescreen_PlayUiSound(TITLE_SFX_FADE_OUT);
       }
       g_nScreenFadeLevel = g_nTitleMode.animTimer;
       if (g_nScreenFadeLevel > 15)
@@ -173,7 +173,7 @@ void Titlescreen_Update(void) {
 
       if (g_nTitleMode.menuState == 0) {
         /* try to ping port A for a mem card */
-        Titlescreen_PlayUiSound(2);
+        Titlescreen_PlayUiSound(TITLE_SFX_CARD_ACCESS);
         MemCardLoad(0 /* port A card 0 */);
         g_nTitleMode.menuState = 1;
       } else if (g_nTitleMode.menuState == 1) {
@@ -277,7 +277,7 @@ void Titlescreen_Update(void) {
             g_nTitleMode.menuState = TITLE_MENU_NEW_OR_LOAD;
             g_nTitleMode.selection = 1;
             g_nGamePaused = 1;
-            Titlescreen_PlayUiSound(9);
+            Titlescreen_PlayUiSound(TITLE_SFX_SUCCESS);
           } else if (g_nTitleMode.retryCount < 2) {
             /* save checksums didn't match, retry the read up to 2 times */
             g_nTitleMode.retryCount++;
@@ -303,7 +303,7 @@ void Titlescreen_Update(void) {
             g_nTitleMode.menuState = TITLE_MENU_NEW_OR_LOAD;
             g_nTitleMode.selection = 1;
             g_nGamePaused = 1;
-            Titlescreen_PlayUiSound(9);
+            Titlescreen_PlayUiSound(TITLE_SFX_SUCCESS);
           }
         } else if (g_nTitleMode.mcResult == McErrFileNotExist) {
           /* no save file, ask if we can create one */
@@ -329,7 +329,7 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nTitleMode.animTimer == 0) {
-        Titlescreen_PlayUiSound(4);
+        Titlescreen_PlayUiSound(TITLE_SFX_ERROR);
       }
 
       if (g_nTitleMode.animTimer >= 8) {
@@ -340,7 +340,7 @@ void Titlescreen_Update(void) {
         } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
           if (g_nTitleMode.selection == 0) {
             g_nTitleMode.subState = TITLE_CARD_NO_SAVE_WARNING;
-            Titlescreen_PlayUiSound(3);
+            Titlescreen_PlayUiSound(TITLE_SFX_PROMPT);
           } else {
             RELOAD_MEMCARDS
           }
@@ -376,7 +376,7 @@ void Titlescreen_Update(void) {
         } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
           if (g_nTitleMode.selection == 0) {
             g_nTitleMode.subState = TITLE_CARD_NO_SAVE_WARNING;
-            Titlescreen_PlayUiSound(3);
+            Titlescreen_PlayUiSound(TITLE_SFX_PROMPT);
           } else {
             RELOAD_MEMCARDS
           }
@@ -436,7 +436,7 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nTitleMode.animTimer == 0) {
-        Titlescreen_PlayUiSound(3);
+        Titlescreen_PlayUiSound(TITLE_SFX_PROMPT);
       }
 
       if (g_nTitleMode.animTimer >= 8) {
@@ -453,12 +453,12 @@ void Titlescreen_Update(void) {
               g_nTitleMode.subState = TITLE_CARD_FORMATTING;
               MemCardSync(0, (long *)&g_nTitleMode.mcCmd,
                             (long *)&g_nTitleMode.mcResult);
-              Titlescreen_PlayUiSound(2);
+              Titlescreen_PlayUiSound(TITLE_SFX_CARD_ACCESS);
             }
           } else {
             g_nTitleMode.subState = TITLE_CARD_UNUSABLE;
             g_nTitleMode.selection = 0;
-            Titlescreen_PlayUiSound(3);
+            Titlescreen_PlayUiSound(TITLE_SFX_PROMPT);
           }
         }
       }
@@ -472,11 +472,11 @@ void Titlescreen_Update(void) {
           g_nTitleMode.cardStatus[g_nTitleMode.cardPort] = McErrNone;
           g_nTitleMode.subState = TITLE_CARD_FORMAT_DONE;
           g_nTitleMode.selection = 0; /* continue */
-          Titlescreen_PlayUiSound(9);
+          Titlescreen_PlayUiSound(TITLE_SFX_SUCCESS);
         } else {
           g_nTitleMode.subState = TITLE_CARD_FORMAT_FAILED;
           g_nTitleMode.selection = 1; /* cancel */
-          Titlescreen_PlayUiSound(4);
+          Titlescreen_PlayUiSound(TITLE_SFX_ERROR);
         }
       }
       break;
@@ -495,7 +495,7 @@ void Titlescreen_Update(void) {
         if (RestartTitleCardCheckOnTriangle()) {
           /* triangle was pushed, RestartTitleCardCheckOnTriangle already took care of it */
         } else if (g_dwPadPressed.pressed & (PAD_CROSS | PAD_START)) {
-          Titlescreen_PlayUiSound(1);
+          Titlescreen_PlayUiSound(TITLE_SFX_SELECT);
           g_nTitleMode.subState = TITLE_CARD_READ;
           g_nTitleMode.menuState = 0;
           g_nTitleMode.retryCount = 0;
@@ -526,11 +526,11 @@ void Titlescreen_Update(void) {
             g_nTitleMode.subState = TITLE_CARD_FORMATTING;
             MemCardSync(0, (long *)&g_nTitleMode.mcCmd,
                           (long *)&g_nTitleMode.mcResult);
-            Titlescreen_PlayUiSound(2);
+            Titlescreen_PlayUiSound(TITLE_SFX_CARD_ACCESS);
           } else {
             g_nTitleMode.subState = TITLE_CARD_UNUSABLE;
             g_nTitleMode.selection = 0;
-            Titlescreen_PlayUiSound(3);
+            Titlescreen_PlayUiSound(TITLE_SFX_PROMPT);
           }
         }
       }
@@ -547,7 +547,7 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nTitleMode.animTimer == 0) {
-        Titlescreen_PlayUiSound(3);
+        Titlescreen_PlayUiSound(TITLE_SFX_PROMPT);
       }
 
       if (g_nTitleMode.animTimer >= 8) {
@@ -562,11 +562,11 @@ void Titlescreen_Update(void) {
             g_nTitleMode.retryCount = 0;
             MemCardSync(0, (long *)&g_nTitleMode.mcCmd,
                           (long *)&g_nTitleMode.mcResult);
-            Titlescreen_PlayUiSound(2);
+            Titlescreen_PlayUiSound(TITLE_SFX_CARD_ACCESS);
           } else {
             g_nTitleMode.subState = TITLE_CARD_UNUSABLE;
             g_nTitleMode.selection = 0;
-            Titlescreen_PlayUiSound(3);
+            Titlescreen_PlayUiSound(TITLE_SFX_PROMPT);
           }
         }
       }
@@ -643,7 +643,7 @@ void Titlescreen_Update(void) {
             g_nTitleMode.menuState = TITLE_MENU_NEW_OR_LOAD;
             g_nTitleMode.selection = 0;
             g_nGamePaused = 1;
-            Titlescreen_PlayUiSound(9);
+            Titlescreen_PlayUiSound(TITLE_SFX_SUCCESS);
           } else {
             if (g_nTitleMode.retryCount < 2) {
               g_nTitleMode.retryCount++;
@@ -666,7 +666,7 @@ void Titlescreen_Update(void) {
               g_nTitleMode.menuState = TITLE_MENU_NEW_OR_LOAD;
               g_nTitleMode.selection = 0;
               g_nGamePaused = 1;
-              Titlescreen_PlayUiSound(9);
+              Titlescreen_PlayUiSound(TITLE_SFX_SUCCESS);
             }
           }
         } else {
@@ -687,14 +687,14 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nTitleMode.animTimer == 0) {
-        Titlescreen_PlayUiSound(4);
+        Titlescreen_PlayUiSound(TITLE_SFX_ERROR);
       }
 
       if (g_nTitleMode.animTimer >= 8) {
         if (RestartTitleCardCheckOnTriangle()) {
           /* triangle was pushed, RestartTitleCardCheckOnTriangle already took care of it */
         } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
-          Titlescreen_PlayUiSound(3);
+          Titlescreen_PlayUiSound(TITLE_SFX_PROMPT);
           g_nTitleMode.subState = TITLE_CARD_UNUSABLE;
           g_nTitleMode.selection = 0;
         }
@@ -712,7 +712,7 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nTitleMode.animTimer == 0) {
-        Titlescreen_PlayUiSound(4);
+        Titlescreen_PlayUiSound(TITLE_SFX_ERROR);
       }
 
       if (g_nTitleMode.animTimer >= 8) {
@@ -727,11 +727,11 @@ void Titlescreen_Update(void) {
             g_nTitleMode.retryCount = 0;
             MemCardSync(0, (long *)&g_nTitleMode.mcCmd,
                           (long *)&g_nTitleMode.mcResult);
-            Titlescreen_PlayUiSound(2);
+            Titlescreen_PlayUiSound(TITLE_SFX_CARD_ACCESS);
           } else {
             g_nTitleMode.subState = TITLE_CARD_UNUSABLE;
             g_nTitleMode.selection = 0;
-            Titlescreen_PlayUiSound(3);
+            Titlescreen_PlayUiSound(TITLE_SFX_PROMPT);
           }
         }
       }
@@ -749,7 +749,7 @@ void Titlescreen_Update(void) {
       }
 
       if (g_nTitleMode.animTimer == 0) {
-        Titlescreen_PlayUiSound(3);
+        Titlescreen_PlayUiSound(TITLE_SFX_PROMPT);
       }
 
       if (g_nTitleMode.animTimer >= 8) {
@@ -765,7 +765,7 @@ void Titlescreen_Update(void) {
             g_nTitleMode.menuState = 0;
             g_nTitleMode.retryCount = 0;
             g_nTitleMode.selection = 1;
-            Titlescreen_PlayUiSound(1);
+            Titlescreen_PlayUiSound(TITLE_SFX_SELECT);
           }
         }
       }
@@ -831,7 +831,7 @@ void Titlescreen_Update(void) {
     } else if (g_nTitleMode.menuState == TITLE_MENU_NEW_SLOT) {
       if (g_nTitleMode.animTimer >= 8) {
         if (g_dwPadPressed.pressed & (PAD_DOWN | PAD_TRIANGLE)) {
-          Titlescreen_PlayUiSound(9);
+          Titlescreen_PlayUiSound(TITLE_SFX_SUCCESS);
           g_nTitleMode.menuState = TITLE_MENU_NEW_OR_LOAD;
           g_nTitleMode.selection = 0;
         } else if (g_dwPadPressed.pressed & PAD_LEFT) {
@@ -839,17 +839,17 @@ void Titlescreen_Update(void) {
           g_nTitleMode.selection -= 1;
           if (g_nTitleMode.selection < 0)
             g_nTitleMode.selection = 2;
-          Titlescreen_PlayUiSound(0);
+          Titlescreen_PlayUiSound(TITLE_SFX_MOVE);
         } else if (g_dwPadPressed.pressed & PAD_RIGHT) {
           g_nTitleMode.animTimer = 16;
           g_nTitleMode.selection += 1;
           if (g_nTitleMode.selection > 2)
             g_nTitleMode.selection = 0;
-          Titlescreen_PlayUiSound(0);
+          Titlescreen_PlayUiSound(TITLE_SFX_MOVE);
         } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
           if (g_nTitleMode.apSaves[g_nTitleMode.selection]
                   ->levelVisited[0]) {
-            Titlescreen_PlayUiSound(3);
+            Titlescreen_PlayUiSound(TITLE_SFX_PROMPT);
             g_nTitleMode.menuState = TITLE_MENU_OVERWRITE;
             g_nTitleMode.yesNoChoice = 1;
           } else {
@@ -863,12 +863,12 @@ void Titlescreen_Update(void) {
         if ((g_dwPadPressed.pressed & (PAD_RIGHT | PAD_LEFT))) {
           g_nTitleMode.animTimer = 16;
           g_nTitleMode.yesNoChoice = 1 - g_nTitleMode.yesNoChoice;
-          Titlescreen_PlayUiSound(0);
+          Titlescreen_PlayUiSound(TITLE_SFX_MOVE);
         } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS | PAD_TRIANGLE)) {
           if (g_nTitleMode.yesNoChoice == 1 ||
               (g_dwPadPressed.pressed & PAD_TRIANGLE) != 0) {
             g_nTitleMode.menuState = TITLE_MENU_NEW_SLOT;
-            Titlescreen_PlayUiSound(4);
+            Titlescreen_PlayUiSound(TITLE_SFX_ERROR);
           } else {
             InitNewGameState();
             START_GAME(TITLE_EXIT_NEW_GAME)
@@ -878,7 +878,7 @@ void Titlescreen_Update(void) {
     } else if (g_nTitleMode.menuState == TITLE_MENU_LOAD_SLOT) {
       if (g_nTitleMode.animTimer >= 8) {
         if (g_dwPadPressed.pressed & (PAD_DOWN | PAD_TRIANGLE)) {
-          Titlescreen_PlayUiSound(9);
+          Titlescreen_PlayUiSound(TITLE_SFX_SUCCESS);
           g_nTitleMode.menuState = TITLE_MENU_NEW_OR_LOAD;
           g_nTitleMode.selection = 1;
         } else if (g_dwPadPressed.pressed & PAD_LEFT) {
@@ -891,7 +891,7 @@ void Titlescreen_Update(void) {
           }
           if (i >= 0) {
             g_nTitleMode.selection = i;
-            Titlescreen_PlayUiSound(0);
+            Titlescreen_PlayUiSound(TITLE_SFX_MOVE);
           }
         } else if (g_dwPadPressed.pressed & PAD_RIGHT) {
           int i;
@@ -903,7 +903,7 @@ void Titlescreen_Update(void) {
           }
           if (i < 3) {
             g_nTitleMode.selection = i;
-            Titlescreen_PlayUiSound(0);
+            Titlescreen_PlayUiSound(TITLE_SFX_MOVE);
           }
         } else if (g_dwPadPressed.pressed & (PAD_START | PAD_CROSS)) {
           g_nSparxHealth = SPARX_GOLD;
@@ -922,18 +922,18 @@ void Titlescreen_Update(void) {
         } else if (g_dwPadPressed.pressed & (PAD_UP | PAD_START | PAD_CROSS)) {
           if (g_nTitleMode.selection == 1 && !g_nTitleMode.anySaveUsed) {
             g_nTitleMode.animTimer = 16;
-            Titlescreen_PlayUiSound(4);
+            Titlescreen_PlayUiSound(TITLE_SFX_ERROR);
           } else {
             g_nTitleMode.menuState = TITLE_MENU_ROUTE;
             g_nGamePaused = 1;
             g_nTitleMode.savedSelection = g_nTitleMode.selection;
-            Titlescreen_PlayUiSound(1);
+            Titlescreen_PlayUiSound(TITLE_SFX_SELECT);
           }
         }
       }
     } else if (g_nTitleMode.menuState == TITLE_MENU_FADE_OUT) {
       if (g_nTitleMode.animTimer == 0) {
-        Titlescreen_PlayUiSound(5);
+        Titlescreen_PlayUiSound(TITLE_SFX_FADE_OUT);
       }
 
       g_nScreenFadeLevel = g_nTitleMode.animTimer + 1;

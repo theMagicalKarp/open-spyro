@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "level_sfx.h"
 #include "main_shared.h"
+#include "pause_menu.h"
 #include "sample_bank.h"
 
 /* Enter the pause menu gamestate (0x8002c420). param nonzero = paused from
@@ -17,8 +18,8 @@ void EnterPauseMenu(int fromGameplay) {
   }
   PlaySoundEffect(LEVEL_SFX(SFX_MENU_OPEN), 0, SFX_MODE_PANNED, 0);
   g_nGamestate = GS_PAUSE_MENU;
-  g_nPauseMenuCursor = 0;
-  g_nPauseMenuSubstate = 0;
+  g_nPauseMenuCursor = PAUSE_ROW_CONTINUE;
+  g_nPauseMenuSubstate = PAUSE_PAGE_MAIN;
   g_nPauseMenuIdleFrames = 0;
   if (g_nFlightLevelActive != 0) {
     if (fromGameplay != 0) {

@@ -67,6 +67,21 @@ enum {
   TITLE_SPR_MSG_CARD_FULL_L3 = 63
 };
 
+/* Titlescreen_PlayUiSound ids (index into g_anTitleSampleOffsets), named
+ * from where Titlescreen_Update plays them. */
+enum {
+  TITLE_SFX_MOVE = 0,        /* option / slot cursor moves */
+  TITLE_SFX_SELECT = 1,      /* card picked, menu choice confirmed */
+  TITLE_SFX_CARD_ACCESS = 2, /* card probe, format and create start */
+  TITLE_SFX_PROMPT = 3,      /* a question dialog opens or is cancelled */
+  TITLE_SFX_ERROR = 4,       /* no card, card full, failure, refused choice */
+  TITLE_SFX_FADE_OUT = 5,    /* leaving the title (game or demo) */
+  TITLE_SFX_LOGO_IN = 6,     /* logo lands */
+  TITLE_SFX_START = 7,       /* Start pressed at the logo */
+  TITLE_SFX_LOGO_OUT = 8,    /* logo slides away */
+  TITLE_SFX_SUCCESS = 9      /* save picker reached, format done, crash demo */
+};
+
 /* sprite color/flash variants */
 enum {
   TITLE_COLOR_NORMAL = 0,

@@ -575,7 +575,7 @@ extern struct Actor *g_pSpriteRecordWriteCursor; /* 0x80075710: sprite-record qu
 extern int g_nDemoMode;                    /* 0x80075714: attract demo: 0 off, 1 playback (set by StoryIntro_Update), 2 record into 0x80600000 */
 extern int g_nGroundSurfaceType;             /* 0x80075718 */
 extern void *g_pGemTallyParticleRecords;     /* 0x8007571c */
-extern int g_nPauseMenuCursor;               /* 0x80075720 */
+extern int g_nPauseMenuCursor;               /* 0x80075720: row on the pause page (enum PauseMainRow / PauseOptionsRow / PauseQuitRow); flight results menu reuses it */
 extern uint g_dwGamestateFrames;             /* 0x8007572c */
 extern int g_nPadSetMainModePending;         /* 0x80075730 */
 extern void (*g_pfnLevelUpdateActors)(void); /* 0x80075734 */
@@ -601,7 +601,7 @@ extern void *g_pPrimBufferWriteCursor;       /* 0x800757b0 */
 extern int g_nLevelPickupTableCount;         /* 0x800757b4 */
 extern int g_nDemoIndex;                 /* 0x800757b8: which of the 4 attract demos plays next (cycles &3) */
 extern void (*g_pfnGamestate7Handler)(void);  /* 0x800757c0: flight levels' FlightResultsMenu_Update */
-extern int g_nPauseMenuSubstate;             /* 0x800757c8 */
+extern int g_nPauseMenuSubstate;             /* 0x800757c8: pause menu page, enum PausePage (pause_menu.h) */
 extern int g_nSubMenuScrollOffset;           /* 0x800757cc */
 extern int g_nPulseRumbleTimer;              /* 0x800757d0 */
 extern uint g_dwActorMeshFadeColor;          /* 0x800757d4 */
