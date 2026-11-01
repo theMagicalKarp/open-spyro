@@ -1769,4 +1769,17 @@ enum TallyIconMode {
   TALLY_ICON_SPIRAL = 7, /* spirals into the centre, then PARKED */
 };
 
+/* AmbientSoundState.mode picks the sample-bank voice set (per level, so the
+ * other values stay literal); AMBIENT_MODE_PATH also carries the source along
+ * its path, one leg at a time. */
+enum AmbientSoundMode {
+  AMBIENT_MODE_PATH = 2,
+};
+
+/* AmbientSoundState.sub while AMBIENT_MODE_PATH. */
+enum AmbientSoundPathStep {
+  AMBIENT_STEP_WAIT = 0, /* on its timer: plays a voice, then TRAVEL */
+  AMBIENT_STEP_TRAVEL = 1, /* steps along the leg; at its end snaps to the next node, WAIT */
+};
+
 #endif

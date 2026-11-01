@@ -2320,17 +2320,17 @@ void Level0_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case AMBIENT_MODE_PATH:
         switch (st->sub) {
-        case 0:
+        case AMBIENT_STEP_WAIT:
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
             st->timer = 0x200 - (GetRandomU32() & 0x7F);
             snd = (GetRandomU32() & 1) + 0xD;
-            st->sub = 1;
+            st->sub = AMBIENT_STEP_TRAVEL;
           }
           break;
 
-        case 1:
+        case AMBIENT_STEP_TRAVEL:
           if (st->count-- > 0) {
             /* Coasting along the current leg. */
             actor->posX += st->vel[0];
@@ -2341,7 +2341,7 @@ void Level0_UpdateActors(void) {
             actor->posX = PATH_X(st->path, (st->path[1] + 1) % st->path[0]);
             actor->posY = PATH_Y(st->path, (st->path[1] + 1) % st->path[0]);
             actor->posZ = PATH_Z(st->path, (st->path[1] + 1) % st->path[0]);
-            st->sub = 0;
+            st->sub = AMBIENT_STEP_WAIT;
             st->path[1] = (st->path[1] + 1) % st->path[0];
             {
               int offA = (st->path[1] << 4) + 8;
