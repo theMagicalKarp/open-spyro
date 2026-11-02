@@ -845,7 +845,7 @@ void Level19_UpdateActors(void) {
       case BGUARD_RUN:
         ANIM_GO(actor, 4);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0, 8, 0x10, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
-            0x100) {
+            PATH_ARRIVED(0)) {
           st->mode = BGUARD_CUE_NONE;
           ENTER_POSE(actor, BGUARD_WATCH);
         }
@@ -2246,7 +2246,7 @@ void Level19_UpdateActors(void) {
       st = (WhirlwindState *)actor->state;
       if (st->flags & WHIRL_F_GATED) {
         if (g_pActorListBase[st->idx].type == ACTOR_TYPE_KEY) {
-          if (g_pActorListBase[st->idx].subMode == 0)
+          if (g_pActorListBase[st->idx].subMode == KEY_WAITING)
             break;
           if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1C01)
             break;
@@ -3431,7 +3431,7 @@ void Level19_UpdateActors(void) {
         }
         ANIM_GO(actor, RAM_WANDER);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
-            0x100) {
+            PATH_ARRIVED(0)) {
           g_pActorListBase[st->partner].subMode = 1;
           actor->mode = RAM_PATH_END;
           continue;
@@ -3493,7 +3493,7 @@ void Level19_UpdateActors(void) {
 
       case BSENTRY_PATROL:
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x6E, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
-            0x100) {
+            PATH_ARRIVED(0)) {
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1C00 &&
               ABS2(actor->posZ - SPY.posZ) < 0x44C) {
             ENTER_POSE_BRK(actor, BSENTRY_ROUSE);

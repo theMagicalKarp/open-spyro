@@ -2322,7 +2322,7 @@ void Level10_UpdateActors(void) {
       st = (WhirlwindState *)actor->state;
       if (st->flags & WHIRL_F_GATED) {
         if (g_pActorListBase[st->idx].type == ACTOR_TYPE_KEY) {
-          if (g_pActorListBase[st->idx].subMode == 0)
+          if (g_pActorListBase[st->idx].subMode == KEY_WAITING)
             break;
           if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1C01)
             break;
@@ -2958,7 +2958,7 @@ void Level10_UpdateActors(void) {
       case SGUARD_PATH_CHASE:
         st->accel = 0xA0;
         if (PivotActorAlongPath(actor, st->target, 0x12C, st->accel, 0, 8, 0x40, PIVOT_TURN_ANY,
-                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x100) {
+                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(0)) {
           st->done = 0;
           actor->mode = SGUARD_CHASE;
           continue;
@@ -2972,7 +2972,7 @@ void Level10_UpdateActors(void) {
         }
         st->accel = 0xB4;
         if (PivotActorAlongPath(actor, st->target, 0x100, st->accel, 0, 8, 0x40, PIVOT_TURN_ANY,
-                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x100) {
+                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(0)) {
           actor->mode = SGUARD_BRAKE_AIM;
           continue;
         }

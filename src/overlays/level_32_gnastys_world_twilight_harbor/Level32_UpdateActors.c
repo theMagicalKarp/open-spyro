@@ -1635,7 +1635,7 @@ void Level32_UpdateActors(void) {
           continue;
         }
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
-            0x100) {
+            PATH_ARRIVED(0)) {
           actor->mode = BURSTGUN_TURN;
         }
         continue;
@@ -1762,7 +1762,7 @@ void Level32_UpdateActors(void) {
 
       case SWEEPGUN_ADVANCE:
         if (PivotActorAlongPath(actor, st->path, 0x100, 0xA0, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
-            0x100) {
+            PATH_ARRIVED(0)) {
           actor->mode = SWEEPGUN_IDLE;
         }
         continue;
@@ -1949,7 +1949,7 @@ void Level32_UpdateActors(void) {
 
       case LOBGUN_WALK:
         if (PivotActorAlongPath(actor, st->path, 0x100, 0xAA, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
-            0x100) {
+            PATH_ARRIVED(0)) {
           actor->mode = LOBGUN_TURN;
           continue;
         }
@@ -2659,7 +2659,7 @@ void Level32_UpdateActors(void) {
       st = (WhirlwindState *)actor->state;
       if (st->flags & WHIRL_F_GATED) {
         if (g_pActorListBase[st->idx].type == ACTOR_TYPE_KEY) {
-          if (g_pActorListBase[st->idx].subMode == 0)
+          if (g_pActorListBase[st->idx].subMode == KEY_WAITING)
             break;
           if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1C01)
             break;

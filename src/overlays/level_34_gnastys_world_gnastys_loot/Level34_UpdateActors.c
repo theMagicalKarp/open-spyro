@@ -1745,7 +1745,7 @@ void Level34_UpdateActors(void) {
 
           case 5:
             if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
-                              MOVE_CHECK_Z) == 0x100) {
+                              MOVE_CHECK_Z) == PATH_ARRIVED(0)) {
               st->leg = 0;
             }
             d = (FLY_Z(st->cur, st->cur->cur) - actor->posZ) >> 3;

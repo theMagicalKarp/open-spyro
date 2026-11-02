@@ -1851,7 +1851,7 @@ void Level2_UpdateActors(void) {
           case POSTGUARD_AMBUSH_RUN:
             ANIM_GO(actor, 1);
             if (PivotActorAlongPath(actor, st->path, 0x100, 0x96, 0, 8, 0x32, PIVOT_TURN_ANY,
-                              MOVE_LIFT | MOVE_FOLLOW_FLOOR) == 0x100) {
+                              MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(0)) {
               st->phase++;
             }
             break;
