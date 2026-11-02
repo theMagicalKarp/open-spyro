@@ -2520,7 +2520,7 @@ void Level7_UpdateActors(void) {
       }
       switch (actor->mode) {
       case BRAWLER_IDLE: {
-        int d = ApproxDist2D(&actor->posX, spy);
+        int d = ApproxDist2D(&actor->posX, &spy->posX);
 
         TurnActorYawTowardAngle(actor,
                       WrapAddAngle8(ArcTan2(spy->posX - actor->posX,
@@ -2565,7 +2565,7 @@ void Level7_UpdateActors(void) {
         break;
 
       case BRAWLER_GUARD: {
-        int d = ApproxDist2D(&actor->posX, spy);
+        int d = ApproxDist2D(&actor->posX, &spy->posX);
 
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && d < 0x9C4 &&
@@ -2705,7 +2705,7 @@ void Level7_UpdateActors(void) {
             st->triggered = one;
             ENTER_POSE(actor, SHOOTER_WAKE);
           }
-          if (ApproxDist2D(&actor->posX, spy) < 0x2800 &&
+          if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2800 &&
               ABS2(SPY_DZ(actor)) < 0x3E8 && st->triggered == 0) {
             st->triggered = one;
             ENTER_POSE(actor, SHOOTER_WAKE);
@@ -3078,7 +3078,7 @@ void Level7_UpdateActors(void) {
         if (MoveActorByDelta(actor, st->vel[0], st->vel[1], st->vel[2], fade,
                           0x12C, one) != 0) {
           actor->mode = SSHOT_BURST;
-        } else if (ApproxDist2D(&actor->posX, spy) < 0xC8 &&
+        } else if (ApproxDist2D(&actor->posX, &spy->posX) < 0xC8 &&
                    ABS2(SPY_DZ(actor)) < 0x384) {
           g_nSpyroSwingEulerTargetY[19] = /* g_dwSpyroRequestMask */
               (SPYRO_RQ_PENDING | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_VEL_Z | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
@@ -4069,7 +4069,7 @@ void Level7_UpdateActors(void) {
             int len = VectorLength(&g_anSpyroRequestVelocity.x, VEC_LEN_XYZ);
 
             ScaleVector3ByRatio(&g_anSpyroRequestVelocity.x, len,
-                          (0x1000 - ApproxDist2D(&actor->posX, spy)) /
+                          (0x1000 - ApproxDist2D(&actor->posX, &spy->posX)) /
                               48);
           }
           g_nSpyroRequestVelocityZ = 0x46;

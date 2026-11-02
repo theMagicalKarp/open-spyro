@@ -226,8 +226,8 @@ void TickSpyroAttackEffects(int steps) {
                                       EMIT_FLAME_STREAK, tip, dir);
               __asm__ volatile("" : : "g"(hole));
               if (sfxDone == 0) {
-                PlaySoundEffect(LEVEL_SFX(SFX_ATTACK_HIT), wp, SFX_MODE_FLAT,
-                                0);
+                PlaySoundEffect(LEVEL_SFX(SFX_ATTACK_HIT), (Actor *)wp,
+                                SFX_MODE_FLAT, 0);
                 sfxDone = 1;
               }
             }

@@ -3800,7 +3800,7 @@ void Level18_UpdateActors(void) {
           st->beat = 0x64;
           g_anLevelTriggerStateSlots[st->chunkAnim] = 1;
           PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
-                        &st->voice);
+                        (unsigned char *)&st->voice);
         }
         if (g_nActorAnimDone != 0) {
           ENTER_POSE(actor, WARDRUM_WAIT);

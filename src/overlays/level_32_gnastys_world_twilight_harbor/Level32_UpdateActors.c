@@ -1576,7 +1576,7 @@ void Level32_UpdateActors(void) {
       int dist;
 
       SubtractVector(o100, spy, &actor->posX);
-      dist = ApproxDist2D(&actor->posX, spy);
+      dist = ApproxDist2D(&actor->posX, &spy->posX);
       if (dist < 0x32C8) {
         dist = VectorLength(o100, VEC_LEN_XY);
       }
@@ -1715,7 +1715,7 @@ void Level32_UpdateActors(void) {
       int dist;
 
       SubtractVector(o120, spy, &actor->posX);
-      dist = ApproxDist2D(&actor->posX, spy);
+      dist = ApproxDist2D(&actor->posX, &spy->posX);
       if (dist < 0x32C8) {
         dist = VectorLength(o120, VEC_LEN_XY);
       }
@@ -1882,7 +1882,7 @@ void Level32_UpdateActors(void) {
       int dist;
 
       SubtractVector(o130, spy, &actor->posX);
-      dist = ApproxDist2D(&actor->posX, spy);
+      dist = ApproxDist2D(&actor->posX, &spy->posX);
       if (dist < 0x32C8) {
         dist = VectorLength(o130, VEC_LEN_XY);
       }
@@ -2086,7 +2086,7 @@ void Level32_UpdateActors(void) {
           actor->drawn = 0;
           continue;
         }
-        if (ApproxDist2D(&actor->posX, spy) < reach &&
+        if (ApproxDist2D(&actor->posX, &spy->posX) < reach &&
             ABS2(SPY_DZ(actor)) < high) {
           AS_I32(g_dwSpyroRequestMask) = (SPYRO_RQ_PENDING | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_VEL_Z | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
           SPY.triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);

@@ -58,7 +58,8 @@ void TickSpyroAnimStateMachine(void) {
             g_abSpyroAnimDescTable[*prev * 4 + 3]) != 0) {
       if (*prev == 0x1A) {
         PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT_EXIT),
-                        SPY_FROM_ANIM_PREV(prev, 0), SFX_MODE_PANNED, 0);
+                        (Actor *)SPY_FROM_ANIM_PREV(prev, 0), SFX_MODE_PANNED,
+                        0);
       }
       g_nSpyroAnimMode = SPYRO_ANIM_PLAY;
     }

@@ -736,7 +736,7 @@ void Level19_UpdateActors(void) {
       int d;
 
       SubtractVector(v, &spy->posX, &actor->posX);
-      d = ApproxDist2D(&actor->posX, spy);
+      d = ApproxDist2D(&actor->posX, &spy->posX);
       if (d < 0x32C8) {
         d = VectorLength(v, VEC_LEN_XY);
       }
@@ -3270,7 +3270,7 @@ void Level19_UpdateActors(void) {
           st->beat = 0x64;
           g_anLevelTriggerStateSlots[st->chunkAnim] = 1;
           PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
-                        &st->voice);
+                        (unsigned char *)&st->voice);
         }
         if (g_nActorAnimDone != 0) {
           ENTER_POSE(actor, WARDRUM_WAIT);
@@ -3456,7 +3456,7 @@ void Level19_UpdateActors(void) {
       BoltSentryState *st = actor->state;
       int i;
 
-      if (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER) && ApproxDist2D(&actor->posX, spy) < 0xE10 &&
+      if (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER) && ApproxDist2D(&actor->posX, &spy->posX) < 0xE10 &&
           actor->mode != BSENTRY_KNOCKED) {
         st->speed = 0xF0;
         st->heading = SPY.bodyRotZ;
@@ -3487,7 +3487,7 @@ void Level19_UpdateActors(void) {
         }
         ANIM_GO(actor, 0);
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&actor->posX, spy) < 0x1C00 &&
+        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1C00 &&
             ABS2(actor->posZ - SPY.posZ) < 0x44C) {
           ENTER_POSE_BRK(actor, BSENTRY_ROUSE);
         }
@@ -3496,13 +3496,13 @@ void Level19_UpdateActors(void) {
       case BSENTRY_PATROL:
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x6E, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
-          if (ApproxDist2D(&actor->posX, spy) < 0x1C00 &&
+          if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1C00 &&
               ABS2(actor->posZ - SPY.posZ) < 0x44C) {
             ENTER_POSE_BRK(actor, BSENTRY_ROUSE);
           }
           ENTER_POSE_BRK(actor, BSENTRY_IDLE);
         }
-        if (ApproxDist2D(&actor->posX, spy) < 0x1194 &&
+        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1194 &&
             AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
                                         g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8)) < 0x40) {
@@ -3518,10 +3518,10 @@ void Level19_UpdateActors(void) {
         break;
 
       case BSENTRY_WATCH: {
-        int d = ApproxDist2D(&actor->posX, spy);
+        int d = ApproxDist2D(&actor->posX, &spy->posX);
 
         if (st->guards == 0 &&
-            ApproxDist2D(&actor->posX, spy) < st->range << 10) {
+            ApproxDist2D(&actor->posX, &spy->posX) < st->range << 10) {
           ENTER_POSE(actor, BSENTRY_SUMMON);
         }
         TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
@@ -3541,7 +3541,7 @@ void Level19_UpdateActors(void) {
           st->fx = g_pfnLevelSpawnActor(ACTOR_TYPE_CARRIED_EGG, actor);
         }
         if (st->bolt == 0 && actor->nextFrame - 0xFU < 3 &&
-            ApproxDist2D(&actor->posX, spy) < 0x1194) {
+            ApproxDist2D(&actor->posX, &spy->posX) < 0x1194) {
           AimedBoltState *bs;
 
           st->bolt = g_pfnLevelSpawnActor(ACTOR_TYPE_AIMED_BOLT, actor);
@@ -3616,7 +3616,7 @@ void Level19_UpdateActors(void) {
       case BSENTRY_CUE:
         switch (st->mode) {
         case BSENTRY_CUE_LEAP:
-          if (ApproxDist2D(&actor->posX, spy) < st->range << 10 &&
+          if (ApproxDist2D(&actor->posX, &spy->posX) < st->range << 10 &&
               ABS2(SPY_DZ(actor)) < 0x3E8) {
             st->mode = BSENTRY_CUE_NONE;
             st->speed = ApproxDist2D(&actor->posX, &st->path[6]) / 12;
@@ -3625,7 +3625,7 @@ void Level19_UpdateActors(void) {
           }
           break;
         case BSENTRY_CUE_PATROL:
-          if (ApproxDist2D(&actor->posX, spy) < 0x3000 &&
+          if (ApproxDist2D(&actor->posX, &spy->posX) < 0x3000 &&
               AbsAngleDelta8(actor->rotZ,
                             ArcTan2(spy->posX - actor->posX,
                                           g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8)) < 0x40) {
@@ -3684,7 +3684,7 @@ void Level19_UpdateActors(void) {
         GetActorAttachPoint(st->parent, 0, &actor->posX);
         actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                      spy->posY - actor->posY, ATAN_ANGLE8);
-        actor->rotY = ArcTan2(ApproxDist2D(&actor->posX, spy),
+        actor->rotY = ArcTan2(ApproxDist2D(&actor->posX, &spy->posX),
                                      SPY.posZ - actor->posZ, ATAN_ANGLE8);
         SubtractVector(v, &spy->posX, &actor->posX);
         k = 0x14 - VectorLength(v, VEC_LEN_XYZ) * 0x1A / 1400;
