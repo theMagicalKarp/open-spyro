@@ -318,7 +318,7 @@ void Level9_UpdateActors(void) {
             } else {
               SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             }
-            MarkActorCommittedKill(actor);
+            MarkActorLiveKill(actor);
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = SFX_OVERRIDE_PITCH;
             g_nSfxOverridePitch.v =
@@ -1815,7 +1815,7 @@ void Level9_UpdateActors(void) {
 
           g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, 0x18);
           g_pLockedChestReward = SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
           g_nLevelKeyState = KEYSTATE_CHEST_OPENED;
           g_nSpyroSwingEulerTargetZ = 0;
@@ -1871,7 +1871,7 @@ void Level9_UpdateActors(void) {
       g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x20);
       SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-      MarkActorCommittedKill(actor);
+      MarkActorLiveKill(actor);
       DespawnActorRecord(actor);
       continue;
     }
@@ -1937,7 +1937,7 @@ void Level9_UpdateActors(void) {
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
@@ -1964,7 +1964,7 @@ void Level9_UpdateActors(void) {
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         ENTER_POSE(actor, YAK_KNOCKED);
       }
 
@@ -2149,7 +2149,7 @@ void Level9_UpdateActors(void) {
           st->speed = 0x12C;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         ENTER_POSE(actor, SNOWTHROW_KNOCKED);
       }
 
@@ -2322,7 +2322,7 @@ void Level9_UpdateActors(void) {
           AddVector(&actor->posX, svK, &actor->posX);
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         actor->mode = CBIRD_KNOCKED;
         ANIM_RESET(actor, 4);
         continue;
@@ -2406,7 +2406,7 @@ void Level9_UpdateActors(void) {
         actor->flags = 0;
         if (++st->hits == 4) {
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           ENTER_POSE(actor, TRAM_KNOCKED);
         }
         if (actor->anim == TRAM_STAGGER) {
@@ -2505,7 +2505,7 @@ void Level9_UpdateActors(void) {
         EncodeCachedVecToActorDirCode(actor);
         if (actor->posZ - z > 0x800) {
           SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, &st->dropPos);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           actor->posZ -= 0x200;
           st->rest = 0;
           ENTER_POSE(actor, TRAM_KNOCKED);

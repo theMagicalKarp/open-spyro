@@ -409,7 +409,7 @@ void Level20_UpdateActors(void) {
         }
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         ENTER_POSE_B(actor, GUNNER_KNOCKED);
       }
       actor->flags = 0;
@@ -1659,7 +1659,7 @@ void Level20_UpdateActors(void) {
           *st->chargeLock = 0;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         ENTER_POSE(actor, CHARGER_KNOCKED);
       }
       if (st->init == 0) {
@@ -1667,7 +1667,7 @@ void Level20_UpdateActors(void) {
         if (st->lurk != 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
           if (actor->dropKind != DROP_GEM_ROLL) {
             SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-            MarkActorCommittedKill(actor);
+            MarkActorLiveKill(actor);
           }
           DespawnActorRecord(actor);
           continue;
@@ -2066,7 +2066,7 @@ void Level20_UpdateActors(void) {
         g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x20);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
         continue;
       }
@@ -2135,7 +2135,7 @@ void Level20_UpdateActors(void) {
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
@@ -2716,7 +2716,7 @@ void Level20_UpdateActors(void) {
         }
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       }
       actor->flags = 0;
@@ -2851,7 +2851,7 @@ void Level20_UpdateActors(void) {
           }
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         ENTER_POSE(actor, LURKER_KNOCKED);
       }
 
@@ -3302,7 +3302,7 @@ void Level20_UpdateActors(void) {
             st->lift += 0x32;
           }
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
         }
         if (actor->nextAnim != RAM_KNOCKED) {
           g_nActorAnimDone = 0;
@@ -3394,7 +3394,7 @@ void Level20_UpdateActors(void) {
           st->speed = 0;
           st->lift = 0;
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           ENTER_POSE(actor, RAM_KNOCKED);
         }
         if (actor->nextFrame >= 0xF) {
@@ -3446,7 +3446,7 @@ void Level20_UpdateActors(void) {
           ANIM_RESET(o, 0xA);
         }
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         st->knockSpeed = 0x15E;
         if (actor->mode >= GRABBER_SEIZE) {
           g_nSpyroDrawSuppressed = 0;

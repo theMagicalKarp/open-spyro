@@ -284,7 +284,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8003838c` | IsActorGroundFlat | main | 116 | matched | game |
 | `0x80038400` | ProbeActorGroundHeightRaised | main | 88 | matched | game |
 | `0x80038458` | SnapActorToGround | main | 60 | matched | game |
-| `0x80038494` | IsActorInRunningKillSet | main | 136 | matched | game |
+| `0x80038494` | IsActorInCheckpointKillSet | main | 136 | matched | game |
 | `0x8003851c` | PlayActorMeshVoice | main | 160 | matched | game |
 | `0x800385bc` | BurstActorWithSound | main | 124 | matched | game |
 | `0x80038638` | SteerActorAroundPoint | main | 740 | matched | game |
@@ -322,7 +322,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8003b5f4` | OrPickupGroupActorFlags | main | 148 | matched | game |
 | `0x8003b688` | DespawnPickupGroupActors | main | 160 | matched | game |
 | `0x8003b728` | SetActorGroupSubstate | main | 152 | matched | game |
-| `0x8003b7c0` | MarkActorCommittedKill | main | 148 | matched | game |
+| `0x8003b7c0` | MarkActorLiveKill | main | 148 | matched | game |
 | `0x8003b854` | CommitActorKillGems | main | 384 | matched | game |
 | `0x8003b9d4` | CollectPickupActor | main | 252 | matched | game |
 | `0x8003bad0` | SteerActorTowardPoint | main | 508 | matched | game |

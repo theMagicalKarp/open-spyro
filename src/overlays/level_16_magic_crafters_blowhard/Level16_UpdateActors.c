@@ -326,7 +326,7 @@ void Level16_UpdateActors(void) {
             } else {
               SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             }
-            MarkActorCommittedKill(actor);
+            MarkActorLiveKill(actor);
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = SFX_OVERRIDE_PITCH;
             g_nSfxOverridePitch.v =
@@ -1878,7 +1878,7 @@ void Level16_UpdateActors(void) {
       g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x20);
       SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-      MarkActorCommittedKill(actor);
+      MarkActorLiveKill(actor);
       DespawnActorRecord(actor);
       continue;
     }
@@ -1944,7 +1944,7 @@ void Level16_UpdateActors(void) {
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
@@ -2185,7 +2185,7 @@ void Level16_UpdateActors(void) {
           }
           StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           ENTER_POSE(actor, PATHGUARD_KNOCKED);
         }
       }
@@ -2756,7 +2756,7 @@ void Level16_UpdateActors(void) {
         }
         DispatchActorContactAtSphere(&actor->posX, (st->timer + 1) << 8, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_BLAST), actor, CONTACT_STOP_AT_SOLID);
         if (++st->timer >= 8) {
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
         }
         break;
@@ -3140,7 +3140,7 @@ void Level16_UpdateActors(void) {
 
               CopyVector(&a->posX, &actor->posX);
               SpawnActorDeathDrop(a, DROP_SCATTER, 0, 0);
-              MarkActorCommittedKill(a);
+              MarkActorLiveKill(a);
               st->prev = *as;
               DespawnActorRecord(a);
             }
@@ -3186,7 +3186,7 @@ void Level16_UpdateActors(void) {
             if (g_pActorListBase[st->prev].dropKind != DROP_GEM_ROLL &&
                 g_pActorListBase[st->prev].mode < ACTOR_MODE_DORMANT) {
               SpawnActorDeathDrop(a, DROP_SCATTER, 0, 0);
-              MarkActorCommittedKill(a);
+              MarkActorLiveKill(a);
               DespawnActorRecord(a);
             }
             st->prev = *as;
@@ -3200,7 +3200,7 @@ void Level16_UpdateActors(void) {
             as = a->state;
             if (a->dropKind != DROP_GEM_ROLL && a->mode < ACTOR_MODE_DORMANT) {
               SpawnActorDeathDrop(a, DROP_SCATTER, 0, 0);
-              MarkActorCommittedKill(a);
+              MarkActorLiveKill(a);
               DespawnActorRecord(a);
             }
             st->prev = *as;
@@ -3252,7 +3252,7 @@ void Level16_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           SnapActorToGround(actor);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3454,7 +3454,7 @@ void Level16_UpdateActors(void) {
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != HBELL_STRUCK) {
         StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
         SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         GetWorldChunkAnimState(st->chunkAnim);
         ENTER_POSE(actor, HBELL_STRUCK);
       }

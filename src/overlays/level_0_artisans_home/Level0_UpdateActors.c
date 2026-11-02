@@ -157,7 +157,7 @@ void Level0_UpdateActors(void) {
         }
 
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         actor->mode = PATROLLER_KNOCKED;
         ANIM_RESET(actor, 3);
         continue;
@@ -1354,7 +1354,7 @@ void Level0_UpdateActors(void) {
       if ((actor->flags & ACTOR_HITS_SPYRO) != 0 &&
           (unsigned int)(actor->mode - 7) >= 3) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
 
         if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
           st->moveSpeed = 0x190;
@@ -2082,7 +2082,7 @@ void Level0_UpdateActors(void) {
       g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x20);
       SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-      MarkActorCommittedKill(actor);
+      MarkActorLiveKill(actor);
       DespawnActorRecord(actor);
       continue;
     }
@@ -2565,7 +2565,7 @@ void Level0_UpdateActors(void) {
 
           CopyVector(&p->posX, &actor->posX);
           SpawnActorDeathDrop(p, DROP_SCATTER, 0, 0);
-          MarkActorCommittedKill(p);
+          MarkActorLiveKill(p);
           st->chainA = *link;
           DespawnActorRecord(p);
           actor->flags = 0;
@@ -2584,7 +2584,7 @@ void Level0_UpdateActors(void) {
               st->slots[n][2] = actor->posZ;
               SpawnActorDeathDrop(p, DROP_AT_POINT, 0, st->slots[n]);
               n++;
-              MarkActorCommittedKill(p);
+              MarkActorLiveKill(p);
               DespawnActorRecord(p);
             }
 
@@ -2595,7 +2595,7 @@ void Level0_UpdateActors(void) {
           st->slots[n][1] = actor->posY + (LookupSine(n * 0x555) >> 2);
           st->slots[n][2] = actor->posZ;
           SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, st->slots[n]);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           st->knockSpeed = 0x118;
           st->knockAngle = StepAndLerpAngle8(
               ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),

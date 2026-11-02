@@ -276,7 +276,7 @@ void Level12_UpdateActors(void) {
             } else {
               SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             }
-            MarkActorCommittedKill(actor);
+            MarkActorLiveKill(actor);
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = SFX_OVERRIDE_PITCH;
             g_nSfxOverridePitch.v =
@@ -475,7 +475,7 @@ void Level12_UpdateActors(void) {
         if (actor->dropKind == DROP_GEM_ROLL) {
           actor->dropKind = 0xF;
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
         }
         actor->mode = THIEF_CAUGHT;
         continue;
@@ -1253,7 +1253,7 @@ void Level12_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != PATHWALK_DYING) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         actor->mode = PATHWALK_DYING;
         ANIM_RESET(actor, 2);
         continue;
@@ -2562,7 +2562,7 @@ void Level12_UpdateActors(void) {
 
           g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, 0x18);
           g_pLockedChestReward = SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
           g_nLevelKeyState = KEYSTATE_CHEST_OPENED;
           g_nSpyroSwingEulerTargetZ = 0;
@@ -2667,7 +2667,7 @@ void Level12_UpdateActors(void) {
       g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x20);
       SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-      MarkActorCommittedKill(actor);
+      MarkActorLiveKill(actor);
       DespawnActorRecord(actor);
       continue;
     }
@@ -2733,7 +2733,7 @@ void Level12_UpdateActors(void) {
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
@@ -2973,7 +2973,7 @@ void Level12_UpdateActors(void) {
         idx = actor - g_pActorListBase;
         word = idx >> 5;
         bit = idx & 0x1F;
-        if (g_anRunningKillBitmap[word] & (one << bit)) {
+        if (g_anCheckpointKillBitmap[word] & (one << bit)) {
           gone = actor->dropKind == DROP_GEM_ROLL;
         }
         if (st->mode == VROLE_PAIR) {
@@ -2983,7 +2983,7 @@ void Level12_UpdateActors(void) {
           idx = pair - g_pActorListBase;
           word = idx >> 5;
           bit = idx & 0x1F;
-          if ((g_anRunningKillBitmap[word] & (one << bit)) &&
+          if ((g_anCheckpointKillBitmap[word] & (one << bit)) &&
               (pair->mode >= ACTOR_MODE_DORMANT || pair->dropKind == DROP_GEM_ROLL)) {
             pairGone = 1;
           }
@@ -3011,7 +3011,7 @@ void Level12_UpdateActors(void) {
             spy->bodyRotZ, 0x20, 0x40);
         StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         ENTER_POSE(actor, VILLAGER_KNOCKED);
       }
 
@@ -3291,7 +3291,7 @@ void Level12_UpdateActors(void) {
         st->knockSpin = 0x8C;
         actor->flags = 0;
         ((CollectibleState *)SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0)->state)->mode = COLLREST_SNAP;
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         PlayActorMeshVoice(actor, 0, 0);
         ENTER_POSE(actor, SHEPHERD_KNOCKED);
       }
@@ -3859,7 +3859,7 @@ void Level12_UpdateActors(void) {
           }
           StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           ENTER_POSE(actor, PATHGUARD_KNOCKED);
         }
       }
@@ -4463,7 +4463,7 @@ void Level12_UpdateActors(void) {
         }
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       }
       actor->flags = 0;
@@ -4732,7 +4732,7 @@ void Level12_UpdateActors(void) {
         }
         g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, 0x18);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);

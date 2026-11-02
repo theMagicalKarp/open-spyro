@@ -242,7 +242,7 @@ extern void UnpackWorldCollisionTri(int chunk, int *out);
 extern int WrapAngleDelta8(int a, int b);
 extern unsigned char g_abLevelVisitedFlag[];
 extern int g_anLevelTriggerStateSlots[];
-extern int g_anRunningKillBitmap[];
+extern int g_anCheckpointKillBitmap[];
 extern int g_anFlightClearTimes[];
 extern int g_nCutsceneId[]; /* [0] the cutscene id; [1]/[2] are g_nLevelVortexSeen1/2, indexed by LootVortexState.seen */
 extern int g_nCreditsMode;

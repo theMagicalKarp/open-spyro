@@ -330,7 +330,7 @@ void Level4_UpdateActors(void) {
             } else {
               SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             }
-            MarkActorCommittedKill(actor);
+            MarkActorLiveKill(actor);
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = SFX_OVERRIDE_PITCH;
             g_nSfxOverridePitch.v =
@@ -1674,7 +1674,7 @@ void Level4_UpdateActors(void) {
       g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x20);
       SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-      MarkActorCommittedKill(actor);
+      MarkActorLiveKill(actor);
       DespawnActorRecord(actor);
       continue;
     }
@@ -1740,7 +1740,7 @@ void Level4_UpdateActors(void) {
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
@@ -2230,7 +2230,7 @@ void Level4_UpdateActors(void) {
 
             CopyVector(&drop->posX, &actor->posX);
             SpawnActorDeathDrop(drop, DROP_SCATTER, 0, 0);
-            MarkActorCommittedKill(drop);
+            MarkActorLiveKill(drop);
             st->drop = -1;
             DespawnActorRecord(drop);
           }
@@ -2257,7 +2257,7 @@ void Level4_UpdateActors(void) {
           mate->cullRadius = 0x28;
           mate->updateDist = 0x28;
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           ANIM_SET(actor, 5);
           break;
         }
@@ -2291,7 +2291,7 @@ void Level4_UpdateActors(void) {
         case 2:
           ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           BurstActorWithSound(actor, 0x20);
           DespawnActorRecord(actor);
           continue;
@@ -2432,7 +2432,7 @@ void Level4_UpdateActors(void) {
           (unsigned char)(c - LUNGER_RECOIL) >= 3) {
         if (st->hits == 0) {
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           st->knockSpeed = 0xE6;
           st->knockAngle = StepAndLerpAngle8(
               ArcTan2(actor->posX - spy->posX, actor->posY - SPY.posY, ATAN_ANGLE8),
@@ -2471,7 +2471,7 @@ void Level4_UpdateActors(void) {
       svM[2] += 0x400;
       if (FindGroundHeightBelow(svM, 0x1000) == 0) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         BurstActorWithSound(actor, 0x18);
         DespawnActorRecord(actor);
@@ -2587,7 +2587,7 @@ void Level4_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           BurstActorWithSound(actor, 0x18);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2686,7 +2686,7 @@ void Level4_UpdateActors(void) {
           st->spin = -st->spin;
         }
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         ENTER_POSE4(actor, REAR_KNOCKED);
       }
 

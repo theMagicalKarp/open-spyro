@@ -324,7 +324,7 @@ void Level26_UpdateActors(void) {
             } else {
               SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             }
-            MarkActorCommittedKill(actor);
+            MarkActorLiveKill(actor);
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = SFX_OVERRIDE_PITCH;
             g_nSfxOverridePitch.v =
@@ -659,7 +659,7 @@ void Level26_UpdateActors(void) {
         st->speed = 0xF0;
         st->heading = SPY.bodyRotZ;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         ENTER_POSE(actor, BLOBBER_KNOCKED);
       }
 
@@ -747,9 +747,9 @@ void Level26_UpdateActors(void) {
         st->depth = 0;
         g_pActorListBase[st->partner].mode = 1;
         PlayActorMeshVoice(&g_pActorListBase[st->partner], 0, 0);
-        MarkActorCommittedKill(&g_pActorListBase[st->partner]);
+        MarkActorLiveKill(&g_pActorListBase[st->partner]);
         CommitActorKillGems(0, &g_pActorListBase[st->partner]);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         CommitActorKillGems(0, actor);
         actor->mode = SINKBLK_SINK;
         ANIM_RESET(actor, 1);
@@ -798,7 +798,7 @@ void Level26_UpdateActors(void) {
           st->lift = 0x10;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         ENTER_POSE(actor, CPGUARD_KNOCKED);
       }
       if (st->node < 0) {
@@ -2043,7 +2043,7 @@ void Level26_UpdateActors(void) {
           }
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         actor->mode = CRITTER_KNOCKED;
         ANIM_RESET(actor, 1);
         continue;
@@ -2309,7 +2309,7 @@ void Level26_UpdateActors(void) {
 
           g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, 0x18);
           g_pLockedChestReward = SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
           g_nLevelKeyState = KEYSTATE_CHEST_OPENED;
           g_nSpyroSwingEulerTargetZ = 0;
@@ -2365,7 +2365,7 @@ void Level26_UpdateActors(void) {
       g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x20);
       SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-      MarkActorCommittedKill(actor);
+      MarkActorLiveKill(actor);
       DespawnActorRecord(actor);
       continue;
     }
@@ -2431,7 +2431,7 @@ void Level26_UpdateActors(void) {
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
@@ -2712,7 +2712,7 @@ void Level26_UpdateActors(void) {
                                       g_bSpyroPersistentEulerZ, 0x20, 0x40);
           st->lift = 0x50;
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           ENTER_POSE(actor, PBOUNCER_THROWN);
         }
         if (g_pActorListBase[st->partner].mode != 0) {
@@ -2720,7 +2720,7 @@ void Level26_UpdateActors(void) {
           st->speed = 0;
           st->lift = 0;
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           ENTER_POSE(actor, PBOUNCER_THROWN);
         }
         GetActorAttachPoint(&g_pActorListBase[st->partner], 0, &actor->posX);
@@ -3125,7 +3125,7 @@ void Level26_UpdateActors(void) {
         }
         DispatchActorContactAtSphere(&actor->posX, (st->timer + 1) << 8, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_BLAST), actor, CONTACT_STOP_AT_SOLID);
         if (++st->timer >= 8) {
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
         }
         break;
@@ -3428,7 +3428,7 @@ void Level26_UpdateActors(void) {
         }
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       }
       actor->flags = 0;

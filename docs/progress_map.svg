@@ -391,7 +391,7 @@
 <rect x="288.63" y="646.56" width="9.06" height="8.93" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>RefineSqrtEstimate  ·  148 bytes  ·  handwritten</title></rect>
 <rect x="297.69" y="646.56" width="9.06" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ActivateScriptedCameraView  ·  148 bytes  ·  matched</title></rect>
 <rect x="306.74" y="646.56" width="9.06" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>OrPickupGroupActorFlags  ·  148 bytes  ·  matched</title></rect>
-<rect x="195.62" y="655.50" width="8.79" height="9.20" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MarkActorCommittedKill  ·  148 bytes  ·  matched</title></rect>
+<rect x="195.62" y="655.50" width="8.79" height="9.20" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>MarkActorLiveKill  ·  148 bytes  ·  matched</title></rect>
 <rect x="195.62" y="664.70" width="8.79" height="9.20" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>AdvanceSpyroAnimFrame  ·  148 bytes  ·  matched</title></rect>
 <rect x="195.62" y="673.91" width="8.79" height="9.20" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>GetSpuVoiceKeyStatus  ·  148 bytes  ·  library</title></rect>
 <rect x="195.62" y="683.11" width="8.79" height="9.20" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>ClearImage  ·  148 bytes  ·  library</title></rect>
@@ -412,7 +412,7 @@
 <rect x="248.32" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>main  ·  136 bytes  ·  matched</title></rect>
 <rect x="256.76" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EnqueuePendingSpritePrims  ·  136 bytes  ·  matched</title></rect>
 <rect x="265.19" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>StepAngle8Toward  ·  136 bytes  ·  matched</title></rect>
-<rect x="273.62" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>IsActorInRunningKillSet  ·  136 bytes  ·  matched</title></rect>
+<rect x="273.62" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>IsActorInCheckpointKillSet  ·  136 bytes  ·  matched</title></rect>
 <rect x="282.06" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>IsPickupGroupAllInMode  ·  136 bytes  ·  matched</title></rect>
 <rect x="290.49" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>AdvanceSpyroAnimLayer1Frame  ·  136 bytes  ·  matched</title></rect>
 <rect x="298.93" y="655.50" width="8.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RefreshHudLevelGemCounter  ·  136 bytes  ·  matched</title></rect>

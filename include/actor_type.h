@@ -29,7 +29,7 @@ typedef struct Actor {
   short type;          /* 0x36 actor class */
   short floorOffset;   /* 0x38 signed offset above the ground (SnapActorToGround) */
   unsigned char killGroup; /* 0x3A low 7 bits: kill group (< 0x20 a group bit,
-                            * 0x7D/0x7E special; BuildLoadedLevelRuntime);
+                            * else ACTOR_KILL_GROUP_*; BuildLoadedLevelRuntime);
                             * bit 7 latches the death drop (SpawnActorDeathDrop) */
   unsigned char probeDist; /* 0x3B DriveActorTrackedMove ground-probe distance / 4;
                            * 0 default 0x12C, 0xFF none, 0xFE probe mode 1 */
@@ -79,7 +79,7 @@ typedef struct Actor {
   unsigned char updateDist; /* 0x52 activation radius >> 10 */
   unsigned char dropKind; /* 0x53 death-drop item id (& 0x7F, 1..0x7E fixed;
                            * 0xFF = random gem roll) — SpawnActorDeathDrop,
-                           * IsActorInRunningKillSet */
+                           * IsActorInCheckpointKillSet */
   unsigned char voiceRow; /* 0x54 voice row playing its sound (PlaySoundEffect pPlaying),
                            * VOICE_ROW_NONE when silent */
   unsigned char soundRange; /* 0x55 voice audible range >> 10 (TickActiveSoundVoices) */
@@ -100,7 +100,7 @@ typedef struct Actor {
                                   * updates while it was drawn last frame */
 #define VIS_ZONE_ALWAYS 0xFF     /* ->visZone: no vis-zone gate, always drawn */
 #define DROP_GEM_ROLL 0xFF       /* ->dropKind: a random gem roll (and counts in the
-                                  * running kill set, IsActorInRunningKillSet) */
+                                  * checkpoint kill set, IsActorInCheckpointKillSet) */
 
 /* Actor.flags hit bits that Spyro's attacks raise through
  * DispatchActorContactAtSphere (AdvanceSpyroPhysics, TickSpyroAttackEffects). */
@@ -156,6 +156,12 @@ typedef struct Actor {
 /* Actor.killGroup: the group number, and bit 7, which latches the death drop. */
 #define ACTOR_KILL_GROUP_MASK 0x7F
 #define ACTOR_KILL_DROPPED 0x80
+/* Kill groups BuildLoadedLevelRuntime treats specially when it reloads a level
+ * whose saved kill bitmap has the actor. Other groups >= 0x20 despawn if they
+ * died before the last checkpoint and otherwise respawn as a gem roll; groups
+ * < 0x20 respawn as long as one member survived the checkpoint. */
+#define ACTOR_KILL_GROUP_NEVER_RESPAWN 0x7D  /* any saved kill despawns it */
+#define ACTOR_KILL_GROUP_ALWAYS_RESPAWN 0x7E /* always back, as a gem roll */
 /* Actor.renderList sign bit: draw through BuildSecondaryActorDrawList, which
  * builds the rotation from the euler bytes, instead of the main mesh list. */
 #define ACTOR_RENDER_SECONDARY 0x80

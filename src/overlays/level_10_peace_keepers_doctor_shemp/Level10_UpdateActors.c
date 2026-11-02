@@ -316,7 +316,7 @@ void Level10_UpdateActors(void) {
             } else {
               SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             }
-            MarkActorCommittedKill(actor);
+            MarkActorLiveKill(actor);
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = SFX_OVERRIDE_PITCH;
             g_nSfxOverridePitch.v =
@@ -1817,7 +1817,7 @@ void Level10_UpdateActors(void) {
 
           g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, 0x18);
           g_pLockedChestReward = SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
           g_nLevelKeyState = KEYSTATE_CHEST_OPENED;
           g_nSpyroSwingEulerTargetZ = 0;
@@ -1873,7 +1873,7 @@ void Level10_UpdateActors(void) {
       g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x20);
       SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-      MarkActorCommittedKill(actor);
+      MarkActorLiveKill(actor);
       DespawnActorRecord(actor);
       continue;
     }
@@ -1939,7 +1939,7 @@ void Level10_UpdateActors(void) {
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
@@ -2684,7 +2684,7 @@ void Level10_UpdateActors(void) {
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         ENTER_POSE(actor, SGUARD_KNOCKED);
       }
@@ -2949,7 +2949,7 @@ void Level10_UpdateActors(void) {
         if (actor->subMode == 0 && st->lift < -0x50) {
           FindNearestPathPointToActor(actor, (PathData *)st->path, &nearestNode[1]);
           SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, (int *)((unsigned char *)st->path + ((nearestNode[1] << 4) + 8)));
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           actor->subMode = 1;
         }
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC, 0xC);
@@ -3037,7 +3037,7 @@ void Level10_UpdateActors(void) {
 
             CopyVector(&link->posX, &actor->posX);
             SpawnActorDeathDrop(link, DROP_SCATTER, 0, 0);
-            MarkActorCommittedKill(link);
+            MarkActorLiveKill(link);
             st->chain = *ls;
             DespawnActorRecord(link);
           }
@@ -3417,7 +3417,7 @@ void Level10_UpdateActors(void) {
           actor->floorOffset = 0;
           SnapActorToGround(actor);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3445,7 +3445,7 @@ void Level10_UpdateActors(void) {
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         ENTER_POSE(actor, GLOOK_KNOCKED);
       }
       if (TICK_DOWN(st->camTimer) == 0) {

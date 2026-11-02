@@ -421,7 +421,7 @@ sprites:
         killWord = i >> 5;
         runBit = i & 0x1F;
         runBit = 1 << runBit;
-        if ((g_anRunningKillBitmap[killWord] & runBit) == 0) {
+        if ((g_anCheckpointKillBitmap[killWord] & runBit) == 0) {
           mask |= 1 << type;
         } else {
           row = (g_nLevelIndex << 5) + ((int)g_anLevelKillBitmapTable);
@@ -449,10 +449,11 @@ sprites:
       killWord <<= 2;
       levelBit = 1 << bitIdx;
       if ((*((int *)(killWord + row))) & levelBit) {
-        if ((*(int *)((char *)g_anRunningKillBitmap + killWord) & levelBit) ==
-            0) {
+        if ((*(int *)((char *)g_anCheckpointKillBitmap + killWord) &
+             levelBit) == 0) {
           placed = (Actor *)((i * ACTOR_SIZE) + ((int)rec));
-          if ((placed->killGroup & ACTOR_KILL_GROUP_MASK) == 0x7D) {
+          if ((placed->killGroup & ACTOR_KILL_GROUP_MASK) ==
+              ACTOR_KILL_GROUP_NEVER_RESPAWN) {
             DespawnActorRecord(placed);
           } else {
             placed->dropKind = DROP_GEM_ROLL;
@@ -469,7 +470,7 @@ sprites:
               groupBit = 1 << group;
               count = (mask & groupBit) != 0;
             } else {
-              count = group == 0x7E;
+              count = group == ACTOR_KILL_GROUP_ALWAYS_RESPAWN;
             }
             __asm__ volatile("" : : "r"(k3), "r"(k4));
           }
@@ -487,7 +488,7 @@ sprites:
   }
   i = 0;
   do {
-    g_anCommittedKillBitmap[i] = g_anCommittedKillBitmap[i - 8];
+    g_anLiveKillBitmap[i] = g_anLiveKillBitmap[i - 8];
     i++;
   } while (i < 8);
   i = 9;
