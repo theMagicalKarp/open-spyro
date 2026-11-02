@@ -1797,7 +1797,7 @@ void Level18_UpdateActors(void) {
 
       case CHARGER_RAM:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (MoveActorAlongHeading(actor, st->speed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == 2) {
+        if (MoveActorAlongHeading(actor, st->speed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == MOVED_BLOCKED) {
           *st->flag = 0;
           st->timer2 = 0x78;
           actor->mode = CHARGER_GO_HOME;

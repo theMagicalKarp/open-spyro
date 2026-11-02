@@ -2893,7 +2893,7 @@ void Level31_UpdateActors(void) {
         if (st->timer >= 0x10) {
           r = MoveActorAlongAngle(actor, st->heading, 0xF0, 0x200, 0x200, 0);
           if (r != 0) {
-            if (r == 2 && (g_nGroundSurfaceType & 0x3F) == 0) {
+            if (r == MOVED_BLOCKED && (g_nGroundSurfaceType & 0x3F) == 0) {
               BARREL_BURST(actor, st);
             }
             actor->mode = FLOATBARREL_BURST;
@@ -2901,7 +2901,7 @@ void Level31_UpdateActors(void) {
         } else {
           r = MoveActorAlongAngle(actor, st->heading, 0xF0, 0, 0x200, 0);
           if (r != 0) {
-            if (r == 2 && (g_nGroundSurfaceType & 0x3F) == 0) {
+            if (r == MOVED_BLOCKED && (g_nGroundSurfaceType & 0x3F) == 0) {
               BARREL_BURST(actor, st);
             }
             actor->mode = FLOATBARREL_BURST;

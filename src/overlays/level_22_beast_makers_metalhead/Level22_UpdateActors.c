@@ -1402,7 +1402,7 @@ void Level22_UpdateActors(void) {
 
         CopyVector(g200, &actor->posX);
         r = DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0, 0x12);
-        if (r == 3) {
+        if (r == MOVED_LANDED) {
           st->zSpeed = 0x50;
         }
         actor->updateDist = 0xFF;
@@ -1469,7 +1469,7 @@ void Level22_UpdateActors(void) {
         int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
         ANIM_GO(actor, 5);
-        if (r == 0x100) {
+        if (r == PATH_ARRIVED(0)) {
           actor->mode++;
         }
         break;
@@ -1761,7 +1761,7 @@ void Level22_UpdateActors(void) {
         CopyVector(g200, &actor->posX);
         r = DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0, 0x12);
         actor->updateDist = 0xFF;
-        if (r == 3) {
+        if (r == MOVED_LANDED) {
           st->zSpeed = 0x5A;
         }
         ANIM_GO(actor, 8);
@@ -1836,7 +1836,7 @@ void Level22_UpdateActors(void) {
         int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
         ANIM_GO(actor, 6);
-        if (r == 0x100) {
+        if (r == PATH_ARRIVED(0)) {
           actor->mode++;
         }
         break;

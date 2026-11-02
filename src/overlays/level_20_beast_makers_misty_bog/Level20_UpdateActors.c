@@ -517,7 +517,7 @@ void Level20_UpdateActors(void) {
             continue;
           }
         }
-        if (r == 3 && st->hit == 0) {
+        if (r == MOVED_LANDED && st->hit == 0) {
           st->hit = 1;
           PlayActorMeshVoice(actor, 0, 0);
         }
@@ -1892,7 +1892,7 @@ void Level20_UpdateActors(void) {
 
       case CHARGER_RAM:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (MoveActorAlongHeading(actor, st->speed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == 2) {
+        if (MoveActorAlongHeading(actor, st->speed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == MOVED_BLOCKED) {
           *st->flag = 0;
           st->timer2 = 0x78;
           actor->mode = CHARGER_GO_HOME;
@@ -3579,7 +3579,7 @@ void Level20_UpdateActors(void) {
       case GRABBER_KNOCKED:
         actor->rotX += 4;
         actor->rotY += 4;
-        if (DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0xE) == 3) {
+        if (DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0xE) == MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x30);
           DespawnActorRecord(actor);

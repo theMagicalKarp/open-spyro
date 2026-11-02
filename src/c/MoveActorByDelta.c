@@ -58,12 +58,12 @@ int MoveActorByDelta(Actor *actor, DeltaVec delta, int contactRadius,
   if (contactRadius != 0) {
     if (DispatchActorContactAtSphere(newpos, contactRadius, 0, 0, actor,
                                      CONTACT_STOP_AT_SOLID) != 0) {
-      return 1;
+      return MOVED_HIT_ACTOR;
     }
   }
   if (radius != 0) {
     if (CollideSphereWithWorldAndActors(newpos, radius, radius) != 0) {
-      return 2;
+      return MOVED_BLOCKED;
     }
   }
   if (flags & MOVE_LIFT) {
@@ -72,5 +72,5 @@ int MoveActorByDelta(Actor *actor, DeltaVec delta, int contactRadius,
   }
   CopyVector(&actor->posX, newpos);
   RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
-  return 0;
+  return MOVED_OK;
 }

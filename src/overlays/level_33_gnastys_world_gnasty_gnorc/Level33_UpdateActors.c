@@ -1928,10 +1928,10 @@ void Level33_UpdateActors(void) {
         st->speed = spd;
         r = PivotActorAlongPath(actor, st->path, 0x200, spd, 0, 7, 0x28, PIVOT_TURN_ANY, 0);
         GNASTY_FALL(actor, st);
-        if (r == 0x101 && ApproxDist2D(&actor->posX, &SPY.posX) > 0x2000) {
+        if (r == PATH_ARRIVED(1) && ApproxDist2D(&actor->posX, &SPY.posX) > 0x2000) {
           ENTER_POSE(actor, GNASTY_LOOKOUT);
         }
-        if (r == 0x100) {
+        if (r == PATH_ARRIVED(0)) {
           FindNearestPathPointToSpyro(st->path, o170);
           if (dist > 0x4800 && o170[0] > 0x10 &&
               o170[0] < st->path->count - 1) {
@@ -1989,7 +1989,7 @@ void Level33_UpdateActors(void) {
         }
         r = PivotActorAlongPath(actor, st->path, 0x12C, spd, 0, 0xA, 0x28, PIVOT_TURN_ANY, 0);
         GNASTY_FALL(actor, st);
-        if (r == 0x100) {
+        if (r == PATH_ARRIVED(0)) {
           actor->mode = GNASTY_STAND;
           continue;
         }

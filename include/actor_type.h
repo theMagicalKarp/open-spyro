@@ -120,6 +120,16 @@ typedef struct Actor {
 #define MOVE_CHECK_Z 0x100     /* PivotActorAlongPath: arrival also needs Z within `thresh` */
 #define MOVE_PROBES_FLOOR (MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLOPE_LIMIT)
 
+/* MoveActorAlongHeading / MoveActorAlongAngle / MoveActorByDelta results
+ * (DriveActorTrackedMove passes them on, or MOVED_LANDED). */
+#define MOVED_OK 0        /* the step was committed */
+#define MOVED_HIT_ACTOR 1 /* an actor's contact sphere stopped it */
+#define MOVED_BLOCKED 2   /* world collision, step height or slope rejected it */
+#define MOVED_LANDED 3    /* DriveActorTrackedMove: the fall ended on the floor */
+
+/* PivotActorAlongPath / SteerActorAlongWaypoints result on reaching node n. */
+#define PATH_ARRIVED(n) (0x100 + (n))
+
 /* Size of one actor record: the stride of the actor pool, the sprite-record
  * queue and the HUD icon table. (The typedef fails to compile if the struct
  * ever drifts from it; it emits nothing.) */

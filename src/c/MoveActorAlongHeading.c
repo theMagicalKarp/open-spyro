@@ -40,7 +40,7 @@ int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius,
     if (!(flags & MOVE_PASS_ACTORS)) {
       if (DispatchActorContactAtSphere(newpos, contactRadius, 0, 0, actor,
                                        CONTACT_STOP_AT_SOLID) != 0) {
-        return 1;
+        return MOVED_HIT_ACTOR;
       }
     } else {
       DispatchActorContactAtSphere(newpos, contactRadius, 0, 0, actor,
@@ -54,7 +54,7 @@ int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius,
   if (radius != 0) {
     if (CollideSphereWithWorldAndActors(newpos, radius, radius) != 0) {
       if (!(flags & MOVE_SLIDE)) {
-        return 2;
+        return MOVED_BLOCKED;
       }
       CopyVector(newpos, g_anCollisionResolvedPos);
     }
@@ -86,7 +86,7 @@ int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius,
     }
     if (abs(ang) < 0x17) {
     blocked:
-      return 2;
+      return MOVED_BLOCKED;
     }
   }
   actor->posX = newpos[0];
@@ -108,5 +108,5 @@ int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius,
     EncodeCachedVecToActorDirCode(actor);
   }
   RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
-  return 0;
+  return MOVED_OK;
 }

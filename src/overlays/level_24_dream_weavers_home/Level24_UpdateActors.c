@@ -1051,7 +1051,7 @@ void Level24_UpdateActors(void) {
         }
         r = DriveActorTrackedMove(actor, &st->knock, st->heading, &st->lift, 0xC, 0x10);
         if (st->kind == LGKIND_SMALL) {
-          if (r == 3 && (unsigned)(actor->nextFrame - 0xB) < 9) {
+          if (r == MOVED_LANDED && (unsigned)(actor->nextFrame - 0xB) < 9) {
             g_nActorAnimDone = 0;
             actor->frameProgress = 0x20;
             actor->frameRate = 0x20;
@@ -1061,7 +1061,7 @@ void Level24_UpdateActors(void) {
             actor->nextFrame = 0x14;
             OnActorAnimQueued(actor);
           }
-        } else if (r == 3 && (unsigned)(actor->nextFrame - 0xB) < 9) {
+        } else if (r == MOVED_LANDED && (unsigned)(actor->nextFrame - 0xB) < 9) {
           g_nActorAnimDone = 0;
           actor->frameProgress = 0x20;
           actor->frameRate = 0x20;
@@ -2569,7 +2569,7 @@ void Level24_UpdateActors(void) {
           }
         }
         r = DriveActorTrackedMove(actor, &st->knock, st->heading, &st->lift, 0xC, 0x10);
-        if (r == 3 && actor->nextFrame < 0xA) {
+        if (r == MOVED_LANDED && actor->nextFrame < 0xA) {
           g_nActorAnimDone = 0;
           actor->frameProgress = sixteen;
           actor->frameRate = sixteen;

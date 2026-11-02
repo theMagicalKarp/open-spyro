@@ -4567,7 +4567,7 @@ void Level13_UpdateActors(void) {
                                   PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
             ANIM_GO(actor, 1);
-            if (r == 0x108) {
+            if (r == PATH_ARRIVED(8)) {
               st->sub = SORCERER_STEP_CAST;
               st->timer = 0;
               st->count = 0;

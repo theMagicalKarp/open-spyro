@@ -4184,7 +4184,7 @@ void Level14_UpdateActors(void) {
         actor->frameRate = 0x10;
         if (TICK_DOWN(st->timer) != 0) {
           if (TrackEntityYawTowardSpyro(actor, 8, 0x30, YAW_STEP_IN_BAND) != 0 &&
-              MoveActorAlongHeading(actor, st->speed, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == 2) {
+              MoveActorAlongHeading(actor, st->speed, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == MOVED_BLOCKED) {
             st->timer = 0x12;
             st->heading = ArcTan2(g_anCollisionContactPoint[0] - actor->posX,
                                         g_anCollisionContactPoint[1] - actor->posY, ATAN_ANGLE8);
@@ -4214,7 +4214,7 @@ void Level14_UpdateActors(void) {
                                             NODE_PT(st->cur)[1] - actor->posY,
                                             ATAN_ANGLE8),
                               8, 0x30, YAW_STEP_IN_BAND) != 0 &&
-                MoveActorAlongHeading(actor, 0x60, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == 2) {
+                MoveActorAlongHeading(actor, 0x60, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == MOVED_BLOCKED) {
               st->timer = 0x12;
               st->heading = ArcTan2(g_anCollisionContactPoint[0] - actor->posX,
                                           g_anCollisionContactPoint[1] - actor->posY, ATAN_ANGLE8);
@@ -4271,7 +4271,7 @@ void Level14_UpdateActors(void) {
                                             NODE_PT(st->cur)[1] - actor->posY,
                                             ATAN_ANGLE8),
                               8, 0x30, YAW_STEP_IN_BAND) != 0 &&
-                MoveActorAlongHeading(actor, 0x60, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == 2) {
+                MoveActorAlongHeading(actor, 0x60, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == MOVED_BLOCKED) {
               st->timer = 0x12;
               st->heading = ArcTan2(g_anCollisionContactPoint[0] - actor->posX,
                                           g_anCollisionContactPoint[1] - actor->posY, ATAN_ANGLE8);
@@ -4300,7 +4300,7 @@ void Level14_UpdateActors(void) {
                                             NODE_PT(st->cur)[1] - actor->posY,
                                             ATAN_ANGLE8),
                               8, 0x30, YAW_STEP_IN_BAND) != 0 &&
-                MoveActorAlongHeading(actor, 0x60, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == 2) {
+                MoveActorAlongHeading(actor, 0x60, 0, 0x400, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == MOVED_BLOCKED) {
               st->timer = 0x12;
               st->heading = ArcTan2(g_anCollisionContactPoint[0] - actor->posX,
                                           g_anCollisionContactPoint[1] - actor->posY, ATAN_ANGLE8);

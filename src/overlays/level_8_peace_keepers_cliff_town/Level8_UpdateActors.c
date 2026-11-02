@@ -2577,11 +2577,11 @@ void Level8_UpdateActors(void) {
       case TPRUNNER_KNOCKED:
         r = DriveActorTrackedMove(actor, &st->knockTimer, st->heading, &st->knockSpeed,
                           0xC, 0x10);
-        if (r == 3 && st->cried == 0) {
+        if (r == MOVED_LANDED && st->cried == 0) {
           st->cried = 1;
           PlayActorMeshVoice(actor, 0, 0);
         }
-        if (r == 2 && st->knockSpeed >= -0x63) {
+        if (r == MOVED_BLOCKED && st->knockSpeed >= -0x63) {
           st->knockSpeed = -0x64;
         }
         if (g_nActorAnimDone != 0) {

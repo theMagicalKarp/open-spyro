@@ -36,7 +36,7 @@ int MoveActorAlongAngle(Actor *actor, int angle, int speed, int contactRadius,
     if (!(flags & MOVE_PASS_ACTORS)) {
       if (DispatchActorContactAtSphere(newpos, contactRadius, 0, 0, actor,
                                        CONTACT_STOP_AT_SOLID) != 0) {
-        return 1;
+        return MOVED_HIT_ACTOR;
       }
     } else {
       DispatchActorContactAtSphere(newpos, contactRadius, 0, 0, actor,
@@ -50,7 +50,7 @@ int MoveActorAlongAngle(Actor *actor, int angle, int speed, int contactRadius,
   if (radius != 0) {
     if (CollideSphereWithWorldAndActors(newpos, radius, radius) != 0) {
       if (!(flags & MOVE_SLIDE)) {
-        return 2;
+        return MOVED_BLOCKED;
       }
       CopyVector(newpos, g_anCollisionResolvedPos);
     }
@@ -70,7 +70,7 @@ int MoveActorAlongAngle(Actor *actor, int angle, int speed, int contactRadius,
     }
     if (actor->posZ - floorz >= 0xC9) {
     blocked:
-      return 2;
+      return MOVED_BLOCKED;
     }
   }
 commit:
@@ -93,5 +93,5 @@ commit:
     EncodeCachedVecToActorDirCode(actor);
   }
   RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
-  return 0;
+  return MOVED_OK;
 }
