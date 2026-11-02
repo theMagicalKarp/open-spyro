@@ -768,6 +768,9 @@ void InitSoundEngine(void);
 unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner, unsigned int mode, unsigned char *pPlaying);
 
 /* 0x80056200: Stops one SPU voice by index. index = voice index (low 7 bits, 0..23). Sets bit index of g_dwSpuPendingKeyOff (pending hardware-keyoff mask), then if mode is 2 or 4: resets the table row at &g_aSpuVoiceRows + (idx*0x1c) — writes 0x7f to the busy-marker via the writeback pointer at +0x18, zeros owner-key +0x00 + writeback ptr +0x18 + interp delta +0x14, sets flags ushort +0x0e=0x40 (idle), sets byte +0x0d=0xff (alignment). The 24-entry × 0x1c table at &g_aSpuVoiceRows holds per-voice runtime state. Sole caller: DragonRescue_Update. */
+#ifndef VOICE_RELEASE
+#define VOICE_RELEASE 4 /* StopSoundVoiceByIndex: key off and free the voice row (2 does the same; other modes only key off) */
+#endif
 void StopSoundVoiceByIndex(int index, int mode);
 
 /* 0x800562a4: Stops all SPU voices whose owner-key at +0x00 matches actor. Walks all 24 voice rows at &g_aSpuVoiceRows (stride 0x1c); for each match: kills the voice (resets row to idle as in StopSoundVoiceByIndex) when mode==1, or when mode==2 AND the looping flag (bit 0x100 of flags +0x0e) is set. OR's the kill bitmask into g_dwSpuPendingKeyOff at end. Callers: ChangeSpyroState (stops all Spyro-owned voices on state change), ResetSpyroEntity (full-stop on respawn/level-load). */

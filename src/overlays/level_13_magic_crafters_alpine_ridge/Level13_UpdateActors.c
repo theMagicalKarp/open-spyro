@@ -2683,7 +2683,7 @@ void Level13_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
-        StopSoundVoiceByIndex(actor->voiceRow, 4);
+        StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorCommittedKill(actor);
         ENTER_POSE(actor, CAPTAIN_KNOCKED);
@@ -2913,7 +2913,7 @@ void Level13_UpdateActors(void) {
         case CAPTAIN_STEP_SPAR:
           if (TickCountdownByFrameDelta(&st->timer, 4) && d < 0x1000 &&
               ABS2(SPY_DZ(actor)) < 0x384) {
-            StopSoundVoiceByIndex(actor->voiceRow, 4);
+            StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
             st->step = CAPTAIN_STEP_STRIKE;
           }
           if (TickCountdownByFrameDelta(&st->timer2, 4) && actor->frame >= 0x19) {
@@ -2963,7 +2963,7 @@ void Level13_UpdateActors(void) {
         case CAPTAIN_STEP_REST:
           if (TickCountdownByFrameDelta(&st->timer, 4) && d < 0x1000 &&
               ABS2(SPY_DZ(actor)) < 0x384) {
-            StopSoundVoiceByIndex(actor->voiceRow, 4);
+            StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
             st->step = CAPTAIN_STEP_STRIKE;
           }
           if (TickCountdownByFrameDelta(&st->timer2, 4) && g_nActorAnimDone != 0) {
@@ -3172,7 +3172,7 @@ void Level13_UpdateActors(void) {
             }
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
           }
-          StopSoundVoiceByIndex(actor->voiceRow, 4);
+          StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3183,7 +3183,7 @@ void Level13_UpdateActors(void) {
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
-        StopSoundVoiceByIndex(actor->voiceRow, 4);
+        StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
         ENTER_POSE(actor, VILLAGER_KNOCKED);
@@ -3367,14 +3367,14 @@ void Level13_UpdateActors(void) {
         if (actor->cullRadius == 0 && st->chunkAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
-          StopSoundVoiceByIndex(actor->voiceRow, 4);
+          StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
           DespawnActorRecord(actor);
           continue;
         }
         break;
 
       case VILLAGER_PANIC:
-        StopSoundVoiceByIndex(actor->voiceRow, 4);
+        StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
         st->idleTimer = 0;
         SnapActorToGround(actor);
         if (st->stopVoice != 0) {
@@ -4532,7 +4532,7 @@ void Level13_UpdateActors(void) {
         if (st->mode == SORCERER_ROLE_CASTER) {
           actor->mode = SORCERER_BREAK_LINK;
         } else {
-          StopSoundVoiceByIndex(actor->voiceRow, 4);
+          StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
           actor->mode = SORCERER_KNOCKED;

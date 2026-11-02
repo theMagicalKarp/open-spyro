@@ -2183,7 +2183,7 @@ void Level16_UpdateActors(void) {
           if (actor->flags & ACTOR_HIT_CHARGE) {
             st->speed += 0x8C;
           }
-          StopSoundVoiceByIndex(actor->voiceRow, 4);
+          StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorCommittedKill(actor);
           ENTER_POSE(actor, PATHGUARD_KNOCKED);
@@ -3131,7 +3131,7 @@ void Level16_UpdateActors(void) {
             }
             if (actor->mode == BLOWHARD_P3_PATROL || actor->mode == BLOWHARD_P3_DROP_RIDER ||
                 actor->mode == BLOWHARD_P3_WAIT) {
-              StopSoundVoiceByIndex(actor->voiceRow, 4);
+              StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
               ENTER_POSE(actor, BLOWHARD_DYING);
             }
             if (st->prev >= 0) {
@@ -3452,7 +3452,7 @@ void Level16_UpdateActors(void) {
       int r;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != HBELL_STRUCK) {
-        StopSoundVoiceByIndex(actor->voiceRow, 4);
+        StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
         SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
         MarkActorCommittedKill(actor);
         GetWorldChunkAnimState(st->chunkAnim);

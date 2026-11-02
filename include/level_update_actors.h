@@ -1569,6 +1569,9 @@ extern int ComputeLobVelocityZ(int *from, int *to, int speed, int g, int *out);
 extern void ChangeSpyroState(int state);
 extern void ComputeCameraOrbitOffset(int *out);
 extern void ProjectWorldPointGTEUnscaled(int *out, int *s);
+#ifndef VOICE_RELEASE
+#define VOICE_RELEASE 4 /* StopSoundVoiceByIndex: key off and free the voice row (2 does the same; other modes only key off) */
+#endif
 extern void StopSoundVoiceByIndex(int ch, int mode);
 extern void TallyFlightTarget(int tallyClass);
 extern void UpdateCameraEulerAngles(void);
