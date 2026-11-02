@@ -2976,7 +2976,7 @@ void Level14_UpdateActors(void) {
             actor->posZ = aheadOfSpyro[2];
           }
           if (TICK_DOWN(st->timer) != 0) {
-            ANIM_GO(actor, 1);
+            ANIM_GO(actor, SFGIVER_ANIM_CAST);
             st->count = 0;
             actor->subMode = SFGIVER_SUB_CAST;
           }
@@ -3001,7 +3001,7 @@ void Level14_UpdateActors(void) {
             st->count = 0;
           }
           if (g_nActorAnimDone != 0) {
-            ANIM_GO(actor, 0);
+            ANIM_GO(actor, SFGIVER_ANIM_IDLE);
             st->timer = 0xA;
             actor->subMode = SFGIVER_SUB_LINGER;
             PlayActorMeshVoice(actor, 0, 0);
@@ -3090,11 +3090,11 @@ void Level14_UpdateActors(void) {
                  8) &
                 0xFF;
 
-        ANIM_GO(actor, 2);
+        ANIM_GO(actor, SFGIVER_ANIM_CIRCLE);
         if (actor->subMode != 0 || g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {
           actor->subMode = 0;
           st->alert = 0;
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, SFGIVER_ANIM_IDLE);
           actor->mode = SFGIVER_RETURN;
           continue;
         }

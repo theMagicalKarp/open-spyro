@@ -2911,9 +2911,9 @@ void Level10_UpdateActors(void) {
       }
 
       case SGUARD_RECOVER:
-        ANIM_GO(actor, 0);
+        ANIM_GO(actor, SGUARD_ANIM_IDLE);
         if (TICK_DOWN(st->timer24) != 0) {
-          ANIM_GO(actor, 4);
+          ANIM_GO(actor, SGUARD_ANIM_STANCE);
           actor->mode = SGUARD_GUARD;
           continue;
         }
@@ -2925,7 +2925,7 @@ void Level10_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (TICK_DOWN(st->timer04) != 0 && e < 0x578) {
           st->timer04 = 0x78;
-          ANIM_GO(actor, 5);
+          ANIM_GO(actor, SGUARD_ANIM_SWIPE);
           actor->mode = SGUARD_SWIPE;
           continue;
         }
@@ -2934,14 +2934,14 @@ void Level10_UpdateActors(void) {
 
       case SGUARD_SWIPE:
         if (g_nActorAnimDone != 0) {
-          ANIM_GO(actor, 4);
+          ANIM_GO(actor, SGUARD_ANIM_STANCE);
           actor->mode = SGUARD_GUARD;
           continue;
         }
         break;
 
       case SGUARD_FALL:
-        ANIM_GO(actor, 6);
+        ANIM_GO(actor, SGUARD_ANIM_FALL);
         if (TICK_DOWN(st->timer24) != 0) {
           DespawnActorRecord(actor);
           continue;

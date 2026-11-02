@@ -620,6 +620,15 @@ enum ShempGuardMode {
   SGUARD_PATH_RUSH = 30, /* rushes along ShempGuardState.target's path, then BRAKE_AIM */
 };
 
+/* A Shemp guard's animations besides the poses equal to its mode (CHASE 1,
+ * KNOCKED 3). */
+enum ShempGuardAnim {
+  SGUARD_ANIM_IDLE = 0,   /* SGUARD_RECOVER catches its breath on it */
+  SGUARD_ANIM_STANCE = 4, /* SGUARD_GUARD */
+  SGUARD_ANIM_SWIPE = 5,
+  SGUARD_ANIM_FALL = 6,
+};
+
 /* ->mode of a path runner (ACTOR_TYPE_PATH_RUNNER..+1, PathRunnerState;
  * level 21). PathRunnerState.mode picks which of the two runs it makes. */
 enum RunnerMode {
@@ -1001,6 +1010,13 @@ enum SuperflameGiverSub {
   SFGIVER_SUB_APPROACH = 0, /* floats to Spyro's front */
   SFGIVER_SUB_CAST = 1,     /* casts: motes, then sets g_nSpyroSuperflameTimer */
   SFGIVER_SUB_LINGER = 2,   /* short hold, then SFGIVER_RETURN */
+};
+
+/* A superflame giver's animations. */
+enum SuperflameGiverAnim {
+  SFGIVER_ANIM_IDLE = 0,
+  SFGIVER_ANIM_CAST = 1,   /* SFGIVER_SUB_CAST: motes from frame 6 */
+  SFGIVER_ANIM_CIRCLE = 2, /* SFGIVER_CIRCLE */
 };
 
 /* ->mode of Jacques (ACTOR_TYPE_JACQUES, JacquesState; level 28). */
