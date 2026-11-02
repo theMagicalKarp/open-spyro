@@ -1101,17 +1101,17 @@ void Level24_UpdateActors(void) {
         break;
 
       case LGUARD_ESCORT: {
-        Actor *p = &g_pActorListBase[st->partner];
-        int h = ArcTan2(p->posX - actor->posX, p->posY - actor->posY, ATAN_ANGLE8);
+        Actor *partner = &g_pActorListBase[st->partner];
+        int h = ArcTan2(partner->posX - actor->posX, partner->posY - actor->posY, ATAN_ANGLE8);
 
-        SteerActorAroundPoint(actor, &p->posX, 0x5DC,
-                      WrapAddAngle8(ArcTan2(g_anSpyroWorldPos - p->posX,
-                                                  g_nSpyroWorldPosY - p->posY, ATAN_ANGLE8),
+        SteerActorAroundPoint(actor, &partner->posX, 0x5DC,
+                      WrapAddAngle8(ArcTan2(g_anSpyroWorldPos - partner->posX,
+                                                  g_nSpyroWorldPosY - partner->posY, ATAN_ANGLE8),
                                     0x80),
                       4, 0x32, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
-        if (p->mode != 0xA) {
+        if (partner->mode != 0xA) {
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
-            TurnActorYawTowardAngle(p, h, 4, 0, YAW_HOLD_IN_BAND);
+            TurnActorYawTowardAngle(partner, h, 4, 0, YAW_HOLD_IN_BAND);
           }
           break;
         }

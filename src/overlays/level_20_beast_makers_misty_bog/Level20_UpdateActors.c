@@ -419,9 +419,9 @@ void Level20_UpdateActors(void) {
         if (st->mode == GUNNER_ROLE_GUARD) {
           ENTER_POSE(actor, GUNNER_GUARD);
         } else if (st->mode == GUNNER_ROLE_PATROL) {
-          Actor *p = &g_pActorListBase[st->partner];
+          Actor *partner = &g_pActorListBase[st->partner];
 
-          if (p->mode != 0) {
+          if (partner->mode != 0) {
             st->mode = GUNNER_ROLE_GUARD;
             ENTER_POSE(actor, GUNNER_GUARD);
           }
