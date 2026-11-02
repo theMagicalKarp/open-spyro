@@ -2121,6 +2121,8 @@ int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim, int 
  * first steps of each leg with the previous leg vector; re-aims yaw/pitch. */
 #ifndef TWEEN_FLY
 #define TWEEN_FLY 0x04 /* keep each leg's Z step (fly); without it the step is flattened */
+#define TWEEN_NEXT_LEG 1 /* result: this step finished a leg */
+#define TWEEN_WRAPPED 2  /* result: ... and the cursor wrapped back to node 0 */
 #endif
 int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legs, int flags);
 

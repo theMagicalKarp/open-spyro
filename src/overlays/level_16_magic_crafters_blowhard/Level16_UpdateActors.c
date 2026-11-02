@@ -942,7 +942,7 @@ void Level16_UpdateActors(void) {
 
       if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
 
-        if (st->sparkle != 255) {
+        if (st->sparkle != BILLBOARD_NONE) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
           if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
@@ -955,7 +955,7 @@ void Level16_UpdateActors(void) {
                         &actor->posX);
 
           if (g_aRotBillboards[st->sparkle].life < 5) {
-            st->sparkle = 255;
+            st->sparkle = BILLBOARD_NONE;
           }
         } else {
           if (st->timer > 0xf7) {
@@ -3297,7 +3297,7 @@ void Level16_UpdateActors(void) {
         break;
 
       case BLOWHARD_P2_TRAVEL:
-        if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->tweenStep, 0x20, TWEEN_FLY) == 2) {
+        if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->tweenStep, 0x20, TWEEN_FLY) == TWEEN_WRAPPED) {
           actor->mode = BLOWHARD_P2_PATROL;
           actor->soundRange = 0;
           st->floorZ = actor->posZ + 0x578;
@@ -3359,7 +3359,7 @@ void Level16_UpdateActors(void) {
         break;
 
       case BLOWHARD_P3_TRAVEL:
-        if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->tweenStep, 0x20, TWEEN_FLY) == 2) {
+        if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->tweenStep, 0x20, TWEEN_FLY) == TWEEN_WRAPPED) {
           actor->mode = BLOWHARD_P3_PATROL;
           st->floorZ = actor->posZ + 0x578;
           st->path = st->paths[4];

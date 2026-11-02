@@ -1944,7 +1944,7 @@ void Level27_UpdateActors(void) {
                 ANIM_RESET(o, 1);
               }
               o->renderList = 0xA0;
-              *(int *)&o->tint0 = 0xA18618;
+              *(int *)&o->tint0 = ACTOR_TINT_NEUTRAL;
             }
             a = (actor->rotZ + 0x40) & 0xFF;
             dd = (i % 3 - 1) * 800;

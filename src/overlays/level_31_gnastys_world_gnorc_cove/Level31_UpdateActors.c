@@ -1693,7 +1693,7 @@ void Level31_UpdateActors(void) {
 
       case HATCH_SEALED_IDLE:
         actor->renderList = 0xA0;
-        *(int *)&actor->tint0 = 0xA18618;
+        *(int *)&actor->tint0 = ACTOR_TINT_NEUTRAL;
         if (g_nActorAnimDone != 0) {
           actor->subMode = 0;
           actor->mode = HATCH_SEALED_WAIT;

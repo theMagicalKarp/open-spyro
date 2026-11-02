@@ -894,6 +894,8 @@ extern int FindNearestPathPointToActor(Actor *actor, PathData *path, int *out_in
 /* Path tweens used by the patrol/post classes. */
 #ifndef TWEEN_FLY
 #define TWEEN_FLY 0x04 /* keep each leg's Z step (fly); without it the step is flattened */
+#define TWEEN_NEXT_LEG 1 /* result: this step finished a leg */
+#define TWEEN_WRAPPED 2  /* result: ... and the cursor wrapped back to node 0 */
 #endif
 extern int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legs, int flags);
 

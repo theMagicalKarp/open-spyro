@@ -1799,11 +1799,11 @@ void Level34_UpdateActors(void) {
             g_anCameraActiveTargetParams.w[0] = 0x800 - g_bSpyroPersistentEulerZ * 16;
             r = TweenActorAlongPath(actor, (PathData *)st->path, st->look, &st->laps,
                               st->speed, TWEEN_FLY);
-            if (r == 2) {
+            if (r == TWEEN_WRAPPED) {
               st->cur->cur = 2;
               g_nCinematicActive = 0;
               actor->subMode = 1;
-            } else if (r == one) {
+            } else if (r == one) { /* TWEEN_NEXT_LEG */
               st->speed -= 8;
               if (st->speed < 2) {
                 st->speed = 2;

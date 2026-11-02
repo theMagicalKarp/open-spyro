@@ -547,7 +547,7 @@ void Level23_UpdateActors(void) {
 
       if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
 
-        if (st->sparkle != 255) {
+        if (st->sparkle != BILLBOARD_NONE) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
           if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
@@ -560,7 +560,7 @@ void Level23_UpdateActors(void) {
                         &actor->posX);
 
           if (g_aRotBillboards[st->sparkle].life < 5) {
-            st->sparkle = 255;
+            st->sparkle = BILLBOARD_NONE;
           }
         } else {
           if (st->timer > 0xf7) {
@@ -1211,7 +1211,7 @@ void Level23_UpdateActors(void) {
         }
         d = actor->rotZ;
         if (g_nSpyroSubstate < SPYRO_SUB_SCRIPTED &&
-            TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0xA, TWEEN_FLY) == 2) {
+            TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0xA, TWEEN_FLY) == TWEEN_WRAPPED) {
           st->pathIdx = (st->pathIdx + 1) & 3;
           switch (st->pathIdx) {
           case 0:
