@@ -799,7 +799,7 @@ void Level22_UpdateActors(void) {
         continue;
 
       case METALHEAD_SPRAY:
-        ANIM_GO(actor, 0xC);
+        ANIM_GO(actor, METALHEAD_ANIM_SPRAY);
         if ((unsigned)(actor->nextFrame - 5) < 0x10) {
           Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_POD_SHOT, actor);
           PodShotState *sh = o->state;
@@ -835,7 +835,7 @@ void Level22_UpdateActors(void) {
         continue;
 
       case METALHEAD_LOB:
-        ANIM_GO(actor, 0xD);
+        ANIM_GO(actor, METALHEAD_ANIM_LOB);
         if ((unsigned)(actor->nextFrame - 4) < 5 && st->count >= 7) {
           Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_LOBBED_BOLT, actor);
           LobbedBoltState *b;
@@ -875,7 +875,7 @@ void Level22_UpdateActors(void) {
           actor->mode = METALHEAD_DYING;
           continue;
         }
-        ANIM_GO(actor, 4);
+        ANIM_GO(actor, METALHEAD_ANIM_TURN);
         if (TurnActorYawTowardAngle(actor, h, 6, 8, YAW_STEP_IN_BAND) != 0) {
           actor->subMode = MHEAD_CATCH_NONE;
           actor->mode++;
@@ -885,9 +885,9 @@ void Level22_UpdateActors(void) {
       }
 
       case METALHEAD_PHASE_ROAR:
-        ANIM_GO(actor, 8);
+        ANIM_GO(actor, METALHEAD_ANIM_ROAR);
         if (g_nActorAnimDone != 0) {
-          ANIM_THEN(actor, 9);
+          ANIM_THEN(actor, METALHEAD_ANIM_STAGGER);
           st->staggerTimer = 0x46;
           actor->mode++;
           continue;
@@ -903,9 +903,9 @@ void Level22_UpdateActors(void) {
         continue;
 
       case METALHEAD_PHASE_RECOVER:
-        ANIM_GO(actor, 0xA);
+        ANIM_GO(actor, METALHEAD_ANIM_RECOVER);
         if (g_nActorAnimDone != 0) {
-          ANIM_THEN(actor, 5);
+          ANIM_THEN(actor, METALHEAD_ANIM_RUN);
           actor->mode++;
           continue;
         }
@@ -930,7 +930,7 @@ void Level22_UpdateActors(void) {
         continue;
 
       case METALHEAD_DYING:
-        ANIM_GO(actor, 0xB);
+        ANIM_GO(actor, METALHEAD_ANIM_DYING);
         if (g_nActorAnimDone != 0) {
           ModifyWorldChunkAnimFlags(3, CHUNK_ANIM_RESUME, 0);
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

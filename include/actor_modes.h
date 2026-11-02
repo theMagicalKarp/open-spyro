@@ -268,6 +268,11 @@ enum GnastyMode {
   GNASTY_PATH_END = 21,    /* at the path end until Spyro comes near from below */
 };
 
+/* Gnasty Gnorc runs to animation 1 (THROW plays its own index, 2). */
+enum GnastyAnim {
+  GNASTY_ANIM_RUN = 1,
+};
+
 /* ->mode of Blowhard, the level 16 boss (ACTOR_TYPE_BLOWHARD,
  * BlowhardState). Each of its three phases rises (floorZ + 0x578), hovers
  * or patrols its path, and sinks to drop an ACTOR_TYPE_RIM_RIDER on Spyro;
@@ -781,6 +786,18 @@ enum MetalheadMode {
   METALHEAD_DYING = 20,       /* bursts; sets g_bLevelBossDefeated */
 };
 
+/* Metalhead's animations, from the modes that play them. */
+enum MetalheadAnim {
+  METALHEAD_ANIM_TURN = 4,     /* PHASE_TURN */
+  METALHEAD_ANIM_RUN = 5,      /* queued after RECOVER, plays through PHASE_RUN */
+  METALHEAD_ANIM_ROAR = 8,
+  METALHEAD_ANIM_STAGGER = 9,  /* queued after the roar, plays through PHASE_STAGGER */
+  METALHEAD_ANIM_RECOVER = 0xA,
+  METALHEAD_ANIM_DYING = 0xB,
+  METALHEAD_ANIM_SPRAY = 0xC,
+  METALHEAD_ANIM_LOB = 0xD,
+};
+
 /* MetalheadState.choice: the attack Metalhead picks while METALHEAD_IDLE
  * (random: 60% fling, 25% spray, 15% lob; spray or lob only when a fling
  * is not possible). Back to NONE when its pose ends or the pick's range
@@ -913,6 +930,12 @@ enum SorcererMode {
   SORCERER_WAIT_CONJURE = 97, /* waits, then CONJURE */
   SORCERER_CUE = 98,         /* takes the queued pose (no writer in the C sources) */
   SORCERER_ALERTED = 99,     /* set group-wide: turns angry, takes the queued pose */
+};
+
+/* A sorcerer's walk and rest animations (KNOCKED plays its own index, 6). */
+enum SorcererAnim {
+  SORCERER_ANIM_WALK = 1,
+  SORCERER_ANIM_REST = 7,  /* SORCERER_STEP_REST; a caster resting ignores Spyro */
 };
 
 /* SorcererState.mode: the sorcerer's role, read in SORCERER_IDLE. Flaming a
@@ -1310,6 +1333,13 @@ enum ChargingYakMode {
   YAK_BUTT_HOLD = 7, /* holds after pinning Spyro, then GRAZE */
 };
 
+/* The grazing pair a charging yak alternates in YAK_GRAZE (8 a random 2..4
+ * times, then 9); its other animations are its mode indices. */
+enum ChargingYakAnim {
+  YAK_ANIM_GRAZE = 8,
+  YAK_ANIM_GRAZE_ALT = 9,
+};
+
 /* ->mode of a tough ram (ACTOR_TYPE_TOUGH_RAM, ToughRamState; level 9); the
  * mode is also the animation index. The yak's machine, but four hits. */
 enum ToughRamMode {
@@ -1321,6 +1351,13 @@ enum ToughRamMode {
   TRAM_STAGGER = 5,   /* hit: thrown up and back, then GRAZE */
   TRAM_KNOCKED = 6,   /* the fourth hit (or thrown off a ledge): falls, then bursts */
   TRAM_BUTT_HOLD = 7, /* holds after pinning Spyro, then GRAZE */
+};
+
+/* The grazing pair a tough ram alternates in TRAM_GRAZE (8 a random 2..4
+ * times, then 9); its other animations are its mode indices. */
+enum ToughRamAnim {
+  TRAM_ANIM_GRAZE = 8,
+  TRAM_ANIM_GRAZE_ALT = 9,
 };
 
 /* ->mode of a path snowball thrower (ACTOR_TYPE_PATH_SNOWBALL_THROWER / +1,

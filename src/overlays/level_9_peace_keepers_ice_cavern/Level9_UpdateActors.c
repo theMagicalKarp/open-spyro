@@ -1971,11 +1971,11 @@ void Level9_UpdateActors(void) {
       switch (actor->mode) {
       case YAK_GRAZE:
         if (g_nActorAnimDone != 0) {
-          if (actor->anim == 8) {
-            ANIM_GO(actor, 9);
+          if (actor->anim == YAK_ANIM_GRAZE) {
+            ANIM_GO(actor, YAK_ANIM_GRAZE_ALT);
           } else if (st->timer == 0) {
             st->timer = RandomIntInRange(2, 4);
-            ANIM_GO(actor, 8);
+            ANIM_GO(actor, YAK_ANIM_GRAZE);
           } else {
             st->timer--;
             ANIM_GO(actor, YAK_GRAZE);
@@ -1995,7 +1995,7 @@ void Level9_UpdateActors(void) {
       case YAK_ROUSE:
         if (g_nActorAnimDone != 0) {
           actor->mode = YAK_WATCH;
-          ANIM_RESET(actor, 3);
+          ANIM_RESET(actor, YAK_WATCH);
           continue;
         }
         break;
@@ -2027,7 +2027,7 @@ void Level9_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           if (st->rest != 0) {
             actor->mode = YAK_BUTT_HOLD;
-            ANIM_RESET(actor, 7);
+            ANIM_RESET(actor, YAK_BUTT_HOLD);
             continue;
           }
           ENTER_POSE(actor, YAK_GRAZE);
@@ -2421,11 +2421,11 @@ void Level9_UpdateActors(void) {
       switch (actor->mode) {
       case TRAM_GRAZE:
         if (g_nActorAnimDone != 0) {
-          if (actor->anim == 8) {
-            ANIM_GO(actor, 9);
+          if (actor->anim == TRAM_ANIM_GRAZE) {
+            ANIM_GO(actor, TRAM_ANIM_GRAZE_ALT);
           } else if (st->timer == 0) {
             st->timer = RandomIntInRange(2, 4);
-            ANIM_GO(actor, 8);
+            ANIM_GO(actor, TRAM_ANIM_GRAZE);
           } else {
             st->timer--;
             ANIM_GO(actor, TRAM_GRAZE);
@@ -2445,7 +2445,7 @@ void Level9_UpdateActors(void) {
       case TRAM_ROUSE:
         if (g_nActorAnimDone != 0) {
           actor->mode = TRAM_WATCH;
-          ANIM_RESET(actor, 2);
+          ANIM_RESET(actor, TRAM_WATCH);
           continue;
         }
         break;
@@ -2477,7 +2477,7 @@ void Level9_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           if (st->rest != 0) {
             actor->mode = TRAM_BUTT_HOLD;
-            ANIM_RESET(actor, 7);
+            ANIM_RESET(actor, TRAM_BUTT_HOLD);
             continue;
           }
           ENTER_POSE(actor, TRAM_GRAZE);

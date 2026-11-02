@@ -4534,7 +4534,7 @@ void Level13_UpdateActors(void) {
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorLiveKill(actor);
           actor->mode = SORCERER_KNOCKED;
-          ANIM_RESET(actor, 6);
+          ANIM_RESET(actor, SORCERER_KNOCKED);
           continue;
         }
       }
@@ -4557,7 +4557,7 @@ void Level13_UpdateActors(void) {
           }
         } else if (st->mode == SORCERER_ROLE_CASTER) {
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2800 &&
-              g_nSpyroAirborneFrames == 0 && actor->nextAnim != 7) {
+              g_nSpyroAirborneFrames == 0 && actor->nextAnim != SORCERER_ANIM_REST) {
             actor->mode = SORCERER_BREAK_LINK;
             continue;
           }
@@ -4566,7 +4566,7 @@ void Level13_UpdateActors(void) {
             int r = PivotActorAlongPath(actor, st->path, 0x200, 0x6E, 0, 8, 0x80,
                                   PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
-            ANIM_GO(actor, 1);
+            ANIM_GO(actor, SORCERER_ANIM_WALK);
             if (r == PATH_ARRIVED(8)) {
               st->sub = SORCERER_STEP_CAST;
               st->timer = 0;
@@ -4608,12 +4608,12 @@ void Level13_UpdateActors(void) {
 
           case SORCERER_STEP_REST:
             if (TICK_DOWN(st->timer)) {
-              if (actor->nextAnim != 6 && actor->anim != 7) {
+              if (actor->nextAnim != SORCERER_KNOCKED && actor->anim != SORCERER_ANIM_REST) {
                 g_nActorAnimDone = 0;
-                ANIM_RESET(actor, 7);
+                ANIM_RESET(actor, SORCERER_ANIM_REST);
               }
               if (g_nActorAnimDone != 0) {
-                ANIM_SET(actor, 1);
+                ANIM_SET(actor, SORCERER_ANIM_WALK);
                 st->sub = SORCERER_STEP_WALK;
               }
             }
