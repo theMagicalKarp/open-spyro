@@ -2028,7 +2028,7 @@ void Level6_UpdateActors(void) {
             dist = VectorLength(g056, VEC_LEN_XYZ);
 
             if (high == 0 &&
-                (TickCountdownByFrameDelta((void *)st, 4) != 0 ||
+                (TICK_DOWN(st->timer) != 0 ||
                  (st->timer < 0x50 &&
                   AbsAngleDelta8(
                       (actor->rotZ + (pk->vel[0] * 0x6E)) & 0xFF,
@@ -2222,7 +2222,7 @@ void Level6_UpdateActors(void) {
       }
       if ((actor->flags & ACTOR_HIT_SUPER) && actor->mode < BPROP_BREAK) {
         if (st[0] != 0) {
-          if (TickCountdownByFrameDelta(st, 4) != 0) {
+          if (TICK_DOWN(*st) != 0) {
             actor->mode = BPROP_BREAK;
             ANIM_RESET(actor, 2);
             continue;

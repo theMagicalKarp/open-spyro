@@ -333,7 +333,7 @@ void Level0_UpdateActors(void) {
       int *st;
 
       st = (int *)actor->state;
-      if (TickCountdownByFrameDelta(st, 4) == 0) {
+      if (TICK_DOWN(*st) == 0) {
         break;
       }
       g_pfnLevelEmitParticles(1, EMIT_DRIFTING_MOTE, &actor->posX, 0);
@@ -1773,7 +1773,7 @@ void Level0_UpdateActors(void) {
           dist = VectorLength(svA, VEC_LEN_XYZ);
 
           if (isPickupAnimPhase == 0) {
-            if (TickCountdownByFrameDelta(st, 4) != 0 ||
+            if (TICK_DOWN(st->timer) != 0 ||
                 (st->timer < 80 &&
                  AbsAngleDelta8((actor->rotZ + (bp->circleDir * 110)) & 0xFF,
                                ((CAM.rotZ >> 4) + 0x80) & 0xFF) < 8)) {

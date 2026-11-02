@@ -2715,7 +2715,7 @@ void Level14_UpdateActors(void) {
           dist = VectorLength(svJ1, VEC_LEN_XYZ);
 
           if (isPickupAnimPhase == 0) {
-            if (TickCountdownByFrameDelta(st, 4) != 0 ||
+            if (TICK_DOWN(st->timer) != 0 ||
                 (st->timer < 80 &&
                  AbsAngleDelta8((actor->rotZ + (bp->circleDir * 110)) & 0xFF,
                                ((CAM.rotZ >> 4) + 0x80) & 0xFF) < 8)) {

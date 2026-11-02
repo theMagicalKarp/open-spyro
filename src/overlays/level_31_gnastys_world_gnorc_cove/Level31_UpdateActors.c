@@ -1406,7 +1406,7 @@ void Level31_UpdateActors(void) {
             dist = VectorLength(svA, VEC_LEN_XYZ);
 
             if (high == 0 &&
-                (TickCountdownByFrameDelta((void *)st, 4) != 0 ||
+                (TICK_DOWN(st->timer) != 0 ||
                  (st->timer < 0x50 &&
                   AbsAngleDelta8(
                       (actor->rotZ + (pk->vel[0] * 0x6E)) & 0xFF,
@@ -2499,7 +2499,7 @@ void Level31_UpdateActors(void) {
         break;
 
       case FLOATBARREL_FUSE:
-        if (TickCountdownByFrameDelta((int *)st, 2) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           actor->mode = FLOATBARREL_BURST;
         }
         break;
@@ -2659,7 +2659,7 @@ void Level31_UpdateActors(void) {
         if (actor->posZ - SPY.posZ < 0x80) {
           RaiseSpyroTriggerInRadius(&actor->posX, 0x200, SPYRO_EV_HIT_PINNED);
         }
-        if (TickCountdownByFrameDelta((int *)st, 2) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           actor->mode = FLOATBARREL_BURST;
         }
         if (g_nSpyroState == SPYRO_ST_HURT_PINNED || g_nSpyroState == SPYRO_ST_DEATH_PINNED) {
@@ -2944,7 +2944,7 @@ void Level31_UpdateActors(void) {
         if (actor->posZ - SPY.posZ < 0x80) {
           RaiseSpyroTriggerInRadius(&actor->posX, 0x200, SPYRO_EV_HIT_PINNED);
         }
-        if (TickCountdownByFrameDelta((int *)st, 2) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           actor->mode = FLOATBARREL_BURST;
         }
         if (g_nSpyroState == SPYRO_ST_HURT_PINNED || g_nSpyroState == SPYRO_ST_DEATH_PINNED) {

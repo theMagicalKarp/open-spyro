@@ -767,7 +767,7 @@ void Level16_UpdateActors(void) {
       case SPLITSHOT_GATHER:
       case SPLITSHOT_RAISE:
       case SPLITSHOT_FRAGMENT:
-        if (g_nActorAnimDone != 0 && TickCountdownByFrameDelta(st, 4) != 0) {
+        if (g_nActorAnimDone != 0 && TICK_DOWN(*st) != 0) {
           DespawnActorRecord(actor);
         }
         break;
@@ -793,7 +793,7 @@ void Level16_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (TickCountdownByFrameDelta(st, 4) != 0 ||
+        if (TICK_DOWN(*st) != 0 ||
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) != 0 ||
             CastRayWorldAndActors(svA, &actor->posX) != 0) {
           DespawnActorRecord(actor);
@@ -826,7 +826,7 @@ void Level16_UpdateActors(void) {
         actor->rotZ = ArcTan2(CAM.posX - actor->posX,
                                      CAM.posY - actor->posY, ATAN_ANGLE8);
         CopyVector(svA, &st->owner->posX);
-        if (TickCountdownByFrameDelta(st, 4) != 0 || RaiseSpyroTriggerInRadius(svA, 0x140, SPYRO_EV_HIT_TINT | SPYRO_EV_CHARGE_HIT) != 0) {
+        if (TICK_DOWN(st->timer) != 0 || RaiseSpyroTriggerInRadius(svA, 0x140, SPYRO_EV_HIT_TINT | SPYRO_EV_CHARGE_HIT) != 0) {
           ((RimState *)st->owner->state)->child = 0;
           DespawnActorRecord(actor);
         }
@@ -1571,7 +1571,7 @@ void Level16_UpdateActors(void) {
             dist = VectorLength(sparxTargetPos, VEC_LEN_XYZ);
 
             if (high == 0 &&
-                (TickCountdownByFrameDelta((void *)st, 4) != 0 ||
+                (TICK_DOWN(st->timer) != 0 ||
                  (st->timer < 0x50 &&
                   AbsAngleDelta8(
                       (actor->rotZ + (pk->vel[0] * 0x6E)) & 0xFF,

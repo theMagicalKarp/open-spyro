@@ -190,7 +190,7 @@ void Level12_UpdateActors(void) {
       int *st;
 
       st = (int *)actor->state;
-      if (TickCountdownByFrameDelta(st, 4) == 0) {
+      if (TICK_DOWN(*st) == 0) {
         break;
       }
       g_pfnLevelEmitParticles(1, EMIT_DRIFTING_MOTE, &actor->posX, 0);
@@ -1349,7 +1349,7 @@ void Level12_UpdateActors(void) {
       case SPLITSHOT_GATHER:
       case SPLITSHOT_RAISE:
       case SPLITSHOT_FRAGMENT:
-        if (g_nActorAnimDone != 0 && TickCountdownByFrameDelta(st, 4) != 0) {
+        if (g_nActorAnimDone != 0 && TICK_DOWN(*st) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -1376,7 +1376,7 @@ void Level12_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (TickCountdownByFrameDelta(st, 4) != 0 ||
+        if (TICK_DOWN(*st) != 0 ||
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) != 0 ||
             CastRayWorldAndActors(svD, &actor->posX) != 0) {
           DespawnActorRecord(actor);
@@ -2140,7 +2140,7 @@ void Level12_UpdateActors(void) {
             dist = VectorLength(svA, VEC_LEN_XYZ);
 
             if (high == 0 &&
-                (TickCountdownByFrameDelta((void *)st, 4) != 0 ||
+                (TICK_DOWN(st->timer) != 0 ||
                  (st->timer < 0x50 &&
                   AbsAngleDelta8(
                       (actor->rotZ + (pk->vel[0] * 0x6E)) & 0xFF,

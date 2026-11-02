@@ -981,7 +981,7 @@ void Level11_UpdateActors(void) {
           dist = VectorLength(svA, VEC_LEN_XYZ);
 
           if (isPickupAnimPhase == 0) {
-            if (TickCountdownByFrameDelta(st, 4) != 0 ||
+            if (TICK_DOWN(st->timer) != 0 ||
                 (st->timer < 80 &&
                  AbsAngleDelta8((actor->rotZ + (bp->circleDir * 110)) & 0xFF,
                                ((CAM.rotZ >> 4) + 0x80) & 0xFF) < 8)) {
@@ -1409,7 +1409,7 @@ void Level11_UpdateActors(void) {
         break;
       }
       case TIMEBONUS_ARRIVED:
-        if (TickCountdownByFrameDelta(st, 4) != 0) {
+        if (TICK_DOWN(*st) != 0) {
           g_nFlightTimeRemaining += TIME_BONUS_SECONDS(actor->type) * 60;
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_TIME_ADDED], actor, SFX_MODE_PANNED, 0);
           DespawnActorRecord(actor);
