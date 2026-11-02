@@ -1783,6 +1783,20 @@ enum CheckpointMode {
   CHECKPT_HELD = 3,      /* its dragon statue holds it until the rescue (no arm runs) */
 };
 
+/* A checkpoint's animations: the flash plays while CHECKPT_FLASH runs. */
+enum CheckpointAnim {
+  CHECKPT_ANIM_REST = 0,
+  CHECKPT_ANIM_FLASH = 1,
+};
+
+/* Animated scenery (ACTOR_TYPE_ANIMATED_SCENERY / _B): its idle loop, the
+ * hit it plays when flamed, and the loop it settles into after the hit. */
+enum SceneryAnim {
+  SCENERY_ANIM_IDLE = 0,
+  SCENERY_ANIM_HIT = 1,
+  SCENERY_ANIM_AFTER_HIT = 2,
+};
+
 /* A checkpoint that is not waiting for Spyro's touch: REARM, or FLASH at
  * least 16 frames in. A save host (SaveHostState.anchor is always a
  * checkpoint in the level data) only opens the save menu at a settled one. */

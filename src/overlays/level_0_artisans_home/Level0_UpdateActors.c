@@ -2499,7 +2499,7 @@ void Level0_UpdateActors(void) {
 
           SetSpawnAnchorFromActor(actor, actor->rotZ);
           actor->mode = CHECKPT_FLASH;
-          actor->anim = 1;
+          actor->anim = CHECKPT_ANIM_FLASH;
           actor->subMode = 0;
         }
         break;
@@ -2510,7 +2510,7 @@ void Level0_UpdateActors(void) {
 
         if (actor->subMode >= 0x30) {
           actor->mode = CHECKPT_REARM;
-          actor->anim = 0;
+          actor->anim = CHECKPT_ANIM_REST;
         }
         break;
       }
@@ -2530,23 +2530,23 @@ void Level0_UpdateActors(void) {
         actor->frameRate = poseBase + RandomIntInRange(-4, 4);
       }
 
-      if ((actor->flags & ACTOR_HIT_FLAME) != 0 && actor->nextAnim == 0) {
-        if (actor->anim != 1) {
+      if ((actor->flags & ACTOR_HIT_FLAME) != 0 && actor->nextAnim == SCENERY_ANIM_IDLE) {
+        if (actor->anim != SCENERY_ANIM_HIT) {
           g_nActorAnimDone = 0;
-          ANIM_RESET(actor, 1);
+          ANIM_RESET(actor, SCENERY_ANIM_HIT);
         }
         break;
       }
 
-      if (actor->nextAnim != 1) {
+      if (actor->nextAnim != SCENERY_ANIM_HIT) {
         break;
       }
 
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
 
-      if (g_nActorAnimDone != 0 && actor->anim != 2) {
+      if (g_nActorAnimDone != 0 && actor->anim != SCENERY_ANIM_AFTER_HIT) {
         g_nActorAnimDone = 0;
-        ANIM_RESET(actor, 2);
+        ANIM_RESET(actor, SCENERY_ANIM_AFTER_HIT);
       }
       break;
 
@@ -2999,7 +2999,7 @@ void Level0_UpdateActors(void) {
           actor->mode = LIFECHEST_OPEN;
           actor->frameProgress = 8;
           actor->frameRate = 8;
-          actor->nextAnim = 1;
+          actor->nextAnim = LIFECHEST_OPEN;
 
           st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
@@ -3038,7 +3038,7 @@ void Level0_UpdateActors(void) {
           }
         }
       } else {
-        if (actor->anim == 1) {
+        if (actor->anim == LIFECHEST_OPEN) {
           st->phase += g_nFrameStep;
           st->passenger->cullRadius = 0x10;
           st->passenger->updateDist = ACTOR_UPDATE_ALWAYS;
@@ -3050,7 +3050,7 @@ void Level0_UpdateActors(void) {
           actor->frameProgress = 8;
           actor->frameRate = 8;
           actor->mode = LIFECHEST_CLOSED;
-          actor->nextAnim = 0;
+          actor->nextAnim = LIFECHEST_CLOSED;
           if (actor->voiceRow == VOICE_ROW_NONE) {
             PlayActorMeshVoice(actor, 3, 0);
           }

@@ -2300,7 +2300,7 @@ void Level30_UpdateActors(void) {
         if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
           SetSpawnAnchorFromActor(actor, actor->rotZ);
           actor->mode = CHECKPT_FLASH;
-          actor->anim = 1;
+          actor->anim = CHECKPT_ANIM_FLASH;
           actor->subMode = 0;
           continue;
         }
@@ -2315,7 +2315,7 @@ void Level30_UpdateActors(void) {
           break;
         }
         actor->mode = CHECKPT_REARM;
-        actor->anim = 0;
+        actor->anim = CHECKPT_ANIM_REST;
         continue;
       }
       }
