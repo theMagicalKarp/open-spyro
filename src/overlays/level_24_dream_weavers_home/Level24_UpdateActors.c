@@ -250,7 +250,7 @@ void Level24_UpdateActors(void) {
 
         if (st->release != 0) {
           /* Released: drift away and pop. */
-          if (TickCountdownByFrameDelta(&st->release, 4) != 0) {
+          if (TICK_DOWN(st->release) != 0) {
             int *vel = st->pos;
 
             if (st->trackPos != 0) {
@@ -303,9 +303,9 @@ void Level24_UpdateActors(void) {
       break;
     }
 
-    /* Butterfly (ChaseState). */
+    /* Butterfly (ButterflyState). */
     case ACTOR_TYPE_BUTTERFLY: {
-      ChaseState *st = (ChaseState *)actor->state;
+      ButterflyState *st = (ButterflyState *)actor->state;
 
       if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
@@ -330,9 +330,9 @@ void Level24_UpdateActors(void) {
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
                   0) {
-                st->dir = 1;
+                st->circleDir = 1;
               } else {
-                st->dir = -1;
+                st->circleDir = -1;
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
@@ -351,10 +351,10 @@ void Level24_UpdateActors(void) {
 
       switch (actor->mode) {
       case BUTTERFLY_FLUTTER: {
-        if (TickCountdownByFrameDelta(&st->idleTimer, 2) == 0 || actor->drawn) {
+        if (TICK_DOWN(st->offscreenTimer) == 0 || actor->drawn) {
           int refHeight, rotated, moved;
 
-          if (TickCountdownByFrameDelta(&st->headingTimer, 1) != 0) {
+          if (TICK_DOWN(st->headingTimer) != 0) {
             int r = RandomSignedInRange(30, 90);
             if (GetRandomU32() & 1) {
               r = -r;
@@ -364,7 +364,7 @@ void Level24_UpdateActors(void) {
             st->headingTimer = RandomIntInRange(60, 140);
           }
 
-          if (TickCountdownByFrameDelta(&st->climbTimer, 1) != 0) {
+          if (TICK_DOWN(st->climbTimer) != 0) {
             st->vz = RandomSignedInRange(10, 25);
             st->climbTimer = RandomIntInRange(80, 140);
           }
@@ -395,9 +395,9 @@ void Level24_UpdateActors(void) {
             st->headingTimer = RandomIntInRange(30, 80);
           }
 
-          if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
-            int angle = ArcTan2(st->tgtX - actor->posX,
-                                      st->tgtY - actor->posY, ATAN_ANGLE8);
+          if (ApproxDist2D(&actor->posX, st->home) > 2000) {
+            int angle = ArcTan2(st->home[0] - actor->posX,
+                                      st->home[1] - actor->posY, ATAN_ANGLE8);
 
             st->heading = angle;
             st->headingTimer = 40;
@@ -412,7 +412,7 @@ void Level24_UpdateActors(void) {
         SteerActorAroundPoint(actor, &spy->posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
-                                    st->dir * 8),
+                                    st->circleDir * 8),
                       8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
@@ -420,7 +420,7 @@ void Level24_UpdateActors(void) {
         } else {
           int refHeight;
 
-          if (TickCountdownByFrameDelta(&st->climbTimer, 1)) {
+          if (TICK_DOWN(st->climbTimer)) {
             st->vz = RandomSignedInRange(5, 20);
             st->climbTimer = RandomIntInRange(40, 80);
           }
@@ -650,7 +650,7 @@ void Level24_UpdateActors(void) {
             a = 0x2C;
             b = 0x41;
           }
-          TickCountdownByFrameDelta(&st->timer, 4);
+          TICK_DOWN(st->timer);
           if (actor->flags & ACTOR_HIT_FLAME) {
             int h;
 
@@ -713,7 +713,7 @@ void Level24_UpdateActors(void) {
             g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, g056, (int)g136);
           } while (i < 5);
         }
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           StopSoundVoicesByOwner(actor, VOICE_STOP_LOOPING);
           actor->mode = CCANNON_FIRE;
           continue;
@@ -917,7 +917,7 @@ void Level24_UpdateActors(void) {
         if (st->range > 0 && actor->mode == LGUARD_IDLE &&
             (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range ||
              IsPointInRotatedBox(&spy->posX, st->vol) != 0) &&
-            TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
+            TICK_DOWN(st->timer2) != 0) {
           st->range = -st->range;
           if (st->range == 0) {
             st->range = -1;
@@ -944,7 +944,7 @@ void Level24_UpdateActors(void) {
           actor->mode = LGUARD_SHRINK;
           continue;
         } else if (st->range < 0) {
-          TickCountdownByFrameDelta(&st->timer2, 4);
+          TICK_DOWN(st->timer2);
         }
       }
       actor->flags = 0;
@@ -963,7 +963,7 @@ void Level24_UpdateActors(void) {
           continue;
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
+        if (TICK_DOWN(st->timer) != 0 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x190
                                : -SPY_DZ(actor) < 0x190)) {
           if (st->kind == LGKIND_SMALL) {
@@ -1076,7 +1076,7 @@ void Level24_UpdateActors(void) {
       }
 
       case LGUARD_SHRINK:
-        TickCountdownByFrameDelta(&st->timer2, 4);
+        TICK_DOWN(st->timer2);
         actor->scale -= g_nFrameStep * 2;
         if (actor->scale < 0x21) {
           actor->scale = 0x20;
@@ -1087,7 +1087,7 @@ void Level24_UpdateActors(void) {
         break;
 
       case LGUARD_GROW:
-        TickCountdownByFrameDelta(&st->timer2, 4);
+        TICK_DOWN(st->timer2);
         actor->scale += g_nFrameStep * 2;
         if (actor->scale >= 0x38) {
           actor->scale = 0x20;
@@ -1110,7 +1110,7 @@ void Level24_UpdateActors(void) {
                                     0x80),
                       4, 0x32, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
         if (partner->mode != 0xA) {
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          if (TICK_DOWN(st->timer) != 0) {
             TurnActorYawTowardAngle(partner, h, 4, 0, YAW_HOLD_IN_BAND);
           }
           break;
@@ -1163,7 +1163,7 @@ void Level24_UpdateActors(void) {
               st->life--;
             }
           } while (st->steps != 0);
-          if (TickCountdownByFrameDelta(&st->timer, 2) != 0) {
+          if (TICK_DOWN(st->timer) != 0) {
             actor->mode = COMET_HIT;
           }
           if (actor->posX < 0 || actor->posY < 0 || actor->posZ < 0) {
@@ -2242,7 +2242,7 @@ void Level24_UpdateActors(void) {
 
       case SINGER_WALK:
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1000) {
-          if (TickCountdownByFrameDelta(&st->call, 4) != 0) {
+          if (TICK_DOWN(st->call) != 0) {
             st->call = (int)GetRandomU32() % 32 + 100;
             PlayActorMeshVoice(actor, (int)GetRandomU32() % 3 + 2, 0);
           }
@@ -2323,7 +2323,7 @@ void Level24_UpdateActors(void) {
           st->timer = 0x14A;
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           st->timer = 0x50;
           PlayActorMeshVoice(actor, 1, 0);
           ENTER_POSE(actor, SINGER_SING_END);
@@ -2339,13 +2339,13 @@ void Level24_UpdateActors(void) {
         case SINGER_ROLE_DROPPED:
         case SINGER_ROLE_CARRIED:
         case SINGER_ROLE_TWO_GATE:
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          if (TICK_DOWN(st->timer) != 0) {
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             ENTER_POSE(actor, SINGER_SETTLE);
           }
           break;
         case SINGER_ROLE_PAIRED:
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          if (TICK_DOWN(st->timer) != 0) {
             int s;
 
             if (g_pActorListBase[st->partner].mode >= 6) {
@@ -2426,7 +2426,7 @@ void Level24_UpdateActors(void) {
         if (st->range > 0 && (actor->mode == LGUARD_IDLE || actor->mode == LGUARD_LUNGE) &&
             (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range ||
              IsPointInRotatedBox(&spy->posX, st->vol) != 0) &&
-            TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
+            TICK_DOWN(st->timer2) != 0) {
           st->range = -st->range;
           if (st->range == 0) {
             st->range = -1;
@@ -2461,7 +2461,7 @@ void Level24_UpdateActors(void) {
           actor->mode = LGUARD_GROW;
           continue;
         } else if (st->range < 0) {
-          TickCountdownByFrameDelta(&st->timer2, 4);
+          TICK_DOWN(st->timer2);
         }
       }
       actor->flags = 0;
@@ -2475,7 +2475,7 @@ void Level24_UpdateActors(void) {
           continue;
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
+        if (TICK_DOWN(st->timer) != 0 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x190
                                : -SPY_DZ(actor) < 0x190)) {
           if (st->kind == LGKIND_SMALL) {
@@ -2594,7 +2594,7 @@ void Level24_UpdateActors(void) {
       }
 
       case LGUARD_SHRINK:
-        TickCountdownByFrameDelta(&st->timer2, 4);
+        TICK_DOWN(st->timer2);
         actor->scale -= g_nFrameStep * 2;
         if (actor->scale < 0x21) {
           actor->scale = 0x20;
@@ -2604,7 +2604,7 @@ void Level24_UpdateActors(void) {
         break;
 
       case LGUARD_GROW:
-        TickCountdownByFrameDelta(&st->timer2, 4);
+        TICK_DOWN(st->timer2);
         actor->scale += g_nFrameStep * 2;
         if (actor->scale >= 0x38) {
           StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
@@ -3157,7 +3157,7 @@ void Level24_UpdateActors(void) {
         break;
 
       case 1:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           st->timer = 0x258 - (GetRandomU32() & 0x7F);
           voice = (GetRandomU32() & 7) + 7;
         }
@@ -3166,7 +3166,7 @@ void Level24_UpdateActors(void) {
       case AMBIENT_MODE_PATH:
         switch (st->sub) {
         case AMBIENT_STEP_WAIT:
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          if (TICK_DOWN(st->timer) != 0) {
             st->timer = 0x200 - (GetRandomU32() & 0x7F);
             voice = (GetRandomU32() & 1) + 0xD;
             st->sub = AMBIENT_STEP_TRAVEL;
@@ -3208,14 +3208,14 @@ void Level24_UpdateActors(void) {
         break;
 
       case 3:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           st->timer = 0x270 - (GetRandomU32() & 0x7F);
           voice = (GetRandomU32() & 1) + 0xF;
         }
         break;
 
       case 4:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           int r;
 
           st->timer = 0x258 - (GetRandomU32() & 0x7F);
@@ -3276,7 +3276,7 @@ void Level24_UpdateActors(void) {
       flags = st->flags;
       if (flags & WHIRL_F_IDLE) {
         if (st->timer != 0) {
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0)
+          if (TICK_DOWN(st->timer) != 0)
             st->flags = (st->flags & ~WHIRL_F_IDLE) | WHIRL_F_WOKEN;
           break;
         }
@@ -3314,7 +3314,7 @@ void Level24_UpdateActors(void) {
         break;
       }
       if ((st->flags & ~WHIRL_F_TARGET_CAM) == WHIRL_F_WOKEN && st->timer != 0 &&
-          TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          TICK_DOWN(st->timer) != 0) {
         st->flags = (st->flags & ~WHIRL_F_WOKEN) | WHIRL_F_IDLE;
       }
       break;
@@ -3610,7 +3610,7 @@ void Level24_UpdateActors(void) {
 
       CopyVector(&actor->posX, &SPY.posX);
 
-      if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+      if (TICK_DOWN(st->timer) != 0) {
         Actor *scan;
 
         st->timer = st->period;

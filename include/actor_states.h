@@ -56,6 +56,22 @@ typedef struct DragonStatueState {
   int restZ;        /* 0x50 */
 } DragonStatueState;
 
+/* Type 16 (ACTOR_TYPE_BUTTERFLY): flutters about its spawn point, turning
+ * and climbing on random timers and staying 0..0x7D0 out from home and
+ * 300..1024 above the ground. SpawnActor seeds offscreenTimer with 0x708:
+ * until it runs out the butterfly flutters even when it was not drawn last
+ * frame, after that only while drawn. Sparx eating it (BUTTERFLY_CIRCLE)
+ * makes it circle Spyro on the side circleDir picks. */
+typedef struct ButterflyState {
+  int circleDir;              /* 0x00 +1 / -1, from the side of Spyro it is on */
+  int home[3];                /* 0x04 spawn point it flutters near */
+  unsigned char vz;           /* 0x10 climb step, a signed byte */
+  unsigned char heading;      /* 0x11 */
+  unsigned char headingTimer; /* 0x12 frames to the next heading change */
+  unsigned char climbTimer;   /* 0x13 frames to the next climb change */
+  short offscreenTimer;       /* 0x14 frames it still flutters undrawn */
+} ButterflyState;
+
 /* Type 110 (ACTOR_TYPE_SAVE_HOST): the save-prompt host. Waits until Spyro
  * is away from its anchor, then until its arming actor goes dormant; pops in
  * beside Spyro (particles, spin, shrink from scale 0x60), then hovers on a

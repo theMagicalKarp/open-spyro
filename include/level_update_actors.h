@@ -36,19 +36,6 @@ extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type *
  */
 
 /* PathData (waypoint paths) lives in actor_type.h. */
-/* Type 16: butterfly. Flutters around an anchor until Sparx fetches it. */
-typedef struct ChaseState {
-  int dir;               /* 0x00 -1 or 1, picked from which side Spyro is on */
-  int tgtX;              /* 0x04 */
-  int tgtY;              /* 0x08 */
-  int pad0C;             /* 0x0C */
-  unsigned char vz;      /* 0x10 vertical step, sign-magnitude in a byte */
-  unsigned char heading; /* 0x11 */
-  unsigned char headingTimer;     /* 0x12 heading-change timer */
-  unsigned char climbTimer;     /* 0x13 vertical-change timer */
-  unsigned char idleTimer;     /* 0x14 */
-} ChaseState;
-
 /* Sparx's state block, as seen by the actors that send him fetching. */
 typedef struct ChaserState {
   int timer; /* 0x00 */
@@ -725,18 +712,6 @@ typedef struct OrbitState {
   short ring;  /* 0x04 ring index; the arm always uses it as ring - 1 */
   short ringPhase;  /* 0x06 phase offset within the ring */
 } OrbitState;
-
-/* Case 16 — butterfly: flutters near its spawn point until Sparx eats it
- * (or it turns into Sparx when Spyro has none). */
-typedef struct WanderState {
-  int turn;              /* 0x00 turn direction, +1 / -1 */
-  int home[3];           /* 0x04 spawn position it stays near */
-  unsigned char speed;   /* 0x10 forward speed, signed when >= 0x80 */
-  unsigned char heading; /* 0x11 */
-  unsigned char reTurn;  /* 0x12 frames until the next heading change */
-  unsigned char reStep;  /* 0x13 frames until the next speed change */
-  unsigned char wanderTimer;   /* 0x14 */
-} WanderState;
 
 /* Case 194 — breakable chest: one hit spawns its gem shower. */
 typedef struct ChestState {

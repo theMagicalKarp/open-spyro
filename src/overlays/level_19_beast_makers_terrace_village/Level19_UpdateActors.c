@@ -373,7 +373,7 @@ void Level19_UpdateActors(void) {
 
         if (st->release != 0) {
           /* Released: drift away and pop. */
-          if (TickCountdownByFrameDelta(&st->release, 4) != 0) {
+          if (TICK_DOWN(st->release) != 0) {
             int *vel = st->pos;
 
             if (st->trackPos != 0) {
@@ -426,9 +426,9 @@ void Level19_UpdateActors(void) {
       break;
     }
 
-    /* Butterfly (ChaseState). */
+    /* Butterfly (ButterflyState). */
     case ACTOR_TYPE_BUTTERFLY: {
-      ChaseState *st = (ChaseState *)actor->state;
+      ButterflyState *st = (ButterflyState *)actor->state;
 
       if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
@@ -453,9 +453,9 @@ void Level19_UpdateActors(void) {
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
                   0) {
-                st->dir = 1;
+                st->circleDir = 1;
               } else {
-                st->dir = -1;
+                st->circleDir = -1;
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
@@ -474,10 +474,10 @@ void Level19_UpdateActors(void) {
 
       switch (actor->mode) {
       case BUTTERFLY_FLUTTER: {
-        if (TickCountdownByFrameDelta(&st->idleTimer, 2) == 0 || actor->drawn) {
+        if (TICK_DOWN(st->offscreenTimer) == 0 || actor->drawn) {
           int refHeight, rotated, moved;
 
-          if (TickCountdownByFrameDelta(&st->headingTimer, 1) != 0) {
+          if (TICK_DOWN(st->headingTimer) != 0) {
             int r = RandomSignedInRange(30, 90);
             if (GetRandomU32() & 1) {
               r = -r;
@@ -487,7 +487,7 @@ void Level19_UpdateActors(void) {
             st->headingTimer = RandomIntInRange(60, 140);
           }
 
-          if (TickCountdownByFrameDelta(&st->climbTimer, 1) != 0) {
+          if (TICK_DOWN(st->climbTimer) != 0) {
             st->vz = RandomSignedInRange(10, 25);
             st->climbTimer = RandomIntInRange(80, 140);
           }
@@ -518,9 +518,9 @@ void Level19_UpdateActors(void) {
             st->headingTimer = RandomIntInRange(30, 80);
           }
 
-          if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
-            int angle = ArcTan2(st->tgtX - actor->posX,
-                                      st->tgtY - actor->posY, ATAN_ANGLE8);
+          if (ApproxDist2D(&actor->posX, st->home) > 2000) {
+            int angle = ArcTan2(st->home[0] - actor->posX,
+                                      st->home[1] - actor->posY, ATAN_ANGLE8);
 
             st->heading = angle;
             st->headingTimer = 40;
@@ -535,7 +535,7 @@ void Level19_UpdateActors(void) {
         SteerActorAroundPoint(actor, &spy->posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
-                                    st->dir * 8),
+                                    st->circleDir * 8),
                       8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
@@ -543,7 +543,7 @@ void Level19_UpdateActors(void) {
         } else {
           int refHeight;
 
-          if (TickCountdownByFrameDelta(&st->climbTimer, 1)) {
+          if (TICK_DOWN(st->climbTimer)) {
             st->vz = RandomSignedInRange(5, 20);
             st->climbTimer = RandomIntInRange(40, 80);
           }
@@ -786,8 +786,8 @@ void Level19_UpdateActors(void) {
           continue;
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && d < 0xFA0 &&
-            ABS2(SPY_DZ(actor)) < 0x320 && TickCountdownByFrameDelta(&st->countdown, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0 && d < 0xFA0 &&
+            ABS2(SPY_DZ(actor)) < 0x320 && TICK_DOWN(st->countdown) != 0) {
           ENTER_POSE(actor, BGUARD_WIND_UP);
         }
         break;
@@ -800,7 +800,7 @@ void Level19_UpdateActors(void) {
 
       case BGUARD_FIRE:
         TrackEntityYawTowardSpyro(actor, 0xE, 0, YAW_STEP_IN_BAND);
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           int i;
 
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -817,7 +817,7 @@ void Level19_UpdateActors(void) {
           }
           st->timer = 8;
         }
-        if (TickCountdownByFrameDelta(&st->timer2, 4) != 0 && g_nActorAnimDone != 0) {
+        if (TICK_DOWN(st->timer2) != 0 && g_nActorAnimDone != 0) {
           st->timer = 0xB4;
           ENTER_POSE(actor, BGUARD_WATCH);
         }
@@ -866,7 +866,7 @@ void Level19_UpdateActors(void) {
                       ArcTan2(g_pActorListBase[st->link].posX - actor->posX,
                                     g_pActorListBase[st->link].posY - actor->posY, ATAN_ANGLE8),
                       6, 0, YAW_HOLD_IN_BAND);
-        if (TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
+        if (TICK_DOWN(st->timer2) != 0) {
           st->timer2 = 0x19;
           actor->mode = BGUARD_FIRE_AT_LINK;
           continue;
@@ -879,7 +879,7 @@ void Level19_UpdateActors(void) {
                       ArcTan2(g_pActorListBase[st->link].posX - actor->posX,
                                     g_pActorListBase[st->link].posY - actor->posY, ATAN_ANGLE8),
                       6, 0, YAW_HOLD_IN_BAND);
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           int i;
 
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -898,7 +898,7 @@ void Level19_UpdateActors(void) {
           }
           st->timer = 8;
         }
-        if (TickCountdownByFrameDelta(&st->timer2, 4) != 0 && g_nActorAnimDone != 0) {
+        if (TICK_DOWN(st->timer2) != 0 && g_nActorAnimDone != 0) {
           BoltGuardState *ts = g_pActorListBase[st->link].state;
 
           if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT || st->link == -1) {
@@ -2261,7 +2261,7 @@ void Level19_UpdateActors(void) {
       flags = st->flags;
       if (flags & WHIRL_F_IDLE) {
         if (st->timer != 0) {
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0)
+          if (TICK_DOWN(st->timer) != 0)
             st->flags = (st->flags & ~WHIRL_F_IDLE) | WHIRL_F_WOKEN;
           break;
         }
@@ -2299,7 +2299,7 @@ void Level19_UpdateActors(void) {
         break;
       }
       if ((st->flags & ~WHIRL_F_TARGET_CAM) == WHIRL_F_WOKEN && st->timer != 0 &&
-          TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          TICK_DOWN(st->timer) != 0) {
         st->flags = (st->flags & ~WHIRL_F_WOKEN) | WHIRL_F_IDLE;
       }
       break;
@@ -3243,7 +3243,7 @@ void Level19_UpdateActors(void) {
         PlayActorMeshVoice(actor, 0, 0);
         ENTER_POSE(actor, WARDRUM_KNOCKED);
       }
-      if (TickCountdownByFrameDelta(&st->beat, 4) == 2) {
+      if (TICK_DOWN(st->beat) == 2) {
         st->fade = 0x14;
         st->wait = st->reload;
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
@@ -3251,13 +3251,13 @@ void Level19_UpdateActors(void) {
       if (st->beat == 0 && CHUNK_ANIM_STEP(GetWorldChunkAnimState(st->chunkAnim)) < 2) {
         g_anLevelTriggerStateSlots[st->chunkAnim] = 0;
       }
-      if (TickCountdownByFrameDelta(&st->fade, 4) == 0) {
+      if (TICK_DOWN(st->fade) == 0) {
         ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_KEEP(CHUNK_ANIM_BRANCH), CHUNK_ANIM_BRANCH);
       }
 
       switch (actor->mode) {
       case WARDRUM_WAIT:
-        if (TickCountdownByFrameDelta(&st->wait, 4) == 2) {
+        if (TICK_DOWN(st->wait) == 2) {
           ENTER_POSE(actor, WARDRUM_BEAT);
         }
         break;
@@ -3277,7 +3277,7 @@ void Level19_UpdateActors(void) {
 
       case WARDRUM_KNOCKED:
         actor->rotY += g_nFrameStep * 2;
-        if (TickCountdownByFrameDelta(&st->life, 4) != 0 ||
+        if (TICK_DOWN(st->life) != 0 ||
             DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, 0xC) ==
                 3) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -3345,7 +3345,7 @@ void Level19_UpdateActors(void) {
 
       switch (actor->mode) {
       case RAM_GRAZE:
-        if (TickCountdownByFrameDelta(&st->call, 4) != 0) {
+        if (TICK_DOWN(st->call) != 0) {
           st->call = (GetRandomU32() & 0x1F) + 0x50;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
@@ -3386,7 +3386,7 @@ void Level19_UpdateActors(void) {
             ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                           st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8);
 
-        if (TickCountdownByFrameDelta(&st->call, 4) != 0) {
+        if (TICK_DOWN(st->call) != 0) {
           st->call = (GetRandomU32() & 0x1F) + 0x50;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
@@ -3439,7 +3439,7 @@ void Level19_UpdateActors(void) {
         break;
 
       case RAM_PATH_END:
-        if (TickCountdownByFrameDelta(&st->call, 4) != 0) {
+        if (TICK_DOWN(st->call) != 0) {
           st->call = (GetRandomU32() & 0x3F) + 0x78;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
@@ -3523,7 +3523,7 @@ void Level19_UpdateActors(void) {
           ENTER_POSE(actor, BSENTRY_SUMMON);
         }
         TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && d < 0xFA0 &&
+        if (TICK_DOWN(st->timer) != 0 && d < 0xFA0 &&
             ABS2(actor->posZ - SPY.posZ) < 0x44C) {
           ENTER_POSE_BRK_B(actor, BSENTRY_THROW);
         }
@@ -3606,7 +3606,7 @@ void Level19_UpdateActors(void) {
         break;
 
       case BSENTRY_RECOVER:
-        if (g_nActorAnimDone != 0 && TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (g_nActorAnimDone != 0 && TICK_DOWN(st->timer) != 0) {
           ENTER_POSE_BRK(actor, BSENTRY_IDLE);
         }
         break;
@@ -3736,7 +3736,7 @@ void Level19_UpdateActors(void) {
         DespawnActorRecord(actor);
         continue;
       }
-      if (TickCountdownByFrameDelta(&st->timer, 2) != 0) {
+      if (TICK_DOWN(st->timer) != 0) {
         DespawnActorRecord(actor);
         continue;
       }

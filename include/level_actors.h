@@ -56,7 +56,14 @@ extern unsigned char **g_pTriggerRegionTable;                /* surface records,
 extern int RandomIntInRange(int lo, int hi);                 /* random in [lo, hi] */
 extern int RandomSignedInRange(int lo, int hi);
 extern int StepAndLerpAngle8(int ang, int facing, int maxStep, int frac);
-extern int TickCountdownByFrameDelta(void *timer, int step);
+extern int TickCountdownByFrameDelta(void *pValue, int width);
+
+#ifndef TICK_DOWN
+/* Count the 1-, 2- or 4-byte lvalue `v` down by the frame delta (see
+ * TickCountdownByFrameDelta): 0 still counting, 2 reached zero now, 1 was
+ * already zero. */
+#define TICK_DOWN(v) TickCountdownByFrameDelta(&(v), sizeof(v))
+#endif
 extern void VectorToSVectorShr2(short *dst, int *src);
 
 /* World chunk-animation flags (byte [1] of a chunk-anim entry; each step

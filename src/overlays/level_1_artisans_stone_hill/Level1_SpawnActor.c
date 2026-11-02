@@ -96,10 +96,10 @@ Actor *Level1_SpawnActor(int type, Actor *parent) {
     pos = &rec->posX;
     CopyVector(pos, &parent->posX);
     rec->posZ += 0x200;
-    CopyVector(st->anchor, pos);
+    CopyVector(st->home, pos);
     st->climbTimer = 0;
     st->headingTimer = 0;
-    st->idleTimer = 0x708;
+    st->offscreenTimer = 0x708;
     break;
   }
 

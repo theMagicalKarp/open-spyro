@@ -1908,6 +1908,13 @@ int RandomSignedInRange(int lo, int hi);
 /* 0x80037f90: Counts a 4/2/1-byte value down by the frame delta (g_nActorFrameDelta), clamping at 0. Returns 0 still counting, 2 reached zero this call, 1 already zero. */
 int TickCountdownByFrameDelta(void *pValue, int width);
 
+#ifndef TICK_DOWN
+/* Count the 1-, 2- or 4-byte lvalue `v` down by the frame delta (see
+ * TickCountdownByFrameDelta): 0 still counting, 2 reached zero now, 1 was
+ * already zero. */
+#define TICK_DOWN(v) TickCountdownByFrameDelta(&(v), sizeof(v))
+#endif
+
 /* 0x80038074: (a + b + 0x100) % 0x100 — 8-bit angle add with wrap. */
 int WrapAddAngle8(int a, int b);
 

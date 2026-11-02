@@ -295,7 +295,7 @@ void Level32_UpdateActors(void) {
 
         if (st->release != 0) {
           /* Released: drift away and pop. */
-          if (TickCountdownByFrameDelta(&st->release, 4) != 0) {
+          if (TICK_DOWN(st->release) != 0) {
             int *vel = st->pos;
 
             if (st->trackPos != 0) {
@@ -348,9 +348,9 @@ void Level32_UpdateActors(void) {
       break;
     }
 
-    /* Butterfly (ChaseState). */
+    /* Butterfly (ButterflyState). */
     case ACTOR_TYPE_BUTTERFLY: {
-      ChaseState *st = (ChaseState *)actor->state;
+      ButterflyState *st = (ButterflyState *)actor->state;
 
       if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
@@ -375,9 +375,9 @@ void Level32_UpdateActors(void) {
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
                   0) {
-                st->dir = 1;
+                st->circleDir = 1;
               } else {
-                st->dir = -1;
+                st->circleDir = -1;
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
@@ -396,10 +396,10 @@ void Level32_UpdateActors(void) {
 
       switch (actor->mode) {
       case BUTTERFLY_FLUTTER: {
-        if (TickCountdownByFrameDelta(&st->idleTimer, 2) == 0 || actor->drawn) {
+        if (TICK_DOWN(st->offscreenTimer) == 0 || actor->drawn) {
           int refHeight, rotated, moved;
 
-          if (TickCountdownByFrameDelta(&st->headingTimer, 1) != 0) {
+          if (TICK_DOWN(st->headingTimer) != 0) {
             int r = RandomSignedInRange(30, 90);
             if (GetRandomU32() & 1) {
               r = -r;
@@ -409,7 +409,7 @@ void Level32_UpdateActors(void) {
             st->headingTimer = RandomIntInRange(60, 140);
           }
 
-          if (TickCountdownByFrameDelta(&st->climbTimer, 1) != 0) {
+          if (TICK_DOWN(st->climbTimer) != 0) {
             st->vz = RandomSignedInRange(10, 25);
             st->climbTimer = RandomIntInRange(80, 140);
           }
@@ -440,9 +440,9 @@ void Level32_UpdateActors(void) {
             st->headingTimer = RandomIntInRange(30, 80);
           }
 
-          if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
-            int angle = ArcTan2(st->tgtX - actor->posX,
-                                      st->tgtY - actor->posY, ATAN_ANGLE8);
+          if (ApproxDist2D(&actor->posX, st->home) > 2000) {
+            int angle = ArcTan2(st->home[0] - actor->posX,
+                                      st->home[1] - actor->posY, ATAN_ANGLE8);
 
             st->heading = angle;
             st->headingTimer = 40;
@@ -457,7 +457,7 @@ void Level32_UpdateActors(void) {
         SteerActorAroundPoint(actor, &spy->posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
-                                    st->dir * 8),
+                                    st->circleDir * 8),
                       8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
@@ -465,7 +465,7 @@ void Level32_UpdateActors(void) {
         } else {
           int refHeight;
 
-          if (TickCountdownByFrameDelta(&st->climbTimer, 1)) {
+          if (TICK_DOWN(st->climbTimer)) {
             st->vz = RandomSignedInRange(5, 20);
             st->climbTimer = RandomIntInRange(40, 80);
           }
@@ -1615,13 +1615,13 @@ void Level32_UpdateActors(void) {
           ENTER_POSE(actor, BURSTGUN_WALK);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (TickCountdownByFrameDelta(&st->shotTimer, 4) != 0 && dist < 0x1388 &&
+        if (TICK_DOWN(st->shotTimer) != 0 && dist < 0x1388 &&
             AbsAngleDelta8(((unsigned short)g_nCameraEulerYaw << 16 >> 20),
                           ArcTan2(actor->posX - g_anCameraPos[0],
                                         actor->posY - g_anCameraPos[1], ATAN_ANGLE8)) <
                 0x28 &&
             actor->posZ - actor->floorOffset - SPY.posZ < -0xC8 &&
-            TickCountdownByFrameDelta(&st->countdown, 4) != 0) {
+            TICK_DOWN(st->countdown) != 0) {
           st->shotGap = 0;
           st->shotTimer = st->shotReload;
           ENTER_POSE_B(actor, BURSTGUN_FIRE);
@@ -1698,7 +1698,7 @@ void Level32_UpdateActors(void) {
         continue;
 
       case BURSTGUN_SINK:
-        if (TickCountdownByFrameDelta(&st->sinkTimer, 4) != 0) {
+        if (TICK_DOWN(st->sinkTimer) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -1789,7 +1789,7 @@ void Level32_UpdateActors(void) {
           }
           st->sweepYaw += st->sweepRate;
           d = WrapAngleDelta8(st->yawToSpyro, st->sweepYaw >> 4);
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && ABS(d) > 0x1A &&
+          if (TICK_DOWN(st->timer) != 0 && ABS(d) > 0x1A &&
               ((d < 0 && st->sweepRate < 0) || (d > 0 && st->sweepRate > 0))) {
             actor->subMode = SWEEPGUN_STEP_REVERSE;
           }
@@ -1865,7 +1865,7 @@ void Level32_UpdateActors(void) {
         continue;
 
       case SWEEPGUN_SINK:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -1925,11 +1925,11 @@ void Level32_UpdateActors(void) {
           ENTER_POSE(actor, LOBGUN_WALK);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && dist < 0x9C4 &&
+        if (TICK_DOWN(st->timer) != 0 && dist < 0x9C4 &&
             ABS2(SPY_DZ(actor)) < 0x258) {
           ENTER_POSE_B(actor, LOBGUN_SWIPE);
         }
-        if (st->flags != GUNNER_F_ARMED && dist > 0x9C4 && TickCountdownByFrameDelta(&st->throwTimer, 4) != 0) {
+        if (st->flags != GUNNER_F_ARMED && dist > 0x9C4 && TICK_DOWN(st->throwTimer) != 0) {
           if (st->aimRange < dist) {
             unsigned char *p = st->targetPath;
 
@@ -2039,7 +2039,7 @@ void Level32_UpdateActors(void) {
         break;
 
       case LOBGUN_SINK:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -2069,7 +2069,7 @@ void Level32_UpdateActors(void) {
             reach = 0x708;
           }
         }
-        TickCountdownByFrameDelta(&st->longReachTimer, 2);
+        TICK_DOWN(st->longReachTimer);
         CopyVector(o140, &actor->posX);
         AddVector(&actor->posX, &actor->posX, st->vel);
         if (actor->posX < 0 || actor->posY < 0 ||
@@ -2094,7 +2094,7 @@ void Level32_UpdateActors(void) {
           actor->mode = SHOT_BURST;
           continue;
         }
-        if (TickCountdownByFrameDelta(&st->life, 2) != 0) {
+        if (TICK_DOWN(st->life) != 0) {
           DespawnActorRecord(actor);
         }
         continue;
@@ -2127,7 +2127,7 @@ void Level32_UpdateActors(void) {
           continue;
         }
       }
-      if (TickCountdownByFrameDelta(&st->rearmTimer, 4) != 0 && g_nActorAnimDone != 0) {
+      if (TICK_DOWN(st->rearmTimer) != 0 && g_nActorAnimDone != 0) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         actor->mode = FCSWITCH_IDLE;
         ANIM_RESET(actor, 0);
@@ -2213,7 +2213,7 @@ void Level32_UpdateActors(void) {
         if (CastRayWorldAndActors(o140, &actor->posX) != 0) {
           actor->mode = LGLOB_BURST;
         }
-        if (TickCountdownByFrameDelta(&q->hA, 2) != 0) {
+        if (TICK_DOWN(q->hA) != 0) {
           actor->mode = LGLOB_BURST;
         }
         o140[0] = 0;
@@ -2417,7 +2417,7 @@ void Level32_UpdateActors(void) {
       switch (actor->mode) {
       case CRITTER_WANDER:
         UpdateActorWander(actor, &st->wander);
-        if (TickCountdownByFrameDelta(&st->idleTimer, 4) != 0) {
+        if (TICK_DOWN(st->idleTimer) != 0) {
           ENTER_POSE(actor, CRITTER_REST);
         }
         break;
@@ -2674,7 +2674,7 @@ void Level32_UpdateActors(void) {
       flags = st->flags;
       if (flags & WHIRL_F_IDLE) {
         if (st->timer != 0) {
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0)
+          if (TICK_DOWN(st->timer) != 0)
             st->flags = (st->flags & ~WHIRL_F_IDLE) | WHIRL_F_WOKEN;
           break;
         }
@@ -2712,7 +2712,7 @@ void Level32_UpdateActors(void) {
         break;
       }
       if ((st->flags & ~WHIRL_F_TARGET_CAM) == WHIRL_F_WOKEN && st->timer != 0 &&
-          TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          TICK_DOWN(st->timer) != 0) {
         st->flags = (st->flags & ~WHIRL_F_WOKEN) | WHIRL_F_IDLE;
       }
       break;
@@ -2816,7 +2816,7 @@ void Level32_UpdateActors(void) {
 
       CopyVector(&actor->posX, &SPY.posX);
 
-      if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+      if (TICK_DOWN(st->timer) != 0) {
         Actor *scan;
 
         st->timer = st->period;

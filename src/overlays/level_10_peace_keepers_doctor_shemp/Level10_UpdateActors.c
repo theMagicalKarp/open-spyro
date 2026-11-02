@@ -297,7 +297,7 @@ void Level10_UpdateActors(void) {
 
         if (st->release != 0) {
           /* Released: drift away and pop. */
-          if (TickCountdownByFrameDelta(&st->release, 4) != 0) {
+          if (TICK_DOWN(st->release) != 0) {
             int *vel = st->pos;
 
             if (st->trackPos != 0) {
@@ -356,9 +356,9 @@ void Level10_UpdateActors(void) {
       break;
     }
 
-    /* Butterfly (ChaseState). */
+    /* Butterfly (ButterflyState). */
     case ACTOR_TYPE_BUTTERFLY: {
-      ChaseState *st = (ChaseState *)actor->state;
+      ButterflyState *st = (ButterflyState *)actor->state;
 
       if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
@@ -383,9 +383,9 @@ void Level10_UpdateActors(void) {
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
                   0) {
-                st->dir = 1;
+                st->circleDir = 1;
               } else {
-                st->dir = -1;
+                st->circleDir = -1;
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
@@ -404,10 +404,10 @@ void Level10_UpdateActors(void) {
 
       switch (actor->mode) {
       case BUTTERFLY_FLUTTER: {
-        if (TickCountdownByFrameDelta(&st->idleTimer, 2) == 0 || actor->drawn) {
+        if (TICK_DOWN(st->offscreenTimer) == 0 || actor->drawn) {
           int refHeight, rotated, moved;
 
-          if (TickCountdownByFrameDelta(&st->headingTimer, 1) != 0) {
+          if (TICK_DOWN(st->headingTimer) != 0) {
             int r = RandomSignedInRange(30, 90);
             if (GetRandomU32() & 1) {
               r = -r;
@@ -417,7 +417,7 @@ void Level10_UpdateActors(void) {
             st->headingTimer = RandomIntInRange(60, 140);
           }
 
-          if (TickCountdownByFrameDelta(&st->climbTimer, 1) != 0) {
+          if (TICK_DOWN(st->climbTimer) != 0) {
             st->vz = RandomSignedInRange(10, 25);
             st->climbTimer = RandomIntInRange(80, 140);
           }
@@ -448,9 +448,9 @@ void Level10_UpdateActors(void) {
             st->headingTimer = RandomIntInRange(30, 80);
           }
 
-          if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
-            int angle = ArcTan2(st->tgtX - actor->posX,
-                                      st->tgtY - actor->posY, ATAN_ANGLE8);
+          if (ApproxDist2D(&actor->posX, st->home) > 2000) {
+            int angle = ArcTan2(st->home[0] - actor->posX,
+                                      st->home[1] - actor->posY, ATAN_ANGLE8);
 
             st->heading = angle;
             st->headingTimer = 40;
@@ -465,7 +465,7 @@ void Level10_UpdateActors(void) {
         SteerActorAroundPoint(actor, &spy->posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
-                                    st->dir * 8),
+                                    st->circleDir * 8),
                       8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
@@ -473,7 +473,7 @@ void Level10_UpdateActors(void) {
         } else {
           int refHeight;
 
-          if (TickCountdownByFrameDelta(&st->climbTimer, 1)) {
+          if (TICK_DOWN(st->climbTimer)) {
             st->vz = RandomSignedInRange(5, 20);
             st->climbTimer = RandomIntInRange(40, 80);
           }
@@ -2218,7 +2218,7 @@ void Level10_UpdateActors(void) {
         break;
 
       case 1:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           st->timer = 0x258 - (GetRandomU32() & 0x7F);
           voice = (GetRandomU32() & 7) + 7;
         }
@@ -2227,7 +2227,7 @@ void Level10_UpdateActors(void) {
       case AMBIENT_MODE_PATH:
         switch (st->sub) {
         case AMBIENT_STEP_WAIT:
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          if (TICK_DOWN(st->timer) != 0) {
             st->timer = 0x200 - (GetRandomU32() & 0x7F);
             voice = (GetRandomU32() & 1) + 0xD;
             st->sub = AMBIENT_STEP_TRAVEL;
@@ -2269,14 +2269,14 @@ void Level10_UpdateActors(void) {
         break;
 
       case 3:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           st->timer = 0x270 - (GetRandomU32() & 0x7F);
           voice = (GetRandomU32() & 1) + 0xF;
         }
         break;
 
       case 4:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           int r;
 
           st->timer = 0x258 - (GetRandomU32() & 0x7F);
@@ -2337,7 +2337,7 @@ void Level10_UpdateActors(void) {
       flags = st->flags;
       if (flags & WHIRL_F_IDLE) {
         if (st->timer != 0) {
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0)
+          if (TICK_DOWN(st->timer) != 0)
             st->flags = (st->flags & ~WHIRL_F_IDLE) | WHIRL_F_WOKEN;
           break;
         }
@@ -2375,7 +2375,7 @@ void Level10_UpdateActors(void) {
         break;
       }
       if ((st->flags & ~WHIRL_F_TARGET_CAM) == WHIRL_F_WOKEN && st->timer != 0 &&
-          TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          TICK_DOWN(st->timer) != 0) {
         st->flags = (st->flags & ~WHIRL_F_WOKEN) | WHIRL_F_IDLE;
       }
       break;
@@ -2734,9 +2734,9 @@ void Level10_UpdateActors(void) {
 
       case SGUARD_CHASE:
         d = ApproxDist2D(&actor->posX, &spy->posX);
-        if (TickCountdownByFrameDelta(&st->timer38, 4) != 0) {
+        if (TICK_DOWN(st->timer38) != 0) {
           ANIM_GO(actor, 1);
-          if (TickCountdownByFrameDelta(&st->timer04, 4) == 2) {
+          if (TICK_DOWN(st->timer04) == 2) {
             PlayActorMeshVoice(actor, 1, 0);
           }
           if (st->done != 0) {
@@ -2880,7 +2880,7 @@ void Level10_UpdateActors(void) {
         if (st->timer24 < 0xA5) {
           TurnActorYawTowardAngle(actor, st->turn, 7, 0, YAW_HOLD_IN_BAND);
         }
-        if (TickCountdownByFrameDelta(&st->timer24, 4) != 0) {
+        if (TICK_DOWN(st->timer24) != 0) {
           st->accel -= 0x10;
           if (st->accel < 0) {
             st->accel = 0;
@@ -2912,7 +2912,7 @@ void Level10_UpdateActors(void) {
 
       case SGUARD_RECOVER:
         ANIM_GO(actor, 0);
-        if (TickCountdownByFrameDelta(&st->timer24, 4) != 0) {
+        if (TICK_DOWN(st->timer24) != 0) {
           ANIM_GO(actor, 4);
           actor->mode = SGUARD_GUARD;
           continue;
@@ -2923,7 +2923,7 @@ void Level10_UpdateActors(void) {
         int e = ApproxDist2D(&actor->posX, &SPY.posX);
 
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (TickCountdownByFrameDelta(&st->timer04, 4) != 0 && e < 0x578) {
+        if (TICK_DOWN(st->timer04) != 0 && e < 0x578) {
           st->timer04 = 0x78;
           ANIM_GO(actor, 5);
           actor->mode = SGUARD_SWIPE;
@@ -2942,7 +2942,7 @@ void Level10_UpdateActors(void) {
 
       case SGUARD_FALL:
         ANIM_GO(actor, 6);
-        if (TickCountdownByFrameDelta(&st->timer24, 4) != 0) {
+        if (TICK_DOWN(st->timer24) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -2967,7 +2967,7 @@ void Level10_UpdateActors(void) {
 
       case SGUARD_PATH_RUSH:
         ANIM_GO(actor, 1);
-        if (TickCountdownByFrameDelta(&st->timer04, 4) == 2) {
+        if (TICK_DOWN(st->timer04) == 2) {
           PlayActorMeshVoice(actor, 1, 0);
         }
         st->accel = 0xB4;
@@ -3091,7 +3091,7 @@ void Level10_UpdateActors(void) {
           }
           break;
         case SHEMP_PHASE_2:
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
+          if (TICK_DOWN(st->timer) != 0 &&
               ApproxDist2D(&actor->posX, &spy->posX) < 0x1964 &&
               actor->posZ - actor->floorOffset - SPY.posZ < 0) {
             actor->mode = SHEMP_P2_TAUNT;
@@ -3099,7 +3099,7 @@ void Level10_UpdateActors(void) {
           }
           break;
         case SHEMP_PHASE_3:
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
+          if (TICK_DOWN(st->timer) != 0 &&
               ApproxDist2D(&actor->posX, &spy->posX) < 0x1964 &&
               actor->posZ - actor->floorOffset - SPY.posZ < 0) {
             actor->mode = SHEMP_P3_TAUNT;
@@ -3123,7 +3123,7 @@ void Level10_UpdateActors(void) {
           }
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
+        if (TICK_DOWN(st->timer) != 0 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < 0x16A8) {
           ANIM_GO(actor, sixteen);
           actor->mode = SHEMP_P2_SLAM;
@@ -3182,7 +3182,7 @@ void Level10_UpdateActors(void) {
             }
           }
         }
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
+        if (TICK_DOWN(st->timer) != 0 &&
             actor->posZ - actor->floorOffset - SPY.posZ < 0 &&
             AbsAngleDelta8(actor->rotZ,
                           ArcTan2(SPY.posX - actor->posX,
@@ -3207,7 +3207,7 @@ void Level10_UpdateActors(void) {
       case SHEMP_P1_CHARGE:
         ANIM_GO(actor, 9);
         if (MoveActorAlongHeading(actor, 0xAA, 0, 0, MOVE_LIFT | MOVE_STEP_LIMIT) != 0 ||
-            TickCountdownByFrameDelta(&st->timer, 4) != 0 ||
+            TICK_DOWN(st->timer) != 0 ||
             (AbsAngleDelta8(actor->rotZ,
                            ArcTan2(spy->posX - actor->posX,
                                          spy->posY - actor->posY, ATAN_ANGLE8)) < 0xA &&
@@ -3269,7 +3269,7 @@ void Level10_UpdateActors(void) {
           }
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
+        if (TICK_DOWN(st->timer) != 0 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < 0x1388) {
           actor->mode = SHEMP_P3_TURN;
           continue;
@@ -3343,7 +3343,7 @@ void Level10_UpdateActors(void) {
                            ATAN_ANGLE8) +
              0x80) &
             0xFF;
-        if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
+        if (TICK_DOWN(st->timer) == 0) {
           g_nCinematicActive = 1;
           SPY.requestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FREEZE_INPUT);
           EBB_BREAK();
@@ -3359,7 +3359,7 @@ void Level10_UpdateActors(void) {
           g_nCinematicActive = 0;
         }
         if (g_nActorAnimDone != 0 || actor->nextFrame >= 0xE) {
-          if (TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
+          if (TICK_DOWN(st->timer2) != 0) {
             PlayActorMeshVoice(actor, RandomIntInRange(0, 2), 0);
             st->timer2 = 0x28;
           }
@@ -3448,10 +3448,10 @@ void Level10_UpdateActors(void) {
         MarkActorCommittedKill(actor);
         ENTER_POSE(actor, GLOOK_KNOCKED);
       }
-      if (TickCountdownByFrameDelta(&st->camTimer, 4) == 0) {
+      if (TICK_DOWN(st->camTimer) == 0) {
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT);
       }
-      if (TickCountdownByFrameDelta(&st->camTimer2, 4) == 0) {
+      if (TICK_DOWN(st->camTimer2) == 0) {
         int cd = ApproxDist2D(&actor->posX, &spy->posX) + 0xC00;
 
         if (st->camDist < cd) {
@@ -3482,7 +3482,7 @@ void Level10_UpdateActors(void) {
           st->init = 1;
           st->home = actor->rotZ;
         }
-        if (link != 0 && TickCountdownByFrameDelta(&st->wait, 4) != 0 &&
+        if (link != 0 && TICK_DOWN(st->wait) != 0 &&
             actor->subMode == 0 && link->mode == SGUARD_IDLE && d < st->range << 10 &&
             actor->posZ < SPY.posZ &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x5DC) {
@@ -3532,7 +3532,7 @@ void Level10_UpdateActors(void) {
             }
           }
         }
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && d < 0x9C4 &&
+        if (TICK_DOWN(st->timer) != 0 && d < 0x9C4 &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x3E8 &&
             actor->posZ - actor->floorOffset - SPY.posZ < 0) {
           ENTER_POSE(actor, GLOOK_SWIPE);

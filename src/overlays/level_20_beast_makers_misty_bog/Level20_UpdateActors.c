@@ -230,10 +230,10 @@ void Level20_UpdateActors(void) {
       break;
     }
 
-    /* Butterfly (WanderState): flutters about its spawn point. Near a hurt
+    /* Butterfly (ButterflyState): flutters about its spawn point. Near a hurt
      * Spyro it becomes Sparx when Sparx is gone, else Sparx comes to eat it. */
     case ACTOR_TYPE_BUTTERFLY: {
-      WanderState *st;
+      ButterflyState *st;
 
       EBB_BREAK();
       st = actor->state;
@@ -260,9 +260,9 @@ void Level20_UpdateActors(void) {
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
                   0) {
-                st->turn = 1;
+                st->circleDir = 1;
               } else {
-                st->turn = -1;
+                st->circleDir = -1;
               }
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
               sparx->target = actor;
@@ -276,7 +276,7 @@ void Level20_UpdateActors(void) {
       if (!(actor->cullRadius & 0x80)) {
         switch (actor->mode) {
         case BUTTERFLY_FLUTTER:
-          if (TickCountdownByFrameDelta(&st->wanderTimer, 2) == 0 || actor->drawn != 0) {
+          if (TICK_DOWN(st->offscreenTimer) == 0 || actor->drawn != 0) {
             int moved;
             int blocked;
             int step;
@@ -284,22 +284,22 @@ void Level20_UpdateActors(void) {
             unsigned int spd;
             int *at;
 
-            if (TickCountdownByFrameDelta(&st->reTurn, 1) != 0) {
+            if (TICK_DOWN(st->headingTimer) != 0) {
               int turn = RandomSignedInRange(0x1E, 0x5A);
 
               if (GetRandomU32() & 1) {
                 turn = -turn;
               }
               st->heading = WrapAddAngle8(st->heading, turn);
-              st->reTurn = RandomIntInRange(0x3C, 0x8C);
+              st->headingTimer = RandomIntInRange(0x3C, 0x8C);
             }
 
-            if (TickCountdownByFrameDelta(&st->reStep, 1) != 0) {
-              st->speed = RandomSignedInRange(0xA, 0x19);
-              st->reStep = RandomIntInRange(0x50, 0x8C);
+            if (TICK_DOWN(st->climbTimer) != 0) {
+              st->vz = RandomSignedInRange(0xA, 0x19);
+              st->climbTimer = RandomIntInRange(0x50, 0x8C);
             }
 
-            spd = st->speed;
+            spd = st->vz;
             if (spd >= 0x80) {
               z = actor->posZ - 0x100;
             } else {
@@ -310,13 +310,13 @@ void Level20_UpdateActors(void) {
             step = actor->posZ - ProbeActorGroundHeight(actor);
 
             if (step < 0x12C) {
-              st->speed = RandomIntInRange(0xA, 0x19);
-              st->reStep = RandomIntInRange(0x50, 0x8C);
+              st->vz = RandomIntInRange(0xA, 0x19);
+              st->climbTimer = RandomIntInRange(0x50, 0x8C);
             }
 
             if ((unsigned int)(step - 0x401) < 0x3FF) {
-              st->speed = -RandomIntInRange(0xA, 0x19);
-              st->reStep = RandomIntInRange(0x50, 0x8C);
+              st->vz = -RandomIntInRange(0xA, 0x19);
+              st->climbTimer = RandomIntInRange(0x50, 0x8C);
             }
 
             moved = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, YAW_STEP_IN_BAND);
@@ -326,14 +326,14 @@ void Level20_UpdateActors(void) {
               if (blocked != 0) {
                 st->heading =
                     WrapAddAngle8(st->heading, RandomIntInRange(0x62, 0x9E));
-                st->reTurn = RandomIntInRange(0x1E, 0x50);
+                st->headingTimer = RandomIntInRange(0x1E, 0x50);
               }
             }
 
             if (ApproxDist2D(&actor->posX, st->home) >= 0x7D1) {
               st->heading = ArcTan2(st->home[0] - actor->posX,
                                           st->home[1] - actor->posY, ATAN_ANGLE8);
-              st->reTurn = 0x28;
+              st->headingTimer = 0x28;
             }
           } else {
             DespawnActorRecord(actor);
@@ -345,7 +345,7 @@ void Level20_UpdateActors(void) {
           SteerActorAroundPoint(actor, &spy->posX, 0x320,
                         WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                     actor->posY - spy->posY, ATAN_ANGLE8),
-                                      st->turn * 8),
+                                      st->circleDir * 8),
                         8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
           if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
@@ -353,9 +353,9 @@ void Level20_UpdateActors(void) {
             break;
           }
 
-          if (TickCountdownByFrameDelta(&st->reStep, 1) != 0) {
-            st->speed = RandomSignedInRange(5, 0x14);
-            st->reStep = RandomIntInRange(0x28, 0x50);
+          if (TICK_DOWN(st->climbTimer) != 0) {
+            st->vz = RandomSignedInRange(5, 0x14);
+            st->climbTimer = RandomIntInRange(0x28, 0x50);
           }
 
           {
@@ -363,7 +363,7 @@ void Level20_UpdateActors(void) {
             int z;
             unsigned int spd;
 
-            spd = st->speed;
+            spd = st->vz;
             if (spd >= 0x80) {
               z = actor->posZ - 0x100;
             } else {
@@ -374,13 +374,13 @@ void Level20_UpdateActors(void) {
             step = actor->posZ - ProbeActorGroundHeight(actor);
 
             if (step < 0xC8) {
-              st->speed = RandomIntInRange(5, 0x14);
-              st->reStep = RandomIntInRange(0x28, 0x50);
+              st->vz = RandomIntInRange(5, 0x14);
+              st->climbTimer = RandomIntInRange(0x28, 0x50);
             }
 
             if ((unsigned int)(step - 0x3E9) < 0x417) {
-              st->speed = -RandomIntInRange(5, 0x14);
-              st->reStep = RandomIntInRange(0x28, 0x50);
+              st->vz = -RandomIntInRange(5, 0x14);
+              st->climbTimer = RandomIntInRange(0x28, 0x50);
             }
           }
           break;
@@ -466,7 +466,7 @@ void Level20_UpdateActors(void) {
             ArcTan2(g_pActorListBase[st->partner].posX - actor->posX,
                           g_pActorListBase[st->partner].posY - actor->posY, ATAN_ANGLE8),
             6, 0, YAW_HOLD_IN_BAND);
-        if ((TickCountdownByFrameDelta(&st->timer, 4) != 0 ||
+        if ((TICK_DOWN(st->timer) != 0 ||
              ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x514) &&
             g_nActorAnimDone != 0) {
           if (actor->anim != 4) {
@@ -495,7 +495,7 @@ void Level20_UpdateActors(void) {
           ENTER_POSE(actor, GUNNER_ADVANCE);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0 && d < 0x514) {
+        if (TICK_DOWN(st->timer) != 0 && d < 0x514) {
           st->timer = 0x78;
           ENTER_POSE_B(actor, GUNNER_FIRE);
         }
@@ -531,7 +531,7 @@ void Level20_UpdateActors(void) {
       }
 
       case GUNNER_ADVANCE:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0 ||
+        if (TICK_DOWN(st->timer) != 0 ||
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x3E8) {
           st->range = 0;
           st->timer = 0;
@@ -557,7 +557,7 @@ void Level20_UpdateActors(void) {
         break;
 
       case GUNNER_SINK:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -1673,7 +1673,7 @@ void Level20_UpdateActors(void) {
           continue;
         }
       }
-      if (TickCountdownByFrameDelta(&st->timer3, 4) == 0) {
+      if (TICK_DOWN(st->timer3) == 0) {
         int d = ApproxDist2D(&actor->posX, &spy->posX) + 0x1000;
 
         if (st->camDist < d) {
@@ -1690,7 +1690,7 @@ void Level20_UpdateActors(void) {
       case CHARGER_IDLE: {
         int *p;
 
-        TickCountdownByFrameDelta(&st->timer2, 4);
+        TICK_DOWN(st->timer2);
         switch (st->mode) {
         case CHARGER_ROLE_STAND:
           TrackEntityYawTowardSpyro(actor, 0xA, 0, YAW_HOLD_IN_BAND);
@@ -1787,7 +1787,7 @@ void Level20_UpdateActors(void) {
         int s137;
         int dist = ApproxDist2D(&actor->posX, &spy->posX);
 
-        if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
+        if (TICK_DOWN(st->timer) == 0) {
           break;
         }
         ANIM_GO(actor, 1);
@@ -1826,7 +1826,7 @@ void Level20_UpdateActors(void) {
             }
           }
         }
-        if (TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
+        if (TICK_DOWN(st->timer2) != 0) {
           st->knock = SPY.bodyRotZ;
           st->timer2 = 0x1E;
         }
@@ -2857,7 +2857,7 @@ void Level20_UpdateActors(void) {
 
       switch (actor->mode) {
       case LURKER_WATCH:
-        if (dist < 0x2000 && TickCountdownByFrameDelta(&st->coolDown, 4) != 0 &&
+        if (dist < 0x2000 && TICK_DOWN(st->coolDown) != 0 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x5DC
                                : -SPY_DZ(actor) < 0x5DC) &&
             AbsAngleDelta8(((unsigned short)g_nCameraEulerYaw << 16 >> 20),
@@ -2891,7 +2891,7 @@ void Level20_UpdateActors(void) {
         }
         if (st->mode == 0) {
           if (dist > 0x2000) {
-            if (TickCountdownByFrameDelta(&st->roamTimer, 4) != 0) {
+            if (TICK_DOWN(st->roamTimer) != 0) {
               PathData *p = st->path;
               int c = p->cur;
 
@@ -2939,7 +2939,7 @@ void Level20_UpdateActors(void) {
             continue;
           }
         }
-        if (TickCountdownByFrameDelta(&st->stunTimer, 4) != 0 || g_nActorAnimDone != 0) {
+        if (TICK_DOWN(st->stunTimer) != 0 || g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
@@ -2949,7 +2949,7 @@ void Level20_UpdateActors(void) {
 
       case LURKER_SPIN:
         actor->rotZ += 5;
-        if (TickCountdownByFrameDelta(&st->roamTimer, 4) != 0 && g_nActorAnimDone != 0) {
+        if (TICK_DOWN(st->roamTimer) != 0 && g_nActorAnimDone != 0) {
           ENTER_POSE(actor, LURKER_WATCH);
         }
         break;
@@ -3042,7 +3042,7 @@ void Level20_UpdateActors(void) {
       }
 
       case LURKER_SINK:
-        if (TickCountdownByFrameDelta(&st->coolDown, 4) != 0) {
+        if (TICK_DOWN(st->coolDown) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -3324,7 +3324,7 @@ void Level20_UpdateActors(void) {
 
       switch (actor->mode) {
       case RAM_GRAZE:
-        if (TickCountdownByFrameDelta(&st->call, 4) != 0) {
+        if (TICK_DOWN(st->call) != 0) {
           st->call = (GetRandomU32() & 0x1F) + 0x50;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
@@ -3365,7 +3365,7 @@ void Level20_UpdateActors(void) {
             ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                           st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8);
 
-        if (TickCountdownByFrameDelta(&st->call, 4) != 0) {
+        if (TICK_DOWN(st->call) != 0) {
           st->call = (GetRandomU32() & 0x1F) + 0x50;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
@@ -3418,7 +3418,7 @@ void Level20_UpdateActors(void) {
         break;
 
       case RAM_PATH_END:
-        if (TickCountdownByFrameDelta(&st->call, 4) != 0) {
+        if (TICK_DOWN(st->call) != 0) {
           st->call = (GetRandomU32() & 0x3F) + 0x78;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
@@ -3476,7 +3476,7 @@ void Level20_UpdateActors(void) {
           st->grabChance = 0;
           ANIM_GO(actor, 0);
         }
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           int k;
           int r;
 
@@ -3495,7 +3495,7 @@ void Level20_UpdateActors(void) {
           }
           k = st->grabChance - (d0 >> 6);
           r = GetRandomU32() & 0xFF;
-          if (TickCountdownByFrameDelta(&st->grabCoolDown, 4) != 0 && *st->held == 0 && r < k &&
+          if (TICK_DOWN(st->grabCoolDown) != 0 && *st->held == 0 && r < k &&
               AbsAngleDelta8(((unsigned short)g_nCameraEulerYaw << 16 >> 20),
                             ArcTan2(actor->posX - g_anCameraPos[0],
                                           actor->posY - g_anCameraPos[1], ATAN_ANGLE8)) <
@@ -3523,7 +3523,7 @@ void Level20_UpdateActors(void) {
         } else {
           ANIM_GO(actor, 3);
         }
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           Actor **lp;
           Actor *o;
 

@@ -452,7 +452,7 @@ void Credits_Update(void) {
     if (last >= line) {
       do {
         int cur = -1;
-        if (TickCountdownByFrameDelta(&LINES[line].showTimer, 2) != 0) {
+        if (TICK_DOWN(LINES[line].showTimer) != 0) {
           LINES[line].state = CRED_LINE_SCROLLED;
           if (LINES[line].nextDelay == 0 && line == g_nCreditsFirstVisibleLine) {
             g_nCreditsFirstVisibleLine = line + 1;
@@ -460,7 +460,7 @@ void Credits_Update(void) {
         }
         if (LINES[0].state == CRED_LINE_PENDING) {
           cur = 0;
-        } else if (TickCountdownByFrameDelta(&LINES[line].nextDelay, 2) != 0 &&
+        } else if (TICK_DOWN(LINES[line].nextDelay) != 0 &&
                    LINES[line + 1].state == CRED_LINE_PENDING &&
                    line < g_nCreditsLineCount - 1) {
           cur = line + 1;

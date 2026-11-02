@@ -305,7 +305,7 @@ void Level28_UpdateActors(void) {
 
         if (st->release != 0) {
           /* Released: drift away and pop. */
-          if (TickCountdownByFrameDelta(&st->release, 4) != 0) {
+          if (TICK_DOWN(st->release) != 0) {
             int *vel = st->pos;
 
             if (st->trackPos != 0) {
@@ -358,9 +358,9 @@ void Level28_UpdateActors(void) {
       break;
     }
 
-    /* Butterfly (ChaseState). */
+    /* Butterfly (ButterflyState). */
     case ACTOR_TYPE_BUTTERFLY: {
-      ChaseState *st = (ChaseState *)actor->state;
+      ButterflyState *st = (ButterflyState *)actor->state;
 
       if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
@@ -385,9 +385,9 @@ void Level28_UpdateActors(void) {
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
                   0) {
-                st->dir = 1;
+                st->circleDir = 1;
               } else {
-                st->dir = -1;
+                st->circleDir = -1;
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
@@ -406,10 +406,10 @@ void Level28_UpdateActors(void) {
 
       switch (actor->mode) {
       case BUTTERFLY_FLUTTER: {
-        if (TickCountdownByFrameDelta(&st->idleTimer, 2) == 0 || actor->drawn) {
+        if (TICK_DOWN(st->offscreenTimer) == 0 || actor->drawn) {
           int refHeight, rotated, moved;
 
-          if (TickCountdownByFrameDelta(&st->headingTimer, 1) != 0) {
+          if (TICK_DOWN(st->headingTimer) != 0) {
             int r = RandomSignedInRange(30, 90);
             if (GetRandomU32() & 1) {
               r = -r;
@@ -419,7 +419,7 @@ void Level28_UpdateActors(void) {
             st->headingTimer = RandomIntInRange(60, 140);
           }
 
-          if (TickCountdownByFrameDelta(&st->climbTimer, 1) != 0) {
+          if (TICK_DOWN(st->climbTimer) != 0) {
             st->vz = RandomSignedInRange(10, 25);
             st->climbTimer = RandomIntInRange(80, 140);
           }
@@ -450,9 +450,9 @@ void Level28_UpdateActors(void) {
             st->headingTimer = RandomIntInRange(30, 80);
           }
 
-          if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
-            int angle = ArcTan2(st->tgtX - actor->posX,
-                                      st->tgtY - actor->posY, ATAN_ANGLE8);
+          if (ApproxDist2D(&actor->posX, st->home) > 2000) {
+            int angle = ArcTan2(st->home[0] - actor->posX,
+                                      st->home[1] - actor->posY, ATAN_ANGLE8);
 
             st->heading = angle;
             st->headingTimer = 40;
@@ -467,7 +467,7 @@ void Level28_UpdateActors(void) {
         SteerActorAroundPoint(actor, &spy->posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
-                                    st->dir * 8),
+                                    st->circleDir * 8),
                       8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
@@ -475,7 +475,7 @@ void Level28_UpdateActors(void) {
         } else {
           int refHeight;
 
-          if (TickCountdownByFrameDelta(&st->climbTimer, 1)) {
+          if (TICK_DOWN(st->climbTimer)) {
             st->vz = RandomSignedInRange(5, 20);
             st->climbTimer = RandomIntInRange(40, 80);
           }
@@ -707,7 +707,7 @@ void Level28_UpdateActors(void) {
       switch (actor->mode) {
       case CRAM_GRAZE:
       case CRAM_WATCH:
-        TickCountdownByFrameDelta(&st->timer, 4);
+        TICK_DOWN(st->timer);
         if (st->timer == 0 && dist < 0x2000 && actor->type == ACTOR_TYPE_CHARGING_RAM &&
             st->mode != 0 &&
             AbsAngleDelta8(spy->bodyRotZ,
@@ -768,7 +768,7 @@ void Level28_UpdateActors(void) {
           actor->mode = CRAM_GO_HOME;
           continue;
         }
-        if (TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
+        if (TICK_DOWN(st->timer2) != 0) {
           st->timer2 = 0x1E;
           st->heading = *(unsigned char *)&g_bSpyroPersistentEulerZ;
         }
@@ -786,7 +786,7 @@ void Level28_UpdateActors(void) {
                           ArcTan2(actor->posX - spy->posX,
                                         actor->posY - spy->posY, ATAN_ANGLE8)) >= 0x31) {
           if (st->timer3 != 0) {
-            if (TickCountdownByFrameDelta(&st->timer3, 4) != 0) {
+            if (TICK_DOWN(st->timer3) != 0) {
               st->timer3 = 0;
               actor->mode = CRAM_GO_HOME;
               continue;
@@ -938,7 +938,7 @@ void Level28_UpdateActors(void) {
         actor->posZ += st->vz;
         actor->rotX += st->spinX;
         actor->rotY += st->spinY;
-        if (TickCountdownByFrameDelta(&st->timer, 1) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           CopyVector(g056, &actor->posX);
           g056[2] += 0xC8;
           if (CollideSphereWithWorldAndActors(g056, 0xDC, 0xDC) != 0) {
@@ -952,7 +952,7 @@ void Level28_UpdateActors(void) {
             continue;
           }
         }
-        if (TickCountdownByFrameDelta(&st->timer2, 2) != 0) {
+        if (TICK_DOWN(st->timer2) != 0) {
           st->u06 = 0;
           st->speed = 0;
           st->spinX = 0;
@@ -2001,7 +2001,7 @@ void Level28_UpdateActors(void) {
 
       case SINGER_WALK:
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1000) {
-          if (TickCountdownByFrameDelta(&st->call, 4) != 0) {
+          if (TICK_DOWN(st->call) != 0) {
             st->call = (int)GetRandomU32() % 32 + 100;
             PlayActorMeshVoice(actor, (int)GetRandomU32() % 3 + 2, 0);
           }
@@ -2082,7 +2082,7 @@ void Level28_UpdateActors(void) {
           st->timer = 0x14A;
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           st->timer = 0x50;
           PlayActorMeshVoice(actor, 1, 0);
           ENTER_POSE(actor, SINGER_SING_END);
@@ -2098,13 +2098,13 @@ void Level28_UpdateActors(void) {
         case SINGER_ROLE_DROPPED:
         case SINGER_ROLE_CARRIED:
         case SINGER_ROLE_TWO_GATE:
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          if (TICK_DOWN(st->timer) != 0) {
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             ENTER_POSE(actor, SINGER_SETTLE);
           }
           break;
         case SINGER_ROLE_PAIRED:
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          if (TICK_DOWN(st->timer) != 0) {
             int s;
 
             if (g_pActorListBase[st->partner].mode >= 6) {
@@ -2196,7 +2196,7 @@ void Level28_UpdateActors(void) {
           continue;
         }
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2800 &&
-            TickCountdownByFrameDelta(&st->timer, 4) != 0 && actor->drawn != 0 &&
+            TICK_DOWN(st->timer) != 0 && actor->drawn != 0 &&
             AbsAngleDelta8(g_nCameraEulerYaw >> 4,
                           ArcTan2(actor->posX - g_anCameraPos[0],
                                         actor->posY - g_anCameraPos[1], ATAN_ANGLE8)) <
@@ -2936,7 +2936,7 @@ void Level28_UpdateActors(void) {
       flags = st->flags;
       if (flags & WHIRL_F_IDLE) {
         if (st->timer != 0) {
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0)
+          if (TICK_DOWN(st->timer) != 0)
             st->flags = (st->flags & ~WHIRL_F_IDLE) | WHIRL_F_WOKEN;
           break;
         }
@@ -2974,7 +2974,7 @@ void Level28_UpdateActors(void) {
         break;
       }
       if ((st->flags & ~WHIRL_F_TARGET_CAM) == WHIRL_F_WOKEN && st->timer != 0 &&
-          TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          TICK_DOWN(st->timer) != 0) {
         st->flags = (st->flags & ~WHIRL_F_WOKEN) | WHIRL_F_IDLE;
       }
       break;

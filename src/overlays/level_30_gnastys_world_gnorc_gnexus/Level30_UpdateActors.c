@@ -248,7 +248,7 @@ void Level30_UpdateActors(void) {
 
         if (st->release != 0) {
           /* Released: drift away and pop. */
-          if (TickCountdownByFrameDelta(&st->release, 4) != 0) {
+          if (TICK_DOWN(st->release) != 0) {
             int *vel = st->pos;
 
             if (st->trackPos != 0) {
@@ -301,10 +301,10 @@ void Level30_UpdateActors(void) {
       break;
     }
 
-    /* Butterfly (WanderState): flutters about its spawn point. Near a hurt
+    /* Butterfly (ButterflyState): flutters about its spawn point. Near a hurt
      * Spyro it becomes Sparx when Sparx is gone, else Sparx comes to eat it. */
     case ACTOR_TYPE_BUTTERFLY: {
-      WanderState *st;
+      ButterflyState *st;
 
       EBB_BREAK();
       st = actor->state;
@@ -331,9 +331,9 @@ void Level30_UpdateActors(void) {
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
                   0) {
-                st->turn = 1;
+                st->circleDir = 1;
               } else {
-                st->turn = -1;
+                st->circleDir = -1;
               }
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
               sparx->target = actor;
@@ -347,7 +347,7 @@ void Level30_UpdateActors(void) {
       if (!(actor->cullRadius & 0x80)) {
         switch (actor->mode) {
         case BUTTERFLY_FLUTTER:
-          if (TickCountdownByFrameDelta(&st->wanderTimer, 2) == 0 || actor->drawn != 0) {
+          if (TICK_DOWN(st->offscreenTimer) == 0 || actor->drawn != 0) {
             int moved;
             int blocked;
             int step;
@@ -355,22 +355,22 @@ void Level30_UpdateActors(void) {
             unsigned int spd;
             int *at;
 
-            if (TickCountdownByFrameDelta(&st->reTurn, 1) != 0) {
+            if (TICK_DOWN(st->headingTimer) != 0) {
               int turn = RandomSignedInRange(0x1E, 0x5A);
 
               if (GetRandomU32() & 1) {
                 turn = -turn;
               }
               st->heading = WrapAddAngle8(st->heading, turn);
-              st->reTurn = RandomIntInRange(0x3C, 0x8C);
+              st->headingTimer = RandomIntInRange(0x3C, 0x8C);
             }
 
-            if (TickCountdownByFrameDelta(&st->reStep, 1) != 0) {
-              st->speed = RandomSignedInRange(0xA, 0x19);
-              st->reStep = RandomIntInRange(0x50, 0x8C);
+            if (TICK_DOWN(st->climbTimer) != 0) {
+              st->vz = RandomSignedInRange(0xA, 0x19);
+              st->climbTimer = RandomIntInRange(0x50, 0x8C);
             }
 
-            spd = st->speed;
+            spd = st->vz;
             if (spd >= 0x80) {
               z = actor->posZ - 0x100;
             } else {
@@ -381,13 +381,13 @@ void Level30_UpdateActors(void) {
             step = actor->posZ - ProbeActorGroundHeight(actor);
 
             if (step < 0x12C) {
-              st->speed = RandomIntInRange(0xA, 0x19);
-              st->reStep = RandomIntInRange(0x50, 0x8C);
+              st->vz = RandomIntInRange(0xA, 0x19);
+              st->climbTimer = RandomIntInRange(0x50, 0x8C);
             }
 
             if ((unsigned int)(step - 0x401) < 0x3FF) {
-              st->speed = -RandomIntInRange(0xA, 0x19);
-              st->reStep = RandomIntInRange(0x50, 0x8C);
+              st->vz = -RandomIntInRange(0xA, 0x19);
+              st->climbTimer = RandomIntInRange(0x50, 0x8C);
             }
 
             moved = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, YAW_STEP_IN_BAND);
@@ -397,14 +397,14 @@ void Level30_UpdateActors(void) {
               if (blocked != 0) {
                 st->heading =
                     WrapAddAngle8(st->heading, RandomIntInRange(0x62, 0x9E));
-                st->reTurn = RandomIntInRange(0x1E, 0x50);
+                st->headingTimer = RandomIntInRange(0x1E, 0x50);
               }
             }
 
             if (ApproxDist2D(&actor->posX, st->home) >= 0x7D1) {
               st->heading = ArcTan2(st->home[0] - actor->posX,
                                           st->home[1] - actor->posY, ATAN_ANGLE8);
-              st->reTurn = 0x28;
+              st->headingTimer = 0x28;
             }
           } else {
             DespawnActorRecord(actor);
@@ -416,7 +416,7 @@ void Level30_UpdateActors(void) {
           SteerActorAroundPoint(actor, &spy->posX, 0x320,
                         WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                     actor->posY - spy->posY, ATAN_ANGLE8),
-                                      st->turn * 8),
+                                      st->circleDir * 8),
                         8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
           if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
@@ -424,9 +424,9 @@ void Level30_UpdateActors(void) {
             break;
           }
 
-          if (TickCountdownByFrameDelta(&st->reStep, 1) != 0) {
-            st->speed = RandomSignedInRange(5, 0x14);
-            st->reStep = RandomIntInRange(0x28, 0x50);
+          if (TICK_DOWN(st->climbTimer) != 0) {
+            st->vz = RandomSignedInRange(5, 0x14);
+            st->climbTimer = RandomIntInRange(0x28, 0x50);
           }
 
           {
@@ -434,7 +434,7 @@ void Level30_UpdateActors(void) {
             int z;
             unsigned int spd;
 
-            spd = st->speed;
+            spd = st->vz;
             if (spd >= 0x80) {
               z = actor->posZ - 0x100;
             } else {
@@ -445,13 +445,13 @@ void Level30_UpdateActors(void) {
             step = actor->posZ - ProbeActorGroundHeight(actor);
 
             if (step < 0xC8) {
-              st->speed = RandomIntInRange(5, 0x14);
-              st->reStep = RandomIntInRange(0x28, 0x50);
+              st->vz = RandomIntInRange(5, 0x14);
+              st->climbTimer = RandomIntInRange(0x28, 0x50);
             }
 
             if ((unsigned int)(step - 0x3E9) < 0x417) {
-              st->speed = -RandomIntInRange(5, 0x14);
-              st->reStep = RandomIntInRange(0x28, 0x50);
+              st->vz = -RandomIntInRange(5, 0x14);
+              st->climbTimer = RandomIntInRange(0x28, 0x50);
             }
           }
           break;
@@ -1794,7 +1794,7 @@ void Level30_UpdateActors(void) {
         switch (actor->mode) {
         case CRITTER_WANDER:
           UpdateActorWander(actor, &st->wander);
-          if (TickCountdownByFrameDelta(&st->rest, 4) != 0) {
+          if (TICK_DOWN(st->rest) != 0) {
             actor->mode = CRITTER_REST;
             if (actor->nextAnim != 2) {
               ANIM_ADVANCE(actor, 2);
@@ -2060,7 +2060,7 @@ void Level30_UpdateActors(void) {
         break;
 
       case 1:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           st->timer = 0x258 - (GetRandomU32() & 0x7F);
           voice = (GetRandomU32() & 7) + 7;
         }
@@ -2069,7 +2069,7 @@ void Level30_UpdateActors(void) {
       case AMBIENT_MODE_PATH:
         switch (st->sub) {
         case AMBIENT_STEP_WAIT:
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          if (TICK_DOWN(st->timer) != 0) {
             st->timer = 0x200 - (GetRandomU32() & 0x7F);
             voice = (GetRandomU32() & 1) + 0xD;
             st->sub = AMBIENT_STEP_TRAVEL;
@@ -2111,14 +2111,14 @@ void Level30_UpdateActors(void) {
         break;
 
       case 3:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           st->timer = 0x270 - (GetRandomU32() & 0x7F);
           voice = (GetRandomU32() & 1) + 0xF;
         }
         break;
 
       case 4:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           int r;
 
           st->timer = 0x258 - (GetRandomU32() & 0x7F);
@@ -2254,7 +2254,7 @@ void Level30_UpdateActors(void) {
 
       CopyVector(&actor->posX, &SPY.posX);
 
-      if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+      if (TICK_DOWN(st->timer) != 0) {
         Actor *scan;
 
         st->timer = st->period;

@@ -308,7 +308,7 @@ void Level2_UpdateActors(void) {
 
         if (st->release != 0) {
           /* Released: drift away and pop. */
-          if (TickCountdownByFrameDelta(&st->release, 4) != 0) {
+          if (TICK_DOWN(st->release) != 0) {
             int *vel = st->pos;
 
             if (st->trackPos != 0) {
@@ -361,9 +361,9 @@ void Level2_UpdateActors(void) {
       break;
     }
 
-    /* Butterfly (ChaseState). */
+    /* Butterfly (ButterflyState). */
     case ACTOR_TYPE_BUTTERFLY: {
-      ChaseState *st = (ChaseState *)actor->state;
+      ButterflyState *st = (ButterflyState *)actor->state;
 
       if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
@@ -388,9 +388,9 @@ void Level2_UpdateActors(void) {
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
                   0) {
-                st->dir = 1;
+                st->circleDir = 1;
               } else {
-                st->dir = -1;
+                st->circleDir = -1;
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
@@ -409,10 +409,10 @@ void Level2_UpdateActors(void) {
 
       switch (actor->mode) {
       case BUTTERFLY_FLUTTER: {
-        if (TickCountdownByFrameDelta(&st->idleTimer, 2) == 0 || actor->drawn) {
+        if (TICK_DOWN(st->offscreenTimer) == 0 || actor->drawn) {
           int refHeight, rotated, moved;
 
-          if (TickCountdownByFrameDelta(&st->headingTimer, 1) != 0) {
+          if (TICK_DOWN(st->headingTimer) != 0) {
             int r = RandomSignedInRange(30, 90);
             if (GetRandomU32() & 1) {
               r = -r;
@@ -422,7 +422,7 @@ void Level2_UpdateActors(void) {
             st->headingTimer = RandomIntInRange(60, 140);
           }
 
-          if (TickCountdownByFrameDelta(&st->climbTimer, 1) != 0) {
+          if (TICK_DOWN(st->climbTimer) != 0) {
             st->vz = RandomSignedInRange(10, 25);
             st->climbTimer = RandomIntInRange(80, 140);
           }
@@ -453,9 +453,9 @@ void Level2_UpdateActors(void) {
             st->headingTimer = RandomIntInRange(30, 80);
           }
 
-          if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
-            int angle = ArcTan2(st->tgtX - actor->posX,
-                                      st->tgtY - actor->posY, ATAN_ANGLE8);
+          if (ApproxDist2D(&actor->posX, st->home) > 2000) {
+            int angle = ArcTan2(st->home[0] - actor->posX,
+                                      st->home[1] - actor->posY, ATAN_ANGLE8);
 
             st->heading = angle;
             st->headingTimer = 40;
@@ -470,7 +470,7 @@ void Level2_UpdateActors(void) {
         SteerActorAroundPoint(actor, &spy->posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
-                                    st->dir * 8),
+                                    st->circleDir * 8),
                       8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
@@ -478,7 +478,7 @@ void Level2_UpdateActors(void) {
         } else {
           int refHeight;
 
-          if (TickCountdownByFrameDelta(&st->climbTimer, 1)) {
+          if (TICK_DOWN(st->climbTimer)) {
             st->vz = RandomSignedInRange(5, 20);
             st->climbTimer = RandomIntInRange(40, 80);
           }
@@ -1312,7 +1312,7 @@ void Level2_UpdateActors(void) {
           ENTER_POSE_B(actor, GPAIR_ROUSE);
         }
 
-        if (st->partner != -1 && TickCountdownByFrameDelta(&st->timer, 4)) {
+        if (st->partner != -1 && TICK_DOWN(st->timer)) {
           Actor *mate = &g_pActorListBase[st->partner];
 
           if ((unsigned int)(WrapAngleDelta8(
@@ -1379,7 +1379,7 @@ void Level2_UpdateActors(void) {
         }
         break;
       case GPAIR_GLOAT:
-        if (g_nActorAnimDone != 0 && TickCountdownByFrameDelta(&st->flag, 4)) {
+        if (g_nActorAnimDone != 0 && TICK_DOWN(st->flag)) {
           ENTER_POSE_B(actor, GPAIR_IDLE);
         }
         break;
@@ -1838,7 +1838,7 @@ void Level2_UpdateActors(void) {
             }
             break;
           case POSTGUARD_AMBUSH_DELAY:
-            if (TickCountdownByFrameDelta(&st->timer, 4)) {
+            if (TICK_DOWN(st->timer)) {
               st->phase++;
             }
             break;
@@ -1872,14 +1872,14 @@ void Level2_UpdateActors(void) {
         case POSTGUARD_HOP_REST:
           ANIM_GO(actor, 4);
           st->flag = 1;
-          if (TickCountdownByFrameDelta(&st->timer, 4) && g_nActorAnimDone != 0) {
+          if (TICK_DOWN(st->timer) && g_nActorAnimDone != 0) {
             st->sub = POSTGUARD_HOP_READY;
             st->flag = 0;
             ANIM_GO(actor, 5);
           }
           break;
         case POSTGUARD_HOP_READY:
-          if (TickCountdownByFrameDelta(&st->timer, 4) &&
+          if (TICK_DOWN(st->timer) &&
               ApproxDist2D(&actor->posX, &spy->posX) < 0x578) {
             int height = actor->posZ - actor->floorOffset;
             int drop = height - SPY.posZ;
@@ -1916,7 +1916,7 @@ void Level2_UpdateActors(void) {
           g_nActorAnimDone = 0;
           ANIM_RESET(actor, 3);
         }
-        if (TickCountdownByFrameDelta(&st->timer, 4)) {
+        if (TICK_DOWN(st->timer)) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x20);
           DespawnActorRecord(actor);
@@ -2036,7 +2036,7 @@ void Level2_UpdateActors(void) {
         }
 
         st->flag = 0;
-        if (TickCountdownByFrameDelta(&st->timer, 4) &&
+        if (TICK_DOWN(st->timer) &&
             actor->posZ - actor->floorOffset - SPY.posZ > -0x1F4) {
           int dSpy = ApproxDist2D(&actor->posX, &((SpyroObj *)(base - 8))->posX);
           int dPost = ApproxDist2D(&actor->posX,
@@ -2660,7 +2660,7 @@ void Level2_UpdateActors(void) {
         break;
 
       case 1:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           st->timer = 0x258 - (GetRandomU32() & 0x7F);
           voice = (GetRandomU32() & 7) + 7;
         }
@@ -2669,7 +2669,7 @@ void Level2_UpdateActors(void) {
       case AMBIENT_MODE_PATH:
         switch (st->sub) {
         case AMBIENT_STEP_WAIT:
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          if (TICK_DOWN(st->timer) != 0) {
             st->timer = 0x200 - (GetRandomU32() & 0x7F);
             voice = (GetRandomU32() & 1) + 0xD;
             st->sub = AMBIENT_STEP_TRAVEL;
@@ -2711,14 +2711,14 @@ void Level2_UpdateActors(void) {
         break;
 
       case 3:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           st->timer = 0x270 - (GetRandomU32() & 0x7F);
           voice = (GetRandomU32() & 1) + 0xF;
         }
         break;
 
       case 4:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           int r;
 
           st->timer = 0x258 - (GetRandomU32() & 0x7F);
@@ -2854,7 +2854,7 @@ void Level2_UpdateActors(void) {
 
       CopyVector(&actor->posX, &SPY.posX);
 
-      if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+      if (TICK_DOWN(st->timer) != 0) {
         Actor *scan;
 
         st->timer = st->period;
@@ -2956,7 +2956,7 @@ void Level2_UpdateActors(void) {
 
       switch (actor->mode) {
       case GRAZER_WANDER:
-        if (TickCountdownByFrameDelta(&st->timer, 4)) {
+        if (TICK_DOWN(st->timer)) {
           ENTER_POSE(actor, GRAZER_PAUSE);
         }
         UpdateActorWander(actor, &st->wander);
