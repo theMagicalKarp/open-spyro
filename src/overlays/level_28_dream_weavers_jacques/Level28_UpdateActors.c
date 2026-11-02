@@ -848,7 +848,7 @@ void Level28_UpdateActors(void) {
             RaiseSpyroTriggerInRadius(g056, 0xDC, SPYRO_EV_HIT) != 0) {
           PlayActorMeshVoice(actor, 0, 0);
           actor->mode = TROCK_BREAK;
-          ANIM_RESET(actor, 1);
+          ANIM_RESET(actor, TROCK_BREAK);
           continue;
         }
       }
@@ -862,7 +862,7 @@ void Level28_UpdateActors(void) {
           ((JacquesState *)st->partner->state)->u54 = 0;
           ((JacquesState *)st->partner->state)->child = 0;
           actor->mode = TROCK_BREAK;
-          ANIM_RESET(actor, 1);
+          ANIM_RESET(actor, TROCK_BREAK);
           continue;
         }
         if (st->partner->nextFrame == 4) {
@@ -882,7 +882,7 @@ void Level28_UpdateActors(void) {
         CopyVector(g168, &spy->posX);
         if (actor->posX < 0x400 || actor->posY < 0x400 || actor->posZ < 0x400) {
           actor->mode = TROCK_BREAK;
-          ANIM_RESET(actor, 1);
+          ANIM_RESET(actor, TROCK_BREAK);
           continue;
         }
         g168[2] = FindGroundHeightBelow(&spy->posX, 0x2800) + 0x12C;
@@ -948,7 +948,7 @@ void Level28_UpdateActors(void) {
             st->spinY = 0;
             PlayActorMeshVoice(actor, 0, 0);
             actor->mode = TROCK_SMASH;
-            ANIM_RESET(actor, 2);
+            ANIM_RESET(actor, TROCK_SMASH);
             continue;
           }
         }
@@ -959,7 +959,7 @@ void Level28_UpdateActors(void) {
           st->spinY = 0;
           PlayActorMeshVoice(actor, 0, 0);
           actor->mode = TROCK_SMASH;
-          ANIM_RESET(actor, 2);
+          ANIM_RESET(actor, TROCK_SMASH);
           continue;
         }
         continue;
@@ -1932,7 +1932,7 @@ void Level28_UpdateActors(void) {
           st->mode = one;
         }
         actor->mode = SINGER_STRUCK;
-        ANIM_RESET(actor, 8);
+        ANIM_RESET(actor, SINGER_STRUCK);
         continue;
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
@@ -1990,7 +1990,7 @@ void Level28_UpdateActors(void) {
           CopyVector(g368, &actor->posX);
           if (CollideSphereWithWorldAndActors(g368, 0x100, 0x100) != 0) {
             actor->mode = SINGER_LANDED;
-            ANIM_RESET(actor, 7);
+            ANIM_RESET(actor, SINGER_LANDED);
             continue;
           }
           actor->posZ += st->vz;
@@ -2297,7 +2297,7 @@ void Level28_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
         actor->mode = CRITTER_KNOCKED;
-        ANIM_RESET(actor, 1);
+        ANIM_RESET(actor, CRITTER_KNOCKED);
         continue;
       }
 

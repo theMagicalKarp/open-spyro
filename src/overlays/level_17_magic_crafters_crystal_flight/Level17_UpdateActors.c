@@ -1367,7 +1367,7 @@ void Level17_UpdateActors(void) {
         }
         PlayActorMeshVoice(actor, 0, 0);
         actor->mode = BANKER_STRUCK;
-        ANIM_RESET(actor, 1);
+        ANIM_RESET(actor, BANKER_STRUCK);
         break;
       }
 
@@ -1408,7 +1408,7 @@ void Level17_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           actor->mode = BANKER_FLEE;
-          ANIM_RESET(actor, 2);
+          ANIM_RESET(actor, BANKER_FLEE);
         }
         break;
       case BANKER_FLEE:

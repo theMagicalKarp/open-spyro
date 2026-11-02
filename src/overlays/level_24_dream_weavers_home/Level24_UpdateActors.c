@@ -620,7 +620,7 @@ void Level24_UpdateActors(void) {
 
       RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
       if (actor->nextAnim >= 3 && actor->nextFrame >= 0xE) {
-        ANIM_GO(actor, 0);
+        ANIM_GO(actor, CCANNON_WATCH);
       }
       if (st->init == 0) {
         st->init = one;
@@ -811,20 +811,20 @@ void Level24_UpdateActors(void) {
             cs->vz = t;
           }
         }
-        ANIM_GO(actor, 3);
+        ANIM_GO(actor, CCANNON_FIRE);
         actor->mode = CCANNON_WATCH;
         continue;
       }
 
       case CCANNON_LOB:
-        if (actor->nextAnim == 3) {
+        if (actor->nextAnim == CCANNON_FIRE) {
           g_nActorAnimDone = 0;
-          actor->anim = 3;
+          actor->anim = CCANNON_FIRE;
           actor->frameProgress = 0;
           actor->frame = 0;
           actor->nextFrame = 1;
         }
-        ANIM_GO(actor, 3);
+        ANIM_GO(actor, CCANNON_FIRE);
         if (actor->drawn == 0 ||
             TurnActorYawTowardAngle(actor,
                           ArcTan2(g_pActorListBase[st->target].posX - actor->posX,
@@ -2173,7 +2173,7 @@ void Level24_UpdateActors(void) {
           st->mode = one;
         }
         actor->mode = SINGER_STRUCK;
-        ANIM_RESET(actor, 8);
+        ANIM_RESET(actor, SINGER_STRUCK);
         continue;
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
@@ -2231,7 +2231,7 @@ void Level24_UpdateActors(void) {
           CopyVector(g368, &actor->posX);
           if (CollideSphereWithWorldAndActors(g368, 0x100, 0x100) != 0) {
             actor->mode = SINGER_LANDED;
-            ANIM_RESET(actor, 7);
+            ANIM_RESET(actor, SINGER_LANDED);
             continue;
           }
           actor->posZ += st->vz;
@@ -2689,7 +2689,7 @@ void Level24_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
         actor->mode = CRITTER_KNOCKED;
-        ANIM_RESET(actor, 1);
+        ANIM_RESET(actor, CRITTER_KNOCKED);
         continue;
       }
 

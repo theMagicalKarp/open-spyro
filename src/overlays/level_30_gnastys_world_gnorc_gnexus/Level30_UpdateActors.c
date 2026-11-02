@@ -1787,8 +1787,8 @@ void Level30_UpdateActors(void) {
         MarkActorLiveKill(actor);
         actor->mode = CRITTER_KNOCKED;
 
-        if (actor->nextAnim != 1) {
-          ANIM_ADVANCE(actor, 1);
+        if (actor->nextAnim != CRITTER_KNOCKED) {
+          ANIM_ADVANCE(actor, CRITTER_KNOCKED);
         }
       } else {
         switch (actor->mode) {
@@ -1796,8 +1796,8 @@ void Level30_UpdateActors(void) {
           UpdateActorWander(actor, &st->wander);
           if (TICK_DOWN(st->rest) != 0) {
             actor->mode = CRITTER_REST;
-            if (actor->nextAnim != 2) {
-              ANIM_ADVANCE(actor, 2);
+            if (actor->nextAnim != CRITTER_REST) {
+              ANIM_ADVANCE(actor, CRITTER_REST);
             }
           } else {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
@@ -1822,8 +1822,8 @@ void Level30_UpdateActors(void) {
           if (g_nActorAnimDone != 0) {
             st->rest = RandomIntInRange(0x5A, 0x12C);
             actor->mode = CRITTER_WANDER;
-            if (actor->nextAnim != 0) {
-              ANIM_ADVANCE(actor, 0);
+            if (actor->nextAnim != CRITTER_WANDER) {
+              ANIM_ADVANCE(actor, CRITTER_WANDER);
             }
           } else {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);

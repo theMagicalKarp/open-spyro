@@ -1185,7 +1185,7 @@ void Level15_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
         actor->mode = PATHWALK_DYING;
-        ANIM_RESET(actor, 2);
+        ANIM_RESET(actor, PATHWALK_DYING);
         continue;
       }
 
