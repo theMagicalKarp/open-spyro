@@ -138,8 +138,8 @@ void Level31_UpdateActors(void) {
   int v480[3];
   int v496[3];
   int col2[3];
-  int v528[3];
-  int v544[3];
+  int letterSlot[3];
+  int letterSwingRest[3];
 
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
    * pass. */
@@ -4166,26 +4166,26 @@ void Level31_UpdateActors(void) {
           v496[2] = 0;
           bearing = (bearing + 0x80) & 0xFF;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
-          ScaleVector3Sat(v528, v496, st->radius - 1);
+          ScaleVector3Sat(letterSlot, v496, st->radius - 1);
           LShiftVector3(v496, 1);
           arm = st->radius - 1;
-          v528[2] += (g_anCosineLut[arm * 2] * 3) >> 3;
-          v544[0] = v480[0] * g_anCosineLut[arm * 2];
-          v544[1] = v480[1] * g_anCosineLut[arm * 2];
-          v544[2] = 0;
+          letterSlot[2] += (g_anCosineLut[arm * 2] * 3) >> 3;
+          letterSwingRest[0] = v480[0] * g_anCosineLut[arm * 2];
+          letterSwingRest[1] = v480[1] * g_anCosineLut[arm * 2];
+          letterSwingRest[2] = 0;
           bearing = arm << 1;
           bearing = (bearing - (st->phase * 4)) & 0xFF;
           ScaleVector3Sat(v496, v496, st->phase);
-          SubtractVector(v528, v528, v496);
+          SubtractVector(letterSlot, letterSlot, v496);
           swing = &g_anCosineLut[bearing];
           actor->posX = v480[0] * *swing;
           actor->posY = v480[1] * *swing;
           actor->posZ = 0;
-          SubtractVector(&actor->posX, &actor->posX, v544);
+          SubtractVector(&actor->posX, &actor->posX, letterSwingRest);
           RShiftVector3(&actor->posX, 0xA);
           AddVector(&actor->posX, &actor->posX, v480);
           AddVector(&actor->posX, &actor->posX, &st->parent->posX);
-          SubtractVector(&actor->posX, &actor->posX, v528);
+          SubtractVector(&actor->posX, &actor->posX, letterSlot);
           actor->posZ = actor->posZ + ((*swing * 3) >> 3) + 0x600;
         }
       } else {

@@ -118,7 +118,7 @@ void Level10_UpdateActors(void) {
   int idx370[2];
   int pos371[3];
   int p371[3];
-  int t536[3];
+  int letterSwingRest[3];
 
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
    * pass. */
@@ -3683,9 +3683,9 @@ void Level10_UpdateActors(void) {
           LShiftVector3(tgt371, 1);
           arm = st->radius - 1;
           vel371[2] += (g_anCosineLut[arm * 2] * 3) >> 3;
-          t536[0] = pos371[0] * g_anCosineLut[arm * 2];
-          t536[1] = pos371[1] * g_anCosineLut[arm * 2];
-          t536[2] = 0;
+          letterSwingRest[0] = pos371[0] * g_anCosineLut[arm * 2];
+          letterSwingRest[1] = pos371[1] * g_anCosineLut[arm * 2];
+          letterSwingRest[2] = 0;
           bearing = arm << 1;
           bearing = (bearing - (st->phase * 4)) & 0xFF;
           ScaleVector3Sat(tgt371, tgt371, st->phase);
@@ -3694,7 +3694,7 @@ void Level10_UpdateActors(void) {
           actor->posX = pos371[0] * *swing;
           actor->posY = pos371[1] * *swing;
           actor->posZ = 0;
-          SubtractVector(&actor->posX, &actor->posX, t536);
+          SubtractVector(&actor->posX, &actor->posX, letterSwingRest);
           RShiftVector3(&actor->posX, 0xA);
           AddVector(&actor->posX, &actor->posX, pos371);
           AddVector(&actor->posX, &actor->posX, &st->parent->posX);

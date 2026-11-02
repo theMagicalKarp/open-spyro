@@ -114,7 +114,7 @@ void Level20_UpdateActors(void) {
   int A352[3];
   int A368[2];
   int A376[3];
-  int A392[3];
+  int letterSlot[3];
   int A408[3];
 
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
@@ -3247,17 +3247,17 @@ void Level20_UpdateActors(void) {
           A336[2] = 0;
           bearing = (bearing + 0x80) & 0xFF;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
-          ScaleVector3Sat(A392, A336, st->radius - 1);
+          ScaleVector3Sat(letterSlot, A336, st->radius - 1);
           LShiftVector3(A336, 1);
           arm = st->radius - 1;
-          A392[2] += (g_anCosineLut[arm * 2] * 3) >> 3;
+          letterSlot[2] += (g_anCosineLut[arm * 2] * 3) >> 3;
           A408[0] = A376[0] * g_anCosineLut[arm * 2];
           A408[1] = A376[1] * g_anCosineLut[arm * 2];
           A408[2] = 0;
           bearing = arm << 1;
           bearing = (bearing - (st->phase * 4)) & 0xFF;
           ScaleVector3Sat(A336, A336, st->phase);
-          SubtractVector(A392, A392, A336);
+          SubtractVector(letterSlot, letterSlot, A336);
           swing = &g_anCosineLut[bearing];
           actor->posX = A376[0] * *swing;
           actor->posY = A376[1] * *swing;
@@ -3266,7 +3266,7 @@ void Level20_UpdateActors(void) {
           RShiftVector3(&actor->posX, 0xA);
           AddVector(&actor->posX, &actor->posX, A376);
           AddVector(&actor->posX, &actor->posX, &st->parent->posX);
-          SubtractVector(&actor->posX, &actor->posX, A392);
+          SubtractVector(&actor->posX, &actor->posX, letterSlot);
           actor->posZ = actor->posZ + ((*swing * 3) >> 3) + 0x600;
         }
       } else {

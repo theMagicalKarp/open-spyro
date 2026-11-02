@@ -114,9 +114,9 @@ void Level7_UpdateActors(void) {
   int s432[3];
   int s448[3];
   int s464[3];
-  int s480[3];
-  int s496[3];
-  int s512[3];
+  int letterSide[3];
+  int letterSlot[3];
+  int letterSwingRest[3];
 
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
    * pass. */
@@ -4671,31 +4671,31 @@ void Level7_UpdateActors(void) {
           s448[0] = (g_anCosineLut[bearing] * 3) >> 4;
           s448[1] = (g_anSineLut[bearing] * 3) >> 4;
           s448[2] = 0;
-          s480[0] = (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          s480[1] = (unsigned short)g_anSineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          s480[2] = 0;
+          letterSide[0] = (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          letterSide[1] = (unsigned short)g_anSineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          letterSide[2] = 0;
           bearing = (bearing + 0x80) & 0xFF;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
-          ScaleVector3Sat(s496, s480, st->radius - 1);
-          LShiftVector3(s480, 1);
+          ScaleVector3Sat(letterSlot, letterSide, st->radius - 1);
+          LShiftVector3(letterSide, 1);
           arm = st->radius - 1;
-          s496[2] += (g_anCosineLut[arm * 2] * 3) >> 3;
-          s512[0] = s448[0] * g_anCosineLut[arm * 2];
-          s512[1] = s448[1] * g_anCosineLut[arm * 2];
-          s512[2] = 0;
+          letterSlot[2] += (g_anCosineLut[arm * 2] * 3) >> 3;
+          letterSwingRest[0] = s448[0] * g_anCosineLut[arm * 2];
+          letterSwingRest[1] = s448[1] * g_anCosineLut[arm * 2];
+          letterSwingRest[2] = 0;
           bearing = arm << 1;
           bearing = (bearing - (st->phase * 4)) & 0xFF;
-          ScaleVector3Sat(s480, s480, st->phase);
-          SubtractVector(s496, s496, s480);
+          ScaleVector3Sat(letterSide, letterSide, st->phase);
+          SubtractVector(letterSlot, letterSlot, letterSide);
           swing = &g_anCosineLut[bearing];
           actor->posX = s448[0] * *swing;
           actor->posY = s448[1] * *swing;
           actor->posZ = 0;
-          SubtractVector(&actor->posX, &actor->posX, s512);
+          SubtractVector(&actor->posX, &actor->posX, letterSwingRest);
           RShiftVector3(&actor->posX, 0xA);
           AddVector(&actor->posX, &actor->posX, s448);
           AddVector(&actor->posX, &actor->posX, &st->parent->posX);
-          SubtractVector(&actor->posX, &actor->posX, s496);
+          SubtractVector(&actor->posX, &actor->posX, letterSlot);
           actor->posZ = actor->posZ + ((*swing * 3) >> 3) + 0x600;
         }
       } else {
