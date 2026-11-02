@@ -1202,9 +1202,8 @@ undefined FUN_80062648(void);
 
 void FlushCache(void);
 
-/* 0x800626f8: libc memcpy: byte copy of param_3 bytes from param_2 to param_1. Returns dest (or NULL if dest is NULL). */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined1 *memcpy(undefined1 *param_1, undefined1 *param_2, int param_3);
+/* 0x800626f8: libc memcpy: byte copy of n bytes from src to dst. Returns dest (or NULL if dest is NULL). */
+void *memcpy(void *dst, const void *src, unsigned int n);
 
 /* 0x8006272c: libc rand(): g_dwRandSeed = g_dwRandSeed * 0x41C64E6D + 0x3039; returns bits 16..30 (0..0x7FFF), not a full 32-bit value. Seeded by srand. */
 unsigned int GetRandomU32(void);
@@ -1212,8 +1211,8 @@ unsigned int GetRandomU32(void);
 /* 0x8006275c: libc srand: sets g_dwRandSeed. */
 void srand(unsigned int seed);
 
-/* 0x8006276c: libc strlen clone. Returns 0 for NULL pointer; otherwise length of null-terminated string at param_1. */
-int strlen(char *param_1);
+/* 0x8006276c: libc strlen clone. Returns 0 for NULL pointer; otherwise length of null-terminated string at s. Declared with the builtin's signature so gcc does not warn; no game caller's codegen depends on the return signedness. */
+unsigned int strlen(const char *s);
 
 int WritePrintf(char *fmt, ...);
 
@@ -1227,7 +1226,7 @@ undefined WriteChar(byte param_1);
 
 long write(long param_1, void *param_2, long param_3);
 
-/* 0x80062fd4: libc sprintf clone (PSY-Q libapi). Writes formatted output to buf from format string fmt with varargs starting at param_3. Supports %d/%i/%u/%s/%x/%X/%o/%p/%c/%n with flags '-' '+' ' ' '#' '0' and width.precision (use '*' for varargs). Calls strlen, memchr, and memmove (memcpy-like byte copy). */
+/* 0x80062fd4: libc sprintf clone (PSY-Q libapi). Writes formatted output to buf from format string fmt with the varargs after fmt. Supports %d/%i/%u/%s/%x/%X/%o/%p/%c/%n with flags '-' '+' ' ' '#' '0' and width.precision (use '*' for varargs). Calls strlen, memchr, and memmove (memcpy-like byte copy). */
 int sprintf(char *buf, char *fmt, ...);
 
 /* 0x80063830: libc memmove: overlap-safe byte copy. Picks ascending vs descending direction by comparing src<dst. Called from sprintf's %s/%c padding paths. */
@@ -1504,7 +1503,7 @@ undefined firstfile2(void);
 char *strcat(char *param_1, char *param_2);
 
 /* 0x8006887c: libc strcmp: null-terminated byte compare. Returns (unsigned char) diff at first mismatch, 0 on equal, with NULL handling: NULL == NULL = 0, NULL < non-NULL. */
-int strcmp(byte *param_1, byte *param_2);
+int strcmp(const char *a, const char *b);
 
 long _card_info(long chan);
 
