@@ -1881,7 +1881,8 @@ enum FlameTriggerMode {
 };
 
 /* ->mode of the level 20 one-shot prop (ACTOR_TYPE_ONE_SHOT_PROP); each mode
- * plays its own animation. Something outside its arm sets PLAY. */
+ * plays its own animation. A gunner partnered with it (level data) sets PLAY
+ * from GUNNER_WAKE. */
 enum OneShotPropMode {
   ONESHOT_IDLE = 0,
   ONESHOT_PLAY = 1,     /* to frame 0xE, then PLAYED */
