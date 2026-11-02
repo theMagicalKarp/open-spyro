@@ -34,6 +34,14 @@ enum SparxSubMode {
   SPARX_SUB_PARKED = 99,  /* takes no targets (no writer in the C sources) */
 };
 
+/* Sparx's hover animation per health colour; the odd index after each is the
+ * same colour's catch animation (the chase steps up to it, EAT_DONE back). */
+enum SparxAnim {
+  SPARX_ANIM_GREEN = 0,
+  SPARX_ANIM_BLUE = 2,
+  SPARX_ANIM_GOLD = 4,
+};
+
 /* ->mode of a dragon egg (ACTOR_TYPE_DRAGON_EGG, EggRiseState). */
 enum EggMode {
   EGG_CARRIED = 0,      /* held by its egg thief */
@@ -196,6 +204,14 @@ enum ThiefMode {
   THIEF_CLIMB_RUN_BACK = 0x2C, /* runs the path back to its start */
   THIEF_CIRCLE = 0x32,      /* circles the current node away from Spyro */
   THIEF_STAND = 0x3C,       /* stands facing Spyro */
+};
+
+/* An egg thief's animations (nextAnim), from what each mode plays. */
+enum ThiefAnim {
+  THIEF_ANIM_IDLE = 0,   /* back on its start node */
+  THIEF_ANIM_RUN = 1,    /* every run/hop mode */
+  THIEF_ANIM_CAUGHT = 3, /* hit: the egg drops from frame 5, then it bursts */
+  THIEF_ANIM_TAUNT = 4,  /* stands facing Spyro; voices 6/5 on frames 2/0xC */
 };
 
 /* ->subMode of an egg thief that keeps away around its home node. */
