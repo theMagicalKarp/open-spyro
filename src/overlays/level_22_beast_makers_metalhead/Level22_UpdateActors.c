@@ -996,8 +996,8 @@ void Level22_UpdateActors(void) {
           }
           o = g_pfnLevelSpawnActor(ACTOR_TYPE_ROLLING_BOULDER, actor);
           o->mode = BOULDER_SHARD;
-          if (o->anim != 1) {
-            ANIM_RESET(o, 1);
+          if (o->anim != BOULDER_SHARD) {
+            ANIM_RESET(o, BOULDER_SHARD);
           }
           q = o->state;
           if (actor->subMode == BOULDER_DROPPED) {
@@ -1408,7 +1408,7 @@ void Level22_UpdateActors(void) {
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
         actor->probeDist = 0xFF;
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
-        ANIM_GO(actor, 7);
+        ANIM_GO(actor, BTHROW_ANIM_HURTLE);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2BC &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x2BC
                                : -SPY_DZ(actor) < 0x2BC) &&
@@ -1499,7 +1499,7 @@ void Level22_UpdateActors(void) {
         Actor *catcher = &g_pActorListBase[st->catcher];
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
-        ANIM_GO(actor, 6);
+        ANIM_GO(actor, BTHROW_ANIM_LEAP);
         RefreshActorDerivedState(catcher, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(catcher, 0, g232);
         GetActorAttachPoint(catcher, 1, g248);
@@ -1764,7 +1764,7 @@ void Level22_UpdateActors(void) {
         if (r == MOVED_LANDED) {
           st->zSpeed = 0x5A;
         }
-        ANIM_GO(actor, 8);
+        ANIM_GO(actor, GATEKEEPER_ANIM_HURTLE);
         actor->probeDist = 0xFF;
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x3E8 &&
@@ -1835,7 +1835,7 @@ void Level22_UpdateActors(void) {
       case GATEKEEPER_RIDE_WALK: {
         int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
-        ANIM_GO(actor, 6);
+        ANIM_GO(actor, GATEKEEPER_ANIM_WALK);
         if (r == PATH_ARRIVED(0)) {
           actor->mode++;
         }
@@ -1866,7 +1866,7 @@ void Level22_UpdateActors(void) {
         Actor *catcher = &g_pActorListBase[st->catcher];
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
-        ANIM_GO(actor, 7);
+        ANIM_GO(actor, GATEKEEPER_ANIM_LEAP);
         RefreshActorDerivedState(catcher, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(catcher, 0, g232);
         GetActorAttachPoint(catcher, 1, g312);
@@ -3534,7 +3534,8 @@ void Level22_UpdateActors(void) {
     }
 
     /* Dragon fragment, updated out of line. */
-    case ACTOR_TYPE_STATUE_SHARD:      TickStatueBurstShard(actor);
+    case ACTOR_TYPE_STATUE_SHARD:
+      TickStatueBurstShard(actor);
       break;
 
     /* Floating digits (GemDigitState). */
@@ -4127,7 +4128,8 @@ void Level22_UpdateActors(void) {
 
     /* Checkpoint: Spyro reaching it sets the respawn anchor
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
-    case ACTOR_TYPE_CHECKPOINT:      switch (actor->mode) {
+    case ACTOR_TYPE_CHECKPOINT:
+      switch (actor->mode) {
       case CHECKPT_REARM:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xA01) {
           break;
@@ -4173,7 +4175,8 @@ void Level22_UpdateActors(void) {
 
     /* One-shot effects: removed as soon as their animation ends. */
     case ACTOR_TYPE_HAZARD2_ENTER_FX:
-    case ACTOR_TYPE_HAZARD2_DEATH_FX:      if (g_nActorAnimDone == 0) {
+    case ACTOR_TYPE_HAZARD2_DEATH_FX:
+      if (g_nActorAnimDone == 0) {
         break;
       }
       DespawnActorRecord(actor);

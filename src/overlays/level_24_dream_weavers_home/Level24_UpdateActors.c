@@ -597,7 +597,8 @@ void Level24_UpdateActors(void) {
 
     /* Comet spark: replays its animation subMode times, then shares the
      * one-shot effects' exit. */
-    case ACTOR_TYPE_COMET_SPARK:      if (actor->subMode != 0) {
+    case ACTOR_TYPE_COMET_SPARK:
+      if (actor->subMode != 0) {
         actor->subMode--;
         actor->frame = 0;
         actor->nextFrame = 1;
@@ -606,7 +607,8 @@ void Level24_UpdateActors(void) {
 
     /* One-shot effects: removed as soon as their animation ends. */
     case ACTOR_TYPE_HAZARD0_DEATH_FX:
-    case ACTOR_TYPE_HAZARD0_ENTER_FX:      if (g_nActorAnimDone != 0) {
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
+      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -2236,7 +2238,7 @@ void Level24_UpdateActors(void) {
           }
           actor->posZ += st->vz;
           st->vz += st->dvz;
-          ANIM_GO(actor, 6);
+          ANIM_GO(actor, SINGER_ANIM_THROWN);
         }
         continue;
 
@@ -3078,7 +3080,8 @@ void Level24_UpdateActors(void) {
     }
 
     /* Dragon fragment, updated out of line. */
-    case ACTOR_TYPE_STATUE_SHARD:      TickStatueBurstShard(actor);
+    case ACTOR_TYPE_STATUE_SHARD:
+      TickStatueBurstShard(actor);
       break;
 
     /* Floating digits (GemDigitState). */
@@ -3780,7 +3783,8 @@ void Level24_UpdateActors(void) {
 
     /* Checkpoint: Spyro reaching it sets the respawn anchor
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
-    case ACTOR_TYPE_CHECKPOINT:      switch (actor->mode) {
+    case ACTOR_TYPE_CHECKPOINT:
+      switch (actor->mode) {
       case CHECKPT_REARM:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xA01) {
           break;

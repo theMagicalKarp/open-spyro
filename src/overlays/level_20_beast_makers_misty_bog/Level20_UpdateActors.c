@@ -428,7 +428,7 @@ void Level20_UpdateActors(void) {
           ANIM_GO(actor, GUNNER_ADVANCE);
           PivotActorAlongPath(actor, st->path, 0x100, 0xA0, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         } else if (st->mode == GUNNER_ROLE_LOOKOUT) {
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, GUNNER_IDLE);
           if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x640 &&
               g_pActorListBase[st->partner].mode == 0) {
             ENTER_POSE(actor, GUNNER_STARTLE);
@@ -2292,7 +2292,8 @@ void Level20_UpdateActors(void) {
     }
 
     /* Dragon fragment, updated out of line. */
-    case ACTOR_TYPE_STATUE_SHARD:      TickStatueBurstShard(actor);
+    case ACTOR_TYPE_STATUE_SHARD:
+      TickStatueBurstShard(actor);
       break;
 
     /* Floating gem-value digits (GemDigitStateZ): fall and bounce off the world while their life lasts. */
@@ -2600,7 +2601,8 @@ void Level20_UpdateActors(void) {
 
     /* Checkpoint: Spyro reaching it sets the respawn anchor
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
-    case ACTOR_TYPE_CHECKPOINT:      switch (actor->mode) {
+    case ACTOR_TYPE_CHECKPOINT:
+      switch (actor->mode) {
       case CHECKPT_REARM:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xA01) {
           break;
@@ -2647,7 +2649,8 @@ void Level20_UpdateActors(void) {
     /* One-shot effects: removed as soon as their animation ends. */
     case ACTOR_TYPE_SPLASH:
     case ACTOR_TYPE_HAZARD0_DEATH_FX:
-    case ACTOR_TYPE_HAZARD0_ENTER_FX:      if (g_nActorAnimDone == 0) {
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
+      if (g_nActorAnimDone == 0) {
         break;
       }
       DespawnActorRecord(actor);
@@ -2955,7 +2958,7 @@ void Level20_UpdateActors(void) {
         break;
 
       case LURKER_AIM:
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, LURKER_ANIM_TURN);
         if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0xDAC) {
           actor->mode = LURKER_FACE;
           continue;
@@ -2984,7 +2987,7 @@ void Level20_UpdateActors(void) {
         break;
 
       case LURKER_FACE:
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, LURKER_ANIM_TURN);
         if (TrackEntityYawTowardSpyro(actor, 8, 2, YAW_STEP_IN_BAND) != 0 && g_nActorAnimDone != 0) {
           ENTER_POSE(actor, LURKER_WATCH);
         }
@@ -2994,7 +2997,7 @@ void Level20_UpdateActors(void) {
         int d;
         int k;
 
-        ANIM_GO(actor, 3);
+        ANIM_GO(actor, LURKER_ANIM_LASH);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(actor, 0, A352);
         GetActorAttachPoint(actor, 1, A376);
@@ -3442,8 +3445,8 @@ void Level20_UpdateActors(void) {
 
         CopyVector(&o->posX, &actor->posX);
         o->mode = GRABBER_HUSK;
-        if (o->anim != 0xA) {
-          ANIM_RESET(o, 0xA);
+        if (o->anim != GRABBER_ANIM_HUSK) {
+          ANIM_RESET(o, GRABBER_ANIM_HUSK);
         }
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);

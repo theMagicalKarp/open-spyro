@@ -761,7 +761,7 @@ void Level19_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
-        ANIM_SET(actor, 6);
+        ANIM_SET(actor, BGUARD_ANIM_KNOCKED);
         PlayActorMeshVoice(actor, 0, 0);
         actor->mode = BGUARD_KNOCKED;
         continue;
@@ -843,7 +843,7 @@ void Level19_UpdateActors(void) {
         break;
 
       case BGUARD_RUN:
-        ANIM_GO(actor, 4);
+        ANIM_GO(actor, BGUARD_ANIM_RUN);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0, 8, 0x10, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             PATH_ARRIVED(0)) {
           st->mode = BGUARD_CUE_NONE;
@@ -2026,7 +2026,8 @@ void Level19_UpdateActors(void) {
     
 
     /* One-shot effects: removed as soon as their animation ends. */
-    case ACTOR_TYPE_REBOUND_FX:      if (g_nActorAnimDone != 0) {
+    case ACTOR_TYPE_REBOUND_FX:
+      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -2172,7 +2173,8 @@ void Level19_UpdateActors(void) {
     }
 
     /* Dragon fragment, updated out of line. */
-    case ACTOR_TYPE_STATUE_SHARD:      TickStatueBurstShard(actor);
+    case ACTOR_TYPE_STATUE_SHARD:
+      TickStatueBurstShard(actor);
       break;
 
     /* Floating digits (GemDigitState). */
@@ -2547,7 +2549,8 @@ void Level19_UpdateActors(void) {
 
     /* Checkpoint: Spyro reaching it sets the respawn anchor
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
-    case ACTOR_TYPE_CHECKPOINT:      switch (actor->mode) {
+    case ACTOR_TYPE_CHECKPOINT:
+      switch (actor->mode) {
       case CHECKPT_REARM:
         if (ApproxDist2D(&actor->posX, &SPY.posX) > 0xA00) {
           actor->mode = CHECKPT_ARMED;
@@ -2632,7 +2635,8 @@ void Level19_UpdateActors(void) {
 
     /* One-shot effects: removed as soon as their animation ends. */
     case ACTOR_TYPE_HAZARD2_ENTER_FX:
-    case ACTOR_TYPE_HAZARD2_DEATH_FX:      if (g_nActorAnimDone != 0) {
+    case ACTOR_TYPE_HAZARD2_DEATH_FX:
+      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }

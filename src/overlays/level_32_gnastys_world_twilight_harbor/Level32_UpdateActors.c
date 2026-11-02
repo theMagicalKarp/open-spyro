@@ -1817,7 +1817,7 @@ void Level32_UpdateActors(void) {
         }
 
         case SWEEPGUN_STEP_REVERSE:
-          ANIM_GO(actor, 5);
+          ANIM_GO(actor, SWEEPGUN_ANIM_TURN);
           if (g_nActorAnimDone != 0) {
             if (actor->nextAnim != SWEEPGUN_SWEEP) {
               g_nActorAnimDone = 0;
@@ -1940,7 +1940,7 @@ void Level32_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           if (GetRandomU32() & 1) {
-            ANIM_GO(actor, 1);
+            ANIM_GO(actor, LOBGUN_ANIM_FIDGET);
           } else {
             ANIM_GO(actor, LOBGUN_WATCH);
           }
@@ -2586,7 +2586,8 @@ void Level32_UpdateActors(void) {
     }
 
     /* Dragon fragment, updated out of line. */
-    case ACTOR_TYPE_STATUE_SHARD:      TickStatueBurstShard(actor);
+    case ACTOR_TYPE_STATUE_SHARD:
+      TickStatueBurstShard(actor);
       break;
 
     /* Floating digits (GemDigitState). */
@@ -2986,7 +2987,8 @@ void Level32_UpdateActors(void) {
 
     /* Checkpoint: Spyro reaching it sets the respawn anchor
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
-    case ACTOR_TYPE_CHECKPOINT:      switch (actor->mode) {
+    case ACTOR_TYPE_CHECKPOINT:
+      switch (actor->mode) {
       case CHECKPT_REARM:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xA01) {
           break;
@@ -3032,7 +3034,8 @@ void Level32_UpdateActors(void) {
 
     /* One-shot effects: removed as soon as their animation ends. */
     case ACTOR_TYPE_HAZARD2_ENTER_FX:
-    case ACTOR_TYPE_HAZARD2_DEATH_FX:      if (g_nActorAnimDone != 0) {
+    case ACTOR_TYPE_HAZARD2_DEATH_FX:
+      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }

@@ -2331,7 +2331,7 @@ void Level1_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           if (st->timer == 0) {
             st->timer = RandomIntInRange(3, 6);
-            ANIM_GO(actor, 1);
+            ANIM_GO(actor, REAR_ANIM_FIDGET);
           } else {
             st->timer -= 1;
             ANIM_GO(actor, REAR_IDLE);
@@ -2370,7 +2370,7 @@ void Level1_UpdateActors(void) {
           if (dist > 0xC00) {
             if (st->timer == 0) {
               st->timer = RandomIntInRange(3, 6);
-              ANIM_GO(actor, 10);
+              ANIM_GO(actor, REAR_ANIM_REARED_FIDGET);
             } else {
               st->timer -= 1;
               ANIM_GO(actor, REAR_REARED);
@@ -3708,7 +3708,8 @@ void Level1_UpdateActors(void) {
 
     /* One-shot effects: removed as soon as their animation ends. */
     case ACTOR_TYPE_HAZARD0_DEATH_FX:
-    case ACTOR_TYPE_HAZARD0_ENTER_FX:      if (g_nActorAnimDone != 0) {
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
+      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }

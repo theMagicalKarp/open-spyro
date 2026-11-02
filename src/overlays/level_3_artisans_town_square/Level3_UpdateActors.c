@@ -3166,7 +3166,8 @@ void Level3_UpdateActors(void) {
 
     /* One-shot effects: removed as soon as their animation ends. */
     case ACTOR_TYPE_HAZARD0_DEATH_FX:
-    case ACTOR_TYPE_HAZARD0_ENTER_FX:      if (g_nActorAnimDone != 0) {
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
+      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -3386,8 +3387,8 @@ void Level3_UpdateActors(void) {
         break;
 
       case LFOLLOW_KNOCKED:
-        if (actor->anim == 3 && g_nActorAnimDone != 0) {
-          ANIM_GO(actor, 4);
+        if (actor->anim == LFOLLOW_KNOCKED && g_nActorAnimDone != 0) {
+          ANIM_GO(actor, LFOLLOW_ANIM_TUMBLE);
         }
         actor->rotX += st->spinX;
         actor->rotY += st->spinY;

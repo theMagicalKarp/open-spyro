@@ -1392,7 +1392,7 @@ void Level2_UpdateActors(void) {
           }
           break;
         case GPCUE_SIGNAL:
-          ANIM_GO(actor, 8);
+          ANIM_GO(actor, GPAIR_ANIM_SIGNAL);
           if (g_nActorAnimNewFrame != 0 && actor->frame == 8) {
             g_pActorListBase[st->partner].mode = 0xD;
             g_pActorListBase[st->partner].anim = 0xD;
@@ -2103,7 +2103,7 @@ void Level2_UpdateActors(void) {
             }
           }
         } else {
-          ANIM_GO(actor, 4);
+          ANIM_GO(actor, PCHARGER_ANIM_BUTT);
           if (g_nActorAnimNewFrame != 0 && actor->frame == 4) {
             PathData *p = st->path;
             int prev = p->count - 1;

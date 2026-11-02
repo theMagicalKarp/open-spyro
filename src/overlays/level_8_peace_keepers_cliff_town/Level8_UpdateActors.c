@@ -2621,7 +2621,7 @@ void Level8_UpdateActors(void) {
         break;
 
       case TPRUNNER_RUN:
-        ANIM_GO(actor, 7);
+        ANIM_GO(actor, TPRUNNER_ANIM_RUN);
         if (st->which == 1) {
           if (PivotActorAlongPath(actor, st->pathA, 0x80,
                             actor->drawn == 0 ? 0x8C : 0x64, 0, 4, 0x14, PIVOT_TURN_ANY,
@@ -2819,8 +2819,8 @@ void Level8_UpdateActors(void) {
           ANIM_GO(actor, GLOOK_ANIM_CALL);
         }
         if (actor->anim == GLOOK_ANIM_CALL && g_nActorAnimNewFrame != 0 && actor->frame == 5) {
-          if (link->nextAnim != 7) {
-            ANIM_ADVANCE(link, 7);
+          if (link->nextAnim != TPRUNNER_ANIM_RUN) {
+            ANIM_ADVANCE(link, TPRUNNER_ANIM_RUN);
           }
           link->mode = TPRUNNER_WALK_BACK;
         }
@@ -3160,15 +3160,15 @@ void Level8_UpdateActors(void) {
         }
 
       case ROAMCRIT_DYING:
-        if (actor->anim == 6 && actor->frame < 8) {
+        if (actor->anim == ROAMCRIT_DYING && actor->frame < 8) {
           UpdateActorWander(actor, &st->wander);
         }
         if (g_nActorAnimDone != 0) {
-          if (actor->anim != 6) {
+          if (actor->anim != ROAMCRIT_DYING) {
             DespawnActorRecord(actor);
             continue;
           }
-          ANIM_SET(actor, 7);
+          ANIM_SET(actor, ROAMCRIT_ANIM_DEAD);
         }
         break;
       }
@@ -3732,7 +3732,8 @@ void Level8_UpdateActors(void) {
 
     /* Checkpoint: Spyro reaching it sets the respawn anchor
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
-    case ACTOR_TYPE_CHECKPOINT + 1:      switch (actor->mode) {
+    case ACTOR_TYPE_CHECKPOINT + 1:
+      switch (actor->mode) {
       case CHECKPT_REARM:
         if (ApproxDist2D(&actor->posX, &SPY.posX) > 0xA00) {
           actor->mode = CHECKPT_ARMED;
@@ -4199,7 +4200,8 @@ void Level8_UpdateActors(void) {
     case ACTOR_TYPE_REBOUND_FX:
     case ACTOR_TYPE_HAZARD1_ENTER_FX:
     case ACTOR_TYPE_HAZARD1_DEATH_FX:
-    case ACTOR_TYPE_BELL_RIPPLE:      if (g_nActorAnimDone != 0) {
+    case ACTOR_TYPE_BELL_RIPPLE:
+      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }

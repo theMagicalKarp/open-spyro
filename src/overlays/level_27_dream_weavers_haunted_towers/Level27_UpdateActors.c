@@ -1741,7 +1741,7 @@ void Level27_UpdateActors(void) {
       case ROCKTHROW_KNOCKED:
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC, 0x10);
         if (g_nActorAnimDone != 0 && actor->nextAnim == ROCKTHROW_KNOCKED) {
-          ANIM_SET(actor, 4);
+          ANIM_SET(actor, ROCKTHROW_ANIM_DOWN);
         }
         if (TICK_DOWN(st->timer) != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -1895,7 +1895,7 @@ void Level27_UpdateActors(void) {
           RefreshActorDerivedState(st->part[i], ACTOR_REFRESH_GRID);
         }
         if (st->kind == BWALL_ARMORED) {
-          ANIM_SET(actor, 1);
+          ANIM_SET(actor, BWALL_ANIM_ARMORED);
         }
       }
       if (st->kind == BWALL_ARMORED) {
@@ -1940,8 +1940,8 @@ void Level27_UpdateActors(void) {
             int dd;
 
             if (st->kind == BWALL_ARMORED) {
-              if (o->anim != 1) {
-                ANIM_RESET(o, 1);
+              if (o->anim != BWALL_ANIM_ARMORED) {
+                ANIM_RESET(o, BWALL_ANIM_ARMORED);
               }
               o->renderList = 0xA0;
               *(int *)&o->tint0 = ACTOR_TINT_NEUTRAL;
@@ -2944,7 +2944,8 @@ void Level27_UpdateActors(void) {
     }
 
     /* Dragon fragment, updated out of line. */
-    case ACTOR_TYPE_STATUE_SHARD:      TickStatueBurstShard(actor);
+    case ACTOR_TYPE_STATUE_SHARD:
+      TickStatueBurstShard(actor);
       break;
 
     /* Floating digits (GemDigitState). */
@@ -3537,7 +3538,8 @@ void Level27_UpdateActors(void) {
 
     /* Checkpoint: Spyro reaching it sets the respawn anchor
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
-    case ACTOR_TYPE_CHECKPOINT:      switch (actor->mode) {
+    case ACTOR_TYPE_CHECKPOINT:
+      switch (actor->mode) {
       case CHECKPT_REARM:
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xA01) {
           break;
@@ -3583,7 +3585,8 @@ void Level27_UpdateActors(void) {
 
     /* One-shot effects: removed as soon as their animation ends. */
     case ACTOR_TYPE_HAZARD0_DEATH_FX:
-    case ACTOR_TYPE_HAZARD0_ENTER_FX:      if (g_nActorAnimDone != 0) {
+    case ACTOR_TYPE_HAZARD0_ENTER_FX:
+      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }

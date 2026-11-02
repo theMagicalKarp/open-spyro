@@ -887,8 +887,8 @@ void Level25_UpdateActors(void) {
           MarkActorLiveKill(actor);
           actor->mode = LOOKOUT_KNOCKED;
           actor->flags = 0;
-          if (actor->nextAnim != 3) {
-            ANIM_ADVANCE(actor, 3);
+          if (actor->nextAnim != LOOKOUT_KNOCKED) {
+            ANIM_ADVANCE(actor, LOOKOUT_KNOCKED);
           }
           continue;
         }
@@ -956,8 +956,8 @@ void Level25_UpdateActors(void) {
             ABS2(actor->posZ - actor->floorOffset - g_nSpyroWorldPosZ) < 0x320) {
           actor->mode = LOOKOUT_SNAP;
           actor->subMode = 0;
-          if (actor->nextAnim != 2) {
-            ANIM_ADVANCE(actor, 2);
+          if (actor->nextAnim != LOOKOUT_SNAP) {
+            ANIM_ADVANCE(actor, LOOKOUT_SNAP);
           }
           continue;
         }
@@ -2359,8 +2359,8 @@ void Level25_UpdateActors(void) {
           Actor *flame = g_pfnLevelSpawnActor(ACTOR_TYPE_LANTERN_FLAME, actor);
 
           actor->mode = LANTERN_DONE;
-          flame->mode = 1;
-          ANIM_RESET(flame, 1);
+          flame->mode = LFLAME_CLOSE;
+          ANIM_RESET(flame, LFLAME_CLOSE);
         }
         continue;
 
@@ -2376,16 +2376,16 @@ void Level25_UpdateActors(void) {
     case ACTOR_TYPE_LANTERN_FLAME: {
       Actor **st = actor->state;
 
-      if (actor->mode == 0) {
+      if (actor->mode == LFLAME_STRIKE) {
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);
         }
         continue;
       }
-      if (actor->mode == 1 && g_nActorAnimDone != 0) {
+      if (actor->mode == LFLAME_CLOSE && g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         (*st)->mode = LANTERN_IDLE;
-        ANIM_RESET(*st, 0);
+        ANIM_RESET(*st, LANTERN_IDLE);
       }
       continue;
     }

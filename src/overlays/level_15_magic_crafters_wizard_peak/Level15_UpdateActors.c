@@ -3980,7 +3980,8 @@ void Level15_UpdateActors(void) {
 
     /* Checkpoint: Spyro reaching it sets the respawn anchor
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
-    case ACTOR_TYPE_CHECKPOINT + 2:      switch (actor->mode) {
+    case ACTOR_TYPE_CHECKPOINT + 2:
+      switch (actor->mode) {
       case CHECKPT_REARM:
         if (ApproxDist2D(&actor->posX, &SPY.posX) > 0xA00) {
           actor->mode = CHECKPT_ARMED;

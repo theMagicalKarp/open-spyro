@@ -2695,7 +2695,7 @@ void Level4_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           if (st->count == 0) {
             st->count = RandomIntInRange(3, 6);
-            ANIM_GO(actor, 1);
+            ANIM_GO(actor, REAR_ANIM_FIDGET);
           } else {
             st->count -= 1;
             ANIM_GO(actor, REAR_IDLE);
@@ -2729,7 +2729,7 @@ void Level4_UpdateActors(void) {
           if (dist > 0xC00) {
             if (st->count == 0) {
               st->count = RandomIntInRange(3, 6);
-              ANIM_GO(actor, 10);
+              ANIM_GO(actor, REAR_ANIM_REARED_FIDGET);
             } else {
               st->count -= 1;
               ANIM_GO(actor, REAR_REARED);

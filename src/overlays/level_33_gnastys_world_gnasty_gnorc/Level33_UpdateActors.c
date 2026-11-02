@@ -681,7 +681,8 @@ void Level33_UpdateActors(void) {
     case ACTOR_TYPE_HAZARD1_ENTER_FX:
     case ACTOR_TYPE_HAZARD1_DEATH_FX:
     case ACTOR_TYPE_HAZARD2_ENTER_FX:
-    case ACTOR_TYPE_HAZARD2_DEATH_FX:      if (g_nActorAnimDone != 0) {
+    case ACTOR_TYPE_HAZARD2_DEATH_FX:
+      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
