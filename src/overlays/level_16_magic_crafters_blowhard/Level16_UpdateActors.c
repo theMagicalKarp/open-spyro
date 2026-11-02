@@ -3268,13 +3268,13 @@ void Level16_UpdateActors(void) {
         if (dist < 0x2800 && st->minion == 0 && st->floorZ == -1) {
           actor->mode = BLOWHARD_P1_DROP_RIDER;
           st->floorZ = actor->posZ - 0x578;
-          ANIM_GO(actor, 5);
+          ANIM_GO(actor, BLOWHARD_ANIM_DROP_RIDER);
         }
         break;
 
       case BLOWHARD_P1_DROP_RIDER:
         TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
-        if (actor->anim == 5 && actor->frame >= 6 && st->minion == 0) {
+        if (actor->anim == BLOWHARD_ANIM_DROP_RIDER && actor->frame >= 6 && st->minion == 0) {
           int v[3];
 
           CopyVector(v, &actor->posX);
@@ -3285,13 +3285,13 @@ void Level16_UpdateActors(void) {
           }
         }
         if (g_nActorAnimDone != 0) {
-          if (actor->anim == 5 && st->minion != 0) {
-            ANIM_SET(actor, 6);
+          if (actor->anim == BLOWHARD_ANIM_DROP_RIDER && st->minion != 0) {
+            ANIM_SET(actor, BLOWHARD_ANIM_DROP_END);
           }
-          if (g_nActorAnimDone != 0 && actor->anim == 6) {
+          if (g_nActorAnimDone != 0 && actor->anim == BLOWHARD_ANIM_DROP_END) {
             actor->mode = BLOWHARD_P1_HOVER;
             st->floorZ = actor->posZ + 0x578;
-            ANIM_SET(actor, BLOWHARD_START_PHASE);
+            ANIM_SET(actor, BLOWHARD_ANIM_HOVER);
           }
         }
         break;
@@ -3316,7 +3316,7 @@ void Level16_UpdateActors(void) {
           } else if (st->minion == 0 && dist > 0x1000) {
             actor->mode = BLOWHARD_P2_DROP_RIDER;
             st->floorZ = actor->posZ - 0x578;
-            ANIM_GO(actor, 5);
+            ANIM_GO(actor, BLOWHARD_ANIM_DROP_RIDER);
           }
           break;
         }
@@ -3328,7 +3328,7 @@ void Level16_UpdateActors(void) {
         if (AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(actor->posX - SPY.posX,
                                         actor->posY - SPY.posY, ATAN_ANGLE8)) < 0x30 &&
-            actor->anim == 5 && actor->frame >= 6 && st->minion == 0) {
+            actor->anim == BLOWHARD_ANIM_DROP_RIDER && actor->frame >= 6 && st->minion == 0) {
           int v[3];
 
           CopyVector(v, &actor->posX);
@@ -3339,14 +3339,14 @@ void Level16_UpdateActors(void) {
           }
         }
         if (g_nActorAnimDone != 0) {
-          if (actor->anim == 5 && st->minion != 0) {
-            ANIM_SET(actor, 6);
+          if (actor->anim == BLOWHARD_ANIM_DROP_RIDER && st->minion != 0) {
+            ANIM_SET(actor, BLOWHARD_ANIM_DROP_END);
           }
-          if (g_nActorAnimDone != 0 && actor->anim == 6) {
+          if (g_nActorAnimDone != 0 && actor->anim == BLOWHARD_ANIM_DROP_END) {
             actor->mode = BLOWHARD_P2_WAIT;
             st->wait = 0x6E;
             st->pathDone = 0;
-            ANIM_SET(actor, BLOWHARD_START_PHASE);
+            ANIM_SET(actor, BLOWHARD_ANIM_HOVER);
           }
         }
         break;
@@ -3377,7 +3377,7 @@ void Level16_UpdateActors(void) {
           } else if (st->minion == 0 && dist > 0x1000) {
             actor->mode = BLOWHARD_P3_DROP_RIDER;
             st->floorZ = actor->posZ - 0x578;
-            ANIM_GO(actor, 5);
+            ANIM_GO(actor, BLOWHARD_ANIM_DROP_RIDER);
           }
           break;
         }
@@ -3389,7 +3389,7 @@ void Level16_UpdateActors(void) {
         if (AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(actor->posX - SPY.posX,
                                         actor->posY - SPY.posY, ATAN_ANGLE8)) < 0x30 &&
-            actor->anim == 5 && actor->frame >= 6 && st->minion == 0) {
+            actor->anim == BLOWHARD_ANIM_DROP_RIDER && actor->frame >= 6 && st->minion == 0) {
           int v[3];
 
           CopyVector(v, &actor->posX);
@@ -3400,18 +3400,18 @@ void Level16_UpdateActors(void) {
           }
         }
         if (g_nActorAnimDone != 0) {
-          if (actor->anim == 5 && st->minion != 0) {
-            ANIM_SET(actor, 6);
+          if (actor->anim == BLOWHARD_ANIM_DROP_RIDER && st->minion != 0) {
+            ANIM_SET(actor, BLOWHARD_ANIM_DROP_END);
           }
           if (g_nActorAnimDone != 0) {
-            if (actor->anim == 5) {
-              ANIM_SET(actor, 6);
+            if (actor->anim == BLOWHARD_ANIM_DROP_RIDER) {
+              ANIM_SET(actor, BLOWHARD_ANIM_DROP_END);
             }
-            if (g_nActorAnimDone != 0 && actor->anim == 6) {
+            if (g_nActorAnimDone != 0 && actor->anim == BLOWHARD_ANIM_DROP_END) {
               actor->mode = BLOWHARD_P3_WAIT;
               st->pathDone = 0;
               st->wait = 0x6E;
-              ANIM_SET(actor, BLOWHARD_START_PHASE);
+              ANIM_SET(actor, BLOWHARD_ANIM_HOVER);
             }
           }
         }

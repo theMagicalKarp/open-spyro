@@ -159,7 +159,7 @@ void Level0_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
         actor->mode = PATROLLER_KNOCKED;
-        ANIM_RESET(actor, 3);
+        ANIM_RESET(actor, PATROLLER_ANIM_KNOCKED);
         continue;
       }
 
@@ -189,9 +189,9 @@ void Level0_UpdateActors(void) {
           continue;
         }
 
-        if (actor->nextAnim != 0) {
+        if (actor->nextAnim != PATROLLER_ANIM_IDLE) {
           g_nActorAnimDone = 0;
-          ANIM_ADVANCE(actor, 0);
+          ANIM_ADVANCE(actor, PATROLLER_ANIM_IDLE);
         }
 
         break;
@@ -259,9 +259,9 @@ void Level0_UpdateActors(void) {
           st->speed += 0xA;
         }
 
-        if (actor->nextAnim != 1) {
+        if (actor->nextAnim != PATROLLER_ANIM_RUN) {
           g_nActorAnimDone = 0;
-          ANIM_ADVANCE(actor, 1);
+          ANIM_ADVANCE(actor, PATROLLER_ANIM_RUN);
         }
 
         if (TICK_DOWN(st->travelTimer) != 0) {

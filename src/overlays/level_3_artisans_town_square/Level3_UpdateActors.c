@@ -399,7 +399,7 @@ void Level3_UpdateActors(void) {
       if (ApproxDist2D(&actor->posX, &spy->posX) > 0xC00) {
         st->camLock = 0;
       }
-      if (actor->anim == 8 && st->camDone == 0 &&
+      if (actor->anim == WARD_ANIM_SHOVE && st->camDone == 0 &&
           ApproxDist2D(&actor->posX, &spy->posX) < 0x600 &&
           AbsAngleDelta8(actor->rotZ,
                         ArcTan2(spy->posX - actor->posX,
@@ -475,9 +475,9 @@ void Level3_UpdateActors(void) {
                                           SPY.posY - actor->posY, ATAN_ANGLE8)) < 0x40) {
             st->camLock = 0x78;
             st->camDone = 0;
-            ANIM_GO(actor, 8);
+            ANIM_GO(actor, WARD_ANIM_SHOVE);
           }
-          if (actor->anim == 8 && g_nActorAnimDone != 0) {
+          if (actor->anim == WARD_ANIM_SHOVE && g_nActorAnimDone != 0) {
             actor->mode = WARD_GO_HOME;
             ANIM_GO(actor, WARD_ADVANCE);
           }
@@ -500,9 +500,9 @@ void Level3_UpdateActors(void) {
                                             SPY.posY - actor->posY, ATAN_ANGLE8)) < 0x40) {
               st->camLock = 0x78;
               st->camDone = 0;
-              ANIM_GO(actor, 8);
+              ANIM_GO(actor, WARD_ANIM_SHOVE);
             }
-            if (actor->anim == 8 && g_nActorAnimDone != 0) {
+            if (actor->anim == WARD_ANIM_SHOVE && g_nActorAnimDone != 0) {
               ANIM_GO(actor, WARD_ADVANCE);
             }
             break;
@@ -535,7 +535,7 @@ void Level3_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           st->timer = (GetRandomU32() & 0x3F) + 0x40;
           actor->mode = WARD_DAZED;
-          ANIM_RESET(actor, 5);
+          ANIM_RESET(actor, WARD_DAZED);
           continue;
         }
         if (actor->frame < 5) {
@@ -553,14 +553,14 @@ void Level3_UpdateActors(void) {
           ANIM_QUEUE(actor, WARD_BURN);
         }
         switch (actor->anim) {
-        case 4:
+        case WARD_KNOCKED:
           if (g_nActorAnimDone != 0) {
             actor->mode = WARD_DAZED;
-            ANIM_RESET(actor, 5);
+            ANIM_RESET(actor, WARD_DAZED);
             continue;
           }
           break;
-        case 5:
+        case WARD_DAZED:
           if (TICK_DOWN(st->timer) == 0) {
             break;
           }
@@ -570,16 +570,16 @@ void Level3_UpdateActors(void) {
             DespawnActorRecord(actor);
             continue;
           }
-          ANIM_SET(actor, 6);
+          ANIM_SET(actor, WARD_ANIM_DAZED_STIR);
           actor->frame = 0x31;
           actor->nextFrame = 0x32;
           actor->frameProgress = 0;
           break;
-        case 6:
+        case WARD_ANIM_DAZED_STIR:
           if (actor->frame >= 0x2C && actor->frame < 0x32) {
             actor->flags = 0;
             st->timer = (GetRandomU32() & 0x3F) + 0x40;
-            ANIM_SET(actor, 5);
+            ANIM_SET(actor, WARD_DAZED);
           }
           break;
         }
@@ -614,9 +614,9 @@ void Level3_UpdateActors(void) {
                                         SPY.posY - actor->posY, ATAN_ANGLE8)) < 0x40) {
           st->camLock = 0x78;
           st->camDone = 0;
-          ANIM_GO(actor, 8);
+          ANIM_GO(actor, WARD_ANIM_SHOVE);
         }
-        if (actor->anim == 8 && g_nActorAnimDone != 0) {
+        if (actor->anim == WARD_ANIM_SHOVE && g_nActorAnimDone != 0) {
           ANIM_GO(actor, WARD_ADVANCE);
         }
         break;

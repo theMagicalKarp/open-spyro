@@ -290,6 +290,13 @@ enum BlowhardMode {
   BLOWHARD_NEXT_PHASE = 0x63,   /* phase + 1, next path, back to START_PHASE */
 };
 
+/* Blowhard's animations: it hovers between rider drops. */
+enum BlowhardAnim {
+  BLOWHARD_ANIM_HOVER = 0,
+  BLOWHARD_ANIM_DROP_RIDER = 5, /* the rim rider leaves it from frame 6 */
+  BLOWHARD_ANIM_DROP_END = 6,
+};
+
 /* ->mode of Doctor Shemp, the level 10 boss (ACTOR_TYPE_DOCTOR_SHEMP,
  * ShempState). SHEMP_IDLE starts the routine for ShempState.phase 0..2;
  * a flame or charge from behind (or into the phase-2 slam) stuns him and he
@@ -706,6 +713,13 @@ enum WardRole {
                          * near home; then becomes ROLE_PATROL */
 };
 
+/* A ward's animations besides the WARD_KNOCKED / WARD_DAZED poses (4, 5),
+ * which play the animation equal to the mode. */
+enum WardAnim {
+  WARD_ANIM_DAZED_STIR = 6, /* between dazed loops; back to WARD_DAZED from frame 0x2C */
+  WARD_ANIM_SHOVE = 8,      /* Spyro close and facing it */
+};
+
 /* ->mode of a shooter sentry (ACTOR_TYPE_SHOOTER, ShooterState; level 7).
  * Flames bounce off while it hides behind its shield (SHOOTER_SHIELD,
  * frames 4..30). */
@@ -816,6 +830,13 @@ enum PatrollerMode {
   PATROLLER_PICK = 1,      /* picks the neighbour node away from Spyro */
   PATROLLER_FLEE = 2,      /* runs for it, then WAIT */
   PATROLLER_KNOCKED = 3,   /* knocked away, then despawns */
+};
+
+/* A path patroller's animations. */
+enum PatrollerAnim {
+  PATROLLER_ANIM_IDLE = 0,
+  PATROLLER_ANIM_RUN = 1,
+  PATROLLER_ANIM_KNOCKED = 3,
 };
 
 /* ->mode of a lunging guard (ACTOR_TYPE_LUNGING_GUARD and
