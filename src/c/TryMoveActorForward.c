@@ -25,7 +25,7 @@ int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR,
   } else if (g_nActorFrameDelta == 4) {
     speed <<= 1;
   }
-  ApplyEulerRotation(&actor->rotX, (MATRIX *)mtx, 0);
+  ApplyEulerRotation(&actor->rotX, mtx, 0);
   vec[0] = speed;
   vec[2] = 0;
   vec[1] = 0;

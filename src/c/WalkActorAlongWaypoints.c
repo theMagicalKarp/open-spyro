@@ -54,7 +54,7 @@ int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist,
   if (len < cap) {
     cap = len;
   }
-  ApplyEulerRotation((unsigned int *)eul, (unsigned int *)mtx, 0);
+  ApplyEulerRotation(eul, mtx, 0);
   vec[0] = cap;
   vec[1] = 0;
   vec[2] = 0;

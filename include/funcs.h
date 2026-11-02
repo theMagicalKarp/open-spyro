@@ -116,8 +116,8 @@ int LookupCosine(int angle);
 /* 0x80016d08: Wraps GTE LZCS/LZCR. Returns 0 if input is 0, otherwise returns (0x1f - leading_zeros), i.e. the bit position of the most-significant set bit. Used by lighting/depth normalization in DrawPortalsAndStaticActors. */
 int CountLeadingZeros(int x);
 
-/* 0x80016d2c: Composes Euler rotation (packed yaw/pitch/roll in *euler, low to high byte) onto the base 3x3 rotation matrix in base (or identity if base is NULL). Uses GTE rtv0 with the sine LUT at g_anCosineLut and cosine LUT at g_anSineLut to multiply axis-by-axis. Writes the composed matrix (5 packed words) to mtx. */
-void ApplyEulerRotation(unsigned char *euler, MATRIX *mtx, MATRIX *base);
+/* 0x80016d2c: Composes Euler rotation (packed yaw/pitch/roll in *euler, low to high byte) onto the base 3x3 rotation matrix in base (or identity if base is NULL). Uses GTE rtv0 with the sine LUT at g_anCosineLut and cosine LUT at g_anSineLut to multiply axis-by-axis. Writes the composed matrix (5 packed words: the 3x3 shorts of a MATRIX) to mtx. */
+void ApplyEulerRotation(unsigned char *euler, int *mtx, int *base);
 
 /* 0x80017048: Rotates the 3-vector at src by the 3x3 rotation matrix at mtx using GTE rtir. The Y and Z components are negated on both input and output (PSX screen-up coord convention). Result written to dst. */
 void RotateVectorByMatrix(int *mtx, int *src, int *dst);
