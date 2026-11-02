@@ -414,7 +414,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         AddVector(vel, vel, nudge);
       }
     }
-    if (t < 0xD && g_nSpyroSubstate == 0 &&
+    if (t < 0xD && g_nSpyroSubstate == SPYRO_SUB_JUMP_RISING &&
         ((g_pPadSubstepState->held & 0x40) || g_bSpyroJumpHoldForced != 0)) {
       int c;
       int v;

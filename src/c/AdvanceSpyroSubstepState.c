@@ -50,7 +50,7 @@ void AdvanceSpyroSubstepState(void) {
   case SPYRO_ST_JUMP:
     UpdateSpyroFlightAttitudeNearGround();
     if (g_nSpyroAnimMode == SPYRO_ANIM_PLAY) {
-      if (g_nSpyroSubstate == 0) {
+      if (g_nSpyroSubstate == SPYRO_SUB_JUMP_RISING) {
         frame = g_bSpyroAnimFrame;
         if (frame < 3) {
           g_nSpyroAnimPlayRate = 4;

@@ -122,6 +122,14 @@ typedef enum SpyroState
  * (jump: 0 rising with Cross held, 1 descending, 2 Cross released; glide/fly:
  * 1/2 from R1/L1, 3 a flight-level crash check; fall: a frame count that
  * respawns Spyro at 0x79). The values shared across states: */
+/* SPYRO_ST_JUMP: */
+#define SPYRO_SUB_JUMP_RISING 0   /* Cross still held */
+#define SPYRO_SUB_JUMP_FALLING 1  /* past the apex */
+#define SPYRO_SUB_JUMP_RELEASED 2 /* Cross let go while rising */
+/* SPYRO_ST_GLIDE / FLY within 0x200 of the floor reference: the shoulder
+ * button held (L1 also stores the height in g_nSpyroMotionAux). */
+#define SPYRO_SUB_GLIDE_R1 1
+#define SPYRO_SUB_GLIDE_L1 2
 #define SPYRO_SUB_SUPERCHARGE 0x40    /* charge/charge-air entered from a supercharge */
 #define SPYRO_SUB_CHARGE_LATCHED 0x80 /* charge target speed latched (LATCH_CHARGE_SPEED) */
 /* Glide/fly substates >= 8 are scripted: flight levels stop the clock and the
