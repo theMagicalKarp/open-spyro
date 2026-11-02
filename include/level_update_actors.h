@@ -76,7 +76,7 @@ extern struct {
 
 extern void AimCameraStickTowardPoint(int *pos);
 
-extern void SVectorToVectorShl2(int *dst, int *s);
+extern void SVectorToVectorShl2(int *dst, short *src);
 
 extern void CommitActorKillGems(int value, void *actor);
 
