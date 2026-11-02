@@ -1680,6 +1680,12 @@ enum CheckpointMode {
   CHECKPT_FLASH = 2,     /* subMode counts frames to 0x30, then REARM */
 };
 
+/* A checkpoint that is not waiting for Spyro's touch: REARM, or FLASH at
+ * least 16 frames in. A save host (SaveHostState.anchor is always a
+ * checkpoint in the level data) only opens the save menu at a settled one. */
+#define CHECKPT_SETTLED(a) \
+  ((a)->mode == CHECKPT_REARM || ((a)->mode == CHECKPT_FLASH && (a)->subMode >= 0x10))
+
 /* ->mode of a lookout (LookoutState): ACTOR_TYPE_GUARD_LOOKOUT (level 8) and
  * ACTOR_TYPE_SHEMP_LOOKOUT (level 10); the update switches on a local copy. */
 enum GuardLookoutMode {

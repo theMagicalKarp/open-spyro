@@ -65,7 +65,9 @@ typedef struct DragonStatueState {
 typedef struct SaveHostState {
   int armer;       /* 0x00 actor index of the dragon whose rescue (dormant, mode >= 0x80)
                     arms the host; save-menu option 1 replays that rescue */
-  int anchor;      /* 0x04 actor index the host hovers around and Spyro stands at */
+  int anchor;      /* 0x04 actor index of the checkpoint (ACTOR_TYPE_CHECKPOINT..+2,
+                    level data) the host hovers around and Spyro stands at; the
+                    host reappears after a prompt once Spyro re-arms it */
   int timer;       /* 0x08 pop-in delay, then the bob phase */
   int baseZ;       /* 0x0C bob centre height */
   int wanderTo[3]; /* 0x10 next hover point near the anchor */
