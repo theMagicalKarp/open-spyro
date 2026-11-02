@@ -932,7 +932,7 @@ typedef struct PostState {
   int flag;       /* 0x18 */
   short spinX;    /* 0x1C */
   short spinY;    /* 0x1E */
-  int sub;        /* 0x20 */
+  int sub;        /* 0x20 enum PostGuardHop */
   int phase;      /* 0x24 enum PostGuardAmbush */
   int partner;    /* 0x28 index into g_pActorListBase */
 } PostState;

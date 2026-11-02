@@ -1871,16 +1871,16 @@ void Level2_UpdateActors(void) {
       case POSTGUARD_HOP:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         switch (st->sub) {
-        case 0:
+        case POSTGUARD_HOP_REST:
           ANIM_GO(actor, 4);
           st->flag = 1;
           if (TickCountdownByFrameDelta(&st->timer, 4) && g_nActorAnimDone != 0) {
-            st->sub = 1;
+            st->sub = POSTGUARD_HOP_READY;
             st->flag = 0;
             ANIM_GO(actor, 5);
           }
           break;
-        case 1:
+        case POSTGUARD_HOP_READY:
           if (TickCountdownByFrameDelta(&st->timer, 4) &&
               ApproxDist2D(&actor->posX, &spy->posX) < 0x578) {
             int height = actor->posZ - actor->floorOffset;
@@ -1897,7 +1897,7 @@ void Level2_UpdateActors(void) {
               ANIM_GO(actor, 5);
             } else {
               st->flag = 1;
-              st->sub = 0;
+              st->sub = POSTGUARD_HOP_REST;
               st->timer = RandomIntInRange(0x8C, 0xC8);
               ANIM_BLEND(actor, 4);
             }
@@ -1953,7 +1953,7 @@ void Level2_UpdateActors(void) {
       case POSTGUARD_SHOUT:
         ANIM_GO(actor, 7);
         if (g_nActorAnimDone != 0) {
-          st->sub = 0;
+          st->sub = POSTGUARD_HOP_REST;
           ANIM_BLEND(actor, 4);
           actor->mode = POSTGUARD_HOP;
           continue;

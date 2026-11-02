@@ -585,6 +585,14 @@ enum PostGuardMode {
   POSTGUARD_SHOUT = 21,   /* shouts, then HOP */
 };
 
+/* PostState.sub during POSTGUARD_HOP. */
+enum PostGuardHop {
+  POSTGUARD_HOP_REST = 0,  /* animation 4 with PostState.flag set, until its timer and the
+                            * animation run out */
+  POSTGUARD_HOP_READY = 1, /* animation 5; lunges (animation 6) when its timer is out and
+                            * Spyro is close and level, back to REST when 5 ends */
+};
+
 /* PostState.mode: what a post guard does while POSTGUARD_IDLE (from its
  * spawn record). */
 enum PostGuardPost {
