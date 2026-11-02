@@ -120,7 +120,7 @@ void Level8_UpdateActors(void) {
   int homingStep[3];
   int svJ[3];
   int y256[3];
-  int y272[3];
+  int sparkVel[3];
   int y288[3];
   int y304[3];
   int y320[3];
@@ -2516,8 +2516,8 @@ void Level8_UpdateActors(void) {
           break;
         }
         if (g_dwGamestateFrames & 1) {
-          ZeroVector(y272);
-          g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &st->flung->posX, (int)y272);
+          ZeroVector(sparkVel);
+          g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &st->flung->posX, (int)sparkVel);
         }
       }
       break;

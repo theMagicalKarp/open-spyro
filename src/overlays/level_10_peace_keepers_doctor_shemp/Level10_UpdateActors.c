@@ -115,7 +115,7 @@ void Level10_UpdateActors(void) {
   int tgt371[3];
   int vel371[3];
   int col2[3];
-  int idx370[2];
+  int nearestNode[2];
   int pos371[3];
   int p371[3];
   int letterSwingRest[3];
@@ -2870,9 +2870,9 @@ void Level10_UpdateActors(void) {
 
       case SGUARD_BRAKE_AIM:
         st->timer24 = 0xB4;
-        FindNearestPathPointToActor(actor, (PathData *)st->path, &idx370[0]);
-        st->turn = ArcTan2(PATH_X(st->path, idx370[0]) - actor->posX,
-                                 PATH_Y(st->path, idx370[0]) - actor->posY, ATAN_ANGLE8);
+        FindNearestPathPointToActor(actor, (PathData *)st->path, &nearestNode[0]);
+        st->turn = ArcTan2(PATH_X(st->path, nearestNode[0]) - actor->posX,
+                                 PATH_Y(st->path, nearestNode[0]) - actor->posY, ATAN_ANGLE8);
         actor->mode = SGUARD_BRAKE;
         continue;
 
@@ -2949,8 +2949,8 @@ void Level10_UpdateActors(void) {
           continue;
         }
         if (actor->subMode == 0 && st->lift < -0x50) {
-          FindNearestPathPointToActor(actor, (PathData *)st->path, &idx370[1]);
-          SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, (int *)((unsigned char *)st->path + ((idx370[1] << 4) + 8)));
+          FindNearestPathPointToActor(actor, (PathData *)st->path, &nearestNode[1]);
+          SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, (int *)((unsigned char *)st->path + ((nearestNode[1] << 4) + 8)));
           MarkActorCommittedKill(actor);
           actor->subMode = 1;
         }

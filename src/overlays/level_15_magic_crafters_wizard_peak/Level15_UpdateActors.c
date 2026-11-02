@@ -121,7 +121,7 @@ void Level15_UpdateActors(void) {
   int x256[3];
   int x272[3];
   int prevPos[3];
-  int x304[3];
+  int spyroDelta[3];
   int sparkleTwinkle[3];
   int shardTwinkle[3];
   int x352[3];
@@ -3665,9 +3665,9 @@ void Level15_UpdateActors(void) {
       PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->voiceRow);
       if ((GetRandomU32() & 1) == 0)
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, actor, 0);
-      SubtractVector(x304, &spy->posX, &actor->posX);
-      distance = VectorLength(x304, VEC_LEN_XY);
-      if (distance < st->radius && x304[2] >= -0x3FF && x304[2] < st->spanZ &&
+      SubtractVector(spyroDelta, &spy->posX, &actor->posX);
+      distance = VectorLength(spyroDelta, VEC_LEN_XY);
+      if (distance < st->radius && spyroDelta[2] >= -0x3FF && spyroDelta[2] < st->spanZ &&
           (SPY.state == SPYRO_ST_LIFT || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
         spyro = &SPY;
         spyro->requestMask = SPYRO_RQ_PENDING;

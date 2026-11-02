@@ -233,7 +233,7 @@ void Level14_UpdateActors(void) {
   int homingStep[3];
   int svJ1[3];
   int sparxToTarget[3];
-  int x272[3];
+  int twinklePos[3];
   int x288[3];
   int fx[6];
   int col[3];
@@ -3104,8 +3104,8 @@ void Level14_UpdateActors(void) {
       }
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-      GetActorAttachPoint(actor, 0, x272);
-      g_pfnLevelEmitParticles(2, EMIT_TWINKLE, x272, 2);
+      GetActorAttachPoint(actor, 0, twinklePos);
+      g_pfnLevelEmitParticles(2, EMIT_TWINKLE, twinklePos, 2);
       break;
     }
 

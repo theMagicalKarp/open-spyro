@@ -117,7 +117,7 @@ void Level16_UpdateActors(void) {
   int eggArcOffset[3];
   int svD[3];
   int eggViewPos[3];
-  int svF[3];
+  int sparkVel[3];
   int svG[3];
   int bounceNormal[3];
   int acc[3][3];
@@ -873,10 +873,10 @@ void Level16_UpdateActors(void) {
       actor->rotZ += st->spin[2];
 
       if (!(st->life & 3)) {
-        svF[0] = GetRandomU32() & 3;
-        svF[1] = GetRandomU32() & 3;
-        svF[2] = 0x14;
-        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, (int)svF);
+        sparkVel[0] = GetRandomU32() & 3;
+        sparkVel[1] = GetRandomU32() & 3;
+        sparkVel[2] = 0x14;
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, (int)sparkVel);
       }
 
       st->life -= 1;

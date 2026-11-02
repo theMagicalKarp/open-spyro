@@ -119,8 +119,8 @@ void Level22_UpdateActors(void) {
   int bounceNormal[3];
   int homingStep[3];
   int sparxToTarget[3];
-  int g464[6];
-  int g488[3];
+  int sparkPosVel[6];
+  int sparkRgb[3];
   int chestToSpyro[3];
   int keySlotOffset[3];
   int g536[3];
@@ -2989,14 +2989,14 @@ void Level22_UpdateActors(void) {
       actor->rotY += st->spin[1];
       actor->rotZ += st->spin[2];
       if (!(actor->subMode & 1)) {
-        CopyVector(g464, &actor->posX);
-        g464[3] = GetRandomU32() & 3;
-        g464[4] = GetRandomU32() & 3;
-        g464[5] = 0x14;
-        g488[0] = 0x80;
-        g488[1] = 0x70;
-        g488[2] = 0x40;
-        g_pfnLevelEmitParticles(1, EMIT_SPARK_RGB, g464, (int)g488);
+        CopyVector(sparkPosVel, &actor->posX);
+        sparkPosVel[3] = GetRandomU32() & 3;
+        sparkPosVel[4] = GetRandomU32() & 3;
+        sparkPosVel[5] = 0x14;
+        sparkRgb[0] = 0x80;
+        sparkRgb[1] = 0x70;
+        sparkRgb[2] = 0x40;
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_RGB, sparkPosVel, (int)sparkRgb);
       }
       break;
     }

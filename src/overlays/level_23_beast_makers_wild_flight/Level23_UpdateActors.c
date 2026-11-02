@@ -111,7 +111,7 @@ void Level23_UpdateActors(void) {
   char *base;
 
   /* Scratch vectors shared by several cases. */
-  int svX[3];
+  int nextPos[3];
   int svA[3];
   int eggArcBase[3];
   int eggArcOffset[3];
@@ -303,10 +303,10 @@ void Level23_UpdateActors(void) {
       DriftState *st = actor->state;
 
       if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
-        AddVector(svX, &actor->posX, st->vel);
-        if (CastRayWorldAndActors(&actor->posX, svX) == 0 &&
+        AddVector(nextPos, &actor->posX, st->vel);
+        if (CastRayWorldAndActors(&actor->posX, nextPos) == 0 &&
             RaiseSpyroTriggerInRadius(&actor->posX, 0, SPYRO_EV_HIT) == 0) {
-          CopyVector(&actor->posX, svX);
+          CopyVector(&actor->posX, nextPos);
           break;
         }
       }

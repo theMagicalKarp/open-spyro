@@ -225,8 +225,8 @@ void Level33_UpdateActors(void) {
   int sparxToTarget[3];
   int fx[6];
   int col[3];
-  int o128[3];
-  int o138[2];
+  int spyroDelta[3];
+  int nearestNode[2];
   int o140[3];
   int o150[3];
   int o160[3];
@@ -1491,10 +1491,10 @@ void Level33_UpdateActors(void) {
       LanePatrollerState *st = actor->state;
       int dist;
 
-      SubtractVector(o128, &SPY.posX, &actor->posX);
+      SubtractVector(spyroDelta, &SPY.posX, &actor->posX);
       dist = ApproxDist2D(&actor->posX, &SPY.posX);
       if (dist < 0x32C8) {
-        dist = VectorLength(o128, VEC_LEN_XY);
+        dist = VectorLength(spyroDelta, VEC_LEN_XY);
       }
 
       if (actor->flags != 0 && actor->mode != LANEPAT_KNOCKED) {
@@ -1602,7 +1602,7 @@ void Level33_UpdateActors(void) {
           ENTER_POSE(actor, LANEPAT_WATCH);
         }
         FindFarthestPathPointFromSpyro((PathData *)st->path);
-        FindNearestPathPointToSpyro(st->path, o138);
+        FindNearestPathPointToSpyro(st->path, nearestNode);
         if (dist < 0x3000) {
           int a;
           int n;
@@ -1615,7 +1615,7 @@ void Level33_UpdateActors(void) {
           n = 0;
           p = st->path;
           i = p->cur;
-          while (i != o138[0]) {
+          while (i != nearestNode[0]) {
             i -= p->dir;
             i = (i + p->count) % p->count;
             n++;

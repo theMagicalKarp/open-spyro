@@ -116,7 +116,7 @@ void Level24_UpdateActors(void) {
   int gripA[3];
   int gripB[3];
   int g368[3];
-  int g384[6];
+  int sparkPosVel[6];
   int g408[3];
   int sparkleTwinkle[3];
   int shardTwinkle[3];
@@ -2658,14 +2658,14 @@ void Level24_UpdateActors(void) {
       actor->rotY += st->spin[1];
       actor->rotZ += st->spin[2];
       if (!(actor->subMode & 1)) {
-        CopyVector(g384, &actor->posX);
-        g384[3] = GetRandomU32() & 3;
-        g384[4] = GetRandomU32() & 3;
-        g384[5] = 0x14;
+        CopyVector(sparkPosVel, &actor->posX);
+        sparkPosVel[3] = GetRandomU32() & 3;
+        sparkPosVel[4] = GetRandomU32() & 3;
+        sparkPosVel[5] = 0x14;
         g368[0] = 0x80;
         g368[1] = 0x70;
         g368[2] = 0x40;
-        g_pfnLevelEmitParticles(1, EMIT_SPARK_RGB, g384, (int)g368);
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_RGB, sparkPosVel, (int)g368);
       }
       break;
     }

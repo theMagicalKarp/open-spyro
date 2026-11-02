@@ -109,7 +109,7 @@ void Level12_UpdateActors(void) {
   int chestToSpyro[3];
   int keySlotOffset[3];
   int tgt271[3];
-  int idx271[2];
+  int nearestNode[2];
   int shardTwinkle[3];
   int mat2[3][3];
   int x352[3];
@@ -3593,10 +3593,10 @@ void Level12_UpdateActors(void) {
             continue;
           }
           if (st->post == SHEPHERD_POST_PAIR_PATROL || st->post == SHEPHERD_POST_PATROL) {
-            if (FindNearestPathPointToActor(actor, st->path, idx271) > 0x1000) {
+            if (FindNearestPathPointToActor(actor, st->path, nearestNode) > 0x1000) {
               if (st->post == SHEPHERD_POST_PATROL) {
-                st->path->cur = idx271[0];
-                CopyVector(st->home, PATH_PT(st->path, idx271[0]));
+                st->path->cur = nearestNode[0];
+                CopyVector(st->home, PATH_PT(st->path, nearestNode[0]));
               }
               actor->mode = SHEPHERD_GO_HOME;
               continue;

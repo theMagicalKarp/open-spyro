@@ -107,13 +107,13 @@ void Level32_UpdateActors(void) {
   int bounceNormal[3];
   int homingStep[3];
   int sparxToTarget[3];
-  int o100[3];
+  int spyroDelta[3];
   int o110[3];
   int o120[3];
   int o130[3];
   int o140[3];
   int o150[3];
-  int o160[3];
+  int sparkVel[3];
   int sparkLead[3];
   int z256[3];
   int sparkleTwinkle[3];
@@ -1575,10 +1575,10 @@ void Level32_UpdateActors(void) {
       BurstGunnerState *st = actor->state;
       int dist;
 
-      SubtractVector(o100, &spy->posX, &actor->posX);
+      SubtractVector(spyroDelta, &spy->posX, &actor->posX);
       dist = ApproxDist2D(&actor->posX, &spy->posX);
       if (dist < 0x32C8) {
-        dist = VectorLength(o100, VEC_LEN_XY);
+        dist = VectorLength(spyroDelta, VEC_LEN_XY);
       }
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != BURSTGUN_KNOCKED &&
@@ -2103,12 +2103,12 @@ void Level32_UpdateActors(void) {
       }
 
       case SHOT_BURST:
-        o160[0] = 0;
-        o160[1] = 0;
-        o160[2] = 0xC;
-        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, (int)o160);
-        o160[2] = -0x30;
-        g_pfnLevelEmitParticles(4, EMIT_FLAME_STREAK, &actor->posX, (int)o160);
+        sparkVel[0] = 0;
+        sparkVel[1] = 0;
+        sparkVel[2] = 0xC;
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, (int)sparkVel);
+        sparkVel[2] = -0x30;
+        g_pfnLevelEmitParticles(4, EMIT_FLAME_STREAK, &actor->posX, (int)sparkVel);
         DespawnActorRecord(actor);
         continue;
       }

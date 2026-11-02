@@ -137,7 +137,7 @@ void Level34_UpdateActors(void) {
   int m179;
 
   /* Scratch vectors, in frame order. */
-  int svA[3];
+  int nextPos[3];
   int s72[3];
   int eggArcBase[3];
   int eggArcOffset[3];
@@ -533,12 +533,12 @@ void Level34_UpdateActors(void) {
         continue;
       }
       pos = &actor->posX;
-      AddVector(svA, pos, st->vel);
-      if (CastRayWorldAndActors(pos, svA) || RaiseSpyroTriggerInRadius(pos, 0, SPYRO_EV_HIT)) {
+      AddVector(nextPos, pos, st->vel);
+      if (CastRayWorldAndActors(pos, nextPos) || RaiseSpyroTriggerInRadius(pos, 0, SPYRO_EV_HIT)) {
         DespawnActorRecord(actor);
         continue;
       }
-      CopyVector(pos, svA);
+      CopyVector(pos, nextPos);
       break;
     }
 

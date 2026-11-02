@@ -109,7 +109,7 @@ void Level13_UpdateActors(void) {
   int col[3];
   int w296[3];
   int x272[3];
-  int idx271[2];
+  int nearestNode[2];
   int prevPos[3];
   int sparkleTwinkle[3];
   int shardTwinkle[3];
@@ -118,7 +118,7 @@ void Level13_UpdateActors(void) {
   int mat2[3][3];
   int x368[3];
   int col2[3];
-  int t472[3];
+  int sparkVel[3];
   int letterSide[3];
   int letterSlot[3];
   int letterSwingRest[3];
@@ -3764,10 +3764,10 @@ void Level13_UpdateActors(void) {
             continue;
           }
           if (st->post == SHEPHERD_POST_PAIR_PATROL || st->post == SHEPHERD_POST_PATROL) {
-            if (FindNearestPathPointToActor(actor, st->path, idx271) > 0x1000) {
+            if (FindNearestPathPointToActor(actor, st->path, nearestNode) > 0x1000) {
               if (st->post == SHEPHERD_POST_PATROL) {
-                st->path->cur = idx271[0];
-                CopyVector(st->home, PATH_PT(st->path, idx271[0]));
+                st->path->cur = nearestNode[0];
+                CopyVector(st->home, PATH_PT(st->path, nearestNode[0]));
               }
               actor->mode = SHEPHERD_GO_HOME;
               continue;
@@ -5368,10 +5368,10 @@ void Level13_UpdateActors(void) {
       }
 
       for (i = 0; i < 8; i++) {
-        t472[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
-        t472[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
-        t472[2] = 0x18;
-        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)t472);
+        sparkVel[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
+        sparkVel[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
+        sparkVel[2] = 0x18;
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)sparkVel);
       }
 
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);

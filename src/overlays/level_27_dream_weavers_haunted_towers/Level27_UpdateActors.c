@@ -115,14 +115,14 @@ void Level27_UpdateActors(void) {
   int bounceNormal[3];
   int homingStep[3];
   int sparxToTarget[3];
-  int g256[3];
+  int sparkVel[3];
   int g272[3];
   int g288[3];
   int sparkLead[3];
   int g320[3];
-  int g336[6];
-  int g360[3];
-  int g376[3];
+  int sparkPosVel[6];
+  int sparkRgb[3];
+  int spyroDelta[3];
   int g392[3];
   int g408[3];
   int g424[3];
@@ -1822,11 +1822,11 @@ void Level27_UpdateActors(void) {
           st->vz = 0;
         }
       }
-      g256[0] = 0;
-      g256[1] = 0;
-      g256[2] = 0;
-      g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, (int)g256);
-      CopyVector(g256, &actor->posX);
+      sparkVel[0] = 0;
+      sparkVel[1] = 0;
+      sparkVel[2] = 0;
+      g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, (int)sparkVel);
+      CopyVector(sparkVel, &actor->posX);
       actor->posX += st->vx;
       actor->posY += st->vy;
       actor->posZ += st->vz;
@@ -1838,7 +1838,7 @@ void Level27_UpdateActors(void) {
         hit = RaiseSpyroTriggerInRadius(&actor->posX, 0xDC, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT);
       }
       if (actor->subMode != 2 && st->age < 0x5B && hit == 0 &&
-          CastRayWorldAndActors(g256, &actor->posX) == 0) {
+          CastRayWorldAndActors(sparkVel, &actor->posX) == 0) {
         continue;
       }
       if (hit != 0) {
@@ -2223,14 +2223,14 @@ void Level27_UpdateActors(void) {
       actor->rotY += st->spin[1];
       actor->rotZ += st->spin[2];
       if (!(actor->subMode & 1)) {
-        CopyVector(g336, &actor->posX);
-        g336[3] = GetRandomU32() & 3;
-        g336[4] = GetRandomU32() & 3;
-        g336[5] = 0x14;
-        g360[0] = 0x80;
-        g360[1] = 0x70;
-        g360[2] = 0x40;
-        g_pfnLevelEmitParticles(1, EMIT_SPARK_RGB, g336, (int)g360);
+        CopyVector(sparkPosVel, &actor->posX);
+        sparkPosVel[3] = GetRandomU32() & 3;
+        sparkPosVel[4] = GetRandomU32() & 3;
+        sparkPosVel[5] = 0x14;
+        sparkRgb[0] = 0x80;
+        sparkRgb[1] = 0x70;
+        sparkRgb[2] = 0x40;
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_RGB, sparkPosVel, (int)sparkRgb);
       }
       break;
     }
@@ -2461,10 +2461,10 @@ void Level27_UpdateActors(void) {
       int dist;
       int i;
 
-      SubtractVector(g376, &spy->posX, &actor->posX);
+      SubtractVector(spyroDelta, &spy->posX, &actor->posX);
       dist = ApproxDist2D(&actor->posX, &g_anSpyroWorldPos);
       if (dist < 0x32C8) {
-        dist = VectorLength(g376, VEC_LEN_XY);
+        dist = VectorLength(spyroDelta, VEC_LEN_XY);
       }
       TickActorFlameGlow(actor);
       if (actor->flags & ACTOR_HIT_SUPER) {
