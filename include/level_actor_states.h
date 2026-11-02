@@ -189,7 +189,9 @@ typedef struct BoulderState {
 #define BTHROW_F_HOP 2       /* boulder thrower: jumps to path point 0 / 1 as Spyro enters box0 / box1 */
 #define ROCKTHROW_F_ESCORT 2 /* rock thrower: escorts its partner, who it rouses when knocked */
 
-/* Type 100 state (boulder thrower). */
+/* Type 100 state (boulder thrower). Its first six words (partner .. partnerSignal)
+ * match GatekeeperState's, so a partner of either type is signalled through
+ * BoulderThrowerState. */
 typedef struct BoulderThrowerState {
   int partner;     /* 0x00 index into g_pActorListBase, -1 none */
   int catcher;     /* 0x04 index into g_pActorListBase: who catches and flings it (RIDE_*) */

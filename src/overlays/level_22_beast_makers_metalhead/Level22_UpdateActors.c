@@ -1525,7 +1525,7 @@ void Level22_UpdateActors(void) {
         CopyVector(&actor->posX, g264);
         if (catcher->nextFrame >= 0xE) {
           if (st->partner != -1) {
-            ((int *)g_pActorListBase[st->partner].state)[5] = 1;
+            ((BoulderThrowerState *)g_pActorListBase[st->partner].state)->partnerSignal = 1;
           }
           *st->releaseFlag = 0;
           st->heading = ArcTan2(spy->posX - actor->posX,
@@ -1892,7 +1892,7 @@ void Level22_UpdateActors(void) {
         CopyVector(&actor->posX, g328);
         if (catcher->nextFrame >= 0xE) {
           if (st->partner != -1) {
-            ((int *)g_pActorListBase[st->partner].state)[5] = 1;
+            ((BoulderThrowerState *)g_pActorListBase[st->partner].state)->partnerSignal = 1;
           }
           *st->releaseFlag = 0;
           st->heading = ArcTan2(spy->posX - actor->posX,
