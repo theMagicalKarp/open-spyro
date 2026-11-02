@@ -2409,7 +2409,7 @@ void Level9_UpdateActors(void) {
           MarkActorCommittedKill(actor);
           ENTER_POSE(actor, TRAM_KNOCKED);
         }
-        if (actor->anim == 5) {
+        if (actor->anim == TRAM_STAGGER) {
           actor->frame = 0;
           actor->nextFrame = 1;
           actor->frameProgress = 0;

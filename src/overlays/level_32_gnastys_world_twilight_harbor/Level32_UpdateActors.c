@@ -1819,11 +1819,11 @@ void Level32_UpdateActors(void) {
         case SWEEPGUN_STEP_REVERSE:
           ANIM_GO(actor, 5);
           if (g_nActorAnimDone != 0) {
-            if (actor->nextAnim != 3) {
+            if (actor->nextAnim != SWEEPGUN_SWEEP) {
               g_nActorAnimDone = 0;
               actor->frameProgress = sixteen;
               actor->frameRate = sixteen;
-              actor->nextAnim = 3;
+              actor->nextAnim = SWEEPGUN_SWEEP;
               actor->nextFrame = 0;
               OnActorAnimQueued(actor);
             }

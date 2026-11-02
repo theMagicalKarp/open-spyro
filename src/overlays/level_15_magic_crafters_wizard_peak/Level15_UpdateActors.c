@@ -1328,8 +1328,8 @@ void Level15_UpdateActors(void) {
       if (st->mode == TCMD_BOUND) {
         if (actor->mode != TGUARD_BOUND) {
           actor->mode = TGUARD_BOUND;
-          actor->anim = 7;
-          actor->nextAnim = 7;
+          actor->anim = TGUARD_BOUND;
+          actor->nextAnim = TGUARD_BOUND;
           actor->frameProgress = 0;
           actor->frameRate = 0;
           actor->frame = 0;
@@ -3417,7 +3417,7 @@ void Level15_UpdateActors(void) {
         break;
 
       case SENTINEL_RELAY_ALERT:
-        if (actor->nextAnim == 0) {
+        if (actor->nextAnim == SENTINEL_IDLE) {
           st->timer = GetRandomU32() & 0x1F;
           actor->mode = SENTINEL_RELAY_ALERT_WAIT;
           continue;
@@ -3426,7 +3426,7 @@ void Level15_UpdateActors(void) {
         break;
 
       case SENTINEL_RELAY_TRACK:
-        if (actor->nextAnim == 0) {
+        if (actor->nextAnim == SENTINEL_IDLE) {
           st->timer = GetRandomU32() & 0x1F;
           actor->mode = SENTINEL_RELAY_TRACK_WAIT;
           continue;

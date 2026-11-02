@@ -3556,7 +3556,7 @@ void Level13_UpdateActors(void) {
           if (actor->subMode != 0) {
             TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
             if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1C00) {
-              if (actor->nextAnim == 4) {
+              if (actor->nextAnim == SHEPHERD_SWING) {
                 g_nActorAnimDone = 0;
                 actor->frameProgress = sixteen;
                 actor->frameRate = sixteen;
@@ -4720,7 +4720,7 @@ void Level13_UpdateActors(void) {
         break;
 
       case SORCERER_CUE:
-        if (actor->nextAnim == 0) {
+        if (actor->nextAnim == SORCERER_IDLE) {
           st->timer = GetRandomU32() & 0xF;
           actor->mode = SORCERER_WAIT_TAUNT;
           continue;
@@ -4730,7 +4730,7 @@ void Level13_UpdateActors(void) {
 
       case SORCERER_ALERTED:
         st->angry = 1;
-        if (actor->nextAnim == 0) {
+        if (actor->nextAnim == SORCERER_IDLE) {
           st->timer = st->rest;
           actor->mode = SORCERER_WAIT_CONJURE;
           continue;

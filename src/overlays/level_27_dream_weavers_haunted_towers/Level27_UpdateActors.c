@@ -1740,7 +1740,7 @@ void Level27_UpdateActors(void) {
 
       case ROCKTHROW_KNOCKED:
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC, 0x10);
-        if (g_nActorAnimDone != 0 && actor->nextAnim == 3) {
+        if (g_nActorAnimDone != 0 && actor->nextAnim == ROCKTHROW_KNOCKED) {
           ANIM_SET(actor, 4);
         }
         if (TICK_DOWN(st->timer) != 0) {
@@ -2585,10 +2585,10 @@ void Level27_UpdateActors(void) {
       case FGUARD_WAKE:
         if (g_nActorAnimDone != 0) {
           actor->mode = FGUARD_WATCH;
-          if (actor->nextAnim != 2) {
+          if (actor->nextAnim != FGUARD_WATCH) {
             actor->frameProgress = sixteen;
             actor->frameRate = sixteen;
-            actor->nextAnim = 2;
+            actor->nextAnim = FGUARD_WATCH;
             actor->nextFrame = 0;
             OnActorAnimQueued(actor);
           }

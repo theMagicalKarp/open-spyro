@@ -672,8 +672,8 @@ void Level28_UpdateActors(void) {
         actor->frame = actor->nextFrame = (int)GetRandomU32() % 10;
         if (st->mode != 0) {
           actor->mode = CRAM_WATCH;
-          actor->nextAnim = 2;
-          actor->anim = 2;
+          actor->nextAnim = CRAM_WATCH;
+          actor->anim = CRAM_WATCH;
         }
       }
       if (actor->type == ACTOR_TYPE_BIG_CHARGING_RAM) {

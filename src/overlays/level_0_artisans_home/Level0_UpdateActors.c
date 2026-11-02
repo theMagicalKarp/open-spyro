@@ -1530,7 +1530,7 @@ void Level0_UpdateActors(void) {
       case PENEMY_SPOT: {
         if (g_nActorAnimDone != 0) {
           if (SPY.state == SPYRO_ST_CHARGE || SPY.state == SPYRO_ST_CHARGE_AIR) {
-            if (actor->anim != 6) {
+            if (actor->anim != PENEMY_HIDE) {
               g_nActorAnimDone = 0;
               ANIM_RESET(actor, PENEMY_HIDE);
             }
@@ -2702,7 +2702,7 @@ void Level0_UpdateActors(void) {
             ANIM_RESET(actor, 3);
           } else {
             actor->mode = FLOCK_RUN;
-            if (actor->nextAnim != 2) {
+            if (actor->nextAnim != FLOCK_RUN) {
               ANIM_ADVANCE(actor, 2);
             }
           }

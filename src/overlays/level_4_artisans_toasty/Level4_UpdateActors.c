@@ -2704,7 +2704,7 @@ void Level4_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (TICK_DOWN(st->timer) != 0 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
-          if (actor->anim == 0) {
+          if (actor->anim == REAR_IDLE) {
             ENTER_POSE4(actor, REAR_NOTICE);
           }
           ENTER_POSE4(actor, REAR_REAR);

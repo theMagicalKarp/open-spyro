@@ -3385,7 +3385,7 @@ void Level12_UpdateActors(void) {
           if (actor->subMode != 0) {
             TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
             if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1C00) {
-              if (actor->nextAnim == 4) {
+              if (actor->nextAnim == SHEPHERD_SWING) {
                 g_nActorAnimDone = 0;
                 actor->frameProgress = sixteen;
                 actor->frameRate = sixteen;

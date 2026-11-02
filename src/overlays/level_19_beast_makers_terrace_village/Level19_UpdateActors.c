@@ -3325,11 +3325,11 @@ void Level19_UpdateActors(void) {
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorCommittedKill(actor);
         }
-        if (actor->nextAnim != 3) {
+        if (actor->nextAnim != RAM_KNOCKED) {
           g_nActorAnimDone = 0;
           actor->frameProgress = sixteen;
           actor->frameRate = sixteen;
-          actor->nextAnim = 3;
+          actor->nextAnim = RAM_KNOCKED;
           actor->nextFrame = 0;
           OnActorAnimQueued(actor);
         }

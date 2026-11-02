@@ -2344,7 +2344,7 @@ void Level1_UpdateActors(void) {
           int drop = height - SPY.posZ;
 
           if (drop > 0 ? drop < 0x5DC : (SPY.posZ - height) < 0x5DC) {
-            if (actor->anim == 0) {
+            if (actor->anim == REAR_IDLE) {
               ENTER_POSE4(actor, REAR_NOTICE);
             }
             ENTER_POSE4(actor, REAR_REAR);

@@ -2804,7 +2804,7 @@ void Level10_UpdateActors(void) {
           g_nActorAnimDone = 0;
           c = actor->nextAnim;
           f = actor->nextFrame;
-          actor->nextAnim = 3;
+          actor->nextAnim = SGUARD_KNOCKED;
           actor->frameProgress = sixteen;
           actor->frameRate = sixteen;
           actor->nextFrame = 0xD;
