@@ -355,13 +355,13 @@ void TickLevelTransitionStream(int full) {
               CopyVector((int *)(pe + PE_TO(SPY_REQUEST_TARGET)),
                          actor->path + 6);
               *pe = ArcTan2(actor->path[6] - actor->path[2],
-                            actor->path[7] - actor->path[3], 0);
+                            actor->path[7] - actor->path[3], ATAN_ANGLE8);
             } else {
               CopyVector((int *)(pe - SPYB_EULER_Z), actor->path + 6);
               CopyVector((int *)(pe + PE_TO(SPY_REQUEST_TARGET)),
                          actor->path + 2);
               *pe = ArcTan2(actor->path[2] - actor->path[6],
-                            actor->path[3] - actor->path[7], 0);
+                            actor->path[3] - actor->path[7], ATAN_ANGLE8);
             }
             *(CameraAngles *)spring = ((CameraAngles *)spring)[1];
             *pyaw = *((unsigned char *)pyaw - PYAW_BACK_TO(SPYB_EULER_Z)) << 4;
