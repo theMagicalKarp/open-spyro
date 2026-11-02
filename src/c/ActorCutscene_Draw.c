@@ -74,7 +74,7 @@ void ActorCutscene_Draw(void) {
       attr[1] = 1;
       attr[2] = 0x1600;
       rec = g_pSpriteRecordWriteCursor;
-      BuildTextSprites(buf, pos, attr, 0x10, 2);
+      BuildTextSprites(buf, pos, attr, 0x10, TINT_GOLD);
 
       rec--;
       phase = 0;

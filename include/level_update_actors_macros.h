@@ -130,6 +130,11 @@
 
 /* The anim bytes 0x3C..0x3F read as one word. */
 #define ANIM_WORD(a) (*(int *)&(a)->anim)
+/* One masked word test of the animation bytes: `anim` is `id` and
+ * `nextFrame` is `nf` (bytes 0 and 3), or `nextAnim` is `id` and
+ * `nextFrame` is `nf` (bytes 1 and 3). */
+#define ANIM_AT_FRAME(a, id, nf) ((ANIM_WORD(a) & 0xFF0000FF) == (((nf) << 24) | (id)))
+#define NEXT_ANIM_AT_FRAME(a, id, nf) ((ANIM_WORD(a) & 0xFF00FF00) == (((nf) << 24) | ((id) << 8)))
 
 /* Spyro's facing delta to an actor. */
 #define SPY_FACING(a)                                                          \

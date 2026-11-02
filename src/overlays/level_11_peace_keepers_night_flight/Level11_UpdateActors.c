@@ -160,7 +160,7 @@ void Level11_UpdateActors(void) {
             if (SPY.sparxHealth >= SPARX_GONE) {
               g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
-              PlayActorMeshVoice(g_pSparxActor, 0, 0);
+              PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
 
               SPY.sparxHealth = one;
 
@@ -646,11 +646,11 @@ void Level11_UpdateActors(void) {
 
                   if (cs->owner == 0) {
                     if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
-                                       g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0])) {
+                                       g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                       g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                       g_nSfxOverrideVolR = 0x2000;
                       g_nSfxOverrideVolL = 0x2000;
-                      PlayActorMeshVoice(g_pSparxActor, 0, 0);
+                      PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                     }
 
                     g_pSparxActor->subMode = SPARX_SUB_FETCH;
@@ -774,11 +774,11 @@ void Level11_UpdateActors(void) {
 
                 if (cs->owner == 0) {
                   if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
-                                     g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0])) {
+                                     g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
-                    PlayActorMeshVoice(g_pSparxActor, 0, 0);
+                    PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                   }
 
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
@@ -1948,7 +1948,7 @@ void Level11_UpdateActors(void) {
     case ACTOR_TYPE_LETTER_A + 25: {
       OrbitState *st = actor->state;
 
-      if (st->owner->mode == 0 || st->owner->subMode != actor->mode) {
+      if (st->owner->mode == ORBIT_OWNER_FAR || st->owner->subMode != actor->mode) {
         DespawnActorRecord(actor);
       } else if (st->owner->type == ACTOR_TYPE_LEVEL_EXIT) {
         if (ApproxDist2D(&st->owner->posX, &spy->posX) < 0x400) {

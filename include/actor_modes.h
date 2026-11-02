@@ -178,6 +178,11 @@ enum PortalNameMode {
   PORTALNAME_NEAR = 1, /* camera close and facing one side: letters shown */
 };
 
+/* The owner mode that removes a floating name's letters (OrbitState.owner
+ * is a portal name or a level exit; PORTALNAME_FAR and LEVELEXIT_FAR are
+ * both 0). */
+#define ORBIT_OWNER_FAR 0
+
 /* ->subMode of a portal name sign: the side the camera reads it from;
  * SpawnNameLetterActors mirrors the letter arc for NAMESIDE_BACK. */
 enum NameSignSide {
@@ -683,6 +688,35 @@ enum SwoopKind {
   SWOOP_KIND_STRAIGHT = 2, /* no weave; dives to Spyro's height and turns back sharply */
 };
 
+/* Per-type mesh voice indices: PlayActorMeshVoice's voiceOffset and the
+ * matching m_Sounds[] slot of the type's mesh record. */
+enum SparxVoice {
+  SPARX_VOICE_BUZZ = 0, /* his only voice: on reappearing and on setting off for a pickup */
+};
+enum StatueVoice {
+  STATUE_VOICE_RATTLE = 0, /* STATUE_IDLE's periodic shake */
+};
+enum ChestVoice {
+  WOODCHEST_VOICE_BREAK = 0,   /* ACTOR_TYPE_WOOD_CHEST struck */
+  WOBBLECHEST_VOICE_BREAK = 0, /* ACTOR_TYPE_WOBBLE_CHEST charged */
+  LOCKEDCHEST_VOICE_OPEN = 0,  /* ACTOR_TYPE_LOCKED_CHEST opened by its key */
+  SPINCHEST_VOICE_LAUNCH = 0,  /* ACTOR_TYPE_SPIN_CHEST spun fast enough: the lid flies */
+  SPINLID_VOICE_BURST = 0,     /* ACTOR_TYPE_SPIN_CHEST_LID bursting */
+};
+enum BreakableVoice {
+  BROCK_VOICE_BREAK = 0,     /* ACTOR_TYPE_BREAKABLE_ROCK supercharged */
+  CBOULDER_VOICE_CRACK = 0,  /* ACTOR_TYPE_CRACKING_BOULDER: sparks while it cracks */
+  CBOULDER_VOICE_BURST = 1,  /* its timer out: it bursts into falling debris */
+};
+enum CannonVoice {
+  CANNON_VOICE_FUSE = 0, /* CANNON_FUSE, while it smokes */
+  CANNON_VOICE_FIRE = 1, /* the shot, entering CANNON_FLIGHT */
+};
+enum ShempGuardVoice {
+  SGUARD_VOICE_FALL = 0,  /* ran off a ledge: entering SGUARD_FALL */
+  SGUARD_VOICE_SHOUT = 1, /* while it chases or rushes, and once ShempGuardState.watch plays animation 7 */
+};
+
 /* A level 7/8 bell's animations (ACTOR_TYPE_BELL_A/B/C). A flame rings it
  * once per cooldown (subMode 0x50); any other hit only wobbles it. */
 enum BellAnim {
@@ -710,7 +744,7 @@ enum VillagerAnim {
   VILLAGER_ANIM_CHATTER = 4, /* talking (chunk anim past step 1) and VILLAGER_STOP; voices 4/5 */
   VILLAGER_ANIM_COWER = 7,   /* VILLAGER_PANIC, then RUN */
   VILLAGER_ANIM_RUN = 8,
-  VILLAGER_ANIM_REACT = 9,   /* VROLE_LEADER: cued by the leader's animation 8, back to IDLE at frame 0x14 */
+  VILLAGER_ANIM_REACT = 9,   /* VROLE_LEADER: cued at the leader's animation 4, frame 8; back to IDLE at frame 0x14 */
 };
 
 /* VillagerState.mode: the villager's role. */
@@ -1903,6 +1937,13 @@ enum TrailBombMode {
   TRAILBOMB_FLY = 0,  /* flies, laying its trail; landing spawns an ACTOR_TYPE_SHOCKWAVE */
   TRAILBOMB_HIT = 1,  /* landed or timed out: hides, then FADE */
   TRAILBOMB_FADE = 2, /* the trail fades out, then despawn */
+};
+
+/* A shockwave's animations (ACTOR_TYPE_SHOCKWAVE): it spreads while its
+ * timer runs, hitting Spyro inside its radius, then fades and despawns. */
+enum ShockwaveAnim {
+  SHOCKWAVE_ANIM_SPREAD = 0,
+  SHOCKWAVE_ANIM_FADE = 1,
 };
 
 /* ->mode of a lane patroller (ACTOR_TYPE_LANE_PATROLLER, LanePatrollerState;

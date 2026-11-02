@@ -315,7 +315,7 @@ void Level24_UpdateActors(void) {
             if (SPY.sparxHealth >= SPARX_GONE) {
               g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
-              PlayActorMeshVoice(g_pSparxActor, 0, 0);
+              PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
 
               SPY.sparxHealth = SPARX_GREEN;
 
@@ -1431,11 +1431,11 @@ void Level24_UpdateActors(void) {
                 if (sparx->target == 0) {
                   if (GetSoundVoiceStatusByOwner(
                           g_pSparxActor,
-                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0]) == 0) {
+                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ]) == 0) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
-                    PlayActorMeshVoice(g_pSparxActor, 0, 0);
+                    PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                   }
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
                   sparx->target = actor;
@@ -1554,11 +1554,11 @@ void Level24_UpdateActors(void) {
                 if (sparx->target == 0) {
                   if (GetSoundVoiceStatusByOwner(
                           g_pSparxActor,
-                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0]) == 0) {
+                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ]) == 0) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
-                    PlayActorMeshVoice(g_pSparxActor, 0, 0);
+                    PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                   }
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
                   sparx->target = actor;
@@ -2837,7 +2837,7 @@ void Level24_UpdateActors(void) {
       }
 
       actor->soundRange = 0x20;
-      PlayActorMeshVoice(actor, 0, 0);
+      PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
       /* Two of each of the first pair, then six of the third. */
       for (i = 0; i < 2; i++) {
@@ -2904,7 +2904,7 @@ void Level24_UpdateActors(void) {
         int i;
 
         actor->soundRange = 0x20;
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, WOBBLECHEST_VOICE_BREAK, 0);
 
         for (i = 0; i < 2; i++) {
           if (ACTOR_POOL_LOW()) {
@@ -2970,8 +2970,8 @@ void Level24_UpdateActors(void) {
           int dx;
           int dy;
 
-          if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[0]) == 0) {
-            PlayActorMeshVoice(actor, 0, 0);
+          if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[STATUE_VOICE_RATTLE]) == 0) {
+            PlayActorMeshVoice(actor, STATUE_VOICE_RATTLE, 0);
           }
 
           actor->rotX = g_aShakeRotOffsets[(st->phase - 0xC0) >> 1].a + st->rotX;
@@ -3497,7 +3497,7 @@ void Level24_UpdateActors(void) {
           g480[1] = (GetRandomU32() & 7) + 6;
           g_pfnLevelEmitParticles(1, EMIT_FADING_SPARK, jetPos, (int)g480);
           if (actor->voiceRow == VOICE_ROW_NONE) {
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, CBOULDER_VOICE_CRACK, 0);
           }
         }
         if (st->timer >= 0x39) {
@@ -3524,7 +3524,7 @@ void Level24_UpdateActors(void) {
           Actor *c;
           DebrisFallState *cs;
 
-          PlayActorMeshVoice(actor, 1, 0);
+          PlayActorMeshVoice(actor, CBOULDER_VOICE_BURST, 0);
           SpawnActorDeathDrop(actor, DROP_HIGH_HOP, 0, 0);
           for (i = 0; i < 8; i++) {
             short *p;
@@ -4121,7 +4121,7 @@ void Level24_UpdateActors(void) {
     case ACTOR_TYPE_LETTER_A + 25: {
       NameLetterState *st = actor->state;
 
-      if (st->parent->mode == 0 || st->parent->subMode != actor->mode) {
+      if (st->parent->mode == ORBIT_OWNER_FAR || st->parent->subMode != actor->mode) {
         DespawnActorRecord(actor);
         continue;
       }

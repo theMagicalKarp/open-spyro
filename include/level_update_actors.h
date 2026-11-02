@@ -1112,7 +1112,7 @@ typedef struct RoamingCritterState {
 
 typedef struct ShempGuardState {
   int mode;           /* 0x00 0 = patrol, 1 = hold near target */
-  int timer04;        /* 0x04 */
+  int cueTimer;       /* 0x04 to its next shout (CHASE / PATH_RUSH, at 2) or swipe (GUARD) */
   int lift;           /* 0x08 */
   int heading;        /* 0x0C */
   int speed;          /* 0x10 */
@@ -1120,12 +1120,12 @@ typedef struct ShempGuardState {
   int range;          /* 0x18 sight range, in 1024s */
   int accel;          /* 0x1C */
   int turn;           /* 0x20 */
-  int timer24;        /* 0x24 */
+  int stateTimer;     /* 0x24 BRAKE, RECOVER and FALL durations */
   int watch;          /* 0x28 index into g_pActorListBase */
   int guard;          /* 0x2C index into g_pActorListBase */
   int done;           /* 0x30 */
   PathData *target;   /* 0x34 path it pivots along; node 3 is the point it tests Spyro against */
-  int timer38;        /* 0x38 */
+  int chaseDelay;     /* 0x38 CHASE waits it out; a lookout hands it on */
   PathData *path; /* 0x3C */
   int boxA[6];        /* 0x40 */
   int boxB[6];        /* 0x58 */

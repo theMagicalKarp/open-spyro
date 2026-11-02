@@ -353,7 +353,7 @@ void Level0_UpdateActors(void) {
             if (SPY.sparxHealth >= SPARX_GONE) {
               g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
-              PlayActorMeshVoice(g_pSparxActor, 0, 0);
+              PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
 
               SPY.sparxHealth = SPARX_GREEN;
 
@@ -943,11 +943,11 @@ void Level0_UpdateActors(void) {
 
                   if (cs->owner == 0) {
                     if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
-                                       g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0])) {
+                                       g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                       g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                       g_nSfxOverrideVolR = 0x2000;
                       g_nSfxOverrideVolL = 0x2000;
-                      PlayActorMeshVoice(g_pSparxActor, 0, 0);
+                      PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                     }
 
                     g_pSparxActor->subMode = SPARX_SUB_FETCH;
@@ -1066,11 +1066,11 @@ void Level0_UpdateActors(void) {
 
                 if (cs->owner == 0) {
                   if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
-                                     g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0])) {
+                                     g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
-                    PlayActorMeshVoice(g_pSparxActor, 0, 0);
+                    PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                   }
 
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
@@ -2062,7 +2062,7 @@ void Level0_UpdateActors(void) {
       }
 
       actor->soundRange = 0x20;
-      PlayActorMeshVoice(actor, 0, 0);
+      PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
       /* Two of each of the first pair, then six of the third. */
       for (i = 0; i < 2; i++) {
@@ -2111,8 +2111,8 @@ void Level0_UpdateActors(void) {
           StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         } else if (st->phase >= 192) {
 
-          if (!GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[0])) {
-            PlayActorMeshVoice(actor, 0, 0);
+          if (!GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[STATUE_VOICE_RATTLE])) {
+            PlayActorMeshVoice(actor, STATUE_VOICE_RATTLE, 0);
           }
           actor->rotX =
               (signed char)g_aShakeRotOffsets[(st->phase - 192) >> 1].a + st->savedRotX;
@@ -2471,11 +2471,11 @@ void Level0_UpdateActors(void) {
         InsertActorIntoSpatialGrid(p);
         p->killGroup &= ACTOR_KILL_GROUP_MASK;
         p->flags = 0;
-        p->mode = 0;
+        p->mode = ACTOR_SPAWN_MODE;
         p->frameProgress = 0;
-        p->frameRate = TYPE_DESC(p, 0);
-        p->anim = 0;
-        p->nextAnim = 0;
+        p->frameRate = TYPE_DESC(p, ACTOR_SPAWN_ANIM);
+        p->anim = ACTOR_SPAWN_ANIM;
+        p->nextAnim = ACTOR_SPAWN_ANIM;
         p->frame = 0;
         p->nextFrame = 1;
       }
@@ -3136,7 +3136,7 @@ void Level0_UpdateActors(void) {
     case ACTOR_TYPE_LETTER_A + 25: {
       OrbitState *st = actor->state;
 
-      if (st->owner->mode == 0 || st->owner->subMode != actor->mode) {
+      if (st->owner->mode == ORBIT_OWNER_FAR || st->owner->subMode != actor->mode) {
         DespawnActorRecord(actor);
       } else if (st->owner->type == ACTOR_TYPE_LEVEL_EXIT) {
         if (ApproxDist2D(&st->owner->posX, &SPY.posX) < 0x400) {

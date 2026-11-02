@@ -94,12 +94,18 @@ typedef struct Actor {
 #define ACTOR_CULL_HIDDEN 0 /* ->cullRadius: a zero bound fails the view cull, so the actor is hidden */
 #define ACTOR_TINT_NEUTRAL 0xA18618 /* the 0x4C tint word at neutral levels (0x18 each, tag 0xA) */
 /* Actor.tintMode presets, used with tint0..2 zeroed. RasterizeSpritePrimQueue
- * reads the preset word at 0x8006E3D8 + (tint word >> 22) and loads its low
- * three bytes into the GTE back colour (R, G, B), so a preset is a light
- * level rather than the visible colour. EXE words: 1 0x606060, 2 0x006060,
- * 3..6 zero (filled at run time; the flight tally writes them),
- * 0xB 0x006060, 0xC 0x605050, 0xD 0x000060 (flag nibble 0xC), 0xE 0x206020.
- * Named by the actors that pick them. */
+ * reads the preset word at 0x8006E3D8 + (tint word >> 22). Its low three
+ * bytes, x16, go to the GTE back colour (R, G, B), so a preset is a light
+ * level rather than the visible colour. Byte 3: the low nibble x2 is loaded
+ * into IR0; a nonzero high nibble is a glint threshold, n x 0x80 above the
+ * back colour's R: once the lit R channel passes it, twice the excess is
+ * added to all three channels (a white highlight). EXE words: 0 0x808080,
+ * 1 0x606060, 2 0x006060, 3..6 zero (filled at run time; the flight tally
+ * writes them), 7 0x606060 (glint 4), 8 0x000060, 9 0x006000, 0xA 0x600000,
+ * 0xB 0x006060, 0xC 0x605050, 0xD 0x000060 (glint 0xC), 0xE 0x206020,
+ * 0xF..0x11 the 0xA..0xC colours with glint 0xC, 0x12..0x16 the 8..0xC
+ * colours with glint 0xA, 0x17 0x600040. Named by the actors and text that
+ * pick them. */
 #define TINT_GEM_1 1      /* gems, one per value: HUD tally icons use type - 0x52 */
 #define TINT_GEM_2 2
 #define TINT_GEM_5 3
@@ -107,6 +113,9 @@ typedef struct Actor {
 #define TINT_GEM_25 5
 #define TINT_WHITE 1        /* 0x606060: Sparx food; the 1-gem shares it */
 #define TINT_GOLD 2         /* 0x006060 (R, G): text glyphs, digits; the 2-gem shares it */
+#define TINT_RED 8          /* 0x000060 (R): flight results "NEW RECORD" and a record time */
+#define TINT_GREEN 9        /* 0x006000 (G) */
+#define TINT_BLUE 0xA       /* 0x600000 (B): the flight results' "X" */
 #define TINT_HUD 0xB        /* HUD sprites and text (BuildTextSprites default); same word as TINT_GOLD */
 #define TINT_EXTRA_LIFE 0xC
 #define TINT_BOULDER_SPARK 0xD /* boulder debris 152/153 */
