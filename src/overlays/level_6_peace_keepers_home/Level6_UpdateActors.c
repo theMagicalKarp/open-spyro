@@ -278,8 +278,8 @@ void Level6_UpdateActors(void) {
             }
           }
 
-          actor->mode = 0;
-          ANIM_RESET(actor, 0);
+          actor->mode = ACTOR_SPAWN_MODE;
+          ANIM_RESET(actor, ACTOR_SPAWN_ANIM);
         } else {
           st->detached = 1;
           goto follow_carry;
@@ -2741,8 +2741,8 @@ void Level6_UpdateActors(void) {
           if ((unsigned)(st->kind - 2) < 2 || st->kind == SOLDIERKIND_GUNNER) {
             Actor *a = &g_pActorListBase[st->link];
 
-            if (a->nextAnim != 0) {
-              ANIM_ADVANCE(a, 0);
+            if (a->nextAnim != FBCANNON_ANIM_REST) {
+              ANIM_ADVANCE(a, FBCANNON_ANIM_REST);
             }
           }
           if (actor->mode < SOLDIER_TO_POST && (st->kind == SOLDIERKIND_BOUNDED_PATROL || st->kind == SOLDIERKIND_BOUNDED_SENTRY)) {
@@ -2996,17 +2996,17 @@ void Level6_UpdateActors(void) {
           actor->nextFrame = 6;
           actor->frameProgress = 0;
         }
-        if (a->anim < 3) {
+        if (a->anim < FBCANNON_ANIM_FIRE) {
           if (r >= 0xB) {
             if (WrapAngleDelta8(h, h2) < 0) {
-              if (a->nextAnim != 1) {
-                ANIM_ADVANCE(a, 1);
+              if (a->nextAnim != FBCANNON_ANIM_TURN_NEG) {
+                ANIM_ADVANCE(a, FBCANNON_ANIM_TURN_NEG);
               }
-            } else if (a->nextAnim != 2) {
-              ANIM_ADVANCE(a, 2);
+            } else if (a->nextAnim != FBCANNON_ANIM_TURN_POS) {
+              ANIM_ADVANCE(a, FBCANNON_ANIM_TURN_POS);
             }
-          } else if (a->nextAnim != 0) {
-            ANIM_ADVANCE(a, 0);
+          } else if (a->nextAnim != FBCANNON_ANIM_REST) {
+            ANIM_ADVANCE(a, FBCANNON_ANIM_REST);
           }
         }
         if (TICK_DOWN(st->timer) != 0) {
@@ -3043,8 +3043,8 @@ void Level6_UpdateActors(void) {
 
               ((SoldierState *)b->state)->timer = 0x5A;
             }
-            if (a->anim != 3) {
-              ANIM_RESET(a, 3);
+            if (a->anim != FBCANNON_ANIM_FIRE) {
+              ANIM_RESET(a, FBCANNON_ANIM_FIRE);
             }
           }
         }
@@ -3062,8 +3062,8 @@ void Level6_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
           if (b->mode < ACTOR_MODE_DORMANT) {
             ((SoldierState *)b->state)->timer = 0xB4;
-            if (b->nextAnim != 8) {
-              ANIM_ADVANCE(b, 8);
+            if (b->nextAnim != SOLDIER_GUNNER) {
+              ANIM_ADVANCE(b, SOLDIER_GUNNER);
             }
             b->mode = SOLDIER_GUNNER;
           }
@@ -3097,8 +3097,8 @@ void Level6_UpdateActors(void) {
             fs->delay = 0;
             o->cullRadius = 0x30;
             cs->hold = g320[0] + 1;
-            if (a->anim != 3) {
-              ANIM_RESET(a, 3);
+            if (a->anim != FBCANNON_ANIM_FIRE) {
+              ANIM_RESET(a, FBCANNON_ANIM_FIRE);
             }
           }
         }
@@ -3270,10 +3270,10 @@ void Level6_UpdateActors(void) {
       RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
       if (st->hold != 0 && --st->hold == 0) {
         ((SoldierState *)p->state)->volley = 0x3C;
-        ANIM_GO(actor, 3);
+        ANIM_GO(actor, FBCANNON_ANIM_FIRE);
       }
-      if (actor->nextAnim >= 3 && actor->nextFrame >= 8) {
-        ANIM_GO(actor, 0);
+      if (actor->nextAnim >= FBCANNON_ANIM_FIRE && actor->nextFrame >= 8) {
+        ANIM_GO(actor, FBCANNON_ANIM_REST);
       }
       if (st->init == 0) {
         st->init = one;
@@ -3286,7 +3286,7 @@ void Level6_UpdateActors(void) {
 
       switch (actor->mode) {
       case FBCANNON_IDLE:
-        if (p->mode >= ACTOR_MODE_DORMANT || (p->nextAnim == 3 && p->nextFrame >= 0x15)) {
+        if (p->mode >= ACTOR_MODE_DORMANT || (p->nextAnim == SOLDIER_KNOCKED && p->nextFrame >= 0x15)) {
           int range = 0x4E2;
           int a = 0x20;
           int b = 0x5A;
@@ -3461,7 +3461,7 @@ void Level6_UpdateActors(void) {
             }
           }
         }
-        ANIM_GO(actor, 3);
+        ANIM_GO(actor, FBCANNON_ANIM_FIRE);
         actor->mode = FBCANNON_IDLE;
         continue;
       }
@@ -3970,9 +3970,9 @@ void Level6_UpdateActors(void) {
             CopyVector(&scan->posX, scan->state);
             InsertActorIntoSpatialGrid(scan);
             scan->flags = 0;
-            scan->mode = 0;
+            scan->mode = ACTOR_SPAWN_MODE;
             scan->killGroup &= ACTOR_KILL_GROUP_MASK;
-            ANIM_RESET(scan, 0);
+            ANIM_RESET(scan, ACTOR_SPAWN_ANIM);
           }
         }
       }

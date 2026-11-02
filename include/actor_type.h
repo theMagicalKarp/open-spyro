@@ -158,13 +158,15 @@ typedef struct Actor {
 /* PivotActorAlongPath / SteerActorAlongWaypoints result on reaching node n. */
 #define PATH_ARRIVED(n) (0x100 + (n))
 
-/* Size of one actor record: the stride of the actor pool, the sprite-record
- * queue and the HUD icon table. (The typedef fails to compile if the struct
- * ever drifts from it; it emits nothing.) */
 /* Actor.mode sentinels: UpdateActors and the scans skip dormant records, and
  * the pool ends at the first record whose mode is 0xFF. */
 #define ACTOR_MODE_DORMANT 0x80
 #define ACTOR_MODE_END 0xFF
+/* The mode and animation a fresh record starts in (InitActorRenderDefaults);
+ * a follower taking its parent over and a respawner reviving a record put
+ * them back to these. */
+#define ACTOR_SPAWN_MODE 0
+#define ACTOR_SPAWN_ANIM 0
 
 /* Actor.animFlags bits (TickActorAnims). */
 #define ACTOR_ANIM_NEW_FRAME 0x01 /* stepped onto a new frame this tick */
@@ -184,6 +186,9 @@ typedef struct Actor {
  * builds the rotation from the euler bytes, instead of the main mesh list. */
 #define ACTOR_RENDER_SECONDARY 0x80
 
+/* Size of one actor record: the stride of the actor pool, the sprite-record
+ * queue and the HUD icon table. (The typedef fails to compile if the struct
+ * ever drifts from it; it emits nothing.) */
 #define ACTOR_SIZE 0x58
 typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
 

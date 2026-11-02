@@ -236,8 +236,8 @@ void Level24_UpdateActors(void) {
             }
           }
 
-          actor->mode = 0;
-          ANIM_RESET(actor, 0);
+          actor->mode = ACTOR_SPAWN_MODE;
+          ANIM_RESET(actor, ACTOR_SPAWN_ANIM);
         } else {
           st->detached = 1;
           goto follow_carry;
@@ -3621,9 +3621,9 @@ void Level24_UpdateActors(void) {
             CopyVector(&scan->posX, scan->state);
             InsertActorIntoSpatialGrid(scan);
             scan->flags = 0;
-            scan->mode = 0;
+            scan->mode = ACTOR_SPAWN_MODE;
             scan->killGroup &= ACTOR_KILL_GROUP_MASK;
-            ANIM_RESET(scan, 0);
+            ANIM_RESET(scan, ACTOR_SPAWN_ANIM);
           }
         }
       }

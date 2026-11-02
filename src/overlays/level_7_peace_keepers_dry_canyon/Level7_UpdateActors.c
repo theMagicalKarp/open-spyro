@@ -274,8 +274,8 @@ void Level7_UpdateActors(void) {
             }
           }
 
-          actor->mode = 0;
-          ANIM_RESET(actor, 0);
+          actor->mode = ACTOR_SPAWN_MODE;
+          ANIM_RESET(actor, ACTOR_SPAWN_ANIM);
         } else {
           st->detached = 1;
           goto follow_carry;
@@ -2608,8 +2608,8 @@ void Level7_UpdateActors(void) {
           s344[2] = 0x5DC;
           AddVector(&c->posX, &c->posX, s344);
           i = 0;
-          if (c->anim != 4) {
-            ANIM_RESET(c, 4);
+          if (c->anim != SWOOP_ANIM_KNOCKED) {
+            ANIM_RESET(c, SWOOP_ANIM_KNOCKED);
           }
           c->mode = SWOOP_KNOCKED;
           cs->speed = 0x12C;
@@ -2675,25 +2675,25 @@ void Level7_UpdateActors(void) {
         if (st->mode == SHOOTER_ROLE_DOZER) {
           if (st->triggered == 0) {
             if (actor->anim == SHOOTER_ANIM_IDLE) {
-              ANIM_GO(actor, 8);
+              ANIM_GO(actor, SHOOTER_ANIM_DOZE);
             } else if (g_nActorAnimDone != 0) {
               switch (actor->anim) {
-              case 8:
+              case SHOOTER_ANIM_DOZE:
                 if (st->blinks != 0) {
                   st->blinks--;
                 } else {
                   st->blinks = RandomIntInRange(2, 6);
-                  ANIM_GO(actor, 9);
+                  ANIM_GO(actor, SHOOTER_ANIM_BLINK_1);
                 }
                 break;
-              case 9:
-                ANIM_GO(actor, 10);
+              case SHOOTER_ANIM_BLINK_1:
+                ANIM_GO(actor, SHOOTER_ANIM_BLINK_2);
                 break;
-              case 10:
-                ANIM_GO(actor, 12);
+              case SHOOTER_ANIM_BLINK_2:
+                ANIM_GO(actor, SHOOTER_ANIM_BLINK_3);
                 break;
-              case 12:
-                ANIM_GO(actor, 8);
+              case SHOOTER_ANIM_BLINK_3:
+                ANIM_GO(actor, SHOOTER_ANIM_DOZE);
                 break;
               }
             }
@@ -3119,36 +3119,37 @@ void Level7_UpdateActors(void) {
       continue;
     }
 
-    /* Bell prop: rings when charged, spawning a ripple, and settles. */
+    /* Bell prop: a flame rings it (spawning a ripple), any other hit wobbles it (BellAnim). */
     case ACTOR_TYPE_BELL_A:
     case ACTOR_TYPE_BELL_B:
-    case ACTOR_TYPE_BELL_C:      if (actor->flags != 0) {
+    case ACTOR_TYPE_BELL_C:
+      if (actor->flags != 0) {
         if (actor->flags == ACTOR_HIT_FLAME && actor->subMode == 0) {
           actor->subMode = 0x50;
-          ANIM_SET(actor, 2);
-        } else if (actor->nextAnim == 0) {
-          ANIM_SET(actor, 1);
+          ANIM_SET(actor, BELL_ANIM_SWING);
+        } else if (actor->nextAnim == BELL_ANIM_REST) {
+          ANIM_SET(actor, BELL_ANIM_WOBBLE);
         }
       }
       actor->flags = 0;
       if (g_nActorAnimDone != 0) {
         switch (actor->nextAnim) {
-        case 2: {
+        case BELL_ANIM_SWING: {
           Actor *p = g_pfnLevelSpawnActor(ACTOR_TYPE_BELL_RIPPLE, actor);
 
           p->rotZ = ((unsigned short)g_nCameraEulerYaw << 16 >> 18) - 0x80;
           CopyVector(&p->posX, &actor->posX);
-          ANIM_SET(actor, 3);
+          ANIM_SET(actor, BELL_ANIM_RING);
           break;
         }
-        case 1:
-        case 4:
-          ANIM_SET(actor, 0);
+        case BELL_ANIM_WOBBLE:
+        case BELL_ANIM_SETTLE:
+          ANIM_SET(actor, BELL_ANIM_REST);
           break;
         }
       }
       if (TICK_DOWN(actor->subMode) == 2) {
-        ANIM_SET(actor, 4);
+        ANIM_SET(actor, BELL_ANIM_SETTLE);
       }
       break;
 
@@ -4100,9 +4101,9 @@ void Level7_UpdateActors(void) {
             CopyVector(&scan->posX, scan->state);
             InsertActorIntoSpatialGrid(scan);
             scan->flags = 0;
-            scan->mode = 0;
+            scan->mode = ACTOR_SPAWN_MODE;
             scan->killGroup &= ACTOR_KILL_GROUP_MASK;
-            ANIM_RESET(scan, 0);
+            ANIM_RESET(scan, ACTOR_SPAWN_ANIM);
           }
         }
       }

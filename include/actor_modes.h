@@ -547,6 +547,15 @@ enum FireballCannonMode {
   FBCANNON_FIRE = 3, /* lobs a fireball at the best target ahead, back to IDLE */
 };
 
+/* A fireball cannon's animations; its gunner (or a dueling soldier) plays
+ * them on its link. */
+enum FireballCannonAnim {
+  FBCANNON_ANIM_REST = 0,
+  FBCANNON_ANIM_TURN_NEG = 1, /* the gunner's aim is 0xB+ off, negative yaw delta */
+  FBCANNON_ANIM_TURN_POS = 2, /* the same, positive */
+  FBCANNON_ANIM_FIRE = 3,     /* the lob; back to REST from frame 8 */
+};
+
 /* ->mode of a guard captain (ACTOR_TYPE_GUARD_CAPTAIN, CaptainState;
  * level 13). CAPTAIN_IDLE runs CaptainState.mode's post (partnered sentry,
  * group lookout, ledge guard, wanderer...). */
@@ -669,6 +678,16 @@ enum SwoopKind {
   SWOOP_KIND_STRAIGHT = 2, /* no weave; dives to Spyro's height and turns back sharply */
 };
 
+/* A level 7/8 bell's animations (ACTOR_TYPE_BELL_A/B/C). A flame rings it
+ * once per cooldown (subMode 0x50); any other hit only wobbles it. */
+enum BellAnim {
+  BELL_ANIM_REST = 0,
+  BELL_ANIM_WOBBLE = 1, /* non-flame hit while at rest, then REST */
+  BELL_ANIM_SWING = 2,  /* flamed: spawns a ACTOR_TYPE_BELL_RIPPLE when done, then RING */
+  BELL_ANIM_RING = 3,   /* rings on until the cooldown reaches 2 */
+  BELL_ANIM_SETTLE = 4, /* cooldown at 2: settles, then REST */
+};
+
 /* ->mode of a villager (ACTOR_TYPE_VILLAGER, VillagerState; levels 12/13).
  * VILLAGER_IDLE runs VillagerState.mode's role (talker, lookout, paired,
  * follower of a leader); Spyro too close sends it running. */
@@ -678,6 +697,15 @@ enum VillagerMode {
   VILLAGER_PANIC = 90,  /* cowers, then RUN */
   VILLAGER_RUN = 91,    /* runs between random path points; far enough: IDLE */
   VILLAGER_STOP = 92,   /* catches its breath facing Spyro; he comes closer: PANIC */
+};
+
+/* A villager's animations besides the poses equal to its mode (IDLE 0,
+ * KNOCKED 3). */
+enum VillagerAnim {
+  VILLAGER_ANIM_CHATTER = 4, /* talking (chunk anim past step 1) and VILLAGER_STOP; voices 4/5 */
+  VILLAGER_ANIM_COWER = 7,   /* VILLAGER_PANIC, then RUN */
+  VILLAGER_ANIM_RUN = 8,
+  VILLAGER_ANIM_REACT = 9,   /* VROLE_LEADER: cued by the leader's animation 8, back to IDLE at frame 0x14 */
 };
 
 /* VillagerState.mode: the villager's role. */
@@ -783,13 +811,18 @@ enum ShooterMode {
   SHOOTER_ADVANCE = 20, /* walks its path toward Spyro, then SHIELD */
 };
 
-/* A shooter's animations (8, 9, 10 and 12 are its idle blink cycle). */
+/* A shooter's animations. A dozer idles on DOZE for 2..6 loops, then plays
+ * BLINK_1, _2, _3 and dozes again. */
 enum ShooterAnim {
   SHOOTER_ANIM_IDLE = 0,
   SHOOTER_ANIM_LOWER = 2,   /* drops the shield */
   SHOOTER_ANIM_WALK = 4,    /* SHOOTER_ADVANCE */
   SHOOTER_ANIM_AIM = 6,
   SHOOTER_ANIM_SHIELD = 7,
+  SHOOTER_ANIM_DOZE = 8,
+  SHOOTER_ANIM_BLINK_1 = 9,
+  SHOOTER_ANIM_BLINK_2 = 10,
+  SHOOTER_ANIM_BLINK_3 = 12,
 };
 
 /* ShooterState.mode: the sentry's role. */
@@ -880,6 +913,21 @@ enum AlarmGuardMode {
   APGUARD_WATCH = 20,      /* faces Spyro; close when its timer runs out: SHOVE */
   APGUARD_SHOVE = 21,      /* shoves Spyro back, then WATCH */
   APGUARD_HANDED_OFF = 98, /* hidden after the hand-off; no collision */
+};
+
+/* An alarm post guard's animations. GuardState.anim is the base of its set:
+ * 0 for the first guard, APGUARD_ANIM_PARTNER_SET for the partner it hands
+ * off to, with STAND..HIT_END at the same offsets in both. */
+enum AlarmGuardAnim {
+  APGUARD_ANIM_STAND = 0,       /* base + 0: facing Spyro */
+  APGUARD_ANIM_STEP = 1,        /* base + 1: sidestepping round its post, walking to the next */
+  APGUARD_ANIM_HIT = 2,         /* base + 2 */
+  APGUARD_ANIM_SHOVE = 3,       /* base + 3: APGUARD_SHOVE */
+  APGUARD_ANIM_SET_LEN = 4,     /* below base + 4 a hit or shove blends in, else restarts */
+  APGUARD_ANIM_FIDGET = 4,      /* APGUARD_WATCH, a random 2..4 loops apart */
+  APGUARD_ANIM_HAND_OFF = 5,    /* the stage-1 hit, waking the partner */
+  APGUARD_ANIM_HIDDEN = 6,      /* APGUARD_HANDED_OFF */
+  APGUARD_ANIM_PARTNER_SET = 7, /* the partner's base */
 };
 
 /* ->mode of a path patroller (ACTOR_TYPE_PATH_PATROLLER, PathState; levels

@@ -243,8 +243,8 @@ void Level12_UpdateActors(void) {
             }
           }
 
-          actor->mode = 0;
-          ANIM_RESET(actor, 0);
+          actor->mode = ACTOR_SPAWN_MODE;
+          ANIM_RESET(actor, ACTOR_SPAWN_ANIM);
         } else {
           st->detached = 1;
           goto follow_carry;
@@ -3079,7 +3079,7 @@ void Level12_UpdateActors(void) {
               st->idleTimer = (GetRandomU32() & 0x2F) + 0x3C;
               PlayActorMeshVoice(actor, (GetRandomU32() & 1) | 4, 0);
             }
-            ANIM_GO(actor, 4);
+            ANIM_GO(actor, VILLAGER_ANIM_CHATTER);
             if (range + 0x800 < dist && (animState & CHUNK_ANIM_HALTED)) {
               ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
               st->timer = 0x1E;
@@ -3125,7 +3125,7 @@ void Level12_UpdateActors(void) {
           } else if (TICK_DOWN(st->timer) == 2) {
             g_pActorListBase[st->link].subMode = 1;
           }
-          if ((g_pActorListBase[st->link].nextAnim == 3 || g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) &&
+          if ((g_pActorListBase[st->link].nextAnim == VILLAGER_KNOCKED || g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) &&
               ApproxDist2D(&actor->posX, &SPY.posX) <
                   (st->fleeDist << 10) + 0x7D0) {
             actor->mode = VILLAGER_PANIC;
@@ -3154,7 +3154,7 @@ void Level12_UpdateActors(void) {
             }
             if ((ANIM_WORD(lead) & 0xFF0000FF) == 0x08000004 &&
                 lead->frameProgress < 0x11) {
-              ANIM_GO(actor, 9);
+              ANIM_GO(actor, VILLAGER_ANIM_REACT);
             }
             if ((ANIM_WORD(actor) & 0xFF00FF00) == 0x14000900 &&
                 g_nActorAnimNewFrame != 0) {
@@ -3209,7 +3209,7 @@ void Level12_UpdateActors(void) {
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
           }
         }
-        ANIM_GO(actor, 7);
+        ANIM_GO(actor, VILLAGER_ANIM_COWER);
         if (g_nActorAnimDone != 0) {
           st->speed = 0x5F;
           st->timer = RandomIntInRange(0xF0, 0x168);
@@ -3230,7 +3230,7 @@ void Level12_UpdateActors(void) {
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
           }
         }
-        ANIM_GO(actor, 8);
+        ANIM_GO(actor, VILLAGER_ANIM_RUN);
         if (ApproxDist2D(&actor->posX, PATH_PT(st->path, st->path->cur)) < 0x96) {
           int next;
 
@@ -3249,13 +3249,13 @@ void Level12_UpdateActors(void) {
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) >
                 (st->fleeDist << 10) + 0x1388 &&
-            (st->mode != VROLE_PAIR || g_pActorListBase[st->link].nextAnim != 3)) {
+            (st->mode != VROLE_PAIR || g_pActorListBase[st->link].nextAnim != VILLAGER_KNOCKED)) {
           ENTER_POSE(actor, VILLAGER_IDLE);
         }
         if (TICK_DOWN(st->timer)) {
           st->idleTimer = 0x1E;
           st->runFrom = ApproxDist2D(&actor->posX, &SPY.posX);
-          ANIM_BLEND(actor, 4);
+          ANIM_BLEND(actor, VILLAGER_ANIM_CHATTER);
           actor->mode = VILLAGER_STOP;
           continue;
         }

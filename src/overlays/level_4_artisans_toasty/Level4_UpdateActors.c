@@ -297,8 +297,8 @@ void Level4_UpdateActors(void) {
             }
           }
 
-          actor->mode = 0;
-          ANIM_RESET(actor, 0);
+          actor->mode = ACTOR_SPAWN_MODE;
+          ANIM_RESET(actor, ACTOR_SPAWN_ANIM);
         } else {
           st->detached = 1;
           goto follow_carry;
@@ -2201,14 +2201,14 @@ void Level4_UpdateActors(void) {
                              actor->posY - st->posts->nodes[st->stage].y, ATAN_ANGLE8);
         speed = st->stage * 20 + 0xB4;
 
-        if (actor->nextAnim == 0) {
+        if (actor->nextAnim == APGUARD_ANIM_STAND) {
           limit = 0x19;
         }
 
         if (limit < AbsAngleDelta8(toSpy, toMe)) {
           SteerActorAroundPoint(actor, &st->posts->nodes[st->stage].x, 0x1388, toSpy, 6,
                         speed, 6, 0x14, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
-          ANIM_GO(actor, st->anim + 1);
+          ANIM_GO(actor, st->anim + APGUARD_ANIM_STEP);
         } else {
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
           ANIM_GO(actor, st->anim);
@@ -2234,10 +2234,10 @@ void Level4_UpdateActors(void) {
             st->drop = -1;
             DespawnActorRecord(drop);
           }
-          if (actor->nextAnim < st->anim + 4) {
-            ANIM_GO(actor, st->anim + 2);
+          if (actor->nextAnim < st->anim + APGUARD_ANIM_SET_LEN) {
+            ANIM_GO(actor, st->anim + APGUARD_ANIM_HIT);
           } else {
-            ANIM_SET(actor, st->anim + 2);
+            ANIM_SET(actor, st->anim + APGUARD_ANIM_HIT);
           }
           break;
 
@@ -2247,9 +2247,9 @@ void Level4_UpdateActors(void) {
 
           ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
           mate->mode = APGUARD_HIT_PLAYOUT;
-          mate->anim = 7;
-          mate->nextAnim = 7;
-          ms->anim = 7;
+          mate->anim = APGUARD_ANIM_PARTNER_SET;
+          mate->nextAnim = APGUARD_ANIM_PARTNER_SET;
+          ms->anim = APGUARD_ANIM_PARTNER_SET;
           ms->stage = 1;
           ms->path->cur = st->path->cur;
           CopyVector(&mate->posX, &actor->posX);
@@ -2258,12 +2258,12 @@ void Level4_UpdateActors(void) {
           mate->updateDist = 0x28;
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorLiveKill(actor);
-          ANIM_SET(actor, 5);
+          ANIM_SET(actor, APGUARD_ANIM_HAND_OFF);
           break;
         }
 
         case 2:
-          ANIM_GO(actor, 9);
+          ANIM_GO(actor, APGUARD_ANIM_PARTNER_SET + APGUARD_ANIM_HIT);
           break;
         }
         actor->mode += 1;
@@ -2275,17 +2275,17 @@ void Level4_UpdateActors(void) {
         }
         switch (st->stage) {
         case 0:
-          ANIM_GO(actor, st->anim + 1);
+          ANIM_GO(actor, st->anim + APGUARD_ANIM_STEP);
           break;
 
         case 1:
           if (st->anim == 0) {
-            ANIM_SET(actor, 6);
+            ANIM_SET(actor, APGUARD_ANIM_HIDDEN);
             actor->collision = 0;
             actor->mode = APGUARD_HANDED_OFF;
             continue;
           }
-          ANIM_GO(actor, st->anim + 1);
+          ANIM_GO(actor, st->anim + APGUARD_ANIM_STEP);
           break;
 
         case 2:
@@ -2325,13 +2325,13 @@ void Level4_UpdateActors(void) {
           if (st->stage < 2) {
             if (st->count == 0) {
               st->count = RandomIntInRange(2, 4);
-              ANIM_SET(actor, 4);
+              ANIM_SET(actor, APGUARD_ANIM_FIDGET);
             } else {
               st->count -= 1;
-              if (actor->nextAnim == 4) {
-                ANIM_SET(actor, 0);
+              if (actor->nextAnim == APGUARD_ANIM_FIDGET) {
+                ANIM_SET(actor, APGUARD_ANIM_STAND);
               } else {
-                ANIM_GO(actor, 0);
+                ANIM_GO(actor, APGUARD_ANIM_STAND);
               }
             }
           } else {
@@ -2348,15 +2348,15 @@ void Level4_UpdateActors(void) {
       }
 
       case APGUARD_SHOVE:
-        if (actor->nextAnim != st->anim + 3) {
+        if (actor->nextAnim != st->anim + APGUARD_ANIM_SHOVE) {
           st->timer = 0xB4;
           g_anSpyroRequestVelocity.x = g_anSineLut[actor->rotZ] << 16 >> 21;
           g_anSpyroRequestVelocity.y = -(g_anCosineLut[actor->rotZ] << 7) >> 12;
           g_nSpyroRequestVelocityZ = 0;
-          if (actor->nextAnim < st->anim + 4) {
-            ANIM_GO(actor, st->anim + 3);
+          if (actor->nextAnim < st->anim + APGUARD_ANIM_SET_LEN) {
+            ANIM_GO(actor, st->anim + APGUARD_ANIM_SHOVE);
           } else {
-            ANIM_SET(actor, st->anim + 3);
+            ANIM_SET(actor, st->anim + APGUARD_ANIM_SHOVE);
           }
           actor->mode = APGUARD_WATCH;
           continue;
