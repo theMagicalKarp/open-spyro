@@ -116,7 +116,7 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
       dbg->spinX = GetRandomU32() & 0xe;
       dbg->spinY = GetRandomU32() & 0xe;
       dbg->spinZ = GetRandomU32() & 0xe;
-      rec->subMode = 3;
+      rec->subMode = COLLECT_HOMING;
       rec->updateDist = ACTOR_UPDATE_ALWAYS;
       return rec;
     }

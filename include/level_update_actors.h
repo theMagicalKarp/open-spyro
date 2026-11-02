@@ -348,6 +348,10 @@ typedef struct ExitWhirlState {
 
 #ifndef PIVOT_TURN_ANY
 #define PIVOT_TURN_ANY 0xFF /* turnGroup: turn without waiting on a group peer */
+/* ->subMode while PivotActorAlongPath drives the actor. */
+#define PIVOT_SUB_ARRIVED 0 /* reached a node (or not started): may need to turn */
+#define PIVOT_SUB_WALKING 1 /* heading within `lim`: walking to the node */
+#define PIVOT_SUB_TURNING 2 /* turning in place toward the node */
 #endif
 extern int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed, int contactRadius, int step, int lim, int turnGroup, int flags);
 

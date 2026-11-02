@@ -12,8 +12,8 @@
    path->count-1 otherwise — and reports it as 0x100+index in the return.
    When the heading delta to the node exceeds `lim`, turns in place via
    ApproachAngle8 (deferring the turn when another live actor whose group is
-   `turnGroup` is already mid-turn; 0xFF = no gating); otherwise marks the actor
-   moving and delegates the step to TurnActorYawTowardAngle +
+   `turnGroup` is walking; 0xFF = no gating); otherwise marks the actor
+   walking and delegates the step to TurnActorYawTowardAngle +
    MoveActorAlongHeading. */
 
 /* Turn the actor's yaw toward `ang`, at most `step` per frame. */
@@ -49,7 +49,7 @@ int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed,
 
   if (ApproxDist2D(&actor->posX, &path->nodes[path->cur].x) < thresh &&
       zclose != 0) {
-    actor->subMode = 0;
+    actor->subMode = PIVOT_SUB_ARRIVED;
     if (path->dir == -1) {
       wrap = path->count;
       idx = path->cur + 1;
@@ -71,19 +71,20 @@ int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed,
   ang = ArcTan2(node[2] - actor->posX, node[3] - actor->posY, ATAN_ANGLE8);
 
   if (AbsAngleDelta8(ang, actor->rotZ) <= lim) {
-    actor->subMode = 1;
+    actor->subMode = PIVOT_SUB_WALKING;
     TurnActorYawTowardAngle(actor, ang, step, lim, YAW_STEP_IN_BAND);
     MoveActorAlongHeading(actor, speed, contactRadius, 0, flags);
     goto done;
   }
 
-  if (actor->subMode == 0 && turnGroup != PIVOT_TURN_ANY) {
-    /* Only one actor of this turn group turns at a time — if a peer is already
-       mid-turn (state 1), defer to it. */
+  if (actor->subMode == PIVOT_SUB_ARRIVED && turnGroup != PIVOT_TURN_ANY) {
+    /* A freshly arrived actor starts its turn only while no peer of its turn
+       group is walking (PIVOT_SUB_WALKING). */
     list = g_apActiveActorListBlock;
     while ((peer = *(list++)) != 0) {
       if (peer->group == turnGroup &&
-          (unsigned int)peer->mode < ACTOR_MODE_DORMANT && peer->subMode == 1) {
+          (unsigned int)peer->mode < ACTOR_MODE_DORMANT &&
+          peer->subMode == PIVOT_SUB_WALKING) {
         break;
       }
     }
@@ -91,7 +92,7 @@ int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed,
       goto done;
     }
     TurnActorTowardAngle(actor, ang, step, lim);
-    actor->subMode = 2;
+    actor->subMode = PIVOT_SUB_TURNING;
   } else {
     TurnActorTowardAngle(actor, ang, step, lim);
   }
