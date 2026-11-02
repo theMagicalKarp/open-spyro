@@ -2867,7 +2867,7 @@ void Level8_UpdateActors(void) {
           }
         }
         actor->mode = SWOOP_KNOCKED;
-        ANIM_RESET(actor, 4);
+        ANIM_RESET(actor, SWOOP_ANIM_KNOCKED);
         continue;
       }
 
@@ -2918,11 +2918,11 @@ void Level8_UpdateActors(void) {
             }
             *st->alert = 1;
             st->count = 0;
-            if (actor->anim != 1) {
+            if (actor->anim != SWOOP_ANIM_LAUNCH) {
               actor->frameProgress = 8;
               actor->frameRate = 8;
               actor->anim = actor->nextAnim;
-              actor->nextAnim = 1;
+              actor->nextAnim = SWOOP_ANIM_LAUNCH;
               actor->frame = actor->nextFrame;
               actor->nextFrame = 0;
               OnActorAnimQueued(actor);
@@ -2948,7 +2948,7 @@ void Level8_UpdateActors(void) {
         a = ArcTan2(spy->posX - actor->posX, SPY.posY - actor->posY, ATAN_ANGLE8);
         step = 0xC;
 
-        if (g_nActorAnimDone == 0 && actor->nextAnim == 1 && actor->nextFrame < 0xB) {
+        if (g_nActorAnimDone == 0 && actor->nextAnim == SWOOP_ANIM_LAUNCH && actor->nextFrame < 0xB) {
           break;
         }
         st->count += g_nFrameStep;
@@ -2964,7 +2964,7 @@ void Level8_UpdateActors(void) {
           step = 0x18;
         }
         if (g_nActorAnimDone != 0) {
-          ANIM_GO(actor, 2);
+          ANIM_GO(actor, SWOOP_ANIM_FLY);
         }
         if (st->speed < 0xAA) {
           st->speed += 0xA;
@@ -3076,7 +3076,7 @@ void Level8_UpdateActors(void) {
           }
         }
         if (g_nActorAnimDone != 0) {
-          ANIM_GO(actor, 2);
+          ANIM_GO(actor, SWOOP_ANIM_FLY);
         }
         if (st->kind == SWOOP_KIND_STRAIGHT) {
           TurnActorYawTowardAngle(actor, a, 7, 0, YAW_HOLD_IN_BAND);

@@ -2674,7 +2674,7 @@ void Level7_UpdateActors(void) {
       case SHOOTER_IDLE:
         if (st->mode == SHOOTER_ROLE_DOZER) {
           if (st->triggered == 0) {
-            if (actor->anim == 0) {
+            if (actor->anim == SHOOTER_ANIM_IDLE) {
               ANIM_GO(actor, 8);
             } else if (g_nActorAnimDone != 0) {
               switch (actor->anim) {
@@ -2712,7 +2712,7 @@ void Level7_UpdateActors(void) {
         }
         st->timer = 0x78;
         actor->mode = SHOOTER_SHIELD;
-        ANIM_RESET(actor, 7);
+        ANIM_RESET(actor, SHOOTER_ANIM_SHIELD);
         continue;
 
       case SHOOTER_FIRE:
@@ -2741,7 +2741,7 @@ void Level7_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           st->spawned = 0;
           actor->mode = SHOOTER_SHIELD;
-          ANIM_RESET(actor, 7);
+          ANIM_RESET(actor, SHOOTER_ANIM_SHIELD);
           continue;
         }
         break;
@@ -2752,7 +2752,7 @@ void Level7_UpdateActors(void) {
             st->timer = 0x3C;
           }
           actor->mode = SHOOTER_AIM;
-          ANIM_RESET(actor, 6);
+          ANIM_RESET(actor, SHOOTER_ANIM_AIM);
           continue;
         }
         break;
@@ -2795,7 +2795,7 @@ void Level7_UpdateActors(void) {
           actor->frameProgress = 10;
           actor->frameRate = 10;
           actor->anim = actor->nextAnim;
-          actor->nextAnim = 7;
+          actor->nextAnim = SHOOTER_ANIM_SHIELD;
           actor->frame = actor->nextFrame;
           actor->nextFrame = 5;
           OnActorAnimQueued(actor);
@@ -2816,7 +2816,7 @@ void Level7_UpdateActors(void) {
             actor->frameProgress = 10;
             actor->frameRate = 10;
             actor->anim = actor->nextAnim;
-            actor->nextAnim = 7;
+            actor->nextAnim = SHOOTER_ANIM_SHIELD;
             actor->frame = actor->nextFrame;
             actor->nextFrame = 5;
             OnActorAnimQueued(actor);
@@ -2849,7 +2849,7 @@ void Level7_UpdateActors(void) {
         if (actor->frame >= 0x12) {
           st->timer = 0x3C;
           actor->mode = SHOOTER_LOWER;
-          ANIM_RESET(actor, 2);
+          ANIM_RESET(actor, SHOOTER_ANIM_LOWER);
           continue;
         }
         break;
@@ -2870,8 +2870,8 @@ void Level7_UpdateActors(void) {
           continue;
         }
         st->timer = 0x3C;
-        actor->anim = 7;
-        actor->nextAnim = 7;
+        actor->anim = SHOOTER_ANIM_SHIELD;
+        actor->nextAnim = SHOOTER_ANIM_SHIELD;
         actor->frame = 3;
         actor->nextFrame = 4;
         actor->frameProgress = 0x20;
@@ -2879,13 +2879,13 @@ void Level7_UpdateActors(void) {
         break;
 
       case SHOOTER_ADVANCE:
-        ANIM_GO(actor, 4);
+        ANIM_GO(actor, SHOOTER_ANIM_WALK);
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x800 ||
             PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
                 PATH_ARRIVED(0)) {
           st->timer = 0x3C;
-          actor->anim = 7;
-          actor->nextAnim = 7;
+          actor->anim = SHOOTER_ANIM_SHIELD;
+          actor->nextAnim = SHOOTER_ANIM_SHIELD;
           actor->frame = 3;
           actor->nextFrame = 4;
           actor->frameProgress = 0x20;
@@ -3184,7 +3184,7 @@ void Level7_UpdateActors(void) {
           }
         }
         actor->mode = SWOOP_KNOCKED;
-        ANIM_RESET(actor, 4);
+        ANIM_RESET(actor, SWOOP_ANIM_KNOCKED);
         continue;
       }
 
@@ -3235,11 +3235,11 @@ void Level7_UpdateActors(void) {
             }
             *st->alert = 1;
             st->count = 0;
-            if (actor->anim != 1) {
+            if (actor->anim != SWOOP_ANIM_LAUNCH) {
               actor->frameProgress = 8;
               actor->frameRate = 8;
               actor->anim = actor->nextAnim;
-              actor->nextAnim = 1;
+              actor->nextAnim = SWOOP_ANIM_LAUNCH;
               actor->frame = actor->nextFrame;
               actor->nextFrame = 0;
               OnActorAnimQueued(actor);
@@ -3265,7 +3265,7 @@ void Level7_UpdateActors(void) {
         a = ArcTan2(spy->posX - actor->posX, SPY.posY - actor->posY, ATAN_ANGLE8);
         step = 0xC;
 
-        if (g_nActorAnimDone == 0 && actor->nextAnim == 1 && actor->nextFrame < 0xB) {
+        if (g_nActorAnimDone == 0 && actor->nextAnim == SWOOP_ANIM_LAUNCH && actor->nextFrame < 0xB) {
           break;
         }
         st->count += g_nFrameStep;
@@ -3281,7 +3281,7 @@ void Level7_UpdateActors(void) {
           step = 0x18;
         }
         if (g_nActorAnimDone != 0) {
-          ANIM_GO(actor, 2);
+          ANIM_GO(actor, SWOOP_ANIM_FLY);
         }
         if (st->speed < 0xAA) {
           st->speed += 0xA;
@@ -3393,7 +3393,7 @@ void Level7_UpdateActors(void) {
           }
         }
         if (g_nActorAnimDone != 0) {
-          ANIM_GO(actor, 2);
+          ANIM_GO(actor, SWOOP_ANIM_FLY);
         }
         if (st->kind == SWOOP_KIND_STRAIGHT) {
           TurnActorYawTowardAngle(actor, a, 7, 0, YAW_HOLD_IN_BAND);

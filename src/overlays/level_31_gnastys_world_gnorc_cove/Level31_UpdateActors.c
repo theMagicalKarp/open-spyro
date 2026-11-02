@@ -1647,7 +1647,7 @@ void Level31_UpdateActors(void) {
         actor->mode = HATCH_OPEN;
         actor->flags = 0;
         actor->subMode = 0;
-        ANIM_RESET(actor, 2);
+        ANIM_RESET(actor, HATCH_OPEN);
         continue;
       }
       actor->flags = 0;
@@ -1656,13 +1656,13 @@ void Level31_UpdateActors(void) {
       case HATCH_IDLE:
         if (st->kind == 1) {
           actor->mode = HATCH_SEALED_IDLE;
-          ANIM_RESET(actor, 3);
+          ANIM_RESET(actor, HATCH_SEALED_IDLE);
           continue;
         }
         if (g_nActorAnimDone != 0) {
           actor->subMode = 0;
           actor->mode = HATCH_WAIT;
-          ANIM_RESET(actor, 1);
+          ANIM_RESET(actor, HATCH_WAIT);
           continue;
         }
         break;
@@ -1670,7 +1670,7 @@ void Level31_UpdateActors(void) {
       case HATCH_WAIT:
         if (actor->subMode == 1) {
           actor->mode = HATCH_IDLE;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, HATCH_IDLE);
           continue;
         }
         break;
@@ -1682,11 +1682,11 @@ void Level31_UpdateActors(void) {
           st->child = 0;
           if (st->kind == 1) {
             actor->mode = HATCH_SEALED_IDLE;
-            ANIM_RESET(actor, 3);
+            ANIM_RESET(actor, HATCH_SEALED_IDLE);
             continue;
           }
           actor->mode = HATCH_IDLE;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, HATCH_IDLE);
           continue;
         }
         break;
@@ -1697,7 +1697,7 @@ void Level31_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           actor->subMode = 0;
           actor->mode = HATCH_SEALED_WAIT;
-          ANIM_RESET(actor, 4);
+          ANIM_RESET(actor, HATCH_SEALED_WAIT);
           continue;
         }
         break;
@@ -1705,7 +1705,7 @@ void Level31_UpdateActors(void) {
       case HATCH_SEALED_WAIT:
         if (actor->subMode == 1) {
           actor->mode = HATCH_SEALED_IDLE;
-          ANIM_RESET(actor, 3);
+          ANIM_RESET(actor, HATCH_SEALED_IDLE);
           continue;
         }
         break;

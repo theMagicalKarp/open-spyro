@@ -600,6 +600,13 @@ enum SwoopMode {
   SWOOP_KNOCKED = 4, /* flamed or charged: drifts down and bursts */
 };
 
+/* A swooper's animations. */
+enum SwoopAnim {
+  SWOOP_ANIM_LAUNCH = 1,  /* starts the dive; it holds still until frame 0xB */
+  SWOOP_ANIM_FLY = 2,     /* after the launch, and on the way home */
+  SWOOP_ANIM_KNOCKED = 4,
+};
+
 /* SwoopState.kind: how a dive is flown. 0 and 1 are fixed weave sides and
  * are copied straight into SwoopState.side (0 sways the heading negative,
  * 1 positive), so they stay literal. */
@@ -665,6 +672,18 @@ enum PostGuardAmbush {
   POSTGUARD_AMBUSH_FACE = 4,  /* turns to Spyro, then HOP */
 };
 
+/* A post guard's animations, from the modes that play them. */
+enum PostGuardAnim {
+  POSTGUARD_ANIM_STAND = 0,
+  POSTGUARD_ANIM_RUN = 1,
+  POSTGUARD_ANIM_KNOCKED = 2,     /* the spin; KNOCKED_END follows it */
+  POSTGUARD_ANIM_KNOCKED_END = 3,
+  POSTGUARD_ANIM_REST = 4,        /* POSTGUARD_HOP_REST */
+  POSTGUARD_ANIM_READY = 5,       /* POSTGUARD_HOP_READY */
+  POSTGUARD_ANIM_LUNGE = 6,
+  POSTGUARD_ANIM_SHOUT = 7,       /* the ambush rouse and POSTGUARD_SHOUT */
+};
+
 /* ->mode of a patrol ward (ACTOR_TYPE_PATROL_WARD, WardState; level 3).
  * WARD_IDLE runs WardState.mode's role (sentry, node patrol, partner ring);
  * its shove (animation 8) knocks Spyro back. */
@@ -701,6 +720,15 @@ enum ShooterMode {
   SHOOTER_RISE = 9,     /* plays out, then WAKE */
   SHOOTER_WAKE = 11,    /* wakes and turns to Spyro; ADVANCE if it has a range */
   SHOOTER_ADVANCE = 20, /* walks its path toward Spyro, then SHIELD */
+};
+
+/* A shooter's animations (8, 9, 10 and 12 are its idle blink cycle). */
+enum ShooterAnim {
+  SHOOTER_ANIM_IDLE = 0,
+  SHOOTER_ANIM_LOWER = 2,   /* drops the shield */
+  SHOOTER_ANIM_WALK = 4,    /* SHOOTER_ADVANCE */
+  SHOOTER_ANIM_AIM = 6,
+  SHOOTER_ANIM_SHIELD = 7,
 };
 
 /* ShooterState.mode: the sentry's role. */
@@ -824,6 +852,19 @@ enum GrabberMode {
   GRABBER_DEVOUR = 13,     /* Sparx is gone: the hold kills Spyro */
   GRABBER_THROW_SHORT = 14, /* the shorter throw used after the first one */
   GRABBER_HUSK = 99,       /* the copy left behind by a knock: plays out, despawns */
+};
+
+/* A grabber's animations, from the modes that play them. */
+enum GrabberAnim {
+  GRABBER_ANIM_LURK = 0,
+  GRABBER_ANIM_EMERGE = 1,  /* the lurk's grab roll came up; voice 2 plays over it */
+  GRABBER_ANIM_REACH = 2,   /* rushing, Spyro inside 0xFA0 */
+  GRABBER_ANIM_MOVE = 3,    /* rushing from further out, and retreating */
+  GRABBER_ANIM_CARRY = 4,
+  GRABBER_ANIM_THROW = 5,
+  GRABBER_ANIM_THROW_SHORT = 7,
+  GRABBER_ANIM_DEVOUR = 8,
+  GRABBER_ANIM_HIT = 9,     /* flamed: entering GRABBER_KNOCKED */
 };
 
 /* ->mode of a sorcerer (ACTOR_TYPE_SORCERER, SorcererState; level 13).

@@ -1805,7 +1805,7 @@ void Level2_UpdateActors(void) {
           }
           break;
         case POSTGUARD_POST_PATROL:
-          ANIM_GO(actor, 1);
+          ANIM_GO(actor, POSTGUARD_ANIM_RUN);
           PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0xC8, 5, 0xA, actor->group,
                         MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400) {
@@ -1815,7 +1815,7 @@ void Level2_UpdateActors(void) {
         case POSTGUARD_POST_WATCH:
           TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
           if (g_nActorAnimDone != 0) {
-            ANIM_GO(actor, 0);
+            ANIM_GO(actor, POSTGUARD_ANIM_STAND);
           }
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
             actor->subMode = 0;
@@ -1843,13 +1843,13 @@ void Level2_UpdateActors(void) {
             }
             break;
           case POSTGUARD_AMBUSH_ROUSE:
-            ANIM_GO(actor, 7);
+            ANIM_GO(actor, POSTGUARD_ANIM_SHOUT);
             if (g_nActorAnimDone != 0) {
               st->phase++;
             }
             break;
           case POSTGUARD_AMBUSH_RUN:
-            ANIM_GO(actor, 1);
+            ANIM_GO(actor, POSTGUARD_ANIM_RUN);
             if (PivotActorAlongPath(actor, st->path, 0x100, 0x96, 0, 8, 0x32, PIVOT_TURN_ANY,
                               MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(0)) {
               st->phase++;
@@ -1870,12 +1870,12 @@ void Level2_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         switch (st->sub) {
         case POSTGUARD_HOP_REST:
-          ANIM_GO(actor, 4);
+          ANIM_GO(actor, POSTGUARD_ANIM_REST);
           st->flameProof = 1;
           if (TICK_DOWN(st->timer) && g_nActorAnimDone != 0) {
             st->sub = POSTGUARD_HOP_READY;
             st->flameProof = 0;
-            ANIM_GO(actor, 5);
+            ANIM_GO(actor, POSTGUARD_ANIM_READY);
           }
           break;
         case POSTGUARD_HOP_READY:
@@ -1885,19 +1885,19 @@ void Level2_UpdateActors(void) {
             int drop = height - SPY.posZ;
 
             if ((drop > 0 ? drop < 0x3E8 : (SPY.posZ - height) < 0x3E8) &&
-                actor->anim == 5) {
+                actor->anim == POSTGUARD_ANIM_READY) {
               st->timer = 0xB4;
-              ANIM_GO(actor, 6);
+              ANIM_GO(actor, POSTGUARD_ANIM_LUNGE);
             }
           }
           if (g_nActorAnimDone != 0) {
-            if (actor->anim == 6) {
-              ANIM_GO(actor, 5);
+            if (actor->anim == POSTGUARD_ANIM_LUNGE) {
+              ANIM_GO(actor, POSTGUARD_ANIM_READY);
             } else {
               st->flameProof = 1;
               st->sub = POSTGUARD_HOP_REST;
               st->timer = RandomIntInRange(0x8C, 0xC8);
-              ANIM_BLEND(actor, 4);
+              ANIM_BLEND(actor, POSTGUARD_ANIM_REST);
             }
           }
           break;
@@ -1912,9 +1912,9 @@ void Level2_UpdateActors(void) {
         actor->rotX += st->spinX;
         actor->rotY += st->spinY;
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->time, 0xC, 0xC);
-        if (g_nActorAnimDone != 0 && actor->nextAnim == 2 && actor->anim != 3) {
+        if (g_nActorAnimDone != 0 && actor->nextAnim == POSTGUARD_ANIM_KNOCKED && actor->anim != POSTGUARD_ANIM_KNOCKED_END) {
           g_nActorAnimDone = 0;
-          ANIM_RESET(actor, 3);
+          ANIM_RESET(actor, POSTGUARD_ANIM_KNOCKED_END);
         }
         if (TICK_DOWN(st->timer)) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -1925,7 +1925,7 @@ void Level2_UpdateActors(void) {
         break;
 
       case POSTGUARD_TO_POST:
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, POSTGUARD_ANIM_RUN);
         if (TurnActorYawTowardAngle(
                 actor,
                 ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
@@ -1935,7 +1935,7 @@ void Level2_UpdateActors(void) {
         }
         if (ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x) < 0x100 ||
             ApproxDist2D(&actor->posX, &SPY.posX) < 0xC00) {
-          ANIM_BLEND(actor, 4);
+          ANIM_BLEND(actor, POSTGUARD_ANIM_REST);
           actor->mode = POSTGUARD_HOP;
           continue;
         }
@@ -1949,10 +1949,10 @@ void Level2_UpdateActors(void) {
         break;
 
       case POSTGUARD_SHOUT:
-        ANIM_GO(actor, 7);
+        ANIM_GO(actor, POSTGUARD_ANIM_SHOUT);
         if (g_nActorAnimDone != 0) {
           st->sub = POSTGUARD_HOP_REST;
-          ANIM_BLEND(actor, 4);
+          ANIM_BLEND(actor, POSTGUARD_ANIM_REST);
           actor->mode = POSTGUARD_HOP;
           continue;
         }

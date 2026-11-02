@@ -3459,12 +3459,12 @@ void Level20_UpdateActors(void) {
           *st->held = 0;
         }
         PlayActorMeshVoice(actor, 1, 0);
-        ANIM_SET(actor, 9);
+        ANIM_SET(actor, GRABBER_ANIM_HIT);
         actor->mode = GRABBER_KNOCKED;
         continue;
       }
       actor->flags = 0;
-      if (actor->nextAnim == 1 &&
+      if (actor->nextAnim == GRABBER_ANIM_EMERGE &&
           GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[2]) == 0) {
         PlayActorMeshVoice(actor, 2, &st->voice);
       }
@@ -3474,21 +3474,21 @@ void Level20_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (d0 > 0x2C00) {
           st->grabChance = 0;
-          ANIM_GO(actor, GRABBER_LURK);
+          ANIM_GO(actor, GRABBER_ANIM_LURK);
         }
         if (TICK_DOWN(st->timer) != 0) {
           int k;
           int r;
 
           if (st->grabChance == 0) {
-            if (actor->nextAnim == 0 && actor->nextFrame >= 0xF) {
+            if (actor->nextAnim == GRABBER_ANIM_LURK && actor->nextFrame >= 0xF) {
               actor->frame = 0;
               actor->nextFrame = 1;
               actor->frameProgress = 0;
             }
-          } else if (actor->nextAnim == 0 && actor->nextFrame >= 0x1C) {
+          } else if (actor->nextAnim == GRABBER_ANIM_LURK && actor->nextFrame >= 0x1C) {
             g_nActorAnimDone = 0;
-            ANIM_ADVANCE(actor, 1);
+            ANIM_ADVANCE(actor, GRABBER_ANIM_EMERGE);
           }
           if (st->grabChance == 0 && d0 < 0x2400) {
             st->grabChance = RandomIntInRange(0, 0x3F) + 0x50;
@@ -3519,9 +3519,9 @@ void Level20_UpdateActors(void) {
         int d1 = ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos);
 
         if (d1 < 0xFA0) {
-          ANIM_GO(actor, 2);
+          ANIM_GO(actor, GRABBER_ANIM_REACH);
         } else {
-          ANIM_GO(actor, 3);
+          ANIM_GO(actor, GRABBER_ANIM_MOVE);
         }
         if (TICK_DOWN(st->timer) != 0) {
           Actor **lp;
@@ -3559,7 +3559,7 @@ void Level20_UpdateActors(void) {
       }
 
       case GRABBER_RETREAT:
-        ANIM_GO(actor, 3);
+        ANIM_GO(actor, GRABBER_ANIM_MOVE);
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(st->home[0] - actor->posX,
                                         st->home[1] - actor->posY, ATAN_ANGLE8),
@@ -3645,7 +3645,7 @@ void Level20_UpdateActors(void) {
       }
 
       case GRABBER_CARRY:
-        ANIM_GO(actor, 4);
+        ANIM_GO(actor, GRABBER_ANIM_CARRY);
         spy->posX = actor->posX;
         spy->posY = actor->posY;
         g_nSpyroDrawSuppressed = 1;
@@ -3656,7 +3656,7 @@ void Level20_UpdateActors(void) {
         break;
 
       case GRABBER_THROW:
-        ANIM_GO(actor, 5);
+        ANIM_GO(actor, GRABBER_ANIM_THROW);
         if (g_nSpyroDrawSuppressed != 0) {
           if (actor->nextFrame >= 0x29) {
             g_nSpyroDrawSuppressed = 0;
@@ -3683,12 +3683,12 @@ void Level20_UpdateActors(void) {
 
       case GRABBER_DEVOUR:
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
-        ANIM_GO(actor, 8);
+        ANIM_GO(actor, GRABBER_ANIM_DEVOUR);
         g_dwSpyroTriggerEventFlags |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_HIT);
         break;
 
       case GRABBER_THROW_SHORT:
-        ANIM_GO(actor, 7);
+        ANIM_GO(actor, GRABBER_ANIM_THROW_SHORT);
         if (g_nSpyroDrawSuppressed != 0) {
           if (actor->nextFrame >= 0x10) {
             g_nSpyroDrawSuppressed = 0;
