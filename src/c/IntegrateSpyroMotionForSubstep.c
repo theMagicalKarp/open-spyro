@@ -174,22 +174,22 @@ static inline int *Opaque(int *p) {
      component (both keep their original call-crossing allocnos);
    - `k` is bumped after the spawn call so sched1 hoists it past the call;
    - case 26's actor base is a fresh single-set `ob` so sched1 boosts its la;
-   - the 0x1B spawn writes v50[2] last so the fn pointer lands in t1. */
+   - the 0x1B spawn writes wakePos[2] last so the fn pointer lands in t1. */
 /* Spyro motion for one pad substep (0x80043fe4, 15228 bytes): steering,
    speed and velocity per state, the glide flight model, then the 1/64
    position accumulator and the persistent byte euler angles. */
 void IntegrateSpyroMotionForSubstep(int substep) {
-  int v10[3];
-  int v20[3];
-  int v30[3];
+  int jumpSteer[3];
+  int fallDrag[3];
+  int toHomingTarget[3];
   int v40[3];
-  int v50[3];
+  int wakePos[3];
   int v60[3];
   int v70[3];
-  int v80[3];
-  int v90[3];
-  int vA0[3];
-  int vB0[3];
+  int liftStep[3];
+  int slideDrag[3];
+  int orbitStep[3];
+  int knockDrag[3];
   int t;
   int *sp;
 
@@ -394,13 +394,13 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         (g_nSpyroMotionSpeed * LookupCosine(g_nSpyroMoveTargetYaw)) >> 12;
     g_nSpyroCarryMotionY =
         (g_nSpyroMotionSpeed * LookupSine(g_nSpyroMoveTargetYaw)) >> 12;
-    SubtractVector(v10, cd + (SPY_CARRY - SPY_LOCKOUT), vel);
-    v10[2] = 0;
-    l = VectorLength(v10, VEC_LEN_XY);
+    SubtractVector(jumpSteer, cd + (SPY_CARRY - SPY_LOCKOUT), vel);
+    jumpSteer[2] = 0;
+    l = VectorLength(jumpSteer, VEC_LEN_XY);
     if (l > 0x280) {
-      ScaleVector3ByRatio(v10, l, 0x280);
+      ScaleVector3ByRatio(jumpSteer, l, 0x280);
     }
-    AddVector(vel, vel, v10);
+    AddVector(vel, vel, jumpSteer);
     if (g_nSpyroWallSlideContributedFlag != 0) {
       int *nudge = cd + (SPY_NUDGE - SPY_LOCKOUT);
 
@@ -457,20 +457,20 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       IntegrateSpyroBodyEuler(d);
     }
     if (SPY[SPY_FRAME_MOTION] < 0x80) {
-      CopyVector(v20, &SPY[SPY_NUDGE]);
-      RShiftVector3(v20, 3);
-      AddVector(&SPY[SPY_VELOCITY], &SPY[SPY_VELOCITY], v20);
+      CopyVector(fallDrag, &SPY[SPY_NUDGE]);
+      RShiftVector3(fallDrag, 3);
+      AddVector(&SPY[SPY_VELOCITY], &SPY[SPY_VELOCITY], fallDrag);
     }
-    ZeroVector(v20);
+    ZeroVector(fallDrag);
     vel = &SPY[SPY_VELOCITY];
-    SubtractVector(v20, v20, vel);
-    v20[2] = 0;
-    l = VectorLength(v20, VEC_LEN_XY);
+    SubtractVector(fallDrag, fallDrag, vel);
+    fallDrag[2] = 0;
+    l = VectorLength(fallDrag, VEC_LEN_XY);
     if (l > 0x40) {
-      ScaleVector3ByRatio(v20, l, 0x40);
+      ScaleVector3ByRatio(fallDrag, l, 0x40);
     }
-    v20[2] = g_nSpyroGravityStep;
-    AddVector(vel, vel, v20);
+    fallDrag[2] = g_nSpyroGravityStep;
+    AddVector(vel, vel, fallDrag);
     if (g_nSpyroGroundProbeSuspendFlag == 0 && g_nSpyroGroundSlope < 0x20) {
       NudgeSpyroFromWallProbes();
     }
@@ -562,9 +562,11 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (abs(d) >= 0x200) {
           int l;
 
-          SubtractVector(v30, &g_pSpyroHomingTargetActor->posX, &SPY[0]);
-          l = VectorLength(v30, VEC_LEN_XYZ);
-          d = (ArcTan2(v30[0], v30[1], ATAN_ANGLE12) - SPY[SPY_BODY_YAW]) &
+          SubtractVector(toHomingTarget, &g_pSpyroHomingTargetActor->posX,
+                         &SPY[0]);
+          l = VectorLength(toHomingTarget, VEC_LEN_XYZ);
+          d = (ArcTan2(toHomingTarget[0], toHomingTarget[1], ATAN_ANGLE12) -
+               SPY[SPY_BODY_YAW]) &
               0xFFF;
           if (d > 0x800) {
             d -= 0x1000;
@@ -1116,13 +1118,13 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (g_anSpyroVelocityFp6[0] == 0 && g_anSpyroVelocityFp6[1] == 0) {
           n0 += 0x10000;
         }
-        CopyVector(v50, g_anSpyroVelocityFp6);
-        RShiftVector3(v50, 6);
-        v50[0] += g_anSpyroWorldPos[0];
-        v50[1] += g_nSpyroWorldPosY;
-        v50[2] =
+        CopyVector(wakePos, g_anSpyroVelocityFp6);
+        RShiftVector3(wakePos, 6);
+        wakePos[0] += g_anSpyroWorldPos[0];
+        wakePos[1] += g_nSpyroWorldPosY;
+        wakePos[2] =
             g_nSpyroGroundHeightZ; /* last: keeps t0 live past the fn load */
-        g_pfnLevelEmitParticles(1, EMIT_FLIGHT_GROUND_WAKE, v50, n0);
+        g_pfnLevelEmitParticles(1, EMIT_FLIGHT_GROUND_WAKE, wakePos, n0);
       }
       moving = 0;
       if (g_anSpyroVelocityFp6[0] != 0 || g_anSpyroVelocityFp6[1] != 0) {
@@ -1350,7 +1352,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       if (lift > 0x12C0) {
         lift = 0x12C0;
       }
-      CopyVector(v80, zb + 0x5D);
+      CopyVector(liftStep, zb + 0x5D);
       a = zb[0] - g_nSpyroScriptedLiftBaseZ;
       g_nSpyroSubstate = 0;
       g_nSpyroMoveTargetMag = 0x400;
@@ -1369,9 +1371,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       if (reach < m) {
         m = reach;
       }
-      v80[0] = (m * LookupCosine(g_nSpyroBodyYaw)) >> 12;
-      v80[1] = (m * LookupSine(g_nSpyroBodyYaw)) >> 12;
-      AddVector(v80, v80, zb + 0x5D);
+      liftStep[0] = (m * LookupCosine(g_nSpyroBodyYaw)) >> 12;
+      liftStep[1] = (m * LookupSine(g_nSpyroBodyYaw)) >> 12;
+      AddVector(liftStep, liftStep, zb + 0x5D);
     } else {
       a = (g_nSpyroBodyYaw - (g_pScriptedCameraActor->rotZ << 4)) & 0xFFF;
       m = reach;
@@ -1381,21 +1383,21 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       if (abs(a) < 0x100) {
         m += 0x800;
       }
-      v80[0] = (m * LookupCosine(g_nSpyroBodyYaw)) >> 12;
-      v80[1] = (m * LookupSine(g_nSpyroBodyYaw)) >> 12;
-      AddVector(v80, v80, zb + 0x5D);
+      liftStep[0] = (m * LookupCosine(g_nSpyroBodyYaw)) >> 12;
+      liftStep[1] = (m * LookupSine(g_nSpyroBodyYaw)) >> 12;
+      AddVector(liftStep, liftStep, zb + 0x5D);
       a = zb[0x54] - zb[0];
       lift = (a * 0x12C0) >> 10;
       a = (g_pScriptedCameraActor->rotZ << 4) - ((a * a) >> 11);
       g_nSpyroMoveTargetMag = 0xC80;
     }
-    v80[2] = 0;
-    SubtractVector(v80, v80, g_anSpyroWorldPos);
-    m = VectorLength(v80, VEC_LEN_XY);
+    liftStep[2] = 0;
+    SubtractVector(liftStep, liftStep, g_anSpyroWorldPos);
+    m = VectorLength(liftStep, VEC_LEN_XY);
     if (g_nSpyroMoveTargetMag < m) {
-      ScaleVector3ByRatio(v80, m, g_nSpyroMoveTargetMag);
+      ScaleVector3ByRatio(liftStep, m, g_nSpyroMoveTargetMag);
     }
-    CopyVector(g_anSpyroWorldPos + SPY_CARRY, v80);
+    CopyVector(g_anSpyroWorldPos + SPY_CARRY, liftStep);
     CopyVector(g_anSpyroWorldPos + SPY_VELOCITY, g_anSpyroWorldPos + SPY_CARRY);
     g_nSpyroCarryMotionZ = lift;
     g_nSpyroVelocityZ = lift;
@@ -1411,13 +1413,13 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     if (g_nSpyroGroundSlope < 0x17) {
       int *c2 = &SPY[SPY_CARRY];
 
-      ZeroVector(v90);
-      SubtractVector(v90, v90, c2);
-      l = VectorLength(v90, VEC_LEN_XYZ);
+      ZeroVector(slideDrag);
+      SubtractVector(slideDrag, slideDrag, c2);
+      l = VectorLength(slideDrag, VEC_LEN_XYZ);
       if (l > 0x100) {
-        ScaleVector3ByRatio(v90, l, 0x100);
+        ScaleVector3ByRatio(slideDrag, l, 0x100);
       }
-      AddVector(c2, c2, v90);
+      AddVector(c2, c2, slideDrag);
     }
     carry = g_anSpyroCarryMotionVec;
     AddVector(carry, carry, carry - 6);
@@ -1522,9 +1524,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     obj = ((int **)g_pScriptedCameraActor)[0];
     obj2 = obj;
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
-    SubtractVector(vA0, &g_pScriptedCameraActor->posX, &SPY[0]);
-    dist = VectorLength(vA0, VEC_LEN_XY);
-    ang = ArcTan2(vA0[0], vA0[1], ATAN_ANGLE12);
+    SubtractVector(orbitStep, &g_pScriptedCameraActor->posX, &SPY[0]);
+    dist = VectorLength(orbitStep, VEC_LEN_XY);
+    ang = ArcTan2(orbitStep[0], orbitStep[1], ATAN_ANGLE12);
     dt = (g_nSpyroSubstate == 1 ? -g_nSpyroTurnRateAccum
                                 : g_nSpyroTurnRateAccum) >>
          6;
@@ -1542,22 +1544,22 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     }
     g_pScriptedCameraActor->rotZ = v >> 4;
     SCHED_FENCE();
-    vA0[0] = (dist * LookupCosine(a)) >> 12;
+    orbitStep[0] = (dist * LookupCosine(a)) >> 12;
     {
       int t = LookupSine(a);
       int *q;
 
       ob = Opaque(&SPY[SPY_SCRIPTED_ACTOR]);
       q = ((int **)ob)[0] + 3;
-      vA0[1] = (dist * t) >> 12;
-      AddVector(vA0, vA0, q);
+      orbitStep[1] = (dist * t) >> 12;
+      AddVector(orbitStep, orbitStep, q);
     }
-    SubtractVector(vA0, vA0, ob - SPY_SCRIPTED_ACTOR);
-    vA0[2] = 0;
-    LShiftVector3(vA0, 6);
+    SubtractVector(orbitStep, orbitStep, ob - SPY_SCRIPTED_ACTOR);
+    orbitStep[2] = 0;
+    LShiftVector3(orbitStep, 6);
     SCHED_FENCE();
     obj2 = ob + (SPY_VELOCITY - SPY_SCRIPTED_ACTOR);
-    CopyVector(obj2, vA0);
+    CopyVector(obj2, orbitStep);
     KEEP_IN_REG(obj2);
     g_nSpyroBodyYaw = (g_nSpyroBodyYaw + dt) & 0xFFF;
     if (g_nSpyroCliffEdgeHint != 0) {
@@ -1572,23 +1574,23 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     int *vel;
     int l;
 
-    ZeroVector(vB0);
+    ZeroVector(knockDrag);
     vel = &SPY[SPY_VELOCITY];
-    SubtractVector(vB0, vB0, vel);
+    SubtractVector(knockDrag, knockDrag, vel);
     if (g_nSpyroAirborneFrames != 0) {
-      vB0[2] = 0;
-      l = VectorLength(vB0, VEC_LEN_XY);
+      knockDrag[2] = 0;
+      l = VectorLength(knockDrag, VEC_LEN_XY);
       if (l > 0x40) {
-        ScaleVector3ByRatio(vB0, l, 0x40);
+        ScaleVector3ByRatio(knockDrag, l, 0x40);
       }
-      vB0[2] = -0xC0;
-      AddVector(vel, vel, vB0);
+      knockDrag[2] = -0xC0;
+      AddVector(vel, vel, knockDrag);
     } else {
-      l = VectorLength(vB0, VEC_LEN_XYZ);
+      l = VectorLength(knockDrag, VEC_LEN_XYZ);
       if (l > 0x100) {
-        ScaleVector3ByRatio(vB0, l, 0x100);
+        ScaleVector3ByRatio(knockDrag, l, 0x100);
       }
-      AddVector(vel, vel, vB0);
+      AddVector(vel, vel, knockDrag);
       AddVector(vel, vel, &SPY[SPY_PLATFORM]);
     }
     if (SPY[SPY_VELOCITY + 2] < -0x2300) {
