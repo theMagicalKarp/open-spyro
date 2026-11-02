@@ -3025,7 +3025,7 @@ void Level10_UpdateActors(void) {
                                         spy->posY - actor->posY, ATAN_ANGLE8)) >= 0x55 ||
             (actor->mode == SHEMP_P2_SLAM && actor->nextFrame >= 0x16 && actor->nextFrame < 0x30)) {
           if (st->phase == SHEMP_PHASE_3) {
-            ANIM_SET(actor, 3);
+            ANIM_SET(actor, SHEMP_ANIM_DYING);
             actor->rotZ += 0x80;
             ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
             actor->mode = SHEMP_DYING;
@@ -3080,7 +3080,7 @@ void Level10_UpdateActors(void) {
         st->ang = actor->rotZ * 16;
         d = SteerActorYawTowardSpyro(actor, &st->turnDir, &st->ang, 0x20, 0x280, 1);
         if (ABS(d) < 0x80) {
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, SHEMP_ANIM_IDLE);
         }
         st->animStarted = 0;
         switch (st->phase) {
@@ -3111,15 +3111,15 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_P2_TAUNT:
         if (st->animStarted == 0) {
-          ANIM_GO(actor, 7);
+          ANIM_GO(actor, SHEMP_ANIM_ROAR);
           st->animStarted = 1;
         } else if (g_nActorAnimDone != 0) {
           if (st->count == 0) {
             st->count = RandomIntInRange(1, 2);
-            ANIM_GO(actor, 0x13);
+            ANIM_GO(actor, SHEMP_ANIM_GESTURE);
           } else {
             st->count--;
-            ANIM_GO(actor, 0x12);
+            ANIM_GO(actor, SHEMP_ANIM_STAND);
           }
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
@@ -3142,7 +3142,7 @@ void Level10_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           st->timer = 0xA0;
-          ANIM_GO(actor, 0x12);
+          ANIM_GO(actor, SHEMP_ANIM_STAND);
           actor->mode = SHEMP_P2_TAUNT;
           continue;
         }
@@ -3162,23 +3162,23 @@ void Level10_UpdateActors(void) {
         b = ArcTan2(actor->posX - *(int *)((unsigned char *)st->path + off + 8),
                           actor->posY - *(int *)((unsigned char *)st->path + off + 0xC), ATAN_ANGLE8);
         spd = 0xB4;
-        if (actor->nextAnim == 9) {
+        if (actor->nextAnim == SHEMP_ANIM_WALK) {
           lim = 6;
         }
         if (AbsAngleDelta8(ha, b) > lim) {
           SteerActorAroundPoint(actor, (int *)((unsigned char *)st->path + (off + 8)), 0xC80, ha, 6,
                         spd, 9, 0x14, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
-          ANIM_GO(actor, 9);
+          ANIM_GO(actor, SHEMP_ANIM_WALK);
         } else {
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-          ANIM_GO(actor, 0x12);
+          ANIM_GO(actor, SHEMP_ANIM_STAND);
           if (g_nActorAnimDone != 0) {
             if (st->count == 0) {
               st->count = RandomIntInRange(1, 2);
-              ANIM_GO(actor, 0x13);
+              ANIM_GO(actor, SHEMP_ANIM_GESTURE);
             } else {
               st->count--;
-              ANIM_GO(actor, 0x12);
+              ANIM_GO(actor, SHEMP_ANIM_STAND);
             }
           }
         }
@@ -3194,7 +3194,7 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_P1_WINDUP:
         if (st->animStarted == 0) {
-          ANIM_GO(actor, 0xA);
+          ANIM_GO(actor, SHEMP_ANIM_WINDUP);
         }
         if (g_nActorAnimDone != 0 || st->animStarted != 0) {
           st->animStarted = 1;
@@ -3205,7 +3205,7 @@ void Level10_UpdateActors(void) {
         break;
 
       case SHEMP_P1_CHARGE:
-        ANIM_GO(actor, 9);
+        ANIM_GO(actor, SHEMP_ANIM_WALK);
         if (MoveActorAlongHeading(actor, 0xAA, 0, 0, MOVE_LIFT | MOVE_STEP_LIMIT) != 0 ||
             TICK_DOWN(st->timer) != 0 ||
             (AbsAngleDelta8(actor->rotZ,
@@ -3218,7 +3218,7 @@ void Level10_UpdateActors(void) {
         break;
 
       case SHEMP_P1_STRIKE:
-        ANIM_GO(actor, 0xF);
+        ANIM_GO(actor, SHEMP_ANIM_STRIKE);
         if (AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
                                         spy->posY - actor->posY, ATAN_ANGLE8)) < 8 &&
@@ -3238,7 +3238,7 @@ void Level10_UpdateActors(void) {
         off = st->node[0] << 4;
         a = ArcTan2(*(int *)((unsigned char *)st->path + off + 8) - spy->posX,
                           *(int *)((unsigned char *)st->path + off + 0xC) - spy->posY, ATAN_ANGLE8);
-        ANIM_GO(actor, 9);
+        ANIM_GO(actor, SHEMP_ANIM_WALK);
         tgt371[0] = *(int *)((unsigned char *)st->path + off + 8) + ((g_anCosineLut[a] * 0x19) >> 5);
         tgt371[1] =
             *(int *)((unsigned char *)st->path + off + 0xC) + ((g_anSineLut[a] * 0x19) >> 5);
@@ -3257,15 +3257,15 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_P3_TAUNT:
         if (st->animStarted == 0) {
-          ANIM_GO(actor, 0xA);
+          ANIM_GO(actor, SHEMP_ANIM_WINDUP);
           st->animStarted = 1;
         } else if (g_nActorAnimDone != 0) {
           if (st->count == 0) {
             st->count = RandomIntInRange(1, 2);
-            ANIM_GO(actor, 0x13);
+            ANIM_GO(actor, SHEMP_ANIM_GESTURE);
           } else {
             st->count--;
-            ANIM_GO(actor, 0x12);
+            ANIM_GO(actor, SHEMP_ANIM_STAND);
           }
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
@@ -3277,7 +3277,7 @@ void Level10_UpdateActors(void) {
         break;
 
       case SHEMP_P3_TURN:
-        ANIM_GO(actor, 0xB);
+        ANIM_GO(actor, SHEMP_ANIM_TURN);
         st->timer = 0;
         actor->subMode = actor->rotZ;
         if (TurnActorYawTowardAngle(actor,
@@ -3313,7 +3313,7 @@ void Level10_UpdateActors(void) {
           }
           if (st->timer >> 4 >= 0x105) {
             st->timer = 0x3C;
-            ANIM_BLEND(actor, 0x12);
+            ANIM_BLEND(actor, SHEMP_ANIM_STAND);
             actor->mode = SHEMP_P3_TAUNT;
             continue;
           }
@@ -3323,10 +3323,10 @@ void Level10_UpdateActors(void) {
       case SHEMP_STUNNED:
         st->timer = 0xC8;
         if (st->phase == SHEMP_PHASE_1) {
-          ANIM_GO(actor, 0xE);
+          ANIM_GO(actor, SHEMP_ANIM_STUNNED);
         } else {
           actor->rotZ += 0x80;
-          ANIM_SET(actor, 0xE);
+          ANIM_SET(actor, SHEMP_ANIM_STUNNED);
         }
         ModifyWorldChunkAnimFlags(st->phase, CHUNK_ANIM_RESUME, 0);
         st->timer2 = 0x1E;
@@ -3402,14 +3402,14 @@ void Level10_UpdateActors(void) {
         }
         if (TrackEntityYawTowardSpyro(actor, 6, 0xA, YAW_STEP_IN_BAND) != 0 && g_nActorAnimDone != 0) {
           st->count = 0;
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, SHEMP_ANIM_IDLE);
           actor->mode = SHEMP_IDLE;
           continue;
         }
         break;
 
       case SHEMP_DYING:
-        ANIM_GO(actor, 3);
+        ANIM_GO(actor, SHEMP_ANIM_DYING);
         if (g_nActorAnimDone != 0) {
           g_bLevelPhasedBossKilled = 1;
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

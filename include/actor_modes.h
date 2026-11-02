@@ -323,6 +323,20 @@ enum ShempPhase {
   SHEMP_PHASE_3 = 2, /* same, SHEMP_P3_TAUNT; stunned here he is beaten */
 };
 
+/* Doctor Shemp's animations, from the modes that play them. */
+enum ShempAnim {
+  SHEMP_ANIM_IDLE = 0,
+  SHEMP_ANIM_DYING = 3,
+  SHEMP_ANIM_ROAR = 7,     /* opens the phase-2 taunt */
+  SHEMP_ANIM_WALK = 9,     /* circle, charge, return */
+  SHEMP_ANIM_WINDUP = 0xA, /* phase-1 windup, opens the phase-3 taunt */
+  SHEMP_ANIM_TURN = 0xB,
+  SHEMP_ANIM_STUNNED = 0xE,
+  SHEMP_ANIM_STRIKE = 0xF,
+  SHEMP_ANIM_STAND = 0x12, /* between gestures; the sweep blends back to it */
+  SHEMP_ANIM_GESTURE = 0x13, /* starts each taunt round of 1..2 stands */
+};
+
 /* ->mode of a shepherd (ACTOR_TYPE_SHEPHERD, ShepherdState; levels 12/13).
  * SHEPHERD_IDLE runs ShepherdState.post's waiting behaviour; shepherds
  * work in pairs (ShepherdState.partner), one riding the other's shoulders. */
@@ -359,6 +373,17 @@ enum ShepherdPost {
   SHEPHERD_POST_WATCH = 9,       /* faces Spyro; he lands near: CHASE */
   SHEPHERD_POST_COVER = 10,      /* throws toward its partners, guards when Spyro is close; a
                                   * partner knocked: POST_WATCH and RECOVER */
+};
+
+/* A shepherd's animations, from the modes that play them. */
+enum ShepherdAnim {
+  SHEPHERD_ANIM_RUN = 1,
+  SHEPHERD_ANIM_WATCH = 2,      /* the leaper tracking Spyro above it */
+  SHEPHERD_ANIM_THROW = 5,      /* a crook leaves its hand on frame 0xE */
+  SHEPHERD_ANIM_LOITER = 6,
+  SHEPHERD_ANIM_RIDE = 0xC,
+  SHEPHERD_ANIM_SIGNAL = 0xD,   /* sends its partner after Spyro */
+  SHEPHERD_ANIM_FACE_PARTNER = 0xE, /* the pair patrol's stop */
 };
 
 /* ->mode of a singing path walker (ACTOR_TYPE_SINGING_PATH_WALKER,
@@ -515,6 +540,19 @@ enum CaptainFightStep {
   CAPTAIN_STEP_SHEATHE_RESET = 4, /* puts the sword away, back to GUARD */
   CAPTAIN_STEP_SHEATHE = 5,  /* puts the sword away, then REST */
   CAPTAIN_STEP_REST = 6,     /* close: STRIKE; rested: DRAW again */
+};
+
+/* A guard captain's animations, from the modes that play them (0xB, a pose
+ * the patrol tests for, has no player in the C). */
+enum CaptainAnim {
+  CAPTAIN_ANIM_STAND = 0,    /* sentry; held on its frame 0x14/0x15 pose */
+  CAPTAIN_ANIM_GUARD = 2,
+  CAPTAIN_ANIM_FIGHT_DRAW = 6, /* the fight's draw step */
+  CAPTAIN_ANIM_WALK = 7,
+  CAPTAIN_ANIM_SHEATHE = 8,
+  CAPTAIN_ANIM_ROUSE = 9,
+  CAPTAIN_ANIM_BASH = 0xA,
+  CAPTAIN_ANIM_DRAW = 0xC,   /* alerted: draws before DRAW / DRAW_ADVANCE */
 };
 /* CaptainState.step on a ledge post instead: nonzero once armed. */
 #define CAPTAIN_LEDGE_ARMED 1

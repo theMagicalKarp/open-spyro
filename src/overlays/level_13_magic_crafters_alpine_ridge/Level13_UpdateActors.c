@@ -2696,7 +2696,7 @@ void Level13_UpdateActors(void) {
         case CAPTAIN_POST_SENTRY: {
           Actor *partner = &g_pActorListBase[st->partner];
 
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, CAPTAIN_ANIM_STAND);
           if (st->heading == -1) {
             st->heading = actor->rotZ;
           }
@@ -2706,7 +2706,7 @@ void Level13_UpdateActors(void) {
             continue;
           }
           if (TurnActorYawTowardAngle(actor, st->heading, 6, 0xA, YAW_STEP_IN_BAND)) {
-            if (st->posed == 0 && actor->anim == 0) {
+            if (st->posed == 0 && actor->anim == CAPTAIN_ANIM_STAND) {
               st->posed = 1;
               actor->frame = 0x15;
               actor->nextFrame = 0x16;
@@ -2735,7 +2735,7 @@ void Level13_UpdateActors(void) {
           SnapActorToGround(actor);
           if (st->step != CAPTAIN_STEP_GUARD) {
             if (TrackEntityYawTowardSpyro(actor, 4, 0x14, YAW_STEP_IN_BAND)) {
-              ANIM_GO(actor, 2);
+              ANIM_GO(actor, CAPTAIN_ANIM_GUARD);
             }
             if (TICK_DOWN(st->timer) &&
                 ApproxDist2D(&actor->posX, &spy->posX) < 0x2800 &&
@@ -2743,7 +2743,7 @@ void Level13_UpdateActors(void) {
               actor->mode = CAPTAIN_STALK;
               continue;
             }
-          } else if (st->posed == 0 && actor->anim == 0) {
+          } else if (st->posed == 0 && actor->anim == CAPTAIN_ANIM_STAND) {
             st->posed = 1;
             actor->frame = 0x15;
             actor->nextFrame = 0x16;
@@ -2761,7 +2761,7 @@ void Level13_UpdateActors(void) {
           if (partner->nextAnim == 3) {
             actor->subMode = 1;
           }
-          if (actor->anim == 0 && st->posed == 0) {
+          if (actor->anim == CAPTAIN_ANIM_STAND && st->posed == 0) {
             st->posed = 1;
             actor->frame = 0x14;
             actor->nextFrame = 0x15;
@@ -2773,7 +2773,7 @@ void Level13_UpdateActors(void) {
               actor->mode = CAPTAIN_FIGHT;
               continue;
             }
-            ANIM_GO(actor, 0xC);
+            ANIM_GO(actor, CAPTAIN_ANIM_DRAW);
             actor->mode = CAPTAIN_DRAW;
             continue;
           }
@@ -2781,7 +2781,7 @@ void Level13_UpdateActors(void) {
             break;
           }
           if (actor->subMode == 1) {
-            ANIM_GO(actor, 7);
+            ANIM_GO(actor, CAPTAIN_ANIM_WALK);
             if (ApproxDist2D(&actor->posX, PATH_PT(st->path, st->path->cur)) <
                 0x100) {
               int next;
@@ -2821,7 +2821,7 @@ void Level13_UpdateActors(void) {
         case CAPTAIN_POST_SENTRY: {
           int *pos;
 
-          ANIM_GO(actor, 7);
+          ANIM_GO(actor, CAPTAIN_ANIM_WALK);
           if (TrackEntityYawTowardSpyro(actor, 8, 0xA, YAW_STEP_IN_BAND) == 0) {
             break;
           }
@@ -2843,7 +2843,7 @@ void Level13_UpdateActors(void) {
         }
 
         case CAPTAIN_POST_LOOKOUT:
-          ANIM_GO(actor, 7);
+          ANIM_GO(actor, CAPTAIN_ANIM_WALK);
           if (TICK_DOWN(st->timer) == 0) {
             break;
           }
@@ -2864,7 +2864,7 @@ void Level13_UpdateActors(void) {
         if (TICK_DOWN(st->timer) == 0) {
           break;
         }
-        ANIM_GO(actor, 9);
+        ANIM_GO(actor, CAPTAIN_ANIM_ROUSE);
         if (actor->nextFrame >= 7) {
           actor->mode = CAPTAIN_ADVANCE;
           continue;
@@ -2893,16 +2893,16 @@ void Level13_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         switch (st->step) {
         case CAPTAIN_STEP_GUARD:
-          ANIM_GO(actor, 2);
+          ANIM_GO(actor, CAPTAIN_ANIM_GUARD);
           if (d < 0x1800) {
             st->step = CAPTAIN_STEP_DRAW;
           }
           break;
 
         case CAPTAIN_STEP_DRAW:
-          ANIM_GO8(actor, 6);
+          ANIM_GO8(actor, CAPTAIN_ANIM_FIGHT_DRAW);
           ANIM_RETIME(actor);
-          if (actor->anim == 6 && g_nActorAnimNewFrame != 0 && actor->frame >= 0xA) {
+          if (actor->anim == CAPTAIN_ANIM_FIGHT_DRAW && g_nActorAnimNewFrame != 0 && actor->frame >= 0xA) {
             st->stanceTimer = RandomIntInRange(0x96, 0x15E);
             st->step = CAPTAIN_STEP_SPAR;
           }
@@ -2943,16 +2943,16 @@ void Level13_UpdateActors(void) {
           break;
 
         case CAPTAIN_STEP_SHEATHE_RESET:
-          ANIM_GO(actor, 8);
+          ANIM_GO(actor, CAPTAIN_ANIM_SHEATHE);
           if (g_nActorAnimNewFrame != 0 && actor->nextFrame >= 8) {
             st->step = CAPTAIN_STEP_GUARD;
           }
           break;
 
         case CAPTAIN_STEP_SHEATHE:
-          ANIM_GO(actor, 8);
+          ANIM_GO(actor, CAPTAIN_ANIM_SHEATHE);
           if (g_nActorAnimNewFrame != 0 && actor->nextFrame >= 8) {
-            ANIM_GO(actor, 2);
+            ANIM_GO(actor, CAPTAIN_ANIM_GUARD);
             st->step = CAPTAIN_STEP_REST;
             st->stanceTimer = RandomIntInRange(0x3C, 0x78);
           }
@@ -2973,7 +2973,7 @@ void Level13_UpdateActors(void) {
       }
 
       case CAPTAIN_BASH:
-        ANIM_GO(actor, 0xA);
+        ANIM_GO(actor, CAPTAIN_ANIM_BASH);
         if (st->camTimer == 0 && actor->nextFrame >= 6) {
           int *v = w296;
 
@@ -2994,7 +2994,7 @@ void Level13_UpdateActors(void) {
         break;
 
       case CAPTAIN_SET_HOME:
-        ANIM_GO(actor, 7);
+        ANIM_GO(actor, CAPTAIN_ANIM_WALK);
         CopyVector(st->home, PATH_PT(st->path, 0));
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         st->step = CAPTAIN_LEDGE_ARMED;
@@ -3003,7 +3003,7 @@ void Level13_UpdateActors(void) {
       case CAPTAIN_STALK: {
         int *pos;
 
-        ANIM_GO(actor, 7);
+        ANIM_GO(actor, CAPTAIN_ANIM_WALK);
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         pos = &actor->posX;
         if (ApproxDist2D(pos, &SPY.posX) < 0x7D0) {
@@ -3033,7 +3033,7 @@ void Level13_UpdateActors(void) {
         if (TICK_DOWN(st->timer) == 0) {
           break;
         }
-        ANIM_GO(actor, 0xC);
+        ANIM_GO(actor, CAPTAIN_ANIM_DRAW);
         actor->mode = CAPTAIN_DRAW_ADVANCE;
         continue;
 
@@ -3048,7 +3048,7 @@ void Level13_UpdateActors(void) {
         int ang = ArcTan2(st->home[0] - actor->posX,
                                 st->home[1] - actor->posY, ATAN_ANGLE8);
 
-        ANIM_GO(actor, 7);
+        ANIM_GO(actor, CAPTAIN_ANIM_WALK);
         if (TurnActorYawTowardAngle(actor, ang, 6, 0x14, YAW_STEP_IN_BAND)) {
           MoveActorAlongHeading(actor, 0x6E, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (ApproxDist2D(&actor->posX, st->home) < 0x80) {
@@ -3486,7 +3486,7 @@ void Level13_UpdateActors(void) {
         }
 
         case SHEPHERD_POST_RUN_PATH:
-          ANIM_GO(actor, 1);
+          ANIM_GO(actor, SHEPHERD_ANIM_RUN);
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x3800) {
             st->done = 0;
             *st->doneFlag = 0;
@@ -3495,9 +3495,9 @@ void Level13_UpdateActors(void) {
           break;
 
         case SHEPHERD_POST_LOITER:
-          if (actor->nextAnim != 6) {
+          if (actor->nextAnim != SHEPHERD_ANIM_LOITER) {
             g_nActorAnimDone = 0;
-            ANIM_ADVANCE(actor, 6);
+            ANIM_ADVANCE(actor, SHEPHERD_ANIM_LOITER);
             actor->nextFrame = RandomIntInRange(0, 0xF);
           }
           if (st->heading == -1) {
@@ -3525,7 +3525,7 @@ void Level13_UpdateActors(void) {
             st->heading = actor->rotZ;
           }
           TurnActorYawTowardAngle(actor, st->heading, 4, 0, YAW_HOLD_IN_BAND);
-          ANIM_GO(actor, 5);
+          ANIM_GO(actor, SHEPHERD_ANIM_THROW);
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x3000) {
             Actor *partner = &g_pActorListBase[st->partner];
             ShepherdState *ps;
@@ -3534,7 +3534,7 @@ void Level13_UpdateActors(void) {
             ps = partner->state;
             ps->vz = 0x14;
             ps->side = 0;
-            ANIM_GO(actor, 0xD);
+            ANIM_GO(actor, SHEPHERD_ANIM_SIGNAL);
             actor->mode = SHEPHERD_WATCH;
             continue;
           }
@@ -3560,16 +3560,16 @@ void Level13_UpdateActors(void) {
                 g_nActorAnimDone = 0;
                 actor->frameProgress = sixteen;
                 actor->frameRate = sixteen;
-                actor->nextAnim = 1;
+                actor->nextAnim = SHEPHERD_ANIM_RUN;
                 actor->nextFrame = 0;
                 OnActorAnimQueued(actor);
               }
               actor->mode = SHEPHERD_CHASE;
               continue;
             }
-            ANIM_GO(actor, 2);
+            ANIM_GO(actor, SHEPHERD_ANIM_WATCH);
           } else {
-            ANIM_GO(actor, 5);
+            ANIM_GO(actor, SHEPHERD_ANIM_THROW);
             if (ApproxDist2D(&actor->posX, &spy->posX) < st->range << 10 &&
                 g_nSpyroAirborneFrames == 0 && SPY.posZ - PATH_Z(st->path, 0) > 0) {
               Actor *partner = &g_pActorListBase[st->partner];
@@ -3614,7 +3614,7 @@ void Level13_UpdateActors(void) {
             SetActorGroupStateExcept(actor, SHEPHERD_ALERTED, SHEPHERD_KNOCKED);
           }
           if (st->sub == 0) {
-            ANIM_GO(actor, 1);
+            ANIM_GO(actor, SHEPHERD_ANIM_RUN);
             PivotActorAlongPath(actor, st->path, 0x100, 0x48, 0xC8, 3, 8,
                           actor->group, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             if (TICK_DOWN(st->timer) && partner->mode < ACTOR_MODE_DORMANT &&
@@ -3630,7 +3630,7 @@ void Level13_UpdateActors(void) {
               st->sub = 2;
             }
           } else if (st->sub == 2) {
-            ANIM_GO(actor, 0xE);
+            ANIM_GO(actor, SHEPHERD_ANIM_FACE_PARTNER);
             if (g_nActorAnimDone != 0) {
               st->sub = 0;
             }
@@ -3645,7 +3645,7 @@ void Level13_UpdateActors(void) {
             actor->mode = SHEPHERD_CHASE;
             continue;
           }
-          ANIM_GO(actor, 1);
+          ANIM_GO(actor, SHEPHERD_ANIM_RUN);
           PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0xC8, 6, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           break;
 
@@ -3671,7 +3671,7 @@ void Level13_UpdateActors(void) {
             int ang = ArcTan2(partner->posX - actor->posX,
                                     partner->posY - actor->posY, ATAN_ANGLE8);
 
-            ANIM_GO(actor, 5);
+            ANIM_GO(actor, SHEPHERD_ANIM_THROW);
             TurnActorYawTowardAngle(actor, ang, 4, 0, YAW_HOLD_IN_BAND);
             if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
               actor->subMode = 1;
@@ -3713,7 +3713,7 @@ void Level13_UpdateActors(void) {
         break;
 
       case SHEPHERD_CHASE:
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, SHEPHERD_ANIM_RUN);
         switch (st->post) {
         case SHEPHERD_POST_RUN_PATH:
           if (st->done == 0 &&
@@ -3943,7 +3943,7 @@ void Level13_UpdateActors(void) {
         Actor *partner = &g_pActorListBase[st->partner];
 
         ((ShepherdState *)partner->state)->timer = 0xA;
-        ANIM_GO(actor, 0xC);
+        ANIM_GO(actor, SHEPHERD_ANIM_RIDE);
         if (partner->nextAnim == 3) {
           st->vz = 0xC8;
           st->knockSpeed = 0x190;
@@ -3995,7 +3995,7 @@ void Level13_UpdateActors(void) {
         int ang = ArcTan2(st->home[0] - actor->posX,
                                 st->home[1] - actor->posY, ATAN_ANGLE8);
 
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, SHEPHERD_ANIM_RUN);
         if (TurnActorYawTowardAngle(actor, ang, 4, 0x14, one)) {
           MoveActorAlongHeading(actor, 0x5A, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (ApproxDist2D(&actor->posX, st->home) < 0x80) {

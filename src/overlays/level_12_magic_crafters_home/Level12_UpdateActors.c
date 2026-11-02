@@ -3315,7 +3315,7 @@ void Level12_UpdateActors(void) {
         }
 
         case SHEPHERD_POST_RUN_PATH:
-          ANIM_GO(actor, 1);
+          ANIM_GO(actor, SHEPHERD_ANIM_RUN);
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x3800) {
             st->done = 0;
             *st->doneFlag = 0;
@@ -3324,9 +3324,9 @@ void Level12_UpdateActors(void) {
           break;
 
         case SHEPHERD_POST_LOITER:
-          if (actor->nextAnim != 6) {
+          if (actor->nextAnim != SHEPHERD_ANIM_LOITER) {
             g_nActorAnimDone = 0;
-            ANIM_ADVANCE(actor, 6);
+            ANIM_ADVANCE(actor, SHEPHERD_ANIM_LOITER);
             actor->nextFrame = RandomIntInRange(0, 0xF);
           }
           if (st->heading == -1) {
@@ -3354,7 +3354,7 @@ void Level12_UpdateActors(void) {
             st->heading = actor->rotZ;
           }
           TurnActorYawTowardAngle(actor, st->heading, 4, 0, YAW_HOLD_IN_BAND);
-          ANIM_GO(actor, 5);
+          ANIM_GO(actor, SHEPHERD_ANIM_THROW);
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x3000) {
             Actor *partner = &g_pActorListBase[st->partner];
             ShepherdState *ps;
@@ -3363,7 +3363,7 @@ void Level12_UpdateActors(void) {
             ps = partner->state;
             ps->vz = 0x14;
             ps->side = 0;
-            ANIM_GO(actor, 0xD);
+            ANIM_GO(actor, SHEPHERD_ANIM_SIGNAL);
             actor->mode = SHEPHERD_WATCH;
             continue;
           }
@@ -3389,16 +3389,16 @@ void Level12_UpdateActors(void) {
                 g_nActorAnimDone = 0;
                 actor->frameProgress = sixteen;
                 actor->frameRate = sixteen;
-                actor->nextAnim = 1;
+                actor->nextAnim = SHEPHERD_ANIM_RUN;
                 actor->nextFrame = 0;
                 OnActorAnimQueued(actor);
               }
               actor->mode = SHEPHERD_CHASE;
               continue;
             }
-            ANIM_GO(actor, 2);
+            ANIM_GO(actor, SHEPHERD_ANIM_WATCH);
           } else {
-            ANIM_GO(actor, 5);
+            ANIM_GO(actor, SHEPHERD_ANIM_THROW);
             if (ApproxDist2D(&actor->posX, &spy->posX) < st->range << 10 &&
                 g_nSpyroAirborneFrames == 0 && SPY.posZ - PATH_Z(st->path, 0) > 0) {
               Actor *partner = &g_pActorListBase[st->partner];
@@ -3443,7 +3443,7 @@ void Level12_UpdateActors(void) {
             SetActorGroupStateExcept(actor, SHEPHERD_ALERTED, SHEPHERD_KNOCKED);
           }
           if (st->sub == 0) {
-            ANIM_GO(actor, 1);
+            ANIM_GO(actor, SHEPHERD_ANIM_RUN);
             PivotActorAlongPath(actor, st->path, 0x100, 0x48, 0xC8, 3, 8,
                           actor->group, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             if (TICK_DOWN(st->timer) && partner->mode < ACTOR_MODE_DORMANT &&
@@ -3459,7 +3459,7 @@ void Level12_UpdateActors(void) {
               st->sub = 2;
             }
           } else if (st->sub == 2) {
-            ANIM_GO(actor, 0xE);
+            ANIM_GO(actor, SHEPHERD_ANIM_FACE_PARTNER);
             if (g_nActorAnimDone != 0) {
               st->sub = 0;
             }
@@ -3474,7 +3474,7 @@ void Level12_UpdateActors(void) {
             actor->mode = SHEPHERD_CHASE;
             continue;
           }
-          ANIM_GO(actor, 1);
+          ANIM_GO(actor, SHEPHERD_ANIM_RUN);
           PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0xC8, 6, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           break;
 
@@ -3500,7 +3500,7 @@ void Level12_UpdateActors(void) {
             int ang = ArcTan2(partner->posX - actor->posX,
                                     partner->posY - actor->posY, ATAN_ANGLE8);
 
-            ANIM_GO(actor, 5);
+            ANIM_GO(actor, SHEPHERD_ANIM_THROW);
             TurnActorYawTowardAngle(actor, ang, 4, 0, YAW_HOLD_IN_BAND);
             if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
               actor->subMode = 1;
@@ -3542,7 +3542,7 @@ void Level12_UpdateActors(void) {
         break;
 
       case SHEPHERD_CHASE:
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, SHEPHERD_ANIM_RUN);
         switch (st->post) {
         case SHEPHERD_POST_RUN_PATH:
           if (st->done == 0 &&
@@ -3772,7 +3772,7 @@ void Level12_UpdateActors(void) {
         Actor *partner = &g_pActorListBase[st->partner];
 
         ((ShepherdState *)partner->state)->timer = 0xA;
-        ANIM_GO(actor, 0xC);
+        ANIM_GO(actor, SHEPHERD_ANIM_RIDE);
         if (partner->nextAnim == 3) {
           st->vz = 0xC8;
           st->knockSpeed = 0x190;
@@ -3824,7 +3824,7 @@ void Level12_UpdateActors(void) {
         int ang = ArcTan2(st->home[0] - actor->posX,
                                 st->home[1] - actor->posY, ATAN_ANGLE8);
 
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, SHEPHERD_ANIM_RUN);
         if (TurnActorYawTowardAngle(actor, ang, 4, 0x14, one)) {
           MoveActorAlongHeading(actor, 0x5A, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (ApproxDist2D(&actor->posX, st->home) < 0x80) {
