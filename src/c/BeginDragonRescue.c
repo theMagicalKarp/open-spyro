@@ -70,7 +70,7 @@ void BeginDragonRescue(Actor *actor) {
   g_nTotalDragonsRescued = world + 1;
   g_anDragonRescueBlock[-1] = st->cutsceneId; /* g_nDragonRescueTypeSnapshot */
   if (st->partner != (-1)) {
-    g_pActorListBase[st->partner].anim = 1;
+    g_pActorListBase[st->partner].anim = CHECKPT_ANIM_FLASH;
   }
   CopyVector(g_anDragonRescueAuraStarAnchor, &actor->posX);
   g_anDragonRescueAuraStarAnchor[2] += 0x40;

@@ -30,8 +30,8 @@ void EndDragonRescueToWorld(void) {
   g_nCinematicActive = 0;
   if (id != -1) {
     rec = &g_pActorListBase[id];
-    rec->anim = 0;
-    rec->mode = 1;
+    rec->anim = CHECKPT_ANIM_REST;
+    rec->mode = CHECKPT_ARMED;
   }
   ResetSpyroEntity(RESET_SPYRO_FULL);
   cam = g_apCameraAnchorBlock;
