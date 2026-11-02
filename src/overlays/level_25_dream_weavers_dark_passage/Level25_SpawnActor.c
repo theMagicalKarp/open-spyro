@@ -113,7 +113,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
     rec->tint0 = 0;
     rec->tint1 = 0;
     rec->tint2 = 0;
-    rec->tintMode = 1;
+    rec->tintMode = TINT_WHITE;
     rec->renderList |= ACTOR_RENDER_SECONDARY;
     break;
   }
@@ -304,7 +304,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
     rec->tint0 = 0;
     rec->tint1 = 0;
     rec->tint2 = 0;
-    rec->tintMode = 0xD;
+    rec->tintMode = TINT_BOULDER_SPARK;
     break;
 
   case ACTOR_TYPE_FLYING_EMBER: {
@@ -397,7 +397,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
     rec->tint0 = 0;
     rec->tint1 = 0;
     rec->tint2 = 0;
-    rec->tintMode = 0xE;
+    rec->tintMode = TINT_STATUE_SHARD;
     if (g_nDragonRescueSubstate == DRAGON_RESCUE_TURN) {
       rec->scale = 0x14;
     } else if (g_nDragonRescueSubstate == DRAGON_RESCUE_SWEEP) {
@@ -435,7 +435,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
 
     InitActorRenderDefaults(rec);
     HideActorRenderRecord(rec);
-    rec->tintMode = 2;
+    rec->tintMode = TINT_GOLD;
     rec->tint0 = 0;
     rec->tint1 = 0;
     rec->tint2 = 0;

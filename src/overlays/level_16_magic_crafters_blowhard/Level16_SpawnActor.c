@@ -113,7 +113,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       rec->tint0 = 0;
       rec->tint1 = 0;
       rec->tint2 = 0;
-      rec->tintMode = 1;
+      rec->tintMode = TINT_WHITE;
       rec->renderList |= ACTOR_RENDER_SECONDARY;
       break;
     }
@@ -326,27 +326,27 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       rec->tint2 = 0;
       if (rec->type == ACTOR_TYPE_EXTRA_LIFE)
       {
-        rec->tintMode = 0xC;
+        rec->tintMode = TINT_EXTRA_LIFE;
       }
       if (rec->type == ACTOR_TYPE_GEM_1)
       {
-        rec->tintMode = 1;
+        rec->tintMode = TINT_GEM_1;
       }
       if (rec->type == ACTOR_TYPE_GEM_2)
       {
-        rec->tintMode = 2;
+        rec->tintMode = TINT_GEM_2;
       }
       if (rec->type == ACTOR_TYPE_GEM_5)
       {
-        rec->tintMode = 3;
+        rec->tintMode = TINT_GEM_5;
       }
       if (rec->type == ACTOR_TYPE_GEM_10)
       {
-        rec->tintMode = 4;
+        rec->tintMode = TINT_GEM_10;
       }
       if (rec->type == ACTOR_TYPE_GEM_25)
       {
-        rec->tintMode = 5;
+        rec->tintMode = TINT_GEM_25;
       }
       break;
     }
@@ -378,7 +378,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       rec->tint0 = 0;
       rec->tint1 = 0;
       rec->tint2 = 0;
-      rec->tintMode = 0xD;
+      rec->tintMode = TINT_BOULDER_SPARK;
       break;
 
     case ACTOR_TYPE_SEED_POD_SHARD ... ACTOR_TYPE_SEED_POD_SHARD + 2:
@@ -436,7 +436,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       rec->tint0 = 0;
       rec->tint1 = 0;
       rec->tint2 = 0;
-      rec->tintMode = 0xE;
+      rec->tintMode = TINT_STATUE_SHARD;
       if (g_nDragonRescueSubstate == DRAGON_RESCUE_TURN)
       {
         rec->scale = 0x14;
@@ -480,7 +480,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       int *st = rec->state;
       InitActorRenderDefaults(rec);
       HideActorRenderRecord(rec);
-      rec->tintMode = 2;
+      rec->tintMode = TINT_GOLD;
       rec->tint0 = 0;
       rec->tint1 = 0;
       rec->tint2 = 0;

@@ -133,7 +133,7 @@ void SpawnNameLetterActors(Actor *sign, int named) {
         letter->floorOffset = yaw & 0xff;
         skin = sign->subMode;
         letter->subMode = i * 8;
-        letter->tintMode = 2;
+        letter->tintMode = TINT_GOLD;
         letter->mode = skin;
       }
       SubtractVector(cursor, cursor, spacing);

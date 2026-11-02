@@ -231,7 +231,8 @@ void DrawLevelTransitionOverlay(void) {
         g_pSpriteRecordWriteCursor->rotZ = PARTICLES[i].spin;
         g_pSpriteRecordWriteCursor->otBias = 0x7f;
         g_pSpriteRecordWriteCursor->tintMode =
-            ACTOR_RAW(g_pSpriteRecordWriteCursor, unsigned char, type) - 0x52;
+            ACTOR_RAW(g_pSpriteRecordWriteCursor, unsigned char, type) -
+            (ACTOR_TYPE_GEM_1 - TINT_GEM_1);
         g_pSpriteRecordWriteCursor->cullRadius = 0xff;
       }
       i++;

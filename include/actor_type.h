@@ -105,8 +105,12 @@ typedef struct Actor {
 #define TINT_GEM_5 3
 #define TINT_GEM_10 4
 #define TINT_GEM_25 5
-#define TINT_HUD 0xB        /* HUD sprites and text (BuildTextSprites default) */
+#define TINT_WHITE 1        /* 0x606060: Sparx food; the 1-gem shares it */
+#define TINT_GOLD 2         /* 0x006060 (R, G): text glyphs, digits; the 2-gem shares it */
+#define TINT_HUD 0xB        /* HUD sprites and text (BuildTextSprites default); same word as TINT_GOLD */
 #define TINT_EXTRA_LIFE 0xC
+#define TINT_BOULDER_SPARK 0xD /* boulder debris 152/153 */
+#define TINT_STATUE_SHARD 0xE
 #define BILLBOARD_NONE 0xFF          /* no g_aRotBillboards handle */
 #define ACTOR_UPDATE_ALWAYS 0xFF /* ->updateDist: read signed by BuildActiveActorList, so
                                   * a negative radius keeps the actor updating anywhere */

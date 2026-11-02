@@ -74,7 +74,7 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     rec->tint0 = 0;
     rec->tint1 = 0;
     rec->tint2 = 0;
-    rec->tintMode = 1;
+    rec->tintMode = TINT_WHITE;
     rec->renderList |= ACTOR_RENDER_SECONDARY;
     break;
   }
@@ -359,7 +359,7 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
 
     InitActorRenderDefaults(rec);
     HideActorRenderRecord(rec);
-    rec->tintMode = 2;
+    rec->tintMode = TINT_GOLD;
     rec->tint0 = 0;
     rec->tint1 = 0;
     rec->tint2 = 0;
@@ -382,7 +382,7 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
       rec->tint0 = 0;
       rec->tint1 = 0;
       rec->tint2 = 0;
-      rec->tintMode = 2;
+      rec->tintMode = TINT_GOLD;
     }
     break;
 
