@@ -8,8 +8,8 @@
 void InitPadSystem(void) {
   unsigned int *pad = &g_dwPadStash;
   PadInitDirect(g_abPadRawReport, g_abPad2RawReport);
-  ResetPadStickCalibrationDefaults((int)pad);
-  FinalizePadCalibration(pad);
+  ResetPadStickCalibrationDefaults((unsigned char *)pad);
+  FinalizePadCalibration((unsigned char *)pad);
   g_nHitRumbleTimer = 0;
   g_nVibrationLevel = 0;
   g_nPulseRumbleTimer = 0;

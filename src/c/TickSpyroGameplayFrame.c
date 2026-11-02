@@ -143,7 +143,7 @@ void TickSpyroGameplayFrame(void) {
     if (fallFrames[0] == 0) {
       camRecord = g_anSpyroDeathCamRecordBlock;
       CopyVector(camRecord, g_anCameraPos);
-      ActivateScriptedCameraView((int)(camRecord - (0x18 / 4)));
+      ActivateScriptedCameraView(camRecord - (0x18 / 4));
     }
     fallFrames[0] += g_nFrameStep;
   }

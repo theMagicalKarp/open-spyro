@@ -97,9 +97,10 @@ void PollPadAndDistributeInput(void) {
     case 0x53:
     case 0x73:
       if (g_anPadTypeBlock[0] != PAD_TYPE_ANALOG) {
-        ResetPadStickCalibrationDefaults((int)&g_anPadTypeBlock[-3]);
+        ResetPadStickCalibrationDefaults(
+            (unsigned char *)&g_anPadTypeBlock[-3]);
         g_dwPadAnalogRawSnapshot = *(unsigned int *)&g_abPadRawReport[4];
-        FinalizePadCalibration((unsigned int *)&g_anPadTypeBlock[-3]);
+        FinalizePadCalibration((unsigned char *)&g_anPadTypeBlock[-3]);
       }
       padType = PAD_TYPE_ANALOG;
       break;

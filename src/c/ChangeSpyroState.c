@@ -53,7 +53,7 @@ void ChangeSpyroState(int state) {
   case SPYRO_ST_GLIDE:
   case SPYRO_ST_FLY:
   case SPYRO_ST_SUPERCHARGE:
-    StopSoundVoicesByOwner(g_anSpyroWorldPos, VOICE_STOP_LOOPING);
+    StopSoundVoicesByOwner((Actor *)g_anSpyroWorldPos, VOICE_STOP_LOOPING);
     break;
   case SPYRO_ST_HURT_TINT:
     g_abSpyroTintRgba[3] = 0;

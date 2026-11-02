@@ -58,7 +58,7 @@ void InitHudCounters(int layout_butterflies) {
   off = 0;
   vec = 0;
 icon_slot:
-  HideActorRenderRecord((int)rec);
+  HideActorRenderRecord((Actor *)rec);
 
   CopyVector(pos, HUD_REST_POS(vec));
   pos += sizeof(Actor) / sizeof(int);

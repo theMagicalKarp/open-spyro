@@ -31,7 +31,7 @@ int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed,
   int idx;
   int wrap;
   int *node;
-  void **list;
+  Actor **list;
   Actor *peer;
 
   if (g_nActorFrameDelta == 3) {

@@ -1107,9 +1107,8 @@ void PutDrawEnv(void *env);
 
 DISPENV *PutDispEnv(DISPENV *env);
 
-/* 0x80060670: libgpu SetDrawMode primitive. Initializes DR_MODE at param_1 (tag length = 2 words): code[0] = GP0(0xe1) draw-mode word built from dfe (force-bg, param_2), dtd (dither, param_3) and tpage bits (param_4); code[1] = clip-area word from optional RECT* param_5 (NULL = no clip). */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined SetDrawMode(int param_1, int param_2, int param_3, uint param_4, byte *param_5);
+/* 0x80060670: libgpu SetDrawMode primitive. Initializes the DR_MODE at p (tag length = 2 words): code[0] = GP0(0xe1) draw-mode word built from dfe (force-bg), dtd (dither) and the tpage bits; code[1] = clip-area word from the optional RECT *tw (NULL = no clip). */
+void SetDrawMode(void *p, int dfe, int dtd, int tpage, RECT *tw);
 
 /* 0x800608e0: libgpu SetDrawEnv: packs a DRAWENV (RECT clip + offset + tpage + dtd + isbg + RGB clear color) into a primitive chain at param_1: GP0(0xe3) area-TL + GP0(0xe4) area-BR + GP0(0xe5) offset + GP0(0xe1) drawmode + GP0(0xe2) texwin + GP0(0xe6) + optional 0x02 background-fill rect. Length byte set to 7 (or 10 with bg fill). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
