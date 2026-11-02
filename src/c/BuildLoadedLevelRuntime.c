@@ -26,7 +26,7 @@ struct CameraParamBlock {
 };
 
 /* The kill-table else-arm reserves v1/a0 with empty asm defs/uses so global
-   alloc hands `tb` a1, as in the original. */
+   alloc hands `group` a1, as in the original. */
 void BuildLoadedLevelRuntime(int fullSetup) {
   int pos[3];
   int pad[8];
@@ -37,23 +37,23 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   int *dst;
   int *src;
   char *rec;
-  Actor *r;
+  Actor *placed;
   int mask;
   int off;
   int i;
   int yaw;
   int gidx;
   int radial;
-  int wi;
+  int killWord;
   int bit;
-  int tb;
+  int group;
   int row;
   short *sinp;
-  int tbit;
+  int groupBit;
   int sh;
-  int *pk;
-  int *gd;
-  int *tg;
+  int *pickupSlot;
+  int *relocSlot;
+  int *triggerSlot;
   int k;
   int j;
   int w;
@@ -351,11 +351,11 @@ sprites:
   g_nLevelPickupTableCount = count;
   i = count - 1;
   if (i >= 0) {
-    pk = (int *)((i * 4) + ((int)p));
+    pickupSlot = (int *)((i * 4) + ((int)p));
     do {
-      *pk += (int)base;
+      *pickupSlot += (int)base;
       i--;
-      pk--;
+      pickupSlot--;
     } while (i >= 0);
   }
   p = (int *)(((char *)base) + (*base));
@@ -368,29 +368,29 @@ sprites:
   p++;
   if ((*base) > 0) {
     do {
-      gd = (int *)(((char *)root) + (*p));
-      *gd += (int)root;
+      relocSlot = (int *)(((char *)root) + (*p));
+      *relocSlot += (int)root;
       i++;
       p++;
     } while (i < (*base));
   }
   if (g_nDemoMode != DEMO_OFF) {
     {
-      register int kk asm("$3");
-      register int dd asm("$2");
+      register int demo asm("$3");
+      register int poseWord asm("$2");
 
       srand(1234);
-      kk = g_nDemoIndex;
-      dd = g_anDemoStartPose[kk * 4];
-      g_anSpyroWorldPos[0] = dd;
-      dd = g_anDemoStartPose[(kk * 4) + 1];
-      g_nSpyroWorldPosY = dd;
-      dd = g_anDemoStartPose[(kk * 4) + 2];
-      g_nSpyroWorldPosZ = dd;
-      dd = g_anDemoStartPose[(kk * 4) + 3];
+      demo = g_nDemoIndex;
+      poseWord = g_anDemoStartPose[demo * 4];
+      g_anSpyroWorldPos[0] = poseWord;
+      poseWord = g_anDemoStartPose[(demo * 4) + 1];
+      g_nSpyroWorldPosY = poseWord;
+      poseWord = g_anDemoStartPose[(demo * 4) + 2];
+      g_nSpyroWorldPosZ = poseWord;
+      poseWord = g_anDemoStartPose[(demo * 4) + 3];
       g_nDemoActive = 1;
-      g_abSpyroPersistentEuler[2] = dd;
-      g_nSpyroBodyYaw = (dd & 0xFF) * 0x10;
+      g_abSpyroPersistentEuler[2] = poseWord;
+      g_nSpyroBodyYaw = (poseWord & 0xFF) * 0x10;
     }
     if (g_nDemoMode == DEMO_PLAYBACK) {
       g_pDemoPadCursor = p;
@@ -405,11 +405,11 @@ sprites:
   if (((Actor *)rec)->mode != ACTOR_MODE_END) {
     do {
       /* An int sum, not &((Actor *)rec)[i]: the index form swaps the addu. */
-      r = (Actor *)((i * ACTOR_SIZE) + ((int)rec));
-      if (((int *)(&g_apActorMeshTable))[r->type] < 0) {
-        InsertActorIntoSpatialGrid(r);
+      placed = (Actor *)((i * ACTOR_SIZE) + ((int)rec));
+      if (((int *)(&g_apActorMeshTable))[placed->type] < 0) {
+        InsertActorIntoSpatialGrid(placed);
       } else {
-        HideActorRenderRecord(r);
+        HideActorRenderRecord(placed);
       }
       CopyVector(pos, &g_pActorListBase[i].posX);
       pos[2] += 0x400;
@@ -417,15 +417,15 @@ sprites:
       EncodeCachedVecToActorDirCode(&g_pActorListBase[i]);
       type = g_pActorListBase[i].killGroup;
       if (((unsigned int)(type & 0x7F)) < 0x20) {
-        register int b1 asm("$5");
-        wi = i >> 5;
-        b1 = i & 0x1F;
-        b1 = 1 << b1;
-        if ((g_anRunningKillBitmap[wi] & b1) == 0) {
+        register int runBit asm("$5");
+        killWord = i >> 5;
+        runBit = i & 0x1F;
+        runBit = 1 << runBit;
+        if ((g_anRunningKillBitmap[killWord] & runBit) == 0) {
           mask |= 1 << type;
         } else {
           row = (g_nLevelIndex << 5) + ((int)g_anLevelKillBitmapTable);
-          if (((*((int *)((wi * 4) + row))) & b1) == 0) {
+          if (((*((int *)((killWord * 4) + row))) & runBit) == 0) {
             mask |= 1 << type;
           }
         }
@@ -439,22 +439,23 @@ sprites:
   i = 0;
   if (((Actor *)rec)->mode != ACTOR_MODE_END) {
     do {
-      register int sh2 asm("$5");
+      register int bitIdx asm("$5");
       register int tbl asm("$3");
-      register int b3 asm("$3");
-      wi = i >> 5;
-      sh2 = i & 0x1F;
+      register int levelBit asm("$3");
+      killWord = i >> 5;
+      bitIdx = i & 0x1F;
       tbl = (int)g_anLevelKillBitmapTable;
       row = (g_nLevelIndex << 5) + tbl;
-      wi <<= 2;
-      b3 = 1 << sh2;
-      if ((*((int *)(wi + row))) & b3) {
-        if ((*(int *)((char *)g_anRunningKillBitmap + wi) & b3) == 0) {
-          r = (Actor *)((i * ACTOR_SIZE) + ((int)rec));
-          if ((r->killGroup & ACTOR_KILL_GROUP_MASK) == 0x7D) {
-            DespawnActorRecord(r);
+      killWord <<= 2;
+      levelBit = 1 << bitIdx;
+      if ((*((int *)(killWord + row))) & levelBit) {
+        if ((*(int *)((char *)g_anRunningKillBitmap + killWord) & levelBit) ==
+            0) {
+          placed = (Actor *)((i * ACTOR_SIZE) + ((int)rec));
+          if ((placed->killGroup & ACTOR_KILL_GROUP_MASK) == 0x7D) {
+            DespawnActorRecord(placed);
           } else {
-            r->dropKind = 0xFF;
+            placed->dropKind = DROP_GEM_ROLL;
           }
         } else {
           {
@@ -463,17 +464,17 @@ sprites:
 
             REG_RESERVE(k3);
             REG_RESERVE(k4);
-            tb = g_pActorListBase[i].killGroup & ACTOR_KILL_GROUP_MASK;
-            if (tb < 0x20) {
-              tbit = 1 << tb;
-              count = (mask & tbit) != 0;
+            group = g_pActorListBase[i].killGroup & ACTOR_KILL_GROUP_MASK;
+            if (group < 0x20) {
+              groupBit = 1 << group;
+              count = (mask & groupBit) != 0;
             } else {
-              count = tb == 0x7E;
+              count = group == 0x7E;
             }
             __asm__ volatile("" : : "r"(k3), "r"(k4));
           }
           if (count != 0) {
-            g_pActorListBase[i].dropKind = 0xFF;
+            g_pActorListBase[i].dropKind = DROP_GEM_ROLL;
           } else {
             DespawnActorRecord(&g_pActorListBase[i]);
           }
@@ -490,11 +491,11 @@ sprites:
     i++;
   } while (i < 8);
   i = 9;
-  tg = &g_anLevelTriggerStateSlots[9];
+  triggerSlot = &g_anLevelTriggerStateSlots[9];
   do {
-    *tg = 0;
+    *triggerSlot = 0;
     i--;
-    tg--;
+    triggerSlot--;
   } while (i >= 0);
   g_pEmitListBase = g_pEmitListBuffer;
   g_pEmitListWriteCursor = g_pEmitListBuffer;

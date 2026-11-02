@@ -58,7 +58,7 @@ Actor *Level17_SpawnActor(int type, Actor *parent)
       InitActorRenderDefaults(rec);
       st->velZ = 0x8C;
       st->bounces = 3;
-      st->sparkle = 0xFF;
+      st->sparkle = BILLBOARD_NONE;
       st->velX = 0;
       st->velY = 0;
       st->restMode = COLLREST_STILL;
@@ -94,10 +94,10 @@ Actor *Level17_SpawnActor(int type, Actor *parent)
       pos = &rec->posX;
       CopyVector(pos, &parent->posX);
       rec->posZ += 0x200;
-      CopyVector(st->anchor, pos);
+      CopyVector(st->home, pos);
       st->climbTimer = 0;
       st->headingTimer = 0;
-      st->idleTimer = 0x708;
+      st->offscreenTimer = 0x708;
       break;
     }
 
@@ -126,7 +126,7 @@ Actor *Level17_SpawnActor(int type, Actor *parent)
     case ACTOR_TYPE_DRAGON_EGG:
       InitActorRenderDefaults(rec);
       rec->cullRadius = 0x20;
-      rec->updateDist = 0xFF;
+      rec->updateDist = ACTOR_UPDATE_ALWAYS;
       if (parent != 0)
     {
       CopyVector(&rec->posX, &parent->posX);
@@ -159,7 +159,7 @@ Actor *Level17_SpawnActor(int type, Actor *parent)
         st->bounces = 3;
       }
       pos = &rec->posX;
-      st->sparkle = 0xFF;
+      st->sparkle = BILLBOARD_NONE;
       rec->subMode = COLLECT_BOUNCE;
       rec->cullRadius = 0x18;
       rec->updateDist = 0x40;
@@ -252,7 +252,7 @@ Actor *Level17_SpawnActor(int type, Actor *parent)
       st->life = 0x40 - (GetRandomU32() & 0xF);
       if (((unsigned int) (((unsigned short) rec->type) - 0x135)) < 3)
       {
-        *((int *) (&rec->tint0)) = 0xA18618;
+        *((int *) (&rec->tint0)) = ACTOR_TINT_NEUTRAL;
         rec->renderList |= ACTOR_RENDER_SECONDARY;
       }
       break;
@@ -374,7 +374,7 @@ Actor *Level17_SpawnActor(int type, Actor *parent)
       InitActorRenderDefaults(rec);
       rec->posX = -0x64;
       rec->posY = 0x1E;
-      rec->cullRadius = 0;
+      rec->cullRadius = ACTOR_CULL_HIDDEN;
       rec->posZ = 0x1000;
       HideActorRenderRecord(rec);
       rec->otBias = 0x20;
@@ -427,7 +427,7 @@ Actor *Level17_SpawnActor(int type, Actor *parent)
     case ACTOR_TYPE_LETTER_A ... ACTOR_TYPE_LETTER_A + 25:
       InitActorRenderDefaults(rec);
       rec->cullRadius = 0x20;
-      rec->updateDist = 0xFF;
+      rec->updateDist = ACTOR_UPDATE_ALWAYS;
       HideActorRenderRecord(rec);
       break;
 

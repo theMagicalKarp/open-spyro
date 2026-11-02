@@ -110,12 +110,12 @@ typedef struct ChargingGuardState {
   int knock;         /* 0x20 knock-back heading */
   int speed;         /* 0x24 */
   int turn;          /* 0x28 */
-  int timer2;        /* 0x2C */
+  int cooldown; /* 0x2C frames before it may charge again */
   int cam;           /* 0x30 camera phase */
   int camDist;       /* 0x34 */
   int pad38;         /* 0x38 */
-  int timer3;        /* 0x3C */
-  int *flag;         /* 0x40 shared alert flag */
+  int camHold; /* 0x3C while counting, the camera holds on it */
+  int *chargeLock; /* 0x40 shared: one charger at a time */
   int dist2;         /* 0x44 */
   int target;        /* 0x48 index into g_pActorListBase */
   int filter;        /* 0x4C type it drives before it */
@@ -318,7 +318,7 @@ typedef struct MetalheadState {
   int phase;            /* 0x00 */
   PathData *path;  /* 0x04 */
   int timer;            /* 0x08 attack cooldown */
-  int timer2;           /* 0x0C */
+  int staggerTimer; /* 0x0C STAGGER length */
   int pathEnd[2];       /* 0x10 per-phase last path node */
   int range[2];         /* 0x18 per-phase fling range (units of 0x400) */
   int choice;           /* 0x20 enum MetalheadAttack */
@@ -341,7 +341,7 @@ typedef struct CarriedRockState {
   short speed;          /* 0x04 */
   short u06;            /* 0x06 */
   short vz;             /* 0x08 */
-  short timer2;         /* 0x0A */
+  short flightTimer; /* 0x0A flight cap after the throw (0x78) */
   Actor *partner;       /* 0x0C the thrower */
 } CarriedRockState;
 
@@ -380,8 +380,8 @@ typedef struct ChargingRamState {
   int pad1C;      /* 0x1C */
   int pad20;      /* 0x20 */
   int home[3];  /* 0x24 */
-  int timer3;   /* 0x30 */
-  int timer2;   /* 0x34 */
+  int lookAwayTimer; /* 0x30 Spyro facing away this long: go home */
+  int reaimTimer; /* 0x34 re-reads Spyro's heading every 0x1E frames */
   int charged;  /* 0x38 */
   int pad3C;      /* 0x3C */
   int saved;    /* 0x40 state to return to */
@@ -404,7 +404,7 @@ typedef struct PathWalkerState {
   int pad3C;             /* 0x3C */
   int startCur;        /* 0x40 */
   int partner;         /* 0x44 index into g_pActorListBase */
-  int flag;            /* 0x48 */
+  int resumePending;   /* 0x48 paired singer: resume its chunk once it halts */
   int pad4C;             /* 0x4C */
   int rideMode;        /* 0x50 1 = held, 2 = thrown */
   int rider;           /* 0x54 index into g_pActorListBase */
@@ -473,7 +473,7 @@ typedef struct LungingGuardState {
   int partner;         /* 0x40 index into g_pActorListBase */
   int msg;             /* 0x44 written into the partner's state */
   int range2;          /* 0x48 */
-  int timer2;          /* 0x4C */
+  int reloadTimer; /* 0x4C reloaded from `reload` after each lunge */
   int reload;          /* 0x50 */
   int spin;            /* 0x54 */
 } LungingGuardState;
@@ -494,7 +494,7 @@ typedef struct BigLungingGuardState {
   int partner;         /* 0x40 */
   int msg;             /* 0x44 */
   int range2;          /* 0x48 */
-  int timer2;          /* 0x4C */
+  int reloadTimer; /* 0x4C reloaded from `reload` after each lunge */
   int reload;          /* 0x50 */
   int follow1;         /* 0x54 index into g_pActorListBase, -1 none */
   int follow2;         /* 0x58 */

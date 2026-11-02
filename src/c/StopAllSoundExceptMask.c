@@ -31,55 +31,55 @@ void StopAllSoundExceptMask(int mask) {
   int rowOff;
   int bit;
   int eight;
-  int sil;
+  int silence;
   volatile unsigned int *keyoff;
   mask = mask ^ 0xFFFFFF;
   i = 0;
   keyoff = g_adwSpuPendingKeyOffBlock;
   one = 1;
   eight = 8;
-  sil = 0x7F;
+  silence = VOICE_ROW_NONE;
   off = 0;
 top:
   if (((VOICE_ROW_RAW(off, unsigned short, nFlags)) & 0x83) != 0) {
-    int o;
-    int m;
-    int v2;
-    int o2;
+    int rowAt;
+    int mode;
+    int row;
+    int parkOff;
     unsigned char *owner;
     bit = one << i;
     if (((mask >> i) & 1) != 0) {
       rowOff = (i & 0x7F) * 0x1C;
       *keyoff |= bit;
-      o = rowOff;
-      m = (VOICE_ROW_RAW(o, unsigned short, nFlags)) & 0x1C;
-      if (m == eight) {
-        goto mode8;
+      rowAt = rowOff;
+      mode = (VOICE_ROW_RAW(rowAt, unsigned short, nFlags)) & SFX_MODE_MASK;
+      if (mode == eight) { /* SFX_MODE_3D */
+        goto mode3d;
       }
-      if (m < 9) {
-        if (m == 4) {
-          owner = VOICE_ROW_RAW(o, unsigned char *, pOwner);
+      if (mode < 9) {
+        if (mode == SFX_MODE_FLAT) {
+          owner = VOICE_ROW_RAW(rowAt, unsigned char *, pOwner);
           if (owner != 0) {
-            owner[SPYB_VOICE_MARKER] = sil; /* every SFX_MODE_FLAT caller owns
-                                               the row by Spyro's block */
+            owner[SPYB_VOICE_MARKER] = silence; /* every SFX_MODE_FLAT caller
+                                               owns the row by Spyro's block */
           }
         }
       }
       goto park;
-    mode8:
-      owner = VOICE_ROW_RAW(o, unsigned char *, pOwner);
+    mode3d:
+      owner = VOICE_ROW_RAW(rowAt, unsigned char *, pOwner);
 
       if (owner != 0) {
-        ((Actor *)owner)->voiceRow = sil;
+        ((Actor *)owner)->voiceRow = silence;
       }
     park:
-      v2 = i & 0x7F;
+      row = i & 0x7F;
 
-      o2 = v2 * 0x1C;
-      VOICE_ROW_RAW(o2, unsigned short, nFlags) = 0x40;
-      VOICE_ROW_RAW(o2, int, pOwner) = 0;
-      VOICE_ROW_RAW(o2, int, pPlaying) = 0;
-      VOICE_ROW_RAW(o2, unsigned char, nSampleId) = 0xFF;
+      parkOff = row * 0x1C;
+      VOICE_ROW_RAW(parkOff, unsigned short, nFlags) = 0x40;
+      VOICE_ROW_RAW(parkOff, int, pOwner) = 0;
+      VOICE_ROW_RAW(parkOff, int, pPlaying) = 0;
+      VOICE_ROW_RAW(parkOff, unsigned char, nSampleId) = 0xFF;
     }
   }
 

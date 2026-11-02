@@ -79,7 +79,7 @@ int TickDemoPlayback(void) {
         SAMPLE_RAW(BANK, short, nPitchSpread) = 0;
         SAMPLE_RAW(BANK, short, nPitchStep) = 0;
         SAMPLE_RAW(BANK, int, nPitchMode) = 0;
-        g_nSfxOverrideFlags = 1;
+        g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
         g_nSfxOverrideVolL = 0x3fff;
         g_nSfxOverrideVolR = 0x3fff;
         PlaySoundEffect(0, 0, SFX_MODE_PANNED, &g_bSceneSfxVoiceMarker);

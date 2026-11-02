@@ -70,10 +70,7 @@ void Level16_AdvanceEmitList(int step) {
     switch (rec[0]) {
     case EMIT_SPARK_VEL:
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 2;
       rec[0xC] -= step4;
       rec[0xD] -= step4;
@@ -86,10 +83,7 @@ void Level16_AdvanceEmitList(int step) {
 
     case EMIT_SPARK_VEL_DIM:
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step4;
       rec[0xC] -= step4;
       rec[0xD] -= step4;
@@ -102,10 +96,7 @@ void Level16_AdvanceEmitList(int step) {
 
     case EMIT_SPARK_RISE:
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step4;
       rec[0xC] -= step4;
       rec[0xD] -= step4;
@@ -218,10 +209,7 @@ void Level16_AdvanceEmitList(int step) {
 
     case EMIT_SPEED_DUST:
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 2;
       AGE += step;
       if (AGE >= 0x20 || ALIVE == 0) {
@@ -276,10 +264,7 @@ void Level16_AdvanceEmitList(int step) {
       /* Gnasty's cauldron drip: a slow ember that dies when its red
        * channel bottoms out. */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 2;
       rec[0xC] -= 4;
       rec[0xD] -= 4;
@@ -292,10 +277,7 @@ void Level16_AdvanceEmitList(int step) {
     case EMIT_SPARK_RGB:
       /* The same ember with a late red cut-off at age 9. */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 2;
       if (AGE >= 9) {
         rec[0xC] -= 0x20;

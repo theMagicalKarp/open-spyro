@@ -79,7 +79,7 @@ int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius,
     if (path->cur == path->count) {
       path->cur = 0;
     }
-    ret = path->cur + 0x100;
+    ret = PATH_ARRIVED(path->cur);
   }
   return ret;
 }

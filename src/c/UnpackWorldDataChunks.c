@@ -17,13 +17,13 @@ typedef struct WorldCollisionHeader {
   int surface; /* 0x14 per-triangle surface-type bytes */
   int table18; /* 0x18 */
 } WorldCollisionHeader;
-#define COLL_HDR(h, field)                                                     \
-  (*(int *)((char *)(h) + (int)&((WorldCollisionHeader *)0)->field))
+#define COLL_HDR(hdr, field)                                                   \
+  (*(int *)((char *)(hdr) + (int)&((WorldCollisionHeader *)0)->field))
 
 /* 0x80012d58 — walk the loaded world bundle as a chain of size-prefixed
    sections (word 0 of each section links to the next), publish each
    section's table pointer + count globals and patch the relative offsets in
-   each pointer table to absolute addresses (1240 b). flag != 0 unpacks the
+   each pointer table to absolute addresses (1240 b). reduced != 0 unpacks the
    reduced stream (mesh index / trigger / collision-header and the mob
    sections are absent). Returns the cursor past the consumed data.
 
@@ -33,93 +33,93 @@ typedef struct WorldCollisionHeader {
    `base + *base` directly makes `base` canonical and folds every increment
    into displacement form. Each section's count is its own local so it stays
    block-local (v0/v1), and pad[14] reproduces the original 0x50 frame. */
-void *UnpackWorldDataChunks(int *p, int flag) {
+void *UnpackWorldDataChunks(int *p, int reduced) {
   int *base;
-  int *pm;
+  int *meshCountRef;
   int i;
-  int n1;
-  int n2;
-  int n3;
-  int n4;
-  int n5;
-  int n6;
-  int n7;
+  int meshCount;
+  int chunkCount;
+  int visZoneCount;
+  int meshIndexCount;
+  int triggerCount;
+  int triCount;
+  int portalCount;
   int pad[14];
 
   /* section: mesh headers */
   base = p;
   p++;
-  n1 = *p;
+  meshCount = *p;
   p++;
-  pm = g_anWorldMeshCountBlock;
+  meshCountRef = g_anWorldMeshCountBlock;
   g_pWorldMeshHeaderArray = p;
-  *pm = n1;
-  p += n1 * 4;
+  *meshCountRef = meshCount;
+  p += meshCount * 4;
   g_pWorldMeshVertexData = p;
   p = (int *)((char *)base + *base);
 
   /* section: world chunks */
   base = p;
   p++;
-  n2 = *p;
+  chunkCount = *p;
   p++;
   g_pWorldChunkArray = p;
-  g_nWorldChunkCount = n2;
+  g_nWorldChunkCount = chunkCount;
   i = 0;
-  if (n2 > 0) {
-    int *pc = pm - 7;
+  if (chunkCount > 0) {
+    int *chunkCountRef = meshCountRef - 7;
 
     do {
-      int t = *p + 4;
-      *p = (int)base + t;
+      int rel = *p + 4;
+      *p = (int)base + rel;
       i++;
       p++;
-    } while (i < *pc);
+    } while (i < *chunkCountRef);
   }
   p = (int *)((char *)base + *base);
 
-  if (flag == 0) {
+  if (reduced == 0) {
     /* section: mesh index tables */
     base = p;
     if (*base >= 5) {
       p += 2;
-      n3 = *p;
+      visZoneCount = *p;
       p++;
       i = 0;
       {
-        int *pn = g_anVisZoneCountBlock;
+        int *visZoneCountRef = g_anVisZoneCountBlock;
 
         g_pVisZoneChunkLists = p;
-        *pn = n3;
-        if (n3 > 0) {
+        *visZoneCountRef = visZoneCount;
+        if (visZoneCount > 0) {
           do {
-            int t = *p + 4;
-            *p = (int)base + t;
+            int rel = *p + 4;
+            *p = (int)base + rel;
             i++;
             p++;
-          } while (i < *pn);
+          } while (i < *visZoneCountRef);
         }
       }
       i = 0;
       p = (int *)((char *)base + (base[1] + 4));
-      n4 = *p;
+      meshIndexCount = *p;
       p++;
       {
-        int *pi = g_anWorldMeshIndexCountBlock;
+        int *meshIndexCountRef = g_anWorldMeshIndexCountBlock;
 
         g_pWorldMeshIndexTable = p;
-        *pi = n4;
-        if (n4 > 0) {
+        *meshIndexCountRef = meshIndexCount;
+        if (meshIndexCount > 0) {
           do {
-            int s;
-            int t;
+            int tableBase;
+            int rel;
 
             i++;
-            s = (int)base + base[1];
-            t = *p + 4;
-            *p = s + t;
+            tableBase = (int)base + base[1];
+            rel = *p + 4;
+            *p = tableBase + rel;
             p++;
-          } while (i < *pi);
+          } while (i < *meshIndexCountRef);
         }
       }
     } else {
@@ -128,57 +128,57 @@ void *UnpackWorldDataChunks(int *p, int flag) {
       g_pWorldMeshIndexTable = 0;
     }
     p = (int *)((char *)base + *base);
-    if (flag == 0) {
+    if (reduced == 0) {
       /* section: trigger regions */
       base = p;
       p++;
-      n5 = *p;
+      triggerCount = *p;
       p++;
       i = 0;
       {
-        int *pt = g_anTriggerRegionCount;
+        int *triggerCountRef = g_anTriggerRegionCount;
 
         g_pTriggerRegionTable = p;
-        *pt = n5;
-        if (n5 > 0) {
+        *triggerCountRef = triggerCount;
+        if (triggerCount > 0) {
           do {
-            int t = *p + 4;
-            *p = (int)base + t;
+            int rel = *p + 4;
+            *p = (int)base + rel;
             i++;
             p++;
-          } while (i < *pt);
+          } while (i < *triggerCountRef);
         }
       }
       p = (int *)((char *)base + *base);
-      if (flag == 0) {
+      if (reduced == 0) {
         /* section: collision header (five relative offsets made absolute) */
         base = p;
         p++;
         g_pWorldCollisionHeader = p;
         {
-          int *h = *(int *volatile *)&g_pWorldCollisionHeader;
+          int *hdr = *(int *volatile *)&g_pWorldCollisionHeader;
 
-          COLL_HDR(h, xIndex) = (int)p + COLL_HDR(h, xIndex);
+          COLL_HDR(hdr, xIndex) = (int)p + COLL_HDR(hdr, xIndex);
         }
         {
-          int *h = *(int *volatile *)&g_pWorldCollisionHeader;
+          int *hdr = *(int *volatile *)&g_pWorldCollisionHeader;
 
-          COLL_HDR(h, yzIndex) = (int)p + COLL_HDR(h, yzIndex);
+          COLL_HDR(hdr, yzIndex) = (int)p + COLL_HDR(hdr, yzIndex);
         }
         {
-          int *h = *(int *volatile *)&g_pWorldCollisionHeader;
+          int *hdr = *(int *volatile *)&g_pWorldCollisionHeader;
 
-          COLL_HDR(h, tris) = (int)p + COLL_HDR(h, tris);
+          COLL_HDR(hdr, tris) = (int)p + COLL_HDR(hdr, tris);
         }
         {
-          int *h = *(int *volatile *)&g_pWorldCollisionHeader;
+          int *hdr = *(int *volatile *)&g_pWorldCollisionHeader;
 
-          COLL_HDR(h, surface) = (int)p + COLL_HDR(h, surface);
+          COLL_HDR(hdr, surface) = (int)p + COLL_HDR(hdr, surface);
         }
         {
-          int *h = *(int *volatile *)&g_pWorldCollisionHeader;
+          int *hdr = *(int *volatile *)&g_pWorldCollisionHeader;
 
-          COLL_HDR(h, table18) = (int)p + COLL_HDR(h, table18);
+          COLL_HDR(hdr, table18) = (int)p + COLL_HDR(hdr, table18);
         }
         p = (int *)((char *)base + *base);
       }
@@ -189,69 +189,69 @@ void *UnpackWorldDataChunks(int *p, int flag) {
   base = p;
   p++;
   {
-    unsigned char *pb = g_abCollisionHeaderBytes;
+    unsigned char *collisionHdrBytes = g_abCollisionHeaderBytes;
 
-    pb[0] = ((unsigned char *)p)[0];
-    pb[1] = ((unsigned char *)p)[1];
-    pb[2] = ((unsigned char *)p)[2];
+    collisionHdrBytes[0] = ((unsigned char *)p)[0];
+    collisionHdrBytes[1] = ((unsigned char *)p)[1];
+    collisionHdrBytes[2] = ((unsigned char *)p)[2];
     p++;
-    n6 = *p;
+    triCount = *p;
     p++;
     g_pWorldCollisionTriArray = p;
-    g_nWorldCollisionTriCount = n6;
+    g_nWorldCollisionTriCount = triCount;
     i = 0;
-    if (n6 > 0) {
-      int *ptc = (int *)(pb - 0x10);
+    if (triCount > 0) {
+      int *triCountRef = (int *)(collisionHdrBytes - 0x10);
 
       do {
-        int t = *p + 4;
-        *p = (int)base + t;
+        int rel = *p + 4;
+        *p = (int)base + rel;
         i++;
         p++;
-      } while (i < *ptc);
+      } while (i < *triCountRef);
     }
   }
   p = (int *)((char *)base + *base);
-  if (flag != 0) {
+  if (reduced != 0) {
     return p;
   }
 
   /* section: portals */
-  n7 = *p;
+  portalCount = *p;
   p++;
-  g_nPortalCount = n7;
+  g_nPortalCount = portalCount;
   i = 0;
-  if (n7 > 0) {
-    int **pe = (int **)g_apPortals;
+  if (portalCount > 0) {
+    int **portalSlot = (int **)g_apPortals;
 
     do {
       int j;
-      int *e;
+      int *portal;
 
-      *pe = p;
-      e = p;
+      *portalSlot = p;
+      portal = p;
       p += p[1] * 3 + 8;
-      *(int **)e = p;
+      *(int **)portal = p;
       p += 5;
       base = p;
       p++;
-      ((int *)**pe)[4] = *p;
+      ((int *)**portalSlot)[4] = *p;
       p++;
-      ((int *)**pe)[0] = *p;
+      ((int *)**portalSlot)[0] = *p;
       p++;
-      ((int *)**pe)[1] = (int)p;
+      ((int *)**portalSlot)[1] = (int)p;
       j = 0;
-      if (*(int *)**pe > 0) {
-        int **q = pe;
+      if (*(int *)**portalSlot > 0) {
+        int **slot = portalSlot;
 
         do {
-          int t = *p + 4;
-          *p = (int)base + t;
+          int rel = *p + 4;
+          *p = (int)base + rel;
           j++;
           p++;
-        } while (j < *(int *)**q);
+        } while (j < *(int *)**slot);
       }
-      pe++;
+      portalSlot++;
       i++;
       p = (int *)((char *)base + *base);
     } while (i < g_nPortalCount);
@@ -272,7 +272,7 @@ void *UnpackWorldDataChunks(int *p, int flag) {
   base = p;
   g_nLevelSampleBankCount = *p;
   p++;
-  RelocateLevelSampleBank((char *)p, 1);
+  RelocateLevelSampleBank(p, 1);
   p = (int *)((char *)base + *base);
   return p;
 }

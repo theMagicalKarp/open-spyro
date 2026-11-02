@@ -36,19 +36,6 @@ extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type *
  */
 
 /* PathData (waypoint paths) lives in actor_type.h. */
-/* Type 16: butterfly. Flutters around an anchor until Sparx fetches it. */
-typedef struct ChaseState {
-  int dir;               /* 0x00 -1 or 1, picked from which side Spyro is on */
-  int tgtX;              /* 0x04 */
-  int tgtY;              /* 0x08 */
-  int pad0C;             /* 0x0C */
-  unsigned char vz;      /* 0x10 vertical step, sign-magnitude in a byte */
-  unsigned char heading; /* 0x11 */
-  unsigned char headingTimer;     /* 0x12 heading-change timer */
-  unsigned char climbTimer;     /* 0x13 vertical-change timer */
-  unsigned char idleTimer;     /* 0x14 */
-} ChaseState;
-
 /* Sparx's state block, as seen by the actors that send him fetching. */
 typedef struct ChaserState {
   int timer; /* 0x00 */
@@ -589,7 +576,7 @@ typedef struct EggFlightState {
 /* Type 18: pressure switch. Toggles one bit in a linked actor's sub-state. */
 typedef struct SwitchState {
   int shift; /* 0x00 bit position within the target's 0x49 mask */
-  int idx;   /* 0x04 index into the actor pool at g_pActorListBase */
+  int idx;   /* 0x04 the sequenced prop it cues (ACTOR_TYPE_SEQUENCED_PROP in the level data), an index into g_pActorListBase */
 } SwitchState;
 
 /* Type 49: sequenced prop driven by the 0x8002Bxxx player. Starts once any
@@ -637,7 +624,7 @@ typedef struct CrystalDragonState {
   int pad00[6]; /* 0x00 */
   int cutsceneId;    /* 0x18 rescue cutscene id (see DragonStatueState) */
   int fallbackHeading;    /* 0x1C fallback heading when ->partner is unset */
-  int partner;    /* 0x20 index into g_pActorListBase, -1 for none */
+  int partner;    /* 0x20 its checkpoint (see DragonStatueState), -1 for none */
   int rewardScript;    /* 0x24 script id handed to StubRewardHook, -1 for none */
   int pad28[7]; /* 0x28 */
   int phase;    /* 0x44 phase counter, 0 .. 0x100 */
@@ -725,18 +712,6 @@ typedef struct OrbitState {
   short ring;  /* 0x04 ring index; the arm always uses it as ring - 1 */
   short ringPhase;  /* 0x06 phase offset within the ring */
 } OrbitState;
-
-/* Case 16 — butterfly: flutters near its spawn point until Sparx eats it
- * (or it turns into Sparx when Spyro has none). */
-typedef struct WanderState {
-  int turn;              /* 0x00 turn direction, +1 / -1 */
-  int home[3];           /* 0x04 spawn position it stays near */
-  unsigned char speed;   /* 0x10 forward speed, signed when >= 0x80 */
-  unsigned char heading; /* 0x11 */
-  unsigned char reTurn;  /* 0x12 frames until the next heading change */
-  unsigned char reStep;  /* 0x13 frames until the next speed change */
-  unsigned char wanderTimer;   /* 0x14 */
-} WanderState;
 
 /* Case 194 — breakable chest: one hit spawns its gem shower. */
 typedef struct ChestState {
@@ -906,7 +881,7 @@ typedef struct HopState {
 typedef struct GuardPairState {
   int heading; /* 0x00 knock-back heading */
   int speed;   /* 0x04 */
-  int flag;    /* 0x08 */
+  int gloatCount; /* 0x08 GLOAT plays until it counts down (2 after pinning Spyro) */
   int timer;   /* 0x0C */
   int partner; /* 0x10 index into g_pActorListBase, -1 for none */
 } GuardPairState;
@@ -919,6 +894,8 @@ extern int FindNearestPathPointToActor(Actor *actor, PathData *path, int *out_in
 /* Path tweens used by the patrol/post classes. */
 #ifndef TWEEN_FLY
 #define TWEEN_FLY 0x04 /* keep each leg's Z step (fly); without it the step is flattened */
+#define TWEEN_NEXT_LEG 1 /* result: this step finished a leg */
+#define TWEEN_WRAPPED 2  /* result: ... and the cursor wrapped back to node 0 */
 #endif
 extern int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legs, int flags);
 
@@ -929,7 +906,7 @@ typedef struct PostState {
   int heading;    /* 0x0C knock-back heading */
   int speed;      /* 0x10 knock-back speed */
   int time;       /* 0x14 knock-back time */
-  int flag;       /* 0x18 */
+  int flameProof; /* 0x18 level data: flame alone does not knock it back */
   short spinX;    /* 0x1C */
   short spinY;    /* 0x1E */
   int sub;        /* 0x20 enum PostGuardHop */
@@ -941,7 +918,7 @@ typedef struct PostState {
 typedef struct PatrolState {
   PathData *path; /* 0x00 */
   int mode;       /* 0x04 */
-  int flag;       /* 0x08 */
+  int afterCharge; /* 0x08 set while charging: back on patrol it steps to the next node at once */
   int near;       /* 0x0C */
   int timer;      /* 0x10 */
 } PatrolState;
@@ -1238,7 +1215,7 @@ typedef struct ShepherdState {
   int done;            /* 0x38 */
   int *doneFlag;       /* 0x3C */
   int sub;             /* 0x40 */
-  int timer2;          /* 0x44 */
+  int flankTimer;      /* 0x44 after an alert: frames before a patrol pair re-picks its flank */
   int range;           /* 0x48 in 1024ths */
 } ShepherdState;
 
@@ -1300,7 +1277,7 @@ typedef struct CaptainState {
   int timer;           /* 0x30 */
   int posed;           /* 0x34 */
   int range;           /* 0x38 in 1024ths */
-  int timer2;          /* 0x3C */
+  int stanceTimer; /* 0x3C spar/rest stance length */
 } CaptainState;
 
 typedef struct BoltFlight {
@@ -1523,7 +1500,7 @@ typedef struct ShempState {
   PathData *path; /* 0x20 */
   unsigned char *cam;  /* 0x24 camera anchors, one per phase */
   int node[3];         /* 0x28 path node per phase */
-  int flag;            /* 0x34 */
+  int animStarted;     /* 0x34 the current mode has queued its animation */
   int count;           /* 0x38 */
   int chain;           /* 0x3C first of a linked list in g_pActorListBase */
   int init;            /* 0x40 */

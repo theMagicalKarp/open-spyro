@@ -108,7 +108,7 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
       break;
     }
     ((PortalGuideActor *)g_pActorListBase)[a].mode = PORTALGUIDE_ENTER;
-    ((PortalGuideActor *)g_pActorListBase)[a].updateDist = 0xFF;
+    ((PortalGuideActor *)g_pActorListBase)[a].updateDist = ACTOR_UPDATE_ALWAYS;
     p = ((PortalGuideActor *)g_pActorListBase)[a].state;
     if (d < 0) {
       ((PortalGuideActor *)g_pActorListBase)[a].subMode = PORTAL_SIDE_REVERSED;

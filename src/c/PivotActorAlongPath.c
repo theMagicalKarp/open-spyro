@@ -64,7 +64,7 @@ int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed,
         path->cur = path->count - 1;
       }
     }
-    ret = path->cur + 0x100;
+    ret = PATH_ARRIVED(path->cur);
   }
 
   node = (int *)((char *)path + (path->cur << 4)); /* node x/y at [2]/[3] */

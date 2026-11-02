@@ -98,7 +98,14 @@ extern void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset, int 
 extern void StartCdReadAsync(int lbaBase, void *dst, int size, int offset, int marker);
 extern char *UnpackWorldDataChunks(int *p, int flag);
 extern void CopyWords(void *dst, void *src, int len);
-extern int TickCountdownByFrameDelta(void *timer, int step);
+extern int TickCountdownByFrameDelta(void *pValue, int width);
+
+#ifndef TICK_DOWN
+/* Count the 1-, 2- or 4-byte lvalue `v` down by the frame delta (see
+ * TickCountdownByFrameDelta): 0 still counting, 2 reached zero now, 1 was
+ * already zero. */
+#define TICK_DOWN(v) TickCountdownByFrameDelta(&(v), sizeof(v))
+#endif
 extern int RandomSignedInRange(int lo, int hi);
 
 /* World/OT render entry points the credits backdrop calls. */

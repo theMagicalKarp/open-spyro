@@ -352,7 +352,7 @@ void Credits_Update(void) {
     SAMPLE_RAW(g_pLevelSampleBankEntries, short, nPitchStep) = 0;
     g_pCreditsScrollHeader = e4;
     SAMPLE_RAW(g_pLevelSampleBankEntries, int, nPitchMode) = 0;
-    g_nSfxOverrideFlags = 1;
+    g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
     g_nSfxOverrideVolL = 0x3FFF;
     g_nSfxOverrideVolR = 0x3FFF;
     PlaySoundEffect(0, 0, SFX_MODE_PANNED, 0);
@@ -452,7 +452,7 @@ void Credits_Update(void) {
     if (last >= line) {
       do {
         int cur = -1;
-        if (TickCountdownByFrameDelta(&LINES[line].showTimer, 2) != 0) {
+        if (TICK_DOWN(LINES[line].showTimer) != 0) {
           LINES[line].state = CRED_LINE_SCROLLED;
           if (LINES[line].nextDelay == 0 && line == g_nCreditsFirstVisibleLine) {
             g_nCreditsFirstVisibleLine = line + 1;
@@ -460,7 +460,7 @@ void Credits_Update(void) {
         }
         if (LINES[0].state == CRED_LINE_PENDING) {
           cur = 0;
-        } else if (TickCountdownByFrameDelta(&LINES[line].nextDelay, 2) != 0 &&
+        } else if (TICK_DOWN(LINES[line].nextDelay) != 0 &&
                    LINES[line + 1].state == CRED_LINE_PENDING &&
                    line < g_nCreditsLineCount - 1) {
           cur = line + 1;

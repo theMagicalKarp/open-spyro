@@ -114,8 +114,8 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
         int *ovr = g_nSfxOverrideFlags;
         int pending = ovr[0];
 
-        if (pending & 2) {
-          ovr[0] = pending & ~2;
+        if (pending & SFX_OVERRIDE_PITCH) {
+          ovr[0] = pending & ~SFX_OVERRIDE_PITCH;
           g_aSpuVoiceRows[voice].nPitch = g_nSfxOverridePitch;
         } else {
           g_aSpuVoiceRows[voice].nPitch = ENT->nPitch;
@@ -149,8 +149,8 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
         int *ovr = g_nSfxOverrideFlags;
         int pending = ovr[0];
 
-        if (pending & 1) {
-          ovr[0] = pending & ~1;
+        if (pending & SFX_OVERRIDE_VOLUME) {
+          ovr[0] = pending & ~SFX_OVERRIDE_VOLUME;
           g_aSpuVoiceRows[voice].anPanCache[0] = g_nSfxOverrideVolL;
           g_aSpuVoiceRows[voice].anPanCache[1] = g_nSfxOverrideVolL;
           attr.volL = g_nSfxOverrideVolL;
@@ -171,8 +171,8 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
         int *ovr = g_nSfxOverrideFlags;
         int pending = ovr[0];
 
-        if (pending & 1) {
-          ovr[0] = pending & ~1;
+        if (pending & SFX_OVERRIDE_VOLUME) {
+          ovr[0] = pending & ~SFX_OVERRIDE_VOLUME;
           g_aSpuVoiceRows[voice].anPanCache[0] = g_nSfxOverrideVolL;
           g_aSpuVoiceRows[voice].anPanCache[1] = g_nSfxOverrideVolR;
           attr.volR = g_nSfxOverrideVolR;

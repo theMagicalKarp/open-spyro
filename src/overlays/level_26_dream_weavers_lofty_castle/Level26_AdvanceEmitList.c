@@ -25,7 +25,7 @@
  *                                  r/g/b triple for the fading classes)
  *   0x10..0x16  per-record velocity / colour bytes
  *   0x18  spin angle (a source pointer in class 0x6, a byte angle pair in
- *         classes 0x15/0x4C)        0x1C  wrap count    0x1E  phase toggle
+ *         classes 0x15/0x4C)        0x1C  spark vel z   0x1E  phase toggle
  *
  * The ground-level arm set: it drops the flight classes 0xD/0x13/0x1A/0x1B
  * and adds 0x6 (the orbiting spark, which reads a world point through the
@@ -69,10 +69,7 @@ void Level26_AdvanceEmitList(int step) {
     switch (rec[0]) {
     case EMIT_SPARK_VEL:
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 2;
       rec[0xC] -= step * 4;
       rec[0xD] -= step * 4;
@@ -85,10 +82,7 @@ void Level26_AdvanceEmitList(int step) {
 
     case EMIT_SPARK_VEL_DIM:
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 4;
       rec[0xC] -= step * 4;
       rec[0xD] -= step * 4;
@@ -101,10 +95,7 @@ void Level26_AdvanceEmitList(int step) {
 
     case EMIT_SPARK_RISE:
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 4;
       rec[0xC] -= step * 4;
       rec[0xD] -= step * 4;
@@ -141,10 +132,7 @@ void Level26_AdvanceEmitList(int step) {
 
     case EMIT_SPEED_DUST:
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 2;
       AGE += step;
       if (AGE >= 0x20 || ALIVE == 0) {
@@ -199,10 +187,7 @@ void Level26_AdvanceEmitList(int step) {
       /* Gnasty's cauldron drip: a slow ember that dies when its red
        * channel bottoms out. */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 2;
       rec[0xC] -= 4;
       rec[0xD] -= 4;
@@ -215,10 +200,7 @@ void Level26_AdvanceEmitList(int step) {
     case EMIT_SPARK_RGB:
       /* The same ember with a late red cut-off at age 9. */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 2;
       if (AGE >= 9) {
         rec[0xC] -= 0x20;

@@ -43,7 +43,7 @@ void SetHudCounterDigits(int slot, int count, int value, int icon) {
     } else {
       if (icon != 0) {
         int off = (slot * 11) << 3;
-        HUD_ICON(off)->cullRadius = 0;
+        HUD_ICON(off)->cullRadius = ACTOR_CULL_HIDDEN;
       }
     }
     i += 1;

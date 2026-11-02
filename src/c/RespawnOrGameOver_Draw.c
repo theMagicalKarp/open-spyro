@@ -176,8 +176,9 @@ void RespawnOrGameOver_Draw(void) {
     g_anCameraEulerPitchBlock[0] = g_anGameOverCameraEulerU[2];
     g_nCameraEulerYaw = g_anGameOverCameraEulerU[3];
     BuildCameraViewMatrix();
-    EmitStaticActorMeshList(-1, (char *)g_anCameraEulerPitchBlock - 0x3A,
-                            (char *)g_anCameraEulerPitchBlock - 0x4E);
+    EmitStaticActorMeshList(
+        -1, (MATRIX *)((char *)g_anCameraEulerPitchBlock - 0x3A),
+        (MATRIX *)((char *)g_anCameraEulerPitchBlock - 0x4E));
     g_anCameraEulerPitchBlock[0] = g_anGameOverCameraEulerU[0];
     g_nCameraEulerYaw = g_anGameOverCameraEulerU[1];
     if (g_nRespawnOrGameOverFrame < 0x20) {

@@ -24,7 +24,7 @@
  *   0x04/0x06/0x08  tail point     0x0A/0x0C/0x0E  head point (also the
  *                                  r/g/b triple for the fading classes)
  *   0x10..0x16  per-record velocity / colour bytes
- *   0x18  spin angle               0x1C  wrap count    0x1E  phase toggle
+ *   0x18  spin angle               0x1C  spark vel z   0x1E  phase toggle
  *
  * The flight-overlay 894-insn variant: the same 16 arms as the 790-insn copy
  * in level_11 / level_17 / level_23, plus the two flight-only classes 0xD
@@ -56,10 +56,7 @@ void Level29_AdvanceEmitList(int step) {
     switch (rec[0]) {
     case EMIT_SPARK_VEL:
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 2;
       rec[0xC] -= step * 4;
       rec[0xD] -= step * 4;
@@ -72,10 +69,7 @@ void Level29_AdvanceEmitList(int step) {
 
     case EMIT_SPARK_VEL_DIM:
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 4;
       rec[0xC] -= step * 4;
       rec[0xD] -= step * 4;
@@ -88,10 +82,7 @@ void Level29_AdvanceEmitList(int step) {
 
     case EMIT_SPARK_RISE:
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 4;
       rec[0xC] -= step * 4;
       rec[0xD] -= step * 4;
@@ -104,10 +95,7 @@ void Level29_AdvanceEmitList(int step) {
 
     case EMIT_SPEED_DUST:
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 2;
       AGE += step;
       if (AGE >= 0x20 || ALIVE == 0) {
@@ -165,10 +153,7 @@ void Level29_AdvanceEmitList(int step) {
         FreeEmitListRecord(rec);
       } else {
         AddSVector(POS, POS, VEL);
-        if (HS(0x1E) != 0) {
-          HU(0x1C)++;
-        }
-        HS(0x1E) = 1 - HU(0x1E);
+        SPARK_Z_CLIMB();
         rec[0xA] += step * 2;
         if (AGE >= 0xD) {
           c = 0x80 - (AGE - 0xC) * 8;

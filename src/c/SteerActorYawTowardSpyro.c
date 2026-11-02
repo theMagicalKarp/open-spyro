@@ -20,93 +20,93 @@
    constant. */
 int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed,
                              int thresh, int animId) {
-  int ret;
+  int bearing;
   int yaw;
-  int d;
-  int d2;
-  int ad;
+  int delta;
+  int oppDelta;
+  int absDelta;
   int dir;
   int next;
-  int t;
+  int newYaw;
 
-  ret = ArcTan2(g_anSpyroWorldPos[0] - actor->posX,
-                g_anSpyroWorldPos[1] - actor->posY, ATAN_ANGLE12);
+  bearing = ArcTan2(g_anSpyroWorldPos[0] - actor->posX,
+                    g_anSpyroWorldPos[1] - actor->posY, ATAN_ANGLE12);
   yaw = *yawp;
-  d = (ret - yaw) & 0xFFF;
-  ret -= 0x800;
-  d2 = (ret - yaw) & 0xFFF;
-  if (d >= 0x801) {
-    d -= 0x1000;
+  delta = (bearing - yaw) & 0xFFF;
+  bearing -= 0x800;
+  oppDelta = (bearing - yaw) & 0xFFF;
+  if (delta >= 0x801) {
+    delta -= 0x1000;
   }
-  if (d2 >= 0x801) {
-    d2 -= 0x1000;
+  if (oppDelta >= 0x801) {
+    oppDelta -= 0x1000;
   }
   if (g_nActorFrameDelta == 3) {
     speed += speed >> 1;
   } else if (g_nActorFrameDelta == 4) {
     speed <<= 1;
   }
-  ad = abs(d);
-  if (ad < speed) {
-    speed = ad;
+  absDelta = abs(delta);
+  if (absDelta < speed) {
+    speed = absDelta;
   }
   dir = *dirp;
   if (dir == 0) {
-    if (d < 0) {
+    if (delta < 0) {
       *dirp = -1;
     } else {
       *dirp = 1;
     }
-  } else if (d < 0) {
+  } else if (delta < 0) {
     if (dir > 0) {
-      if (thresh < abs(d2)) {
+      if (thresh < abs(oppDelta)) {
         *dirp = -1;
       }
     }
-  } else if (dir < 0 && d > 0) {
-    if (thresh < abs(d2)) {
+  } else if (dir < 0 && delta > 0) {
+    if (thresh < abs(oppDelta)) {
       *dirp = 1;
     }
   }
-  if (abs(d) >= 0x101) {
+  if (abs(delta) >= 0x101) {
     next = animId + 1;
     if (*dirp == 1) {
       if (actor->nextAnim != animId) {
         register int old asm("$2");
-        int p3F;
+        int oldFrame;
         g_nActorAnimDone = 0;
         old = actor->nextAnim;
-        p3F = actor->nextFrame;
+        oldFrame = actor->nextFrame;
         actor->frameProgress = 0x10;
         actor->frameRate = 0x10;
         actor->nextAnim = animId;
         actor->nextFrame = 0;
         actor->anim = old;
-        actor->frame = p3F;
-        OnActorAnimQueued(actor, p3F, next);
+        actor->frame = oldFrame;
+        OnActorAnimQueued(actor, oldFrame, next);
       }
     } else {
       if (actor->nextAnim != next) {
         register int old asm("$2");
-        int p3F;
+        int oldFrame;
         g_nActorAnimDone = 0;
         old = actor->nextAnim;
-        p3F = actor->nextFrame;
+        oldFrame = actor->nextFrame;
         actor->frameProgress = 0x10;
         actor->frameRate = 0x10;
         actor->nextAnim = next;
         actor->nextFrame = 0;
         actor->anim = old;
-        actor->frame = p3F;
-        OnActorAnimQueued(actor, p3F, next);
+        actor->frame = oldFrame;
+        OnActorAnimQueued(actor, oldFrame, next);
       }
     }
   }
-  t = *yawp + speed * *dirp;
-  *yawp = t;
-  if (t < 0) {
-    *yawp = t + 0x1000;
+  newYaw = *yawp + speed * *dirp;
+  *yawp = newYaw;
+  if (newYaw < 0) {
+    *yawp = newYaw + 0x1000;
   }
   actor->rotZ = *yawp >> 4;
-  return d;
+  return delta;
 }

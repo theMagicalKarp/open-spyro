@@ -16,17 +16,17 @@ int DriveActorTrackedMove(Actor *actor, int *counter, int angle, int *timer,
   int t;
   int r4;
 
-  ret = 0;
-  mode = 0x21;
+  ret = MOVED_OK;
+  mode = MOVE_SLIDE | MOVE_LIFT;
   dist = 0x12C;
   if (timer == 0 || *timer == 0xFFFF) {
-    mode = 0x25;
+    mode = MOVE_SLIDE | MOVE_FOLLOW_FLOOR | MOVE_LIFT;
   }
   b = actor->probeDist;
   if (b == 0xFE) {
-    mode = 1;
+    mode = MOVE_LIFT;
   } else if (b != 0) {
-    mode &= ~0x20;
+    mode &= ~MOVE_SLIDE;
     dist = b << 2;
     if (b == 0xFF) {
       dist = 0;
@@ -40,8 +40,8 @@ int DriveActorTrackedMove(Actor *actor, int *counter, int angle, int *timer,
       *counter = 0;
     }
   }
-  if (ret == 2) {
-    return 2;
+  if (ret == MOVED_BLOCKED) {
+    return MOVED_BLOCKED;
   }
   if (timer != 0 && *timer != 0xFFFF) {
     r4 = ProbeActorGroundHeightRaised(actor, 0x258);
@@ -54,7 +54,7 @@ int DriveActorTrackedMove(Actor *actor, int *counter, int angle, int *timer,
       t = r4 + actor->floorOffset;
       if (actor->posZ < t) {
         actor->posZ = t;
-        ret = 3;
+        ret = MOVED_LANDED;
       }
     }
     EncodeCachedVecToActorDirCode(actor);

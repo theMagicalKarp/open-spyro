@@ -41,17 +41,6 @@ typedef struct PickupDropState {
   unsigned char sparkle; /* 0x14 g_aRotBillboards handle, 0xFF = none */
 } PickupDropState;
 
-/* Butterfly (type 0x10) — SpawnActor's view of UpdateActors' ChaseState. */
-typedef struct ButterflyState {
-  int dir;                    /* 0x00 */
-  int anchor[3];              /* 0x04 flutter anchor */
-  unsigned char vz;           /* 0x10 vertical step */
-  unsigned char heading;      /* 0x11 */
-  unsigned char headingTimer; /* 0x12 */
-  unsigned char climbTimer;   /* 0x13 vertical-change timer */
-  short idleTimer;
-} ButterflyState;
-
 /* Chest / object fragment (types 0x43..0x45, 0xFF..0x101, 0x135..0x137 and
  * per-level ranges) — UpdateActors' ChestShardState / TumbleState. */
 typedef struct FragmentState {

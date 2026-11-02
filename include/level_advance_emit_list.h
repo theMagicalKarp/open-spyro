@@ -50,4 +50,12 @@ extern int g_nSparxHealth;
 #define POS ((short *)(rec + 4))               /* tail point, svector */
 #define VEL ((short *)(rec + 0x18))            /* velocity / spin, svector */
 
+/* Spark drift: every other tick the z velocity (VEL[2], updated through its
+ * unsigned view) climbs by one; the short at 0x1E is the 0/1 toggle. */
+#define SPARK_Z_CLIMB()                                                        \
+  if (HS(0x1E) != 0) {                                                         \
+    HU(0x1C)++;                                                                \
+  }                                                                            \
+  HS(0x1E) = 1 - HU(0x1E)
+
 #endif /* OPEN_SPYRO_LEVEL_ADVANCE_EMIT_LIST_H */

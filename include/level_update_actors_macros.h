@@ -134,7 +134,7 @@
 /* Spyro's facing delta to an actor. */
 #define SPY_FACING(a)                                                          \
   AbsAngleDelta8(spy->bodyRotZ, ArcTan2((a)->posX - spy->posX,            \
-                                             (a)->posY - spy->posY, 0))
+                                             (a)->posY - spy->posY, ATAN_ANGLE8))
 
 /* An actor's height above Spyro. */
 #define SPY_DZ(a) ((a)->posZ - (a)->floorOffset - SPY.posZ)

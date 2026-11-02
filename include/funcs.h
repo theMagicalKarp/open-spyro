@@ -49,7 +49,7 @@ void Initialize(void);
 void RelocateLevelSampleBank(int *header, int relocate);
 
 /* 0x80012d58: Top-level world-data chunk unpacker — walks the loaded world bundle as a chain of length-prefixed sections (each section starts with a 4-byte byte_size that doubles as the link to the next section) and populates the engine's per-section globals + patches all relative file-offsets to absolute pointers. Sections in order: (1) g_pWorldMeshHeaderArray/c4/c8 = section0 entry array (size 4-int per entry); (2) flag==0 only — g_pVisZoneChunkLists/b4 = section1 entry list + g_pWorldMeshIndexTable/77788 = sub-array; (3) g_pTriggerRegionTable/bc = section2; (4) g_pWorldCollisionHeader = section3 base + +3..+6 absolute-resolves; (5) g_nWorldCollisionTriCount/84/90/91/92 = section4 header; (6) flag==0 only — g_nPortalCount = mob-count, then per-mob a 32-byte+variable layout populating &g_apPortals[i], with a sub-loop building the actor lookup at &g_apMobEntryTable[mob_id*4], finally g_nLevelSampleBankCount = sample-count and a tail call to RelocateLevelSampleBank(piVar3+1, 1). Returns ptr to the next-section after consumption. flag=0 = full unpack (initial load); flag!=0 = re-unpack a subset (level transition). Callers: TickCutsceneBundleLoadStream (state machine — initial) + TickLevelTransitionStream (state machine — transition). */
-void *UnpackWorldDataChunks(int *p, int flag);
+void *UnpackWorldDataChunks(int *p, int reduced);
 
 /* 0x80013230: Patches the mob/actor table at g_apActorMeshTable from a per-mob update list. Pass 1: sanitizes the first 0x2e mob slot pointers at (g_apActorMeshTable[+0x38][i]) — any slot whose stored offset is < the working-pool start (g_pWorkAreaTop) or = 0xffffffff is zeroed. Pass 2: walks (mob_id, byte_size, data...) records until mob_id<0 — for each: stamps mob_table[mob_id*4+0x38] = data ptr, rebases the model body ptr at +0x14 and bound ptr at +0x18 by the global model-data base (g_apActorMeshTable[+0x34]), rebases the per-vertex-anim packed-XY anchor table at +0x10 (lower 21 bits as a relative offset, top 11 bits preserved, result is the >>1 of the absolute byte addr). Callers: TickDragonRescueAssetStream (dragon-rescue asset stream) + TickLevelTransitionStream (level transition). */
 void RelocateMobActorTable(void *table);
@@ -1908,6 +1908,13 @@ int RandomSignedInRange(int lo, int hi);
 /* 0x80037f90: Counts a 4/2/1-byte value down by the frame delta (g_nActorFrameDelta), clamping at 0. Returns 0 still counting, 2 reached zero this call, 1 already zero. */
 int TickCountdownByFrameDelta(void *pValue, int width);
 
+#ifndef TICK_DOWN
+/* Count the 1-, 2- or 4-byte lvalue `v` down by the frame delta (see
+ * TickCountdownByFrameDelta): 0 still counting, 2 reached zero now, 1 was
+ * already zero. */
+#define TICK_DOWN(v) TickCountdownByFrameDelta(&(v), sizeof(v))
+#endif
+
 /* 0x80038074: (a + b + 0x100) % 0x100 — 8-bit angle add with wrap. */
 int WrapAddAngle8(int a, int b);
 
@@ -2114,6 +2121,8 @@ int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim, int 
  * first steps of each leg with the previous leg vector; re-aims yaw/pitch. */
 #ifndef TWEEN_FLY
 #define TWEEN_FLY 0x04 /* keep each leg's Z step (fly); without it the step is flattened */
+#define TWEEN_NEXT_LEG 1 /* result: this step finished a leg */
+#define TWEEN_WRAPPED 2  /* result: ... and the cursor wrapped back to node 0 */
 #endif
 int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legs, int flags);
 

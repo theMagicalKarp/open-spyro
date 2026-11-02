@@ -216,7 +216,7 @@ void Level18_UpdateActors(void) {
       if (st->detached == 0) {
         if (st->trackPos != 0) {
           SubtractVector(st->pos, st->pos, &parent->posX);
-          actor->updateDist = 0xFF;
+          actor->updateDist = ACTOR_UPDATE_ALWAYS;
         } else {
           actor->updateDist = 0x20;
         }
@@ -265,7 +265,7 @@ void Level18_UpdateActors(void) {
 
         if (st->release != 0) {
           /* Released: drift away and pop. */
-          if (TickCountdownByFrameDelta(&st->release, 4) != 0) {
+          if (TICK_DOWN(st->release) != 0) {
             int *vel = st->pos;
 
             if (st->trackPos != 0) {
@@ -286,7 +286,7 @@ void Level18_UpdateActors(void) {
             }
             MarkActorCommittedKill(actor);
             *(volatile int *)&st->count <<= 7;
-            g_nSfxOverrideFlags = 2;
+            g_nSfxOverrideFlags = SFX_OVERRIDE_PITCH;
             g_nSfxOverridePitch.v =
                 SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]) +
                 st->count;
@@ -307,7 +307,7 @@ void Level18_UpdateActors(void) {
           }
 
           if (st->count == 1) {
-            g_nSfxOverrideFlags = 2;
+            g_nSfxOverrideFlags = SFX_OVERRIDE_PITCH;
             g_nSfxOverridePitch.v =
                 SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]);
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->voiceRow);
@@ -318,9 +318,9 @@ void Level18_UpdateActors(void) {
       break;
     }
 
-    /* Butterfly (ChaseState). */
+    /* Butterfly (ButterflyState). */
     case ACTOR_TYPE_BUTTERFLY: {
-      ChaseState *st = (ChaseState *)actor->state;
+      ButterflyState *st = (ButterflyState *)actor->state;
 
       if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
@@ -345,9 +345,9 @@ void Level18_UpdateActors(void) {
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
                   0) {
-                st->dir = 1;
+                st->circleDir = 1;
               } else {
-                st->dir = -1;
+                st->circleDir = -1;
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
@@ -366,10 +366,10 @@ void Level18_UpdateActors(void) {
 
       switch (actor->mode) {
       case BUTTERFLY_FLUTTER: {
-        if (TickCountdownByFrameDelta(&st->idleTimer, 2) == 0 || actor->drawn) {
+        if (TICK_DOWN(st->offscreenTimer) == 0 || actor->drawn) {
           int refHeight, rotated, moved;
 
-          if (TickCountdownByFrameDelta(&st->headingTimer, 1) != 0) {
+          if (TICK_DOWN(st->headingTimer) != 0) {
             int r = RandomSignedInRange(30, 90);
             if (GetRandomU32() & 1) {
               r = -r;
@@ -379,7 +379,7 @@ void Level18_UpdateActors(void) {
             st->headingTimer = RandomIntInRange(60, 140);
           }
 
-          if (TickCountdownByFrameDelta(&st->climbTimer, 1) != 0) {
+          if (TICK_DOWN(st->climbTimer) != 0) {
             st->vz = RandomSignedInRange(10, 25);
             st->climbTimer = RandomIntInRange(80, 140);
           }
@@ -410,9 +410,9 @@ void Level18_UpdateActors(void) {
             st->headingTimer = RandomIntInRange(30, 80);
           }
 
-          if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
-            int angle = ArcTan2(st->tgtX - actor->posX,
-                                      st->tgtY - actor->posY, ATAN_ANGLE8);
+          if (ApproxDist2D(&actor->posX, st->home) > 2000) {
+            int angle = ArcTan2(st->home[0] - actor->posX,
+                                      st->home[1] - actor->posY, ATAN_ANGLE8);
 
             st->heading = angle;
             st->headingTimer = 40;
@@ -427,7 +427,7 @@ void Level18_UpdateActors(void) {
         SteerActorAroundPoint(actor, &spy->posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
-                                    st->dir * 8),
+                                    st->circleDir * 8),
                       8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
@@ -435,7 +435,7 @@ void Level18_UpdateActors(void) {
         } else {
           int refHeight;
 
-          if (TickCountdownByFrameDelta(&st->climbTimer, 1)) {
+          if (TICK_DOWN(st->climbTimer)) {
             st->vz = RandomSignedInRange(5, 20);
             st->climbTimer = RandomIntInRange(40, 80);
           }
@@ -829,7 +829,7 @@ void Level18_UpdateActors(void) {
                   if (GetSoundVoiceStatusByOwner(
                           g_pSparxActor,
                           g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0]) == 0) {
-                    g_nSfxOverrideFlags = 1;
+                    g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
                     PlayActorMeshVoice(g_pSparxActor, 0, 0);
@@ -915,7 +915,7 @@ void Level18_UpdateActors(void) {
               }
             }
 
-            g_nSfxOverrideFlags = 1;
+            g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
             g_nSfxOverrideVolL = 0x3CCC >> (3 - st->bounce);
             g_nSfxOverrideVolR = 0x3CCC >> (3 - st->bounce);
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
@@ -952,7 +952,7 @@ void Level18_UpdateActors(void) {
                   if (GetSoundVoiceStatusByOwner(
                           g_pSparxActor,
                           g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0]) == 0) {
-                    g_nSfxOverrideFlags = 1;
+                    g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
                     PlayActorMeshVoice(g_pSparxActor, 0, 0);
@@ -1101,7 +1101,7 @@ void Level18_UpdateActors(void) {
             int drop = height - SPY.posZ;
 
             if (drop > 0 ? drop < 0x800 : (SPY.posZ - height) < 0x800) {
-              if (st->prompted == 0 || anchor->mode == 1) {
+              if (st->prompted == 0 || anchor->mode == CHECKPT_ARMED) {
                 int *at = &actor->posX;
 
                 st->prompted = 0;
@@ -1142,8 +1142,7 @@ void Level18_UpdateActors(void) {
         st->timer += 1;
         actor->posZ = st->baseZ + (LookupCosine(st->timer << 7) >> 6);
 
-        if ((anchor->mode == 0 ||
-             (anchor->mode == 2 && anchor->subMode >= 0x10)) &&
+        if (CHECKPT_SETTLED(anchor) &&
             ApproxDist2D(&anchor->posX, &spy->posX) < 0x400 &&
             (height = anchor->posZ - anchor->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
@@ -1190,8 +1189,7 @@ void Level18_UpdateActors(void) {
         st->timer += 1;
         actor->posZ = st->baseZ + (LookupCosine(st->timer << 7) >> 6);
 
-        if ((anchor->mode == 0 ||
-             (anchor->mode == 2 && anchor->subMode >= 0x10)) &&
+        if (CHECKPT_SETTLED(anchor) &&
             ApproxDist2D(&anchor->posX, &spy->posX) < 0x400 &&
             (height = anchor->posZ - anchor->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
@@ -1240,7 +1238,7 @@ void Level18_UpdateActors(void) {
           actor->scale += 4;
           actor->rotZ += 8;
         } else {
-          actor->cullRadius = 0;
+          actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;
           actor->mode = SAVEHOST_HIDDEN;
           st->timer = 0x10;
@@ -1367,7 +1365,7 @@ void Level18_UpdateActors(void) {
             dist = VectorLength(svA, VEC_LEN_XYZ);
 
             if (high == 0 &&
-                (TickCountdownByFrameDelta((void *)st, 4) != 0 ||
+                (TICK_DOWN(st->timer) != 0 ||
                  (st->timer < 0x50 &&
                   AbsAngleDelta8(
                       (actor->rotZ + (pk->vel[0] * 0x6E)) & 0xFF,
@@ -1438,7 +1436,7 @@ void Level18_UpdateActors(void) {
               EBB_BREAK();
 
               if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[SFX_GEM_BOUNCE]) == 0) {
-                g_nSfxOverrideFlags = 1;
+                g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                 g_nSfxOverrideVolR = 0x3600;
                 g_nSfxOverrideVolL = 0x3600;
                 PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
@@ -1563,7 +1561,7 @@ void Level18_UpdateActors(void) {
         st->speed = 0xFA;
         st->turn = 0;
         if (actor->mode != CHARGER_IDLE) {
-          *st->flag = 0;
+          *st->chargeLock = 0;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
@@ -1572,7 +1570,7 @@ void Level18_UpdateActors(void) {
       if (st->init == 0) {
         st->init = 1;
         if (st->lurk != 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
-          if (actor->dropKind != 0xFF) {
+          if (actor->dropKind != DROP_GEM_ROLL) {
             SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             MarkActorCommittedKill(actor);
           }
@@ -1580,7 +1578,7 @@ void Level18_UpdateActors(void) {
           continue;
         }
       }
-      if (TickCountdownByFrameDelta(&st->timer3, 4) == 0) {
+      if (TICK_DOWN(st->camHold) == 0) {
         int d = ApproxDist2D(&actor->posX, &spy->posX) + 0x1000;
 
         if (st->camDist < d) {
@@ -1597,14 +1595,14 @@ void Level18_UpdateActors(void) {
       case CHARGER_IDLE: {
         int *p;
 
-        TickCountdownByFrameDelta(&st->timer2, 4);
+        TICK_DOWN(st->cooldown);
         switch (st->mode) {
         case CHARGER_ROLE_STAND:
           TrackEntityYawTowardSpyro(actor, 0xA, 0, YAW_HOLD_IN_BAND);
           break;
 
         case CHARGER_ROLE_PATROL:
-          ANIM_GO(actor, 1);
+          ANIM_GO(actor, CHARGER_CHARGE);
           if (st->speed < 0x96) {
             st->speed = 0x96;
           }
@@ -1641,7 +1639,7 @@ void Level18_UpdateActors(void) {
           int spd = 0xA0;
           int d = ApproxDist2D(&actor->posX, &g_pActorListBase[st->target].posX);
 
-          ANIM_GO(actor, 1);
+          ANIM_GO(actor, CHARGER_CHARGE);
           if (d < 0xFA0) {
             spd = 0x8C;
           } else if (d > 0x1770) {
@@ -1670,13 +1668,13 @@ void Level18_UpdateActors(void) {
           }
           break;
         }
-        if (st->timer2 == 0 && *st->flag == 0 && g_nSpyroAirborneFrames == 0) {
+        if (st->cooldown == 0 && *st->chargeLock == 0 && g_nSpyroAirborneFrames == 0) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
           if ((dz > 0 ? dz < 0x320
                       : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x320) &&
               ApproxDist2D(p, &SPY.posX) < st->range << 10) {
-            *st->flag = 1;
+            *st->chargeLock = 1;
             st->timer = 0;
             st->charging = 0;
             if (st->mode == CHARGER_ROLE_FOLLOW) {
@@ -1694,10 +1692,10 @@ void Level18_UpdateActors(void) {
         int s137;
         int dist = ApproxDist2D(&actor->posX, &spy->posX);
 
-        if (TickCountdownByFrameDelta(&st->timer, 4) == 0) {
+        if (TICK_DOWN(st->timer) == 0) {
           break;
         }
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, CHARGER_CHARGE);
         if (st->mode == CHARGER_ROLE_POST) {
           SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist2,
                         ArcTan2(spy->posX - st->path->nodes[0].x,
@@ -1733,9 +1731,9 @@ void Level18_UpdateActors(void) {
             }
           }
         }
-        if (TickCountdownByFrameDelta(&st->timer2, 4) != 0) {
+        if (TICK_DOWN(st->cooldown) != 0) {
           st->knock = SPY.bodyRotZ;
-          st->timer2 = 0x1E;
+          st->cooldown = 0x1E;
         }
         st->turn = (ArcTan2(actor->posX - spy->posX,
                                   actor->posY - spy->posY, ATAN_ANGLE8) -
@@ -1759,8 +1757,8 @@ void Level18_UpdateActors(void) {
         }
         if (MoveActorAlongHeading(actor, s137, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0) {
         reset137:
-          *st->flag = 0;
-          st->timer2 = 0x78;
+          *st->chargeLock = 0;
+          st->cooldown = 0x78;
           actor->mode = CHARGER_GO_HOME;
           continue;
         }
@@ -1799,9 +1797,9 @@ void Level18_UpdateActors(void) {
 
       case CHARGER_RAM:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (MoveActorAlongHeading(actor, st->speed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == 2) {
-          *st->flag = 0;
-          st->timer2 = 0x78;
+        if (MoveActorAlongHeading(actor, st->speed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == MOVED_BLOCKED) {
+          *st->chargeLock = 0;
+          st->cooldown = 0x78;
           actor->mode = CHARGER_GO_HOME;
           continue;
         }
@@ -1815,14 +1813,14 @@ void Level18_UpdateActors(void) {
                      : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x384) {
             if (st->cam == 0) {
               st->cam = 1;
-              st->timer2 = 0xDC;
+              st->cooldown = 0xDC;
               SPY.triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
               g_anSpyroRequestVelocity.x = LookupCosine(actor->rotZ * 16) * 0x87 >> 12;
               g_nSpyroRequestVelocityY = LookupSine(actor->rotZ * 16) * 0x87 >> 12;
               g_nSpyroRequestVelocityZ = 0x32;
             } else if (st->cam == 1) {
               st->cam = 2;
-              st->timer3 = 0x1E;
+              st->camHold = 0x1E;
               SPY.requestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
               SPY.pCamAnchor = &actor->posX;
               SPY.pCamTarget = &g_anCameraActiveTargetParams;
@@ -1849,15 +1847,15 @@ void Level18_UpdateActors(void) {
           if (st->cam == 0) {
             ENTER_POSE(actor, CHARGER_CHARGE);
           }
-          *st->flag = 0;
-          ANIM_GO(actor, 1);
+          *st->chargeLock = 0;
+          ANIM_GO(actor, CHARGER_CHARGE);
           actor->mode = CHARGER_GO_HOME;
           continue;
         }
         break;
 
       case CHARGER_GO_HOME:
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, CHARGER_CHARGE);
         if (st->mode == CHARGER_ROLE_POST) {
           SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist2,
                         ArcTan2(st->vec[0] - st->path->nodes[0].x,
@@ -1941,11 +1939,11 @@ void Level18_UpdateActors(void) {
 
             g_nLevelKeyState = KEYSTATE_CARRIED;
             actor->scale = 0x40;
-            actor->cullRadius = 0;
-            actor->updateDist = 0;
+            actor->cullRadius = ACTOR_CULL_HIDDEN;
+            actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
             actor->drawn = 0;
             actor->groundCode = 0;
-            actor->visZone = 0xFF;
+            actor->visZone = VIS_ZONE_ALWAYS;
             actor->subMode = KEY_TAKEN;
           }
         }
@@ -2031,7 +2029,7 @@ void Level18_UpdateActors(void) {
           actor->subMode = LOCKCHEST_KEY_READY;
           key->scale = 0x40;
           key->groundCode = 0;
-          key->visZone = 0xFF;
+          key->visZone = VIS_ZONE_ALWAYS;
           key->subMode = KEY_TAKEN;
         }
         break;
@@ -2132,8 +2130,8 @@ void Level18_UpdateActors(void) {
               SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_STOP)) {
           int i;
 
-          key->cullRadius = 0;
-          key->updateDist = 0;
+          key->cullRadius = ACTOR_CULL_HIDDEN;
+          key->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
           key->drawn = 0;
           g_nCinematicActive = 0;
           actor->soundRange = 0x20;
@@ -2350,7 +2348,7 @@ void Level18_UpdateActors(void) {
 
       if (actor->mode == STATUE_INIT) {
         if (st->partner != -1) {
-          g_pActorListBase[st->partner].mode = 3;
+          g_pActorListBase[st->partner].mode = CHECKPT_HELD;
         }
         actor->mode = STATUE_IDLE;
         st->rotX = actor->rotX;
@@ -2424,7 +2422,7 @@ void Level18_UpdateActors(void) {
               StubRewardHook(st->reward, 0);
 
               if (st->partner != -1) {
-                g_pActorListBase[st->partner].mode = 1;
+                g_pActorListBase[st->partner].mode = CHECKPT_ARMED;
               }
               DespawnActorRecord(actor);
               continue;
@@ -2435,7 +2433,7 @@ void Level18_UpdateActors(void) {
               g_nTotalDragonsRescued += 1;
 
               if (st->partner != -1) {
-                g_pActorListBase[st->partner].mode = 1;
+                g_pActorListBase[st->partner].mode = CHECKPT_ARMED;
               }
               DespawnActorRecord(actor);
               continue;
@@ -2500,7 +2498,7 @@ void Level18_UpdateActors(void) {
     case ACTOR_TYPE_GEM_DIGIT_0 + 9: {
       GemDigitState *st = actor->state;
 
-      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != ACTOR_CULL_HIDDEN)) {
 
         if (st->life >= 1) {
 
@@ -2563,7 +2561,7 @@ void Level18_UpdateActors(void) {
         break;
 
       case 1:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           st->timer = 0x258 - (GetRandomU32() & 0x7F);
           voice = (GetRandomU32() & 7) + 7;
         }
@@ -2572,7 +2570,7 @@ void Level18_UpdateActors(void) {
       case AMBIENT_MODE_PATH:
         switch (st->sub) {
         case AMBIENT_STEP_WAIT:
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          if (TICK_DOWN(st->timer) != 0) {
             st->timer = 0x200 - (GetRandomU32() & 0x7F);
             voice = (GetRandomU32() & 1) + 0xD;
             st->sub = AMBIENT_STEP_TRAVEL;
@@ -2614,14 +2612,14 @@ void Level18_UpdateActors(void) {
         break;
 
       case 3:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           st->timer = 0x270 - (GetRandomU32() & 0x7F);
           voice = (GetRandomU32() & 1) + 0xF;
         }
         break;
 
       case 4:
-        if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+        if (TICK_DOWN(st->timer) != 0) {
           int r;
 
           st->timer = 0x258 - (GetRandomU32() & 0x7F);
@@ -2667,7 +2665,7 @@ void Level18_UpdateActors(void) {
       st = (WhirlwindState *)actor->state;
       if (st->flags & WHIRL_F_GATED) {
         if (g_pActorListBase[st->idx].type == ACTOR_TYPE_KEY) {
-          if (g_pActorListBase[st->idx].subMode == 0)
+          if (g_pActorListBase[st->idx].subMode == KEY_WAITING)
             break;
           if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1C01)
             break;
@@ -2682,7 +2680,7 @@ void Level18_UpdateActors(void) {
       flags = st->flags;
       if (flags & WHIRL_F_IDLE) {
         if (st->timer != 0) {
-          if (TickCountdownByFrameDelta(&st->timer, 4) != 0)
+          if (TICK_DOWN(st->timer) != 0)
             st->flags = (st->flags & ~WHIRL_F_IDLE) | WHIRL_F_WOKEN;
           break;
         }
@@ -2720,7 +2718,7 @@ void Level18_UpdateActors(void) {
         break;
       }
       if ((st->flags & ~WHIRL_F_TARGET_CAM) == WHIRL_F_WOKEN && st->timer != 0 &&
-          TickCountdownByFrameDelta(&st->timer, 4) != 0) {
+          TICK_DOWN(st->timer) != 0) {
         st->flags = (st->flags & ~WHIRL_F_WOKEN) | WHIRL_F_IDLE;
       }
       break;
@@ -2834,14 +2832,14 @@ void Level18_UpdateActors(void) {
       case BOULDER_INTACT:
         if (actor->flags & ACTOR_HIT_BLAST) {
           actor->subMode = BOULDER_CRACKING;
-          actor->updateDist = 0xFF;
+          actor->updateDist = ACTOR_UPDATE_ALWAYS;
           actor->cullRadius = 0x7F;
           if (st->timer < 0x5A) {
             st->timer = 0x5A;
           }
         } else if (actor->flags & ACTOR_HIT_FLAME) {
           actor->subMode = BOULDER_CRACKING;
-          actor->updateDist = 0xFF;
+          actor->updateDist = ACTOR_UPDATE_ALWAYS;
           actor->cullRadius = 0x7F;
           st->timer = 0;
         } else {
@@ -2855,7 +2853,7 @@ void Level18_UpdateActors(void) {
       hit:
         if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
           actor->subMode = BOULDER_BURST;
-          actor->cullRadius = 0;
+          actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;
           st->timer = 0;
         }
@@ -2914,7 +2912,7 @@ void Level18_UpdateActors(void) {
         }
         } else {
           actor->subMode = BOULDER_BURST;
-          actor->cullRadius = 0;
+          actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;
           st->timer = 0;
         }
@@ -3032,7 +3030,7 @@ void Level18_UpdateActors(void) {
           actor->updateDist = 0x40;
           st->prize = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
           st->prize->subMode = COLLECT_INERT;
-          st->prize->cullRadius = 0;
+          st->prize->cullRadius = ACTOR_CULL_HIDDEN;
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
@@ -3222,7 +3220,7 @@ void Level18_UpdateActors(void) {
 
       LUID_PAD LUID_PAD
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == ACTOR_HIT_FLAME) {
-        actor->updateDist = 0xFF;
+        actor->updateDist = ACTOR_UPDATE_ALWAYS;
         PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
                       &actor->voiceRow);
         if (actor->voiceRow != VOICE_ROW_NONE) {
@@ -3330,7 +3328,7 @@ void Level18_UpdateActors(void) {
         st->timer = 0;
         actor->subMode = LID_FLYING;
         actor->cullRadius = 0x20;
-        actor->updateDist = 0xFF;
+        actor->updateDist = ACTOR_UPDATE_ALWAYS;
         actor->rotX = 0xA;
         actor->rotY = 0;
         continue;
@@ -3558,8 +3556,8 @@ void Level18_UpdateActors(void) {
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;
           st->passenger->frameRate = 0x10;
-          st->passenger->updateDist = 0;
-          st->passenger->cullRadius = 0;
+          st->passenger->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
+          st->passenger->cullRadius = ACTOR_CULL_HIDDEN;
           st->passenger->drawn = 0;
           st->passenger->otBias = 5;
 
@@ -3593,7 +3591,7 @@ void Level18_UpdateActors(void) {
         if (actor->anim == 1) {
           st->phase += g_nFrameStep;
           st->passenger->cullRadius = 0x10;
-          st->passenger->updateDist = 0xFF;
+          st->passenger->updateDist = ACTOR_UPDATE_ALWAYS;
         }
 
         if (st->phase >= 0xE6) {
@@ -3775,7 +3773,7 @@ void Level18_UpdateActors(void) {
         PlayActorMeshVoice(actor, 0, 0);
         ENTER_POSE(actor, WARDRUM_KNOCKED);
       }
-      if (TickCountdownByFrameDelta(&st->beat, 4) == 2) {
+      if (TICK_DOWN(st->beat) == 2) {
         st->fade = 0x14;
         st->wait = st->reload;
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
@@ -3783,13 +3781,13 @@ void Level18_UpdateActors(void) {
       if (st->beat == 0 && CHUNK_ANIM_STEP(GetWorldChunkAnimState(st->chunkAnim)) < 2) {
         g_anLevelTriggerStateSlots[st->chunkAnim] = 0;
       }
-      if (TickCountdownByFrameDelta(&st->fade, 4) == 0) {
+      if (TICK_DOWN(st->fade) == 0) {
         ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_KEEP(CHUNK_ANIM_BRANCH), CHUNK_ANIM_BRANCH);
       }
 
       switch (actor->mode) {
       case WARDRUM_WAIT:
-        if (TickCountdownByFrameDelta(&st->wait, 4) == 2) {
+        if (TICK_DOWN(st->wait) == 2) {
           ENTER_POSE(actor, WARDRUM_BEAT);
         }
         break;
@@ -3809,12 +3807,12 @@ void Level18_UpdateActors(void) {
 
       case WARDRUM_KNOCKED:
         actor->rotY += g_nFrameStep * 2;
-        if (TickCountdownByFrameDelta(&st->life, 4) != 0 ||
+        if (TICK_DOWN(st->life) != 0 ||
             DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, 0xC) ==
-                3) {
+                MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
-          actor->cullRadius = 0;
+          actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->mode = WARDRUM_GONE;
           continue;
         }
@@ -3858,11 +3856,11 @@ void Level18_UpdateActors(void) {
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorCommittedKill(actor);
         }
-        if (actor->nextAnim != 3) {
+        if (actor->nextAnim != RAM_KNOCKED) {
           g_nActorAnimDone = 0;
           actor->frameProgress = sixteen;
           actor->frameRate = sixteen;
-          actor->nextAnim = 3;
+          actor->nextAnim = RAM_KNOCKED;
           actor->nextFrame = 0;
           OnActorAnimQueued(actor);
         }
@@ -3878,7 +3876,7 @@ void Level18_UpdateActors(void) {
 
       switch (actor->mode) {
       case RAM_GRAZE:
-        if (TickCountdownByFrameDelta(&st->call, 4) != 0) {
+        if (TICK_DOWN(st->call) != 0) {
           st->call = (GetRandomU32() & 0x1F) + 0x50;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
@@ -3919,7 +3917,7 @@ void Level18_UpdateActors(void) {
             ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                           st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8);
 
-        if (TickCountdownByFrameDelta(&st->call, 4) != 0) {
+        if (TICK_DOWN(st->call) != 0) {
           st->call = (GetRandomU32() & 0x1F) + 0x50;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
@@ -3962,9 +3960,9 @@ void Level18_UpdateActors(void) {
         if (SPY.airborneFrames != 0) {
           break;
         }
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, RAM_WANDER);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
-            0x100) {
+            PATH_ARRIVED(0)) {
           g_pActorListBase[st->partner].subMode = 1;
           actor->mode = RAM_PATH_END;
           continue;
@@ -3972,11 +3970,11 @@ void Level18_UpdateActors(void) {
         break;
 
       case RAM_PATH_END:
-        if (TickCountdownByFrameDelta(&st->call, 4) != 0) {
+        if (TICK_DOWN(st->call) != 0) {
           st->call = (GetRandomU32() & 0x3F) + 0x78;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
-        ANIM_GO(actor, 0);
+        ANIM_GO(actor, RAM_GRAZE);
         break;
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
@@ -3987,40 +3985,40 @@ void Level18_UpdateActors(void) {
      * resets once its animation ends. */
     case ACTOR_TYPE_BELL_POST:
       switch (actor->mode) {
-      case 0:
+      case BELLPOST_IDLE:
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          actor->mode = 1;
-          ANIM_RESET(actor, 1);
+          actor->mode = BELLPOST_RING;
+          ANIM_RESET(actor, BELLPOST_RING);
           continue;
         }
         if (actor->flags & ACTOR_HIT_FLAME) {
-          actor->mode = 2;
-          ANIM_RESET(actor, 2);
+          actor->mode = BELLPOST_SCORCH;
+          ANIM_RESET(actor, BELLPOST_SCORCH);
           continue;
         }
         break;
 
-      case 1:
+      case BELLPOST_RING:
         if (actor->flags & ACTOR_HIT_FLAME) {
-          ANIM_QUEUE(actor, 2);
+          ANIM_QUEUE(actor, BELLPOST_SCORCH);
         }
         if (g_nActorAnimDone != 0) {
-          ANIM_QUEUE(actor, 0);
+          ANIM_QUEUE(actor, BELLPOST_IDLE);
         }
         break;
 
-      case 3:
+      case BELLPOST_FLAMED:
         if (actor->flags != 0) {
-          actor->mode = 4;
-          ANIM_RESET(actor, 4);
+          actor->mode = BELLPOST_FLAMED_RING;
+          ANIM_RESET(actor, BELLPOST_FLAMED_RING);
           continue;
         }
         break;
 
-      case 2:
-      case 4:
+      case BELLPOST_SCORCH:
+      case BELLPOST_FLAMED_RING:
         if (g_nActorAnimDone != 0) {
-          ANIM_QUEUE(actor, 3);
+          ANIM_QUEUE(actor, BELLPOST_FLAMED);
         }
         break;
       }

@@ -58,7 +58,7 @@ enum SaveHostMode {
 /* ->mode of a crystal dragon statue (ACTOR_TYPE_DRAGON_STATUE,
  * DragonStatueState). */
 enum DragonStatueMode {
-  STATUE_INIT = 0,      /* snapshot the rest pose, hold the partner (mode 3) */
+  STATUE_INIT = 0,      /* snapshot the rest pose, hold its checkpoint (CHECKPT_HELD) */
   STATUE_IDLE = 1,      /* shakes now and then; Spyro touching it frees the dragon */
   STATUE_RESCUING = 2,  /* BeginDragonRescue ran (also the save menu's replay) */
 };
@@ -877,6 +877,13 @@ enum GuardPairMode {
   GPAIR_CUE = 10,     /* signals its partner (subMode steps the gesture), then IDLE */
 };
 
+/* ->subMode while GPAIR_CUE: the signal gesture. */
+enum GuardPairCueStep {
+  GPCUE_RAISE = 0,  /* plays the ROUSE animation */
+  GPCUE_SIGNAL = 1, /* animation 8; on its frame 8 the partner enters mode 0xD */
+  GPCUE_LOWER = 2,  /* plays the LOWER animation, then IDLE */
+};
+
 /* ->mode of a sweep gunner (ACTOR_TYPE_SWEEP_GUNNER, SweepGunnerState;
  * level 32). */
 enum SweepGunnerMode {
@@ -1678,7 +1685,14 @@ enum CheckpointMode {
   CHECKPT_REARM = 0,     /* waits for Spyro to walk away (> 2560), then ARMED */
   CHECKPT_ARMED = 1,     /* Spyro touches it: sets the respawn anchor, FLASH */
   CHECKPT_FLASH = 2,     /* subMode counts frames to 0x30, then REARM */
+  CHECKPT_HELD = 3,      /* its dragon statue holds it until the rescue (no arm runs) */
 };
+
+/* A checkpoint that is not waiting for Spyro's touch: REARM, or FLASH at
+ * least 16 frames in. A save host (SaveHostState.anchor is always a
+ * checkpoint in the level data) only opens the save menu at a settled one. */
+#define CHECKPT_SETTLED(a) \
+  ((a)->mode == CHECKPT_REARM || ((a)->mode == CHECKPT_FLASH && (a)->subMode >= 0x10))
 
 /* ->mode of a lookout (LookoutState): ACTOR_TYPE_GUARD_LOOKOUT (level 8) and
  * ACTOR_TYPE_SHEMP_LOOKOUT (level 10); the update switches on a local copy. */
@@ -1744,6 +1758,12 @@ enum ShooterShotMode {
 enum PressureSwitchMode {
   PSWITCH_UP = 0,
   PSWITCH_DOWN = 1, /* its bit in the linked actor's subMode is set */
+};
+
+/* ->subMode of the pressure switch: Spyro stepping on it. */
+enum PressureSwitchStep {
+  PSWITCH_CLEAR = 0,    /* Spyro steps on: toggle its bit in the prop's subMode */
+  PSWITCH_STOOD_ON = 1, /* until Spyro steps off */
 };
 
 /* ->mode of the simple two-mode projectiles: ACTOR_TYPE_FLYING_EMBER and
@@ -1834,6 +1854,41 @@ enum AmbientSoundMode {
 enum AmbientSoundPathStep {
   AMBIENT_STEP_WAIT = 0, /* on its timer: plays a voice, then TRAVEL */
   AMBIENT_STEP_TRAVEL = 1, /* steps along the leg; at its end snaps to the next node, WAIT */
+};
+
+/* ->mode of the level 18 bell post (ACTOR_TYPE_BELL_POST); each mode plays
+ * its own animation. A flame leaves it in the FLAMED pair for good. */
+enum BellPostMode {
+  BELLPOST_IDLE = 0,        /* a charge rings it, a flame scorches it */
+  BELLPOST_RING = 1,        /* rings once, then IDLE (a flame still scorches it) */
+  BELLPOST_SCORCH = 2,      /* flamed: plays out into FLAMED */
+  BELLPOST_FLAMED = 3,      /* scorched idle: any hit rings it */
+  BELLPOST_FLAMED_RING = 4, /* rings once, back to FLAMED */
+};
+
+/* ->mode of a charge-reactive prop (ACTOR_TYPE_CHARGE_REACT_PROP, levels
+ * 2/25); each mode plays its own animation. */
+enum ChargeReactMode {
+  CREACT_IDLE = 0,  /* a charge starts REACT */
+  CREACT_REACT = 1, /* plays the reaction once, back to IDLE */
+};
+
+/* ->mode of the level 2 flame trigger (ACTOR_TYPE_FLAME_CHUNK_TRIGGER). */
+enum FlameTriggerMode {
+  FLAMETRIG_ARMED = 0, /* a flame resumes its world chunk animation */
+  FLAMETRIG_FIRED = 1, /* plays animation 1, then SPENT */
+  FLAMETRIG_SPENT = 2, /* holds animation 2 */
+};
+
+/* ->mode of the level 20 one-shot prop (ACTOR_TYPE_ONE_SHOT_PROP); each mode
+ * plays its own animation. A gunner partnered with it (level data) sets PLAY
+ * from GUNNER_WAKE. */
+enum OneShotPropMode {
+  ONESHOT_IDLE = 0,
+  ONESHOT_PLAY = 1,     /* to frame 0xE, then PLAYED */
+  ONESHOT_PLAYED = 2,   /* holds */
+  ONESHOT_HIT = 3,      /* any hit before HIT: to frame 0x13, then HIT_DONE */
+  ONESHOT_HIT_DONE = 4, /* holds */
 };
 
 #endif

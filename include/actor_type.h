@@ -91,6 +91,16 @@ typedef struct Actor {
 
 /* Actor.voiceRow while no voice row plays the actor's sound. */
 #define VOICE_ROW_NONE 0x7F
+#define ACTOR_CULL_HIDDEN 0 /* ->cullRadius: a zero bound fails the view cull, so the actor is hidden */
+#define ACTOR_TINT_NEUTRAL 0xA18618 /* the 0x4C tint word at neutral levels (0x18 each, tag 0xA) */
+#define BILLBOARD_NONE 0xFF          /* no g_aRotBillboards handle */
+#define ACTOR_UPDATE_ALWAYS 0xFF /* ->updateDist: read signed by BuildActiveActorList, so
+                                  * a negative radius keeps the actor updating anywhere */
+#define ACTOR_UPDATE_WHEN_DRAWN 0 /* ->updateDist: no activation radius, so it only
+                                  * updates while it was drawn last frame */
+#define VIS_ZONE_ALWAYS 0xFF     /* ->visZone: no vis-zone gate, always drawn */
+#define DROP_GEM_ROLL 0xFF       /* ->dropKind: a random gem roll (and counts in the
+                                  * running kill set, IsActorInRunningKillSet) */
 
 /* Actor.flags hit bits that Spyro's attacks raise through
  * DispatchActorContactAtSphere (AdvanceSpyroPhysics, TickSpyroAttackEffects). */
@@ -119,6 +129,16 @@ typedef struct Actor {
 #define MOVE_STRAFE 0x08       /* SteerActorAroundPoint: face the target, move along the heading */
 #define MOVE_CHECK_Z 0x100     /* PivotActorAlongPath: arrival also needs Z within `thresh` */
 #define MOVE_PROBES_FLOOR (MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLOPE_LIMIT)
+
+/* MoveActorAlongHeading / MoveActorAlongAngle / MoveActorByDelta results
+ * (DriveActorTrackedMove passes them on, or MOVED_LANDED). */
+#define MOVED_OK 0        /* the step was committed */
+#define MOVED_HIT_ACTOR 1 /* an actor's contact sphere stopped it */
+#define MOVED_BLOCKED 2   /* world collision, step height or slope rejected it */
+#define MOVED_LANDED 3    /* DriveActorTrackedMove: the fall ended on the floor */
+
+/* PivotActorAlongPath / SteerActorAlongWaypoints result on reaching node n. */
+#define PATH_ARRIVED(n) (0x100 + (n))
 
 /* Size of one actor record: the stride of the actor pool, the sprite-record
  * queue and the HUD icon table. (The typedef fails to compile if the struct
@@ -465,6 +485,11 @@ enum ActorType {
                              * outside its audible range */
 #define SFX_MODE_PANNED 0x10 /* pan supplied by the caller */
 #define SFX_MODE_MASK 0x1C   /* the mode group within a voice row's nFlags */
+
+/* g_nSfxOverrideFlags: one-shot overrides the next PlaySoundEffect consumes
+ * (and clears). */
+#define SFX_OVERRIDE_VOLUME 1 /* use g_nSfxOverrideVolL/R instead of the default volume */
+#define SFX_OVERRIDE_PITCH 2  /* use g_nSfxOverridePitch instead of the sample's pitch */
 
 /* StopSoundVoicesByOwner's mode: which of the owner's voices to stop. */
 #define VOICE_STOP_ALL 1     /* every voice it owns */

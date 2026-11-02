@@ -19,7 +19,7 @@
  *                                  r/g/b triple for the fading classes)
  *   0x10..0x16  per-record velocity / colour bytes
  *   0x18  spin angle (a source pointer in classes 0x4 / 0x6, a byte angle
- *         pair in 0x15 / 0x4C)      0x1C  wrap count    0x1E  phase toggle
+ *         pair in 0x15 / 0x4C)      0x1C  spark vel z   0x1E  phase toggle
  *
  * Beyond the shared ground-level arm set this variant adds the two wizard
  * classes 0x4 and 0x5, and takes 0x7 / 0x41 from the level_12 body.
@@ -61,10 +61,7 @@ void Level15_AdvanceEmitList(int step) {
     switch (rec[0]) {
     case EMIT_SPARK_VEL:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 2;
       rec[0xC] -= step4;
       rec[0xD] -= step4;
@@ -77,10 +74,7 @@ void Level15_AdvanceEmitList(int step) {
 
     case EMIT_SPARK_VEL_DIM:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step4;
       rec[0xC] -= step4;
       rec[0xD] -= step4;
@@ -93,10 +87,7 @@ void Level15_AdvanceEmitList(int step) {
 
     case EMIT_SPARK_RISE:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step4;
       rec[0xC] -= step4;
       rec[0xD] -= step4;
@@ -306,10 +297,7 @@ void Level15_AdvanceEmitList(int step) {
 
     case EMIT_SPEED_DUST:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 2;
       AGE += step;
       if (AGE >= 0x20 || ALIVE == 0) {

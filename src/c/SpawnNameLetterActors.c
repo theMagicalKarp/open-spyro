@@ -38,8 +38,8 @@ void SpawnNameLetterActors(Actor *sign, int named) {
   int scratch[2];
   char *name;
   int yaw;
-  int a;
-  int b;
+  int sideAng;
+  int endAng;
   int ang;
   int step;
   int len;
@@ -57,15 +57,15 @@ void SpawnNameLetterActors(Actor *sign, int named) {
     yaw = ArcTan2(g_anSpyroWorldPos[0] - sign->posX,
                   g_nSpyroWorldPosY - sign->posY, ATAN_ANGLE8);
   }
-  a = yaw & 0xff;
-  ang = a * 16;
+  sideAng = yaw & 0xff;
+  ang = sideAng * 16;
   radial[0] = (LookupCosine(ang) * 3) >> 4;
   radial[1] = (LookupSine(ang) * 3) >> 4;
   radial[2] = 0;
-  a = a + 0x40;
-  a = a * 16;
-  spacing[0] = LookupCosine(a) >> 5;
-  spacing[1] = LookupSine(a) >> 5;
+  sideAng = sideAng + 0x40;
+  sideAng = sideAng * 16;
+  spacing[0] = LookupCosine(sideAng) >> 5;
+  spacing[1] = LookupSine(sideAng) >> 5;
   spacing[2] = 0;
 
   if (named != 0) {
@@ -85,11 +85,11 @@ void SpawnNameLetterActors(Actor *sign, int named) {
   LShiftVector3(spacing, 1);
 
   step = n * 2;
-  b = step & 0xff;
-  b = b * 16;
-  cursor[2] = cursor[2] + ((LookupCosine(b) * 3) >> 3);
-  bend[0] = radial[0] * LookupCosine(b);
-  bend[1] = radial[1] * LookupCosine(b);
+  endAng = step & 0xff;
+  endAng = endAng * 16;
+  cursor[2] = cursor[2] + ((LookupCosine(endAng) * 3) >> 3);
+  bend[0] = radial[0] * LookupCosine(endAng);
+  bend[1] = radial[1] * LookupCosine(endAng);
   bend[2] = 0;
 
   i = 0;
@@ -98,7 +98,7 @@ void SpawnNameLetterActors(Actor *sign, int named) {
     do {
       int raw = *p;
       int ch = raw & 0xff;
-      int t;
+      int arcAng;
       int skin;
 
       if (ch != ' ') {
@@ -112,10 +112,10 @@ void SpawnNameLetterActors(Actor *sign, int named) {
         REC(letter)->count = len;
         REC(letter)->index = i;
 
-        t = step & 0xff;
-        t = t * 16;
-        letter->posX = radial[0] * LookupCosine(t);
-        letter->posY = radial[1] * LookupCosine(t);
+        arcAng = step & 0xff;
+        arcAng = arcAng * 16;
+        letter->posX = radial[0] * LookupCosine(arcAng);
+        letter->posY = radial[1] * LookupCosine(arcAng);
         letter->posZ = 0;
 
         pos = &letter->posX;
@@ -125,7 +125,7 @@ void SpawnNameLetterActors(Actor *sign, int named) {
         AddVector(pos, pos, &sign->posX);
         SubtractVector(pos, pos, cursor);
 
-        pos[2] = pos[2] + ((LookupCosine(t) * 3) >> 3);
+        pos[2] = pos[2] + ((LookupCosine(arcAng) * 3) >> 3);
         if (letter->type == ACTOR_TYPE_GLYPH_COMMA) {
           pos[2] = pos[2] + 0x100;
         }
