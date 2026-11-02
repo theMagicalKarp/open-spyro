@@ -37,7 +37,9 @@ extern int g_nSpyroWorldPosY;
 extern Actor *g_pActorListBase;                              /* level actor pool */
 extern Actor *g_pActorPoolDynBase;                           /* end of the level actor pool */
 extern void (*g_pfnLevelBeginActorCutscene)(Actor *actor);
-extern void (*g_pfnLevelEmitParticles)(int count, int type, int *pos, void *effectArg);
+/* pos: a world vec3, or the Actor * for actor-anchored types; effectArg: a
+ * colour / radius / life word, or a velocity pointer cast to int (EmitEffect). */
+extern void (*g_pfnLevelEmitParticles)(int count, int type, void *pos, int effectArg);
 extern void (*g_pfnLevelEndFlightRun)(void);           /* LevelN_FlightEndHook: crash, hazard, fall, time-out */
 extern Actor *(*g_pfnLevelSpawnActor)(int type, Actor *parent);
 extern Actor *g_pSparxActor;                     /* Sparx, or null when absent */
