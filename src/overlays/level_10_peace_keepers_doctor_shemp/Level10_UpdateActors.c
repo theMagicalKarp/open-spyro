@@ -1603,7 +1603,7 @@ void Level10_UpdateActors(void) {
             g_nLevelKeyState = KEYSTATE_CARRIED;
             actor->scale = 0x40;
             actor->cullRadius = ACTOR_CULL_HIDDEN;
-            actor->updateDist = 0;
+            actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
             actor->drawn = 0;
             actor->groundCode = 0;
             actor->visZone = VIS_ZONE_ALWAYS;
@@ -1794,7 +1794,7 @@ void Level10_UpdateActors(void) {
           int i;
 
           key->cullRadius = ACTOR_CULL_HIDDEN;
-          key->updateDist = 0;
+          key->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
           key->drawn = 0;
           g_nCinematicActive = 0;
           actor->soundRange = 0x20;

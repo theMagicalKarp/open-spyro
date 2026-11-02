@@ -96,6 +96,8 @@ typedef struct Actor {
 #define BILLBOARD_NONE 0xFF          /* no g_aRotBillboards handle */
 #define ACTOR_UPDATE_ALWAYS 0xFF /* ->updateDist: read signed by BuildActiveActorList, so
                                   * a negative radius keeps the actor updating anywhere */
+#define ACTOR_UPDATE_WHEN_DRAWN 0 /* ->updateDist: no activation radius, so it only
+                                  * updates while it was drawn last frame */
 #define VIS_ZONE_ALWAYS 0xFF     /* ->visZone: no vis-zone gate, always drawn */
 #define DROP_GEM_ROLL 0xFF       /* ->dropKind: a random gem roll (and counts in the
                                   * running kill set, IsActorInRunningKillSet) */

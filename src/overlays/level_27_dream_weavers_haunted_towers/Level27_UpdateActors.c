@@ -2304,7 +2304,7 @@ void Level27_UpdateActors(void) {
             g_nLevelKeyState = KEYSTATE_CARRIED;
             actor->scale = 0x40;
             actor->cullRadius = ACTOR_CULL_HIDDEN;
-            actor->updateDist = 0;
+            actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
             actor->drawn = 0;
             actor->groundCode = 0;
             actor->visZone = VIS_ZONE_ALWAYS;
@@ -3851,7 +3851,7 @@ void Level27_UpdateActors(void) {
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;
           st->passenger->frameRate = 0x10;
-          st->passenger->updateDist = 0;
+          st->passenger->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
           st->passenger->cullRadius = ACTOR_CULL_HIDDEN;
           st->passenger->drawn = 0;
           st->passenger->otBias = 5;

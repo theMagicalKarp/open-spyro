@@ -1303,7 +1303,7 @@ void Level23_UpdateActors(void) {
 
           g_nLevelKeyState = KEYSTATE_CARRIED;
           actor->cullRadius = ACTOR_CULL_HIDDEN;
-          actor->updateDist = 0;
+          actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
           actor->drawn = 0;
           actor->groundCode = 0;
           actor->scale = 0x40;
