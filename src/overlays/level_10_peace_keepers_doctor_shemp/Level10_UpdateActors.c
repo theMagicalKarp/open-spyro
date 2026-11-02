@@ -107,11 +107,11 @@ void Level10_UpdateActors(void) {
   int bounceNormal[3];
   int homingStep[3];
   int sparxToTarget[3];
-  int t352[3];
-  int t368[3];
+  int chestToSpyro[3];
+  int keySlotOffset[3];
   int v250[3];
-  int svM[3];
-  int svT[3];
+  int sparkleTwinkle[3];
+  int shardTwinkle[3];
   int tgt371[3];
   int vel371[3];
   int col2[3];
@@ -1744,20 +1744,20 @@ void Level10_UpdateActors(void) {
         g_nCinematicActive = 1;
 
         if (st->shake < 0xC0) {
-          t352[0] = 0x200;
-          t352[1] = 0;
-          t352[2] = 0x140;
-          RotateVectorByMatrix(actor->mtx, t352, t352);
-          AddVector(t352, t352, &actor->posX);
-          SubtractVector(t352, t352, &spy->posX);
-          t352[2] -= 0x100;
-          RShiftVector3(t352, 5);
-          ScaleVector3Sat(t352, t352, st->shake);
-          DivideVector3(t352, t352, 6);
-          AddVector(t352, t352, &spy->posX);
-          t352[2] += 0x100;
-          t352[2] += g_anSineLut[(st->shake << 7) / 192] >> 3;
-          CopyVector(&key->posX, t352);
+          chestToSpyro[0] = 0x200;
+          chestToSpyro[1] = 0;
+          chestToSpyro[2] = 0x140;
+          RotateVectorByMatrix(actor->mtx, chestToSpyro, chestToSpyro);
+          AddVector(chestToSpyro, chestToSpyro, &actor->posX);
+          SubtractVector(chestToSpyro, chestToSpyro, &spy->posX);
+          chestToSpyro[2] -= 0x100;
+          RShiftVector3(chestToSpyro, 5);
+          ScaleVector3Sat(chestToSpyro, chestToSpyro, st->shake);
+          DivideVector3(chestToSpyro, chestToSpyro, 6);
+          AddVector(chestToSpyro, chestToSpyro, &spy->posX);
+          chestToSpyro[2] += 0x100;
+          chestToSpyro[2] += g_anSineLut[(st->shake << 7) / 192] >> 3;
+          CopyVector(&key->posX, chestToSpyro);
           g_nSpyroSwingEulerTargetY[0] = g_anSineLut[(st->shake << 7) / 192] >> 3;
 
           if (st->shake < 0x40) {
@@ -1783,11 +1783,11 @@ void Level10_UpdateActors(void) {
           }
         } else if (st->shake < 0xD0) {
           key->rotZ = actor->rotZ;
-          t368[0] = 0x200 - (st->shake - 0xC0) * 8;
-          t368[1] = 0;
-          t368[2] = 0x140;
-          RotateVectorByMatrix(actor->mtx, t368, t368);
-          AddVector(&key->posX, t368, &actor->posX);
+          keySlotOffset[0] = 0x200 - (st->shake - 0xC0) * 8;
+          keySlotOffset[1] = 0;
+          keySlotOffset[2] = 0x140;
+          RotateVectorByMatrix(actor->mtx, keySlotOffset, keySlotOffset);
+          AddVector(&key->posX, keySlotOffset, &actor->posX);
         }
 
         if (st->shake >= 0xD0 ||
@@ -2399,11 +2399,11 @@ void Level10_UpdateActors(void) {
         actor->rotY += st->spin[1];
         actor->rotZ += st->spin[2];
 
-        svM[0] = (GetRandomU32() & 0xFE) - 0x7F;
-        svM[1] = (GetRandomU32() & 0xFE) - 0x7F;
-        svM[2] = (GetRandomU32() & 0xFE) - 0x40;
-        AddVector(svM, svM, &actor->posX);
-        g_pfnLevelEmitParticles(1, EMIT_TWINKLE, svM, 1);
+        sparkleTwinkle[0] = (GetRandomU32() & 0xFE) - 0x7F;
+        sparkleTwinkle[1] = (GetRandomU32() & 0xFE) - 0x7F;
+        sparkleTwinkle[2] = (GetRandomU32() & 0xFE) - 0x40;
+        AddVector(sparkleTwinkle, sparkleTwinkle, &actor->posX);
+        g_pfnLevelEmitParticles(1, EMIT_TWINKLE, sparkleTwinkle, 1);
         st->life -= 1;
       } else {
         DespawnActorRecord(actor);
@@ -2457,11 +2457,11 @@ void Level10_UpdateActors(void) {
 
           do {
             i += 1;
-            svT[0] = (GetRandomU32() & 0xFE) - 0x7F;
-            svT[1] = (GetRandomU32() & 0xFE) - 0x7F;
-            svT[2] = (GetRandomU32() & 0xFE) - 0x40;
-            AddVector(svT, svT, &actor->posX);
-            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, svT, 1);
+            shardTwinkle[0] = (GetRandomU32() & 0xFE) - 0x7F;
+            shardTwinkle[1] = (GetRandomU32() & 0xFE) - 0x7F;
+            shardTwinkle[2] = (GetRandomU32() & 0xFE) - 0x40;
+            AddVector(shardTwinkle, shardTwinkle, &actor->posX);
+            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, shardTwinkle, 1);
           } while (i < 3);
         }
 

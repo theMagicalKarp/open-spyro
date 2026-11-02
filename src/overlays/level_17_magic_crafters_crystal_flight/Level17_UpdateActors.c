@@ -108,7 +108,7 @@ void Level17_UpdateActors(void) {
   int homingStep[3];
   int sparxToTarget[3];
   int svT[3];
-  int svU[3];
+  int bonusStep[3];
   int svV[3];
   int svW[3];
   int sh6;
@@ -1494,11 +1494,11 @@ void Level17_UpdateActors(void) {
       case TIMEBONUS_TO_HUD: {
         int d;
 
-        svU[0] = 0x1A4;
-        svU[1] = 0x30;
-        svU[2] = 0x157C;
-        SubtractVector(svU, svU, &actor->posX);
-        d = VectorLength(svU, VEC_LEN_XYZ);
+        bonusStep[0] = 0x1A4;
+        bonusStep[1] = 0x30;
+        bonusStep[2] = 0x157C;
+        SubtractVector(bonusStep, bonusStep, &actor->posX);
+        d = VectorLength(bonusStep, VEC_LEN_XYZ);
         if (d < 0x20) {
           actor->mode = TIMEBONUS_ARRIVED;
           actor->posX = 0x1A4;
@@ -1507,9 +1507,9 @@ void Level17_UpdateActors(void) {
           *st = 0x1E;
         } else {
           if (d > 0x80) {
-            ScaleVector3ByRatio(svU, d, 0x80);
+            ScaleVector3ByRatio(bonusStep, d, 0x80);
           }
-          AddVector(&actor->posX, &actor->posX, svU);
+          AddVector(&actor->posX, &actor->posX, bonusStep);
         }
         break;
       }

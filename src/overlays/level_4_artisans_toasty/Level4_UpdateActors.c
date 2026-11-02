@@ -131,7 +131,7 @@ void Level4_UpdateActors(void) {
   int homingStep[3];
   int sparxToTarget[3];
   int svK[3];
-  int svL[3];
+  int shardTwinkle[3];
   int svM[3];
   int svN[3];
   int svO[3];
@@ -2156,11 +2156,11 @@ void Level4_UpdateActors(void) {
 
           do {
             i += 1;
-            svL[0] = (GetRandomU32() & 0xFE) - 0x7F;
-            svL[1] = (GetRandomU32() & 0xFE) - 0x7F;
-            svL[2] = (GetRandomU32() & 0xFE) - 0x40;
-            AddVector(svL, svL, &actor->posX);
-            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, svL, 1);
+            shardTwinkle[0] = (GetRandomU32() & 0xFE) - 0x7F;
+            shardTwinkle[1] = (GetRandomU32() & 0xFE) - 0x7F;
+            shardTwinkle[2] = (GetRandomU32() & 0xFE) - 0x40;
+            AddVector(shardTwinkle, shardTwinkle, &actor->posX);
+            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, shardTwinkle, 1);
           } while (i < 3);
         }
 

@@ -119,7 +119,7 @@ void Level9_UpdateActors(void) {
   int svK[3];
   int svL[3];
   int svM[3];
-  int svT[3];
+  int shardTwinkle[3];
   int svN[3];
   int svO[3];
   int col2[3];
@@ -2951,11 +2951,11 @@ void Level9_UpdateActors(void) {
 
           do {
             i += 1;
-            svT[0] = (GetRandomU32() & 0xFE) - 0x7F;
-            svT[1] = (GetRandomU32() & 0xFE) - 0x7F;
-            svT[2] = (GetRandomU32() & 0xFE) - 0x40;
-            AddVector(svT, svT, &actor->posX);
-            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, svT, 1);
+            shardTwinkle[0] = (GetRandomU32() & 0xFE) - 0x7F;
+            shardTwinkle[1] = (GetRandomU32() & 0xFE) - 0x7F;
+            shardTwinkle[2] = (GetRandomU32() & 0xFE) - 0x40;
+            AddVector(shardTwinkle, shardTwinkle, &actor->posX);
+            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, shardTwinkle, 1);
           } while (i < 3);
         }
 

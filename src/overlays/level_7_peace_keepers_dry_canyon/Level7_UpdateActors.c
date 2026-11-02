@@ -103,8 +103,8 @@ void Level7_UpdateActors(void) {
   int sparxToTarget[3];
   int fx[6];
   int col[3];
-  int t352[3];
-  int t368[3];
+  int chestToSpyro[3];
+  int keySlotOffset[3];
   int s328[3];
   int s344[3];
   int v168[3];
@@ -2405,20 +2405,20 @@ void Level7_UpdateActors(void) {
         g_nCinematicActive = 1;
 
         if (st->shake < 0xC0) {
-          t352[0] = 0x200;
-          t352[1] = 0;
-          t352[2] = 0x140;
-          RotateVectorByMatrix(actor->mtx, t352, t352);
-          AddVector(t352, t352, &actor->posX);
-          SubtractVector(t352, t352, &spy->posX);
-          t352[2] -= 0x100;
-          RShiftVector3(t352, 5);
-          ScaleVector3Sat(t352, t352, st->shake);
-          DivideVector3(t352, t352, 6);
-          AddVector(t352, t352, &spy->posX);
-          t352[2] += 0x100;
-          t352[2] += g_anSineLut[(st->shake << 7) / 192] >> 3;
-          CopyVector(&key->posX, t352);
+          chestToSpyro[0] = 0x200;
+          chestToSpyro[1] = 0;
+          chestToSpyro[2] = 0x140;
+          RotateVectorByMatrix(actor->mtx, chestToSpyro, chestToSpyro);
+          AddVector(chestToSpyro, chestToSpyro, &actor->posX);
+          SubtractVector(chestToSpyro, chestToSpyro, &spy->posX);
+          chestToSpyro[2] -= 0x100;
+          RShiftVector3(chestToSpyro, 5);
+          ScaleVector3Sat(chestToSpyro, chestToSpyro, st->shake);
+          DivideVector3(chestToSpyro, chestToSpyro, 6);
+          AddVector(chestToSpyro, chestToSpyro, &spy->posX);
+          chestToSpyro[2] += 0x100;
+          chestToSpyro[2] += g_anSineLut[(st->shake << 7) / 192] >> 3;
+          CopyVector(&key->posX, chestToSpyro);
           g_nSpyroSwingEulerTargetY[0] = g_anSineLut[(st->shake << 7) / 192] >> 3;
 
           if (st->shake < 0x40) {
@@ -2444,11 +2444,11 @@ void Level7_UpdateActors(void) {
           }
         } else if (st->shake < 0xD0) {
           key->rotZ = actor->rotZ;
-          t368[0] = 0x200 - (st->shake - 0xC0) * 8;
-          t368[1] = 0;
-          t368[2] = 0x140;
-          RotateVectorByMatrix(actor->mtx, t368, t368);
-          AddVector(&key->posX, t368, &actor->posX);
+          keySlotOffset[0] = 0x200 - (st->shake - 0xC0) * 8;
+          keySlotOffset[1] = 0;
+          keySlotOffset[2] = 0x140;
+          RotateVectorByMatrix(actor->mtx, keySlotOffset, keySlotOffset);
+          AddVector(&key->posX, keySlotOffset, &actor->posX);
         }
 
         if (st->shake >= 0xD0 ||
