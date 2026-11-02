@@ -804,7 +804,7 @@ void Level26_UpdateActors(void) {
       if (st->node < 0) {
         if (st->onPath != 0) {
           st->node = st->path->cur;
-          st->path->reversed = -1;
+          st->path->dir = -1;
         } else {
           st->node = 0;
         }
@@ -861,7 +861,7 @@ void Level26_UpdateActors(void) {
 
       case CPGUARD_RETURN:
         if (st->onPath != 0) {
-          d = FindNearestPathPointToActor(actor, (PostPath *)st->path, idx);
+          d = FindNearestPathPointToActor(actor, (PathData *)st->path, idx);
           st->path->cur = idx[0];
           if (d < 0x200) {
             ENTER_POSE(actor, CPGUARD_PATROL);

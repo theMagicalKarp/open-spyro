@@ -2894,7 +2894,7 @@ void Level20_UpdateActors(void) {
         if (st->mode == 0) {
           if (dist > 0x2000) {
             if (TickCountdownByFrameDelta(&st->roamTimer, 4) != 0) {
-              FlyPath *p = st->path;
+              PathData *p = st->path;
               int c = p->cur;
 
               do {

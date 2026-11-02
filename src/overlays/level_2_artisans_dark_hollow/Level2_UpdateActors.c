@@ -37,7 +37,7 @@
  *   - `do { } while (0);` barriers at the head of cases 165/166 and in 412's
  *     hit block keep cse from folding `spy` into the absolute address.
  *   - Case 165 has two `mode = 3; continue;` tails (jump.c merges them);
- *     one shared tail changes the register choice for the `sel` store.
+ *     one shared tail changes the register choice for the `cur` store.
  */
 
 #include "actor.h"
@@ -1780,27 +1780,27 @@ void Level2_UpdateActors(void) {
       case POSTGUARD_IDLE:
         switch (st->mode) {
         case POSTGUARD_POST_PICK:
-          if (ApproxDist2D(&spy->posX, &st->path->pts[0]) < 0x1C00) {
+          if (ApproxDist2D(&spy->posX, &st->path->nodes[0].x) < 0x1C00) {
             if (AbsAngleDelta8(ArcTan2(spy->posX - actor->posX,
                                             SPY.posY - actor->posY, ATAN_ANGLE8),
-                              ArcTan2(st->path->pts[0].x - actor->posX,
-                                            st->path->pts[0].y - actor->posY,
+                              ArcTan2(st->path->nodes[0].x - actor->posX,
+                                            st->path->nodes[0].y - actor->posY,
                                             ATAN_ANGLE8)) >= 0x15 ||
                 ApproxDist2D(&actor->posX, &spy->posX) >
-                    ApproxDist2D(&actor->posX, &st->path->pts[0])) {
-              st->path->sel = 0;
+                    ApproxDist2D(&actor->posX, &st->path->nodes[0].x)) {
+              st->path->cur = 0;
               actor->mode = POSTGUARD_TO_POST;
               continue;
             }
-          } else if (ApproxDist2D(&spy->posX, &st->path->pts[1]) < 0x1C00) {
+          } else if (ApproxDist2D(&spy->posX, &st->path->nodes[1].x) < 0x1C00) {
             if (AbsAngleDelta8(ArcTan2(spy->posX - actor->posX,
                                             SPY.posY - actor->posY, ATAN_ANGLE8),
-                              ArcTan2(st->path->pts[1].x - actor->posX,
-                                            st->path->pts[1].y - actor->posY,
+                              ArcTan2(st->path->nodes[1].x - actor->posX,
+                                            st->path->nodes[1].y - actor->posY,
                                             ATAN_ANGLE8)) >= 0x15 ||
                 ApproxDist2D(&actor->posX, &spy->posX) >
-                    ApproxDist2D(&actor->posX, &st->path->pts[1])) {
-              st->path->sel = 1;
+                    ApproxDist2D(&actor->posX, &st->path->nodes[1].x)) {
+              st->path->cur = 1;
               actor->mode = POSTGUARD_TO_POST;
               continue;
             }
@@ -1930,12 +1930,12 @@ void Level2_UpdateActors(void) {
         ANIM_GO(actor, 1);
         if (TurnActorYawTowardAngle(
                 actor,
-                ArcTan2(st->path->pts[st->path->sel].x - actor->posX,
-                              st->path->pts[st->path->sel].y - actor->posY, ATAN_ANGLE8),
+                ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
+                              st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8),
                 6, 0x14, one)) {
           MoveActorAlongHeading(actor, 0x8C, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
-        if (ApproxDist2D(&actor->posX, &st->path->pts[st->path->sel]) < 0x100 ||
+        if (ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x) < 0x100 ||
             ApproxDist2D(&actor->posX, &SPY.posX) < 0xC00) {
           ANIM_BLEND(actor, 4);
           actor->mode = POSTGUARD_HOP;
@@ -1987,8 +1987,8 @@ void Level2_UpdateActors(void) {
       case PCHARGER_PATROL: {
         int turned;
         int ang = ArcTan2(
-            st->path->pts[st->path->sel].x - actor->posX,
-            st->path->pts[st->path->sel].y - actor->posY, ATAN_ANGLE8);
+            st->path->nodes[st->path->cur].x - actor->posX,
+            st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8);
 
         turned = 0;
 
@@ -1997,23 +1997,23 @@ void Level2_UpdateActors(void) {
           MoveActorAlongAngle(actor, ang, 0x50, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (st->flag != 0 ||
               ApproxDist2D(&actor->posX,
-                            (int *)&st->path->pts[st->path->sel]) < 0x80) {
-            PostPath *path = st->path;
+                            &st->path->nodes[st->path->cur].x) < 0x80) {
+            PathData *path = st->path;
 
             if (path->dir == 1) {
-              if (path->sel + 1 == path->count) {
+              if (path->cur + 1 == path->count) {
                 path->dir = -path->dir;
-                st->path->sel = st->path->count - 2;
+                st->path->cur = st->path->count - 2;
                 turned = 1;
               } else {
-                path->sel = path->dir + path->sel;
+                path->cur = path->dir + path->cur;
               }
-            } else if (path->sel == 0) {
+            } else if (path->cur == 0) {
               turned = 1;
               path->dir = -path->dir;
-              st->path->sel = 1;
+              st->path->cur = 1;
             } else {
-              path->sel = path->dir + path->sel;
+              path->cur = path->dir + path->cur;
             }
           }
         } else {
@@ -2042,7 +2042,7 @@ void Level2_UpdateActors(void) {
             actor->posZ - actor->floorOffset - SPY.posZ > -0x1F4) {
           int dSpy = ApproxDist2D(&actor->posX, &((SpyroObj *)(base - 8))->posX);
           int dPost = ApproxDist2D(&actor->posX,
-                                    (int *)&st->path->pts[st->path->sel]);
+                                    &st->path->nodes[st->path->cur].x);
           int ok;
 
           if (st->near) {
@@ -2055,8 +2055,8 @@ void Level2_UpdateActors(void) {
               AbsAngleDelta8(
                   ArcTan2(spy->posX - actor->posX, spy->posY - actor->posY,
                                 ATAN_ANGLE8),
-                  ArcTan2(st->path->pts[st->path->sel].x - actor->posX,
-                                st->path->pts[st->path->sel].y - actor->posY,
+                  ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
+                                st->path->nodes[st->path->cur].y - actor->posY,
                                 ATAN_ANGLE8)) < 0x20) {
             actor->subMode = 0;
             ENTER_POSE(actor, PCHARGER_CHARGE);
@@ -2091,11 +2091,11 @@ void Level2_UpdateActors(void) {
             actor->subMode++;
           }
           if (FindNearestPathPointToActor(actor, st->path, idx) > 0x5DC) {
-            ang = ArcTan2(st->path->pts[idx[0]].x - actor->posX,
-                                st->path->pts[idx[0]].y - actor->posY, ATAN_ANGLE8);
+            ang = ArcTan2(st->path->nodes[idx[0]].x - actor->posX,
+                                st->path->nodes[idx[0]].y - actor->posY, ATAN_ANGLE8);
             if (AbsAngleDelta8(
-                    ang, ArcTan2(st->path->pts[one - idx[0]].x - actor->posX,
-                                       st->path->pts[one - idx[0]].y - actor->posY,
+                    ang, ArcTan2(st->path->nodes[one - idx[0]].x - actor->posX,
+                                       st->path->nodes[one - idx[0]].y - actor->posY,
                                        ATAN_ANGLE8)) < 0x20 &&
                 AbsAngleDelta8(ang, ArcTan2(spy->posX - actor->posX,
                                                  SPY.posY - actor->posY, ATAN_ANGLE8)) <
@@ -2107,11 +2107,11 @@ void Level2_UpdateActors(void) {
         } else {
           ANIM_GO(actor, 4);
           if (g_nActorAnimNewFrame != 0 && actor->frame == 4) {
-            PostPath *p = st->path;
+            PathData *p = st->path;
             int prev = p->count - 1;
 
-            SubtractVector(svR, (int *)&p->pts[p->sel],
-                          (int *)&p->pts[(p->sel + prev) % p->count]);
+            SubtractVector(svR, &p->nodes[p->cur].x,
+                          &p->nodes[(p->cur + prev) % p->count].x);
             ScaleVector3ByRatio(svR, VectorLength(svR, VEC_LEN_XY), 0x96);
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FORCE_STATE);
             g_nSpyroRequestVelocityZ = 0x78;

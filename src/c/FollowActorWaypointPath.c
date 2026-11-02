@@ -17,7 +17,7 @@ void FollowActorWaypointPath(Actor *actor, PathData *path, int threshold,
   SubtractVector(v, &actor->posX, &path->nodes[path->cur].x);
   dist = VectorLength(v, VEC_LEN_XYZ);
   if (dist < threshold) {
-    if (path->reversed == -1) {
+    if (path->dir == -1) {
       path->cur += 1;
       if (path->cur == path->count) {
         path->cur = 0;

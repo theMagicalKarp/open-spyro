@@ -50,7 +50,7 @@ int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed,
   if (ApproxDist2D(&actor->posX, &path->nodes[path->cur].x) < thresh &&
       zclose != 0) {
     actor->subMode = 0;
-    if (path->reversed == -1) {
+    if (path->dir == -1) {
       wrap = path->count;
       idx = path->cur + 1;
       path->cur = idx;

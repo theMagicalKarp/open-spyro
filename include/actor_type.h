@@ -489,7 +489,9 @@ typedef struct PathData {
   unsigned char count; /* 0x00 */
   unsigned char cur;   /* 0x01 */
   char pad02[4];
-  short reversed;      /* 0x06 -1: walk forward (wrap to 0), else backward */
+  short dir;           /* 0x06 +1 / -1 step direction. PivotActorAlongPath and
+                        * FollowActorWaypointPath step forward (wrap to 0) when it is -1;
+                        * the overlay walkers mostly add it to cur */
   struct {
     int x;
     int y;

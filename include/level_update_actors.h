@@ -912,20 +912,9 @@ typedef struct GuardPairState {
 } GuardPairState;
 
 /* Case 165 -- post guard. */
-typedef struct PostPoint {
-  int x, y, z, pad;
-} PostPoint;
-
-typedef struct PostPath {
-  unsigned char count; /* 0x00 number of points */
-  unsigned char sel;   /* 0x01 point in use */
-  char pad02[4];
-  short dir; /* 0x06 walking direction, +1 or -1 */
-  PostPoint pts[2]; /* 0x08 */
-} PostPath;
 
 /* Index of the path point nearest the actor (written to *idx). */
-extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *out_index);
+extern int FindNearestPathPointToActor(Actor *actor, PathData *path, int *out_index);
 
 /* Path tweens used by the patrol/post classes. */
 #ifndef TWEEN_FLY
@@ -934,7 +923,7 @@ extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *out_in
 extern int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legs, int flags);
 
 typedef struct PostState {
-  PostPath *path; /* 0x00 */
+  PathData *path; /* 0x00 */
   int mode;       /* 0x04 enum PostGuardPost */
   int timer;      /* 0x08 */
   int heading;    /* 0x0C knock-back heading */
@@ -950,7 +939,7 @@ typedef struct PostState {
 
 /* Case 166 -- path patroller. */
 typedef struct PatrolState {
-  PostPath *path; /* 0x00 */
+  PathData *path; /* 0x00 */
   int mode;       /* 0x04 */
   int flag;       /* 0x08 */
   int near;       /* 0x0C */
@@ -1337,15 +1326,8 @@ typedef struct Debris {
   int life;            /* 0x0C */
 } Debris;
 
-typedef struct FlyPath {
-  unsigned char count; /* 0x00 */
-  unsigned char cur;   /* 0x01 */
-  char pad02[4];
-  short dir;           /* 0x06 +1 forward, -1 back */
-} FlyPath;
-
 typedef struct LootThiefState {
-  FlyPath *path;  /* 0x00 escape path */
+  PathData *path;  /* 0x00 escape path */
   int onRing;     /* 0x04 */
   int roll;       /* 0x08 */
   int rollVel;    /* 0x0C */
@@ -1356,15 +1338,15 @@ typedef struct LootThiefState {
   int laps;       /* 0x28 */
   int init;       /* 0x2C */
   int chunkAnim;        /* 0x30 world chunk-anim handle (GetWorldChunkAnimState) */
-  FlyPath *cur;   /* 0x34 */
-  FlyPath *ring;  /* 0x38 */
-  FlyPath *pathA; /* 0x3C */
-  FlyPath *pathB; /* 0x40 */
+  PathData *cur;   /* 0x34 */
+  PathData *ring;  /* 0x38 */
+  PathData *pathA; /* 0x3C */
+  PathData *pathB; /* 0x40 */
   int leg;        /* 0x44 */
 } LootThiefState;
 
 typedef struct CritterState {
-  FlyPath *path;    /* 0x00 */
+  PathData *path;    /* 0x00 */
   int attach;       /* 0x04 actor it rides, 0 = none */
   int hasHome;      /* 0x08 */
   int mode;         /* 0x0C enum LootCritterRun */
@@ -1611,7 +1593,7 @@ extern PortalCamPath *volatile g_pPortalCamPathData;
 extern struct CutscenePath *g_pPathTableHead;
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
-extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);
+extern int FindNearestPathPointToSpyro(PathData *path, int *nearest);
 extern int g_anCameraPos[];
 extern int g_nCameraActiveTargetPitch;
 extern int g_nCameraActiveTargetDistance;

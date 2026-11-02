@@ -130,7 +130,7 @@ extern L33Trail *g_apMotionTrailSlices[]; /* trails */
 
 /* Type 159 state: a lane patroller. */
 typedef struct LanePatrollerState {
-  FlyPath *path; /* 0x00 */
+  PathData *path; /* 0x00 */
   int lane;       /* 0x04 lane; indexes g_anLevelEscapeRunCount */
   int slowTimer;       /* 0x08 slow-down timer */
   int u0C;       /* 0x0C */
@@ -148,9 +148,9 @@ extern int g_anLevelEscapeRunCount[]; /* laps per lane */
 
 /* Type 161 state (Gnasty Gnorc). */
 typedef struct GnastyState {
-  FlyPath *path;            /* 0x00 current escape path */
-  FlyPath *path2;           /* 0x04 the other escape path */
-  FlyPath *path3;           /* 0x08 camera reference path */
+  PathData *path;            /* 0x00 current escape path */
+  PathData *path2;           /* 0x04 the other escape path */
+  PathData *path3;           /* 0x08 camera reference path */
   int u0C;                  /* 0x0C */
   int u10;                  /* 0x10 */
   int knockHeading;                  /* 0x14 knock-back heading */
@@ -1555,7 +1555,7 @@ void Level33_UpdateActors(void) {
         break;
 
       case LANEPAT_RUN: {
-        FlyPath *p;
+        PathData *p;
         int spd;
         int r;
         int h;
@@ -1668,7 +1668,7 @@ void Level33_UpdateActors(void) {
             ApproxDist2D(&actor->posX,
                           PATH_END(st->path)) < 0xBB8 &&
             actor->mode != GNASTY_FLAMED) {
-          FlyPath *t;
+          PathData *t;
 
           ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
           g_pActorListBase[st->key].subMode = 1;
@@ -1744,7 +1744,7 @@ void Level33_UpdateActors(void) {
           g_dwSpyroRequestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FREEZE_INPUT);
           /* st->path2, read by byte offset: the in-struct form reorders
              the loads (9/8304 insns differ). */
-          anc = PATH_END(*(FlyPath **)((char *)st + 4));
+          anc = PATH_END(*(PathData **)((char *)st + 4));
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
           *(int *)&g_anCameraActiveTargetParams = -ca << 4;
           g_nCameraActiveTargetDistance = 0x1770;
@@ -1767,7 +1767,7 @@ void Level33_UpdateActors(void) {
                       &SPY.posX);
         RShiftVector3(PATH_PT((unsigned char *)st->path, 0), 1);
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FREEZE_INPUT);
-        anc = (int *)((char *)*(FlyPath **)st + 8);
+        anc = (int *)((char *)*(PathData **)st + 8);
         g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
         *(int *)&g_anCameraActiveTargetParams = -ca << 4;
         g_nCameraActiveTargetDistance = 0xFA0;

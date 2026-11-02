@@ -658,11 +658,11 @@ void Level8_UpdateActors(void) {
               (st->needLos == 0 || CheckSpyroLineOfSightTo(&actor->posX) != 0)) {
             st->node = FindFarthestPathPointFromSpyro(st->path);
             st->speed = 0;
-            if (st->node - st->path->reversed != st->path->cur) {
+            if (st->node - st->path->dir != st->path->cur) {
               st->turned = 0;
               if (ApproxDist2D(&actor->posX,
                                 &st->path->nodes[st->path->cur].x) < 0x100) {
-                st->path->cur = (st->path->cur + st->path->reversed +
+                st->path->cur = (st->path->cur + st->path->dir +
                                  st->path->count) %
                                 st->path->count;
               }
@@ -953,7 +953,7 @@ void Level8_UpdateActors(void) {
             st->speed = top;
           }
         }
-        next = (st->path->cur + st->path->reversed + st->path->count) %
+        next = (st->path->cur + st->path->dir + st->path->count) %
                st->path->count;
         dCur = ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x);
         dNext = ApproxDist2D(&actor->posX, &st->path->nodes[next].x);
@@ -970,20 +970,20 @@ void Level8_UpdateActors(void) {
 
           if (st->turned == 0 && ABS2(dA - dB) < 0x28) {
             st->turned = 1;
-            st->path->reversed = -st->path->reversed;
+            st->path->dir = -st->path->dir;
           } else if (dA < dB && ABS2(dA - dB) >= 0x1D && dB > 0x3C &&
                      AbsAngleDelta8(actor->rotZ,
                                    ArcTan2(spy->posX - actor->posX,
                                                  spy->posY - actor->posY,
                                                  ATAN_ANGLE8)) < 0x3C) {
-            st->path->reversed = -st->path->reversed;
+            st->path->dir = -st->path->dir;
             st->path->cur = next;
           }
         }
         r = PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         if (r & 0x100) {
           if ((r & ~0x100) ==
-              (st->node - st->path->reversed) % st->path->count) {
+              (st->node - st->path->dir) % st->path->count) {
             actor->mode = THIEF_IDLE;
             continue;
           }
@@ -1075,7 +1075,7 @@ void Level8_UpdateActors(void) {
           MoveActorAlongHeading(actor, 0x96, 0, 0, MOVE_LIFT);
         }
         if (d < 0x100 && actor->posZ == g) {
-          st->path->reversed = -st->path->reversed;
+          st->path->dir = -st->path->dir;
           st->path->cur = 8;
           actor->mode = THIEF_CLIMB_RUN_BACK;
           continue;
@@ -1100,7 +1100,7 @@ void Level8_UpdateActors(void) {
         }
         if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, PIVOT_TURN_ANY,
                           MOVE_LIFT | MOVE_FOLLOW_FLOOR) == st->path->count + 0xFF) {
-          st->path->reversed = -st->path->reversed;
+          st->path->dir = -st->path->dir;
           st->path->cur = 1;
           actor->mode = THIEF_IDLE;
           continue;

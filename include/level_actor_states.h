@@ -142,7 +142,7 @@ typedef struct GunnerState {
 /* Type 403 state (level 20): the lurker with its `tether`; can hold Spyro. */
 typedef struct LurkerState {
   int mode;      /* 0x00 0 roams its path */
-  FlyPath *path; /* 0x04 */
+  PathData *path; /* 0x04 */
   int knockHeading;       /* 0x08 knock-back heading */
   int knockSpeed;       /* 0x0C knock-back speed */
   int knockZSpeed;       /* 0x10 */
@@ -198,7 +198,7 @@ typedef struct BoulderThrowerState {
   int idlePose2;         /* 0x10 level data: idle in pose 2 */
   int partnerSignal; /* 0x14 set to 1 by the partner (its state word 5) */
   int pad18[3];      /* 0x18 */
-  FlyPath *path;   /* 0x24 */
+  PathData *path;   /* 0x24 */
   int flags;         /* 0x28 THROWER_F_ADVANCE, BTHROW_F_HOP */
   int timer;         /* 0x2C timer */
   int heading;         /* 0x30 heading */
@@ -235,7 +235,7 @@ typedef struct GatekeeperState {
   int heading;         /* 0x2C heading */
   int speed;         /* 0x30 speed */
   int zSpeed;         /* 0x34 */
-  FlyPath *path;   /* 0x38 */
+  PathData *path;   /* 0x38 */
   int box0[6];      /* 0x3C trigger box */
   int box1[6];      /* 0x54 trigger box */
   int command;         /* 0x6C posted: 1 = mode 0x28, else reverse along the path (mode 0x32); cleared when taken */
