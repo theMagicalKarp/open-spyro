@@ -797,7 +797,7 @@ void Level6_UpdateActors(void) {
           if (g >= z) {
             actor->posZ = g;
             st->path->cur = 0;
-            ANIM_GO(actor, 0);
+            ANIM_GO(actor, THIEF_IDLE);
             actor->mode = THIEF_IDLE;
             continue;
           }
@@ -2782,7 +2782,7 @@ void Level6_UpdateActors(void) {
           if (TICK_DOWN(st->timer) == 0) {
             TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
           } else {
-            ANIM_GO(actor, 1);
+            ANIM_GO(actor, SOLDIER_CHASE);
             if (PivotActorAlongPath(actor, st->path, 0x80, 0x46, 0, 4, 0x14, PIVOT_TURN_ANY,
                               MOVE_LIFT | MOVE_FOLLOW_FLOOR) != 0) {
               st->timer = RandomIntInRange(0x78, 0xB4);
@@ -2801,14 +2801,14 @@ void Level6_UpdateActors(void) {
           }
           break;
         case SOLDIERKIND_DUELIST:
-          ANIM_GO(actor, 8);
+          ANIM_GO(actor, SOLDIER_GUNNER);
           actor->mode = SOLDIER_DUEL;
           continue;
         case SOLDIERKIND_BOUNDED_PATROL:
           if (TICK_DOWN(st->timer) == 0) {
             TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
           } else {
-            ANIM_GO(actor, 1);
+            ANIM_GO(actor, SOLDIER_CHASE);
             if (PivotActorAlongPath(actor, st->path, 0x80, 0x46, 0, 4, 0x14, PIVOT_TURN_ANY,
                               MOVE_LIFT | MOVE_FOLLOW_FLOOR) != 0) {
               st->timer = RandomIntInRange(0x78, 0xB4);
@@ -2821,7 +2821,7 @@ void Level6_UpdateActors(void) {
           break;
         case SOLDIERKIND_WANDER_TO_POST:
         case SOLDIERKIND_WANDER_TO_CANNON:
-          ANIM_GO(actor, 1);
+          ANIM_GO(actor, SOLDIER_CHASE);
           SnapActorToGround(actor);
           UpdateActorWander(actor, &st->wander);
           if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
@@ -2858,7 +2858,7 @@ void Level6_UpdateActors(void) {
         case SOLDIERKIND_SHORT_LEASH: {
           int d = ApproxDist2D(&actor->posX, &g_anSpyroWorldPos);
 
-          ANIM_GO(actor, 1);
+          ANIM_GO(actor, SOLDIER_CHASE);
           if (TICK_DOWN(st->timer2) != 0) {
             TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
             if (MoveActorAlongHeading(actor, 0x46, 0x12C, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0) {
@@ -2986,9 +2986,9 @@ void Level6_UpdateActors(void) {
                           STEER_NO_BLOCK, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
         TurnActorYawTowardAngle(a, h, 4, 0, YAW_HOLD_IN_BAND);
         if (r < 0xA) {
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, SOLDIER_IDLE);
         } else {
-          ANIM_GO(actor, 1);
+          ANIM_GO(actor, SOLDIER_CHASE);
         }
         if (*(unsigned short *)&actor->anim == 0x101 && g_nActorAnimNewFrame != 0 &&
             actor->frame == 0x10) {
@@ -3124,7 +3124,7 @@ void Level6_UpdateActors(void) {
           }
           if (g_nActorAnimDone != 0 && actor->anim == 9) {
             st->phase = 2;
-            ANIM_SET(actor, 1);
+            ANIM_SET(actor, SOLDIER_CHASE);
           }
           break;
         }
@@ -3242,7 +3242,7 @@ void Level6_UpdateActors(void) {
       }
 
       case SOLDIER_GO_HOME:
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, SOLDIER_CHASE);
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(st->home[0] - actor->posX,
                                         st->home[1] - actor->posY, ATAN_ANGLE8),

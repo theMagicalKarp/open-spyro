@@ -922,7 +922,7 @@ void Level14_UpdateActors(void) {
           if (g >= z) {
             actor->posZ = g;
             st->path->cur = 0;
-            ANIM_GO(actor, 0);
+            ANIM_GO(actor, THIEF_IDLE);
             actor->mode = THIEF_IDLE;
             continue;
           }
@@ -3738,7 +3738,7 @@ void Level14_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           st->flags |= BCASTER_F_WOKEN;
           actor->mode = BCASTER_IDLE;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, BCASTER_IDLE);
           continue;
         }
         break;
@@ -3799,13 +3799,13 @@ void Level14_UpdateActors(void) {
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000 &&
               ABS2(SPY_DZ(actor)) < 0xC00) {
             actor->mode = BCASTER_AIM;
-            ANIM_RESET(actor, 2);
+            ANIM_RESET(actor, BCASTER_AIM);
             continue;
           }
           st->flags &= ~BCASTER_F_IN_RANGE;
           st->timer = (GetRandomU32() & 0x1F) + 0x20;
           actor->mode = BCASTER_IDLE;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, BCASTER_IDLE);
           continue;
         }
         break;
@@ -3823,7 +3823,7 @@ void Level14_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
           actor->mode = BCASTER_IDLE;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, BCASTER_IDLE);
           continue;
         }
         break;
@@ -3955,7 +3955,7 @@ void Level14_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
           actor->mode = CHUNKOP_RUN;
-          ANIM_RESET(actor, 1);
+          ANIM_RESET(actor, CHUNKOP_RUN);
           continue;
         }
         break;

@@ -761,7 +761,7 @@ void Level12_UpdateActors(void) {
           if (g >= z) {
             actor->posZ = g;
             st->path->cur = 0;
-            ANIM_GO(actor, 0);
+            ANIM_GO(actor, THIEF_IDLE);
             actor->mode = THIEF_IDLE;
             continue;
           }
@@ -3063,7 +3063,7 @@ void Level12_UpdateActors(void) {
           SnapActorToGround(actor);
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
           if (marker < 2) {
-            ANIM_GO(actor, 0);
+            ANIM_GO(actor, VILLAGER_IDLE);
             if (dist < range) {
               if (st->timer == 0) {
                 st->timer = st->timerLong;
@@ -3158,7 +3158,7 @@ void Level12_UpdateActors(void) {
             }
             if ((ANIM_WORD(actor) & 0xFF00FF00) == 0x14000900 &&
                 g_nActorAnimNewFrame != 0) {
-              ANIM_GO(actor, 0);
+              ANIM_GO(actor, VILLAGER_IDLE);
             }
           } else if (TICK_DOWN(st->timer)) {
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
@@ -3304,7 +3304,7 @@ void Level12_UpdateActors(void) {
           char *base = (char *)&g_nSpyroWorldPosZ;
           int h = actor->posZ - actor->floorOffset - *(int *)base;
 
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, SHEPHERD_IDLE);
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
           if (TICK_DOWN(st->timer) &&
               ApproxDist2D(&actor->posX, (int *)(base - 8)) < 0x898 &&
@@ -3339,7 +3339,7 @@ void Level12_UpdateActors(void) {
           break;
 
         case SHEPHERD_POST_GUARD_LEVEL:
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, SHEPHERD_IDLE);
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
           SnapActorToGround(actor);
           if (TICK_DOWN(st->timer) &&
@@ -3425,7 +3425,7 @@ void Level12_UpdateActors(void) {
         case SHEPHERD_POST_PAIR_PATROL: {
           Actor *partner = &g_pActorListBase[st->partner];
 
-          if (TICK_DOWN(st->timer2) &&
+          if (TICK_DOWN(st->flankTimer) &&
               ApproxDist2D(&actor->posX, &spy->posX) < 0x1000) {
             int mine = ArcTan2(actor->posX - spy->posX,
                                      actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8);
@@ -3468,7 +3468,7 @@ void Level12_UpdateActors(void) {
         }
 
         case SHEPHERD_POST_PATROL:
-          if (TICK_DOWN(st->timer2) &&
+          if (TICK_DOWN(st->flankTimer) &&
               ABS2(SPY_DZ(actor)) < 0x320 &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x1C00) {
             actor->mode = SHEPHERD_CHASE;
@@ -3523,7 +3523,7 @@ void Level12_UpdateActors(void) {
             int *pos = &actor->posX;
             int d = ApproxDist2D(pos, &spy->posX);
 
-            ANIM_GO(actor, 0);
+            ANIM_GO(actor, SHEPHERD_IDLE);
             TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
             if (d > 0x2000) {
               actor->subMode = 0;
@@ -3689,7 +3689,7 @@ void Level12_UpdateActors(void) {
         Actor *partner = &g_pActorListBase[st->partner];
 
         if (g_nActorAnimDone != 0) {
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, SHEPHERD_IDLE);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0xC00 &&
@@ -3715,13 +3715,13 @@ void Level12_UpdateActors(void) {
         if (TrackEntityYawTowardSpyro(actor, 8, 0x23, YAW_STEP_IN_BAND) == 0) {
           break;
         }
-        ANIM_GO(actor, 7);
+        ANIM_GO(actor, SHEPHERD_RECOVER);
         if (g_nActorAnimDone == 0) {
           break;
         }
         /* fall through */
       case SHEPHERD_ALERTED:
-        st->timer2 = 0xB4;
+        st->flankTimer = 0xB4;
         actor->mode = SHEPHERD_CHASE;
         continue;
 

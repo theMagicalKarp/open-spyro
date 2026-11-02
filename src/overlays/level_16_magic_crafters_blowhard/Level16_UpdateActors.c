@@ -3291,7 +3291,7 @@ void Level16_UpdateActors(void) {
           if (g_nActorAnimDone != 0 && actor->anim == 6) {
             actor->mode = BLOWHARD_P1_HOVER;
             st->floorZ = actor->posZ + 0x578;
-            ANIM_SET(actor, 0);
+            ANIM_SET(actor, BLOWHARD_START_PHASE);
           }
         }
         break;
@@ -3346,7 +3346,7 @@ void Level16_UpdateActors(void) {
             actor->mode = BLOWHARD_P2_WAIT;
             st->wait = 0x6E;
             st->pathDone = 0;
-            ANIM_SET(actor, 0);
+            ANIM_SET(actor, BLOWHARD_START_PHASE);
           }
         }
         break;
@@ -3411,7 +3411,7 @@ void Level16_UpdateActors(void) {
               actor->mode = BLOWHARD_P3_WAIT;
               st->pathDone = 0;
               st->wait = 0x6E;
-              ANIM_SET(actor, 0);
+              ANIM_SET(actor, BLOWHARD_START_PHASE);
             }
           }
         }

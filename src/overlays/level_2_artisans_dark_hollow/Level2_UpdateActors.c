@@ -1386,7 +1386,7 @@ void Level2_UpdateActors(void) {
       case GPAIR_CUE:
         switch (actor->subMode) {
         case 0:
-          ANIM_GO(actor, 2);
+          ANIM_GO(actor, GPAIR_ROUSE);
           if (g_nActorAnimDone != 0) {
             actor->subMode++;
           }
@@ -1406,7 +1406,7 @@ void Level2_UpdateActors(void) {
           }
           break;
         case 2:
-          ANIM_GO(actor, 5);
+          ANIM_GO(actor, GPAIR_LOWER);
           if (g_nActorAnimDone != 0) {
             st->timer = 0x258;
             ENTER_POSE_B(actor, GPAIR_IDLE);

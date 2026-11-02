@@ -692,7 +692,7 @@ void Level25_UpdateActors(void) {
       } else {
         actor->type = ACTOR_TYPE_GRABBER_LOOKOUT;
         actor->mode = LOOKOUT_WAIT;
-        ANIM_RESET(actor, 0);
+        ANIM_RESET(actor, PGRAB_WAIT);
         continue;
       }
 
@@ -834,7 +834,7 @@ void Level25_UpdateActors(void) {
         actor->subMode = 1;
         st->timer = 0xF0;
         actor->mode = LOOKOUT_CHASE;
-        ANIM_RESET(actor, 1);
+        ANIM_RESET(actor, PGRAB_GRAB);
         continue;
 
       case PGRAB_EMERGE: {
@@ -1056,7 +1056,7 @@ void Level25_UpdateActors(void) {
       } else {
         actor->type = ACTOR_TYPE_ROUSED_SENTRY;
         actor->mode = RSENTRY_WATCH;
-        ANIM_RESET(actor, 0);
+        ANIM_RESET(actor, ASENTRY_WATCH);
         continue;
       }
 
@@ -1122,7 +1122,7 @@ void Level25_UpdateActors(void) {
         }
         actor->type = ACTOR_TYPE_ROUSED_SENTRY;
         actor->mode = RSENTRY_WATCH;
-        ANIM_RESET(actor, 0);
+        ANIM_RESET(actor, ASENTRY_WATCH);
         continue;
 
       case ASENTRY_SETTLE:
@@ -1156,7 +1156,7 @@ void Level25_UpdateActors(void) {
           g_pActorListBase[st->link].subMode == 2) {
         actor->type = ACTOR_TYPE_ALARM_SENTRY;
         actor->mode = ASENTRY_SETTLE;
-        ANIM_RESET(actor, 3);
+        ANIM_RESET(actor, RSENTRY_FALL);
         continue;
       }
 

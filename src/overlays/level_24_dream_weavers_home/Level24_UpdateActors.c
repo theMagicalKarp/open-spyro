@@ -2266,7 +2266,7 @@ void Level24_UpdateActors(void) {
 
       case SINGER_LANDED:
         if (g_nActorAnimDone != 0) {
-          ANIM_GO(actor, 3);
+          ANIM_GO(actor, SINGER_WALK);
           actor->mode = SINGER_RETURN;
         }
         continue;
@@ -2368,7 +2368,7 @@ void Level24_UpdateActors(void) {
           st->next = SINGER_REST;
           actor->mode = SINGER_REST;
           actor->flags = 0;
-          ANIM_RESET(actor, 2);
+          ANIM_RESET(actor, SINGER_REST);
           continue;
         }
         continue;

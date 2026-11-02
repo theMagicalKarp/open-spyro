@@ -1213,7 +1213,7 @@ typedef struct ShepherdState {
   int done;            /* 0x38 */
   int *doneFlag;       /* 0x3C */
   int sub;             /* 0x40 */
-  int timer2;          /* 0x44 */
+  int flankTimer;      /* 0x44 after an alert: frames before a patrol pair re-picks its flank */
   int range;           /* 0x48 in 1024ths */
 } ShepherdState;
 

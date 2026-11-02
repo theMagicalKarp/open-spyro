@@ -1829,7 +1829,7 @@ void Level33_UpdateActors(void) {
         if (TICK_DOWN(st->timer) != 0) {
           ANIM_GO(actor, 2);
         } else if (g_nActorAnimDone != 0) {
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, GNASTY_WAIT);
         }
         if (st->timer == 0 && actor->nextFrame >= 9) {
           Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_TRAIL_BOMB, actor);
@@ -2107,7 +2107,7 @@ void Level33_UpdateActors(void) {
       case GNASTY_AT_DOOR:
         GNASTY_FALL(actor, st);
         if (TrackEntityYawTowardSpyro(actor, 5, 0, YAW_HOLD_IN_BAND) != 0) {
-          ANIM_GO(actor, 4);
+          ANIM_GO(actor, GNASTY_LOOKOUT);
         }
         if (IsPointInRotatedBox(&SPY.posX, st->box88) != 0) {
           ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
@@ -2121,7 +2121,7 @@ void Level33_UpdateActors(void) {
         int h = ProbeActorGroundHeightRaised(actor, 0xBB8);
         int z;
 
-        ANIM_GO(actor, 0);
+        ANIM_GO(actor, GNASTY_WAIT);
         st->vSpeed -= 0x19;
         if (st->vSpeed < -0x190) {
           st->vSpeed = -0x190;
@@ -2140,7 +2140,7 @@ void Level33_UpdateActors(void) {
           continue;
         }
         if (TICK_DOWN(st->timer) != 0 && dist < 0xE10) {
-          ANIM_GO(actor, 3);
+          ANIM_GO(actor, GNASTY_SWIPE);
           actor->mode = GNASTY_STAND_SWIPE;
           continue;
         }
@@ -2151,7 +2151,7 @@ void Level33_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (g_nActorAnimDone != 0) {
           st->timer = 0x78;
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, GNASTY_WAIT);
           actor->mode = GNASTY_STAND;
           continue;
         }
@@ -2163,13 +2163,13 @@ void Level33_UpdateActors(void) {
           continue;
         }
         if (TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND) != 0) {
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, GNASTY_WAIT);
         }
         break;
 
       case GNASTY_PATH_END:
         if (TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND) != 0) {
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, GNASTY_WAIT);
         }
         if (TICK_DOWN(st->stateTimer) != 0 && SPY_DZ(actor) < 0 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < 0x251C) {

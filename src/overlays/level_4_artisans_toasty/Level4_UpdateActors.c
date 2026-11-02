@@ -2698,7 +2698,7 @@ void Level4_UpdateActors(void) {
             ANIM_GO(actor, 1);
           } else {
             st->count -= 1;
-            ANIM_GO(actor, 0);
+            ANIM_GO(actor, REAR_IDLE);
           }
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
@@ -2732,10 +2732,10 @@ void Level4_UpdateActors(void) {
               ANIM_GO(actor, 10);
             } else {
               st->count -= 1;
-              ANIM_GO(actor, 4);
+              ANIM_GO(actor, REAR_REARED);
             }
           } else {
-            ANIM_GO(actor, 4);
+            ANIM_GO(actor, REAR_REARED);
           }
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);

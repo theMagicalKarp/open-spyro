@@ -1626,7 +1626,7 @@ void Level32_UpdateActors(void) {
           st->shotTimer = st->shotReload;
           ENTER_POSE_B(actor, BURSTGUN_FIRE);
         }
-        ANIM_GO(actor, 0);
+        ANIM_GO(actor, BURSTGUN_WATCH);
         continue;
 
       case BURSTGUN_WALK:
@@ -1757,7 +1757,7 @@ void Level32_UpdateActors(void) {
           actor->subMode = SWEEPGUN_STEP_FIRE;
           ENTER_POSE_B(actor, SWEEPGUN_SWEEP);
         }
-        ANIM_GO(actor, 0);
+        ANIM_GO(actor, SWEEPGUN_IDLE);
         continue;
 
       case SWEEPGUN_ADVANCE:
@@ -1942,7 +1942,7 @@ void Level32_UpdateActors(void) {
           if (GetRandomU32() & 1) {
             ANIM_GO(actor, 1);
           } else {
-            ANIM_GO(actor, 0);
+            ANIM_GO(actor, LOBGUN_WATCH);
           }
         }
         break;

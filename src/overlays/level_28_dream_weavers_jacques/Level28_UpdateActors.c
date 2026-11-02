@@ -719,7 +719,7 @@ void Level28_UpdateActors(void) {
                 0x23) {
           if (actor->nextAnim < 2) {
             actor->mode = CRAM_REAR;
-            ANIM_RESET(actor, 6);
+            ANIM_RESET(actor, CRAM_REAR);
             continue;
           }
           ENTER_POSE(actor, CRAM_REAR);
@@ -823,7 +823,7 @@ void Level28_UpdateActors(void) {
         if (TurnActorYawTowardAngle(actor, h, 4, 0x14, one) != 0) {
           MoveActorAlongHeading(actor, 0x5A, 0x300, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
         }
-        ANIM_GO(actor, 5);
+        ANIM_GO(actor, CRAM_CHARGE);
         if (ApproxDist2D(&actor->posX, st->home) < 0x80) {
           ENTER_POSE(actor, CRAM_WATCH);
         }
@@ -2025,7 +2025,7 @@ void Level28_UpdateActors(void) {
 
       case SINGER_LANDED:
         if (g_nActorAnimDone != 0) {
-          ANIM_GO(actor, 3);
+          ANIM_GO(actor, SINGER_WALK);
           actor->mode = SINGER_RETURN;
         }
         continue;
@@ -2127,7 +2127,7 @@ void Level28_UpdateActors(void) {
           st->next = SINGER_REST;
           actor->mode = SINGER_REST;
           actor->flags = 0;
-          ANIM_RESET(actor, 2);
+          ANIM_RESET(actor, SINGER_REST);
           continue;
         }
         continue;
@@ -2175,7 +2175,7 @@ void Level28_UpdateActors(void) {
         case 0:
           ENTER_POSE(actor, JACQUES_DEFEATED);
         }
-        ANIM_GO(actor, 0);
+        ANIM_GO(actor, JACQUES_WATCH);
         actor->mode = JACQUES_HOP;
         continue;
       }
@@ -2191,7 +2191,7 @@ void Level28_UpdateActors(void) {
           if (st->path->cur == 13) {
             ModifyWorldChunkAnimFlags(10, CHUNK_ANIM_RESUME, 0);
           }
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, JACQUES_WATCH);
           actor->mode = JACQUES_HOP;
           continue;
         }
@@ -2213,7 +2213,7 @@ void Level28_UpdateActors(void) {
             ModifyWorldChunkAnimFlags(10, CHUNK_ANIM_RESUME, 0);
           }
           st->u54 = 0;
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, JACQUES_WATCH);
           actor->mode = JACQUES_HOP;
           continue;
         }

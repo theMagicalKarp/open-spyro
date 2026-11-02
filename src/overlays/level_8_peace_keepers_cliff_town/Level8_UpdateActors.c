@@ -810,7 +810,7 @@ void Level8_UpdateActors(void) {
           if (g >= z) {
             actor->posZ = g;
             st->path->cur = 0;
-            ANIM_GO(actor, 0);
+            ANIM_GO(actor, THIEF_IDLE);
             actor->mode = THIEF_IDLE;
             continue;
           }
@@ -2738,7 +2738,7 @@ void Level8_UpdateActors(void) {
                                           spy->posY - actor->posY, ATAN_ANGLE8),
                             5);
           if (actor->nextAnim == 4) {
-            ANIM_GO(actor, 0);
+            ANIM_GO(actor, GLOOK_WATCH);
           }
           if (actor->nextAnim == 2 && actor->nextFrame < 0xF) {
             actor->frame = 0xF;
@@ -2750,14 +2750,14 @@ void Level8_UpdateActors(void) {
           }
           if (g_nActorAnimDone != 0) {
             if (actor->nextAnim == 2) {
-              ANIM_SET(actor, 0);
+              ANIM_SET(actor, GLOOK_WATCH);
             } else if (--st->count <= 0) {
               st->count = RandomIntInRange(3, 5);
               if (RandomIntInRange(0, 0x64) > 0x50) {
                 if (actor->nextAnim != 1) {
                   ANIM_GO(actor, 1);
                 } else {
-                  ANIM_GO(actor, 0);
+                  ANIM_GO(actor, GLOOK_WATCH);
                 }
               }
             } else {

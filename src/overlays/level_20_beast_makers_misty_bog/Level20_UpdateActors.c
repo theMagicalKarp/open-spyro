@@ -425,7 +425,7 @@ void Level20_UpdateActors(void) {
             st->mode = GUNNER_ROLE_GUARD;
             ENTER_POSE(actor, GUNNER_GUARD);
           }
-          ANIM_GO(actor, 7);
+          ANIM_GO(actor, GUNNER_ADVANCE);
           PivotActorAlongPath(actor, st->path, 0x100, 0xA0, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         } else if (st->mode == GUNNER_ROLE_LOOKOUT) {
           ANIM_GO(actor, 0);
@@ -1697,7 +1697,7 @@ void Level20_UpdateActors(void) {
           break;
 
         case CHARGER_ROLE_PATROL:
-          ANIM_GO(actor, 1);
+          ANIM_GO(actor, CHARGER_CHARGE);
           if (st->speed < 0x96) {
             st->speed = 0x96;
           }
@@ -1734,7 +1734,7 @@ void Level20_UpdateActors(void) {
           int spd = 0xA0;
           int d = ApproxDist2D(&actor->posX, &g_pActorListBase[st->target].posX);
 
-          ANIM_GO(actor, 1);
+          ANIM_GO(actor, CHARGER_CHARGE);
           if (d < 0xFA0) {
             spd = 0x8C;
           } else if (d > 0x1770) {
@@ -1790,7 +1790,7 @@ void Level20_UpdateActors(void) {
         if (TICK_DOWN(st->timer) == 0) {
           break;
         }
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, CHARGER_CHARGE);
         if (st->mode == CHARGER_ROLE_POST) {
           SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist2,
                         ArcTan2(spy->posX - st->path->nodes[0].x,
@@ -1943,14 +1943,14 @@ void Level20_UpdateActors(void) {
             ENTER_POSE(actor, CHARGER_CHARGE);
           }
           *st->chargeLock = 0;
-          ANIM_GO(actor, 1);
+          ANIM_GO(actor, CHARGER_CHARGE);
           actor->mode = CHARGER_GO_HOME;
           continue;
         }
         break;
 
       case CHARGER_GO_HOME:
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, CHARGER_CHARGE);
         if (st->mode == CHARGER_ROLE_POST) {
           SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist2,
                         ArcTan2(st->vec[0] - st->path->nodes[0].x,
@@ -3408,7 +3408,7 @@ void Level20_UpdateActors(void) {
         if (SPY.airborneFrames != 0) {
           break;
         }
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, RAM_WANDER);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           g_pActorListBase[st->partner].subMode = 1;
@@ -3422,7 +3422,7 @@ void Level20_UpdateActors(void) {
           st->call = (GetRandomU32() & 0x3F) + 0x78;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
-        ANIM_GO(actor, 0);
+        ANIM_GO(actor, RAM_GRAZE);
         break;
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
@@ -3474,7 +3474,7 @@ void Level20_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (d0 > 0x2C00) {
           st->grabChance = 0;
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, GRABBER_LURK);
         }
         if (TICK_DOWN(st->timer) != 0) {
           int k;

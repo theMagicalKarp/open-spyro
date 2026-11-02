@@ -389,7 +389,7 @@ void Level3_UpdateActors(void) {
           { int na; { int nb; } }
           { int na; { int nb; } }
           { int na; { int nb; } }
-          ANIM_RESET(actor, 9);
+          ANIM_RESET(actor, WARD_BURN);
           continue;
         }
         ENTER_POSE(actor, WARD_KNOCKED);
@@ -427,7 +427,7 @@ void Level3_UpdateActors(void) {
           break;
         case WARD_ROLE_PATROL:
           st->speed = 0x64;
-          ANIM_GO(actor, 1);
+          ANIM_GO(actor, WARD_ADVANCE);
           actor->mode = WARD_TO_NODE;
           continue;
         case WARD_ROLE_RING:
@@ -479,7 +479,7 @@ void Level3_UpdateActors(void) {
           }
           if (actor->anim == 8 && g_nActorAnimDone != 0) {
             actor->mode = WARD_GO_HOME;
-            ANIM_GO(actor, 1);
+            ANIM_GO(actor, WARD_ADVANCE);
           }
           break;
         case WARD_ROLE_RING:
@@ -503,7 +503,7 @@ void Level3_UpdateActors(void) {
               ANIM_GO(actor, 8);
             }
             if (actor->anim == 8 && g_nActorAnimDone != 0) {
-              ANIM_GO(actor, 1);
+              ANIM_GO(actor, WARD_ADVANCE);
             }
             break;
           }
@@ -617,7 +617,7 @@ void Level3_UpdateActors(void) {
           ANIM_GO(actor, 8);
         }
         if (actor->anim == 8 && g_nActorAnimDone != 0) {
-          ANIM_GO(actor, 1);
+          ANIM_GO(actor, WARD_ADVANCE);
         }
         break;
 
@@ -628,7 +628,7 @@ void Level3_UpdateActors(void) {
                           4, 0x14, YAW_STEP_IN_BAND) != 0) {
           MoveActorAlongHeading(actor, 0x5A, 0x300, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
         }
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, WARD_ADVANCE);
         if (ApproxDist2D(&actor->posX, &st->homeX) < 0x80) {
           ENTER_POSE(actor, WARD_IDLE);
         }
@@ -941,7 +941,7 @@ void Level3_UpdateActors(void) {
           if (g >= z) {
             actor->posZ = g;
             st->path->cur = 0;
-            ANIM_GO(actor, 0);
+            ANIM_GO(actor, THIEF_IDLE);
             actor->mode = THIEF_IDLE;
             continue;
           }

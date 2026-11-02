@@ -769,7 +769,7 @@ void Level19_UpdateActors(void) {
       actor->flags = 0;
       switch (actor->mode) {
       case BGUARD_WATCH:
-        ANIM_GO(actor, 0);
+        ANIM_GO(actor, BGUARD_WATCH);
         if (st->mode == one /* BGUARD_CUE_RUN */ &&
             (IsPointInRotatedBox(&spy->posX, st->box) != 0 || d < st->range << 10) &&
             ABS2(SPY_DZ(actor)) < 0xBB8) {
@@ -856,7 +856,7 @@ void Level19_UpdateActors(void) {
         break;
 
       case BGUARD_FACE_LINK:
-        ANIM_GO(actor, 0);
+        ANIM_GO(actor, BGUARD_WATCH);
         if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT ||
             ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400 || st->link == -1) {
           st->mode = BGUARD_CUE_NONE;
@@ -874,7 +874,7 @@ void Level19_UpdateActors(void) {
         break;
 
       case BGUARD_FIRE_AT_LINK:
-        ANIM_GO(actor, 2);
+        ANIM_GO(actor, BGUARD_FIRE);
         TurnActorYawTowardAngle(actor,
                       ArcTan2(g_pActorListBase[st->link].posX - actor->posX,
                                     g_pActorListBase[st->link].posY - actor->posY, ATAN_ANGLE8),
@@ -3429,7 +3429,7 @@ void Level19_UpdateActors(void) {
         if (SPY.airborneFrames != 0) {
           break;
         }
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, RAM_WANDER);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             0x100) {
           g_pActorListBase[st->partner].subMode = 1;
@@ -3443,7 +3443,7 @@ void Level19_UpdateActors(void) {
           st->call = (GetRandomU32() & 0x3F) + 0x78;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
-        ANIM_GO(actor, 0);
+        ANIM_GO(actor, RAM_GRAZE);
         break;
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
@@ -3483,7 +3483,7 @@ void Level19_UpdateActors(void) {
             ApproxDist2D(&actor->posX, &SPY.posX) < st->range << 10) {
           ENTER_POSE(actor, BSENTRY_SUMMON);
         }
-        ANIM_GO(actor, 0);
+        ANIM_GO(actor, BSENTRY_IDLE);
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1C00 &&
             ABS2(actor->posZ - SPY.posZ) < 0x44C) {
@@ -3572,14 +3572,14 @@ void Level19_UpdateActors(void) {
           }
           st->timer = 0x3C;
           actor->mode = BSENTRY_IDLE;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, BSENTRY_IDLE);
         }
         break;
 
       case BSENTRY_LOWER:
         if (g_nActorAnimDone != 0) {
           actor->mode = BSENTRY_IDLE;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, BSENTRY_IDLE);
         }
         break;
 

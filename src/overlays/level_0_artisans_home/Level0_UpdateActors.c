@@ -1532,7 +1532,7 @@ void Level0_UpdateActors(void) {
           if (SPY.state == SPYRO_ST_CHARGE || SPY.state == SPYRO_ST_CHARGE_AIR) {
             if (actor->anim != 6) {
               g_nActorAnimDone = 0;
-              ANIM_RESET(actor, 6);
+              ANIM_RESET(actor, PENEMY_HIDE);
             }
             actor->mode = PENEMY_COWER;
             continue;

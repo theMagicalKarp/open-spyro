@@ -1978,7 +1978,7 @@ void Level9_UpdateActors(void) {
             ANIM_GO(actor, 8);
           } else {
             st->timer--;
-            ANIM_GO(actor, 0);
+            ANIM_GO(actor, YAK_GRAZE);
           }
         }
         TrackEntityYawTowardSpyro(actor, 3, 0x10, YAW_HOLD_IN_BAND);
@@ -2037,7 +2037,7 @@ void Level9_UpdateActors(void) {
       case YAK_SETTLE:
         if (g_nActorAnimDone != 0) {
           actor->mode = YAK_GRAZE;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, YAK_GRAZE);
           continue;
         }
         break;
@@ -2197,7 +2197,7 @@ void Level9_UpdateActors(void) {
             st->throwT = 0x1E;
           }
         }
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, SNOWTHROW_ADVANCE);
         break;
 
       case SNOWTHROW_THROW: {
@@ -2259,7 +2259,7 @@ void Level9_UpdateActors(void) {
             8, st->turn4, 0xE, 0x80, st->blockHeadingA, st->blockHeadingB, 0, 0, MOVE_FOLLOW_FLOOR);
         if (r < 0xA) {
           st->timer = 0x5A;
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, SNOWTHROW_WAIT);
           actor->mode = SNOWTHROW_TURN_AWAY;
           continue;
         }
@@ -2268,7 +2268,7 @@ void Level9_UpdateActors(void) {
           actor->mode = SNOWTHROW_AIM;
           continue;
         }
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, SNOWTHROW_ADVANCE);
         break;
 
       case SNOWTHROW_AIM:
@@ -2276,7 +2276,7 @@ void Level9_UpdateActors(void) {
         if (AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
                                         spy->posY - actor->posY, ATAN_ANGLE8)) < 0xA) {
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, SNOWTHROW_WAIT);
         }
         if (TICK_DOWN(st->timer) != 0) {
           int ang = WrapAddAngle8(actor->rotZ, 0xE0);
@@ -2428,7 +2428,7 @@ void Level9_UpdateActors(void) {
             ANIM_GO(actor, 8);
           } else {
             st->timer--;
-            ANIM_GO(actor, 0);
+            ANIM_GO(actor, TRAM_GRAZE);
           }
         }
         TrackEntityYawTowardSpyro(actor, 3, 0x10, YAW_HOLD_IN_BAND);

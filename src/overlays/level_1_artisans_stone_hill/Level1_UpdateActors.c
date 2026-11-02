@@ -1000,7 +1000,7 @@ void Level1_UpdateActors(void) {
           if (g >= z) {
             actor->posZ = g;
             st->path->cur = 0;
-            ANIM_GO(actor, 0);
+            ANIM_GO(actor, THIEF_IDLE);
             actor->mode = THIEF_IDLE;
             continue;
           }
@@ -1538,7 +1538,7 @@ void Level1_UpdateActors(void) {
         if (TICK_DOWN(st->timer) == 0) {
           break;
         }
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, SENTRY_CIRCLE);
         if (TICK_DOWN(st->retarget) != 0) {
           st->retarget = 0x1E;
           st->heading = *(unsigned char *)&g_bSpyroPersistentEulerZ;
@@ -1646,7 +1646,7 @@ void Level1_UpdateActors(void) {
           ENTER_POSE(actor, SENTRY_CIRCLE);
         }
         *st->alert = 0;
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, SENTRY_CIRCLE);
         actor->mode = SENTRY_GO_HOME;
         continue;
 
@@ -1657,7 +1657,7 @@ void Level1_UpdateActors(void) {
                           4, 0x14, YAW_STEP_IN_BAND) != 0) {
           MoveActorAlongHeading(actor, 0x5A, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, SENTRY_CIRCLE);
         if (ApproxDist2D(&actor->posX, &st->homeX) < 0x80) {
           ENTER_POSE(actor, SENTRY_WATCH);
         }
@@ -2334,7 +2334,7 @@ void Level1_UpdateActors(void) {
             ANIM_GO(actor, 1);
           } else {
             st->timer -= 1;
-            ANIM_GO(actor, 0);
+            ANIM_GO(actor, REAR_IDLE);
           }
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
@@ -2373,10 +2373,10 @@ void Level1_UpdateActors(void) {
               ANIM_GO(actor, 10);
             } else {
               st->timer -= 1;
-              ANIM_GO(actor, 4);
+              ANIM_GO(actor, REAR_REARED);
             }
           } else {
-            ANIM_GO(actor, 4);
+            ANIM_GO(actor, REAR_REARED);
           }
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);

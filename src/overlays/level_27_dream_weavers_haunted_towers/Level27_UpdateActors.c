@@ -1692,7 +1692,7 @@ void Level27_UpdateActors(void) {
           actor->subMode = 0;
           ENTER_POSE(actor, ROCKTHROW_THROW);
         }
-        ANIM_GO(actor, 0);
+        ANIM_GO(actor, ROCKTHROW_WATCH);
         break;
 
       case ROCKTHROW_WALK:
@@ -1755,7 +1755,7 @@ void Level27_UpdateActors(void) {
         int spd = 0x78;
         int d = ApproxDist2D(&actor->posX, &g_pActorListBase[st->partner].posX);
 
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, ROCKTHROW_WALK);
         if (d < 0xA8C) {
           spd = 0x64;
         } else if (d > 0xC80) {
@@ -2791,7 +2791,7 @@ void Level27_UpdateActors(void) {
       case FCAPTAIN_RELOCATE: {
         int b = st->path->cur;
 
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, FCAPTAIN_SUMMON);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0xA0, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) &
             0x100) {
           st->path->cur = b;

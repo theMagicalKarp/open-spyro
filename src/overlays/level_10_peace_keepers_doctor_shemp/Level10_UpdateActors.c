@@ -2735,7 +2735,7 @@ void Level10_UpdateActors(void) {
       case SGUARD_CHASE:
         d = ApproxDist2D(&actor->posX, &spy->posX);
         if (TICK_DOWN(st->timer38) != 0) {
-          ANIM_GO(actor, 1);
+          ANIM_GO(actor, SGUARD_CHASE);
           if (TICK_DOWN(st->timer04) == 2) {
             PlayActorMeshVoice(actor, 1, 0);
           }
@@ -2966,7 +2966,7 @@ void Level10_UpdateActors(void) {
         break;
 
       case SGUARD_PATH_RUSH:
-        ANIM_GO(actor, 1);
+        ANIM_GO(actor, SGUARD_CHASE);
         if (TICK_DOWN(st->timer04) == 2) {
           PlayActorMeshVoice(actor, 1, 0);
         }
@@ -3512,7 +3512,7 @@ void Level10_UpdateActors(void) {
                                           spy->posY - actor->posY, ATAN_ANGLE8),
                             5);
           if (actor->nextAnim == 2 || actor->nextAnim == 4) {
-            ANIM_GO(actor, 0);
+            ANIM_GO(actor, GLOOK_WATCH);
           }
           if (actor->anim < 2 || actor->anim == 5) {
             TurnActorYawTowardAngle(actor, h, 4, 0, YAW_HOLD_IN_BAND);
@@ -3524,7 +3524,7 @@ void Level10_UpdateActors(void) {
                 if (actor->nextAnim != 1) {
                   ANIM_GO(actor, 1);
                 } else {
-                  ANIM_GO(actor, 0);
+                  ANIM_GO(actor, GLOOK_WATCH);
                 }
               }
             } else {
