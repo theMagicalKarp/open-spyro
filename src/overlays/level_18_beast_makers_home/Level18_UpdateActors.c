@@ -3985,40 +3985,40 @@ void Level18_UpdateActors(void) {
      * resets once its animation ends. */
     case ACTOR_TYPE_BELL_POST:
       switch (actor->mode) {
-      case 0:
+      case BELLPOST_IDLE:
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          actor->mode = 1;
-          ANIM_RESET(actor, 1);
+          actor->mode = BELLPOST_RING;
+          ANIM_RESET(actor, BELLPOST_RING);
           continue;
         }
         if (actor->flags & ACTOR_HIT_FLAME) {
-          actor->mode = 2;
-          ANIM_RESET(actor, 2);
+          actor->mode = BELLPOST_SCORCH;
+          ANIM_RESET(actor, BELLPOST_SCORCH);
           continue;
         }
         break;
 
-      case 1:
+      case BELLPOST_RING:
         if (actor->flags & ACTOR_HIT_FLAME) {
-          ANIM_QUEUE(actor, 2);
+          ANIM_QUEUE(actor, BELLPOST_SCORCH);
         }
         if (g_nActorAnimDone != 0) {
-          ANIM_QUEUE(actor, 0);
+          ANIM_QUEUE(actor, BELLPOST_IDLE);
         }
         break;
 
-      case 3:
+      case BELLPOST_FLAMED:
         if (actor->flags != 0) {
-          actor->mode = 4;
-          ANIM_RESET(actor, 4);
+          actor->mode = BELLPOST_FLAMED_RING;
+          ANIM_RESET(actor, BELLPOST_FLAMED_RING);
           continue;
         }
         break;
 
-      case 2:
-      case 4:
+      case BELLPOST_SCORCH:
+      case BELLPOST_FLAMED_RING:
         if (g_nActorAnimDone != 0) {
-          ANIM_QUEUE(actor, 3);
+          ANIM_QUEUE(actor, BELLPOST_FLAMED);
         }
         break;
       }

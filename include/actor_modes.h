@@ -1842,4 +1842,38 @@ enum AmbientSoundPathStep {
   AMBIENT_STEP_TRAVEL = 1, /* steps along the leg; at its end snaps to the next node, WAIT */
 };
 
+/* ->mode of the level 18 bell post (ACTOR_TYPE_BELL_POST); each mode plays
+ * its own animation. A flame leaves it in the FLAMED pair for good. */
+enum BellPostMode {
+  BELLPOST_IDLE = 0,        /* a charge rings it, a flame scorches it */
+  BELLPOST_RING = 1,        /* rings once, then IDLE (a flame still scorches it) */
+  BELLPOST_SCORCH = 2,      /* flamed: plays out into FLAMED */
+  BELLPOST_FLAMED = 3,      /* scorched idle: any hit rings it */
+  BELLPOST_FLAMED_RING = 4, /* rings once, back to FLAMED */
+};
+
+/* ->mode of a charge-reactive prop (ACTOR_TYPE_CHARGE_REACT_PROP, levels
+ * 2/25); each mode plays its own animation. */
+enum ChargeReactMode {
+  CREACT_IDLE = 0,  /* a charge starts REACT */
+  CREACT_REACT = 1, /* plays the reaction once, back to IDLE */
+};
+
+/* ->mode of the level 2 flame trigger (ACTOR_TYPE_FLAME_CHUNK_TRIGGER). */
+enum FlameTriggerMode {
+  FLAMETRIG_ARMED = 0, /* a flame resumes its world chunk animation */
+  FLAMETRIG_FIRED = 1, /* plays animation 1, then SPENT */
+  FLAMETRIG_SPENT = 2, /* holds animation 2 */
+};
+
+/* ->mode of the level 20 one-shot prop (ACTOR_TYPE_ONE_SHOT_PROP); each mode
+ * plays its own animation. Something outside its arm sets PLAY. */
+enum OneShotPropMode {
+  ONESHOT_IDLE = 0,
+  ONESHOT_PLAY = 1,     /* to frame 0xE, then PLAYED */
+  ONESHOT_PLAYED = 2,   /* holds */
+  ONESHOT_HIT = 3,      /* any hit before HIT: to frame 0x13, then HIT_DONE */
+  ONESHOT_HIT_DONE = 4, /* holds */
+};
+
 #endif

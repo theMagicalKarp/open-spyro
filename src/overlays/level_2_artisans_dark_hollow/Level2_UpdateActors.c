@@ -1719,15 +1719,15 @@ void Level2_UpdateActors(void) {
     /* Charge-reactive prop: a charge plays its reaction animation once. */
     case ACTOR_TYPE_CHARGE_REACT_PROP:
       switch (actor->mode) {
-      case 0:
+      case CREACT_IDLE:
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          ENTER_POSE(actor, 1);
+          ENTER_POSE(actor, CREACT_REACT);
         }
         break;
-      case 1:
+      case CREACT_REACT:
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
-          ENTER_POSE(actor, 0);
+          ENTER_POSE(actor, CREACT_IDLE);
         }
         break;
       }
@@ -1735,12 +1735,12 @@ void Level2_UpdateActors(void) {
 
     /* Type 157: starts its sound and animation when hit, then settles. */
     case ACTOR_TYPE_FLAME_CHUNK_TRIGGER:
-      if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode == 0) {
+      if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode == FLAMETRIG_ARMED) {
         ModifyWorldChunkAnimFlags(*(int *)actor->state, CHUNK_ANIM_RESUME, 0);
-        actor->mode = 1;
-        ANIM_RESET(actor, 1);
+        actor->mode = FLAMETRIG_FIRED;
+        ANIM_RESET(actor, FLAMETRIG_FIRED);
       } else if (actor->mode == 1 && g_nActorAnimDone != 0) {
-        ENTER_POSE(actor, 2);
+        ENTER_POSE(actor, FLAMETRIG_SPENT);
       }
       break;
 

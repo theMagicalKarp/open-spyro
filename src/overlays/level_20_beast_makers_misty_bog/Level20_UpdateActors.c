@@ -3726,36 +3726,36 @@ void Level20_UpdateActors(void) {
     }
 
     case ACTOR_TYPE_ONE_SHOT_PROP:
-      if (actor->flags != 0 && actor->mode < 3) {
-        actor->mode = 3;
-        ANIM_RESET(actor, 3);
+      if (actor->flags != 0 && actor->mode < ONESHOT_HIT) {
+        actor->mode = ONESHOT_HIT;
+        ANIM_RESET(actor, ONESHOT_HIT);
         continue;
       }
       switch (actor->mode) {
-      case 0:
+      case ONESHOT_IDLE:
         break;
 
-      case 1:
-        ANIM_SET(actor, 1);
+      case ONESHOT_PLAY:
+        ANIM_SET(actor, ONESHOT_PLAY);
         if (actor->nextFrame >= 0xE) {
-          actor->mode = 2;
-          ANIM_RESET(actor, 2);
+          actor->mode = ONESHOT_PLAYED;
+          ANIM_RESET(actor, ONESHOT_PLAYED);
           continue;
         }
         break;
 
-      case 2:
+      case ONESHOT_PLAYED:
         break;
 
-      case 3:
+      case ONESHOT_HIT:
         if (actor->nextFrame >= 0x13) {
-          actor->mode = 4;
-          ANIM_RESET(actor, 4);
+          actor->mode = ONESHOT_HIT_DONE;
+          ANIM_RESET(actor, ONESHOT_HIT_DONE);
           continue;
         }
         break;
 
-      case 4:
+      case ONESHOT_HIT_DONE:
         break;
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);

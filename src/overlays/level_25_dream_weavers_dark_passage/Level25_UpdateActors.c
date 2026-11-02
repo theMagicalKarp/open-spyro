@@ -2393,18 +2393,18 @@ void Level25_UpdateActors(void) {
     /* Charge-reactive prop: a charge plays its reaction animation once. */
     case ACTOR_TYPE_CHARGE_REACT_PROP:
       switch (actor->mode) {
-      case 0:
+      case CREACT_IDLE:
         if (!(actor->flags & ACTOR_HIT_CHARGE)) {
           continue;
         }
-        ENTER_POSE(actor, 1);
+        ENTER_POSE(actor, CREACT_REACT);
 
-      case 1:
+      case CREACT_REACT:
         if (g_nActorAnimDone == 0) {
           continue;
         }
         actor->flags = 0;
-        ENTER_POSE(actor, 0);
+        ENTER_POSE(actor, CREACT_IDLE);
       }
       continue;
 
