@@ -42,6 +42,7 @@ void EnqueueHudSprites(void) {
   byte *eggs;
   byte *ring;
   byte *quad;
+  byte *uvFrame; /* the egg icon's animation frame UVs */
   int i;
   int phase;
   int shade;
@@ -157,10 +158,8 @@ void EnqueueHudSprites(void) {
       do {
         quad = g_abHudEggIconBlock + 0x461 + i * 8;
         step = FRAME_CYCLE + i;
-        EmitTexturedQuad(
-            (short *)quad,
-            (unsigned int *)((step % 9) * 8 + (g_abHudEggIconBlock + 0x569)),
-            0);
+        uvFrame = (step % 9) * 8 + (g_abHudEggIconBlock + 0x569);
+        EmitTexturedQuad((short *)quad, (unsigned int *)uvFrame, 0);
         i += 1;
       } while (i < EGG_COUNT);
     }
