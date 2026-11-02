@@ -492,7 +492,7 @@ void Level0_UpdateActors(void) {
       int active = g_anLevelKillBitmapTable[0x78] & 1;
 
       switch (actor->subMode) {
-      case 0: {
+      case PSWITCH_CLEAR: {
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x500 &&
             ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < 0x280) {
           if ((g_pActorListBase[st->idx].subMode >> st->shift) & 1) {
@@ -500,38 +500,38 @@ void Level0_UpdateActors(void) {
           } else {
             g_pActorListBase[st->idx].subMode |= 1 << st->shift;
           }
-          actor->subMode = 1;
+          actor->subMode = PSWITCH_STOOD_ON;
         }
         break;
       }
 
-      case 1: {
+      case PSWITCH_STOOD_ON: {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x601 ||
             ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) >= 0x2C1) {
-          actor->subMode = 0;
+          actor->subMode = PSWITCH_CLEAR;
         }
         break;
       }
       }
 
-      if (g_pActorListBase[st->idx].mode == 10) {
+      if (g_pActorListBase[st->idx].mode == SEQPROP_RUN) {
         if ((actor->mode & 1) == 0) {
           actor->mode = PSWITCH_DOWN;
-          ANIM_RESET(actor, 1);
+          ANIM_RESET(actor, PSWITCH_DOWN);
         }
         break;
       }
 
-      if (g_pActorListBase[st->idx].mode == 11) {
+      if (g_pActorListBase[st->idx].mode == SEQPROP_RUN_ALT) {
         if ((actor->mode & 1) != 0) {
           actor->mode = PSWITCH_UP;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, PSWITCH_UP);
         }
         break;
       }
 
       if (((g_pActorListBase[st->idx].subMode >> st->shift) & 1) != 0 && active != 0 &&
-          g_pActorListBase[st->idx].mode < 0x63) {
+          g_pActorListBase[st->idx].mode < SEQPROP_DONE) {
         if ((actor->mode & 1) == 0) {
           g_nSfxOverrideFlags = SFX_OVERRIDE_PITCH;
           g_nSfxOverridePitch.v =
@@ -541,10 +541,10 @@ void Level0_UpdateActors(void) {
                         &actor->voiceRow);
         }
         actor->mode = PSWITCH_DOWN;
-        ANIM_RESET(actor, 1);
+        ANIM_RESET(actor, PSWITCH_DOWN);
       } else if ((actor->mode & 1) != 0) {
         actor->mode = PSWITCH_UP;
-        ANIM_RESET(actor, 0);
+        ANIM_RESET(actor, PSWITCH_UP);
       }
       break;
     }

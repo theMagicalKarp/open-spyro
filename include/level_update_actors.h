@@ -576,7 +576,7 @@ typedef struct EggFlightState {
 /* Type 18: pressure switch. Toggles one bit in a linked actor's sub-state. */
 typedef struct SwitchState {
   int shift; /* 0x00 bit position within the target's 0x49 mask */
-  int idx;   /* 0x04 index into the actor pool at g_pActorListBase */
+  int idx;   /* 0x04 the sequenced prop it cues (ACTOR_TYPE_SEQUENCED_PROP in the level data), an index into g_pActorListBase */
 } SwitchState;
 
 /* Type 49: sequenced prop driven by the 0x8002Bxxx player. Starts once any

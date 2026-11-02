@@ -877,6 +877,13 @@ enum GuardPairMode {
   GPAIR_CUE = 10,     /* signals its partner (subMode steps the gesture), then IDLE */
 };
 
+/* ->subMode while GPAIR_CUE: the signal gesture. */
+enum GuardPairCueStep {
+  GPCUE_RAISE = 0,  /* plays the ROUSE animation */
+  GPCUE_SIGNAL = 1, /* animation 8; on its frame 8 the partner enters mode 0xD */
+  GPCUE_LOWER = 2,  /* plays the LOWER animation, then IDLE */
+};
+
 /* ->mode of a sweep gunner (ACTOR_TYPE_SWEEP_GUNNER, SweepGunnerState;
  * level 32). */
 enum SweepGunnerMode {
@@ -1750,6 +1757,12 @@ enum ShooterShotMode {
 enum PressureSwitchMode {
   PSWITCH_UP = 0,
   PSWITCH_DOWN = 1, /* its bit in the linked actor's subMode is set */
+};
+
+/* ->subMode of the pressure switch: Spyro stepping on it. */
+enum PressureSwitchStep {
+  PSWITCH_CLEAR = 0,    /* Spyro steps on: toggle its bit in the prop's subMode */
+  PSWITCH_STOOD_ON = 1, /* until Spyro steps off */
 };
 
 /* ->mode of the simple two-mode projectiles: ACTOR_TYPE_FLYING_EMBER and

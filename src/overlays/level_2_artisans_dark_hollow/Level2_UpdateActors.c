@@ -1320,7 +1320,7 @@ void Level2_UpdateActors(void) {
                                                mate->posY - actor->posY, ATAN_ANGLE8),
                                  actor->rotZ) +
                              0x20) < 7) {
-            actor->subMode = 0;
+            actor->subMode = GPCUE_RAISE;
             actor->mode = GPAIR_CUE;
             continue;
           }
@@ -1385,13 +1385,13 @@ void Level2_UpdateActors(void) {
         break;
       case GPAIR_CUE:
         switch (actor->subMode) {
-        case 0:
+        case GPCUE_RAISE:
           ANIM_GO(actor, GPAIR_ROUSE);
           if (g_nActorAnimDone != 0) {
             actor->subMode++;
           }
           break;
-        case 1:
+        case GPCUE_SIGNAL:
           ANIM_GO(actor, 8);
           if (g_nActorAnimNewFrame != 0 && actor->frame == 8) {
             g_pActorListBase[st->partner].mode = 0xD;
@@ -1405,7 +1405,7 @@ void Level2_UpdateActors(void) {
             actor->subMode++;
           }
           break;
-        case 2:
+        case GPCUE_LOWER:
           ANIM_GO(actor, GPAIR_LOWER);
           if (g_nActorAnimDone != 0) {
             st->timer = 0x258;
