@@ -11,19 +11,19 @@
    the stored checksum matches.
 
    The SpuCommonAttr block at -0x320 is reached through the g_nSfxMixVolume_blk
-   incomplete-array alias (A20).  In the tally loop, the egg-guard compare `c`
-   and the treasure sum `t` are computed ABOVE the empty do/while: the barrier's
-   loop notes land on the `*gems` store, and sched1 then makes every later insn
-   depend on it (B23), so anything that must be emitted before that store has
-   to be computed before the barrier. */
+   incomplete-array alias (A20).  In the tally loop, the egg-guard compare
+   `hasEggs` and the treasure sum `newTotalGems` are computed ABOVE the empty
+   do/while: the barrier's loop notes land on the `*gems` store, and sched1 then
+   makes every later insn depend on it (B23), so anything that must be emitted
+   before that store has to be computed before the barrier. */
 int ApplySaveGameBuffer(unsigned char *buf) {
   unsigned char *start;
   int off;
   unsigned char *common;
   int sfx;
-  int sm;
-  int mv;
-  int w;
+  int sfxMix;
+  int music;
+  int flightLevel;
   int i;
   unsigned char *tbl;
   unsigned char *dst;
@@ -31,33 +31,33 @@ int ApplySaveGameBuffer(unsigned char *buf) {
   unsigned char *end;
   int *eggs;
   int *gems;
-  unsigned char *half;
+  unsigned char *gemRow;
   int lives;
   unsigned int cam;
   int *dragons;
   unsigned char *row;
-  unsigned char *row2;
-  int d;
-  int g;
-  int e;
-  int wd;
-  int wt;
-  int we;
-  int t;
-  int c;
+  unsigned char *levelRow;
+  int dragonCount;
+  int gemCount;
+  int eggCount;
+  int totalDragons;
+  int totalGems;
+  int totalEggs;
+  int newTotalGems;
+  int hasEggs;
   g_nActiveLevelId = buf[SAVE_OFFSET(levelId)];
   sfx = buf[SAVE_OFFSET(sfxVolume)];
-  sm = (sfx * 0x3FFF) / 10;
-  g_nSfxMixVolume_blk[0] = sm;
+  sfxMix = (sfx * 0x3FFF) / 10;
+  g_nSfxMixVolume_blk[0] = sfxMix;
   g_nSfxVolume = sfx;
-  g_nSoundMasterVolume = (sm << 0xC) / 16383;
-  mv = buf[SAVE_OFFSET(musicVolume)];
+  g_nSoundMasterVolume = (sfxMix << 0xC) / 16383;
+  music = buf[SAVE_OFFSET(musicVolume)];
   common = ((unsigned char *)g_nSfxMixVolume_blk) - 0x320;
   *((int *)common) = 0xC0;
-  g_nMusicVolume = mv;
-  g_nCdAudioVolume_blk = mv << 0xB;
-  g_nCdDaVolumeCurrent = mv << 0xB;
-  g_nSpuCommonCdVolumeR = mv << 0xB;
+  g_nMusicVolume = music;
+  g_nCdAudioVolume_blk = music << 0xB;
+  g_nCdDaVolumeCurrent = music << 0xB;
+  g_nSpuCommonCdVolumeR = music << 0xB;
   SetSpuCommonAttr(common);
   cam = ((SaveGameBuffer *)buf)->cameraOptions;
   g_nOptionVibrationEnabled = buf[SAVE_OFFSET(vibration)];
@@ -73,7 +73,7 @@ int ApplySaveGameBuffer(unsigned char *buf) {
   }
   CopyWords(g_anFlightClearTimes, buf + SAVE_OFFSET(flight), 0x14);
   off = SAVE_OFFSET(levelExited);
-  w = 0;
+  flightLevel = 0;
   row = buf;
   tbl = g_abFlightBonusPaid;
   do {
@@ -84,41 +84,41 @@ int ApplySaveGameBuffer(unsigned char *buf) {
       *(dst++) = *(src++);
     } while (((int)dst) < ((int)end));
     row += 5;
-    w += 1;
+    flightLevel += 1;
     tbl += 5;
-  } while (w < 5);
+  } while (flightLevel < 5);
   CopyWords(g_abLevelVisitedFlag, buf + SAVE_OFFSET(levelVisited), 0x24);
   CopyWords(g_abLevelExited, buf + off, 0x24);
   i = 0;
   eggs = g_anLevelEggsRecovered;
   gems = g_anLevelGemsCollected;
-  half = buf;
+  gemRow = buf;
   dragons = g_anLevelDragonsRescued;
   g_nTotalDragonsRescued = 0;
   g_nTotalTreasureCollected = 0;
   g_nTotalEggsRecovered = 0;
   do {
-    row2 = buf + i;
-    d = row2[SAVE_OFFSET(levelDragons)];
-    wd = g_nTotalDragonsRescued;
-    wt = g_nTotalTreasureCollected;
-    *dragons = d;
-    g = SAVE_RAW(half, short, levelGems);
-    g_nTotalDragonsRescued = wd + d;
-    c = i < 0x12;
-    t = wt + g;
+    levelRow = buf + i;
+    dragonCount = levelRow[SAVE_OFFSET(levelDragons)];
+    totalDragons = g_nTotalDragonsRescued;
+    totalGems = g_nTotalTreasureCollected;
+    *dragons = dragonCount;
+    gemCount = SAVE_RAW(gemRow, short, levelGems);
+    g_nTotalDragonsRescued = totalDragons + dragonCount;
+    hasEggs = i < 0x12;
+    newTotalGems = totalGems + gemCount;
     EBB_BREAK();
-    *gems = g;
-    g_nTotalTreasureCollected = t;
-    if (c) {
-      e = row2[SAVE_OFFSET(levelEggs)];
-      we = g_nTotalEggsRecovered;
-      *eggs = e;
-      g_nTotalEggsRecovered = we + e;
+    *gems = gemCount;
+    g_nTotalTreasureCollected = newTotalGems;
+    if (hasEggs) {
+      eggCount = levelRow[SAVE_OFFSET(levelEggs)];
+      totalEggs = g_nTotalEggsRecovered;
+      *eggs = eggCount;
+      g_nTotalEggsRecovered = totalEggs + eggCount;
     }
     eggs += 1;
     gems += 1;
-    half += 2;
+    gemRow += 2;
     i += 1;
     dragons += 1;
   } while (i < 0x24);
