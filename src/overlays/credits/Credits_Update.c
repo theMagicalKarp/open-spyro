@@ -18,197 +18,70 @@
  * out) and trim the pool tail.  Finally the 5-way g_nCreditsMode state machine
  * pages the next credits screen in through StartCdReadAsync / CopyWords.
  *
- * ---- STATE 2026-09-02 (first session; superseded, see 2026-10-04-1 below) --
- * PARKED at **length-exact (1372/1372), frame-exact, running offset 0**, with
- * 785/1372 linked instructions differing (42.8%) and **252 mismatches over
- * 123 regions** on the register-anchored, immediate-masked, difflib-aligned
- * shape diff.  It started the session as an auto-skipped WALL (see below) and
- * as a fresh m2c decode at 588 masked mismatches / offset -40.
- *
- * ---- Measuring this park (do this first) ---------------------------------
- *   uv run --project tools/open-spyro --group split -- open-spyro diff \
- *       Credits_Update            # ~35 s, writes build/diff/*.bin
- * then objdump BOTH build/diff/Credits_Update.{orig,built}.bin with
- * `-b binary -m mips:3000 -EL -D`, anchor register names, mask immediates and
- * difflib-align (see cookbook D-2b; because BOTH sides go through the SAME
- * objdump there is no fp/s8 or t3/t7 naming asymmetry to correct).  Print the
- * running offset per region -- it is the number that matters, not the raw
- * mismatch count.
- *
- * ---- Why it was hidden: the triage B2 detector false-positives ------------
- * `make triage` auto-skipped this function as "B2 $at literal HW load".  It is
- * not B2: every `$at` use here is a gas MACRO expansion -- `lui $at,%hi(sym)`
- * + `sw ...,%lo(sym)($at)` for a global store, `lui $at; addu $at,$at,$i;
- * lw ...,%lo(sym)($at)` for an indexed global, and `lui $at,(0x80000000>>16)`
- * + `bne $v1,$at,L` for an immediate COMPARE.  Real B2 is `lui $at,<imm>`
- * feeding a load/store whose displacement is a BARE constant
- * (`ReadRootCounter2`: `lui $at,(0x1F801120>>16); lhu $v0,(0x1F801120&0xFFFF)($at)`).
- * The detector now keys off the memory operand instead of the `lui`
- * (triage.py); that moved 32 overlay functions out of the wall list.
- *
- * ---- The seven levers that took it 588 -> 252 (all reusable) --------------
- * 1. **A local STRUCT is how the original keeps a group of ints in the frame.**
- *    sp+0x20/0x24/0x28/0x30/0x34/0x38 (x, y, colour, advance, 1, 0x1600) are
- *    read and written through `sp` on EVERY access with a hole at 0x2C.
- *    Separate `int` locals get hard registers; a BLKmode struct never does
- *    (gcc 2.7.2 has no SRA).  Declaring `struct { int x,y,col,unkC,adv,one,
- *    big; } st;` reproduced the whole frame window, hole included.
- * 2. **`__attribute__((noreturn))` on the pool-overflow callee.**  The one
- *    `jal exit` inside the glyph loop made every loop-carried value
- *    (slot, colon, the char pointer, the hoisted 0x10/0x100) call-crossing, so
- *    reload put them all in s-registers where the original uses a3/t0/t1/t2.
- *    `volatile void f();` is NOT enough in this cc1 -- the attribute is.
- *    Worth ~40 mismatches, and it is what put the whole caller-saved chain
- *    back.  Probe first by deleting the call: if the registers change, the
- *    callee is noreturn in the original.
- * 3. **`volatile` on a pointer/state global is the only thing that stops cse
- *    store-forwarding.**  The original re-loads g_pLevelSampleBankEntries before EVERY field
- *    store (six `lui/lw` pairs) although it had just stored a symbol address
- *    into it; ours folded the whole block to absolute `$at` addresses.  No
- *    A200 barrier reaches this (the fold is of the STORED VALUE, not of a
- *    held base).  `char *volatile g_pLevelSampleBankEntries;` fixes it in one line.  Same for
- *    g_pWorldUnpackHead and g_nLevelArchiveByteSize, which the original also re-reads after
- *    storing.  Do NOT blanket-volatile: where the original CACHES a global
- *    across a loop (g_nCreditsGlyphCount in the free-slot search) an explicit `int n =`
- *    local is what reproduces it, and volatile would break it.
- * 4. **gcc 2.7.2 REUSES stack temp slots across disjoint lexical blocks, so
- *    the slot map is a source-scope dial.**  The original's three rects live
- *    at sp+0x18, sp+0x20 and sp+0x28: 0x18 is a FUNCTION-scope declaration
- *    (never freed), 0x20 is the glyph struct's slot after that block exits,
- *    and 0x28 is the second rect in the same `switch` binding contour.  Moving
- *    the first rect from its `if` block to function scope moved all three onto
- *    the original's addresses.  The frame then wanted one more 8-byte slot:
- *    a dead `int padg[2];` after `st` gives `vars= 72` (`addiu sp,-136`)
- *    without moving anything else.
- * 5. **`while (i < n) { if (data) break; ... }` is NOT the same loop as
- *    `while (data) { ...; if (i >= n) break; }`.**  loop.c's
- *    `duplicate_loop_exit_test` copies the loop's FIRST exit test to the
- *    bottom, so putting the DATA test first gets it duplicated (guard + bottom
- *    copy, +6 insns and a rotated body).  Putting the COUNTER test as the loop
- *    condition and the data test as an inner `break` gives the original's
- *    "load/test at the top, `slt`+`bnez` at the bottom, increment in the delay
- *    slot" shape.  Worth 77 identical words on the free-slot search alone.
- * 6. **Sharing ONE loop counter decl across two loops is a priority dial.**
- *    The free-slot index lives in `s1` in the original -- a callee-saved
- *    register for a value that crosses no call -- because it is the SAME
- *    source variable as the re-centre pass's counter, which makes one allocno
- *    with a long live range and therefore LOW global.c priority.  With two
- *    separate `int i`s ours landed in `a1` and rotated the entire caller-saved
- *    chain by one (`n`->a2, `s`->a3, slot->t0, colon->t1, lift->t2).  One
- *    shared decl put all seven back.  Worth 33 mismatches.
- * 7. **Where the negation goes decides whether combine folds it.**
- *    `-(x - 0x100) * 3` is folded to `(0x100 - x) * 3` (one `subu`); the
- *    original's `addiu v0,v0,-256; ...*3; negu` needs `-((x - 0x100) * 3)`.
- *    Worth 34 identical words.
- * Also folded in: an A240 per-site alias for g_pDrawBufB (`g_pDrawBufB_blk`, an
- * incomplete-array view added to credits.undefined_syms.auto.txt) -- the setup
- * block reads it five times through one `lui/addiu` base while case 4 uses the
- * absolute `$at` form, and only two C spellings of one address give both; an
- * A232 `do { } while (0)` before the 20-byte `g_nWorldRenderMeshChunkCount = g_nWorldCollisionTriCount` struct
- * assignment (sched2 otherwise hoists a whole `move_by_pieces` block above the
- * preceding volatile store); and `if (g_pCreditsGlyphPool[...] == 0) { tab = g_pCreditsGlyphPool;
- * ... }` instead of a shared `tab`, which stops jump.c cross-jumping the trim
- * loop's guard INTO the loop body (§B24: the escape is different registers,
- * and a second read of the same global is how you buy them).
- *
- * ---- STATE 2026-10-04-1: 115 masked mismatches over 32 regions -----------
- * Length-exact (1372), frame-exact (136, no padding local), 1,223+ of 1,372
- * linked words byte-identical (was 587).  Measure compile-only (works when the
- * length drifts): build the .o and difflib it against
- * build/diff/<fn>.orig.bin with registers anchored and immediates masked.
- * Levers that closed R1, R2, R5 and most of R6 this session:
- *  8. **The glyph pool and the line table are STRUCT ARRAYS** (CredGlyph,
- *     CredLine).  The HImode field stores are then MEM_IN_STRUCT_P with a
- *     varying address, and sched.c true_dependence lets a SCALAR load
- *     (g_nCreditsGlyphCount) pass them.  That is what puts `sh cur,0x18(g)` in the pool
- *     overflow branch's delay slot.  Byte fields are QImode and alias
- *     everything, as in the original.
- *  9. **Index with `POOL[i]` / `LINES[line]`, not a hand-made byte offset.**
- *     In an address (EXPAND_SUM) context, expand puts the MULT first, and
- *     loop.c's giv replacement keeps it first, which gives the original's
- *     `addu rd,giv,base`.  `&POOL[i]` in a local is NOT an address context,
- *     so it comes out base-first; where the original is giv-first but holds g
- *     in a register, write `(CredGlyph *)(i * 0x1C + (int)g_pCreditsGlyphPool)`.  The
- *     re-centre loop and the two state loops have no `k` at all: the `move
- *     aN,zero` after each guard is loop.c's giv init.
- * 10. **Exactly ONE loop is a `for`** (the state-machine pass).  A `for`
- *     guard `i < D` with i == 0 is folded to `blez D` by combine, which
- *     eliminates the slt temp, and distribute_notes leaves `(use (reg))` for
- *     it.  That orphan pseudo gets an 8-byte stack slot.  The original's frame
- *     has exactly one such slot, which the old `int padg[2]` was faking.  The
- *     `for` guard also defeats jump threading into the next `if (D > 0)`, so
- *     cse reloads g_nCreditsGlyphCount after the loop as the original does.
- * 11. `cur`/`upper` (s3/s4): `upper = (unsigned)(*s - 0x30) < 0xA` expanded
- *     with `upper` as the subtraction's target, which added 2 refs at loop
- *     depth 3 and pushed upper's priority above cur's.  `c = *s - 0x30;`
- *     followed by `upper = (unsigned)c < 0xA` fixes it.  c must keep that
- *     non-byte set, otherwise combine drops the original's `andi c,0xff`.
- * 12. **A call's plain `g_anCreditsPageSectors[i]` argument goes in a local** (`sector`).
- *     rtx_cost of a simple MEM is COSTS_N_INSNS(1) == 2, so expand_call does
- *     not precompute it, and its load lands after the stack-arg store (a
- *     memory dependence).  Loaded first, `li a2,0x800` falls to the front and
- *     the stack store to the back, as in the original.
- * 13. The header key reads: `h + ((idx) * 3 << 3) + K` (a shift index is not
- *     a MULT rtx, so expand does not move it first).  The re-centre x uses
- *     `short gx` (unsigned-short arithmetic, reused unreloaded).
- *     g_nCdReadInFlight is `volatile`: combine will not fold `la; lw 0()` into it.
- *     Case 2's rect is written in natural [0..3] order.
- * ---- STATE 2026-10-19: 14 masked / 14 linked, one cluster left ------------
- * Length-, frame- and branch-target-exact; every difference is the four
- * movstr scratch registers of the init-block 20-byte copy (ours a2/a3/t0/t1,
- * original a3/t0/t1/t2).  Levers that closed clusters A-D and a hidden
- * jump-threading diff this session:
- * 14. **One struct symbol for the CD-stream state block** (Cd85D8 at
- *     0x800785D8, g_pDrawBufA_s in undefined_syms_manual.txt).  The BLK copy
- *     into `S.blk` (0x80078A40) and the 85E0/85E4/8600/8604 fields share a
- *     base, so sched sees output/anti dependences between the copy and the
- *     field stores (BLKmode size 0 = "conflicts with everything on that
- *     base").  That keeps the src re-read and dc read above the copy and the
- *     8600/8604 stores below it -- no barrier, no asm.  Case 4 matched from
- *     it outright (`dc = S.drawBufB` before `S.blk = ...`).
- * 15. **`g_nWorldTimAudioChunkOffset[3]` instead of a scalar g_nWorldBundleChunkSize** for a call argument:
- *     an ARRAY_REF address goes through memory_address, so the cheap
- *     (mem (reg)) form is NOT precomputed by expand_call and the a2 load is
- *     emitted after arg 4's g_nCreditsPageIndex chain, as in the original.
- * 16. `char *e4 = g_pPathTableBuffer;` captured right after the call, a `sz` local
- *     loaded before the g_nCreditsLineCount store, and `int f = g_nReturningHomePhase;` before
- *     the g_pLevelSampleBankEntries re-read fix three load orders (all luid ties).
- * 17. Glyph loop: the `*s - '0'` digit test is a block temp, and the loop
- *     var gets its non-byte def from the space branch instead:
- *     `c = (st.adv * 3) / 4;` (that keeps the loop-top `andi c,0xff`).  A
- *     `do {} while (0)` after `upper = 1` stops sched1 dropping the li into
- *     the st.adv load's delay slot (which inflated the load's qty span and
- *     lost it v0 to the sll temp); a loop-note barrier, unlike an asm
- *     fence, still lets reorg put the li in the bgez delay slot.
- * 18. `i = 0;` hoisted above `if (g_nCreditsGlyphCount > 0)` before the first state
- *     loop.  Without it jump.c threads that blez straight past the `for`
- *     loop (target 0x8007bb6c vs 0x8007b8d0) -- invisible in the masked
- *     shape diff, caught only by the linked `open-spyro diff`.
- * ---- STATE 2026-10-19-1: 4 masked, one load-order swap left ---------------
- * 19. **The movstr scratches are allocated in SCHED1 order, and sched1 sees
- *     no hard-reg clobber on the copy.**  local-alloc gives the four scratch
- *     qtys (birth 2n-1 .. death 2n+1) the first registers free across the
- *     copy in sched1's order.  The original's a3/t0/t1/t2 means the hard a2
- *     arg (the volatile 0x8604 re-read) was already loaded ABOVE the copy in
- *     sched1; sched2, where the copy now clobbers a3, hoists it back up.
- *     Two things free sched1 to do that: the copy goes to its OWN symbol
- *     (`g_nWorldRenderMeshChunkCount = g_nWorldCollisionTriCount`, not `S.blk`, so it has no dep on the
- *     S fields), and C1C is read through a NON-volatile alias
- *     (`g_nLevelArchiveChunkSize_n`, undefined_syms_manual.txt), so the 8604 store/re-read
- *     chain is not pinned behind it.  14 -> 4 masked.  Ruled out on the way
- *     (gcc source): reload spill (a2 is regs_explicitly_used, never a spill
- *     reg) and global.c's local-reg steal (skips regs_ever_live) -- the
- *     earlier "spilled REG_EQUIV pseudo" theory for a2 is wrong.
- * ---- MATCHED 2026-10-20 ----------------------------------------------------
- * 20. **`register char *src asm("$5")` for the e4 re-read.**  sched1's
- *     adjust_priority gives a newly-ready insn the LAUNCH_PRIORITY "birthing"
- *     boost only when its SET_DEST pseudo has reg_n_sets == 1.  Both the e4
- *     re-read and the C1C load were boosted, so the class tie (anti link
- *     cost 1 beats a load's true link) put C1C first.  Setting the hard reg
- *     a1 directly (n_sets >> 1) drops the re-read to its plain priority 5;
- *     C1C wins T-67 and the original `lw a1,85E4; lw v0,C1C` order falls out.
- *     Setting a pseudo twice (`src = g_pPathTableBuffer` later) also flips the pair
- *     but makes src non-local and breaks allocation.
+ * ---- Why the source is shaped this way ------------------------------------
+ * Each item below is load-bearing for the byte match; the matching cookbook
+ * has the general form of each lever.
+ *  1. The frame window sp+0x20..0x38 (x, y, colour, advance, 1, 0x1600, with
+ *     a hole at 0x2C) is ONE local struct `st`: a BLKmode struct is never
+ *     given hard registers, separate ints would be.
+ *  2. `exit` is declared noreturn. Without the attribute its call inside the
+ *     glyph loop makes every loop value call-crossing and moves them into
+ *     s-registers.
+ *  3. g_pLevelSampleBankEntries, g_pWorldUnpackHead and
+ *     g_nLevelArchiveByteSize are volatile here: the original re-reads them
+ *     after storing to them. Where it caches a global across a loop
+ *     (g_nCreditsGlyphCount in the free-slot search) a plain local does that.
+ *  4. Stack temp slots are reused across disjoint blocks, so the three rects
+ *     sit at sp+0x18/0x20/0x28 because the first is declared at function
+ *     scope and the other two share the switch's scope.
+ *  5. The free-slot search tests the counter in the loop condition and the
+ *     data in an inner `break`; the other order gets its exit test
+ *     duplicated by loop.c.
+ *  6. The free-slot and re-centre loops share one counter variable, which
+ *     lowers its allocation priority onto s1 as in the original.
+ *  7. `-((x - 0x100) * 3)`: written as `-(x - 0x100) * 3` combine folds the
+ *     negation away.
+ *  8. The glyph pool and line table are struct arrays (CredGlyph, CredLine),
+ *     so the scheduler lets the scalar g_nCreditsGlyphCount load pass the
+ *     field stores.
+ *  9. Pool and line accesses index the struct arrays; where the original
+ *     holds the pool base in a register the address is spelled
+ *     `(CredGlyph *)(i * 0x1C + (int)g_pCreditsGlyphPool)`.
+ * 10. Of the loops over g_nCreditsGlyphCount, only the state-machine pass is
+ *     a `for`: its folded guard leaves the one 8-byte stack slot the
+ *     original's frame has, and keeps g_nCreditsGlyphCount reloaded after the
+ *     loop.
+ * 11. `c = *s - 0x30;` then `upper = (unsigned)c < 0xA`: computing `upper`
+ *     directly raises its priority over `cur`, and `c` must keep a non-byte
+ *     set so the loop-top `andi c,0xff` stays.
+ * 12. A call's plain `g_anCreditsPageSectors[i]` argument goes through the
+ *     `sector` local so its load comes before the stack-argument store.
+ * 13. The header key reads are `h + ((idx) * 3 << 3) + K`, the re-centre x
+ *     is a `short gx`, g_nCdReadInFlight is volatile, and case 2's rect is
+ *     written in [0..3] order.
+ * 14. The CD-stream state block is one struct symbol (Cd85D8,
+ *     g_pDrawBufA_s), so its block copy and field stores share a base and
+ *     keep their original order without barriers.
+ * 15. `g_nWorldTimAudioChunkOffset[3]` (an array reference, not a scalar) as
+ *     a call argument puts its load after the fifth argument's chain.
+ * 16. `e4 = g_pPathTableBuffer` right after the call, `sz` loaded before the
+ *     g_nCreditsLineCount store, and `f = g_nReturningHomePhase` before the
+ *     g_pLevelSampleBankEntries re-read fix three load orders.
+ * 17. In the glyph loop the digit test is a block temp, `c = (st.adv * 3) /
+ *     4` gives `c` its non-byte set, and the `do {} while (0)` after
+ *     `upper = 1` keeps the li out of the st.adv load's delay slot.
+ * 18. `i = 0;` sits above `if (g_nCreditsGlyphCount > 0)` so jump.c does not
+ *     thread that branch past the first state loop.
+ * 19. The 20-byte copy goes to its own symbol (g_nWorldRenderMeshChunkCount
+ *     = g_nWorldCollisionTriCount) and C1C is read through the non-volatile
+ *     g_nLevelArchiveChunkSize_n, which picks the movstr scratch registers
+ *     a3/t0/t1/t2.
+ * 20. `register char *src asm("$5")` for the e4 re-read takes away its
+ *     scheduling boost, so the C1C load goes first.
+ * Also: g_pDrawBufB has a second spelling (g_pDrawBufB_blk) for the setup
+ * block's shared base (A240); a `do { } while (0)` sits before the 20-byte
+ * struct assignment (A232); and the trim loop re-reads g_pCreditsGlyphPool
+ * instead of sharing `tab` so jump.c does not cross-jump its guard (B24).
  */
 
 #include "sample_bank.h"
