@@ -374,7 +374,7 @@ Actor *Level17_SpawnActor(int type, Actor *parent)
       InitActorRenderDefaults(rec);
       rec->posX = -0x64;
       rec->posY = 0x1E;
-      rec->cullRadius = 0;
+      rec->cullRadius = ACTOR_CULL_HIDDEN;
       rec->posZ = 0x1000;
       HideActorRenderRecord(rec);
       rec->otBias = 0x20;

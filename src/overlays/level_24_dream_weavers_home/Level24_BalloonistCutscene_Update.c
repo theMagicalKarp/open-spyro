@@ -126,7 +126,7 @@ void Level24_BalloonistCutscene_Update(void)
         {
           if (g_pSparxActor != 0)
           {
-            g_pSparxActor->cullRadius = 0;
+            g_pSparxActor->cullRadius = ACTOR_CULL_HIDDEN;
             g_pSparxActor->drawn = 0;
             if (((SparxState *)g_pSparxActor->state)->glow != 0)
             {

@@ -1207,7 +1207,7 @@ void Level30_UpdateActors(void) {
           actor->scale += 4;
           actor->rotZ += 8;
         } else {
-          actor->cullRadius = 0;
+          actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;
           actor->mode = SAVEHOST_HIDDEN;
           st->timer = 0x10;
@@ -1534,7 +1534,7 @@ void Level30_UpdateActors(void) {
 
             g_nLevelKeyState = KEYSTATE_CARRIED;
             actor->scale = 0x40;
-            actor->cullRadius = 0;
+            actor->cullRadius = ACTOR_CULL_HIDDEN;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->groundCode = 0;

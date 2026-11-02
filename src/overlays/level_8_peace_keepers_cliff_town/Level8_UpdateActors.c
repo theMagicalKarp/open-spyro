@@ -1910,7 +1910,7 @@ void Level8_UpdateActors(void) {
           actor->scale += 4;
           actor->rotZ += 8;
         } else {
-          actor->cullRadius = 0;
+          actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;
           actor->mode = SAVEHOST_HIDDEN;
           st->timer = 0x10;
@@ -2244,7 +2244,7 @@ void Level8_UpdateActors(void) {
 
             g_nLevelKeyState = KEYSTATE_CARRIED;
             actor->scale = 0x40;
-            actor->cullRadius = 0;
+            actor->cullRadius = ACTOR_CULL_HIDDEN;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->groundCode = 0;
@@ -2502,7 +2502,7 @@ void Level8_UpdateActors(void) {
           st->link = -1;
           break;
         }
-        t->cullRadius = 0;
+        t->cullRadius = ACTOR_CULL_HIDDEN;
         t->drawn = 0;
         t->updateDist = 0;
         t->subMode = COLLECT_INERT;
@@ -3333,7 +3333,7 @@ void Level8_UpdateActors(void) {
     case ACTOR_TYPE_GEM_DIGIT_0 + 9: {
       GemDigitState *st = actor->state;
 
-      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != ACTOR_CULL_HIDDEN)) {
 
         if (st->life >= 1) {
 
@@ -4002,7 +4002,7 @@ void Level8_UpdateActors(void) {
           st->passenger->rotZ = actor->rotZ;
           st->passenger->frameRate = 0x10;
           st->passenger->updateDist = 0;
-          st->passenger->cullRadius = 0;
+          st->passenger->cullRadius = ACTOR_CULL_HIDDEN;
           st->passenger->drawn = 0;
           st->passenger->otBias = 5;
 

@@ -1308,7 +1308,7 @@ void Level29_UpdateActors(void) {
 
           g_nLevelKeyState = KEYSTATE_CARRIED;
           actor->scale = 0x40;
-          actor->cullRadius = 0;
+          actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->updateDist = 0;
           actor->drawn = 0;
           actor->groundCode = 0;
@@ -1365,7 +1365,7 @@ void Level29_UpdateActors(void) {
     case ACTOR_TYPE_GEM_DIGIT_0 + 9: {
       GemDigitState *st = actor->state;
 
-      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != ACTOR_CULL_HIDDEN)) {
 
         if (st->life >= 1) {
 
@@ -1671,9 +1671,9 @@ void Level29_UpdateActors(void) {
           st->digit[5]->cullRadius = 0xFF;
           st->digit[6]->cullRadius = 0xFF;
         } else {
-          st->digit[4]->cullRadius = 0;
-          st->digit[5]->cullRadius = 0;
-          st->digit[6]->cullRadius = 0;
+          st->digit[4]->cullRadius = ACTOR_CULL_HIDDEN;
+          st->digit[5]->cullRadius = ACTOR_CULL_HIDDEN;
+          st->digit[6]->cullRadius = ACTOR_CULL_HIDDEN;
         }
         i = t * 10 / 6 % 10;
         st->digit[7]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
@@ -1691,7 +1691,7 @@ void Level29_UpdateActors(void) {
         st->digit[0]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
         st->digit[0]->cullRadius = 0xFF;
       } else {
-        st->digit[0]->cullRadius = 0;
+        st->digit[0]->cullRadius = ACTOR_CULL_HIDDEN;
       }
 
       {
@@ -1805,18 +1805,18 @@ void Level29_UpdateActors(void) {
       if (g_nGamestate == GS_FLIGHT_RESULTS) {
         for (i = 0; i < 8; i++) {
           if (st->icon[i] != 0) {
-            st->icon[i]->cullRadius = 0;
+            st->icon[i]->cullRadius = ACTOR_CULL_HIDDEN;
           }
           if (st->spent[i] != 0) {
-            st->spent[i]->cullRadius = 0;
+            st->spent[i]->cullRadius = ACTOR_CULL_HIDDEN;
           }
         }
         for (i = 0; i < 8; i++) {
           if (st->digit[i] != 0) {
-            st->digit[i]->cullRadius = 0;
+            st->digit[i]->cullRadius = ACTOR_CULL_HIDDEN;
           }
           if (st->slot[i] != 0) {
-            st->slot[i]->cullRadius = 0;
+            st->slot[i]->cullRadius = ACTOR_CULL_HIDDEN;
           }
         }
       }

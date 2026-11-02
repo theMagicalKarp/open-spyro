@@ -1492,7 +1492,7 @@ void Level34_UpdateActors(void) {
 
             g_nLevelKeyState = KEYSTATE_CARRIED;
             actor->scale = 0x40;
-            actor->cullRadius = 0;
+            actor->cullRadius = ACTOR_CULL_HIDDEN;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->groundCode = 0;
@@ -1535,7 +1535,7 @@ void Level34_UpdateActors(void) {
 
       if (st->init == 0) {
         actor->frameRate = 0;
-        actor->cullRadius = 0;
+        actor->cullRadius = ACTOR_CULL_HIDDEN;
         actor->drawn = 0;
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         if (CHUNK_ANIM_STEP(GetWorldChunkAnimState(st->chunkAnim)) > 0) {
@@ -1880,7 +1880,7 @@ void Level34_UpdateActors(void) {
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(actor, 0, &g_pActorListBase[st->attach].posX);
       }
-      if (actor->nextAnim == 0 && actor->cullRadius != 0) {
+      if (actor->nextAnim == 0 && actor->cullRadius != ACTOR_CULL_HIDDEN) {
         if (actor->nextFrame == 2 && (GetRandomU32() & 3) == 0 &&
             GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[6]) == 0) {
           PlayActorMeshVoice(actor, 6, 0);
@@ -2136,7 +2136,7 @@ void Level34_UpdateActors(void) {
             goto spark;
           }
           g_nLevelKeyState = one;
-          actor->cullRadius = 0;
+          actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
           actor->drawn = 0;
           actor->groundCode = 0;
@@ -2145,7 +2145,7 @@ void Level34_UpdateActors(void) {
           actor->subMode = 1;
           st->mode = one;
         }
-        if (st->spark != 0xFF && actor->cullRadius != 0) {
+        if (st->spark != 0xFF && actor->cullRadius != ACTOR_CULL_HIDDEN) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset4, g_aRotBillboards[st->spark].pos);
           AddVector(g_aRotBillboards[st->spark].pos, g_aRotBillboards[st->spark].pos,
@@ -2153,7 +2153,7 @@ void Level34_UpdateActors(void) {
           if (g_aRotBillboards[st->spark].life < 5) {
             st->spark = 0xFF;
           }
-        } else if (st->timer >= 0xF8 && actor->cullRadius != 0) {
+        } else if (st->timer >= 0xF8 && actor->cullRadius != ACTOR_CULL_HIDDEN) {
           int s = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset4);
 
           if (s >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
@@ -2170,7 +2170,7 @@ void Level34_UpdateActors(void) {
           break;
         }
         if (g_pActorListBase[st->key].mode < 0x7F) {
-          actor->cullRadius = 0;
+          actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
           actor->drawn = 0;
           actor->groundCode = 0;
@@ -2279,7 +2279,7 @@ void Level34_UpdateActors(void) {
         }
         if (st->timer >= 0xD0 || !((unsigned)SPY.state <= SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
                                     SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_STOP)) {
-          actor->cullRadius = 0;
+          actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;
           g_nCinematicActive = 0;
           g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, 0x18);
@@ -2475,7 +2475,7 @@ void Level34_UpdateActors(void) {
     case ACTOR_TYPE_GEM_DIGIT_0 + 9: {
       GemDigitState *st = actor->state;
 
-      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != ACTOR_CULL_HIDDEN)) {
 
         if (st->life >= 1) {
 
@@ -2762,7 +2762,7 @@ void Level34_UpdateActors(void) {
       hit:
         if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
           actor->subMode = BOULDER_BURST;
-          actor->cullRadius = 0;
+          actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;
           st->timer = 0;
         }
@@ -2821,7 +2821,7 @@ void Level34_UpdateActors(void) {
         }
         } else {
           actor->subMode = BOULDER_BURST;
-          actor->cullRadius = 0;
+          actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;
           st->timer = 0;
         }
@@ -2939,7 +2939,7 @@ void Level34_UpdateActors(void) {
           actor->updateDist = 0x40;
           st->prize = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
           st->prize->subMode = COLLECT_INERT;
-          st->prize->cullRadius = 0;
+          st->prize->cullRadius = ACTOR_CULL_HIDDEN;
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;

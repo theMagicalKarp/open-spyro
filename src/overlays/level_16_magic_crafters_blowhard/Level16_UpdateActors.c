@@ -1441,7 +1441,7 @@ void Level16_UpdateActors(void) {
           actor->scale += 4;
           actor->rotZ = actor->rotZ + 8;
         } else {
-          actor->cullRadius = 0;
+          actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;
           actor->mode = SAVEHOST_HIDDEN;
           st->timer = 16;
@@ -1811,7 +1811,7 @@ void Level16_UpdateActors(void) {
 
             g_nLevelKeyState = KEYSTATE_CARRIED;
             actor->scale = 0x40;
-            actor->cullRadius = 0;
+            actor->cullRadius = ACTOR_CULL_HIDDEN;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->groundCode = 0;
@@ -2118,7 +2118,7 @@ void Level16_UpdateActors(void) {
     case ACTOR_TYPE_GEM_DIGIT_0 + 9: {
       GemDigitState *st = actor->state;
 
-      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != 0)) {
+      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != ACTOR_CULL_HIDDEN)) {
 
         if (st->life >= 1) {
 
@@ -2610,7 +2610,7 @@ void Level16_UpdateActors(void) {
       hit:
         if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
           actor->subMode = BOULDER_BURST;
-          actor->cullRadius = 0;
+          actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;
           st->timer = 0;
         }
@@ -2669,7 +2669,7 @@ void Level16_UpdateActors(void) {
         }
         } else {
           actor->subMode = BOULDER_BURST;
-          actor->cullRadius = 0;
+          actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;
           st->timer = 0;
         }
@@ -2822,7 +2822,7 @@ void Level16_UpdateActors(void) {
           actor->updateDist = 0x40;
           st->prize = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
           st->prize->subMode = COLLECT_INERT;
-          st->prize->cullRadius = 0;
+          st->prize->cullRadius = ACTOR_CULL_HIDDEN;
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
@@ -3466,8 +3466,8 @@ void Level16_UpdateActors(void) {
         continue;
 
       case HBELL_STRUCK:
-        if (g_nActorAnimDone != 0 && actor->cullRadius != 0) {
-          actor->cullRadius = 0;
+        if (g_nActorAnimDone != 0 && actor->cullRadius != ACTOR_CULL_HIDDEN) {
+          actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->frameRate = 0;
           actor->collision = 0;
           BurstActorWithSound(actor, 0x20);
@@ -3479,7 +3479,7 @@ void Level16_UpdateActors(void) {
           if (r & CHUNK_ANIM_HALTED) {
             if (CHUNK_ANIM_STEP(r) != 0) {
               ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
-            } else if (actor->cullRadius == 0) {
+            } else if (actor->cullRadius == ACTOR_CULL_HIDDEN) {
               DespawnActorRecord(actor);
               continue;
             }
@@ -3492,7 +3492,7 @@ void Level16_UpdateActors(void) {
           if (r & CHUNK_ANIM_HALTED) {
             if (CHUNK_ANIM_STEP(r) != 0) {
               ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
-            } else if (actor->cullRadius == 0) {
+            } else if (actor->cullRadius == ACTOR_CULL_HIDDEN) {
               DespawnActorRecord(actor);
               continue;
             }

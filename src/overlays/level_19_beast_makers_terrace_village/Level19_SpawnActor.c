@@ -380,7 +380,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     st->owner = parent;
     st->t = 0;
     st->pad08 = 0;
-    rec->cullRadius = 0;
+    rec->cullRadius = ACTOR_CULL_HIDDEN;
     InsertActorIntoSpatialGrid(rec);
     rec->drawn = 0;
     break;

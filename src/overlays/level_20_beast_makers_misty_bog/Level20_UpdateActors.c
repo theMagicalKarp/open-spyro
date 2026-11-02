@@ -1333,7 +1333,7 @@ void Level20_UpdateActors(void) {
           actor->scale += 4;
           actor->rotZ += 8;
         } else {
-          actor->cullRadius = 0;
+          actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;
           actor->mode = SAVEHOST_HIDDEN;
           st->timer = 0x10;
@@ -2001,7 +2001,7 @@ void Level20_UpdateActors(void) {
 
             g_nLevelKeyState = KEYSTATE_CARRIED;
             actor->scale = 0x40;
-            actor->cullRadius = 0;
+            actor->cullRadius = ACTOR_CULL_HIDDEN;
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->groundCode = 0;
@@ -2473,7 +2473,7 @@ void Level20_UpdateActors(void) {
           actor->updateDist = 0x40;
           st->prize = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
           st->prize->subMode = COLLECT_INERT;
-          st->prize->cullRadius = 0;
+          st->prize->cullRadius = ACTOR_CULL_HIDDEN;
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
@@ -3017,7 +3017,7 @@ void Level20_UpdateActors(void) {
         }
         st->tether->scale = k;
         if (actor->nextFrame < 2) {
-          st->tether->cullRadius = 0;
+          st->tether->cullRadius = ACTOR_CULL_HIDDEN;
         } else {
           st->tether->cullRadius = 0x20;
         }
@@ -3085,7 +3085,7 @@ void Level20_UpdateActors(void) {
           st->passenger->rotZ = actor->rotZ;
           st->passenger->frameRate = 0x10;
           st->passenger->updateDist = 0;
-          st->passenger->cullRadius = 0;
+          st->passenger->cullRadius = ACTOR_CULL_HIDDEN;
           st->passenger->drawn = 0;
           st->passenger->otBias = 5;
 

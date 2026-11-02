@@ -321,7 +321,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
 
     case ACTOR_TYPE_TALLY_ICON_FLAME:
       InitActorRenderDefaults(rec);
-      rec->cullRadius = 0;
+      rec->cullRadius = ACTOR_CULL_HIDDEN;
       rec->posX = -0x64;
       rec->posY = 0x1E;
       rec->posZ = 0x1000;
