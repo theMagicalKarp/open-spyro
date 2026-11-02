@@ -1118,7 +1118,7 @@ extern unsigned char g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_nFarPlaneDrawDistance 0x800785d0  per-gamestate far-plane cull limit (SetupFrameOT)
  *   g_nVisZoneCount  0x800785b4  number of visibility zones
  *   g_nCdDaVolumeCurrent    0x80075f18  live CD-DA volume (fade ramp)
- *   g_pLevelSoundIds        0x80076824  level sound id table
+ *   g_apActorMeshTable_12B  0x80076824  g_apActorMeshTable[0x12B] (ACTOR_TYPE_FLIGHT_CHEST's model)
  *
  * Level-overlay hook slots, filled by ApplyPerLevelGlobalsTable on level entry.
  * Every level installs the same-role overlay function into each slot
@@ -1290,7 +1290,7 @@ extern unsigned int g_anSpuPendingKeyOffBlock[]; /* 0x8007623c */
 extern int g_anSoundMonoMixFlagBlock[]; /* 0x80076240 */
 extern void *g_apActorMeshTableBlock[]; /* 0x80076378 */
 extern char *g_apActorMeshTable_1[]; /* 0x8007637c: &g_apActorMeshTable[1] (AdvanceCutsceneFrame walks types 1..) */
-extern int g_nWorldUnpackLimit; /* 0x80076760: end of the unpack work area */
+extern struct Model *g_apActorMeshTable_FA; /* 0x80076760: g_apActorMeshTable[ACTOR_TYPE_DRAGON_STATUE] under its own symbol; the statue's model data ends the space the rescue assets stream into */
 extern volatile int g_anCdBaseLbaBlock[]; /* 0x80076b90: held-base view of g_nCdBaseLba */
 extern unsigned char g_abCdlLocScratchBlock[36]; /* 0x80076b98 */
 extern short g_anCameraEulerRollBlock[]; /* 0x80076e1c: camera euler trio as an array ([0] roll, [1] pitch, [2] yaw) */

@@ -44,7 +44,8 @@ void TickDragonRescueAssetStream(void) {
 
   switch (g_nDragonRescueStreamState) {
   case RESCUE_STREAM_READ:
-    avail = g_nWorldUnpackLimit - (int)g_pWorldUnpackHead;
+    avail = (int)g_apActorMeshTable_FA -
+            (int)g_pWorldUnpackHead; /* up to the statue's model */
     size = DRAGON_ASSET_SIZE(g_nDragonRescueTypeSnapshot);
     if (avail >= size) {
       g_nDragonRescueReadByteCount = size;

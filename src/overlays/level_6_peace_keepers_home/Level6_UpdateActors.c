@@ -4406,7 +4406,7 @@ void Level6_UpdateActors(void) {
       if (st[0] != 1) {
         continue;
       }
-      PlaySoundEffect(g_pLevelSampleBankHeader[0x1C], actor, SFX_MODE_PANNED, 0);
+      PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD_BURST], actor, SFX_MODE_PANNED, 0);
       CommitActorKillGems(0, actor);
       for (i = 0; i < 4; i++) {
         if (ACTOR_POOL_LOW()) {

@@ -2535,7 +2535,7 @@ void Level33_UpdateActors(void) {
         break;
 
       case LVORTEX_FINISH:
-        PlaySoundEffect(g_pLevelSampleBankHeader[0x3C], 0, SFX_MODE_PANNED, 0);
+        PlaySoundEffect(g_pLevelSampleBankHeader[SFX_LOOT_VORTEX_DONE], 0, SFX_MODE_PANNED, 0);
         ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         g_nSpyroSwingEulerTargetY[1] = 0;
         g_nSpyroSwingEulerTargetY[0] = 0;

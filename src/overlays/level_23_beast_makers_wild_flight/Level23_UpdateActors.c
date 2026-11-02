@@ -1433,7 +1433,7 @@ void Level23_UpdateActors(void) {
       {
         Model **models = g_apActorMeshTable;
 
-        if (GetSoundVoiceStatusByOwner(actor, g_pLevelSoundIds[5]) == 0 && g_nGamestate == GS_GAMEPLAY) {
+        if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable_12B->m_Sounds[1]) == 0 && g_nGamestate == GS_GAMEPLAY) {
           PlaySoundEffect(models[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
                         &actor->voiceRow);
         }
