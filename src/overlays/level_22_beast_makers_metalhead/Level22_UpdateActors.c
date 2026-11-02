@@ -1476,33 +1476,33 @@ void Level22_UpdateActors(void) {
       }
 
       case BTHROW_RIDE_FACE: {
-        Actor *p = &g_pActorListBase[st->rider];
+        Actor *catcher = &g_pActorListBase[st->catcher];
 
-        if (p->subMode != MHEAD_CATCH_NONE) {
-          st->heading = ArcTan2(p->posX - actor->posX, p->posY - actor->posY,
+        if (catcher->subMode != MHEAD_CATCH_NONE) {
+          st->heading = ArcTan2(catcher->posX - actor->posX, catcher->posY - actor->posY,
                                   ATAN_ANGLE8);
           st->speed = 0x5A;
           st->zSpeed = 0x78;
-          p->subMode = MHEAD_CATCH_GO;
+          catcher->subMode = MHEAD_CATCH_GO;
           actor->mode++;
           break;
         }
         ANIM_GO(actor, 2);
         TurnActorYawTowardAngle(actor,
-                      ArcTan2(p->posX - actor->posX,
-                                    p->posY - actor->posY, ATAN_ANGLE8),
+                      ArcTan2(catcher->posX - actor->posX,
+                                    catcher->posY - actor->posY, ATAN_ANGLE8),
                       6, 0, YAW_HOLD_IN_BAND);
         break;
       }
 
       case BTHROW_RIDE_LEAP: {
-        Actor *p = &g_pActorListBase[st->rider];
+        Actor *catcher = &g_pActorListBase[st->catcher];
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
         ANIM_GO(actor, 6);
-        RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
-        GetActorAttachPoint(p, 0, g232);
-        GetActorAttachPoint(p, 1, g248);
+        RefreshActorDerivedState(catcher, ACTOR_REFRESH_MATRIX);
+        GetActorAttachPoint(catcher, 0, g232);
+        GetActorAttachPoint(catcher, 1, g248);
         AddVector(g216, g232, g248);
         RShiftVector3(g216, 1);
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0, sixteen);
@@ -1514,16 +1514,16 @@ void Level22_UpdateActors(void) {
       }
 
       case BTHROW_RIDE_HELD: {
-        Actor *p = &g_pActorListBase[st->rider];
+        Actor *catcher = &g_pActorListBase[st->catcher];
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
-        RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
-        GetActorAttachPoint(p, 0, g280);
-        GetActorAttachPoint(p, 1, g296);
+        RefreshActorDerivedState(catcher, ACTOR_REFRESH_MATRIX);
+        GetActorAttachPoint(catcher, 0, g280);
+        GetActorAttachPoint(catcher, 1, g296);
         AddVector(g264, g280, g296);
         RShiftVector3(g264, 1);
         CopyVector(&actor->posX, g264);
-        if (p->nextFrame >= 0xE) {
+        if (catcher->nextFrame >= 0xE) {
           if (st->partner != -1) {
             ((int *)g_pActorListBase[st->partner].state)[5] = 1;
           }
@@ -1843,33 +1843,33 @@ void Level22_UpdateActors(void) {
       }
 
       case GATEKEEPER_RIDE_FACE: {
-        Actor *p = &g_pActorListBase[st->rider];
+        Actor *catcher = &g_pActorListBase[st->catcher];
 
-        if (p->subMode != MHEAD_CATCH_NONE) {
-          st->heading = ArcTan2(p->posX - actor->posX, p->posY - actor->posY,
+        if (catcher->subMode != MHEAD_CATCH_NONE) {
+          st->heading = ArcTan2(catcher->posX - actor->posX, catcher->posY - actor->posY,
                                   ATAN_ANGLE8);
           st->speed = 0x5A;
           st->zSpeed = 0x78;
-          p->subMode = MHEAD_CATCH_GO;
+          catcher->subMode = MHEAD_CATCH_GO;
           actor->mode++;
           break;
         }
         ANIM_GO(actor, 2);
         TurnActorYawTowardAngle(actor,
-                      ArcTan2(p->posX - actor->posX,
-                                    p->posY - actor->posY, ATAN_ANGLE8),
+                      ArcTan2(catcher->posX - actor->posX,
+                                    catcher->posY - actor->posY, ATAN_ANGLE8),
                       6, 0, YAW_HOLD_IN_BAND);
         break;
       }
 
       case GATEKEEPER_RIDE_LEAP: {
-        Actor *p = &g_pActorListBase[st->rider];
+        Actor *catcher = &g_pActorListBase[st->catcher];
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
         ANIM_GO(actor, 7);
-        RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
-        GetActorAttachPoint(p, 0, g232);
-        GetActorAttachPoint(p, 1, g312);
+        RefreshActorDerivedState(catcher, ACTOR_REFRESH_MATRIX);
+        GetActorAttachPoint(catcher, 0, g232);
+        GetActorAttachPoint(catcher, 1, g312);
         AddVector(g280, g232, g312);
         RShiftVector3(g280, 1);
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0, sixteen);
@@ -1881,16 +1881,16 @@ void Level22_UpdateActors(void) {
       }
 
       case GATEKEEPER_RIDE_HELD: {
-        Actor *p = &g_pActorListBase[st->rider];
+        Actor *catcher = &g_pActorListBase[st->catcher];
 
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
-        RefreshActorDerivedState(p, ACTOR_REFRESH_MATRIX);
-        GetActorAttachPoint(p, 0, g344);
-        GetActorAttachPoint(p, 1, g360);
+        RefreshActorDerivedState(catcher, ACTOR_REFRESH_MATRIX);
+        GetActorAttachPoint(catcher, 0, g344);
+        GetActorAttachPoint(catcher, 1, g360);
         AddVector(g328, g344, g360);
         RShiftVector3(g328, 1);
         CopyVector(&actor->posX, g328);
-        if (p->nextFrame >= 0xE) {
+        if (catcher->nextFrame >= 0xE) {
           if (st->partner != -1) {
             ((int *)g_pActorListBase[st->partner].state)[5] = 1;
           }
@@ -4182,7 +4182,7 @@ void Level22_UpdateActors(void) {
     /* Life chest (LifeChestState). */
     case ACTOR_TYPE_LIFE_CHEST: {
       LifeChestState *st = actor->state;
-      Actor *rider;
+      Actor *prize;
       int i;
       int a;
       int b;
@@ -4265,9 +4265,9 @@ void Level22_UpdateActors(void) {
         break;
       }
 
-      rider = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
+      prize = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
       if (st->restMode == COLLREST_SNAP) {
-        ((CollectibleState *)rider->state)->mode = st->restMode;
+        ((CollectibleState *)prize->state)->mode = st->restMode;
       }
 
       actor->soundRange = 0x20;

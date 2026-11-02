@@ -192,7 +192,7 @@ typedef struct BoulderState {
 /* Type 100 state (boulder thrower). */
 typedef struct BoulderThrowerState {
   int partner;     /* 0x00 index into g_pActorListBase, -1 none */
-  int rider;       /* 0x04 index into g_pActorListBase */
+  int catcher;     /* 0x04 index into g_pActorListBase: who catches and flings it (RIDE_*) */
   int groupAlert;         /* 0x08 level data: on waking, alert the group and its chunk anim */
   int chunkAnim;         /* 0x0C world chunk-anim handle (GetWorldChunkAnimState) */
   int idlePose2;         /* 0x10 level data: idle in pose 2 */
@@ -224,7 +224,7 @@ typedef struct BoulderThrowerState {
 /* Type 101 state (gatekeeper). */
 typedef struct GatekeeperState {
   int partner;     /* 0x00 index into g_pActorListBase, -1 none */
-  int rider;       /* 0x04 index into g_pActorListBase */
+  int catcher;     /* 0x04 index into g_pActorListBase: who catches and flings it (RIDE_*) */
   int groupAlert;         /* 0x08 level data: on waking, alert the group and its chunk anim */
   int chunkAnim;         /* 0x0C world chunk-anim handle (GetWorldChunkAnimState) */
   int idlePose2;         /* 0x10 level data: idle in pose 2 */
