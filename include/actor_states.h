@@ -39,9 +39,10 @@ typedef struct DragonStatueState {
   int cutsceneId;   /* 0x18 rescue cutscene id; == reward (-1) when the
                      * statue has none and counts the rescue directly */
   int facing;       /* 0x1C respawn heading when there is no partner */
-  int partner;      /* 0x20 actor index, -1 = none: held at mode 3 while the
-                     * statue stands, anim 1 during the rescue, back to mode 1
-                     * after; its yaw is the respawn heading */
+  int partner;      /* 0x20 actor index of its checkpoint (level data), -1 =
+                     * none: CHECKPT_HELD while the statue stands, anim 1
+                     * during the rescue, CHECKPT_ARMED after; its yaw is the
+                     * respawn heading */
   int reward;       /* 0x24 */
   int orbitYaw;     /* 0x28 Spyro's orbit target yaw around the statue */
   int orbitRadius;  /* 0x2C and radius */

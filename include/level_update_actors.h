@@ -624,7 +624,7 @@ typedef struct CrystalDragonState {
   int pad00[6]; /* 0x00 */
   int cutsceneId;    /* 0x18 rescue cutscene id (see DragonStatueState) */
   int fallbackHeading;    /* 0x1C fallback heading when ->partner is unset */
-  int partner;    /* 0x20 index into g_pActorListBase, -1 for none */
+  int partner;    /* 0x20 its checkpoint (see DragonStatueState), -1 for none */
   int rewardScript;    /* 0x24 script id handed to StubRewardHook, -1 for none */
   int pad28[7]; /* 0x28 */
   int phase;    /* 0x44 phase counter, 0 .. 0x100 */

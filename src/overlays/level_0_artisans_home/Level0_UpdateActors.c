@@ -2094,7 +2094,7 @@ void Level0_UpdateActors(void) {
       if (actor->mode == STATUE_INIT) {
         int padIdx = st->partner;
         if (padIdx != -1) {
-          g_pActorListBase[padIdx].mode = 3;
+          g_pActorListBase[padIdx].mode = CHECKPT_HELD;
         }
         actor->mode = STATUE_IDLE;
         st->savedRotX = actor->rotX;
@@ -2160,7 +2160,7 @@ void Level0_UpdateActors(void) {
               g_nTotalDragonsRescued++;
               StubRewardHook(st->rewardScript, 0);
               if (st->partner != -1) {
-                g_pActorListBase[st->partner].mode = 1;
+                g_pActorListBase[st->partner].mode = CHECKPT_ARMED;
               }
               DespawnActorRecord(actor);
               continue;
@@ -2168,7 +2168,7 @@ void Level0_UpdateActors(void) {
               g_anLevelDragonsRescued[g_nLevelIndex]++;
               g_nTotalDragonsRescued++;
               if (st->partner != cutsceneId) {
-                g_pActorListBase[st->partner].mode = 1;
+                g_pActorListBase[st->partner].mode = CHECKPT_ARMED;
               }
               DespawnActorRecord(actor);
               continue;

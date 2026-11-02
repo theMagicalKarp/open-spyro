@@ -58,7 +58,7 @@ enum SaveHostMode {
 /* ->mode of a crystal dragon statue (ACTOR_TYPE_DRAGON_STATUE,
  * DragonStatueState). */
 enum DragonStatueMode {
-  STATUE_INIT = 0,      /* snapshot the rest pose, hold the partner (mode 3) */
+  STATUE_INIT = 0,      /* snapshot the rest pose, hold its checkpoint (CHECKPT_HELD) */
   STATUE_IDLE = 1,      /* shakes now and then; Spyro touching it frees the dragon */
   STATUE_RESCUING = 2,  /* BeginDragonRescue ran (also the save menu's replay) */
 };
@@ -1685,6 +1685,7 @@ enum CheckpointMode {
   CHECKPT_REARM = 0,     /* waits for Spyro to walk away (> 2560), then ARMED */
   CHECKPT_ARMED = 1,     /* Spyro touches it: sets the respawn anchor, FLASH */
   CHECKPT_FLASH = 2,     /* subMode counts frames to 0x30, then REARM */
+  CHECKPT_HELD = 3,      /* its dragon statue holds it until the rescue (no arm runs) */
 };
 
 /* A checkpoint that is not waiting for Spyro's touch: REARM, or FLASH at
