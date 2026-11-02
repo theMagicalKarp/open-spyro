@@ -171,8 +171,8 @@ extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
-  int kind;            /* 0x00 */
-  void *desc;          /* 0x04 */
+  int points;          /* 0x00 point count of desc's shape; 0 = free slot (DrawWorldSparkleParticles) */
+  void *desc;          /* 0x04 the shape: `points` 8-byte (x, y) offsets, drawn as shaded triangles */
   int *anchor;         /* 0x08 */
   unsigned char r;     /* 0x0C */
   unsigned char g;     /* 0x0D */

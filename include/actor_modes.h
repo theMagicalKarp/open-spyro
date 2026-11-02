@@ -255,8 +255,14 @@ enum RoamingRamMode {
   RAM_QUIET_KNOCKED = 2, /* the quiet kind (ACTOR_TYPE_ROAMING_RAM_QUIET)'s KNOCKED */
   RAM_KNOCKED = 3,   /* hit: tumbles away and bursts */
   RAM_TRAPPED = 4,   /* inside its trigger box while the trigger is set */
-  RAM_RUN_PATH = 10, /* path rammer (RoamingRamState.mode 1): runs its path */
+  RAM_RUN_PATH = 10, /* path rammer (RAMKIND_PATH): runs its path */
   RAM_PATH_END = 11, /* at the end: wakes its partner, then idles calling */
+};
+
+/* RoamingRamState.mode: the ram's kind (spawn record). */
+enum RoamingRamKind {
+  RAMKIND_ROAMER = 0,
+  RAMKIND_PATH = 1, /* RAM_GRAZE with Spyro close: RAM_RUN_PATH */
 };
 
 /* ->mode of a path walker (ACTOR_TYPE_PATH_WALKER, PathState). */
@@ -294,6 +300,14 @@ enum GnastyMode {
   GNASTY_STAND_SWIPE = 13, /* swipe from GNASTY_STAND */
   GNASTY_PAUSE = 20,       /* waits out stateTimer, then runs */
   GNASTY_PATH_END = 21,    /* at the path end until Spyro comes near from below */
+};
+
+/* GnastyState.phase: the fight's progress (0 and 1 before he reaches his
+ * main path). */
+enum GnastyPhase {
+  GNASTY_PHASE_MAIN = 2,   /* reached path point 1: runs and throws along his main path */
+  GNASTY_PHASE_ESCAPE = 3, /* flamed near its end: the escape path */
+  GNASTY_PHASE_BEATEN = 4, /* flamed near the escape path's end */
 };
 
 /* Gnasty Gnorc runs to animation 1 (THROW plays its own index, 2). */
@@ -2195,7 +2209,7 @@ enum SinkingBlockMode {
 };
 
 /* ->mode of a homeworld talker (ACTOR_TYPE_HOME_TALKER .. + 4; levels
- * 0/6/12/18/24). */
+ * 0/6/12/18/24). Level 30's boss-door trigger (+ 5) runs the same two. */
 enum HomeTalkerMode {
   TALKER_REARM = 0, /* waits for Spyro to walk away (>= 0x1000), then READY */
   TALKER_READY = 1, /* Spyro walks up facing it: starts its actor cutscene, REARM */

@@ -2195,7 +2195,7 @@ void Level21_UpdateActors(void) {
             st->glow->r = 0xC0;
             st->glow->g = 0xC0;
             st->glow->b = 0x60;
-            st->glow->kind = 9;
+            st->glow->points = 9;
             st->glow->desc = &g_anSparkleGlowDesc;
           }
         } else {
@@ -4342,7 +4342,7 @@ void Level21_UpdateActors(void) {
           st->call = (GetRandomU32() & 0x1F) + 0x50;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
-        if (st->mode == 1 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
+        if (st->mode == RAMKIND_PATH && ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
           actor->mode = RAM_RUN_PATH;
           continue;
         }

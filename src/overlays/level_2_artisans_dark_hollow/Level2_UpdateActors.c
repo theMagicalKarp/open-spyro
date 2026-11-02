@@ -1455,7 +1455,7 @@ void Level2_UpdateActors(void) {
             st->glow->r = 0xC0;
             st->glow->g = 0xC0;
             st->glow->b = 0x60;
-            st->glow->kind = 9;
+            st->glow->points = 9;
             st->glow->desc = &g_anSparkleGlowDesc;
           }
         } else {
@@ -1739,7 +1739,7 @@ void Level2_UpdateActors(void) {
         ModifyWorldChunkAnimFlags(*(int *)actor->state, CHUNK_ANIM_RESUME, 0);
         actor->mode = FLAMETRIG_FIRED;
         ANIM_RESET(actor, FLAMETRIG_FIRED);
-      } else if (actor->mode == 1 && g_nActorAnimDone != 0) {
+      } else if (actor->mode == FLAMETRIG_FIRED && g_nActorAnimDone != 0) {
         ENTER_POSE(actor, FLAMETRIG_SPENT);
       }
       break;

@@ -1169,7 +1169,7 @@ void Level33_UpdateActors(void) {
             st->glow->r = 0xC0;
             st->glow->g = 0xC0;
             st->glow->b = 0x60;
-            st->glow->kind = 9;
+            st->glow->points = 9;
             st->glow->desc = &g_anSparkleGlowDesc;
           }
         } else {
@@ -1665,7 +1665,7 @@ void Level33_UpdateActors(void) {
       TickActorFlameGlow(actor);
 
       if (actor->flags & ACTOR_HIT_FLAME) {
-        if (st->phase == 2 &&
+        if (st->phase == GNASTY_PHASE_MAIN &&
             ApproxDist2D(&actor->posX,
                           PATH_END(st->path)) < 0xBB8 &&
             actor->mode != GNASTY_FLAMED) {
@@ -1682,11 +1682,11 @@ void Level33_UpdateActors(void) {
           st->path = st->path2;
           st->path2 = t;
           ENTER_POSE(actor, GNASTY_FLAMED);
-        } else if (st->phase == 3 &&
+        } else if (st->phase == GNASTY_PHASE_ESCAPE &&
                    ApproxDist2D(&actor->posX,
                                  PATH_END(st->path)) < 0xBB8 &&
                    actor->mode != GNASTY_DEFEATED) {
-          st->phase = 4;
+          st->phase = GNASTY_PHASE_BEATEN;
           st->speed = 0xD2;
           st->knockHeading = ArcTan2(actor->posX - SPY.posX,
                                   actor->posY - SPY.posY, ATAN_ANGLE8);
@@ -1698,7 +1698,7 @@ void Level33_UpdateActors(void) {
         }
       }
 
-      if (st->phase < 2) {
+      if (st->phase < GNASTY_PHASE_MAIN) {
         CopyVector(o140, &actor->posX);
         o140[2] += 0x3E8;
         if (g_nSpyroState == SPYRO_ST_CHARGE || g_nSpyroState == SPYRO_ST_CHARGE_AIR) {
@@ -1798,12 +1798,12 @@ void Level33_UpdateActors(void) {
         break;
 
       case GNASTY_THROW:
-        if (st->phase == 2) {
+        if (st->phase == GNASTY_PHASE_MAIN) {
           if (SPY_DZ(actor) < 0 && dist < 0x1388) {
             actor->mode = GNASTY_RUN;
             continue;
           }
-        } else if (st->phase == 3) {
+        } else if (st->phase == GNASTY_PHASE_ESCAPE) {
           if (st->throws < 4) {
             if (dist >= 0xE10) {
               goto anim2;
@@ -1860,7 +1860,7 @@ void Level33_UpdateActors(void) {
           q->landDelay = n - 1;
           st->throws++;
           PlayActorMeshVoice(actor, 0, &st->voice);
-          if (st->phase == 2 && st->throws >= 2) {
+          if (st->phase == GNASTY_PHASE_MAIN && st->throws >= 2) {
             actor->mode = GNASTY_RUN;
             continue;
           }
@@ -2099,7 +2099,7 @@ void Level33_UpdateActors(void) {
         }
         if (ApproxDist2D(&actor->posX, PATH_PT(st->path, 1)) <
             0x320) {
-          st->phase = 2;
+          st->phase = GNASTY_PHASE_MAIN;
           st->path->cur = 2;
           ENTER_POSE(actor, GNASTY_LOOKOUT);
         }

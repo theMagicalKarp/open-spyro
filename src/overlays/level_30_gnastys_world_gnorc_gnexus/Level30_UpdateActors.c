@@ -1256,7 +1256,7 @@ void Level30_UpdateActors(void) {
             st->glow->r = 0xC0;
             st->glow->g = 0xC0;
             st->glow->b = 0x60;
-            st->glow->kind = 9;
+            st->glow->points = 9;
             st->glow->desc = &g_anSparkleGlowDesc;
           }
         } else {
@@ -1571,11 +1571,11 @@ void Level30_UpdateActors(void) {
     /* Boss-door trigger: opens the gnexus door when Spyro walks up facing it.
      */
     case ACTOR_TYPE_HOME_TALKER + 5:
-      if (actor->mode == 0) {
+      if (actor->mode == TALKER_REARM) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
           break;
         }
-        actor->mode = 1;
+        actor->mode = TALKER_READY;
         continue;
       }
 
@@ -1588,7 +1588,7 @@ void Level30_UpdateActors(void) {
           AbsAngleDelta8(actor->rotZ,
                         ArcTan2(spy->posX - actor->posX,
                                       g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8)) < 0x28) {
-        actor->mode = 0;
+        actor->mode = TALKER_REARM;
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         ResetSpyroLinearMotion();
         ZeroVector(&spy->headLook);
