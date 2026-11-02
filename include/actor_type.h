@@ -355,7 +355,7 @@ enum ActorType {
   ACTOR_TYPE_OVERHEAD_THROWER = 205, /* levels 9/10: holds its projectile overhead, throws it at Spyro on its throw frame; stunned when hit */
   ACTOR_TYPE_BELL_A = 206, /* levels 7/8: rings when charged, spawning ACTOR_TYPE_BELL_RIPPLE (also 239/242) */
   ACTOR_TYPE_FLOATING_MINE = 207, /* level 31: drifts like the barrel; charged, runs at the nearest target and bursts */
-  ACTOR_TYPE_HUB_AMBIENCE = 208, /* level 30: starts and keeps alive three voice channels (MusicState) */
+  ACTOR_TYPE_HUB_PATH_GATES = 208, /* level 30: opens the hub's world-chunk paths to Twilight Harbor, Gnasty Gnorc and Gnasty's Loot as they unlock (PathGateState) */
   ACTOR_TYPE_THROWN_SNOWBALL = 209, /* level 9: flies its arc; bursts on a timer, landing or reaching Spyro */
   ACTOR_TYPE_BOBBING_PLATFORM = 210, /* level 22: spinning platform that bobs on a fixed period (BobbingPlatformState) */
   ACTOR_TYPE_PATH_SNOWBALL_THROWER = 211, /* 211..212, level 9: walks its path and throws ACTOR_TYPE_THROWN_SNOWBALL at Spyro */

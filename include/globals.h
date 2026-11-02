@@ -1112,7 +1112,7 @@ extern unsigned char g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_nFlightTallySlot 0x800757c4, g_anFlightTallyShown 0x800770f8, g_nFlightTimeBonus 0x80075908,
  *   g_anFlightCourseBonusTable 0x8006e920, g_pfnFlightTimeFormatter 0x800758c4,
  *   g_nFlightTimeRemaining 0x80075840, g_nFlightQuitFlag 0x80075900  flight-level results/HUD state
- *   g_bAmbienceChannelMask  0x80078e98  ambience channel enables
+ *   g_bTwilightHarborVisited  0x80078e98  g_abLevelVisitedFlag[0x20] (Twilight Harbor) under its own symbol
  *   g_bSpyroPersistentEulerY 0x80078a65 g_abSpyroPersistentEuler[1]
  *   g_pSharedLoadBuffer     0x800113a0  shared CD/asset/splash load buffer pointer
  *   g_nFarPlaneDrawDistance 0x800785d0  per-gamestate far-plane cull limit (SetupFrameOT)

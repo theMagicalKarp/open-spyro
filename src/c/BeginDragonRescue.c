@@ -30,13 +30,14 @@ void BeginDragonRescue(Actor *actor) {
   register int one asm("$4");
   st = actor->state;
   if (((g_nActiveLevelId == LEVEL_ARTISANS) && (st->cutsceneId == 1)) &&
-      ((((g_abLevelExited[1] != 0) || (g_abLevelExited[2] != 0)) ||
-        (g_abLevelExited[3] != 0)) ||
-       (g_abLevelExited[5] != 0))) {
+      ((((g_abLevelExited[LEVEL_SLOT(LEVEL_STONE_HILL)] != 0) ||
+         (g_abLevelExited[LEVEL_SLOT(LEVEL_DARK_HOLLOW)] != 0)) ||
+        (g_abLevelExited[LEVEL_SLOT(LEVEL_TOWN_SQUARE)] != 0)) ||
+       (g_abLevelExited[LEVEL_SLOT(LEVEL_SUNNY_FLIGHT)] != 0))) {
     st->cutsceneId = 2;
   }
   if (g_nActiveLevelId == LEVEL_GNORC_GNEXUS) {
-    if (g_abLevelExited[0x21] != 0) {
+    if (g_abLevelExited[LEVEL_SLOT(LEVEL_GNASTY_GNORC)] != 0) {
       st->cutsceneId = 1;
       st->orbitYaw = 0x800;
       st->orbitRadius = 0xcc8;

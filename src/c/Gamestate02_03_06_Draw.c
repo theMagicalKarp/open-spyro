@@ -4,6 +4,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "gpu_prim.h"
+#include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
 #include "pause_menu.h"
@@ -803,7 +804,8 @@ void Gamestate02_03_06_Draw(void) {
       }
       if (g_nSubMenuCursor < 5) {
         int *pa = pos;
-        if ((&g_abLevelVisitedFlag[6])[g_nSubMenuCursor * 6] != 0) {
+        if ((&g_abLevelVisitedFlag[LEVEL_SLOT(
+                LEVEL_PEACE_KEEPERS)])[g_nSubMenuCursor * 6] != 0) {
           pos[0] = 0x1d7;
           pos[1] = 0x48;
           pos[2] = 0x1100;

@@ -664,6 +664,11 @@ enum RunnerMode {
   RUNNER_LURK = 20,    /* waits for Spyro to enter PathRunnerState.volA, then RUN */
 };
 
+/* A path runner's animations besides the poses equal to its mode. */
+enum RunnerAnim {
+  RUNNER_ANIM_STAND = 4, /* WAIT, TAUNT, LOOKOUT and LURK face Spyro on it; voices 6/5 on frames 1/0xA */
+};
+
 /* ->mode of a swooping guard (ACTOR_TYPE_SWOOPER, SwoopState; levels 7/8).
  * SwoopState.alert is shared: one swoops at a time. */
 enum SwoopMode {

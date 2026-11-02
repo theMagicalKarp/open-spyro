@@ -3154,7 +3154,7 @@ void Level21_UpdateActors(void) {
         }
       }
 
-      if (actor->nextAnim == 4 && actor->cullRadius != ACTOR_CULL_HIDDEN) {
+      if (actor->nextAnim == RUNNER_ANIM_STAND && actor->cullRadius != ACTOR_CULL_HIDDEN) {
         if (actor->nextFrame == 1 && !(GetRandomU32() & 3) &&
             GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[6]) == 0) {
           PlayActorMeshVoice(actor, 6, 0);
@@ -3267,7 +3267,7 @@ void Level21_UpdateActors(void) {
         continue;
 
       case RUNNER_WAIT:
-        ANIM_GO(actor, 4);
+        ANIM_GO(actor, RUNNER_ANIM_STAND);
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (ApproxDist2D(&actor->posX, &spy->posX) < st->range &&
             AbsAngleDelta8(g_bSpyroPersistentEulerZ,
@@ -3415,7 +3415,7 @@ void Level21_UpdateActors(void) {
 
       case RUNNER_TAUNT:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        ANIM_GO(actor, 4);
+        ANIM_GO(actor, RUNNER_ANIM_STAND);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x12C0) {
           actor->mode = RUNNER_DODGE;
           continue;
@@ -3427,7 +3427,7 @@ void Level21_UpdateActors(void) {
         continue;
 
       case RUNNER_LOOKOUT:
-        ANIM_GO(actor, 4);
+        ANIM_GO(actor, RUNNER_ANIM_STAND);
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (SPY_DZ(actor) < 0 &&
             ApproxDist2D(&actor->posX, (int *)(base - 8)) < 0x1964) {
@@ -3451,7 +3451,7 @@ void Level21_UpdateActors(void) {
         continue;
 
       case RUNNER_LURK:
-        ANIM_GO(actor, 4);
+        ANIM_GO(actor, RUNNER_ANIM_STAND);
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->volA) != 0) {
           ENTER_POSE(actor, RUNNER_RUN);

@@ -30,6 +30,7 @@
 #include "level_actors.h"
 #include "vecmath.h"
 #include "level_globals.h"
+#include "level_id.h"
 #include "level_update_actors.h"
 #include "level_actor_states.h"
 #include "level_update_actors_macros.h"
@@ -1719,27 +1720,31 @@ void Level30_UpdateActors(void) {
       break;
     }
 
-    /* Hub ambience (MusicState): starts the three voice channels and keeps
-     * them alive. */
-    case ACTOR_TYPE_HUB_AMBIENCE: {
-      MusicState *st = actor->state;
+    /* Hub path gates (PathGateState): world chunks 0..2 are the paths to
+     * Twilight Harbor, Gnasty Gnorc and Gnasty's Loot. The first tick opens
+     * those whose level was already visited (skipped to step 0x3B when
+     * Spyro glides in); after that each opens on its unlock: Gnorc Cove
+     * exited with a hub dragon freed, Twilight Harbor exited, and every
+     * gem, dragon and egg. */
+    case ACTOR_TYPE_HUB_PATH_GATES: {
+      PathGateState *st = actor->state;
 
       if (st->started == 0) {
-        if (g_bAmbienceChannelMask != 0) {
+        if (g_bTwilightHarborVisited != 0) {
           ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
           if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
             SetWorldChunkAnimStep(0, 0x3B, 0);
           }
         }
 
-        if (g_abLevelVisitedFlag[0x21] != 0) {
+        if (g_abLevelVisitedFlag[LEVEL_SLOT(LEVEL_GNASTY_GNORC)] != 0) {
           ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
           if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
             SetWorldChunkAnimStep(1, 0x3B, 0);
           }
         }
 
-        if (g_abLevelVisitedFlag[0x22] != 0) {
+        if (g_abLevelVisitedFlag[LEVEL_SLOT(LEVEL_GNASTYS_LOOT)] != 0) {
           ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
           if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
             SetWorldChunkAnimStep(2, 0x3B, 0);
@@ -1749,17 +1754,17 @@ void Level30_UpdateActors(void) {
         st->started = 1;
       }
 
-      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(0)) && g_abLevelExited[0x1F] != 0 &&
-          g_anLevelDragonsRescued[0x1E] > 0) {
+      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(0)) && g_abLevelExited[LEVEL_SLOT(LEVEL_GNORC_COVE)] != 0 &&
+          g_anLevelDragonsRescued[LEVEL_SLOT(LEVEL_GNORC_GNEXUS)] > 0) {
         ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
       }
 
-      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(1)) && g_abLevelExited[0x20] != 0) {
+      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(1)) && g_abLevelExited[LEVEL_SLOT(LEVEL_TWILIGHT_HARBOR)] != 0) {
         ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
       }
 
-      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(2)) && g_nTotalTreasureCollected >= 0x2EE0 &&
-          g_nTotalDragonsRescued >= 0x50 && g_nTotalEggsRecovered >= 0xC) {
+      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(2)) && g_nTotalTreasureCollected >= 12000 &&
+          g_nTotalDragonsRescued >= 80 && g_nTotalEggsRecovered >= 12) {
         ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
       }
 

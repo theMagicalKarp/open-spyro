@@ -19,6 +19,7 @@
 #include "level_actors.h"
 #include "vecmath.h"
 #include "level_globals.h"
+#include "level_id.h"
 #include "level_update_actors.h"
 #include "level_actor_states.h"
 #include "level_update_actors_macros.h"
@@ -695,7 +696,7 @@ void Level0_UpdateActors(void) {
       int marker;
 
       if (st->started == 0) {
-        if (g_abLevelVisitedFlag[4] != 0) {
+        if (g_abLevelVisitedFlag[LEVEL_SLOT(LEVEL_TOASTY)] != 0) {
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
           SetWorldChunkAnimStep(st->chunkAnim, 0x3B, 0);
         }
@@ -706,7 +707,8 @@ void Level0_UpdateActors(void) {
 
       switch (marker) {
       case 0:
-        if (g_abLevelExited[1] || g_abLevelExited[2] || g_abLevelExited[3] || g_abLevelExited[4]) {
+        if (g_abLevelExited[LEVEL_SLOT(LEVEL_STONE_HILL)] || g_abLevelExited[LEVEL_SLOT(LEVEL_DARK_HOLLOW)] ||
+            g_abLevelExited[LEVEL_SLOT(LEVEL_TOWN_SQUARE)] || g_abLevelExited[LEVEL_SLOT(LEVEL_TOASTY)]) {
           /* Wake only once the linked actor is dormant and Spyro is near. */
           if (g_pActorListBase[st->idx].mode >= ACTOR_MODE_DORMANT &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
@@ -2733,7 +2735,7 @@ void Level0_UpdateActors(void) {
 
       /* First tick: if already unlocked, skip to the finished state. */
       if (st->primed == 0) {
-        if (g_abLevelVisitedFlag[5] != 0) {
+        if (g_abLevelVisitedFlag[LEVEL_SLOT(LEVEL_SUNNY_FLIGHT)] != 0) {
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
           SetWorldChunkAnimStep(st->chunkAnim, 0x77, 0);
           actor->mode = SEQPROP_DONE;

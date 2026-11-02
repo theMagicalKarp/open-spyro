@@ -724,9 +724,9 @@ typedef struct ChestState {
 } ChestState;
 
 /* Case 208 — the hub's music/voice trigger. */
-typedef struct MusicState {
-  int started; /* 0x00 */
-} MusicState;
+typedef struct PathGateState {
+  int started; /* 0x00 the first tick opened the already-unlocked paths */
+} PathGateState;
 
 /* ACTOR_TYPE_WANDERING_CRITTER_C (level 30): UpdateActorWander's block,
  * then speed/heading for the knock-away. */
@@ -1582,7 +1582,7 @@ extern int g_nCameraActiveTargetYawBias;
 
 /* Main globals read by a single UpdateActors clone. */
 extern unsigned short g_anSwitchSfxPitchOffsets[]; /* indexed by the switch's bit position */
-extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
+extern unsigned char g_bTwilightHarborVisited; /* g_abLevelVisitedFlag[LEVEL_SLOT(LEVEL_TWILIGHT_HARBOR)] as its own symbol */
 extern int g_bLevelBossDefeated; /* boss defeated */
 extern int g_bLevelPhasedBossKilled;
 extern int g_bLevelUseShortReleaseAnim;
