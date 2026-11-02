@@ -45,7 +45,7 @@
  *   0x10..0x16  per-record velocity / colour bytes
  *   0x18  actor id (class 0x1D) / spin angle / source pointer
  *   0x19  patrol node index        0x1A  waypoint index (class 0x1D)
- *   0x1C  wrap count               0x1E  phase toggle / flag bits
+ *   0x1C  spark vel z              0x1E  phase toggle / flag bits
  *
  * Beyond the shared ground-level arm set this variant adds 0x1D (the ghost,
  * a three-sub-state patrol) and 0x1F (a long-lived plain drifter), and takes
@@ -84,10 +84,7 @@ void Level27_AdvanceEmitList(int step) {
     switch (rec[0]) {
     case EMIT_SPARK_VEL:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step2;
       rec[0xC] -= step4;
       rec[0xD] -= step4;
@@ -100,10 +97,7 @@ void Level27_AdvanceEmitList(int step) {
 
     case EMIT_SPARK_VEL_DIM:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step4;
       rec[0xC] -= step4;
       rec[0xD] -= step4;
@@ -116,10 +110,7 @@ void Level27_AdvanceEmitList(int step) {
 
     case EMIT_SPARK_RISE:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step4;
       rec[0xC] -= step4;
       rec[0xD] -= step4;
@@ -177,10 +168,7 @@ void Level27_AdvanceEmitList(int step) {
 
     case EMIT_SPEED_DUST:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step2;
       AGE += step;
       if (AGE >= 0x20 || ALIVE == 0) {
@@ -239,10 +227,7 @@ void Level27_AdvanceEmitList(int step) {
         FreeEmitListRecord(rec);
       } else {
         AddSVector(POS, POS, VEL);
-        if (HS(0x1E) != 0) {
-          HU(0x1C)++;
-        }
-        HS(0x1E) = 1 - HU(0x1E);
+        SPARK_Z_CLIMB();
         rec[0xA] += step2;
         if (AGE >= 0xD) {
           c = 0x80 - (AGE - 0xC) * 8;
@@ -278,10 +263,7 @@ void Level27_AdvanceEmitList(int step) {
       /* Gnasty's cauldron drip: a slow ember that dies when its red
        * channel bottoms out. */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step2;
       rec[0xC] -= 4;
       rec[0xD] -= 4;
@@ -294,10 +276,7 @@ void Level27_AdvanceEmitList(int step) {
     case EMIT_SPARK_RGB:  /* <- Level18_AdvanceEmitList */
       /* The same ember with a late red cut-off at age 9. */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step2;
       if (AGE >= 9) {
         rec[0xC] -= 0x20;

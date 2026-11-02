@@ -19,7 +19,7 @@
  *                                  r/g/b triple for the fading classes)
  *   0x10..0x16  per-record velocity / colour bytes
  *   0x18  spin angle (a source pointer in classes 0x4 / 0x6, a byte angle
- *         pair in 0x15 / 0x4C)      0x1C  wrap count    0x1E  phase toggle
+ *         pair in 0x15 / 0x4C)      0x1C  spark vel z   0x1E  phase toggle
  *
  * It carries the two wizard classes 0x4 and 0x5 matched in level_15, plus
  * 0x8 (the homing bolt) and 0x16 from the level_12 body and the boss-ember
@@ -78,10 +78,7 @@ void Level13_AdvanceEmitList(int step) {
     case EMIT_SPARK_VEL:  /* <- Level15_AdvanceEmitList */
     /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 2;
       rec[0xC] -= step4;
       rec[0xD] -= step4;
@@ -95,10 +92,7 @@ void Level13_AdvanceEmitList(int step) {
     case EMIT_SPARK_VEL_DIM:  /* <- Level15_AdvanceEmitList */
     /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step4;
       rec[0xC] -= step4;
       rec[0xD] -= step4;
@@ -112,10 +106,7 @@ void Level13_AdvanceEmitList(int step) {
     case EMIT_SPARK_RISE:  /* <- Level15_AdvanceEmitList */
     /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step4;
       rec[0xC] -= step4;
       rec[0xD] -= step4;
@@ -349,10 +340,7 @@ void Level13_AdvanceEmitList(int step) {
     case EMIT_SPEED_DUST:  /* <- Level15_AdvanceEmitList */
     /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 2;
       AGE += step;
       if (AGE >= 0x20 || ALIVE == 0) {
@@ -410,10 +398,7 @@ void Level13_AdvanceEmitList(int step) {
       /* Gnasty's cauldron drip: a slow ember that dies when its red
        * channel bottoms out. */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 2;
       rec[0xC] -= 4;
       rec[0xD] -= 4;
@@ -426,10 +411,7 @@ void Level13_AdvanceEmitList(int step) {
     case EMIT_SPARK_RGB:  /* <- Level18_AdvanceEmitList */
       /* The same ember with a late red cut-off at age 9. */
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
-      }
-      HS(0x1E) = 1 - HU(0x1E);
+      SPARK_Z_CLIMB();
       rec[0xA] += step * 2;
       if (AGE >= 9) {
         rec[0xC] -= 0x20;
