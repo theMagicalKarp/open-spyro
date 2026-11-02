@@ -13,7 +13,11 @@ extern int AbsAngleDelta12(int a, int b);
 extern void AddSVector(short *dst, short *src, short *delta);
 extern void AddVector(int *out, int *a, int *b);
 extern void *AllocEmitListRecord(int cls);
-extern int ArcTan2(int dy, int dx, int flag);
+#ifndef ATAN_ANGLE8
+#define ATAN_ANGLE8 0  /* ArcTan2: 8-bit angle, 0..0xFF per turn */
+#define ATAN_ANGLE12 1 /* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */
+#endif
+extern int ArcTan2(int dy, int dx, int scale);
 extern void BeginPauseToMenuTransition(void);
 extern void BuildActiveActorList(void);
 extern void BuildTextSpriteChain();                          /* draw text run */
@@ -52,6 +56,10 @@ extern void PutDrawEnv();
 extern int RaiseSpyroTriggerInRadius(int *pos, int radius, int flags);
 extern void RefreshHudLevelGemCounter(void);
 extern void ResetCameraStateToTarget(void);
+#ifndef RESET_SPYRO_SOFT
+#define RESET_SPYRO_SOFT 0 /* clears input/charge flags, rebuilds body angles */
+#define RESET_SPYRO_FULL 1 /* wipes the Spyro block (keeps pos, euler, Sparx), state IDLE */
+#endif
 extern void ResetSpyroEntity(int full);
 extern void ResetSpyroLinearMotion(void);
 extern void RotateVectorByMatrix();

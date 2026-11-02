@@ -78,7 +78,7 @@ void RespawnOrGameOver_Update(void) {
         g_anCameraPos[2] = 0x800;
         g_nCameraEulerPitch = g_anGameOverCameraEuler[0];
         g_nCameraEulerYaw = g_anGameOverCameraEuler[1];
-        ResetSpyroEntity(1);
+        ResetSpyroEntity(RESET_SPYRO_FULL);
         g_bSpyroAnimPrev = 0x10;
         g_bSpyroAnimCurrent = 0x10;
         g_bSpyroAnimFrame = 1;

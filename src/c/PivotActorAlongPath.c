@@ -11,9 +11,10 @@
    with wrap when the path's +6 halfword is -1, backward with wrap to
    path->count-1 otherwise — and reports it as 0x100+index in the return.
    When the heading delta to the node exceeds `lim`, turns in place via
-   ApproachAngle8 (deferring the turn when another listed actor of the
-   same `kind` is already mid-turn); otherwise marks the actor moving
-   and delegates the step to TurnActorYawTowardAngle + MoveActorAlongHeading. */
+   ApproachAngle8 (deferring the turn when another live actor whose group is
+   `turnGroup` is already mid-turn; 0xFF = no gating); otherwise marks the actor
+   moving and delegates the step to TurnActorYawTowardAngle +
+   MoveActorAlongHeading. */
 
 /* Turn the actor's yaw toward `ang`, at most `step` per frame. */
 #define TurnActorTowardAngle(actor, ang, step, lim)                            \
@@ -22,7 +23,8 @@
   } while (0)
 
 int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed,
-                        int group, int step, int lim, int kind, int flags) {
+                        int contactRadius, int step, int lim, int turnGroup,
+                        int flags) {
   int ret;
   int zclose;
   int ang;
@@ -66,21 +68,21 @@ int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed,
   }
 
   node = (int *)((char *)path + (path->cur << 4)); /* node x/y at [2]/[3] */
-  ang = ArcTan2(node[2] - actor->posX, node[3] - actor->posY, 0);
+  ang = ArcTan2(node[2] - actor->posX, node[3] - actor->posY, ATAN_ANGLE8);
 
   if (AbsAngleDelta8(ang, actor->rotZ) <= lim) {
     actor->subMode = 1;
-    TurnActorYawTowardAngle(actor, ang, step, lim, 1);
-    MoveActorAlongHeading(actor, speed, group, 0, flags);
+    TurnActorYawTowardAngle(actor, ang, step, lim, YAW_STEP_IN_BAND);
+    MoveActorAlongHeading(actor, speed, contactRadius, 0, flags);
     goto done;
   }
 
-  if (actor->subMode == 0 && kind != 0xFF) {
-    /* Only one actor of this kind turns at a time — if a peer is already
+  if (actor->subMode == 0 && turnGroup != PIVOT_TURN_ANY) {
+    /* Only one actor of this turn group turns at a time — if a peer is already
        mid-turn (state 1), defer to it. */
     list = g_apActiveActorListBlock;
     while ((peer = *(list++)) != 0) {
-      if (peer->group == kind &&
+      if (peer->group == turnGroup &&
           (unsigned int)peer->mode < ACTOR_MODE_DORMANT && peer->subMode == 1) {
         break;
       }

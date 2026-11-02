@@ -56,8 +56,8 @@ SDATA(g_nCameraSpringReengageCountdown, 4);
                     g_bCameraLookaheadMotionScale);                            \
     RShiftVector3(ahead, shift);                                               \
     AddVector(ahead, rel, ahead);                                              \
-    a = ArcTan2(rel[0], rel[1], 1);                                            \
-    out = (a - ArcTan2(ahead[0], ahead[1], 1)) & 0xFFF;                        \
+    a = ArcTan2(rel[0], rel[1], ATAN_ANGLE12);                                 \
+    out = (a - ArcTan2(ahead[0], ahead[1], ATAN_ANGLE12)) & 0xFFF;             \
   }
 
 /* Per-frame camera spring driver (0x80035fb4, 5208 bytes). Picks the target
@@ -173,9 +173,9 @@ void UpdateCameraSpringForMode(void) {
       break;
     }
     if (AbsAngleDelta12(yaw, g_nCameraEulerYaw) > 0x578) {
-      g_pCameraTargetParams = g_anCameraParamMode2Reverse;
+      g_pCameraTargetParams = g_anCameraParamFollowFacing;
     } else {
-      g_pCameraTargetParams = g_anCameraParamMode2Front;
+      g_pCameraTargetParams = g_anCameraParamFollowBehind;
       if (!(g_dwActiveCameraOptions & CAM_OPT_SMOOTH_SWING)) {
         g_nCameraTargetInverted = ComputeCameraToTargetAngle(CAM);
         g_nCameraSpringYaw = g_nCameraYaw;
@@ -188,7 +188,7 @@ void UpdateCameraSpringForMode(void) {
   case CAM_MODE_CHARGE: {
     int yaw = g_nSpyroBodyYaw;
 
-    g_pCameraTargetParams = g_anCameraParamMode3;
+    g_pCameraTargetParams = g_anCameraParamCharge;
     g_pCameraAnchorPos = g_anSpyroWorldPos;
     g_nCameraTargetYawBiasFromMode = yaw;
     g_nCameraTargetInverted = ComputeCameraToTargetAngle(&s[S_POS]);
@@ -214,9 +214,9 @@ void UpdateCameraSpringForMode(void) {
             yaw -= 0x1000;
           }
           if (yaw > 0) {
-            *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamMode5RightBias;
+            *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamGlideRightBias;
           } else {
-            *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamMode5LeftBias;
+            *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamGlideLeftBias;
           }
           CAM[0x2B] = (g_nSpyroBodyYaw + 0x800) & 0xFFF;
           g_nCameraTargetInverted = ComputeCameraToTargetAngle(CAM);
@@ -228,16 +228,16 @@ void UpdateCameraSpringForMode(void) {
             yaw -= 0x1000;
           }
           if (yaw > 0x100) {
-            *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamMode5RightBias;
+            *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamGlideRightBias;
           } else if (yaw < -0x100) {
-            *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamMode5LeftBias;
+            *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamGlideLeftBias;
           } else {
-            *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamMode2Front;
+            *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamFollowBehind;
           }
           g_nCameraTargetInverted = ComputeCameraToTargetAngle(g_anCameraPos);
           g_nCameraSpringYaw = g_nCameraYaw;
         } else {
-          *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamMode2Front;
+          *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamFollowBehind;
           s[S_INVERTED] = ComputeCameraToTargetAngle(&s[S_POS]);
           s[S_SPRING_YAW] = s[S_YAW];
           s[S_SPRING_PITCH] = s[S_PITCH];
@@ -248,9 +248,9 @@ void UpdateCameraSpringForMode(void) {
         int r = AbsAngleDelta12(yaw, g_nCameraEulerYaw);
 
         if (g_nSpyroSubstate != SPYRO_SUB_GLIDE_ENTER && r > 0x578) {
-          g_pCameraTargetParams = g_anCameraParamMode2Reverse;
+          g_pCameraTargetParams = g_anCameraParamFollowFacing;
         } else {
-          *(int **)&CAM[CAM_TARGET_PARAMS] = g_anCameraParamMode2Front;
+          *(int **)&CAM[CAM_TARGET_PARAMS] = g_anCameraParamFollowBehind;
           g_nCameraTargetInverted = ComputeCameraToTargetAngle(CAM);
           g_nCameraSpringYaw = g_nCameraYaw;
           g_nCameraSpringPitch = g_nCameraPitch;
@@ -299,9 +299,9 @@ void UpdateCameraSpringForMode(void) {
     g_nCameraTargetYawBiasFromMode = yaw;
     if (g_nCameraCollisionRetries == 0) {
       if (AbsAngleDelta12(yaw, g_nCameraEulerYaw) > 0x578) {
-        g_pCameraTargetParams = g_anCameraParamMode4Reverse;
+        g_pCameraTargetParams = g_anCameraParamFallFacing;
       } else {
-        g_pCameraTargetParams = g_anCameraParamMode4Front;
+        g_pCameraTargetParams = g_anCameraParamFallBehind;
         if (!(g_dwActiveCameraOptions & CAM_OPT_SMOOTH_SWING)) {
           g_nCameraTargetInverted = ComputeCameraToTargetAngle(&s[S_POS]);
           g_nCameraSpringYaw = g_nCameraYaw;
@@ -319,7 +319,7 @@ void UpdateCameraSpringForMode(void) {
     int t;
     int r;
 
-    g_pCameraTargetParams = g_anCameraParamMode9ScriptStick;
+    g_pCameraTargetParams = g_anCameraParamFreeLook;
     g_pCameraAnchorPos = g_anSpyroWorldPos;
     g_nCameraTargetYawBiasFromMode = yaw;
     g_nCameraTargetInverted = ComputeCameraToTargetAngle(&s[S_POS]);
@@ -398,9 +398,9 @@ void UpdateCameraSpringForMode(void) {
     g_nCameraTargetYawBiasFromMode = yaw;
     if (g_nCameraCollisionRetries == 0) {
       if (AbsAngleDelta12(yaw, g_nCameraEulerYaw) > 0x578) {
-        g_pCameraTargetParams = g_anCameraParamMode2Reverse;
+        g_pCameraTargetParams = g_anCameraParamFollowFacing;
       } else {
-        g_pCameraTargetParams = g_anCameraParamMode2Front;
+        g_pCameraTargetParams = g_anCameraParamFollowBehind;
       }
       LoadCameraTargetAnglesFromMode();
     } else {
@@ -435,11 +435,11 @@ void UpdateCameraSpringForMode(void) {
     g_pCameraAnchorPos = g_anSpyroWorldPos;
     g_nCameraTargetYawBiasFromMode =
         ArcTan2(ACTOR_X(actor) - g_pCameraAnchorPos[0],
-                actor->posY - g_nSpyroWorldPosY, 1);
+                actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE12);
     if (g_nCameraCollisionRetries != 0) {
       break;
     }
-    g_pCameraTargetParams = g_anCameraParamModeC_ScriptedFollow;
+    g_pCameraTargetParams = g_anCameraParamScriptedFollow;
     g_nCameraTargetInverted = ComputeCameraToTargetAngle(&s[S_POS]);
     LoadCameraTargetAnglesFromMode();
     break;

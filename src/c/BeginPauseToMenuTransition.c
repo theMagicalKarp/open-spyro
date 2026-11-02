@@ -9,6 +9,6 @@ void BeginPauseToMenuTransition(void) {
   g_nGamestate = GS_MENU_TRANSITION;
   g_nMenuTickFrames = 0;
   g_nMenuDrawFrames = 0;
-  ResetSpyroEntity(0);
+  ResetSpyroEntity(RESET_SPYRO_SOFT);
   ChangeSpyroState(SPYRO_ST_IDLE);
 }

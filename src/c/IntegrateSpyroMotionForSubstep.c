@@ -325,8 +325,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       if (g_pSpyroContactActor != 0) {
         Actor *a = g_pSpyroContactActor;
 
-        g_nSpyroMoveTargetYaw = ArcTan2(a->posX - g_anSpyroWorldPos[0],
-                                        a->posY - g_nSpyroWorldPosY, 1);
+        g_nSpyroMoveTargetYaw =
+            ArcTan2(a->posX - g_anSpyroWorldPos[0], a->posY - g_nSpyroWorldPosY,
+                    ATAN_ANGLE12);
       }
     } else {
       ComputeSpyroMoveTargetFromPad(g_nSpyroMoveTargetMag);
@@ -563,7 +564,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
 
           SubtractVector(v30, &g_pSpyroHomingTargetActor->posX, &SPY[0]);
           l = VectorLength(v30, VEC_LEN_XYZ);
-          d = (ArcTan2(v30[0], v30[1], 1) - SPY[SPY_BODY_YAW]) & 0xFFF;
+          d = (ArcTan2(v30[0], v30[1], ATAN_ANGLE12) - SPY[SPY_BODY_YAW]) &
+              0xFFF;
           if (d > 0x800) {
             d -= 0x1000;
           }
@@ -857,7 +859,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
             v40[2] = 0;
             AddVector(sp + (SPY_VELOCITY - SPY_SPEED),
                       sp + (SPY_VELOCITY - SPY_SPEED), (int *)q);
-            q = (ArcTan2(v40[0], v40[1], 1) - g_nSpyroBodyYaw) & 0xFFF;
+            q = (ArcTan2(v40[0], v40[1], ATAN_ANGLE12) - g_nSpyroBodyYaw) &
+                0xFFF;
             if (q > 0x800) {
               q -= 0x1000;
             }
@@ -1521,7 +1524,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
     SubtractVector(vA0, &g_pScriptedCameraActor->posX, &SPY[0]);
     dist = VectorLength(vA0, VEC_LEN_XY);
-    ang = ArcTan2(vA0[0], vA0[1], 1);
+    ang = ArcTan2(vA0[0], vA0[1], ATAN_ANGLE12);
     dt = (g_nSpyroSubstate == 1 ? -g_nSpyroTurnRateAccum
                                 : g_nSpyroTurnRateAccum) >>
          6;

@@ -65,12 +65,12 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     st->sparkle = 0xFF;
     st->velX = 0;
     st->velY = 0;
-    st->sub = 0;
+    st->restMode = COLLREST_STILL;
     st->timer = 0;
     st->pitch = 0;
     st->yaw = 0;
     st->roll = 0;
-    rec->subMode = 2;
+    rec->subMode = COLLECT_BOUNCE;
     rec->cullRadius = 0x18;
     rec->updateDist = 0x10;
     rec->rotX = 0x20;
@@ -129,7 +129,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     st->velX = 0;
     st->velY = 0;
     st->velZ = 0x8C;
-    st->sub = 0;
+    st->restMode = COLLREST_STILL;
     st->timer = 0;
     st->pitch = 0;
     st->yaw = 0;
@@ -141,7 +141,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     }
     pos = &rec->posX;
     st->sparkle = 0xFF;
-    rec->subMode = 2;
+    rec->subMode = COLLECT_BOUNCE;
     rec->cullRadius = 0x18;
     rec->updateDist = 0x40;
     rec->rotX = 0x20;
@@ -207,7 +207,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     st->zVel = 0xC8;
     st->moveSpeed = 0x15E;
     st->heading = StepAndLerpAngle8(
-        ArcTan2(rec->posX - g_anSpyroWorldPos[0], rec->posY - g_nSpyroWorldPosY, 0),
+        ArcTan2(rec->posX - g_anSpyroWorldPos[0], rec->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
         g_bSpyroPersistentEulerZ, 0x28, 0x40);
     st->timer = 0x78;
     break;

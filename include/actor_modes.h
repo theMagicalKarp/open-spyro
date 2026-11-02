@@ -75,7 +75,7 @@ enum SeedPodMode {
   SEEDPOD_OPEN = 1,   /* shakes with the prize floating above; closes after a while */
 };
 
-/* ->mode of a life chest (ACTOR_TYPE_LIFE_CHEST, LiftState). */
+/* ->mode of a life chest (ACTOR_TYPE_LIFE_CHEST, LifeChestState). */
 enum LifeChestMode {
   LIFECHEST_CLOSED = 0, /* shakes on a timer, then lifts its lid */
   LIFECHEST_OPEN = 1,   /* lid up, its rider showing; closes after 0xE6 frames */
@@ -546,6 +546,14 @@ enum SwoopMode {
   SWOOP_KNOCKED = 4, /* flamed or charged: drifts down and bursts */
 };
 
+/* SwoopState.kind: how a dive is flown. 0 and 1 are fixed weave sides and
+ * are copied straight into SwoopState.side (0 sways the heading negative,
+ * 1 positive), so they stay literal. */
+enum SwoopKind {
+  SWOOP_KIND_RANDOM = -1, /* each dive picks side 0 or 1 at random */
+  SWOOP_KIND_STRAIGHT = 2, /* no weave; dives to Spyro's height and turns back sharply */
+};
+
 /* ->mode of a villager (ACTOR_TYPE_VILLAGER, VillagerState; levels 12/13).
  * VILLAGER_IDLE runs VillagerState.mode's role (talker, lookout, paired,
  * follower of a leader); Spyro too close sends it running. */
@@ -631,6 +639,13 @@ enum ShooterMode {
   SHOOTER_RISE = 9,     /* plays out, then WAKE */
   SHOOTER_WAKE = 11,    /* wakes and turns to Spyro; ADVANCE if it has a range */
   SHOOTER_ADVANCE = 20, /* walks its path toward Spyro, then SHIELD */
+};
+
+/* ShooterState.mode: the sentry's role. */
+enum ShooterRole {
+  SHOOTER_ROLE_DOZER = 0, /* blinks in SHOOTER_IDLE until Spyro comes near; fires inside 0x2800 */
+  SHOOTER_ROLE_GUARD = 1, /* starts behind its shield; ducks while Spyro is 0x2000..0x3C00 away,
+                           * fires once he is inside 0x2000 */
 };
 
 /* ->mode of Metalhead, the level 22 boss (ACTOR_TYPE_METALHEAD,
@@ -755,6 +770,21 @@ enum SorcererMode {
   SORCERER_ALERTED = 99,     /* set group-wide: turns angry, takes the queued pose */
 };
 
+/* SorcererState.mode: the sorcerer's role, read in SORCERER_IDLE. Flaming a
+ * CASTER does not kill it: SORCERER_BREAK_LINK demotes it (and its target)
+ * to SENTRY. */
+enum SorcererRole {
+  SORCERER_ROLE_SENTRY = 0, /* faces Spyro; casts when he nears its path start or comes close */
+  SORCERER_ROLE_CASTER = 1, /* walks its path, casting wisps at SorcererState.target (->sub) */
+};
+
+/* SorcererState.sub: a SORCERER_ROLE_CASTER's step. */
+enum SorcererCasterStep {
+  SORCERER_STEP_WALK = 0, /* pivots along its path; the path's cast cue (0x108): CAST */
+  SORCERER_STEP_CAST = 1, /* turns to its target, three wisps, then WALK */
+  SORCERER_STEP_REST = 2, /* waits out its timer, plays pose 7, then WALK (no writer) */
+};
+
 /* ->mode of a hatch (ACTOR_TYPE_HATCH, HatchState; level 31); the mode is
  * also the animation index. The idle pair loops on a subMode cue. */
 enum HatchMode {
@@ -833,10 +863,16 @@ enum GuardPairMode {
 enum SweepGunnerMode {
   SWEEPGUN_IDLE = 0,     /* faces Spyro; in range and level: SWEEP */
   SWEEPGUN_ADVANCE = 2,  /* Spyro entered its trigger box: walks its path, then IDLE */
-  SWEEPGUN_SWEEP = 3,    /* sprays shots, sweeping between its yaw limits (subMode 1: reverses) */
+  SWEEPGUN_SWEEP = 3,    /* sprays shots, sweeping between its yaw limits (SweepGunnerSweepStep) */
   SWEEPGUN_KNOCKED = 4,  /* flamed: knocked away; bursts, or sinks on water */
   SWEEPGUN_TURN = 10,    /* turns to Spyro, then IDLE */
   SWEEPGUN_SINK = 20,    /* knocked into the water: despawns after a moment */
+};
+
+/* ->subMode while SWEEPGUN_SWEEP. */
+enum SweepGunnerSweepStep {
+  SWEEPGUN_STEP_FIRE = 0,    /* sweeps toward Spyro's bearing, a shot every other frame */
+  SWEEPGUN_STEP_REVERSE = 1, /* overshot him: plays its turn, reverses sweepRate, FIRE */
 };
 
 /* ->mode of a lurker (ACTOR_TYPE_LURKER, LurkerState; level 20). */
@@ -898,10 +934,29 @@ enum RockThrowerMode {
   ROCKTHROW_TURN = 10,   /* turns to Spyro, then WATCH */
 };
 
+/* ->mode / ->subMode of a thrown boulder (ACTOR_TYPE_ROLLING_BOULDER,
+ * BoulderState; levels 21/22). */
+enum RollingBoulderMode {
+  BOULDER_WHOLE = 0, /* held, thrown or dropped (->subMode), then bursts into SHARDs */
+  BOULDER_SHARD = 1, /* tumbles and bounces until its life or view runs out */
+};
+enum RollingBoulderSub {
+  BOULDER_HELD = 0,    /* in the thrower's hands; the thrower moves it */
+  BOULDER_THROWN = 1,  /* rolls along its velocity; bursts on Spyro, a wall or its timer */
+  BOULDER_DROPPED = 2, /* its thrower was knocked: bursts at once, shards along the knock */
+};
+
 /* ->mode of a boulder thrower (ACTOR_TYPE_BOULDER_THROWER / _B,
  * BoulderThrowerState; levels 21/22). Modes 40-43 are the paired charge
  * (wait on the partner, circle it, launch at Spyro); 50-54 the ride, where a
- * partner (BoulderThrowerState.rider) catches and flings it. */
+ * partner (BoulderThrowerState.rider) catches and flings it.
+ *
+ * Group wake (SetActorGroupSubstate): a thrower in BTHROW_IDLE takes a
+ * non-zero ->subMode as the mode to enter, so the signal value is a thrower
+ * mode: ROUSE from a rousing thrower, WATCH (skip the rouse) from a
+ * gatekeeper or the level 21 egg runner. Gatekeepers share these groups
+ * (level data: groups 0..4 in level 21, 0..1 in level 22) and treat any
+ * non-zero value as "rouse". */
 enum BoulderThrowerMode {
   BTHROW_IDLE = 0,          /* holds its spawn pose until roused */
   BTHROW_ROUSE = 1,         /* rousing animation (may alert its group), then WATCH */
@@ -1326,6 +1381,14 @@ enum RimRiderMode {
   RIMRIDER_POP = 5,     /* pop animation, then SINK */
 };
 
+/* RimState.mode: how RIMRIDER_DRIFT moves, picked at spawn from the
+ * parent's mode (0x48 / 0x52 / 0x5C). */
+enum RimRiderDrift {
+  RIMDRIFT_TETHERED = 1, /* slides out along the parent's heading, reach..range from it */
+  RIMDRIFT_CHASE = 2,    /* runs along its own heading at Spyro's last-seen spot */
+  RIMDRIFT_CHASE_HELPER = 3, /* CHASE, first spawning its ACTOR_TYPE_RIM_RIDER_HELPER */
+};
+
 /* ->mode of a brawler (ACTOR_TYPE_BRAWLER, BrawlerState; level 7); the mode
  * is also the animation index. It carries a swooper, which flies off
  * knocked (SWOOP_KNOCKED) when the brawler goes down. */
@@ -1730,6 +1793,19 @@ enum TallyIconMode {
   TALLY_ICON_FINALE = 5, /* all four slots filled: set off toward the results ring */
   TALLY_ICON_TO_RING = 6,
   TALLY_ICON_SPIRAL = 7, /* spirals into the centre, then PARKED */
+};
+
+/* AmbientSoundState.mode picks the sample-bank voice set (per level, so the
+ * other values stay literal); AMBIENT_MODE_PATH also carries the source along
+ * its path, one leg at a time. */
+enum AmbientSoundMode {
+  AMBIENT_MODE_PATH = 2,
+};
+
+/* AmbientSoundState.sub while AMBIENT_MODE_PATH. */
+enum AmbientSoundPathStep {
+  AMBIENT_STEP_WAIT = 0, /* on its timer: plays a voice, then TRAVEL */
+  AMBIENT_STEP_TRAVEL = 1, /* steps along the leg; at its end snaps to the next node, WAIT */
 };
 
 #endif

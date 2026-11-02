@@ -76,7 +76,7 @@ extern struct {
 
 extern void AimCameraStickTowardPoint(int *pos);
 
-extern void SVectorToVectorShl2(int *dst, int *s);
+extern void SVectorToVectorShl2(int *dst, short *src);
 
 extern void CommitActorKillGems(int value, void *actor);
 
@@ -125,16 +125,18 @@ typedef struct AngPair {
 
 extern AngPair g_aShakeRotOffsets[];
 
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-typedef struct LiftState {
+/* Type 421: life chest. Shakes and pops its lid on a timer, showing its
+ * rider (ACTOR_TYPE_LIFE_CHEST_RIDER); breaks into fragments and drops its
+ * prize when hit. */
+typedef struct LifeChestState {
   Actor *passenger; /* 0x00 the spawned passenger, valid once ->mode is 1 */
   int phase;    /* 0x04 phase */
   int savedRotX;    /* 0x08 saved actor->rotX */
   int savedRotY;    /* 0x0C saved actor->rotY */
   int savedPosZ;    /* 0x10 saved actor->posZ */
-  int rideMode;    /* 0x14 mode; 1 selects the extra tick and the rearm */
-} LiftState;
+  int restMode;    /* 0x14 CollectRestMode: COLLREST_SNAP keeps it on the floor, never
+                    * lets it shake open, and is handed to the prize it drops */
+} LifeChestState;
 
 /* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
 typedef struct Xform {
@@ -341,6 +343,10 @@ extern struct {
 /* ==== Globals shared with level 4 ==== */
 extern void RefreshHudLevelGemCounter(void);
 
+#ifndef RESET_SPYRO_SOFT
+#define RESET_SPYRO_SOFT 0 /* clears input/charge flags, rebuilds body angles */
+#define RESET_SPYRO_FULL 1 /* wipes the Spyro block (keeps pos, euler, Sparx), state IDLE */
+#endif
 extern void ResetSpyroEntity(int full);
 
 /* Case 9 -- level-exit whirlwind: shows its name letters near the camera,
@@ -353,7 +359,10 @@ typedef struct ExitWhirlState {
   int depth; /* 0x0C lift height that triggers the exit, 0 = 0x2000 */
 } ExitWhirlState;
 
-extern int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed, int group, int step, int lim, int kind, int flags);
+#ifndef PIVOT_TURN_ANY
+#define PIVOT_TURN_ANY 0xFF /* turnGroup: turn without waiting on a group peer */
+#endif
+extern int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed, int contactRadius, int step, int lim, int turnGroup, int flags);
 
 extern int RaiseSpyroTriggerInRadius(int *pos, int radius, int flags);
 
@@ -470,14 +479,15 @@ typedef struct SwoopState {
   int weaving;   /* 0x1C */
   int sway;      /* 0x20 */
   int swayDir;   /* 0x24 1 out, -1 back, 0 done */
-  int side;      /* 0x28 */
-  int kind;      /* 0x2C 2 = dives to Spyro's height, -1 = random side */
+  int side;      /* 0x28 weave side of this dive: 0, 1 or SWOOP_KIND_STRAIGHT */
+  int kind;      /* 0x2C SwoopKind, or a fixed side 0/1 */
   int *alert;    /* 0x30 shared by the guards of one group */
   int count;     /* 0x34 */
 } SwoopState;
 
 typedef struct CritterKnockState {
-  char pad00[0x38];
+  WanderBlock wander; /* 0x00 UpdateActorWander's block */
+  char pad20[0x18];
   int knock; /* 0x38 knock-back heading */
   int speed; /* 0x3C knock-back speed */
 } CritterKnockState;
@@ -514,7 +524,7 @@ typedef struct ShooterState {
   int home[3];   /* 0x00 */
   void *path;    /* 0x0C */
   int triggered; /* 0x10 */
-  int mode;      /* 0x14 */
+  int mode;      /* 0x14 ShooterRole */
   int timer;     /* 0x18 */
   int heading;   /* 0x1C */
   int speed;     /* 0x20 */
@@ -565,15 +575,16 @@ typedef struct AmbientSoundBytesState {
   int count;           /* 0x24 frames left on the current leg */
 } AmbientSoundBytesState;
 
-/* Type 34: dragon egg. Spirals up, flies to Spyro and is collected. */
-typedef struct ShotState {
+/* Type 34: dragon egg. Spirals up, flies to Spyro and is collected (the
+ * same record as level_actor_states.h EggRiseState). */
+typedef struct EggFlightState {
   void *killActor;        /* 0x00 actor handed to CommitActorKillGems on collection */
   short from[3];         /* 0x04 launch point */
   short to[3];           /* 0x0A destination */
   short speed;           /* 0x10 */
   unsigned char phase;   /* 0x12 timer */
   unsigned char heading; /* 0x13 */
-} ShotState;
+} EggFlightState;
 
 /* Type 18: pressure switch. Toggles one bit in a linked actor's sub-state. */
 typedef struct SwitchState {
@@ -591,7 +602,7 @@ typedef struct AnimState {
 
 /* Types 255/256/423/424: chest fragments that bounce, reflecting their
  * velocity about the surface normal. */
-typedef struct SparkState {
+typedef struct ChestShardState {
   short vel[3];        /* 0x00 */
   unsigned char spin0; /* 0x06 */
   unsigned char pad07;
@@ -600,7 +611,7 @@ typedef struct SparkState {
   unsigned char spin2; /* 0x0A */
   unsigned char pad0B;
   int life; /* 0x0C */
-} SparkState;
+} ChestShardState;
 
 typedef struct {
   unsigned char *v;
@@ -611,18 +622,18 @@ typedef struct {
 typedef struct PickupState {
   int vel[3];          /* 0x00 */
   short groundTri;         /* 0x0C collision triangle it rests on (UnpackWorldCollisionTri) */
-  unsigned char sub;   /* 0x0E resting sub-state, 0..3 */
+  unsigned char restMode; /* 0x0E CollectRestMode while COLLECT_REST */
   unsigned char timer; /* 0x0F */
   unsigned char count; /* 0x10 bounces left */
   unsigned char pitch; /* 0x11 */
   unsigned char yaw;   /* 0x12 */
   unsigned char roll;  /* 0x13 */
-  unsigned char anim;  /* 0x14 0xFF == none */
+  unsigned char sparkle; /* 0x14 g_aRotBillboards handle, 0xFF = none */
 } PickupState;
 
 /* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
  * saves a checkpoint and starts the rescue. */
-typedef struct RideState {
+typedef struct CrystalDragonState {
   int pad00[6]; /* 0x00 */
   int cutsceneId;    /* 0x18 rescue cutscene id (see DragonStatueState) */
   int fallbackHeading;    /* 0x1C fallback heading when ->partner is unset */
@@ -633,7 +644,7 @@ typedef struct RideState {
   int savedRotX;    /* 0x48 saved actor->rotX */
   int savedRotY;    /* 0x4C saved actor->rotY */
   int savedPosZ;    /* 0x50 saved actor->posZ */
-} RideState;
+} CrystalDragonState;
 
 /* Type 398 (ACTOR_TYPE_PORTAL_GUIDE): flies Spyro through a portal. The
  * portal record's word 6 names it; DispatchSpyroTriggerEvent wakes it when
@@ -658,7 +669,7 @@ typedef struct Xform6 {
 
 extern Xform6 g_anCameraActiveTargetParams; /* live camera transform */
 
-extern Xform6 g_anCameraParamMode2Front; /* template it is seeded from */
+extern Xform6 g_anCameraParamFollowBehind; /* template it is seeded from */
 
 /* Type 323: respawner. It rides on Spyro and, every `period` frames, puts
  * each dormant actor of `type` farther than 0x6000 from him back at its home
@@ -738,10 +749,10 @@ typedef struct MusicState {
   int started; /* 0x00 */
 } MusicState;
 
-/* ACTOR_TYPE_WANDERING_CRITTER_C (level 30): pad00 is UpdateActorWander's
- * block; speed/heading drive the knock-away. */
+/* ACTOR_TYPE_WANDERING_CRITTER_C (level 30): UpdateActorWander's block,
+ * then speed/heading for the knock-away. */
 typedef struct WanderKnockState {
-  char pad00[0x20];
+  WanderBlock wander; /* 0x00 UpdateActorWander's block */
   int speed;   /* 0x20 */
   int heading; /* 0x24 */
   char pad28[0x4];
@@ -816,7 +827,7 @@ typedef struct RimState {
   short x;        /* 0x08 Spyro's position when last seen, >> 4 */
   short y;        /* 0x0A */
   Actor *child;   /* 0x0C its type 39 helper */
-  unsigned char mode; /* 0x10 */
+  unsigned char mode; /* 0x10 RimRiderDrift */
 } RimState;
 
 typedef struct RimParent {
@@ -885,7 +896,7 @@ typedef struct BlowhardState {
 
 /* Case 412 -- wandering critter. */
 typedef struct HopState {
-  char pad00[0x20];
+  WanderBlock wander; /* 0x00 UpdateActorWander's block */
   int timer;   /* 0x20 */
   int heading; /* 0x24 knock-back heading */
   int time;    /* 0x28 knock-back time */
@@ -914,9 +925,12 @@ typedef struct PostPath {
 } PostPath;
 
 /* Index of the path point nearest the actor (written to *idx). */
-extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *idx);
+extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *out_index);
 
 /* Path tweens used by the patrol/post classes. */
+#ifndef TWEEN_FLY
+#define TWEEN_FLY 0x04 /* keep each leg's Z step (fly); without it the step is flattened */
+#endif
 extern int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legs, int flags);
 
 typedef struct PostState {
@@ -1117,7 +1131,7 @@ typedef struct CatapultState {
 } CatapultState;
 
 typedef struct RoamingCritterState {
-  char pad00[0x20];
+  WanderBlock wander; /* 0x00 UpdateActorWander's block */
   int speed; /* 0x20 knock-back speed */
   int knock; /* 0x24 knock-back heading */
   char pad28[0x4];
@@ -1270,11 +1284,11 @@ typedef struct SorcererState {
   int count;           /* 0x04 bolts thrown this volley */
   int target;          /* 0x08 actor index */
   unsigned char *path; /* 0x0C { count, cur }, points at +8 */
-  int mode;            /* 0x10 */
+  int mode;            /* 0x10 SorcererRole */
   int pad14;
   int range;           /* 0x18 */
   int angry;           /* 0x1C */
-  int sub;             /* 0x20 */
+  int sub;             /* 0x20 SorcererCasterStep */
   int pad24[3];
   int rest;            /* 0x30 */
 } SorcererState;
@@ -1514,7 +1528,7 @@ typedef struct Follower {
 } Follower;
 
 typedef struct GrazerState {
-  char pad00[0x20];
+  WanderBlock wander; /* 0x00 UpdateActorWander's block */
   int speed; /* 0x20 knock-back speed */
   int knock; /* 0x24 knock-back heading */
   int wait;  /* 0x28 graze timer */

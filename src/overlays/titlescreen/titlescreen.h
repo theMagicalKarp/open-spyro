@@ -178,14 +178,7 @@ extern void *LinkOTPrimitives(int);
 extern void DrawOTag(void *);
 
 /* ---- gamepad ---- */
-#define PAD_L1 (1 << 2)
-#define PAD_TRIANGLE (1 << 4)
-#define PAD_CROSS (1 << 6)
-#define PAD_START (1 << 11)
-#define PAD_UP (1 << 12)
-#define PAD_RIGHT (1 << 13)
-#define PAD_DOWN (1 << 14)
-#define PAD_LEFT (1 << 15)
+#include "pad_buttons.h"
 
 extern struct {
   int pressed;  /* buttons pressed this frame */

@@ -6,15 +6,16 @@
 
 /* Guided-move step for a tracked actor (0x80039688, 0x288). Advances the
    actor's cached position (+0xC/+0x10) along `angle` by `speed` (scaled
-   1.5x/2x in gamestates 3/4), then runs the same contact/collision checks
-   as MoveActorByDelta: actor contact against `group` (flags bit 1 makes it
-   notify-only), world collision over `radius` (flags bit 5 slides to the
-   resolved contact instead of aborting), and a ground probe (flags bits
-   2/4) that either rejects steps >= 0xC9 above/below the floor (bit 4) or
-   snaps/eases Z toward floor+0x38-offset (bit 2). Returns 1 on actor
-   contact, 2 on world/step rejection, 0 when the move was committed. */
+   1.5x/2x at frame delta 3/4), then runs the same contact/collision checks
+   as MoveActorByDelta: actor contact over a `contactRadius` sphere
+   (MOVE_PASS_ACTORS pushes the step out of them instead of failing), world
+   collision over `radius` (flags bit 5 slides to the resolved contact instead
+   of aborting), and a ground probe (flags bits 2/4) that either rejects steps
+   >= 0xC9 above/below the floor (bit 4) or snaps/eases Z toward
+   floor+0x38-offset (bit 2). Returns 1 on actor contact, 2 on world/step
+   rejection, 0 when the move was committed. */
 
-int MoveActorAlongAngle(Actor *actor, int angle, int speed, int group,
+int MoveActorAlongAngle(Actor *actor, int angle, int speed, int contactRadius,
                         int radius, int flags) {
   int newpos[3];
   int ground;
@@ -31,13 +32,15 @@ int MoveActorAlongAngle(Actor *actor, int angle, int speed, int group,
   newpos[0] = actor->posX + ((g_anCosineLut[angle] * speed) >> 12);
   newpos[1] = actor->posY + ((g_anSineLut[angle] * speed) >> 12);
   newpos[2] = actor->posZ;
-  if (group != 0) {
+  if (contactRadius != 0) {
     if (!(flags & MOVE_PASS_ACTORS)) {
-      if (DispatchActorContactAtSphere(newpos, group, 0, 0, actor, 0) != 0) {
+      if (DispatchActorContactAtSphere(newpos, contactRadius, 0, 0, actor,
+                                       CONTACT_STOP_AT_SOLID) != 0) {
         return 1;
       }
     } else {
-      DispatchActorContactAtSphere(newpos, group, 0, 0, actor, 3);
+      DispatchActorContactAtSphere(newpos, contactRadius, 0, 0, actor,
+                                   CONTACT_PUSH_OUT | CONTACT_ALL);
     }
   }
   if (flags & MOVE_LIFT) {

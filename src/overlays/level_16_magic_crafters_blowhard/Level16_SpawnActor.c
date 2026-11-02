@@ -94,12 +94,12 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       st->sparkle = 0xFF;
       st->velX = 0;
       st->velY = 0;
-      st->sub = 0;
+      st->restMode = COLLREST_STILL;
       st->timer = 0;
       st->pitch = 0;
       st->yaw = 0;
       st->roll = 0;
-      rec->subMode = 2;
+      rec->subMode = COLLECT_BOUNCE;
       rec->cullRadius = 0x18;
       rec->updateDist = 0x10;
       rec->rotX = 0x20;
@@ -161,19 +161,19 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       switch (parent->mode)
       {
         case 0x48:
-          st->mode = 1;
+          st->mode = RIMDRIFT_TETHERED;
           st->reach = 0x40;
           st->range = 0xE00;
           break;
 
         case 0x52:
-          st->mode = 2;
+          st->mode = RIMDRIFT_CHASE;
           st->reach = 0x100;
           st->range = 0x2000;
           break;
 
         case 0x5C:
-          st->mode = 3;
+          st->mode = RIMDRIFT_CHASE_HELPER;
           st->reach = 0x140;
           st->range = 0x2000;
           break;
@@ -221,7 +221,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
         rec->posY += LookupSine(parent->rotZ << 4) >> 2;
         rec->posZ += 0x12C;
         rec->rotZ = parent->rotZ;
-        turn = (ArcTan2(ApproxDist2D(pos, g_anSpyroWorldPos), g_nSpyroWorldPosZ - rec->posZ, 0) - parent->rotY) & 0xFF;
+        turn = (ArcTan2(ApproxDist2D(pos, g_anSpyroWorldPos), g_nSpyroWorldPosZ - rec->posZ, ATAN_ANGLE8) - parent->rotY) & 0xFF;
         if (turn > 0x80)
         {
           turn -= 0x100;
@@ -274,7 +274,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       InitActorRenderDefaults(rec);
       CopyVector(&rec->posX, &parent->posX);
       InsertActorIntoSpatialGrid(rec);
-      rec->rotZ = ArcTan2(g_anCameraPos - rec->posX, g_nCameraPosY - rec->posY, 0);
+      rec->rotZ = ArcTan2(g_anCameraPos - rec->posX, g_nCameraPosY - rec->posY, ATAN_ANGLE8);
       rec->posZ -= 0x400;
       st->timer = 0x40;
       st->owner = parent;
@@ -293,7 +293,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       st->velX = 0;
       st->velY = 0;
       st->velZ = 0x8C;
-      st->sub = 0;
+      st->restMode = COLLREST_STILL;
       st->timer = 0;
       st->pitch = 0;
       st->yaw = 0;
@@ -308,7 +308,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       }
       pos = &rec->posX;
       st->sparkle = 0xFF;
-      rec->subMode = 2;
+      rec->subMode = COLLECT_BOUNCE;
       rec->cullRadius = 0x18;
       rec->updateDist = 0x40;
       rec->rotX = 0x20;

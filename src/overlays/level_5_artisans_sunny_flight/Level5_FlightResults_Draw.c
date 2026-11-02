@@ -46,7 +46,7 @@ void Level5_FlightResults_Draw(void)
     short w;
     short h;
   } rect;
-  int buf[8];
+  int buf[8]; /* the status text; int-typed as in the match */
   int pos[3];
   if (g_nMenuDrawFrames == 0)
   {
@@ -259,7 +259,7 @@ void Level5_FlightResults_Draw(void)
       {
         memcpy(buf, "CRASHED", 8);
       }
-      pos[0] = 0x10C - (strlen(buf) * 0xC);
+      pos[0] = 0x10C - (strlen((char *)buf) * 0xC);
       pos[1] = 0x1E;
       pos[2] = 0xC00;
       BuildTextSpriteChain(buf, pos, 0x18, 0xB);
@@ -312,7 +312,7 @@ void Level5_FlightResults_Draw(void)
           sprintf(buf, "0");
           snd = 0x21;
         }
-        pos[0] = 0x1E0 - (strlen(buf) * 0x12);
+        pos[0] = 0x1E0 - (strlen((char *)buf) * 0x12);
         pos[1] = 0x3C;
         pos[2] = 0x1100;
         BuildTextSpriteChain(buf, pos, 0x12, 0xB);
@@ -355,7 +355,7 @@ void Level5_FlightResults_Draw(void)
           sprintf(buf, "0");
           snd = 0x21;
         }
-        pos[0] = 0x1E0 - (strlen(buf) * 0x12);
+        pos[0] = 0x1E0 - (strlen((char *)buf) * 0x12);
         pos[1] = 0x50;
         pos[2] = 0x1100;
         BuildTextSpriteChain(buf, pos, 0x12, 0xB);
@@ -398,7 +398,7 @@ void Level5_FlightResults_Draw(void)
           sprintf(buf, "0");
           snd = 0x21;
         }
-        pos[0] = 0x1E0 - (strlen(buf) * 0x12);
+        pos[0] = 0x1E0 - (strlen((char *)buf) * 0x12);
         pos[1] = 0x64;
         pos[2] = 0x1100;
         BuildTextSpriteChain(buf, pos, 0x12, 0xB);
@@ -441,7 +441,7 @@ void Level5_FlightResults_Draw(void)
           sprintf(buf, "0");
           snd = 0x21;
         }
-        pos[0] = 0x1E0 - (strlen(buf) * 0x12);
+        pos[0] = 0x1E0 - (strlen((char *)buf) * 0x12);
         pos[1] = 0x78;
         pos[2] = 0x1100;
         BuildTextSpriteChain(buf, pos, 0x12, 0xB);
@@ -476,7 +476,7 @@ void Level5_FlightResults_Draw(void)
           sprintf(buf, "0");
           snd = 0x21;
         }
-        pos[0] = 0x1E0 - (strlen(buf) * 0x12);
+        pos[0] = 0x1E0 - (strlen((char *)buf) * 0x12);
         pos[1] = 0x8C;
         pos[2] = 0x1100;
         BuildTextSpriteChain(buf, pos, 0x12, 0xB);
@@ -492,7 +492,7 @@ void Level5_FlightResults_Draw(void)
       pos[2] = 0x1100;
       BuildTextSpriteChain("TOTAL", pos, 0x12, 0xB);
       sprintf(buf, "%d", bonus);
-      pos[0] = 0x1E0 - (strlen(buf) * 0x12);
+      pos[0] = 0x1E0 - (strlen((char *)buf) * 0x12);
       pos[1] = 0xA0;
       pos[2] = 0x1100;
       BuildTextSpriteChain(buf, pos, 0x12, 0xB);
@@ -654,7 +654,7 @@ void Level5_FlightResults_Draw(void)
         {
           memcpy(buf, "CRASHED", 8);
         }
-        count = strlen(buf);
+        count = strlen((char *)buf);
         pos[0] = 0x10C - (count * 0xC);
         pos[1] = 0x96;
         pos[2] = 0xC00;

@@ -59,8 +59,8 @@ void OrActorGroupFlagsInCone(Actor *actor, int group, unsigned int bits,
         }
       zdone:
         if (AbsAngleDelta8(actor->rotZ, ArcTan2(rec->posX - actor->posX,
-                                                rec->posY - actor->posY, 0)) <
-            angLim) {
+                                                rec->posY - actor->posY,
+                                                ATAN_ANGLE8)) < angLim) {
           rec->flags |= bits;
         }
       }

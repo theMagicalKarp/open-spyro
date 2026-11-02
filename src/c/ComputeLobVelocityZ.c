@@ -1,6 +1,10 @@
 #include "funcs.h"
 #include "globals.h"
 
+/* Initial Z velocity for a lob from `pos` that lands on `target` (0x8003891c):
+   the flight time is the XY distance over `speed` frames (written to *pOutTime
+   when non-null), and vz solves dz + gravity * t^2 / 2 over that time; 0 when
+   the flight takes under a frame. */
 int ComputeLobVelocityZ(int *pos, int *target, int speed, int gravity,
                         int *pOutTime) {
   int v[2];

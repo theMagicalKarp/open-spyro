@@ -69,7 +69,7 @@ void UpdateActorWander(Actor *actor, WanderBlock *wb) {
       wb->weaveDir = -(int)wb->weaveDir;
     }
   }
-  if (TurnActorYawTowardAngle(actor, heading, turn, 5, 1) == 0) {
+  if (TurnActorYawTowardAngle(actor, heading, turn, 5, YAW_STEP_IN_BAND) == 0) {
     aligned = 0;
   }
 
@@ -98,8 +98,8 @@ void UpdateActorWander(Actor *actor, WanderBlock *wb) {
     spyro = g_anSpyroWorldPos;
     dist = ApproxDist2D(&actor->posX, spyro);
     if (dist < 0x44C && wb->chasing == 0) {
-      wb->heading =
-          ArcTan2(actor->posX - spyro[0], actor->posY - g_nSpyroWorldPosY, 0);
+      wb->heading = ArcTan2(actor->posX - spyro[0],
+                            actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8);
       wb->heading = WrapAddAngle8(wb->heading, RandomIntInRange(-0x3C, 0x3C));
       wb->repickTimer = RandomIntInRange(wb->repickMin, wb->repickMax);
       wb->chasing = 1;
@@ -108,7 +108,7 @@ void UpdateActorWander(Actor *actor, WanderBlock *wb) {
     if (wb->chaseRadius != 0 && wb->chasing == 0 && wb->chaseCooldown == 0 &&
         dist < (int)(wb->chaseRadius << 10)) {
       wb->heading = ArcTan2(actor->posX - g_anSpyroWorldPos[0],
-                            actor->posY - g_nSpyroWorldPosY, 0);
+                            actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8);
       wb->heading = WrapAddAngle8(wb->heading, RandomIntInRange(-0x30, 0x30));
       wb->repickTimer = RandomIntInRange(wb->repickMin, wb->repickMax);
       wb->chasing = 1;
@@ -116,8 +116,8 @@ void UpdateActorWander(Actor *actor, WanderBlock *wb) {
     }
     home = ApproxDist2D(&actor->posX, &wb->homeX);
     if ((int)(wb->leash << 10) < home) {
-      wb->heading =
-          ArcTan2(wb->homeX - actor->posX, wb->homeY - actor->posY, 0);
+      wb->heading = ArcTan2(wb->homeX - actor->posX, wb->homeY - actor->posY,
+                            ATAN_ANGLE8);
       wb->chasing = 0;
       wb->chaseCooldown = 0x14;
       wb->repickTimer = home / (int)wb->speed;

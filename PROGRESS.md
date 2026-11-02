@@ -240,7 +240,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8002e12c` | PauseMenu_Update | main | 2560 | matched | game |
 | `0x8002eb2c` | SubMenu_Update | main | 708 | matched | game |
 | `0x8002edf0` | RespawnOrGameOver_Update | main | 1492 | matched | game |
-| `0x8002f3c4` | OverlayScreen_Update | main | 32 | matched | game |
+| `0x8002f3c4` | Gamestate06_Update | main | 32 | matched | game |
 | `0x8002f3e4` | DragonRescue_Update | main | 8400 | matched | game |
 | `0x800314b4` | SaveMenu_Update | main | 4132 | matched | game |
 | `0x800324d8` | ActorCutscene_Update | main | 1352 | matched | game |

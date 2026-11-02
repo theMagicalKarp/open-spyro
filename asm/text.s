@@ -1783,8 +1783,8 @@ glabel BuildLoadedLevelRuntime
     /* 4298 80013A98 00000000 */   nop
     /* 429C 80013A9C 0880043C */  lui        $a0, %hi(g_anCameraActiveTargetParams)
     /* 42A0 80013AA0 68868424 */  addiu      $a0, $a0, %lo(g_anCameraActiveTargetParams)
-    /* 42A4 80013AA4 0780063C */  lui        $a2, %hi(g_anCameraParamMode2Front)
-    /* 42A8 80013AA8 34C9C624 */  addiu      $a2, $a2, %lo(g_anCameraParamMode2Front)
+    /* 42A4 80013AA4 0780063C */  lui        $a2, %hi(g_anCameraParamFollowBehind)
+    /* 42A8 80013AA8 34C9C624 */  addiu      $a2, $a2, %lo(g_anCameraParamFollowBehind)
     /* 42AC 80013AAC 0000C28C */  lw         $v0, 0x0($a2)
     /* 42B0 80013AB0 0400C38C */  lw         $v1, 0x4($a2)
     /* 42B4 80013AB4 0800C58C */  lw         $a1, 0x8($a2)
@@ -11247,9 +11247,9 @@ glabel Gamestate02_03_06_Draw
     /* C378 8001BB78 21980000 */  addu       $s3, $zero, $zero
     /* C37C 8001BB7C 80180200 */  sll        $v1, $v0, 2
     /* C380 8001BB80 03004228 */  slti       $v0, $v0, 0x3
-    /* C384 8001BB84 0780013C */  lui        $at, %hi(g_apTitleCardNames + 0x4)
+    /* C384 8001BB84 0780013C */  lui        $at, %hi(g_apWorldNames + 0x4)
     /* C388 8001BB88 21082300 */  addu       $at, $at, $v1
-    /* C38C 8001BB8C D4F7248C */  lw         $a0, %lo(g_apTitleCardNames + 0x4)($at)
+    /* C38C 8001BB8C D4F7248C */  lw         $a0, %lo(g_apWorldNames + 0x4)($at)
     /* C390 8001BB90 DB89010C */  jal        strlen
     /* C394 8001BB94 C0B80200 */   sll       $s7, $v0, 3
     /* C398 8001BB98 4000A527 */  addiu      $a1, $sp, 0x40
@@ -11277,9 +11277,9 @@ glabel Gamestate02_03_06_Draw
     /* C3F0 8001BBF0 80200400 */  sll        $a0, $a0, 2
     /* C3F4 8001BBF4 4000A2AF */  sw         $v0, 0x40($sp)
     /* C3F8 8001BBF8 1000A7AF */  sw         $a3, 0x10($sp)
-    /* C3FC 8001BBFC 0780013C */  lui        $at, %hi(g_apTitleCardNames + 0x4)
+    /* C3FC 8001BBFC 0780013C */  lui        $at, %hi(g_apWorldNames + 0x4)
     /* C400 8001BC00 21082400 */  addu       $at, $at, $a0
-    /* C404 8001BC04 D4F7248C */  lw         $a0, %lo(g_apTitleCardNames + 0x4)($at)
+    /* C404 8001BC04 D4F7248C */  lw         $a0, %lo(g_apWorldNames + 0x4)($at)
     /* C408 8001BC08 6B60000C */  jal        BuildTextSprites
     /* C40C 8001BC0C 17000724 */   addiu     $a3, $zero, 0x17
     /* C410 8001BC10 0780023C */  lui        $v0, %hi(g_nSubMenuCursor)
@@ -13912,9 +13912,9 @@ glabel ActorCutscene_Draw
     /* EABC 8001E2BC 83100800 */  sra        $v0, $t0, 2
     /* EAC0 8001E2C0 23104300 */  subu       $v0, $v0, $v1
     /* EAC4 8001E2C4 80100200 */  sll        $v0, $v0, 2
-    /* EAC8 8001E2C8 0780013C */  lui        $at, %hi(g_apTitleCardNames)
+    /* EAC8 8001E2C8 0780013C */  lui        $at, %hi(g_apWorldNames)
     /* EACC 8001E2CC 21082200 */  addu       $at, $at, $v0
-    /* EAD0 8001E2D0 D0F7268C */  lw         $a2, %lo(g_apTitleCardNames)($at)
+    /* EAD0 8001E2D0 D0F7268C */  lw         $a2, %lo(g_apWorldNames)($at)
     /* EAD4 8001E2D4 0180053C */  lui        $a1, %hi(g_szEnteringWorldFmt)
     /* EAD8 8001E2D8 D00CA524 */  addiu      $a1, $a1, %lo(g_szEnteringWorldFmt)
     /* EADC 8001E2DC E1780008 */  j          .L8001E384
@@ -13932,9 +13932,9 @@ glabel ActorCutscene_Draw
     /* EB08 8001E308 83100800 */  sra        $v0, $t0, 2
     /* EB0C 8001E30C 23104300 */  subu       $v0, $v0, $v1
     /* EB10 8001E310 80100200 */  sll        $v0, $v0, 2
-    /* EB14 8001E314 0780013C */  lui        $at, %hi(g_apTitleCardNames)
+    /* EB14 8001E314 0780013C */  lui        $at, %hi(g_apWorldNames)
     /* EB18 8001E318 21082200 */  addu       $at, $at, $v0
-    /* EB1C 8001E31C D0F7268C */  lw         $a2, %lo(g_apTitleCardNames)($at)
+    /* EB1C 8001E31C D0F7268C */  lw         $a2, %lo(g_apWorldNames)($at)
     /* EB20 8001E320 DF780008 */  j          .L8001E37C
     /* EB24 8001E324 3800A427 */   addiu     $a0, $sp, 0x38
   .L8001E328:
@@ -13956,9 +13956,9 @@ glabel ActorCutscene_Draw
     /* EB64 8001E364 40100200 */  sll        $v0, $v0, 1
     /* EB68 8001E368 21104500 */  addu       $v0, $v0, $a1
     /* EB6C 8001E36C 80100200 */  sll        $v0, $v0, 2
-    /* EB70 8001E370 0780013C */  lui        $at, %hi(g_apTitleCardNames + 0x8)
+    /* EB70 8001E370 0780013C */  lui        $at, %hi(g_apWorldNames + 0x8)
     /* EB74 8001E374 21082200 */  addu       $at, $at, $v0
-    /* EB78 8001E378 D8F7268C */  lw         $a2, %lo(g_apTitleCardNames + 0x8)($at)
+    /* EB78 8001E378 D8F7268C */  lw         $a2, %lo(g_apWorldNames + 0x8)($at)
   .L8001E37C:
     /* EB7C 8001E37C 0180053C */  lui        $a1, %hi(g_szEnteringFmt)
     /* EB80 8001E380 E40CA524 */  addiu      $a1, $a1, %lo(g_szEnteringFmt)
@@ -14719,8 +14719,8 @@ glabel GamestateDraw
   .L8001EE44:
     /* F644 8001EE44 08006214 */  bne        $v1, $v0, .L8001EE68
     /* F648 8001EE48 08000224 */   addiu     $v0, $zero, 0x8
-    /* F64C 8001EE4C 0780023C */  lui        $v0, %hi(g_pfnGamestate7DrawHook)
-    /* F650 8001EE50 7C56428C */  lw         $v0, %lo(g_pfnGamestate7DrawHook)($v0)
+    /* F64C 8001EE4C 0780023C */  lui        $v0, %hi(g_pfnFlightResultsDraw)
+    /* F650 8001EE50 7C56428C */  lw         $v0, %lo(g_pfnFlightResultsDraw)($v0)
     /* F654 8001EE54 00000000 */  nop
     /* F658 8001EE58 09F84000 */  jalr       $v0
     /* F65C 8001EE5C 00000000 */   nop
@@ -32873,11 +32873,11 @@ glabel RespawnOrGameOver_Update
 endlabel RespawnOrGameOver_Update
 .endif
 
-.section .text.OverlayScreen_Update, "ax"
-.ifndef HAVE_C_OverlayScreen_Update
-nonmatching OverlayScreen_Update, 0x20
+.section .text.Gamestate06_Update, "ax"
+.ifndef HAVE_C_Gamestate06_Update
+nonmatching Gamestate06_Update, 0x20
 
-glabel OverlayScreen_Update
+glabel Gamestate06_Update
     /* 1FBC4 8002F3C4 E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 1FBC8 8002F3C8 1000BFAF */  sw         $ra, 0x10($sp)
     /* 1FBCC 8002F3CC 47B2000C */  jal        Gamestate06SubstateStub_Noop
@@ -32886,7 +32886,7 @@ glabel OverlayScreen_Update
     /* 1FBD8 8002F3D8 1800BD27 */  addiu      $sp, $sp, 0x18
     /* 1FBDC 8002F3DC 0800E003 */  jr         $ra
     /* 1FBE0 8002F3E0 00000000 */   nop
-endlabel OverlayScreen_Update
+endlabel Gamestate06_Update
 .endif
 
 .section .text.DragonRescue_Update, "ax"
@@ -37589,15 +37589,15 @@ glabel GamestateUpdate
   .L80033900:
     /* 24100 80033900 05006214 */  bne        $v1, $v0, .L80033918
     /* 24104 80033904 07000224 */   addiu     $v0, $zero, 0x7
-    /* 24108 80033908 F1BC000C */  jal        OverlayScreen_Update
+    /* 24108 80033908 F1BC000C */  jal        Gamestate06_Update
     /* 2410C 8003390C 00000000 */   nop
     /* 24110 80033910 0CCF0008 */  j          .L80033C30
     /* 24114 80033914 00000000 */   nop
   .L80033918:
     /* 24118 80033918 08006214 */  bne        $v1, $v0, .L8003393C
     /* 2411C 8003391C 08000224 */   addiu     $v0, $zero, 0x8
-    /* 24120 80033920 0780023C */  lui        $v0, %hi(g_pfnGamestate7Handler)
-    /* 24124 80033924 C057428C */  lw         $v0, %lo(g_pfnGamestate7Handler)($v0)
+    /* 24120 80033920 0780023C */  lui        $v0, %hi(g_pfnFlightResultsUpdate)
+    /* 24124 80033924 C057428C */  lw         $v0, %lo(g_pfnFlightResultsUpdate)($v0)
     /* 24128 80033928 00000000 */  nop
     /* 2412C 8003392C 09F84000 */  jalr       $v0
     /* 24130 80033930 00000000 */   nop
@@ -40679,8 +40679,8 @@ glabel UpdateCameraSpringForMode
     /* 26C4C 8003644C 79054228 */  slti       $v0, $v0, 0x579
     /* 26C50 80036450 07004014 */  bnez       $v0, .L80036470
     /* 26C54 80036454 00000000 */   nop
-    /* 26C58 80036458 0780023C */  lui        $v0, %hi(g_anCameraParamMode2Reverse)
-    /* 26C5C 8003645C 64C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode2Reverse)
+    /* 26C58 80036458 0780023C */  lui        $v0, %hi(g_anCameraParamFollowFacing)
+    /* 26C5C 8003645C 64C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFollowFacing)
     /* 26C60 80036460 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 26C64 80036464 A86E22AC */  sw         $v0, %lo(g_pCameraTargetParams)($at)
     /* 26C68 80036468 2DD90008 */  j          .L800364B4
@@ -40688,8 +40688,8 @@ glabel UpdateCameraSpringForMode
   .L80036470:
     /* 26C70 80036470 0780023C */  lui        $v0, %hi(g_dwActiveCameraOptions)
     /* 26C74 80036474 1459428C */  lw         $v0, %lo(g_dwActiveCameraOptions)($v0)
-    /* 26C78 80036478 0780033C */  lui        $v1, %hi(g_anCameraParamMode2Front)
-    /* 26C7C 8003647C 34C96324 */  addiu      $v1, $v1, %lo(g_anCameraParamMode2Front)
+    /* 26C78 80036478 0780033C */  lui        $v1, %hi(g_anCameraParamFollowBehind)
+    /* 26C7C 8003647C 34C96324 */  addiu      $v1, $v1, %lo(g_anCameraParamFollowBehind)
     /* 26C80 80036480 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 26C84 80036484 A86E23AC */  sw         $v1, %lo(g_pCameraTargetParams)($at)
     /* 26C88 80036488 40004230 */  andi       $v0, $v0, 0x40
@@ -40737,8 +40737,8 @@ glabel UpdateCameraSpringForMode
   .L8003652C:
     /* 26D2C 8003652C 0880033C */  lui        $v1, %hi(g_nSpyroBodyYaw)
     /* 26D30 80036530 748B638C */  lw         $v1, %lo(g_nSpyroBodyYaw)($v1)
-    /* 26D34 80036534 0780023C */  lui        $v0, %hi(g_anCameraParamMode3)
-    /* 26D38 80036538 94C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode3)
+    /* 26D34 80036534 0780023C */  lui        $v0, %hi(g_anCameraParamCharge)
+    /* 26D38 80036538 94C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamCharge)
     /* 26D3C 8003653C 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 26D40 80036540 A86E22AC */  sw         $v0, %lo(g_pCameraTargetParams)($at)
     /* 26D44 80036544 0880023C */  lui        $v0, %hi(g_anSpyroWorldPos)
@@ -40806,13 +40806,13 @@ glabel UpdateCameraSpringForMode
   .L80036638:
     /* 26E38 80036638 05008018 */  blez       $a0, .L80036650
     /* 26E3C 8003663C 00000000 */   nop
-    /* 26E40 80036640 0780023C */  lui        $v0, %hi(g_anCameraParamMode5RightBias)
-    /* 26E44 80036644 4CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode5RightBias)
+    /* 26E40 80036640 0780023C */  lui        $v0, %hi(g_anCameraParamGlideRightBias)
+    /* 26E44 80036644 4CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamGlideRightBias)
     /* 26E48 80036648 97D90008 */  j          .L8003665C
     /* 26E4C 8003664C 100042AE */   sw        $v0, 0x10($s2)
   .L80036650:
-    /* 26E50 80036650 0780023C */  lui        $v0, %hi(g_anCameraParamMode5LeftBias)
-    /* 26E54 80036654 7CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode5LeftBias)
+    /* 26E50 80036650 0780023C */  lui        $v0, %hi(g_anCameraParamGlideLeftBias)
+    /* 26E54 80036654 7CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamGlideLeftBias)
     /* 26E58 80036658 100042AE */  sw         $v0, 0x10($s2)
   .L8003665C:
     /* 26E5C 8003665C 0780023C */  lui        $v0, %hi(g_nCameraTargetYawBiasFromMode)
@@ -40840,20 +40840,20 @@ glabel UpdateCameraSpringForMode
   .L800366B0:
     /* 26EB0 800366B0 05004014 */  bnez       $v0, .L800366C8
     /* 26EB4 800366B4 00FF8228 */   slti      $v0, $a0, -0x100
-    /* 26EB8 800366B8 0780023C */  lui        $v0, %hi(g_anCameraParamMode5RightBias)
-    /* 26EBC 800366BC 4CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode5RightBias)
+    /* 26EB8 800366B8 0780023C */  lui        $v0, %hi(g_anCameraParamGlideRightBias)
+    /* 26EBC 800366BC 4CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamGlideRightBias)
     /* 26EC0 800366C0 BAD90008 */  j          .L800366E8
     /* 26EC4 800366C4 00000000 */   nop
   .L800366C8:
     /* 26EC8 800366C8 05004010 */  beqz       $v0, .L800366E0
     /* 26ECC 800366CC 00000000 */   nop
-    /* 26ED0 800366D0 0780023C */  lui        $v0, %hi(g_anCameraParamMode5LeftBias)
-    /* 26ED4 800366D4 7CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode5LeftBias)
+    /* 26ED0 800366D0 0780023C */  lui        $v0, %hi(g_anCameraParamGlideLeftBias)
+    /* 26ED4 800366D4 7CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamGlideLeftBias)
     /* 26ED8 800366D8 BAD90008 */  j          .L800366E8
     /* 26EDC 800366DC 00000000 */   nop
   .L800366E0:
-    /* 26EE0 800366E0 0780023C */  lui        $v0, %hi(g_anCameraParamMode2Front)
-    /* 26EE4 800366E4 34C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode2Front)
+    /* 26EE0 800366E0 0780023C */  lui        $v0, %hi(g_anCameraParamFollowBehind)
+    /* 26EE4 800366E4 34C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFollowBehind)
   .L800366E8:
     /* 26EE8 800366E8 0780043C */  lui        $a0, %hi(g_anCameraPos)
     /* 26EEC 800366EC F86D8424 */  addiu      $a0, $a0, %lo(g_anCameraPos)
@@ -40869,8 +40869,8 @@ glabel UpdateCameraSpringForMode
     /* 26F14 80036714 0080023C */   lui       $v0, (0x80000009 >> 16)
   .L80036718:
     /* 26F18 80036718 21200002 */  addu       $a0, $s0, $zero
-    /* 26F1C 8003671C 0780023C */  lui        $v0, %hi(g_anCameraParamMode2Front)
-    /* 26F20 80036720 34C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode2Front)
+    /* 26F1C 8003671C 0780023C */  lui        $v0, %hi(g_anCameraParamFollowBehind)
+    /* 26F20 80036720 34C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFollowBehind)
     /* 26F24 80036724 C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 26F28 80036728 100042AE */   sw        $v0, 0x10($s2)
     /* 26F2C 8003672C C8FF438E */  lw         $v1, -0x38($s2)
@@ -40923,8 +40923,8 @@ glabel UpdateCameraSpringForMode
     /* 26FE4 800367E4 79058228 */   slti      $v0, $a0, 0x579
     /* 26FE8 800367E8 07004014 */  bnez       $v0, .L80036808
     /* 26FEC 800367EC 00000000 */   nop
-    /* 26FF0 800367F0 0780023C */  lui        $v0, %hi(g_anCameraParamMode2Reverse)
-    /* 26FF4 800367F4 64C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode2Reverse)
+    /* 26FF0 800367F0 0780023C */  lui        $v0, %hi(g_anCameraParamFollowFacing)
+    /* 26FF4 800367F4 64C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFollowFacing)
     /* 26FF8 800367F8 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 26FFC 800367FC A86E22AC */  sw         $v0, %lo(g_pCameraTargetParams)($at)
     /* 27000 80036800 13DA0008 */  j          .L8003684C
@@ -40933,8 +40933,8 @@ glabel UpdateCameraSpringForMode
     /* 27008 80036808 0780033C */  lui        $v1, %hi(g_pCameraTargetParams)
     /* 2700C 8003680C A86E6324 */  addiu      $v1, $v1, %lo(g_pCameraTargetParams)
     /* 27010 80036810 50FF6424 */  addiu      $a0, $v1, -0xB0
-    /* 27014 80036814 0780023C */  lui        $v0, %hi(g_anCameraParamMode2Front)
-    /* 27018 80036818 34C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode2Front)
+    /* 27014 80036814 0780023C */  lui        $v0, %hi(g_anCameraParamFollowBehind)
+    /* 27018 80036818 34C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFollowBehind)
     /* 2701C 8003681C C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 27020 80036820 000062AC */   sw        $v0, 0x0($v1)
     /* 27024 80036824 0780033C */  lui        $v1, %hi(g_nCameraYaw)
@@ -41128,15 +41128,15 @@ glabel UpdateCameraSpringForMode
     /* 272D8 80036AD8 79054228 */  slti       $v0, $v0, 0x579
     /* 272DC 80036ADC 05004014 */  bnez       $v0, .L80036AF4
     /* 272E0 80036AE0 00000000 */   nop
-    /* 272E4 80036AE4 0780023C */  lui        $v0, %hi(g_anCameraParamMode4Reverse)
-    /* 272E8 80036AE8 DCC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode4Reverse)
+    /* 272E4 80036AE4 0780023C */  lui        $v0, %hi(g_anCameraParamFallFacing)
+    /* 272E8 80036AE8 DCC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFallFacing)
     /* 272EC 80036AEC A9DB0008 */  j          .L80036EA4
     /* 272F0 80036AF0 00000000 */   nop
   .L80036AF4:
     /* 272F4 80036AF4 0780023C */  lui        $v0, %hi(g_dwActiveCameraOptions)
     /* 272F8 80036AF8 1459428C */  lw         $v0, %lo(g_dwActiveCameraOptions)($v0)
-    /* 272FC 80036AFC 0780033C */  lui        $v1, %hi(g_anCameraParamMode4Front)
-    /* 27300 80036B00 ACC96324 */  addiu      $v1, $v1, %lo(g_anCameraParamMode4Front)
+    /* 272FC 80036AFC 0780033C */  lui        $v1, %hi(g_anCameraParamFallBehind)
+    /* 27300 80036B00 ACC96324 */  addiu      $v1, $v1, %lo(g_anCameraParamFallBehind)
     /* 27304 80036B04 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 27308 80036B08 A86E23AC */  sw         $v1, %lo(g_pCameraTargetParams)($at)
     /* 2730C 80036B0C 40004230 */  andi       $v0, $v0, 0x40
@@ -41159,8 +41159,8 @@ glabel UpdateCameraSpringForMode
   .L80036B48:
     /* 27348 80036B48 0880033C */  lui        $v1, %hi(g_nSpyroBodyYaw)
     /* 2734C 80036B4C 748B638C */  lw         $v1, %lo(g_nSpyroBodyYaw)($v1)
-    /* 27350 80036B50 0780023C */  lui        $v0, %hi(g_anCameraParamMode9ScriptStick)
-    /* 27354 80036B54 0CCA4224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode9ScriptStick)
+    /* 27350 80036B50 0780023C */  lui        $v0, %hi(g_anCameraParamFreeLook)
+    /* 27354 80036B54 0CCA4224 */  addiu      $v0, $v0, %lo(g_anCameraParamFreeLook)
     /* 27358 80036B58 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 2735C 80036B5C A86E22AC */  sw         $v0, %lo(g_pCameraTargetParams)($at)
     /* 27360 80036B60 0880023C */  lui        $v0, %hi(g_anSpyroWorldPos)
@@ -41384,13 +41384,13 @@ glabel UpdateCameraSpringForMode
     /* 27680 80036E80 79054228 */  slti       $v0, $v0, 0x579
     /* 27684 80036E84 05004014 */  bnez       $v0, .L80036E9C
     /* 27688 80036E88 00000000 */   nop
-    /* 2768C 80036E8C 0780023C */  lui        $v0, %hi(g_anCameraParamMode2Reverse)
-    /* 27690 80036E90 64C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode2Reverse)
+    /* 2768C 80036E8C 0780023C */  lui        $v0, %hi(g_anCameraParamFollowFacing)
+    /* 27690 80036E90 64C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFollowFacing)
     /* 27694 80036E94 A9DB0008 */  j          .L80036EA4
     /* 27698 80036E98 00000000 */   nop
   .L80036E9C:
-    /* 2769C 80036E9C 0780023C */  lui        $v0, %hi(g_anCameraParamMode2Front)
-    /* 276A0 80036EA0 34C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode2Front)
+    /* 2769C 80036E9C 0780023C */  lui        $v0, %hi(g_anCameraParamFollowBehind)
+    /* 276A0 80036EA0 34C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFollowBehind)
   .L80036EA4:
     /* 276A4 80036EA4 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 276A8 80036EA8 A86E22AC */  sw         $v0, %lo(g_pCameraTargetParams)($at)
@@ -41467,8 +41467,8 @@ glabel UpdateCameraSpringForMode
     /* 277B4 80036FB4 A46E22AC */  sw         $v0, %lo(g_nCameraTargetYawBiasFromMode)($at)
     /* 277B8 80036FB8 71006014 */  bnez       $v1, .L80037180
     /* 277BC 80036FBC 0080023C */   lui       $v0, (0x80000009 >> 16)
-    /* 277C0 80036FC0 0780023C */  lui        $v0, %hi(g_anCameraParamModeC_ScriptedFollow)
-    /* 277C4 80036FC4 74CB4224 */  addiu      $v0, $v0, %lo(g_anCameraParamModeC_ScriptedFollow)
+    /* 277C0 80036FC0 0780023C */  lui        $v0, %hi(g_anCameraParamScriptedFollow)
+    /* 277C4 80036FC4 74CB4224 */  addiu      $v0, $v0, %lo(g_anCameraParamScriptedFollow)
     /* 277C8 80036FC8 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 277CC 80036FCC A86E22AC */  sw         $v0, %lo(g_pCameraTargetParams)($at)
     /* 277D0 80036FD0 C2CF000C */  jal        ComputeCameraToTargetAngle
@@ -42224,8 +42224,8 @@ glabel UpdateLevelTransitionCamera
     /* 28268 80037A68 0A004228 */  slti       $v0, $v0, 0xA
     /* 2826C 80037A6C 05004014 */  bnez       $v0, .L80037A84
     /* 28270 80037A70 00000000 */   nop
-    /* 28274 80037A74 0780023C */  lui        $v0, %hi(g_anCameraParamMode2Reverse)
-    /* 28278 80037A78 64C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamMode2Reverse)
+    /* 28274 80037A74 0780023C */  lui        $v0, %hi(g_anCameraParamFollowFacing)
+    /* 28278 80037A78 64C94224 */  addiu      $v0, $v0, %lo(g_anCameraParamFollowFacing)
     /* 2827C 80037A7C B6DE0008 */  j          .L80037AD8
     /* 28280 80037A80 00000000 */   nop
   .L80037A84:
@@ -55377,8 +55377,8 @@ glabel UpdateSpyroStateBehavior
     /* 336C0 80042EC0 0D004010 */  beqz       $v0, .L80042EF8
     /* 336C4 80042EC4 00000000 */   nop
   .L80042EC8:
-    /* 336C8 80042EC8 0780023C */  lui        $v0, %hi(g_pfnLevelFallImpactCallback)
-    /* 336CC 80042ECC 9456428C */  lw         $v0, %lo(g_pfnLevelFallImpactCallback)($v0)
+    /* 336C8 80042EC8 0780023C */  lui        $v0, %hi(g_pfnLevelEndFlightRun)
+    /* 336CC 80042ECC 9456428C */  lw         $v0, %lo(g_pfnLevelEndFlightRun)($v0)
     /* 336D0 80042ED0 00000000 */  nop
     /* 336D4 80042ED4 09F84000 */  jalr       $v0
     /* 336D8 80042ED8 00000000 */   nop
@@ -61222,8 +61222,8 @@ glabel DispatchSpyroPhysicsByState
     /* 38AF4 800482F4 64010624 */   addiu     $a2, $zero, 0x164
     /* 38AF8 800482F8 A7004010 */  beqz       $v0, .L80048598
     /* 38AFC 800482FC 00000000 */   nop
-    /* 38B00 80048300 0780023C */  lui        $v0, %hi(g_pfnLevelFallImpactCallback)
-    /* 38B04 80048304 9456428C */  lw         $v0, %lo(g_pfnLevelFallImpactCallback)($v0)
+    /* 38B00 80048300 0780023C */  lui        $v0, %hi(g_pfnLevelEndFlightRun)
+    /* 38B04 80048304 9456428C */  lw         $v0, %lo(g_pfnLevelEndFlightRun)($v0)
     /* 38B08 80048308 00000000 */  nop
     /* 38B0C 8004830C 09F84000 */  jalr       $v0
     /* 38B10 80048310 00000000 */   nop
@@ -63611,8 +63611,8 @@ glabel TickSpyroGameplayFrame
     /* 3AC74 8004A474 00000000 */  nop
     /* 3AC78 8004A478 17004010 */  beqz       $v0, .L8004A4D8
     /* 3AC7C 8004A47C 00000000 */   nop
-    /* 3AC80 8004A480 0780023C */  lui        $v0, %hi(g_pfnLevelFallImpactCallback)
-    /* 3AC84 8004A484 9456428C */  lw         $v0, %lo(g_pfnLevelFallImpactCallback)($v0)
+    /* 3AC80 8004A480 0780023C */  lui        $v0, %hi(g_pfnLevelEndFlightRun)
+    /* 3AC84 8004A484 9456428C */  lw         $v0, %lo(g_pfnLevelEndFlightRun)($v0)
     /* 3AC88 8004A488 00000000 */  nop
     /* 3AC8C 8004A48C 09F84000 */  jalr       $v0
     /* 3AC90 8004A490 00000000 */   nop
@@ -82084,20 +82084,20 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B1CC 8005A9CC BC5622AC */  sw         $v0, %lo(g_pfnLevelAdvanceEmitList)($at)
     /* 4B1D0 8005A9D0 0880023C */  lui        $v0, %hi(D_8007AE08_lv25)
     /* 4B1D4 8005A9D4 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08_lv25)
-    /* 4B1D8 8005A9D8 0780013C */  lui        $at, %hi(g_pfnLevelFallImpactCallback)
-    /* 4B1DC 8005A9DC 945622AC */  sw         $v0, %lo(g_pfnLevelFallImpactCallback)($at)
+    /* 4B1D8 8005A9D8 0780013C */  lui        $at, %hi(g_pfnLevelEndFlightRun)
+    /* 4B1DC 8005A9DC 945622AC */  sw         $v0, %lo(g_pfnLevelEndFlightRun)($at)
     /* 4B1E0 8005A9E0 0880023C */  lui        $v0, %hi(D_8007AEDC_lv25)
     /* 4B1E4 8005A9E4 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC_lv25)
     /* 4B1E8 8005A9E8 0780013C */  lui        $at, %hi(g_pfnLevelHandleFlightResults)
     /* 4B1EC 8005A9EC A85722AC */  sw         $v0, %lo(g_pfnLevelHandleFlightResults)($at)
     /* 4B1F0 8005A9F0 0880023C */  lui        $v0, %hi(D_8007B1FC_lv25)
     /* 4B1F4 8005A9F4 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC_lv25)
-    /* 4B1F8 8005A9F8 0780013C */  lui        $at, %hi(g_pfnGamestate7Handler)
-    /* 4B1FC 8005A9FC C05722AC */  sw         $v0, %lo(g_pfnGamestate7Handler)($at)
+    /* 4B1F8 8005A9F8 0780013C */  lui        $at, %hi(g_pfnFlightResultsUpdate)
+    /* 4B1FC 8005A9FC C05722AC */  sw         $v0, %lo(g_pfnFlightResultsUpdate)($at)
     /* 4B200 8005AA00 0880023C */  lui        $v0, %hi(D_8007B68C_lv25)
     /* 4B204 8005AA04 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C_lv25)
-    /* 4B208 8005AA08 0780013C */  lui        $at, %hi(g_pfnGamestate7DrawHook)
-    /* 4B20C 8005AA0C 7C5622AC */  sw         $v0, %lo(g_pfnGamestate7DrawHook)($at)
+    /* 4B208 8005AA08 0780013C */  lui        $at, %hi(g_pfnFlightResultsDraw)
+    /* 4B20C 8005AA0C 7C5622AC */  sw         $v0, %lo(g_pfnFlightResultsDraw)($at)
     /* 4B210 8005AA10 0880023C */  lui        $v0, %hi(D_8007B4B0_lv25)
     /* 4B214 8005AA14 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0_lv25)
     /* 4B218 8005AA18 0780013C */  lui        $at, %hi(g_pfnFlightTimeFormatter)
@@ -82286,20 +82286,20 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B4DC 8005ACDC BC5622AC */  sw         $v0, %lo(g_pfnLevelAdvanceEmitList)($at)
     /* 4B4E0 8005ACE0 0880023C */  lui        $v0, %hi(D_8007AE08_lv25)
     /* 4B4E4 8005ACE4 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08_lv25)
-    /* 4B4E8 8005ACE8 0780013C */  lui        $at, %hi(g_pfnLevelFallImpactCallback)
-    /* 4B4EC 8005ACEC 945622AC */  sw         $v0, %lo(g_pfnLevelFallImpactCallback)($at)
+    /* 4B4E8 8005ACE8 0780013C */  lui        $at, %hi(g_pfnLevelEndFlightRun)
+    /* 4B4EC 8005ACEC 945622AC */  sw         $v0, %lo(g_pfnLevelEndFlightRun)($at)
     /* 4B4F0 8005ACF0 0880023C */  lui        $v0, %hi(D_8007AEDC_lv25)
     /* 4B4F4 8005ACF4 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC_lv25)
     /* 4B4F8 8005ACF8 0780013C */  lui        $at, %hi(g_pfnLevelHandleFlightResults)
     /* 4B4FC 8005ACFC A85722AC */  sw         $v0, %lo(g_pfnLevelHandleFlightResults)($at)
     /* 4B500 8005AD00 0880023C */  lui        $v0, %hi(D_8007B1FC_lv25)
     /* 4B504 8005AD04 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC_lv25)
-    /* 4B508 8005AD08 0780013C */  lui        $at, %hi(g_pfnGamestate7Handler)
-    /* 4B50C 8005AD0C C05722AC */  sw         $v0, %lo(g_pfnGamestate7Handler)($at)
+    /* 4B508 8005AD08 0780013C */  lui        $at, %hi(g_pfnFlightResultsUpdate)
+    /* 4B50C 8005AD0C C05722AC */  sw         $v0, %lo(g_pfnFlightResultsUpdate)($at)
     /* 4B510 8005AD10 0880023C */  lui        $v0, %hi(D_8007B68C_lv25)
     /* 4B514 8005AD14 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C_lv25)
-    /* 4B518 8005AD18 0780013C */  lui        $at, %hi(g_pfnGamestate7DrawHook)
-    /* 4B51C 8005AD1C 7C5622AC */  sw         $v0, %lo(g_pfnGamestate7DrawHook)($at)
+    /* 4B518 8005AD18 0780013C */  lui        $at, %hi(g_pfnFlightResultsDraw)
+    /* 4B51C 8005AD1C 7C5622AC */  sw         $v0, %lo(g_pfnFlightResultsDraw)($at)
     /* 4B520 8005AD20 0880023C */  lui        $v0, %hi(D_8007B4B0_lv25)
     /* 4B524 8005AD24 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0_lv25)
     /* 4B528 8005AD28 0780013C */  lui        $at, %hi(g_pfnFlightTimeFormatter)
@@ -82452,20 +82452,20 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B75C 8005AF5C BC5622AC */  sw         $v0, %lo(g_pfnLevelAdvanceEmitList)($at)
     /* 4B760 8005AF60 0880023C */  lui        $v0, %hi(D_8007AE08_lv25)
     /* 4B764 8005AF64 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08_lv25)
-    /* 4B768 8005AF68 0780013C */  lui        $at, %hi(g_pfnLevelFallImpactCallback)
-    /* 4B76C 8005AF6C 945622AC */  sw         $v0, %lo(g_pfnLevelFallImpactCallback)($at)
+    /* 4B768 8005AF68 0780013C */  lui        $at, %hi(g_pfnLevelEndFlightRun)
+    /* 4B76C 8005AF6C 945622AC */  sw         $v0, %lo(g_pfnLevelEndFlightRun)($at)
     /* 4B770 8005AF70 0880023C */  lui        $v0, %hi(D_8007AEDC_lv25)
     /* 4B774 8005AF74 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC_lv25)
     /* 4B778 8005AF78 0780013C */  lui        $at, %hi(g_pfnLevelHandleFlightResults)
     /* 4B77C 8005AF7C A85722AC */  sw         $v0, %lo(g_pfnLevelHandleFlightResults)($at)
     /* 4B780 8005AF80 0880023C */  lui        $v0, %hi(D_8007B1FC_lv25)
     /* 4B784 8005AF84 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC_lv25)
-    /* 4B788 8005AF88 0780013C */  lui        $at, %hi(g_pfnGamestate7Handler)
-    /* 4B78C 8005AF8C C05722AC */  sw         $v0, %lo(g_pfnGamestate7Handler)($at)
+    /* 4B788 8005AF88 0780013C */  lui        $at, %hi(g_pfnFlightResultsUpdate)
+    /* 4B78C 8005AF8C C05722AC */  sw         $v0, %lo(g_pfnFlightResultsUpdate)($at)
     /* 4B790 8005AF90 0880023C */  lui        $v0, %hi(D_8007B68C_lv25)
     /* 4B794 8005AF94 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C_lv25)
-    /* 4B798 8005AF98 0780013C */  lui        $at, %hi(g_pfnGamestate7DrawHook)
-    /* 4B79C 8005AF9C 7C5622AC */  sw         $v0, %lo(g_pfnGamestate7DrawHook)($at)
+    /* 4B798 8005AF98 0780013C */  lui        $at, %hi(g_pfnFlightResultsDraw)
+    /* 4B79C 8005AF9C 7C5622AC */  sw         $v0, %lo(g_pfnFlightResultsDraw)($at)
     /* 4B7A0 8005AFA0 0880023C */  lui        $v0, %hi(D_8007B4B0_lv25)
     /* 4B7A4 8005AFA4 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0_lv25)
     /* 4B7A8 8005AFA8 0780013C */  lui        $at, %hi(g_pfnFlightTimeFormatter)
@@ -82618,20 +82618,20 @@ glabel ApplyPerLevelGlobalsTable
     /* 4B9DC 8005B1DC BC5622AC */  sw         $v0, %lo(g_pfnLevelAdvanceEmitList)($at)
     /* 4B9E0 8005B1E0 0880023C */  lui        $v0, %hi(D_8007AE08_lv25)
     /* 4B9E4 8005B1E4 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08_lv25)
-    /* 4B9E8 8005B1E8 0780013C */  lui        $at, %hi(g_pfnLevelFallImpactCallback)
-    /* 4B9EC 8005B1EC 945622AC */  sw         $v0, %lo(g_pfnLevelFallImpactCallback)($at)
+    /* 4B9E8 8005B1E8 0780013C */  lui        $at, %hi(g_pfnLevelEndFlightRun)
+    /* 4B9EC 8005B1EC 945622AC */  sw         $v0, %lo(g_pfnLevelEndFlightRun)($at)
     /* 4B9F0 8005B1F0 0880023C */  lui        $v0, %hi(D_8007AEDC_lv25)
     /* 4B9F4 8005B1F4 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC_lv25)
     /* 4B9F8 8005B1F8 0780013C */  lui        $at, %hi(g_pfnLevelHandleFlightResults)
     /* 4B9FC 8005B1FC A85722AC */  sw         $v0, %lo(g_pfnLevelHandleFlightResults)($at)
     /* 4BA00 8005B200 0880023C */  lui        $v0, %hi(D_8007B1FC_lv25)
     /* 4BA04 8005B204 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC_lv25)
-    /* 4BA08 8005B208 0780013C */  lui        $at, %hi(g_pfnGamestate7Handler)
-    /* 4BA0C 8005B20C C05722AC */  sw         $v0, %lo(g_pfnGamestate7Handler)($at)
+    /* 4BA08 8005B208 0780013C */  lui        $at, %hi(g_pfnFlightResultsUpdate)
+    /* 4BA0C 8005B20C C05722AC */  sw         $v0, %lo(g_pfnFlightResultsUpdate)($at)
     /* 4BA10 8005B210 0880023C */  lui        $v0, %hi(D_8007B68C_lv25)
     /* 4BA14 8005B214 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C_lv25)
-    /* 4BA18 8005B218 0780013C */  lui        $at, %hi(g_pfnGamestate7DrawHook)
-    /* 4BA1C 8005B21C 7C5622AC */  sw         $v0, %lo(g_pfnGamestate7DrawHook)($at)
+    /* 4BA18 8005B218 0780013C */  lui        $at, %hi(g_pfnFlightResultsDraw)
+    /* 4BA1C 8005B21C 7C5622AC */  sw         $v0, %lo(g_pfnFlightResultsDraw)($at)
     /* 4BA20 8005B220 0880023C */  lui        $v0, %hi(D_8007B4B0_lv25)
     /* 4BA24 8005B224 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0_lv25)
     /* 4BA28 8005B228 0780013C */  lui        $at, %hi(g_pfnFlightTimeFormatter)
@@ -82784,20 +82784,20 @@ glabel ApplyPerLevelGlobalsTable
     /* 4BC5C 8005B45C BC5622AC */  sw         $v0, %lo(g_pfnLevelAdvanceEmitList)($at)
     /* 4BC60 8005B460 0880023C */  lui        $v0, %hi(D_8007AE08_lv25)
     /* 4BC64 8005B464 08AE4224 */  addiu      $v0, $v0, %lo(D_8007AE08_lv25)
-    /* 4BC68 8005B468 0780013C */  lui        $at, %hi(g_pfnLevelFallImpactCallback)
-    /* 4BC6C 8005B46C 945622AC */  sw         $v0, %lo(g_pfnLevelFallImpactCallback)($at)
+    /* 4BC68 8005B468 0780013C */  lui        $at, %hi(g_pfnLevelEndFlightRun)
+    /* 4BC6C 8005B46C 945622AC */  sw         $v0, %lo(g_pfnLevelEndFlightRun)($at)
     /* 4BC70 8005B470 0880023C */  lui        $v0, %hi(D_8007AEDC_lv25)
     /* 4BC74 8005B474 DCAE4224 */  addiu      $v0, $v0, %lo(D_8007AEDC_lv25)
     /* 4BC78 8005B478 0780013C */  lui        $at, %hi(g_pfnLevelHandleFlightResults)
     /* 4BC7C 8005B47C A85722AC */  sw         $v0, %lo(g_pfnLevelHandleFlightResults)($at)
     /* 4BC80 8005B480 0880023C */  lui        $v0, %hi(D_8007B1FC_lv25)
     /* 4BC84 8005B484 FCB14224 */  addiu      $v0, $v0, %lo(D_8007B1FC_lv25)
-    /* 4BC88 8005B488 0780013C */  lui        $at, %hi(g_pfnGamestate7Handler)
-    /* 4BC8C 8005B48C C05722AC */  sw         $v0, %lo(g_pfnGamestate7Handler)($at)
+    /* 4BC88 8005B488 0780013C */  lui        $at, %hi(g_pfnFlightResultsUpdate)
+    /* 4BC8C 8005B48C C05722AC */  sw         $v0, %lo(g_pfnFlightResultsUpdate)($at)
     /* 4BC90 8005B490 0880023C */  lui        $v0, %hi(D_8007B68C_lv25)
     /* 4BC94 8005B494 8CB64224 */  addiu      $v0, $v0, %lo(D_8007B68C_lv25)
-    /* 4BC98 8005B498 0780013C */  lui        $at, %hi(g_pfnGamestate7DrawHook)
-    /* 4BC9C 8005B49C 7C5622AC */  sw         $v0, %lo(g_pfnGamestate7DrawHook)($at)
+    /* 4BC98 8005B498 0780013C */  lui        $at, %hi(g_pfnFlightResultsDraw)
+    /* 4BC9C 8005B49C 7C5622AC */  sw         $v0, %lo(g_pfnFlightResultsDraw)($at)
     /* 4BCA0 8005B4A0 0880023C */  lui        $v0, %hi(D_8007B4B0_lv25)
     /* 4BCA4 8005B4A4 B0B44224 */  addiu      $v0, $v0, %lo(D_8007B4B0_lv25)
     /* 4BCA8 8005B4A8 0780013C */  lui        $at, %hi(g_pfnFlightTimeFormatter)

@@ -17,10 +17,12 @@ struct NameRec {
 #define REC(p) (*(struct NameRec *volatile *)&(p)->state)
 
 /* Spells a name out in floating letter actors around `sign`. With `named` set
-   the text is the level name for the sign's own level id and the arc hangs off
-   the sign's yaw (mirrored, and flipped through the origin, when the sign's
-   ->subMode is non-zero); otherwise it is the balloonist's name laid out
-   facing Spyro. Letters are spawned through g_pfnLevelSpawnActor ('A'-'Z'
+   (NAME_LETTERS_LEVEL) the text is the level name for the sign's own level id
+   and the arc hangs off the sign's yaw (mirrored, and flipped through the
+   origin, when the sign's ->subMode is non-zero); otherwise it is "RETURN
+   HOME" (slot 0 of g_apBalloonistNames, ahead of the per-world names) laid out
+   facing Spyro, as the level-exit whirlwinds show it. Letters are spawned
+   through g_pfnLevelSpawnActor ('A'-'Z'
    map to id 0x1AA.., anything else to 0x4C) and threaded onto a radial arc:
    each glyph sits one `spacing` step further round the ring, bent outward by
    `bend` and lifted by the cosine of its position ('L' actors get an extra
@@ -53,7 +55,7 @@ void SpawnNameLetterActors(Actor *sign, int named) {
   } else {
     name = g_apBalloonistNames[0];
     yaw = ArcTan2(g_anSpyroWorldPos[0] - sign->posX,
-                  g_nSpyroWorldPosY - sign->posY, 0);
+                  g_nSpyroWorldPosY - sign->posY, ATAN_ANGLE8);
   }
   a = yaw & 0xff;
   ang = a * 16;

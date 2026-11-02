@@ -65,7 +65,7 @@ SDATA(g_pSpyroContactActor, 4);
     keep##from : if ((signed char)ArcTan2(                                     \
                          g_anCollisionProbeVec[2],                             \
                          VectorLength(g_anCollisionProbeVec, VEC_LEN_XY),      \
-                         0) >= 0x17) {                                         \
+                         ATAN_ANGLE8) >= 0x17) {                               \
       int t = g_nGroundSurfaceType & 0x3F;                                     \
       unsigned char kind;                                                      \
                                                                                \
@@ -221,7 +221,8 @@ int AdvanceSpyroPhysics(void) {
 
               SubtractVector(e, (int *)&rq2[-SPY_REQUEST],
                              ACTOR_POS(g_pScriptedCameraActor));
-              a = ((ArcTan2(e[0], e[1], 0) - g_pScriptedCameraActor->rotZ) +
+              a = ((ArcTan2(e[0], e[1], ATAN_ANGLE8) -
+                    g_pScriptedCameraActor->rotZ) +
                    0x80) &
                   0xFF;
               if (a > 0x80) {
@@ -245,7 +246,7 @@ int AdvanceSpyroPhysics(void) {
                 int t;
 
                 SubtractVector(e, ACTOR_POS(SPY[SPY_SCRIPTED_ACTOR]), SPY);
-                a = ArcTan2(e[0], e[1], 1);
+                a = ArcTan2(e[0], e[1], ATAN_ANGLE12);
                 h = g_pScriptedCameraActor->rotZ;
                 a = (a - (h << 4)) & 0xFFF;
                 if (a < 0x800) {
@@ -355,9 +356,9 @@ int AdvanceSpyroPhysics(void) {
           switch (*st) {
           case SPYRO_ST_CHARGE_AIR:
             if (st[1] & SPYRO_SUB_SUPERCHARGE) {
-              hit = DispatchActorContactAtSphere(pos, 0x164,
-                                                 &g_dwSpyroTriggerEventFlags,
-                                                 ACTOR_HIT_SUPER, 0, 0);
+              hit = DispatchActorContactAtSphere(
+                  pos, 0x164, &g_dwSpyroTriggerEventFlags, ACTOR_HIT_SUPER, 0,
+                  CONTACT_STOP_AT_SOLID);
               if (hit == 0) {
                 goto collide;
               }
@@ -387,8 +388,9 @@ int AdvanceSpyroPhysics(void) {
           case SPYRO_ST_SUPERCHARGE_AIR:
           case SPYRO_ST_SUPERCHARGE:
             mask |= ACTOR_HIT_SUPER;
-            hit = DispatchActorContactAtSphere(
-                pos, 0x164, &g_dwSpyroTriggerEventFlags, mask, 0, 0);
+            hit = DispatchActorContactAtSphere(pos, 0x164,
+                                               &g_dwSpyroTriggerEventFlags,
+                                               mask, 0, CONTACT_STOP_AT_SOLID);
             if (hit == 0) {
               goto collide;
             }

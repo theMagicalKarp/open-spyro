@@ -6,6 +6,7 @@
    direction from the actor to Spyro. */
 int IsActorFacingSpyro(Actor *actor, int threshold) {
   return AbsAngleDelta8(ArcTan2(g_anSpyroWorldPos[0] - actor->posX,
-                                g_anSpyroWorldPos[1] - actor->posY, 0),
+                                g_anSpyroWorldPos[1] - actor->posY,
+                                ATAN_ANGLE8),
                         actor->rotZ) < threshold;
 }

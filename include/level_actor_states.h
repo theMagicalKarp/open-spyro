@@ -671,7 +671,7 @@ typedef struct FlameChunkSwitchState {
 
 /* Type 236 state (level 32 wanderer; the head is UpdateActorWander's wander block). */
 typedef struct WandererState {
-  int pad00[8]; /* 0x00 */
+  WanderBlock wander; /* 0x00 UpdateActorWander's block */
   int knockSpeed;    /* 0x20 knock-back speed */
   int knockHeading;    /* 0x24 knock-back heading */
   int pad28;    /* 0x28 */

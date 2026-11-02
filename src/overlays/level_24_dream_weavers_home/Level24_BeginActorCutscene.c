@@ -41,7 +41,7 @@ void Level24_BeginActorCutscene(Actor *actor) {
   g_nGamePaused = 1;
   g_pActorCutsceneRecord = &g_pActorListBase[count];
   g_nActorCutsceneCamYawStart = ArcTan2(pos[0] - ACTOR_RAW(actor, int, posX),
-                             g_nCameraPosY - ACTOR_RAW(actor, int, posY), 1);
+                             g_nCameraPosY - ACTOR_RAW(actor, int, posY), ATAN_ANGLE12);
   SubtractVector(vec, pos, &actor->posX);
   g_nActorCutsceneCamRadiusStart = VectorLength(vec, VEC_LEN_XY);
   g_nActorCutsceneCamHeightStart = g_nCameraPosZ;

@@ -224,7 +224,7 @@ extern void DrawFullscreenTint(int slot, int r, int g, int b);
 extern void EmitStaticActorMeshListFogged(void);
 extern void EnqueueHudSprites(void);
 extern long GetSpuTransferStatus(int mode);
-extern void InitActorMeshScratchRegions(int mode);
+extern void InitActorMeshScratchRegions(int split);
 extern void InitNewGameState(void);
 extern void RelocateMobActorTable(void *table);
 extern void RotateLightVectorXZ(int steps);
@@ -308,7 +308,11 @@ extern void srand(unsigned int seed);
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
 extern void AddVector(int *dst, int *a, int *b);
-extern int ArcTan2(int y, int x, int high_precision);
+#ifndef ATAN_ANGLE8
+#define ATAN_ANGLE8 0  /* ArcTan2: 8-bit angle, 0..0xFF per turn */
+#define ATAN_ANGLE12 1 /* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */
+#endif
+extern int ArcTan2(int y, int x, int scale);
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 extern void SubtractVector(int *dst, int *a, int *b);
 extern void ZeroVector(int *vec);

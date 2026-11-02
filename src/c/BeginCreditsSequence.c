@@ -24,7 +24,7 @@ void BeginCreditsSequence(int reloadMeshes) {
   if (reloadMeshes != 0) {
     LoadActorMeshTables();
   }
-  ResetSpyroEntity(1);
+  ResetSpyroEntity(RESET_SPYRO_FULL);
   g_nGamestate = GS_CREDITS;
   g_nCreditsMode = CREDITS_MODE_BUILD;
   g_nCreditsFirstVisibleLine = 0;

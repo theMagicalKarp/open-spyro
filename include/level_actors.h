@@ -38,7 +38,7 @@ extern Actor *g_pActorListBase;                              /* level actor pool
 extern Actor *g_pActorPoolDynBase;                           /* end of the level actor pool */
 extern void (*g_pfnLevelBeginActorCutscene)(Actor *actor);
 extern void (*g_pfnLevelEmitParticles)(int count, int type, int *pos, void *effectArg);
-extern void (*g_pfnLevelFallImpactCallback)(void);           /* out-of-time handler */
+extern void (*g_pfnLevelEndFlightRun)(void);           /* LevelN_FlightEndHook: crash, hazard, fall, time-out */
 extern Actor *(*g_pfnLevelSpawnActor)(int type, Actor *parent);
 extern Actor *g_pSparxActor;                     /* Sparx, or null when absent */
 extern unsigned char *g_pLevelSampleBankEntries;             /* sound definitions, 20 bytes each */
@@ -55,7 +55,7 @@ extern int RandomIntInRange(int lo, int hi);                 /* random in [lo, h
 extern int RandomSignedInRange(int lo, int hi);
 extern int StepAndLerpAngle8(int ang, int facing, int maxStep, int frac);
 extern int TickCountdownByFrameDelta(void *timer, int step);
-extern void VectorToSVectorShr2(short *dst, int *s);
+extern void VectorToSVectorShr2(short *dst, int *src);
 
 /* World chunk-animation flags (byte [1] of a chunk-anim entry; each step
  * entry's low two bits are copied into it on arrival, TickWorldChunkAnimations). */
@@ -83,11 +83,23 @@ extern int g_anMotionTrailSliceCounts[];       /* trail lengths */
 extern signed char g_bSpyroRequestYaw; /* g_abSpyroRequestEuler[2]: requested yaw */
 
 /* Engine helpers every actor family calls; parameter names follow the main definitions. */
-extern int DispatchActorContactAtSphere(int *pos, int radius, int events, int mask, Actor *actor, int flag);
+#ifndef CONTACT_STOP_AT_SOLID
+#define CONTACT_STOP_AT_SOLID 0 /* stop at the first solid shape; returns the last actor touched */
+#define CONTACT_PUSH_OUT      1 /* push pos out of the first solid shape (written back); returns that actor */
+#define CONTACT_ALL           2 /* keep testing past solid shapes */
+#endif
+extern int DispatchActorContactAtSphere(int *pos, int radius, int events, int hitBits, Actor *self, int mode);
 extern void GetActorAttachPoint(Actor *actor, int slot, int *pos);
-extern int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int deadzone, int speed, int turnStep, int turnThreshold, int blockA, int blockB, int moveGroup, int moveRadius, int flags);
+#ifndef STEER_NO_BLOCK
+#define STEER_NO_BLOCK 0xFF /* blockA / blockB: no blocked heading */
+#endif
+extern int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int deadzone, int speed, int turnStep, int turnThreshold, int blockA, int blockB, int contactRadius, int wallRadius, int flags);
 extern int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim, int pitchLim, int radius);
-extern void SVectorToVectorShl2(int *dst, int *s);
+extern void SVectorToVectorShl2(int *dst, short *src);
+#ifndef YAW_HOLD_IN_BAND
+#define YAW_HOLD_IN_BAND 0 /* inside the threshold band: stop turning */
+#define YAW_STEP_IN_BAND 1 /* inside the band: keep stepping onto the target */
+#endif
 extern int TrackEntityYawTowardSpyro(Actor *actor, int step, int threshold, int flag);
 extern int g_anCameraPos[];
 

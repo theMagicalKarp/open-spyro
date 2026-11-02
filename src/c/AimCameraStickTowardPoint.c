@@ -20,7 +20,7 @@ void AimCameraStickTowardPoint(int *target) {
   RotateVectorByMatrix(inv, v, v);
 
   {
-    int ang = ArcTan2(VectorLength(v, VEC_LEN_XY), v[2], 1);
+    int ang = ArcTan2(VectorLength(v, VEC_LEN_XY), v[2], ATAN_ANGLE12);
     g_nSpyroSwingEulerTargetY = ang;
     if ((unsigned int)(ang - 0x181) < 0x67F) {
       g_nSpyroSwingEulerTargetY = 0x180;
@@ -31,7 +31,7 @@ void AimCameraStickTowardPoint(int *target) {
 
   {
     int *req;
-    int ang = ArcTan2(v[0], v[1], 1);
+    int ang = ArcTan2(v[0], v[1], ATAN_ANGLE12);
     req = g_anCameraScriptStickRequestXBlock;
     *req = ang;
     if ((unsigned int)(ang - 0x201) < 0x5FF) {

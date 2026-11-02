@@ -42,7 +42,7 @@ int DispatchSpyroChargeStateChanges(void) {
         d, &g_pSpyroContactActor->posX,
         lock -
             0x58); /* g_anSpyroWorldPos, 0x58 words below the lockout counter */
-    angle = (ArcTan2(d[0], d[1], 1) - g_nSpyroBodyYaw) & 0xFFF;
+    angle = (ArcTan2(d[0], d[1], ATAN_ANGLE12) - g_nSpyroBodyYaw) & 0xFFF;
     if (angle > 0x800) {
       angle -= 0x1000;
     }

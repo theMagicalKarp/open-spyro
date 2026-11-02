@@ -4,10 +4,10 @@
 #include "vecmath.h"
 
 /* Rotate `actor`'s byte yaw (rotZ) toward an explicit `target` angle,
-   stepping by at most `step` (boosted 1.5x in camera mode 3, 2x in mode 4) but
+   stepping by at most `step` (boosted 1.5x at frame delta 3, 2x at 4) but
    never past the actual delta. Returns 0 while still outside the `threshold`
    dead-band (and keeps turning); returns 1 once within it, applying one more
-   step when `flag` is set. */
+   step when `flag` is YAW_STEP_IN_BAND. */
 int TurnActorYawTowardAngle(Actor *actor, int target, int step, int threshold,
                             int flag) {
   int delta = AbsAngleDelta8(target, actor->rotZ);

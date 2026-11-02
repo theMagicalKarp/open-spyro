@@ -321,13 +321,13 @@ extern int g_anGteExceptionVectorStub[14]; /* 0x800626b0 */
 
 /* ---- .data ---- */
 extern int g_anSpyroIdleAnimStateSeq[9];                     /* 0x8006bc60 */
-extern byte g_abSpyroStateTransitionAnimMatrix[2025];        /* 0x8006bc84 */
-extern byte g_abSpyroStateAnimIndexMap[48];                  /* 0x8006c470 */
-extern byte g_abSpyroAnimDescTable[192];                     /* 0x8006c4a0 */
-extern byte g_abSpyroStateCameraMode;                        /* 0x8006c588 */
+extern unsigned char g_abSpyroStateTransitionAnimMatrix[2025];        /* 0x8006bc84 */
+extern unsigned char g_abSpyroStateAnimIndexMap[48];                  /* 0x8006c470 */
+extern unsigned char g_abSpyroAnimDescTable[192];                     /* 0x8006c4a0 */
+extern unsigned char g_abSpyroStateCameraMode;                        /* 0x8006c588 */
 extern int g_anSpyroSlopeSpeedTargets[6];                    /* 0x8006c5b8 */
-extern byte g_abSpyroEulerRateRampUp[12];                    /* 0x8006c6f8 */
-extern byte g_abSpyroEulerRateRampSigned[13];                /* 0x8006c704 */
+extern unsigned char g_abSpyroEulerRateRampUp[12];                    /* 0x8006c6f8 */
+extern unsigned char g_abSpyroEulerRateRampSigned[13];                /* 0x8006c704 */
 extern int g_anSpyroWallNudgeAngleByProbeMask[16];           /* 0x8006c714 */
 extern short g_anCameraSpringDriveGains[36];                 /* 0x8006c754 */
 extern short g_anCameraSpringDampingGains[36];               /* 0x8006c79c */
@@ -335,14 +335,14 @@ extern short g_anCameraSpringSnapThresholds[36];             /* 0x8006c7e4 */
 extern int g_anCameraEscapeOffsets[36];                    /* 0x8006c82c */
 extern int g_anCameraDynamicTargetParams[6];                 /* 0x8006c8bc */
 extern int g_anCameraParamDefault[6];                        /* 0x8006c8d4 */
-extern int g_anCameraParamMode2Front[6];                     /* 0x8006c934 */
-extern int g_anCameraParamMode5RightBias[6];                 /* 0x8006c94c */
-extern int g_anCameraParamMode2Reverse[6];                   /* 0x8006c964 */
-extern int g_anCameraParamMode5LeftBias[6];                  /* 0x8006c97c */
-extern int g_anCameraParamMode3[6];                          /* 0x8006c994 */
-extern int g_anCameraParamMode4Front[6];                     /* 0x8006c9ac */
-extern int g_anCameraParamMode4Reverse[6];                   /* 0x8006c9dc */
-extern int g_anCameraParamMode9ScriptStick[6];               /* 0x8006ca0c */
+extern int g_anCameraParamFollowBehind[6];                     /* 0x8006c934 */
+extern int g_anCameraParamGlideRightBias[6];                 /* 0x8006c94c */
+extern int g_anCameraParamFollowFacing[6];                   /* 0x8006c964 */
+extern int g_anCameraParamGlideLeftBias[6];                  /* 0x8006c97c */
+extern int g_anCameraParamCharge[6];                          /* 0x8006c994 */
+extern int g_anCameraParamFallBehind[6];                     /* 0x8006c9ac */
+extern int g_anCameraParamFallFacing[6];                   /* 0x8006c9dc */
+extern int g_anCameraParamFreeLook[6];               /* 0x8006ca0c */
 extern int g_anCameraParamTransitionYawBelow[6];              /* 0x8006ca3c */
 extern int g_anCameraParamTransitionStreaming[6];             /* 0x8006ca54 */
 extern int g_anCameraParamTransitionYawAbove[6];              /* 0x8006ca6c */
@@ -350,7 +350,7 @@ extern int g_anCameraMode12Params[6];                        /* 0x8006ca84 */
 extern int g_anCameraStuckReseatParams[30];                  /* 0x8006cab4 */
 extern int g_anCameraParamEnemyLock[6];                      /* 0x8006cb2c */
 extern int g_anCameraParamScriptedTarget[6];                 /* 0x8006cb5c */
-extern int g_anCameraParamModeC_ScriptedFollow[6];           /* 0x8006cb74 */
+extern int g_anCameraParamScriptedFollow[6];           /* 0x8006cb74 */
 extern int g_anFogFullScreenTriPairSxy[6];                   /* 0x8006cb8c */
 extern short g_anSineLut[321];                               /* 0x8006cbf8 */
 extern short g_anCosineLut[]; /* 0x8006cc78: g_anSineLut + 0x80 (quarter turn); a distinct symbol so cse cannot derive the sine base from it */
@@ -364,8 +364,8 @@ extern int g_anWorldChunkTriangleSubdiv2Tris[4];             /* 0x8006d0e8 */
 extern int g_anWorldChunkTriangleSubdiv4Tris[16];            /* 0x8006d0f8 */
 extern int g_anWorldChunkTriangleSubdiv2EdgeTriRecords[36];  /* 0x8006d138 */
 extern int g_anWorldChunkTriangleSubdiv4EdgeTriRecords[108]; /* 0x8006d1c8 */
-extern byte g_abWorldChunkTriangleSubdiv2UvRotIdx[16];       /* 0x8006d378 */
-extern byte g_abWorldChunkTriangleSubdiv4UvRotIdx[64];       /* 0x8006d388 */
+extern unsigned char g_abWorldChunkTriangleSubdiv2UvRotIdx[16];       /* 0x8006d378 */
+extern unsigned char g_abWorldChunkTriangleSubdiv4UvRotIdx[64];       /* 0x8006d388 */
 extern int g_anWorldChunkTriangleUvOrientPairs[128];         /* 0x8006d3c8 */
 extern int g_anWorldChunkTriList6Vert[7];                    /* 0x8006d5c8 */
 extern int g_anWorldChunkTriList9Vert[12];                   /* 0x8006d5e4 */
@@ -378,7 +378,7 @@ extern short g_anSpyroFlameArcPathsShort[384];          /* 0x8006daa8 */
 extern short g_anSpyroFlameArcPathsLong[512];           /* 0x8006dda8 */
 extern int g_anSpyroFlameCapColors[4];                  /* 0x8006e1a8 */
 extern int g_anSpyroFlameCapColorsAlt[4];               /* 0x8006e1b8 */
-extern byte g_abSpyroFlameSlotMap[16];                  /* 0x8006e1c8 */
+extern unsigned char g_abSpyroFlameSlotMap[16];                  /* 0x8006e1c8 */
 extern int g_anSpyroFlameEndBurstDirs[24];              /* 0x8006e1d8 */
 extern int g_anSpyroFlameTipOffsets[6];                 /* 0x8006e238 */
 extern int g_anSpyroFlameTipBurstVels[6];               /* 0x8006e250 */
@@ -388,7 +388,7 @@ extern int g_anHudIconRestPos[36];                           /* 0x8006e68c */
 extern short g_anHudDigitRestRects[48];                      /* 0x8006e71c */
 extern short g_anHudRollInStepTable[14];                     /* 0x8006e77c */
 extern short g_anHudRollOutStepTable[14];                    /* 0x8006e798 */
-extern byte g_abHudButterflyRingXY[40];                      /* 0x8006e7b4 */
+extern unsigned char g_abHudButterflyRingXY[40];                      /* 0x8006e7b4 */
 extern int g_anLevelDeathPlaneZTable[36];                    /* 0x8006e9a4 */
 extern int g_anLevelSpawnNudgeZTable[36];                    /* 0x8006edb4 */
 extern int g_nCutsceneHeaderChunkSize;                          /* 0x8006ee5c */
@@ -400,20 +400,20 @@ extern int g_nLevelMusicTrack;                               /* 0x8006ef9c */
 extern int g_anCdAudioBankBaseLba[6];                        /* 0x8006f200 */
 extern int g_anGameOverRespawnPosTable[36];                  /* 0x8006f218 */
 extern unsigned char g_abGameOverRespawnYawVirtualBase[];    /* FIXME: type/size unrecovered @ 0x8006f296 */
-extern byte g_abGameOverRespawnYawTable[12];                 /* 0x8006f2a8 */
+extern unsigned char g_abGameOverRespawnYawTable[12];                 /* 0x8006f2a8 */
 extern short g_anGameOverLetterPosXY[16];                    /* 0x8006f2b4 */
 extern short g_anGameOverRevealScaleRamp[24];                /* 0x8006f2d4 */
 extern short g_anMenuBackdropGrayClut[32];                   /* 0x8006f310 */
-extern byte g_abLevelTotalDragonsTable[36];                  /* 0x8006f414 */
+extern unsigned char g_abLevelTotalDragonsTable[36];                  /* 0x8006f414 */
 extern short g_anLevelTotalGemsTable[35];                    /* 0x8006f438 */
-extern byte g_abLevelTotalEggsTable[18];                     /* 0x8006f480 */
+extern unsigned char g_abLevelTotalEggsTable[18];                     /* 0x8006f480 */
 extern char *g_apDragonNames[79];                            /* 0x8006f694 */
-extern char *g_apTitleCardNames[8];                          /* 0x8006f7d0 */
-extern char *g_apLevelNameStrings[36];                       /* 0x8006f7f0 */
-extern char *g_apBalloonistNames[7];                         /* 0x8006f880 */
-extern byte g_abBalloonistDialoguePageStarts[40];            /* 0x8006f89c */
+extern char *g_apWorldNames[8];                          /* 0x8006f7d0 [1..6] the world names ARTISANS..GNASTY'S WORLD by level id / 10; [0] "DRAGON X" and [7] "THIGH MASTERS" are reached by no world (world 6 has no balloonist to ask for [7]). g_apLevelNameStrings follows directly, so [world * 6 + level + 2] is that level's name */
+extern char *g_apLevelNameStrings[36];                       /* 0x8006f7f0 [(world - 1) * 6 + level] level names, HOME..GNASTY'S LOOT (35 used) */
+extern char *g_apBalloonistNames[7];                         /* 0x8006f880 [0] "RETURN HOME" (level-exit letters), [1..6] the per-world balloonists MARCO..HAK, indexed by level id / 10 */
+extern unsigned char g_abBalloonistDialoguePageStarts[40];            /* 0x8006f89c */
 extern char *g_apBalloonistDialogueLines[108];               /* 0x8006f8c4 */
-extern byte g_abPadActAlignTable[6];                         /* 0x8006fccc */
+extern unsigned char g_abPadActAlignTable[6];                         /* 0x8006fccc */
 extern void *g_pOtMergedChainHead;                           /* 0x8006fcec */
 extern void *g_pOtMergedChainTail;                           /* 0x8006fcf0 */
 extern void *g_pOtDepthBinHead0;                             /* 0x8006fcf4 */
@@ -432,58 +432,58 @@ extern int g_nSnCrtInitFlag;                                 /* 0x800730bc */
 extern void *g_pCrt0HeapBase;                                /* 0x800730c0 */
 extern int g_nCrt0HeapSize;                                  /* 0x800730c4 */
 extern int g_nSpuDmaEventHandle;                             /* 0x800730e8 */
-extern uint g_dwSpuLiveKeyOnMask;                            /* 0x800730ec */
+extern unsigned int g_dwSpuLiveKeyOnMask;                            /* 0x800730ec */
 extern int g_nSpuTransferMode;                               /* 0x800730f0 */
 extern int g_nSpuReverbEsaShadow;                            /* 0x800730fc */
-extern uint g_dwSpuDeferredKeyOnMask;                        /* 0x80073114 */
-extern uint g_dwSpuDeferredFlushPending;                     /* 0x80073118 */
-extern ushort g_anSpuVoiceNoteShadow[24];                    /* 0x8007311c */
+extern unsigned int g_dwSpuDeferredKeyOnMask;                        /* 0x80073114 */
+extern unsigned int g_dwSpuDeferredFlushPending;                     /* 0x80073118 */
+extern unsigned short g_anSpuVoiceNoteShadow[24];                    /* 0x8007311c */
 extern int g_nSpuDmaEventInstalledFlag;                      /* 0x80073550 */
 extern int g_nSpuAddrAlignEnable;                            /* 0x80073578 */
 extern int g_nSpuAddrShift;                                  /* 0x8007357c */
 extern int g_nSpuAddrAlignUnit;                              /* 0x80073580 */
-extern uint g_dwSpuAddrAlignMask;                            /* 0x80073584 */
+extern unsigned int g_dwSpuAddrAlignMask;                            /* 0x80073584 */
 extern int g_nSpuTransferDoneFlag;                           /* 0x80073588 */
 extern int g_nSpuPendingDmaDirection;                        /* 0x800735a4 */
-extern uint g_dwSpuDmaMadrShadow;                            /* 0x800735a8 */
+extern unsigned int g_dwSpuDmaMadrShadow;                            /* 0x800735a8 */
 extern int g_nSpuDmaBcrBlockCount;                           /* 0x800735ac */
 extern int g_nSpuReverbEsaDefault;                           /* 0x800735bc */
 extern int g_nVsyncPrevHRetraceCount;                        /* 0x800738c4 */
 extern int g_nVsyncPrevVblankCount;                          /* 0x800738c8 */
 extern short g_nLibapiCallbackInstalled;                     /* 0x80073924 */
 extern short g_nInIsrFlag;                                   /* 0x80073926 */
-extern pointer g_apfnIrqHandlers[11];                        /* 0x80073928 */
+extern void *g_apfnIrqHandlers[11];                        /* 0x80073928 */
 extern short g_nIrqEnableMask;                               /* 0x80073954 */
 extern short g_nLibapiSavedIMask;                            /* 0x80073956 */
-extern uint g_dwLibapiSavedDmaDpcr;                          /* 0x80073958 */
+extern unsigned int g_dwLibapiSavedDmaDpcr;                          /* 0x80073958 */
 extern void *g_pBiosExceptionPatch;                          /* 0x80073960 */
-extern pointer g_apfnLibapiSysCallbacks[8];                  /* 0x8007498c */
+extern void *g_apfnLibapiSysCallbacks[8];                  /* 0x8007498c */
 extern void *g_pLibapiSysVtable;                             /* 0x800749ac */
 extern void *g_pIStatReg;                                    /* 0x800749b0 */
 extern void *g_pIMaskReg;                                    /* 0x800749b4 */
 extern void *g_pDmaDpcrReg;                                  /* 0x800749b8 */
 extern int g_nIsrTimeoutCounter;                             /* 0x800749bc */
-extern pointer g_apfnRcntCallbacks[8];                       /* 0x800749c0 */
+extern void *g_apfnRcntCallbacks[8];                       /* 0x800749c0 */
 extern int g_nRcntAuxState;                                  /* 0x800749e0 */
 extern void *g_pTmrHretraceModeReg;                          /* 0x800749e4 */
 extern void *g_pDmaDicrReg;                                  /* 0x800749e8 */
-extern pointer g_apfnDmaCallbacks[8];                        /* 0x800749ec */
+extern void *g_apfnDmaCallbacks[8];                        /* 0x800749ec */
 extern int g_nGraphType;                                     /* 0x80074a10 */
 extern void *g_pGpuClearImageHandler;                        /* 0x80074a28 */
 extern void *g_pGpuStoreImageHandler;                        /* 0x80074a38 */
 extern void *g_pGpuLoadImageHandler;                         /* 0x80074a3c */
 extern void *g_pGpuDispatchTable;                            /* 0x80074a5c */
 extern void *g_pfnGpuDebugPrintf;                            /* 0x80074a60 */
-extern byte g_bGpuDebugType;                                 /* 0x80074a64 */
-extern byte g_bGpuQueueModeActive;                           /* 0x80074a65 */
-extern byte g_bGpuDebugLevel;                                /* 0x80074a66 */
-extern byte g_bGpuReverseFlag;                               /* 0x80074a67 */
+extern unsigned char g_bGpuDebugType;                                 /* 0x80074a64 */
+extern unsigned char g_bGpuQueueModeActive;                           /* 0x80074a65 */
+extern unsigned char g_bGpuDebugLevel;                                /* 0x80074a66 */
+extern unsigned char g_bGpuReverseFlag;                               /* 0x80074a67 */
 extern short g_nGpuScreenWidth;                              /* 0x80074a68 */
 extern short g_nGpuScreenHeight;                             /* 0x80074a6a */
 extern int g_nGpuQueueCompletionPending;                     /* 0x80074a6c */
 extern void *g_pfnGpuQueueCompletionCallback;                /* 0x80074a70 */
-extern byte g_abPutDrawEnvCache[92];                         /* 0x80074a74 */
-extern byte g_abPutDispEnvCache[20];                         /* 0x80074ad0 */
+extern unsigned char g_abPutDrawEnvCache[92];                         /* 0x80074a74 */
+extern unsigned char g_abPutDispEnvCache[20];                         /* 0x80074ad0 */
 extern int g_anGpuModeHResTable[5];                          /* 0x80074ae4 */
 extern int g_anGpuModeVResTable[5];                          /* 0x80074af8 */
 extern int g_anGpuMoveImagePacket[5];                        /* 0x80074b0c */
@@ -492,9 +492,9 @@ extern void *g_pGpuStatReg;                                  /* 0x80074b38 */
 extern void *g_pDmaGpuMadrReg;                               /* 0x80074b3c */
 extern void *g_pDmaGpuBcrReg;                                /* 0x80074b40 */
 extern void *g_pDmaGpuChcrReg;                               /* 0x80074b44 */
-extern uint g_dwLastGpuOpFunc;                               /* 0x80074b58 */
-extern uint g_dwLastGpuOpArg1;                               /* 0x80074b5c */
-extern uint g_dwLastGpuOpArg2;                               /* 0x80074b60 */
+extern unsigned int g_dwLastGpuOpFunc;                               /* 0x80074b58 */
+extern unsigned int g_dwLastGpuOpArg1;                               /* 0x80074b5c */
+extern unsigned int g_dwLastGpuOpArg2;                               /* 0x80074b60 */
 extern int g_nGpuQueueWriteIndex;                            /* 0x80074b68 */
 extern int g_nGpuQueueReadIndex;                             /* 0x80074b6c */
 extern int g_nEnqueueGpuSavedIMask;                          /* 0x80074b70 */
@@ -506,12 +506,12 @@ extern short g_anSqrtLUT[192];                               /* 0x80074b84 */
 extern int g_nInitPadFlag;                                   /* 0x800751a0 */
 
 /* ---- .sdata ---- */
-extern byte g_abSpyroIdleDelayRandTable[8]; /* 0x80075274 */
-extern byte g_bCameraLookaheadMotionScale;  /* 0x8007527c */
-extern byte g_abGameOverLetterAngle[8];     /* 0x800752d0 */
+extern unsigned char g_abSpyroIdleDelayRandTable[8]; /* 0x80075274 */
+extern unsigned char g_bCameraLookaheadMotionScale;  /* 0x8007527c */
+extern unsigned char g_abGameOverLetterAngle[8];     /* 0x800752d0 */
 extern short g_anGameOverCameraEuler[4];    /* 0x800752d8 */
-extern byte g_abGameOverLetterDelay[8];     /* 0x800752e0 */
-extern byte g_abWorldTitleGlyphCounts[8];   /* 0x8007555c */
+extern unsigned char g_abGameOverLetterDelay[8];     /* 0x800752e0 */
+extern unsigned char g_abWorldTitleGlyphCounts[8];   /* 0x8007555c */
 extern char g_szTitleCardPlaceholderA[2];   /* 0x80075564 */
 extern char g_szTitleCardJacques[8];        /* 0x80075568 */
 extern char g_szTitleCardToasty[7];         /* 0x80075570 */
@@ -544,15 +544,22 @@ extern char g_szUiSlot2[7];                 /* 0x80075638 */
 /* ---- .sbss ---- */
 extern int g_nCutsceneId;                /* 0x8007566c: scripted cutscene / bundle id (enum CutsceneId, cutscene_id.h): title backdrop, opening story, the two endings (BeginCutscene) */
 extern int g_nGnastyLootFallRefZCap;         /* 0x80075678 */
-extern void (*g_pfnGamestate7DrawHook)(void); /* 0x8007567c: flight levels' FlightResults_Draw */
+extern void (*g_pfnFlightResultsDraw)(void); /* 0x8007567c: flight levels' FlightResults_Draw */
 extern struct CutscenePath *g_pPathTableHead; /* 0x80075680: the cutscene path table (cutscene_path.h) */
 extern int g_nMotionTrailRibbonCount;        /* 0x80075684 */
 extern int g_nPrevLevelIndex;           /* 0x80075688: the level index being left, for the tally (TickLevelTransitionStream) */
 extern int g_nMenuTickFrames;           /* 0x8007568c: update-side frame clock shared by the menu gamestates: the pause menu resets it on each cursor move, flight results blink on it (% 0x10 < 6), MenuTransition_Draw sweeps the backdrop CLUT load with it, SpyroStateDelay_Update counts 0x20-frame passes on it */
 extern int g_nFlightLevelActive;             /* 0x80075690 */
-extern void (*g_pfnLevelFallImpactCallback)(void); /* 0x80075694: flight levels' FlightEndHook, else null */
+extern void (*g_pfnLevelEndFlightRun)(void); /* 0x80075694: flight levels' FlightEndHook, else null: ends the run (crash, hazard sink, fall or time-out) into GS_FLIGHT_RESULTS */
 extern int g_nActorPoolLiveCount;            /* 0x800756a4 */
 extern int g_nActorPoolCapacity;             /* 0x800756a8 */
+#ifndef ACTOR_POOL_RESERVE
+/* Optional spawns (shards, debris, sparkles) are skipped once fewer than this
+ * many pool slots are free, keeping room for the actors that matter. */
+#define ACTOR_POOL_RESERVE 0x15
+#define ACTOR_POOL_LOW() (g_nActorPoolCapacity - g_nActorPoolLiveCount < ACTOR_POOL_RESERVE)
+#define ACTOR_POOL_HAS_ROOM() (g_nActorPoolCapacity - g_nActorPoolLiveCount >= ACTOR_POOL_RESERVE)
+#endif
 extern int g_nLevelTransitionPhase;          /* 0x800756ac: frame clock of the level-transition banner and treasure tally (DrawLevelTransitionOverlay): 0x40 results panel in, 0x80 gems fly, 0x1A0 tally over */
 extern int g_nLevelTransitionTallyActive;    /* 0x800756b0: 1 while the post-level treasure tally plays (set on a level exit / hub return); LevelLoad_Update holds the final stream stages until it clears */
 extern int g_nCameraLosClear;                /* 0x800756b8 */
@@ -576,7 +583,7 @@ extern int g_nDemoMode;                    /* 0x80075714: attract demo, enum Dem
 extern int g_nGroundSurfaceType;             /* 0x80075718 */
 extern void *g_pGemTallyParticleRecords;     /* 0x8007571c: the tally particle pool (GemTallyParticle, gem_tally.h), borrowed from g_apSecondaryEntityList */
 extern int g_nPauseMenuCursor;               /* 0x80075720: row on the pause page (enum PauseMainRow / PauseOptionsRow / PauseQuitRow); flight results menu reuses it */
-extern uint g_dwGamestateFrames;             /* 0x8007572c */
+extern unsigned int g_dwGamestateFrames;             /* 0x8007572c */
 extern int g_nPadSetMainModePending;         /* 0x80075730 */
 extern void (*g_pfnLevelUpdateActors)(void); /* 0x80075734 */
 extern void *g_pEmitListWriteCursor;         /* 0x80075738 */
@@ -600,17 +607,17 @@ extern int g_nOptionVibrationEnabled;        /* 0x800757a4 */
 extern void *g_pPrimBufferWriteCursor;       /* 0x800757b0 */
 extern int g_nLevelPickupTableCount;         /* 0x800757b4 */
 extern int g_nDemoIndex;                 /* 0x800757b8: which of the 4 attract demos plays next (cycles &3) */
-extern void (*g_pfnGamestate7Handler)(void);  /* 0x800757c0: flight levels' FlightResultsMenu_Update */
+extern void (*g_pfnFlightResultsUpdate)(void);  /* 0x800757c0: flight levels' FlightResultsMenu_Update */
 extern int g_nPauseMenuSubstate;             /* 0x800757c8: pause menu page, enum PausePage (pause_menu.h) */
 extern int g_nSubMenuScrollOffset;           /* 0x800757cc */
 extern int g_nPulseRumbleTimer;              /* 0x800757d0 */
-extern uint g_dwActorMeshFadeColor;          /* 0x800757d4 */
+extern unsigned int g_dwActorMeshFadeColor;          /* 0x800757d4 */
 extern int g_nGamestate;                     /* 0x800757d8 */
 extern struct PadSubstep *g_pPadSubstepState; /* 0x800757e0: this substep's g_anPadSubstepRing entry (pad.h) */
 extern void *g_pCollisionHitActor;           /* 0x800757e4 */
 extern int g_nGameOverLevelIndex;       /* 0x800757e8: g_nLevelIndex at game over; picks the continue spawn in g_anGameOverRespawnPosTable / g_abGameOverRespawnYawTable (BuildLoadedLevelRuntime) */
 extern unsigned short **g_pLevelPickupTableEntries; /* 0x800757f8: per pickup group, its actor-id list (bit 15 marks the last) */
-extern byte g_abPadActCommand[2];            /* 0x80075800 */
+extern unsigned char g_abPadActCommand[2];            /* 0x80075800 */
 extern struct Actor *g_pSpyroContactActor;           /* 0x80075804 */
 extern int g_nLastCollisionHitChunkId;       /* 0x80075808 */
 extern int g_nSparxHealthStash;           /* 0x8007580c: saved g_nSparxHealth; -1 = none (ResetLevelState, new game) */
@@ -648,7 +655,7 @@ extern int g_nPortalCount;              /* 0x800758bc */
 extern int g_nSpyroFallReferenceZ;           /* 0x800758c0 */
 extern int g_nVblankTickCount;               /* 0x800758c8 */
 extern struct Actor *(*g_pfnLevelSpawnActor)(int type, struct Actor *parent); /* 0x800758cc */
-extern byte g_abWorldBalloonistState[6];         /* 0x800758d0 per-homeworld balloonist progress, enum BalloonistState (actor_cutscene.h): unmet / talked / travel unlocked (ResetLevelState seeds [0] = 2, the unlock cheat fills all 2, homeworld UpdateActors steps it and picks the dialogue page) */
+extern unsigned char g_abWorldBalloonistState[6];         /* 0x800758d0 per-homeworld balloonist progress, enum BalloonistState (actor_cutscene.h): unmet / talked / travel unlocked (ResetLevelState seeds [0] = 2, the unlock cheat fills all 2, homeworld UpdateActors steps it and picks the dialogue page) */
 extern int g_nPadActAlignedFlag;             /* 0x800758e0 */
 /* 0x800758e4: the level's EmitParticles(count, type, pos, effectArg). Left
  * unprototyped: effectArg is a velocity vector, a packed colour, a scale or a
@@ -660,7 +667,7 @@ extern int g_nLevelSelectSubIndex;           /* 0x800758f0 */
 extern int g_nPortalViewPitchTilt;      /* 0x800758fc: portal-surface view tilt, +2 a frame (DrawPortalsAndStaticActors) */
 extern int g_nHitRumbleTimer;                /* 0x80075904 */
 extern int g_nCameraShakeDuration;           /* 0x8007590c */
-extern uint g_dwActiveCameraOptions;         /* 0x80075914: camera option word, CAM_OPT_ACTIVE or CAM_OPT_PASSIVE (camera.h); saved */
+extern unsigned int g_dwActiveCameraOptions;         /* 0x80075914: camera option word, CAM_OPT_ACTIVE or CAM_OPT_PASSIVE (camera.h); saved */
 extern int g_nScreenFadeLevel;              /* 0x80075918: fade-to-black level (drawn as a subtractive fullscreen tint, decays by g_nFrameStep in gameplay) */
 extern int g_nPortalDistanceFogEnabled;                /* 0x8007591c: portals beyond 0x4000 fade into g_dwWorldFogColor (DrawPortalsAndStaticActors); set for Beast Makers home + Misty Bog and the opening-story cutscene */
 extern int g_nCameraManualYawInput;          /* 0x80075924 */
@@ -671,7 +678,7 @@ extern int g_nActorMeshOtDepthBin;           /* 0x80075934 */
 extern int g_nCameraPassiveModeHoldTimer;    /* 0x80075938 */
 extern int g_nRespawnOrGameOverFrame;             /* 0x8007593c: frame counter of the respawn / game-over sequence (RespawnOrGameOver_Update / _Draw) */
 extern int g_nRespawnOrGameOverMode;              /* 0x80075940: respawn / game-over sub-mode: 0 load frame (respawn returns here), 1 game-over presentation, 2 wait for the level stream (RespawnOrGameOver_Update) */
-extern byte g_bPadInputStashed;  /* 0x80075944: 1 while live pad input sits in g_dwPadStash (toggled by MovePadInputState); the frame tick restores it when set */
+extern unsigned char g_bPadInputStashed;  /* 0x80075944: 1 while live pad input sits in g_dwPadStash (toggled by MovePadInputState); the frame tick restores it when set */
 extern int g_nVsyncFramePaceAnchor;          /* 0x80075950 */
 extern int g_nVsyncFrameEndCount;            /* 0x80075954 */
 extern int g_nSpyroPitchRateAccum;           /* 0x80075960 */
@@ -680,26 +687,26 @@ extern int g_nActiveLevelId;                 /* 0x8007596c */
 extern int g_nSpyroIdleAnimSeqCursor;        /* 0x80075970 */
 
 /* ---- .bss ---- */
-extern byte g_abGpuStatusShadow[256];                   /* 0x800759bc */
-extern uint g_dwRandSeed;                               /* 0x80075ac0 */
+extern unsigned char g_abGpuStatusShadow[256];                   /* 0x800759bc */
+extern unsigned int g_dwRandSeed;                               /* 0x80075ac0 */
 extern int g_anEntitySpikeTexWords[2];                  /* 0x80075ef8 */
 extern void *g_pEntityListEnd;                          /* 0x80075f00 */
-extern byte g_abSpuCommonAttr[76];                      /* 0x80075f08 */
+extern unsigned char g_abSpuCommonAttr[76];                      /* 0x80075f08 */
 extern void *g_pLevelSampleBankEntries;                 /* 0x800761d0 */
 extern void *g_pLevelSampleBankHeader;                  /* 0x800761d4 */
 extern int g_nMusicVolumeFadeTarget;                    /* 0x800761d8 */
 extern int g_nSoundMasterVolume;                        /* 0x8007622c */
 extern int g_nMusicVolumeFadeStep;                      /* 0x80076230 */
 extern int g_nLevelSampleBankCount;                     /* 0x80076234 */
-extern uint g_dwSpuPendingKeyOn;                        /* 0x80076238 */
-extern uint g_dwSpuPendingKeyOff;                       /* 0x8007623c */
+extern unsigned int g_dwSpuPendingKeyOn;                        /* 0x80076238 */
+extern unsigned int g_dwSpuPendingKeyOff;                       /* 0x8007623c */
 extern int g_nSoundMonoMixFlag;                         /* 0x80076240 */
 extern int g_nDragonRescueAuraStarEnabled;                 /* 0x80076248 */
 extern int g_anDragonRescueAuraStarAnchor[3];              /* 0x8007624c */
 extern int g_anDragonRescueAuraStarMtx[5];                 /* 0x80076258 */
 extern int g_nDragonRescueAuraStarRadius;                  /* 0x8007626c */
-extern byte g_abDragonRescueAuraStarEuler[3];              /* 0x80076270 */
-extern byte g_bDragonRescueAuraStarColor;                  /* 0x80076273 */
+extern unsigned char g_abDragonRescueAuraStarEuler[3];              /* 0x80076270 */
+extern unsigned char g_bDragonRescueAuraStarColor;                  /* 0x80076273 */
 extern void *g_apMobEntryTable[];                       /* 0x80076278: mob id -> entry (UnpackWorldDataChunks) */
 extern void *g_apActorMeshTable;                        /* 0x80076378 */
 extern void *g_pDragonRescueStatueModelData;               /* 0x80076b70 */
@@ -708,7 +715,7 @@ extern int g_anCollisionResolvedPos[3];                 /* 0x80076b80 */
 extern unsigned char g_nCollisionResolvedZ[];           /* FIXME: type/size unrecovered @ 0x80076b88 */
 extern int g_nCdBaseLba;                                /* 0x80076b90 */
 extern int g_nCdReadSectorCount;                        /* 0x80076b94 */
-extern byte g_abCdlLocScratch;                          /* 0x80076b98 */
+extern unsigned char g_abCdlLocScratch;                          /* 0x80076b98 */
 extern void *g_pCdReadDstBuffer;                        /* 0x80076b9c */
 extern int g_nCdReadInFlight;                           /* 0x80076bb8 */
 extern int g_anPadHistoryRing[16];                      /* 0x80076bc0 */
@@ -789,12 +796,12 @@ extern int g_nDragonRescueFullscreenTintLevel;             /* 0x80077074 */
 extern void *g_pDragonRescueCameraPath;                    /* 0x80077078 */
 extern int g_nDragonRescueCameraPathCount;                 /* 0x8007707c */
 extern int g_nDragonRescueSecondaryTimer;                  /* 0x80077080 */
-extern byte g_bSceneSfxVoiceMarker;                 /* 0x80077084: PlaySoundEffect voice marker shared by the non-gameplay scene sounds: dragon-rescue count blip, opening/demo stream sample (BeginCutscene, TickDemoPlayback), titlescreen UI sound */
+extern unsigned char g_bSceneSfxVoiceMarker;                 /* 0x80077084: PlaySoundEffect voice marker shared by the non-gameplay scene sounds: dragon-rescue count blip, opening/demo stream sample (BeginCutscene, TickDemoPlayback), titlescreen UI sound */
 extern int g_nDragonRescueAudioFiredFlag;                  /* 0x80077088 */
 extern int g_nDragonRescuePadHoldTimer;                    /* 0x8007708c */
 extern int g_nDragonRescueOrbitStartYaw;                   /* 0x80077090 */
 extern int g_nDragonRescueOrbitStartRadius;                /* 0x80077094 */
-extern uint g_dwDragonRescueOrbitTargetYaw;                /* 0x80077098 */
+extern unsigned int g_dwDragonRescueOrbitTargetYaw;                /* 0x80077098 */
 extern int g_nDragonRescueOrbitTargetRadius;               /* 0x8007709c */
 extern int g_nDragonRescueCameraStartYaw;                  /* 0x800770a0 */
 extern int g_nDragonRescueCameraStartRadius;               /* 0x800770a4 */
@@ -806,29 +813,29 @@ extern struct Actor *g_pDragonRescueStatueActor;           /* 0x800770b8: the fr
 extern struct Actor *g_pDragonRescueSpyroMirrorActor;      /* 0x800770bc: Spyro's stand-in (ACTOR_TYPE_RESCUE_SPYRO) */
 extern struct Actor *g_pDragonRescueSourceActor;           /* 0x800770c0: the dragon statue being rescued (BeginDragonRescue) */
 extern int g_anWorldLightDirVec[6];                     /* 0x800770c8 */
-extern byte g_abBillboardBasisVectors[18];              /* 0x800770e0 */
+extern unsigned char g_abBillboardBasisVectors[18];              /* 0x800770e0 */
 extern int g_nLightSweepAngle;                          /* 0x800770f4 */
-extern byte g_abWorldRotatingBillboardTable[128];       /* 0x80077114 */
+extern unsigned char g_abWorldRotatingBillboardTable[128];       /* 0x80077114 */
 extern int g_anLevelDragonsRescued[36];                 /* 0x800772d8 */
 extern int g_anCollisionProbeVec[3];                    /* 0x80077368 */
-extern uint g_dwPadPressed;                             /* 0x80077378 */
-extern uint g_dwPadReleased;                            /* 0x8007737c */
-extern uint g_dwPadHeld;                                /* 0x80077380 */
+extern unsigned int g_dwPadPressed;                             /* 0x80077378 */
+extern unsigned int g_dwPadReleased;                            /* 0x8007737c */
+extern unsigned int g_dwPadHeld;                                /* 0x80077380 */
 extern int g_nPadType;                                  /* 0x80077384: enum PadType (pad.h) */
 extern int g_nPadStickActiveFlag;                       /* 0x80077388 */
-extern uint g_dwPadAnalogCalibrated;                    /* 0x8007738c */
+extern unsigned int g_dwPadAnalogCalibrated;                    /* 0x8007738c */
 extern int g_nPadAllInputIdleFlag;                      /* 0x80077390 */
 extern int g_nPadDirectionalIdleFlag;                   /* 0x80077394 */
-extern uint g_dwPadAnalogRawSnapshot;                   /* 0x80077398 */
+extern unsigned int g_dwPadAnalogRawSnapshot;                   /* 0x80077398 */
 extern int g_anPadSubstepRing[24];                      /* 0x800773bc */
 extern int g_anLevelGemsCollected[36];                  /* 0x80077420 */
 extern int g_nCurrentMusicTrack;                        /* 0x800774b0 */
-extern uint g_dwMusicStreamStatus;                      /* 0x800774b4: XA music stream state, MUSIC_ST_* (cd_music.h); data reads wait for MUSIC_ST_IDLE */
+extern unsigned int g_dwMusicStreamStatus;                      /* 0x800774b4: XA music stream state, MUSIC_ST_* (cd_music.h); data reads wait for MUSIC_ST_IDLE */
 extern int g_anMusicTrackLbaTable[64];                  /* 0x800774b8 */
-extern uint g_dwCdMusicReadHead;                        /* 0x800776b8 */
+extern unsigned int g_dwCdMusicReadHead;                        /* 0x800776b8 */
 extern int g_nLastCdMusicCommand;                       /* 0x800776c4: libcd command the music stream is waiting on: CdlReadS while starting, CdlPause queued for the end of a fade-out (CdlStop/CdlPause handled alike) */
 extern int g_nPendingMusicCommand;                      /* 0x800776c8: MUSIC_CMD_* to retry on the next TickCdMusicStream (the drive was busy) */
-extern uint g_dwPadStash;                            /* 0x800776d8: first word of a 0xA4-byte stash of the pad state block (g_dwPadPressed..); MovePadInputState parks live input here to blank it for a frame */
+extern unsigned int g_dwPadStash;                            /* 0x800776d8: first word of a 0xA4-byte stash of the pad state block (g_dwPadPressed..); MovePadInputState parks live input here to blank it for a frame */
 extern int g_nWorldCollisionTriCount;                   /* 0x80077780 */
 extern void *g_pWorldCollisionTriArray;                 /* 0x80077784 */
 extern int g_nWorldMeshIndexCount;                      /* 0x80077788 */
@@ -843,14 +850,14 @@ extern int g_anCommittedKillBitmap[8];                  /* 0x800778b8 */
 extern int g_anLevelSpawnPos[3];                        /* 0x800778d8 */
 extern int g_nLevelSpawnYaw;                            /* 0x800778e4 */
 extern int g_anLevelKillBitmapTable[288];               /* 0x80077908 */
-extern byte g_abGemTallyIconUvTable[32];                /* 0x80077db8 */
+extern unsigned char g_abGemTallyIconUvTable[32];                /* 0x80077db8 */
 extern int g_anStaticRegSaveArea[19];                   /* 0x80077dd8 */
-extern byte g_abHudCounterDisplayState[5];              /* 0x80077fa8: per HudCounter, a HudCounterState (hud_counter.h) */
-extern byte g_bHudLevelGemRollPhase;                    /* 0x80077fad */
-extern byte g_bHudDragonRollPhase;                      /* 0x80077fae */
-extern byte g_bHudLivesRollPhase;                       /* 0x80077faf */
-extern byte g_bHudEggRollPhase;                    /* 0x80077fb0 */
-extern byte g_bHudKeyRollPhase;                    /* 0x80077fb1 */
+extern unsigned char g_abHudCounterDisplayState[5];              /* 0x80077fa8: per HudCounter, a HudCounterState (hud_counter.h) */
+extern unsigned char g_bHudLevelGemRollPhase;                    /* 0x80077fad */
+extern unsigned char g_bHudDragonRollPhase;                      /* 0x80077fae */
+extern unsigned char g_bHudLivesRollPhase;                       /* 0x80077faf */
+extern unsigned char g_bHudEggRollPhase;                    /* 0x80077fb0 */
+extern unsigned char g_bHudKeyRollPhase;                    /* 0x80077fb1 */
 extern int g_nHudLevelGemHoldTimer;                     /* 0x80077fb4 */
 extern int g_nHudDragonHoldTimer;                       /* 0x80077fb8 */
 extern int g_nHudLivesHoldTimer;                        /* 0x80077fbc */
@@ -863,9 +870,9 @@ extern int g_nHudEggCachedCount;                   /* 0x80077fd4 */
 extern int g_nHudKeyCachedState;                   /* 0x80077fd8 */
 extern int g_nHudEggRollRequest;                   /* 0x80077fdc */
 extern int g_nHudButterflyCachedCount;                  /* 0x80077fe0 */
-extern uint g_dwHudBobSinePhase;                        /* 0x80077fe4 */
+extern unsigned int g_dwHudBobSinePhase;                        /* 0x80077fe4 */
 extern int g_nHudFrameCycleMod9;                        /* 0x80077fe8 */
-extern byte g_abHudIconActorRecords[1056];              /* 0x80077fec */
+extern unsigned char g_abHudIconActorRecords[1056];              /* 0x80077fec */
 extern short g_anHudSpriteRects[128];                   /* 0x8007840c */
 extern int g_anLevelSpriteTexWordPairs[20];             /* 0x8007850c */
 extern int g_nWorldAnimMeshKeyframeCount;               /* 0x80078560 */
@@ -904,41 +911,41 @@ extern int g_nLevelArchiveByteSize;                     /* 0x80078604 */
 extern int g_anFlightClearTimes[6];                 /* 0x80078618: per flight level (world 0..4): run time of the first all-targets clear, 0 = not yet cleared (FlightEndHook); saved */
 extern struct Portal *g_apPortals[];     /* 0x80078640 (portal.h) */
 extern int g_anCameraActiveTargetParams[6];             /* 0x80078668 */
-extern byte g_abFlightBonusPaid[30];             /* 0x80078680: per flight level, 5 bytes: [0..3] target-class bonus paid, [4] all-clear bonus paid (HandleFlightResults); saved */
-extern byte g_abPadRawReport[34];                       /* 0x800786a0 */
+extern unsigned char g_abFlightBonusPaid[30];             /* 0x80078680: per flight level, 5 bytes: [0..3] target-class bonus paid, [4] all-clear bonus paid (HandleFlightResults); saved */
+extern unsigned char g_abPadRawReport[34];                       /* 0x800786a0 */
 extern int g_anSpyroFlameAnchorPos[3];             /* 0x800786c8 */
-extern byte g_abSpyroFlameAnchorEuler[3];          /* 0x800786d4 */
+extern unsigned char g_abSpyroFlameAnchorEuler[3];          /* 0x800786d4 */
 extern int g_anSpyroFlameRibbonTexWords[4];        /* 0x800786d8 */
-extern byte g_abSpyroFlameSlotAge[8];              /* 0x800786e8 */
-extern byte g_abSpyroFlameSlotEndAge[8];           /* 0x800786f0 */
-extern byte g_abSpyroFlameSlotState[8];            /* 0x800786f8 */
-extern byte g_bSpyroFlameActive;                /* 0x80078760: a flame breath is live (set on PAD_CIRCLE in TickSpyroFlameAttack, cleared when every flame slot is idle) */
-extern byte g_bSpyroFlameSegmentIdx;               /* 0x80078761 */
-extern byte g_bSpyroFlameAnchorMode;               /* 0x80078762 */
-extern byte g_bSpyroFlameAnimRingBase;             /* 0x80078763 */
+extern unsigned char g_abSpyroFlameSlotAge[8];              /* 0x800786e8 */
+extern unsigned char g_abSpyroFlameSlotEndAge[8];           /* 0x800786f0 */
+extern unsigned char g_abSpyroFlameSlotState[8];            /* 0x800786f8 */
+extern unsigned char g_bSpyroFlameActive;                /* 0x80078760: a flame breath is live (set on PAD_CIRCLE in TickSpyroFlameAttack, cleared when every flame slot is idle) */
+extern unsigned char g_bSpyroFlameSegmentIdx;               /* 0x80078761 */
+extern unsigned char g_bSpyroFlameAnchorMode;               /* 0x80078762 */
+extern unsigned char g_bSpyroFlameAnimRingBase;             /* 0x80078763 */
 extern int g_nSpyroFlameVariant;                   /* 0x80078764: 1 for a superflame breath (alternate particles and cap colours) */
 extern int g_nSpyroSuperflameTimer;                    /* 0x80078768: superflame power-up frames left; given by an actor in levels 14/27, makes Spyro glow red and blink for the last 0x78 frames, cleared on level exit */
 extern int g_anSpyroFlameAnchorMtx[5];             /* 0x8007876c */
 extern int g_anSpyroFlameRenderMtx[5];             /* 0x80078780 */
 extern int g_anSpyroFlameAnchorOffset[3];          /* 0x80078794 */
 extern int g_anSpyroFlameSlotPrevPos[24];          /* 0x800787a0 */
-extern byte g_abWorldSparkleParticleTable[576];         /* 0x80078800 */
+extern unsigned char g_abWorldSparkleParticleTable[576];         /* 0x80078800 */
 extern int g_nWorldRenderMeshChunkCount;                /* 0x80078a40 */
 extern void *g_pWorldRenderMeshChunkArray;              /* 0x80078a44 */
 extern int g_nWorldRenderMeshIndexCount;                /* 0x80078a48 */
 extern void *g_pWorldRenderMeshIndexTable;              /* 0x80078a4c */
-extern uint g_dwWorldFogColor;                          /* 0x80078a50 */
+extern unsigned int g_dwWorldFogColor;                          /* 0x80078a50 */
 extern int g_anSpyroWorldPos[3];                        /* 0x80078a58 */
-extern byte g_abSpyroPersistentEuler[3];                /* 0x80078a64 */
-extern byte g_abSpyroSwingByteEuler[3];                 /* 0x80078a68 */
-extern byte g_bSpyroAnimPrev;                           /* 0x80078a70 */
-extern byte g_bSpyroAnimCurrent;                        /* 0x80078a71 */
-extern byte g_bSpyroFramePrev;                          /* 0x80078a76 */
-extern byte g_bSpyroAnimFrame;                          /* 0x80078a77 */
-extern byte g_bSpyroSubFrameTimer;                      /* 0x80078a7c */
-extern byte g_bSpyroOtBinBias;                          /* 0x80078a7f */
-extern byte g_abSpyroTintRgba[4];                 /* 0x80078a80: Spyro's model tint (alpha 0 = none): the superflame's red glow, the SPYRO_ST_HURT_TINT white/dark flash */
-extern uint g_dwSpyroTriggerEventFlags;                 /* 0x80078a84 */
+extern unsigned char g_abSpyroPersistentEuler[3];                /* 0x80078a64 */
+extern unsigned char g_abSpyroSwingByteEuler[3];                 /* 0x80078a68 */
+extern unsigned char g_bSpyroAnimPrev;                           /* 0x80078a70 */
+extern unsigned char g_bSpyroAnimCurrent;                        /* 0x80078a71 */
+extern unsigned char g_bSpyroFramePrev;                          /* 0x80078a76 */
+extern unsigned char g_bSpyroAnimFrame;                          /* 0x80078a77 */
+extern unsigned char g_bSpyroSubFrameTimer;                      /* 0x80078a7c */
+extern unsigned char g_bSpyroOtBinBias;                          /* 0x80078a7f */
+extern unsigned char g_abSpyroTintRgba[4];                 /* 0x80078a80: Spyro's model tint (alpha 0 = none): the superflame's red glow, the SPYRO_ST_HURT_TINT white/dark flash */
+extern unsigned int g_dwSpyroTriggerEventFlags;                 /* 0x80078a84 */
 extern int g_nSpyroHazardFloorZ;                     /* 0x80078a88 */
 extern int g_anSpyroBodyMtx[5];                         /* 0x80078a8c */
 extern int g_nSpyroAnimMode;                            /* 0x80078aac: enum SpyroAnimMode (spyro_state.h): the transition TickSpyroAnimStateMachine is playing */
@@ -998,9 +1005,9 @@ extern int g_anSpyroSwingEulerPrev[3];                  /* 0x80078c08 */
 extern int g_anSpyroSwingEulerSpringAccum[3];           /* 0x80078c14 */
 extern int g_anSpyroComposedBodyMtx[5];                 /* 0x80078c20 */
 extern int g_nSpyroInputBlankCountdown;                /* 0x80078c48: frames left during which Spyro's frame tick stashes the pad (no input): 0xC after a level load, >= 2 while SPYRO_RQ_FREEZE_INPUT or a scripted move holds */
-extern uint g_dwSpyroRequestMask;                       /* 0x80078c4c */
+extern unsigned int g_dwSpyroRequestMask;                       /* 0x80078c4c */
 extern int g_anSpyroRequestTargetPos[3];                /* 0x80078c50 */
-extern byte g_abSpyroRequestEuler[3];                   /* 0x80078c5c */
+extern unsigned char g_abSpyroRequestEuler[3];                   /* 0x80078c5c */
 extern int g_anSpyroRequestVelocity[3];                 /* 0x80078c60 */
 extern int g_nSpyroRequestState;                        /* 0x80078c70 */
 extern void *g_pSpyroRequestCameraAnchor;               /* 0x80078c74 */
@@ -1012,12 +1019,12 @@ extern int g_nPortalCamPathReverseFlag;              /* 0x80078ca0 */
 extern int g_nSpyroFlightMode;                    /* 0x80078ca4: Spyro can fly: set on flight levels (and in Gnasty's Loot, LEVEL_GNASTYS_LOOT, once grounded), cleared on level exit. While set the glide/fly states take R1/L1 as substates 1/2 and the fall physics keeps tracking g_nSpyroFloorReferenceZ */
 extern int g_nSpyroChargeHoldFlag;                      /* 0x80078ca8 */
 extern int g_nSpyroGlideBankingFlag;                    /* 0x80078cac */
-extern uint g_dwSpyroFootstepPrimarySfxKey;             /* 0x80078cbc */
-extern uint g_dwSpyroFootstepSecondarySfxKey;           /* 0x80078cc0 */
+extern unsigned int g_dwSpyroFootstepPrimarySfxKey;             /* 0x80078cbc */
+extern unsigned int g_dwSpyroFootstepSecondarySfxKey;           /* 0x80078cc0 */
 extern int g_nSpyroGroundChunkId;                       /* 0x80078ccc */
 extern int g_anSpyroGroundChunkVerts[9];                /* 0x80078cd0 */
 extern void *g_pSpyroHazardRegionData;                /* 0x80078cf4 */
-extern byte g_bSpyroSfxVoiceMarker;                     /* 0x80078cf8 */
+extern unsigned char g_bSpyroSfxVoiceMarker;                     /* 0x80078cf8 */
 extern int g_nSaveMenuMode;                             /* 0x80078d00: enum SaveMenuMode (save_menu.h) */
 extern int g_nSaveMenuAnimPhase;                        /* 0x80078d04: frames since the screen changed (input waits on it) */
 extern int g_nSaveMenuCursor;                           /* 0x80078d08: SaveMenuRow / SaveFailedRow, or the SaveStep while saving */
@@ -1028,26 +1035,26 @@ extern int g_nTitleMode;                          /* 0x80078d78: title state blo
 extern int g_nStoryIntroSubstate;                       /* 0x80078d7c: title state +0x04: StoryIntro_Update step (0 arm, 1 stream, 2 fly-in) */
 extern int g_nStoryIntroTimer;                          /* 0x80078d80: title state +0x08: StoryIntro_Update frame timer */
 extern int g_nTitleExitPath;                        /* 0x80078d94: title state +0x1C: enum TitleExitPath — new game (opening story), loaded save, or attract demo (StoryIntro_Update) */
-extern byte g_abPad2RawReport[34];                      /* 0x80078e50 */
+extern unsigned char g_abPad2RawReport[34];                      /* 0x80078e50 */
 extern unsigned char g_abLevelVisitedFlagVirtualBase[]; /* FIXME: type/size unrecovered @ 0x80078e72 */
-extern byte g_abLevelVisitedFlag[36];                   /* 0x80078e78 */
-extern byte g_abGpuOpQueueRing[6144];                   /* 0x80078ea0 */
-extern byte g_abLevelExited[36];                    /* 0x8007a6a8: per-level flag, set to 1 when Spyro leaves through the level-exit whirlwind (saved) */
+extern unsigned char g_abLevelVisitedFlag[36];                   /* 0x80078e78 */
+extern unsigned char g_abGpuOpQueueRing[6144];                   /* 0x80078ea0 */
+extern unsigned char g_abLevelExited[36];                    /* 0x8007a6a8: per-level flag, set to 1 when Spyro leaves through the level-exit whirlwind (saved) */
 extern int g_nCutsceneArchiveOffset;                       /* 0x8007a6e8 */
 extern int g_nGameOverSceneSectorOffset;                /* 0x8007a708 */
 extern int g_nGameOverSceneByteSize;                    /* 0x8007a70c */
 extern int g_nLevelSplashOffset;                        /* 0x8007a718 */
 extern int g_nLevelArchiveOffset;                       /* 0x8007a720 */
 extern int g_anActorScissorRect[4];                     /* 0x8007aa00 */
-extern byte g_abSpyroShadowRingHeights[8];              /* 0x8007aa10 */
-extern byte g_abSpyroShadowRingNoGroundFlags[8];        /* 0x8007aa18 */
+extern unsigned char g_abSpyroShadowRingHeights[8];              /* 0x8007aa10 */
+extern unsigned char g_abSpyroShadowRingNoGroundFlags[8];        /* 0x8007aa18 */
 extern int g_anSpyroShadowPos[3];                       /* 0x8007aa20 */
 extern int g_nSpyroShadowOtBinBias;                     /* 0x8007aa2c */
 extern int g_nSpyroShadowRingIndex;                     /* 0x8007aa30 */
 extern int g_nSpyroShadowHiddenFlag;                    /* 0x8007aa34 */
 
 /* ---- RAM ---- */
-extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
+extern unsigned char g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
 
 /* ---- Named 2026-10-21 (session 2) — documented here, declared per file ----
  * These were autolabels; the users still carry their own extern (several
@@ -1157,7 +1164,7 @@ extern byte g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_bWorldBalloonistState1 0x800758d1  g_abWorldBalloonistState[1] (scalar view)
  *   g_nLevelEggsRecovered1/7/8/12/15 0x80076fec..0x80077024  g_anLevelEggsRecovered[n] views; a zero one
  *       (or < 2 for [12]) unlocks hint pages 0x21..0x25
- *   g_apWorldNameByLevelTens 0x8006f7d4  &g_apTitleCardNames[1], indexed by level id / 10 (world name)
+ *   g_apWorldNameByLevelTens 0x8006f7d4  &g_apWorldNames[1], takes a 0-based world index, so [level id / 10] is the NEXT world (the balloonist's GO TO destination)
  *   g_apLevelNameByWorldRow  0x8006f7d8  indexed (level id / 10) * 6 + level id % 10 (lands in
  *       g_apLevelNameStrings from world 1)
  *   g_abBalloonistDialoguePageEnds 0x8006f89d  &g_abBalloonistDialoguePageStarts[1]: page m ends where m + 1 starts
@@ -1341,11 +1348,11 @@ extern int g_anLevelSpawnYawBlock[]; /* 0x800778e4: +0 spawn yaw (see alias) */
 extern int g_nLevelProgress; /* 0x800778e8: live level progress word */
 extern int g_nLevelProgressCheckpoint; /* 0x800778ec: g_nLevelProgress at the last checkpoint */
 extern int g_CutsceneSoundDef[]; /* 0x800778f0: shared cutscene sample-bank record (cutscene entry and demo end) */
-extern byte g_abHudGemCounterBlock[]; /* 0x80077fa8: +0: icon records at +0x44 */
-extern byte g_abHudGemRollBlock[]; /* 0x80077fa8: +0: roll timer at +0xC */
-extern byte g_abHudDragonCounterBlock[]; /* 0x80077fa9: +1: records at +0x1FB */
-extern byte g_abHudButterflyRingBlock[]; /* 0x80077faa: +2: butterfly quads at +0x4C2 */
-extern byte g_abHudLivesCounterBlock[]; /* 0x80077faa: +2: records at +0x302 */
+extern unsigned char g_abHudGemCounterBlock[]; /* 0x80077fa8: +0: icon records at +0x44 */
+extern unsigned char g_abHudGemRollBlock[]; /* 0x80077fa8: +0: roll timer at +0xC */
+extern unsigned char g_abHudDragonCounterBlock[]; /* 0x80077fa9: +1: records at +0x1FB */
+extern unsigned char g_abHudButterflyRingBlock[]; /* 0x80077faa: +2: butterfly quads at +0x4C2 */
+extern unsigned char g_abHudLivesCounterBlock[]; /* 0x80077faa: +2: records at +0x302 */
 extern unsigned char g_abHudEggIconBlock[]; /* 0x80077fab: egg HUD state byte; its quads at +0x461 */
 extern unsigned char g_abHudKeyCounterBlock[]; /* 0x80077fac: level-key HUD state byte; its record at +0x408 */
 extern unsigned char g_abHudGemRollPhaseBlock[]; /* 0x80077fad */

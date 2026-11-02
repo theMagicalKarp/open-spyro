@@ -93,33 +93,8 @@
  * Absolute value. The two forms differ only at zero; both occur. */
 
 
-/* ANIM_ADVANCE promotes the queued animation and queues `next` after it. */
-#define ANIM_ADVANCE(a, next)                                                  \
-  (a)->frameProgress = sixteen;                                                        \
-  (a)->frameRate = sixteen;                                                        \
-  (a)->anim = (a)->nextAnim;                                                     \
-  (a)->nextAnim = (next);                                                         \
-  (a)->frame = (a)->nextFrame;                                                     \
-  (a)->nextFrame = 0;                                                              \
-  OnActorAnimQueued(a);
-
-/* ENTER_POSE sets the state byte to `n`, advances to animation `n` unless it
- * is already queued, and moves on to the next actor. It ends in a bare
- * `continue`, so use it only inside braces. */
-#define ENTER_POSE(a, n)                                                       \
-  (a)->mode = (n);                                                            \
-  if ((a)->nextAnim != (n)) {                                                     \
-    (a)->frameProgress = sixteen;                                                      \
-    (a)->frameRate = sixteen;                                                      \
-    (a)->anim = (a)->nextAnim;                                                   \
-    (a)->nextAnim = (n);                                                          \
-    (a)->frame = (a)->nextFrame;                                                   \
-    (a)->nextFrame = 0;                                                            \
-    OnActorAnimQueued(a);                                                          \
-  }                                                                            \
-  continue
-
-#define SPY g_anSpyroWorldPosBlock
+/* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
+#define ANIM_RATE16 sixteen
 
 /* ==== level_30 per-class state blocks ====
  *
@@ -202,7 +177,7 @@ void Level4_UpdateActors(void) {
       if (actor->mode != LEVELEXIT_FAR ? dist < 0x2800 : dist < 0x2400) {
         if (actor->mode == LEVELEXIT_FAR) {
           actor->posZ += 0x600;
-          SpawnNameLetterActors(actor, 0);
+          SpawnNameLetterActors(actor, NAME_LETTERS_RETURN_HOME);
           actor->posZ -= 0x600;
         }
         actor->mode = oneq;
@@ -265,7 +240,7 @@ void Level4_UpdateActors(void) {
                 g_nCurrentLevelId = g_nActiveLevelId / 10 * 10;
                 g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
                 g_dwSpyroRequestMask = 0;
-                ResetSpyroEntity(0);
+                ResetSpyroEntity(RESET_SPYRO_SOFT);
                 g_nSpyroFlightMode = 0;
                 g_nSpyroSuperflameTimer = 0;
               }
@@ -414,7 +389,7 @@ void Level4_UpdateActors(void) {
             if (cs->owner == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
-                                              actor->posY - spy->posY, 0)) <
+                                              actor->posY - spy->posY, ATAN_ANGLE8)) <
                   0) {
                 st->dir = 1;
               } else {
@@ -473,7 +448,7 @@ void Level4_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(80, 140);
           }
 
-          rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, 1);
+          rotated = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, YAW_STEP_IN_BAND);
           moved = MoveActorAlongHeading(actor, 30, 0, 50, MOVE_LIFT);
 
           if (rotated && moved) {
@@ -483,7 +458,7 @@ void Level4_UpdateActors(void) {
 
           if (ApproxDist2D(&actor->posX, &st->tgtX) > 2000) {
             int angle = ArcTan2(st->tgtX - actor->posX,
-                                      st->tgtY - actor->posY, 0);
+                                      st->tgtY - actor->posY, ATAN_ANGLE8);
 
             st->heading = angle;
             st->headingTimer = 40;
@@ -497,9 +472,9 @@ void Level4_UpdateActors(void) {
       case BUTTERFLY_CIRCLE: {
         SteerActorAroundPoint(actor, &spy->posX, 0x320,
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
-                                                  actor->posY - spy->posY, 0),
+                                                  actor->posY - spy->posY, ATAN_ANGLE8),
                                     st->dir * 8),
-                      8, 0x82, 0xE, 0x80, 0xFF, 0xFF, 0, 0, 0);
+                      8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
           actor->mode = BUTTERFLY_FLUTTER;
@@ -1167,7 +1142,7 @@ void Level4_UpdateActors(void) {
                 st->prompted = 0;
                 actor->posZ = st->baseZ + 0x80;
                 actor->rotZ = ArcTan2(spy->posX - actor->posX,
-                                             spy->posY - actor->posY, 0) -
+                                             spy->posY - actor->posY, ATAN_ANGLE8) -
                                0x80;
                 actor->cullRadius = 0x20;
                 actor->mode = SAVEHOST_POP_IN;
@@ -1226,7 +1201,7 @@ void Level4_UpdateActors(void) {
         if (st->wanderTimer == 0) {
           int reach = (GetRandomU32() & 0x3F) + 0x140;
           int bearing = ArcTan2(spy->posX - rider->posX,
-                                      spy->posY - rider->posY, 0);
+                                      spy->posY - rider->posY, ATAN_ANGLE8);
           int aim = (bearing + (GetRandomU32() & 0xF)) - 8;
 
           EBB_BREAK();
@@ -1237,7 +1212,7 @@ void Level4_UpdateActors(void) {
           st->wanderTo[0] -= (LookupCosine(aim) * reach) >> 12;
           st->wanderTo[1] -= (LookupSine(aim) * reach) >> 12;
           st->faceYaw = ArcTan2(spy->posX - st->wanderTo[0],
-                                  spy->posY - st->wanderTo[1], 0);
+                                  spy->posY - st->wanderTo[1], ATAN_ANGLE8);
           st->wanderTimer = 0;
         }
         break;
@@ -1447,8 +1422,8 @@ void Level4_UpdateActors(void) {
               ScaleVector3ByRatio(svA, dist, reach - 5);
             }
             AddVector(&actor->posX, &actor->posX, svA);
-            TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], 0), 0xA, 0, 0);
-            actor->rotY = ArcTan2(VectorLength(svA, VEC_LEN_XY), svA[2], 0);
+            TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
+            actor->rotY = ArcTan2(VectorLength(svA, VEC_LEN_XY), svA[2], ATAN_ANGLE8);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
           }
@@ -1512,8 +1487,8 @@ void Level4_UpdateActors(void) {
                 ScaleVector3ByRatio(svJ, dist, 0x122);
               }
               AddVector(&actor->posX, &actor->posX, svJ);
-              TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], 0), 0xA, 0, 0);
-              actor->rotY = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], 0);
+              TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
+              actor->rotY = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], ATAN_ANGLE8);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
             break;
@@ -1576,7 +1551,7 @@ void Level4_UpdateActors(void) {
 
             actor->rotX = 0;
             actor->rotY = svF[2];
-            TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, 0);
+            TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, YAW_HOLD_IN_BAND);
           }
 
           switch (SPY.sparxHealth) {
@@ -1685,14 +1660,14 @@ void Level4_UpdateActors(void) {
 
       /* Two of each of the first pair, then six of the third. */
       for (i = 0; i < 2; i++) {
-        if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
+        if (ACTOR_POOL_LOW()) {
           break;
         }
         g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_CHEST_SHARD, actor);
         g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_CHEST_SHARD + 1, actor);
       }
       for (i = 0; i < 6; i++) {
-        if (g_nActorPoolCapacity - g_nActorPoolLiveCount < 0x15) {
+        if (ACTOR_POOL_LOW()) {
           break;
         }
         g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_CHEST_SHARD + 2, actor);
@@ -1751,7 +1726,7 @@ void Level4_UpdateActors(void) {
         PlayActorMeshVoice(actor, 0, 0);
 
         for (i = 0; i < 2; i++) {
-          if ((g_nActorPoolCapacity - g_nActorPoolLiveCount) < 0x15) {
+          if (ACTOR_POOL_LOW()) {
             break;
           }
           g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD, actor);
@@ -1759,7 +1734,7 @@ void Level4_UpdateActors(void) {
         }
 
         for (i = 0; i < 6; i++) {
-          if ((g_nActorPoolCapacity - g_nActorPoolLiveCount) < 0x15) {
+          if (ACTOR_POOL_LOW()) {
             break;
           }
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPARKLE_SHARD, actor);
@@ -2018,17 +1993,17 @@ void Level4_UpdateActors(void) {
         }
         break;
 
-      case 2:
+      case AMBIENT_MODE_PATH:
         switch (st->sub) {
-        case 0:
+        case AMBIENT_STEP_WAIT:
           if (TickCountdownByFrameDelta(&st->timer, 4) != 0) {
             st->timer = 0x200 - (GetRandomU32() & 0x7F);
             voice = (GetRandomU32() & 1) + 0xD;
-            st->sub = 1;
+            st->sub = AMBIENT_STEP_TRAVEL;
           }
           break;
 
-        case 1: {
+        case AMBIENT_STEP_TRAVEL: {
           int left = st->left;
 
           st->left = left - 1;
@@ -2046,7 +2021,7 @@ void Level4_UpdateActors(void) {
                 st->path->nodes[(st->path->cur + 1) % st->path->count].y;
             actor->posZ =
                 st->path->nodes[(st->path->cur + 1) % st->path->count].z;
-            st->sub = 0;
+            st->sub = AMBIENT_STEP_WAIT;
             st->path->cur = (st->path->cur + 1) % st->path->count;
             st->left = ComputeStepTowardPoint(
                 &st->path->nodes[st->path->cur].x,
@@ -2222,10 +2197,10 @@ void Level4_UpdateActors(void) {
         int speed;
 
         toSpy = ArcTan2(st->posts->nodes[st->stage].x - spy->posX,
-                              st->posts->nodes[st->stage].y - spy->posY, 0);
+                              st->posts->nodes[st->stage].y - spy->posY, ATAN_ANGLE8);
         limit = 10;
         toMe = ArcTan2(actor->posX - st->posts->nodes[st->stage].x,
-                             actor->posY - st->posts->nodes[st->stage].y, 0);
+                             actor->posY - st->posts->nodes[st->stage].y, ATAN_ANGLE8);
         speed = st->stage * 20 + 0xB4;
 
         if (actor->nextAnim == 0) {
@@ -2234,10 +2209,10 @@ void Level4_UpdateActors(void) {
 
         if (limit < AbsAngleDelta8(toSpy, toMe)) {
           SteerActorAroundPoint(actor, &st->posts->nodes[st->stage].x, 0x1388, toSpy, 6,
-                        speed, 6, 0x14, 0xFF, 0xFF, 0, 0, 0);
+                        speed, 6, 0x14, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
           ANIM_GO(actor, st->anim + 1);
         } else {
-          TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+          TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
           ANIM_GO(actor, st->anim);
         }
 
@@ -2338,7 +2313,7 @@ void Level4_UpdateActors(void) {
           actor->mode = APGUARD_HOLD;
           continue;
         }
-        PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 9, 0x14, 0xFF, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 9, 0x14, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         break;
 
       case APGUARD_WATCH: {
@@ -2348,7 +2323,7 @@ void Level4_UpdateActors(void) {
           range = 0x960;
         }
 
-        if (TrackEntityYawTowardSpyro(actor, 6, 0x14, 1) != 0 && g_nActorAnimDone != 0) {
+        if (TrackEntityYawTowardSpyro(actor, 6, 0x14, YAW_STEP_IN_BAND) != 0 && g_nActorAnimDone != 0) {
           if (st->stage < 2) {
             if (st->count == 0) {
               st->count = RandomIntInRange(2, 4);
@@ -2462,7 +2437,7 @@ void Level4_UpdateActors(void) {
           MarkActorCommittedKill(actor);
           st->knockSpeed = 0xE6;
           st->knockAngle = StepAndLerpAngle8(
-              ArcTan2(actor->posX - spy->posX, actor->posY - SPY.posY, 0),
+              ArcTan2(actor->posX - spy->posX, actor->posY - SPY.posY, ATAN_ANGLE8),
               g_bSpyroPersistentEulerZ, 0x20, 0x40);
           st->velZ = 0x14;
           actor->mode = LUNGER_KNOCKED;
@@ -2470,7 +2445,7 @@ void Level4_UpdateActors(void) {
         }
         if (st->guard == 0) {
           WrapAngleDelta8(actor->rotZ, ArcTan2(spy->posX - actor->posX,
-                                                    SPY.posY - actor->posY, 0));
+                                                    SPY.posY - actor->posY, ATAN_ANGLE8));
           st->hits -= 1;
           st->anim += 7;
           goto lunge_hit;
@@ -2479,7 +2454,7 @@ void Level4_UpdateActors(void) {
           if (st->guard < 4) {
             WrapAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
-                                        SPY.posY - actor->posY, 0));
+                                        SPY.posY - actor->posY, ATAN_ANGLE8));
             *st->flag = 1;
             st->hits -= 1;
             st->anim += 7;
@@ -2531,8 +2506,8 @@ void Level4_UpdateActors(void) {
         ANIM_GO(actor, st->anim + 2);
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(st->target[0] - actor->posX,
-                                        st->target[1] - actor->posY, 0),
-                          0xA, 4, 1) != 0) {
+                                        st->target[1] - actor->posY, ATAN_ANGLE8),
+                          0xA, 4, YAW_STEP_IN_BAND) != 0) {
           PlayActorMeshVoice(actor, 1, 0);
           actor->mode = LUNGER_LEAP;
           continue;
@@ -2581,7 +2556,7 @@ void Level4_UpdateActors(void) {
               actor->posZ - floor >= 0x1F5) {
             MoveActorAlongAngle(actor,
                           ArcTan2(SPY.posX - actor->posX,
-                                        SPY.posY - actor->posY, 0),
+                                        SPY.posY - actor->posY, ATAN_ANGLE8),
                           0x50, 0, 0, 0);
           } else if (ApproxDist2D(&actor->posX, st->target) >= 0x97) {
             MoveActorAlongHeading(actor, 0xE6, 0, 0x12C, 0);
@@ -2626,8 +2601,8 @@ void Level4_UpdateActors(void) {
         }
         TurnActorYawTowardAngle(actor,
                       ArcTan2(st->target[0] - actor->posX,
-                                    st->target[1] - actor->posY, 0),
-                      7, 0, 0);
+                                    st->target[1] - actor->posY, ATAN_ANGLE8),
+                      7, 0, YAW_HOLD_IN_BAND);
         if (actor->nextFrame >= 9) {
           ANIM_SET(actor, st->anim + 1);
           st->wait = 0;
@@ -2653,7 +2628,7 @@ void Level4_UpdateActors(void) {
 
       case LUNGER_GO_HOME:
         if (ApproxDist2D(&actor->posX, st->home) < 0xB4) {
-          if (TurnActorYawTowardAngle(actor, st->heading, 6, 5, 1) != 0) {
+          if (TurnActorYawTowardAngle(actor, st->heading, 6, 5, YAW_STEP_IN_BAND) != 0) {
             *st->flag = 0;
             st->wait = 0x78;
             actor->mode = LUNGER_IDLE;
@@ -2663,8 +2638,8 @@ void Level4_UpdateActors(void) {
           ANIM_GO(actor, st->anim + 1);
           if (TurnActorYawTowardAngle(actor,
                             ArcTan2(st->home[0] - actor->posX,
-                                          st->home[1] - actor->posY, 0),
-                            6, 0x14, 1) != 0) {
+                                          st->home[1] - actor->posY, ATAN_ANGLE8),
+                            6, 0x14, YAW_STEP_IN_BAND) != 0) {
             MoveActorAlongHeading(actor, 0x82, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           }
         }
@@ -2678,7 +2653,7 @@ void Level4_UpdateActors(void) {
                  ApproxDist2D(&spy->posX, st->home) < 0x3E8) {
         if (TickCountdownByFrameDelta(&st->look, 4) != 0) {
           int ang =
-              ArcTan2(spy->posX - actor->posX, SPY.posY - actor->posY, 0);
+              ArcTan2(spy->posX - actor->posX, SPY.posY - actor->posY, ATAN_ANGLE8);
 
           g_anSpyroRequestVelocity.x = g_anCosineLut[ang] * 25 >> 10;
           g_anSpyroRequestVelocity.y = g_anSineLut[ang] * 25 >> 10;
@@ -2702,7 +2677,7 @@ void Level4_UpdateActors(void) {
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != REAR_KNOCKED) {
         SetActorGroupSubstate(actor, 1);
         st->angle = StepAndLerpAngle8(
-            ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, 0),
+            ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         st->speed = 0x190;
         if (actor->flags & ACTOR_HIT_CHARGE) {
@@ -2728,7 +2703,7 @@ void Level4_UpdateActors(void) {
             ANIM_GO(actor, 0);
           }
         }
-        TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (TickCountdownByFrameDelta(&st->timer, 4) != 0 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
           if (actor->anim == 0) {
@@ -2739,14 +2714,14 @@ void Level4_UpdateActors(void) {
         break;
 
       case REAR_NOTICE:
-        TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (g_nActorAnimDone != 0) {
           ENTER_POSE4(actor, REAR_REAR);
         }
         break;
 
       case REAR_REAR:
-        TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         goto spin_wait;
 
       case REAR_REARED: {
@@ -2765,7 +2740,7 @@ void Level4_UpdateActors(void) {
             ANIM_GO(actor, 4);
           }
         }
-        TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (dist < 0xBB8) {
           int height = actor->posZ - actor->floorOffset;
           int drop = height - SPY.posZ;
@@ -2781,7 +2756,7 @@ void Level4_UpdateActors(void) {
       }
 
       case REAR_SHOVE:
-        TrackEntityYawTowardSpyro(actor, 6, 0, 0);
+        TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (g_nSpyroState == SPYRO_ST_KNOCKBACK) {
           st->timer = 0x8C;
         }
@@ -2897,7 +2872,7 @@ void Level4_UpdateActors(void) {
 
           actor->subMode += 8;
           bearing = ArcTan2(spy->posX - st->parent->posX,
-                                  SPY.posY - st->parent->posY, 0);
+                                  SPY.posY - st->parent->posY, ATAN_ANGLE8);
           svN[0] = (g_anCosineLut[bearing] * 3) >> 4;
           svN[1] = (g_anSineLut[bearing] * 3) >> 4;
           svN[2] = 0;

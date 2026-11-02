@@ -110,7 +110,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   }
   g_nSparxHealth = g_nSparxHealthStash;
   if (g_nGamestate != GS_ACTOR_CUTSCENE) {
-    ResetSpyroEntity(0);
+    ResetSpyroEntity(RESET_SPYRO_SOFT);
     g_nSpyroInputBlankCountdown = 0xC;
   }
   if ((g_nActiveLevelId % 10) == 5) {
@@ -153,7 +153,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
       goto emitlist;
     }
     *((struct CameraParamBlock *)g_anCameraActiveTargetParams) =
-        *((struct CameraParamBlock *)g_anCameraParamMode2Front);
+        *((struct CameraParamBlock *)g_anCameraParamFollowBehind);
     g_pCameraAnchorPos = g_anSpyroWorldPos;
     g_nCameraCurrentMode = CAM_MODE_STAND;
     g_nCameraNextMode = CAM_MODE_STAND;

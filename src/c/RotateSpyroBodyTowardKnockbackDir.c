@@ -1,12 +1,15 @@
 #include "vecmath.h"
 
 #include "globals.h"
+/* Turn Spyro's byte yaw toward his motion vector (0x8003dfec): nothing inside
+   +-`band`, a snap when within +-`step`, else one `step`; g_nSpyroBodyYaw is
+   rebuilt from the byte. */
 void RotateSpyroBodyTowardKnockbackDir(int step, int band) {
   int ret;
   int yaw;
   int cur;
   int diff;
-  ret = ArcTan2(g_anSpyroMotionVec[0], g_anSpyroMotionVec[1], 0);
+  ret = ArcTan2(g_anSpyroMotionVec[0], g_anSpyroMotionVec[1], ATAN_ANGLE8);
   cur = g_abSpyroPersistentEuler[2];
   diff = ret - cur;
   diff = diff & 0xFF;

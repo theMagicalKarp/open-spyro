@@ -201,7 +201,8 @@ void TickSpyroAttackEffects(int steps) {
             if ((*((volatile int *)(&pt[-0xf]))) != 0) {
               mask = ACTOR_HIT_FLAME | ACTOR_HIT_SUPER;
             }
-            if ((DispatchActorContactAtSphere(tip, 0xa0, 0, mask, 0, 0) != 0) ||
+            if ((DispatchActorContactAtSphere(tip, 0xa0, 0, mask, 0,
+                                              CONTACT_STOP_AT_SOLID) != 0) ||
                 (CastRayWorldAndActors(dir, tip) != 0)) {
               ((unsigned char *)&g_anSpyroFlameAnchorMtxBlock[-0x1d])[i] = 2;
               g_abSpyroFlameSlotEndAge[i] =

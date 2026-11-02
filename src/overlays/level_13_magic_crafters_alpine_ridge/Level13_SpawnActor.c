@@ -42,12 +42,12 @@ Actor *Level13_SpawnActor(int type, Actor *parent) {
     st->sparkle = 0xFF;
     st->velX = 0;
     st->velY = 0;
-    st->sub = 0;
+    st->restMode = COLLREST_STILL;
     st->timer = 0;
     st->pitch = 0;
     st->yaw = 0;
     st->roll = 0;
-    rec->subMode = 2;
+    rec->subMode = COLLECT_BOUNCE;
     rec->cullRadius = 0x18;
     rec->updateDist = 0x10;
     rec->rotX = 0x20;
@@ -101,7 +101,7 @@ Actor *Level13_SpawnActor(int type, Actor *parent) {
     st->velX = 0;
     st->velY = 0;
     st->velZ = 0x8C;
-    st->sub = 0;
+    st->restMode = COLLREST_STILL;
     st->timer = 0;
     st->pitch = 0;
     st->yaw = 0;
@@ -113,7 +113,7 @@ Actor *Level13_SpawnActor(int type, Actor *parent) {
     }
     pos = &rec->posX;
     st->sparkle = 0xFF;
-    rec->subMode = 2;
+    rec->subMode = COLLECT_BOUNCE;
     rec->cullRadius = 0x18;
     rec->updateDist = 0x40;
     rec->rotX = 0x20;
@@ -290,7 +290,7 @@ Actor *Level13_SpawnActor(int type, Actor *parent) {
     rec->posZ = parent->posZ + 0x300;
     dx = g_anSpyroWorldPos[0] - rec->posX;
     dy = g_nSpyroWorldPosY - rec->posY;
-    turn = (ArcTan2(dx, dy, 0) - parent->rotZ) & 0xFF;
+    turn = (ArcTan2(dx, dy, ATAN_ANGLE8) - parent->rotZ) & 0xFF;
     if (turn > 0x80) {
       turn -= 0x100;
     }
@@ -303,7 +303,7 @@ Actor *Level13_SpawnActor(int type, Actor *parent) {
     rec->rotZ = parent->rotZ + turn;
     dist = ApproxDist2D(&rec->posX, (int *)g_anSpyroWorldPos);
     dz = rec->posZ - 0x164;
-    turn = (ArcTan2(dist, g_nSpyroGroundHeightZ - dz, 0) - parent->rotY) & 0xFF;
+    turn = (ArcTan2(dist, g_nSpyroGroundHeightZ - dz, ATAN_ANGLE8) - parent->rotY) & 0xFF;
     if (turn > 0x80) {
       turn -= 0x100;
     }

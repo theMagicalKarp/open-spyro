@@ -32,7 +32,8 @@ void ProbeSpyroLedgeForward(void) {
   if (CastRayWorldAndActors(from, tp) != 0) {
     cp = g_anCollisionProbeVec;
     len = VectorLength(cp, VEC_LEN_XY);
-    if (((signed char)ArcTan2(g_anCollisionProbeVec[2], len, 0)) >= 0x17) {
+    if (((signed char)ArcTan2(g_anCollisionProbeVec[2], len, ATAN_ANGLE8)) >=
+        0x17) {
       g_anSpyroBodyMtx[32] = 1;
       CopyVector(g_anSpyroBodyMtx + 33, cp);
     }

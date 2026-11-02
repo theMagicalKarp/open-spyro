@@ -95,7 +95,7 @@ extern int g_pOtDepthBinHead0[];            /* OT depth-bin list */
 
 extern unsigned short g_anCosineLut[]; /* cosine LUT */
 
-extern char *g_apBalloonistNames[];          /* per-world balloonist names */
+extern char *g_apBalloonistNames[];          /* [world] balloonist name; [0] is "RETURN HOME" */
 
 extern char *g_apBalloonistDialogueLines[];          /* dialogue lines */
 

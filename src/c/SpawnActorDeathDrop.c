@@ -145,7 +145,8 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
       g_anCollisionProbeVec[2],
       VectorLength(g_anCollisionProbeVec, VEC_LEN_XY));
   if (hit == 0 || ang >= 0x18 ||
-      DispatchActorContactAtSphere(throw_, 0xc8, 0, 0, 0, 0) != 0) {
+      DispatchActorContactAtSphere(throw_, 0xc8, 0, 0, 0,
+                                   CONTACT_STOP_AT_SOLID) != 0) {
     CopyVector(throw_, &src->posX);
   }
   n = 0;

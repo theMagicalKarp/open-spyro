@@ -91,7 +91,8 @@ void ChangeSpyroState(int state) {
     int a;
 
     SPY[SPY_SUBSTATE] = 0;
-    a = (ArcTan2(SPY[SPY_MOTION], g_anSpyroMotionVec[1], 1) - g_nSpyroBodyYaw) &
+    a = (ArcTan2(SPY[SPY_MOTION], g_anSpyroMotionVec[1], ATAN_ANGLE12) -
+         g_nSpyroBodyYaw) &
         0xFFF;
     if ((unsigned)(a - 0x401) < 0x7FF) {
       g_nSpyroMotionSpeed = 0;
@@ -108,8 +109,8 @@ void ChangeSpyroState(int state) {
       int base;
       int side;
 
-      a = (g_nSpyroBodyYaw -
-           ArcTan2(g_anSpyroGroundNormal[0], g_anSpyroGroundNormal[1], 1)) &
+      a = (g_nSpyroBodyYaw - ArcTan2(g_anSpyroGroundNormal[0],
+                                     g_anSpyroGroundNormal[1], ATAN_ANGLE12)) &
           0xFFF;
       if (a > 0x800) {
         a -= 0x1000;
@@ -236,7 +237,7 @@ void ChangeSpyroState(int state) {
           int da;
 
           SubtractVector(d, &actor->posX, from);
-          a = (ArcTan2(d[0], d[1], 1) - g_nSpyroBodyYaw) & 0xFFF;
+          a = (ArcTan2(d[0], d[1], ATAN_ANGLE12) - g_nSpyroBodyYaw) & 0xFFF;
           if (a > 0x800) {
             a -= 0x1000;
           }
@@ -484,7 +485,8 @@ void ChangeSpyroState(int state) {
     break;
   case SPYRO_ST_SCRIPTED_WALK:
     SPY[SPY_SUBSTATE] = 0;
-    if ((unsigned)(((ArcTan2(SPY[SPY_MOTION], g_anSpyroMotionVec[1], 1) -
+    if ((unsigned)(((ArcTan2(SPY[SPY_MOTION], g_anSpyroMotionVec[1],
+                             ATAN_ANGLE12) -
                      g_nSpyroBodyYaw) &
                     0xFFF) -
                    0x401) < 0x7FF) {
@@ -508,7 +510,7 @@ void ChangeSpyroState(int state) {
     } else {
       g_anSpyroVelocity[2] = g_anSpyroMotionVec[2];
     }
-    ArcTan2(SPY[SPY_VELOCITY], g_anSpyroVelocity[1], 1);
+    ArcTan2(SPY[SPY_VELOCITY], g_anSpyroVelocity[1], ATAN_ANGLE12);
     g_nSpyroGravityStep = -0x300;
     if (g_nSpyroAirborneFrames == 0) {
       ApplyGravityAlongSpyroSlopeNormal();

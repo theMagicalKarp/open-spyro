@@ -69,7 +69,7 @@ void SaveMenu_Update(void) {
       ACTOR_RAW(ACT, int, posZ) =
           g_nSaveMenuHostFromZ +
           (((g_nSaveMenuHostToZ - g_nSaveMenuHostFromZ) * t) >> 13);
-      TrackEntityYawTowardSpyro(ACT, 3, 0, 0);
+      TrackEntityYawTowardSpyro(ACT, 3, 0, YAW_HOLD_IN_BAND);
       FindGroundHeightBelow(&ACT->posX, 0x1000);
       EncodeCachedVecToActorDirCode(ACT);
       if (g_pSparxActor != 0) {
@@ -94,8 +94,8 @@ void SaveMenu_Update(void) {
       SubtractVector(vec, vec, g_anCameraPos);
       if (g_nSaveMenuAnimPhase < 0x20) {
         ang[0] = 0;
-        ang[1] = ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], 1);
-        ang[2] = ArcTan2(vec[0], vec[1], 1);
+        ang[1] = ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], ATAN_ANGLE12);
+        ang[2] = ArcTan2(vec[0], vec[1], ATAN_ANGLE12);
         g_nCameraEulerRoll = (g_nCameraEulerRoll +
                               ((SignedAngleDelta12(ang[0], g_nCameraEulerRoll) *
                                 g_nSaveMenuAnimPhase) >>
@@ -115,8 +115,8 @@ void SaveMenu_Update(void) {
       } else {
         g_nCameraEulerRoll = 0;
         g_nCameraEulerPitch =
-            ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], 1);
-        g_nCameraEulerYaw = ArcTan2(vec[0], vec[1], 1);
+            ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], ATAN_ANGLE12);
+        g_nCameraEulerYaw = ArcTan2(vec[0], vec[1], ATAN_ANGLE12);
       }
       if (((SM[28] - SM[27]) & 0xFFF) < 0x801) {
         g_abSpyroPersistentEuler[2] =
@@ -145,7 +145,7 @@ void SaveMenu_Update(void) {
         Actor *act = ACT;
 
         ACT->rotZ = ArcTan2(g_anSpyroWorldPos[0] - act->posX,
-                            g_anSpyroWorldPos[1] - act->posY, 0);
+                            g_anSpyroWorldPos[1] - act->posY, ATAN_ANGLE8);
       }
       if (g_pSparxActor != 0) {
         g_pSparxActor->posX =

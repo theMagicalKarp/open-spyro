@@ -75,12 +75,12 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     st->sparkle = 0xFF;
     st->velX = 0;
     st->velY = 0;
-    st->sub = 0;
+    st->restMode = COLLREST_STILL;
     st->timer = 0;
     st->pitch = 0;
     st->yaw = 0;
     st->roll = 0;
-    rec->subMode = 2;
+    rec->subMode = COLLECT_BOUNCE;
     rec->cullRadius = 0x18;
     rec->updateDist = 0x10;
     rec->rotX = 0x20;
@@ -146,7 +146,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     st->velX = 0;
     st->velY = 0;
     st->velZ = 0x8C;
-    st->sub = 0;
+    st->restMode = COLLREST_STILL;
     st->timer = 0;
     st->pitch = 0;
     st->yaw = 0;
@@ -158,7 +158,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     }
     pos = &rec->posX;
     st->sparkle = 0xFF;
-    rec->subMode = 2;
+    rec->subMode = COLLECT_BOUNCE;
     rec->cullRadius = 0x18;
     rec->updateDist = 0x40;
     rec->rotX = 0x20;
@@ -272,7 +272,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
   case ACTOR_TYPE_REBOUND_FX:
     InitActorRenderDefaults(rec);
     CopyVector(&rec->posX, g_anSpyroFirstContactPoint);
-    rec->rotZ = ArcTan2(g_anSpyroFirstContactNormal[0], g_anSpyroFirstContactNormal[1], 0) + 0x40;
+    rec->rotZ = ArcTan2(g_anSpyroFirstContactNormal[0], g_anSpyroFirstContactNormal[1], ATAN_ANGLE8) + 0x40;
     InsertActorIntoSpatialGrid(rec);
     break;
 

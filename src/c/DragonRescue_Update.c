@@ -131,8 +131,9 @@ void DragonRescue_Update(void) {
       {
         Actor *src = SRC;
 
-        g_nDragonRescueOrbitStartYaw = ArcTan2(
-            g_anSpyroWorldPos[0] - src->posX, g_nSpyroWorldPosY - src->posY, 1);
+        g_nDragonRescueOrbitStartYaw =
+            ArcTan2(g_anSpyroWorldPos[0] - src->posX,
+                    g_nSpyroWorldPosY - src->posY, ATAN_ANGLE12);
       }
       SubtractVector(vec, g_anSpyroWorldPos, &SRC->posX);
       g_nDragonRescueOrbitStartRadius = VectorLength(vec, VEC_LEN_XY);
@@ -143,7 +144,7 @@ void DragonRescue_Update(void) {
         g_nDragonRescueOrbitTargetRadius = STATUE_ST(src)->orbitRadius;
         g_nDragonRescueCameraStartYaw =
             ArcTan2(*(int *)(int)g_anCameraPos - ACTOR_RAW(src, int, posX),
-                    g_anCameraPos[1] - ACTOR_RAW(src, int, posY), 1);
+                    g_anCameraPos[1] - ACTOR_RAW(src, int, posY), ATAN_ANGLE12);
       }
       SubtractVector(vec, g_anCameraPos, &SRC->posX);
       g_nDragonRescueCameraStartRadius = VectorLength(vec, VEC_LEN_XY);
@@ -152,8 +153,8 @@ void DragonRescue_Update(void) {
         Actor *src = SRC;
 
         rec = REC(src); /* DragonStatueState.camPos */
-        g_nDragonRescueCameraTargetYaw =
-            ArcTan2(W32(rec, 0) - src->posX, W32(rec, 4) - src->posY, 1);
+        g_nDragonRescueCameraTargetYaw = ArcTan2(
+            W32(rec, 0) - src->posX, W32(rec, 4) - src->posY, ATAN_ANGLE12);
       }
       SubtractVector(vec, rec, &SRC->posX);
       g_nDragonRescueCameraTargetRadius = VectorLength(vec, VEC_LEN_XY);
@@ -170,7 +171,7 @@ void DragonRescue_Update(void) {
         g_nDragonRescueSweepDurationFrames = 0x80;
       }
       g_nSpyroSuperflameTimerSave = g_nSpyroSuperflameTimer;
-      ResetSpyroEntity(1);
+      ResetSpyroEntity(RESET_SPYRO_FULL);
       g_bSpyroAnimPrev = 1;
       g_bSpyroAnimCurrent = 1;
       g_bSpyroAnimFrame = 1;
@@ -243,7 +244,7 @@ void DragonRescue_Update(void) {
       g_nSpyroWorldPosY = SRC->posY + ((LookupSine(a) * d) >> 12);
       SubtractVector(vec, g_anSpyroWorldPos, vec);
       {
-        int dir = ArcTan2(vec[0], vec[1], 0);
+        int dir = ArcTan2(vec[0], vec[1], ATAN_ANGLE8);
 
         if (AbsAngleDelta8(dir, g_abSpyroPersistentEuler[2]) >= 4) {
           if (((dir - g_abSpyroPersistentEuler[2]) & 0xFF) < 0x81) {
@@ -342,8 +343,8 @@ void DragonRescue_Update(void) {
       SubtractVector(vec, vec, g_anCameraPos);
       if (g_nDragonRescueTimer < 0x10) {
         ang[0] = 0;
-        ang[1] = ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], 1);
-        ang[2] = ArcTan2(vec[0], vec[1], 1);
+        ang[1] = ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], ATAN_ANGLE12);
+        ang[2] = ArcTan2(vec[0], vec[1], ATAN_ANGLE12);
         g_nCameraEulerRoll = (g_nCameraEulerRoll +
                               ((SignedAngleDelta12(ang[0], g_nCameraEulerRoll) *
                                 g_nDragonRescueTimer) >>
@@ -364,16 +365,16 @@ void DragonRescue_Update(void) {
                  g_nDragonRescueSweepDurationFrames - 0x20) {
         g_nCameraEulerRoll = 0;
         g_nCameraEulerPitch =
-            ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], 1);
-        g_nCameraEulerYaw = ArcTan2(vec[0], vec[1], 1);
+            ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], ATAN_ANGLE12);
+        g_nCameraEulerYaw = ArcTan2(vec[0], vec[1], ATAN_ANGLE12);
       } else {
         /* DragonStatueState.camEuler (+0x0C..+0x14) as byte-offset ints: the
            struct member form reschedules the three blends (A400) */
         int *rec = REC(SRC);
 
         ang[0] = 0;
-        ang[1] = ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], 1);
-        ang[2] = ArcTan2(vec[0], vec[1], 1);
+        ang[1] = ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], ATAN_ANGLE12);
+        ang[2] = ArcTan2(vec[0], vec[1], ATAN_ANGLE12);
         g_nCameraEulerRoll =
             (ang[0] + ((SignedAngleDelta12(W32(rec, 0xc), ang[0]) *
                         (g_nDragonRescueTimer -
@@ -402,9 +403,9 @@ void DragonRescue_Update(void) {
                 g_nSpyroGroundNormalX * LookupSine(EUL2 << 4)) >>
                12;
       vec[2] = g_anSpyroGroundNormal[2];
-      g_abSpyroPersistentEuler[0] =
-          -ArcTan2(IntegerSqrt(vec[0] * vec[0] + vec[2] * vec[2]), vec[1], 1);
-      g_abSpyroPersistentEuler[1] = -ArcTan2(vec[2], vec[0], 1);
+      g_abSpyroPersistentEuler[0] = -ArcTan2(
+          IntegerSqrt(vec[0] * vec[0] + vec[2] * vec[2]), vec[1], ATAN_ANGLE12);
+      g_abSpyroPersistentEuler[1] = -ArcTan2(vec[2], vec[0], ATAN_ANGLE12);
       AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
       TickSpyroAnimLayer1();
       TickSpyroAnimLayer2();

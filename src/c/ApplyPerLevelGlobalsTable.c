@@ -4,6 +4,12 @@
 #include "level_id.h"
 #include "main_shared.h"
 
+/* Point the per-level hook slots at the overlay just loaded for
+   g_nActiveLevelId (0x8005a470): every level sets the overlay end and its
+   SpawnActor / UpdateActors / EmitParticles / AdvanceEmitList entries; homes
+   add the actor-cutscene and save-menu hooks, flight levels the flight-run and
+   results hooks. Ids 0..9 and 99 are the overlays not mapped from WAD.WAD
+   (level_entry_points.h). */
 void ApplyPerLevelGlobalsTable(void) {
   switch (g_nActiveLevelId) {
   case 0:
@@ -112,10 +118,10 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelUpdateActors = Level5_UpdateActors;
     g_pfnLevelEmitParticles = Level5_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level5_AdvanceEmitList;
-    g_pfnLevelFallImpactCallback = Level5_FlightEndHook;
+    g_pfnLevelEndFlightRun = Level5_FlightEndHook;
     g_pfnLevelHandleFlightResults = Level5_HandleFlightResults;
-    g_pfnGamestate7Handler = Level5_FlightResultsMenu_Update;
-    g_pfnGamestate7DrawHook = Level5_FlightResults_Draw;
+    g_pfnFlightResultsUpdate = Level5_FlightResultsMenu_Update;
+    g_pfnFlightResultsDraw = Level5_FlightResults_Draw;
     g_pfnFlightTimeFormatter = Level5_DrawFlightRaceTime;
     break;
   case LEVEL_PEACE_KEEPERS:
@@ -171,10 +177,10 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelUpdateActors = Level11_UpdateActors;
     g_pfnLevelEmitParticles = Level11_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level11_AdvanceEmitList;
-    g_pfnLevelFallImpactCallback = Level11_FlightEndHook;
+    g_pfnLevelEndFlightRun = Level11_FlightEndHook;
     g_pfnLevelHandleFlightResults = Level11_HandleFlightResults;
-    g_pfnGamestate7Handler = Level11_FlightResultsMenu_Update;
-    g_pfnGamestate7DrawHook = Level11_FlightResults_Draw;
+    g_pfnFlightResultsUpdate = Level11_FlightResultsMenu_Update;
+    g_pfnFlightResultsDraw = Level11_FlightResults_Draw;
     g_pfnFlightTimeFormatter = Level11_DrawFlightRaceTime;
     break;
   case LEVEL_MAGIC_CRAFTERS:
@@ -222,10 +228,10 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelUpdateActors = Level17_UpdateActors;
     g_pfnLevelEmitParticles = Level17_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level17_AdvanceEmitList;
-    g_pfnLevelFallImpactCallback = Level17_FlightEndHook;
+    g_pfnLevelEndFlightRun = Level17_FlightEndHook;
     g_pfnLevelHandleFlightResults = Level17_HandleFlightResults;
-    g_pfnGamestate7Handler = Level17_FlightResultsMenu_Update;
-    g_pfnGamestate7DrawHook = Level17_FlightResults_Draw;
+    g_pfnFlightResultsUpdate = Level17_FlightResultsMenu_Update;
+    g_pfnFlightResultsDraw = Level17_FlightResults_Draw;
     g_pfnFlightTimeFormatter = Level17_DrawFlightRaceTime;
     break;
   case LEVEL_BEAST_MAKERS:
@@ -273,10 +279,10 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelUpdateActors = Level23_UpdateActors;
     g_pfnLevelEmitParticles = Level23_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level23_AdvanceEmitList;
-    g_pfnLevelFallImpactCallback = Level23_FlightEndHook;
+    g_pfnLevelEndFlightRun = Level23_FlightEndHook;
     g_pfnLevelHandleFlightResults = Level23_HandleFlightResults;
-    g_pfnGamestate7Handler = Level23_FlightResultsMenu_Update;
-    g_pfnGamestate7DrawHook = Level23_FlightResults_Draw;
+    g_pfnFlightResultsUpdate = Level23_FlightResultsMenu_Update;
+    g_pfnFlightResultsDraw = Level23_FlightResults_Draw;
     g_pfnFlightTimeFormatter = Level23_DrawFlightRaceTime;
     break;
   case LEVEL_DREAM_WEAVERS:
@@ -324,10 +330,10 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnLevelUpdateActors = Level29_UpdateActors;
     g_pfnLevelEmitParticles = Level29_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level29_AdvanceEmitList;
-    g_pfnLevelFallImpactCallback = Level29_FlightEndHook;
+    g_pfnLevelEndFlightRun = Level29_FlightEndHook;
     g_pfnLevelHandleFlightResults = Level29_HandleFlightResults;
-    g_pfnGamestate7Handler = Level29_FlightResultsMenu_Update;
-    g_pfnGamestate7DrawHook = Level29_FlightResults_Draw;
+    g_pfnFlightResultsUpdate = Level29_FlightResultsMenu_Update;
+    g_pfnFlightResultsDraw = Level29_FlightResults_Draw;
     g_pfnFlightTimeFormatter = Level29_DrawFlightRaceTime;
     break;
   case LEVEL_GNORC_GNEXUS:

@@ -111,7 +111,7 @@ typedef struct Actor {
  * MoveActorByDelta, which reads only MOVE_LIFT, TryMoveActorForward), passed
  * through by SteerActorAroundPoint and PivotActorAlongPath. */
 #define MOVE_LIFT 0x01         /* probe the world 0x12C + radius higher (undone after) */
-#define MOVE_PASS_ACTORS 0x02  /* actor contact only notifies (mode 3), never blocks */
+#define MOVE_PASS_ACTORS 0x02  /* actors never block: the step is pushed out of them (CONTACT_PUSH_OUT) */
 #define MOVE_FOLLOW_FLOOR 0x04 /* ease Z toward the probed floor (snap when close) */
 #define MOVE_STEP_LIMIT 0x10   /* reject a step up or down past the step height */
 #define MOVE_SLIDE 0x20        /* world contact: slide to the resolved point, don't reject */
@@ -128,7 +128,7 @@ typedef struct Actor {
 #define ACTOR_MODE_DORMANT 0x80
 #define ACTOR_MODE_END 0xFF
 
-/* Actor.animFlags bits (AdvanceActorAnimation). */
+/* Actor.animFlags bits (TickActorAnims). */
 #define ACTOR_ANIM_NEW_FRAME 0x01 /* stepped onto a new frame this tick */
 #define ACTOR_ANIM_DONE 0x02      /* the animation finished (g_nActorAnimDone) */
 /* Actor.groundCode bit 31: the packed contact is valid. */
@@ -410,7 +410,7 @@ enum ActorType {
   ACTOR_TYPE_FOLLOW_FACER = 414, /* level 33: turns toward the actor it follows */
   ACTOR_TYPE_BALLOON = 416,        /* bobs about its rest height; only in balloonist levels */
   ACTOR_TYPE_REWARD_BURST = 417, /* level 6: once triggered, plays its sound and throws up to four sets of sparks */
-  ACTOR_TYPE_LIFE_CHEST = 421,       /* shakes and pops its lid on a timer, spawning a 0x1A6 rider (LiftState) */
+  ACTOR_TYPE_LIFE_CHEST = 421,       /* shakes and pops its lid on a timer, spawning a 0x1A6 rider (LifeChestState) */
   ACTOR_TYPE_LIFE_CHEST_RIDER = 422, /* shown while ACTOR_TYPE_LIFE_CHEST's lid is up, then despawned; no UpdateActors arm */
   ACTOR_TYPE_LIFE_CHEST_SHARD = 423, /* 423..425: life chest burst (423/424 bounce, 425 tumbles) */
   ACTOR_TYPE_LETTER_A = 0x1AA,     /* letter glyphs A..Z (0x1AA..0x1C3): floating names, text
@@ -506,7 +506,7 @@ typedef struct WanderBlock {
   int pad08;                     /* 0x08 */
   unsigned char speed;           /* 0x0C move speed (x1.5 / x2 at frame delta 3 / 4) */
   unsigned char turnRate;        /* 0x0D */
-  unsigned char contact;         /* 0x0E move contact group, also the probe radius */
+  unsigned char contact;         /* 0x0E actor-contact and wall radius of each step */
   unsigned char repickMin;       /* 0x0F re-pick countdown range */
   unsigned char repickMax;       /* 0x10 */
   unsigned char jitterMin;       /* 0x11 heading jitter range */
@@ -521,7 +521,7 @@ typedef struct WanderBlock {
   unsigned char chaseRadius;     /* 0x1A 0 = only the fixed 0x44C range */
   unsigned char chasing;         /* 0x1B */
   unsigned char chaseCooldown;   /* 0x1C set after a wall bump or a walk home */
-  unsigned char contactCooldown; /* 0x1D moves ignore the contact group while set */
+  unsigned char contactCooldown; /* 0x1D steps skip the actor-contact test while set */
   short weave;                   /* 0x1E current weave offset */
 } WanderBlock; /* 0x20 */
 

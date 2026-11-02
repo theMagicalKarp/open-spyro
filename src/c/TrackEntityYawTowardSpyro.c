@@ -4,13 +4,13 @@
 #include "vecmath.h"
 
 /* Rotate `actor`'s byte yaw (rotZ) toward the direction of Spyro, stepping
-   by at most `step` (boosted 1.5x in camera mode 3, 2x in mode 4) but never
+   by at most `step` (boosted 1.5x at frame delta 3, 2x at 4) but never
    past the actual delta. Returns 0 while still outside the `threshold`
    dead-band (and keeps turning); returns 1 once within it, applying one more
-   step when `flag` is set. */
+   step when `flag` is YAW_STEP_IN_BAND. */
 int TrackEntityYawTowardSpyro(Actor *actor, int step, int threshold, int flag) {
   int target = ArcTan2(g_anSpyroWorldPos[0] - actor->posX,
-                       g_anSpyroWorldPos[1] - actor->posY, 0);
+                       g_anSpyroWorldPos[1] - actor->posY, ATAN_ANGLE8);
   int delta = AbsAngleDelta8(target, actor->rotZ);
 
   if (g_nActorFrameDelta == 3) {

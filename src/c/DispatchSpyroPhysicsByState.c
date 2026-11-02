@@ -91,9 +91,10 @@ void DispatchSpyroPhysicsByState(void) {
       int a;
       int b;
 
-      ang = (g_nSpyroBodyYaw -
-             ArcTan2(g_anSpyroGroundNormal[0], g_anSpyroGroundNormal[1], 1)) &
-            0xFFF;
+      ang =
+          (g_nSpyroBodyYaw - ArcTan2(g_anSpyroGroundNormal[0],
+                                     g_anSpyroGroundNormal[1], ATAN_ANGLE12)) &
+          0xFFF;
       if (ang > 0x800) {
         ang -= 0x1000;
       }
@@ -222,7 +223,7 @@ void DispatchSpyroPhysicsByState(void) {
         TRACK_FLOOR_REFERENCE();
         if (g_nSpyroSubstate == 3 &&
             CollideSphereWithWorldAndActors(&SPY[0], 0x164, 0x164) != 0) {
-          g_pfnLevelFallImpactCallback();
+          g_pfnLevelEndFlightRun();
         }
       } else {
         CLAMP_FALL_REFERENCE();
