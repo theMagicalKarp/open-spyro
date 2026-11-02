@@ -114,13 +114,13 @@ void Level32_UpdateActors(void) {
   int o140[3];
   int o150[3];
   int o160[3];
-  int o170[3];
+  int sparkLead[3];
   int z256[3];
-  int t400[3];
-  int t416[3];
+  int sparkleTwinkle[3];
+  int shardTwinkle[3];
   int q432[3];
   int q448[3];
-  int q464[3];
+  int podSparkVel[3];
   int letterSlot[3];
   int letterSwingRest[3];
 
@@ -2264,10 +2264,10 @@ void Level32_UpdateActors(void) {
           o150[2] = (g_anSineLut[a] * 5) >> 8;
           o150[0] = (o150[0] * g_anCosineLut[a]) >> 12;
           o150[1] = (o150[1] * g_anCosineLut[a]) >> 12;
-          CopyVector(o170, o150);
-          LShiftVector3(o170, 2);
-          AddVector(o170, o170, &actor->posX);
-          g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, o170, (int)o150);
+          CopyVector(sparkLead, o150);
+          LShiftVector3(sparkLead, 2);
+          AddVector(sparkLead, sparkLead, &actor->posX);
+          g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, sparkLead, (int)o150);
         }
         g_pfnLevelEmitParticles(0xA, EMIT_STREAK_BURST, &actor->posX, 0x10);
         DespawnActorRecord(actor);
@@ -2736,11 +2736,11 @@ void Level32_UpdateActors(void) {
         actor->rotY += st->spin[1];
         actor->rotZ += st->spin[2];
 
-        t400[0] = (GetRandomU32() & 0xFE) - 0x7F;
-        t400[1] = (GetRandomU32() & 0xFE) - 0x7F;
-        t400[2] = (GetRandomU32() & 0xFE) - 0x40;
-        AddVector(t400, t400, &actor->posX);
-        g_pfnLevelEmitParticles(1, EMIT_TWINKLE, t400, 1);
+        sparkleTwinkle[0] = (GetRandomU32() & 0xFE) - 0x7F;
+        sparkleTwinkle[1] = (GetRandomU32() & 0xFE) - 0x7F;
+        sparkleTwinkle[2] = (GetRandomU32() & 0xFE) - 0x40;
+        AddVector(sparkleTwinkle, sparkleTwinkle, &actor->posX);
+        g_pfnLevelEmitParticles(1, EMIT_TWINKLE, sparkleTwinkle, 1);
         st->life -= 1;
       } else {
         DespawnActorRecord(actor);
@@ -2793,11 +2793,11 @@ void Level32_UpdateActors(void) {
 
           do {
             i += 1;
-            t416[0] = (GetRandomU32() & 0xFE) - 0x7F;
-            t416[1] = (GetRandomU32() & 0xFE) - 0x7F;
-            t416[2] = (GetRandomU32() & 0xFE) - 0x40;
-            AddVector(t416, t416, &actor->posX);
-            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, t416, 1);
+            shardTwinkle[0] = (GetRandomU32() & 0xFE) - 0x7F;
+            shardTwinkle[1] = (GetRandomU32() & 0xFE) - 0x7F;
+            shardTwinkle[2] = (GetRandomU32() & 0xFE) - 0x40;
+            AddVector(shardTwinkle, shardTwinkle, &actor->posX);
+            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, shardTwinkle, 1);
           } while (i < 3);
         }
 
@@ -2962,10 +2962,10 @@ void Level32_UpdateActors(void) {
             q448[0] += g_anCosineLut[j * 43] >> 6;
             q448[1] += g_anSineLut[j * 43] >> 6;
             q448[2] += 0x28;
-            q464[0] = g_anCosineLut[j * 43] >> 7;
-            q464[1] = g_anSineLut[j * 43] >> 7;
-            q464[2] = 0x10;
-            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, q448, (int)q464);
+            podSparkVel[0] = g_anCosineLut[j * 43] >> 7;
+            podSparkVel[1] = g_anSineLut[j * 43] >> 7;
+            podSparkVel[2] = 0x10;
+            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, q448, (int)podSparkVel);
           }
           DespawnActorRecord(st->prize);
           actor->killGroup &= ACTOR_KILL_GROUP_MASK;

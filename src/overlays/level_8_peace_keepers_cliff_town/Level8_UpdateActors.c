@@ -125,10 +125,10 @@ void Level8_UpdateActors(void) {
   int y304[3];
   int y320[3];
   int shardTwinkle[3];
-  int y352[3];
-  int y368[3];
-  int y384[3];
-  int y400[3];
+  int barrelAxis[3];
+  int muzzlePos[3];
+  int smokeVel[3];
+  int ballToNode[3];
   int y416[3];
   int letterSide[3];
   int letterSlot[3];
@@ -3840,13 +3840,13 @@ void Level8_UpdateActors(void) {
       if (st->init == 1) {
         int pitch;
 
-        SubtractVector(y352, PATH_PT(st->path, 1), PATH_PT(st->path, 0));
-        pitch = ArcTan2(VectorLength(y352, VEC_LEN_XY), y352[2], ATAN_ANGLE8);
+        SubtractVector(barrelAxis, PATH_PT(st->path, 1), PATH_PT(st->path, 0));
+        pitch = ArcTan2(VectorLength(barrelAxis, VEC_LEN_XY), barrelAxis[2], ATAN_ANGLE8);
         actor->rotY = pitch - 0x40;
         if (((unsigned int)(pitch + 0x40) & 0xFF) < 0x60) {
           actor->rotY = 0xE0;
         }
-        actor->rotZ = ArcTan2(y352[0], y352[1], ATAN_ANGLE8);
+        actor->rotZ = ArcTan2(barrelAxis[0], barrelAxis[1], ATAN_ANGLE8);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         st->init = 2;
       }
@@ -3868,18 +3868,18 @@ void Level8_UpdateActors(void) {
       case CANNON_FUSE:
         st->timer += g_nFrameStep;
         if (st->timer < 0x5A) {
-          y368[0] = 0;
-          y368[1] = 0;
-          y368[2] = 0x14C;
-          RotateVectorByMatrix(actor->mtx, y368, y368);
-          AddVector(y368, y368, &actor->posX);
-          y384[0] = 0;
-          y384[1] = 6;
-          y384[2] = -0xC;
-          RotateVectorByMatrix(actor->mtx, y384, y384);
-          y384[0] += (GetRandomU32() & 0xF) - 8;
-          y384[1] += (GetRandomU32() & 0xF) - 8;
-          g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, y368, (int)y384);
+          muzzlePos[0] = 0;
+          muzzlePos[1] = 0;
+          muzzlePos[2] = 0x14C;
+          RotateVectorByMatrix(actor->mtx, muzzlePos, muzzlePos);
+          AddVector(muzzlePos, muzzlePos, &actor->posX);
+          smokeVel[0] = 0;
+          smokeVel[1] = 6;
+          smokeVel[2] = -0xC;
+          RotateVectorByMatrix(actor->mtx, smokeVel, smokeVel);
+          smokeVel[0] += (GetRandomU32() & 0xF) - 8;
+          smokeVel[1] += (GetRandomU32() & 0xF) - 8;
+          g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, muzzlePos, (int)smokeVel);
           if (actor->voiceRow != VOICE_ROW_NONE) {
             continue;
           }
@@ -3888,16 +3888,16 @@ void Level8_UpdateActors(void) {
         }
         if (st->timer < 0xB4 &&
             (st->timer & 3) <= ((st->timer + g_nFrameStep) & 3)) {
-          y368[0] = 0;
-          y368[1] = 0;
-          y368[2] = 0x14C;
-          RotateVectorByMatrix(actor->mtx, y368, y368);
-          AddVector(y368, y368, &actor->posX);
-          y384[0] = 0;
-          y384[1] = ((st->timer - 0x5A) >> 3) + 9;
-          y384[2] = -0x12 - ((st->timer - 0x5A) >> 2);
-          RotateVectorByMatrix(actor->mtx, y384, y384);
-          g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, y368, (int)y384);
+          muzzlePos[0] = 0;
+          muzzlePos[1] = 0;
+          muzzlePos[2] = 0x14C;
+          RotateVectorByMatrix(actor->mtx, muzzlePos, muzzlePos);
+          AddVector(muzzlePos, muzzlePos, &actor->posX);
+          smokeVel[0] = 0;
+          smokeVel[1] = ((st->timer - 0x5A) >> 3) + 9;
+          smokeVel[2] = -0x12 - ((st->timer - 0x5A) >> 2);
+          RotateVectorByMatrix(actor->mtx, smokeVel, smokeVel);
+          g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, muzzlePos, (int)smokeVel);
           if (actor->rotX < 0x80) {
             actor->rotX = -((st->timer - 0x5A) >> 5);
           } else {
@@ -3919,8 +3919,8 @@ void Level8_UpdateActors(void) {
 
       case CANNON_FLIGHT:
         if (st->timer == 4) {
-          SubtractVector(y400, PATH_PT(st->path, st->path->cur), &actor->posX);
-          CopyVector(st->vel, y400);
+          SubtractVector(ballToNode, PATH_PT(st->path, st->path->cur), &actor->posX);
+          CopyVector(st->vel, ballToNode);
           st->path->cur++;
           if (st->path->cur == st->path->count) {
             Actor *target = &g_pActorListBase[st->link];
@@ -3934,24 +3934,24 @@ void Level8_UpdateActors(void) {
           st->timer = 0;
         } else {
           if (st->timer == 3) {
-            SubtractVector(y400, PATH_PT(st->path, st->path->cur), &actor->posX);
-            RShiftVector3(y400, 1);
+            SubtractVector(ballToNode, PATH_PT(st->path, st->path->cur), &actor->posX);
+            RShiftVector3(ballToNode, 1);
           } else {
-            SubtractVector(y400, PATH_PT(st->path, st->path->cur),
+            SubtractVector(ballToNode, PATH_PT(st->path, st->path->cur),
                           (int *)((unsigned char *)st->path + ((st->path->cur << 4) - 8)));
-            ScaleVector3Sat(y400, y400, g_anSineLut[st->timer * 2 - 6]);
+            ScaleVector3Sat(ballToNode, ballToNode, g_anSineLut[st->timer * 2 - 6]);
             ScaleVector3Sat(y416, st->vel, g_anSineLut[st->timer * 2 - 5]);
-            AddVector(y400, y400, y416);
-            RShiftVector3(y400, 0xA);
+            AddVector(ballToNode, ballToNode, y416);
+            RShiftVector3(ballToNode, 0xA);
           }
           st->timer++;
         }
-        VectorLength(y400, VEC_LEN_XYZ);
-        actor->rotZ = ArcTan2_8bit(y400[0], y400[1]);
-        actor->rotY = -ArcTan2_8bit(y400[2], VectorLength(y400, VEC_LEN_XY));
-        AddVector(&actor->posX, &actor->posX, y400);
-        ZeroVector(y400);
-        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)y400);
+        VectorLength(ballToNode, VEC_LEN_XYZ);
+        actor->rotZ = ArcTan2_8bit(ballToNode[0], ballToNode[1]);
+        actor->rotY = -ArcTan2_8bit(ballToNode[2], VectorLength(ballToNode, VEC_LEN_XY));
+        AddVector(&actor->posX, &actor->posX, ballToNode);
+        ZeroVector(ballToNode);
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)ballToNode);
         continue;
       }
       continue;

@@ -95,10 +95,10 @@ void Level3_UpdateActors(void) {
   int homingStep[3];
   int svJ[3];
   int z256[3];
-  int z272[3];
+  int shardTwinkle[3];
   int z288[3];
   int z304[3];
-  int z320[3];
+  int podSparkVel[3];
   int letterSide[3];
   int letterSlot[3];
   int letterSwingRest[3];
@@ -2926,11 +2926,11 @@ void Level3_UpdateActors(void) {
 
           do {
             i += 1;
-            z272[0] = (GetRandomU32() & 0xFE) - 0x7F;
-            z272[1] = (GetRandomU32() & 0xFE) - 0x7F;
-            z272[2] = (GetRandomU32() & 0xFE) - 0x40;
-            AddVector(z272, z272, &actor->posX);
-            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, z272, 1);
+            shardTwinkle[0] = (GetRandomU32() & 0xFE) - 0x7F;
+            shardTwinkle[1] = (GetRandomU32() & 0xFE) - 0x7F;
+            shardTwinkle[2] = (GetRandomU32() & 0xFE) - 0x40;
+            AddVector(shardTwinkle, shardTwinkle, &actor->posX);
+            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, shardTwinkle, 1);
           } while (i < 3);
         }
 
@@ -3095,10 +3095,10 @@ void Level3_UpdateActors(void) {
             z304[0] += g_anCosineLut[j * 43] >> 6;
             z304[1] += g_anSineLut[j * 43] >> 6;
             z304[2] += 0x28;
-            z320[0] = g_anCosineLut[j * 43] >> 7;
-            z320[1] = g_anSineLut[j * 43] >> 7;
-            z320[2] = 0x10;
-            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, z304, (int)z320);
+            podSparkVel[0] = g_anCosineLut[j * 43] >> 7;
+            podSparkVel[1] = g_anSineLut[j * 43] >> 7;
+            podSparkVel[2] = 0x10;
+            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, z304, (int)podSparkVel);
           }
           DespawnActorRecord(st->prize);
           actor->killGroup &= ACTOR_KILL_GROUP_MASK;

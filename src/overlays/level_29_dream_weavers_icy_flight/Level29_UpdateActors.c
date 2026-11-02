@@ -122,7 +122,7 @@ void Level29_UpdateActors(void) {
   int eggArcOffset[3];
   int svD[3];
   int eggViewPos[3];
-  int svY[3];
+  int sparkLead[3];
   int svF[3];
   int acc[3][3];
   int bouncePos[3];
@@ -567,10 +567,10 @@ void Level29_UpdateActors(void) {
             svA[0] = (GetRandomU32() & 0x7E) - 0x3F;
             svA[1] = (GetRandomU32() & 0x7E) - 0x3F;
             svA[2] = GetRandomU32() & 0x1F;
-            CopyVector(svY, svA);
-            LShiftVector3(svY, 2);
-            AddVector(svY, svY, &actor->posX);
-            g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, svY, (int)svA);
+            CopyVector(sparkLead, svA);
+            LShiftVector3(sparkLead, 2);
+            AddVector(sparkLead, sparkLead, &actor->posX);
+            g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, sparkLead, (int)svA);
           }
           PlayActorMeshVoice(actor, 0, 0);
           DespawnActorRecord(actor);

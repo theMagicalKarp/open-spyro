@@ -107,27 +107,27 @@ void Level28_UpdateActors(void) {
   int eggArcOffset[3];
   int g104[3];
   int eggViewPos[3];
-  int g136[3];
-  int g152[3];
+  int gripA[3];
+  int gripB[3];
   int g168[3];
   int g184[3];
-  int g200[3];
+  int groundProbe[3];
   int g216[3][3];
-  int g256[3];
-  int g272[3];
-  int g288[3];
-  int g304[3];
-  int g320[3];
+  int bouncePos[3];
+  int bounceNormal[3];
+  int homingStep[3];
+  int sparxTargetPos[3];
+  int sparxToTarget[3];
   int g336[3];
   int g352[3];
   int g368[3];
-  int g384[3];
+  int keySlotOffset[3];
   int g400[3];
-  int g416[3];
-  int g432[3];
+  int sparkleTwinkle[3];
+  int shardTwinkle[3];
   int g448[3];
   int g464[3];
-  int g480[3];
+  int podSparkVel[3];
   int letterSlot[3];
   int letterSwingRest[3];
 
@@ -869,11 +869,11 @@ void Level28_UpdateActors(void) {
           st->mode = CROCK_RELEASED;
         }
         if (st->mode == CROCK_IN_HANDS) {
-          GetActorAttachPoint(st->partner, 1, g136);
-          GetActorAttachPoint(st->partner, 2, g152);
-          actor->posX = g136[0] + ((g152[0] - g136[0]) >> 1);
-          actor->posY = g136[1] + ((g152[1] - g136[1]) >> 1);
-          actor->posZ = g136[2] + ((g152[2] - g136[2]) >> 1);
+          GetActorAttachPoint(st->partner, 1, gripA);
+          GetActorAttachPoint(st->partner, 2, gripB);
+          actor->posX = gripA[0] + ((gripB[0] - gripA[0]) >> 1);
+          actor->posY = gripA[1] + ((gripB[1] - gripA[1]) >> 1);
+          actor->posZ = gripA[2] + ((gripB[2] - gripA[2]) >> 1);
           continue;
         }
         if (st->mode == CROCK_PARKED) {
@@ -1162,10 +1162,10 @@ void Level28_UpdateActors(void) {
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
           } else if (st->mode == COLLREST_FIND_TRI) {
-            CopyVector(g200, &actor->posX);
-            g200[2] += 0x400;
+            CopyVector(groundProbe, &actor->posX);
+            groundProbe[2] += 0x400;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
-            if (FindGroundHeightBelow(g200, 0x1000) > 0) {
+            if (FindGroundHeightBelow(groundProbe, 0x1000) > 0) {
               st->groundTri = g_nLastCollisionHitChunkId;
               st->mode = COLLREST_ON_TRI;
             }
@@ -1209,22 +1209,22 @@ void Level28_UpdateActors(void) {
           int *at;
           int dist;
 
-          ScaleVector3Sat(g256, (int *)st, g_nFrameStep);
-          RShiftVector3(g256, 1);
-          dist = VectorLength(g256, VEC_LEN_XYZ);
+          ScaleVector3Sat(bouncePos, (int *)st, g_nFrameStep);
+          RShiftVector3(bouncePos, 1);
+          dist = VectorLength(bouncePos, VEC_LEN_XYZ);
 
           if (dist >= 0xDD) {
-            ScaleVector3ByRatio(g256, dist, 0xDC);
+            ScaleVector3ByRatio(bouncePos, dist, 0xDC);
           }
 
           at = &actor->posX;
-          AddVector(g256, at, g256);
+          AddVector(bouncePos, at, bouncePos);
 
           if (st->vel[2] >= -0xDB) {
             st->vel[2] -= g_nFrameStep * 5;
           }
 
-          if (g256[2] < 0) {
+          if (bouncePos[2] < 0) {
             if (actor->type != ACTOR_TYPE_EXTRA_LIFE && actor->type != ACTOR_TYPE_SPARX_FOOD) {
               CollectPickupActor(actor);
             }
@@ -1232,9 +1232,9 @@ void Level28_UpdateActors(void) {
             continue;
           }
 
-          g256[2] += 0xF0;
+          bouncePos[2] += 0xF0;
 
-          if (CollideSphereWithWorldAndActors(g256, 0xF0, 0xF0) != 0) {
+          if (CollideSphereWithWorldAndActors(bouncePos, 0xF0, 0xF0) != 0) {
             if (GetGroundTriggerRegionType() == 0) {
               if (actor->type != ACTOR_TYPE_EXTRA_LIFE && actor->type != ACTOR_TYPE_SPARX_FOOD) {
                 CollectPickupActor(actor);
@@ -1243,24 +1243,24 @@ void Level28_UpdateActors(void) {
               continue;
             }
 
-            CopyVector(g272, &g_anCollisionProbeVec);
+            CopyVector(bounceNormal, &g_anCollisionProbeVec);
             CopyVector(at, &g_anCollisionResolvedPos);
             actor->posZ -= 0xF0;
 
             if (st->bounce == 0) {
-              int floor = FindGroundHeightBelow(g256, 0x400);
+              int floor = FindGroundHeightBelow(bouncePos, 0x400);
               int slope =
-                  (signed char)ArcTan2_8bit(g272[2], VectorLength(g272, VEC_LEN_XY));
+                  (signed char)ArcTan2_8bit(bounceNormal[2], VectorLength(bounceNormal, VEC_LEN_XY));
 
-              if ((g256[2] - 0x190) < floor && slope < 0x18) {
+              if ((bouncePos[2] - 0x190) < floor && slope < 0x18) {
                 actor->subMode = COLLECT_REST;
-                CopyVector(at, g256);
+                CopyVector(at, bouncePos);
                 actor->posZ = floor;
                 if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
                   st->lean = -ArcTan2_8bit(
-                      IntegerSqrt((g272[0] * g272[0]) + (g272[2] * g272[2])),
-                      g272[1]);
-                  st->roll = -ArcTan2_8bit(g272[2], g272[0]);
+                      IntegerSqrt((bounceNormal[0] * bounceNormal[0]) + (bounceNormal[2] * bounceNormal[2])),
+                      bounceNormal[1]);
+                  st->roll = -ArcTan2_8bit(bounceNormal[2], bounceNormal[0]);
                   if (st->lean != 0 || st->roll != 0) {
                     actor->rotZ = 0;
                   }
@@ -1280,16 +1280,16 @@ void Level28_UpdateActors(void) {
             g_nSfxOverrideVolR = 0x3CCC >> (3 - st->bounce);
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
 
-            if (ReflectVectorOffNormal((int *)st, g272, (int *)st) != 0) {
+            if (ReflectVectorOffNormal((int *)st, bounceNormal, (int *)st) != 0) {
               st->bounce -= 1;
               st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 0x20;
               st->vel[1] = (st->vel[1] >> 3) + (GetRandomU32() & 0x3F) - 0x20;
               st->vel[2] = (st->vel[2] >> 2) + (GetRandomU32() & 0xF);
             }
           } else {
-            g256[2] -= 0xF0;
-            CopyVector(at, g256);
-            FindGroundHeightBelow(g256, 0x10000);
+            bouncePos[2] -= 0xF0;
+            CopyVector(at, bouncePos);
+            FindGroundHeightBelow(bouncePos, 0x10000);
             EncodeCachedVecToActorDirCode(actor);
           }
 
@@ -1334,15 +1334,15 @@ void Level28_UpdateActors(void) {
           if (st->timer >= 0x20) {
             CopyVector(&actor->posX, &SPY.posX);
           } else {
-            SubtractVector(g288, &spy->posX, (int *)st);
-            RShiftVector3(g288, 5);
+            SubtractVector(homingStep, &spy->posX, (int *)st);
+            RShiftVector3(homingStep, 5);
 
-            if (VectorLength(g288, VEC_LEN_XYZ) >= 0x1E1) {
+            if (VectorLength(homingStep, VEC_LEN_XYZ) >= 0x1E1) {
               CopyVector(&actor->posX, &spy->posX);
               st->timer = 0x20;
             } else {
-              ScaleVector3Sat(g288, g288, st->timer);
-              AddVector(&actor->posX, (int *)st, g288);
+              ScaleVector3Sat(homingStep, homingStep, st->timer);
+              AddVector(&actor->posX, (int *)st, homingStep);
               actor->posZ += (short)(g_anSineLut[st->timer * 4] / 12);
             }
           }
@@ -1687,17 +1687,17 @@ void Level28_UpdateActors(void) {
             int reach;
             int limit;
 
-            CopyVector(g304, &st->target->posX);
+            CopyVector(sparxTargetPos, &st->target->posX);
 
             if (high == 0) {
-              g304[0] -=
+              sparxTargetPos[0] -=
                   (unsigned short)g_anCosineLut[st->target->rotZ] << 16 >> 20;
-              g304[1] -=
+              sparxTargetPos[1] -=
                   (unsigned short)g_anSineLut[st->target->rotZ] << 16 >> 20;
             } else {
-              g304[0] -=
+              sparxTargetPos[0] -=
                   (unsigned short)g_anCosineLut[st->target->rotZ] << 16 >> 22;
-              g304[1] -=
+              sparxTargetPos[1] -=
                   (unsigned short)g_anSineLut[st->target->rotZ] << 16 >> 22;
             }
 
@@ -1722,8 +1722,8 @@ void Level28_UpdateActors(void) {
               }
             }
 
-            SubtractVector(g304, g304, &actor->posX);
-            dist = VectorLength(g304, VEC_LEN_XYZ);
+            SubtractVector(sparxTargetPos, sparxTargetPos, &actor->posX);
+            dist = VectorLength(sparxTargetPos, VEC_LEN_XYZ);
 
             if (high == 0 &&
                 (TickCountdownByFrameDelta((void *)st, 4) != 0 ||
@@ -1741,13 +1741,13 @@ void Level28_UpdateActors(void) {
             reach = high != 0 ? 0x96 : 0x82;
             limit = reach + 5;
             if (limit < dist) {
-              ScaleVector3ByRatio(g304, dist, limit);
+              ScaleVector3ByRatio(sparxTargetPos, dist, limit);
             } else {
-              ScaleVector3ByRatio(g304, dist, reach - 5);
+              ScaleVector3ByRatio(sparxTargetPos, dist, reach - 5);
             }
-            AddVector(&actor->posX, &actor->posX, g304);
-            TurnActorYawTowardAngle(actor, ArcTan2(g304[0], g304[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
-            actor->rotY = ArcTan2(VectorLength(g304, VEC_LEN_XY), g304[2], ATAN_ANGLE8);
+            AddVector(&actor->posX, &actor->posX, sparxTargetPos);
+            TurnActorYawTowardAngle(actor, ArcTan2(sparxTargetPos[0], sparxTargetPos[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
+            actor->rotY = ArcTan2(VectorLength(sparxTargetPos, VEC_LEN_XY), sparxTargetPos[2], ATAN_ANGLE8);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
           }
@@ -1775,8 +1775,8 @@ void Level28_UpdateActors(void) {
             CollectibleState *pk = st->target->state;
             int dist;
 
-            SubtractVector(g320, &st->target->posX, &actor->posX);
-            dist = VectorLength(g320, VEC_LEN_XYZ);
+            SubtractVector(sparxToTarget, &st->target->posX, &actor->posX);
+            dist = VectorLength(sparxToTarget, VEC_LEN_XYZ);
 
             if (dist < 0x200) {
               pk->timer = 0;
@@ -1806,13 +1806,13 @@ void Level28_UpdateActors(void) {
               int lim = 0x136;
 
               if (lim < dist) {
-                ScaleVector3ByRatio(g320, dist, lim);
+                ScaleVector3ByRatio(sparxToTarget, dist, lim);
               } else {
-                ScaleVector3ByRatio(g320, dist, 0x122);
+                ScaleVector3ByRatio(sparxToTarget, dist, 0x122);
               }
-              AddVector(&actor->posX, &actor->posX, g320);
-              TurnActorYawTowardAngle(actor, ArcTan2(g320[0], g320[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
-              actor->rotY = ArcTan2(VectorLength(g320, VEC_LEN_XY), g320[2], ATAN_ANGLE8);
+              AddVector(&actor->posX, &actor->posX, sparxToTarget);
+              TurnActorYawTowardAngle(actor, ArcTan2(sparxToTarget[0], sparxToTarget[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
+              actor->rotY = ArcTan2(VectorLength(sparxToTarget, VEC_LEN_XY), sparxToTarget[2], ATAN_ANGLE8);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
             break;
@@ -2527,11 +2527,11 @@ void Level28_UpdateActors(void) {
           }
         } else if (st->shake < 0xD0) {
           key->rotZ = actor->rotZ;
-          g384[0] = 0x200 - (st->shake - 0xC0) * 8;
-          g384[1] = 0;
-          g384[2] = 0x140;
-          RotateVectorByMatrix(actor->mtx, g384, g384);
-          AddVector(&key->posX, g384, &actor->posX);
+          keySlotOffset[0] = 0x200 - (st->shake - 0xC0) * 8;
+          keySlotOffset[1] = 0;
+          keySlotOffset[2] = 0x140;
+          RotateVectorByMatrix(actor->mtx, keySlotOffset, keySlotOffset);
+          AddVector(&key->posX, keySlotOffset, &actor->posX);
         }
 
         if (st->shake >= 0xD0 ||
@@ -2998,11 +2998,11 @@ void Level28_UpdateActors(void) {
         actor->rotY += st->spin[1];
         actor->rotZ += st->spin[2];
 
-        g416[0] = (GetRandomU32() & 0xFE) - 0x7F;
-        g416[1] = (GetRandomU32() & 0xFE) - 0x7F;
-        g416[2] = (GetRandomU32() & 0xFE) - 0x40;
-        AddVector(g416, g416, &actor->posX);
-        g_pfnLevelEmitParticles(1, EMIT_TWINKLE, g416, 1);
+        sparkleTwinkle[0] = (GetRandomU32() & 0xFE) - 0x7F;
+        sparkleTwinkle[1] = (GetRandomU32() & 0xFE) - 0x7F;
+        sparkleTwinkle[2] = (GetRandomU32() & 0xFE) - 0x40;
+        AddVector(sparkleTwinkle, sparkleTwinkle, &actor->posX);
+        g_pfnLevelEmitParticles(1, EMIT_TWINKLE, sparkleTwinkle, 1);
         st->life -= 1;
       } else {
         DespawnActorRecord(actor);
@@ -3056,11 +3056,11 @@ void Level28_UpdateActors(void) {
 
           do {
             i += 1;
-            g432[0] = (GetRandomU32() & 0xFE) - 0x7F;
-            g432[1] = (GetRandomU32() & 0xFE) - 0x7F;
-            g432[2] = (GetRandomU32() & 0xFE) - 0x40;
-            AddVector(g432, g432, &actor->posX);
-            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, g432, 1);
+            shardTwinkle[0] = (GetRandomU32() & 0xFE) - 0x7F;
+            shardTwinkle[1] = (GetRandomU32() & 0xFE) - 0x7F;
+            shardTwinkle[2] = (GetRandomU32() & 0xFE) - 0x40;
+            AddVector(shardTwinkle, shardTwinkle, &actor->posX);
+            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, shardTwinkle, 1);
           } while (i < 3);
         }
 
@@ -3198,10 +3198,10 @@ void Level28_UpdateActors(void) {
             g464[0] += g_anCosineLut[j * 43] >> 6;
             g464[1] += g_anSineLut[j * 43] >> 6;
             g464[2] += 0x28;
-            g480[0] = g_anCosineLut[j * 43] >> 7;
-            g480[1] = g_anSineLut[j * 43] >> 7;
-            g480[2] = 0x10;
-            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, g464, (int)g480);
+            podSparkVel[0] = g_anCosineLut[j * 43] >> 7;
+            podSparkVel[1] = g_anSineLut[j * 43] >> 7;
+            podSparkVel[2] = 0x10;
+            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, g464, (int)podSparkVel);
           }
           DespawnActorRecord(st->prize);
           actor->killGroup &= ACTOR_KILL_GROUP_MASK;

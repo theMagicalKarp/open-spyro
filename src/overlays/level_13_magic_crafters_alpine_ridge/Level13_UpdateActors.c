@@ -110,7 +110,7 @@ void Level13_UpdateActors(void) {
   int w296[3];
   int x272[3];
   int idx271[2];
-  int x288[3];
+  int prevPos[3];
   int sparkleTwinkle[3];
   int shardTwinkle[3];
   int ps[6];
@@ -4154,7 +4154,7 @@ void Level13_UpdateActors(void) {
         }
         actor->rotZ += d;
       }
-      CopyVector(x288, &actor->posX);
+      CopyVector(prevPos, &actor->posX);
       if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
         for (i = 0; i < 3; i++) {
           if (ACTOR_POOL_LOW()) {
@@ -4192,7 +4192,7 @@ void Level13_UpdateActors(void) {
       } else {
         g_pfnLevelEmitParticles(1, EMIT_JITTER_DRIFT, &actor->posX, 0);
       }
-      if (CastRayWorldAndActors(x288, &actor->posX) != 0) {
+      if (CastRayWorldAndActors(prevPos, &actor->posX) != 0) {
         DespawnActorRecord(actor);
         continue;
       }

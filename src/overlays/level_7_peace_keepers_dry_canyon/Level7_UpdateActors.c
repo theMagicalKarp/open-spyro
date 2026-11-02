@@ -108,12 +108,12 @@ void Level7_UpdateActors(void) {
   int s328[3];
   int s344[3];
   int v168[3];
-  int v178[3];
+  int sparkLead[3];
   int s392[3];
   int ps[6];
   int s432[3];
   int s448[3];
-  int s464[3];
+  int podSparkVel[3];
   int letterSide[3];
   int letterSlot[3];
   int letterSwingRest[3];
@@ -3108,10 +3108,10 @@ void Level7_UpdateActors(void) {
           v168[0] = (GetRandomU32() & 0x3E) - 0x1F;
           v168[1] = (GetRandomU32() & 0x3E) - 0x1F;
           v168[2] = GetRandomU32() & 0xF;
-          CopyVector(v178, v168);
-          LShiftVector3(v178, 2);
-          AddVector(v178, v178, &actor->posX);
-          g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, v178, (int)v168);
+          CopyVector(sparkLead, v168);
+          LShiftVector3(sparkLead, 2);
+          AddVector(sparkLead, sparkLead, &actor->posX);
+          g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, sparkLead, (int)v168);
         }
         g_pfnLevelEmitParticles(0xA, EMIT_STREAK_BURST, &actor->posX, 0x10);
         DespawnActorRecord(actor);
@@ -4235,10 +4235,10 @@ void Level7_UpdateActors(void) {
             s448[0] += g_anCosineLut[j * 43] >> 6;
             s448[1] += g_anSineLut[j * 43] >> 6;
             s448[2] += 0x28;
-            s464[0] = g_anCosineLut[j * 43] >> 7;
-            s464[1] = g_anSineLut[j * 43] >> 7;
-            s464[2] = 0x10;
-            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, s448, (int)s464);
+            podSparkVel[0] = g_anCosineLut[j * 43] >> 7;
+            podSparkVel[1] = g_anSineLut[j * 43] >> 7;
+            podSparkVel[2] = 0x10;
+            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, s448, (int)podSparkVel);
           }
           DespawnActorRecord(st->prize);
           actor->killGroup &= ACTOR_KILL_GROUP_MASK;

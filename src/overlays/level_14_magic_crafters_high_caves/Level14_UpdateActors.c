@@ -238,7 +238,7 @@ void Level14_UpdateActors(void) {
   int fx[6];
   int col[3];
   int svK[3];
-  int svL[3];
+  int prevPos[3];
   int v376[3];
   int t392[3][3];
   int sparkleTwinkle[3];
@@ -247,7 +247,7 @@ void Level14_UpdateActors(void) {
   int s496[3];
   int mat2[3][3];
   int s512[3];
-  int s528[3];
+  int podSparkVel[3];
   int vecB[3];
   int vecC[3];
   int vecD[3];
@@ -3645,7 +3645,7 @@ void Level14_UpdateActors(void) {
         }
         actor->rotZ += d;
       }
-      CopyVector(svL, &actor->posX);
+      CopyVector(prevPos, &actor->posX);
       if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
         for (i = 0; i < 3; i++) {
           if (ACTOR_POOL_LOW()) {
@@ -3683,7 +3683,7 @@ void Level14_UpdateActors(void) {
       } else {
         g_pfnLevelEmitParticles(1, EMIT_JITTER_DRIFT, &actor->posX, 0);
       }
-      if (CastRayWorldAndActors(svL, &actor->posX) != 0) {
+      if (CastRayWorldAndActors(prevPos, &actor->posX) != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -4821,10 +4821,10 @@ void Level14_UpdateActors(void) {
             s512[0] += g_anCosineLut[j * 43] >> 6;
             s512[1] += g_anSineLut[j * 43] >> 6;
             s512[2] += 0x28;
-            s528[0] = g_anCosineLut[j * 43] >> 7;
-            s528[1] = g_anSineLut[j * 43] >> 7;
-            s528[2] = 0x10;
-            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, s512, (int)s528);
+            podSparkVel[0] = g_anCosineLut[j * 43] >> 7;
+            podSparkVel[1] = g_anSineLut[j * 43] >> 7;
+            podSparkVel[2] = 0x10;
+            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, s512, (int)podSparkVel);
           }
           DespawnActorRecord(st->prize);
           actor->killGroup &= ACTOR_KILL_GROUP_MASK;

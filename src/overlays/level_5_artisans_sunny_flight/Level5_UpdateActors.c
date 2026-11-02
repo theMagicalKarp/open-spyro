@@ -107,7 +107,7 @@ void Level5_UpdateActors(void) {
   int homingStep[3];
   int sparxToTarget[3];
   int bonusStep[3];
-  int svV[3];
+  int targetFromSpyro[3];
   int svW[3];
   int sh6;
 
@@ -1543,10 +1543,10 @@ void Level5_UpdateActors(void) {
         int drop = height - SPY.posZ;
 
         if (drop > 0 ? drop < 4000 : SPY.posZ - height < 4000) {
-          SubtractVector(svV, &actor->posX, &spy->posX);
-          svW[2] = (svV[2] - 0xC0) * 4;
-          svV[2] = (svW[2] - svV[2]) >> 2;
-          if (VectorLength(svV, VEC_LEN_XYZ) < 0x578 &&
+          SubtractVector(targetFromSpyro, &actor->posX, &spy->posX);
+          svW[2] = (targetFromSpyro[2] - 0xC0) * 4;
+          targetFromSpyro[2] = (svW[2] - targetFromSpyro[2]) >> 2;
+          if (VectorLength(targetFromSpyro, VEC_LEN_XYZ) < 0x578 &&
               PlaneDistanceAbs(&spy->posX, st) < 0x200) {
             int i;
 
@@ -1564,13 +1564,13 @@ void Level5_UpdateActors(void) {
               }
               shard = g_pfnLevelSpawnActor(i + ACTOR_TYPE_FLIGHT_TARGET_SHARD, actor);
               ss = shard->state;
-              RotateVectorByMatrix(actor->mtx, &g_anActorShardOffsets[i * 3], svV);
-              AddVector(&shard->posX, &actor->posX, svV);
-              RShiftVector3(svV, 5);
+              RotateVectorByMatrix(actor->mtx, &g_anActorShardOffsets[i * 3], targetFromSpyro);
+              AddVector(&shard->posX, &actor->posX, targetFromSpyro);
+              RShiftVector3(targetFromSpyro, 5);
               svW[0] = (GetRandomU32() & 0x7E) - 0x3F;
               svW[1] = (GetRandomU32() & 0x7E) - 0x3F;
               svW[2] = (GetRandomU32() & 0x7E) - 0x3F;
-              AddVector(&ss->posX, svV, svW);
+              AddVector(&ss->posX, targetFromSpyro, svW);
               AddVector(&shard->posX, &shard->posX, &ss->posX);
               ss->spinX = (GetRandomU32() & 2) - 1;
               ss->spinY = (GetRandomU32() & 2) - 1;
