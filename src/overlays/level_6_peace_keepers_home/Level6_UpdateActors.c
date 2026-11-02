@@ -115,7 +115,7 @@ typedef struct FireballCannonState {
 /* Types 214/216 state: a Peace Keeper soldier (kind picks the behaviour). */
 typedef struct SoldierState {
   WanderBlock wander; /* 0x00 UpdateActorWander's block */
-  unsigned char *path; /* 0x20 */
+  PathData *path; /* 0x20 */
   int kind;            /* 0x24 SoldierKind */
   int timer;           /* 0x28 */
   int timer2;          /* 0x2C */

@@ -3643,7 +3643,7 @@ void Level25_UpdateActors(void) {
         actor->subMode = CANNON_FLIGHT;
         actor->cullRadius = 0x40;
         actor->updateDist = 0x40;
-        st->path[1] = 1;
+        st->path->cur = 1;
         st->timer = 0;
         ZeroVector(st->vel);
         PlayActorMeshVoice(actor, 1, 0);
@@ -3651,10 +3651,10 @@ void Level25_UpdateActors(void) {
 
       case CANNON_FLIGHT:
         if (st->timer == 4) {
-          SubtractVector(s560, PATH_PT(st->path, st->path[1]), &actor->posX);
+          SubtractVector(s560, PATH_PT(st->path, st->path->cur), &actor->posX);
           CopyVector(st->vel, s560);
-          st->path[1]++;
-          if (st->path[1] == st->path[0]) {
+          st->path->cur++;
+          if (st->path->cur == st->path->count) {
             Actor *target = &g_pActorListBase[st->link];
 
             if (st->link > 0) {
@@ -3666,11 +3666,11 @@ void Level25_UpdateActors(void) {
           st->timer = 0;
         } else {
           if (st->timer == 3) {
-            SubtractVector(s560, PATH_PT(st->path, st->path[1]), &actor->posX);
+            SubtractVector(s560, PATH_PT(st->path, st->path->cur), &actor->posX);
             RShiftVector3(s560, 1);
           } else {
-            SubtractVector(s560, PATH_PT(st->path, st->path[1]),
-                          (int *)(st->path + ((st->path[1] << 4) - 8)));
+            SubtractVector(s560, PATH_PT(st->path, st->path->cur),
+                          (int *)((unsigned char *)st->path + ((st->path->cur << 4) - 8)));
             ScaleVector3Sat(s560, s560, g_anSineLut[st->timer * 2 - 6]);
             ScaleVector3Sat(s576, st->vel, g_anSineLut[st->timer * 2 - 5]);
             AddVector(s560, s560, s576);

@@ -252,8 +252,8 @@ typedef struct GatekeeperState {
  * him to a goal, and jumps or scatters when struck. */
 typedef struct PathRunnerState {
   int speed;           /* 0x00 flee speed */
-  unsigned char *path; /* 0x04 current path: [0] count, [1] cur, nodes at +8 */
-  unsigned char *home; /* 0x08 home path */
+  PathData *path; /* 0x04 */
+  PathData *home;      /* 0x08 home path */
   int knock;           /* 0x0C knock-back speed */
   int knockAng;        /* 0x10 knock-back heading */
   int lift;            /* 0x14 vertical speed */
@@ -314,7 +314,7 @@ typedef struct PlatformPodState {
  * path to the next arena spot. */
 typedef struct MetalheadState {
   int phase;            /* 0x00 */
-  unsigned char *path;  /* 0x04 */
+  PathData *path;  /* 0x04 */
   int timer;            /* 0x08 attack cooldown */
   int timer2;           /* 0x0C */
   int pathEnd[2];       /* 0x10 per-phase last path node */
@@ -464,7 +464,7 @@ typedef struct LungingGuardState {
   int kind;            /* 0x10 LungingGuardKind */
   int timer;           /* 0x14 */
   int vol[6];          /* 0x18 trigger box */
-  unsigned char *path; /* 0x30 */
+  PathData *path; /* 0x30 */
   int flags;           /* 0x34 LGUARD_F_* */
   int init;            /* 0x38 */
   int range;           /* 0x3C <0 = waiting */
@@ -485,7 +485,7 @@ typedef struct BigLungingGuardState {
   int kind;            /* 0x10 LungingGuardKind */
   int timer;           /* 0x14 */
   int vol[6];          /* 0x18 */
-  unsigned char *path; /* 0x30 */
+  PathData *path; /* 0x30 */
   int flags;           /* 0x34 LGUARD_F_* */
   int init;            /* 0x38 */
   int range;           /* 0x3C */
@@ -534,7 +534,7 @@ typedef struct RockThrowerState {
   int timer;            /* 0x28 */
   int range;            /* 0x2C */
   int range2;           /* 0x30 */
-  unsigned char *path;  /* 0x34 */
+  PathData *path;  /* 0x34 */
   int partner;          /* 0x38 index into g_pActorListBase */
   int pad3C;              /* 0x3C */
   int link;             /* 0x40 index into g_pActorListBase, -1 none */
@@ -563,7 +563,7 @@ typedef struct FenceGuardPieceState {
 /* Type 204 state: the fence-guard captain. Wakes the guards (203) whose
  * boxes Spyro has entered and sends them in one at a time. */
 typedef struct FenceCaptainState {
-  unsigned char *path; /* 0x000 */
+  PathData *path; /* 0x000 */
   int pad04[7];          /* 0x004 */
   int link[7];         /* 0x020 the guards, index into g_pActorListBase, -1 none */
   int cur;             /* 0x03C */

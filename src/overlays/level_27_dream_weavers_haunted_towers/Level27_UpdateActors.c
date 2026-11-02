@@ -2756,13 +2756,13 @@ void Level27_UpdateActors(void) {
       case FCAPTAIN_VOLLEY:
         TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
         if (g_nActorAnimDone != 0) {
-          unsigned char *p = st->path;
-          int b = p[1];
+          PathData *p = st->path;
+          int b = p->cur;
 
           do {
-            st->path[1] = RandomIntInRange(1, p[0]) - 1;
+            st->path->cur = RandomIntInRange(1, p->count) - 1;
             p = st->path;
-          } while (p[1] == b);
+          } while (p->cur == b);
           actor->mode = FCAPTAIN_RELOCATE;
           continue;
         }
@@ -2789,12 +2789,12 @@ void Level27_UpdateActors(void) {
         break;
 
       case FCAPTAIN_RELOCATE: {
-        int b = st->path[1];
+        int b = st->path->cur;
 
         ANIM_GO(actor, 1);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0xA0, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) &
             0x100) {
-          st->path[1] = b;
+          st->path->cur = b;
           ENTER_POSE(actor, FCAPTAIN_WATCH);
         }
         break;

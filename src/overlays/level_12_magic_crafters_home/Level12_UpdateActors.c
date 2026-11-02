@@ -3233,18 +3233,18 @@ void Level12_UpdateActors(void) {
           }
         }
         ANIM_GO(actor, 8);
-        if (ApproxDist2D(&actor->posX, PATH_PT(st->path, st->path[1])) < 0x96) {
+        if (ApproxDist2D(&actor->posX, PATH_PT(st->path, st->path->cur)) < 0x96) {
           int next;
 
           do {
-            next = RandomIntInRange(0, st->path[0] - 1);
-          } while (next == st->path[1]);
-          st->path[1] = next;
+            next = RandomIntInRange(0, st->path->count - 1);
+          } while (next == st->path->cur);
+          st->path->cur = next;
           st->speed = RandomIntInRange(0x3C, 0x6E);
         }
         if (TurnActorYawTowardAngle(actor,
-                          ArcTan2(PATH_X(st->path, st->path[1]) - actor->posX,
-                                        PATH_Y(st->path, st->path[1]) - actor->posY,
+                          ArcTan2(PATH_X(st->path, st->path->cur) - actor->posX,
+                                        PATH_Y(st->path, st->path->cur) - actor->posY,
                                         ATAN_ANGLE8),
                           7, 0x50, one)) {
           MoveActorAlongHeading(actor, st->speed, 0, 0, one);
@@ -3595,7 +3595,7 @@ void Level12_UpdateActors(void) {
           if (st->post == SHEPHERD_POST_PAIR_PATROL || st->post == SHEPHERD_POST_PATROL) {
             if (FindNearestPathPointToActor(actor, st->path, idx271) > 0x1000) {
               if (st->post == SHEPHERD_POST_PATROL) {
-                st->path[1] = idx271[0];
+                st->path->cur = idx271[0];
                 CopyVector(st->home, PATH_PT(st->path, idx271[0]));
               }
               actor->mode = SHEPHERD_GO_HOME;

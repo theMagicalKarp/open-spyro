@@ -1563,7 +1563,7 @@ void Level33_UpdateActors(void) {
 
         if (actor->posZ < 0x800) {
           CopyVector(&actor->posX,
-                        PATH_PT((unsigned char *)st->path, st->path->cur));
+                        PATH_PT(st->path, st->path->cur));
           SnapActorToGround(actor);
         }
         if (TickCountdownByFrameDelta(&st->slowTimer, 4) != 0) {
@@ -1728,12 +1728,12 @@ void Level33_UpdateActors(void) {
       }
 
       if ((unsigned)(actor->mode - 6) < 2) {
-        int ca = (ArcTan2(PATH_X((unsigned char *)st->path2,
+        int ca = (ArcTan2(PATH_X(st->path2,
                                        st->path2->count - 1) -
-                                    PATH_X((unsigned char *)st->path3, 0),
-                                PATH_Y((unsigned char *)st->path2,
+                                    PATH_X(st->path3, 0),
+                                PATH_Y(st->path2,
                                        st->path2->count - 1) -
-                                    PATH_Y((unsigned char *)st->path3, 0),
+                                    PATH_Y(st->path3, 0),
                                 ATAN_ANGLE8) +
                   0x80) &
                  0xFF;
@@ -1763,9 +1763,9 @@ void Level33_UpdateActors(void) {
         int ca = (SPY.bodyRotZ + 0x40) & 0xFF;
         int *anc;
 
-        AddVector(PATH_PT((unsigned char *)st->path, 0), &actor->posX,
+        AddVector(PATH_PT(st->path, 0), &actor->posX,
                       &SPY.posX);
-        RShiftVector3(PATH_PT((unsigned char *)st->path, 0), 1);
+        RShiftVector3(PATH_PT(st->path, 0), 1);
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FREEZE_INPUT);
         anc = (int *)((char *)*(PathData **)st + 8);
         g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
@@ -1883,7 +1883,7 @@ void Level33_UpdateActors(void) {
           actor->mode = GNASTY_RUN;
           continue;
         }
-        if (ApproxDist2D(&SPY.posX, PATH_PT((unsigned char *)st->path, 12)) <
+        if (ApproxDist2D(&SPY.posX, PATH_PT(st->path, 12)) <
             0x2000) {
           CopyVector(&actor->posX,
                         PATH_END(st->path));
@@ -1959,9 +1959,9 @@ void Level33_UpdateActors(void) {
           TurnActorYawTowardAngle(
               actor,
               ArcTan2(
-                  PATH_X((unsigned char *)st->path, st->path->cur) -
+                  PATH_X(st->path, st->path->cur) -
                       actor->posX,
-                  PATH_Y((unsigned char *)st->path, st->path->cur) -
+                  PATH_Y(st->path, st->path->cur) -
                       actor->posY,
                   ATAN_ANGLE8),
               6, 0, YAW_HOLD_IN_BAND);
@@ -1994,7 +1994,7 @@ void Level33_UpdateActors(void) {
           continue;
         }
         if (st->passedPt6 == 0 &&
-            ApproxDist2D(&actor->posX, PATH_PT((unsigned char *)st->path, 6)) <
+            ApproxDist2D(&actor->posX, PATH_PT(st->path, 6)) <
                 0x258) {
           st->passedPt6 = 1;
           actor->mode = GNASTY_AT_DOOR;
@@ -2088,15 +2088,15 @@ void Level33_UpdateActors(void) {
         ANIM_GO(actor, 1);
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(
-                              PATH_X((unsigned char *)st->path, 1) -
+                              PATH_X(st->path, 1) -
                                   actor->posX,
-                              PATH_Y((unsigned char *)st->path, 1) -
+                              PATH_Y(st->path, 1) -
                                   actor->posY,
                               ATAN_ANGLE8),
                           7, 0x14, YAW_STEP_IN_BAND) != 0) {
           MoveActorAlongHeading(actor, 0xF0, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
-        if (ApproxDist2D(&actor->posX, PATH_PT((unsigned char *)st->path, 1)) <
+        if (ApproxDist2D(&actor->posX, PATH_PT(st->path, 1)) <
             0x320) {
           st->phase = 2;
           st->path->cur = 2;

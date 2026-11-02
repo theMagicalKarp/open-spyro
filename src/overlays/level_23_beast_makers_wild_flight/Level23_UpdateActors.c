@@ -88,8 +88,8 @@
 
 /* Type 0xA2: a roller that cycles over four paths. */
 typedef struct CyclerState {
-  unsigned char *path;     /* 0x00 current path */
-  unsigned char *paths[4]; /* 0x04 */
+  PathData *path;     /* 0x00 current path */
+  PathData *paths[4];      /* 0x04 */
   int pathIdx;             /* 0x14 */
   int reward;              /* 0x18 */
   int tally;               /* 0x1C */
@@ -1202,9 +1202,9 @@ void Level23_UpdateActors(void) {
         int d;
 
         if (st->legStep == 0xFF) {
-          st->path[1]++;
-          if (st->path[1] >= st->path[0]) {
-            st->path[1] = 0;
+          st->path->cur++;
+          if (st->path->cur >= st->path->count) {
+            st->path->cur = 0;
           }
           st->legStep = 0;
           ZeroVector(st->legVec);
@@ -1227,7 +1227,7 @@ void Level23_UpdateActors(void) {
             st->path = st->paths[3];
             break;
           }
-          st->path[1] = 0;
+          st->path->cur = 0;
         }
         d = (actor->rotZ - d) & 0xFF;
         if (d > 0x80) {
@@ -1447,12 +1447,12 @@ void Level23_UpdateActors(void) {
         int best = 30000;
         int i;
 
-        for (i = 0; i < st->path[0]; i++) {
-          int d = ApproxDist2D(&actor->posX, (int *)(st->path + ((i << 4) + 8)));
+        for (i = 0; i < st->path->count; i++) {
+          int d = ApproxDist2D(&actor->posX, (int *)((unsigned char *)st->path + ((i << 4) + 8)));
 
           if (d < best) {
             best = d;
-            st->path[1] = i;
+            st->path->cur = i;
           }
         }
         st->ready = 1;

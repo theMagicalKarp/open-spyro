@@ -2950,7 +2950,7 @@ void Level10_UpdateActors(void) {
         }
         if (actor->subMode == 0 && st->lift < -0x50) {
           FindNearestPathPointToActor(actor, (PathData *)st->path, &idx370[1]);
-          SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, (int *)(st->path + ((idx370[1] << 4) + 8)));
+          SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, (int *)((unsigned char *)st->path + ((idx370[1] << 4) + 8)));
           MarkActorCommittedKill(actor);
           actor->subMode = 1;
         }
@@ -3071,7 +3071,7 @@ void Level10_UpdateActors(void) {
             ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
             ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
             CopyVector(&actor->posX,
-                          (int *)(st->path + ((st->path[0] << 4) - 0x18)));
+                          (int *)((unsigned char *)st->path + ((st->path->count << 4) - 0x18)));
             DespawnActorRecord(actor);
           }
         }
@@ -3158,17 +3158,17 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_P1_CIRCLE:
         off = st->node[0] << 4;
-        ha = ArcTan2(*(int *)(st->path + off + 8) - spy->posX,
-                          *(int *)(st->path + off + 0xC) - spy->posY, ATAN_ANGLE8);
+        ha = ArcTan2(*(int *)((unsigned char *)st->path + off + 8) - spy->posX,
+                          *(int *)((unsigned char *)st->path + off + 0xC) - spy->posY, ATAN_ANGLE8);
         lim = 0xE;
-        b = ArcTan2(actor->posX - *(int *)(st->path + off + 8),
-                          actor->posY - *(int *)(st->path + off + 0xC), ATAN_ANGLE8);
+        b = ArcTan2(actor->posX - *(int *)((unsigned char *)st->path + off + 8),
+                          actor->posY - *(int *)((unsigned char *)st->path + off + 0xC), ATAN_ANGLE8);
         spd = 0xB4;
         if (actor->nextAnim == 9) {
           lim = 6;
         }
         if (AbsAngleDelta8(ha, b) > lim) {
-          SteerActorAroundPoint(actor, (int *)(st->path + (off + 8)), 0xC80, ha, 6,
+          SteerActorAroundPoint(actor, (int *)((unsigned char *)st->path + (off + 8)), 0xC80, ha, 6,
                         spd, 9, 0x14, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
           ANIM_GO(actor, 9);
         } else {
@@ -3238,12 +3238,12 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_P1_RETURN:
         off = st->node[0] << 4;
-        a = ArcTan2(*(int *)(st->path + off + 8) - spy->posX,
-                          *(int *)(st->path + off + 0xC) - spy->posY, ATAN_ANGLE8);
+        a = ArcTan2(*(int *)((unsigned char *)st->path + off + 8) - spy->posX,
+                          *(int *)((unsigned char *)st->path + off + 0xC) - spy->posY, ATAN_ANGLE8);
         ANIM_GO(actor, 9);
-        tgt371[0] = *(int *)(st->path + off + 8) + ((g_anCosineLut[a] * 0x19) >> 5);
+        tgt371[0] = *(int *)((unsigned char *)st->path + off + 8) + ((g_anCosineLut[a] * 0x19) >> 5);
         tgt371[1] =
-            *(int *)(st->path + off + 0xC) + ((g_anSineLut[a] * 0x19) >> 5);
+            *(int *)((unsigned char *)st->path + off + 0xC) + ((g_anSineLut[a] * 0x19) >> 5);
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(tgt371[0] - actor->posX,
                                         tgt371[1] - actor->posY, ATAN_ANGLE8),
@@ -3338,9 +3338,9 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_RETREAT:
         off = st->node[st->phase - 1] << 4;
-        ca = (ArcTan2(*(int *)(st->path + off + 8) -
+        ca = (ArcTan2(*(int *)((unsigned char *)st->path + off + 8) -
                                PATH_X(st->cam, st->phase - 1),
-                           *(int *)(st->path + off + 0xC) -
+                           *(int *)((unsigned char *)st->path + off + 0xC) -
                                PATH_Y(st->cam, st->phase - 1),
                            ATAN_ANGLE8) +
              0x80) &
@@ -3350,7 +3350,7 @@ void Level10_UpdateActors(void) {
           SPY.requestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FREEZE_INPUT);
           EBB_BREAK();
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
-          g_pSpyroRequestCameraAnchor = (int *)(st->path + (off + 8));
+          g_pSpyroRequestCameraAnchor = (int *)((unsigned char *)st->path + (off + 8));
           *(int *)&g_anCameraActiveTargetParams = -ca << 4;
           g_nCameraActiveTargetDistance = 0x1770;
           g_nCameraActiveTargetPitch = 0x19;

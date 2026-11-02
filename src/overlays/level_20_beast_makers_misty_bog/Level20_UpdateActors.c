@@ -2908,7 +2908,7 @@ void Level20_UpdateActors(void) {
             FindNearestPathPointToSpyro(st->path, A368);
             if (st->path->cur != A368[0] &&
                 dist - ApproxDist2D((int *)&g_anSpyroWorldPos,
-                                     PATH_PT((unsigned char *)st->path,
+                                     PATH_PT(st->path,
                                              A368[0])) >=
                     0x5DD) {
               st->path->cur = A368[0];
@@ -2970,7 +2970,7 @@ void Level20_UpdateActors(void) {
                 3, 2, YAW_STEP_IN_BAND) != 0 &&
             g_nActorAnimDone != 0) {
           st->hopSpeed = ApproxDist2D(&actor->posX,
-                                  PATH_PT((unsigned char *)st->path,
+                                  PATH_PT(st->path,
                                           st->path->cur)) /
                     0x14;
           actor->mode++;

@@ -1332,12 +1332,12 @@ void Level17_UpdateActors(void) {
         int best = 30000;
         int i;
 
-        for (i = 0; i < st->path[0]; i++) {
-          int d = ApproxDist2D(&actor->posX, (int *)(st->path + ((i << 4) + 8)));
+        for (i = 0; i < st->path->count; i++) {
+          int d = ApproxDist2D(&actor->posX, (int *)((unsigned char *)st->path + ((i << 4) + 8)));
 
           if (d < best) {
             best = d;
-            st->path[1] = i;
+            st->path->cur = i;
           }
         }
         st->ready = 1;

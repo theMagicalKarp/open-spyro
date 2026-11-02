@@ -1107,7 +1107,7 @@ typedef struct CannonState {
   int link;            /* 0x00 index of the actor it wakes on arrival */
   int vel[3];          /* 0x04 */
   int timer;           /* 0x10 */
-  unsigned char *path; /* 0x14 */
+  PathData *path; /* 0x14 */
   int init;            /* 0x18 1 = aim the barrel along the path */
 } CannonState;
 
@@ -1150,7 +1150,7 @@ typedef struct ShempGuardState {
   int done;           /* 0x30 */
   GuardTarget *target; /* 0x34 */
   int timer38;        /* 0x38 */
-  unsigned char *path; /* 0x3C */
+  PathData *path; /* 0x3C */
   int boxA[6];        /* 0x40 */
   int boxB[6];        /* 0x58 */
 } ShempGuardState;
@@ -1191,7 +1191,7 @@ typedef struct RunnerState {
  * face a friend (mode 1), waits on a partner (mode 2) or watches a leader
  * (mode 3); knocked back when hit, and runs off when Spyro gets close. */
 typedef struct VillagerState {
-  unsigned char *path; /* 0x00 wander path { count, cur }, points at +8 */
+  PathData *path; /* 0x00 wander path */
   int chunkAnim;             /* 0x04 world chunk-anim handle (GetWorldChunkAnimState) */
   int friend;          /* 0x08 actor it faces / sparkles at, -1 = none */
   int link;            /* 0x0C partner actor */
@@ -1228,7 +1228,7 @@ typedef struct LeaderState {
  * while SHEPHERD_IDLE, flanks or chases Spyro in SHEPHERD_CHASE (also by post),
  * climbs onto and drops off a partner (0x10-0x12), and walks home (0x64). */
 typedef struct ShepherdState {
-  unsigned char *path; /* 0x00 { count, cur }, points at +8 */
+  PathData *path; /* 0x00 */
   int home[3];         /* 0x04 */
   int heading;         /* 0x10 -1 = take the actor's own */
   int post;            /* 0x14 enum ShepherdPost (from its spawn record) */
@@ -1272,7 +1272,7 @@ typedef struct SorcererState {
   int timer;           /* 0x00 */
   int count;           /* 0x04 bolts thrown this volley */
   int target;          /* 0x08 actor index */
-  unsigned char *path; /* 0x0C { count, cur }, points at +8 */
+  PathData *path; /* 0x0C */
   int mode;            /* 0x10 SorcererRole */
   int pad14;
   int range;           /* 0x18 */
@@ -1293,7 +1293,7 @@ typedef struct BoltState {
  * winds up (state 7). */
 typedef struct CaptainState {
   int home[3];         /* 0x00 */
-  unsigned char *path; /* 0x0C { count, cur }, points at +8 */
+  PathData *path; /* 0x0C */
   int mode;            /* 0x10 enum CaptainPost */
   int heading;         /* 0x14 -1 = take the actor's own */
   int knockSpeed;      /* 0x18 */
@@ -1525,7 +1525,7 @@ typedef struct ShempState {
   int pad14;           /* 0x14 */
   int turnDir;           /* 0x18 passed by address to SteerActorYawTowardSpyro */
   int phase;           /* 0x1C enum ShempPhase */
-  unsigned char *path; /* 0x20 byte 0 = node count */
+  PathData *path; /* 0x20 */
   unsigned char *cam;  /* 0x24 camera anchors, one per phase */
   int node[3];         /* 0x28 path node per phase */
   int flag;            /* 0x34 */

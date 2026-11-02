@@ -122,7 +122,7 @@ typedef struct RiderState {
 /* ACTOR_TYPE_BANKING_FLIGHT_TARGET: a path walker that rolls with its turns and, when flamed,
  * spawns its reward and three embers and runs off. */
 typedef struct RollerState {
-  unsigned char *path; /* 0x00 [0]=node count, [1]=nearest node */
+  PathData *path; /* 0x00 */
   int reward;          /* 0x04 reward actor type - 0x158 */
   int tally;           /* 0x08 */
   int roll;            /* 0x0C */
@@ -137,7 +137,7 @@ typedef struct RollerState {
 
 /* ACTOR_TYPE_BLASTABLE_PATH_SMOKER / _PROP: path tweeners a blast wrecks. */
 typedef struct SmokerState {
-  unsigned char *path; /* 0x00 */
+  PathData *path; /* 0x00 */
   int legStep;           /* 0x04 */
   int legVec[3];        /* 0x08 */
   int timer;           /* 0x14 */

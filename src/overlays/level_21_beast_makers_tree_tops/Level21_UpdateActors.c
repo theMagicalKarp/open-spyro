@@ -836,13 +836,13 @@ void Level21_UpdateActors(void) {
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
           st->path->cur = 0;
           CopyVector(&actor->posX,
-                        PATH_PT((unsigned char *)st->path, 0));
+                        PATH_PT(st->path, 0));
           SnapActorToGround(actor);
         } else if (st->path->cur != 1 &&
                    IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box1) != 0) {
           st->path->cur = 1;
           CopyVector(&actor->posX,
-                        PATH_PT((unsigned char *)st->path, 1));
+                        PATH_PT(st->path, 1));
           SnapActorToGround(actor);
         }
       }
@@ -1219,13 +1219,13 @@ void Level21_UpdateActors(void) {
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
           st->path->cur = 0;
           CopyVector(&actor->posX,
-                        PATH_PT((unsigned char *)st->path, 0));
+                        PATH_PT(st->path, 0));
           SnapActorToGround(actor);
         } else if (st->path->cur != 1 &&
                    IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box1) != 0) {
           st->path->cur = 1;
           CopyVector(&actor->posX,
-                        PATH_PT((unsigned char *)st->path, 1));
+                        PATH_PT(st->path, 1));
           SnapActorToGround(actor);
         }
       }
@@ -3098,13 +3098,13 @@ void Level21_UpdateActors(void) {
           st->camTimer = 0;
           if (g_anLevelRunnerArrived[st->mode] != 0) {
             CopyVector(&actor->posX,
-                          (int *)(st->path + (st->path[0] * 16 - 8)));
+                          (int *)((unsigned char *)st->path + (st->path->count * 16 - 8)));
             ENTER_POSE(actor, RUNNER_WAIT);
           }
           st->path = st->home;
-          st->path[1] = st->path[0] - 1;
+          st->path->cur = st->path->count - 1;
           CopyVector(&actor->posX,
-                        (int *)(st->path + (st->path[0] * 16 - 0x18)));
+                        (int *)((unsigned char *)st->path + (st->path->count * 16 - 0x18)));
           SnapActorToGround(actor);
           actor->mode = RUNNER_DODGE;
           continue;
@@ -3124,9 +3124,9 @@ void Level21_UpdateActors(void) {
             ENTER_POSE(actor, RUNNER_WAIT);
           }
           st->path = st->home;
-          st->path[1] = st->path[0] - 1;
+          st->path->cur = st->path->count - 1;
           CopyVector(&actor->posX,
-                        (int *)(st->path + (st->path[0] * 16 - 0x18)));
+                        (int *)((unsigned char *)st->path + (st->path->count * 16 - 0x18)));
           SnapActorToGround(actor);
           actor->mode = RUNNER_DODGE;
           continue;
@@ -3208,7 +3208,7 @@ void Level21_UpdateActors(void) {
           if (st->mode == PRUN_SECOND) {
             if (g_anLevelRunnerArrived[1] == 0) {
               st->path = st->home;
-              st->path[1] = 0;
+              st->path->cur = 0;
               actor->mode = RUNNER_FLEE;
               continue;
             }
@@ -3220,7 +3220,7 @@ void Level21_UpdateActors(void) {
               continue;
             }
             st->path = st->home;
-            st->path[1] = 0;
+            st->path->cur = 0;
             actor->mode = RUNNER_FLEE;
             continue;
           }
@@ -3275,7 +3275,7 @@ void Level21_UpdateActors(void) {
                           ArcTan2(actor->posX - spy->posX,
                                         actor->posY - SPY.posY, ATAN_ANGLE8)) < 0x20) {
           st->path = st->home;
-          st->path[1] = 0;
+          st->path->cur = 0;
           st->lift = 0;
           actor->mode = RUNNER_FLEE;
           continue;
@@ -3327,18 +3327,18 @@ void Level21_UpdateActors(void) {
             g_pfnLevelEmitParticles(1, EMIT_HEAT_SPARK, runnerSpark, 0);
           } while (k < 3);
         }
-        last = st->mode < 2 ? st->path[0] - 1 : 0;
+        last = st->mode < 2 ? st->path->count - 1 : 0;
         if (r == 0x103 && st->mode == PRUN_FIRST && g_anLevelRunnerArrived[0] == 0) {
-          st->path[1] = st->path[0] - 1;
+          st->path->cur = st->path->count - 1;
           CopyVector(&actor->posX,
-                        (int *)(st->path + (st->path[0] * 16 - 0x18)));
+                        (int *)((unsigned char *)st->path + (st->path->count * 16 - 0x18)));
           SnapActorToGround(actor);
           actor->mode = RUNNER_DODGE;
           continue;
         }
         if (r == last + 0x100) {
           if (st->mode < 2) {
-            st->path[1] = st->path[0] - 1;
+            st->path->cur = st->path->count - 1;
             actor->mode = RUNNER_DODGE;
             continue;
           }
@@ -3371,9 +3371,9 @@ void Level21_UpdateActors(void) {
 
         ANIM_GO(actor, 0);
         r = SteerActorAroundPoint(
-            actor, PATH_PT(st->path, st->path[1]), st->speed,
-            (ArcTan2(spy->posX - PATH_X(st->path, st->path[1]),
-                           spy->posY - PATH_Y(st->path, st->path[1]), ATAN_ANGLE8) +
+            actor, PATH_PT(st->path, st->path->cur), st->speed,
+            (ArcTan2(spy->posX - PATH_X(st->path, st->path->cur),
+                           spy->posY - PATH_Y(st->path, st->path->cur), ATAN_ANGLE8) +
              0x80) &
                 0xFF,
             0x1E, 0x64, 0xF, 0x20, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
@@ -3394,9 +3394,9 @@ void Level21_UpdateActors(void) {
 
         ANIM_GO(actor, 0);
         r = SteerActorAroundPoint(
-            actor, PATH_PT(st->path, st->path[1]), st->speed,
-            ArcTan2(spy->posX - PATH_X(st->path, st->path[1]),
-                          spy->posY - PATH_Y(st->path, st->path[1]), ATAN_ANGLE8),
+            actor, PATH_PT(st->path, st->path->cur), st->speed,
+            ArcTan2(spy->posX - PATH_X(st->path, st->path->cur),
+                          spy->posY - PATH_Y(st->path, st->path->cur), ATAN_ANGLE8),
             5, 0xC8, 0xF, 0x20, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
         SnapActorToGround(actor);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0xFA0) {

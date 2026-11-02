@@ -670,7 +670,7 @@ void Level22_UpdateActors(void) {
           DespawnPickupGroupActors(2);
           DespawnPickupGroupActors(3);
           CopyVector(&actor->posX,
-                        (int *)(st->path + (st->path[0] * 16 - 8)));
+                        (int *)((unsigned char *)st->path + (st->path->count * 16 - 8)));
           if (actor->dropKind != 0xFF) {
             SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             MarkActorCommittedKill(actor);
@@ -865,8 +865,8 @@ void Level22_UpdateActors(void) {
         continue;
 
       case METALHEAD_PHASE_TURN: {
-        int h = ArcTan2(PATH_X(st->path, st->path[1]) - actor->posX,
-                              PATH_Y(st->path, st->path[1]) - actor->posY, ATAN_ANGLE8);
+        int h = ArcTan2(PATH_X(st->path, st->path->cur) - actor->posX,
+                              PATH_Y(st->path, st->path->cur) - actor->posY, ATAN_ANGLE8);
 
         OrPickupGroupActorFlags(st->phase, ACTOR_HIT_BLAST);
         if (st->phase == 1) {
@@ -1212,13 +1212,13 @@ void Level22_UpdateActors(void) {
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
           st->path->cur = 0;
           CopyVector(&actor->posX,
-                        PATH_PT((unsigned char *)st->path, 0));
+                        PATH_PT(st->path, 0));
           SnapActorToGround(actor);
         } else if (st->path->cur != 1 &&
                    IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box1) != 0) {
           st->path->cur = 1;
           CopyVector(&actor->posX,
-                        PATH_PT((unsigned char *)st->path, 1));
+                        PATH_PT(st->path, 1));
           SnapActorToGround(actor);
         }
       }
@@ -1595,13 +1595,13 @@ void Level22_UpdateActors(void) {
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
           st->path->cur = 0;
           CopyVector(&actor->posX,
-                        PATH_PT((unsigned char *)st->path, 0));
+                        PATH_PT(st->path, 0));
           SnapActorToGround(actor);
         } else if (st->path->cur != 1 &&
                    IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box1) != 0) {
           st->path->cur = 1;
           CopyVector(&actor->posX,
-                        PATH_PT((unsigned char *)st->path, 1));
+                        PATH_PT(st->path, 1));
           SnapActorToGround(actor);
         }
       }
