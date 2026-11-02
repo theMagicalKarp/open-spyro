@@ -255,8 +255,8 @@ void TickLevelTransitionStream(int full) {
       if (list[i] <= 0) {
         break;
       }
-      mesh[*slot++] =
-          RelocateActorMeshHeader(g_pWorldUnpackHead + (list[i] - list[-16]));
+      mesh[*slot++] = RelocateActorMeshHeader(
+          (int *)(g_pWorldUnpackHead + (list[i] - list[-16])));
     }
     g_pPathTableBuffer = g_pWorldUnpackHead + list[-15];
     g_nLevelArchiveByteSize = list[-13];

@@ -65,10 +65,10 @@ void TickDragonRescueAssetStream(void) {
     if (g_nDragonRescueSplitFlag == 0) {
       g_pDragonRescueCameraPath = HEAD + g_nDragonRescueCameraPathOffset;
       g_nDragonRescueCameraPathCount = g_nDragonRescueCameraPathSize / 24;
-      g_pDragonRescueStatueModelData =
-          RelocateActorMeshHeader(HEAD + g_nDragonRescueHeaderEndOffset);
-      g_pDragonRescueMirrorModelData =
-          RelocateActorMeshHeader(HEAD + g_nDragonRescueMirrorMeshOffset);
+      g_pDragonRescueStatueModelData = RelocateActorMeshHeader(
+          (int *)(HEAD + g_nDragonRescueHeaderEndOffset));
+      g_pDragonRescueMirrorModelData = RelocateActorMeshHeader(
+          (int *)(HEAD + g_nDragonRescueMirrorMeshOffset));
       g_nDragonRescueSpuChunkIndex = 0;
     } else {
       SetSpuTransferStartAddr(0x80000 - g_nDragonRescueAudioSampleSize);
@@ -138,10 +138,10 @@ void TickDragonRescueAssetStream(void) {
       p = *h + g_nDragonRescueCameraPathOffset;
       g_pDragonRescueCameraPath = p - g_nDragonRescueHeaderEndOffset;
       g_nDragonRescueCameraPathCount = g_nDragonRescueCameraPathSize / 24;
-      g_pDragonRescueStatueModelData = RelocateActorMeshHeader(*h);
+      g_pDragonRescueStatueModelData = RelocateActorMeshHeader((int *)*h);
       g_pDragonRescueMirrorModelData =
-          RelocateActorMeshHeader(*h + g_nDragonRescueMirrorMeshOffset -
-                                  g_nDragonRescueHeaderEndOffset);
+          RelocateActorMeshHeader((int *)(*h + g_nDragonRescueMirrorMeshOffset -
+                                          g_nDragonRescueHeaderEndOffset));
     }
     g_nDragonRescueStreamState++;
     return;
@@ -207,8 +207,8 @@ void TickDragonRescueAssetStream(void) {
       if (list[i] <= 0) {
         break;
       }
-      mesh[*slot++] =
-          RelocateActorMeshHeader(g_pWorldUnpackHead + (list[i] - list[-16]));
+      mesh[*slot++] = RelocateActorMeshHeader(
+          (int *)(g_pWorldUnpackHead + (list[i] - list[-16])));
     }
     break;
   default:
