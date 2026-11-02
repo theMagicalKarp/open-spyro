@@ -2501,7 +2501,7 @@ void Level10_UpdateActors(void) {
           st->prize->rotX = 0;
           st->prize->rotY = 0;
           g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (st->prize->type - ACTOR_TYPE_GEM_1));
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_OPEN, 0);
           actor->mode = SEEDPOD_OPEN;
           ANIM_RESET(actor, SEEDPOD_OPEN);
           continue;
@@ -2548,7 +2548,7 @@ void Level10_UpdateActors(void) {
             (g_nSpyroState == SPYRO_ST_CHARGE_AIR && (g_nSpyroSubstate & SPYRO_SUB_SUPERCHARGE))) {
           CollectPickupActor(st->prize);
           DespawnActorRecord(st->prize);
-          PlayActorMeshVoice(actor, 2, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_BURST, 0);
           for (i = 0; i < 2; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
@@ -2569,7 +2569,7 @@ void Level10_UpdateActors(void) {
         }
         if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = COLLECT_BOUNCE;
-          PlayActorMeshVoice(actor, 2, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_BURST, 0);
           for (i = 0; i < 2; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
@@ -2609,7 +2609,7 @@ void Level10_UpdateActors(void) {
           actor->rotY = st->rotY;
           actor->posZ = st->restZ;
           st->timer = 0;
-          PlayActorMeshVoice(actor, 1, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_CLOSE, 0);
           actor->mode = SEEDPOD_CLOSED;
           ANIM_RESET(actor, SEEDPOD_CLOSED);
           continue;

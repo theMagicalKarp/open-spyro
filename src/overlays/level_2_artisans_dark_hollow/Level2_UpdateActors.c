@@ -3019,7 +3019,7 @@ void Level2_UpdateActors(void) {
           st->passenger->drawn = 0;
           st->passenger->otBias = 5;
 
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, LIFECHEST_VOICE_OPEN, 0);
         } else if (st->phase >= 0x1A0) {
           actor->rotX = g_aShakeRotOffsets[LIFECHEST_SHAKE_STEP(st)].a + st->savedRotX;
           actor->rotY = g_aShakeRotOffsets[LIFECHEST_SHAKE_STEP(st)].b + st->savedRotY;
@@ -3034,7 +3034,7 @@ void Level2_UpdateActors(void) {
           actor->posZ = st->savedPosZ + (a + b) * 6;
 
           if (actor->voiceRow == VOICE_ROW_NONE) {
-            PlayActorMeshVoice(actor, 1, 0);
+            PlayActorMeshVoice(actor, LIFECHEST_VOICE_RATTLE, 0);
           }
         } else if (st->phase >= 0x19C) {
           /* Just before the shake: remember the rest pose. */
@@ -3060,7 +3060,7 @@ void Level2_UpdateActors(void) {
           actor->mode = LIFECHEST_CLOSED;
           actor->nextAnim = LIFECHEST_CLOSED;
           if (actor->voiceRow == VOICE_ROW_NONE) {
-            PlayActorMeshVoice(actor, 3, 0);
+            PlayActorMeshVoice(actor, LIFECHEST_VOICE_CLOSE, 0);
           }
         }
       }
@@ -3075,7 +3075,7 @@ void Level2_UpdateActors(void) {
       }
 
       actor->soundRange = 0x20;
-      PlayActorMeshVoice(actor, 4, 0);
+      PlayActorMeshVoice(actor, LIFECHEST_VOICE_BREAK, 0);
 
       /* Fragment bursts; each stops early once the dynamic pool is full. */
       for (i = 0; i < 2; i++) {
@@ -3106,7 +3106,7 @@ void Level2_UpdateActors(void) {
         DespawnActorRecord(st->passenger);
       }
 
-      PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[2], actor, SFX_MODE_3D,
+      PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[LIFECHEST_VOICE_BURST], actor, SFX_MODE_3D,
                     (void *)(long)actor->voiceRow);
       DespawnActorRecord(actor);
       continue;

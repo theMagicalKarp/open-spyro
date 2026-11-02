@@ -663,12 +663,12 @@ void Level14_UpdateActors(void) {
 
       if (actor->nextAnim == THIEF_ANIM_TAUNT) {
         if (actor->nextFrame == 2 && (GetRandomU32() & 3) == 0 &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[6]) == 0) {
-          PlayActorMeshVoice(actor, 6, 0);
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[THIEF_VOICE_TAUNT_EARLY]) == 0) {
+          PlayActorMeshVoice(actor, THIEF_VOICE_TAUNT_EARLY, 0);
         }
         if (actor->nextFrame == 0xC && (GetRandomU32() & 3) == 0 &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[5]) == 0) {
-          PlayActorMeshVoice(actor, 5, 0);
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[THIEF_VOICE_TAUNT_LATE]) == 0) {
+          PlayActorMeshVoice(actor, THIEF_VOICE_TAUNT_LATE, 0);
         }
       }
 
@@ -4725,7 +4725,7 @@ void Level14_UpdateActors(void) {
           st->prize->rotX = 0;
           st->prize->rotY = 0;
           g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (st->prize->type - ACTOR_TYPE_GEM_1));
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_OPEN, 0);
           actor->mode = SEEDPOD_OPEN;
           ANIM_RESET(actor, SEEDPOD_OPEN);
           continue;
@@ -4772,7 +4772,7 @@ void Level14_UpdateActors(void) {
             (g_nSpyroState == SPYRO_ST_CHARGE_AIR && (g_nSpyroSubstate & SPYRO_SUB_SUPERCHARGE))) {
           CollectPickupActor(st->prize);
           DespawnActorRecord(st->prize);
-          PlayActorMeshVoice(actor, 2, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_BURST, 0);
           for (i = 0; i < 2; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
@@ -4793,7 +4793,7 @@ void Level14_UpdateActors(void) {
         }
         if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = COLLECT_BOUNCE;
-          PlayActorMeshVoice(actor, 2, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_BURST, 0);
           for (i = 0; i < 2; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
@@ -4833,7 +4833,7 @@ void Level14_UpdateActors(void) {
           actor->rotY = st->rotY;
           actor->posZ = st->restZ;
           st->timer = 0;
-          PlayActorMeshVoice(actor, 1, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_CLOSE, 0);
           actor->mode = SEEDPOD_CLOSED;
           ANIM_RESET(actor, SEEDPOD_CLOSED);
           continue;

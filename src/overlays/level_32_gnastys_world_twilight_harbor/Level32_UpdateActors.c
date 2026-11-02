@@ -2864,7 +2864,7 @@ void Level32_UpdateActors(void) {
           st->prize->rotX = 0;
           st->prize->rotY = 0;
           g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (st->prize->type - ACTOR_TYPE_GEM_1));
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_OPEN, 0);
           actor->mode = SEEDPOD_OPEN;
           ANIM_RESET(actor, SEEDPOD_OPEN);
           continue;
@@ -2911,7 +2911,7 @@ void Level32_UpdateActors(void) {
             (g_nSpyroState == SPYRO_ST_CHARGE_AIR && (g_nSpyroSubstate & SPYRO_SUB_SUPERCHARGE))) {
           CollectPickupActor(st->prize);
           DespawnActorRecord(st->prize);
-          PlayActorMeshVoice(actor, 2, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_BURST, 0);
           for (i = 0; i < 2; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
@@ -2932,7 +2932,7 @@ void Level32_UpdateActors(void) {
         }
         if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = COLLECT_BOUNCE;
-          PlayActorMeshVoice(actor, 2, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_BURST, 0);
           for (i = 0; i < 2; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
@@ -2972,7 +2972,7 @@ void Level32_UpdateActors(void) {
           actor->rotY = st->rotY;
           actor->posZ = st->restZ;
           st->timer = 0;
-          PlayActorMeshVoice(actor, 1, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_CLOSE, 0);
           actor->mode = SEEDPOD_CLOSED;
           ANIM_RESET(actor, SEEDPOD_CLOSED);
           continue;
@@ -3141,7 +3141,7 @@ void Level32_UpdateActors(void) {
           st->passenger->drawn = 0;
           st->passenger->otBias = 5;
 
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, LIFECHEST_VOICE_OPEN, 0);
         } else if (st->phase >= 0x1A0) {
           actor->rotX = g_aShakeRotOffsets[LIFECHEST_SHAKE_STEP(st)].a + st->savedRotX;
           actor->rotY = g_aShakeRotOffsets[LIFECHEST_SHAKE_STEP(st)].b + st->savedRotY;
@@ -3156,7 +3156,7 @@ void Level32_UpdateActors(void) {
           actor->posZ = st->savedPosZ + (a + b) * 6;
 
           if (actor->voiceRow == VOICE_ROW_NONE) {
-            PlayActorMeshVoice(actor, 1, 0);
+            PlayActorMeshVoice(actor, LIFECHEST_VOICE_RATTLE, 0);
           }
         } else if (st->phase >= 0x19C) {
           /* Just before the shake: remember the rest pose. */
@@ -3182,7 +3182,7 @@ void Level32_UpdateActors(void) {
           actor->mode = LIFECHEST_CLOSED;
           actor->nextAnim = LIFECHEST_CLOSED;
           if (actor->voiceRow == VOICE_ROW_NONE) {
-            PlayActorMeshVoice(actor, 3, 0);
+            PlayActorMeshVoice(actor, LIFECHEST_VOICE_CLOSE, 0);
           }
         }
       }
@@ -3197,7 +3197,7 @@ void Level32_UpdateActors(void) {
       }
 
       actor->soundRange = 0x20;
-      PlayActorMeshVoice(actor, 4, 0);
+      PlayActorMeshVoice(actor, LIFECHEST_VOICE_BREAK, 0);
 
       /* Fragment bursts; each stops early once the dynamic pool is full. */
       for (i = 0; i < 2; i++) {
@@ -3228,7 +3228,7 @@ void Level32_UpdateActors(void) {
         DespawnActorRecord(st->passenger);
       }
 
-      PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[2], actor, SFX_MODE_3D,
+      PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[LIFECHEST_VOICE_BURST], actor, SFX_MODE_3D,
                     (void *)(long)actor->voiceRow);
       DespawnActorRecord(actor);
       continue;

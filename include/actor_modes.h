@@ -83,10 +83,26 @@ enum SeedPodMode {
   SEEDPOD_OPEN = 1,   /* shakes with the prize floating above; closes after a while */
 };
 
+/* A seed pod's voices (PlayActorMeshVoice). */
+enum SeedPodVoice {
+  SEEDPOD_VOICE_OPEN = 0,
+  SEEDPOD_VOICE_CLOSE = 1,
+  SEEDPOD_VOICE_BURST = 2, /* the prize collected or a supercharge hit */
+};
+
 /* ->mode of a life chest (ACTOR_TYPE_LIFE_CHEST, LifeChestState). */
 enum LifeChestMode {
   LIFECHEST_CLOSED = 0, /* shakes on a timer, then lifts its lid */
   LIFECHEST_OPEN = 1,   /* lid up, its rider showing; closes after 0xE6 frames */
+};
+
+/* A life chest's voices (PlayActorMeshVoice, or m_Sounds[] for BURST). */
+enum LifeChestVoice {
+  LIFECHEST_VOICE_OPEN = 0,
+  LIFECHEST_VOICE_RATTLE = 1, /* the shake before it opens */
+  LIFECHEST_VOICE_BURST = 2,  /* as it despawns, on its own voice row */
+  LIFECHEST_VOICE_CLOSE = 3,
+  LIFECHEST_VOICE_BREAK = 4,  /* when struck */
 };
 
 /* ->mode of a level-exit whirlwind (ACTOR_TYPE_LEVEL_EXIT, ExitWhirlState). */
@@ -212,6 +228,13 @@ enum ThiefAnim {
   THIEF_ANIM_RUN = 1,    /* every run/hop mode */
   THIEF_ANIM_CAUGHT = 3, /* hit: the egg drops from frame 5, then it bursts */
   THIEF_ANIM_TAUNT = 4,  /* stands facing Spyro; voices 6/5 on frames 2/0xC */
+};
+
+/* An egg thief's voices (PlayActorMeshVoice): 0..4 are its running chatter,
+ * picked at random without repeats; the taunt plays the other two. */
+enum ThiefVoice {
+  THIEF_VOICE_TAUNT_LATE = 5,  /* on THIEF_ANIM_TAUNT frame 0xC */
+  THIEF_VOICE_TAUNT_EARLY = 6, /* on THIEF_ANIM_TAUNT frame 2 */
 };
 
 /* ->subMode of an egg thief that keeps away around its home node. */
