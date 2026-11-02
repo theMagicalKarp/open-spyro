@@ -55,8 +55,8 @@ void Initialize(void) {
   int n;
   char *src2;
   unsigned char *isrgb24;
-  short rect[4];
-  short clear[4];
+  RECT rect;
+  RECT clear;
 
   InitGraphicsHardware();
   SpuInit();
@@ -79,11 +79,11 @@ void Initialize(void) {
   bias = -0xE0;
   do {
     AddBiasToColorRuns(&g_pOtDepthBinHead0, g_apDrawBufBlock[0], bias);
-    rect[2] = 0x300;
-    rect[0] = 0;
-    rect[1] = 0;
-    rect[3] = 0xF0;
-    LoadImage(rect, g_apDrawBufBlock[0]);
+    rect.w = 0x300;
+    rect.x = 0;
+    rect.y = 0;
+    rect.h = 0xF0;
+    LoadImage(&rect, g_apDrawBufBlock[0]);
     DrawSync(0);
     VSync(0);
     PutDispEnv(&g_abFrameDispEnv1);
@@ -132,11 +132,11 @@ hold_title:
   buf2 = g_apDrawBufBlock2;
 fade_out_title:
   AddBiasToColorRuns(&g_pOtDepthBinHead0, buf2[0], -(j + 1) << 5);
-  rect[2] = 0x300;
-  rect[0] = 0;
-  rect[1] = 0;
-  rect[3] = 0xF0;
-  LoadImage(rect, buf2[0]);
+  rect.w = 0x300;
+  rect.x = 0;
+  rect.y = 0;
+  rect.h = 0xF0;
+  LoadImage(&rect, buf2[0]);
   DrawSync(0);
   VSync(0);
   PutDispEnv(&g_abFrameDispEnv1);
@@ -152,11 +152,11 @@ fade_out_title:
   bias3 = -0xE0;
 fade_in_splash:
   AddBiasToColorRuns(dst, src, bias3);
-  rect[2] = 0x300;
-  rect[0] = 0;
-  rect[1] = 0;
-  rect[3] = 0xF0;
-  LoadImage(rect, src);
+  rect.w = 0x300;
+  rect.x = 0;
+  rect.y = 0;
+  rect.h = 0xF0;
+  LoadImage(&rect, src);
   DrawSync(0);
   VSync(0);
   PutDispEnv(&g_abFrameDispEnv1);
@@ -182,11 +182,11 @@ hold_splash:
   src2 = dst - 0x5A000;
 fade_out_splash:
   AddBiasToColorRuns(dst, src2, -(n + 1) << 5);
-  rect[2] = 0x300;
-  rect[0] = 0;
-  rect[1] = 0;
-  rect[3] = 0xF0;
-  LoadImage(rect, src2);
+  rect.w = 0x300;
+  rect.x = 0;
+  rect.y = 0;
+  rect.h = 0xF0;
+  LoadImage(&rect, src2);
   DrawSync(0);
   VSync(0);
   PutDispEnv(&g_abFrameDispEnv1);
@@ -200,18 +200,18 @@ fade_out_splash:
   *isrgb24 = 0;
   g_abFrameDispEnv1.isrgb24 = 0;
   PutDispEnv((DISPENV *)(isrgb24 + 0x73));
-  clear[0] = 0;
-  clear[1] = 0;
-  clear[2] = 0x200;
-  clear[3] = 0x1E0;
-  ClearImage(clear, 0, 0, 0);
+  clear.x = 0;
+  clear.y = 0;
+  clear.w = 0x200;
+  clear.h = 0x1E0;
+  ClearImage(&clear, 0, 0, 0);
   DrawSync(0);
   SetDispMask(1);
-  rect[0] = 0x200;
-  rect[1] = 0;
-  rect[2] = 0x200;
-  rect[3] = 0x100;
-  LoadImage(rect, top);
+  rect.x = 0x200;
+  rect.y = 0;
+  rect.w = 0x200;
+  rect.h = 0x100;
+  LoadImage(&rect, top);
   DrawSync(0);
   g_pWorkAreaTop = (char *)0x80200000 - g_nCrt0StackSize;
   LoadActorMeshTables();

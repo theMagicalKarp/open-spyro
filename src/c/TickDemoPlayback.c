@@ -19,7 +19,7 @@
    when the demo ended this frame, else 0.
    (0x800334d4, 904 bytes.) */
 int TickDemoPlayback(void) {
-  short rect[8];
+  RECT rect[2]; /* only rect[0] is used; a single RECT shrinks the frame by 8 */
 
   SampleDemoPadFrame();
   if (g_nDemoMode != DEMO_RECORD) {
@@ -36,10 +36,10 @@ int TickDemoPlayback(void) {
     if (g_nDemoExitFadeFrame == 0x10) {
       StopAllSoundExceptMask(0);
       TickSpuPerFrame();
-      rect[2] = 0x200;
-      rect[0] = 0;
-      rect[1] = 0;
-      rect[3] = 0x1e0;
+      rect[0].w = 0x200;
+      rect[0].x = 0;
+      rect[0].y = 0;
+      rect[0].h = 0x1e0;
       ClearImage(rect, 0, 0, 0);
       DrawSync(0);
       g_pDrawBufA = &g_abDrawBufPool;

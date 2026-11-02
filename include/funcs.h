@@ -1058,12 +1058,10 @@ undefined1 *InitDmaCallbackTable(void);
 undefined FUN_8005e8ac(undefined4 *param_1, int param_2);
 
 /* 0x8005ea94: PSY-Q SetDefDrawEnv (ex-SetDefaultDisplayEnv — old name had Draw/Disp SWAPPED). Fills a DRAWENV head: clip rect (x,y,w,h), ofs=(x,y), tw cleared, tpage=10, dtd=1, dfe = h within display (NTSC h<=0x100 / PAL h<=0x120 via GetGraphType), isbg=0, r0/g0/b0=0. Does not touch dr_env. Called by InitGraphicsHardware on the DB DRAWENVs at g_abFrameDrawEnv0/g_abFrameDrawEnv1. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined InitDefaultDrawEnv(undefined2 *param_1, undefined2 param_2, undefined2 param_3, undefined2 param_4, int param_5);
+DRAWENV *InitDefaultDrawEnv(DRAWENV *env, int x, int y, int w, int h);
 
 /* 0x8005eb4c: PSY-Q SetDefDispEnv (ex-SetDefaultDrawEnv — old name had Draw/Disp SWAPPED). Fills a 0x14-byte DISPENV: disp rect (x,y,w,h), screen rect zeroed, isinter/isrgb24/pad cleared. Called by InitGraphicsHardware on the DB DISPENVs at g_abFrameDispEnv0/g_abFrameDispEnv1. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined InitDefaultDispEnv(undefined2 *param_1, undefined2 param_2, undefined2 param_3, undefined2 param_4, undefined2 param_5);
+DISPENV *InitDefaultDispEnv(DISPENV *env, int x, int y, int w, int h);
 
 /* 0x8005eba0: libgpu accessor returning g_nGraphType — the cached "graph type" / video-mode flag (0 = NTSC, non-zero = PAL). Set by libgpu init based on console region. Used by SetDefaultDisplayEnv to choose the 256-vs-288-scanline interlace boundary, and by PutDispEnv to pick the GP1 display-mode word. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
@@ -1091,19 +1089,17 @@ int DrawSync(int mode);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined ValidateGpuRect(undefined4 param_1, short *param_2);
 
-/* 0x8005f8f8: libgpu ClearImage. Fills VRAM rect param_1 with packed 24-bit color (R=param_2, G=param_3, B=param_4) via the GPU command-dispatch table at PTR_PTR_80074a5c. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined ClearImage(short *param_1, uint param_2, uint param_3, uint param_4);
+/* 0x8005f8f8: libgpu ClearImage. Fills VRAM rect with packed 24-bit color (r, g, b) via the GPU command-dispatch table at PTR_PTR_80074a5c. */
+int ClearImage(RECT *rect, int r, int g, int b);
 
-/* 0x8005fa28: libgpu LoadImage. Transfers CPU memory at param_2 into VRAM rect param_1 via the GPU command-dispatch table at PTR_PTR_80074a5c. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined LoadImage(short *param_1, undefined4 param_2);
+/* 0x8005fa28: libgpu LoadImage. Transfers CPU memory at p into VRAM rect via the GPU command-dispatch table at PTR_PTR_80074a5c. */
+int LoadImage(RECT *rect, void *p);
 
 /* 0x8005fa8c: libgpu StoreImage. Transfers VRAM rect r out to CPU memory at dst via the GPU command-dispatch table at PTR_PTR_80074a5c. */
 void StoreImage(RECT *r, void *dst);
 
 /* 0x8005faf0: libgpu MoveImage. VRAM-to-VRAM rect copy: source rect (RECT *)rect, destination (x=x, y=y). Returns -1 if source rect has zero width or height. */
-void MoveImage(short *rect, unsigned int x, int y);
+int MoveImage(RECT *rect, int x, int y);
 
 void DrawOTag(void *ot);
 

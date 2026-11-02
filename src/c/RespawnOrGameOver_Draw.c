@@ -38,7 +38,7 @@ static inline unsigned char *Opaque(unsigned char *p) {
 }
 
 void RespawnOrGameOver_Draw(void) {
-  short rect[4];
+  RECT rect;
   int pos[3];
   int size[3];
   int i;
@@ -70,14 +70,14 @@ void RespawnOrGameOver_Draw(void) {
       DrawSync(0);
       VSync(0);
       bright = 8;
-      rect[0] = 0;
+      rect.x = 0;
       if (g_pActiveFrameDrawEnv != &g_abFrameDrawEnv0) {
         bright = 0xF8;
       }
-      rect[2] = 0x200;
-      rect[1] = bright;
-      rect[3] = 0xE0;
-      MoveImage(rect, 0, 0x100 - bright);
+      rect.w = 0x200;
+      rect.y = bright;
+      rect.h = 0xE0;
+      MoveImage(&rect, 0, 0x100 - bright);
       DrawSync(0);
       g_abFrameDrawEnv0.isbg = 0;
       g_abFrameDrawEnv1.isbg = 0;
@@ -107,11 +107,11 @@ void RespawnOrGameOver_Draw(void) {
         }
         DrawSync(0);
         VSync(0);
-        rect[2] = 0x200;
-        rect[0] = 0;
-        rect[1] = 0;
-        rect[3] = 0x1E0;
-        ClearImage(rect, 0, 0, 0);
+        rect.w = 0x200;
+        rect.x = 0;
+        rect.y = 0;
+        rect.h = 0x1E0;
+        ClearImage(&rect, 0, 0, 0);
       }
     }
   } else if (g_nRespawnOrGameOverMode == 1) {
@@ -192,14 +192,14 @@ void RespawnOrGameOver_Draw(void) {
   } else {
     if (g_nRespawnOrGameOverFrame == 0) {
       bright = 8;
-      rect[0] = 0;
+      rect.x = 0;
       if (g_pActiveFrameDrawEnv != &g_abFrameDrawEnv0) {
         bright = 0xF8;
       }
-      rect[2] = 0x200;
-      rect[1] = bright;
-      rect[3] = 0xE0;
-      MoveImage(rect, 0, 0x100 - bright);
+      rect.w = 0x200;
+      rect.y = bright;
+      rect.h = 0xE0;
+      MoveImage(&rect, 0, 0x100 - bright);
       DrawSync(0);
       g_abFrameDrawEnv0.isbg = 0;
       g_abFrameDrawEnv1.isbg = 0;
@@ -229,11 +229,11 @@ void RespawnOrGameOver_Draw(void) {
         }
         DrawSync(0);
         VSync(0);
-        rect[2] = 0x200;
-        rect[0] = 0;
-        rect[1] = 0;
-        rect[3] = 0x1E0;
-        ClearImage(rect, 0, 0, 0);
+        rect.w = 0x200;
+        rect.x = 0;
+        rect.y = 0;
+        rect.h = 0x1E0;
+        ClearImage(&rect, 0, 0, 0);
       }
     }
   }
