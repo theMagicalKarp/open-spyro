@@ -31,8 +31,8 @@ void Cutscene_Draw(void) {
   FillWord(otHead, 0, 0x1c00);
   g_nFarPlaneDrawDistance = 0x14000;
   RenderWorldChunks(-1);
-  EmitStaticActorMeshList(-1, g_anCameraViewMtx,
-                          (int *)((char *)g_anCameraViewMtx - 0x14));
+  EmitStaticActorMeshList(-1, (MATRIX *)g_anCameraViewMtx,
+                          (MATRIX *)((char *)g_anCameraViewMtx - 0x14));
   if (g_nScreenFadeLevel != 0) {
     int t = g_nScreenFadeLevel << 4;
     DrawFullscreenTint(2, t, t, t);

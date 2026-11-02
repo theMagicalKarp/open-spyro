@@ -272,7 +272,7 @@ void *UnpackWorldDataChunks(int *p, int flag) {
   base = p;
   g_nLevelSampleBankCount = *p;
   p++;
-  RelocateLevelSampleBank((char *)p, 1);
+  RelocateLevelSampleBank(p, 1);
   p = (int *)((char *)base + *base);
   return p;
 }

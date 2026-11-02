@@ -146,7 +146,7 @@ void PauseMenu_Update(void) {
         *p = vol;
         g_nCdDaVolumeCurrent = vol;
         g_nSpuCommonCdVolumeR = vol;
-        SetSpuCommonAttr(common);
+        SetSpuCommonAttr((unsigned char *)common);
       }
       return;
     case OPTIONS_ROW_SPEAKERS:

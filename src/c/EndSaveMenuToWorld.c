@@ -35,7 +35,7 @@ void EndSaveMenuToWorld(void) {
   g_nSpyroSuperflameTimer = g_nSpyroSuperflameTimerSave;
   g_nCameraTargetYawBiasFromMode = g_anSpyroMoveTargetYawBlock[0x14];
 
-  ComputeCameraToTargetAngle((char *)g_apCameraAnchorBlock - 0xA8);
+  ComputeCameraToTargetAngle((int *)((char *)g_apCameraAnchorBlock - 0xA8));
   CopyWords(dyn, (char *)g_apCameraAnchorBlock - 0x40, 0x18);
   dyn[0] = (dyn[0] + g_nCameraTargetYawBiasFromMode) & 0xFFF;
 

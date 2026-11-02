@@ -57,7 +57,7 @@ void Titlescreen_EmitSpriteQuad(int nX, int nY, int nSprite, int nColorId) {
   p->tpage = g_aTitlescreenSprites[nSprite].nTpage;
   p->clut = g_aTitlescreenSprites[nSprite].nClut;
 
-  AddPrimToOT(p);
+  AddPrimToOT((int)p);
 
   g_pPrimBufferWriteCursor = p + 1;
 
