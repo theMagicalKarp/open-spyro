@@ -663,7 +663,7 @@ int FindWorldFloorBelowPoint(int *pos);
 #define CONTACT_PUSH_OUT      1 /* push pos out of the first solid shape (written back); returns that actor */
 #define CONTACT_ALL           2 /* keep testing past solid shapes */
 #endif
-int DispatchActorContactAtSphere(int *pos, int radius, int events, int hitBits, Actor *self, int mode);
+Actor *DispatchActorContactAtSphere(int *pos, int radius, unsigned int *events, int hitBits, Actor *self, int mode);
 
 /* 0x8004eba8: Renders the per-level static-actor mesh list. Stage 1: Z-cull each mesh chunk via gte_rtps_b, building visible-chunk pointer list at &g_pOtDepthBinHead0. Stage 2: project triangle verts through GTE, build 5-bit frustum outcodes, emit POLY_F3 (0x84) / POLY_F4 (0x86) flat prims into the OT bump buffer at g_pPrimBufferWriteCursor. lod = actor mesh index into g_pWorldRenderMeshIndexTable table (or -1 to walk the flat list at g_pWorldRenderMeshChunkArray..+g_nWorldRenderMeshChunkCount*4). viewMtx/worldMtx = camera rot/translate matrices. Called once at the end of DrawPortalsAndStaticActors, and by Gamestate01_09/04_05/Cutscene_Draw. */
 void EmitStaticActorMeshList(int zone, MATRIX *viewMtx, MATRIX *worldMtx);

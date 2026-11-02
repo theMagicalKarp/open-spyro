@@ -19,8 +19,9 @@
        actor */
 #define CONTACT_ALL 2 /* keep testing past solid shapes */
 #endif
-extern int DispatchActorContactAtSphere(int *pos, int radius, int events,
-                                        int hitBits, Actor *self, int mode);
+extern Actor *DispatchActorContactAtSphere(int *pos, int radius,
+                                           unsigned int *events, int hitBits,
+                                           Actor *self, int mode);
 extern void RefreshActorDerivedState(Actor *actor, int mode);
 
 typedef struct {

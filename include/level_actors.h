@@ -90,7 +90,7 @@ extern signed char g_bSpyroRequestYaw; /* g_abSpyroRequestEuler[2]: requested ya
 #define CONTACT_PUSH_OUT      1 /* push pos out of the first solid shape (written back); returns that actor */
 #define CONTACT_ALL           2 /* keep testing past solid shapes */
 #endif
-extern int DispatchActorContactAtSphere(int *pos, int radius, int events, int hitBits, Actor *self, int mode);
+extern Actor *DispatchActorContactAtSphere(int *pos, int radius, unsigned int *events, int hitBits, Actor *self, int mode);
 extern void GetActorAttachPoint(Actor *actor, int slot, int *pos);
 #ifndef STEER_NO_BLOCK
 #define STEER_NO_BLOCK 0xFF /* blockA / blockB: no blocked heading */
