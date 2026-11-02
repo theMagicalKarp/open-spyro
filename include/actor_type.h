@@ -29,7 +29,7 @@ typedef struct Actor {
   short type;          /* 0x36 actor class */
   short floorOffset;   /* 0x38 signed offset above the ground (SnapActorToGround) */
   unsigned char killGroup; /* 0x3A low 7 bits: kill group (< 0x20 a group bit,
-                            * 0x7D/0x7E special; BuildLoadedLevelRuntime);
+                            * else ACTOR_KILL_GROUP_*; BuildLoadedLevelRuntime);
                             * bit 7 latches the death drop (SpawnActorDeathDrop) */
   unsigned char probeDist; /* 0x3B DriveActorTrackedMove ground-probe distance / 4;
                            * 0 default 0x12C, 0xFF none, 0xFE probe mode 1 */
@@ -79,7 +79,7 @@ typedef struct Actor {
   unsigned char updateDist; /* 0x52 activation radius >> 10 */
   unsigned char dropKind; /* 0x53 death-drop item id (& 0x7F, 1..0x7E fixed;
                            * 0xFF = random gem roll) — SpawnActorDeathDrop,
-                           * IsActorInRunningKillSet */
+                           * IsActorInCheckpointKillSet */
   unsigned char voiceRow; /* 0x54 voice row playing its sound (PlaySoundEffect pPlaying),
                            * VOICE_ROW_NONE when silent */
   unsigned char soundRange; /* 0x55 voice audible range >> 10 (TickActiveSoundVoices) */
@@ -93,6 +93,24 @@ typedef struct Actor {
 #define VOICE_ROW_NONE 0x7F
 #define ACTOR_CULL_HIDDEN 0 /* ->cullRadius: a zero bound fails the view cull, so the actor is hidden */
 #define ACTOR_TINT_NEUTRAL 0xA18618 /* the 0x4C tint word at neutral levels (0x18 each, tag 0xA) */
+/* Actor.tintMode presets, used with tint0..2 zeroed. RasterizeSpritePrimQueue
+ * reads the preset word at 0x8006E3D8 + (tint word >> 22) and loads its low
+ * three bytes into the GTE back colour (R, G, B), so a preset is a light
+ * level rather than the visible colour. EXE words: 1 0x606060, 2 0x006060,
+ * 3..6 zero (filled at run time; the flight tally writes them),
+ * 0xB 0x006060, 0xC 0x605050, 0xD 0x000060 (flag nibble 0xC), 0xE 0x206020.
+ * Named by the actors that pick them. */
+#define TINT_GEM_1 1      /* gems, one per value: HUD tally icons use type - 0x52 */
+#define TINT_GEM_2 2
+#define TINT_GEM_5 3
+#define TINT_GEM_10 4
+#define TINT_GEM_25 5
+#define TINT_WHITE 1        /* 0x606060: Sparx food; the 1-gem shares it */
+#define TINT_GOLD 2         /* 0x006060 (R, G): text glyphs, digits; the 2-gem shares it */
+#define TINT_HUD 0xB        /* HUD sprites and text (BuildTextSprites default); same word as TINT_GOLD */
+#define TINT_EXTRA_LIFE 0xC
+#define TINT_BOULDER_SPARK 0xD /* boulder debris 152/153 */
+#define TINT_STATUE_SHARD 0xE
 #define BILLBOARD_NONE 0xFF          /* no g_aRotBillboards handle */
 #define ACTOR_UPDATE_ALWAYS 0xFF /* ->updateDist: read signed by BuildActiveActorList, so
                                   * a negative radius keeps the actor updating anywhere */
@@ -100,7 +118,7 @@ typedef struct Actor {
                                   * updates while it was drawn last frame */
 #define VIS_ZONE_ALWAYS 0xFF     /* ->visZone: no vis-zone gate, always drawn */
 #define DROP_GEM_ROLL 0xFF       /* ->dropKind: a random gem roll (and counts in the
-                                  * running kill set, IsActorInRunningKillSet) */
+                                  * checkpoint kill set, IsActorInCheckpointKillSet) */
 
 /* Actor.flags hit bits that Spyro's attacks raise through
  * DispatchActorContactAtSphere (AdvanceSpyroPhysics, TickSpyroAttackEffects). */
@@ -156,6 +174,12 @@ typedef struct Actor {
 /* Actor.killGroup: the group number, and bit 7, which latches the death drop. */
 #define ACTOR_KILL_GROUP_MASK 0x7F
 #define ACTOR_KILL_DROPPED 0x80
+/* Kill groups BuildLoadedLevelRuntime treats specially when it reloads a level
+ * whose saved kill bitmap has the actor. Other groups >= 0x20 despawn if they
+ * died before the last checkpoint and otherwise respawn as a gem roll; groups
+ * < 0x20 respawn as long as one member survived the checkpoint. */
+#define ACTOR_KILL_GROUP_NEVER_RESPAWN 0x7D  /* any saved kill despawns it */
+#define ACTOR_KILL_GROUP_ALWAYS_RESPAWN 0x7E /* always back, as a gem roll */
 /* Actor.renderList sign bit: draw through BuildSecondaryActorDrawList, which
  * builds the rotation from the euler bytes, instead of the main mesh list. */
 #define ACTOR_RENDER_SECONDARY 0x80

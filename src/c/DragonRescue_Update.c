@@ -11,6 +11,7 @@
 #include "model.h"
 #include "pad_buttons.h"
 #include "sample_bank.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 /* Matching notes. Several accesses are spelled to control the scheduler's
@@ -172,8 +173,8 @@ void DragonRescue_Update(void) {
       }
       g_nSpyroSuperflameTimerSave = g_nSpyroSuperflameTimer;
       ResetSpyroEntity(RESET_SPYRO_FULL);
-      g_bSpyroAnimPrev = 1;
-      g_bSpyroAnimCurrent = 1;
+      g_bSpyroAnimPrev = SPYRO_ANIMID_WALK;
+      g_bSpyroAnimCurrent = SPYRO_ANIMID_WALK;
       g_bSpyroAnimFrame = 1;
       g_bSpyroFramePrev = 0;
       g_bSpyroSubFrameTimer = 0;
@@ -288,7 +289,7 @@ void DragonRescue_Update(void) {
         if (g_nDragonRescueTimer >= land &&
             g_nDragonRescueTimer - g_nFrameStep < land) {
           g_bSpyroFramePrev = g_bSpyroAnimFrame;
-          g_bSpyroAnimCurrent = 3;
+          g_bSpyroAnimCurrent = SPYRO_ANIMID_STOP;
           g_bSpyroAnimFrame = 0;
           g_bSpyroSubFrameTimer = 0;
           g_nSpyroAnimPlayRate = 0xC;
@@ -332,7 +333,7 @@ void DragonRescue_Update(void) {
       g_nDragonRescueSubstate = DRAGON_RESCUE_LOAD_WAIT;
       g_bSpyroSubFrameTimer = 4;
       g_nDragonRescueTimer = 0;
-      g_bSpyroAnimCurrent = 0;
+      g_bSpyroAnimCurrent = SPYRO_ANIMID_IDLE;
       g_bSpyroAnimFrame = 0;
       g_nSpyroAnimPlayRate = 4;
       g_abSpyroPersistentEuler[2] = (int)g_dwDragonRescueOrbitTargetYaw >> 4;
@@ -626,8 +627,8 @@ void DragonRescue_Update(void) {
               ->m_NumFrames -
           1;
       MIRROR->frameProgress = 0;
-      g_bSpyroAnimPrev = 0;
-      g_bSpyroAnimCurrent = 0;
+      g_bSpyroAnimPrev = SPYRO_ANIMID_IDLE;
+      g_bSpyroAnimCurrent = SPYRO_ANIMID_IDLE;
       g_bSpyroFramePrev = 0;
       g_bSpyroAnimFrame = 1;
       g_bSpyroSubFrameTimer = 0;

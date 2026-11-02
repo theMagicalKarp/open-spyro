@@ -6,6 +6,7 @@
 #include "main_shared.h"
 #include "match_asm.h"
 #include "pad.h"
+#include "pad_buttons.h"
 #include "sdata.h"
 #include "spyro_block.h"
 #include "spyro_state.h"
@@ -57,15 +58,15 @@ static inline int *Opaque(int *p) {
     x = PADB[0x16] - 0x7F;                                                     \
     y = 0x7F - PADB[0x17];                                                     \
   } else {                                                                     \
-    if (g_pPadSubstepState->held & 0x1000) {                                   \
+    if (g_pPadSubstepState->held & PAD_UP) {                                   \
       y = 0x7F;                                                                \
     } else {                                                                   \
-      y = (g_pPadSubstepState->held & 0x4000) ? -0x7F : 0;                     \
+      y = (g_pPadSubstepState->held & PAD_DOWN) ? -0x7F : 0;                   \
     }                                                                          \
-    if (g_pPadSubstepState->held & 0x2000) {                                   \
+    if (g_pPadSubstepState->held & PAD_RIGHT) {                                \
       x = 0x7F;                                                                \
     } else {                                                                   \
-      x = (g_pPadSubstepState->held & 0x8000) ? -0x7F : 0;                     \
+      x = (g_pPadSubstepState->held & PAD_LEFT) ? -0x7F : 0;                   \
     }                                                                          \
   }
 
@@ -414,8 +415,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         AddVector(vel, vel, nudge);
       }
     }
-    if (t < 0xD && g_nSpyroSubstate == 0 &&
-        ((g_pPadSubstepState->held & 0x40) || g_bSpyroJumpHoldForced != 0)) {
+    if (t < 0xD && g_nSpyroSubstate == SPYRO_SUB_JUMP_RISING &&
+        ((g_pPadSubstepState->held & PAD_CROSS) ||
+         g_bSpyroJumpHoldForced != 0)) {
       int c;
       int v;
 
@@ -714,12 +716,12 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           x = PADB[0x16] - 0x7F;
           y = 0x7F - PADB[0x17];
         } else {
-          if (g_pPadSubstepState->held & 0x1000) {
+          if (g_pPadSubstepState->held & PAD_UP) {
             g_nSpyroMotionAux += 0x10;
             if (g_nSpyroMotionAux >= 0x80) {
               g_nSpyroMotionAux = 0x7F;
             }
-          } else if (g_pPadSubstepState->held & 0x4000) {
+          } else if (g_pPadSubstepState->held & PAD_DOWN) {
             g_nSpyroMotionAux -= 0x10;
             if (g_nSpyroMotionAux < -0x7F) {
               g_nSpyroMotionAux = -0x7F;
@@ -735,12 +737,12 @@ void IntegrateSpyroMotionForSubstep(int substep) {
             g_nSpyroMotionAux += x;
           }
           y = g_nSpyroMotionAux;
-          if (g_pPadSubstepState->held & 0x2000) {
+          if (g_pPadSubstepState->held & PAD_RIGHT) {
             g_nSpyroTurnRateAccum += 0x10;
             if (g_nSpyroTurnRateAccum >= 0x80) {
               g_nSpyroTurnRateAccum = 0x7F;
             }
-          } else if (g_pPadSubstepState->held & 0x8000) {
+          } else if (g_pPadSubstepState->held & PAD_LEFT) {
             g_nSpyroTurnRateAccum -= 0x10;
             if (g_nSpyroTurnRateAccum < -0x7F) {
               g_nSpyroTurnRateAccum = -0x7F;
@@ -1632,14 +1634,14 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       }
       a = g_nSpyroBodyYawStep;
     } else {
-      if (g_pPadSubstepState->held & 0x8000) {
+      if (g_pPadSubstepState->held & PAD_LEFT) {
         if (g_nSpyroBodyYawStep < 0) {
           g_nSpyroBodyYawStep = 0;
         }
         if (g_nSpyroBodyYawStep < 6) {
           g_nSpyroBodyYawStep++;
         }
-      } else if (g_pPadSubstepState->held & 0x2000) {
+      } else if (g_pPadSubstepState->held & PAD_RIGHT) {
         if (g_nSpyroBodyYawStep > 0) {
           g_nSpyroBodyYawStep = 0;
         }

@@ -1190,27 +1190,27 @@ void Level29_UpdateActors(void) {
 
         switch (SPY.sparxHealth) {
         case SPARX_GREEN:
-          if (actor->nextAnim != 0) {
-            if (actor->anim != 0) {
+          if (actor->nextAnim != SPARX_ANIM_GREEN) {
+            if (actor->anim != SPARX_ANIM_GREEN) {
               g_nActorAnimDone = 0;
-              ANIM_RESET(actor, 0);
+              ANIM_RESET(actor, SPARX_ANIM_GREEN);
             }
           }
           break;
         case SPARX_BLUE:
-          if (actor->nextAnim != 2) {
-            if (actor->anim != 2) {
+          if (actor->nextAnim != SPARX_ANIM_BLUE) {
+            if (actor->anim != SPARX_ANIM_BLUE) {
               g_nActorAnimDone = 0;
-              ANIM_RESET(actor, 2);
+              ANIM_RESET(actor, SPARX_ANIM_BLUE);
             }
           }
 
           break;
         case SPARX_GOLD:
-          if (actor->nextAnim != 4) {
-            if (actor->anim != 4) {
+          if (actor->nextAnim != SPARX_ANIM_GOLD) {
+            if (actor->anim != SPARX_ANIM_GOLD) {
               g_nActorAnimDone = 0;
-              ANIM_RESET(actor, 4);
+              ANIM_RESET(actor, SPARX_ANIM_GOLD);
             }
           }
           break;
@@ -1239,7 +1239,7 @@ void Level29_UpdateActors(void) {
         PlayActorMeshVoice(actor, 0, 0);
         g_pfnLevelSpawnActor(ACTOR_TYPE_BOBBER_SPINOFF, actor);
         actor->mode = FTARGET_STRUCK;
-        ANIM_RESET(actor, 1);
+        ANIM_RESET(actor, FTARGET_STRUCK);
         break;
       }
 

@@ -39,21 +39,21 @@ void StoryIntro_Draw(void) {
     col[2] = 0x1600;
     if (g_nTitleExitPath == TITLE_EXIT_NEW_GAME) {
       pos[0] = 0x5C;
-      BuildTextSprites(g_szInTheWorldOfDragons, pos, col, 0x10, 0xB);
+      BuildTextSprites(g_szInTheWorldOfDragons, pos, col, 0x10, TINT_HUD);
       limit = 0xB8;
     } else if (g_nTitleExitPath == TITLE_EXIT_LOADED_GAME) {
       if (g_abLevelVisitedFlag[0] != 0) {
         pos[0] = 0x50;
-        BuildTextSprites(g_szTheAdventureContinues, pos, col, 0x10, 0xB);
+        BuildTextSprites(g_szTheAdventureContinues, pos, col, 0x10, TINT_HUD);
         limit = 0xBC;
       } else {
         pos[0] = 0x64;
-        BuildTextSprites(g_szTheAdventureBegins, pos, col, 0x10, 0xB);
+        BuildTextSprites(g_szTheAdventureBegins, pos, col, 0x10, TINT_HUD);
         limit = 0xB6;
       }
     } else {
       pos[0] = 0x68;
-      BuildTextSprites(g_szEnteringDemoMode, pos, col, 0x10, 0xB);
+      BuildTextSprites(g_szEnteringDemoMode, pos, col, 0x10, TINT_HUD);
       limit = 0xB2;
     }
 

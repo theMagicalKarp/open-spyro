@@ -267,7 +267,7 @@ void Level30_UpdateActors(void) {
             } else {
               SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             }
-            MarkActorCommittedKill(actor);
+            MarkActorLiveKill(actor);
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = SFX_OVERRIDE_PITCH;
             g_nSfxOverridePitch.v =
@@ -1481,23 +1481,23 @@ void Level30_UpdateActors(void) {
 
           switch (SPY.sparxHealth) {
           case SPARX_GREEN:
-            if (actor->nextAnim != 0 && actor->anim != 0) {
+            if (actor->nextAnim != SPARX_ANIM_GREEN && actor->anim != SPARX_ANIM_GREEN) {
               g_nActorAnimDone = 0;
-              ANIM_RESET(actor, 0);
+              ANIM_RESET(actor, SPARX_ANIM_GREEN);
             }
             break;
 
           case SPARX_BLUE:
-            if (actor->nextAnim != 2 && actor->anim != 2) {
+            if (actor->nextAnim != SPARX_ANIM_BLUE && actor->anim != SPARX_ANIM_BLUE) {
               g_nActorAnimDone = 0;
-              ANIM_RESET(actor, 2);
+              ANIM_RESET(actor, SPARX_ANIM_BLUE);
             }
             break;
 
           case SPARX_GOLD:
-            if (actor->nextAnim != 4 && actor->anim != 4) {
+            if (actor->nextAnim != SPARX_ANIM_GOLD && actor->anim != SPARX_ANIM_GOLD) {
               g_nActorAnimDone = 0;
-              ANIM_RESET(actor, 4);
+              ANIM_RESET(actor, SPARX_ANIM_GOLD);
             }
             break;
           }
@@ -1633,7 +1633,7 @@ void Level30_UpdateActors(void) {
         g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x20);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
         continue;
       }
@@ -1702,7 +1702,7 @@ void Level30_UpdateActors(void) {
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
@@ -1784,11 +1784,11 @@ void Level30_UpdateActors(void) {
         }
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         actor->mode = CRITTER_KNOCKED;
 
-        if (actor->nextAnim != 1) {
-          ANIM_ADVANCE(actor, 1);
+        if (actor->nextAnim != CRITTER_KNOCKED) {
+          ANIM_ADVANCE(actor, CRITTER_KNOCKED);
         }
       } else {
         switch (actor->mode) {
@@ -1796,8 +1796,8 @@ void Level30_UpdateActors(void) {
           UpdateActorWander(actor, &st->wander);
           if (TICK_DOWN(st->rest) != 0) {
             actor->mode = CRITTER_REST;
-            if (actor->nextAnim != 2) {
-              ANIM_ADVANCE(actor, 2);
+            if (actor->nextAnim != CRITTER_REST) {
+              ANIM_ADVANCE(actor, CRITTER_REST);
             }
           } else {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
@@ -1822,8 +1822,8 @@ void Level30_UpdateActors(void) {
           if (g_nActorAnimDone != 0) {
             st->rest = RandomIntInRange(0x5A, 0x12C);
             actor->mode = CRITTER_WANDER;
-            if (actor->nextAnim != 0) {
-              ANIM_ADVANCE(actor, 0);
+            if (actor->nextAnim != CRITTER_WANDER) {
+              ANIM_ADVANCE(actor, CRITTER_WANDER);
             }
           } else {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
@@ -2300,7 +2300,7 @@ void Level30_UpdateActors(void) {
         if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
           SetSpawnAnchorFromActor(actor, actor->rotZ);
           actor->mode = CHECKPT_FLASH;
-          actor->anim = 1;
+          actor->anim = CHECKPT_ANIM_FLASH;
           actor->subMode = 0;
           continue;
         }
@@ -2315,7 +2315,7 @@ void Level30_UpdateActors(void) {
           break;
         }
         actor->mode = CHECKPT_REARM;
-        actor->anim = 0;
+        actor->anim = CHECKPT_ANIM_REST;
         continue;
       }
       }

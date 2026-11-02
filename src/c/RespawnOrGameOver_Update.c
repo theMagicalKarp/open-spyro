@@ -79,8 +79,8 @@ void RespawnOrGameOver_Update(void) {
         g_nCameraEulerPitch = g_anGameOverCameraEuler[0];
         g_nCameraEulerYaw = g_anGameOverCameraEuler[1];
         ResetSpyroEntity(RESET_SPYRO_FULL);
-        g_bSpyroAnimPrev = 0x10;
-        g_bSpyroAnimCurrent = 0x10;
+        g_bSpyroAnimPrev = SPYRO_ANIMID_GLIDE;
+        g_bSpyroAnimCurrent = SPYRO_ANIMID_GLIDE;
         g_bSpyroAnimFrame = 1;
         g_nExtraLives = 4;
         g_nSparxFoodCount = 0;
@@ -115,7 +115,7 @@ void RespawnOrGameOver_Update(void) {
       if (g_nRespawnOrGameOverFrame < 0x164) {
         AdvanceSpyroAnimFrame(3);
       } else {
-        g_bSpyroAnimCurrent = 0xe;
+        g_bSpyroAnimCurrent = SPYRO_ANIMID_TEETER;
         g_bSpyroAnimFrame = 0;
         g_bSpyroSubFrameTimer = g_nRespawnOrGameOverFrame - 0x64;
         g_abSpyroPersistentEuler[1] =
@@ -127,8 +127,8 @@ void RespawnOrGameOver_Update(void) {
     }
     if (g_nRespawnOrGameOverFrame >= 0x174) {
       if (g_nRespawnOrGameOverFrame == 0x174) {
-        g_bSpyroAnimPrev = 0xe;
-        g_bSpyroAnimCurrent = 0xe;
+        g_bSpyroAnimPrev = SPYRO_ANIMID_TEETER;
+        g_bSpyroAnimCurrent = SPYRO_ANIMID_TEETER;
         g_bSpyroFramePrev = 0;
         g_bSpyroAnimFrame = 1;
         g_bSpyroSubFrameTimer = 0;

@@ -262,7 +262,7 @@ void Level29_FlightResults_Draw(void)
       pos[0] = 0x10C - (strlen((char *)buf) * 0xC);
       pos[1] = 0x1E;
       pos[2] = 0xC00;
-      BuildTextSpriteChain(buf, pos, 0x18, 0xB);
+      BuildTextSpriteChain(buf, pos, 0x18, TINT_HUD);
       fp = g_pSpriteRecordWriteCursor - 1;
       g_pSpriteRecordWriteCursor = fp;
       FillWord(fp, 0, 0x58);
@@ -276,20 +276,20 @@ void Level29_FlightResults_Draw(void)
       }
       g_pSpriteRecordWriteCursor->rotZ = g_dwHudBobSinePhase;
       g_pSpriteRecordWriteCursor->otBias = 0x7F;
-      g_pSpriteRecordWriteCursor->tintMode = 0xB;
+      g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = 0xFF;
       EmitRadialShadedLine(0x3C, 0x2E, 0x1C4, 0x2E);
       pos[0] = 0x64;
       pos[1] = 0x3C;
       pos[2] = 0x1100;
-      BuildTextSpriteChain(g_apFlightRowTitles[g_nActiveWorldIndex * 4], pos, 0x12, 0xB);
+      BuildTextSpriteChain(g_apFlightRowTitles[g_nActiveWorldIndex * 4], pos, 0x12, TINT_HUD);
       if (g_nSubMenuCursor > 0)
       {
         sprintf(buf, "%d/8", g_anFlightTargetTally);
         pos[0] = 0x140;
         pos[1] = 0x3C;
         pos[2] = 0x1100;
-        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, TINT_HUD);
       }
       if (g_nSubMenuCursor >= 2)
       {
@@ -315,7 +315,7 @@ void Level29_FlightResults_Draw(void)
         pos[0] = 0x1E0 - (strlen((char *)buf) * 0x12);
         pos[1] = 0x3C;
         pos[2] = 0x1100;
-        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, TINT_HUD);
         if (g_nFlightResultsRevealStep < 2)
         {
           PlaySoundEffect(g_pLevelSampleBankHeader[snd], (Actor *)g_anSpyroWorldPos, SFX_MODE_PANNED, 0);
@@ -325,14 +325,14 @@ void Level29_FlightResults_Draw(void)
       pos[0] = 0x64;
       pos[1] = 0x50;
       pos[2] = 0x1100;
-      BuildTextSpriteChain(g_apFlightRowTitles_r1[g_nActiveWorldIndex * 4], pos, 0x12, 0xB);
+      BuildTextSpriteChain(g_apFlightRowTitles_r1[g_nActiveWorldIndex * 4], pos, 0x12, TINT_HUD);
       if (g_nSubMenuCursor >= 3)
       {
         sprintf(buf, "%d/8", g_nFlightTargetTally1);
         pos[0] = 0x140;
         pos[1] = 0x50;
         pos[2] = 0x1100;
-        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, TINT_HUD);
       }
       if (g_nSubMenuCursor >= 4)
       {
@@ -358,7 +358,7 @@ void Level29_FlightResults_Draw(void)
         pos[0] = 0x1E0 - (strlen((char *)buf) * 0x12);
         pos[1] = 0x50;
         pos[2] = 0x1100;
-        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, TINT_HUD);
         if (g_nFlightResultsRevealStep < 4)
         {
           PlaySoundEffect(g_pLevelSampleBankHeader[snd], (Actor *)g_anSpyroWorldPos, SFX_MODE_PANNED, 0);
@@ -368,14 +368,14 @@ void Level29_FlightResults_Draw(void)
       pos[0] = 0x64;
       pos[1] = 0x64;
       pos[2] = 0x1100;
-      BuildTextSpriteChain(g_apFlightRowTitles_r2[g_nActiveWorldIndex * 4], pos, 0x12, 0xB);
+      BuildTextSpriteChain(g_apFlightRowTitles_r2[g_nActiveWorldIndex * 4], pos, 0x12, TINT_HUD);
       if (g_nSubMenuCursor >= 5)
       {
         sprintf(buf, "%d/8", g_nFlightTargetTally2);
         pos[0] = 0x140;
         pos[1] = 0x64;
         pos[2] = 0x1100;
-        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, TINT_HUD);
       }
       if (g_nSubMenuCursor >= 6)
       {
@@ -401,7 +401,7 @@ void Level29_FlightResults_Draw(void)
         pos[0] = 0x1E0 - (strlen((char *)buf) * 0x12);
         pos[1] = 0x64;
         pos[2] = 0x1100;
-        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, TINT_HUD);
         if (g_nFlightResultsRevealStep < 6)
         {
           PlaySoundEffect(g_pLevelSampleBankHeader[snd], (Actor *)g_anSpyroWorldPos, SFX_MODE_PANNED, 0);
@@ -411,14 +411,14 @@ void Level29_FlightResults_Draw(void)
       pos[0] = 0x64;
       pos[1] = 0x78;
       pos[2] = 0x1100;
-      BuildTextSpriteChain(g_apFlightRowTitles_r3[g_nActiveWorldIndex * 4], pos, 0x12, 0xB);
+      BuildTextSpriteChain(g_apFlightRowTitles_r3[g_nActiveWorldIndex * 4], pos, 0x12, TINT_HUD);
       if (g_nSubMenuCursor >= 7)
       {
         sprintf(buf, "%d/8", g_nFlightTargetTally3);
         pos[0] = 0x140;
         pos[1] = 0x78;
         pos[2] = 0x1100;
-        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, TINT_HUD);
       }
       if (g_nSubMenuCursor >= 8)
       {
@@ -444,7 +444,7 @@ void Level29_FlightResults_Draw(void)
         pos[0] = 0x1E0 - (strlen((char *)buf) * 0x12);
         pos[1] = 0x78;
         pos[2] = 0x1100;
-        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, TINT_HUD);
         if (g_nFlightResultsRevealStep < 8)
         {
           PlaySoundEffect(g_pLevelSampleBankHeader[snd], (Actor *)g_anSpyroWorldPos, SFX_MODE_PANNED, 0);
@@ -454,7 +454,7 @@ void Level29_FlightResults_Draw(void)
       pos[0] = 0x64;
       pos[1] = 0x8C;
       pos[2] = 0x1100;
-      BuildTextSpriteChain("ALL IN ONE", pos, 0x12, 0xB);
+      BuildTextSpriteChain("ALL IN ONE", pos, 0x12, TINT_HUD);
       if (g_nSubMenuCursor >= FLIGHT_REVEAL_ALL)
       {
         if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == 0x20)
@@ -479,7 +479,7 @@ void Level29_FlightResults_Draw(void)
         pos[0] = 0x1E0 - (strlen((char *)buf) * 0x12);
         pos[1] = 0x8C;
         pos[2] = 0x1100;
-        BuildTextSpriteChain(buf, pos, 0x12, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x12, TINT_HUD);
         if (g_nFlightResultsRevealStep < 9)
         {
           PlaySoundEffect(g_pLevelSampleBankHeader[snd], (Actor *)g_anSpyroWorldPos, SFX_MODE_PANNED, 0);
@@ -490,12 +490,12 @@ void Level29_FlightResults_Draw(void)
       pos[0] = 0x64;
       pos[1] = 0xA0;
       pos[2] = 0x1100;
-      BuildTextSpriteChain("TOTAL", pos, 0x12, 0xB);
+      BuildTextSpriteChain("TOTAL", pos, 0x12, TINT_HUD);
       sprintf(buf, "%d", bonus);
       pos[0] = 0x1E0 - (strlen((char *)buf) * 0x12);
       pos[1] = 0xA0;
       pos[2] = 0x1100;
-      BuildTextSpriteChain(buf, pos, 0x12, 0xB);
+      BuildTextSpriteChain(buf, pos, 0x12, TINT_HUD);
       EmitRadialShadedLine(0x3C, 0xB0, 0x1C4, 0xB0);
       if (g_nSubMenuCursor >= FLIGHT_REVEAL_ALL)
       {
@@ -504,7 +504,7 @@ void Level29_FlightResults_Draw(void)
           pos[0] = 0x50;
           pos[1] = 0xD2;
           pos[2] = 0x1100;
-          BuildTextSpriteChain("PRESS   TO CONTINUE", pos, 0x12, 0xB);
+          BuildTextSpriteChain("PRESS   TO CONTINUE", pos, 0x12, TINT_HUD);
           pos[0] = 0xBC;
           BuildTextSpriteChain("X", pos, 0x12, 0xA);
         }
@@ -518,7 +518,7 @@ void Level29_FlightResults_Draw(void)
           pos[0] = 0x8C;
           pos[1] = 0xBE;
           pos[2] = 0x1100;
-          BuildTextSpriteChain("TRY AGAIN?", pos, 0x12, 0xB);
+          BuildTextSpriteChain("TRY AGAIN?", pos, 0x12, TINT_HUD);
           blink = 0;
           pos[0] = 0x15C;
           pos[1] = 0xBE;
@@ -599,12 +599,12 @@ void Level29_FlightResults_Draw(void)
       pos[0] = 0x88;
       pos[1] = 0x28;
       pos[2] = 0xC00;
-      BuildTextSpriteChain("TIME ATTACK", pos, 0x18, 0xB);
+      BuildTextSpriteChain("TIME ATTACK", pos, 0x18, TINT_HUD);
       EmitRadialShadedLine(0x3C, 0x3D, 0x1C4, 0x3D);
       pos[0] = 0x140;
       pos[1] = 0x50;
       pos[2] = 0x1100;
-      BuildTextSpriteChain("BEST TIME", pos, 0x12, 0xB);
+      BuildTextSpriteChain("BEST TIME", pos, 0x12, TINT_HUD);
       pos[0] = 0x191;
       pos[1] = 0x64;
       pos[2] = 0x1100;
@@ -612,7 +612,7 @@ void Level29_FlightResults_Draw(void)
       pos[0] = 0x38;
       pos[1] = 0x50;
       pos[2] = 0x1100;
-      BuildTextSpriteChain("YOUR TIME", pos, 0x12, 0xB);
+      BuildTextSpriteChain("YOUR TIME", pos, 0x12, TINT_HUD);
       pos[0] = 0x89;
       pos[1] = 0x64;
       pos[2] = 0x1100;
@@ -658,7 +658,7 @@ void Level29_FlightResults_Draw(void)
         pos[0] = 0x10C - (count * 0xC);
         pos[1] = 0x96;
         pos[2] = 0xC00;
-        BuildTextSpriteChain(buf, pos, 0x18, 0xB);
+        BuildTextSpriteChain(buf, pos, 0x18, TINT_HUD);
         rec = g_pSpriteRecordWriteCursor;
         i = 0;
         if (count > 0)
@@ -703,7 +703,7 @@ void Level29_FlightResults_Draw(void)
       pos[1] = 0xBE;
       pos[2] = 0x1100;
       pp = pos;
-      BuildTextSpriteChain("TRY AGAIN", pp, 0x12, 0xB);
+      BuildTextSpriteChain("TRY AGAIN", pp, 0x12, TINT_HUD);
       blink = 0;
       pos[0] = 0x154;
       pos[1] = 0xBE;

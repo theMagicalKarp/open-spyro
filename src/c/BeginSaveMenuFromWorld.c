@@ -6,6 +6,7 @@
 #include "sample_bank.h"
 #include "save_menu.h"
 #include "spyro_block.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 /* g_abSpyroAnimPrevBlock as an INT array — +0 anim-prev byte, -6 words
@@ -65,7 +66,7 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   g_abSpyroAnimPrevBlock[0] = 1;
   EBB_BREAK();
   py = g_nSpyroWorldPosY;
-  *(volatile unsigned char *)&g_bSpyroAnimCurrent = 1;
+  *(volatile unsigned char *)&g_bSpyroAnimCurrent = SPYRO_ANIMID_WALK;
   *(volatile unsigned char *)&g_bSpyroFramePrev = 0;
   *(volatile unsigned char *)&g_bSpyroAnimFrame = 1;
   *(volatile unsigned char *)&g_bSpyroSubFrameTimer = 0;

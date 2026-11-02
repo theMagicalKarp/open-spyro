@@ -1011,7 +1011,7 @@
    "size": 60
   },
   {
-   "name": "IsActorInRunningKillSet",
+   "name": "IsActorInCheckpointKillSet",
    "vram": 2147714196,
    "size": 136
   },
@@ -1201,7 +1201,7 @@
    "size": 152
   },
   {
-   "name": "MarkActorCommittedKill",
+   "name": "MarkActorLiveKill",
    "vram": 2147727296,
    "size": 148
   },

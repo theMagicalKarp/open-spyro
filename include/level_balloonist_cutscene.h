@@ -11,6 +11,7 @@
 #include "actor_type.h"
 #include "actor_states.h"
 #include "actor_cutscene.h"
+#include "spyro_state.h"
 
 extern void CopyWords(void *dst, void *src, int len);
 

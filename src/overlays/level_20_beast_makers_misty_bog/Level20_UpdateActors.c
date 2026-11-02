@@ -409,7 +409,7 @@ void Level20_UpdateActors(void) {
         }
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         ENTER_POSE_B(actor, GUNNER_KNOCKED);
       }
       actor->flags = 0;
@@ -1614,23 +1614,23 @@ void Level20_UpdateActors(void) {
 
           switch (SPY.sparxHealth) {
           case SPARX_GREEN:
-            if (actor->nextAnim != 0 && actor->anim != 0) {
+            if (actor->nextAnim != SPARX_ANIM_GREEN && actor->anim != SPARX_ANIM_GREEN) {
               g_nActorAnimDone = 0;
-              ANIM_RESET(actor, 0);
+              ANIM_RESET(actor, SPARX_ANIM_GREEN);
             }
             break;
 
           case SPARX_BLUE:
-            if (actor->nextAnim != 2 && actor->anim != 2) {
+            if (actor->nextAnim != SPARX_ANIM_BLUE && actor->anim != SPARX_ANIM_BLUE) {
               g_nActorAnimDone = 0;
-              ANIM_RESET(actor, 2);
+              ANIM_RESET(actor, SPARX_ANIM_BLUE);
             }
             break;
 
           case SPARX_GOLD:
-            if (actor->nextAnim != 4 && actor->anim != 4) {
+            if (actor->nextAnim != SPARX_ANIM_GOLD && actor->anim != SPARX_ANIM_GOLD) {
               g_nActorAnimDone = 0;
-              ANIM_RESET(actor, 4);
+              ANIM_RESET(actor, SPARX_ANIM_GOLD);
             }
             break;
           }
@@ -1659,7 +1659,7 @@ void Level20_UpdateActors(void) {
           *st->chargeLock = 0;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         ENTER_POSE(actor, CHARGER_KNOCKED);
       }
       if (st->init == 0) {
@@ -1667,7 +1667,7 @@ void Level20_UpdateActors(void) {
         if (st->lurk != 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
           if (actor->dropKind != DROP_GEM_ROLL) {
             SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-            MarkActorCommittedKill(actor);
+            MarkActorLiveKill(actor);
           }
           DespawnActorRecord(actor);
           continue;
@@ -2066,7 +2066,7 @@ void Level20_UpdateActors(void) {
         g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x20);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
         continue;
       }
@@ -2135,7 +2135,7 @@ void Level20_UpdateActors(void) {
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
@@ -2477,10 +2477,10 @@ void Level20_UpdateActors(void) {
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
-          g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (st->prize->type - 0x53));
-          PlayActorMeshVoice(actor, 0, 0);
+          g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (st->prize->type - ACTOR_TYPE_GEM_1));
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_OPEN, 0);
           actor->mode = SEEDPOD_OPEN;
-          ANIM_RESET(actor, 1);
+          ANIM_RESET(actor, SEEDPOD_OPEN);
           continue;
         }
         if (st->timer >= 0xF8) {
@@ -2525,7 +2525,7 @@ void Level20_UpdateActors(void) {
             (g_nSpyroState == SPYRO_ST_CHARGE_AIR && (g_nSpyroSubstate & SPYRO_SUB_SUPERCHARGE))) {
           CollectPickupActor(st->prize);
           DespawnActorRecord(st->prize);
-          PlayActorMeshVoice(actor, 2, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_BURST, 0);
           for (i = 0; i < 2; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
@@ -2546,7 +2546,7 @@ void Level20_UpdateActors(void) {
         }
         if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = COLLECT_BOUNCE;
-          PlayActorMeshVoice(actor, 2, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_BURST, 0);
           for (i = 0; i < 2; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
@@ -2586,9 +2586,9 @@ void Level20_UpdateActors(void) {
           actor->rotY = st->rotY;
           actor->posZ = st->restZ;
           st->timer = 0;
-          PlayActorMeshVoice(actor, 1, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_CLOSE, 0);
           actor->mode = SEEDPOD_CLOSED;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, SEEDPOD_CLOSED);
           continue;
         }
         break;
@@ -2622,7 +2622,7 @@ void Level20_UpdateActors(void) {
         if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
           SetSpawnAnchorFromActor(actor, actor->rotZ);
           actor->mode = CHECKPT_FLASH;
-          actor->anim = 1;
+          actor->anim = CHECKPT_ANIM_FLASH;
           actor->subMode = 0;
           continue;
         }
@@ -2638,7 +2638,7 @@ void Level20_UpdateActors(void) {
           break;
         }
         actor->mode = CHECKPT_REARM;
-        actor->anim = 0;
+        actor->anim = CHECKPT_ANIM_REST;
         continue;
       }
       }
@@ -2716,7 +2716,7 @@ void Level20_UpdateActors(void) {
         }
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       }
       actor->flags = 0;
@@ -2851,7 +2851,7 @@ void Level20_UpdateActors(void) {
           }
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         ENTER_POSE(actor, LURKER_KNOCKED);
       }
 
@@ -3077,7 +3077,7 @@ void Level20_UpdateActors(void) {
           actor->mode = LIFECHEST_OPEN;
           actor->frameProgress = 8;
           actor->frameRate = 8;
-          actor->nextAnim = 1;
+          actor->nextAnim = LIFECHEST_OPEN;
 
           st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
@@ -3089,7 +3089,7 @@ void Level20_UpdateActors(void) {
           st->passenger->drawn = 0;
           st->passenger->otBias = 5;
 
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, LIFECHEST_VOICE_OPEN, 0);
         } else if (st->phase >= 0x1A0) {
           actor->rotX = g_aShakeRotOffsets[LIFECHEST_SHAKE_STEP(st)].a + st->savedRotX;
           actor->rotY = g_aShakeRotOffsets[LIFECHEST_SHAKE_STEP(st)].b + st->savedRotY;
@@ -3104,7 +3104,7 @@ void Level20_UpdateActors(void) {
           actor->posZ = st->savedPosZ + (a + b) * 6;
 
           if (actor->voiceRow == VOICE_ROW_NONE) {
-            PlayActorMeshVoice(actor, 1, 0);
+            PlayActorMeshVoice(actor, LIFECHEST_VOICE_RATTLE, 0);
           }
         } else if (st->phase >= 0x19C) {
           /* Just before the shake: remember the rest pose. */
@@ -3116,7 +3116,7 @@ void Level20_UpdateActors(void) {
           }
         }
       } else {
-        if (actor->anim == 1) {
+        if (actor->anim == LIFECHEST_OPEN) {
           st->phase += g_nFrameStep;
           st->passenger->cullRadius = 0x10;
           st->passenger->updateDist = ACTOR_UPDATE_ALWAYS;
@@ -3128,9 +3128,9 @@ void Level20_UpdateActors(void) {
           actor->frameProgress = 8;
           actor->frameRate = 8;
           actor->mode = LIFECHEST_CLOSED;
-          actor->nextAnim = 0;
+          actor->nextAnim = LIFECHEST_CLOSED;
           if (actor->voiceRow == VOICE_ROW_NONE) {
-            PlayActorMeshVoice(actor, 3, 0);
+            PlayActorMeshVoice(actor, LIFECHEST_VOICE_CLOSE, 0);
           }
         }
       }
@@ -3145,7 +3145,7 @@ void Level20_UpdateActors(void) {
       }
 
       actor->soundRange = 0x20;
-      PlayActorMeshVoice(actor, 4, 0);
+      PlayActorMeshVoice(actor, LIFECHEST_VOICE_BREAK, 0);
 
       /* Fragment bursts; each stops early once the dynamic pool is full. */
       for (i = 0; i < 2; i++) {
@@ -3176,7 +3176,7 @@ void Level20_UpdateActors(void) {
         DespawnActorRecord(st->passenger);
       }
 
-      PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[2], actor, SFX_MODE_3D,
+      PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[LIFECHEST_VOICE_BURST], actor, SFX_MODE_3D,
                     (void *)(long)actor->voiceRow);
       DespawnActorRecord(actor);
       continue;
@@ -3302,7 +3302,7 @@ void Level20_UpdateActors(void) {
             st->lift += 0x32;
           }
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
         }
         if (actor->nextAnim != RAM_KNOCKED) {
           g_nActorAnimDone = 0;
@@ -3394,7 +3394,7 @@ void Level20_UpdateActors(void) {
           st->speed = 0;
           st->lift = 0;
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           ENTER_POSE(actor, RAM_KNOCKED);
         }
         if (actor->nextFrame >= 0xF) {
@@ -3446,7 +3446,7 @@ void Level20_UpdateActors(void) {
           ANIM_RESET(o, 0xA);
         }
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         st->knockSpeed = 0x15E;
         if (actor->mode >= GRABBER_SEIZE) {
           g_nSpyroDrawSuppressed = 0;
@@ -3459,12 +3459,12 @@ void Level20_UpdateActors(void) {
           *st->held = 0;
         }
         PlayActorMeshVoice(actor, 1, 0);
-        ANIM_SET(actor, 9);
+        ANIM_SET(actor, GRABBER_ANIM_HIT);
         actor->mode = GRABBER_KNOCKED;
         continue;
       }
       actor->flags = 0;
-      if (actor->nextAnim == 1 &&
+      if (actor->nextAnim == GRABBER_ANIM_EMERGE &&
           GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[2]) == 0) {
         PlayActorMeshVoice(actor, 2, &st->voice);
       }
@@ -3474,21 +3474,21 @@ void Level20_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (d0 > 0x2C00) {
           st->grabChance = 0;
-          ANIM_GO(actor, GRABBER_LURK);
+          ANIM_GO(actor, GRABBER_ANIM_LURK);
         }
         if (TICK_DOWN(st->timer) != 0) {
           int k;
           int r;
 
           if (st->grabChance == 0) {
-            if (actor->nextAnim == 0 && actor->nextFrame >= 0xF) {
+            if (actor->nextAnim == GRABBER_ANIM_LURK && actor->nextFrame >= 0xF) {
               actor->frame = 0;
               actor->nextFrame = 1;
               actor->frameProgress = 0;
             }
-          } else if (actor->nextAnim == 0 && actor->nextFrame >= 0x1C) {
+          } else if (actor->nextAnim == GRABBER_ANIM_LURK && actor->nextFrame >= 0x1C) {
             g_nActorAnimDone = 0;
-            ANIM_ADVANCE(actor, 1);
+            ANIM_ADVANCE(actor, GRABBER_ANIM_EMERGE);
           }
           if (st->grabChance == 0 && d0 < 0x2400) {
             st->grabChance = RandomIntInRange(0, 0x3F) + 0x50;
@@ -3519,9 +3519,9 @@ void Level20_UpdateActors(void) {
         int d1 = ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos);
 
         if (d1 < 0xFA0) {
-          ANIM_GO(actor, 2);
+          ANIM_GO(actor, GRABBER_ANIM_REACH);
         } else {
-          ANIM_GO(actor, 3);
+          ANIM_GO(actor, GRABBER_ANIM_MOVE);
         }
         if (TICK_DOWN(st->timer) != 0) {
           Actor **lp;
@@ -3559,7 +3559,7 @@ void Level20_UpdateActors(void) {
       }
 
       case GRABBER_RETREAT:
-        ANIM_GO(actor, 3);
+        ANIM_GO(actor, GRABBER_ANIM_MOVE);
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(st->home[0] - actor->posX,
                                         st->home[1] - actor->posY, ATAN_ANGLE8),
@@ -3645,7 +3645,7 @@ void Level20_UpdateActors(void) {
       }
 
       case GRABBER_CARRY:
-        ANIM_GO(actor, 4);
+        ANIM_GO(actor, GRABBER_ANIM_CARRY);
         spy->posX = actor->posX;
         spy->posY = actor->posY;
         g_nSpyroDrawSuppressed = 1;
@@ -3656,7 +3656,7 @@ void Level20_UpdateActors(void) {
         break;
 
       case GRABBER_THROW:
-        ANIM_GO(actor, 5);
+        ANIM_GO(actor, GRABBER_ANIM_THROW);
         if (g_nSpyroDrawSuppressed != 0) {
           if (actor->nextFrame >= 0x29) {
             g_nSpyroDrawSuppressed = 0;
@@ -3683,12 +3683,12 @@ void Level20_UpdateActors(void) {
 
       case GRABBER_DEVOUR:
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
-        ANIM_GO(actor, 8);
+        ANIM_GO(actor, GRABBER_ANIM_DEVOUR);
         g_dwSpyroTriggerEventFlags |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_HIT);
         break;
 
       case GRABBER_THROW_SHORT:
-        ANIM_GO(actor, 7);
+        ANIM_GO(actor, GRABBER_ANIM_THROW_SHORT);
         if (g_nSpyroDrawSuppressed != 0) {
           if (actor->nextFrame >= 0x10) {
             g_nSpyroDrawSuppressed = 0;

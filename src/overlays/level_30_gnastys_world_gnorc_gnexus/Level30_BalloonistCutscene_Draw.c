@@ -66,7 +66,7 @@ void Level30_BalloonistCutscene_Draw(void) {
       titleColor[0] = 0x10;
       titleColor[1] = 1;
       titleColor[2] = 0x1400;
-      BuildTextSprites(title, titlePos, titleColor, 0x12, 0xB);
+      BuildTextSprites(title, titlePos, titleColor, 0x12, TINT_HUD);
       for (cursor -= ACTOR_SIZE, titlePhase = 0; cursor >= g_pSpriteRecordWriteCursor;
            cursor -= ACTOR_SIZE, titlePhase += 1) {
         ((Actor *)cursor)->rotZ =
@@ -85,7 +85,7 @@ void Level30_BalloonistCutscene_Draw(void) {
         pageCursor = g_pSpriteRecordWriteCursor;
         while (line < g_abBalloonistDialoguePageEnds[g_nActorCutsceneSubstate[3]]) {
           pagePos[0] = 0x5E;
-          BuildTextSprites(g_apBalloonistDialogueLines[line], pagePos, pageColor, 0x12, 0xB);
+          BuildTextSprites(g_apBalloonistDialogueLines[line], pagePos, pageColor, 0x12, TINT_HUD);
           pagePos[1] += 0x12;
           line += 1;
         }
@@ -114,16 +114,16 @@ void Level30_BalloonistCutscene_Draw(void) {
         menuColor[1] = 1;
         menuPos[1] = 0x24;
         if (g_nActorCutsceneSubstate[4] == 0) {
-          BuildTextSprites("HOP ON, SPYRO!", menuPos, menuColor, 0x10, 0xB);
+          BuildTextSprites("HOP ON, SPYRO!", menuPos, menuColor, 0x10, TINT_HUD);
         } else if (g_nActorCutsceneSubstate[4] == 1) {
-          BuildTextSprites("NEED A LIFT?", menuPos, menuColor, 0x10, 0xB);
+          BuildTextSprites("NEED A LIFT?", menuPos, menuColor, 0x10, TINT_HUD);
         } else {
-          BuildTextSprites("WHERE TO, SPYRO?", menuPos, menuColor, 0x10, 0xB);
+          BuildTextSprites("WHERE TO, SPYRO?", menuPos, menuColor, 0x10, TINT_HUD);
         }
         menuPos[0] = 0x110;
         rec = (Actor *)g_pSpriteRecordWriteCursor - 1;
         menuPos[1] += 0x14;
-        BuildTextSprites("STAY HERE", menuPos, menuColor, 0x10, 0xB);
+        BuildTextSprites("STAY HERE", menuPos, menuColor, 0x10, TINT_HUD);
         menuPos[1] += 0xF;
         if (g_nActorCutsceneSubstate[2] == 0) {
           for (greetPhase = 0; rec >= (Actor *)g_pSpriteRecordWriteCursor;
@@ -136,7 +136,7 @@ void Level30_BalloonistCutscene_Draw(void) {
           if (g_nActiveLevelId / 10 - 1 != world && g_abWorldBalloonistState[world] == BALLOONIST_OPEN) {
             menuPos[0] = 0x110;
             rec = (Actor *)g_pSpriteRecordWriteCursor - 1;
-            BuildTextSprites(g_apWorldNameByLevelTens[world], menuPos, menuColor, 0x10, 0xB);
+            BuildTextSprites(g_apWorldNameByLevelTens[world], menuPos, menuColor, 0x10, TINT_HUD);
             menuPos[1] += 0xF;
             if (g_nActorCutsceneSubstate[2] == slot) {
               for (rosterPhase = 0; rec >= (Actor *)g_pSpriteRecordWriteCursor;
@@ -167,14 +167,14 @@ void Level30_BalloonistCutscene_Draw(void) {
         askPos[2] = 0x1100;
         askPos[0] = 0x60;
         if (g_nActorCutsceneSubstate[3] == BPAGE_CONFIRM_NEXT) {
-          BuildTextSprites("ARE YOU READY TO GO?", askPos, askColor, 0x12, 0xB);
+          BuildTextSprites("ARE YOU READY TO GO?", askPos, askColor, 0x12, TINT_HUD);
         } else {
-          BuildTextSprites("WOULD YOU LIKE TO GO?", askPos, askColor, 0x12, 0xB);
+          BuildTextSprites("WOULD YOU LIKE TO GO?", askPos, askColor, 0x12, TINT_HUD);
         }
         askPos[0] = 0x80;
         rec = (Actor *)g_pSpriteRecordWriteCursor - 1;
         askPos[1] += 0x19;
-        BuildTextSprites("STAY HERE", askPos, askColor, 0x12, 0xB);
+        BuildTextSprites("STAY HERE", askPos, askColor, 0x12, TINT_HUD);
         askPos[1] += 0x13;
         if (g_nActorCutsceneSubstate[2] == 0) {
           for (promptPhase = 0; rec >= (Actor *)g_pSpriteRecordWriteCursor;
@@ -190,7 +190,7 @@ void Level30_BalloonistCutscene_Draw(void) {
           sprintf(dest, g_szGoTo,
                         g_apLevelNameByWorldRow[(g_nCurrentLevelId / 10) * 6 + g_nCurrentLevelId % 10]);
         }
-        BuildTextSprites(dest, askPos, askColor, 0x12, 0xB);
+        BuildTextSprites(dest, askPos, askColor, 0x12, TINT_HUD);
         if (g_nActorCutsceneSubstate[2] == 1) {
           for (namePhase = 0; rec >= (Actor *)g_pSpriteRecordWriteCursor;
                rec--, namePhase += 1) {

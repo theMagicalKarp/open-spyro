@@ -2294,9 +2294,9 @@ glabel BuildLoadedLevelRuntime
     /* 4A20 80014220 43311100 */   sra       $a2, $s1, 5
     /* 4A24 80014224 1F002532 */  andi       $a1, $s1, 0x1F
     /* 4A28 80014228 80200600 */  sll        $a0, $a2, 2
-    /* 4A2C 8001422C 0780013C */  lui        $at, %hi(g_anRunningKillBitmap)
+    /* 4A2C 8001422C 0780013C */  lui        $at, %hi(g_anCheckpointKillBitmap)
     /* 4A30 80014230 21082400 */  addu       $at, $at, $a0
-    /* 4A34 80014234 9878228C */  lw         $v0, %lo(g_anRunningKillBitmap)($at)
+    /* 4A34 80014234 9878228C */  lw         $v0, %lo(g_anCheckpointKillBitmap)($at)
     /* 4A38 80014238 0428B300 */  sllv       $a1, $s3, $a1
     /* 4A3C 8001423C 24104500 */  and        $v0, $v0, $a1
     /* 4A40 80014240 0D004010 */  beqz       $v0, .L80014278
@@ -2352,9 +2352,9 @@ glabel BuildLoadedLevelRuntime
     /* 4AF8 800142F8 24104300 */  and        $v0, $v0, $v1
     /* 4AFC 800142FC 2C004010 */  beqz       $v0, .L800143B0
     /* 4B00 80014300 00000000 */   nop
-    /* 4B04 80014304 0780013C */  lui        $at, %hi(g_anRunningKillBitmap)
+    /* 4B04 80014304 0780013C */  lui        $at, %hi(g_anCheckpointKillBitmap)
     /* 4B08 80014308 21082600 */  addu       $at, $at, $a2
-    /* 4B0C 8001430C 9878228C */  lw         $v0, %lo(g_anRunningKillBitmap)($at)
+    /* 4B0C 8001430C 9878228C */  lw         $v0, %lo(g_anCheckpointKillBitmap)($at)
     /* 4B10 80014310 00000000 */  nop
     /* 4B14 80014314 24104300 */  and        $v0, $v0, $v1
     /* 4B18 80014318 08004014 */  bnez       $v0, .L8001433C
@@ -2411,8 +2411,8 @@ glabel BuildLoadedLevelRuntime
     /* 4BCC 800143CC 01003126 */   addiu     $s1, $s1, 0x1
   .L800143D0:
     /* 4BD0 800143D0 21880000 */  addu       $s1, $zero, $zero
-    /* 4BD4 800143D4 0780023C */  lui        $v0, %hi(g_anCommittedKillBitmap)
-    /* 4BD8 800143D8 B8784224 */  addiu      $v0, $v0, %lo(g_anCommittedKillBitmap)
+    /* 4BD4 800143D4 0780023C */  lui        $v0, %hi(g_anLiveKillBitmap)
+    /* 4BD8 800143D8 B8784224 */  addiu      $v0, $v0, %lo(g_anLiveKillBitmap)
     /* 4BDC 800143DC 21184000 */  addu       $v1, $v0, $zero
     /* 4BE0 800143E0 E0FF6424 */  addiu      $a0, $v1, -0x20
   .L800143E4:
@@ -43052,11 +43052,11 @@ glabel SnapActorToGround
 endlabel SnapActorToGround
 .endif
 
-.section .text.IsActorInRunningKillSet, "ax"
-.ifndef HAVE_C_IsActorInRunningKillSet
-nonmatching IsActorInRunningKillSet, 0x88
+.section .text.IsActorInCheckpointKillSet, "ax"
+.ifndef HAVE_C_IsActorInCheckpointKillSet
+nonmatching IsActorInCheckpointKillSet, 0x88
 
-glabel IsActorInRunningKillSet
+glabel IsActorInCheckpointKillSet
     /* 28C94 80038494 21288000 */  addu       $a1, $a0, $zero
     /* 28C98 80038498 0780043C */  lui        $a0, %hi(g_pActorListBase)
     /* 28C9C 8003849C 2858848C */  lw         $a0, %lo(g_pActorListBase)($a0)
@@ -43078,9 +43078,9 @@ glabel IsActorInRunningKillSet
     /* 28CDC 800384DC 1F008430 */  andi       $a0, $a0, 0x1F
     /* 28CE0 800384E0 80180300 */  sll        $v1, $v1, 2
     /* 28CE4 800384E4 01000224 */  addiu      $v0, $zero, 0x1
-    /* 28CE8 800384E8 0780013C */  lui        $at, %hi(g_anRunningKillBitmap)
+    /* 28CE8 800384E8 0780013C */  lui        $at, %hi(g_anCheckpointKillBitmap)
     /* 28CEC 800384EC 21082300 */  addu       $at, $at, $v1
-    /* 28CF0 800384F0 9878238C */  lw         $v1, %lo(g_anRunningKillBitmap)($at)
+    /* 28CF0 800384F0 9878238C */  lw         $v1, %lo(g_anCheckpointKillBitmap)($at)
     /* 28CF4 800384F4 04108200 */  sllv       $v0, $v0, $a0
     /* 28CF8 800384F8 24186200 */  and        $v1, $v1, $v0
     /* 28CFC 800384FC 05006010 */  beqz       $v1, .L80038514
@@ -43092,7 +43092,7 @@ glabel IsActorInRunningKillSet
   .L80038514:
     /* 28D14 80038514 0800E003 */  jr         $ra
     /* 28D18 80038518 2110C000 */   addu      $v0, $a2, $zero
-endlabel IsActorInRunningKillSet
+endlabel IsActorInCheckpointKillSet
 .endif
 
 .section .text.PlayActorMeshVoice, "ax"
@@ -46908,11 +46908,11 @@ glabel SetActorGroupSubstate
 endlabel SetActorGroupSubstate
 .endif
 
-.section .text.MarkActorCommittedKill, "ax"
-.ifndef HAVE_C_MarkActorCommittedKill
-nonmatching MarkActorCommittedKill, 0x94
+.section .text.MarkActorLiveKill, "ax"
+.ifndef HAVE_C_MarkActorLiveKill
+nonmatching MarkActorLiveKill, 0x94
 
-glabel MarkActorCommittedKill
+glabel MarkActorLiveKill
     /* 2BFC0 8003B7C0 0780033C */  lui        $v1, %hi(g_pActorListBase)
     /* 2BFC4 8003B7C4 2858638C */  lw         $v1, %lo(g_pActorListBase)($v1)
     /* 2BFC8 8003B7C8 00000000 */  nop
@@ -46939,8 +46939,8 @@ glabel MarkActorCommittedKill
     /* 2C01C 8003B81C C3280300 */  sra        $a1, $v1, 3
     /* 2C020 8003B820 031A0300 */  sra        $v1, $v1, 8
     /* 2C024 8003B824 1F00A530 */  andi       $a1, $a1, 0x1F
-    /* 2C028 8003B828 0780023C */  lui        $v0, %hi(g_anCommittedKillBitmap)
-    /* 2C02C 8003B82C B8784224 */  addiu      $v0, $v0, %lo(g_anCommittedKillBitmap)
+    /* 2C028 8003B828 0780023C */  lui        $v0, %hi(g_anLiveKillBitmap)
+    /* 2C02C 8003B82C B8784224 */  addiu      $v0, $v0, %lo(g_anLiveKillBitmap)
     /* 2C030 8003B830 80180300 */  sll        $v1, $v1, 2
     /* 2C034 8003B834 21186200 */  addu       $v1, $v1, $v0
     /* 2C038 8003B838 01000224 */  addiu      $v0, $zero, 0x1
@@ -46951,7 +46951,7 @@ glabel MarkActorCommittedKill
   .L8003B84C:
     /* 2C04C 8003B84C 0800E003 */  jr         $ra
     /* 2C050 8003B850 00000000 */   nop
-endlabel MarkActorCommittedKill
+endlabel MarkActorLiveKill
 .endif
 
 .section .text.CommitActorKillGems, "ax"
@@ -47016,8 +47016,8 @@ glabel CommitActorKillGems
     /* 2C124 8003B924 03220200 */  sra        $a0, $v0, 8
     /* 2C128 8003B928 2128C000 */  addu       $a1, $a2, $zero
     /* 2C12C 8003B92C 1F00C630 */  andi       $a2, $a2, 0x1F
-    /* 2C130 8003B930 0780023C */  lui        $v0, %hi(g_anCommittedKillBitmap)
-    /* 2C134 8003B934 B8784224 */  addiu      $v0, $v0, %lo(g_anCommittedKillBitmap)
+    /* 2C130 8003B930 0780023C */  lui        $v0, %hi(g_anLiveKillBitmap)
+    /* 2C134 8003B934 B8784224 */  addiu      $v0, $v0, %lo(g_anLiveKillBitmap)
     /* 2C138 8003B938 80200400 */  sll        $a0, $a0, 2
     /* 2C13C 8003B93C 21208200 */  addu       $a0, $a0, $v0
     /* 2C140 8003B940 01000324 */  addiu      $v1, $zero, 0x1

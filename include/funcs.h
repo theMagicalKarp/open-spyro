@@ -57,7 +57,7 @@ void RelocateMobActorTable(void *table);
 /* 0x800133e0: Relocates a freshly-loaded actor-mesh / vertex-anim header to absolute pointers. Two formats keyed by sign bit of *table: (A) negative: 3-ptr quick form — rebases +1, +2, +3 by header base, then strips the top bit. (B) non-negative: 8-entry parent header at +5 (each entry gets +0x14, +0x18, +0x20 rebased), then up to *table child entries at +0xe each pointing to a sub-record (also rebased) — sub-records contain either (a) a byte-flag-cleared form: per-vertex-anim packed-XY at +0x12 walks N entries (lower 21 bits rebased by header_base, &0x1fffff masked, top 11 bits preserved) + an inline relative resolver on the 2nd int (rebased by header_base relative to the pointer position) — or (b) the byte-flag-set form: model body at +0x8 rebased + the packed-XY +0x12 walked with the additive >>1 absolute scheme. Returns the header base ptr with top bit cleared. Callers: M09 state machines (TickCutsceneBundleLoadStream / TickDragonRescueAssetStream / TickLevelTransitionStream) + LoadActorMeshTables (M12 runtime load). */
 void *RelocateActorMeshHeader(int *table);
 
-/* 0x8001364c: Post-CD-stream level finalization driver — the "level-loader meat". Builds per-level runtime state from the freshly streamed bundle in g_pPathTableBuffer. Callers: LoadAndStartLevelFromCd + TickLevelTransitionStream (case 0xd). fullSetup = full-setup flag (0 skips chunk-anim reset + overlay-hook/HUD init). Steps: (1) stop sounds, reset frame counters, g_nPortalDistanceFogEnabled for levels 0x28/0x2a. (2) spawn select: g_nSpawnAnchorValid latch ? keep g_anLevelSpawnPos/Yaw(>>4) : read path-table head; gamestate 5 (game over, levels 0x28..0x3b) uses the continue tables via g_nGameOverLevelIndex; g_nPortalTransitionActive keeps Spyro in place (exit nudge from g_anLevelSpawnNudgeZTable + sine radial). (3) ResetSpyroEntity. (4) flight branch (level%10==5): g_nFlightLevelActive=1, ChangeSpyroState(SPYRO_ST_FLY), zero pitch/turn accums. Level 0x40 also seeds g_nGnastyLootFallRefZCap. (5) camera: fill g_anCameraActiveTargetParams from g_anCameraParamFollowBehind ([2]=0x600), retarget g_pCameraTargetParams, ResetCameraStateToTarget. (6) gamestate=0, clear letterbox. (7) rebase 7 world chunk-anim subtables. (8) actor table: g_pActorListBase + pool setup (g_pActorPoolFreeHead/ DynBase, aux pool, capacity=(top-base)/0x70). (9) pickup table rebase. (10) g_pActorSpatialGridBase + relocation list. (11) attract demo (g_nDemoMode != 0): srand(1234), Spyro placed from g_anDemoStartPose[g_nDemoIndex*4], g_nDemoActive=1, g_pDemoPadCursor = the bundle's recorded pad stream (playback, mode 1) or a zero-filled buffer at 0x80600000 (record, mode 2). (12/13) two actor passes applying g_anLevelKillBitmapTable[level*8] vs g_anRunningKillBitmap (despawn/hide). (14) snapshot running -> committed bitmap. (15) zero g_anLevelTriggerStateSlots. (16) reset emit list (base/cursor/terminator/sentinel). (17) ResetWorldParticleTables. (18) full setup + non-flight: g_pSparxActor = (*g_pfnLevelSpawnActor)(ACTOR_TYPE_SPARX,0), InitHudCounters(1). (19) HandleMusicCommand(g_nCurrentMusicTrack,1). */
+/* 0x8001364c: Post-CD-stream level finalization driver — the "level-loader meat". Builds per-level runtime state from the freshly streamed bundle in g_pPathTableBuffer. Callers: LoadAndStartLevelFromCd + TickLevelTransitionStream (case 0xd). fullSetup = full-setup flag (0 skips chunk-anim reset + overlay-hook/HUD init). Steps: (1) stop sounds, reset frame counters, g_nPortalDistanceFogEnabled for levels 0x28/0x2a. (2) spawn select: g_nSpawnAnchorValid latch ? keep g_anLevelSpawnPos/Yaw(>>4) : read path-table head; gamestate 5 (game over, levels 0x28..0x3b) uses the continue tables via g_nGameOverLevelIndex; g_nPortalTransitionActive keeps Spyro in place (exit nudge from g_anLevelSpawnNudgeZTable + sine radial). (3) ResetSpyroEntity. (4) flight branch (level%10==5): g_nFlightLevelActive=1, ChangeSpyroState(SPYRO_ST_FLY), zero pitch/turn accums. Level 0x40 also seeds g_nGnastyLootFallRefZCap. (5) camera: fill g_anCameraActiveTargetParams from g_anCameraParamFollowBehind ([2]=0x600), retarget g_pCameraTargetParams, ResetCameraStateToTarget. (6) gamestate=0, clear letterbox. (7) rebase 7 world chunk-anim subtables. (8) actor table: g_pActorListBase + pool setup (g_pActorPoolFreeHead/ DynBase, aux pool, capacity=(top-base)/0x70). (9) pickup table rebase. (10) g_pActorSpatialGridBase + relocation list. (11) attract demo (g_nDemoMode != 0): srand(1234), Spyro placed from g_anDemoStartPose[g_nDemoIndex*4], g_nDemoActive=1, g_pDemoPadCursor = the bundle's recorded pad stream (playback, mode 1) or a zero-filled buffer at 0x80600000 (record, mode 2). (12/13) two actor passes applying g_anLevelKillBitmapTable[level*8] vs g_anCheckpointKillBitmap: a saved kill despawns or respawns as a gem roll by kill group (ACTOR_KILL_GROUP_*). (14) restore the live kill bitmap from the checkpoint one. (15) zero g_anLevelTriggerStateSlots. (16) reset emit list (base/cursor/terminator/sentinel). (17) ResetWorldParticleTables. (18) full setup + non-flight: g_pSparxActor = (*g_pfnLevelSpawnActor)(ACTOR_TYPE_SPARX,0), InitHudCounters(1). (19) HandleMusicCommand(g_nCurrentMusicTrack,1). */
 void BuildLoadedLevelRuntime(int fullSetup);
 
 /* 0x800144c8: Synchronous level load + start, from LevelIntro_Update at the intro fade's load point: StopAllSoundExceptMask(0); CdReadSyncSectors the level's archive (g_nLevelArchiveBaseLba + the g_nLevelArchiveOffset entry for g_nLevelIndex, 0x10-byte stride) into g_pPathTableBuffer; BuildLoadedLevelRuntime(1); RestartSpyroAnimWithState(SPYRO_ST_FLY on flight levels, else SPYRO_ST_IDLE); and Sparx back to full health (g_nSparxHealth = 3). */
@@ -1936,8 +1936,8 @@ int ProbeActorGroundHeightRaised(Actor *actor, int delta);
 /* 0x80038458: Sets the actor's Z to ProbeActorGroundHeight + its signed +0x38 floor offset, then re-encodes its direction code. */
 void SnapActorToGround(Actor *actor);
 
-/* 0x80038494: True when the actor's pool slot bit is set in g_anRunningKillBitmap and its +0x53 byte is 0xFF. */
-int IsActorInRunningKillSet(Actor *actor);
+/* 0x80038494: True when the actor's pool slot bit is set in g_anCheckpointKillBitmap and its +0x53 byte is 0xFF. */
+int IsActorInCheckpointKillSet(Actor *actor);
 
 /* 0x8003851c: Plays the voice sample named in the actor's mesh record (g_apActorMeshTable[actor->type] + arg1, byte 4) keyed to arg2, or to the actor's own +0x54 slot after stopping its previous voices. */
 void PlayActorMeshVoice(Actor *actor, int voiceOffset, void *owner);
@@ -1961,8 +1961,8 @@ void ReplaceActorGroupState(Actor *actor, int value, int match);
 /* 0x8003b728: SetActorGroupState for the sub-state byte +0x49. */
 void SetActorGroupSubstate(Actor *actor, int value);
 
-/* 0x8003b7c0: Sets the actor's pool-index bit in g_anCommittedKillBitmap (ignored outside the live pool). */
-void MarkActorCommittedKill(Actor *actor);
+/* 0x8003b7c0: Sets the actor's pool-index bit in g_anLiveKillBitmap (ignored outside the live pool). */
+void MarkActorLiveKill(Actor *actor);
 
 /* 0x8003b9d4: Pickup collection: pushes the actor's kind into the gem-tally icon ring, handles the egg thief, spawns the kind's particle burst and queues the sound for kinds 0x53..0x57. */
 void CollectPickupActor(Actor *actor);
@@ -2092,6 +2092,10 @@ int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int dead
  * `lim`, then walks; returns 0x100 + node index on arrival. */
 #ifndef PIVOT_TURN_ANY
 #define PIVOT_TURN_ANY 0xFF /* turnGroup: turn without waiting on a group peer */
+/* ->subMode while PivotActorAlongPath drives the actor. */
+#define PIVOT_SUB_ARRIVED 0 /* reached a node (or not started): may need to turn */
+#define PIVOT_SUB_WALKING 1 /* heading within `lim`: walking to the node */
+#define PIVOT_SUB_TURNING 2 /* turning in place toward the node */
 #endif
 int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed, int contactRadius, int step, int lim, int turnGroup, int flags);
 

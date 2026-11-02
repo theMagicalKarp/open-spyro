@@ -137,7 +137,7 @@ void Level8_BalloonistCutscene_Update(void)
           g_nSpyroSuperflameTimerSave = g_nSpyroSuperflameTimer;
           ResetSpyroEntity(RESET_SPYRO_FULL);
           g_bSpyroAnimPrev[0] = 1;
-          g_bSpyroAnimCurrent = 1;
+          g_bSpyroAnimCurrent = SPYRO_ANIMID_WALK;
           g_bSpyroAnimFrame = 1;
           CopyVector(g_anActorCutsceneSpyroFrom, &g_bSpyroAnimPrev[-0x18]);
           SPYRO_TO_X_VIA_FROM = 0x4A0;
@@ -194,7 +194,7 @@ void Level8_BalloonistCutscene_Update(void)
             g_nActorCutsceneSpyroYawStart = g_bSpyroPersistentEulerZ * 0x10;
             n = g_pActorCutsceneActor->rotZ;
             m = g_bSpyroAnimFrame;
-            g_bSpyroAnimCurrent = 3;
+            g_bSpyroAnimCurrent = SPYRO_ANIMID_STOP;
             g_bSpyroFramePrev = m;
             g_bSpyroAnimFrame = 0;
             g_bSpyroSubFrameTimer = 0;
@@ -266,7 +266,7 @@ void Level8_BalloonistCutscene_Update(void)
         CopyVector(g_anSpyroWorldPos, &g_nActorCutsceneTimer[8]);
         n = g_bSpyroAnimFrame;
         g_nSpyroAnimPlayRate = 4;
-        g_bSpyroAnimCurrent = 0;
+        g_bSpyroAnimCurrent = SPYRO_ANIMID_IDLE;
         g_bSpyroAnimFrame = 0;
         g_bSpyroSubFrameTimer = 0;
         g_nActorCutsceneSubstate[0] = ACS_DIALOGUE;
@@ -525,7 +525,7 @@ void Level8_BalloonistCutscene_Update(void)
           {
             int m;
           m = g_bSpyroAnimFrame;
-          g_bSpyroAnimCurrent = 5;
+          g_bSpyroAnimCurrent = SPYRO_ANIMID_JUMP;
           g_bSpyroAnimFrame = 0;
           g_bSpyroSubFrameTimer = 0;
           g_nSpyroAnimPlayRate = 7;
@@ -620,7 +620,7 @@ void Level8_BalloonistCutscene_Update(void)
           yaw = ACTOR_RAW(g_pActorCutsceneRecord, int, posZ);
           g_bSpyroFramePrev = k;
           g_nSpyroAnimPlayRate = 4;
-          g_bSpyroAnimCurrent = 0;
+          g_bSpyroAnimCurrent = SPYRO_ANIMID_IDLE;
           g_bSpyroAnimFrame = 0;
           g_bSpyroSubFrameTimer = 0;
           g_bSpyroOtBinBias = 3;
@@ -787,7 +787,7 @@ void Level8_BalloonistCutscene_Update(void)
         g_nActorCutsceneSpyroToY = k;
         g_nActorCutsceneSpyroToZ = FindGroundHeightBelow(&g_nActorCutsceneTimer[8], 0x10000) + 0x164;
         k = g_bSpyroAnimFrame;
-        g_bSpyroAnimCurrent = 5;
+        g_bSpyroAnimCurrent = SPYRO_ANIMID_JUMP;
         g_bSpyroAnimFrame = 0;
         g_bSpyroSubFrameTimer = 0;
         g_nSpyroAnimPlayRate = 6;

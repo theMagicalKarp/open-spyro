@@ -294,11 +294,11 @@ void UpdateSpyroStateBehavior(void) {
       g_nSpyroJumpHoldLatch = 1;
     }
     if (g_anSpyroMotionVec[2] < 0) {
-      g_nSpyroSubstate = 1;
+      g_nSpyroSubstate = SPYRO_SUB_JUMP_FALLING;
     }
-    if (g_nSpyroSubstate == 0 && !(g_dwPadHeld & PAD_CROSS) &&
-        g_bSpyroJumpHoldForced == 0) {
-      g_nSpyroSubstate = 2;
+    if (g_nSpyroSubstate == SPYRO_SUB_JUMP_RISING &&
+        !(g_dwPadHeld & PAD_CROSS) && g_bSpyroJumpHoldForced == 0) {
+      g_nSpyroSubstate = SPYRO_SUB_JUMP_RELEASED;
     }
     if (g_nSpyroAirborneFrames == 0 && g_nSpyroStateTimer >= 0x10) {
       if (g_nSpyroGroundSlope >= 0x17) {
@@ -318,7 +318,8 @@ void UpdateSpyroStateBehavior(void) {
       g_nSpyroMotionSpeed = 0x1F80;
       break;
     }
-    if (g_nSpyroGlideEnteredLatch == 0 && g_nSpyroSubstate == 1 &&
+    if (g_nSpyroGlideEnteredLatch == 0 &&
+        g_nSpyroSubstate == SPYRO_SUB_JUMP_FALLING &&
         g_nSpyroJumpHoldLatch != 0) {
       JUMP_STATE();
       break;
@@ -629,10 +630,10 @@ void UpdateSpyroStateBehavior(void) {
         break;
       }
       pad = g_pPadSubstepState->held;
-      if (pad & 8) {
-        g_nSpyroSubstate = 1;
-      } else if (pad & 4) {
-        g_nSpyroSubstate = 2;
+      if (pad & PAD_R1) {
+        g_nSpyroSubstate = SPYRO_SUB_GLIDE_R1;
+      } else if (pad & PAD_L1) {
+        g_nSpyroSubstate = SPYRO_SUB_GLIDE_L1;
         g_nSpyroMotionAux = d;
       }
       break;
@@ -997,10 +998,10 @@ void UpdateSpyroStateBehavior(void) {
       } else {
         int pad = g_pPadSubstepState->held;
 
-        if (pad & 8) {
-          g_nSpyroSubstate = 1;
-        } else if (pad & 4) {
-          g_nSpyroSubstate = 2;
+        if (pad & PAD_R1) {
+          g_nSpyroSubstate = SPYRO_SUB_GLIDE_R1;
+        } else if (pad & PAD_L1) {
+          g_nSpyroSubstate = SPYRO_SUB_GLIDE_L1;
           g_nSpyroMotionAux = d;
         }
       }
@@ -1039,10 +1040,10 @@ void UpdateSpyroStateBehavior(void) {
       } else {
         int pad = g_pPadSubstepState->held;
 
-        if (pad & 8) {
-          SPY[SPY_SUBSTATE] = 1;
-        } else if (pad & 4) {
-          SPY[SPY_SUBSTATE] = 2;
+        if (pad & PAD_R1) {
+          SPY[SPY_SUBSTATE] = SPYRO_SUB_GLIDE_R1;
+        } else if (pad & PAD_L1) {
+          SPY[SPY_SUBSTATE] = SPYRO_SUB_GLIDE_L1;
           g_nSpyroMotionAux = d;
         }
       }
@@ -1083,10 +1084,10 @@ void UpdateSpyroStateBehavior(void) {
       } else {
         int pad = g_pPadSubstepState->held;
 
-        if (pad & 8) {
-          SPY[SPY_SUBSTATE] = 1;
-        } else if (pad & 4) {
-          SPY[SPY_SUBSTATE] = 2;
+        if (pad & PAD_R1) {
+          SPY[SPY_SUBSTATE] = SPYRO_SUB_GLIDE_R1;
+        } else if (pad & PAD_L1) {
+          SPY[SPY_SUBSTATE] = SPYRO_SUB_GLIDE_L1;
           g_nSpyroMotionAux = d;
         }
       }

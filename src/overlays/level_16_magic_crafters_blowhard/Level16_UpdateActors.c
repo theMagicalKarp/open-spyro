@@ -326,7 +326,7 @@ void Level16_UpdateActors(void) {
             } else {
               SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             }
-            MarkActorCommittedKill(actor);
+            MarkActorLiveKill(actor);
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = SFX_OVERRIDE_PITCH;
             g_nSfxOverridePitch.v =
@@ -676,7 +676,7 @@ void Level16_UpdateActors(void) {
           st->x = SPY.posX >> 4;
           st->y = SPY.posY >> 4;
           actor->mode = RIMRIDER_DRIFT;
-          ANIM_RESET(actor, 1);
+          ANIM_RESET(actor, RIMRIDER_DRIFT);
         }
         break;
 
@@ -1725,23 +1725,23 @@ void Level16_UpdateActors(void) {
 
           switch (SPY.sparxHealth) {
           case SPARX_GREEN:
-            if (actor->nextAnim != 0 && actor->anim != 0) {
+            if (actor->nextAnim != SPARX_ANIM_GREEN && actor->anim != SPARX_ANIM_GREEN) {
               g_nActorAnimDone = 0;
-              ANIM_RESET(actor, 0);
+              ANIM_RESET(actor, SPARX_ANIM_GREEN);
             }
             break;
 
           case SPARX_BLUE:
-            if (actor->nextAnim != 2 && actor->anim != 2) {
+            if (actor->nextAnim != SPARX_ANIM_BLUE && actor->anim != SPARX_ANIM_BLUE) {
               g_nActorAnimDone = 0;
-              ANIM_RESET(actor, 2);
+              ANIM_RESET(actor, SPARX_ANIM_BLUE);
             }
             break;
 
           case SPARX_GOLD:
-            if (actor->nextAnim != 4 && actor->anim != 4) {
+            if (actor->nextAnim != SPARX_ANIM_GOLD && actor->anim != SPARX_ANIM_GOLD) {
               g_nActorAnimDone = 0;
-              ANIM_RESET(actor, 4);
+              ANIM_RESET(actor, SPARX_ANIM_GOLD);
             }
             break;
           }
@@ -1878,7 +1878,7 @@ void Level16_UpdateActors(void) {
       g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x20);
       SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-      MarkActorCommittedKill(actor);
+      MarkActorLiveKill(actor);
       DespawnActorRecord(actor);
       continue;
     }
@@ -1944,7 +1944,7 @@ void Level16_UpdateActors(void) {
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
@@ -2185,7 +2185,7 @@ void Level16_UpdateActors(void) {
           }
           StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           ENTER_POSE(actor, PATHGUARD_KNOCKED);
         }
       }
@@ -2275,7 +2275,7 @@ void Level16_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
         if (g_nActorAnimDone != 0) {
           actor->mode = PATHGUARD_WALK;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, PATHGUARD_WALK);
           continue;
         }
         if (st->timer <= 0) {
@@ -2756,7 +2756,7 @@ void Level16_UpdateActors(void) {
         }
         DispatchActorContactAtSphere(&actor->posX, (st->timer + 1) << 8, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_BLAST), actor, CONTACT_STOP_AT_SOLID);
         if (++st->timer >= 8) {
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
         }
         break;
@@ -2826,10 +2826,10 @@ void Level16_UpdateActors(void) {
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
-          g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (st->prize->type - 0x53));
-          PlayActorMeshVoice(actor, 0, 0);
+          g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (st->prize->type - ACTOR_TYPE_GEM_1));
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_OPEN, 0);
           actor->mode = SEEDPOD_OPEN;
-          ANIM_RESET(actor, 1);
+          ANIM_RESET(actor, SEEDPOD_OPEN);
           continue;
         }
         if (st->timer >= 0xF8) {
@@ -2874,7 +2874,7 @@ void Level16_UpdateActors(void) {
             (g_nSpyroState == SPYRO_ST_CHARGE_AIR && (g_nSpyroSubstate & SPYRO_SUB_SUPERCHARGE))) {
           CollectPickupActor(st->prize);
           DespawnActorRecord(st->prize);
-          PlayActorMeshVoice(actor, 2, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_BURST, 0);
           for (i = 0; i < 2; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
@@ -2895,7 +2895,7 @@ void Level16_UpdateActors(void) {
         }
         if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = COLLECT_BOUNCE;
-          PlayActorMeshVoice(actor, 2, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_BURST, 0);
           for (i = 0; i < 2; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
@@ -2935,9 +2935,9 @@ void Level16_UpdateActors(void) {
           actor->rotY = st->rotY;
           actor->posZ = st->restZ;
           st->timer = 0;
-          PlayActorMeshVoice(actor, 1, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_CLOSE, 0);
           actor->mode = SEEDPOD_CLOSED;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, SEEDPOD_CLOSED);
           continue;
         }
         break;
@@ -2965,7 +2965,7 @@ void Level16_UpdateActors(void) {
                      : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x200) {
             SetSpawnAnchorFromActor(actor, actor->rotZ);
             actor->mode = CHECKPT_FLASH;
-            actor->anim = 1;
+            actor->anim = CHECKPT_ANIM_FLASH;
             actor->subMode = 0;
           }
         }
@@ -2975,7 +2975,7 @@ void Level16_UpdateActors(void) {
         actor->subMode += g_nFrameStep;
         if (actor->subMode >= 0x30) {
           actor->mode = CHECKPT_REARM;
-          actor->anim = 0;
+          actor->anim = CHECKPT_ANIM_REST;
         }
         break;
       }
@@ -3140,7 +3140,7 @@ void Level16_UpdateActors(void) {
 
               CopyVector(&a->posX, &actor->posX);
               SpawnActorDeathDrop(a, DROP_SCATTER, 0, 0);
-              MarkActorCommittedKill(a);
+              MarkActorLiveKill(a);
               st->prev = *as;
               DespawnActorRecord(a);
             }
@@ -3186,7 +3186,7 @@ void Level16_UpdateActors(void) {
             if (g_pActorListBase[st->prev].dropKind != DROP_GEM_ROLL &&
                 g_pActorListBase[st->prev].mode < ACTOR_MODE_DORMANT) {
               SpawnActorDeathDrop(a, DROP_SCATTER, 0, 0);
-              MarkActorCommittedKill(a);
+              MarkActorLiveKill(a);
               DespawnActorRecord(a);
             }
             st->prev = *as;
@@ -3200,7 +3200,7 @@ void Level16_UpdateActors(void) {
             as = a->state;
             if (a->dropKind != DROP_GEM_ROLL && a->mode < ACTOR_MODE_DORMANT) {
               SpawnActorDeathDrop(a, DROP_SCATTER, 0, 0);
-              MarkActorCommittedKill(a);
+              MarkActorLiveKill(a);
               DespawnActorRecord(a);
             }
             st->prev = *as;
@@ -3252,7 +3252,7 @@ void Level16_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           SnapActorToGround(actor);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3268,13 +3268,13 @@ void Level16_UpdateActors(void) {
         if (dist < 0x2800 && st->minion == 0 && st->floorZ == -1) {
           actor->mode = BLOWHARD_P1_DROP_RIDER;
           st->floorZ = actor->posZ - 0x578;
-          ANIM_GO(actor, 5);
+          ANIM_GO(actor, BLOWHARD_ANIM_DROP_RIDER);
         }
         break;
 
       case BLOWHARD_P1_DROP_RIDER:
         TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
-        if (actor->anim == 5 && actor->frame >= 6 && st->minion == 0) {
+        if (actor->anim == BLOWHARD_ANIM_DROP_RIDER && actor->frame >= 6 && st->minion == 0) {
           int v[3];
 
           CopyVector(v, &actor->posX);
@@ -3285,13 +3285,13 @@ void Level16_UpdateActors(void) {
           }
         }
         if (g_nActorAnimDone != 0) {
-          if (actor->anim == 5 && st->minion != 0) {
-            ANIM_SET(actor, 6);
+          if (actor->anim == BLOWHARD_ANIM_DROP_RIDER && st->minion != 0) {
+            ANIM_SET(actor, BLOWHARD_ANIM_DROP_END);
           }
-          if (g_nActorAnimDone != 0 && actor->anim == 6) {
+          if (g_nActorAnimDone != 0 && actor->anim == BLOWHARD_ANIM_DROP_END) {
             actor->mode = BLOWHARD_P1_HOVER;
             st->floorZ = actor->posZ + 0x578;
-            ANIM_SET(actor, BLOWHARD_START_PHASE);
+            ANIM_SET(actor, BLOWHARD_ANIM_HOVER);
           }
         }
         break;
@@ -3316,7 +3316,7 @@ void Level16_UpdateActors(void) {
           } else if (st->minion == 0 && dist > 0x1000) {
             actor->mode = BLOWHARD_P2_DROP_RIDER;
             st->floorZ = actor->posZ - 0x578;
-            ANIM_GO(actor, 5);
+            ANIM_GO(actor, BLOWHARD_ANIM_DROP_RIDER);
           }
           break;
         }
@@ -3328,7 +3328,7 @@ void Level16_UpdateActors(void) {
         if (AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(actor->posX - SPY.posX,
                                         actor->posY - SPY.posY, ATAN_ANGLE8)) < 0x30 &&
-            actor->anim == 5 && actor->frame >= 6 && st->minion == 0) {
+            actor->anim == BLOWHARD_ANIM_DROP_RIDER && actor->frame >= 6 && st->minion == 0) {
           int v[3];
 
           CopyVector(v, &actor->posX);
@@ -3339,14 +3339,14 @@ void Level16_UpdateActors(void) {
           }
         }
         if (g_nActorAnimDone != 0) {
-          if (actor->anim == 5 && st->minion != 0) {
-            ANIM_SET(actor, 6);
+          if (actor->anim == BLOWHARD_ANIM_DROP_RIDER && st->minion != 0) {
+            ANIM_SET(actor, BLOWHARD_ANIM_DROP_END);
           }
-          if (g_nActorAnimDone != 0 && actor->anim == 6) {
+          if (g_nActorAnimDone != 0 && actor->anim == BLOWHARD_ANIM_DROP_END) {
             actor->mode = BLOWHARD_P2_WAIT;
             st->wait = 0x6E;
             st->pathDone = 0;
-            ANIM_SET(actor, BLOWHARD_START_PHASE);
+            ANIM_SET(actor, BLOWHARD_ANIM_HOVER);
           }
         }
         break;
@@ -3377,7 +3377,7 @@ void Level16_UpdateActors(void) {
           } else if (st->minion == 0 && dist > 0x1000) {
             actor->mode = BLOWHARD_P3_DROP_RIDER;
             st->floorZ = actor->posZ - 0x578;
-            ANIM_GO(actor, 5);
+            ANIM_GO(actor, BLOWHARD_ANIM_DROP_RIDER);
           }
           break;
         }
@@ -3389,7 +3389,7 @@ void Level16_UpdateActors(void) {
         if (AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(actor->posX - SPY.posX,
                                         actor->posY - SPY.posY, ATAN_ANGLE8)) < 0x30 &&
-            actor->anim == 5 && actor->frame >= 6 && st->minion == 0) {
+            actor->anim == BLOWHARD_ANIM_DROP_RIDER && actor->frame >= 6 && st->minion == 0) {
           int v[3];
 
           CopyVector(v, &actor->posX);
@@ -3400,18 +3400,18 @@ void Level16_UpdateActors(void) {
           }
         }
         if (g_nActorAnimDone != 0) {
-          if (actor->anim == 5 && st->minion != 0) {
-            ANIM_SET(actor, 6);
+          if (actor->anim == BLOWHARD_ANIM_DROP_RIDER && st->minion != 0) {
+            ANIM_SET(actor, BLOWHARD_ANIM_DROP_END);
           }
           if (g_nActorAnimDone != 0) {
-            if (actor->anim == 5) {
-              ANIM_SET(actor, 6);
+            if (actor->anim == BLOWHARD_ANIM_DROP_RIDER) {
+              ANIM_SET(actor, BLOWHARD_ANIM_DROP_END);
             }
-            if (g_nActorAnimDone != 0 && actor->anim == 6) {
+            if (g_nActorAnimDone != 0 && actor->anim == BLOWHARD_ANIM_DROP_END) {
               actor->mode = BLOWHARD_P3_WAIT;
               st->pathDone = 0;
               st->wait = 0x6E;
-              ANIM_SET(actor, BLOWHARD_START_PHASE);
+              ANIM_SET(actor, BLOWHARD_ANIM_HOVER);
             }
           }
         }
@@ -3454,7 +3454,7 @@ void Level16_UpdateActors(void) {
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != HBELL_STRUCK) {
         StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
         SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         GetWorldChunkAnimState(st->chunkAnim);
         ENTER_POSE(actor, HBELL_STRUCK);
       }
@@ -3462,7 +3462,7 @@ void Level16_UpdateActors(void) {
       switch (actor->mode) {
       case HBELL_INIT:
         actor->mode = HBELL_HUM;
-        ANIM_RESET(actor, 2);
+        ANIM_RESET(actor, HBELL_HUM);
         continue;
 
       case HBELL_STRUCK:

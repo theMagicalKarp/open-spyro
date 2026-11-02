@@ -122,6 +122,14 @@ typedef enum SpyroState
  * (jump: 0 rising with Cross held, 1 descending, 2 Cross released; glide/fly:
  * 1/2 from R1/L1, 3 a flight-level crash check; fall: a frame count that
  * respawns Spyro at 0x79). The values shared across states: */
+/* SPYRO_ST_JUMP: */
+#define SPYRO_SUB_JUMP_RISING 0   /* Cross still held */
+#define SPYRO_SUB_JUMP_FALLING 1  /* past the apex */
+#define SPYRO_SUB_JUMP_RELEASED 2 /* Cross let go while rising */
+/* SPYRO_ST_GLIDE / FLY within 0x200 of the floor reference: the shoulder
+ * button held (L1 also stores the height in g_nSpyroMotionAux). */
+#define SPYRO_SUB_GLIDE_R1 1
+#define SPYRO_SUB_GLIDE_L1 2
 #define SPYRO_SUB_SUPERCHARGE 0x40    /* charge/charge-air entered from a supercharge */
 #define SPYRO_SUB_CHARGE_LATCHED 0x80 /* charge target speed latched (LATCH_CHARGE_SPEED) */
 /* Glide/fly substates >= 8 are scripted: flight levels stop the clock and the
@@ -161,6 +169,58 @@ enum SpyroAnimMode {
   SPYRO_ANIM_BLEND_FAST = 8,       /* new anim from frame 0, one 2-step advance */
   SPYRO_ANIM_FINISH_10 = 10,       /* style treated as FINISH */
   SPYRO_ANIM_CUT_LOOP_START = 11,  /* style only: switch at loop start + 1 */
+};
+
+/* Spyro's animation ids (g_bSpyroAnimCurrent / Prev, the g_abSpyroAnimDescTable
+ * index), each named for the state whose default animation it is in
+ * g_abSpyroStateAnimIndexMap (the 0x8006C470 bytes). 46 and 47 are empty. */
+enum SpyroAnimId {
+  SPYRO_ANIMID_IDLE = 0,
+  SPYRO_ANIMID_WALK = 1,
+  SPYRO_ANIMID_RUN = 2,
+  SPYRO_ANIMID_STOP = 3,
+  SPYRO_ANIMID_TURN_AROUND = 4,
+  SPYRO_ANIMID_JUMP = 5,
+  SPYRO_ANIMID_FALL = 6,
+  /* 7: no state plays it by default */
+  SPYRO_ANIMID_HURT_TINT = 8,
+  SPYRO_ANIMID_FACE_TARGET = 9,
+  SPYRO_ANIMID_SIDESTEP_L1 = 10,
+  SPYRO_ANIMID_SIDESTEP_R1 = 11,
+  SPYRO_ANIMID_CHARGE = 12,
+  SPYRO_ANIMID_CHARGE_BONK = 13,
+  SPYRO_ANIMID_TEETER = 14,
+  SPYRO_ANIMID_HURT = 15,
+  SPYRO_ANIMID_GLIDE = 16,
+  SPYRO_ANIMID_GLIDE_DROP = 17,
+  SPYRO_ANIMID_LIFT = 18,
+  SPYRO_ANIMID_FIDGET_0 = 19,
+  SPYRO_ANIMID_SLIDE = 20,
+  SPYRO_ANIMID_CHARGE_AIR = 21,
+  SPYRO_ANIMID_JOG = 22,
+  SPYRO_ANIMID_KNOCKBACK = 23,
+  SPYRO_ANIMID_GLIDE_SLOW = 24,
+  SPYRO_ANIMID_SUPERCHARGE_AIR = 25,
+  SPYRO_ANIMID_HURT_PINNED = 26,
+  SPYRO_ANIMID_SCRIPTED_WALK = 27,
+  SPYRO_ANIMID_HURT_LONG = 28,
+  SPYRO_ANIMID_KNOCKBACK_2 = 29,
+  SPYRO_ANIMID_HAZARD = 30,
+  SPYRO_ANIMID_DEATH = 31,
+  SPYRO_ANIMID_DEATH_PINNED = 32,
+  SPYRO_ANIMID_FLY = 33,
+  SPYRO_ANIMID_FLY_CLIMB = 34,
+  SPYRO_ANIMID_FLY_DIVE = 35,
+  SPYRO_ANIMID_SCRIPTED_HOLD = 36,
+  SPYRO_ANIMID_FIDGET_1 = 37,
+  SPYRO_ANIMID_FIDGET_2 = 38,
+  SPYRO_ANIMID_FIDGET_3 = 39,
+  SPYRO_ANIMID_FIDGET_4 = 40,
+  SPYRO_ANIMID_FIDGET_5 = 41,
+  SPYRO_ANIMID_FIDGET_6 = 42,
+  SPYRO_ANIMID_FIDGET_7 = 43,
+  SPYRO_ANIMID_FIDGET_8 = 44,
+  SPYRO_ANIMID_SUPERCHARGE = 45,
 };
 
 /* g_nSpyroFlameState: the flame-breath machine (TickSpyroFlameAttack). */

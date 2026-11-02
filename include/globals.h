@@ -846,8 +846,8 @@ extern int g_anLevelTriggerStateSlots[10];              /* 0x800777c0 */
 extern int g_nActorCutsceneSubstate;                      /* 0x800777e8: enum ActorCutsceneSubstate (actor_cutscene.h) */
 extern int g_anCollisionContactPoint[3];                /* 0x80077858 */
 extern int g_nSpawnAnchorValid;                         /* 0x80077888 */
-extern int g_anRunningKillBitmap[8];                    /* 0x80077898 */
-extern int g_anCommittedKillBitmap[8];                  /* 0x800778b8 */
+extern int g_anCheckpointKillBitmap[8];                /* 0x80077898: per pool slot, killed as of the last checkpoint (SetSpawnAnchorFromActor snapshots the live set here) */
+extern int g_anLiveKillBitmap[8];                      /* 0x800778b8: per pool slot, killed in this attempt (MarkActorLiveKill/CommitActorKillGems); BuildLoadedLevelRuntime restores it from the checkpoint set */
 extern int g_anLevelSpawnPos[3];                        /* 0x800778d8 */
 extern int g_nLevelSpawnYaw;                            /* 0x800778e4 */
 extern int g_anLevelKillBitmapTable[288];               /* 0x80077908 */
@@ -940,7 +940,7 @@ extern int g_anSpyroWorldPos[3];                        /* 0x80078a58 */
 extern unsigned char g_abSpyroPersistentEuler[3];                /* 0x80078a64 */
 extern unsigned char g_abSpyroSwingByteEuler[3];                 /* 0x80078a68 */
 extern unsigned char g_bSpyroAnimPrev;                           /* 0x80078a70 */
-extern unsigned char g_bSpyroAnimCurrent;                        /* 0x80078a71 */
+extern unsigned char g_bSpyroAnimCurrent;                        /* 0x80078a71: enum SpyroAnimId (spyro_state.h) */
 extern unsigned char g_bSpyroFramePrev;                          /* 0x80078a76 */
 extern unsigned char g_bSpyroAnimFrame;                          /* 0x80078a77 */
 extern unsigned char g_bSpyroSubFrameTimer;                      /* 0x80078a7c */

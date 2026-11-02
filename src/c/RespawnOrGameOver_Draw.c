@@ -137,7 +137,7 @@ void RespawnOrGameOver_Draw(void) {
           g_pSpriteRecordWriteCursor->posY = LETTER_POS(k)->y;
           g_pSpriteRecordWriteCursor->rotZ = g_abGameOverLetterAngle[i];
           g_pSpriteRecordWriteCursor->otBias = 4;
-          g_pSpriteRecordWriteCursor->tintMode = 0xB;
+          g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
           g_pSpriteRecordWriteCursor->cullRadius = 0x20;
         }
         i += 1;
@@ -151,7 +151,7 @@ void RespawnOrGameOver_Draw(void) {
         pos[0] = 0xAE;
         pos[1] = 0xD0;
         pos[2] = 0x1100;
-        BuildTextSprites(g_szPressStart, pos, size, 0x12, 0xB);
+        BuildTextSprites(g_szPressStart, pos, size, 0x12, TINT_HUD);
         i = 0;
         sbase = &g_anSineLut[0x40];
         sk = 0;

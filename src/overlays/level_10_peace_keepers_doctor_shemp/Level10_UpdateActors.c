@@ -316,7 +316,7 @@ void Level10_UpdateActors(void) {
             } else {
               SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             }
-            MarkActorCommittedKill(actor);
+            MarkActorLiveKill(actor);
             *(volatile int *)&st->count <<= 7;
             g_nSfxOverrideFlags = SFX_OVERRIDE_PITCH;
             g_nSfxOverridePitch.v =
@@ -1549,23 +1549,23 @@ void Level10_UpdateActors(void) {
 
           switch (SPY.sparxHealth) {
           case SPARX_GREEN:
-            if (actor->nextAnim != 0 && actor->anim != 0) {
+            if (actor->nextAnim != SPARX_ANIM_GREEN && actor->anim != SPARX_ANIM_GREEN) {
               g_nActorAnimDone = 0;
-              ANIM_RESET(actor, 0);
+              ANIM_RESET(actor, SPARX_ANIM_GREEN);
             }
             break;
 
           case SPARX_BLUE:
-            if (actor->nextAnim != 2 && actor->anim != 2) {
+            if (actor->nextAnim != SPARX_ANIM_BLUE && actor->anim != SPARX_ANIM_BLUE) {
               g_nActorAnimDone = 0;
-              ANIM_RESET(actor, 2);
+              ANIM_RESET(actor, SPARX_ANIM_BLUE);
             }
             break;
 
           case SPARX_GOLD:
-            if (actor->nextAnim != 4 && actor->anim != 4) {
+            if (actor->nextAnim != SPARX_ANIM_GOLD && actor->anim != SPARX_ANIM_GOLD) {
               g_nActorAnimDone = 0;
-              ANIM_RESET(actor, 4);
+              ANIM_RESET(actor, SPARX_ANIM_GOLD);
             }
             break;
           }
@@ -1817,7 +1817,7 @@ void Level10_UpdateActors(void) {
 
           g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, 0x18);
           g_pLockedChestReward = SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
           g_nLevelKeyState = KEYSTATE_CHEST_OPENED;
           g_nSpyroSwingEulerTargetZ = 0;
@@ -1873,7 +1873,7 @@ void Level10_UpdateActors(void) {
       g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
       g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x20);
       SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-      MarkActorCommittedKill(actor);
+      MarkActorLiveKill(actor);
       DespawnActorRecord(actor);
       continue;
     }
@@ -1939,7 +1939,7 @@ void Level10_UpdateActors(void) {
 
         g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
         st->handle = SelectActorLodBand(actor, st->handle);
@@ -2500,10 +2500,10 @@ void Level10_UpdateActors(void) {
           st->prize->drawn = 0;
           st->prize->rotX = 0;
           st->prize->rotY = 0;
-          g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (st->prize->type - 0x53));
-          PlayActorMeshVoice(actor, 0, 0);
+          g_pfnLevelEmitParticles(8, EMIT_GEM_COLOR_BURST, &actor->posX, (st->prize->type - ACTOR_TYPE_GEM_1));
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_OPEN, 0);
           actor->mode = SEEDPOD_OPEN;
-          ANIM_RESET(actor, 1);
+          ANIM_RESET(actor, SEEDPOD_OPEN);
           continue;
         }
         if (st->timer >= 0xF8) {
@@ -2548,7 +2548,7 @@ void Level10_UpdateActors(void) {
             (g_nSpyroState == SPYRO_ST_CHARGE_AIR && (g_nSpyroSubstate & SPYRO_SUB_SUPERCHARGE))) {
           CollectPickupActor(st->prize);
           DespawnActorRecord(st->prize);
-          PlayActorMeshVoice(actor, 2, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_BURST, 0);
           for (i = 0; i < 2; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
@@ -2569,7 +2569,7 @@ void Level10_UpdateActors(void) {
         }
         if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = COLLECT_BOUNCE;
-          PlayActorMeshVoice(actor, 2, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_BURST, 0);
           for (i = 0; i < 2; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
@@ -2609,9 +2609,9 @@ void Level10_UpdateActors(void) {
           actor->rotY = st->rotY;
           actor->posZ = st->restZ;
           st->timer = 0;
-          PlayActorMeshVoice(actor, 1, 0);
+          PlayActorMeshVoice(actor, SEEDPOD_VOICE_CLOSE, 0);
           actor->mode = SEEDPOD_CLOSED;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, SEEDPOD_CLOSED);
           continue;
         }
         break;
@@ -2640,7 +2640,7 @@ void Level10_UpdateActors(void) {
                      : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x200) {
             SetSpawnAnchorFromActor(actor, actor->rotZ);
             actor->mode = CHECKPT_FLASH;
-            actor->anim = 1;
+            actor->anim = CHECKPT_ANIM_FLASH;
             actor->subMode = 0;
           }
         }
@@ -2650,7 +2650,7 @@ void Level10_UpdateActors(void) {
         actor->subMode += g_nFrameStep;
         if (actor->subMode >= 0x30) {
           actor->mode = CHECKPT_REARM;
-          actor->anim = 0;
+          actor->anim = CHECKPT_ANIM_REST;
         }
         break;
       }
@@ -2684,7 +2684,7 @@ void Level10_UpdateActors(void) {
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         ENTER_POSE(actor, SGUARD_KNOCKED);
       }
@@ -2911,9 +2911,9 @@ void Level10_UpdateActors(void) {
       }
 
       case SGUARD_RECOVER:
-        ANIM_GO(actor, 0);
+        ANIM_GO(actor, SGUARD_ANIM_IDLE);
         if (TICK_DOWN(st->timer24) != 0) {
-          ANIM_GO(actor, 4);
+          ANIM_GO(actor, SGUARD_ANIM_STANCE);
           actor->mode = SGUARD_GUARD;
           continue;
         }
@@ -2925,7 +2925,7 @@ void Level10_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (TICK_DOWN(st->timer04) != 0 && e < 0x578) {
           st->timer04 = 0x78;
-          ANIM_GO(actor, 5);
+          ANIM_GO(actor, SGUARD_ANIM_SWIPE);
           actor->mode = SGUARD_SWIPE;
           continue;
         }
@@ -2934,14 +2934,14 @@ void Level10_UpdateActors(void) {
 
       case SGUARD_SWIPE:
         if (g_nActorAnimDone != 0) {
-          ANIM_GO(actor, 4);
+          ANIM_GO(actor, SGUARD_ANIM_STANCE);
           actor->mode = SGUARD_GUARD;
           continue;
         }
         break;
 
       case SGUARD_FALL:
-        ANIM_GO(actor, 6);
+        ANIM_GO(actor, SGUARD_ANIM_FALL);
         if (TICK_DOWN(st->timer24) != 0) {
           DespawnActorRecord(actor);
           continue;
@@ -2949,7 +2949,7 @@ void Level10_UpdateActors(void) {
         if (actor->subMode == 0 && st->lift < -0x50) {
           FindNearestPathPointToActor(actor, (PathData *)st->path, &nearestNode[1]);
           SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, (int *)((unsigned char *)st->path + ((nearestNode[1] << 4) + 8)));
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           actor->subMode = 1;
         }
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC, 0xC);
@@ -3025,7 +3025,7 @@ void Level10_UpdateActors(void) {
                                         spy->posY - actor->posY, ATAN_ANGLE8)) >= 0x55 ||
             (actor->mode == SHEMP_P2_SLAM && actor->nextFrame >= 0x16 && actor->nextFrame < 0x30)) {
           if (st->phase == SHEMP_PHASE_3) {
-            ANIM_SET(actor, 3);
+            ANIM_SET(actor, SHEMP_ANIM_DYING);
             actor->rotZ += 0x80;
             ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
             actor->mode = SHEMP_DYING;
@@ -3037,7 +3037,7 @@ void Level10_UpdateActors(void) {
 
             CopyVector(&link->posX, &actor->posX);
             SpawnActorDeathDrop(link, DROP_SCATTER, 0, 0);
-            MarkActorCommittedKill(link);
+            MarkActorLiveKill(link);
             st->chain = *ls;
             DespawnActorRecord(link);
           }
@@ -3080,7 +3080,7 @@ void Level10_UpdateActors(void) {
         st->ang = actor->rotZ * 16;
         d = SteerActorYawTowardSpyro(actor, &st->turnDir, &st->ang, 0x20, 0x280, 1);
         if (ABS(d) < 0x80) {
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, SHEMP_ANIM_IDLE);
         }
         st->animStarted = 0;
         switch (st->phase) {
@@ -3111,15 +3111,15 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_P2_TAUNT:
         if (st->animStarted == 0) {
-          ANIM_GO(actor, 7);
+          ANIM_GO(actor, SHEMP_ANIM_ROAR);
           st->animStarted = 1;
         } else if (g_nActorAnimDone != 0) {
           if (st->count == 0) {
             st->count = RandomIntInRange(1, 2);
-            ANIM_GO(actor, 0x13);
+            ANIM_GO(actor, SHEMP_ANIM_GESTURE);
           } else {
             st->count--;
-            ANIM_GO(actor, 0x12);
+            ANIM_GO(actor, SHEMP_ANIM_STAND);
           }
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
@@ -3142,7 +3142,7 @@ void Level10_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           st->timer = 0xA0;
-          ANIM_GO(actor, 0x12);
+          ANIM_GO(actor, SHEMP_ANIM_STAND);
           actor->mode = SHEMP_P2_TAUNT;
           continue;
         }
@@ -3162,23 +3162,23 @@ void Level10_UpdateActors(void) {
         b = ArcTan2(actor->posX - *(int *)((unsigned char *)st->path + off + 8),
                           actor->posY - *(int *)((unsigned char *)st->path + off + 0xC), ATAN_ANGLE8);
         spd = 0xB4;
-        if (actor->nextAnim == 9) {
+        if (actor->nextAnim == SHEMP_ANIM_WALK) {
           lim = 6;
         }
         if (AbsAngleDelta8(ha, b) > lim) {
           SteerActorAroundPoint(actor, (int *)((unsigned char *)st->path + (off + 8)), 0xC80, ha, 6,
                         spd, 9, 0x14, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
-          ANIM_GO(actor, 9);
+          ANIM_GO(actor, SHEMP_ANIM_WALK);
         } else {
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-          ANIM_GO(actor, 0x12);
+          ANIM_GO(actor, SHEMP_ANIM_STAND);
           if (g_nActorAnimDone != 0) {
             if (st->count == 0) {
               st->count = RandomIntInRange(1, 2);
-              ANIM_GO(actor, 0x13);
+              ANIM_GO(actor, SHEMP_ANIM_GESTURE);
             } else {
               st->count--;
-              ANIM_GO(actor, 0x12);
+              ANIM_GO(actor, SHEMP_ANIM_STAND);
             }
           }
         }
@@ -3194,7 +3194,7 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_P1_WINDUP:
         if (st->animStarted == 0) {
-          ANIM_GO(actor, 0xA);
+          ANIM_GO(actor, SHEMP_ANIM_WINDUP);
         }
         if (g_nActorAnimDone != 0 || st->animStarted != 0) {
           st->animStarted = 1;
@@ -3205,7 +3205,7 @@ void Level10_UpdateActors(void) {
         break;
 
       case SHEMP_P1_CHARGE:
-        ANIM_GO(actor, 9);
+        ANIM_GO(actor, SHEMP_ANIM_WALK);
         if (MoveActorAlongHeading(actor, 0xAA, 0, 0, MOVE_LIFT | MOVE_STEP_LIMIT) != 0 ||
             TICK_DOWN(st->timer) != 0 ||
             (AbsAngleDelta8(actor->rotZ,
@@ -3218,7 +3218,7 @@ void Level10_UpdateActors(void) {
         break;
 
       case SHEMP_P1_STRIKE:
-        ANIM_GO(actor, 0xF);
+        ANIM_GO(actor, SHEMP_ANIM_STRIKE);
         if (AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
                                         spy->posY - actor->posY, ATAN_ANGLE8)) < 8 &&
@@ -3238,7 +3238,7 @@ void Level10_UpdateActors(void) {
         off = st->node[0] << 4;
         a = ArcTan2(*(int *)((unsigned char *)st->path + off + 8) - spy->posX,
                           *(int *)((unsigned char *)st->path + off + 0xC) - spy->posY, ATAN_ANGLE8);
-        ANIM_GO(actor, 9);
+        ANIM_GO(actor, SHEMP_ANIM_WALK);
         tgt371[0] = *(int *)((unsigned char *)st->path + off + 8) + ((g_anCosineLut[a] * 0x19) >> 5);
         tgt371[1] =
             *(int *)((unsigned char *)st->path + off + 0xC) + ((g_anSineLut[a] * 0x19) >> 5);
@@ -3257,15 +3257,15 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_P3_TAUNT:
         if (st->animStarted == 0) {
-          ANIM_GO(actor, 0xA);
+          ANIM_GO(actor, SHEMP_ANIM_WINDUP);
           st->animStarted = 1;
         } else if (g_nActorAnimDone != 0) {
           if (st->count == 0) {
             st->count = RandomIntInRange(1, 2);
-            ANIM_GO(actor, 0x13);
+            ANIM_GO(actor, SHEMP_ANIM_GESTURE);
           } else {
             st->count--;
-            ANIM_GO(actor, 0x12);
+            ANIM_GO(actor, SHEMP_ANIM_STAND);
           }
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
@@ -3277,7 +3277,7 @@ void Level10_UpdateActors(void) {
         break;
 
       case SHEMP_P3_TURN:
-        ANIM_GO(actor, 0xB);
+        ANIM_GO(actor, SHEMP_ANIM_TURN);
         st->timer = 0;
         actor->subMode = actor->rotZ;
         if (TurnActorYawTowardAngle(actor,
@@ -3313,7 +3313,7 @@ void Level10_UpdateActors(void) {
           }
           if (st->timer >> 4 >= 0x105) {
             st->timer = 0x3C;
-            ANIM_BLEND(actor, 0x12);
+            ANIM_BLEND(actor, SHEMP_ANIM_STAND);
             actor->mode = SHEMP_P3_TAUNT;
             continue;
           }
@@ -3323,10 +3323,10 @@ void Level10_UpdateActors(void) {
       case SHEMP_STUNNED:
         st->timer = 0xC8;
         if (st->phase == SHEMP_PHASE_1) {
-          ANIM_GO(actor, 0xE);
+          ANIM_GO(actor, SHEMP_ANIM_STUNNED);
         } else {
           actor->rotZ += 0x80;
-          ANIM_SET(actor, 0xE);
+          ANIM_SET(actor, SHEMP_ANIM_STUNNED);
         }
         ModifyWorldChunkAnimFlags(st->phase, CHUNK_ANIM_RESUME, 0);
         st->timer2 = 0x1E;
@@ -3402,14 +3402,14 @@ void Level10_UpdateActors(void) {
         }
         if (TrackEntityYawTowardSpyro(actor, 6, 0xA, YAW_STEP_IN_BAND) != 0 && g_nActorAnimDone != 0) {
           st->count = 0;
-          ANIM_GO(actor, 0);
+          ANIM_GO(actor, SHEMP_ANIM_IDLE);
           actor->mode = SHEMP_IDLE;
           continue;
         }
         break;
 
       case SHEMP_DYING:
-        ANIM_GO(actor, 3);
+        ANIM_GO(actor, SHEMP_ANIM_DYING);
         if (g_nActorAnimDone != 0) {
           g_bLevelPhasedBossKilled = 1;
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -3417,7 +3417,7 @@ void Level10_UpdateActors(void) {
           actor->floorOffset = 0;
           SnapActorToGround(actor);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-          MarkActorCommittedKill(actor);
+          MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3445,7 +3445,7 @@ void Level10_UpdateActors(void) {
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
-        MarkActorCommittedKill(actor);
+        MarkActorLiveKill(actor);
         ENTER_POSE(actor, GLOOK_KNOCKED);
       }
       if (TICK_DOWN(st->camTimer) == 0) {
@@ -3487,13 +3487,13 @@ void Level10_UpdateActors(void) {
             actor->posZ < SPY.posZ &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x5DC) {
           actor->subMode = 1;
-          ANIM_GO(actor, 4);
+          ANIM_GO(actor, GLOOK_ANIM_STAND);
           actor->mode = GLOOK_ROUSE;
           continue;
         }
         if (d > 0x2000) {
           TurnActorYawTowardAngle(actor, st->home, 4, 0, YAW_HOLD_IN_BAND);
-          if (actor->anim == 2 && g_nActorAnimNewFrame != 0 && actor->frame == 0xF &&
+          if (actor->anim == GLOOK_ANIM_IDLE && g_nActorAnimNewFrame != 0 && actor->frame == 0xF &&
               --st->count > 0) {
             actor->frame = 5;
             actor->nextFrame = 6;
@@ -3502,33 +3502,33 @@ void Level10_UpdateActors(void) {
           if (st->count == 0) {
             st->count = RandomIntInRange(3, 5);
             if (RandomIntInRange(0, 0x64) > 0x50) {
-              ANIM_GO(actor, 1);
+              ANIM_GO(actor, GLOOK_ANIM_FIDGET);
             } else {
-              ANIM_GO(actor, 4);
+              ANIM_GO(actor, GLOOK_ANIM_STAND);
             }
           }
         } else {
           h = WrapAddAngle8(ArcTan2(spy->posX - actor->posX,
                                           spy->posY - actor->posY, ATAN_ANGLE8),
                             5);
-          if (actor->nextAnim == 2 || actor->nextAnim == 4) {
+          if (actor->nextAnim == GLOOK_ANIM_IDLE || actor->nextAnim == GLOOK_ANIM_STAND) {
             ANIM_GO(actor, GLOOK_WATCH);
           }
-          if (actor->anim < 2 || actor->anim == 5) {
+          if (actor->anim < 2 || actor->anim == GLOOK_ANIM_WATCH_ALT) {
             TurnActorYawTowardAngle(actor, h, 4, 0, YAW_HOLD_IN_BAND);
           }
           if (g_nActorAnimDone != 0) {
             if (--st->count <= 0) {
               st->count = RandomIntInRange(3, 5);
               if (RandomIntInRange(0, 0x64) > 0x50) {
-                if (actor->nextAnim != 1) {
-                  ANIM_GO(actor, 1);
+                if (actor->nextAnim != GLOOK_ANIM_FIDGET) {
+                  ANIM_GO(actor, GLOOK_ANIM_FIDGET);
                 } else {
                   ANIM_GO(actor, GLOOK_WATCH);
                 }
               }
             } else {
-              ANIM_GO(actor, 5);
+              ANIM_GO(actor, GLOOK_ANIM_WATCH_ALT);
             }
           }
         }
@@ -3582,9 +3582,9 @@ void Level10_UpdateActors(void) {
                           ArcTan2(link->posX - actor->posX,
                                         link->posY - actor->posY, ATAN_ANGLE8),
                           8, 6, YAW_STEP_IN_BAND) != 0) {
-          ANIM_GO(actor, 8);
+          ANIM_GO(actor, GLOOK_ANIM_CALL);
         }
-        if (actor->anim == 8 && g_nActorAnimNewFrame != 0 && actor->frame == 5) {
+        if (actor->anim == GLOOK_ANIM_CALL && g_nActorAnimNewFrame != 0 && actor->frame == 5) {
           ShempGuardState *ls = link->state;
 
           if (link->mode < 0x7F && link->nextAnim != 3) {
@@ -3603,8 +3603,8 @@ void Level10_UpdateActors(void) {
             }
           }
         }
-        if (g_nActorAnimDone != 0 && actor->anim == 8) {
-          ANIM_GO(actor, 4);
+        if (g_nActorAnimDone != 0 && actor->anim == GLOOK_ANIM_CALL) {
+          ANIM_GO(actor, GLOOK_ANIM_STAND);
           actor->mode = GLOOK_WATCH;
           continue;
         }

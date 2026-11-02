@@ -35,7 +35,7 @@ int ProbeActorGroundHeight(Actor *actor);
 int IsActorGroundFlat(Actor *actor);
 int ProbeActorGroundHeightRaised(Actor *actor, int delta);
 void SnapActorToGround(Actor *actor);
-int IsActorInRunningKillSet(Actor *actor);
+int IsActorInCheckpointKillSet(Actor *actor);
 void PlayActorMeshVoice(Actor *actor, int voiceOffset, void *owner);
 void BurstActorWithSound(Actor *actor, int sparkLife);
 #ifndef YAW_HOLD_IN_BAND
@@ -58,7 +58,7 @@ void OrActorGroupFlagsInCone(Actor *actor, int group, unsigned int bits, int dis
 void SetActorGroupStateExcept(Actor *actor, int value, int match);
 void ReplaceActorGroupState(Actor *actor, int value, int match);
 void SetActorGroupSubstate(Actor *actor, int value);
-void MarkActorCommittedKill(Actor *actor);
+void MarkActorLiveKill(Actor *actor);
 void CollectPickupActor(Actor *actor);
 int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR, int flags);
 #ifndef NAME_LETTERS_RETURN_HOME

@@ -52,11 +52,11 @@ void SaveMenu_Update(void) {
 
       t = LookupSine((SM[1] << 5) - 0x400) + 0x1000;
       actor = &g_pActorListBase[((SaveHostState *)ACT->state)->anchor];
-      if (actor->mode == 2) {
+      if (actor->mode == CHECKPT_FLASH) {
         actor->subMode += g_nFrameStep;
         if (actor->subMode >= 0x30) {
-          actor->mode = 0;
-          actor->anim = 0;
+          actor->mode = CHECKPT_REARM;
+          actor->anim = CHECKPT_ANIM_REST;
         }
       }
       a = LERP_ANGLE(SM[14], SM[11], t);

@@ -319,7 +319,7 @@ void Gamestate02_03_06_Draw(void) {
       pos[0] = 0xba;
       pos[1] = 0x52;
       pos[2] = 0xc00;
-      BuildTextSpriteChain(g_szUiPaused, pos, 0x1c, 0xb);
+      BuildTextSpriteChain(g_szUiPaused, pos, 0x1c, TINT_HUD);
       if (g_nPauseMenuSubstate == PAUSE_PAGE_QUIT_CONFIRM) {
         styA[0] = 0x10;
         styA[1] = 1;
@@ -327,11 +327,11 @@ void Gamestate02_03_06_Draw(void) {
         pos[0] = 0xb7;
         pos[1] = 0x77;
         pos[2] = 0x1100;
-        BuildTextSprites(g_szQuitGamePrompt, pos, styA, 0x12, 0xb);
+        BuildTextSprites(g_szQuitGamePrompt, pos, styA, 0x12, TINT_HUD);
         pos[0] = 0xc0;
         pos[1] = 0x94;
         pos[2] = 0x1100;
-        BuildTextSprites(g_szUiYes, pos, styA, 0x12, 0xb);
+        BuildTextSprites(g_szUiYes, pos, styA, 0x12, TINT_HUD);
         if (g_nPauseMenuCursor == PAUSE_QUIT_YES) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 3;
@@ -339,7 +339,7 @@ void Gamestate02_03_06_Draw(void) {
         pos[0] = 0x128;
         pos[1] = 0x94;
         pos[2] = 0x1100;
-        BuildTextSprites(g_szUiNo, pos, styA, 0x12, 0xb);
+        BuildTextSprites(g_szUiNo, pos, styA, 0x12, TINT_HUD);
         if (g_nPauseMenuCursor == PAUSE_QUIT_NO) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 2;
@@ -364,7 +364,7 @@ void Gamestate02_03_06_Draw(void) {
         pos[0] = 0x6b;
         pos[1] = 0x6c;
         pos[2] = 0x1400;
-        BuildTextSprites(g_szSoundEffects, pos, styB, 0x10, 0xb);
+        BuildTextSprites(g_szSoundEffects, pos, styB, 0x10, TINT_HUD);
         if (g_nPauseMenuCursor == OPTIONS_ROW_SFX_VOLUME) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 0xb;
@@ -372,7 +372,7 @@ void Gamestate02_03_06_Draw(void) {
         pos[0] = 0x79;
         pos[1] = 0x7c;
         pos[2] = 0x1400;
-        BuildTextSprites(g_szMusicVolume, pos, styB, 0x10, 0xb);
+        BuildTextSprites(g_szMusicVolume, pos, styB, 0x10, TINT_HUD);
         if (g_nPauseMenuCursor == OPTIONS_ROW_MUSIC_VOLUME) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 0xb;
@@ -380,7 +380,7 @@ void Gamestate02_03_06_Draw(void) {
         pos[0] = 0x6b;
         pos[1] = 0x8c;
         pos[2] = 0x1400;
-        BuildTextSprites(g_szSpeakerSetup, pos, styB, 0x10, 0xb);
+        BuildTextSprites(g_szSpeakerSetup, pos, styB, 0x10, TINT_HUD);
         if (g_nPauseMenuCursor == OPTIONS_ROW_SPEAKERS) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 0xc;
@@ -389,7 +389,7 @@ void Gamestate02_03_06_Draw(void) {
           pos[0] = 0xa3;
           pos[1] = 0x9c;
           pos[2] = 0x1400;
-          BuildTextSprites(g_szVibration, pos, styB, 0x10, 0xb);
+          BuildTextSprites(g_szVibration, pos, styB, 0x10, TINT_HUD);
           if (g_nPauseMenuCursor == OPTIONS_ROW_VIBRATION) {
             rec = g_pSpriteRecordWriteCursor;
             nGlyphs = 9;
@@ -400,7 +400,7 @@ void Gamestate02_03_06_Draw(void) {
         v = rows;
         v <<= 4;
         pos[1] = v + 0x9c;
-        BuildTextSprites(g_szUiCamera, pos, styB, 0x10, 0xb);
+        BuildTextSprites(g_szUiCamera, pos, styB, 0x10, TINT_HUD);
         if (g_nPauseMenuCursor == OPTIONS_ROW_CAMERA) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 6;
@@ -408,7 +408,7 @@ void Gamestate02_03_06_Draw(void) {
         pos[0] = 0xee;
         pos[1] = v + 0xac;
         pos[2] = 0x1100;
-        BuildTextSprites(g_szUiDone, pos, styB, 0x10, 0xb);
+        BuildTextSprites(g_szUiDone, pos, styB, 0x10, TINT_HUD);
         if (g_nPauseMenuCursor == OPTIONS_ROW_DONE) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 4;
@@ -430,7 +430,7 @@ void Gamestate02_03_06_Draw(void) {
           pos[0] = 0x142;
           pos[1] = 0x6c;
           pos[2] = 0x1400;
-          BuildTextSprites(g_szUiOff, pos, styB, 0x10, 0xb);
+          BuildTextSprites(g_szUiOff, pos, styB, 0x10, TINT_HUD);
           phase3 = 0;
           if (g_nPauseMenuCursor == OPTIONS_ROW_SFX_VOLUME) {
             rec = g_pSpriteRecordWriteCursor;
@@ -466,7 +466,7 @@ void Gamestate02_03_06_Draw(void) {
               }
               phase4 += 0xc;
               g_pSpriteRecordWriteCursor->otBias = 0x7f;
-              g_pSpriteRecordWriteCursor->tintMode = 0xb;
+              g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
               g_pSpriteRecordWriteCursor->cullRadius = 0xff;
               x += 0xa;
               i++;
@@ -477,7 +477,7 @@ void Gamestate02_03_06_Draw(void) {
           pos[0] = 0x142;
           pos[1] = 0x7c;
           pos[2] = 0x1400;
-          BuildTextSprites(g_szUiOff, pos, styB, 0x10, 0xb);
+          BuildTextSprites(g_szUiOff, pos, styB, 0x10, TINT_HUD);
           phase5 = 0;
           if (g_nPauseMenuCursor == OPTIONS_ROW_MUSIC_VOLUME) {
             rec = g_pSpriteRecordWriteCursor;
@@ -513,7 +513,7 @@ void Gamestate02_03_06_Draw(void) {
               }
               phase6 += 0xc;
               g_pSpriteRecordWriteCursor->otBias = 0x7f;
-              g_pSpriteRecordWriteCursor->tintMode = 0xb;
+              g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
               g_pSpriteRecordWriteCursor->cullRadius = 0xff;
               x += 0xa;
               i++;
@@ -524,10 +524,10 @@ void Gamestate02_03_06_Draw(void) {
         pos[1] = 0x8c;
         pos[2] = 0x1400;
         if (g_nSoundMonoMixFlag != 0) {
-          BuildTextSprites(g_szUiMono, pos, styB, 0x10, 0xb);
+          BuildTextSprites(g_szUiMono, pos, styB, 0x10, TINT_HUD);
           n3 = 4;
         } else {
-          BuildTextSprites(g_szUiStereo, pos, styB, 0x10, 0xb);
+          BuildTextSprites(g_szUiStereo, pos, styB, 0x10, TINT_HUD);
           n3 = 6;
         }
         if (g_nPauseMenuCursor == OPTIONS_ROW_SPEAKERS) {
@@ -550,10 +550,10 @@ void Gamestate02_03_06_Draw(void) {
           pos[1] = 0x9c;
           pos[2] = 0x1400;
           if (g_nOptionVibrationEnabled != 0) {
-            BuildTextSprites(g_szUiOn, pos, styB, 0x10, 0xb);
+            BuildTextSprites(g_szUiOn, pos, styB, 0x10, TINT_HUD);
             n4 = 2;
           } else {
-            BuildTextSprites(g_szUiOff, pos, styB, 0x10, 0xb);
+            BuildTextSprites(g_szUiOff, pos, styB, 0x10, TINT_HUD);
             n4 = 3;
           }
           if (g_nPauseMenuCursor == OPTIONS_ROW_VIBRATION) {
@@ -576,10 +576,10 @@ void Gamestate02_03_06_Draw(void) {
         pos[1] = rows * 0x10 + 0x9c;
         pos[2] = 0x1400;
         if (g_dwActiveCameraOptions == CAM_OPT_ACTIVE) {
-          BuildTextSprites(g_szUiActive, pos, styB, 0x10, 0xb);
+          BuildTextSprites(g_szUiActive, pos, styB, 0x10, TINT_HUD);
           n5 = 6;
         } else {
-          BuildTextSprites(g_szUiPassive, pos, styB, 0x10, 0xb);
+          BuildTextSprites(g_szUiPassive, pos, styB, 0x10, TINT_HUD);
           n5 = 7;
         }
         if (g_nPauseMenuCursor == OPTIONS_ROW_CAMERA) {
@@ -604,7 +604,7 @@ void Gamestate02_03_06_Draw(void) {
         styC[1] = 1;
         pos[1] = 0x6e;
         pos[2] = 0x1100;
-        BuildTextSprites(g_szContinue, pos, styC, 0x12, 0xb);
+        BuildTextSprites(g_szContinue, pos, styC, 0x12, TINT_HUD);
         if (g_nPauseMenuCursor == PAUSE_ROW_CONTINUE) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 8;
@@ -612,7 +612,7 @@ void Gamestate02_03_06_Draw(void) {
         pos[0] = 0xcf;
         pos[1] = 0x80;
         pos[2] = 0x1100;
-        BuildTextSprites(g_szUiOptions, pos, styC, 0x12, 0xb);
+        BuildTextSprites(g_szUiOptions, pos, styC, 0x12, TINT_HUD);
         if (g_nPauseMenuCursor == PAUSE_ROW_OPTIONS) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 7;
@@ -620,7 +620,7 @@ void Gamestate02_03_06_Draw(void) {
         pos[0] = 0xbf;
         pos[1] = 0x92;
         pos[2] = 0x1100;
-        BuildTextSprites(g_szInventory, pos, styC, 0x12, 0xb);
+        BuildTextSprites(g_szInventory, pos, styC, 0x12, TINT_HUD);
         if (g_nPauseMenuCursor == PAUSE_ROW_INVENTORY) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 9;
@@ -629,7 +629,7 @@ void Gamestate02_03_06_Draw(void) {
           pos[0] = 0xe7;
           pos[1] = 0xa4;
           pos[2] = 0x1100;
-          BuildTextSprites(g_szUiQuit, pos, styC, 0x12, 0xb);
+          BuildTextSprites(g_szUiQuit, pos, styC, 0x12, TINT_HUD);
           if (g_nPauseMenuCursor == PAUSE_ROW_EXIT) {
             rec = g_pSpriteRecordWriteCursor;
             nGlyphs = 4;
@@ -639,7 +639,7 @@ void Gamestate02_03_06_Draw(void) {
           pos[0] = 0xb7;
           pos[1] = 0xa4;
           pos[2] = 0x1100;
-          BuildTextSprites(g_szExitLevel, pos, styC, 0x12, 0xb);
+          BuildTextSprites(g_szExitLevel, pos, styC, 0x12, TINT_HUD);
           if (g_nPauseMenuCursor == PAUSE_ROW_EXIT) {
             rec = g_pSpriteRecordWriteCursor;
             nGlyphs = 9;
@@ -649,7 +649,7 @@ void Gamestate02_03_06_Draw(void) {
           pos[0] = 0xbf;
           pos[1] = 0xa4;
           pos[2] = 0x1100;
-          BuildTextSprites(g_szQuitGame, pos, styC, 0x12, 0xb);
+          BuildTextSprites(g_szQuitGame, pos, styC, 0x12, TINT_HUD);
           if (g_nPauseMenuCursor == PAUSE_ROW_EXIT) {
             rec = g_pSpriteRecordWriteCursor;
             nGlyphs = 8;
@@ -724,7 +724,7 @@ void Gamestate02_03_06_Draw(void) {
           0x19;
       g_pSpriteRecordWriteCursor->rotZ = g_adwHudBobSinePhaseBlock[0];
       g_pSpriteRecordWriteCursor->otBias = 0x7f;
-      g_pSpriteRecordWriteCursor->tintMode = 0xb;
+      g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = 0xff;
       g_pSpriteRecordWriteCursor--;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
@@ -742,7 +742,7 @@ void Gamestate02_03_06_Draw(void) {
             ((unsigned short *)g_anCosineLut)[bob] >> 8;
       }
       g_pSpriteRecordWriteCursor->otBias = 0x7f;
-      g_pSpriteRecordWriteCursor->tintMode = 0xb;
+      g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = 0xff;
       {
         int x3;
@@ -849,7 +849,7 @@ void Gamestate02_03_06_Draw(void) {
       SCHED_FENCE();
       g_pSpriteRecordWriteCursor->rotZ = g_dwHudBobSinePhase;
       g_pSpriteRecordWriteCursor->otBias = 0x7f;
-      g_pSpriteRecordWriteCursor->tintMode = 0xb;
+      g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = 0xff;
       g_pSpriteRecordWriteCursor--;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
@@ -870,7 +870,7 @@ void Gamestate02_03_06_Draw(void) {
       }
       g_pSpriteRecordWriteCursor->otBias = 0x7f;
       i = 0;
-      g_pSpriteRecordWriteCursor->tintMode = 0xb;
+      g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       y = 0x7b;
       g_pSpriteRecordWriteCursor->cullRadius = 0xff;
       do {

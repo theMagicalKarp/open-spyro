@@ -4,7 +4,7 @@
 /* Mark `actor` in the committed-kill bitmap (0x8003b7c0). Ignores pointers
    outside the live pool [g_pActorListBase, g_pActorPoolDynBase); otherwise sets
    the bit for its pool index. */
-void MarkActorCommittedKill(Actor *actor) {
+void MarkActorLiveKill(Actor *actor) {
   int index;
   int word;
   int bit;
@@ -13,6 +13,6 @@ void MarkActorCommittedKill(Actor *actor) {
     index = actor - g_pActorListBase;
     word = index >> 5;
     bit = index & 0x1F;
-    g_anCommittedKillBitmap[word] |= 1 << bit;
+    g_anLiveKillBitmap[word] |= 1 << bit;
   }
 }
