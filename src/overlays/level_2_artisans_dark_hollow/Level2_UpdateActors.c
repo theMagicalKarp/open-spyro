@@ -1341,7 +1341,7 @@ void Level2_UpdateActors(void) {
             ((dz = actor->posZ - SPY.posZ) > 0 ? dz < 0x5DC
                                                : SPY.posZ - actor->posZ < 0x5DC)) {
           st->speed = 0x48;
-          st->flag = 0;
+          st->gloatCount = 0;
           ENTER_POSE_B(actor, GPAIR_SWING);
         }
         if (dist > 0x2400) {
@@ -1352,10 +1352,10 @@ void Level2_UpdateActors(void) {
       case GPAIR_SWING:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (SPY.state == SPYRO_ST_HURT_PINNED) {
-          st->flag = 2;
+          st->gloatCount = 2;
         }
         if (g_nActorAnimDone != 0) {
-          if (st->flag != 0) {
+          if (st->gloatCount != 0) {
             ENTER_POSE_B(actor, GPAIR_GLOAT);
           }
           ENTER_POSE_B(actor, GPAIR_WATCH);
@@ -1379,7 +1379,7 @@ void Level2_UpdateActors(void) {
         }
         break;
       case GPAIR_GLOAT:
-        if (g_nActorAnimDone != 0 && TICK_DOWN(st->flag)) {
+        if (g_nActorAnimDone != 0 && TICK_DOWN(st->gloatCount)) {
           ENTER_POSE_B(actor, GPAIR_IDLE);
         }
         break;
@@ -1753,7 +1753,7 @@ void Level2_UpdateActors(void) {
       TickActorFlameGlow(actor);
       EBB_BREAK();
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != POSTGUARD_KNOCKED &&
-          (actor->flags != ACTOR_HIT_FLAME || st->flag == 0)) {
+          (actor->flags != ACTOR_HIT_FLAME || st->flameProof == 0)) {
         st->time = 0x8C;
         st->speed = 0x118;
         st->timer = 0x28;
@@ -1871,10 +1871,10 @@ void Level2_UpdateActors(void) {
         switch (st->sub) {
         case POSTGUARD_HOP_REST:
           ANIM_GO(actor, 4);
-          st->flag = 1;
+          st->flameProof = 1;
           if (TICK_DOWN(st->timer) && g_nActorAnimDone != 0) {
             st->sub = POSTGUARD_HOP_READY;
-            st->flag = 0;
+            st->flameProof = 0;
             ANIM_GO(actor, 5);
           }
           break;
@@ -1894,7 +1894,7 @@ void Level2_UpdateActors(void) {
             if (actor->anim == 6) {
               ANIM_GO(actor, 5);
             } else {
-              st->flag = 1;
+              st->flameProof = 1;
               st->sub = POSTGUARD_HOP_REST;
               st->timer = RandomIntInRange(0x8C, 0xC8);
               ANIM_BLEND(actor, 4);
@@ -1993,7 +1993,7 @@ void Level2_UpdateActors(void) {
         if (AbsAngleDelta8(ang, actor->rotZ) < 0x10) {
           TurnActorYawTowardAngle(actor, ang, 5, 0, YAW_HOLD_IN_BAND);
           MoveActorAlongAngle(actor, ang, 0x50, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-          if (st->flag != 0 ||
+          if (st->afterCharge != 0 ||
               ApproxDist2D(&actor->posX,
                             &st->path->nodes[st->path->cur].x) < 0x80) {
             PathData *path = st->path;
@@ -2035,7 +2035,7 @@ void Level2_UpdateActors(void) {
           st->mode = 1;
         }
 
-        st->flag = 0;
+        st->afterCharge = 0;
         if (TICK_DOWN(st->timer) &&
             actor->posZ - actor->floorOffset - SPY.posZ > -0x1F4) {
           int dSpy = ApproxDist2D(&actor->posX, &((SpyroObj *)(base - 8))->posX);
@@ -2073,7 +2073,7 @@ void Level2_UpdateActors(void) {
         break;
 
       case PCHARGER_CHARGE:
-        st->flag = 1;
+        st->afterCharge = 1;
         if (actor->subMode == 0) {
           int dist = ApproxDist2D(&actor->posX, &spy->posX);
           int ang;

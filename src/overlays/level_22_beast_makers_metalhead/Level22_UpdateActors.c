@@ -888,7 +888,7 @@ void Level22_UpdateActors(void) {
         ANIM_GO(actor, 8);
         if (g_nActorAnimDone != 0) {
           ANIM_THEN(actor, 9);
-          st->timer2 = 0x46;
+          st->staggerTimer = 0x46;
           actor->mode++;
           continue;
         }
@@ -896,7 +896,7 @@ void Level22_UpdateActors(void) {
 
       case METALHEAD_PHASE_STAGGER:
         PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 3, 5, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-        if (TICK_DOWN(st->timer2) != 0) {
+        if (TICK_DOWN(st->staggerTimer) != 0) {
           actor->mode++;
           continue;
         }

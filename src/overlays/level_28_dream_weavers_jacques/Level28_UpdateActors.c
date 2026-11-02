@@ -768,8 +768,8 @@ void Level28_UpdateActors(void) {
           actor->mode = CRAM_GO_HOME;
           continue;
         }
-        if (TICK_DOWN(st->timer2) != 0) {
-          st->timer2 = 0x1E;
+        if (TICK_DOWN(st->reaimTimer) != 0) {
+          st->reaimTimer = 0x1E;
           st->heading = *(unsigned char *)&g_bSpyroPersistentEulerZ;
         }
         if (TurnActorYawTowardAngle(actor,
@@ -785,17 +785,17 @@ void Level28_UpdateActors(void) {
         if (AbsAngleDelta8(spy->bodyRotZ,
                           ArcTan2(actor->posX - spy->posX,
                                         actor->posY - spy->posY, ATAN_ANGLE8)) >= 0x31) {
-          if (st->timer3 != 0) {
-            if (TICK_DOWN(st->timer3) != 0) {
-              st->timer3 = 0;
+          if (st->lookAwayTimer != 0) {
+            if (TICK_DOWN(st->lookAwayTimer) != 0) {
+              st->lookAwayTimer = 0;
               actor->mode = CRAM_GO_HOME;
               continue;
             }
           } else {
-            st->timer3 = 0x28;
+            st->lookAwayTimer = 0x28;
           }
         } else {
-          st->timer3 = 0;
+          st->lookAwayTimer = 0;
         }
         if (st->charged == 0 && dist < range - 0x258 &&
             AbsAngleDelta8(actor->rotZ,
@@ -899,7 +899,7 @@ void Level28_UpdateActors(void) {
         actor->rotZ =
             ArcTan2(spy->posX - actor->posX, SPY.posY - actor->posY, ATAN_ANGLE8);
         st->timer = 8;
-        st->timer2 = 0x78;
+        st->flightTimer = 0x78;
         ((JacquesState *)st->partner->state)->child = 0;
         st->speed = 0x12C;
         d = ApproxDist2D(&actor->posX, g168);
@@ -952,7 +952,7 @@ void Level28_UpdateActors(void) {
             continue;
           }
         }
-        if (TICK_DOWN(st->timer2) != 0) {
+        if (TICK_DOWN(st->flightTimer) != 0) {
           st->u06 = 0;
           st->speed = 0;
           st->spinX = 0;
@@ -2046,8 +2046,8 @@ void Level28_UpdateActors(void) {
             break;
           case SINGER_ROLE_PAIRED:
             if (g_pActorListBase[st->partner].mode >= 6 &&
-                ((PathWalkerState *)g_pActorListBase[st->partner].state)->flag == 0) {
-              st->flag = one;
+                ((PathWalkerState *)g_pActorListBase[st->partner].state)->resumePending == 0) {
+              st->resumePending = one;
             } else {
               st->timer = 0x1C2;
               ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
@@ -2077,8 +2077,8 @@ void Level28_UpdateActors(void) {
         if (st->next == SINGER_CUE_STOP) {
           ENTER_POSE(actor, SINGER_SETTLE);
         }
-        if (st->flag != 0 && (GetWorldChunkAnimState(st->chunkAnim) & CHUNK_ANIM_HALTED)) {
-          st->flag = 0;
+        if (st->resumePending != 0 && (GetWorldChunkAnimState(st->chunkAnim) & CHUNK_ANIM_HALTED)) {
+          st->resumePending = 0;
           st->timer = 0x14A;
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }

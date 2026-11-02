@@ -3082,7 +3082,7 @@ void Level10_UpdateActors(void) {
         if (ABS(d) < 0x80) {
           ANIM_GO(actor, 0);
         }
-        st->flag = 0;
+        st->animStarted = 0;
         switch (st->phase) {
         case SHEMP_PHASE_1:
           if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x2328) {
@@ -3110,9 +3110,9 @@ void Level10_UpdateActors(void) {
         break;
 
       case SHEMP_P2_TAUNT:
-        if (st->flag == 0) {
+        if (st->animStarted == 0) {
           ANIM_GO(actor, 7);
-          st->flag = 1;
+          st->animStarted = 1;
         } else if (g_nActorAnimDone != 0) {
           if (st->count == 0) {
             st->count = RandomIntInRange(1, 2);
@@ -3150,7 +3150,7 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_P1_START:
         st->timer = 0x5A;
-        st->flag = 0;
+        st->animStarted = 0;
         actor->mode = SHEMP_P1_CIRCLE;
         continue;
 
@@ -3193,11 +3193,11 @@ void Level10_UpdateActors(void) {
         break;
 
       case SHEMP_P1_WINDUP:
-        if (st->flag == 0) {
+        if (st->animStarted == 0) {
           ANIM_GO(actor, 0xA);
         }
-        if (g_nActorAnimDone != 0 || st->flag != 0) {
-          st->flag = 1;
+        if (g_nActorAnimDone != 0 || st->animStarted != 0) {
+          st->animStarted = 1;
           st->timer = 0x32;
           actor->mode = SHEMP_P1_CHARGE;
           continue;
@@ -3256,9 +3256,9 @@ void Level10_UpdateActors(void) {
         break;
 
       case SHEMP_P3_TAUNT:
-        if (st->flag == 0) {
+        if (st->animStarted == 0) {
           ANIM_GO(actor, 0xA);
-          st->flag = 1;
+          st->animStarted = 1;
         } else if (g_nActorAnimDone != 0) {
           if (st->count == 0) {
             st->count = RandomIntInRange(1, 2);

@@ -2903,7 +2903,7 @@ void Level13_UpdateActors(void) {
           ANIM_GO8(actor, 6);
           ANIM_RETIME(actor);
           if (actor->anim == 6 && g_nActorAnimNewFrame != 0 && actor->frame >= 0xA) {
-            st->timer2 = RandomIntInRange(0x96, 0x15E);
+            st->stanceTimer = RandomIntInRange(0x96, 0x15E);
             st->step = CAPTAIN_STEP_SPAR;
           }
           break;
@@ -2914,7 +2914,7 @@ void Level13_UpdateActors(void) {
             StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
             st->step = CAPTAIN_STEP_STRIKE;
           }
-          if (TICK_DOWN(st->timer2) && actor->frame >= 0x19) {
+          if (TICK_DOWN(st->stanceTimer) && actor->frame >= 0x19) {
             st->step = CAPTAIN_STEP_SHEATHE;
           }
           if (d > 0x1C00) {
@@ -2954,7 +2954,7 @@ void Level13_UpdateActors(void) {
           if (g_nActorAnimNewFrame != 0 && actor->nextFrame >= 8) {
             ANIM_GO(actor, 2);
             st->step = CAPTAIN_STEP_REST;
-            st->timer2 = RandomIntInRange(0x3C, 0x78);
+            st->stanceTimer = RandomIntInRange(0x3C, 0x78);
           }
           break;
 
@@ -2964,7 +2964,7 @@ void Level13_UpdateActors(void) {
             StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
             st->step = CAPTAIN_STEP_STRIKE;
           }
-          if (TICK_DOWN(st->timer2) && g_nActorAnimDone != 0) {
+          if (TICK_DOWN(st->stanceTimer) && g_nActorAnimDone != 0) {
             st->step = CAPTAIN_STEP_DRAW;
           }
           break;

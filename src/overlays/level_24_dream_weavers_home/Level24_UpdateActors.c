@@ -917,14 +917,14 @@ void Level24_UpdateActors(void) {
         if (st->range > 0 && actor->mode == LGUARD_IDLE &&
             (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range ||
              IsPointInRotatedBox(&spy->posX, st->vol) != 0) &&
-            TICK_DOWN(st->timer2) != 0) {
+            TICK_DOWN(st->reloadTimer) != 0) {
           st->range = -st->range;
           if (st->range == 0) {
             st->range = -1;
           }
           g_pActorListBase[st->partner].subMode = actor - g_pActorListBase;
           *(int *)g_pActorListBase[st->partner].state = st->msg;
-          st->timer2 = st->reload;
+          st->reloadTimer = st->reload;
         } else if (actor->flags & ACTOR_HIT_BLAST) {
           actor->flags = 0;
           if (st->flags & LGUARD_F_REARM) {
@@ -944,7 +944,7 @@ void Level24_UpdateActors(void) {
           actor->mode = LGUARD_SHRINK;
           continue;
         } else if (st->range < 0) {
-          TICK_DOWN(st->timer2);
+          TICK_DOWN(st->reloadTimer);
         }
       }
       actor->flags = 0;
@@ -1076,7 +1076,7 @@ void Level24_UpdateActors(void) {
       }
 
       case LGUARD_SHRINK:
-        TICK_DOWN(st->timer2);
+        TICK_DOWN(st->reloadTimer);
         actor->scale -= g_nFrameStep * 2;
         if (actor->scale < 0x21) {
           actor->scale = 0x20;
@@ -1087,7 +1087,7 @@ void Level24_UpdateActors(void) {
         break;
 
       case LGUARD_GROW:
-        TICK_DOWN(st->timer2);
+        TICK_DOWN(st->reloadTimer);
         actor->scale += g_nFrameStep * 2;
         if (actor->scale >= 0x38) {
           actor->scale = 0x20;
@@ -2287,8 +2287,8 @@ void Level24_UpdateActors(void) {
             break;
           case SINGER_ROLE_PAIRED:
             if (g_pActorListBase[st->partner].mode >= 6 &&
-                ((PathWalkerState *)g_pActorListBase[st->partner].state)->flag == 0) {
-              st->flag = one;
+                ((PathWalkerState *)g_pActorListBase[st->partner].state)->resumePending == 0) {
+              st->resumePending = one;
             } else {
               st->timer = 0x1C2;
               ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
@@ -2318,8 +2318,8 @@ void Level24_UpdateActors(void) {
         if (st->next == SINGER_CUE_STOP) {
           ENTER_POSE(actor, SINGER_SETTLE);
         }
-        if (st->flag != 0 && (GetWorldChunkAnimState(st->chunkAnim) & CHUNK_ANIM_HALTED)) {
-          st->flag = 0;
+        if (st->resumePending != 0 && (GetWorldChunkAnimState(st->chunkAnim) & CHUNK_ANIM_HALTED)) {
+          st->resumePending = 0;
           st->timer = 0x14A;
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
@@ -2426,14 +2426,14 @@ void Level24_UpdateActors(void) {
         if (st->range > 0 && (actor->mode == LGUARD_IDLE || actor->mode == LGUARD_LUNGE) &&
             (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range ||
              IsPointInRotatedBox(&spy->posX, st->vol) != 0) &&
-            TICK_DOWN(st->timer2) != 0) {
+            TICK_DOWN(st->reloadTimer) != 0) {
           st->range = -st->range;
           if (st->range == 0) {
             st->range = -1;
           }
           g_pActorListBase[st->partner].subMode = actor - g_pActorListBase;
           *(int *)g_pActorListBase[st->partner].state = st->msg;
-          st->timer2 = st->reload;
+          st->reloadTimer = st->reload;
           if (st->follow1 != -1) {
             ((int *)g_pActorListBase[st->follow1].state)[19] = 0x28;
           }
@@ -2461,7 +2461,7 @@ void Level24_UpdateActors(void) {
           actor->mode = LGUARD_GROW;
           continue;
         } else if (st->range < 0) {
-          TICK_DOWN(st->timer2);
+          TICK_DOWN(st->reloadTimer);
         }
       }
       actor->flags = 0;
@@ -2594,7 +2594,7 @@ void Level24_UpdateActors(void) {
       }
 
       case LGUARD_SHRINK:
-        TICK_DOWN(st->timer2);
+        TICK_DOWN(st->reloadTimer);
         actor->scale -= g_nFrameStep * 2;
         if (actor->scale < 0x21) {
           actor->scale = 0x20;
@@ -2604,7 +2604,7 @@ void Level24_UpdateActors(void) {
         break;
 
       case LGUARD_GROW:
-        TICK_DOWN(st->timer2);
+        TICK_DOWN(st->reloadTimer);
         actor->scale += g_nFrameStep * 2;
         if (actor->scale >= 0x38) {
           StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);

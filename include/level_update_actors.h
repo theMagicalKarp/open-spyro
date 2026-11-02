@@ -881,7 +881,7 @@ typedef struct HopState {
 typedef struct GuardPairState {
   int heading; /* 0x00 knock-back heading */
   int speed;   /* 0x04 */
-  int flag;    /* 0x08 */
+  int gloatCount; /* 0x08 GLOAT plays until it counts down (2 after pinning Spyro) */
   int timer;   /* 0x0C */
   int partner; /* 0x10 index into g_pActorListBase, -1 for none */
 } GuardPairState;
@@ -904,7 +904,7 @@ typedef struct PostState {
   int heading;    /* 0x0C knock-back heading */
   int speed;      /* 0x10 knock-back speed */
   int time;       /* 0x14 knock-back time */
-  int flag;       /* 0x18 */
+  int flameProof; /* 0x18 level data: flame alone does not knock it back */
   short spinX;    /* 0x1C */
   short spinY;    /* 0x1E */
   int sub;        /* 0x20 enum PostGuardHop */
@@ -916,7 +916,7 @@ typedef struct PostState {
 typedef struct PatrolState {
   PathData *path; /* 0x00 */
   int mode;       /* 0x04 */
-  int flag;       /* 0x08 */
+  int afterCharge; /* 0x08 set while charging: back on patrol it steps to the next node at once */
   int near;       /* 0x0C */
   int timer;      /* 0x10 */
 } PatrolState;
@@ -1275,7 +1275,7 @@ typedef struct CaptainState {
   int timer;           /* 0x30 */
   int posed;           /* 0x34 */
   int range;           /* 0x38 in 1024ths */
-  int timer2;          /* 0x3C */
+  int stanceTimer; /* 0x3C spar/rest stance length */
 } CaptainState;
 
 typedef struct BoltFlight {
@@ -1498,7 +1498,7 @@ typedef struct ShempState {
   PathData *path; /* 0x20 */
   unsigned char *cam;  /* 0x24 camera anchors, one per phase */
   int node[3];         /* 0x28 path node per phase */
-  int flag;            /* 0x34 */
+  int animStarted;     /* 0x34 the current mode has queued its animation */
   int count;           /* 0x38 */
   int chain;           /* 0x3C first of a linked list in g_pActorListBase */
   int init;            /* 0x40 */

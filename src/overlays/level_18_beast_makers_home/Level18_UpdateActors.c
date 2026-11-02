@@ -1561,7 +1561,7 @@ void Level18_UpdateActors(void) {
         st->speed = 0xFA;
         st->turn = 0;
         if (actor->mode != CHARGER_IDLE) {
-          *st->flag = 0;
+          *st->chargeLock = 0;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorCommittedKill(actor);
@@ -1578,7 +1578,7 @@ void Level18_UpdateActors(void) {
           continue;
         }
       }
-      if (TICK_DOWN(st->timer3) == 0) {
+      if (TICK_DOWN(st->camHold) == 0) {
         int d = ApproxDist2D(&actor->posX, &spy->posX) + 0x1000;
 
         if (st->camDist < d) {
@@ -1595,7 +1595,7 @@ void Level18_UpdateActors(void) {
       case CHARGER_IDLE: {
         int *p;
 
-        TICK_DOWN(st->timer2);
+        TICK_DOWN(st->cooldown);
         switch (st->mode) {
         case CHARGER_ROLE_STAND:
           TrackEntityYawTowardSpyro(actor, 0xA, 0, YAW_HOLD_IN_BAND);
@@ -1668,13 +1668,13 @@ void Level18_UpdateActors(void) {
           }
           break;
         }
-        if (st->timer2 == 0 && *st->flag == 0 && g_nSpyroAirborneFrames == 0) {
+        if (st->cooldown == 0 && *st->chargeLock == 0 && g_nSpyroAirborneFrames == 0) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
           if ((dz > 0 ? dz < 0x320
                       : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x320) &&
               ApproxDist2D(p, &SPY.posX) < st->range << 10) {
-            *st->flag = 1;
+            *st->chargeLock = 1;
             st->timer = 0;
             st->charging = 0;
             if (st->mode == CHARGER_ROLE_FOLLOW) {
@@ -1731,9 +1731,9 @@ void Level18_UpdateActors(void) {
             }
           }
         }
-        if (TICK_DOWN(st->timer2) != 0) {
+        if (TICK_DOWN(st->cooldown) != 0) {
           st->knock = SPY.bodyRotZ;
-          st->timer2 = 0x1E;
+          st->cooldown = 0x1E;
         }
         st->turn = (ArcTan2(actor->posX - spy->posX,
                                   actor->posY - spy->posY, ATAN_ANGLE8) -
@@ -1757,8 +1757,8 @@ void Level18_UpdateActors(void) {
         }
         if (MoveActorAlongHeading(actor, s137, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0) {
         reset137:
-          *st->flag = 0;
-          st->timer2 = 0x78;
+          *st->chargeLock = 0;
+          st->cooldown = 0x78;
           actor->mode = CHARGER_GO_HOME;
           continue;
         }
@@ -1798,8 +1798,8 @@ void Level18_UpdateActors(void) {
       case CHARGER_RAM:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (MoveActorAlongHeading(actor, st->speed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == MOVED_BLOCKED) {
-          *st->flag = 0;
-          st->timer2 = 0x78;
+          *st->chargeLock = 0;
+          st->cooldown = 0x78;
           actor->mode = CHARGER_GO_HOME;
           continue;
         }
@@ -1813,14 +1813,14 @@ void Level18_UpdateActors(void) {
                      : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x384) {
             if (st->cam == 0) {
               st->cam = 1;
-              st->timer2 = 0xDC;
+              st->cooldown = 0xDC;
               SPY.triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
               g_anSpyroRequestVelocity.x = LookupCosine(actor->rotZ * 16) * 0x87 >> 12;
               g_nSpyroRequestVelocityY = LookupSine(actor->rotZ * 16) * 0x87 >> 12;
               g_nSpyroRequestVelocityZ = 0x32;
             } else if (st->cam == 1) {
               st->cam = 2;
-              st->timer3 = 0x1E;
+              st->camHold = 0x1E;
               SPY.requestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
               SPY.pCamAnchor = &actor->posX;
               SPY.pCamTarget = &g_anCameraActiveTargetParams;
@@ -1847,7 +1847,7 @@ void Level18_UpdateActors(void) {
           if (st->cam == 0) {
             ENTER_POSE(actor, CHARGER_CHARGE);
           }
-          *st->flag = 0;
+          *st->chargeLock = 0;
           ANIM_GO(actor, 1);
           actor->mode = CHARGER_GO_HOME;
           continue;
