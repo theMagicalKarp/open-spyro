@@ -335,7 +335,7 @@ typedef struct CarriedRockState {
   unsigned char timer;  /* 0x00 */
   unsigned char spinX;  /* 0x01 */
   unsigned char spinY;  /* 0x02 */
-  unsigned char mode;   /* 0x03 1 = held, 0x63 = idle */
+  unsigned char mode;   /* 0x03 enum CarriedRockHold */
   short speed;          /* 0x04 */
   short u06;            /* 0x06 */
   short vz;             /* 0x08 */

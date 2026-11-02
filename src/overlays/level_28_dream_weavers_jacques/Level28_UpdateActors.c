@@ -838,7 +838,7 @@ void Level28_UpdateActors(void) {
     case ACTOR_TYPE_THROWN_ROCK: {
       CarriedRockState *st = actor->state;
 
-      if (st->mode != 0x63) {
+      if (st->mode != CROCK_PARKED) {
         RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
         FindGroundHeightBelow(&actor->posX, 0x10000);
         EncodeCachedVecToActorDirCode(actor);
@@ -866,9 +866,9 @@ void Level28_UpdateActors(void) {
           continue;
         }
         if (st->partner->nextFrame == 4) {
-          st->mode = 0;
+          st->mode = CROCK_RELEASED;
         }
-        if (st->mode == 1) {
+        if (st->mode == CROCK_IN_HANDS) {
           GetActorAttachPoint(st->partner, 1, g136);
           GetActorAttachPoint(st->partner, 2, g152);
           actor->posX = g136[0] + ((g152[0] - g136[0]) >> 1);
@@ -876,7 +876,7 @@ void Level28_UpdateActors(void) {
           actor->posZ = g136[2] + ((g152[2] - g136[2]) >> 1);
           continue;
         }
-        if (st->mode == 0x63) {
+        if (st->mode == CROCK_PARKED) {
           continue;
         }
         CopyVector(g168, &spy->posX);
@@ -2227,7 +2227,7 @@ void Level28_UpdateActors(void) {
           st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_THROWN_ROCK, actor);
           st->child->groundCode = -1;
           ((CarriedRockState *)st->child->state)->partner = actor;
-          ((CarriedRockState *)st->child->state)->mode = 1;
+          ((CarriedRockState *)st->child->state)->mode = CROCK_IN_HANDS;
         }
         continue;
 

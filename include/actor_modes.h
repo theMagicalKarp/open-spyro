@@ -1515,8 +1515,15 @@ enum LanternMode {
   LANTERN_DONE = 5,
 };
 
+/* CarriedRockState.mode while the rock is TROCK_HELD. */
+enum CarriedRockHold {
+  CROCK_RELEASED = 0, /* let go on the thrower's frame 4: aims and flies */
+  CROCK_IN_HANDS = 1, /* set by the thrower at spawn: rides between its hands */
+  CROCK_PARKED = 0x63, /* no contact test and no motion; nothing in level 28 sets it */
+};
+
 /* ->mode of Jacques' thrown rock (ACTOR_TYPE_THROWN_ROCK, CarriedRockState;
- * level 28). CarriedRockState.mode 1 rides between the thrower's hands. */
+ * level 28). */
 enum ThrownRockMode {
   TROCK_HELD = 0,    /* carried; released on the throw frame: aims at Spyro, FLY */
   TROCK_BREAK = 1,   /* touched Spyro (or dropped): break animation, then despawn */
