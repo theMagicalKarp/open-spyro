@@ -1575,7 +1575,7 @@ void Level32_UpdateActors(void) {
       BurstGunnerState *st = actor->state;
       int dist;
 
-      SubtractVector(o100, spy, &actor->posX);
+      SubtractVector(o100, &spy->posX, &actor->posX);
       dist = ApproxDist2D(&actor->posX, &spy->posX);
       if (dist < 0x32C8) {
         dist = VectorLength(o100, VEC_LEN_XY);
@@ -1651,7 +1651,7 @@ void Level32_UpdateActors(void) {
 
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 0, &o->posX);
-          CopyVector(o120, spy);
+          CopyVector(o120, &spy->posX);
           SubtractVector(o110, o120, &o->posX);
           ScaleVector3ByRatio(o110, VectorLength(o110, VEC_LEN_XY), 0x12C);
           o110[0] += RandomIntInRange(-0x18, 0x18);
@@ -1714,7 +1714,7 @@ void Level32_UpdateActors(void) {
       SweepGunnerState *st = actor->state;
       int dist;
 
-      SubtractVector(o120, spy, &actor->posX);
+      SubtractVector(o120, &spy->posX, &actor->posX);
       dist = ApproxDist2D(&actor->posX, &spy->posX);
       if (dist < 0x32C8) {
         dist = VectorLength(o120, VEC_LEN_XY);
@@ -1881,7 +1881,7 @@ void Level32_UpdateActors(void) {
       LobGunnerState *st = actor->state;
       int dist;
 
-      SubtractVector(o130, spy, &actor->posX);
+      SubtractVector(o130, &spy->posX, &actor->posX);
       dist = ApproxDist2D(&actor->posX, &spy->posX);
       if (dist < 0x32C8) {
         dist = VectorLength(o130, VEC_LEN_XY);

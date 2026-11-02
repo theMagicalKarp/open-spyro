@@ -1099,7 +1099,7 @@ typedef struct SentinelState {
 #define SENTINEL_F_AIM 8     /* standing: watches for Spyro inside `range` */
 
 
-extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist, int cap, int contactRadius, int maxTurn, int stallAngle, int f);
+extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist, int cap, int contactRadius, int maxTurn, int stallAngle, int *smoothVel);
 
 extern int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius, int speed, int contact, int clamp, int limit, int *f);
 
@@ -1128,11 +1128,6 @@ typedef struct RoamingCritterState {
 } RoamingCritterState;
 
 /* Type 370: Doctor Shemp's guard. */
-typedef struct {
-  char pad00[0x38];
-  int posX; /* 0x38 */
-  int posY; /* 0x3C */
-} GuardTarget;
 
 typedef struct ShempGuardState {
   int mode;           /* 0x00 0 = patrol, 1 = hold near target */
@@ -1148,7 +1143,7 @@ typedef struct ShempGuardState {
   int watch;          /* 0x28 index into g_pActorListBase */
   int guard;          /* 0x2C index into g_pActorListBase */
   int done;           /* 0x30 */
-  GuardTarget *target; /* 0x34 */
+  PathData *target;   /* 0x34 path it pivots along; node 3 is the point it tests Spyro against */
   int timer38;        /* 0x38 */
   PathData *path; /* 0x3C */
   int boxA[6];        /* 0x40 */

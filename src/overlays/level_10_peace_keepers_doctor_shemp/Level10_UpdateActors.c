@@ -2717,11 +2717,11 @@ void Level10_UpdateActors(void) {
           }
         } else if (st->mode == 1) {
           if (AbsAngleDelta8(
-                  ArcTan2(st->target->posX - actor->posX,
-                                st->target->posY - actor->posY, ATAN_ANGLE8),
+                  ArcTan2(st->target->nodes[3].x - actor->posX,
+                                st->target->nodes[3].y - actor->posY, ATAN_ANGLE8),
                   ArcTan2(spy->posX - actor->posX,
                                 spy->posY - actor->posY, ATAN_ANGLE8)) < 0x40) {
-            if (ApproxDist2D(&spy->posX, &st->target->posX) < 0x898) {
+            if (ApproxDist2D(&spy->posX, &st->target->nodes[3].x) < 0x898) {
               actor->mode = SGUARD_PATH_RUSH;
               continue;
             }

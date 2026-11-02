@@ -120,7 +120,7 @@ typedef struct AttachBeadState {
 /* Type 467 state: a bolt-throwing sentry with three guards (`kids`). */
 typedef struct BoltSentryState {
   int mode;      /* 0x00 enum BoltSentryCue */
-  int *path;     /* 0x04 */
+  PathData *path; /* 0x04 */
   int range;     /* 0x08 in 1024s */
   int timer;     /* 0x0C */
   int u10;       /* 0x10 */
@@ -3619,7 +3619,7 @@ void Level19_UpdateActors(void) {
           if (ApproxDist2D(&actor->posX, &spy->posX) < st->range << 10 &&
               ABS2(SPY_DZ(actor)) < 0x3E8) {
             st->mode = BSENTRY_CUE_NONE;
-            st->speed = ApproxDist2D(&actor->posX, &st->path[6]) / 12;
+            st->speed = ApproxDist2D(&actor->posX, &st->path->nodes[1].x) / 12;
             st->u24 = 0x6E;
             ENTER_POSE_BRK(actor, BSENTRY_LEAP);
           }
@@ -3637,9 +3637,9 @@ void Level19_UpdateActors(void) {
         break;
 
       case BSENTRY_LEAP: {
-        int h = ArcTan2(st->path[6] - actor->posX,
-                              st->path[7] - actor->posY, ATAN_ANGLE8);
-        int d = ApproxDist2D(&actor->posX, &st->path[6]);
+        int h = ArcTan2(st->path->nodes[1].x - actor->posX,
+                              st->path->nodes[1].y - actor->posY, ATAN_ANGLE8);
+        int d = ApproxDist2D(&actor->posX, &st->path->nodes[1].x);
 
         ProbeActorGroundHeight(actor);
         TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
