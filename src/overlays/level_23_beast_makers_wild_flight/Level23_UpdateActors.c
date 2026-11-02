@@ -113,16 +113,16 @@ void Level23_UpdateActors(void) {
   /* Scratch vectors shared by several cases. */
   int svX[3];
   int svA[3];
-  int svB[3];
-  int svC[3];
+  int eggArcBase[3];
+  int eggArcOffset[3];
   int svD[3];
-  int svE[3];
+  int eggViewPos[3];
   int svF[3];
   int acc[3][3];
-  int svG[3];
-  int svH[3];
-  int svI[3];
-  int svJ[3];
+  int bouncePos[3];
+  int bounceNormal[3];
+  int homingStep[3];
+  int sparxToTarget[3];
   int svU[3];
   int svV[3];
   int svW[3];
@@ -390,12 +390,12 @@ void Level23_UpdateActors(void) {
       case EGG_TO_SPYRO:
         st->phase = st->phase + g_nFrameStep;
         if (st->phase < 0x40) {
-          SVectorToVectorShl2(svB, st->from);
-          SVectorToVectorShl2(svC, st->to);
-          SubtractVector(svC, svC, svB);
-          ScaleVector3Sat(svC, svC, st->phase);
-          RShiftVector3(svC, 6);
-          AddVector(&actor->posX, svB, svC);
+          SVectorToVectorShl2(eggArcBase, st->from);
+          SVectorToVectorShl2(eggArcOffset, st->to);
+          SubtractVector(eggArcOffset, eggArcOffset, eggArcBase);
+          ScaleVector3Sat(eggArcOffset, eggArcOffset, st->phase);
+          RShiftVector3(eggArcOffset, 6);
+          AddVector(&actor->posX, eggArcBase, eggArcOffset);
           actor->rotZ = actor->rotZ + (g_nFrameStep << 2);
         } else {
           CopyVector(svD, &spy->posX);
@@ -436,9 +436,9 @@ void Level23_UpdateActors(void) {
         break;
 
       case EGG_COLLECTED:
-        SubtractVector(svE, &actor->posX, &CAM.posX);
-        WorldToCameraRotate(svE, svE);
-        g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
+        SubtractVector(eggViewPos, &actor->posX, &CAM.posX);
+        WorldToCameraRotate(eggViewPos, eggViewPos);
+        g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, eggViewPos, 0);
         g_nCinematicActive = 0;
         ZeroVector(&SPY.headLook);
         CommitActorKillGems(0, st->killActor);
@@ -680,22 +680,22 @@ void Level23_UpdateActors(void) {
       case COLLECT_BOUNCE: {
         int speed;
 
-        ScaleVector3Sat(svG, st->vel, g_nFrameStep);
-        RShiftVector3(svG, 1);
+        ScaleVector3Sat(bouncePos, st->vel, g_nFrameStep);
+        RShiftVector3(bouncePos, 1);
 
-        speed = VectorLength(svG, VEC_LEN_XYZ);
+        speed = VectorLength(bouncePos, VEC_LEN_XYZ);
 
         if (220 < speed) {
-          ScaleVector3ByRatio(svG, speed, 220);
+          ScaleVector3ByRatio(bouncePos, speed, 220);
         }
 
-        AddVector(svG, &actor->posX, svG);
+        AddVector(bouncePos, &actor->posX, bouncePos);
 
         if (-220 < st->vel[2]) {
           st->vel[2] -= g_nFrameStep * 5;
         }
 
-        if (svG[2] < 0) {
+        if (bouncePos[2] < 0) {
           if (actor->type != ACTOR_TYPE_EXTRA_LIFE && actor->type != ACTOR_TYPE_SPARX_FOOD) {
             CollectPickupActor(actor);
           }
@@ -705,9 +705,9 @@ void Level23_UpdateActors(void) {
           int r;
           register int *pos asm("$4");
 
-          svG[2] += 240;
+          bouncePos[2] += 240;
 
-          r = CollideSphereWithWorldAndActors(svG, 240, 240);
+          r = CollideSphereWithWorldAndActors(bouncePos, 240, 240);
           pos = &actor->posX;
           if (r) {
             if (GetGroundTriggerRegionType(pos) == 0) {
@@ -718,26 +718,26 @@ void Level23_UpdateActors(void) {
               continue;
             }
 
-            CopyVector(svH, &g_anCollisionProbeVec);
+            CopyVector(bounceNormal, &g_anCollisionProbeVec);
             CopyVector(&actor->posX, &g_anCollisionResolvedPos);
             actor->posZ -= 0xF0;
 
             if (st->count == 0) {
-              int groundHeight = FindGroundHeightBelow(svG, 0x400);
+              int groundHeight = FindGroundHeightBelow(bouncePos, 0x400);
               int groundAngle =
-                  (signed char)ArcTan2_8bit(svH[2], VectorLength(svH, VEC_LEN_XY));
+                  (signed char)ArcTan2_8bit(bounceNormal[2], VectorLength(bounceNormal, VEC_LEN_XY));
 
-              if ((svG[2] - 400) < groundHeight && groundAngle < 24) {
+              if ((bouncePos[2] - 400) < groundHeight && groundAngle < 24) {
                 actor->subMode = COLLECT_REST;
-                CopyVector(&actor->posX, svG);
+                CopyVector(&actor->posX, bouncePos);
                 actor->posZ = groundHeight;
 
                 if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
 
                   st->pitch = -ArcTan2_8bit(
-                      IntegerSqrt((svH[0] * svH[0]) + (svH[2] * svH[2])),
-                      svH[1]);
-                  st->yaw = -ArcTan2_8bit(svH[2], svH[0]);
+                      IntegerSqrt((bounceNormal[0] * bounceNormal[0]) + (bounceNormal[2] * bounceNormal[2])),
+                      bounceNormal[1]);
+                  st->yaw = -ArcTan2_8bit(bounceNormal[2], bounceNormal[0]);
 
                   if (st->pitch != 0 || st->yaw != 0) {
                     actor->rotZ = 0;
@@ -757,7 +757,7 @@ void Level23_UpdateActors(void) {
 
               PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
 
-              if (ReflectVectorOffNormal(st->vel, svH, st->vel)) {
+              if (ReflectVectorOffNormal(st->vel, bounceNormal, st->vel)) {
                 st->count--;
 
                 st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 32;
@@ -767,9 +767,9 @@ void Level23_UpdateActors(void) {
             }
 
           } else {
-            svG[2] -= 240;
-            CopyVector(pos, svG);
-            FindGroundHeightBelow(svG, 0x10000);
+            bouncePos[2] -= 240;
+            CopyVector(pos, bouncePos);
+            FindGroundHeightBelow(bouncePos, 0x10000);
             EncodeCachedVecToActorDirCode(actor);
           }
         }
@@ -809,15 +809,15 @@ void Level23_UpdateActors(void) {
           CopyVector(&actor->posX, &SPY.posX);
         } else {
 
-          SubtractVector(svI, &spy->posX, st->vel);
-          RShiftVector3(svI, 5);
+          SubtractVector(homingStep, &spy->posX, st->vel);
+          RShiftVector3(homingStep, 5);
 
-          if (VectorLength(svI, VEC_LEN_XYZ) > 480) {
+          if (VectorLength(homingStep, VEC_LEN_XYZ) > 480) {
             CopyVector(&actor->posX, &spy->posX);
             st->timer = 32;
           } else {
-            ScaleVector3Sat(svI, svI, st->timer);
-            AddVector(&actor->posX, st->vel, svI);
+            ScaleVector3Sat(homingStep, homingStep, st->timer);
+            AddVector(&actor->posX, st->vel, homingStep);
             actor->posZ += g_anSineLut[st->timer * 4] / 12;
           }
         }
@@ -1039,8 +1039,8 @@ void Level23_UpdateActors(void) {
           PickupState *cp = st->target->state;
           int dist;
 
-          SubtractVector(svJ, &st->target->posX, &actor->posX);
-          dist = VectorLength(svJ, VEC_LEN_XYZ);
+          SubtractVector(sparxToTarget, &st->target->posX, &actor->posX);
+          dist = VectorLength(sparxToTarget, VEC_LEN_XYZ);
 
           if (dist < 512) {
             cp->timer = 0;
@@ -1069,13 +1069,13 @@ void Level23_UpdateActors(void) {
             int dcheck = 310;
 
             if (dcheck < dist)
-              ScaleVector3ByRatio(svJ, dist, 310);
+              ScaleVector3ByRatio(sparxToTarget, dist, 310);
             else
-              ScaleVector3ByRatio(svJ, dist, 290);
+              ScaleVector3ByRatio(sparxToTarget, dist, 290);
 
-            AddVector(&actor->posX, &actor->posX, svJ);
-            TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
-            pitchAngle = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], ATAN_ANGLE8);
+            AddVector(&actor->posX, &actor->posX, sparxToTarget);
+            TurnActorYawTowardAngle(actor, ArcTan2(sparxToTarget[0], sparxToTarget[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
+            pitchAngle = ArcTan2(VectorLength(sparxToTarget, VEC_LEN_XY), sparxToTarget[2], ATAN_ANGLE8);
             actor->rotY = pitchAngle;
             actor->rotY = StepAngle8Toward(pitchAngle, 0, 0x30);
           }

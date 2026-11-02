@@ -113,15 +113,15 @@ void Level16_UpdateActors(void) {
 
   /* Scratch vectors, in first-use order. */
   int svA[3];
-  int svB[3];
-  int svC[3];
+  int eggArcBase[3];
+  int eggArcOffset[3];
   int svD[3];
-  int svE[3];
+  int eggViewPos[3];
   int svF[3];
   int svG[3];
-  int svH[3];
+  int bounceNormal[3];
   int acc[3][3];
-  int svI[3];
+  int homingStep[3];
   int svJ[3];
   int svK[3];
   int svL[3];
@@ -584,12 +584,12 @@ void Level16_UpdateActors(void) {
         st->phase += g_nFrameStep;
 
         if (st->phase < 0x40) {
-          SVectorToVectorShl2(svB, st->centre);
-          SVectorToVectorShl2(svC, st->apex);
-          SubtractVector(svC, svC, svB);
-          ScaleVector3Sat(svC, svC, st->phase);
-          RShiftVector3(svC, 6);
-          AddVector(&actor->posX, svB, svC);
+          SVectorToVectorShl2(eggArcBase, st->centre);
+          SVectorToVectorShl2(eggArcOffset, st->apex);
+          SubtractVector(eggArcOffset, eggArcOffset, eggArcBase);
+          ScaleVector3Sat(eggArcOffset, eggArcOffset, st->phase);
+          RShiftVector3(eggArcOffset, 6);
+          AddVector(&actor->posX, eggArcBase, eggArcOffset);
           actor->rotZ += g_nFrameStep * 4;
         } else {
           CopyVector(svD, &SPY.posX);
@@ -633,9 +633,9 @@ void Level16_UpdateActors(void) {
       }
 
       case EGG_COLLECTED: {
-        SubtractVector(svE, &actor->posX, &CAM.posX);
-        WorldToCameraRotate(svE, svE);
-        g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
+        SubtractVector(eggViewPos, &actor->posX, &CAM.posX);
+        WorldToCameraRotate(eggViewPos, eggViewPos);
+        g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, eggViewPos, 0);
         g_nCinematicActive = 0;
         ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
@@ -1025,12 +1025,12 @@ void Level16_UpdateActors(void) {
           } else if (st->restMode == COLLREST_FIND_TRI) {
             int colIndex;
 
-            CopyVector(svH, &actor->posX);
-            svH[2] += 0x400;
+            CopyVector(bounceNormal, &actor->posX);
+            bounceNormal[2] += 0x400;
 
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
 
-            if (FindGroundHeightBelow(svH, 0x1000) > 0) {
+            if (FindGroundHeightBelow(bounceNormal, 0x1000) > 0) {
               colIndex = g_nLastCollisionHitChunkId;
               st->restMode = COLLREST_ON_TRI;
               st->groundTri = colIndex;
@@ -1075,31 +1075,31 @@ void Level16_UpdateActors(void) {
       case COLLECT_BOUNCE: {
         int speed;
 
-        ScaleVector3Sat(svI, st->vel, g_nFrameStep);
-        RShiftVector3(svI, 1);
+        ScaleVector3Sat(homingStep, st->vel, g_nFrameStep);
+        RShiftVector3(homingStep, 1);
 
-        speed = VectorLength(svI, VEC_LEN_XYZ);
+        speed = VectorLength(homingStep, VEC_LEN_XYZ);
 
         if (220 < speed) {
-          ScaleVector3ByRatio(svI, speed, 220);
+          ScaleVector3ByRatio(homingStep, speed, 220);
         }
 
-        AddVector(svI, &actor->posX, svI);
+        AddVector(homingStep, &actor->posX, homingStep);
 
         if (-220 < st->vel[2]) {
           st->vel[2] -= g_nFrameStep * 5;
         }
 
-        if (svI[2] < 0) {
+        if (homingStep[2] < 0) {
           if (actor->type != ACTOR_TYPE_EXTRA_LIFE && actor->type != ACTOR_TYPE_SPARX_FOOD) {
             CollectPickupActor(actor);
           }
           DespawnActorRecord(actor);
           continue;
         } else {
-          svI[2] += 240;
+          homingStep[2] += 240;
 
-          if (CollideSphereWithWorldAndActors(svI, 240, 240)) {
+          if (CollideSphereWithWorldAndActors(homingStep, 240, 240)) {
             if (GetGroundTriggerRegionType() == 0) {
               if (actor->type != ACTOR_TYPE_EXTRA_LIFE && actor->type != ACTOR_TYPE_SPARX_FOOD) {
                 CollectPickupActor(actor);
@@ -1113,13 +1113,13 @@ void Level16_UpdateActors(void) {
             actor->posZ -= 0xF0;
 
             if (st->count == 0) {
-              int groundHeight = FindGroundHeightBelow(svI, 0x400);
+              int groundHeight = FindGroundHeightBelow(homingStep, 0x400);
               int groundAngle =
                   (signed char)ArcTan2_8bit(svJ[2], VectorLength(svJ, VEC_LEN_XY));
 
-              if ((svI[2] - 400) < groundHeight && groundAngle < 24) {
+              if ((homingStep[2] - 400) < groundHeight && groundAngle < 24) {
                 actor->subMode = COLLECT_REST;
-                CopyVector(&actor->posX, svI);
+                CopyVector(&actor->posX, homingStep);
                 actor->posZ = groundHeight;
 
                 if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
@@ -1157,9 +1157,9 @@ void Level16_UpdateActors(void) {
             }
 
           } else {
-            svI[2] -= 240;
-            CopyVector(&actor->posX, svI);
-            FindGroundHeightBelow(svI, 0x10000);
+            homingStep[2] -= 240;
+            CopyVector(&actor->posX, homingStep);
+            FindGroundHeightBelow(homingStep, 0x10000);
             EncodeCachedVecToActorDirCode(actor);
           }
         }
