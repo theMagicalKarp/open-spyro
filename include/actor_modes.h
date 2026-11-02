@@ -499,6 +499,16 @@ enum SoldierMode {
   SOLDIER_GO_HOME = 100,   /* walks back to SoldierState.home, then IDLE */
 };
 
+/* A soldier's animations besides the poses equal to its mode (CHASE 1,
+ * KNOCKED 3, ALERT 4, IN_POST 0xB, ENTER_POST 0x10). */
+enum SoldierAnim {
+  SOLDIER_ANIM_LOOK_AROUND = 6, /* a patrol's pause at a path point */
+  SOLDIER_ANIM_SHOUT = 9,       /* TO_POST's call before it runs */
+  SOLDIER_ANIM_HIDE = 0xC,      /* down in its post, facing Spyro */
+  SOLDIER_ANIM_ALERT_SHORT = 0xF, /* the bounded sentry's ALERT */
+  SOLDIER_ANIM_POP_OUT = 0x11,  /* up out of the post while Spyro looks away */
+};
+
 /* ->mode of a level 6 fireball cannon (ACTOR_TYPE_FIREBALL_CANNON,
  * FireballCannonState). While its crew (FireballCannonState.link) stands, the
  * crew fires it; once the crew is down, Spyro can flame the fuse. */

@@ -2755,7 +2755,7 @@ void Level6_UpdateActors(void) {
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorLiveKill(actor);
           actor->mode = SOLDIER_KNOCKED;
-          ANIM_RESET(actor, 3);
+          ANIM_RESET(actor, SOLDIER_KNOCKED);
           continue;
         }
       }
@@ -2786,7 +2786,7 @@ void Level6_UpdateActors(void) {
             if (PivotActorAlongPath(actor, st->path, 0x80, 0x46, 0, 4, 0x14, PIVOT_TURN_ANY,
                               MOVE_LIFT | MOVE_FOLLOW_FLOOR) != 0) {
               st->timer = RandomIntInRange(0x78, 0xB4);
-              ANIM_GO(actor, 6);
+              ANIM_GO(actor, SOLDIER_ANIM_LOOK_AROUND);
             }
           }
           if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
@@ -2812,7 +2812,7 @@ void Level6_UpdateActors(void) {
             if (PivotActorAlongPath(actor, st->path, 0x80, 0x46, 0, 4, 0x14, PIVOT_TURN_ANY,
                               MOVE_LIFT | MOVE_FOLLOW_FLOOR) != 0) {
               st->timer = RandomIntInRange(0x78, 0xB4);
-              ANIM_GO(actor, 6);
+              ANIM_GO(actor, SOLDIER_ANIM_LOOK_AROUND);
             }
           }
           if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
@@ -2962,12 +2962,12 @@ void Level6_UpdateActors(void) {
         }
         if (TrackEntityYawTowardSpyro(actor, 6, 0xF, YAW_STEP_IN_BAND) != 0) {
           if (st->kind == SOLDIERKIND_BOUNDED_SENTRY) {
-            ANIM_GO(actor, 0xF);
+            ANIM_GO(actor, SOLDIER_ANIM_ALERT_SHORT);
           } else {
-            ANIM_GO(actor, 4);
+            ANIM_GO(actor, SOLDIER_ALERT);
           }
         }
-        if ((g_nActorAnimDone != 0 && actor->anim == 4) || actor->anim == 0xF) {
+        if ((g_nActorAnimDone != 0 && actor->anim == SOLDIER_ALERT) || actor->anim == SOLDIER_ANIM_ALERT_SHORT) {
           ENTER_POSE(actor, SOLDIER_CHASE);
         }
         break;
@@ -3120,9 +3120,9 @@ void Level6_UpdateActors(void) {
           int r = TrackEntityYawTowardSpyro(actor, 6, 0xA, YAW_STEP_IN_BAND);
 
           if (TICK_DOWN(st->timer) != 0 && r != 0) {
-            ANIM_GO(actor, 9);
+            ANIM_GO(actor, SOLDIER_ANIM_SHOUT);
           }
-          if (g_nActorAnimDone != 0 && actor->anim == 9) {
+          if (g_nActorAnimDone != 0 && actor->anim == SOLDIER_ANIM_SHOUT) {
             st->phase = 2;
             ANIM_SET(actor, SOLDIER_CHASE);
           }
@@ -3131,7 +3131,7 @@ void Level6_UpdateActors(void) {
         if (actor->type == ACTOR_TYPE_SOLDIER_B && a->mode >= ACTOR_MODE_DORMANT) {
           actor->subMode = 1;
           actor->mode = SOLDIER_IN_POST;
-          ANIM_RESET(actor, 0xB);
+          ANIM_RESET(actor, SOLDIER_IN_POST);
           continue;
         }
         if (st->kind == SOLDIERKIND_WANDER_TO_CANNON && actor->type == ACTOR_TYPE_SOLDIER) {
@@ -3149,7 +3149,7 @@ void Level6_UpdateActors(void) {
                             6, 6, YAW_STEP_IN_BAND) != 0) {
             actor->subMode = 0;
             actor->mode = SOLDIER_ENTER_POST;
-            ANIM_RESET(actor, 0x10);
+            ANIM_RESET(actor, SOLDIER_ENTER_POST);
             continue;
           }
         } else if (TurnActorYawTowardAngle(actor,
@@ -3178,9 +3178,9 @@ void Level6_UpdateActors(void) {
           actor->subMode = 1;
           actor->rotZ = ArcTan2(g_anSpyroWorldPos - actor->posX,
                                        g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8);
-          ANIM_SET(actor, 0xC);
+          ANIM_SET(actor, SOLDIER_ANIM_HIDE);
         }
-        if (actor->anim == 0x11) {
+        if (actor->anim == SOLDIER_ANIM_POP_OUT) {
           if (AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                             ArcTan2(actor->posX - g_anSpyroWorldPos,
                                           actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8)) >=
@@ -3198,7 +3198,7 @@ void Level6_UpdateActors(void) {
               actor->frameProgress = 0;
             }
             if (g_nActorAnimDone != 0) {
-              ANIM_SET(actor, 0xC);
+              ANIM_SET(actor, SOLDIER_ANIM_HIDE);
             }
           }
         } else if (g_nActorAnimDone != 0 &&
@@ -3207,7 +3207,7 @@ void Level6_UpdateActors(void) {
                                                 actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8)) >=
                         0x17 ||
                     st->bold != 0)) {
-          ANIM_SET(actor, 0x11);
+          ANIM_SET(actor, SOLDIER_ANIM_POP_OUT);
           actor->frame = 0x16;
           actor->nextFrame = 0x17;
           actor->frameProgress = 0;
@@ -3221,7 +3221,7 @@ void Level6_UpdateActors(void) {
         if (actor->nextFrame == 0xB) {
           actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->mode = SOLDIER_IN_POST;
-          ANIM_RESET(actor, 0xB);
+          ANIM_RESET(actor, SOLDIER_IN_POST);
           continue;
         }
         if (ApproxDist2D(&actor->posX, &a->posX) > 0x64) {
