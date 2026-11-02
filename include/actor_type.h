@@ -93,6 +93,20 @@ typedef struct Actor {
 #define VOICE_ROW_NONE 0x7F
 #define ACTOR_CULL_HIDDEN 0 /* ->cullRadius: a zero bound fails the view cull, so the actor is hidden */
 #define ACTOR_TINT_NEUTRAL 0xA18618 /* the 0x4C tint word at neutral levels (0x18 each, tag 0xA) */
+/* Actor.tintMode presets, used with tint0..2 zeroed. RasterizeSpritePrimQueue
+ * reads the preset word at 0x8006E3D8 + (tint word >> 22) and loads its low
+ * three bytes into the GTE back colour (R, G, B), so a preset is a light
+ * level rather than the visible colour. EXE words: 1 0x606060, 2 0x006060,
+ * 3..6 zero (filled at run time; the flight tally writes them),
+ * 0xB 0x006060, 0xC 0x605050, 0xD 0x000060 (flag nibble 0xC), 0xE 0x206020.
+ * Named by the actors that pick them. */
+#define TINT_GEM_1 1      /* gems, one per value: HUD tally icons use type - 0x52 */
+#define TINT_GEM_2 2
+#define TINT_GEM_5 3
+#define TINT_GEM_10 4
+#define TINT_GEM_25 5
+#define TINT_HUD 0xB        /* HUD sprites and text (BuildTextSprites default) */
+#define TINT_EXTRA_LIFE 0xC
 #define BILLBOARD_NONE 0xFF          /* no g_aRotBillboards handle */
 #define ACTOR_UPDATE_ALWAYS 0xFF /* ->updateDist: read signed by BuildActiveActorList, so
                                   * a negative radius keeps the actor updating anywhere */

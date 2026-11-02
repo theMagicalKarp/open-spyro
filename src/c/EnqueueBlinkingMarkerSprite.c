@@ -23,7 +23,7 @@ void EnqueueBlinkingMarkerSprite(int *pos, int frame, int tile) {
       g_pSpriteRecordWriteCursor->rotZ = tile << 7;
     }
     g_pSpriteRecordWriteCursor->otBias = 0x7f;
-    g_pSpriteRecordWriteCursor->tintMode = 0xb;
+    g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
     g_pSpriteRecordWriteCursor->cullRadius = 0xff;
   }
 }

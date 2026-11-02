@@ -28,7 +28,7 @@ void ReturningHome_Draw(void) {
   g_abFrameDrawEnv1.r0 = 0;
   g_abFrameDrawEnv1.g0 = 0;
   g_abFrameDrawEnv1.b0 = 0;
-  BuildTextSprites(g_szReturningHome, posVec, sizeVec, 0x12, 0xb);
+  BuildTextSprites(g_szReturningHome, posVec, sizeVec, 0x12, TINT_HUD);
   glyph = first - 1;
   phase = 0;
   if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {

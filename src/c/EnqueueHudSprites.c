@@ -80,7 +80,7 @@ void EnqueueHudSprites(void) {
         rect[0] = 0x5A;
         rect[1] = 0x24;
         rect[2] = 0xB40;
-        BuildTextSpriteChain((char *)scratch, rect, 0x1C, 0xB);
+        BuildTextSpriteChain((char *)scratch, rect, 0x1C, TINT_HUD);
         rec--;
         phase = 0;
         while ((int)rec >= (int)g_pSpriteRecordWriteCursor) {

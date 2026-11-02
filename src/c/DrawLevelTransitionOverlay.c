@@ -256,7 +256,7 @@ void DrawLevelTransitionOverlay(void) {
     spr->y = y;
     g_pSpriteRecordWriteCursor->rotZ = 0xb0;
     g_pSpriteRecordWriteCursor->otBias = 0x7f;
-    g_pSpriteRecordWriteCursor->tintMode = 0xb;
+    g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
     g_pSpriteRecordWriteCursor->cullRadius = 0xff;
   }
 

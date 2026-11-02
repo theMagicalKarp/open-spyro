@@ -66,7 +66,7 @@ icon_slot:
   HUD_ICON(off)->otBias = 0x20;
   HUD_ICON(off)->cullRadius = white;
   HUD_ICON(off)->subMode = white;
-  HUD_ICON(off)->tintMode = 0x0B;
+  HUD_ICON(off)->tintMode = TINT_HUD;
   off += ACTOR_SIZE;
   i += 1;
   vec += 0xC;
