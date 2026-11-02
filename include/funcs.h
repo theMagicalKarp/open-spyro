@@ -949,9 +949,8 @@ undefined4 ApplySpuVoiceAttrRange(uint *param_1, uint param_2, uint param_3, int
 /* 0x8005d6b8: Computes the SPU pitch register value from a note delta — PSY-Q SpuFsetNToP equivalent. Each note is packed as (semitone, fraction-of-semitone) pairs; delta = (param_3*128 + param_4) - (param_1*128 + param_2) gives 128ths of a semitone. Divides by 0x600 (=12 semitones * 128 = one octave) into octave count + intra-octave remainder. Base pitch 0x1000 shifts left (positive delta = higher) or right (negative) by octave count. Within the octave, multiplies repeatedly by 0x103b (=4155 ≈ 4096 * 2^(1/12), the semitone ratio in 12.0 fixed point) for each 32-unit chunk of fractional remainder, then linearly interpolates the last 5 bits. Result clamped to 0x3fff. Sole caller: ApplySpuVoiceAttrRange (when SpuVoiceAttr.note differs from sample_note). */
 uint ComputeSpuPitchFromNoteDelta(uint param_1, uint param_2, uint param_3, uint param_4);
 
-/* 0x8005d9ec: PSY-Q SpuGetAllKeysStatus equivalent. Fills param_1[0..23] with each voice's key/envelope status code: 0 = SPU_OFF (key clear, env=0); 1 = SPU_ON (key set, env>0); 2 = SPU_ON_ENV_OFF (key clear, env still > 0 — release tail); 3 = SPU_OFF_ENV_ON (key set, env=0 — attack ramp). Per voice: reads envelope short at (SPU register base + 0x10*idx + 0xc) and probes live key-on mask g_dwSpuLiveKeyOnMask bit idx. Sole caller: SyncSoundVoicesWithHardware (drift-reconciliation probe). */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined GetAllSpuVoiceKeyStatus(undefined1 *param_1);
+/* 0x8005d9ec: PSY-Q SpuGetAllKeysStatus equivalent. Fills status[0..23] with each voice's key/envelope status code: 0 = SPU_OFF (key clear, env=0); 1 = SPU_ON (key set, env>0); 2 = SPU_ON_ENV_OFF (key clear, env still > 0 — release tail); 3 = SPU_OFF_ENV_ON (key set, env=0 — attack ramp). Per voice: reads envelope short at (SPU register base + 0x10*idx + 0xc) and probes live key-on mask g_dwSpuLiveKeyOnMask bit idx. Sole caller: SyncSoundVoicesWithHardware (drift-reconciliation probe). */
+void GetAllSpuVoiceKeyStatus(char *status);
 
 /* 0x8005da74: Write L/R volume registers for one SPU voice and flush. Masks each volume short to 0x7fff (clears phase-invert / sweep-mode high bit, keeping straight volume mode) then stores into the SPU voice registers (D_80073554 = 0x1F801C00) + vNum*0x10 (+0 = VolL, +2 = VolR). Calls DelaySpuRegisterWrite to flush to hardware. Sole caller: TickActiveSoundVoices (per-frame per-voice volume update after pan/falloff compute). */
 void SetSpuVoiceVolumeLR(int vNum, short volL, short volR);
@@ -965,8 +964,7 @@ long LoadExec(char *param_1, ulong param_2, ulong param_3);
 void _96_init(void);
 
 /* 0x8005db4c: BIOS A0:0x72 stub (_96_remove) — issues `li t2,0xa0 / jr t2 / _li t1,0x72`. PSY-Q convention: deinit CD-ROM filesystem (releases BIOS file-system event handlers + interrupt hooks). Called by ResetCallback during libapi master init so the callback subsystem can re-arm everything from a known-clear state. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined Bios96Remove(void);
+void Bios96Remove(void);
 
 void DeliverEvent(ulong param_1, ulong param_2);
 
@@ -1081,8 +1079,7 @@ void SetDrawMove(DR_MOVE *p, RECT *rect, int x, int y);
 int ResetGraph(int mode);
 
 /* 0x8005f53c: PSY-Q SetGraphDebug equivalent — sets the libgpu debug verbosity level (g_bGpuDebugLevel), returns previous level. When non-zero, prints "SetGraphDebug:level:%d,type:%d reverse:%d\n" via PTR_WritePrintf_80074a60. Higher levels enable extra "%s:bad RECT" / "GPU timeout:..." diagnostics in libgpu primitive packers and watchdog paths. Called by InitGraphicsHardware (typically with level=0 to disable verbose mode in shipped builds). */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined1 SetGraphDebug(char param_1);
+int SetGraphDebug(int level);
 
 void SetDispMask(int on);
 
@@ -1279,8 +1276,7 @@ undefined4 CdSyncCallback(undefined4 param_1);
 undefined4 CdReadyCallback(undefined4 param_1);
 
 /* 0x80063c48: libcd CdControl: 3-retry wrapper around CdCommandSync. Saves the ready callback (0x80074e34), optionally issues a CdlSetloc (sub-cmd 2) for commands that need a location (gated by 0x80074dac[cmd] non-zero), then issues the real command. Restores the callback before returning. Returns 1 on success, 0 if all 3 retries fail. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined4 CdControl(byte param_1, undefined1 *param_2, undefined1 *param_3);
+int CdControl(unsigned char com, unsigned char *param, unsigned char *result);
 
 /* 0x80063d80: libcd CdControlF: like CdControl but aborts any in-progress command first by issuing CdlNop (sub-cmd 1) when 0x80074e44 & 0x10 is set. Suppresses the sync callback during the abort + optional CdlSetloc preamble, restores it for the actual command issue, and uses CdCommandSync mode=1. Returns 1 on success, 0 after 3 retries. */
 int CdControlForce(unsigned char com, char *param);
@@ -1290,8 +1286,7 @@ int CdControlForce(unsigned char com, char *param);
 int CdControlBlocking(int com, char *param, char *result);
 
 /* 0x80063ff0: libcd CdMix: sets CD-DA volume mixing (CdlATV*). Wraps FUN_80065108 which writes 4 bytes (L→Lspu, L→Rspu, R→Lspu, R→Rspu) into CDIO mixer registers via index-2/index-3 register switching. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined4 CdMix(undefined1 *param_1);
+int CdMix(unsigned char *vol);
 
 /* 0x80064010: libcd CdGetSector: synchronous DMA read of one sector to (buf, nword). Wraps FUN_8006570c which programs DMA channel 3 with CHCR=0x11000000 (sync read), waits for status bit 0x40, then DICR ACK. Returns true (iVar1 == 0). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
