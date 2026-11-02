@@ -940,7 +940,7 @@ extern int g_anSpyroWorldPos[3];                        /* 0x80078a58 */
 extern unsigned char g_abSpyroPersistentEuler[3];                /* 0x80078a64 */
 extern unsigned char g_abSpyroSwingByteEuler[3];                 /* 0x80078a68 */
 extern unsigned char g_bSpyroAnimPrev;                           /* 0x80078a70 */
-extern unsigned char g_bSpyroAnimCurrent;                        /* 0x80078a71 */
+extern unsigned char g_bSpyroAnimCurrent;                        /* 0x80078a71: enum SpyroAnimId (spyro_state.h) */
 extern unsigned char g_bSpyroFramePrev;                          /* 0x80078a76 */
 extern unsigned char g_bSpyroAnimFrame;                          /* 0x80078a77 */
 extern unsigned char g_bSpyroSubFrameTimer;                      /* 0x80078a7c */

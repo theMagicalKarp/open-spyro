@@ -4,6 +4,7 @@
 #include "gamestate.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_state.h"
 #include "title_state.h"
 
 /* Update for gamestate 0xd (story-intro / new-game transition, 0x80032b08,
@@ -56,8 +57,8 @@ void StoryIntro_Update(void) {
       g_anSpyroWorldPos[0] = 0x2780;
       g_anSpyroWorldPos[1] = 0xf00;
       g_anSpyroWorldPos[2] = 0x29a0;
-      g_bSpyroAnimPrev = 0x10;
-      g_bSpyroAnimCurrent = 0x10;
+      g_bSpyroAnimPrev = SPYRO_ANIMID_GLIDE;
+      g_bSpyroAnimCurrent = SPYRO_ANIMID_GLIDE;
       g_abSpyroPersistentEuler[0] = 0;
       g_abSpyroPersistentEuler[1] = 0;
       g_abSpyroPersistentEuler[2] = 0;
