@@ -1239,7 +1239,7 @@ void Level29_UpdateActors(void) {
         PlayActorMeshVoice(actor, 0, 0);
         g_pfnLevelSpawnActor(ACTOR_TYPE_BOBBER_SPINOFF, actor);
         actor->mode = FTARGET_STRUCK;
-        ANIM_RESET(actor, 1);
+        ANIM_RESET(actor, FTARGET_STRUCK);
         break;
       }
 

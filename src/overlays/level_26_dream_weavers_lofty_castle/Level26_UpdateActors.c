@@ -752,7 +752,7 @@ void Level26_UpdateActors(void) {
         MarkActorLiveKill(actor);
         CommitActorKillGems(0, actor);
         actor->mode = SINKBLK_SINK;
-        ANIM_RESET(actor, 1);
+        ANIM_RESET(actor, SINKBLK_SINK);
         continue;
       }
       if (actor->mode == SINKBLK_SINK) {
@@ -2660,7 +2660,7 @@ void Level26_UpdateActors(void) {
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode == PPLAT_BOB) {
         actor->mode = PPLAT_BREAK;
-        ANIM_RESET(actor, 1);
+        ANIM_RESET(actor, PPLAT_BREAK);
         continue;
       }
       if (g_pActorListBase[st->partner].mode >= ACTOR_MODE_DORMANT) {

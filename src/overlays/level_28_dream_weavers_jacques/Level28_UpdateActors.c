@@ -695,7 +695,7 @@ void Level28_UpdateActors(void) {
         }
         MarkActorLiveKill(actor);
         actor->mode = CRAM_KNOCKED;
-        ANIM_RESET(actor, 4);
+        ANIM_RESET(actor, CRAM_KNOCKED);
         continue;
       }
       actor->flags = 0;

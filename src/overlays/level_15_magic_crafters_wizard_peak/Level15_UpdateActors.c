@@ -2965,7 +2965,7 @@ void Level15_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
         if (g_nActorAnimDone != 0) {
           actor->mode = PATHGUARD_WALK;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, PATHGUARD_WALK);
           continue;
         }
         if (st->timer <= 0) {
@@ -3193,7 +3193,7 @@ void Level15_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
         actor->mode = SENTINEL_KNOCKED;
-        ANIM_RESET(actor, 6);
+        ANIM_RESET(actor, SENTINEL_KNOCKED);
         continue;
       }
 
@@ -3307,7 +3307,7 @@ void Level15_UpdateActors(void) {
           RESET_IDLE(actor);
         }
         actor->mode = SENTINEL_CAST;
-        ANIM_RESET(actor, 4);
+        ANIM_RESET(actor, SENTINEL_CAST);
         continue;
 
       case SENTINEL_CAST:

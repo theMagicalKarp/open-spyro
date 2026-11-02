@@ -2217,14 +2217,14 @@ void Level6_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode < BPROP_BREAK) {
         actor->mode = BPROP_BREAK;
-        ANIM_RESET(actor, 2);
+        ANIM_RESET(actor, BPROP_BREAK);
         continue;
       }
       if ((actor->flags & ACTOR_HIT_SUPER) && actor->mode < BPROP_BREAK) {
         if (st[0] != 0) {
           if (TICK_DOWN(*st) != 0) {
             actor->mode = BPROP_BREAK;
-            ANIM_RESET(actor, 2);
+            ANIM_RESET(actor, BPROP_BREAK);
             continue;
           }
         } else {
@@ -2235,7 +2235,7 @@ void Level6_UpdateActors(void) {
       case BPROP_WOBBLE:
         if (g_nActorAnimDone != 0) {
           actor->mode = BPROP_IDLE;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, BPROP_IDLE);
           continue;
         }
         break;
@@ -2576,7 +2576,7 @@ void Level6_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
         actor->mode = CRITTER_KNOCKED;
-        ANIM_RESET(actor, 1);
+        ANIM_RESET(actor, CRITTER_KNOCKED);
         continue;
       }
 

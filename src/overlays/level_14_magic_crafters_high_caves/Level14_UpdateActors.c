@@ -3697,12 +3697,12 @@ void Level14_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
         actor->mode = BCASTER_KNOCKED;
-        ANIM_RESET(actor, 4);
+        ANIM_RESET(actor, BCASTER_KNOCKED);
         continue;
       }
       if ((actor->flags & ACTOR_NUDGED) && actor->mode < BCASTER_KNOCKED) {
         actor->mode = BCASTER_FLINCH;
-        ANIM_RESET(actor, 5);
+        ANIM_RESET(actor, BCASTER_FLINCH);
         continue;
       }
       switch (actor->mode) {
@@ -3764,7 +3764,7 @@ void Level14_UpdateActors(void) {
           st->timer = 0;
           st->count = 0;
           actor->mode = BCASTER_CAST;
-          ANIM_RESET(actor, 3);
+          ANIM_RESET(actor, BCASTER_CAST);
           continue;
         }
         break;
@@ -3916,7 +3916,7 @@ void Level14_UpdateActors(void) {
       case CHUNKOP_START:
         if (g_nActorAnimDone != 0) {
           actor->mode = CHUNKOP_WAIT;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, CHUNKOP_WAIT);
           continue;
         }
         if (st->spark != 0 && (GetRandomU32() & 1) &&
@@ -4036,7 +4036,7 @@ void Level14_UpdateActors(void) {
       case WPRUNNER_EMERGE:
         if (g_nActorAnimDone != 0) {
           actor->mode = WPRUNNER_RUN;
-          ANIM_RESET(actor, 1);
+          ANIM_RESET(actor, WPRUNNER_RUN);
           continue;
         }
         if (st->link->mode >= RSPAWNER_KNOCKED) {

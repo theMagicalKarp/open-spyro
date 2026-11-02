@@ -2460,7 +2460,7 @@ void Level4_UpdateActors(void) {
             CopyVector(st->home, pos);
           lunge_hit:
             actor->mode = LUNGER_RECOIL;
-            ANIM_RESET(actor, 0xD);
+            ANIM_RESET(actor, LUNGER_RECOIL);
             continue;
           }
         }

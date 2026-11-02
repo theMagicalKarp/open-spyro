@@ -1966,7 +1966,7 @@ void Level22_UpdateActors(void) {
         if (TICK_DOWN(st->timer) != 0) {
           st->timer = 0x46;
           actor->mode = PPOD_OPEN;
-          ANIM_RESET(actor, 1);
+          ANIM_RESET(actor, PPOD_OPEN);
           continue;
         }
         break;
@@ -1995,7 +1995,7 @@ void Level22_UpdateActors(void) {
           }
         }
         actor->mode = PPOD_UP;
-        ANIM_RESET(actor, 2);
+        ANIM_RESET(actor, PPOD_UP);
         continue;
 
       case PPOD_UP:

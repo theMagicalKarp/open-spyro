@@ -2452,7 +2452,7 @@ void Level31_UpdateActors(void) {
           ((int *)g_pActorListBase[st->held].state)[4] = -1;
           st->held = -1;
           actor->mode = CTHROW_DROP;
-          ANIM_RESET(actor, 0xB);
+          ANIM_RESET(actor, CTHROW_DROP);
           continue;
         }
         GetActorAttachPoint(actor, 0, v201a);
@@ -2485,7 +2485,7 @@ void Level31_UpdateActors(void) {
       } else if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode == FLOATBARREL_FLOAT) {
         st->timer = 0x3C;
         actor->mode = FLOATBARREL_FUSE;
-        ANIM_RESET(actor, 1);
+        ANIM_RESET(actor, FLOATBARREL_FUSE);
         continue;
       }
       actor->flags = 0;

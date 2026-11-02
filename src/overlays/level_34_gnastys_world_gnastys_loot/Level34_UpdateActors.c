@@ -1574,7 +1574,7 @@ void Level34_UpdateActors(void) {
         }
         PlayActorMeshVoice(actor, 0, 0);
         actor->mode = LTHIEF_KNOCKED;
-        ANIM_RESET(actor, 1);
+        ANIM_RESET(actor, LTHIEF_KNOCKED);
         continue;
       }
 

@@ -2324,7 +2324,7 @@ void Level9_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
         actor->mode = CBIRD_KNOCKED;
-        ANIM_RESET(actor, 4);
+        ANIM_RESET(actor, CBIRD_KNOCKED);
         continue;
       }
 
@@ -2377,7 +2377,7 @@ void Level9_UpdateActors(void) {
       case CBIRD_LAND:
         if (g_nActorAnimDone != 0) {
           actor->mode = CBIRD_PERCH;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, CBIRD_PERCH);
           continue;
         }
         break;

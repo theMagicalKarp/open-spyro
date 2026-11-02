@@ -676,7 +676,7 @@ void Level16_UpdateActors(void) {
           st->x = SPY.posX >> 4;
           st->y = SPY.posY >> 4;
           actor->mode = RIMRIDER_DRIFT;
-          ANIM_RESET(actor, 1);
+          ANIM_RESET(actor, RIMRIDER_DRIFT);
         }
         break;
 
@@ -2275,7 +2275,7 @@ void Level16_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
         if (g_nActorAnimDone != 0) {
           actor->mode = PATHGUARD_WALK;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, PATHGUARD_WALK);
           continue;
         }
         if (st->timer <= 0) {
@@ -3462,7 +3462,7 @@ void Level16_UpdateActors(void) {
       switch (actor->mode) {
       case HBELL_INIT:
         actor->mode = HBELL_HUM;
-        ANIM_RESET(actor, 2);
+        ANIM_RESET(actor, HBELL_HUM);
         continue;
 
       case HBELL_STRUCK:

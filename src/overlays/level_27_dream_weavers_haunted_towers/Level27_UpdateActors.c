@@ -2509,7 +2509,7 @@ void Level27_UpdateActors(void) {
       if (actor->subMode == 2) {
         actor->subMode = 0;
         actor->mode = FGUARD_ASLEEP;
-        ANIM_RESET(actor, 0);
+        ANIM_RESET(actor, FGUARD_ASLEEP);
         continue;
       }
       if (actor->mode >= FGUARD_WATCH && st->onPath == 1) {
@@ -2577,7 +2577,7 @@ void Level27_UpdateActors(void) {
         if (actor->subMode == 1 || st->wake != 0) {
           actor->subMode = 0;
           actor->mode = FGUARD_WAKE;
-          ANIM_RESET(actor, 1);
+          ANIM_RESET(actor, FGUARD_WAKE);
           continue;
         }
         break;

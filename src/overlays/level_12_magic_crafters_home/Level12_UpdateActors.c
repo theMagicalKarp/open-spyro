@@ -3949,7 +3949,7 @@ void Level12_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
         if (g_nActorAnimDone != 0) {
           actor->mode = PATHGUARD_WALK;
-          ANIM_RESET(actor, 0);
+          ANIM_RESET(actor, PATHGUARD_WALK);
           continue;
         }
         if (st->timer <= 0) {

@@ -3511,7 +3511,7 @@ void Level19_UpdateActors(void) {
       case BSENTRY_ROUSE:
         if (g_nActorAnimDone != 0) {
           actor->mode = BSENTRY_WATCH;
-          ANIM_RESET(actor, 3);
+          ANIM_RESET(actor, BSENTRY_WATCH);
         }
         break;
 
@@ -3567,7 +3567,7 @@ void Level19_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           if (st->timer != 0) {
             actor->mode = BSENTRY_RECOVER;
-            ANIM_RESET(actor, 7);
+            ANIM_RESET(actor, BSENTRY_RECOVER);
             break;
           }
           st->timer = 0x3C;

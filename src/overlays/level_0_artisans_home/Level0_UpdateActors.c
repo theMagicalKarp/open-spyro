@@ -2601,7 +2601,7 @@ void Level0_UpdateActors(void) {
               ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
               SPY.bodyRotZ, 0x20, 0x40);
           actor->mode = FLOCK_KNOCKED;
-          ANIM_RESET(actor, 5);
+          ANIM_RESET(actor, FLOCK_KNOCKED);
           continue;
         }
       }
@@ -2699,11 +2699,11 @@ void Level0_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           if (actor->mode == FLOCK_RUN) {
             actor->mode = FLOCK_RUN_ALT;
-            ANIM_RESET(actor, 3);
+            ANIM_RESET(actor, FLOCK_RUN_ALT);
           } else {
             actor->mode = FLOCK_RUN;
             if (actor->nextAnim != FLOCK_RUN) {
-              ANIM_ADVANCE(actor, 2);
+              ANIM_ADVANCE(actor, FLOCK_RUN);
             }
           }
           continue;

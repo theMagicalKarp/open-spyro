@@ -2123,14 +2123,14 @@ void Level32_UpdateActors(void) {
           ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
           st->rearmTimer = 0x50;
           actor->mode = FCSWITCH_TRIPPED;
-          ANIM_RESET(actor, 1);
+          ANIM_RESET(actor, FCSWITCH_TRIPPED);
           continue;
         }
       }
       if (TICK_DOWN(st->rearmTimer) != 0 && g_nActorAnimDone != 0) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         actor->mode = FCSWITCH_IDLE;
-        ANIM_RESET(actor, 0);
+        ANIM_RESET(actor, FCSWITCH_IDLE);
         continue;
       }
       actor->flags = 0;

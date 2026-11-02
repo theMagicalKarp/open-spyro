@@ -899,7 +899,7 @@ void Level25_UpdateActors(void) {
         }
         actor->type = ACTOR_TYPE_POST_GRABBER;
         actor->mode = PGRAB_EMERGE;
-        ANIM_RESET(actor, 4);
+        ANIM_RESET(actor, PGRAB_EMERGE);
         continue;
       }
 
@@ -1287,7 +1287,7 @@ void Level25_UpdateActors(void) {
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) ||
             CastRayWorldAndActors(prevPos, &actor->posX)) {
           actor->mode = SHOT_BURST;
-          ANIM_RESET(actor, 1);
+          ANIM_RESET(actor, SHOT_BURST);
         }
         continue;
 
@@ -2253,7 +2253,7 @@ void Level25_UpdateActors(void) {
         if (actor->mode < LANTERN_STRUCK) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_LANTERN_FLAME, actor);
           actor->mode = LANTERN_STRUCK;
-          ANIM_RESET(actor, 3);
+          ANIM_RESET(actor, LANTERN_STRUCK);
           continue;
         }
       }

@@ -3138,7 +3138,7 @@ void Level8_UpdateActors(void) {
           ENTER_POSE(actor, ROAMCRIT_KNOCKED);
         }
         actor->mode = ROAMCRIT_DYING;
-        ANIM_RESET(actor, 6);
+        ANIM_RESET(actor, ROAMCRIT_DYING);
         continue;
       }
 

@@ -1193,7 +1193,7 @@ void Level23_UpdateActors(void) {
         }
         PlayActorMeshVoice(actor, 0, 0);
         actor->mode = FTARGET_STRUCK;
-        ANIM_RESET(actor, 1);
+        ANIM_RESET(actor, FTARGET_STRUCK);
         break;
       }
 

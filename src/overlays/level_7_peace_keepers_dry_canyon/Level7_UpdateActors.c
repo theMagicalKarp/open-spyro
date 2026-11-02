@@ -2513,7 +2513,7 @@ void Level7_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);
         actor->mode = BRAWLER_KNOCKED;
-        ANIM_RESET(actor, 6);
+        ANIM_RESET(actor, BRAWLER_KNOCKED);
         continue;
       }
       switch (actor->mode) {
@@ -2916,7 +2916,7 @@ void Level7_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
         actor->mode = CRITTER_KNOCKED;
-        ANIM_RESET(actor, 1);
+        ANIM_RESET(actor, CRITTER_KNOCKED);
         continue;
       }
 
