@@ -86,7 +86,7 @@ void DrawLevelTransitionOverlay(void) {
     step[0] = 0x10;
     step[1] = 1;
     step[2] = 0x1400;
-    BuildTextSprites((unsigned char *)buf, pos, step, 0x12, 2);
+    BuildTextSprites((unsigned char *)buf, pos, step, 0x12, TINT_GOLD);
     glyph--;
     if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {
       unsigned short *lut = (unsigned short *)g_anCosineLut;
@@ -141,7 +141,7 @@ void DrawLevelTransitionOverlay(void) {
     {
       Actor *glyph = g_pSpriteRecordWriteCursor;
       int wave;
-      BuildTextSprites((unsigned char *)buf, pos, step, 0x12, 2);
+      BuildTextSprites((unsigned char *)buf, pos, step, 0x12, TINT_GOLD);
       glyph--;
       wave = 0;
       if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {

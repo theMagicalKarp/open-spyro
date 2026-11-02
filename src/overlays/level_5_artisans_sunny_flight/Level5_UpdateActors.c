@@ -150,7 +150,7 @@ void Level5_UpdateActors(void) {
             if (SPY.sparxHealth >= SPARX_GONE) {
               g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
-              PlayActorMeshVoice(g_pSparxActor, 0, 0);
+              PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
 
               SPY.sparxHealth = one;
 
@@ -695,11 +695,11 @@ void Level5_UpdateActors(void) {
 
                   if (cs->owner == 0) {
                     if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
-                                       g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0])) {
+                                       g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                       g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                       g_nSfxOverrideVolR = 0x2000;
                       g_nSfxOverrideVolL = 0x2000;
-                      PlayActorMeshVoice(g_pSparxActor, 0, 0);
+                      PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                     }
 
                     g_pSparxActor->subMode = SPARX_SUB_FETCH;
@@ -823,11 +823,11 @@ void Level5_UpdateActors(void) {
 
                 if (cs->owner == 0) {
                   if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
-                                     g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0])) {
+                                     g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
-                    PlayActorMeshVoice(g_pSparxActor, 0, 0);
+                    PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                   }
 
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
@@ -957,7 +957,7 @@ void Level5_UpdateActors(void) {
             st->glow->r = 0xC0;
             st->glow->g = 0xC0;
             st->glow->b = 0x60;
-            st->glow->kind = 9;
+            st->glow->points = 9;
             st->glow->desc = &g_anSparkleGlowDesc;
           }
         } else {
@@ -1361,7 +1361,7 @@ void Level5_UpdateActors(void) {
       {
         Model **models = g_apActorMeshTable;
 
-        if (GetSoundVoiceStatusByOwner(actor, g_pLevelSoundIds[5]) == 0 && g_nGamestate == GS_GAMEPLAY) {
+        if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable_12B->m_Sounds[1]) == 0 && g_nGamestate == GS_GAMEPLAY) {
           PlaySoundEffect(models[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
                         &actor->voiceRow);
         }
@@ -1722,7 +1722,7 @@ void Level5_UpdateActors(void) {
         }
       } else {
         ChangeSpyroState(SPYRO_ST_FLY);
-        g_nSpyroSubstate = 3;
+        g_nSpyroSubstate = SPYRO_SUB_FLY_RUN;
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_NO_CLIP);
       }
 
@@ -2172,7 +2172,7 @@ void Level5_UpdateActors(void) {
     case ACTOR_TYPE_LETTER_A + 25: {
       OrbitState *st = actor->state;
 
-      if (st->owner->mode == 0 || st->owner->subMode != actor->mode) {
+      if (st->owner->mode == ORBIT_OWNER_FAR || st->owner->subMode != actor->mode) {
         DespawnActorRecord(actor);
       } else if (st->owner->type == ACTOR_TYPE_LEVEL_EXIT) {
         if (ApproxDist2D(&st->owner->posX, &spy->posX) < 0x400) {

@@ -171,8 +171,8 @@ extern int ReflectVectorOffNormal(int *v, int *n, int *out);
 
 /* Glow node owned by Sparx; follows its anchor position. */
 typedef struct FxNode {
-  int kind;            /* 0x00 */
-  void *desc;          /* 0x04 */
+  int points;          /* 0x00 point count of desc's shape; 0 = free slot (DrawWorldSparkleParticles) */
+  void *desc;          /* 0x04 the shape: `points` 8-byte (x, y) offsets, drawn as shaded triangles */
   int *anchor;         /* 0x08 */
   unsigned char r;     /* 0x0C */
   unsigned char g;     /* 0x0D */
@@ -724,9 +724,9 @@ typedef struct ChestState {
 } ChestState;
 
 /* Case 208 — the hub's music/voice trigger. */
-typedef struct MusicState {
-  int started; /* 0x00 */
-} MusicState;
+typedef struct PathGateState {
+  int started; /* 0x00 the first tick opened the already-unlocked paths */
+} PathGateState;
 
 /* ACTOR_TYPE_WANDERING_CRITTER_C (level 30): UpdateActorWander's block,
  * then speed/heading for the knock-away. */
@@ -921,9 +921,9 @@ typedef struct PostState {
 /* Case 166 -- path patroller. */
 typedef struct PatrolState {
   PathData *path; /* 0x00 */
-  int mode;       /* 0x04 */
+  int mode;       /* 0x04 PathChargerTurn */
   int afterCharge; /* 0x08 set while charging: back on patrol it steps to the next node at once */
-  int near;       /* 0x0C */
+  int near;       /* 0x0C this leg charges from further away (taunted at its last turn) */
   int timer;      /* 0x10 */
 } PatrolState;
 
@@ -1112,7 +1112,7 @@ typedef struct RoamingCritterState {
 
 typedef struct ShempGuardState {
   int mode;           /* 0x00 0 = patrol, 1 = hold near target */
-  int timer04;        /* 0x04 */
+  int cueTimer;       /* 0x04 to its next shout (CHASE / PATH_RUSH, at 2) or swipe (GUARD) */
   int lift;           /* 0x08 */
   int heading;        /* 0x0C */
   int speed;          /* 0x10 */
@@ -1120,12 +1120,12 @@ typedef struct ShempGuardState {
   int range;          /* 0x18 sight range, in 1024s */
   int accel;          /* 0x1C */
   int turn;           /* 0x20 */
-  int timer24;        /* 0x24 */
+  int stateTimer;     /* 0x24 BRAKE, RECOVER and FALL durations */
   int watch;          /* 0x28 index into g_pActorListBase */
   int guard;          /* 0x2C index into g_pActorListBase */
   int done;           /* 0x30 */
   PathData *target;   /* 0x34 path it pivots along; node 3 is the point it tests Spyro against */
-  int timer38;        /* 0x38 */
+  int chaseDelay;     /* 0x38 CHASE waits it out; a lookout hands it on */
   PathData *path; /* 0x3C */
   int boxA[6];        /* 0x40 */
   int boxB[6];        /* 0x58 */
@@ -1403,7 +1403,7 @@ typedef struct L26Rot {
 
 typedef struct HatchState {
   int pad00;
-  int kind;     /* 0x04 0 = opens to charge or flame, else charge only */
+  int kind;     /* 0x04 HatchKind */
   Actor *child; /* 0x08 released occupant */
   int handle;   /* 0x0C for SelectActorLodBand */
 } HatchState;
@@ -1582,7 +1582,7 @@ extern int g_nCameraActiveTargetYawBias;
 
 /* Main globals read by a single UpdateActors clone. */
 extern unsigned short g_anSwitchSfxPitchOffsets[]; /* indexed by the switch's bit position */
-extern unsigned char g_bAmbienceChannelMask; /* ambience channel enables */
+extern unsigned char g_bTwilightHarborVisited; /* g_abLevelVisitedFlag[LEVEL_SLOT(LEVEL_TWILIGHT_HARBOR)] as its own symbol */
 extern int g_bLevelBossDefeated; /* boss defeated */
 extern int g_bLevelPhasedBossKilled;
 extern int g_bLevelUseShortReleaseAnim;

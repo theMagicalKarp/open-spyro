@@ -2985,8 +2985,8 @@ glabel TickDragonRescueAssetStream
   jlabel .L80014C04
     /* 5404 80014C04 0780023C */  lui        $v0, %hi(g_nDragonRescueTypeSnapshot)
     /* 5408 80014C08 5470428C */  lw         $v0, %lo(g_nDragonRescueTypeSnapshot)($v0)
-    /* 540C 80014C0C 0780043C */  lui        $a0, %hi(g_nWorldUnpackLimit)
-    /* 5410 80014C10 6067848C */  lw         $a0, %lo(g_nWorldUnpackLimit)($a0)
+    /* 540C 80014C0C 0780043C */  lui        $a0, %hi(g_apActorMeshTable_FA)
+    /* 5410 80014C10 6067848C */  lw         $a0, %lo(g_apActorMeshTable_FA)($a0)
     /* 5414 80014C14 0880033C */  lui        $v1, %hi(g_pWorldUnpackHead)
     /* 5418 80014C18 E085638C */  lw         $v1, %lo(g_pWorldUnpackHead)($v1)
     /* 541C 80014C1C C0100200 */  sll        $v0, $v0, 3

@@ -207,7 +207,7 @@ extern int g_nTotalDragonsRescued;
 extern int g_nTotalEggsRecovered;
 extern int g_nTotalTreasureCollected;                    /* gem total shown on the balloon */
 extern struct Actor *g_pActorCutsceneActor;  /* focus actor (BeginActorCutscene) */
-extern unsigned char *g_pLevelSoundIds;                  /* level sound ids */
+extern struct Model *g_apActorMeshTable_12B; /* g_apActorMeshTable[ACTOR_TYPE_FLIGHT_CHEST] under its own symbol */
 extern void *g_pSpyroRequestCameraTargetParams;          /* SPY.pCamTarget, absolute form */
 
 /* Hoisted: declared identically (bar parameter names) in every includer. */

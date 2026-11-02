@@ -91,7 +91,7 @@ typedef struct RoamingRamState {
   int knock;      /* 0x10 knock-back heading */
   int speed;      /* 0x14 */
   int lift;       /* 0x18 */
-  int mode;       /* 0x1C */
+  int mode;       /* 0x1C RoamingRamKind */
   int partner;    /* 0x20 index into g_pActorListBase */
   int target;     /* 0x24 index into g_pActorListBase */
   int triggerSlot;       /* 0x28 g_anLevelTriggerStateSlots index (a war drum sets it), -1 = none */

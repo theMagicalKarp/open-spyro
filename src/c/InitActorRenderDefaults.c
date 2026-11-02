@@ -12,10 +12,10 @@ void InitActorRenderDefaults(Actor *actor) {
   actor->updateDist = ACTOR_UPDATE_ALWAYS;
   actor->otBias = 4;
   actor->nextFrame = 1;
-  actor->mode = 0;
+  actor->mode = ACTOR_SPAWN_MODE;
   actor->subMode = 0;
-  actor->anim = 0;
-  actor->nextAnim = 0;
+  actor->anim = ACTOR_SPAWN_ANIM;
+  actor->nextAnim = ACTOR_SPAWN_ANIM;
   actor->frame = 0;
   actor->frameProgress = 0;
   actor->frameRate = 0x20;

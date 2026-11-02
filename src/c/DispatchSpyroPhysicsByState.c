@@ -221,7 +221,7 @@ void DispatchSpyroPhysicsByState(void) {
     if (SPY[SPY_FLIGHT_MODE] != 0) {
       if (g_nFlightLevelActive != 0) {
         TRACK_FLOOR_REFERENCE();
-        if (g_nSpyroSubstate == 3 &&
+        if (g_nSpyroSubstate == SPYRO_SUB_FLY_RUN &&
             CollideSphereWithWorldAndActors(&SPY[0], 0x164, 0x164) != 0) {
           g_pfnLevelEndFlightRun();
         }

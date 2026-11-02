@@ -310,8 +310,8 @@ void Level34_UpdateActors(void) {
             }
           }
 
-          actor->mode = 0;
-          ANIM_RESET(actor, 0);
+          actor->mode = ACTOR_SPAWN_MODE;
+          ANIM_RESET(actor, ACTOR_SPAWN_ANIM);
         } else {
           st->detached = 1;
           goto follow_carry;
@@ -389,7 +389,7 @@ void Level34_UpdateActors(void) {
             if (SPY.sparxHealth >= SPARX_GONE) {
               g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
-              PlayActorMeshVoice(g_pSparxActor, 0, 0);
+              PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
 
               SPY.sparxHealth = SPARX_GREEN;
 
@@ -898,11 +898,11 @@ void Level34_UpdateActors(void) {
                 if (sparx->target == 0) {
                   if (GetSoundVoiceStatusByOwner(
                           g_pSparxActor,
-                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0]) == 0) {
+                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ]) == 0) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
-                    PlayActorMeshVoice(g_pSparxActor, 0, 0);
+                    PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                   }
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
                   sparx->target = actor;
@@ -1021,11 +1021,11 @@ void Level34_UpdateActors(void) {
                 if (sparx->target == 0) {
                   if (GetSoundVoiceStatusByOwner(
                           g_pSparxActor,
-                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0]) == 0) {
+                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ]) == 0) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
-                    PlayActorMeshVoice(g_pSparxActor, 0, 0);
+                    PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                   }
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
                   sparx->target = actor;
@@ -1173,7 +1173,7 @@ void Level34_UpdateActors(void) {
             st->glow->r = 0xC0;
             st->glow->g = 0xC0;
             st->glow->b = 0x60;
-            st->glow->kind = 9;
+            st->glow->points = 9;
             st->glow->desc = &g_anSparkleGlowDesc;
           }
         } else {
@@ -2295,7 +2295,7 @@ void Level34_UpdateActors(void) {
         break;
 
       case LVORTEX_FINISH:
-        PlaySoundEffect(g_pLevelSampleBankHeader[0x3C], 0, SFX_MODE_PANNED, 0);
+        PlaySoundEffect(g_pLevelSampleBankHeader[SFX_LOOT_VORTEX_DONE], 0, SFX_MODE_PANNED, 0);
         ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         g_nSpyroSwingEulerTargetY[1] = 0;
         g_nSpyroSwingEulerTargetY[0] = 0;
@@ -2335,7 +2335,7 @@ void Level34_UpdateActors(void) {
       }
 
       actor->soundRange = 0x20;
-      PlayActorMeshVoice(actor, 0, 0);
+      PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
       /* Two of each of the first pair, then six of the third. */
       for (i = 0; i < 2; i++) {
@@ -2402,7 +2402,7 @@ void Level34_UpdateActors(void) {
         int i;
 
         actor->soundRange = 0x20;
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, WOBBLECHEST_VOICE_BREAK, 0);
 
         for (i = 0; i < 2; i++) {
           if (ACTOR_POOL_LOW()) {
@@ -2807,7 +2807,7 @@ void Level34_UpdateActors(void) {
           w416[1] = (GetRandomU32() & 7) + 6;
           g_pfnLevelEmitParticles(1, EMIT_FADING_SPARK, ps, (int)w416);
           if (actor->voiceRow == VOICE_ROW_NONE) {
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, CBOULDER_VOICE_CRACK, 0);
           }
         }
         if (st->timer >= 0x39) {
@@ -2834,7 +2834,7 @@ void Level34_UpdateActors(void) {
           Actor *c;
           DebrisFallState *cs;
 
-          PlayActorMeshVoice(actor, 1, 0);
+          PlayActorMeshVoice(actor, CBOULDER_VOICE_BURST, 0);
           SpawnActorDeathDrop(actor, DROP_HIGH_HOP, 0, 0);
           for (i = 0; i < 8; i++) {
             short *p;
@@ -3069,7 +3069,8 @@ void Level34_UpdateActors(void) {
     case ACTOR_TYPE_HAZARD0_DEATH_FX:
     case ACTOR_TYPE_HAZARD0_ENTER_FX:
     case ACTOR_TYPE_HAZARD2_ENTER_FX:
-    case ACTOR_TYPE_HAZARD2_DEATH_FX:      if (g_nActorAnimDone != 0) {
+    case ACTOR_TYPE_HAZARD2_DEATH_FX:
+      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -3122,7 +3123,7 @@ void Level34_UpdateActors(void) {
       st->lid->rotZ = st->angle >> 4;
       if (st->speed > 0xE0 || (actor->flags & ACTOR_HIT_SUPER)) {
         st->lid->subMode = LID_LAUNCH;
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, SPINCHEST_VOICE_LAUNCH, 0);
         for (i = 0; i < 2; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
@@ -3230,7 +3231,7 @@ void Level34_UpdateActors(void) {
             g_pfnLevelSpawnActor(ACTOR_TYPE_SPARKLE_SHARD, actor);
           }
           g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, SPINLID_VOICE_BURST, 0);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3273,7 +3274,7 @@ void Level34_UpdateActors(void) {
         int i;
 
         actor->soundRange = 0x20;
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, BROCK_VOICE_BREAK, 0);
         for (i = 0; i < 4;) {
           if (ACTOR_POOL_LOW()) {
             break;
@@ -3357,7 +3358,7 @@ void Level34_UpdateActors(void) {
           if (actor->voiceRow != VOICE_ROW_NONE) {
             continue;
           }
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, CANNON_VOICE_FUSE, 0);
           continue;
         }
         if (st->timer < 0xB4 &&
@@ -3388,7 +3389,7 @@ void Level34_UpdateActors(void) {
         st->path->cur = 1;
         st->timer = 0;
         ZeroVector(st->vel);
-        PlayActorMeshVoice(actor, 1, 0);
+        PlayActorMeshVoice(actor, CANNON_VOICE_FIRE, 0);
         continue;
 
       case CANNON_FLIGHT:
@@ -3463,7 +3464,7 @@ void Level34_UpdateActors(void) {
     case ACTOR_TYPE_LETTER_A + 25: {
       NameLetterState *st = actor->state;
 
-      if (st->parent->mode == 0 || st->parent->subMode != actor->mode) {
+      if (st->parent->mode == ORBIT_OWNER_FAR || st->parent->subMode != actor->mode) {
         DespawnActorRecord(actor);
         continue;
       }

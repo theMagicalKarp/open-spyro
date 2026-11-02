@@ -1112,13 +1112,13 @@ extern unsigned char g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_nFlightTallySlot 0x800757c4, g_anFlightTallyShown 0x800770f8, g_nFlightTimeBonus 0x80075908,
  *   g_anFlightCourseBonusTable 0x8006e920, g_pfnFlightTimeFormatter 0x800758c4,
  *   g_nFlightTimeRemaining 0x80075840, g_nFlightQuitFlag 0x80075900  flight-level results/HUD state
- *   g_bAmbienceChannelMask  0x80078e98  ambience channel enables
+ *   g_bTwilightHarborVisited  0x80078e98  g_abLevelVisitedFlag[0x20] (Twilight Harbor) under its own symbol
  *   g_bSpyroPersistentEulerY 0x80078a65 g_abSpyroPersistentEuler[1]
  *   g_pSharedLoadBuffer     0x800113a0  shared CD/asset/splash load buffer pointer
  *   g_nFarPlaneDrawDistance 0x800785d0  per-gamestate far-plane cull limit (SetupFrameOT)
  *   g_nVisZoneCount  0x800785b4  number of visibility zones
  *   g_nCdDaVolumeCurrent    0x80075f18  live CD-DA volume (fade ramp)
- *   g_pLevelSoundIds        0x80076824  level sound id table
+ *   g_apActorMeshTable_12B  0x80076824  g_apActorMeshTable[0x12B] (ACTOR_TYPE_FLIGHT_CHEST's model)
  *
  * Level-overlay hook slots, filled by ApplyPerLevelGlobalsTable on level entry.
  * Every level installs the same-role overlay function into each slot
@@ -1147,7 +1147,7 @@ extern unsigned char g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_dwBurstColorSparxFood / ExtraLife 0x8006e490 / 0x8006e494  0x2C-coded colour words (0x808080 / 0x008080)
  *       UpdateActors passes to emit effect 0xC for ACTOR_TYPE_SPARX_FOOD / EXTRA_LIFE in place of g_adwActorBurstColors;
  *       entries 5 and 6 of a 7-word colour table at 0x8006e47c
- *   g_anSparkleGlowDesc     0x8006e390  descriptor installed as FxNode.desc on every kind-9 sparkle from
+ *   g_anSparkleGlowDesc     0x8006e390  descriptor installed as FxNode.desc on every 9-point sparkle from
  *       AllocWorldSparkle (UpdateActors smoke/glow nodes); 42 small signed words, likely shape offsets
  *   g_aSmokeJetEmitters     0x8006e614  3 x {short pos[3], vel[3]} jet origins/velocities, rotated by the
  *       actor matrix (two puffs per jet per frame)
@@ -1290,7 +1290,7 @@ extern unsigned int g_anSpuPendingKeyOffBlock[]; /* 0x8007623c */
 extern int g_anSoundMonoMixFlagBlock[]; /* 0x80076240 */
 extern void *g_apActorMeshTableBlock[]; /* 0x80076378 */
 extern char *g_apActorMeshTable_1[]; /* 0x8007637c: &g_apActorMeshTable[1] (AdvanceCutsceneFrame walks types 1..) */
-extern int g_nWorldUnpackLimit; /* 0x80076760: end of the unpack work area */
+extern struct Model *g_apActorMeshTable_FA; /* 0x80076760: g_apActorMeshTable[ACTOR_TYPE_DRAGON_STATUE] under its own symbol; the statue's model data ends the space the rescue assets stream into */
 extern volatile int g_anCdBaseLbaBlock[]; /* 0x80076b90: held-base view of g_nCdBaseLba */
 extern unsigned char g_abCdlLocScratchBlock[36]; /* 0x80076b98 */
 extern short g_anCameraEulerRollBlock[]; /* 0x80076e1c: camera euler trio as an array ([0] roll, [1] pitch, [2] yaw) */

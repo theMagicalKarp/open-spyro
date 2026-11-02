@@ -178,6 +178,11 @@ enum PortalNameMode {
   PORTALNAME_NEAR = 1, /* camera close and facing one side: letters shown */
 };
 
+/* The owner mode that removes a floating name's letters (OrbitState.owner
+ * is a portal name or a level exit; PORTALNAME_FAR and LEVELEXIT_FAR are
+ * both 0). */
+#define ORBIT_OWNER_FAR 0
+
 /* ->subMode of a portal name sign: the side the camera reads it from;
  * SpawnNameLetterActors mirrors the letter arc for NAMESIDE_BACK. */
 enum NameSignSide {
@@ -250,8 +255,14 @@ enum RoamingRamMode {
   RAM_QUIET_KNOCKED = 2, /* the quiet kind (ACTOR_TYPE_ROAMING_RAM_QUIET)'s KNOCKED */
   RAM_KNOCKED = 3,   /* hit: tumbles away and bursts */
   RAM_TRAPPED = 4,   /* inside its trigger box while the trigger is set */
-  RAM_RUN_PATH = 10, /* path rammer (RoamingRamState.mode 1): runs its path */
+  RAM_RUN_PATH = 10, /* path rammer (RAMKIND_PATH): runs its path */
   RAM_PATH_END = 11, /* at the end: wakes its partner, then idles calling */
+};
+
+/* RoamingRamState.mode: the ram's kind (spawn record). */
+enum RoamingRamKind {
+  RAMKIND_ROAMER = 0,
+  RAMKIND_PATH = 1, /* RAM_GRAZE with Spyro close: RAM_RUN_PATH */
 };
 
 /* ->mode of a path walker (ACTOR_TYPE_PATH_WALKER, PathState). */
@@ -289,6 +300,14 @@ enum GnastyMode {
   GNASTY_STAND_SWIPE = 13, /* swipe from GNASTY_STAND */
   GNASTY_PAUSE = 20,       /* waits out stateTimer, then runs */
   GNASTY_PATH_END = 21,    /* at the path end until Spyro comes near from below */
+};
+
+/* GnastyState.phase: the fight's progress (0 and 1 before he reaches his
+ * main path). */
+enum GnastyPhase {
+  GNASTY_PHASE_MAIN = 2,   /* reached path point 1: runs and throws along his main path */
+  GNASTY_PHASE_ESCAPE = 3, /* flamed near its end: the escape path */
+  GNASTY_PHASE_BEATEN = 4, /* flamed near the escape path's end */
 };
 
 /* Gnasty Gnorc runs to animation 1 (THROW plays its own index, 2). */
@@ -390,6 +409,14 @@ enum ShepherdMode {
   SHEPHERD_GO_HOME = 100, /* walks back to its home point */
 };
 
+/* ShepherdState.sub on SHEPHERD_POST_PAIR_PATROL (1 is written through
+ * the function's pinned `one`). */
+enum ShepherdPairStep {
+  SHEPHERD_PAIR_WALK = 0, /* patrols its path; near its partner on the timer: TURN */
+  SHEPHERD_PAIR_TURN = 1, /* turns to the partner */
+  SHEPHERD_PAIR_FACE = 2, /* SHEPHERD_ANIM_FACE_PARTNER, then WALK */
+};
+
 /* ShepherdState.post: what a shepherd does while SHEPHERD_IDLE, and how it
  * chases in SHEPHERD_CHASE (the spawn record sets it; 8 is never used). Like
  * CaptainPost. */
@@ -437,6 +464,11 @@ enum SingerMode {
   SINGER_SETTLE = 12,   /* stops its voices, back to REST */
   SINGER_RETURN = 99,   /* walks its path back and frees the rider */
   SINGER_CUE_STOP = 99, /* PathWalkerState.next: the partner says stop singing */
+};
+
+/* A singing path walker's animations besides the poses equal to its mode. */
+enum SingerAnim {
+  SINGER_ANIM_THROWN = 6, /* flying after its rider throws it */
 };
 
 /* PathWalkerState.mode: the walker's role, fixed at spawn. */
@@ -527,6 +559,13 @@ enum SoldierMode {
   SOLDIER_GO_HOME = 100,   /* walks back to SoldierState.home, then IDLE */
 };
 
+/* SoldierState.phase during SOLDIER_TO_POST. */
+enum SoldierPostPhase {
+  SOLDIER_POST_START = 0, /* rolls SoldierState.bold and a random shout delay */
+  SOLDIER_POST_SHOUT = 1, /* turns to Spyro and shouts (SOLDIER_ANIM_SHOUT) */
+  SOLDIER_POST_RUN = 2,   /* runs to its post, then ENTER_POST */
+};
+
 /* A soldier's animations besides the poses equal to its mode (CHASE 1,
  * KNOCKED 3, ALERT 4, IN_POST 0xB, ENTER_POST 0x10). */
 enum SoldierAnim {
@@ -545,6 +584,15 @@ enum FireballCannonMode {
   FBCANNON_LIT = 1,  /* flamed from behind: starts the fuse */
   FBCANNON_FUSE = 2, /* smokes for 0x3C ticks */
   FBCANNON_FIRE = 3, /* lobs a fireball at the best target ahead, back to IDLE */
+};
+
+/* A fireball cannon's animations; its gunner (or a dueling soldier) plays
+ * them on its link. */
+enum FireballCannonAnim {
+  FBCANNON_ANIM_REST = 0,
+  FBCANNON_ANIM_TURN_NEG = 1, /* the gunner's aim is 0xB+ off, negative yaw delta */
+  FBCANNON_ANIM_TURN_POS = 2, /* the same, positive */
+  FBCANNON_ANIM_FIRE = 3,     /* the lob; back to REST from frame 8 */
 };
 
 /* ->mode of a guard captain (ACTOR_TYPE_GUARD_CAPTAIN, CaptainState;
@@ -645,6 +693,11 @@ enum RunnerMode {
   RUNNER_LURK = 20,    /* waits for Spyro to enter PathRunnerState.volA, then RUN */
 };
 
+/* A path runner's animations besides the poses equal to its mode. */
+enum RunnerAnim {
+  RUNNER_ANIM_STAND = 4, /* WAIT, TAUNT, LOOKOUT and LURK face Spyro on it; voices 6/5 on frames 1/0xA */
+};
+
 /* ->mode of a swooping guard (ACTOR_TYPE_SWOOPER, SwoopState; levels 7/8).
  * SwoopState.alert is shared: one swoops at a time. */
 enum SwoopMode {
@@ -669,6 +722,45 @@ enum SwoopKind {
   SWOOP_KIND_STRAIGHT = 2, /* no weave; dives to Spyro's height and turns back sharply */
 };
 
+/* Per-type mesh voice indices: PlayActorMeshVoice's voiceOffset and the
+ * matching m_Sounds[] slot of the type's mesh record. */
+enum SparxVoice {
+  SPARX_VOICE_BUZZ = 0, /* his only voice: on reappearing and on setting off for a pickup */
+};
+enum StatueVoice {
+  STATUE_VOICE_RATTLE = 0, /* STATUE_IDLE's periodic shake */
+};
+enum ChestVoice {
+  WOODCHEST_VOICE_BREAK = 0,   /* ACTOR_TYPE_WOOD_CHEST struck */
+  WOBBLECHEST_VOICE_BREAK = 0, /* ACTOR_TYPE_WOBBLE_CHEST charged */
+  LOCKEDCHEST_VOICE_OPEN = 0,  /* ACTOR_TYPE_LOCKED_CHEST opened by its key */
+  SPINCHEST_VOICE_LAUNCH = 0,  /* ACTOR_TYPE_SPIN_CHEST spun fast enough: the lid flies */
+  SPINLID_VOICE_BURST = 0,     /* ACTOR_TYPE_SPIN_CHEST_LID bursting */
+};
+enum BreakableVoice {
+  BROCK_VOICE_BREAK = 0,     /* ACTOR_TYPE_BREAKABLE_ROCK supercharged */
+  CBOULDER_VOICE_CRACK = 0,  /* ACTOR_TYPE_CRACKING_BOULDER: sparks while it cracks */
+  CBOULDER_VOICE_BURST = 1,  /* its timer out: it bursts into falling debris */
+};
+enum CannonVoice {
+  CANNON_VOICE_FUSE = 0, /* CANNON_FUSE, while it smokes */
+  CANNON_VOICE_FIRE = 1, /* the shot, entering CANNON_FLIGHT */
+};
+enum ShempGuardVoice {
+  SGUARD_VOICE_FALL = 0,  /* ran off a ledge: entering SGUARD_FALL */
+  SGUARD_VOICE_SHOUT = 1, /* while it chases or rushes, and once ShempGuardState.watch plays animation 7 */
+};
+
+/* A level 7/8 bell's animations (ACTOR_TYPE_BELL_A/B/C). A flame rings it
+ * once per cooldown (subMode 0x50); any other hit only wobbles it. */
+enum BellAnim {
+  BELL_ANIM_REST = 0,
+  BELL_ANIM_WOBBLE = 1, /* non-flame hit while at rest, then REST */
+  BELL_ANIM_SWING = 2,  /* flamed: spawns a ACTOR_TYPE_BELL_RIPPLE when done, then RING */
+  BELL_ANIM_RING = 3,   /* rings on until the cooldown reaches 2 */
+  BELL_ANIM_SETTLE = 4, /* cooldown at 2: settles, then REST */
+};
+
 /* ->mode of a villager (ACTOR_TYPE_VILLAGER, VillagerState; levels 12/13).
  * VILLAGER_IDLE runs VillagerState.mode's role (talker, lookout, paired,
  * follower of a leader); Spyro too close sends it running. */
@@ -678,6 +770,15 @@ enum VillagerMode {
   VILLAGER_PANIC = 90,  /* cowers, then RUN */
   VILLAGER_RUN = 91,    /* runs between random path points; far enough: IDLE */
   VILLAGER_STOP = 92,   /* catches its breath facing Spyro; he comes closer: PANIC */
+};
+
+/* A villager's animations besides the poses equal to its mode (IDLE 0,
+ * KNOCKED 3). */
+enum VillagerAnim {
+  VILLAGER_ANIM_CHATTER = 4, /* talking (chunk anim past step 1) and VILLAGER_STOP; voices 4/5 */
+  VILLAGER_ANIM_COWER = 7,   /* VILLAGER_PANIC, then RUN */
+  VILLAGER_ANIM_RUN = 8,
+  VILLAGER_ANIM_REACT = 9,   /* VROLE_LEADER: cued at the leader's animation 4, frame 8; back to IDLE at frame 0x14 */
 };
 
 /* VillagerState.mode: the villager's role. */
@@ -783,13 +884,18 @@ enum ShooterMode {
   SHOOTER_ADVANCE = 20, /* walks its path toward Spyro, then SHIELD */
 };
 
-/* A shooter's animations (8, 9, 10 and 12 are its idle blink cycle). */
+/* A shooter's animations. A dozer idles on DOZE for 2..6 loops, then plays
+ * BLINK_1, _2, _3 and dozes again. */
 enum ShooterAnim {
   SHOOTER_ANIM_IDLE = 0,
   SHOOTER_ANIM_LOWER = 2,   /* drops the shield */
   SHOOTER_ANIM_WALK = 4,    /* SHOOTER_ADVANCE */
   SHOOTER_ANIM_AIM = 6,
   SHOOTER_ANIM_SHIELD = 7,
+  SHOOTER_ANIM_DOZE = 8,
+  SHOOTER_ANIM_BLINK_1 = 9,
+  SHOOTER_ANIM_BLINK_2 = 10,
+  SHOOTER_ANIM_BLINK_3 = 12,
 };
 
 /* ShooterState.mode: the sentry's role. */
@@ -882,6 +988,21 @@ enum AlarmGuardMode {
   APGUARD_HANDED_OFF = 98, /* hidden after the hand-off; no collision */
 };
 
+/* An alarm post guard's animations. GuardState.anim is the base of its set:
+ * 0 for the first guard, APGUARD_ANIM_PARTNER_SET for the partner it hands
+ * off to, with STAND..HIT_END at the same offsets in both. */
+enum AlarmGuardAnim {
+  APGUARD_ANIM_STAND = 0,       /* base + 0: facing Spyro */
+  APGUARD_ANIM_STEP = 1,        /* base + 1: sidestepping round its post, walking to the next */
+  APGUARD_ANIM_HIT = 2,         /* base + 2 */
+  APGUARD_ANIM_SHOVE = 3,       /* base + 3: APGUARD_SHOVE */
+  APGUARD_ANIM_SET_LEN = 4,     /* below base + 4 a hit or shove blends in, else restarts */
+  APGUARD_ANIM_FIDGET = 4,      /* APGUARD_WATCH, a random 2..4 loops apart */
+  APGUARD_ANIM_HAND_OFF = 5,    /* the stage-1 hit, waking the partner */
+  APGUARD_ANIM_HIDDEN = 6,      /* APGUARD_HANDED_OFF */
+  APGUARD_ANIM_PARTNER_SET = 7, /* the partner's base */
+};
+
 /* ->mode of a path patroller (ACTOR_TYPE_PATH_PATROLLER, PathState; levels
  * 0/1): a critter that scatters along its path nodes away from Spyro. */
 enum PatrollerMode {
@@ -945,6 +1066,7 @@ enum GrabberAnim {
   GRABBER_ANIM_THROW_SHORT = 7,
   GRABBER_ANIM_DEVOUR = 8,
   GRABBER_ANIM_HIT = 9,     /* flamed: entering GRABBER_KNOCKED */
+  GRABBER_ANIM_HUSK = 0xA,  /* GRABBER_HUSK, the copy a flame knock leaves */
 };
 
 /* ->mode of a sorcerer (ACTOR_TYPE_SORCERER, SorcererState; level 13).
@@ -993,6 +1115,12 @@ enum HatchMode {
   HATCH_OPEN = 2,        /* struck: released its barrel or mine; recloses once Spyro is away */
   HATCH_SEALED_IDLE = 3, /* the sealed kind's idle (only a charge opens it) */
   HATCH_SEALED_WAIT = 4,
+};
+
+/* HatchState.kind (spawn record). */
+enum HatchKind {
+  HATCH_KIND_BARREL = 0, /* any hit opens it; holds an ACTOR_TYPE_FLOATING_BARREL */
+  HATCH_KIND_SEALED = 1, /* only a charge or supercharge opens it; holds an ACTOR_TYPE_FLOATING_MINE */
 };
 
 /* ->mode of a superflame giver (ACTOR_TYPE_SUPERFLAME_GIVER, level 14;
@@ -1068,8 +1196,13 @@ enum GuardPairMode {
 /* ->subMode while GPAIR_CUE: the signal gesture. */
 enum GuardPairCueStep {
   GPCUE_RAISE = 0,  /* plays the ROUSE animation */
-  GPCUE_SIGNAL = 1, /* animation 8; on its frame 8 the partner enters mode 0xD */
+  GPCUE_SIGNAL = 1, /* GPAIR_ANIM_SIGNAL; on its frame 8 the partner enters mode 0xD */
   GPCUE_LOWER = 2,  /* plays the LOWER animation, then IDLE */
+};
+
+/* A paired guard's animations besides the poses equal to its mode. */
+enum GuardPairAnim {
+  GPAIR_ANIM_SIGNAL = 8, /* GPCUE_SIGNAL */
 };
 
 /* ->mode of a sweep gunner (ACTOR_TYPE_SWEEP_GUNNER, SweepGunnerState;
@@ -1089,6 +1222,11 @@ enum SweepGunnerSweepStep {
   SWEEPGUN_STEP_REVERSE = 1, /* overshot him: plays its turn, reverses sweepRate, FIRE */
 };
 
+/* A sweep gunner's animations besides the poses equal to its mode. */
+enum SweepGunnerAnim {
+  SWEEPGUN_ANIM_TURN = 5, /* SWEEPGUN_STEP_REVERSE */
+};
+
 /* ->mode of a lurker (ACTOR_TYPE_LURKER, LurkerState; level 20). */
 enum LurkerMode {
   LURKER_WATCH = 0,    /* Spyro close in front: LASH; else hops between path nodes */
@@ -1099,6 +1237,12 @@ enum LurkerMode {
   LURKER_FACE = 15,    /* turns to Spyro, then WATCH */
   LURKER_LASH = 20,    /* lashes its ACTOR_TYPE_LURKER_TETHER at Spyro and drags him */
   LURKER_SINK = 30,    /* knocked into the water: despawns after a moment */
+};
+
+/* A lurker's animations besides the poses equal to its mode. */
+enum LurkerAnim {
+  LURKER_ANIM_TURN = 1, /* LURKER_AIM and LURKER_FACE */
+  LURKER_ANIM_LASH = 3,
 };
 
 /* ->mode of a gunner (ACTOR_TYPE_GUNNER, GunnerState; level 20).
@@ -1148,6 +1292,11 @@ enum RockThrowerMode {
   ROCKTHROW_TURN = 10,   /* turns to Spyro, then WATCH */
 };
 
+/* A rock thrower's animations besides the poses equal to its mode. */
+enum RockThrowerAnim {
+  ROCKTHROW_ANIM_DOWN = 4, /* after the knock plays out, until it bursts */
+};
+
 /* ->mode / ->subMode of a thrown boulder (ACTOR_TYPE_ROLLING_BOULDER,
  * BoulderState; levels 21/22). */
 enum RollingBoulderMode {
@@ -1190,6 +1339,12 @@ enum BoulderThrowerMode {
   BTHROW_RIDE_HELD = 54,    /* held; flung at Spyro (HURTLE) on the throw frame */
 };
 
+/* A boulder thrower's animations besides the poses equal to its mode. */
+enum BoulderThrowerAnim {
+  BTHROW_ANIM_LEAP = 6,   /* BTHROW_RIDE_LEAP */
+  BTHROW_ANIM_HURTLE = 7, /* BTHROW_HURTLE */
+};
+
 /* ->mode of a gatekeeper (ACTOR_TYPE_GATEKEEPER / _B, GatekeeperState;
  * levels 21/22). Modes 40-44 hand out its run of keys (GatekeeperState.keys)
  * one at a time; 43 and 50-54 match the boulder thrower's. */
@@ -1211,6 +1366,13 @@ enum GatekeeperMode {
                                 * ready (subMode != 0), then jumps, setting its subMode to 2 */
   GATEKEEPER_RIDE_LEAP = 53,   /* jumps into the catcher's hands */
   GATEKEEPER_RIDE_HELD = 54,   /* held; flung at Spyro (HURTLE) on the throw frame */
+};
+
+/* A gatekeeper's animations besides the poses equal to its mode. */
+enum GatekeeperAnim {
+  GATEKEEPER_ANIM_WALK = 6,   /* GATEKEEPER_RIDE_WALK */
+  GATEKEEPER_ANIM_LEAP = 7,   /* GATEKEEPER_RIDE_LEAP */
+  GATEKEEPER_ANIM_HURTLE = 8, /* GATEKEEPER_HURTLE */
 };
 
 /* ->mode of a tethered guard (ACTOR_TYPE_TETHERED_GUARD, TetherState; level
@@ -1433,6 +1595,11 @@ enum LobGunnerMode {
   LOBGUN_SINK = 20,   /* splashed down: despawns after a delay */
 };
 
+/* A lob gunner's animations besides the poses equal to its mode. */
+enum LobGunnerAnim {
+  LOBGUN_ANIM_FIDGET = 1, /* LOBGUN_WATCH: half the time once an animation ends */
+};
+
 /* ->mode of a burst gunner (ACTOR_TYPE_BURST_GUNNER, BurstGunnerState; level
  * 32); the mode is also the animation index. */
 enum BurstGunnerMode {
@@ -1456,6 +1623,12 @@ enum BoltGuardMode {
   BGUARD_RUN = 10,         /* runs its path; done or Spyro near: WATCH */
   BGUARD_FACE_LINK = 20,   /* faces its link, then FIRE_AT_LINK */
   BGUARD_FIRE_AT_LINK = 21, /* fires bolt pairs at its link, then the next link */
+};
+
+/* A bolt guard's animations besides the poses equal to its mode. */
+enum BoltGuardAnim {
+  BGUARD_ANIM_RUN = 4,     /* BGUARD_RUN */
+  BGUARD_ANIM_KNOCKED = 6, /* charged: the shatter */
 };
 
 /* BoltGuardState.mode: the one-shot cue a bolt guard waits on in
@@ -1490,6 +1663,12 @@ enum RearingCritterMode {
   REAR_DROP = 6,    /* drops back down, then IDLE */
   REAR_KNOCKED = 7, /* spins away, then bursts */
   REAR_GLOAT = 8,   /* after knocking Spyro back, then REARED */
+};
+
+/* A rearing critter's idle fidgets: one every 3..6 loops of the pose. */
+enum RearAnim {
+  REAR_ANIM_FIDGET = 1,         /* REAR_IDLE */
+  REAR_ANIM_REARED_FIDGET = 10, /* REAR_REARED, Spyro further than 0xC00 */
 };
 
 /* ->mode of a sentry (ACTOR_TYPE_SENTRY, SentryState; level 1). Only one
@@ -1591,6 +1770,11 @@ enum TwoPathRunnerMode {
   TPRUNNER_SWIPE = 8,      /* swipes, then GUARD */
   TPRUNNER_WALK_BACK = 10, /* walks to its path node, then GUARD (a level 8 lookout, GLOOK_ROUSE, sets its linked runner to 10) */
   TPRUNNER_RUN = 0x14,     /* runs its chosen path to RunnerState.node, then GUARD */
+};
+
+/* A two-path runner's animations besides the poses equal to its mode. */
+enum TwoPathRunnerAnim {
+  TPRUNNER_ANIM_RUN = 7, /* TPRUNNER_RUN; a lookout's GLOOK_ROUSE also starts it on its runner */
 };
 
 /* RunnerState.mode: how far a two-path runner is armed. */
@@ -1699,6 +1883,18 @@ enum PathChargerMode {
   PCHARGER_TAUNT_ALT = 7, /* the same (no writer in the C sources) */
 };
 
+/* PatrolState.mode: what a path charger did at its last path turn. */
+enum PathChargerTurn {
+  PCTURN_FIRST = 0,   /* no turn yet: the first one always taunts a Spyro ahead */
+  PCTURN_PLAIN = 1,   /* later turns taunt one time in three */
+  PCTURN_TAUNTED = 2, /* taunted: the next leg charges from further (PatrolState.near) */
+};
+
+/* A path charger's animations besides the poses equal to its mode. */
+enum PathChargerAnim {
+  PCHARGER_ANIM_BUTT = 4, /* reaching Spyro: butts him off the path on frame 4 */
+};
+
 /* ->mode of a linked follower (ACTOR_TYPE_LINKED_FOLLOWER, Follower; level
  * 3); the mode is also the animation index. It trails its leader
  * (Follower.link) while the leader is active. */
@@ -1708,6 +1904,11 @@ enum LinkedFollowerMode {
   LFOLLOW_KNOCKED = 3, /* knocked spinning into the air, then bursts */
   LFOLLOW_SET_OFF = 5, /* turns to the leader's heading, then FOLLOW */
   LFOLLOW_TAUNT = 8,   /* faces Spyro, then IDLE */
+};
+
+/* A linked follower's animations besides the poses equal to its mode. */
+enum LinkedFollowerAnim {
+  LFOLLOW_ANIM_TUMBLE = 4, /* LFOLLOW_KNOCKED, after the knock (3) */
 };
 
 /* ->mode of a balloon (ACTOR_TYPE_BALLOON). */
@@ -1735,6 +1936,13 @@ enum LanternMode {
   LANTERN_STRUCK = 3,   /* Spyro hit it: lit for good, with an ACTOR_TYPE_LANTERN_FLAME */
   LANTERN_HOLD_LIT = 4, /* stays lit, then spawns the closing flame: DONE */
   LANTERN_DONE = 5,
+};
+
+/* ->mode of a lantern flame (ACTOR_TYPE_LANTERN_FLAME); the mode is also
+ * the animation index. Both despawn when their animation ends. */
+enum LanternFlameMode {
+  LFLAME_STRIKE = 0, /* LANTERN_STRUCK's burst */
+  LFLAME_CLOSE = 1,  /* LANTERN_HOLD_LIT's last flame: puts the lantern back to LANTERN_IDLE */
 };
 
 /* CarriedRockState.mode while the rock is TROCK_HELD. */
@@ -1776,6 +1984,13 @@ enum TrailBombMode {
   TRAILBOMB_FLY = 0,  /* flies, laying its trail; landing spawns an ACTOR_TYPE_SHOCKWAVE */
   TRAILBOMB_HIT = 1,  /* landed or timed out: hides, then FADE */
   TRAILBOMB_FADE = 2, /* the trail fades out, then despawn */
+};
+
+/* A shockwave's animations (ACTOR_TYPE_SHOCKWAVE): it spreads while its
+ * timer runs, hitting Spyro inside its radius, then fades and despawns. */
+enum ShockwaveAnim {
+  SHOCKWAVE_ANIM_SPREAD = 0,
+  SHOCKWAVE_ANIM_FADE = 1,
 };
 
 /* ->mode of a lane patroller (ACTOR_TYPE_LANE_PATROLLER, LanePatrollerState;
@@ -1879,7 +2094,12 @@ enum OverheadThrowerMode {
 enum RoamingCritterMode {
   ROAMCRIT_WANDER = 0,  /* UpdateActorWander */
   ROAMCRIT_KNOCKED = 5, /* slides along the knock heading, bursts; falls into DYING */
-  ROAMCRIT_DYING = 6,   /* death animation 6 (wandering its first frames), then 7; despawns */
+  ROAMCRIT_DYING = 6,   /* death animation 6 (wandering its first frames), then ROAMCRIT_ANIM_DEAD; despawns */
+};
+
+/* A roaming critter's animations besides the poses equal to its mode. */
+enum RoamingCritterAnim {
+  ROAMCRIT_ANIM_DEAD = 7,
 };
 
 /* ->mode of a checkpoint (ACTOR_TYPE_CHECKPOINT .. + 2; every ground level). */
@@ -2017,7 +2237,7 @@ enum SinkingBlockMode {
 };
 
 /* ->mode of a homeworld talker (ACTOR_TYPE_HOME_TALKER .. + 4; levels
- * 0/6/12/18/24). */
+ * 0/6/12/18/24). Level 30's boss-door trigger (+ 5) runs the same two. */
 enum HomeTalkerMode {
   TALKER_REARM = 0, /* waits for Spyro to walk away (>= 0x1000), then READY */
   TALKER_READY = 1, /* Spyro walks up facing it: starts its actor cutscene, REARM */
@@ -2034,6 +2254,13 @@ enum FlameChunkSwitchMode {
 enum BreakableWallKind {
   BWALL_PLAIN = 0,   /* any hit on a part breaks it */
   BWALL_ARMORED = 1, /* only a supercharge or superflame (ACTOR_HIT_SUPER) breaks it */
+};
+
+/* A breakable wall's animations: the armored kind wears ARMORED, and so
+ * does its rubble. */
+enum BreakableWallAnim {
+  BWALL_ANIM_PLAIN = 0,
+  BWALL_ANIM_ARMORED = 1,
 };
 
 /* SuperflameGiverState.kind: how long the granted superflame lasts. */

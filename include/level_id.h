@@ -48,4 +48,9 @@ enum LevelId {
   LEVEL_GNASTYS_LOOT = 64,
 };
 
+/* A level id's slot in the per-level tables (g_abLevelExited,
+ * g_abLevelVisitedFlag, g_anLevelDragonsRescued, ...): the order of the
+ * level overlays, six slots per world. */
+#define LEVEL_SLOT(id) (((id) / 10 - 1) * 6 + (id) % 10)
+
 #endif /* OPEN_SPYRO_LEVEL_ID_H */

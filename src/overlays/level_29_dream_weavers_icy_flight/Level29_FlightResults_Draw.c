@@ -29,6 +29,7 @@
 #include "actor.h"
 #include "gpu_prim.h"
 #include "frame_db.h"
+#include "level_sfx.h"
 
 /* The backdrop quad being built at p, read back through volatile accesses
  * (see the match notes), and the TILE bar that follows the last quad. */
@@ -134,7 +135,7 @@ void Level29_FlightResults_Draw(void)
     int b;
     int a;
     int d;
-    int snd;
+    int snd; /* a reveal's sound slot (LevelSfx), then the run time's tint */
     unsigned short bh;
     unsigned short ch;
     unsigned char bq;
@@ -305,12 +306,12 @@ void Level29_FlightResults_Draw(void)
             sprintf(buf, "%d", g_anFlightCourseBonusTable[k]);
             bonus += g_anFlightCourseBonusTable[g_nActiveWorldIndex * 5];
           }
-          snd = 0;
+          snd = SFX_REWARD;
         }
         else
         {
           sprintf(buf, "0");
-          snd = 0x21;
+          snd = SFX_FLIGHT_CLOCK;
         }
         pos[0] = 0x1E0 - (strlen((char *)buf) * 0x12);
         pos[1] = 0x3C;
@@ -348,12 +349,12 @@ void Level29_FlightResults_Draw(void)
             sprintf(buf, "%d", g_anFlightCourseBonusTable_r1[k]);
             bonus += g_anFlightCourseBonusTable[g_nActiveWorldIndex * 5 + 1];
           }
-          snd = 0;
+          snd = SFX_REWARD;
         }
         else
         {
           sprintf(buf, "0");
-          snd = 0x21;
+          snd = SFX_FLIGHT_CLOCK;
         }
         pos[0] = 0x1E0 - (strlen((char *)buf) * 0x12);
         pos[1] = 0x50;
@@ -391,12 +392,12 @@ void Level29_FlightResults_Draw(void)
             sprintf(buf, "%d", g_anFlightCourseBonusTable_r2[k]);
             bonus += g_anFlightCourseBonusTable_r2[g_nActiveWorldIndex * 5];
           }
-          snd = 0;
+          snd = SFX_REWARD;
         }
         else
         {
           sprintf(buf, "0");
-          snd = 0x21;
+          snd = SFX_FLIGHT_CLOCK;
         }
         pos[0] = 0x1E0 - (strlen((char *)buf) * 0x12);
         pos[1] = 0x64;
@@ -434,12 +435,12 @@ void Level29_FlightResults_Draw(void)
             sprintf(buf, "%d", g_anFlightCourseBonusTable_r3[k]);
             bonus += g_anFlightCourseBonusTable_r3[g_nActiveWorldIndex * 5];
           }
-          snd = 0;
+          snd = SFX_REWARD;
         }
         else
         {
           sprintf(buf, "0");
-          snd = 0x21;
+          snd = SFX_FLIGHT_CLOCK;
         }
         pos[0] = 0x1E0 - (strlen((char *)buf) * 0x12);
         pos[1] = 0x78;
@@ -469,12 +470,12 @@ void Level29_FlightResults_Draw(void)
             sprintf(buf, "%d", g_anFlightCourseBonusTable_r4[k]);
             bonus += g_anFlightCourseBonusTable_r4[g_nActiveWorldIndex * 5];
           }
-          snd = 0;
+          snd = SFX_REWARD;
         }
         else
         {
           sprintf(buf, "0");
-          snd = 0x21;
+          snd = SFX_FLIGHT_CLOCK;
         }
         pos[0] = 0x1E0 - (strlen((char *)buf) * 0x12);
         pos[1] = 0x8C;
@@ -506,7 +507,7 @@ void Level29_FlightResults_Draw(void)
           pos[2] = 0x1100;
           BuildTextSpriteChain("PRESS   TO CONTINUE", pos, 0x12, TINT_HUD);
           pos[0] = 0xBC;
-          BuildTextSpriteChain("X", pos, 0x12, 0xA);
+          BuildTextSpriteChain("X", pos, 0x12, TINT_BLUE);
         }
         else
         {
@@ -608,7 +609,7 @@ void Level29_FlightResults_Draw(void)
       pos[0] = 0x191;
       pos[1] = 0x64;
       pos[2] = 0x1100;
-      g_pfnFlightTimeFormatter(g_anFlightClearTimes[g_nActiveWorldIndex], pos, 0xB);
+      g_pfnFlightTimeFormatter(g_anFlightClearTimes[g_nActiveWorldIndex], pos, TINT_HUD);
       pos[0] = 0x38;
       pos[1] = 0x50;
       pos[2] = 0x1100;
@@ -616,10 +617,10 @@ void Level29_FlightResults_Draw(void)
       pos[0] = 0x89;
       pos[1] = 0x64;
       pos[2] = 0x1100;
-      snd = 0xB;
+      snd = TINT_HUD;
       if (g_anFlightClearTimes[g_nActiveWorldIndex] >= g_nFlightRunClock)
       {
-        snd = 8;
+        snd = TINT_RED;
       }
       if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == 0x20)
       {
@@ -642,7 +643,7 @@ void Level29_FlightResults_Draw(void)
       }
       else
       {
-        g_pfnFlightTimeFormatter(-1, pos, 0xB);
+        g_pfnFlightTimeFormatter(-1, pos, TINT_HUD);
       }
       if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) < 0x20)
       {
@@ -683,7 +684,7 @@ void Level29_FlightResults_Draw(void)
         pos[0] = 0x94;
         pos[1] = 0x96;
         pos[2] = 0xC00;
-        BuildTextSpriteChain("NEW RECORD", pos, 0x18, 8);
+        BuildTextSpriteChain("NEW RECORD", pos, 0x18, TINT_RED);
         count = 0xA;
         i = 0;
         lut = (short *) g_anCosineLut;

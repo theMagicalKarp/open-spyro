@@ -268,9 +268,9 @@ int AdvanceSpyroPhysics(void) {
                   }
                   g_dwSpyroRequestMask |= SPYRO_RQ_FORCE_STATE;
                   if (side) {
-                    g_nSpyroSubstate = 1;
+                    g_nSpyroSubstate = SPYRO_SUB_ORBIT_NEG;
                   } else {
-                    g_nSpyroSubstate = 2;
+                    g_nSpyroSubstate = SPYRO_SUB_ORBIT_POS;
                   }
                 }
               } else {

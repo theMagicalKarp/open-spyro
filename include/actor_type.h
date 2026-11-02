@@ -94,12 +94,18 @@ typedef struct Actor {
 #define ACTOR_CULL_HIDDEN 0 /* ->cullRadius: a zero bound fails the view cull, so the actor is hidden */
 #define ACTOR_TINT_NEUTRAL 0xA18618 /* the 0x4C tint word at neutral levels (0x18 each, tag 0xA) */
 /* Actor.tintMode presets, used with tint0..2 zeroed. RasterizeSpritePrimQueue
- * reads the preset word at 0x8006E3D8 + (tint word >> 22) and loads its low
- * three bytes into the GTE back colour (R, G, B), so a preset is a light
- * level rather than the visible colour. EXE words: 1 0x606060, 2 0x006060,
- * 3..6 zero (filled at run time; the flight tally writes them),
- * 0xB 0x006060, 0xC 0x605050, 0xD 0x000060 (flag nibble 0xC), 0xE 0x206020.
- * Named by the actors that pick them. */
+ * reads the preset word at 0x8006E3D8 + (tint word >> 22). Its low three
+ * bytes, x16, go to the GTE back colour (R, G, B), so a preset is a light
+ * level rather than the visible colour. Byte 3: the low nibble x2 is loaded
+ * into IR0; a nonzero high nibble is a glint threshold, n x 0x80 above the
+ * back colour's R: once the lit R channel passes it, twice the excess is
+ * added to all three channels (a white highlight). EXE words: 0 0x808080,
+ * 1 0x606060, 2 0x006060, 3..6 zero (filled at run time; the flight tally
+ * writes them), 7 0x606060 (glint 4), 8 0x000060, 9 0x006000, 0xA 0x600000,
+ * 0xB 0x006060, 0xC 0x605050, 0xD 0x000060 (glint 0xC), 0xE 0x206020,
+ * 0xF..0x11 the 0xA..0xC colours with glint 0xC, 0x12..0x16 the 8..0xC
+ * colours with glint 0xA, 0x17 0x600040. Named by the actors and text that
+ * pick them. */
 #define TINT_GEM_1 1      /* gems, one per value: HUD tally icons use type - 0x52 */
 #define TINT_GEM_2 2
 #define TINT_GEM_5 3
@@ -107,6 +113,9 @@ typedef struct Actor {
 #define TINT_GEM_25 5
 #define TINT_WHITE 1        /* 0x606060: Sparx food; the 1-gem shares it */
 #define TINT_GOLD 2         /* 0x006060 (R, G): text glyphs, digits; the 2-gem shares it */
+#define TINT_RED 8          /* 0x000060 (R): flight results "NEW RECORD" and a record time */
+#define TINT_GREEN 9        /* 0x006000 (G) */
+#define TINT_BLUE 0xA       /* 0x600000 (B): the flight results' "X" */
 #define TINT_HUD 0xB        /* HUD sprites and text (BuildTextSprites default); same word as TINT_GOLD */
 #define TINT_EXTRA_LIFE 0xC
 #define TINT_BOULDER_SPARK 0xD /* boulder debris 152/153 */
@@ -158,13 +167,15 @@ typedef struct Actor {
 /* PivotActorAlongPath / SteerActorAlongWaypoints result on reaching node n. */
 #define PATH_ARRIVED(n) (0x100 + (n))
 
-/* Size of one actor record: the stride of the actor pool, the sprite-record
- * queue and the HUD icon table. (The typedef fails to compile if the struct
- * ever drifts from it; it emits nothing.) */
 /* Actor.mode sentinels: UpdateActors and the scans skip dormant records, and
  * the pool ends at the first record whose mode is 0xFF. */
 #define ACTOR_MODE_DORMANT 0x80
 #define ACTOR_MODE_END 0xFF
+/* The mode and animation a fresh record starts in (InitActorRenderDefaults);
+ * a follower taking its parent over and a respawner reviving a record put
+ * them back to these. */
+#define ACTOR_SPAWN_MODE 0
+#define ACTOR_SPAWN_ANIM 0
 
 /* Actor.animFlags bits (TickActorAnims). */
 #define ACTOR_ANIM_NEW_FRAME 0x01 /* stepped onto a new frame this tick */
@@ -184,6 +195,9 @@ typedef struct Actor {
  * builds the rotation from the euler bytes, instead of the main mesh list. */
 #define ACTOR_RENDER_SECONDARY 0x80
 
+/* Size of one actor record: the stride of the actor pool, the sprite-record
+ * queue and the HUD icon table. (The typedef fails to compile if the struct
+ * ever drifts from it; it emits nothing.) */
 #define ACTOR_SIZE 0x58
 typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
 
@@ -341,7 +355,7 @@ enum ActorType {
   ACTOR_TYPE_OVERHEAD_THROWER = 205, /* levels 9/10: holds its projectile overhead, throws it at Spyro on its throw frame; stunned when hit */
   ACTOR_TYPE_BELL_A = 206, /* levels 7/8: rings when charged, spawning ACTOR_TYPE_BELL_RIPPLE (also 239/242) */
   ACTOR_TYPE_FLOATING_MINE = 207, /* level 31: drifts like the barrel; charged, runs at the nearest target and bursts */
-  ACTOR_TYPE_HUB_AMBIENCE = 208, /* level 30: starts and keeps alive three voice channels (MusicState) */
+  ACTOR_TYPE_HUB_PATH_GATES = 208, /* level 30: opens the hub's world-chunk paths to Twilight Harbor, Gnasty Gnorc and Gnasty's Loot as they unlock (PathGateState) */
   ACTOR_TYPE_THROWN_SNOWBALL = 209, /* level 9: flies its arc; bursts on a timer, landing or reaching Spyro */
   ACTOR_TYPE_BOBBING_PLATFORM = 210, /* level 22: spinning platform that bobs on a fixed period (BobbingPlatformState) */
   ACTOR_TYPE_PATH_SNOWBALL_THROWER = 211, /* 211..212, level 9: walks its path and throws ACTOR_TYPE_THROWN_SNOWBALL at Spyro */

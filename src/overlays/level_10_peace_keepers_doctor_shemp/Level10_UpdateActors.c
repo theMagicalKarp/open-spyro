@@ -283,8 +283,8 @@ void Level10_UpdateActors(void) {
             }
           }
 
-          actor->mode = 0;
-          ANIM_RESET(actor, 0);
+          actor->mode = ACTOR_SPAWN_MODE;
+          ANIM_RESET(actor, ACTOR_SPAWN_ANIM);
         } else {
           st->detached = 1;
           goto follow_carry;
@@ -368,7 +368,7 @@ void Level10_UpdateActors(void) {
             if (SPY.sparxHealth >= SPARX_GONE) {
               g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
-              PlayActorMeshVoice(g_pSparxActor, 0, 0);
+              PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
 
               SPY.sparxHealth = SPARX_GREEN;
 
@@ -858,11 +858,11 @@ void Level10_UpdateActors(void) {
                 if (sparx->target == 0) {
                   if (GetSoundVoiceStatusByOwner(
                           g_pSparxActor,
-                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0]) == 0) {
+                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ]) == 0) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
-                    PlayActorMeshVoice(g_pSparxActor, 0, 0);
+                    PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                   }
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
                   sparx->target = actor;
@@ -981,11 +981,11 @@ void Level10_UpdateActors(void) {
                 if (sparx->target == 0) {
                   if (GetSoundVoiceStatusByOwner(
                           g_pSparxActor,
-                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0]) == 0) {
+                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ]) == 0) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
-                    PlayActorMeshVoice(g_pSparxActor, 0, 0);
+                    PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                   }
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
                   sparx->target = actor;
@@ -1316,7 +1316,7 @@ void Level10_UpdateActors(void) {
             st->glow->r = 0xC0;
             st->glow->g = 0xC0;
             st->glow->b = 0x60;
-            st->glow->kind = 9;
+            st->glow->points = 9;
             st->glow->desc = &g_anSparkleGlowDesc;
           }
         } else {
@@ -1798,7 +1798,7 @@ void Level10_UpdateActors(void) {
           key->drawn = 0;
           g_nCinematicActive = 0;
           actor->soundRange = 0x20;
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, LOCKEDCHEST_VOICE_OPEN, 0);
 
           for (i = 0; i < 4; i++) {
             if (ACTOR_POOL_LOW()) {
@@ -1853,7 +1853,7 @@ void Level10_UpdateActors(void) {
       }
 
       actor->soundRange = 0x20;
-      PlayActorMeshVoice(actor, 0, 0);
+      PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
       /* Two of each of the first pair, then six of the third. */
       for (i = 0; i < 2; i++) {
@@ -1920,7 +1920,7 @@ void Level10_UpdateActors(void) {
         int i;
 
         actor->soundRange = 0x20;
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, WOBBLECHEST_VOICE_BREAK, 0);
 
         for (i = 0; i < 2; i++) {
           if (ACTOR_POOL_LOW()) {
@@ -2028,8 +2028,8 @@ void Level10_UpdateActors(void) {
           int dx;
           int dy;
 
-          if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[0]) == 0) {
-            PlayActorMeshVoice(actor, 0, 0);
+          if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[STATUE_VOICE_RATTLE]) == 0) {
+            PlayActorMeshVoice(actor, STATUE_VOICE_RATTLE, 0);
           }
 
           actor->rotX = g_aShakeRotOffsets[(st->phase - 0xC0) >> 1].a + st->rotX;
@@ -2710,7 +2710,7 @@ void Level10_UpdateActors(void) {
           if (st->watch != -1 && g_pActorListBase[st->watch].nextAnim == 7) {
             st->done = 1;
             st->watch = -1;
-            PlayActorMeshVoice(actor, 1, 0);
+            PlayActorMeshVoice(actor, SGUARD_VOICE_SHOUT, 0);
             ENTER_POSE(actor, SGUARD_CHASE);
           }
         } else if (st->mode == 1) {
@@ -2734,10 +2734,10 @@ void Level10_UpdateActors(void) {
 
       case SGUARD_CHASE:
         d = ApproxDist2D(&actor->posX, &spy->posX);
-        if (TICK_DOWN(st->timer38) != 0) {
+        if (TICK_DOWN(st->chaseDelay) != 0) {
           ANIM_GO(actor, SGUARD_CHASE);
-          if (TICK_DOWN(st->timer04) == 2) {
-            PlayActorMeshVoice(actor, 1, 0);
+          if (TICK_DOWN(st->cueTimer) == 2) {
+            PlayActorMeshVoice(actor, SGUARD_VOICE_SHOUT, 0);
           }
           if (st->done != 0) {
             actor->mode = SGUARD_PATH_RUSH;
@@ -2772,9 +2772,9 @@ void Level10_UpdateActors(void) {
               st->speed = 0x50;
             }
             st->lift = 0x28;
-            st->timer24 = 0x3C;
+            st->stateTimer = 0x3C;
             actor->subMode = 0;
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, SGUARD_VOICE_FALL, 0);
             actor->mode = SGUARD_FALL;
             continue;
           }
@@ -2832,9 +2832,9 @@ void Level10_UpdateActors(void) {
             st->speed = 0x50;
           }
           st->lift = 0x28;
-          st->timer24 = 0x3C;
+          st->stateTimer = 0x3C;
           actor->subMode = 0;
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, SGUARD_VOICE_FALL, 0);
           actor->mode = SGUARD_FALL;
           continue;
         }
@@ -2867,7 +2867,7 @@ void Level10_UpdateActors(void) {
       }
 
       case SGUARD_BRAKE_AIM:
-        st->timer24 = 0xB4;
+        st->stateTimer = 0xB4;
         FindNearestPathPointToActor(actor, (PathData *)st->path, &nearestNode[0]);
         st->turn = ArcTan2(PATH_X(st->path, nearestNode[0]) - actor->posX,
                                  PATH_Y(st->path, nearestNode[0]) - actor->posY, ATAN_ANGLE8);
@@ -2877,17 +2877,17 @@ void Level10_UpdateActors(void) {
       case SGUARD_BRAKE: {
         int h = ProbeActorGroundHeight(actor);
 
-        if (st->timer24 < 0xA5) {
+        if (st->stateTimer < 0xA5) {
           TurnActorYawTowardAngle(actor, st->turn, 7, 0, YAW_HOLD_IN_BAND);
         }
-        if (TICK_DOWN(st->timer24) != 0) {
+        if (TICK_DOWN(st->stateTimer) != 0) {
           st->accel -= 0x10;
           if (st->accel < 0) {
             st->accel = 0;
           }
         }
         if (st->accel == 0) {
-          st->timer24 = 0x3C;
+          st->stateTimer = 0x3C;
           actor->mode = SGUARD_RECOVER;
           continue;
         }
@@ -2899,9 +2899,9 @@ void Level10_UpdateActors(void) {
             st->speed = 0x50;
           }
           st->lift = 0x28;
-          st->timer24 = 0x3C;
+          st->stateTimer = 0x3C;
           actor->subMode = 0;
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, SGUARD_VOICE_FALL, 0);
           actor->mode = SGUARD_FALL;
           continue;
         }
@@ -2912,7 +2912,7 @@ void Level10_UpdateActors(void) {
 
       case SGUARD_RECOVER:
         ANIM_GO(actor, SGUARD_ANIM_IDLE);
-        if (TICK_DOWN(st->timer24) != 0) {
+        if (TICK_DOWN(st->stateTimer) != 0) {
           ANIM_GO(actor, SGUARD_ANIM_STANCE);
           actor->mode = SGUARD_GUARD;
           continue;
@@ -2923,8 +2923,8 @@ void Level10_UpdateActors(void) {
         int e = ApproxDist2D(&actor->posX, &SPY.posX);
 
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (TICK_DOWN(st->timer04) != 0 && e < 0x578) {
-          st->timer04 = 0x78;
+        if (TICK_DOWN(st->cueTimer) != 0 && e < 0x578) {
+          st->cueTimer = 0x78;
           ANIM_GO(actor, SGUARD_ANIM_SWIPE);
           actor->mode = SGUARD_SWIPE;
           continue;
@@ -2942,7 +2942,7 @@ void Level10_UpdateActors(void) {
 
       case SGUARD_FALL:
         ANIM_GO(actor, SGUARD_ANIM_FALL);
-        if (TICK_DOWN(st->timer24) != 0) {
+        if (TICK_DOWN(st->stateTimer) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -2967,8 +2967,8 @@ void Level10_UpdateActors(void) {
 
       case SGUARD_PATH_RUSH:
         ANIM_GO(actor, SGUARD_CHASE);
-        if (TICK_DOWN(st->timer04) == 2) {
-          PlayActorMeshVoice(actor, 1, 0);
+        if (TICK_DOWN(st->cueTimer) == 2) {
+          PlayActorMeshVoice(actor, SGUARD_VOICE_SHOUT, 0);
         }
         st->accel = 0xB4;
         if (PivotActorAlongPath(actor, st->target, 0x100, st->accel, 0, 8, 0x40, PIVOT_TURN_ANY,
@@ -3587,17 +3587,17 @@ void Level10_UpdateActors(void) {
         if (actor->anim == GLOOK_ANIM_CALL && g_nActorAnimNewFrame != 0 && actor->frame == 5) {
           ShempGuardState *ls = link->state;
 
-          if (link->mode < 0x7F && link->nextAnim != 3) {
+          if (link->mode < 0x7F && link->nextAnim != SGUARD_KNOCKED) {
             link->mode = SGUARD_CHASE;
           }
-          ls->timer04 = 0x1A;
+          ls->cueTimer = 0x1A;
           if (ls->watch != -1) {
             st->link = ls->watch;
             ls->watch = -1;
             actor->subMode = 0;
-            if (ls->timer38 != 0) {
-              st->wait = ls->timer38;
-              ls->timer38 = 0;
+            if (ls->chaseDelay != 0) {
+              st->wait = ls->chaseDelay;
+              ls->chaseDelay = 0;
             } else {
               st->wait = 0x14;
             }
@@ -3646,7 +3646,7 @@ void Level10_UpdateActors(void) {
     case ACTOR_TYPE_LETTER_A + 25: {
       NameLetterState *st = actor->state;
 
-      if (st->parent->mode == 0 || st->parent->subMode != actor->mode) {
+      if (st->parent->mode == ORBIT_OWNER_FAR || st->parent->subMode != actor->mode) {
         DespawnActorRecord(actor);
         continue;
       }

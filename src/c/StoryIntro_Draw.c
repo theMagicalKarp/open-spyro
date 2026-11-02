@@ -1,6 +1,7 @@
 #include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "main_shared.h"
 #include "title_state.h"
 
@@ -42,7 +43,7 @@ void StoryIntro_Draw(void) {
       BuildTextSprites(g_szInTheWorldOfDragons, pos, col, 0x10, TINT_HUD);
       limit = 0xB8;
     } else if (g_nTitleExitPath == TITLE_EXIT_LOADED_GAME) {
-      if (g_abLevelVisitedFlag[0] != 0) {
+      if (g_abLevelVisitedFlag[LEVEL_SLOT(LEVEL_ARTISANS)] != 0) {
         pos[0] = 0x50;
         BuildTextSprites(g_szTheAdventureContinues, pos, col, 0x10, TINT_HUD);
         limit = 0xBC;

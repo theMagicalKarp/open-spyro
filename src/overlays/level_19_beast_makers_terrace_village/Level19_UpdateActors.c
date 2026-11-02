@@ -359,8 +359,8 @@ void Level19_UpdateActors(void) {
             }
           }
 
-          actor->mode = 0;
-          ANIM_RESET(actor, 0);
+          actor->mode = ACTOR_SPAWN_MODE;
+          ANIM_RESET(actor, ACTOR_SPAWN_ANIM);
         } else {
           st->detached = 1;
           goto follow_carry;
@@ -438,7 +438,7 @@ void Level19_UpdateActors(void) {
             if (SPY.sparxHealth >= SPARX_GONE) {
               g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
-              PlayActorMeshVoice(g_pSparxActor, 0, 0);
+              PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
 
               SPY.sparxHealth = SPARX_GREEN;
 
@@ -761,7 +761,7 @@ void Level19_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
-        ANIM_SET(actor, 6);
+        ANIM_SET(actor, BGUARD_ANIM_KNOCKED);
         PlayActorMeshVoice(actor, 0, 0);
         actor->mode = BGUARD_KNOCKED;
         continue;
@@ -843,7 +843,7 @@ void Level19_UpdateActors(void) {
         break;
 
       case BGUARD_RUN:
-        ANIM_GO(actor, 4);
+        ANIM_GO(actor, BGUARD_ANIM_RUN);
         if (PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0, 8, 0x10, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             PATH_ARRIVED(0)) {
           st->mode = BGUARD_CUE_NONE;
@@ -1130,11 +1130,11 @@ void Level19_UpdateActors(void) {
                 if (sparx->target == 0) {
                   if (GetSoundVoiceStatusByOwner(
                           g_pSparxActor,
-                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0]) == 0) {
+                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ]) == 0) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
-                    PlayActorMeshVoice(g_pSparxActor, 0, 0);
+                    PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                   }
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
                   sparx->target = actor;
@@ -1253,11 +1253,11 @@ void Level19_UpdateActors(void) {
                 if (sparx->target == 0) {
                   if (GetSoundVoiceStatusByOwner(
                           g_pSparxActor,
-                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0]) == 0) {
+                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ]) == 0) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
-                    PlayActorMeshVoice(g_pSparxActor, 0, 0);
+                    PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                   }
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
                   sparx->target = actor;
@@ -1587,7 +1587,7 @@ void Level19_UpdateActors(void) {
             st->glow->r = 0xC0;
             st->glow->g = 0xC0;
             st->glow->b = 0x60;
-            st->glow->kind = 9;
+            st->glow->points = 9;
             st->glow->desc = &g_anSparkleGlowDesc;
           }
         } else {
@@ -1920,7 +1920,7 @@ void Level19_UpdateActors(void) {
       }
 
       actor->soundRange = 0x20;
-      PlayActorMeshVoice(actor, 0, 0);
+      PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
       /* Two of each of the first pair, then six of the third. */
       for (i = 0; i < 2; i++) {
@@ -1987,7 +1987,7 @@ void Level19_UpdateActors(void) {
         int i;
 
         actor->soundRange = 0x20;
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, WOBBLECHEST_VOICE_BREAK, 0);
 
         for (i = 0; i < 2; i++) {
           if (ACTOR_POOL_LOW()) {
@@ -2026,7 +2026,8 @@ void Level19_UpdateActors(void) {
     
 
     /* One-shot effects: removed as soon as their animation ends. */
-    case ACTOR_TYPE_REBOUND_FX:      if (g_nActorAnimDone != 0) {
+    case ACTOR_TYPE_REBOUND_FX:
+      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -2062,8 +2063,8 @@ void Level19_UpdateActors(void) {
           int dx;
           int dy;
 
-          if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[0]) == 0) {
-            PlayActorMeshVoice(actor, 0, 0);
+          if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[STATUE_VOICE_RATTLE]) == 0) {
+            PlayActorMeshVoice(actor, STATUE_VOICE_RATTLE, 0);
           }
 
           actor->rotX = g_aShakeRotOffsets[(st->phase - 0xC0) >> 1].a + st->rotX;
@@ -2172,7 +2173,8 @@ void Level19_UpdateActors(void) {
     }
 
     /* Dragon fragment, updated out of line. */
-    case ACTOR_TYPE_STATUE_SHARD:      TickStatueBurstShard(actor);
+    case ACTOR_TYPE_STATUE_SHARD:
+      TickStatueBurstShard(actor);
       break;
 
     /* Floating digits (GemDigitState). */
@@ -2547,7 +2549,8 @@ void Level19_UpdateActors(void) {
 
     /* Checkpoint: Spyro reaching it sets the respawn anchor
      * (SetSpawnAnchorFromActor); it then plays its anim for 0x30 frames. */
-    case ACTOR_TYPE_CHECKPOINT:      switch (actor->mode) {
+    case ACTOR_TYPE_CHECKPOINT:
+      switch (actor->mode) {
       case CHECKPT_REARM:
         if (ApproxDist2D(&actor->posX, &SPY.posX) > 0xA00) {
           actor->mode = CHECKPT_ARMED;
@@ -2632,7 +2635,8 @@ void Level19_UpdateActors(void) {
 
     /* One-shot effects: removed as soon as their animation ends. */
     case ACTOR_TYPE_HAZARD2_ENTER_FX:
-    case ACTOR_TYPE_HAZARD2_DEATH_FX:      if (g_nActorAnimDone != 0) {
+    case ACTOR_TYPE_HAZARD2_DEATH_FX:
+      if (g_nActorAnimDone != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -2685,7 +2689,7 @@ void Level19_UpdateActors(void) {
       st->lid->rotZ = st->angle >> 4;
       if (st->speed > 0xE0 || (actor->flags & ACTOR_HIT_SUPER)) {
         st->lid->subMode = LID_LAUNCH;
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, SPINCHEST_VOICE_LAUNCH, 0);
         for (i = 0; i < 2; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
@@ -2793,7 +2797,7 @@ void Level19_UpdateActors(void) {
             g_pfnLevelSpawnActor(ACTOR_TYPE_SPARKLE_SHARD, actor);
           }
           g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, SPINLID_VOICE_BURST, 0);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2836,7 +2840,7 @@ void Level19_UpdateActors(void) {
         int i;
 
         actor->soundRange = 0x20;
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, BROCK_VOICE_BREAK, 0);
         for (i = 0; i < 4;) {
           if (ACTOR_POOL_LOW()) {
             break;
@@ -2920,7 +2924,7 @@ void Level19_UpdateActors(void) {
           if (actor->voiceRow != VOICE_ROW_NONE) {
             continue;
           }
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, CANNON_VOICE_FUSE, 0);
           continue;
         }
         if (st->timer < 0xB4 &&
@@ -2951,7 +2955,7 @@ void Level19_UpdateActors(void) {
         st->path->cur = 1;
         st->timer = 0;
         ZeroVector(st->vel);
-        PlayActorMeshVoice(actor, 1, 0);
+        PlayActorMeshVoice(actor, CANNON_VOICE_FIRE, 0);
         continue;
 
       case CANNON_FLIGHT:
@@ -3155,7 +3159,7 @@ void Level19_UpdateActors(void) {
     case ACTOR_TYPE_LETTER_A + 25: {
       NameLetterState *st = actor->state;
 
-      if (st->parent->mode == 0 || st->parent->subMode != actor->mode) {
+      if (st->parent->mode == ORBIT_OWNER_FAR || st->parent->subMode != actor->mode) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -3349,7 +3353,7 @@ void Level19_UpdateActors(void) {
           st->call = (GetRandomU32() & 0x1F) + 0x50;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
-        if (st->mode == 1 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
+        if (st->mode == RAMKIND_PATH && ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
           actor->mode = RAM_RUN_PATH;
           continue;
         }

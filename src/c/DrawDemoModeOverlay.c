@@ -21,7 +21,7 @@ void DrawDemoModeOverlay(void) {
   pos[0] = 199;
   pos[1] = 200;
   pos[2] = 0x1100;
-  BuildTextSprites(g_szDemoMode, pos, size, 0x12, 2);
+  BuildTextSprites(g_szDemoMode, pos, size, 0x12, TINT_GOLD);
   glyph = first - 1;
   phase = 0;
   if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {

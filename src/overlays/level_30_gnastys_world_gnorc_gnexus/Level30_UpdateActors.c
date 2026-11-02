@@ -30,6 +30,7 @@
 #include "level_actors.h"
 #include "vecmath.h"
 #include "level_globals.h"
+#include "level_id.h"
 #include "level_update_actors.h"
 #include "level_actor_states.h"
 #include "level_update_actors_macros.h"
@@ -234,8 +235,8 @@ void Level30_UpdateActors(void) {
             }
           }
 
-          actor->mode = 0;
-          ANIM_RESET(actor, 0);
+          actor->mode = ACTOR_SPAWN_MODE;
+          ANIM_RESET(actor, ACTOR_SPAWN_ANIM);
         } else {
           st->detached = 1;
           goto follow_carry;
@@ -800,12 +801,12 @@ void Level30_UpdateActors(void) {
 
                 if (sparx->target == 0) {
                   if (GetSoundVoiceStatusByOwner(g_pSparxActor,
-                                    g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0]) ==
+                                    g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ]) ==
                       0) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
-                    PlayActorMeshVoice(g_pSparxActor, 0, 0);
+                    PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                   }
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
                   sparx->target = actor;
@@ -922,12 +923,12 @@ void Level30_UpdateActors(void) {
 
                 if (sparx->target == 0) {
                   if (GetSoundVoiceStatusByOwner(g_pSparxActor,
-                                    g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0]) ==
+                                    g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ]) ==
                       0) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
-                    PlayActorMeshVoice(g_pSparxActor, 0, 0);
+                    PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                   }
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
                   sparx->target = actor;
@@ -1255,7 +1256,7 @@ void Level30_UpdateActors(void) {
             st->glow->r = 0xC0;
             st->glow->g = 0xC0;
             st->glow->b = 0x60;
-            st->glow->kind = 9;
+            st->glow->points = 9;
             st->glow->desc = &g_anSparkleGlowDesc;
           }
         } else {
@@ -1570,11 +1571,11 @@ void Level30_UpdateActors(void) {
     /* Boss-door trigger: opens the gnexus door when Spyro walks up facing it.
      */
     case ACTOR_TYPE_HOME_TALKER + 5:
-      if (actor->mode == 0) {
+      if (actor->mode == TALKER_REARM) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
           break;
         }
-        actor->mode = 1;
+        actor->mode = TALKER_READY;
         continue;
       }
 
@@ -1587,7 +1588,7 @@ void Level30_UpdateActors(void) {
           AbsAngleDelta8(actor->rotZ,
                         ArcTan2(spy->posX - actor->posX,
                                       g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8)) < 0x28) {
-        actor->mode = 0;
+        actor->mode = TALKER_REARM;
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         ResetSpyroLinearMotion();
         ZeroVector(&spy->headLook);
@@ -1613,7 +1614,7 @@ void Level30_UpdateActors(void) {
         int i;
 
         actor->soundRange = 0x20;
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
         for (i = 0; i < 2; i++) {
           if (ACTOR_POOL_LOW()) {
@@ -1683,7 +1684,7 @@ void Level30_UpdateActors(void) {
         int i;
 
         actor->soundRange = 0x20;
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, WOBBLECHEST_VOICE_BREAK, 0);
 
         for (i = 0; i < 2; i++) {
           if (ACTOR_POOL_LOW()) {
@@ -1719,27 +1720,31 @@ void Level30_UpdateActors(void) {
       break;
     }
 
-    /* Hub ambience (MusicState): starts the three voice channels and keeps
-     * them alive. */
-    case ACTOR_TYPE_HUB_AMBIENCE: {
-      MusicState *st = actor->state;
+    /* Hub path gates (PathGateState): world chunks 0..2 are the paths to
+     * Twilight Harbor, Gnasty Gnorc and Gnasty's Loot. The first tick opens
+     * those whose level was already visited (skipped to step 0x3B when
+     * Spyro glides in); after that each opens on its unlock: Gnorc Cove
+     * exited with a hub dragon freed, Twilight Harbor exited, and every
+     * gem, dragon and egg. */
+    case ACTOR_TYPE_HUB_PATH_GATES: {
+      PathGateState *st = actor->state;
 
       if (st->started == 0) {
-        if (g_bAmbienceChannelMask != 0) {
+        if (g_bTwilightHarborVisited != 0) {
           ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
           if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
             SetWorldChunkAnimStep(0, 0x3B, 0);
           }
         }
 
-        if (g_abLevelVisitedFlag[0x21] != 0) {
+        if (g_abLevelVisitedFlag[LEVEL_SLOT(LEVEL_GNASTY_GNORC)] != 0) {
           ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
           if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
             SetWorldChunkAnimStep(1, 0x3B, 0);
           }
         }
 
-        if (g_abLevelVisitedFlag[0x22] != 0) {
+        if (g_abLevelVisitedFlag[LEVEL_SLOT(LEVEL_GNASTYS_LOOT)] != 0) {
           ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
           if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
             SetWorldChunkAnimStep(2, 0x3B, 0);
@@ -1749,17 +1754,17 @@ void Level30_UpdateActors(void) {
         st->started = 1;
       }
 
-      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(0)) && g_abLevelExited[0x1F] != 0 &&
-          g_anLevelDragonsRescued[0x1E] > 0) {
+      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(0)) && g_abLevelExited[LEVEL_SLOT(LEVEL_GNORC_COVE)] != 0 &&
+          g_anLevelDragonsRescued[LEVEL_SLOT(LEVEL_GNORC_GNEXUS)] > 0) {
         ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
       }
 
-      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(1)) && g_abLevelExited[0x20] != 0) {
+      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(1)) && g_abLevelExited[LEVEL_SLOT(LEVEL_TWILIGHT_HARBOR)] != 0) {
         ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
       }
 
-      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(2)) && g_nTotalTreasureCollected >= 0x2EE0 &&
-          g_nTotalDragonsRescued >= 0x50 && g_nTotalEggsRecovered >= 0xC) {
+      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(2)) && g_nTotalTreasureCollected >= 12000 &&
+          g_nTotalDragonsRescued >= 80 && g_nTotalEggsRecovered >= 12) {
         ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
       }
 
@@ -1869,8 +1874,8 @@ void Level30_UpdateActors(void) {
           int dx;
           int dy;
 
-          if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[0]) == 0) {
-            PlayActorMeshVoice(actor, 0, 0);
+          if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[STATUE_VOICE_RATTLE]) == 0) {
+            PlayActorMeshVoice(actor, STATUE_VOICE_RATTLE, 0);
           }
 
           actor->rotX = g_aShakeRotOffsets[(st->phase - 0xC0) >> 1].a + st->rotX;
@@ -2265,9 +2270,9 @@ void Level30_UpdateActors(void) {
             CopyVector(&scan->posX, scan->state);
             InsertActorIntoSpatialGrid(scan);
             scan->flags = 0;
-            scan->mode = 0;
+            scan->mode = ACTOR_SPAWN_MODE;
             scan->killGroup &= ACTOR_KILL_GROUP_MASK;
-            ANIM_RESET(scan, 0);
+            ANIM_RESET(scan, ACTOR_SPAWN_ANIM);
           }
         }
       }
@@ -2509,7 +2514,7 @@ void Level30_UpdateActors(void) {
     case ACTOR_TYPE_LETTER_A + 25: {
       NameLetterState *st = actor->state;
 
-      if (st->parent->mode == 0 || st->parent->subMode != actor->mode) {
+      if (st->parent->mode == ORBIT_OWNER_FAR || st->parent->subMode != actor->mode) {
         DespawnActorRecord(actor);
         continue;
       }
