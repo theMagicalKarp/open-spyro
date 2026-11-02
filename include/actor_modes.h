@@ -661,8 +661,9 @@ enum ShooterRole {
  * METALHEAD_PHASE_TURN; the run steps through the phase modes with
  * mode++. */
 enum MetalheadMode {
-  METALHEAD_IDLE = 0,         /* picks STOMP / SPRAY / LOB by Spyro's range */
-  METALHEAD_STOMP = 1,
+  METALHEAD_IDLE = 0,         /* picks FLING / SPRAY / LOB by Spyro's range */
+  METALHEAD_FLING = 1,       /* catches the minion that jumped in (subMode MHEAD_CATCH_GO) and
+                               * flings it at Spyro; the minion lets go on frame 0xE */
   METALHEAD_SPRAY = 2,        /* sprays ACTOR_TYPE_POD_SHOTs ahead of him */
   METALHEAD_LOB = 3,          /* lobs an ACTOR_TYPE_LOBBED_BOLT at Spyro's spot */
   METALHEAD_PHASE_TURN = 10,  /* turns onto his path (in the last phase: DYING) */
@@ -675,14 +676,24 @@ enum MetalheadMode {
 };
 
 /* MetalheadState.choice: the attack Metalhead picks while METALHEAD_IDLE
- * (random: 60% stomp, 25% spray, 15% lob; spray or lob only when Spyro is
- * out of stomp reach). Back to NONE when its pose ends or the pick's range
+ * (random: 60% fling, 25% spray, 15% lob; spray or lob only when a fling
+ * is not possible). Back to NONE when its pose ends or the pick's range
  * test fails. */
 enum MetalheadAttack {
   METALHEAD_ATTACK_NONE = 0,
-  METALHEAD_ATTACK_STOMP = 1, /* waits for Spyro in range, then METALHEAD_STOMP */
+  METALHEAD_ATTACK_FLING = 1, /* needs a live minion in the phase's group and Spyro at least
+                               * 0x2000 away and level: raises MHEAD_CATCH_READY until a
+                               * minion jumps in, then METALHEAD_FLING */
   METALHEAD_ATTACK_SPRAY = 2, /* METALHEAD_SPRAY */
   METALHEAD_ATTACK_LOB = 3,   /* METALHEAD_LOB */
+};
+
+/* Metalhead's ->subMode: the catch handshake with the boulder throwers and
+ * gatekeepers of his phase group (their *_RIDE_FACE modes). */
+enum MetalheadCatch {
+  MHEAD_CATCH_NONE = 0,
+  MHEAD_CATCH_READY = 1, /* Spyro is in fling range: a facing minion may jump */
+  MHEAD_CATCH_GO = 2,    /* set by the minion as it jumps: enter METALHEAD_FLING */
 };
 
 /* ->mode of a lunger (ACTOR_TYPE_LUNGER, LungeState; level 4). It takes
@@ -978,7 +989,8 @@ enum BoulderThrowerMode {
   BTHROW_HURTLE = 43,       /* flies at Spyro, knocking him back; bursts on a timer */
   BTHROW_RIDE_WAIT = 50,    /* waits for BoulderThrowerState.partnerSignal */
   BTHROW_RIDE_WALK = 51,    /* walks its path to the catcher */
-  BTHROW_RIDE_FACE = 52,    /* faces the catcher until it is ready, then jumps */
+  BTHROW_RIDE_FACE = 52,    /* faces the catcher (Metalhead in level 22) until it is ready
+                             * (subMode != 0), then jumps, setting its subMode to 2 */
   BTHROW_RIDE_LEAP = 53,    /* jumps into the catcher's hands */
   BTHROW_RIDE_HELD = 54,    /* held; flung at Spyro (HURTLE) on the throw frame */
 };
@@ -1000,7 +1012,8 @@ enum GatekeeperMode {
   GATEKEEPER_KEYS_RECOVER = 44, /* back to KEYS_WAIT while keys remain */
   GATEKEEPER_RIDE_WAIT = 50,   /* waits for GatekeeperState.partnerSignal */
   GATEKEEPER_RIDE_WALK = 51,   /* walks its path to the catcher */
-  GATEKEEPER_RIDE_FACE = 52,   /* faces the catcher until it is ready, then jumps */
+  GATEKEEPER_RIDE_FACE = 52,   /* faces the catcher (Metalhead in level 22) until it is
+                                * ready (subMode != 0), then jumps, setting its subMode to 2 */
   GATEKEEPER_RIDE_LEAP = 53,   /* jumps into the catcher's hands */
   GATEKEEPER_RIDE_HELD = 54,   /* held; flung at Spyro (HURTLE) on the throw frame */
 };

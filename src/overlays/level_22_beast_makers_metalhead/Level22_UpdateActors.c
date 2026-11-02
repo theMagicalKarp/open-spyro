@@ -647,7 +647,7 @@ void Level22_UpdateActors(void) {
       break;
     }
 
-    /* Type 48: Metalhead. Stomps, sprays shots or lobs a bolt depending on
+    /* Type 48: Metalhead. Flings a minion, sprays shots or lobs a bolt depending on
      * how far away Spyro is; each time his health drops a phase he runs
      * the path to the next spot. */
     case ACTOR_TYPE_METALHEAD: {
@@ -724,7 +724,7 @@ void Level22_UpdateActors(void) {
               (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x385
                                  : -SPY_DZ(actor) < 0x385))) {
           sel = 2;
-          if (st->choice == METALHEAD_ATTACK_STOMP) {
+          if (st->choice == METALHEAD_ATTACK_FLING) {
             st->choice = METALHEAD_ATTACK_NONE;
           }
         }
@@ -736,7 +736,7 @@ void Level22_UpdateActors(void) {
             r = RandomIntInRange(0x3C, 100);
           }
           if (r < 0x3C) {
-            st->choice = METALHEAD_ATTACK_STOMP;
+            st->choice = METALHEAD_ATTACK_FLING;
           } else if (r < 0x55) {
             st->choice = METALHEAD_ATTACK_SPRAY;
           } else {
@@ -747,19 +747,19 @@ void Level22_UpdateActors(void) {
           continue;
         }
         switch (st->choice) {
-        case METALHEAD_ATTACK_STOMP:
+        case METALHEAD_ATTACK_FLING:
           if (d < st->range[st->phase] << 10 && d > 0x2000 &&
               (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x320
                                  : -SPY_DZ(actor) < 0x320)) {
-            if (actor->subMode == 0) {
-              actor->subMode = 1;
+            if (actor->subMode == MHEAD_CATCH_NONE) {
+              actor->subMode = MHEAD_CATCH_READY;
             }
-          } else if (actor->subMode == 1) {
-            actor->subMode = 0;
+          } else if (actor->subMode == MHEAD_CATCH_READY) {
+            actor->subMode = MHEAD_CATCH_NONE;
           }
-          if (actor->subMode == 2) {
-            actor->subMode = 0;
-            ENTER_POSE(actor, METALHEAD_STOMP);
+          if (actor->subMode == MHEAD_CATCH_GO) {
+            actor->subMode = MHEAD_CATCH_NONE;
+            ENTER_POSE(actor, METALHEAD_FLING);
           }
           continue;
 
@@ -789,7 +789,7 @@ void Level22_UpdateActors(void) {
         continue;
       }
 
-      case METALHEAD_STOMP:
+      case METALHEAD_FLING:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (g_nActorAnimDone != 0) {
           st->timer = 0x50;
@@ -1478,12 +1478,12 @@ void Level22_UpdateActors(void) {
       case BTHROW_RIDE_FACE: {
         Actor *p = &g_pActorListBase[st->rider];
 
-        if (p->subMode != 0) {
+        if (p->subMode != MHEAD_CATCH_NONE) {
           st->heading = ArcTan2(p->posX - actor->posX, p->posY - actor->posY,
                                   ATAN_ANGLE8);
           st->speed = 0x5A;
           st->zSpeed = 0x78;
-          p->subMode = 2;
+          p->subMode = MHEAD_CATCH_GO;
           actor->mode++;
           break;
         }
@@ -1845,12 +1845,12 @@ void Level22_UpdateActors(void) {
       case GATEKEEPER_RIDE_FACE: {
         Actor *p = &g_pActorListBase[st->rider];
 
-        if (p->subMode != 0) {
+        if (p->subMode != MHEAD_CATCH_NONE) {
           st->heading = ArcTan2(p->posX - actor->posX, p->posY - actor->posY,
                                   ATAN_ANGLE8);
           st->speed = 0x5A;
           st->zSpeed = 0x78;
-          p->subMode = 2;
+          p->subMode = MHEAD_CATCH_GO;
           actor->mode++;
           break;
         }
