@@ -2796,7 +2796,7 @@ void Level10_UpdateActors(void) {
           continue;
         }
         if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC,
-                          0xC) == 3 &&
+                          0xC) == MOVED_LANDED &&
             actor->nextFrame < 0xD) {
           int c;
           int f;

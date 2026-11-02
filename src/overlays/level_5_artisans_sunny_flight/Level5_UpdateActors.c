@@ -1443,7 +1443,7 @@ void Level5_UpdateActors(void) {
       }
       case BANKER_STRUCK:
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
-                          0xC) == 3) {
+                          0xC) == MOVED_LANDED) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
           DespawnActorRecord(actor);
@@ -1456,7 +1456,7 @@ void Level5_UpdateActors(void) {
         break;
       case BANKER_FLEE:
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
-                          0xC) == 3) {
+                          0xC) == MOVED_LANDED) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
           DespawnActorRecord(actor);

@@ -1269,7 +1269,7 @@ void Level29_UpdateActors(void) {
       case FTARGET_SPENT:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
-                          0xC) == 3) {
+                          0xC) == MOVED_LANDED) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
           DespawnActorRecord(actor);
@@ -1342,7 +1342,7 @@ void Level29_UpdateActors(void) {
 
       actor->rotZ += 8;
       if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
-                        0xC) == 3) {
+                        0xC) == MOVED_LANDED) {
         DespawnActorRecord(actor);
         continue;
       }

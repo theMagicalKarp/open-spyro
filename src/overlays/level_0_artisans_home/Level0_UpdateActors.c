@@ -1635,7 +1635,7 @@ void Level0_UpdateActors(void) {
 
       case PENEMY_FALL: {
         if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
-                          0x10) == 3) {
+                          0x10) == MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x10);
           DespawnActorRecord(actor);

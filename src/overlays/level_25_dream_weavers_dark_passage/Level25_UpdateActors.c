@@ -1220,7 +1220,7 @@ void Level25_UpdateActors(void) {
 
       case RSENTRY_FALL:
         if (DriveActorTrackedMove(actor, &st->speed, st->dir, &st->step, 0xC, 0x10) ==
-            3) {
+            MOVED_LANDED) {
           ENTER_POSE(actor, RSENTRY_BURST);
         }
         TurnActorYawTowardAngle(actor, (st->dir + 0x80) & 0xFF, 0x10, 0x20, YAW_STEP_IN_BAND);

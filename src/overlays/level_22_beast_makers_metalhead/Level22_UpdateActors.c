@@ -1273,7 +1273,7 @@ void Level22_UpdateActors(void) {
 
       case BTHROW_KNOCKED:
         if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC, 0xA) ==
-                3 &&
+                MOVED_LANDED &&
             st->speed == 0 && st->landSoundPlayed == 0) {
           PlayActorMeshVoice(actor, 0, 0);
           st->landSoundPlayed = 1;

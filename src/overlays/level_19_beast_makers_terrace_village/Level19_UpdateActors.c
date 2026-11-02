@@ -827,7 +827,7 @@ void Level19_UpdateActors(void) {
         actor->rotX += st->spinX;
         actor->rotY += st->spinY;
         if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->turn, 0xC,
-                          0x10) == 3) {
+                          0x10) == MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
           DespawnActorRecord(actor);
@@ -3279,7 +3279,7 @@ void Level19_UpdateActors(void) {
         actor->rotY += g_nFrameStep * 2;
         if (TICK_DOWN(st->life) != 0 ||
             DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, 0xC) ==
-                3) {
+                MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
           actor->cullRadius = 0;
