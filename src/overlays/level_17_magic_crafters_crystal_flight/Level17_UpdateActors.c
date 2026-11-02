@@ -1716,7 +1716,7 @@ void Level17_UpdateActors(void) {
         }
       } else {
         ChangeSpyroState(SPYRO_ST_FLY);
-        g_nSpyroSubstate = 3;
+        g_nSpyroSubstate = SPYRO_SUB_FLY_RUN;
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_NO_CLIP);
       }
 

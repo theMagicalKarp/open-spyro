@@ -2019,7 +2019,7 @@ void Level2_UpdateActors(void) {
         }
 
         if (turned) {
-          if (st->mode == 2) {
+          if (st->mode == PCTURN_TAUNTED) {
             st->near = 1;
           } else {
             st->near = 0;
@@ -2028,11 +2028,11 @@ void Level2_UpdateActors(void) {
               AbsAngleDelta8(actor->rotZ,
                             ArcTan2(spy->posX - actor->posX,
                                           SPY.posY - actor->posY, ATAN_ANGLE8)) < 0x40 &&
-              (st->mode == 0 || RandomIntInRange(0, 2) == 0)) {
-            st->mode = 2;
+              (st->mode == PCTURN_FIRST || RandomIntInRange(0, 2) == 0)) {
+            st->mode = PCTURN_TAUNTED;
             ENTER_POSE(actor, PCHARGER_TAUNT);
           }
-          st->mode = 1;
+          st->mode = PCTURN_PLAIN;
         }
 
         st->afterCharge = 0;

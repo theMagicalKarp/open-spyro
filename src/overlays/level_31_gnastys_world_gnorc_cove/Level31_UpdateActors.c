@@ -1632,11 +1632,11 @@ void Level31_UpdateActors(void) {
       st->handle = SelectActorLodBand(actor, st->handle);
       kind = st->kind;
       mask = ACTOR_HIT_ANY;
-      if (kind != 0) {
+      if (kind != HATCH_KIND_BARREL) {
         mask = ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER;
       }
       if ((actor->flags & mask) && actor->mode != HATCH_OPEN) {
-        if (kind != 0) {
+        if (kind != HATCH_KIND_BARREL) {
           st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_FLOATING_MINE, actor);
         } else {
           st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_FLOATING_BARREL, actor);
@@ -1654,7 +1654,7 @@ void Level31_UpdateActors(void) {
 
       switch (actor->mode) {
       case HATCH_IDLE:
-        if (st->kind == 1) {
+        if (st->kind == HATCH_KIND_SEALED) {
           actor->mode = HATCH_SEALED_IDLE;
           ANIM_RESET(actor, HATCH_SEALED_IDLE);
           continue;
@@ -1680,7 +1680,7 @@ void Level31_UpdateActors(void) {
             ApproxDist2D(&actor->posX, &SPY.posX) > 0x400 &&
             ApproxDist2D(&actor->posX, &CAM.posX) > 0xA00) {
           st->child = 0;
-          if (st->kind == 1) {
+          if (st->kind == HATCH_KIND_SEALED) {
             actor->mode = HATCH_SEALED_IDLE;
             ANIM_RESET(actor, HATCH_SEALED_IDLE);
             continue;
@@ -2213,7 +2213,7 @@ void Level31_UpdateActors(void) {
           } else {
             int t = ACTOR_TYPE_FLOATING_BARREL;
 
-            if (hs->kind == 1) {
+            if (hs->kind == HATCH_KIND_SEALED) {
               t = ACTOR_TYPE_FLOATING_MINE;
             }
             st->held = g_pfnLevelSpawnActor(t, actor);

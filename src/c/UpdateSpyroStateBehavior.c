@@ -102,7 +102,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_nSpyroFrameMotionLength > 0x400) {
       ChangeSpyroState(SPYRO_ST_STOP);
-      g_nSpyroSubstate = 7;
+      g_nSpyroSubstate = SPYRO_SUB_STOP_FROM_SPEED;
       break;
     }
     if (g_nCameraNextMode == (CAM_HELD | CAM_MODE_FREE_LOOK)) {

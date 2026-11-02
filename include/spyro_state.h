@@ -130,6 +130,17 @@ typedef enum SpyroState
  * button held (L1 also stores the height in g_nSpyroMotionAux). */
 #define SPYRO_SUB_GLIDE_R1 1
 #define SPYRO_SUB_GLIDE_L1 2
+/* SPYRO_ST_FLY on a flight level: the run is live; touching the world or an
+ * actor ends it (g_pfnLevelEndFlightRun). */
+#define SPYRO_SUB_FLY_RUN 3
+/* SPYRO_ST_STOP entered at speed (UpdateSpyroStateBehavior); with the stick
+ * idle the speed target drops straight to 0. */
+#define SPYRO_SUB_STOP_FROM_SPEED 7
+/* SPYRO_ST_SCRIPTED_WALK round the scripted-camera actor: the sign its turn
+ * rate is applied with (AdvanceSpyroPhysics picks it from which half of the
+ * actor's facing Spyro is in). */
+#define SPYRO_SUB_ORBIT_NEG 1
+#define SPYRO_SUB_ORBIT_POS 2
 #define SPYRO_SUB_SUPERCHARGE 0x40    /* charge/charge-air entered from a supercharge */
 #define SPYRO_SUB_CHARGE_LATCHED 0x80 /* charge target speed latched (LATCH_CHARGE_SPEED) */
 /* Glide/fly substates >= 8 are scripted: flight levels stop the clock and the

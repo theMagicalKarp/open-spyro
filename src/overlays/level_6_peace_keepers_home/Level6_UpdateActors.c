@@ -3108,22 +3108,22 @@ void Level6_UpdateActors(void) {
       case SOLDIER_TO_POST: {
         Actor *a = &g_pActorListBase[st->link];
 
-        if (st->phase == 0) {
+        if (st->phase == SOLDIER_POST_START) {
           if (GetRandomU32() & 1) {
             st->bold = 1;
           }
           st->timer = RandomIntInRange(0, 0x28);
-          st->phase = 1;
+          st->phase = SOLDIER_POST_SHOUT;
           break;
         }
-        if (st->phase == 1) {
+        if (st->phase == SOLDIER_POST_SHOUT) {
           int r = TrackEntityYawTowardSpyro(actor, 6, 0xA, YAW_STEP_IN_BAND);
 
           if (TICK_DOWN(st->timer) != 0 && r != 0) {
             ANIM_GO(actor, SOLDIER_ANIM_SHOUT);
           }
           if (g_nActorAnimDone != 0 && actor->anim == SOLDIER_ANIM_SHOUT) {
-            st->phase = 2;
+            st->phase = SOLDIER_POST_RUN;
             ANIM_SET(actor, SOLDIER_CHASE);
           }
           break;

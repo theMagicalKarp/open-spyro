@@ -921,9 +921,9 @@ typedef struct PostState {
 /* Case 166 -- path patroller. */
 typedef struct PatrolState {
   PathData *path; /* 0x00 */
-  int mode;       /* 0x04 */
+  int mode;       /* 0x04 PathChargerTurn */
   int afterCharge; /* 0x08 set while charging: back on patrol it steps to the next node at once */
-  int near;       /* 0x0C */
+  int near;       /* 0x0C this leg charges from further away (taunted at its last turn) */
   int timer;      /* 0x10 */
 } PatrolState;
 
@@ -1403,7 +1403,7 @@ typedef struct L26Rot {
 
 typedef struct HatchState {
   int pad00;
-  int kind;     /* 0x04 0 = opens to charge or flame, else charge only */
+  int kind;     /* 0x04 HatchKind */
   Actor *child; /* 0x08 released occupant */
   int handle;   /* 0x0C for SelectActorLodBand */
 } HatchState;

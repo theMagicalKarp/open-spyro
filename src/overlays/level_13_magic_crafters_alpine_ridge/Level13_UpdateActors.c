@@ -3613,7 +3613,7 @@ void Level13_UpdateActors(void) {
             }
             SetActorGroupStateExcept(actor, SHEPHERD_ALERTED, SHEPHERD_KNOCKED);
           }
-          if (st->sub == 0) {
+          if (st->sub == SHEPHERD_PAIR_WALK) {
             ANIM_GO(actor, SHEPHERD_ANIM_RUN);
             PivotActorAlongPath(actor, st->path, 0x100, 0x48, 0xC8, 3, 8,
                           actor->group, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
@@ -3627,12 +3627,12 @@ void Level13_UpdateActors(void) {
                               ArcTan2(partner->posX - actor->posX,
                                             partner->posY - actor->posY, ATAN_ANGLE8),
                               4, 0xA, one)) {
-              st->sub = 2;
+              st->sub = SHEPHERD_PAIR_FACE;
             }
-          } else if (st->sub == 2) {
+          } else if (st->sub == SHEPHERD_PAIR_FACE) {
             ANIM_GO(actor, SHEPHERD_ANIM_FACE_PARTNER);
             if (g_nActorAnimDone != 0) {
-              st->sub = 0;
+              st->sub = SHEPHERD_PAIR_WALK;
             }
           }
           break;

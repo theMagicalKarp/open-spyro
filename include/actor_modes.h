@@ -409,6 +409,14 @@ enum ShepherdMode {
   SHEPHERD_GO_HOME = 100, /* walks back to its home point */
 };
 
+/* ShepherdState.sub on SHEPHERD_POST_PAIR_PATROL (1 is written through
+ * the function's pinned `one`). */
+enum ShepherdPairStep {
+  SHEPHERD_PAIR_WALK = 0, /* patrols its path; near its partner on the timer: TURN */
+  SHEPHERD_PAIR_TURN = 1, /* turns to the partner */
+  SHEPHERD_PAIR_FACE = 2, /* SHEPHERD_ANIM_FACE_PARTNER, then WALK */
+};
+
 /* ShepherdState.post: what a shepherd does while SHEPHERD_IDLE, and how it
  * chases in SHEPHERD_CHASE (the spawn record sets it; 8 is never used). Like
  * CaptainPost. */
@@ -549,6 +557,13 @@ enum SoldierMode {
   SOLDIER_IN_POST = 11,    /* hides in the post and pops out at Spyro */
   SOLDIER_ENTER_POST = 16, /* climbs in, then IN_POST */
   SOLDIER_GO_HOME = 100,   /* walks back to SoldierState.home, then IDLE */
+};
+
+/* SoldierState.phase during SOLDIER_TO_POST. */
+enum SoldierPostPhase {
+  SOLDIER_POST_START = 0, /* rolls SoldierState.bold and a random shout delay */
+  SOLDIER_POST_SHOUT = 1, /* turns to Spyro and shouts (SOLDIER_ANIM_SHOUT) */
+  SOLDIER_POST_RUN = 2,   /* runs to its post, then ENTER_POST */
 };
 
 /* A soldier's animations besides the poses equal to its mode (CHASE 1,
@@ -1100,6 +1115,12 @@ enum HatchMode {
   HATCH_OPEN = 2,        /* struck: released its barrel or mine; recloses once Spyro is away */
   HATCH_SEALED_IDLE = 3, /* the sealed kind's idle (only a charge opens it) */
   HATCH_SEALED_WAIT = 4,
+};
+
+/* HatchState.kind (spawn record). */
+enum HatchKind {
+  HATCH_KIND_BARREL = 0, /* any hit opens it; holds an ACTOR_TYPE_FLOATING_BARREL */
+  HATCH_KIND_SEALED = 1, /* only a charge or supercharge opens it; holds an ACTOR_TYPE_FLOATING_MINE */
 };
 
 /* ->mode of a superflame giver (ACTOR_TYPE_SUPERFLAME_GIVER, level 14;
@@ -1860,6 +1881,13 @@ enum PathChargerMode {
   PCHARGER_CHARGE = 2,  /* charges down the path; reaching Spyro, butts him off it */
   PCHARGER_TAUNT = 6,   /* at a turn with Spyro ahead: faces him, then PATROL */
   PCHARGER_TAUNT_ALT = 7, /* the same (no writer in the C sources) */
+};
+
+/* PatrolState.mode: what a path charger did at its last path turn. */
+enum PathChargerTurn {
+  PCTURN_FIRST = 0,   /* no turn yet: the first one always taunts a Spyro ahead */
+  PCTURN_PLAIN = 1,   /* later turns taunt one time in three */
+  PCTURN_TAUNTED = 2, /* taunted: the next leg charges from further (PatrolState.near) */
 };
 
 /* A path charger's animations besides the poses equal to its mode. */

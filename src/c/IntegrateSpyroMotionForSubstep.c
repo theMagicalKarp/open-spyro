@@ -321,7 +321,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     int *w;
 
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
-    if (g_nPadDirectionalIdleFlag != 0 && g_nSpyroSubstate == 7) {
+    if (g_nPadDirectionalIdleFlag != 0 &&
+        g_nSpyroSubstate == SPYRO_SUB_STOP_FROM_SPEED) {
       g_nSpyroSpeedTarget = 0;
       if (g_pSpyroContactActor != 0) {
         Actor *a = g_pSpyroContactActor;
@@ -1529,8 +1530,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     SubtractVector(orbitStep, &g_pScriptedCameraActor->posX, &SPY[0]);
     dist = VectorLength(orbitStep, VEC_LEN_XY);
     ang = ArcTan2(orbitStep[0], orbitStep[1], ATAN_ANGLE12);
-    dt = (g_nSpyroSubstate == 1 ? -g_nSpyroTurnRateAccum
-                                : g_nSpyroTurnRateAccum) >>
+    dt = (g_nSpyroSubstate == SPYRO_SUB_ORBIT_NEG ? -g_nSpyroTurnRateAccum
+                                                  : g_nSpyroTurnRateAccum) >>
          6;
     ComputeSpyroMoveTargetFromPad(0x280);
     TurnSpyroTowardMoveTargetWithLean(0);
