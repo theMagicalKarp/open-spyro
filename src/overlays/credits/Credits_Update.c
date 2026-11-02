@@ -231,7 +231,7 @@ typedef struct {
  * each site the address form the original uses (A240). The shared headers
  * declare these differently, so they stay here. */
 extern char *volatile g_pLevelSampleBankEntries;
-extern char *g_nCdBaseLba[];
+extern int g_nCdBaseLba[];
 extern volatile int g_nCdReadInFlight[];
 extern int g_nWorldTimAudioChunkOffset[];
 extern volatile int g_nLevelArchiveChunkSize;
@@ -329,7 +329,7 @@ void Credits_Update(void) {
     }
     CdReadSyncSectors(g_nCdBaseLba[0], g_pDrawBufB_blk[0], g_nWorldTimAudioChunkOffset[3],
                   g_nWorldBundleChunkOffset + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], 0x258);
-    S.e0 = UnpackWorldDataChunks(g_pDrawBufB_blk[0], 1);
+    S.e0 = UnpackWorldDataChunks((int *)g_pDrawBufB_blk[0], 1);
     {
       register char *src asm("$5");
       S.e4 = S.e0;
@@ -772,7 +772,7 @@ void Credits_Update(void) {
           DrawSync(0);
           CopyWords(g_pCreditsScratchBuf, g_pCreditsLoadBuf + 0x40000, g_nCreditsLoadSpan - 0x40000);
           g_pCreditsLoadBuf = g_pCreditsScratchBuf + g_nCreditsLoadSpan - 0x40000;
-          S.e0 = UnpackWorldDataChunks(g_pDrawBufB, 1);
+          S.e0 = UnpackWorldDataChunks((int *)g_pDrawBufB, 1);
           {
           char *dc = S.dc;
           S.blk = g_nWorldCollisionTriCount;

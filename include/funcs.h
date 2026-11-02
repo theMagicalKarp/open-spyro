@@ -1357,13 +1357,11 @@ undefined4 FUN_8006580c(undefined4 param_1, uint param_2);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 CdReadStart(int param_1);
 
-/* 0x8006606c: libcd CdRead public API. Configures per-sector size (0x200/0x246/0x249 by mode bits 0x30), saves prior callbacks, pauses any in-flight command, then calls CdReadStart(0). Returns true on success. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-bool CdRead(undefined4 param_1, undefined4 param_2, uint param_3);
+/* 0x8006606c: libcd CdRead public API. Configures per-sector size (0x200/0x246/0x249 by mode bits 0x30), saves prior callbacks, pauses any in-flight command, then calls CdReadStart(0). Returns 1 on success. */
+int CdRead(int sectors, void *buf, int mode);
 
 /* 0x8006623c: libcd CdReadCallback: installs the data-arrival callback for libcd reads at 0x80075144. Distinct from CdSyncCallback/CdReadyCallback — this one is invoked per sector by the CdRead state machine (CdReadStart saves and restores it around the actual read). Returns previous; NULL disables. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined4 CdReadCallback(undefined4 param_1);
+void *CdReadCallback(void *func);
 
 /* 0x80066254: Sony SDK internal — libcd read-break callback install (sets g_anCdReadModeBlock). Returns previous. Called by CdInit with 0 to clear the slot. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */

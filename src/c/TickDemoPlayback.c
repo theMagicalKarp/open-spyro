@@ -92,7 +92,7 @@ int TickDemoPlayback(void) {
         int offset = *(volatile int *)&g_nTitleSceneSectorOffset;
         int dst =
             -0x40000 + (int)*(void *volatile *)&g_pRenderScratchRegionBase;
-        StartCdReadAsync(lba, dst, 0x40000, offset, 600);
+        StartCdReadAsync(lba, (void *)dst, 0x40000, offset, 600);
       }
       g_nGamePaused = 1;
       g_nDemoIndex = (g_nDemoIndex + 1) & 3;
