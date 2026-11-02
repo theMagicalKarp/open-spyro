@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_block.h"
 #include "spyro_state.h"
 
 /* shared-base view of g_nSpyroState (0x80078ad0): the state read and the
@@ -55,14 +56,14 @@ void TickSpyroFrameGlideHold(void) {
     TickSpyroAnimLayer2();
   }
   euler = g_abSpyroPersistentEulerBlock;
-  e28 = (int *)(euler + 0x28);
+  e28 = (int *)(euler + EULER_TO_BODY_MTX);
   euler[0] = g_nSpyroBodyPitch >> 4;
   r = g_nSpyroBodyRoll >> 4;
   y = g_nSpyroBodyYaw >> 4;
   euler[1] = r;
   euler[2] = y;
   ApplyEulerRotation(euler, e28, 0);
-  m = (int *)(euler + 0x1BC);
+  m = (int *)(euler + EULER_TO_COMPOSED_MTX);
   ApplyEulerRotation(euler + 4, m, 0);
   MulMatrix0(e28, m, m);
   g_dwSpyroRequestMask = 0;

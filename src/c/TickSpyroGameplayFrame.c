@@ -11,12 +11,6 @@
    frame * 4, whose AnimationHeader.m_FrameWords word is the footstep sfx key
    and its top byte the sfx id.  The header pointer is re-read per use
    (volatile) — the original never keeps it live across the sfx-id test. */
-/* Byte distances from the held euler base (g_abSpyroPersistentEuler,
-   0x80078a64) to the two matrices it builds: g_anSpyroBodyMtx (0x80078a8c)
-   and g_anSpyroComposedBodyMtx (0x80078c20). */
-#define EULER_TO_BODY_MTX 0x28
-#define EULER_TO_COMPOSED_MTX 0x1BC
-
 /* ...and from the held footstep-key base (g_adwSpyroFootstepSfxBlock,
    0x80078cbc) back to g_anSpyroWorldPos (the sound owner) and on to
    g_bSpyroSfxVoiceMarker. */

@@ -19,6 +19,7 @@
 #include "main_shared.h"
 #include "match_asm.h"
 #include "sample_bank.h"
+#include "spyro_block.h"
 
 /* Held-base alias views (see config/symbol_addrs.txt). */
 
@@ -119,7 +120,7 @@ void TickSpyroAttackEffects(int steps) {
       g_abSpyroFlameAnchorEuler[1] = g_abSpyroPersistentEulerBlock[1];
       g_abSpyroFlameAnchorEuler[2] = g_abSpyroPersistentEulerBlock[2];
       CopyWords(&g_abSpyroFlameAnchorModeBlock[0xa],
-                &g_abSpyroPersistentEulerBlock[0x1bc], 0x14);
+                &g_abSpyroPersistentEulerBlock[EULER_TO_COMPOSED_MTX], 0x14);
       rec = (int *)((g_bSpyroFramePrev * 4) +
                     (*((int *)(((g_bSpyroAnimPrev * 4) +
                                 ((int)g_apActorMeshTable)) +
