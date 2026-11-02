@@ -101,7 +101,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
     case ACTOR_TYPE_DRAGON_EGG:
       InitActorRenderDefaults(rec);
       rec->cullRadius = 0x20;
-      rec->updateDist = 0xFF;
+      rec->updateDist = ACTOR_UPDATE_ALWAYS;
       if (parent != 0)
     {
       CopyVector(&rec->posX, &parent->posX);
@@ -388,7 +388,7 @@ Actor *Level11_SpawnActor(int type, Actor *parent)
     case ACTOR_TYPE_LETTER_A ... ACTOR_TYPE_LETTER_A + 25:
       InitActorRenderDefaults(rec);
       rec->cullRadius = 0x20;
-      rec->updateDist = 0xFF;
+      rec->updateDist = ACTOR_UPDATE_ALWAYS;
       HideActorRenderRecord(rec);
       break;
 

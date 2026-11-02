@@ -20,7 +20,7 @@ int IsActorInRunningKillSet(Actor *actor) {
     int bit = idx & 0x1F;
     int t = g_anRunningKillBitmap[word] & (1 << bit);
     if (t != 0) {
-      hit = actor->dropKind == 0xFF;
+      hit = actor->dropKind == DROP_GEM_ROLL;
     }
   }
   return hit;

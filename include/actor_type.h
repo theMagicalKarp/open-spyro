@@ -91,6 +91,11 @@ typedef struct Actor {
 
 /* Actor.voiceRow while no voice row plays the actor's sound. */
 #define VOICE_ROW_NONE 0x7F
+#define ACTOR_UPDATE_ALWAYS 0xFF /* ->updateDist: read signed by BuildActiveActorList, so
+                                  * a negative radius keeps the actor updating anywhere */
+#define VIS_ZONE_ALWAYS 0xFF     /* ->visZone: no vis-zone gate, always drawn */
+#define DROP_GEM_ROLL 0xFF       /* ->dropKind: a random gem roll (and counts in the
+                                  * running kill set, IsActorInRunningKillSet) */
 
 /* Actor.flags hit bits that Spyro's attacks raise through
  * DispatchActorContactAtSphere (AdvanceSpyroPhysics, TickSpyroAttackEffects). */
@@ -475,6 +480,11 @@ enum ActorType {
                              * outside its audible range */
 #define SFX_MODE_PANNED 0x10 /* pan supplied by the caller */
 #define SFX_MODE_MASK 0x1C   /* the mode group within a voice row's nFlags */
+
+/* g_nSfxOverrideFlags: one-shot overrides the next PlaySoundEffect consumes
+ * (and clears). */
+#define SFX_OVERRIDE_VOLUME 1 /* use g_nSfxOverrideVolL/R instead of the default volume */
+#define SFX_OVERRIDE_PITCH 2  /* use g_nSfxOverridePitch instead of the sample's pitch */
 
 /* StopSoundVoicesByOwner's mode: which of the owner's voices to stop. */
 #define VOICE_STOP_ALL 1     /* every voice it owns */

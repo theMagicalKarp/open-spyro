@@ -9,7 +9,7 @@
    widest activation radius, dropKind the random gem roll) and voiceRow 0x7F. */
 void InitActorRenderDefaults(Actor *actor) {
   actor->cullRadius = 0x10;
-  actor->updateDist = 0xff;
+  actor->updateDist = ACTOR_UPDATE_ALWAYS;
   actor->otBias = 4;
   actor->nextFrame = 1;
   actor->mode = 0;
@@ -20,8 +20,8 @@ void InitActorRenderDefaults(Actor *actor) {
   actor->frameProgress = 0;
   actor->frameRate = 0x20;
   actor->group = 0xff;
-  actor->visZone = 0xff;
-  actor->dropKind = 0xff;
+  actor->visZone = VIS_ZONE_ALWAYS;
+  actor->dropKind = DROP_GEM_ROLL;
   actor->flags = 0;
   actor->rotX = 0;
   actor->rotY = 0;

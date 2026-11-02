@@ -258,7 +258,7 @@ void Level16_UpdateActors(void) {
       if (st->detached == 0) {
         if (st->trackPos != 0) {
           SubtractVector(st->pos, st->pos, &parent->posX);
-          actor->updateDist = 0xFF;
+          actor->updateDist = ACTOR_UPDATE_ALWAYS;
         } else {
           actor->updateDist = 0x20;
         }
@@ -328,7 +328,7 @@ void Level16_UpdateActors(void) {
             }
             MarkActorCommittedKill(actor);
             *(volatile int *)&st->count <<= 7;
-            g_nSfxOverrideFlags = 2;
+            g_nSfxOverrideFlags = SFX_OVERRIDE_PITCH;
             g_nSfxOverridePitch.v =
                 SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]) +
                 st->count;
@@ -349,7 +349,7 @@ void Level16_UpdateActors(void) {
           }
 
           if (st->count == 1) {
-            g_nSfxOverrideFlags = 2;
+            g_nSfxOverrideFlags = SFX_OVERRIDE_PITCH;
             g_nSfxOverridePitch.v =
                 SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]);
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE], actor, SFX_MODE_3D, &actor->voiceRow);
@@ -1055,7 +1055,7 @@ void Level16_UpdateActors(void) {
                   if (cs->owner == 0) {
                     if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                        g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0])) {
-                      g_nSfxOverrideFlags = 1;
+                      g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                       g_nSfxOverrideVolR = 0x2000;
                       g_nSfxOverrideVolL = 0x2000;
                       PlayActorMeshVoice(g_pSparxActor, 0, 0);
@@ -1141,7 +1141,7 @@ void Level16_UpdateActors(void) {
             }
 
             if (st->count != 0) {
-              g_nSfxOverrideFlags = 1;
+              g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
               g_nSfxOverrideVolL = 0x3CCC >> (3 - st->count);
               g_nSfxOverrideVolR = 0x3CCC >> (3 - st->count);
 
@@ -1178,7 +1178,7 @@ void Level16_UpdateActors(void) {
                 if (cs->owner == 0) {
                   if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                      g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[0])) {
-                    g_nSfxOverrideFlags = 1;
+                    g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = 0x2000;
                     g_nSfxOverrideVolL = 0x2000;
                     PlayActorMeshVoice(g_pSparxActor, 0, 0);
@@ -1642,7 +1642,7 @@ void Level16_UpdateActors(void) {
               EBB_BREAK();
 
               if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[SFX_GEM_BOUNCE]) == 0) {
-                g_nSfxOverrideFlags = 1;
+                g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                 g_nSfxOverrideVolR = 0x3600;
                 g_nSfxOverrideVolL = 0x3600;
                 PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
@@ -1815,7 +1815,7 @@ void Level16_UpdateActors(void) {
             actor->updateDist = 0;
             actor->drawn = 0;
             actor->groundCode = 0;
-            actor->visZone = 0xFF;
+            actor->visZone = VIS_ZONE_ALWAYS;
             actor->subMode = KEY_TAKEN;
           }
         }
@@ -2589,14 +2589,14 @@ void Level16_UpdateActors(void) {
       case BOULDER_INTACT:
         if (actor->flags & ACTOR_HIT_BLAST) {
           actor->subMode = BOULDER_CRACKING;
-          actor->updateDist = 0xFF;
+          actor->updateDist = ACTOR_UPDATE_ALWAYS;
           actor->cullRadius = 0x7F;
           if (st->timer < 0x5A) {
             st->timer = 0x5A;
           }
         } else if (actor->flags & ACTOR_HIT_FLAME) {
           actor->subMode = BOULDER_CRACKING;
-          actor->updateDist = 0xFF;
+          actor->updateDist = ACTOR_UPDATE_ALWAYS;
           actor->cullRadius = 0x7F;
           st->timer = 0;
         } else {
@@ -3183,7 +3183,7 @@ void Level16_UpdateActors(void) {
             st->pathDone = 0;
             st->phase = 1;
             st->path = st->paths[3];
-            if (g_pActorListBase[st->prev].dropKind != 0xFF &&
+            if (g_pActorListBase[st->prev].dropKind != DROP_GEM_ROLL &&
                 g_pActorListBase[st->prev].mode < ACTOR_MODE_DORMANT) {
               SpawnActorDeathDrop(a, DROP_SCATTER, 0, 0);
               MarkActorCommittedKill(a);
@@ -3198,7 +3198,7 @@ void Level16_UpdateActors(void) {
             st->path = st->paths[4];
             a = &g_pActorListBase[st->prev];
             as = a->state;
-            if (a->dropKind != 0xFF && a->mode < ACTOR_MODE_DORMANT) {
+            if (a->dropKind != DROP_GEM_ROLL && a->mode < ACTOR_MODE_DORMANT) {
               SpawnActorDeathDrop(a, DROP_SCATTER, 0, 0);
               MarkActorCommittedKill(a);
               DespawnActorRecord(a);

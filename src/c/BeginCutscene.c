@@ -42,7 +42,7 @@ void BeginCutscene(void) {
   SAMPLE_RAW(g_pActiveCutsceneSoundDef, int, nPitchMode) = 0;
   g_nSfxOverrideVolL = 0x3FFF;
   g_nSfxOverrideVolR = 0x3FFF;
-  g_nSfxOverrideFlags = 1;
+  g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
 
   PlaySoundEffect(0, 0, SFX_MODE_PANNED, &g_bSceneSfxVoiceMarker);
 }

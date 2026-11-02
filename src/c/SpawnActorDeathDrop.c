@@ -117,7 +117,7 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
       dbg->spinY = GetRandomU32() & 0xe;
       dbg->spinZ = GetRandomU32() & 0xe;
       rec->subMode = 3;
-      rec->updateDist = 0xff;
+      rec->updateDist = ACTOR_UPDATE_ALWAYS;
       return rec;
     }
     CopyVector(throw_, &src->posX);

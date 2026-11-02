@@ -535,7 +535,7 @@ void DragonRescue_Update(void) {
         SBE->nPitchSpread = 0;
         SBE->nPitchStep = 0;
         SBE->nPitchMode = 0;
-        ((struct { int v; } *)&g_nSfxOverrideFlags)->v = 1;
+        ((struct { int v; } *)&g_nSfxOverrideFlags)->v = SFX_OVERRIDE_VOLUME;
         ((struct { short v; } *)&g_nSfxOverrideVolL)->v = 0x3FFF;
         ((struct { short v; } *)&g_nSfxOverrideVolR)->v = 0x3FFF;
         StopSoundVoiceByIndex(GB[11], VOICE_RELEASE);

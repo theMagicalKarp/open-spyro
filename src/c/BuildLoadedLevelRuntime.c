@@ -454,7 +454,7 @@ sprites:
           if ((r->killGroup & ACTOR_KILL_GROUP_MASK) == 0x7D) {
             DespawnActorRecord(r);
           } else {
-            r->dropKind = 0xFF;
+            r->dropKind = DROP_GEM_ROLL;
           }
         } else {
           {
@@ -473,7 +473,7 @@ sprites:
             __asm__ volatile("" : : "r"(k3), "r"(k4));
           }
           if (count != 0) {
-            g_pActorListBase[i].dropKind = 0xFF;
+            g_pActorListBase[i].dropKind = DROP_GEM_ROLL;
           } else {
             DespawnActorRecord(&g_pActorListBase[i]);
           }

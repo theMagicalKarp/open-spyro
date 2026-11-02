@@ -352,7 +352,7 @@ void Credits_Update(void) {
     SAMPLE_RAW(g_pLevelSampleBankEntries, short, nPitchStep) = 0;
     g_pCreditsScrollHeader = e4;
     SAMPLE_RAW(g_pLevelSampleBankEntries, int, nPitchMode) = 0;
-    g_nSfxOverrideFlags = 1;
+    g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
     g_nSfxOverrideVolL = 0x3FFF;
     g_nSfxOverrideVolR = 0x3FFF;
     PlaySoundEffect(0, 0, SFX_MODE_PANNED, 0);
