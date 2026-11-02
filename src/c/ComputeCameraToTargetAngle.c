@@ -18,12 +18,12 @@ int ComputeCameraToTargetAngle(int *target) {
   int vec[3];
   int yaw;
   int dist;
-  int old;
-  int opp;
-  int d1;
-  int d2;
-  int d;
-  int e;
+  int oldYaw;
+  int flipYaw;
+  int yawDelta;
+  int flipDelta;
+  int pitchBias;
+  int yawBias;
   int *pitch;
 
   SubtractVector(vec, target, g_pCameraAnchorPos);
@@ -34,17 +34,17 @@ int ComputeCameraToTargetAngle(int *target) {
   dist = RefineSqrtEstimate(vec, dist, 0);
   g_nCameraPitch = ArcTan2(dist, vec[2], ATAN_ANGLE12);
   yaw = ArcTan2(vec[0], -vec[1], ATAN_ANGLE12);
-  old = g_nCameraYaw;
-  d1 = (yaw - old) & 0xFFF;
-  if (d1 >= 0x801) {
-    d1 -= 0x1000;
+  oldYaw = g_nCameraYaw;
+  yawDelta = (yaw - oldYaw) & 0xFFF;
+  if (yawDelta >= 0x801) {
+    yawDelta -= 0x1000;
   }
-  opp = old - 0x800;
-  d2 = (yaw - opp) & 0xFFF;
-  if (d2 >= 0x801) {
-    d2 -= 0x1000;
+  flipYaw = oldYaw - 0x800;
+  flipDelta = (yaw - flipYaw) & 0xFFF;
+  if (flipDelta >= 0x801) {
+    flipDelta -= 0x1000;
   }
-  if (abs(d2) < abs(d1) &&
+  if (abs(flipDelta) < abs(yawDelta) &&
       (g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_FREE_LOOK) ||
        g_nCameraTargetInverted != 0)) {
     if (abs(vec[0]) < 0x81) {
@@ -68,16 +68,16 @@ int ComputeCameraToTargetAngle(int *target) {
     }
     yaw = 0;
   }
-  d = (g_nCameraEulerPitch - g_nCameraPitch) & 0xFFF;
+  pitchBias = (g_nCameraEulerPitch - g_nCameraPitch) & 0xFFF;
   g_nCameraDraftRoll = g_nCameraEulerRoll;
-  g_nCameraDraftPitchBias = d;
-  if (d >= 0x801) {
-    g_nCameraDraftPitchBias = d - 0x1000;
+  g_nCameraDraftPitchBias = pitchBias;
+  if (pitchBias >= 0x801) {
+    g_nCameraDraftPitchBias = pitchBias - 0x1000;
   }
-  e = (0x800 - g_nCameraEulerYaw - g_nCameraYaw) & 0xFFF;
-  g_nCameraDraftYawBias = e;
-  if (e >= 0x801) {
-    g_nCameraDraftYawBias = e - 0x1000;
+  yawBias = (0x800 - g_nCameraEulerYaw - g_nCameraYaw) & 0xFFF;
+  g_nCameraDraftYawBias = yawBias;
+  if (yawBias >= 0x801) {
+    g_nCameraDraftYawBias = yawBias - 0x1000;
   }
   return yaw;
 }

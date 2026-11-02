@@ -234,7 +234,7 @@ void Level14_UpdateActors(void) {
   int svJ1[3];
   int sparxToTarget[3];
   int twinklePos[3];
-  int x288[3];
+  int aheadOfSpyro[3];
   int fx[6];
   int col[3];
   int svK[3];
@@ -2932,12 +2932,12 @@ void Level14_UpdateActors(void) {
         short *nv;
 
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        CopyVector(x288, &SPY.posX);
+        CopyVector(aheadOfSpyro, &SPY.posX);
         g_nCinematicActive = 1;
-        x288[0] += (g_anCosineLut[SPY.bodyRotZ] * 0xE1) >> 10;
-        x288[1] += (g_anSineLut[SPY.bodyRotZ] * 0xE1) >> 10;
-        x288[2] -= 0x17C;
-        dz = x288[2] - actor->posZ;
+        aheadOfSpyro[0] += (g_anCosineLut[SPY.bodyRotZ] * 0xE1) >> 10;
+        aheadOfSpyro[1] += (g_anSineLut[SPY.bodyRotZ] * 0xE1) >> 10;
+        aheadOfSpyro[2] -= 0x17C;
+        dz = aheadOfSpyro[2] - actor->posZ;
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         CopyVector(st->cam, &SPY.posX);
         st->cam[0] += (g_anCosineLut[SPY.bodyRotZ] * 0x4B) >> 10;
@@ -2954,14 +2954,14 @@ void Level14_UpdateActors(void) {
         g_anCameraActiveTargetParams.w[0] = -(SPY.bodyRotZ + 0x40) << 4;
         switch (actor->subMode) {
         case SFGIVER_SUB_APPROACH:
-          if (ApproxDist2D(&actor->posX, x288) > 0x50) {
+          if (ApproxDist2D(&actor->posX, aheadOfSpyro) > 0x50) {
             MoveActorAlongAngle(actor,
-                          ArcTan2(x288[0] - actor->posX,
-                                        x288[1] - actor->posY, ATAN_ANGLE8),
+                          ArcTan2(aheadOfSpyro[0] - actor->posX,
+                                        aheadOfSpyro[1] - actor->posY, ATAN_ANGLE8),
                           0x64, 0, 0, 0);
           } else {
-            actor->posX = x288[0];
-            actor->posY = x288[1];
+            actor->posX = aheadOfSpyro[0];
+            actor->posY = aheadOfSpyro[1];
           }
           if (ABS2(dz) > 0x28) {
             if (dz < 0) {
@@ -2973,7 +2973,7 @@ void Level14_UpdateActors(void) {
             }
             actor->posZ += dz;
           } else {
-            actor->posZ = x288[2];
+            actor->posZ = aheadOfSpyro[2];
           }
           if (TICK_DOWN(st->timer) != 0) {
             ANIM_GO(actor, 1);
@@ -2994,10 +2994,10 @@ void Level14_UpdateActors(void) {
             if (actor->type == ACTOR_TYPE_SUPERFLAME_GIVER_ALT) {
               r = 0x190;
             }
-            CopyVector(x288, &SPY.posX);
-            x288[0] += (r * g_anCosineLut[SPY.bodyRotZ]) >> 12;
-            x288[1] += (r * g_anSineLut[SPY.bodyRotZ]) >> 12;
-            g_pfnLevelEmitParticles(1, EMIT_SPREAD_MOTE, x288, 0);
+            CopyVector(aheadOfSpyro, &SPY.posX);
+            aheadOfSpyro[0] += (r * g_anCosineLut[SPY.bodyRotZ]) >> 12;
+            aheadOfSpyro[1] += (r * g_anSineLut[SPY.bodyRotZ]) >> 12;
+            g_pfnLevelEmitParticles(1, EMIT_SPREAD_MOTE, aheadOfSpyro, 0);
             st->count = 0;
           }
           if (g_nActorAnimDone != 0) {

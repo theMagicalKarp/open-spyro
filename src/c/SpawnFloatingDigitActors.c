@@ -35,57 +35,57 @@ struct Digit {
      to the yaw lbu. The barrier also keeps the sh above the x/y updates
      (a free store would win the hazard tie and sink to the delay slot). */
 void SpawnFloatingDigitActors(int value, Actor *src) {
-  short rot[3];
+  short faceDir[3];
   Actor *rec;
   struct Digit *st;
   int x;
   int y;
   int place;
-  int d;
-  int a;
+  int digit;
+  int yawIdx;
   int z;
   short *cam;
-  int sx;
-  int cx;
+  int sinYaw;
+  int cosYaw;
   int prod;
   cam = g_anCameraEulerYawBlock;
   place = 1;
   x = src->posX;
   y = src->posY;
-  rot[0] = LookupCosine(cam[0] - 0x400) >> 8;
-  rot[1] = LookupSine(cam[0] - 0x400) >> 8;
-  rot[2] = 0x80;
+  faceDir[0] = LookupCosine(cam[0] - 0x400) >> 8;
+  faceDir[1] = LookupSine(cam[0] - 0x400) >> 8;
+  faceDir[2] = 0x80;
   if (value != 0) {
     do {
       int q;
-      d = value % 10;
+      digit = value % 10;
       q = value / 10;
-      prod = d + ACTOR_TYPE_GEM_DIGIT_0;
+      prod = digit + ACTOR_TYPE_GEM_DIGIT_0;
       rec = g_pfnLevelSpawnActor(prod, 0);
       rec->posX = x;
       rec->posY = y;
       z = src->posZ;
-      prod = d * place;
+      prod = digit * place;
       rec->rotX = 0;
       rec->rotY = 0;
       rec->posZ = z;
       st = (struct Digit *)rec->state;
       rec->rotZ = ((struct { unsigned short v; } *)&g_nCameraEulerYaw)->v >> 4;
-      st->dir[0] = rot[0];
-      st->dir[1] = rot[1];
-      st->dir[2] = rot[2];
+      st->dir[0] = faceDir[0];
+      st->dir[1] = faceDir[1];
+      st->dir[2] = faceDir[2];
       value = q;
       place *= 10;
       st->place = prod;
-      a = rec->rotZ;
-      sx = g_anSineLut[a];
-      cx = g_anCosineLut[a];
-      rot[2] -= 0x10;
+      yawIdx = rec->rotZ;
+      sinYaw = g_anSineLut[yawIdx];
+      cosYaw = g_anCosineLut[yawIdx];
+      faceDir[2] -= 0x10;
       SCHED_FENCE();
-      OPAQUE(sx);
-      OPAQUE(cx);
-      x -= sx >> 4;
-      y += cx >> 4;
+      OPAQUE(sinYaw);
+      OPAQUE(cosYaw);
+      x -= sinYaw >> 4;
+      y += cosYaw >> 4;
     } while (value != 0);
   }
 }

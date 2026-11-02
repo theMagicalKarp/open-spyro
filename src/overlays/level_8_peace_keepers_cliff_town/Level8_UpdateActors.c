@@ -2505,7 +2505,7 @@ void Level8_UpdateActors(void) {
         t->cullRadius = 0;
         t->drawn = 0;
         t->updateDist = 0;
-        t->subMode = 4;
+        t->subMode = COLLECT_INERT;
         break;
       }
       if (st->flung != 0) {

@@ -1,3 +1,4 @@
+#include "actor_type.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "spu.h"
@@ -17,30 +18,30 @@ void StopSoundVoicesByOwner(int owner, int mode) {
   int i = 0;
   int one = 1;
   int two = 2;
-  int silence = 0x7F;
+  int silence = VOICE_ROW_NONE;
   int idle = 0x40;
-  int ff = 0xFF;
-  int *po = (int *)&g_aSpuVoiceRows[0].pOwner;
-  unsigned short *pf = &g_aSpuVoiceRows[0].nFlags;
-  unsigned char **ps = (unsigned char **)&g_aSpuVoiceRows[0].pPlaying;
+  int noSample = 0xFF;
+  int *ownerp = (int *)&g_aSpuVoiceRows[0].pOwner;
+  unsigned short *flagsp = &g_aSpuVoiceRows[0].nFlags;
+  unsigned char **playingp = (unsigned char **)&g_aSpuVoiceRows[0].pPlaying;
   int off = 0;
 top:
-  if (*po == owner) {
-    if (mode == one || (mode == two && (*pf & 0x100) != 0)) {
+  if (*ownerp == owner) {
+    if (mode == one || (mode == two && (*flagsp & 0x100) != 0)) {
       kmask |= one << i;
-      if (*ps != 0) {
-        **ps = silence;
+      if (*playingp != 0) {
+        **playingp = silence;
       }
-      *ps = 0;
-      *pf = idle;
-      *po = 0;
+      *playingp = 0;
+      *flagsp = idle;
+      *ownerp = 0;
       VOICE_ROW_RAW(off, int, nPitchStep) = 0;
-      VOICE_ROW_RAW(off, unsigned char, nSampleId) = ff;
+      VOICE_ROW_RAW(off, unsigned char, nSampleId) = noSample;
     }
   }
-  po = (int *)((SPUVOICEROW *)po + 1);
-  pf = (unsigned short *)((SPUVOICEROW *)pf + 1);
-  ps = (unsigned char **)((SPUVOICEROW *)ps + 1);
+  ownerp = (int *)((SPUVOICEROW *)ownerp + 1);
+  flagsp = (unsigned short *)((SPUVOICEROW *)flagsp + 1);
+  playingp = (unsigned char **)((SPUVOICEROW *)playingp + 1);
   i += 1;
   off += 0x1C;
   if (i < 24) {
