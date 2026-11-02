@@ -1793,7 +1793,7 @@ void Level30_UpdateActors(void) {
       } else {
         switch (actor->mode) {
         case CRITTER_WANDER:
-          UpdateActorWander(actor, st);
+          UpdateActorWander(actor, &st->wander);
           if (TickCountdownByFrameDelta(&st->rest, 4) != 0) {
             actor->mode = CRITTER_REST;
             if (actor->nextAnim != 2) {

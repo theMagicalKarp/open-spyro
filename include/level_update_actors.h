@@ -486,7 +486,8 @@ typedef struct SwoopState {
 } SwoopState;
 
 typedef struct CritterKnockState {
-  char pad00[0x38];
+  WanderBlock wander; /* 0x00 UpdateActorWander's block */
+  char pad20[0x18];
   int knock; /* 0x38 knock-back heading */
   int speed; /* 0x3C knock-back speed */
 } CritterKnockState;
@@ -748,10 +749,10 @@ typedef struct MusicState {
   int started; /* 0x00 */
 } MusicState;
 
-/* ACTOR_TYPE_WANDERING_CRITTER_C (level 30): pad00 is UpdateActorWander's
- * block; speed/heading drive the knock-away. */
+/* ACTOR_TYPE_WANDERING_CRITTER_C (level 30): UpdateActorWander's block,
+ * then speed/heading for the knock-away. */
 typedef struct WanderKnockState {
-  char pad00[0x20];
+  WanderBlock wander; /* 0x00 UpdateActorWander's block */
   int speed;   /* 0x20 */
   int heading; /* 0x24 */
   char pad28[0x4];
@@ -895,7 +896,7 @@ typedef struct BlowhardState {
 
 /* Case 412 -- wandering critter. */
 typedef struct HopState {
-  char pad00[0x20];
+  WanderBlock wander; /* 0x00 UpdateActorWander's block */
   int timer;   /* 0x20 */
   int heading; /* 0x24 knock-back heading */
   int time;    /* 0x28 knock-back time */
@@ -1130,7 +1131,7 @@ typedef struct CatapultState {
 } CatapultState;
 
 typedef struct RoamingCritterState {
-  char pad00[0x20];
+  WanderBlock wander; /* 0x00 UpdateActorWander's block */
   int speed; /* 0x20 knock-back speed */
   int knock; /* 0x24 knock-back heading */
   char pad28[0x4];
@@ -1527,7 +1528,7 @@ typedef struct Follower {
 } Follower;
 
 typedef struct GrazerState {
-  char pad00[0x20];
+  WanderBlock wander; /* 0x00 UpdateActorWander's block */
   int speed; /* 0x20 knock-back speed */
   int knock; /* 0x24 knock-back heading */
   int wait;  /* 0x28 graze timer */

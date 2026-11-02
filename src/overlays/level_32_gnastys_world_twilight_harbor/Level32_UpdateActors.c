@@ -2418,7 +2418,7 @@ void Level32_UpdateActors(void) {
 
       switch (actor->mode) {
       case CRITTER_WANDER:
-        UpdateActorWander(actor, st);
+        UpdateActorWander(actor, &st->wander);
         if (TickCountdownByFrameDelta(&st->idleTimer, 4) != 0) {
           ENTER_POSE(actor, CRITTER_REST);
         }

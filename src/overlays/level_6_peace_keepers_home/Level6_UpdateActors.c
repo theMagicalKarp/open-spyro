@@ -114,7 +114,7 @@ typedef struct FireballCannonState {
 
 /* Types 214/216 state: a Peace Keeper soldier (kind picks the behaviour). */
 typedef struct SoldierState {
-  char pad00[0x20];
+  WanderBlock wander; /* 0x00 UpdateActorWander's block */
   unsigned char *path; /* 0x20 */
   int kind;            /* 0x24 SoldierKind */
   int timer;           /* 0x28 */
@@ -2582,7 +2582,7 @@ void Level6_UpdateActors(void) {
 
       switch (actor->mode) {
       case CRITTER_WANDER:
-        UpdateActorWander(actor, st);
+        UpdateActorWander(actor, &st->wander);
         break;
 
       case CRITTER_KNOCKED:
@@ -2823,7 +2823,7 @@ void Level6_UpdateActors(void) {
         case SOLDIERKIND_WANDER_TO_CANNON:
           ANIM_GO(actor, 1);
           SnapActorToGround(actor);
-          UpdateActorWander(actor, st);
+          UpdateActorWander(actor, &st->wander);
           if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
             ReplaceActorGroupState(actor, SOLDIER_TO_POST, SOLDIER_IDLE);
           }

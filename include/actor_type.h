@@ -506,7 +506,7 @@ typedef struct WanderBlock {
   int pad08;                     /* 0x08 */
   unsigned char speed;           /* 0x0C move speed (x1.5 / x2 at frame delta 3 / 4) */
   unsigned char turnRate;        /* 0x0D */
-  unsigned char contact;         /* 0x0E move contact group, also the probe radius */
+  unsigned char contact;         /* 0x0E actor-contact and wall radius of each step */
   unsigned char repickMin;       /* 0x0F re-pick countdown range */
   unsigned char repickMax;       /* 0x10 */
   unsigned char jitterMin;       /* 0x11 heading jitter range */
@@ -521,7 +521,7 @@ typedef struct WanderBlock {
   unsigned char chaseRadius;     /* 0x1A 0 = only the fixed 0x44C range */
   unsigned char chasing;         /* 0x1B */
   unsigned char chaseCooldown;   /* 0x1C set after a wall bump or a walk home */
-  unsigned char contactCooldown; /* 0x1D moves ignore the contact group while set */
+  unsigned char contactCooldown; /* 0x1D steps skip the actor-contact test while set */
   short weave;                   /* 0x1E current weave offset */
 } WanderBlock; /* 0x20 */
 

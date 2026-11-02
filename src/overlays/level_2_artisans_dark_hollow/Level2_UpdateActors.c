@@ -2961,7 +2961,7 @@ void Level2_UpdateActors(void) {
         if (TickCountdownByFrameDelta(&st->timer, 4)) {
           ENTER_POSE(actor, GRAZER_PAUSE);
         }
-        UpdateActorWander(actor, st);
+        UpdateActorWander(actor, &st->wander);
         break;
       case GRAZER_PAUSE:
         SnapActorToGround(actor);

@@ -3146,7 +3146,7 @@ void Level8_UpdateActors(void) {
 
       switch (actor->mode) {
       case ROAMCRIT_WANDER:
-        UpdateActorWander(actor, st);
+        UpdateActorWander(actor, &st->wander);
         break;
 
       case ROAMCRIT_KNOCKED:
@@ -3163,7 +3163,7 @@ void Level8_UpdateActors(void) {
 
       case ROAMCRIT_DYING:
         if (actor->anim == 6 && actor->frame < 8) {
-          UpdateActorWander(actor, st);
+          UpdateActorWander(actor, &st->wander);
         }
         if (g_nActorAnimDone != 0) {
           if (actor->anim != 6) {

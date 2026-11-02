@@ -3454,7 +3454,7 @@ void Level3_UpdateActors(void) {
         if (TickCountdownByFrameDelta(&st->wait, 4) != 0) {
           ENTER_POSE(actor, GRAZER_PAUSE);
         }
-        UpdateActorWander(actor, st);
+        UpdateActorWander(actor, &st->wander);
         if (TickCountdownByFrameDelta(&st->voice, 4) != 0) {
           st->voice = (GetRandomU32() & 0x3F) + 0x78;
           PlayActorMeshVoice(actor, 3, 0);
