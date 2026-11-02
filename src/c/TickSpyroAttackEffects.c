@@ -19,6 +19,7 @@
 #include "main_shared.h"
 #include "match_asm.h"
 #include "sample_bank.h"
+#include "spyro_block.h"
 
 /* Held-base alias views (see config/symbol_addrs.txt). */
 
@@ -119,7 +120,7 @@ void TickSpyroAttackEffects(int steps) {
       g_abSpyroFlameAnchorEuler[1] = g_abSpyroPersistentEulerBlock[1];
       g_abSpyroFlameAnchorEuler[2] = g_abSpyroPersistentEulerBlock[2];
       CopyWords(&g_abSpyroFlameAnchorModeBlock[0xa],
-                &g_abSpyroPersistentEulerBlock[0x1bc], 0x14);
+                &g_abSpyroPersistentEulerBlock[EULER_TO_COMPOSED_MTX], 0x14);
       rec = (int *)((g_bSpyroFramePrev * 4) +
                     (*((int *)(((g_bSpyroAnimPrev * 4) +
                                 ((int)g_apActorMeshTable)) +
@@ -212,7 +213,7 @@ void TickSpyroAttackEffects(int steps) {
               dir[2] = 0;
               RotateVectorByMatrix(&pt[-0xd], dir, dir);
               dir[2] = 0;
-              g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, tip, dir);
+              g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, tip, (int)dir);
               if ((*((volatile int *)(&pt[-0xf]))) == 0) {
                 g_pfnLevelEmitParticles(4, EMIT_EMBER, tip, 0);
               }
@@ -223,11 +224,11 @@ void TickSpyroAttackEffects(int steps) {
               ApplyActiveGteRotation(dir, dir);
               g_pfnLevelEmitParticles(((*((volatile int *)(&pt[-0xf]))) * 5) +
                                           5,
-                                      EMIT_FLAME_STREAK, tip, dir);
+                                      EMIT_FLAME_STREAK, tip, (int)dir);
               __asm__ volatile("" : : "g"(hole));
               if (sfxDone == 0) {
-                PlaySoundEffect(LEVEL_SFX(SFX_ATTACK_HIT), wp, SFX_MODE_FLAT,
-                                0);
+                PlaySoundEffect(LEVEL_SFX(SFX_ATTACK_HIT), (Actor *)wp,
+                                SFX_MODE_FLAT, 0);
                 sfxDone = 1;
               }
             }
@@ -242,16 +243,16 @@ void TickSpyroAttackEffects(int steps) {
             AddVector(tip, tip, &mtx[-0x29]);
             ZeroVector(dir);
             if (g_nSpyroFlameVariant != 0) {
-              g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, tip, dir);
+              g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, tip, (int)dir);
             } else {
-              g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, tip, dir);
+              g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, tip, (int)dir);
             }
             if (g_nSpyroFlameVariant == 0) {
               g_pfnLevelEmitParticles(4, EMIT_EMBER, tip, 0);
             }
             ApplyActiveGteRotation(&g_anSpyroFlameEndBurstDirs[i * 3], dir);
             g_pfnLevelEmitParticles((g_nSpyroFlameVariant * 5) + 5,
-                                    EMIT_FLAME_STREAK, tip, dir);
+                                    EMIT_FLAME_STREAK, tip, (int)dir);
           }
         }
       } else {

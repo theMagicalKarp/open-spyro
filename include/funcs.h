@@ -55,7 +55,7 @@ void *UnpackWorldDataChunks(int *p, int flag);
 void RelocateMobActorTable(void *table);
 
 /* 0x800133e0: Relocates a freshly-loaded actor-mesh / vertex-anim header to absolute pointers. Two formats keyed by sign bit of *table: (A) negative: 3-ptr quick form — rebases +1, +2, +3 by header base, then strips the top bit. (B) non-negative: 8-entry parent header at +5 (each entry gets +0x14, +0x18, +0x20 rebased), then up to *table child entries at +0xe each pointing to a sub-record (also rebased) — sub-records contain either (a) a byte-flag-cleared form: per-vertex-anim packed-XY at +0x12 walks N entries (lower 21 bits rebased by header_base, &0x1fffff masked, top 11 bits preserved) + an inline relative resolver on the 2nd int (rebased by header_base relative to the pointer position) — or (b) the byte-flag-set form: model body at +0x8 rebased + the packed-XY +0x12 walked with the additive >>1 absolute scheme. Returns the header base ptr with top bit cleared. Callers: M09 state machines (TickCutsceneBundleLoadStream / TickDragonRescueAssetStream / TickLevelTransitionStream) + LoadActorMeshTables (M12 runtime load). */
-int RelocateActorMeshHeader(int *table);
+void *RelocateActorMeshHeader(int *table);
 
 /* 0x8001364c: Post-CD-stream level finalization driver — the "level-loader meat". Builds per-level runtime state from the freshly streamed bundle in g_pPathTableBuffer. Callers: LoadAndStartLevelFromCd + TickLevelTransitionStream (case 0xd). fullSetup = full-setup flag (0 skips chunk-anim reset + overlay-hook/HUD init). Steps: (1) stop sounds, reset frame counters, g_nPortalDistanceFogEnabled for levels 0x28/0x2a. (2) spawn select: g_nSpawnAnchorValid latch ? keep g_anLevelSpawnPos/Yaw(>>4) : read path-table head; gamestate 5 (game over, levels 0x28..0x3b) uses the continue tables via g_nGameOverLevelIndex; g_nPortalTransitionActive keeps Spyro in place (exit nudge from g_anLevelSpawnNudgeZTable + sine radial). (3) ResetSpyroEntity. (4) flight branch (level%10==5): g_nFlightLevelActive=1, ChangeSpyroState(SPYRO_ST_FLY), zero pitch/turn accums. Level 0x40 also seeds g_nGnastyLootFallRefZCap. (5) camera: fill g_anCameraActiveTargetParams from g_anCameraParamFollowBehind ([2]=0x600), retarget g_pCameraTargetParams, ResetCameraStateToTarget. (6) gamestate=0, clear letterbox. (7) rebase 7 world chunk-anim subtables. (8) actor table: g_pActorListBase + pool setup (g_pActorPoolFreeHead/ DynBase, aux pool, capacity=(top-base)/0x70). (9) pickup table rebase. (10) g_pActorSpatialGridBase + relocation list. (11) attract demo (g_nDemoMode != 0): srand(1234), Spyro placed from g_anDemoStartPose[g_nDemoIndex*4], g_nDemoActive=1, g_pDemoPadCursor = the bundle's recorded pad stream (playback, mode 1) or a zero-filled buffer at 0x80600000 (record, mode 2). (12/13) two actor passes applying g_anLevelKillBitmapTable[level*8] vs g_anRunningKillBitmap (despawn/hide). (14) snapshot running -> committed bitmap. (15) zero g_anLevelTriggerStateSlots. (16) reset emit list (base/cursor/terminator/sentinel). (17) ResetWorldParticleTables. (18) full setup + non-flight: g_pSparxActor = (*g_pfnLevelSpawnActor)(ACTOR_TYPE_SPARX,0), InitHudCounters(1). (19) HandleMusicCommand(g_nCurrentMusicTrack,1). */
 void BuildLoadedLevelRuntime(int fullSetup);
@@ -116,8 +116,8 @@ int LookupCosine(int angle);
 /* 0x80016d08: Wraps GTE LZCS/LZCR. Returns 0 if input is 0, otherwise returns (0x1f - leading_zeros), i.e. the bit position of the most-significant set bit. Used by lighting/depth normalization in DrawPortalsAndStaticActors. */
 int CountLeadingZeros(int x);
 
-/* 0x80016d2c: Composes Euler rotation (packed yaw/pitch/roll in *euler, low to high byte) onto the base 3x3 rotation matrix in base (or identity if base is NULL). Uses GTE rtv0 with the sine LUT at g_anCosineLut and cosine LUT at g_anSineLut to multiply axis-by-axis. Writes the composed matrix (5 packed words) to mtx. */
-void ApplyEulerRotation(unsigned char *euler, MATRIX *mtx, MATRIX *base);
+/* 0x80016d2c: Composes Euler rotation (packed yaw/pitch/roll in *euler, low to high byte) onto the base 3x3 rotation matrix in base (or identity if base is NULL). Uses GTE rtv0 with the sine LUT at g_anCosineLut and cosine LUT at g_anSineLut to multiply axis-by-axis. Writes the composed matrix (5 packed words: the 3x3 shorts of a MATRIX) to mtx. */
+void ApplyEulerRotation(unsigned char *euler, int *mtx, int *base);
 
 /* 0x80017048: Rotates the 3-vector at src by the 3x3 rotation matrix at mtx using GTE rtir. The Y and Z components are negated on both input and output (PSX screen-up coord convention). Result written to dst. */
 void RotateVectorByMatrix(int *mtx, int *src, int *dst);
@@ -663,7 +663,7 @@ int FindWorldFloorBelowPoint(int *pos);
 #define CONTACT_PUSH_OUT      1 /* push pos out of the first solid shape (written back); returns that actor */
 #define CONTACT_ALL           2 /* keep testing past solid shapes */
 #endif
-int DispatchActorContactAtSphere(int *pos, int radius, int events, int hitBits, Actor *self, int mode);
+Actor *DispatchActorContactAtSphere(int *pos, int radius, unsigned int *events, int hitBits, Actor *self, int mode);
 
 /* 0x8004eba8: Renders the per-level static-actor mesh list. Stage 1: Z-cull each mesh chunk via gte_rtps_b, building visible-chunk pointer list at &g_pOtDepthBinHead0. Stage 2: project triangle verts through GTE, build 5-bit frustum outcodes, emit POLY_F3 (0x84) / POLY_F4 (0x86) flat prims into the OT bump buffer at g_pPrimBufferWriteCursor. lod = actor mesh index into g_pWorldRenderMeshIndexTable table (or -1 to walk the flat list at g_pWorldRenderMeshChunkArray..+g_nWorldRenderMeshChunkCount*4). viewMtx/worldMtx = camera rot/translate matrices. Called once at the end of DrawPortalsAndStaticActors, and by Gamestate01_09/04_05/Cutscene_Draw. */
 void EmitStaticActorMeshList(int zone, MATRIX *viewMtx, MATRIX *worldMtx);
@@ -768,6 +768,9 @@ void InitSoundEngine(void);
 unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner, unsigned int mode, unsigned char *pPlaying);
 
 /* 0x80056200: Stops one SPU voice by index. index = voice index (low 7 bits, 0..23). Sets bit index of g_dwSpuPendingKeyOff (pending hardware-keyoff mask), then if mode is 2 or 4: resets the table row at &g_aSpuVoiceRows + (idx*0x1c) — writes 0x7f to the busy-marker via the writeback pointer at +0x18, zeros owner-key +0x00 + writeback ptr +0x18 + interp delta +0x14, sets flags ushort +0x0e=0x40 (idle), sets byte +0x0d=0xff (alignment). The 24-entry × 0x1c table at &g_aSpuVoiceRows holds per-voice runtime state. Sole caller: DragonRescue_Update. */
+#ifndef VOICE_RELEASE
+#define VOICE_RELEASE 4 /* StopSoundVoiceByIndex: key off and free the voice row (2 does the same; other modes only key off) */
+#endif
 void StopSoundVoiceByIndex(int index, int mode);
 
 /* 0x800562a4: Stops all SPU voices whose owner-key at +0x00 matches actor. Walks all 24 voice rows at &g_aSpuVoiceRows (stride 0x1c); for each match: kills the voice (resets row to idle as in StopSoundVoiceByIndex) when mode==1, or when mode==2 AND the looping flag (bit 0x100 of flags +0x0e) is set. OR's the kill bitmask into g_dwSpuPendingKeyOff at end. Callers: ChangeSpyroState (stops all Spyro-owned voices on state change), ResetSpyroEntity (full-stop on respawn/level-load). */
@@ -812,10 +815,10 @@ void DrawDragonRescueAuraStar(void);
 /* 0x80058b68: Resets the world particle/billboard tables on level load. Zeroes the 16-entry x 0x24-byte emitter array at &g_abWorldSparkleParticleTable (used by DrawWorldParticleEmitters/DrawWorldSparkleParticles) and the 8-entry x 0x18-byte billboard array at &g_abWorldRotatingBillboardTable (used by DrawWorldRotatingBillboards). Sole caller BuildLoadedLevelRuntime (level loader meat). */
 void ResetWorldParticleTables(void);
 
-/* 0x80058ba8: Per-frame driver for the world particle/billboard emitter pair. Calls DrawWorldSparkleParticles (sparkle/particle emitter — iterates &g_abWorldSparkleParticleTable 16-entry table, each entry = 9 ints, emits GTE-projected POLY_FT3+POLY_GT3 chains scaled by distance) then DrawWorldRotatingBillboards(g_nFrameStep) (16-entry billboard rotator at &g_abBillboardBasisVectors+0x10..0x800771b0, advances per-entry phase by g_nFrameStep, emits POLY_GT4 with cos/sin tables from g_anSineLut/cc78). Called by ComposeFrameScene. */
+/* 0x80058ba8: Per-frame driver for the world particle/billboard emitter pair. Calls DrawWorldSparkleParticles (sparkle/particle emitter — iterates &g_abWorldSparkleParticleTable 16-entry table, each entry = 9 ints, emits GTE-projected POLY_FT3+POLY_GT3 chains scaled by distance) then DrawWorldRotatingBillboards(g_nFrameStep) (16-entry billboard rotator at &g_anBillboardBasisVectors+0x10..0x800771b0, advances per-entry phase by g_nFrameStep, emits POLY_GT4 with cos/sin tables from g_anSineLut/cc78). Called by ComposeFrameScene. */
 void DrawWorldParticleEmitters(void);
 
-/* 0x80058bd8: Precomputes the 3 camera-space basis vectors used by the billboard sprite emitter. Calls WorldToCameraRotate on the X-axis (0x1000,0,0), Y-axis (0,0x1000,0), and inverted Z-axis (0,0,-0x1000), packs each result via VectorToSVector to the 3 SVECTOR slots at &g_abBillboardBasisVectors/e6/ec. Sole caller GamestateUpdate; runs once per frame after the camera matrix is committed so the billboard emitter can splat sprites with consistent screen-facing orientation. */
+/* 0x80058bd8: Precomputes the 3 camera-space basis vectors used by the billboard sprite emitter. Calls WorldToCameraRotate on the X-axis (0x1000,0,0), Y-axis (0,0x1000,0), and inverted Z-axis (0,0,-0x1000), packs each result via VectorToSVector to the 3 SVECTOR slots at &g_anBillboardBasisVectors/e6/ec. Sole caller GamestateUpdate; runs once per frame after the camera matrix is committed so the billboard emitter can splat sprites with consistent screen-facing orientation. */
 void ComputeBillboardBasisVectors(void);
 
 /* 0x80058c7c: Seeds the 6-component light-direction vector pair at g_anWorldLightDirVec..dc with the fixed default {-0x9d5, -0x99a, -0xb20, -0x9d5, -0x99a, -0xb20} (twice the same vector — likely two light slots sharing the world default). Called by level-init paths before RotateLightVectorXZ tweaks the vector per-frame. */
@@ -946,9 +949,8 @@ undefined4 ApplySpuVoiceAttrRange(uint *param_1, uint param_2, uint param_3, int
 /* 0x8005d6b8: Computes the SPU pitch register value from a note delta — PSY-Q SpuFsetNToP equivalent. Each note is packed as (semitone, fraction-of-semitone) pairs; delta = (param_3*128 + param_4) - (param_1*128 + param_2) gives 128ths of a semitone. Divides by 0x600 (=12 semitones * 128 = one octave) into octave count + intra-octave remainder. Base pitch 0x1000 shifts left (positive delta = higher) or right (negative) by octave count. Within the octave, multiplies repeatedly by 0x103b (=4155 ≈ 4096 * 2^(1/12), the semitone ratio in 12.0 fixed point) for each 32-unit chunk of fractional remainder, then linearly interpolates the last 5 bits. Result clamped to 0x3fff. Sole caller: ApplySpuVoiceAttrRange (when SpuVoiceAttr.note differs from sample_note). */
 uint ComputeSpuPitchFromNoteDelta(uint param_1, uint param_2, uint param_3, uint param_4);
 
-/* 0x8005d9ec: PSY-Q SpuGetAllKeysStatus equivalent. Fills param_1[0..23] with each voice's key/envelope status code: 0 = SPU_OFF (key clear, env=0); 1 = SPU_ON (key set, env>0); 2 = SPU_ON_ENV_OFF (key clear, env still > 0 — release tail); 3 = SPU_OFF_ENV_ON (key set, env=0 — attack ramp). Per voice: reads envelope short at (SPU register base + 0x10*idx + 0xc) and probes live key-on mask g_dwSpuLiveKeyOnMask bit idx. Sole caller: SyncSoundVoicesWithHardware (drift-reconciliation probe). */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined GetAllSpuVoiceKeyStatus(undefined1 *param_1);
+/* 0x8005d9ec: PSY-Q SpuGetAllKeysStatus equivalent. Fills status[0..23] with each voice's key/envelope status code: 0 = SPU_OFF (key clear, env=0); 1 = SPU_ON (key set, env>0); 2 = SPU_ON_ENV_OFF (key clear, env still > 0 — release tail); 3 = SPU_OFF_ENV_ON (key set, env=0 — attack ramp). Per voice: reads envelope short at (SPU register base + 0x10*idx + 0xc) and probes live key-on mask g_dwSpuLiveKeyOnMask bit idx. Sole caller: SyncSoundVoicesWithHardware (drift-reconciliation probe). */
+void GetAllSpuVoiceKeyStatus(char *status);
 
 /* 0x8005da74: Write L/R volume registers for one SPU voice and flush. Masks each volume short to 0x7fff (clears phase-invert / sweep-mode high bit, keeping straight volume mode) then stores into the SPU voice registers (D_80073554 = 0x1F801C00) + vNum*0x10 (+0 = VolL, +2 = VolR). Calls DelaySpuRegisterWrite to flush to hardware. Sole caller: TickActiveSoundVoices (per-frame per-voice volume update after pan/falloff compute). */
 void SetSpuVoiceVolumeLR(int vNum, short volL, short volR);
@@ -962,8 +964,7 @@ long LoadExec(char *param_1, ulong param_2, ulong param_3);
 void _96_init(void);
 
 /* 0x8005db4c: BIOS A0:0x72 stub (_96_remove) — issues `li t2,0xa0 / jr t2 / _li t1,0x72`. PSY-Q convention: deinit CD-ROM filesystem (releases BIOS file-system event handlers + interrupt hooks). Called by ResetCallback during libapi master init so the callback subsystem can re-arm everything from a known-clear state. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined Bios96Remove(void);
+void Bios96Remove(void);
 
 void DeliverEvent(ulong param_1, ulong param_2);
 
@@ -1058,12 +1059,10 @@ undefined1 *InitDmaCallbackTable(void);
 undefined FUN_8005e8ac(undefined4 *param_1, int param_2);
 
 /* 0x8005ea94: PSY-Q SetDefDrawEnv (ex-SetDefaultDisplayEnv — old name had Draw/Disp SWAPPED). Fills a DRAWENV head: clip rect (x,y,w,h), ofs=(x,y), tw cleared, tpage=10, dtd=1, dfe = h within display (NTSC h<=0x100 / PAL h<=0x120 via GetGraphType), isbg=0, r0/g0/b0=0. Does not touch dr_env. Called by InitGraphicsHardware on the DB DRAWENVs at g_abFrameDrawEnv0/g_abFrameDrawEnv1. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined InitDefaultDrawEnv(undefined2 *param_1, undefined2 param_2, undefined2 param_3, undefined2 param_4, int param_5);
+DRAWENV *InitDefaultDrawEnv(DRAWENV *env, int x, int y, int w, int h);
 
 /* 0x8005eb4c: PSY-Q SetDefDispEnv (ex-SetDefaultDrawEnv — old name had Draw/Disp SWAPPED). Fills a 0x14-byte DISPENV: disp rect (x,y,w,h), screen rect zeroed, isinter/isrgb24/pad cleared. Called by InitGraphicsHardware on the DB DISPENVs at g_abFrameDispEnv0/g_abFrameDispEnv1. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined InitDefaultDispEnv(undefined2 *param_1, undefined2 param_2, undefined2 param_3, undefined2 param_4, undefined2 param_5);
+DISPENV *InitDefaultDispEnv(DISPENV *env, int x, int y, int w, int h);
 
 /* 0x8005eba0: libgpu accessor returning g_nGraphType — the cached "graph type" / video-mode flag (0 = NTSC, non-zero = PAL). Set by libgpu init based on console region. Used by SetDefaultDisplayEnv to choose the 256-vs-288-scanline interlace boundary, and by PutDispEnv to pick the GP1 display-mode word. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
@@ -1080,8 +1079,7 @@ void SetDrawMove(DR_MOVE *p, RECT *rect, int x, int y);
 int ResetGraph(int mode);
 
 /* 0x8005f53c: PSY-Q SetGraphDebug equivalent — sets the libgpu debug verbosity level (g_bGpuDebugLevel), returns previous level. When non-zero, prints "SetGraphDebug:level:%d,type:%d reverse:%d\n" via PTR_WritePrintf_80074a60. Higher levels enable extra "%s:bad RECT" / "GPU timeout:..." diagnostics in libgpu primitive packers and watchdog paths. Called by InitGraphicsHardware (typically with level=0 to disable verbose mode in shipped builds). */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined1 SetGraphDebug(char param_1);
+int SetGraphDebug(int level);
 
 void SetDispMask(int on);
 
@@ -1091,19 +1089,17 @@ int DrawSync(int mode);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined ValidateGpuRect(undefined4 param_1, short *param_2);
 
-/* 0x8005f8f8: libgpu ClearImage. Fills VRAM rect param_1 with packed 24-bit color (R=param_2, G=param_3, B=param_4) via the GPU command-dispatch table at PTR_PTR_80074a5c. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined ClearImage(short *param_1, uint param_2, uint param_3, uint param_4);
+/* 0x8005f8f8: libgpu ClearImage. Fills VRAM rect with packed 24-bit color (r, g, b) via the GPU command-dispatch table at PTR_PTR_80074a5c. */
+int ClearImage(RECT *rect, int r, int g, int b);
 
-/* 0x8005fa28: libgpu LoadImage. Transfers CPU memory at param_2 into VRAM rect param_1 via the GPU command-dispatch table at PTR_PTR_80074a5c. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined LoadImage(short *param_1, undefined4 param_2);
+/* 0x8005fa28: libgpu LoadImage. Transfers CPU memory at p into VRAM rect via the GPU command-dispatch table at PTR_PTR_80074a5c. */
+int LoadImage(RECT *rect, void *p);
 
 /* 0x8005fa8c: libgpu StoreImage. Transfers VRAM rect r out to CPU memory at dst via the GPU command-dispatch table at PTR_PTR_80074a5c. */
 void StoreImage(RECT *r, void *dst);
 
 /* 0x8005faf0: libgpu MoveImage. VRAM-to-VRAM rect copy: source rect (RECT *)rect, destination (x=x, y=y). Returns -1 if source rect has zero width or height. */
-void MoveImage(short *rect, unsigned int x, int y);
+int MoveImage(RECT *rect, int x, int y);
 
 void DrawOTag(void *ot);
 
@@ -1111,9 +1107,8 @@ void PutDrawEnv(void *env);
 
 DISPENV *PutDispEnv(DISPENV *env);
 
-/* 0x80060670: libgpu SetDrawMode primitive. Initializes DR_MODE at param_1 (tag length = 2 words): code[0] = GP0(0xe1) draw-mode word built from dfe (force-bg, param_2), dtd (dither, param_3) and tpage bits (param_4); code[1] = clip-area word from optional RECT* param_5 (NULL = no clip). */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined SetDrawMode(int param_1, int param_2, int param_3, uint param_4, byte *param_5);
+/* 0x80060670: libgpu SetDrawMode primitive. Initializes the DR_MODE at p (tag length = 2 words): code[0] = GP0(0xe1) draw-mode word built from dfe (force-bg), dtd (dither) and the tpage bits; code[1] = clip-area word from the optional RECT *tw (NULL = no clip). */
+void SetDrawMode(void *p, int dfe, int dtd, int tpage, RECT *tw);
 
 /* 0x800608e0: libgpu SetDrawEnv: packs a DRAWENV (RECT clip + offset + tpage + dtd + isbg + RGB clear color) into a primitive chain at param_1: GP0(0xe3) area-TL + GP0(0xe4) area-BR + GP0(0xe5) offset + GP0(0xe1) drawmode + GP0(0xe2) texwin + GP0(0xe6) + optional 0x02 background-fill rect. Length byte set to 7 (or 10 with bg fill). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
@@ -1202,9 +1197,8 @@ undefined FUN_80062648(void);
 
 void FlushCache(void);
 
-/* 0x800626f8: libc memcpy: byte copy of param_3 bytes from param_2 to param_1. Returns dest (or NULL if dest is NULL). */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined1 *memcpy(undefined1 *param_1, undefined1 *param_2, int param_3);
+/* 0x800626f8: libc memcpy: byte copy of n bytes from src to dst. Returns dest (or NULL if dest is NULL). */
+void *memcpy(void *dst, const void *src, unsigned int n);
 
 /* 0x8006272c: libc rand(): g_dwRandSeed = g_dwRandSeed * 0x41C64E6D + 0x3039; returns bits 16..30 (0..0x7FFF), not a full 32-bit value. Seeded by srand. */
 unsigned int GetRandomU32(void);
@@ -1212,8 +1206,8 @@ unsigned int GetRandomU32(void);
 /* 0x8006275c: libc srand: sets g_dwRandSeed. */
 void srand(unsigned int seed);
 
-/* 0x8006276c: libc strlen clone. Returns 0 for NULL pointer; otherwise length of null-terminated string at param_1. */
-int strlen(char *param_1);
+/* 0x8006276c: libc strlen clone. Returns 0 for NULL pointer; otherwise length of null-terminated string at s. Declared with the builtin's signature so gcc does not warn; no game caller's codegen depends on the return signedness. */
+unsigned int strlen(const char *s);
 
 int WritePrintf(char *fmt, ...);
 
@@ -1227,7 +1221,7 @@ undefined WriteChar(byte param_1);
 
 long write(long param_1, void *param_2, long param_3);
 
-/* 0x80062fd4: libc sprintf clone (PSY-Q libapi). Writes formatted output to buf from format string fmt with varargs starting at param_3. Supports %d/%i/%u/%s/%x/%X/%o/%p/%c/%n with flags '-' '+' ' ' '#' '0' and width.precision (use '*' for varargs). Calls strlen, memchr, and memmove (memcpy-like byte copy). */
+/* 0x80062fd4: libc sprintf clone (PSY-Q libapi). Writes formatted output to buf from format string fmt with the varargs after fmt. Supports %d/%i/%u/%s/%x/%X/%o/%p/%c/%n with flags '-' '+' ' ' '#' '0' and width.precision (use '*' for varargs). Calls strlen, memchr, and memmove (memcpy-like byte copy). */
 int sprintf(char *buf, char *fmt, ...);
 
 /* 0x80063830: libc memmove: overlap-safe byte copy. Picks ascending vs descending direction by comparing src<dst. Called from sprintf's %s/%c padding paths. */
@@ -1282,8 +1276,7 @@ undefined4 CdSyncCallback(undefined4 param_1);
 undefined4 CdReadyCallback(undefined4 param_1);
 
 /* 0x80063c48: libcd CdControl: 3-retry wrapper around CdCommandSync. Saves the ready callback (0x80074e34), optionally issues a CdlSetloc (sub-cmd 2) for commands that need a location (gated by 0x80074dac[cmd] non-zero), then issues the real command. Restores the callback before returning. Returns 1 on success, 0 if all 3 retries fail. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined4 CdControl(byte param_1, undefined1 *param_2, undefined1 *param_3);
+int CdControl(unsigned char com, unsigned char *param, unsigned char *result);
 
 /* 0x80063d80: libcd CdControlF: like CdControl but aborts any in-progress command first by issuing CdlNop (sub-cmd 1) when 0x80074e44 & 0x10 is set. Suppresses the sync callback during the abort + optional CdlSetloc preamble, restores it for the actual command issue, and uses CdCommandSync mode=1. Returns 1 on success, 0 after 3 retries. */
 int CdControlForce(unsigned char com, char *param);
@@ -1293,8 +1286,7 @@ int CdControlForce(unsigned char com, char *param);
 int CdControlBlocking(int com, char *param, char *result);
 
 /* 0x80063ff0: libcd CdMix: sets CD-DA volume mixing (CdlATV*). Wraps FUN_80065108 which writes 4 bytes (L→Lspu, L→Rspu, R→Lspu, R→Rspu) into CDIO mixer registers via index-2/index-3 register switching. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined4 CdMix(undefined1 *param_1);
+int CdMix(unsigned char *vol);
 
 /* 0x80064010: libcd CdGetSector: synchronous DMA read of one sector to (buf, nword). Wraps FUN_8006570c which programs DMA channel 3 with CHCR=0x11000000 (sync read), waits for status bit 0x40, then DICR ACK. Returns true (iVar1 == 0). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
@@ -1362,13 +1354,11 @@ undefined4 FUN_8006580c(undefined4 param_1, uint param_2);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 CdReadStart(int param_1);
 
-/* 0x8006606c: libcd CdRead public API. Configures per-sector size (0x200/0x246/0x249 by mode bits 0x30), saves prior callbacks, pauses any in-flight command, then calls CdReadStart(0). Returns true on success. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-bool CdRead(undefined4 param_1, undefined4 param_2, uint param_3);
+/* 0x8006606c: libcd CdRead public API. Configures per-sector size (0x200/0x246/0x249 by mode bits 0x30), saves prior callbacks, pauses any in-flight command, then calls CdReadStart(0). Returns 1 on success. */
+int CdRead(int sectors, void *buf, int mode);
 
 /* 0x8006623c: libcd CdReadCallback: installs the data-arrival callback for libcd reads at 0x80075144. Distinct from CdSyncCallback/CdReadyCallback — this one is invoked per sector by the CdRead state machine (CdReadStart saves and restores it around the actual read). Returns previous; NULL disables. */
-/* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined4 CdReadCallback(undefined4 param_1);
+void *CdReadCallback(void *func);
 
 /* 0x80066254: Sony SDK internal — libcd read-break callback install (sets g_anCdReadModeBlock). Returns previous. Called by CdInit with 0 to clear the slot. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
@@ -1504,7 +1494,7 @@ undefined firstfile2(void);
 char *strcat(char *param_1, char *param_2);
 
 /* 0x8006887c: libc strcmp: null-terminated byte compare. Returns (unsigned char) diff at first mismatch, 0 on equal, with NULL handling: NULL == NULL = 0, NULL < non-NULL. */
-int strcmp(byte *param_1, byte *param_2);
+int strcmp(const char *a, const char *b);
 
 long _card_info(long chan);
 

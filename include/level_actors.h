@@ -37,7 +37,9 @@ extern int g_nSpyroWorldPosY;
 extern Actor *g_pActorListBase;                              /* level actor pool */
 extern Actor *g_pActorPoolDynBase;                           /* end of the level actor pool */
 extern void (*g_pfnLevelBeginActorCutscene)(Actor *actor);
-extern void (*g_pfnLevelEmitParticles)(int count, int type, int *pos, void *effectArg);
+/* pos: a world vec3, or the Actor * for actor-anchored types; effectArg: a
+ * colour / radius / life word, or a velocity pointer cast to int (EmitEffect). */
+extern void (*g_pfnLevelEmitParticles)(int count, int type, void *pos, int effectArg);
 extern void (*g_pfnLevelEndFlightRun)(void);           /* LevelN_FlightEndHook: crash, hazard, fall, time-out */
 extern Actor *(*g_pfnLevelSpawnActor)(int type, Actor *parent);
 extern Actor *g_pSparxActor;                     /* Sparx, or null when absent */
@@ -88,7 +90,7 @@ extern signed char g_bSpyroRequestYaw; /* g_abSpyroRequestEuler[2]: requested ya
 #define CONTACT_PUSH_OUT      1 /* push pos out of the first solid shape (written back); returns that actor */
 #define CONTACT_ALL           2 /* keep testing past solid shapes */
 #endif
-extern int DispatchActorContactAtSphere(int *pos, int radius, int events, int hitBits, Actor *self, int mode);
+extern Actor *DispatchActorContactAtSphere(int *pos, int radius, unsigned int *events, int hitBits, Actor *self, int mode);
 extern void GetActorAttachPoint(Actor *actor, int slot, int *pos);
 #ifndef STEER_NO_BLOCK
 #define STEER_NO_BLOCK 0xFF /* blockA / blockB: no blocked heading */

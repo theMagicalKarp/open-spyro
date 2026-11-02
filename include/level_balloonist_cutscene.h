@@ -20,7 +20,7 @@ extern void ComputeCameraToTargetAngle(int *target);
 
 extern int FindGroundHeightBelow(int *pos, int depth);
 
-extern void PlaySoundEffect(int sampleId, int owner, int mode, int pPlaying);
+extern unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner, unsigned int mode, unsigned char *pPlaying);
 
 extern void StopAllSoundExceptMask(int mask);
 

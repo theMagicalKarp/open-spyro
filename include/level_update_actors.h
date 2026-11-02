@@ -912,20 +912,9 @@ typedef struct GuardPairState {
 } GuardPairState;
 
 /* Case 165 -- post guard. */
-typedef struct PostPoint {
-  int x, y, z, pad;
-} PostPoint;
-
-typedef struct PostPath {
-  unsigned char count; /* 0x00 number of points */
-  unsigned char sel;   /* 0x01 point in use */
-  char pad02[4];
-  short dir; /* 0x06 walking direction, +1 or -1 */
-  PostPoint pts[2]; /* 0x08 */
-} PostPath;
 
 /* Index of the path point nearest the actor (written to *idx). */
-extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *out_index);
+extern int FindNearestPathPointToActor(Actor *actor, PathData *path, int *out_index);
 
 /* Path tweens used by the patrol/post classes. */
 #ifndef TWEEN_FLY
@@ -934,7 +923,7 @@ extern int FindNearestPathPointToActor(Actor *actor, PostPath *path, int *out_in
 extern int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legs, int flags);
 
 typedef struct PostState {
-  PostPath *path; /* 0x00 */
+  PathData *path; /* 0x00 */
   int mode;       /* 0x04 enum PostGuardPost */
   int timer;      /* 0x08 */
   int heading;    /* 0x0C knock-back heading */
@@ -943,14 +932,14 @@ typedef struct PostState {
   int flag;       /* 0x18 */
   short spinX;    /* 0x1C */
   short spinY;    /* 0x1E */
-  int sub;        /* 0x20 */
+  int sub;        /* 0x20 enum PostGuardHop */
   int phase;      /* 0x24 enum PostGuardAmbush */
   int partner;    /* 0x28 index into g_pActorListBase */
 } PostState;
 
 /* Case 166 -- path patroller. */
 typedef struct PatrolState {
-  PostPath *path; /* 0x00 */
+  PathData *path; /* 0x00 */
   int mode;       /* 0x04 */
   int flag;       /* 0x08 */
   int near;       /* 0x0C */
@@ -1110,7 +1099,7 @@ typedef struct SentinelState {
 #define SENTINEL_F_AIM 8     /* standing: watches for Spyro inside `range` */
 
 
-extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist, int cap, int contactRadius, int maxTurn, int stallAngle, int f);
+extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist, int cap, int contactRadius, int maxTurn, int stallAngle, int *smoothVel);
 
 extern int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius, int speed, int contact, int clamp, int limit, int *f);
 
@@ -1118,7 +1107,7 @@ typedef struct CannonState {
   int link;            /* 0x00 index of the actor it wakes on arrival */
   int vel[3];          /* 0x04 */
   int timer;           /* 0x10 */
-  unsigned char *path; /* 0x14 */
+  PathData *path; /* 0x14 */
   int init;            /* 0x18 1 = aim the barrel along the path */
 } CannonState;
 
@@ -1139,11 +1128,6 @@ typedef struct RoamingCritterState {
 } RoamingCritterState;
 
 /* Type 370: Doctor Shemp's guard. */
-typedef struct {
-  char pad00[0x38];
-  int posX; /* 0x38 */
-  int posY; /* 0x3C */
-} GuardTarget;
 
 typedef struct ShempGuardState {
   int mode;           /* 0x00 0 = patrol, 1 = hold near target */
@@ -1159,9 +1143,9 @@ typedef struct ShempGuardState {
   int watch;          /* 0x28 index into g_pActorListBase */
   int guard;          /* 0x2C index into g_pActorListBase */
   int done;           /* 0x30 */
-  GuardTarget *target; /* 0x34 */
+  PathData *target;   /* 0x34 path it pivots along; node 3 is the point it tests Spyro against */
   int timer38;        /* 0x38 */
-  unsigned char *path; /* 0x3C */
+  PathData *path; /* 0x3C */
   int boxA[6];        /* 0x40 */
   int boxB[6];        /* 0x58 */
 } ShempGuardState;
@@ -1202,7 +1186,7 @@ typedef struct RunnerState {
  * face a friend (mode 1), waits on a partner (mode 2) or watches a leader
  * (mode 3); knocked back when hit, and runs off when Spyro gets close. */
 typedef struct VillagerState {
-  unsigned char *path; /* 0x00 wander path { count, cur }, points at +8 */
+  PathData *path; /* 0x00 wander path */
   int chunkAnim;             /* 0x04 world chunk-anim handle (GetWorldChunkAnimState) */
   int friend;          /* 0x08 actor it faces / sparkles at, -1 = none */
   int link;            /* 0x0C partner actor */
@@ -1239,7 +1223,7 @@ typedef struct LeaderState {
  * while SHEPHERD_IDLE, flanks or chases Spyro in SHEPHERD_CHASE (also by post),
  * climbs onto and drops off a partner (0x10-0x12), and walks home (0x64). */
 typedef struct ShepherdState {
-  unsigned char *path; /* 0x00 { count, cur }, points at +8 */
+  PathData *path; /* 0x00 */
   int home[3];         /* 0x04 */
   int heading;         /* 0x10 -1 = take the actor's own */
   int post;            /* 0x14 enum ShepherdPost (from its spawn record) */
@@ -1283,7 +1267,7 @@ typedef struct SorcererState {
   int timer;           /* 0x00 */
   int count;           /* 0x04 bolts thrown this volley */
   int target;          /* 0x08 actor index */
-  unsigned char *path; /* 0x0C { count, cur }, points at +8 */
+  PathData *path; /* 0x0C */
   int mode;            /* 0x10 SorcererRole */
   int pad14;
   int range;           /* 0x18 */
@@ -1304,7 +1288,7 @@ typedef struct BoltState {
  * winds up (state 7). */
 typedef struct CaptainState {
   int home[3];         /* 0x00 */
-  unsigned char *path; /* 0x0C { count, cur }, points at +8 */
+  PathData *path; /* 0x0C */
   int mode;            /* 0x10 enum CaptainPost */
   int heading;         /* 0x14 -1 = take the actor's own */
   int knockSpeed;      /* 0x18 */
@@ -1337,15 +1321,8 @@ typedef struct Debris {
   int life;            /* 0x0C */
 } Debris;
 
-typedef struct FlyPath {
-  unsigned char count; /* 0x00 */
-  unsigned char cur;   /* 0x01 */
-  char pad02[4];
-  short dir;           /* 0x06 +1 forward, -1 back */
-} FlyPath;
-
 typedef struct LootThiefState {
-  FlyPath *path;  /* 0x00 escape path */
+  PathData *path;  /* 0x00 escape path */
   int onRing;     /* 0x04 */
   int roll;       /* 0x08 */
   int rollVel;    /* 0x0C */
@@ -1356,15 +1333,15 @@ typedef struct LootThiefState {
   int laps;       /* 0x28 */
   int init;       /* 0x2C */
   int chunkAnim;        /* 0x30 world chunk-anim handle (GetWorldChunkAnimState) */
-  FlyPath *cur;   /* 0x34 */
-  FlyPath *ring;  /* 0x38 */
-  FlyPath *pathA; /* 0x3C */
-  FlyPath *pathB; /* 0x40 */
+  PathData *cur;   /* 0x34 */
+  PathData *ring;  /* 0x38 */
+  PathData *pathA; /* 0x3C */
+  PathData *pathB; /* 0x40 */
   int leg;        /* 0x44 */
 } LootThiefState;
 
 typedef struct CritterState {
-  FlyPath *path;    /* 0x00 */
+  PathData *path;    /* 0x00 */
   int attach;       /* 0x04 actor it rides, 0 = none */
   int hasHome;      /* 0x08 */
   int mode;         /* 0x0C enum LootCritterRun */
@@ -1543,7 +1520,7 @@ typedef struct ShempState {
   int pad14;           /* 0x14 */
   int turnDir;           /* 0x18 passed by address to SteerActorYawTowardSpyro */
   int phase;           /* 0x1C enum ShempPhase */
-  unsigned char *path; /* 0x20 byte 0 = node count */
+  PathData *path; /* 0x20 */
   unsigned char *cam;  /* 0x24 camera anchors, one per phase */
   int node[3];         /* 0x28 path node per phase */
   int flag;            /* 0x34 */
@@ -1592,6 +1569,9 @@ extern int ComputeLobVelocityZ(int *from, int *to, int speed, int g, int *out);
 extern void ChangeSpyroState(int state);
 extern void ComputeCameraOrbitOffset(int *out);
 extern void ProjectWorldPointGTEUnscaled(int *out, int *s);
+#ifndef VOICE_RELEASE
+#define VOICE_RELEASE 4 /* StopSoundVoiceByIndex: key off and free the voice row (2 does the same; other modes only key off) */
+#endif
 extern void StopSoundVoiceByIndex(int ch, int mode);
 extern void TallyFlightTarget(int tallyClass);
 extern void UpdateCameraEulerAngles(void);
@@ -1611,7 +1591,7 @@ extern PortalCamPath *volatile g_pPortalCamPathData;
 extern struct CutscenePath *g_pPathTableHead;
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
-extern int FindNearestPathPointToSpyro(FlyPath *path, int *nearest);
+extern int FindNearestPathPointToSpyro(PathData *path, int *nearest);
 extern int g_anCameraPos[];
 extern int g_nCameraActiveTargetPitch;
 extern int g_nCameraActiveTargetDistance;

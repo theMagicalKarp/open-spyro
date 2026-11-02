@@ -78,7 +78,9 @@ typedef struct ShardState {
 
 extern int FindGroundHeightBelow(int *pos, int drop);
 
-extern void (*g_pfnLevelEmitParticles)(int count, int type, int *pos, int effectArg);
+/* pos: a world vec3, or the Actor * for actor-anchored types; effectArg: a
+ * colour / radius / life word, or a velocity pointer cast to int (EmitEffect). */
+extern void (*g_pfnLevelEmitParticles)(int count, int type, void *pos, int effectArg);
 
 extern short g_anCosineLut[]; /* unit-circle x table (8-bit angle) */
 

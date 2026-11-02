@@ -69,6 +69,9 @@ extern void ScaleVector3Sat(int *out, int *src, int scale);
 extern int SignedAngleDelta12(int a, int b);
 extern void sprintf();                                       /* format string */
 extern int StepAngle8Toward(int to, int from, int maxStep);
+#ifndef VOICE_RELEASE
+#define VOICE_RELEASE 4 /* StopSoundVoiceByIndex: key off and free the voice row (2 does the same; other modes only key off) */
+#endif
 extern void StopSoundVoiceByIndex(int ch, int mode);
 extern void StoreImage();                                    /* MoveImage */
 extern int strlen();                                         /* text glyph count */

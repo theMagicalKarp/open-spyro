@@ -30,12 +30,13 @@
 /* Spyro's world block as the actor arms read it (SPY.posX, SPY.state, ...). */
 #define SPY g_anSpyroWorldPosBlock
 
-/* Node accessors for paths held as byte pointers (type 286). */
-#define PATH_X(p, i) (*(int *)((p) + ((i) << 4) + 0x8))
+/* Node accessors in the byte-address form (p + (i << 4) + 8) some clones
+ * need (A214); p is a PathData * or a byte pointer. */
+#define PATH_X(p, i) (*(int *)((unsigned char *)(p) + ((i) << 4) + 0x8))
 
-#define PATH_Y(p, i) (*(int *)((p) + ((i) << 4) + 0xC))
+#define PATH_Y(p, i) (*(int *)((unsigned char *)(p) + ((i) << 4) + 0xC))
 
-#define PATH_Z(p, i) (*(int *)((p) + ((i) << 4) + 0x10))
+#define PATH_Z(p, i) (*(int *)((unsigned char *)(p) + ((i) << 4) + 0x10))
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
 #define TYPE_DESC(a, id)                                                     \
@@ -125,7 +126,7 @@
 
 /* Case 402 -- cannon ball: fired from a barrel, then flown along a path
  * whose header is { count, cur } and whose points follow at +8 (PATH_X). */
-#define PATH_PT(p, i) ((int *)((p) + (((i) << 4) + 0x8)))
+#define PATH_PT(p, i) ((int *)((unsigned char *)(p) + (((i) << 4) + 0x8)))
 
 /* The anim bytes 0x3C..0x3F read as one word. */
 #define ANIM_WORD(a) (*(int *)&(a)->anim)
@@ -233,7 +234,8 @@
 
 #define FLY_Y(p, i) (*(int *)((char *)(p) + ((i) << 4) + 0xC))
 
-#define RUN_FLAGS(p) (*(int *)((p) + ((p)[1] << 4) + 0x14))
+/* The current node's speed word, which the path runner reads as flags. */
+#define RUN_FLAGS(p) (*(int *)((unsigned char *)(p) + ((p)->cur << 4) + 0x14))
 
 #define ROCK(st) (*(Actor **)((char *)(st) + 0x40))
 

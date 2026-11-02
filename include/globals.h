@@ -657,10 +657,11 @@ extern int g_nVblankTickCount;               /* 0x800758c8 */
 extern struct Actor *(*g_pfnLevelSpawnActor)(int type, struct Actor *parent); /* 0x800758cc */
 extern unsigned char g_abWorldBalloonistState[6];         /* 0x800758d0 per-homeworld balloonist progress, enum BalloonistState (actor_cutscene.h): unmet / talked / travel unlocked (ResetLevelState seeds [0] = 2, the unlock cheat fills all 2, homeworld UpdateActors steps it and picks the dialogue page) */
 extern int g_nPadActAlignedFlag;             /* 0x800758e0 */
-/* 0x800758e4: the level's EmitParticles(count, type, pos, effectArg). Left
- * unprototyped: effectArg is a velocity vector, a packed colour, a scale or a
- * flag depending on the effect, and main passes each shape. */
-extern void (*g_pfnLevelEmitParticles)();
+/* 0x800758e4: the level's EmitParticles(count, type, pos, effectArg). pos is
+ * a world vec3 or, for actor-anchored effects, the Actor *; effectArg is a
+ * packed colour, a scale or a flag, or a velocity pointer cast to int,
+ * depending on the effect (EmitEffect, emit_record.h). */
+extern void (*g_pfnLevelEmitParticles)(int count, int type, void *pos, int effectArg);
 extern int g_nSparxFoodCount;                /* 0x800758e8: type-15 pickups collected; every 20 become an extra life (UpdateHudCounters) */
 extern int g_nLevelSelectWorldIndex;         /* 0x800758ec */
 extern int g_nLevelSelectSubIndex;           /* 0x800758f0 */
@@ -813,7 +814,7 @@ extern struct Actor *g_pDragonRescueStatueActor;           /* 0x800770b8: the fr
 extern struct Actor *g_pDragonRescueSpyroMirrorActor;      /* 0x800770bc: Spyro's stand-in (ACTOR_TYPE_RESCUE_SPYRO) */
 extern struct Actor *g_pDragonRescueSourceActor;           /* 0x800770c0: the dragon statue being rescued (BeginDragonRescue) */
 extern int g_anWorldLightDirVec[6];                     /* 0x800770c8 */
-extern unsigned char g_abBillboardBasisVectors[18];              /* 0x800770e0 */
+extern short g_anBillboardBasisVectors[9];              /* 0x800770e0 */
 extern int g_nLightSweepAngle;                          /* 0x800770f4 */
 extern unsigned char g_abWorldRotatingBillboardTable[128];       /* 0x80077114 */
 extern int g_anLevelDragonsRescued[36];                 /* 0x800772d8 */

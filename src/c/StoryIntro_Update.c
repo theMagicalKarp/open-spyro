@@ -18,7 +18,7 @@
    shared light rotation + timer tick. */
 
 void StoryIntro_Update(void) {
-  VECTOR delta;
+  int delta[4];
   RECT clear;
 
   if (g_nTitleMode == TITLE_MODE_STORY_INTRO) {
@@ -79,7 +79,7 @@ void StoryIntro_Update(void) {
     } else if (g_nStoryIntroSubstate == STORY_INTRO_FLY) {
       int *pos = g_anSpyroWorldPosBlock;
 
-      CopyVector(&delta, (VECTOR *)pos);
+      CopyVector(delta, pos);
       if (g_nStoryIntroTimer < 0x50) {
         pos[0] = LookupCosine((-g_nStoryIntroTimer << 10) / 80) + 0x1780;
         g_nSpyroWorldPosY =
@@ -114,10 +114,10 @@ void StoryIntro_Update(void) {
         g_nSpyroWorldPosZ = 0x4000;
       }
 
-      SubtractVector(&delta, (VECTOR *)g_anSpyroWorldPos, &delta);
+      SubtractVector(delta, g_anSpyroWorldPos, delta);
       g_abSpyroPersistentEuler[1] =
-          ArcTan2(VectorLength(&delta, VEC_LEN_XY), delta.vz, ATAN_ANGLE8);
-      g_abSpyroPersistentEuler[2] = ArcTan2(delta.vx, delta.vy, ATAN_ANGLE8);
+          ArcTan2(VectorLength(delta, VEC_LEN_XY), delta[2], ATAN_ANGLE8);
+      g_abSpyroPersistentEuler[2] = ArcTan2(delta[0], delta[1], ATAN_ANGLE8);
       AdvanceSpyroAnimFrame(3);
       TickSpyroAnimLayer1();
       TickSpyroAnimLayer2();

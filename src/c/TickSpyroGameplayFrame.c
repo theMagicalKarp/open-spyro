@@ -11,12 +11,6 @@
    frame * 4, whose AnimationHeader.m_FrameWords word is the footstep sfx key
    and its top byte the sfx id.  The header pointer is re-read per use
    (volatile) — the original never keeps it live across the sfx-id test. */
-/* Byte distances from the held euler base (g_abSpyroPersistentEuler,
-   0x80078a64) to the two matrices it builds: g_anSpyroBodyMtx (0x80078a8c)
-   and g_anSpyroComposedBodyMtx (0x80078c20). */
-#define EULER_TO_BODY_MTX 0x28
-#define EULER_TO_COMPOSED_MTX 0x1BC
-
 /* ...and from the held footstep-key base (g_adwSpyroFootstepSfxBlock,
    0x80078cbc) back to g_anSpyroWorldPos (the sound owner) and on to
    g_bSpyroSfxVoiceMarker. */
@@ -149,7 +143,7 @@ void TickSpyroGameplayFrame(void) {
     if (fallFrames[0] == 0) {
       camRecord = g_anSpyroDeathCamRecordBlock;
       CopyVector(camRecord, g_anCameraPos);
-      ActivateScriptedCameraView((int)(camRecord - (0x18 / 4)));
+      ActivateScriptedCameraView(camRecord - (0x18 / 4));
     }
     fallFrames[0] += g_nFrameStep;
   }
@@ -162,7 +156,8 @@ done:
     ptr = ANIM_SLOT(mesh);
     rec = frame + ptr;
     if (g_dwSpyroFootstepPrimarySfxKey != FRAME_KEY(rec)) {
-      PlaySoundEffect(sfx[0], SPY_FROM_ANIM_PREV(animBlock, 0), SFX_MODE_FLAT,
+      PlaySoundEffect(sfx[0], (Actor *)SPY_FROM_ANIM_PREV(animBlock, 0),
+                      SFX_MODE_FLAT,
                       SPY_FROM_ANIM_PREV(animBlock, SPYB_VOICE_MARKER));
     }
   }
@@ -177,9 +172,9 @@ done:
     ptr = ANIM_SLOT(g_bSpyroAnimLayer1Prev * 4 + (int)g_apActorMeshTable);
     rec = g_bSpyroAnimLayer1FramePrev * 4 + ptr;
     if (g_dwSpyroFootstepSecondarySfxKey != FRAME_KEY(rec)) {
-      PlaySoundEffect(sfx[1], (unsigned char *)footstep - FOOTSTEP_TO_SPYRO_POS,
-                      SFX_MODE_FLAT,
-                      (unsigned char *)footstep + FOOTSTEP_TO_VOICE_MARKER);
+      PlaySoundEffect(
+          sfx[1], (Actor *)((unsigned char *)footstep - FOOTSTEP_TO_SPYRO_POS),
+          SFX_MODE_FLAT, (unsigned char *)footstep + FOOTSTEP_TO_VOICE_MARKER);
     }
   }
   key2 =

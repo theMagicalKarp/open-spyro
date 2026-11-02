@@ -17,7 +17,7 @@ void InitCdSystem(void) {
   mode = CdlModeSpeed;
   CdInit();
   CdControl(CdlSetmode, &mode, 0);
-  CdReadCallback((unsigned int)CdReadCompleteCallback);
+  CdReadCallback(CdReadCompleteCallback);
   g_anMusicStreamBlock[0] = MUSIC_ST_IDLE;
   g_nLastCdMusicCommand = 0;
   g_nPendingMusicCommand = 0;

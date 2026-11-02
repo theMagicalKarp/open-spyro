@@ -243,6 +243,9 @@ extern char *g_pRenderScratchRegionBase;
 extern int g_nTitleSceneSectorOffset;
 
 extern int GetRandomU32(void);
+#ifndef VOICE_RELEASE
+#define VOICE_RELEASE 4 /* StopSoundVoiceByIndex: key off and free the voice row (2 does the same; other modes only key off) */
+#endif
 extern void StopSoundVoiceByIndex(int, int);
 extern void RestartStalledCdRead(void);
 extern int CallCdSync(int, int);

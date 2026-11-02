@@ -180,7 +180,8 @@ void DragonRescue_Update(void) {
       g_pEmitListWriteCursor = g_pEmitListBase;
       ((unsigned char *)g_pEmitListBase)[1] = 0xFF;
       StopAllSoundExceptMask(1 << SRC->voiceRow);
-      PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_SWEEP), 0, SFX_MODE_PANNED, &GB[11]);
+      PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_SWEEP), 0, SFX_MODE_PANNED,
+                      (unsigned char *)&GB[11]);
     }
   } break;
   case DRAGON_RESCUE_SWEEP:
@@ -476,9 +477,9 @@ void DragonRescue_Update(void) {
         CopyVector(&MIRROR->posX, g_anSpyroWorldPos);
         MIRROR->otBias = five;
         InsertActorIntoSpatialGrid(MIRROR);
-        StopSoundVoiceByIndex(GB[11], 4);
+        StopSoundVoiceByIndex(GB[11], VOICE_RELEASE);
         PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_STATUE), 0, SFX_MODE_PANNED,
-                        &GB[11]);
+                        (unsigned char *)&GB[11]);
         ACTOR_RAW(SRC, int, posZ) += 0x78;
         DespawnActorRecord(SRC);
       }
@@ -537,8 +538,8 @@ void DragonRescue_Update(void) {
         ((struct { int v; } *)&g_nSfxOverrideFlags)->v = 1;
         ((struct { short v; } *)&g_nSfxOverrideVolL)->v = 0x3FFF;
         ((struct { short v; } *)&g_nSfxOverrideVolR)->v = 0x3FFF;
-        StopSoundVoiceByIndex(GB[11], 4);
-        PlaySoundEffect(0, 0, SFX_MODE_PANNED, &GB[11]);
+        StopSoundVoiceByIndex(GB[11], VOICE_RELEASE);
+        PlaySoundEffect(0, 0, SFX_MODE_PANNED, (unsigned char *)&GB[11]);
         CopyWords(*(void *volatile *)g_apSampleBankEntriesBlock, save, 0x14);
         g_nDragonRescueAudioFiredFlag = 1;
       }
@@ -698,12 +699,12 @@ void DragonRescue_Update(void) {
       g_bHudDragonRollPhase = 0;
       CopyVector((int *)ang, &g_pDragonRescueStatueActor->posX);
       ((int *)ang)[2] += 0x40;
-      g_pfnLevelEmitParticles(0x20, EMIT_RESCUE_SWIRL, (int *)ang, 0);
+      g_pfnLevelEmitParticles(0x20, EMIT_RESCUE_SWIRL, ang, 0);
       CopyVector(g_anDragonRescueAuraStarAnchor, (int *)ang);
       DespawnActorRecord(STATUE);
       DespawnActorRecord(MIRROR);
       PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_DEPART), 0, SFX_MODE_PANNED,
-                      &GB[11]);
+                      (unsigned char *)&GB[11]);
     }
   } break;
   case DRAGON_RESCUE_COUNT:
@@ -729,7 +730,8 @@ void DragonRescue_Update(void) {
       GB[5] = 0;
       g_pEmitListWriteCursor = g_pEmitListBase;
       ((unsigned char *)g_pEmitListBase)[1] = 0xFF;
-      PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_FADE), 0, SFX_MODE_PANNED, &GB[11]);
+      PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_FADE), 0, SFX_MODE_PANNED,
+                      (unsigned char *)&GB[11]);
     }
     break;
   case DRAGON_RESCUE_FADE_OUT: {

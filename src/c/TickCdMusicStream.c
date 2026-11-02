@@ -156,7 +156,7 @@ void TickCdMusicStream(void) {
     g_nSpuCommonCdVolumeR = vol;
   spu:
     *(unsigned int *)g_abSpuCommonAttr = 0xC0;
-    SetSpuCommonAttr((unsigned int *)g_abSpuCommonAttr);
+    SetSpuCommonAttr(g_abSpuCommonAttr);
   } else {
     if (g_adwMusicStreamBlock[0] & MUSIC_ST_FADING) {
       g_adwMusicStreamBlock[0] = MUSIC_ST_PAUSED;

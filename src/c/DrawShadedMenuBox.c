@@ -9,7 +9,7 @@ void DrawShadedMenuBox(int left, int right, int top, int bottom) {
   ModePolyF4 *prim;
 
   prim = g_pPrimBufferWriteCursor;
-  SetDrawMode((int)g_pPrimBufferWriteCursor, 1, 0, 0x40, (unsigned char *)0);
+  SetDrawMode(g_pPrimBufferWriteCursor, 1, 0, 0x40, 0);
   AddPrimToOT((int)prim);
   prim->poly.tag = 0x5000000;
   prim->poly.code = 0x2a;

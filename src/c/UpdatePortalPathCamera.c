@@ -16,9 +16,9 @@
    to 0x1000) << 7 >> 12; at the path ends the step is capped by
    g_nPortalCamPathMaxStep. (0x8003740c, 776 bytes.) */
 void UpdatePortalPathCamera(void) {
-  VECTOR tangent;
-  VECTOR toPlayer;
-  VECTOR toWaypoint;
+  int tangent[4];
+  int toPlayer[4];
+  int toWaypoint[4];
   PortalCamPath *path;
   int idx;
   int dist;
@@ -27,8 +27,8 @@ void UpdatePortalPathCamera(void) {
   int quot;
 
   idx = PATH->index;
-  SubtractVector(&toWaypoint, PATH->point[idx].pos, g_anCameraPos);
-  dist = VectorLength(&toWaypoint, VEC_LEN_XYZ);
+  SubtractVector(toWaypoint, PATH->point[idx].pos, g_anCameraPos);
+  dist = VectorLength(toWaypoint, VEC_LEN_XYZ);
   if (dist < 0x200) {
     if (g_nPortalCamPathReverseFlag != 0) {
       path = PATH;
@@ -51,26 +51,26 @@ void UpdatePortalPathCamera(void) {
   }
 
   if (step != 0) {
-    SubtractVector(&toPlayer, g_anSpyroWorldPos, g_anCameraPos);
-    span = VectorLength(&toPlayer, VEC_LEN_XYZ);
+    SubtractVector(toPlayer, g_anSpyroWorldPos, g_anCameraPos);
+    span = VectorLength(toPlayer, VEC_LEN_XYZ);
     step = 0;
     if (span > 0x400) {
       step = (span - 0x400) * 4;
       if (span < step) {
         step = span;
       }
-      ScaleVector3ByRatio(&toPlayer, span, step);
+      ScaleVector3ByRatio(toPlayer, span, step);
       span = step;
       if (g_nPortalCamPathReverseFlag != 0) {
-        SubtractVector(&tangent, g_pPortalCamPathData->point[idx].pos,
+        SubtractVector(tangent, g_pPortalCamPathData->point[idx].pos,
                        g_pPortalCamPathData->point[idx + 1].pos);
       } else {
-        SubtractVector(&tangent, g_pPortalCamPathData->point[idx].pos,
+        SubtractVector(tangent, g_pPortalCamPathData->point[idx].pos,
                        g_pPortalCamPathData->point[idx - 1].pos);
       }
-      SetVector3Magnitude(&tangent, 0x1000);
-      quot = (tangent.vx * toPlayer.vx + tangent.vy * toPlayer.vy +
-              tangent.vz * toPlayer.vz) /
+      SetVector3Magnitude(tangent, 0x1000);
+      quot = (tangent[0] * toPlayer[0] + tangent[1] * toPlayer[1] +
+              tangent[2] * toPlayer[2]) /
              span;
       step = abs(quot);
       if (step < 0) {
@@ -88,8 +88,8 @@ void UpdatePortalPathCamera(void) {
   }
 
   span = dist;
-  ScaleVector3ByRatio(&toWaypoint, span, step * g_nFrameStep);
-  AddVector(g_anCameraPos, g_anCameraPos, &toWaypoint);
+  ScaleVector3ByRatio(toWaypoint, span, step * g_nFrameStep);
+  AddVector(g_anCameraPos, g_anCameraPos, toWaypoint);
   g_nCameraTargetInverted = ComputeCameraToTargetAngle(g_anCameraPos);
   UpdateCameraEulerAngles();
 }

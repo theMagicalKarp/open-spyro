@@ -111,9 +111,9 @@ void TickSpyroFlameAttack(void) {
           AddVector(pos, pos, (int *)(((char *)strike) - 0x198));
           ApplyActiveGteRotation(tip + 6, vel);
           if (g_nSpyroFlameVariant != 0) {
-            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, pos, vel);
+            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, pos, (int)vel);
           } else {
-            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, pos, vel);
+            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, pos, (int)vel);
           }
         }
         {
@@ -123,9 +123,9 @@ void TickSpyroFlameAttack(void) {
           AddVector(pos, pos, (int *)(((char *)mtx) - 0x1C8));
           ApplyActiveGteRotation(tip + 6, vel);
           if (g_nSpyroFlameVariant != 0) {
-            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, pos, vel);
+            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, pos, (int)vel);
           } else {
-            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, pos, vel);
+            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, pos, (int)vel);
           }
         }
       } else if ((g_dwPadPressed & PAD_CIRCLE) &&

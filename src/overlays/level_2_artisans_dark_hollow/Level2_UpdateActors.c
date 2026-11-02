@@ -37,7 +37,7 @@
  *   - `do { } while (0);` barriers at the head of cases 165/166 and in 412's
  *     hit block keep cse from folding `spy` into the absolute address.
  *   - Case 165 has two `mode = 3; continue;` tails (jump.c merges them);
- *     one shared tail changes the register choice for the `sel` store.
+ *     one shared tail changes the register choice for the `cur` store.
  */
 
 #include "actor.h"
@@ -115,25 +115,25 @@ void Level2_UpdateActors(void) {
 
   /* Scratch vectors shared by several cases. */
   int svA[3];
-  int svB[3];
-  int svC[3];
+  int eggArcBase[3];
+  int eggArcOffset[3];
   int svD[3];
-  int svE[3];
+  int eggViewPos[3];
   int svF[3];
   int acc[3][3];
-  int svG[3];
-  int svH[3];
-  int svI[3];
+  int bouncePos[3];
+  int bounceNormal[3];
+  int homingStep[3];
   int svJ[3];
   int idx[2];
   int svR[3];
   int svS[3];
   int svK[3];
-  int svL[3];
+  int shardTwinkle[3];
   int svN[3];
-  int svO[3];
-  int svP[3];
-  int svQ[3];
+  int letterSide[3];
+  int letterSlot[3];
+  int letterSwingRest[3];
 
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
    * pass. */
@@ -189,10 +189,10 @@ void Level2_UpdateActors(void) {
 
         if (dist < 0x4000) {
           if (!(tick & 3)) {
-            g_pfnLevelEmitParticles(1, EMIT_RISING_SPIRAL, &actor->posX, (void *)tick);
+            g_pfnLevelEmitParticles(1, EMIT_RISING_SPIRAL, &actor->posX, tick);
           }
         } else if ((tick & 0xF) < 8 && !(tick & 3)) {
-          g_pfnLevelEmitParticles(1, EMIT_RISING_SPIRAL_SMEAR, &actor->posX, (void *)tick);
+          g_pfnLevelEmitParticles(1, EMIT_RISING_SPIRAL_SMEAR, &actor->posX, tick);
         }
       }
 
@@ -522,7 +522,7 @@ void Level2_UpdateActors(void) {
 
       if ((unsigned int)(actor->mode - 2) < 3) {
         AimCameraStickTowardPoint(&actor->posX);
-        g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, (int *)0x602080);
+        g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, 0x602080);
       }
 
       switch (actor->mode) {
@@ -587,12 +587,12 @@ void Level2_UpdateActors(void) {
         st->phase += g_nFrameStep;
 
         if (st->phase < 0x40) {
-          SVectorToVectorShl2(svB, st->centre);
-          SVectorToVectorShl2(svC, st->apex);
-          SubtractVector(svC, svC, svB);
-          ScaleVector3Sat(svC, svC, st->phase);
-          RShiftVector3(svC, 6);
-          AddVector(&actor->posX, svB, svC);
+          SVectorToVectorShl2(eggArcBase, st->centre);
+          SVectorToVectorShl2(eggArcOffset, st->apex);
+          SubtractVector(eggArcOffset, eggArcOffset, eggArcBase);
+          ScaleVector3Sat(eggArcOffset, eggArcOffset, st->phase);
+          RShiftVector3(eggArcOffset, 6);
+          AddVector(&actor->posX, eggArcBase, eggArcOffset);
           actor->rotZ += g_nFrameStep * 4;
         } else {
           CopyVector(svD, &spy->posX);
@@ -636,9 +636,9 @@ void Level2_UpdateActors(void) {
       }
 
       case EGG_COLLECTED: {
-        SubtractVector(svE, &actor->posX, &CAM.posX);
-        WorldToCameraRotate(svE, svE);
-        g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
+        SubtractVector(eggViewPos, &actor->posX, &CAM.posX);
+        WorldToCameraRotate(eggViewPos, eggViewPos);
+        g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, eggViewPos, 0);
         g_nCinematicActive = 0;
         ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
@@ -661,7 +661,7 @@ void Level2_UpdateActors(void) {
       ShardState *st = actor->state;
 
       if (st->life <= 0 || actor->drawn == 0) {
-        g_pfnLevelEmitParticles(8, EMIT_STREAK_BURST, &actor->posX, (int *)0x10);
+        g_pfnLevelEmitParticles(8, EMIT_STREAK_BURST, &actor->posX, 0x10);
         DespawnActorRecord(actor);
         continue;
       }
@@ -699,7 +699,7 @@ void Level2_UpdateActors(void) {
         svD[0] = GetRandomU32() & 3;
         svD[1] = GetRandomU32() & 3;
         svD[2] = 0x14;
-        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, svD);
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, (int)svD);
       }
 
       st->life -= 1;
@@ -884,22 +884,22 @@ void Level2_UpdateActors(void) {
           int *at;
           int dist;
 
-          ScaleVector3Sat(svG, (int *)st, g_nFrameStep);
-          RShiftVector3(svG, 1);
-          dist = VectorLength(svG, VEC_LEN_XYZ);
+          ScaleVector3Sat(bouncePos, (int *)st, g_nFrameStep);
+          RShiftVector3(bouncePos, 1);
+          dist = VectorLength(bouncePos, VEC_LEN_XYZ);
 
           if (dist >= 0xDD) {
-            ScaleVector3ByRatio(svG, dist, 0xDC);
+            ScaleVector3ByRatio(bouncePos, dist, 0xDC);
           }
 
           at = &actor->posX;
-          AddVector(svG, at, svG);
+          AddVector(bouncePos, at, bouncePos);
 
           if (st->vel[2] >= -0xDB) {
             st->vel[2] -= g_nFrameStep * 5;
           }
 
-          if (svG[2] < 0) {
+          if (bouncePos[2] < 0) {
             if (actor->type != ACTOR_TYPE_EXTRA_LIFE && actor->type != ACTOR_TYPE_SPARX_FOOD) {
               CollectPickupActor(actor);
             }
@@ -907,9 +907,9 @@ void Level2_UpdateActors(void) {
             continue;
           }
 
-          svG[2] += 0xF0;
+          bouncePos[2] += 0xF0;
 
-          if (CollideSphereWithWorldAndActors(svG, 0xF0, 0xF0) != 0) {
+          if (CollideSphereWithWorldAndActors(bouncePos, 0xF0, 0xF0) != 0) {
             if (GetGroundTriggerRegionType() == 0) {
               if (actor->type != ACTOR_TYPE_EXTRA_LIFE && actor->type != ACTOR_TYPE_SPARX_FOOD) {
                 CollectPickupActor(actor);
@@ -918,24 +918,24 @@ void Level2_UpdateActors(void) {
               continue;
             }
 
-            CopyVector(svH, &g_anCollisionProbeVec);
+            CopyVector(bounceNormal, &g_anCollisionProbeVec);
             CopyVector(at, &g_anCollisionResolvedPos);
             actor->posZ -= 0xF0;
 
             if (st->bounce == 0) {
-              int floor = FindGroundHeightBelow(svG, 0x400);
+              int floor = FindGroundHeightBelow(bouncePos, 0x400);
               int slope =
-                  (signed char)ArcTan2_8bit(svH[2], VectorLength(svH, VEC_LEN_XY));
+                  (signed char)ArcTan2_8bit(bounceNormal[2], VectorLength(bounceNormal, VEC_LEN_XY));
 
-              if ((svG[2] - 0x190) < floor && slope < 0x18) {
+              if ((bouncePos[2] - 0x190) < floor && slope < 0x18) {
                 actor->subMode = COLLECT_REST;
-                CopyVector(at, svG);
+                CopyVector(at, bouncePos);
                 actor->posZ = floor;
                 if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
                   st->lean = -ArcTan2_8bit(
-                      IntegerSqrt((svH[0] * svH[0]) + (svH[2] * svH[2])),
-                      svH[1]);
-                  st->roll = -ArcTan2_8bit(svH[2], svH[0]);
+                      IntegerSqrt((bounceNormal[0] * bounceNormal[0]) + (bounceNormal[2] * bounceNormal[2])),
+                      bounceNormal[1]);
+                  st->roll = -ArcTan2_8bit(bounceNormal[2], bounceNormal[0]);
                   if (st->lean != 0 || st->roll != 0) {
                     actor->rotZ = 0;
                   }
@@ -955,16 +955,16 @@ void Level2_UpdateActors(void) {
             g_nSfxOverrideVolR = 0x3CCC >> (3 - st->bounce);
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
 
-            if (ReflectVectorOffNormal((int *)st, svH, (int *)st) != 0) {
+            if (ReflectVectorOffNormal((int *)st, bounceNormal, (int *)st) != 0) {
               st->bounce -= 1;
               st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 0x20;
               st->vel[1] = (st->vel[1] >> 3) + (GetRandomU32() & 0x3F) - 0x20;
               st->vel[2] = (st->vel[2] >> 2) + (GetRandomU32() & 0xF);
             }
           } else {
-            svG[2] -= 0xF0;
-            CopyVector(at, svG);
-            FindGroundHeightBelow(svG, 0x10000);
+            bouncePos[2] -= 0xF0;
+            CopyVector(at, bouncePos);
+            FindGroundHeightBelow(bouncePos, 0x10000);
             EncodeCachedVecToActorDirCode(actor);
           }
 
@@ -1009,15 +1009,15 @@ void Level2_UpdateActors(void) {
           if (st->timer >= 0x20) {
             CopyVector(&actor->posX, &SPY.posX);
           } else {
-            SubtractVector(svI, &spy->posX, (int *)st);
-            RShiftVector3(svI, 5);
+            SubtractVector(homingStep, &spy->posX, (int *)st);
+            RShiftVector3(homingStep, 5);
 
-            if (VectorLength(svI, VEC_LEN_XYZ) >= 0x1E1) {
+            if (VectorLength(homingStep, VEC_LEN_XYZ) >= 0x1E1) {
               CopyVector(&actor->posX, &spy->posX);
               st->timer = 0x20;
             } else {
-              ScaleVector3Sat(svI, svI, st->timer);
-              AddVector(&actor->posX, (int *)st, svI);
+              ScaleVector3Sat(homingStep, homingStep, st->timer);
+              AddVector(&actor->posX, (int *)st, homingStep);
               actor->posZ += (short)(g_anSineLut[st->timer * 4] / 12);
             }
           }
@@ -1075,8 +1075,8 @@ void Level2_UpdateActors(void) {
             if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
               PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
               RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-              g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)8);
-              g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (int *)0x10);
+              g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 8);
+              g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x10);
               if (g_nExtraLives < 0x63) {
                 g_nExtraLives += 1;
               }
@@ -1106,20 +1106,20 @@ void Level2_UpdateActors(void) {
     /* Save-prompt host (SaveHostState). */
     case ACTOR_TYPE_SAVE_HOST: {
       SaveHostState *st = actor->state;
-      Actor *trigger = &g_pActorListBase[st->armer];
-      Actor *rider = &g_pActorListBase[st->anchor];
+      Actor *armer = &g_pActorListBase[st->armer];
+      Actor *anchor = &g_pActorListBase[st->anchor];
 
       switch (actor->mode) {
       case SAVEHOST_WAIT_AWAY:
         actor->collision = 0;
-        if (ApproxDist2D(&rider->posX, &SPY.posX) < 0xA01) {
+        if (ApproxDist2D(&anchor->posX, &SPY.posX) < 0xA01) {
           break;
         }
         actor->mode = SAVEHOST_WAIT_ARMED;
         continue;
 
       case SAVEHOST_WAIT_ARMED:
-        if (trigger->mode >= ACTOR_MODE_DORMANT) {
+        if (armer->mode >= ACTOR_MODE_DORMANT) {
           actor->mode = SAVEHOST_HIDDEN;
           st->timer = 0x10;
           st->baseZ = actor->posZ;
@@ -1136,7 +1136,7 @@ void Level2_UpdateActors(void) {
             int drop = height - SPY.posZ;
 
             if (drop > 0 ? drop < 0x800 : (SPY.posZ - height) < 0x800) {
-              if (st->prompted == 0 || rider->mode == 1) {
+              if (st->prompted == 0 || anchor->mode == 1) {
                 int *at = &actor->posX;
 
                 st->prompted = 0;
@@ -1147,7 +1147,7 @@ void Level2_UpdateActors(void) {
                 actor->cullRadius = 0x20;
                 actor->mode = SAVEHOST_POP_IN;
                 actor->scale = 0x60;
-                g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, at, (int *)0xC);
+                g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, at, 0xC);
                 RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
                 FindGroundHeightBelow(at, 0x1000);
                 EncodeCachedVecToActorDirCode(actor);
@@ -1177,10 +1177,10 @@ void Level2_UpdateActors(void) {
         st->timer += 1;
         actor->posZ = st->baseZ + (LookupCosine(st->timer << 7) >> 6);
 
-        if ((rider->mode == 0 ||
-             (rider->mode == 2 && rider->subMode >= 0x10)) &&
-            ApproxDist2D(&rider->posX, &spy->posX) < 0x400 &&
-            (height = rider->posZ - rider->floorOffset, drop = height - SPY.posZ,
+        if ((anchor->mode == 0 ||
+             (anchor->mode == 2 && anchor->subMode >= 0x10)) &&
+            ApproxDist2D(&anchor->posX, &spy->posX) < 0x400 &&
+            (height = anchor->posZ - anchor->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
             (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
           actor->mode = SAVEHOST_POP_OUT;
@@ -1200,12 +1200,12 @@ void Level2_UpdateActors(void) {
         st->wanderTimer -= 1;
         if (st->wanderTimer == 0) {
           int reach = (GetRandomU32() & 0x3F) + 0x140;
-          int bearing = ArcTan2(spy->posX - rider->posX,
-                                      spy->posY - rider->posY, ATAN_ANGLE8);
+          int bearing = ArcTan2(spy->posX - anchor->posX,
+                                      spy->posY - anchor->posY, ATAN_ANGLE8);
           int aim = (bearing + (GetRandomU32() & 0xF)) - 8;
 
           EBB_BREAK();
-          CopyVector(st->wanderTo, &rider->posX);
+          CopyVector(st->wanderTo, &anchor->posX);
           aim &= 0xFF;
           aim *= 0x10;
           actor->mode = SAVEHOST_WANDER;
@@ -1225,10 +1225,10 @@ void Level2_UpdateActors(void) {
         st->timer += 1;
         actor->posZ = st->baseZ + (LookupCosine(st->timer << 7) >> 6);
 
-        if ((rider->mode == 0 ||
-             (rider->mode == 2 && rider->subMode >= 0x10)) &&
-            ApproxDist2D(&rider->posX, &spy->posX) < 0x400 &&
-            (height = rider->posZ - rider->floorOffset, drop = height - SPY.posZ,
+        if ((anchor->mode == 0 ||
+             (anchor->mode == 2 && anchor->subMode >= 0x10)) &&
+            ApproxDist2D(&anchor->posX, &spy->posX) < 0x400 &&
+            (height = anchor->posZ - anchor->floorOffset, drop = height - SPY.posZ,
              drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
             (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
           actor->mode = SAVEHOST_POP_OUT;
@@ -1279,7 +1279,7 @@ void Level2_UpdateActors(void) {
           actor->drawn = 0;
           actor->mode = SAVEHOST_HIDDEN;
           st->timer = 0x10;
-          g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, (int *)0xC);
+          g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, 0xC);
           actor->groundCode &= ~ACTOR_GROUND_VALID;
         }
         break;
@@ -1780,27 +1780,27 @@ void Level2_UpdateActors(void) {
       case POSTGUARD_IDLE:
         switch (st->mode) {
         case POSTGUARD_POST_PICK:
-          if (ApproxDist2D(&spy->posX, &st->path->pts[0]) < 0x1C00) {
+          if (ApproxDist2D(&spy->posX, &st->path->nodes[0].x) < 0x1C00) {
             if (AbsAngleDelta8(ArcTan2(spy->posX - actor->posX,
                                             SPY.posY - actor->posY, ATAN_ANGLE8),
-                              ArcTan2(st->path->pts[0].x - actor->posX,
-                                            st->path->pts[0].y - actor->posY,
+                              ArcTan2(st->path->nodes[0].x - actor->posX,
+                                            st->path->nodes[0].y - actor->posY,
                                             ATAN_ANGLE8)) >= 0x15 ||
                 ApproxDist2D(&actor->posX, &spy->posX) >
-                    ApproxDist2D(&actor->posX, &st->path->pts[0])) {
-              st->path->sel = 0;
+                    ApproxDist2D(&actor->posX, &st->path->nodes[0].x)) {
+              st->path->cur = 0;
               actor->mode = POSTGUARD_TO_POST;
               continue;
             }
-          } else if (ApproxDist2D(&spy->posX, &st->path->pts[1]) < 0x1C00) {
+          } else if (ApproxDist2D(&spy->posX, &st->path->nodes[1].x) < 0x1C00) {
             if (AbsAngleDelta8(ArcTan2(spy->posX - actor->posX,
                                             SPY.posY - actor->posY, ATAN_ANGLE8),
-                              ArcTan2(st->path->pts[1].x - actor->posX,
-                                            st->path->pts[1].y - actor->posY,
+                              ArcTan2(st->path->nodes[1].x - actor->posX,
+                                            st->path->nodes[1].y - actor->posY,
                                             ATAN_ANGLE8)) >= 0x15 ||
                 ApproxDist2D(&actor->posX, &spy->posX) >
-                    ApproxDist2D(&actor->posX, &st->path->pts[1])) {
-              st->path->sel = 1;
+                    ApproxDist2D(&actor->posX, &st->path->nodes[1].x)) {
+              st->path->cur = 1;
               actor->mode = POSTGUARD_TO_POST;
               continue;
             }
@@ -1871,16 +1871,16 @@ void Level2_UpdateActors(void) {
       case POSTGUARD_HOP:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         switch (st->sub) {
-        case 0:
+        case POSTGUARD_HOP_REST:
           ANIM_GO(actor, 4);
           st->flag = 1;
           if (TickCountdownByFrameDelta(&st->timer, 4) && g_nActorAnimDone != 0) {
-            st->sub = 1;
+            st->sub = POSTGUARD_HOP_READY;
             st->flag = 0;
             ANIM_GO(actor, 5);
           }
           break;
-        case 1:
+        case POSTGUARD_HOP_READY:
           if (TickCountdownByFrameDelta(&st->timer, 4) &&
               ApproxDist2D(&actor->posX, &spy->posX) < 0x578) {
             int height = actor->posZ - actor->floorOffset;
@@ -1897,7 +1897,7 @@ void Level2_UpdateActors(void) {
               ANIM_GO(actor, 5);
             } else {
               st->flag = 1;
-              st->sub = 0;
+              st->sub = POSTGUARD_HOP_REST;
               st->timer = RandomIntInRange(0x8C, 0xC8);
               ANIM_BLEND(actor, 4);
             }
@@ -1930,12 +1930,12 @@ void Level2_UpdateActors(void) {
         ANIM_GO(actor, 1);
         if (TurnActorYawTowardAngle(
                 actor,
-                ArcTan2(st->path->pts[st->path->sel].x - actor->posX,
-                              st->path->pts[st->path->sel].y - actor->posY, ATAN_ANGLE8),
+                ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
+                              st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8),
                 6, 0x14, one)) {
           MoveActorAlongHeading(actor, 0x8C, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
-        if (ApproxDist2D(&actor->posX, &st->path->pts[st->path->sel]) < 0x100 ||
+        if (ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x) < 0x100 ||
             ApproxDist2D(&actor->posX, &SPY.posX) < 0xC00) {
           ANIM_BLEND(actor, 4);
           actor->mode = POSTGUARD_HOP;
@@ -1953,7 +1953,7 @@ void Level2_UpdateActors(void) {
       case POSTGUARD_SHOUT:
         ANIM_GO(actor, 7);
         if (g_nActorAnimDone != 0) {
-          st->sub = 0;
+          st->sub = POSTGUARD_HOP_REST;
           ANIM_BLEND(actor, 4);
           actor->mode = POSTGUARD_HOP;
           continue;
@@ -1987,8 +1987,8 @@ void Level2_UpdateActors(void) {
       case PCHARGER_PATROL: {
         int turned;
         int ang = ArcTan2(
-            st->path->pts[st->path->sel].x - actor->posX,
-            st->path->pts[st->path->sel].y - actor->posY, ATAN_ANGLE8);
+            st->path->nodes[st->path->cur].x - actor->posX,
+            st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8);
 
         turned = 0;
 
@@ -1997,23 +1997,23 @@ void Level2_UpdateActors(void) {
           MoveActorAlongAngle(actor, ang, 0x50, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (st->flag != 0 ||
               ApproxDist2D(&actor->posX,
-                            (int *)&st->path->pts[st->path->sel]) < 0x80) {
-            PostPath *path = st->path;
+                            &st->path->nodes[st->path->cur].x) < 0x80) {
+            PathData *path = st->path;
 
             if (path->dir == 1) {
-              if (path->sel + 1 == path->count) {
+              if (path->cur + 1 == path->count) {
                 path->dir = -path->dir;
-                st->path->sel = st->path->count - 2;
+                st->path->cur = st->path->count - 2;
                 turned = 1;
               } else {
-                path->sel = path->dir + path->sel;
+                path->cur = path->dir + path->cur;
               }
-            } else if (path->sel == 0) {
+            } else if (path->cur == 0) {
               turned = 1;
               path->dir = -path->dir;
-              st->path->sel = 1;
+              st->path->cur = 1;
             } else {
-              path->sel = path->dir + path->sel;
+              path->cur = path->dir + path->cur;
             }
           }
         } else {
@@ -2042,7 +2042,7 @@ void Level2_UpdateActors(void) {
             actor->posZ - actor->floorOffset - SPY.posZ > -0x1F4) {
           int dSpy = ApproxDist2D(&actor->posX, &((SpyroObj *)(base - 8))->posX);
           int dPost = ApproxDist2D(&actor->posX,
-                                    (int *)&st->path->pts[st->path->sel]);
+                                    &st->path->nodes[st->path->cur].x);
           int ok;
 
           if (st->near) {
@@ -2055,8 +2055,8 @@ void Level2_UpdateActors(void) {
               AbsAngleDelta8(
                   ArcTan2(spy->posX - actor->posX, spy->posY - actor->posY,
                                 ATAN_ANGLE8),
-                  ArcTan2(st->path->pts[st->path->sel].x - actor->posX,
-                                st->path->pts[st->path->sel].y - actor->posY,
+                  ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
+                                st->path->nodes[st->path->cur].y - actor->posY,
                                 ATAN_ANGLE8)) < 0x20) {
             actor->subMode = 0;
             ENTER_POSE(actor, PCHARGER_CHARGE);
@@ -2091,11 +2091,11 @@ void Level2_UpdateActors(void) {
             actor->subMode++;
           }
           if (FindNearestPathPointToActor(actor, st->path, idx) > 0x5DC) {
-            ang = ArcTan2(st->path->pts[idx[0]].x - actor->posX,
-                                st->path->pts[idx[0]].y - actor->posY, ATAN_ANGLE8);
+            ang = ArcTan2(st->path->nodes[idx[0]].x - actor->posX,
+                                st->path->nodes[idx[0]].y - actor->posY, ATAN_ANGLE8);
             if (AbsAngleDelta8(
-                    ang, ArcTan2(st->path->pts[one - idx[0]].x - actor->posX,
-                                       st->path->pts[one - idx[0]].y - actor->posY,
+                    ang, ArcTan2(st->path->nodes[one - idx[0]].x - actor->posX,
+                                       st->path->nodes[one - idx[0]].y - actor->posY,
                                        ATAN_ANGLE8)) < 0x20 &&
                 AbsAngleDelta8(ang, ArcTan2(spy->posX - actor->posX,
                                                  SPY.posY - actor->posY, ATAN_ANGLE8)) <
@@ -2107,11 +2107,11 @@ void Level2_UpdateActors(void) {
         } else {
           ANIM_GO(actor, 4);
           if (g_nActorAnimNewFrame != 0 && actor->frame == 4) {
-            PostPath *p = st->path;
+            PathData *p = st->path;
             int prev = p->count - 1;
 
-            SubtractVector(svR, (int *)&p->pts[p->sel],
-                          (int *)&p->pts[(p->sel + prev) % p->count]);
+            SubtractVector(svR, &p->nodes[p->cur].x,
+                          &p->nodes[(p->cur + prev) % p->count].x);
             ScaleVector3ByRatio(svR, VectorLength(svR, VEC_LEN_XY), 0x96);
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FORCE_STATE);
             g_nSpyroRequestVelocityZ = 0x78;
@@ -2161,7 +2161,7 @@ void Level2_UpdateActors(void) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
             for (i = 0; i < 6; i++) {
-              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, (int *)(0x8080 + (i << 24)));
+              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, (0x8080 + (i << 24)));
             }
 
             g_nLevelKeyState = KEYSTATE_CARRIED;
@@ -2379,7 +2379,7 @@ void Level2_UpdateActors(void) {
             g_pfnLevelSpawnActor(ACTOR_TYPE_SPARKLE_SHARD, actor);
           }
 
-          g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, (void *)0x18);
+          g_pfnLevelEmitParticles(0x20, EMIT_STREAK_BURST, &actor->posX, 0x18);
           g_pLockedChestReward = SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorCommittedKill(actor);
           DespawnActorRecord(actor);
@@ -2391,9 +2391,9 @@ void Level2_UpdateActors(void) {
 
         RefreshActorDerivedState(key, ACTOR_REFRESH_MATRIX);
         if (st->shake % 4 < 2) {
-          g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)key, (void *)0x8080);
+          g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, key, 0x8080);
         } else {
-          g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)key, (void *)0x5008080);
+          g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, key, 0x5008080);
         }
         break;
       }
@@ -2435,7 +2435,7 @@ void Level2_UpdateActors(void) {
       }
 
       g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
-      g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x20);
+      g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x20);
       SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
       MarkActorCommittedKill(actor);
       DespawnActorRecord(actor);
@@ -2777,7 +2777,7 @@ void Level2_UpdateActors(void) {
         svK[1] = (GetRandomU32() & 0xFE) - 0x7F;
         svK[2] = (GetRandomU32() & 0xFE) - 0x40;
         AddVector(svK, svK, &actor->posX);
-        g_pfnLevelEmitParticles(1, EMIT_TWINKLE, svK, (int *)1);
+        g_pfnLevelEmitParticles(1, EMIT_TWINKLE, svK, 1);
         st->life -= 1;
       } else {
         DespawnActorRecord(actor);
@@ -2831,11 +2831,11 @@ void Level2_UpdateActors(void) {
 
           do {
             i += 1;
-            svL[0] = (GetRandomU32() & 0xFE) - 0x7F;
-            svL[1] = (GetRandomU32() & 0xFE) - 0x7F;
-            svL[2] = (GetRandomU32() & 0xFE) - 0x40;
-            AddVector(svL, svL, &actor->posX);
-            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, svL, (int *)1);
+            shardTwinkle[0] = (GetRandomU32() & 0xFE) - 0x7F;
+            shardTwinkle[1] = (GetRandomU32() & 0xFE) - 0x7F;
+            shardTwinkle[2] = (GetRandomU32() & 0xFE) - 0x40;
+            AddVector(shardTwinkle, shardTwinkle, &actor->posX);
+            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, shardTwinkle, 1);
           } while (i < 3);
         }
 
@@ -2844,7 +2844,7 @@ void Level2_UpdateActors(void) {
       }
 
       if (actor->drawn != 0) {
-        g_pfnLevelEmitParticles(8, EMIT_STREAK_BURST, &actor->posX, (int *)0x10);
+        g_pfnLevelEmitParticles(8, EMIT_STREAK_BURST, &actor->posX, 0x10);
       }
       DespawnActorRecord(actor);
       continue;
@@ -2988,7 +2988,7 @@ void Level2_UpdateActors(void) {
     /* Life chest (LifeChestState). */
     case ACTOR_TYPE_LIFE_CHEST: {
       LifeChestState *st = actor->state;
-      Actor *rider;
+      Actor *prize;
       int i;
       int a;
       int b;
@@ -3071,9 +3071,9 @@ void Level2_UpdateActors(void) {
         break;
       }
 
-      rider = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
+      prize = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
       if (st->restMode == COLLREST_SNAP) {
-        ((CollectibleState *)rider->state)->mode = one;
+        ((CollectibleState *)prize->state)->mode = one;
       }
 
       actor->soundRange = 0x20;
@@ -3099,10 +3099,10 @@ void Level2_UpdateActors(void) {
         svN[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
         svN[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
         svN[2] = 0x18;
-        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, svN);
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)svN);
       }
 
-      g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x18);
+      g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
 
       if (actor->mode == LIFECHEST_OPEN) {
         DespawnActorRecord(st->passenger);
@@ -3172,31 +3172,31 @@ void Level2_UpdateActors(void) {
           svN[0] = (g_anCosineLut[bearing] * 3) >> 4;
           svN[1] = (g_anSineLut[bearing] * 3) >> 4;
           svN[2] = 0;
-          svO[0] = (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          svO[1] = (unsigned short)g_anSineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          svO[2] = 0;
+          letterSide[0] = (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          letterSide[1] = (unsigned short)g_anSineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          letterSide[2] = 0;
           bearing = (bearing + 0x80) & 0xFF;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
-          ScaleVector3Sat(svP, svO, st->radius - 1);
-          LShiftVector3(svO, 1);
+          ScaleVector3Sat(letterSlot, letterSide, st->radius - 1);
+          LShiftVector3(letterSide, 1);
           arm = st->radius - 1;
-          svP[2] += (g_anCosineLut[arm * 2] * 3) >> 3;
-          svQ[0] = svN[0] * g_anCosineLut[arm * 2];
-          svQ[1] = svN[1] * g_anCosineLut[arm * 2];
-          svQ[2] = 0;
+          letterSlot[2] += (g_anCosineLut[arm * 2] * 3) >> 3;
+          letterSwingRest[0] = svN[0] * g_anCosineLut[arm * 2];
+          letterSwingRest[1] = svN[1] * g_anCosineLut[arm * 2];
+          letterSwingRest[2] = 0;
           bearing = arm << 1;
           bearing = (bearing - (st->phase * 4)) & 0xFF;
-          ScaleVector3Sat(svO, svO, st->phase);
-          SubtractVector(svP, svP, svO);
+          ScaleVector3Sat(letterSide, letterSide, st->phase);
+          SubtractVector(letterSlot, letterSlot, letterSide);
           swing = &g_anCosineLut[bearing];
           actor->posX = svN[0] * *swing;
           actor->posY = svN[1] * *swing;
           actor->posZ = 0;
-          SubtractVector(&actor->posX, &actor->posX, svQ);
+          SubtractVector(&actor->posX, &actor->posX, letterSwingRest);
           RShiftVector3(&actor->posX, 0xA);
           AddVector(&actor->posX, &actor->posX, svN);
           AddVector(&actor->posX, &actor->posX, &st->parent->posX);
-          SubtractVector(&actor->posX, &actor->posX, svP);
+          SubtractVector(&actor->posX, &actor->posX, letterSlot);
           actor->posZ = actor->posZ + ((*swing * 3) >> 3) + 0x600;
         }
       } else {

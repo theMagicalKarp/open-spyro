@@ -165,7 +165,7 @@
  *     field stores (BLKmode size 0 = "conflicts with everything on that
  *     base").  That keeps the src re-read and dc read above the copy and the
  *     8600/8604 stores below it -- no barrier, no asm.  Case 4 matched from
- *     it outright (`dc = S.dc` before `S.blk = ...`).
+ *     it outright (`dc = S.drawBufB` before `S.blk = ...`).
  * 15. **`g_nWorldTimAudioChunkOffset[3]` instead of a scalar g_nWorldBundleChunkSize** for a call argument:
  *     an ARRAY_REF address goes through memory_address, so the cheap
  *     (mem (reg)) form is NOT precomputed by expand_call and the a2 load is
@@ -231,7 +231,7 @@ typedef struct {
  * each site the address form the original uses (A240). The shared headers
  * declare these differently, so they stay here. */
 extern char *volatile g_pLevelSampleBankEntries;
-extern char *g_nCdBaseLba[];
+extern int g_nCdBaseLba[];
 extern volatile int g_nCdReadInFlight[];
 extern int g_nWorldTimAudioChunkOffset[];
 extern volatile int g_nLevelArchiveChunkSize;
@@ -249,13 +249,13 @@ extern char *g_pPathTableBuffer;
 extern volatile int g_nLevelArchiveByteSize;
 
 typedef struct {
-  char *d8;
-  char *dc;
-  char *volatile e0;
-  char *volatile e4;
+  char *drawBufA;                /* 0x800785D8 g_pDrawBufA */
+  char *drawBufB;                /* 0x800785DC g_pDrawBufB */
+  char *volatile worldUnpackHead; /* 0x800785E0 g_pWorldUnpackHead */
+  char *volatile pathTableBuffer; /* 0x800785E4 g_pPathTableBuffer */
   char padE8[0x18];
-  int l600;
-  volatile int h604;
+  int levelArchiveBaseLba;           /* 0x80078600 g_nLevelArchiveBaseLba */
+  volatile int levelArchiveByteSize; /* 0x80078604 g_nLevelArchiveByteSize */
   char pad608[0x8A40 - 0x8608];
   Blk20 blk;
 } Cd85D8;
@@ -329,17 +329,17 @@ void Credits_Update(void) {
     }
     CdReadSyncSectors(g_nCdBaseLba[0], g_pDrawBufB_blk[0], g_nWorldTimAudioChunkOffset[3],
                   g_nWorldBundleChunkOffset + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], 0x258);
-    S.e0 = UnpackWorldDataChunks(g_pDrawBufB_blk[0], 1);
+    S.worldUnpackHead = UnpackWorldDataChunks((int *)g_pDrawBufB_blk[0], 1);
     {
       register char *src asm("$5");
-      S.e4 = S.e0;
-      src = S.e4;
+      S.pathTableBuffer = S.worldUnpackHead;
+      src = S.pathTableBuffer;
       g_nWorldRenderMeshChunkCount = g_nWorldCollisionTriCount;
-      S.l600 = g_nLevelArchiveChunkOffset;
-      S.h604 = g_nLevelArchiveChunkSize_n;
+      S.levelArchiveBaseLba = g_nLevelArchiveChunkOffset;
+      S.levelArchiveByteSize = g_nLevelArchiveChunkSize_n;
       g_nPortalCount = 0;
-      CdReadSyncSectors(g_nCdBaseLba[0], src, S.h604,
-                    S.l600 + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], 0x258);
+      CdReadSyncSectors(g_nCdBaseLba[0], src, S.levelArchiveByteSize,
+                    S.levelArchiveBaseLba + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], 0x258);
     }
     {
     char *e4 = g_pPathTableBuffer;
@@ -772,9 +772,9 @@ void Credits_Update(void) {
           DrawSync(0);
           CopyWords(g_pCreditsScratchBuf, g_pCreditsLoadBuf + 0x40000, g_nCreditsLoadSpan - 0x40000);
           g_pCreditsLoadBuf = g_pCreditsScratchBuf + g_nCreditsLoadSpan - 0x40000;
-          S.e0 = UnpackWorldDataChunks(g_pDrawBufB, 1);
+          S.worldUnpackHead = UnpackWorldDataChunks((int *)g_pDrawBufB, 1);
           {
-          char *dc = S.dc;
+          char *dc = S.drawBufB;
           S.blk = g_nWorldCollisionTriCount;
           g_pPathTableBuffer = dc + g_nWorldBundleChunkSize;
           }

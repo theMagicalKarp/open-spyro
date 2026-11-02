@@ -64,16 +64,16 @@ void Level0_UpdateActors(void) {
 
   /* Scratch vectors shared by several cases. */
   int svA[3];
-  int svB[3];
-  int svC[3];
+  int eggArcBase[3];
+  int eggArcOffset[3];
   int svD[3];
-  int svE[3];
+  int eggViewPos[3];
   int svF[3];
   int acc[3][3];
-  int svG[3];
-  int svH[3];
-  int svI[3];
-  int svJ[3];
+  int bouncePos[3];
+  int bounceNormal[3];
+  int homingStep[3];
+  int sparxToTarget[3];
   int svK[3];
 
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
@@ -563,7 +563,7 @@ void Level0_UpdateActors(void) {
       }
       if ((unsigned int)(actor->mode - 2) < 3) {
         AimCameraStickTowardPoint(&actor->posX);
-        g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, (void *)0x602080);
+        g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, 0x602080);
       }
 
       switch (actor->mode) {
@@ -625,12 +625,12 @@ void Level0_UpdateActors(void) {
       case EGG_TO_SPYRO:
         st->phase = st->phase + g_nFrameStep;
         if (st->phase < 0x40) {
-          SVectorToVectorShl2(svB, st->from);
-          SVectorToVectorShl2(svC, st->to);
-          SubtractVector(svC, svC, svB);
-          ScaleVector3Sat(svC, svC, st->phase);
-          RShiftVector3(svC, 6);
-          AddVector(&actor->posX, svB, svC);
+          SVectorToVectorShl2(eggArcBase, st->from);
+          SVectorToVectorShl2(eggArcOffset, st->to);
+          SubtractVector(eggArcOffset, eggArcOffset, eggArcBase);
+          ScaleVector3Sat(eggArcOffset, eggArcOffset, st->phase);
+          RShiftVector3(eggArcOffset, 6);
+          AddVector(&actor->posX, eggArcBase, eggArcOffset);
           actor->rotZ = actor->rotZ + (g_nFrameStep << 2);
         } else {
           CopyVector(svD, &SPY.posX);
@@ -671,9 +671,9 @@ void Level0_UpdateActors(void) {
         break;
 
       case EGG_COLLECTED:
-        SubtractVector(svE, &actor->posX, &CAM.posX);
-        WorldToCameraRotate(svE, svE);
-        g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
+        SubtractVector(eggViewPos, &actor->posX, &CAM.posX);
+        WorldToCameraRotate(eggViewPos, eggViewPos);
+        g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, eggViewPos, 0);
         g_nCinematicActive = 0;
         ZeroVector(&SPY.headLook);
         CommitActorKillGems(0, st->killActor);
@@ -766,11 +766,11 @@ void Level0_UpdateActors(void) {
           svD[0] = GetRandomU32() & 3;
           svD[1] = GetRandomU32() & 3;
           svD[2] = 0x14;
-          g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, svD);
+          g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, (int)svD);
         }
         st->life--;
       } else {
-        g_pfnLevelEmitParticles(8, EMIT_STREAK_BURST, &actor->posX, (void *)0x10);
+        g_pfnLevelEmitParticles(8, EMIT_STREAK_BURST, &actor->posX, 0x10);
         DespawnActorRecord(actor);
         continue;
       }
@@ -964,31 +964,31 @@ void Level0_UpdateActors(void) {
       case COLLECT_BOUNCE: {
         int speed;
 
-        ScaleVector3Sat(svG, st->vel, g_nFrameStep);
-        RShiftVector3(svG, 1);
+        ScaleVector3Sat(bouncePos, st->vel, g_nFrameStep);
+        RShiftVector3(bouncePos, 1);
 
-        speed = VectorLength(svG, VEC_LEN_XYZ);
+        speed = VectorLength(bouncePos, VEC_LEN_XYZ);
 
         if (220 < speed) {
-          ScaleVector3ByRatio(svG, speed, 220);
+          ScaleVector3ByRatio(bouncePos, speed, 220);
         }
 
-        AddVector(svG, &actor->posX, svG);
+        AddVector(bouncePos, &actor->posX, bouncePos);
 
         if (-220 < st->vel[2]) {
           st->vel[2] -= g_nFrameStep * 5;
         }
 
-        if (svG[2] < 0) {
+        if (bouncePos[2] < 0) {
           if (actor->type != ACTOR_TYPE_EXTRA_LIFE && actor->type != ACTOR_TYPE_SPARX_FOOD) {
             CollectPickupActor(actor);
           }
           DespawnActorRecord(actor);
           continue;
         } else {
-          svG[2] += 240;
+          bouncePos[2] += 240;
 
-          if (CollideSphereWithWorldAndActors(svG, 240, 240)) {
+          if (CollideSphereWithWorldAndActors(bouncePos, 240, 240)) {
             if (GetGroundTriggerRegionType() == 0) {
               if (actor->type != ACTOR_TYPE_EXTRA_LIFE && actor->type != ACTOR_TYPE_SPARX_FOOD) {
                 CollectPickupActor(actor);
@@ -997,26 +997,26 @@ void Level0_UpdateActors(void) {
               continue;
             }
 
-            CopyVector(svH, &g_anCollisionProbeVec);
+            CopyVector(bounceNormal, &g_anCollisionProbeVec);
             CopyVector(&actor->posX, &g_anCollisionResolvedPos);
             actor->posZ -= 0xF0;
 
             if (st->count == 0) {
-              int groundHeight = FindGroundHeightBelow(svG, 0x400);
+              int groundHeight = FindGroundHeightBelow(bouncePos, 0x400);
               int groundAngle =
-                  (signed char)ArcTan2_8bit(svH[2], VectorLength(svH, VEC_LEN_XY));
+                  (signed char)ArcTan2_8bit(bounceNormal[2], VectorLength(bounceNormal, VEC_LEN_XY));
 
-              if ((svG[2] - 400) < groundHeight && groundAngle < 24) {
+              if ((bouncePos[2] - 400) < groundHeight && groundAngle < 24) {
                 actor->subMode = COLLECT_REST;
-                CopyVector(&actor->posX, svG);
+                CopyVector(&actor->posX, bouncePos);
                 actor->posZ = groundHeight;
 
                 if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
 
                   st->pitch = -ArcTan2_8bit(
-                      IntegerSqrt((svH[0] * svH[0]) + (svH[2] * svH[2])),
-                      svH[1]);
-                  st->yaw = -ArcTan2_8bit(svH[2], svH[0]);
+                      IntegerSqrt((bounceNormal[0] * bounceNormal[0]) + (bounceNormal[2] * bounceNormal[2])),
+                      bounceNormal[1]);
+                  st->yaw = -ArcTan2_8bit(bounceNormal[2], bounceNormal[0]);
 
                   if (st->pitch != 0 || st->yaw != 0) {
                     actor->rotZ = 0;
@@ -1036,7 +1036,7 @@ void Level0_UpdateActors(void) {
 
               PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
 
-              if (ReflectVectorOffNormal(st->vel, svH, st->vel)) {
+              if (ReflectVectorOffNormal(st->vel, bounceNormal, st->vel)) {
                 st->count--;
 
                 st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 32;
@@ -1046,9 +1046,9 @@ void Level0_UpdateActors(void) {
             }
 
           } else {
-            svG[2] -= 240;
-            CopyVector(&actor->posX, svG);
-            FindGroundHeightBelow(svG, 0x10000);
+            bouncePos[2] -= 240;
+            CopyVector(&actor->posX, bouncePos);
+            FindGroundHeightBelow(bouncePos, 0x10000);
             EncodeCachedVecToActorDirCode(actor);
           }
         }
@@ -1088,15 +1088,15 @@ void Level0_UpdateActors(void) {
           CopyVector(&actor->posX, &SPY.posX);
         } else {
 
-          SubtractVector(svI, &SPY.posX, st->vel);
-          RShiftVector3(svI, 5);
+          SubtractVector(homingStep, &SPY.posX, st->vel);
+          RShiftVector3(homingStep, 5);
 
-          if (VectorLength(svI, VEC_LEN_XYZ) > 480) {
+          if (VectorLength(homingStep, VEC_LEN_XYZ) > 480) {
             CopyVector(&actor->posX, &SPY.posX);
             st->timer = 32;
           } else {
-            ScaleVector3Sat(svI, svI, st->timer);
-            AddVector(&actor->posX, st->vel, svI);
+            ScaleVector3Sat(homingStep, homingStep, st->timer);
+            AddVector(&actor->posX, st->vel, homingStep);
             actor->posZ += g_anSineLut[st->timer * 4] / 12;
           }
         }
@@ -1140,8 +1140,8 @@ void Level0_UpdateActors(void) {
         if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, (void *)8);
-          g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, (void *)0x10);
+          g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, 8);
+          g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, 0x10);
 
           if (g_nExtraLives < 99) {
             g_nExtraLives++;
@@ -1208,7 +1208,7 @@ void Level0_UpdateActors(void) {
                 actor->mode = SAVEHOST_POP_IN;
                 actor->scale = 0x60;
 
-                g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, (void *)0xC);
+                g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, 0xC);
 
                 RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
                 FindGroundHeightBelow(&actor->posX, 0x1000);
@@ -1335,7 +1335,7 @@ void Level0_UpdateActors(void) {
           actor->mode = SAVEHOST_HIDDEN;
           st->timer = 16;
 
-          g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, (void *)0xC);
+          g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, 0xC);
 
           actor->groundCode &= ~ACTOR_GROUND_VALID;
         }
@@ -1818,8 +1818,8 @@ void Level0_UpdateActors(void) {
           PickupState *cp = st->target->state;
           int dist;
 
-          SubtractVector(svJ, &st->target->posX, &actor->posX);
-          dist = VectorLength(svJ, VEC_LEN_XYZ);
+          SubtractVector(sparxToTarget, &st->target->posX, &actor->posX);
+          dist = VectorLength(sparxToTarget, VEC_LEN_XYZ);
 
           if (dist < 512) {
             cp->timer = 0;
@@ -1831,11 +1831,11 @@ void Level0_UpdateActors(void) {
             st->target->subMode = COLLECT_HOMING;
 
             if (st->target->type == ACTOR_TYPE_EXTRA_LIFE)
-              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_dwBurstColorExtraLife);
+              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorExtraLife);
             else if (st->target->type == ACTOR_TYPE_SPARX_FOOD)
-              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_dwBurstColorSparxFood);
+              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_dwBurstColorSparxFood);
             else
-              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, g_adwActorBurstColors[st->target->type]);
+              g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, g_adwActorBurstColors[st->target->type]);
 
             st->target = 0;
             if (!GetSoundVoiceStatusByOwner(actor, AS_PTRU8(g_pLevelSampleBankHeader)[SFX_GEM_BOUNCE])) {
@@ -1848,13 +1848,13 @@ void Level0_UpdateActors(void) {
             int dcheck = 310;
 
             if (dcheck < dist)
-              ScaleVector3ByRatio(svJ, dist, 310);
+              ScaleVector3ByRatio(sparxToTarget, dist, 310);
             else
-              ScaleVector3ByRatio(svJ, dist, 290);
+              ScaleVector3ByRatio(sparxToTarget, dist, 290);
 
-            AddVector(&actor->posX, &actor->posX, svJ);
-            TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
-            pitchAngle = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], ATAN_ANGLE8);
+            AddVector(&actor->posX, &actor->posX, sparxToTarget);
+            TurnActorYawTowardAngle(actor, ArcTan2(sparxToTarget[0], sparxToTarget[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
+            pitchAngle = ArcTan2(VectorLength(sparxToTarget, VEC_LEN_XY), sparxToTarget[2], ATAN_ANGLE8);
             actor->rotY = pitchAngle;
             actor->rotY = StepAngle8Toward(pitchAngle, 0, 0x30);
           }
@@ -1969,7 +1969,7 @@ void Level0_UpdateActors(void) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
           for (i = 0; i < 6; i++) {
-            g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, (int *)actor, (void *)(0x8080 + 0x1000000 * i));
+            g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, (0x8080 + 0x1000000 * i));
           }
 
           g_nLevelKeyState = KEYSTATE_CARRIED;
@@ -2080,7 +2080,7 @@ void Level0_UpdateActors(void) {
       }
 
       g_pfnLevelEmitParticles(5, EMIT_SPARK_RISE, &actor->posX, 0);
-      g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x20);
+      g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x20);
       SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
       MarkActorCommittedKill(actor);
       DespawnActorRecord(actor);
@@ -2415,7 +2415,7 @@ void Level0_UpdateActors(void) {
         actor->subMode = 1;
       PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->voiceRow);
       if ((GetRandomU32() & 1) == 0)
-        g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, (int *)actor, 0);
+        g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, actor, 0);
       SubtractVector(svK, &SPY.posX, &actor->posX);
       distance = VectorLength(svK, VEC_LEN_XY);
       if (distance < st->radius && svK[2] >= -0x3FF && svK[2] < st->spanZ &&
@@ -2838,7 +2838,7 @@ void Level0_UpdateActors(void) {
       tri[0][0] = (short)g_anCosineLut[actor->rotZ] >> 5;
       tri[0][1] = (short)g_anSineLut[actor->rotZ] >> 5;
       tri[0][2] = 0x20;
-      g_pfnLevelEmitParticles(1, EMIT_SLOWING_SPARK, &actor->posX, tri[0]);
+      g_pfnLevelEmitParticles(1, EMIT_SLOWING_SPARK, &actor->posX, (int)tri[0]);
       break;
     }
 
@@ -2978,7 +2978,7 @@ void Level0_UpdateActors(void) {
     /* Life chest (LifeChestState). */
     case ACTOR_TYPE_LIFE_CHEST: {
       LifeChestState *st = actor->state;
-      Actor *rider;
+      Actor *prize;
       int i;
       int a;
       int b;
@@ -3061,9 +3061,9 @@ void Level0_UpdateActors(void) {
         break;
       }
 
-      rider = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
+      prize = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
       if (st->restMode == COLLREST_SNAP) {
-        ((CollectibleState *)rider->state)->mode = COLLREST_SNAP;
+        ((CollectibleState *)prize->state)->mode = COLLREST_SNAP;
       }
 
       actor->soundRange = 0x20;
@@ -3091,10 +3091,10 @@ void Level0_UpdateActors(void) {
         vec[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
         vec[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
         vec[2] = 0x18;
-        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, vec);
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)vec);
       }
 
-      g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, (void *)0x18);
+      g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x18);
 
       if (actor->mode == LIFECHEST_OPEN) {
         DespawnActorRecord(st->passenger);

@@ -65,4 +65,10 @@
  * (g_abSpyroAnimPrevBlock); b = 0 is the block base (g_anSpyroWorldPos). */
 #define SPY_FROM_ANIM_PREV(p, b) ((p) + ((b) - SPYB_ANIM_PREV))
 
+/* Byte distances from the held euler base (g_abSpyroPersistentEuler,
+ * 0x80078a64) to the two matrices it builds: g_anSpyroBodyMtx (0x80078a8c)
+ * and g_anSpyroComposedBodyMtx (0x80078c20). */
+#define EULER_TO_BODY_MTX 0x28
+#define EULER_TO_COMPOSED_MTX 0x1BC
+
 #endif /* OPEN_SPYRO_SPYRO_BLOCK_H */

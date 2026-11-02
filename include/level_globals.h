@@ -13,8 +13,8 @@
 
 extern int g_anSparkleGlowDesc;
 extern int g_anFlightTallyTintPresets[];
-extern void *g_dwBurstColorSparxFood;
-extern void *g_dwBurstColorExtraLife;
+extern int g_dwBurstColorSparxFood;
+extern int g_dwBurstColorExtraLife;
 extern int g_anTintByDropKind[]; /* packed Actor tint word per dropKind (see actor.h) */
 /* Flight results board rows, indexed world * 4 (titles) or world * 5 (bonus
  * values / claimed flags); _rN is row N of the same table, declared as its
@@ -80,7 +80,7 @@ extern unsigned char g_abLevelExited[];              /* per-level "left through 
 extern unsigned char g_abWorldBalloonistState[];             /* per-world balloonist progress 0/1/2 */
 extern unsigned char g_abSpyroStateCameraMode[];
 extern unsigned char g_abFlightBonusPaid[];       /* per flight level bonus-paid flags */
-extern void *g_adwActorBurstColors[];
+extern int g_adwActorBurstColors[];
 extern int g_anEmitSlotOffsets[];                        /* per-slot offsets, stride 3 ints */
 extern int g_anEmitStepOffsets[];                        /* per-step offsets, stride 3 ints */
 extern int g_anFlightCourseBonusTable[];                 /* per-course bonus table rows */
@@ -107,7 +107,7 @@ extern unsigned char g_bSpyroSubFrameTimer;
 extern unsigned char g_bSpyroSwingByteEuler1;
 extern int g_dwGamestateFrames;                          /* frame counter; the arm acts on every 4th frame */
 extern int g_dwSpyroRequestMask;                         /* scripted camera control word */
-extern int g_dwSpyroTriggerEventFlags;                   /* SPY.triggerEvents, absolute form */
+extern unsigned int g_dwSpyroTriggerEventFlags;                 /* SPY.triggerEvents, absolute form */
 extern int g_nActiveLevelId;                             /* active level id */
 extern int g_nActiveWorldIndex;                          /* course index */
 extern int g_nActorAnimDone;                             /* current actor's animation finished */

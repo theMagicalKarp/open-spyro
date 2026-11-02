@@ -326,8 +326,8 @@ void DrawPortalsAndStaticActors(void) {
               euler[0] = (unsigned short)g_nCameraEulerRoll >> 4;
               euler[1] = (unsigned short)g_nCameraEulerPitch >> 4;
               euler[2] = (unsigned short)g_nCameraEulerYaw >> 4;
-              ApplyEulerRotation(euler, &eulerMtx, 0);
-              RotateVectorByMatrix(&eulerMtx, vAxis, vAxis);
+              ApplyEulerRotation(euler, (int *)&eulerMtx, 0);
+              RotateVectorByMatrix((int *)&eulerMtx, vAxis, vAxis);
               if (vAxis[0] * vRel[0] + vAxis[1] * vRel[1] + vAxis[2] * vRel[2] <
                   0) {
                 flags = 0;
@@ -477,8 +477,8 @@ void DrawPortalsAndStaticActors(void) {
             euler2[0] = (unsigned short)g_nCameraEulerRoll >> 4;
             euler2[1] = (unsigned short)g_nCameraEulerPitch >> 4;
             euler2[2] = (unsigned short)g_nCameraEulerYaw >> 4;
-            ApplyEulerRotation(euler2, &eulerMtx2, 0);
-            RotateVectorByMatrix(&eulerMtx2, vAxis2, vAxis2);
+            ApplyEulerRotation(euler2, (int *)&eulerMtx2, 0);
+            RotateVectorByMatrix((int *)&eulerMtx2, vAxis2, vAxis2);
             if (vAxis2[0] * vRel2[0] + vAxis2[1] * vRel2[1] +
                     vAxis2[2] * vRel2[2] <
                 0) {

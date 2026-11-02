@@ -255,8 +255,8 @@ void TickLevelTransitionStream(int full) {
       if (list[i] <= 0) {
         break;
       }
-      mesh[*slot++] =
-          RelocateActorMeshHeader(g_pWorldUnpackHead + (list[i] - list[-16]));
+      mesh[*slot++] = RelocateActorMeshHeader(
+          (int *)(g_pWorldUnpackHead + (list[i] - list[-16])));
     }
     g_pPathTableBuffer = g_pWorldUnpackHead + list[-15];
     g_nLevelArchiveByteSize = list[-13];
@@ -329,8 +329,7 @@ void TickLevelTransitionStream(int full) {
         AddVector(g_anCameraPos, g_anCameraPos, &g_anSpyroSubstateBlock[-31]);
         UpdateCameraEulerAngles();
         CopyVector(g_anSpyroDeathCamRecordBlock, g_anCameraPos);
-        ActivateScriptedCameraView(
-            (int)(g_anSpyroDeathCamRecordBlock - (0x18 / 4)));
+        ActivateScriptedCameraView(g_anSpyroDeathCamRecordBlock - (0x18 / 4));
         g_nGamestate = GS_ARRIVAL_CAMERA;
       } else if (g_nReturnPortalLevelId != 0) {
         for (i = 0; i < g_nPortalCount; i++) {
@@ -410,8 +409,7 @@ void TickLevelTransitionStream(int full) {
           AddVector(g_anCameraPos, g_anCameraPos, pos);
           UpdateCameraEulerAngles();
           CopyVector(g_anSpyroDeathCamRecordBlock, g_anCameraPos);
-          ActivateScriptedCameraView(
-              (int)(g_anSpyroDeathCamRecordBlock - (0x18 / 4)));
+          ActivateScriptedCameraView(g_anSpyroDeathCamRecordBlock - (0x18 / 4));
           g_nSpyroSubstate = SPYRO_SUB_GLIDE_ARRIVE;
           g_nGamestate = GS_ARRIVAL_CAMERA;
         }

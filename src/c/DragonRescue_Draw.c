@@ -24,7 +24,7 @@ void DragonRescue_Draw(void) {
   unsigned char *icon;
 
   if (g_anDragonRescueAuraStarBlock[0] != 0) {
-    ApplyEulerRotation(&g_anDragonRescueAuraStarBlock[10],
+    ApplyEulerRotation((unsigned char *)&g_anDragonRescueAuraStarBlock[10],
                        &g_anDragonRescueAuraStarBlock[4],
                        g_anWorldToCameraRotMtx);
     DrawDragonRescueAuraStar();

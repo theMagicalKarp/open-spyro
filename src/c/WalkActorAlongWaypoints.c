@@ -54,7 +54,7 @@ int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist,
   if (len < cap) {
     cap = len;
   }
-  ApplyEulerRotation((unsigned int *)eul, (unsigned int *)mtx, 0);
+  ApplyEulerRotation(eul, mtx, 0);
   vec[0] = cap;
   vec[1] = 0;
   vec[2] = 0;
@@ -69,7 +69,7 @@ int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist,
     AddVector(vec, &actor->posX, vec);
   }
   if (contactRadius != 0) {
-    DispatchActorContactAtSphere(vec, contactRadius, 0, 0, (int)actor,
+    DispatchActorContactAtSphere(vec, contactRadius, 0, 0, actor,
                                  CONTACT_STOP_AT_SOLID);
   }
   vec[2] += 0x400;
@@ -83,7 +83,7 @@ int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist,
     }
   }
   CopyVector(&actor->posX, vec);
-  EncodeCachedVecToActorDirCode((int)actor);
+  EncodeCachedVecToActorDirCode(actor);
   RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
   ret = 0;
   SubtractVector(vec, &path->nodes[path->cur].x, &actor->posX);

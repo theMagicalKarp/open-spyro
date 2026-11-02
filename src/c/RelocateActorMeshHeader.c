@@ -12,7 +12,7 @@
        21 bits, plain ones add the delta to the first word of each pair and
        patch the second word's 16-bit link when it is set. */
 
-int RelocateActorMeshHeader(int *table) {
+void *RelocateActorMeshHeader(int *table) {
   int *hdr;
   int *w;
   int i;
@@ -25,7 +25,7 @@ int RelocateActorMeshHeader(int *table) {
     table[1] = table[1] + (int)table;
     table[2] = table[2] + (int)table;
     table[3] = table[3] + (int)table;
-    return (int)table & 0x7FFFFFFF;
+    return (void *)((int)table & 0x7FFFFFFF);
   }
 
   for (i = 0; i < 8; i++) {
@@ -68,5 +68,5 @@ int RelocateActorMeshHeader(int *table) {
       }
     }
   }
-  return (int)table;
+  return table;
 }

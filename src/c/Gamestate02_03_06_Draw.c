@@ -264,7 +264,7 @@ void Gamestate02_03_06_Draw(void) {
           phase7, v5, phase8, v6, phase9, v7, phase10, v8;
       int y;
       void *box = &prim->box;
-      SetDrawMode((int)box, 1, 0, 0x40, (RECT *)0);
+      SetDrawMode(box, 1, 0, 0x40, 0);
       AddPrimToOT((int)box);
       {
         int k;
@@ -776,7 +776,7 @@ void Gamestate02_03_06_Draw(void) {
       }
       EmitRadialShadedLine(0x40, 0x45, 0x1c0, 0x45);
       prim3 = g_pPrimBufferWriteCursor;
-      SetDrawMode((int)prim3, 1, 0, 0x40, (RECT *)0);
+      SetDrawMode(prim3, 1, 0, 0x40, 0);
       AddPrimToOT((int)prim3);
       prim3->poly.tag = 0x5000000;
       prim3->poly.code = 0x2a;
@@ -882,7 +882,7 @@ void Gamestate02_03_06_Draw(void) {
           int sc;
           int row;
           prim3 = g_pPrimBufferWriteCursor;
-          SetDrawMode((int)prim3, 1, 0, 0x40, (RECT *)0);
+          SetDrawMode(prim3, 1, 0, 0x40, 0);
           AddPrimToOT((int)prim3);
           pf = (int)&prim3->poly;
           prim3->poly.tag = 0x5000000;
