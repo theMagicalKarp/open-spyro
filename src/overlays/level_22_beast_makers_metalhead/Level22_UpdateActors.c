@@ -877,7 +877,7 @@ void Level22_UpdateActors(void) {
         }
         ANIM_GO(actor, 4);
         if (TurnActorYawTowardAngle(actor, h, 6, 8, YAW_STEP_IN_BAND) != 0) {
-          actor->subMode = 0;
+          actor->subMode = MHEAD_CATCH_NONE;
           actor->mode++;
           continue;
         }
@@ -924,7 +924,7 @@ void Level22_UpdateActors(void) {
           actor->group = ++st->phase;
           SetActorGroupSubstate(actor, 1);
           actor->group = 0xFF;
-          actor->subMode = 0;
+          actor->subMode = MHEAD_CATCH_NONE;
           ENTER_POSE(actor, METALHEAD_IDLE);
         }
         continue;

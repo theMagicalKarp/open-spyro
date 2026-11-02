@@ -2733,7 +2733,7 @@ void Level13_UpdateActors(void) {
 
         case CAPTAIN_POST_LEDGE:
           SnapActorToGround(actor);
-          if (st->step != 0) {
+          if (st->step != CAPTAIN_STEP_GUARD) {
             if (TrackEntityYawTowardSpyro(actor, 4, 0x14, YAW_STEP_IN_BAND)) {
               ANIM_GO(actor, 2);
             }
