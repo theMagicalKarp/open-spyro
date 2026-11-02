@@ -129,9 +129,9 @@ typedef struct {
 } WORLDCOUNTERS;
 
 void ActorCutscene_Update(void) {
-  VECTOR delta;
+  int delta[4];
   SVECTOR aim;
-  VECTOR settle;
+  int settle[4];
   int ease;
   int yaw;
   int radius;
@@ -199,14 +199,14 @@ void ActorCutscene_Update(void) {
             ease) >>
            13);
 
-      SubtractVector(&delta.vx, &g_pActorCutsceneRecord->posX, cam);
-      delta.vz += 0x200;
+      SubtractVector(delta, &g_pActorCutsceneRecord->posX, cam);
+      delta[2] += 0x200;
 
       if (g_nActorCutsceneTimer < 0x40) {
         aim.vx = 0;
-        aim.vy = ArcTan2(VectorLength(&delta.vx, VEC_LEN_XY), -delta.vz,
-                         ATAN_ANGLE12);
-        aim.vz = ArcTan2(delta.vx, delta.vy, ATAN_ANGLE12);
+        aim.vy =
+            ArcTan2(VectorLength(delta, VEC_LEN_XY), -delta[2], ATAN_ANGLE12);
+        aim.vz = ArcTan2(delta[0], delta[1], ATAN_ANGLE12);
         /* Unsigned view for the accumulate only: the call argument above is a
            signed read of the same halfword (lh), the fold back in is not. */
         g_nCameraEulerPitch =
@@ -221,9 +221,9 @@ void ActorCutscene_Update(void) {
                               6)) &
                             0xFFF;
       } else {
-        g_nCameraEulerPitch = ArcTan2(VectorLength(&delta.vx, VEC_LEN_XY),
-                                      -delta.vz, ATAN_ANGLE12);
-        g_nCameraEulerYaw = ArcTan2(delta.vx, delta.vy, ATAN_ANGLE12);
+        g_nCameraEulerPitch =
+            ArcTan2(VectorLength(delta, VEC_LEN_XY), -delta[2], ATAN_ANGLE12);
+        g_nCameraEulerYaw = ArcTan2(delta[0], delta[1], ATAN_ANGLE12);
       }
     } else if (g_nCdStreamState == LSTREAM_RELOCATE) {
       int *cam; /* see the approach arm: block-scoped per arm on purpose */
@@ -275,14 +275,13 @@ void ActorCutscene_Update(void) {
                           12);
       g_anCameraPos[2] = g_pActorCutsceneRecord->posZ + 0x200;
 
-      SubtractVector(&settle.vx,
-                     (int *)((char *)g_anActorCutsceneTimerBlock[25] + 0xC),
-                     cam);
-      settle.vz += 0x200;
+      SubtractVector(
+          settle, (int *)((char *)g_anActorCutsceneTimerBlock[25] + 0xC), cam);
+      settle[2] += 0x200;
 
-      g_nCameraEulerPitch = ArcTan2(VectorLength(&settle.vx, VEC_LEN_XY),
-                                    -settle.vz, ATAN_ANGLE12);
-      g_nCameraEulerYaw = ArcTan2(settle.vx, settle.vy, ATAN_ANGLE12);
+      g_nCameraEulerPitch =
+          ArcTan2(VectorLength(settle, VEC_LEN_XY), -settle[2], ATAN_ANGLE12);
+      g_nCameraEulerYaw = ArcTan2(settle[0], settle[1], ATAN_ANGLE12);
 
       /* Named to pin the g_pActorCutsceneRecord load ahead of the g_anCameraPos
          reads below, so the camera load falls into its shadow and the `lbu`

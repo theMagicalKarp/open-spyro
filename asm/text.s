@@ -80021,8 +80021,8 @@ glabel ComputeBillboardBasisVectors
     /* 493F8 80058BF8 00101124 */  addiu      $s1, $zero, 0x1000
     /* 493FC 80058BFC 445C000C */  jal        WorldToCameraRotate
     /* 49400 80058C00 1000B1AF */   sw        $s1, 0x10($sp)
-    /* 49404 80058C04 0780103C */  lui        $s0, %hi(g_abBillboardBasisVectors)
-    /* 49408 80058C08 E0701026 */  addiu      $s0, $s0, %lo(g_abBillboardBasisVectors)
+    /* 49404 80058C04 0780103C */  lui        $s0, %hi(g_anBillboardBasisVectors)
+    /* 49408 80058C08 E0701026 */  addiu      $s0, $s0, %lo(g_anBillboardBasisVectors)
     /* 4940C 80058C0C 21200002 */  addu       $a0, $s0, $zero
     /* 49410 80058C10 1A5F000C */  jal        VectorToSVector
     /* 49414 80058C14 1000A527 */   addiu     $a1, $sp, 0x10

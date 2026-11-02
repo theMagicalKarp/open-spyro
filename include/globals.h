@@ -814,7 +814,7 @@ extern struct Actor *g_pDragonRescueStatueActor;           /* 0x800770b8: the fr
 extern struct Actor *g_pDragonRescueSpyroMirrorActor;      /* 0x800770bc: Spyro's stand-in (ACTOR_TYPE_RESCUE_SPYRO) */
 extern struct Actor *g_pDragonRescueSourceActor;           /* 0x800770c0: the dragon statue being rescued (BeginDragonRescue) */
 extern int g_anWorldLightDirVec[6];                     /* 0x800770c8 */
-extern unsigned char g_abBillboardBasisVectors[18];              /* 0x800770e0 */
+extern short g_anBillboardBasisVectors[9];              /* 0x800770e0 */
 extern int g_nLightSweepAngle;                          /* 0x800770f4 */
 extern unsigned char g_abWorldRotatingBillboardTable[128];       /* 0x80077114 */
 extern int g_anLevelDragonsRescued[36];                 /* 0x800772d8 */
