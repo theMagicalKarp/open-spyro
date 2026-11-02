@@ -14,50 +14,50 @@
    a1,t0,a1` operand order instead of accumulating in place. */
 
 void DampenSpyroFreeFallAttitude(void) {
-  int e[2];
+  int err[2];
   int pitch;
   int roll;
-  int v;
-  int d0;
-  int d1;
-  int k0;
-  int k1;
+  int wrapped;
+  int pitchAccel;
+  int rollAccel;
+  int pitchVel;
+  int rollStepVel;
   int pad[2];
   int rollVel;
   int out0;
   int out1;
-  e[0] = 0;
-  e[1] = 0;
+  err[0] = 0;
+  err[1] = 0;
   pitch = g_anSpyroBodyPitchBlock[0];
-  v = (-pitch) & 0xFFF;
-  e[0] = v;
-  if (v >= 0x800) {
-    e[0] = v - 0x1000;
+  wrapped = (-pitch) & 0xFFF;
+  err[0] = wrapped;
+  if (wrapped >= 0x800) {
+    err[0] = wrapped - 0x1000;
   }
   roll = g_anSpyroBodyPitchBlock[-1];
-  v = (-roll) & 0xFFF;
-  e[1] = v;
-  if (v >= 0x800) {
-    e[1] = v - 0x1000;
+  wrapped = (-roll) & 0xFFF;
+  err[1] = wrapped;
+  if (wrapped >= 0x800) {
+    err[1] = wrapped - 0x1000;
   }
-  d0 = (e[0] << 2) >> 4;
-  k0 = g_nSpyroPitchSpringVel;
-  d0 = d0 - ((k0 << 4) >> 6);
-  k0 = k0 + d0;
-  d1 = e[1] << 2;
+  pitchAccel = (err[0] << 2) >> 4;
+  pitchVel = g_nSpyroPitchSpringVel;
+  pitchAccel = pitchAccel - ((pitchVel << 4) >> 6);
+  pitchVel = pitchVel + pitchAccel;
+  rollAccel = err[1] << 2;
   rollVel = g_nSpyroRollSpringVel;
-  d1 = d1 >> 4;
-  g_nSpyroPitchSpringVel = k0;
-  k0 = k0 >> 2;
-  e[0] = k0;
-  out0 = pitch + k0;
-  k1 = rollVel;
-  d1 = d1 - ((k1 << 4) >> 6);
-  k1 = k1 + d1;
-  g_nSpyroRollSpringVel = k1;
-  k1 = k1 >> 2;
-  e[1] = k1;
-  out1 = roll + k1;
+  rollAccel = rollAccel >> 4;
+  g_nSpyroPitchSpringVel = pitchVel;
+  pitchVel = pitchVel >> 2;
+  err[0] = pitchVel;
+  out0 = pitch + pitchVel;
+  rollStepVel = rollVel;
+  rollAccel = rollAccel - ((rollStepVel << 4) >> 6);
+  rollStepVel = rollStepVel + rollAccel;
+  g_nSpyroRollSpringVel = rollStepVel;
+  rollStepVel = rollStepVel >> 2;
+  err[1] = rollStepVel;
+  out1 = roll + rollStepVel;
   g_anSpyroBodyPitchBlock[0] = out0;
   g_anSpyroBodyPitchBlock[-1] = out1;
 }

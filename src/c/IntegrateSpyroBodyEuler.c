@@ -20,31 +20,32 @@
    LookupSine and the call itself, which leaves the call's result copy free to
    follow the first roll load. */
 void IntegrateSpyroBodyEuler(int rate) {
-  int d[3];
-  int cp;
-  int sp;
-  int cr;
-  int a;
-  int b;
+  int delta[3];
+  int cosPitch;
+  int sinPitch;
+  int cosRoll;
+  int rollTerm;
+  int yawStep;
   int pitch;
 
-  cp = LookupCosine(g_anSpyroBodyPitchBlock[0]);
+  cosPitch = LookupCosine(g_anSpyroBodyPitchBlock[0]);
   pitch = g_anSpyroBodyPitchBlock[0];
   EBB_BREAK();
-  sp = LookupSine(pitch);
-  cr = LookupCosine(-g_anSpyroBodyPitchBlock[-1] & 0xfff);
-  if (cr == 0) {
-    cr = 1;
+  sinPitch = LookupSine(pitch);
+  cosRoll = LookupCosine(-g_anSpyroBodyPitchBlock[-1] & 0xfff);
+  if (cosRoll == 0) {
+    cosRoll = 1;
   }
-  a = rate * LookupSine(-g_anSpyroBodyPitchBlock[-1] & 0xfff) / cr;
-  b = rate * cp / cr;
-  d[1] = (rate * sp) >> 12;
-  g_anSpyroBodyPitchBlock[-1] = (g_anSpyroBodyPitchBlock[-1] + d[1]) & 0xfff;
+  rollTerm = rate * LookupSine(-g_anSpyroBodyPitchBlock[-1] & 0xfff) / cosRoll;
+  yawStep = rate * cosPitch / cosRoll;
+  delta[1] = (rate * sinPitch) >> 12;
+  g_anSpyroBodyPitchBlock[-1] =
+      (g_anSpyroBodyPitchBlock[-1] + delta[1]) & 0xfff;
   g_abSpyroPersistentEuler[1] = g_anSpyroBodyPitchBlock[-1] >> 4;
-  d[2] = b;
-  YAW = (YAW + d[2]) & 0xfff;
+  delta[2] = yawStep;
+  YAW = (YAW + delta[2]) & 0xfff;
   g_abSpyroPersistentEuler[2] = YAW >> 4;
-  d[0] = (a * cp) >> 12;
-  g_anSpyroBodyPitchBlock[0] = (g_anSpyroBodyPitchBlock[0] + d[0]) & 0xfff;
+  delta[0] = (rollTerm * cosPitch) >> 12;
+  g_anSpyroBodyPitchBlock[0] = (g_anSpyroBodyPitchBlock[0] + delta[0]) & 0xfff;
   g_abSpyroPersistentEuler[0] = g_anSpyroBodyPitchBlock[0] >> 4;
 }
