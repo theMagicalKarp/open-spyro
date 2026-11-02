@@ -3487,13 +3487,13 @@ void Level10_UpdateActors(void) {
             actor->posZ < SPY.posZ &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x5DC) {
           actor->subMode = 1;
-          ANIM_GO(actor, 4);
+          ANIM_GO(actor, GLOOK_ANIM_STAND);
           actor->mode = GLOOK_ROUSE;
           continue;
         }
         if (d > 0x2000) {
           TurnActorYawTowardAngle(actor, st->home, 4, 0, YAW_HOLD_IN_BAND);
-          if (actor->anim == 2 && g_nActorAnimNewFrame != 0 && actor->frame == 0xF &&
+          if (actor->anim == GLOOK_ANIM_IDLE && g_nActorAnimNewFrame != 0 && actor->frame == 0xF &&
               --st->count > 0) {
             actor->frame = 5;
             actor->nextFrame = 6;
@@ -3502,33 +3502,33 @@ void Level10_UpdateActors(void) {
           if (st->count == 0) {
             st->count = RandomIntInRange(3, 5);
             if (RandomIntInRange(0, 0x64) > 0x50) {
-              ANIM_GO(actor, 1);
+              ANIM_GO(actor, GLOOK_ANIM_FIDGET);
             } else {
-              ANIM_GO(actor, 4);
+              ANIM_GO(actor, GLOOK_ANIM_STAND);
             }
           }
         } else {
           h = WrapAddAngle8(ArcTan2(spy->posX - actor->posX,
                                           spy->posY - actor->posY, ATAN_ANGLE8),
                             5);
-          if (actor->nextAnim == 2 || actor->nextAnim == 4) {
+          if (actor->nextAnim == GLOOK_ANIM_IDLE || actor->nextAnim == GLOOK_ANIM_STAND) {
             ANIM_GO(actor, GLOOK_WATCH);
           }
-          if (actor->anim < 2 || actor->anim == 5) {
+          if (actor->anim < 2 || actor->anim == GLOOK_ANIM_WATCH_ALT) {
             TurnActorYawTowardAngle(actor, h, 4, 0, YAW_HOLD_IN_BAND);
           }
           if (g_nActorAnimDone != 0) {
             if (--st->count <= 0) {
               st->count = RandomIntInRange(3, 5);
               if (RandomIntInRange(0, 0x64) > 0x50) {
-                if (actor->nextAnim != 1) {
-                  ANIM_GO(actor, 1);
+                if (actor->nextAnim != GLOOK_ANIM_FIDGET) {
+                  ANIM_GO(actor, GLOOK_ANIM_FIDGET);
                 } else {
                   ANIM_GO(actor, GLOOK_WATCH);
                 }
               }
             } else {
-              ANIM_GO(actor, 5);
+              ANIM_GO(actor, GLOOK_ANIM_WATCH_ALT);
             }
           }
         }
@@ -3582,9 +3582,9 @@ void Level10_UpdateActors(void) {
                           ArcTan2(link->posX - actor->posX,
                                         link->posY - actor->posY, ATAN_ANGLE8),
                           8, 6, YAW_STEP_IN_BAND) != 0) {
-          ANIM_GO(actor, 8);
+          ANIM_GO(actor, GLOOK_ANIM_CALL);
         }
-        if (actor->anim == 8 && g_nActorAnimNewFrame != 0 && actor->frame == 5) {
+        if (actor->anim == GLOOK_ANIM_CALL && g_nActorAnimNewFrame != 0 && actor->frame == 5) {
           ShempGuardState *ls = link->state;
 
           if (link->mode < 0x7F && link->nextAnim != 3) {
@@ -3603,8 +3603,8 @@ void Level10_UpdateActors(void) {
             }
           }
         }
-        if (g_nActorAnimDone != 0 && actor->anim == 8) {
-          ANIM_GO(actor, 4);
+        if (g_nActorAnimDone != 0 && actor->anim == GLOOK_ANIM_CALL) {
+          ANIM_GO(actor, GLOOK_ANIM_STAND);
           actor->mode = GLOOK_WATCH;
           continue;
         }

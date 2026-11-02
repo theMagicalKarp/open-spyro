@@ -1903,6 +1903,18 @@ enum GuardLookoutMode {
   GLOOK_ROUSE = 10,  /* turns to its guard and wakes it on frame 5, then WATCH */
 };
 
+/* A lookout's animations (GLOOK_WATCH's own index, 0, is its stand facing
+ * Spyro). Far from Spyro it loops IDLE (frames 5..0xF, a random 3..5 times),
+ * then picks FIDGET (one in five) or STAND; near him it alternates the watch
+ * stand with WATCH_ALT. */
+enum GuardLookoutAnim {
+  GLOOK_ANIM_FIDGET = 1,
+  GLOOK_ANIM_IDLE = 2,
+  GLOOK_ANIM_STAND = 4,     /* also before and after GLOOK_ROUSE's call */
+  GLOOK_ANIM_WATCH_ALT = 5,
+  GLOOK_ANIM_CALL = 8,      /* GLOOK_ROUSE: the guard wakes on frame 5 */
+};
+
 /* ->mode of the level 16 humming bell (ACTOR_TYPE_HUMMING_BELL,
  * HummingBellState). */
 enum HummingBellMode {
