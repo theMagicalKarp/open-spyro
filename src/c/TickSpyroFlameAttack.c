@@ -50,14 +50,9 @@
    Every non-cancelled frame ends by ticking the strike timer, and the frame
    always finishes in SmoothSpyroByteEulerSpring. */
 
-/* NOTE: the function body below is decomp-permuter output, spliced in
-   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
-   gain only. It reads worse than the hand-written form it replaced and
-   its inline comments are lost. The hand-written original is recoverable
-   from history as src/c/TickSpyroHornStrikeAttack.c.wip (the function's
-   name before it was recognised as the flame breath); this body came from
-   the permuter's TickSpyroHornStrikeAttack output-285-1.
- */
+/* The body below started as decomp-permuter output (2026-08-14-1) and was
+   carried to a full match from there; the earlier hand-written draft and its
+   comments are in git history (7623bbd6^). */
 void TickSpyroFlameAttack(void) {
   int pos[4];
   int vel[4];
@@ -145,7 +140,6 @@ void TickSpyroFlameAttack(void) {
         }
         FillWord(g_abSpyroFlameSlotAge, 0, 8);
       } else {
-        ;
         if (g_anSpyroFlameTimerBlock[0] >= 0x30) {
           live = g_abSpyroFlameActiveBlock;
           live[0] = 0;

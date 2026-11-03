@@ -47,12 +47,9 @@
 extern int g_anSpyroWorldPos[];
 extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type */
 
-/* NOTE: the function body below is decomp-permuter output, spliced in
-   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
-   gain only. It reads worse than the hand-written form it replaced and
-   its inline comments are lost. The hand-written original is recoverable
-   with `git show HEAD:src/overlays/level_16_magic_crafters_blowhard/Level16_SpawnActor.c.wip`; this body came from
-   build/permuter/nonmatchings/Level16_SpawnActor/output-815-1/source.c. */
+/* The body below started as decomp-permuter output (2026-08-14-1) and was
+   carried to a full match from there; the earlier hand-written draft and its
+   comments are in git history (7623bbd6^). */
 Actor *Level16_SpawnActor(int type, Actor *parent)
 {
   Actor *rec;

@@ -7,9 +7,8 @@
    the mono-mix flag is set both channels collapse to their average.
    (0x80056c84, 320 bytes.) */
 
-/* Body is decomp-permuter output from the 2026-07-25 sweep (it reads worse than
-   the hand-written form it replaced); original hand-written body:
-   git show 46305b0:src/c/ComputeVoicePanAndFalloff.c.wip
+/* Body is decomp-permuter output from the 2026-07-25 sweep; the earlier
+   hand-written draft: git show 46305b0:src/c/ComputeVoicePanAndFalloff.c.wip
    Two things are load-bearing: `pad` sizes the 0x20 frame (A127 — without it
    the frame is 0x10 and the 5th argument reloads from 0x20(sp) instead of
    0x30(sp)), and the wrap arm must negate the PARAMETER and mask the COPY

@@ -33,12 +33,9 @@
 
 
 
-/* NOTE: the function body below is decomp-permuter output, spliced in
-   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
-   gain only. It reads worse than the hand-written form it replaced and
-   its inline comments are lost. The hand-written original is recoverable
-   with `git show HEAD:src/overlays/level_17_magic_crafters_crystal_flight/Level17_SpawnActor.c.wip`; this body came from
-   build/permuter/nonmatchings/Level17_SpawnActor/output-325-1/source.c. */
+/* The body below started as decomp-permuter output (2026-08-14-1) and was
+   carried to a full match from there; the earlier hand-written draft and its
+   comments are in git history (7623bbd6^). */
 Actor *Level17_SpawnActor(int type, Actor *parent)
 {
   Actor *rec;
