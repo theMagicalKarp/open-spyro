@@ -113,4 +113,43 @@ typedef struct WhirlwindState {
 #define WHIRL_F_GATED 0x08      /* waits on its owner (`idx`: a key's subMode, a statue or gem gone) */
 #define WHIRL_F_MARK 0x10       /* also sets ->subMode to 1 while active */
 
+/* Level 14 type 303 (ACTOR_TYPE_RUNNER_SPAWNER): every so often (`timer`,
+ * 0xB4) rewinds `path` and spawns one waypoint runner (304), handing it the
+ * path and `value`; killable. */
+typedef struct RunnerSpawnerState {
+  struct PathData *path; /* 0x00 the runners' waypoint path; cur reset to 0 per spawn */
+  int flags;             /* 0x04 bit 0: a runner is out */
+  int wait;              /* 0x08 */
+  int timer;             /* 0x0C */
+  int value;             /* 0x10 copied to the spawn's WaypointRunnerState.target */
+} RunnerSpawnerState;
+
+/* Level 14 type 304 (ACTOR_TYPE_WAYPOINT_RUNNER): walks its spawner's `path`
+ * until it reaches Spyro, the path end, or its `target` actor (which it
+ * flags), then clears the spawner's flags bit 0 and leaves. */
+typedef struct WaypointRunnerState {
+  struct PathData *path;  /* 0x00 inherited from the spawner */
+  struct Actor *spawner;  /* 0x04 the RunnerSpawnerState owner */
+  int smoothVel[3];       /* 0x08 WalkActorAlongWaypoints' smoothed velocity */
+  short target;           /* 0x14 pool index, < 0 = none */
+} WaypointRunnerState;
+
+/* Level 19 type 343 (ACTOR_TYPE_ATTACH_BEAD): a bead that streams from its
+ * owner's attach point 1 to point 0, starting subMode * 42 frames late and
+ * growing as it goes. */
+typedef struct AttachBeadState {
+  struct Actor *owner; /* 0x00 */
+  int t;               /* 0x04 */
+  int pad08;           /* 0x08 cleared at spawn, never read */
+} AttachBeadState;
+
+/* Level 29 type 232 (ACTOR_TYPE_BOBBER_SPINOFF): spins off its bobbing
+ * flight target and runs until it gets away or times out. */
+typedef struct SpinRunState {
+  int heading;   /* 0x00 */
+  int zVel;      /* 0x04 */
+  int moveSpeed; /* 0x08 */
+  int timer;     /* 0x0C */
+} SpinRunState;
+
 #endif /* OPEN_SPYRO_ACTOR_STATES_H */

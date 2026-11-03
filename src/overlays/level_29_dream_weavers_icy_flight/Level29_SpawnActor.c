@@ -34,16 +34,6 @@
 #include "main_shared.h"
 #include "level_emit_particles.h"
 
-/* Spin-and-run helper state block (type 0xE8; SpinRunState in the updater). */
-typedef struct AimState {
-  int heading;   /* 0x00 */
-  int zVel;      /* 0x04 */
-  int moveSpeed; /* 0x08 */
-  int timer;     /* 0x0C */
-} AimState;
-
-
-
 Actor *Level29_SpawnActor(int type, Actor *parent) {
   Actor *rec;
   int owner;
@@ -198,7 +188,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
 
   case ACTOR_TYPE_BOBBER_SPINOFF:
   {
-    AimState *st = rec->state;
+    SpinRunState *st = rec->state;
 
     InitActorRenderDefaults(rec);
     CopyVector(&rec->posX, &parent->posX);

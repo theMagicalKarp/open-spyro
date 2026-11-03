@@ -250,7 +250,7 @@ enum ActorType {
   ACTOR_TYPE_PATROL_WARD = 23, /* level 3: patrol guard (WardState) */
   ACTOR_TYPE_GUNNER = 28, /* level 20: wakes its partner, turns to it, fires type 400 shots (GunnerState) */
   ACTOR_TYPE_LURKER_TETHER = 31, /* level 20: the tether ACTOR_TYPE_LURKER drags Spyro with; no UpdateActors arm */
-  ACTOR_TYPE_CARRIED_EGG = 32, /* level 19: rides its carrier until the carrier reaches pose 4, then behaves as a dragon egg */
+  ACTOR_TYPE_CARRIED_EGG = 32, /* level 19: rides attach point 0 of the bolt sentry that spawns it while the sentry stays in BSENTRY_THROW */
   ACTOR_TYPE_EGG_THIEF = 33,       /* runs off with a dragon egg (34), drops it when hit (ThiefState) */
   ACTOR_TYPE_DRAGON_EGG = 34,      /* recovered egg: rises, rolls the HUD egg tally */
   ACTOR_TYPE_BOLT_GUARD = 35, /* level 19: scatters when hit, fires type 494 bolts (BoltGuardState) */

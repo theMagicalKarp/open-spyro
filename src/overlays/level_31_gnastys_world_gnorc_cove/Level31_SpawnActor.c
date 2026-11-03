@@ -16,20 +16,8 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "actor.h"
+#include "level_update_actors.h"
 #include "level_emit_particles.h"
-
-/* Barrel state block (types 0xCA / 0xCF; FloatingBarrelState in the updater). */
-typedef struct SeekState {
-  short pad00;
-  short blast;  /* 0x02 blast pushed Spyro */
-  Actor *owner; /* 0x04 rider */
-  int pad08;
-  int sink;     /* 0x0C sink speed */
-  int link;     /* 0x10 index into g_pActorListBase, -1 = none */
-  short handle; /* 0x14 for SelectActorLodBand */
-} SeekState;
-
-
 
 Actor *Level31_SpawnActor(int type, Actor *parent) {
   Actor *rec;
@@ -190,7 +178,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     break;
 
   case ACTOR_TYPE_FLOATING_BARREL: {
-    SeekState *st = rec->state;
+    FloatingBarrelState *st = rec->state;
     int *pos;
     int probe[3];
 
@@ -198,7 +186,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     pos = &rec->posX;
     CopyVector(pos, &parent->posX);
     st->sink = -0xC;
-    st->owner = parent;
+    st->rider = parent;
     st->blast = 0;
     st->link = -1;
     rec->floorOffset = 0x1CD;
@@ -214,7 +202,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
   }
 
   case ACTOR_TYPE_FLOATING_MINE: {
-    SeekState *st = rec->state;
+    FloatingBarrelState *st = rec->state;
     int *pos;
     int probe[3];
 
@@ -222,7 +210,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     pos = &rec->posX;
     CopyVector(pos, &parent->posX);
     st->sink = -0xC;
-    st->owner = parent;
+    st->rider = parent;
     st->blast = 0;
     st->handle = 0;
     st->link = -1;

@@ -42,16 +42,6 @@
 #include "level_update_actors.h"
 #include "level_emit_particles.h"
 
-/* Debris state block (types 0x43..0x45, 0xFF..0x101, 0x135..0x137). */
-/* Attach-point bead state block (type 0x157; AttachBeadState in the
- * updater). */
-typedef struct TrackState {
-  Actor *owner;        /* 0x00 */
-  int t;               /* 0x04 */
-  int pad08;           /* 0x08 cleared here, never read */
-} TrackState;
-
-
 extern unsigned short g_nCameraEulerPitch;  /* unsigned view (lhu); globals.h has it short */
 
 Actor *Level19_SpawnActor(int type, Actor *parent) {
@@ -115,10 +105,10 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
   }
 
   case ACTOR_TYPE_CARRIED_EGG: {
-    TrackState *st = rec->state;
+    Actor **st = rec->state;
 
     InitActorRenderDefaults(rec);
-    st->owner = parent;
+    *st = parent;
     GetActorAttachPoint(parent, 0, &rec->posX);
     InsertActorIntoSpatialGrid(rec);
     rec->rotY = g_nCameraEulerPitch;
@@ -373,7 +363,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
   }
 
   case ACTOR_TYPE_ATTACH_BEAD: {
-    TrackState *st = rec->state;
+    AttachBeadState *st = rec->state;
 
     InitActorRenderDefaults(rec);
     CopyVector(&rec->posX, &parent->posX);

@@ -101,15 +101,6 @@ typedef struct BobberState {
   int moveSpeed;   /* 0x20 passed by address to DriveActorTrackedMove */
 } BobberState;
 
-/* Type 0xE8: the helper; spins and runs until it gets away or times out. */
-typedef struct SpinRunState {
-  int heading; /* 0x00 */
-  int zVel;   /* 0x04 */
-  int moveSpeed;   /* 0x08 */
-  int timer;   /* 0x0C */
-} SpinRunState;
-
-
 void Level29_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;

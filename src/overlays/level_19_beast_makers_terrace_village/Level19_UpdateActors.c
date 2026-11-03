@@ -110,13 +110,6 @@ typedef struct BoltGuardState {
   int box[3];  /* 0x30 */
 } BoltGuardState;
 
-/* Type 343 state: a bead that streams from its owner's attach point 1 to
- * point 0, starting subMode * 42 frames late and growing as it goes. */
-typedef struct AttachBeadState {
-  Actor *owner; /* 0x00 */
-  int t;        /* 0x04 */
-} AttachBeadState;
-
 /* Type 467 state: a bolt-throwing sentry with three guards (`kids`). */
 typedef struct BoltSentryState {
   int mode;      /* 0x00 enum BoltSentryCue */
@@ -573,12 +566,13 @@ void Level19_UpdateActors(void) {
       break;
     }
 
-    /* Type 32: rides its carrier until the carrier reaches pose 4, then
-     * behaves as a dragon egg. */
+    /* Type 32: rides attach point 0 of the bolt sentry that spawned it and
+     * despawns once the sentry leaves BSENTRY_THROW. It then shares the dragon
+     * egg arm, where its mode 0 (EGG_CARRIED) does nothing. */
     case ACTOR_TYPE_CARRIED_EGG: {
       Actor **st = actor->state;
 
-      if (actor->subMode != 0 || (*st)->mode != 4) {
+      if (actor->subMode != 0 || (*st)->mode != BSENTRY_THROW) {
         DespawnActorRecord(actor);
         continue;
       }

@@ -89,27 +89,6 @@
 /* ==== Level 14 classes ==== */
 extern int g_anCollisionContactPoint[2]; /* wall probe hit x, y */
 
-/* Type 303: runner spawner. Every so often (`timer`, 0xB4) spawns one type
- * 304 runner and hands it `value`; killable. */
-typedef struct RunnerSpawnerState {
-  unsigned char *link; /* 0x00 byte +1 cleared when the spawn fires */
-  int flags;           /* 0x04 bit 0: spawned */
-  int wait;            /* 0x08 */
-  int timer;           /* 0x0C */
-  int value;           /* 0x10 copied to the spawn's WaypointRunnerState.target */
-} RunnerSpawnerState;
-
-/* Type 304: waypoint runner. Walks `path` until it reaches Spyro, the path
- * end, or its `target` actor (which it flags), then clears its spawner's
- * flags bit 0 and leaves. */
-typedef struct WaypointRunnerState {
-  void *path;   /* 0x00 */
-  Actor *link;  /* 0x04 its state's flags bit 0 is cleared on release */
-  int hold;     /* 0x08 */
-  int pad0C[2]; /* 0x0C */
-  short target; /* 0x14 pool index, < 0 = none */
-} WaypointRunnerState;
-
 /* Type 302: chunk operator. Starts its world chunk's animation when Spyro
  * comes near (0x2000) or goes far (0x3000); with `riding` set it follows the
  * moving floor triangle under it. */
@@ -4007,7 +3986,7 @@ void Level14_UpdateActors(void) {
 
       case RSPAWNER_RELEASE:
         if (actor->nextFrame >= 5 && !(st->flags & 1)) {
-          st->link[1] = 0;
+          st->path->cur = 0;
           ((WaypointRunnerState *)g_pfnLevelSpawnActor(ACTOR_TYPE_WAYPOINT_RUNNER, actor)->state)->target = st->value;
           st->flags |= 1;
         }
@@ -4039,7 +4018,7 @@ void Level14_UpdateActors(void) {
           ANIM_RESET(actor, WPRUNNER_RUN);
           continue;
         }
-        if (st->link->mode >= RSPAWNER_KNOCKED) {
+        if (st->spawner->mode >= RSPAWNER_KNOCKED) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -4049,19 +4028,19 @@ void Level14_UpdateActors(void) {
         int *pos = &actor->posX;
 
         if (RaiseSpyroTriggerInRadius(pos, 0x280, SPYRO_EV_HIT_LONG | SPYRO_EV_CHARGE_HIT) != 0) {
-          ((RunnerSpawnerState *)st->link->state)->flags &= ~1;
+          ((RunnerSpawnerState *)st->spawner->state)->flags &= ~1;
           ENTER_POSE(actor, WPRUNNER_POP);
           continue;
         }
         if (WalkActorAlongWaypoints(actor, st->path, 0x100, 0x40, 0, 0x20, 0xFF,
-                          &st->hold) == 0x100) {
-          ((RunnerSpawnerState *)st->link->state)->flags &= ~1;
+                          st->smoothVel) == 0x100) {
+          ((RunnerSpawnerState *)st->spawner->state)->flags &= ~1;
           ENTER_POSE(actor, WPRUNNER_POP);
           continue;
         }
         if (st->target >= 0 && g_pActorListBase[st->target].mode < ACTOR_MODE_DORMANT &&
             ApproxDist2D(pos, &g_pActorListBase[st->target].posX) < 0x280) {
-          ((RunnerSpawnerState *)st->link->state)->flags &= ~1;
+          ((RunnerSpawnerState *)st->spawner->state)->flags &= ~1;
           g_pActorListBase[st->target].flags |= ACTOR_NUDGED;
           ENTER_POSE(actor, WPRUNNER_POP);
           continue;

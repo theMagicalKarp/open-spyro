@@ -40,14 +40,6 @@
 #include "level_spawn_actor.h"
 #include "actor.h"
 
-/* Path-walker state block (type 0x130; WaypointRunnerState in the updater). */
-typedef struct AimState {
-  int path;     /* 0x00 waypoint path, inherited from the parent */
-  Actor *owner; /* 0x04 */
-  int hold;     /* 0x08 first of the three words ZeroVector clears */
-} AimState;
-
-
 extern volatile int g_anSpyroWorldPos[];
 extern volatile int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
@@ -346,8 +338,8 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     break;
   }
   case ACTOR_TYPE_WAYPOINT_RUNNER: {
-    AimState *st = rec->state;
-    AimState *pst = parent->state;
+    WaypointRunnerState *st = rec->state;
+    RunnerSpawnerState *pst = parent->state;
     int *pos;
     int probe[3];
     int unused[2];
@@ -355,9 +347,9 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     InitActorRenderDefaults(rec);
     pos = &rec->posX;
     CopyVector(pos, &parent->posX);
-    st->owner = parent;
+    st->spawner = parent;
     st->path = pst->path;
-    ZeroVector(&st->hold);
+    ZeroVector(st->smoothVel);
     rec->cullRadius = 0x20;
     InsertActorIntoSpatialGrid(rec);
     rec->groundCode = -1;
