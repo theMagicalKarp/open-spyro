@@ -4086,8 +4086,8 @@ void Level31_UpdateActors(void) {
       }
 
       for (i = 0; i < 8; i++) {
-        v480[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
-        v480[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
+        v480[0] = (g_anCosineLut[i * 32] >> 8) * 3;
+        v480[1] = (g_anSineLut[i * 32] >> 8) * 3;
         v480[2] = 0x18;
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)v480);
       }

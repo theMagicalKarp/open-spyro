@@ -144,7 +144,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
     pos = &rec->posX;
     GetActorAttachPoint(parent, 0, pos);
     rec->rotX = 0;
-    turn = ArcTan2(ApproxDist2D(pos, (int *)g_anSpyroWorldPos),
+    turn = ArcTan2(ApproxDist2D(pos, g_anSpyroWorldPos),
                          g_nSpyroWorldPosZ - rec->posZ, ATAN_ANGLE8);
     if (turn > 0x80) {
       turn -= 0x100;
@@ -171,7 +171,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
     pos = &rec->posX;
     GetActorAttachPoint(parent, 0, pos);
     rec->rotX = 0;
-    turn = ArcTan2(ApproxDist2D(pos, (int *)g_anSpyroWorldPos),
+    turn = ArcTan2(ApproxDist2D(pos, g_anSpyroWorldPos),
                          g_nSpyroWorldPosZ - rec->posZ, ATAN_ANGLE8);
     if (turn > 0x80) {
       turn -= 0x100;
@@ -310,7 +310,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
     pos = &rec->posX;
     GetActorAttachPoint(parent, 0, pos);
     rec->rotX = 0;
-    turn = ArcTan2(ApproxDist2D(pos, (int *)g_anSpyroWorldPos),
+    turn = ArcTan2(ApproxDist2D(pos, g_anSpyroWorldPos),
                          g_nSpyroWorldPosZ - rec->posZ, ATAN_ANGLE8);
     if (turn > 0x80) {
       turn -= 0x100;

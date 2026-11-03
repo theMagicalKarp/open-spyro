@@ -274,7 +274,7 @@ void ChangeSpyroState(int state) {
     for (i = 0; i < 4; i++) {
       v[0] = 0;
       v[1] = (short)(unsigned short)g_anCosineLut[ang] >> 7;
-      v[2] = (short)g_anSineLut[ang] >> 7;
+      v[2] = g_anSineLut[ang] >> 7;
       RotateVectorByMatrix(g_anSpyroBodyMtx, v, v);
       g_pfnLevelEmitParticles(1, EMIT_DUST_PUFF, v, 1);
       ang = (ang + 0x40) & 0xFF;

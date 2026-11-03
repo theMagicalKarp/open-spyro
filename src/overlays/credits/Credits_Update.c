@@ -527,7 +527,7 @@ void Credits_Update(void) {
               g->z + g->dz;
           POOL[i].g = POOL[i].g + POOL[i].dg;
           POOL[i].b = POOL[i].b + POOL[i].db;
-          if ((unsigned char)(POOL[i].timer =
+          if ((POOL[i].timer =
                                   POOL[i].timer - 1) == 0) {
             POOL[i].state = CRED_GLYPH_SETTLED;
             POOL[i].dx = RandomSignedInRange(3, 0xB);

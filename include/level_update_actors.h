@@ -478,7 +478,7 @@ typedef struct BrawlerSpawnState {
  * `home` after a chase. */
 typedef struct ShooterState {
   int home[3];   /* 0x00 */
-  void *path;    /* 0x0C */
+  PathData *path;    /* 0x0C */
   int triggered; /* 0x10 */
   int mode;      /* 0x14 ShooterRole */
   int timer;     /* 0x18 */

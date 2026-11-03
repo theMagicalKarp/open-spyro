@@ -2869,7 +2869,7 @@ void Level10_UpdateActors(void) {
 
       case SGUARD_BRAKE_AIM:
         st->stateTimer = 0xB4;
-        FindNearestPathPointToActor(actor, (PathData *)st->path, &nearestNode[0]);
+        FindNearestPathPointToActor(actor, st->path, &nearestNode[0]);
         st->turn = ArcTan2(PATH_X(st->path, nearestNode[0]) - actor->posX,
                                  PATH_Y(st->path, nearestNode[0]) - actor->posY, ATAN_ANGLE8);
         actor->mode = SGUARD_BRAKE;
@@ -2948,7 +2948,7 @@ void Level10_UpdateActors(void) {
           continue;
         }
         if (actor->subMode == 0 && st->lift < -0x50) {
-          FindNearestPathPointToActor(actor, (PathData *)st->path, &nearestNode[1]);
+          FindNearestPathPointToActor(actor, st->path, &nearestNode[1]);
           SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, (int *)((unsigned char *)st->path + ((nearestNode[1] << 4) + 8)));
           MarkActorLiveKill(actor);
           actor->subMode = 1;

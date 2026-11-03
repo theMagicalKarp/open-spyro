@@ -28,7 +28,7 @@ int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist,
   SubtractVector(vec, &path->nodes[path->cur].x, &actor->posX);
   eul[0] = 0;
   eul[1] = ArcTan2(VectorLength(vec, VEC_LEN_XY), vec[2], ATAN_ANGLE8);
-  if ((int)VectorLength(vec, VEC_LEN_XY) < arriveDist) {
+  if (VectorLength(vec, VEC_LEN_XY) < arriveDist) {
     eul[2] = actor->rotZ;
   } else {
     delta = ArcTan2(vec[0], vec[1], ATAN_ANGLE8);
@@ -87,7 +87,7 @@ int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist,
   RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
   ret = 0;
   SubtractVector(vec, &path->nodes[path->cur].x, &actor->posX);
-  if ((int)VectorLength(vec, VEC_LEN_XYZ) < arriveDist) {
+  if (VectorLength(vec, VEC_LEN_XYZ) < arriveDist) {
     actor->subMode = 0;
     path->cur = path->cur + 1;
     if ((path->cur & 0xFF) == path->count) {

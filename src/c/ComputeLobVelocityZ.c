@@ -13,7 +13,7 @@ int ComputeLobVelocityZ(int *pos, int *target, int speed, int gravity,
 
   v[0] = pos[0] - target[0];
   v[1] = pos[1] - target[1];
-  t = (int)VectorLength(v, VEC_LEN_XY) / speed;
+  t = VectorLength(v, VEC_LEN_XY) / speed;
   if (pOutTime != 0) {
     *pOutTime = t;
   }

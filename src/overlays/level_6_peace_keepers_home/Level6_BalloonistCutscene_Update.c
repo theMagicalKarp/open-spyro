@@ -307,7 +307,7 @@ void Level6_BalloonistCutscene_Update(void)
             {
               do
               {
-                k = ((int) GetRandomU32()) % 5;
+                k = GetRandomU32() % 5;
                 if ((k == 0) && (g_nLevelEggsRecovered1 == 0))
                 {
                   g_nActorCutsceneDialogPage_s = BPAGE_HINT_STONE_HILL;

@@ -4294,8 +4294,8 @@ void Level22_UpdateActors(void) {
       }
 
       for (i = 0; i < 8; i++) {
-        g608[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
-        g608[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
+        g608[0] = (g_anCosineLut[i * 32] >> 8) * 3;
+        g608[1] = (g_anSineLut[i * 32] >> 8) * 3;
         g608[2] = 0x18;
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)g608);
       }

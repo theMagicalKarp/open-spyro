@@ -1603,7 +1603,7 @@ void Level33_UpdateActors(void) {
           }
           ENTER_POSE(actor, LANEPAT_WATCH);
         }
-        FindFarthestPathPointFromSpyro((PathData *)st->path);
+        FindFarthestPathPointFromSpyro(st->path);
         FindNearestPathPointToSpyro(st->path, nearestNode);
         if (dist < 0x3000) {
           int a;

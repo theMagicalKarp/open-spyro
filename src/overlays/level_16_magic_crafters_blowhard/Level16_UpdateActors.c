@@ -716,7 +716,7 @@ void Level16_UpdateActors(void) {
           if (d > 0x3000) {
             d = 0x3000;
           }
-          if ((short)st->reach >> 1 >= d) {
+          if (st->reach >> 1 >= d) {
             ENTER_POSE(actor, RIMRIDER_STOP);
           }
           actor->posX += (st->reach * g_anCosineLut[actor->rotZ]) >> 12;

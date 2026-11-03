@@ -23,7 +23,7 @@ int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius,
   SubtractVector(vec, &path->nodes[path->cur].x, &actor->posX);
   eul[0] = 0;
   eul[1] = ArcTan2(VectorLength(vec, VEC_LEN_XY), vec[2], ATAN_ANGLE8);
-  if (((int)VectorLength(vec, VEC_LEN_XY)) < radius) {
+  if (VectorLength(vec, VEC_LEN_XY) < radius) {
     eul[2] = *yawp;
   } else {
     int yaw;
@@ -73,7 +73,7 @@ int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius,
   RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
   ret = 0;
   SubtractVector(vec, &path->nodes[path->cur].x, &actor->posX);
-  if (((int)VectorLength(vec, VEC_LEN_XYZ)) < radius) {
+  if (VectorLength(vec, VEC_LEN_XYZ) < radius) {
     actor->subMode = 0;
     path->cur += 1;
     if (path->cur == path->count) {

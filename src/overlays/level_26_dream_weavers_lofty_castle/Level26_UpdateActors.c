@@ -861,7 +861,7 @@ void Level26_UpdateActors(void) {
 
       case CPGUARD_RETURN:
         if (st->onPath != 0) {
-          d = FindNearestPathPointToActor(actor, (PathData *)st->path, idx);
+          d = FindNearestPathPointToActor(actor, st->path, idx);
           st->path->cur = idx[0];
           if (d < 0x200) {
             ENTER_POSE(actor, CPGUARD_PATROL);
@@ -3640,8 +3640,8 @@ void Level26_UpdateActors(void) {
       }
 
       for (i = 0; i < 8; i++) {
-        t472[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
-        t472[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
+        t472[0] = (g_anCosineLut[i * 32] >> 8) * 3;
+        t472[1] = (g_anSineLut[i * 32] >> 8) * 3;
         t472[2] = 0x18;
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)t472);
       }

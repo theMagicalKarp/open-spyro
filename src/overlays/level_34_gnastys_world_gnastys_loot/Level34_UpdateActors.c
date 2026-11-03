@@ -1763,7 +1763,7 @@ void Level34_UpdateActors(void) {
           int yaw = actor->rotZ;
 
           if (actor->subMode != 0) {
-            TweenActorAlongPath(actor, (PathData *)st->cur, st->look, &st->laps, 2,
+            TweenActorAlongPath(actor, st->cur, st->look, &st->laps, 2,
                           0);
             if (AbsAngleDelta8(actor->rotZ,
                               ArcTan2(SPY.posX - actor->posX,
@@ -1797,7 +1797,7 @@ void Level34_UpdateActors(void) {
             g_anCameraActiveTargetParams.w[3] = 0;
             g_anCameraActiveTargetParams.w[5] = 0;
             g_anCameraActiveTargetParams.w[0] = 0x800 - g_bSpyroPersistentEulerZ * 16;
-            r = TweenActorAlongPath(actor, (PathData *)st->path, st->look, &st->laps,
+            r = TweenActorAlongPath(actor, st->path, st->look, &st->laps,
                               st->speed, TWEEN_FLY);
             if (r == TWEEN_WRAPPED) {
               st->cur->cur = 2;

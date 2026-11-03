@@ -91,7 +91,7 @@ void Gamestate02_03_06_Draw(void) {
     } while (0);
     do {
       PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
-      img = (void **)g_apRenderScratchPrimTopBlock;
+      img = g_apRenderScratchPrimTopBlock;
     } while (0);
     KEEP_IN_REG(k18);
     img2 = img - 2;

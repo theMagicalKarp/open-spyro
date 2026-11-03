@@ -316,7 +316,7 @@ Actor *Level6_SpawnActor(int type, Actor *parent) {
     if (parent != 0) {
       CopyVector(&rec->posX, &parent->posX);
     } else {
-      CopyVector(&rec->posX, (int *)g_anSpyroWorldPos);
+      CopyVector(&rec->posX, g_anSpyroWorldPos);
     }
     rec->posZ += 0x200;
     ground = FindGroundHeightBelow(&rec->posX, 0x800);
@@ -400,7 +400,7 @@ Actor *Level6_SpawnActor(int type, Actor *parent) {
     if (parent != 0) {
       CopyVector(&rec->posX, &parent->posX);
     } else {
-      CopyVector(&rec->posX, (int *)g_anSpyroWorldPos);
+      CopyVector(&rec->posX, g_anSpyroWorldPos);
     }
     InsertActorIntoSpatialGrid(rec);
     break;

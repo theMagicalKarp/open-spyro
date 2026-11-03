@@ -2806,8 +2806,8 @@ void Level0_UpdateActors(void) {
 
       if (st->handle < 0) {
         /* Unattached: probe just ahead and attach to that triangle. */
-        tri[0][0] = (short)g_anCosineLut[actor->rotZ] >> 1;
-        tri[0][1] = (short)g_anSineLut[actor->rotZ] >> 1;
+        tri[0][0] = g_anCosineLut[actor->rotZ] >> 1;
+        tri[0][1] = g_anSineLut[actor->rotZ] >> 1;
         tri[0][2] = 0;
         AddVector(tri[0], tri[0], &actor->posX);
 
@@ -2837,8 +2837,8 @@ void Level0_UpdateActors(void) {
       if ((g_dwGamestateFrames & 3) != 0) {
         break;
       }
-      tri[0][0] = (short)g_anCosineLut[actor->rotZ] >> 5;
-      tri[0][1] = (short)g_anSineLut[actor->rotZ] >> 5;
+      tri[0][0] = g_anCosineLut[actor->rotZ] >> 5;
+      tri[0][1] = g_anSineLut[actor->rotZ] >> 5;
       tri[0][2] = 0x20;
       g_pfnLevelEmitParticles(1, EMIT_SLOWING_SPARK, &actor->posX, (int)tri[0]);
       break;
@@ -3090,8 +3090,8 @@ void Level0_UpdateActors(void) {
       for (i = 0; i < 8; i++) {
         int vec[3];
 
-        vec[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
-        vec[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
+        vec[0] = (g_anCosineLut[i * 32] >> 8) * 3;
+        vec[1] = (g_anSineLut[i * 32] >> 8) * 3;
         vec[2] = 0x18;
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)vec);
       }

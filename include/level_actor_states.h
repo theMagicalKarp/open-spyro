@@ -109,7 +109,7 @@ typedef struct ChargingGuardState {
 /* Type 28 state (level 20): the gunner, paired with a `partner`; fires
  * type 400 shots in mode 5. */
 typedef struct GunnerState {
-  void *path;  /* 0x00 */
+  PathData *path;  /* 0x00 */
   int partner; /* 0x04 index into g_pActorListBase; level data: ACTOR_TYPE_ONE_SHOT_PROP / CHARGING_GUARD */
   int knockSpeed;     /* 0x08 knock-back speed */
   int knockZSpeed;     /* 0x0C */
@@ -576,7 +576,7 @@ typedef struct BurstGunnerState {
   int shotTimer;     /* 0x10 shot timer */
   int shotGap;     /* 0x14 frames since the last shot of a burst */
   int shotReload;     /* 0x18 shot timer reload */
-  void *path;   /* 0x1C path */
+  PathData *path;   /* 0x1C path */
   int pad20;     /* 0x20 */
   int countdown;     /* 0x24 */
   TriggerBox box0;  /* 0x28 trigger box */
@@ -590,7 +590,7 @@ typedef struct BurstGunnerState {
  * limits. */
 typedef struct SweepGunnerState {
   int flags;     /* 0x00 GUNNER_F_ARMED */
-  void *path;   /* 0x04 path */
+  PathData *path;   /* 0x04 path */
   int knockSpeed;     /* 0x08 knock-back speed */
   int knockHeading;     /* 0x0C knock-back heading */
   int knockZSpeed;     /* 0x10 */
@@ -616,7 +616,7 @@ typedef struct LobGunnerState {
   int knockZSpeed;              /* 0x0C */
   TriggerBox box0;           /* 0x10 trigger box */
   unsigned char *targetPath;   /* 0x28 target path: count, index, points */
-  void *path;            /* 0x2C path */
+  PathData *path;            /* 0x2C path */
   int timer;              /* 0x30 timer */
   int throwTimer;              /* 0x34 throw timer */
   Actor *heldLob;           /* 0x38 held lob (type 176), -1 once thrown */
