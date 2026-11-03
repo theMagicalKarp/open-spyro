@@ -626,7 +626,7 @@ enum CaptainPost {
   CAPTAIN_POST_LOOKOUT = 1,      /* within range: alerts its group (CAPTAIN_ALERTED) */
   CAPTAIN_POST_LEDGE = 2,        /* once armed (step), stalks Spyro when he is above its path */
   CAPTAIN_POST_FIGHTER = 3,      /* fights straight away */
-  CAPTAIN_POST_PATROL = 4,       /* walks between path points once its partner calls */
+  CAPTAIN_POST_PATROL = 4,       /* walks between path points once its shepherd partner is knocked */
   CAPTAIN_POST_LEDGE_WAIT = 5,   /* faces Spyro until cued, then arms as POST_LEDGE */
 };
 
@@ -2026,8 +2026,11 @@ enum WarDrumMode {
 };
 
 /* ->mode of a lantern (ACTOR_TYPE_LANTERN, LanternState; level 25); the mode
- * is also the animation index. subMode bit 0 is lit, bit 1 settled, bit 2
- * holds it as is. */
+ * is also the animation index. ->subMode holds the LANTERN_F_* bits, which
+ * the grabbers and alarm sentries that link a lantern (level data) watch. */
+#define LANTERN_F_LIT 0x1     /* lit (its glow node grows) */
+#define LANTERN_F_SETTLED 0x2 /* not mid-toggle; a hit sets it with LIT */
+#define LANTERN_F_HELD 0x4    /* a grabber holds it as is: IDLE stops toggling */
 enum LanternMode {
   LANTERN_IDLE = 0,     /* on the timer, toggles: lit ones SNUFF, dark ones LIGHT */
   LANTERN_SNUFF = 1,    /* goes out, then IDLE */
@@ -2288,7 +2291,7 @@ enum PlatformPodMode {
  * is also the animation index. */
 enum BreakablePropMode {
   BPROP_IDLE = 0,
-  BPROP_WOBBLE = 1, /* plays out, then IDLE (no writer in this block) */
+  BPROP_WOBBLE = 1, /* plays out, then IDLE; set by a soldier ducking into it (SOLDIER_ENTER_POST) */
   BPROP_BREAK = 2,  /* flamed, or supercharged twice in half a second: breaks, despawns */
 };
 

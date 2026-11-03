@@ -3358,7 +3358,7 @@ void Level3_UpdateActors(void) {
         if (d < 0x2000) {
           TrackEntityYawTowardSpyro(actor, 10, 0, YAW_HOLD_IN_BAND);
         }
-        if (g_pActorListBase[st->link].mode < 5) {
+        if (g_pActorListBase[st->link].mode < WARD_DAZED) {
           if (ApproxDist2D(&actor->posX, &g_pActorListBase[st->link].posX) < 0x1000) {
             ENTER_POSE(actor, LFOLLOW_SET_OFF);
           }
@@ -3371,7 +3371,7 @@ void Level3_UpdateActors(void) {
       }
 
       case LFOLLOW_FOLLOW:
-        if (g_pActorListBase[st->link].mode >= 4) {
+        if (g_pActorListBase[st->link].mode >= WARD_KNOCKED) {
           ENTER_POSE(actor, LFOLLOW_IDLE);
         }
         if (TICK_DOWN(st->hold) != 0 &&

@@ -745,7 +745,7 @@ void Level26_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode == SINKBLK_IDLE) {
         st->depth = 0;
-        g_pActorListBase[st->partner].mode = 1;
+        g_pActorListBase[st->partner].mode = ESCORT_TWEEN_IN;
         PlayActorMeshVoice(&g_pActorListBase[st->partner], SINKBLK_VOICE_FREED, 0);
         MarkActorLiveKill(&g_pActorListBase[st->partner]);
         CommitActorKillGems(0, &g_pActorListBase[st->partner]);
@@ -1453,7 +1453,7 @@ void Level26_UpdateActors(void) {
       case ESCORT_HOLD:
         if (st->partner >= 0) {
           g_pActorListBase[st->partner].subMode |= 1 << st->slot;
-          if (g_pActorListBase[st->partner].mode == 4) {
+          if (g_pActorListBase[st->partner].mode == ESCORT_BREAK_AWAY) {
             actor->mode = ESCORT_BREAK_AWAY;
             st->speed = 0x20;
             st->timer = 0x78;
@@ -2715,7 +2715,7 @@ void Level26_UpdateActors(void) {
           MarkActorLiveKill(actor);
           ENTER_POSE(actor, PBOUNCER_THROWN);
         }
-        if (g_pActorListBase[st->partner].mode != 0) {
+        if (g_pActorListBase[st->partner].mode != PPLAT_BOB) {
           st->heading = actor->rotZ;
           st->speed = 0;
           st->lift = 0;

@@ -141,7 +141,7 @@ typedef struct LanePatrollerState {
   int endNodeBack;       /* 0x20 end node going back */
   int endNodeFwd;       /* 0x24 end node going forward */
   int box[14];   /* 0x28 trigger box */
-  int partner;       /* 0x60 partner actor index, -1 none */
+  int partner;       /* 0x60 partner actor index, -1 none; level data: ACTOR_TYPE_LOOT_VORTEX */
 } LanePatrollerState;
 
 extern int g_anLevelEscapeRunCount[]; /* laps per lane */
@@ -169,8 +169,8 @@ typedef struct GnastyState {
   int box88[6];             /* 0x88 trigger box */
   int boxA0[6];             /* 0xA0 trigger box */
   int uB8;                  /* 0xB8 */
-  int key2;                 /* 0xBC actor index, -1 none */
-  int key;                  /* 0xC0 actor index */
+  int key2;                 /* 0xBC actor index, -1 none; level data: ACTOR_TYPE_LOOT_VORTEX */
+  int key;                  /* 0xC0 actor index; level data: ACTOR_TYPE_FOLLOWER */
   int seen;                 /* 0xC4 */
   unsigned char *home;      /* 0xC8 */
   int camTimer;             /* 0xCC */

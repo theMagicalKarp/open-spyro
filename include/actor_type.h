@@ -93,19 +93,22 @@ typedef struct Actor {
 #define VOICE_ROW_NONE 0x7F
 #define ACTOR_CULL_HIDDEN 0 /* ->cullRadius: a zero bound fails the view cull, so the actor is hidden */
 #define ACTOR_TINT_NEUTRAL 0xA18618 /* the 0x4C tint word at neutral levels (0x18 each, tag 0xA) */
-/* Actor.tintMode presets, used with tint0..2 zeroed. RasterizeSpritePrimQueue
- * reads the preset word at 0x8006E3D8 + (tint word >> 22). Its low three
- * bytes, x16, go to the GTE back colour (R, G, B), so a preset is a light
- * level rather than the visible colour. Byte 3: the low nibble x2 is loaded
- * into IR0; a nonzero high nibble is a glint threshold, n x 0x80 above the
- * back colour's R: once the lit R channel passes it, twice the excess is
- * added to all three channels (a white highlight). EXE words: 0 0x808080,
- * 1 0x606060, 2 0x006060, 3..6 zero (filled at run time; the flight tally
- * writes them), 7 0x606060 (glint 4), 8 0x000060, 9 0x006000, 0xA 0x600000,
- * 0xB 0x006060, 0xC 0x605050, 0xD 0x000060 (glint 0xC), 0xE 0x206020,
- * 0xF..0x11 the 0xA..0xC colours with glint 0xC, 0x12..0x16 the 8..0xC
- * colours with glint 0xA, 0x17 0x600040. Named by the actors and text that
- * pick them. */
+/* Actor.tintMode presets, used with tint0..2 zeroed.
+ * RasterizeSpritePrimQueue reads the preset word at 0x8006E3D8 + (tint word
+ * >> 22). Its low three bytes, x16, go to the GTE back colour (R, G, B), so
+ * a preset is a light level rather than the visible colour. Byte 3: the low
+ * nibble x2 goes to IR0, which scales each camera-rotated vertex normal
+ * before `cc` lights it through the light colour matrix: 0 leaves the flat
+ * back colour, larger values shade by facing more strongly (a lit word that
+ * compares below the preset's packed word is replaced by it). A nonzero high
+ * nibble is a glint threshold, n x 0x80 above the back colour's R: once the
+ * lit R channel passes it, twice the excess is added to all three channels
+ * (a white highlight). EXE words: 0 0x808080, 1 0x606060, 2 0x006060, 3..6
+ * zero (filled at run time; the flight tally writes them), 7 0x606060 (glint
+ * 4), 8 0x000060, 9 0x006000, 0xA 0x600000, 0xB 0x006060, 0xC 0x605050, 0xD
+ * 0x000060 (glint 0xC), 0xE 0x206020, 0xF..0x11 the 0xA..0xC colours with
+ * glint 0xC, 0x12..0x16 the 8..0xC colours with glint 0xA, 0x17 0x600040.
+ * Named by the actors and text that pick them. */
 #define TINT_GEM_1 1      /* gems, one per value: HUD tally icons use type - 0x52 */
 #define TINT_GEM_2 2
 #define TINT_GEM_5 3

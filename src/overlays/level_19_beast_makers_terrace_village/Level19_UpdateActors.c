@@ -104,7 +104,7 @@ typedef struct BoltGuardState {
   void *path;  /* 0x1C */
   int range;   /* 0x20 in 1024s; the next link for a followed actor */
   int countdown;     /* 0x24 */
-  int link;    /* 0x28 actor index, -1 for none */
+  int link;    /* 0x28 actor index, -1 for none; initially (level data) ACTOR_TYPE_ROAMING_RAM */
   short spinX; /* 0x2C */
   short spinY; /* 0x2E */
   int box[3];  /* 0x30 */

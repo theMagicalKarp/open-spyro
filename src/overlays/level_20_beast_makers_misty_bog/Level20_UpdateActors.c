@@ -421,7 +421,7 @@ void Level20_UpdateActors(void) {
         } else if (st->mode == GUNNER_ROLE_PATROL) {
           Actor *partner = &g_pActorListBase[st->partner];
 
-          if (partner->mode != 0) {
+          if (partner->mode != CHARGER_IDLE) {
             st->mode = GUNNER_ROLE_GUARD;
             ENTER_POSE(actor, GUNNER_GUARD);
           }
@@ -430,7 +430,7 @@ void Level20_UpdateActors(void) {
         } else if (st->mode == GUNNER_ROLE_LOOKOUT) {
           ANIM_GO(actor, GUNNER_IDLE);
           if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x640 &&
-              g_pActorListBase[st->partner].mode == 0) {
+              g_pActorListBase[st->partner].mode == ONESHOT_IDLE) {
             ENTER_POSE(actor, GUNNER_STARTLE);
           }
           if (actor->subMode != 0) {
@@ -440,8 +440,8 @@ void Level20_UpdateActors(void) {
         break;
 
       case GUNNER_WAKE:
-        if (actor->nextFrame >= 4 && g_pActorListBase[st->partner].mode == 0) {
-          g_pActorListBase[st->partner].mode = 1;
+        if (actor->nextFrame >= 4 && g_pActorListBase[st->partner].mode == ONESHOT_IDLE) {
+          g_pActorListBase[st->partner].mode = ONESHOT_PLAY;
         }
         if (g_nActorAnimDone != 0) {
           ENTER_POSE(actor, GUNNER_TURN);

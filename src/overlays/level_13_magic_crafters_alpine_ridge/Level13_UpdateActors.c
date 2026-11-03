@@ -2700,7 +2700,7 @@ void Level13_UpdateActors(void) {
           if (st->heading == -1) {
             st->heading = actor->rotZ;
           }
-          if (partner->mode == 3 || partner->mode >= ACTOR_MODE_DORMANT ||
+          if (partner->mode == SHEPHERD_KNOCKED || partner->mode >= ACTOR_MODE_DORMANT ||
               ApproxDist2D(&actor->posX, &SPY.posX) <= 0x1400) {
             actor->mode = CAPTAIN_FIGHT;
             continue;
@@ -2713,7 +2713,7 @@ void Level13_UpdateActors(void) {
               actor->frameProgress = 0;
             }
             if (st->partner != -1) {
-              partner->mode = 0;
+              partner->mode = SHEPHERD_IDLE;
             }
           }
           break;
@@ -2758,7 +2758,7 @@ void Level13_UpdateActors(void) {
         case CAPTAIN_POST_PATROL: {
           Actor *partner = &g_pActorListBase[st->partner];
 
-          if (partner->nextAnim == 3) {
+          if (partner->nextAnim == SHEPHERD_KNOCKED) {
             actor->subMode = 1;
           }
           if (actor->anim == CAPTAIN_ANIM_STAND && st->posed == 0) {

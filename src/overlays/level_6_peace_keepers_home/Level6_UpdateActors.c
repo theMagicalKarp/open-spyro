@@ -100,8 +100,8 @@ typedef struct FireballState {
 
 /* Type 225 state: a cannon. */
 typedef struct FireballCannonState {
-  int link;    /* 0x00 index into g_pActorListBase (its trigger) */
-  int rival;   /* 0x04 index into g_pActorListBase: the cannon it duels */
+  int link;    /* 0x00 index into g_pActorListBase (its trigger); level data: ACTOR_TYPE_SOLDIER */
+  int rival;   /* 0x04 index into g_pActorListBase: the cannon it duels; level data: ACTOR_TYPE_FIREBALL_CANNON */
   int u08;     /* 0x08 */
   int hold;    /* 0x0C ticks until the trigger is released */
   int u10;     /* 0x10 */
@@ -121,8 +121,10 @@ typedef struct SoldierState {
   int timer2;          /* 0x2C */
   int home[4];         /* 0x30 */
   int speed;           /* 0x40 */
-  int link;            /* 0x44 index into g_pActorListBase */
-  int link2;           /* 0x48 index into g_pActorListBase, -1 none */
+  int link;            /* 0x44 index into g_pActorListBase: its post (an
+                        * ACTOR_TYPE_BREAKABLE_PROP) or, for runners and duelists, its
+                        * ACTOR_TYPE_FIREBALL_CANNON (level data) */
+  int link2;           /* 0x48 index into g_pActorListBase, -1 none (a duelist's rival soldier) */
   int volley;          /* 0x4C */
   int phase;           /* 0x50 */
   int knockDir;        /* 0x54 */
@@ -3167,7 +3169,7 @@ void Level6_UpdateActors(void) {
       case SOLDIER_IN_POST: {
         Actor *a = &g_pActorListBase[st->link];
 
-        if (a->anim < 2) {
+        if (a->anim < BPROP_BREAK) {
           actor->cullRadius = ACTOR_CULL_HIDDEN;
           break;
         }
@@ -3232,11 +3234,11 @@ void Level6_UpdateActors(void) {
         } else {
           CopyVector(&actor->posX, &a->posX);
         }
-        if (actor->frame >= 5 && a->mode == 0) {
-          if (a->anim != 1) {
-            ANIM_RESET(a, 1);
+        if (actor->frame >= 5 && a->mode == BPROP_IDLE) {
+          if (a->anim != BPROP_WOBBLE) {
+            ANIM_RESET(a, BPROP_WOBBLE);
           }
-          a->mode = 1;
+          a->mode = BPROP_WOBBLE;
         }
         break;
       }

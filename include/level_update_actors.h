@@ -677,7 +677,7 @@ typedef struct RespawnState {
 typedef struct WalkerState {
   PathData *path;      /* 0x00 */
   int timer;           /* 0x04 */
-  int tgtIdx;          /* 0x08 index into g_pActorListBase, -1 when unclaimed */
+  int tgtIdx;          /* 0x08 index into g_pActorListBase, -1 when unclaimed; level data: ACTOR_TYPE_PATH_ENEMY */
   int heading;         /* 0x0C */
   int moveSpeed;           /* 0x10 passed by address to DriveActorTrackedMove */
   int zVel;           /* 0x14 likewise */
@@ -762,7 +762,7 @@ typedef struct GuardState {
   int count;       /* 0x14 idle fidgets before the next look-around */
   int timer;       /* 0x18 */
   int anim;        /* 0x1C animation base */
-  int partner;     /* 0x20 index into g_pActorListBase */
+  int partner;     /* 0x20 index into g_pActorListBase; level data: ACTOR_TYPE_ALARM_POST_GUARD */
   int alarm;       /* 0x24 */
   int drop;        /* 0x28 index into g_pActorListBase, -1 for none */
 } GuardState;
@@ -829,7 +829,7 @@ typedef struct PathGuardState {
   int angle;      /* 0x0C heading offset */
   int timer;      /* 0x10 */
   int node;       /* 0x14 */
-  int partner;    /* 0x18 index into g_pActorListBase */
+  int partner;    /* 0x18 index into g_pActorListBase; level data: ACTOR_TYPE_PATH_GUARD */
   int heading;    /* 0x1C */
   int speed;      /* 0x20 knock-back speed */
   int knock;      /* 0x24 knock-back heading */
@@ -846,7 +846,7 @@ typedef struct HummingBellState {
   int timer;  /* 0x14 */
   int period; /* 0x18 */
   char pad1C[0x14];
-  int target; /* 0x30 index into g_pActorListBase */
+  int target; /* 0x30 index into g_pActorListBase; level data: ACTOR_TYPE_FLOOR_MARKER */
 } HummingBellState;
 
 /* Case 495 -- the level boss. */
@@ -915,7 +915,7 @@ typedef struct PostState {
   short spinY;    /* 0x1E */
   int sub;        /* 0x20 enum PostGuardHop */
   int phase;      /* 0x24 enum PostGuardAmbush */
-  int partner;    /* 0x28 index into g_pActorListBase */
+  int partner;    /* 0x28 index into g_pActorListBase; level data: ACTOR_TYPE_POST_GUARD */
 } PostState;
 
 /* Case 166 -- path patroller. */
@@ -1054,7 +1054,7 @@ typedef struct KeeperState {
   int timer;   /* 0x00 knockback timer */
   int heading; /* 0x04 knockback heading */
   int count;   /* 0x08 idle countdown */
-  int link;    /* 0x0C linked guard (index into g_pActorListBase), or -1 */
+  int link;    /* 0x0C linked guard (index into g_pActorListBase), or -1; level data: ACTOR_TYPE_TETHERED_GUARD / TETHER_KEEPER */
   int mode;    /* 0x10 TetherCommand passed to the guard */
   int baseX;   /* 0x14 post position */
   int baseY;   /* 0x18 */
@@ -1095,7 +1095,7 @@ typedef struct CannonState {
 typedef struct CatapultState {
   int angle;     /* 0x00 0..0x120 */
   int vel;       /* 0x04 */
-  int link;      /* 0x08 actor to fling (index into g_pActorListBase), or -1 */
+  int link;      /* 0x08 actor to fling (index into g_pActorListBase), or -1; level data: ACTOR_TYPE_GEM_5 / GEM_1 / GEM_2 */
   Actor *flung;  /* 0x0C actor in flight */
   int timer;     /* 0x10 */
 } CatapultState;
@@ -1121,8 +1121,9 @@ typedef struct ShempGuardState {
   int accel;          /* 0x1C */
   int turn;           /* 0x20 */
   int stateTimer;     /* 0x24 BRAKE, RECOVER and FALL durations */
-  int watch;          /* 0x28 index into g_pActorListBase */
-  int guard;          /* 0x2C index into g_pActorListBase */
+  int watch;          /* 0x28 index into g_pActorListBase, -1 none: a peer Shemp guard
+                       * (level data); its nextAnim 7 cues this one to CHASE */
+  int guard;          /* 0x2C index into g_pActorListBase: its ACTOR_TYPE_SHEMP_LOOKOUT */
   int done;           /* 0x30 */
   PathData *target;   /* 0x34 path it pivots along; node 3 is the point it tests Spyro against */
   int chaseDelay;     /* 0x38 CHASE waits it out; a lookout hands it on */
@@ -1139,7 +1140,7 @@ typedef struct LookoutState {
   int count;     /* 0x0C idle loops left */
   int home;      /* 0x10 rest heading */
   int init;      /* 0x14 */
-  int link;      /* 0x18 guard to rouse (index into g_pActorListBase), or -1 */
+  int link;      /* 0x18 guard to rouse (index into g_pActorListBase), or -1; initially (level data) ACTOR_TYPE_SHEMP_GUARD / TWO_PATH_RUNNER */
   int camTimer;  /* 0x1C */
   int camTimer2; /* 0x20 */
   int camDist;   /* 0x24 */
@@ -1247,7 +1248,7 @@ typedef struct FallState {
 typedef struct SorcererState {
   int timer;           /* 0x00 */
   int count;           /* 0x04 bolts thrown this volley */
-  int target;          /* 0x08 actor index */
+  int target;          /* 0x08 actor index; level data: ACTOR_TYPE_VILLAGER */
   PathData *path; /* 0x0C */
   int mode;            /* 0x10 SorcererRole */
   int pad14;
@@ -1274,7 +1275,7 @@ typedef struct CaptainState {
   int heading;         /* 0x14 -1 = take the actor's own */
   int knockSpeed;      /* 0x18 */
   int knockHeading;    /* 0x1C */
-  int partner;         /* 0x20 actor index, -1 = none */
+  int partner;         /* 0x20 actor index, -1 = none: an ACTOR_TYPE_SHEPHERD (level data) */
   int camTimer;        /* 0x24 */
   int step;            /* 0x28 CaptainFightStep; on a ledge post CAPTAIN_LEDGE_ARMED */
   int pad2C;
@@ -1341,7 +1342,7 @@ typedef struct LootVortexState {
   int chunkAnim;              /* 0x04 world chunk-anim handle (GetWorldChunkAnimState) */
   int pad[6];           /* 0x08 trigger volume */
   int mode;             /* 0x20 LootVortexStage */
-  int key;              /* 0x24 actor index */
+  int key;              /* 0x24 actor index; level data: ACTOR_TYPE_LOOT_CRITTER / LOOT_THIEF / LANE_PATROLLER */
   int target;           /* 0x28 actor index */
   int seen;             /* 0x2C 1/2 picks g_nLevelVortexSeen1/2 (read as g_nCutsceneId[seen]), 0 = none */
 } LootVortexState;
@@ -1354,12 +1355,12 @@ typedef struct BombLobberState {
 } BombLobberState;
 
 typedef struct SinkingBlockState {
-  int partner; /* 0x00 index into g_pActorListBase */
+  int partner; /* 0x00 index into g_pActorListBase; level data: ACTOR_TYPE_FORMATION_ESCORT */
   int depth;   /* 0x04 */
 } SinkingBlockState;
 
 typedef struct PartnerPlatformState {
-  int partner;        /* 0x00 index into g_pActorListBase */
+  int partner;        /* 0x00 index into g_pActorListBase; level data: ACTOR_TYPE_PARTNER_BOUNCER */
   unsigned int phase; /* 0x04 */
   int pad08;
   int pad0C;
@@ -1368,15 +1369,15 @@ typedef struct PartnerPlatformState {
 } PartnerPlatformState;
 
 typedef struct PartnerBouncerState {
-  int partner; /* 0x00 index into g_pActorListBase */
+  int partner; /* 0x00 index into g_pActorListBase; level data: ACTOR_TYPE_PARTNER_PLATFORM */
   int speed;   /* 0x04 */
   int lift;    /* 0x08 */
   int heading; /* 0x0C */
 } PartnerBouncerState;
 
 typedef struct FormationEscortState {
-  int leader;     /* 0x00 index into g_pActorListBase */
-  int partner;    /* 0x04 index into g_pActorListBase, -1 = none */
+  int leader;     /* 0x00 index into g_pActorListBase; level data: ACTOR_TYPE_WHIRLWIND */
+  int partner;    /* 0x04 index into g_pActorListBase, -1 = none; level data: ACTOR_TYPE_FORMATION_ESCORT */
   PathData *path; /* 0x08 */
   int tweenLeg[3]; /* 0x0C TweenActorAlongPath prev leg */
   int timer;      /* 0x18 */
@@ -1409,7 +1410,7 @@ typedef struct HatchState {
 } HatchState;
 
 typedef struct MountState {
-  int rider; /* 0x00 index into g_pActorListBase, -1 = none */
+  int rider; /* 0x00 index into g_pActorListBase, -1 = none; level data: ACTOR_TYPE_FLOATING_MINE / FLOATING_BARREL */
   int init;  /* 0x04 */
   int knock; /* 0x08 knock-back heading */
   int speed; /* 0x0C */
@@ -1431,7 +1432,7 @@ typedef struct FloatingBarrelState {
   Actor *rider; /* 0x04 */
   int heading;  /* 0x08 run heading */
   int sink;     /* 0x0C sink speed */
-  int link;     /* 0x10 index into g_pActorListBase, -1 = none */
+  int link;     /* 0x10 index into g_pActorListBase, -1 = none; level data: ACTOR_TYPE_MOUNT / CARRIED_THROWER */
   short handle; /* 0x14 for SelectActorLodBand */
 } FloatingBarrelState;
 
@@ -1480,7 +1481,7 @@ typedef struct Follower {
   signed char spinX; /* 0x0A */
   signed char spinY; /* 0x0B */
   int pathDist;      /* 0x0C */
-  int link;          /* 0x10 leader (index into g_pActorListBase) */
+  int link;          /* 0x10 leader (index into g_pActorListBase); level data: ACTOR_TYPE_PATROL_WARD */
   int target[3];     /* 0x14 */
   int timer;         /* 0x20 */
 } Follower;
