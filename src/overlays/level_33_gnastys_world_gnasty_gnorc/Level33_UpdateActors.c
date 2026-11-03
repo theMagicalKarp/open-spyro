@@ -176,10 +176,10 @@ void Level33_UpdateActors(void) {
   int col[3];
   int spyroDelta[3];
   int nearestNode[2];
-  int o140[3];
+  int sightPoint[3];
   int o150[3];
-  int o160[3];
-  int o170[2];
+  int spyroFloor[3];
+  int pathHit[2];
   int w181[3];
   int sparkleTwinkle[3];
   int shardTwinkle[3];
@@ -1648,13 +1648,13 @@ void Level33_UpdateActors(void) {
       }
 
       if (st->phase < GNASTY_PHASE_MAIN) {
-        CopyVector(o140, &actor->posX);
-        o140[2] += 0x3E8;
+        CopyVector(sightPoint, &actor->posX);
+        sightPoint[2] += 0x3E8;
         if (g_nSpyroState == SPYRO_ST_CHARGE || g_nSpyroState == SPYRO_ST_CHARGE_AIR) {
           st->camTimer = 0x3C;
         }
         if (TICK_DOWN(st->camTimer) != 0 && dist < 0x4000 &&
-            (CheckSpyroLineOfSightTo(o140) != 0 || dist < 0x3000)) {
+            (CheckSpyroLineOfSightTo(sightPoint) != 0 || dist < 0x3000)) {
           g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FOLLOW_CAMERA);
           g_pScriptedCameraActor = actor;
         }
@@ -1791,15 +1791,15 @@ void Level33_UpdateActors(void) {
           GetActorAttachPoint(actor, 0, &o->posX);
           o->rotZ =
               ArcTan2(SPY.posX - o->posX, SPY.posY - o->posY, ATAN_ANGLE8);
-          CopyVector(o160, &SPY.posX);
-          o160[2] = FindGroundHeightBelow(o160, 0x1000);
-          SubtractVector(o150, o160, &o->posX);
+          CopyVector(spyroFloor, &SPY.posX);
+          spyroFloor[2] = FindGroundHeightBelow(spyroFloor, 0x1000);
+          SubtractVector(o150, spyroFloor, &o->posX);
           n = VectorLength(o150, VEC_LEN_XY) / spd;
           q->speed = spd;
           if (n <= 0) {
             n = 1;
           }
-          q->climb = (o160[2] - o->posZ) / n;
+          q->climb = (spyroFloor[2] - o->posZ) / n;
           if (q->climb < -0x1F4) {
             q->climb = -0x1F4;
           }
@@ -1882,9 +1882,9 @@ void Level33_UpdateActors(void) {
           ENTER_POSE(actor, GNASTY_LOOKOUT);
         }
         if (r == PATH_ARRIVED(0)) {
-          FindNearestPathPointToSpyro(st->path, o170);
-          if (dist > 0x4800 && o170[0] > 0x10 &&
-              o170[0] < st->path->count - 1) {
+          FindNearestPathPointToSpyro(st->path, pathHit);
+          if (dist > 0x4800 && pathHit[0] > 0x10 &&
+              pathHit[0] < st->path->count - 1) {
             st->throws = 0;
             actor->mode = GNASTY_THROW;
             continue;

@@ -17,7 +17,7 @@
  *     for the last callee-saved register, so every Spyro read the original
  *     makes through fp must go through `spy` (cases 300 and 312 included).
  *   - Scratch arrays at function level in first-use order, with a BLKmode
- *     `idx[2]` after svE for case 62's FindNearestPathPointToActor out-argument.
+ *     `idx[2]` after camRel for case 62's FindNearestPathPointToActor out-argument.
  *   - Case 61 settles with `z ? z : (t = posZ - 0x200, t - depth)`: the comma
  *     temp stops fold from reassociating the subtraction.
  *   - Case 392's |dx| + |dy| goes through `d` (ABS2 form) and its tests are
@@ -65,7 +65,7 @@ void Level26_UpdateActors(void) {
   int eggArcBase[3];
   int eggArcOffset[3];
   int svD[3];
-  int svE[3];
+  int camRel[3];
   int idx[2];
   int t144[3];
   int groundProbe[3];
@@ -589,9 +589,9 @@ void Level26_UpdateActors(void) {
       }
 
       case EGG_COLLECTED: {
-        SubtractVector(svE, &actor->posX, &CAM.posX);
-        WorldToCameraRotate(svE, svE);
-        g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
+        SubtractVector(camRel, &actor->posX, &CAM.posX);
+        WorldToCameraRotate(camRel, camRel);
+        g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, camRel, 0);
         g_nCinematicActive = 0;
         ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);

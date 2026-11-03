@@ -179,7 +179,7 @@ void Level14_UpdateActors(void) {
   int bouncePos[3];
   int bounceNormal[3];
   int homingStep[3];
-  int svJ1[3];
+  int toTargetAhead[3];
   int sparxToTarget[3];
   int twinklePos[3];
   int aheadOfSpyro[3];
@@ -2632,13 +2632,13 @@ void Level14_UpdateActors(void) {
           int dist;
           int targetSpeed;
 
-          CopyVector(svJ1, &target->posX);
+          CopyVector(toTargetAhead, &target->posX);
           if (isPickupAnimPhase == 0) {
-            svJ1[0] -= g_anCosineLut[st->target->rotZ] >> 4;
-            svJ1[1] -= g_anSineLut[st->target->rotZ] >> 4;
+            toTargetAhead[0] -= g_anCosineLut[st->target->rotZ] >> 4;
+            toTargetAhead[1] -= g_anSineLut[st->target->rotZ] >> 4;
           } else {
-            svJ1[0] -= g_anCosineLut[st->target->rotZ] >> 6;
-            svJ1[1] -= g_anSineLut[st->target->rotZ] >> 6;
+            toTargetAhead[0] -= g_anCosineLut[st->target->rotZ] >> 6;
+            toTargetAhead[1] -= g_anSineLut[st->target->rotZ] >> 6;
           }
 
           if (isPickupAnimPhase) {
@@ -2659,8 +2659,8 @@ void Level14_UpdateActors(void) {
             }
           }
 
-          SubtractVector(svJ1, svJ1, &actor->posX);
-          dist = VectorLength(svJ1, VEC_LEN_XYZ);
+          SubtractVector(toTargetAhead, toTargetAhead, &actor->posX);
+          dist = VectorLength(toTargetAhead, VEC_LEN_XYZ);
 
           if (isPickupAnimPhase == 0) {
             if (TICK_DOWN(st->timer) != 0 ||
@@ -2675,13 +2675,13 @@ void Level14_UpdateActors(void) {
           }
           targetSpeed = isPickupAnimPhase ? 150 : 130;
           if (targetSpeed + 5 < dist) {
-            ScaleVector3ByRatio(svJ1, dist, targetSpeed + 5);
+            ScaleVector3ByRatio(toTargetAhead, dist, targetSpeed + 5);
           } else {
-            ScaleVector3ByRatio(svJ1, dist, targetSpeed - 5);
+            ScaleVector3ByRatio(toTargetAhead, dist, targetSpeed - 5);
           }
-          AddVector(&actor->posX, &actor->posX, svJ1);
-          TurnActorYawTowardAngle(actor, ArcTan2(svJ1[0], svJ1[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
-          pitchAngle = ArcTan2(VectorLength(svJ1, VEC_LEN_XY), svJ1[2], ATAN_ANGLE8);
+          AddVector(&actor->posX, &actor->posX, toTargetAhead);
+          TurnActorYawTowardAngle(actor, ArcTan2(toTargetAhead[0], toTargetAhead[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
+          pitchAngle = ArcTan2(VectorLength(toTargetAhead, VEC_LEN_XY), toTargetAhead[2], ATAN_ANGLE8);
           actor->rotY = pitchAngle;
           actor->rotY = StepAngle8Toward(pitchAngle, 0, 0x30);
           break;

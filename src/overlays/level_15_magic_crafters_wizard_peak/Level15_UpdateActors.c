@@ -15,7 +15,7 @@
  *   - Level 9's loop top (`oneq`/`one` carriers, `spy = base - 8`), but 16 is
  *     a literal (`sixteen` is a macro), not a hoisted carrier.
  *   - Scratch arrays in the original frame order: the twelve 16-byte slots
- *     after svJ are shared across arms (x256..x432).
+ *     after sparxToTarget are shared across arms (x256..x432).
  *   - Pool-actor reads use `g_pActorListBase[i].field` directly; a `&g_pActorListBase[i]`
  *     pointer local reverses the address add.
  *   - Reads of Spyro's heading/position that the original keeps below a
@@ -69,7 +69,7 @@ void Level15_UpdateActors(void) {
   int bouncePos[3];
   int bounceNormal[3];
   int homingStep[3];
-  int svJ[3];
+  int sparxToTarget[3];
   int x256[3];
   int x272[3];
   int prevPos[3];
@@ -2295,8 +2295,8 @@ void Level15_UpdateActors(void) {
             CollectibleState *pk = st->target->state;
             int dist;
 
-            SubtractVector(svJ, &st->target->posX, &actor->posX);
-            dist = VectorLength(svJ, VEC_LEN_XYZ);
+            SubtractVector(sparxToTarget, &st->target->posX, &actor->posX);
+            dist = VectorLength(sparxToTarget, VEC_LEN_XYZ);
 
             if (dist < 0x200) {
               pk->timer = 0;
@@ -2326,13 +2326,13 @@ void Level15_UpdateActors(void) {
               int lim = 0x136;
 
               if (lim < dist) {
-                ScaleVector3ByRatio(svJ, dist, lim);
+                ScaleVector3ByRatio(sparxToTarget, dist, lim);
               } else {
-                ScaleVector3ByRatio(svJ, dist, 0x122);
+                ScaleVector3ByRatio(sparxToTarget, dist, 0x122);
               }
-              AddVector(&actor->posX, &actor->posX, svJ);
-              TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
-              actor->rotY = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], ATAN_ANGLE8);
+              AddVector(&actor->posX, &actor->posX, sparxToTarget);
+              TurnActorYawTowardAngle(actor, ArcTan2(sparxToTarget[0], sparxToTarget[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
+              actor->rotY = ArcTan2(VectorLength(sparxToTarget, VEC_LEN_XY), sparxToTarget[2], ATAN_ANGLE8);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
             break;

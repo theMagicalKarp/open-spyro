@@ -75,7 +75,7 @@ void Level10_UpdateActors(void) {
   int col2[3];
   int nearestNode[2];
   int pos371[3];
-  int p371[3];
+  int sparkPos[3];
   int letterSwingRest[3];
 
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
@@ -3333,12 +3333,12 @@ void Level10_UpdateActors(void) {
             vel371[0] = (unsigned short)g_anCosineLut[bi] << 16 >> 21;
             vel371[1] = (unsigned short)g_anSineLut[bi] << 16 >> 21;
             vel371[2] = RandomIntInRange(-0xF, 0xF) + 0x14;
-            CopyVector(p371, pos371);
+            CopyVector(sparkPos, pos371);
             i++;
-            p371[0] += (GetRandomU32() & 0x1FF) - 0x100;
-            p371[1] += (GetRandomU32() & 0x1FF) - 0x100;
-            p371[2] += (GetRandomU32() & 0x1FF) - 0x100;
-            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, p371, (int)vel371);
+            sparkPos[0] += (GetRandomU32() & 0x1FF) - 0x100;
+            sparkPos[1] += (GetRandomU32() & 0x1FF) - 0x100;
+            sparkPos[2] += (GetRandomU32() & 0x1FF) - 0x100;
+            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, sparkPos, (int)vel371);
           } while (i < 3);
           if (g_nActorAnimDone != 0) {
             actor->frame = 0xF;

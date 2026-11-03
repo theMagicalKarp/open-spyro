@@ -77,7 +77,7 @@ void Level29_UpdateActors(void) {
   int homingStep[3];
   int sparxToTarget[3];
   int bonusStep[3];
-  int svW[3];
+  int tallyOffset[3];
   int sh6;
 
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
@@ -1866,13 +1866,13 @@ void Level29_UpdateActors(void) {
         actor->rotZ += 8;
         break;
       case TALLY_ICON_SPEND:
-        svW[0] = g_nFlightTallySlot * 50 + 0x1E;
-        svW[1] = 0xC8;
-        svW[2] = 0x1000;
-        AddVector(&st->x, svW, &actor->posX);
+        tallyOffset[0] = g_nFlightTallySlot * 50 + 0x1E;
+        tallyOffset[1] = 0xC8;
+        tallyOffset[2] = 0x1000;
+        AddVector(&st->x, tallyOffset, &actor->posX);
         RShiftVector3(&st->x, 1);
-        SubtractVector(svW, &st->x, &actor->posX);
-        st->radius = VectorLength(svW, VEC_LEN_XY);
+        SubtractVector(tallyOffset, &st->x, &actor->posX);
+        st->radius = VectorLength(tallyOffset, VEC_LEN_XY);
         st->angle =
             ArcTan2(actor->posX - st->x, st->y - actor->posY, ATAN_ANGLE12);
         st->phase = 0x800;
@@ -1891,13 +1891,13 @@ void Level29_UpdateActors(void) {
         }
         break;
       case TALLY_ICON_FINALE:
-        svW[0] = (g_anCosineLut[actor->subMode * 64] >> sh6) + 0x100;
-        svW[1] = ((g_anSineLut[actor->subMode * 64] * 5) >> 9) + 0x78;
-        svW[2] = 0x1000;
-        AddVector(&st->x, svW, &actor->posX);
+        tallyOffset[0] = (g_anCosineLut[actor->subMode * 64] >> sh6) + 0x100;
+        tallyOffset[1] = ((g_anSineLut[actor->subMode * 64] * 5) >> 9) + 0x78;
+        tallyOffset[2] = 0x1000;
+        AddVector(&st->x, tallyOffset, &actor->posX);
         RShiftVector3(&st->x, 1);
-        SubtractVector(svW, &st->x, &actor->posX);
-        st->radius = VectorLength(svW, VEC_LEN_XY);
+        SubtractVector(tallyOffset, &st->x, &actor->posX);
+        st->radius = VectorLength(tallyOffset, VEC_LEN_XY);
         st->angle =
             ArcTan2(actor->posX - st->x, st->y - actor->posY, ATAN_ANGLE12);
         st->phase = 0x800;

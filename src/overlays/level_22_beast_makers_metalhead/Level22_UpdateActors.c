@@ -68,16 +68,16 @@ void Level22_UpdateActors(void) {
   int g168[3];
   int sparkLead[3];
   int g200[3];
-  int g216[3];
+  int throwerMid[3];
   int g232[3];
-  int g248[3];
-  int g264[3];
+  int throwerCatchPt[3];
+  int throwerHoldMid[3];
   int g280[3];
   int g296[3];
-  int g312[3];
-  int g328[3];
+  int gateCatchPt[3];
+  int gateHoldMid[3];
   int g344[3];
-  int g360[3];
+  int gateCatchPt2[3];
   int triVerts[3][3]; /* sp 376 */
   int bounceNormal[3];
   int homingStep[3];
@@ -1465,12 +1465,12 @@ void Level22_UpdateActors(void) {
         ANIM_GO(actor, BTHROW_ANIM_LEAP);
         RefreshActorDerivedState(catcher, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(catcher, 0, g232);
-        GetActorAttachPoint(catcher, 1, g248);
-        AddVector(g216, g232, g248);
-        RShiftVector3(g216, 1);
+        GetActorAttachPoint(catcher, 1, throwerCatchPt);
+        AddVector(throwerMid, g232, throwerCatchPt);
+        RShiftVector3(throwerMid, 1);
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0, sixteen);
-        if (actor->posZ < g216[2]) {
-          CopyVector(&actor->posX, g216);
+        if (actor->posZ < throwerMid[2]) {
+          CopyVector(&actor->posX, throwerMid);
           actor->mode++;
         }
         break;
@@ -1483,9 +1483,9 @@ void Level22_UpdateActors(void) {
         RefreshActorDerivedState(catcher, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(catcher, 0, g280);
         GetActorAttachPoint(catcher, 1, g296);
-        AddVector(g264, g280, g296);
-        RShiftVector3(g264, 1);
-        CopyVector(&actor->posX, g264);
+        AddVector(throwerHoldMid, g280, g296);
+        RShiftVector3(throwerHoldMid, 1);
+        CopyVector(&actor->posX, throwerHoldMid);
         if (catcher->nextFrame >= 0xE) {
           if (st->partner != -1) {
             ((BoulderThrowerState *)g_pActorListBase[st->partner].state)->partnerSignal = 1;
@@ -1832,8 +1832,8 @@ void Level22_UpdateActors(void) {
         ANIM_GO(actor, GATEKEEPER_ANIM_LEAP);
         RefreshActorDerivedState(catcher, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(catcher, 0, g232);
-        GetActorAttachPoint(catcher, 1, g312);
-        AddVector(g280, g232, g312);
+        GetActorAttachPoint(catcher, 1, gateCatchPt);
+        AddVector(g280, g232, gateCatchPt);
         RShiftVector3(g280, 1);
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0, sixteen);
         if (actor->posZ < g280[2]) {
@@ -1849,10 +1849,10 @@ void Level22_UpdateActors(void) {
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
         RefreshActorDerivedState(catcher, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(catcher, 0, g344);
-        GetActorAttachPoint(catcher, 1, g360);
-        AddVector(g328, g344, g360);
-        RShiftVector3(g328, 1);
-        CopyVector(&actor->posX, g328);
+        GetActorAttachPoint(catcher, 1, gateCatchPt2);
+        AddVector(gateHoldMid, g344, gateCatchPt2);
+        RShiftVector3(gateHoldMid, 1);
+        CopyVector(&actor->posX, gateHoldMid);
         if (catcher->nextFrame >= 0xE) {
           if (st->partner != -1) {
             ((BoulderThrowerState *)g_pActorListBase[st->partner].state)->partnerSignal = 1;

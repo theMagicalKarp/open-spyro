@@ -30,7 +30,7 @@
  *     the 0x80000012 store (sched1 LUID order of the two hoisted constants).
  *   - Case 314: `limit = 10` after the first call; `mate->rotZ` copied before
  *     the two 0x28 stores.
- *   - Case 335: `&actor->posX` (not `pos`) for the svM copy, so `pos` dies
+ *   - Case 335: `&actor->posX` (not `pos`) for the floorProbe copy, so `pos` dies
  *     early; the `do { } while (0);` barrier sits after the head call.
  *   - Case 349 shares ONE `ENTER_POSE(actor, 4)` through gotos from cases 3
  *     and 5. Three separate copies push the constant-4 movable over loop.c's
@@ -90,9 +90,9 @@ void Level4_UpdateActors(void) {
   int sparxToTarget[3];
   int svK[3];
   int shardTwinkle[3];
-  int svM[3];
+  int floorProbe[3];
   int letterFacing[3];
-  int svO[3];
+  int letterOffset[3];
   int letterSlot[3];
   int letterSwingRest[3];
 
@@ -2425,9 +2425,9 @@ void Level4_UpdateActors(void) {
       }
 
       actor->flags = 0;
-      CopyVector(svM, &actor->posX);
-      svM[2] += 0x400;
-      if (FindGroundHeightBelow(svM, 0x1000) == 0) {
+      CopyVector(floorProbe, &actor->posX);
+      floorProbe[2] += 0x400;
+      if (FindGroundHeightBelow(floorProbe, 0x1000) == 0) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
         MarkActorLiveKill(actor);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -2832,15 +2832,15 @@ void Level4_UpdateActors(void) {
           letterFacing[0] = (g_anCosineLut[bearing] * 3) >> 4;
           letterFacing[1] = (g_anSineLut[bearing] * 3) >> 4;
           letterFacing[2] = 0;
-          svO[0] =
+          letterOffset[0] =
               (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          svO[1] =
+          letterOffset[1] =
               (unsigned short)g_anSineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          svO[2] = 0;
+          letterOffset[2] = 0;
           bearing = (bearing + 0x80) & 0xFF;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
-          ScaleVector3Sat(letterSlot, svO, st->radius - 1);
-          LShiftVector3(svO, 1);
+          ScaleVector3Sat(letterSlot, letterOffset, st->radius - 1);
+          LShiftVector3(letterOffset, 1);
           arm = st->radius - 1;
           letterSlot[2] += (g_anCosineLut[arm * 2] * 3) >> 3;
           letterSwingRest[0] = letterFacing[0] * g_anCosineLut[arm * 2];
@@ -2848,8 +2848,8 @@ void Level4_UpdateActors(void) {
           letterSwingRest[2] = 0;
           bearing = arm << 1;
           bearing = (bearing - (st->phase * 4)) & 0xFF;
-          ScaleVector3Sat(svO, svO, st->phase);
-          SubtractVector(letterSlot, letterSlot, svO);
+          ScaleVector3Sat(letterOffset, letterOffset, st->phase);
+          SubtractVector(letterSlot, letterSlot, letterOffset);
           swing = &g_anCosineLut[bearing];
           actor->posX = letterFacing[0] * *swing;
           actor->posY = letterFacing[1] * *swing;

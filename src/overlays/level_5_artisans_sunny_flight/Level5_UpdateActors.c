@@ -15,7 +15,7 @@
  *     0x197/0x198 (smoking walkers); 0x1EA joins the 0x183 arm; no 0x154.
  *   - 0x1E0 and 0x167 are written as one `if (...) { body } else { expire }`
  *     each, so jump.c cross-jumps 0x1E0's last test and body into 0x167.
- *   - scratch vectors: `svY` before `svF` (the rider's burst), no `svT`, a
+ *   - scratch vectors: `sparkPos` before `svF` (the rider's burst), no `svT`, a
  *     block-local vector in 0x197, and an unused `vecE` in the 0x4C arm.
  *   - the rider copies its host's rotation as one 3-byte struct (`lb` x3
  *     then `sb` x3), with the host indexed inline.
@@ -55,7 +55,7 @@ void Level5_UpdateActors(void) {
   int eggArcOffset[3];
   int svD[3];
   int eggViewPos[3];
-  int svY[3];
+  int sparkPos[3];
   int svF[3];
   int acc[3][3];
   int bouncePos[3];
@@ -507,10 +507,10 @@ void Level5_UpdateActors(void) {
             svA[0] = (GetRandomU32() & 0x7E) - 0x3F;
             svA[1] = (GetRandomU32() & 0x7E) - 0x3F;
             svA[2] = GetRandomU32() & 0x1F;
-            CopyVector(svY, svA);
-            LShiftVector3(svY, 2);
-            AddVector(svY, svY, &actor->posX);
-            g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, svY, (int)svA);
+            CopyVector(sparkPos, svA);
+            LShiftVector3(sparkPos, 2);
+            AddVector(sparkPos, sparkPos, &actor->posX);
+            g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, sparkPos, (int)svA);
           }
           PlayActorMeshVoice(actor, FTARGET_VOICE_BURST, 0);
           DespawnActorRecord(actor);

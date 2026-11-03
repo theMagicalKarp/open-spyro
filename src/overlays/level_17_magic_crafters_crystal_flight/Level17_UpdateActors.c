@@ -13,7 +13,7 @@
  *   - new arms 0x11 (drift shard), 0x134 (roller) and 0x1E1..0x1E3 (its
  *     embers); 0x190 joins the 405/477 arm; 0x189 replaces 0x1EB in the 0x183
  *     arm; the 0x18D/0x18F trigger arm is gone.
- *   - `svX` is the first scratch vector (0x11's), the embers use a
+ *   - `nextPos` is the first scratch vector (0x11's), the embers use a
  *     block-local `trail[3]`.
  *   - 0x134: the waypoint scan addresses `st->path + ((i << 4) + 8)` so the
  *     node offset is its own giv; `d` holds the old heading and then the
@@ -51,7 +51,7 @@ void Level17_UpdateActors(void) {
   char *base;
 
   /* Scratch vectors shared by several cases. */
-  int svX[3];
+  int nextPos[3];
   int svA[3];
   int eggArcBase[3];
   int eggArcOffset[3];
@@ -244,10 +244,10 @@ void Level17_UpdateActors(void) {
       DriftState *st = actor->state;
 
       if (TICK_DOWN(st->timer) == 0) {
-        AddVector(svX, &actor->posX, st->vel);
-        if (CastRayWorldAndActors(&actor->posX, svX) == 0 &&
+        AddVector(nextPos, &actor->posX, st->vel);
+        if (CastRayWorldAndActors(&actor->posX, nextPos) == 0 &&
             RaiseSpyroTriggerInRadius(&actor->posX, 0, SPYRO_EV_HIT) == 0) {
-          CopyVector(&actor->posX, svX);
+          CopyVector(&actor->posX, nextPos);
           break;
         }
       }

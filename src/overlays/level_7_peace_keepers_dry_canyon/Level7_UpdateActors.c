@@ -76,7 +76,7 @@ void Level7_UpdateActors(void) {
   int keySlotOffset[3];
   int s328[3];
   int s344[3];
-  int v168[3];
+  int sparkVel[3];
   int sparkLead[3];
   int s392[3];
   int ps[6];
@@ -3072,13 +3072,13 @@ void Level7_UpdateActors(void) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
-          v168[0] = (GetRandomU32() & 0x3E) - 0x1F;
-          v168[1] = (GetRandomU32() & 0x3E) - 0x1F;
-          v168[2] = GetRandomU32() & 0xF;
-          CopyVector(sparkLead, v168);
+          sparkVel[0] = (GetRandomU32() & 0x3E) - 0x1F;
+          sparkVel[1] = (GetRandomU32() & 0x3E) - 0x1F;
+          sparkVel[2] = GetRandomU32() & 0xF;
+          CopyVector(sparkLead, sparkVel);
           LShiftVector3(sparkLead, 2);
           AddVector(sparkLead, sparkLead, &actor->posX);
-          g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, sparkLead, (int)v168);
+          g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, sparkLead, (int)sparkVel);
         }
         g_pfnLevelEmitParticles(0xA, EMIT_STREAK_BURST, &actor->posX, 0x10);
         DespawnActorRecord(actor);

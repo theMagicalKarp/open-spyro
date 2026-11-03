@@ -17,7 +17,7 @@
  *     every other 1 is a literal, so int sites and compares use the hoisted
  *     fp while byte stores stay inline `li`. 16 is a literal, not a carrier.
  *   - Scratch arrays at function level in frame order (the shared slots
- *     s152..s576 are reused across arms).
+ *     sparkVel and s168..s576, reused across arms).
  *   - Case 402 reads its two gain columns as `g_anSineLut[t * 2 - 6]` and
  *     `[t * 2 - 5]`; two separate symbols compile identically but lose the
  *     reload spill slot that makes the frame 0x2D0.
@@ -70,7 +70,7 @@ void Level25_UpdateActors(void) {
   int svD[3];
   int eggViewPos[3];
   int prevPos[3];
-  int s152[3];
+  int sparkVel[3];
   int s168[3];
   int groundProbe[3];
   int acc[3][3];
@@ -79,8 +79,8 @@ void Level25_UpdateActors(void) {
   int homingStep[3];
   int sparxTargetPos[3];
   int sparxToTarget[3];
-  int svX[3];
-  int svY[3];
+  int attachA[3];
+  int attachB[3];
   int fx[6];
   int col[3];
   int svW[3];
@@ -1298,10 +1298,10 @@ void Level25_UpdateActors(void) {
       actor->rotZ += st->spin[2];
 
       if (!(st->life & 3)) {
-        s152[0] = GetRandomU32() & 3;
-        s152[1] = GetRandomU32() & 3;
-        s152[2] = 0x14;
-        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, (int)s152);
+        sparkVel[0] = GetRandomU32() & 3;
+        sparkVel[1] = GetRandomU32() & 3;
+        sparkVel[2] = 0x14;
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, (int)sparkVel);
       }
 
       st->life -= 1;
@@ -2244,9 +2244,9 @@ void Level25_UpdateActors(void) {
       }
       if (st->fx != 0) {
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-        GetActorAttachPoint(actor, 0, svX);
-        GetActorAttachPoint(actor, 1, svY);
-        AddVector(st->pos, svX, svY);
+        GetActorAttachPoint(actor, 0, attachA);
+        GetActorAttachPoint(actor, 1, attachB);
+        AddVector(st->pos, attachA, attachB);
         RShiftVector3(st->pos, 1);
       }
 

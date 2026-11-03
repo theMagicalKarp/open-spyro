@@ -86,8 +86,8 @@ void Level16_UpdateActors(void) {
   int bounceNormal[3];
   int acc[3][3];
   int homingStep[3];
-  int svJ[3];
-  int svK[3];
+  int hitNormal[3];
+  int toSpyro[3];
   int sparxTargetPos[3];
   int sparxToTarget[3];
   int fx[6];
@@ -1072,14 +1072,14 @@ void Level16_UpdateActors(void) {
               continue;
             }
 
-            CopyVector(svJ, &g_anCollisionProbeVec);
+            CopyVector(hitNormal, &g_anCollisionProbeVec);
             CopyVector(&actor->posX, &g_anCollisionResolvedPos);
             actor->posZ -= 0xF0;
 
             if (st->count == 0) {
               int groundHeight = FindGroundHeightBelow(homingStep, 0x400);
               int groundAngle =
-                  (signed char)ArcTan2_8bit(svJ[2], VectorLength(svJ, VEC_LEN_XY));
+                  (signed char)ArcTan2_8bit(hitNormal[2], VectorLength(hitNormal, VEC_LEN_XY));
 
               if ((homingStep[2] - 400) < groundHeight && groundAngle < 24) {
                 actor->subMode = COLLECT_REST;
@@ -1089,9 +1089,9 @@ void Level16_UpdateActors(void) {
                 if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
 
                   st->pitch = -ArcTan2_8bit(
-                      IntegerSqrt((svJ[0] * svJ[0]) + (svJ[2] * svJ[2])),
-                      svJ[1]);
-                  st->yaw = -ArcTan2_8bit(svJ[2], svJ[0]);
+                      IntegerSqrt((hitNormal[0] * hitNormal[0]) + (hitNormal[2] * hitNormal[2])),
+                      hitNormal[1]);
+                  st->yaw = -ArcTan2_8bit(hitNormal[2], hitNormal[0]);
 
                   if (st->pitch != 0 || st->yaw != 0) {
                     actor->rotZ = 0;
@@ -1111,7 +1111,7 @@ void Level16_UpdateActors(void) {
 
               PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
 
-              if (ReflectVectorOffNormal(st->vel, svJ, st->vel)) {
+              if (ReflectVectorOffNormal(st->vel, hitNormal, st->vel)) {
                 st->count--;
 
                 st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 32;
@@ -1163,15 +1163,15 @@ void Level16_UpdateActors(void) {
           CopyVector(&actor->posX, &SPY.posX);
         } else {
 
-          SubtractVector(svK, &SPY.posX, st->vel);
-          RShiftVector3(svK, 5);
+          SubtractVector(toSpyro, &SPY.posX, st->vel);
+          RShiftVector3(toSpyro, 5);
 
-          if (VectorLength(svK, VEC_LEN_XYZ) > 480) {
+          if (VectorLength(toSpyro, VEC_LEN_XYZ) > 480) {
             CopyVector(&actor->posX, &SPY.posX);
             st->timer = 32;
           } else {
-            ScaleVector3Sat(svK, svK, st->timer);
-            AddVector(&actor->posX, st->vel, svK);
+            ScaleVector3Sat(toSpyro, toSpyro, st->timer);
+            AddVector(&actor->posX, st->vel, toSpyro);
             actor->posZ += g_anSineLut[st->timer * 4] / 12;
           }
         }

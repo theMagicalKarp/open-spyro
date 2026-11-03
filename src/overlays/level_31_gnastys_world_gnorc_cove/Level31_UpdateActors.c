@@ -79,7 +79,7 @@ void Level31_UpdateActors(void) {
   int v200b[3];
   int v201a[3];
   int v201b[3];
-  int v207[3];
+  int toOther[3];
   int v250[3];
   int sparkleTwinkle[3];
   int shardTwinkle[3];
@@ -2654,8 +2654,8 @@ void Level31_UpdateActors(void) {
                 a->collision >= 0) {
               continue;
             }
-            SubtractVector(v207, &a->posX, &actor->posX);
-            len = ABS(v207[0]) + ABS(v207[1]);
+            SubtractVector(toOther, &a->posX, &actor->posX);
+            len = ABS(toOther[0]) + ABS(toOther[1]);
             if (len >= 0x6000) {
               continue;
             }
@@ -2670,7 +2670,7 @@ void Level31_UpdateActors(void) {
             if (d >= 0xC) {
               continue;
             }
-            len = VectorLength(v207, VEC_LEN_XY);
+            len = VectorLength(toOther, VEC_LEN_XY);
             if (len >= 0x4000) {
               continue;
             }

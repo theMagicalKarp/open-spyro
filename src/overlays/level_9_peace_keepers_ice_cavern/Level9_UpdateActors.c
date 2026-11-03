@@ -26,7 +26,7 @@
  *     volatile g_bSpyroPersistentEulerZ), 231 before its other stores; 231's knock-back
  *     call is an if/else of two calls.
  *   - Scratch arrays at function level in first-use order, matching the
- *     level 2 layout up to svS.
+ *     level 2 layout up to keyOffset.
  */
 
 #include "actor.h"
@@ -72,9 +72,9 @@ void Level9_UpdateActors(void) {
   int homingStep[3];
   int sparxToTarget[3];
   int chestToSpyro[3];
-  int svS[3];
+  int keyOffset[3];
   int svK[3];
-  int svL[3];
+  int orbitPoint[3];
   int svM[3];
   int shardTwinkle[3];
   int svN[3];
@@ -1736,11 +1736,11 @@ void Level9_UpdateActors(void) {
           }
         } else if (st->shake < 0xD0) {
           key->rotZ = actor->rotZ;
-          svS[0] = 0x200 - (st->shake - 0xC0) * 8;
-          svS[1] = 0;
-          svS[2] = 0x140;
-          RotateVectorByMatrix(actor->mtx, svS, svS);
-          AddVector(&key->posX, svS, &actor->posX);
+          keyOffset[0] = 0x200 - (st->shake - 0xC0) * 8;
+          keyOffset[1] = 0;
+          keyOffset[2] = 0x140;
+          RotateVectorByMatrix(actor->mtx, keyOffset, keyOffset);
+          AddVector(&key->posX, keyOffset, &actor->posX);
         }
 
         if (st->shake >= 0xD0 ||
@@ -2301,17 +2301,17 @@ void Level9_UpdateActors(void) {
       case CBIRD_CIRCLE:
         if (st->timer == 0) {
           SteerActorTowardPoint(actor, st->home, 0x40, 8, 8, 0);
-          SubtractVector(svL, st->home, &actor->posX);
-          if (VectorLength(svL, VEC_LEN_XYZ) < 0x200) {
+          SubtractVector(orbitPoint, st->home, &actor->posX);
+          if (VectorLength(orbitPoint, VEC_LEN_XYZ) < 0x200) {
             st->timer = 0x78;
             ENTER_POSE(actor, CBIRD_LAND);
           }
         } else {
-          svL[0] = (st->radius * LookupCosine(st->angle)) >> 12;
-          svL[1] = (st->radius * LookupSine(st->angle)) >> 12;
-          svL[2] = st->height;
-          AddVector(svL, svL, &SPY.posX);
-          SteerActorTowardPoint(actor, svL, 0x60, 8, 8, 0x100);
+          orbitPoint[0] = (st->radius * LookupCosine(st->angle)) >> 12;
+          orbitPoint[1] = (st->radius * LookupSine(st->angle)) >> 12;
+          orbitPoint[2] = st->height;
+          AddVector(orbitPoint, orbitPoint, &SPY.posX);
+          SteerActorTowardPoint(actor, orbitPoint, 0x60, 8, 8, 0x100);
           st->angle = (st->angle + 0x10) & 0xFFF;
           st->timer--;
         }

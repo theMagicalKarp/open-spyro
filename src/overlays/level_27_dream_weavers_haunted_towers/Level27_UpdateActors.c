@@ -78,8 +78,8 @@ void Level27_UpdateActors(void) {
   int spyroDelta[3];
   int g392[3];
   int g408[3];
-  int g424[3];
-  int g440[3];
+  int boundB[3];
+  int toClamped[3];
   int shardTwinkle[3];
   int jetPos[6];
   int g496[3];
@@ -2475,53 +2475,53 @@ void Level27_UpdateActors(void) {
         n = dy * g408[0] + dx * st->path[3];
         k = (dy * g_anSpyroWorldPos + dx * g_nSpyroWorldPosY - n) / len;
         g408[1] = st->path[3];
-        g424[0] = st->path[6];
-        g424[1] = st->path[7];
+        boundB[0] = st->path[6];
+        boundB[1] = st->path[7];
         g392[0] = g_anSpyroWorldPos - k * dy / len;
         g392[1] = g_nSpyroWorldPosY - k * dx / len;
-        if (g392[0] < g408[0] && g392[0] < g424[0]) {
-          if (g408[0] < g424[0]) {
+        if (g392[0] < g408[0] && g392[0] < boundB[0]) {
+          if (g408[0] < boundB[0]) {
             if (g392[0] < g408[0]) {
               g392[0] = g408[0];
             }
-          } else if (g392[0] < g424[0]) {
-            g392[0] = g424[0];
+          } else if (g392[0] < boundB[0]) {
+            g392[0] = boundB[0];
           }
-        } else if (g392[0] > g408[0] && g392[0] > g424[0]) {
-          if (g408[0] > g424[0]) {
+        } else if (g392[0] > g408[0] && g392[0] > boundB[0]) {
+          if (g408[0] > boundB[0]) {
             if (g392[0] > g408[0]) {
               g392[0] = g408[0];
             }
-          } else if (g392[0] > g424[0]) {
-            g392[0] = g424[0];
+          } else if (g392[0] > boundB[0]) {
+            g392[0] = boundB[0];
           }
         }
-        if (g392[1] < g408[1] && g392[1] < g424[1]) {
-          if (g408[1] < g424[1]) {
+        if (g392[1] < g408[1] && g392[1] < boundB[1]) {
+          if (g408[1] < boundB[1]) {
             if (g392[1] < g408[1]) {
               g392[1] = g408[1];
             }
-          } else if (g392[1] < g424[1]) {
-            g392[1] = g424[1];
+          } else if (g392[1] < boundB[1]) {
+            g392[1] = boundB[1];
           }
-        } else if (g392[1] > g408[1] && g392[1] > g424[1]) {
-          if (g408[1] > g424[1]) {
+        } else if (g392[1] > g408[1] && g392[1] > boundB[1]) {
+          if (g408[1] > boundB[1]) {
             if (g392[1] > g408[1]) {
               g392[1] = g408[1];
             }
-          } else if (g392[1] > g424[1]) {
-            g392[1] = g424[1];
+          } else if (g392[1] > boundB[1]) {
+            g392[1] = boundB[1];
           }
         }
-        SubtractVector(g440, g392, &actor->posX);
-        len = VectorLength(g440, VEC_LEN_XY);
+        SubtractVector(toClamped, g392, &actor->posX);
+        len = VectorLength(toClamped, VEC_LEN_XY);
         if (len < 0xC8) {
           actor->posX = g392[0];
           actor->posY = g392[1];
         } else {
-          ScaleVector3ByRatio(g440, len, 0xC8);
-          actor->posX += g440[0];
-          actor->posY += g440[1];
+          ScaleVector3ByRatio(toClamped, len, 0xC8);
+          actor->posX += toClamped[0];
+          actor->posY += toClamped[1];
         }
       }
 
