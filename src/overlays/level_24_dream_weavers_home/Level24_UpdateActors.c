@@ -925,7 +925,9 @@ void Level24_UpdateActors(void) {
             st->range = -1;
           }
           g_pActorListBase[st->partner].subMode = actor - g_pActorListBase;
-          *(int *)g_pActorListBase[st->partner].state = st->msg;
+          /* CometCannonState.steps, as a plain word store: the typed view
+           * reschedules the whole function. */
+          *(int *)g_pActorListBase[st->partner].state = st->cometSteps;
           st->reloadTimer = st->reload;
         } else if (actor->flags & ACTOR_HIT_BLAST) {
           actor->flags = 0;
@@ -2434,13 +2436,15 @@ void Level24_UpdateActors(void) {
             st->range = -1;
           }
           g_pActorListBase[st->partner].subMode = actor - g_pActorListBase;
-          *(int *)g_pActorListBase[st->partner].state = st->msg;
+          /* CometCannonState.steps, as a plain word store: the typed view
+           * reschedules the whole function. */
+          *(int *)g_pActorListBase[st->partner].state = st->cometSteps;
           st->reloadTimer = st->reload;
           if (st->follow1 != -1) {
-            ((int *)g_pActorListBase[st->follow1].state)[19] = 0x28;
+            ((BigLungingGuardState *)g_pActorListBase[st->follow1].state)->reloadTimer = 0x28;
           }
           if (st->follow2 != -1) {
-            ((int *)g_pActorListBase[st->follow2].state)[19] = 0x50;
+            ((BigLungingGuardState *)g_pActorListBase[st->follow2].state)->reloadTimer = 0x50;
           }
         } else if (actor->flags & ACTOR_HIT_BLAST) {
           actor->flags = 0;

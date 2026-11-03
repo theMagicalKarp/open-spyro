@@ -1999,7 +1999,7 @@ void Level22_UpdateActors(void) {
         continue;
 
       case PPOD_UP:
-        if (*(int *)g_pActorListBase[st->partner].state == actor->group - 2 &&
+        if (((MetalheadState *)g_pActorListBase[st->partner].state)->phase == actor->group - 2 &&
             TICK_DOWN(st->shotTimer) != 0) {
           Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_POD_SHOT, actor);
           PodShotState *sh = o->state;

@@ -473,7 +473,7 @@ typedef struct LungingGuardState {
   int init;            /* 0x38 */
   int range;           /* 0x3C <0 = waiting */
   int partner;         /* 0x40 index into g_pActorListBase; level data: ACTOR_TYPE_COMET_CANNON */
-  int msg;             /* 0x44 written into the partner's state */
+  int cometSteps;      /* 0x44 handed to the partner cannon's CometCannonState.steps */
   int range2;          /* 0x48 */
   int reloadTimer; /* 0x4C reloaded from `reload` after each lunge */
   int reload;          /* 0x50 */
@@ -494,7 +494,7 @@ typedef struct BigLungingGuardState {
   int init;            /* 0x38 */
   int range;           /* 0x3C */
   int partner;         /* 0x40; level data: ACTOR_TYPE_COMET_CANNON */
-  int msg;             /* 0x44 */
+  int cometSteps;      /* 0x44 handed to the partner cannon's CometCannonState.steps */
   int range2;          /* 0x48 */
   int reloadTimer; /* 0x4C reloaded from `reload` after each lunge */
   int reload;          /* 0x50 */

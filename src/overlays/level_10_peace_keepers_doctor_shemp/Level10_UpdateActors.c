@@ -1956,8 +1956,9 @@ void Level10_UpdateActors(void) {
       break;
     }
 
-    /* Type 205: snowball thrower. Holds its snowball overhead, throws it at
-     * Spyro on its throw frame and is stunned when hit. */
+    /* Type 205: overhead thrower. Spins the gem it holds (state word 0, a
+     * level-data link; often none) overhead; charged, flings it at Spyro to
+     * bounce (COLLECT_BOUNCE). */
     case ACTOR_TYPE_OVERHEAD_THROWER: {
       int *st = actor->state;
 
@@ -1970,7 +1971,7 @@ void Level10_UpdateActors(void) {
         } else {
           CopyVector(&g_pActorListBase[*st].posX, &actor->posX);
           g_pActorListBase[*st].posZ += 0x800;
-          g_pActorListBase[*st].subMode = 4;
+          g_pActorListBase[*st].subMode = COLLECT_INERT;
           g_pActorListBase[*st].rotX = 0;
           g_pActorListBase[*st].rotY = 0;
           g_pActorListBase[*st].rotZ += 8;
@@ -1978,16 +1979,16 @@ void Level10_UpdateActors(void) {
       }
       if (actor->mode == OTHROW_HIT) {
         if (*st >= 0) {
-          ThrownSnowballState *ball = g_pActorListBase[*st].state;
+          PickupState *gem = g_pActorListBase[*st].state;
           int ang = ArcTan2(spy->posX - actor->posX,
                                   spy->posY - actor->posY, ATAN_ANGLE8) *
                     16;
 
-          g_pActorListBase[*st].subMode = 2;
-          ball->kind = 3;
-          ball->vx = (LookupCosine(ang) * 0x1C) >> 12;
-          ball->vy = (LookupSine(ang) * 0x1C) >> 12;
-          ball->vz = 0x32;
+          g_pActorListBase[*st].subMode = COLLECT_BOUNCE;
+          gem->count = 3;
+          gem->vel[0] = (LookupCosine(ang) * 0x1C) >> 12;
+          gem->vel[1] = (LookupSine(ang) * 0x1C) >> 12;
+          gem->vel[2] = 0x32;
           *st = -1;
         }
         if (g_nActorAnimDone != 0) {

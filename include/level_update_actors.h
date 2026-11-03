@@ -1047,6 +1047,9 @@ typedef struct TetherState {
   int stop;    /* 0x18 node of the sentinel's path where it powers this guard */
 } TetherState;
 
+/* The tethered guard's view of its link's state. For an ACTOR_TYPE_PATH_GUARD
+ * link (level data) it is PathGuardState's path and flags, so `moving` == 1
+ * is PATHGUARD_F_RING. */
 typedef struct LeadState {
   PathData *path; /* 0x00 */
   int moving;     /* 0x04 */

@@ -102,7 +102,7 @@ typedef struct BoltGuardState {
   int turn;    /* 0x14 */
   int u18;     /* 0x18 */
   void *path;  /* 0x1C */
-  int range;   /* 0x20 in 1024s; the next link for a followed actor */
+  int range;   /* 0x20 in 1024s */
   int countdown;     /* 0x24 */
   int link;    /* 0x28 actor index, -1 for none; initially (level data) ACTOR_TYPE_ROAMING_RAM */
   short spinX; /* 0x2C */
@@ -899,13 +899,13 @@ void Level19_UpdateActors(void) {
           st->timer = 8;
         }
         if (TICK_DOWN(st->timer2) != 0 && g_nActorAnimDone != 0) {
-          BoltGuardState *ts = g_pActorListBase[st->link].state;
+          RoamingRamState *ts = g_pActorListBase[st->link].state;
 
           if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT || st->link == -1) {
             st->mode = BGUARD_CUE_NONE;
             ENTER_POSE(actor, BGUARD_WATCH);
           }
-          st->link = ts->range;
+          st->link = ts->partner; /* on along the rams' partner chain */
           st->timer2 = 0x3C;
           actor->mode = BGUARD_FACE_LINK;
           continue;

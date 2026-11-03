@@ -2099,7 +2099,7 @@ void Level31_UpdateActors(void) {
       MountState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != MOUNT_KNOCKED) {
-        ((int *)g_pActorListBase[st->rider].state)[4] = -1;
+        ((FloatingBarrelState *)g_pActorListBase[st->rider].state)->link = -1;
         st->rider = -1;
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
@@ -2449,7 +2449,7 @@ void Level31_UpdateActors(void) {
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
       if (st->held >= 0) {
         if (g_pActorListBase[st->held].mode >= FLOATBARREL_BURST) {
-          ((int *)g_pActorListBase[st->held].state)[4] = -1;
+          ((FloatingBarrelState *)g_pActorListBase[st->held].state)->link = -1;
           st->held = -1;
           actor->mode = CTHROW_DROP;
           ANIM_RESET(actor, CTHROW_DROP);

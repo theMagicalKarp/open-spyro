@@ -2191,8 +2191,8 @@ enum ChunkOperatorMode {
 /* ->mode of the overhead thrower (ACTOR_TYPE_OVERHEAD_THROWER; levels 9/10);
  * the mode is also the animation index. */
 enum OverheadThrowerMode {
-  OTHROW_HOLD = 0, /* holds its snowball (state word 0) overhead */
-  OTHROW_HIT = 1,  /* charged or supercharged: lets the snowball fly at Spyro, then HOLD */
+  OTHROW_HOLD = 0, /* spins its gem (state word 0) overhead, COLLECT_INERT */
+  OTHROW_HIT = 1,  /* charged or supercharged: flings the gem at Spyro (COLLECT_BOUNCE), then HOLD */
 };
 
 /* ->mode of the level 8 roaming critter (ACTOR_TYPE_ROAMING_CRITTER,
