@@ -21,7 +21,7 @@ int TrackEntityYawTowardSpyro(Actor *actor, int step, int threshold, int flag) {
   if (delta < step) {
     step = delta;
   }
-  if (threshold < (int)AbsAngleDelta8(target, actor->rotZ)) {
+  if (threshold < AbsAngleDelta8(target, actor->rotZ)) {
     actor->rotZ = ApproachAngle8(target, actor->rotZ, step, (step >> 1) + 1);
     return 0;
   }

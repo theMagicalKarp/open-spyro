@@ -32,7 +32,7 @@ typedef struct Actor {
                             * else ACTOR_KILL_GROUP_*; BuildLoadedLevelRuntime);
                             * bit 7 latches the death drop (SpawnActorDeathDrop) */
   unsigned char probeDist; /* 0x3B DriveActorTrackedMove ground-probe distance / 4;
-                           * 0 default 0x12C, 0xFF none, 0xFE probe mode 1 */
+                           * 0 default 0x12C, ACTOR_PROBE_NONE / ACTOR_PROBE_LIFT_ONLY */
   unsigned char anim;  /* 0x3C current animation */
   unsigned char nextAnim; /* 0x3D next animation */
   unsigned char frame; /* 0x3E current frame */
@@ -124,6 +124,10 @@ typedef struct Actor {
 #define TINT_BOULDER_SPARK 0xD /* boulder debris 152/153 */
 #define TINT_STATUE_SHARD 0xE
 #define BILLBOARD_NONE 0xFF          /* no g_aRotBillboards handle */
+/* Actor.probeDist sentinels (DriveActorTrackedMove; other values are the
+ * ground-probe distance / 4, 0 = the default 0x12C). */
+#define ACTOR_PROBE_LIFT_ONLY 0xFE /* probe with MOVE_LIFT alone (no slide, no floor follow) */
+#define ACTOR_PROBE_NONE 0xFF      /* probe distance 0 */
 #define ACTOR_UPDATE_ALWAYS 0xFF /* ->updateDist: read signed by BuildActiveActorList, so
                                   * a negative radius keeps the actor updating anywhere */
 #define ACTOR_UPDATE_WHEN_DRAWN 0 /* ->updateDist: no activation radius, so it only
@@ -250,7 +254,7 @@ enum ActorType {
   ACTOR_TYPE_PATROL_WARD = 23, /* level 3: patrol guard (WardState) */
   ACTOR_TYPE_GUNNER = 28, /* level 20: wakes its partner, turns to it, fires type 400 shots (GunnerState) */
   ACTOR_TYPE_LURKER_TETHER = 31, /* level 20: the tether ACTOR_TYPE_LURKER drags Spyro with; no UpdateActors arm */
-  ACTOR_TYPE_CARRIED_EGG = 32, /* level 19: rides its carrier until the carrier reaches pose 4, then behaves as a dragon egg */
+  ACTOR_TYPE_CARRIED_EGG = 32, /* level 19: rides attach point 0 of the bolt sentry that spawns it while the sentry stays in BSENTRY_THROW */
   ACTOR_TYPE_EGG_THIEF = 33,       /* runs off with a dragon egg (34), drops it when hit (ThiefState) */
   ACTOR_TYPE_DRAGON_EGG = 34,      /* recovered egg: rises, rolls the HUD egg tally */
   ACTOR_TYPE_BOLT_GUARD = 35, /* level 19: scatters when hit, fires type 494 bolts (BoltGuardState) */
@@ -293,7 +297,7 @@ enum ActorType {
   ACTOR_TYPE_FORMATION_ESCORT = 88, /* level 26: follows its leader on a ring, flies off when the leader breaks away */
   ACTOR_TYPE_COMET_CANNON = 91, /* level 24: blasts Spyro in its sights, or lobs ACTOR_TYPE_COMET at its trigger's target (CometCannonState) */
   ACTOR_TYPE_LUNGING_GUARD = 92, /* level 24: wakes its partner, paces, lunges; spins away when struck */
-  ACTOR_TYPE_GROUND_BOUNCE_SHARD = 93, /* levels 19/22: explosion shard with a ground bounce (ShardState) */
+  ACTOR_TYPE_GROUND_BOUNCE_SHARD = 93, /* levels 19/22: explosion shard with a ground bounce (TumbleState) */
   ACTOR_TYPE_BOULDER_THROWER = 100, /* level 21: picks up and hurls ACTOR_TYPE_ROLLING_BOULDER, rides its partner, charges (BoulderThrowerState) */
   ACTOR_TYPE_GATEKEEPER = 101, /* level 21: releases its run of keys as Spyro approaches (GatekeeperState) */
   ACTOR_TYPE_BOULDER_THROWER_B = 102, /* level 22's ACTOR_TYPE_BOULDER_THROWER */
@@ -311,7 +315,7 @@ enum ActorType {
   ACTOR_TYPE_CHARGE_REACT_PROP = 129, /* levels 2/25: a charge plays its reaction animation once */
   ACTOR_TYPE_BIG_LUNGING_GUARD = 130, /* level 24: ACTOR_TYPE_LUNGING_GUARD plus two followers and a growl */
   ACTOR_TYPE_BREAKABLE_WALL_PART = 132, /* level 27: one of ACTOR_TYPE_BREAKABLE_WALL's four parts */
-  ACTOR_TYPE_RUBBLE_SHARD = 133, /* level 27: explosion shard with a ground bounce (ShardState); also 215 */
+  ACTOR_TYPE_RUBBLE_SHARD = 133, /* level 27: explosion shard with a ground bounce (TumbleState); also 215 */
   ACTOR_TYPE_ROCK_THROWER = 134, /* level 27: throws ACTOR_TYPE_FALLING_CHUNK rocks at Spyro (RockThrowerState) */
   ACTOR_TYPE_FALLING_CHUNK = 135, /* level 27: rides the floor or falls; bursts into rubble (FallingChunkState) */
   ACTOR_TYPE_BREAKABLE_WALL = 136, /* level 27: four parts; striking one blows the wall into rubble (BreakableWallState) */

@@ -94,7 +94,7 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
     break;
 
   case ACTOR_TYPE_SPLIT_SHOT: {
-    int *st = rec->state;
+    int *timer = rec->state;
     int *pos;
     int turn;
 
@@ -108,7 +108,7 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
       rec->frameRate = g_apActorMeshTable[rec->type]->m_Animations[SPLITSHOT_FRAGMENT]->m_ProgressPerTick;
       rec->anim = SPLITSHOT_FRAGMENT;
       rec->nextAnim = SPLITSHOT_FRAGMENT;
-      *st = 3;
+      *timer = 3;
     } else if (parent->nextFrame >= 6) {
       rec->posX += LookupCosine(parent->rotZ << 4) >> 2;
       rec->posY += LookupSine(parent->rotZ << 4) >> 2;
@@ -128,7 +128,7 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
         turn = 0x10;
       }
       rec->rotY = parent->rotY + turn;
-      *st = 0x80;
+      *timer = 0x80;
       rec->mode = SPLITSHOT_FLY;
       rec->frameProgress = 0;
       rec->frameRate = g_apActorMeshTable[rec->type]->m_Animations[SPLITSHOT_FLY]->m_ProgressPerTick;
@@ -150,7 +150,7 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
         rec->posZ += 0x180;
         rec->rotZ = parent->rotZ;
       }
-      *st = 2;
+      *timer = 2;
     }
     InsertActorIntoSpatialGrid(rec);
     break;
@@ -236,7 +236,7 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
   case ACTOR_TYPE_WOOD_CHEST_SHARD ... ACTOR_TYPE_WOOD_CHEST_SHARD + 2:
   case ACTOR_TYPE_SPARKLE_SHARD ... ACTOR_TYPE_WOOD_SHARD + 1:
   case ACTOR_TYPE_LIFE_CHEST_SHARD ... ACTOR_TYPE_LIFE_CHEST_SHARD + 2: {
-    FragmentState *st = rec->state;
+    TumbleState *st = rec->state;
     int yaw;
     int pitch;
 
@@ -257,9 +257,9 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
     rec->posZ += st->vel[2] * 4;
-    st->spinX = GetRandomU32() & 0xF;
-    st->spinY = GetRandomU32() & 0xF;
-    st->spinZ = GetRandomU32() & 0xF;
+    st->spin[0] = GetRandomU32() & 0xF;
+    st->spin[1] = GetRandomU32() & 0xF;
+    st->spin[2] = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
     if ((unsigned int)((unsigned short)rec->type - 0x135) < 3) {

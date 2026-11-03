@@ -514,11 +514,11 @@ void Level13_UpdateActors(void) {
       st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != THIEF_CAUGHT) {
-        st->knock = 0x96;
+        st->knockSpeed = 0x96;
         if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
-          st->knock = 0xE1;
+          st->knockSpeed = 0xE1;
         }
-        st->heading = StepAndLerpAngle8(
+        st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         if (actor->dropKind == DROP_GEM_ROLL) {
@@ -676,7 +676,7 @@ void Level13_UpdateActors(void) {
           ANIM_GO(actor, THIEF_ANIM_TAUNT);
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         } else if (st->mode == THIEFKIND_CLIMB) {
-          if (IsPointInRotatedBox(&SPY.posX, st->area) != 0) {
+          if (IsPointInRotatedBox(&SPY.posX, &st->area) != 0) {
             actor->mode = THIEF_CLIMB_RUN;
             continue;
           }
@@ -832,11 +832,11 @@ void Level13_UpdateActors(void) {
             st->egg = 0;
           }
         }
-        if (st->knock != 0) {
-          MoveActorAlongAngle(actor, st->heading, st->knock, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-          st->knock -= 0x10;
-          if (st->knock < 0) {
-            st->knock = 0;
+        if (st->knockSpeed != 0) {
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          st->knockSpeed -= 0x10;
+          if (st->knockSpeed < 0) {
+            st->knockSpeed = 0;
           }
         }
         ANIM_GO(actor, THIEF_ANIM_CAUGHT);
@@ -1386,14 +1386,14 @@ void Level13_UpdateActors(void) {
       break;
     }
 
-    /* Explosion shard with a ground bounce (ShardState). */
+    /* Explosion shard with a ground bounce (TumbleState). */
     case ACTOR_TYPE_SEED_POD_SHARD:
     case ACTOR_TYPE_SEED_POD_SHARD + 1:
     case ACTOR_TYPE_WOOD_CHEST_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1:
     case ACTOR_TYPE_LIFE_CHEST_SHARD:
     case ACTOR_TYPE_LIFE_CHEST_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {
 
@@ -2769,7 +2769,7 @@ void Level13_UpdateActors(void) {
           }
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1800 &&
               ABS2(SPY_DZ(actor)) < 0x320) {
-            if (actor->anim != 0xB) {
+            if (actor->anim != CAPTAIN_ANIM_START) {
               actor->mode = CAPTAIN_FIGHT;
               continue;
             }
@@ -3460,7 +3460,7 @@ void Level13_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
-        st->knockSpin = 0x8C;
+        st->knockZSpeed = 0x8C;
         actor->flags = 0;
         ((CollectibleState *)SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0)->state)->mode = COLLREST_SNAP;
         MarkActorLiveKill(actor);
@@ -3829,7 +3829,7 @@ void Level13_UpdateActors(void) {
         break;
 
       case SHEPHERD_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockSpin,
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed,
                       0x12, 0xC);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -4105,12 +4105,12 @@ void Level13_UpdateActors(void) {
         voice = 0x12;
         break;
 
-      case 8:
-        voice = 0x1A;
+      case AMBIENT_MODE_PORTAL:
+        voice = SFX_PORTAL_HUM;
         break;
 
-      case 9:
-        voice = 0x36;
+      case AMBIENT_MODE_WHIRLWIND:
+        voice = SFX_WHIRLWIND;
         break;
       }
 
@@ -4199,7 +4199,7 @@ void Level13_UpdateActors(void) {
 
     /* Sparkling shard: 1 puff per frame. */
     case ACTOR_TYPE_SPARKLE_SHARD: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
@@ -4230,7 +4230,7 @@ void Level13_UpdateActors(void) {
     /* Wood shard: bounces and throws three sparks a frame. */
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
       register int i asm("$16");
 
       if (st->life > 0) {
@@ -5371,8 +5371,8 @@ void Level13_UpdateActors(void) {
       }
 
       for (i = 0; i < 8; i++) {
-        sparkVel[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
-        sparkVel[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
+        sparkVel[0] = (g_anCosineLut[i * 32] >> 8) * 3;
+        sparkVel[1] = (g_anSineLut[i * 32] >> 8) * 3;
         sparkVel[2] = 0x18;
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)sparkVel);
       }

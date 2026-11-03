@@ -788,7 +788,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
             v40[1] = g_nSpyroVelocityY >> 3;
             AddVector(v40, v40, pos);
             if (CheckLineOfSightSegment(pos, v40) == 0) {
-              y = (g_nSpyroWorldPosZ - *(int *)g_nCollisionResolvedZ) >> 3;
+              y = (g_nSpyroWorldPosZ - g_nCollisionResolvedZ) >> 3;
               if (y > 7) {
                 y = 7;
               }
@@ -1541,6 +1541,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       g_nSpyroTurnRateAccum = g_nSpyroSpeedTarget;
     }
     a = (ang + dt + 0x800) & 0xFFF;
+    /* The original tests type 0xFF here, though no scripted-camera actor
+     * (exit whirlwind 9, fireball cannon 225, Blowhard 495) has it and both
+     * arms bump the same word (obj2 == obj). */
     if (g_pScriptedCameraActor->type == 0xFF) {
       v = obj2[5] = (obj2[5] + dt) & 0xFFF;
     } else {

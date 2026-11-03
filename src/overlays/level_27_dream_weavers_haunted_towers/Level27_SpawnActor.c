@@ -43,19 +43,6 @@
 #include "level_emit_particles.h"
 #include "emit_record.h"
 
-/* Debris state block (types 0x43..0x45, 0xFF..0x101, 0x135..0x137). */
-/* Flung-critter state block (level_27 type 0xD7). */
-typedef struct BatState {
-  short velX;          /* 0x00 */
-  short velY;          /* 0x02 */
-  short velZ;          /* 0x04 */
-  short spinX;         /* 0x06 per-frame spin (ShardState.spin in the updater) */
-  short spinY;         /* 0x08 */
-  short spinZ;         /* 0x0A */
-  int life;            /* 0x0C */
-  int floor;           /* 0x10 */
-} BatState;
-
 
 extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type */
 
@@ -130,7 +117,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     break;
 
   case ACTOR_TYPE_SPLIT_SHOT: {
-    int *st = rec->state;
+    int *timer = rec->state;
     int *pos;
     int turn;
 
@@ -144,7 +131,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
       rec->frameRate = g_apActorMeshTable[rec->type]->m_Animations[SPLITSHOT_FRAGMENT]->m_ProgressPerTick;
       rec->anim = SPLITSHOT_FRAGMENT;
       rec->nextAnim = SPLITSHOT_FRAGMENT;
-      *st = 3;
+      *timer = 3;
     } else if (parent->nextFrame >= 6) {
       rec->posX += LookupCosine(parent->rotZ << 4) >> 2;
       rec->posY += LookupSine(parent->rotZ << 4) >> 2;
@@ -164,7 +151,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
         turn = 0x10;
       }
       rec->rotY = parent->rotY + turn;
-      *st = 0x80;
+      *timer = 0x80;
       rec->mode = SPLITSHOT_FLY;
       rec->frameProgress = 0;
       rec->frameRate = g_apActorMeshTable[rec->type]->m_Animations[SPLITSHOT_FLY]->m_ProgressPerTick;
@@ -186,7 +173,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
         rec->posZ += 0x180;
         rec->rotZ = parent->rotZ;
       }
-      *st = 2;
+      *timer = 2;
     }
     InsertActorIntoSpatialGrid(rec);
     break;
@@ -251,7 +238,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
   }
 
   case ACTOR_TYPE_RUBBLE_SHARD_B: {
-    BatState *st;
+    TumbleState *st;
     int speed;
     int dir;
 
@@ -262,14 +249,14 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
     dir = (parent->rotY + RandomIntInRange(-0xF, 0xF)) & 0xFF;
-    st->velX = speed * g_anCosineLut[dir] >> 12;
-    st->velY = speed * g_anSineLut[dir] >> 12;
-    st->velZ = RandomIntInRange(0x64, 0x8C);
+    st->vel[0] = speed * g_anCosineLut[dir] >> 12;
+    st->vel[1] = speed * g_anSineLut[dir] >> 12;
+    st->vel[2] = RandomIntInRange(0x64, 0x8C);
     st->life = RandomIntInRange(0x1E, 0x32);
-    st->spinX = RandomSignedInRange(7, 0xC);
-    st->spinY = RandomSignedInRange(7, 0xC);
-    st->spinZ = RandomSignedInRange(7, 0xC);
-    st->floor = parent->posZ - parent->floorOffset - 0x40;
+    st->spin[0] = RandomSignedInRange(7, 0xC);
+    st->spin[1] = RandomSignedInRange(7, 0xC);
+    st->spin[2] = RandomSignedInRange(7, 0xC);
+    st->floorZ = parent->posZ - parent->floorOffset - 0x40;
     *(int *)&rec->tint0 = 0x1000000;
     rec->renderList |= ACTOR_RENDER_SECONDARY;
     break;
@@ -310,7 +297,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
   case ACTOR_TYPE_WOOD_CHEST_SHARD ... ACTOR_TYPE_WOOD_CHEST_SHARD + 2:
   case ACTOR_TYPE_SPARKLE_SHARD ... ACTOR_TYPE_WOOD_SHARD + 1:
   case ACTOR_TYPE_LIFE_CHEST_SHARD ... ACTOR_TYPE_LIFE_CHEST_SHARD + 2: {
-    FragmentState *st = rec->state;
+    TumbleState *st = rec->state;
     int yaw;
     int pitch;
 
@@ -331,9 +318,9 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
     rec->posZ += st->vel[2] * 4;
-    st->spinX = GetRandomU32() & 0xF;
-    st->spinY = GetRandomU32() & 0xF;
-    st->spinZ = GetRandomU32() & 0xF;
+    st->spin[0] = GetRandomU32() & 0xF;
+    st->spin[1] = GetRandomU32() & 0xF;
+    st->spin[2] = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
     if ((unsigned int)((unsigned short)rec->type - 0x135) < 3) {
@@ -449,7 +436,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     break;
 
   case ACTOR_TYPE_REBOUND_DEBRIS ... ACTOR_TYPE_REBOUND_DEBRIS + 1: {
-    FragmentState *st = rec->state;
+    TumbleState *st = rec->state;
 
     InitActorRenderDefaults(rec);
     rec->cullRadius = 0x20;
@@ -467,9 +454,9 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
     rec->posZ += st->vel[2] * 4;
-    st->spinX = GetRandomU32() & 0xF;
-    st->spinY = GetRandomU32() & 0xF;
-    st->spinZ = GetRandomU32() & 0xF;
+    st->spin[0] = GetRandomU32() & 0xF;
+    st->spin[1] = GetRandomU32() & 0xF;
+    st->spin[2] = GetRandomU32() & 0xF;
     st->life = RandomIntInRange(0x18, 0x23);
     break;
   }

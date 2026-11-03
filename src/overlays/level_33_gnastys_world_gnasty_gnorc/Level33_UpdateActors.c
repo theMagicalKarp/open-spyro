@@ -137,10 +137,11 @@ typedef struct LanePatrollerState {
   int speed;       /* 0x10 speed */
   int knockHeading;       /* 0x14 knock-back heading */
   int knockSpeed;       /* 0x18 knock-back speed */
-  int vSpeed;       /* 0x1C vertical speed */
+  int knockZSpeed;       /* 0x1C vertical speed */
   int endNodeBack;       /* 0x20 end node going back */
   int endNodeFwd;       /* 0x24 end node going forward */
-  int box[14];   /* 0x28 trigger box */
+  TriggerBox box; /* 0x28 trigger box */
+  int pad40[8];
   int partner;       /* 0x60 partner actor index, -1 none; level data: ACTOR_TYPE_LOOT_VORTEX */
 } LanePatrollerState;
 
@@ -165,9 +166,9 @@ typedef struct GnastyState {
   int u64;                  /* 0x64 */
   int throws;               /* 0x68 bombs thrown */
   int passedPt6;                  /* 0x6C latched on nearing path point 6 (mode 0xB once per phase) */
-  int box70[6];             /* 0x70 trigger box */
-  int box88[6];             /* 0x88 trigger box */
-  int boxA0[6];             /* 0xA0 trigger box */
+  TriggerBox box70;             /* 0x70 trigger box */
+  TriggerBox box88;             /* 0x88 trigger box */
+  TriggerBox boxA0;             /* 0xA0 trigger box */
   int uB8;                  /* 0xB8 */
   int key2;                 /* 0xBC actor index, -1 none; level data: ACTOR_TYPE_LOOT_VORTEX */
   int key;                  /* 0xC0 actor index; level data: ACTOR_TYPE_FOLLOWER */
@@ -688,12 +689,12 @@ void Level33_UpdateActors(void) {
       }
       break;
 
-    /* Explosion shard with a ground bounce (ShardState). */
+    /* Explosion shard with a ground bounce (TumbleState). */
     case ACTOR_TYPE_SEED_POD_SHARD:
     case ACTOR_TYPE_SEED_POD_SHARD + 1:
     case ACTOR_TYPE_WOOD_CHEST_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {
 
@@ -1506,7 +1507,7 @@ void Level33_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
-        st->vSpeed = 0x28;
+        st->knockZSpeed = 0x28;
         ENTER_POSE(actor, LANEPAT_KNOCKED);
       }
       actor->flags = 0;
@@ -1543,7 +1544,7 @@ void Level33_UpdateActors(void) {
             st->slowTimer = 0x96;
           }
           st->slowTimer -= g_anLevelEscapeRunCount[st->lane] * 6;
-          if (IsPointInRotatedBox(&SPY.posX, st->box) != 0) {
+          if (IsPointInRotatedBox(&SPY.posX, &st->box) != 0) {
             st->path->dir *= -1;
           }
           if (st->path->dir == -1) {
@@ -1581,18 +1582,18 @@ void Level33_UpdateActors(void) {
         }
         r = PivotActorAlongPath(actor, st->path, 0x1C2, spd, 0, 0xA, 0x28, PIVOT_TURN_ANY, MOVE_LIFT);
         h = ProbeActorGroundHeightRaised(actor, 0xBB8);
-        st->vSpeed -= 0x1E;
-        if (st->vSpeed < -0x190) {
-          st->vSpeed = -0x190;
+        st->knockZSpeed -= 0x1E;
+        if (st->knockZSpeed < -0x190) {
+          st->knockZSpeed = -0x190;
         }
-        z = actor->posZ + st->vSpeed;
+        z = actor->posZ + st->knockZSpeed;
         if (z < h) {
           actor->posZ = h;
         } else {
           actor->posZ = z;
         }
         if ((r & PATH_ARRIVED_FLAG) && (FLY_FLAGS(st->path, st->path->cur) & PATH_NODE_JUMP) == PATH_JUMP_LOW) {
-          st->vSpeed = 0x12C;
+          st->knockZSpeed = 0x12C;
         }
         if ((st->path->dir == -1 && r == (st->endNodeBack | 0x100)) ||
             (st->path->dir == 1 && r == (st->endNodeFwd | 0x100))) {
@@ -1602,7 +1603,7 @@ void Level33_UpdateActors(void) {
           }
           ENTER_POSE(actor, LANEPAT_WATCH);
         }
-        FindFarthestPathPointFromSpyro((PathData *)st->path);
+        FindFarthestPathPointFromSpyro(st->path);
         FindNearestPathPointToSpyro(st->path, nearestNode);
         if (dist < 0x3000) {
           int a;
@@ -1635,7 +1636,7 @@ void Level33_UpdateActors(void) {
       }
 
       case LANEPAT_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->vSpeed, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x20);
@@ -1723,8 +1724,8 @@ void Level33_UpdateActors(void) {
       }
 
       if (st->seen == 0 && g_nSpyroAirborneFrames == 0 &&
-          (IsPointInRotatedBox(&SPY.posX, st->box70) != 0 ||
-           IsPointInRotatedBox(&SPY.posX, st->boxA0) != 0)) {
+          (IsPointInRotatedBox(&SPY.posX, &st->box70) != 0 ||
+           IsPointInRotatedBox(&SPY.posX, &st->boxA0) != 0)) {
         st->seen = 1;
       }
 
@@ -2110,7 +2111,7 @@ void Level33_UpdateActors(void) {
         if (TrackEntityYawTowardSpyro(actor, 5, 0, YAW_HOLD_IN_BAND) != 0) {
           ANIM_GO(actor, GNASTY_LOOKOUT);
         }
-        if (IsPointInRotatedBox(&SPY.posX, st->box88) != 0) {
+        if (IsPointInRotatedBox(&SPY.posX, &st->box88) != 0) {
           ModifyWorldChunkAnimFlags(GNASTY_CHUNK_DOOR, CHUNK_ANIM_RESUME, 0);
           ANIM_GO(actor, GNASTY_ANIM_RUN);
           actor->mode = GNASTY_ESCAPE;
@@ -2426,7 +2427,7 @@ void Level33_UpdateActors(void) {
 
       case LVORTEX_OPEN:
         if (((unsigned)SPY.state <= SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG || SPY.state == SPYRO_ST_RUN) &&
-            IsPointInRotatedBox(&SPY.posX, st->pad) &&
+            IsPointInRotatedBox(&SPY.posX, &st->box) &&
             AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(g_pActorListBase[st->target].posX - SPY.posX,
                                         g_pActorListBase[st->target].posY - SPY.posY,
@@ -2742,7 +2743,7 @@ void Level33_UpdateActors(void) {
 
     /* Sparkling shard: 1 puff per frame. */
     case ACTOR_TYPE_SPARKLE_SHARD: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
@@ -2773,7 +2774,7 @@ void Level33_UpdateActors(void) {
     /* Wood shard: bounces and throws three sparks a frame. */
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
       register int i asm("$16");
 
       if (st->life > 0) {

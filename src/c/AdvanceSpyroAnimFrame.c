@@ -27,7 +27,7 @@ void AdvanceSpyroAnimFrame(int delta) {
     g_bSpyroAnimFrame = newFrame;
 
     loopEnd = g_abSpyroAnimDescTable[idx + 1];
-    if ((unsigned char)newFrame >= loopEnd) {
+    if (newFrame >= loopEnd) {
       g_bSpyroAnimFrame = g_abSpyroAnimDescTable[idx];
     }
   }

@@ -644,14 +644,14 @@ void Level9_UpdateActors(void) {
       break;
     }
 
-    /* Explosion shard with a ground bounce (ShardState). */
+    /* Explosion shard with a ground bounce (TumbleState). */
     case ACTOR_TYPE_SEED_POD_SHARD:
     case ACTOR_TYPE_SEED_POD_SHARD + 1:
     case ACTOR_TYPE_WOOD_CHEST_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1:
     case ACTOR_TYPE_LIFE_CHEST_SHARD:
     case ACTOR_TYPE_LIFE_CHEST_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {
 
@@ -1961,7 +1961,7 @@ void Level9_UpdateActors(void) {
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != YAK_KNOCKED) {
         st->speed = 0xF0;
-        st->heading = SPY.bodyRotZ;
+        st->knockHeading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);
@@ -2044,7 +2044,7 @@ void Level9_UpdateActors(void) {
 
       case YAK_KNOCKED:
         if (st->speed > 0) {
-          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, MOVE_LIFT);
+          MoveActorAlongAngle(actor, st->knockHeading, st->speed, 0x1F4, 0x2BC, MOVE_LIFT);
           st->speed -= 0x10;
         }
         if (g_nActorAnimDone != 0) {
@@ -2069,36 +2069,36 @@ void Level9_UpdateActors(void) {
      * level-data link; often none) overhead; charged, flings it at Spyro to
      * bounce (COLLECT_BOUNCE). */
     case ACTOR_TYPE_OVERHEAD_THROWER: {
-      int *st = actor->state;
+      int *held = actor->state; /* pool index of the gem it holds, -1 none */
 
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != OTHROW_HIT) {
         ENTER_POSE(actor, OTHROW_HIT);
       }
-      if (*st >= 0) {
-        if (g_pActorListBase[*st].mode >= ACTOR_MODE_DORMANT) {
-          *st = -1;
+      if (*held >= 0) {
+        if (g_pActorListBase[*held].mode >= ACTOR_MODE_DORMANT) {
+          *held = -1;
         } else {
-          CopyVector(&g_pActorListBase[*st].posX, &actor->posX);
-          g_pActorListBase[*st].posZ += 0x800;
-          g_pActorListBase[*st].subMode = COLLECT_INERT;
-          g_pActorListBase[*st].rotX = 0;
-          g_pActorListBase[*st].rotY = 0;
-          g_pActorListBase[*st].rotZ += 8;
+          CopyVector(&g_pActorListBase[*held].posX, &actor->posX);
+          g_pActorListBase[*held].posZ += 0x800;
+          g_pActorListBase[*held].subMode = COLLECT_INERT;
+          g_pActorListBase[*held].rotX = 0;
+          g_pActorListBase[*held].rotY = 0;
+          g_pActorListBase[*held].rotZ += 8;
         }
       }
       if (actor->mode == OTHROW_HIT) {
-        if (*st >= 0) {
-          PickupState *gem = g_pActorListBase[*st].state;
+        if (*held >= 0) {
+          PickupState *gem = g_pActorListBase[*held].state;
           int ang = ArcTan2(spy->posX - actor->posX,
                                   spy->posY - actor->posY, ATAN_ANGLE8) *
                     16;
 
-          g_pActorListBase[*st].subMode = COLLECT_BOUNCE;
+          g_pActorListBase[*held].subMode = COLLECT_BOUNCE;
           gem->count = 3;
           gem->vel[0] = (LookupCosine(ang) * 0x1C) >> 12;
           gem->vel[1] = (LookupSine(ang) * 0x1C) >> 12;
           gem->vel[2] = 0x32;
-          *st = -1;
+          *held = -1;
         }
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
@@ -2142,12 +2142,12 @@ void Level9_UpdateActors(void) {
       int r;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != SNOWTHROW_KNOCKED) {
-        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, 0x20, 0x40);
-        st->speed = 0xB4;
+        st->knockSpeed = 0xB4;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->speed = 0x12C;
+          st->knockSpeed = 0x12C;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
@@ -2183,7 +2183,7 @@ void Level9_UpdateActors(void) {
             actor, &st->path->nodes[0].x, st->dist,
             ArcTan2(spy->posX - st->path->nodes[st->path->cur].x,
                           spy->posY - st->path->nodes[st->path->cur].y, ATAN_ANGLE8),
-            8, st->turn1, 0xE, 0x80, st->blockHeadingA, st->blockHeadingB, 0, 0, MOVE_FOLLOW_FLOOR);
+            8, st->advanceSpeed, 0xE, 0x80, st->blockHeadingA, st->blockHeadingB, 0, 0, MOVE_FOLLOW_FLOOR);
         if (r == 0x100 || r < 0x40) {
           int ang = WrapAddAngle8(actor->rotZ, 0xE0);
 
@@ -2218,15 +2218,15 @@ void Level9_UpdateActors(void) {
           SubtractVector(bv, &SPY.posX, &ball->posX);
           ScaleVector3ByRatio(bv, VectorLength(bv, VEC_LEN_XYZ), 0xC8);
           ((ThrownSnowballState *)bv)->timer = 0x8C;
-          st->knock = WrapAddAngle8(actor->rotZ, 0x80);
-          st->speed = 0;
+          st->knockHeading = WrapAddAngle8(actor->rotZ, 0x80);
+          st->knockSpeed = 0;
           st->throwT = 0x1E;
         }
-        if (st->speed != 0) {
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0x12C, 0x12C, MOVE_LIFT);
-          st->speed -= 0x14;
-          if (st->speed < 0) {
-            st->speed = 0;
+        if (st->knockSpeed != 0) {
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0x12C, 0x12C, MOVE_LIFT);
+          st->knockSpeed -= 0x14;
+          if (st->knockSpeed < 0) {
+            st->knockSpeed = 0;
           }
         }
         if (g_nActorAnimDone != 0) {
@@ -2237,11 +2237,11 @@ void Level9_UpdateActors(void) {
       }
 
       case SNOWTHROW_KNOCKED:
-        if (st->speed != 0) {
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0x12C, 0x12C, MOVE_LIFT);
-          st->speed -= 0xC;
-          if (st->speed < 0) {
-            st->speed = 0;
+        if (st->knockSpeed != 0) {
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0x12C, 0x12C, MOVE_LIFT);
+          st->knockSpeed -= 0xC;
+          if (st->knockSpeed < 0) {
+            st->knockSpeed = 0;
           }
         }
         if (g_nActorAnimDone != 0) {
@@ -2257,7 +2257,7 @@ void Level9_UpdateActors(void) {
             actor, &st->path->nodes[0].x, st->dist,
             ArcTan2(st->path->nodes[st->path->cur].x - spy->posX,
                           st->path->nodes[st->path->cur].y - spy->posY, ATAN_ANGLE8),
-            8, st->turn4, 0xE, 0x80, st->blockHeadingA, st->blockHeadingB, 0, 0, MOVE_FOLLOW_FLOOR);
+            8, st->retreatSpeed, 0xE, 0x80, st->blockHeadingA, st->blockHeadingB, 0, 0, MOVE_FOLLOW_FLOOR);
         if (r < 0xA) {
           st->timer = 0x5A;
           ANIM_GO(actor, SNOWTHROW_WAIT);
@@ -2401,7 +2401,7 @@ void Level9_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != TRAM_KNOCKED) {
-        st->heading = SPY.bodyRotZ;
+        st->knockHeading = SPY.bodyRotZ;
         st->speed = 0x80;
         st->rest = 0x80;
         actor->flags = 0;
@@ -2496,9 +2496,9 @@ void Level9_UpdateActors(void) {
 
         if (st->rest != 0) {
           if (actor->nextFrame >= 4) {
-            DriveActorTrackedMove(actor, &st->rest, st->heading, 0, 8, 0);
+            DriveActorTrackedMove(actor, &st->rest, st->knockHeading, 0, 8, 0);
           } else {
-            DriveActorTrackedMove(actor, &st->rest, st->heading, 0, 0, 0);
+            DriveActorTrackedMove(actor, &st->rest, st->knockHeading, 0, 0, 0);
           }
         }
         actor->posZ += 0x200;
@@ -2530,9 +2530,9 @@ void Level9_UpdateActors(void) {
         }
         if (st->speed != 0) {
           actor->posX +=
-              (st->speed * LookupCosine(st->heading << 4)) >> 12;
+              (st->speed * LookupCosine(st->knockHeading << 4)) >> 12;
           actor->posY +=
-              (st->speed * LookupSine(st->heading << 4)) >> 12;
+              (st->speed * LookupSine(st->knockHeading << 4)) >> 12;
         }
         actor->posZ += 0x200;
         z = FindGroundHeightBelow(&actor->posX, 0x1000);
@@ -2860,12 +2860,12 @@ void Level9_UpdateActors(void) {
         voice = 0x12;
         break;
 
-      case 8:
-        voice = 0x1A;
+      case AMBIENT_MODE_PORTAL:
+        voice = SFX_PORTAL_HUM;
         break;
 
-      case 9:
-        voice = 0x36;
+      case AMBIENT_MODE_WHIRLWIND:
+        voice = SFX_WHIRLWIND;
         break;
       }
 
@@ -2878,7 +2878,7 @@ void Level9_UpdateActors(void) {
 
     /* Sparkling shard: 1 puff per frame. */
     case ACTOR_TYPE_SPARKLE_SHARD: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
@@ -2909,7 +2909,7 @@ void Level9_UpdateActors(void) {
     /* Wood shard: bounces and throws three sparks a frame. */
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
       register int i asm("$16");
 
       if (st->life > 0) {
@@ -3297,8 +3297,8 @@ void Level9_UpdateActors(void) {
       }
 
       for (i = 0; i < 8; i++) {
-        svN[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
-        svN[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
+        svN[0] = (g_anCosineLut[i * 32] >> 8) * 3;
+        svN[1] = (g_anSineLut[i * 32] >> 8) * 3;
         svN[2] = 0x18;
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)svN);
       }

@@ -89,27 +89,6 @@
 /* ==== Level 14 classes ==== */
 extern int g_anCollisionContactPoint[2]; /* wall probe hit x, y */
 
-/* Type 303: runner spawner. Every so often (`timer`, 0xB4) spawns one type
- * 304 runner and hands it `value`; killable. */
-typedef struct RunnerSpawnerState {
-  unsigned char *link; /* 0x00 byte +1 cleared when the spawn fires */
-  int flags;           /* 0x04 bit 0: spawned */
-  int wait;            /* 0x08 */
-  int timer;           /* 0x0C */
-  int value;           /* 0x10 copied to the spawn's WaypointRunnerState.target */
-} RunnerSpawnerState;
-
-/* Type 304: waypoint runner. Walks `path` until it reaches Spyro, the path
- * end, or its `target` actor (which it flags), then clears its spawner's
- * flags bit 0 and leaves. */
-typedef struct WaypointRunnerState {
-  void *path;   /* 0x00 */
-  Actor *link;  /* 0x04 its state's flags bit 0 is cleared on release */
-  int hold;     /* 0x08 */
-  int pad0C[2]; /* 0x0C */
-  short target; /* 0x14 pool index, < 0 = none */
-} WaypointRunnerState;
-
 /* Type 302: chunk operator. Starts its world chunk's animation when Spyro
  * comes near (0x2000) or goes far (0x3000); with `riding` set it follows the
  * moving floor triangle under it. */
@@ -626,11 +605,11 @@ void Level14_UpdateActors(void) {
       st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != THIEF_CAUGHT) {
-        st->knock = 0x96;
+        st->knockSpeed = 0x96;
         if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
-          st->knock = 0xE1;
+          st->knockSpeed = 0xE1;
         }
-        st->heading = StepAndLerpAngle8(
+        st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         if (actor->dropKind == DROP_GEM_ROLL) {
@@ -788,7 +767,7 @@ void Level14_UpdateActors(void) {
           ANIM_GO(actor, THIEF_ANIM_TAUNT);
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         } else if (st->mode == THIEFKIND_CLIMB) {
-          if (IsPointInRotatedBox(&SPY.posX, st->area) != 0) {
+          if (IsPointInRotatedBox(&SPY.posX, &st->area) != 0) {
             actor->mode = THIEF_CLIMB_RUN;
             continue;
           }
@@ -944,11 +923,11 @@ void Level14_UpdateActors(void) {
             st->egg = 0;
           }
         }
-        if (st->knock != 0) {
-          MoveActorAlongAngle(actor, st->heading, st->knock, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-          st->knock -= 0x10;
-          if (st->knock < 0) {
-            st->knock = 0;
+        if (st->knockSpeed != 0) {
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          st->knockSpeed -= 0x10;
+          if (st->knockSpeed < 0) {
+            st->knockSpeed = 0;
           }
         }
         ANIM_GO(actor, THIEF_ANIM_CAUGHT);
@@ -1500,12 +1479,12 @@ void Level14_UpdateActors(void) {
       break;
     }
 
-    /* Explosion shard with a ground bounce (ShardState). */
+    /* Explosion shard with a ground bounce (TumbleState). */
     case ACTOR_TYPE_SEED_POD_SHARD:
     case ACTOR_TYPE_SEED_POD_SHARD + 1:
     case ACTOR_TYPE_WOOD_CHEST_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {
 
@@ -3598,12 +3577,12 @@ void Level14_UpdateActors(void) {
         voice = 0x12;
         break;
 
-      case 8:
-        voice = 0x1A;
+      case AMBIENT_MODE_PORTAL:
+        voice = SFX_PORTAL_HUM;
         break;
 
-      case 9:
-        voice = 0x36;
+      case AMBIENT_MODE_WHIRLWIND:
+        voice = SFX_WHIRLWIND;
         break;
       }
 
@@ -4007,7 +3986,7 @@ void Level14_UpdateActors(void) {
 
       case RSPAWNER_RELEASE:
         if (actor->nextFrame >= 5 && !(st->flags & 1)) {
-          st->link[1] = 0;
+          st->path->cur = 0;
           ((WaypointRunnerState *)g_pfnLevelSpawnActor(ACTOR_TYPE_WAYPOINT_RUNNER, actor)->state)->target = st->value;
           st->flags |= 1;
         }
@@ -4039,7 +4018,7 @@ void Level14_UpdateActors(void) {
           ANIM_RESET(actor, WPRUNNER_RUN);
           continue;
         }
-        if (st->link->mode >= RSPAWNER_KNOCKED) {
+        if (st->spawner->mode >= RSPAWNER_KNOCKED) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -4049,19 +4028,19 @@ void Level14_UpdateActors(void) {
         int *pos = &actor->posX;
 
         if (RaiseSpyroTriggerInRadius(pos, 0x280, SPYRO_EV_HIT_LONG | SPYRO_EV_CHARGE_HIT) != 0) {
-          ((RunnerSpawnerState *)st->link->state)->flags &= ~1;
+          ((RunnerSpawnerState *)st->spawner->state)->flags &= ~1;
           ENTER_POSE(actor, WPRUNNER_POP);
           continue;
         }
         if (WalkActorAlongWaypoints(actor, st->path, 0x100, 0x40, 0, 0x20, 0xFF,
-                          &st->hold) == 0x100) {
-          ((RunnerSpawnerState *)st->link->state)->flags &= ~1;
+                          st->smoothVel) == 0x100) {
+          ((RunnerSpawnerState *)st->spawner->state)->flags &= ~1;
           ENTER_POSE(actor, WPRUNNER_POP);
           continue;
         }
         if (st->target >= 0 && g_pActorListBase[st->target].mode < ACTOR_MODE_DORMANT &&
             ApproxDist2D(pos, &g_pActorListBase[st->target].posX) < 0x280) {
-          ((RunnerSpawnerState *)st->link->state)->flags &= ~1;
+          ((RunnerSpawnerState *)st->spawner->state)->flags &= ~1;
           g_pActorListBase[st->target].flags |= ACTOR_NUDGED;
           ENTER_POSE(actor, WPRUNNER_POP);
           continue;
@@ -4328,7 +4307,7 @@ void Level14_UpdateActors(void) {
 
     /* Sparkling shard: 1 puff per frame. */
     case ACTOR_TYPE_SPARKLE_SHARD: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
@@ -4359,7 +4338,7 @@ void Level14_UpdateActors(void) {
     /* Wood shard: bounces and throws three sparks a frame. */
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
       register int i asm("$16");
 
       if (st->life > 0) {

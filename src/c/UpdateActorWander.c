@@ -106,7 +106,7 @@ void UpdateActorWander(Actor *actor, WanderBlock *wb) {
       return;
     }
     if (wb->chaseRadius != 0 && wb->chasing == 0 && wb->chaseCooldown == 0 &&
-        dist < (int)(wb->chaseRadius << 10)) {
+        dist < (wb->chaseRadius << 10)) {
       wb->heading = ArcTan2(actor->posX - g_anSpyroWorldPos[0],
                             actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8);
       wb->heading = WrapAddAngle8(wb->heading, RandomIntInRange(-0x30, 0x30));
@@ -115,7 +115,7 @@ void UpdateActorWander(Actor *actor, WanderBlock *wb) {
       return;
     }
     home = ApproxDist2D(&actor->posX, &wb->homeX);
-    if ((int)(wb->leash << 10) < home) {
+    if ((wb->leash << 10) < home) {
       wb->heading = ArcTan2(wb->homeX - actor->posX, wb->homeY - actor->posY,
                             ATAN_ANGLE8);
       wb->chasing = 0;

@@ -94,14 +94,15 @@ void Level22_UpdateActors(void) {
   char *base;
   int dt;
 
-  /* Scratch vectors, in the original's slot order (named by sp offset). */
+  /* Scratch vectors, in the original's slot order: shared ones named by sp
+   * offset (gNNN), single-use ones by role with the offset noted. */
   int g056[3];
   int eggArcBase[3];
   int eggArcOffset[3];
   int g104[3];
   int eggViewPos[3];
   int prevPos[3];
-  int g152[3];
+  int stepVel[3]; /* sp 152 */
   int g168[3];
   int sparkLead[3];
   int g200[3];
@@ -115,7 +116,7 @@ void Level22_UpdateActors(void) {
   int g328[3];
   int g344[3];
   int g360[3];
-  int g376[3][3];
+  int triVerts[3][3]; /* sp 376 */
   int bounceNormal[3];
   int homingStep[3];
   int sparxToTarget[3];
@@ -1038,11 +1039,11 @@ void Level22_UpdateActors(void) {
         if (st->vz < -0xA0) {
           st->vz = -0xA0;
         }
-        g152[0] = st->vx;
-        g152[1] = st->vy;
-        g152[2] = st->vz;
+        stepVel[0] = st->vx;
+        stepVel[1] = st->vy;
+        stepVel[2] = st->vz;
         CopyVector(prevPos, &actor->posX);
-        AddVector(&actor->posX, &actor->posX, g152);
+        AddVector(&actor->posX, &actor->posX, stepVel);
         if (TICK_DOWN(st->life) != 0) {
           DespawnActorRecord(actor);
           continue;
@@ -1051,12 +1052,12 @@ void Level22_UpdateActors(void) {
           continue;
         }
         CopyVector(g168, &g_anCollisionProbeVec);
-        if (ReflectVectorOffNormal(g152, g168, g152) == 0) {
+        if (ReflectVectorOffNormal(stepVel, g168, stepVel) == 0) {
           continue;
         }
-        st->vx = (g152[0] * 7) >> 3;
-        st->vy = (g152[1] * 7) >> 3;
-        st->vz = (g152[2] * 7) >> 3;
+        st->vx = (stepVel[0] * 7) >> 3;
+        st->vy = (stepVel[1] * 7) >> 3;
+        st->vz = (stepVel[2] * 7) >> 3;
         continue;
       }
       continue;
@@ -1209,13 +1210,13 @@ void Level22_UpdateActors(void) {
 
       if (st->flags == BTHROW_F_HOP) {
         if (st->path->cur != 0 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box0) != 0) {
           st->path->cur = 0;
           CopyVector(&actor->posX,
                         PATH_PT(st->path, 0));
           SnapActorToGround(actor);
         } else if (st->path->cur != 1 &&
-                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box1) != 0) {
+                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box1) != 0) {
           st->path->cur = 1;
           CopyVector(&actor->posX,
                         PATH_PT(st->path, 1));
@@ -1257,8 +1258,8 @@ void Level22_UpdateActors(void) {
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < st->throwRange) {
           goto pose5;
         }
-        if (st->box0HalfWidth != 0 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
+        if (st->box0.halfWidth != 0 &&
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box0) != 0) {
         pose5:
           ENTER_POSE(actor, BTHROW_PATROL);
         }
@@ -1406,7 +1407,7 @@ void Level22_UpdateActors(void) {
           st->zSpeed = 0x50;
         }
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        actor->probeDist = 0xFF;
+        actor->probeDist = ACTOR_PROBE_NONE;
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
         ANIM_GO(actor, BTHROW_ANIM_HURTLE);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2BC &&
@@ -1592,13 +1593,13 @@ void Level22_UpdateActors(void) {
 
       if (st->mode == GKEEPER_POST_TWO_BOX) {
         if (st->path->cur != 0 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box0) != 0) {
           st->path->cur = 0;
           CopyVector(&actor->posX,
                         PATH_PT(st->path, 0));
           SnapActorToGround(actor);
         } else if (st->path->cur != 1 &&
-                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box1) != 0) {
+                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box1) != 0) {
           st->path->cur = 1;
           CopyVector(&actor->posX,
                         PATH_PT(st->path, 1));
@@ -1765,7 +1766,7 @@ void Level22_UpdateActors(void) {
           st->zSpeed = 0x5A;
         }
         ANIM_GO(actor, GATEKEEPER_ANIM_HURTLE);
-        actor->probeDist = 0xFF;
+        actor->probeDist = ACTOR_PROBE_NONE;
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x3E8 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x320
@@ -2044,7 +2045,7 @@ void Level22_UpdateActors(void) {
       continue;
     }
 
-    /* Explosion shard with a ground bounce (ShardState). */
+    /* Explosion shard with a ground bounce (TumbleState). */
     case ACTOR_TYPE_SEED_POD_SHARD:
     case ACTOR_TYPE_SEED_POD_SHARD + 1:
     case ACTOR_TYPE_GROUND_BOUNCE_SHARD:
@@ -2052,7 +2053,7 @@ void Level22_UpdateActors(void) {
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1:
     case ACTOR_TYPE_LIFE_CHEST_SHARD:
     case ACTOR_TYPE_LIFE_CHEST_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {
 
@@ -2223,14 +2224,14 @@ void Level22_UpdateActors(void) {
 
           } else if (st->restMode == COLLREST_ON_TRI) {
 
-            UnpackWorldCollisionTri(st->groundTri, g376[0]);
+            UnpackWorldCollisionTri(st->groundTri, triVerts[0]);
 
-            AddVector(g376[0], g376[0], g376[1]);
-            AddVector(g376[0], g376[0], g376[2]);
+            AddVector(triVerts[0], triVerts[0], triVerts[1]);
+            AddVector(triVerts[0], triVerts[0], triVerts[2]);
 
-            actor->posX = g376[0][0] / 3;
-            actor->posY = g376[0][1] / 3;
-            actor->posZ = g376[0][2] / 3;
+            actor->posX = triVerts[0][0] / 3;
+            actor->posY = triVerts[0][1] / 3;
+            actor->posZ = triVerts[0][2] / 3;
 
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
@@ -3670,7 +3671,7 @@ void Level22_UpdateActors(void) {
 
     /* Sparkling shard: 1 puff per frame. */
     case ACTOR_TYPE_SPARKLE_SHARD: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
@@ -3701,7 +3702,7 @@ void Level22_UpdateActors(void) {
     /* Wood shard: bounces and throws three sparks a frame. */
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
       register int i asm("$16");
 
       if (st->life > 0) {
@@ -4293,8 +4294,8 @@ void Level22_UpdateActors(void) {
       }
 
       for (i = 0; i < 8; i++) {
-        g608[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
-        g608[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
+        g608[0] = (g_anCosineLut[i * 32] >> 8) * 3;
+        g608[1] = (g_anSineLut[i * 32] >> 8) * 3;
         g608[2] = 0x18;
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)g608);
       }
@@ -4415,20 +4416,20 @@ void Level22_UpdateActors(void) {
       if ((actor->flags & ACTOR_HIT_ANY) && actor->mode != RAM_KNOCKED) {
         EBB_BREAK();
         if (actor->flags & ACTOR_HIT_BLAST) {
-          st->knock = ArcTan2(actor->posX - g_pActorListBase[st->target].posX,
+          st->knockHeading = ArcTan2(actor->posX - g_pActorListBase[st->target].posX,
                                     actor->posY - g_pActorListBase[st->target].posY,
                                     ATAN_ANGLE8);
           st->speed = 0x8C;
-          st->lift = 0x23;
+          st->zSpeed = 0x23;
         } else {
-          st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+          st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
                                     spy->bodyRotZ, 0x20, 0x40);
           st->speed = 0xC8;
-          st->lift = 0x32;
+          st->zSpeed = 0x32;
           if (actor->flags & ACTOR_HIT_CHARGE) {
             st->speed += 0x46;
-            st->lift += 0x32;
+            st->zSpeed += 0x32;
           }
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorLiveKill(actor);
@@ -4447,7 +4448,7 @@ void Level22_UpdateActors(void) {
       actor->flags = 0;
       if (st->triggerSlot != -1 && g_anLevelTriggerStateSlots[st->triggerSlot] != 0 &&
           (unsigned int)(actor->mode - 3) >= 2 &&
-          IsPointInRotatedBox(&actor->posX, &st->box.x) != 0) {
+          IsPointInRotatedBox(&actor->posX, &st->box) != 0) {
         ENTER_POSE(actor, RAM_TRAPPED);
       }
 
@@ -4509,7 +4510,7 @@ void Level22_UpdateActors(void) {
       }
 
       case RAM_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, 0x10);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, 0x10);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x10);
@@ -4521,7 +4522,7 @@ void Level22_UpdateActors(void) {
       case RAM_TRAPPED:
         if (g_anLevelTriggerStateSlots[st->triggerSlot] == 0) {
           st->speed = 0;
-          st->lift = 0;
+          st->zSpeed = 0;
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorLiveKill(actor);
           ENTER_POSE(actor, RAM_KNOCKED);

@@ -42,16 +42,6 @@
 #include "level_update_actors.h"
 #include "level_emit_particles.h"
 
-/* Debris state block (types 0x43..0x45, 0xFF..0x101, 0x135..0x137). */
-/* Attach-point bead state block (type 0x157; AttachBeadState in the
- * updater). */
-typedef struct TrackState {
-  Actor *owner;        /* 0x00 */
-  int t;               /* 0x04 */
-  int pad08;           /* 0x08 cleared here, never read */
-} TrackState;
-
-
 extern unsigned short g_nCameraEulerPitch;  /* unsigned view (lhu); globals.h has it short */
 
 Actor *Level19_SpawnActor(int type, Actor *parent) {
@@ -115,10 +105,10 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
   }
 
   case ACTOR_TYPE_CARRIED_EGG: {
-    TrackState *st = rec->state;
+    Actor **st = rec->state;
 
     InitActorRenderDefaults(rec);
-    st->owner = parent;
+    *st = parent;
     GetActorAttachPoint(parent, 0, &rec->posX);
     InsertActorIntoSpatialGrid(rec);
     rec->rotY = g_nCameraEulerPitch;
@@ -196,7 +186,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
   }
 
   case ACTOR_TYPE_GROUND_BOUNCE_SHARD: {
-    FragmentState *st = rec->state;
+    TumbleState *st = rec->state;
     int yaw;
     int pitch;
     int speed;
@@ -206,9 +196,9 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
     if (parent->type == ACTOR_TYPE_BOLT_GUARD) {
-      FragmentState *pst = parent->state;
+      BoltGuardState *pst = parent->state;
 
-      yaw = ((pst->life + RandomIntInRange(-0x32, 0x32)) & 0xFF) << 4;
+      yaw = ((pst->knockHeading + RandomIntInRange(-0x32, 0x32)) & 0xFF) << 4;
       pitch = GetRandomU32() & 0x7FF;
       if (LookupCosine(pitch) >> 4 > 0) {
         speed = LookupCosine(pitch) >> 4;
@@ -239,12 +229,12 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
     rec->posZ += st->vel[2] * 4;
-    st->spinX = GetRandomU32() & 0xF;
-    st->spinY = GetRandomU32() & 0xF;
-    st->spinZ = GetRandomU32() & 0xF;
-    rec->rotX += (unsigned char)st->spinX * 4;
-    rec->rotY += (unsigned char)st->spinY * 4;
-    rec->rotZ += (unsigned char)st->spinZ * 4;
+    st->spin[0] = GetRandomU32() & 0xF;
+    st->spin[1] = GetRandomU32() & 0xF;
+    st->spin[2] = GetRandomU32() & 0xF;
+    rec->rotX += (unsigned char)st->spin[0] * 4;
+    rec->rotY += (unsigned char)st->spin[1] * 4;
+    rec->rotZ += (unsigned char)st->spin[2] * 4;
     st->floorZ = parent->posZ - 0x40;
     *(int *)&rec->tint0 = 0x1000000;
     rec->renderList |= ACTOR_RENDER_SECONDARY;
@@ -280,7 +270,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
   case ACTOR_TYPE_WOOD_CHEST_SHARD ... ACTOR_TYPE_WOOD_CHEST_SHARD + 2:
   case ACTOR_TYPE_SPARKLE_SHARD ... ACTOR_TYPE_WOOD_SHARD + 1:
   case ACTOR_TYPE_LIFE_CHEST_SHARD ... ACTOR_TYPE_LIFE_CHEST_SHARD + 2: {
-    FragmentState *st = rec->state;
+    TumbleState *st = rec->state;
     int yaw;
     int pitch;
 
@@ -301,9 +291,9 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
     rec->posZ += st->vel[2] * 4;
-    st->spinX = GetRandomU32() & 0xF;
-    st->spinY = GetRandomU32() & 0xF;
-    st->spinZ = GetRandomU32() & 0xF;
+    st->spin[0] = GetRandomU32() & 0xF;
+    st->spin[1] = GetRandomU32() & 0xF;
+    st->spin[2] = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
     if ((unsigned int)((unsigned short)rec->type - 0x135) < 3) {
@@ -373,7 +363,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
   }
 
   case ACTOR_TYPE_ATTACH_BEAD: {
-    TrackState *st = rec->state;
+    AttachBeadState *st = rec->state;
 
     InitActorRenderDefaults(rec);
     CopyVector(&rec->posX, &parent->posX);

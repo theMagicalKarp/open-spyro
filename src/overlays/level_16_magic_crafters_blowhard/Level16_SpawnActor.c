@@ -25,6 +25,7 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "actor.h"
+#include "level_update_actors.h"
 #include "model.h"
 #include "emit_record.h"
 
@@ -42,35 +43,13 @@
  * the position falls back to Spyro's (g_anSpyroWorldPos).
  */
 
-/* Rim-rider state block (type 0x25; Level16_UpdateActors views it as
- * RimState). */
-typedef struct WindState {
-  Actor *owner;       /* 0x00 */
-  short reach;        /* 0x04 */
-  short range;        /* 0x06 */
-  int seenXY;         /* 0x08 Spyro's last-seen x/y >> 4 (two shorts) */
-  int child;          /* 0x0C type 0x27 helper actor */
-  unsigned char mode; /* 0x10 */
-} WindState;
-
-/* Rim-rider helper state block (type 0x27; HelperState in the updater). */
-typedef struct AimState {
-  int timer;    /* 0x00 */
-  Actor *owner; /* 0x04 */
-  int beat;     /* 0x08 */
-} AimState;
-
-extern int g_anCameraPos;     /* scalar view of camera X: the spawned prop turns to face the camera */
 
 extern int g_anSpyroWorldPos[];
 extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type */
 
-/* NOTE: the function body below is decomp-permuter output, spliced in
-   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
-   gain only. It reads worse than the hand-written form it replaced and
-   its inline comments are lost. The hand-written original is recoverable
-   with `git show HEAD:src/overlays/level_16_magic_crafters_blowhard/Level16_SpawnActor.c.wip`; this body came from
-   build/permuter/nonmatchings/Level16_SpawnActor/output-815-1/source.c. */
+/* The body below started as decomp-permuter output (2026-08-14-1) and was
+   carried to a full match from there; the earlier hand-written draft and its
+   comments are in git history (7623bbd6^). */
 Actor *Level16_SpawnActor(int type, Actor *parent)
 {
   Actor *rec;
@@ -148,7 +127,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
 
     case ACTOR_TYPE_RIM_RIDER:
     {
-      WindState *st = rec->state;
+      RimState *st = rec->state;
       int probe[3];
       int anim;
       shiftX = 2;
@@ -184,7 +163,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       rec->posX = parent->posX + (g_anCosineLut[parent->rotZ] >> shiftX);
       rec->posY = parent->posY + (g_anSineLut[parent->rotZ] >> shiftY);
       rec->posZ = parent->posZ;
-      st->owner = parent;
+      st->parent = parent;
       st->child = 0;
       rec->mode = 0;
       anim = g_apActorMeshTable[rec->type]->m_Animations[0]->m_ProgressPerTick;
@@ -199,7 +178,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
 
     case ACTOR_TYPE_SPLIT_SHOT:
     {
-      int *st = rec->state;
+      int *timer = rec->state;
       int *pos;
       int turn;
       InitActorRenderDefaults(rec);
@@ -213,7 +192,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
         rec->frameRate = g_apActorMeshTable[rec->type]->m_Animations[SPLITSHOT_FRAGMENT]->m_ProgressPerTick;
         rec->anim = SPLITSHOT_FRAGMENT;
         rec->nextAnim = SPLITSHOT_FRAGMENT;
-        *st = 3;
+        *timer = 3;
       }
       else
         if (parent->nextFrame >= 6)
@@ -236,7 +215,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
           turn = 0x10;
         }
         rec->rotY = parent->rotY + turn;
-        *st = 0x80;
+        *timer = 0x80;
         rec->mode = SPLITSHOT_FLY;
         rec->frameProgress = 0;
         rec->frameRate = g_apActorMeshTable[rec->type]->m_Animations[SPLITSHOT_FLY]->m_ProgressPerTick;
@@ -263,7 +242,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
           rec->posZ += 0x180;
           rec->rotZ = parent->rotZ;
         }
-        *st = 2;
+        *timer = 2;
       }
       InsertActorIntoSpatialGrid(rec);
       break;
@@ -271,11 +250,11 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
 
     case ACTOR_TYPE_RIM_RIDER_HELPER:
     {
-      AimState *st = rec->state;
+      HelperState *st = rec->state;
       InitActorRenderDefaults(rec);
       CopyVector(&rec->posX, &parent->posX);
       InsertActorIntoSpatialGrid(rec);
-      rec->rotZ = ArcTan2(g_anCameraPos - rec->posX, g_nCameraPosY - rec->posY, ATAN_ANGLE8);
+      rec->rotZ = ArcTan2(g_anCameraPos[0] - rec->posX, g_nCameraPosY - rec->posY, ATAN_ANGLE8);
       rec->posZ -= 0x400;
       st->timer = 0x40;
       st->owner = parent;
@@ -390,7 +369,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
 
     case ACTOR_TYPE_SPARKLE_SHARD ... ACTOR_TYPE_WOOD_SHARD + 1:
     {
-      FragmentState *st = rec->state;
+      TumbleState *st = rec->state;
       int yaw;
       int pitch;
       InitActorRenderDefaults(rec);
@@ -411,9 +390,9 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       rec->posX += st->vel[0] * 4;
       rec->posY += st->vel[1] * 4;
       rec->posZ += st->vel[2] * 4;
-      st->spinX = GetRandomU32() & 0xF;
-      st->spinY = GetRandomU32() & 0xF;
-      st->spinZ = GetRandomU32() & 0xF;
+      st->spin[0] = GetRandomU32() & 0xF;
+      st->spin[1] = GetRandomU32() & 0xF;
+      st->spin[2] = GetRandomU32() & 0xF;
       st->floorZ = parent->posZ - 0x40;
       st->life = 0x40 - (GetRandomU32() & 0xF);
       if (((unsigned int) (((unsigned short) rec->type) - 0x135)) < 3)

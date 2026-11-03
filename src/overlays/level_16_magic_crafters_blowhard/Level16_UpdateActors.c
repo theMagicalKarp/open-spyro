@@ -716,7 +716,7 @@ void Level16_UpdateActors(void) {
           if (d > 0x3000) {
             d = 0x3000;
           }
-          if ((short)st->reach >> 1 >= d) {
+          if (st->reach >> 1 >= d) {
             ENTER_POSE(actor, RIMRIDER_STOP);
           }
           actor->posX += (st->reach * g_anCosineLut[actor->rotZ]) >> 12;
@@ -761,13 +761,13 @@ void Level16_UpdateActors(void) {
      * splits into four more of itself when it reaches him, and fizzles out
      * on a timer or against a wall. */
     case ACTOR_TYPE_SPLIT_SHOT: {
-      int *st = actor->state;
+      int *timer = actor->state;
 
       switch (actor->mode) {
       case SPLITSHOT_GATHER:
       case SPLITSHOT_RAISE:
       case SPLITSHOT_FRAGMENT:
-        if (g_nActorAnimDone != 0 && TICK_DOWN(*st) != 0) {
+        if (g_nActorAnimDone != 0 && TICK_DOWN(*timer) != 0) {
           DespawnActorRecord(actor);
         }
         break;
@@ -793,13 +793,13 @@ void Level16_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (TICK_DOWN(*st) != 0 ||
+        if (TICK_DOWN(*timer) != 0 ||
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) != 0 ||
             CastRayWorldAndActors(svA, &actor->posX) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
-        if ((*st & 7) == 0) {
+        if ((*timer & 7) == 0) {
           g_pfnLevelEmitParticles(1, EMIT_DRIFT_SPARKLE, &actor->posX, 0x10);
         }
         break;
@@ -834,12 +834,12 @@ void Level16_UpdateActors(void) {
       break;
     }
 
-    /* Explosion shard with a ground bounce (ShardState). */
+    /* Explosion shard with a ground bounce (TumbleState). */
     case ACTOR_TYPE_SEED_POD_SHARD:
     case ACTOR_TYPE_SEED_POD_SHARD + 1:
     case ACTOR_TYPE_WOOD_CHEST_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {
 
@@ -2176,12 +2176,12 @@ void Level16_UpdateActors(void) {
       if (actor->mode != PATHGUARD_KNOCKED) {
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_WHITE_STREAK, actor, 0);
         if (actor->flags & ACTOR_HITS_SPYRO) {
-          st->speed = 0xDC;
-          st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
+          st->knockSpeed = 0xDC;
+          st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                   actor->posY - SPY.posY, ATAN_ANGLE8),
                                     g_bSpyroPersistentEulerZ, 0x20, 0x60);
           if (actor->flags & ACTOR_HIT_CHARGE) {
-            st->speed += 0x8C;
+            st->knockSpeed += 0x8C;
           }
           StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2291,7 +2291,7 @@ void Level16_UpdateActors(void) {
         break;
 
       case PATHGUARD_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knock, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -2397,12 +2397,12 @@ void Level16_UpdateActors(void) {
         voice = 0x12;
         break;
 
-      case 8:
-        voice = 0x1A;
+      case AMBIENT_MODE_PORTAL:
+        voice = SFX_PORTAL_HUM;
         break;
 
-      case 9:
-        voice = 0x36;
+      case AMBIENT_MODE_WHIRLWIND:
+        voice = SFX_WHIRLWIND;
         break;
       }
 
@@ -2483,7 +2483,7 @@ void Level16_UpdateActors(void) {
 
     /* Sparkling shard: 1 puff per frame. */
     case ACTOR_TYPE_SPARKLE_SHARD: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
@@ -2514,7 +2514,7 @@ void Level16_UpdateActors(void) {
     /* Wood shard: bounces and throws three sparks a frame. */
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
       register int i asm("$16");
 
       if (st->life > 0) {
@@ -2768,9 +2768,9 @@ void Level16_UpdateActors(void) {
     /* Type 328: floor-snapped marker. Finds the floor triangle under itself
      * once, then sits at that triangle's centroid. */
     case ACTOR_TYPE_FLOOR_MARKER: {
-      int *st = actor->state;
+      int *hitTri = actor->state; /* collision triangle under it, < 0 until found */
 
-      if (*st < 0) {
+      if (*hitTri < 0) {
         int z;
         int d;
 
@@ -2782,15 +2782,15 @@ void Level16_UpdateActors(void) {
         }
         if (d < 0x400) {
           actor->posZ = z;
-          *st = g_nLastCollisionHitChunkId;
+          *hitTri = g_nLastCollisionHitChunkId;
         } else {
           actor->posZ -= 0x200;
         }
-        if (*st < 0) {
+        if (*hitTri < 0) {
           break;
         }
       }
-      UnpackWorldCollisionTri(*st, tri[0]);
+      UnpackWorldCollisionTri(*hitTri, tri[0]);
       CopyVector(&actor->posX, tri[0]);
       AddVector(&actor->posX, &actor->posX, tri[1]);
       AddVector(&actor->posX, &actor->posX, tri[2]);

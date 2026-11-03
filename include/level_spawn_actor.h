@@ -41,31 +41,7 @@ typedef struct PickupDropState {
   unsigned char sparkle; /* 0x14 g_aRotBillboards handle, 0xFF = none */
 } PickupDropState;
 
-/* Chest / object fragment (types 0x43..0x45, 0xFF..0x101, 0x135..0x137 and
- * per-level ranges) — UpdateActors' ChestShardState / TumbleState. */
-typedef struct FragmentState {
-  short vel[3]; /* 0x00 */
-  short spinX;  /* 0x06 */
-  short spinY;  /* 0x08 */
-  short spinZ;  /* 0x0A */
-  int life;     /* 0x0C ticks left */
-  int floorZ;   /* 0x10 retire height */
-} FragmentState;
-
-/* Thrown-shard state block (types 0x120..0x121, 0x1F6) — UpdateActors'
- * BounceState. */
-typedef struct ShardState {
-  short vel[3];       /* 0x00 */
-  short spinX;        /* 0x06 */
-  short spinY;        /* 0x08 */
-  short spinZ;        /* 0x0A */
-  unsigned char life; /* 0x0C */
-  unsigned char slow; /* 0x0D frames until the push dies off */
-  short sway;         /* 0x0E */
-  int mode;           /* 0x10 */
-} ShardState;
-
-extern int FindGroundHeightBelow(int *pos, int drop);
+extern int FindGroundHeightBelow(int *pos, int depth);
 
 /* pos: a world vec3, or the Actor * for actor-anchored types; effectArg: a
  * colour / radius / life word, or a velocity pointer cast to int (EmitEffect). */
@@ -79,7 +55,7 @@ extern int g_anFlightClearTimes[];   /* per flight level first-clear time */
 
 extern int RandomIntInRange(int lo, int hi);
 extern int RandomSignedInRange(int lo, int hi);
-extern int StepAndLerpAngle8(int ang, int facing, int maxStep, int frac);
+extern int StepAndLerpAngle8(int to, int from, int maxStep, int frac);
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
 extern int g_anFlightTargetTally;

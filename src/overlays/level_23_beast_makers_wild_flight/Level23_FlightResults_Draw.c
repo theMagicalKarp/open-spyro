@@ -275,7 +275,7 @@ void Level23_FlightResults_Draw(void)
         ACTOR_RAW(r, int, posX) = 0x1CC;
         ACTOR_RAW(r, int, posY) = 0x28;
         ACTOR_RAW(r, int, posZ) = 0xC00;
-        ((Actor *)r)->rotY = ((short) g_anCosineLut[g_dwHudBobSinePhase]) >> 9;
+        ((Actor *)r)->rotY = g_anCosineLut[g_dwHudBobSinePhase] >> 9;
       }
       g_pSpriteRecordWriteCursor->rotZ = g_dwHudBobSinePhase;
       g_pSpriteRecordWriteCursor->otBias = 0x7F;
@@ -559,7 +559,7 @@ void Level23_FlightResults_Draw(void)
           i = 0;
           if (count > 0)
           {
-            short *lut = (short *) g_anCosineLut;
+            short *lut = g_anCosineLut;
             int ph = 0;
             do
             {
@@ -631,7 +631,7 @@ void Level23_FlightResults_Draw(void)
         i = 0;
         if (count > 0)
         {
-          short *lut = (short *) g_anCosineLut;
+          short *lut = g_anCosineLut;
           int ph = 0;
           do
           {
@@ -666,7 +666,7 @@ void Level23_FlightResults_Draw(void)
         i = 0;
         if (count > 0)
         {
-          short *lut = (short *) g_anCosineLut;
+          short *lut = g_anCosineLut;
           int ph = 0;
           do
           {
@@ -689,7 +689,7 @@ void Level23_FlightResults_Draw(void)
         BuildTextSpriteChain("NEW RECORD", pos, 0x18, TINT_RED);
         count = 0xA;
         i = 0;
-        lut = (short *) g_anCosineLut;
+        lut = g_anCosineLut;
         ph = 0;
         rec = g_pSpriteRecordWriteCursor;
         do
@@ -743,7 +743,7 @@ void Level23_FlightResults_Draw(void)
       i = 0;
       if (count > 0)
       {
-        short *lut = (short *) g_anCosineLut;
+        short *lut = g_anCosineLut;
         int ph = 0;
         do
         {

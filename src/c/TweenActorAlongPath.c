@@ -6,7 +6,7 @@
 /* 0x8003bfc0 — advance an actor one sub-step along its waypoint ring.
    `path` is the waypoint block (count byte [0], cursor byte [1], vec3s at
    +8 + i*0x10) and `step` the sub-step counter within the current leg, which
-   takes `legs` frames. Once the counter reaches the leg length the cursor
+   takes `legFrames` frames. Once the counter reaches the leg length the cursor
    advances (wrapping to 0, returning 2 instead of 1) and the raw leg vector
    is published in `prev`. Otherwise the remaining leg is divided into the
    frames still to run; for the first steps of a leg that share of the new
@@ -19,7 +19,7 @@
    reorg puts it in the branch delay slot; the divisor is a `$6` register
    local (the original's a2). */
 int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step,
-                        int legs, int flags) {
+                        int legFrames, int flags) {
   int dir[4];
   int blend[4];
   short *tbl;
@@ -33,15 +33,15 @@ int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step,
   int ret;
 
   ret = 0;
-  if (legs >= 9) {
+  if (legFrames >= 9) {
     tbl = g_anTweenBlendWeights8;
     lim = 7;
-  } else if (legs >= 7) {
+  } else if (legFrames >= 7) {
     tbl = g_anTweenBlendWeights6;
     lim = 5;
   } else {
     lim = 1;
-    if (legs >= 5) {
+    if (legFrames >= 5) {
       tbl = g_anTweenBlendWeights4;
       lim = 3;
     } else {
@@ -52,7 +52,7 @@ int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step,
   idx = path->cur;
   EBB_BREAK();
   t = *step;
-  if (t >= legs) {
+  if (t >= legFrames) {
     SubtractVector(dir, &path->nodes[idx].x, &actor->posX);
     CopyVector(prev, dir);
     ret++;
@@ -64,7 +64,7 @@ int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step,
   } else if (lim < t) {
     SubtractVector(dir, &path->nodes[idx].x, &actor->posX);
     n = *step - 1;
-    span = legs - n;
+    span = legFrames - n;
     dir[0] = dir[0] / span;
     dir[1] = dir[1] / span;
     dir[2] = dir[2] / span;
@@ -72,7 +72,7 @@ int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step,
   } else {
     SubtractVector(dir, &path->nodes[idx].x, &actor->posX);
     n = *step - 1;
-    span = legs - n;
+    span = legFrames - n;
     dir[0] = dir[0] / span;
     dir[1] = dir[1] / span;
     dir[2] = dir[2] / span;

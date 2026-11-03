@@ -32,8 +32,8 @@ extern int *g_apActorMeshTable; /* 0x80076378 */
    actor's mesh. The mesh's vertex block sits past its packed-word array, so
    that address becomes the relocation base for the +0x10 field and for the
    packed 21-bit words at +0x24. */
-void RelocateMobActorTable(int *arg) {
-  register int *stream asm("$6") = arg;
+void RelocateMobActorTable(int *table) {
+  register int *stream asm("$6") = table;
   int i;
   int *mesh;
   int *w;

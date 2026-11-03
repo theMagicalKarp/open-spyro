@@ -110,14 +110,14 @@ void Level27_UpdateActors(void) {
   int g104[3];
   int eggViewPos[3];
   int g136[3];
-  int g152[3][3];
+  int triVerts[3][3]; /* sp 152 */
   int bouncePos[3];
   int bounceNormal[3];
   int homingStep[3];
   int sparxToTarget[3];
   int sparkVel[3];
   int g272[3];
-  int g288[3];
+  int sparkStep[3]; /* sp 288 */
   int sparkLead[3];
   int g320[3];
   int sparkPosVel[6];
@@ -649,13 +649,13 @@ void Level27_UpdateActors(void) {
      * splits into four more of itself when it reaches him, and fizzles out
      * on a timer or against a wall. */
     case ACTOR_TYPE_SPLIT_SHOT: {
-      int *st = actor->state;
+      int *timer = actor->state;
 
       switch (actor->mode) {
       case SPLITSHOT_GATHER:
       case SPLITSHOT_RAISE:
       case SPLITSHOT_FRAGMENT:
-        if (g_nActorAnimDone != 0 && TICK_DOWN(*st) != 0) {
+        if (g_nActorAnimDone != 0 && TICK_DOWN(*timer) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -682,13 +682,13 @@ void Level27_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (TICK_DOWN(*st) != 0 ||
+        if (TICK_DOWN(*timer) != 0 ||
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) != 0 ||
             CastRayWorldAndActors(g104, &actor->posX) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
-        if ((*st & 7) == 0) {
+        if ((*timer & 7) == 0) {
           g_pfnLevelEmitParticles(1, EMIT_DRIFT_SPARKLE, &actor->posX, 0x10);
         }
         break;
@@ -697,7 +697,7 @@ void Level27_UpdateActors(void) {
       break;
     }
 
-    /* Explosion shard with a ground bounce (ShardState). */
+    /* Explosion shard with a ground bounce (TumbleState). */
     case ACTOR_TYPE_SEED_POD_SHARD:
     case ACTOR_TYPE_SEED_POD_SHARD + 1:
     case ACTOR_TYPE_RUBBLE_SHARD:
@@ -706,7 +706,7 @@ void Level27_UpdateActors(void) {
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1:
     case ACTOR_TYPE_LIFE_CHEST_SHARD:
     case ACTOR_TYPE_LIFE_CHEST_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {
 
@@ -877,12 +877,12 @@ void Level27_UpdateActors(void) {
               }
             }
           } else if (st->mode == COLLREST_ON_TRI) {
-            UnpackWorldCollisionTri(st->groundTri, g152[0]);
-            AddVector(g152[0], g152[0], g152[1]);
-            AddVector(g152[0], g152[0], g152[2]);
-            actor->posX = g152[0][0] / 3;
-            actor->posY = g152[0][1] / 3;
-            actor->posZ = g152[0][2] / 3;
+            UnpackWorldCollisionTri(st->groundTri, triVerts[0]);
+            AddVector(triVerts[0], triVerts[0], triVerts[1]);
+            AddVector(triVerts[0], triVerts[0], triVerts[2]);
+            actor->posX = triVerts[0][0] / 3;
+            actor->posY = triVerts[0][1] / 3;
+            actor->posZ = triVerts[0][2] / 3;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
@@ -1642,10 +1642,10 @@ void Level27_UpdateActors(void) {
         FallingChunkState *c;
 
         st->speed = 0x15E;
-        st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
                                                   actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
                                     g_bSpyroPersistentEulerZ, 0x20, 0x40);
-        st->lift = 0x8C;
+        st->zSpeed = 0x8C;
         st->timer = 0x3C;
         actor->flags = 0;
         o = g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_CHUNK, actor);
@@ -1655,8 +1655,8 @@ void Level27_UpdateActors(void) {
         c = o->state;
         c->noFloor = 1;
         c->age = 0;
-        c->vx = (g_anCosineLut[(st->heading - 10) & 0xFF] * 0x4B) >> 10;
-        c->vy = (g_anSineLut[(st->heading - 10) & 0xFF] * 0x4B) >> 10;
+        c->vx = (g_anCosineLut[(st->knockHeading - 10) & 0xFF] * 0x4B) >> 10;
+        c->vy = (g_anSineLut[(st->knockHeading - 10) & 0xFF] * 0x4B) >> 10;
         c->vz = 0xDC;
         c->spin[0] = RandomSignedInRange(7, 0xF);
         c->spin[1] = RandomSignedInRange(7, 0xF);
@@ -1679,7 +1679,7 @@ void Level27_UpdateActors(void) {
                                  : -SPY_DZ(actor) < 0x1F4) &&
               ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range) ||
              (st->link != -1 && g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) ||
-             IsPointInRotatedBox(&g_anSpyroWorldPos, st->vol) != 0)) {
+             IsPointInRotatedBox(&g_anSpyroWorldPos, &st->vol) != 0)) {
           ENTER_POSE(actor, ROCKTHROW_WALK);
         }
         if (st->flags & ROCKTHROW_F_ESCORT) {
@@ -1739,7 +1739,7 @@ void Level27_UpdateActors(void) {
         break;
 
       case ROCKTHROW_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC, 0x10);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, 0x10);
         if (g_nActorAnimDone != 0 && actor->nextAnim == ROCKTHROW_KNOCKED) {
           ANIM_SET(actor, ROCKTHROW_ANIM_DOWN);
         }
@@ -1767,7 +1767,7 @@ void Level27_UpdateActors(void) {
                                     ATAN_ANGLE8),
                       4, 0, YAW_HOLD_IN_BAND);
         MoveActorAlongHeading(actor, spd, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-        if (IsPointInRotatedBox(&g_anSpyroWorldPos, st->vol) != 0) {
+        if (IsPointInRotatedBox(&g_anSpyroWorldPos, &st->vol) != 0) {
           st->trig = one;
         }
         if (st->trig != 0) {
@@ -1855,13 +1855,13 @@ void Level27_UpdateActors(void) {
         g_pfnLevelSpawnActor(ACTOR_TYPE_REBOUND_DEBRIS + 1, actor);
       }
       for (i = 0; i < 0x12; i++) {
-        g288[0] = RandomIntInRange(-0x5A, 0x5A);
-        g288[1] = RandomIntInRange(-0x5A, 0x5A);
-        g288[2] = RandomIntInRange(-0x19, 0x3C);
-        CopyVector(sparkLead, g288);
+        sparkStep[0] = RandomIntInRange(-0x5A, 0x5A);
+        sparkStep[1] = RandomIntInRange(-0x5A, 0x5A);
+        sparkStep[2] = RandomIntInRange(-0x19, 0x3C);
+        CopyVector(sparkLead, sparkStep);
         LShiftVector3(sparkLead, 2);
         AddVector(sparkLead, sparkLead, &actor->posX);
-        g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, sparkLead, (int)g288);
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, sparkLead, (int)sparkStep);
       }
       g_pfnLevelEmitParticles(10, EMIT_STREAK_BURST, &actor->posX, 0x10);
       DespawnActorRecord(actor);
@@ -1935,7 +1935,7 @@ void Level27_UpdateActors(void) {
           g272[2] = 0;
           do {
             Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_RUBBLE_SHARD, actor);
-            ShardState *c = o->state;
+            TumbleState *c = o->state;
             int a;
             int dd;
 
@@ -2241,14 +2241,14 @@ void Level27_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         actor->flags = 0;
-        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, 0x20, 0x40);
         {
           if (actor->flags & ACTOR_HIT_FLAME) {
-            st->speed = 0x8C;
+            st->knockSpeed = 0x8C;
           } else {
-            st->speed = 0xFA;
+            st->knockSpeed = 0xFA;
           }
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2264,9 +2264,9 @@ void Level27_UpdateActors(void) {
         break;
 
       case CRITTER_KNOCKED:
-        if (st->speed >= 0x10) {
-          st->speed -= 0xF;
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        if (st->knockSpeed >= 0x10) {
+          st->knockSpeed -= 0xF;
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);
@@ -2674,7 +2674,7 @@ void Level27_UpdateActors(void) {
       if (st->all1.halfWidth == 0 &&
           (g_nSpyroWorldPosZ - st->all1.z > 0 ? g_nSpyroWorldPosZ - st->all1.z < 0x7D0
                                        : st->all1.z - g_nSpyroWorldPosZ < 0x7D0) &&
-          IsPointInRotatedBox(&g_anSpyroWorldPos, (int *)&st->all1) != 0) {
+          IsPointInRotatedBox(&g_anSpyroWorldPos, &st->all1) != 0) {
         for (i = 6; i >= 0; i--) {
           st->hit[i] = 1;
         }
@@ -2682,7 +2682,7 @@ void Level27_UpdateActors(void) {
       if (st->all2.halfWidth == 0 &&
           (g_nSpyroWorldPosZ - st->all2.z > 0 ? g_nSpyroWorldPosZ - st->all2.z < 0x7D0
                                        : st->all2.z - g_nSpyroWorldPosZ < 0x7D0) &&
-          IsPointInRotatedBox(&g_anSpyroWorldPos, (int *)&st->all2) != 0) {
+          IsPointInRotatedBox(&g_anSpyroWorldPos, &st->all2) != 0) {
         for (i = 6; i >= 0; i--) {
           st->hit[i] = 1;
         }
@@ -2693,12 +2693,12 @@ void Level27_UpdateActors(void) {
             (g_nSpyroWorldPosZ - st->box[i].z > 0
                  ? g_nSpyroWorldPosZ - st->box[i].z < 0x7D0
                  : st->box[i].z - g_nSpyroWorldPosZ < 0x7D0) &&
-            IsPointInRotatedBox(&g_anSpyroWorldPos, (int *)&st->box[i]) != 0) {
+            IsPointInRotatedBox(&g_anSpyroWorldPos, &st->box[i]) != 0) {
           st->hit[i] = 1;
         }
       }
       if (st->reset.halfWidth != 0 &&
-          IsPointInRotatedBox(&g_anSpyroWorldPos, (int *)&st->reset) != 0) {
+          IsPointInRotatedBox(&g_anSpyroWorldPos, &st->reset) != 0) {
         st->cur = 0;
         for (i = 0; i < 7; i++) {
           if (st->link[i] != -1) {
@@ -3080,7 +3080,7 @@ void Level27_UpdateActors(void) {
 
     /* Sparkling shard: 1 puff per frame. */
     case ACTOR_TYPE_SPARKLE_SHARD: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
@@ -3111,7 +3111,7 @@ void Level27_UpdateActors(void) {
     /* Wood shard: bounces and throws three sparks a frame. */
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
       register int i asm("$16");
 
       if (st->life > 0) {
@@ -3934,8 +3934,8 @@ void Level27_UpdateActors(void) {
       }
 
       for (i = 0; i < 8; i++) {
-        g512[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
-        g512[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
+        g512[0] = (g_anCosineLut[i * 32] >> 8) * 3;
+        g512[1] = (g_anSineLut[i * 32] >> 8) * 3;
         g512[2] = 0x18;
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)g512);
       }

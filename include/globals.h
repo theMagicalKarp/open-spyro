@@ -399,7 +399,7 @@ extern int g_anCdAudioTrackLengths[48];                      /* 0x8006eedc */
 extern int g_nLevelMusicTrack;                               /* 0x8006ef9c */
 extern int g_anCdAudioBankBaseLba[6];                        /* 0x8006f200 */
 extern int g_anGameOverRespawnPosTable[36];                  /* 0x8006f218 */
-extern unsigned char g_abGameOverRespawnYawVirtualBase[];    /* FIXME: type/size unrecovered @ 0x8006f296 */
+extern unsigned char g_abGameOverRespawnYawVirtualBase[];    /* 0x8006f296: g_abGameOverRespawnYawTable - 0x12, the base the original indexes by g_nGameOverLevelIndex */
 extern unsigned char g_abGameOverRespawnYawTable[12];                 /* 0x8006f2a8 */
 extern short g_anGameOverLetterPosXY[16];                    /* 0x8006f2b4 */
 extern short g_anGameOverRevealScaleRamp[24];                /* 0x8006f2d4 */
@@ -713,7 +713,7 @@ extern void *g_apActorMeshTable;                        /* 0x80076378 */
 extern void *g_pDragonRescueStatueModelData;               /* 0x80076b70 */
 extern void *g_pDragonRescueMirrorModelData;               /* 0x80076b74 */
 extern int g_anCollisionResolvedPos[3];                 /* 0x80076b80 */
-extern unsigned char g_nCollisionResolvedZ[];           /* FIXME: type/size unrecovered @ 0x80076b88 */
+extern int g_nCollisionResolvedZ;                       /* 0x80076b88: g_anCollisionResolvedPos[2] */
 extern int g_nCdBaseLba;                                /* 0x80076b90 */
 extern int g_nCdReadSectorCount;                        /* 0x80076b94 */
 extern unsigned char g_abCdlLocScratch;                          /* 0x80076b98 */
@@ -1037,7 +1037,7 @@ extern int g_nStoryIntroSubstate;                       /* 0x80078d7c: title sta
 extern int g_nStoryIntroTimer;                          /* 0x80078d80: title state +0x08: StoryIntro_Update frame timer */
 extern int g_nTitleExitPath;                        /* 0x80078d94: title state +0x1C: enum TitleExitPath — new game (opening story), loaded save, or attract demo (StoryIntro_Update) */
 extern unsigned char g_abPad2RawReport[34];                      /* 0x80078e50 */
-extern unsigned char g_abLevelVisitedFlagVirtualBase[]; /* FIXME: type/size unrecovered @ 0x80078e72 */
+extern unsigned char g_abLevelVisitedFlagVirtualBase[]; /* 0x80078e72: g_abLevelVisitedFlag - 6, so [world * 6] (world 1..6) is that world's home level */
 extern unsigned char g_abLevelVisitedFlag[36];                   /* 0x80078e78 */
 extern unsigned char g_abGpuOpQueueRing[6144];                   /* 0x80078ea0 */
 extern unsigned char g_abLevelExited[36];                    /* 0x8007a6a8: per-level flag, set to 1 when Spyro leaves through the level-exit whirlwind (saved) */
@@ -1259,13 +1259,13 @@ extern int g_nLevelVortexSeen2; /* 0x80075674: the same for seen 2 (g_nCutsceneI
 extern int g_nLevelLoadUnreadWord; /* 0x80075698 */
 extern void (*g_pfnActorCutsceneSubstateUpdate)(void); /* 0x8007574c: per-level handler for the other 0xC substates (ApplyPerLevelGlobalsTable) */
 extern struct Actor *g_pLockedChestReward; /* 0x80075758: the reward the opened locked chest dropped (key state 3 once collected) */
-extern int g_pCreditsScratchBuf; /* 0x80075768 */
+extern char *g_pCreditsScratchBuf; /* 0x80075768: credits CD page scratch / draw buffers (credits.h) */
 extern int g_bLevelUseShortReleaseAnim; /* 0x8007577c */
 extern struct Actor *g_pSpyroHomingTargetActor; /* 0x80075790: charge homing target (ChangeSpyroState) */
 extern int g_nActorAnimDone; /* 0x80075794 */
 extern void (*g_pfnLevelBeginActorCutscene)(struct Actor *actor); /* 0x800757a0 */
 extern void (*g_pfnLevelHandleFlightResults)(int reload); /* 0x800757a8 */
-extern int g_pCreditsScrollHeader; /* 0x800757bc */
+extern char *g_pCreditsScrollHeader; /* 0x800757bc: credits camera/scroll track (credits.h) */
 extern int g_nWorldFloorVisZone; /* 0x80075844 */
 extern int g_bLevelPhasedBossKilled; /* 0x80075850 */
 extern int g_bLevelBossDefeated; /* 0x80075854: cleared on level load */

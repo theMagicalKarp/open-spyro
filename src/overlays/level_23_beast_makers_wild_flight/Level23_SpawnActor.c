@@ -37,12 +37,9 @@
 
 
 
-/* NOTE: the function body below is decomp-permuter output, spliced in
-   by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
-   gain only. It reads worse than the hand-written form it replaced and
-   its inline comments are lost. The hand-written original is recoverable
-   with `git show HEAD:src/overlays/level_23_beast_makers_wild_flight/Level23_SpawnActor.c.wip`; this body came from
-   build/permuter/nonmatchings/Level23_SpawnActor/output-325-1/source.c. */
+/* The body below started as decomp-permuter output (2026-08-14-1) and was
+   carried to a full match from there; the earlier hand-written draft and its
+   comments are in git history (7623bbd6^). */
 Actor *Level23_SpawnActor(int type, Actor *parent)
 {
   Actor *rec;
@@ -228,7 +225,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
 
     case ACTOR_TYPE_FLIGHT_CHEST_SHARD ... ACTOR_TYPE_FLIGHT_CHEST_SHARD + 2:
     {
-      FragmentState *st = rec->state;
+      TumbleState *st = rec->state;
       int yaw;
       int pitch;
       InitActorRenderDefaults(rec);
@@ -249,9 +246,9 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       rec->posX += st->vel[0] * 4;
       rec->posY += st->vel[1] * 4;
       rec->posZ += st->vel[2] * 4;
-      st->spinX = GetRandomU32() & 0xF;
-      st->spinY = GetRandomU32() & 0xF;
-      st->spinZ = GetRandomU32() & 0xF;
+      st->spin[0] = GetRandomU32() & 0xF;
+      st->spin[1] = GetRandomU32() & 0xF;
+      st->spin[2] = GetRandomU32() & 0xF;
       st->floorZ = parent->posZ - 0x40;
       st->life = 0x40 - (GetRandomU32() & 0xF);
       if (((unsigned int) (((unsigned short) rec->type) - 0x135)) < 3)
@@ -264,7 +261,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
 
     case ACTOR_TYPE_SPARK_DEBRIS ... ACTOR_TYPE_SPARK_DEBRIS + 2:
     {
-      FragmentState *st = rec->state;
+      TumbleState *st = rec->state;
       int yaw;
       int pitch;
       InitActorRenderDefaults(rec);
@@ -282,9 +279,9 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       rec->posX += st->vel[0] * 4;
       rec->posY += st->vel[1] * 4;
       rec->posZ += st->vel[2] * 4;
-      st->spinX = GetRandomU32() & 0xF;
-      st->spinY = GetRandomU32() & 0xF;
-      st->spinZ = GetRandomU32() & 0xF;
+      st->spin[0] = GetRandomU32() & 0xF;
+      st->spin[1] = GetRandomU32() & 0xF;
+      st->spin[2] = GetRandomU32() & 0xF;
       st->floorZ = parent->posZ - 0x40;
       st->life = 0x40 - (GetRandomU32() & 0xF);
       break;
@@ -292,7 +289,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
 
     case ACTOR_TYPE_TUMBLE_SHARD ... ACTOR_TYPE_TUMBLE_SHARD + 2:
     {
-      FragmentState *st = rec->state;
+      TumbleState *st = rec->state;
       int seed;
       InitActorRenderDefaults(rec);
       rec->cullRadius = 0x20;
@@ -318,9 +315,9 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       {
         st->vel[2] = 0x14;
       }
-      st->spinX = GetRandomU32() & 0xF;
-      st->spinY = GetRandomU32() & 0xF;
-      st->spinZ = GetRandomU32() & 0xF;
+      st->spin[0] = GetRandomU32() & 0xF;
+      st->spin[1] = GetRandomU32() & 0xF;
+      st->spin[2] = GetRandomU32() & 0xF;
       st->floorZ = parent->posZ - 0x40;
       st->life = 0x40 - (GetRandomU32() & 0xF);
       break;

@@ -6,43 +6,6 @@
 #ifndef OPEN_SPYRO_FLIGHT_ACTOR_STATES_H
 #define OPEN_SPYRO_FLIGHT_ACTOR_STATES_H
 
-/* Case 34 — a recovered dragon egg: spirals up off its spot, flies to just
- * above Spyro, then requests the HUD egg-counter roll (Cross skips). */
-typedef struct EggRiseState {
-  Actor *owner;          /* 0x00 the egg thief that carried it (credited the kill gems) */
-  int centre[3];         /* 0x04 pad centre */
-  int apex[3];           /* 0x0A (short-aligned) rise target */
-  unsigned short radius; /* 0x10 */
-  unsigned char phase;   /* 0x12 */
-  unsigned char angle;   /* 0x13 */
-} EggRiseState;
-
-/* Cases 14/15/83..87 — collectibles: 14 extra life, 15 Sparx food, 83..87
- * gems (CollectPickupActor). They bounce out of a broken chest or fodder,
- * glitter, and home in on Spyro once he (or Sparx, fetching) gets close. The
- * same record as level_update_actors.h PickupState, in the field view these
- * clones were matched with (signed lean/roll). */
-typedef struct CollectibleState {
-  int vel[3];           /* 0x00 velocity, also read as a vector */
-  short groundTri;      /* 0x0C collision triangle it rests on */
-  unsigned char mode;   /* 0x0E CollectRestMode while COLLECT_REST */
-  unsigned char timer;  /* 0x0F */
-  signed char bounce;   /* 0x10 bounces left */
-  signed char lean;     /* 0x11 body pitch */
-  signed char roll;     /* 0x12 */
-  unsigned char spin;   /* 0x13 */
-  unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
-} CollectibleState;
-
-/* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
-typedef struct ShardState {
-  short vel[3];        /* 0x00 */
-  signed char spin[3]; /* 0x06 pitch / yaw / roll per frame */
-  char pad09[0x3];
-  int life;  /* 0x0C */
-  int floor; /* 0x10 */
-} ShardState;
-
 /* Flight rings (ACTOR_TYPE_FLIGHT_RING): a helper actor spawned alongside, and the
  * sound to play when Spyro flies through. */
 typedef struct TargetState {
@@ -127,21 +90,13 @@ typedef struct RollerState {
   int tally;           /* 0x08 */
   int roll;            /* 0x0C */
   int rollVel;         /* 0x10 */
-  int zVel;           /* 0x14 passed by address to DriveActorTrackedMove */
+  int zSpeed;           /* 0x14 passed by address to DriveActorTrackedMove */
   int heading;         /* 0x18 */
   int moveSpeed;           /* 0x1C passed by address to DriveActorTrackedMove */
   int legVec[3];        /* 0x20 */
   int legStep;           /* 0x2C */
   int ready;           /* 0x30 nearest node found */
 } RollerState;
-
-/* ACTOR_TYPE_BLASTABLE_PATH_SMOKER / _PROP: path tweeners a blast wrecks. */
-typedef struct SmokerState {
-  PathData *path; /* 0x00 */
-  int legStep;           /* 0x04 */
-  int legVec[3];        /* 0x08 */
-  int timer;           /* 0x14 */
-} SmokerState;
 
 /* Flight-level chest (ACTOR_TYPE_FLIGHT_CHEST): struck, it tallies and frees
  * its time bonus. */

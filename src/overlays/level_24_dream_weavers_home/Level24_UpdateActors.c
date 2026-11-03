@@ -95,7 +95,8 @@ void Level24_UpdateActors(void) {
   char *base;
   int dt;
 
-  /* Scratch vectors, in the original's slot order (named by sp offset). */
+  /* Scratch vectors, in the original's slot order: shared ones named by sp
+   * offset (gNNN), single-use ones by role with the offset noted. */
   int g056[3];
   int eggArcBase[3];
   int eggArcOffset[3];
@@ -103,12 +104,12 @@ void Level24_UpdateActors(void) {
   int eggViewPos[3];
   int g136[3];
   int g152[3];
-  int g168[3];
-  int g184[2];
-  int g192[3];
+  int lobTarget[3]; /* sp 168 */
+  int lobFrames[2]; /* sp 184 */
+  int targetPos[3]; /* sp 192 */
   volatile int g208v;
-  int g216[3];
-  int g232[3][3];
+  int arcEnd[3]; /* sp 216 */
+  int triVerts[3][3]; /* sp 232 */
   int bouncePos[3];
   int bounceNormal[3];
   int homingStep[3];
@@ -798,18 +799,18 @@ void Level24_UpdateActors(void) {
           }
         }
         if (best != 0) {
-          CopyVector(g168, &best->posX);
+          CopyVector(lobTarget, &best->posX);
           if (best->type == ACTOR_TYPE_LUNGING_GUARD || best->type == ACTOR_TYPE_BIG_LUNGING_GUARD) {
-            g168[2] += 0x320;
+            lobTarget[2] += 0x320;
           }
           o->rotZ = ArcTan2(best->posX - actor->posX,
                                    best->posY - actor->posY, ATAN_ANGLE8);
           cs->dvz = -8;
           cs->speed = 0x258;
           {
-            int t = ComputeLobVelocityZ(&o->posX, g168, 0x258, cs->dvz, g184);
+            int t = ComputeLobVelocityZ(&o->posX, lobTarget, 0x258, cs->dvz, lobFrames);
 
-            cs->life = g184[0];
+            cs->life = lobFrames[0];
             cs->vz = t;
           }
         }
@@ -838,11 +839,11 @@ void Level24_UpdateActors(void) {
           int v;
           int i;
 
-          CopyVector(g192, &g_pActorListBase[st->target].posX);
+          CopyVector(targetPos, &g_pActorListBase[st->target].posX);
           o = g_pfnLevelSpawnActor(ACTOR_TYPE_COMET, actor);
-          o->rotZ = ArcTan2(g192[0] - o->posX, g192[1] - o->posY, ATAN_ANGLE8);
+          o->rotZ = ArcTan2(targetPos[0] - o->posX, targetPos[1] - o->posY, ATAN_ANGLE8);
           CopyVector(&o->posX, &actor->posX);
-          g192[2] += 0x320;
+          targetPos[2] += 0x320;
           cs = o->state;
           o->posX += (g_anCosineLut[o->rotZ] * 0x7D) >> 8;
           o->posY += (g_anSineLut[o->rotZ] * 0x7D) >> 8;
@@ -855,20 +856,20 @@ void Level24_UpdateActors(void) {
           cs->dvz = -7;
           cs->speed = 0x320;
           cs->spark = 0;
-          cs->vz = ComputeLobVelocityZ(&o->posX, g192, 0x320, cs->dvz, (int *)&g208v);
+          cs->vz = ComputeLobVelocityZ(&o->posX, targetPos, 0x320, cs->dvz, (int *)&g208v);
           cs->trail = (CometTrailPoint *)((char *)st + (st->idx * 0xE38 + 0x28));
           cs->lifeOn = one;
           v = cs->vz;
           cs->life = g208v;
-          CopyVector(g216, &o->posX);
+          CopyVector(arcEnd, &o->posX);
           for (i = 0; i < *(int *)&g208v; i++) {
-            g216[0] += (cs->speed * g_anCosineLut[o->rotZ]) >> 12;
-            g216[1] += (cs->speed * g_anSineLut[o->rotZ]) >> 12;
-            g216[2] += v;
+            arcEnd[0] += (cs->speed * g_anCosineLut[o->rotZ]) >> 12;
+            arcEnd[1] += (cs->speed * g_anSineLut[o->rotZ]) >> 12;
+            arcEnd[2] += v;
             v += cs->dvz;
           }
-          SubtractVector(g216, g192, g216);
-          AddVector(&o->posX, &o->posX, g216);
+          SubtractVector(arcEnd, targetPos, arcEnd);
+          AddVector(&o->posX, &o->posX, arcEnd);
           actor->mode = CCANNON_WATCH;
           continue;
         }
@@ -891,12 +892,12 @@ void Level24_UpdateActors(void) {
       }
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != LGUARD_KNOCKED &&
           (st->kind != LGKIND_BIG || !(actor->flags & ACTOR_HIT_CHARGE))) {
-        st->lift = 0;
-        st->knock = 0xC8;
+        st->knockZSpeed = 0;
+        st->knockSpeed = 0xC8;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->knock = 0x15E;
+          st->knockSpeed = 0x15E;
         }
-        st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
                                                   actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
                                     g_bSpyroPersistentEulerZ, 0x20, 0x40);
         actor->flags = 0;
@@ -918,7 +919,7 @@ void Level24_UpdateActors(void) {
       if (actor->mode < LGUARD_KNOCKED && (st->range != 0 || (actor->flags & ACTOR_HIT_BLAST))) {
         if (st->range > 0 && actor->mode == LGUARD_IDLE &&
             (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range ||
-             IsPointInRotatedBox(&spy->posX, st->vol) != 0) &&
+             IsPointInRotatedBox(&spy->posX, &st->vol) != 0) &&
             TICK_DOWN(st->reloadTimer) != 0) {
           st->range = -st->range;
           if (st->range == 0) {
@@ -1053,7 +1054,7 @@ void Level24_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        r = DriveActorTrackedMove(actor, &st->knock, st->heading, &st->lift, 0xC, 0x10);
+        r = DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0x10);
         if (st->kind == LGKIND_SMALL) {
           if (r == MOVED_LANDED && (unsigned)(actor->nextFrame - 0xB) < 9) {
             g_nActorAnimDone = 0;
@@ -1113,7 +1114,7 @@ void Level24_UpdateActors(void) {
                                                   g_nSpyroWorldPosY - partner->posY, ATAN_ANGLE8),
                                     0x80),
                       4, 0x32, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
-        if (partner->mode != 0xA) {
+        if (partner->mode != CCANNON_LOB) {
           if (TICK_DOWN(st->timer) != 0) {
             TurnActorYawTowardAngle(partner, h, 4, 0, YAW_HOLD_IN_BAND);
           }
@@ -1219,14 +1220,14 @@ void Level24_UpdateActors(void) {
       continue;
     }
 
-    /* Explosion shard with a ground bounce (ShardState). */
+    /* Explosion shard with a ground bounce (TumbleState). */
     case ACTOR_TYPE_SEED_POD_SHARD:
     case ACTOR_TYPE_SEED_POD_SHARD + 1:
     case ACTOR_TYPE_WOOD_CHEST_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1:
     case ACTOR_TYPE_LIFE_CHEST_SHARD:
     case ACTOR_TYPE_LIFE_CHEST_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {
 
@@ -1397,12 +1398,12 @@ void Level24_UpdateActors(void) {
               }
             }
           } else if (st->mode == COLLREST_ON_TRI) {
-            UnpackWorldCollisionTri(st->groundTri, g232[0]);
-            AddVector(g232[0], g232[0], g232[1]);
-            AddVector(g232[0], g232[0], g232[2]);
-            actor->posX = g232[0][0] / 3;
-            actor->posY = g232[0][1] / 3;
-            actor->posZ = g232[0][2] / 3;
+            UnpackWorldCollisionTri(st->groundTri, triVerts[0]);
+            AddVector(triVerts[0], triVerts[0], triVerts[1]);
+            AddVector(triVerts[0], triVerts[0], triVerts[2]);
+            actor->posX = triVerts[0][0] / 3;
+            actor->posY = triVerts[0][1] / 3;
+            actor->posZ = triVerts[0][2] / 3;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
@@ -2398,16 +2399,16 @@ void Level24_UpdateActors(void) {
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != LGUARD_KNOCKED &&
           (st->kind != LGKIND_BIG || !(actor->flags & ACTOR_HIT_CHARGE))) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        st->lift = 0x96;
-        st->knock = 0x118;
+        st->knockZSpeed = 0x96;
+        st->knockSpeed = 0x118;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->knock = 0x17C;
+          st->knockSpeed = 0x17C;
         }
         st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
                                                   actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
                                     g_bSpyroPersistentEulerZ, 0x20, 0x40);
         actor->flags = 0;
-        actor->probeDist = 0xFF;
+        actor->probeDist = ACTOR_PROBE_NONE;
         st->spin = RandomSignedInRange(8, 0xE);
         actor->subMode = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2429,7 +2430,7 @@ void Level24_UpdateActors(void) {
       if (actor->mode < LGUARD_KNOCKED && (st->range != 0 || (actor->flags & ACTOR_HIT_BLAST))) {
         if (st->range > 0 && (actor->mode == LGUARD_IDLE || actor->mode == LGUARD_LUNGE) &&
             (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range ||
-             IsPointInRotatedBox(&spy->posX, st->vol) != 0) &&
+             IsPointInRotatedBox(&spy->posX, &st->vol) != 0) &&
             TICK_DOWN(st->reloadTimer) != 0) {
           st->range = -st->range;
           if (st->range == 0) {
@@ -2574,7 +2575,7 @@ void Level24_UpdateActors(void) {
             }
           }
         }
-        r = DriveActorTrackedMove(actor, &st->knock, st->heading, &st->lift, 0xC, 0x10);
+        r = DriveActorTrackedMove(actor, &st->knockSpeed, st->heading, &st->knockZSpeed, 0xC, 0x10);
         if (r == MOVED_LANDED && actor->nextFrame < 0xA) {
           g_nActorAnimDone = 0;
           actor->frameProgress = sixteen;
@@ -2682,14 +2683,14 @@ void Level24_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         actor->flags = 0;
-        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, 0x20, 0x40);
         {
           if (actor->flags & ACTOR_HIT_FLAME) {
-            st->speed = 0x8C;
+            st->knockSpeed = 0x8C;
           } else {
-            st->speed = 0xFA;
+            st->knockSpeed = 0xFA;
           }
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2705,9 +2706,9 @@ void Level24_UpdateActors(void) {
         break;
 
       case CRITTER_KNOCKED:
-        if (st->speed >= 0x10) {
-          st->speed -= 0xF;
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        if (st->knockSpeed >= 0x10) {
+          st->knockSpeed -= 0xF;
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);
@@ -3243,12 +3244,12 @@ void Level24_UpdateActors(void) {
         voice = 0x12;
         break;
 
-      case 8:
-        voice = 0x1A;
+      case AMBIENT_MODE_PORTAL:
+        voice = SFX_PORTAL_HUM;
         break;
 
-      case 9:
-        voice = 0x36;
+      case AMBIENT_MODE_WHIRLWIND:
+        voice = SFX_WHIRLWIND;
         break;
       }
 
@@ -3329,7 +3330,7 @@ void Level24_UpdateActors(void) {
 
     /* Sparkling shard: 1 puff per frame. */
     case ACTOR_TYPE_SPARKLE_SHARD: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
@@ -3360,7 +3361,7 @@ void Level24_UpdateActors(void) {
     /* Wood shard: bounces and throws three sparks a frame. */
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
       register int i asm("$16");
 
       if (st->life > 0) {
@@ -4075,8 +4076,8 @@ void Level24_UpdateActors(void) {
       }
 
       for (i = 0; i < 8; i++) {
-        g496[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
-        g496[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
+        g496[0] = (g_anCosineLut[i * 32] >> 8) * 3;
+        g496[1] = (g_anSineLut[i * 32] >> 8) * 3;
         g496[2] = 0x18;
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)g496);
       }

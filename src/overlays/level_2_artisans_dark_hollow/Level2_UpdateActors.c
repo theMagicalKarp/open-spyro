@@ -653,12 +653,12 @@ void Level2_UpdateActors(void) {
       break;
     }
 
-    /* Explosion shard with a ground bounce (ShardState). */
+    /* Explosion shard with a ground bounce (TumbleState). */
     case ACTOR_TYPE_WOOD_CHEST_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1:
     case ACTOR_TYPE_LIFE_CHEST_SHARD:
     case ACTOR_TYPE_LIFE_CHEST_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life <= 0 || actor->drawn == 0) {
         g_pfnLevelEmitParticles(8, EMIT_STREAK_BURST, &actor->posX, 0x10);
@@ -1293,7 +1293,7 @@ void Level2_UpdateActors(void) {
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != GPAIR_KNOCKED) {
         st->speed = 0xF0;
-        st->heading = SPY.bodyRotZ;
+        st->knockHeading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);
@@ -1368,7 +1368,7 @@ void Level2_UpdateActors(void) {
         break;
       case GPAIR_KNOCKED:
         if (st->speed > 0) {
-          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 0);
+          MoveActorAlongAngle(actor, st->knockHeading, st->speed, 0x1F4, 0x2BC, 0);
           st->speed -= 0x10;
         }
         if (g_nActorAnimDone != 0) {
@@ -1754,15 +1754,15 @@ void Level2_UpdateActors(void) {
       EBB_BREAK();
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != POSTGUARD_KNOCKED &&
           (actor->flags != ACTOR_HIT_FLAME || st->flameProof == 0)) {
-        st->time = 0x8C;
-        st->speed = 0x118;
+        st->knockZSpeed = 0x8C;
+        st->knockSpeed = 0x118;
         st->timer = 0x28;
         if (actor->flags == ACTOR_HIT_CHARGE) {
-          st->time = 0xAA;
-          st->speed = 0x15E;
+          st->knockZSpeed = 0xAA;
+          st->knockSpeed = 0x15E;
           st->timer = 0x3C;
         }
-        st->heading = StepAndLerpAngle8(
+        st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         st->spinX = sixteen - (GetRandomU32() & 0x1F);
@@ -1911,7 +1911,7 @@ void Level2_UpdateActors(void) {
       case POSTGUARD_KNOCKED:
         actor->rotX += st->spinX;
         actor->rotY += st->spinY;
-        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->time, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0xC);
         if (g_nActorAnimDone != 0 && actor->nextAnim == POSTGUARD_ANIM_KNOCKED && actor->anim != POSTGUARD_ANIM_KNOCKED_END) {
           g_nActorAnimDone = 0;
           ANIM_RESET(actor, POSTGUARD_ANIM_KNOCKED_END);
@@ -2739,12 +2739,12 @@ void Level2_UpdateActors(void) {
         voice = 0x12;
         break;
 
-      case 8:
-        voice = 0x1A;
+      case AMBIENT_MODE_PORTAL:
+        voice = SFX_PORTAL_HUM;
         break;
 
-      case 9:
-        voice = 0x36;
+      case AMBIENT_MODE_WHIRLWIND:
+        voice = SFX_WHIRLWIND;
         break;
       }
 
@@ -2757,7 +2757,7 @@ void Level2_UpdateActors(void) {
 
     /* Sparkling shard: 1 puff per frame. */
     case ACTOR_TYPE_SPARKLE_SHARD: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
@@ -2788,7 +2788,7 @@ void Level2_UpdateActors(void) {
     /* Wood shard: bounces and throws three sparks a frame. */
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
       register int i asm("$16");
 
       if (st->life > 0) {
@@ -2938,13 +2938,13 @@ void Level2_UpdateActors(void) {
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != GRAZER_KNOCKED) {
         EBB_BREAK();
         actor->flags = 0;
-        st->heading = StepAndLerpAngle8(
+        st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         if (actor->flags & ACTOR_HIT_FLAME) {
-          st->time = 0x96;
+          st->knockSpeed = 0x96;
         } else {
-          st->time = 0x12C;
+          st->knockSpeed = 0x12C;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
@@ -2969,7 +2969,7 @@ void Level2_UpdateActors(void) {
         }
         break;
       case GRAZER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->time, st->heading, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x10);
@@ -3094,8 +3094,8 @@ void Level2_UpdateActors(void) {
       }
 
       for (i = 0; i < 8; i++) {
-        svN[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
-        svN[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
+        svN[0] = (g_anCosineLut[i * 32] >> 8) * 3;
+        svN[1] = (g_anSineLut[i * 32] >> 8) * 3;
         svN[2] = 0x18;
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)svN);
       }

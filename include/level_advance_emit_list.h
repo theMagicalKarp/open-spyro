@@ -9,7 +9,7 @@
 
 #include "sparx.h"
 
-extern void AddSVector(short *dst, short *src, short *delta);
+extern void AddSVector(short *dst, short *a, short *b);
 
 extern void SVectorToVectorShl2(int *dst, short *src);
 extern void SVectorToVector(int *dst, short *src);

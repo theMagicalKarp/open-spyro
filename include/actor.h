@@ -18,7 +18,7 @@
 void BeginDragonRescue(Actor *actor);
 void DespawnActorRecord(Actor *actor);
 void EncodeCachedVecToActorDirCode(Actor *actor);
-int GetSoundVoiceStatusByOwner(Actor *actor, int subId);
+int GetSoundVoiceStatusByOwner(Actor *actor, int sampleId);
 void HideActorRenderRecord(Actor *actor);
 void InitActorRenderDefaults(Actor *actor);
 void InsertActorIntoSpatialGrid(Actor *actor);
@@ -36,7 +36,7 @@ int IsActorGroundFlat(Actor *actor);
 int ProbeActorGroundHeightRaised(Actor *actor, int delta);
 void SnapActorToGround(Actor *actor);
 int IsActorInCheckpointKillSet(Actor *actor);
-void PlayActorMeshVoice(Actor *actor, int voiceOffset, void *owner);
+void PlayActorMeshVoice(Actor *actor, int voice, void *voiceRow);
 void BurstActorWithSound(Actor *actor, int sparkLife);
 #ifndef YAW_HOLD_IN_BAND
 #define YAW_HOLD_IN_BAND 0 /* inside the threshold band: stop turning */
@@ -47,7 +47,7 @@ int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed, int 
 int MoveActorByDelta(Actor *actor, int vx, int vy, int vz, int contactRadius, int radius, int flags);
 int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius, int radius, int flags);
 int MoveActorAlongAngle(Actor *actor, int angle, int speed, int contactRadius, int radius, int flags);
-int DriveActorTrackedMove(Actor *actor, int *counter, int heading, int *timer, int step, int decay);
+int DriveActorTrackedMove(Actor *actor, int *speed, int heading, int *vz, int friction, int gravity);
 void UpdateActorWander(Actor *actor, WanderBlock *wb);
 int SelectActorLodBand(Actor *actor, int band);
 void TickActorFlameGlow(Actor *actor);

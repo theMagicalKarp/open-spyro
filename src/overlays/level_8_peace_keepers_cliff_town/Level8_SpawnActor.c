@@ -177,7 +177,7 @@ Actor *Level8_SpawnActor(int type, Actor *parent) {
   case ACTOR_TYPE_WOOD_CHEST_SHARD ... ACTOR_TYPE_WOOD_CHEST_SHARD + 2:
   case ACTOR_TYPE_SPARKLE_SHARD ... ACTOR_TYPE_WOOD_SHARD + 1:
   case ACTOR_TYPE_LIFE_CHEST_SHARD ... ACTOR_TYPE_LIFE_CHEST_SHARD + 2: {
-    FragmentState *st = rec->state;
+    TumbleState *st = rec->state;
     int yaw;
     int pitch;
 
@@ -198,9 +198,9 @@ Actor *Level8_SpawnActor(int type, Actor *parent) {
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
     rec->posZ += st->vel[2] * 4;
-    st->spinX = GetRandomU32() & 0xF;
-    st->spinY = GetRandomU32() & 0xF;
-    st->spinZ = GetRandomU32() & 0xF;
+    st->spin[0] = GetRandomU32() & 0xF;
+    st->spin[1] = GetRandomU32() & 0xF;
+    st->spin[2] = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
     if ((unsigned int)((unsigned short)rec->type - 0x135) < 3) {
@@ -270,7 +270,7 @@ Actor *Level8_SpawnActor(int type, Actor *parent) {
   }
 
   case ACTOR_TYPE_BOUNCE_DEBRIS ... ACTOR_TYPE_BOUNCE_DEBRIS + 1: {
-    ShardState *st = rec->state;
+    BounceState *st = rec->state;
     int yaw;
     int pitch;
 
@@ -296,7 +296,7 @@ Actor *Level8_SpawnActor(int type, Actor *parent) {
       rec->rotZ = GetRandomU32();
       if ((int)(GetRandomU32() & 0xFFF) >= 0x800) {
         rec->rotY = (GetRandomU32() & 0x1C) - 0x10;
-        st->mode = 1;
+        st->mode = BOUNCE_SWAY;
       }
     } else {
       if (st->vel[0] < -0x60) {
@@ -315,9 +315,9 @@ Actor *Level8_SpawnActor(int type, Actor *parent) {
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
     rec->posZ += st->vel[2] * 4;
-    st->spinX = (GetRandomU32() & 0x1F) - 0x10;
-    st->spinY = (GetRandomU32() & 0x1F) - 0x10;
-    st->spinZ = (GetRandomU32() & 0x1F) - 0x10;
+    st->spin[0] = (GetRandomU32() & 0x1F) - 0x10;
+    st->spin[1] = (GetRandomU32() & 0x1F) - 0x10;
+    st->spin[2] = (GetRandomU32() & 0x1F) - 0x10;
     st->life = 0x32 - RandomIntInRange(0, 0x14);
     st->slow = 0xA;
     st->sway = 4;

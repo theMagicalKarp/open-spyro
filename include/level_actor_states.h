@@ -34,14 +34,6 @@ typedef struct CollectibleState {
   unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
 } CollectibleState;
 
-/* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
-typedef struct ShardState {
-  short vel[3];  /* 0x00 */
-  short spin[3]; /* 0x06 pitch / yaw / roll per frame */
-  int life;      /* 0x0C */
-  int floor;     /* 0x10 */
-} ShardState;
-
 /* Type 227 (levels 14, 27): superflame giver. When Spyro faces it in range
  * it freezes him, flies in front of him under a scripted camera (`cam`), and
  * sets g_nSpyroSuperflameTimer by `kind`; then flies back to `home`. */
@@ -65,32 +57,21 @@ typedef struct WarDrumState {
   int wait;   /* 0x04 */
   int beat;   /* 0x08 */
   int fade;   /* 0x0C */
-  int knock;  /* 0x10 knock-back heading */
+  int knockHeading;  /* 0x10 knock-back heading */
   int speed;  /* 0x14 */
-  int lift;   /* 0x18 */
+  int zSpeed;   /* 0x18 */
   int life;   /* 0x1C */
   int reload; /* 0x20 */
   int voice;  /* 0x24 */
 } WarDrumState;
 
-/* A trigger box for IsPointInRotatedBox: a point, half-extents in the box's
- * own frame, and that frame's yaw. A zero half-width marks an unused box. */
-typedef struct TriggerBox {
-  int x;         /* 0x00 */
-  int y;         /* 0x04 */
-  int z;         /* 0x08 */
-  int halfWidth; /* 0x0C 0 = unused */
-  int halfDepth; /* 0x10 */
-  int yaw;       /* 0x14 sine-LUT index */
-} TriggerBox;
-
 /* Case 466 -- roaming ram. */
 typedef struct RoamingRamState {
   char pad00[0xC];
   PathData *path; /* 0x0C */
-  int knock;      /* 0x10 knock-back heading */
+  int knockHeading;      /* 0x10 knock-back heading */
   int speed;      /* 0x14 */
-  int lift;       /* 0x18 */
+  int zSpeed;       /* 0x18 */
   int mode;       /* 0x1C RoamingRamKind */
   int partner;    /* 0x20 index into g_pActorListBase; level data: ACTOR_TYPE_ROAMING_RAM / GUNNER */
   int target;     /* 0x24 index into g_pActorListBase; level data: ACTOR_TYPE_BOLT_GUARD */
@@ -107,7 +88,7 @@ typedef struct ChargingGuardState {
   int range;         /* 0x14 sight range >> 10 */
   PathData *path;    /* 0x18 */
   int pad1C; /* 0x1C a level-data pointer (relocated at load), never read */
-  int knock;         /* 0x20 knock-back heading */
+  int knockHeading;         /* 0x20 knock-back heading */
   int speed;         /* 0x24 */
   int turn;          /* 0x28 */
   int cooldown; /* 0x2C frames before it may charge again */
@@ -116,7 +97,7 @@ typedef struct ChargingGuardState {
   int pad38;         /* 0x38 */
   int camHold; /* 0x3C while counting, the camera holds on it */
   int *chargeLock; /* 0x40 shared: one charger at a time */
-  int dist2;         /* 0x44 */
+  int orbitRadius;     /* 0x44 orbit round path node 0; 0 until taken from the start distance */
   int target;        /* 0x48 index into g_pActorListBase; level data: ACTOR_TYPE_GUNNER */
   int filter;        /* 0x4C type it drives before it */
   int charging;      /* 0x50 */
@@ -128,7 +109,7 @@ typedef struct ChargingGuardState {
 /* Type 28 state (level 20): the gunner, paired with a `partner`; fires
  * type 400 shots in mode 5. */
 typedef struct GunnerState {
-  void *path;  /* 0x00 */
+  PathData *path;  /* 0x00 */
   int partner; /* 0x04 index into g_pActorListBase; level data: ACTOR_TYPE_ONE_SHOT_PROP / CHARGING_GUARD */
   int knockSpeed;     /* 0x08 knock-back speed */
   int knockZSpeed;     /* 0x0C */
@@ -140,8 +121,14 @@ typedef struct GunnerState {
 } GunnerState;
 
 /* Type 403 state (level 20): the lurker with its `tether`; can hold Spyro. */
+/* LurkerState.mode (level data: 11 roam, 5 hold). */
+enum LurkerPost {
+  LURKER_POST_ROAM = 0, /* hops between its path points to stay near Spyro */
+  LURKER_POST_HOLD = 1, /* stays put, only turning to face Spyro */
+};
+
 typedef struct LurkerState {
-  int mode;      /* 0x00 0 roams its path */
+  int mode;      /* 0x00 level data, enum LurkerPost */
   PathData *path; /* 0x04 */
   int knockHeading;       /* 0x08 knock-back heading */
   int knockSpeed;       /* 0x0C knock-back speed */
@@ -210,10 +197,8 @@ typedef struct BoulderThrowerState {
   Actor *rock;     /* 0x40 boulder being carried */
   int sightRange;         /* 0x44 sight range */
   int throwRange;         /* 0x48 throw range */
-  int box0[3];      /* 0x4C trigger box */
-  int box0HalfWidth;         /* 0x58 */
-  int pad5C[2];      /* 0x5C */
-  int box1[6];      /* 0x64 trigger box */
+  TriggerBox box0;      /* 0x4C trigger box (halfWidth 0 = unused) */
+  TriggerBox box1;      /* 0x64 trigger box */
   int command;         /* 0x7C posted: 1 = mode 0x28, else reverse along the path (mode 0x32); cleared when taken */
   int orbitRadius;         /* 0x80 */
   int jitterA;         /* 0x84 random 8..15 on entering mode 0x2B; not read here */
@@ -239,8 +224,8 @@ typedef struct GatekeeperState {
   int speed;         /* 0x30 speed */
   int zSpeed;         /* 0x34 */
   PathData *path;   /* 0x38 */
-  int box0[6];      /* 0x3C trigger box */
-  int box1[6];      /* 0x54 trigger box */
+  TriggerBox box0;      /* 0x3C trigger box */
+  TriggerBox box1;      /* 0x54 trigger box */
   int command;         /* 0x6C posted: 1 = mode 0x28, else reverse along the path (mode 0x32); cleared when taken */
   int idx;         /* 0x70 next key */
   int range[2];    /* 0x74 release range per key (units of 0x400) */
@@ -254,12 +239,12 @@ typedef struct GatekeeperState {
 /* Type 293/294 state (path runner): runs its path ahead of Spyro, leads
  * him to a goal, and jumps or scatters when struck. */
 typedef struct PathRunnerState {
-  int speed;           /* 0x00 flee speed */
+  int dodgeRadius;     /* 0x00 level data: orbit radius round the path point while dodging */
   PathData *path; /* 0x04 */
   PathData *home;      /* 0x08 home path */
-  int knock;           /* 0x0C knock-back speed */
-  int knockAng;        /* 0x10 knock-back heading */
-  int lift;            /* 0x14 vertical speed */
+  int knockSpeed;           /* 0x0C knock-back speed */
+  int knockHeading;        /* 0x10 knock-back heading */
+  int knockZSpeed;            /* 0x14 vertical speed */
   int target;          /* 0x18 index into g_pActorListBase, -1 none; initially (level data) ACTOR_TYPE_BOULDER_THROWER / GATEKEEPER */
   int pathInit;        /* 0x1C */
   int camTimer;        /* 0x20 */
@@ -267,8 +252,8 @@ typedef struct PathRunnerState {
   int range;           /* 0x28 */
   int timer;           /* 0x2C */
   int init;            /* 0x30 */
-  int volA[6];         /* 0x34 trigger box */
-  int volB[6];         /* 0x4C trigger box */
+  TriggerBox volA;         /* 0x34 trigger box */
+  TriggerBox volB;         /* 0x4C trigger box */
   int camDone;         /* 0x64 */
 } PathRunnerState;
 
@@ -374,8 +359,8 @@ typedef struct JacquesState {
 typedef struct ChargingRamState {
   int init;     /* 0x00 */
   int mode;     /* 0x04 nonzero = starts awake */
-  int knock;    /* 0x08 knock-back speed */
-  int lift;     /* 0x0C */
+  int knockSpeed;    /* 0x08 knock-back speed */
+  int knockZSpeed;     /* 0x0C */
   int pad10;      /* 0x10 */
   int heading;  /* 0x14 */
   int pad18;      /* 0x18 */
@@ -461,13 +446,13 @@ typedef struct CometCannonState {
 
 /* Types 92/130 state: a guard whose animations start at `base`. */
 typedef struct LungingGuardState {
-  int knock;           /* 0x00 knock-back speed */
-  int heading;         /* 0x04 knock-back heading */
-  int lift;            /* 0x08 */
+  int knockSpeed;           /* 0x00 knock-back speed */
+  int knockHeading;         /* 0x04 knock-back heading */
+  int knockZSpeed;            /* 0x08 */
   int base;            /* 0x0C first animation */
   int kind;            /* 0x10 LungingGuardKind */
   int timer;           /* 0x14 */
-  int vol[6];          /* 0x18 trigger box */
+  TriggerBox vol;          /* 0x18 trigger box */
   PathData *path; /* 0x30 */
   int flags;           /* 0x34 LGUARD_F_* */
   int init;            /* 0x38 */
@@ -482,13 +467,13 @@ typedef struct LungingGuardState {
 
 /* Type 130 state: the bigger guard (as type 92's, with two followers). */
 typedef struct BigLungingGuardState {
-  int knock;           /* 0x00 */
+  int knockSpeed;           /* 0x00 */
   int heading;         /* 0x04 */
-  int lift;            /* 0x08 */
+  int knockZSpeed;            /* 0x08 */
   int base;            /* 0x0C */
   int kind;            /* 0x10 LungingGuardKind */
   int timer;           /* 0x14 */
-  int vol[6];          /* 0x18 */
+  TriggerBox vol;          /* 0x18 */
   PathData *path; /* 0x30 */
   int flags;           /* 0x34 LGUARD_F_* */
   int init;            /* 0x38 */
@@ -530,11 +515,11 @@ typedef struct BreakableWallState {
 
 /* Type 134 state: a rock thrower. */
 typedef struct RockThrowerState {
-  int heading;          /* 0x00 knock-back heading */
+  int knockHeading;          /* 0x00 knock-back heading */
   int speed;            /* 0x04 */
-  int lift;             /* 0x08 */
+  int zSpeed;             /* 0x08 */
   int flags;            /* 0x0C THROWER_F_ADVANCE, ROCKTHROW_F_ESCORT */
-  int vol[6];           /* 0x10 trigger box */
+  TriggerBox vol;           /* 0x10 trigger box */
   int timer;            /* 0x28 */
   int range;            /* 0x2C */
   int range2;           /* 0x30 */
@@ -597,12 +582,12 @@ typedef struct BurstGunnerState {
   int shotTimer;     /* 0x10 shot timer */
   int shotGap;     /* 0x14 frames since the last shot of a burst */
   int shotReload;     /* 0x18 shot timer reload */
-  void *path;   /* 0x1C path */
+  PathData *path;   /* 0x1C path */
   int pad20;     /* 0x20 */
   int countdown;     /* 0x24 */
-  int box0[6];  /* 0x28 trigger box */
-  int box1[6];  /* 0x40 trigger box */
-  int box2[6];  /* 0x58 trigger box */
+  TriggerBox box0;  /* 0x28 trigger box */
+  TriggerBox box1;  /* 0x40 trigger box */
+  TriggerBox box2;  /* 0x58 trigger box */
   int initialised;     /* 0x70 initialised */
   int sinkTimer;     /* 0x74 sink timer */
 } BurstGunnerState;
@@ -611,7 +596,7 @@ typedef struct BurstGunnerState {
  * limits. */
 typedef struct SweepGunnerState {
   int flags;     /* 0x00 GUNNER_F_ARMED */
-  void *path;   /* 0x04 path */
+  PathData *path;   /* 0x04 path */
   int knockSpeed;     /* 0x08 knock-back speed */
   int knockHeading;     /* 0x0C knock-back heading */
   int knockZSpeed;     /* 0x10 */
@@ -623,9 +608,9 @@ typedef struct SweepGunnerState {
   int sweepRate;     /* 0x28 sweep rate */
   int sweepYaw;     /* 0x2C sweep yaw << 4 */
   int timer;     /* 0x30 timer */
-  int box0[6];  /* 0x34 trigger box */
-  int box1[6];  /* 0x4C trigger box */
-  int box2[6];  /* 0x64 trigger box */
+  TriggerBox box0;  /* 0x34 trigger box */
+  TriggerBox box1;  /* 0x4C trigger box */
+  TriggerBox box2;  /* 0x64 trigger box */
   int initialised;     /* 0x7C initialised */
 } SweepGunnerState;
 
@@ -635,30 +620,30 @@ typedef struct LobGunnerState {
   int knockSpeed;              /* 0x04 knock-back speed */
   int knockHeading;              /* 0x08 knock-back heading */
   int knockZSpeed;              /* 0x0C */
-  int box0[6];           /* 0x10 trigger box */
+  TriggerBox box0;           /* 0x10 trigger box */
   unsigned char *targetPath;   /* 0x28 target path: count, index, points */
-  void *path;            /* 0x2C path */
+  PathData *path;            /* 0x2C path */
   int timer;              /* 0x30 timer */
   int throwTimer;              /* 0x34 throw timer */
   Actor *heldLob;           /* 0x38 held lob (type 176), -1 once thrown */
   int pad3C; /* 0x3C a level-data pointer (relocated at load), never read */
   int aimRange;              /* 0x40 aim-at-path range */
-  int box1[6];           /* 0x44 trigger box */
-  int box2[6];           /* 0x5C trigger box */
+  TriggerBox box1;           /* 0x44 trigger box */
+  TriggerBox box2;           /* 0x5C trigger box */
   int initialised;              /* 0x74 initialised */
 } LobGunnerState;
 
 /* State of the lob type 148 throws. */
 typedef struct LobState {
   int flightTime;            /* 0x00 frames to the target (ComputeLobVelocityZ out) */
-  short h4;           /* 0x04 */
-  short h6;           /* 0x06 */
-  short h8;           /* 0x08 */
-  short hA;           /* 0x0A */
-  unsigned char bC;   /* 0x0C */
-  unsigned char bD;   /* 0x0D */
-  unsigned char bE;   /* 0x0E */
-  unsigned char bF;   /* 0x0F */
+  short speed;           /* 0x04 horizontal speed along heading */
+  short zSpeed;          /* 0x06 vertical speed (ComputeLobVelocityZ) */
+  short gravity;         /* 0x08 added to zSpeed each frame */
+  short life;            /* 0x0A frames before it bursts */
+  unsigned char heading; /* 0x0C toward the target (8-bit) */
+  unsigned char spinX;   /* 0x0D per-frame rotX/rotY/rotZ deltas */
+  unsigned char spinY;   /* 0x0E */
+  unsigned char spinZ;   /* 0x0F */
 } LobState;
 
 /* Type 156 state. */
@@ -682,11 +667,5 @@ typedef struct WandererState {
   int pad28; /* 0x28 a level-data pointer (relocated at load), never read */
   int idleTimer;    /* 0x2C idle timer */
 } WandererState;
-
-/* Falling debris (ACTOR_TYPE_FALLING_DEBRIS, levels 13/14/15). */
-typedef struct FallingDebrisState {
-  int vel[3]; /* 0x00 random spread; vel[2] falls by 6 a frame to -0x80 */
-  int life;   /* 0x0C 0x20..0x3F frames */
-} FallingDebrisState;
 
 #endif /* OPEN_SPYRO_LEVEL_ACTOR_STATES_H */

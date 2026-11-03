@@ -200,7 +200,7 @@ Actor *Level6_SpawnActor(int type, Actor *parent) {
   case ACTOR_TYPE_WOOD_CHEST_SHARD ... ACTOR_TYPE_WOOD_CHEST_SHARD + 2:
   case ACTOR_TYPE_SPARKLE_SHARD ... ACTOR_TYPE_WOOD_SHARD + 1:
   case ACTOR_TYPE_LIFE_CHEST_SHARD ... ACTOR_TYPE_LIFE_CHEST_SHARD + 2: {
-    FragmentState *st = rec->state;
+    TumbleState *st = rec->state;
     int yaw;
     int pitch;
 
@@ -221,9 +221,9 @@ Actor *Level6_SpawnActor(int type, Actor *parent) {
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
     rec->posZ += st->vel[2] * 4;
-    st->spinX = GetRandomU32() & 0xF;
-    st->spinY = GetRandomU32() & 0xF;
-    st->spinZ = GetRandomU32() & 0xF;
+    st->spin[0] = GetRandomU32() & 0xF;
+    st->spin[1] = GetRandomU32() & 0xF;
+    st->spin[2] = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
     if ((unsigned int)((unsigned short)rec->type - 0x135) < 3) {
@@ -316,7 +316,7 @@ Actor *Level6_SpawnActor(int type, Actor *parent) {
     if (parent != 0) {
       CopyVector(&rec->posX, &parent->posX);
     } else {
-      CopyVector(&rec->posX, (int *)g_anSpyroWorldPos);
+      CopyVector(&rec->posX, g_anSpyroWorldPos);
     }
     rec->posZ += 0x200;
     ground = FindGroundHeightBelow(&rec->posX, 0x800);
@@ -335,7 +335,7 @@ Actor *Level6_SpawnActor(int type, Actor *parent) {
   }
 
   case ACTOR_TYPE_FALLING_SPARK ... ACTOR_TYPE_FALLING_SPARK + 2: {
-    FragmentState *st;
+    TumbleState *st;
     int drop;
     int nudge;
 
@@ -354,9 +354,9 @@ Actor *Level6_SpawnActor(int type, Actor *parent) {
     nudge = -drop + 0x640;
     rec->posX += st->vel[0] * nudge >> 10;
     rec->posY += st->vel[1] * nudge >> 10;
-    st->spinX = GetRandomU32() & 0xF;
-    st->spinY = GetRandomU32() & 0xF;
-    st->spinZ = GetRandomU32() & 0xF;
+    st->spin[0] = GetRandomU32() & 0xF;
+    st->spin[1] = GetRandomU32() & 0xF;
+    st->spin[2] = GetRandomU32() & 0xF;
     st->life = 0xA0;
     break;
   }
@@ -370,7 +370,7 @@ Actor *Level6_SpawnActor(int type, Actor *parent) {
     break;
 
   case ACTOR_TYPE_REBOUND_DEBRIS ... ACTOR_TYPE_REBOUND_DEBRIS + 1: {
-    FragmentState *st = rec->state;
+    TumbleState *st = rec->state;
 
     InitActorRenderDefaults(rec);
     rec->cullRadius = 0x20;
@@ -388,9 +388,9 @@ Actor *Level6_SpawnActor(int type, Actor *parent) {
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
     rec->posZ += st->vel[2] * 4;
-    st->spinX = GetRandomU32() & 0xF;
-    st->spinY = GetRandomU32() & 0xF;
-    st->spinZ = GetRandomU32() & 0xF;
+    st->spin[0] = GetRandomU32() & 0xF;
+    st->spin[1] = GetRandomU32() & 0xF;
+    st->spin[2] = GetRandomU32() & 0xF;
     st->life = RandomIntInRange(0x18, 0x23);
     break;
   }
@@ -400,7 +400,7 @@ Actor *Level6_SpawnActor(int type, Actor *parent) {
     if (parent != 0) {
       CopyVector(&rec->posX, &parent->posX);
     } else {
-      CopyVector(&rec->posX, (int *)g_anSpyroWorldPos);
+      CopyVector(&rec->posX, g_anSpyroWorldPos);
     }
     InsertActorIntoSpatialGrid(rec);
     break;

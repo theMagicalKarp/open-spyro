@@ -656,10 +656,10 @@ void Level4_UpdateActors(void) {
       break;
     }
 
-    /* Explosion shard with a ground bounce (ShardState). */
+    /* Explosion shard with a ground bounce (TumbleState). */
     case ACTOR_TYPE_WOOD_CHEST_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life <= 0 || actor->drawn == 0) {
         g_pfnLevelEmitParticles(8, EMIT_STREAK_BURST, &actor->posX, 0x10);
@@ -2064,12 +2064,12 @@ void Level4_UpdateActors(void) {
         voice = 0x12;
         break;
 
-      case 8:
-        voice = 0x1A;
+      case AMBIENT_MODE_PORTAL:
+        voice = SFX_PORTAL_HUM;
         break;
 
-      case 9:
-        voice = 0x36;
+      case AMBIENT_MODE_WHIRLWIND:
+        voice = SFX_WHIRLWIND;
         break;
       }
 
@@ -2082,7 +2082,7 @@ void Level4_UpdateActors(void) {
 
     /* Sparkling shard: 1 puff per frame. */
     case ACTOR_TYPE_SPARKLE_SHARD: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
@@ -2113,7 +2113,7 @@ void Level4_UpdateActors(void) {
     /* Wood shard: bounces and throws three sparks a frame. */
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
       register int i asm("$16");
 
       if (st->life > 0) {
@@ -2434,10 +2434,10 @@ void Level4_UpdateActors(void) {
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorLiveKill(actor);
           st->knockSpeed = 0xE6;
-          st->knockAngle = StepAndLerpAngle8(
+          st->knockHeading = StepAndLerpAngle8(
               ArcTan2(actor->posX - spy->posX, actor->posY - SPY.posY, ATAN_ANGLE8),
               g_bSpyroPersistentEulerZ, 0x20, 0x40);
-          st->velZ = 0x14;
+          st->knockZSpeed = 0x14;
           actor->mode = LUNGER_KNOCKED;
           continue;
         }
@@ -2500,7 +2500,7 @@ void Level4_UpdateActors(void) {
         break;
 
       case LUNGER_AIM:
-        st->velZ = (ApproxDist2D(&actor->posX, &SPY.posX) * 35 >> 10) + 0x12C;
+        st->knockZSpeed = (ApproxDist2D(&actor->posX, &SPY.posX) * 35 >> 10) + 0x12C;
         ANIM_GO(actor, st->anim + 2);
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(st->target[0] - actor->posX,
@@ -2515,10 +2515,10 @@ void Level4_UpdateActors(void) {
       case LUNGER_LEAP: {
         int floor = ProbeActorGroundHeight(actor);
 
-        actor->posZ += st->velZ;
-        st->velZ -= 0x32;
-        if (st->velZ < -0x258) {
-          st->velZ = -0x258;
+        actor->posZ += st->knockZSpeed;
+        st->knockZSpeed -= 0x32;
+        if (st->knockZSpeed < -0x258) {
+          st->knockZSpeed = -0x258;
         }
         if (SPY.state == SPYRO_ST_HURT_PINNED) {
           st->burn = 0x1E;
@@ -2550,7 +2550,7 @@ void Level4_UpdateActors(void) {
             actor->nextFrame = 9;
             actor->frameProgress = 0;
           }
-          if ((unsigned int)(dist - 0x51) < 0x2CF && st->velZ < 0x64 &&
+          if ((unsigned int)(dist - 0x51) < 0x2CF && st->knockZSpeed < 0x64 &&
               actor->posZ - floor >= 0x1F5) {
             MoveActorAlongAngle(actor,
                           ArcTan2(SPY.posX - actor->posX,
@@ -2568,7 +2568,7 @@ void Level4_UpdateActors(void) {
 
       case LUNGER_KNOCKED:
         ANIM_GO(actor, st->anim + 4);
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockAngle, &st->velZ, 0xC,
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC,
                       0xA);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -2674,7 +2674,7 @@ void Level4_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != REAR_KNOCKED) {
         SetActorGroupSubstate(actor, 1);
-        st->angle = StepAndLerpAngle8(
+        st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         st->speed = 0x190;
@@ -2781,7 +2781,7 @@ void Level4_UpdateActors(void) {
         }
         if (st->speed > 0x1E) {
           st->speed -= 0x1E;
-          MoveActorAlongAngle(actor, st->angle, st->speed, 0, 0x12C, MOVE_LIFT);
+          MoveActorAlongAngle(actor, st->knockHeading, st->speed, 0, 0x12C, MOVE_LIFT);
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

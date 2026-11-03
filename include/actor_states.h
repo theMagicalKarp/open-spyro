@@ -1,9 +1,22 @@
 /* actor_states.h — class-specific state blocks (Actor->state) that main and
- * the level overlays both read. They stand alone, without the Actor type, so
- * overlay headers that only forward-declare struct Actor can include this. */
+ * the level overlays both read, or that a level's SpawnActor and UpdateActors
+ * share (level_spawn_actor.h and level_update_actors.h both include this).
+ * They stand alone, without the Actor type, so overlay headers that only
+ * forward-declare struct Actor can include this. */
 
 #ifndef OPEN_SPYRO_ACTOR_STATES_H
 #define OPEN_SPYRO_ACTOR_STATES_H
+
+/* A trigger box for IsPointInRotatedBox: a point, half-extents in the box's
+ * own frame, and that frame's yaw. A zero half-width marks an unused box. */
+typedef struct TriggerBox {
+  int x;         /* 0x00 */
+  int y;         /* 0x04 */
+  int z;         /* 0x08 */
+  int halfWidth; /* 0x0C 0 = unused */
+  int halfDepth; /* 0x10 */
+  int yaw;       /* 0x14 sine-LUT index */
+} TriggerBox;
 
 /* Dragon-statue burst shard (type 0xFB), ticked by TickStatueBurstShard:
  * integrates vel with gravity while life runs and posZ stays above floorZ. */
@@ -112,5 +125,115 @@ typedef struct WhirlwindState {
 #define WHIRL_F_WOKEN 0x04      /* woken: idles again 0x78 frames after a lift */
 #define WHIRL_F_GATED 0x08      /* waits on its owner (`idx`: a key's subMode, a statue or gem gone) */
 #define WHIRL_F_MARK 0x10       /* also sets ->subMode to 1 while active */
+
+/* Level 14 type 303 (ACTOR_TYPE_RUNNER_SPAWNER): every so often (`timer`,
+ * 0xB4) rewinds `path` and spawns one waypoint runner (304), handing it the
+ * path and `value`; killable. */
+typedef struct RunnerSpawnerState {
+  struct PathData *path; /* 0x00 the runners' waypoint path; cur reset to 0 per spawn */
+  int flags;             /* 0x04 bit 0: a runner is out */
+  int wait;              /* 0x08 */
+  int timer;             /* 0x0C */
+  int value;             /* 0x10 copied to the spawn's WaypointRunnerState.target */
+} RunnerSpawnerState;
+
+/* Level 14 type 304 (ACTOR_TYPE_WAYPOINT_RUNNER): walks its spawner's `path`
+ * until it reaches Spyro, the path end, or its `target` actor (which it
+ * flags), then clears the spawner's flags bit 0 and leaves. */
+typedef struct WaypointRunnerState {
+  struct PathData *path;  /* 0x00 inherited from the spawner */
+  struct Actor *spawner;  /* 0x04 the RunnerSpawnerState owner */
+  int smoothVel[3];       /* 0x08 WalkActorAlongWaypoints' smoothed velocity */
+  short target;           /* 0x14 pool index, < 0 = none */
+} WaypointRunnerState;
+
+/* Level 19 type 343 (ACTOR_TYPE_ATTACH_BEAD): a bead that streams from its
+ * owner's attach point 1 to point 0, starting subMode * 42 frames late and
+ * growing as it goes. */
+typedef struct AttachBeadState {
+  struct Actor *owner; /* 0x00 */
+  int t;               /* 0x04 */
+  int pad08;           /* 0x08 cleared at spawn, never read */
+} AttachBeadState;
+
+/* Level 29 type 232 (ACTOR_TYPE_BOBBER_SPINOFF): spins off its bobbing
+ * flight target and runs until it gets away or times out. */
+typedef struct SpinRunState {
+  int heading;   /* 0x00 */
+  int zSpeed;      /* 0x04 */
+  int moveSpeed; /* 0x08 */
+  int timer;     /* 0x0C */
+} SpinRunState;
+
+/* Levels 13/14/15 type 295 (ACTOR_TYPE_HOMING_WISP): steers toward its
+ * target actor (or Spyro), and bursts into three sparks when it arrives or
+ * touches the ground. */
+typedef struct WispState {
+  struct Actor *target; /* 0x00 actor to reach, or null to chase Spyro */
+  int timer;            /* 0x04 lifetime */
+} WispState;
+
+/* Falling debris (ACTOR_TYPE_FALLING_DEBRIS, levels 13/14/15). */
+typedef struct FallingDebrisState {
+  int vel[3]; /* 0x00 random spread; vel[2] falls by 6 a frame to -0x80 */
+  int life;   /* 0x0C 0x20..0x3F frames */
+} FallingDebrisState;
+
+/* Levels 3/7/8 bouncing debris (ACTOR_TYPE_SWAYING_DEBRIS and kin): thrown
+ * with a random push, sways while it falls and bounces off the ground. */
+typedef struct BounceState {
+  short vel[3];       /* 0x00 */
+  short spin[3];      /* 0x06 per-frame rotX/rotY/rotZ deltas */
+  unsigned char life; /* 0x0C */
+  unsigned char slow; /* 0x0D frames until the push dies off */
+  short sway;         /* 0x0E */
+  int mode;           /* 0x10 enum BounceMotion */
+} BounceState;
+
+/* BounceState.mode, picked at random at spawn. */
+enum BounceMotion {
+  BOUNCE_SPIN = 0, /* tumbles: rotZ turns 0xC a frame */
+  BOUNCE_SWAY = 1, /* falls rocking side to side by `sway` like a leaf */
+};
+
+/* Level 19 type 35 (ACTOR_TYPE_BOLT_GUARD): scatters when hit and fires type
+ * 494 bolts. SpawnActor aims its ground-bounce shards along `knockHeading`. */
+typedef struct BoltGuardState {
+  int mode;    /* 0x00 enum BoltGuardCue */
+  int timer;   /* 0x04 */
+  int timer2;  /* 0x08 */
+  int knockHeading; /* 0x0C knock-back heading (12-bit), set when it is hit */
+  int speed;   /* 0x10 */
+  int zSpeed;    /* 0x14 vertical speed (DriveActorTrackedMove) */
+  int u18;     /* 0x18 */
+  struct PathData *path; /* 0x1C */
+  int range;   /* 0x20 in 1024s */
+  int countdown;     /* 0x24 */
+  int link;    /* 0x28 actor index, -1 for none; initially (level data) ACTOR_TYPE_ROAMING_RAM */
+  short spinX; /* 0x2C */
+  short spinY; /* 0x2E */
+  TriggerBox box; /* 0x30 */
+} BoltGuardState;
+
+/* ACTOR_TYPE_BLASTABLE_PATH_SMOKER / _PROP: path tweeners a blast
+ * wrecks (flight levels 5/29). */
+typedef struct SmokerState {
+  struct PathData *path; /* 0x00 */
+  int legStep;           /* 0x04 */
+  int legVec[3];        /* 0x08 previous leg vector (TweenActorAlongPath); a wreck ember starts from it */
+  int timer;           /* 0x14 */
+} SmokerState;
+
+/* Tumbling fragments: SpawnActor's chest/object shards (types 0x43..0x45,
+ * 0xFF..0x101, 0x135..0x137 and per-level ranges) and UpdateActors' falling
+ * debris shards thrown by a break (255/256, 310/311, 257, 309, 425, level 27's
+ * rubble). Integrate until life, visibility or the floor runs out. Other updaters view some of these types as ChestShardState (byte
+ * spins) or EmberState. */
+typedef struct TumbleState {
+  short vel[3];  /* 0x00 */
+  short spin[3]; /* 0x06 per-frame delta for ->rotX/rotY/rotZ */
+  int life;      /* 0x0C ticks remaining */
+  int floorZ;    /* 0x10 retire once the actor sinks to this height */
+} TumbleState;
 
 #endif /* OPEN_SPYRO_ACTOR_STATES_H */

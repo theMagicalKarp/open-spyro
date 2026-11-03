@@ -687,12 +687,12 @@ void Level34_UpdateActors(void) {
       break;
     }
 
-    /* Explosion shard with a ground bounce (ShardState). */
+    /* Explosion shard with a ground bounce (TumbleState). */
     case ACTOR_TYPE_SEED_POD_SHARD:
     case ACTOR_TYPE_SEED_POD_SHARD + 1:
     case ACTOR_TYPE_WOOD_CHEST_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {
 
@@ -1559,7 +1559,7 @@ void Level34_UpdateActors(void) {
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) != 0 && actor->mode != one) {
         int i;
 
-        st->knockSpin = 0;
+        st->knockZSpeed = 0;
         st->speed = 0x15E;
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
@@ -1596,15 +1596,15 @@ void Level34_UpdateActors(void) {
                 st->ring->dir = -1;
               }
               if (st->ring->dir > 0) {
-                st->cur = st->pathB;
+                st->curPath = st->pathB;
               } else {
-                st->cur = st->pathA;
+                st->curPath = st->pathA;
               }
-              st->cur->cur = st->cur->count - 1;
-              st->cur->dir = one;
+              st->curPath->cur = st->curPath->count - 1;
+              st->curPath->dir = one;
               st->leg = one;
             }
-            d0 = (FLY_Z(st->cur, st->cur->count - 1) - actor->posZ) >> 3;
+            d0 = (FLY_Z(st->curPath, st->curPath->count - 1) - actor->posZ) >> 3;
             if (d0 > 0x100) {
               d0 = 0x100;
             }
@@ -1616,9 +1616,9 @@ void Level34_UpdateActors(void) {
             break;
 
           case 1:
-            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
-                              0) == ((st->cur->count - 1) | 0x100)) {
-              if (st->cur == st->pathB) {
+            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+                              0) == ((st->curPath->count - 1) | 0x100)) {
+              if (st->curPath == st->pathB) {
                 st->ring->dir = one;
                 st->ring->cur = st->ring->count - 1;
               } else {
@@ -1626,9 +1626,9 @@ void Level34_UpdateActors(void) {
                 st->ring->cur = 0;
               }
               st->leg = 2;
-              st->cur = st->ring;
+              st->curPath = st->ring;
             }
-            d = (FLY_Z(st->cur, st->cur->cur) - actor->posZ) >> 3;
+            d = (FLY_Z(st->curPath, st->curPath->cur) - actor->posZ) >> 3;
             if (d > 0x100) {
               d = 0x100;
             }
@@ -1642,9 +1642,9 @@ void Level34_UpdateActors(void) {
           case 2:
             n = 0x100;
             if (st->ring->dir > 0) {
-              n = (st->cur->count - 1) | 0x100;
+              n = (st->curPath->count - 1) | 0x100;
             }
-            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               0) == n) {
               st->path->dir = -st->ring->dir;
               if (st->path->dir > 0) {
@@ -1652,13 +1652,13 @@ void Level34_UpdateActors(void) {
               } else {
                 st->path->cur = 0;
               }
-              st->cur = st->path;
+              st->curPath = st->path;
               if (++st->laps >= 6) {
                 st->laps = 5;
               }
               st->leg = 3;
             }
-            n = (FLY_Z(st->cur, st->cur->cur) - actor->posZ) >> 3;
+            n = (FLY_Z(st->curPath, st->curPath->cur) - actor->posZ) >> 3;
             if (n > 0x80) {
               n = 0x80;
             }
@@ -1675,9 +1675,9 @@ void Level34_UpdateActors(void) {
           case 3:
             n = 0x100;
             if (st->ring->dir > 0) {
-              n = (st->cur->count - 1) | 0x100;
+              n = (st->curPath->count - 1) | 0x100;
             }
-            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               0) == n) {
               st->ring->dir = -st->path->dir;
               if (st->ring->dir > 0) {
@@ -1686,9 +1686,9 @@ void Level34_UpdateActors(void) {
                 st->ring->cur = 0;
               }
               st->leg = 2;
-              st->cur = st->ring;
+              st->curPath = st->ring;
             }
-            n = (FLY_Z(st->cur, st->cur->cur) - actor->posZ) >> 3;
+            n = (FLY_Z(st->curPath, st->curPath->cur) - actor->posZ) >> 3;
             if (n > 0x80) {
               n = 0x80;
             }
@@ -1710,20 +1710,20 @@ void Level34_UpdateActors(void) {
             } else {
               st->ring->dir = -1;
             }
-            st->cur = st->ring;
+            st->curPath = st->ring;
             n = 0x100;
             if (st->ring->dir > 0) {
-              n = (st->cur->count - 1) | 0x100;
+              n = (st->curPath->count - 1) | 0x100;
             }
-            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               0) == n) {
               if (st->ring->dir > 0) {
-                st->cur = st->pathA;
+                st->curPath = st->pathA;
               } else {
-                st->cur = st->pathB;
+                st->curPath = st->pathB;
               }
-              st->cur->cur = 0;
-              st->cur->dir = -1;
+              st->curPath->cur = 0;
+              st->curPath->dir = -1;
               st->laps++;
               if (st->laps >= 6) {
                 st->laps = 5;
@@ -1732,7 +1732,7 @@ void Level34_UpdateActors(void) {
             } else if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
               st->leg = 2;
             }
-            n = (FLY_Z(st->cur, st->cur->cur) - actor->posZ) >> 3;
+            n = (FLY_Z(st->curPath, st->curPath->cur) - actor->posZ) >> 3;
             if (n > 0x80) {
               n = 0x80;
             }
@@ -1744,11 +1744,11 @@ void Level34_UpdateActors(void) {
             break;
 
           case 5:
-            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               MOVE_CHECK_Z) == PATH_ARRIVED(0)) {
               st->leg = 0;
             }
-            d = (FLY_Z(st->cur, st->cur->cur) - actor->posZ) >> 3;
+            d = (FLY_Z(st->curPath, st->curPath->cur) - actor->posZ) >> 3;
             if (d > 0x100) {
               d = 0x100;
             }
@@ -1763,7 +1763,7 @@ void Level34_UpdateActors(void) {
           int yaw = actor->rotZ;
 
           if (actor->subMode != 0) {
-            TweenActorAlongPath(actor, (PathData *)st->cur, st->look, &st->laps, 2,
+            TweenActorAlongPath(actor, st->curPath, st->look, &st->laps, 2,
                           0);
             if (AbsAngleDelta8(actor->rotZ,
                               ArcTan2(SPY.posX - actor->posX,
@@ -1771,7 +1771,7 @@ void Level34_UpdateActors(void) {
                 0x40) {
               d = (0x61A8 - actor->posZ) >> 1;
             } else {
-              d = (FLY_Z(st->cur, st->cur->cur) - actor->posZ) >> 3;
+              d = (FLY_Z(st->curPath, st->curPath->cur) - actor->posZ) >> 3;
             }
             if (d > 0x80) {
               d = 0x80;
@@ -1797,10 +1797,10 @@ void Level34_UpdateActors(void) {
             g_anCameraActiveTargetParams.w[3] = 0;
             g_anCameraActiveTargetParams.w[5] = 0;
             g_anCameraActiveTargetParams.w[0] = 0x800 - g_bSpyroPersistentEulerZ * 16;
-            r = TweenActorAlongPath(actor, (PathData *)st->path, st->look, &st->laps,
+            r = TweenActorAlongPath(actor, st->path, st->look, &st->laps,
                               st->speed, TWEEN_FLY);
             if (r == TWEEN_WRAPPED) {
-              st->cur->cur = 2;
+              st->curPath->cur = 2;
               g_nCinematicActive = 0;
               actor->subMode = 1;
             } else if (r == one) { /* TWEEN_NEXT_LEG */
@@ -1830,7 +1830,7 @@ void Level34_UpdateActors(void) {
         break;
 
       case LTHIEF_KNOCKED:
-        if (DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->knockSpin,
+        if (DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->knockZSpeed,
                           0xC, 0xC) == MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -1857,7 +1857,7 @@ void Level34_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
             g_bSpyroPersistentEulerZ, 0x20, 0x40);
-        st->knockSpin = 0x80;
+        st->knockZSpeed = 0x80;
         if (actor->dropKind == DROP_GEM_ROLL) {
           actor->dropKind = 0xF;
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2071,7 +2071,7 @@ void Level34_UpdateActors(void) {
         break;
 
       case LCRITTER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockSpin,
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed,
                       0xC, 0x10);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -2186,7 +2186,7 @@ void Level34_UpdateActors(void) {
 
       case LVORTEX_OPEN:
         if (((unsigned)SPY.state <= SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG || SPY.state == SPYRO_ST_RUN) &&
-            IsPointInRotatedBox(&SPY.posX, st->pad) &&
+            IsPointInRotatedBox(&SPY.posX, &st->box) &&
             AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(g_pActorListBase[st->target].posX - SPY.posX,
                                         g_pActorListBase[st->target].posY - SPY.posY,
@@ -2617,12 +2617,12 @@ void Level34_UpdateActors(void) {
         voice = 0x12;
         break;
 
-      case 8:
-        voice = 0x1A;
+      case AMBIENT_MODE_PORTAL:
+        voice = SFX_PORTAL_HUM;
         break;
 
-      case 9:
-        voice = 0x36;
+      case AMBIENT_MODE_WHIRLWIND:
+        voice = SFX_WHIRLWIND;
         break;
       }
 
@@ -2635,7 +2635,7 @@ void Level34_UpdateActors(void) {
 
     /* Sparkling shard: 1 puff per frame. */
     case ACTOR_TYPE_SPARKLE_SHARD: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
@@ -2666,7 +2666,7 @@ void Level34_UpdateActors(void) {
     /* Wood shard: bounces and throws three sparks a frame. */
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
       register int i asm("$16");
 
       if (st->life > 0) {

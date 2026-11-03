@@ -127,12 +127,12 @@ typedef struct SoldierState {
   int link2;           /* 0x48 index into g_pActorListBase, -1 none (a duelist's rival soldier) */
   int volley;          /* 0x4C */
   int phase;           /* 0x50 */
-  int knockDir;        /* 0x54 */
-  int knock;           /* 0x58 */
+  int knockHeading;        /* 0x54 */
+  int knockSpeed;           /* 0x58 */
   int seen;            /* 0x5C */
   int bold;            /* 0x60 */
   int gone;            /* 0x64 */
-  int vol[6];          /* 0x68 */
+  TriggerBox vol;          /* 0x68 */
 } SoldierState;
 
 /* ==== The function ==== */
@@ -151,19 +151,19 @@ void Level6_UpdateActors(void) {
   int g104[3];
   int eggViewPos[3];
   int g136[3];
-  int g152[3][3];
+  int triVerts[3][3]; /* sp 152 */
   int bouncePos[3];
   int bounceNormal[3];
   int homingStep[3];
   int sparxToTarget[3];
   int chestToSpyro[3];
   int keySlotOffset[3];
-  int g288[3];
+  int groundProbe[3]; /* sp 288 */
   int g304[3];
-  int g320[2];
+  int lobFrames[2]; /* sp 320 */
   int g328[3];
-  int g344[3];
-  int g360[3];
+  int dustVel[3]; /* sp 344 */
+  int toTarget[3]; /* sp 360 */
   int sparkLead[3];
   int g392[3];
   int g408[3];
@@ -503,11 +503,11 @@ void Level6_UpdateActors(void) {
       st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != THIEF_CAUGHT) {
-        st->knock = 0x96;
+        st->knockSpeed = 0x96;
         if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
-          st->knock = 0xE1;
+          st->knockSpeed = 0xE1;
         }
-        st->heading = StepAndLerpAngle8(
+        st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         if (actor->dropKind == DROP_GEM_ROLL) {
@@ -665,7 +665,7 @@ void Level6_UpdateActors(void) {
           ANIM_GO(actor, THIEF_ANIM_TAUNT);
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         } else if (st->mode == THIEFKIND_CLIMB) {
-          if (IsPointInRotatedBox(&SPY.posX, st->area) != 0) {
+          if (IsPointInRotatedBox(&SPY.posX, &st->area) != 0) {
             actor->mode = THIEF_CLIMB_RUN;
             continue;
           }
@@ -821,11 +821,11 @@ void Level6_UpdateActors(void) {
             st->egg = 0;
           }
         }
-        if (st->knock != 0) {
-          MoveActorAlongAngle(actor, st->heading, st->knock, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-          st->knock -= 0x10;
-          if (st->knock < 0) {
-            st->knock = 0;
+        if (st->knockSpeed != 0) {
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          st->knockSpeed -= 0x10;
+          if (st->knockSpeed < 0) {
+            st->knockSpeed = 0;
           }
         }
         ANIM_GO(actor, THIEF_ANIM_CAUGHT);
@@ -1281,14 +1281,14 @@ void Level6_UpdateActors(void) {
       break;
     }
 
-    /* Explosion shard with a ground bounce (ShardState). */
+    /* Explosion shard with a ground bounce (TumbleState). */
     case ACTOR_TYPE_SEED_POD_SHARD:
     case ACTOR_TYPE_SEED_POD_SHARD + 1:
     case ACTOR_TYPE_WOOD_CHEST_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1:
     case ACTOR_TYPE_LIFE_CHEST_SHARD:
     case ACTOR_TYPE_LIFE_CHEST_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {
 
@@ -1458,12 +1458,12 @@ void Level6_UpdateActors(void) {
               }
             }
           } else if (st->mode == COLLREST_ON_TRI) {
-            UnpackWorldCollisionTri(st->groundTri, g152[0]);
-            AddVector(g152[0], g152[0], g152[1]);
-            AddVector(g152[0], g152[0], g152[2]);
-            actor->posX = g152[0][0] / 3;
-            actor->posY = g152[0][1] / 3;
-            actor->posZ = g152[0][2] / 3;
+            UnpackWorldCollisionTri(st->groundTri, triVerts[0]);
+            AddVector(triVerts[0], triVerts[0], triVerts[1]);
+            AddVector(triVerts[0], triVerts[0], triVerts[2]);
+            actor->posX = triVerts[0][0] / 3;
+            actor->posY = triVerts[0][1] / 3;
+            actor->posZ = triVerts[0][2] / 3;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
@@ -2565,14 +2565,14 @@ void Level6_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         actor->flags = 0;
-        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, 0x20, 0x40);
         {
           if (actor->flags & ACTOR_HIT_FLAME) {
-            st->speed = 0xC8;
+            st->knockSpeed = 0xC8;
           } else {
-            st->speed = 0x190;
+            st->knockSpeed = 0x190;
           }
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2588,9 +2588,9 @@ void Level6_UpdateActors(void) {
         break;
 
       case CRITTER_KNOCKED:
-        if (st->speed >= 0x10) {
-          st->speed -= 0xF;
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        if (st->knockSpeed >= 0x10) {
+          st->knockSpeed -= 0xF;
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);
@@ -2735,11 +2735,11 @@ void Level6_UpdateActors(void) {
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != SOLDIER_KNOCKED) {
         actor->flags = 0;
         if (actor->mode != SOLDIER_IN_POST || actor->cullRadius != ACTOR_CULL_HIDDEN) {
-          st->knockDir = StepAndLerpAngle8(
+          st->knockHeading = StepAndLerpAngle8(
               ArcTan2(actor->posX - g_anSpyroWorldPos, actor->posY - g_nSpyroWorldPosY,
                             ATAN_ANGLE8),
               g_bSpyroPersistentEulerZ, 0x20, 0x40);
-          st->knock = 0xFA;
+          st->knockSpeed = 0xFA;
           if ((unsigned)(st->kind - 2) < 2 || st->kind == SOLDIERKIND_GUNNER) {
             Actor *a = &g_pActorListBase[st->link];
 
@@ -2772,9 +2772,9 @@ void Level6_UpdateActors(void) {
           continue;
         }
       }
-      CopyVector(g288, &actor->posX);
-      g288[2] += 0x400;
-      FindGroundHeightBelow(g288, 0x10000);
+      CopyVector(groundProbe, &actor->posX);
+      groundProbe[2] += 0x400;
+      FindGroundHeightBelow(groundProbe, 0x10000);
       EncodeCachedVecToActorDirCode(actor);
 
       switch (actor->mode) {
@@ -2909,7 +2909,7 @@ void Level6_UpdateActors(void) {
           int d = ApproxDist2D(&actor->posX, &g_anSpyroWorldPos);
 
           if (TICK_DOWN(st->timer2) != 0) {
-            if (IsPointInRotatedBox(&actor->posX, st->vol) != 0) {
+            if (IsPointInRotatedBox(&actor->posX, &st->vol) != 0) {
               actor->mode = SOLDIER_GO_HOME;
               continue;
             }
@@ -2943,11 +2943,11 @@ void Level6_UpdateActors(void) {
         break;
 
       case SOLDIER_KNOCKED:
-        if (st->knock != 0) {
-          MoveActorAlongAngle(actor, st->knockDir, st->knock, 0x12C, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-          st->knock -= 0x14;
-          if (st->knock < 0) {
-            st->knock = 0;
+        if (st->knockSpeed != 0) {
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0x12C, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          st->knockSpeed -= 0x14;
+          if (st->knockSpeed < 0) {
+            st->knockSpeed = 0;
           }
         }
         if (g_nActorAnimDone != 0) {
@@ -3092,13 +3092,13 @@ void Level6_UpdateActors(void) {
             g304[1] += (g_anSineLut[c->rotZ] * 0x433) >> 12;
             fs->speed = 0xB4;
             fs->grav = -5;
-            fs->vz = ComputeLobVelocityZ(&o->posX, g304, fs->speed, fs->grav, g320);
+            fs->vz = ComputeLobVelocityZ(&o->posX, g304, fs->speed, fs->grav, lobFrames);
             fs->spent = 1;
-            fs->age = g320[0] + 1;
+            fs->age = lobFrames[0] + 1;
             fs->link = -1;
             fs->delay = 0;
             o->cullRadius = 0x30;
-            cs->hold = g320[0] + 1;
+            cs->hold = lobFrames[0] + 1;
             if (a->anim != FBCANNON_ANIM_FIRE) {
               ANIM_RESET(a, FBCANNON_ANIM_FIRE);
             }
@@ -3348,16 +3348,16 @@ void Level6_UpdateActors(void) {
           actor->flags = 0;
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 3, g328);
-          g344[0] = -0x10;
-          g344[1] = 0;
-          g344[2] = -0xE;
-          RotateVectorByMatrix(actor->mtx, g344, g344);
+          dustVel[0] = -0x10;
+          dustVel[1] = 0;
+          dustVel[2] = -0xE;
+          RotateVectorByMatrix(actor->mtx, dustVel, dustVel);
           i = 0;
           do {
             i++;
-            g344[0] += (GetRandomU32() & 0xF) - 8;
-            g344[1] += (GetRandomU32() & 0xF) - 8;
-            g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, g328, (int)g344);
+            dustVel[0] += (GetRandomU32() & 0xF) - 8;
+            dustVel[1] += (GetRandomU32() & 0xF) - 8;
+            g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, g328, (int)dustVel);
           } while (i < 5);
         }
         if (TICK_DOWN(st->timer) != 0) {
@@ -3406,8 +3406,8 @@ void Level6_UpdateActors(void) {
           if ((q->collision == 0 || q->collision >= 0) && q->type != ACTOR_TYPE_REWARD_BURST) {
             continue;
           }
-          SubtractVector(g360, &q->posX, &actor->posX);
-          d = ABS(g360[0]) + ABS(g360[1]);
+          SubtractVector(toTarget, &q->posX, &actor->posX);
+          d = ABS(toTarget[0]) + ABS(toTarget[1]);
           if (d > 0xBFFF) {
             continue;
           }
@@ -3422,7 +3422,7 @@ void Level6_UpdateActors(void) {
           if (ang >= 7) {
             continue;
           }
-          d = VectorLength(g360, VEC_LEN_XY);
+          d = VectorLength(toTarget, VEC_LEN_XY);
           if (d >= 0x6800) {
             continue;
           }
@@ -3446,9 +3446,9 @@ void Level6_UpdateActors(void) {
           o->rotZ = ArcTan2(best->posX - actor->posX,
                                    best->posY - actor->posY, ATAN_ANGLE8);
           cs->grav = -5;
-          SubtractVector(g360, &best->posX, &o->posX);
-          ang = VectorLength(g360, VEC_LEN_XY);
-          h = ang - g360[2];
+          SubtractVector(toTarget, &best->posX, &o->posX);
+          ang = VectorLength(toTarget, VEC_LEN_XY);
+          h = ang - toTarget[2];
           if (h > 0x400) {
             bestScore = ((ang * 5 >> 8) * ang / h) >> 1;
             if ((unsigned)(bestScore - 0x11) <= 0xFFFEE) {
@@ -3847,12 +3847,12 @@ void Level6_UpdateActors(void) {
         voice = 0x12;
         break;
 
-      case 8:
-        voice = 0x1A;
+      case AMBIENT_MODE_PORTAL:
+        voice = SFX_PORTAL_HUM;
         break;
 
-      case 9:
-        voice = 0x36;
+      case AMBIENT_MODE_WHIRLWIND:
+        voice = SFX_WHIRLWIND;
         break;
       }
 
@@ -3865,7 +3865,7 @@ void Level6_UpdateActors(void) {
 
     /* Sparkling shard: 1 puff per frame. */
     case ACTOR_TYPE_SPARKLE_SHARD: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
@@ -3896,7 +3896,7 @@ void Level6_UpdateActors(void) {
     /* Wood shard: bounces and throws three sparks a frame. */
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
       register int i asm("$16");
 
       if (st->life > 0) {
@@ -4390,10 +4390,10 @@ void Level6_UpdateActors(void) {
     /* Type 417: a reward burst. Once triggered it plays its sound, throws up
      * to four sets of sparks (while the spawn budget allows) and goes. */
     case ACTOR_TYPE_REWARD_BURST: {
-      int *st = actor->state;
+      int *burst = actor->state; /* level data: 1 bursts once hit, 0 just goes */
       int i;
 
-      if (st[0] == 1 && actor->dropKind == DROP_GEM_ROLL) {
+      if (*burst == 1 && actor->dropKind == DROP_GEM_ROLL) {
         ModifyWorldChunkAnimFlags(REWARD_BURST_CHUNK, CHUNK_ANIM_RESUME, 0);
         DespawnActorRecord(actor);
         continue;
@@ -4401,11 +4401,11 @@ void Level6_UpdateActors(void) {
       if (actor->subMode != 1) {
         continue;
       }
-      if (st[0] == 0) {
+      if (*burst == 0) {
         DespawnActorRecord(actor);
         continue;
       }
-      if (st[0] != 1) {
+      if (*burst != 1) {
         continue;
       }
       PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD_BURST], actor, SFX_MODE_PANNED, 0);
@@ -4535,8 +4535,8 @@ void Level6_UpdateActors(void) {
       }
 
       for (i = 0; i < 8; i++) {
-        g408[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
-        g408[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
+        g408[0] = (g_anCosineLut[i * 32] >> 8) * 3;
+        g408[1] = (g_anSineLut[i * 32] >> 8) * 3;
         g408[2] = 0x18;
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)g408);
       }

@@ -31,7 +31,8 @@ enum SparxSubMode {
   SPARX_SUB_EAT = 1,      /* caught it: +1 health, despawn the butterfly */
   SPARX_SUB_EAT_DONE = 2, /* back to the hover animation, drop the target */
   SPARX_SUB_FETCH = 4,    /* flying to a pickup, which he sends COLLECT_HOMING */
-  SPARX_SUB_PARKED = 99,  /* takes no targets (no writer in the C sources) */
+  SPARX_SUB_PARKED = 99,  /* takes no targets; never set (no 0x63 store to subMode in main or any
+                           * overlay), so the ~100 tests of it are dead */
 };
 
 /* Sparx's hover animation per health colour; the odd index after each is the
@@ -641,8 +642,7 @@ enum CaptainFightStep {
   CAPTAIN_STEP_REST = 6,     /* close: STRIKE; rested: DRAW again */
 };
 
-/* A guard captain's animations, from the modes that play them (0xB, a pose
- * the patrol tests for, has no player in the C). */
+/* A guard captain's animations, from the modes that play them. */
 enum CaptainAnim {
   CAPTAIN_ANIM_STAND = 0,    /* sentry; held on its frame 0x14/0x15 pose */
   CAPTAIN_ANIM_GUARD = 2,
@@ -651,6 +651,9 @@ enum CaptainAnim {
   CAPTAIN_ANIM_SHEATHE = 8,
   CAPTAIN_ANIM_ROUSE = 9,
   CAPTAIN_ANIM_BASH = 0xA,
+  CAPTAIN_ANIM_START = 0xB,  /* level-data start pose (the lookouts and one patrol captain); no
+                              * C writer, so it holds until another anim replaces it. A patrol
+                              * captain still in it draws (DRAW) before fighting */
   CAPTAIN_ANIM_DRAW = 0xC,   /* alerted: draws before DRAW / DRAW_ADVANCE */
 };
 /* CaptainState.step on a ledge post instead: nonzero once armed. */
@@ -754,7 +757,7 @@ enum CannonVoice {
 };
 enum ShempGuardVoice {
   SGUARD_VOICE_FALL = 0,  /* ran off a ledge: entering SGUARD_FALL */
-  SGUARD_VOICE_SHOUT = 1, /* while it chases or rushes, and once ShempGuardState.watch plays animation 7 */
+  SGUARD_VOICE_SHOUT = 1, /* while it chases or rushes (and on the never-met ShempGuardState.watch cue) */
 };
 enum SpinChestVoice {
   SPINCHEST_VOICE_SPIN = 1, /* played on each spin-up hit, pitched up by its speed */
@@ -1059,9 +1062,9 @@ enum LungerMode {
   LUNGER_AIM = 1,        /* turns to the target point, then LEAP */
   LUNGER_LEAP = 2,       /* leaps at the point, pinning Spyro under it; then GO_HOME */
   LUNGER_KNOCKED = 4,    /* last hit: knocked away, then bursts */
-  LUNGER_BURST = 10,     /* bursts and drops its loot (no writer in the C sources) */
+  LUNGER_BURST = 10,     /* bursts and drops its loot (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
   LUNGER_RECOIL = 13,    /* flinches from a hit, re-aims, then AIM */
-  LUNGER_RECOIL_B = 14,  /* recoil variants (no writer in the C sources) */
+  LUNGER_RECOIL_B = 14,  /* recoil variants (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
   LUNGER_RECOIL_C = 15,
   LUNGER_ALERTED = 20,   /* marks LungeState.alerted, then IDLE */
   LUNGER_GO_HOME = 100,  /* walks back home and faces its heading, then IDLE */
@@ -1140,7 +1143,7 @@ enum GrabberMode {
   GRABBER_RUSH = 1,        /* rushes Spyro (shoving gunners in its way); close: SEIZE */
   GRABBER_RETREAT = 2,     /* back home, then LURK */
   GRABBER_KNOCKED = 4,     /* flamed: drops Spyro, tumbles away and bursts */
-  GRABBER_RECOVER = 6,     /* plays out, then RUSH (no writer in the C sources) */
+  GRABBER_RECOVER = 6,     /* plays out, then RUSH (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
   GRABBER_SEIZE = 10,      /* closes on Spyro and takes hold (hides him) */
   GRABBER_CARRY = 11,
   GRABBER_THROW = 12,      /* throws Spyro clear, then RETREAT */
@@ -1176,7 +1179,7 @@ enum SorcererMode {
   SORCERER_BREAK_LINK = 10,  /* the path caster was flamed: calms its target, then SETTLE */
   SORCERER_WAIT_TAUNT = 96,  /* waits, then TAUNT */
   SORCERER_WAIT_CONJURE = 97, /* waits, then CONJURE */
-  SORCERER_CUE = 98,         /* takes the queued pose (no writer in the C sources) */
+  SORCERER_CUE = 98,         /* takes the queued pose (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
   SORCERER_ALERTED = 99,     /* set group-wide: turns angry, takes the queued pose */
 };
 
@@ -1648,7 +1651,7 @@ enum ToughRamMode {
   TRAM_ROUSE = 1,     /* rousing animation, then WATCH */
   TRAM_WATCH = 2,     /* faces Spyro; close: BUTT; far: GRAZE */
   TRAM_BUTT = 3,      /* butts Spyro; pinned him: BUTT_HOLD */
-  TRAM_SETTLE = 4,    /* back to GRAZE (no writer in the C sources) */
+  TRAM_SETTLE = 4,    /* back to GRAZE (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
   TRAM_STAGGER = 5,   /* hit: thrown up and back, then GRAZE */
   TRAM_KNOCKED = 6,   /* the fourth hit (or thrown off a ledge): falls, then bursts */
   TRAM_BUTT_HOLD = 7, /* holds after pinning Spyro, then GRAZE */
@@ -1872,7 +1875,7 @@ enum TwoPathRunnerMode {
   TPRUNNER_IDLE = 0,       /* until RunnerState.mode arms it: GUARD */
   TPRUNNER_GUARD = 4,      /* faces Spyro; close on the timer: SWIPE; armed: RUN */
   TPRUNNER_KNOCKED = 5,    /* charged: knocked away, then bursts */
-  TPRUNNER_REACT = 6,      /* faces Spyro, then GUARD (no writer in the C sources) */
+  TPRUNNER_REACT = 6,      /* faces Spyro, then GUARD (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
   TPRUNNER_SWIPE = 8,      /* swipes, then GUARD */
   TPRUNNER_WALK_BACK = 10, /* walks to its path node, then GUARD (a level 8 lookout, GLOOK_ROUSE, sets its linked runner to 10) */
   TPRUNNER_RUN = 0x14,     /* runs its chosen path to RunnerState.node, then GUARD */
@@ -1914,7 +1917,7 @@ enum RimRiderDrift {
  * knocked (SWOOP_KNOCKED) when the brawler goes down. */
 enum BrawlerMode {
   BRAWLER_IDLE = 0,    /* faces Spyro; near: RAISE */
-  BRAWLER_SEND = 1,    /* sends an ACTOR_TYPE_BRAWLER_SPAWN out on frame 0x11 (no writer in the C sources) */
+  BRAWLER_SEND = 1,    /* sends an ACTOR_TYPE_BRAWLER_SPAWN out on frame 0x11 (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
   BRAWLER_RAISE = 2,   /* raises its fists, then GUARD */
   BRAWLER_GUARD = 3,   /* faces Spyro; close on the timer: PUNCH; far: LOWER */
   BRAWLER_PUNCH = 4,   /* punches, then RAISE */
@@ -1986,7 +1989,7 @@ enum PathChargerMode {
   PCHARGER_KNOCKED = 1, /* flamed: bursts */
   PCHARGER_CHARGE = 2,  /* charges down the path; reaching Spyro, butts him off it */
   PCHARGER_TAUNT = 6,   /* at a turn with Spyro ahead: faces him, then PATROL */
-  PCHARGER_TAUNT_ALT = 7, /* the same (no writer in the C sources) */
+  PCHARGER_TAUNT_ALT = 7, /* the same (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
 };
 
 /* PatrolState.mode: what a path charger did at its last path turn. */
@@ -2075,7 +2078,7 @@ enum ThrownRockMode {
 enum CometCannonMode {
   CCANNON_WATCH = 0,  /* lit by Spyro's flame from behind it: ARM; cued (subMode): LOB */
   CCANNON_ARM = 1,    /* sets the fuse, then FIRE */
-  CCANNON_FUSE = 2,   /* smokes until the fuse runs out, then FIRE (no writer in the C sources) */
+  CCANNON_FUSE = 2,   /* smokes until the fuse runs out, then FIRE (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
   CCANNON_FIRE = 3,   /* fires an ACTOR_TYPE_COMET at the best target ahead, then WATCH */
   CCANNON_LOB = 10,   /* turns to the cued target and lobs a comet at it, then WATCH */
 };
@@ -2407,11 +2410,15 @@ enum TallyIconMode {
   TALLY_ICON_SPIRAL = 7, /* spirals into the centre, then PARKED */
 };
 
-/* AmbientSoundState.mode picks the sample-bank voice set (per level, so the
- * other values stay literal); AMBIENT_MODE_PATH also carries the source along
- * its path, one leg at a time. */
+/* AmbientSoundState.mode picks the sample-bank voice set. Level data only
+ * places modes 0..7 in the Artisans levels (0..3), where the slots they play
+ * are level-specific, so those values stay literal; AMBIENT_MODE_PATH also
+ * carries the source along its path, one leg at a time. -1 = silent. */
 enum AmbientSoundMode {
   AMBIENT_MODE_PATH = 2,
+  AMBIENT_MODE_PORTAL = 8,    /* SFX_PORTAL_HUM: the source on every exit whirlwind
+                               * (type 9) and home-world portal (type 1) */
+  AMBIENT_MODE_WHIRLWIND = 9, /* SFX_WHIRLWIND; no level places it */
 };
 
 /* AmbientSoundState.sub while AMBIENT_MODE_PATH. */

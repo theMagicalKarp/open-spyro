@@ -34,16 +34,6 @@
 #include "main_shared.h"
 #include "level_emit_particles.h"
 
-/* Spin-and-run helper state block (type 0xE8; SpinRunState in the updater). */
-typedef struct AimState {
-  int heading;   /* 0x00 */
-  int zVel;      /* 0x04 */
-  int moveSpeed; /* 0x08 */
-  int timer;     /* 0x0C */
-} AimState;
-
-
-
 Actor *Level29_SpawnActor(int type, Actor *parent) {
   Actor *rec;
   int owner;
@@ -198,13 +188,13 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
 
   case ACTOR_TYPE_BOBBER_SPINOFF:
   {
-    AimState *st = rec->state;
+    SpinRunState *st = rec->state;
 
     InitActorRenderDefaults(rec);
     CopyVector(&rec->posX, &parent->posX);
     rec->posZ += 0x400;
     InsertActorIntoSpatialGrid(rec);
-    st->zVel = 0xC8;
+    st->zSpeed = 0xC8;
     st->moveSpeed = 0x15E;
     st->heading = StepAndLerpAngle8(
         ArcTan2(rec->posX - g_anSpyroWorldPos[0], rec->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
@@ -214,7 +204,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
   }
 
   case ACTOR_TYPE_FLIGHT_CHEST_SHARD ... ACTOR_TYPE_FLIGHT_CHEST_SHARD + 2: {
-    FragmentState *st = rec->state;
+    TumbleState *st = rec->state;
     int yaw;
     int pitch;
 
@@ -235,9 +225,9 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
     rec->posZ += st->vel[2] * 4;
-    st->spinX = GetRandomU32() & 0xF;
-    st->spinY = GetRandomU32() & 0xF;
-    st->spinZ = GetRandomU32() & 0xF;
+    st->spin[0] = GetRandomU32() & 0xF;
+    st->spin[1] = GetRandomU32() & 0xF;
+    st->spin[2] = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
     if ((unsigned int)((unsigned short)rec->type - 0x135) < 3) {
@@ -248,7 +238,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
   }
 
   case ACTOR_TYPE_SPARK_DEBRIS ... ACTOR_TYPE_SPARK_DEBRIS + 1: {
-    FragmentState *st = rec->state;
+    TumbleState *st = rec->state;
     int yaw;
     int pitch;
 
@@ -267,9 +257,9 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
     rec->posZ += st->vel[2] * 4;
-    st->spinX = GetRandomU32() & 0xF;
-    st->spinY = GetRandomU32() & 0xF;
-    st->spinZ = GetRandomU32() & 0xF;
+    st->spin[0] = GetRandomU32() & 0xF;
+    st->spin[1] = GetRandomU32() & 0xF;
+    st->spin[2] = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
     break;
@@ -277,7 +267,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
 
   case ACTOR_TYPE_TUMBLE_SHARD ... ACTOR_TYPE_TUMBLE_SHARD + 2:
   {
-    FragmentState *st = rec->state;
+    TumbleState *st = rec->state;
     int seed;
 
     InitActorRenderDefaults(rec);
@@ -300,9 +290,9 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     if (st->vel[2] < 0x14) {
       st->vel[2] = 0x14;
     }
-    st->spinX = GetRandomU32() & 0xF;
-    st->spinY = GetRandomU32() & 0xF;
-    st->spinZ = GetRandomU32() & 0xF;
+    st->spin[0] = GetRandomU32() & 0xF;
+    st->spin[1] = GetRandomU32() & 0xF;
+    st->spin[2] = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
     break;
@@ -310,16 +300,16 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
 
   case ACTOR_TYPE_WRECK_EMBER:
   {
-    FragmentState *st = rec->state;
-    int *pst = parent->state;
+    TumbleState *st = rec->state;
+    SmokerState *pst = parent->state;
     int dir[3];
 
     InitActorRenderDefaults(rec);
     rec->cullRadius = 0x20;
     InsertActorIntoSpatialGrid(rec);
-    CopyVector((int *)st, pst + 2);
-    st->spinY = 0;
-    st->spinZ = 0;
+    CopyVector((int *)st, pst->legVec); /* three ints over vel[] and spin[] */
+    st->spin[1] = 0;
+    st->spin[2] = 0;
     st->vel[2] += 0x40;
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
@@ -328,25 +318,25 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
       dir[0] = 0x200;
       dir[1] = 0x200;
       rec->rotZ = 0x40;
-      st->spinX = 0x10;
+      st->spin[0] = 0x10;
       break;
     case 1:
       dir[0] = 0x200;
       dir[1] = -0x200;
       rec->rotZ = 0xC0;
-      st->spinX = -0x10;
+      st->spin[0] = -0x10;
       break;
     case 2:
       dir[0] = -0x200;
       dir[1] = 0x200;
       rec->rotZ = 0x40;
-      st->spinX = 0x10;
+      st->spin[0] = 0x10;
       break;
     case 3:
       dir[0] = -0x200;
       dir[1] = -0x200;
       rec->rotZ = 0xC0;
-      st->spinX = -0x10;
+      st->spin[0] = -0x10;
       break;
     }
     rec->rotZ += parent->rotZ;

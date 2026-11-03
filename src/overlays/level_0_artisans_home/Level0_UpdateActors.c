@@ -1360,7 +1360,7 @@ void Level0_UpdateActors(void) {
 
         if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
           st->moveSpeed = 0x190;
-          st->zVel = 0x46;
+          st->zSpeed = 0x46;
           st->heading = StepAndLerpAngle8(
               ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
               SPY.bodyRotZ, 0x28, 0x80);
@@ -1368,7 +1368,7 @@ void Level0_UpdateActors(void) {
         }
 
         PlaySoundEffect(g_pLevelSampleBankHeader[0x27], actor, SFX_MODE_3D, &actor->voiceRow);
-        st->zVel = 0xB4;
+        st->zSpeed = 0xB4;
         st->moveSpeed = 0x118;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
@@ -1618,7 +1618,7 @@ void Level0_UpdateActors(void) {
 
         actor->rotY += 4;
         TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, YAW_STEP_IN_BAND);
-        DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zSpeed, 0xC, 0xC);
         break;
       }
 
@@ -1630,13 +1630,13 @@ void Level0_UpdateActors(void) {
           continue;
         }
 
-        DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zSpeed, 0xC, 0xC);
         TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, YAW_STEP_IN_BAND);
         break;
       }
 
       case PENEMY_FALL: {
-        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
+        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zSpeed, 0xC,
                           0x10) == MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x10);
@@ -2363,12 +2363,12 @@ void Level0_UpdateActors(void) {
         snd = 0x12;
         break;
 
-      case 8:
-        snd = 0x1A;
+      case AMBIENT_MODE_PORTAL:
+        snd = SFX_PORTAL_HUM;
         break;
 
-      case 9:
-        snd = 0x36;
+      case AMBIENT_MODE_WHIRLWIND:
+        snd = SFX_WHIRLWIND;
         break;
       }
 
@@ -2599,7 +2599,7 @@ void Level0_UpdateActors(void) {
           SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, st->slots[n]);
           MarkActorLiveKill(actor);
           st->knockSpeed = 0x118;
-          st->knockAngle = StepAndLerpAngle8(
+          st->knockHeading = StepAndLerpAngle8(
               ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
               SPY.bodyRotZ, 0x20, 0x40);
           actor->mode = FLOCK_KNOCKED;
@@ -2722,7 +2722,7 @@ void Level0_UpdateActors(void) {
           continue;
         }
 
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockAngle, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
         break;
       }
       }
@@ -2806,8 +2806,8 @@ void Level0_UpdateActors(void) {
 
       if (st->handle < 0) {
         /* Unattached: probe just ahead and attach to that triangle. */
-        tri[0][0] = (short)g_anCosineLut[actor->rotZ] >> 1;
-        tri[0][1] = (short)g_anSineLut[actor->rotZ] >> 1;
+        tri[0][0] = g_anCosineLut[actor->rotZ] >> 1;
+        tri[0][1] = g_anSineLut[actor->rotZ] >> 1;
         tri[0][2] = 0;
         AddVector(tri[0], tri[0], &actor->posX);
 
@@ -2837,8 +2837,8 @@ void Level0_UpdateActors(void) {
       if ((g_dwGamestateFrames & 3) != 0) {
         break;
       }
-      tri[0][0] = (short)g_anCosineLut[actor->rotZ] >> 5;
-      tri[0][1] = (short)g_anSineLut[actor->rotZ] >> 5;
+      tri[0][0] = g_anCosineLut[actor->rotZ] >> 5;
+      tri[0][1] = g_anSineLut[actor->rotZ] >> 5;
       tri[0][2] = 0x20;
       g_pfnLevelEmitParticles(1, EMIT_SLOWING_SPARK, &actor->posX, (int)tri[0]);
       break;
@@ -3090,8 +3090,8 @@ void Level0_UpdateActors(void) {
       for (i = 0; i < 8; i++) {
         int vec[3];
 
-        vec[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
-        vec[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
+        vec[0] = (g_anCosineLut[i * 32] >> 8) * 3;
+        vec[1] = (g_anSineLut[i * 32] >> 8) * 3;
         vec[2] = 0x18;
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)vec);
       }

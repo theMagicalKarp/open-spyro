@@ -21,14 +21,14 @@
      arg copy schedules ahead of it. Assigning `src` before the call — in any
      position, including at the call itself — always emits the addiu first. */
 
-void SetSpawnAnchorFromActor(Actor *actor, int yaw) {
+void SetSpawnAnchorFromActor(Actor *actor, int heading) {
   int *rescued;
   int *dst;
   int *src;
   int i;
   int t;
-  g_anLevelSpawnYawBlock[0] = (yaw << 4) & 0xFFF;
-  CopyVector((int *)(&g_anLevelSpawnYawBlock[-3]), &actor->posX);
+  g_anLevelSpawnYawBlock[0] = (heading << 4) & 0xFFF;
+  CopyVector(&g_anLevelSpawnYawBlock[-3], &actor->posX);
   t = 1;
   *((volatile int *)(&g_nSpawnAnchorValid)) = t;
   dst = &g_anLevelSpawnYawBlock[-19];

@@ -96,7 +96,7 @@ typedef struct CyclerState {
   int tally;               /* 0x1C */
   int roll;                /* 0x20 */
   int rollVel;             /* 0x24 */
-  int zVel;               /* 0x28 */
+  int zSpeed;               /* 0x28 */
   int heading;             /* 0x2C */
   int moveSpeed;               /* 0x30 */
   int legVec[3];            /* 0x34 */
@@ -1179,7 +1179,7 @@ void Level23_UpdateActors(void) {
           reward->mode = TIMEBONUS_COLLECT;
         }
         TallyFlightTarget(st->tally);
-        st->zVel = 0xC8;
+        st->zSpeed = 0xC8;
         st->moveSpeed = 0x15E;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
@@ -1263,7 +1263,7 @@ void Level23_UpdateActors(void) {
         /* fall through */
       case FTARGET_SPENT:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
+        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zSpeed, 0xC,
                           0xC) == MOVED_LANDED) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
@@ -1468,7 +1468,7 @@ void Level23_UpdateActors(void) {
           reward->mode = TIMEBONUS_COLLECT;
         }
         TallyFlightTarget(st->tally);
-        st->zVel = 0;
+        st->zSpeed = 0;
         st->moveSpeed = 0x15E;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
@@ -1515,7 +1515,7 @@ void Level23_UpdateActors(void) {
         break;
       }
       case BANKER_STRUCK:
-        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
+        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zSpeed, 0xC,
                           0xC) == MOVED_LANDED) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
@@ -1528,7 +1528,7 @@ void Level23_UpdateActors(void) {
         }
         break;
       case BANKER_FLEE:
-        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
+        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zSpeed, 0xC,
                           0xC) == MOVED_LANDED) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);

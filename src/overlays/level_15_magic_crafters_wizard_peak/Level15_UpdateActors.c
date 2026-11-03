@@ -399,11 +399,11 @@ void Level15_UpdateActors(void) {
       st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != THIEF_CAUGHT) {
-        st->knock = 0x96;
+        st->knockSpeed = 0x96;
         if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
-          st->knock = 0xE1;
+          st->knockSpeed = 0xE1;
         }
-        st->heading = StepAndLerpAngle8(
+        st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         if (actor->dropKind == DROP_GEM_ROLL) {
@@ -561,7 +561,7 @@ void Level15_UpdateActors(void) {
           ANIM_GO(actor, THIEF_ANIM_TAUNT);
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         } else if (st->mode == THIEFKIND_CLIMB) {
-          if (IsPointInRotatedBox(&SPY.posX, st->area) != 0) {
+          if (IsPointInRotatedBox(&SPY.posX, &st->area) != 0) {
             actor->mode = THIEF_CLIMB_RUN;
             continue;
           }
@@ -717,11 +717,11 @@ void Level15_UpdateActors(void) {
             st->egg = 0;
           }
         }
-        if (st->knock != 0) {
-          MoveActorAlongAngle(actor, st->heading, st->knock, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-          st->knock -= 0x10;
-          if (st->knock < 0) {
-            st->knock = 0;
+        if (st->knockSpeed != 0) {
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          st->knockSpeed -= 0x10;
+          if (st->knockSpeed < 0) {
+            st->knockSpeed = 0;
           }
         }
         ANIM_GO(actor, THIEF_ANIM_CAUGHT);
@@ -1273,13 +1273,13 @@ void Level15_UpdateActors(void) {
      * splits into four more of itself when it reaches him, and fizzles out
      * on a timer or against a wall. */
     case ACTOR_TYPE_SPLIT_SHOT: {
-      int *st = actor->state;
+      int *timer = actor->state;
 
       switch (actor->mode) {
       case SPLITSHOT_GATHER:
       case SPLITSHOT_RAISE:
       case SPLITSHOT_FRAGMENT:
-        if (g_nActorAnimDone != 0 && TICK_DOWN(*st) != 0) {
+        if (g_nActorAnimDone != 0 && TICK_DOWN(*timer) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -1306,13 +1306,13 @@ void Level15_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (TICK_DOWN(*st) != 0 ||
+        if (TICK_DOWN(*timer) != 0 ||
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) != 0 ||
             CastRayWorldAndActors(svD, &actor->posX) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
-        if ((*st & 7) == 0) {
+        if ((*timer & 7) == 0) {
           g_pfnLevelEmitParticles(1, EMIT_DRIFT_SPARKLE, &actor->posX, 0x10);
         }
         break;
@@ -1354,8 +1354,8 @@ void Level15_UpdateActors(void) {
         }
       }
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != TGUARD_KNOCKED) {
-        st->speed = 0xC8;
-        st->heading = SPY.bodyRotZ;
+        st->knockSpeed = 0xC8;
+        st->knockHeading = SPY.bodyRotZ;
         st->mode = TCMD_NONE;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -1469,9 +1469,9 @@ void Level15_UpdateActors(void) {
         break;
 
       case TGUARD_KNOCKED:
-        if (st->speed > 0) {
-          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 0);
-          st->speed -= 0x10;
+        if (st->knockSpeed > 0) {
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0x1F4, 0x2BC, 0);
+          st->knockSpeed -= 0x10;
         }
         if (g_nActorAnimDone == 0) {
           break;
@@ -1545,14 +1545,14 @@ void Level15_UpdateActors(void) {
       break;
     }
 
-    /* Explosion shard with a ground bounce (ShardState). */
+    /* Explosion shard with a ground bounce (TumbleState). */
     case ACTOR_TYPE_SEED_POD_SHARD:
     case ACTOR_TYPE_SEED_POD_SHARD + 1:
     case ACTOR_TYPE_WOOD_CHEST_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1:
     case ACTOR_TYPE_LIFE_CHEST_SHARD:
     case ACTOR_TYPE_LIFE_CHEST_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {
 
@@ -2866,12 +2866,12 @@ void Level15_UpdateActors(void) {
       if (actor->mode != PATHGUARD_KNOCKED) {
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_WHITE_STREAK, actor, 0);
         if (actor->flags & ACTOR_HITS_SPYRO) {
-          st->speed = 0xDC;
-          st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+          st->knockSpeed = 0xDC;
+          st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
                                     spy->bodyRotZ, 0x20, 0x60);
           if (actor->flags & ACTOR_HIT_CHARGE) {
-            st->speed += 0x8C;
+            st->knockSpeed += 0x8C;
           }
           StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2981,7 +2981,7 @@ void Level15_UpdateActors(void) {
         break;
 
       case PATHGUARD_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knock, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -3000,8 +3000,8 @@ void Level15_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode < KEEPER_KNOCKED) {
-        st->timer = 0x15E;
-        st->heading = StepAndLerpAngle8(
+        st->knockSpeed = 0x15E;
+        st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         actor->flags = 0;
@@ -3026,8 +3026,8 @@ void Level15_UpdateActors(void) {
           switch (st->mode) {
           case TCMD_SWAT:
             if (actor->mode < KEEPER_KNOCKED && g_pActorListBase[st->link].nextFrame >= 4) {
-              st->timer = 0x15E;
-              st->heading = g_pActorListBase[st->link].rotZ;
+              st->knockSpeed = 0x15E;
+              st->knockHeading = g_pActorListBase[st->link].rotZ;
               SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
               MarkActorLiveKill(actor);
               ENTER_POSE(actor, KEEPER_STRUCK);
@@ -3128,7 +3128,7 @@ void Level15_UpdateActors(void) {
       }
 
       case KEEPER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->timer, st->heading, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -3138,7 +3138,7 @@ void Level15_UpdateActors(void) {
         break;
 
       case KEEPER_KNOCKED_ALT:
-        DriveActorTrackedMove(actor, &st->timer, st->heading, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -3166,15 +3166,15 @@ void Level15_UpdateActors(void) {
       SentinelState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode < SENTINEL_KNOCKED) {
-        st->knockTimer = (g_nSpyroMotionSpeed >> 6) + 0x1C2;
+        st->knockSpeed = (g_nSpyroMotionSpeed >> 6) + 0x1C2;
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - ((SpyroObj *)&g_anSpyroWorldPos)->posX,
                           actor->posY - ((SpyroObj *)&g_anSpyroWorldPos)->posY, ATAN_ANGLE8),
             g_bSpyroPersistentEulerZ, 0x20, 0x40);
-        st->knockSpeed = 0x50;
+        st->knockZSpeed = 0x50;
         if (actor->flags & ACTOR_HIT_FLAME) {
-          st->knockTimer = 0xAA;
-          st->knockSpeed = 0x5A;
+          st->knockSpeed = 0xAA;
+          st->knockZSpeed = 0x5A;
         }
         while (st->link >= 0) {
           TetherState *cs = g_pActorListBase[st->link].state;
@@ -3394,8 +3394,8 @@ void Level15_UpdateActors(void) {
       }
 
       case SENTINEL_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockTimer, st->knockHeading,
-                      &st->knockSpeed, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading,
+                      &st->knockZSpeed, 0xC, 0xC);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x30);
@@ -3532,12 +3532,12 @@ void Level15_UpdateActors(void) {
         voice = 0x12;
         break;
 
-      case 8:
-        voice = 0x1A;
+      case AMBIENT_MODE_PORTAL:
+        voice = SFX_PORTAL_HUM;
         break;
 
-      case 9:
-        voice = 0x36;
+      case AMBIENT_MODE_WHIRLWIND:
+        voice = SFX_WHIRLWIND;
         break;
       }
 
@@ -3694,7 +3694,7 @@ void Level15_UpdateActors(void) {
 
     /* Sparkling shard: 1 puff per frame. */
     case ACTOR_TYPE_SPARKLE_SHARD: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
@@ -3725,7 +3725,7 @@ void Level15_UpdateActors(void) {
     /* Wood shard: bounces and throws three sparks a frame. */
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
       register int i asm("$16");
 
       if (st->life > 0) {
@@ -4364,8 +4364,8 @@ void Level15_UpdateActors(void) {
       }
 
       for (i = 0; i < 8; i++) {
-        x368[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
-        x368[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
+        x368[0] = (g_anCosineLut[i * 32] >> 8) * 3;
+        x368[1] = (g_anSineLut[i * 32] >> 8) * 3;
         x368[2] = 0x18;
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)x368);
       }

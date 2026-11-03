@@ -648,12 +648,12 @@ void Level10_UpdateActors(void) {
       break;
     }
 
-    /* Explosion shard with a ground bounce (ShardState). */
+    /* Explosion shard with a ground bounce (TumbleState). */
     case ACTOR_TYPE_SEED_POD_SHARD:
     case ACTOR_TYPE_SEED_POD_SHARD + 1:
     case ACTOR_TYPE_WOOD_CHEST_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {
 
@@ -1960,36 +1960,36 @@ void Level10_UpdateActors(void) {
      * level-data link; often none) overhead; charged, flings it at Spyro to
      * bounce (COLLECT_BOUNCE). */
     case ACTOR_TYPE_OVERHEAD_THROWER: {
-      int *st = actor->state;
+      int *held = actor->state; /* pool index of the gem it holds, -1 none */
 
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != OTHROW_HIT) {
         ENTER_POSE(actor, OTHROW_HIT);
       }
-      if (*st >= 0) {
-        if (g_pActorListBase[*st].mode >= ACTOR_MODE_DORMANT) {
-          *st = -1;
+      if (*held >= 0) {
+        if (g_pActorListBase[*held].mode >= ACTOR_MODE_DORMANT) {
+          *held = -1;
         } else {
-          CopyVector(&g_pActorListBase[*st].posX, &actor->posX);
-          g_pActorListBase[*st].posZ += 0x800;
-          g_pActorListBase[*st].subMode = COLLECT_INERT;
-          g_pActorListBase[*st].rotX = 0;
-          g_pActorListBase[*st].rotY = 0;
-          g_pActorListBase[*st].rotZ += 8;
+          CopyVector(&g_pActorListBase[*held].posX, &actor->posX);
+          g_pActorListBase[*held].posZ += 0x800;
+          g_pActorListBase[*held].subMode = COLLECT_INERT;
+          g_pActorListBase[*held].rotX = 0;
+          g_pActorListBase[*held].rotY = 0;
+          g_pActorListBase[*held].rotZ += 8;
         }
       }
       if (actor->mode == OTHROW_HIT) {
-        if (*st >= 0) {
-          PickupState *gem = g_pActorListBase[*st].state;
+        if (*held >= 0) {
+          PickupState *gem = g_pActorListBase[*held].state;
           int ang = ArcTan2(spy->posX - actor->posX,
                                   spy->posY - actor->posY, ATAN_ANGLE8) *
                     16;
 
-          g_pActorListBase[*st].subMode = COLLECT_BOUNCE;
+          g_pActorListBase[*held].subMode = COLLECT_BOUNCE;
           gem->count = 3;
           gem->vel[0] = (LookupCosine(ang) * 0x1C) >> 12;
           gem->vel[1] = (LookupSine(ang) * 0x1C) >> 12;
           gem->vel[2] = 0x32;
-          *st = -1;
+          *held = -1;
         }
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
@@ -2298,12 +2298,12 @@ void Level10_UpdateActors(void) {
         voice = 0x12;
         break;
 
-      case 8:
-        voice = 0x1A;
+      case AMBIENT_MODE_PORTAL:
+        voice = SFX_PORTAL_HUM;
         break;
 
-      case 9:
-        voice = 0x36;
+      case AMBIENT_MODE_WHIRLWIND:
+        voice = SFX_WHIRLWIND;
         break;
       }
 
@@ -2384,7 +2384,7 @@ void Level10_UpdateActors(void) {
 
     /* Sparkling shard: 1 puff per frame. */
     case ACTOR_TYPE_SPARKLE_SHARD: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
@@ -2415,7 +2415,7 @@ void Level10_UpdateActors(void) {
     /* Wood shard: bounces and throws three sparks a frame. */
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
       register int i asm("$16");
 
       if (st->life > 0) {
@@ -2681,7 +2681,7 @@ void Level10_UpdateActors(void) {
                          ArcTan2(spy->posX - actor->posX,
                                        spy->posY - actor->posY, ATAN_ANGLE8)) >= 0x55)) {
         st->speed = 0x15E;
-        st->lift = 0xA0;
+        st->zSpeed = 0xA0;
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2694,7 +2694,7 @@ void Level10_UpdateActors(void) {
       switch (actor->mode) {
       case SGUARD_IDLE:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if (st->mode == 0) {
+        if (st->mode == SGUARD_POST_PATROL) {
           if (st->guard != -1 && g_pActorListBase[st->guard].mode >= ACTOR_MODE_DORMANT) {
             actor->mode = SGUARD_GUARD;
             continue;
@@ -2702,7 +2702,7 @@ void Level10_UpdateActors(void) {
           if (actor->drawn != 0 &&
               ApproxDist2D(&actor->posX, &spy->posX) < st->range << 10 &&
               ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x800) {
-            st->accel = 0;
+            st->rampSpeed = 0;
             if (actor->group == 0xFF) {
               ENTER_POSE(actor, SGUARD_ROUSE);
             }
@@ -2714,7 +2714,7 @@ void Level10_UpdateActors(void) {
             PlayActorMeshVoice(actor, SGUARD_VOICE_SHOUT, 0);
             ENTER_POSE(actor, SGUARD_CHASE);
           }
-        } else if (st->mode == 1) {
+        } else if (st->mode == SGUARD_POST_HOLD) {
           if (AbsAngleDelta8(
                   ArcTan2(st->target->nodes[3].x - actor->posX,
                                 st->target->nodes[3].y - actor->posY, ATAN_ANGLE8),
@@ -2727,7 +2727,7 @@ void Level10_UpdateActors(void) {
           } else if (actor->drawn != 0 &&
                      ApproxDist2D(&actor->posX, &spy->posX) < st->range << 10 &&
                      ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x800) {
-            st->accel = 0;
+            st->rampSpeed = 0;
             ENTER_POSE(actor, SGUARD_ROUSE);
           }
         }
@@ -2744,8 +2744,8 @@ void Level10_UpdateActors(void) {
             actor->mode = SGUARD_PATH_RUSH;
             continue;
           }
-          if (IsPointInRotatedBox(&actor->posX, st->boxA) != 0 ||
-              IsPointInRotatedBox(&actor->posX, st->boxB) != 0) {
+          if (IsPointInRotatedBox(&actor->posX, &st->boxA) != 0 ||
+              IsPointInRotatedBox(&actor->posX, &st->boxB) != 0) {
             actor->mode = SGUARD_BRAKE_AIM;
             continue;
           }
@@ -2756,23 +2756,23 @@ void Level10_UpdateActors(void) {
             actor->mode = SGUARD_RUSH;
             continue;
           }
-          if (st->accel < 0xC8) {
-            st->accel += 0x14;
+          if (st->rampSpeed < 0xC8) {
+            st->rampSpeed += 0x14;
           }
           if (TurnActorYawTowardAngle(actor,
                             ArcTan2(spy->posX - actor->posX,
                                           spy->posY - actor->posY, ATAN_ANGLE8),
                             8, 0x26, YAW_STEP_IN_BAND) != 0) {
-            MoveActorAlongHeading(actor, st->accel, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_SLIDE);
+            MoveActorAlongHeading(actor, st->rampSpeed, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_SLIDE);
           }
           g = ProbeActorGroundHeight(actor);
           if (actor->posZ - g > 0x1F4) {
             st->heading = 0x4D;
-            st->speed = st->accel;
+            st->speed = st->rampSpeed;
             if (st->speed < 0x50) {
               st->speed = 0x50;
             }
-            st->lift = 0x28;
+            st->zSpeed = 0x28;
             st->stateTimer = 0x3C;
             actor->subMode = 0;
             PlayActorMeshVoice(actor, SGUARD_VOICE_FALL, 0);
@@ -2796,7 +2796,7 @@ void Level10_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC,
+        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC,
                           0xC) == MOVED_LANDED &&
             actor->nextFrame < 0xD) {
           int c;
@@ -2821,18 +2821,18 @@ void Level10_UpdateActors(void) {
       case SGUARD_RUSH: {
         int g4;
 
-        if (st->accel < 0xC8) {
-          st->accel += 0x14;
+        if (st->rampSpeed < 0xC8) {
+          st->rampSpeed += 0x14;
         }
-        MoveActorAlongHeading(actor, st->accel, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_SLIDE);
+        MoveActorAlongHeading(actor, st->rampSpeed, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_SLIDE);
         g4 = ProbeActorGroundHeight(actor);
         if (actor->posZ - g4 > 0x1F4) {
           st->heading = 0x4D;
-          st->speed = st->accel;
+          st->speed = st->rampSpeed;
           if (st->speed < 0x50) {
             st->speed = 0x50;
           }
-          st->lift = 0x28;
+          st->zSpeed = 0x28;
           st->stateTimer = 0x3C;
           actor->subMode = 0;
           PlayActorMeshVoice(actor, SGUARD_VOICE_FALL, 0);
@@ -2840,8 +2840,8 @@ void Level10_UpdateActors(void) {
           continue;
         }
         actor->posZ = actor->floorOffset + g4;
-        if (IsPointInRotatedBox(&actor->posX, st->boxA) != 0 ||
-            IsPointInRotatedBox(&actor->posX, st->boxB) != 0) {
+        if (IsPointInRotatedBox(&actor->posX, &st->boxA) != 0 ||
+            IsPointInRotatedBox(&actor->posX, &st->boxB) != 0) {
           actor->mode = SGUARD_BRAKE_AIM;
           continue;
         }
@@ -2869,8 +2869,8 @@ void Level10_UpdateActors(void) {
 
       case SGUARD_BRAKE_AIM:
         st->stateTimer = 0xB4;
-        FindNearestPathPointToActor(actor, (PathData *)st->path, &nearestNode[0]);
-        st->turn = ArcTan2(PATH_X(st->path, nearestNode[0]) - actor->posX,
+        FindNearestPathPointToActor(actor, st->path, &nearestNode[0]);
+        st->pathHeading = ArcTan2(PATH_X(st->path, nearestNode[0]) - actor->posX,
                                  PATH_Y(st->path, nearestNode[0]) - actor->posY, ATAN_ANGLE8);
         actor->mode = SGUARD_BRAKE;
         continue;
@@ -2879,15 +2879,15 @@ void Level10_UpdateActors(void) {
         int h = ProbeActorGroundHeight(actor);
 
         if (st->stateTimer < 0xA5) {
-          TurnActorYawTowardAngle(actor, st->turn, 7, 0, YAW_HOLD_IN_BAND);
+          TurnActorYawTowardAngle(actor, st->pathHeading, 7, 0, YAW_HOLD_IN_BAND);
         }
         if (TICK_DOWN(st->stateTimer) != 0) {
-          st->accel -= 0x10;
-          if (st->accel < 0) {
-            st->accel = 0;
+          st->rampSpeed -= 0x10;
+          if (st->rampSpeed < 0) {
+            st->rampSpeed = 0;
           }
         }
-        if (st->accel == 0) {
+        if (st->rampSpeed == 0) {
           st->stateTimer = 0x3C;
           actor->mode = SGUARD_RECOVER;
           continue;
@@ -2895,11 +2895,11 @@ void Level10_UpdateActors(void) {
         if (actor->posZ - (h + actor->floorOffset) > 0x320 ||
             IsActorGroundFlat(actor) == 0) {
           st->heading = actor->rotZ;
-          st->speed = st->accel;
+          st->speed = st->rampSpeed;
           if (st->speed < 0x50) {
             st->speed = 0x50;
           }
-          st->lift = 0x28;
+          st->zSpeed = 0x28;
           st->stateTimer = 0x3C;
           actor->subMode = 0;
           PlayActorMeshVoice(actor, SGUARD_VOICE_FALL, 0);
@@ -2907,7 +2907,7 @@ void Level10_UpdateActors(void) {
           continue;
         }
         actor->posZ = h + actor->floorOffset;
-        MoveActorAlongHeading(actor, st->accel, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_SLIDE);
+        MoveActorAlongHeading(actor, st->rampSpeed, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_SLIDE);
         break;
       }
 
@@ -2947,18 +2947,18 @@ void Level10_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (actor->subMode == 0 && st->lift < -0x50) {
-          FindNearestPathPointToActor(actor, (PathData *)st->path, &nearestNode[1]);
+        if (actor->subMode == 0 && st->zSpeed < -0x50) {
+          FindNearestPathPointToActor(actor, st->path, &nearestNode[1]);
           SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, (int *)((unsigned char *)st->path + ((nearestNode[1] << 4) + 8)));
           MarkActorLiveKill(actor);
           actor->subMode = 1;
         }
-        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC, 0xC);
         break;
 
       case SGUARD_PATH_CHASE:
-        st->accel = 0xA0;
-        if (PivotActorAlongPath(actor, st->target, 0x12C, st->accel, 0, 8, 0x40, PIVOT_TURN_ANY,
+        st->rampSpeed = 0xA0;
+        if (PivotActorAlongPath(actor, st->target, 0x12C, st->rampSpeed, 0, 8, 0x40, PIVOT_TURN_ANY,
                           MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(0)) {
           st->done = 0;
           actor->mode = SGUARD_CHASE;
@@ -2971,8 +2971,8 @@ void Level10_UpdateActors(void) {
         if (TICK_DOWN(st->cueTimer) == 2) {
           PlayActorMeshVoice(actor, SGUARD_VOICE_SHOUT, 0);
         }
-        st->accel = 0xB4;
-        if (PivotActorAlongPath(actor, st->target, 0x100, st->accel, 0, 8, 0x40, PIVOT_TURN_ANY,
+        st->rampSpeed = 0xB4;
+        if (PivotActorAlongPath(actor, st->target, 0x100, st->rampSpeed, 0, 8, 0x40, PIVOT_TURN_ANY,
                           MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(0)) {
           actor->mode = SGUARD_BRAKE_AIM;
           continue;
@@ -3442,8 +3442,8 @@ void Level10_UpdateActors(void) {
         link = &g_pActorListBase[st->link];
       }
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != GLOOK_KNOCKED) {
-        st->speed = 0xF0;
-        st->heading = SPY.bodyRotZ;
+        st->knockSpeed = 0xF0;
+        st->knockHeading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);
@@ -3481,7 +3481,7 @@ void Level10_UpdateActors(void) {
         d = ApproxDist2D(&actor->posX, &spy->posX);
         if (st->init == 0) {
           st->init = 1;
-          st->home = actor->rotZ;
+          st->homeHeading = actor->rotZ;
         }
         if (link != 0 && TICK_DOWN(st->wait) != 0 &&
             actor->subMode == 0 && link->mode == SGUARD_IDLE && d < st->range << 10 &&
@@ -3493,7 +3493,7 @@ void Level10_UpdateActors(void) {
           continue;
         }
         if (d > 0x2000) {
-          TurnActorYawTowardAngle(actor, st->home, 4, 0, YAW_HOLD_IN_BAND);
+          TurnActorYawTowardAngle(actor, st->homeHeading, 4, 0, YAW_HOLD_IN_BAND);
           if (actor->anim == GLOOK_ANIM_IDLE && g_nActorAnimNewFrame != 0 && actor->frame == 0xF &&
               --st->count > 0) {
             actor->frame = 5;
@@ -3566,9 +3566,9 @@ void Level10_UpdateActors(void) {
         break;
 
       case GLOOK_KNOCKED:
-        if (st->speed > 0) {
-          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, MOVE_LIFT);
-          st->speed -= 0x10;
+        if (st->knockSpeed > 0) {
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0x1F4, 0x2BC, MOVE_LIFT);
+          st->knockSpeed -= 0x10;
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

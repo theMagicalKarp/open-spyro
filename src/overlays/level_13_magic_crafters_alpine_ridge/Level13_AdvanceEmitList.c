@@ -305,7 +305,7 @@ void Level13_AdvanceEmitList(int step) {
           KEEP_IN_REG(burst);
           VectorToSVectorShr2(POS, home);
           AGE++;
-          home = (int *)g_anCameraPos;
+          home = g_anCameraPos;
           bolt = home;
           SubtractVector(v, p, g_anCameraPos);
           c = abs(v[0]) + abs(v[1]);

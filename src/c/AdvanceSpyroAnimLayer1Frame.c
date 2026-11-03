@@ -21,7 +21,7 @@ void AdvanceSpyroAnimLayer1Frame(int step) {
     g_bSpyroAnimLayer1Frame = newFrame;
 
     len = g_abSpyroAnimDescTable[anim * 4 + 2];
-    if ((unsigned char)newFrame >= len) {
+    if (newFrame >= len) {
       g_bSpyroAnimLayer1Frame = len - 1;
     }
   }

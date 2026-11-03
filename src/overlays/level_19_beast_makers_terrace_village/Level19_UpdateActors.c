@@ -92,31 +92,6 @@
   }                                                                            \
   break
 
-/* Type 35 state: a guard that scatters when hit and fires type 494 bolts. */
-typedef struct BoltGuardState {
-  int mode;    /* 0x00 enum BoltGuardCue */
-  int timer;   /* 0x04 */
-  int timer2;  /* 0x08 */
-  int heading; /* 0x0C */
-  int speed;   /* 0x10 */
-  int turn;    /* 0x14 */
-  int u18;     /* 0x18 */
-  void *path;  /* 0x1C */
-  int range;   /* 0x20 in 1024s */
-  int countdown;     /* 0x24 */
-  int link;    /* 0x28 actor index, -1 for none; initially (level data) ACTOR_TYPE_ROAMING_RAM */
-  short spinX; /* 0x2C */
-  short spinY; /* 0x2E */
-  int box[3];  /* 0x30 */
-} BoltGuardState;
-
-/* Type 343 state: a bead that streams from its owner's attach point 1 to
- * point 0, starting subMode * 42 frames late and growing as it goes. */
-typedef struct AttachBeadState {
-  Actor *owner; /* 0x00 */
-  int t;        /* 0x04 */
-} AttachBeadState;
-
 /* Type 467 state: a bolt-throwing sentry with three guards (`kids`). */
 typedef struct BoltSentryState {
   int mode;      /* 0x00 enum BoltSentryCue */
@@ -573,12 +548,13 @@ void Level19_UpdateActors(void) {
       break;
     }
 
-    /* Type 32: rides its carrier until the carrier reaches pose 4, then
-     * behaves as a dragon egg. */
+    /* Type 32: rides attach point 0 of the bolt sentry that spawned it and
+     * despawns once the sentry leaves BSENTRY_THROW. It then shares the dragon
+     * egg arm, where its mode 0 (EGG_CARRIED) does nothing. */
     case ACTOR_TYPE_CARRIED_EGG: {
       Actor **st = actor->state;
 
-      if (actor->subMode != 0 || (*st)->mode != 4) {
+      if (actor->subMode != 0 || (*st)->mode != BSENTRY_THROW) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -744,9 +720,9 @@ void Level19_UpdateActors(void) {
       if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER) && actor->mode != BGUARD_KNOCKED) {
         int i;
 
-        st->turn = 0xE6;
+        st->zSpeed = 0xE6;
         st->speed = 0x12C;
-        st->heading =
+        st->knockHeading =
             StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                         actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
                           g_bSpyroPersistentEulerZ, 0x20, 0x40);
@@ -771,7 +747,7 @@ void Level19_UpdateActors(void) {
       case BGUARD_WATCH:
         ANIM_GO(actor, BGUARD_WATCH);
         if (st->mode == one /* BGUARD_CUE_RUN */ &&
-            (IsPointInRotatedBox(&spy->posX, st->box) != 0 || d < st->range << 10) &&
+            (IsPointInRotatedBox(&spy->posX, &st->box) != 0 || d < st->range << 10) &&
             ABS2(SPY_DZ(actor)) < 0xBB8) {
           if (actor->group != 0xFF) {
             SetActorGroupStateExcept(actor, BGUARD_RUN, BGUARD_KNOCKED);
@@ -826,7 +802,7 @@ void Level19_UpdateActors(void) {
       case BGUARD_KNOCKED:
         actor->rotX += st->spinX;
         actor->rotY += st->spinY;
-        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->turn, 0xC,
+        if (DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC,
                           0x10) == MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -916,7 +892,7 @@ void Level19_UpdateActors(void) {
       continue;
     }
 
-    /* Explosion shard with a ground bounce (ShardState). */
+    /* Explosion shard with a ground bounce (TumbleState). */
     case ACTOR_TYPE_SEED_POD_SHARD:
     case ACTOR_TYPE_SEED_POD_SHARD + 1:
     case ACTOR_TYPE_GROUND_BOUNCE_SHARD:
@@ -924,7 +900,7 @@ void Level19_UpdateActors(void) {
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1:
     case ACTOR_TYPE_LIFE_CHEST_SHARD:
     case ACTOR_TYPE_LIFE_CHEST_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {
 
@@ -2309,7 +2285,7 @@ void Level19_UpdateActors(void) {
 
     /* Sparkling shard: 1 puff per frame. */
     case ACTOR_TYPE_SPARKLE_SHARD: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
@@ -2340,7 +2316,7 @@ void Level19_UpdateActors(void) {
     /* Wood shard: bounces and throws three sparks a frame. */
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
       register int i asm("$16");
 
       if (st->life > 0) {
@@ -3109,8 +3085,8 @@ void Level19_UpdateActors(void) {
       }
 
       for (i = 0; i < 8; i++) {
-        o480[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
-        o480[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
+        o480[0] = (g_anCosineLut[i * 32] >> 8) * 3;
+        o480[1] = (g_anSineLut[i * 32] >> 8) * 3;
         o480[2] = 0x18;
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)o480);
       }
@@ -3231,16 +3207,16 @@ void Level19_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && (unsigned int)(actor->mode - 3) >= 2) {
         actor->flags = 0;
-        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, 0x20, 0x40);
-        st->lift = 0x46;
+        st->zSpeed = 0x46;
         st->life = 0x32;
         if (actor->flags & ACTOR_HIT_FLAME) {
           st->speed = 0x96;
         } else {
           st->speed = 0x12C;
-          st->lift = 0x82;
+          st->zSpeed = 0x82;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
@@ -3282,7 +3258,7 @@ void Level19_UpdateActors(void) {
       case WARDRUM_KNOCKED:
         actor->rotY += g_nFrameStep * 2;
         if (TICK_DOWN(st->life) != 0 ||
-            DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, 0xC) ==
+            DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, 0xC) ==
                 MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -3311,20 +3287,20 @@ void Level19_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HIT_ANY) && actor->mode != RAM_KNOCKED) {
         if (actor->flags & ACTOR_HIT_BLAST) {
-          st->knock = ArcTan2(actor->posX - g_pActorListBase[st->target].posX,
+          st->knockHeading = ArcTan2(actor->posX - g_pActorListBase[st->target].posX,
                                     actor->posY - g_pActorListBase[st->target].posY,
                                     ATAN_ANGLE8);
           st->speed = 0x8C;
-          st->lift = 0x23;
+          st->zSpeed = 0x23;
         } else {
-          st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+          st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
                                     spy->bodyRotZ, 0x20, 0x40);
           st->speed = 0xC8;
-          st->lift = 0x32;
+          st->zSpeed = 0x32;
           if (actor->flags & ACTOR_HIT_CHARGE) {
             st->speed += 0x46;
-            st->lift += 0x32;
+            st->zSpeed += 0x32;
           }
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorLiveKill(actor);
@@ -3343,7 +3319,7 @@ void Level19_UpdateActors(void) {
       actor->flags = 0;
       if (st->triggerSlot != -1 && g_anLevelTriggerStateSlots[st->triggerSlot] != 0 &&
           (unsigned int)(actor->mode - 3) >= 2 &&
-          IsPointInRotatedBox(&actor->posX, &st->box.x) != 0) {
+          IsPointInRotatedBox(&actor->posX, &st->box) != 0) {
         ENTER_POSE_B(actor, RAM_TRAPPED);
       }
 
@@ -3405,7 +3381,7 @@ void Level19_UpdateActors(void) {
       }
 
       case RAM_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, 0x10);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, 0x10);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x10);
@@ -3417,7 +3393,7 @@ void Level19_UpdateActors(void) {
       case RAM_TRAPPED:
         if (g_anLevelTriggerStateSlots[st->triggerSlot] == 0) {
           st->speed = 0;
-          st->lift = 0;
+          st->zSpeed = 0;
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorLiveKill(actor);
           ENTER_POSE(actor, RAM_KNOCKED);

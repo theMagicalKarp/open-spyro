@@ -1,19 +1,19 @@
 #include "funcs.h"
 #include "globals.h"
 
-/* Trigger the actor's mesh-defined voice sample (sample id at +4 of the mesh
-   record g_apActorMeshTable[actor->meshId] offset by voiceOffset). With an
-   explicit owner (owner) the one-shot keys to it; otherwise the actor's own
-   prior voices are stopped first and it keys to itself (+0x54). */
-void PlayActorMeshVoice(Actor *actor, int voiceOffset, void *owner) {
-  if (owner != 0) {
+/* Play voice `voice` of the actor's model: the sample id is byte 4 + voice
+   of its g_apActorMeshTable record. With a `voiceRow` slot the sound keys to
+   it; otherwise the actor's own voices are stopped first and it keys to the
+   actor's ->voiceRow. */
+void PlayActorMeshVoice(Actor *actor, int voice, void *voiceRow) {
+  if (voiceRow != 0) {
     PlaySoundEffect(
-        ((unsigned char *)(&g_apActorMeshTable)[actor->type] + voiceOffset)[4],
-        actor, SFX_MODE_3D, owner);
+        ((unsigned char *)(&g_apActorMeshTable)[actor->type] + voice)[4], actor,
+        SFX_MODE_3D, voiceRow);
   } else {
     StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
     PlaySoundEffect(
-        ((unsigned char *)(&g_apActorMeshTable)[actor->type] + voiceOffset)[4],
-        actor, SFX_MODE_3D, &actor->voiceRow);
+        ((unsigned char *)(&g_apActorMeshTable)[actor->type] + voice)[4], actor,
+        SFX_MODE_3D, &actor->voiceRow);
   }
 }

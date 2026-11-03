@@ -833,13 +833,13 @@ void Level21_UpdateActors(void) {
 
       if (st->flags == BTHROW_F_HOP) {
         if (st->path->cur != 0 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box0) != 0) {
           st->path->cur = 0;
           CopyVector(&actor->posX,
                         PATH_PT(st->path, 0));
           SnapActorToGround(actor);
         } else if (st->path->cur != 1 &&
-                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box1) != 0) {
+                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box1) != 0) {
           st->path->cur = 1;
           CopyVector(&actor->posX,
                         PATH_PT(st->path, 1));
@@ -881,8 +881,8 @@ void Level21_UpdateActors(void) {
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < st->throwRange) {
           goto pose5;
         }
-        if (st->box0HalfWidth != 0 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
+        if (st->box0.halfWidth != 0 &&
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box0) != 0) {
         pose5:
           ENTER_POSE(actor, BTHROW_PATROL);
         }
@@ -1030,7 +1030,7 @@ void Level21_UpdateActors(void) {
           st->zSpeed = 0x50;
         }
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        actor->probeDist = 0xFF;
+        actor->probeDist = ACTOR_PROBE_NONE;
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
         ANIM_GO(actor, BTHROW_ANIM_HURTLE);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2BC &&
@@ -1216,13 +1216,13 @@ void Level21_UpdateActors(void) {
 
       if (st->mode == GKEEPER_POST_TWO_BOX) {
         if (st->path->cur != 0 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box0) != 0) {
           st->path->cur = 0;
           CopyVector(&actor->posX,
                         PATH_PT(st->path, 0));
           SnapActorToGround(actor);
         } else if (st->path->cur != 1 &&
-                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box1) != 0) {
+                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box1) != 0) {
           st->path->cur = 1;
           CopyVector(&actor->posX,
                         PATH_PT(st->path, 1));
@@ -1389,7 +1389,7 @@ void Level21_UpdateActors(void) {
           st->zSpeed = 0x5A;
         }
         ANIM_GO(actor, GATEKEEPER_ANIM_HURTLE);
-        actor->probeDist = 0xFF;
+        actor->probeDist = ACTOR_PROBE_NONE;
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x3E8 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x320
@@ -1533,14 +1533,14 @@ void Level21_UpdateActors(void) {
       continue;
     }
 
-    /* Explosion shard with a ground bounce (ShardState). */
+    /* Explosion shard with a ground bounce (TumbleState). */
     case ACTOR_TYPE_SEED_POD_SHARD:
     case ACTOR_TYPE_SEED_POD_SHARD + 1:
     case ACTOR_TYPE_WOOD_CHEST_SHARD:
     case ACTOR_TYPE_WOOD_CHEST_SHARD + 1:
     case ACTOR_TYPE_LIFE_CHEST_SHARD:
     case ACTOR_TYPE_LIFE_CHEST_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life > 0 && actor->drawn != 0) {
 
@@ -3049,12 +3049,12 @@ void Level21_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode >= RUNNER_WAIT &&
           actor->mode != RUNNER_FLEE) {
-        st->knock = 0x3C;
+        st->knockSpeed = 0x3C;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->knock = 0x55;
+          st->knockSpeed = 0x55;
         }
-        st->lift = 0x3C;
-        st->knockAng = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+        st->knockZSpeed = 0x3C;
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                    actor->posY - spy->posY, ATAN_ANGLE8),
                                      spy->bodyRotZ, 0x20, 0x40);
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -3086,7 +3086,7 @@ void Level21_UpdateActors(void) {
         if (g_nSpawnAnchorValid[0] != 0) {
           st->camTimer = 0;
         }
-        if (IsPointInRotatedBox(&spy->posX, st->volB) != 0) {
+        if (IsPointInRotatedBox(&spy->posX, &st->volB) != 0) {
           actor->group = 0;
           SetActorGroupSubstate(actor, BTHROW_WATCH);
           actor->group = 1;
@@ -3111,7 +3111,7 @@ void Level21_UpdateActors(void) {
       }
       if (st->mode == PRUN_SECOND && st->pathInit == 0) {
         st->pathInit = 1;
-        if (IsPointInRotatedBox(&spy->posX, st->volB) != 0) {
+        if (IsPointInRotatedBox(&spy->posX, &st->volB) != 0) {
           actor->group = 2;
           SetActorGroupSubstate(actor, BTHROW_WATCH);
           actor->group = 0xFF;
@@ -3183,11 +3183,11 @@ void Level21_UpdateActors(void) {
         }
         r = PivotActorAlongPath(actor, st->path, 0x17C, spd, 0, 8, 0x28, PIVOT_TURN_ANY, 0);
         floor = ProbeActorGroundHeightRaised(actor, 0xBB8);
-        st->lift -= 0x1E;
-        if (st->lift < -0x190) {
-          st->lift = -0x190;
+        st->knockZSpeed -= 0x1E;
+        if (st->knockZSpeed < -0x190) {
+          st->knockZSpeed = -0x190;
         }
-        z = actor->posZ + st->lift;
+        z = actor->posZ + st->knockZSpeed;
         if (z < floor) {
           actor->posZ = floor;
         } else {
@@ -3226,10 +3226,10 @@ void Level21_UpdateActors(void) {
         } else if (r & PATH_ARRIVED_FLAG) {
           switch (RUN_FLAGS(st->path) & PATH_NODE_JUMP) {
           case PATH_JUMP_LOW:
-            st->lift = 0xDC;
+            st->knockZSpeed = 0xDC;
             break;
           case PATH_JUMP_MID:
-            st->lift = 0x140;
+            st->knockZSpeed = 0x140;
             break;
           }
         }
@@ -3257,7 +3257,7 @@ void Level21_UpdateActors(void) {
         continue;
 
       case RUNNER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knock, st->knockAng, &st->lift, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0xC);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -3275,7 +3275,7 @@ void Level21_UpdateActors(void) {
                                         actor->posY - SPY.posY, ATAN_ANGLE8)) < 0x20) {
           st->path = st->home;
           st->path->cur = 0;
-          st->lift = 0;
+          st->knockZSpeed = 0;
           actor->mode = RUNNER_FLEE;
           continue;
         }
@@ -3297,11 +3297,11 @@ void Level21_UpdateActors(void) {
         }
         r = PivotActorAlongPath(actor, st->path, 0x17C, spd, 0, 10, 0x28, PIVOT_TURN_ANY, 0);
         floor = ProbeActorGroundHeightRaised(actor, 0xBB8);
-        st->lift -= 10;
-        if (st->lift < -0x190) {
-          st->lift = -0x190;
+        st->knockZSpeed -= 10;
+        if (st->knockZSpeed < -0x190) {
+          st->knockZSpeed = -0x190;
         }
-        z = actor->posZ + st->lift;
+        z = actor->posZ + st->knockZSpeed;
         if (z < floor) {
           actor->posZ = floor;
         } else {
@@ -3348,17 +3348,17 @@ void Level21_UpdateActors(void) {
         if (r & PATH_ARRIVED_FLAG) {
           switch (RUN_FLAGS(st->path) & PATH_NODE_JUMP) {
           case PATH_JUMP_LOW:
-            st->lift = 0x17C;
+            st->knockZSpeed = 0x17C;
             break;
           case PATH_JUMP_MID:
             if (st->mode == PRUN_FIRST) {
-              st->lift = 0x104;
+              st->knockZSpeed = 0x104;
             } else if (st->mode == PRUN_SECOND) {
-              st->lift = 0xD2;
+              st->knockZSpeed = 0xD2;
             }
             break;
           case 3:
-            st->lift = 0xC8;
+            st->knockZSpeed = 0xC8;
             break;
           }
         }
@@ -3370,7 +3370,7 @@ void Level21_UpdateActors(void) {
 
         ANIM_GO(actor, RUNNER_RUN);
         r = SteerActorAroundPoint(
-            actor, PATH_PT(st->path, st->path->cur), st->speed,
+            actor, PATH_PT(st->path, st->path->cur), st->dodgeRadius,
             (ArcTan2(spy->posX - PATH_X(st->path, st->path->cur),
                            spy->posY - PATH_Y(st->path, st->path->cur), ATAN_ANGLE8) +
              0x80) &
@@ -3393,7 +3393,7 @@ void Level21_UpdateActors(void) {
 
         ANIM_GO(actor, RUNNER_RUN);
         r = SteerActorAroundPoint(
-            actor, PATH_PT(st->path, st->path->cur), st->speed,
+            actor, PATH_PT(st->path, st->path->cur), st->dodgeRadius,
             ArcTan2(spy->posX - PATH_X(st->path, st->path->cur),
                           spy->posY - PATH_Y(st->path, st->path->cur), ATAN_ANGLE8),
             5, 0xC8, 0xF, 0x20, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
@@ -3453,7 +3453,7 @@ void Level21_UpdateActors(void) {
       case RUNNER_LURK:
         ANIM_GO(actor, RUNNER_ANIM_STAND);
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->volA) != 0) {
+        if (IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->volA) != 0) {
           ENTER_POSE(actor, RUNNER_RUN);
         }
         continue;
@@ -3531,7 +3531,7 @@ void Level21_UpdateActors(void) {
 
     /* Sparkling shard: 1 puff per frame. */
     case ACTOR_TYPE_SPARKLE_SHARD: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
 
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
@@ -3562,7 +3562,7 @@ void Level21_UpdateActors(void) {
     /* Wood shard: bounces and throws three sparks a frame. */
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
-      ShardState *st = actor->state;
+      TumbleState *st = actor->state;
       register int i asm("$16");
 
       if (st->life > 0) {
@@ -4185,8 +4185,8 @@ void Level21_UpdateActors(void) {
       }
 
       for (i = 0; i < 8; i++) {
-        svJ[0] = ((short)g_anCosineLut[i * 32] >> 8) * 3;
-        svJ[1] = ((short)g_anSineLut[i * 32] >> 8) * 3;
+        svJ[0] = (g_anCosineLut[i * 32] >> 8) * 3;
+        svJ[1] = (g_anSineLut[i * 32] >> 8) * 3;
         svJ[2] = 0x18;
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &actor->posX, (int)svJ);
       }
@@ -4306,20 +4306,20 @@ void Level21_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HIT_ANY) && actor->mode != RAM_QUIET_KNOCKED) {
         if (actor->flags & ACTOR_HIT_BLAST) {
-          st->knock = ArcTan2(actor->posX - g_pActorListBase[st->target].posX,
+          st->knockHeading = ArcTan2(actor->posX - g_pActorListBase[st->target].posX,
                                     actor->posY - g_pActorListBase[st->target].posY,
                                     ATAN_ANGLE8);
           st->speed = 0x8C;
-          st->lift = 0x23;
+          st->zSpeed = 0x23;
         } else {
-          st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+          st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
                                     spy->bodyRotZ, 0x20, 0x40);
           st->speed = 0xC8;
-          st->lift = 0x32;
+          st->zSpeed = 0x32;
           if (actor->flags & ACTOR_HIT_CHARGE) {
             st->speed += 0x46;
-            st->lift += 0x32;
+            st->zSpeed += 0x32;
           }
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorLiveKill(actor);
@@ -4394,7 +4394,7 @@ void Level21_UpdateActors(void) {
       }
 
       case RAM_QUIET_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, 0x10);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, 0x10);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x10);

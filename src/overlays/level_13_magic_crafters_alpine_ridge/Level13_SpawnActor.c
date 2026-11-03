@@ -184,7 +184,7 @@ Actor *Level13_SpawnActor(int type, Actor *parent) {
   case ACTOR_TYPE_WOOD_CHEST_SHARD ... ACTOR_TYPE_WOOD_CHEST_SHARD + 2:
   case ACTOR_TYPE_SPARKLE_SHARD ... ACTOR_TYPE_WOOD_SHARD + 1:
   case ACTOR_TYPE_LIFE_CHEST_SHARD ... ACTOR_TYPE_LIFE_CHEST_SHARD + 2: {
-    FragmentState *st = rec->state;
+    TumbleState *st = rec->state;
     int yaw;
     int pitch;
 
@@ -205,9 +205,9 @@ Actor *Level13_SpawnActor(int type, Actor *parent) {
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
     rec->posZ += st->vel[2] * 4;
-    st->spinX = GetRandomU32() & 0xF;
-    st->spinY = GetRandomU32() & 0xF;
-    st->spinZ = GetRandomU32() & 0xF;
+    st->spin[0] = GetRandomU32() & 0xF;
+    st->spin[1] = GetRandomU32() & 0xF;
+    st->spin[2] = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
     if ((unsigned int)((unsigned short)rec->type - 0x135) < 3) {
@@ -277,7 +277,7 @@ Actor *Level13_SpawnActor(int type, Actor *parent) {
   }
 
   case ACTOR_TYPE_HOMING_WISP: {
-    int *st = rec->state;
+    WispState *st = rec->state;
     int turn;
     int dy;
     int dx;
@@ -314,20 +314,20 @@ Actor *Level13_SpawnActor(int type, Actor *parent) {
       turn = 0x30;
     }
     rec->rotY = parent->rotY + turn;
-    st[1] = 0x5A;
-    st[0] = 0;
+    st->timer = 0x5A;
+    st->target = 0;
     InsertActorIntoSpatialGrid(rec);
     break;
   }
   case ACTOR_TYPE_FALLING_DEBRIS: {
-    int *st = rec->state;
+    FallingDebrisState *st = rec->state;
 
     InitActorRenderDefaults(rec);
     CopyVector(&rec->posX, &parent->posX);
-    st[0] = (GetRandomU32() & 0x7E) - 0x3F;
-    st[1] = (GetRandomU32() & 0x7E) - 0x3F;
-    st[2] = (GetRandomU32() & 0x7E) - 0x10;
-    st[3] = (GetRandomU32() & 0x1F) + 0x20;
+    st->vel[0] = (GetRandomU32() & 0x7E) - 0x3F;
+    st->vel[1] = (GetRandomU32() & 0x7E) - 0x3F;
+    st->vel[2] = (GetRandomU32() & 0x7E) - 0x10;
+    st->life = (GetRandomU32() & 0x1F) + 0x20;
     InsertActorIntoSpatialGrid(rec);
     break;
   }

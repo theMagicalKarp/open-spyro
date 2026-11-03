@@ -220,7 +220,7 @@ extern short g_anTweenBlendWeights4[];
 extern short g_anTweenBlendWeights6[];
 extern short g_anTweenBlendWeights8[];
 extern short g_anTweenBlendWeights2[];
-extern void DrawFullscreenTint(int slot, int r, int g, int b);
+extern void DrawFullscreenTint(int abr, int r, int g, int b);
 extern void EmitStaticActorMeshListFogged(void);
 extern void EnqueueHudSprites(void);
 extern long GetSpuTransferStatus(int mode);
@@ -296,11 +296,11 @@ extern void *g_apOtDepthBinBlock[];
 extern void (*g_pfnActorCutsceneSubstateDraw)(void);
 extern void BuildSecondaryActorDrawList(void);
 extern void ClearPadHistoryRing(void);
-extern void ComputeVoicePanAndFalloff(short *vol, int dist, unsigned char bearing, unsigned int range, short *cached);
+extern void ComputeVoicePanAndFalloff(short *out, int vol, unsigned char pan, unsigned int range, short *base);
 extern void DrawEntityDirectionalSpikes(void);
 extern void DrawSpyroDropShadow(void);
 extern void EmitSecondaryActorPrimitives(void);
-extern void MapPadAxisToCalibratedRange(unsigned char *cal, int block);
+extern void MapPadAxisToCalibratedRange(unsigned char *axes, int calib);
 extern void NudgeSpyroFromWallProbes(void);
 extern void SetSpuKeyMask(int on, unsigned int voices);
 extern void TriggerRespawnOrGameOver(void);
@@ -312,7 +312,7 @@ extern void AddVector(int *dst, int *a, int *b);
 #define ATAN_ANGLE8 0  /* ArcTan2: 8-bit angle, 0..0xFF per turn */
 #define ATAN_ANGLE12 1 /* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */
 #endif
-extern int ArcTan2(int y, int x, int scale);
+extern int ArcTan2(int x, int y, int scale);
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 extern void SubtractVector(int *dst, int *a, int *b);
 extern void ZeroVector(int *vec);

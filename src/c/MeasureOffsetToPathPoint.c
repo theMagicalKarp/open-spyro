@@ -11,5 +11,5 @@ int MeasureOffsetToPathPoint(Actor *actor, PathData *path, int divisor) {
   v[1] = path->nodes[path->cur].y - actor->posY;
   v[2] = path->nodes[path->cur].z - actor->posZ;
 
-  return (int)VectorLength(v, VEC_LEN_XYZ) / divisor;
+  return VectorLength(v, VEC_LEN_XYZ) / divisor;
 }
