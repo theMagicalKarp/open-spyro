@@ -151,19 +151,19 @@ void Level6_UpdateActors(void) {
   int g104[3];
   int eggViewPos[3];
   int g136[3];
-  int g152[3][3];
+  int triVerts[3][3]; /* sp 152 */
   int bouncePos[3];
   int bounceNormal[3];
   int homingStep[3];
   int sparxToTarget[3];
   int chestToSpyro[3];
   int keySlotOffset[3];
-  int g288[3];
+  int groundProbe[3]; /* sp 288 */
   int g304[3];
-  int g320[2];
+  int lobFrames[2]; /* sp 320 */
   int g328[3];
-  int g344[3];
-  int g360[3];
+  int dustVel[3]; /* sp 344 */
+  int toTarget[3]; /* sp 360 */
   int sparkLead[3];
   int g392[3];
   int g408[3];
@@ -1458,12 +1458,12 @@ void Level6_UpdateActors(void) {
               }
             }
           } else if (st->mode == COLLREST_ON_TRI) {
-            UnpackWorldCollisionTri(st->groundTri, g152[0]);
-            AddVector(g152[0], g152[0], g152[1]);
-            AddVector(g152[0], g152[0], g152[2]);
-            actor->posX = g152[0][0] / 3;
-            actor->posY = g152[0][1] / 3;
-            actor->posZ = g152[0][2] / 3;
+            UnpackWorldCollisionTri(st->groundTri, triVerts[0]);
+            AddVector(triVerts[0], triVerts[0], triVerts[1]);
+            AddVector(triVerts[0], triVerts[0], triVerts[2]);
+            actor->posX = triVerts[0][0] / 3;
+            actor->posY = triVerts[0][1] / 3;
+            actor->posZ = triVerts[0][2] / 3;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
@@ -2772,9 +2772,9 @@ void Level6_UpdateActors(void) {
           continue;
         }
       }
-      CopyVector(g288, &actor->posX);
-      g288[2] += 0x400;
-      FindGroundHeightBelow(g288, 0x10000);
+      CopyVector(groundProbe, &actor->posX);
+      groundProbe[2] += 0x400;
+      FindGroundHeightBelow(groundProbe, 0x10000);
       EncodeCachedVecToActorDirCode(actor);
 
       switch (actor->mode) {
@@ -3092,13 +3092,13 @@ void Level6_UpdateActors(void) {
             g304[1] += (g_anSineLut[c->rotZ] * 0x433) >> 12;
             fs->speed = 0xB4;
             fs->grav = -5;
-            fs->vz = ComputeLobVelocityZ(&o->posX, g304, fs->speed, fs->grav, g320);
+            fs->vz = ComputeLobVelocityZ(&o->posX, g304, fs->speed, fs->grav, lobFrames);
             fs->spent = 1;
-            fs->age = g320[0] + 1;
+            fs->age = lobFrames[0] + 1;
             fs->link = -1;
             fs->delay = 0;
             o->cullRadius = 0x30;
-            cs->hold = g320[0] + 1;
+            cs->hold = lobFrames[0] + 1;
             if (a->anim != FBCANNON_ANIM_FIRE) {
               ANIM_RESET(a, FBCANNON_ANIM_FIRE);
             }
@@ -3348,16 +3348,16 @@ void Level6_UpdateActors(void) {
           actor->flags = 0;
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 3, g328);
-          g344[0] = -0x10;
-          g344[1] = 0;
-          g344[2] = -0xE;
-          RotateVectorByMatrix(actor->mtx, g344, g344);
+          dustVel[0] = -0x10;
+          dustVel[1] = 0;
+          dustVel[2] = -0xE;
+          RotateVectorByMatrix(actor->mtx, dustVel, dustVel);
           i = 0;
           do {
             i++;
-            g344[0] += (GetRandomU32() & 0xF) - 8;
-            g344[1] += (GetRandomU32() & 0xF) - 8;
-            g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, g328, (int)g344);
+            dustVel[0] += (GetRandomU32() & 0xF) - 8;
+            dustVel[1] += (GetRandomU32() & 0xF) - 8;
+            g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, g328, (int)dustVel);
           } while (i < 5);
         }
         if (TICK_DOWN(st->timer) != 0) {
@@ -3406,8 +3406,8 @@ void Level6_UpdateActors(void) {
           if ((q->collision == 0 || q->collision >= 0) && q->type != ACTOR_TYPE_REWARD_BURST) {
             continue;
           }
-          SubtractVector(g360, &q->posX, &actor->posX);
-          d = ABS(g360[0]) + ABS(g360[1]);
+          SubtractVector(toTarget, &q->posX, &actor->posX);
+          d = ABS(toTarget[0]) + ABS(toTarget[1]);
           if (d > 0xBFFF) {
             continue;
           }
@@ -3422,7 +3422,7 @@ void Level6_UpdateActors(void) {
           if (ang >= 7) {
             continue;
           }
-          d = VectorLength(g360, VEC_LEN_XY);
+          d = VectorLength(toTarget, VEC_LEN_XY);
           if (d >= 0x6800) {
             continue;
           }
@@ -3446,9 +3446,9 @@ void Level6_UpdateActors(void) {
           o->rotZ = ArcTan2(best->posX - actor->posX,
                                    best->posY - actor->posY, ATAN_ANGLE8);
           cs->grav = -5;
-          SubtractVector(g360, &best->posX, &o->posX);
-          ang = VectorLength(g360, VEC_LEN_XY);
-          h = ang - g360[2];
+          SubtractVector(toTarget, &best->posX, &o->posX);
+          ang = VectorLength(toTarget, VEC_LEN_XY);
+          h = ang - toTarget[2];
           if (h > 0x400) {
             bestScore = ((ang * 5 >> 8) * ang / h) >> 1;
             if ((unsigned)(bestScore - 0x11) <= 0xFFFEE) {

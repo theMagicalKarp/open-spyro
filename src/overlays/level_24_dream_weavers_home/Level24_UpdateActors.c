@@ -95,7 +95,8 @@ void Level24_UpdateActors(void) {
   char *base;
   int dt;
 
-  /* Scratch vectors, in the original's slot order (named by sp offset). */
+  /* Scratch vectors, in the original's slot order: shared ones named by sp
+   * offset (gNNN), single-use ones by role with the offset noted. */
   int g056[3];
   int eggArcBase[3];
   int eggArcOffset[3];
@@ -103,12 +104,12 @@ void Level24_UpdateActors(void) {
   int eggViewPos[3];
   int g136[3];
   int g152[3];
-  int g168[3];
-  int g184[2];
-  int g192[3];
+  int lobTarget[3]; /* sp 168 */
+  int lobFrames[2]; /* sp 184 */
+  int targetPos[3]; /* sp 192 */
   volatile int g208v;
-  int g216[3];
-  int g232[3][3];
+  int arcEnd[3]; /* sp 216 */
+  int triVerts[3][3]; /* sp 232 */
   int bouncePos[3];
   int bounceNormal[3];
   int homingStep[3];
@@ -798,18 +799,18 @@ void Level24_UpdateActors(void) {
           }
         }
         if (best != 0) {
-          CopyVector(g168, &best->posX);
+          CopyVector(lobTarget, &best->posX);
           if (best->type == ACTOR_TYPE_LUNGING_GUARD || best->type == ACTOR_TYPE_BIG_LUNGING_GUARD) {
-            g168[2] += 0x320;
+            lobTarget[2] += 0x320;
           }
           o->rotZ = ArcTan2(best->posX - actor->posX,
                                    best->posY - actor->posY, ATAN_ANGLE8);
           cs->dvz = -8;
           cs->speed = 0x258;
           {
-            int t = ComputeLobVelocityZ(&o->posX, g168, 0x258, cs->dvz, g184);
+            int t = ComputeLobVelocityZ(&o->posX, lobTarget, 0x258, cs->dvz, lobFrames);
 
-            cs->life = g184[0];
+            cs->life = lobFrames[0];
             cs->vz = t;
           }
         }
@@ -838,11 +839,11 @@ void Level24_UpdateActors(void) {
           int v;
           int i;
 
-          CopyVector(g192, &g_pActorListBase[st->target].posX);
+          CopyVector(targetPos, &g_pActorListBase[st->target].posX);
           o = g_pfnLevelSpawnActor(ACTOR_TYPE_COMET, actor);
-          o->rotZ = ArcTan2(g192[0] - o->posX, g192[1] - o->posY, ATAN_ANGLE8);
+          o->rotZ = ArcTan2(targetPos[0] - o->posX, targetPos[1] - o->posY, ATAN_ANGLE8);
           CopyVector(&o->posX, &actor->posX);
-          g192[2] += 0x320;
+          targetPos[2] += 0x320;
           cs = o->state;
           o->posX += (g_anCosineLut[o->rotZ] * 0x7D) >> 8;
           o->posY += (g_anSineLut[o->rotZ] * 0x7D) >> 8;
@@ -855,20 +856,20 @@ void Level24_UpdateActors(void) {
           cs->dvz = -7;
           cs->speed = 0x320;
           cs->spark = 0;
-          cs->vz = ComputeLobVelocityZ(&o->posX, g192, 0x320, cs->dvz, (int *)&g208v);
+          cs->vz = ComputeLobVelocityZ(&o->posX, targetPos, 0x320, cs->dvz, (int *)&g208v);
           cs->trail = (CometTrailPoint *)((char *)st + (st->idx * 0xE38 + 0x28));
           cs->lifeOn = one;
           v = cs->vz;
           cs->life = g208v;
-          CopyVector(g216, &o->posX);
+          CopyVector(arcEnd, &o->posX);
           for (i = 0; i < *(int *)&g208v; i++) {
-            g216[0] += (cs->speed * g_anCosineLut[o->rotZ]) >> 12;
-            g216[1] += (cs->speed * g_anSineLut[o->rotZ]) >> 12;
-            g216[2] += v;
+            arcEnd[0] += (cs->speed * g_anCosineLut[o->rotZ]) >> 12;
+            arcEnd[1] += (cs->speed * g_anSineLut[o->rotZ]) >> 12;
+            arcEnd[2] += v;
             v += cs->dvz;
           }
-          SubtractVector(g216, g192, g216);
-          AddVector(&o->posX, &o->posX, g216);
+          SubtractVector(arcEnd, targetPos, arcEnd);
+          AddVector(&o->posX, &o->posX, arcEnd);
           actor->mode = CCANNON_WATCH;
           continue;
         }
@@ -1397,12 +1398,12 @@ void Level24_UpdateActors(void) {
               }
             }
           } else if (st->mode == COLLREST_ON_TRI) {
-            UnpackWorldCollisionTri(st->groundTri, g232[0]);
-            AddVector(g232[0], g232[0], g232[1]);
-            AddVector(g232[0], g232[0], g232[2]);
-            actor->posX = g232[0][0] / 3;
-            actor->posY = g232[0][1] / 3;
-            actor->posZ = g232[0][2] / 3;
+            UnpackWorldCollisionTri(st->groundTri, triVerts[0]);
+            AddVector(triVerts[0], triVerts[0], triVerts[1]);
+            AddVector(triVerts[0], triVerts[0], triVerts[2]);
+            actor->posX = triVerts[0][0] / 3;
+            actor->posY = triVerts[0][1] / 3;
+            actor->posZ = triVerts[0][2] / 3;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);

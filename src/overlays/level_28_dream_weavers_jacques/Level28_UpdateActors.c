@@ -101,7 +101,8 @@ void Level28_UpdateActors(void) {
   char *base;
   int dt;
 
-  /* Scratch vectors, in the original's slot order (named by sp offset). */
+  /* Scratch vectors, in the original's slot order: shared ones named by sp
+   * offset (gNNN), single-use ones by role with the offset noted. */
   int g056[3];
   int eggArcBase[3];
   int eggArcOffset[3];
@@ -112,14 +113,14 @@ void Level28_UpdateActors(void) {
   int g168[3];
   int g184[3];
   int groundProbe[3];
-  int g216[3][3];
+  int triVerts[3][3]; /* sp 216 */
   int bouncePos[3];
   int bounceNormal[3];
   int homingStep[3];
   int sparxTargetPos[3];
   int sparxToTarget[3];
-  int g336[3];
-  int g352[3];
+  int riderPt1[3]; /* sp 336 */
+  int riderPt2[3]; /* sp 352 */
   int g368[3];
   int keySlotOffset[3];
   int g400[3];
@@ -1152,12 +1153,12 @@ void Level28_UpdateActors(void) {
               }
             }
           } else if (st->mode == COLLREST_ON_TRI) {
-            UnpackWorldCollisionTri(st->groundTri, g216[0]);
-            AddVector(g216[0], g216[0], g216[1]);
-            AddVector(g216[0], g216[0], g216[2]);
-            actor->posX = g216[0][0] / 3;
-            actor->posY = g216[0][1] / 3;
-            actor->posZ = g216[0][2] / 3;
+            UnpackWorldCollisionTri(st->groundTri, triVerts[0]);
+            AddVector(triVerts[0], triVerts[0], triVerts[1]);
+            AddVector(triVerts[0], triVerts[0], triVerts[2]);
+            actor->posX = triVerts[0][0] / 3;
+            actor->posY = triVerts[0][1] / 3;
+            actor->posZ = triVerts[0][2] / 3;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
@@ -1974,11 +1975,11 @@ void Level28_UpdateActors(void) {
           continue;
         }
         if (st->rideMode == one) {
-          GetActorAttachPoint(&g_pActorListBase[st->rider], 1, g336);
-          GetActorAttachPoint(&g_pActorListBase[st->rider], 2, g352);
-          actor->posX = g336[0] + ((g352[0] - g336[0]) >> 1);
-          actor->posY = g336[1] + ((g352[1] - g336[1]) >> 1);
-          actor->posZ = g336[2] + ((g352[2] - g336[2]) >> 1);
+          GetActorAttachPoint(&g_pActorListBase[st->rider], 1, riderPt1);
+          GetActorAttachPoint(&g_pActorListBase[st->rider], 2, riderPt2);
+          actor->posX = riderPt1[0] + ((riderPt2[0] - riderPt1[0]) >> 1);
+          actor->posY = riderPt1[1] + ((riderPt2[1] - riderPt1[1]) >> 1);
+          actor->posZ = riderPt1[2] + ((riderPt2[2] - riderPt1[2]) >> 1);
           actor->rotZ =
               ArcTan2(actor->posX - g_pActorListBase[st->rider].posX,
                             actor->posY - g_pActorListBase[st->rider].posY, ATAN_ANGLE8);

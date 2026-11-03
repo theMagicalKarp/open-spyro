@@ -110,14 +110,14 @@ void Level27_UpdateActors(void) {
   int g104[3];
   int eggViewPos[3];
   int g136[3];
-  int g152[3][3];
+  int triVerts[3][3]; /* sp 152 */
   int bouncePos[3];
   int bounceNormal[3];
   int homingStep[3];
   int sparxToTarget[3];
   int sparkVel[3];
   int g272[3];
-  int g288[3];
+  int sparkStep[3]; /* sp 288 */
   int sparkLead[3];
   int g320[3];
   int sparkPosVel[6];
@@ -877,12 +877,12 @@ void Level27_UpdateActors(void) {
               }
             }
           } else if (st->mode == COLLREST_ON_TRI) {
-            UnpackWorldCollisionTri(st->groundTri, g152[0]);
-            AddVector(g152[0], g152[0], g152[1]);
-            AddVector(g152[0], g152[0], g152[2]);
-            actor->posX = g152[0][0] / 3;
-            actor->posY = g152[0][1] / 3;
-            actor->posZ = g152[0][2] / 3;
+            UnpackWorldCollisionTri(st->groundTri, triVerts[0]);
+            AddVector(triVerts[0], triVerts[0], triVerts[1]);
+            AddVector(triVerts[0], triVerts[0], triVerts[2]);
+            actor->posX = triVerts[0][0] / 3;
+            actor->posY = triVerts[0][1] / 3;
+            actor->posZ = triVerts[0][2] / 3;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
@@ -1855,13 +1855,13 @@ void Level27_UpdateActors(void) {
         g_pfnLevelSpawnActor(ACTOR_TYPE_REBOUND_DEBRIS + 1, actor);
       }
       for (i = 0; i < 0x12; i++) {
-        g288[0] = RandomIntInRange(-0x5A, 0x5A);
-        g288[1] = RandomIntInRange(-0x5A, 0x5A);
-        g288[2] = RandomIntInRange(-0x19, 0x3C);
-        CopyVector(sparkLead, g288);
+        sparkStep[0] = RandomIntInRange(-0x5A, 0x5A);
+        sparkStep[1] = RandomIntInRange(-0x5A, 0x5A);
+        sparkStep[2] = RandomIntInRange(-0x19, 0x3C);
+        CopyVector(sparkLead, sparkStep);
         LShiftVector3(sparkLead, 2);
         AddVector(sparkLead, sparkLead, &actor->posX);
-        g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, sparkLead, (int)g288);
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, sparkLead, (int)sparkStep);
       }
       g_pfnLevelEmitParticles(10, EMIT_STREAK_BURST, &actor->posX, 0x10);
       DespawnActorRecord(actor);

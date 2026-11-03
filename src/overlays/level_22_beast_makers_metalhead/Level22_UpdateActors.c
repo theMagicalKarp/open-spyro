@@ -94,14 +94,15 @@ void Level22_UpdateActors(void) {
   char *base;
   int dt;
 
-  /* Scratch vectors, in the original's slot order (named by sp offset). */
+  /* Scratch vectors, in the original's slot order: shared ones named by sp
+   * offset (gNNN), single-use ones by role with the offset noted. */
   int g056[3];
   int eggArcBase[3];
   int eggArcOffset[3];
   int g104[3];
   int eggViewPos[3];
   int prevPos[3];
-  int g152[3];
+  int stepVel[3]; /* sp 152 */
   int g168[3];
   int sparkLead[3];
   int g200[3];
@@ -115,7 +116,7 @@ void Level22_UpdateActors(void) {
   int g328[3];
   int g344[3];
   int g360[3];
-  int g376[3][3];
+  int triVerts[3][3]; /* sp 376 */
   int bounceNormal[3];
   int homingStep[3];
   int sparxToTarget[3];
@@ -1038,11 +1039,11 @@ void Level22_UpdateActors(void) {
         if (st->vz < -0xA0) {
           st->vz = -0xA0;
         }
-        g152[0] = st->vx;
-        g152[1] = st->vy;
-        g152[2] = st->vz;
+        stepVel[0] = st->vx;
+        stepVel[1] = st->vy;
+        stepVel[2] = st->vz;
         CopyVector(prevPos, &actor->posX);
-        AddVector(&actor->posX, &actor->posX, g152);
+        AddVector(&actor->posX, &actor->posX, stepVel);
         if (TICK_DOWN(st->life) != 0) {
           DespawnActorRecord(actor);
           continue;
@@ -1051,12 +1052,12 @@ void Level22_UpdateActors(void) {
           continue;
         }
         CopyVector(g168, &g_anCollisionProbeVec);
-        if (ReflectVectorOffNormal(g152, g168, g152) == 0) {
+        if (ReflectVectorOffNormal(stepVel, g168, stepVel) == 0) {
           continue;
         }
-        st->vx = (g152[0] * 7) >> 3;
-        st->vy = (g152[1] * 7) >> 3;
-        st->vz = (g152[2] * 7) >> 3;
+        st->vx = (stepVel[0] * 7) >> 3;
+        st->vy = (stepVel[1] * 7) >> 3;
+        st->vz = (stepVel[2] * 7) >> 3;
         continue;
       }
       continue;
@@ -2223,14 +2224,14 @@ void Level22_UpdateActors(void) {
 
           } else if (st->restMode == COLLREST_ON_TRI) {
 
-            UnpackWorldCollisionTri(st->groundTri, g376[0]);
+            UnpackWorldCollisionTri(st->groundTri, triVerts[0]);
 
-            AddVector(g376[0], g376[0], g376[1]);
-            AddVector(g376[0], g376[0], g376[2]);
+            AddVector(triVerts[0], triVerts[0], triVerts[1]);
+            AddVector(triVerts[0], triVerts[0], triVerts[2]);
 
-            actor->posX = g376[0][0] / 3;
-            actor->posY = g376[0][1] / 3;
-            actor->posZ = g376[0][2] / 3;
+            actor->posX = triVerts[0][0] / 3;
+            actor->posY = triVerts[0][1] / 3;
+            actor->posZ = triVerts[0][2] / 3;
 
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
