@@ -708,7 +708,7 @@ void Level26_UpdateActors(void) {
     /* Type 55: lobbed bomb. Bursts on landing, on a timer or against
      * Spyro, then plays its burst and is removed. */
     case ACTOR_TYPE_LOBBED_BOMB: {
-      int *st = actor->state;
+      int *life = actor->state; /* frames left; hits other actors once under 40 frames out */
 
       switch (actor->mode) {
       case LOBBOMB_FLY:
@@ -718,11 +718,11 @@ void Level26_UpdateActors(void) {
           break;
         }
         CopyVector(svD, &actor->posX);
-        if (*st < 0x64) {
+        if (*life < 0x64) {
           DispatchActorContactAtSphere(&actor->posX, 0x64, 0, ACTOR_HIT_CHARGE, actor, CONTACT_STOP_AT_SOLID);
         }
         if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT) != 0 ||
-            TICK_DOWN(*st) != 0 ||
+            TICK_DOWN(*life) != 0 ||
             TryMoveActorForward(actor, 0xE0, 0, 0x100, 0) != 0 ||
             CastRayWorldAndActors(svD, &actor->posX) != 0) {
           actor->mode = LOBBOMB_BURST;

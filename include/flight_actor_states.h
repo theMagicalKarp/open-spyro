@@ -34,15 +34,6 @@ typedef struct CollectibleState {
   unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
 } CollectibleState;
 
-/* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
-typedef struct ShardState {
-  short vel[3];        /* 0x00 */
-  signed char spin[3]; /* 0x06 pitch / yaw / roll per frame */
-  char pad09[0x3];
-  int life;  /* 0x0C */
-  int floor; /* 0x10 */
-} ShardState;
-
 /* Flight rings (ACTOR_TYPE_FLIGHT_RING): a helper actor spawned alongside, and the
  * sound to play when Spyro flies through. */
 typedef struct TargetState {

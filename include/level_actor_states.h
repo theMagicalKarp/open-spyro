@@ -34,14 +34,6 @@ typedef struct CollectibleState {
   unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
 } CollectibleState;
 
-/* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break. */
-typedef struct ShardState {
-  short vel[3];  /* 0x00 */
-  short spin[3]; /* 0x06 pitch / yaw / roll per frame */
-  int life;      /* 0x0C */
-  int floor;     /* 0x10 */
-} ShardState;
-
 /* Type 227 (levels 14, 27): superflame giver. When Spyro faces it in range
  * it freezes him, flies in front of him under a scripted camera (`cam`), and
  * sets g_nSpyroSuperflameTimer by `kind`; then flies back to `home`. */
@@ -682,11 +674,5 @@ typedef struct WandererState {
   int pad28; /* 0x28 a level-data pointer (relocated at load), never read */
   int idleTimer;    /* 0x2C idle timer */
 } WandererState;
-
-/* Falling debris (ACTOR_TYPE_FALLING_DEBRIS, levels 13/14/15). */
-typedef struct FallingDebrisState {
-  int vel[3]; /* 0x00 random spread; vel[2] falls by 6 a frame to -0x80 */
-  int life;   /* 0x0C 0x20..0x3F frames */
-} FallingDebrisState;
 
 #endif /* OPEN_SPYRO_LEVEL_ACTOR_STATES_H */

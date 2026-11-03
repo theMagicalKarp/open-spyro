@@ -152,4 +152,38 @@ typedef struct SpinRunState {
   int timer;     /* 0x0C */
 } SpinRunState;
 
+/* Levels 13/14/15 type 295 (ACTOR_TYPE_HOMING_WISP): steers toward its
+ * target actor (or Spyro), and bursts into three sparks when it arrives or
+ * touches the ground. */
+typedef struct WispState {
+  struct Actor *target; /* 0x00 actor to reach, or null to chase Spyro */
+  int timer;            /* 0x04 lifetime */
+} WispState;
+
+/* Falling debris (ACTOR_TYPE_FALLING_DEBRIS, levels 13/14/15). */
+typedef struct FallingDebrisState {
+  int vel[3]; /* 0x00 random spread; vel[2] falls by 6 a frame to -0x80 */
+  int life;   /* 0x0C 0x20..0x3F frames */
+} FallingDebrisState;
+
+/* Levels 3/7/8 bouncing debris (ACTOR_TYPE_SWAYING_DEBRIS and kin): thrown
+ * with a random push, sways while it falls and bounces off the ground. */
+typedef struct BounceState {
+  short vel[3];       /* 0x00 */
+  short spin[3];      /* 0x06 per-frame rotX/rotY/rotZ deltas */
+  unsigned char life; /* 0x0C */
+  unsigned char slow; /* 0x0D frames until the push dies off */
+  short sway;         /* 0x0E */
+  int mode;           /* 0x10 */
+} BounceState;
+
+/* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break (and
+ * level 27's rubble). */
+typedef struct ShardState {
+  short vel[3];  /* 0x00 */
+  short spin[3]; /* 0x06 pitch / yaw / roll per frame */
+  int life;      /* 0x0C */
+  int floor;     /* 0x10 */
+} ShardState;
+
 #endif /* OPEN_SPYRO_ACTOR_STATES_H */

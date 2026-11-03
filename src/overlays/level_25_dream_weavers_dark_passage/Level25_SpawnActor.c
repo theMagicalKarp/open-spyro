@@ -64,15 +64,6 @@
  * With no parent the position falls back to Spyro's (g_anSpyroWorldPos).
  */
 
-/* Debris state block (types 0x43..0x45, 0xFF..0x101, 0x135..0x137). */
-/* Parent-anchored tracker state block. */
-typedef struct TrackState {
-  Actor *owner;        /* 0x00 */
-  int pad04;
-  int pad08;
-} TrackState;
-
-
 
 Actor *Level25_SpawnActor(int type, Actor *parent) {
   Actor *rec;
@@ -145,7 +136,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
     break;
 
   case ACTOR_TYPE_LOBBED_BOMB: {
-    PickupDropState *st = rec->state;
+    int *life = rec->state;
     int *pos;
     int turn;
 
@@ -167,12 +158,12 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
     rec->rotY = turn;
     rec->rotZ = ArcTan2(g_anSpyroWorldPos[0] - rec->posX, g_nSpyroWorldPosY - rec->posY, ATAN_ANGLE8);
     InsertActorIntoSpatialGrid(rec);
-    st->velX = 0x8C;
+    *life = 0x8C;
     break;
   }
 
   case ACTOR_TYPE_FALLING_ROCK: {
-    PickupDropState *st = rec->state;
+    int *life = rec->state;
     int *pos;
     int turn;
 
@@ -194,7 +185,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
     rec->rotY = turn;
     rec->rotZ = ArcTan2(g_anSpyroWorldPos[0] - rec->posX, g_nSpyroWorldPosY - rec->posY, ATAN_ANGLE8);
     InsertActorIntoSpatialGrid(rec);
-    st->velX = 0xF0;
+    *life = 0xF0;
     break;
   }
 
@@ -276,7 +267,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
   }
 
   case ACTOR_TYPE_LANTERN_FLAME: {
-    TrackState *st = rec->state;
+    Actor **lantern = rec->state;
     int dx;
     int dy;
     int dz;
@@ -291,7 +282,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
       rec->rotY = dy;
     } while (0);
     rec->rotZ = dz;
-    st->owner = parent;
+    *lantern = parent;
     InsertActorIntoSpatialGrid(rec);
     break;
   }
@@ -308,7 +299,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
     break;
 
   case ACTOR_TYPE_FLYING_EMBER: {
-    PickupDropState *st = rec->state;
+    int *life = rec->state;
     int *pos;
     int turn;
     int pdir;
@@ -342,7 +333,7 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
       rec->rotZ = pdir;
     }
     InsertActorIntoSpatialGrid(rec);
-    st->velX = 0xF0;
+    *life = 0xF0;
     break;
   }
 

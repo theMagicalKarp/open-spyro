@@ -440,19 +440,6 @@ typedef struct SpinChestLidState {
   int timer;  /* 0x0C */
 } SpinChestLidState;
 
-typedef struct BounceState {
-  short vx;           /* 0x00 */
-  short vy;           /* 0x02 */
-  short vz;           /* 0x04 */
-  short rx;           /* 0x06 */
-  short ry;           /* 0x08 */
-  short rz;           /* 0x0A */
-  unsigned char life; /* 0x0C */
-  unsigned char slow; /* 0x0D frames until the push dies off */
-  short sway;         /* 0x0E */
-  int mode;           /* 0x10 */
-} BounceState;
-
 typedef struct SwoopState {
   int speed;     /* 0x00 */
   int heading;   /* 0x04 */
@@ -1019,13 +1006,6 @@ typedef struct BreakableRockState {
   int restZ;  /* 0x0C */
   int handle; /* 0x10 for SelectActorLodBand */
 } BreakableRockState;
-
-/* Type 295: homing wisp. Steers toward its target actor (or Spyro), and
- * bursts into three sparks when it arrives or touches the ground. */
-typedef struct WispState {
-  Actor *target; /* 0x00 actor to reach, or null to chase Spyro */
-  int timer;     /* 0x04 lifetime */
-} WispState;
 
 typedef struct TetherState {
   int timer;   /* 0x00 */

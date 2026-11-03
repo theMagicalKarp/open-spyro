@@ -3500,28 +3500,28 @@ void Level8_UpdateActors(void) {
         DespawnActorRecord(actor);
         continue;
       }
-      actor->posX += st->vx;
-      actor->posY += st->vy;
-      st->vz -= 5;
+      actor->posX += st->vel[0];
+      actor->posY += st->vel[1];
+      st->vel[2] -= 5;
       if (--st->slow == 0) {
-        st->vx = 0;
-        st->vy = 0;
-        st->vz = 0;
+        st->vel[0] = 0;
+        st->vel[1] = 0;
+        st->vel[2] = 0;
       }
       if (actor->type == ACTOR_TYPE_BOUNCE_DEBRIS) {
-        actor->rotX += st->rx;
-        actor->rotY += st->ry;
-        actor->rotZ += st->rz;
-        if (st->vz < -0x80) {
-          st->vz = -0x80;
+        actor->rotX += st->spin[0];
+        actor->rotY += st->spin[1];
+        actor->rotZ += st->spin[2];
+        if (st->vel[2] < -0x80) {
+          st->vel[2] = -0x80;
         }
       } else {
-        if (st->vz < -0x18) {
-          st->vz = -0x18;
+        if (st->vel[2] < -0x18) {
+          st->vel[2] = -0x18;
         }
         if (st->mode == 0) {
           actor->rotZ += 0xC;
-        } else if (st->vz < 0) {
+        } else if (st->vel[2] < 0) {
           {
             int u = actor->rotY;
             int sw = st->sway;
@@ -3537,7 +3537,7 @@ void Level8_UpdateActors(void) {
           }
         }
       }
-      actor->posZ += st->vz;
+      actor->posZ += st->vel[2];
       st->life--;
       break;
     }

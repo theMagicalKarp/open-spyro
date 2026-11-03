@@ -116,7 +116,7 @@ Actor *Level26_SpawnActor(int type, Actor *parent) {
     break;
 
   case ACTOR_TYPE_LOBBED_BOMB: {
-    PickupDropState *st = rec->state;
+    int *life = rec->state;
     int *pos;
     int turn;
 
@@ -138,7 +138,7 @@ Actor *Level26_SpawnActor(int type, Actor *parent) {
     rec->rotY = turn;
     rec->rotZ = ArcTan2(g_anSpyroWorldPos[0] - rec->posX, g_nSpyroWorldPosY - rec->posY, ATAN_ANGLE8);
     InsertActorIntoSpatialGrid(rec);
-    st->velX = 0x8C;
+    *life = 0x8C;
     break;
   }
 

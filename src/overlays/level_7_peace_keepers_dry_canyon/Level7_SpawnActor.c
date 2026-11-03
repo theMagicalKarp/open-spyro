@@ -276,7 +276,7 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
   }
 
   case ACTOR_TYPE_BOUNCE_DEBRIS ... ACTOR_TYPE_BOUNCE_DEBRIS + 1: {
-    ShardState *st = rec->state;
+    BounceState *st = rec->state;
     int yaw;
     int pitch;
 
@@ -321,9 +321,9 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
     rec->posX += st->vel[0] * 4;
     rec->posY += st->vel[1] * 4;
     rec->posZ += st->vel[2] * 4;
-    st->spinX = (GetRandomU32() & 0x1F) - 0x10;
-    st->spinY = (GetRandomU32() & 0x1F) - 0x10;
-    st->spinZ = (GetRandomU32() & 0x1F) - 0x10;
+    st->spin[0] = (GetRandomU32() & 0x1F) - 0x10;
+    st->spin[1] = (GetRandomU32() & 0x1F) - 0x10;
+    st->spin[2] = (GetRandomU32() & 0x1F) - 0x10;
     st->life = 0x32 - RandomIntInRange(0, 0x14);
     st->slow = 0xA;
     st->sway = 4;

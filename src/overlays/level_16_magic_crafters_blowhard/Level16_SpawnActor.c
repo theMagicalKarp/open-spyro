@@ -25,6 +25,7 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "actor.h"
+#include "level_update_actors.h"
 #include "model.h"
 #include "emit_record.h"
 
@@ -42,25 +43,6 @@
  * the position falls back to Spyro's (g_anSpyroWorldPos).
  */
 
-/* Rim-rider state block (type 0x25; Level16_UpdateActors views it as
- * RimState). */
-typedef struct WindState {
-  Actor *owner;       /* 0x00 */
-  short reach;        /* 0x04 */
-  short range;        /* 0x06 */
-  int seenXY;         /* 0x08 Spyro's last-seen x/y >> 4 (two shorts) */
-  int child;          /* 0x0C type 0x27 helper actor */
-  unsigned char mode; /* 0x10 */
-} WindState;
-
-/* Rim-rider helper state block (type 0x27; HelperState in the updater). */
-typedef struct AimState {
-  int timer;    /* 0x00 */
-  Actor *owner; /* 0x04 */
-  int beat;     /* 0x08 */
-} AimState;
-
-extern int g_anCameraPos;     /* scalar view of camera X: the spawned prop turns to face the camera */
 
 extern int g_anSpyroWorldPos[];
 extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type */
@@ -148,7 +130,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
 
     case ACTOR_TYPE_RIM_RIDER:
     {
-      WindState *st = rec->state;
+      RimState *st = rec->state;
       int probe[3];
       int anim;
       shiftX = 2;
@@ -184,7 +166,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       rec->posX = parent->posX + (g_anCosineLut[parent->rotZ] >> shiftX);
       rec->posY = parent->posY + (g_anSineLut[parent->rotZ] >> shiftY);
       rec->posZ = parent->posZ;
-      st->owner = parent;
+      st->parent = parent;
       st->child = 0;
       rec->mode = 0;
       anim = g_apActorMeshTable[rec->type]->m_Animations[0]->m_ProgressPerTick;
@@ -271,11 +253,11 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
 
     case ACTOR_TYPE_RIM_RIDER_HELPER:
     {
-      AimState *st = rec->state;
+      HelperState *st = rec->state;
       InitActorRenderDefaults(rec);
       CopyVector(&rec->posX, &parent->posX);
       InsertActorIntoSpatialGrid(rec);
-      rec->rotZ = ArcTan2(g_anCameraPos - rec->posX, g_nCameraPosY - rec->posY, ATAN_ANGLE8);
+      rec->rotZ = ArcTan2(g_anCameraPos[0] - rec->posX, g_nCameraPosY - rec->posY, ATAN_ANGLE8);
       rec->posZ -= 0x400;
       st->timer = 0x40;
       st->owner = parent;

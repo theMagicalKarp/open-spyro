@@ -3718,20 +3718,20 @@ void Level3_UpdateActors(void) {
       if (st->life == 0 || actor->drawn == 0) {
         goto kill;
       }
-      actor->posX += st->vx;
-      actor->posY += st->vy;
-      st->vz -= 5;
+      actor->posX += st->vel[0];
+      actor->posY += st->vel[1];
+      st->vel[2] -= 5;
       if (--st->slow == 0) {
-        st->vx = 0;
-        st->vy = 0;
-        st->vz = 0;
+        st->vel[0] = 0;
+        st->vel[1] = 0;
+        st->vel[2] = 0;
       }
-      if (st->vz < -0x18) {
-        st->vz = -0x18;
+      if (st->vel[2] < -0x18) {
+        st->vel[2] = -0x18;
       }
       if (st->mode == 0) {
         actor->rotZ += 0xC;
-      } else if (st->vz < 0) {
+      } else if (st->vel[2] < 0) {
         {
           int u = actor->rotY;
           int sw = st->sway;
@@ -3746,7 +3746,7 @@ void Level3_UpdateActors(void) {
           actor->rotZ += 1;
         }
       }
-      actor->posZ += st->vz;
+      actor->posZ += st->vel[2];
       st->life--;
       break;
     kill:

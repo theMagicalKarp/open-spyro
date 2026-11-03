@@ -1242,7 +1242,7 @@ void Level25_UpdateActors(void) {
     /* Type 55: lobbed bomb. Bursts on landing, on a timer or against
      * Spyro, then plays its burst and is removed. */
     case ACTOR_TYPE_LOBBED_BOMB: {
-      int *st = actor->state;
+      int *life = actor->state; /* frames left; hits other actors once under 40 frames out */
 
       switch (actor->mode) {
       case LOBBOMB_FLY:
@@ -1252,11 +1252,11 @@ void Level25_UpdateActors(void) {
           break;
         }
         CopyVector(svA, &actor->posX);
-        if (*st < 0x64) {
+        if (*life < 0x64) {
           DispatchActorContactAtSphere(&actor->posX, 0x64, 0, ACTOR_HIT_CHARGE, actor, CONTACT_STOP_AT_SOLID);
         }
         if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT) != 0 ||
-            TICK_DOWN(*st) != 0 ||
+            TICK_DOWN(*life) != 0 ||
             TryMoveActorForward(actor, 0xE0, 0, 0x100, 0) != 0 ||
             CastRayWorldAndActors(svA, &actor->posX) != 0) {
           actor->mode = LOBBOMB_BURST;
@@ -1275,15 +1275,15 @@ void Level25_UpdateActors(void) {
     /* Type 56: falling rock. Drops until it lands, hits Spyro or times
      * out, then shatters. */
     case ACTOR_TYPE_FALLING_ROCK: {
-      int *st = actor->state;
+      int *life = actor->state; /* frames left; hits other actors once under 40 frames out */
 
       switch (actor->mode) {
       case SHOT_FLY:
         CopyVector(prevPos, &actor->posX);
-        if (*st < 0xC8) {
+        if (*life < 0xC8) {
           DispatchActorContactAtSphere(&actor->posX, 0x64, 0, ACTOR_HIT_CHARGE, actor, CONTACT_STOP_AT_SOLID);
         }
-        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT) || TICK_DOWN(*st) ||
+        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT) || TICK_DOWN(*life) ||
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) ||
             CastRayWorldAndActors(prevPos, &actor->posX)) {
           actor->mode = SHOT_BURST;
@@ -2444,7 +2444,7 @@ void Level25_UpdateActors(void) {
     /* Type 155: flying ember. Rides the floor, trails sparks, and bursts
      * when it lands, hits Spyro, times out or leaves the level. */
     case ACTOR_TYPE_FLYING_EMBER: {
-      int *st = actor->state;
+      int *life = actor->state; /* frames left; hits other actors once under 40 frames out */
       int i;
 
       switch (actor->mode) {
@@ -2472,10 +2472,10 @@ void Level25_UpdateActors(void) {
           }
         }
         CopyVector(svW, &actor->posX);
-        if (*st < 0xC8) {
+        if (*life < 0xC8) {
           DispatchActorContactAtSphere(&actor->posX, 0x64, 0, ACTOR_HIT_CHARGE, actor, CONTACT_STOP_AT_SOLID);
         }
-        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT) || TICK_DOWN(*st) ||
+        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_HIT | SPYRO_EV_CHARGE_HIT) || TICK_DOWN(*life) ||
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) ||
             CastRayWorldAndActors(svW, &actor->posX)) {
           actor->mode = SHOT_BURST;

@@ -52,19 +52,6 @@ typedef struct FragmentState {
   int floorZ;   /* 0x10 retire height */
 } FragmentState;
 
-/* Thrown-shard state block (types 0x120..0x121, 0x1F6) — UpdateActors'
- * BounceState. */
-typedef struct ShardState {
-  short vel[3];       /* 0x00 */
-  short spinX;        /* 0x06 */
-  short spinY;        /* 0x08 */
-  short spinZ;        /* 0x0A */
-  unsigned char life; /* 0x0C */
-  unsigned char slow; /* 0x0D frames until the push dies off */
-  short sway;         /* 0x0E */
-  int mode;           /* 0x10 */
-} ShardState;
-
 extern int FindGroundHeightBelow(int *pos, int drop);
 
 /* pos: a world vec3, or the Actor * for actor-anchored types; effectArg: a
