@@ -3190,7 +3190,7 @@ void Level16_UpdateActors(void) {
               DespawnActorRecord(a);
             }
             st->prev = *as;
-            ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(BLOWHARD_CHUNK_PHASE1, CHUNK_ANIM_RESUME, 0);
             st->chunkAnim = -1;
           }
           if (g_nLevelProgressCheckpoint[0] >= 2) {

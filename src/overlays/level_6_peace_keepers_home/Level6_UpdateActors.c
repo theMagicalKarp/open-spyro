@@ -4392,7 +4392,7 @@ void Level6_UpdateActors(void) {
       int i;
 
       if (st[0] == 1 && actor->dropKind == DROP_GEM_ROLL) {
-        ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(REWARD_BURST_CHUNK, CHUNK_ANIM_RESUME, 0);
         DespawnActorRecord(actor);
         continue;
       }
@@ -4417,7 +4417,7 @@ void Level6_UpdateActors(void) {
         g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_SPARK + 2, actor);
       }
       g_pfnLevelEmitParticles(8, EMIT_SCATTER_MOTE, &actor->posX, 0);
-      ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
+      ModifyWorldChunkAnimFlags(REWARD_BURST_CHUNK, CHUNK_ANIM_RESUME, 0);
       DespawnActorRecord(actor);
       continue;
     }

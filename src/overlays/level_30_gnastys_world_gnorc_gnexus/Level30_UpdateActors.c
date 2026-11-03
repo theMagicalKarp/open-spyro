@@ -1731,41 +1731,41 @@ void Level30_UpdateActors(void) {
 
       if (st->started == 0) {
         if (g_bTwilightHarborVisited != 0) {
-          ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(PATHGATE_CHUNK_TWILIGHT_HARBOR, CHUNK_ANIM_RESUME, 0);
           if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
-            SetWorldChunkAnimStep(0, 0x3B, 0);
+            SetWorldChunkAnimStep(PATHGATE_CHUNK_TWILIGHT_HARBOR, 0x3B, 0);
           }
         }
 
         if (g_abLevelVisitedFlag[LEVEL_SLOT(LEVEL_GNASTY_GNORC)] != 0) {
-          ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(PATHGATE_CHUNK_GNASTY_GNORC, CHUNK_ANIM_RESUME, 0);
           if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
-            SetWorldChunkAnimStep(1, 0x3B, 0);
+            SetWorldChunkAnimStep(PATHGATE_CHUNK_GNASTY_GNORC, 0x3B, 0);
           }
         }
 
         if (g_abLevelVisitedFlag[LEVEL_SLOT(LEVEL_GNASTYS_LOOT)] != 0) {
-          ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(PATHGATE_CHUNK_GNASTYS_LOOT, CHUNK_ANIM_RESUME, 0);
           if (g_nSpyroState == SPYRO_ST_GLIDE && g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
-            SetWorldChunkAnimStep(2, 0x3B, 0);
+            SetWorldChunkAnimStep(PATHGATE_CHUNK_GNASTYS_LOOT, 0x3B, 0);
           }
         }
 
         st->started = 1;
       }
 
-      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(0)) && g_abLevelExited[LEVEL_SLOT(LEVEL_GNORC_COVE)] != 0 &&
+      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(PATHGATE_CHUNK_TWILIGHT_HARBOR)) && g_abLevelExited[LEVEL_SLOT(LEVEL_GNORC_COVE)] != 0 &&
           g_anLevelDragonsRescued[LEVEL_SLOT(LEVEL_GNORC_GNEXUS)] > 0) {
-        ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(PATHGATE_CHUNK_TWILIGHT_HARBOR, CHUNK_ANIM_RESUME, 0);
       }
 
-      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(1)) && g_abLevelExited[LEVEL_SLOT(LEVEL_TWILIGHT_HARBOR)] != 0) {
-        ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
+      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(PATHGATE_CHUNK_GNASTY_GNORC)) && g_abLevelExited[LEVEL_SLOT(LEVEL_TWILIGHT_HARBOR)] != 0) {
+        ModifyWorldChunkAnimFlags(PATHGATE_CHUNK_GNASTY_GNORC, CHUNK_ANIM_RESUME, 0);
       }
 
-      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(2)) && g_nTotalTreasureCollected >= 12000 &&
+      if (!CHUNK_ANIM_STEP(GetWorldChunkAnimState(PATHGATE_CHUNK_GNASTYS_LOOT)) && g_nTotalTreasureCollected >= 12000 &&
           g_nTotalDragonsRescued >= 80 && g_nTotalEggsRecovered >= 12) {
-        ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(PATHGATE_CHUNK_GNASTYS_LOOT, CHUNK_ANIM_RESUME, 0);
       }
 
       break;

@@ -661,10 +661,10 @@ void Level22_UpdateActors(void) {
       }
       if (st->init == 0) {
         st->init = 1;
-        ModifyWorldChunkAnimFlags(3, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(METALHEAD_CHUNK_ARENA, CHUNK_ANIM_RESUME, 0);
         if (IsActorInCheckpointKillSet(actor) != 0) {
-          ModifyWorldChunkAnimFlags(4, CHUNK_ANIM_RESUME, 0);
-          ModifyWorldChunkAnimFlags(5, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(METALHEAD_CHUNK_PHASE(0), CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(METALHEAD_CHUNK_PHASE(1), CHUNK_ANIM_RESUME, 0);
           OrPickupGroupActorFlags(0, ACTOR_HIT_BLAST);
           OrPickupGroupActorFlags(1, ACTOR_HIT_BLAST);
           DespawnPickupGroupActors(2);
@@ -704,13 +704,13 @@ void Level22_UpdateActors(void) {
         st->camTimer = 0x3C;
       }
       if (PickupGroupHasLiveActor(st->phase + 2) == 0 && actor->mode < 4) {
-        ModifyWorldChunkAnimFlags(st->phase + 4, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(METALHEAD_CHUNK_PHASE(st->phase), CHUNK_ANIM_RESUME, 0);
         actor->mode = METALHEAD_PHASE_TURN;
         continue;
       }
       if (st->seen == 0 && dist < 0x6800) {
         st->seen = 1;
-        ModifyWorldChunkAnimFlags(3, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(METALHEAD_CHUNK_ARENA, CHUNK_ANIM_RESUME, 0);
       }
 
       switch (actor->mode) {
@@ -932,7 +932,7 @@ void Level22_UpdateActors(void) {
       case METALHEAD_DYING:
         ANIM_GO(actor, METALHEAD_ANIM_DYING);
         if (g_nActorAnimDone != 0) {
-          ModifyWorldChunkAnimFlags(3, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(METALHEAD_CHUNK_ARENA, CHUNK_ANIM_RESUME, 0);
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x40);
           g_bLevelBossDefeated = 1;

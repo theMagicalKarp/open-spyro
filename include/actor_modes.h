@@ -2433,4 +2433,49 @@ enum OneShotPropMode {
   ONESHOT_HIT_DONE = 4, /* holds */
 };
 
+/* World chunk-anim handles (ModifyWorldChunkAnimFlags / GetWorldChunkAnimState /
+ * SetWorldChunkAnimStep ids) that actor code names with a literal. Each is the
+ * id byte of an entry in that level's chunk-anim tables, so the names hold
+ * only within the level (or clone family) noted. */
+enum ChunkAnimHandle {
+  /* Level 30 (Gnorc Gnexus), ACTOR_TYPE_HUB_PATH_GATES: one per path. */
+  PATHGATE_CHUNK_TWILIGHT_HARBOR = 0,
+  PATHGATE_CHUNK_GNASTY_GNORC = 1,
+  PATHGATE_CHUNK_GNASTYS_LOOT = 2,
+  /* Level 6, ACTOR_TYPE_REWARD_BURST: resumed as it bursts (or at once
+   * when its gems were already taken). */
+  REWARD_BURST_CHUNK = 0,
+  /* Level 32, ACTOR_TYPE_FLAME_CHUNK_SWITCH: resumed each time it is flamed
+   * while armed. */
+  FCSWITCH_CHUNK = 0,
+  /* Level 33 (Gnasty Gnorc). */
+  GNASTY_CHUNK_DOOR = 0,     /* GNASTY_AT_DOOR, Spyro in its box: he escapes */
+  GNASTY_CHUNK_ESCAPE = 1,   /* flamed at his main path's end: GNASTY_PHASE_ESCAPE */
+  LANEPAT_CHUNK_REVEAL = 4,  /* lane-1 patrollers stay hidden until it starts moving */
+  /* Level 16 (Blowhard): the chunk his first hit releases, replayed when a
+   * checkpoint restores him past phase 1. */
+  BLOWHARD_CHUNK_PHASE1 = 0,
+  /* Level 22 (Metalhead): resumed at init, on first sight and as he dies.
+   * The phase chunks are METALHEAD_CHUNK_PHASE. */
+  METALHEAD_CHUNK_ARENA = 3,
+  /* Level 28 (Jacques). */
+  JACQUES_CHUNK_START_A = 7, /* both resumed on his first tick */
+  JACQUES_CHUNK_START_B = 8,
+  JACQUES_CHUNK_STOP11 = 9,  /* struck at path stop 11 */
+  JACQUES_CHUNK_STOP13 = 10, /* struck, or Spyro close, at path stop 13 */
+  /* Levels 24/28, SINGER_ROLE_TWO_GATE: the singer opens A, or B once A
+   * has moved. */
+  SINGER_CHUNK_GATE_A = 1,
+  SINGER_CHUNK_GATE_B = 2,
+  /* Levels 12/13, VROLE_LEADER villager: on its leader's script cue 7. */
+  VILLAGER_CHUNK_LEADER_CUE = 9,
+};
+/* Level 10 (Doctor Shemp): chunk N is resumed as phase N ends (stunned; in
+ * SHEMP_PHASE_3, dying); all three when he is already beaten. */
+#define SHEMP_PHASE_CHUNK(phase) (phase)
+/* Level 22: Metalhead's phase N (0, 1) ends by resuming chunk N + 4. */
+#define METALHEAD_CHUNK_PHASE(phase) ((phase) + 4)
+/* Level 4: an alarm post guard hit at stage N (0..2) resumes chunk N. */
+#define APGUARD_STAGE_CHUNK(stage) (stage)
+
 #endif

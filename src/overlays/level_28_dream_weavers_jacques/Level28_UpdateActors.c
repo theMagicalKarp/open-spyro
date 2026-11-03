@@ -2054,14 +2054,14 @@ void Level28_UpdateActors(void) {
             }
             break;
           case SINGER_ROLE_TWO_GATE:
-            if (CHUNK_ANIM_STEP(GetWorldChunkAnimState(1)) > 0 ||
-                !(GetWorldChunkAnimState(1) & CHUNK_ANIM_HALTED)) {
+            if (CHUNK_ANIM_STEP(GetWorldChunkAnimState(SINGER_CHUNK_GATE_A)) > 0 ||
+                !(GetWorldChunkAnimState(SINGER_CHUNK_GATE_A) & CHUNK_ANIM_HALTED)) {
               st->timer = 0x1C2;
-              ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
-              st->chunkAnim = 2;
+              ModifyWorldChunkAnimFlags(SINGER_CHUNK_GATE_B, CHUNK_ANIM_RESUME, 0);
+              st->chunkAnim = SINGER_CHUNK_GATE_B;
             } else {
               st->timer = 0x1C2;
-              ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
+              ModifyWorldChunkAnimFlags(SINGER_CHUNK_GATE_A, CHUNK_ANIM_RESUME, 0);
               st->chunkAnim = one;
             }
             break;
@@ -2160,17 +2160,17 @@ void Level28_UpdateActors(void) {
         st->stops[4] = 11;
         st->stops[5] = 13;
         st->stops[6] = 0;
-        ModifyWorldChunkAnimFlags(7, CHUNK_ANIM_RESUME, 0);
-        ModifyWorldChunkAnimFlags(8, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(JACQUES_CHUNK_START_A, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(JACQUES_CHUNK_START_B, CHUNK_ANIM_RESUME, 0);
       }
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != JACQUES_DEFEATED && actor->mode != 6) {
         actor->flags = 0;
         switch (st->path->cur) {
         case 11:
-          ModifyWorldChunkAnimFlags(9, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(JACQUES_CHUNK_STOP11, CHUNK_ANIM_RESUME, 0);
           break;
         case 13:
-          ModifyWorldChunkAnimFlags(10, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(JACQUES_CHUNK_STOP13, CHUNK_ANIM_RESUME, 0);
           break;
         case 0:
           ENTER_POSE(actor, JACQUES_DEFEATED);
@@ -2189,7 +2189,7 @@ void Level28_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1000 &&
             st->standGround == 0) {
           if (st->path->cur == 13) {
-            ModifyWorldChunkAnimFlags(10, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(JACQUES_CHUNK_STOP13, CHUNK_ANIM_RESUME, 0);
           }
           ANIM_GO(actor, JACQUES_WATCH);
           actor->mode = JACQUES_HOP;
@@ -2210,7 +2210,7 @@ void Level28_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1000 &&
             st->standGround == 0) {
           if (st->path->cur == 13) {
-            ModifyWorldChunkAnimFlags(10, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(JACQUES_CHUNK_STOP13, CHUNK_ANIM_RESUME, 0);
           }
           st->u54 = 0;
           ANIM_GO(actor, JACQUES_WATCH);

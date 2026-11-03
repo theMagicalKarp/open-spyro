@@ -3027,7 +3027,7 @@ void Level10_UpdateActors(void) {
           if (st->phase == SHEMP_PHASE_3) {
             ANIM_SET(actor, SHEMP_ANIM_DYING);
             actor->rotZ += 0x80;
-            ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(SHEMP_PHASE_CHUNK(SHEMP_PHASE_3), CHUNK_ANIM_RESUME, 0);
             actor->mode = SHEMP_DYING;
             continue;
           }
@@ -3065,9 +3065,9 @@ void Level10_UpdateActors(void) {
             }
           }
           if (!found) {
-            ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
-            ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
-            ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(SHEMP_PHASE_CHUNK(SHEMP_PHASE_1), CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(SHEMP_PHASE_CHUNK(SHEMP_PHASE_2), CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(SHEMP_PHASE_CHUNK(SHEMP_PHASE_3), CHUNK_ANIM_RESUME, 0);
             CopyVector(&actor->posX,
                           (int *)((unsigned char *)st->path + ((st->path->count << 4) - 0x18)));
             DespawnActorRecord(actor);
@@ -3328,7 +3328,7 @@ void Level10_UpdateActors(void) {
           actor->rotZ += 0x80;
           ANIM_SET(actor, SHEMP_ANIM_STUNNED);
         }
-        ModifyWorldChunkAnimFlags(st->phase, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(SHEMP_PHASE_CHUNK(st->phase), CHUNK_ANIM_RESUME, 0);
         st->timer2 = 0x1E;
         st->phase++;
         actor->mode = SHEMP_RETREAT;

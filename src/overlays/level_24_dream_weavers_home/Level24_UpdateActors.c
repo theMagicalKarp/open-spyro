@@ -2297,14 +2297,14 @@ void Level24_UpdateActors(void) {
             }
             break;
           case SINGER_ROLE_TWO_GATE:
-            if (CHUNK_ANIM_STEP(GetWorldChunkAnimState(1)) > 0 ||
-                !(GetWorldChunkAnimState(1) & CHUNK_ANIM_HALTED)) {
+            if (CHUNK_ANIM_STEP(GetWorldChunkAnimState(SINGER_CHUNK_GATE_A)) > 0 ||
+                !(GetWorldChunkAnimState(SINGER_CHUNK_GATE_A) & CHUNK_ANIM_HALTED)) {
               st->timer = 0x1C2;
-              ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
-              st->chunkAnim = 2;
+              ModifyWorldChunkAnimFlags(SINGER_CHUNK_GATE_B, CHUNK_ANIM_RESUME, 0);
+              st->chunkAnim = SINGER_CHUNK_GATE_B;
             } else {
               st->timer = 0x1C2;
-              ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
+              ModifyWorldChunkAnimFlags(SINGER_CHUNK_GATE_A, CHUNK_ANIM_RESUME, 0);
               st->chunkAnim = one;
             }
             break;

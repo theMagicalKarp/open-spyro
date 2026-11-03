@@ -1512,7 +1512,7 @@ void Level33_UpdateActors(void) {
       actor->flags = 0;
 
       if (st->lane == 1 && actor->cullRadius == 0 &&
-          CHUNK_ANIM_STEP(GetWorldChunkAnimState(4)) > 0) {
+          CHUNK_ANIM_STEP(GetWorldChunkAnimState(LANEPAT_CHUNK_REVEAL)) > 0) {
         actor->cullRadius = 0x28;
         g_pActorListBase[st->partner].cullRadius = 0x28;
       }
@@ -1671,7 +1671,7 @@ void Level33_UpdateActors(void) {
             actor->mode != GNASTY_FLAMED) {
           PathData *t;
 
-          ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(GNASTY_CHUNK_ESCAPE, CHUNK_ANIM_RESUME, 0);
           g_pActorListBase[st->key].subMode = 1;
           st->camTimer = 0xA0;
           st->vSpeed = 0;
@@ -2111,7 +2111,7 @@ void Level33_UpdateActors(void) {
           ANIM_GO(actor, GNASTY_LOOKOUT);
         }
         if (IsPointInRotatedBox(&SPY.posX, st->box88) != 0) {
-          ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(GNASTY_CHUNK_DOOR, CHUNK_ANIM_RESUME, 0);
           ANIM_GO(actor, GNASTY_ANIM_RUN);
           actor->mode = GNASTY_ESCAPE;
           continue;

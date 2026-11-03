@@ -3315,7 +3315,7 @@ void Level13_UpdateActors(void) {
           if (marker < 3) {
             if (TICK_DOWN(st->timer) && ls->script[1] == 7) {
               st->timer = 0x12C;
-              ModifyWorldChunkAnimFlags(9, CHUNK_ANIM_RESUME, 0);
+              ModifyWorldChunkAnimFlags(VILLAGER_CHUNK_LEADER_CUE, CHUNK_ANIM_RESUME, 0);
               ls->mode = 8;
               ls->cue = 2;
             }

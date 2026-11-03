@@ -2120,7 +2120,7 @@ void Level32_UpdateActors(void) {
       if (actor->flags & ACTOR_HIT_FLAME) {
         PlayActorMeshVoice(actor, FCSWITCH_VOICE_LIT, &actor->voiceRow);
         if (st->rearmTimer == 0) {
-          ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(FCSWITCH_CHUNK, CHUNK_ANIM_RESUME, 0);
           st->rearmTimer = 0x50;
           actor->mode = FCSWITCH_TRIPPED;
           ANIM_RESET(actor, FCSWITCH_TRIPPED);
