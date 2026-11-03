@@ -98,7 +98,7 @@ void LevelTransition_Draw(void) {
       EmitStaticActorMeshList(-1, &m1, p2);
     } else {
       EmitStaticActorMeshList(-1, (MATRIX *)g_anCameraViewMtx,
-                              (MATRIX *)((char *)g_anCameraViewMtx - 0x14));
+                              (MATRIX *)CAM_W2C_MTX_VIA_VIEW);
     }
   }
   DrawSync(0);

@@ -15,6 +15,9 @@
 #define SPY_POS_Z          0x02 /* g_nSpyroWorldPosZ */
 #define SPY_BODY_MTX       0x0D /* g_anSpyroBodyMtx */
 #define SPY_TRIGGER_FLAGS  0x0B /* g_dwSpyroTriggerEventFlags */
+#define SPY_ANIM_PLAY_RATE 0x16 /* g_nSpyroAnimPlayRate */
+#define SPY_FLAME_PHASE    0x18 /* g_nSpyroFlamePhase */
+#define SPY_FLAME_LAYER1_STATE 0x1A /* g_nSpyroFlameLayer1State */
 #define SPY_STATE          0x1E /* g_nSpyroState */
 #define SPY_SUBSTATE       0x1F /* g_nSpyroSubstate */
 #define SPY_CONTACTED      0x22 /* g_nSpyroContactedActorFlag */
@@ -47,6 +50,8 @@
 #define SPY_FIRST_POINT    0x5F /* g_anSpyroFirstContactPoint */
 #define SPY_FIRST_NORMAL   0x62 /* g_anSpyroFirstContactNormal */
 #define SPY_SCRIPTED_MOVE  0x65 /* g_nSpyroScriptedMoveMode */
+#define SPY_FLAME_TIMER    0x68 /* g_nSpyroFlameTimer */
+#define SPY_SWING_TARGET   0x69 /* g_nSpyroSwingEulerTargetX (x, y, z) */
 #define SPY_INPUT_BLANK      0x7C /* g_nSpyroInputBlankCountdown */
 #define SPY_REQUEST        0x7D /* g_dwSpyroRequestMask */
 #define SPY_REQUEST_TARGET 0x7E /* g_anSpyroRequestTargetPos */

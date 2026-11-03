@@ -1035,7 +1035,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       case 3: {
         int p;
 
-        if (g_anCameraPosBlock[12] != (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
+        if (g_anCameraPosBlock[12] /* g_nCameraCurrentMode */ !=
+            (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
           CopyVector(g_anSpyroDeathCamRecordBlock, g_anCameraPosBlock);
           ActivateScriptedCameraView(
               SCRIPTED_CAM_VIEW_AT_POS(g_anSpyroDeathCamRecordBlock));

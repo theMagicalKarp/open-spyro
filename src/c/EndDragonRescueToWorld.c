@@ -45,8 +45,8 @@ void EndDragonRescueToWorld(void) {
   g_pCameraTargetParams = dyn;
   g_nSpyroSuperflameTimer = timer;
   g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
-  ComputeCameraToTargetAngle((int *)((char *)cam - 0xA8));
-  CopyWords(dyn, ((char *)cam) - 0x40, 0x18);
+  ComputeCameraToTargetAngle((int *)((char *)cam - 0xA8)); /* g_anCameraPos */
+  CopyWords(dyn, ((char *)cam) - 0x40, 0x18);              /* g_nCameraYaw */
   dyn[0] = (dyn[0] + g_nCameraTargetYawBiasFromMode) & 0xFFF;
   ResetCameraStateToTarget();
   InitHudCounters(0);

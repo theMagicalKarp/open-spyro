@@ -42,8 +42,8 @@ void TickSpyroFrameGlideHold(void) {
   }
   vel = g_anSpyroVelocityFp6;
   RShiftVector3(vel, 6);
-  pos = (int *)((char *)vel - 0x100);
-  CopyVector((int *)((char *)vel - 0x74), pos);
+  pos = vel - (SPY_VELOCITY_FP6 - SPY_POS);
+  CopyVector(vel - (SPY_VELOCITY_FP6 - SPY_PREV_POS), pos);
   AddVector(pos, pos, vel);
   for (i = 0; i < g_nFrameStep; i++) {
     AdvanceSpyroSubstepState();

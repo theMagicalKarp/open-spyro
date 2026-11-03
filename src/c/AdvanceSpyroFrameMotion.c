@@ -1,6 +1,8 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_block.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 /* shared-base view of g_dwSpyroRequestMask (0x80078c4c): the mask read and
@@ -28,8 +30,9 @@ void AdvanceSpyroFrameMotion(void) {
     AdvanceSpyroSubstepState();
   }
   req = g_adwSpyroRequestMaskBlock;
-  if (!(req[0] & 0x4000)) {
-    ground = FindGroundHeightBelow((int *)((char *)req - 0x1F4), 0x10000);
+  if (!(req[0] & SPYRO_RQ_NO_CLIP)) {
+    ground =
+        FindGroundHeightBelow((int *)(req - (SPY_REQUEST - SPY_POS)), 0x10000);
     g_nSpyroGroundHeightZ = ground;
     g_nSpyroTriggerCurrentEventId = 0;
     if (g_nSpyroAirborneFrames == 0 &&

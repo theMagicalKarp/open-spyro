@@ -39,6 +39,15 @@ typedef struct ScriptedCamView {
 /* The record whose camPos is at `pos`. */
 #define SCRIPTED_CAM_VIEW_AT_POS(pos) ((ScriptedCamView *)((int *)(pos) - 6))
 
+/* Byte views onto the camera globals from the held bases the original keeps
+ * live (g_anCameraEulerPitchBlock, g_anCameraViewMtx, g_apCameraAnchorBlock);
+ * each is the named global's address. */
+#define CAM_VIEW_MTX_VIA_EULER ((char *)g_anCameraEulerPitchBlock - 0x3A) /* g_anCameraViewMtx */
+#define CAM_W2C_MTX_VIA_EULER ((char *)g_anCameraEulerPitchBlock - 0x4E)  /* g_anWorldToCameraRotMtx */
+#define CAM_W2C_MTX_VIA_VIEW ((char *)g_anCameraViewMtx - 0x14)           /* g_anWorldToCameraRotMtx */
+#define CAM_POS_VIA_ANCHOR ((char *)g_apCameraAnchorBlock - 0xA8)         /* g_anCameraPos */
+#define CAM_YAW_VIA_ANCHOR ((char *)g_apCameraAnchorBlock - 0x40)         /* g_nCameraYaw */
+
 /* g_nCameraCurrentMode / g_nCameraNextMode. Modes 0..6 and 0xF are the
  * per-Spyro-state picks (g_abSpyroStateCameraModeTable, by SpyroState); the
  * rest are entered by request bits, scripts and transitions. CAM_HELD marks a

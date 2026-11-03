@@ -27,7 +27,8 @@ void EndSaveMenuToWorld(void) {
   g_nSpyroSwingEulerPrev1 = 0x100;
   g_bSpyroSwingByteEuler1 = 0x10;
   g_nSpyroInputBlankCountdown = 8;
-  g_apCameraAnchorBlock[0] = &g_anSpyroSwingTargetBlock[-105];
+  g_apCameraAnchorBlock[0] =
+      &g_anSpyroSwingTargetBlock[SPY_POS - SPY_SWING_TARGET];
 
   dyn = g_anCameraDynamicTargetParams;
   g_nCameraCurrentMode = CAM_MODE_STAND;
@@ -37,8 +38,8 @@ void EndSaveMenuToWorld(void) {
   g_nCameraTargetYawBiasFromMode =
       g_anSpyroMoveTargetYawBlock[SPY_BODY_YAW - SPY_MOVE_TARGET_YAW];
 
-  ComputeCameraToTargetAngle((int *)((char *)g_apCameraAnchorBlock - 0xA8));
-  CopyWords(dyn, (char *)g_apCameraAnchorBlock - 0x40, 0x18);
+  ComputeCameraToTargetAngle((int *)CAM_POS_VIA_ANCHOR);
+  CopyWords(dyn, CAM_YAW_VIA_ANCHOR, 0x18);
   dyn[0] = (dyn[0] + g_nCameraTargetYawBiasFromMode) & 0xFFF;
 
   ResetCameraStateToTarget();
