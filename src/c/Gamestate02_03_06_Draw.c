@@ -695,16 +695,16 @@ void Gamestate02_03_06_Draw(void) {
       }
       fmt = g_szFmtPercentD;
       sprintf(buf, fmt, pct);
-      BuildTextSpriteChain(buf, pos, 0x22, 2);
+      BuildTextSpriteChain(buf, pos, 0x22, TINT_GOLD);
       pos[0] = 0x1de;
       buf[0] = '%';
       buf[1] = 0;
-      BuildTextSpriteChain(buf, pos, 0x22, 2);
+      BuildTextSpriteChain(buf, pos, 0x22, TINT_GOLD);
       pos[0] = 0x5a;
       pos[1] = 0x24;
       pos[2] = 0xb40;
       sprintf(buf, fmt, g_nTotalTreasureCollected);
-      BuildTextSpriteChain(buf, pos, 0x1b, 2);
+      BuildTextSpriteChain(buf, pos, 0x1b, TINT_GOLD);
       pos[0] = 0x14d;
       pos[1] = 0x24;
       pos[2] = 0xb40;
@@ -712,7 +712,7 @@ void Gamestate02_03_06_Draw(void) {
         pos[0] = 0x132;
       }
       sprintf(buf, fmt, g_nTotalDragonsRescued);
-      BuildTextSpriteChain(buf, pos, 0x1b, 2);
+      BuildTextSpriteChain(buf, pos, 0x1b, TINT_GOLD);
       g_pSpriteRecordWriteCursor--;
       FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
       g_pSpriteRecordWriteCursor->type = ACTOR_TYPE_HUD_GEM_ICON;
@@ -759,7 +759,7 @@ void Gamestate02_03_06_Draw(void) {
               pos[1] = 0x3a;
               pos[0] = x3;
               pos[2] = 0x1800;
-              BuildTextSpriteChain(g_szUiGlyphX, pos, 0, 2);
+              BuildTextSpriteChain(g_szUiGlyphX, pos, 0, TINT_GOLD);
               pos[0] = 0x20;
               pos[1] = 0x20;
               pos[2] = 0x20;
@@ -823,7 +823,7 @@ void Gamestate02_03_06_Draw(void) {
       v = (v - 1) * 0xa - 0x9e;
       pos[0] = g_nSubMenuScrollOffset - v;
       BuildTextSprites((&g_apWorldNames[1])[g_nSubMenuCursor], pos, styD, 0x17,
-                       2);
+                       TINT_GOLD);
       rec = g_pSpriteRecordWriteCursor;
       phase = 0;
       while (i < (int)g_abWorldTitleGlyphBlock[g_nSubMenuCursor]) {
@@ -919,7 +919,7 @@ void Gamestate02_03_06_Draw(void) {
           styD[2] = 0x1400;
           rec = g_pSpriteRecordWriteCursor;
           BuildTextSprites(g_apLevelNameStrings[g_nSubMenuCursor * 6 + i], pos,
-                           styD, 0x12, 2);
+                           styD, 0x12, TINT_GOLD);
           bC = bias + 0x113;
           gx = g_nSubMenuScrollOffset + bC;
           {
@@ -939,34 +939,34 @@ void Gamestate02_03_06_Draw(void) {
             pos[0] += 0x12;
           }
           sprintf(buf, g_szFmtPercentD, *gems);
-          BuildTextSpriteChain(buf, pos, 0x12, 2);
+          BuildTextSpriteChain(buf, pos, 0x12, TINT_GOLD);
           pos[2] = 0x1800;
           bD = bias + 0x15a;
           pos[0] = g_nSubMenuScrollOffset + bD;
-          BuildTextSpriteChain(g_szUiSlash, pos, 0x12, 2);
+          BuildTextSpriteChain(g_szUiSlash, pos, 0x12, TINT_GOLD);
           pos[2] = 0x1100;
           bE = bias + 0x16b;
           pos[0] = g_nSubMenuScrollOffset + bE;
           sprintf(buf, g_szFmtPercentD,
                   g_anLevelTotalGemsTable[g_nSubMenuCursor * 6 + i]);
-          BuildTextSpriteChain(buf, pos, 0x12, 2);
+          BuildTextSpriteChain(buf, pos, 0x12, TINT_GOLD);
           if (g_abLevelTotalDragonsBlock[g_nSubMenuCursor * 6 + i] != 0) {
             pos[0] = g_nSubMenuScrollOffset + 0x1bd;
             sprintf(buf, g_szFmtPercentD,
                     g_anLevelDragonsRescued[g_nSubMenuCursor * 6 + i]);
-            BuildTextSpriteChain(buf, pos, 0x12, 2);
+            BuildTextSpriteChain(buf, pos, 0x12, TINT_GOLD);
             pos[2] = 0x1800;
             pos[0] = g_nSubMenuScrollOffset + 0x1ce;
-            BuildTextSpriteChain(g_szUiSlash, pos, 0x12, 2);
+            BuildTextSpriteChain(g_szUiSlash, pos, 0x12, TINT_GOLD);
             pos[2] = 0x1100;
             pos[0] = g_nSubMenuScrollOffset + 0x1df;
             sprintf(buf, g_szFmtPercentD,
                     g_abLevelTotalDragonsBlock[g_nSubMenuCursor * 6 + i]);
-            BuildTextSpriteChain(buf, pos, 0x12, 2);
+            BuildTextSpriteChain(buf, pos, 0x12, TINT_GOLD);
           } else {
             pos[2] = 0x1800;
             pos[0] = g_nSubMenuScrollOffset + 0x1ce;
-            BuildTextSpriteChain(g_szUiSlash, pos, 0x12, 2);
+            BuildTextSpriteChain(g_szUiSlash, pos, 0x12, TINT_GOLD);
             g_pSpriteRecordWriteCursor->rotX = 0x29;
           }
           if (g_nSubMenuCursor * 6 + i == g_nLevelIndex) {
@@ -1003,7 +1003,7 @@ void Gamestate02_03_06_Draw(void) {
                 pos[0] = quad2[0] + 0xc;
                 pos[1] = y;
                 pos[2] = 0x1800;
-                BuildTextSpriteChain(g_szUiGlyphX, pos, 0, 2);
+                BuildTextSpriteChain(g_szUiGlyphX, pos, 0, TINT_GOLD);
                 pos[0] = 0x20;
                 pos[1] = 0x20;
                 pos[2] = 0x20;

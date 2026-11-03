@@ -203,7 +203,7 @@ void DrawLevelTransitionOverlay(void) {
     sprintf(msg, g_szFmtPercentD, value);
     {
       Actor *glyph = g_pSpriteRecordWriteCursor;
-      BuildTextSpriteChain((unsigned char *)msg, pos, 0x14, 2);
+      BuildTextSpriteChain((unsigned char *)msg, pos, 0x14, TINT_GOLD);
       glyph--;
       if ((int)g_pSpriteRecordWriteCursor <= (int)glyph) {
         unsigned short *lut = (unsigned short *)g_anCosineLut;

@@ -127,6 +127,8 @@
 /* Case 402 -- cannon ball: fired from a barrel, then flown along a path
  * whose header is { count, cur } and whose points follow at +8 (PATH_X). */
 #define PATH_PT(p, i) ((int *)((unsigned char *)(p) + (((i) << 4) + 0x8)))
+/* The same point from a byte offset already scaled by 16 (i << 4). */
+#define PATH_PT_AT(p, off) ((int *)((unsigned char *)(p) + (off) + 0x8))
 
 /* The anim bytes 0x3C..0x3F read as one word. */
 #define ANIM_WORD(a) (*(int *)&(a)->anim)

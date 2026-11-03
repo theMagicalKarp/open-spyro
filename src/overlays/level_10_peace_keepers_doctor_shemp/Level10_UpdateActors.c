@@ -3156,11 +3156,11 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_P1_CIRCLE:
         off = st->node[0] << 4;
-        ha = ArcTan2(*(int *)((unsigned char *)st->path + off + 8) - spy->posX,
-                          *(int *)((unsigned char *)st->path + off + 0xC) - spy->posY, ATAN_ANGLE8);
+        ha = ArcTan2(PATH_PT_AT(st->path, off)[0] - spy->posX,
+                          PATH_PT_AT(st->path, off)[1] - spy->posY, ATAN_ANGLE8);
         lim = 0xE;
-        b = ArcTan2(actor->posX - *(int *)((unsigned char *)st->path + off + 8),
-                          actor->posY - *(int *)((unsigned char *)st->path + off + 0xC), ATAN_ANGLE8);
+        b = ArcTan2(actor->posX - PATH_PT_AT(st->path, off)[0],
+                          actor->posY - PATH_PT_AT(st->path, off)[1], ATAN_ANGLE8);
         spd = 0xB4;
         if (actor->nextAnim == SHEMP_ANIM_WALK) {
           lim = 6;
@@ -3236,12 +3236,12 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_P1_RETURN:
         off = st->node[0] << 4;
-        a = ArcTan2(*(int *)((unsigned char *)st->path + off + 8) - spy->posX,
-                          *(int *)((unsigned char *)st->path + off + 0xC) - spy->posY, ATAN_ANGLE8);
+        a = ArcTan2(PATH_PT_AT(st->path, off)[0] - spy->posX,
+                          PATH_PT_AT(st->path, off)[1] - spy->posY, ATAN_ANGLE8);
         ANIM_GO(actor, SHEMP_ANIM_WALK);
-        tgt371[0] = *(int *)((unsigned char *)st->path + off + 8) + ((g_anCosineLut[a] * 0x19) >> 5);
+        tgt371[0] = PATH_PT_AT(st->path, off)[0] + ((g_anCosineLut[a] * 0x19) >> 5);
         tgt371[1] =
-            *(int *)((unsigned char *)st->path + off + 0xC) + ((g_anSineLut[a] * 0x19) >> 5);
+            PATH_PT_AT(st->path, off)[1] + ((g_anSineLut[a] * 0x19) >> 5);
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(tgt371[0] - actor->posX,
                                         tgt371[1] - actor->posY, ATAN_ANGLE8),
@@ -3336,9 +3336,9 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_RETREAT:
         off = st->node[st->phase - 1] << 4;
-        ca = (ArcTan2(*(int *)((unsigned char *)st->path + off + 8) -
+        ca = (ArcTan2(PATH_PT_AT(st->path, off)[0] -
                                PATH_X(st->cam, st->phase - 1),
-                           *(int *)((unsigned char *)st->path + off + 0xC) -
+                           PATH_PT_AT(st->path, off)[1] -
                                PATH_Y(st->cam, st->phase - 1),
                            ATAN_ANGLE8) +
              0x80) &
