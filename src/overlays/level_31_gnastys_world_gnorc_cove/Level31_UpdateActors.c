@@ -2101,7 +2101,7 @@ void Level31_UpdateActors(void) {
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != MOUNT_KNOCKED) {
         ((FloatingBarrelState *)g_pActorListBase[st->rider].state)->link = -1;
         st->rider = -1;
-        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
                                   SPY.bodyRotZ, 0x20, 0x40);
         st->lift = 0x78;
@@ -2163,7 +2163,7 @@ void Level31_UpdateActors(void) {
         break;
 
       case MOUNT_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->lift, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -2183,7 +2183,7 @@ void Level31_UpdateActors(void) {
       HatchCarrierState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != HCARRIER_KNOCKED) {
-        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
                                   SPY.bodyRotZ, 0x20, 0x40);
         st->lift = 0x3C;
@@ -2245,7 +2245,7 @@ void Level31_UpdateActors(void) {
       }
 
       case HCARRIER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->lift, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x30);
@@ -2280,7 +2280,7 @@ void Level31_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       if ((unsigned int)(actor->mode - 6) < 5 && (actor->flags & ACTOR_HIT_FLAME)) {
-        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
                                   SPY.bodyRotZ, 0x20, 0x40);
         st->lift = 0x3C;
@@ -2437,7 +2437,7 @@ void Level31_UpdateActors(void) {
         break;
 
       case CTHROW_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knock, &st->lift, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->lift, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x30);
@@ -2962,13 +2962,13 @@ void Level31_UpdateActors(void) {
       RoamingCritterState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
-        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
                                   SPY.bodyRotZ, 0x20, 0x40);
         if (actor->flags & ACTOR_HIT_FLAME) {
-          st->speed = 0xC8;
+          st->knockSpeed = 0xC8;
         } else {
-          st->speed = 0x190;
+          st->knockSpeed = 0x190;
         }
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2985,9 +2985,9 @@ void Level31_UpdateActors(void) {
         break;
 
       case CRITTER_KNOCKED:
-        if (st->speed > 0xF) {
-          st->speed -= 0xF;
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x1F4, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        if (st->knockSpeed > 0xF) {
+          st->knockSpeed -= 0xF;
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x1F4, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

@@ -1293,7 +1293,7 @@ void Level2_UpdateActors(void) {
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != GPAIR_KNOCKED) {
         st->speed = 0xF0;
-        st->heading = SPY.bodyRotZ;
+        st->knockHeading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);
@@ -1368,7 +1368,7 @@ void Level2_UpdateActors(void) {
         break;
       case GPAIR_KNOCKED:
         if (st->speed > 0) {
-          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 0);
+          MoveActorAlongAngle(actor, st->knockHeading, st->speed, 0x1F4, 0x2BC, 0);
           st->speed -= 0x10;
         }
         if (g_nActorAnimDone != 0) {
@@ -1755,14 +1755,14 @@ void Level2_UpdateActors(void) {
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != POSTGUARD_KNOCKED &&
           (actor->flags != ACTOR_HIT_FLAME || st->flameProof == 0)) {
         st->time = 0x8C;
-        st->speed = 0x118;
+        st->knockSpeed = 0x118;
         st->timer = 0x28;
         if (actor->flags == ACTOR_HIT_CHARGE) {
           st->time = 0xAA;
-          st->speed = 0x15E;
+          st->knockSpeed = 0x15E;
           st->timer = 0x3C;
         }
-        st->heading = StepAndLerpAngle8(
+        st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         st->spinX = sixteen - (GetRandomU32() & 0x1F);
@@ -1911,7 +1911,7 @@ void Level2_UpdateActors(void) {
       case POSTGUARD_KNOCKED:
         actor->rotX += st->spinX;
         actor->rotY += st->spinY;
-        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->time, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->time, 0xC, 0xC);
         if (g_nActorAnimDone != 0 && actor->nextAnim == POSTGUARD_ANIM_KNOCKED && actor->anim != POSTGUARD_ANIM_KNOCKED_END) {
           g_nActorAnimDone = 0;
           ANIM_RESET(actor, POSTGUARD_ANIM_KNOCKED_END);
@@ -2938,7 +2938,7 @@ void Level2_UpdateActors(void) {
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != GRAZER_KNOCKED) {
         EBB_BREAK();
         actor->flags = 0;
-        st->heading = StepAndLerpAngle8(
+        st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         if (actor->flags & ACTOR_HIT_FLAME) {
@@ -2969,7 +2969,7 @@ void Level2_UpdateActors(void) {
         }
         break;
       case GRAZER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->time, st->heading, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->time, st->knockHeading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x10);

@@ -1642,7 +1642,7 @@ void Level27_UpdateActors(void) {
         FallingChunkState *c;
 
         st->speed = 0x15E;
-        st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
                                                   actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
                                     g_bSpyroPersistentEulerZ, 0x20, 0x40);
         st->lift = 0x8C;
@@ -1655,8 +1655,8 @@ void Level27_UpdateActors(void) {
         c = o->state;
         c->noFloor = 1;
         c->age = 0;
-        c->vx = (g_anCosineLut[(st->heading - 10) & 0xFF] * 0x4B) >> 10;
-        c->vy = (g_anSineLut[(st->heading - 10) & 0xFF] * 0x4B) >> 10;
+        c->vx = (g_anCosineLut[(st->knockHeading - 10) & 0xFF] * 0x4B) >> 10;
+        c->vy = (g_anSineLut[(st->knockHeading - 10) & 0xFF] * 0x4B) >> 10;
         c->vz = 0xDC;
         c->spin[0] = RandomSignedInRange(7, 0xF);
         c->spin[1] = RandomSignedInRange(7, 0xF);
@@ -1739,7 +1739,7 @@ void Level27_UpdateActors(void) {
         break;
 
       case ROCKTHROW_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC, 0x10);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->lift, 0xC, 0x10);
         if (g_nActorAnimDone != 0 && actor->nextAnim == ROCKTHROW_KNOCKED) {
           ANIM_SET(actor, ROCKTHROW_ANIM_DOWN);
         }
@@ -2241,14 +2241,14 @@ void Level27_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         actor->flags = 0;
-        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, 0x20, 0x40);
         {
           if (actor->flags & ACTOR_HIT_FLAME) {
-            st->speed = 0x8C;
+            st->knockSpeed = 0x8C;
           } else {
-            st->speed = 0xFA;
+            st->knockSpeed = 0xFA;
           }
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2264,9 +2264,9 @@ void Level27_UpdateActors(void) {
         break;
 
       case CRITTER_KNOCKED:
-        if (st->speed >= 0x10) {
-          st->speed -= 0xF;
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        if (st->knockSpeed >= 0x10) {
+          st->knockSpeed -= 0xF;
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);

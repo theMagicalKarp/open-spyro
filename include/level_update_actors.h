@@ -444,8 +444,8 @@ typedef struct SwoopState {
 typedef struct CritterKnockState {
   WanderBlock wander; /* 0x00 UpdateActorWander's block */
   char pad20[0x18];
-  int knock; /* 0x38 knock-back heading */
-  int speed; /* 0x3C knock-back speed */
+  int knockHeading; /* 0x38 knock-back heading */
+  int knockSpeed; /* 0x3C knock-back speed */
 } CritterKnockState;
 
 /* Type 184 (level 7): a stationary brawler. Turns to face Spyro and swings
@@ -759,7 +759,7 @@ typedef struct LungeState {
 typedef struct SpinnerState {
   int count; /* 0x00 */
   int timer; /* 0x04 */
-  int angle; /* 0x08 knock-back heading */
+  int knockHeading; /* 0x08 knock-back heading */
   int speed; /* 0x0C */
   int spin;  /* 0x10 */
 } SpinnerState;
@@ -797,8 +797,8 @@ typedef struct PathGuardState {
   int node;       /* 0x14 */
   int partner;    /* 0x18 index into g_pActorListBase; level data: ACTOR_TYPE_PATH_GUARD */
   int heading;    /* 0x1C */
-  int speed;      /* 0x20 knock-back speed */
-  int knock;      /* 0x24 knock-back heading */
+  int knockSpeed;      /* 0x20 knock-back speed */
+  int knockHeading;      /* 0x24 knock-back heading */
 } PathGuardState;
 
 /* PathGuardState.flags. */
@@ -844,13 +844,13 @@ typedef struct BlowhardState {
 typedef struct HopState {
   WanderBlock wander; /* 0x00 UpdateActorWander's block */
   int timer;   /* 0x20 */
-  int heading; /* 0x24 knock-back heading */
+  int knockHeading; /* 0x24 knock-back heading */
   int time;    /* 0x28 knock-back time */
 } HopState;
 
 /* Case 115 -- patrolling guard, one of a pair. */
 typedef struct GuardPairState {
-  int heading; /* 0x00 knock-back heading */
+  int knockHeading; /* 0x00 knock-back heading */
   int speed;   /* 0x04 */
   int gloatCount; /* 0x08 GLOAT plays until it counts down (2 after pinning Spyro) */
   int timer;   /* 0x0C */
@@ -874,8 +874,8 @@ typedef struct PostState {
   PathData *path; /* 0x00 */
   int mode;       /* 0x04 enum PostGuardPost */
   int timer;      /* 0x08 */
-  int heading;    /* 0x0C knock-back heading */
-  int speed;      /* 0x10 knock-back speed */
+  int knockHeading;    /* 0x0C knock-back heading */
+  int knockSpeed;      /* 0x10 knock-back speed */
   int time;       /* 0x14 knock-back time */
   int flameProof; /* 0x18 level data: flame alone does not knock it back */
   short spinX;    /* 0x1C */
@@ -915,7 +915,7 @@ typedef struct CirclingBirdState {
 
 /* Case 198 -- charging yak. */
 typedef struct ChargingYakState {
-  int heading; /* 0x00 knock-back heading */
+  int knockHeading; /* 0x00 knock-back heading */
   int speed;   /* 0x04 */
   int rest;    /* 0x08 rest countdown after a charge */
   int pad0C;
@@ -924,7 +924,7 @@ typedef struct ChargingYakState {
 
 /* Case 231 -- ram. */
 typedef struct ToughRamState {
-  int heading; /* 0x00 knock-back heading */
+  int knockHeading; /* 0x00 knock-back heading */
   int speed;   /* 0x04 */
   int rest;    /* 0x08 rest countdown, knock-back height step */
   int pad0C;
@@ -944,8 +944,8 @@ typedef struct SnowballThrowerState {
   int wake;       /* 0x10 wake-up distance >> 10, 0 = default */
   int turn1;      /* 0x14 */
   int turn4;      /* 0x18 */
-  int knock;      /* 0x1C knock-back heading */
-  int speed;      /* 0x20 knock-back speed */
+  int knockHeading;      /* 0x1C knock-back heading */
+  int knockSpeed;      /* 0x20 knock-back speed */
   int blockHeadingA; /* 0x24 SteerActorAroundPoint blocked heading */
   int blockHeadingB; /* 0x28 SteerActorAroundPoint blocked heading */
   int throwT;     /* 0x2C */
@@ -1065,8 +1065,8 @@ typedef struct CatapultState {
 
 typedef struct RoamingCritterState {
   WanderBlock wander; /* 0x00 UpdateActorWander's block */
-  int speed; /* 0x20 knock-back speed */
-  int knock; /* 0x24 knock-back heading */
+  int knockSpeed; /* 0x20 knock-back speed */
+  int knockHeading; /* 0x24 knock-back heading */
   char pad28[0x4];
   int wait;  /* 0x2C pause timer */
 } RoamingCritterState;
@@ -1099,8 +1099,8 @@ typedef struct ShempGuardState {
 
 /* Type 372: Shemp's lookout. */
 typedef struct LookoutState {
-  int heading;   /* 0x00 knock-back heading */
-  int speed;     /* 0x04 knock-back speed */
+  int knockHeading;   /* 0x00 knock-back heading */
+  int knockSpeed;     /* 0x04 knock-back speed */
   int timer;     /* 0x08 swipe cooldown */
   int count;     /* 0x0C idle loops left */
   int home;      /* 0x10 rest heading */
@@ -1306,8 +1306,8 @@ typedef struct LootVortexState {
 
 typedef struct BombLobberState {
   int timer;   /* 0x00 */
-  int heading; /* 0x04 knock-back heading */
-  int speed;   /* 0x08 knock-back speed */
+  int knockHeading; /* 0x04 knock-back heading */
+  int knockSpeed;   /* 0x08 knock-back speed */
   int reload;  /* 0x0C */
 } BombLobberState;
 
@@ -1345,7 +1345,7 @@ typedef struct FormationEscortState {
 typedef struct ChasingPathGuardState {
   int home[3];    /* 0x00 */
   int timer;      /* 0x0C */
-  int knock;      /* 0x10 knock-back heading */
+  int knockHeading;      /* 0x10 knock-back heading */
   int speed;      /* 0x14 */
   int lift;       /* 0x18 */
   PathData *path; /* 0x1C */
@@ -1369,7 +1369,7 @@ typedef struct HatchState {
 typedef struct MountState {
   int rider; /* 0x00 index into g_pActorListBase, -1 = none; level data: ACTOR_TYPE_FLOATING_MINE / FLOATING_BARREL */
   int init;  /* 0x04 */
-  int knock; /* 0x08 knock-back heading */
+  int knockHeading; /* 0x08 knock-back heading */
   int speed; /* 0x0C */
   int lift;  /* 0x10 */
 } MountState;
@@ -1378,7 +1378,7 @@ typedef struct HatchCarrierState {
   int hatch;   /* 0x00 index of its hatch in g_pActorListBase */
   Actor *held; /* 0x04 carried occupant */
   int timer;   /* 0x08 */
-  int knock;   /* 0x0C knock-back heading */
+  int knockHeading;   /* 0x0C knock-back heading */
   int speed;   /* 0x10 */
   int lift;    /* 0x14 */
 } HatchCarrierState;
@@ -1407,7 +1407,7 @@ typedef struct CarriedThrowerState {
   int held;  /* 0x00 index of the carried actor in g_pActorListBase, -1 = none */
   int scored; /* 0x04 the swing hit Spyro: gloat after it */
   int timer; /* 0x08 */
-  int knock; /* 0x0C knock-back heading */
+  int knockHeading; /* 0x0C knock-back heading */
   int speed; /* 0x10 */
   int lift;  /* 0x14 */
 } CarriedThrowerState;
@@ -1445,8 +1445,8 @@ typedef struct Follower {
 
 typedef struct GrazerState {
   WanderBlock wander; /* 0x00 UpdateActorWander's block */
-  int speed; /* 0x20 knock-back speed */
-  int knock; /* 0x24 knock-back heading */
+  int knockSpeed; /* 0x20 knock-back speed */
+  int knockHeading; /* 0x24 knock-back heading */
   int wait;  /* 0x28 graze timer */
   int voice; /* 0x2C bleat timer */
 } GrazerState;

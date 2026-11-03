@@ -3442,8 +3442,8 @@ void Level10_UpdateActors(void) {
         link = &g_pActorListBase[st->link];
       }
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != GLOOK_KNOCKED) {
-        st->speed = 0xF0;
-        st->heading = SPY.bodyRotZ;
+        st->knockSpeed = 0xF0;
+        st->knockHeading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);
@@ -3566,9 +3566,9 @@ void Level10_UpdateActors(void) {
         break;
 
       case GLOOK_KNOCKED:
-        if (st->speed > 0) {
-          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, MOVE_LIFT);
-          st->speed -= 0x10;
+        if (st->knockSpeed > 0) {
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0x1F4, 0x2BC, MOVE_LIFT);
+          st->knockSpeed -= 0x10;
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

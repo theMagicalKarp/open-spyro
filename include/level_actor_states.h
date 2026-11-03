@@ -57,7 +57,7 @@ typedef struct WarDrumState {
   int wait;   /* 0x04 */
   int beat;   /* 0x08 */
   int fade;   /* 0x0C */
-  int knock;  /* 0x10 knock-back heading */
+  int knockHeading;  /* 0x10 knock-back heading */
   int speed;  /* 0x14 */
   int lift;   /* 0x18 */
   int life;   /* 0x1C */
@@ -80,7 +80,7 @@ typedef struct TriggerBox {
 typedef struct RoamingRamState {
   char pad00[0xC];
   PathData *path; /* 0x0C */
-  int knock;      /* 0x10 knock-back heading */
+  int knockHeading;      /* 0x10 knock-back heading */
   int speed;      /* 0x14 */
   int lift;       /* 0x18 */
   int mode;       /* 0x1C RoamingRamKind */
@@ -99,7 +99,7 @@ typedef struct ChargingGuardState {
   int range;         /* 0x14 sight range >> 10 */
   PathData *path;    /* 0x18 */
   int pad1C; /* 0x1C a level-data pointer (relocated at load), never read */
-  int knock;         /* 0x20 knock-back heading */
+  int knockHeading;         /* 0x20 knock-back heading */
   int speed;         /* 0x24 */
   int turn;          /* 0x28 */
   int cooldown; /* 0x2C frames before it may charge again */
@@ -249,8 +249,8 @@ typedef struct PathRunnerState {
   int speed;           /* 0x00 flee speed */
   PathData *path; /* 0x04 */
   PathData *home;      /* 0x08 home path */
-  int knock;           /* 0x0C knock-back speed */
-  int knockAng;        /* 0x10 knock-back heading */
+  int knockSpeed;           /* 0x0C knock-back speed */
+  int knockHeading;        /* 0x10 knock-back heading */
   int lift;            /* 0x14 vertical speed */
   int target;          /* 0x18 index into g_pActorListBase, -1 none; initially (level data) ACTOR_TYPE_BOULDER_THROWER / GATEKEEPER */
   int pathInit;        /* 0x1C */
@@ -366,7 +366,7 @@ typedef struct JacquesState {
 typedef struct ChargingRamState {
   int init;     /* 0x00 */
   int mode;     /* 0x04 nonzero = starts awake */
-  int knock;    /* 0x08 knock-back speed */
+  int knockSpeed;    /* 0x08 knock-back speed */
   int lift;     /* 0x0C */
   int pad10;      /* 0x10 */
   int heading;  /* 0x14 */
@@ -453,8 +453,8 @@ typedef struct CometCannonState {
 
 /* Types 92/130 state: a guard whose animations start at `base`. */
 typedef struct LungingGuardState {
-  int knock;           /* 0x00 knock-back speed */
-  int heading;         /* 0x04 knock-back heading */
+  int knockSpeed;           /* 0x00 knock-back speed */
+  int knockHeading;         /* 0x04 knock-back heading */
   int lift;            /* 0x08 */
   int base;            /* 0x0C first animation */
   int kind;            /* 0x10 LungingGuardKind */
@@ -522,7 +522,7 @@ typedef struct BreakableWallState {
 
 /* Type 134 state: a rock thrower. */
 typedef struct RockThrowerState {
-  int heading;          /* 0x00 knock-back heading */
+  int knockHeading;          /* 0x00 knock-back heading */
   int speed;            /* 0x04 */
   int lift;             /* 0x08 */
   int flags;            /* 0x0C THROWER_F_ADVANCE, ROCKTHROW_F_ESCORT */

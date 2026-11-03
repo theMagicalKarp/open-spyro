@@ -2674,7 +2674,7 @@ void Level4_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != REAR_KNOCKED) {
         SetActorGroupSubstate(actor, 1);
-        st->angle = StepAndLerpAngle8(
+        st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         st->speed = 0x190;
@@ -2781,7 +2781,7 @@ void Level4_UpdateActors(void) {
         }
         if (st->speed > 0x1E) {
           st->speed -= 0x1E;
-          MoveActorAlongAngle(actor, st->angle, st->speed, 0, 0x12C, MOVE_LIFT);
+          MoveActorAlongAngle(actor, st->knockHeading, st->speed, 0, 0x12C, MOVE_LIFT);
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

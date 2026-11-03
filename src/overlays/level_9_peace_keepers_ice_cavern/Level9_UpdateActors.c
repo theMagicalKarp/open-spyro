@@ -1961,7 +1961,7 @@ void Level9_UpdateActors(void) {
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != YAK_KNOCKED) {
         st->speed = 0xF0;
-        st->heading = SPY.bodyRotZ;
+        st->knockHeading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);
@@ -2044,7 +2044,7 @@ void Level9_UpdateActors(void) {
 
       case YAK_KNOCKED:
         if (st->speed > 0) {
-          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, MOVE_LIFT);
+          MoveActorAlongAngle(actor, st->knockHeading, st->speed, 0x1F4, 0x2BC, MOVE_LIFT);
           st->speed -= 0x10;
         }
         if (g_nActorAnimDone != 0) {
@@ -2142,12 +2142,12 @@ void Level9_UpdateActors(void) {
       int r;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != SNOWTHROW_KNOCKED) {
-        st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
+        st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, 0x20, 0x40);
-        st->speed = 0xB4;
+        st->knockSpeed = 0xB4;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->speed = 0x12C;
+          st->knockSpeed = 0x12C;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
@@ -2218,15 +2218,15 @@ void Level9_UpdateActors(void) {
           SubtractVector(bv, &SPY.posX, &ball->posX);
           ScaleVector3ByRatio(bv, VectorLength(bv, VEC_LEN_XYZ), 0xC8);
           ((ThrownSnowballState *)bv)->timer = 0x8C;
-          st->knock = WrapAddAngle8(actor->rotZ, 0x80);
-          st->speed = 0;
+          st->knockHeading = WrapAddAngle8(actor->rotZ, 0x80);
+          st->knockSpeed = 0;
           st->throwT = 0x1E;
         }
-        if (st->speed != 0) {
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0x12C, 0x12C, MOVE_LIFT);
-          st->speed -= 0x14;
-          if (st->speed < 0) {
-            st->speed = 0;
+        if (st->knockSpeed != 0) {
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0x12C, 0x12C, MOVE_LIFT);
+          st->knockSpeed -= 0x14;
+          if (st->knockSpeed < 0) {
+            st->knockSpeed = 0;
           }
         }
         if (g_nActorAnimDone != 0) {
@@ -2237,11 +2237,11 @@ void Level9_UpdateActors(void) {
       }
 
       case SNOWTHROW_KNOCKED:
-        if (st->speed != 0) {
-          MoveActorAlongAngle(actor, st->knock, st->speed, 0x12C, 0x12C, MOVE_LIFT);
-          st->speed -= 0xC;
-          if (st->speed < 0) {
-            st->speed = 0;
+        if (st->knockSpeed != 0) {
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0x12C, 0x12C, MOVE_LIFT);
+          st->knockSpeed -= 0xC;
+          if (st->knockSpeed < 0) {
+            st->knockSpeed = 0;
           }
         }
         if (g_nActorAnimDone != 0) {
@@ -2401,7 +2401,7 @@ void Level9_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != TRAM_KNOCKED) {
-        st->heading = SPY.bodyRotZ;
+        st->knockHeading = SPY.bodyRotZ;
         st->speed = 0x80;
         st->rest = 0x80;
         actor->flags = 0;
@@ -2496,9 +2496,9 @@ void Level9_UpdateActors(void) {
 
         if (st->rest != 0) {
           if (actor->nextFrame >= 4) {
-            DriveActorTrackedMove(actor, &st->rest, st->heading, 0, 8, 0);
+            DriveActorTrackedMove(actor, &st->rest, st->knockHeading, 0, 8, 0);
           } else {
-            DriveActorTrackedMove(actor, &st->rest, st->heading, 0, 0, 0);
+            DriveActorTrackedMove(actor, &st->rest, st->knockHeading, 0, 0, 0);
           }
         }
         actor->posZ += 0x200;
@@ -2530,9 +2530,9 @@ void Level9_UpdateActors(void) {
         }
         if (st->speed != 0) {
           actor->posX +=
-              (st->speed * LookupCosine(st->heading << 4)) >> 12;
+              (st->speed * LookupCosine(st->knockHeading << 4)) >> 12;
           actor->posY +=
-              (st->speed * LookupSine(st->heading << 4)) >> 12;
+              (st->speed * LookupSine(st->knockHeading << 4)) >> 12;
         }
         actor->posZ += 0x200;
         z = FindGroundHeightBelow(&actor->posX, 0x1000);

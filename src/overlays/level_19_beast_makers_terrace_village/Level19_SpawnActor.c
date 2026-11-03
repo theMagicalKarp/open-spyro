@@ -198,7 +198,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     if (parent->type == ACTOR_TYPE_BOLT_GUARD) {
       BoltGuardState *pst = parent->state;
 
-      yaw = ((pst->heading + RandomIntInRange(-0x32, 0x32)) & 0xFF) << 4;
+      yaw = ((pst->knockHeading + RandomIntInRange(-0x32, 0x32)) & 0xFF) << 4;
       pitch = GetRandomU32() & 0x7FF;
       if (LookupCosine(pitch) >> 4 > 0) {
         speed = LookupCosine(pitch) >> 4;

@@ -180,12 +180,12 @@ typedef struct BounceState {
 } BounceState;
 
 /* Level 19 type 35 (ACTOR_TYPE_BOLT_GUARD): scatters when hit and fires type
- * 494 bolts. SpawnActor aims its ground-bounce shards along `heading`. */
+ * 494 bolts. SpawnActor aims its ground-bounce shards along `knockHeading`. */
 typedef struct BoltGuardState {
   int mode;    /* 0x00 enum BoltGuardCue */
   int timer;   /* 0x04 */
   int timer2;  /* 0x08 */
-  int heading; /* 0x0C knock-back heading (12-bit), set when it is hit */
+  int knockHeading; /* 0x0C knock-back heading (12-bit), set when it is hit */
   int speed;   /* 0x10 */
   int turn;    /* 0x14 */
   int u18;     /* 0x18 */

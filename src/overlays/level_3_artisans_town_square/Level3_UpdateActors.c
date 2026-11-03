@@ -3438,10 +3438,10 @@ void Level3_UpdateActors(void) {
           }
           g_pfnLevelSpawnActor(ACTOR_TYPE_SWAYING_DEBRIS, actor);
         }
-        st->knock = StepAndLerpAngle8(
+        st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
-        st->speed = 0xFA;
+        st->knockSpeed = 0xFA;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
         ENTER_POSE(actor, GRAZER_KNOCKED);
@@ -3473,7 +3473,7 @@ void Level3_UpdateActors(void) {
         break;
 
       case GRAZER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knock, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x10);
