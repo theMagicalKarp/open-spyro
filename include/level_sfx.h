@@ -40,6 +40,7 @@ enum LevelSfx {
   SFX_SPYRO_HURT_EXIT = 0x1B,   /* leaving SPYRO_ST_HURT / HURT_TINT / HURT_LONG / KNOCKBACK(_2),
                                  * the end of the HURT_PINNED animation, and SPYRO_ST_HAZARD
                                  * entry (which has no exit sound of its own) */
+  SFX_PORTAL_HUM = 0x1A, /* AMBIENT_MODE_PORTAL sources: on each exit whirlwind and hub portal */
   /* Single-type slots. */
   SFX_REWARD_BURST = 0x1C,   /* level 6: a type 417 reward burst goes off */
   SFX_LOOT_VORTEX_DONE = 0x3C, /* levels 33/34: a loot vortex's sequence ends (LVORTEX_FINISH) */

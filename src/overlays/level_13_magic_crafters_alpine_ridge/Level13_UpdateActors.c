@@ -2769,7 +2769,7 @@ void Level13_UpdateActors(void) {
           }
           if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1800 &&
               ABS2(SPY_DZ(actor)) < 0x320) {
-            if (actor->anim != 0xB) {
+            if (actor->anim != CAPTAIN_ANIM_START) {
               actor->mode = CAPTAIN_FIGHT;
               continue;
             }
@@ -4105,12 +4105,12 @@ void Level13_UpdateActors(void) {
         voice = 0x12;
         break;
 
-      case 8:
-        voice = 0x1A;
+      case AMBIENT_MODE_PORTAL:
+        voice = SFX_PORTAL_HUM;
         break;
 
-      case 9:
-        voice = 0x36;
+      case AMBIENT_MODE_WHIRLWIND:
+        voice = SFX_WHIRLWIND;
         break;
       }
 

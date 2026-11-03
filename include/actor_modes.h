@@ -641,8 +641,7 @@ enum CaptainFightStep {
   CAPTAIN_STEP_REST = 6,     /* close: STRIKE; rested: DRAW again */
 };
 
-/* A guard captain's animations, from the modes that play them (0xB, a pose
- * the patrol tests for, has no player in the C). */
+/* A guard captain's animations, from the modes that play them. */
 enum CaptainAnim {
   CAPTAIN_ANIM_STAND = 0,    /* sentry; held on its frame 0x14/0x15 pose */
   CAPTAIN_ANIM_GUARD = 2,
@@ -651,6 +650,9 @@ enum CaptainAnim {
   CAPTAIN_ANIM_SHEATHE = 8,
   CAPTAIN_ANIM_ROUSE = 9,
   CAPTAIN_ANIM_BASH = 0xA,
+  CAPTAIN_ANIM_START = 0xB,  /* level-data start pose (the lookouts and one patrol captain); no
+                              * C writer, so it holds until another anim replaces it. A patrol
+                              * captain still in it draws (DRAW) before fighting */
   CAPTAIN_ANIM_DRAW = 0xC,   /* alerted: draws before DRAW / DRAW_ADVANCE */
 };
 /* CaptainState.step on a ledge post instead: nonzero once armed. */
@@ -754,7 +756,7 @@ enum CannonVoice {
 };
 enum ShempGuardVoice {
   SGUARD_VOICE_FALL = 0,  /* ran off a ledge: entering SGUARD_FALL */
-  SGUARD_VOICE_SHOUT = 1, /* while it chases or rushes, and once ShempGuardState.watch plays animation 7 */
+  SGUARD_VOICE_SHOUT = 1, /* while it chases or rushes (and on the never-met ShempGuardState.watch cue) */
 };
 enum SpinChestVoice {
   SPINCHEST_VOICE_SPIN = 1, /* played on each spin-up hit, pitched up by its speed */
@@ -2407,11 +2409,15 @@ enum TallyIconMode {
   TALLY_ICON_SPIRAL = 7, /* spirals into the centre, then PARKED */
 };
 
-/* AmbientSoundState.mode picks the sample-bank voice set (per level, so the
- * other values stay literal); AMBIENT_MODE_PATH also carries the source along
- * its path, one leg at a time. */
+/* AmbientSoundState.mode picks the sample-bank voice set. Level data only
+ * places modes 0..7 in the Artisans levels (0..3), where the slots they play
+ * are level-specific, so those values stay literal; AMBIENT_MODE_PATH also
+ * carries the source along its path, one leg at a time. -1 = silent. */
 enum AmbientSoundMode {
   AMBIENT_MODE_PATH = 2,
+  AMBIENT_MODE_PORTAL = 8,    /* SFX_PORTAL_HUM: the source on every exit whirlwind
+                               * (type 9) and home-world portal (type 1) */
+  AMBIENT_MODE_WHIRLWIND = 9, /* SFX_WHIRLWIND; no level places it */
 };
 
 /* AmbientSoundState.sub while AMBIENT_MODE_PATH. */

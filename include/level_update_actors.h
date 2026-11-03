@@ -1099,7 +1099,9 @@ typedef struct ShempGuardState {
   int turn;           /* 0x20 */
   int stateTimer;     /* 0x24 BRAKE, RECOVER and FALL durations */
   int watch;          /* 0x28 index into g_pActorListBase, -1 none: a peer Shemp guard
-                       * (level data); its nextAnim 7 cues this one to CHASE */
+                       * (level data); its nextAnim 7 cues this one to CHASE. Dead in
+                       * practice: guards start at anim 0, SGUARD_RECOVER is entered
+                       * without ENTER_POSE, and no other path queues anim 7 */
   int guard;          /* 0x2C index into g_pActorListBase: its ACTOR_TYPE_SHEMP_LOOKOUT */
   int done;           /* 0x30 */
   PathData *target;   /* 0x34 path it pivots along; node 3 is the point it tests Spyro against */

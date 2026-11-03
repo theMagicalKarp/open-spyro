@@ -2163,7 +2163,8 @@ void Level28_UpdateActors(void) {
         ModifyWorldChunkAnimFlags(JACQUES_CHUNK_START_A, CHUNK_ANIM_RESUME, 0);
         ModifyWorldChunkAnimFlags(JACQUES_CHUNK_START_B, CHUNK_ANIM_RESUME, 0);
       }
-      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != JACQUES_DEFEATED && actor->mode != 6) {
+      if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != JACQUES_DEFEATED &&
+          actor->mode != 6 /* no Jacques arm enters mode 6 */) {
         actor->flags = 0;
         switch (st->path->cur) {
         case 11:

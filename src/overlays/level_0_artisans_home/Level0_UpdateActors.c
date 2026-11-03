@@ -2363,12 +2363,12 @@ void Level0_UpdateActors(void) {
         snd = 0x12;
         break;
 
-      case 8:
-        snd = 0x1A;
+      case AMBIENT_MODE_PORTAL:
+        snd = SFX_PORTAL_HUM;
         break;
 
-      case 9:
-        snd = 0x36;
+      case AMBIENT_MODE_WHIRLWIND:
+        snd = SFX_WHIRLWIND;
         break;
       }
 

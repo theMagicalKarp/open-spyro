@@ -1113,7 +1113,7 @@ void Level24_UpdateActors(void) {
                                                   g_nSpyroWorldPosY - partner->posY, ATAN_ANGLE8),
                                     0x80),
                       4, 0x32, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
-        if (partner->mode != 0xA) {
+        if (partner->mode != CCANNON_LOB) {
           if (TICK_DOWN(st->timer) != 0) {
             TurnActorYawTowardAngle(partner, h, 4, 0, YAW_HOLD_IN_BAND);
           }
@@ -3243,12 +3243,12 @@ void Level24_UpdateActors(void) {
         voice = 0x12;
         break;
 
-      case 8:
-        voice = 0x1A;
+      case AMBIENT_MODE_PORTAL:
+        voice = SFX_PORTAL_HUM;
         break;
 
-      case 9:
-        voice = 0x36;
+      case AMBIENT_MODE_WHIRLWIND:
+        voice = SFX_WHIRLWIND;
         break;
       }
 
