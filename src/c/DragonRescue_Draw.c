@@ -5,6 +5,9 @@
 #include "hud.h"
 #include "main_shared.h"
 
+/* g_apSpritePrimQueue, reached from the held OT depth-bin base. */
+#define SPRITE_PRIM_QUEUE (&g_apOtDepthBinBlock[2304])
+
 /* Draw for gamestate 8 (GS_DRAGON_RESCUE, 0x8001cfdc, 0x73c).
 
    The dragon-rescue presentation, one arm per g_nDragonRescueSubstate. Substate
@@ -59,7 +62,7 @@ void DragonRescue_Draw(void) {
     }
     *ot = 0;
     act = g_pActorListBase;
-    q = &g_apOtDepthBinBlock[2304];
+    q = SPRITE_PRIM_QUEUE;
     id = act->mode;
     while (id != ACTOR_MODE_END) {
       if (act->type == ACTOR_TYPE_STATUE_SHARD && id < ACTOR_MODE_DORMANT) {
@@ -99,7 +102,7 @@ void DragonRescue_Draw(void) {
     *ot++ = g_pDragonRescueStatueActor;
     *ot++ = g_pDragonRescueSpyroMirrorActor;
     *ot = 0;
-    q = &g_apOtDepthBinBlock[2304];
+    q = SPRITE_PRIM_QUEUE;
     act = g_pActorListBase;
     id = act->mode;
     while (id != ACTOR_MODE_END) {
@@ -134,7 +137,7 @@ void DragonRescue_Draw(void) {
     i = 0;
     *ot++ = g_pDragonRescueStatueActor;
     *ot = 0;
-    q = &g_apOtDepthBinBlock[2304];
+    q = SPRITE_PRIM_QUEUE;
     icon = (unsigned char *)HUD_ICON_SLOT(HUD_SLOT_DRAGON_DIGITS);
   icon5:
     *q++ = icon;
@@ -175,7 +178,7 @@ void DragonRescue_Draw(void) {
     unsigned char *icon;
     void **q;
     int i;
-    q = &g_apOtDepthBinBlock[2304];
+    q = SPRITE_PRIM_QUEUE;
     i = 0;
     icon = (unsigned char *)HUD_ICON_SLOT(HUD_SLOT_DRAGON_DIGITS);
   icon6:
@@ -201,7 +204,7 @@ void DragonRescue_Draw(void) {
       int i;
       void **q;
       i = 0;
-      q = &g_apOtDepthBinBlock[2304];
+      q = SPRITE_PRIM_QUEUE;
       icon = (unsigned char *)HUD_ICON_SLOT(HUD_SLOT_DRAGON_DIGITS);
     icon7:
       *q++ = icon;

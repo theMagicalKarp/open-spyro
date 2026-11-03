@@ -29,6 +29,12 @@
      the cheaper register, so the `la` is emitted with the index load and
      fills its load-delay bubble, as in the original. */
 
+/* Views off the held fade-target base (g_nMusicVolumeFadeTarget). */
+#define FADE_TARGET (g_anMusicFadeBlock[0])
+#define FADE_STEP (g_anMusicFadeBlock[0x16]) /* g_nMusicVolumeFadeStep */
+#define CD_DA_VOLUME                                                           \
+  (*(short *)&g_anMusicFadeBlock[-0xB0]) /* g_nCdDaVolumeCurrent */
+
 /* 0x8002bbe0 (1024 bytes) — per-frame CD-DA music stream tick plus the volume
    fade ramp.  Polls the in-flight CD command, retires it (or dispatches a
    queued one), keeps the current track streaming — advancing to a random track
@@ -108,15 +114,15 @@ void TickCdMusicStream(void) {
     }
   }
 
-  target = g_anMusicFadeBlock[0];
+  target = FADE_TARGET;
   if (target >= 0) {
     EBB_BREAK();
-    step = g_anMusicFadeBlock[0x16];
-    vol = *(short *)&g_anMusicFadeBlock[-0xB0];
+    step = FADE_STEP;
+    vol = CD_DA_VOLUME;
     vol = vol + step;
     if (step < 0) {
       if (target < vol) {
-        *(short *)&g_anMusicFadeBlock[-0xB0] = vol;
+        CD_DA_VOLUME = vol;
         goto store_right;
       }
       if (target == 0) {
@@ -138,13 +144,13 @@ void TickCdMusicStream(void) {
       goto store_right;
     }
     if (vol < target) {
-      *(short *)&g_anMusicFadeBlock[-0xB0] = vol;
+      CD_DA_VOLUME = vol;
       goto store_right;
     }
-    g_anMusicFadeBlock[0x16] = 0;
-    *(short *)&g_anMusicFadeBlock[-0xB0] = target;
+    FADE_STEP = 0;
+    CD_DA_VOLUME = target;
     g_nSpuCommonCdVolumeR = target;
-    g_anMusicFadeBlock[0] = -1;
+    FADE_TARGET = -1;
     goto spu;
   store_right:
     g_nSpuCommonCdVolumeR = vol;

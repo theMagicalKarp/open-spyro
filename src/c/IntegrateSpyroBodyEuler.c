@@ -1,6 +1,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "spyro_block.h"
 #include "vecmath.h"
 
 /* Yaw written as a record member, so its in-struct load stays below the
@@ -32,16 +33,21 @@ void IntegrateSpyroBodyEuler(int rate) {
   pitch = g_anSpyroBodyPitchBlock[0];
   EBB_BREAK();
   sinPitch = LookupSine(pitch);
-  cosRoll = LookupCosine(-g_anSpyroBodyPitchBlock[-1] & 0xfff);
+  cosRoll =
+      LookupCosine(-g_anSpyroBodyPitchBlock[SPY_ROLL - SPY_PITCH] & 0xfff);
   if (cosRoll == 0) {
     cosRoll = 1;
   }
-  rollTerm = rate * LookupSine(-g_anSpyroBodyPitchBlock[-1] & 0xfff) / cosRoll;
+  rollTerm =
+      rate *
+      LookupSine(-g_anSpyroBodyPitchBlock[SPY_ROLL - SPY_PITCH] & 0xfff) /
+      cosRoll;
   yawStep = rate * cosPitch / cosRoll;
   delta[1] = (rate * sinPitch) >> 12;
-  g_anSpyroBodyPitchBlock[-1] =
-      (g_anSpyroBodyPitchBlock[-1] + delta[1]) & 0xfff;
-  g_abSpyroPersistentEuler[1] = g_anSpyroBodyPitchBlock[-1] >> 4;
+  g_anSpyroBodyPitchBlock[SPY_ROLL - SPY_PITCH] =
+      (g_anSpyroBodyPitchBlock[SPY_ROLL - SPY_PITCH] + delta[1]) & 0xfff;
+  g_abSpyroPersistentEuler[1] =
+      g_anSpyroBodyPitchBlock[SPY_ROLL - SPY_PITCH] >> 4;
   delta[2] = yawStep;
   YAW = (YAW + delta[2]) & 0xfff;
   g_abSpyroPersistentEuler[2] = YAW >> 4;

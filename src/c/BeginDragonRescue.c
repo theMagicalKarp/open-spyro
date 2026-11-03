@@ -60,22 +60,22 @@ void BeginDragonRescue(Actor *actor) {
   g_nCinematicActive = one;
   g_nGamePaused = one;
   *dragons = prevDragons + 1;
-  g_anDragonRescueBlock[0] = DRAGON_RESCUE_AURA; /* g_nDragonRescueSubstate */
-  g_anDragonRescueBlock[1] =
-      RESCUE_STREAM_READ;        /* g_nDragonRescueStreamState */
-  g_anDragonRescueBlock[5] = 0;  /* g_nDragonRescueTimer */
-  g_anDragonRescueBlock[10] = 0; /* g_nDragonRescueSecondaryTimer */
-  g_anDragonRescueBlock[13] = 0; /* g_nDragonRescuePadHoldTimer */
-  g_anDragonRescueBlock[12] = 0; /* g_nDragonRescueAudioFiredFlag */
-  g_anDragonRescueBlock[0x1a] = (int)actor;
+  g_anDragonRescueBlock[DRW_SUBSTATE] = DRAGON_RESCUE_AURA;
+  g_anDragonRescueBlock[DRW_STREAM_STATE] = RESCUE_STREAM_READ;
+  g_anDragonRescueBlock[DRW_TIMER] = 0;
+  g_anDragonRescueBlock[DRW_SECONDARY_TIMER] = 0;
+  g_anDragonRescueBlock[DRW_PAD_HOLD_TIMER] = 0;
+  g_anDragonRescueBlock[DRW_AUDIO_FIRED] = 0;
+  g_anDragonRescueBlock[DRW_SOURCE_ACTOR] = (int)actor;
   g_nTotalDragonsRescued = world + 1;
-  g_anDragonRescueBlock[-1] = st->cutsceneId; /* g_nDragonRescueTypeSnapshot */
+  g_anDragonRescueBlock[DRW_TYPE_SNAPSHOT] = st->cutsceneId;
   if (st->partner != (-1)) {
     g_pActorListBase[st->partner].anim = CHECKPT_ANIM_FLASH;
   }
   CopyVector(g_anDragonRescueAuraStarAnchor, &actor->posX);
   g_anDragonRescueAuraStarAnchor[2] += 0x40;
-  PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_START),
-                  (Actor *)&g_anDragonRescueBlock[0x1a], SFX_MODE_PANNED,
-                  &((Actor *)g_anDragonRescueBlock[0x1a])->voiceRow);
+  PlaySoundEffect(
+      LEVEL_SFX(SFX_RESCUE_START),
+      (Actor *)&g_anDragonRescueBlock[DRW_SOURCE_ACTOR], SFX_MODE_PANNED,
+      &((Actor *)g_anDragonRescueBlock[DRW_SOURCE_ACTOR])->voiceRow);
 }

@@ -3,6 +3,12 @@
 #include "main_shared.h"
 #include "vecmath.h"
 
+/* Views off the held spawn-yaw base (g_nLevelSpawnYaw). */
+#define SPAWN_POS (&g_anLevelSpawnYawBlock[-3]) /* g_anLevelSpawnPos */
+#define CHECKPOINT_KILLS                                                       \
+  (&g_anLevelSpawnYawBlock[-19])                  /* g_anCheckpointKillBitmap */
+#define LIVE_KILLS (&g_anLevelSpawnYawBlock[-11]) /* g_anLiveKillBitmap */
+
 /* 0x80059474 (0xF8) — latch `actor`'s position and facing as the
    level spawn anchor: store the wrapped yaw (<<4 & 0xFFF) and position, mark
    the anchor valid, bias spawn Z up 0x164, snapshot the level's rescued/gem
@@ -28,10 +34,10 @@ void SetSpawnAnchorFromActor(Actor *actor, int heading) {
   int i;
   int t;
   g_anLevelSpawnYawBlock[0] = (heading << 4) & 0xFFF;
-  CopyVector(&g_anLevelSpawnYawBlock[-3], &actor->posX);
+  CopyVector(SPAWN_POS, &actor->posX);
   t = 1;
   *((volatile int *)(&g_nSpawnAnchorValid)) = t;
-  dst = &g_anLevelSpawnYawBlock[-19];
+  dst = CHECKPOINT_KILLS;
   *((volatile int *)(&g_nLevelSpawnPosZ)) += 0x164;
   rescued = &g_anLevelDragonsRescued[g_nLevelIndex];
   {
@@ -41,8 +47,8 @@ void SetSpawnAnchorFromActor(Actor *actor, int heading) {
     *(&g_nSpawnAnchorReserved) = 0;
     *((volatile int *)(&g_nSpawnAnchorGemsCollected)) = t;
   }
-  CopyWords(dst, &g_anLevelSpawnYawBlock[-11], 0x20);
-  src = &g_anLevelSpawnYawBlock[-11];
+  CopyWords(dst, LIVE_KILLS, 0x20);
+  src = LIVE_KILLS;
   i = 0;
   do {
     int v = *src;

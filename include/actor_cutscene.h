@@ -18,6 +18,20 @@ enum ActorCutsceneSubstate {
 };
 
 /* g_abWorldBalloonistState[world]: a homeworld balloonist's progress. */
+/* Word indices into g_anActorCutsceneTimerBlock (the held-base view at
+ * g_nActorCutsceneTimer, 0x800777ec), each named after the global there. */
+enum ActorCutsceneWord {
+  ACSW_SUBSTATE = -1,         /* g_nActorCutsceneSubstate */
+  ACSW_TIMER = 0,             /* g_nActorCutsceneTimer */
+  ACSW_CARD_VARIANT = 4,      /* g_nActorCutsceneCardVariant */
+  ACSW_CAM_YAW_START = 13,    /* g_nActorCutsceneCamYawStart */
+  ACSW_CAM_HEIGHT_START = 15, /* g_nActorCutsceneCamHeightStart */
+  ACSW_CAM_YAW_GOAL = 19,     /* g_nActorCutsceneCamYawGoal */
+  ACSW_CAM_RADIUS_GOAL = 20,  /* g_nActorCutsceneCamRadiusGoal */
+  ACSW_CAM_HEIGHT_GOAL = 21,  /* g_nActorCutsceneCamHeightGoal */
+  ACSW_RECORD = 25            /* g_pActorCutsceneRecord */
+};
+
 enum BalloonistState {
   BALLOONIST_UNMET = 0,
   BALLOONIST_TALKED = 1,

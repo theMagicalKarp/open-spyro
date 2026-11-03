@@ -6,6 +6,14 @@
 #include "pad.h"
 #include "pad_buttons.h"
 
+/* Views off the held pad-type and held-buttons bases. */
+#define PAD_CALIBRATION                                                        \
+  ((unsigned char *)&g_anPadTypeBlock[-3]) /* the g_dwPadPressed PadState */
+#define PAD_PRESSED_ACC (g_adwPadHeldBlock[-2])  /* g_dwPadPressed */
+#define PAD_RELEASED_ACC (g_adwPadHeldBlock[-1]) /* g_dwPadReleased */
+#define PAD_STICK_ACTIVE                                                       \
+  ((int *)&g_adwPadHeldBlock[2]) /* g_nPadStickActiveFlag */
+
 /* Per-VBlank pad poll callback (0x80053c68, 0x67C), registered by
    InitPadSystem via InstallVSyncCallback. Ticks the vblank/CD watchdog
    counters, bails out while the attract demo owns the pad, then drives the
@@ -98,10 +106,9 @@ void PollPadAndDistributeInput(void) {
     case PAD_ID_ANALOG_STICK:
     case PAD_ID_DUALSHOCK:
       if (g_anPadTypeBlock[0] != PAD_TYPE_ANALOG) {
-        ResetPadStickCalibrationDefaults(
-            (unsigned char *)&g_anPadTypeBlock[-3]);
+        ResetPadStickCalibrationDefaults(PAD_CALIBRATION);
         g_dwPadAnalogRawSnapshot = *(unsigned int *)&g_abPadRawReport[4];
-        FinalizePadCalibration((unsigned char *)&g_anPadTypeBlock[-3]);
+        FinalizePadCalibration(PAD_CALIBRATION);
       }
       padType = PAD_TYPE_ANALOG;
       break;
@@ -111,7 +118,7 @@ void PollPadAndDistributeInput(void) {
     }
   }
 
-  stick = (int *)&g_adwPadHeldBlock[2];
+  stick = PAD_STICK_ACTIVE;
   stick[0] = 0;
   if (padType >= PAD_TYPE_DIGITAL) {
     unsigned int buttons;
@@ -175,8 +182,8 @@ void PollPadAndDistributeInput(void) {
       g_adwPadHeldBlock[0] = buttons;
       if (g_nFrameTicks != 0) {
         EBB_BREAK();
-        g_adwPadHeldBlock[-2] |= pressed;
-        g_adwPadHeldBlock[-1] |= released;
+        PAD_PRESSED_ACC |= pressed;
+        PAD_RELEASED_ACC |= released;
       } else {
         g_dwPadPressed = pressed;
         g_dwPadReleased = released;
@@ -203,7 +210,7 @@ void PollPadAndDistributeInput(void) {
     if (g_nFrameTicks < 4) {
       int slot = g_nFrameTicks * 0x18;
       int *analog;
-      int *ring = (int *)&g_adwPadHeldBlock[2];
+      int *ring = PAD_STICK_ACTIVE;
       PAD_SUBSTEP(slot)->padType = padType;
       PAD_SUBSTEP(slot)->held = buttons;
       PAD_SUBSTEP(slot)->pressed = pressed;

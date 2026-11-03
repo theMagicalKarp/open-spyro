@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_block.h"
 
 /* 0x8003da08 (0xDC) — spring Spyro's body pitch and roll back toward level
    while free-falling: wrap each angle's error into [-0x800,0x800), run it
@@ -34,7 +35,7 @@ void DampenSpyroFreeFallAttitude(void) {
   if (wrapped >= 0x800) {
     err[0] = wrapped - 0x1000;
   }
-  roll = g_anSpyroBodyPitchBlock[-1];
+  roll = g_anSpyroBodyPitchBlock[SPY_ROLL - SPY_PITCH];
   wrapped = (-roll) & 0xFFF;
   err[1] = wrapped;
   if (wrapped >= 0x800) {
@@ -59,5 +60,5 @@ void DampenSpyroFreeFallAttitude(void) {
   err[1] = rollStepVel;
   out1 = roll + rollStepVel;
   g_anSpyroBodyPitchBlock[0] = out0;
-  g_anSpyroBodyPitchBlock[-1] = out1;
+  g_anSpyroBodyPitchBlock[SPY_ROLL - SPY_PITCH] = out1;
 }
