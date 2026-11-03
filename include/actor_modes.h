@@ -1460,6 +1460,11 @@ enum GatekeeperMode {
   GATEKEEPER_RIDE_LEAP = 53,   /* jumps into the catcher's hands */
   GATEKEEPER_RIDE_HELD = 54,   /* held; flung at Spyro (HURTLE) on the throw frame */
 };
+/* GatekeeperState.mode (levels 21/22). */
+enum GatekeeperPost {
+  GKEEPER_POST_FIXED = 0,
+  GKEEPER_POST_TWO_BOX = 2, /* jumps to path node 0 / 1 when Spyro enters box0 / box1 */
+};
 
 /* A gatekeeper's animations besides the poses equal to its mode. */
 enum GatekeeperAnim {

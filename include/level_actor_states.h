@@ -225,13 +225,14 @@ typedef struct BoulderThrowerState {
 
 /* Type 101 state (gatekeeper). */
 typedef struct GatekeeperState {
-  int partner;     /* 0x00 index into g_pActorListBase, -1 none */
+  int partner;     /* 0x00 index into g_pActorListBase, -1 none; level data: a boulder
+                    * thrower or another gatekeeper (types A or B) */
   int catcher;     /* 0x04 index into g_pActorListBase: who catches and flings it (RIDE_*); level data: ACTOR_TYPE_METALHEAD */
   int groupAlert;         /* 0x08 level data: on waking, alert the group and its chunk anim */
   int chunkAnim;         /* 0x0C world chunk-anim handle (GetWorldChunkAnimState) */
   int idlePose2;         /* 0x10 level data: idle in pose 2 */
   int partnerSignal; /* 0x14 set to 1 by the partner (its state word 5) */
-  int mode;        /* 0x18 */
+  int mode;        /* 0x18 enum GatekeeperPost */
   int timer;         /* 0x1C timer */
   int pad20[3];      /* 0x20 */
   int heading;         /* 0x2C heading */

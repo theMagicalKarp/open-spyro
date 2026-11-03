@@ -1214,7 +1214,7 @@ void Level21_UpdateActors(void) {
         continue;
       }
 
-      if (st->mode == 2) {
+      if (st->mode == GKEEPER_POST_TWO_BOX) {
         if (st->path->cur != 0 &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
           st->path->cur = 0;
