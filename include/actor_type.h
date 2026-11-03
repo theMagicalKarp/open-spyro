@@ -193,7 +193,10 @@ typedef struct Actor {
 /* Kill groups BuildLoadedLevelRuntime treats specially when it reloads a level
  * whose saved kill bitmap has the actor. Other groups >= 0x20 despawn if they
  * died before the last checkpoint and otherwise respawn as a gem roll; groups
- * < 0x20 respawn as long as one member survived the checkpoint. */
+ * < 0x20 respawn as long as one member survived the checkpoint. In level
+ * data, gems, chests, seed pods, followers and dragon statues are NEVER_RESPAWN;
+ * escorts, villagers and a few bosses ALWAYS_RESPAWN; 0x7F marks actors
+ * outside the kill sets (props, ambient sounds, checkpoints, save hosts). */
 #define ACTOR_KILL_GROUP_NEVER_RESPAWN 0x7D  /* any saved kill despawns it */
 #define ACTOR_KILL_GROUP_ALWAYS_RESPAWN 0x7E /* always back, as a gem roll */
 /* Actor.renderList sign bit: draw through BuildSecondaryActorDrawList, which

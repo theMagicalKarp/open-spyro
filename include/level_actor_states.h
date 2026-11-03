@@ -359,7 +359,8 @@ typedef struct JacquesState {
   int legStep[3];              /* 0x28 */
   int timer;               /* 0x34 */
   int pad38;                 /* 0x38 */
-  Actor *stopActor;              /* 0x3C level actor tied to the stop just reached (38 or 41) */
+  Actor *stopActor;              /* 0x3C level actor tied to the stop just reached: pool slot 38
+                                  * (a singing path walker) or 41 (a 25-gem) in level data; never read */
   int atStop;                 /* 0x40 set on reaching each stop */
   Actor *child;            /* 0x44 rock in hand */
   int pad48;                 /* 0x48 */
