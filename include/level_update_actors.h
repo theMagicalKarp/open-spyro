@@ -926,7 +926,7 @@ typedef struct ChargingYakState {
 typedef struct ToughRamState {
   int knockHeading; /* 0x00 knock-back heading */
   int speed;   /* 0x04 */
-  int rest;    /* 0x08 rest countdown, knock-back height step */
+  int rest;    /* 0x08 butt-hold flag; on a knock, the stagger slide speed (DriveActorTrackedMove) */
   int pad0C;
   int timer;   /* 0x10 grazing timer */
   int dropPos;   /* 0x14 */

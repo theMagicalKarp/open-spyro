@@ -21,8 +21,6 @@
 #include "sample_bank.h"
 #include "spyro_block.h"
 
-/* Held-base alias views (see config/symbol_addrs.txt). */
-
 /* 0x80048d10 (2248 bytes) — per-tick attack-effects driver, two independent
    subsystems sharing one function.  (1) Superflame glow: while
    g_nSpyroSuperflameTimer runs, spawn one particle per frame at a random offset

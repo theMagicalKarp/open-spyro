@@ -45,9 +45,6 @@
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 sixteen
 
-#define sixteen 0x10
-
-#undef sixteen
 
 void Level28_UpdateActors(void) {
   Actor **actorList;

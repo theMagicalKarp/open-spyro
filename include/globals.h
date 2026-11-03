@@ -1227,7 +1227,7 @@ extern char g_szCrashDemoExePath[]; /* 0x80010da0: "cdrom:\\S0\\CRASH.EXE;1" */
 extern char g_szMemCardSaveName[]; /* 0x80010db8: memory card save file name */
 extern void *g_pSharedLoadBuffer; /* 0x800113a0: shared CD/asset/splash load buffer */
 extern unsigned char g_abSpyroStateCameraModeTable[]; /* 0x8006c588 */
-extern short g_anDpadDirectionYaw[]; /* 0x8006c5d0 */
+extern short g_anDpadDirectionYaw[]; /* 0x8006c5d0 D-pad -> yaw, 16 entries indexed by the pad button nibble */
 extern short g_anSpyroTurnRateRows[]; /* 0x8006c5f0 */
 extern int g_anSpyroFlameTipOffsets2[]; /* 0x8006e244: g_anSpyroFlameTipOffsets+0xC */
 extern int g_anWorldSparkleShape[]; /* 0x8006e308: 10-word table in .data (5 signed pairs) */
@@ -1252,7 +1252,7 @@ extern unsigned char g_abLevelTotalDragonsBlock[]; /* 0x8006f414: held-base view
 extern void *g_apOtDepthBinBlock[]; /* 0x8006fcf4 */
 extern unsigned char g_abSpyroFlameTransitionModes[][2]; /* 0x80075264 */
 extern unsigned char g_abSpyroFlameAnimTable[]; /* 0x80075268 */
-extern unsigned short g_anGameOverCameraEulerU[]; /* 0x800752d8 */
+extern unsigned short g_anGameOverCameraEulerU[]; /* 0x800752d8 g_anGameOverCameraEuler read unsigned (lhu) */
 extern unsigned char g_abWorldTitleGlyphBlock[]; /* 0x8007555c: held-base view (A240) */
 extern int g_nLevelVortexSeen1; /* 0x80075670: a loot vortex (levels 33/34, LootVortexState.seen 1) was entered this visit; read as g_nCutsceneId[1] */
 extern int g_nLevelVortexSeen2; /* 0x80075674: the same for seen 2 (g_nCutsceneId[2]) */
@@ -1281,7 +1281,7 @@ extern short g_nCdDaVolumeCurrent; /* 0x80075f18: SpuCommonAttr CD volume L */
 extern short g_nSpuCommonCdVolumeR; /* 0x80075f1a: SpuCommonAttr CD volume R */
 extern void *g_apSampleBankEntriesBlock[]; /* 0x800761d0 */
 extern char *volatile g_pActiveCutsceneSoundDef; /* 0x800761d0 */
-extern int g_anMusicFadeBlock[]; /* 0x800761d8 */
+extern int g_anMusicFadeBlock[]; /* 0x800761d8 held-base view of g_nMusicVolumeFadeTarget: [0x16] (+0x58) is g_nMusicVolumeFadeStep, the SPU master-volume short pair sits at -0x2C0 */
 extern unsigned short g_nSfxOverridePitch; /* 0x800761f4: override pitch */
 extern int g_nSfxMixVolume_blk[]; /* 0x80076228: held-base view of g_nSfxMixVolume */
 extern int g_anSoundMasterVolumeBlock[]; /* 0x8007622c: g_nSoundMasterVolume */

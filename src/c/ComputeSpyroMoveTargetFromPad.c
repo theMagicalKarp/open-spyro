@@ -9,9 +9,6 @@
 #define DPAD_DIRECTION_YAW(off)                                                \
   (*(short *)((char *)g_anDpadDirectionYaw + (off)))
 
-/* D-pad -> yaw table (16 entries, stride 2), indexed by the pad button nibble.
- */
-
 /* 0x8003d3b8 (0x174) — convert this substep's pad input (g_pPadSubstepState)
    into a movement target. Analog stick (bytes +0x16/+0x17 centred on 0x7f):
    ArcTan2 target yaw made camera-relative, speed scaled by |dx|+|dy|. D-pad

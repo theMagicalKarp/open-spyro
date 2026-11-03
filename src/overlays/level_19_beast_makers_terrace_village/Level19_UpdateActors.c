@@ -51,9 +51,10 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-/* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
+/* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. The
+ * clones that need a loop-top carrier for 0x10 declare `int sixteen`; here
+ * it is the plain constant, so arm bodies read the same in every level. */
 #define ANIM_RATE16 sixteen
-
 #define sixteen 0x10
 
 /* ENTER_POSE for arms whose fall-out runs a shared exit after the switch. */

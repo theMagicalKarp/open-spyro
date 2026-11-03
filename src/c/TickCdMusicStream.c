@@ -10,12 +10,6 @@
    held base, as the original addresses it. */
 #define CD_MUSIC_POS ((unsigned char *)g_adwMusicStreamBlock + 0x20D)
 
-/* held-base view of g_nMusicVolumeFadeTarget (0x800761d8): [0] is the target,
-   [0x16] (+0x58) is g_nMusicVolumeFadeStep, and the SPU master-volume short
-   pair sits at -0x2C0. */
-/* held-base view of g_dwMusicStreamStatus (0x800774b4); +0x20D reaches the
-   last CdlLOC the drive reported. */
-
 /* Levers (all load-bearing):
      - frame 0x38 -> 0x30: A231. The CdSync==5 arm's two LBA-table reads
        straddle CdIntToPos/CdControl; with one base symbol cse makes them one
