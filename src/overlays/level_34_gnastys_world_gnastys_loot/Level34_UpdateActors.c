@@ -1596,15 +1596,15 @@ void Level34_UpdateActors(void) {
                 st->ring->dir = -1;
               }
               if (st->ring->dir > 0) {
-                st->cur = st->pathB;
+                st->curPath = st->pathB;
               } else {
-                st->cur = st->pathA;
+                st->curPath = st->pathA;
               }
-              st->cur->cur = st->cur->count - 1;
-              st->cur->dir = one;
+              st->curPath->cur = st->curPath->count - 1;
+              st->curPath->dir = one;
               st->leg = one;
             }
-            d0 = (FLY_Z(st->cur, st->cur->count - 1) - actor->posZ) >> 3;
+            d0 = (FLY_Z(st->curPath, st->curPath->count - 1) - actor->posZ) >> 3;
             if (d0 > 0x100) {
               d0 = 0x100;
             }
@@ -1616,9 +1616,9 @@ void Level34_UpdateActors(void) {
             break;
 
           case 1:
-            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
-                              0) == ((st->cur->count - 1) | 0x100)) {
-              if (st->cur == st->pathB) {
+            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+                              0) == ((st->curPath->count - 1) | 0x100)) {
+              if (st->curPath == st->pathB) {
                 st->ring->dir = one;
                 st->ring->cur = st->ring->count - 1;
               } else {
@@ -1626,9 +1626,9 @@ void Level34_UpdateActors(void) {
                 st->ring->cur = 0;
               }
               st->leg = 2;
-              st->cur = st->ring;
+              st->curPath = st->ring;
             }
-            d = (FLY_Z(st->cur, st->cur->cur) - actor->posZ) >> 3;
+            d = (FLY_Z(st->curPath, st->curPath->cur) - actor->posZ) >> 3;
             if (d > 0x100) {
               d = 0x100;
             }
@@ -1642,9 +1642,9 @@ void Level34_UpdateActors(void) {
           case 2:
             n = 0x100;
             if (st->ring->dir > 0) {
-              n = (st->cur->count - 1) | 0x100;
+              n = (st->curPath->count - 1) | 0x100;
             }
-            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               0) == n) {
               st->path->dir = -st->ring->dir;
               if (st->path->dir > 0) {
@@ -1652,13 +1652,13 @@ void Level34_UpdateActors(void) {
               } else {
                 st->path->cur = 0;
               }
-              st->cur = st->path;
+              st->curPath = st->path;
               if (++st->laps >= 6) {
                 st->laps = 5;
               }
               st->leg = 3;
             }
-            n = (FLY_Z(st->cur, st->cur->cur) - actor->posZ) >> 3;
+            n = (FLY_Z(st->curPath, st->curPath->cur) - actor->posZ) >> 3;
             if (n > 0x80) {
               n = 0x80;
             }
@@ -1675,9 +1675,9 @@ void Level34_UpdateActors(void) {
           case 3:
             n = 0x100;
             if (st->ring->dir > 0) {
-              n = (st->cur->count - 1) | 0x100;
+              n = (st->curPath->count - 1) | 0x100;
             }
-            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               0) == n) {
               st->ring->dir = -st->path->dir;
               if (st->ring->dir > 0) {
@@ -1686,9 +1686,9 @@ void Level34_UpdateActors(void) {
                 st->ring->cur = 0;
               }
               st->leg = 2;
-              st->cur = st->ring;
+              st->curPath = st->ring;
             }
-            n = (FLY_Z(st->cur, st->cur->cur) - actor->posZ) >> 3;
+            n = (FLY_Z(st->curPath, st->curPath->cur) - actor->posZ) >> 3;
             if (n > 0x80) {
               n = 0x80;
             }
@@ -1710,20 +1710,20 @@ void Level34_UpdateActors(void) {
             } else {
               st->ring->dir = -1;
             }
-            st->cur = st->ring;
+            st->curPath = st->ring;
             n = 0x100;
             if (st->ring->dir > 0) {
-              n = (st->cur->count - 1) | 0x100;
+              n = (st->curPath->count - 1) | 0x100;
             }
-            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               0) == n) {
               if (st->ring->dir > 0) {
-                st->cur = st->pathA;
+                st->curPath = st->pathA;
               } else {
-                st->cur = st->pathB;
+                st->curPath = st->pathB;
               }
-              st->cur->cur = 0;
-              st->cur->dir = -1;
+              st->curPath->cur = 0;
+              st->curPath->dir = -1;
               st->laps++;
               if (st->laps >= 6) {
                 st->laps = 5;
@@ -1732,7 +1732,7 @@ void Level34_UpdateActors(void) {
             } else if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
               st->leg = 2;
             }
-            n = (FLY_Z(st->cur, st->cur->cur) - actor->posZ) >> 3;
+            n = (FLY_Z(st->curPath, st->curPath->cur) - actor->posZ) >> 3;
             if (n > 0x80) {
               n = 0x80;
             }
@@ -1744,11 +1744,11 @@ void Level34_UpdateActors(void) {
             break;
 
           case 5:
-            if (PivotActorAlongPath(actor, st->cur, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               MOVE_CHECK_Z) == PATH_ARRIVED(0)) {
               st->leg = 0;
             }
-            d = (FLY_Z(st->cur, st->cur->cur) - actor->posZ) >> 3;
+            d = (FLY_Z(st->curPath, st->curPath->cur) - actor->posZ) >> 3;
             if (d > 0x100) {
               d = 0x100;
             }
@@ -1763,7 +1763,7 @@ void Level34_UpdateActors(void) {
           int yaw = actor->rotZ;
 
           if (actor->subMode != 0) {
-            TweenActorAlongPath(actor, st->cur, st->look, &st->laps, 2,
+            TweenActorAlongPath(actor, st->curPath, st->look, &st->laps, 2,
                           0);
             if (AbsAngleDelta8(actor->rotZ,
                               ArcTan2(SPY.posX - actor->posX,
@@ -1771,7 +1771,7 @@ void Level34_UpdateActors(void) {
                 0x40) {
               d = (0x61A8 - actor->posZ) >> 1;
             } else {
-              d = (FLY_Z(st->cur, st->cur->cur) - actor->posZ) >> 3;
+              d = (FLY_Z(st->curPath, st->curPath->cur) - actor->posZ) >> 3;
             }
             if (d > 0x80) {
               d = 0x80;
@@ -1800,7 +1800,7 @@ void Level34_UpdateActors(void) {
             r = TweenActorAlongPath(actor, st->path, st->look, &st->laps,
                               st->speed, TWEEN_FLY);
             if (r == TWEEN_WRAPPED) {
-              st->cur->cur = 2;
+              st->curPath->cur = 2;
               g_nCinematicActive = 0;
               actor->subMode = 1;
             } else if (r == one) { /* TWEEN_NEXT_LEG */

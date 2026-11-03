@@ -127,8 +127,8 @@ typedef struct SoldierState {
   int link2;           /* 0x48 index into g_pActorListBase, -1 none (a duelist's rival soldier) */
   int volley;          /* 0x4C */
   int phase;           /* 0x50 */
-  int knockDir;        /* 0x54 */
-  int knock;           /* 0x58 */
+  int knockHeading;        /* 0x54 */
+  int knockSpeed;           /* 0x58 */
   int seen;            /* 0x5C */
   int bold;            /* 0x60 */
   int gone;            /* 0x64 */
@@ -2735,11 +2735,11 @@ void Level6_UpdateActors(void) {
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != SOLDIER_KNOCKED) {
         actor->flags = 0;
         if (actor->mode != SOLDIER_IN_POST || actor->cullRadius != ACTOR_CULL_HIDDEN) {
-          st->knockDir = StepAndLerpAngle8(
+          st->knockHeading = StepAndLerpAngle8(
               ArcTan2(actor->posX - g_anSpyroWorldPos, actor->posY - g_nSpyroWorldPosY,
                             ATAN_ANGLE8),
               g_bSpyroPersistentEulerZ, 0x20, 0x40);
-          st->knock = 0xFA;
+          st->knockSpeed = 0xFA;
           if ((unsigned)(st->kind - 2) < 2 || st->kind == SOLDIERKIND_GUNNER) {
             Actor *a = &g_pActorListBase[st->link];
 
@@ -2943,11 +2943,11 @@ void Level6_UpdateActors(void) {
         break;
 
       case SOLDIER_KNOCKED:
-        if (st->knock != 0) {
-          MoveActorAlongAngle(actor, st->knockDir, st->knock, 0x12C, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-          st->knock -= 0x14;
-          if (st->knock < 0) {
-            st->knock = 0;
+        if (st->knockSpeed != 0) {
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0x12C, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          st->knockSpeed -= 0x14;
+          if (st->knockSpeed < 0) {
+            st->knockSpeed = 0;
           }
         }
         if (g_nActorAnimDone != 0) {

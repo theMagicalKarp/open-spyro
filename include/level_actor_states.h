@@ -630,14 +630,14 @@ typedef struct LobGunnerState {
 /* State of the lob type 148 throws. */
 typedef struct LobState {
   int flightTime;            /* 0x00 frames to the target (ComputeLobVelocityZ out) */
-  short h4;           /* 0x04 */
-  short h6;           /* 0x06 */
-  short h8;           /* 0x08 */
-  short hA;           /* 0x0A */
-  unsigned char bC;   /* 0x0C */
-  unsigned char bD;   /* 0x0D */
-  unsigned char bE;   /* 0x0E */
-  unsigned char bF;   /* 0x0F */
+  short speed;           /* 0x04 horizontal speed along heading */
+  short zSpeed;          /* 0x06 vertical speed (ComputeLobVelocityZ) */
+  short gravity;         /* 0x08 added to zSpeed each frame */
+  short life;            /* 0x0A frames before it bursts */
+  unsigned char heading; /* 0x0C toward the target (8-bit) */
+  unsigned char spinX;   /* 0x0D per-frame rotX/rotY/rotZ deltas */
+  unsigned char spinY;   /* 0x0E */
+  unsigned char spinZ;   /* 0x0F */
 } LobState;
 
 /* Type 156 state. */

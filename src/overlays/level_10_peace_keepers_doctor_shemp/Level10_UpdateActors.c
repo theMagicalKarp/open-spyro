@@ -2702,7 +2702,7 @@ void Level10_UpdateActors(void) {
           if (actor->drawn != 0 &&
               ApproxDist2D(&actor->posX, &spy->posX) < st->range << 10 &&
               ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x800) {
-            st->accel = 0;
+            st->rampSpeed = 0;
             if (actor->group == 0xFF) {
               ENTER_POSE(actor, SGUARD_ROUSE);
             }
@@ -2727,7 +2727,7 @@ void Level10_UpdateActors(void) {
           } else if (actor->drawn != 0 &&
                      ApproxDist2D(&actor->posX, &spy->posX) < st->range << 10 &&
                      ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x800) {
-            st->accel = 0;
+            st->rampSpeed = 0;
             ENTER_POSE(actor, SGUARD_ROUSE);
           }
         }
@@ -2756,19 +2756,19 @@ void Level10_UpdateActors(void) {
             actor->mode = SGUARD_RUSH;
             continue;
           }
-          if (st->accel < 0xC8) {
-            st->accel += 0x14;
+          if (st->rampSpeed < 0xC8) {
+            st->rampSpeed += 0x14;
           }
           if (TurnActorYawTowardAngle(actor,
                             ArcTan2(spy->posX - actor->posX,
                                           spy->posY - actor->posY, ATAN_ANGLE8),
                             8, 0x26, YAW_STEP_IN_BAND) != 0) {
-            MoveActorAlongHeading(actor, st->accel, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_SLIDE);
+            MoveActorAlongHeading(actor, st->rampSpeed, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_SLIDE);
           }
           g = ProbeActorGroundHeight(actor);
           if (actor->posZ - g > 0x1F4) {
             st->heading = 0x4D;
-            st->speed = st->accel;
+            st->speed = st->rampSpeed;
             if (st->speed < 0x50) {
               st->speed = 0x50;
             }
@@ -2821,14 +2821,14 @@ void Level10_UpdateActors(void) {
       case SGUARD_RUSH: {
         int g4;
 
-        if (st->accel < 0xC8) {
-          st->accel += 0x14;
+        if (st->rampSpeed < 0xC8) {
+          st->rampSpeed += 0x14;
         }
-        MoveActorAlongHeading(actor, st->accel, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_SLIDE);
+        MoveActorAlongHeading(actor, st->rampSpeed, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_SLIDE);
         g4 = ProbeActorGroundHeight(actor);
         if (actor->posZ - g4 > 0x1F4) {
           st->heading = 0x4D;
-          st->speed = st->accel;
+          st->speed = st->rampSpeed;
           if (st->speed < 0x50) {
             st->speed = 0x50;
           }
@@ -2882,12 +2882,12 @@ void Level10_UpdateActors(void) {
           TurnActorYawTowardAngle(actor, st->pathHeading, 7, 0, YAW_HOLD_IN_BAND);
         }
         if (TICK_DOWN(st->stateTimer) != 0) {
-          st->accel -= 0x10;
-          if (st->accel < 0) {
-            st->accel = 0;
+          st->rampSpeed -= 0x10;
+          if (st->rampSpeed < 0) {
+            st->rampSpeed = 0;
           }
         }
-        if (st->accel == 0) {
+        if (st->rampSpeed == 0) {
           st->stateTimer = 0x3C;
           actor->mode = SGUARD_RECOVER;
           continue;
@@ -2895,7 +2895,7 @@ void Level10_UpdateActors(void) {
         if (actor->posZ - (h + actor->floorOffset) > 0x320 ||
             IsActorGroundFlat(actor) == 0) {
           st->heading = actor->rotZ;
-          st->speed = st->accel;
+          st->speed = st->rampSpeed;
           if (st->speed < 0x50) {
             st->speed = 0x50;
           }
@@ -2907,7 +2907,7 @@ void Level10_UpdateActors(void) {
           continue;
         }
         actor->posZ = h + actor->floorOffset;
-        MoveActorAlongHeading(actor, st->accel, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_SLIDE);
+        MoveActorAlongHeading(actor, st->rampSpeed, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_SLIDE);
         break;
       }
 
@@ -2957,8 +2957,8 @@ void Level10_UpdateActors(void) {
         break;
 
       case SGUARD_PATH_CHASE:
-        st->accel = 0xA0;
-        if (PivotActorAlongPath(actor, st->target, 0x12C, st->accel, 0, 8, 0x40, PIVOT_TURN_ANY,
+        st->rampSpeed = 0xA0;
+        if (PivotActorAlongPath(actor, st->target, 0x12C, st->rampSpeed, 0, 8, 0x40, PIVOT_TURN_ANY,
                           MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(0)) {
           st->done = 0;
           actor->mode = SGUARD_CHASE;
@@ -2971,8 +2971,8 @@ void Level10_UpdateActors(void) {
         if (TICK_DOWN(st->cueTimer) == 2) {
           PlayActorMeshVoice(actor, SGUARD_VOICE_SHOUT, 0);
         }
-        st->accel = 0xB4;
-        if (PivotActorAlongPath(actor, st->target, 0x100, st->accel, 0, 8, 0x40, PIVOT_TURN_ANY,
+        st->rampSpeed = 0xB4;
+        if (PivotActorAlongPath(actor, st->target, 0x100, st->rampSpeed, 0, 8, 0x40, PIVOT_TURN_ANY,
                           MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(0)) {
           actor->mode = SGUARD_BRAKE_AIM;
           continue;

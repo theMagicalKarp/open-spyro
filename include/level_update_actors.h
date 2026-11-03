@@ -1081,7 +1081,7 @@ typedef struct ShempGuardState {
   int speed;          /* 0x10 */
   int pad14;          /* 0x14 */
   int range;          /* 0x18 sight range, in 1024s */
-  int accel;          /* 0x1C */
+  int rampSpeed;      /* 0x1C run speed, ramped up 0x14 a frame to 0xC8 and down on braking */
   int pathHeading;    /* 0x20 heading to the nearest path node */
   int stateTimer;     /* 0x24 BRAKE, RECOVER and FALL durations */
   int watch;          /* 0x28 index into g_pActorListBase, -1 none: a peer Shemp guard
@@ -1272,7 +1272,7 @@ typedef struct LootThiefState {
   int laps;       /* 0x28 laps run (caps at 5, slows the run); also TweenActorAlongPath's step counter */
   int init;       /* 0x2C */
   int chunkAnim;        /* 0x30 world chunk-anim handle (GetWorldChunkAnimState) */
-  PathData *cur;   /* 0x34 */
+  PathData *curPath;   /* 0x34 the path being flown: pathA, pathB, ring or path */
   PathData *ring;  /* 0x38 */
   PathData *pathA; /* 0x3C */
   PathData *pathB; /* 0x40 */

@@ -2009,17 +2009,17 @@ void Level32_UpdateActors(void) {
               o150[1] = SPY.posY;
               o150[2] = SPY.posZ - 0x17C;
             }
-            q->h8 = -6;
-            q->h4 = 0x104;
-            q->h6 = ComputeLobVelocityZ(&st->heldLob->posX, o150, 0x104, q->h8, (int *)q);
+            q->gravity = -6;
+            q->speed = 0x104;
+            q->zSpeed = ComputeLobVelocityZ(&st->heldLob->posX, o150, 0x104, q->gravity, (int *)q);
             if (q->flightTime == 0) {
               st->heldLob->mode = LGLOB_DESPAWN;
             }
-            q->bD = RandomSignedInRange(7, 0xF);
-            q->bE = RandomSignedInRange(7, 0xF);
-            q->bF = RandomSignedInRange(7, 0xF);
-            q->hA = 0x8C;
-            q->bC = ArcTan2(o150[0] - actor->posX, o150[1] - actor->posY,
+            q->spinX = RandomSignedInRange(7, 0xF);
+            q->spinY = RandomSignedInRange(7, 0xF);
+            q->spinZ = RandomSignedInRange(7, 0xF);
+            q->life = 0x8C;
+            q->heading = ArcTan2(o150[0] - actor->posX, o150[1] - actor->posY,
                                   ATAN_ANGLE8);
             st->heldLob->subMode = 1;
             st->heldLob = (Actor *)-1;
@@ -2206,24 +2206,24 @@ void Level32_UpdateActors(void) {
       switch (actor->mode) {
       case LGLOB_FLY:
         CopyVector(o140, &actor->posX);
-        actor->posX += (q->h4 * g_anCosineLut[q->bC]) >> 12;
-        actor->posY += (q->h4 * g_anSineLut[q->bC]) >> 12;
-        actor->posZ += q->h6;
-        q->h6 += q->h8;
+        actor->posX += (q->speed * g_anCosineLut[q->heading]) >> 12;
+        actor->posY += (q->speed * g_anSineLut[q->heading]) >> 12;
+        actor->posZ += q->zSpeed;
+        q->zSpeed += q->gravity;
         if (CastRayWorldAndActors(o140, &actor->posX) != 0) {
           actor->mode = LGLOB_BURST;
         }
-        if (TICK_DOWN(q->hA) != 0) {
+        if (TICK_DOWN(q->life) != 0) {
           actor->mode = LGLOB_BURST;
         }
         o140[0] = 0;
         o140[1] = 0;
         o140[2] = 0;
         g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, (int)o140);
-        actor->rotX += q->bD;
-        actor->rotY += q->bE;
-        actor->rotZ += q->bF;
-        q->hA += g_nFrameStep;
+        actor->rotX += q->spinX;
+        actor->rotY += q->spinY;
+        actor->rotZ += q->spinZ;
+        q->life += g_nFrameStep;
         continue;
 
       case LGLOB_BURST:
