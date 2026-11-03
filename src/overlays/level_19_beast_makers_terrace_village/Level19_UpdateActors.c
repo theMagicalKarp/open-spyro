@@ -446,9 +446,9 @@ void Level19_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -459,7 +459,7 @@ void Level19_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;

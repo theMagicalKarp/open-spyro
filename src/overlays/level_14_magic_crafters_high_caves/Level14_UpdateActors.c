@@ -493,9 +493,9 @@ void Level14_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(SPY.bodyRotZ,
                                 ArcTan2(actor->posX - SPY.posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8)) < 0) {
@@ -505,7 +505,7 @@ void Level14_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -1716,9 +1716,9 @@ void Level14_UpdateActors(void) {
                 int res = CheckLineOfSightSegment(&g_pSparxActor->posX, &actor->posX);
 
                 if (res) {
-                  ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+                  SparxState *cs = g_pSparxActor->state;
 
-                  if (cs->owner == 0) {
+                  if (cs->target == 0) {
                     if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                        g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                       g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
@@ -1728,7 +1728,7 @@ void Level14_UpdateActors(void) {
                     }
 
                     g_pSparxActor->subMode = SPARX_SUB_FETCH;
-                    cs->owner = actor;
+                    cs->target = actor;
                   }
                 }
               }
@@ -1839,9 +1839,9 @@ void Level14_UpdateActors(void) {
 
               if (SPY.airborneFrames == 0 && st->count < 3) {
 
-                ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+                SparxState *cs = g_pSparxActor->state;
 
-                if (cs->owner == 0) {
+                if (cs->target == 0) {
                   if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                      g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
@@ -1851,7 +1851,7 @@ void Level14_UpdateActors(void) {
                   }
 
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
-                  cs->owner = actor;
+                  cs->target = actor;
                 }
               }
             }
@@ -1907,10 +1907,10 @@ void Level14_UpdateActors(void) {
           (actor->subMode == COLLECT_HOMING && st->timer > 64)) {
 
         if (g_pSparxActor != 0) {
-          ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+          SparxState *cs = g_pSparxActor->state;
 
-          if (cs->owner == actor) {
-            cs->owner = 0;
+          if (cs->target == actor) {
+            cs->target = 0;
           }
         }
 

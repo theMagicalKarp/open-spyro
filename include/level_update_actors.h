@@ -36,14 +36,6 @@ extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type *
  */
 
 /* PathData (waypoint paths) lives in actor_type.h. */
-/* Sparx's state block, as seen by the actors that send him fetching. */
-typedef struct ChaserState {
-  int timer; /* 0x00 */
-  int pad04;
-  int pad08;
-  int pad0C;
-  Actor *owner; /* 0x10 actor being fetched, or null */
-} ChaserState;
 
 /* Engine callees shared by most behaviours: update list, collision and
  * movement helpers, random numbers and angle arithmetic. */
