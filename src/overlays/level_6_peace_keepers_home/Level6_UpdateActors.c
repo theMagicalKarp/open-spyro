@@ -2213,7 +2213,7 @@ void Level6_UpdateActors(void) {
     /* Type 146: a breakable prop. A flame breaks it at once; a charge needs
      * a second hit within half a second. */
     case ACTOR_TYPE_BREAKABLE_PROP: {
-      int *st = actor->state;
+      int *hitWindow = actor->state; /* frames left for a second charge to break it */
 
       if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode < BPROP_BREAK) {
         actor->mode = BPROP_BREAK;
@@ -2221,14 +2221,14 @@ void Level6_UpdateActors(void) {
         continue;
       }
       if ((actor->flags & ACTOR_HIT_SUPER) && actor->mode < BPROP_BREAK) {
-        if (st[0] != 0) {
-          if (TICK_DOWN(*st) != 0) {
+        if (*hitWindow != 0) {
+          if (TICK_DOWN(*hitWindow) != 0) {
             actor->mode = BPROP_BREAK;
             ANIM_RESET(actor, BPROP_BREAK);
             continue;
           }
         } else {
-          st[0] = 0x1E;
+          *hitWindow = 0x1E;
         }
       }
       switch (actor->mode) {

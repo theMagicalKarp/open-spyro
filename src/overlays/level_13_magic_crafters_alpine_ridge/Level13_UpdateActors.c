@@ -4505,17 +4505,17 @@ void Level13_UpdateActors(void) {
     /* Falling debris: tumbles along its velocity while on screen and is
      * removed once its timer runs out or it goes off screen. */
     case ACTOR_TYPE_FALLING_DEBRIS: {
-      int *st = actor->state;
+      FallingDebrisState *st = actor->state;
 
-      if (TICK_DOWN(st[3]) != 0 || actor->drawn == 0) {
+      if (TICK_DOWN(st->life) != 0 || actor->drawn == 0) {
         DespawnActorRecord(actor);
         continue;
       }
-      st[2] -= 6;
-      if (st[2] < -0x80) {
-        st[2] = -0x80;
+      st->vel[2] -= 6;
+      if (st->vel[2] < -0x80) {
+        st->vel[2] = -0x80;
       }
-      AddVector(&actor->posX, &actor->posX, st);
+      AddVector(&actor->posX, &actor->posX, st->vel);
       actor->rotX += 0xF;
       actor->rotZ += 9;
       break;

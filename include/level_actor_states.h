@@ -680,4 +680,10 @@ typedef struct WandererState {
   int idleTimer;    /* 0x2C idle timer */
 } WandererState;
 
+/* Falling debris (ACTOR_TYPE_FALLING_DEBRIS, levels 13/14/15). */
+typedef struct FallingDebrisState {
+  int vel[3]; /* 0x00 random spread; vel[2] falls by 6 a frame to -0x80 */
+  int life;   /* 0x0C 0x20..0x3F frames */
+} FallingDebrisState;
+
 #endif /* OPEN_SPYRO_LEVEL_ACTOR_STATES_H */

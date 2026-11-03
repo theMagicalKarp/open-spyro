@@ -1325,15 +1325,15 @@ void Level5_UpdateActors(void) {
     /* Flight-level chest: flaming or charging it frees its reward and
      * scatters shards; otherwise it hums its ambient sound. */
     case ACTOR_TYPE_FLIGHT_CHEST: {
-      int *st = actor->state;
+      FlightChestState *st = actor->state;
       int i;
 
       if (actor->flags & ACTOR_HITS_SPYRO) {
         Actor *reward;
 
         PlayActorMeshVoice(actor, FCHEST_VOICE_BURST, 0);
-        TallyFlightTarget(st[1]);
-        reward = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st[0]), actor);
+        TallyFlightTarget(st->tallyClass);
+        reward = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st->reward), actor);
         if (reward != 0) {
           reward->mode = TIMEBONUS_COLLECT;
         }

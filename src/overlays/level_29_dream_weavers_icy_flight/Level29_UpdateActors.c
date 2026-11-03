@@ -1426,15 +1426,15 @@ void Level29_UpdateActors(void) {
     /* Flight-level chest: flaming or charging it frees its reward and
      * scatters shards; otherwise it hums its ambient sound. */
     case ACTOR_TYPE_FLIGHT_CHEST: {
-      int *st = actor->state;
+      FlightChestState *st = actor->state;
       int i;
 
       if (actor->flags & ACTOR_HITS_SPYRO) {
         Actor *reward;
 
         PlayActorMeshVoice(actor, FCHEST_VOICE_BURST, 0);
-        TallyFlightTarget(st[1]);
-        reward = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st[0]), actor);
+        TallyFlightTarget(st->tallyClass);
+        reward = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st->reward), actor);
         if (reward != 0) {
           reward->mode = TIMEBONUS_COLLECT;
         }
@@ -1995,18 +1995,18 @@ void Level29_UpdateActors(void) {
      * retires itself as ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT. */
     case ACTOR_TYPE_FLAME_FLIGHT_TARGET:
     case ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT: {
-      int *st = actor->state;
+      FlameTargetState *st = actor->state;
 
       if (actor->type == ACTOR_TYPE_FLAME_FLIGHT_TARGET && (actor->flags & ACTOR_HIT_FLAME)) {
         Actor *reward;
 
-        TallyFlightTarget(st[0]);
-        reward = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st[1]), actor);
+        TallyFlightTarget(st->tallyClass);
+        reward = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st->reward), actor);
         if (reward != 0) {
           reward->mode = TIMEBONUS_COLLECT;
         }
-        if (st[2] >= 0) {
-          ModifyWorldChunkAnimFlags(st[2], CHUNK_ANIM_RESUME, 0);
+        if (st->chunkAnim >= 0) {
+          ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
         actor->type = ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT;
       }
