@@ -179,15 +179,6 @@ typedef struct BounceState {
   int mode;           /* 0x10 */
 } BounceState;
 
-/* Cases 255/256, 310/311, 257, 309 — debris shards thrown by a break (and
- * level 27's rubble). */
-typedef struct ShardState {
-  short vel[3];  /* 0x00 */
-  short spin[3]; /* 0x06 pitch / yaw / roll per frame */
-  int life;      /* 0x0C */
-  int floor;     /* 0x10 */
-} ShardState;
-
 /* Level 19 type 35 (ACTOR_TYPE_BOLT_GUARD): scatters when hit and fires type
  * 494 bolts. SpawnActor aims its ground-bounce shards along `heading`. */
 typedef struct BoltGuardState {
@@ -218,8 +209,8 @@ typedef struct SmokerState {
 
 /* Tumbling fragments: SpawnActor's chest/object shards (types 0x43..0x45,
  * 0xFF..0x101, 0x135..0x137 and per-level ranges) and UpdateActors' falling
- * chest fragments (257/425). Integrate until life, visibility or the floor
- * runs out. Other updaters view some of these types as ChestShardState (byte
+ * debris shards thrown by a break (255/256, 310/311, 257, 309, 425, level 27's
+ * rubble). Integrate until life, visibility or the floor runs out. Other updaters view some of these types as ChestShardState (byte
  * spins) or EmberState. */
 typedef struct TumbleState {
   short vel[3];  /* 0x00 */

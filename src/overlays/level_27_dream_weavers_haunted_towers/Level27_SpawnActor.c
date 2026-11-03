@@ -238,7 +238,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
   }
 
   case ACTOR_TYPE_RUBBLE_SHARD_B: {
-    ShardState *st;
+    TumbleState *st;
     int speed;
     int dir;
 
@@ -256,7 +256,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     st->spin[0] = RandomSignedInRange(7, 0xC);
     st->spin[1] = RandomSignedInRange(7, 0xC);
     st->spin[2] = RandomSignedInRange(7, 0xC);
-    st->floor = parent->posZ - parent->floorOffset - 0x40;
+    st->floorZ = parent->posZ - parent->floorOffset - 0x40;
     *(int *)&rec->tint0 = 0x1000000;
     rec->renderList |= ACTOR_RENDER_SECONDARY;
     break;

@@ -293,7 +293,7 @@ enum ActorType {
   ACTOR_TYPE_FORMATION_ESCORT = 88, /* level 26: follows its leader on a ring, flies off when the leader breaks away */
   ACTOR_TYPE_COMET_CANNON = 91, /* level 24: blasts Spyro in its sights, or lobs ACTOR_TYPE_COMET at its trigger's target (CometCannonState) */
   ACTOR_TYPE_LUNGING_GUARD = 92, /* level 24: wakes its partner, paces, lunges; spins away when struck */
-  ACTOR_TYPE_GROUND_BOUNCE_SHARD = 93, /* levels 19/22: explosion shard with a ground bounce (ShardState) */
+  ACTOR_TYPE_GROUND_BOUNCE_SHARD = 93, /* levels 19/22: explosion shard with a ground bounce (TumbleState) */
   ACTOR_TYPE_BOULDER_THROWER = 100, /* level 21: picks up and hurls ACTOR_TYPE_ROLLING_BOULDER, rides its partner, charges (BoulderThrowerState) */
   ACTOR_TYPE_GATEKEEPER = 101, /* level 21: releases its run of keys as Spyro approaches (GatekeeperState) */
   ACTOR_TYPE_BOULDER_THROWER_B = 102, /* level 22's ACTOR_TYPE_BOULDER_THROWER */
@@ -311,7 +311,7 @@ enum ActorType {
   ACTOR_TYPE_CHARGE_REACT_PROP = 129, /* levels 2/25: a charge plays its reaction animation once */
   ACTOR_TYPE_BIG_LUNGING_GUARD = 130, /* level 24: ACTOR_TYPE_LUNGING_GUARD plus two followers and a growl */
   ACTOR_TYPE_BREAKABLE_WALL_PART = 132, /* level 27: one of ACTOR_TYPE_BREAKABLE_WALL's four parts */
-  ACTOR_TYPE_RUBBLE_SHARD = 133, /* level 27: explosion shard with a ground bounce (ShardState); also 215 */
+  ACTOR_TYPE_RUBBLE_SHARD = 133, /* level 27: explosion shard with a ground bounce (TumbleState); also 215 */
   ACTOR_TYPE_ROCK_THROWER = 134, /* level 27: throws ACTOR_TYPE_FALLING_CHUNK rocks at Spyro (RockThrowerState) */
   ACTOR_TYPE_FALLING_CHUNK = 135, /* level 27: rides the floor or falls; bursts into rubble (FallingChunkState) */
   ACTOR_TYPE_BREAKABLE_WALL = 136, /* level 27: four parts; striking one blows the wall into rubble (BreakableWallState) */
