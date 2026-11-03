@@ -684,7 +684,7 @@ void Level28_UpdateActors(void) {
           ((actor->type == ACTOR_TYPE_BIG_CHARGING_RAM && (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER))) ||
            (actor->type == ACTOR_TYPE_CHARGING_RAM && (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER))))) {
         st->knockSpeed = 0x190;
-        st->lift = 0xAA;
+        st->knockZSpeed = 0xAA;
         st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
                                     spy->bodyRotZ, 0x20, 0x40);
@@ -755,7 +755,7 @@ void Level28_UpdateActors(void) {
         continue;
 
       case CRAM_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->heading, &st->lift, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->heading, &st->knockZSpeed, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x20);

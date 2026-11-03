@@ -1645,7 +1645,7 @@ void Level27_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
                                                   actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
                                     g_bSpyroPersistentEulerZ, 0x20, 0x40);
-        st->lift = 0x8C;
+        st->zSpeed = 0x8C;
         st->timer = 0x3C;
         actor->flags = 0;
         o = g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_CHUNK, actor);
@@ -1739,7 +1739,7 @@ void Level27_UpdateActors(void) {
         break;
 
       case ROCKTHROW_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->lift, 0xC, 0x10);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, 0x10);
         if (g_nActorAnimDone != 0 && actor->nextAnim == ROCKTHROW_KNOCKED) {
           ANIM_SET(actor, ROCKTHROW_ANIM_DOWN);
         }

@@ -90,7 +90,7 @@ typedef struct RollerState {
   int tally;           /* 0x08 */
   int roll;            /* 0x0C */
   int rollVel;         /* 0x10 */
-  int zVel;           /* 0x14 passed by address to DriveActorTrackedMove */
+  int zSpeed;           /* 0x14 passed by address to DriveActorTrackedMove */
   int heading;         /* 0x18 */
   int moveSpeed;           /* 0x1C passed by address to DriveActorTrackedMove */
   int legVec[3];        /* 0x20 */

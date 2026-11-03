@@ -194,7 +194,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     CopyVector(&rec->posX, &parent->posX);
     rec->posZ += 0x400;
     InsertActorIntoSpatialGrid(rec);
-    st->zVel = 0xC8;
+    st->zSpeed = 0xC8;
     st->moveSpeed = 0x15E;
     st->heading = StepAndLerpAngle8(
         ArcTan2(rec->posX - g_anSpyroWorldPos[0], rec->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),

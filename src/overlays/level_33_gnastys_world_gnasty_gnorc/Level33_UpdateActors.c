@@ -137,7 +137,7 @@ typedef struct LanePatrollerState {
   int speed;       /* 0x10 speed */
   int knockHeading;       /* 0x14 knock-back heading */
   int knockSpeed;       /* 0x18 knock-back speed */
-  int vSpeed;       /* 0x1C vertical speed */
+  int knockZSpeed;       /* 0x1C vertical speed */
   int endNodeBack;       /* 0x20 end node going back */
   int endNodeFwd;       /* 0x24 end node going forward */
   TriggerBox box; /* 0x28 trigger box */
@@ -1507,7 +1507,7 @@ void Level33_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8),
                                 g_bSpyroPersistentEulerZ, 0x20, 0x40);
-        st->vSpeed = 0x28;
+        st->knockZSpeed = 0x28;
         ENTER_POSE(actor, LANEPAT_KNOCKED);
       }
       actor->flags = 0;
@@ -1582,18 +1582,18 @@ void Level33_UpdateActors(void) {
         }
         r = PivotActorAlongPath(actor, st->path, 0x1C2, spd, 0, 0xA, 0x28, PIVOT_TURN_ANY, MOVE_LIFT);
         h = ProbeActorGroundHeightRaised(actor, 0xBB8);
-        st->vSpeed -= 0x1E;
-        if (st->vSpeed < -0x190) {
-          st->vSpeed = -0x190;
+        st->knockZSpeed -= 0x1E;
+        if (st->knockZSpeed < -0x190) {
+          st->knockZSpeed = -0x190;
         }
-        z = actor->posZ + st->vSpeed;
+        z = actor->posZ + st->knockZSpeed;
         if (z < h) {
           actor->posZ = h;
         } else {
           actor->posZ = z;
         }
         if ((r & PATH_ARRIVED_FLAG) && (FLY_FLAGS(st->path, st->path->cur) & PATH_NODE_JUMP) == PATH_JUMP_LOW) {
-          st->vSpeed = 0x12C;
+          st->knockZSpeed = 0x12C;
         }
         if ((st->path->dir == -1 && r == (st->endNodeBack | 0x100)) ||
             (st->path->dir == 1 && r == (st->endNodeFwd | 0x100))) {
@@ -1636,7 +1636,7 @@ void Level33_UpdateActors(void) {
       }
 
       case LANEPAT_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->vSpeed, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x20);

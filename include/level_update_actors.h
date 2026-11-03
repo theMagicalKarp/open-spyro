@@ -645,7 +645,7 @@ typedef struct WalkerState {
   int tgtIdx;          /* 0x08 index into g_pActorListBase, -1 when unclaimed; level data: ACTOR_TYPE_PATH_ENEMY */
   int heading;         /* 0x0C */
   int moveSpeed;           /* 0x10 passed by address to DriveActorTrackedMove */
-  int zVel;           /* 0x14 likewise */
+  int zSpeed;           /* 0x14 likewise */
 } WalkerState;
 
 /* Type 339: flock leader. Two linked chains of follower actors, a path, and
@@ -750,7 +750,7 @@ typedef struct LungeState {
   int wait;       /* 0x48 */
   int knockAngle; /* 0x4C */
   int knockSpeed; /* 0x50 */
-  int velZ;       /* 0x54 */
+  int knockZSpeed;       /* 0x54 */
   int look;       /* 0x58 */
   int burn;       /* 0x5C */
 } LungeState;
@@ -1076,7 +1076,7 @@ typedef struct RoamingCritterState {
 typedef struct ShempGuardState {
   int mode;           /* 0x00 0 = patrol, 1 = hold near target */
   int cueTimer;       /* 0x04 to its next shout (CHASE / PATH_RUSH, at 2) or swipe (GUARD) */
-  int lift;           /* 0x08 */
+  int zSpeed;           /* 0x08 */
   int heading;        /* 0x0C */
   int speed;          /* 0x10 */
   int pad14;          /* 0x14 */
@@ -1328,7 +1328,7 @@ typedef struct PartnerPlatformState {
 typedef struct PartnerBouncerState {
   int partner; /* 0x00 index into g_pActorListBase; level data: ACTOR_TYPE_PARTNER_PLATFORM */
   int speed;   /* 0x04 */
-  int lift;    /* 0x08 */
+  int zSpeed;    /* 0x08 */
   int heading; /* 0x0C */
 } PartnerBouncerState;
 
@@ -1347,7 +1347,7 @@ typedef struct ChasingPathGuardState {
   int timer;      /* 0x0C */
   int knockHeading;      /* 0x10 knock-back heading */
   int speed;      /* 0x14 */
-  int lift;       /* 0x18 */
+  int zSpeed;       /* 0x18 */
   PathData *path; /* 0x1C */
   int node;       /* 0x20 */
   int onPath;     /* 0x24 */
@@ -1371,7 +1371,7 @@ typedef struct MountState {
   int init;  /* 0x04 */
   int knockHeading; /* 0x08 knock-back heading */
   int speed; /* 0x0C */
-  int lift;  /* 0x10 */
+  int zSpeed;  /* 0x10 */
 } MountState;
 
 typedef struct HatchCarrierState {
@@ -1380,7 +1380,7 @@ typedef struct HatchCarrierState {
   int timer;   /* 0x08 */
   int knockHeading;   /* 0x0C knock-back heading */
   int speed;   /* 0x10 */
-  int lift;    /* 0x14 */
+  int zSpeed;    /* 0x14 */
 } HatchCarrierState;
 
 typedef struct FloatingBarrelState {
@@ -1409,7 +1409,7 @@ typedef struct CarriedThrowerState {
   int timer; /* 0x08 */
   int knockHeading; /* 0x0C knock-back heading */
   int speed; /* 0x10 */
-  int lift;  /* 0x14 */
+  int zSpeed;  /* 0x14 */
 } CarriedThrowerState;
 
 typedef struct WardState {

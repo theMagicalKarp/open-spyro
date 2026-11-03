@@ -789,13 +789,13 @@ void Level26_UpdateActors(void) {
                                   spy->bodyRotZ, 0x20, 0x40);
         if (actor->flags & ACTOR_HIT_SUPER) {
           st->speed = (spy->motionSpeed >> 6) + 0x1C2;
-          st->lift = 0x50;
+          st->zSpeed = 0x50;
         } else if (actor->flags & ACTOR_HIT_CHARGE) {
           st->speed = 0x1F4;
-          st->lift = 0x20;
+          st->zSpeed = 0x20;
         } else {
           st->speed = 0x12C;
-          st->lift = 0x10;
+          st->zSpeed = 0x10;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
         MarkActorLiveKill(actor);
@@ -954,7 +954,7 @@ void Level26_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->lift, 0xC,
+        if (DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC,
                           0x10) != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -2710,7 +2710,7 @@ void Level26_UpdateActors(void) {
           st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                     actor->posY - SPY.posY, ATAN_ANGLE8),
                                       g_bSpyroPersistentEulerZ, 0x20, 0x40);
-          st->lift = 0x50;
+          st->zSpeed = 0x50;
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           MarkActorLiveKill(actor);
           ENTER_POSE(actor, PBOUNCER_THROWN);
@@ -2718,7 +2718,7 @@ void Level26_UpdateActors(void) {
         if (g_pActorListBase[st->partner].mode != PPLAT_BOB) {
           st->heading = actor->rotZ;
           st->speed = 0;
-          st->lift = 0;
+          st->zSpeed = 0;
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           MarkActorLiveKill(actor);
           ENTER_POSE(actor, PBOUNCER_THROWN);
@@ -2744,7 +2744,7 @@ void Level26_UpdateActors(void) {
         break;
 
       case PBOUNCER_THROWN:
-        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC,
+        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC,
                           0x10) != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x30);
@@ -2765,7 +2765,7 @@ void Level26_UpdateActors(void) {
         break;
 
       case PBOUNCER_FALL:
-        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC,
+        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC,
                           0x10) != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x30);

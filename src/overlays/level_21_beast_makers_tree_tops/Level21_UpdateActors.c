@@ -3053,7 +3053,7 @@ void Level21_UpdateActors(void) {
         if (actor->flags & ACTOR_HIT_CHARGE) {
           st->knockSpeed = 0x55;
         }
-        st->lift = 0x3C;
+        st->knockZSpeed = 0x3C;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                    actor->posY - spy->posY, ATAN_ANGLE8),
                                      spy->bodyRotZ, 0x20, 0x40);
@@ -3183,11 +3183,11 @@ void Level21_UpdateActors(void) {
         }
         r = PivotActorAlongPath(actor, st->path, 0x17C, spd, 0, 8, 0x28, PIVOT_TURN_ANY, 0);
         floor = ProbeActorGroundHeightRaised(actor, 0xBB8);
-        st->lift -= 0x1E;
-        if (st->lift < -0x190) {
-          st->lift = -0x190;
+        st->knockZSpeed -= 0x1E;
+        if (st->knockZSpeed < -0x190) {
+          st->knockZSpeed = -0x190;
         }
-        z = actor->posZ + st->lift;
+        z = actor->posZ + st->knockZSpeed;
         if (z < floor) {
           actor->posZ = floor;
         } else {
@@ -3226,10 +3226,10 @@ void Level21_UpdateActors(void) {
         } else if (r & PATH_ARRIVED_FLAG) {
           switch (RUN_FLAGS(st->path) & PATH_NODE_JUMP) {
           case PATH_JUMP_LOW:
-            st->lift = 0xDC;
+            st->knockZSpeed = 0xDC;
             break;
           case PATH_JUMP_MID:
-            st->lift = 0x140;
+            st->knockZSpeed = 0x140;
             break;
           }
         }
@@ -3257,7 +3257,7 @@ void Level21_UpdateActors(void) {
         continue;
 
       case RUNNER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->lift, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0xC);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -3275,7 +3275,7 @@ void Level21_UpdateActors(void) {
                                         actor->posY - SPY.posY, ATAN_ANGLE8)) < 0x20) {
           st->path = st->home;
           st->path->cur = 0;
-          st->lift = 0;
+          st->knockZSpeed = 0;
           actor->mode = RUNNER_FLEE;
           continue;
         }
@@ -3297,11 +3297,11 @@ void Level21_UpdateActors(void) {
         }
         r = PivotActorAlongPath(actor, st->path, 0x17C, spd, 0, 10, 0x28, PIVOT_TURN_ANY, 0);
         floor = ProbeActorGroundHeightRaised(actor, 0xBB8);
-        st->lift -= 10;
-        if (st->lift < -0x190) {
-          st->lift = -0x190;
+        st->knockZSpeed -= 10;
+        if (st->knockZSpeed < -0x190) {
+          st->knockZSpeed = -0x190;
         }
-        z = actor->posZ + st->lift;
+        z = actor->posZ + st->knockZSpeed;
         if (z < floor) {
           actor->posZ = floor;
         } else {
@@ -3348,17 +3348,17 @@ void Level21_UpdateActors(void) {
         if (r & PATH_ARRIVED_FLAG) {
           switch (RUN_FLAGS(st->path) & PATH_NODE_JUMP) {
           case PATH_JUMP_LOW:
-            st->lift = 0x17C;
+            st->knockZSpeed = 0x17C;
             break;
           case PATH_JUMP_MID:
             if (st->mode == PRUN_FIRST) {
-              st->lift = 0x104;
+              st->knockZSpeed = 0x104;
             } else if (st->mode == PRUN_SECOND) {
-              st->lift = 0xD2;
+              st->knockZSpeed = 0xD2;
             }
             break;
           case 3:
-            st->lift = 0xC8;
+            st->knockZSpeed = 0xC8;
             break;
           }
         }
@@ -4310,16 +4310,16 @@ void Level21_UpdateActors(void) {
                                     actor->posY - g_pActorListBase[st->target].posY,
                                     ATAN_ANGLE8);
           st->speed = 0x8C;
-          st->lift = 0x23;
+          st->zSpeed = 0x23;
         } else {
           st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
                                     spy->bodyRotZ, 0x20, 0x40);
           st->speed = 0xC8;
-          st->lift = 0x32;
+          st->zSpeed = 0x32;
           if (actor->flags & ACTOR_HIT_CHARGE) {
             st->speed += 0x46;
-            st->lift += 0x32;
+            st->zSpeed += 0x32;
           }
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorLiveKill(actor);
@@ -4394,7 +4394,7 @@ void Level21_UpdateActors(void) {
       }
 
       case RAM_QUIET_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->lift, 0xC, 0x10);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, 0x10);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x10);

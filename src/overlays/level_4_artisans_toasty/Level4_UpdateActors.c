@@ -2437,7 +2437,7 @@ void Level4_UpdateActors(void) {
           st->knockAngle = StepAndLerpAngle8(
               ArcTan2(actor->posX - spy->posX, actor->posY - SPY.posY, ATAN_ANGLE8),
               g_bSpyroPersistentEulerZ, 0x20, 0x40);
-          st->velZ = 0x14;
+          st->knockZSpeed = 0x14;
           actor->mode = LUNGER_KNOCKED;
           continue;
         }
@@ -2500,7 +2500,7 @@ void Level4_UpdateActors(void) {
         break;
 
       case LUNGER_AIM:
-        st->velZ = (ApproxDist2D(&actor->posX, &SPY.posX) * 35 >> 10) + 0x12C;
+        st->knockZSpeed = (ApproxDist2D(&actor->posX, &SPY.posX) * 35 >> 10) + 0x12C;
         ANIM_GO(actor, st->anim + 2);
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(st->target[0] - actor->posX,
@@ -2515,10 +2515,10 @@ void Level4_UpdateActors(void) {
       case LUNGER_LEAP: {
         int floor = ProbeActorGroundHeight(actor);
 
-        actor->posZ += st->velZ;
-        st->velZ -= 0x32;
-        if (st->velZ < -0x258) {
-          st->velZ = -0x258;
+        actor->posZ += st->knockZSpeed;
+        st->knockZSpeed -= 0x32;
+        if (st->knockZSpeed < -0x258) {
+          st->knockZSpeed = -0x258;
         }
         if (SPY.state == SPYRO_ST_HURT_PINNED) {
           st->burn = 0x1E;
@@ -2550,7 +2550,7 @@ void Level4_UpdateActors(void) {
             actor->nextFrame = 9;
             actor->frameProgress = 0;
           }
-          if ((unsigned int)(dist - 0x51) < 0x2CF && st->velZ < 0x64 &&
+          if ((unsigned int)(dist - 0x51) < 0x2CF && st->knockZSpeed < 0x64 &&
               actor->posZ - floor >= 0x1F5) {
             MoveActorAlongAngle(actor,
                           ArcTan2(SPY.posX - actor->posX,
@@ -2568,7 +2568,7 @@ void Level4_UpdateActors(void) {
 
       case LUNGER_KNOCKED:
         ANIM_GO(actor, st->anim + 4);
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockAngle, &st->velZ, 0xC,
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockAngle, &st->knockZSpeed, 0xC,
                       0xA);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

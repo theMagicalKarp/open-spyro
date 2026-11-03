@@ -160,7 +160,7 @@ typedef struct AttachBeadState {
  * flight target and runs until it gets away or times out. */
 typedef struct SpinRunState {
   int heading;   /* 0x00 */
-  int zVel;      /* 0x04 */
+  int zSpeed;      /* 0x04 */
   int moveSpeed; /* 0x08 */
   int timer;     /* 0x0C */
 } SpinRunState;

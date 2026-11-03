@@ -892,7 +892,7 @@ void Level24_UpdateActors(void) {
       }
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != LGUARD_KNOCKED &&
           (st->kind != LGKIND_BIG || !(actor->flags & ACTOR_HIT_CHARGE))) {
-        st->lift = 0;
+        st->knockZSpeed = 0;
         st->knockSpeed = 0xC8;
         if (actor->flags & ACTOR_HIT_CHARGE) {
           st->knockSpeed = 0x15E;
@@ -1054,7 +1054,7 @@ void Level24_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        r = DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->lift, 0xC, 0x10);
+        r = DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0x10);
         if (st->kind == LGKIND_SMALL) {
           if (r == MOVED_LANDED && (unsigned)(actor->nextFrame - 0xB) < 9) {
             g_nActorAnimDone = 0;
@@ -2399,10 +2399,10 @@ void Level24_UpdateActors(void) {
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != LGUARD_KNOCKED &&
           (st->kind != LGKIND_BIG || !(actor->flags & ACTOR_HIT_CHARGE))) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        st->lift = 0x96;
-        st->knock = 0x118;
+        st->knockZSpeed = 0x96;
+        st->knockSpeed = 0x118;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->knock = 0x17C;
+          st->knockSpeed = 0x17C;
         }
         st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
                                                   actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
@@ -2575,7 +2575,7 @@ void Level24_UpdateActors(void) {
             }
           }
         }
-        r = DriveActorTrackedMove(actor, &st->knock, st->heading, &st->lift, 0xC, 0x10);
+        r = DriveActorTrackedMove(actor, &st->knockSpeed, st->heading, &st->knockZSpeed, 0xC, 0x10);
         if (r == MOVED_LANDED && actor->nextFrame < 0xA) {
           g_nActorAnimDone = 0;
           actor->frameProgress = sixteen;

@@ -2104,7 +2104,7 @@ void Level31_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
                                   SPY.bodyRotZ, 0x20, 0x40);
-        st->lift = 0x78;
+        st->zSpeed = 0x78;
         if (actor->flags & ACTOR_HIT_CHARGE) {
           st->speed = 0xF0;
         } else {
@@ -2120,7 +2120,7 @@ void Level31_UpdateActors(void) {
         if (s == FLOATBARREL_BLAST) {
           st->rider = -1;
           st->speed = 0;
-          st->lift = 0xF0;
+          st->zSpeed = 0xF0;
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorLiveKill(actor);
           ENTER_POSE(actor, MOUNT_KNOCKED);
@@ -2128,7 +2128,7 @@ void Level31_UpdateActors(void) {
         if (s == FLOATBARREL_RUN) {
           st->rider = -1;
           st->speed = 0;
-          st->lift = 0x78;
+          st->zSpeed = 0x78;
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorLiveKill(actor);
           ENTER_POSE(actor, MOUNT_KNOCKED);
@@ -2163,7 +2163,7 @@ void Level31_UpdateActors(void) {
         break;
 
       case MOUNT_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->lift, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -2186,7 +2186,7 @@ void Level31_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
                                   SPY.bodyRotZ, 0x20, 0x40);
-        st->lift = 0x3C;
+        st->zSpeed = 0x3C;
         st->speed = 0x78;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);
@@ -2245,7 +2245,7 @@ void Level31_UpdateActors(void) {
       }
 
       case HCARRIER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->lift, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x30);
@@ -2283,7 +2283,7 @@ void Level31_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
                                   SPY.bodyRotZ, 0x20, 0x40);
-        st->lift = 0x3C;
+        st->zSpeed = 0x3C;
         st->speed = 0x78;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);
@@ -2437,7 +2437,7 @@ void Level31_UpdateActors(void) {
         break;
 
       case CTHROW_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->lift, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x30);

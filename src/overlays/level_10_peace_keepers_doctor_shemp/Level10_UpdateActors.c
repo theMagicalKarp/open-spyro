@@ -2681,7 +2681,7 @@ void Level10_UpdateActors(void) {
                          ArcTan2(spy->posX - actor->posX,
                                        spy->posY - actor->posY, ATAN_ANGLE8)) >= 0x55)) {
         st->speed = 0x15E;
-        st->lift = 0xA0;
+        st->zSpeed = 0xA0;
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2772,7 +2772,7 @@ void Level10_UpdateActors(void) {
             if (st->speed < 0x50) {
               st->speed = 0x50;
             }
-            st->lift = 0x28;
+            st->zSpeed = 0x28;
             st->stateTimer = 0x3C;
             actor->subMode = 0;
             PlayActorMeshVoice(actor, SGUARD_VOICE_FALL, 0);
@@ -2796,7 +2796,7 @@ void Level10_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC,
+        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC,
                           0xC) == MOVED_LANDED &&
             actor->nextFrame < 0xD) {
           int c;
@@ -2832,7 +2832,7 @@ void Level10_UpdateActors(void) {
           if (st->speed < 0x50) {
             st->speed = 0x50;
           }
-          st->lift = 0x28;
+          st->zSpeed = 0x28;
           st->stateTimer = 0x3C;
           actor->subMode = 0;
           PlayActorMeshVoice(actor, SGUARD_VOICE_FALL, 0);
@@ -2899,7 +2899,7 @@ void Level10_UpdateActors(void) {
           if (st->speed < 0x50) {
             st->speed = 0x50;
           }
-          st->lift = 0x28;
+          st->zSpeed = 0x28;
           st->stateTimer = 0x3C;
           actor->subMode = 0;
           PlayActorMeshVoice(actor, SGUARD_VOICE_FALL, 0);
@@ -2947,13 +2947,13 @@ void Level10_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (actor->subMode == 0 && st->lift < -0x50) {
+        if (actor->subMode == 0 && st->zSpeed < -0x50) {
           FindNearestPathPointToActor(actor, st->path, &nearestNode[1]);
           SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, (int *)((unsigned char *)st->path + ((nearestNode[1] << 4) + 8)));
           MarkActorLiveKill(actor);
           actor->subMode = 1;
         }
-        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->lift, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC, 0xC);
         break;
 
       case SGUARD_PATH_CHASE:

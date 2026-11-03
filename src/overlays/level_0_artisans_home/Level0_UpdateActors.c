@@ -1360,7 +1360,7 @@ void Level0_UpdateActors(void) {
 
         if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
           st->moveSpeed = 0x190;
-          st->zVel = 0x46;
+          st->zSpeed = 0x46;
           st->heading = StepAndLerpAngle8(
               ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
               SPY.bodyRotZ, 0x28, 0x80);
@@ -1368,7 +1368,7 @@ void Level0_UpdateActors(void) {
         }
 
         PlaySoundEffect(g_pLevelSampleBankHeader[0x27], actor, SFX_MODE_3D, &actor->voiceRow);
-        st->zVel = 0xB4;
+        st->zSpeed = 0xB4;
         st->moveSpeed = 0x118;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
@@ -1618,7 +1618,7 @@ void Level0_UpdateActors(void) {
 
         actor->rotY += 4;
         TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, YAW_STEP_IN_BAND);
-        DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zSpeed, 0xC, 0xC);
         break;
       }
 
@@ -1630,13 +1630,13 @@ void Level0_UpdateActors(void) {
           continue;
         }
 
-        DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zSpeed, 0xC, 0xC);
         TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, YAW_STEP_IN_BAND);
         break;
       }
 
       case PENEMY_FALL: {
-        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zVel, 0xC,
+        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zSpeed, 0xC,
                           0x10) == MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x10);
