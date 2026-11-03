@@ -239,7 +239,7 @@ extern void ResetSpyroEntity(int full);
 extern void ResetSpyroLinearMotion(void);
 extern int StepAngle8Toward(int to, int from, int maxStep);
 extern void StubRewardHook(int script, int a);
-extern void UnpackWorldCollisionTri(int chunk, int *out);
+extern void UnpackWorldCollisionTri(int chunk, int *verts);
 extern int WrapAngleDelta8(int a, int b);
 extern unsigned char g_abLevelVisitedFlag[];
 extern int g_anLevelTriggerStateSlots[];

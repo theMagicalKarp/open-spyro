@@ -54,7 +54,7 @@ extern struct {
   int v;
 } g_nHudEggRollRequest;
 
-extern void AimCameraStickTowardPoint(int *pos);
+extern void AimCameraStickTowardPoint(int *target);
 
 extern void SVectorToVectorShl2(int *dst, short *src);
 
@@ -150,7 +150,7 @@ extern CamObj g_anWorldToCameraRotMtx;
 extern void StubRewardHook(int script, int a);
 
 /* Callees used by the collectible and fairy behaviours. */
-extern void UnpackWorldCollisionTri(int chunk, int *out);
+extern void UnpackWorldCollisionTri(int chunk, int *verts);
 
 extern int CheckLineOfSightSegment(int *from, int *to);
 
@@ -367,7 +367,7 @@ typedef struct SeedPodState {
   int restZ;    /* 0x10 */
 } SeedPodState;
 
-extern int CheckSpyroLineOfSightTo(int *pos);
+extern int CheckSpyroLineOfSightTo(int *target);
 
 extern int IsPointInRotatedBox(int *pos, TriggerBox *box);
 
@@ -383,9 +383,9 @@ typedef struct LockedChestState {
   int handle; /* 0x14 for SelectActorLodBand */
 } LockedChestState;
 
-extern void DivideVector3(int *dst, int *s, int k);
+extern void DivideVector3(int *dst, int *src, int n);
 
-extern void GetActorAttachPoint(Actor *actor, int slot, int *pos);
+extern void GetActorAttachPoint(Actor *actor, int slot, int *dst);
 
 /* Type 33: egg thief. Carries a stolen egg (a type 0x22 actor it spawns),
  * runs a looping path away from Spyro, digs between path sections, and drops
@@ -868,7 +868,7 @@ extern int FindNearestPathPointToActor(Actor *actor, PathData *path, int *out_in
 #define TWEEN_NEXT_LEG 1 /* result: this step finished a leg */
 #define TWEEN_WRAPPED 2  /* result: ... and the cursor wrapped back to node 0 */
 #endif
-extern int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legs, int flags);
+extern int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legFrames, int flags);
 
 typedef struct PostState {
   PathData *path; /* 0x00 */
@@ -1045,7 +1045,7 @@ typedef struct SentinelState {
 
 extern int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist, int cap, int contactRadius, int maxTurn, int stallAngle, int *smoothVel);
 
-extern int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius, int speed, int contact, int clamp, int limit, int *f);
+extern int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius, int speed, int contact, int clamp, int limit, int *yawp);
 
 typedef struct CannonState {
   int link;            /* 0x00 index of the actor it wakes on arrival; level data: ACTOR_TYPE_BREAKABLE_ROCK */
@@ -1268,8 +1268,8 @@ typedef struct LootThiefState {
   int knockZSpeed;  /* 0x10 vertical speed (DriveActorTrackedMove) */
   int knockHeading; /* 0x14 */
   int speed;      /* 0x18 */
-  int look[3];    /* 0x1C */
-  int laps;       /* 0x28 */
+  int look[3];    /* 0x1C TweenActorAlongPath prev leg */
+  int laps;       /* 0x28 laps run (caps at 5, slows the run); also TweenActorAlongPath's step counter */
   int init;       /* 0x2C */
   int chunkAnim;        /* 0x30 world chunk-anim handle (GetWorldChunkAnimState) */
   PathData *cur;   /* 0x34 */
@@ -1337,7 +1337,7 @@ typedef struct FormationEscortState {
   int partner;    /* 0x04 index into g_pActorListBase, -1 = none; level data: ACTOR_TYPE_FORMATION_ESCORT */
   PathData *path; /* 0x08 */
   int tweenLeg[3]; /* 0x0C TweenActorAlongPath prev leg */
-  int timer;      /* 0x18 */
+  int timer;      /* 0x18 TweenActorAlongPath step counter, then a countdown */
   int slot;       /* 0x1C place in the ring */
   int speed;      /* 0x20 */
 } FormationEscortState;
@@ -1502,16 +1502,16 @@ typedef struct LanternState {
 extern int FindFarthestPathPointFromSpyro(PathData *path);
 
 /* Hoisted: declared identically (bar parameter names) in every includer. */
-extern int ComputeLobVelocityZ(int *from, int *to, int speed, int g, int *out);
+extern int ComputeLobVelocityZ(int *pos, int *target, int speed, int gravity, int *pOutTime);
 
 /* Declared identically by two or more *_UpdateActors.c files; hoisted here. */
 extern void ChangeSpyroState(int state);
 extern void ComputeCameraOrbitOffset(int *out);
-extern void ProjectWorldPointGTEUnscaled(int *out, int *s);
+extern void ProjectWorldPointGTEUnscaled(int *out, int *pos);
 #ifndef VOICE_RELEASE
 #define VOICE_RELEASE 4 /* StopSoundVoiceByIndex: key off and free the voice row (2 does the same; other modes only key off) */
 #endif
-extern void StopSoundVoiceByIndex(int ch, int mode);
+extern void StopSoundVoiceByIndex(int index, int mode);
 extern void TallyFlightTarget(int tallyClass);
 extern void UpdateCameraEulerAngles(void);
 extern Xform g_aCameraXformPresets[];

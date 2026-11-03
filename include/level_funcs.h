@@ -17,7 +17,7 @@ extern void *AllocEmitListRecord(int cls);
 #define ATAN_ANGLE8 0  /* ArcTan2: 8-bit angle, 0..0xFF per turn */
 #define ATAN_ANGLE12 1 /* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */
 #endif
-extern int ArcTan2(int dy, int dx, int scale);
+extern int ArcTan2(int dx, int dy, int scale);
 extern void BeginPauseToMenuTransition(void);
 extern void BuildActiveActorList(void);
 extern void BuildTextSpriteChain();                          /* draw text run */

@@ -12,7 +12,7 @@
 
 #include "actor.h"
 
-extern void ComputeCameraToTargetAngle(int *out);
+extern void ComputeCameraToTargetAngle(int *target);
 extern int g_anRotBillboardOffsetsRand[][3];
 extern Actor *g_pLockedChestReward;
 extern int g_anSpuVoiceRowPitch[][7];                        /* g_aSpuVoiceRows[i].nPitch (rows are 7 words) */
@@ -55,7 +55,7 @@ extern int *g_pSpyroRequestCameraAnchor;                     /* SPY.pCamAnchor, 
 extern unsigned char **g_pTriggerRegionTable;                /* surface records, indexed by the above */
 extern int RandomIntInRange(int lo, int hi);                 /* random in [lo, hi] */
 extern int RandomSignedInRange(int lo, int hi);
-extern int StepAndLerpAngle8(int ang, int facing, int maxStep, int frac);
+extern int StepAndLerpAngle8(int to, int from, int maxStep, int frac);
 extern int TickCountdownByFrameDelta(void *pValue, int width);
 
 #ifndef TICK_DOWN
@@ -79,13 +79,13 @@ extern void VectorToSVectorShr2(short *dst, int *src);
 
 /* Hoisted: declared identically (bar parameter names) in every includer. */
 extern int CastRayWorldAndActors(int *start, int *end);
-extern int ComputeStepTowardPoint(int *from, int *to, int *vel, int speed);
+extern int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
 extern int g_anSparxHealthBlock[]; /* == g_nSparxHealth (SPY.sparxHealth): 3 gold .. 1 green, 0 Sparx gone, -1 the fatal hit was taken */
-extern int GetWorldChunkAnimState(int handle); /* flags | step << 8 | delay << 16 */
-extern void ModifyWorldChunkAnimFlags(int handle, int andMask, int orMask);
+extern int GetWorldChunkAnimState(int id); /* flags | step << 8 | delay << 16 */
+extern void ModifyWorldChunkAnimFlags(int id, int andMask, int orMask);
 extern int PickupGroupHasLiveActor(int group);
 extern int PlaneDistanceAbs(int *pos, void *st);
-extern void SetWorldChunkAnimStep(int handle, int step, int fire);
+extern void SetWorldChunkAnimStep(int id, int step, int fire);
 extern int WrapAddAngle8(int a, int b);
 extern int g_anActorShardOffsets[];  /* shard offset vectors, 3 ints each */
 extern int g_anMotionTrailSliceCounts[];       /* trail lengths */
@@ -98,7 +98,7 @@ extern signed char g_bSpyroRequestYaw; /* g_abSpyroRequestEuler[2]: requested ya
 #define CONTACT_ALL           2 /* keep testing past solid shapes */
 #endif
 extern Actor *DispatchActorContactAtSphere(int *pos, int radius, unsigned int *events, int hitBits, Actor *self, int mode);
-extern void GetActorAttachPoint(Actor *actor, int slot, int *pos);
+extern void GetActorAttachPoint(Actor *actor, int slot, int *dst);
 #ifndef STEER_NO_BLOCK
 #define STEER_NO_BLOCK 0xFF /* blockA / blockB: no blocked heading */
 #endif

@@ -214,7 +214,7 @@ typedef struct BoltGuardState {
 typedef struct SmokerState {
   struct PathData *path; /* 0x00 */
   int legStep;           /* 0x04 */
-  int legVec[3];        /* 0x08 per-frame step along the leg; a wreck ember starts from it */
+  int legVec[3];        /* 0x08 previous leg vector (TweenActorAlongPath); a wreck ember starts from it */
   int timer;           /* 0x14 */
 } SmokerState;
 

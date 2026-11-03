@@ -101,15 +101,15 @@ void FillBlock16(void *dst, int value, int count);
 /* 0x80016958 (hand-written): Copies byte_count bytes (a non-zero multiple of 4) word by word; reads the source four words at a time, so it may read up to 12 bytes past its end. */
 void CopyWords(void *dst, void *src, int byte_count);
 
-/* 0x800169ac: 2-arg arctan returning 8-bit angle (0..0xff = 0..360deg). Smaller, lower-precision sibling of ArcTan2 — uses byte-LUT at s__________________________________8006d82c. */
-int ArcTan2_8bit(int y, int x);
+/* 0x800169ac: 2-arg arctan returning 8-bit angle (0..0xff = 0..360deg). Smaller, lower-precision sibling of ArcTan2 — uses the byte LUT D_8006D908. Arguments are (x, y): angle 0 lies along +x and 0x40 along +y. */
+int ArcTan2_8bit(int x, int y);
 
 #ifndef ATAN_ANGLE8
 #define ATAN_ANGLE8 0  /* ArcTan2: 8-bit angle, 0..0xFF per turn */
 #define ATAN_ANGLE12 1 /* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */
 #endif
-/* 0x80016ab4: Angle of (y, x) in the scale ATAN_ANGLE8 (0..0xFF) or ATAN_ANGLE12 (0..0xFFF, GTE-normalized LUT with one division of interpolation). */
-int ArcTan2(int y, int x, int scale);
+/* 0x80016ab4: Angle of the vector (x, y) (0 along +x) in the scale ATAN_ANGLE8 (0..0xFF) or ATAN_ANGLE12 (0..0xFFF, GTE-normalized LUT with one division of interpolation). */
+int ArcTan2(int x, int y, int scale);
 
 int LookupSine(int angle);
 
@@ -143,16 +143,16 @@ int RefineSqrtEstimate(int *v, int len, int mode);
 void SetVector3Magnitude(int *vec, int magnitude);
 
 /* 0x800175b8: In-place scale vector by ratio ratio/len using GTE gpl0. Computes (ratio << 12)/len then multiplies each component by it with 12-bit fixed-point. Heavily used by Spyro physics/movement. */
-void ScaleVector3ByRatio(int *vec, int len, int ratio);
+void ScaleVector3ByRatio(int *vec, int den, int num);
 
 /* 0x80017614: In-place scale of int[3] vector by IR0 fixed-point factor (gte_gpl0 with MAC=0), then arithmetic right-shift each component by shift. Used in physics for velocity damping. */
 void ScaleVector3Shifted(int *vec, int num, int shift);
 
 /* 0x800176a0: In-place left-shift of an int[3] vector by n bits. Sibling of RShiftVector3. */
-void LShiftVector3(int *v, int n);
+void LShiftVector3(int *vec, int shift);
 
 /* 0x800176c8: Arithmetic right-shifts each of the 3 signed ints at *v by (n & 0x1f). Used for fixed-point precision conversion in the actor draw path. */
-void RShiftVector3(int *v, int n);
+void RShiftVector3(int *vec, int shift);
 
 void ZeroVector(int *vec);
 
@@ -1941,8 +1941,8 @@ void SnapActorToGround(Actor *actor);
 /* 0x80038494: True when the actor's pool slot bit is set in g_anCheckpointKillBitmap and its +0x53 byte is 0xFF. */
 int IsActorInCheckpointKillSet(Actor *actor);
 
-/* 0x8003851c: Plays the voice sample named in the actor's mesh record (g_apActorMeshTable[actor->type] + arg1, byte 4) keyed to arg2, or to the actor's own +0x54 slot after stopping its previous voices. */
-void PlayActorMeshVoice(Actor *actor, int voiceOffset, void *owner);
+/* 0x8003851c: Plays voice `voice` of the actor's model (sample id at byte 4 + voice of its g_apActorMeshTable record), keyed to the `voiceRow` slot, or to the actor's own ->voiceRow after stopping its previous voices. */
+void PlayActorMeshVoice(Actor *actor, int voice, void *voiceRow);
 
 /* 0x80038ee0: Turns the actor's 8-bit yaw (+0x46) toward `target` by at most `step` (x1.5 / x2 at frame delta 3 / 4); returns 1 once within `threshold`. */
 int TurnActorYawTowardAngle(Actor *actor, int target, int step, int threshold, int flag);
@@ -2130,7 +2130,7 @@ int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim, int 
 #define TWEEN_NEXT_LEG 1 /* result: this step finished a leg */
 #define TWEEN_WRAPPED 2  /* result: ... and the cursor wrapped back to node 0 */
 #endif
-int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legs, int flags);
+int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legFrames, int flags);
 
 /* 0x8003c358: Spell a level name (portal signs) or "RETURN HOME" (level exits) in floating letter actors around a sign. */
 #ifndef NAME_LETTERS_RETURN_HOME

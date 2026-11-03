@@ -13,7 +13,7 @@
 #include "actor_cutscene.h"
 #include "spyro_state.h"
 
-extern void CopyWords(void *dst, void *src, int len);
+extern void CopyWords(void *dst, void *src, int byte_count);
 
 extern void ApplyEulerRotation(int *euler, int *mtx, int base);
 

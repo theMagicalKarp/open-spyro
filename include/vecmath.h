@@ -61,7 +61,7 @@ void SetVector3Magnitude(int *vec, int magnitude);
 /* GTE rotations (Y/Z sign-flipped in and out): by an explicit matrix, by the
  * currently loaded matrix, and by the camera matrix. */
 void RotateVectorByMatrix(int *mtx, int *src, int *dst);
-void ApplyActiveGteRotation(int *src, int *dst);
+void ApplyActiveGteRotation(int *dst, int *src);
 void WorldToCameraRotate(int *src, int *dst);
 
 /* The game's PRNG. */

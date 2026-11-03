@@ -41,7 +41,7 @@ typedef struct PickupDropState {
   unsigned char sparkle; /* 0x14 g_aRotBillboards handle, 0xFF = none */
 } PickupDropState;
 
-extern int FindGroundHeightBelow(int *pos, int drop);
+extern int FindGroundHeightBelow(int *pos, int depth);
 
 /* pos: a world vec3, or the Actor * for actor-anchored types; effectArg: a
  * colour / radius / life word, or a velocity pointer cast to int (EmitEffect). */
@@ -55,7 +55,7 @@ extern int g_anFlightClearTimes[];   /* per flight level first-clear time */
 
 extern int RandomIntInRange(int lo, int hi);
 extern int RandomSignedInRange(int lo, int hi);
-extern int StepAndLerpAngle8(int ang, int facing, int maxStep, int frac);
+extern int StepAndLerpAngle8(int to, int from, int maxStep, int frac);
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
 extern int g_anFlightTargetTally;

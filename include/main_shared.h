@@ -312,7 +312,7 @@ extern void AddVector(int *dst, int *a, int *b);
 #define ATAN_ANGLE8 0  /* ArcTan2: 8-bit angle, 0..0xFF per turn */
 #define ATAN_ANGLE12 1 /* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */
 #endif
-extern int ArcTan2(int y, int x, int scale);
+extern int ArcTan2(int x, int y, int scale);
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 extern void SubtractVector(int *dst, int *a, int *b);
 extern void ZeroVector(int *vec);
