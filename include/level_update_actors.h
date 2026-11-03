@@ -489,7 +489,7 @@ typedef struct CritterKnockState {
  * debris. */
 typedef struct BrawlerState {
   int link;    /* 0x00 handed to the spawned bolt */
-  int flag;    /* 0x04 */
+  int sending; /* 0x04 set each BRAWLER_SEND frame; never read */
   int u08;     /* 0x08 */
   int heading; /* 0x0C */
   int speed;   /* 0x10 */

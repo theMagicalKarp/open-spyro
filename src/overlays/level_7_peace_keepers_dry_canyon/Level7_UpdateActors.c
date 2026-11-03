@@ -2532,7 +2532,7 @@ void Level7_UpdateActors(void) {
       }
 
       case BRAWLER_SEND:
-        st->flag = one;
+        st->sending = one;
         if (g_nActorAnimNewFrame != 0 && actor->frame == 0x11) {
           int h = WrapAddAngle8(actor->rotZ, 0xFD);
           Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_BRAWLER_SPAWN, actor);

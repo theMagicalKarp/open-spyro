@@ -61,7 +61,7 @@
 void Level0_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
-  int flag1;
+  int newFrame;
 
   /* Scratch vectors shared by several cases. */
   int svA[3];
@@ -97,9 +97,9 @@ void Level0_UpdateActors(void) {
     /* Publish this actor's animation flags and the frame delta for the
      * callees. */
     g_nActorAnimDone = actor->animFlags & ACTOR_ANIM_DONE;
-    flag1 = actor->animFlags & ACTOR_ANIM_NEW_FRAME;
+    newFrame = actor->animFlags & ACTOR_ANIM_NEW_FRAME;
     g_nActorFrameDelta = g_nFrameStep;
-    g_nActorAnimNewFrame = flag1;
+    g_nActorAnimNewFrame = newFrame;
 
     /* One case per actor class. `break` and `continue` both end this actor's
      * update; `continue` also skips any shared tail inside the case. */
