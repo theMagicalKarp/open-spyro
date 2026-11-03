@@ -6,7 +6,7 @@
 /* g_nSpyroState values. ChangeSpyroState runs a state's entry setup,
  * UpdateSpyroStateBehavior its per-frame exits; the names come from those
  * exits and the pad bits that reach them (pad_buttons.h). Hit states are
- * picked by DispatchSpyroPadStateChanges / DispatchSpyroChargeStateChanges
+ * picked by ApplySpyroTriggerEvents / DispatchSpyroChargeStateChanges
  * from the g_dwSpyroTriggerEventFlags bit noted. g_nSpyroState itself stays an
  * int, like g_nGamestate. */
 typedef enum SpyroState
@@ -62,7 +62,7 @@ typedef enum SpyroState
 
 /* g_dwSpyroTriggerEventFlags bits (SpyroObj.triggerEvents): raised by actors
  * and the collision probes during the frame, consumed by
- * DispatchSpyroPadStateChanges / DispatchSpyroChargeStateChanges. The hit
+ * ApplySpyroTriggerEvents / DispatchSpyroChargeStateChanges. The hit
  * bits each pick a hurt state and cost one g_nSparxHealth; the two contact
  * bits only matter while charging (CONTACT_FRONT bonks when the contact actor
  * is ahead, CONTACT bonks anyway, both together hurt). */
@@ -90,7 +90,7 @@ typedef enum SpyroState
 #define SPYRO_EV_UNREAD_80000 0x80000
 #define SPYRO_EV_HITS 0x01F1        /* every hit bit (HIT, PINNED .. KNOCKBACK) */
 
-/* Masks the states pass to DispatchSpyroPadStateChanges: everything but the
+/* Masks the states pass to ApplySpyroTriggerEvents: everything but the
  * charge-contact pair; also no hazard; and the supercharge's only two. */
 #define SPYRO_EV_MASK_DEFAULT 0xFFF9
 #define SPYRO_EV_MASK_NO_HAZARD 0xFBF9

@@ -360,7 +360,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8003ea68` | ChangeSpyroState | main | 4960 | matched | game |
 | `0x8003fdc8` | RestartSpyroAnimWithState | main | 120 | matched | game |
 | `0x8003fe40` | AdvanceSpyroPhysics | main | 4392 | matched | game |
-| `0x80040f68` | DispatchSpyroPadStateChanges | main | 776 | matched | game |
+| `0x80040f68` | ApplySpyroTriggerEvents | main | 776 | matched | game |
 | `0x80041270` | DispatchSpyroChargeStateChanges | main | 744 | matched | game |
 | `0x80041558` | CycleSpyroIdleAnim | main | 280 | matched | game |
 | `0x80041670` | UpdateSpyroStateBehavior | main | 10612 | matched | game |

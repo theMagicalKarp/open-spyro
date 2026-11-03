@@ -30,19 +30,20 @@ void PollPadAndDistributeInput(void) {
   }
 
   padState = PadGetState(0);
-  if (padState == 1) {
+  if (padState == PadStateFindPad) {
     g_nPadActAlignedFlag = 0;
   }
   if (g_nPadActAlignedFlag == 0) {
     PadSetAct(0, g_abPadActCommand, 2);
-    if (padState == 2) {
+    if (padState == PadStateFindCTP1) {
       g_nPadActAlignedFlag = 1;
-    } else if (padState == 6 && PadSetActAlign(0, g_abPadActAlignTable) != 0) {
+    } else if (padState == PadStateStable &&
+               PadSetActAlign(0, g_abPadActAlignTable) != 0) {
       g_nPadActAlignedFlag = 1;
     }
   }
 
-  if (PadInfoMode(0, 2, 0) != 0) {
+  if (PadInfoMode(0, InfoModeCurExID, 0) != 0) {
     if (g_nPadSetMainModePending != 0) {
       if (PadSetMainMode(0, 1, 0) != 0) {
         g_nPadSetMainModePending = 0;

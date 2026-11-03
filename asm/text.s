@@ -53194,11 +53194,11 @@ glabel AdvanceSpyroPhysics
 endlabel AdvanceSpyroPhysics
 .endif
 
-.section .text.DispatchSpyroPadStateChanges, "ax"
-.ifndef HAVE_C_DispatchSpyroPadStateChanges
-nonmatching DispatchSpyroPadStateChanges, 0x308
+.section .text.ApplySpyroTriggerEvents, "ax"
+.ifndef HAVE_C_ApplySpyroTriggerEvents
+nonmatching ApplySpyroTriggerEvents, 0x308
 
-glabel DispatchSpyroPadStateChanges
+glabel ApplySpyroTriggerEvents
     /* 31768 80040F68 0780033C */  lui        $v1, %hi(g_nCurrentLevelId)
     /* 3176C 80040F6C B458638C */  lw         $v1, %lo(g_nCurrentLevelId)($v1)
     /* 31770 80040F70 0780023C */  lui        $v0, %hi(g_nActiveLevelId)
@@ -53417,7 +53417,7 @@ glabel DispatchSpyroPadStateChanges
     /* 31A64 80041264 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 31A68 80041268 0800E003 */  jr         $ra
     /* 31A6C 8004126C 00000000 */   nop
-endlabel DispatchSpyroPadStateChanges
+endlabel ApplySpyroTriggerEvents
 .endif
 
 .section .text.DispatchSpyroChargeStateChanges, "ax"
@@ -53741,7 +53741,7 @@ glabel UpdateSpyroStateBehavior
     /* 31EA8 800416A8 08004000 */  jr         $v0
     /* 31EAC 800416AC 00000000 */   nop
   jlabel .L800416B0
-    /* 31EB0 800416B0 DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 31EB0 800416B0 DA03010C */  jal        ApplySpyroTriggerEvents
     /* 31EB4 800416B4 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 31EB8 800416B8 430A4014 */  bnez       $v0, .L80043FC8
     /* 31EBC 800416BC 00000000 */   nop
@@ -53827,7 +53827,7 @@ glabel UpdateSpyroStateBehavior
     /* 31FF8 800417F8 F20F0108 */  j          .L80043FC8
     /* 31FFC 800417FC 00000000 */   nop
   jlabel .L80041800
-    /* 32000 80041800 DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 32000 80041800 DA03010C */  jal        ApplySpyroTriggerEvents
     /* 32004 80041804 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 32008 80041808 EF094014 */  bnez       $v0, .L80043FC8
     /* 3200C 8004180C 00000000 */   nop
@@ -53892,7 +53892,7 @@ glabel UpdateSpyroStateBehavior
     /* 320F0 800418F0 F00F0108 */  j          .L80043FC0
     /* 320F4 800418F4 00000000 */   nop
   jlabel .L800418F8
-    /* 320F8 800418F8 DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 320F8 800418F8 DA03010C */  jal        ApplySpyroTriggerEvents
     /* 320FC 800418FC F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 32100 80041900 B1094014 */  bnez       $v0, .L80043FC8
     /* 32104 80041904 00000000 */   nop
@@ -53981,7 +53981,7 @@ glabel UpdateSpyroStateBehavior
     /* 32244 80041A44 F00F0108 */  j          .L80043FC0
     /* 32248 80041A48 00000000 */   nop
   jlabel .L80041A4C
-    /* 3224C 80041A4C DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 3224C 80041A4C DA03010C */  jal        ApplySpyroTriggerEvents
     /* 32250 80041A50 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 32254 80041A54 5C094014 */  bnez       $v0, .L80043FC8
     /* 32258 80041A58 00000000 */   nop
@@ -54091,7 +54091,7 @@ glabel UpdateSpyroStateBehavior
     /* 323E4 80041BE4 F00F0108 */  j          .L80043FC0
     /* 323E8 80041BE8 00000000 */   nop
   jlabel .L80041BEC
-    /* 323EC 80041BEC DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 323EC 80041BEC DA03010C */  jal        ApplySpyroTriggerEvents
     /* 323F0 80041BF0 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 323F4 80041BF4 F4084014 */  bnez       $v0, .L80043FC8
     /* 323F8 80041BF8 00000000 */   nop
@@ -54128,7 +54128,7 @@ glabel UpdateSpyroStateBehavior
     /* 3246C 80041C6C F00F0108 */  j          .L80043FC0
     /* 32470 80041C70 01000424 */   addiu     $a0, $zero, 0x1
   jlabel .L80041C74
-    /* 32474 80041C74 DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 32474 80041C74 DA03010C */  jal        ApplySpyroTriggerEvents
     /* 32478 80041C78 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 3247C 80041C7C D2084014 */  bnez       $v0, .L80043FC8
     /* 32480 80041C80 00000000 */   nop
@@ -54301,7 +54301,7 @@ glabel UpdateSpyroStateBehavior
     /* 326FC 80041EFC F20F0108 */  j          .L80043FC8
     /* 32700 80041F00 00000000 */   nop
   jlabel .L80041F04
-    /* 32704 80041F04 DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 32704 80041F04 DA03010C */  jal        ApplySpyroTriggerEvents
     /* 32708 80041F08 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 3270C 80041F0C 2E084014 */  bnez       $v0, .L80043FC8
     /* 32710 80041F10 00000000 */   nop
@@ -54519,7 +54519,7 @@ glabel UpdateSpyroStateBehavior
     /* 32A30 80042230 B20B0108 */  j          .L80042EC8
     /* 32A34 80042234 00000000 */   nop
   jlabel .L80042238
-    /* 32A38 80042238 DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 32A38 80042238 DA03010C */  jal        ApplySpyroTriggerEvents
     /* 32A3C 8004223C F9FB0434 */   ori       $a0, $zero, 0xFBF9
     /* 32A40 80042240 19004010 */  beqz       $v0, .L800422A8
     /* 32A44 80042244 00000000 */   nop
@@ -54582,7 +54582,7 @@ glabel UpdateSpyroStateBehavior
     /* 32B24 80042324 F20F0108 */  j          .L80043FC8
     /* 32B28 80042328 00000000 */   nop
   jlabel .L8004232C
-    /* 32B2C 8004232C DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 32B2C 8004232C DA03010C */  jal        ApplySpyroTriggerEvents
     /* 32B30 80042330 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 32B34 80042334 24074014 */  bnez       $v0, .L80043FC8
     /* 32B38 80042338 00000000 */   nop
@@ -54622,7 +54622,7 @@ glabel UpdateSpyroStateBehavior
     /* 32BB8 800423B8 F00F0108 */  j          .L80043FC0
     /* 32BBC 800423BC 21200000 */   addu      $a0, $zero, $zero
   jlabel .L800423C0
-    /* 32BC0 800423C0 DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 32BC0 800423C0 DA03010C */  jal        ApplySpyroTriggerEvents
     /* 32BC4 800423C4 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 32BC8 800423C8 FF064014 */  bnez       $v0, .L80043FC8
     /* 32BCC 800423CC 00000000 */   nop
@@ -54793,7 +54793,7 @@ glabel UpdateSpyroStateBehavior
     /* 32E3C 8004263C F20F0108 */  j          .L80043FC8
     /* 32E40 80042640 00000000 */   nop
   jlabel .L80042644
-    /* 32E44 80042644 DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 32E44 80042644 DA03010C */  jal        ApplySpyroTriggerEvents
     /* 32E48 80042648 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 32E4C 8004264C 5E064014 */  bnez       $v0, .L80043FC8
     /* 32E50 80042650 00000000 */   nop
@@ -54827,7 +54827,7 @@ glabel UpdateSpyroStateBehavior
     /* 32EB8 800426B8 F00F0108 */  j          .L80043FC0
     /* 32EBC 800426BC 00000000 */   nop
   jlabel .L800426C0
-    /* 32EC0 800426C0 DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 32EC0 800426C0 DA03010C */  jal        ApplySpyroTriggerEvents
     /* 32EC4 800426C4 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 32EC8 800426C8 3F064014 */  bnez       $v0, .L80043FC8
     /* 32ECC 800426CC 00000000 */   nop
@@ -54939,7 +54939,7 @@ glabel UpdateSpyroStateBehavior
     /* 33068 80042868 F00F0108 */  j          .L80043FC0
     /* 3306C 8004286C 1E000424 */   addiu     $a0, $zero, 0x1E
   jlabel .L80042870
-    /* 33070 80042870 DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 33070 80042870 DA03010C */  jal        ApplySpyroTriggerEvents
     /* 33074 80042874 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 33078 80042878 D3054014 */  bnez       $v0, .L80043FC8
     /* 3307C 8004287C 00000000 */   nop
@@ -55088,12 +55088,12 @@ glabel UpdateSpyroStateBehavior
     /* 33298 80042A98 F00F0108 */  j          .L80043FC0
     /* 3329C 80042A9C 00000000 */   nop
   jlabel .L80042AA0
-    /* 332A0 80042AA0 DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 332A0 80042AA0 DA03010C */  jal        ApplySpyroTriggerEvents
     /* 332A4 80042AA4 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 332A8 80042AA8 F20F0108 */  j          .L80043FC8
     /* 332AC 80042AAC 00000000 */   nop
   jlabel .L80042AB0
-    /* 332B0 80042AB0 DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 332B0 80042AB0 DA03010C */  jal        ApplySpyroTriggerEvents
     /* 332B4 80042AB4 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 332B8 80042AB8 43054014 */  bnez       $v0, .L80043FC8
     /* 332BC 80042ABC 00000000 */   nop
@@ -55202,7 +55202,7 @@ glabel UpdateSpyroStateBehavior
     /* 33434 80042C34 F20F0108 */  j          .L80043FC8
     /* 33438 80042C38 00000000 */   nop
   jlabel .L80042C3C
-    /* 3343C 80042C3C DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 3343C 80042C3C DA03010C */  jal        ApplySpyroTriggerEvents
     /* 33440 80042C40 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 33444 80042C44 E0044014 */  bnez       $v0, .L80043FC8
     /* 33448 80042C48 00000000 */   nop
@@ -55280,7 +55280,7 @@ glabel UpdateSpyroStateBehavior
     /* 33554 80042D54 F20F0108 */  j          .L80043FC8
     /* 33558 80042D58 00000000 */   nop
   jlabel .L80042D5C
-    /* 3355C 80042D5C DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 3355C 80042D5C DA03010C */  jal        ApplySpyroTriggerEvents
     /* 33560 80042D60 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 33564 80042D64 98044014 */  bnez       $v0, .L80043FC8
     /* 33568 80042D68 00000000 */   nop
@@ -55520,7 +55520,7 @@ glabel UpdateSpyroStateBehavior
     /* 338DC 800430DC F00F0108 */  j          .L80043FC0
     /* 338E0 800430E0 20000424 */   addiu     $a0, $zero, 0x20
   jlabel .L800430E4
-    /* 338E4 800430E4 DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 338E4 800430E4 DA03010C */  jal        ApplySpyroTriggerEvents
     /* 338E8 800430E8 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 338EC 800430EC B6034014 */  bnez       $v0, .L80043FC8
     /* 338F0 800430F0 00000000 */   nop
@@ -55568,7 +55568,7 @@ glabel UpdateSpyroStateBehavior
     /* 33994 80043194 F00F0108 */  j          .L80043FC0
     /* 33998 80043198 00000000 */   nop
   jlabel .L8004319C
-    /* 3399C 8004319C DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 3399C 8004319C DA03010C */  jal        ApplySpyroTriggerEvents
     /* 339A0 800431A0 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 339A4 800431A4 88034014 */  bnez       $v0, .L80043FC8
     /* 339A8 800431A8 00000000 */   nop
@@ -55840,7 +55840,7 @@ glabel UpdateSpyroStateBehavior
     /* 33D94 80043594 F20F0108 */  j          .L80043FC8
     /* 33D98 80043598 000062AC */   sw        $v0, 0x0($v1)
   jlabel .L8004359C
-    /* 33D9C 8004359C DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 33D9C 8004359C DA03010C */  jal        ApplySpyroTriggerEvents
     /* 33DA0 800435A0 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 33DA4 800435A4 88024014 */  bnez       $v0, .L80043FC8
     /* 33DA8 800435A8 00000000 */   nop
@@ -55881,7 +55881,7 @@ glabel UpdateSpyroStateBehavior
     /* 33E34 80043634 F00F0108 */  j          .L80043FC0
     /* 33E38 80043638 21200000 */   addu      $a0, $zero, $zero
   jlabel .L8004363C
-    /* 33E3C 8004363C DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 33E3C 8004363C DA03010C */  jal        ApplySpyroTriggerEvents
     /* 33E40 80043640 F9FB0434 */   ori       $a0, $zero, 0xFBF9
     /* 33E44 80043644 60024014 */  bnez       $v0, .L80043FC8
     /* 33E48 80043648 00000000 */   nop
@@ -55924,7 +55924,7 @@ glabel UpdateSpyroStateBehavior
     /* 33ED8 800436D8 F00F0108 */  j          .L80043FC0
     /* 33EDC 800436DC 00000000 */   nop
   jlabel .L800436E0
-    /* 33EE0 800436E0 DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 33EE0 800436E0 DA03010C */  jal        ApplySpyroTriggerEvents
     /* 33EE4 800436E4 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 33EE8 800436E8 37024014 */  bnez       $v0, .L80043FC8
     /* 33EEC 800436EC 00000000 */   nop
@@ -56088,7 +56088,7 @@ glabel UpdateSpyroStateBehavior
     /* 34134 80043934 F00F0108 */  j          .L80043FC0
     /* 34138 80043938 00000000 */   nop
   jlabel .L8004393C
-    /* 3413C 8004393C DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 3413C 8004393C DA03010C */  jal        ApplySpyroTriggerEvents
     /* 34140 80043940 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 34144 80043944 A0014014 */  bnez       $v0, .L80043FC8
     /* 34148 80043948 00000000 */   nop
@@ -56242,7 +56242,7 @@ glabel UpdateSpyroStateBehavior
     /* 34370 80043B70 F00F0108 */  j          .L80043FC0
     /* 34374 80043B74 00000000 */   nop
   jlabel .L80043B78
-    /* 34378 80043B78 DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 34378 80043B78 DA03010C */  jal        ApplySpyroTriggerEvents
     /* 3437C 80043B7C F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 34380 80043B80 11014014 */  bnez       $v0, .L80043FC8
     /* 34384 80043B84 00000000 */   nop
@@ -56407,7 +56407,7 @@ glabel UpdateSpyroStateBehavior
     /* 345D4 80043DD4 F00F0108 */  j          .L80043FC0
     /* 345D8 80043DD8 00000000 */   nop
   jlabel .L80043DDC
-    /* 345DC 80043DDC DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 345DC 80043DDC DA03010C */  jal        ApplySpyroTriggerEvents
     /* 345E0 80043DE0 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 345E4 80043DE4 78004014 */  bnez       $v0, .L80043FC8
     /* 345E8 80043DE8 00000000 */   nop
@@ -56419,7 +56419,7 @@ glabel UpdateSpyroStateBehavior
     /* 34600 80043E00 F00F0108 */  j          .L80043FC0
     /* 34604 80043E04 00000000 */   nop
   jlabel .L80043E08
-    /* 34608 80043E08 DA03010C */  jal        DispatchSpyroPadStateChanges
+    /* 34608 80043E08 DA03010C */  jal        ApplySpyroTriggerEvents
     /* 3460C 80043E0C 00840434 */   ori       $a0, $zero, 0x8400
     /* 34610 80043E10 6D004014 */  bnez       $v0, .L80043FC8
     /* 34614 80043E14 00000000 */   nop
