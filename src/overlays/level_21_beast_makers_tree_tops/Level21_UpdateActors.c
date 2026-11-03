@@ -1030,7 +1030,7 @@ void Level21_UpdateActors(void) {
           st->zSpeed = 0x50;
         }
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        actor->probeDist = 0xFF;
+        actor->probeDist = ACTOR_PROBE_NONE;
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
         ANIM_GO(actor, BTHROW_ANIM_HURTLE);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2BC &&
@@ -1389,7 +1389,7 @@ void Level21_UpdateActors(void) {
           st->zSpeed = 0x5A;
         }
         ANIM_GO(actor, GATEKEEPER_ANIM_HURTLE);
-        actor->probeDist = 0xFF;
+        actor->probeDist = ACTOR_PROBE_NONE;
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x3E8 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x320

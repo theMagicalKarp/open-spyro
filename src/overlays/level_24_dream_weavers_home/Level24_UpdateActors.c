@@ -2408,7 +2408,7 @@ void Level24_UpdateActors(void) {
                                                   actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
                                     g_bSpyroPersistentEulerZ, 0x20, 0x40);
         actor->flags = 0;
-        actor->probeDist = 0xFF;
+        actor->probeDist = ACTOR_PROBE_NONE;
         st->spin = RandomSignedInRange(8, 0xE);
         actor->subMode = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);

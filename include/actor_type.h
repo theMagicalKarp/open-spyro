@@ -32,7 +32,7 @@ typedef struct Actor {
                             * else ACTOR_KILL_GROUP_*; BuildLoadedLevelRuntime);
                             * bit 7 latches the death drop (SpawnActorDeathDrop) */
   unsigned char probeDist; /* 0x3B DriveActorTrackedMove ground-probe distance / 4;
-                           * 0 default 0x12C, 0xFF none, 0xFE probe mode 1 */
+                           * 0 default 0x12C, ACTOR_PROBE_NONE / ACTOR_PROBE_LIFT_ONLY */
   unsigned char anim;  /* 0x3C current animation */
   unsigned char nextAnim; /* 0x3D next animation */
   unsigned char frame; /* 0x3E current frame */
@@ -124,6 +124,10 @@ typedef struct Actor {
 #define TINT_BOULDER_SPARK 0xD /* boulder debris 152/153 */
 #define TINT_STATUE_SHARD 0xE
 #define BILLBOARD_NONE 0xFF          /* no g_aRotBillboards handle */
+/* Actor.probeDist sentinels (DriveActorTrackedMove; other values are the
+ * ground-probe distance / 4, 0 = the default 0x12C). */
+#define ACTOR_PROBE_LIFT_ONLY 0xFE /* probe with MOVE_LIFT alone (no slide, no floor follow) */
+#define ACTOR_PROBE_NONE 0xFF      /* probe distance 0 */
 #define ACTOR_UPDATE_ALWAYS 0xFF /* ->updateDist: read signed by BuildActiveActorList, so
                                   * a negative radius keeps the actor updating anywhere */
 #define ACTOR_UPDATE_WHEN_DRAWN 0 /* ->updateDist: no activation radius, so it only

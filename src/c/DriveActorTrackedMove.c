@@ -25,12 +25,12 @@ int DriveActorTrackedMove(Actor *actor, int *speed, int heading, int *vz,
     mode = MOVE_SLIDE | MOVE_FOLLOW_FLOOR | MOVE_LIFT;
   }
   b = actor->probeDist;
-  if (b == 0xFE) {
+  if (b == ACTOR_PROBE_LIFT_ONLY) {
     mode = MOVE_LIFT;
   } else if (b != 0) {
     mode &= ~MOVE_SLIDE;
     dist = b << 2;
-    if (b == 0xFF) {
+    if (b == ACTOR_PROBE_NONE) {
       dist = 0;
     }
   }
