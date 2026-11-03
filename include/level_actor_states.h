@@ -121,8 +121,14 @@ typedef struct GunnerState {
 } GunnerState;
 
 /* Type 403 state (level 20): the lurker with its `tether`; can hold Spyro. */
+/* LurkerState.mode (level data: 11 roam, 5 hold). */
+enum LurkerPost {
+  LURKER_POST_ROAM = 0, /* hops between its path points to stay near Spyro */
+  LURKER_POST_HOLD = 1, /* stays put, only turning to face Spyro */
+};
+
 typedef struct LurkerState {
-  int mode;      /* 0x00 0 roams its path */
+  int mode;      /* 0x00 level data, enum LurkerPost */
   PathData *path; /* 0x04 */
   int knockHeading;       /* 0x08 knock-back heading */
   int knockSpeed;       /* 0x0C knock-back speed */

@@ -2892,7 +2892,7 @@ void Level20_UpdateActors(void) {
           actor->mode = LURKER_LASH;
           continue;
         }
-        if (st->mode == 0) {
+        if (st->mode == LURKER_POST_ROAM) {
           if (dist > 0x2000) {
             if (TICK_DOWN(st->roamTimer) != 0) {
               PathData *p = st->path;

@@ -1073,8 +1073,14 @@ typedef struct RoamingCritterState {
 
 /* Type 370: Doctor Shemp's guard. */
 
+/* ShempGuardState.mode. Level 10 places every guard as SGUARD_POST_PATROL. */
+enum ShempGuardPost {
+  SGUARD_POST_PATROL = 0, /* waits for Spyro in range or a lookout's cue */
+  SGUARD_POST_HOLD = 1,   /* holds near target node 3 while Spyro is outside its arc */
+};
+
 typedef struct ShempGuardState {
-  int mode;           /* 0x00 0 = patrol, 1 = hold near target */
+  int mode;           /* 0x00 level data, enum ShempGuardPost */
   int cueTimer;       /* 0x04 to its next shout (CHASE / PATH_RUSH, at 2) or swipe (GUARD) */
   int zSpeed;           /* 0x08 */
   int heading;        /* 0x0C */

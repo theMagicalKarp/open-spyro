@@ -187,8 +187,14 @@ typedef struct BounceState {
   unsigned char life; /* 0x0C */
   unsigned char slow; /* 0x0D frames until the push dies off */
   short sway;         /* 0x0E */
-  int mode;           /* 0x10 */
+  int mode;           /* 0x10 enum BounceMotion */
 } BounceState;
+
+/* BounceState.mode, picked at random at spawn. */
+enum BounceMotion {
+  BOUNCE_SPIN = 0, /* tumbles: rotZ turns 0xC a frame */
+  BOUNCE_SWAY = 1, /* falls rocking side to side by `sway` like a leaf */
+};
 
 /* Level 19 type 35 (ACTOR_TYPE_BOLT_GUARD): scatters when hit and fires type
  * 494 bolts. SpawnActor aims its ground-bounce shards along `knockHeading`. */

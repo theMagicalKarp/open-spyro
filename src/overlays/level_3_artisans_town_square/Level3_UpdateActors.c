@@ -3729,7 +3729,7 @@ void Level3_UpdateActors(void) {
       if (st->vel[2] < -0x18) {
         st->vel[2] = -0x18;
       }
-      if (st->mode == 0) {
+      if (st->mode == BOUNCE_SPIN) {
         actor->rotZ += 0xC;
       } else if (st->vel[2] < 0) {
         {

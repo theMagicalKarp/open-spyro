@@ -2694,7 +2694,7 @@ void Level10_UpdateActors(void) {
       switch (actor->mode) {
       case SGUARD_IDLE:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if (st->mode == 0) {
+        if (st->mode == SGUARD_POST_PATROL) {
           if (st->guard != -1 && g_pActorListBase[st->guard].mode >= ACTOR_MODE_DORMANT) {
             actor->mode = SGUARD_GUARD;
             continue;
@@ -2714,7 +2714,7 @@ void Level10_UpdateActors(void) {
             PlayActorMeshVoice(actor, SGUARD_VOICE_SHOUT, 0);
             ENTER_POSE(actor, SGUARD_CHASE);
           }
-        } else if (st->mode == 1) {
+        } else if (st->mode == SGUARD_POST_HOLD) {
           if (AbsAngleDelta8(
                   ArcTan2(st->target->nodes[3].x - actor->posX,
                                 st->target->nodes[3].y - actor->posY, ATAN_ANGLE8),

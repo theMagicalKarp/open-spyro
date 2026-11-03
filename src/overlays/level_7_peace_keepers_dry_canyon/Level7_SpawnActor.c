@@ -302,7 +302,7 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
       rec->rotZ = GetRandomU32();
       if ((int)(GetRandomU32() & 0xFFF) >= 0x800) {
         rec->rotY = (GetRandomU32() & 0x1C) - 0x10;
-        st->mode = 1;
+        st->mode = BOUNCE_SWAY;
       }
     } else {
       if (st->vel[0] < -0x60) {
