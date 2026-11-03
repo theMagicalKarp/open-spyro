@@ -125,7 +125,7 @@ typedef struct ChunkOperatorState {
 /* Type 301: bolt caster. Wakes when Spyro is in range and fires type 295
  * bolts at him. */
 typedef struct BoltCasterState {
-  int target; /* 0x00 pool index of the actor it fires at, -1 = none */
+  int target; /* 0x00 pool index of the actor it fires at, -1 = none; level data: ACTOR_TYPE_RUNNER_SPAWNER / CHUNK_OPERATOR */
   int flags;  /* 0x04 BCASTER_F_* */
   int timer;  /* 0x08 */
   int count;  /* 0x0C bolts fired */
@@ -177,7 +177,7 @@ typedef struct CarrierState {
   PathData *path0; /* 0x10 */
   PathData *cur;   /* 0x14 */
   int dest[3];     /* 0x18 */
-  int rider;       /* 0x24 pool index */
+  int rider;       /* 0x24 pool index; level data: ACTOR_TYPE_CARRIER */
   int bob;         /* 0x28 */
   int vz;          /* 0x2C */
 } CarrierState;

@@ -55,7 +55,7 @@ typedef struct SuperflameGiverState {
   PathData *path; /* 0x28 */
   int cool;       /* 0x2C */
   int alert;      /* 0x30 */
-  int link;       /* 0x34 pool index, -1 = none */
+  int link;       /* 0x34 pool index, -1 = none; level data: ACTOR_TYPE_ROCK_THROWER */
   int heading;    /* 0x38 -1 = unset */
 } SuperflameGiverState;
 
@@ -243,7 +243,7 @@ typedef struct GatekeeperState {
   int command;         /* 0x6C posted: 1 = mode 0x28, else reverse along the path (mode 0x32); cleared when taken */
   int idx;         /* 0x70 next key */
   int range[2];    /* 0x74 release range per key (units of 0x400) */
-  int keys[2];     /* 0x7C key actor indices, -1 released */
+  int keys[2];     /* 0x7C key actor indices, -1 released; level data: ACTOR_TYPE_BOULDER_THROWER_B */
   int count;       /* 0x84 */
   int *releaseFlag;        /* 0x88 cleared at the throw's release frame (0xE) */
   int pad8C;         /* 0x8C */
@@ -492,13 +492,13 @@ typedef struct BigLungingGuardState {
   int flags;           /* 0x34 LGUARD_F_* */
   int init;            /* 0x38 */
   int range;           /* 0x3C */
-  int partner;         /* 0x40 */
+  int partner;         /* 0x40; level data: ACTOR_TYPE_COMET_CANNON */
   int msg;             /* 0x44 */
   int range2;          /* 0x48 */
   int reloadTimer; /* 0x4C reloaded from `reload` after each lunge */
   int reload;          /* 0x50 */
   int follow1;         /* 0x54 index into g_pActorListBase, -1 none; level data: ACTOR_TYPE_BIG_LUNGING_GUARD */
-  int follow2;         /* 0x58 */
+  int follow2;         /* 0x58; level data: ACTOR_TYPE_BIG_LUNGING_GUARD */
   int spin;            /* 0x5C */
   int pad60;             /* 0x60 */
   int flip;            /* 0x64 */
