@@ -244,7 +244,7 @@ void DrawMotionTrailRibbons(void);
 void DrawCinematicLetterbox(void);
 
 /* 0x800190d4: Submits a semi-transparent fullscreen POLY_F4 (rect (0,8)-(512,232)) of color (r,g,b) into the active OT depth slot. Allocates from the primitive buffer at g_pPrimBufferWriteCursor; chains via AddPrimToOT. Used for fade/tint overlays (the g_nScreenFadeLevel fade, the dragon-rescue flash, the scripted-cutscene fade). */
-void DrawFullscreenTint(int slot, int r, int g, int b);
+void DrawFullscreenTint(int abr, int r, int g, int b);
 
 /* 0x8001919c: Emits a textured POLY_FT4 quad: rect (x,y,w,h)=rect[0..3] shorts, UV+CLUT=uv[0..1], RGB color=rgb[0..2] or default 0x80,0x80,0x80. Calls AddPrimToOT and advances g_pPrimBufferWriteCursor by 0x28 bytes. */
 void EmitTexturedQuad(short *rect, unsigned int *uv, unsigned int *rgb);
@@ -733,8 +733,8 @@ void ResetPadStickCalibrationDefaults(unsigned char *cal);
 /* 0x80053790: Finalizes per-axis analog calibration after the controller reports its observed lo/mid/hi values. For each of 4 axes: cal[+0x20+i] = recorded neutral, +0x24+i = lo bound, +0x28+i = hi bound. If hi-lo span < 0x30 (controller didn't move enough yet) OR lo-mid distance < 0x30: falls through to ResetPadStickCalibrationDefaults (sets the no-calibration defaults +0x20=0x7f, +0x24=0, +0x28=0xff for all 4) and returns 0. Otherwise: computes lo_mid breakpoint at +0x2c = neutral + '0' (0x30), hi_mid breakpoint at +0x30 = neutral - 0x30, and scaling factors +0x34 = 0x4000 / (hi - lo_mid), +0x3c = 0x3f80 / (lo_mid - lo), then clears the snapshot head (cal[0..2]=0, cal[6]=cal[7]=1, and the 4-byte field at +0x14 of head = 0x7f7f7f7f neutral). Also clears the 4-record per-substep table: each record at +6 dwords stride has [0x12/0x13/0x14] = 0 and +0x58 (= +0x16 of record from caller view) = 0x7f7f7f7f. Returns 1 on success. Callers: PollPadAndDistributeInput, InitPadSystem. */
 int FinalizePadCalibration(unsigned char *cal);
 
-/* 0x80053940: Maps raw 8-bit analog stick values into the calibrated 0..0xff range for 4 axes (cal[0..3]). For each axis: if raw < calibration[+0x2c] (mid-low): output = 0x7f + ((raw - low_mid) * scale_low[+0x34]) >> 7, clamped to ≤0xff. If raw > calibration[+0x30] (mid-high): output = 0x7f - ((raw - high_mid) * scale_hi[+0x3c]) >> 7, clamped to ≥0. Else: output = 0x7f (neutral). The two scale factors (+0x34 / +0x3c) and the two mid breakpoints (+0x2c / +0x30) per axis are filled in by FinalizePadCalibration from the controller's reported hi/lo bounds. Callers: SampleDemoPadFrame, PollPadAndDistributeInput. */
-void MapPadAxisToCalibratedRange(unsigned char *cal, int block);
+/* 0x80053940: Maps raw 8-bit analog stick values into the calibrated 0..0xff range for 4 axes (axes[0..3], calibration PadState at calib). For each axis: if raw < calibration[+0x2c] (mid-low): output = 0x7f + ((raw - low_mid) * scale_low[+0x34]) >> 7, clamped to ≤0xff. If raw > calibration[+0x30] (mid-high): output = 0x7f - ((raw - high_mid) * scale_hi[+0x3c]) >> 7, clamped to ≥0. Else: output = 0x7f (neutral). The two scale factors (+0x34 / +0x3c) and the two mid breakpoints (+0x2c / +0x30) per axis are filled in by FinalizePadCalibration from the controller's reported hi/lo bounds. Callers: SampleDemoPadFrame, PollPadAndDistributeInput. */
+void MapPadAxisToCalibratedRange(unsigned char *axes, int calib);
 
 /* 0x800539fc: Attract-demo pad sampler (sole caller TickDemoPlayback). Record mode (g_nDemoMode == 2): reads the raw pad (inverted button halfword + calibrated right-stick bytes via MapPadAxisToCalibratedRange) and appends the packed word (buttons | stick<<16) at g_pDemoPadCursor. Playback: reads the next recorded word back instead (left stick centred at 0x7F). Either way rebuilds g_dwPadHeld/Pressed/Released and the stick-active flag, broadcasts to all 4 pad substep records, refreshes the idle flags, sets g_nPadType = 3 and forces g_nFrameTicks = 2 so every demo frame is two vblanks. Returns 2. */
 int SampleDemoPadFrame(void);
@@ -787,8 +787,8 @@ void HandleMusicCommand(int track, int cmd);
 /* 0x80056b28: Mass voice-stop helper used for state transitions. Walks all 24 SPU voice rows at &g_aSpuVoiceRows: for any active voice (flags +0x0e bits 0x83 set — bit 0x1=active or bit 0x2=playing) NOT in mask mask, stamps owner's per-mode busy-flag byte (offset +0x54 for mode-8 / +0x2a0 for mode-4) with 0x7f=released, ORs voice idx bit into g_dwSpuPendingKeyOff (pending hardware keyoff mask consumed by SPU update), zeros voice row (owner ptr / interp delta / writeback ptr), sets flags=0x40 (idle). After the walk, zeros g_dwSpuPendingKeyOn and calls HandleMusicCommand(0, 4) to stop CD music. Common callers (mask=0 → "kill everything"): pause-menu enter, level-cutscene begin, death plane, credits sequence. */
 void StopAllSoundExceptMask(int mask);
 
-/* 0x80056c84: 3D positional sound pan + distance falloff. Inputs: vol=&out[L,R] shorts, dist=squared-distance vol scalar, bearing=pan byte (0x80=center; wraps full-L/full-R via the 0x40/0xbf compare), range=range (divisor; returns early if 0), cached=listener-relative baseline [L,R]. Computes falloff fraction (dist<<8)/range, derives per-channel gains, applies to baseline, clamps each to [0,0x3fff]. If mono-mix flag g_nSoundMonoMixFlag set, averages L=R. Called by PlaySoundEffect (one-shot trigger pan) + TickActiveSoundVoices (per-frame mode-8 voices). */
-void ComputeVoicePanAndFalloff(short *vol, int dist, unsigned char bearing, unsigned int range, short *cached);
+/* 0x80056c84: 3D positional sound pan + distance falloff. Inputs: out=[L,R] gains, vol=distance falloff scalar, pan=pan byte (0x80=center; wraps full-L/full-R via the 0x40/0xbf compare), range=range (divisor; returns early if 0), base=listener-relative baseline [L,R]. Computes falloff fraction (dist<<8)/range, derives per-channel gains, applies to baseline, clamps each to [0,0x3fff]. If mono-mix flag g_nSoundMonoMixFlag set, averages L=R. Called by PlaySoundEffect (one-shot trigger pan) + TickActiveSoundVoices (per-frame mode-8 voices). */
+void ComputeVoicePanAndFalloff(short *out, int vol, unsigned char pan, unsigned int range, short *base);
 
 /* 0x80056dc4: Looks up the SPU voice currently playing for a given (owner-key, marker-byte) pair. Walks all 24 voice rows at &g_aSpuVoiceRows matching (actor == row+0x00 = owner-key) AND (a == row+0x0d = marker). Returns: 0 = no match (sound not playing for this owner/marker); 1 = found, one-shot (flags +0x0e bit 0x100 clear); 2 = found, looping (flags +0x0e bit 0x100 set). Sole caller: PlaySoundEffect (used to skip re-triggering an already-playing sound). */
 int GetSoundVoiceStatusByOwner(Actor *actor, int sampleId);
@@ -2081,7 +2081,7 @@ void OnActorAnimQueued(Actor *actor, ...); /* no-op; SteerActorYawTowardSpyro pa
 int ComputeLobVelocityZ(int *pos, int *target, int speed, int gravity, int *pOutTime);
 
 /* 0x80038d54: |dot(plane.xyz, p) >> 10 + plane.w| — absolute point/plane distance. */
-int PlaneDistanceAbs(int *p, int *plane);
+int PlaneDistanceAbs(int *pos, int *plane);
 
 /* 0x80038638: Steer an actor around a target point (aims `radius` off it on the
  * side it is already turning toward); returns the residual heading error. */
@@ -2137,7 +2137,7 @@ int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int 
 #define NAME_LETTERS_RETURN_HOME 0 /* "RETURN HOME", facing Spyro (level exits) */
 #define NAME_LETTERS_LEVEL       1 /* the sign's level name, along its yaw (portals) */
 #endif
-void SpawnNameLetterActors(Actor *actor, int named);
+void SpawnNameLetterActors(Actor *sign, int named);
 
 /* 0x8003c85c: Convert the bearing from Spyro to `target` into scripted-camera stick requests. */
 void AimCameraStickTowardPoint(int *target);

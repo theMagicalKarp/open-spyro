@@ -5,18 +5,18 @@
 
    Matching notes (ex-"handwritten" $at-as-data): the three components are
    pinned to $at/$v0/$v1 with local register variables (A374/A405). */
-void RShiftVector3(int *v, int n) {
+void RShiftVector3(int *vec, int shift) {
   register int a asm("$1");
   register int b asm("$2");
   register int c asm("$3");
 
-  a = v[0];
-  b = v[1];
-  c = v[2];
-  a >>= n;
-  b >>= n;
-  c >>= n;
-  v[0] = a;
-  v[1] = b;
-  v[2] = c;
+  a = vec[0];
+  b = vec[1];
+  c = vec[2];
+  a >>= shift;
+  b >>= shift;
+  c >>= shift;
+  vec[0] = a;
+  vec[1] = b;
+  vec[2] = c;
 }
