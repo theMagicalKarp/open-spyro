@@ -704,11 +704,11 @@ void Level1_UpdateActors(void) {
       st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != THIEF_CAUGHT) {
-        st->knock = 0x96;
+        st->knockSpeed = 0x96;
         if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
-          st->knock = 0xE1;
+          st->knockSpeed = 0xE1;
         }
-        st->heading = StepAndLerpAngle8(
+        st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         if (actor->dropKind == DROP_GEM_ROLL) {
@@ -1022,11 +1022,11 @@ void Level1_UpdateActors(void) {
             st->egg = 0;
           }
         }
-        if (st->knock != 0) {
-          MoveActorAlongAngle(actor, st->heading, st->knock, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-          st->knock -= 0x10;
-          if (st->knock < 0) {
-            st->knock = 0;
+        if (st->knockSpeed != 0) {
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          st->knockSpeed -= 0x10;
+          if (st->knockSpeed < 0) {
+            st->knockSpeed = 0;
           }
         }
         ANIM_GO(actor, THIEF_ANIM_CAUGHT);
@@ -2310,12 +2310,12 @@ void Level1_UpdateActors(void) {
       st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != REAR_KNOCKED) {
-        st->heading = StepAngle8Toward(
+        st->knockHeading = StepAngle8Toward(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20);
-        st->speed = 0x190;
+        st->knockSpeed = 0x190;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->speed = 0x1F4;
+          st->knockSpeed = 0x1F4;
         }
         st->spin = RandomIntInRange(2, 5);
         if (GetRandomU32() & 1) {
@@ -2427,9 +2427,9 @@ void Level1_UpdateActors(void) {
         if (actor->frame < 0xA) {
           actor->rotZ += st->spin;
         }
-        if (st->speed > 0x1E) {
-          st->speed -= 0x1E;
-          MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x12C, MOVE_LIFT);
+        if (st->knockSpeed > 0x1E) {
+          st->knockSpeed -= 0x1E;
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x12C, MOVE_LIFT);
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

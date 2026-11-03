@@ -47,7 +47,7 @@ int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed, int 
 int MoveActorByDelta(Actor *actor, int vx, int vy, int vz, int contactRadius, int radius, int flags);
 int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius, int radius, int flags);
 int MoveActorAlongAngle(Actor *actor, int angle, int speed, int contactRadius, int radius, int flags);
-int DriveActorTrackedMove(Actor *actor, int *counter, int heading, int *timer, int step, int decay);
+int DriveActorTrackedMove(Actor *actor, int *speed, int heading, int *vz, int friction, int gravity);
 void UpdateActorWander(Actor *actor, WanderBlock *wb);
 int SelectActorLodBand(Actor *actor, int band);
 void TickActorFlameGlow(Actor *actor);

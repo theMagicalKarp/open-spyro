@@ -879,7 +879,7 @@ void Level25_UpdateActors(void) {
           } else {
             st->fleeSpeed = 0x190;
           }
-          st->fleeStep = 0;
+          st->fleeZSpeed = 0;
           st->fleeDir = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                     actor->posY - SPY.posY, ATAN_ANGLE8),
                                       g_bSpyroPersistentEulerZ, 0x20, 0x40);
@@ -979,7 +979,7 @@ void Level25_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        DriveActorTrackedMove(actor, &st->fleeSpeed, st->fleeDir, &st->fleeStep, 0xC,
+        DriveActorTrackedMove(actor, &st->fleeSpeed, st->fleeDir, &st->fleeZSpeed, 0xC,
                       0x10);
         break;
       }
@@ -1145,7 +1145,7 @@ void Level25_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
         st->speed = 0x190;
-        st->step = 0x8C;
+        st->zSpeed = 0x8C;
         st->dir = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8),
                                 g_bSpyroPersistentEulerZ, 0x28, 0x80);
@@ -1215,11 +1215,11 @@ void Level25_UpdateActors(void) {
         }
         actor->rotY += 4;
         TurnActorYawTowardAngle(actor, (st->dir + 0x80) & 0xFF, 0x10, 0x20, YAW_STEP_IN_BAND);
-        DriveActorTrackedMove(actor, &st->speed, st->dir, &st->step, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->speed, st->dir, &st->zSpeed, 0xC, 0xC);
         break;
 
       case RSENTRY_FALL:
-        if (DriveActorTrackedMove(actor, &st->speed, st->dir, &st->step, 0xC, 0x10) ==
+        if (DriveActorTrackedMove(actor, &st->speed, st->dir, &st->zSpeed, 0xC, 0x10) ==
             MOVED_LANDED) {
           ENTER_POSE(actor, RSENTRY_BURST);
         }

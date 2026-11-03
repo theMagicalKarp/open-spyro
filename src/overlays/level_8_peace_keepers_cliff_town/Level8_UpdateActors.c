@@ -514,11 +514,11 @@ void Level8_UpdateActors(void) {
       st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != THIEF_CAUGHT) {
-        st->knock = 0x96;
+        st->knockSpeed = 0x96;
         if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
-          st->knock = 0xE1;
+          st->knockSpeed = 0xE1;
         }
-        st->heading = StepAndLerpAngle8(
+        st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         if (actor->dropKind == DROP_GEM_ROLL) {
@@ -832,11 +832,11 @@ void Level8_UpdateActors(void) {
             st->egg = 0;
           }
         }
-        if (st->knock != 0) {
-          MoveActorAlongAngle(actor, st->heading, st->knock, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-          st->knock -= 0x10;
-          if (st->knock < 0) {
-            st->knock = 0;
+        if (st->knockSpeed != 0) {
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          st->knockSpeed -= 0x10;
+          if (st->knockSpeed < 0) {
+            st->knockSpeed = 0;
           }
         }
         ANIM_GO(actor, THIEF_ANIM_CAUGHT);
@@ -2528,9 +2528,9 @@ void Level8_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != TPRUNNER_KNOCKED) {
-        st->knockTimer = 0x190;
-        st->knockSpeed = 0xAA;
-        st->heading = StepAndLerpAngle8(
+        st->knockSpeed = 0x190;
+        st->knockZSpeed = 0xAA;
+        st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         actor->flags = 0;
@@ -2575,14 +2575,14 @@ void Level8_UpdateActors(void) {
       }
 
       case TPRUNNER_KNOCKED:
-        r = DriveActorTrackedMove(actor, &st->knockTimer, st->heading, &st->knockSpeed,
+        r = DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed,
                           0xC, 0x10);
         if (r == MOVED_LANDED && st->cried == 0) {
           st->cried = 1;
           PlayActorMeshVoice(actor, TPRUNNER_VOICE_LAND, 0);
         }
-        if (r == MOVED_BLOCKED && st->knockSpeed >= -0x63) {
-          st->knockSpeed = -0x64;
+        if (r == MOVED_BLOCKED && st->knockZSpeed >= -0x63) {
+          st->knockZSpeed = -0x64;
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

@@ -1559,7 +1559,7 @@ void Level34_UpdateActors(void) {
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) != 0 && actor->mode != one) {
         int i;
 
-        st->knockSpin = 0;
+        st->knockZSpeed = 0;
         st->speed = 0x15E;
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
@@ -1830,7 +1830,7 @@ void Level34_UpdateActors(void) {
         break;
 
       case LTHIEF_KNOCKED:
-        if (DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->knockSpin,
+        if (DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->knockZSpeed,
                           0xC, 0xC) == MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -1857,7 +1857,7 @@ void Level34_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
             g_bSpyroPersistentEulerZ, 0x20, 0x40);
-        st->knockSpin = 0x80;
+        st->knockZSpeed = 0x80;
         if (actor->dropKind == DROP_GEM_ROLL) {
           actor->dropKind = 0xF;
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2071,7 +2071,7 @@ void Level34_UpdateActors(void) {
         break;
 
       case LCRITTER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockSpin,
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed,
                       0xC, 0x10);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

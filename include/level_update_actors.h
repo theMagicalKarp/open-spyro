@@ -398,8 +398,8 @@ typedef struct ThiefState {
   int landed;     /* 0x10 */
   int speed;      /* 0x14 path speed */
   int stuck;      /* 0x18 frames spent cornered */
-  int heading;    /* 0x1C knockback heading */
-  int knock;      /* 0x20 knockback speed */
+  int knockHeading;    /* 0x1C knockback heading */
+  int knockSpeed;      /* 0x20 knockback speed */
   int pad24;
   int node;       /* 0x28 node the path should stop at */
   int range;      /* 0x2C wake-up range, in 0x400 units */
@@ -486,7 +486,7 @@ typedef struct ShooterState {
   int speed;     /* 0x20 */
   int blinks;    /* 0x24 */
   int pad28;       /* 0x28 */
-  int turn;      /* 0x2C */
+  int zSpeed;      /* 0x2C vertical speed (DriveActorTrackedMove) */
   int range;     /* 0x30 */
   int spawned;   /* 0x34 */
 } ShooterState;
@@ -651,7 +651,7 @@ typedef struct WalkerState {
 /* Type 339: flock leader. Two linked chains of follower actors, a path, and
  * one formation slot per follower plus one for the leader. */
 typedef struct FlockState {
-  int knockAngle;           /* 0x00 knockback angle */
+  int knockHeading;           /* 0x00 knockback angle */
   int knockSpeed;           /* 0x04 knockback speed */
   PathData *path;      /* 0x08 */
   int pad0C;
@@ -845,7 +845,7 @@ typedef struct HopState {
   WanderBlock wander; /* 0x00 UpdateActorWander's block */
   int timer;   /* 0x20 */
   int knockHeading; /* 0x24 knock-back heading */
-  int time;    /* 0x28 knock-back time */
+  int knockSpeed;    /* 0x28 knock-back speed */
 } HopState;
 
 /* Case 115 -- patrolling guard, one of a pair. */
@@ -876,7 +876,7 @@ typedef struct PostState {
   int timer;      /* 0x08 */
   int knockHeading;    /* 0x0C knock-back heading */
   int knockSpeed;      /* 0x10 knock-back speed */
-  int time;       /* 0x14 knock-back time */
+  int knockZSpeed;       /* 0x14 knock-back vertical speed */
   int flameProof; /* 0x18 level data: flame alone does not knock it back */
   short spinX;    /* 0x1C */
   short spinY;    /* 0x1E */
@@ -960,8 +960,8 @@ typedef struct {
 typedef struct RearState {
   int timer;   /* 0x00 idle-hop countdown */
   int hitCooldown; /* 0x04 frames before it rears again after knocking Spyro back */
-  int heading; /* 0x08 knockback heading */
-  int speed;   /* 0x0C knockback speed */
+  int knockHeading; /* 0x08 knockback heading */
+  int knockSpeed;   /* 0x0C knockback speed */
   int spin;    /* 0x10 per-frame yaw while tumbling */
 } RearState;
 
@@ -995,8 +995,8 @@ typedef struct BreakableRockState {
 
 typedef struct TetherState {
   int timer;   /* 0x00 */
-  int speed;   /* 0x04 knockback speed */
-  int heading; /* 0x08 knockback heading */
+  int knockSpeed;   /* 0x04 knockback speed */
+  int knockHeading; /* 0x08 knockback heading */
   int link;    /* 0x0C walker to follow (index into g_pActorListBase), or -1;
                 * a sentinel powering a chain of guards reads it as the next
                 * guard (ending the chain when that isn't a tethered guard) */
@@ -1014,8 +1014,8 @@ typedef struct LeadState {
 } LeadState;
 
 typedef struct KeeperState {
-  int timer;   /* 0x00 knockback timer */
-  int heading; /* 0x04 knockback heading */
+  int knockSpeed;   /* 0x00 knock-back speed */
+  int knockHeading; /* 0x04 knockback heading */
   int count;   /* 0x08 idle countdown */
   int link;    /* 0x0C linked guard (index into g_pActorListBase), or -1; level data: ACTOR_TYPE_TETHERED_GUARD / TETHER_KEEPER */
   int mode;    /* 0x10 TetherCommand passed to the guard */
@@ -1031,9 +1031,9 @@ typedef struct SentinelState {
   int flags;        /* 0x10 SENTINEL_F_* */
   int heading;      /* 0x14 */
   int range;        /* 0x18 */
-  int knockTimer;   /* 0x1C */
+  int knockSpeed;   /* 0x1C */
   int knockHeading; /* 0x20 */
-  int knockSpeed;   /* 0x24 */
+  int knockZSpeed;   /* 0x24 vertical speed (DriveActorTrackedMove) */
 } SentinelState;
 
 /* SentinelState.flags. */
@@ -1116,10 +1116,10 @@ typedef struct LookoutState {
 typedef struct RunnerState {
   PathData *pathA; /* 0x00 */
   PathData *pathB; /* 0x04 */
-  int knockTimer;  /* 0x08 */
-  int knockSpeed;  /* 0x0C */
+  int knockSpeed;  /* 0x08 */
+  int knockZSpeed;  /* 0x0C vertical speed (DriveActorTrackedMove) */
   int pad10;
-  int heading;     /* 0x14 knockback heading */
+  int knockHeading;     /* 0x14 knockback heading */
   int timer;       /* 0x18 */
   int mode;        /* 0x1C TwoPathRunnerArm */
   int pad20;
@@ -1167,7 +1167,7 @@ typedef struct ShepherdState {
   int post;            /* 0x14 enum ShepherdPost (from its spawn record) */
   int knockSpeed;      /* 0x18 */
   int knockHeading;    /* 0x1C */
-  int knockSpin;       /* 0x20 */
+  int knockZSpeed;       /* 0x20 vertical speed (DriveActorTrackedMove) */
   int partner;         /* 0x24; level data: ACTOR_TYPE_SHEPHERD / GUARD_CAPTAIN */
   int partner2;        /* 0x28; level data: ACTOR_TYPE_GUARD_CAPTAIN */
   int timer;           /* 0x2C */
@@ -1265,7 +1265,7 @@ typedef struct LootThiefState {
   int onRing;     /* 0x04 */
   int roll;       /* 0x08 */
   int rollVel;    /* 0x0C */
-  int knockSpin;  /* 0x10 */
+  int knockZSpeed;  /* 0x10 vertical speed (DriveActorTrackedMove) */
   int knockHeading; /* 0x14 */
   int speed;      /* 0x18 */
   int look[3];    /* 0x1C */
@@ -1284,7 +1284,7 @@ typedef struct CritterState {
   int attach;       /* 0x04 actor it rides, 0 = none */
   int hasHome;      /* 0x08 */
   int mode;         /* 0x0C enum LootCritterRun */
-  int knockSpin;    /* 0x10 */
+  int knockZSpeed;    /* 0x10 vertical speed (DriveActorTrackedMove) */
   int knockHeading; /* 0x14 */
   int knockSpeed;   /* 0x18 */
   int stuck;        /* 0x1C */
@@ -1480,12 +1480,12 @@ typedef struct PostGrabberState {
   int link;      /* 0x24 index of its partner in g_pActorListBase, -1 = none; level data: ACTOR_TYPE_LANTERN */
   int fleeDir;   /* 0x28 */
   int fleeSpeed; /* 0x2C */
-  int fleeStep;  /* 0x30 */
+  int fleeZSpeed;  /* 0x30 vertical speed (DriveActorTrackedMove) */
 } PostGrabberState;
 
 typedef struct AlarmSentryState {
   int speed; /* 0x00 retreat speed (case 54) */
-  int step;  /* 0x04 */
+  int zSpeed;  /* 0x04 vertical speed (DriveActorTrackedMove) */
   int dir;   /* 0x08 retreat heading */
   int link;  /* 0x0C index of its partner in g_pActorListBase, -1 = none; level data: ACTOR_TYPE_LANTERN */
   int timer; /* 0x10 */

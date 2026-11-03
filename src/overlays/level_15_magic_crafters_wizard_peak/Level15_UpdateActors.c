@@ -399,11 +399,11 @@ void Level15_UpdateActors(void) {
       st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != THIEF_CAUGHT) {
-        st->knock = 0x96;
+        st->knockSpeed = 0x96;
         if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
-          st->knock = 0xE1;
+          st->knockSpeed = 0xE1;
         }
-        st->heading = StepAndLerpAngle8(
+        st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         if (actor->dropKind == DROP_GEM_ROLL) {
@@ -717,11 +717,11 @@ void Level15_UpdateActors(void) {
             st->egg = 0;
           }
         }
-        if (st->knock != 0) {
-          MoveActorAlongAngle(actor, st->heading, st->knock, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-          st->knock -= 0x10;
-          if (st->knock < 0) {
-            st->knock = 0;
+        if (st->knockSpeed != 0) {
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          st->knockSpeed -= 0x10;
+          if (st->knockSpeed < 0) {
+            st->knockSpeed = 0;
           }
         }
         ANIM_GO(actor, THIEF_ANIM_CAUGHT);
@@ -1354,8 +1354,8 @@ void Level15_UpdateActors(void) {
         }
       }
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != TGUARD_KNOCKED) {
-        st->speed = 0xC8;
-        st->heading = SPY.bodyRotZ;
+        st->knockSpeed = 0xC8;
+        st->knockHeading = SPY.bodyRotZ;
         st->mode = TCMD_NONE;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -1469,9 +1469,9 @@ void Level15_UpdateActors(void) {
         break;
 
       case TGUARD_KNOCKED:
-        if (st->speed > 0) {
-          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, 0);
-          st->speed -= 0x10;
+        if (st->knockSpeed > 0) {
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0x1F4, 0x2BC, 0);
+          st->knockSpeed -= 0x10;
         }
         if (g_nActorAnimDone == 0) {
           break;
@@ -3000,8 +3000,8 @@ void Level15_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode < KEEPER_KNOCKED) {
-        st->timer = 0x15E;
-        st->heading = StepAndLerpAngle8(
+        st->knockSpeed = 0x15E;
+        st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
         actor->flags = 0;
@@ -3026,8 +3026,8 @@ void Level15_UpdateActors(void) {
           switch (st->mode) {
           case TCMD_SWAT:
             if (actor->mode < KEEPER_KNOCKED && g_pActorListBase[st->link].nextFrame >= 4) {
-              st->timer = 0x15E;
-              st->heading = g_pActorListBase[st->link].rotZ;
+              st->knockSpeed = 0x15E;
+              st->knockHeading = g_pActorListBase[st->link].rotZ;
               SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
               MarkActorLiveKill(actor);
               ENTER_POSE(actor, KEEPER_STRUCK);
@@ -3128,7 +3128,7 @@ void Level15_UpdateActors(void) {
       }
 
       case KEEPER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->timer, st->heading, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -3138,7 +3138,7 @@ void Level15_UpdateActors(void) {
         break;
 
       case KEEPER_KNOCKED_ALT:
-        DriveActorTrackedMove(actor, &st->timer, st->heading, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
@@ -3166,15 +3166,15 @@ void Level15_UpdateActors(void) {
       SentinelState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode < SENTINEL_KNOCKED) {
-        st->knockTimer = (g_nSpyroMotionSpeed >> 6) + 0x1C2;
+        st->knockSpeed = (g_nSpyroMotionSpeed >> 6) + 0x1C2;
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - ((SpyroObj *)&g_anSpyroWorldPos)->posX,
                           actor->posY - ((SpyroObj *)&g_anSpyroWorldPos)->posY, ATAN_ANGLE8),
             g_bSpyroPersistentEulerZ, 0x20, 0x40);
-        st->knockSpeed = 0x50;
+        st->knockZSpeed = 0x50;
         if (actor->flags & ACTOR_HIT_FLAME) {
-          st->knockTimer = 0xAA;
-          st->knockSpeed = 0x5A;
+          st->knockSpeed = 0xAA;
+          st->knockZSpeed = 0x5A;
         }
         while (st->link >= 0) {
           TetherState *cs = g_pActorListBase[st->link].state;
@@ -3394,8 +3394,8 @@ void Level15_UpdateActors(void) {
       }
 
       case SENTINEL_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockTimer, st->knockHeading,
-                      &st->knockSpeed, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading,
+                      &st->knockZSpeed, 0xC, 0xC);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x30);

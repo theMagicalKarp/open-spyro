@@ -2599,7 +2599,7 @@ void Level0_UpdateActors(void) {
           SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, st->slots[n]);
           MarkActorLiveKill(actor);
           st->knockSpeed = 0x118;
-          st->knockAngle = StepAndLerpAngle8(
+          st->knockHeading = StepAndLerpAngle8(
               ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
               SPY.bodyRotZ, 0x20, 0x40);
           actor->mode = FLOCK_KNOCKED;
@@ -2722,7 +2722,7 @@ void Level0_UpdateActors(void) {
           continue;
         }
 
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockAngle, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
         break;
       }
       }

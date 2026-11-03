@@ -720,7 +720,7 @@ void Level19_UpdateActors(void) {
       if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER) && actor->mode != BGUARD_KNOCKED) {
         int i;
 
-        st->turn = 0xE6;
+        st->zSpeed = 0xE6;
         st->speed = 0x12C;
         st->knockHeading =
             StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
@@ -802,7 +802,7 @@ void Level19_UpdateActors(void) {
       case BGUARD_KNOCKED:
         actor->rotX += st->spinX;
         actor->rotY += st->spinY;
-        if (DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->turn, 0xC,
+        if (DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC,
                           0x10) == MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);

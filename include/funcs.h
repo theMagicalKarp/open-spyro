@@ -1979,8 +1979,8 @@ int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius, int radius
 /* 0x80039688: Guided-move step along an explicit `angle`, same checks and return codes as MoveActorAlongHeading. */
 int MoveActorAlongAngle(Actor *actor, int angle, int speed, int contactRadius, int radius, int flags);
 
-/* 0x80039910: Runs MoveActorAlongAngle while *counter is live, then applies the vertical timer decay to +0x14 and floor-snaps when *timer runs out; returns the move result or 3 on landing. */
-int DriveActorTrackedMove(Actor *actor, int *counter, int heading, int *timer, int step, int decay);
+/* 0x80039910: One frame of ballistic motion (knock-back, hop, leap): steps along `heading` while *speed lasts (bled by `friction`), then adds *vz to Z under `gravity` (terminal -0x104; vz null or *vz 0xFFFF = none) and floor-snaps once falling; returns the move result or MOVED_LANDED. */
+int DriveActorTrackedMove(Actor *actor, int *speed, int heading, int *vz, int friction, int gravity);
 
 /* 0x80039aa8: Wander/patrol step: re-picks a jittered heading on a countdown, adds a weave, leashes to the home point, turns and takes a guided-move step (behaviour block layout in the C doc). */
 void UpdateActorWander(Actor *actor, WanderBlock *wb);
