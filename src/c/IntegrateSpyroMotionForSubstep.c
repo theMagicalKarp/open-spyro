@@ -1,4 +1,5 @@
 #include "actor_states.h"
+#include "camera.h"
 #include "emit_record.h"
 #include "funcs.h"
 #include "globals.h"
@@ -1034,7 +1035,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       case 3: {
         int p;
 
-        if (g_anCameraPosBlock[12] != 0x8000000E) {
+        if (g_anCameraPosBlock[12] != (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
           CopyVector(g_anSpyroDeathCamRecordBlock, g_anCameraPosBlock);
           ActivateScriptedCameraView(g_anSpyroDeathCamRecordBlock - 6);
         }

@@ -145,7 +145,7 @@ typedef struct {
   short rotZ;    /* 0x50 */
   short pad52;   /* 0x52 */
   int occlusion; /* 0x54 */
-  unsigned int state; /* 0x58 m_State */
+  unsigned int state; /* 0x58 m_State: g_nCameraCurrentMode (CameraMode) */
   int pad5C;     /* 0x5C */
   Xform lastSim; /* 0x60 */
   Xform sphere;  /* 0x78 m_Sphere */

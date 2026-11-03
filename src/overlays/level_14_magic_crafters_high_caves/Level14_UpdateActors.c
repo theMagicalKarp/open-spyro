@@ -2810,7 +2810,7 @@ void Level14_UpdateActors(void) {
 
           svA[0] = -0x258;
           svA[1] = (GetRandomU32() & 0x310) - 0x188;
-          if (CAM.state == 3) {
+          if (CAM.state == CAM_MODE_CHARGE) {
             svA[2] = (GetRandomU32() & 0x7F) + 0x64;
           } else {
             svA[2] = (GetRandomU32() & 0x1FF) - 0xC8;
@@ -2821,14 +2821,14 @@ void Level14_UpdateActors(void) {
           st->timer = GetRandomU32() & 0x7B;
         } else {
           st->timer -= g_nFrameStep;
-          if (CAM.state == 3) {
+          if (CAM.state == CAM_MODE_CHARGE) {
             svA[0] = st->drift[0] + (SPY.motionSpeed >> 2);
             svA[1] = st->drift[1];
             svA[2] = st->drift[2];
             if (svA[2] < 0x64)
               svA[2] = 0x64;
           } else {
-            if (CAM.state == 0x80000009)
+            if (CAM.state == (CAM_HELD | CAM_MODE_FREE_LOOK))
               svA[0] = st->drift[0] - 512;
             else {
               svA[0] = st->drift[0];

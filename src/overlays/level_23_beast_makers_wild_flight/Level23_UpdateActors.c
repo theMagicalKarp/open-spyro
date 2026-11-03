@@ -26,6 +26,7 @@
 #include "match_asm.h"
 #include "pad_buttons.h"
 #include "spyro_state.h"
+#include "camera.h"
 #include "level_sfx.h"
 #include "level_id.h"
 #include "emit_record.h"
@@ -1089,7 +1090,7 @@ void Level23_UpdateActors(void) {
 
           svF[0] = -0x258;
           svF[1] = (GetRandomU32() & 0x310) - 0x188;
-          if (CAM.state == 3) {
+          if (CAM.state == CAM_MODE_CHARGE) {
             svF[2] = (GetRandomU32() & 0x7F) + 0x64;
           } else {
             svF[2] = (GetRandomU32() & 0x1FF) - 0xC8;
@@ -1100,14 +1101,14 @@ void Level23_UpdateActors(void) {
           st->timer = GetRandomU32() & 0x7B;
         } else {
           st->timer -= g_nFrameStep;
-          if (CAM.state == 3) {
+          if (CAM.state == CAM_MODE_CHARGE) {
             svF[0] = st->drift[0] + (SPY.motionSpeed >> 2);
             svF[1] = st->drift[1];
             svF[2] = st->drift[2];
             if (svF[2] < 0x64)
               svF[2] = 0x64;
           } else {
-            if (CAM.state == 0x80000009)
+            if (CAM.state == (CAM_HELD | CAM_MODE_FREE_LOOK))
               svF[0] = st->drift[0] - 512;
             else {
               svF[0] = st->drift[0];
