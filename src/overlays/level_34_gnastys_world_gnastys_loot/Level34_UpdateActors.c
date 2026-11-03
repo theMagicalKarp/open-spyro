@@ -2186,7 +2186,7 @@ void Level34_UpdateActors(void) {
 
       case LVORTEX_OPEN:
         if (((unsigned)SPY.state <= SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG || SPY.state == SPYRO_ST_RUN) &&
-            IsPointInRotatedBox(&SPY.posX, st->pad) &&
+            IsPointInRotatedBox(&SPY.posX, &st->box) &&
             AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(g_pActorListBase[st->target].posX - SPY.posX,
                                         g_pActorListBase[st->target].posY - SPY.posY,

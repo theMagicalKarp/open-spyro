@@ -8,6 +8,8 @@
 #include "types.h"
 #include "actor_type.h"
 
+struct TriggerBox;
+
 /* Prototypes started as Ghidra-inferred seeds. Each matched function's
  * prototype is now taken from its src/c definition, or — where a widely
  * included header (main_shared.h, vecmath.h, actor.h, ...) already declares
@@ -2022,7 +2024,7 @@ int FindNearestPathPointToSpyro(unsigned char *list, int *out_index);
 int FindFarthestPathPointFromSpyro(unsigned char *list);
 
 /* 0x80038c4c: Rotates pos - rec into the record's yaw frame (+0x14) and tests it against the half-extents at +0xC/+0x10. */
-int IsPointInRotatedBox(int *pos, int *rec);
+int IsPointInRotatedBox(int *pos, struct TriggerBox *box);
 
 /* --- Shared helpers named 2026-10-21 (session 2). Evidence: the original asm
  * (hand-written routines) or the matched C body named in each entry. --- */

@@ -7,6 +7,17 @@
 #ifndef OPEN_SPYRO_ACTOR_STATES_H
 #define OPEN_SPYRO_ACTOR_STATES_H
 
+/* A trigger box for IsPointInRotatedBox: a point, half-extents in the box's
+ * own frame, and that frame's yaw. A zero half-width marks an unused box. */
+typedef struct TriggerBox {
+  int x;         /* 0x00 */
+  int y;         /* 0x04 */
+  int z;         /* 0x08 */
+  int halfWidth; /* 0x0C 0 = unused */
+  int halfDepth; /* 0x10 */
+  int yaw;       /* 0x14 sine-LUT index */
+} TriggerBox;
+
 /* Dragon-statue burst shard (type 0xFB), ticked by TickStatueBurstShard:
  * integrates vel with gravity while life runs and posZ stays above floorZ. */
 typedef struct BurstShardState {
@@ -195,7 +206,7 @@ typedef struct BoltGuardState {
   int link;    /* 0x28 actor index, -1 for none; initially (level data) ACTOR_TYPE_ROAMING_RAM */
   short spinX; /* 0x2C */
   short spinY; /* 0x2E */
-  int box[3];  /* 0x30 */
+  TriggerBox box; /* 0x30 */
 } BoltGuardState;
 
 /* ACTOR_TYPE_BLASTABLE_PATH_SMOKER / _PROP: path tweeners a blast

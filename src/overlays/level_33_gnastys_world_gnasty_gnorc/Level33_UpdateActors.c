@@ -140,7 +140,8 @@ typedef struct LanePatrollerState {
   int vSpeed;       /* 0x1C vertical speed */
   int endNodeBack;       /* 0x20 end node going back */
   int endNodeFwd;       /* 0x24 end node going forward */
-  int box[14];   /* 0x28 trigger box */
+  TriggerBox box; /* 0x28 trigger box */
+  int pad40[8];
   int partner;       /* 0x60 partner actor index, -1 none; level data: ACTOR_TYPE_LOOT_VORTEX */
 } LanePatrollerState;
 
@@ -165,9 +166,9 @@ typedef struct GnastyState {
   int u64;                  /* 0x64 */
   int throws;               /* 0x68 bombs thrown */
   int passedPt6;                  /* 0x6C latched on nearing path point 6 (mode 0xB once per phase) */
-  int box70[6];             /* 0x70 trigger box */
-  int box88[6];             /* 0x88 trigger box */
-  int boxA0[6];             /* 0xA0 trigger box */
+  TriggerBox box70;             /* 0x70 trigger box */
+  TriggerBox box88;             /* 0x88 trigger box */
+  TriggerBox boxA0;             /* 0xA0 trigger box */
   int uB8;                  /* 0xB8 */
   int key2;                 /* 0xBC actor index, -1 none; level data: ACTOR_TYPE_LOOT_VORTEX */
   int key;                  /* 0xC0 actor index; level data: ACTOR_TYPE_FOLLOWER */
@@ -1543,7 +1544,7 @@ void Level33_UpdateActors(void) {
             st->slowTimer = 0x96;
           }
           st->slowTimer -= g_anLevelEscapeRunCount[st->lane] * 6;
-          if (IsPointInRotatedBox(&SPY.posX, st->box) != 0) {
+          if (IsPointInRotatedBox(&SPY.posX, &st->box) != 0) {
             st->path->dir *= -1;
           }
           if (st->path->dir == -1) {
@@ -1723,8 +1724,8 @@ void Level33_UpdateActors(void) {
       }
 
       if (st->seen == 0 && g_nSpyroAirborneFrames == 0 &&
-          (IsPointInRotatedBox(&SPY.posX, st->box70) != 0 ||
-           IsPointInRotatedBox(&SPY.posX, st->boxA0) != 0)) {
+          (IsPointInRotatedBox(&SPY.posX, &st->box70) != 0 ||
+           IsPointInRotatedBox(&SPY.posX, &st->boxA0) != 0)) {
         st->seen = 1;
       }
 
@@ -2110,7 +2111,7 @@ void Level33_UpdateActors(void) {
         if (TrackEntityYawTowardSpyro(actor, 5, 0, YAW_HOLD_IN_BAND) != 0) {
           ANIM_GO(actor, GNASTY_LOOKOUT);
         }
-        if (IsPointInRotatedBox(&SPY.posX, st->box88) != 0) {
+        if (IsPointInRotatedBox(&SPY.posX, &st->box88) != 0) {
           ModifyWorldChunkAnimFlags(GNASTY_CHUNK_DOOR, CHUNK_ANIM_RESUME, 0);
           ANIM_GO(actor, GNASTY_ANIM_RUN);
           actor->mode = GNASTY_ESCAPE;
@@ -2426,7 +2427,7 @@ void Level33_UpdateActors(void) {
 
       case LVORTEX_OPEN:
         if (((unsigned)SPY.state <= SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG || SPY.state == SPYRO_ST_RUN) &&
-            IsPointInRotatedBox(&SPY.posX, st->pad) &&
+            IsPointInRotatedBox(&SPY.posX, &st->box) &&
             AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(g_pActorListBase[st->target].posX - SPY.posX,
                                         g_pActorListBase[st->target].posY - SPY.posY,

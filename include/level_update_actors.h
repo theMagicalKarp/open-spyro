@@ -369,7 +369,7 @@ typedef struct SeedPodState {
 
 extern int CheckSpyroLineOfSightTo(int *pos);
 
-extern int IsPointInRotatedBox(int *pos, int *rec);
+extern int IsPointInRotatedBox(int *pos, TriggerBox *box);
 
 /* Case 174 -- the locked chest (ACTOR_TYPE_LOCKED_CHEST): with the key held,
  * Spyro facing it up close freezes, the key flies into its lock, and it
@@ -408,7 +408,7 @@ typedef struct ThiefState {
   int dist;       /* 0x38 */
   int voice;      /* 0x3C taunt timer */
   int lastVoice;  /* 0x40 */
-  int area[3];    /* 0x44 trigger volume for mode 4 */
+  TriggerBox area; /* 0x44 trigger volume for mode 4 */
 } ThiefState;
 
 /* Case 390 -- spinning chest. */
@@ -837,7 +837,7 @@ typedef struct BlowhardState {
                        * ACTOR_TYPE_GEM_HOLDER (its state word 0 links the next) */
   int wait;           /* 0x68 */
   char pad6C[0x8];
-  int soundBox;          /* 0x74 */
+  TriggerBox soundBox;   /* 0x74 Spyro inside: plays the boss sound */
 } BlowhardState;
 
 /* Case 412 -- wandering critter. */
@@ -1093,8 +1093,8 @@ typedef struct ShempGuardState {
   PathData *target;   /* 0x34 path it pivots along; node 3 is the point it tests Spyro against */
   int chaseDelay;     /* 0x38 CHASE waits it out; a lookout hands it on */
   PathData *path; /* 0x3C */
-  int boxA[6];        /* 0x40 */
-  int boxB[6];        /* 0x58 */
+  TriggerBox boxA;        /* 0x40 */
+  TriggerBox boxB;        /* 0x58 */
 } ShempGuardState;
 
 /* Type 372: Shemp's lookout. */
@@ -1297,7 +1297,7 @@ typedef struct LootVortexState {
   unsigned char phase;  /* 0x02 */
   unsigned char spark;  /* 0x03 0xFF = none */
   int chunkAnim;              /* 0x04 world chunk-anim handle (GetWorldChunkAnimState) */
-  int pad[6];           /* 0x08 trigger volume */
+  TriggerBox box;           /* 0x08 trigger volume */
   int mode;             /* 0x20 LootVortexStage */
   int key;              /* 0x24 actor index; level data: ACTOR_TYPE_LOOT_CRITTER / LOOT_THIEF / LANE_PATROLLER */
   int target;           /* 0x28 actor index: its ACTOR_TYPE_VORTEX_TARGET (level data) */

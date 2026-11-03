@@ -3871,7 +3871,7 @@ void Level18_UpdateActors(void) {
       actor->flags = 0;
       if (st->triggerSlot != -1 && g_anLevelTriggerStateSlots[st->triggerSlot] != 0 &&
           (unsigned int)(actor->mode - 3) >= 2 &&
-          IsPointInRotatedBox(&actor->posX, &st->box.x) != 0) {
+          IsPointInRotatedBox(&actor->posX, &st->box) != 0) {
         ENTER_POSE(actor, RAM_TRAPPED);
       }
 

@@ -833,13 +833,13 @@ void Level21_UpdateActors(void) {
 
       if (st->flags == BTHROW_F_HOP) {
         if (st->path->cur != 0 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box0) != 0) {
           st->path->cur = 0;
           CopyVector(&actor->posX,
                         PATH_PT(st->path, 0));
           SnapActorToGround(actor);
         } else if (st->path->cur != 1 &&
-                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box1) != 0) {
+                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box1) != 0) {
           st->path->cur = 1;
           CopyVector(&actor->posX,
                         PATH_PT(st->path, 1));
@@ -881,8 +881,8 @@ void Level21_UpdateActors(void) {
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < st->throwRange) {
           goto pose5;
         }
-        if (st->box0HalfWidth != 0 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
+        if (st->box0.halfWidth != 0 &&
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box0) != 0) {
         pose5:
           ENTER_POSE(actor, BTHROW_PATROL);
         }
@@ -1216,13 +1216,13 @@ void Level21_UpdateActors(void) {
 
       if (st->mode == GKEEPER_POST_TWO_BOX) {
         if (st->path->cur != 0 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box0) != 0) {
           st->path->cur = 0;
           CopyVector(&actor->posX,
                         PATH_PT(st->path, 0));
           SnapActorToGround(actor);
         } else if (st->path->cur != 1 &&
-                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box1) != 0) {
+                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box1) != 0) {
           st->path->cur = 1;
           CopyVector(&actor->posX,
                         PATH_PT(st->path, 1));
@@ -3086,7 +3086,7 @@ void Level21_UpdateActors(void) {
         if (g_nSpawnAnchorValid[0] != 0) {
           st->camTimer = 0;
         }
-        if (IsPointInRotatedBox(&spy->posX, st->volB) != 0) {
+        if (IsPointInRotatedBox(&spy->posX, &st->volB) != 0) {
           actor->group = 0;
           SetActorGroupSubstate(actor, BTHROW_WATCH);
           actor->group = 1;
@@ -3111,7 +3111,7 @@ void Level21_UpdateActors(void) {
       }
       if (st->mode == PRUN_SECOND && st->pathInit == 0) {
         st->pathInit = 1;
-        if (IsPointInRotatedBox(&spy->posX, st->volB) != 0) {
+        if (IsPointInRotatedBox(&spy->posX, &st->volB) != 0) {
           actor->group = 2;
           SetActorGroupSubstate(actor, BTHROW_WATCH);
           actor->group = 0xFF;
@@ -3453,7 +3453,7 @@ void Level21_UpdateActors(void) {
       case RUNNER_LURK:
         ANIM_GO(actor, RUNNER_ANIM_STAND);
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->volA) != 0) {
+        if (IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->volA) != 0) {
           ENTER_POSE(actor, RUNNER_RUN);
         }
         continue;

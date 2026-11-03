@@ -1210,13 +1210,13 @@ void Level22_UpdateActors(void) {
 
       if (st->flags == BTHROW_F_HOP) {
         if (st->path->cur != 0 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box0) != 0) {
           st->path->cur = 0;
           CopyVector(&actor->posX,
                         PATH_PT(st->path, 0));
           SnapActorToGround(actor);
         } else if (st->path->cur != 1 &&
-                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box1) != 0) {
+                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box1) != 0) {
           st->path->cur = 1;
           CopyVector(&actor->posX,
                         PATH_PT(st->path, 1));
@@ -1258,8 +1258,8 @@ void Level22_UpdateActors(void) {
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < st->throwRange) {
           goto pose5;
         }
-        if (st->box0HalfWidth != 0 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
+        if (st->box0.halfWidth != 0 &&
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box0) != 0) {
         pose5:
           ENTER_POSE(actor, BTHROW_PATROL);
         }
@@ -1593,13 +1593,13 @@ void Level22_UpdateActors(void) {
 
       if (st->mode == GKEEPER_POST_TWO_BOX) {
         if (st->path->cur != 0 &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box0) != 0) {
           st->path->cur = 0;
           CopyVector(&actor->posX,
                         PATH_PT(st->path, 0));
           SnapActorToGround(actor);
         } else if (st->path->cur != 1 &&
-                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box1) != 0) {
+                   IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box1) != 0) {
           st->path->cur = 1;
           CopyVector(&actor->posX,
                         PATH_PT(st->path, 1));
@@ -4448,7 +4448,7 @@ void Level22_UpdateActors(void) {
       actor->flags = 0;
       if (st->triggerSlot != -1 && g_anLevelTriggerStateSlots[st->triggerSlot] != 0 &&
           (unsigned int)(actor->mode - 3) >= 2 &&
-          IsPointInRotatedBox(&actor->posX, &st->box.x) != 0) {
+          IsPointInRotatedBox(&actor->posX, &st->box) != 0) {
         ENTER_POSE(actor, RAM_TRAPPED);
       }
 

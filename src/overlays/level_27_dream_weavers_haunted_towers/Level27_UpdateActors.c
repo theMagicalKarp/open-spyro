@@ -1679,7 +1679,7 @@ void Level27_UpdateActors(void) {
                                  : -SPY_DZ(actor) < 0x1F4) &&
               ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range) ||
              (st->link != -1 && g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) ||
-             IsPointInRotatedBox(&g_anSpyroWorldPos, st->vol) != 0)) {
+             IsPointInRotatedBox(&g_anSpyroWorldPos, &st->vol) != 0)) {
           ENTER_POSE(actor, ROCKTHROW_WALK);
         }
         if (st->flags & ROCKTHROW_F_ESCORT) {
@@ -1767,7 +1767,7 @@ void Level27_UpdateActors(void) {
                                     ATAN_ANGLE8),
                       4, 0, YAW_HOLD_IN_BAND);
         MoveActorAlongHeading(actor, spd, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-        if (IsPointInRotatedBox(&g_anSpyroWorldPos, st->vol) != 0) {
+        if (IsPointInRotatedBox(&g_anSpyroWorldPos, &st->vol) != 0) {
           st->trig = one;
         }
         if (st->trig != 0) {
@@ -2674,7 +2674,7 @@ void Level27_UpdateActors(void) {
       if (st->all1.halfWidth == 0 &&
           (g_nSpyroWorldPosZ - st->all1.z > 0 ? g_nSpyroWorldPosZ - st->all1.z < 0x7D0
                                        : st->all1.z - g_nSpyroWorldPosZ < 0x7D0) &&
-          IsPointInRotatedBox(&g_anSpyroWorldPos, (int *)&st->all1) != 0) {
+          IsPointInRotatedBox(&g_anSpyroWorldPos, &st->all1) != 0) {
         for (i = 6; i >= 0; i--) {
           st->hit[i] = 1;
         }
@@ -2682,7 +2682,7 @@ void Level27_UpdateActors(void) {
       if (st->all2.halfWidth == 0 &&
           (g_nSpyroWorldPosZ - st->all2.z > 0 ? g_nSpyroWorldPosZ - st->all2.z < 0x7D0
                                        : st->all2.z - g_nSpyroWorldPosZ < 0x7D0) &&
-          IsPointInRotatedBox(&g_anSpyroWorldPos, (int *)&st->all2) != 0) {
+          IsPointInRotatedBox(&g_anSpyroWorldPos, &st->all2) != 0) {
         for (i = 6; i >= 0; i--) {
           st->hit[i] = 1;
         }
@@ -2693,12 +2693,12 @@ void Level27_UpdateActors(void) {
             (g_nSpyroWorldPosZ - st->box[i].z > 0
                  ? g_nSpyroWorldPosZ - st->box[i].z < 0x7D0
                  : st->box[i].z - g_nSpyroWorldPosZ < 0x7D0) &&
-            IsPointInRotatedBox(&g_anSpyroWorldPos, (int *)&st->box[i]) != 0) {
+            IsPointInRotatedBox(&g_anSpyroWorldPos, &st->box[i]) != 0) {
           st->hit[i] = 1;
         }
       }
       if (st->reset.halfWidth != 0 &&
-          IsPointInRotatedBox(&g_anSpyroWorldPos, (int *)&st->reset) != 0) {
+          IsPointInRotatedBox(&g_anSpyroWorldPos, &st->reset) != 0) {
         st->cur = 0;
         for (i = 0; i < 7; i++) {
           if (st->link[i] != -1) {

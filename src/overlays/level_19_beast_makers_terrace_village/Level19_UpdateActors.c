@@ -747,7 +747,7 @@ void Level19_UpdateActors(void) {
       case BGUARD_WATCH:
         ANIM_GO(actor, BGUARD_WATCH);
         if (st->mode == one /* BGUARD_CUE_RUN */ &&
-            (IsPointInRotatedBox(&spy->posX, st->box) != 0 || d < st->range << 10) &&
+            (IsPointInRotatedBox(&spy->posX, &st->box) != 0 || d < st->range << 10) &&
             ABS2(SPY_DZ(actor)) < 0xBB8) {
           if (actor->group != 0xFF) {
             SetActorGroupStateExcept(actor, BGUARD_RUN, BGUARD_KNOCKED);
@@ -3319,7 +3319,7 @@ void Level19_UpdateActors(void) {
       actor->flags = 0;
       if (st->triggerSlot != -1 && g_anLevelTriggerStateSlots[st->triggerSlot] != 0 &&
           (unsigned int)(actor->mode - 3) >= 2 &&
-          IsPointInRotatedBox(&actor->posX, &st->box.x) != 0) {
+          IsPointInRotatedBox(&actor->posX, &st->box) != 0) {
         ENTER_POSE_B(actor, RAM_TRAPPED);
       }
 

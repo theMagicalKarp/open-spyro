@@ -919,7 +919,7 @@ void Level24_UpdateActors(void) {
       if (actor->mode < LGUARD_KNOCKED && (st->range != 0 || (actor->flags & ACTOR_HIT_BLAST))) {
         if (st->range > 0 && actor->mode == LGUARD_IDLE &&
             (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range ||
-             IsPointInRotatedBox(&spy->posX, st->vol) != 0) &&
+             IsPointInRotatedBox(&spy->posX, &st->vol) != 0) &&
             TICK_DOWN(st->reloadTimer) != 0) {
           st->range = -st->range;
           if (st->range == 0) {
@@ -2430,7 +2430,7 @@ void Level24_UpdateActors(void) {
       if (actor->mode < LGUARD_KNOCKED && (st->range != 0 || (actor->flags & ACTOR_HIT_BLAST))) {
         if (st->range > 0 && (actor->mode == LGUARD_IDLE || actor->mode == LGUARD_LUNGE) &&
             (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range ||
-             IsPointInRotatedBox(&spy->posX, st->vol) != 0) &&
+             IsPointInRotatedBox(&spy->posX, &st->vol) != 0) &&
             TICK_DOWN(st->reloadTimer) != 0) {
           st->range = -st->range;
           if (st->range == 0) {

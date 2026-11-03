@@ -132,7 +132,7 @@ typedef struct SoldierState {
   int seen;            /* 0x5C */
   int bold;            /* 0x60 */
   int gone;            /* 0x64 */
-  int vol[6];          /* 0x68 */
+  TriggerBox vol;          /* 0x68 */
 } SoldierState;
 
 /* ==== The function ==== */
@@ -665,7 +665,7 @@ void Level6_UpdateActors(void) {
           ANIM_GO(actor, THIEF_ANIM_TAUNT);
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         } else if (st->mode == THIEFKIND_CLIMB) {
-          if (IsPointInRotatedBox(&SPY.posX, st->area) != 0) {
+          if (IsPointInRotatedBox(&SPY.posX, &st->area) != 0) {
             actor->mode = THIEF_CLIMB_RUN;
             continue;
           }
@@ -2909,7 +2909,7 @@ void Level6_UpdateActors(void) {
           int d = ApproxDist2D(&actor->posX, &g_anSpyroWorldPos);
 
           if (TICK_DOWN(st->timer2) != 0) {
-            if (IsPointInRotatedBox(&actor->posX, st->vol) != 0) {
+            if (IsPointInRotatedBox(&actor->posX, &st->vol) != 0) {
               actor->mode = SOLDIER_GO_HOME;
               continue;
             }

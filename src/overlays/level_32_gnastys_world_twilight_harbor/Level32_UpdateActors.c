@@ -1600,8 +1600,8 @@ void Level32_UpdateActors(void) {
       if (st->initialised == 0) {
         st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->flags == GUNNER_F_ARMED && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
-                             IsPointInRotatedBox(&spy->posX, st->box2) != 0)) {
+        if (st->flags == GUNNER_F_ARMED && (IsPointInRotatedBox(&spy->posX, &st->box1) != 0 ||
+                             IsPointInRotatedBox(&spy->posX, &st->box2) != 0)) {
           st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, BURSTGUN_WALK);
         }
@@ -1610,7 +1610,7 @@ void Level32_UpdateActors(void) {
       switch (actor->mode) {
       case BURSTGUN_WATCH:
         if (st->flags == GUNNER_F_ARMED &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box0) != 0) {
           st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, BURSTGUN_WALK);
         }
@@ -1736,8 +1736,8 @@ void Level32_UpdateActors(void) {
       if (st->initialised == 0) {
         st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->flags == GUNNER_F_ARMED && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
-                             IsPointInRotatedBox(&spy->posX, st->box2) != 0)) {
+        if (st->flags == GUNNER_F_ARMED && (IsPointInRotatedBox(&spy->posX, &st->box1) != 0 ||
+                             IsPointInRotatedBox(&spy->posX, &st->box2) != 0)) {
           st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, SWEEPGUN_ADVANCE);
         }
@@ -1746,7 +1746,7 @@ void Level32_UpdateActors(void) {
       switch (actor->mode) {
       case SWEEPGUN_IDLE:
         if (st->flags == GUNNER_F_ARMED &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box0) != 0) {
           st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, SWEEPGUN_ADVANCE);
         }
@@ -1910,8 +1910,8 @@ void Level32_UpdateActors(void) {
       if (st->initialised == 0) {
         st->initialised = 1;
         actor->updateDist = 0x20;
-        if (st->flags == GUNNER_F_ARMED && (IsPointInRotatedBox(&spy->posX, st->box1) != 0 ||
-                             IsPointInRotatedBox(&spy->posX, st->box2) != 0)) {
+        if (st->flags == GUNNER_F_ARMED && (IsPointInRotatedBox(&spy->posX, &st->box1) != 0 ||
+                             IsPointInRotatedBox(&spy->posX, &st->box2) != 0)) {
           st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, LOBGUN_WALK);
         }
@@ -1920,7 +1920,7 @@ void Level32_UpdateActors(void) {
       switch (actor->mode) {
       case LOBGUN_WATCH:
         if (st->flags == GUNNER_F_ARMED &&
-            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
+            IsPointInRotatedBox((int *)&g_anSpyroWorldPos, &st->box0) != 0) {
           st->flags &= ~GUNNER_F_ARMED;
           ENTER_POSE(actor, LOBGUN_WALK);
         }

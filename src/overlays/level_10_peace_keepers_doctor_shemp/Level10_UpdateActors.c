@@ -2744,8 +2744,8 @@ void Level10_UpdateActors(void) {
             actor->mode = SGUARD_PATH_RUSH;
             continue;
           }
-          if (IsPointInRotatedBox(&actor->posX, st->boxA) != 0 ||
-              IsPointInRotatedBox(&actor->posX, st->boxB) != 0) {
+          if (IsPointInRotatedBox(&actor->posX, &st->boxA) != 0 ||
+              IsPointInRotatedBox(&actor->posX, &st->boxB) != 0) {
             actor->mode = SGUARD_BRAKE_AIM;
             continue;
           }
@@ -2840,8 +2840,8 @@ void Level10_UpdateActors(void) {
           continue;
         }
         actor->posZ = actor->floorOffset + g4;
-        if (IsPointInRotatedBox(&actor->posX, st->boxA) != 0 ||
-            IsPointInRotatedBox(&actor->posX, st->boxB) != 0) {
+        if (IsPointInRotatedBox(&actor->posX, &st->boxA) != 0 ||
+            IsPointInRotatedBox(&actor->posX, &st->boxB) != 0) {
           actor->mode = SGUARD_BRAKE_AIM;
           continue;
         }

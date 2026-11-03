@@ -1,13 +1,13 @@
+#include "actor_states.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "vecmath.h"
 
-/* 0x80038c4c (0x108) — rotate the XY delta between `pos` and record `rec`
-   into the record's frame using its yaw angle (+0x14, sine-LUT index), and
-   return whether the rotated point lies inside the record's box extents
-   (+0xC half-width, +0x10 half-depth). The rotated |x|/|y| pair is also
-   written to a scratch pair (never read back). */
-int IsPointInRotatedBox(int *pos, int *rec) {
+/* 0x80038c4c (0x108) — rotate the XY delta between `pos` and the box's
+   centre into the box's frame using its yaw (sine-LUT index), and return
+   whether the rotated point lies inside the box's half-width / half-depth. The
+   rotated |x|/|y| pair is also written to a scratch pair (never read back). */
+int IsPointInRotatedBox(int *pos, TriggerBox *box) {
   volatile int out[4];
   int delta[3];
   short *cosp;
@@ -19,8 +19,8 @@ int IsPointInRotatedBox(int *pos, int *rec) {
   int ry;
   int ay;
 
-  angle = rec[5];
-  SubtractVector(delta, pos, rec);
+  angle = box->yaw;
+  SubtractVector(delta, pos, &box->x);
   cosp = &g_anCosineLut[angle];
   sinp = &g_anSineLut[angle];
   dx = delta[0];
@@ -38,8 +38,8 @@ int IsPointInRotatedBox(int *pos, int *rec) {
   {
     register int r asm("$2") = 0;
 
-    if (rx < rec[3]) {
-      r = ay < rec[4];
+    if (rx < box->halfWidth) {
+      r = ay < box->halfDepth;
     }
     return r;
   }
@@ -49,7 +49,7 @@ int IsPointInRotatedBox(int *pos, int *rec) {
    (not if/ternary) expands via single-insn abssi2 so the ry mult pipeline
    interleaves across the x-abs + store; g_anCosineLut alias (sym at
    lut+0x80) stops cse deriving the sine base via addiu -0x80. The result is
-   a `$2` register variable set to 0 BEFORE the rec[3] load: with $2 live
-   there, local-alloc cannot give rec[3] and rec[4] the same v0, so rec[3]
-   takes v1 and ay drops to a1. As a pseudo the same `r = 0` form costs a
-   move. */
+   a `$2` register variable set to 0 BEFORE the halfWidth load: with $2 live
+   there, local-alloc cannot give halfWidth and halfDepth the same v0, so
+   halfWidth takes v1 and ay drops to a1. As a pseudo the same `r = 0` form
+   costs a move. */

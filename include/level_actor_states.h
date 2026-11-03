@@ -65,17 +65,6 @@ typedef struct WarDrumState {
   int voice;  /* 0x24 */
 } WarDrumState;
 
-/* A trigger box for IsPointInRotatedBox: a point, half-extents in the box's
- * own frame, and that frame's yaw. A zero half-width marks an unused box. */
-typedef struct TriggerBox {
-  int x;         /* 0x00 */
-  int y;         /* 0x04 */
-  int z;         /* 0x08 */
-  int halfWidth; /* 0x0C 0 = unused */
-  int halfDepth; /* 0x10 */
-  int yaw;       /* 0x14 sine-LUT index */
-} TriggerBox;
-
 /* Case 466 -- roaming ram. */
 typedef struct RoamingRamState {
   char pad00[0xC];
@@ -202,10 +191,8 @@ typedef struct BoulderThrowerState {
   Actor *rock;     /* 0x40 boulder being carried */
   int sightRange;         /* 0x44 sight range */
   int throwRange;         /* 0x48 throw range */
-  int box0[3];      /* 0x4C trigger box */
-  int box0HalfWidth;         /* 0x58 */
-  int pad5C[2];      /* 0x5C */
-  int box1[6];      /* 0x64 trigger box */
+  TriggerBox box0;      /* 0x4C trigger box (halfWidth 0 = unused) */
+  TriggerBox box1;      /* 0x64 trigger box */
   int command;         /* 0x7C posted: 1 = mode 0x28, else reverse along the path (mode 0x32); cleared when taken */
   int orbitRadius;         /* 0x80 */
   int jitterA;         /* 0x84 random 8..15 on entering mode 0x2B; not read here */
@@ -231,8 +218,8 @@ typedef struct GatekeeperState {
   int speed;         /* 0x30 speed */
   int zSpeed;         /* 0x34 */
   PathData *path;   /* 0x38 */
-  int box0[6];      /* 0x3C trigger box */
-  int box1[6];      /* 0x54 trigger box */
+  TriggerBox box0;      /* 0x3C trigger box */
+  TriggerBox box1;      /* 0x54 trigger box */
   int command;         /* 0x6C posted: 1 = mode 0x28, else reverse along the path (mode 0x32); cleared when taken */
   int idx;         /* 0x70 next key */
   int range[2];    /* 0x74 release range per key (units of 0x400) */
@@ -259,8 +246,8 @@ typedef struct PathRunnerState {
   int range;           /* 0x28 */
   int timer;           /* 0x2C */
   int init;            /* 0x30 */
-  int volA[6];         /* 0x34 trigger box */
-  int volB[6];         /* 0x4C trigger box */
+  TriggerBox volA;         /* 0x34 trigger box */
+  TriggerBox volB;         /* 0x4C trigger box */
   int camDone;         /* 0x64 */
 } PathRunnerState;
 
@@ -459,7 +446,7 @@ typedef struct LungingGuardState {
   int base;            /* 0x0C first animation */
   int kind;            /* 0x10 LungingGuardKind */
   int timer;           /* 0x14 */
-  int vol[6];          /* 0x18 trigger box */
+  TriggerBox vol;          /* 0x18 trigger box */
   PathData *path; /* 0x30 */
   int flags;           /* 0x34 LGUARD_F_* */
   int init;            /* 0x38 */
@@ -480,7 +467,7 @@ typedef struct BigLungingGuardState {
   int base;            /* 0x0C */
   int kind;            /* 0x10 LungingGuardKind */
   int timer;           /* 0x14 */
-  int vol[6];          /* 0x18 */
+  TriggerBox vol;          /* 0x18 */
   PathData *path; /* 0x30 */
   int flags;           /* 0x34 LGUARD_F_* */
   int init;            /* 0x38 */
@@ -526,7 +513,7 @@ typedef struct RockThrowerState {
   int speed;            /* 0x04 */
   int lift;             /* 0x08 */
   int flags;            /* 0x0C THROWER_F_ADVANCE, ROCKTHROW_F_ESCORT */
-  int vol[6];           /* 0x10 trigger box */
+  TriggerBox vol;           /* 0x10 trigger box */
   int timer;            /* 0x28 */
   int range;            /* 0x2C */
   int range2;           /* 0x30 */
@@ -592,9 +579,9 @@ typedef struct BurstGunnerState {
   void *path;   /* 0x1C path */
   int pad20;     /* 0x20 */
   int countdown;     /* 0x24 */
-  int box0[6];  /* 0x28 trigger box */
-  int box1[6];  /* 0x40 trigger box */
-  int box2[6];  /* 0x58 trigger box */
+  TriggerBox box0;  /* 0x28 trigger box */
+  TriggerBox box1;  /* 0x40 trigger box */
+  TriggerBox box2;  /* 0x58 trigger box */
   int initialised;     /* 0x70 initialised */
   int sinkTimer;     /* 0x74 sink timer */
 } BurstGunnerState;
@@ -615,9 +602,9 @@ typedef struct SweepGunnerState {
   int sweepRate;     /* 0x28 sweep rate */
   int sweepYaw;     /* 0x2C sweep yaw << 4 */
   int timer;     /* 0x30 timer */
-  int box0[6];  /* 0x34 trigger box */
-  int box1[6];  /* 0x4C trigger box */
-  int box2[6];  /* 0x64 trigger box */
+  TriggerBox box0;  /* 0x34 trigger box */
+  TriggerBox box1;  /* 0x4C trigger box */
+  TriggerBox box2;  /* 0x64 trigger box */
   int initialised;     /* 0x7C initialised */
 } SweepGunnerState;
 
@@ -627,7 +614,7 @@ typedef struct LobGunnerState {
   int knockSpeed;              /* 0x04 knock-back speed */
   int knockHeading;              /* 0x08 knock-back heading */
   int knockZSpeed;              /* 0x0C */
-  int box0[6];           /* 0x10 trigger box */
+  TriggerBox box0;           /* 0x10 trigger box */
   unsigned char *targetPath;   /* 0x28 target path: count, index, points */
   void *path;            /* 0x2C path */
   int timer;              /* 0x30 timer */
@@ -635,8 +622,8 @@ typedef struct LobGunnerState {
   Actor *heldLob;           /* 0x38 held lob (type 176), -1 once thrown */
   int pad3C; /* 0x3C a level-data pointer (relocated at load), never read */
   int aimRange;              /* 0x40 aim-at-path range */
-  int box1[6];           /* 0x44 trigger box */
-  int box2[6];           /* 0x5C trigger box */
+  TriggerBox box1;           /* 0x44 trigger box */
+  TriggerBox box2;           /* 0x5C trigger box */
   int initialised;              /* 0x74 initialised */
 } LobGunnerState;
 
