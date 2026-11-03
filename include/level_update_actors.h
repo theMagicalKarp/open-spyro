@@ -13,6 +13,7 @@
 #include "cutscene_path.h"
 #include "portal.h"
 #include "model.h"
+#include "rot_billboard.h"
 
 /* The update list, and the per-actor values the loop publishes before it
  * dispatches. */
@@ -77,12 +78,6 @@ typedef struct {
 
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2); /* ground/wall probe */
 
-/* g_aRotBillboards records (SpawnActorRotBillboard) used as sparkles around items. */
-typedef struct RotBillboard {
-  int pos[3];         /* 0x00 */
-  unsigned char life; /* 0x0C frames left; 0 = slot free */
-  unsigned char pad[11];
-} RotBillboard;
 
 extern RotBillboard g_aRotBillboards[];
 

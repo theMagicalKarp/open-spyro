@@ -31,7 +31,8 @@ enum SparxSubMode {
   SPARX_SUB_EAT = 1,      /* caught it: +1 health, despawn the butterfly */
   SPARX_SUB_EAT_DONE = 2, /* back to the hover animation, drop the target */
   SPARX_SUB_FETCH = 4,    /* flying to a pickup, which he sends COLLECT_HOMING */
-  SPARX_SUB_PARKED = 99,  /* takes no targets (no writer in the C sources) */
+  SPARX_SUB_PARKED = 99,  /* takes no targets; never set (no 0x63 store to subMode in main or any
+                           * overlay), so the ~100 tests of it are dead */
 };
 
 /* Sparx's hover animation per health colour; the odd index after each is the

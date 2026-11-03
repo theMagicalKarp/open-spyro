@@ -6,34 +6,6 @@
 #ifndef OPEN_SPYRO_FLIGHT_ACTOR_STATES_H
 #define OPEN_SPYRO_FLIGHT_ACTOR_STATES_H
 
-/* Case 34 — a recovered dragon egg: spirals up off its spot, flies to just
- * above Spyro, then requests the HUD egg-counter roll (Cross skips). */
-typedef struct EggRiseState {
-  Actor *owner;          /* 0x00 the egg thief that carried it (credited the kill gems) */
-  int centre[3];         /* 0x04 pad centre */
-  int apex[3];           /* 0x0A (short-aligned) rise target */
-  unsigned short radius; /* 0x10 */
-  unsigned char phase;   /* 0x12 */
-  unsigned char angle;   /* 0x13 */
-} EggRiseState;
-
-/* Cases 14/15/83..87 — collectibles: 14 extra life, 15 Sparx food, 83..87
- * gems (CollectPickupActor). They bounce out of a broken chest or fodder,
- * glitter, and home in on Spyro once he (or Sparx, fetching) gets close. The
- * same record as level_update_actors.h PickupState, in the field view these
- * clones were matched with (signed lean/roll). */
-typedef struct CollectibleState {
-  int vel[3];           /* 0x00 velocity, also read as a vector */
-  short groundTri;      /* 0x0C collision triangle it rests on */
-  unsigned char mode;   /* 0x0E CollectRestMode while COLLECT_REST */
-  unsigned char timer;  /* 0x0F */
-  signed char bounce;   /* 0x10 bounces left */
-  signed char lean;     /* 0x11 body pitch */
-  signed char roll;     /* 0x12 */
-  unsigned char spin;   /* 0x13 */
-  unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
-} CollectibleState;
-
 /* Flight rings (ACTOR_TYPE_FLIGHT_RING): a helper actor spawned alongside, and the
  * sound to play when Spyro flies through. */
 typedef struct TargetState {
