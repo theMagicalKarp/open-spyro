@@ -347,6 +347,8 @@ enum ActorType {
   ACTOR_TYPE_LOOT_VORTEX = 181, /* levels 33/34 (LootVortexState) */
   ACTOR_TYPE_BRAWLER_SPAWN = 183, /* level 7: spawned by ACTOR_TYPE_BRAWLER on frame 0x11; no level has an UpdateActors arm for it (BrawlerSpawnState) */
   ACTOR_TYPE_BRAWLER = 184, /* level 7: stationary brawler (BrawlerState) */
+  ACTOR_TYPE_VORTEX_TARGET = 185, /* levels 33/34: an inert marker a loot vortex is entered facing
+                                   * and flies toward (LootVortexState.target) */
   ACTOR_TYPE_SHOOTER = 186, /* level 7: blinking sentry that fires type 197 (ShooterState) */
   ACTOR_TYPE_HOME_TALKER = 187, /* 187..192: the homeworld talkers (levels 0/6/12/18/24/30); walking up facing one starts its actor cutscene */
   ACTOR_TYPE_WANDERING_CRITTER_B = 193, /* levels 6/7: wanders; knocked away when hit (CritterKnockState) */

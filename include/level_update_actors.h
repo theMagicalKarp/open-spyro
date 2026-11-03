@@ -1345,7 +1345,7 @@ typedef struct LootVortexState {
   int pad[6];           /* 0x08 trigger volume */
   int mode;             /* 0x20 LootVortexStage */
   int key;              /* 0x24 actor index; level data: ACTOR_TYPE_LOOT_CRITTER / LOOT_THIEF / LANE_PATROLLER */
-  int target;           /* 0x28 actor index */
+  int target;           /* 0x28 actor index: its ACTOR_TYPE_VORTEX_TARGET (level data) */
   int seen;             /* 0x2C 1/2 picks g_nLevelVortexSeen1/2 (read as g_nCutsceneId[seen]), 0 = none */
 } LootVortexState;
 
