@@ -690,8 +690,8 @@ typedef struct FlockState {
   int knockSpeed;           /* 0x04 knockback speed */
   PathData *path;      /* 0x08 */
   int pad0C;
-  int chainA;       /* 0x10 */
-  int chainB;       /* 0x14 */
+  int chainA;       /* 0x10 ACTOR_TYPE_GEM_HOLDER chain: each hit releases the next */
+  int chainB;       /* 0x14 holder chain the final hit releases all at once */
   int slots[16][3]; /* 0x18 */
 } FlockState;
 
@@ -764,7 +764,8 @@ typedef struct GuardState {
   int anim;        /* 0x1C animation base */
   int partner;     /* 0x20 index into g_pActorListBase; level data: ACTOR_TYPE_ALARM_POST_GUARD */
   int alarm;       /* 0x24 */
-  int drop;        /* 0x28 index into g_pActorListBase, -1 for none */
+  int drop;        /* 0x28 index into g_pActorListBase, -1 for none: an
+                    * ACTOR_TYPE_GEM_HOLDER its stage-0 hit releases */
 } GuardState;
 
 /* Case 335 -- lunging enemy. */
@@ -867,7 +868,8 @@ typedef struct BlowhardState {
   int started;        /* 0x58 */
   char pad5C[0x4];
   int pathDone;          /* 0x60 on the path */
-  int prev;           /* 0x64 index into g_pActorListBase of the previous stage's gate */
+  int prev;           /* 0x64 index into g_pActorListBase: the previous stage's
+                       * ACTOR_TYPE_GEM_HOLDER (its state word 0 links the next) */
   int wait;           /* 0x68 */
   char pad6C[0x8];
   int soundBox;          /* 0x74 */
@@ -1507,7 +1509,7 @@ typedef struct ShempState {
   int node[3];         /* 0x28 path node per phase */
   int animStarted;     /* 0x34 the current mode has queued its animation */
   int count;           /* 0x38 */
-  int chain;           /* 0x3C first of a linked list in g_pActorListBase */
+  int chain;           /* 0x3C first of an ACTOR_TYPE_GEM_HOLDER chain (level data) */
   int init;            /* 0x40 */
   int timer2;          /* 0x44 */
 } ShempState;

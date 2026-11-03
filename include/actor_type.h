@@ -440,6 +440,9 @@ enum ActorType {
   ACTOR_TYPE_TIME_BONUS = 345,       /* flight time bonus 345..347: flies to the HUD clock */
   ACTOR_TYPE_SPINNER = 349, /* level 4: idles, rears up at Spyro, spins away when knocked back (SpinnerState) */
   ACTOR_TYPE_SEQUENCED_PROP = 350, /* level 0: sequenced prop (PropAnimState) */
+  ACTOR_TYPE_GEM_HOLDER = 351, /* levels 0/4/10/16: a hidden record with no update arm whose fixed
+                                * death drop is a gem; its owner releases it (SpawnActorDeathDrop);
+                                * state word 0 chains the next holder, -1 ends */
   ACTOR_TYPE_FLIGHT_TARGET = 353,    /* breakable flight target: bursts into shards 374..386 when flown through */
   ACTOR_TYPE_FLIGHT_HUD = 358,       /* flight-level HUD controller (clock digits, target tally) */
   ACTOR_TYPE_TUMBLE_SHARD = 359, /* 359..361: falling, spinning burst shards of the riding target and level 23's cycler (TumbleState) */
