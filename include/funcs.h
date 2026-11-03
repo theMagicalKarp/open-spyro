@@ -867,7 +867,7 @@ undefined __do_global_dtors(void);
 /* 0x8005ba60: PSY-Q SpuInit equivalent (S_I.OBJ/SpuInit signature match). Trivial 1-line wrapper: calls InitSpuSubsystem(0) (full-init path that re-seeds voice-table shadow, opens VBlank event, zeros DMA tracking state). No other callers under this address — game routes SPU subsystem init through this single entry. */
 void InitSpu(void);
 
-/* 0x8005ba80: SPU subsystem init worker — the public InitSpu wraps with (0). Sequence: (1) FUN_8005ddc8 vtable callback (pre-init hook through PTR_PTR_800749ac+0xc), (2) InitSpuHardware(param_1) — hardware reset + per-voice register seed, (3) when param_1==0: fills all 24 entries of g_anSpuVoiceNoteShadow with 0xc000 (default note shadow), (4) InstallSpuDmaEventHandler — opens VBlank event 0xf0000009 for SPU DMA completion, (5) zeros DMA-tracking state (0x800730f4/f8/104/108/10a/10c/110), (6) saves g_nSpuReverbEsaDefault -> g_nSpuReverbEsaShadow (transfer-control default), (7) WriteSpuRegister(0xd1, g_nSpuReverbEsaDefault, 0) — direct SPU register write at slot 0xd1, (8) zeros more SPU tracking state (0x800735b0/b4/b8, g_nSpuTransferMode/ec/118/114). param_1 selects full reset (0) vs minimal re-init (!=0; skips voice-shadow seed). Sole caller: InitSpu. */
+/* 0x8005ba80: SPU subsystem init worker — the public InitSpu wraps with (0). Sequence: (1) FUN_8005ddc8 vtable callback (pre-init hook through g_pLibapiSysVtable+0xc), (2) InitSpuHardware(param_1) — hardware reset + per-voice register seed, (3) when param_1==0: fills all 24 entries of g_anSpuVoiceNoteShadow with 0xc000 (default note shadow), (4) InstallSpuDmaEventHandler — opens VBlank event 0xf0000009 for SPU DMA completion, (5) zeros DMA-tracking state (0x800730f4/f8/104/108/10a/10c/110), (6) saves g_nSpuReverbEsaDefault -> g_nSpuReverbEsaShadow (transfer-control default), (7) WriteSpuRegister(0xd1, g_nSpuReverbEsaDefault, 0) — direct SPU register write at slot 0xd1, (8) zeros more SPU tracking state (0x800735b0/b4/b8, g_nSpuTransferMode/ec/118/114). param_1 selects full reset (0) vs minimal re-init (!=0; skips voice-shadow seed). Sole caller: InitSpu. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined InitSpuSubsystem(int param_1);
 
@@ -995,22 +995,22 @@ void ChangeClearPAD(long param_1);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined ChangeClearRCnt(void);
 
-/* 0x8005ddc8: libapi system-vector slot[3] thunk — dispatches via *(PTR_PTR_800749ac+0xc)(). The default installed handler is ResetCallback (libapi master init); callers (CdInitDriver, InitSpuSubsystem, ResetGraph, FUN_80065364) invoke this to (re)arm the BIOS event/IRQ subsystem before configuring their own hardware. SDK internal — plate-only. */
+/* 0x8005ddc8: libapi system-vector slot[3] thunk — dispatches via *(g_pLibapiSysVtable+0xc)(). The default installed handler is ResetCallback (libapi master init); callers (CdInitDriver, InitSpuSubsystem, ResetGraph, FUN_80065364) invoke this to (re)arm the BIOS event/IRQ subsystem before configuring their own hardware. SDK internal — plate-only. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_8005ddc8(void);
 
-/* 0x8005ddf8: libapi system-vector slot[2] thunk — dispatches via *(PTR_PTR_800749ac+0x8)(). Called after each callback-table init (InitRootCounterCallbacks + InitDmaCallbackTable + CdInitDriver + FUN_80065364) to commit the freshly-zeroed table to the master interrupt entry. SDK internal — plate-only. */
+/* 0x8005ddf8: libapi system-vector slot[2] thunk — dispatches via *(g_pLibapiSysVtable+0x8)(). Called after each callback-table init (InitRootCounterCallbacks + InitDmaCallbackTable + CdInitDriver + FUN_80065364) to commit the freshly-zeroed table to the master interrupt entry. SDK internal — plate-only. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_8005ddf8(void);
 
-/* 0x8005de28: PSY-Q DmaCallback equivalent. Dispatches via the system DMA function-pointer table at *PTR_PTR_800749ac+0x4 — registers (a0=dma_channel, a1=callback) with the BIOS DMA-completion machinery; the table is the system vector for libapi/libetc. Callers (EnqueueGpuOp / FlushGpuQueue / InstallSpuDmaCallback / FUN_80064050) each install their per-channel completion handler this way. */
+/* 0x8005de28: PSY-Q DmaCallback equivalent. Dispatches via the system DMA function-pointer table at *g_pLibapiSysVtable+0x4 — registers (a0=dma_channel, a1=callback) with the BIOS DMA-completion machinery; the table is the system vector for libapi/libetc. Callers (EnqueueGpuOp / FlushGpuQueue / InstallSpuDmaCallback / FUN_80064050) each install their per-channel completion handler this way. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined DmaCallback(void);
 
-/* 0x8005de58: PSY-Q VSyncCallback equivalent — installs a VBlank-driven periodic callback. Dispatches via *(PTR_PTR_800749ac+0x14)(channel=4, fn). Sole caller InitPadSystem registers PollPadAndDistributeInput as the per-VBlank pad/rumble driver. Channel 4 is the libapi RCnt slot bound to VBlank. */
+/* 0x8005de58: PSY-Q VSyncCallback equivalent — installs a VBlank-driven periodic callback. Dispatches via *(g_pLibapiSysVtable+0x14)(channel=4, fn). Sole caller InitPadSystem registers PollPadAndDistributeInput as the per-VBlank pad/rumble driver. Channel 4 is the libapi RCnt slot bound to VBlank. */
 void InstallVSyncCallback(unsigned int cb);
 
-/* 0x8005de8c: libapi system-vector slot[5] no-arg thunk — dispatches via *(PTR_PTR_800749ac+0x14)(). Callers (MemCardOpenSession, MemCardCloseSession) use this as a CD-bus arbitration release / VSync-callback clear when handing the system off between memcard and CD subsystems. SDK internal — plate-only. */
+/* 0x8005de8c: libapi system-vector slot[5] no-arg thunk — dispatches via *(g_pLibapiSysVtable+0x14)(). Callers (MemCardOpenSession, MemCardCloseSession) use this as a CD-bus arbitration release / VSync-callback clear when handing the system off between memcard and CD subsystems. SDK internal — plate-only. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_8005de8c(void);
 
@@ -1018,7 +1018,7 @@ undefined FUN_8005de8c(void);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined2 FUN_8005df1c(void);
 
-/* 0x8005df44: Atomic I_MASK swap — saves old PTR_I_MASK_800749b4 value, writes new mask, returns old. PSY-Q SetIntMask equivalent. Used by libgpu watchdog/DMA-queue code (CheckGpuTimeout, EnqueueGpuOp, FlushGpuQueue, ResetGraphImpl) to mask interrupts during critical hardware-register touches. */
+/* 0x8005df44: Atomic I_MASK swap — saves old g_pIMaskReg value, writes new mask, returns old. PSY-Q SetIntMask equivalent. Used by libgpu watchdog/DMA-queue code (CheckGpuTimeout, EnqueueGpuOp, FlushGpuQueue, ResetGraphImpl) to mask interrupts during critical hardware-register touches. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined2 SetInterruptMask(undefined2 param_1);
 
@@ -1053,7 +1053,7 @@ undefined1 *InitRootCounterCallbacks(void);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_8005e604(undefined4 *param_1, int param_2);
 
-/* 0x8005e630: Initializes the libapi DMA callback table at &g_apfnDmaCallbacks. Zeros the 8-entry per-channel callback array, sets PTR_DMA_DICR_800749e8=0 (clear DMA IRQ-control), commits via DispatchSystemInitVector. Returns &0x8005e804 (the DMA master IRQ handler) — ResetCallback stores this into system-vector slot[1]. Called once during libapi master init; the per-channel handlers installed by DmaCallback live in this table. */
+/* 0x8005e630: Initializes the libapi DMA callback table at &g_apfnDmaCallbacks. Zeros the 8-entry per-channel callback array, sets g_pDmaDicrReg=0 (clear DMA IRQ-control), commits via DispatchSystemInitVector. Returns &0x8005e804 (the DMA master IRQ handler) — ResetCallback stores this into system-vector slot[1]. Called once during libapi master init; the per-channel handlers installed by DmaCallback live in this table. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined1 *InitDmaCallbackTable(void);
 
@@ -1081,24 +1081,24 @@ void SetDrawMove(DR_MOVE *p, RECT *rect, int x, int y);
 
 int ResetGraph(int mode);
 
-/* 0x8005f53c: PSY-Q SetGraphDebug equivalent — sets the libgpu debug verbosity level (g_bGpuDebugLevel), returns previous level. When non-zero, prints "SetGraphDebug:level:%d,type:%d reverse:%d\n" via PTR_WritePrintf_80074a60. Higher levels enable extra "%s:bad RECT" / "GPU timeout:..." diagnostics in libgpu primitive packers and watchdog paths. Called by InitGraphicsHardware (typically with level=0 to disable verbose mode in shipped builds). */
+/* 0x8005f53c: PSY-Q SetGraphDebug equivalent — sets the libgpu debug verbosity level (g_bGpuDebugLevel), returns previous level. When non-zero, prints "SetGraphDebug:level:%d,type:%d reverse:%d\n" via g_pfnGpuDebugPrintf. Higher levels enable extra "%s:bad RECT" / "GPU timeout:..." diagnostics in libgpu primitive packers and watchdog paths. Called by InitGraphicsHardware (typically with level=0 to disable verbose mode in shipped builds). */
 int SetGraphDebug(int level);
 
 void SetDispMask(int on);
 
 int DrawSync(int mode);
 
-/* 0x8005f7d0: libgpu debug helper called by ClearImage/LoadImage/StoreImage/MoveImage. Validates that RECT param_2 fits within the framebuffer bounds (g_nGpuScreenWidth/6a). Prints '%s:bad RECT' via the debug printf hook (PTR_WritePrintf_80074a60) when verbose mode (g_bGpuDebugLevel) is set. */
+/* 0x8005f7d0: libgpu debug helper called by ClearImage/LoadImage/StoreImage/MoveImage. Validates that RECT param_2 fits within the framebuffer bounds (g_nGpuScreenWidth/6a). Prints '%s:bad RECT' via the debug printf hook (g_pfnGpuDebugPrintf) when verbose mode (g_bGpuDebugLevel) is set. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined ValidateGpuRect(undefined4 param_1, short *param_2);
 
-/* 0x8005f8f8: libgpu ClearImage. Fills VRAM rect with packed 24-bit color (r, g, b) via the GPU command-dispatch table at PTR_PTR_80074a5c. */
+/* 0x8005f8f8: libgpu ClearImage. Fills VRAM rect with packed 24-bit color (r, g, b) via the GPU command-dispatch table at g_pGpuDispatchTable. */
 int ClearImage(RECT *rect, int r, int g, int b);
 
-/* 0x8005fa28: libgpu LoadImage. Transfers CPU memory at p into VRAM rect via the GPU command-dispatch table at PTR_PTR_80074a5c. */
+/* 0x8005fa28: libgpu LoadImage. Transfers CPU memory at p into VRAM rect via the GPU command-dispatch table at g_pGpuDispatchTable. */
 int LoadImage(RECT *rect, void *p);
 
-/* 0x8005fa8c: libgpu StoreImage. Transfers VRAM rect r out to CPU memory at dst via the GPU command-dispatch table at PTR_PTR_80074a5c. */
+/* 0x8005fa8c: libgpu StoreImage. Transfers VRAM rect r out to CPU memory at dst via the GPU command-dispatch table at g_pGpuDispatchTable. */
 void StoreImage(RECT *r, void *dst);
 
 /* 0x8005faf0: libgpu MoveImage. VRAM-to-VRAM rect copy: source rect (RECT *)rect, destination (x=x, y=y). Returns -1 if source rect has zero width or height. */
@@ -1157,7 +1157,7 @@ uint FlushGpuQueue(void);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 ResetGraphImpl(uint param_1);
 
-/* 0x80061f48: libgpu DrawSync impl (dispatched via PTR_PTR_80074a5c). param=0 blocks until 64-entry DMA queue + DMA-2 + GP1 ready-bit all idle (with CheckGpuTimeout watchdog); param!=0 returns queue depth (0=idle, >=1=pending). */
+/* 0x80061f48: libgpu DrawSync impl (dispatched via g_pGpuDispatchTable). param=0 blocks until 64-entry DMA queue + DMA-2 + GP1 ready-bit all idle (with CheckGpuTimeout watchdog); param!=0 returns queue depth (0=idle, >=1=pending). */
 uint DrawSyncImpl(int param_1);
 
 /* 0x80062090: libgpu watchdog reset: sets the GPU-timeout VSync deadline to VSync(-1)+0xf0 (240 ticks ahead) and clears the spin counter at g_nGpuWatchdogSpinCount. Called by EnqueueGpuOp / FlushGpuQueue siblings whenever fresh work is queued, so CheckGpuTimeout's deadline rolls forward instead of firing on long-but-not-stuck pipelines. */
