@@ -93,19 +93,22 @@ typedef struct Actor {
 #define VOICE_ROW_NONE 0x7F
 #define ACTOR_CULL_HIDDEN 0 /* ->cullRadius: a zero bound fails the view cull, so the actor is hidden */
 #define ACTOR_TINT_NEUTRAL 0xA18618 /* the 0x4C tint word at neutral levels (0x18 each, tag 0xA) */
-/* Actor.tintMode presets, used with tint0..2 zeroed. RasterizeSpritePrimQueue
- * reads the preset word at 0x8006E3D8 + (tint word >> 22). Its low three
- * bytes, x16, go to the GTE back colour (R, G, B), so a preset is a light
- * level rather than the visible colour. Byte 3: the low nibble x2 is loaded
- * into IR0; a nonzero high nibble is a glint threshold, n x 0x80 above the
- * back colour's R: once the lit R channel passes it, twice the excess is
- * added to all three channels (a white highlight). EXE words: 0 0x808080,
- * 1 0x606060, 2 0x006060, 3..6 zero (filled at run time; the flight tally
- * writes them), 7 0x606060 (glint 4), 8 0x000060, 9 0x006000, 0xA 0x600000,
- * 0xB 0x006060, 0xC 0x605050, 0xD 0x000060 (glint 0xC), 0xE 0x206020,
- * 0xF..0x11 the 0xA..0xC colours with glint 0xC, 0x12..0x16 the 8..0xC
- * colours with glint 0xA, 0x17 0x600040. Named by the actors and text that
- * pick them. */
+/* Actor.tintMode presets, used with tint0..2 zeroed.
+ * RasterizeSpritePrimQueue reads the preset word at 0x8006E3D8 + (tint word
+ * >> 22). Its low three bytes, x16, go to the GTE back colour (R, G, B), so
+ * a preset is a light level rather than the visible colour. Byte 3: the low
+ * nibble x2 goes to IR0, which scales each camera-rotated vertex normal
+ * before `cc` lights it through the light colour matrix: 0 leaves the flat
+ * back colour, larger values shade by facing more strongly (a lit word that
+ * compares below the preset's packed word is replaced by it). A nonzero high
+ * nibble is a glint threshold, n x 0x80 above the back colour's R: once the
+ * lit R channel passes it, twice the excess is added to all three channels
+ * (a white highlight). EXE words: 0 0x808080, 1 0x606060, 2 0x006060, 3..6
+ * zero (filled at run time; the flight tally writes them), 7 0x606060 (glint
+ * 4), 8 0x000060, 9 0x006000, 0xA 0x600000, 0xB 0x006060, 0xC 0x605050, 0xD
+ * 0x000060 (glint 0xC), 0xE 0x206020, 0xF..0x11 the 0xA..0xC colours with
+ * glint 0xC, 0x12..0x16 the 8..0xC colours with glint 0xA, 0x17 0x600040.
+ * Named by the actors and text that pick them. */
 #define TINT_GEM_1 1      /* gems, one per value: HUD tally icons use type - 0x52 */
 #define TINT_GEM_2 2
 #define TINT_GEM_5 3
@@ -164,7 +167,9 @@ typedef struct Actor {
 #define MOVED_BLOCKED 2   /* world collision, step height or slope rejected it */
 #define MOVED_LANDED 3    /* DriveActorTrackedMove: the fall ended on the floor */
 
-/* PivotActorAlongPath / SteerActorAlongWaypoints result on reaching node n. */
+/* PivotActorAlongPath / SteerActorAlongWaypoints result on reaching node n:
+ * the flag is set and the low byte is the node. */
+#define PATH_ARRIVED_FLAG 0x100
 #define PATH_ARRIVED(n) (0x100 + (n))
 
 /* Actor.mode sentinels: UpdateActors and the scans skip dormant records, and
@@ -188,7 +193,10 @@ typedef struct Actor {
 /* Kill groups BuildLoadedLevelRuntime treats specially when it reloads a level
  * whose saved kill bitmap has the actor. Other groups >= 0x20 despawn if they
  * died before the last checkpoint and otherwise respawn as a gem roll; groups
- * < 0x20 respawn as long as one member survived the checkpoint. */
+ * < 0x20 respawn as long as one member survived the checkpoint. In level
+ * data, gems, chests, seed pods, followers and dragon statues are NEVER_RESPAWN;
+ * escorts, villagers and a few bosses ALWAYS_RESPAWN; 0x7F marks actors
+ * outside the kill sets (props, ambient sounds, checkpoints, save hosts). */
 #define ACTOR_KILL_GROUP_NEVER_RESPAWN 0x7D  /* any saved kill despawns it */
 #define ACTOR_KILL_GROUP_ALWAYS_RESPAWN 0x7E /* always back, as a gem roll */
 /* Actor.renderList sign bit: draw through BuildSecondaryActorDrawList, which
@@ -339,6 +347,8 @@ enum ActorType {
   ACTOR_TYPE_LOOT_VORTEX = 181, /* levels 33/34 (LootVortexState) */
   ACTOR_TYPE_BRAWLER_SPAWN = 183, /* level 7: spawned by ACTOR_TYPE_BRAWLER on frame 0x11; no level has an UpdateActors arm for it (BrawlerSpawnState) */
   ACTOR_TYPE_BRAWLER = 184, /* level 7: stationary brawler (BrawlerState) */
+  ACTOR_TYPE_VORTEX_TARGET = 185, /* levels 33/34: an inert marker a loot vortex is entered facing
+                                   * and flies toward (LootVortexState.target) */
   ACTOR_TYPE_SHOOTER = 186, /* level 7: blinking sentry that fires type 197 (ShooterState) */
   ACTOR_TYPE_HOME_TALKER = 187, /* 187..192: the homeworld talkers (levels 0/6/12/18/24/30); walking up facing one starts its actor cutscene */
   ACTOR_TYPE_WANDERING_CRITTER_B = 193, /* levels 6/7: wanders; knocked away when hit (CritterKnockState) */
@@ -352,7 +362,7 @@ enum ActorType {
   ACTOR_TYPE_FLOATING_BARREL = 202, /* level 31: bobs on the water; struck, bursts with a push-back blast and sinks */
   ACTOR_TYPE_FENCE_GUARD = 203, /* level 27: sent in by ACTOR_TYPE_FENCE_CAPTAIN (FenceGuardState) */
   ACTOR_TYPE_FENCE_CAPTAIN = 204, /* level 27: wakes and recalls its fence guards (FenceCaptainState) */
-  ACTOR_TYPE_OVERHEAD_THROWER = 205, /* levels 9/10: holds its projectile overhead, throws it at Spyro on its throw frame; stunned when hit */
+  ACTOR_TYPE_OVERHEAD_THROWER = 205, /* levels 9/10: spins a held gem overhead (level-data link, often none); charged, flings it at Spyro */
   ACTOR_TYPE_BELL_A = 206, /* levels 7/8: rings when charged, spawning ACTOR_TYPE_BELL_RIPPLE (also 239/242) */
   ACTOR_TYPE_FLOATING_MINE = 207, /* level 31: drifts like the barrel; charged, runs at the nearest target and bursts */
   ACTOR_TYPE_HUB_PATH_GATES = 208, /* level 30: opens the hub's world-chunk paths to Twilight Harbor, Gnasty Gnorc and Gnasty's Loot as they unlock (PathGateState) */
@@ -432,6 +442,9 @@ enum ActorType {
   ACTOR_TYPE_TIME_BONUS = 345,       /* flight time bonus 345..347: flies to the HUD clock */
   ACTOR_TYPE_SPINNER = 349, /* level 4: idles, rears up at Spyro, spins away when knocked back (SpinnerState) */
   ACTOR_TYPE_SEQUENCED_PROP = 350, /* level 0: sequenced prop (PropAnimState) */
+  ACTOR_TYPE_GEM_HOLDER = 351, /* levels 0/4/10/16: a hidden record with no update arm whose fixed
+                                * death drop is a gem; its owner releases it (SpawnActorDeathDrop);
+                                * state word 0 chains the next holder, -1 ends */
   ACTOR_TYPE_FLIGHT_TARGET = 353,    /* breakable flight target: bursts into shards 374..386 when flown through */
   ACTOR_TYPE_FLIGHT_HUD = 358,       /* flight-level HUD controller (clock digits, target tally) */
   ACTOR_TYPE_TUMBLE_SHARD = 359, /* 359..361: falling, spinning burst shards of the riding target and level 23's cycler (TumbleState) */
@@ -559,7 +572,8 @@ typedef struct PathData {
     int x;
     int y;
     int z;
-    int speed; /* > 0 overrides the follow speed at this node */
+    int speed; /* > 0 overrides the follow speed at this node; the path runner
+                * and Gnasty split it (PATH_NODE_SPEED / PATH_NODE_JUMP) */
   } nodes[1];          /* 0x08 */
 } PathData;
 

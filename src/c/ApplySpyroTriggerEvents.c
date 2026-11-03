@@ -10,8 +10,8 @@
 /* Map this frame's trigger events to Spyro state transitions (0x80040F68,
    0x308).
 
-   `pad` is the mask of events the calling state accepts; it is first gated by
-   the input lockout (0x5A post-hit invulnerability frames, which drop the
+   `events` is the mask of events the calling state accepts; it is first gated
+   by the input lockout (0x5A post-hit invulnerability frames, which drop the
    damage events 0x1F1, and the hazard 0x400 too while Spyro is still rising)
    and then by g_dwSpyroTriggerEventFlags, the events raised this frame. The
    0x5F1 group is damage: a one-of ladder that costs one g_nSparxHealth, picks
@@ -21,12 +21,12 @@
    SPYRO_ST_LIFT) and the charge-hold flag (0x2000). Returns 1 when a
    transition was dispatched. */
 
-int DispatchSpyroPadStateChanges(int pad) {
+int ApplySpyroTriggerEvents(int events) {
   int *ev;
   int *lock;
   int *ready;
   int ret;
-  int held;
+  int nonHit;
   int next;
 
   ret = 0;
@@ -34,39 +34,39 @@ int DispatchSpyroPadStateChanges(int pad) {
     return 0;
   }
   if (g_nSpyroInputLockoutCountdown != 0) {
-    pad &= ~SPYRO_EV_HITS;
+    events &= ~SPYRO_EV_HITS;
     if (g_anSpyroMotionVec[2] > 0) {
-      pad &= ~SPYRO_EV_HAZARD;
+      events &= ~SPYRO_EV_HAZARD;
     }
   }
   ev = g_adwSpyroTriggerEventBlock;
-  pad &= ev[0];
+  events &= ev[0];
 
-  if ((pad & (SPYRO_EV_HITS | SPYRO_EV_HAZARD)) &&
+  if ((events & (SPYRO_EV_HITS | SPYRO_EV_HAZARD)) &&
       g_nSparxHealth >= SPARX_GONE) {
     if (g_bDebugNoDepletion == 0) {
       g_nSparxHealth = g_nSparxHealth - 1;
     }
-    if (pad & SPYRO_EV_HIT_PINNED) {
+    if (events & SPYRO_EV_HIT_PINNED) {
       if (g_nSparxHealth < SPARX_GONE) {
         next = SPYRO_ST_DEATH_PINNED;
       } else {
         next = SPYRO_ST_HURT_PINNED;
       }
       ChangeSpyroState(next);
-    } else if (pad & SPYRO_EV_HIT_TINT) {
+    } else if (events & SPYRO_EV_HIT_TINT) {
       PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT_FLASH),
                       (Actor *)&ev[-SPY_TRIGGER_FLAGS], SFX_MODE_FLAT,
                       (unsigned char *)ev +
                           (SPYB_VOICE_MARKER - SPY_TRIGGER_FLAGS * 4));
       ChangeSpyroState(SPYRO_ST_HURT_TINT);
-    } else if (pad & SPYRO_EV_HIT_LONG) {
+    } else if (events & SPYRO_EV_HIT_LONG) {
       ChangeSpyroState(SPYRO_ST_HURT_LONG);
-    } else if (pad & SPYRO_EV_KNOCKBACK_2) {
+    } else if (events & SPYRO_EV_KNOCKBACK_2) {
       ChangeSpyroState(SPYRO_ST_KNOCKBACK_2);
-    } else if (pad & SPYRO_EV_KNOCKBACK) {
+    } else if (events & SPYRO_EV_KNOCKBACK) {
       ChangeSpyroState(SPYRO_ST_KNOCKBACK);
-    } else if (pad & SPYRO_EV_HAZARD) {
+    } else if (events & SPYRO_EV_HAZARD) {
       ChangeSpyroState(SPYRO_ST_HAZARD);
       if (*(int *)g_pSpyroHazardRegionData != 0 && g_bDebugNoDepletion == 0) {
         g_nSparxHealth = SPARX_FATAL;
@@ -81,8 +81,8 @@ int DispatchSpyroPadStateChanges(int pad) {
     return 1;
   }
 
-  held = pad & 0xFC00;
-  if (pad & SPYRO_EV_HAZARD) {
+  nonHit = events & 0xFC00;
+  if (events & SPYRO_EV_HAZARD) {
     ready = g_anSparxHealthBlock;
     if (ready[0] >= 0) {
       ResetSpyroLinearMotion();
@@ -97,13 +97,13 @@ int DispatchSpyroPadStateChanges(int pad) {
     ret = 1;
   }
 
-  if (held & SPYRO_EV_REBOUND) {
+  if (nonHit & SPYRO_EV_REBOUND) {
     ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
     SetVector3Magnitude(g_anSpyroFirstContactNormal, 0x800);
     CopyVector(g_anSpyroFirstContactNormal - 0x25, g_anSpyroFirstContactNormal);
     ret = 1;
   }
-  if (held & SPYRO_EV_LIFT) {
+  if (nonHit & SPYRO_EV_LIFT) {
     if (g_nSpyroState != SPYRO_ST_LIFT) {
       ChangeSpyroState(SPYRO_ST_LIFT);
       ret = 1;
@@ -112,7 +112,7 @@ int DispatchSpyroPadStateChanges(int pad) {
     ChangeSpyroState(SPYRO_ST_GLIDE);
   }
   if (g_nSpyroState != SPYRO_ST_SUPERCHARGE) {
-    if (held & SPYRO_EV_CHARGE_HOLD) {
+    if (nonHit & SPYRO_EV_CHARGE_HOLD) {
       g_nSpyroChargeHoldFlag = 1;
     } else {
       g_nSpyroChargeHoldFlag = 0;

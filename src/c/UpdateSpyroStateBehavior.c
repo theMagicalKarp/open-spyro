@@ -77,7 +77,7 @@ static inline int OpaqueInt(int p) {
 void UpdateSpyroStateBehavior(void) {
   switch (g_nSpyroState) {
   case SPYRO_ST_IDLE:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
@@ -125,7 +125,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_WALK:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
@@ -160,7 +160,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_RUN:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
@@ -223,7 +223,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_STOP:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
@@ -269,7 +269,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_TURN_AROUND:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_nSpyroAirborneFrames >= 4 || g_nSpyroGroundSlope >= 0x17) {
@@ -287,7 +287,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_JUMP:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_nSpyroGlideEnteredLatch == 0 && (g_dwPadPressed & PAD_CROSS)) {
@@ -329,7 +329,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_FALL:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
@@ -397,7 +397,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_FACE_TARGET:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_NO_HAZARD)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_NO_HAZARD)) {
       if (g_nSpyroStateTimer >= 0xD) {
         g_nSpyroBodyYaw = g_nSpyroMoveTargetYaw;
         g_nSpyroBodyPitch = -g_nSpyroBodyPitch & 0xFFF;
@@ -419,7 +419,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_SIDESTEP_L1:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (SPY[SPY_AIRBORNE] >= 4 || g_nSpyroGroundSlope >= 0x17) {
@@ -437,7 +437,7 @@ void UpdateSpyroStateBehavior(void) {
     ChangeSpyroState(SPYRO_ST_IDLE);
     break;
   case SPYRO_ST_SIDESTEP_R1:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (SPY[SPY_AIRBORNE] >= 4 || g_nSpyroGroundSlope >= 0x17) {
@@ -505,7 +505,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_CHARGE_BONK:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_nSpyroStateTimer > 0x10 &&
@@ -518,7 +518,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_TEETER:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
@@ -593,7 +593,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     goto land;
   case SPYRO_ST_GLIDE:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_nSpyroAirborneFrames == 0) {
@@ -648,7 +648,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_LIFT:
-    DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT);
+    ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT);
     break;
   case SPYRO_ST_FIDGET_0:
   case SPYRO_ST_FIDGET_1:
@@ -661,7 +661,7 @@ void UpdateSpyroStateBehavior(void) {
   case SPYRO_ST_FIDGET_8: {
     int *air;
 
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
@@ -720,7 +720,7 @@ void UpdateSpyroStateBehavior(void) {
     break;
   }
   case SPYRO_ST_GLIDE_DROP:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_nSpyroWorldPosZ >= g_anLevelDeathPlaneZTable[g_nLevelIndex] &&
@@ -744,7 +744,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     goto fall_timeout;
   case SPYRO_ST_SLIDE:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if ((g_dwPadHeld & PAD_CROSS) && g_nSpyroStateTimer < 4) {
@@ -810,7 +810,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_JOG:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
@@ -840,7 +840,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_GLIDE_SLOW:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_nSpyroAirborneFrames == 0) {
@@ -939,7 +939,7 @@ void UpdateSpyroStateBehavior(void) {
     break;
   }
   case SPYRO_ST_SCRIPTED_WALK:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
@@ -958,7 +958,7 @@ void UpdateSpyroStateBehavior(void) {
     ChangeSpyroState(SPYRO_ST_IDLE);
     break;
   case SPYRO_ST_HAZARD:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_NO_HAZARD)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_NO_HAZARD)) {
       break;
     }
     if (SPY[SPY_SPARX_HEALTH] < 0) {
@@ -974,7 +974,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_FLY:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_nSpyroAirborneFrames == 0) {
@@ -1018,7 +1018,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_FLY_CLIMB:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_nSpyroAirborneFrames == 0) {
@@ -1060,7 +1060,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_FLY_DIVE:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_nSpyroAirborneFrames == 0) {
@@ -1104,7 +1104,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_SCRIPTED_HOLD:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_DEFAULT)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
     if (g_dwSpyroRequestMask == 0) {
@@ -1112,7 +1112,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     break;
   case SPYRO_ST_SUPERCHARGE:
-    if (DispatchSpyroPadStateChanges(SPYRO_EV_MASK_SUPERCHARGE)) {
+    if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_SUPERCHARGE)) {
       break;
     }
     if (g_dwPadHeld & PAD_CROSS) {

@@ -988,7 +988,7 @@ extern int g_nSpyroJumpHoldLatch;                       /* 0x80078bac */
 extern int g_nSpyroFloorReferenceZ;                     /* 0x80078bb0 */
 extern int g_nSpyroGravityEnableFlag;                   /* 0x80078bb4 */
 extern int g_nSpyroInputLockoutCountdown;               /* 0x80078bb8 */
-extern int g_nSparxHealth;                           /* 0x80078bbc: Sparx health: 3 gold, 2 blue, 1 green, 0 Sparx gone, -1 after the fatal hit. Hits decrement it (DispatchSpyroPadStateChanges / DispatchSpyroChargeStateChanges pick the death state once it goes negative); the Sparx actor eating a butterfly adds 1; a new game sets 3. */
+extern int g_nSparxHealth;                           /* 0x80078bbc: Sparx health: 3 gold, 2 blue, 1 green, 0 Sparx gone, -1 after the fatal hit. Hits decrement it (ApplySpyroTriggerEvents / DispatchSpyroChargeStateChanges pick the death state once it goes negative); the Sparx actor eating a butterfly adds 1; a new game sets 3. */
 extern int g_nSpyroHazardSinkDepth;                         /* 0x80078bc0 */
 extern int g_nSpyroFirstContactChunkId;                 /* 0x80078bc4 */
 extern int g_nSpyroTriggerCurrentEventId;               /* 0x80078bc8 */

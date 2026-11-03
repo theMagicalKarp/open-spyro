@@ -27,6 +27,7 @@
 #include "match_asm.h"
 #include "pad_buttons.h"
 #include "spyro_state.h"
+#include "camera.h"
 #include "level_sfx.h"
 #include "level_id.h"
 #include "emit_record.h"
@@ -160,9 +161,9 @@ void Level17_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) < 0) {
@@ -172,7 +173,7 @@ void Level17_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -648,9 +649,9 @@ void Level17_UpdateActors(void) {
                 int res = CheckLineOfSightSegment(&g_pSparxActor->posX, &actor->posX);
 
                 if (res) {
-                  ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+                  SparxState *cs = g_pSparxActor->state;
 
-                  if (cs->owner == 0) {
+                  if (cs->target == 0) {
                     if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                        g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                       g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
@@ -660,7 +661,7 @@ void Level17_UpdateActors(void) {
                     }
 
                     g_pSparxActor->subMode = SPARX_SUB_FETCH;
-                    cs->owner = actor;
+                    cs->target = actor;
                   }
                 }
               }
@@ -776,9 +777,9 @@ void Level17_UpdateActors(void) {
 
               if (SPY.airborneFrames == 0 && st->count < 3) {
 
-                ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+                SparxState *cs = g_pSparxActor->state;
 
-                if (cs->owner == 0) {
+                if (cs->target == 0) {
                   if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                      g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
@@ -788,7 +789,7 @@ void Level17_UpdateActors(void) {
                   }
 
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
-                  cs->owner = actor;
+                  cs->target = actor;
                 }
               }
             }
@@ -844,10 +845,10 @@ void Level17_UpdateActors(void) {
           (actor->subMode == COLLECT_HOMING && st->timer > 64)) {
 
         if (g_pSparxActor != 0) {
-          ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+          SparxState *cs = g_pSparxActor->state;
 
-          if (cs->owner == actor) {
-            cs->owner = 0;
+          if (cs->target == actor) {
+            cs->target = 0;
           }
         }
 
@@ -1082,7 +1083,7 @@ void Level17_UpdateActors(void) {
 
           svF[0] = -0x258;
           svF[1] = (GetRandomU32() & 0x310) - 0x188;
-          if (CAM.state == 3) {
+          if (CAM.state == CAM_MODE_CHARGE) {
             svF[2] = (GetRandomU32() & 0x7F) + 0x64;
           } else {
             svF[2] = (GetRandomU32() & 0x1FF) - 0xC8;
@@ -1093,14 +1094,14 @@ void Level17_UpdateActors(void) {
           st->timer = GetRandomU32() & 0x7B;
         } else {
           st->timer -= g_nFrameStep;
-          if (CAM.state == 3) {
+          if (CAM.state == CAM_MODE_CHARGE) {
             svF[0] = st->drift[0] + (SPY.motionSpeed >> 2);
             svF[1] = st->drift[1];
             svF[2] = st->drift[2];
             if (svF[2] < 0x64)
               svF[2] = 0x64;
           } else {
-            if (CAM.state == 0x80000009)
+            if (CAM.state == (CAM_HELD | CAM_MODE_FREE_LOOK))
               svF[0] = st->drift[0] - 512;
             else {
               svF[0] = st->drift[0];
@@ -1282,15 +1283,15 @@ void Level17_UpdateActors(void) {
     /* Flight-level chest: flaming or charging it frees its reward and
      * scatters shards; otherwise it hums its ambient sound. */
     case ACTOR_TYPE_FLIGHT_CHEST: {
-      int *st = actor->state;
+      FlightChestState *st = actor->state;
       int i;
 
       if (actor->flags & ACTOR_HITS_SPYRO) {
         Actor *reward;
 
-        PlayActorMeshVoice(actor, 0, 0);
-        TallyFlightTarget(st[1]);
-        reward = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st[0]), actor);
+        PlayActorMeshVoice(actor, FCHEST_VOICE_BURST, 0);
+        TallyFlightTarget(st->tallyClass);
+        reward = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st->reward), actor);
         if (reward != 0) {
           reward->mode = TIMEBONUS_COLLECT;
         }
@@ -1318,8 +1319,8 @@ void Level17_UpdateActors(void) {
       {
         Model **models = g_apActorMeshTable;
 
-        if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable_12B->m_Sounds[1]) == 0 && g_nGamestate == GS_GAMEPLAY) {
-          PlaySoundEffect(models[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable_12B->m_Sounds[FCHEST_VOICE_HUM]) == 0 && g_nGamestate == GS_GAMEPLAY) {
+          PlaySoundEffect(models[actor->type]->m_Sounds[FCHEST_VOICE_HUM], actor, SFX_MODE_3D,
                         &actor->voiceRow);
         }
       }
@@ -1365,7 +1366,7 @@ void Level17_UpdateActors(void) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS + 1, actor);
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS + 2, actor);
         }
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, FTARGET_VOICE_BURST, 0);
         actor->mode = BANKER_STRUCK;
         ANIM_RESET(actor, BANKER_STRUCK);
         break;
@@ -1435,7 +1436,7 @@ void Level17_UpdateActors(void) {
 
       actor->rotX = WrapAddAngle8(actor->rotX, 8);
       if ((actor->rotX) < 8) {
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, FRING_VOICE_SPIN, 0);
       }
 
       RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -1572,7 +1573,7 @@ void Level17_UpdateActors(void) {
               ss->life = 0x3C;
             }
 
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, FTARGET_VOICE_BURST, 0);
             DespawnActorRecord(actor);
             break;
           }

@@ -397,9 +397,9 @@ void Level34_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(SPY.bodyRotZ,
                                 ArcTan2(actor->posX - SPY.posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8)) < 0) {
@@ -409,7 +409,7 @@ void Level34_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -1572,7 +1572,7 @@ void Level34_UpdateActors(void) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS + 1, actor);
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS + 2, actor);
         }
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, LTHIEF_VOICE_KNOCKED, 0);
         actor->mode = LTHIEF_KNOCKED;
         ANIM_RESET(actor, LTHIEF_KNOCKED);
         continue;
@@ -1880,14 +1880,14 @@ void Level34_UpdateActors(void) {
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(actor, 0, &g_pActorListBase[st->attach].posX);
       }
-      if (actor->nextAnim == 0 && actor->cullRadius != ACTOR_CULL_HIDDEN) {
+      if (actor->nextAnim == LCRITTER_WATCH && actor->cullRadius != ACTOR_CULL_HIDDEN) {
         if (actor->nextFrame == 2 && (GetRandomU32() & 3) == 0 &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[6]) == 0) {
-          PlayActorMeshVoice(actor, 6, 0);
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[LCRITTER_VOICE_TAUNT_EARLY]) == 0) {
+          PlayActorMeshVoice(actor, LCRITTER_VOICE_TAUNT_EARLY, 0);
         }
         if (actor->nextFrame == 0xC && (GetRandomU32() & 3) == 0 &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[5]) == 0) {
-          PlayActorMeshVoice(actor, 5, 0);
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[LCRITTER_VOICE_TAUNT_LATE]) == 0) {
+          PlayActorMeshVoice(actor, LCRITTER_VOICE_TAUNT_LATE, 0);
         }
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
@@ -1896,7 +1896,7 @@ void Level34_UpdateActors(void) {
       case LCRITTER_WATCH:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
-          actor->subMode = 0;
+          actor->subMode = LCRITTER_HOME_ORBIT;
           ENTER_POSE(actor, LCRITTER_FLEE);
         }
         break;
@@ -1913,7 +1913,7 @@ void Level34_UpdateActors(void) {
             speed = 0xF0;
           }
           switch (actor->subMode) {
-          case 0: {
+          case LCRITTER_HOME_ORBIT: {
             int home = ArcTan2(FP_X(st->path, 0) - actor->posX,
                                      FP_Y(st->path, 0) - actor->posY, ATAN_ANGLE8);
             int lim;
@@ -1953,12 +1953,12 @@ void Level34_UpdateActors(void) {
                 AbsAngleDelta8(home, ArcTan2(SPY.posX - actor->posX,
                                                   SPY.posY - actor->posY, ATAN_ANGLE8)) >
                     0x20) {
-              actor->subMode = 1;
+              actor->subMode = LCRITTER_HOME_BREAKOUT;
             }
             break;
           }
 
-          case 1: {
+          case LCRITTER_HOME_BREAKOUT: {
             int a = ArcTan2(FP_X(st->path, 0) - SPY.posX,
                                   FP_Y(st->path, 0) - SPY.posY, ATAN_ANGLE8);
             int b = ArcTan2(FP_X(st->path, 0) - actor->posX,
@@ -1967,10 +1967,10 @@ void Level34_UpdateActors(void) {
             TurnActorYawTowardAngle(actor, a, 8, 0, YAW_HOLD_IN_BAND);
             MoveActorAlongHeading(actor, speed, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             if (AbsAngleDelta8(a, b) > 0x50) {
-              actor->subMode = 0;
+              actor->subMode = LCRITTER_HOME_ORBIT;
             }
             if (ApproxDist2D(pos, FP_PT(st->path, 0)) > 0x1800) {
-              actor->subMode = 0;
+              actor->subMode = LCRITTER_HOME_ORBIT;
             }
             break;
           }
@@ -2024,8 +2024,8 @@ void Level34_UpdateActors(void) {
               st->path->dir = dir;
             }
             r = PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-            if (r & 0x100) {
-              r &= ~0x100;
+            if (r & PATH_ARRIVED_FLAG) {
+              r &= ~PATH_ARRIVED_FLAG;
               if (st->path->dir == -1) {
                 if (r == one) {
                   ENTER_POSE(actor, LCRITTER_WATCH);
@@ -2044,8 +2044,8 @@ void Level34_UpdateActors(void) {
             int r = PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 8, 0x1E,
                                   PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
-            if (r & 0x100) {
-              r &= ~0x100;
+            if (r & PATH_ARRIVED_FLAG) {
+              r &= ~PATH_ARRIVED_FLAG;
               if (st->path->dir == -1) {
                 if (r == one) {
                   ENTER_POSE(actor, LCRITTER_WATCH);
@@ -3080,13 +3080,13 @@ void Level34_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
       SpinChestState *st = actor->state;
-      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN]);
       int cur = g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0];
       int i;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == ACTOR_HIT_FLAME) {
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN], actor, SFX_MODE_3D,
                       &actor->voiceRow);
         if (actor->voiceRow != VOICE_ROW_NONE) {
           g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0] = pitch + st->speed * 4;

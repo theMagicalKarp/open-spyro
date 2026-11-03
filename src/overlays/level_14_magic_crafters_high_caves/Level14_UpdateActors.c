@@ -125,7 +125,7 @@ typedef struct ChunkOperatorState {
 /* Type 301: bolt caster. Wakes when Spyro is in range and fires type 295
  * bolts at him. */
 typedef struct BoltCasterState {
-  int target; /* 0x00 pool index of the actor it fires at, -1 = none */
+  int target; /* 0x00 pool index of the actor it fires at, -1 = none; level data: ACTOR_TYPE_RUNNER_SPAWNER / CHUNK_OPERATOR */
   int flags;  /* 0x04 BCASTER_F_* */
   int timer;  /* 0x08 */
   int count;  /* 0x0C bolts fired */
@@ -177,7 +177,7 @@ typedef struct CarrierState {
   PathData *path0; /* 0x10 */
   PathData *cur;   /* 0x14 */
   int dest[3];     /* 0x18 */
-  int rider;       /* 0x24 pool index */
+  int rider;       /* 0x24 pool index; level data: ACTOR_TYPE_CARRIER */
   int bob;         /* 0x28 */
   int vz;          /* 0x2C */
 } CarrierState;
@@ -493,9 +493,9 @@ void Level14_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(SPY.bodyRotZ,
                                 ArcTan2(actor->posX - SPY.posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8)) < 0) {
@@ -505,7 +505,7 @@ void Level14_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -1093,8 +1093,8 @@ void Level14_UpdateActors(void) {
           }
         }
         r = PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-        if (r & 0x100) {
-          if ((r & ~0x100) ==
+        if (r & PATH_ARRIVED_FLAG) {
+          if ((r & ~PATH_ARRIVED_FLAG) ==
               (st->node - st->path->dir) % st->path->count) {
             actor->mode = THIEF_IDLE;
             continue;
@@ -1716,9 +1716,9 @@ void Level14_UpdateActors(void) {
                 int res = CheckLineOfSightSegment(&g_pSparxActor->posX, &actor->posX);
 
                 if (res) {
-                  ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+                  SparxState *cs = g_pSparxActor->state;
 
-                  if (cs->owner == 0) {
+                  if (cs->target == 0) {
                     if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                        g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                       g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
@@ -1728,7 +1728,7 @@ void Level14_UpdateActors(void) {
                     }
 
                     g_pSparxActor->subMode = SPARX_SUB_FETCH;
-                    cs->owner = actor;
+                    cs->target = actor;
                   }
                 }
               }
@@ -1839,9 +1839,9 @@ void Level14_UpdateActors(void) {
 
               if (SPY.airborneFrames == 0 && st->count < 3) {
 
-                ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+                SparxState *cs = g_pSparxActor->state;
 
-                if (cs->owner == 0) {
+                if (cs->target == 0) {
                   if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                      g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
@@ -1851,7 +1851,7 @@ void Level14_UpdateActors(void) {
                   }
 
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
-                  cs->owner = actor;
+                  cs->target = actor;
                 }
               }
             }
@@ -1907,10 +1907,10 @@ void Level14_UpdateActors(void) {
           (actor->subMode == COLLECT_HOMING && st->timer > 64)) {
 
         if (g_pSparxActor != 0) {
-          ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+          SparxState *cs = g_pSparxActor->state;
 
-          if (cs->owner == actor) {
-            cs->owner = 0;
+          if (cs->target == actor) {
+            cs->target = 0;
           }
         }
 
@@ -2810,7 +2810,7 @@ void Level14_UpdateActors(void) {
 
           svA[0] = -0x258;
           svA[1] = (GetRandomU32() & 0x310) - 0x188;
-          if (CAM.state == 3) {
+          if (CAM.state == CAM_MODE_CHARGE) {
             svA[2] = (GetRandomU32() & 0x7F) + 0x64;
           } else {
             svA[2] = (GetRandomU32() & 0x1FF) - 0xC8;
@@ -2821,14 +2821,14 @@ void Level14_UpdateActors(void) {
           st->timer = GetRandomU32() & 0x7B;
         } else {
           st->timer -= g_nFrameStep;
-          if (CAM.state == 3) {
+          if (CAM.state == CAM_MODE_CHARGE) {
             svA[0] = st->drift[0] + (SPY.motionSpeed >> 2);
             svA[1] = st->drift[1];
             svA[2] = st->drift[2];
             if (svA[2] < 0x64)
               svA[2] = 0x64;
           } else {
-            if (CAM.state == 0x80000009)
+            if (CAM.state == (CAM_HELD | CAM_MODE_FREE_LOOK))
               svA[0] = st->drift[0] - 512;
             else {
               svA[0] = st->drift[0];
@@ -3004,7 +3004,7 @@ void Level14_UpdateActors(void) {
             ANIM_GO(actor, SFGIVER_ANIM_IDLE);
             st->timer = 0xA;
             actor->subMode = SFGIVER_SUB_LINGER;
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, SFGIVER_VOICE_CAST_END, 0);
           }
           f = 7;
           if (actor->type == ACTOR_TYPE_SUPERFLAME_GIVER_ALT) {
@@ -4613,17 +4613,17 @@ void Level14_UpdateActors(void) {
     /* Falling debris: tumbles along its velocity while on screen and is
      * removed once its timer runs out or it goes off screen. */
     case ACTOR_TYPE_FALLING_DEBRIS: {
-      int *st = actor->state;
+      FallingDebrisState *st = actor->state;
 
-      if (TICK_DOWN(st[3]) != 0 || actor->drawn == 0) {
+      if (TICK_DOWN(st->life) != 0 || actor->drawn == 0) {
         DespawnActorRecord(actor);
         continue;
       }
-      st[2] -= 6;
-      if (st[2] < -0x80) {
-        st[2] = -0x80;
+      st->vel[2] -= 6;
+      if (st->vel[2] < -0x80) {
+        st->vel[2] = -0x80;
       }
-      AddVector(&actor->posX, &actor->posX, st);
+      AddVector(&actor->posX, &actor->posX, st->vel);
       actor->rotX += 0xF;
       actor->rotZ += 9;
       break;
@@ -4895,13 +4895,13 @@ void Level14_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
       SpinChestState *st = actor->state;
-      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN]);
       int cur = g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0];
       int i;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == ACTOR_HIT_FLAME) {
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN], actor, SFX_MODE_3D,
                       &actor->voiceRow);
         if (actor->voiceRow != VOICE_ROW_NONE) {
           g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0] = pitch + st->speed * 4;

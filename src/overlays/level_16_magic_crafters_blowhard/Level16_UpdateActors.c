@@ -380,9 +380,9 @@ void Level16_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(SPY.bodyRotZ,
                                 ArcTan2(actor->posX - SPY.posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8)) < 0) {
@@ -392,7 +392,7 @@ void Level16_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -702,7 +702,7 @@ void Level16_UpdateActors(void) {
         case RIMDRIFT_CHASE_HELPER:
           if (st->child == 0) {
             st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER_HELPER, actor);
-            PlayActorMeshVoice(actor, 1, 0);
+            PlayActorMeshVoice(actor, RIMRIDER_VOICE_SPAWN_HELPER, 0);
           }
         case RIMDRIFT_CHASE: {
           int d;
@@ -745,7 +745,7 @@ void Level16_UpdateActors(void) {
 
       case RIMRIDER_SPAWN:
         st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER_HELPER, actor);
-        PlayActorMeshVoice(actor, 1, 0);
+        PlayActorMeshVoice(actor, RIMRIDER_VOICE_SPAWN_HELPER, 0);
         ENTER_POSE(actor, RIMRIDER_POP);
 
       case RIMRIDER_POP:
@@ -819,7 +819,7 @@ void Level16_UpdateActors(void) {
       actor->posX = st->owner->posX;
       actor->posY = st->owner->posY;
       if (TICK_DOWN(st->beat) != 0) {
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, RIMHELPER_VOICE_BEAT, 0);
         st->beat = 99999;
       }
       if (actor->mode == 0) {
@@ -1050,9 +1050,9 @@ void Level16_UpdateActors(void) {
                 int res = CheckLineOfSightSegment(&g_pSparxActor->posX, &actor->posX);
 
                 if (res) {
-                  ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+                  SparxState *cs = g_pSparxActor->state;
 
-                  if (cs->owner == 0) {
+                  if (cs->target == 0) {
                     if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                        g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                       g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
@@ -1062,7 +1062,7 @@ void Level16_UpdateActors(void) {
                     }
 
                     g_pSparxActor->subMode = SPARX_SUB_FETCH;
-                    cs->owner = actor;
+                    cs->target = actor;
                   }
                 }
               }
@@ -1173,9 +1173,9 @@ void Level16_UpdateActors(void) {
 
               if (SPY.airborneFrames == 0 && st->count < 3) {
 
-                ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+                SparxState *cs = g_pSparxActor->state;
 
-                if (cs->owner == 0) {
+                if (cs->target == 0) {
                   if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                      g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
@@ -1185,7 +1185,7 @@ void Level16_UpdateActors(void) {
                   }
 
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
-                  cs->owner = actor;
+                  cs->target = actor;
                 }
               }
             }
@@ -1241,10 +1241,10 @@ void Level16_UpdateActors(void) {
           (actor->subMode == COLLECT_HOMING && st->timer > 64)) {
 
         if (g_pSparxActor != 0) {
-          ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+          SparxState *cs = g_pSparxActor->state;
 
-          if (cs->owner == actor) {
-            cs->owner = 0;
+          if (cs->target == actor) {
+            cs->target = 0;
           }
         }
 
@@ -3181,7 +3181,7 @@ void Level16_UpdateActors(void) {
           if (g_nLevelProgressCheckpoint[0] > 0) {
             actor->mode = BLOWHARD_P2_PATROL;
             st->pathDone = 0;
-            st->phase = 1;
+            st->phase = BLOWHARD_PHASE_2;
             st->path = st->paths[3];
             if (g_pActorListBase[st->prev].dropKind != DROP_GEM_ROLL &&
                 g_pActorListBase[st->prev].mode < ACTOR_MODE_DORMANT) {
@@ -3190,7 +3190,7 @@ void Level16_UpdateActors(void) {
               DespawnActorRecord(a);
             }
             st->prev = *as;
-            ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(BLOWHARD_CHUNK_PHASE1, CHUNK_ANIM_RESUME, 0);
             st->chunkAnim = -1;
           }
           if (g_nLevelProgressCheckpoint[0] >= 2) {
@@ -3217,15 +3217,15 @@ void Level16_UpdateActors(void) {
       switch (actor->mode) {
       case BLOWHARD_START_PHASE:
         switch (st->phase) {
-        case 0:
+        case BLOWHARD_PHASE_1:
           actor->mode = BLOWHARD_P1_RISE;
           st->tweenStep = 0;
           break;
-        case 1:
+        case BLOWHARD_PHASE_2:
           actor->mode = BLOWHARD_P2_TRAVEL;
           st->tweenStep = 0;
           break;
-        case 2:
+        case BLOWHARD_PHASE_3:
           actor->mode = BLOWHARD_P3_TRAVEL;
           st->tweenStep = 0;
           break;
@@ -3281,7 +3281,7 @@ void Level16_UpdateActors(void) {
           v[2] += 0x400;
           if (CheckLineOfSightSegment(v, &SPY.posX) != 0) {
             st->minion = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER, actor);
-            PlayActorMeshVoice(st->minion, 0, 0);
+            PlayActorMeshVoice(st->minion, RIMRIDER_VOICE_DROPPED, 0);
           }
         }
         if (g_nActorAnimDone != 0) {
@@ -3335,7 +3335,7 @@ void Level16_UpdateActors(void) {
           v[2] += 0x400;
           if (CheckLineOfSightSegment(v, &SPY.posX) != 0) {
             st->minion = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER, actor);
-            PlayActorMeshVoice(st->minion, 0, 0);
+            PlayActorMeshVoice(st->minion, RIMRIDER_VOICE_DROPPED, 0);
           }
         }
         if (g_nActorAnimDone != 0) {
@@ -3396,7 +3396,7 @@ void Level16_UpdateActors(void) {
           v[2] += 0x400;
           if (CheckLineOfSightSegment(v, &SPY.posX) != 0) {
             st->minion = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER, actor);
-            PlayActorMeshVoice(st->minion, 0, 0);
+            PlayActorMeshVoice(st->minion, RIMRIDER_VOICE_DROPPED, 0);
           }
         }
         if (g_nActorAnimDone != 0) {
@@ -3427,13 +3427,13 @@ void Level16_UpdateActors(void) {
       case BLOWHARD_NEXT_PHASE:
         st->phase++;
         switch (st->phase) {
-        case 0:
+        case BLOWHARD_PHASE_1:
           st->path = st->paths[0];
           break;
-        case 1:
+        case BLOWHARD_PHASE_2:
           st->path = st->paths[1];
           break;
-        case 2:
+        case BLOWHARD_PHASE_3:
           st->path = st->paths[2];
           break;
         }

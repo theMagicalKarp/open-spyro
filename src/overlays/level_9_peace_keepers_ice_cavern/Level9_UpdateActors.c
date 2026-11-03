@@ -372,9 +372,9 @@ void Level9_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -385,7 +385,7 @@ void Level9_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -2065,8 +2065,9 @@ void Level9_UpdateActors(void) {
       break;
     }
 
-    /* Type 205: snowball thrower. Holds its snowball overhead, throws it at
-     * Spyro on its throw frame and is stunned when hit. */
+    /* Type 205: overhead thrower. Spins the gem it holds (state word 0, a
+     * level-data link; often none) overhead; charged, flings it at Spyro to
+     * bounce (COLLECT_BOUNCE). */
     case ACTOR_TYPE_OVERHEAD_THROWER: {
       int *st = actor->state;
 
@@ -2079,7 +2080,7 @@ void Level9_UpdateActors(void) {
         } else {
           CopyVector(&g_pActorListBase[*st].posX, &actor->posX);
           g_pActorListBase[*st].posZ += 0x800;
-          g_pActorListBase[*st].subMode = 4;
+          g_pActorListBase[*st].subMode = COLLECT_INERT;
           g_pActorListBase[*st].rotX = 0;
           g_pActorListBase[*st].rotY = 0;
           g_pActorListBase[*st].rotZ += 8;
@@ -2087,16 +2088,16 @@ void Level9_UpdateActors(void) {
       }
       if (actor->mode == OTHROW_HIT) {
         if (*st >= 0) {
-          ThrownSnowballState *ball = g_pActorListBase[*st].state;
+          PickupState *gem = g_pActorListBase[*st].state;
           int ang = ArcTan2(spy->posX - actor->posX,
                                   spy->posY - actor->posY, ATAN_ANGLE8) *
                     16;
 
-          g_pActorListBase[*st].subMode = 2;
-          ball->kind = 3;
-          ball->vx = (LookupCosine(ang) * 0x1C) >> 12;
-          ball->vy = (LookupSine(ang) * 0x1C) >> 12;
-          ball->vz = 0x32;
+          g_pActorListBase[*st].subMode = COLLECT_BOUNCE;
+          gem->count = 3;
+          gem->vel[0] = (LookupCosine(ang) * 0x1C) >> 12;
+          gem->vel[1] = (LookupSine(ang) * 0x1C) >> 12;
+          gem->vel[2] = 0x32;
           *st = -1;
         }
         if (g_nActorAnimDone != 0) {
@@ -2123,7 +2124,7 @@ void Level9_UpdateActors(void) {
         continue;
       }
       if (RaiseSpyroTriggerInRadius(&actor->posX, 0x80, SPYRO_EV_HIT) != 0) {
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, SNOWBALL_VOICE_HIT, 0);
         g_pfnLevelEmitParticles(0x10, EMIT_JITTER_BURST, &actor->posX, 0);
         DespawnActorRecord(actor);
         continue;

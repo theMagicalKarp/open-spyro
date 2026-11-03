@@ -371,9 +371,9 @@ void Level21_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -384,7 +384,7 @@ void Level21_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -899,7 +899,7 @@ void Level21_UpdateActors(void) {
         if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC, 0xA) ==
                 MOVED_LANDED &&
             st->speed == 0 && st->landSoundPlayed == 0) {
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, BTHROW_VOICE_LAND, 0);
           st->landSoundPlayed = 1;
         }
         if (g_nActorAnimDone != 0) {
@@ -1214,7 +1214,7 @@ void Level21_UpdateActors(void) {
         continue;
       }
 
-      if (st->mode == 2) {
+      if (st->mode == GKEEPER_POST_TWO_BOX) {
         if (st->path->cur != 0 &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
           st->path->cur = 0;
@@ -1751,9 +1751,9 @@ void Level21_UpdateActors(void) {
                 int res = CheckLineOfSightSegment(&g_pSparxActor->posX, &actor->posX);
 
                 if (res) {
-                  ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+                  SparxState *cs = g_pSparxActor->state;
 
-                  if (cs->owner == 0) {
+                  if (cs->target == 0) {
                     if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                        g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                       g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
@@ -1763,7 +1763,7 @@ void Level21_UpdateActors(void) {
                     }
 
                     g_pSparxActor->subMode = SPARX_SUB_FETCH;
-                    cs->owner = actor;
+                    cs->target = actor;
                   }
                 }
               }
@@ -1874,9 +1874,9 @@ void Level21_UpdateActors(void) {
 
               if (SPY.airborneFrames == 0 && st->count < 3) {
 
-                ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+                SparxState *cs = g_pSparxActor->state;
 
-                if (cs->owner == 0) {
+                if (cs->target == 0) {
                   if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                      g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
@@ -1886,7 +1886,7 @@ void Level21_UpdateActors(void) {
                   }
 
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
-                  cs->owner = actor;
+                  cs->target = actor;
                 }
               }
             }
@@ -1942,10 +1942,10 @@ void Level21_UpdateActors(void) {
           (actor->subMode == COLLECT_HOMING && st->timer > 64)) {
 
         if (g_pSparxActor != 0) {
-          ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+          SparxState *cs = g_pSparxActor->state;
 
-          if (cs->owner == actor) {
-            cs->owner = 0;
+          if (cs->target == actor) {
+            cs->target = 0;
           }
         }
 
@@ -3156,12 +3156,12 @@ void Level21_UpdateActors(void) {
 
       if (actor->nextAnim == RUNNER_ANIM_STAND && actor->cullRadius != ACTOR_CULL_HIDDEN) {
         if (actor->nextFrame == 1 && !(GetRandomU32() & 3) &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[6]) == 0) {
-          PlayActorMeshVoice(actor, 6, 0);
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[RUNNER_VOICE_STAND_EARLY]) == 0) {
+          PlayActorMeshVoice(actor, RUNNER_VOICE_STAND_EARLY, 0);
         }
         if (actor->nextFrame == 10 && !(GetRandomU32() & 3) &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[5]) == 0) {
-          PlayActorMeshVoice(actor, 5, 0);
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[RUNNER_VOICE_STAND_LATE]) == 0) {
+          PlayActorMeshVoice(actor, RUNNER_VOICE_STAND_LATE, 0);
         }
       }
 
@@ -3173,7 +3173,7 @@ void Level21_UpdateActors(void) {
         int floor;
         int z;
 
-        t = RUN_FLAGS(st->path) & 0xFFC;
+        t = RUN_FLAGS(st->path) & PATH_NODE_SPEED;
         spd = 0xB4;
         if (t != 0) {
           spd = t;
@@ -3223,12 +3223,12 @@ void Level21_UpdateActors(void) {
             actor->mode = RUNNER_FLEE;
             continue;
           }
-        } else if (r & 0x100) {
-          switch (RUN_FLAGS(st->path) & 3) {
-          case 1:
+        } else if (r & PATH_ARRIVED_FLAG) {
+          switch (RUN_FLAGS(st->path) & PATH_NODE_JUMP) {
+          case PATH_JUMP_LOW:
             st->lift = 0xDC;
             break;
-          case 2:
+          case PATH_JUMP_MID:
             st->lift = 0x140;
             break;
           }
@@ -3290,7 +3290,7 @@ void Level21_UpdateActors(void) {
         int last;
 
         ANIM_GO(actor, RUNNER_RUN);
-        t = RUN_FLAGS(st->path) & 0xFFC;
+        t = RUN_FLAGS(st->path) & PATH_NODE_SPEED;
         spd = 0xF0;
         if (t != 0) {
           spd = t;
@@ -3335,7 +3335,7 @@ void Level21_UpdateActors(void) {
           actor->mode = RUNNER_DODGE;
           continue;
         }
-        if (r == last + 0x100) {
+        if (r == PATH_ARRIVED(last)) {
           if (st->mode < 2) {
             st->path->cur = st->path->count - 1;
             actor->mode = RUNNER_DODGE;
@@ -3345,12 +3345,12 @@ void Level21_UpdateActors(void) {
           actor->mode = RUNNER_WAIT;
           continue;
         }
-        if (r & 0x100) {
-          switch (RUN_FLAGS(st->path) & 3) {
-          case 1:
+        if (r & PATH_ARRIVED_FLAG) {
+          switch (RUN_FLAGS(st->path) & PATH_NODE_JUMP) {
+          case PATH_JUMP_LOW:
             st->lift = 0x17C;
             break;
-          case 2:
+          case PATH_JUMP_MID:
             if (st->mode == PRUN_FIRST) {
               st->lift = 0x104;
             } else if (st->mode == PRUN_SECOND) {
@@ -3847,13 +3847,13 @@ void Level21_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
       SpinChestState *st = actor->state;
-      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN]);
       int cur = g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0];
       int i;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == ACTOR_HIT_FLAME) {
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN], actor, SFX_MODE_3D,
                       &actor->voiceRow);
         if (actor->voiceRow != VOICE_ROW_NONE) {
           g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0] = pitch + st->speed * 4;

@@ -375,9 +375,9 @@ void Level22_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -388,7 +388,7 @@ void Level22_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -661,10 +661,10 @@ void Level22_UpdateActors(void) {
       }
       if (st->init == 0) {
         st->init = 1;
-        ModifyWorldChunkAnimFlags(3, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(METALHEAD_CHUNK_ARENA, CHUNK_ANIM_RESUME, 0);
         if (IsActorInCheckpointKillSet(actor) != 0) {
-          ModifyWorldChunkAnimFlags(4, CHUNK_ANIM_RESUME, 0);
-          ModifyWorldChunkAnimFlags(5, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(METALHEAD_CHUNK_PHASE(0), CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(METALHEAD_CHUNK_PHASE(1), CHUNK_ANIM_RESUME, 0);
           OrPickupGroupActorFlags(0, ACTOR_HIT_BLAST);
           OrPickupGroupActorFlags(1, ACTOR_HIT_BLAST);
           DespawnPickupGroupActors(2);
@@ -704,13 +704,13 @@ void Level22_UpdateActors(void) {
         st->camTimer = 0x3C;
       }
       if (PickupGroupHasLiveActor(st->phase + 2) == 0 && actor->mode < 4) {
-        ModifyWorldChunkAnimFlags(st->phase + 4, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(METALHEAD_CHUNK_PHASE(st->phase), CHUNK_ANIM_RESUME, 0);
         actor->mode = METALHEAD_PHASE_TURN;
         continue;
       }
       if (st->seen == 0 && dist < 0x6800) {
         st->seen = 1;
-        ModifyWorldChunkAnimFlags(3, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(METALHEAD_CHUNK_ARENA, CHUNK_ANIM_RESUME, 0);
       }
 
       switch (actor->mode) {
@@ -932,7 +932,7 @@ void Level22_UpdateActors(void) {
       case METALHEAD_DYING:
         ANIM_GO(actor, METALHEAD_ANIM_DYING);
         if (g_nActorAnimDone != 0) {
-          ModifyWorldChunkAnimFlags(3, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(METALHEAD_CHUNK_ARENA, CHUNK_ANIM_RESUME, 0);
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x40);
           g_bLevelBossDefeated = 1;
@@ -1275,7 +1275,7 @@ void Level22_UpdateActors(void) {
         if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC, 0xA) ==
                 MOVED_LANDED &&
             st->speed == 0 && st->landSoundPlayed == 0) {
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, BTHROW_VOICE_LAND, 0);
           st->landSoundPlayed = 1;
         }
         if (g_nActorAnimDone != 0) {
@@ -1590,7 +1590,7 @@ void Level22_UpdateActors(void) {
         continue;
       }
 
-      if (st->mode == 2) {
+      if (st->mode == GKEEPER_POST_TWO_BOX) {
         if (st->path->cur != 0 &&
             IsPointInRotatedBox((int *)&g_anSpyroWorldPos, st->box0) != 0) {
           st->path->cur = 0;
@@ -1919,7 +1919,7 @@ void Level22_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       if ((actor->flags & ACTOR_HIT_CHARGE) && actor->mode < PPOD_UP) {
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, PPOD_VOICE_BURST, 0);
         actor->posZ -= 0x190;
         for (i = 0; i < 6; i++) {
           if (ACTOR_POOL_LOW()) {
@@ -1937,7 +1937,7 @@ void Level22_UpdateActors(void) {
         continue;
       }
       if ((actor->flags & (ACTOR_HIT_BLAST | ACTOR_HIT_SUPER)) == (ACTOR_HIT_BLAST | ACTOR_HIT_SUPER)) {
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, PPOD_VOICE_BURST, 0);
         actor->posZ -= 0x190;
         for (i = 0; i < 6; i++) {
           if (ACTOR_POOL_LOW()) {
@@ -1999,7 +1999,7 @@ void Level22_UpdateActors(void) {
         continue;
 
       case PPOD_UP:
-        if (*(int *)g_pActorListBase[st->partner].state == actor->group - 2 &&
+        if (((MetalheadState *)g_pActorListBase[st->partner].state)->phase == actor->group - 2 &&
             TICK_DOWN(st->shotTimer) != 0) {
           Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_POD_SHOT, actor);
           PodShotState *sh = o->state;
@@ -2037,7 +2037,7 @@ void Level22_UpdateActors(void) {
           st->kids[i] = 0;
         }
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        PlayActorMeshVoice(actor, 1, 0);
+        PlayActorMeshVoice(actor, PPOD_VOICE_RETRACT, 0);
         RESET_IDLE(actor);
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
@@ -2264,9 +2264,9 @@ void Level22_UpdateActors(void) {
                 int res = CheckLineOfSightSegment(&g_pSparxActor->posX, &actor->posX);
 
                 if (res) {
-                  ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+                  SparxState *cs = g_pSparxActor->state;
 
-                  if (cs->owner == 0) {
+                  if (cs->target == 0) {
                     if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                        g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                       g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
@@ -2276,7 +2276,7 @@ void Level22_UpdateActors(void) {
                     }
 
                     g_pSparxActor->subMode = SPARX_SUB_FETCH;
-                    cs->owner = actor;
+                    cs->target = actor;
                   }
                 }
               }
@@ -2387,9 +2387,9 @@ void Level22_UpdateActors(void) {
 
               if (SPY.airborneFrames == 0 && st->count < 3) {
 
-                ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+                SparxState *cs = g_pSparxActor->state;
 
-                if (cs->owner == 0) {
+                if (cs->target == 0) {
                   if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                      g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
@@ -2399,7 +2399,7 @@ void Level22_UpdateActors(void) {
                   }
 
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
-                  cs->owner = actor;
+                  cs->target = actor;
                 }
               }
             }
@@ -2455,10 +2455,10 @@ void Level22_UpdateActors(void) {
           (actor->subMode == COLLECT_HOMING && st->timer > 64)) {
 
         if (g_pSparxActor != 0) {
-          ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+          SparxState *cs = g_pSparxActor->state;
 
-          if (cs->owner == actor) {
-            cs->owner = 0;
+          if (cs->target == actor) {
+            cs->target = 0;
           }
         }
 

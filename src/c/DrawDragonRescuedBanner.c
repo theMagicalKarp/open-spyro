@@ -25,12 +25,12 @@ void DrawDragonRescuedBanner(void) {
   pos[0] = 0xB0 - w;
   pos[1] = 0xC8;
   pos[2] = 0x1000;
-  BuildTextSpriteChain(g_szUiRescued, pos, 0x14, 2);
+  BuildTextSpriteChain(g_szUiRescued, pos, 0x14, TINT_GOLD);
 
   pos[0] = 0x150 - w;
   pos[1] = 0xC8;
   pos[2] = 0xC00;
-  BuildTextSpriteChain(name, pos, 0x1A, 2);
+  BuildTextSpriteChain(name, pos, 0x1A, TINT_GOLD);
 
   phase = 0;
   rec--;

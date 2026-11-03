@@ -378,9 +378,9 @@ void Level28_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -391,7 +391,7 @@ void Level28_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -846,7 +846,7 @@ void Level28_UpdateActors(void) {
         g056[2] += 0xC8;
         if ((actor->mode == TROCK_HELD || actor->mode == TROCK_FLY) &&
             RaiseSpyroTriggerInRadius(g056, 0xDC, SPYRO_EV_HIT) != 0) {
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, TROCK_VOICE_BREAK, 0);
           actor->mode = TROCK_BREAK;
           ANIM_RESET(actor, TROCK_BREAK);
           continue;
@@ -946,7 +946,7 @@ void Level28_UpdateActors(void) {
             st->speed = 0;
             st->spinX = 0;
             st->spinY = 0;
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, TROCK_VOICE_BREAK, 0);
             actor->mode = TROCK_SMASH;
             ANIM_RESET(actor, TROCK_SMASH);
             continue;
@@ -957,7 +957,7 @@ void Level28_UpdateActors(void) {
           st->speed = 0;
           st->spinX = 0;
           st->spinY = 0;
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, TROCK_VOICE_BREAK, 0);
           actor->mode = TROCK_SMASH;
           ANIM_RESET(actor, TROCK_SMASH);
           continue;
@@ -2054,19 +2054,19 @@ void Level28_UpdateActors(void) {
             }
             break;
           case SINGER_ROLE_TWO_GATE:
-            if (CHUNK_ANIM_STEP(GetWorldChunkAnimState(1)) > 0 ||
-                !(GetWorldChunkAnimState(1) & CHUNK_ANIM_HALTED)) {
+            if (CHUNK_ANIM_STEP(GetWorldChunkAnimState(SINGER_CHUNK_GATE_A)) > 0 ||
+                !(GetWorldChunkAnimState(SINGER_CHUNK_GATE_A) & CHUNK_ANIM_HALTED)) {
               st->timer = 0x1C2;
-              ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
-              st->chunkAnim = 2;
+              ModifyWorldChunkAnimFlags(SINGER_CHUNK_GATE_B, CHUNK_ANIM_RESUME, 0);
+              st->chunkAnim = SINGER_CHUNK_GATE_B;
             } else {
               st->timer = 0x1C2;
-              ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
+              ModifyWorldChunkAnimFlags(SINGER_CHUNK_GATE_A, CHUNK_ANIM_RESUME, 0);
               st->chunkAnim = one;
             }
             break;
           }
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, SINGER_VOICE_SING, 0);
           ANIM_QUEUE(actor, SINGER_SING);
         }
         continue;
@@ -2084,7 +2084,7 @@ void Level28_UpdateActors(void) {
         }
         if (TICK_DOWN(st->timer) != 0) {
           st->timer = 0x50;
-          PlayActorMeshVoice(actor, 1, 0);
+          PlayActorMeshVoice(actor, SINGER_VOICE_SING_END, 0);
           ENTER_POSE(actor, SINGER_SING_END);
         }
         continue;
@@ -2160,17 +2160,17 @@ void Level28_UpdateActors(void) {
         st->stops[4] = 11;
         st->stops[5] = 13;
         st->stops[6] = 0;
-        ModifyWorldChunkAnimFlags(7, CHUNK_ANIM_RESUME, 0);
-        ModifyWorldChunkAnimFlags(8, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(JACQUES_CHUNK_START_A, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(JACQUES_CHUNK_START_B, CHUNK_ANIM_RESUME, 0);
       }
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != JACQUES_DEFEATED && actor->mode != 6) {
         actor->flags = 0;
         switch (st->path->cur) {
         case 11:
-          ModifyWorldChunkAnimFlags(9, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(JACQUES_CHUNK_STOP11, CHUNK_ANIM_RESUME, 0);
           break;
         case 13:
-          ModifyWorldChunkAnimFlags(10, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(JACQUES_CHUNK_STOP13, CHUNK_ANIM_RESUME, 0);
           break;
         case 0:
           ENTER_POSE(actor, JACQUES_DEFEATED);
@@ -2189,7 +2189,7 @@ void Level28_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1000 &&
             st->standGround == 0) {
           if (st->path->cur == 13) {
-            ModifyWorldChunkAnimFlags(10, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(JACQUES_CHUNK_STOP13, CHUNK_ANIM_RESUME, 0);
           }
           ANIM_GO(actor, JACQUES_WATCH);
           actor->mode = JACQUES_HOP;
@@ -2210,7 +2210,7 @@ void Level28_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1000 &&
             st->standGround == 0) {
           if (st->path->cur == 13) {
-            ModifyWorldChunkAnimFlags(10, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(JACQUES_CHUNK_STOP13, CHUNK_ANIM_RESUME, 0);
           }
           st->u54 = 0;
           ANIM_GO(actor, JACQUES_WATCH);

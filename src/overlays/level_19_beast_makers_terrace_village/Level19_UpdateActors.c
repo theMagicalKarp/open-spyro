@@ -102,9 +102,9 @@ typedef struct BoltGuardState {
   int turn;    /* 0x14 */
   int u18;     /* 0x18 */
   void *path;  /* 0x1C */
-  int range;   /* 0x20 in 1024s; the next link for a followed actor */
+  int range;   /* 0x20 in 1024s */
   int countdown;     /* 0x24 */
-  int link;    /* 0x28 actor index, -1 for none */
+  int link;    /* 0x28 actor index, -1 for none; initially (level data) ACTOR_TYPE_ROAMING_RAM */
   short spinX; /* 0x2C */
   short spinY; /* 0x2E */
   int box[3];  /* 0x30 */
@@ -446,9 +446,9 @@ void Level19_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -459,7 +459,7 @@ void Level19_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -762,7 +762,7 @@ void Level19_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
         ANIM_SET(actor, BGUARD_ANIM_KNOCKED);
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, BGUARD_VOICE_KNOCKED, 0);
         actor->mode = BGUARD_KNOCKED;
         continue;
       }
@@ -899,13 +899,13 @@ void Level19_UpdateActors(void) {
           st->timer = 8;
         }
         if (TICK_DOWN(st->timer2) != 0 && g_nActorAnimDone != 0) {
-          BoltGuardState *ts = g_pActorListBase[st->link].state;
+          RoamingRamState *ts = g_pActorListBase[st->link].state;
 
           if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT || st->link == -1) {
             st->mode = BGUARD_CUE_NONE;
             ENTER_POSE(actor, BGUARD_WATCH);
           }
-          st->link = ts->range;
+          st->link = ts->partner; /* on along the rams' partner chain */
           st->timer2 = 0x3C;
           actor->mode = BGUARD_FACE_LINK;
           continue;
@@ -2646,13 +2646,13 @@ void Level19_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
       SpinChestState *st = actor->state;
-      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN]);
       int cur = g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0];
       int i;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == ACTOR_HIT_FLAME) {
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN], actor, SFX_MODE_3D,
                       &actor->voiceRow);
         if (actor->voiceRow != VOICE_ROW_NONE) {
           g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0] = pitch + st->speed * 4;
@@ -3244,7 +3244,7 @@ void Level19_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, WARDRUM_VOICE_KNOCKED, 0);
         ENTER_POSE(actor, WARDRUM_KNOCKED);
       }
       if (TICK_DOWN(st->beat) == 2) {
@@ -3271,7 +3271,7 @@ void Level19_UpdateActors(void) {
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
           st->beat = 0x64;
           g_anLevelTriggerStateSlots[st->chunkAnim] = 1;
-          PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+          PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[WARDRUM_VOICE_BEAT], actor, SFX_MODE_3D,
                         (unsigned char *)&st->voice);
         }
         if (g_nActorAnimDone != 0) {

@@ -376,9 +376,9 @@ void Level10_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -389,7 +389,7 @@ void Level10_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -1956,8 +1956,9 @@ void Level10_UpdateActors(void) {
       break;
     }
 
-    /* Type 205: snowball thrower. Holds its snowball overhead, throws it at
-     * Spyro on its throw frame and is stunned when hit. */
+    /* Type 205: overhead thrower. Spins the gem it holds (state word 0, a
+     * level-data link; often none) overhead; charged, flings it at Spyro to
+     * bounce (COLLECT_BOUNCE). */
     case ACTOR_TYPE_OVERHEAD_THROWER: {
       int *st = actor->state;
 
@@ -1970,7 +1971,7 @@ void Level10_UpdateActors(void) {
         } else {
           CopyVector(&g_pActorListBase[*st].posX, &actor->posX);
           g_pActorListBase[*st].posZ += 0x800;
-          g_pActorListBase[*st].subMode = 4;
+          g_pActorListBase[*st].subMode = COLLECT_INERT;
           g_pActorListBase[*st].rotX = 0;
           g_pActorListBase[*st].rotY = 0;
           g_pActorListBase[*st].rotZ += 8;
@@ -1978,16 +1979,16 @@ void Level10_UpdateActors(void) {
       }
       if (actor->mode == OTHROW_HIT) {
         if (*st >= 0) {
-          ThrownSnowballState *ball = g_pActorListBase[*st].state;
+          PickupState *gem = g_pActorListBase[*st].state;
           int ang = ArcTan2(spy->posX - actor->posX,
                                   spy->posY - actor->posY, ATAN_ANGLE8) *
                     16;
 
-          g_pActorListBase[*st].subMode = 2;
-          ball->kind = 3;
-          ball->vx = (LookupCosine(ang) * 0x1C) >> 12;
-          ball->vy = (LookupSine(ang) * 0x1C) >> 12;
-          ball->vz = 0x32;
+          g_pActorListBase[*st].subMode = COLLECT_BOUNCE;
+          gem->count = 3;
+          gem->vel[0] = (LookupCosine(ang) * 0x1C) >> 12;
+          gem->vel[1] = (LookupSine(ang) * 0x1C) >> 12;
+          gem->vel[2] = 0x32;
           *st = -1;
         }
         if (g_nActorAnimDone != 0) {
@@ -3027,7 +3028,7 @@ void Level10_UpdateActors(void) {
           if (st->phase == SHEMP_PHASE_3) {
             ANIM_SET(actor, SHEMP_ANIM_DYING);
             actor->rotZ += 0x80;
-            ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(SHEMP_PHASE_CHUNK(SHEMP_PHASE_3), CHUNK_ANIM_RESUME, 0);
             actor->mode = SHEMP_DYING;
             continue;
           }
@@ -3065,9 +3066,9 @@ void Level10_UpdateActors(void) {
             }
           }
           if (!found) {
-            ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
-            ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
-            ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(SHEMP_PHASE_CHUNK(SHEMP_PHASE_1), CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(SHEMP_PHASE_CHUNK(SHEMP_PHASE_2), CHUNK_ANIM_RESUME, 0);
+            ModifyWorldChunkAnimFlags(SHEMP_PHASE_CHUNK(SHEMP_PHASE_3), CHUNK_ANIM_RESUME, 0);
             CopyVector(&actor->posX,
                           (int *)((unsigned char *)st->path + ((st->path->count << 4) - 0x18)));
             DespawnActorRecord(actor);
@@ -3156,11 +3157,11 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_P1_CIRCLE:
         off = st->node[0] << 4;
-        ha = ArcTan2(*(int *)((unsigned char *)st->path + off + 8) - spy->posX,
-                          *(int *)((unsigned char *)st->path + off + 0xC) - spy->posY, ATAN_ANGLE8);
+        ha = ArcTan2(PATH_PT_AT(st->path, off)[0] - spy->posX,
+                          PATH_PT_AT(st->path, off)[1] - spy->posY, ATAN_ANGLE8);
         lim = 0xE;
-        b = ArcTan2(actor->posX - *(int *)((unsigned char *)st->path + off + 8),
-                          actor->posY - *(int *)((unsigned char *)st->path + off + 0xC), ATAN_ANGLE8);
+        b = ArcTan2(actor->posX - PATH_PT_AT(st->path, off)[0],
+                          actor->posY - PATH_PT_AT(st->path, off)[1], ATAN_ANGLE8);
         spd = 0xB4;
         if (actor->nextAnim == SHEMP_ANIM_WALK) {
           lim = 6;
@@ -3236,12 +3237,12 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_P1_RETURN:
         off = st->node[0] << 4;
-        a = ArcTan2(*(int *)((unsigned char *)st->path + off + 8) - spy->posX,
-                          *(int *)((unsigned char *)st->path + off + 0xC) - spy->posY, ATAN_ANGLE8);
+        a = ArcTan2(PATH_PT_AT(st->path, off)[0] - spy->posX,
+                          PATH_PT_AT(st->path, off)[1] - spy->posY, ATAN_ANGLE8);
         ANIM_GO(actor, SHEMP_ANIM_WALK);
-        tgt371[0] = *(int *)((unsigned char *)st->path + off + 8) + ((g_anCosineLut[a] * 0x19) >> 5);
+        tgt371[0] = PATH_PT_AT(st->path, off)[0] + ((g_anCosineLut[a] * 0x19) >> 5);
         tgt371[1] =
-            *(int *)((unsigned char *)st->path + off + 0xC) + ((g_anSineLut[a] * 0x19) >> 5);
+            PATH_PT_AT(st->path, off)[1] + ((g_anSineLut[a] * 0x19) >> 5);
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(tgt371[0] - actor->posX,
                                         tgt371[1] - actor->posY, ATAN_ANGLE8),
@@ -3328,7 +3329,7 @@ void Level10_UpdateActors(void) {
           actor->rotZ += 0x80;
           ANIM_SET(actor, SHEMP_ANIM_STUNNED);
         }
-        ModifyWorldChunkAnimFlags(st->phase, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(SHEMP_PHASE_CHUNK(st->phase), CHUNK_ANIM_RESUME, 0);
         st->timer2 = 0x1E;
         st->phase++;
         actor->mode = SHEMP_RETREAT;
@@ -3336,9 +3337,9 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_RETREAT:
         off = st->node[st->phase - 1] << 4;
-        ca = (ArcTan2(*(int *)((unsigned char *)st->path + off + 8) -
+        ca = (ArcTan2(PATH_PT_AT(st->path, off)[0] -
                                PATH_X(st->cam, st->phase - 1),
-                           *(int *)((unsigned char *)st->path + off + 0xC) -
+                           PATH_PT_AT(st->path, off)[1] -
                                PATH_Y(st->cam, st->phase - 1),
                            ATAN_ANGLE8) +
              0x80) &

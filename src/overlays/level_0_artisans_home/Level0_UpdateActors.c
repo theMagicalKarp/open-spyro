@@ -61,7 +61,7 @@
 void Level0_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
-  int flag1;
+  int newFrame;
 
   /* Scratch vectors shared by several cases. */
   int svA[3];
@@ -97,9 +97,9 @@ void Level0_UpdateActors(void) {
     /* Publish this actor's animation flags and the frame delta for the
      * callees. */
     g_nActorAnimDone = actor->animFlags & ACTOR_ANIM_DONE;
-    flag1 = actor->animFlags & ACTOR_ANIM_NEW_FRAME;
+    newFrame = actor->animFlags & ACTOR_ANIM_NEW_FRAME;
     g_nActorFrameDelta = g_nFrameStep;
-    g_nActorAnimNewFrame = flag1;
+    g_nActorAnimNewFrame = newFrame;
 
     /* One case per actor class. `break` and `continue` both end this actor's
      * update; `continue` also skips any shared tail inside the case. */
@@ -362,9 +362,9 @@ void Level0_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(SPY.bodyRotZ,
                                 ArcTan2(actor->posX - SPY.posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8)) < 0) {
@@ -374,7 +374,7 @@ void Level0_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -538,7 +538,7 @@ void Level0_UpdateActors(void) {
           g_nSfxOverridePitch.v =
               SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]) +
               g_anSwitchSfxPitchOffsets[st->shift];
-          PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[0], actor, SFX_MODE_3D,
+          PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[PSWITCH_VOICE_PRESS], actor, SFX_MODE_3D,
                         &actor->voiceRow);
         }
         actor->mode = PSWITCH_DOWN;
@@ -941,9 +941,9 @@ void Level0_UpdateActors(void) {
                 int res = CheckLineOfSightSegment(&g_pSparxActor->posX, &actor->posX);
 
                 if (res) {
-                  ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+                  SparxState *cs = g_pSparxActor->state;
 
-                  if (cs->owner == 0) {
+                  if (cs->target == 0) {
                     if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                        g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                       g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
@@ -953,7 +953,7 @@ void Level0_UpdateActors(void) {
                     }
 
                     g_pSparxActor->subMode = SPARX_SUB_FETCH;
-                    cs->owner = actor;
+                    cs->target = actor;
                   }
                 }
               }
@@ -1064,9 +1064,9 @@ void Level0_UpdateActors(void) {
 
               if (SPY.airborneFrames == 0 && st->count < 3) {
 
-                ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+                SparxState *cs = g_pSparxActor->state;
 
-                if (cs->owner == 0) {
+                if (cs->target == 0) {
                   if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                      g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
@@ -1076,7 +1076,7 @@ void Level0_UpdateActors(void) {
                   }
 
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
-                  cs->owner = actor;
+                  cs->target = actor;
                 }
               }
             }
@@ -1132,10 +1132,10 @@ void Level0_UpdateActors(void) {
           (actor->subMode == COLLECT_HOMING && st->timer > 64)) {
 
         if (g_pSparxActor != 0) {
-          ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+          SparxState *cs = g_pSparxActor->state;
 
-          if (cs->owner == actor) {
-            cs->owner = 0;
+          if (cs->target == actor) {
+            cs->target = 0;
           }
         }
 
@@ -1870,7 +1870,7 @@ void Level0_UpdateActors(void) {
 
           svF[0] = -0x258;
           svF[1] = (GetRandomU32() & 0x310) - 0x188;
-          if (CAM.state == 3) {
+          if (CAM.state == CAM_MODE_CHARGE) {
             svF[2] = (GetRandomU32() & 0x7F) + 0x64;
           } else {
             svF[2] = (GetRandomU32() & 0x1FF) - 0xC8;
@@ -1881,14 +1881,14 @@ void Level0_UpdateActors(void) {
           st->timer = GetRandomU32() & 0x7B;
         } else {
           st->timer -= g_nFrameStep;
-          if (CAM.state == 3) {
+          if (CAM.state == CAM_MODE_CHARGE) {
             svF[0] = st->drift[0] + (SPY.motionSpeed >> 2);
             svF[1] = st->drift[1];
             svF[2] = st->drift[2];
             if (svF[2] < 0x64)
               svF[2] = 0x64;
           } else {
-            if (CAM.state == 0x80000009)
+            if (CAM.state == (CAM_HELD | CAM_MODE_FREE_LOOK))
               svF[0] = st->drift[0] - 512;
             else {
               svF[0] = st->drift[0];

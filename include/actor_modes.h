@@ -336,6 +336,12 @@ enum BlowhardMode {
   BLOWHARD_P3_WAIT = 0x5D,
   BLOWHARD_NEXT_PHASE = 0x63,   /* phase + 1, next path, back to START_PHASE */
 };
+/* BlowhardState.phase: one hit ends each (BLOWHARD_HIT); the third is fatal. */
+enum BlowhardPhase {
+  BLOWHARD_PHASE_1 = 0, /* paths[0]: BLOWHARD_P1_* */
+  BLOWHARD_PHASE_2 = 1, /* paths[1] (paths[3] restored from a checkpoint): BLOWHARD_P2_* */
+  BLOWHARD_PHASE_3 = 2, /* paths[2] (paths[4] restored): BLOWHARD_P3_* */
+};
 
 /* Blowhard's animations: it hovers between rider drops. */
 enum BlowhardAnim {
@@ -620,7 +626,7 @@ enum CaptainPost {
   CAPTAIN_POST_LOOKOUT = 1,      /* within range: alerts its group (CAPTAIN_ALERTED) */
   CAPTAIN_POST_LEDGE = 2,        /* once armed (step), stalks Spyro when he is above its path */
   CAPTAIN_POST_FIGHTER = 3,      /* fights straight away */
-  CAPTAIN_POST_PATROL = 4,       /* walks between path points once its partner calls */
+  CAPTAIN_POST_PATROL = 4,       /* walks between path points once its shepherd partner is knocked */
   CAPTAIN_POST_LEDGE_WAIT = 5,   /* faces Spyro until cued, then arms as POST_LEDGE */
 };
 
@@ -750,6 +756,93 @@ enum ShempGuardVoice {
   SGUARD_VOICE_FALL = 0,  /* ran off a ledge: entering SGUARD_FALL */
   SGUARD_VOICE_SHOUT = 1, /* while it chases or rushes, and once ShempGuardState.watch plays animation 7 */
 };
+enum SpinChestVoice {
+  SPINCHEST_VOICE_SPIN = 1, /* played on each spin-up hit, pitched up by its speed */
+};
+enum PressSwitchVoice {
+  PSWITCH_VOICE_PRESS = 0, /* pressed in sequence, pitched by its place in it */
+};
+enum FlightTargetVoice {
+  /* The flight-level targets', chests' and rings' single voice. */
+  FTARGET_VOICE_BURST = 0, /* flamed or charged (the bobber also loops it while FTARGET_ACTIVE) */
+  FCHEST_VOICE_BURST = 0,  /* ACTOR_TYPE_FLIGHT_CHEST struck: frees its reward */
+  FCHEST_VOICE_HUM = 1,    /* its ambient hum while intact */
+  FRING_VOICE_SPIN = 0,    /* ACTOR_TYPE_FLIGHT_RING, once per turn of its spin */
+};
+enum KnockedVoice {
+  /* Voice 0 of an enemy knocked out by a charge or flame (with its death drop). */
+  WARDRUM_VOICE_KNOCKED = 0,   /* ACTOR_TYPE_WAR_DRUM */
+  WARDRUM_VOICE_BEAT = 1,      /* its WARDRUM_BEAT strike, frame 6 (resumes its chunk anim) */
+  BGUARD_VOICE_KNOCKED = 0,    /* ACTOR_TYPE_BOLT_GUARD */
+  FGUARD_VOICE_KNOCKED = 0,    /* ACTOR_TYPE_FENCE_GUARD */
+  SHEPHERD_VOICE_KNOCKED = 0,  /* ACTOR_TYPE_SHEPHERD */
+  KEEPER_VOICE_KNOCKED = 0,    /* ACTOR_TYPE_TETHER_KEEPER */
+  LTHIEF_VOICE_KNOCKED = 0,    /* ACTOR_TYPE_LOOT_THIEF */
+  SINKBLK_VOICE_FREED = 0,     /* the sinking block's partner, freed by it */
+  BTHROW_VOICE_LAND = 0,       /* ACTOR_TYPE_BOULDER_THROWER(_B): knocked, comes to rest */
+  TPRUNNER_VOICE_LAND = 0,     /* ACTOR_TYPE_TWO_PATH_RUNNER: knocked, first landing */
+  GUNNER_VOICE_LAND = 0,       /* ACTOR_TYPE_GUNNER: knocked, first landing */
+};
+enum ProjectileVoice {
+  /* Voice 0 of a shot, rock or bomb as it hits. */
+  SHOT_VOICE_BURST = 0,      /* ACTOR_TYPE_FIREBALL hits the world or an actor */
+  LGLOB_VOICE_BURST = 0,     /* ACTOR_TYPE_LOB_GUNNER_LOB bursts */
+  TROCK_VOICE_BREAK = 0,     /* ACTOR_TYPE_THROWN_ROCK hits Spyro or the world, or times out */
+  SNOWBALL_VOICE_HIT = 0,    /* ACTOR_TYPE_THROWN_SNOWBALL hits Spyro */
+  TRAILBOMB_VOICE_HIT = 0,   /* ACTOR_TYPE_TRAIL_BOMB lands or times out */
+  FCHUNK_VOICE_BURST = 0,    /* ACTOR_TYPE_FALLING_CHUNK bursts into rubble */
+};
+enum BreakWallVoice {
+  BWALL_VOICE_BREAK = 0,         /* ACTOR_TYPE_BREAKABLE_WALL */
+  BWALL_VOICE_BREAK_ARMORED = 1, /* the same, for BWALL_ARMORED */
+};
+enum FloatBarrelVoice {
+  /* ACTOR_TYPE_FLOATING_BARREL / FLOATING_MINE. */
+  FLOATBARREL_VOICE_BURST = 0,
+  FLOATBARREL_VOICE_RUN = 1,     /* the mine set running by a charge */
+  FLOATBARREL_VOICE_TUMBLE = 2,  /* looped while subMode is set: it tumbles (rotX) and sinks */
+};
+enum StandVoice {
+  /* Random idle voices (one in four) on a stand or taunt anim's frames,
+   * as THIEF_VOICE_TAUNT_EARLY/LATE. */
+  RUNNER_VOICE_STAND_EARLY = 6,   /* ACTOR_TYPE_PATH_RUNNER + 1: RUNNER_ANIM_STAND frame 1 */
+  RUNNER_VOICE_STAND_LATE = 5,    /* ... frame 0xA */
+  LANEPAT_VOICE_STAND_EARLY = 6,  /* ACTOR_TYPE_LANE_PATROLLER: LANEPAT_WATCH pose, frame 1 */
+  LANEPAT_VOICE_STAND_LATE = 5,   /* ... frame 0xA */
+  LCRITTER_VOICE_TAUNT_EARLY = 6, /* ACTOR_TYPE_LOOT_CRITTER: LCRITTER_WATCH pose, frame 2 */
+  LCRITTER_VOICE_TAUNT_LATE = 5,  /* ... frame 0xC */
+  GRAZER_VOICE_CALL = 3,          /* ACTOR_TYPE_GRAZING_CRITTER, every 0x78..0xB7 ticks of GRAZER_WANDER */
+};
+enum SingerVoice {
+  SINGER_VOICE_SING = 0,     /* struck: starts singing (SINGER_SING) */
+  SINGER_VOICE_SING_END = 1, /* the song's timer out: SINGER_SING_END */
+};
+enum LungerVoice {
+  LUNGER_VOICE_LAND = 0, /* first touch of the floor */
+  LUNGER_VOICE_LEAP = 1, /* turned to its target: LUNGER_AIM -> LUNGER_LEAP */
+};
+enum GrabberVoice {
+  GRABBER_VOICE_HIT = 1,    /* struck: GRABBER_KNOCKED */
+  GRABBER_VOICE_EMERGE = 2, /* while GRABBER_ANIM_EMERGE plays */
+};
+enum RimRiderVoice {
+  RIMRIDER_VOICE_DROPPED = 0, /* dropped by Blowhard (BLOWHARD_ANIM_DROP_RIDER) */
+  RIMRIDER_VOICE_SPAWN_HELPER = 1, /* spawns its ACTOR_TYPE_RIM_RIDER_HELPER */
+  RIMHELPER_VOICE_BEAT = 0,   /* the helper, once its beat timer runs out */
+};
+enum ShooterVoice {
+  FBCANNON_VOICE_FUSE = 0,  /* ACTOR_TYPE_FIREBALL_CANNON lit: FBCANNON_FUSE */
+  CCANNON_VOICE_FIRE = 1,   /* ACTOR_TYPE_COMET_CANNON fires a comet */
+  CATAPULT_VOICE_SWING = 0, /* ACTOR_TYPE_CATAPULT, each tick its arm is raised */
+  GNASTY_VOICE_THROW = 0,   /* Gnasty Gnorc throws */
+  LGUARD_VOICE_GROWL = 0,   /* ACTOR_TYPE_BIG_LUNGING_GUARD: lunging, on frame 6 */
+};
+enum MiscVoice {
+  FCSWITCH_VOICE_LIT = 0,     /* ACTOR_TYPE_FLAME_CHUNK_SWITCH flamed */
+  SFGIVER_VOICE_CAST_END = 0, /* superflame giver: the cast anim done, SFGIVER_SUB_LINGER */
+  PPOD_VOICE_BURST = 0,       /* ACTOR_TYPE_PLATFORM_POD popped */
+  PPOD_VOICE_RETRACT = 1,     /* its timer out: the platforms despawn */
+};
 
 /* A level 7/8 bell's animations (ACTOR_TYPE_BELL_A/B/C). A flame rings it
  * once per cooldown (subMode 0x50); any other hit only wobbles it. */
@@ -786,7 +879,8 @@ enum VillagerRole {
   VROLE_CHAT = 0,   /* faces Spyro; talks (its chunk anim) when he is in talk range */
   VROLE_FACE = 1,   /* faces its friend; Spyro too close: PANIC */
   VROLE_PAIR = 2,   /* waits on its partner (link), cueing it via subMode */
-  VROLE_LEADER = 3, /* watches its leader (LeaderState) */
+  VROLE_LEADER = 3, /* held by its link, a caster sorcerer: at the sorcerer's path node 7
+                     * sends it to SORCERER_STEP_REST */
 };
 
 /* ->mode of a post guard (ACTOR_TYPE_POST_GUARD, PostState; level 2).
@@ -1104,7 +1198,8 @@ enum SorcererRole {
 enum SorcererCasterStep {
   SORCERER_STEP_WALK = 0, /* pivots along its path; the path's cast cue (0x108): CAST */
   SORCERER_STEP_CAST = 1, /* turns to its target, three wisps, then WALK */
-  SORCERER_STEP_REST = 2, /* waits out its timer, plays pose 7, then WALK (no writer) */
+  SORCERER_STEP_REST = 2, /* waits out its timer, plays pose 7, then WALK; set by its
+                           * VROLE_LEADER villager */
 };
 
 /* ->mode of a hatch (ACTOR_TYPE_HATCH, HatchState; level 31); the mode is
@@ -1366,6 +1461,11 @@ enum GatekeeperMode {
                                 * ready (subMode != 0), then jumps, setting its subMode to 2 */
   GATEKEEPER_RIDE_LEAP = 53,   /* jumps into the catcher's hands */
   GATEKEEPER_RIDE_HELD = 54,   /* held; flung at Spyro (HURTLE) on the throw frame */
+};
+/* GatekeeperState.mode (levels 21/22). */
+enum GatekeeperPost {
+  GKEEPER_POST_FIXED = 0,
+  GKEEPER_POST_TWO_BOX = 2, /* jumps to path node 0 / 1 when Spyro enters box0 / box1 */
 };
 
 /* A gatekeeper's animations besides the poses equal to its mode. */
@@ -1741,6 +1841,12 @@ enum LootCritterMode {
   LCRITTER_FLEE = 1,    /* runs from Spyro around its home or along its path */
   LCRITTER_KNOCKED = 2, /* knocked away (dropping its loot once), then bursts */
 };
+/* A homed loot critter's ->subMode while LCRITTER_FLEE. */
+enum LootCritterHomeStep {
+  LCRITTER_HOME_ORBIT = 0,    /* steers round its home point away from Spyro; stuck there with
+                               * Spyro off the home side: BREAKOUT */
+  LCRITTER_HOME_BREAKOUT = 1, /* runs on along Spyro-to-home; turned or 0x1800 out: ORBIT */
+};
 
 /* CritterState.mode: how a homeless loot critter (no CritterState.hasHome)
  * runs its path during LCRITTER_FLEE. Spyro within 0x1800 always restarts at
@@ -1927,8 +2033,11 @@ enum WarDrumMode {
 };
 
 /* ->mode of a lantern (ACTOR_TYPE_LANTERN, LanternState; level 25); the mode
- * is also the animation index. subMode bit 0 is lit, bit 1 settled, bit 2
- * holds it as is. */
+ * is also the animation index. ->subMode holds the LANTERN_F_* bits, which
+ * the grabbers and alarm sentries that link a lantern (level data) watch. */
+#define LANTERN_F_LIT 0x1     /* lit (its glow node grows) */
+#define LANTERN_F_SETTLED 0x2 /* not mid-toggle; a hit sets it with LIT */
+#define LANTERN_F_HELD 0x4    /* a grabber holds it as is: IDLE stops toggling */
 enum LanternMode {
   LANTERN_IDLE = 0,     /* on the timer, toggles: lit ones SNUFF, dark ones LIGHT */
   LANTERN_SNUFF = 1,    /* goes out, then IDLE */
@@ -2084,8 +2193,8 @@ enum ChunkOperatorMode {
 /* ->mode of the overhead thrower (ACTOR_TYPE_OVERHEAD_THROWER; levels 9/10);
  * the mode is also the animation index. */
 enum OverheadThrowerMode {
-  OTHROW_HOLD = 0, /* holds its snowball (state word 0) overhead */
-  OTHROW_HIT = 1,  /* charged or supercharged: lets the snowball fly at Spyro, then HOLD */
+  OTHROW_HOLD = 0, /* spins its gem (state word 0) overhead, COLLECT_INERT */
+  OTHROW_HIT = 1,  /* charged or supercharged: flings the gem at Spyro (COLLECT_BOUNCE), then HOLD */
 };
 
 /* ->mode of the level 8 roaming critter (ACTOR_TYPE_ROAMING_CRITTER,
@@ -2189,7 +2298,7 @@ enum PlatformPodMode {
  * is also the animation index. */
 enum BreakablePropMode {
   BPROP_IDLE = 0,
-  BPROP_WOBBLE = 1, /* plays out, then IDLE (no writer in this block) */
+  BPROP_WOBBLE = 1, /* plays out, then IDLE; set by a soldier ducking into it (SOLDIER_ENTER_POST) */
   BPROP_BREAK = 2,  /* flamed, or supercharged twice in half a second: breaks, despawns */
 };
 
@@ -2345,5 +2454,50 @@ enum OneShotPropMode {
   ONESHOT_HIT = 3,      /* any hit before HIT: to frame 0x13, then HIT_DONE */
   ONESHOT_HIT_DONE = 4, /* holds */
 };
+
+/* World chunk-anim handles (ModifyWorldChunkAnimFlags / GetWorldChunkAnimState /
+ * SetWorldChunkAnimStep ids) that actor code names with a literal. Each is the
+ * id byte of an entry in that level's chunk-anim tables, so the names hold
+ * only within the level (or clone family) noted. */
+enum ChunkAnimHandle {
+  /* Level 30 (Gnorc Gnexus), ACTOR_TYPE_HUB_PATH_GATES: one per path. */
+  PATHGATE_CHUNK_TWILIGHT_HARBOR = 0,
+  PATHGATE_CHUNK_GNASTY_GNORC = 1,
+  PATHGATE_CHUNK_GNASTYS_LOOT = 2,
+  /* Level 6, ACTOR_TYPE_REWARD_BURST: resumed as it bursts (or at once
+   * when its gems were already taken). */
+  REWARD_BURST_CHUNK = 0,
+  /* Level 32, ACTOR_TYPE_FLAME_CHUNK_SWITCH: resumed each time it is flamed
+   * while armed. */
+  FCSWITCH_CHUNK = 0,
+  /* Level 33 (Gnasty Gnorc). */
+  GNASTY_CHUNK_DOOR = 0,     /* GNASTY_AT_DOOR, Spyro in its box: he escapes */
+  GNASTY_CHUNK_ESCAPE = 1,   /* flamed at his main path's end: GNASTY_PHASE_ESCAPE */
+  LANEPAT_CHUNK_REVEAL = 4,  /* lane-1 patrollers stay hidden until it starts moving */
+  /* Level 16 (Blowhard): the chunk his first hit releases, replayed when a
+   * checkpoint restores him past phase 1. */
+  BLOWHARD_CHUNK_PHASE1 = 0,
+  /* Level 22 (Metalhead): resumed at init, on first sight and as he dies.
+   * The phase chunks are METALHEAD_CHUNK_PHASE. */
+  METALHEAD_CHUNK_ARENA = 3,
+  /* Level 28 (Jacques). */
+  JACQUES_CHUNK_START_A = 7, /* both resumed on his first tick */
+  JACQUES_CHUNK_START_B = 8,
+  JACQUES_CHUNK_STOP11 = 9,  /* struck at path stop 11 */
+  JACQUES_CHUNK_STOP13 = 10, /* struck, or Spyro close, at path stop 13 */
+  /* Levels 24/28, SINGER_ROLE_TWO_GATE: the singer opens A, or B once A
+   * has moved. */
+  SINGER_CHUNK_GATE_A = 1,
+  SINGER_CHUNK_GATE_B = 2,
+  /* Levels 12/13, VROLE_LEADER villager, as its sorcerer reaches path node 7. */
+  VILLAGER_CHUNK_LEADER_CUE = 9,
+};
+/* Level 10 (Doctor Shemp): chunk N is resumed as phase N ends (stunned; in
+ * SHEMP_PHASE_3, dying); all three when he is already beaten. */
+#define SHEMP_PHASE_CHUNK(phase) (phase)
+/* Level 22: Metalhead's phase N (0, 1) ends by resuming chunk N + 4. */
+#define METALHEAD_CHUNK_PHASE(phase) ((phase) + 4)
+/* Level 4: an alarm post guard hit at stage N (0..2) resumes chunk N. */
+#define APGUARD_STAGE_CHUNK(stage) (stage)
 
 #endif

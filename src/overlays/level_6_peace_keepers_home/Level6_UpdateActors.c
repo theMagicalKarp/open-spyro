@@ -100,8 +100,8 @@ typedef struct FireballState {
 
 /* Type 225 state: a cannon. */
 typedef struct FireballCannonState {
-  int link;    /* 0x00 index into g_pActorListBase (its trigger) */
-  int rival;   /* 0x04 index into g_pActorListBase: the cannon it duels */
+  int link;    /* 0x00 index into g_pActorListBase (its trigger); level data: ACTOR_TYPE_SOLDIER */
+  int rival;   /* 0x04 index into g_pActorListBase: the cannon it duels; level data: ACTOR_TYPE_FIREBALL_CANNON */
   int u08;     /* 0x08 */
   int hold;    /* 0x0C ticks until the trigger is released */
   int u10;     /* 0x10 */
@@ -121,8 +121,10 @@ typedef struct SoldierState {
   int timer2;          /* 0x2C */
   int home[4];         /* 0x30 */
   int speed;           /* 0x40 */
-  int link;            /* 0x44 index into g_pActorListBase */
-  int link2;           /* 0x48 index into g_pActorListBase, -1 none */
+  int link;            /* 0x44 index into g_pActorListBase: its post (an
+                        * ACTOR_TYPE_BREAKABLE_PROP) or, for runners and duelists, its
+                        * ACTOR_TYPE_FIREBALL_CANNON (level data) */
+  int link2;           /* 0x48 index into g_pActorListBase, -1 none (a duelist's rival soldier) */
   int volley;          /* 0x4C */
   int phase;           /* 0x50 */
   int knockDir;        /* 0x54 */
@@ -365,9 +367,9 @@ void Level6_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -378,7 +380,7 @@ void Level6_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -968,8 +970,8 @@ void Level6_UpdateActors(void) {
           }
         }
         r = PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-        if (r & 0x100) {
-          if ((r & ~0x100) ==
+        if (r & PATH_ARRIVED_FLAG) {
+          if ((r & ~PATH_ARRIVED_FLAG) ==
               (st->node - st->path->dir) % st->path->count) {
             actor->mode = THIEF_IDLE;
             continue;
@@ -2213,7 +2215,7 @@ void Level6_UpdateActors(void) {
     /* Type 146: a breakable prop. A flame breaks it at once; a charge needs
      * a second hit within half a second. */
     case ACTOR_TYPE_BREAKABLE_PROP: {
-      int *st = actor->state;
+      int *hitWindow = actor->state; /* frames left for a second charge to break it */
 
       if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode < BPROP_BREAK) {
         actor->mode = BPROP_BREAK;
@@ -2221,14 +2223,14 @@ void Level6_UpdateActors(void) {
         continue;
       }
       if ((actor->flags & ACTOR_HIT_SUPER) && actor->mode < BPROP_BREAK) {
-        if (st[0] != 0) {
-          if (TICK_DOWN(*st) != 0) {
+        if (*hitWindow != 0) {
+          if (TICK_DOWN(*hitWindow) != 0) {
             actor->mode = BPROP_BREAK;
             ANIM_RESET(actor, BPROP_BREAK);
             continue;
           }
         } else {
-          st[0] = 0x1E;
+          *hitWindow = 0x1E;
         }
       }
       switch (actor->mode) {
@@ -3167,7 +3169,7 @@ void Level6_UpdateActors(void) {
       case SOLDIER_IN_POST: {
         Actor *a = &g_pActorListBase[st->link];
 
-        if (a->anim < 2) {
+        if (a->anim < BPROP_BREAK) {
           actor->cullRadius = ACTOR_CULL_HIDDEN;
           break;
         }
@@ -3232,11 +3234,11 @@ void Level6_UpdateActors(void) {
         } else {
           CopyVector(&actor->posX, &a->posX);
         }
-        if (actor->frame >= 5 && a->mode == 0) {
-          if (a->anim != 1) {
-            ANIM_RESET(a, 1);
+        if (actor->frame >= 5 && a->mode == BPROP_IDLE) {
+          if (a->anim != BPROP_WOBBLE) {
+            ANIM_RESET(a, BPROP_WOBBLE);
           }
-          a->mode = 1;
+          a->mode = BPROP_WOBBLE;
         }
         break;
       }
@@ -3335,7 +3337,7 @@ void Level6_UpdateActors(void) {
 
       case FBCANNON_LIT:
         st->timer = 0x3C;
-        PlayActorMeshVoice(actor, 0, &st->voice);
+        PlayActorMeshVoice(actor, FBCANNON_VOICE_FUSE, &st->voice);
         actor->mode = FBCANNON_FUSE;
         continue;
 
@@ -3497,7 +3499,7 @@ void Level6_UpdateActors(void) {
             st->delay--;
           }
           if (CollideSphereWithWorldAndActors(&actor->posX, 0x168, 0x168) != 0) {
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, SHOT_VOICE_BURST, 0);
             actor->mode = SHOT_BURST;
             if (st->link != -1) {
               g_pActorListBase[st->link].subMode = 1;
@@ -3505,7 +3507,7 @@ void Level6_UpdateActors(void) {
           }
           if (st->age >= 9 && st->delay == 0 &&
               DispatchActorContactAtSphere(&actor->posX, 0x400, 0, ACTOR_HIT_SUPER, actor, CONTACT_ALL) != 0) {
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, SHOT_VOICE_BURST, 0);
             actor->mode = SHOT_BURST;
             if (st->link != -1) {
               g_pActorListBase[st->link].subMode = 1;
@@ -4392,7 +4394,7 @@ void Level6_UpdateActors(void) {
       int i;
 
       if (st[0] == 1 && actor->dropKind == DROP_GEM_ROLL) {
-        ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
+        ModifyWorldChunkAnimFlags(REWARD_BURST_CHUNK, CHUNK_ANIM_RESUME, 0);
         DespawnActorRecord(actor);
         continue;
       }
@@ -4417,7 +4419,7 @@ void Level6_UpdateActors(void) {
         g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_SPARK + 2, actor);
       }
       g_pfnLevelEmitParticles(8, EMIT_SCATTER_MOTE, &actor->posX, 0);
-      ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
+      ModifyWorldChunkAnimFlags(REWARD_BURST_CHUNK, CHUNK_ANIM_RESUME, 0);
       DespawnActorRecord(actor);
       continue;
     }

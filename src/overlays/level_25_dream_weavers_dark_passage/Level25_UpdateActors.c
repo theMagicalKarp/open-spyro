@@ -397,9 +397,9 @@ void Level25_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(SPY.bodyRotZ,
                                 ArcTan2(actor->posX - SPY.posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8)) < 0) {
@@ -409,7 +409,7 @@ void Level25_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -683,7 +683,7 @@ void Level25_UpdateActors(void) {
       actor->flags = 0;
       if (st->link >= 0) {
         if (actor->mode != PGRAB_STAND_DOWN && actor->mode != PGRAB_KNOCKED &&
-            g_pActorListBase[st->link].subMode == 3) {
+            g_pActorListBase[st->link].subMode == (LANTERN_F_LIT | LANTERN_F_SETTLED)) {
           if (*st->slot == actor) {
             L25_DROP(st);
           }
@@ -812,7 +812,7 @@ void Level25_UpdateActors(void) {
           if (st->link < 0) {
             goto pose1;
           }
-          if (g_pActorListBase[st->link].subMode & 2) {
+          if (g_pActorListBase[st->link].subMode & LANTERN_F_SETTLED) {
             goto grab;
           }
         }
@@ -821,7 +821,7 @@ void Level25_UpdateActors(void) {
         st->timer = 0xF0;
         break;
       grab:
-        g_pActorListBase[st->link].subMode |= 4;
+        g_pActorListBase[st->link].subMode |= LANTERN_F_HELD;
         ENTER_POSE(actor, PGRAB_GRAB);
       pose1:
         ENTER_POSE(actor, PGRAB_GRAB);
@@ -893,7 +893,7 @@ void Level25_UpdateActors(void) {
           continue;
         }
       } else if (actor->mode != LOOKOUT_KNOCKED && st->link >= 0 &&
-                 g_pActorListBase[st->link].subMode == 2) {
+                 g_pActorListBase[st->link].subMode == LANTERN_F_SETTLED) {
         if (*st->slot == actor) {
           *st->slot = 0;
         }
@@ -1050,7 +1050,7 @@ void Level25_UpdateActors(void) {
       TickActorFlameGlow(actor);
       actor->flags = 0;
       if (st->link >= 0) {
-        if (actor->mode != ASENTRY_ROUSE && g_pActorListBase[st->link].subMode == 3) {
+        if (actor->mode != ASENTRY_ROUSE && g_pActorListBase[st->link].subMode == (LANTERN_F_LIT | LANTERN_F_SETTLED)) {
           ENTER_POSE(actor, ASENTRY_ROUSE);
         }
       } else {
@@ -1153,7 +1153,7 @@ void Level25_UpdateActors(void) {
       }
       actor->flags = 0;
       if (actor->mode < RSENTRY_KNOCKED && st->link >= 0 &&
-          g_pActorListBase[st->link].subMode == 2) {
+          g_pActorListBase[st->link].subMode == LANTERN_F_SETTLED) {
         actor->type = ACTOR_TYPE_ALARM_SENTRY;
         actor->mode = ASENTRY_SETTLE;
         ANIM_RESET(actor, RSENTRY_FALL);
@@ -2249,7 +2249,7 @@ void Level25_UpdateActors(void) {
 
       if (actor->flags & ACTOR_HITS_SPYRO) {
         actor->flags = 0;
-        actor->subMode |= 3;
+        actor->subMode |= LANTERN_F_LIT | LANTERN_F_SETTLED;
         if (actor->mode < LANTERN_STRUCK) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_LANTERN_FLAME, actor);
           actor->mode = LANTERN_STRUCK;
@@ -2258,7 +2258,7 @@ void Level25_UpdateActors(void) {
         }
       }
       actor->flags = 0;
-      if (actor->subMode & 1) {
+      if (actor->subMode & LANTERN_F_LIT) {
         if (st->fx == 0) {
           FxNode *g = AllocWorldSparkle();
 
@@ -2309,12 +2309,12 @@ void Level25_UpdateActors(void) {
           if (TICK_DOWN(st->timer) == 0) {
             break;
           }
-          if (actor->subMode & 4) {
+          if (actor->subMode & LANTERN_F_HELD) {
             break;
           }
           st->timer = 0x78;
-          actor->subMode &= 0xFD;
-          if (actor->subMode & 1) {
+          actor->subMode &= ~LANTERN_F_SETTLED;
+          if (actor->subMode & LANTERN_F_LIT) {
             if (st->chunkAnim >= 0) {
               ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             }
@@ -2322,26 +2322,26 @@ void Level25_UpdateActors(void) {
           }
           ENTER_POSE(actor, LANTERN_LIGHT);
         }
-        actor->subMode |= 2;
+        actor->subMode |= LANTERN_F_SETTLED;
         break;
 
       case LANTERN_SNUFF:
-        actor->subMode &= 0xFE;
+        actor->subMode &= ~LANTERN_F_LIT;
         if (g_nActorAnimDone == 0) {
           break;
         }
-        actor->subMode |= 2;
+        actor->subMode |= LANTERN_F_SETTLED;
         ENTER_POSE(actor, LANTERN_IDLE);
 
       case LANTERN_LIGHT:
-        actor->subMode |= 1;
+        actor->subMode |= LANTERN_F_LIT;
         if (g_nActorAnimDone == 0) {
           break;
         }
         if (st->chunkAnim >= 0) {
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
-        actor->subMode |= 2;
+        actor->subMode |= LANTERN_F_SETTLED;
         ENTER_POSE(actor, LANTERN_IDLE);
 
       case LANTERN_STRUCK:

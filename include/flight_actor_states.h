@@ -143,4 +143,18 @@ typedef struct SmokerState {
   int timer;           /* 0x14 */
 } SmokerState;
 
+/* Flight-level chest (ACTOR_TYPE_FLIGHT_CHEST): struck, it tallies and frees
+ * its time bonus. */
+typedef struct FlightChestState {
+  int reward;     /* 0x00 its time bonus, spawned as TIME_BONUS_TYPE(reward) */
+  int tallyClass; /* 0x04 flight target class 0..3 (TallyFlightTarget) */
+} FlightChestState;
+
+/* Flame flight target (ACTOR_TYPE_FLAME_FLIGHT_TARGET, levels 11/29). */
+typedef struct FlameTargetState {
+  int tallyClass; /* 0x00 flight target class 0..3 (TallyFlightTarget) */
+  int reward;     /* 0x04 its time bonus, spawned as TIME_BONUS_TYPE(reward) */
+  int chunkAnim;  /* 0x08 world chunk anim it resumes, or -1 */
+} FlameTargetState;
+
 #endif /* OPEN_SPYRO_FLIGHT_ACTOR_STATES_H */

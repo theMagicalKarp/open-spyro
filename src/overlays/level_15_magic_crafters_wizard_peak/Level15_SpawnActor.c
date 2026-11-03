@@ -16,12 +16,13 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "actor.h"
+#include "model.h"
 #include "emit_record.h"
 
 extern volatile int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
 extern volatile int g_anSpyroWorldPos[];
-extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
+extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type */
 
 Actor *Level15_SpawnActor(int type, Actor *parent) {
   Actor *rec;
@@ -105,9 +106,9 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
       rec->rotZ = parent->rotZ;
       rec->mode = SPLITSHOT_FRAGMENT;
       rec->frameProgress = 0;
-      rec->frameRate = g_apActorMeshTable[rec->type][0x11][0xC];
-      rec->anim = 3;
-      rec->nextAnim = 3;
+      rec->frameRate = g_apActorMeshTable[rec->type]->m_Animations[SPLITSHOT_FRAGMENT]->m_ProgressPerTick;
+      rec->anim = SPLITSHOT_FRAGMENT;
+      rec->nextAnim = SPLITSHOT_FRAGMENT;
       *st = 3;
     } else if (parent->nextFrame >= 6) {
       rec->posX += LookupCosine(parent->rotZ << 4) >> 2;
@@ -131,9 +132,9 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
       *st = 0x80;
       rec->mode = SPLITSHOT_FLY;
       rec->frameProgress = 0;
-      rec->frameRate = g_apActorMeshTable[rec->type][0x10][0xC];
-      rec->anim = 2;
-      rec->nextAnim = 2;
+      rec->frameRate = g_apActorMeshTable[rec->type]->m_Animations[SPLITSHOT_FLY]->m_ProgressPerTick;
+      rec->anim = SPLITSHOT_FLY;
+      rec->nextAnim = SPLITSHOT_FLY;
       g_pfnLevelEmitParticles(4, EMIT_DRIFT_SPARKLE, pos, 0x10);
       InsertActorIntoSpatialGrid(rec);
       break;
@@ -143,9 +144,9 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
         rec->rotZ = parent->rotZ;
         rec->mode = SPLITSHOT_RAISE;
         rec->frameProgress = 0;
-        rec->frameRate = g_apActorMeshTable[rec->type][0xF][0xC];
-        rec->anim = 1;
-        rec->nextAnim = 1;
+        rec->frameRate = g_apActorMeshTable[rec->type]->m_Animations[SPLITSHOT_RAISE]->m_ProgressPerTick;
+        rec->anim = SPLITSHOT_RAISE;
+        rec->nextAnim = SPLITSHOT_RAISE;
       } else {
         rec->posZ += 0x180;
         rec->rotZ = parent->rotZ;

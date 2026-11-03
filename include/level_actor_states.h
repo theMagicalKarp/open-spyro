@@ -55,7 +55,7 @@ typedef struct SuperflameGiverState {
   PathData *path; /* 0x28 */
   int cool;       /* 0x2C */
   int alert;      /* 0x30 */
-  int link;       /* 0x34 pool index, -1 = none */
+  int link;       /* 0x34 pool index, -1 = none; level data: ACTOR_TYPE_ROCK_THROWER */
   int heading;    /* 0x38 -1 = unset */
 } SuperflameGiverState;
 
@@ -92,8 +92,8 @@ typedef struct RoamingRamState {
   int speed;      /* 0x14 */
   int lift;       /* 0x18 */
   int mode;       /* 0x1C RoamingRamKind */
-  int partner;    /* 0x20 index into g_pActorListBase */
-  int target;     /* 0x24 index into g_pActorListBase */
+  int partner;    /* 0x20 index into g_pActorListBase; level data: ACTOR_TYPE_ROAMING_RAM / GUNNER */
+  int target;     /* 0x24 index into g_pActorListBase; level data: ACTOR_TYPE_BOLT_GUARD */
   int triggerSlot;       /* 0x28 g_anLevelTriggerStateSlots index (a war drum sets it), -1 = none */
   TriggerBox box; /* 0x2C where a set triggerSlot sends it into mode 4 */
   int call;       /* 0x44 */
@@ -106,7 +106,7 @@ typedef struct ChargingGuardState {
   int timer;         /* 0x10 */
   int range;         /* 0x14 sight range >> 10 */
   PathData *path;    /* 0x18 */
-  int pad1C;         /* 0x1C */
+  int pad1C; /* 0x1C a level-data pointer (relocated at load), never read */
   int knock;         /* 0x20 knock-back heading */
   int speed;         /* 0x24 */
   int turn;          /* 0x28 */
@@ -117,7 +117,7 @@ typedef struct ChargingGuardState {
   int camHold; /* 0x3C while counting, the camera holds on it */
   int *chargeLock; /* 0x40 shared: one charger at a time */
   int dist2;         /* 0x44 */
-  int target;        /* 0x48 index into g_pActorListBase */
+  int target;        /* 0x48 index into g_pActorListBase; level data: ACTOR_TYPE_GUNNER */
   int filter;        /* 0x4C type it drives before it */
   int charging;      /* 0x50 */
   int init;          /* 0x54 */
@@ -129,7 +129,7 @@ typedef struct ChargingGuardState {
  * type 400 shots in mode 5. */
 typedef struct GunnerState {
   void *path;  /* 0x00 */
-  int partner; /* 0x04 index into g_pActorListBase */
+  int partner; /* 0x04 index into g_pActorListBase; level data: ACTOR_TYPE_ONE_SHOT_PROP / CHARGING_GUARD */
   int knockSpeed;     /* 0x08 knock-back speed */
   int knockZSpeed;     /* 0x0C */
   int knockHeading;     /* 0x10 knock-back heading */
@@ -193,8 +193,8 @@ typedef struct BoulderState {
  * match GatekeeperState's, so a partner of either type is signalled through
  * BoulderThrowerState. */
 typedef struct BoulderThrowerState {
-  int partner;     /* 0x00 index into g_pActorListBase, -1 none */
-  int catcher;     /* 0x04 index into g_pActorListBase: who catches and flings it (RIDE_*) */
+  int partner;     /* 0x00 index into g_pActorListBase, -1 none; level data: ACTOR_TYPE_GATEKEEPER_B / BOULDER_THROWER_B / GATEKEEPER */
+  int catcher;     /* 0x04 index into g_pActorListBase: who catches and flings it (RIDE_*); level data: ACTOR_TYPE_METALHEAD */
   int groupAlert;         /* 0x08 level data: on waking, alert the group and its chunk anim */
   int chunkAnim;         /* 0x0C world chunk-anim handle (GetWorldChunkAnimState) */
   int idlePose2;         /* 0x10 level data: idle in pose 2 */
@@ -225,13 +225,14 @@ typedef struct BoulderThrowerState {
 
 /* Type 101 state (gatekeeper). */
 typedef struct GatekeeperState {
-  int partner;     /* 0x00 index into g_pActorListBase, -1 none */
-  int catcher;     /* 0x04 index into g_pActorListBase: who catches and flings it (RIDE_*) */
+  int partner;     /* 0x00 index into g_pActorListBase, -1 none; level data: a boulder
+                    * thrower or another gatekeeper (types A or B) */
+  int catcher;     /* 0x04 index into g_pActorListBase: who catches and flings it (RIDE_*); level data: ACTOR_TYPE_METALHEAD */
   int groupAlert;         /* 0x08 level data: on waking, alert the group and its chunk anim */
   int chunkAnim;         /* 0x0C world chunk-anim handle (GetWorldChunkAnimState) */
   int idlePose2;         /* 0x10 level data: idle in pose 2 */
   int partnerSignal; /* 0x14 set to 1 by the partner (its state word 5) */
-  int mode;        /* 0x18 */
+  int mode;        /* 0x18 enum GatekeeperPost */
   int timer;         /* 0x1C timer */
   int pad20[3];      /* 0x20 */
   int heading;         /* 0x2C heading */
@@ -243,7 +244,7 @@ typedef struct GatekeeperState {
   int command;         /* 0x6C posted: 1 = mode 0x28, else reverse along the path (mode 0x32); cleared when taken */
   int idx;         /* 0x70 next key */
   int range[2];    /* 0x74 release range per key (units of 0x400) */
-  int keys[2];     /* 0x7C key actor indices, -1 released */
+  int keys[2];     /* 0x7C key actor indices, -1 released; level data: ACTOR_TYPE_BOULDER_THROWER_B */
   int count;       /* 0x84 */
   int *releaseFlag;        /* 0x88 cleared at the throw's release frame (0xE) */
   int pad8C;         /* 0x8C */
@@ -259,7 +260,7 @@ typedef struct PathRunnerState {
   int knock;           /* 0x0C knock-back speed */
   int knockAng;        /* 0x10 knock-back heading */
   int lift;            /* 0x14 vertical speed */
-  int target;          /* 0x18 index into g_pActorListBase, -1 none */
+  int target;          /* 0x18 index into g_pActorListBase, -1 none; initially (level data) ACTOR_TYPE_BOULDER_THROWER / GATEKEEPER */
   int pathInit;        /* 0x1C */
   int camTimer;        /* 0x20 */
   unsigned int mode;   /* 0x24 PathRunnerRun: which goal flag it drives */
@@ -307,7 +308,7 @@ typedef struct PlatformPodState {
   int *counter;   /* 0x10 shared live-pod count */
   int initCount;  /* 0x14 */
   int init;       /* 0x18 */
-  int partner;    /* 0x1C index into g_pActorListBase */
+  int partner;    /* 0x1C index into g_pActorListBase; level data: ACTOR_TYPE_METALHEAD */
   int shotTimer;  /* 0x20 */
   Actor *kids[4]; /* 0x24 */
 } PlatformPodState;
@@ -359,7 +360,8 @@ typedef struct JacquesState {
   int legStep[3];              /* 0x28 */
   int timer;               /* 0x34 */
   int pad38;                 /* 0x38 */
-  Actor *stopActor;              /* 0x3C level actor tied to the stop just reached (38 or 41) */
+  Actor *stopActor;              /* 0x3C level actor tied to the stop just reached: pool slot 38
+                                  * (a singing path walker) or 41 (a 25-gem) in level data; never read */
   int atStop;                 /* 0x40 set on reaching each stop */
   Actor *child;            /* 0x44 rock in hand */
   int pad48;                 /* 0x48 */
@@ -403,11 +405,11 @@ typedef struct PathWalkerState {
   int timer;           /* 0x38 */
   int pad3C;             /* 0x3C */
   int startCur;        /* 0x40 */
-  int partner;         /* 0x44 index into g_pActorListBase */
+  int partner;         /* 0x44 index into g_pActorListBase; level data: ACTOR_TYPE_SINGING_PATH_WALKER */
   int resumePending;   /* 0x48 paired singer: resume its chunk once it halts */
   int pad4C;             /* 0x4C */
   int rideMode;        /* 0x50 1 = held, 2 = thrown */
-  int rider;           /* 0x54 index into g_pActorListBase */
+  int rider;           /* 0x54 index into g_pActorListBase; level data: ACTOR_TYPE_BIG_CHARGING_RAM / SINGING_PATH_WALKER / WHIRLWIND */
   int speed;           /* 0x58 */
   int vz;              /* 0x5C */
   int dvz;             /* 0x60 */
@@ -440,8 +442,8 @@ typedef struct CometState {
  * buffers here. */
 typedef struct CometCannonState {
   int steps;      /* 0x00 comet sub-steps */
-  int link;       /* 0x04 index into g_pActorListBase (its trigger) */
-  int target;     /* 0x08 index into g_pActorListBase */
+  int link;       /* 0x04 index into g_pActorListBase (its trigger); level data: ACTOR_TYPE_LUNGING_GUARD */
+  int target;     /* 0x08 index into g_pActorListBase; initially (level data) ACTOR_TYPE_WHIRLWIND */
   int pad0C;        /* 0x0C */
   int timer;      /* 0x10 */
   int heading;    /* 0x14 */
@@ -470,8 +472,8 @@ typedef struct LungingGuardState {
   int flags;           /* 0x34 LGUARD_F_* */
   int init;            /* 0x38 */
   int range;           /* 0x3C <0 = waiting */
-  int partner;         /* 0x40 index into g_pActorListBase */
-  int msg;             /* 0x44 written into the partner's state */
+  int partner;         /* 0x40 index into g_pActorListBase; level data: ACTOR_TYPE_COMET_CANNON */
+  int cometSteps;      /* 0x44 handed to the partner cannon's CometCannonState.steps */
   int range2;          /* 0x48 */
   int reloadTimer; /* 0x4C reloaded from `reload` after each lunge */
   int reload;          /* 0x50 */
@@ -491,13 +493,13 @@ typedef struct BigLungingGuardState {
   int flags;           /* 0x34 LGUARD_F_* */
   int init;            /* 0x38 */
   int range;           /* 0x3C */
-  int partner;         /* 0x40 */
-  int msg;             /* 0x44 */
+  int partner;         /* 0x40; level data: ACTOR_TYPE_COMET_CANNON */
+  int cometSteps;      /* 0x44 handed to the partner cannon's CometCannonState.steps */
   int range2;          /* 0x48 */
   int reloadTimer; /* 0x4C reloaded from `reload` after each lunge */
   int reload;          /* 0x50 */
-  int follow1;         /* 0x54 index into g_pActorListBase, -1 none */
-  int follow2;         /* 0x58 */
+  int follow1;         /* 0x54 index into g_pActorListBase, -1 none; level data: ACTOR_TYPE_BIG_LUNGING_GUARD */
+  int follow2;         /* 0x58; level data: ACTOR_TYPE_BIG_LUNGING_GUARD */
   int spin;            /* 0x5C */
   int pad60;             /* 0x60 */
   int flip;            /* 0x64 */
@@ -537,9 +539,9 @@ typedef struct RockThrowerState {
   int range;            /* 0x2C */
   int range2;           /* 0x30 */
   PathData *path;  /* 0x34 */
-  int partner;          /* 0x38 index into g_pActorListBase */
+  int partner;          /* 0x38 index into g_pActorListBase; level data: ACTOR_TYPE_BREAKABLE_WALL / SUPERFLAME_GIVER_B */
   int pad3C;              /* 0x3C */
-  int link;             /* 0x40 index into g_pActorListBase, -1 none */
+  int link;             /* 0x40 index into g_pActorListBase, -1 none; level data: ACTOR_TYPE_BREAKABLE_WALL */
   int trig;             /* 0x44 */
 } RockThrowerState;
 
@@ -551,7 +553,7 @@ typedef struct FenceGuardState {
   int *path;  /* 0x0C segment ends at [2],[3] and [6],[7] */
   int pad10;    /* 0x10 */
   int timer;  /* 0x14 */
-  int link;   /* 0x18 index into g_pActorListBase, -1 none */
+  int link;   /* 0x18 index into g_pActorListBase, -1 none; level data: ACTOR_TYPE_BREAKABLE_WALL */
   int pad1C;    /* 0x1C */
   int timer0; /* 0x20 timer reload */
 } FenceGuardState;
@@ -567,7 +569,8 @@ typedef struct FenceGuardPieceState {
 typedef struct FenceCaptainState {
   PathData *path; /* 0x000 */
   int pad04[7];          /* 0x004 */
-  int link[7];         /* 0x020 the guards, index into g_pActorListBase, -1 none */
+  int link[7];         /* 0x020 the guards, index into g_pActorListBase, -1 none; level data:
+                        * ACTOR_TYPE_FENCE_GUARD */
   int cur;             /* 0x03C */
   TriggerBox box[7];       /* 0x040 one per guard */
   int hit[7];          /* 0x0E8 */
@@ -638,7 +641,7 @@ typedef struct LobGunnerState {
   int timer;              /* 0x30 timer */
   int throwTimer;              /* 0x34 throw timer */
   Actor *heldLob;           /* 0x38 held lob (type 176), -1 once thrown */
-  int pad3C;              /* 0x3C */
+  int pad3C; /* 0x3C a level-data pointer (relocated at load), never read */
   int aimRange;              /* 0x40 aim-at-path range */
   int box1[6];           /* 0x44 trigger box */
   int box2[6];           /* 0x5C trigger box */
@@ -676,8 +679,14 @@ typedef struct WandererState {
   WanderBlock wander; /* 0x00 UpdateActorWander's block */
   int knockSpeed;    /* 0x20 knock-back speed */
   int knockHeading;    /* 0x24 knock-back heading */
-  int pad28;    /* 0x28 */
+  int pad28; /* 0x28 a level-data pointer (relocated at load), never read */
   int idleTimer;    /* 0x2C idle timer */
 } WandererState;
+
+/* Falling debris (ACTOR_TYPE_FALLING_DEBRIS, levels 13/14/15). */
+typedef struct FallingDebrisState {
+  int vel[3]; /* 0x00 random spread; vel[2] falls by 6 a frame to -0x80 */
+  int life;   /* 0x0C 0x20..0x3F frames */
+} FallingDebrisState;
 
 #endif /* OPEN_SPYRO_LEVEL_ACTOR_STATES_H */

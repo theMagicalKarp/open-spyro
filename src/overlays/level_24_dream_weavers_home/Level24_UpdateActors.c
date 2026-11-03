@@ -323,9 +323,9 @@ void Level24_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -336,7 +336,7 @@ void Level24_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -729,7 +729,7 @@ void Level24_UpdateActors(void) {
         Actor *q;
         int bestScore;
 
-        PlayActorMeshVoice(actor, 1, 0);
+        PlayActorMeshVoice(actor, CCANNON_VOICE_FIRE, 0);
         st->idx = (st->idx + 1) % 3;
         o = g_pfnLevelSpawnActor(ACTOR_TYPE_COMET, actor);
         cs = o->state;
@@ -925,7 +925,9 @@ void Level24_UpdateActors(void) {
             st->range = -1;
           }
           g_pActorListBase[st->partner].subMode = actor - g_pActorListBase;
-          *(int *)g_pActorListBase[st->partner].state = st->msg;
+          /* CometCannonState.steps, as a plain word store: the typed view
+           * reschedules the whole function. */
+          *(int *)g_pActorListBase[st->partner].state = st->cometSteps;
           st->reloadTimer = st->reload;
         } else if (actor->flags & ACTOR_HIT_BLAST) {
           actor->flags = 0;
@@ -2297,19 +2299,19 @@ void Level24_UpdateActors(void) {
             }
             break;
           case SINGER_ROLE_TWO_GATE:
-            if (CHUNK_ANIM_STEP(GetWorldChunkAnimState(1)) > 0 ||
-                !(GetWorldChunkAnimState(1) & CHUNK_ANIM_HALTED)) {
+            if (CHUNK_ANIM_STEP(GetWorldChunkAnimState(SINGER_CHUNK_GATE_A)) > 0 ||
+                !(GetWorldChunkAnimState(SINGER_CHUNK_GATE_A) & CHUNK_ANIM_HALTED)) {
               st->timer = 0x1C2;
-              ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
-              st->chunkAnim = 2;
+              ModifyWorldChunkAnimFlags(SINGER_CHUNK_GATE_B, CHUNK_ANIM_RESUME, 0);
+              st->chunkAnim = SINGER_CHUNK_GATE_B;
             } else {
               st->timer = 0x1C2;
-              ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
+              ModifyWorldChunkAnimFlags(SINGER_CHUNK_GATE_A, CHUNK_ANIM_RESUME, 0);
               st->chunkAnim = one;
             }
             break;
           }
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, SINGER_VOICE_SING, 0);
           ANIM_QUEUE(actor, SINGER_SING);
         }
         continue;
@@ -2327,7 +2329,7 @@ void Level24_UpdateActors(void) {
         }
         if (TICK_DOWN(st->timer) != 0) {
           st->timer = 0x50;
-          PlayActorMeshVoice(actor, 1, 0);
+          PlayActorMeshVoice(actor, SINGER_VOICE_SING_END, 0);
           ENTER_POSE(actor, SINGER_SING_END);
         }
         continue;
@@ -2434,13 +2436,15 @@ void Level24_UpdateActors(void) {
             st->range = -1;
           }
           g_pActorListBase[st->partner].subMode = actor - g_pActorListBase;
-          *(int *)g_pActorListBase[st->partner].state = st->msg;
+          /* CometCannonState.steps, as a plain word store: the typed view
+           * reschedules the whole function. */
+          *(int *)g_pActorListBase[st->partner].state = st->cometSteps;
           st->reloadTimer = st->reload;
           if (st->follow1 != -1) {
-            ((int *)g_pActorListBase[st->follow1].state)[19] = 0x28;
+            ((BigLungingGuardState *)g_pActorListBase[st->follow1].state)->reloadTimer = 0x28;
           }
           if (st->follow2 != -1) {
-            ((int *)g_pActorListBase[st->follow2].state)[19] = 0x50;
+            ((BigLungingGuardState *)g_pActorListBase[st->follow2].state)->reloadTimer = 0x50;
           }
         } else if (actor->flags & ACTOR_HIT_BLAST) {
           actor->flags = 0;
@@ -2541,8 +2545,8 @@ void Level24_UpdateActors(void) {
             actor->frameProgress = 0;
           }
           if (actor->nextFrame == 6 &&
-              GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[0]) == 0) {
-            PlayActorMeshVoice(actor, 0, &st->sound);
+              GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[LGUARD_VOICE_GROWL]) == 0) {
+            PlayActorMeshVoice(actor, LGUARD_VOICE_GROWL, &st->sound);
           }
           break;
         }

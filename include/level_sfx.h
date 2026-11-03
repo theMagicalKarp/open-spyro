@@ -9,7 +9,7 @@ enum LevelSfx {
   SFX_REWARD = 0,         /* extra life collected, gem-tally burst, cheat accepted */
   SFX_CHARGE = 4,         /* charge entry; the loop StopSoundVoicesByOwner ends on exit */
   SFX_SUPERCHARGE = 5,    /* supercharge entry */
-  SFX_SPYRO_HURT_FLASH = 0x1F, /* SPYRO_EV_HIT_TINT hit (DispatchSpyroPadStateChanges) */
+  SFX_SPYRO_HURT_FLASH = 0x1F, /* SPYRO_EV_HIT_TINT hit (ApplySpyroTriggerEvents) */
   SFX_SPYRO_PINNED_EXIT = 0x20, /* leaving SPYRO_ST_HURT_PINNED */
   SFX_SPLASH = 0x1D,      /* Spyro enters a hazard; actors touch surface-0 ground (with a ripple spawn) */
   /* Flight levels (types 0x154 targets, 0x159..0x15B time bonuses, 0x166 HUD). */

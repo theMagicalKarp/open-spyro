@@ -379,9 +379,9 @@ void Level13_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -392,7 +392,7 @@ void Level13_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -981,8 +981,8 @@ void Level13_UpdateActors(void) {
           }
         }
         r = PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-        if (r & 0x100) {
-          if ((r & ~0x100) ==
+        if (r & PATH_ARRIVED_FLAG) {
+          if ((r & ~PATH_ARRIVED_FLAG) ==
               (st->node - st->path->dir) % st->path->count) {
             actor->mode = THIEF_IDLE;
             continue;
@@ -2700,7 +2700,7 @@ void Level13_UpdateActors(void) {
           if (st->heading == -1) {
             st->heading = actor->rotZ;
           }
-          if (partner->mode == 3 || partner->mode >= ACTOR_MODE_DORMANT ||
+          if (partner->mode == SHEPHERD_KNOCKED || partner->mode >= ACTOR_MODE_DORMANT ||
               ApproxDist2D(&actor->posX, &SPY.posX) <= 0x1400) {
             actor->mode = CAPTAIN_FIGHT;
             continue;
@@ -2713,7 +2713,7 @@ void Level13_UpdateActors(void) {
               actor->frameProgress = 0;
             }
             if (st->partner != -1) {
-              partner->mode = 0;
+              partner->mode = SHEPHERD_IDLE;
             }
           }
           break;
@@ -2758,7 +2758,7 @@ void Level13_UpdateActors(void) {
         case CAPTAIN_POST_PATROL: {
           Actor *partner = &g_pActorListBase[st->partner];
 
-          if (partner->nextAnim == 3) {
+          if (partner->nextAnim == SHEPHERD_KNOCKED) {
             actor->subMode = 1;
           }
           if (actor->anim == CAPTAIN_ANIM_STAND && st->posed == 0) {
@@ -3305,7 +3305,7 @@ void Level13_UpdateActors(void) {
           }
         } else if (st->mode == VROLE_LEADER) {
           Actor *lead = &g_pActorListBase[st->link];
-          LeaderState *ls = lead->state;
+          SorcererState *ls = lead->state;
 
           SnapActorToGround(actor);
           TurnActorYawTowardAngle(actor,
@@ -3313,11 +3313,11 @@ void Level13_UpdateActors(void) {
                                       lead->posY - actor->posY, ATAN_ANGLE8),
                         6, 0, YAW_HOLD_IN_BAND);
           if (marker < 3) {
-            if (TICK_DOWN(st->timer) && ls->script[1] == 7) {
+            if (TICK_DOWN(st->timer) && ls->path->cur == 7) {
               st->timer = 0x12C;
-              ModifyWorldChunkAnimFlags(9, CHUNK_ANIM_RESUME, 0);
-              ls->mode = 8;
-              ls->cue = 2;
+              ModifyWorldChunkAnimFlags(VILLAGER_CHUNK_LEADER_CUE, CHUNK_ANIM_RESUME, 0);
+              ls->timer = 8;
+              ls->sub = SORCERER_STEP_REST;
             }
             if (ANIM_AT_FRAME(lead, 4, 4) &&
                 (int)(GetRandomU32() & 0xFF) >= 0xD3) {
@@ -3464,7 +3464,7 @@ void Level13_UpdateActors(void) {
         actor->flags = 0;
         ((CollectibleState *)SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0)->state)->mode = COLLREST_SNAP;
         MarkActorLiveKill(actor);
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, SHEPHERD_VOICE_KNOCKED, 0);
         ENTER_POSE(actor, SHEPHERD_KNOCKED);
       }
       actor->flags = 0;
@@ -4505,17 +4505,17 @@ void Level13_UpdateActors(void) {
     /* Falling debris: tumbles along its velocity while on screen and is
      * removed once its timer runs out or it goes off screen. */
     case ACTOR_TYPE_FALLING_DEBRIS: {
-      int *st = actor->state;
+      FallingDebrisState *st = actor->state;
 
-      if (TICK_DOWN(st[3]) != 0 || actor->drawn == 0) {
+      if (TICK_DOWN(st->life) != 0 || actor->drawn == 0) {
         DespawnActorRecord(actor);
         continue;
       }
-      st[2] -= 6;
-      if (st[2] < -0x80) {
-        st[2] = -0x80;
+      st->vel[2] -= 6;
+      if (st->vel[2] < -0x80) {
+        st->vel[2] = -0x80;
       }
-      AddVector(&actor->posX, &actor->posX, st);
+      AddVector(&actor->posX, &actor->posX, st->vel);
       actor->rotX += 0xF;
       actor->rotZ += 9;
       break;
@@ -4691,15 +4691,18 @@ void Level13_UpdateActors(void) {
         break;
 
       case SORCERER_BREAK_LINK: {
+        /* The caster's target is the villager it holds (a VROLE_LEADER led
+         * by this sorcerer, level data): freed, it goes back to chatting and
+         * its friend (a floor marker) moves above it. */
         Actor *t = &g_pActorListBase[st->target];
-        SorcererState *ts = t->state;
-        Actor *m = &g_pActorListBase[ts->target];
+        VillagerState *ts = t->state;
+        Actor *m = &g_pActorListBase[ts->friend];
         int *tri = m->state;
 
         st->mode = SORCERER_ROLE_SENTRY;
         st->timer = 0x3C;
-        ts->mode = SORCERER_ROLE_SENTRY;
-        ts->range = 0x3C;
+        ts->mode = VROLE_CHAT;
+        ts->timerLong = 0x3C;
         CopyVector(&m->posX, &t->posX);
         m->posZ += 0x200;
         *tri = -1;
@@ -4981,13 +4984,13 @@ void Level13_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
       SpinChestState *st = actor->state;
-      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN]);
       int cur = g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0];
       int i;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == ACTOR_HIT_FLAME) {
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN], actor, SFX_MODE_3D,
                       &actor->voiceRow);
         if (actor->voiceRow != VOICE_ROW_NONE) {
           g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0] = pitch + st->speed * 4;

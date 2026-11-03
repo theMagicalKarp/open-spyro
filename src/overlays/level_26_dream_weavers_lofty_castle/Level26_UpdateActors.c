@@ -378,9 +378,9 @@ void Level26_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -391,7 +391,7 @@ void Level26_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -745,8 +745,8 @@ void Level26_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode == SINKBLK_IDLE) {
         st->depth = 0;
-        g_pActorListBase[st->partner].mode = 1;
-        PlayActorMeshVoice(&g_pActorListBase[st->partner], 0, 0);
+        g_pActorListBase[st->partner].mode = ESCORT_TWEEN_IN;
+        PlayActorMeshVoice(&g_pActorListBase[st->partner], SINKBLK_VOICE_FREED, 0);
         MarkActorLiveKill(&g_pActorListBase[st->partner]);
         CommitActorKillGems(0, &g_pActorListBase[st->partner]);
         MarkActorLiveKill(actor);
@@ -1453,7 +1453,7 @@ void Level26_UpdateActors(void) {
       case ESCORT_HOLD:
         if (st->partner >= 0) {
           g_pActorListBase[st->partner].subMode |= 1 << st->slot;
-          if (g_pActorListBase[st->partner].mode == 4) {
+          if (g_pActorListBase[st->partner].mode == ESCORT_BREAK_AWAY) {
             actor->mode = ESCORT_BREAK_AWAY;
             st->speed = 0x20;
             st->timer = 0x78;
@@ -2715,7 +2715,7 @@ void Level26_UpdateActors(void) {
           MarkActorLiveKill(actor);
           ENTER_POSE(actor, PBOUNCER_THROWN);
         }
-        if (g_pActorListBase[st->partner].mode != 0) {
+        if (g_pActorListBase[st->partner].mode != PPLAT_BOB) {
           st->heading = actor->rotZ;
           st->speed = 0;
           st->lift = 0;
@@ -3369,13 +3369,13 @@ void Level26_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
       SpinChestState *st = actor->state;
-      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN]);
       int cur = g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0];
       int i;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == ACTOR_HIT_FLAME) {
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN], actor, SFX_MODE_3D,
                       &actor->voiceRow);
         if (actor->voiceRow != VOICE_ROW_NONE) {
           g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0] = pitch + st->speed * 4;

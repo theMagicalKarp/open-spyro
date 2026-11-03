@@ -378,9 +378,9 @@ void Level27_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -391,7 +391,7 @@ void Level27_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -1846,7 +1846,7 @@ void Level27_UpdateActors(void) {
         g_nSpyroRequestVelocityY = st->vy >> 2;
         g_nSpyroRequestVelocityZ = 0x28;
       }
-      PlayActorMeshVoice(actor, 0, 0);
+      PlayActorMeshVoice(actor, FCHUNK_VOICE_BURST, 0);
       for (i = 0; i < 6; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
@@ -1913,9 +1913,9 @@ void Level27_UpdateActors(void) {
           int j;
 
           if (st->kind == BWALL_ARMORED) {
-            PlayActorMeshVoice(actor, 1, 0);
+            PlayActorMeshVoice(actor, BWALL_VOICE_BREAK_ARMORED, 0);
           } else {
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, BWALL_VOICE_BREAK, 0);
           }
           if (AbsAngleDelta8(actor->rotZ,
                             ArcTan2(g_anSpyroWorldPos - actor->posX,
@@ -2097,7 +2097,7 @@ void Level27_UpdateActors(void) {
             ANIM_GO(actor, SFGIVER_ANIM_IDLE);
             st->timer = 0xA;
             actor->subMode = SFGIVER_SUB_LINGER;
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, SFGIVER_VOICE_CAST_END, 0);
           }
           f = 7;
           if (actor->type == ACTOR_TYPE_SUPERFLAME_GIVER_ALT) {
@@ -2472,7 +2472,7 @@ void Level27_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, FGUARD_VOICE_KNOCKED, 0);
         for (i = 0; i < 6; i++) {
           Actor *o;
           FenceGuardPieceState *c;
@@ -3596,13 +3596,13 @@ void Level27_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
       SpinChestState *st = actor->state;
-      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN]);
       int cur = g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0];
       int i;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == ACTOR_HIT_FLAME) {
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN], actor, SFX_MODE_3D,
                       &actor->voiceRow);
         if (actor->voiceRow != VOICE_ROW_NONE) {
           g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0] = pitch + st->speed * 4;

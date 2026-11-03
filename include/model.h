@@ -40,6 +40,9 @@ typedef struct Model {
  * the tables with int arithmetic. */
 #define MODEL_OFFSET(field) ((int)&((Model *)0)->field)
 #define ANIM_HEADER_OFFSET(field) ((int)&((AnimationHeader *)0)->field)
+/* The same as int-word indices, for code that walks them as int arrays. */
+#define MODEL_WORD(field) (MODEL_OFFSET(field) / 4)
+#define ANIM_HEADER_WORD(field) (ANIM_HEADER_OFFSET(field) / 4)
 
 /* A Model / AnimationHeader field read as a plain byte-offset reference from
  * any pointer or int (the ACTOR_RAW form, for the same reasons). */

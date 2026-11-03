@@ -361,9 +361,9 @@ void Level7_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -374,7 +374,7 @@ void Level7_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -963,8 +963,8 @@ void Level7_UpdateActors(void) {
           }
         }
         r = PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-        if (r & 0x100) {
-          if ((r & ~0x100) ==
+        if (r & PATH_ARRIVED_FLAG) {
+          if ((r & ~PATH_ARRIVED_FLAG) ==
               (st->node - st->path->dir) % st->path->count) {
             actor->mode = THIEF_IDLE;
             continue;
@@ -2532,7 +2532,7 @@ void Level7_UpdateActors(void) {
       }
 
       case BRAWLER_SEND:
-        st->flag = one;
+        st->sending = one;
         if (g_nActorAnimNewFrame != 0 && actor->frame == 0x11) {
           int h = WrapAddAngle8(actor->rotZ, 0xFD);
           Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_BRAWLER_SPAWN, actor);
@@ -2547,7 +2547,7 @@ void Level7_UpdateActors(void) {
           cs->u08 = 0x28;
           cs->u14 = one;
           cs->u10 = 0xF0;
-          cs->link = st->link;
+          cs->path = st->boltPath;
           cs->u04 = 0x6E;
           st->u08 = 0x78;
         }
@@ -4310,13 +4310,13 @@ void Level7_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
       SpinChestState *st = actor->state;
-      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN]);
       int cur = g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0];
       int i;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == ACTOR_HIT_FLAME) {
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN], actor, SFX_MODE_3D,
                       &actor->voiceRow);
         if (actor->voiceRow != VOICE_ROW_NONE) {
           g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0] = pitch + st->speed * 4;

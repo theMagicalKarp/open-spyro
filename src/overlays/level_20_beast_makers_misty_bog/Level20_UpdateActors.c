@@ -247,7 +247,7 @@ void Level20_UpdateActors(void) {
               Actor *sparx = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
               g_pSparxActor = sparx;
-              PlayActorMeshVoice(sparx, 0, 0);
+              PlayActorMeshVoice(sparx, SPARX_VOICE_BUZZ, 0);
               g_nSparxHealth = SPARX_GREEN;
               DespawnActorRecord(actor);
               continue;
@@ -421,7 +421,7 @@ void Level20_UpdateActors(void) {
         } else if (st->mode == GUNNER_ROLE_PATROL) {
           Actor *partner = &g_pActorListBase[st->partner];
 
-          if (partner->mode != 0) {
+          if (partner->mode != CHARGER_IDLE) {
             st->mode = GUNNER_ROLE_GUARD;
             ENTER_POSE(actor, GUNNER_GUARD);
           }
@@ -430,7 +430,7 @@ void Level20_UpdateActors(void) {
         } else if (st->mode == GUNNER_ROLE_LOOKOUT) {
           ANIM_GO(actor, GUNNER_IDLE);
           if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x640 &&
-              g_pActorListBase[st->partner].mode == 0) {
+              g_pActorListBase[st->partner].mode == ONESHOT_IDLE) {
             ENTER_POSE(actor, GUNNER_STARTLE);
           }
           if (actor->subMode != 0) {
@@ -440,8 +440,8 @@ void Level20_UpdateActors(void) {
         break;
 
       case GUNNER_WAKE:
-        if (actor->nextFrame >= 4 && g_pActorListBase[st->partner].mode == 0) {
-          g_pActorListBase[st->partner].mode = 1;
+        if (actor->nextFrame >= 4 && g_pActorListBase[st->partner].mode == ONESHOT_IDLE) {
+          g_pActorListBase[st->partner].mode = ONESHOT_PLAY;
         }
         if (g_nActorAnimDone != 0) {
           ENTER_POSE(actor, GUNNER_TURN);
@@ -519,7 +519,7 @@ void Level20_UpdateActors(void) {
         }
         if (r == MOVED_LANDED && st->hit == 0) {
           st->hit = 1;
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, GUNNER_VOICE_LAND, 0);
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -2660,13 +2660,13 @@ void Level20_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
       SpinChestState *st = actor->state;
-      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN]);
       int cur = g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0];
       int i;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == ACTOR_HIT_FLAME) {
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN], actor, SFX_MODE_3D,
                       &actor->voiceRow);
         if (actor->voiceRow != VOICE_ROW_NONE) {
           g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0] = pitch + st->speed * 4;
@@ -3461,15 +3461,15 @@ void Level20_UpdateActors(void) {
         if (actor->mode != GRABBER_LURK) {
           *st->held = 0;
         }
-        PlayActorMeshVoice(actor, 1, 0);
+        PlayActorMeshVoice(actor, GRABBER_VOICE_HIT, 0);
         ANIM_SET(actor, GRABBER_ANIM_HIT);
         actor->mode = GRABBER_KNOCKED;
         continue;
       }
       actor->flags = 0;
       if (actor->nextAnim == GRABBER_ANIM_EMERGE &&
-          GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[2]) == 0) {
-        PlayActorMeshVoice(actor, 2, &st->voice);
+          GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[GRABBER_VOICE_EMERGE]) == 0) {
+        PlayActorMeshVoice(actor, GRABBER_VOICE_EMERGE, &st->voice);
       }
 
       switch (actor->mode) {

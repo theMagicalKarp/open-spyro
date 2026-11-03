@@ -235,9 +235,9 @@ void Level3_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -248,7 +248,7 @@ void Level3_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -1112,8 +1112,8 @@ void Level3_UpdateActors(void) {
           }
         }
         r = PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-        if (r & 0x100) {
-          if ((r & ~0x100) ==
+        if (r & PATH_ARRIVED_FLAG) {
+          if ((r & ~PATH_ARRIVED_FLAG) ==
               (st->node - st->path->dir) % st->path->count) {
             actor->mode = THIEF_IDLE;
             continue;
@@ -3177,13 +3177,13 @@ void Level3_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
       SpinChestState *st = actor->state;
-      int pitch = SAMPLE_PITCH(g_apActorMeshTable[390]->m_Sounds[1]);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[ACTOR_TYPE_SPIN_CHEST]->m_Sounds[SPINCHEST_VOICE_SPIN]);
       int cur = g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0];
       int i;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == ACTOR_HIT_FLAME) {
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN], actor, SFX_MODE_3D,
                       &actor->voiceRow);
         if (actor->voiceRow != VOICE_ROW_NONE) {
           g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0] = pitch + st->speed * 4;
@@ -3358,7 +3358,7 @@ void Level3_UpdateActors(void) {
         if (d < 0x2000) {
           TrackEntityYawTowardSpyro(actor, 10, 0, YAW_HOLD_IN_BAND);
         }
-        if (g_pActorListBase[st->link].mode < 5) {
+        if (g_pActorListBase[st->link].mode < WARD_DAZED) {
           if (ApproxDist2D(&actor->posX, &g_pActorListBase[st->link].posX) < 0x1000) {
             ENTER_POSE(actor, LFOLLOW_SET_OFF);
           }
@@ -3371,7 +3371,7 @@ void Level3_UpdateActors(void) {
       }
 
       case LFOLLOW_FOLLOW:
-        if (g_pActorListBase[st->link].mode >= 4) {
+        if (g_pActorListBase[st->link].mode >= WARD_KNOCKED) {
           ENTER_POSE(actor, LFOLLOW_IDLE);
         }
         if (TICK_DOWN(st->hold) != 0 &&
@@ -3456,7 +3456,7 @@ void Level3_UpdateActors(void) {
         UpdateActorWander(actor, &st->wander);
         if (TICK_DOWN(st->voice) != 0) {
           st->voice = (GetRandomU32() & 0x3F) + 0x78;
-          PlayActorMeshVoice(actor, 3, 0);
+          PlayActorMeshVoice(actor, GRAZER_VOICE_CALL, 0);
         }
         break;
 

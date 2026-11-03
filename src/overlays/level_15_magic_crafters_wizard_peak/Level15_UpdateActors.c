@@ -264,9 +264,9 @@ void Level15_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -277,7 +277,7 @@ void Level15_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -866,8 +866,8 @@ void Level15_UpdateActors(void) {
           }
         }
         r = PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-        if (r & 0x100) {
-          if ((r & ~0x100) ==
+        if (r & PATH_ARRIVED_FLAG) {
+          if ((r & ~PATH_ARRIVED_FLAG) ==
               (st->node - st->path->dir) % st->path->count) {
             actor->mode = THIEF_IDLE;
             continue;
@@ -3007,7 +3007,7 @@ void Level15_UpdateActors(void) {
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, KEEPER_VOICE_KNOCKED, 0);
         if (GetRandomU32() & 1) {
           ENTER_POSE(actor, KEEPER_KNOCKED_ALT);
         }
@@ -3788,17 +3788,17 @@ void Level15_UpdateActors(void) {
     /* Falling debris: tumbles along its velocity while on screen and is
      * removed once its timer runs out or it goes off screen. */
     case ACTOR_TYPE_FALLING_DEBRIS: {
-      int *st = actor->state;
+      FallingDebrisState *st = actor->state;
 
-      if (TICK_DOWN(st[3]) != 0 || actor->drawn == 0) {
+      if (TICK_DOWN(st->life) != 0 || actor->drawn == 0) {
         DespawnActorRecord(actor);
         continue;
       }
-      st[2] -= 6;
-      if (st[2] < -0x80) {
-        st[2] = -0x80;
+      st->vel[2] -= 6;
+      if (st->vel[2] < -0x80) {
+        st->vel[2] = -0x80;
       }
-      AddVector(&actor->posX, &actor->posX, st);
+      AddVector(&actor->posX, &actor->posX, st->vel);
       actor->rotX += 0xF;
       actor->rotZ += 9;
       break;
@@ -4026,13 +4026,13 @@ void Level15_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
       SpinChestState *st = actor->state;
-      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN]);
       int cur = g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0];
       int i;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == ACTOR_HIT_FLAME) {
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN], actor, SFX_MODE_3D,
                       &actor->voiceRow);
         if (actor->voiceRow != VOICE_ROW_NONE) {
           g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0] = pitch + st->speed * 4;

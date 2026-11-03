@@ -368,9 +368,9 @@ void Level32_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -381,7 +381,7 @@ void Level32_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -2118,9 +2118,9 @@ void Level32_UpdateActors(void) {
       FlameChunkSwitchState *st = actor->state;
 
       if (actor->flags & ACTOR_HIT_FLAME) {
-        PlayActorMeshVoice(actor, 0, &actor->voiceRow);
+        PlayActorMeshVoice(actor, FCSWITCH_VOICE_LIT, &actor->voiceRow);
         if (st->rearmTimer == 0) {
-          ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(FCSWITCH_CHUNK, CHUNK_ANIM_RESUME, 0);
           st->rearmTimer = 0x50;
           actor->mode = FCSWITCH_TRIPPED;
           ANIM_RESET(actor, FCSWITCH_TRIPPED);
@@ -2245,7 +2245,7 @@ void Level32_UpdateActors(void) {
           spy->requestVelY = y;
           actor->mode = LGLOB_BURST;
         }
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, LGLOB_VOICE_BURST, 0);
         for (i = 0; i < 7; i++) {
           if (ACTOR_POOL_LOW()) {
             break;

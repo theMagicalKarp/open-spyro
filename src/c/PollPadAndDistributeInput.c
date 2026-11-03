@@ -30,19 +30,20 @@ void PollPadAndDistributeInput(void) {
   }
 
   padState = PadGetState(0);
-  if (padState == 1) {
+  if (padState == PadStateFindPad) {
     g_nPadActAlignedFlag = 0;
   }
   if (g_nPadActAlignedFlag == 0) {
     PadSetAct(0, g_abPadActCommand, 2);
-    if (padState == 2) {
+    if (padState == PadStateFindCTP1) {
       g_nPadActAlignedFlag = 1;
-    } else if (padState == 6 && PadSetActAlign(0, g_abPadActAlignTable) != 0) {
+    } else if (padState == PadStateStable &&
+               PadSetActAlign(0, g_abPadActAlignTable) != 0) {
       g_nPadActAlignedFlag = 1;
     }
   }
 
-  if (PadInfoMode(0, 2, 0) != 0) {
+  if (PadInfoMode(0, InfoModeCurExID, 0) != 0) {
     if (g_nPadSetMainModePending != 0) {
       if (PadSetMainMode(0, 1, 0) != 0) {
         g_nPadSetMainModePending = 0;
@@ -91,11 +92,11 @@ void PollPadAndDistributeInput(void) {
     padType = PAD_TYPE_NONE;
   } else {
     switch (g_abPadRawReport[1]) {
-    case 0x41:
+    case PAD_ID_DIGITAL:
       padType = PAD_TYPE_DIGITAL;
       break;
-    case 0x53:
-    case 0x73:
+    case PAD_ID_ANALOG_STICK:
+    case PAD_ID_DUALSHOCK:
       if (g_anPadTypeBlock[0] != PAD_TYPE_ANALOG) {
         ResetPadStickCalibrationDefaults(
             (unsigned char *)&g_anPadTypeBlock[-3]);
@@ -123,7 +124,7 @@ void PollPadAndDistributeInput(void) {
     if (padType == PAD_TYPE_ANALOG) {
       *(unsigned int *)cal = *(unsigned int *)&g_abPadRawReport[4];
       MapPadAxisToCalibratedRange(cal, (int)&stick[-4]);
-      if (g_abPadRawReport[1] == 0x53) {
+      if (g_abPadRawReport[1] == PAD_ID_ANALOG_STICK) {
         /* the Saturn-pad face/shoulder remap accumulator deliberately reuses
            `pressed`: the original serves both from one register (their ranges
            are disjoint, A196), and a separate local rotates the whole function.

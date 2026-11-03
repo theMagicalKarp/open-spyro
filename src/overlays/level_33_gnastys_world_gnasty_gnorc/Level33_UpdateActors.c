@@ -141,7 +141,7 @@ typedef struct LanePatrollerState {
   int endNodeBack;       /* 0x20 end node going back */
   int endNodeFwd;       /* 0x24 end node going forward */
   int box[14];   /* 0x28 trigger box */
-  int partner;       /* 0x60 partner actor index, -1 none */
+  int partner;       /* 0x60 partner actor index, -1 none; level data: ACTOR_TYPE_LOOT_VORTEX */
 } LanePatrollerState;
 
 extern int g_anLevelEscapeRunCount[]; /* laps per lane */
@@ -169,8 +169,8 @@ typedef struct GnastyState {
   int box88[6];             /* 0x88 trigger box */
   int boxA0[6];             /* 0xA0 trigger box */
   int uB8;                  /* 0xB8 */
-  int key2;                 /* 0xBC actor index, -1 none */
-  int key;                  /* 0xC0 actor index */
+  int key2;                 /* 0xBC actor index, -1 none; level data: ACTOR_TYPE_LOOT_VORTEX */
+  int key;                  /* 0xC0 actor index; level data: ACTOR_TYPE_FOLLOWER */
   int seen;                 /* 0xC4 */
   unsigned char *home;      /* 0xC8 */
   int camTimer;             /* 0xCC */
@@ -402,9 +402,9 @@ void Level33_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(SPY.bodyRotZ,
                                 ArcTan2(actor->posX - SPY.posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8)) < 0) {
@@ -414,7 +414,7 @@ void Level33_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -1512,19 +1512,19 @@ void Level33_UpdateActors(void) {
       actor->flags = 0;
 
       if (st->lane == 1 && actor->cullRadius == 0 &&
-          CHUNK_ANIM_STEP(GetWorldChunkAnimState(4)) > 0) {
+          CHUNK_ANIM_STEP(GetWorldChunkAnimState(LANEPAT_CHUNK_REVEAL)) > 0) {
         actor->cullRadius = 0x28;
         g_pActorListBase[st->partner].cullRadius = 0x28;
       }
 
-      if (actor->nextAnim == 0 && actor->cullRadius != ACTOR_CULL_HIDDEN) {
+      if (actor->nextAnim == LANEPAT_WATCH && actor->cullRadius != ACTOR_CULL_HIDDEN) {
         if (actor->nextFrame == 1 && !(GetRandomU32() & 3) &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[6]) == 0) {
-          PlayActorMeshVoice(actor, 6, 0);
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[LANEPAT_VOICE_STAND_EARLY]) == 0) {
+          PlayActorMeshVoice(actor, LANEPAT_VOICE_STAND_EARLY, 0);
         }
         if (actor->nextFrame == 0xA && !(GetRandomU32() & 3) &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[5]) == 0) {
-          PlayActorMeshVoice(actor, 5, 0);
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[LANEPAT_VOICE_STAND_LATE]) == 0) {
+          PlayActorMeshVoice(actor, LANEPAT_VOICE_STAND_LATE, 0);
         }
       }
 
@@ -1576,8 +1576,8 @@ void Level33_UpdateActors(void) {
           }
         }
         spd = st->speed;
-        if (FLY_FLAGS(st->path, st->path->cur) & 0xFFC) {
-          spd = FLY_FLAGS(st->path, st->path->cur) & 0xFFC;
+        if (FLY_FLAGS(st->path, st->path->cur) & PATH_NODE_SPEED) {
+          spd = FLY_FLAGS(st->path, st->path->cur) & PATH_NODE_SPEED;
         }
         r = PivotActorAlongPath(actor, st->path, 0x1C2, spd, 0, 0xA, 0x28, PIVOT_TURN_ANY, MOVE_LIFT);
         h = ProbeActorGroundHeightRaised(actor, 0xBB8);
@@ -1591,7 +1591,7 @@ void Level33_UpdateActors(void) {
         } else {
           actor->posZ = z;
         }
-        if ((r & 0x100) && (FLY_FLAGS(st->path, st->path->cur) & 3) == 1) {
+        if ((r & PATH_ARRIVED_FLAG) && (FLY_FLAGS(st->path, st->path->cur) & PATH_NODE_JUMP) == PATH_JUMP_LOW) {
           st->vSpeed = 0x12C;
         }
         if ((st->path->dir == -1 && r == (st->endNodeBack | 0x100)) ||
@@ -1671,7 +1671,7 @@ void Level33_UpdateActors(void) {
             actor->mode != GNASTY_FLAMED) {
           PathData *t;
 
-          ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(GNASTY_CHUNK_ESCAPE, CHUNK_ANIM_RESUME, 0);
           g_pActorListBase[st->key].subMode = 1;
           st->camTimer = 0xA0;
           st->vSpeed = 0;
@@ -1859,7 +1859,7 @@ void Level33_UpdateActors(void) {
           q->lifeTimer = 0xA0;
           q->landDelay = n - 1;
           st->throws++;
-          PlayActorMeshVoice(actor, 0, &st->voice);
+          PlayActorMeshVoice(actor, GNASTY_VOICE_THROW, &st->voice);
           if (st->phase == GNASTY_PHASE_MAIN && st->throws >= 2) {
             actor->mode = GNASTY_RUN;
             continue;
@@ -1908,8 +1908,8 @@ void Level33_UpdateActors(void) {
         }
         i = st->path->cur;
         spd = 0x13B;
-        if (FLY_FLAGS(st->path, i) & 0xFFC) {
-          spd = FLY_FLAGS(st->path, i) & 0xFFC;
+        if (FLY_FLAGS(st->path, i) & PATH_NODE_SPEED) {
+          spd = FLY_FLAGS(st->path, i) & PATH_NODE_SPEED;
         }
         if (i >= 0xE) {
           far = 0x1964;
@@ -1985,8 +1985,8 @@ void Level33_UpdateActors(void) {
           st->queuedJumpSpeed = 0;
         }
         spd = 0x104;
-        if (FLY_FLAGS(st->path, st->path->cur) & 0xFFC) {
-          spd = FLY_FLAGS(st->path, st->path->cur) & 0xFFC;
+        if (FLY_FLAGS(st->path, st->path->cur) & PATH_NODE_SPEED) {
+          spd = FLY_FLAGS(st->path, st->path->cur) & PATH_NODE_SPEED;
         }
         r = PivotActorAlongPath(actor, st->path, 0x12C, spd, 0, 0xA, 0x28, PIVOT_TURN_ANY, 0);
         GNASTY_FALL(actor, st);
@@ -2001,15 +2001,15 @@ void Level33_UpdateActors(void) {
           actor->mode = GNASTY_AT_DOOR;
           continue;
         }
-        if (r & 0x100) {
-          switch (FLY_FLAGS(st->path, st->path->cur) & 3) {
-          case 1:
+        if (r & PATH_ARRIVED_FLAG) {
+          switch (FLY_FLAGS(st->path, st->path->cur) & PATH_NODE_JUMP) {
+          case PATH_JUMP_LOW:
             st->queuedJumpSpeed = 0xDC;
             break;
-          case 2:
+          case PATH_JUMP_MID:
             st->queuedJumpSpeed = 0x10E;
             break;
-          case 3:
+          case PATH_JUMP_HIGH:
             st->queuedJumpSpeed = 0x140;
             break;
           }
@@ -2111,7 +2111,7 @@ void Level33_UpdateActors(void) {
           ANIM_GO(actor, GNASTY_LOOKOUT);
         }
         if (IsPointInRotatedBox(&SPY.posX, st->box88) != 0) {
-          ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(GNASTY_CHUNK_DOOR, CHUNK_ANIM_RESUME, 0);
           ANIM_GO(actor, GNASTY_ANIM_RUN);
           actor->mode = GNASTY_ESCAPE;
           continue;
@@ -2242,7 +2242,7 @@ void Level33_UpdateActors(void) {
               o->scale = 0x7F;
             }
             actor->mode = TRAILBOMB_HIT;
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, TRAILBOMB_VOICE_HIT, 0);
           }
           if (actor->mode == TRAILBOMB_HIT) {
             actor->cullRadius = ACTOR_CULL_HIDDEN;

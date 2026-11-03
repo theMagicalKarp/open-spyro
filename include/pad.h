@@ -15,9 +15,21 @@
 enum PadType {
   PAD_TYPE_NONE = 0,        /* no controller (status byte nonzero) */
   PAD_TYPE_UNSUPPORTED = 1, /* any other id */
-  PAD_TYPE_DIGITAL = 2,     /* id 0x41, standard digital pad */
-  PAD_TYPE_ANALOG = 3,      /* id 0x73 DualShock / 0x53 analog joystick */
+  PAD_TYPE_DIGITAL = 2,     /* PAD_ID_DIGITAL */
+  PAD_TYPE_ANALOG = 3,      /* PAD_ID_DUALSHOCK or PAD_ID_ANALOG_STICK */
 };
+
+/* PSY-Q libpad values PollPadAndDistributeInput passes and tests. */
+#define PadStateFindPad 1  /* PadGetState: a controller is being identified */
+#define PadStateFindCTP1 2 /* PadGetState: identified, no actuator alignment needed */
+#define PadStateStable 6   /* PadGetState: identified, actuators ready to align */
+#define InfoModeCurExID 2  /* PadInfoMode: the current extended id (nonzero: DualShock) */
+
+/* The controller report's id byte (g_abPadRawReport[1]): type in the high
+ * nibble, data halfwords in the low. */
+#define PAD_ID_DIGITAL 0x41      /* standard digital pad */
+#define PAD_ID_ANALOG_STICK 0x53 /* analog joystick: Poll remaps its face and shoulder bits */
+#define PAD_ID_DUALSHOCK 0x73    /* DualShock / analog pad in analog mode */
 
 /* Stick axis bytes of the analog word, in controller-report order (right
  * stick first). 0x7F is centred; X grows rightward, Y grows downward

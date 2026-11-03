@@ -1,6 +1,6 @@
 /* sparx.h — Sparx's health (g_nSparxHealth / SPY.sparxHealth). Each hit costs
  * one level; a hit at SPARX_GONE takes it to SPARX_FATAL and Spyro dies
- * (DispatchSpyroPadStateChanges). Eating a butterfly restores one. */
+ * (ApplySpyroTriggerEvents). Eating a butterfly restores one. */
 
 #ifndef OPEN_SPYRO_SPARX_H
 #define OPEN_SPYRO_SPARX_H

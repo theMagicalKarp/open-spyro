@@ -384,9 +384,9 @@ void Level31_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -397,7 +397,7 @@ void Level31_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -2099,7 +2099,7 @@ void Level31_UpdateActors(void) {
       MountState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != MOUNT_KNOCKED) {
-        ((int *)g_pActorListBase[st->rider].state)[4] = -1;
+        ((FloatingBarrelState *)g_pActorListBase[st->rider].state)->link = -1;
         st->rider = -1;
         st->knock = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
@@ -2449,7 +2449,7 @@ void Level31_UpdateActors(void) {
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
       if (st->held >= 0) {
         if (g_pActorListBase[st->held].mode >= FLOATBARREL_BURST) {
-          ((int *)g_pActorListBase[st->held].state)[4] = -1;
+          ((FloatingBarrelState *)g_pActorListBase[st->held].state)->link = -1;
           st->held = -1;
           actor->mode = CTHROW_DROP;
           ANIM_RESET(actor, CTHROW_DROP);
@@ -2509,7 +2509,7 @@ void Level31_UpdateActors(void) {
 
         actor->posZ -= 0x1CD;
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, FLOATBARREL_VOICE_BURST, 0);
         if (actor->drawn != 0) {
           int i;
           Actor *d;
@@ -2637,7 +2637,7 @@ void Level31_UpdateActors(void) {
       if (actor->subMode != 0) {
         int f;
 
-        PlayActorMeshVoice(actor, 2, &actor->voiceRow);
+        PlayActorMeshVoice(actor, FLOATBARREL_VOICE_TUMBLE, &actor->voiceRow);
         actor->rotX += 6;
         f = FindGroundHeightBelow(&actor->posX, 0x800);
         if (actor->posZ - f > 0x180) {
@@ -2694,7 +2694,7 @@ void Level31_UpdateActors(void) {
           actor->subMode = 0;
           actor->mode = FLOATBARREL_RUN;
           actor->posZ += 0xC8;
-          PlayActorMeshVoice(actor, 1, 0);
+          PlayActorMeshVoice(actor, FLOATBARREL_VOICE_RUN, 0);
           best = 0;
           i = 0x7530;
           for (a = g_pActorListBase; a < g_pActorPoolDynBase; a++) {
@@ -2762,7 +2762,7 @@ void Level31_UpdateActors(void) {
 
         actor->posZ -= 0x1CD;
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, FLOATBARREL_VOICE_BURST, 0);
         if (actor->drawn != 0) {
           Actor *d;
           L31Debris *ds;
@@ -2922,7 +2922,7 @@ void Level31_UpdateActors(void) {
       if (actor->subMode != 0) {
         int f;
 
-        PlayActorMeshVoice(actor, 2, &actor->voiceRow);
+        PlayActorMeshVoice(actor, FLOATBARREL_VOICE_TUMBLE, &actor->voiceRow);
         actor->rotX += 6;
         f = FindGroundHeightBelow(&actor->posX, 0x800);
         if (actor->posZ - f > 0x180) {

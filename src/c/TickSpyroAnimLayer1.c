@@ -3,6 +3,16 @@
 
 extern unsigned char g_abSpyroAnimLayer1SubstepBlock;
 
+/* g_anSpyroFlamePhaseBlock[0], and the g_abSpyroFlameTransitionModes entry
+ * that starts a phase on a flame-state change. The blend timer
+ * (g_abSpyroAnimLayer1SubstepBlock) runs to 0x10. */
+enum FlameLayerPhase {
+  FLAME_LAYER_TRACK = 0, /* follows g_nSpyroFlameState */
+  FLAME_LAYER_BLEND = 1, /* blends in from the body's pose, 2 per tick from 2 */
+  FLAME_LAYER_SWITCH =
+      2, /* switches to the state's flame anim, 4 per tick from 4 */
+};
+
 /* 0x80049660 — per-frame layer-1 (flame-breath overlay) anim driver: phase 0
    tracks the flame-breath state (snapshot the primary anim bytes when idle,
    advance the layer frame otherwise, or start a blend/hard-switch phase from
@@ -26,7 +36,7 @@ void TickSpyroAnimLayer1(void) {
   unsigned char blendCurFrame;
 
   switch (g_anSpyroFlamePhaseBlock[0]) {
-  case 0:
+  case FLAME_LAYER_TRACK:
     state = g_nSpyroFlameState;
     if (state == g_anSpyroFlamePhaseBlock[2]) {
       if (state == 0) {
@@ -49,7 +59,7 @@ void TickSpyroAnimLayer1(void) {
     } else {
       mode = g_abSpyroFlameTransitionModes[g_nSpyroFlameLayer1State][state];
       switch (mode) {
-      case 2:
+      case FLAME_LAYER_SWITCH:
         oldAnim = *(volatile byte *)&g_bSpyroAnimLayer1Current;
         oldFrame = *(volatile byte *)&g_bSpyroAnimLayer1Frame;
         g_anSpyroFlamePhaseBlock[0] = mode;
@@ -61,7 +71,7 @@ void TickSpyroAnimLayer1(void) {
         g_anSpyroFlamePhaseBlock[2] = state;
         *(volatile unsigned char *)&g_bSpyroAnimLayer1Current = newAnim;
         break;
-      case 1:
+      case FLAME_LAYER_BLEND:
         *(volatile int *)&g_anSpyroFlamePhaseBlock[0] = mode;
         blendAnim = *(volatile byte *)&g_bSpyroAnimLayer1Current;
         blendFrame = *(volatile byte *)&g_bSpyroAnimLayer1Frame;
@@ -77,20 +87,20 @@ void TickSpyroAnimLayer1(void) {
       }
     }
     break;
-  case 2:
+  case FLAME_LAYER_SWITCH:
     timer = g_abSpyroAnimLayer1SubstepBlock + 4;
     g_abSpyroAnimLayer1SubstepBlock = timer;
     if ((unsigned char)timer >= 0x10) {
       AdvanceSpyroAnimLayer1Frame(0);
-      g_anSpyroFlamePhaseBlock[0] = 0;
+      g_anSpyroFlamePhaseBlock[0] = FLAME_LAYER_TRACK;
     }
     break;
-  case 1:
+  case FLAME_LAYER_BLEND:
     timer = g_abSpyroAnimLayer1SubstepBlock + 2;
     g_abSpyroAnimLayer1SubstepBlock = timer;
     if ((unsigned char)timer >= 0x10) {
       AdvanceSpyroAnimLayer1Frame(0);
-      g_anSpyroFlamePhaseBlock[0] = 0;
+      g_anSpyroFlamePhaseBlock[0] = FLAME_LAYER_TRACK;
     }
     break;
   }

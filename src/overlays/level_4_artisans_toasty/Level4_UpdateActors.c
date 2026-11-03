@@ -384,9 +384,9 @@ void Level4_UpdateActors(void) {
               break;
             }
           } else if (g_pSparxActor->subMode != SPARX_SUB_PARKED) {
-            ChaserState *cs = (ChaserState *)g_pSparxActor->state;
+            SparxState *cs = g_pSparxActor->state;
 
-            if (cs->owner == 0) {
+            if (cs->target == 0) {
               if (WrapAngleDelta8(spy->bodyRotZ,
                                 ArcTan2(actor->posX - spy->posX,
                                               actor->posY - spy->posY, ATAN_ANGLE8)) <
@@ -397,7 +397,7 @@ void Level4_UpdateActors(void) {
               }
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
-              cs->owner = actor;
+              cs->target = actor;
               cs->timer = RandomIntInRange(150, 210);
 
               actor->mode = BUTTERFLY_CIRCLE;
@@ -2224,7 +2224,7 @@ void Level4_UpdateActors(void) {
       case APGUARD_HIT:
         switch (st->stage) {
         case 0:
-          ModifyWorldChunkAnimFlags(0, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(APGUARD_STAGE_CHUNK(0), CHUNK_ANIM_RESUME, 0);
           if (st->drop >= 0) {
             Actor *drop = &g_pActorListBase[st->drop];
 
@@ -2245,7 +2245,7 @@ void Level4_UpdateActors(void) {
           Actor *mate = &g_pActorListBase[st->partner];
           GuardState *ms = mate->state;
 
-          ModifyWorldChunkAnimFlags(1, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(APGUARD_STAGE_CHUNK(1), CHUNK_ANIM_RESUME, 0);
           mate->mode = APGUARD_HIT_PLAYOUT;
           mate->anim = APGUARD_ANIM_PARTNER_SET;
           mate->nextAnim = APGUARD_ANIM_PARTNER_SET;
@@ -2289,7 +2289,7 @@ void Level4_UpdateActors(void) {
           break;
 
         case 2:
-          ModifyWorldChunkAnimFlags(2, CHUNK_ANIM_RESUME, 0);
+          ModifyWorldChunkAnimFlags(APGUARD_STAGE_CHUNK(2), CHUNK_ANIM_RESUME, 0);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorLiveKill(actor);
           BurstActorWithSound(actor, 0x20);
@@ -2506,7 +2506,7 @@ void Level4_UpdateActors(void) {
                           ArcTan2(st->target[0] - actor->posX,
                                         st->target[1] - actor->posY, ATAN_ANGLE8),
                           0xA, 4, YAW_STEP_IN_BAND) != 0) {
-          PlayActorMeshVoice(actor, 1, 0);
+          PlayActorMeshVoice(actor, LUNGER_VOICE_LEAP, 0);
           actor->mode = LUNGER_LEAP;
           continue;
         }
@@ -2526,7 +2526,7 @@ void Level4_UpdateActors(void) {
 
         if (floor + actor->floorOffset >= actor->posZ) {
           if (actor->subMode == 0) {
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, LUNGER_VOICE_LAND, 0);
             actor->subMode = 1;
           }
           if (actor->nextFrame < 0xD) {

@@ -78,6 +78,7 @@
  */
 
 #include "level_globals.h"
+#include "model.h"
 #include "level_funcs.h"
 #include "level_balloonist_cutscene.h"
 #include "gamestate.h"
@@ -674,16 +675,18 @@ void Level18_BalloonistCutscene_Update(void)
         {
           bank = (int *) 0x801FE000;
         }
+        /* Move the balloon's model (16 KB) into the bank and rebase its first
+         * animation pointer and that header's face, colour and 0x24 pointers. */
         CopyWords(bank, g_apActorMeshTable_1A0[0], 0x4000);
         step = ((int) bank) - ((int) g_apActorMeshTable_1A0[0]);
         g_apActorMeshTable_1A0[0] = bank;
-        g_apActorMeshTable_1A0[0][14] = g_apActorMeshTable_1A0[0][14] + step;
-        slot = (int *) g_apActorMeshTable_1A0[0][14];
-        slot[5] = slot[5] + step;
-        slot = (int *) g_apActorMeshTable_1A0[0][14];
-        slot[6] = slot[6] + step;
-        slot = (int *) g_apActorMeshTable_1A0[0][14];
-        slot[9] = slot[9] + step;
+        g_apActorMeshTable_1A0[0][MODEL_WORD(m_Animations)] = g_apActorMeshTable_1A0[0][MODEL_WORD(m_Animations)] + step;
+        slot = (int *) g_apActorMeshTable_1A0[0][MODEL_WORD(m_Animations)];
+        slot[ANIM_HEADER_WORD(m_Faces)] = slot[ANIM_HEADER_WORD(m_Faces)] + step;
+        slot = (int *) g_apActorMeshTable_1A0[0][MODEL_WORD(m_Animations)];
+        slot[ANIM_HEADER_WORD(m_Colors)] = slot[ANIM_HEADER_WORD(m_Colors)] + step;
+        slot = (int *) g_apActorMeshTable_1A0[0][MODEL_WORD(m_Animations)];
+        slot[ANIM_HEADER_WORD(m_FrameWords)] = slot[ANIM_HEADER_WORD(m_FrameWords)] + step;
       }
         break;
     }
