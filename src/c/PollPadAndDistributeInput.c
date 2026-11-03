@@ -91,11 +91,11 @@ void PollPadAndDistributeInput(void) {
     padType = PAD_TYPE_NONE;
   } else {
     switch (g_abPadRawReport[1]) {
-    case 0x41:
+    case PAD_ID_DIGITAL:
       padType = PAD_TYPE_DIGITAL;
       break;
-    case 0x53:
-    case 0x73:
+    case PAD_ID_ANALOG_STICK:
+    case PAD_ID_DUALSHOCK:
       if (g_anPadTypeBlock[0] != PAD_TYPE_ANALOG) {
         ResetPadStickCalibrationDefaults(
             (unsigned char *)&g_anPadTypeBlock[-3]);
@@ -123,7 +123,7 @@ void PollPadAndDistributeInput(void) {
     if (padType == PAD_TYPE_ANALOG) {
       *(unsigned int *)cal = *(unsigned int *)&g_abPadRawReport[4];
       MapPadAxisToCalibratedRange(cal, (int)&stick[-4]);
-      if (g_abPadRawReport[1] == 0x53) {
+      if (g_abPadRawReport[1] == PAD_ID_ANALOG_STICK) {
         /* the Saturn-pad face/shoulder remap accumulator deliberately reuses
            `pressed`: the original serves both from one register (their ranges
            are disjoint, A196), and a separate local rotates the whole function.

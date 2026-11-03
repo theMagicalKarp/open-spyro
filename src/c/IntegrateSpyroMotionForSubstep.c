@@ -881,7 +881,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         }
         break;
       }
-      case 1: {
+      case SPYRO_SUB_GLIDE_R1: {
         SPY[SPY_BODY_YAW] &= 0xFFF;
         g_nSpyroBodyRoll = (g_nSpyroBodyRoll + 0x1E) & 0xFFF;
         if (g_nSpyroBodyRoll > 0x800) {
@@ -924,7 +924,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         BuildSpyroVelocityFromBodyEuler();
         break;
       }
-      case 2: {
+      case SPYRO_SUB_GLIDE_L1: {
         register int *gb asm("$6") = &SPY[SPY_GLIDE_BANK];
 
         OPAQUE(gb);
