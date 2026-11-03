@@ -47,65 +47,16 @@
 #include "cd_stream.h"
 #include "actor_cutscene.h"
 
-
-/* Type 286: ambient sound source (AmbientSoundState) with the path seen as
- * bytes, the view the other clones were matched with. */
-
-
-/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
- * saves a checkpoint and starts the rescue. */
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 sixteen
 
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Level 16 classes ==== */
-
-
-/* Case 328 -- floor-snapped marker. */
-
-
-/* ENTER_POSE with the already-there test first. */
-/* ==== Level 2 classes ==== */
-
-
-/* ==== Level 9 classes ==== */
-
-
-/* ==== Shared classes (from level 26) ==== */
-
 #define sixteen 0x10
-
-/* ==== Level 18 classes ==== */
-
 
 /* A NOTE-only scope: four NOTE luids and no code. It lengthens the lifetime
  * loop.c sees for any hoistable value live across it (cookbook A294). */
 #define LUID_PAD { int na; { int nb; } }
 #define LUID_PAD5 LUID_PAD LUID_PAD LUID_PAD LUID_PAD LUID_PAD
 
-/* ==== The function ==== */
 void Level18_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;

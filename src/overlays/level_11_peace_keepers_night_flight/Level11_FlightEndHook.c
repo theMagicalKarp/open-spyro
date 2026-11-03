@@ -12,7 +12,6 @@
 #include "level_spawn_actor.h"
 #include "gamestate.h"
 
-
 void Level11_FlightEndHook(void) {
   if (g_nGamestate != GS_FLIGHT_RESULTS) {
     int score = g_nFlightRunClock;

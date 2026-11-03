@@ -38,56 +38,12 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-/* ==== Per-class state blocks ====
- *
- * Every actor class keeps its private state behind actor->state. The blocks
- * below sit next to the globals and callees their case needs.
- */
-
-
 /* Surface normal produced by the collision probes. */
 extern int g_nCollisionProbeVecX; /* g_anCollisionProbeVec[0] */
-
-
-/* Callees used by the collectible and fairy behaviours. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
 
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 sixteen
 
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Globals shared with level 4 ==== */
-
-
-/* ==== Level 16 classes ==== */
-
-/* Case 328 -- floor-snapped marker. */
-
-
-/* ENTER_POSE with the already-there test first. */
-/* ==== Level 2 classes ==== */
-
-
-/* ==== Level 9 classes ==== */
-
-/* ==== level_10 per-class state blocks ==== */
-
-
-/* ==== Level 32 classes ==== */
-
-
-/* ==== The function ==== */
 void Level32_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;

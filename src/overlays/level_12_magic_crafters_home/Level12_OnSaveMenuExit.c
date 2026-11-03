@@ -13,7 +13,6 @@
 #include "level_actors.h"
 #include "actor_type.h"
 
-
 void Level12_OnSaveMenuExit(void) {
   Actor *actor;
 

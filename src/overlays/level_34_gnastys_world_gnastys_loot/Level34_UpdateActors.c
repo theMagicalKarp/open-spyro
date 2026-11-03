@@ -49,80 +49,13 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-
-/* Type 286: ambient sound source (AmbientSoundState) with the path seen as
- * bytes, the view the other clones were matched with. */
-
-
-/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
- * saves a checkpoint and starts the rescue. */
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 sixteen
 
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Level 16 classes ==== */
-
-
-/* Case 328 -- floor-snapped marker. */
-
-
-/* ENTER_POSE with the already-there test first. */
-/* ==== Level 2 classes ==== */
-
-
-/* ==== Level 9 classes ==== */
-
-
-/* ==== Camera and Spyro globals used by the camera arms ==== */
-
-
 #define sixteen 0x10
 
-
-/* Types 288/289: bouncing debris. Flies on its velocity until its life runs
- * out; type 288 tumbles, 289 sways as it falls. */
-
-/* Type 218: catapult. Charging it winds it up; when it swings it flings the
- * linked actor along an arc. */
-
-
-/* Type 270: villager. Chats when Spyro faces it up close (mode 0), turns to
- * face a friend (mode 1), waits on a partner (mode 2) or watches a leader
- * (mode 3); knocked back when hit, and runs off when Spyro gets close. */
-
-
-/* A flight path: { count, cur, .., dir } then 16-byte nodes at +8. */
-
-
-/* Type 177: treasure thief. Flies a ring with two spurs (pathA/pathB),
- * running laps away from Spyro; knocked out it bursts into loot. */
-
-
-/* ==== The function ==== */
 #define spy ((SpyroObj *)&g_anSpyroWorldPos)
+
 void Level34_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;

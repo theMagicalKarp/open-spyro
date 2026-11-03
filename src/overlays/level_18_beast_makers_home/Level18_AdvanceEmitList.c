@@ -82,7 +82,6 @@
  * level_2_artisans_dark_hollow.ovl.
  */
 
-
 void Level18_AdvanceEmitList(int step) {
   unsigned char *rec = g_pEmitListBase;
   int p[3];

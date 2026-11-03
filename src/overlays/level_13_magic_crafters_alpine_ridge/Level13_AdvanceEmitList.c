@@ -48,7 +48,6 @@
 #include "spyro_state.h"
 #include "emit_record.h"
 
-
 void Level13_AdvanceEmitList(int step) {
   unsigned char *rec = g_pEmitListBase;
   int pt[3];

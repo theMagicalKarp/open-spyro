@@ -33,6 +33,7 @@
 /* The body below started as decomp-permuter output (2026-08-14-1) and was
    carried to a full match from there; the earlier hand-written draft and its
    comments are in git history (7623bbd6^). */
+
 Actor *Level11_SpawnActor(int type, Actor *parent)
 {
   Actor *rec;

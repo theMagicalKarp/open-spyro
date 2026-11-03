@@ -1,18 +1,9 @@
-/* Level0_UpdateActors -- per-frame actor update for level 0.
+/* Level0_UpdateActors -- per-frame actor update for level 0 (Artisans Home).
  *
  * Walks the list of actors due for an update this frame and runs each one's
  * behaviour. Each `case` of the dispatch switch is one actor class: a small
  * state machine over the actor's state byte (->mode), often with a sub-state
  * (->subMode), and usually a class-specific state block behind ->state.
- *
- * Layout of this file:
- *   Core records      Actor, the per-type Model table, waypoint paths
- *   Per-class blocks  one state struct per actor class, each followed by the
- *                     globals and callees its case uses, in roughly case order
- *   Shared objects    the camera (CAM) and Spyro (SPY), each declared as one
- *                     aggregate over its whole address range
- *   Helper macros     absolute value and the three animation idioms
- *   The function      update-list preamble, then the per-class dispatch
  */
 
 #include "actor.h"
@@ -32,32 +23,9 @@
 #include "cd_stream.h"
 #include "actor_cutscene.h"
 
-
-/* Type 286: ambient sound source (AmbientSoundState) with the path seen as
- * bytes, the view the other clones were matched with. */
-
-
-/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
- * saves a checkpoint and starts the rescue. */
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 0x10
 
-/* ==== The function ==== */
 void Level0_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;

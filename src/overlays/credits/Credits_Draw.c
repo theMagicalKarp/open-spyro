@@ -22,9 +22,6 @@
 #include "level_flight_results.h"
 #include "frame_db.h"
 
-
-/* The sprite record being written (Actor layout). */
-
 void Credits_Draw(void) {
   int i;
 

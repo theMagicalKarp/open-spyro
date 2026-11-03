@@ -36,8 +36,6 @@
 #define QUAD ((volatile PolyFT4 *) p)
 #define TILE ((Tile *) ((PolyFT4 *) p + 1))
 
-
-
 static const char g_szTryAgain[12];
 
 void Level17_FlightResults_Draw(void)

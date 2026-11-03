@@ -33,8 +33,6 @@
  * Sunny Flight carries the full flight arm set shared with levels 11/17/23/29.
  */
 
-
-
 Actor *Level5_SpawnActor(int type, Actor *parent) {
   Actor *rec;
   int owner;

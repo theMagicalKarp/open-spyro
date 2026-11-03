@@ -51,38 +51,10 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 sixteen
 
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* Case 328 -- floor-snapped marker. */
-
-
-/* ==== Camera and Spyro globals used by the camera arms ==== */
-
-
 #define sixteen 0x10
-
-
-/* ==== Level 19 classes ==== */
 
 /* ENTER_POSE for arms whose fall-out runs a shared exit after the switch. */
 #define ENTER_POSE_BRK(a, n)                                                   \
@@ -135,7 +107,6 @@ enum AimedBoltMode {
   }                                                                            \
   break
 
-/* ==== The function ==== */
 void Level19_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;

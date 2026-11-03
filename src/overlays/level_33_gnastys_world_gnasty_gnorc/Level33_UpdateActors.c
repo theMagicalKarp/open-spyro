@@ -39,66 +39,13 @@
 #include "level_sfx.h"
 #include "emit_record.h"
 
-
-/* Type 286: ambient sound source; mode 2 also coasts along a path. */
-
-
-/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
- * saves a checkpoint and starts the rescue. */
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
 /* 256-entry sine and cosine tables. */
 extern short g_anSineLut_s[];
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
 
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 sixteen
 
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Level 16 classes ==== */
-
-/* Case 328 -- floor-snapped marker. */
-
-
-/* ENTER_POSE with the already-there test first. */
-/* ==== Level 2 classes ==== */
-
-
-/* ==== Level 9 classes ==== */
-
-/* ==== Level 26 classes ==== */
-
 #define sixteen 0x10
-
-/* ==== Classes shared with level 31 ==== */
-
-
-/* ==== Level 25 classes ==== */
-
-/* Case 50 -- grabber. Only one grabber at a time may hold Spyro; the shared
- * slot names the holder. */
-
-
-/* ==== Level 33 classes ==== */
 
 /* Type 143 state: the shockwave a trail bomb sets off. */
 typedef struct ShockwaveState {
@@ -201,8 +148,8 @@ typedef struct GnastyState {
 extern unsigned char g_abSpyroPersistentEuler; /* SPY.bodyRotX, absolute form */
 #define PATH_END(p) ((int *)((char *)(p) + (((p)->count << 4) - 8)))
 
-/* ==== The function ==== */
 #define spy (&SPY)
+
 void Level33_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;

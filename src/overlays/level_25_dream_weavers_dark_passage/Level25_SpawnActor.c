@@ -64,7 +64,6 @@
  * With no parent the position falls back to Spyro's (g_anSpyroWorldPos).
  */
 
-
 Actor *Level25_SpawnActor(int type, Actor *parent) {
   Actor *rec;
   int owner;

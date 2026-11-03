@@ -41,7 +41,6 @@ extern SoundDef g_CutsceneSoundDef;   /* the shared cutscene sound definition */
 extern int g_anTitleSampleOffsets[];      /* title-screen SPU sample offset table */
 extern int g_bSceneSfxVoiceMarker;        /* dragon-cutscene sound voice */
 
-
 void Titlescreen_PlayUiSound(int nSoundId) {
   g_pLevelSampleBankEntries.pSoundDef = &g_CutsceneSoundDef;
   g_pLevelSampleBankEntries.pSoundDef->nAddr = g_anTitleSampleOffsets[nSoundId] + 0x1010;

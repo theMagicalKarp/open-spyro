@@ -43,37 +43,13 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 sixteen
 
-/* Case 328 -- floor-snapped marker. */
-
-/* ==== Camera and Spyro globals used by the camera arms ==== */
-
-
 #define sixteen 0x10
-
-/* Types 288/289: bouncing debris. Flies on its velocity until its life runs
- * out; type 288 tumbles, 289 sways as it falls. */
 
 #undef sixteen
 
-/* ==== The function ==== */
 void Level3_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;

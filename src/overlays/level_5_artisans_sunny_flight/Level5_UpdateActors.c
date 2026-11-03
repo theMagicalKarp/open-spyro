@@ -1,4 +1,11 @@
-/* Level5_UpdateActors (0x8007CFB4, 21,736 B) -- matching notes.
+/* Level5_UpdateActors -- per-frame actor update for level 5 (Sunny Flight).
+ *
+ * Walks the list of actors due for an update this frame and runs each one's
+ * behaviour. Each `case` of the dispatch switch is one actor class: a small
+ * state machine over the actor's state byte (->mode), often with a sub-state
+ * (->subMode), and usually a class-specific state block behind ->state.
+ *
+ * Matching notes (0x8007CFB4, 21,736 B):
  *
  * Sibling of Level11_UpdateActors (the flight actor-update family head),
  * templated from the matched level_17 copy. See the level_11 file for the
@@ -30,61 +37,9 @@
 #include "level_id.h"
 #include "emit_record.h"
 
-/* Level5_UpdateActors -- per-frame actor update for level 11 (Night Flight).
- *
- * Walks the list of actors due for an update this frame and runs each one's
- * behaviour. Each `case` of the dispatch switch is one actor class: a small
- * state machine over the actor's state byte (->mode), often with a sub-state
- * (->subMode), and usually a class-specific state block behind ->state.
- *
- * Layout of this file:
- *   Core records      Actor, the per-type Model table, waypoint paths
- *   Per-class blocks  one state struct per actor class, each followed by the
- *                     globals and callees its case uses, in roughly case order
- *   Shared objects    the camera (CAM) and Spyro (SPY), each declared as one
- *                     aggregate over its whole address range
- *   Helper macros     absolute value and the three animation idioms
- *   The function      update-list preamble, then the per-class dispatch
- */
-
-
-/* Type 286: ambient sound source; mode 2 also coasts along a path. */
-
-
-/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
- * saves a checkpoint and starts the rescue. */
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
 
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 0x10
-
-/* ==== level_30 per-class state blocks (splice leftovers) ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Flight-level classes ==== */
-
-
-/* ==== The function ==== */
-
 
 void Level5_UpdateActors(void) {
   Actor **actorList;

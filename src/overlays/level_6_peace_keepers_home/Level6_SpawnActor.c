@@ -47,8 +47,6 @@
 #include "actor.h"
 #include "level_emit_particles.h"
 
-
-
 Actor *Level6_SpawnActor(int type, Actor *parent) {
   Actor *rec;
   int owner;

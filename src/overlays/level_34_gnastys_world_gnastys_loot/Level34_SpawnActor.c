@@ -19,8 +19,6 @@
 #include "main_shared.h"
 #include "level_emit_particles.h"
 
-
-
 Actor *Level34_SpawnActor(int type, Actor *parent) {
   Actor *rec;
   int owner;

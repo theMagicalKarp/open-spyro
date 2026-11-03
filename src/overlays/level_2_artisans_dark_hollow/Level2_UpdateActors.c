@@ -12,15 +12,6 @@
  * patroller (166), the locked chest (174) and the wandering
  * critter (412).
  *
- * Layout of this file:
- *   Core records      Actor, the per-type Model table, waypoint paths
- *   Per-class blocks  one state struct per actor class, each followed by the
- *                     globals and callees its case uses, in roughly case order
- *   Shared objects    the camera (CAM) and Spyro (SPY), each declared as one
- *                     aggregate over its whole address range
- *   Helper macros     absolute value and the animation idioms
- *   The function      update-list preamble, then the per-class dispatch
- *
  * Load-bearing source forms (matched 2026-09-28):
  *   - Loop-top constant carriers `sixteen`, `oneq` (a `short`) and `one`, as
  *     in level 4 (see Level4_UpdateActors).
@@ -58,51 +49,9 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-/* The update list, and the per-actor values the loop publishes before it
- * dispatches. */
-
-/* ==== Per-class state blocks ====
- *
- * Every actor class keeps its private state behind actor->state. The blocks
- * below sit next to the globals and callees their case needs.
- */
-
-/* PathData (waypoint paths) lives in actor_type.h. */
-/* Node accessors for paths held as byte pointers (type 286). */
-
-
-/* Callees used by the collectible and fairy behaviours. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 sixteen
 
-/* ==== Classes shared with level 30 ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Globals shared with level 30 ====
- *
- * The hub's own state: which stage of the balloon sequence the world is in,
- * the scripted-camera block at 0x80078C4C, and the three ambience channels. */
-
-
-/* ==== Globals shared with level 4 ==== */
-
-
-/* ENTER_POSE with the already-there test first. */
-/* ==== Level 2 classes ==== */
-
-
-/* ==== The function ==== */
 void Level2_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;

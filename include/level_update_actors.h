@@ -1055,6 +1055,8 @@ typedef struct CannonState {
   int init;            /* 0x18 1 = aim the barrel along the path */
 } CannonState;
 
+/* Type 218 (level 8): catapult. Charging it winds it up; when it swings it
+ * flings the linked actor along an arc. */
 typedef struct CatapultState {
   int angle;     /* 0x00 0..0x120 */
   int vel;       /* 0x04 */
@@ -1266,6 +1268,9 @@ typedef struct Debris {
   int life;            /* 0x0C */
 } Debris;
 
+/* Type 177 (level 34): treasure thief. Flies a ring with two spurs
+ * (pathA/pathB), running laps away from Spyro; knocked out it bursts into
+ * loot. */
 typedef struct LootThiefState {
   PathData *path;  /* 0x00 escape path */
   int onRing;     /* 0x04 */

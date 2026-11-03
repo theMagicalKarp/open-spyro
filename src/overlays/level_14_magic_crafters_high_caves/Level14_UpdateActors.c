@@ -50,41 +50,10 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-/* ==== Per-class state blocks ====
- *
- * Every actor class keeps its private state behind actor->state. The blocks
- * below sit next to the globals and callees their case needs.
- */
-
-
-/* Callees used by the collectible and fairy behaviours. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 sixteen
 
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Globals shared with level 4 ==== */
-
-
-/* Case 328 -- floor-snapped marker. */
-
-
-/* ==== Camera and Spyro globals used by the camera arms ==== */
-
 #define sixteen 0x10
-
 
 /* ==== Level 14 classes ==== */
 extern int g_anCollisionContactPoint[2]; /* wall probe hit x, y */
@@ -113,7 +82,6 @@ typedef struct BoltCasterState {
 /* BoltCasterState.flags. */
 #define BCASTER_F_WOKEN 1    /* has noticed Spyro once: goes straight to AIM */
 #define BCASTER_F_IN_RANGE 2 /* Spyro in range: keeps aiming and casting */
-
 
 /* Type 305: a critter that walks one of three paths and flees Spyro. */
 typedef struct FleeingWalkerState {
@@ -190,10 +158,10 @@ typedef struct CarrierState {
     }                                                                          \
   }
 
-/* ==== The function ==== */
 #define one 1
 #define spy (&SPY)
 #define oneq 1
+
 void Level14_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;

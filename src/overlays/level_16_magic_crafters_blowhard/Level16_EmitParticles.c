@@ -45,8 +45,6 @@
 #include "gamestate.h"
 #include "level_id.h"
 
-
-
 void Level16_EmitParticles(int count, int type, int *pos, int effectArg) {
   int v0[3];
   int vt[3];

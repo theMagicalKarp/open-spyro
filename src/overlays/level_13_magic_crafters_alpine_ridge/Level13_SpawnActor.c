@@ -17,7 +17,6 @@
 #include "level_spawn_actor.h"
 #include "actor.h"
 
-
 extern volatile int g_anSpyroWorldPos[];
 extern volatile int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
