@@ -9,7 +9,7 @@
 
 typedef struct Actor {
   void *state;         /* 0x00 class-specific state block */
-  int pad04;           /* 0x04 */
+  struct Actor *gridNext; /* 0x04 next actor in the same spatial-grid cell (InsertActorIntoSpatialGrid) */
   int collision;       /* 0x08 collision record; < 0 (a KSEG0 pointer) when the
                         * actor can be hit, 0 / >= 0 when not (overlay target
                         * scans skip those) */
