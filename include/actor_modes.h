@@ -879,7 +879,8 @@ enum VillagerRole {
   VROLE_CHAT = 0,   /* faces Spyro; talks (its chunk anim) when he is in talk range */
   VROLE_FACE = 1,   /* faces its friend; Spyro too close: PANIC */
   VROLE_PAIR = 2,   /* waits on its partner (link), cueing it via subMode */
-  VROLE_LEADER = 3, /* watches its leader (LeaderState) */
+  VROLE_LEADER = 3, /* held by its link, a caster sorcerer: at the sorcerer's path node 7
+                     * sends it to SORCERER_STEP_REST */
 };
 
 /* ->mode of a post guard (ACTOR_TYPE_POST_GUARD, PostState; level 2).
@@ -1197,7 +1198,8 @@ enum SorcererRole {
 enum SorcererCasterStep {
   SORCERER_STEP_WALK = 0, /* pivots along its path; the path's cast cue (0x108): CAST */
   SORCERER_STEP_CAST = 1, /* turns to its target, three wisps, then WALK */
-  SORCERER_STEP_REST = 2, /* waits out its timer, plays pose 7, then WALK (no writer) */
+  SORCERER_STEP_REST = 2, /* waits out its timer, plays pose 7, then WALK; set by its
+                           * VROLE_LEADER villager */
 };
 
 /* ->mode of a hatch (ACTOR_TYPE_HATCH, HatchState; level 31); the mode is
@@ -2487,7 +2489,7 @@ enum ChunkAnimHandle {
    * has moved. */
   SINGER_CHUNK_GATE_A = 1,
   SINGER_CHUNK_GATE_B = 2,
-  /* Levels 12/13, VROLE_LEADER villager: on its leader's script cue 7. */
+  /* Levels 12/13, VROLE_LEADER villager, as its sorcerer reaches path node 7. */
   VILLAGER_CHUNK_LEADER_CUE = 9,
 };
 /* Level 10 (Doctor Shemp): chunk N is resumed as phase N ends (stunned; in

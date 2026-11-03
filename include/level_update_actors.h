@@ -1197,15 +1197,6 @@ typedef struct VillagerState {
   int idleTimer;       /* 0x54 */
 } VillagerState;
 
-/* The leader a mode-3 villager watches. */
-typedef struct LeaderState {
-  int mode;               /* 0x00 */
-  int pad04[2];
-  unsigned char *script;  /* 0x0C */
-  int pad10[4];
-  int cue;                /* 0x20 */
-} LeaderState;
-
 /* Type 271: shepherd. Guards a flock with a partner shepherd: keeps its post
  * while SHEPHERD_IDLE, flanks or chases Spyro in SHEPHERD_CHASE (also by post),
  * climbs onto and drops off a partner (0x10-0x12), and walks home (0x64). */
@@ -1253,7 +1244,8 @@ typedef struct FallState {
 typedef struct SorcererState {
   int timer;           /* 0x00 */
   int count;           /* 0x04 bolts thrown this volley */
-  int target;          /* 0x08 actor index; level data: ACTOR_TYPE_VILLAGER */
+  int target;          /* 0x08 actor index; a caster's villager (level data: a VROLE_LEADER
+                        * this sorcerer leads), freed at SORCERER_BREAK_LINK */
   PathData *path; /* 0x0C */
   int mode;            /* 0x10 SorcererRole */
   int pad14;

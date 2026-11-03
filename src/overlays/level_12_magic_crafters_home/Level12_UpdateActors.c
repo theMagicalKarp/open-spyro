@@ -3133,7 +3133,7 @@ void Level12_UpdateActors(void) {
           }
         } else if (st->mode == VROLE_LEADER) {
           Actor *lead = &g_pActorListBase[st->link];
-          LeaderState *ls = lead->state;
+          SorcererState *ls = lead->state;
 
           SnapActorToGround(actor);
           TurnActorYawTowardAngle(actor,
@@ -3141,11 +3141,11 @@ void Level12_UpdateActors(void) {
                                       lead->posY - actor->posY, ATAN_ANGLE8),
                         6, 0, YAW_HOLD_IN_BAND);
           if (marker < 3) {
-            if (TICK_DOWN(st->timer) && ls->script[1] == 7) {
+            if (TICK_DOWN(st->timer) && ls->path->cur == 7) {
               st->timer = 0x12C;
               ModifyWorldChunkAnimFlags(VILLAGER_CHUNK_LEADER_CUE, CHUNK_ANIM_RESUME, 0);
-              ls->mode = 8;
-              ls->cue = 2;
+              ls->timer = 8;
+              ls->sub = SORCERER_STEP_REST;
             }
             if (ANIM_AT_FRAME(lead, 4, 4) &&
                 (int)(GetRandomU32() & 0xFF) >= 0xD3) {
