@@ -10,7 +10,7 @@
  *    emits `lh; sra 2`. The local costs nothing (it is constant-propagated) but
  *    it must be a SEPARATE local per shift site: one local feeding two shifts
  *    stays in a register and degrades both to `srav`.
- * 2. The arm-0x25 tail needed the `g_apActorMeshTable[type][0xE][0xC]` lookup hoisted
+ * 2. The arm-0x25 tail needed the `m_Animations[0]->m_ProgressPerTick` lookup hoisted
  *    into an `anim` temp above the four `rec->anim..nextFrame = 0` stores (which are
  *    themselves in original order 3D, 3C, 3F, 3E), so the load chain schedules
  *    ahead of the store batch and `sb anim,65(rec)` still lands in the `j`
@@ -25,6 +25,7 @@
 #include "level_globals.h"
 #include "level_spawn_actor.h"
 #include "actor.h"
+#include "model.h"
 #include "emit_record.h"
 
 /* Level16_SpawnActor (0x80083AB4, level_16_magic_crafters_blowhard
@@ -62,7 +63,7 @@ typedef struct AimState {
 extern int g_anCameraPos;     /* scalar view of camera X: the spawned prop turns to face the camera */
 
 extern int g_anSpyroWorldPos[];
-extern unsigned char **g_apActorMeshTable[];  /* per-type actor asset table */
+extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type */
 
 /* NOTE: the function body below is decomp-permuter output, spliced in
    by the 2026-08-14-1 unattended permuter session for its PARTIAL-BYTE
@@ -186,7 +187,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       st->owner = parent;
       st->child = 0;
       rec->mode = 0;
-      anim = g_apActorMeshTable[rec->type][0xE][0xC];
+      anim = g_apActorMeshTable[rec->type]->m_Animations[0]->m_ProgressPerTick;
       rec->nextAnim = 0;
       rec->anim = 0;
       rec->nextFrame = 0;
@@ -209,9 +210,9 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
         rec->rotZ = parent->rotZ;
         rec->mode = SPLITSHOT_FRAGMENT;
         rec->frameProgress = 0;
-        rec->frameRate = g_apActorMeshTable[rec->type][0x11][0xC];
-        rec->anim = 3;
-        rec->nextAnim = 3;
+        rec->frameRate = g_apActorMeshTable[rec->type]->m_Animations[SPLITSHOT_FRAGMENT]->m_ProgressPerTick;
+        rec->anim = SPLITSHOT_FRAGMENT;
+        rec->nextAnim = SPLITSHOT_FRAGMENT;
         *st = 3;
       }
       else
@@ -238,9 +239,9 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
         *st = 0x80;
         rec->mode = SPLITSHOT_FLY;
         rec->frameProgress = 0;
-        rec->frameRate = g_apActorMeshTable[rec->type][0x10][0xC];
-        rec->anim = 2;
-        rec->nextAnim = 2;
+        rec->frameRate = g_apActorMeshTable[rec->type]->m_Animations[SPLITSHOT_FLY]->m_ProgressPerTick;
+        rec->anim = SPLITSHOT_FLY;
+        rec->nextAnim = SPLITSHOT_FLY;
         g_pfnLevelEmitParticles(4, EMIT_DRIFT_SPARKLE, pos, 0x10);
         InsertActorIntoSpatialGrid(rec);
         break;
@@ -253,9 +254,9 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
           rec->rotZ = parent->rotZ;
           rec->mode = SPLITSHOT_RAISE;
           rec->frameProgress = 0;
-          rec->frameRate = g_apActorMeshTable[rec->type][0xF][0xC];
-          rec->anim = 1;
-          rec->nextAnim = 1;
+          rec->frameRate = g_apActorMeshTable[rec->type]->m_Animations[SPLITSHOT_RAISE]->m_ProgressPerTick;
+          rec->anim = SPLITSHOT_RAISE;
+          rec->nextAnim = SPLITSHOT_RAISE;
         }
         else
         {
