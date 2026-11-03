@@ -2024,8 +2024,8 @@ void Level34_UpdateActors(void) {
               st->path->dir = dir;
             }
             r = PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-            if (r & 0x100) {
-              r &= ~0x100;
+            if (r & PATH_ARRIVED_FLAG) {
+              r &= ~PATH_ARRIVED_FLAG;
               if (st->path->dir == -1) {
                 if (r == one) {
                   ENTER_POSE(actor, LCRITTER_WATCH);
@@ -2044,8 +2044,8 @@ void Level34_UpdateActors(void) {
             int r = PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 8, 0x1E,
                                   PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
-            if (r & 0x100) {
-              r &= ~0x100;
+            if (r & PATH_ARRIVED_FLAG) {
+              r &= ~PATH_ARRIVED_FLAG;
               if (st->path->dir == -1) {
                 if (r == one) {
                   ENTER_POSE(actor, LCRITTER_WATCH);

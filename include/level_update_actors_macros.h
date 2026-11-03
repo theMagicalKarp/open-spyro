@@ -243,6 +243,15 @@
 
 /* The current node's speed word, which the path runner reads as flags. */
 #define RUN_FLAGS(p) (*(int *)((unsigned char *)(p) + ((p)->cur << 4) + 0x14))
+/* That word's fields: the low two bits ask for a jump on arrival (larger
+ * values jump higher), bits 2..11 a speed override (0 = the actor's own). */
+#define PATH_NODE_JUMP 0x3
+#define PATH_NODE_SPEED 0xFFC
+enum PathNodeJump {
+  PATH_JUMP_LOW = 1,
+  PATH_JUMP_MID = 2,  /* the path runner's highest */
+  PATH_JUMP_HIGH = 3, /* Gnasty Gnorc only */
+};
 
 #define ROCK(st) (*(Actor **)((char *)(st) + 0x40))
 

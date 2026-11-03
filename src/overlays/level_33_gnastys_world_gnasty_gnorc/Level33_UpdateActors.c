@@ -1576,8 +1576,8 @@ void Level33_UpdateActors(void) {
           }
         }
         spd = st->speed;
-        if (FLY_FLAGS(st->path, st->path->cur) & 0xFFC) {
-          spd = FLY_FLAGS(st->path, st->path->cur) & 0xFFC;
+        if (FLY_FLAGS(st->path, st->path->cur) & PATH_NODE_SPEED) {
+          spd = FLY_FLAGS(st->path, st->path->cur) & PATH_NODE_SPEED;
         }
         r = PivotActorAlongPath(actor, st->path, 0x1C2, spd, 0, 0xA, 0x28, PIVOT_TURN_ANY, MOVE_LIFT);
         h = ProbeActorGroundHeightRaised(actor, 0xBB8);
@@ -1591,7 +1591,7 @@ void Level33_UpdateActors(void) {
         } else {
           actor->posZ = z;
         }
-        if ((r & 0x100) && (FLY_FLAGS(st->path, st->path->cur) & 3) == 1) {
+        if ((r & PATH_ARRIVED_FLAG) && (FLY_FLAGS(st->path, st->path->cur) & PATH_NODE_JUMP) == PATH_JUMP_LOW) {
           st->vSpeed = 0x12C;
         }
         if ((st->path->dir == -1 && r == (st->endNodeBack | 0x100)) ||
@@ -1908,8 +1908,8 @@ void Level33_UpdateActors(void) {
         }
         i = st->path->cur;
         spd = 0x13B;
-        if (FLY_FLAGS(st->path, i) & 0xFFC) {
-          spd = FLY_FLAGS(st->path, i) & 0xFFC;
+        if (FLY_FLAGS(st->path, i) & PATH_NODE_SPEED) {
+          spd = FLY_FLAGS(st->path, i) & PATH_NODE_SPEED;
         }
         if (i >= 0xE) {
           far = 0x1964;
@@ -1985,8 +1985,8 @@ void Level33_UpdateActors(void) {
           st->queuedJumpSpeed = 0;
         }
         spd = 0x104;
-        if (FLY_FLAGS(st->path, st->path->cur) & 0xFFC) {
-          spd = FLY_FLAGS(st->path, st->path->cur) & 0xFFC;
+        if (FLY_FLAGS(st->path, st->path->cur) & PATH_NODE_SPEED) {
+          spd = FLY_FLAGS(st->path, st->path->cur) & PATH_NODE_SPEED;
         }
         r = PivotActorAlongPath(actor, st->path, 0x12C, spd, 0, 0xA, 0x28, PIVOT_TURN_ANY, 0);
         GNASTY_FALL(actor, st);
@@ -2001,15 +2001,15 @@ void Level33_UpdateActors(void) {
           actor->mode = GNASTY_AT_DOOR;
           continue;
         }
-        if (r & 0x100) {
-          switch (FLY_FLAGS(st->path, st->path->cur) & 3) {
-          case 1:
+        if (r & PATH_ARRIVED_FLAG) {
+          switch (FLY_FLAGS(st->path, st->path->cur) & PATH_NODE_JUMP) {
+          case PATH_JUMP_LOW:
             st->queuedJumpSpeed = 0xDC;
             break;
-          case 2:
+          case PATH_JUMP_MID:
             st->queuedJumpSpeed = 0x10E;
             break;
-          case 3:
+          case PATH_JUMP_HIGH:
             st->queuedJumpSpeed = 0x140;
             break;
           }

@@ -3173,7 +3173,7 @@ void Level21_UpdateActors(void) {
         int floor;
         int z;
 
-        t = RUN_FLAGS(st->path) & 0xFFC;
+        t = RUN_FLAGS(st->path) & PATH_NODE_SPEED;
         spd = 0xB4;
         if (t != 0) {
           spd = t;
@@ -3223,12 +3223,12 @@ void Level21_UpdateActors(void) {
             actor->mode = RUNNER_FLEE;
             continue;
           }
-        } else if (r & 0x100) {
-          switch (RUN_FLAGS(st->path) & 3) {
-          case 1:
+        } else if (r & PATH_ARRIVED_FLAG) {
+          switch (RUN_FLAGS(st->path) & PATH_NODE_JUMP) {
+          case PATH_JUMP_LOW:
             st->lift = 0xDC;
             break;
-          case 2:
+          case PATH_JUMP_MID:
             st->lift = 0x140;
             break;
           }
@@ -3290,7 +3290,7 @@ void Level21_UpdateActors(void) {
         int last;
 
         ANIM_GO(actor, RUNNER_RUN);
-        t = RUN_FLAGS(st->path) & 0xFFC;
+        t = RUN_FLAGS(st->path) & PATH_NODE_SPEED;
         spd = 0xF0;
         if (t != 0) {
           spd = t;
@@ -3335,7 +3335,7 @@ void Level21_UpdateActors(void) {
           actor->mode = RUNNER_DODGE;
           continue;
         }
-        if (r == last + 0x100) {
+        if (r == PATH_ARRIVED(last)) {
           if (st->mode < 2) {
             st->path->cur = st->path->count - 1;
             actor->mode = RUNNER_DODGE;
@@ -3345,12 +3345,12 @@ void Level21_UpdateActors(void) {
           actor->mode = RUNNER_WAIT;
           continue;
         }
-        if (r & 0x100) {
-          switch (RUN_FLAGS(st->path) & 3) {
-          case 1:
+        if (r & PATH_ARRIVED_FLAG) {
+          switch (RUN_FLAGS(st->path) & PATH_NODE_JUMP) {
+          case PATH_JUMP_LOW:
             st->lift = 0x17C;
             break;
-          case 2:
+          case PATH_JUMP_MID:
             if (st->mode == PRUN_FIRST) {
               st->lift = 0x104;
             } else if (st->mode == PRUN_SECOND) {

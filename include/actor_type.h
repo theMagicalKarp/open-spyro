@@ -164,7 +164,9 @@ typedef struct Actor {
 #define MOVED_BLOCKED 2   /* world collision, step height or slope rejected it */
 #define MOVED_LANDED 3    /* DriveActorTrackedMove: the fall ended on the floor */
 
-/* PivotActorAlongPath / SteerActorAlongWaypoints result on reaching node n. */
+/* PivotActorAlongPath / SteerActorAlongWaypoints result on reaching node n:
+ * the flag is set and the low byte is the node. */
+#define PATH_ARRIVED_FLAG 0x100
 #define PATH_ARRIVED(n) (0x100 + (n))
 
 /* Actor.mode sentinels: UpdateActors and the scans skip dormant records, and
@@ -559,7 +561,8 @@ typedef struct PathData {
     int x;
     int y;
     int z;
-    int speed; /* > 0 overrides the follow speed at this node */
+    int speed; /* > 0 overrides the follow speed at this node; the path runner
+                * and Gnasty split it (PATH_NODE_SPEED / PATH_NODE_JUMP) */
   } nodes[1];          /* 0x08 */
 } PathData;
 
