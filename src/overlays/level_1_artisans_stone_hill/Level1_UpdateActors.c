@@ -3134,17 +3134,17 @@ void Level1_UpdateActors(void) {
     case ACTOR_TYPE_CAMERA_FACING_PROP:
     case ACTOR_TYPE_CAMERA_FACING_PROP + 1:
     case ACTOR_TYPE_CAMERA_FACING_PROP + 2: {
-      int *st = actor->state;
+      int *faced = actor->state;
       int *view;
 
-      if (*st != 0) {
+      if (*faced != 0) {
         break;
       }
       SnapActorToGround(actor);
       view = &g_anCollisionProbeVec;
       actor->rotY = ArcTan2(g_nCollisionProbeVecZ, VectorLength(view, VEC_LEN_XY), ATAN_ANGLE8);
       actor->rotZ = ArcTan2(-view[0], -g_nCollisionProbeVecY, ATAN_ANGLE8);
-      *st = 1;
+      *faced = 1;
       break;
     }
 

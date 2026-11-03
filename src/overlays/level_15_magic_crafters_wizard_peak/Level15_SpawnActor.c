@@ -95,7 +95,7 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
     break;
 
   case ACTOR_TYPE_SPLIT_SHOT: {
-    int *st = rec->state;
+    int *timer = rec->state;
     int *pos;
     int turn;
 
@@ -109,7 +109,7 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
       rec->frameRate = g_apActorMeshTable[rec->type]->m_Animations[SPLITSHOT_FRAGMENT]->m_ProgressPerTick;
       rec->anim = SPLITSHOT_FRAGMENT;
       rec->nextAnim = SPLITSHOT_FRAGMENT;
-      *st = 3;
+      *timer = 3;
     } else if (parent->nextFrame >= 6) {
       rec->posX += LookupCosine(parent->rotZ << 4) >> 2;
       rec->posY += LookupSine(parent->rotZ << 4) >> 2;
@@ -129,7 +129,7 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
         turn = 0x10;
       }
       rec->rotY = parent->rotY + turn;
-      *st = 0x80;
+      *timer = 0x80;
       rec->mode = SPLITSHOT_FLY;
       rec->frameProgress = 0;
       rec->frameRate = g_apActorMeshTable[rec->type]->m_Animations[SPLITSHOT_FLY]->m_ProgressPerTick;
@@ -151,7 +151,7 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
         rec->posZ += 0x180;
         rec->rotZ = parent->rotZ;
       }
-      *st = 2;
+      *timer = 2;
     }
     InsertActorIntoSpatialGrid(rec);
     break;

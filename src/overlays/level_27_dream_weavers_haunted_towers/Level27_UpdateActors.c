@@ -649,13 +649,13 @@ void Level27_UpdateActors(void) {
      * splits into four more of itself when it reaches him, and fizzles out
      * on a timer or against a wall. */
     case ACTOR_TYPE_SPLIT_SHOT: {
-      int *st = actor->state;
+      int *timer = actor->state;
 
       switch (actor->mode) {
       case SPLITSHOT_GATHER:
       case SPLITSHOT_RAISE:
       case SPLITSHOT_FRAGMENT:
-        if (g_nActorAnimDone != 0 && TICK_DOWN(*st) != 0) {
+        if (g_nActorAnimDone != 0 && TICK_DOWN(*timer) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -682,13 +682,13 @@ void Level27_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (TICK_DOWN(*st) != 0 ||
+        if (TICK_DOWN(*timer) != 0 ||
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) != 0 ||
             CastRayWorldAndActors(g104, &actor->posX) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
-        if ((*st & 7) == 0) {
+        if ((*timer & 7) == 0) {
           g_pfnLevelEmitParticles(1, EMIT_DRIFT_SPARKLE, &actor->posX, 0x10);
         }
         break;

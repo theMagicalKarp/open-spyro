@@ -1960,36 +1960,36 @@ void Level10_UpdateActors(void) {
      * level-data link; often none) overhead; charged, flings it at Spyro to
      * bounce (COLLECT_BOUNCE). */
     case ACTOR_TYPE_OVERHEAD_THROWER: {
-      int *st = actor->state;
+      int *held = actor->state; /* pool index of the gem it holds, -1 none */
 
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != OTHROW_HIT) {
         ENTER_POSE(actor, OTHROW_HIT);
       }
-      if (*st >= 0) {
-        if (g_pActorListBase[*st].mode >= ACTOR_MODE_DORMANT) {
-          *st = -1;
+      if (*held >= 0) {
+        if (g_pActorListBase[*held].mode >= ACTOR_MODE_DORMANT) {
+          *held = -1;
         } else {
-          CopyVector(&g_pActorListBase[*st].posX, &actor->posX);
-          g_pActorListBase[*st].posZ += 0x800;
-          g_pActorListBase[*st].subMode = COLLECT_INERT;
-          g_pActorListBase[*st].rotX = 0;
-          g_pActorListBase[*st].rotY = 0;
-          g_pActorListBase[*st].rotZ += 8;
+          CopyVector(&g_pActorListBase[*held].posX, &actor->posX);
+          g_pActorListBase[*held].posZ += 0x800;
+          g_pActorListBase[*held].subMode = COLLECT_INERT;
+          g_pActorListBase[*held].rotX = 0;
+          g_pActorListBase[*held].rotY = 0;
+          g_pActorListBase[*held].rotZ += 8;
         }
       }
       if (actor->mode == OTHROW_HIT) {
-        if (*st >= 0) {
-          PickupState *gem = g_pActorListBase[*st].state;
+        if (*held >= 0) {
+          PickupState *gem = g_pActorListBase[*held].state;
           int ang = ArcTan2(spy->posX - actor->posX,
                                   spy->posY - actor->posY, ATAN_ANGLE8) *
                     16;
 
-          g_pActorListBase[*st].subMode = COLLECT_BOUNCE;
+          g_pActorListBase[*held].subMode = COLLECT_BOUNCE;
           gem->count = 3;
           gem->vel[0] = (LookupCosine(ang) * 0x1C) >> 12;
           gem->vel[1] = (LookupSine(ang) * 0x1C) >> 12;
           gem->vel[2] = 0x32;
-          *st = -1;
+          *held = -1;
         }
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;

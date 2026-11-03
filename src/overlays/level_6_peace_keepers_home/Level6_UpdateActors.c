@@ -4390,10 +4390,10 @@ void Level6_UpdateActors(void) {
     /* Type 417: a reward burst. Once triggered it plays its sound, throws up
      * to four sets of sparks (while the spawn budget allows) and goes. */
     case ACTOR_TYPE_REWARD_BURST: {
-      int *st = actor->state;
+      int *burst = actor->state; /* level data: 1 bursts once hit, 0 just goes */
       int i;
 
-      if (st[0] == 1 && actor->dropKind == DROP_GEM_ROLL) {
+      if (*burst == 1 && actor->dropKind == DROP_GEM_ROLL) {
         ModifyWorldChunkAnimFlags(REWARD_BURST_CHUNK, CHUNK_ANIM_RESUME, 0);
         DespawnActorRecord(actor);
         continue;
@@ -4401,11 +4401,11 @@ void Level6_UpdateActors(void) {
       if (actor->subMode != 1) {
         continue;
       }
-      if (st[0] == 0) {
+      if (*burst == 0) {
         DespawnActorRecord(actor);
         continue;
       }
-      if (st[0] != 1) {
+      if (*burst != 1) {
         continue;
       }
       PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD_BURST], actor, SFX_MODE_PANNED, 0);

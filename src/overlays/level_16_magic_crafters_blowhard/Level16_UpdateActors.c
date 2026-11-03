@@ -761,13 +761,13 @@ void Level16_UpdateActors(void) {
      * splits into four more of itself when it reaches him, and fizzles out
      * on a timer or against a wall. */
     case ACTOR_TYPE_SPLIT_SHOT: {
-      int *st = actor->state;
+      int *timer = actor->state;
 
       switch (actor->mode) {
       case SPLITSHOT_GATHER:
       case SPLITSHOT_RAISE:
       case SPLITSHOT_FRAGMENT:
-        if (g_nActorAnimDone != 0 && TICK_DOWN(*st) != 0) {
+        if (g_nActorAnimDone != 0 && TICK_DOWN(*timer) != 0) {
           DespawnActorRecord(actor);
         }
         break;
@@ -793,13 +793,13 @@ void Level16_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (TICK_DOWN(*st) != 0 ||
+        if (TICK_DOWN(*timer) != 0 ||
             TryMoveActorForward(actor, 0x80, 0, 0x100, 0) != 0 ||
             CastRayWorldAndActors(svA, &actor->posX) != 0) {
           DespawnActorRecord(actor);
           continue;
         }
-        if ((*st & 7) == 0) {
+        if ((*timer & 7) == 0) {
           g_pfnLevelEmitParticles(1, EMIT_DRIFT_SPARKLE, &actor->posX, 0x10);
         }
         break;
@@ -2768,9 +2768,9 @@ void Level16_UpdateActors(void) {
     /* Type 328: floor-snapped marker. Finds the floor triangle under itself
      * once, then sits at that triangle's centroid. */
     case ACTOR_TYPE_FLOOR_MARKER: {
-      int *st = actor->state;
+      int *hitTri = actor->state; /* collision triangle under it, < 0 until found */
 
-      if (*st < 0) {
+      if (*hitTri < 0) {
         int z;
         int d;
 
@@ -2782,15 +2782,15 @@ void Level16_UpdateActors(void) {
         }
         if (d < 0x400) {
           actor->posZ = z;
-          *st = g_nLastCollisionHitChunkId;
+          *hitTri = g_nLastCollisionHitChunkId;
         } else {
           actor->posZ -= 0x200;
         }
-        if (*st < 0) {
+        if (*hitTri < 0) {
           break;
         }
       }
-      UnpackWorldCollisionTri(*st, tri[0]);
+      UnpackWorldCollisionTri(*hitTri, tri[0]);
       CopyVector(&actor->posX, tri[0]);
       AddVector(&actor->posX, &actor->posX, tri[1]);
       AddVector(&actor->posX, &actor->posX, tri[2]);
