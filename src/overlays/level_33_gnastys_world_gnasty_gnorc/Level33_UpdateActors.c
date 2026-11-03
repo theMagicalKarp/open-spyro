@@ -1517,7 +1517,7 @@ void Level33_UpdateActors(void) {
         g_pActorListBase[st->partner].cullRadius = 0x28;
       }
 
-      if (actor->nextAnim == 0 && actor->cullRadius != ACTOR_CULL_HIDDEN) {
+      if (actor->nextAnim == LANEPAT_WATCH && actor->cullRadius != ACTOR_CULL_HIDDEN) {
         if (actor->nextFrame == 1 && !(GetRandomU32() & 3) &&
             GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[LANEPAT_VOICE_STAND_EARLY]) == 0) {
           PlayActorMeshVoice(actor, LANEPAT_VOICE_STAND_EARLY, 0);

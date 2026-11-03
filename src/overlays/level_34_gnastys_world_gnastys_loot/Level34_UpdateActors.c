@@ -1880,7 +1880,7 @@ void Level34_UpdateActors(void) {
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(actor, 0, &g_pActorListBase[st->attach].posX);
       }
-      if (actor->nextAnim == 0 && actor->cullRadius != ACTOR_CULL_HIDDEN) {
+      if (actor->nextAnim == LCRITTER_WATCH && actor->cullRadius != ACTOR_CULL_HIDDEN) {
         if (actor->nextFrame == 2 && (GetRandomU32() & 3) == 0 &&
             GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[LCRITTER_VOICE_TAUNT_EARLY]) == 0) {
           PlayActorMeshVoice(actor, LCRITTER_VOICE_TAUNT_EARLY, 0);
@@ -1896,7 +1896,7 @@ void Level34_UpdateActors(void) {
       case LCRITTER_WATCH:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
-          actor->subMode = 0;
+          actor->subMode = LCRITTER_HOME_ORBIT;
           ENTER_POSE(actor, LCRITTER_FLEE);
         }
         break;
@@ -1913,7 +1913,7 @@ void Level34_UpdateActors(void) {
             speed = 0xF0;
           }
           switch (actor->subMode) {
-          case 0: {
+          case LCRITTER_HOME_ORBIT: {
             int home = ArcTan2(FP_X(st->path, 0) - actor->posX,
                                      FP_Y(st->path, 0) - actor->posY, ATAN_ANGLE8);
             int lim;
@@ -1953,12 +1953,12 @@ void Level34_UpdateActors(void) {
                 AbsAngleDelta8(home, ArcTan2(SPY.posX - actor->posX,
                                                   SPY.posY - actor->posY, ATAN_ANGLE8)) >
                     0x20) {
-              actor->subMode = 1;
+              actor->subMode = LCRITTER_HOME_BREAKOUT;
             }
             break;
           }
 
-          case 1: {
+          case LCRITTER_HOME_BREAKOUT: {
             int a = ArcTan2(FP_X(st->path, 0) - SPY.posX,
                                   FP_Y(st->path, 0) - SPY.posY, ATAN_ANGLE8);
             int b = ArcTan2(FP_X(st->path, 0) - actor->posX,
@@ -1967,10 +1967,10 @@ void Level34_UpdateActors(void) {
             TurnActorYawTowardAngle(actor, a, 8, 0, YAW_HOLD_IN_BAND);
             MoveActorAlongHeading(actor, speed, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             if (AbsAngleDelta8(a, b) > 0x50) {
-              actor->subMode = 0;
+              actor->subMode = LCRITTER_HOME_ORBIT;
             }
             if (ApproxDist2D(pos, FP_PT(st->path, 0)) > 0x1800) {
-              actor->subMode = 0;
+              actor->subMode = LCRITTER_HOME_ORBIT;
             }
             break;
           }

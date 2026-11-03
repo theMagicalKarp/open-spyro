@@ -3181,7 +3181,7 @@ void Level16_UpdateActors(void) {
           if (g_nLevelProgressCheckpoint[0] > 0) {
             actor->mode = BLOWHARD_P2_PATROL;
             st->pathDone = 0;
-            st->phase = 1;
+            st->phase = BLOWHARD_PHASE_2;
             st->path = st->paths[3];
             if (g_pActorListBase[st->prev].dropKind != DROP_GEM_ROLL &&
                 g_pActorListBase[st->prev].mode < ACTOR_MODE_DORMANT) {
@@ -3217,15 +3217,15 @@ void Level16_UpdateActors(void) {
       switch (actor->mode) {
       case BLOWHARD_START_PHASE:
         switch (st->phase) {
-        case 0:
+        case BLOWHARD_PHASE_1:
           actor->mode = BLOWHARD_P1_RISE;
           st->tweenStep = 0;
           break;
-        case 1:
+        case BLOWHARD_PHASE_2:
           actor->mode = BLOWHARD_P2_TRAVEL;
           st->tweenStep = 0;
           break;
-        case 2:
+        case BLOWHARD_PHASE_3:
           actor->mode = BLOWHARD_P3_TRAVEL;
           st->tweenStep = 0;
           break;
@@ -3427,13 +3427,13 @@ void Level16_UpdateActors(void) {
       case BLOWHARD_NEXT_PHASE:
         st->phase++;
         switch (st->phase) {
-        case 0:
+        case BLOWHARD_PHASE_1:
           st->path = st->paths[0];
           break;
-        case 1:
+        case BLOWHARD_PHASE_2:
           st->path = st->paths[1];
           break;
-        case 2:
+        case BLOWHARD_PHASE_3:
           st->path = st->paths[2];
           break;
         }

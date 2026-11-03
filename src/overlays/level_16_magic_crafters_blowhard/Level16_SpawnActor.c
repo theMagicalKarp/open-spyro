@@ -161,19 +161,19 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       EncodeCachedVecToActorDirCode(rec);
       switch (parent->mode)
       {
-        case 0x48:
+        case BLOWHARD_P1_DROP_RIDER:
           st->mode = RIMDRIFT_TETHERED;
           st->reach = 0x40;
           st->range = 0xE00;
           break;
 
-        case 0x52:
+        case BLOWHARD_P2_DROP_RIDER:
           st->mode = RIMDRIFT_CHASE;
           st->reach = 0x100;
           st->range = 0x2000;
           break;
 
-        case 0x5C:
+        case BLOWHARD_P3_DROP_RIDER:
           st->mode = RIMDRIFT_CHASE_HELPER;
           st->reach = 0x140;
           st->range = 0x2000;

@@ -336,6 +336,12 @@ enum BlowhardMode {
   BLOWHARD_P3_WAIT = 0x5D,
   BLOWHARD_NEXT_PHASE = 0x63,   /* phase + 1, next path, back to START_PHASE */
 };
+/* BlowhardState.phase: one hit ends each (BLOWHARD_HIT); the third is fatal. */
+enum BlowhardPhase {
+  BLOWHARD_PHASE_1 = 0, /* paths[0]: BLOWHARD_P1_* */
+  BLOWHARD_PHASE_2 = 1, /* paths[1] (paths[3] restored from a checkpoint): BLOWHARD_P2_* */
+  BLOWHARD_PHASE_3 = 2, /* paths[2] (paths[4] restored): BLOWHARD_P3_* */
+};
 
 /* Blowhard's animations: it hovers between rider drops. */
 enum BlowhardAnim {
@@ -801,9 +807,9 @@ enum StandVoice {
    * as THIEF_VOICE_TAUNT_EARLY/LATE. */
   RUNNER_VOICE_STAND_EARLY = 6,   /* ACTOR_TYPE_PATH_RUNNER + 1: RUNNER_ANIM_STAND frame 1 */
   RUNNER_VOICE_STAND_LATE = 5,    /* ... frame 0xA */
-  LANEPAT_VOICE_STAND_EARLY = 6,  /* ACTOR_TYPE_LANE_PATROLLER: anim 0 frame 1 */
+  LANEPAT_VOICE_STAND_EARLY = 6,  /* ACTOR_TYPE_LANE_PATROLLER: LANEPAT_WATCH pose, frame 1 */
   LANEPAT_VOICE_STAND_LATE = 5,   /* ... frame 0xA */
-  LCRITTER_VOICE_TAUNT_EARLY = 6, /* ACTOR_TYPE_LOOT_CRITTER: anim 0 frame 2 */
+  LCRITTER_VOICE_TAUNT_EARLY = 6, /* ACTOR_TYPE_LOOT_CRITTER: LCRITTER_WATCH pose, frame 2 */
   LCRITTER_VOICE_TAUNT_LATE = 5,  /* ... frame 0xC */
   GRAZER_VOICE_CALL = 3,          /* ACTOR_TYPE_GRAZING_CRITTER, every 0x78..0xB7 ticks of GRAZER_WANDER */
 };
@@ -1827,6 +1833,12 @@ enum LootCritterMode {
   LCRITTER_WATCH = 0,   /* faces Spyro; near: FLEE */
   LCRITTER_FLEE = 1,    /* runs from Spyro around its home or along its path */
   LCRITTER_KNOCKED = 2, /* knocked away (dropping its loot once), then bursts */
+};
+/* A homed loot critter's ->subMode while LCRITTER_FLEE. */
+enum LootCritterHomeStep {
+  LCRITTER_HOME_ORBIT = 0,    /* steers round its home point away from Spyro; stuck there with
+                               * Spyro off the home side: BREAKOUT */
+  LCRITTER_HOME_BREAKOUT = 1, /* runs on along Spyro-to-home; turned or 0x1800 out: ORBIT */
 };
 
 /* CritterState.mode: how a homeless loot critter (no CritterState.hasHome)
