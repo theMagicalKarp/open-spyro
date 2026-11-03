@@ -106,7 +106,7 @@ typedef struct ChargingGuardState {
   int timer;         /* 0x10 */
   int range;         /* 0x14 sight range >> 10 */
   PathData *path;    /* 0x18 */
-  int pad1C;         /* 0x1C */
+  int pad1C; /* 0x1C a level-data pointer (relocated at load), never read */
   int knock;         /* 0x20 knock-back heading */
   int speed;         /* 0x24 */
   int turn;          /* 0x28 */
@@ -641,7 +641,7 @@ typedef struct LobGunnerState {
   int timer;              /* 0x30 timer */
   int throwTimer;              /* 0x34 throw timer */
   Actor *heldLob;           /* 0x38 held lob (type 176), -1 once thrown */
-  int pad3C;              /* 0x3C */
+  int pad3C; /* 0x3C a level-data pointer (relocated at load), never read */
   int aimRange;              /* 0x40 aim-at-path range */
   int box1[6];           /* 0x44 trigger box */
   int box2[6];           /* 0x5C trigger box */
@@ -679,7 +679,7 @@ typedef struct WandererState {
   WanderBlock wander; /* 0x00 UpdateActorWander's block */
   int knockSpeed;    /* 0x20 knock-back speed */
   int knockHeading;    /* 0x24 knock-back heading */
-  int pad28;    /* 0x28 */
+  int pad28; /* 0x28 a level-data pointer (relocated at load), never read */
   int idleTimer;    /* 0x2C idle timer */
 } WandererState;
 

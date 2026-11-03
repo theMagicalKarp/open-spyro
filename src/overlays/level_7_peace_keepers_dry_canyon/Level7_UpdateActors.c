@@ -2547,7 +2547,7 @@ void Level7_UpdateActors(void) {
           cs->u08 = 0x28;
           cs->u14 = one;
           cs->u10 = 0xF0;
-          cs->link = st->link;
+          cs->path = st->boltPath;
           cs->u04 = 0x6E;
           st->u08 = 0x78;
         }

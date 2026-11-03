@@ -480,7 +480,7 @@ typedef struct CritterKnockState {
  * it back along `heading`/`speed` (mode 6) and it bursts into type 230/288/289
  * debris. */
 typedef struct BrawlerState {
-  int link;    /* 0x00 handed to the spawned bolt */
+  PathData *boltPath; /* 0x00 handed to the spawned bolt (a path in the level data) */
   int sending; /* 0x04 set each BRAWLER_SEND frame; never read */
   int u08;     /* 0x08 */
   int heading; /* 0x0C */
@@ -492,7 +492,7 @@ typedef struct BrawlerState {
  * Nothing in case 184 enters mode 1, and Level7_UpdateActors has no arm for
  * type 183, so these fields are write-only here and keep raw names. */
 typedef struct BrawlerSpawnState {
-  int link;    /* 0x00 */
+  PathData *path; /* 0x00 the brawler's boltPath */
   int u04;     /* 0x04 */
   int u08;     /* 0x08 */
   int heading; /* 0x0C */
