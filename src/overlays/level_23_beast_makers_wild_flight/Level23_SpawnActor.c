@@ -228,7 +228,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
 
     case ACTOR_TYPE_FLIGHT_CHEST_SHARD ... ACTOR_TYPE_FLIGHT_CHEST_SHARD + 2:
     {
-      FragmentState *st = rec->state;
+      TumbleState *st = rec->state;
       int yaw;
       int pitch;
       InitActorRenderDefaults(rec);
@@ -249,9 +249,9 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       rec->posX += st->vel[0] * 4;
       rec->posY += st->vel[1] * 4;
       rec->posZ += st->vel[2] * 4;
-      st->spinX = GetRandomU32() & 0xF;
-      st->spinY = GetRandomU32() & 0xF;
-      st->spinZ = GetRandomU32() & 0xF;
+      st->spin[0] = GetRandomU32() & 0xF;
+      st->spin[1] = GetRandomU32() & 0xF;
+      st->spin[2] = GetRandomU32() & 0xF;
       st->floorZ = parent->posZ - 0x40;
       st->life = 0x40 - (GetRandomU32() & 0xF);
       if (((unsigned int) (((unsigned short) rec->type) - 0x135)) < 3)
@@ -264,7 +264,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
 
     case ACTOR_TYPE_SPARK_DEBRIS ... ACTOR_TYPE_SPARK_DEBRIS + 2:
     {
-      FragmentState *st = rec->state;
+      TumbleState *st = rec->state;
       int yaw;
       int pitch;
       InitActorRenderDefaults(rec);
@@ -282,9 +282,9 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       rec->posX += st->vel[0] * 4;
       rec->posY += st->vel[1] * 4;
       rec->posZ += st->vel[2] * 4;
-      st->spinX = GetRandomU32() & 0xF;
-      st->spinY = GetRandomU32() & 0xF;
-      st->spinZ = GetRandomU32() & 0xF;
+      st->spin[0] = GetRandomU32() & 0xF;
+      st->spin[1] = GetRandomU32() & 0xF;
+      st->spin[2] = GetRandomU32() & 0xF;
       st->floorZ = parent->posZ - 0x40;
       st->life = 0x40 - (GetRandomU32() & 0xF);
       break;
@@ -292,7 +292,7 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
 
     case ACTOR_TYPE_TUMBLE_SHARD ... ACTOR_TYPE_TUMBLE_SHARD + 2:
     {
-      FragmentState *st = rec->state;
+      TumbleState *st = rec->state;
       int seed;
       InitActorRenderDefaults(rec);
       rec->cullRadius = 0x20;
@@ -318,9 +318,9 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       {
         st->vel[2] = 0x14;
       }
-      st->spinX = GetRandomU32() & 0xF;
-      st->spinY = GetRandomU32() & 0xF;
-      st->spinZ = GetRandomU32() & 0xF;
+      st->spin[0] = GetRandomU32() & 0xF;
+      st->spin[1] = GetRandomU32() & 0xF;
+      st->spin[2] = GetRandomU32() & 0xF;
       st->floorZ = parent->posZ - 0x40;
       st->life = 0x40 - (GetRandomU32() & 0xF);
       break;

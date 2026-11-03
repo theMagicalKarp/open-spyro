@@ -126,14 +126,6 @@ typedef struct RollerState {
   int ready;           /* 0x30 nearest node found */
 } RollerState;
 
-/* ACTOR_TYPE_BLASTABLE_PATH_SMOKER / _PROP: path tweeners a blast wrecks. */
-typedef struct SmokerState {
-  PathData *path; /* 0x00 */
-  int legStep;           /* 0x04 */
-  int legVec[3];        /* 0x08 */
-  int timer;           /* 0x14 */
-} SmokerState;
-
 /* Flight-level chest (ACTOR_TYPE_FLIGHT_CHEST): struck, it tallies and frees
  * its time bonus. */
 typedef struct FlightChestState {

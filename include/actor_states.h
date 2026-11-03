@@ -1,6 +1,8 @@
 /* actor_states.h — class-specific state blocks (Actor->state) that main and
- * the level overlays both read. They stand alone, without the Actor type, so
- * overlay headers that only forward-declare struct Actor can include this. */
+ * the level overlays both read, or that a level's SpawnActor and UpdateActors
+ * share (level_spawn_actor.h and level_update_actors.h both include this).
+ * They stand alone, without the Actor type, so overlay headers that only
+ * forward-declare struct Actor can include this. */
 
 #ifndef OPEN_SPYRO_ACTOR_STATES_H
 #define OPEN_SPYRO_ACTOR_STATES_H
@@ -185,5 +187,45 @@ typedef struct ShardState {
   int life;      /* 0x0C */
   int floor;     /* 0x10 */
 } ShardState;
+
+/* Level 19 type 35 (ACTOR_TYPE_BOLT_GUARD): scatters when hit and fires type
+ * 494 bolts. SpawnActor aims its ground-bounce shards along `heading`. */
+typedef struct BoltGuardState {
+  int mode;    /* 0x00 enum BoltGuardCue */
+  int timer;   /* 0x04 */
+  int timer2;  /* 0x08 */
+  int heading; /* 0x0C knock-back heading (12-bit), set when it is hit */
+  int speed;   /* 0x10 */
+  int turn;    /* 0x14 */
+  int u18;     /* 0x18 */
+  struct PathData *path; /* 0x1C */
+  int range;   /* 0x20 in 1024s */
+  int countdown;     /* 0x24 */
+  int link;    /* 0x28 actor index, -1 for none; initially (level data) ACTOR_TYPE_ROAMING_RAM */
+  short spinX; /* 0x2C */
+  short spinY; /* 0x2E */
+  int box[3];  /* 0x30 */
+} BoltGuardState;
+
+/* ACTOR_TYPE_BLASTABLE_PATH_SMOKER / _PROP: path tweeners a blast
+ * wrecks (flight levels 5/29). */
+typedef struct SmokerState {
+  struct PathData *path; /* 0x00 */
+  int legStep;           /* 0x04 */
+  int legVec[3];        /* 0x08 per-frame step along the leg; a wreck ember starts from it */
+  int timer;           /* 0x14 */
+} SmokerState;
+
+/* Tumbling fragments: SpawnActor's chest/object shards (types 0x43..0x45,
+ * 0xFF..0x101, 0x135..0x137 and per-level ranges) and UpdateActors' falling
+ * chest fragments (257/425). Integrate until life, visibility or the floor
+ * runs out. Other updaters view some of these types as ChestShardState (byte
+ * spins) or EmberState. */
+typedef struct TumbleState {
+  short vel[3];  /* 0x00 */
+  short spin[3]; /* 0x06 per-frame delta for ->rotX/rotY/rotZ */
+  int life;      /* 0x0C ticks remaining */
+  int floorZ;    /* 0x10 retire once the actor sinks to this height */
+} TumbleState;
 
 #endif /* OPEN_SPYRO_ACTOR_STATES_H */

@@ -41,17 +41,6 @@ typedef struct PickupDropState {
   unsigned char sparkle; /* 0x14 g_aRotBillboards handle, 0xFF = none */
 } PickupDropState;
 
-/* Chest / object fragment (types 0x43..0x45, 0xFF..0x101, 0x135..0x137 and
- * per-level ranges) — UpdateActors' ChestShardState / TumbleState. */
-typedef struct FragmentState {
-  short vel[3]; /* 0x00 */
-  short spinX;  /* 0x06 */
-  short spinY;  /* 0x08 */
-  short spinZ;  /* 0x0A */
-  int life;     /* 0x0C ticks left */
-  int floorZ;   /* 0x10 retire height */
-} FragmentState;
-
 extern int FindGroundHeightBelow(int *pos, int drop);
 
 /* pos: a world vec3, or the Actor * for actor-anchored types; effectArg: a

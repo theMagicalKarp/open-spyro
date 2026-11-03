@@ -184,15 +184,6 @@ extern void ClearWord(FxNode *node);
 extern int StepAngle8Toward(int to, int from, int maxStep);
 extern int ApproachAngle8(int target, int cur, int step, int lim);
 
-/* Types 257/425: falling chest fragments. Integrate until life, visibility
- * or the floor runs out. */
-typedef struct TumbleState {
-  short vel[3];  /* 0x00 */
-  short spin[3]; /* 0x06 per-frame delta for ->rotX/rotY/rotZ */
-  int life;      /* 0x0C ticks remaining */
-  int floorZ;    /* 0x10 retire once the actor sinks to this height */
-} TumbleState;
-
 /* Spyro as one object at 0x80078A58, with the fields this function touches. */
 typedef struct {
   int posX;                       /* 0x000 */

@@ -92,24 +92,6 @@
   }                                                                            \
   break
 
-/* Type 35 state: a guard that scatters when hit and fires type 494 bolts. */
-typedef struct BoltGuardState {
-  int mode;    /* 0x00 enum BoltGuardCue */
-  int timer;   /* 0x04 */
-  int timer2;  /* 0x08 */
-  int heading; /* 0x0C */
-  int speed;   /* 0x10 */
-  int turn;    /* 0x14 */
-  int u18;     /* 0x18 */
-  void *path;  /* 0x1C */
-  int range;   /* 0x20 in 1024s */
-  int countdown;     /* 0x24 */
-  int link;    /* 0x28 actor index, -1 for none; initially (level data) ACTOR_TYPE_ROAMING_RAM */
-  short spinX; /* 0x2C */
-  short spinY; /* 0x2E */
-  int box[3];  /* 0x30 */
-} BoltGuardState;
-
 /* Type 467 state: a bolt-throwing sentry with three guards (`kids`). */
 typedef struct BoltSentryState {
   int mode;      /* 0x00 enum BoltSentryCue */

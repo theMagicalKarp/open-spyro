@@ -1061,9 +1061,9 @@ enum LungerMode {
   LUNGER_AIM = 1,        /* turns to the target point, then LEAP */
   LUNGER_LEAP = 2,       /* leaps at the point, pinning Spyro under it; then GO_HOME */
   LUNGER_KNOCKED = 4,    /* last hit: knocked away, then bursts */
-  LUNGER_BURST = 10,     /* bursts and drops its loot (no writer in the C sources) */
+  LUNGER_BURST = 10,     /* bursts and drops its loot (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
   LUNGER_RECOIL = 13,    /* flinches from a hit, re-aims, then AIM */
-  LUNGER_RECOIL_B = 14,  /* recoil variants (no writer in the C sources) */
+  LUNGER_RECOIL_B = 14,  /* recoil variants (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
   LUNGER_RECOIL_C = 15,
   LUNGER_ALERTED = 20,   /* marks LungeState.alerted, then IDLE */
   LUNGER_GO_HOME = 100,  /* walks back home and faces its heading, then IDLE */
@@ -1142,7 +1142,7 @@ enum GrabberMode {
   GRABBER_RUSH = 1,        /* rushes Spyro (shoving gunners in its way); close: SEIZE */
   GRABBER_RETREAT = 2,     /* back home, then LURK */
   GRABBER_KNOCKED = 4,     /* flamed: drops Spyro, tumbles away and bursts */
-  GRABBER_RECOVER = 6,     /* plays out, then RUSH (no writer in the C sources) */
+  GRABBER_RECOVER = 6,     /* plays out, then RUSH (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
   GRABBER_SEIZE = 10,      /* closes on Spyro and takes hold (hides him) */
   GRABBER_CARRY = 11,
   GRABBER_THROW = 12,      /* throws Spyro clear, then RETREAT */
@@ -1178,7 +1178,7 @@ enum SorcererMode {
   SORCERER_BREAK_LINK = 10,  /* the path caster was flamed: calms its target, then SETTLE */
   SORCERER_WAIT_TAUNT = 96,  /* waits, then TAUNT */
   SORCERER_WAIT_CONJURE = 97, /* waits, then CONJURE */
-  SORCERER_CUE = 98,         /* takes the queued pose (no writer in the C sources) */
+  SORCERER_CUE = 98,         /* takes the queued pose (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
   SORCERER_ALERTED = 99,     /* set group-wide: turns angry, takes the queued pose */
 };
 
@@ -1650,7 +1650,7 @@ enum ToughRamMode {
   TRAM_ROUSE = 1,     /* rousing animation, then WATCH */
   TRAM_WATCH = 2,     /* faces Spyro; close: BUTT; far: GRAZE */
   TRAM_BUTT = 3,      /* butts Spyro; pinned him: BUTT_HOLD */
-  TRAM_SETTLE = 4,    /* back to GRAZE (no writer in the C sources) */
+  TRAM_SETTLE = 4,    /* back to GRAZE (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
   TRAM_STAGGER = 5,   /* hit: thrown up and back, then GRAZE */
   TRAM_KNOCKED = 6,   /* the fourth hit (or thrown off a ledge): falls, then bursts */
   TRAM_BUTT_HOLD = 7, /* holds after pinning Spyro, then GRAZE */
@@ -1874,7 +1874,7 @@ enum TwoPathRunnerMode {
   TPRUNNER_IDLE = 0,       /* until RunnerState.mode arms it: GUARD */
   TPRUNNER_GUARD = 4,      /* faces Spyro; close on the timer: SWIPE; armed: RUN */
   TPRUNNER_KNOCKED = 5,    /* charged: knocked away, then bursts */
-  TPRUNNER_REACT = 6,      /* faces Spyro, then GUARD (no writer in the C sources) */
+  TPRUNNER_REACT = 6,      /* faces Spyro, then GUARD (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
   TPRUNNER_SWIPE = 8,      /* swipes, then GUARD */
   TPRUNNER_WALK_BACK = 10, /* walks to its path node, then GUARD (a level 8 lookout, GLOOK_ROUSE, sets its linked runner to 10) */
   TPRUNNER_RUN = 0x14,     /* runs its chosen path to RunnerState.node, then GUARD */
@@ -1916,7 +1916,7 @@ enum RimRiderDrift {
  * knocked (SWOOP_KNOCKED) when the brawler goes down. */
 enum BrawlerMode {
   BRAWLER_IDLE = 0,    /* faces Spyro; near: RAISE */
-  BRAWLER_SEND = 1,    /* sends an ACTOR_TYPE_BRAWLER_SPAWN out on frame 0x11 (no writer in the C sources) */
+  BRAWLER_SEND = 1,    /* sends an ACTOR_TYPE_BRAWLER_SPAWN out on frame 0x11 (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
   BRAWLER_RAISE = 2,   /* raises its fists, then GUARD */
   BRAWLER_GUARD = 3,   /* faces Spyro; close on the timer: PUNCH; far: LOWER */
   BRAWLER_PUNCH = 4,   /* punches, then RAISE */
@@ -1988,7 +1988,7 @@ enum PathChargerMode {
   PCHARGER_KNOCKED = 1, /* flamed: bursts */
   PCHARGER_CHARGE = 2,  /* charges down the path; reaching Spyro, butts him off it */
   PCHARGER_TAUNT = 6,   /* at a turn with Spyro ahead: faces him, then PATROL */
-  PCHARGER_TAUNT_ALT = 7, /* the same (no writer in the C sources) */
+  PCHARGER_TAUNT_ALT = 7, /* the same (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
 };
 
 /* PatrolState.mode: what a path charger did at its last path turn. */
@@ -2077,7 +2077,7 @@ enum ThrownRockMode {
 enum CometCannonMode {
   CCANNON_WATCH = 0,  /* lit by Spyro's flame from behind it: ARM; cued (subMode): LOB */
   CCANNON_ARM = 1,    /* sets the fuse, then FIRE */
-  CCANNON_FUSE = 2,   /* smokes until the fuse runs out, then FIRE (no writer in the C sources) */
+  CCANNON_FUSE = 2,   /* smokes until the fuse runs out, then FIRE (unreachable: no writer in the C sources, and level data starts every one in mode 0) */
   CCANNON_FIRE = 3,   /* fires an ACTOR_TYPE_COMET at the best target ahead, then WATCH */
   CCANNON_LOB = 10,   /* turns to the cued target and lobs a comet at it, then WATCH */
 };
