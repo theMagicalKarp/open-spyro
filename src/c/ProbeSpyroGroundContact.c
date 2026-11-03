@@ -1,16 +1,13 @@
 #include "funcs.h"
 #include "globals.h"
 #include "match_asm.h"
+#include "spyro_block.h"
 #include "spyro_state.h"
 
-/* The whole Spyro ground/collision state block hangs off one base register:
-   [0] airborne frames, [2..4] ground normal, [5] slope, [0xa] cliff-edge hint,
-   [0x2d] ground-run flag, [0x76] ground chunk id, [0x77..] chunk verts, and the
-   body matrix / world position sit at -0x68 / -0x9c below it. */
-#define BLK g_anSpyroAirborneFramesBlock
-#define MTX (&BLK[-0x1a]) /* g_anSpyroBodyMtx */
-#define POS (&BLK[-0x27]) /* g_anSpyroWorldPos */
-#define NORMAL (&BLK[2])  /* g_anSpyroGroundNormal */
+/* The whole Spyro ground/collision state block hangs off one base register,
+   g_nSpyroAirborneFrames: BLK(i) is the Spyro-block word i (spyro_block.h)
+   reached from it. */
+#define BLK(i) g_anSpyroAirborneFramesBlock[(i) - SPY_AIRBORNE]
 
 /* Per-frame ground probe. Casts a body-relative ray straight down from Spyro
    (and, on a shallow hit, a second wider one) through the world + actor
@@ -22,13 +19,13 @@ void ProbeSpyroGroundContact(void) {
   int down[4];
   int out[4];
   int t;
-  g_anSpyroAirborneFramesBlock[0] += 1;
-  ZeroVector(&g_anSpyroAirborneFramesBlock[2]);
+  BLK(SPY_AIRBORNE) += 1;
+  ZeroVector(&BLK(SPY_GROUND_NORMAL));
   g_anSpyroGroundNormal[2] = 0x1000;
   if (((!out) && (!out)) && (!out)) {
   }
   g_nSpyroGroundSlope = 0;
-  g_anSpyroAirborneFramesBlock[0xa] = 0;
+  BLK(SPY_CLIFF) = 0;
   if ((g_dwSpyroRequestMask & SPYRO_RQ_NO_CLIP) == 0) {
     down[0] = 0;
     out[0] = 0;
@@ -36,12 +33,12 @@ void ProbeSpyroGroundContact(void) {
     out[1] = 0;
     down[2] = -0x104;
     out[2] = -0x1c4;
-    RotateVectorByMatrix(&g_anSpyroAirborneFramesBlock[-0x1a], down, down);
-    AddVector(down, down, &g_anSpyroAirborneFramesBlock[-0x27]);
+    RotateVectorByMatrix(&BLK(SPY_BODY_MTX), down, down);
+    AddVector(down, down, &BLK(SPY_POS));
     ApplyActiveGteRotation(out, out);
-    AddVector(out, out, &g_anSpyroAirborneFramesBlock[-0x27]);
+    AddVector(out, out, &BLK(SPY_POS));
     if (CastRayWorldAndActors(down, out) != 0) {
-      CopyVector(&g_anSpyroAirborneFramesBlock[2], g_anCollisionProbeVec);
+      CopyVector(&BLK(SPY_GROUND_NORMAL), g_anCollisionProbeVec);
       t = (signed char)ArcTan2(g_anCollisionProbeVec[2],
                                VectorLength(g_anCollisionProbeVec, VEC_LEN_XY),
                                ATAN_ANGLE8);
@@ -49,45 +46,43 @@ void ProbeSpyroGroundContact(void) {
       if (t < 0) {
         g_nSpyroGroundSlope = 0x400;
       }
-      g_anSpyroAirborneFramesBlock[0x76] = g_nLastCollisionHitChunkId;
+      BLK(SPY_GROUND_CHUNK) = g_nLastCollisionHitChunkId;
       UnpackWorldCollisionTri(g_nLastCollisionHitChunkId,
-                              &g_anSpyroAirborneFramesBlock[0x77]);
+                              &BLK(SPY_GROUND_VERTS));
       if (g_nSpyroGroundSlope < 0x21) {
-        g_anSpyroAirborneFramesBlock[0x2d] = g_nSpyroGroundSlope >= 0x17;
-        g_anSpyroAirborneFramesBlock[0] = 0;
+        BLK(SPY_GLIDE_SPENT) = g_nSpyroGroundSlope >= 0x17;
+        BLK(SPY_AIRBORNE) = 0;
         down[0] = 0x104;
         down[1] = 0;
         down[2] = -0x104;
         out[0] = 0x1c4;
         out[1] = 0;
         out[2] = -0x1c4;
-        RotateVectorByMatrix(&g_anSpyroAirborneFramesBlock[-0x1a], down, down);
-        AddVector(down, down, &g_anSpyroAirborneFramesBlock[-0x27]);
+        RotateVectorByMatrix(&BLK(SPY_BODY_MTX), down, down);
+        AddVector(down, down, &BLK(SPY_POS));
         ApplyActiveGteRotation(out, out);
-        AddVector(out, out, &g_anSpyroAirborneFramesBlock[-0x27]);
+        AddVector(out, out, &BLK(SPY_POS));
         if (CastRayWorldAndActors(down, out) == 0) {
-          g_anSpyroAirborneFramesBlock[0xa] = 1;
+          BLK(SPY_CLIFF) = 1;
         }
       }
     } else {
-      g_anSpyroAirborneFramesBlock[0x76] = -1;
+      BLK(SPY_GROUND_CHUNK) = -1;
     }
-    if ((g_anSpyroAirborneFramesBlock[0] != 0) &&
-        (g_nSpyroGroundProbeSuspendFlag == 0)) {
+    if ((BLK(SPY_AIRBORNE) != 0) && (g_nSpyroGroundProbeSuspendFlag == 0)) {
       down[0] = 0;
       down[1] = 0;
       down[2] = -0x104;
       out[0] = 0;
       out[1] = 0;
       out[2] = -0x1c4;
-      AddVector(down, down, &g_anSpyroAirborneFramesBlock[-0x27]);
-      AddVector(out, out, &g_anSpyroAirborneFramesBlock[-0x27]);
+      AddVector(down, down, &BLK(SPY_POS));
+      AddVector(out, out, &BLK(SPY_POS));
       if (CastRayWorldAndActors(down, out) != 0) {
-        CopyVector(&g_anSpyroAirborneFramesBlock[2], g_anCollisionProbeVec);
+        CopyVector(&BLK(SPY_GROUND_NORMAL), g_anCollisionProbeVec);
         t = (signed char)ArcTan2(
             g_anSpyroGroundNormal[2],
-            VectorLength(&g_anSpyroAirborneFramesBlock[2], VEC_LEN_XY),
-            ATAN_ANGLE8);
+            VectorLength(&BLK(SPY_GROUND_NORMAL), VEC_LEN_XY), ATAN_ANGLE8);
         g_nSpyroGroundSlope = t;
         if (t < 0) {
           g_nSpyroGroundSlope = 0x400;
@@ -100,10 +95,9 @@ void ProbeSpyroGroundContact(void) {
            g_nSpyroGroundSlope precisely because there the original DOES
            fold. */
         EBB_BREAK();
-        if (g_anSpyroAirborneFramesBlock[5] < 0x21) {
-          g_anSpyroAirborneFramesBlock[0] = 0;
-          g_anSpyroAirborneFramesBlock[0x2d] =
-              g_anSpyroAirborneFramesBlock[5] >= 0x17;
+        if (BLK(SPY_GROUND_SLOPE) < 0x21) {
+          BLK(SPY_AIRBORNE) = 0;
+          BLK(SPY_GLIDE_SPENT) = BLK(SPY_GROUND_SLOPE) >= 0x17;
         }
       }
     }

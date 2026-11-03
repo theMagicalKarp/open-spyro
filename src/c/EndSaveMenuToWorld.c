@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "hud_counter.h"
 #include "main_shared.h"
+#include "spyro_block.h"
 #include "vecmath.h"
 
 /* 0x8002d02c, 324 bytes — leave the save/load menu back into the world
@@ -33,7 +34,8 @@ void EndSaveMenuToWorld(void) {
   g_nCameraNextMode = CAM_MODE_STAND;
   g_pCameraTargetParams = dyn;
   g_nSpyroSuperflameTimer = g_nSpyroSuperflameTimerSave;
-  g_nCameraTargetYawBiasFromMode = g_anSpyroMoveTargetYawBlock[0x14];
+  g_nCameraTargetYawBiasFromMode =
+      g_anSpyroMoveTargetYawBlock[SPY_BODY_YAW - SPY_MOVE_TARGET_YAW];
 
   ComputeCameraToTargetAngle((int *)((char *)g_apCameraAnchorBlock - 0xA8));
   CopyWords(dyn, (char *)g_apCameraAnchorBlock - 0x40, 0x18);

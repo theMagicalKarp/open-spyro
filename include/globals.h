@@ -5,6 +5,7 @@
 #ifndef OPEN_SPYRO_GLOBALS_H
 #define OPEN_SPYRO_GLOBALS_H
 
+#include "camera.h"
 #include "sparx.h"
 
 #include "types.h"
@@ -983,7 +984,7 @@ extern int g_anSpyroPendingImpulse[3];                  /* 0x80078b84 */
 extern int g_nSpyroMoveTargetMag;                       /* 0x80078b9c */
 extern int g_nSpyroBodyYawStep;                         /* 0x80078ba0 */
 extern int g_nSpyroGravityStep;                         /* 0x80078ba4 */
-extern int g_nSpyroGlideEnteredLatch;                       /* 0x80078ba8 set to 1 whenever ChangeSpyroState enters a glide/fly state from another state; only ResetSpyroEntity(1)'s FillWord clears it. While set, the jump-hold latch is off and a fall needs 0x1F (flight: 0x10) frames before Cross glides */
+extern int g_nSpyroGlideSpentFlag;                       /* 0x80078ba8 1 once Spyro has entered a glide/fly state (ChangeSpyroState) or stands on steep ground (slope 0x17..0x20); ProbeSpyroGroundContact clears it on gentler ground. While set, the jump-hold latch is off and a fall needs 0x1F (flight: 0x10) frames before Cross glides */
 extern int g_nSpyroJumpHoldLatch;                       /* 0x80078bac */
 extern int g_nSpyroFloorReferenceZ;                     /* 0x80078bb0 */
 extern int g_nSpyroGravityEnableFlag;                   /* 0x80078bb4 */
@@ -1237,7 +1238,7 @@ extern int g_anFlightBoundsRadius[]; /* 0x8006e7e4 */
 extern int g_anHazardEnterSpawnType[]; /* 0x8006ea34 */
 extern int g_anHazardTimeoutSpawnType[]; /* 0x8006ea40 */
 extern int g_anLevelEntryPoints[]; /* 0x8006ea4c: entry points, 4 words per level */
-extern int g_anScriptedCameraPresetRecords[]; /* 0x8006eb24 */
+extern ScriptedCamView g_aScriptedCamViews[]; /* 0x8006eb24 three presets + the fall/death vantage */
 extern int g_anDemoLevelIds[]; /* 0x8006ee7c: level id per attract demo (StoryIntro_Update) */
 extern int g_anLevelMusicPickTable[]; /* 0x8006f05c */
 extern int g_anGameOverRespawnPosVirtualBase[]; /* 0x8006f140 */
@@ -1302,8 +1303,8 @@ extern int g_anCameraSpringDeltaStateBlock[]; /* 0x80076e78 */
 extern int g_nCameraSpringYawDelta; /* 0x80076e78 */
 extern int g_nCameraSpringPitchDelta; /* 0x80076e7c */
 extern int g_anCameraScriptStickIntegratorBlock[]; /* 0x80076eac */
-extern int *g_pScriptedCameraView; /* 0x80076ebc */
-extern int *g_apScriptedCameraViewBlock[]; /* 0x80076ebc: held-base view of g_pScriptedCameraView */
+extern ScriptedCamView *g_pScriptedCameraView; /* 0x80076ebc */
+extern ScriptedCamView *g_apScriptedCameraViewBlock[]; /* 0x80076ebc: held-base view of g_pScriptedCameraView */
 extern unsigned char g_abFrameDrawEnvIsbgBlock[]; /* 0x80076ef8 */
 extern char g_abDragonRescueAssetHeader[]; /* 0x80077030: dragon-rescue asset header copy */
 extern int g_anDragonRescueHeaderEndBlock[]; /* 0x8007703c: held-base view of the header-end offset */

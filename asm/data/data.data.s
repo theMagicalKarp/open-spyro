@@ -4195,9 +4195,9 @@ dlabel g_anLevelEntryPoints
     /* 5F320 8006EB20 7AE70000 */ .word 0x0000E77A
 enddlabel g_anLevelEntryPoints
 
-nonmatching g_anScriptedCameraPresetRecords
+nonmatching g_aScriptedCamViews
 
-dlabel g_anScriptedCameraPresetRecords
+dlabel g_aScriptedCamViews
     /* 5F324 8006EB24 C63E0100 */ .word 0x00013EC6
     /* 5F328 8006EB28 5DFD0000 */ .word 0x0000FD5D
     /* 5F32C 8006EB2C 02800000 */ .word 0x00008002
@@ -4246,7 +4246,7 @@ dlabel g_anScriptedCameraPresetRecords
     /* 5F3D8 8006EBD8 00000000 */ .word 0x00000000
     /* 5F3DC 8006EBDC 00000000 */ .word 0x00000000
     /* 5F3E0 8006EBE0 00000000 */ .word 0x00000000
-enddlabel g_anScriptedCameraPresetRecords
+enddlabel g_aScriptedCamViews
 
 nonmatching g_anSpyroDeathCamRecordBlock
 

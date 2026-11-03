@@ -7,6 +7,7 @@
 
 #include "types.h"
 #include "actor_type.h"
+#include "camera.h"
 
 struct TriggerBox;
 
@@ -481,9 +482,9 @@ void UpdateCameraSpringForMode(void);
 void UpdatePortalPathCamera(void);
 
 /* 0x80037714: Sets the active scripted-camera record (g_pScriptedCameraView), snaps the smoothed eye position g_anCameraPos to the record's stored eye at +0x18, zeros velocity at g_anSpyroVelocity, sets g_nSpyroVelocityZ=-0x2300 (default Z), loads Roll/Pitch/Yaw from record offsets +0x24/+0x28/+0x2c into g_nCameraEulerRoll/Pitch/Yaw, then forces both camera mode slots to 0x8000000e. Called only by UpdateScriptedCameraView when selecting a new vantage. */
-void ActivateScriptedCameraView(int *view);
+void ActivateScriptedCameraView(ScriptedCamView *view);
 
-/* 0x800377a8: Camera updater for mode 0x8000000e (scripted vantage triplet). Once the level-load stream has finished (g_nCdStreamState < 0), picks the next mode from &g_abSpyroStateCameraMode unless the current camera state matches the override list (modes 6/0x10/0x20/0x21/0x22/0xf/0x1d). When the active scripted-camera record (g_pScriptedCameraView) is exhausted — either the player has moved further than the record's max distance (field 0xd) OR the player has left the camera-screen window via ProjectWorldPointGTEUnscaled (Y > 0xf0) — picks one of 3 ROM records at &g_anScriptedCameraPresetRecords (stride 0x38), avoiding immediate self-repeat, and calls ActivateScriptedCameraView. Refreshes camera euler angles when the record's type field at +0x30 == 1. */
+/* 0x800377a8: Camera updater for mode 0x8000000e (scripted vantage triplet). Once the level-load stream has finished (g_nCdStreamState < 0), picks the next mode from &g_abSpyroStateCameraMode unless the current camera state matches the override list (modes 6/0x10/0x20/0x21/0x22/0xf/0x1d). When the active scripted-camera record (g_pScriptedCameraView) is exhausted — either the player has moved further than the record's max distance (range) OR the player has left the camera-screen window via ProjectWorldPointGTEUnscaled (Y > 0xf0) — picks one of 3 ROM records at &g_aScriptedCamViews (stride 0x38), avoiding immediate self-repeat, and calls ActivateScriptedCameraView. Refreshes camera euler angles when the record's aimAtSpyro is 1. */
 void UpdateScriptedCameraView(void);
 
 /* 0x80037a20: Camera updater for mode 0x80000012 (level transition: set with GS_LEVEL_LOAD by portal entry, BeginWorldHubReturn and HandleLevelSelectInput; holds on Spyro while the next level streams). Anchors on the player (&g_anSpyroWorldPos) with yaw bias from level yaw g_nSpyroBodyYaw. Picks the target-params block based on whether yaw is above/below the level yaw (g_anCameraParamTransitionYawBelow vs g_anCameraParamTransitionYawAbove) or, when g_nReturnPortalLevelId is set, by submode threshold (g_anCameraParamTransitionStreaming vs g_anCameraParamFollowFacing). Zeros the yaw torque, runs the spring step (axis 0) per frame-step, recomputes the eye position via ComputeCameraOrbitOffset + AddVector, then SnapCameraToTarget + UpdateCameraEulerAngles + ComputeCameraToTargetAngle. Copies the auto-aim outputs into the spring set so subsequent frames smoothly leave the freeze. */
