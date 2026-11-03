@@ -3370,7 +3370,7 @@ void Level21_UpdateActors(void) {
 
         ANIM_GO(actor, RUNNER_RUN);
         r = SteerActorAroundPoint(
-            actor, PATH_PT(st->path, st->path->cur), st->speed,
+            actor, PATH_PT(st->path, st->path->cur), st->dodgeRadius,
             (ArcTan2(spy->posX - PATH_X(st->path, st->path->cur),
                            spy->posY - PATH_Y(st->path, st->path->cur), ATAN_ANGLE8) +
              0x80) &
@@ -3393,7 +3393,7 @@ void Level21_UpdateActors(void) {
 
         ANIM_GO(actor, RUNNER_RUN);
         r = SteerActorAroundPoint(
-            actor, PATH_PT(st->path, st->path->cur), st->speed,
+            actor, PATH_PT(st->path, st->path->cur), st->dodgeRadius,
             ArcTan2(spy->posX - PATH_X(st->path, st->path->cur),
                           spy->posY - PATH_Y(st->path, st->path->cur), ATAN_ANGLE8),
             5, 0xC8, 0xF, 0x20, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);

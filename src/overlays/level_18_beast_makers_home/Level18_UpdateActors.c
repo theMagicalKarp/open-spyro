@@ -1630,8 +1630,8 @@ void Level18_UpdateActors(void) {
           break;
 
         case CHARGER_ROLE_POST:
-          if (st->dist2 == 0) {
-            st->dist2 = ApproxDist2D(&actor->posX, &st->path->nodes[0].x);
+          if (st->orbitRadius == 0) {
+            st->orbitRadius = ApproxDist2D(&actor->posX, &st->path->nodes[0].x);
           }
           break;
 
@@ -1697,7 +1697,7 @@ void Level18_UpdateActors(void) {
         }
         ANIM_GO(actor, CHARGER_CHARGE);
         if (st->mode == CHARGER_ROLE_POST) {
-          SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist2,
+          SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->orbitRadius,
                         ArcTan2(spy->posX - st->path->nodes[0].x,
                                       SPY.posY - st->path->nodes[0].y, ATAN_ANGLE8),
                         8, 0x12C, 0xE, 8, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
@@ -1857,7 +1857,7 @@ void Level18_UpdateActors(void) {
       case CHARGER_GO_HOME:
         ANIM_GO(actor, CHARGER_CHARGE);
         if (st->mode == CHARGER_ROLE_POST) {
-          SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist2,
+          SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->orbitRadius,
                         ArcTan2(st->vec[0] - st->path->nodes[0].x,
                                       st->vec[1] - st->path->nodes[0].y, ATAN_ANGLE8),
                         1, 0xC8, 0xE, 8, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);

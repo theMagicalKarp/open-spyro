@@ -2870,7 +2870,7 @@ void Level10_UpdateActors(void) {
       case SGUARD_BRAKE_AIM:
         st->stateTimer = 0xB4;
         FindNearestPathPointToActor(actor, st->path, &nearestNode[0]);
-        st->turn = ArcTan2(PATH_X(st->path, nearestNode[0]) - actor->posX,
+        st->pathHeading = ArcTan2(PATH_X(st->path, nearestNode[0]) - actor->posX,
                                  PATH_Y(st->path, nearestNode[0]) - actor->posY, ATAN_ANGLE8);
         actor->mode = SGUARD_BRAKE;
         continue;
@@ -2879,7 +2879,7 @@ void Level10_UpdateActors(void) {
         int h = ProbeActorGroundHeight(actor);
 
         if (st->stateTimer < 0xA5) {
-          TurnActorYawTowardAngle(actor, st->turn, 7, 0, YAW_HOLD_IN_BAND);
+          TurnActorYawTowardAngle(actor, st->pathHeading, 7, 0, YAW_HOLD_IN_BAND);
         }
         if (TICK_DOWN(st->stateTimer) != 0) {
           st->accel -= 0x10;
@@ -3481,7 +3481,7 @@ void Level10_UpdateActors(void) {
         d = ApproxDist2D(&actor->posX, &spy->posX);
         if (st->init == 0) {
           st->init = 1;
-          st->home = actor->rotZ;
+          st->homeHeading = actor->rotZ;
         }
         if (link != 0 && TICK_DOWN(st->wait) != 0 &&
             actor->subMode == 0 && link->mode == SGUARD_IDLE && d < st->range << 10 &&
@@ -3493,7 +3493,7 @@ void Level10_UpdateActors(void) {
           continue;
         }
         if (d > 0x2000) {
-          TurnActorYawTowardAngle(actor, st->home, 4, 0, YAW_HOLD_IN_BAND);
+          TurnActorYawTowardAngle(actor, st->homeHeading, 4, 0, YAW_HOLD_IN_BAND);
           if (actor->anim == GLOOK_ANIM_IDLE && g_nActorAnimNewFrame != 0 && actor->frame == 0xF &&
               --st->count > 0) {
             actor->frame = 5;

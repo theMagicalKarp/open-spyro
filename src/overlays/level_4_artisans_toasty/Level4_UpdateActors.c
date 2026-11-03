@@ -2434,7 +2434,7 @@ void Level4_UpdateActors(void) {
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorLiveKill(actor);
           st->knockSpeed = 0xE6;
-          st->knockAngle = StepAndLerpAngle8(
+          st->knockHeading = StepAndLerpAngle8(
               ArcTan2(actor->posX - spy->posX, actor->posY - SPY.posY, ATAN_ANGLE8),
               g_bSpyroPersistentEulerZ, 0x20, 0x40);
           st->knockZSpeed = 0x14;
@@ -2568,7 +2568,7 @@ void Level4_UpdateActors(void) {
 
       case LUNGER_KNOCKED:
         ANIM_GO(actor, st->anim + 4);
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockAngle, &st->knockZSpeed, 0xC,
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC,
                       0xA);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);

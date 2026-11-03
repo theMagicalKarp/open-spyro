@@ -97,7 +97,7 @@ typedef struct ChargingGuardState {
   int pad38;         /* 0x38 */
   int camHold; /* 0x3C while counting, the camera holds on it */
   int *chargeLock; /* 0x40 shared: one charger at a time */
-  int dist2;         /* 0x44 */
+  int orbitRadius;     /* 0x44 orbit round path node 0; 0 until taken from the start distance */
   int target;        /* 0x48 index into g_pActorListBase; level data: ACTOR_TYPE_GUNNER */
   int filter;        /* 0x4C type it drives before it */
   int charging;      /* 0x50 */
@@ -233,7 +233,7 @@ typedef struct GatekeeperState {
 /* Type 293/294 state (path runner): runs its path ahead of Spyro, leads
  * him to a goal, and jumps or scatters when struck. */
 typedef struct PathRunnerState {
-  int speed;           /* 0x00 flee speed */
+  int dodgeRadius;     /* 0x00 level data: orbit radius round the path point while dodging */
   PathData *path; /* 0x04 */
   PathData *home;      /* 0x08 home path */
   int knockSpeed;           /* 0x0C knock-back speed */

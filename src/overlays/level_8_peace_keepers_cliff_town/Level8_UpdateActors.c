@@ -2703,7 +2703,7 @@ void Level8_UpdateActors(void) {
         d = ApproxDist2D(&actor->posX, &spy->posX);
         if (st->init == 0) {
           st->init = 1;
-          st->home = actor->rotZ;
+          st->homeHeading = actor->rotZ;
         }
         if (link != 0 && actor->subMode == 0 && link->mode == TPRUNNER_IDLE &&
             d < st->range << 10 && actor->posZ < SPY.posZ &&
@@ -2714,7 +2714,7 @@ void Level8_UpdateActors(void) {
           continue;
         }
         if (d > 0x2000) {
-          TurnActorYawTowardAngle(actor, st->home, 4, 0, YAW_HOLD_IN_BAND);
+          TurnActorYawTowardAngle(actor, st->homeHeading, 4, 0, YAW_HOLD_IN_BAND);
           if (actor->anim == GLOOK_ANIM_IDLE && g_nActorAnimNewFrame != 0 && actor->frame == 0xF &&
               --st->count > 0) {
             actor->frame = 5;

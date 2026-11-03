@@ -748,7 +748,7 @@ typedef struct LungeState {
   int *flag; /* 0x40 */
   int pad44;
   int wait;       /* 0x48 */
-  int knockAngle; /* 0x4C */
+  int knockHeading; /* 0x4C knock-back heading */
   int knockSpeed; /* 0x50 */
   int knockZSpeed;       /* 0x54 */
   int look;       /* 0x58 */
@@ -942,8 +942,8 @@ typedef struct SnowballThrowerState {
   int heading;    /* 0x08 */
   int timer;      /* 0x0C */
   int wake;       /* 0x10 wake-up distance >> 10, 0 = default */
-  int turn1;      /* 0x14 */
-  int turn4;      /* 0x18 */
+  int advanceSpeed;   /* 0x14 steering speed while advancing (level data) */
+  int retreatSpeed;   /* 0x18 steering speed while retreating (level data) */
   int knockHeading;      /* 0x1C knock-back heading */
   int knockSpeed;      /* 0x20 knock-back speed */
   int blockHeadingA; /* 0x24 SteerActorAroundPoint blocked heading */
@@ -1082,7 +1082,7 @@ typedef struct ShempGuardState {
   int pad14;          /* 0x14 */
   int range;          /* 0x18 sight range, in 1024s */
   int accel;          /* 0x1C */
-  int turn;           /* 0x20 */
+  int pathHeading;    /* 0x20 heading to the nearest path node */
   int stateTimer;     /* 0x24 BRAKE, RECOVER and FALL durations */
   int watch;          /* 0x28 index into g_pActorListBase, -1 none: a peer Shemp guard
                        * (level data); its nextAnim 7 cues this one to CHASE. Dead in
@@ -1103,7 +1103,7 @@ typedef struct LookoutState {
   int knockSpeed;     /* 0x04 knock-back speed */
   int timer;     /* 0x08 swipe cooldown */
   int count;     /* 0x0C idle loops left */
-  int home;      /* 0x10 rest heading */
+  int homeHeading;      /* 0x10 rest heading */
   int init;      /* 0x14 */
   int link;      /* 0x18 guard to rouse (index into g_pActorListBase), or -1; initially (level data) ACTOR_TYPE_SHEMP_GUARD / TWO_PATH_RUNNER */
   int camTimer;  /* 0x1C */
