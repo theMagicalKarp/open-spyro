@@ -846,7 +846,7 @@ void Level28_UpdateActors(void) {
         g056[2] += 0xC8;
         if ((actor->mode == TROCK_HELD || actor->mode == TROCK_FLY) &&
             RaiseSpyroTriggerInRadius(g056, 0xDC, SPYRO_EV_HIT) != 0) {
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, TROCK_VOICE_BREAK, 0);
           actor->mode = TROCK_BREAK;
           ANIM_RESET(actor, TROCK_BREAK);
           continue;
@@ -946,7 +946,7 @@ void Level28_UpdateActors(void) {
             st->speed = 0;
             st->spinX = 0;
             st->spinY = 0;
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, TROCK_VOICE_BREAK, 0);
             actor->mode = TROCK_SMASH;
             ANIM_RESET(actor, TROCK_SMASH);
             continue;
@@ -957,7 +957,7 @@ void Level28_UpdateActors(void) {
           st->speed = 0;
           st->spinX = 0;
           st->spinY = 0;
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, TROCK_VOICE_BREAK, 0);
           actor->mode = TROCK_SMASH;
           ANIM_RESET(actor, TROCK_SMASH);
           continue;
@@ -2066,7 +2066,7 @@ void Level28_UpdateActors(void) {
             }
             break;
           }
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, SINGER_VOICE_SING, 0);
           ANIM_QUEUE(actor, SINGER_SING);
         }
         continue;
@@ -2084,7 +2084,7 @@ void Level28_UpdateActors(void) {
         }
         if (TICK_DOWN(st->timer) != 0) {
           st->timer = 0x50;
-          PlayActorMeshVoice(actor, 1, 0);
+          PlayActorMeshVoice(actor, SINGER_VOICE_SING_END, 0);
           ENTER_POSE(actor, SINGER_SING_END);
         }
         continue;

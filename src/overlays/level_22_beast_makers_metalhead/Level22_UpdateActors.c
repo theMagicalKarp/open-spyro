@@ -1275,7 +1275,7 @@ void Level22_UpdateActors(void) {
         if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC, 0xA) ==
                 MOVED_LANDED &&
             st->speed == 0 && st->landSoundPlayed == 0) {
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, BTHROW_VOICE_LAND, 0);
           st->landSoundPlayed = 1;
         }
         if (g_nActorAnimDone != 0) {
@@ -1919,7 +1919,7 @@ void Level22_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       if ((actor->flags & ACTOR_HIT_CHARGE) && actor->mode < PPOD_UP) {
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, PPOD_VOICE_BURST, 0);
         actor->posZ -= 0x190;
         for (i = 0; i < 6; i++) {
           if (ACTOR_POOL_LOW()) {
@@ -1937,7 +1937,7 @@ void Level22_UpdateActors(void) {
         continue;
       }
       if ((actor->flags & (ACTOR_HIT_BLAST | ACTOR_HIT_SUPER)) == (ACTOR_HIT_BLAST | ACTOR_HIT_SUPER)) {
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, PPOD_VOICE_BURST, 0);
         actor->posZ -= 0x190;
         for (i = 0; i < 6; i++) {
           if (ACTOR_POOL_LOW()) {
@@ -2037,7 +2037,7 @@ void Level22_UpdateActors(void) {
           st->kids[i] = 0;
         }
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        PlayActorMeshVoice(actor, 1, 0);
+        PlayActorMeshVoice(actor, PPOD_VOICE_RETRACT, 0);
         RESET_IDLE(actor);
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);

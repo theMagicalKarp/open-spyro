@@ -319,7 +319,7 @@ void Level30_UpdateActors(void) {
               Actor *sparx = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
 
               g_pSparxActor = sparx;
-              PlayActorMeshVoice(sparx, 0, 0);
+              PlayActorMeshVoice(sparx, SPARX_VOICE_BUZZ, 0);
               g_nSparxHealth = SPARX_GREEN;
               DespawnActorRecord(actor);
               continue;

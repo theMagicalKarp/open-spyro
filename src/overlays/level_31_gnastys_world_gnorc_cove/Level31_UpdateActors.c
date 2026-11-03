@@ -2509,7 +2509,7 @@ void Level31_UpdateActors(void) {
 
         actor->posZ -= 0x1CD;
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, FLOATBARREL_VOICE_BURST, 0);
         if (actor->drawn != 0) {
           int i;
           Actor *d;
@@ -2637,7 +2637,7 @@ void Level31_UpdateActors(void) {
       if (actor->subMode != 0) {
         int f;
 
-        PlayActorMeshVoice(actor, 2, &actor->voiceRow);
+        PlayActorMeshVoice(actor, FLOATBARREL_VOICE_TUMBLE, &actor->voiceRow);
         actor->rotX += 6;
         f = FindGroundHeightBelow(&actor->posX, 0x800);
         if (actor->posZ - f > 0x180) {
@@ -2694,7 +2694,7 @@ void Level31_UpdateActors(void) {
           actor->subMode = 0;
           actor->mode = FLOATBARREL_RUN;
           actor->posZ += 0xC8;
-          PlayActorMeshVoice(actor, 1, 0);
+          PlayActorMeshVoice(actor, FLOATBARREL_VOICE_RUN, 0);
           best = 0;
           i = 0x7530;
           for (a = g_pActorListBase; a < g_pActorPoolDynBase; a++) {
@@ -2762,7 +2762,7 @@ void Level31_UpdateActors(void) {
 
         actor->posZ -= 0x1CD;
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, FLOATBARREL_VOICE_BURST, 0);
         if (actor->drawn != 0) {
           Actor *d;
           L31Debris *ds;
@@ -2922,7 +2922,7 @@ void Level31_UpdateActors(void) {
       if (actor->subMode != 0) {
         int f;
 
-        PlayActorMeshVoice(actor, 2, &actor->voiceRow);
+        PlayActorMeshVoice(actor, FLOATBARREL_VOICE_TUMBLE, &actor->voiceRow);
         actor->rotX += 6;
         f = FindGroundHeightBelow(&actor->posX, 0x800);
         if (actor->posZ - f > 0x180) {

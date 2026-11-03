@@ -1519,12 +1519,12 @@ void Level33_UpdateActors(void) {
 
       if (actor->nextAnim == 0 && actor->cullRadius != ACTOR_CULL_HIDDEN) {
         if (actor->nextFrame == 1 && !(GetRandomU32() & 3) &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[6]) == 0) {
-          PlayActorMeshVoice(actor, 6, 0);
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[LANEPAT_VOICE_STAND_EARLY]) == 0) {
+          PlayActorMeshVoice(actor, LANEPAT_VOICE_STAND_EARLY, 0);
         }
         if (actor->nextFrame == 0xA && !(GetRandomU32() & 3) &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[5]) == 0) {
-          PlayActorMeshVoice(actor, 5, 0);
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[LANEPAT_VOICE_STAND_LATE]) == 0) {
+          PlayActorMeshVoice(actor, LANEPAT_VOICE_STAND_LATE, 0);
         }
       }
 
@@ -1859,7 +1859,7 @@ void Level33_UpdateActors(void) {
           q->lifeTimer = 0xA0;
           q->landDelay = n - 1;
           st->throws++;
-          PlayActorMeshVoice(actor, 0, &st->voice);
+          PlayActorMeshVoice(actor, GNASTY_VOICE_THROW, &st->voice);
           if (st->phase == GNASTY_PHASE_MAIN && st->throws >= 2) {
             actor->mode = GNASTY_RUN;
             continue;
@@ -2242,7 +2242,7 @@ void Level33_UpdateActors(void) {
               o->scale = 0x7F;
             }
             actor->mode = TRAILBOMB_HIT;
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, TRAILBOMB_VOICE_HIT, 0);
           }
           if (actor->mode == TRAILBOMB_HIT) {
             actor->cullRadius = ACTOR_CULL_HIDDEN;

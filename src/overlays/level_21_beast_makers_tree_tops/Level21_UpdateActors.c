@@ -899,7 +899,7 @@ void Level21_UpdateActors(void) {
         if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC, 0xA) ==
                 MOVED_LANDED &&
             st->speed == 0 && st->landSoundPlayed == 0) {
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, BTHROW_VOICE_LAND, 0);
           st->landSoundPlayed = 1;
         }
         if (g_nActorAnimDone != 0) {
@@ -3156,12 +3156,12 @@ void Level21_UpdateActors(void) {
 
       if (actor->nextAnim == RUNNER_ANIM_STAND && actor->cullRadius != ACTOR_CULL_HIDDEN) {
         if (actor->nextFrame == 1 && !(GetRandomU32() & 3) &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[6]) == 0) {
-          PlayActorMeshVoice(actor, 6, 0);
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[RUNNER_VOICE_STAND_EARLY]) == 0) {
+          PlayActorMeshVoice(actor, RUNNER_VOICE_STAND_EARLY, 0);
         }
         if (actor->nextFrame == 10 && !(GetRandomU32() & 3) &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[5]) == 0) {
-          PlayActorMeshVoice(actor, 5, 0);
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[RUNNER_VOICE_STAND_LATE]) == 0) {
+          PlayActorMeshVoice(actor, RUNNER_VOICE_STAND_LATE, 0);
         }
       }
 
@@ -3847,13 +3847,13 @@ void Level21_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
       SpinChestState *st = actor->state;
-      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN]);
       int cur = g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0];
       int i;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == ACTOR_HIT_FLAME) {
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN], actor, SFX_MODE_3D,
                       &actor->voiceRow);
         if (actor->voiceRow != VOICE_ROW_NONE) {
           g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0] = pitch + st->speed * 4;

@@ -67,7 +67,7 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
       rec = g_pfnLevelSpawnActor(ACTOR_TYPE_BUTTERFLY, src);
     } else {
       rec = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, src);
-      PlayActorMeshVoice(rec, 0, 0);
+      PlayActorMeshVoice(rec, SPARX_VOICE_BUZZ, 0);
       g_anSparxHealthBlock[0] = SPARX_GREEN;
       g_pSparxActor = rec;
     }

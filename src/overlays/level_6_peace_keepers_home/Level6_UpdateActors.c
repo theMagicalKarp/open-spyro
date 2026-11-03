@@ -3335,7 +3335,7 @@ void Level6_UpdateActors(void) {
 
       case FBCANNON_LIT:
         st->timer = 0x3C;
-        PlayActorMeshVoice(actor, 0, &st->voice);
+        PlayActorMeshVoice(actor, FBCANNON_VOICE_FUSE, &st->voice);
         actor->mode = FBCANNON_FUSE;
         continue;
 
@@ -3497,7 +3497,7 @@ void Level6_UpdateActors(void) {
             st->delay--;
           }
           if (CollideSphereWithWorldAndActors(&actor->posX, 0x168, 0x168) != 0) {
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, SHOT_VOICE_BURST, 0);
             actor->mode = SHOT_BURST;
             if (st->link != -1) {
               g_pActorListBase[st->link].subMode = 1;
@@ -3505,7 +3505,7 @@ void Level6_UpdateActors(void) {
           }
           if (st->age >= 9 && st->delay == 0 &&
               DispatchActorContactAtSphere(&actor->posX, 0x400, 0, ACTOR_HIT_SUPER, actor, CONTACT_ALL) != 0) {
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, SHOT_VOICE_BURST, 0);
             actor->mode = SHOT_BURST;
             if (st->link != -1) {
               g_pActorListBase[st->link].subMode = 1;

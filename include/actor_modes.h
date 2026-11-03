@@ -750,6 +750,93 @@ enum ShempGuardVoice {
   SGUARD_VOICE_FALL = 0,  /* ran off a ledge: entering SGUARD_FALL */
   SGUARD_VOICE_SHOUT = 1, /* while it chases or rushes, and once ShempGuardState.watch plays animation 7 */
 };
+enum SpinChestVoice {
+  SPINCHEST_VOICE_SPIN = 1, /* played on each spin-up hit, pitched up by its speed */
+};
+enum PressSwitchVoice {
+  PSWITCH_VOICE_PRESS = 0, /* pressed in sequence, pitched by its place in it */
+};
+enum FlightTargetVoice {
+  /* The flight-level targets', chests' and rings' single voice. */
+  FTARGET_VOICE_BURST = 0, /* flamed or charged (the bobber also loops it while FTARGET_ACTIVE) */
+  FCHEST_VOICE_BURST = 0,  /* ACTOR_TYPE_FLIGHT_CHEST struck: frees its reward */
+  FCHEST_VOICE_HUM = 1,    /* its ambient hum while intact */
+  FRING_VOICE_SPIN = 0,    /* ACTOR_TYPE_FLIGHT_RING, once per turn of its spin */
+};
+enum KnockedVoice {
+  /* Voice 0 of an enemy knocked out by a charge or flame (with its death drop). */
+  WARDRUM_VOICE_KNOCKED = 0,   /* ACTOR_TYPE_WAR_DRUM */
+  WARDRUM_VOICE_BEAT = 1,      /* its WARDRUM_BEAT strike, frame 6 (resumes its chunk anim) */
+  BGUARD_VOICE_KNOCKED = 0,    /* ACTOR_TYPE_BOLT_GUARD */
+  FGUARD_VOICE_KNOCKED = 0,    /* ACTOR_TYPE_FENCE_GUARD */
+  SHEPHERD_VOICE_KNOCKED = 0,  /* ACTOR_TYPE_SHEPHERD */
+  KEEPER_VOICE_KNOCKED = 0,    /* ACTOR_TYPE_TETHER_KEEPER */
+  LTHIEF_VOICE_KNOCKED = 0,    /* ACTOR_TYPE_LOOT_THIEF */
+  SINKBLK_VOICE_FREED = 0,     /* the sinking block's partner, freed by it */
+  BTHROW_VOICE_LAND = 0,       /* ACTOR_TYPE_BOULDER_THROWER(_B): knocked, comes to rest */
+  TPRUNNER_VOICE_LAND = 0,     /* ACTOR_TYPE_TWO_PATH_RUNNER: knocked, first landing */
+  GUNNER_VOICE_LAND = 0,       /* ACTOR_TYPE_GUNNER: knocked, first landing */
+};
+enum ProjectileVoice {
+  /* Voice 0 of a shot, rock or bomb as it hits. */
+  SHOT_VOICE_BURST = 0,      /* ACTOR_TYPE_FIREBALL hits the world or an actor */
+  LGLOB_VOICE_BURST = 0,     /* ACTOR_TYPE_LOB_GUNNER_LOB bursts */
+  TROCK_VOICE_BREAK = 0,     /* ACTOR_TYPE_THROWN_ROCK hits Spyro or the world, or times out */
+  SNOWBALL_VOICE_HIT = 0,    /* ACTOR_TYPE_THROWN_SNOWBALL hits Spyro */
+  TRAILBOMB_VOICE_HIT = 0,   /* ACTOR_TYPE_TRAIL_BOMB lands or times out */
+  FCHUNK_VOICE_BURST = 0,    /* ACTOR_TYPE_FALLING_CHUNK bursts into rubble */
+};
+enum BreakWallVoice {
+  BWALL_VOICE_BREAK = 0,         /* ACTOR_TYPE_BREAKABLE_WALL */
+  BWALL_VOICE_BREAK_ARMORED = 1, /* the same, for BWALL_ARMORED */
+};
+enum FloatBarrelVoice {
+  /* ACTOR_TYPE_FLOATING_BARREL / FLOATING_MINE. */
+  FLOATBARREL_VOICE_BURST = 0,
+  FLOATBARREL_VOICE_RUN = 1,     /* the mine set running by a charge */
+  FLOATBARREL_VOICE_TUMBLE = 2,  /* looped while subMode is set: it tumbles (rotX) and sinks */
+};
+enum StandVoice {
+  /* Random idle voices (one in four) on a stand or taunt anim's frames,
+   * as THIEF_VOICE_TAUNT_EARLY/LATE. */
+  RUNNER_VOICE_STAND_EARLY = 6,   /* ACTOR_TYPE_PATH_RUNNER + 1: RUNNER_ANIM_STAND frame 1 */
+  RUNNER_VOICE_STAND_LATE = 5,    /* ... frame 0xA */
+  LANEPAT_VOICE_STAND_EARLY = 6,  /* ACTOR_TYPE_LANE_PATROLLER: anim 0 frame 1 */
+  LANEPAT_VOICE_STAND_LATE = 5,   /* ... frame 0xA */
+  LCRITTER_VOICE_TAUNT_EARLY = 6, /* ACTOR_TYPE_LOOT_CRITTER: anim 0 frame 2 */
+  LCRITTER_VOICE_TAUNT_LATE = 5,  /* ... frame 0xC */
+  GRAZER_VOICE_CALL = 3,          /* ACTOR_TYPE_GRAZING_CRITTER, every 0x78..0xB7 ticks of GRAZER_WANDER */
+};
+enum SingerVoice {
+  SINGER_VOICE_SING = 0,     /* struck: starts singing (SINGER_SING) */
+  SINGER_VOICE_SING_END = 1, /* the song's timer out: SINGER_SING_END */
+};
+enum LungerVoice {
+  LUNGER_VOICE_LAND = 0, /* first touch of the floor */
+  LUNGER_VOICE_LEAP = 1, /* turned to its target: LUNGER_AIM -> LUNGER_LEAP */
+};
+enum GrabberVoice {
+  GRABBER_VOICE_HIT = 1,    /* struck: GRABBER_KNOCKED */
+  GRABBER_VOICE_EMERGE = 2, /* while GRABBER_ANIM_EMERGE plays */
+};
+enum RimRiderVoice {
+  RIMRIDER_VOICE_DROPPED = 0, /* dropped by Blowhard (BLOWHARD_ANIM_DROP_RIDER) */
+  RIMRIDER_VOICE_SPAWN_HELPER = 1, /* spawns its ACTOR_TYPE_RIM_RIDER_HELPER */
+  RIMHELPER_VOICE_BEAT = 0,   /* the helper, once its beat timer runs out */
+};
+enum ShooterVoice {
+  FBCANNON_VOICE_FUSE = 0,  /* ACTOR_TYPE_FIREBALL_CANNON lit: FBCANNON_FUSE */
+  CCANNON_VOICE_FIRE = 1,   /* ACTOR_TYPE_COMET_CANNON fires a comet */
+  CATAPULT_VOICE_SWING = 0, /* ACTOR_TYPE_CATAPULT, each tick its arm is raised */
+  GNASTY_VOICE_THROW = 0,   /* Gnasty Gnorc throws */
+  LGUARD_VOICE_GROWL = 0,   /* ACTOR_TYPE_BIG_LUNGING_GUARD: lunging, on frame 6 */
+};
+enum MiscVoice {
+  FCSWITCH_VOICE_LIT = 0,     /* ACTOR_TYPE_FLAME_CHUNK_SWITCH flamed */
+  SFGIVER_VOICE_CAST_END = 0, /* superflame giver: the cast anim done, SFGIVER_SUB_LINGER */
+  PPOD_VOICE_BURST = 0,       /* ACTOR_TYPE_PLATFORM_POD popped */
+  PPOD_VOICE_RETRACT = 1,     /* its timer out: the platforms despawn */
+};
 
 /* A level 7/8 bell's animations (ACTOR_TYPE_BELL_A/B/C). A flame rings it
  * once per cooldown (subMode 0x50); any other hit only wobbles it. */

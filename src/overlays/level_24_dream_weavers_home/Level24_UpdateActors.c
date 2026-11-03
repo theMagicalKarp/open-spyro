@@ -729,7 +729,7 @@ void Level24_UpdateActors(void) {
         Actor *q;
         int bestScore;
 
-        PlayActorMeshVoice(actor, 1, 0);
+        PlayActorMeshVoice(actor, CCANNON_VOICE_FIRE, 0);
         st->idx = (st->idx + 1) % 3;
         o = g_pfnLevelSpawnActor(ACTOR_TYPE_COMET, actor);
         cs = o->state;
@@ -2309,7 +2309,7 @@ void Level24_UpdateActors(void) {
             }
             break;
           }
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, SINGER_VOICE_SING, 0);
           ANIM_QUEUE(actor, SINGER_SING);
         }
         continue;
@@ -2327,7 +2327,7 @@ void Level24_UpdateActors(void) {
         }
         if (TICK_DOWN(st->timer) != 0) {
           st->timer = 0x50;
-          PlayActorMeshVoice(actor, 1, 0);
+          PlayActorMeshVoice(actor, SINGER_VOICE_SING_END, 0);
           ENTER_POSE(actor, SINGER_SING_END);
         }
         continue;
@@ -2541,8 +2541,8 @@ void Level24_UpdateActors(void) {
             actor->frameProgress = 0;
           }
           if (actor->nextFrame == 6 &&
-              GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[0]) == 0) {
-            PlayActorMeshVoice(actor, 0, &st->sound);
+              GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[LGUARD_VOICE_GROWL]) == 0) {
+            PlayActorMeshVoice(actor, LGUARD_VOICE_GROWL, &st->sound);
           }
           break;
         }

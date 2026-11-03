@@ -702,7 +702,7 @@ void Level16_UpdateActors(void) {
         case RIMDRIFT_CHASE_HELPER:
           if (st->child == 0) {
             st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER_HELPER, actor);
-            PlayActorMeshVoice(actor, 1, 0);
+            PlayActorMeshVoice(actor, RIMRIDER_VOICE_SPAWN_HELPER, 0);
           }
         case RIMDRIFT_CHASE: {
           int d;
@@ -745,7 +745,7 @@ void Level16_UpdateActors(void) {
 
       case RIMRIDER_SPAWN:
         st->child = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER_HELPER, actor);
-        PlayActorMeshVoice(actor, 1, 0);
+        PlayActorMeshVoice(actor, RIMRIDER_VOICE_SPAWN_HELPER, 0);
         ENTER_POSE(actor, RIMRIDER_POP);
 
       case RIMRIDER_POP:
@@ -819,7 +819,7 @@ void Level16_UpdateActors(void) {
       actor->posX = st->owner->posX;
       actor->posY = st->owner->posY;
       if (TICK_DOWN(st->beat) != 0) {
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, RIMHELPER_VOICE_BEAT, 0);
         st->beat = 99999;
       }
       if (actor->mode == 0) {
@@ -3281,7 +3281,7 @@ void Level16_UpdateActors(void) {
           v[2] += 0x400;
           if (CheckLineOfSightSegment(v, &SPY.posX) != 0) {
             st->minion = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER, actor);
-            PlayActorMeshVoice(st->minion, 0, 0);
+            PlayActorMeshVoice(st->minion, RIMRIDER_VOICE_DROPPED, 0);
           }
         }
         if (g_nActorAnimDone != 0) {
@@ -3335,7 +3335,7 @@ void Level16_UpdateActors(void) {
           v[2] += 0x400;
           if (CheckLineOfSightSegment(v, &SPY.posX) != 0) {
             st->minion = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER, actor);
-            PlayActorMeshVoice(st->minion, 0, 0);
+            PlayActorMeshVoice(st->minion, RIMRIDER_VOICE_DROPPED, 0);
           }
         }
         if (g_nActorAnimDone != 0) {
@@ -3396,7 +3396,7 @@ void Level16_UpdateActors(void) {
           v[2] += 0x400;
           if (CheckLineOfSightSegment(v, &SPY.posX) != 0) {
             st->minion = g_pfnLevelSpawnActor(ACTOR_TYPE_RIM_RIDER, actor);
-            PlayActorMeshVoice(st->minion, 0, 0);
+            PlayActorMeshVoice(st->minion, RIMRIDER_VOICE_DROPPED, 0);
           }
         }
         if (g_nActorAnimDone != 0) {

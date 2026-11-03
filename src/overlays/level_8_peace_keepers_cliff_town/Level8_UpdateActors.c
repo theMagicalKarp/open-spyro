@@ -2476,7 +2476,7 @@ void Level8_UpdateActors(void) {
           int step;
           int z;
 
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, CATAPULT_VOICE_SWING, 0);
           fs = t->state;
           CopyVector(y256, &t->posX);
           CopyVector(&t->posX, &actor->posX);
@@ -2579,7 +2579,7 @@ void Level8_UpdateActors(void) {
                           0xC, 0x10);
         if (r == MOVED_LANDED && st->cried == 0) {
           st->cried = 1;
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, TPRUNNER_VOICE_LAND, 0);
         }
         if (r == MOVED_BLOCKED && st->knockSpeed >= -0x63) {
           st->knockSpeed = -0x64;

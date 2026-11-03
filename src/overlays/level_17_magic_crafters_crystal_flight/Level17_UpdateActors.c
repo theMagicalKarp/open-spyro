@@ -1288,7 +1288,7 @@ void Level17_UpdateActors(void) {
       if (actor->flags & ACTOR_HITS_SPYRO) {
         Actor *reward;
 
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, FCHEST_VOICE_BURST, 0);
         TallyFlightTarget(st[1]);
         reward = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st[0]), actor);
         if (reward != 0) {
@@ -1318,8 +1318,8 @@ void Level17_UpdateActors(void) {
       {
         Model **models = g_apActorMeshTable;
 
-        if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable_12B->m_Sounds[1]) == 0 && g_nGamestate == GS_GAMEPLAY) {
-          PlaySoundEffect(models[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable_12B->m_Sounds[FCHEST_VOICE_HUM]) == 0 && g_nGamestate == GS_GAMEPLAY) {
+          PlaySoundEffect(models[actor->type]->m_Sounds[FCHEST_VOICE_HUM], actor, SFX_MODE_3D,
                         &actor->voiceRow);
         }
       }
@@ -1365,7 +1365,7 @@ void Level17_UpdateActors(void) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS + 1, actor);
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPARK_DEBRIS + 2, actor);
         }
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, FTARGET_VOICE_BURST, 0);
         actor->mode = BANKER_STRUCK;
         ANIM_RESET(actor, BANKER_STRUCK);
         break;
@@ -1435,7 +1435,7 @@ void Level17_UpdateActors(void) {
 
       actor->rotX = WrapAddAngle8(actor->rotX, 8);
       if ((actor->rotX) < 8) {
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, FRING_VOICE_SPIN, 0);
       }
 
       RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -1572,7 +1572,7 @@ void Level17_UpdateActors(void) {
               ss->life = 0x3C;
             }
 
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, FTARGET_VOICE_BURST, 0);
             DespawnActorRecord(actor);
             break;
           }

@@ -572,7 +572,7 @@ void Level29_UpdateActors(void) {
             AddVector(sparkLead, sparkLead, &actor->posX);
             g_pfnLevelEmitParticles(1, EMIT_SPARK_YELLOW, sparkLead, (int)svA);
           }
-          PlayActorMeshVoice(actor, 0, 0);
+          PlayActorMeshVoice(actor, FTARGET_VOICE_BURST, 0);
           DespawnActorRecord(actor);
           continue;
         }
@@ -1236,7 +1236,7 @@ void Level29_UpdateActors(void) {
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
             SPY.bodyRotZ, 0x28, 0x40);
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, FTARGET_VOICE_BURST, 0);
         g_pfnLevelSpawnActor(ACTOR_TYPE_BOBBER_SPINOFF, actor);
         actor->mode = FTARGET_STRUCK;
         ANIM_RESET(actor, FTARGET_STRUCK);
@@ -1245,7 +1245,7 @@ void Level29_UpdateActors(void) {
 
       switch (actor->mode) {
       case FTARGET_ACTIVE:
-        PlayActorMeshVoice(actor, 0, &actor->voiceRow);
+        PlayActorMeshVoice(actor, FTARGET_VOICE_BURST, &actor->voiceRow);
         st->phase += g_nFrameStep;
         if (st->phase >= 0x1E0) {
           st->phase -= 0x1E0;
@@ -1432,7 +1432,7 @@ void Level29_UpdateActors(void) {
       if (actor->flags & ACTOR_HITS_SPYRO) {
         Actor *reward;
 
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, FCHEST_VOICE_BURST, 0);
         TallyFlightTarget(st[1]);
         reward = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st[0]), actor);
         if (reward != 0) {
@@ -1462,8 +1462,8 @@ void Level29_UpdateActors(void) {
       {
         Model **models = g_apActorMeshTable;
 
-        if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable_12B->m_Sounds[1]) == 0 && g_nGamestate == GS_GAMEPLAY) {
-          PlaySoundEffect(models[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable_12B->m_Sounds[FCHEST_VOICE_HUM]) == 0 && g_nGamestate == GS_GAMEPLAY) {
+          PlaySoundEffect(models[actor->type]->m_Sounds[FCHEST_VOICE_HUM], actor, SFX_MODE_3D,
                         &actor->voiceRow);
         }
       }

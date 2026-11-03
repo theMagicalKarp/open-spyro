@@ -538,7 +538,7 @@ void Level0_UpdateActors(void) {
           g_nSfxOverridePitch.v =
               SAMPLE_PITCH(g_pLevelSampleBankHeader[SFX_SEQUENCE_TONE]) +
               g_anSwitchSfxPitchOffsets[st->shift];
-          PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[0], actor, SFX_MODE_3D,
+          PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[PSWITCH_VOICE_PRESS], actor, SFX_MODE_3D,
                         &actor->voiceRow);
         }
         actor->mode = PSWITCH_DOWN;

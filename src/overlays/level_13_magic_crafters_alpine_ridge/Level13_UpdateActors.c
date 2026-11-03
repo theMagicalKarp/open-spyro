@@ -3464,7 +3464,7 @@ void Level13_UpdateActors(void) {
         actor->flags = 0;
         ((CollectibleState *)SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0)->state)->mode = COLLREST_SNAP;
         MarkActorLiveKill(actor);
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, SHEPHERD_VOICE_KNOCKED, 0);
         ENTER_POSE(actor, SHEPHERD_KNOCKED);
       }
       actor->flags = 0;
@@ -4981,13 +4981,13 @@ void Level13_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
       SpinChestState *st = actor->state;
-      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN]);
       int cur = g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0];
       int i;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == ACTOR_HIT_FLAME) {
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN], actor, SFX_MODE_3D,
                       &actor->voiceRow);
         if (actor->voiceRow != VOICE_ROW_NONE) {
           g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0] = pitch + st->speed * 4;

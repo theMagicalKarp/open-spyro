@@ -2506,7 +2506,7 @@ void Level4_UpdateActors(void) {
                           ArcTan2(st->target[0] - actor->posX,
                                         st->target[1] - actor->posY, ATAN_ANGLE8),
                           0xA, 4, YAW_STEP_IN_BAND) != 0) {
-          PlayActorMeshVoice(actor, 1, 0);
+          PlayActorMeshVoice(actor, LUNGER_VOICE_LEAP, 0);
           actor->mode = LUNGER_LEAP;
           continue;
         }
@@ -2526,7 +2526,7 @@ void Level4_UpdateActors(void) {
 
         if (floor + actor->floorOffset >= actor->posZ) {
           if (actor->subMode == 0) {
-            PlayActorMeshVoice(actor, 0, 0);
+            PlayActorMeshVoice(actor, LUNGER_VOICE_LAND, 0);
             actor->subMode = 1;
           }
           if (actor->nextFrame < 0xD) {

@@ -3177,13 +3177,13 @@ void Level3_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
       SpinChestState *st = actor->state;
-      int pitch = SAMPLE_PITCH(g_apActorMeshTable[390]->m_Sounds[1]);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[ACTOR_TYPE_SPIN_CHEST]->m_Sounds[SPINCHEST_VOICE_SPIN]);
       int cur = g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0];
       int i;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == ACTOR_HIT_FLAME) {
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN], actor, SFX_MODE_3D,
                       &actor->voiceRow);
         if (actor->voiceRow != VOICE_ROW_NONE) {
           g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0] = pitch + st->speed * 4;
@@ -3456,7 +3456,7 @@ void Level3_UpdateActors(void) {
         UpdateActorWander(actor, &st->wander);
         if (TICK_DOWN(st->voice) != 0) {
           st->voice = (GetRandomU32() & 0x3F) + 0x78;
-          PlayActorMeshVoice(actor, 3, 0);
+          PlayActorMeshVoice(actor, GRAZER_VOICE_CALL, 0);
         }
         break;
 

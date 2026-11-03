@@ -3215,14 +3215,14 @@ void Level18_UpdateActors(void) {
      * voice); spun fast enough, or flamed, it bursts. */
     case ACTOR_TYPE_SPIN_CHEST: {
       SpinChestState *st = actor->state;
-      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[1]);
+      int pitch = SAMPLE_PITCH(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN]);
       int cur = g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0];
       int i;
 
       LUID_PAD LUID_PAD
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) == ACTOR_HIT_FLAME) {
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+        PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[SPINCHEST_VOICE_SPIN], actor, SFX_MODE_3D,
                       &actor->voiceRow);
         if (actor->voiceRow != VOICE_ROW_NONE) {
           g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0] = pitch + st->speed * 4;
@@ -3771,7 +3771,7 @@ void Level18_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
-        PlayActorMeshVoice(actor, 0, 0);
+        PlayActorMeshVoice(actor, WARDRUM_VOICE_KNOCKED, 0);
         ENTER_POSE(actor, WARDRUM_KNOCKED);
       }
       if (TICK_DOWN(st->beat) == 2) {
@@ -3798,7 +3798,7 @@ void Level18_UpdateActors(void) {
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
           st->beat = 0x64;
           g_anLevelTriggerStateSlots[st->chunkAnim] = 1;
-          PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[1], actor, SFX_MODE_3D,
+          PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[WARDRUM_VOICE_BEAT], actor, SFX_MODE_3D,
                         (unsigned char *)&st->voice);
         }
         if (g_nActorAnimDone != 0) {
