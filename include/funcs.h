@@ -521,7 +521,7 @@ void ApplySpyroStateTransition(void);
 /* 0x8003d194: Per-frame Spyro animation state-machine tick. Routes on g_nSpyroAnimMode (0..10): case 0 = advance frame (no pending transition) or ApplySpyroStateTransition; cases 1/2/6 = advance sub-frame timer by 2; cases 3/10 = stepped transition — only when g_abSpyroStateTransitionAnimMatrix[g_nSpyroState + g_nSpyroPrevState*0x2d] is 3/4/10, calls StepSpyroAnimAndCommitTransition at the previous anim's play rate (plays the landing SFX when prev anim was 0x1a); case 4 = wait for sub-frame overflow then enter mode 3; cases 5/8 = advance with a specific increment then drop back to mode 0. */
 void TickSpyroAnimStateMachine(void);
 
-/* 0x8003d3b8: Reads the current pad (via g_pPadSubstepState) and converts directional input into a movement target. Analog stick (offsets +0x16 +0x17 centered at 0x7f) maps to ArcTan2 → target yaw g_nSpyroMoveTargetYaw + magnitude-scaled speed g_nSpyroSpeedTarget. D-pad (button bits in +4 nibble 0xf000) maps via the 16-entry yaw table at &g_anDpadDirectionYaw (stride 2). Both paths combine with g_nCameraEulerYaw so movement is camera-relative. */
+/* 0x8003d3b8: Reads the current pad (via g_pPadSubstepState) and converts directional input into a movement target. The left stick (PAD_AXIS_LX / LY, 0x7F centred) maps to ArcTan2 → target yaw g_nSpyroMoveTargetYaw + magnitude-scaled speed g_nSpyroSpeedTarget. The D-pad (held & PAD_DPAD) maps via the 16-entry yaw table at &g_anDpadDirectionYaw (stride 2). Both paths combine with g_nCameraEulerYaw so movement is camera-relative. */
 void ComputeSpyroMoveTargetFromPad(int speed);
 
 /* 0x8003d52c: Applies sin/cos integration of body-frame angular velocity (rate) to update world-frame Euler angles. Reads current pitch (g_nSpyroBodyPitch) and yaw (g_nSpyroBodyRoll) via the LUTs, then increments yaw (g_nSpyroBodyRoll), roll (g_nSpyroBodyYaw), and pitch (g_nSpyroBodyPitch) by the cos/sin-projected components. Also updates the byte snapshots g_abSpyroPersistentEuler[0..2] (12-bit angles >> 4). The cos(pitch) denominator divisor models a pitch-coupled yaw scaling. */
@@ -764,10 +764,10 @@ void PollPadAndDistributeInput(void);
 /* 0x800542e4: Writes value into count HUD digit records from slot (&g_abHudIconActorRecords[slot * 0x58]) as decimal digits, most significant first. HUD_DIGITS_PENDING stores each digit as the pending one (->subMode) for a roll to swap in (CommitHudCounterAnimState); HUD_DIGITS_SHOW shows each digit shows at once (->type = ACTOR_TYPE_GEM_DIGIT_0 + digit, ->cullRadius 0xFF) and the unused slots are hidden. Called by UpdateHudCounters' roll paths, DragonRescue_Update, RefreshHudLevelGemCounter and InitHudCounters. */
 void SetHudCounterDigits(int slot, int count, int value, int show);
 
-/* 0x80054400: Per-slot roll-animation offset writer for the big HUD icon records. For count slots starting at base, writes (base + delta) into the +0x14 field of each 0x58-byte icon record at &g_abHudIconActorRecords, where base = (&g_anHudIconRestPos+0x4)[slot*0xc] (= +4 of the per-slot rest-position vec3 at &g_anHudIconRestPos). Sole caller UpdateHudCounters passes ±sine-LUT entries to drive the roll-in/roll-out animation on digit changes. */
+/* 0x80054400: Rolls count HUD icon actors from slot base: each one's posY = its rest Y (g_anHudIconRestPos[slot][1]) + delta. UpdateHudCounters passes the g_anHudRollInStepTable / g_anHudRollOutStepTable step to slide a counter's digits and icon in or out. */
 void OffsetHudIconRollAxis(int base, int count, int delta);
 
-/* 0x8005445c: Per-slot roll-animation offset writer for the small HUD digit sprite descriptors. For count slots starting at base, writes (base + delta) into the +0x2 (V) field of each 8-byte sprite record at &g_anHudSpriteRects, where base = (&g_anHudDigitRestRects+0x2)[slot*4] (= +0x2 of the per-slot rest UV in &g_anHudDigitRestRects). Sole caller UpdateHudCounters; mirror of OffsetHudIconRollAxis but for the digit-sprite vertex table rather than the big icon records. */
+/* 0x8005445c: The same roll for the HUD sprite rects: count g_anHudSpriteRects entries from slot base get y = their g_anHudDigitRestRects y + delta. */
 void OffsetHudDigitRollAxis(int base, int count, int delta);
 
 /* 0x800544a8: Steps a digit roll over count HUD digit records from slot: a digit already turned (rotZ != 0) or with a pending value (->subMode) different from the shown one (->type - ACTOR_TYPE_GEM_DIGIT_0) takes rotZ = state, the counter's roll phase. At HUD_DIGIT_SWAP_PHASE (0xC0, a quarter turn) each pending digit is swapped into ->type and made drawable (->cullRadius 0xFF). Called by UpdateHudCounters' hold/ratchet paths and DragonRescue_Update. */
@@ -1966,14 +1966,13 @@ void PlayActorMeshVoice(Actor *actor, int voice, void *voiceRow);
 /* 0x80038ee0: Turns the actor's 8-bit yaw (->rotZ) toward `target` by at most `step` (x1.5 / x2 at frame delta 3 / 4); returns 1 once within `threshold`. */
 int TurnActorYawTowardAngle(Actor *actor, int target, int step, int threshold, int flag);
 
-/* 0x8003aaec: Allocates a rotating-billboard particle (24-byte records at g_aRotBillboards), places it at the actor's matrix-rotated offset, white, with fixed life/size bytes; returns the record index or < 0. */
 /* 0x8005882c (hand-written asm): scans the 8 records of g_aRotBillboards (0x18 stride) for one whose life byte (+0xC) is 0 and returns its index, or -1 when all are live. Caller: SpawnActorRotBillboard. */
 int FindFreeRotBillboardSlot(void);
 
 /* 0x8003aaec: Allocates a g_aRotBillboards record, seeds it white at `offset` rotated by the actor's matrix plus its position, and returns the record index (negative when the table is full). */
 int SpawnActorRotBillboard(Actor *actor, int *offset);
 
-/* 0x8003b1e8: Writes state byte +0x48 = a1 on every non-dormant (< 0x80) actor of a0's pickup group (->group), or on a0 alone when the group index is out of range. */
+/* 0x8003b1e8: Sets ->mode = value on every non-dormant actor of actor's pickup group (->group, via g_pLevelPickupTableEntries), or on actor alone when the group index is out of range. */
 void SetActorGroupState(Actor *actor, int value);
 
 /* 0x8003b538: SetActorGroupState restricted to actors whose current state equals a2. */
@@ -2042,7 +2041,7 @@ int FindNearestPathPointToSpyro(PathData *path, int *out_index);
 /* 0x80038bb0: Index of the path-list point farthest (2D) from Spyro. */
 int FindFarthestPathPointFromSpyro(PathData *path);
 
-/* 0x80038c4c: Rotates pos - rec into the record's yaw frame (+0x14) and tests it against the half-extents at +0xC/+0x10. */
+/* 0x80038c4c: Rotates pos - box (x, y) into the TriggerBox's yaw frame (->yaw) and tests it against halfWidth / halfDepth. */
 int IsPointInRotatedBox(int *pos, struct TriggerBox *box);
 
 /* --- Shared helpers named 2026-10-21 (session 2). Evidence: the original asm
