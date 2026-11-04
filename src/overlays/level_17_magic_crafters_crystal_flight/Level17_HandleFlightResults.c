@@ -25,6 +25,7 @@
 #include "level_flight_results.h"
 #include "gamestate.h"
 #include "camera.h"
+#include "frame_db.h"
 
 extern char *g_pRenderScratchPrimTop;
 
@@ -40,7 +41,7 @@ void Level17_HandleFlightResults(int reload) {
     rect.w = 0x100;
     rect.y = 0;
     rect.h = 0xE1;
-    LoadImage(&rect, g_pRenderScratchPrimTop - 0x1C200);
+    LoadImage(&rect, g_pRenderScratchPrimTop - MENU_SNAPSHOT_BYTES);
     DrawSync(0);
   }
   g_nGamestate = GS_GAMEPLAY;

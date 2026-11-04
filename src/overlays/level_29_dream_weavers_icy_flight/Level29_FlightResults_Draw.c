@@ -85,7 +85,7 @@ void Level29_FlightResults_Draw(void)
     rect.y = 0;
     rect.w = 0x100;
     rect.h = 0xE1;
-    StoreImage(&rect, img[0] + 0xFFFE3E00);
+    StoreImage(&rect, img[0] - MENU_SNAPSHOT_BYTES);
     y = 8;
     do
     {
@@ -150,7 +150,7 @@ void Level29_FlightResults_Draw(void)
     PutDrawEnv(env);
     {
     int off, bias;
-    do { off = 0x1C000; bias = 0xFFFE3E00; } while (0);
+    do { off = 0x1C000; bias = -MENU_SNAPSHOT_BYTES; } while (0);
     {
     register char *e8 asm("$3");
     register char *f0 asm("$2");

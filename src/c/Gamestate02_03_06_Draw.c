@@ -105,7 +105,7 @@ void Gamestate02_03_06_Draw(void) {
     rect.y = 0;
     rect.w = 0x100;
     rect.h = 0xe1;
-    StoreImage(&rect, (void *)((char *)img[0] + 0xFFFE3E00));
+    StoreImage(&rect, (void *)((char *)img[0] - MENU_SNAPSHOT_BYTES));
     y = 8;
     do {
       KEEP_IN_REG(strip);
@@ -164,7 +164,7 @@ void Gamestate02_03_06_Draw(void) {
       int off, bias;
       do {
         off = 0x1C000;
-        bias = 0xFFFE3E00;
+        bias = -MENU_SNAPSHOT_BYTES;
       } while (0);
       {
         register char *e8 asm("$3");
