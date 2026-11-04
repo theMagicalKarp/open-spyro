@@ -33,7 +33,7 @@
  * Spawn one actor ("moby") of type `type`, parented to `parent`.
  *
  * Allocates a pool record (AllocActorRecordSlot), stamps the
- * type into +0x36 and the parent's pool index into +0x56 (the 0x58-byte-record
+ * type into ->type and the parent's pool index into ->poolIndex (the 0x58-byte-record
  * pointer difference, clamped away when it is not a real pool slot), then runs
  * a per-type init arm. Every arm starts from InitActorRenderDefaults
  * (InitActorRenderDefaults) and ends by placing the new actor: most copy the
@@ -44,14 +44,14 @@
  *  - 0xE / 0x53..0x57 (collectible drops: life statue, life orb, gems): fill the pickup state block,
  *    take a ground probe (FindGroundHeightBelow) 0x400 above the spawn point, encode
  *    the cached direction (EncodeCachedVecToActorDirCode) and select the per-type
- *    variant byte at +0x4F (0xE: 0xC, 0x53..0x57: 1..5).
+ *    tintMode preset (0xE: 0xC, 0x53..0x57: 1..5).
  *  - 0x43..0x45 / 0xFF..0x101 / 0x135..0x137 (debris bursts):
  *    give the fragment a random unit velocity built from a random yaw
  *    (0xFFF) and pitch (0x7FF) through LookupCosine/LookupSine, add a sixth
  *    of Spyro's velocity (g_anSpyroVelocity..54) when the parent is flagged 0x20000,
  *    nudge the spawn point along it, and randomise the tumble rates. The
  *    0x135..0x137 sub-range additionally gets the 0xA18618 tint and the
- *    +0x4B bit 7 flag.
+ *    ACTOR_RENDER_SECONDARY renderList bit.
  *  - 0xFB (dragon-statue burst shard, ticked by TickStatueBurstShard): pick one of eight launch directions from
  *    the g_anLaunchDirTable/g_anLaunchDirTableZ table, rotate it into the parent's orientation
  *    (RotateVectorByMatrix), jitter each component by
