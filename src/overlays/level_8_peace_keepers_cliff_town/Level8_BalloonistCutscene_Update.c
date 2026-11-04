@@ -104,7 +104,7 @@ void Level8_BalloonistCutscene_Update(void)
   {
     g_pActiveActorList1 = 0;
     g_apActiveActorList[0] = g_pActorCutsceneActor;
-    TickActorAnims(g_apActiveActorList, 0);
+    TickActorAnims(g_apActiveActorList, ANIM_TICK_NORMAL);
   }
   switch (st[0])
   {

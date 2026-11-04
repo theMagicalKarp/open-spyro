@@ -675,7 +675,7 @@ extern int g_nPortalDistanceFogEnabled;                /* 0x8007591c: portals be
 extern int g_nCameraManualYawInput;          /* 0x80075924 */
 extern int g_nPadHistoryIndex;               /* 0x80075928 */
 extern int g_nCameraForcePassiveFollow;        /* 0x8007592c: 1 while Spyro is in SPYRO_ST_HURT_LONG (UpdateCameraFrame): the camera behaves as if CAM_OPT_PASSIVE_FOLLOW were set */
-extern void *g_pActorAuxPoolFreeHead;        /* 0x80075930 */
+extern void *g_pActorAuxPoolFreeHead;        /* 0x80075930: one past the next free 0x18-byte actor ->state record; the aux pool grows down (AllocActorRecordSlot) */
 extern int g_nActorMeshOtDepthBin;           /* 0x80075934 */
 extern int g_nCameraPassiveModeHoldTimer;    /* 0x80075938 */
 extern int g_nRespawnOrGameOverFrame;             /* 0x8007593c: frame counter of the respawn / game-over sequence (RespawnOrGameOver_Update / _Draw) */

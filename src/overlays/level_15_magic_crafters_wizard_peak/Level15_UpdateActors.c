@@ -86,10 +86,10 @@ void Level15_UpdateActors(void) {
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
    * pass. */
   BuildActiveActorList();
-  TickActorAnims(g_apActiveActorList, 0);
+  TickActorAnims(g_apActiveActorList, ANIM_TICK_NORMAL);
 
   if (g_nFrameStep >= 3) {
-    TickActorAnims(g_apActiveActorList, g_nFrameStep == 3 ? 0x80000001 : 0x80000000);
+    TickActorAnims(g_apActiveActorList, g_nFrameStep == 3 ? ANIM_TICK_EXTRA | ANIM_TICK_HALF_RATE : ANIM_TICK_EXTRA);
   }
 
   actorList = g_apActiveActorList;

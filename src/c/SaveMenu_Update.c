@@ -44,7 +44,7 @@ void SaveMenu_Update(void) {
   RotateLightVectorXZ(3);
   g_apActiveActorListBlock[0] = ACT;
   g_apActiveActorListBlock[1] = 0;
-  TickActorAnims(g_apActiveActorListBlock, 0);
+  TickActorAnims(g_apActiveActorListBlock, ANIM_TICK_NORMAL);
   switch (SM[0]) {
   case SAVE_MODE_SWING_IN:
     if (SM[1] < 0x40) {
