@@ -26,7 +26,8 @@ extern void ChangeSpyroState(int state);
 extern int CheckLineOfSightSegment(int *from, int *to);
 extern int CheckSpyroLineOfSightTo(int *pos);
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2); /* ground/wall probe */
-extern void CommitActorKillGems(int value, void *actor);
+struct Actor;
+extern void CommitActorKillGems(int value, struct Actor *actor);
 extern void ComputeCameraOrbitOffset(int *out);
 extern void ConvertRGB15ToLuma8();                           /* texture-page sync */
 extern void CopyVector();

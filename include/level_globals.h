@@ -227,7 +227,7 @@ extern void (*g_pfnLevelHandleFlightResults)();
 extern void BuildActiveActorList(void);
 extern int CheckLineOfSightSegment(int *from, int *to);
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
-extern void CommitActorKillGems(int value, void *actor);
+extern void CommitActorKillGems(int value, Actor *actor);
 extern int FindGroundHeightBelow(int *pos, int depth);
 struct TriggerBox;
 extern int IsPointInRotatedBox(int *pos, struct TriggerBox *box);

@@ -58,7 +58,7 @@ extern void AimCameraStickTowardPoint(int *target);
 
 extern void SVectorToVectorShl2(int *dst, short *src);
 
-extern void CommitActorKillGems(int value, void *actor);
+extern void CommitActorKillGems(int value, Actor *actor);
 
 /* Types 260..269: a floating gem-value digit (0x104 + digit), spawned by
  * SpawnFloatingDigitActors when a kill pays out gems. */
@@ -534,7 +534,7 @@ typedef struct AmbientSoundBytesState {
 /* Type 34: dragon egg. Spirals up, flies to Spyro and is collected (the
  * same record as level_actor_states.h EggRiseState). */
 typedef struct EggFlightState {
-  void *killActor;        /* 0x00 actor handed to CommitActorKillGems on collection */
+  Actor *killActor;       /* 0x00 actor handed to CommitActorKillGems on collection */
   short from[3];         /* 0x04 launch point */
   short to[3];           /* 0x0A destination */
   short speed;           /* 0x10 */
@@ -1541,7 +1541,7 @@ extern PortalCamPath *volatile g_pPortalCamPathData;
 extern struct CutscenePath *g_pPathTableHead;
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
-extern int FindNearestPathPointToSpyro(PathData *path, int *nearest);
+extern int FindNearestPathPointToSpyro(PathData *path, int *out_index);
 extern int g_anCameraPos[];
 extern int g_nCameraActiveTargetPitch;
 extern int g_nCameraActiveTargetDistance;

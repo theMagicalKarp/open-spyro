@@ -65,7 +65,7 @@ int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR, int
 #define NAME_LETTERS_RETURN_HOME 0 /* "RETURN HOME", facing Spyro (level exits) */
 #define NAME_LETTERS_LEVEL       1 /* the sign's level name, along its yaw (portals) */
 #endif
-void SpawnNameLetterActors(Actor *actor, int named);
+void SpawnNameLetterActors(Actor *sign, int named);
 void FollowActorWaypointPath(Actor *actor, PathData *path, int threshold, int cap, int radius, int yawLim, int pitchLim);
 void RefreshActorDerivedState(Actor *actor, int mode);
 void SetSpawnAnchorFromActor(Actor *actor, int heading);
