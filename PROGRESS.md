@@ -349,7 +349,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8003de44` | AlignSpyroBodyToVelocity | main | 284 | matched | game |
 | `0x8003df60` | ResetSpyroFrameMotion | main | 68 | matched | game |
 | `0x8003dfa4` | ResetSpyroLinearMotion | main | 72 | matched | game |
-| `0x8003dfec` | RotateSpyroBodyTowardKnockbackDir | main | 200 | matched | game |
+| `0x8003dfec` | TurnSpyroYawTowardMotion | main | 200 | matched | game |
 | `0x8003e0b4` | ApplyGravityAlongSpyroSlopeTangent | main | 248 | matched | game |
 | `0x8003e1ac` | ApplyGravityAlongSpyroSlopeNormal | main | 108 | matched | game |
 | `0x8003e218` | ProbeSpyroLedgeForward | main | 256 | matched | game |

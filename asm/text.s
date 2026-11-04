@@ -49845,11 +49845,11 @@ glabel ResetSpyroLinearMotion
 endlabel ResetSpyroLinearMotion
 .endif
 
-.section .text.RotateSpyroBodyTowardKnockbackDir, "ax"
-.ifndef HAVE_C_RotateSpyroBodyTowardKnockbackDir
-nonmatching RotateSpyroBodyTowardKnockbackDir, 0xC8
+.section .text.TurnSpyroYawTowardMotion, "ax"
+.ifndef HAVE_C_TurnSpyroYawTowardMotion
+nonmatching TurnSpyroYawTowardMotion, 0xC8
 
-glabel RotateSpyroBodyTowardKnockbackDir
+glabel TurnSpyroYawTowardMotion
     /* 2E7EC 8003DFEC E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 2E7F0 8003DFF0 1000B0AF */  sw         $s0, 0x10($sp)
     /* 2E7F4 8003DFF4 21808000 */  addu       $s0, $a0, $zero
@@ -49905,7 +49905,7 @@ glabel RotateSpyroBodyTowardKnockbackDir
     /* 2E8A8 8003E0A8 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 2E8AC 8003E0AC 0800E003 */  jr         $ra
     /* 2E8B0 8003E0B0 00000000 */   nop
-endlabel RotateSpyroBodyTowardKnockbackDir
+endlabel TurnSpyroYawTowardMotion
 .endif
 
 .section .text.ApplyGravityAlongSpyroSlopeTangent, "ax"
@@ -59770,7 +59770,7 @@ glabel IntegrateSpyroMotionForSubstep
     /* 37604 80046E04 000020AE */  sw         $zero, 0x0($s1)
   .L80046E08:
     /* 37608 80046E08 08000424 */  addiu      $a0, $zero, 0x8
-    /* 3760C 80046E0C FBF7000C */  jal        RotateSpyroBodyTowardKnockbackDir
+    /* 3760C 80046E0C FBF7000C */  jal        TurnSpyroYawTowardMotion
     /* 37610 80046E10 04000524 */   addiu     $a1, $zero, 0x4
     /* 37614 80046E14 0880023C */  lui        $v0, %hi(g_nSpyroGroundSlope)
     /* 37618 80046E18 088B428C */  lw         $v0, %lo(g_nSpyroGroundSlope)($v0)

@@ -1336,7 +1336,7 @@
    "size": 72
   },
   {
-   "name": "RotateSpyroBodyTowardKnockbackDir",
+   "name": "TurnSpyroYawTowardMotion",
    "vram": 2147737580,
    "size": 200
   },

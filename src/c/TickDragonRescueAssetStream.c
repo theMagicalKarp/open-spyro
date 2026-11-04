@@ -12,7 +12,7 @@
 #define DRAGON_ASSET_SIZE(i) ((&g_nDragonAssetSize)[(i) * 2])
 #define LEVEL_ARCHIVE_OFFSET(i) ((&g_nLevelArchiveOffset)[(i) * 4])
 
-/* 0x80014b70 (0x800): streams the dragon-rescue (dragon rescue) assets while
+/* 0x80014b70 (0x800): streams the dragon-rescue assets while
    the pickup overlay runs. Each tick, once the drive is idle and the music
    stream table is built, it runs one stage: read the dragon asset (split in
    two when it does not fit the unpack area), relocate the statue/mirror

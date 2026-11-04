@@ -1415,7 +1415,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     int l;
 
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
-    RotateSpyroBodyTowardKnockbackDir(8, 4);
+    TurnSpyroYawTowardMotion(8, 4);
     if (g_nSpyroGroundSlope < 0x17) {
       int *c2 = &SPY[SPY_CARRY];
 

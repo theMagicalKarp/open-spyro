@@ -1,12 +1,12 @@
 #include "actor_type.h"
 #include "globals.h"
 
-/* Tick the +0x4E countdown byte on an actor. When the 0x10000 flag (+0x18) is
-   set it counts UP by 0x18, wrapping back to 0x60 once it reaches 0x61. When
+/* Tick the actor's tint2 glow byte. While ACTOR_HIT_FLAME is set in ->flags
+   it counts UP by 0x18, wrapping back to 0x60 once it reaches 0x61. When
    the flag is clear it counts DOWN: by 2 while >= 0x21, by 1 below that, and
    holds at 0. Named for the flag: 0x10000 is the flame-hit bit (a flame
    breaks the type-146 prop at once) and StepActorScorchTint pushes the shade
-   band out for the same flag, so +0x4E reads as a scorch glow (likely). */
+   band out for the same flag, so tint2 reads as a scorch glow (likely). */
 void TickActorFlameGlow(Actor *actor) {
   if (actor->flags & ACTOR_HIT_FLAME) {
     int v = actor->tint2 + 0x18;

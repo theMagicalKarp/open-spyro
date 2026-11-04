@@ -6,7 +6,7 @@
 #include "hud_counter.h"
 #include "main_shared.h"
 
-/* Leave the dragon-rescue / dragon-rescue overlay back into the world
+/* Leave the dragon-rescue gamestate back into the world
    (0x8002CB6C, gamestate 0): unblock gameplay, release the actor that owned
    the pickup (clear its +0x3C hold byte and re-enable it at +0x48), reset
    Spyro, re-seed the pad-snapshot countdown and point the camera anchor at his

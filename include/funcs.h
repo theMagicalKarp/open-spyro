@@ -358,7 +358,7 @@ void EndRespawnToGameplay(void);
 /* 0x8002c91c: Empty body (single `jr ra`); Gamestate06_Update's only call, so gamestate 6 updates nothing. */
 void Gamestate06SubstateStub_Noop(void);
 
-/* 0x8002c924: Begins the dragon-rescue statue cutscene overlay (g_nGamestate=GS_DRAGON_RESCUE = GS_DRAGON_RESCUE). Seeds the cutscene substate/timer globals, increments BOTH dragon counters in lockstep (g_anLevelDragonsRescued[g_nLevelIndex] per-level + g_nTotalDragonsRescued game-wide total, with the HUD cache primed from the latter), blocks gameplay (g_nCinematicActive=1, g_nGamePaused=1), sets the statue's partner checkpoint to CHECKPT_ANIM_FLASH, anchors the aura star above the statue, and fires the rescue chime sfx. Special cases: Artisans home (level 10) upgrades pickup type 1->2 once any sibling-level g_abLevelExited entry is nonzero; Gnasty's Loot (level 0x3c) rewrites the actor params for the key-locked treasure variant. */
+/* 0x8002c924: Begins the dragon-rescue statue cutscene overlay (g_nGamestate = GS_DRAGON_RESCUE). Seeds the cutscene substate/timer globals, increments BOTH dragon counters in lockstep (g_anLevelDragonsRescued[g_nLevelIndex] per-level + g_nTotalDragonsRescued game-wide total, with the HUD cache primed from the latter), blocks gameplay (g_nCinematicActive=1, g_nGamePaused=1), sets the statue's partner checkpoint to CHECKPT_ANIM_FLASH, anchors the aura star above the statue, and fires the rescue chime sfx. Special cases: Artisans home (level 10) upgrades pickup type 1->2 once any sibling-level g_abLevelExited entry is nonzero; Gnasty's Loot (level 0x3c) rewrites the actor params for the key-locked treasure variant. */
 void BeginDragonRescue(Actor *actor);
 
 /* 0x8002cb6c: Returns from the dragon rescue to gameplay: GS_GAMEPLAY, gameplay unblocked, the rescued dragon's linked actor reset (anim 0, mode 1), ResetSpyroEntity(1), a 0xC-frame pad snapshot, the camera anchor back on Spyro with the standing camera (CAM_MODE_STAND) on the dynamic target params, the superflame timer restored and the HUD counters reset (InitHudCounters(0)). */
@@ -548,8 +548,8 @@ void AlignSpyroBodyToVelocity(void);
 /* 0x8003dfa4: Hard-zero of Spyro's linear motion. Clears the knockback accumulator g_anSpyroMotionVec..b6c, the frame-delta length g_nSpyroFrameMotionLength, the live velocity g_anSpyroVelocity..b54, and the speed scalar g_nSpyroMotionSpeed. Called by jump/glide/dive transitions (ApplySpyroTriggerEvents/41270/41670) just before they overwrite velocity with their own launch. */
 void ResetSpyroLinearMotion(void);
 
-/* 0x8003dfec: Rotates Spyro's body yaw (g_bSpyroPersistentEulerZ byte / g_nSpyroBodyYaw word) by ±step toward the knockback direction ArcTan2(g_anSpyroMotionVec, g_nSpyroMotionY). The 8-bit angle delta must lie outside the ±band dead-band; if it also escapes ±step, the body snaps directly to the target rather than stepping. Used by IntegrateSpyroMotionForSubstep (on-ground update) to recover orientation after impacts. */
-void RotateSpyroBodyTowardKnockbackDir(int step, int band);
+/* 0x8003dfec: Turns Spyro's byte yaw (g_bSpyroPersistentEulerZ, then g_nSpyroBodyYaw = byte << 4) toward his motion direction ArcTan2(g_anSpyroMotionVec): no change inside +-band, a snap when within +-step, else one step. Only caller: SPYRO_ST_SLIDE (step 8, band 4). */
+void TurnSpyroYawTowardMotion(int step, int band);
 
 /* 0x8003e0b4: Decomposes gravity along the slope tangent of the current surface. Computes the component of gravity (g_nSpyroGravityStep) projected onto the ground plane defined by normal g_anSpyroGroundNormal and writes the down-slope acceleration into 0x80078b28 (with g_nSpyroSlopeGravityStep = gravity magnitude). Called by ChangeSpyroState cases 0xb (charge), 0x13, 0x2c to give Spyro a slope-slide push along the ground tangent. */
 void ApplyGravityAlongSpyroSlopeTangent(void);
