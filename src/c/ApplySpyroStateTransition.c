@@ -58,7 +58,7 @@ void ApplySpyroStateTransition(void) {
     cur = g_bSpyroAnimCurrent;
     frame = *pf;
     idx = cur * 4;
-    if (frame >= g_abSpyroAnimDescTable[idx + 1]) {
+    if (frame >= g_abSpyroAnimDescTable[idx + SPYRO_ANIM_DESC_LOOP_END]) {
       g_nSpyroAnimMode = SPYRO_ANIM_LOOP_WRAP;
       g_bSpyroAnimPrev = cur;
       g_bSpyroFramePrev = frame;
@@ -85,7 +85,8 @@ void ApplySpyroStateTransition(void) {
     g_bSpyroAnimFrame = frame + 1;
     g_bSpyroAnimCurrent = next;
     idx = next * 4;
-    if (g_bSpyroAnimFrame >= g_abSpyroAnimDescTable[idx + 1]) {
+    if (g_bSpyroAnimFrame >=
+        g_abSpyroAnimDescTable[idx + SPYRO_ANIM_DESC_LOOP_END]) {
       g_bSpyroAnimFrame = g_abSpyroAnimDescTable[idx];
     }
     g_bSpyroSubFrameTimer = 4;

@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_state.h"
 
 /* 0x8003cb24: Adds delta to the sub-frame timer g_bSpyroSubFrameTimer. On
    overflow past 0xF, advances g_bSpyroAnimFrame by 1 within the current anim,
@@ -26,7 +27,7 @@ void AdvanceSpyroAnimFrame(int delta) {
     g_bSpyroFramePrev = frame;
     g_bSpyroAnimFrame = newFrame;
 
-    loopEnd = g_abSpyroAnimDescTable[idx + 1];
+    loopEnd = g_abSpyroAnimDescTable[idx + SPYRO_ANIM_DESC_LOOP_END];
     if (newFrame >= loopEnd) {
       g_bSpyroAnimFrame = g_abSpyroAnimDescTable[idx];
     }

@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_state.h"
 
 extern unsigned char g_bSpyroAnimLayer2Substep[]; /* layer-2 substep accumulator
    — incomplete array so the base address is materialized once and held (single
@@ -29,7 +30,7 @@ void AdvanceSpyroAnimLayer2Frame(int step) {
     g_bSpyroAnimLayer2FramePrev = frame;
     g_bSpyroAnimLayer2Frame = newFrame;
 
-    if (newFrame == g_abSpyroAnimDescTable[off + 1]) {
+    if (newFrame == g_abSpyroAnimDescTable[off + SPYRO_ANIM_DESC_LOOP_END]) {
       g_bSpyroAnimLayer2Frame = g_abSpyroAnimDescTable[off];
     }
   }

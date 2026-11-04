@@ -255,6 +255,17 @@ enum SpyroAnimId {
   SPYRO_ANIMID_COUNT = 46, /* the Model.m_Animations slots InstallSpyroAnimStream fills */
 };
 
+/* g_abSpyroAnimDescTable: SPYRO_ANIMID_COUNT 4-byte records, then one byte
+ * per animation. */
+#define SPYRO_ANIM_DESC_LOOP_START 0 /* frame a looping anim restarts at */
+#define SPYRO_ANIM_DESC_LOOP_END 1   /* one past the loop's last frame */
+#define SPYRO_ANIM_DESC_FRAMES 2     /* frame count (layer 1 holds the last one) */
+#define SPYRO_ANIM_DESC_RATE 3       /* play rate (g_nSpyroFlameAnimRate) */
+/* Nonzero: the animation keeps the overlay layers off (the flame breath is
+ * cancelled, a layer-2 request is dropped). */
+#define SPYRO_ANIM_NO_OVERLAY(anim)                                            \
+  g_abSpyroAnimDescTable[SPYRO_ANIMID_COUNT * 4 + (anim)]
+
 /* g_nSpyroFlameState: the flame-breath machine (TickSpyroFlameAttack). */
 enum SpyroFlameState {
   SPYRO_FLAME_IDLE = 0,

@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_state.h"
 
 /* 0x800495d8 */
 void AdvanceSpyroAnimLayer1Frame(int step) {
@@ -20,7 +21,7 @@ void AdvanceSpyroAnimLayer1Frame(int step) {
     g_bSpyroAnimLayer1FramePrev = frame;
     g_bSpyroAnimLayer1Frame = newFrame;
 
-    len = g_abSpyroAnimDescTable[anim * 4 + 2];
+    len = g_abSpyroAnimDescTable[anim * 4 + SPYRO_ANIM_DESC_FRAMES];
     if (newFrame >= len) {
       g_bSpyroAnimLayer1Frame = len - 1;
     }

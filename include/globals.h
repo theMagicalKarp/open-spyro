@@ -324,7 +324,7 @@ extern int g_anGteExceptionVectorStub[14]; /* 0x800626b0 */
 extern int g_anSpyroIdleAnimStateSeq[9];                     /* 0x8006bc60 */
 extern unsigned char g_abSpyroStateTransitionAnimMatrix[2025];        /* 0x8006bc84 */
 extern unsigned char g_abSpyroStateAnimIndexMap[48];                  /* 0x8006c470 */
-extern unsigned char g_abSpyroAnimDescTable[192];                     /* 0x8006c4a0 */
+extern unsigned char g_abSpyroAnimDescTable[192];                     /* 0x8006c4a0: SPYRO_ANIMID_COUNT 4-byte records (loop start / loop end / frame count / rate, SPYRO_ANIM_DESC_*), then the per-anim SPYRO_ANIM_NO_OVERLAY bytes (spyro_state.h) */
 extern unsigned char g_abSpyroStateCameraMode;                        /* 0x8006c588 */
 extern int g_anSpyroSlopeSpeedTargets[6];                    /* 0x8006c5b8 */
 extern unsigned char g_abSpyroEulerRateRampUp[12];                    /* 0x8006c6f8 */
