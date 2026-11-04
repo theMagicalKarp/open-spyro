@@ -7,10 +7,11 @@
 #include "main_shared.h"
 
 /* Leave the dragon-rescue gamestate back into the world
-   (0x8002CB6C, gamestate 0): unblock gameplay, release the actor that owned
-   the pickup (clear its +0x3C hold byte and re-enable it at +0x48), reset
-   Spyro, re-seed the pad-snapshot countdown and point the camera anchor at his
-   world position, retarget the dynamic camera params (yaw re-biased to Spyro's
+   (0x8002CB6C, gamestate 0): unblock gameplay, arm the rescued dragon's
+   checkpoint (its partner actor, CHECKPT_HELD while the statue stood, goes
+   to CHECKPT_ARMED with anim CHECKPT_ANIM_REST), reset Spyro, re-seed the
+   pad-snapshot countdown and point the camera anchor at Spyro's world
+   position, retarget the dynamic camera params (yaw re-biased to Spyro's
    body yaw, wrapped to 12 bits), restore the superflame timer, reset the
    camera and HUD (all five counters hidden), and re-issue the current music
    track (command 8).
