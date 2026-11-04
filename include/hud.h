@@ -40,4 +40,19 @@
  * g_anHudIconRestPos. */
 #define HUD_REST_POS(o) ((int *)((char *)g_anHudIconRestPos + (o)))
 
+/* Word offsets reached off the held-base HUD views (A228): the original forms
+ * one base for a HUD global and reaches a neighbour off it, so the C indexes
+ * the incomplete-array view (g_an*Block) by the address difference. */
+/* g_nHudButterflyCachedCount (0x80077fe0) -> the lives icon's posX / posY,
+ * the anchor the sparx-food butterflies ring (UpdateHudCounters) */
+#define HUD_BFLY_TO_LIVES_ICON_X                                               \
+  ((0x80077fec - 0x80077fe0 + HUD_SLOT_LIVES * ACTOR_SIZE + 0x0C) / 4)
+#define HUD_BFLY_TO_LIVES_ICON_Y (HUD_BFLY_TO_LIVES_ICON_X + 1)
+/* g_dwHudBobSinePhase (0x80077fe4) -> g_nHudFrameCycleMod9 */
+#define HUD_BOB_TO_FRAME_CYCLE 1
+/* g_dwHudBobSinePhase / g_nHudFrameCycleMod9 -> &g_anLevelSpriteTexWordPairs[2],
+ * the 9 animated egg-icon frames (two words each) of the inventory screen */
+#define HUD_BOB_TO_EGG_ICON_FRAMES ((0x8007850c - 0x80077fe4) / 4 + 2)
+#define HUD_CYCLE_TO_EGG_ICON_FRAMES ((0x8007850c - 0x80077fe8) / 4 + 2)
+
 #endif /* OPEN_SPYRO_HUD_H */

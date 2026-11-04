@@ -4,6 +4,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "gpu_prim.h"
+#include "hud.h"
 #include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
@@ -765,10 +766,12 @@ void Gamestate02_03_06_Draw(void) {
               pos[2] = 0x20;
               EmitTexturedQuad(quad, &g_anLevelSpriteTexWordPairs[2], pos);
             } else {
-              EmitTexturedQuad(quad,
-                               &g_adwHudBobSinePhaseBlock[0x14c] +
-                                   (g_adwHudBobSinePhaseBlock[1] + i) % 9 * 2,
-                               (int *)0);
+              EmitTexturedQuad(
+                  quad,
+                  &g_adwHudBobSinePhaseBlock[HUD_BOB_TO_EGG_ICON_FRAMES] +
+                      (g_adwHudBobSinePhaseBlock[HUD_BOB_TO_FRAME_CYCLE] + i) %
+                          9 * 2,
+                  (int *)0);
             }
             x3 += 0x1b;
             i++;
@@ -1009,10 +1012,11 @@ void Gamestate02_03_06_Draw(void) {
                 pos[2] = 0x20;
                 EmitTexturedQuad(quad2, &g_anLevelSpriteTexWordPairs[2], pos);
               } else {
-                EmitTexturedQuad(quad2,
-                                 &g_anHudFrameCycleBlock[0x14b] +
-                                     (g_anHudFrameCycleBlock[0] + i) % 9 * 2,
-                                 (int *)0);
+                EmitTexturedQuad(
+                    quad2,
+                    &g_anHudFrameCycleBlock[HUD_CYCLE_TO_EGG_ICON_FRAMES] +
+                        (g_anHudFrameCycleBlock[0] + i) % 9 * 2,
+                    (int *)0);
               }
               e++;
             }

@@ -265,10 +265,12 @@ void UpdateHudCounters(void) {
       k = n * 8 + 0x60;
       j = n * 2;
       HUD_RECT(g_anHudSpriteRects, k)->x =
-          (g_anHudButterflyCachedBlock[0xE2] + g_abHudButterflyRingXY[j]) -
+          (g_anHudButterflyCachedBlock[HUD_BFLY_TO_LIVES_ICON_X] +
+           g_abHudButterflyRingXY[j]) -
           0x1D;
       HUD_RECT(g_anHudSpriteRects, k)->y =
-          (g_anHudButterflyCachedBlock[0xE3] + g_abHudButterflyRingXY[j + 1]) -
+          (g_anHudButterflyCachedBlock[HUD_BFLY_TO_LIVES_ICON_Y] +
+           g_abHudButterflyRingXY[j + 1]) -
           0x1C;
       HUD_RECT(g_anHudSpriteRects, k)->w = 8;
       HUD_RECT(g_anHudSpriteRects, k)->h = 8;
