@@ -1,5 +1,5 @@
-/* Level15_AdvanceEmitList (0x80087b40, level_15_magic_crafters_wizard_peak
- * overlay, 0x1918 bytes).
+/* Level15_AdvanceEmitList (0x80087b40, level_15_magic_crafters_wizard_peak overlay,
+ * 0x1910 bytes).
  *
  * The emit-list ADVANCE pass -- the 1604-insn wizard-peak variant of the walk
  * matched in level_10 / level_11 / level_5.  Walks the 0x20-byte record stream

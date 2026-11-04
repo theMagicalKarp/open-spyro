@@ -40,46 +40,6 @@
 #include "spyro_state.h"
 #include "emit_record.h"
 
-/* Level24_AdvanceEmitList (0x80083274, level_2_artisans_dark_hollow overlay,
- * 0x122c bytes).
- *
- * The emit-list ADVANCE pass -- the ground-level (non-flight) 1163-insn
- * variant of the walk matched in level_11 / level_5.  Walks the 0x20-byte
- * record stream at g_pEmitListBase and ages one record per iteration: integrates
- * its position, fades its colour, ticks its life counter and, when the record
- * has expired (or its alive byte has been cleared), hands it back with
- * FreeEmitListRecord().  The walk stops at the terminator record, whose class byte
- * at +0x01 is 0xFF.
- *
- * Only `rec` is a real induction variable.  `pos` and `vel` are separate
- * pointers because the arms pass them to AddSVector() as values, so
- * loop.c strength-reduces each into its own register; every field access is
- * an ADDRESS giv off `rec`, and loop.c picks the last one it scans -- the
- * `rec[1]` terminator test -- as the shared base, which is how the whole
- * record ends up addressed off `rec + 1` with offsets 0x00..0x1D.  Writing
- * the fields against a `rec + 1` pointer local instead costs a fifth
- * induction variable.
- *
- * Field map, in record-relative offsets:
- *   0x00  effect id                0x01  class / terminator
- *   0x02  age                      0x03  alive
- *   0x04/0x06/0x08  tail point     0x0A/0x0C/0x0E  head point (also the
- *                                  r/g/b triple for the fading classes)
- *   0x10..0x16  per-record velocity / colour bytes
- *   0x18  spin angle (a source pointer in class 0x6, a byte angle pair in
- *         classes 0x15/0x4C)        0x1C  spark vel z   0x1E  phase toggle
- *
- * The ground-level arm set: it drops the flight classes 0xD/0x13/0x1A/0x1B
- * and adds 0x6 (the orbiting spark, which reads a world point through the
- * pointer at +0x18), 0x15 and 0x4C (the two unit-circle swirls, which share
- * a cross-jumped sine tail), 0x18 (EMIT_RESCUE_SWIRL, whose radius and height track
- * g_nDragonRescueTimer), 0x46 and 0x50 (two midpoint-relaxation
- * classes).  Word-identical (bar the jump-table symbol and branch
- * displacements) to the copies in level_1 / level_4 / level_10 / level_28.
- *
- * Verified byte-identical inside the relinked
- * level_2_artisans_dark_hollow.ovl.
- */
 
 void Level24_AdvanceEmitList(int step) {
   unsigned char *rec = g_pEmitListBase;

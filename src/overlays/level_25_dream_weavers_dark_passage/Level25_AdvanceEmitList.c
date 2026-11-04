@@ -1,7 +1,7 @@
-/* Level2_AdvanceEmitList (0x80083274, level_2_artisans_dark_hollow overlay,
- * 0x122c bytes).
+/* Level25_AdvanceEmitList (0x800857fc, level_25_dream_weavers_dark_passage overlay,
+ * 0x153c bytes).
  *
- * The emit-list ADVANCE pass -- the ground-level (non-flight) 1163-insn
+ * The emit-list ADVANCE pass -- the ground-level (non-flight) 1359-insn
  * variant of the walk matched in level_11 / level_5.  Walks the 0x20-byte
  * record stream at g_pEmitListBase and ages one record per iteration: integrates
  * its position, fades its colour, ticks its life counter and, when the record
@@ -32,8 +32,8 @@
  * pointer at +0x18), 0x15 and 0x4C (the two unit-circle swirls, which share
  * a cross-jumped sine tail), 0x18 (EMIT_RESCUE_SWIRL, whose radius and height track
  * g_nDragonRescueTimer), 0x46 and 0x50 (two midpoint-relaxation
- * classes).  Word-identical (bar the jump-table symbol and branch
- * displacements) to the copies in level_1 / level_4 / level_10 / level_28.
+ * classes).  Against level_2's set this copy adds EMIT_ACTOR_RING_SPARK, EMIT_FADING_SPARK,
+ * EMIT_SPARK_RGB, EMIT_SPARK_YELLOW, EMIT_YELLOW_DUST.
  *
  * Arm 0x15's third read of g_nFrameStep goes through a const-qualified deref.
  * That is load-bearing, not decoration: without it sched1 makes the load
@@ -46,7 +46,7 @@
  * store leads.  The same read stays plain at its other two use sites.
  *
  * Verified byte-identical inside the relinked
- * level_2_artisans_dark_hollow.ovl.
+ * level_25_dream_weavers_dark_passage.ovl.
  */
 
 #include "vecmath.h"

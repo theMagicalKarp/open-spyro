@@ -1,5 +1,5 @@
-/* Level16_EmitParticles (0x80085F40, level_16_magic_crafters_blowhard
- * overlay, 0x10f4 bytes).
+/* Level16_EmitParticles (0x80085f40, level_16_magic_crafters_blowhard overlay,
+ * 0x155c bytes).
  *
  * Push `count` particle records of effect `type` onto the emit list (the
  * 0x20-byte record stream that RasterizeEmitList walks each frame).
