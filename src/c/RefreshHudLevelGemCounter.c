@@ -13,7 +13,7 @@ void RefreshHudLevelGemCounter(void) {
   unsigned char state;
   int gems = g_anLevelGemsCollected[g_nLevelIndex];
   *pc = gems;
-  SetHudCounterDigits(HUD_SLOT_GEM_DIGITS, 4, gems, 1);
+  SetHudCounterDigits(HUD_SLOT_GEM_DIGITS, 4, gems, HUD_DIGITS_SHOW);
   /* the do/while(0) is load-bearing: it pins the state load below the
      SetHudCounterDigits call instead of letting it hoist into the arg block */
   do {

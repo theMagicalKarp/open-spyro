@@ -124,12 +124,14 @@ void UpdateHudCounters(void) {
         int *gc;
 
         OPAQUE_COPY(gc, &GEMCACHE);
-        SetHudCounterDigits(HUD_SLOT_GEM_DIGITS, 4, gc[0] + 1, 0);
+        SetHudCounterDigits(HUD_SLOT_GEM_DIGITS, 4, gc[0] + 1,
+                            HUD_DIGITS_PENDING);
         CommitHudCounterAnimState(0, 4, ((unsigned char *)gc)[-0x1B]);
         nDelta = g_anLevelGemsCollected[g_nLevelIndex] - gc[0];
         if (nDelta >= 0xC9) {
           gc[0] = gc[0] + 8;
-        } else if (nDelta >= 0x15 || ((unsigned char *)gc)[-0x1B] == 0xC0) {
+        } else if (nDelta >= 0x15 ||
+                   ((unsigned char *)gc)[-0x1B] == HUD_DIGIT_SWAP_PHASE) {
           gc[0] = gc[0] + 1;
         }
       }
@@ -235,9 +237,9 @@ void UpdateHudCounters(void) {
       g_nHudLivesHoldTimer = 0;
       g_bHudLivesRollPhase -= 0x10;
       SetHudCounterDigits(HUD_SLOT_LIVES_DIGITS, 2, g_nHudLivesCachedCount + 1,
-                          0);
+                          HUD_DIGITS_PENDING);
       CommitHudCounterAnimState(8, 2, g_bHudLivesRollPhase);
-      if (g_bHudLivesRollPhase == 0xC0) {
+      if (g_bHudLivesRollPhase == HUD_DIGIT_SWAP_PHASE) {
         g_nHudLivesCachedCount += 1;
       }
     }

@@ -32,6 +32,16 @@
                                   * sparx-food butterflies ring it */
 #define HUD_SLOT_KEY 11          /* the level key icon (ACTOR_TYPE_KEY) */
 
+/* A digit roll turns each digit record's rotZ down in 0x10 steps from 0;
+ * at this phase, a quarter turn in, CommitHudCounterAnimState swaps the
+ * pending digit (->subMode) into ->type and the counter's cached value
+ * advances. */
+#define HUD_DIGIT_SWAP_PHASE 0xC0
+
+/* SetHudCounterDigits' last argument. */
+#define HUD_DIGITS_PENDING 0 /* store as ->subMode for a roll to swap in */
+#define HUD_DIGITS_SHOW 1    /* show at once, hide the unused slots */
+
 /* RECT at byte offset `off` (slot * 8) of a HUD rect table
  * (g_anHudSpriteRects, g_anHudDigitRestRects). */
 #define HUD_RECT(tbl, off) ((RECT *)((char *)(tbl) + (off)))

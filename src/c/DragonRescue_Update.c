@@ -716,9 +716,10 @@ void DragonRescue_Update(void) {
         g_bHudDragonRollPhase != 0) {
       g_bHudDragonRollPhase += 0x10;
       SetHudCounterDigits(HUD_SLOT_DRAGON_DIGITS, 2,
-                          g_anHudDragonCachedCountBlock[0] + 1, 0);
+                          g_anHudDragonCachedCountBlock[0] + 1,
+                          HUD_DIGITS_PENDING);
       CommitHudCounterAnimState(5, 2, g_bHudDragonRollPhase);
-      if (g_bHudDragonRollPhase == 0xC0) {
+      if (g_bHudDragonRollPhase == HUD_DIGIT_SWAP_PHASE) {
         g_anHudDragonCachedCountBlock[0]++;
       }
       if (g_bHudDragonRollPhase == 0) {

@@ -120,9 +120,11 @@ icon_slot:
   g_nHudButterflyCachedCount = food;
   g_nHudLivesCachedCount = lives;
   g_nHudLevelGemCachedCount = gems;
-  SetHudCounterDigits(HUD_SLOT_GEM_DIGITS, 4, gems, 1);
-  SetHudCounterDigits(HUD_SLOT_DRAGON_DIGITS, 2, g_nHudDragonCachedCount, 1);
-  SetHudCounterDigits(HUD_SLOT_LIVES_DIGITS, 2, g_nHudLivesCachedCount, 1);
+  SetHudCounterDigits(HUD_SLOT_GEM_DIGITS, 4, gems, HUD_DIGITS_SHOW);
+  SetHudCounterDigits(HUD_SLOT_DRAGON_DIGITS, 2, g_nHudDragonCachedCount,
+                      HUD_DIGITS_SHOW);
+  SetHudCounterDigits(HUD_SLOT_LIVES_DIGITS, 2, g_nHudLivesCachedCount,
+                      HUD_DIGITS_SHOW);
   if (layout_butterflies != 0) {
     g_nHudEggRollRequest = 0;
     i = 0;
