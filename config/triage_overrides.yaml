@@ -2553,7 +2553,7 @@ ComputeDepthCuedColor:
   date: 2026-08-25
   note: "68 B; 17 insns, 6 `addi` markers + 6 GTE ops."
 
-func_8004BDEC:
+CastRayWorldAndActors_Tail:
   verdict: wall
   class: "B6 hand-written asm (`addi` / splat handwritten marker)"
   date: 2026-08-25

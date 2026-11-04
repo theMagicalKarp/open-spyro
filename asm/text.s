@@ -5725,11 +5725,11 @@ endlabel WorldToCameraRotate
 /* Handwritten function */
 .endif
 
-.section .text.func_80017188, "ax"
-.ifndef HAVE_C_func_80017188
-nonmatching func_80017188, 0x74
+.section .text.FitVector3ToInt16, "ax"
+.ifndef HAVE_C_FitVector3ToInt16
+nonmatching FitVector3ToInt16, 0x74
 
-glabel func_80017188
+glabel FitVector3ToInt16
     /* 7988 80017188 0000A18C */  lw         $at, 0x0($a1)
     /* 798C 8001718C 0400A28C */  lw         $v0, 0x4($a1)
     /* 7990 80017190 0800A38C */  lw         $v1, 0x8($a1)
@@ -5763,7 +5763,7 @@ glabel func_80017188
     /* 79F0 800171F0 040082AC */  sw         $v0, 0x4($a0)
     /* 79F4 800171F4 0800E003 */  jr         $ra
     /* 79F8 800171F8 080083AC */   sw        $v1, 0x8($a0)
-endlabel func_80017188
+endlabel FitVector3ToInt16
 
 /* Handwritten function */
 .endif
@@ -6044,11 +6044,11 @@ endlabel ReflectVectorOffNormal
 /* Handwritten function */
 .endif
 
-.section .text.func_80017548, "ax"
-.ifndef HAVE_C_func_80017548
-nonmatching func_80017548, 0x70
+.section .text.CrossProductOfEdges, "ax"
+.ifndef HAVE_C_CrossProductOfEdges
+nonmatching CrossProductOfEdges, 0x70
 
-glabel func_80017548
+glabel CrossProductOfEdges
     /* 7D48 80017548 0000818C */  lw         $at, 0x0($a0)
     /* 7D4C 8001754C 0400828C */  lw         $v0, 0x4($a0)
     /* 7D50 80017550 0800838C */  lw         $v1, 0x8($a0)
@@ -6077,7 +6077,7 @@ glabel func_80017548
     /* 7DAC 800175AC 0400FAE8 */  swc2       $26, 0x4($a3) /* handwritten instruction */
     /* 7DB0 800175B0 0800E003 */  jr         $ra
     /* 7DB4 800175B4 0800FBE8 */   swc2      $27, 0x8($a3) /* handwritten instruction */
-endlabel func_80017548
+endlabel CrossProductOfEdges
 
 /* Handwritten function */
 .endif
@@ -6229,11 +6229,11 @@ endlabel CopyVector
 /* Handwritten function */
 .endif
 
-.section .text.func_8001771C, "ax"
-.ifndef HAVE_C_func_8001771C
-nonmatching func_8001771C, 0x3C
+.section .text.VectorsEqual, "ax"
+.ifndef HAVE_C_VectorsEqual
+nonmatching VectorsEqual, 0x3C
 
-glabel func_8001771C
+glabel VectorsEqual
     /* 7F1C 8001771C 0000818C */  lw         $at, 0x0($a0)
     /* 7F20 80017720 0000A28C */  lw         $v0, 0x0($a1)
     /* 7F24 80017724 0400838C */  lw         $v1, 0x4($a0)
@@ -6250,7 +6250,7 @@ glabel func_8001771C
   .L80017750:
     /* 7F50 80017750 0800E003 */  jr         $ra
     /* 7F54 80017754 00000220 */   addi      $v0, $zero, 0x0 /* handwritten instruction */
-endlabel func_8001771C
+endlabel VectorsEqual
 
 /* Handwritten function */
 .endif
@@ -6358,11 +6358,11 @@ endlabel DivideVector3
 /* Handwritten function */
 .endif
 
-.section .text.func_80017854, "ax"
-.ifndef HAVE_C_func_80017854
-nonmatching func_80017854, 0x40
+.section .text.CrossProduct, "ax"
+.ifndef HAVE_C_CrossProduct
+nonmatching CrossProduct, 0x40
 
-glabel func_80017854
+glabel CrossProduct
     /* 8054 80017854 0000A18C */  lw         $at, 0x0($a1)
     /* 8058 80017858 0400A28C */  lw         $v0, 0x4($a1)
     /* 805C 8001785C 0800A38C */  lw         $v1, 0x8($a1)
@@ -6379,7 +6379,7 @@ glabel func_80017854
     /* 8088 80017888 04009AE8 */  swc2       $26, 0x4($a0) /* handwritten instruction */
     /* 808C 8001788C 0800E003 */  jr         $ra
     /* 8090 80017890 08009BE8 */   swc2      $27, 0x8($a0) /* handwritten instruction */
-endlabel func_80017854
+endlabel CrossProduct
 
 /* Handwritten function */
 .endif
@@ -20603,11 +20603,11 @@ endlabel RasterizeSpyroModel
 /* Handwritten function */
 .endif
 
-.section .text.func_800242B8, "ax"
-.ifndef HAVE_C_func_800242B8
-nonmatching func_800242B8, 0x1638
+.section .text.RasterizeSpyroModel_Tail, "ax"
+.ifndef HAVE_C_RasterizeSpyroModel_Tail
+nonmatching RasterizeSpyroModel_Tail, 0x1638
 
-glabel func_800242B8
+glabel RasterizeSpyroModel_Tail
     /* 14AB8 800242B8 00088148 */  mtc2       $at, $1 /* handwritten instruction */
     /* 14ABC 800242BC 00000000 */  nop
     /* 14AC0 800242C0 00000000 */  nop
@@ -22107,7 +22107,7 @@ glabel func_800242B8
     /* 160E4 800258E4 0000308C */  lw         $s0, 0x0($at)
     /* 160E8 800258E8 0800E003 */  jr         $ra
     /* 160EC 800258EC 00000000 */   nop
-endlabel func_800242B8
+endlabel RasterizeSpyroModel_Tail
 
 /* Handwritten function */
 .endif
@@ -65373,11 +65373,11 @@ endlabel CastRayWorldAndActors
 /* Handwritten function */
 .endif
 
-.section .text.func_8004BDEC, "ax"
-.ifndef HAVE_C_func_8004BDEC
-nonmatching func_8004BDEC, 0x60
+.section .text.CastRayWorldAndActors_Tail, "ax"
+.ifndef HAVE_C_CastRayWorldAndActors_Tail
+nonmatching CastRayWorldAndActors_Tail, 0x60
 
-glabel func_8004BDEC
+glabel CastRayWorldAndActors_Tail
     /* 3C5EC 8004BDEC 0040023C */  lui        $v0, (0x40000000 >> 16)
     /* 3C5F0 8004BDF0 12002210 */  beq        $at, $v0, .L8004BE3C
     /* 3C5F4 8004BDF4 00000220 */   addi      $v0, $zero, 0x0 /* handwritten instruction */
@@ -65403,7 +65403,7 @@ glabel func_8004BDEC
     /* 3C640 8004BE40 20C01503 */  add        $t8, $t8, $s5 /* handwritten instruction */
     /* 3C644 8004BE44 E22B0108 */  j          .L8004AF88
     /* 3C648 8004BE48 20C83603 */   add       $t9, $t9, $s6 /* handwritten instruction */
-endlabel func_8004BDEC
+endlabel CastRayWorldAndActors_Tail
 
 /* Handwritten function */
 .endif
@@ -66533,11 +66533,11 @@ endlabel CollideSphereWithWorldAndActors
 /* Handwritten function */
 .endif
 
-.section .text.func_8004CEDC, "ax"
-.ifndef HAVE_C_func_8004CEDC
-nonmatching func_8004CEDC, 0x710
+.section .text.CollideSphereWithWorldAndActors_Tail, "ax"
+.ifndef HAVE_C_CollideSphereWithWorldAndActors_Tail
+nonmatching CollideSphereWithWorldAndActors_Tail, 0x710
 
-glabel func_8004CEDC
+glabel CollideSphereWithWorldAndActors_Tail
     /* 3D6DC 8004CEDC 00D01148 */  mfc2       $s1, $26 /* handwritten instruction */
     /* 3D6E0 8004CEE0 00D81248 */  mfc2       $s2, $27 /* handwritten instruction */
     /* 3D6E4 8004CEE4 83821000 */  sra        $s0, $s0, 10
@@ -67019,7 +67019,7 @@ glabel func_8004CEDC
     /* 3DDE0 8004D5E0 0000308C */  lw         $s0, 0x0($at)
     /* 3DDE4 8004D5E4 0800E003 */  jr         $ra
     /* 3DDE8 8004D5E8 01000220 */   addi      $v0, $zero, 0x1 /* handwritten instruction */
-endlabel func_8004CEDC
+endlabel CollideSphereWithWorldAndActors_Tail
 
 /* Handwritten function */
 .endif
@@ -68148,11 +68148,11 @@ endlabel DispatchActorContactAtSphere
 /* Handwritten function */
 .endif
 
-.section .text.func_8004E60C, "ax"
-.ifndef HAVE_C_func_8004E60C
-nonmatching func_8004E60C, 0x59C
+.section .text.DispatchActorContactAtSphere_Tail, "ax"
+.ifndef HAVE_C_DispatchActorContactAtSphere_Tail
+nonmatching DispatchActorContactAtSphere_Tail, 0x59C
 
-glabel func_8004E60C
+glabel DispatchActorContactAtSphere_Tail
     /* 3EE0C 8004E60C 2578F501 */  or         $t7, $t7, $s5
     /* 3EE10 8004E610 1800CFAF */  sw         $t7, 0x18($fp)
   .L8004E614:
@@ -68540,7 +68540,7 @@ glabel func_8004E60C
     /* 3F39C 8004EB9C 0000308C */  lw         $s0, 0x0($at)
     /* 3F3A0 8004EBA0 0800E003 */  jr         $ra
     /* 3F3A4 8004EBA4 00000000 */   nop
-endlabel func_8004E60C
+endlabel DispatchActorContactAtSphere_Tail
 
 /* Handwritten function */
 .endif
@@ -69482,11 +69482,11 @@ endlabel ClipAndEmitActorTriangle
 /* Handwritten function */
 .endif
 
-.section .text.func_8004F8EC, "ax"
-.ifndef HAVE_C_func_8004F8EC
-nonmatching func_8004F8EC, 0x4C0
+.section .text.ClipAndEmitActorTriangle_Tail, "ax"
+.ifndef HAVE_C_ClipAndEmitActorTriangle_Tail
+nonmatching ClipAndEmitActorTriangle_Tail, 0x4C0
 
-glabel func_8004F8EC
+glabel ClipAndEmitActorTriangle_Tail
     /* 400EC 8004F8EC 440068AD */  sw         $t0, 0x44($t3)
     /* 400F0 8004F8F0 48007FAD */  sw         $ra, 0x48($t3)
     /* 400F4 8004F8F4 21204000 */  addu       $a0, $v0, $zero
@@ -69803,7 +69803,7 @@ glabel func_8004F8EC
     /* 405A0 8004FDA0 0000308C */  lw         $s0, 0x0($at)
     /* 405A4 8004FDA4 0800E003 */  jr         $ra
     /* 405A8 8004FDA8 00000000 */   nop
-endlabel func_8004F8EC
+endlabel ClipAndEmitActorTriangle_Tail
 
 /* Handwritten function */
 .endif
@@ -70002,7 +70002,7 @@ glabel ClipAndEmitFoggedActorTriangle
   alabel D_80050028
     /* 40828 80050028 E43F0108 */  j          ClipAndEmitFoggedActorTriangle
     /* 4082C 8005002C 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
-    /* 40830 80050030 1A400108 */  j          func_80050068
+    /* 40830 80050030 1A400108 */  j          ClipAndEmitFoggedActorTriangle_Tail
     /* 40834 80050034 00000000 */   nop
     /* 40838 80050038 2A400108 */  j          .L800500A8
     /* 4083C 8005003C 00000000 */   nop
@@ -70021,11 +70021,11 @@ endlabel ClipAndEmitFoggedActorTriangle
 /* Handwritten function */
 .endif
 
-.section .text.func_80050068, "ax"
-.ifndef HAVE_C_func_80050068
-nonmatching func_80050068, 0x1D8
+.section .text.ClipAndEmitFoggedActorTriangle_Tail, "ax"
+.ifndef HAVE_C_ClipAndEmitFoggedActorTriangle_Tail
+nonmatching ClipAndEmitFoggedActorTriangle_Tail, 0x1D8
 
-glabel func_80050068
+glabel ClipAndEmitFoggedActorTriangle_Tail
     /* 40868 80050068 2180E003 */  addu       $s0, $ra, $zero
     /* 4086C 8005006C 2120A001 */  addu       $a0, $t5, $zero
     /* 40870 80050070 6B3F010C */  jal        BlendDepthCuedEdgeColor
@@ -70153,7 +70153,7 @@ glabel func_80050068
     /* 40A34 80050234 0000308C */  lw         $s0, 0x0($at)
     /* 40A38 80050238 0800E003 */  jr         $ra
     /* 40A3C 8005023C 00000000 */   nop
-endlabel func_80050068
+endlabel ClipAndEmitFoggedActorTriangle_Tail
 
 /* Handwritten function */
 .endif

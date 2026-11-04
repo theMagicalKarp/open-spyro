@@ -201,7 +201,7 @@
    "size": 120
   },
   {
-   "name": "func_80017188",
+   "name": "FitVector3ToInt16",
    "vram": 2147578248,
    "size": 116
   },
@@ -236,7 +236,7 @@
    "size": 288
   },
   {
-   "name": "func_80017548",
+   "name": "CrossProductOfEdges",
    "vram": 2147579208,
    "size": 112
   },
@@ -271,7 +271,7 @@
    "size": 28
   },
   {
-   "name": "func_8001771C",
+   "name": "VectorsEqual",
    "vram": 2147579676,
    "size": 60
   },
@@ -296,7 +296,7 @@
    "size": 92
   },
   {
-   "name": "func_80017854",
+   "name": "CrossProduct",
    "vram": 2147579988,
    "size": 64
   },
@@ -581,7 +581,7 @@
    "size": 2036
   },
   {
-   "name": "func_800242B8",
+   "name": "RasterizeSpyroModel_Tail",
    "vram": 2147631800,
    "size": 5688
   },
@@ -1501,7 +1501,7 @@
    "size": 4020
   },
   {
-   "name": "func_8004BDEC",
+   "name": "CastRayWorldAndActors_Tail",
    "vram": 2147794412,
    "size": 96
   },
@@ -1511,7 +1511,7 @@
    "size": 4240
   },
   {
-   "name": "func_8004CEDC",
+   "name": "CollideSphereWithWorldAndActors_Tail",
    "vram": 2147798748,
    "size": 1808
   },
@@ -1536,7 +1536,7 @@
    "size": 576
   },
   {
-   "name": "func_8004E60C",
+   "name": "DispatchActorContactAtSphere_Tail",
    "vram": 2147804684,
    "size": 1436
   },
@@ -1561,7 +1561,7 @@
    "size": 260
   },
   {
-   "name": "func_8004F8EC",
+   "name": "ClipAndEmitActorTriangle_Tail",
    "vram": 2147809516,
    "size": 1216
   },
@@ -1581,7 +1581,7 @@
    "size": 212
   },
   {
-   "name": "func_80050068",
+   "name": "ClipAndEmitFoggedActorTriangle_Tail",
    "vram": 2147811432,
    "size": 472
   },

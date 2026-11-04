@@ -23,7 +23,7 @@
 <rect x="14.00" y="196.99" width="76.29" height="63.34" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>Gamestate02_03_06_Draw  ·  8840 bytes  ·  matched</title></rect>
 <rect x="90.29" y="196.99" width="72.49" height="63.34" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DragonRescue_Update  ·  8400 bytes  ·  matched</title></rect>
 <rect x="162.78" y="196.99" width="58.99" height="63.34" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>EmitSecondaryActorPrimitives  ·  6836 bytes  ·  handwritten</title></rect>
-<rect x="221.77" y="196.99" width="49.09" height="63.34" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_800242B8  ·  5688 bytes  ·  handwritten</title></rect>
+<rect x="221.77" y="196.99" width="49.09" height="63.34" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>RasterizeSpyroModel_Tail  ·  5688 bytes  ·  handwritten</title></rect>
 <rect x="270.86" y="196.99" width="44.94" height="63.34" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateCameraSpringForMode  ·  5208 bytes  ·  matched</title></rect>
 <rect x="14.00" y="260.33" width="55.60" height="50.61" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DrawPortalsAndStaticActors  ·  5148 bytes  ·  matched</title></rect>
 <rect x="69.60" y="260.33" width="53.57" height="50.61" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ChangeSpyroState  ·  4960 bytes  ·  matched</title></rect>
@@ -54,7 +54,7 @@
 <rect x="253.14" y="391.48" width="31.68" height="34.02" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SelectCameraMode  ·  1972 bytes  ·  matched</title></rect>
 <rect x="284.82" y="391.48" width="30.98" height="34.02" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>PlaySoundEffect  ·  1928 bytes  ·  matched</title></rect>
 <rect x="14.00" y="425.50" width="33.20" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DragonRescue_Draw  ·  1852 bytes  ·  matched</title></rect>
-<rect x="47.20" y="425.50" width="32.41" height="30.49" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_8004CEDC  ·  1808 bytes  ·  handwritten</title></rect>
+<rect x="47.20" y="425.50" width="32.41" height="30.49" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>CollideSphereWithWorldAndActors_Tail  ·  1808 bytes  ·  handwritten</title></rect>
 <rect x="79.61" y="425.50" width="32.41" height="30.49" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DrawSpyroFlameTrails  ·  1808 bytes  ·  handwritten</title></rect>
 <rect x="112.02" y="425.50" width="30.47" height="30.49" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>StoryIntro_Update  ·  1700 bytes  ·  matched</title></rect>
 <rect x="142.49" y="425.50" width="29.97" height="30.49" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FormatAndWrite  ·  1672 bytes  ·  library</title></rect>
@@ -66,7 +66,7 @@
 <rect x="14.00" y="456.00" width="29.76" height="27.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickSpyroGameplayFrame  ·  1516 bytes  ·  matched</title></rect>
 <rect x="43.76" y="456.00" width="29.28" height="27.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RespawnOrGameOver_Update  ·  1492 bytes  ·  matched</title></rect>
 <rect x="73.04" y="456.00" width="28.34" height="27.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RespawnOrGameOver_Draw  ·  1444 bytes  ·  matched</title></rect>
-<rect x="101.38" y="456.00" width="28.19" height="27.85" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_8004E60C  ·  1436 bytes  ·  handwritten</title></rect>
+<rect x="101.38" y="456.00" width="28.19" height="27.85" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DispatchActorContactAtSphere_Tail  ·  1436 bytes  ·  handwritten</title></rect>
 <rect x="129.57" y="456.00" width="27.79" height="27.85" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>CdProcessInterrupt  ·  1416 bytes  ·  library</title></rect>
 <rect x="157.36" y="456.00" width="27.09" height="27.85" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>MemCardCreateFile  ·  1380 bytes  ·  library</title></rect>
 <rect x="184.45" y="456.00" width="26.54" height="27.85" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ActorCutscene_Update  ·  1352 bytes  ·  matched</title></rect>
@@ -78,7 +78,7 @@
 <rect x="14.00" y="511.97" width="25.50" height="28.04" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SpawnActorDeathDrop  ·  1308 bytes  ·  matched</title></rect>
 <rect x="14.00" y="540.01" width="25.50" height="26.84" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DrawEntityDirectionalSpikes  ·  1252 bytes  ·  handwritten</title></rect>
 <rect x="14.00" y="566.85" width="25.50" height="26.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UnpackWorldDataChunks  ·  1240 bytes  ·  matched</title></rect>
-<rect x="14.00" y="593.43" width="25.50" height="26.07" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_8004F8EC  ·  1216 bytes  ·  handwritten</title></rect>
+<rect x="14.00" y="593.43" width="25.50" height="26.07" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ClipAndEmitActorTriangle_Tail  ·  1216 bytes  ·  handwritten</title></rect>
 <rect x="14.00" y="619.50" width="25.50" height="26.07" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_80050710  ·  1216 bytes  ·  handwritten</title></rect>
 <rect x="14.00" y="645.57" width="25.50" height="26.07" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_800658FC  ·  1216 bytes  ·  library</title></rect>
 <rect x="14.00" y="671.63" width="25.50" height="25.98" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>EmitStaticActorMeshListFogged  ·  1212 bytes  ·  handwritten</title></rect>
@@ -174,7 +174,7 @@
 <rect x="100.19" y="580.26" width="15.71" height="16.84" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildSaveGameBuffer  ·  484 bytes  ·  matched</title></rect>
 <rect x="100.19" y="597.10" width="15.71" height="16.84" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>MemCardInit  ·  484 bytes  ·  library</title></rect>
 <rect x="100.19" y="613.94" width="15.71" height="16.56" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ReturningHome_Draw  ·  476 bytes  ·  matched</title></rect>
-<rect x="100.19" y="630.50" width="15.71" height="16.42" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_80050068  ·  472 bytes  ·  handwritten</title></rect>
+<rect x="100.19" y="630.50" width="15.71" height="16.42" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ClipAndEmitFoggedActorTriangle_Tail  ·  472 bytes  ·  handwritten</title></rect>
 <rect x="100.19" y="646.92" width="15.71" height="16.42" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FUN_80069c08  ·  472 bytes  ·  library</title></rect>
 <rect x="100.19" y="663.34" width="15.71" height="16.28" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>BuildActiveActorList  ·  468 bytes  ·  handwritten</title></rect>
 <rect x="100.19" y="679.62" width="15.71" height="16.28" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>GetActorAttachPoint  ·  468 bytes  ·  handwritten</title></rect>
@@ -443,14 +443,14 @@
 <rect x="292.30" y="664.31" width="7.83" height="8.38" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_8005E560  ·  120 bytes  ·  library</title></rect>
 <rect x="300.14" y="664.31" width="7.83" height="8.38" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_80063A14  ·  120 bytes  ·  library</title></rect>
 <rect x="307.97" y="664.31" width="7.83" height="8.38" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PAD_OBJ_1A4  ·  120 bytes  ·  library</title></rect>
-<rect x="212.95" y="672.69" width="8.03" height="7.89" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_80017188  ·  116 bytes  ·  handwritten</title></rect>
+<rect x="212.95" y="672.69" width="8.03" height="7.89" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>FitVector3ToInt16  ·  116 bytes  ·  handwritten</title></rect>
 <rect x="212.95" y="680.58" width="8.03" height="7.89" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>LerpVectorGTE  ·  116 bytes  ·  handwritten</title></rect>
 <rect x="212.95" y="688.48" width="8.03" height="7.89" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>IsActorGroundFlat  ·  116 bytes  ·  matched</title></rect>
 <rect x="212.95" y="696.37" width="8.03" height="7.89" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>DrawOTag  ·  116 bytes  ·  library</title></rect>
 <rect x="212.95" y="704.27" width="8.03" height="7.89" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>_padSendAtLoadInfo  ·  116 bytes  ·  library</title></rect>
 <rect x="212.95" y="712.16" width="8.03" height="7.89" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADPORTD_OBJ_1C8  ·  116 bytes  ·  library</title></rect>
 <rect x="212.95" y="720.06" width="8.03" height="7.62" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CdReadCompleteCallback  ·  112 bytes  ·  matched</title></rect>
-<rect x="212.95" y="727.68" width="8.03" height="7.62" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_80017548  ·  112 bytes  ·  handwritten</title></rect>
+<rect x="212.95" y="727.68" width="8.03" height="7.62" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>CrossProductOfEdges  ·  112 bytes  ·  handwritten</title></rect>
 <rect x="212.95" y="735.30" width="8.03" height="7.62" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>EndRespawnToGameplay  ·  112 bytes  ·  matched</title></rect>
 <rect x="212.95" y="742.92" width="8.03" height="7.62" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RandomIntInRange  ·  112 bytes  ·  matched</title></rect>
 <rect x="212.95" y="750.55" width="8.03" height="7.62" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TickSpyroAnimLayer2GateTimer  ·  112 bytes  ·  matched</title></rect>
@@ -495,7 +495,7 @@
 <rect x="228.29" y="687.54" width="7.33" height="7.16" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ApproxDist2D  ·  96 bytes  ·  handwritten</title></rect>
 <rect x="228.29" y="694.69" width="7.33" height="7.16" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UpdateCameraEulerAngles  ·  96 bytes  ·  matched</title></rect>
 <rect x="228.29" y="701.85" width="7.33" height="7.16" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TallyFlightTarget  ·  96 bytes  ·  matched</title></rect>
-<rect x="228.29" y="709.01" width="7.33" height="7.16" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_8004BDEC  ·  96 bytes  ·  handwritten</title></rect>
+<rect x="228.29" y="709.01" width="7.33" height="7.16" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>CastRayWorldAndActors_Tail  ·  96 bytes  ·  handwritten</title></rect>
 <rect x="228.29" y="716.16" width="7.33" height="7.16" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_8005C668  ·  96 bytes  ·  library</title></rect>
 <rect x="228.29" y="723.32" width="7.33" height="7.16" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>ReadSpuRam  ·  96 bytes  ·  library</title></rect>
 <rect x="228.29" y="730.48" width="7.33" height="7.16" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>WriteSpuRam  ·  96 bytes  ·  library</title></rect>
@@ -559,7 +559,7 @@
 <rect x="297.51" y="700.83" width="6.10" height="6.10" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>BuildDrawOffsetCommand  ·  68 bytes  ·  library</title></rect>
 <rect x="303.61" y="700.83" width="6.10" height="6.10" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PadChkMtap  ·  68 bytes  ·  library</title></rect>
 <rect x="309.70" y="700.83" width="6.10" height="6.10" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FUN_800698e8  ·  68 bytes  ·  library</title></rect>
-<rect x="248.38" y="706.93" width="5.66" height="6.18" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_80017854  ·  64 bytes  ·  handwritten</title></rect>
+<rect x="248.38" y="706.93" width="5.66" height="6.18" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>CrossProduct  ·  64 bytes  ·  handwritten</title></rect>
 <rect x="248.38" y="713.12" width="5.66" height="6.18" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ResetWorldParticleTables  ·  64 bytes  ·  matched</title></rect>
 <rect x="248.38" y="719.30" width="5.66" height="6.18" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>SetSpuVoiceVolumeLR  ·  64 bytes  ·  library</title></rect>
 <rect x="248.38" y="725.49" width="5.66" height="6.18" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>DumpClut  ·  64 bytes  ·  library</title></rect>
@@ -567,7 +567,7 @@
 <rect x="248.38" y="737.85" width="5.66" height="6.18" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FIRST_OBJ_25C  ·  64 bytes  ·  library</title></rect>
 <rect x="248.38" y="744.04" width="5.66" height="6.18" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PAD_OBJ_2BC  ·  64 bytes  ·  library</title></rect>
 <rect x="248.38" y="750.22" width="5.66" height="5.80" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>AddPrimToOTSlot  ·  60 bytes  ·  handwritten</title></rect>
-<rect x="248.38" y="756.02" width="5.66" height="5.80" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_8001771C  ·  60 bytes  ·  handwritten</title></rect>
+<rect x="248.38" y="756.02" width="5.66" height="5.80" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>VectorsEqual  ·  60 bytes  ·  handwritten</title></rect>
 <rect x="248.38" y="761.82" width="5.66" height="5.80" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SnapActorToGround  ·  60 bytes  ·  matched</title></rect>
 <rect x="248.38" y="767.62" width="5.66" height="5.80" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_8005C62C  ·  60 bytes  ·  library</title></rect>
 <rect x="254.03" y="706.93" width="5.65" height="5.81" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>InitDefaultDispEnv  ·  60 bytes  ·  library</title></rect>

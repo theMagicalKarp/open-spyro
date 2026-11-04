@@ -310,6 +310,9 @@ void RasterizeSpritePrimQueue(void);
 /* 0x80023ac4: Rasterizes Spyro's model (hand-written; formerly RasterizePairedActor). Its base register is the Spyro block (g_anSpyroWorldPos); the mesh and frame records come from g_apActorMeshTable indexed by Spyro's previous and current anim bytes (g_bSpyroAnimPrev / Current and their frames), optionally intpl-blending the two frames' vertices when g_bSpyroSubFrameTimer/7d/7e flags are set, runs the GTE transform/lighting pass with shared camera matrix (g_anWorldToCameraRotMtx..e0) and color refs (g_abSpyroPersistentEuler/68/6c), and emits POLY_GT4 / POLY_G4 / sprite primitives into the OT depth bins. Handles a Gouraud color interpolation table at g_anActorDepthCuedVtxColor when distance/depth fog applies. Largest single rasterizer in the binary; investigate further before depending on field interpretations. */
 void RasterizeSpyroModel(void);
 
+/* 0x800242b8: continuation of RasterizeSpyroModel (hand-written asm). Splat starts a symbol at this address, but the code there is the rest of the same routine: RasterizeSpyroModel falls straight into it. No callers. */
+void RasterizeSpyroModel_Tail(void);
+
 /* 0x800258f0: World chunk renderer. Loads the camera GTE rotation matrix from g_anCameraViewMtx..df4, then iterates a chunk pointer table: if zone >= 0 it walks that visibility zone's chunk list at g_pVisZoneChunkLists + zone*4 (terminated by byte 0xff); if zone < 0 it walks the full visible-chunk list at g_pWorldChunkArray (length g_nWorldChunkCount). For each chunk, projects its anchor through gte_rtir_b, performs frustum/depth tests, and on visibility emits primitives into the OT depth bins via the scratch buffer at g_abVisZoneGates. Also called by Cutscene_Draw. */
 void RenderWorldChunks(int zone);
 
@@ -651,8 +654,14 @@ void ResetSpyroEntity(int full);
 /* 0x8004ae38: Ray cast against world geometry + dynamic actor meshes. Args: ray-start (vec3), ray-end (vec3), unused, scratch buffer. Walks the 4-cell actor grid at g_pActorSpatialGridBase+0x1000 (testing each actor's local-frame mesh via the per-actor-mesh table at &g_apActorMeshTable[idx]+0x38) and the world-chunk index at g_pWorldCollisionHeader. On hit writes: g_anCollisionResolvedPos..b88 = hit point, g_anCollisionProbeVec..70 = hit normal (or surface vector), g_pCollisionHitActor = hit actor ptr (NULL = world hit), g_nLastCollisionHitChunkId = hit triangle index (-1 = actor hit). Returns 1 on hit, 0 otherwise. Shared by every M05 line probe (LedgeForward / GroundContact / OntoLocalFloor / WallProbes) and M06 CheckLineOfSightSegment. */
 int CastRayWorldAndActors(int *start, int *end);
 
+/* 0x8004bdec: continuation of CastRayWorldAndActors (hand-written asm). Splat starts a symbol at this address, but the code there is the routine's exit: it falls in from the hit test, returns 1 (restoring the saved registers from g_anStaticRegSaveArea) or steps the ray and jumps back into the walk loop. No callers. */
+void CastRayWorldAndActors_Tail(void);
+
 /* 0x8004be4c: Sphere-vs-world+actors collision with slide-out resolution. Args: sphere center, radius, max-slide-distance, scratch. Same 4-cell actor grid + world-chunk-index iteration as CastRayWorldAndActors but tests sphere against each triangle: AABB reject, signed dot-product front-face test, then ray-triangle barycentric for closest point. On contact, computes penetration via g_anSqrtLUT iterative refinement and writes pushed-out sphere center to g_anCollisionResolvedPos..b88 + contact point to g_anCollisionContactPoint..60 + normal to g_anCollisionProbeVec..70 + hit actor/triangle. Returns 1 on hit. Callers: AdvanceSpyroPhysics (per-substep collision march, up to 6 retries), DispatchSpyroPhysicsByState (the SPYRO_ST_FLY states' crash test), UpdateGameplayCamera (camera-vs-world collision). */
 int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
+
+/* 0x8004cedc: continuation of CollideSphereWithWorldAndActors (hand-written asm). Splat starts a symbol at this address, but the code there is the rest of the routine, entered by falling through mid-GTE sequence. No callers. */
+void CollideSphereWithWorldAndActors_Tail(void);
 
 /* 0x8004d5ec: Finds the highest world+actor triangle below a point within search distance. Args: position (vec3), max-search-down. Iterates 4-cell actor grid + world chunk index, testing each candidate triangle for XY-containment and reading its Y at the projected point. Tracks highest hit so far in scratchpad word 0x1f800020. On result writes g_anCollisionResolvedPos..b88 (hit point), g_anCollisionProbeVec..70 (normal), g_pCollisionHitActor (actor or NULL=world), g_nLastCollisionHitChunkId (triangle), g_nGroundSurfaceType (per-triangle surface-type byte). Return value (via g_nCollisionResolvedZ + v0) is the ground Y the caller uses for foot height. Callers: AdvanceSpyroFrameMotion (per-frame foot probe via g_nSpyroGroundHeightZ), DispatchSpyroPhysicsByState (swim/state-0xf air probes), IntegrateSpyroMotionForSubstep, SaveMenu_Update, level-loader BuildLoadedLevelRuntime. */
 int FindGroundHeightBelow(int *pos, int depth);
@@ -668,6 +677,9 @@ int FindWorldFloorBelowPoint(int *pos);
 #endif
 Actor *DispatchActorContactAtSphere(int *pos, int radius, unsigned int *events, int hitBits, Actor *self, int mode);
 
+/* 0x8004e60c: continuation of DispatchActorContactAtSphere (hand-written asm). Splat starts a symbol at this address, but the code there is the rest of the routine, entered by falling through. No callers. */
+void DispatchActorContactAtSphere_Tail(void);
+
 /* 0x8004eba8: Renders the per-level static-actor mesh list. Stage 1: Z-cull each mesh chunk via gte_rtps_b, building visible-chunk pointer list at &g_pOtDepthBinHead0. Stage 2: project triangle verts through GTE, build 5-bit frustum outcodes, emit POLY_F3 (0x84) / POLY_F4 (0x86) flat prims into the OT bump buffer at g_pPrimBufferWriteCursor. lod = actor mesh index into g_pWorldRenderMeshIndexTable table (or -1 to walk the flat list at g_pWorldRenderMeshChunkArray..+g_nWorldRenderMeshChunkCount*4). viewMtx/worldMtx = camera rot/translate matrices. Called once at the end of DrawPortalsAndStaticActors, and by Gamestate01_09/04_05/Cutscene_Draw. */
 void EmitStaticActorMeshList(int zone, MATRIX *viewMtx, MATRIX *worldMtx);
 
@@ -680,6 +692,9 @@ void EmitDynamicActorMeshScissored(int *mesh, MATRIX *viewMtx, MATRIX *outMtx);
 /* 0x8004f7e8: Per-triangle clip-and-emit helper for EmitDynamicActorMeshScissored. Builds a 6-bit visibility code from 3 gte_nclip signed-area tests (one per edge) + the upstream 5-bit frustum outcode, then dispatches the 32-entry D_8004F890 jumptable to pick a clip case. Fast path: when in_t2 prim head is empty, writes the triangle directly into the OT bump buffer instead of clipping. */
 void ClipAndEmitActorTriangle(void); /* register-convention helper: no C callers */
 
+/* 0x8004f8ec: continuation of ClipAndEmitActorTriangle (hand-written asm). Splat starts a symbol at this address, but the code there is the rest of the same routine: it falls in mid-way through saving the deferred-triangle slot and blends the clipped edge colours (BlendDepthCuedEdgeColor). No callers. */
+void ClipAndEmitActorTriangle_Tail(void);
+
 /* 0x8004fdac: GTE depth-cue color helper for a clipped polygon edge. Loads vertex RGB + fog direction (the fog color in a register) into GTE, runs gte_gpl12 (general-purpose linear interp along edge) followed by gte_dpcs_b (depth-cue single-color) to produce the blended RGB at the clip point. Returns the depth-cued color packed with POLY_F2 prim code (0x30000000). No direct callers: invoked exclusively via the D_8004F890 / D_80050028 clip jumptables from ClipAndEmit{Actor,FoggedActor}Triangle. */
 unsigned int BlendDepthCuedEdgeColor(void); /* register-convention helper: no C callers */
 
@@ -688,6 +703,9 @@ void EmitDynamicActorMeshFogged(unsigned int *color);
 
 /* 0x8004ff90: Per-triangle clip-and-emit helper for EmitDynamicActorMeshFogged. Mirrors ClipAndEmitActorTriangle: 3 gte_nclip tests build a 6-bit visibility code that dispatches the D_80050028 fog clip jumptable (32 cases). Fast path: when in_t2 is empty, emits a 5-dword POLY_F4 record into the caller's prim buffer (unaff_s2) and links it via OT head/tail (unaff_s3) without going through the clip jumptable. */
 void ClipAndEmitFoggedActorTriangle(void); /* register-convention helper: no C callers */
+
+/* 0x80050068: continuation of ClipAndEmitFoggedActorTriangle (hand-written asm). Splat starts a symbol at this address, but the code there is the outcode cases of its jump table (D_80050028) and the emitter's exit, which restores g_pPrimBufferWriteCursor and the registers saved in g_anStaticRegSaveArea. No callers. */
+void ClipAndEmitFoggedActorTriangle_Tail(void);
 
 /* 0x80050240: Fog-shaded sibling of EmitDynamicActorMeshScissored. Mirrors its Z-cull pre-pass over the submesh list (mesh = {count, *list}, viewMtx = world rotation matrix) into &g_pOtDepthBinHead0 survivor list. Stage 2 (uses outMtx = pose matrix) adds a per-vertex gte_dpcs_b color pass over RGB[] (loaded from g_dwActorMeshFadeColor / g_nFadeProgress, writing back into scratch at &g_apSecondaryEntityList) before the gte_rtps_b projection loop; emits screen outcodes against the same scissor at g_anActorScissorRect..0c and dispatches each triangle to ClipAndEmitFogShadedActorTriangle (jumptable D_800506B4). Saves GTE backup at g_anStaticRegSaveArea..e04 and advances g_pPrimBufferWriteCursor OT bump pointer. Caller: DrawPortalsAndStaticActors fade-band outline-jittered pass (depth 0x3001..0x3fff) — the per-vertex-dpcs sibling of EmitDynamicActorMeshScissored. */
 void EmitDynamicActorMeshFogShaded(int *mesh, MATRIX *viewMtx, MATRIX *outMtx);
