@@ -428,7 +428,7 @@ extern void *g_apSecondaryDrawEntityList[128];               /* 0x80071ef4 */
 extern void *g_apSpritePrimQueue[256];                       /* 0x800720f4 */
 extern int g_apSecondaryEntityList[128];                     /* 0x800724f4 */
 extern int g_anOtPrimSaveList[64];                           /* 0x800726f4 */
-extern int g_anCheatCodeSequences[128];                      /* 0x80072e94 */
+extern int g_anCheatCodeSequences[128];                      /* 0x80072e94: 8 cheat-code button sequences, 16 pad words each, 0-terminated (CheckCheatCodeMatch); only slots 2..4 have an effect (ApplyCheatCodeEffect) */
 extern int g_nSnCrtInitFlag;                                 /* 0x800730bc */
 extern void *g_pCrt0HeapBase;                                /* 0x800730c0 */
 extern int g_nCrt0HeapSize;                                  /* 0x800730c4 */
