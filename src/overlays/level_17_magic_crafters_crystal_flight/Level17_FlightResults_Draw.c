@@ -152,7 +152,7 @@ void Level17_FlightResults_Draw(void)
     PutDrawEnv(env);
     {
     int off, bias;
-    do { off = 0x1C000; bias = -MENU_SNAPSHOT_BYTES; } while (0);
+    do { off = PRIM_BUFFER_BYTES; bias = -MENU_SNAPSHOT_BYTES; } while (0);
     {
     register char *e8 asm("$3");
     register char *f0 asm("$2");

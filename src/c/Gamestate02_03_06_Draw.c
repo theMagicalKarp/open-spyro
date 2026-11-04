@@ -163,7 +163,7 @@ void Gamestate02_03_06_Draw(void) {
     {
       int off, bias;
       do {
-        off = 0x1C000;
+        off = PRIM_BUFFER_BYTES;
         bias = -MENU_SNAPSHOT_BYTES;
       } while (0);
       {

@@ -43,7 +43,7 @@ void GamestateDraw(void) {
   g_pActiveFrameDrawEnv = (DRAWENV *)env;
   g_nPrimBufferOverflowFlag = 0;
   g_pPrimBufferWriteCursor = cursor;
-  limit = cursor + 0x1C000;
+  limit = cursor + PRIM_BUFFER_BYTES;
   g_pOtDepthBinArrayBase = otbase;
   g_pOtActiveDepthSlot = otslot;
   g_pPrimBufferLimit = limit;

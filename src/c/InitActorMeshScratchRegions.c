@@ -1,3 +1,4 @@
+#include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
 #include "match_asm.h"
@@ -20,10 +21,10 @@ void InitActorMeshScratchRegions(int split) {
   top -= 0x6008;
   g_pRenderScratchPrimTop = top;
   if (split) {
-    size = -0x13000;
+    size = -PRIM_BUFFER_BYTES_SPLIT;
     top += size;
   } else {
-    size = -0x1c000;
+    size = -PRIM_BUFFER_BYTES;
     top += size;
   }
   g_pRenderScratchPrimBase1 = top;
