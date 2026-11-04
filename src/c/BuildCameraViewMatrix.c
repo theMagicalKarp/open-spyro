@@ -2,9 +2,10 @@
 #include "globals.h"
 #include "main_shared.h"
 
-/* Build the 3x3 camera view matrix from g_nCameraEulerPitch/Yaw/Roll (X*Y*Z
-   order). Writes the full matrix to the view-matrix slot (0x80076de4) and a
-   Y-row-scaled (*0x140>>9) copy to g_anWorldToCameraRotMtx (0x80033c50). */
+/* 0x80033c50: build the 3x3 camera view matrix from
+   g_nCameraEulerPitch/Yaw/Roll (X*Y*Z order). Writes the full matrix to
+   g_anCameraViewMtx (0x80076de4) and a Y-row-scaled (*0x140>>9) copy to
+   g_anWorldToCameraRotMtx (0x80076dd0). */
 void BuildCameraViewMatrix(void) {
   int v;
   MATRIX view;

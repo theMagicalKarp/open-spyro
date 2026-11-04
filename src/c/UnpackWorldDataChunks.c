@@ -9,8 +9,9 @@
    sections (word 0 of each section links to the next), publish each
    section's table pointer + count globals and patch the relative offsets in
    each pointer table to absolute addresses (1240 b). reduced != 0 unpacks the
-   reduced stream (mesh index / trigger / collision-header and the mob
-   sections are absent). Returns the cursor past the consumed data.
+   reduced stream (mesh index / trigger / collision-header and the
+   portal, emit-texture and sample-bank sections are absent). Returns the cursor
+   past the consumed data.
 
    One function-scope `base` holds every section start (s0, it crosses the
    sample-bank call), and the cursor stays the cse-canonical register at each
@@ -242,13 +243,13 @@ void *UnpackWorldDataChunks(int *p, int reduced) {
     } while (i < g_nPortalCount);
   }
 
-  /* section: mob id -> entry lookup */
+  /* section: emit texture tables (effect id -> texture frame list) */
   base = p;
   p++;
   i = *p;
   p++;
   for (; i > 0; i--) {
-    g_apMobEntryTable[*(short *)p] = p;
+    g_apEmitTextureTable[*(short *)p] = p;
     p = (int *)((char *)p + ((short *)p)[1] + 4);
   }
   p = (int *)((char *)base + *base);

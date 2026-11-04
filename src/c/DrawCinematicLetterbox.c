@@ -5,7 +5,7 @@
 /* Draw two stacked black POLY_F4 cinematic bars (top y=0..h, bottom
    y=240-h..240) where h = g_nLetterboxBarHeight animates 0..0x16 driven by
    g_nCinematicActive — the "letterbox close"/"open" cutscene transition.
-   Submits both bars via AddPrimToOT (0x80018f30, 0x1a4). */
+   Submits both bars via AddPrimToOT. (0x80018f30, 0x1a4 bytes) */
 void DrawCinematicLetterbox(void) {
   PolyF4 *q;
   int h;

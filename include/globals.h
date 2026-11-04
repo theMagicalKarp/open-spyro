@@ -715,7 +715,9 @@ extern int g_anDragonRescueAuraStarMtx[5];                 /* 0x80076258 */
 extern int g_nDragonRescueAuraStarRadius;                  /* 0x8007626c */
 extern unsigned char g_abDragonRescueAuraStarEuler[3];              /* 0x80076270 */
 extern unsigned char g_bDragonRescueAuraStarColor;                  /* 0x80076273 */
-extern void *g_apMobEntryTable[];                       /* 0x80076278: mob id -> entry (UnpackWorldDataChunks) */
+extern void *g_apEmitTextureTable[];                       /* 0x80076278: emit effect id (Emit.type) -> its texture record: short id,
+ * short byte size, then 8-byte texpage/UV frames Emit texIndex picks
+ * (UnpackWorldDataChunks fills it; RasterizeEmitList reads it) */
 extern void *g_apActorMeshTable;                        /* 0x80076378 */
 extern void *g_pDragonRescueStatueModelData;               /* 0x80076b70 */
 extern void *g_pDragonRescueMirrorModelData;               /* 0x80076b74 */
