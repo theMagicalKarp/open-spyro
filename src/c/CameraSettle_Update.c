@@ -16,7 +16,7 @@ void CameraSettle_Update(void) {
     g_anCameraEulerPitchBlock[0] = pitch - 0x1000;
   }
   if ((g_anCameraEulerPitchBlock[0] < -0x200) ||
-      (g_pCameraTargetParams == g_anCameraMode12Params)) {
+      (g_pCameraTargetParams == g_anCameraParamTransitionGlideIn)) {
     g_nGamestate = GS_GAMEPLAY;
   }
 }

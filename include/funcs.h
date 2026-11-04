@@ -400,7 +400,7 @@ void AnimateGemTallyParticles(void);
 /* 0x8002df9c: g_nGamestate==1 (GS_LEVEL_LOAD) handler: calls TickSpyroFrameGlideHold, UpdateCameraFrame, AnimateGemTallyParticles; conditionally calls TickLevelTransitionStream when g_nCdStreamState<0xb or g_nLevelTransitionTallyActive==0. */
 void LevelLoad_Update(void);
 
-/* 0x8002e000: Gamestate 9 handler (set by TickLevelTransitionStream after a level transition): runs a normal gameplay tick (TickSpyroGameplayFrame + UpdateCameraFrame) while the scripted arrival camera settles. Normalizes g_nCameraEulerPitch to signed 12-bit; returns to gamestate 0 when pitch < -0x200 OR g_pCameraTargetParams has latched g_anCameraMode12Params (the mode-0x12 arrival block). */
+/* 0x8002e000: Gamestate 9 handler (set by TickLevelTransitionStream after a level transition): runs a normal gameplay tick (TickSpyroGameplayFrame + UpdateCameraFrame) while the scripted arrival camera settles. Normalizes g_nCameraEulerPitch to signed 12-bit; returns to gamestate 0 when pitch < -0x200 OR g_pCameraTargetParams has latched g_anCameraParamTransitionGlideIn (the portal glide-in arrival preset). */
 void CameraSettle_Update(void);
 
 /* 0x8002e084: GS_MENU_TRANSITION (10) handler. Counter g_nMenuTickFrames (reused) increments. At frame 16 (when g_nMenuDrawFrames==0) calls ChangeSpyroState(SPYRO_ST_GLIDE). At frame 32 resets counter, increments g_nMenuDrawFrames; when it reaches 2 calls BeginWorldHubReturn. */

@@ -401,7 +401,7 @@ void TickLevelTransitionStream(int full) {
         CopyVector(pos, &g_anSpawnAnchorBlock[0x14] /* g_anLevelSpawnPos */);
         ComputeCameraOrbitOffset(g_anCameraPos);
         ZeroVector(yawp - 4);
-        if (g_pCameraTargetParams == g_anCameraMode12Params) {
+        if (g_pCameraTargetParams == g_anCameraParamTransitionGlideIn) {
           g_anSpyroWorldPosZBlock[0] = g_nSpyroWorldPosZ - 0x1600;
           pos[0] -= (g_anCosineLut[g_abSpyroPersistentEuler[2]] * 5) >> 1;
           g_nSpyroWorldPosY -=

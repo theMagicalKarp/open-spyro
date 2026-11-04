@@ -4445,8 +4445,8 @@ glabel TickLevelTransitionStream
     /* 699C 8001619C F0FF0426 */   addiu     $a0, $s0, -0x10
     /* 69A0 800161A0 0780033C */  lui        $v1, %hi(g_pCameraTargetParams)
     /* 69A4 800161A4 A86E638C */  lw         $v1, %lo(g_pCameraTargetParams)($v1)
-    /* 69A8 800161A8 0780023C */  lui        $v0, %hi(g_anCameraMode12Params)
-    /* 69AC 800161AC 84CA4224 */  addiu      $v0, $v0, %lo(g_anCameraMode12Params)
+    /* 69A8 800161A8 0780023C */  lui        $v0, %hi(g_anCameraParamTransitionGlideIn)
+    /* 69AC 800161AC 84CA4224 */  addiu      $v0, $v0, %lo(g_anCameraParamTransitionGlideIn)
     /* 69B0 800161B0 34006214 */  bne        $v1, $v0, .L80016284
     /* 69B4 800161B4 21202002 */   addu      $a0, $s1, $zero
     /* 69B8 800161B8 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
@@ -31527,8 +31527,8 @@ glabel CameraSettle_Update
     /* 1E850 8002E050 00000000 */   nop
     /* 1E854 8002E054 0780033C */  lui        $v1, %hi(g_pCameraTargetParams)
     /* 1E858 8002E058 A86E638C */  lw         $v1, %lo(g_pCameraTargetParams)($v1)
-    /* 1E85C 8002E05C 0780023C */  lui        $v0, %hi(g_anCameraMode12Params)
-    /* 1E860 8002E060 84CA4224 */  addiu      $v0, $v0, %lo(g_anCameraMode12Params)
+    /* 1E85C 8002E05C 0780023C */  lui        $v0, %hi(g_anCameraParamTransitionGlideIn)
+    /* 1E860 8002E060 84CA4224 */  addiu      $v0, $v0, %lo(g_anCameraParamTransitionGlideIn)
     /* 1E864 8002E064 03006214 */  bne        $v1, $v0, .L8002E074
     /* 1E868 8002E068 00000000 */   nop
   .L8002E06C:

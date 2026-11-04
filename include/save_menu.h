@@ -7,6 +7,34 @@
 
 #include "memcard.h"
 
+/* Word indices into the record at 0x80078d00 (g_anSaveMenuBlock[]), shared
+ * with the titlescreen's save-slot words at [5]..[8]. The angle/distance/Z
+ * triples place an actor (or the camera) around Spyro: SAVE_MODE_SWING_IN
+ * eases each from its FROM to its TO keyframe. Most words also have a scalar
+ * global (g_nSaveMenu..., globals.h); SaveMenu_Update reads some through the
+ * array to keep the original's held base. A struct view of the record grows
+ * both SaveMenu_Update and SaveLoadMenu_Draw: the int-array base is what lets
+ * gcc share one base register (cookbook shared-base idiom). */
+enum SaveMenuWord {
+  SM_MODE = 0,               /* enum SaveMenuMode */
+  SM_PHASE = 1,              /* frames since the screen changed */
+  SM_CURSOR = 2,             /* SaveMenuRow / SaveFailedRow / SaveStep */
+  SM_SUBSTATE = 3,           /* enum SaveMenuScreen */
+  SM_X_OFFSET = 4,           /* menu text x origin */
+  SM_SYNC_CMD = 9,           /* MemCardSync cmd */
+  SM_SYNC_RESULT = 10,       /* MemCardSync result */
+  SM_HOST_FROM_ANGLE = 11,   /* +0x2C; dist, Z follow */
+  SM_HOST_TO_ANGLE = 14,     /* +0x38; dist, Z follow */
+  SM_SPARX_FROM_ANGLE = 17,  /* +0x44; dist follows */
+  SM_SPARX_TO_ANGLE = 19,    /* +0x4C */
+  SM_SPARX_TO_DIST = 20,     /* +0x50 */
+  SM_CAMERA_FROM_ANGLE = 21, /* +0x54; dist, Z follow */
+  SM_CAMERA_TO_ANGLE = 24,   /* +0x60; dist, Z follow */
+  SM_SPYRO_FROM_YAW = 27,    /* +0x6C */
+  SM_SPYRO_TO_YAW = 28,      /* +0x70 */
+  SM_HOST_ACTOR = 29,        /* +0x74 g_pSaveMenuHostActor */
+};
+
 /* g_nSaveMenuMode */
 enum SaveMenuMode {
   SAVE_MODE_SWING_IN = 0, /* host, Sparx and camera ease to their keyframes */

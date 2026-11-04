@@ -1501,16 +1501,16 @@ dlabel g_anCameraParamTransitionYawAbove
     /* 5D280 8006CA80 00000000 */ .word 0x00000000
 enddlabel g_anCameraParamTransitionYawAbove
 
-nonmatching g_anCameraMode12Params
+nonmatching g_anCameraParamTransitionGlideIn
 
-dlabel g_anCameraMode12Params
+dlabel g_anCameraParamTransitionGlideIn
     /* 5D284 8006CA84 00000000 */ .word 0x00000000
     /* 5D288 8006CA88 40FFFFFF */ .word 0xFFFFFF40
     /* 5D28C 8006CA8C 000C0000 */ .word 0x00000C00
     /* 5D290 8006CA90 00000000 */ .word 0x00000000
     /* 5D294 8006CA94 54000000 */ .word 0x00000054
     /* 5D298 8006CA98 00000000 */ .word 0x00000000
-enddlabel g_anCameraMode12Params
+enddlabel g_anCameraParamTransitionGlideIn
 
 nonmatching D_8006CA9C
 

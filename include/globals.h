@@ -347,7 +347,13 @@ extern int g_anCameraParamFreeLook[6];               /* 0x8006ca0c */
 extern int g_anCameraParamTransitionYawBelow[6];              /* 0x8006ca3c */
 extern int g_anCameraParamTransitionStreaming[6];             /* 0x8006ca54 */
 extern int g_anCameraParamTransitionYawAbove[6];              /* 0x8006ca6c */
-extern int g_anCameraMode12Params[6];                        /* 0x8006ca84 */
+/* 0x8006ca84: g_aCameraXformPresets[4], the arrival a portal guide can
+ * request (PortalState.cameraPreset). TickLevelTransitionStream spawns Spyro
+ * 0x1600 below and 2.5 units behind the spawn point in SPYRO_SUB_GLIDE_ENTER
+ * and goes straight to GS_GAMEPLAY (no arrival camera); CameraSettle_Update
+ * ends at once on it. Presets 1..3 are the TransitionYawBelow / Streaming /
+ * YawAbove blocks above. */
+extern int g_anCameraParamTransitionGlideIn[6];
 extern int g_anCameraStuckReseatParams[30];                  /* 0x8006cab4 */
 extern int g_anCameraParamEnemyLock[6];                      /* 0x8006cb2c */
 extern int g_anCameraParamScriptedTarget[6];                 /* 0x8006cb5c */
@@ -1142,7 +1148,7 @@ extern unsigned char g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_abEmitTrailColorsG/B  0x8006e439 / 0x8006e43a  green / blue views of g_abEmitTrailColors
  *   g_anSparxEmitOffset     0x8006e570  int[3] EmitParticles offset for actor type 0x78 (Sparx)
  *   g_adwActorBurstColors   0x8006e330  packed RGB per actor type for emit effect 0xC (CollectPickupActor)
- *   g_aCameraXformPresets   0x8006ca24  0x18-byte spherical camera-coordinate presets
+ *   g_aCameraXformPresets   0x8006ca24  0x18-byte spherical camera-coordinate presets ([1..4] = g_anCameraParamTransition*)
  *   g_nSpyroMotionY         0x80078b68  scalar view of g_anSpyroMotionVec[1]
  *   g_nSpyroRequestTargetZ  0x80078c58  g_anSpyroRequestTargetPos[2]
  *   g_anSpuVoiceRowPitch / PitchStep 0x80075f38 / 0x80075f44  nPitch / nPitchStep columns of g_aSpuVoiceRows
