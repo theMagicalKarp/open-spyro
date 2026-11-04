@@ -56,8 +56,8 @@ void MenuTransition_Draw(void) {
   case 0: {
     DRAWENV *env;
 
-    env = &g_abFrameDrawEnv0;
-    if (g_pActiveFrameDrawEnv == &g_abFrameDrawEnv0) {
+    env = &g_FrameDrawEnv0;
+    if (g_pActiveFrameDrawEnv == &g_FrameDrawEnv0) {
       env = &FRAME_DB(env)[1].draw;
     }
     i = 0;
@@ -128,16 +128,16 @@ void MenuTransition_Draw(void) {
     prog = (0x20 - g_nMenuTickFrames) << 7;
     g_nFadeProgress = prog;
     *(volatile int *)&color = ComputeDepthCuedColor(g_dwWorldFogColor, 0, prog);
-    env = &g_abFrameDrawEnv0;
-    if (*(DRAWENV *volatile *)&g_pActiveFrameDrawEnv == &g_abFrameDrawEnv0) {
-      g_abFrameDrawEnv1.r0 = ((unsigned char *)&color)[0];
-      g_abFrameDrawEnv1.g0 = ((unsigned char *)&color)[1];
-      g_abFrameDrawEnv1.b0 = ((unsigned char *)&color)[2];
+    env = &g_FrameDrawEnv0;
+    if (*(DRAWENV *volatile *)&g_pActiveFrameDrawEnv == &g_FrameDrawEnv0) {
+      g_FrameDrawEnv1.r0 = ((unsigned char *)&color)[0];
+      g_FrameDrawEnv1.g0 = ((unsigned char *)&color)[1];
+      g_FrameDrawEnv1.b0 = ((unsigned char *)&color)[2];
       env = &FRAME_DB(env)[1].draw;
     } else {
-      g_abFrameDrawEnv0.r0 = ((unsigned char *)&color)[0];
-      g_abFrameDrawEnv0.g0 = ((unsigned char *)&color)[1];
-      g_abFrameDrawEnv0.b0 = ((unsigned char *)&color)[2];
+      g_FrameDrawEnv0.r0 = ((unsigned char *)&color)[0];
+      g_FrameDrawEnv0.g0 = ((unsigned char *)&color)[1];
+      g_FrameDrawEnv0.b0 = ((unsigned char *)&color)[2];
     }
     PutDrawEnv(env);
     EmitStaticActorMeshListFogged();

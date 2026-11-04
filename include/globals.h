@@ -777,13 +777,13 @@ extern int g_anCameraScriptStickIntegrator[2];          /* 0x80076eac */
 extern int g_nCameraTargetInverted;                     /* 0x80076eb8 */
 extern int g_nCameraSpringSuppressFlag;                 /* 0x80076ec0 */
 extern int g_anCameraScriptedTargetPos[3];              /* 0x80076ed0 */
-extern DRAWENV g_abFrameDrawEnv0;                       /* 0x80076ee0 */
-extern DISPENV g_abFrameDispEnv0;                       /* 0x80076f3c */
+extern DRAWENV g_FrameDrawEnv0;                       /* 0x80076ee0 */
+extern DISPENV g_FrameDispEnv0;                       /* 0x80076f3c */
 extern void *g_pFramePrimBufferBase0;                   /* 0x80076f50 */
 extern void *g_pFrameOtDepthBinBase0;                   /* 0x80076f54 */
 extern void *g_pFrameOtMergedChainSlot0;                /* 0x80076f58 */
-extern DRAWENV g_abFrameDrawEnv1;                       /* 0x80076f64 */
-extern DISPENV g_abFrameDispEnv1;                       /* 0x80076fc0 */
+extern DRAWENV g_FrameDrawEnv1;                       /* 0x80076f64 */
+extern DISPENV g_FrameDispEnv1;                       /* 0x80076fc0 */
 extern void *g_pFramePrimBufferBase1;                   /* 0x80076fd4 */
 extern void *g_pFrameOtDepthBinBase1;                   /* 0x80076fd8 */
 extern void *g_pFrameOtMergedChainSlot1;                /* 0x80076fdc */
@@ -882,7 +882,7 @@ extern int g_nHudEggRollRequest;                   /* 0x80077fdc */
 extern int g_nHudButterflyCachedCount;                  /* 0x80077fe0 */
 extern unsigned int g_dwHudIconSpinAngle;                        /* 0x80077fe4: 8-bit angle the HUD gem / lives icons and the menu gem icons spin on (rotZ), down by the frame step each tick; their rotY tilt is its cosine */
 extern int g_nHudFrameCycleMod9;                        /* 0x80077fe8 */
-extern unsigned char g_abHudIconActorRecords[1056];              /* 0x80077fec */
+extern unsigned char g_aHudIconActorRecords[1056];              /* 0x80077fec */
 extern short g_anHudSpriteRects[128];                   /* 0x8007840c */
 extern int g_anLevelSpriteTexWordPairs[20];             /* 0x8007850c */
 extern int g_nWorldAnimMeshKeyframeCount;               /* 0x80078560 */
@@ -1171,7 +1171,7 @@ extern unsigned char g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_nActorCutsceneMenuCursor  0x800777f0  highlighted entry of the dialogue page/roster menu (wraps)
  *   g_nActorCutsceneDialogPage  0x800777f4  dialogue page id the substate-1 menu shows (0x1E/0x1F, 0x21..0x26, ...)
  *   g_nActorCutsceneDialogVariant 0x800777f8  line variant within the page (UpdateActors picks 0..2 at random)
- *   g_abActorCutsceneActorSnapshot 0x80071e9c  0x58-byte copy of the focus actor taken at lift-off (substate 3)
+ *   g_aActorCutsceneActorSnapshot 0x80071e9c  0x58-byte copy of the focus actor taken at lift-off (substate 3)
  *   g_anActorCutsceneLandingX / Y 0x8006eadc / 0x8006eae0  per-card-variant landing x / y (stride 8), copied to
  *       g_nActorCutsceneSpyroToX / Y before the descend substate
  *   g_bWorldBalloonistState1 0x800758d1  g_abWorldBalloonistState[1] (scalar view)

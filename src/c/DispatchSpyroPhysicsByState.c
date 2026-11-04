@@ -222,7 +222,7 @@ void DispatchSpyroPhysicsByState(void) {
       if (g_nFlightLevelActive != 0) {
         TRACK_FLOOR_REFERENCE();
         if (g_nSpyroSubstate == SPYRO_SUB_FLY_RUN &&
-            CollideSphereWithWorldAndActors(&SPY[0], 0x164, 0x164) != 0) {
+            CollideSphereWithWorldAndActors(&SPY[SPY_POS], 0x164, 0x164) != 0) {
           g_pfnLevelEndFlightRun();
         }
       } else {
@@ -247,7 +247,7 @@ void DispatchSpyroPhysicsByState(void) {
     }
     if ((g_dwSpyroRequestMask & SPYRO_RQ_NO_CLIP) &&
         g_nSpyroSubstate == SPYRO_SUB_GLIDE_TO_TARGET) {
-      g_nSpyroGroundHeightZ = FindGroundHeightBelow(&SPY[0], 0x10000);
+      g_nSpyroGroundHeightZ = FindGroundHeightBelow(&SPY[SPY_POS], 0x10000);
     }
     break;
   case SPYRO_ST_FACE_TARGET:
@@ -278,7 +278,7 @@ void DispatchSpyroPhysicsByState(void) {
     AdvanceSpyroPhysics();
     ProbeSpyroGroundContact();
     if (SPY[SPY_SUBSTATE] & SPYRO_SUB_SUPERCHARGE) {
-      CopyVector(dust, &SPY[0]);
+      CopyVector(dust, &SPY[SPY_POS]);
       dust[0] += (GetRandomU32() & 0xFE) - 0x7F;
       dust[1] += (GetRandomU32() & 0xFE) - 0x7F;
       CopyVector(dustVel, &SPY[SPY_MOTION]);
@@ -324,7 +324,7 @@ void DispatchSpyroPhysicsByState(void) {
     ProbeSpyroGroundContact();
     ApplyGravityAlongSpyroSlopeNormal();
     ApplyGravityAlongSpyroSlopeTangent();
-    CopyVector(trail, &SPY[0]);
+    CopyVector(trail, &SPY[SPY_POS]);
     trail[0] += (GetRandomU32() & 0xFE) - 0x7F;
     trail[1] += (GetRandomU32() & 0xFE) - 0x7F;
     trail[2] -= 0x164;
@@ -338,7 +338,7 @@ void DispatchSpyroPhysicsByState(void) {
     if (g_nSpyroGroundHeightZ != 0) {
       g_nSpyroHazardFloorZ = g_nSpyroGroundHeightZ;
     } else {
-      CopyVector(pos, &SPY[0]);
+      CopyVector(pos, &SPY[SPY_POS]);
       pos[2] += 0x800;
       g_nSpyroHazardFloorZ = FindGroundHeightBelow(pos, 0xC00);
     }

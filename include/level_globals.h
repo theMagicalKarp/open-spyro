@@ -35,7 +35,7 @@ extern char *g_apWorldNameByLevelTens[];                               /* world 
 extern char *g_apLevelNameByWorldRow[];                               /* level names */
 extern unsigned char g_abBalloonistDialoguePageEnds[];                       /* dialogue page end line */
 extern int g_pActiveActorList1;
-extern Actor g_abActorCutsceneActorSnapshot[]; /* focus-actor copy taken at lift-off */
+extern Actor g_aActorCutsceneActorSnapshot[]; /* focus-actor copy taken at lift-off */
 extern int g_bDebugNoDepletion;
 extern unsigned char g_bWorldBalloonistState1;                         /* per-world "seen it" flags */
 extern int *g_apActorMeshTable_1A0[]; /* g_apActorMeshTable[0x1A0] (balloonist cutscene relocates it) */
@@ -64,7 +64,7 @@ extern int g_nActorCutsceneCamEulerPitchStart;
 extern int g_nActorCutsceneCamEulerYawStart;
 extern int g_nActorCutsceneRecordZStart;
 extern int g_nActorCutsceneRecordZGoal;
-extern unsigned char g_abHudIconActorRecords_rotZ[];
+extern unsigned char g_aHudIconActorRecords_rotZ[];
 extern int g_anFlightTallyActiveSlots_e1; /* queue slots 1..3, shifted down as each class is shown */
 extern int g_anFlightTallyActiveSlots_e2;
 extern int g_anFlightTallyActiveSlots_e3;

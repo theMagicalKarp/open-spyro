@@ -568,7 +568,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           int l;
 
           SubtractVector(toHomingTarget, &g_pSpyroHomingTargetActor->posX,
-                         &SPY[0]);
+                         &SPY[SPY_POS]);
           l = VectorLength(toHomingTarget, VEC_LEN_XYZ);
           d = (ArcTan2(toHomingTarget[0], toHomingTarget[1], ATAN_ANGLE12) -
                SPY[SPY_BODY_YAW]) &
@@ -783,7 +783,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (g_nSpyroWorldPosZ < g_nSpyroFloorReferenceZ) {
           v40[2] = (g_nSpyroVelocityZ >> 3) - 0x400;
           if (v40[2] < 0) {
-            int *pos = &SPY[0];
+            int *pos = &SPY[SPY_POS];
 
             v40[0] = g_anSpyroVelocity[0] >> 3;
             v40[1] = g_nSpyroVelocityY >> 3;
@@ -1239,7 +1239,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (g_nSpyroInputBlankCountdown <= 0) {
           g_nSpyroInputBlankCountdown = 1;
         }
-        if (ApproxDist2D(&SPY[0], &SPY[0x7E]) < 0x300) {
+        if (ApproxDist2D(&SPY[SPY_POS], &SPY[SPY_REQUEST_TARGET]) < 0x300) {
           LEVEL_GLIDE_HANDOFF();
         }
         g_nSpyroBodyRoll = 0;
@@ -1259,7 +1259,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (g_nSpyroStateTimer < 0x10) {
           y = 0;
         } else {
-          y = FindGroundHeightBelow(&SPY[0], 0x10000);
+          y = FindGroundHeightBelow(&SPY[SPY_POS], 0x10000);
           if (g_nSpyroGlideBankingFlag != 0) {
             int d = g_nSpyroWorldPosZ - y;
 
@@ -1531,7 +1531,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     obj = ((int **)g_pScriptedCameraActor)[0];
     obj2 = obj;
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
-    SubtractVector(orbitStep, &g_pScriptedCameraActor->posX, &SPY[0]);
+    SubtractVector(orbitStep, &g_pScriptedCameraActor->posX, &SPY[SPY_POS]);
     dist = VectorLength(orbitStep, VEC_LEN_XY);
     ang = ArcTan2(orbitStep[0], orbitStep[1], ATAN_ANGLE12);
     dt = (g_nSpyroSubstate == SPYRO_SUB_ORBIT_NEG ? -g_nSpyroTurnRateAccum

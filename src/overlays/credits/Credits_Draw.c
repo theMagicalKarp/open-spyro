@@ -34,7 +34,7 @@ void Credits_Draw(void) {
     VSync(0);
     y = 8;
     rect.x = 0;
-    if (g_pActiveFrameDrawEnv != g_abFrameDrawEnv0) {
+    if (g_pActiveFrameDrawEnv != g_FrameDrawEnv0) {
       y = 0xF8;
     }
     rect.w = 0x200;

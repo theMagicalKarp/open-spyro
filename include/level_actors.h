@@ -18,7 +18,7 @@ extern Actor *g_pLockedChestReward;
 extern int g_anSpuVoiceRowPitch[][7];                        /* g_aSpuVoiceRows[i].nPitch (rows are 7 words) */
 extern int g_anSpuVoiceRowPitchStep[][7];                    /* g_aSpuVoiceRows[i].nPitchStep */
 extern int g_nActorCutsceneDialogPage;
-extern Actor g_abHudIconActorRecords[];                      /* the four HUD class icons */
+extern Actor g_aHudIconActorRecords[];                      /* the four HUD class icons */
 extern int g_anCollisionResolvedPos;                         /* collision contact point */
 extern short g_anCosineLut[];
 extern int g_anFlightTargetTally[];                          /* tally collected, per class */

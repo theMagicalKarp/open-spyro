@@ -21,12 +21,12 @@ void LevelTransition_Draw(void) {
   r = ((unsigned char *)&g_dwWorldFogColor)[0];
   g = ((unsigned char *)&g_dwWorldFogColor)[1];
   b = ((unsigned char *)&g_dwWorldFogColor)[2];
-  g_abFrameDrawEnv0.r0 = r;
-  g_abFrameDrawEnv0.g0 = g;
-  g_abFrameDrawEnv0.b0 = b;
-  g_abFrameDrawEnv1.r0 = r;
-  g_abFrameDrawEnv1.g0 = g;
-  g_abFrameDrawEnv1.b0 = b;
+  g_FrameDrawEnv0.r0 = r;
+  g_FrameDrawEnv0.g0 = g;
+  g_FrameDrawEnv0.b0 = b;
+  g_FrameDrawEnv1.r0 = r;
+  g_FrameDrawEnv1.g0 = g;
+  g_FrameDrawEnv1.b0 = b;
   FillWord(&g_pOtDepthBinHead0, 0, 0x900);
   if (g_nLevelTransitionTallyActive != 0) {
     DrawLevelTransitionOverlay();

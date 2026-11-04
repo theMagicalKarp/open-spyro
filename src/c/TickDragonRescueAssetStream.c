@@ -98,7 +98,7 @@ void TickDragonRescueAssetStream(void) {
         SetSpuTransferStartAddr(top + (g_nDragonRescueSpuChunkIndex << 15) -
                                 g_nDragonRescueAudioSampleSize);
       }
-      if (g_pActiveFrameDrawEnv == &g_abFrameDrawEnv0) {
+      if (g_pActiveFrameDrawEnv == &g_FrameDrawEnv0) {
         buf = g_pFramePrimBufferBase1;
       } else {
         buf = g_pFramePrimBufferBase0;

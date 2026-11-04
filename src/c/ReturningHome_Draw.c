@@ -22,12 +22,12 @@ void ReturningHome_Draw(void) {
   posVec[0] = 0x76;
   posVec[1] = 0x6e;
   posVec[2] = 0x1100;
-  g_abFrameDrawEnv0.r0 = 0;
-  g_abFrameDrawEnv0.g0 = 0;
-  g_abFrameDrawEnv0.b0 = 0;
-  g_abFrameDrawEnv1.r0 = 0;
-  g_abFrameDrawEnv1.g0 = 0;
-  g_abFrameDrawEnv1.b0 = 0;
+  g_FrameDrawEnv0.r0 = 0;
+  g_FrameDrawEnv0.g0 = 0;
+  g_FrameDrawEnv0.b0 = 0;
+  g_FrameDrawEnv1.r0 = 0;
+  g_FrameDrawEnv1.g0 = 0;
+  g_FrameDrawEnv1.b0 = 0;
   BuildTextSprites(g_szReturningHome, posVec, sizeVec, 0x12, TINT_HUD);
   glyph = first - 1;
   phase = 0;

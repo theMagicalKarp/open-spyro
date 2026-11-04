@@ -5,7 +5,7 @@
  * turns the HUD icon spin angle (g_dwHudIconSpinAngle) and sun vector (RotateLightVectorXZ),
  * then runs the retry/exit menu. g_nSubMenuScrollOffset paces g_nSubMenuCursor (menu reveal
  * timer, +1 every 5 ticks, capped 9); four HUD sprite records at
- * g_abHudIconActorRecords_rotZ (+0x58 stride) spin their +0x32 angle byte. Once revealed
+ * g_aHudIconActorRecords_rotZ (+0x58 stride) spin their +0x32 angle byte. Once revealed
  * (timer >= 9): select/start (pad & (PAD_UP | PAD_DOWN)) toggles the cursor
  * (g_nPauseMenuCursor) with a blip; confirm (pad & (PAD_CROSS | PAD_START)) either dispatches the
  * cursor action (0 = restart flight via g_pfnLevelHandleFlightResults(1) +
@@ -45,7 +45,7 @@ void Level23_FlightResultsMenu_Update(void) {
     g_nSubMenuScrollOffset = 0;
   }
   i = 0;
-  rec = g_abHudIconActorRecords_rotZ;
+  rec = g_aHudIconActorRecords_rotZ;
   do {
     *rec += 8;
     i += 1;

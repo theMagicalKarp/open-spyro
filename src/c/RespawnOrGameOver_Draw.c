@@ -67,7 +67,7 @@ void RespawnOrGameOver_Draw(void) {
       VSync(0);
       bright = 8;
       rect.x = 0;
-      if (g_pActiveFrameDrawEnv != &g_abFrameDrawEnv0) {
+      if (g_pActiveFrameDrawEnv != &g_FrameDrawEnv0) {
         bright = 0xF8;
       }
       rect.w = 0x200;
@@ -75,8 +75,8 @@ void RespawnOrGameOver_Draw(void) {
       rect.h = 0xE0;
       MoveImage(&rect, 0, 0x100 - bright);
       DrawSync(0);
-      g_abFrameDrawEnv0.isbg = 0;
-      g_abFrameDrawEnv1.isbg = 0;
+      g_FrameDrawEnv0.isbg = 0;
+      g_FrameDrawEnv1.isbg = 0;
     } else if (g_nRespawnOrGameOverFrame < 0x10) {
       if (g_nRespawnOrGameOverFrame == 1) {
         DrawFullscreenTint(2, 0x10, 0x10, 0x10);
@@ -93,10 +93,10 @@ void RespawnOrGameOver_Draw(void) {
           unsigned char *e = Opaque(g_abFrameDrawEnvIsbgBlock);
 
           e[0] = 1;
-          g_abFrameDrawEnv1.isbg = 1;
-          g_abFrameDrawEnv0.r0 = 0;
-          g_abFrameDrawEnv0.g0 = 0;
-          g_abFrameDrawEnv0.b0 = 0;
+          g_FrameDrawEnv1.isbg = 1;
+          g_FrameDrawEnv0.r0 = 0;
+          g_FrameDrawEnv0.g0 = 0;
+          g_FrameDrawEnv0.b0 = 0;
           e[0x85] = 0;
           e[0x86] = 0;
           e[0x87] = 0;
@@ -189,7 +189,7 @@ void RespawnOrGameOver_Draw(void) {
     if (g_nRespawnOrGameOverFrame == 0) {
       bright = 8;
       rect.x = 0;
-      if (g_pActiveFrameDrawEnv != &g_abFrameDrawEnv0) {
+      if (g_pActiveFrameDrawEnv != &g_FrameDrawEnv0) {
         bright = 0xF8;
       }
       rect.w = 0x200;
@@ -197,8 +197,8 @@ void RespawnOrGameOver_Draw(void) {
       rect.h = 0xE0;
       MoveImage(&rect, 0, 0x100 - bright);
       DrawSync(0);
-      g_abFrameDrawEnv0.isbg = 0;
-      g_abFrameDrawEnv1.isbg = 0;
+      g_FrameDrawEnv0.isbg = 0;
+      g_FrameDrawEnv1.isbg = 0;
     } else if (g_nRespawnOrGameOverFrame < 0x10) {
       if (g_nRespawnOrGameOverFrame == 1) {
         DrawFullscreenTint(2, 0x10, 0x10, 0x10);
@@ -215,10 +215,10 @@ void RespawnOrGameOver_Draw(void) {
           unsigned char *e = Opaque(g_abFrameDrawEnvIsbgBlock);
 
           e[0] = 1;
-          g_abFrameDrawEnv1.isbg = 1;
-          g_abFrameDrawEnv0.r0 = 0;
-          g_abFrameDrawEnv0.g0 = 0;
-          g_abFrameDrawEnv0.b0 = 0;
+          g_FrameDrawEnv1.isbg = 1;
+          g_FrameDrawEnv0.r0 = 0;
+          g_FrameDrawEnv0.g0 = 0;
+          g_FrameDrawEnv0.b0 = 0;
           e[0x85] = 0;
           e[0x86] = 0;
           e[0x87] = 0;

@@ -1530,16 +1530,16 @@ void Level11_UpdateActors(void) {
         }
 
         for (i = 0, y = 0x3C; i < 4; i++) {
-          g_abHudIconActorRecords[i].type = st->types[i];
-          InitActorRenderDefaults(&g_abHudIconActorRecords[i]);
-          HideActorRenderRecord(&g_abHudIconActorRecords[i]);
-          g_abHudIconActorRecords[i].posY = y;
+          g_aHudIconActorRecords[i].type = st->types[i];
+          InitActorRenderDefaults(&g_aHudIconActorRecords[i]);
+          HideActorRenderRecord(&g_aHudIconActorRecords[i]);
+          g_aHudIconActorRecords[i].posY = y;
           y += 0x14;
-          g_abHudIconActorRecords[i].otBias = 0x20;
-          g_abHudIconActorRecords[i].cullRadius = 0xFF;
-          g_abHudIconActorRecords[i].posX = 0x3C;
-          g_abHudIconActorRecords[i].posZ = 0x1000;
-          g_abHudIconActorRecords[i].tintMode = i + 3;
+          g_aHudIconActorRecords[i].otBias = 0x20;
+          g_aHudIconActorRecords[i].cullRadius = 0xFF;
+          g_aHudIconActorRecords[i].posX = 0x3C;
+          g_aHudIconActorRecords[i].posZ = 0x1000;
+          g_aHudIconActorRecords[i].tintMode = i + 3;
         }
       }
 

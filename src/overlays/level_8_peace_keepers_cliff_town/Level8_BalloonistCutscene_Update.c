@@ -7,7 +7,7 @@
  *   1  dialogue: pad-driven page/roster menu (g_nActorCutsceneDialogPage submode),
  *   2  board:    fly Spyro to the balloon over 0x66 frames,
  *   3  lift off: raise the balloon (Z) for 0x80 frames, then snapshot the
- *                actor into g_abActorCutsceneActorSnapshot and swap the 0x4000-byte scratch bank,
+ *                actor into g_aActorCutsceneActorSnapshot and swap the 0x4000-byte scratch bank,
  *   5  cruise:   interpolate the camera along the flight path (0x100 frames),
  *   6  descend:  lower the balloon for 0x80 frames,
  *   7  land:     ease Spyro out of the balloon, then hand the frame back to
@@ -664,8 +664,8 @@ void Level8_BalloonistCutscene_Update(void)
         g_nActorCutsceneCamHeightGoal = m + 0x200;
         }
         TickLevelTransitionStream(1);
-        CopyWords(g_abActorCutsceneActorSnapshot, g_pActorCutsceneRecord, 0x58);
-        g_pActorCutsceneRecord = g_abActorCutsceneActorSnapshot;
+        CopyWords(g_aActorCutsceneActorSnapshot, g_pActorCutsceneRecord, 0x58);
+        g_pActorCutsceneRecord = g_aActorCutsceneActorSnapshot;
         if (((unsigned int) g_pRenderScratchRegionBase) <= 0x801FFFFF)
         {
           bank = (int *) (g_pWorldRenderMeshChunkArray - 0x400C);

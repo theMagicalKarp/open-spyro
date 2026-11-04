@@ -112,12 +112,12 @@ void ActorCutscene_Draw(void) {
         }
         color = ComputeDepthCuedColor(g_dwWorldFogColor, g_dwActorMeshFadeColor,
                                       g_nFadeProgress);
-        g_abFrameDrawEnv0.r0 = ((unsigned char *)&color)[0];
-        g_abFrameDrawEnv0.g0 = ((unsigned char *)&color)[1];
-        g_abFrameDrawEnv0.b0 = ((unsigned char *)&color)[2];
-        g_abFrameDrawEnv1.r0 = ((unsigned char *)&color)[0];
-        g_abFrameDrawEnv1.g0 = ((unsigned char *)&color)[1];
-        g_abFrameDrawEnv1.b0 = ((unsigned char *)&color)[2];
+        g_FrameDrawEnv0.r0 = ((unsigned char *)&color)[0];
+        g_FrameDrawEnv0.g0 = ((unsigned char *)&color)[1];
+        g_FrameDrawEnv0.b0 = ((unsigned char *)&color)[2];
+        g_FrameDrawEnv1.r0 = ((unsigned char *)&color)[0];
+        g_FrameDrawEnv1.g0 = ((unsigned char *)&color)[1];
+        g_FrameDrawEnv1.b0 = ((unsigned char *)&color)[2];
         if (g_nFadeProgress < 0x1000) {
           EmitStaticActorMeshListFogged();
         }

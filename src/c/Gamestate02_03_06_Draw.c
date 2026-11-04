@@ -88,7 +88,7 @@ void Gamestate02_03_06_Draw(void) {
       SetupFrameOT();
       DrawSync(0);
       VSync(0);
-      envBase = &g_abFrameDrawEnv0;
+      envBase = &g_FrameDrawEnv0;
     } while (0);
     do {
       PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
@@ -154,7 +154,7 @@ void Gamestate02_03_06_Draw(void) {
     unsigned char bq;
     unsigned char cq;
     cur = (*(char **)&g_pActiveFrameDrawEnv);
-    env = ((char *)&g_abFrameDrawEnv0);
+    env = ((char *)&g_FrameDrawEnv0);
     if (cur == env) {
       env += 0x84;
     }

@@ -51,11 +51,11 @@ void InitHudCounters(int layout_butterflies) {
   int size;
   int dst;
   int pad[2];
-  FillWord(g_abHudIconActorRecords, 0, 0x420);
+  FillWord(g_aHudIconActorRecords, 0, 0x420);
   i = 0;
   ff = 0xFF;
   pos = &HUD_ICON(0)->posX;
-  rec = g_abHudIconActorRecords;
+  rec = g_aHudIconActorRecords;
   off = 0;
   vec = 0;
 icon_slot:

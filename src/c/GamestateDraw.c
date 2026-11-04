@@ -34,7 +34,7 @@ void GamestateDraw(void) {
   int b;
   int tint;
 
-  env = (char *)&g_abFrameDrawEnv0;
+  env = (char *)&g_FrameDrawEnv0;
   if ((char *)g_pActiveFrameDrawEnv == env) {
     env += sizeof(FrameDB);
   }
@@ -96,12 +96,12 @@ void GamestateDraw(void) {
     r = ((unsigned char *)&g_dwWorldFogColor)[0];
     g = ((unsigned char *)&g_dwWorldFogColor)[1];
     b = ((unsigned char *)&g_dwWorldFogColor)[2];
-    g_abFrameDrawEnv0.r0 = r;
-    g_abFrameDrawEnv0.g0 = g;
-    g_abFrameDrawEnv0.b0 = b;
-    g_abFrameDrawEnv1.r0 = r;
-    g_abFrameDrawEnv1.g0 = g;
-    g_abFrameDrawEnv1.b0 = b;
+    g_FrameDrawEnv0.r0 = r;
+    g_FrameDrawEnv0.g0 = g;
+    g_FrameDrawEnv0.b0 = b;
+    g_FrameDrawEnv1.r0 = r;
+    g_FrameDrawEnv1.g0 = g;
+    g_FrameDrawEnv1.b0 = b;
     BuildRenderEntityLists();
     if (g_nFlightLevelActive == 0) {
       EnqueueHudSprites();

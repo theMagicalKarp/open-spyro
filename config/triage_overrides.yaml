@@ -3216,7 +3216,7 @@ RespawnOrGameOver_Draw:
     held-base fold" note that predated A200; the 2026-08-26 rework that took it
     to 356/361 was never committed, so it was re-derived here. Now 5/361,
     length-exact and LINKING (partial credit 1236 -> 1368 B). Recipe: the
-    incomplete-array alias g_abFrameDrawEnvIsbgBlock at g_abFrameDrawEnv0+0x18
+    incomplete-array alias g_abFrameDrawEnvIsbgBlock at g_FrameDrawEnv0+0x18
     with element indices [0] / [0x85..0x87], env1.isbg and env0.r0/g0/b0 left
     absolute, plus an empty do { } while (0); at slot 0. Barrier sweep is
     recorded in the .wip header and reproduces A200's 5/7/40/9/12 exactly --
@@ -3687,7 +3687,7 @@ Gamestate02_03_06_Draw:
     number is positional noise, not distance: the offset leaves zero at orig[29]
     and is back to 0 by orig[33], but everything after insn 29 therefore scores
     nothing. Next move is R1 in the .c.wip header - the 4-insn head knot where
-    the original materialises &g_abFrameDrawEnv0 at insn 28 and
+    the original materialises &g_FrameDrawEnv0 at insn 28 and
     &g_pRenderScratchPrimTop at insn 34 (with addiu s2,s0,-8 in PutDrawEnv's
     delay slot) and we emit both one call later; worth ~5,000 partial bytes
     because the first 1,270 instructions are otherwise offset-neutral. Six new

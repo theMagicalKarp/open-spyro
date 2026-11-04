@@ -11,8 +11,8 @@
 
 /* Declared identically by two or more *FlightResults*.c files; hoisted here. */
 extern void AddPrimToOT();
-extern char g_abFrameDrawEnv0[];
-extern char g_abHudIconActorRecords[];
+extern char g_FrameDrawEnv0[];
+extern char g_aHudIconActorRecords[];
 extern int g_anLevelGemsCollected[];
 extern char g_anMenuBackdropGrayClut[];
 extern int g_nVsyncFrameEndCount[];
