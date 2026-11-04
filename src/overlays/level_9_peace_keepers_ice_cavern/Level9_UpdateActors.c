@@ -1789,7 +1789,7 @@ void Level9_UpdateActors(void) {
         break;
       }
 
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       actor->flags = 0;
       continue;
     }
@@ -1897,7 +1897,7 @@ void Level9_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;

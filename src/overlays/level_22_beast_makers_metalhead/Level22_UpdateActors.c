@@ -642,7 +642,7 @@ void Level22_UpdateActors(void) {
           continue;
         }
       }
-      st->lodHandle = SelectActorLodBand(actor, st->lodHandle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       actor->flags = 0;
       if (actor->mode < METALHEAD_PHASE_TURN) {
         if (st->phase == 0) {
@@ -3221,7 +3221,7 @@ void Level22_UpdateActors(void) {
         break;
       }
 
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       actor->flags = 0;
       continue;
     }
@@ -3329,7 +3329,7 @@ void Level22_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;

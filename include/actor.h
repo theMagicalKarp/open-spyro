@@ -49,7 +49,7 @@ int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius, int radius
 int MoveActorAlongAngle(Actor *actor, int angle, int speed, int contactRadius, int radius, int flags);
 int DriveActorTrackedMove(Actor *actor, int *speed, int heading, int *vz, int friction, int gravity);
 void UpdateActorWander(Actor *actor, WanderBlock *wb);
-int SelectActorLodBand(Actor *actor, int band);
+int StepActorScorchTint(Actor *actor, int band);
 void TickActorFlameGlow(Actor *actor);
 int SpawnActorRotBillboard(Actor *actor, int *offset);
 Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt);

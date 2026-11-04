@@ -1578,7 +1578,7 @@ void Level31_UpdateActors(void) {
       int kind;
       int mask;
 
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       kind = st->kind;
       mask = ACTOR_HIT_ANY;
       if (kind != HATCH_KIND_BARREL) {
@@ -1920,7 +1920,7 @@ void Level31_UpdateActors(void) {
         break;
       }
 
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       actor->flags = 0;
       continue;
     }
@@ -2028,7 +2028,7 @@ void Level31_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
@@ -2628,7 +2628,7 @@ void Level31_UpdateActors(void) {
       int i;
       unsigned char s;
 
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       if ((actor->flags & ACTOR_HIT_CHARGE) &&
           (unsigned char)(actor->mode - 2) >= 2 && actor->mode != FLOATBARREL_RUN) {
         if (st->link < 0 || g_pActorListBase[st->link].type != ACTOR_TYPE_CARRIED_THROWER) {
@@ -3912,7 +3912,7 @@ void Level31_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
         if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE)) && st->shake == 0) {
           st->shake = 1;
           st->rotX = actor->rotX;

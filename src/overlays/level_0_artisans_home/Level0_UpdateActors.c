@@ -2772,7 +2772,7 @@ void Level0_UpdateActors(void) {
       PatchRideState *st = actor->state;
       int tri[3][3];
 
-      if (st->handle < 0) {
+      if (st->triId < 0) {
         /* Unattached: probe just ahead and attach to that triangle. */
         tri[0][0] = g_anCosineLut[actor->rotZ] >> 1;
         tri[0][1] = g_anSineLut[actor->rotZ] >> 1;
@@ -2783,8 +2783,8 @@ void Level0_UpdateActors(void) {
           break;
         }
 
-        st->handle = g_nLastCollisionHitChunkId;
-        UnpackWorldCollisionTri(st->handle, tri[0]);
+        st->triId = g_nLastCollisionHitChunkId;
+        UnpackWorldCollisionTri(st->triId, tri[0]);
         AddVector(tri[0], tri[0], tri[1]);
         AddVector(tri[0], tri[0], tri[2]);
         tri[0][0] /= 3;
@@ -2794,7 +2794,7 @@ void Level0_UpdateActors(void) {
         break;
       }
 
-      UnpackWorldCollisionTri(st->handle, tri[0]);
+      UnpackWorldCollisionTri(st->triId, tri[0]);
       AddVector(tri[0], tri[0], tri[1]);
       AddVector(tri[0], tri[0], tri[2]);
       tri[0][0] /= 3;

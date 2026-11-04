@@ -379,7 +379,7 @@
 <rect x="186.19" y="755.79" width="9.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitPadSystem  ·  152 bytes  ·  matched</title></rect>
 <rect x="186.19" y="764.60" width="9.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildAudioTrackTable  ·  152 bytes  ·  matched</title></rect>
 <rect x="195.62" y="646.56" width="9.30" height="8.93" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>VectorLength  ·  152 bytes  ·  handwritten</title></rect>
-<rect x="204.92" y="646.56" width="9.30" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SelectActorLodBand  ·  152 bytes  ·  matched</title></rect>
+<rect x="204.92" y="646.56" width="9.30" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>StepActorScorchTint  ·  152 bytes  ·  matched</title></rect>
 <rect x="214.22" y="646.56" width="9.30" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SetActorGroupSubstate  ·  152 bytes  ·  matched</title></rect>
 <rect x="223.52" y="646.56" width="9.30" height="8.93" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>AllocEmitListRecord  ·  152 bytes  ·  handwritten</title></rect>
 <rect x="232.82" y="646.56" width="9.30" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SyncSoundVoicesWithHardware  ·  152 bytes  ·  matched</title></rect>

@@ -273,7 +273,7 @@ typedef struct WobbleState {
   int rotY;   /* 0x08 */
   int restZ;  /* 0x0C */
   int snapToGround;  /* 0x10 nonzero: re-snap to the floor every frame */
-  int handle; /* 0x14 */
+  int scorchBand; /* 0x14 StepActorScorchTint band */
 } WobbleState;
 
 /* Cases 76 and 426..451 — a letter of a floating name (SpawnNameLetterActors:
@@ -380,7 +380,7 @@ typedef struct LockedChestState {
   int rotX;   /* 0x08 rest pose */
   int rotY;   /* 0x0C */
   int restZ;  /* 0x10 */
-  int handle; /* 0x14 for SelectActorLodBand */
+  int scorchBand; /* 0x14 StepActorScorchTint band */
 } LockedChestState;
 
 extern void DivideVector3(int *dst, int *src, int n);
@@ -417,7 +417,7 @@ typedef struct SpinChestState {
   int angle;  /* 0x04 */
   int speed;  /* 0x08 */
   int timer;  /* 0x0C */
-  int handle; /* 0x10 for SelectActorLodBand */
+  int scorchBand; /* 0x10 StepActorScorchTint band */
 } SpinChestState;
 
 /* Case 392 -- the spin chest's lid, launched when the chest bursts. */
@@ -663,7 +663,7 @@ typedef struct FlockState {
 /* Type 391: rides a collision triangle, holding its offset from the
  * triangle's centroid. */
 typedef struct PatchRideState {
-  int handle;    /* 0x00 */
+  int triId;     /* 0x00 collision triangle ridden (-1 until found) */
   int offset[3]; /* 0x04 actor position relative to the centroid */
 } PatchRideState;
 
@@ -990,7 +990,7 @@ typedef struct BreakableRockState {
   int rotX;   /* 0x04 rest rotation */
   int rotY;   /* 0x08 */
   int restZ;  /* 0x0C */
-  int handle; /* 0x10 for SelectActorLodBand */
+  int scorchBand; /* 0x10 StepActorScorchTint band */
 } BreakableRockState;
 
 typedef struct TetherState {
@@ -1374,7 +1374,7 @@ typedef struct HatchState {
   int pad00;
   int kind;     /* 0x04 HatchKind */
   Actor *child; /* 0x08 released occupant */
-  int handle;   /* 0x0C for SelectActorLodBand */
+  int scorchBand;   /* 0x0C StepActorScorchTint band */
 } HatchState;
 
 typedef struct MountState {
@@ -1401,7 +1401,7 @@ typedef struct FloatingBarrelState {
   int heading;  /* 0x08 run heading */
   int sink;     /* 0x0C sink speed */
   int link;     /* 0x10 index into g_pActorListBase, -1 = none; level data: ACTOR_TYPE_MOUNT / CARRIED_THROWER */
-  short handle; /* 0x14 for SelectActorLodBand */
+  short scorchBand; /* 0x14 StepActorScorchTint band */
 } FloatingBarrelState;
 
 typedef struct L31Debris {

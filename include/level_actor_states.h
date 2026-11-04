@@ -315,7 +315,7 @@ typedef struct MetalheadState {
   int seen;             /* 0x44 */
   int init;             /* 0x48 */
   int camTimer;         /* 0x4C */
-  int lodHandle;              /* 0x50 */
+  int scorchBand;              /* 0x50 StepActorScorchTint band */
 } MetalheadState;
 
 /* Type 47 state: a thrown rock, carried by its partner until released. */
@@ -510,7 +510,7 @@ typedef struct BreakableWallState {
   Actor *part[4]; /* 0x00 */
   int kind;       /* 0x10 BreakableWallKind */
   int init;       /* 0x14 */
-  int lodHandle;        /* 0x18 */
+  int scorchBand;        /* 0x18 StepActorScorchTint band */
 } BreakableWallState;
 
 /* Type 134 state: a rock thrower. */

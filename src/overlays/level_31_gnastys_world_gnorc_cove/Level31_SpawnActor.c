@@ -212,7 +212,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     st->sink = -0xC;
     st->rider = parent;
     st->blast = 0;
-    st->handle = 0;
+    st->scorchBand = 0;
     st->link = -1;
     rec->floorOffset = 0x1CD;
     InsertActorIntoSpatialGrid(rec);

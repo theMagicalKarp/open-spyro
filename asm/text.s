@@ -45841,11 +45841,11 @@ glabel BlendVectorPairByMode
 endlabel BlendVectorPairByMode
 .endif
 
-.section .text.SelectActorLodBand, "ax"
-.ifndef HAVE_C_SelectActorLodBand
-nonmatching SelectActorLodBand, 0x98
+.section .text.StepActorScorchTint, "ax"
+.ifndef HAVE_C_StepActorScorchTint
+nonmatching StepActorScorchTint, 0x98
 
-glabel SelectActorLodBand
+glabel StepActorScorchTint
     /* 2B1EC 8003A9EC 2130A000 */  addu       $a2, $a1, $zero
     /* 2B1F0 8003A9F0 0500C014 */  bnez       $a2, .L8003AA08
     /* 2B1F4 8003A9F4 21388000 */   addu      $a3, $a0, $zero
@@ -45890,7 +45890,7 @@ glabel SelectActorLodBand
   .L8003AA7C:
     /* 2B27C 8003AA7C 0800E003 */  jr         $ra
     /* 2B280 8003AA80 2110C000 */   addu      $v0, $a2, $zero
-endlabel SelectActorLodBand
+endlabel StepActorScorchTint
 .endif
 
 .section .text.TickActorFlameGlow, "ax"

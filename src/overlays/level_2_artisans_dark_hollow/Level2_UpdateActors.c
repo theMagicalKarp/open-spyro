@@ -2345,7 +2345,7 @@ void Level2_UpdateActors(void) {
         break;
       }
 
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       actor->flags = 0;
       continue;
     }

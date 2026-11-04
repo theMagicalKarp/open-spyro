@@ -309,7 +309,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8003a79c` | MeasureOffsetToPathPoint | main | 180 | matched | game |
 | `0x8003a850` | StepTweenOffsetVector | main | 208 | matched | game |
 | `0x8003a920` | BlendVectorPairByMode | main | 204 | matched | game |
-| `0x8003a9ec` | SelectActorLodBand | main | 152 | matched | game |
+| `0x8003a9ec` | StepActorScorchTint | main | 152 | matched | game |
 | `0x8003aa84` | TickActorFlameGlow | main | 104 | matched | game |
 | `0x8003aaec` | SpawnActorRotBillboard | main | 212 | matched | game |
 | `0x8003abc0` | SpawnActorDeathDrop | main | 1308 | matched | game |

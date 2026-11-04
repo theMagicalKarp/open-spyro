@@ -2678,7 +2678,7 @@ void Level21_UpdateActors(void) {
         break;
       }
 
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       actor->flags = 0;
       continue;
     }
@@ -2786,7 +2786,7 @@ void Level21_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
@@ -3840,7 +3840,7 @@ void Level21_UpdateActors(void) {
           st->speed += 0x64;
         }
       }
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       st->speed -= 1;
       if (pitch < cur && actor->voiceRow != VOICE_ROW_NONE) {
         g_anSpuVoiceRowPitchStep[actor->voiceRow & 0x7F][0] = -4;
@@ -4027,7 +4027,7 @@ void Level21_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
         if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE)) && st->shake == 0) {
           st->shake = 1;
           st->rotX = actor->rotX;

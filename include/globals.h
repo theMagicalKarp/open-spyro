@@ -1066,8 +1066,8 @@ extern unsigned char g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *
  * Per-actor tick state (written by each level's UpdateActors before calling
  * the actor's handler; read by the shared actor helpers):
- *   g_nActorAnimDone        0x80075794  actor +0x42 bit 1: animation finished
- *   g_nActorAnimNewFrame    0x800757f4  actor +0x42 bit 0: new anim frame
+ *   g_nActorAnimDone        0x80075794  Actor.animFlags bit 1: animation finished
+ *   g_nActorAnimNewFrame    0x800757f4  Actor.animFlags bit 0: new anim frame
  *   g_nActorFrameDelta      0x800756c4  this actor's frame delta (TickCountdownByFrameDelta)
  *
  * Component aliases of named vectors (absolute-address forms the matches need):
