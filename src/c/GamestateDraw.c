@@ -10,10 +10,11 @@
 
    Flips to the other of the two frame environments (they sit 0x84 apart, so
    the second is derived from the first) and republishes the per-frame buffer
-   cursors held in its tail: the prim-buffer write cursor (+0x70) with its
-   0x1C000-byte limit, the OT depth-bin array (+0x74) and the active depth slot
-   (+0x78). The sprite-record buffer starts where the prim buffer ends. Then
-   the camera view matrix, and the active gamestate's Draw handler.
+   cursors held in its FrameDB tail: the prim-buffer write cursor
+   (primBufferBase) with its PRIM_BUFFER_BYTES limit, the OT depth-bin array
+   (otDepthBinBase) and the active depth slot (otMergedChainSlot). The
+   sprite-record buffer starts where the prim buffer ends. Then the camera view
+   matrix, and the active gamestate's Draw handler.
 
    State 0 is the gameplay frame: push the world fog color into both frame
    DRAWENVs, build the render entity lists, overlay the loading-screen sprites
