@@ -51,7 +51,7 @@ void MenuTransition_Draw(void) {
 
   g_nPrimBufferOverflowFlag = 0;
   g_pPrimBufferWriteCursor = g_pRenderScratchRegionBase;
-  g_pPrimBufferLimit = (char *)g_pRenderScratchRegionBase + 0x1C000;
+  g_pPrimBufferLimit = (char *)g_pRenderScratchRegionBase + PRIM_BUFFER_BYTES;
   switch (g_nMenuDrawFrames) {
   case 0: {
     DRAWENV *env;

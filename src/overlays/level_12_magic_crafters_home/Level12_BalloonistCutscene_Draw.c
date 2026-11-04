@@ -2,8 +2,8 @@
  *
  * Balloonist cutscene DRAW half (gamestate 0xC). Dispatches on the substate
  * word g_nActorCutsceneSubstate[0]:
- *   < 2  — draw the "<world> THE BALLOONIST" title card, then pulse the alpha
- *          (+0x46) of every sprite record the draw just appended, sampling the
+ *   < 2  — draw the "<world> THE BALLOONIST" title card, then rock every glyph
+ *          the draw just appended (its rotZ roll angle, +0x46), sampling the
  *          cosine LUT g_anCosineLut with a per-glyph phase step of 0xC.
  *   == 1 — plus one of three sub-menus selected by g_nActorCutsceneSubstate[3]:
  *            * outside 0x1E..0x20: the dialogue page whose line range is

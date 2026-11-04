@@ -4,16 +4,17 @@
 #include "libcd.h"
 #include "main_shared.h"
 
-/* 0x800163e4: watchdog-driven CD stall recovery. If a stall marker is armed
-   and has exceeded the watchdog tick threshold, resets the CD subsystem,
+/* 0x800163e4: watchdog-driven CD stall recovery. If a read armed a stall
+   timeout (g_nCdStallTimeoutTicks) and the vblank watchdog has passed it,
+   resets the CD subsystem,
    reinstalls the read callback, resets the music-stream state, busy-waits
    for the drive to reach state 2, then reissues the pending sector read. */
 void RestartStalledCdRead(void) {
-  int marker;
+  int timeout;
 
-  marker = g_nCdStallMarker;
-  if (marker != 0) {
-    if (marker < g_nCdStallWatchdogTicks) {
+  timeout = g_nCdStallTimeoutTicks;
+  if (timeout != 0) {
+    if (timeout < g_nCdStallWatchdogTicks) {
       CdInit();
       CdReadCallback(CdReadCompleteCallback);
       g_dwMusicStreamStatus = MUSIC_ST_IDLE;

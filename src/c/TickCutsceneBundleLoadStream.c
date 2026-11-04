@@ -69,7 +69,7 @@ void TickCutsceneBundleLoadStream(void) {
     int id = *((volatile int *)(&g_nCutsceneId));
     void *dst = *((void *volatile *)(&g_pDrawBufA));
     archiveOff = (&g_nCutsceneArchiveOffset)[id * 2];
-    StartCdReadAsync(lba, dst, 0x800, archiveOff, 0x258);
+    StartCdReadAsync(lba, dst, 0x800, archiveOff, CD_STALL_TIMEOUT_TICKS);
     g_nCdStreamState = CSTREAM_READ_TIM;
   } else if (state == CSTREAM_READ_TIM) {
     int lba;
@@ -82,7 +82,7 @@ void TickCutsceneBundleLoadStream(void) {
     StartCdReadAsync(lba, dst, (&g_nCutsceneHeaderChunkSize)[id],
                      g_anWorldTimAudioChunkOffsetBlock[0] +
                          (&g_nCutsceneArchiveOffset)[id * 2],
-                     0x258);
+                     CD_STALL_TIMEOUT_TICKS);
     g_nCdStreamState = CSTREAM_UPLOAD_TIM;
     return;
   } else if (state == CSTREAM_UPLOAD_TIM) {
@@ -100,7 +100,7 @@ void TickCutsceneBundleLoadStream(void) {
     int off = *((volatile int *)(&g_nWorldTimAudioChunkOffset));
     StartCdReadAsync(lba, dst, size,
                      (off + (&g_nCutsceneArchiveOffset)[id * 2]) + 0x80000,
-                     0x258);
+                     CD_STALL_TIMEOUT_TICKS);
     g_nCdStreamState = CSTREAM_UPLOAD_AUDIO;
   } else if (state == CSTREAM_UPLOAD_AUDIO) {
     SetSpuTransferStartAddr(0x1010);
@@ -115,7 +115,8 @@ void TickCutsceneBundleLoadStream(void) {
       int size = *((volatile int *)(&g_nWorldBundleChunkSize));
       int off = *((volatile int *)(&g_nWorldBundleChunkOffset));
       StartCdReadAsync(lba, dst, size,
-                       off + (&g_nCutsceneArchiveOffset)[id * 2], 0x258);
+                       off + (&g_nCutsceneArchiveOffset)[id * 2],
+                       CD_STALL_TIMEOUT_TICKS);
     }
     g_nCdStreamState = CSTREAM_UNPACK;
   } else if (state == CSTREAM_UNPACK) {
@@ -137,7 +138,8 @@ void TickCutsceneBundleLoadStream(void) {
       register int off asm("$3") =
           *((volatile int *)(&g_nWorldDataExtChunkOffset));
       StartCdReadAsync(lba, dst, extSize,
-                       off + (&g_nCutsceneArchiveOffset)[id * 2], 0x258);
+                       off + (&g_nCutsceneArchiveOffset)[id * 2],
+                       CD_STALL_TIMEOUT_TICKS);
     }
     return;
   } else if (state == CSTREAM_EXT_WAIT) {
@@ -182,7 +184,8 @@ void TickCutsceneBundleLoadStream(void) {
       id = *((volatile int *)(&g_nCutsceneId));
       g_nLevelArchiveBaseLba = off;
       StartCdReadAsync(lba, dst, count,
-                       off + (&g_nCutsceneArchiveOffset)[id * 2], 0x258);
+                       off + (&g_nCutsceneArchiveOffset)[id * 2],
+                       CD_STALL_TIMEOUT_TICKS);
     }
     g_nCdStreamState = CSTREAM_REBASE_PATHS;
   } else if (state == CSTREAM_REBASE_PATHS) {

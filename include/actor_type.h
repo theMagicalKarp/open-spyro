@@ -189,6 +189,13 @@ typedef struct Actor {
 /* Actor.animFlags bits (TickActorAnims). */
 #define ACTOR_ANIM_NEW_FRAME 0x01 /* stepped onto a new frame this tick */
 #define ACTOR_ANIM_DONE 0x02      /* the animation finished (g_nActorAnimDone) */
+#define ACTOR_ANIM_EXTRA_STEP 0x04 /* the long-frame extra pass stepped again */
+/* TickActorAnims' mode: the low bits shift frameRate down; ANIM_TICK_EXTRA is
+ * the extra pass a long frame (g_nFrameStep >= 3) runs after the normal one,
+ * at half rate for a 3-tick frame. */
+#define ANIM_TICK_NORMAL 0
+#define ANIM_TICK_EXTRA 0x80000000
+#define ANIM_TICK_HALF_RATE 1
 /* Actor.groundCode bit 31: the packed contact is valid. */
 #define ACTOR_GROUND_VALID 0x80000000
 /* Actor.killGroup: the group number, and bit 7, which latches the death drop. */
@@ -548,7 +555,7 @@ enum ActorType {
 
 /* StopSoundVoicesByOwner's mode: which of the owner's voices to stop. */
 #define VOICE_STOP_ALL 1     /* every voice it owns */
-#define VOICE_STOP_LOOPING 2 /* only its looping voices (row flag 0x100) */
+#define VOICE_STOP_LOOPING 2 /* only its looping voices (VOICE_ROW_LOOPING) */
 
 /* SpawnActorDeathDrop's `kind`: how a thrown drop leaves its source. Rolled
  * extra lives, butterflies and Sparx ignore it. */

@@ -5,10 +5,10 @@
 /* 0x80016698 — fire an async CD sector read without waiting: set 2x speed
    (CdlSetmode 0x80), seek to lbaBase + offset/0x800, then CdRead
    (size+0x7ff)/0x800 sectors to dst. Stashes the in-flight bookkeeping
-   (sector count / dst / marker for RestartStalledCdRead) and raises the
+   (sector count / dst / stallTicks for RestartStalledCdRead) and raises the
    in-flight flag; callers poll it themselves. */
 void StartCdReadAsync(int lbaBase, void *dst, int size, int offset,
-                      int marker) {
+                      int stallTicks) {
   unsigned char mode[4];
   byte *loc;
   int pos;
@@ -17,7 +17,7 @@ void StartCdReadAsync(int lbaBase, void *dst, int size, int offset,
   mode[0] = CdlModeSpeed;
   CdControl(CdlSetmode, mode, 0);
   g_nCdStallWatchdogTicks = 0;
-  g_nCdStallMarker = marker;
+  g_nCdStallTimeoutTicks = stallTicks;
 
   pos = lbaBase + offset / 0x800;
   loc = &g_abCdlLocScratch;

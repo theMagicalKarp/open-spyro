@@ -10,10 +10,10 @@
   (*(short *)((char *)g_anDpadDirectionYaw + (off)))
 
 /* 0x8003d3b8 (0x174) — convert this substep's pad input (g_pPadSubstepState)
-   into a movement target. Analog stick (bytes +0x16/+0x17 centred on 0x7f):
-   ArcTan2 target yaw made camera-relative, speed scaled by |dx|+|dy|. D-pad
-   (button nibble 0xf000): the yaw table plus g_nCameraEulerYaw at full speed.
-   Neutral input holds the persistent yaw and zeroes speed.
+   into a movement target. Left stick (analog axes PAD_AXIS_LX / LY, 0x7F
+   centred): ArcTan2 target yaw made camera-relative, speed scaled by |dx|+|dy|.
+   D-pad (PAD_DPAD): the yaw table plus g_nCameraEulerYaw at full speed. Neutral
+   input holds the persistent yaw and zeroes speed.
 
    Match notes: the two analog yaw stores go through one held base (`target`,
    via the incomplete-array alias). The first store is volatile and so is the

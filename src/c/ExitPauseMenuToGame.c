@@ -1,4 +1,5 @@
 #include "cd_music.h"
+#include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
 #include "hud_counter.h"
@@ -17,7 +18,7 @@ void ExitPauseMenuToGame(int resumeMusic) {
   rect.w = 0x100;
   rect.y = 0;
   rect.h = 0xE1;
-  LoadImage(&rect, (char *)g_pRenderScratchPrimTop + 0xFFFE3E00);
+  LoadImage(&rect, (char *)g_pRenderScratchPrimTop - MENU_SNAPSHOT_BYTES);
   DrawSync(0);
   g_nGamestate = GS_GAMEPLAY;
   InitLightVectorConstants();

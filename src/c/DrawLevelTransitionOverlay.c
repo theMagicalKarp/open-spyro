@@ -23,7 +23,7 @@
    it counts up over the gem fly-in (2 frames per icon, capped at 0x40) and
    then counts on from the game-wide total, and one gem sprite is emitted per
    live g_pGemTallyParticleRecords record (U from g_abGemTallyIconUvTable) plus
-   the treasure icon itself. Every glyph's alpha is pulsed from the cosine LUT
+   the treasure icon itself. Every glyph rocks on the cosine LUT (its rotZ)
    stepped by the phase.
 
    The queue is flushed here rather than by the caller: clear the head slot,

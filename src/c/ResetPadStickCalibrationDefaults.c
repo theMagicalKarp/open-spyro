@@ -2,8 +2,7 @@
 #include "pad.h"
 
 /* Reset the four analog-stick calibration channels to neutral: center 0x7F,
-   range 0..0xFF. The three sub-tables live at +0x20/+0x24/+0x28 in the pad
-   calibration block. */
+   range 0..0xFF (PadState.stickNeutral / stickLow / stickHigh). */
 void ResetPadStickCalibrationDefaults(unsigned char *cal) {
   int i;
 

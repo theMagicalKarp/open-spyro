@@ -104,7 +104,7 @@ void Level3_BalloonistCutscene_Update(void)
   {
     g_pActiveActorList1 = 0;
     g_apActiveActorList[0] = g_pActorCutsceneActor;
-    TickActorAnims(g_apActiveActorList, 0);
+    TickActorAnims(g_apActiveActorList, ANIM_TICK_NORMAL);
   }
   switch (st[0])
   {
@@ -139,7 +139,7 @@ void Level3_BalloonistCutscene_Update(void)
           g_bSpyroAnimPrev[0] = 1;
           g_bSpyroAnimCurrent = SPYRO_ANIMID_WALK;
           g_bSpyroAnimFrame = 1;
-          CopyVector(g_anActorCutsceneSpyroFrom, &g_bSpyroAnimPrev[-0x18]);
+          CopyVector(g_anActorCutsceneSpyroFrom, SPYRO_POS_VIA_ANIM_PREV);
           SPYRO_TO_X_VIA_FROM = 0x4A0;
           g_nActorCutsceneSpyroToY = 0;
           g_nActorCutsceneSpyroToZ = 0x164;
@@ -218,7 +218,7 @@ void Level3_BalloonistCutscene_Update(void)
         }
         g_abSpyroPersistentEuler[0] = 0;
         g_bSpyroPersistentEulerY = 0;
-        g_nSpyroGroundHeightZ = FindGroundHeightBelow((int *) (&g_abSpyroPersistentEuler[-0xC]), 0x10000);
+        g_nSpyroGroundHeightZ = FindGroundHeightBelow((int *) (&g_abSpyroPersistentEuler[-SPYB_EULER]), 0x10000);
         ApplyEulerRotation((int *) (&g_abSpyroPersistentEuler[0]), (int *) (&g_abSpyroPersistentEuler[0x28]), 0);
         SampleSpyroShadowRingHeights(1);
         TickSpyroAttackEffects(g_nFrameStep);

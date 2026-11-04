@@ -92,6 +92,7 @@
 #include "credits.h"
 #include "actor.h"
 #include "match_asm.h"
+#include "cd_stream.h"
 
 extern void exit() __attribute__((noreturn));
 
@@ -185,23 +186,23 @@ void Credits_Update(void) {
       g_pDrawBufB = g_pCreditsScratchBuf;
     }
     sector = g_anCreditsPageSectors[g_nCreditsPageIndex * 2];
-    CdReadSyncSectors(g_nCdBaseLba[0], g_pDrawBufB_blk[0], 0x800, sector, 0x258);
+    CdReadSyncSectors(g_nCdBaseLba[0], g_pDrawBufB_blk[0], 0x800, sector, CD_STALL_TIMEOUT_TICKS);
     CopyWords(g_nWorldTimAudioChunkOffset, g_pDrawBufB_blk[0], 0x1D0);
     CdReadSyncSectors(g_nCdBaseLba[0], g_pDrawBufB_blk[0], 0x60000,
-                  g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], 0x258);
+                  g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], CD_STALL_TIMEOUT_TICKS);
     rect0[0] = 0x200;
     rect0[2] = 0x200;
     rect0[1] = 0;
     rect0[3] = 0x180;
     LoadImage(rect0, g_pDrawBufB_blk[0]);
     CdReadSyncSectors(g_nCdBaseLba[0], g_pDrawBufB_blk[0], g_nWorldTimAudioChunkSize - 0x60000,
-                  g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2] + 0x60000, 0x258);
+                  g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2] + 0x60000, CD_STALL_TIMEOUT_TICKS);
     SetSpuTransferStartAddr(0x1010);
     WriteSpuRam(g_pDrawBufB_blk[0], 0x7EFF0);
     while (GetSpuTransferStatus(0) == 0) {
     }
     CdReadSyncSectors(g_nCdBaseLba[0], g_pDrawBufB_blk[0], g_nWorldTimAudioChunkOffset[3],
-                  g_nWorldBundleChunkOffset + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], 0x258);
+                  g_nWorldBundleChunkOffset + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], CD_STALL_TIMEOUT_TICKS);
     S.worldUnpackHead = UnpackWorldDataChunks((int *)g_pDrawBufB_blk[0], 1);
     {
       register char *src asm("$5");
@@ -212,7 +213,7 @@ void Credits_Update(void) {
       S.levelArchiveByteSize = g_nLevelArchiveChunkSize_n;
       g_nPortalCount = 0;
       CdReadSyncSectors(g_nCdBaseLba[0], src, S.levelArchiveByteSize,
-                    S.levelArchiveBaseLba + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], 0x258);
+                    S.levelArchiveBaseLba + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], CD_STALL_TIMEOUT_TICKS);
     }
     {
     char *e4 = g_pPathTableBuffer;
@@ -593,14 +594,14 @@ void Credits_Update(void) {
         switch (st) {
         case CREDITS_MODE_FETCH_HEADER: {
           int sector = g_anCreditsPageSectors[g_nCreditsPageIndex * 2];
-          StartCdReadAsync(g_nCdBaseLba[0], g_pCreditsLoadBuf, 0x800, sector, 0x258);
+          StartCdReadAsync(g_nCdBaseLba[0], g_pCreditsLoadBuf, 0x800, sector, CD_STALL_TIMEOUT_TICKS);
           g_nCreditsMode = g_nCreditsMode + 1;
           break;
         }
         case CREDITS_MODE_FETCH_TEXTURES:
           CopyWords(g_nWorldTimAudioChunkOffset, g_pCreditsLoadBuf, 0x1D0);
           StartCdReadAsync(g_nCdBaseLba[0], g_pCreditsLoadBuf, 0x20000,
-                        g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], 0x258);
+                        g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], CD_STALL_TIMEOUT_TICKS);
           g_nCreditsMode = g_nCreditsMode + 1;
           break;
         case CREDITS_MODE_FETCH_SCENE: {
@@ -620,7 +621,7 @@ void Credits_Update(void) {
           g_nCreditsLoadSpan = span;
           StartCdReadAsync(g_nCdBaseLba[0], g_pCreditsLoadBuf, span,
                         g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2] + 0x20000,
-                        0x258);
+                        CD_STALL_TIMEOUT_TICKS);
           g_nCreditsMode = g_nCreditsMode + 1;
           break;
         }

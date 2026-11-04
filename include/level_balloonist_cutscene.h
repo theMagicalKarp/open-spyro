@@ -73,17 +73,17 @@ extern unsigned char g_bSpyroPersistentEulerZ;
 
 extern unsigned char g_bSpyroOtBinBias;
 
-extern void RasterizeSpritePrimQueue();
+extern void RasterizeSpritePrimQueue(void);
 
-extern void BuildRenderEntityLists();
+extern void BuildRenderEntityLists(void);
 
-extern void ComposeFrameScene();
+extern void ComposeFrameScene(void);
 
-extern void SetupFrameOT();
+extern void SetupFrameOT(void);
 
-extern void DrawPortalsAndStaticActors();
+extern void DrawPortalsAndStaticActors(void);
 
-extern void RasterizeEmitList();
+extern void RasterizeEmitList(void);
 
 /* The sprite-record write cursor, declared int here: the balloonist Draw
  * clones walk it with int cursors whose loop tests compare signed (as
@@ -101,7 +101,7 @@ extern char *g_apBalloonistNames[];          /* [world] balloonist name; [0] is 
 extern char *g_apBalloonistDialogueLines[];          /* dialogue lines */
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
-extern unsigned int g_dwHudBobSinePhase[];
+extern unsigned int g_dwHudIconSpinAngle[];
 
 /* The balloonist actor record (Update reads its fields; Draw links it into
  * the OT as the pending node). */
@@ -113,5 +113,8 @@ extern Actor *g_pActorCutsceneRecord;
  * in the Update clones), and the address shares From's lui. The plain
  * scalar store costs an extra lui. */
 #define SPYRO_TO_X_VIA_FROM (*(int *)((char *)g_anActorCutsceneSpyroFrom + 12))
+/* g_anSpyroWorldPos reached off the g_bSpyroAnimPrev base the lift-off
+ * stores just used (0x18 bytes below it in the Spyro block). */
+#define SPYRO_POS_VIA_ANIM_PREV ((int *)&g_bSpyroAnimPrev[-0x18])
 
 #endif /* OPEN_SPYRO_LEVEL_BALLOONIST_CUTSCENE_H */

@@ -324,7 +324,7 @@ extern int g_anGteExceptionVectorStub[14]; /* 0x800626b0 */
 extern int g_anSpyroIdleAnimStateSeq[9];                     /* 0x8006bc60 */
 extern unsigned char g_abSpyroStateTransitionAnimMatrix[2025];        /* 0x8006bc84 */
 extern unsigned char g_abSpyroStateAnimIndexMap[48];                  /* 0x8006c470 */
-extern unsigned char g_abSpyroAnimDescTable[192];                     /* 0x8006c4a0 */
+extern unsigned char g_abSpyroAnimDescTable[192];                     /* 0x8006c4a0: SPYRO_ANIMID_COUNT 4-byte records (loop start / loop end / frame count / rate, SPYRO_ANIM_DESC_*), then the per-anim SPYRO_ANIM_NO_OVERLAY bytes (spyro_state.h) */
 extern unsigned char g_abSpyroStateCameraMode;                        /* 0x8006c588 */
 extern int g_anSpyroSlopeSpeedTargets[6];                    /* 0x8006c5b8 */
 extern unsigned char g_abSpyroEulerRateRampUp[12];                    /* 0x8006c6f8 */
@@ -428,7 +428,7 @@ extern void *g_apSecondaryDrawEntityList[128];               /* 0x80071ef4 */
 extern void *g_apSpritePrimQueue[256];                       /* 0x800720f4 */
 extern int g_apSecondaryEntityList[128];                     /* 0x800724f4 */
 extern int g_anOtPrimSaveList[64];                           /* 0x800726f4 */
-extern int g_anCheatCodeSequences[128];                      /* 0x80072e94 */
+extern int g_anCheatCodeSequences[128];                      /* 0x80072e94: 8 cheat-code button sequences, 16 pad words each, 0-terminated (CheckCheatCodeMatch); only slots 2..4 have an effect (ApplyCheatCodeEffect) */
 extern int g_nSnCrtInitFlag;                                 /* 0x800730bc */
 extern void *g_pCrt0HeapBase;                                /* 0x800730c0 */
 extern int g_nCrt0HeapSize;                                  /* 0x800730c4 */
@@ -572,7 +572,7 @@ extern int g_nPortalTransitionActive;           /* 0x800756d0: set by a portal e
 extern int g_nSubMenuScrollDelta;            /* 0x800756d4 */
 extern int g_nPadIsDualshockFlag;            /* 0x800756d8 */
 extern int g_nCameraShakeMagnitude;          /* 0x800756dc */
-extern int g_nCdStallMarker;                 /* 0x800756e0 */
+extern int g_nCdStallTimeoutTicks;                 /* 0x800756e0: vblanks the in-flight CD read may take before RestartStalledCdRead reissues it (CD_STALL_TIMEOUT_TICKS); 0 = disarmed */
 extern void *g_pActorAuxPoolTop;             /* 0x800756e8 */
 extern int g_anSecondaryActorTexWords[2];    /* 0x800756f0 */
 extern int g_nReturningHomePhase;            /* 0x800756f8 */
@@ -590,7 +590,7 @@ extern void (*g_pfnLevelUpdateActors)(void); /* 0x80075734 */
 extern void *g_pEmitListWriteCursor;         /* 0x80075738 */
 extern struct Actor *g_pActorPoolFreeHead;   /* 0x8007573c: lowest free slot of the level actor pool (AllocActorRecordSlot) */
 extern int g_nGemTallyHoldEndPhase;          /* 0x80075740: tally phase where the TREASURE FOUND hold ends: 0x8C + 2 per icon, capped at 0xC0 */
-extern int g_nSubMenuCursor;                 /* 0x80075744 */
+extern int g_nSubMenuCursor;                 /* 0x80075744: inventory page's world cursor (Gamestate02_03_06_Draw); the flight results screens reuse it as their reveal step */
 extern int g_nMusicVolume;                   /* 0x80075748 */
 extern int g_nTotalDragonsRescued;           /* 0x80075750: game-wide dragons freed (ApplySaveGameBuffer sums all 36 levels; ComputeInventoryProgressPercent: 80 = 40%) */
 extern int g_nSfxVolume;                     /* 0x80075754 */
@@ -623,7 +623,7 @@ extern struct Actor *g_pSpyroContactActor;           /* 0x80075804 */
 extern int g_nLastCollisionHitChunkId;       /* 0x80075808 */
 extern int g_nSparxHealthStash;           /* 0x8007580c: saved g_nSparxHealth; -1 = none (ResetLevelState, new game) */
 extern int g_nTotalEggsRecovered;            /* 0x80075810: game-wide eggs recovered (ApplySaveGameBuffer sums g_anLevelEggsRecovered; 12 = 10%) */
-extern int g_nSpyroDrawSuppressed;           /* 0x80075814 */
+extern int g_nSpyroDrawSuppressed;           /* 0x80075814: nonzero skips Spyro's model and shadow (ComposeFrameScene); level 20's grabber sets it while it holds Spyro, BuildLoadedLevelRuntime clears it */
 extern int g_nCreditsReturnLevelId;          /* 0x80075818 */
 extern int *g_pOtActiveDepthSlot;            /* 0x8007581c */
 extern void *g_pOtDepthBinArrayBase;         /* 0x80075820 */
@@ -675,7 +675,7 @@ extern int g_nPortalDistanceFogEnabled;                /* 0x8007591c: portals be
 extern int g_nCameraManualYawInput;          /* 0x80075924 */
 extern int g_nPadHistoryIndex;               /* 0x80075928 */
 extern int g_nCameraForcePassiveFollow;        /* 0x8007592c: 1 while Spyro is in SPYRO_ST_HURT_LONG (UpdateCameraFrame): the camera behaves as if CAM_OPT_PASSIVE_FOLLOW were set */
-extern void *g_pActorAuxPoolFreeHead;        /* 0x80075930 */
+extern void *g_pActorAuxPoolFreeHead;        /* 0x80075930: one past the next free 0x18-byte actor ->state record; the aux pool grows down (AllocActorRecordSlot) */
 extern int g_nActorMeshOtDepthBin;           /* 0x80075934 */
 extern int g_nCameraPassiveModeHoldTimer;    /* 0x80075938 */
 extern int g_nRespawnOrGameOverFrame;             /* 0x8007593c: frame counter of the respawn / game-over sequence (RespawnOrGameOver_Update / _Draw) */
@@ -731,7 +731,7 @@ extern int g_nLevelArchiveChunkOffset;                  /* 0x80076c18 */
 extern int g_nLevelArchiveChunkSize;                    /* 0x80076c1c */
 extern int g_nDragonAssetOffset;                        /* 0x80076c20 */
 extern int g_nDragonAssetSize;                          /* 0x80076c24 */
-extern int g_anActorMeshOffsetList;                     /* 0x80076c50 */
+extern int g_anActorMeshOffsetList;                     /* 0x80076c50: file offsets (in the world data-ext chunk) of the models a level or cutscene streams in, 0-terminated; in a level [0] is Spyro's animation stream (InstallSpyroAnimStream) and [1..] are actor models (RelocateActorMeshHeader) */
 extern int g_anWorldToCameraRotMtx[5];                  /* 0x80076dd0 */
 extern int g_anCameraPos[3];                            /* 0x80076df8 */
 extern int g_anCameraEyeTarget[3];                      /* 0x80076e04 */
@@ -872,7 +872,7 @@ extern int g_nHudEggCachedCount;                   /* 0x80077fd4 */
 extern int g_nHudKeyCachedState;                   /* 0x80077fd8 */
 extern int g_nHudEggRollRequest;                   /* 0x80077fdc */
 extern int g_nHudButterflyCachedCount;                  /* 0x80077fe0 */
-extern unsigned int g_dwHudBobSinePhase;                        /* 0x80077fe4 */
+extern unsigned int g_dwHudIconSpinAngle;                        /* 0x80077fe4: 8-bit angle the HUD gem / lives icons and the menu gem icons spin on (rotZ), down by the frame step each tick; their rotY tilt is its cosine */
 extern int g_nHudFrameCycleMod9;                        /* 0x80077fe8 */
 extern unsigned char g_abHudIconActorRecords[1056];              /* 0x80077fec */
 extern short g_anHudSpriteRects[128];                   /* 0x8007840c */
@@ -1007,11 +1007,11 @@ extern int g_anSpyroSwingEulerPrev[3];                  /* 0x80078c08 */
 extern int g_anSpyroSwingEulerSpringAccum[3];           /* 0x80078c14 */
 extern int g_anSpyroComposedBodyMtx[5];                 /* 0x80078c20 */
 extern int g_nSpyroInputBlankCountdown;                /* 0x80078c48: frames left during which Spyro's frame tick stashes the pad (no input): 0xC after a level load, >= 2 while SPYRO_RQ_FREEZE_INPUT or a scripted move holds */
-extern unsigned int g_dwSpyroRequestMask;                       /* 0x80078c4c */
+extern unsigned int g_dwSpyroRequestMask;                       /* 0x80078c4c: scripted override of Spyro's motion / state / camera set by actors and cutscenes (SPYRO_RQ_* bits, spyro_state.h) */
 extern int g_anSpyroRequestTargetPos[3];                /* 0x80078c50 */
 extern unsigned char g_abSpyroRequestEuler[3];                   /* 0x80078c5c */
 extern int g_anSpyroRequestVelocity[3];                 /* 0x80078c60 */
-extern int g_nSpyroRequestState;                        /* 0x80078c70 */
+extern int g_nSpyroRequestState;                        /* 0x80078c70: the SPYRO_ST_* state applied while SPYRO_RQ_FORCE_STATE is set */
 extern void *g_pSpyroRequestCameraAnchor;               /* 0x80078c74 */
 extern void *g_pSpyroRequestCameraTargetParams;         /* 0x80078c78 */
 extern struct Actor *g_pScriptedCameraActor;                    /* 0x80078c7c */
@@ -1363,7 +1363,7 @@ extern int g_anHudKeyTimerBlock[]; /* 0x80077fc4 */
 extern int g_anHudLevelGemCachedBlock[]; /* 0x80077fc8: held-base view of the cached level gem count */
 extern int g_anHudDragonCachedCountBlock[]; /* 0x80077fcc */
 extern int g_anHudButterflyCachedBlock[]; /* 0x80077fe0 */
-extern int g_adwHudBobSinePhaseBlock[]; /* 0x80077fe4: held-base view of g_dwHudBobSinePhase; [1] is the mod-9 HUD frame counter, [0x14c] is &g_anLevelSpriteTexWordPairs[2] */
+extern int g_adwHudIconSpinAngleBlock[]; /* 0x80077fe4: held-base view of g_dwHudIconSpinAngle; [1] is the mod-9 HUD frame counter, [0x14c] is &g_anLevelSpriteTexWordPairs[2] */
 extern int g_anHudFrameCycleBlock[]; /* 0x80077fe8: the same block seen from g_nHudFrameCycleMod9; [0x14b] is &g_anLevelSpriteTexWordPairs[2] */
 extern int g_anWorldAnimMeshKeyframeCountBlock[]; /* 0x80078560 */
 extern int g_anWorldAnimUvCycleCountBlock[]; /* 0x80078568 */

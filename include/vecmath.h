@@ -44,6 +44,17 @@ void AddVector(int *dst, int *a, int *b);
 void SubtractVector(int *dst, int *a, int *b);
 void LShiftVector3(int *vec, int shift);
 void RShiftVector3(int *vec, int shift);
+/* dst = src shifted right (arithmetic) by 17 - LZCS(|x| | |y| | |z|) when that
+ * is positive, so every component fits an int16 for the GTE. */
+void FitVector3ToInt16(int *dst, int *src);
+/* 1 when all three components are equal, else 0. */
+int VectorsEqual(int *a, int *b);
+/* GTE OP (sf = 0, components taken as int16): dst = a x b, and
+ * dst = (a - origin) x (b - origin), the unnormalized normal of a triangle.
+ * The three helpers above and these two have no callers in the EXE or the
+ * overlays (library leftovers). */
+void CrossProduct(int *dst, int *a, int *b);
+void CrossProductOfEdges(int *origin, int *a, int *b, int *dst);
 
 /* Length of an int[3] (GTE sqr + g_anSqrtLUT); withZ = 0 (VEC_LEN_XY) leaves Z out. */
 #ifndef VEC_LEN_XY

@@ -1,9 +1,9 @@
 /* Matching notes (UpdateHudCounters).
    - The empty `do { } while (0);` after the head breaks cse's held-base fold
      (A200), so the gem machine keeps its 18 register-based accesses off one
-     `la` of g_adwHudBobSinePhaseBlock.
+     `la` of g_adwHudIconSpinAngleBlock.
    - The mod-9 cycle is split across that barrier: the quotient*9 is formed
-     above it and the subtract/store below it, so the bob-phase re-read sits
+     above it and the subtract/store below it, so the spin-angle re-read sits
      between the two as in the original.  `q9` is pinned to $2 (A374) so the
      re-read `idx` (a block-local) avoids v0 while q9 is still live; `q` is
      pinned to $3 and given an asm use so local-alloc does not hand it q9's
@@ -17,28 +17,29 @@
 #include "hud.h"
 #include "match_asm.h"
 
-/* 0x80054988, 3652 bytes — the per-frame HUD tick.  Bobs the two sine-driven
-   icon anchors, then runs five independent roll-animation state machines (one
-   per counter: level gems, dragons, lives+butterflies, world eggs, the level
-   key) out of g_abHudCounterDisplayState[0..4].  Each machine is the same four
-   states: 0 idle (watch the live value), 1 roll-in (14 steps off
-   g_anHudRollInStepTable), 2 hold/ratchet (advance the cached count toward the
-   live one, driving the digit glyphs through SetHudCounterDigits +
-   CommitHudCounterAnimState), 3 roll-out (14 steps off
-   g_anHudRollOutStepTable).  Between the lives and egg machines it lays
-   the sparx-food butterflies out around their ring, and it closes by converting
-   every 20 butterflies into an extra life (capped at 99). */
+/* 0x80054988, 3652 bytes — the per-frame HUD tick.  Turns the HUD icon spin
+   angle (the gem icon spins on it and tilts by its cosine), then runs five
+   independent roll-animation state machines (one per counter: level gems,
+   dragons, lives+butterflies, world eggs, the level key) out of
+   g_abHudCounterDisplayState[0..4].  Each machine is the same four states: 0
+   idle (watch the live value), 1 roll-in (14 steps off g_anHudRollInStepTable),
+   2 hold/ratchet (advance the cached count toward the live one, driving the
+   digit glyphs through SetHudCounterDigits + CommitHudCounterAnimState), 3
+   roll-out (14 steps off g_anHudRollOutStepTable).  Between the lives and egg
+   machines it lays the sparx-food butterflies out around their ring, and it
+   closes by converting every 20 butterflies into an extra life (capped at 99).
+ */
 
 /* Held-base views (A20/A22/A25).  The original materializes ONE base per group
    and reaches the neighbours off it; every other site of the same address stays
    on the plain absolute symbol, which is the per-site A240 split. */
 
-/* the bob-phase base reaches the whole gem machine's state at -0x3C..-0x1C */
+/* the spin-angle base reaches the whole gem machine's state at -0x3C..-0x1C */
 #define FIELDW(sym) (((struct { int v; } *)&(sym))->v)
 #define FIELD(sym) (((struct { unsigned char v; } *)&(sym))->v)
 
-#define HUD ((unsigned char *)g_adwHudBobSinePhaseBlock)
-#define BOB (*(unsigned int *)&HUD[0])
+#define HUD ((unsigned char *)g_adwHudIconSpinAngleBlock)
+#define SPIN (*(unsigned int *)&HUD[0])
 #define GEM_STATE (HUD[-0x3C])
 #define GEM_PHASE (HUD[-0x37])
 #define GEM_TIMER (*(int *)&HUD[-0x30])
@@ -72,13 +73,13 @@ void UpdateHudCounters(void) {
   unsigned int idx;
 
   t = g_nHudFrameCycleMod9 + 1;
-  nPhase = (BOB - g_nFrameStep) & 0xFF;
-  BOB = nPhase;
+  nPhase = (SPIN - g_nFrameStep) & 0xFF;
+  SPIN = nPhase;
   q = t / 9;
   __asm__("" : : "r"(q));
   q9 = q * 9;
   EBB_BREAK();
-  idx = g_dwHudBobSinePhase;
+  idx = g_dwHudIconSpinAngle;
   g_nHudFrameCycleMod9 = t - q9;
   SCHED_FENCE();
   nCos = g_anCosineLut[idx];
@@ -124,12 +125,14 @@ void UpdateHudCounters(void) {
         int *gc;
 
         OPAQUE_COPY(gc, &GEMCACHE);
-        SetHudCounterDigits(HUD_SLOT_GEM_DIGITS, 4, gc[0] + 1, 0);
+        SetHudCounterDigits(HUD_SLOT_GEM_DIGITS, 4, gc[0] + 1,
+                            HUD_DIGITS_PENDING);
         CommitHudCounterAnimState(0, 4, ((unsigned char *)gc)[-0x1B]);
         nDelta = g_anLevelGemsCollected[g_nLevelIndex] - gc[0];
         if (nDelta >= 0xC9) {
           gc[0] = gc[0] + 8;
-        } else if (nDelta >= 0x15 || ((unsigned char *)gc)[-0x1B] == 0xC0) {
+        } else if (nDelta >= 0x15 ||
+                   ((unsigned char *)gc)[-0x1B] == HUD_DIGIT_SWAP_PHASE) {
           gc[0] = gc[0] + 1;
         }
       }
@@ -197,7 +200,7 @@ void UpdateHudCounters(void) {
   }
 
   /* --- counter 2: lives + sparx butterflies ---------------------------- */
-  HUD_ICON_SLOT(HUD_SLOT_LIVES)->rotZ = g_dwHudBobSinePhase;
+  HUD_ICON_SLOT(HUD_SLOT_LIVES)->rotZ = g_dwHudIconSpinAngle;
   if (g_abHudCounterDisplayState[HUD_CTR_LIVES] == HUD_CTR_HIDDEN) {
     if (g_nHudLivesCachedCount != g_nExtraLives ||
         g_nHudButterflyCachedCount != g_nSparxFoodCount) {
@@ -235,9 +238,9 @@ void UpdateHudCounters(void) {
       g_nHudLivesHoldTimer = 0;
       g_bHudLivesRollPhase -= 0x10;
       SetHudCounterDigits(HUD_SLOT_LIVES_DIGITS, 2, g_nHudLivesCachedCount + 1,
-                          0);
+                          HUD_DIGITS_PENDING);
       CommitHudCounterAnimState(8, 2, g_bHudLivesRollPhase);
-      if (g_bHudLivesRollPhase == 0xC0) {
+      if (g_bHudLivesRollPhase == HUD_DIGIT_SWAP_PHASE) {
         g_nHudLivesCachedCount += 1;
       }
     }
@@ -265,10 +268,12 @@ void UpdateHudCounters(void) {
       k = n * 8 + 0x60;
       j = n * 2;
       HUD_RECT(g_anHudSpriteRects, k)->x =
-          (g_anHudButterflyCachedBlock[0xE2] + g_abHudButterflyRingXY[j]) -
+          (g_anHudButterflyCachedBlock[HUD_BFLY_TO_LIVES_ICON_X] +
+           g_abHudButterflyRingXY[j]) -
           0x1D;
       HUD_RECT(g_anHudSpriteRects, k)->y =
-          (g_anHudButterflyCachedBlock[0xE3] + g_abHudButterflyRingXY[j + 1]) -
+          (g_anHudButterflyCachedBlock[HUD_BFLY_TO_LIVES_ICON_Y] +
+           g_abHudButterflyRingXY[j + 1]) -
           0x1C;
       HUD_RECT(g_anHudSpriteRects, k)->w = 8;
       HUD_RECT(g_anHudSpriteRects, k)->h = 8;

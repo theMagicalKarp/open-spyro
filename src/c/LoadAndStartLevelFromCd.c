@@ -1,3 +1,4 @@
+#include "cd_stream.h"
 #include "funcs.h"
 #include "globals.h"
 #include "spyro_state.h"
@@ -24,7 +25,8 @@ void LoadAndStartLevelFromCd(void) {
   dst = *(void *volatile *)&g_pPathTableBuffer;
   size = *(volatile int *)&g_nLevelArchiveByteSize;
   offset = *(int *)((char *)&g_nLevelArchiveOffset + level * 0x10);
-  CdReadSyncSectors(base, dst, size, archiveBase + offset, 0x258);
+  CdReadSyncSectors(base, dst, size, archiveBase + offset,
+                    CD_STALL_TIMEOUT_TICKS);
   BuildLoadedLevelRuntime(1);
 
   if (g_nFlightLevelActive) {

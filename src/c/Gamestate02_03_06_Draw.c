@@ -4,6 +4,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "gpu_prim.h"
+#include "hud.h"
 #include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
@@ -104,7 +105,7 @@ void Gamestate02_03_06_Draw(void) {
     rect.y = 0;
     rect.w = 0x100;
     rect.h = 0xe1;
-    StoreImage(&rect, (void *)((char *)img[0] + 0xFFFE3E00));
+    StoreImage(&rect, (void *)((char *)img[0] - MENU_SNAPSHOT_BYTES));
     y = 8;
     do {
       KEEP_IN_REG(strip);
@@ -162,8 +163,8 @@ void Gamestate02_03_06_Draw(void) {
     {
       int off, bias;
       do {
-        off = 0x1C000;
-        bias = 0xFFFE3E00;
+        off = PRIM_BUFFER_BYTES;
+        bias = -MENU_SNAPSHOT_BYTES;
       } while (0);
       {
         register char *e8 asm("$3");
@@ -720,10 +721,10 @@ void Gamestate02_03_06_Draw(void) {
       g_pSpriteRecordWriteCursor->posY = 0x2e;
       g_pSpriteRecordWriteCursor->posZ = 0xc00;
       g_pSpriteRecordWriteCursor->rotY =
-          ((unsigned short *)g_anCosineLut)[g_adwHudBobSinePhaseBlock[0]]
+          ((unsigned short *)g_anCosineLut)[g_adwHudIconSpinAngleBlock[0]]
               << 0x10 >>
           0x19;
-      g_pSpriteRecordWriteCursor->rotZ = g_adwHudBobSinePhaseBlock[0];
+      g_pSpriteRecordWriteCursor->rotZ = g_adwHudIconSpinAngleBlock[0];
       g_pSpriteRecordWriteCursor->otBias = 0x7f;
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = 0xff;
@@ -765,10 +766,13 @@ void Gamestate02_03_06_Draw(void) {
               pos[2] = 0x20;
               EmitTexturedQuad(quad, &g_anLevelSpriteTexWordPairs[2], pos);
             } else {
-              EmitTexturedQuad(quad,
-                               &g_adwHudBobSinePhaseBlock[0x14c] +
-                                   (g_adwHudBobSinePhaseBlock[1] + i) % 9 * 2,
-                               (int *)0);
+              EmitTexturedQuad(
+                  quad,
+                  &g_adwHudIconSpinAngleBlock[HUD_SPIN_TO_EGG_ICON_FRAMES] +
+                      (g_adwHudIconSpinAngleBlock[HUD_SPIN_TO_FRAME_CYCLE] +
+                       i) %
+                          9 * 2,
+                  (int *)0);
             }
             x3 += 0x1b;
             i++;
@@ -846,10 +850,10 @@ void Gamestate02_03_06_Draw(void) {
       bp = buf;
       ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posZ) = 0xc00;
       g_pSpriteRecordWriteCursor->rotY =
-          ((unsigned short *)g_anCosineLut)[g_dwHudBobSinePhase] << 0x10 >>
+          ((unsigned short *)g_anCosineLut)[g_dwHudIconSpinAngle] << 0x10 >>
           0x19;
       SCHED_FENCE();
-      g_pSpriteRecordWriteCursor->rotZ = g_dwHudBobSinePhase;
+      g_pSpriteRecordWriteCursor->rotZ = g_dwHudIconSpinAngle;
       g_pSpriteRecordWriteCursor->otBias = 0x7f;
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = 0xff;
@@ -1009,10 +1013,11 @@ void Gamestate02_03_06_Draw(void) {
                 pos[2] = 0x20;
                 EmitTexturedQuad(quad2, &g_anLevelSpriteTexWordPairs[2], pos);
               } else {
-                EmitTexturedQuad(quad2,
-                                 &g_anHudFrameCycleBlock[0x14b] +
-                                     (g_anHudFrameCycleBlock[0] + i) % 9 * 2,
-                                 (int *)0);
+                EmitTexturedQuad(
+                    quad2,
+                    &g_anHudFrameCycleBlock[HUD_CYCLE_TO_EGG_ICON_FRAMES] +
+                        (g_anHudFrameCycleBlock[0] + i) % 9 * 2,
+                    (int *)0);
               }
               e++;
             }

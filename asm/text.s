@@ -1189,11 +1189,11 @@ glabel UnpackWorldDataChunks
 endlabel UnpackWorldDataChunks
 .endif
 
-.section .text.RelocateMobActorTable, "ax"
-.ifndef HAVE_C_RelocateMobActorTable
-nonmatching RelocateMobActorTable, 0x1B0
+.section .text.InstallSpyroAnimStream, "ax"
+.ifndef HAVE_C_InstallSpyroAnimStream
+nonmatching InstallSpyroAnimStream, 0x1B0
 
-glabel RelocateMobActorTable
+glabel InstallSpyroAnimStream
     /* 3A30 80013230 F8FFBD27 */  addiu      $sp, $sp, -0x8
     /* 3A34 80013234 21308000 */  addu       $a2, $a0, $zero
     /* 3A38 80013238 21200000 */  addu       $a0, $zero, $zero
@@ -1309,7 +1309,7 @@ glabel RelocateMobActorTable
     /* 3BD4 800133D4 0800BD27 */  addiu      $sp, $sp, 0x8
     /* 3BD8 800133D8 0800E003 */  jr         $ra
     /* 3BDC 800133DC 00000000 */   nop
-endlabel RelocateMobActorTable
+endlabel InstallSpyroAnimStream
 .endif
 
 .section .text.RelocateActorMeshHeader, "ax"
@@ -3419,7 +3419,7 @@ glabel TickDragonRescueAssetStream
     /* 5A70 80015270 106C428C */  lw         $v0, %lo(g_nWorldDataExtChunkOffset)($v0)
     /* 5A74 80015274 0000038E */  lw         $v1, 0x0($s0)
     /* 5A78 80015278 23208200 */  subu       $a0, $a0, $v0
-    /* 5A7C 8001527C 8C4C000C */  jal        RelocateMobActorTable
+    /* 5A7C 8001527C 8C4C000C */  jal        InstallSpyroAnimStream
     /* 5A80 80015280 21206400 */   addu      $a0, $v1, $a0
     /* 5A84 80015284 FF00053C */  lui        $a1, (0xFFFFFF >> 16)
     /* 5A88 80015288 FFFFA534 */  ori        $a1, $a1, (0xFFFFFF & 0xFFFF)
@@ -3964,7 +3964,7 @@ glabel TickLevelTransitionStream
     /* 626C 80015A6C 0880033C */  lui        $v1, %hi(g_pWorldUnpackHead)
     /* 6270 80015A70 E085638C */  lw         $v1, %lo(g_pWorldUnpackHead)($v1)
     /* 6274 80015A74 23208200 */  subu       $a0, $a0, $v0
-    /* 6278 80015A78 8C4C000C */  jal        RelocateMobActorTable
+    /* 6278 80015A78 8C4C000C */  jal        InstallSpyroAnimStream
     /* 627C 80015A7C 21206400 */   addu      $a0, $v1, $a0
     /* 6280 80015A80 21800000 */  addu       $s0, $zero, $zero
   .L80015A84:
@@ -4603,8 +4603,8 @@ endlabel TickLevelTransitionStream
 nonmatching RestartStalledCdRead, 0xAC
 
 glabel RestartStalledCdRead
-    /* 6BE4 800163E4 0780033C */  lui        $v1, %hi(g_nCdStallMarker)
-    /* 6BE8 800163E8 E056638C */  lw         $v1, %lo(g_nCdStallMarker)($v1)
+    /* 6BE4 800163E4 0780033C */  lui        $v1, %hi(g_nCdStallTimeoutTicks)
+    /* 6BE8 800163E8 E056638C */  lw         $v1, %lo(g_nCdStallTimeoutTicks)($v1)
     /* 6BEC 800163EC E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 6BF0 800163F0 1400BFAF */  sw         $ra, 0x14($sp)
     /* 6BF4 800163F4 21006010 */  beqz       $v1, .L8001647C
@@ -4665,8 +4665,8 @@ glabel CdReadCompleteCallback
     /* 6CA8 800164A8 B86B20AC */  sw         $zero, %lo(g_nCdReadInFlight)($at)
     /* 6CAC 800164AC 0780013C */  lui        $at, %hi(g_nCdStallWatchdogTicks)
     /* 6CB0 800164B0 8C5820AC */  sw         $zero, %lo(g_nCdStallWatchdogTicks)($at)
-    /* 6CB4 800164B4 0780013C */  lui        $at, %hi(g_nCdStallMarker)
-    /* 6CB8 800164B8 E05620AC */  sw         $zero, %lo(g_nCdStallMarker)($at)
+    /* 6CB4 800164B4 0780013C */  lui        $at, %hi(g_nCdStallTimeoutTicks)
+    /* 6CB8 800164B8 E05620AC */  sw         $zero, %lo(g_nCdStallTimeoutTicks)($at)
     /* 6CBC 800164BC 3C590008 */  j          .L800164F0
     /* 6CC0 800164C0 00000000 */   nop
   .L800164C4:
@@ -4742,8 +4742,8 @@ glabel CdReadSyncSectors
     /* 6DA8 800165A8 128F010C */  jal        CdControl
     /* 6DAC 800165AC 21300000 */   addu      $a2, $zero, $zero
     /* 6DB0 800165B0 21382002 */  addu       $a3, $s1, $zero
-    /* 6DB4 800165B4 0780013C */  lui        $at, %hi(g_nCdStallMarker)
-    /* 6DB8 800165B8 E05636AC */  sw         $s6, %lo(g_nCdStallMarker)($at)
+    /* 6DB4 800165B4 0780013C */  lui        $at, %hi(g_nCdStallTimeoutTicks)
+    /* 6DB8 800165B8 E05636AC */  sw         $s6, %lo(g_nCdStallTimeoutTicks)($at)
     /* 6DBC 800165BC 0780013C */  lui        $at, %hi(g_nCdStallWatchdogTicks)
     /* 6DC0 800165C0 8C5820AC */  sw         $zero, %lo(g_nCdStallWatchdogTicks)($at)
     /* 6DC4 800165C4 0300E104 */  bgez       $a3, .L800165D4
@@ -4832,8 +4832,8 @@ glabel StartCdReadAsync
     /* 6EDC 800166DC 1000A2A3 */   sb        $v0, 0x10($sp)
     /* 6EE0 800166E0 0780013C */  lui        $at, %hi(g_nCdStallWatchdogTicks)
     /* 6EE4 800166E4 8C5820AC */  sw         $zero, %lo(g_nCdStallWatchdogTicks)($at)
-    /* 6EE8 800166E8 0780013C */  lui        $at, %hi(g_nCdStallMarker)
-    /* 6EEC 800166EC E05630AC */  sw         $s0, %lo(g_nCdStallMarker)($at)
+    /* 6EE8 800166E8 0780013C */  lui        $at, %hi(g_nCdStallTimeoutTicks)
+    /* 6EEC 800166EC E05630AC */  sw         $s0, %lo(g_nCdStallTimeoutTicks)($at)
     /* 6EF0 800166F0 03002106 */  bgez       $s1, .L80016700
     /* 6EF4 800166F4 C3221100 */   sra       $a0, $s1, 11
     /* 6EF8 800166F8 FF073126 */  addiu      $s1, $s1, 0x7FF
@@ -5725,11 +5725,11 @@ endlabel WorldToCameraRotate
 /* Handwritten function */
 .endif
 
-.section .text.func_80017188, "ax"
-.ifndef HAVE_C_func_80017188
-nonmatching func_80017188, 0x74
+.section .text.FitVector3ToInt16, "ax"
+.ifndef HAVE_C_FitVector3ToInt16
+nonmatching FitVector3ToInt16, 0x74
 
-glabel func_80017188
+glabel FitVector3ToInt16
     /* 7988 80017188 0000A18C */  lw         $at, 0x0($a1)
     /* 798C 8001718C 0400A28C */  lw         $v0, 0x4($a1)
     /* 7990 80017190 0800A38C */  lw         $v1, 0x8($a1)
@@ -5763,7 +5763,7 @@ glabel func_80017188
     /* 79F0 800171F0 040082AC */  sw         $v0, 0x4($a0)
     /* 79F4 800171F4 0800E003 */  jr         $ra
     /* 79F8 800171F8 080083AC */   sw        $v1, 0x8($a0)
-endlabel func_80017188
+endlabel FitVector3ToInt16
 
 /* Handwritten function */
 .endif
@@ -6044,11 +6044,11 @@ endlabel ReflectVectorOffNormal
 /* Handwritten function */
 .endif
 
-.section .text.func_80017548, "ax"
-.ifndef HAVE_C_func_80017548
-nonmatching func_80017548, 0x70
+.section .text.CrossProductOfEdges, "ax"
+.ifndef HAVE_C_CrossProductOfEdges
+nonmatching CrossProductOfEdges, 0x70
 
-glabel func_80017548
+glabel CrossProductOfEdges
     /* 7D48 80017548 0000818C */  lw         $at, 0x0($a0)
     /* 7D4C 8001754C 0400828C */  lw         $v0, 0x4($a0)
     /* 7D50 80017550 0800838C */  lw         $v1, 0x8($a0)
@@ -6077,7 +6077,7 @@ glabel func_80017548
     /* 7DAC 800175AC 0400FAE8 */  swc2       $26, 0x4($a3) /* handwritten instruction */
     /* 7DB0 800175B0 0800E003 */  jr         $ra
     /* 7DB4 800175B4 0800FBE8 */   swc2      $27, 0x8($a3) /* handwritten instruction */
-endlabel func_80017548
+endlabel CrossProductOfEdges
 
 /* Handwritten function */
 .endif
@@ -6229,11 +6229,11 @@ endlabel CopyVector
 /* Handwritten function */
 .endif
 
-.section .text.func_8001771C, "ax"
-.ifndef HAVE_C_func_8001771C
-nonmatching func_8001771C, 0x3C
+.section .text.VectorsEqual, "ax"
+.ifndef HAVE_C_VectorsEqual
+nonmatching VectorsEqual, 0x3C
 
-glabel func_8001771C
+glabel VectorsEqual
     /* 7F1C 8001771C 0000818C */  lw         $at, 0x0($a0)
     /* 7F20 80017720 0000A28C */  lw         $v0, 0x0($a1)
     /* 7F24 80017724 0400838C */  lw         $v1, 0x4($a0)
@@ -6250,7 +6250,7 @@ glabel func_8001771C
   .L80017750:
     /* 7F50 80017750 0800E003 */  jr         $ra
     /* 7F54 80017754 00000220 */   addi      $v0, $zero, 0x0 /* handwritten instruction */
-endlabel func_8001771C
+endlabel VectorsEqual
 
 /* Handwritten function */
 .endif
@@ -6358,11 +6358,11 @@ endlabel DivideVector3
 /* Handwritten function */
 .endif
 
-.section .text.func_80017854, "ax"
-.ifndef HAVE_C_func_80017854
-nonmatching func_80017854, 0x40
+.section .text.CrossProduct, "ax"
+.ifndef HAVE_C_CrossProduct
+nonmatching CrossProduct, 0x40
 
-glabel func_80017854
+glabel CrossProduct
     /* 8054 80017854 0000A18C */  lw         $at, 0x0($a1)
     /* 8058 80017858 0400A28C */  lw         $v0, 0x4($a1)
     /* 805C 8001785C 0800A38C */  lw         $v1, 0x8($a1)
@@ -6379,7 +6379,7 @@ glabel func_80017854
     /* 8088 80017888 04009AE8 */  swc2       $26, 0x4($a0) /* handwritten instruction */
     /* 808C 8001788C 0800E003 */  jr         $ra
     /* 8090 80017890 08009BE8 */   swc2      $27, 0x8($a0) /* handwritten instruction */
-endlabel func_80017854
+endlabel CrossProduct
 
 /* Handwritten function */
 .endif
@@ -11001,15 +11001,15 @@ glabel Gamestate02_03_06_Draw
     /* BFBC 8001B7BC 0C0071AC */  sw         $s1, 0xC($v1)
     /* BFC0 8001B7C0 100071AC */  sw         $s1, 0x10($v1)
     /* BFC4 8001B7C4 140062AC */  sw         $v0, 0x14($v1)
-    /* BFC8 8001B7C8 0780023C */  lui        $v0, %hi(g_dwHudBobSinePhase)
-    /* BFCC 8001B7CC E47F428C */  lw         $v0, %lo(g_dwHudBobSinePhase)($v0)
+    /* BFC8 8001B7C8 0780023C */  lui        $v0, %hi(g_dwHudIconSpinAngle)
+    /* BFCC 8001B7CC E47F428C */  lw         $v0, %lo(g_dwHudIconSpinAngle)($v0)
     /* BFD0 8001B7D0 00000000 */  nop
     /* BFD4 8001B7D4 40100200 */  sll        $v0, $v0, 1
     /* BFD8 8001B7D8 0780013C */  lui        $at, %hi(g_anCosineLut)
     /* BFDC 8001B7DC 21082200 */  addu       $at, $at, $v0
     /* BFE0 8001B7E0 78CC2294 */  lhu        $v0, %lo(g_anCosineLut)($at)
-    /* BFE4 8001B7E4 0780153C */  lui        $s5, %hi(g_dwHudBobSinePhase)
-    /* BFE8 8001B7E8 E47FB526 */  addiu      $s5, $s5, %lo(g_dwHudBobSinePhase)
+    /* BFE4 8001B7E4 0780153C */  lui        $s5, %hi(g_dwHudIconSpinAngle)
+    /* BFE8 8001B7E8 E47FB526 */  addiu      $s5, $s5, %lo(g_dwHudIconSpinAngle)
     /* BFEC 8001B7EC 00140200 */  sll        $v0, $v0, 16
     /* BFF0 8001B7F0 43160200 */  sra        $v0, $v0, 25
     /* BFF4 8001B7F4 450062A0 */  sb         $v0, 0x45($v1)
@@ -11342,8 +11342,8 @@ glabel Gamestate02_03_06_Draw
     /* C4EC 8001BCEC 100082AC */  sw         $v0, 0x10($a0)
     /* C4F0 8001BCF0 000C0224 */  addiu      $v0, $zero, 0xC00
     /* C4F4 8001BCF4 140082AC */  sw         $v0, 0x14($a0)
-    /* C4F8 8001BCF8 0780023C */  lui        $v0, %hi(g_dwHudBobSinePhase)
-    /* C4FC 8001BCFC E47F428C */  lw         $v0, %lo(g_dwHudBobSinePhase)($v0)
+    /* C4F8 8001BCF8 0780023C */  lui        $v0, %hi(g_dwHudIconSpinAngle)
+    /* C4FC 8001BCFC E47F428C */  lw         $v0, %lo(g_dwHudIconSpinAngle)($v0)
     /* C500 8001BD00 4000B427 */  addiu      $s4, $sp, 0x40
     /* C504 8001BD04 40100200 */  sll        $v0, $v0, 1
     /* C508 8001BD08 0780013C */  lui        $at, %hi(g_anCosineLut)
@@ -11355,8 +11355,8 @@ glabel Gamestate02_03_06_Draw
     /* C520 8001BD20 450082A0 */  sb         $v0, 0x45($a0)
     /* C524 8001BD24 0780033C */  lui        $v1, %hi(g_pSpriteRecordWriteCursor)
     /* C528 8001BD28 1057638C */  lw         $v1, %lo(g_pSpriteRecordWriteCursor)($v1)
-    /* C52C 8001BD2C 0780023C */  lui        $v0, %hi(g_dwHudBobSinePhase)
-    /* C530 8001BD30 E47F428C */  lw         $v0, %lo(g_dwHudBobSinePhase)($v0)
+    /* C52C 8001BD2C 0780023C */  lui        $v0, %hi(g_dwHudIconSpinAngle)
+    /* C530 8001BD30 E47F428C */  lw         $v0, %lo(g_dwHudIconSpinAngle)($v0)
     /* C534 8001BD34 21280000 */  addu       $a1, $zero, $zero
     /* C538 8001BD38 460062A0 */  sb         $v0, 0x46($v1)
     /* C53C 8001BD3C 0780023C */  lui        $v0, %hi(g_pSpriteRecordWriteCursor)
@@ -20603,11 +20603,11 @@ endlabel RasterizeSpyroModel
 /* Handwritten function */
 .endif
 
-.section .text.func_800242B8, "ax"
-.ifndef HAVE_C_func_800242B8
-nonmatching func_800242B8, 0x1638
+.section .text.RasterizeSpyroModel_Tail, "ax"
+.ifndef HAVE_C_RasterizeSpyroModel_Tail
+nonmatching RasterizeSpyroModel_Tail, 0x1638
 
-glabel func_800242B8
+glabel RasterizeSpyroModel_Tail
     /* 14AB8 800242B8 00088148 */  mtc2       $at, $1 /* handwritten instruction */
     /* 14ABC 800242BC 00000000 */  nop
     /* 14AC0 800242C0 00000000 */  nop
@@ -22107,7 +22107,7 @@ glabel func_800242B8
     /* 160E4 800258E4 0000308C */  lw         $s0, 0x0($at)
     /* 160E8 800258E8 0800E003 */  jr         $ra
     /* 160EC 800258EC 00000000 */   nop
-endlabel func_800242B8
+endlabel RasterizeSpyroModel_Tail
 
 /* Handwritten function */
 .endif
@@ -32292,8 +32292,8 @@ glabel SubMenu_Update
     /* 1F334 8002EB34 398E4234 */  ori        $v0, $v0, (0x38E38E39 & 0xFFFF)
     /* 1F338 8002EB38 0780053C */  lui        $a1, %hi(g_nHudFrameCycleMod9)
     /* 1F33C 8002EB3C E87FA58C */  lw         $a1, %lo(g_nHudFrameCycleMod9)($a1)
-    /* 1F340 8002EB40 0780073C */  lui        $a3, %hi(g_dwHudBobSinePhase)
-    /* 1F344 8002EB44 E47FE724 */  addiu      $a3, $a3, %lo(g_dwHudBobSinePhase)
+    /* 1F340 8002EB40 0780073C */  lui        $a3, %hi(g_dwHudIconSpinAngle)
+    /* 1F344 8002EB44 E47FE724 */  addiu      $a3, $a3, %lo(g_dwHudIconSpinAngle)
     /* 1F348 8002EB48 0100A524 */  addiu      $a1, $a1, 0x1
     /* 1F34C 8002EB4C 1800A200 */  mult       $a1, $v0
     /* 1F350 8002EB50 0780063C */  lui        $a2, %hi(g_nFrameStep)
@@ -65373,11 +65373,11 @@ endlabel CastRayWorldAndActors
 /* Handwritten function */
 .endif
 
-.section .text.func_8004BDEC, "ax"
-.ifndef HAVE_C_func_8004BDEC
-nonmatching func_8004BDEC, 0x60
+.section .text.CastRayWorldAndActors_Tail, "ax"
+.ifndef HAVE_C_CastRayWorldAndActors_Tail
+nonmatching CastRayWorldAndActors_Tail, 0x60
 
-glabel func_8004BDEC
+glabel CastRayWorldAndActors_Tail
     /* 3C5EC 8004BDEC 0040023C */  lui        $v0, (0x40000000 >> 16)
     /* 3C5F0 8004BDF0 12002210 */  beq        $at, $v0, .L8004BE3C
     /* 3C5F4 8004BDF4 00000220 */   addi      $v0, $zero, 0x0 /* handwritten instruction */
@@ -65403,7 +65403,7 @@ glabel func_8004BDEC
     /* 3C640 8004BE40 20C01503 */  add        $t8, $t8, $s5 /* handwritten instruction */
     /* 3C644 8004BE44 E22B0108 */  j          .L8004AF88
     /* 3C648 8004BE48 20C83603 */   add       $t9, $t9, $s6 /* handwritten instruction */
-endlabel func_8004BDEC
+endlabel CastRayWorldAndActors_Tail
 
 /* Handwritten function */
 .endif
@@ -66533,11 +66533,11 @@ endlabel CollideSphereWithWorldAndActors
 /* Handwritten function */
 .endif
 
-.section .text.func_8004CEDC, "ax"
-.ifndef HAVE_C_func_8004CEDC
-nonmatching func_8004CEDC, 0x710
+.section .text.CollideSphereWithWorldAndActors_Tail, "ax"
+.ifndef HAVE_C_CollideSphereWithWorldAndActors_Tail
+nonmatching CollideSphereWithWorldAndActors_Tail, 0x710
 
-glabel func_8004CEDC
+glabel CollideSphereWithWorldAndActors_Tail
     /* 3D6DC 8004CEDC 00D01148 */  mfc2       $s1, $26 /* handwritten instruction */
     /* 3D6E0 8004CEE0 00D81248 */  mfc2       $s2, $27 /* handwritten instruction */
     /* 3D6E4 8004CEE4 83821000 */  sra        $s0, $s0, 10
@@ -67019,7 +67019,7 @@ glabel func_8004CEDC
     /* 3DDE0 8004D5E0 0000308C */  lw         $s0, 0x0($at)
     /* 3DDE4 8004D5E4 0800E003 */  jr         $ra
     /* 3DDE8 8004D5E8 01000220 */   addi      $v0, $zero, 0x1 /* handwritten instruction */
-endlabel func_8004CEDC
+endlabel CollideSphereWithWorldAndActors_Tail
 
 /* Handwritten function */
 .endif
@@ -68148,11 +68148,11 @@ endlabel DispatchActorContactAtSphere
 /* Handwritten function */
 .endif
 
-.section .text.func_8004E60C, "ax"
-.ifndef HAVE_C_func_8004E60C
-nonmatching func_8004E60C, 0x59C
+.section .text.DispatchActorContactAtSphere_Tail, "ax"
+.ifndef HAVE_C_DispatchActorContactAtSphere_Tail
+nonmatching DispatchActorContactAtSphere_Tail, 0x59C
 
-glabel func_8004E60C
+glabel DispatchActorContactAtSphere_Tail
     /* 3EE0C 8004E60C 2578F501 */  or         $t7, $t7, $s5
     /* 3EE10 8004E610 1800CFAF */  sw         $t7, 0x18($fp)
   .L8004E614:
@@ -68540,7 +68540,7 @@ glabel func_8004E60C
     /* 3F39C 8004EB9C 0000308C */  lw         $s0, 0x0($at)
     /* 3F3A0 8004EBA0 0800E003 */  jr         $ra
     /* 3F3A4 8004EBA4 00000000 */   nop
-endlabel func_8004E60C
+endlabel DispatchActorContactAtSphere_Tail
 
 /* Handwritten function */
 .endif
@@ -69482,11 +69482,11 @@ endlabel ClipAndEmitActorTriangle
 /* Handwritten function */
 .endif
 
-.section .text.func_8004F8EC, "ax"
-.ifndef HAVE_C_func_8004F8EC
-nonmatching func_8004F8EC, 0x4C0
+.section .text.ClipAndEmitActorTriangle_Tail, "ax"
+.ifndef HAVE_C_ClipAndEmitActorTriangle_Tail
+nonmatching ClipAndEmitActorTriangle_Tail, 0x4C0
 
-glabel func_8004F8EC
+glabel ClipAndEmitActorTriangle_Tail
     /* 400EC 8004F8EC 440068AD */  sw         $t0, 0x44($t3)
     /* 400F0 8004F8F0 48007FAD */  sw         $ra, 0x48($t3)
     /* 400F4 8004F8F4 21204000 */  addu       $a0, $v0, $zero
@@ -69803,7 +69803,7 @@ glabel func_8004F8EC
     /* 405A0 8004FDA0 0000308C */  lw         $s0, 0x0($at)
     /* 405A4 8004FDA4 0800E003 */  jr         $ra
     /* 405A8 8004FDA8 00000000 */   nop
-endlabel func_8004F8EC
+endlabel ClipAndEmitActorTriangle_Tail
 
 /* Handwritten function */
 .endif
@@ -70002,7 +70002,7 @@ glabel ClipAndEmitFoggedActorTriangle
   alabel D_80050028
     /* 40828 80050028 E43F0108 */  j          ClipAndEmitFoggedActorTriangle
     /* 4082C 8005002C 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
-    /* 40830 80050030 1A400108 */  j          func_80050068
+    /* 40830 80050030 1A400108 */  j          ClipAndEmitFoggedActorTriangle_Tail
     /* 40834 80050034 00000000 */   nop
     /* 40838 80050038 2A400108 */  j          .L800500A8
     /* 4083C 8005003C 00000000 */   nop
@@ -70021,11 +70021,11 @@ endlabel ClipAndEmitFoggedActorTriangle
 /* Handwritten function */
 .endif
 
-.section .text.func_80050068, "ax"
-.ifndef HAVE_C_func_80050068
-nonmatching func_80050068, 0x1D8
+.section .text.ClipAndEmitFoggedActorTriangle_Tail, "ax"
+.ifndef HAVE_C_ClipAndEmitFoggedActorTriangle_Tail
+nonmatching ClipAndEmitFoggedActorTriangle_Tail, 0x1D8
 
-glabel func_80050068
+glabel ClipAndEmitFoggedActorTriangle_Tail
     /* 40868 80050068 2180E003 */  addu       $s0, $ra, $zero
     /* 4086C 8005006C 2120A001 */  addu       $a0, $t5, $zero
     /* 40870 80050070 6B3F010C */  jal        BlendDepthCuedEdgeColor
@@ -70153,7 +70153,7 @@ glabel func_80050068
     /* 40A34 80050234 0000308C */  lw         $s0, 0x0($at)
     /* 40A38 80050238 0800E003 */  jr         $ra
     /* 40A3C 8005023C 00000000 */   nop
-endlabel func_80050068
+endlabel ClipAndEmitFoggedActorTriangle_Tail
 
 /* Handwritten function */
 .endif
@@ -74347,8 +74347,8 @@ nonmatching PollPadAndDistributeInput, 0x67C
 glabel PollPadAndDistributeInput
     /* 44468 80053C68 0780023C */  lui        $v0, %hi(g_nVblankTickCount)
     /* 4446C 80053C6C C858428C */  lw         $v0, %lo(g_nVblankTickCount)($v0)
-    /* 44470 80053C70 0780033C */  lui        $v1, %hi(g_nCdStallMarker)
-    /* 44474 80053C74 E056638C */  lw         $v1, %lo(g_nCdStallMarker)($v1)
+    /* 44470 80053C70 0780033C */  lui        $v1, %hi(g_nCdStallTimeoutTicks)
+    /* 44474 80053C74 E056638C */  lw         $v1, %lo(g_nCdStallTimeoutTicks)($v1)
     /* 44478 80053C78 D8FFBD27 */  addiu      $sp, $sp, -0x28
     /* 4447C 80053C7C 2000BFAF */  sw         $ra, 0x20($sp)
     /* 44480 80053C80 1C00B1AF */  sw         $s1, 0x1C($sp)
@@ -75316,8 +75316,8 @@ glabel UpdateHudCounters
     /* 45190 80054990 398E4234 */  ori        $v0, $v0, (0x38E38E39 & 0xFFFF)
     /* 45194 80054994 0780043C */  lui        $a0, %hi(g_nHudFrameCycleMod9)
     /* 45198 80054998 E87F848C */  lw         $a0, %lo(g_nHudFrameCycleMod9)($a0)
-    /* 4519C 8005499C 0780063C */  lui        $a2, %hi(g_dwHudBobSinePhase)
-    /* 451A0 800549A0 E47FC624 */  addiu      $a2, $a2, %lo(g_dwHudBobSinePhase)
+    /* 4519C 8005499C 0780063C */  lui        $a2, %hi(g_dwHudIconSpinAngle)
+    /* 451A0 800549A0 E47FC624 */  addiu      $a2, $a2, %lo(g_dwHudIconSpinAngle)
     /* 451A4 800549A4 01008424 */  addiu      $a0, $a0, 0x1
     /* 451A8 800549A8 18008200 */  mult       $a0, $v0
     /* 451AC 800549AC 3400BFAF */  sw         $ra, 0x34($sp)
@@ -75337,8 +75337,8 @@ glabel UpdateHudCounters
     /* 451E4 800549E4 23186200 */  subu       $v1, $v1, $v0
     /* 451E8 800549E8 C0100300 */  sll        $v0, $v1, 3
     /* 451EC 800549EC 21104300 */  addu       $v0, $v0, $v1
-    /* 451F0 800549F0 0780033C */  lui        $v1, %hi(g_dwHudBobSinePhase)
-    /* 451F4 800549F4 E47F638C */  lw         $v1, %lo(g_dwHudBobSinePhase)($v1)
+    /* 451F0 800549F0 0780033C */  lui        $v1, %hi(g_dwHudIconSpinAngle)
+    /* 451F4 800549F4 E47F638C */  lw         $v1, %lo(g_dwHudIconSpinAngle)($v1)
     /* 451F8 800549F8 23208200 */  subu       $a0, $a0, $v0
     /* 451FC 800549FC 0780013C */  lui        $at, %hi(g_nHudFrameCycleMod9)
     /* 45200 80054A00 E87F24AC */  sw         $a0, %lo(g_nHudFrameCycleMod9)($at)
@@ -75660,8 +75660,8 @@ glabel UpdateHudCounters
     /* 45698 80054E98 0051010C */  jal        OffsetHudIconRollAxis
     /* 4569C 80054E9C 03000524 */   addiu     $a1, $zero, 0x3
   .L80054EA0:
-    /* 456A0 80054EA0 0780023C */  lui        $v0, %hi(g_dwHudBobSinePhase)
-    /* 456A4 80054EA4 E47F428C */  lw         $v0, %lo(g_dwHudBobSinePhase)($v0)
+    /* 456A0 80054EA0 0780023C */  lui        $v0, %hi(g_dwHudIconSpinAngle)
+    /* 456A4 80054EA4 E47F428C */  lw         $v0, %lo(g_dwHudIconSpinAngle)($v0)
     /* 456A8 80054EA8 0780033C */  lui        $v1, %hi(g_abHudLivesCounterBlock)
     /* 456AC 80054EAC AA7F6390 */  lbu        $v1, %lo(g_abHudLivesCounterBlock)($v1)
     /* 456B0 80054EB0 0880013C */  lui        $at, %hi(D_800783A2)
@@ -91916,7 +91916,7 @@ nonmatching InitGeom, 0x80
 glabel InitGeom
     /* 52B50 80062350 0780013C */  lui        $at, %hi(D_80074D04)
     /* 52B54 80062354 044D3FAC */  sw         $ra, %lo(D_80074D04)($at)
-    /* 52B58 80062358 9289010C */  jal        FUN_80062648
+    /* 52B58 80062358 9289010C */  jal        PatchGteExceptionHandler
     /* 52B5C 8006235C 00000000 */   nop
     /* 52B60 80062360 07801F3C */  lui        $ra, %hi(D_80074D04)
     /* 52B64 80062364 044DFF8F */  lw         $ra, %lo(D_80074D04)($ra)
@@ -92157,11 +92157,11 @@ endlabel SetGeomScreen
     /* 52E44 80062644 00000000 */  nop
 .endif
 
-.section .text.FUN_80062648, "ax"
-.ifndef HAVE_C_FUN_80062648
-nonmatching FUN_80062648, 0x68
+.section .text.PatchGteExceptionHandler, "ax"
+.ifndef HAVE_C_PatchGteExceptionHandler
+nonmatching PatchGteExceptionHandler, 0x68
 
-glabel FUN_80062648
+glabel PatchGteExceptionHandler
     /* 52E48 80062648 0780013C */  lui        $at, %hi(D_80075648)
     /* 52E4C 8006264C 48563FAC */  sw         $ra, %lo(D_80075648)($at)
     /* 52E50 80062650 E976010C */  jal        EnterCriticalSection
@@ -92189,7 +92189,7 @@ glabel FUN_80062648
     /* 52EA4 800626A4 00000000 */  nop
     /* 52EA8 800626A8 0800E003 */  jr         $ra
     /* 52EAC 800626AC 00000000 */   nop
-endlabel FUN_80062648
+endlabel PatchGteExceptionHandler
 
 /* Handwritten function */
 .endif

@@ -6,8 +6,9 @@
    freed dragon's name (g_apDragonNames[] at the statue's
    DragonStatueState.dragonName, +0x38) as two BuildTextSpriteChain labels
    right-shifted by the name length, then walk the sprite records the two calls
-   appended (queue grows downward) and pulse each glyph's alpha byte (+0x46)
-   from the sine LUT off the dragon-rescue timer, phase-stepped 0xC per glyph.
+   appended (queue grows downward) and rock each glyph: its rotZ, the roll
+   angle RasterizeSpritePrimQueue builds the sprite's rotation from, follows
+   the cosine LUT off the dragon-rescue timer, phase-stepped 0xC per glyph.
  */
 void DrawDragonRescuedBanner(void) {
   int pos[3];

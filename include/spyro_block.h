@@ -63,6 +63,11 @@
 #define SPY_GROUND_CHUNK   0x9D /* g_nSpyroGroundChunkId */
 #define SPY_GROUND_VERTS   0x9E /* g_anSpyroGroundChunkVerts */
 
+/* One Spyro-block global reached off another's address (the original keeps
+ * the first one's base register): SPY_VIA(g_anSpyroVelocity, SPY_VELOCITY,
+ * SPY_MOTION) is g_anSpyroMotionVec. */
+#define SPY_VIA(base, from, to) ((base) + ((to) - (from)))
+
 /* Byte offsets into the same block, for the byte-wide globals. */
 #define SPYB_EULER       0x0C /* g_abSpyroPersistentEuler (x, y, z bytes) */
 #define SPYB_EULER_Z     0x0E /* g_bSpyroPersistentEulerZ */

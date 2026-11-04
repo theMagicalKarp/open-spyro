@@ -6,7 +6,7 @@
 #include "sample_bank.h"
 
 /* Inventory sub-menu per-frame update (0x8002eb2c, 0x2c4). Advances the
-   HUD bob phase / frame-cycle counters and the pause-menu idle timer,
+   HUD icon spin angle / frame-cycle counters and the pause-menu idle timer,
    spins the menu light vector, then (once the 5-frame transition is
    done) either runs level-select input or the normal sub-menu: cheat
    detection, up/down scrolling between visited levels (0x1C0 fixed-step
@@ -14,8 +14,8 @@
 
 void SubMenu_Update(void) {
   g_nHudFrameCycleMod9 = (g_nHudFrameCycleMod9 + 1) % 9;
-  g_adwHudBobSinePhaseBlock[0] =
-      (g_adwHudBobSinePhaseBlock[0] - g_nFrameStep) & 0xFF;
+  g_adwHudIconSpinAngleBlock[0] =
+      (g_adwHudIconSpinAngleBlock[0] - g_nFrameStep) & 0xFF;
   g_nMenuTickFrames += g_nFrameStep;
   RotateLightVectorXZ(3);
   if (g_nMenuDrawFrames < 5) {

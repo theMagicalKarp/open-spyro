@@ -29,7 +29,7 @@
 /* Flame-breath (Circle) driver, one frame (0x800499C0, 0x43C).
 
    If the animation currently selected for g_nSpyroState is flagged as a
-   no-flame anim (g_abSpyroAnimDescTable +0xB8), the breath is cancelled: the
+   no-overlay anim (SPYRO_ANIM_NO_OVERLAY), the breath is cancelled: the
    state word is zeroed and the swing euler target reset.
 
    Otherwise the breath runs as a two-state machine on g_nSpyroFlameState:
@@ -61,8 +61,7 @@ void TickSpyroFlameAttack(void) {
   int *cancel;
   unsigned char *anchor;
   unsigned char *live;
-  if (g_abSpyroAnimDescTable[g_abSpyroStateAnimIndexMap[g_nSpyroState] +
-                             0xB8] != 0) {
+  if (SPYRO_ANIM_NO_OVERLAY(g_abSpyroStateAnimIndexMap[g_nSpyroState]) != 0) {
     cancel = g_anSpyroFlameStateBlock;
     cancel[0] = 0;
     ZeroVector(&cancel[3]);
@@ -78,7 +77,8 @@ void TickSpyroFlameAttack(void) {
         g_nSpyroFlameTimer = -1;
         g_nSpyroFlamePhase = 0;
         g_nSpyroFlameAnimRate = g_abSpyroAnimDescTable
-            [(g_abSpyroFlameAnimTable[g_nSpyroFlameState] * 4) + 3];
+            [(g_abSpyroFlameAnimTable[g_nSpyroFlameState] * 4) +
+             SPYRO_ANIM_DESC_RATE];
         g_bSpyroFlameActive = 1;
         g_bSpyroFlameSegmentIdx = 0;
         anchor[0] = 1;
@@ -148,7 +148,8 @@ void TickSpyroFlameAttack(void) {
           g_nSpyroFlameState = SPYRO_FLAME_IDLE;
           g_anSpyroFlameTimerBlock[0] = -1;
           g_nSpyroFlameAnimRate = g_abSpyroAnimDescTable
-              [(g_abSpyroFlameAnimTable[g_nSpyroFlameState] * 4) + 3];
+              [(g_abSpyroFlameAnimTable[g_nSpyroFlameState] * 4) +
+               SPYRO_ANIM_DESC_RATE];
           ZeroVector(
               &g_anSpyroFlameTimerBlock[SPY_SWING_TARGET - SPY_FLAME_TIMER]);
         }

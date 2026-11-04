@@ -103,6 +103,14 @@ typedef struct PadState {
 /* Byte offset of a PadState field. */
 #define PAD_STATE_OFFSET(field) ((int)&((PadState *)0)->field)
 
+/* The same as int-word indices (ResetPadFrameSubstepTable walks the block
+ * as an int array): a PadState field, a field of ring entry 0, and the ring
+ * stride. */
+#define PAD_STATE_WORD(field) (PAD_STATE_OFFSET(field) / 4)
+#define PAD_RING_WORD(field)                                                   \
+  ((PAD_STATE_OFFSET(ring) + PAD_SUBSTEP_OFFSET(field)) / 4)
+#define PAD_SUBSTEP_WORDS ((int)(sizeof(PadSubstep) / 4))
+
 /* A PadState field read through a byte pointer `p` that is offset from the
  * block base (per-axis or per-record cursors). Same address and width as the
  * struct member; the matched calibration code keeps byte-pointer bivs. */

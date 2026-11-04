@@ -32,6 +32,16 @@
                                   * sparx-food butterflies ring it */
 #define HUD_SLOT_KEY 11          /* the level key icon (ACTOR_TYPE_KEY) */
 
+/* A digit roll turns each digit record's rotZ down in 0x10 steps from 0;
+ * at this phase, a quarter turn in, CommitHudCounterAnimState swaps the
+ * pending digit (->subMode) into ->type and the counter's cached value
+ * advances. */
+#define HUD_DIGIT_SWAP_PHASE 0xC0
+
+/* SetHudCounterDigits' last argument. */
+#define HUD_DIGITS_PENDING 0 /* store as ->subMode for a roll to swap in */
+#define HUD_DIGITS_SHOW 1    /* show at once, hide the unused slots */
+
 /* RECT at byte offset `off` (slot * 8) of a HUD rect table
  * (g_anHudSpriteRects, g_anHudDigitRestRects). */
 #define HUD_RECT(tbl, off) ((RECT *)((char *)(tbl) + (off)))
@@ -39,5 +49,20 @@
 /* Icon rest position (x, y, z words) at byte offset `o` (slot * 12) of
  * g_anHudIconRestPos. */
 #define HUD_REST_POS(o) ((int *)((char *)g_anHudIconRestPos + (o)))
+
+/* Word offsets reached off the held-base HUD views (A228): the original forms
+ * one base for a HUD global and reaches a neighbour off it, so the C indexes
+ * the incomplete-array view (g_an*Block) by the address difference. */
+/* g_nHudButterflyCachedCount (0x80077fe0) -> the lives icon's posX / posY,
+ * the anchor the sparx-food butterflies ring (UpdateHudCounters) */
+#define HUD_BFLY_TO_LIVES_ICON_X                                               \
+  ((0x80077fec - 0x80077fe0 + HUD_SLOT_LIVES * ACTOR_SIZE + 0x0C) / 4)
+#define HUD_BFLY_TO_LIVES_ICON_Y (HUD_BFLY_TO_LIVES_ICON_X + 1)
+/* g_dwHudIconSpinAngle (0x80077fe4) -> g_nHudFrameCycleMod9 */
+#define HUD_SPIN_TO_FRAME_CYCLE 1
+/* g_dwHudIconSpinAngle / g_nHudFrameCycleMod9 -> &g_anLevelSpriteTexWordPairs[2],
+ * the 9 animated egg-icon frames (two words each) of the inventory screen */
+#define HUD_SPIN_TO_EGG_ICON_FRAMES ((0x8007850c - 0x80077fe4) / 4 + 2)
+#define HUD_CYCLE_TO_EGG_ICON_FRAMES ((0x8007850c - 0x80077fe8) / 4 + 2)
 
 #endif /* OPEN_SPYRO_HUD_H */

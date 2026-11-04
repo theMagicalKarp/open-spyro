@@ -29,9 +29,9 @@
    addiu after the a0/a1 arg moves, and the bnez slot stays a nop because
    the loop head is `la a0`.
 
-   The 600 marker is pinned in s0, which keeps the CdBaseLba base in s1. The
-   first read pins lba1/off1 to a0/a3, which gives the original's
-   `lw a0; lw a3` order. The buffer load has to be PLAIN: reorg's
+   The CD stall timeout (stallTicks) is pinned in s0, which keeps the CdBaseLba
+   base in s1. The first read pins lba1/off1 to a0/a3, which gives the
+   original's `lw a0; lw a3` order. The buffer load has to be PLAIN: reorg's
    mark_referenced_resources ASSIGNS `volatil` from the last MEM it skips,
    so a volatile load just before `li s0,600` keeps the li out of
    LoadAssetDirectoryFromCd's delay slot. The third read's two counts are
@@ -96,30 +96,30 @@ void Initialize(void) {
 
   LoadAssetDirectoryFromCd();
   {
-    register int k600 asm("$16") = 600;
+    register int stallTicks asm("$16") = CD_STALL_TIMEOUT_TICKS;
     lba = g_anCdBaseLbaBlock;
     archOff = g_anWorldArchiveOffsetBlock;
     {
       register int lba1 asm("$4") = lba[0];
       register int off1 asm("$7") = *(volatile int *)archOff;
       void *buf1 = g_pSharedLoadBuffer;
-      CdReadSyncSectors(lba1, buf1, 0x800, off1, k600);
+      CdReadSyncSectors(lba1, buf1, 0x800, off1, stallTicks);
     }
     timOff = g_anWorldTimAudioChunkOffsetBlock;
     CopyWords(timOff, *(void *volatile *)&g_pSharedLoadBuffer, 0x1D0);
     top = (char *)0x801C0000 - g_nCrt0StackSize;
-    CdReadSyncSectors(lba[0], top, 0x40000, timOff[0] + archOff[0], k600);
+    CdReadSyncSectors(lba[0], top, 0x40000, timOff[0] + archOff[0], stallTicks);
     {
       int cnt3 = *(volatile int *)&g_nLevelLoadChunkSize;
       int off3 = *(volatile int *)&g_nLevelLoadByteOffset;
       CdReadSyncSectors(lba[0], *(void *volatile *)&g_pSharedLoadBuffer, cnt3,
-                        off3, k600);
+                        off3, stallTicks);
     }
     {
       int cnt4 = *(volatile int *)&g_nAssetDirBootBlockSize;
       int off4 = *(volatile int *)&g_anAssetDirectory;
       dst = top - *(volatile int *)&g_nAssetDirBootBlockSize;
-      CdReadSyncSectors(lba[0], dst, cnt4, off4, k600);
+      CdReadSyncSectors(lba[0], dst, cnt4, off4, stallTicks);
     }
   }
 hold_title:

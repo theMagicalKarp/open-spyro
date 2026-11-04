@@ -1,16 +1,24 @@
-/* 0x800133e0 — relocate a freshly loaded actor-mesh table in place (620 b,
-   leaf). Every pointer in the table is stored on disc as an offset from the
-   table's own base, so loading it means adding the base back in:
+#include "model.h"
 
-     - a table whose count word is negative is a stub: fix up its three
+/* 0x800133e0 — relocate a freshly loaded actor Model in place (620 b, leaf).
+   Every pointer in it is stored on disc as an offset from the model's own
+   base, so loading it means adding the base back in:
+
+     - a model whose count word is negative is a stub: fix up its three
        header pointers and hand back the masked base;
-     - otherwise the eight slot pointers at +0x14 are relocated (skipping
-       empty ones), the mesh-block delta at +0x34 is rebased, and every live
-       per-actor mesh at +0x38 is walked. Each mesh's own pointer fields are
-       shifted by the delta, then its packed 21-bit vertex words at +0x24 are
-       re-based: flagged meshes halve the rebased offset back into the low
-       21 bits, plain ones add the delta to the first word of each pair and
-       patch the second word's 16-bit link when it is set. */
+     - otherwise the eight m_CollisionModels slots are relocated (skipping
+       empty ones), m_Data is rebased, and every present m_Animations header
+       is walked: its face / colour pointers move by m_Data, then its frame
+       records are rebased. Spyro-format animations (m_IsSpyroAnimation) keep
+       one word per frame and halve the rebased offset back into its low 21
+       bits; actor animations keep two words per frame, add m_Data to the
+       first and patch the second word's 16-bit link when it is set. */
+
+/* Model words and one animation header's words, as int indexes. */
+#define DATA hdr[MODEL_WORD(m_Data)]
+#define ANIM_SLOT(i) hdr[MODEL_WORD(m_Animations) + (i)]
+#define ANIM(i) ((int *)ANIM_SLOT(i))
+#define AW(field) ANIM_HEADER_WORD(field)
 
 void *RelocateActorMeshHeader(int *table) {
   int *hdr;
@@ -29,40 +37,43 @@ void *RelocateActorMeshHeader(int *table) {
   }
 
   for (i = 0; i < 8; i++) {
-    if (table[5 + i] != 0) {
-      table[5 + i] = ((int)table & 0x7FFFFFFF) + table[5 + i];
+    if (table[MODEL_WORD(m_CollisionModels) + i] != 0) {
+      table[MODEL_WORD(m_CollisionModels) + i] =
+          ((int)table & 0x7FFFFFFF) + table[MODEL_WORD(m_CollisionModels) + i];
     }
   }
 
-  hdr[13] = (int)table + hdr[13];
+  DATA = (int)table + DATA;
 
   for (i = 0; i < hdr[0]; i++) {
-    if (hdr[14 + i] != -1) {
-      hdr[14 + i] = (int)table + hdr[14 + i];
-      ((int *)hdr[14 + i])[5] = hdr[13] + ((int *)hdr[14 + i])[5];
-      ((int *)hdr[14 + i])[6] = hdr[13] + ((int *)hdr[14 + i])[6];
-      if (((int *)hdr[14 + i])[7] != 0) {
-        ((int *)hdr[14 + i])[7] = hdr[13] + ((int *)hdr[14 + i])[7];
-        ((int *)hdr[14 + i])[8] = hdr[13] + ((int *)hdr[14 + i])[8];
+    if (ANIM_SLOT(i) != -1) {
+      ANIM_SLOT(i) = (int)table + ANIM_SLOT(i);
+      ANIM(i)[AW(m_Faces)] = DATA + ANIM(i)[AW(m_Faces)];
+      ANIM(i)[AW(m_Colors)] = DATA + ANIM(i)[AW(m_Colors)];
+      if (ANIM(i)[AW(m_LpFaces)] != 0) {
+        ANIM(i)[AW(m_LpFaces)] = DATA + ANIM(i)[AW(m_LpFaces)];
+        ANIM(i)[AW(m_LpColors)] = DATA + ANIM(i)[AW(m_LpColors)];
       }
-      if (*(unsigned char *)(hdr[14 + i] + 4) != 0) {
-        ((int *)hdr[14 + i])[4] = hdr[13] + ((int *)hdr[14 + i])[4];
-        w = (int *)(hdr[14 + i] + 0x24);
-        for (j = 0; j < *(short *)hdr[14 + i]; j++) {
+      if (ANIM_HEADER_RAW(ANIM_SLOT(i), unsigned char, m_IsSpyroAnimation) !=
+          0) {
+        ANIM(i)
+        [AW(m_AnimationVertices)] = DATA + ANIM(i)[AW(m_AnimationVertices)];
+        w = (int *)(ANIM_SLOT(i) + ANIM_HEADER_OFFSET(m_FrameWords));
+        for (j = 0; j < *(short *)ANIM_SLOT(i); j++) {
           word = *w;
           lo = word & 0x1FFFFF;
           *w = word & 0xFFE00000;
-          lo = ((lo + hdr[13]) >> 1) & 0x1FFFFF;
+          lo = ((lo + DATA) >> 1) & 0x1FFFFF;
           *w += lo;
           w++;
         }
       } else {
-        w = (int *)(hdr[14 + i] + 0x24);
-        for (j = 0; j < *(short *)hdr[14 + i]; j++, w++) {
-          *w += hdr[13] & 0x1FFFFF;
+        w = (int *)(ANIM_SLOT(i) + ANIM_HEADER_OFFSET(m_FrameWords));
+        for (j = 0; j < *(short *)ANIM_SLOT(i); j++, w++) {
+          *w += DATA & 0x1FFFFF;
           w++;
           if ((*w & 0xFFFF) != 0) {
-            *w += ((hdr[13] - (int)w + 4) >> 2) & 0xFFFF;
+            *w += ((DATA - (int)w + 4) >> 2) & 0xFFFF;
           }
         }
       }

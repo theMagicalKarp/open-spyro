@@ -1,3 +1,4 @@
+#include "cd_stream.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -29,7 +30,8 @@ void LoadActorMeshTables(void) {
   nbytes = *(volatile int *)hdr;
   size = *hdr;
   dir = (int *)(top - size - size - g_nCrt0StackSize);
-  CdReadSyncSectors(lba, dir, nbytes, g_nActorMeshDirSectorOffset, 0x258);
+  CdReadSyncSectors(lba, dir, nbytes, g_nActorMeshDirSectorOffset,
+                    CD_STALL_TIMEOUT_TICKS);
 
   chunk = dir[0];
   g_pWorkAreaTop = (void *)(top - g_nCrt0StackSize - chunk);

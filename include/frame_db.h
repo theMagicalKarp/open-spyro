@@ -21,4 +21,15 @@ typedef struct FrameDB {
 /* A frame record seen from its DRAWENV (g_pActiveFrameDrawEnv, &g_abFrameDrawEnv0). */
 #define FRAME_DB(env) ((FrameDB *)(env))
 
+/* Each frame's primitive buffer, carved below g_pRenderScratchPrimTop by
+ * InitActorMeshScratchRegions: 0x1C000 bytes normally, 0x13000 in the split
+ * (cutscene) layout. */
+#define PRIM_BUFFER_BYTES 0x1C000
+#define PRIM_BUFFER_BYTES_SPLIT 0x13000
+
+/* The pause / inventory / flight-results menus freeze the gameplay frame
+ * (StoreImage) into the bytes just below g_pRenderScratchPrimTop: one
+ * 0x100 x 0xE1 16-bit frame. */
+#define MENU_SNAPSHOT_BYTES (0x100 * 0xE1 * 2) /* 0x1C200 */
+
 #endif /* OPEN_SPYRO_FRAME_DB_H */

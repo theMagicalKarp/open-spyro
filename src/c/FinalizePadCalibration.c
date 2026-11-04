@@ -3,13 +3,13 @@
 #include "pad.h"
 
 /* 0x80053790, 432 bytes — validate and bake the pad-stick calibration block.
-   Each of the four axes needs its recorded neutral (+0x20) at least 0x30 away
-   from both reported extremes (+0x24 low / +0x28 high), otherwise the whole
+   Each of the four axes needs its recorded stickNeutral at least 0x30 away
+   from both reported extremes (stickLow / stickHigh), otherwise the whole
    block falls back to the uncalibrated defaults and the function returns 0.
-   Otherwise each axis gets its two breakpoints (+0x2c neutral+0x30 /
-   +0x30 neutral-0x30) and the two fixed-point scale factors (+0x34 and +0x3c
-   shorts), and the per-frame stick state is cleared: the snapshot head words,
-   its four neutral 0x7f bytes, and the four 0x18-byte autorepeat records. */
+   Otherwise each axis gets its two breakpoints (deadHigh = neutral + 0x30,
+   deadLow = neutral - 0x30) and the two Q7 gains (scaleHigh / scaleLow), and
+   the per-frame stick state is cleared: the head words, the centred analog
+   bytes, and the four ring substep records. */
 
 /* Three of the register assignments here are decided by allocation PRIORITY
    (global.c allocno_compare: floor_log2(refs)*refs/live_length, ties by lower

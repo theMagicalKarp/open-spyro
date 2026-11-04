@@ -49,7 +49,7 @@ void RespawnOrGameOver_Update(void) {
         lba = g_nCdBaseLba;
         i = *size;
         CdReadSyncSectors(lba, g_apRenderScratchRegionBlock[0] - (*size), i,
-                          g_nGameOverSceneSectorOffset, 0x258);
+                          g_nGameOverSceneSectorOffset, CD_STALL_TIMEOUT_TICKS);
         p = g_apRenderScratchRegionBlock[0] - (*size);
         fog = (unsigned char *)(&g_anWorldRenderMeshBlock[4]);
         fog[0] = p[0];

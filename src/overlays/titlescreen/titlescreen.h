@@ -97,20 +97,7 @@ enum {
 #include "fog_color.h"
 #include "save_game.h"
 
-typedef struct {
-  char magic[2];
-  u_char iconFlag;
-  u_char blockCount;
-  u_char title[0x40];
-  char reserved[0x1C];
-  u_short clut[0x10];
-  u_char icon[0x80][3];
-} McFileHeader; /* 0x200 */
-
-typedef struct {
-  McFileHeader header;    /* 0x000 */
-  SaveGameBuffer saves[3]; /* 0x200, 3 x 0x600 */
-} TitleSaveFile;
+#include "memcard.h" /* McFileHeader, MemCardSaveFile */
 
 /* ---- titlescreen state (0x5C bytes) ---- */
 typedef struct {
@@ -131,7 +118,7 @@ typedef struct {
   int mcCmd;    /* 0x40 */
   int mcResult;    /* 0x44 */
   int anySaveUsed;           /* 0x48 some save slot has levelVisited[0] */
-  TitleSaveFile *file; /* 0x4C */
+  MemCardSaveFile *file; /* 0x4C */
   SaveGameBuffer *apSaves[3];   /* 0x50 */
 } TitleState;
 
@@ -160,7 +147,7 @@ extern struct {
 
 extern u_char g_pOtDepthBinHead0[];  /* scratch image buffer */
 extern int g_nFarPlaneDrawDistance;       /* far-plane culling distance */
-extern char g_anCameraViewMtx[];    /* camera view matrix (proj matrix at -0x14) */
+extern char g_anCameraViewMtx[];    /* camera view matrix (g_anWorldToCameraRotMtx at -0x14) */
 
 /* ---- main-EXE functions this overlay calls ---- */
 extern void FillWord(void *, int, int);
@@ -248,7 +235,7 @@ extern int GetRandomU32(void);
 #endif
 extern void StopSoundVoiceByIndex(int, int);
 extern void RestartStalledCdRead(void);
-extern int CallCdSync(int, int);
+extern int CallCdSync(int mode, unsigned char *result);
 extern void StartCdReadAsync(int, void *, int, int, int);
 extern void HandleMusicCommand(int, int);
 extern void LoadImage(RECT *, void *);

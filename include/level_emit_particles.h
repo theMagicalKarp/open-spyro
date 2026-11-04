@@ -30,7 +30,7 @@ extern unsigned char g_bSpyroPersistentEulerZ;
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
 extern char *g_apSpritePrimQueue[];
-extern int g_dwHudBobSinePhase;
+extern int g_dwHudIconSpinAngle;
 extern char g_pOtDepthBinHead0[];
 extern char *g_pRenderScratchPrimTop[];
 extern char *g_pRenderScratchRegionBase;

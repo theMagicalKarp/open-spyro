@@ -8,6 +8,8 @@
 #ifndef OPEN_SPYRO_LEVEL_FUNCS_H
 #define OPEN_SPYRO_LEVEL_FUNCS_H
 
+#include "types.h"
+
 extern int abs(int n);
 extern int AbsAngleDelta12(int a, int b);
 extern void AddSVector(short *dst, short *src, short *delta);
@@ -20,8 +22,8 @@ extern void *AllocEmitListRecord(int cls);
 extern int ArcTan2(int dx, int dy, int scale);
 extern void BeginPauseToMenuTransition(void);
 extern void BuildActiveActorList(void);
-extern void BuildTextSpriteChain();                          /* draw text run */
-extern void BuildTextSprites();                              /* BuildTextSpriteChain */
+extern void BuildTextSpriteChain(); /* K&R: callers pass int-typed text buffers */
+extern void *BuildTextSprites(char *text, int *pos, int *attr, int spacing, int flags);
 extern void ChangeSpyroState(int state);
 extern int CheckLineOfSightSegment(int *from, int *to);
 extern int CheckSpyroLineOfSightTo(int *pos);
@@ -29,32 +31,32 @@ extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2); /* ground/
 struct Actor;
 extern void CommitActorKillGems(int value, struct Actor *actor);
 extern void ComputeCameraOrbitOffset(int *out);
-extern void ConvertRGB15ToLuma8();                           /* texture-page sync */
-extern void CopyVector();
+extern void ConvertRGB15ToLuma8(void *buf, int count);
+extern void CopyVector(int *dst, int *src);
 extern void DivideVector3(int *dst, int *s, int k);
-extern void DrawOTag();
-extern void DrawShadedMenuBox();
-extern void DrawSync();
-extern void EmitRadialShadedLine();
+extern void DrawOTag(void *ot);
+extern void DrawShadedMenuBox(int left, int right, int top, int bottom);
+extern int DrawSync(int mode);
+extern void EmitRadialShadedLine(int x0, int y0, int x1, int y1);
 extern void EndSaveMenuToWorld(void);
-extern void EnqueueBlinkingMarkerSprite();
-extern void EnqueuePendingSpritePrims();
-extern void FillWord();                                      /* word fill */
+extern void EnqueueBlinkingMarkerSprite(int *pos, int frame, int tile);
+extern void EnqueuePendingSpritePrims(void);
+extern void FillWord(void *dst, unsigned int value, int bytes);
 extern void FreeEmitListRecord(unsigned char *rec);
 extern int ReflectVectorOffNormal(int *v, int *n, int *out);
-extern int GetRandomU32();
+extern int GetRandomU32(void); /* int, not unsigned: the callers' % and >> are signed */
 extern void InitHudCounters(int layout_butterflies);
 extern void InitLightVectorConstants(void);
 struct TriggerBox;
 extern int IsPointInRotatedBox(int *pos, struct TriggerBox *box);
 extern void LoadAndStartLevelFromCd(void);
-extern void LoadImage();
+extern void LoadImage(); /* K&R: callers pass their own rect views */
 extern int LookupCosine(int ang);
 extern int LookupSine(int ang);
-extern void *memcpy();
+extern void *memcpy(void *dst, const void *src, unsigned int n);
 extern void ProjectWorldPointGTEUnscaled(int *out, int *s);
-extern void PutDispEnv();
-extern void PutDrawEnv();
+extern DISPENV *PutDispEnv(DISPENV *env);
+extern void PutDrawEnv(void *env);
 extern int RaiseSpyroTriggerInRadius(int *pos, int radius, int flags);
 extern void RefreshHudLevelGemCounter(void);
 extern void ResetCameraStateToTarget(void);
@@ -64,18 +66,18 @@ extern void ResetCameraStateToTarget(void);
 #endif
 extern void ResetSpyroEntity(int full);
 extern void ResetSpyroLinearMotion(void);
-extern void RotateVectorByMatrix();
+extern void RotateVectorByMatrix(int *mtx, int *src, int *dst);
 extern void RShiftVector3(int *vec, int shift);
 extern void SampleSpyroShadowRingHeights(int probe);
 extern void ScaleVector3Sat(int *out, int *src, int scale);
 extern int SignedAngleDelta12(int a, int b);
-extern void sprintf();                                       /* format string */
+extern void sprintf(); /* K&R: callers format into int-typed buffers */
 extern int StepAngle8Toward(int to, int from, int maxStep);
 #ifndef VOICE_RELEASE
 #define VOICE_RELEASE 4 /* StopSoundVoiceByIndex: key off and free the voice row (2 does the same; other modes only key off) */
 #endif
 extern void StopSoundVoiceByIndex(int ch, int mode);
-extern void StoreImage();                                    /* MoveImage */
+extern void StoreImage(); /* K&R: the flight results draw passes a stray third argument (the original sets $a2) */
 extern int strlen();                                         /* text glyph count */
 extern void StubRewardHook(int script, int a);
 extern void SubtractVector(int *out, int *a, int *b);
@@ -83,7 +85,7 @@ extern void TallyFlightTarget(int tallyClass);
 extern void TickActiveSoundVoices(void);
 struct Actor;
 extern void TickActorAnims(struct Actor **list, int mode);
-extern void TickLevelTransitionStream();
+extern void TickLevelTransitionStream(int full);
 extern void TickSpyroAttackEffects(int steps);
 extern void UnpackWorldCollisionTri(int chunk, int *out);
 extern void UpdateCameraEulerAngles(void);
@@ -92,12 +94,12 @@ extern void UpdateCameraEulerAngles(void);
 #define VEC_LEN_XYZ 1 /* VectorLength: all three components */
 #endif
 extern int VectorLength(int *vec, int withZ);
-extern int VSync();
+extern int VSync(int mode);
 extern int WrapAngleDelta8(int a, int b);                    /* signed angle delta */
 
 /* Level/asset streaming helpers the credits overlay drives directly. */
-extern void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset, int marker);
-extern void StartCdReadAsync(int lbaBase, void *dst, int size, int offset, int marker);
+extern void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset, int stallTicks);
+extern void StartCdReadAsync(int lbaBase, void *dst, int size, int offset, int stallTicks);
 extern char *UnpackWorldDataChunks(int *p, int flag);
 extern void CopyWords(void *dst, void *src, int len);
 extern int TickCountdownByFrameDelta(void *pValue, int width);

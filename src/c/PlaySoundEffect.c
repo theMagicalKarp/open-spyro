@@ -96,7 +96,7 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
 
   quietest = 0x100;
   for (i = 0; i < 0x18; i++) {
-    if ((g_aSpuVoiceRows[i].nFlags & 0xC1) == 0) {
+    if ((g_aSpuVoiceRows[i].nFlags & VOICE_ROW_BUSY) == 0) {
       voice = i;
       break;
     }
@@ -107,7 +107,7 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
 
   if (voice >= 0) {
     if (voice != 0x18) {
-      g_aSpuVoiceRows[voice].nFlags = mode | 1;
+      g_aSpuVoiceRows[voice].nFlags = mode | VOICE_ROW_ACTIVE;
       g_aSpuVoiceRows[voice].pOwner = (unsigned char *)owner;
       g_aSpuVoiceRows[voice].nSampleId = sampleId;
       {
@@ -207,7 +207,7 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
     if (pPlaying != 0) {
       *pPlaying = voice;
       if (ENT->nLoopAddr != 0) {
-        g_aSpuVoiceRows[voice].nFlags |= 0x100;
+        g_aSpuVoiceRows[voice].nFlags |= VOICE_ROW_LOOPING;
       }
     }
   }

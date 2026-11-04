@@ -9,9 +9,10 @@
  * 2 is past frame 0x8C it lays out one of four message strings with
  * BuildTextSprites, rewinds the sprite-record cursor by the number of glyph
  * slots the message still has to reveal, then runs a per-glyph wave: each
- * record's rotZ byte (its alpha) ramps linearly for the first 0x38 frames of
- * its life and rides the cosine LUT after that. Then the standard sprite flush
- * and the simple (no pace loop) gamestate frame-submit tail. */
+ * record's rotZ byte (its roll angle) ramps from 0x40 by 8 a frame for the
+ * first 0x38 frames of its life, so the glyph spins in and lands upright
+ * (0x200), and rocks on the cosine LUT after that. Then the standard sprite
+ * flush and the simple (no pace loop) gamestate frame-submit tail. */
 
 /* Held-base view of g_nStoryIntroTimer: the original keeps `&timer` in a
    register across the fade-threshold test and the whole glyph loop, which a
@@ -21,7 +22,7 @@ void StoryIntro_Draw(void) {
   int pos[4];
   int col[3];
   int rec;
-  int alpha;
+  int roll;
   int limit;
   int i;
   int phase;
@@ -67,20 +68,20 @@ void StoryIntro_Draw(void) {
       i = 0;
       tp = g_anStoryIntroTimerBlock;
       cosp = (unsigned short *)g_anCosineLut;
-      alpha = rec + 0x46;
+      roll = rec + 0x46;
       phase = 0;
       do {
         t = tp[0];
         born = i + 0x8C;
         age = t - born;
         if (age < 0x38) {
-          *(char *)alpha = (char)((age << 3) + 0x40);
+          *(char *)roll = (char)((age << 3) + 0x40);
         } else {
-          *(char *)alpha = (char)(cosp[((t << 2) + phase) & 0xFF] >> 7);
+          *(char *)roll = (char)(cosp[((t << 2) + phase) & 0xFF] >> 7);
         }
         phase += 0xC;
         i += 1;
-        alpha -= 0x58;
+        roll -= 0x58;
         rec -= ACTOR_SIZE;
       } while (rec >= (int)g_pSpriteRecordWriteCursor);
     }
@@ -94,7 +95,8 @@ void StoryIntro_Draw(void) {
   g_abFrameDrawEnv1.b0 = 0;
   g_apSpritePrimQueue[0] = 0;
   EnqueuePendingSpritePrims();
-  FillWord(&g_apSpritePrimQueue[-0x900], 0, 0x900);
+  FillWord(&g_apSpritePrimQueue[-0x900], 0,
+           0x900); /* 0x900 bytes from g_pOtDepthBinHead0 */
   RasterizeSpritePrimQueue();
 
   if (g_nStoryIntroSubstate == STORY_INTRO_FLY) {
@@ -118,13 +120,13 @@ void StoryIntro_Draw(void) {
  *  - `age = t - born` with `born = i + 0x8C` computed first: written as
  *    `t - (i + 0x8C)` gcc reassociates to `(t - 0x8C) - i`, which also costs
  *    the load-delay nop the `addiu` should fill;
- *  - the two decrements at the loop bottom go `alpha` then `rec`: with `rec`
+ *  - the two decrements at the loop bottom go `roll` then `rec`: with `rec`
  *    first the cursor re-load loses its delay-slot filler (+1 insn);
  *  - the preheader is A93 exactly. The original's order is
- *    [i=0][tp copy][cos base][alpha][phase], and loop.c-hoisted invariants are
+ *    [i=0][tp copy][cos base][roll][phase], and loop.c-hoisted invariants are
  *    inserted just before loop_start, i.e. AFTER every explicit assignment. So
  *    BOTH bases have to be explicit pre-loop locals declared in that order:
- *    left to loop.c they land last, `alpha` is defined while the timer base is
+ *    left to loop.c they land last, `roll` is defined while the timer base is
  *    still live, the two allocnos conflict (i.i.greg: `111 conflicts ... 73`),
  *    and the base is pushed off a1 onto t0 — which is the whole 8-insn residue
  *    this park sat on. `tp` also has to be assigned INSIDE the loop's guarded

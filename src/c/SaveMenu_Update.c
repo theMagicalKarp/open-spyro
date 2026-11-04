@@ -5,6 +5,7 @@
 #include "main_shared.h"
 #include "pad_buttons.h"
 #include "sample_bank.h"
+#include "save_game.h"
 #include "save_menu.h"
 #include "spyro_block.h"
 #include "vecmath.h"
@@ -44,7 +45,7 @@ void SaveMenu_Update(void) {
   RotateLightVectorXZ(3);
   g_apActiveActorListBlock[0] = ACT;
   g_apActiveActorListBlock[1] = 0;
-  TickActorAnims(g_apActiveActorListBlock, 0);
+  TickActorAnims(g_apActiveActorListBlock, ANIM_TICK_NORMAL);
   switch (SM[0]) {
   case SAVE_MODE_SWING_IN:
     if (SM[1] < 0x40) {
@@ -250,7 +251,8 @@ void SaveMenu_Update(void) {
         st = SM[10];
         if (st == McErrNone || st == McErrNewCard) {
           MemCardRead(g_nSaveSlotSelected, g_szMemCardSaveName,
-                      (char *)g_pRenderScratchPrimTop - 0x600, 0, 0x80);
+                      (char *)g_pRenderScratchPrimTop - SAVE_IMAGE_BYTES, 0,
+                      (int)&((McFileHeader *)0)->icon); /* through clut[] */
           *cur = SAVE_STEP_WRITE;
           break;
         }
@@ -269,12 +271,15 @@ void SaveMenu_Update(void) {
         st = SM[10];
         if (st == McErrNone) {
           if (g_nSaveFileTag ==
-              *(unsigned short *)((char *)g_pRenderScratchPrimTop - 0x582)) {
+              ((McFileHeader *)((char *)g_pRenderScratchPrimTop -
+                                SAVE_IMAGE_BYTES))
+                  ->clut[15]) {
             BuildSaveGameBuffer((char *)g_apRenderScratchPrimTopBlock[0] -
-                                0x600);
-            MemCardWrite(g_nSaveSlotSelected, g_szMemCardSaveName,
-                         (char *)g_apRenderScratchPrimTopBlock[0] - 0x600,
-                         g_nSaveSlotIndex * 0x600 + 0x200, 0x600);
+                                SAVE_IMAGE_BYTES);
+            MemCardWrite(
+                g_nSaveSlotSelected, g_szMemCardSaveName,
+                (char *)g_apRenderScratchPrimTopBlock[0] - SAVE_IMAGE_BYTES,
+                MEMCARD_SAVE_OFFSET(g_nSaveSlotIndex), SAVE_IMAGE_BYTES);
             *cur = SAVE_STEP_READ_BACK;
             break;
           }
@@ -290,8 +295,8 @@ void SaveMenu_Update(void) {
         }
         if (SM[10] == McErrNone) {
           MemCardRead(g_nSaveSlotSelected, g_szMemCardSaveName,
-                      (char *)g_pRenderScratchPrimTop - 0x600,
-                      g_nSaveSlotIndex * 0x600 + 0x200, 0x600);
+                      (char *)g_pRenderScratchPrimTop - SAVE_IMAGE_BYTES,
+                      MEMCARD_SAVE_OFFSET(g_nSaveSlotIndex), SAVE_IMAGE_BYTES);
           *cur = SAVE_STEP_VERIFY;
           break;
         }
@@ -304,8 +309,9 @@ void SaveMenu_Update(void) {
         }
         if (SM[10] == McErrNone &&
             ComputeSaveGameChecksum((unsigned char *)g_pRenderScratchPrimTop -
-                                    0x600) ==
-                *(int *)((char *)g_pRenderScratchPrimTop - 0x74)) {
+                                    SAVE_IMAGE_BYTES) ==
+                SAVE_RAW((char *)g_pRenderScratchPrimTop - SAVE_IMAGE_BYTES,
+                         int, checksum)) {
           v = SAVE_SCREEN_SAVED;
         } else {
           v = SAVE_SCREEN_ERROR;

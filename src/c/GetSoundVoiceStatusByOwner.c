@@ -12,7 +12,7 @@ int GetSoundVoiceStatusByOwner(int owner, unsigned int sampleId) {
     int off = i * 0x1C;
     if (owner == VOICE_ROW_RAW(off, int, pOwner) &&
         VOICE_ROW_RAW(off, unsigned char, nSampleId) == sampleId) {
-      if (VOICE_ROW_RAW(off, unsigned short, nFlags) & 0x100) {
+      if (VOICE_ROW_RAW(off, unsigned short, nFlags) & VOICE_ROW_LOOPING) {
         return 2;
       }
       return 1;

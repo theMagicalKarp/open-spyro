@@ -1,4 +1,5 @@
 #include "cd_music.h"
+#include "cd_stream.h"
 #include "dragon_rescue.h"
 #include "funcs.h"
 #include "globals.h"
@@ -58,7 +59,7 @@ void TickDragonRescueAssetStream(void) {
                      g_nDragonRescueReadByteCount,
                      DRAGON_ASSET_OFFSET(g_nDragonRescueTypeSnapshot) +
                          LEVEL_ARCHIVE_OFFSET(g_nLevelIndex),
-                     600);
+                     CD_STALL_TIMEOUT_TICKS);
     g_nDragonRescueStreamState++;
     return;
   case RESCUE_STREAM_RELOCATE:
@@ -84,7 +85,7 @@ void TickDragonRescueAssetStream(void) {
                        DRAGON_ASSET_OFFSET(g_nDragonRescueTypeSnapshot) +
                            LEVEL_ARCHIVE_OFFSET(g_nLevelIndex) +
                            g_nDragonRescueReadByteCount,
-                       600);
+                       CD_STALL_TIMEOUT_TICKS);
     }
     break;
   case RESCUE_STREAM_UPLOAD_VOICE:
@@ -164,7 +165,8 @@ void TickDragonRescueAssetStream(void) {
         int off = *(volatile int *)&g_nWorldTimAudioChunkOffset;
 
         StartCdReadAsync(lba, dst, g_nWorldTimAudioChunkSize + t,
-                         off + LEVEL_ARCHIVE_OFFSET(intro) - t, 600);
+                         off + LEVEL_ARCHIVE_OFFSET(intro) - t,
+                         CD_STALL_TIMEOUT_TICKS);
       }
     } else {
       g_nDragonRescueSplitFlag = 0;
@@ -188,11 +190,12 @@ void TickDragonRescueAssetStream(void) {
       int size = *(volatile int *)&g_nWorldDataExtChunkSize;
       int off = *(volatile int *)&g_nWorldDataExtChunkOffset;
 
-      StartCdReadAsync(lba, dst, size, off + LEVEL_ARCHIVE_OFFSET(intro), 600);
+      StartCdReadAsync(lba, dst, size, off + LEVEL_ARCHIVE_OFFSET(intro),
+                       CD_STALL_TIMEOUT_TICKS);
     }
     break;
   case RESCUE_STREAM_LEVEL_MESHES:
-    RelocateMobActorTable(
+    InstallSpyroAnimStream(
         HEAD + (g_anActorMeshOffsetList - g_nWorldDataExtChunkOffset));
     for (i = 0; i < 0x200; i++) {
       if (((int)g_apActorMeshTableBlock[i] & 0xFFFFFF) <

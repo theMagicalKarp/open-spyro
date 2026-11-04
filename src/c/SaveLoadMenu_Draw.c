@@ -11,8 +11,9 @@ extern MenuBox g_aSaveMenuBoxes[]; /* per-substate menu box */
 
 #define SM g_anSaveMenuBlock
 
-/* Bobs the glyphs of the highlighted line on a cosine wave that travels
-   along it: each glyph's y offset (+0x46 of its 0x58-byte sprite record). */
+/* Rocks the glyphs of the highlighted line on a cosine wave that travels
+   along it: each glyph's roll angle (rotZ, +0x46 of its 0x58-byte sprite
+   record), which RasterizeSpritePrimQueue turns into the sprite's rotation. */
 #define WAVE(rec, n, phase)                                                    \
   for (i = 0; i < (n); i++) {                                                  \
     (rec)[0x46] = (g_anCosineLut[((phase) * 4 + i * 0xC) & 0xFF] * 3) >> 9;    \
@@ -31,7 +32,8 @@ void SaveLoadMenu_Draw(void) {
 
   if (g_pSpriteRecordBufferTop == g_pRenderScratchPrimTop) {
     g_pSpriteRecordBufferTop =
-        (Actor *)((char *)g_pPrimBufferWriteCursor + 0x1BA00);
+        (Actor *)((char *)g_pPrimBufferWriteCursor + PRIM_BUFFER_BYTES -
+                  SAVE_IMAGE_BYTES); /* keep the card buffer clear */
     g_pSpriteRecordWriteCursor = g_pSpriteRecordBufferTop;
   }
   if (g_nSaveMenuMode == SAVE_MODE_MENU) {

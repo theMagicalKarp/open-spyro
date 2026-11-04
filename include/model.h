@@ -7,7 +7,8 @@
 typedef struct AnimationHeader {
   short m_NumFrames;              /* 0x00 */
   unsigned short m_NumColors;     /* 0x02 */
-  unsigned char m_IsSpyroAnimation; /* 0x04 */
+  unsigned char m_IsSpyroAnimation; /* 0x04 nonzero: one-word frame records with
+                                     * a >> 1 vertex offset (RelocateActorMeshHeader) */
   unsigned char m_Scale;
   unsigned char m_ShortEncodeShift;
   unsigned char m_Radius;
@@ -23,9 +24,12 @@ typedef struct AnimationHeader {
   void *m_Colors;
   void *m_LpFaces;
   void *m_LpColors;               /* 0x20 */
-  unsigned int m_FrameWords[1];   /* 0x24 one word per frame; byte 3 is the
-                                   * frame's footstep sfx id (0xFF = none,
-                                   * TickSpyroGameplayFrame) */
+  unsigned int m_FrameWords[1];   /* 0x24 frame records. Spyro's anims: one
+                                   * word per frame, byte 3 the footstep sfx
+                                   * id (0xFF = none, TickSpyroGameplayFrame).
+                                   * Actor anims: two words per frame, byte 3
+                                   * a signed Model.m_Sounds index (< 0 none,
+                                   * TickActorAnims) */
 } AnimationHeader;
 
 typedef struct Model {

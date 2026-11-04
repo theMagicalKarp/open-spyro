@@ -47,6 +47,18 @@ typedef struct SpuVoiceRow {
   /* 0x18 */ char *pPlaying;
 } SPUVOICEROW;
 
+/* SpuVoiceRow.nFlags. A row is free while none of VOICE_ROW_BUSY is set;
+ * bits 0x1C are the PlaySoundEffect mode (SFX_MODE_*, actor_type.h). */
+#define VOICE_ROW_ACTIVE 0x01   /* allocated to a sound (PlaySoundEffect) */
+#define VOICE_ROW_KEYED 0x02    /* the SPU has reported it keyed on; once its
+                                 * envelope ends TickActiveSoundVoices stops it */
+#define VOICE_ROW_STOPPED 0x40  /* stopped this frame; TickActiveSoundVoices
+                                 * clears the row next tick */
+#define VOICE_ROW_FLAG_80 0x80  /* counted busy by the allocator and
+                                 * StopAllSoundExceptMask; nothing sets it */
+#define VOICE_ROW_LOOPING 0x100 /* the sample loops (it has a loop address) */
+#define VOICE_ROW_BUSY (VOICE_ROW_ACTIVE | VOICE_ROW_STOPPED | VOICE_ROW_FLAG_80)
+
 /* g_aSpuVoiceRows (the 24 mixer rows) is declared per file: PlaySoundEffect
  * needs a view with volatile pan-cache fields. */
 

@@ -338,7 +338,8 @@ void Titlescreen_Draw(void) {
   RenderWorldChunks(-1);
 
   /* draw the cyclorama (view matrix, then projection matrix just below it) */
-  EmitStaticActorMeshList(-1, g_anCameraViewMtx, g_anCameraViewMtx - 0x14);
+  EmitStaticActorMeshList(-1, g_anCameraViewMtx,
+                          g_anCameraViewMtx - 0x14 /* g_anWorldToCameraRotMtx */);
 
   /* overlay the fade */
   if (g_nScreenFadeLevel) {

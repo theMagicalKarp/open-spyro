@@ -96,7 +96,8 @@ void Credits_Draw(void) {
     FillBlock16(ot, 0, 0x1C00);
     g_nFarPlaneDrawDistance = 0x28000;
     RenderWorldChunks(-1);
-    EmitStaticActorMeshList(-1, g_anCameraViewMtx, (char *)g_anCameraViewMtx - 0x14);
+    EmitStaticActorMeshList(-1, g_anCameraViewMtx,
+                            (char *)g_anCameraViewMtx - 0x14 /* g_anWorldToCameraRotMtx */);
   }
   DrawSync(0);
   if (g_nDemoActive != 0) {

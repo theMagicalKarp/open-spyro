@@ -83,7 +83,8 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_nSparxHealthStash = g_nSparxHealth;
   }
   if (g_anSpawnAnchorBlock[0] != 0) {
-    CopyVector(g_anSpyroWorldPos, g_anSpawnAnchorBlock + 20);
+    CopyVector(g_anSpyroWorldPos,
+               g_anSpawnAnchorBlock + 20); /* g_anLevelSpawnPos */
     yaw = g_nLevelSpawnYaw >> 4;
     g_abSpyroPersistentEuler[2] = yaw;
   } else if (g_nReturnPortalLevelId == 0) {

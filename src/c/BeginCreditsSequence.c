@@ -1,3 +1,4 @@
+#include "cd_stream.h"
 #include "credits_mode.h"
 #include "funcs.h"
 #include "globals.h"
@@ -41,6 +42,6 @@ void BeginCreditsSequence(int reloadMeshes) {
     int size = *(volatile int *)&g_nCreditsSceneByteSize;
     int offset = *(volatile int *)&g_nCreditsSceneSectorOffset;
     int *dst = *(int *volatile *)&g_pSharedLoadBuffer;
-    CdReadSyncSectors(lba, dst, size, offset, 0x258);
+    CdReadSyncSectors(lba, dst, size, offset, CD_STALL_TIMEOUT_TICKS);
   }
 }

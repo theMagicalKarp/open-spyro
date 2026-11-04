@@ -20,7 +20,7 @@ void StopSoundVoiceByIndex(int index, int mode) {
       if (cb != 0) {
         *cb = 0x7F;
       }
-      VOICE_ROW_RAW(off, short, nFlags) = 0x40;
+      VOICE_ROW_RAW(off, short, nFlags) = VOICE_ROW_STOPPED;
       VOICE_ROW_RAW(off, int, pPlaying) = 0;
       VOICE_ROW_RAW(off, int, pOwner) = 0;
       VOICE_ROW_RAW(off, char, nSampleId) = 0xFF;

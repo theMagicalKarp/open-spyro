@@ -78,31 +78,31 @@ int TickActiveSoundVoices(void) {
   yc = (int)g_anCameraEulerYawBlock;
   yaw = (unsigned char)((*((volatile unsigned short *)yc)) >> 4);
   for (; i < 24; i++) {
-    if (g_aSpuVoiceRows[i].nFlags & 0x40) {
+    if (g_aSpuVoiceRows[i].nFlags & VOICE_ROW_STOPPED) {
       g_aSpuVoiceRows[i].nFlags = 0;
       continue;
     }
-    if (!(g_aSpuVoiceRows[i].nFlags & 1)) {
+    if (!(g_aSpuVoiceRows[i].nFlags & VOICE_ROW_ACTIVE)) {
       continue;
     }
     status = GetSpuVoiceKeyStatus(bit << i);
-    if (g_aSpuVoiceRows[i].nFlags & 2) {
+    if (g_aSpuVoiceRows[i].nFlags & VOICE_ROW_KEYED) {
       if ((status & 0xFF) == 3) {
         playing = g_aSpuVoiceRows[i].pPlaying;
         keyOff |= bit << i;
         if (playing != 0) {
           *playing = 0x7F;
         }
-        g_aSpuVoiceRows[i].nFlags = 0x40;
+        g_aSpuVoiceRows[i].nFlags = VOICE_ROW_STOPPED;
         g_aSpuVoiceRows[i].pPlaying = 0;
         g_aSpuVoiceRows[i].pOwner = 0;
         g_aSpuVoiceRows[i].nSampleId = 0xFF;
         continue;
       }
     } else if (((status & 0xFF) == bit) || ((status & 0xFF) == 3)) {
-      g_aSpuVoiceRows[i].nFlags |= 2;
+      g_aSpuVoiceRows[i].nFlags |= VOICE_ROW_KEYED;
     }
-    if (!(g_aSpuVoiceRows[i].nFlags & 1)) {
+    if (!(g_aSpuVoiceRows[i].nFlags & VOICE_ROW_ACTIVE)) {
       continue;
     }
     mode = g_aSpuVoiceRows[i].nFlags & SFX_MODE_MASK;
@@ -134,7 +134,7 @@ int TickActiveSoundVoices(void) {
           if (playing != 0) {
             *playing = 0x7F;
           }
-          g_aSpuVoiceRows[i].nFlags = 0x40;
+          g_aSpuVoiceRows[i].nFlags = VOICE_ROW_STOPPED;
           g_aSpuVoiceRows[i].pPlaying = 0;
           g_aSpuVoiceRows[i].pOwner = 0;
           g_aSpuVoiceRows[i].nSampleId = 0xFF;

@@ -5,7 +5,8 @@
 #include "sample_bank.h"
 
 /* g_anCheatCodeSequences slots that do something (CheckCheatCodeMatch passes
-   the matched slot); the other slots' sequences are empty or unhandled. */
+   the matched slot). Slots 0, 1 and 5..7 have sequences too and still match,
+   but have no case here. */
 enum CheatCode {
   CHEAT_CREDITS = 2,    /* roll the credits, then return to this level */
   CHEAT_ALL_WORLDS = 3, /* every level visited, every balloonist open */
@@ -14,8 +15,8 @@ enum CheatCode {
 
 /* Apply a matched cheat code (0x8002d810): CHEAT_CREDITS jumps to the credits
    (remembering the level to return to); CHEAT_ALL_WORLDS marks levels 0..0x1F
-   visited and every world's balloonist state 2, then plays the reward sound;
-   CHEAT_99_LIVES sets 99 lives. */
+   visited and every world's balloonist BALLOONIST_OPEN; both play the reward
+   sound. CHEAT_99_LIVES sets 99 lives. */
 
 void ApplyCheatCodeEffect(int code) {
   unsigned char val;

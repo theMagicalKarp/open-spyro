@@ -42,7 +42,8 @@ void UpdateLevelTransitionCamera(void) {
   AddVector(g_anCameraEyeTarget, g_anCameraEyeTarget, g_pCameraAnchorPos);
   SnapCameraToTarget();
   UpdateCameraEulerAngles();
-  g_nCameraTargetInverted = ComputeCameraToTargetAngle(g_anCameraEyeTarget - 3);
+  g_nCameraTargetInverted =
+      ComputeCameraToTargetAngle(g_anCameraEyeTarget - 3 /* g_anCameraPos */);
   g_nCameraSpringYaw = g_nCameraYaw;
   g_nCameraSpringPitch = g_nCameraPitch;
   g_nCameraSpringDistance = g_nCameraDistance;

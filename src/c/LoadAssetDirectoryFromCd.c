@@ -1,3 +1,4 @@
+#include "cd_stream.h"
 #include "funcs.h"
 #include "globals.h"
 
@@ -10,6 +11,7 @@ void LoadAssetDirectoryFromCd(void) {
   volatile int *lba = g_anCdBaseLbaBlock;
 
   *lba = 0x25;
-  CdReadSyncSectors(*lba, g_pSharedLoadBuffer, 0x800, 0, 600);
+  CdReadSyncSectors(*lba, g_pSharedLoadBuffer, 0x800, 0,
+                    CD_STALL_TIMEOUT_TICKS);
   CopyWords(&g_anAssetDirectory, g_pSharedLoadBuffer, 0x330);
 }

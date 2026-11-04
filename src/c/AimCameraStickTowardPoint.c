@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "spyro_block.h"
 
 /* 0x8003c85c (0x138) — derive scripted-camera stick requests that steer the
    view toward `target`: project a probe point ahead of Spyro through his body
@@ -14,7 +15,7 @@ void AimCameraStickTowardPoint(int *target) {
   v[1] = 0;
   v[2] = 0x40;
   RotateVectorByMatrix(g_anSpyroBodyMtx, v, v);
-  AddVector(v, v, g_anSpyroBodyMtx - 13);
+  AddVector(v, v, SPY_VIA(g_anSpyroBodyMtx, SPY_BODY_MTX, SPY_POS));
   SubtractVector(v, target, v);
   TransposePackedMatrix(inv, g_anSpyroBodyMtx);
   RotateVectorByMatrix(inv, v, v);

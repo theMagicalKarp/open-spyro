@@ -16,7 +16,7 @@
    form indexes [world * 6 + level + 2], which runs past the eight world names
    into g_apLevelNameStrings[(world - 1) * 6 + level]. The string
    is centred by its glyph count (7px each) and handed to BuildTextSprites; the
-   emitted glyph records are then alpha-pulsed from the cosine LUT, one
+   emitted glyph records then rock on the cosine LUT (their rotZ), one
    0x58-byte record at a time, walking back down the sprite-record queue.
 
    Substates below 6 also cross-fade the world fog toward the actor mesh fade

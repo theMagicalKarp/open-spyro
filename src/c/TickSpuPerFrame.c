@@ -4,7 +4,7 @@
 
 /* Per-frame SPU maintenance: every 64 frames resync the software voice pool
    with the hardware, then flush any pending key-on / key-off requests (masked
-   to the 24 voice bits) to the SPU and clear them. (0x80056ed0, 144 bytes.) */
+   to the 24 voice bits) to the SPU and clear them. (0x80056ed4, 144 bytes.) */
 void TickSpuPerFrame(void) {
   int *pon;
   unsigned int on;

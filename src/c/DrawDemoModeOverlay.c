@@ -4,8 +4,8 @@
 #include "main_shared.h"
 
 /* Build the "DEMO MODE" text overlay (0x80018908) via BuildTextSprites, then
-   phase-pulse each glyph record's rotZ byte from the sine LUT indexed
-   by the vblank tick, and hand the records to the sprite queue via
+   rock each glyph (its rotZ roll angle) on the cosine LUT indexed by the
+   vblank tick, and hand the records to the sprite queue via
    EnqueuePendingSpritePrims. */
 void DrawDemoModeOverlay(void) {
   Actor *first;

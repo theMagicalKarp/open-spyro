@@ -20,6 +20,7 @@
 
 #include "titlescreen.h"
 #include "sparx.h"
+#include "cd_stream.h"
 
 static const char s_SaveFileName[20] = "BASCUS-94228SPYRO";
 
@@ -89,7 +90,7 @@ void Titlescreen_Update(void) {
         cd = *((volatile int *) &g_nCdBaseLba.baseLba);
         t = g_nTitleSceneSectorOffset;
         StartCdReadAsync(cd, g_pRenderScratchRegionBase - 0x40000, 0x40000,
-                      t, 600);
+                      t, CD_STALL_TIMEOUT_TICKS);
         g_nTitleMode.subState = TITLE_ATTRACT_LOAD_WAIT;
       } else if (g_nTitleMode.subState == TITLE_ATTRACT_LOAD_WAIT) {
         /* once loaded, initialize music and upload the sprite sheet to vram */
@@ -257,7 +258,7 @@ void Titlescreen_Update(void) {
         /* read save file from the selected card */
         MemCardRead(g_nTitleMode.cardPort << 4, (char *)s_SaveFileName,
                       (unsigned long *)g_nTitleMode.file, 0,
-                      sizeof(TitleSaveFile));
+                      sizeof(MemCardSaveFile));
         g_nTitleMode.menuState = 1;
       } else if (g_nTitleMode.menuState == 1) {
         /* save file has been read */
@@ -600,7 +601,7 @@ void Titlescreen_Update(void) {
           }
           MemCardWrite(g_nTitleMode.cardPort << 4, (char *)s_SaveFileName,
                         (unsigned long *)g_nTitleMode.file, 0,
-                        sizeof(TitleSaveFile));
+                        sizeof(MemCardSaveFile));
 
           g_nTitleMode.menuState = 2;
         } else if (g_nTitleMode.mcResult == McErrBlockFull) {
@@ -624,7 +625,7 @@ void Titlescreen_Update(void) {
           /* save succeeded, let's re-read it off the card */
           MemCardRead(g_nTitleMode.cardPort << 4, (char *)s_SaveFileName,
                         (unsigned long *)g_nTitleMode.file, 0,
-                        sizeof(TitleSaveFile));
+                        sizeof(MemCardSaveFile));
           g_nTitleMode.menuState = 3;
         }
       } else {

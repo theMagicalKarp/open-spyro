@@ -2,7 +2,7 @@
  * overlay, 0xf44 bytes).
  *
  * The emit-list ADVANCE pass -- the sibling of the emit dispatcher
- * func_level_33_80082B84.  Walks the 0x20-byte record stream at g_pEmitListBase
+ * Level33_EmitParticles.  Walks the 0x20-byte record stream at g_pEmitListBase
  * and ages one record per iteration: integrates its position, fades its
  * colour, ticks its life counter and, when the record has expired (or its
  * alive byte has been cleared), hands it back with FreeEmitListRecord().  The

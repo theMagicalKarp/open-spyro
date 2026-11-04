@@ -4,7 +4,7 @@
 #include "save_game.h"
 
 /* 0x80059864 (484 bytes) — memcard save-block serializer: packs the current
-   game state into a 0x600-byte buffer (options bytes, per-world tables,
+   game state into a SAVE_IMAGE_BYTES buffer (options bytes, per-world tables,
    per-level visited/gem/dragon/egg tallies, kill bitmaps) and stamps the
    checksum (SaveGameBuffer, save_game.h). Sole caller SaveMenu_Update
    (save-write). */
@@ -24,7 +24,7 @@ void BuildSaveGameBuffer(unsigned char *buf) {
   unsigned char *row2;
   int v;
 
-  FillWord(buf, 0, 0x600);
+  FillWord(buf, 0, SAVE_IMAGE_BYTES);
   buf[SAVE_OFFSET(levelId)] = g_nActiveLevelId;
   buf[SAVE_OFFSET(sfxVolume)] = g_nSfxVolume;
   buf[SAVE_OFFSET(musicVolume)] = g_nMusicVolume;

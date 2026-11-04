@@ -1,15 +1,16 @@
 /* Level17_FlightResults_Draw (0x8007B68C, level_17_magic_crafters_crystal_flight overlay, 6440 bytes).
  *
  * Flight-level end-of-run results/time-attack screen draw. First frame
- * (g_nMenuDrawFrames == 0): runs the render pipeline once, then captures the frame
- * into VRAM strips (4x MoveImage columns + LoadImage of the backdrop strip
- * and CLUT row). Later frames: rebuilds the frozen backdrop as 4 POLY_FT4
+ * (g_nMenuDrawFrames == 0): runs the render pipeline once, then freezes the frame
+ * as a gray backdrop: each of 4 column strips is read back (StoreImage),
+ * packed to 8bpp luma (ConvertRGB15ToLuma8) and reloaded at VRAM x=0x200
+ * (LoadImage), followed by the gray CLUT row. Later frames: rebuilds the frozen backdrop as 4 POLY_FT4
  * quads (clut 0x3820) plus a black TILE bar, then draws either the results
  * board (COMPLETED/QUIT/TIME IS UP/CRASHED headline, four tally rows
  * revealed by g_nSubMenuCursor, bonus column, TOTAL, PRESS-TO-CONTINUE or
  * TRY AGAIN?/YES/NO menu) or, at g_nSubMenuCursor == 0x64, the TIME ATTACK board
  * (times via the formatter g_pfnFlightTimeFormatter, NEW RECORD, TRY AGAIN/YES/NO).
- * Selected records get a sine glow on +0x46 from g_anCosineLut. Standard
+ * Selected glyphs rock on their rotZ (+0x46) from g_anCosineLut. Standard
  * 2-vblank pace tail. Word-identical in all five flight overlays
  * (5/11/17/23/29).
  *
@@ -86,7 +87,7 @@ void Level17_FlightResults_Draw(void)
     rect.y = 0;
     rect.w = 0x100;
     rect.h = 0xE1;
-    StoreImage(&rect, img[0] + 0xFFFE3E00);
+    StoreImage(&rect, img[0] - MENU_SNAPSHOT_BYTES);
     y = 8;
     do
     {
@@ -151,7 +152,7 @@ void Level17_FlightResults_Draw(void)
     PutDrawEnv(env);
     {
     int off, bias;
-    do { off = 0x1C000; bias = 0xFFFE3E00; } while (0);
+    do { off = PRIM_BUFFER_BYTES; bias = -MENU_SNAPSHOT_BYTES; } while (0);
     {
     register char *e8 asm("$3");
     register char *f0 asm("$2");
@@ -273,9 +274,9 @@ void Level17_FlightResults_Draw(void)
         ACTOR_RAW(r, int, posX) = 0x1CC;
         ACTOR_RAW(r, int, posY) = 0x28;
         ACTOR_RAW(r, int, posZ) = 0xC00;
-        ((Actor *)r)->rotY = g_anCosineLut[g_dwHudBobSinePhase] >> 9;
+        ((Actor *)r)->rotY = g_anCosineLut[g_dwHudIconSpinAngle] >> 9;
       }
-      g_pSpriteRecordWriteCursor->rotZ = g_dwHudBobSinePhase;
+      g_pSpriteRecordWriteCursor->rotZ = g_dwHudIconSpinAngle;
       g_pSpriteRecordWriteCursor->otBias = 0x7F;
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = 0xFF;

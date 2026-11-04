@@ -14,7 +14,7 @@
 
 extern void RestartStalledCdRead(void);
 
-extern int CallCdSync();
+extern int CallCdSync(int mode, unsigned char *result);
 
 extern int SetSpuTransferStartAddr(unsigned int addr);
 
@@ -226,7 +226,7 @@ extern void EnqueueHudSprites(void);
 extern long GetSpuTransferStatus(int mode);
 extern void InitActorMeshScratchRegions(int split);
 extern void InitNewGameState(void);
-extern void RelocateMobActorTable(void *table);
+extern void InstallSpyroAnimStream(void *stream);
 extern void RotateLightVectorXZ(int steps);
 extern void SetSpuCommonAttr(unsigned char *attr);
 extern void SnapCameraToTarget(void);

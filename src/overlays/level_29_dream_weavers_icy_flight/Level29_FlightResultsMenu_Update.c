@@ -2,7 +2,7 @@
  *
  * Flight-level end-of-run menu tick: silences all voices once
  * (StopAllSoundExceptMask = StopAllSoundExceptMask when the idle counter is fresh),
- * scrolls the HUD bob phase (g_dwHudBobSinePhase) and sun vector (RotateLightVectorXZ),
+ * turns the HUD icon spin angle (g_dwHudIconSpinAngle) and sun vector (RotateLightVectorXZ),
  * then runs the retry/exit menu. g_nSubMenuScrollOffset paces g_nSubMenuCursor (menu reveal
  * timer, +1 every 5 ticks, capped 9); four HUD sprite records at
  * g_abHudIconActorRecords_rotZ (+0x58 stride) spin their +0x32 angle byte. Once revealed
@@ -26,15 +26,15 @@
 #include "level_sfx.h"
 
 void Level29_FlightResultsMenu_Update(void) {
-  unsigned int *bob;
+  unsigned int *spin;
   unsigned char *rec;
   int i;
 
   if (g_nMenuTickFrames == 0) {
     StopAllSoundExceptMask(0);
   }
-  bob = g_dwHudBobSinePhase;
-  *bob = (*bob - 4) & 0xFF;
+  spin = g_dwHudIconSpinAngle;
+  *spin = (*spin - 4) & 0xFF;
   RotateLightVectorXZ(3);
   g_nMenuTickFrames += 1;
   g_nSubMenuScrollOffset += 1;
