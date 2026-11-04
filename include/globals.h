@@ -891,13 +891,16 @@ extern int g_nWorldAnimColor3Count;                     /* 0x80078588 */
 extern void *g_pWorldAnimColor3List;                    /* 0x8007858c */
 extern int g_nWorldAnimVertexMorphCount;                /* 0x800785a0 */
 extern void *g_pWorldAnimVertexMorphList;               /* 0x800785a4 */
+/* 0x800785a8: base of the world-table block the hand-asm probes index:
+ * +0x04 g_nWorldChunkCount, +0x14 g_anTriggerRegionCount, +0x18 g_pWorldMeshHeaderArray, +0x1C
+ * g_pWorldMeshVertexData, +0x2C g_pWorldCollisionHeader (world_collision.h). */
 extern void *g_pWorldChunkArray;                        /* 0x800785a8 */
 extern int g_nWorldChunkCount;                          /* 0x800785ac */
 extern void *g_pTriggerRegionTable;                     /* 0x800785b8 */
 extern void *g_pWorldMeshHeaderArray;                   /* 0x800785c0 */
 extern void *g_pWorldMeshVertexData;                    /* 0x800785c4 */
 extern int g_nWorldMeshCount;                           /* 0x800785c8 */
-extern void *g_pWorldCollisionHeader;                   /* 0x800785d4 */
+extern void *g_pWorldCollisionHeader;                   /* 0x800785d4: WorldCollisionHeader * */
 extern void *g_pDrawBufA;                               /* 0x800785d8 */
 extern void *g_pDrawBufB;                               /* 0x800785dc */
 extern char *g_pWorldUnpackHead;                        /* 0x800785e0 */

@@ -1,24 +1,9 @@
 #include "funcs.h"
 #include "globals.h"
+#include "world_collision.h"
 /* The section counts that are re-read through held pointers go through
    incomplete-array views (g_an...Block, globals.h) so the pointer access keeps
    its register base instead of folding to the absolute form. */
-
-/* The world collision header (g_pWorldCollisionHeader). Its table fields
- * hold bundle-relative offsets that the unpack below makes absolute; the
- * world probes then read them (FindWorldFloorBelowPoint). COLL_HDR keeps
- * the original's byte-offset access: an `int *` index (`h[2]`) gives a
- * different address RTL and the function stops matching. */
-typedef struct WorldCollisionHeader {
-  int pad00[2];
-  int xIndex;  /* 0x08 X-axis cell index (ushorts) */
-  int yzIndex; /* 0x0C combined Y/Z cell index (ushorts) */
-  int tris;    /* 0x10 triangle records, stride 0xC */
-  int surface; /* 0x14 per-triangle surface-type bytes */
-  int table18; /* 0x18 */
-} WorldCollisionHeader;
-#define COLL_HDR(hdr, field)                                                   \
-  (*(int *)((char *)(hdr) + (int)&((WorldCollisionHeader *)0)->field))
 
 /* 0x80012d58 — walk the loaded world bundle as a chain of size-prefixed
    sections (word 0 of each section links to the next), publish each
@@ -173,12 +158,12 @@ void *UnpackWorldDataChunks(int *p, int reduced) {
         {
           int *hdr = *(int *volatile *)&g_pWorldCollisionHeader;
 
-          COLL_HDR(hdr, surface) = (int)p + COLL_HDR(hdr, surface);
+          COLL_HDR(hdr, visZone) = (int)p + COLL_HDR(hdr, visZone);
         }
         {
           int *hdr = *(int *volatile *)&g_pWorldCollisionHeader;
 
-          COLL_HDR(hdr, table18) = (int)p + COLL_HDR(hdr, table18);
+          COLL_HDR(hdr, groundCode) = (int)p + COLL_HDR(hdr, groundCode);
         }
         p = (int *)((char *)base + *base);
       }
