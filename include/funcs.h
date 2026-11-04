@@ -2016,13 +2016,13 @@ int IsActorFacingSpyro(Actor *actor, int threshold);
 unsigned int CheckSpyroLineOfSightTo(int *target);
 
 /* 0x80038a40: Nearest point of a path list (count at [0], 0x10-byte records from +8) to the actor's position; returns the 2D distance, index via out_index. */
-int FindNearestPathPointToActor(int *ref, unsigned char *list, int *out_index);
+int FindNearestPathPointToActor(Actor *actor, PathData *path, int *out_index);
 
 /* 0x80038afc: FindNearestPathPointToActor measured from Spyro. */
-int FindNearestPathPointToSpyro(unsigned char *list, int *out_index);
+int FindNearestPathPointToSpyro(PathData *path, int *out_index);
 
 /* 0x80038bb0: Index of the path-list point farthest (2D) from Spyro. */
-int FindFarthestPathPointFromSpyro(unsigned char *list);
+int FindFarthestPathPointFromSpyro(PathData *path);
 
 /* 0x80038c4c: Rotates pos - rec into the record's yaw frame (+0x14) and tests it against the half-extents at +0xC/+0x10. */
 int IsPointInRotatedBox(int *pos, struct TriggerBox *box);
