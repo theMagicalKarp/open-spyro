@@ -271,9 +271,9 @@ void Level5_FlightResults_Draw(void)
         ACTOR_RAW(r, int, posX) = 0x1CC;
         ACTOR_RAW(r, int, posY) = 0x28;
         ACTOR_RAW(r, int, posZ) = 0xC00;
-        ((Actor *)r)->rotY = g_anCosineLut[g_dwHudBobSinePhase] >> 9;
+        ((Actor *)r)->rotY = g_anCosineLut[g_dwHudIconSpinAngle] >> 9;
       }
-      g_pSpriteRecordWriteCursor->rotZ = g_dwHudBobSinePhase;
+      g_pSpriteRecordWriteCursor->rotZ = g_dwHudIconSpinAngle;
       g_pSpriteRecordWriteCursor->otBias = 0x7F;
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = 0xFF;

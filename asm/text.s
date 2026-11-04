@@ -11001,15 +11001,15 @@ glabel Gamestate02_03_06_Draw
     /* BFBC 8001B7BC 0C0071AC */  sw         $s1, 0xC($v1)
     /* BFC0 8001B7C0 100071AC */  sw         $s1, 0x10($v1)
     /* BFC4 8001B7C4 140062AC */  sw         $v0, 0x14($v1)
-    /* BFC8 8001B7C8 0780023C */  lui        $v0, %hi(g_dwHudBobSinePhase)
-    /* BFCC 8001B7CC E47F428C */  lw         $v0, %lo(g_dwHudBobSinePhase)($v0)
+    /* BFC8 8001B7C8 0780023C */  lui        $v0, %hi(g_dwHudIconSpinAngle)
+    /* BFCC 8001B7CC E47F428C */  lw         $v0, %lo(g_dwHudIconSpinAngle)($v0)
     /* BFD0 8001B7D0 00000000 */  nop
     /* BFD4 8001B7D4 40100200 */  sll        $v0, $v0, 1
     /* BFD8 8001B7D8 0780013C */  lui        $at, %hi(g_anCosineLut)
     /* BFDC 8001B7DC 21082200 */  addu       $at, $at, $v0
     /* BFE0 8001B7E0 78CC2294 */  lhu        $v0, %lo(g_anCosineLut)($at)
-    /* BFE4 8001B7E4 0780153C */  lui        $s5, %hi(g_dwHudBobSinePhase)
-    /* BFE8 8001B7E8 E47FB526 */  addiu      $s5, $s5, %lo(g_dwHudBobSinePhase)
+    /* BFE4 8001B7E4 0780153C */  lui        $s5, %hi(g_dwHudIconSpinAngle)
+    /* BFE8 8001B7E8 E47FB526 */  addiu      $s5, $s5, %lo(g_dwHudIconSpinAngle)
     /* BFEC 8001B7EC 00140200 */  sll        $v0, $v0, 16
     /* BFF0 8001B7F0 43160200 */  sra        $v0, $v0, 25
     /* BFF4 8001B7F4 450062A0 */  sb         $v0, 0x45($v1)
@@ -11342,8 +11342,8 @@ glabel Gamestate02_03_06_Draw
     /* C4EC 8001BCEC 100082AC */  sw         $v0, 0x10($a0)
     /* C4F0 8001BCF0 000C0224 */  addiu      $v0, $zero, 0xC00
     /* C4F4 8001BCF4 140082AC */  sw         $v0, 0x14($a0)
-    /* C4F8 8001BCF8 0780023C */  lui        $v0, %hi(g_dwHudBobSinePhase)
-    /* C4FC 8001BCFC E47F428C */  lw         $v0, %lo(g_dwHudBobSinePhase)($v0)
+    /* C4F8 8001BCF8 0780023C */  lui        $v0, %hi(g_dwHudIconSpinAngle)
+    /* C4FC 8001BCFC E47F428C */  lw         $v0, %lo(g_dwHudIconSpinAngle)($v0)
     /* C500 8001BD00 4000B427 */  addiu      $s4, $sp, 0x40
     /* C504 8001BD04 40100200 */  sll        $v0, $v0, 1
     /* C508 8001BD08 0780013C */  lui        $at, %hi(g_anCosineLut)
@@ -11355,8 +11355,8 @@ glabel Gamestate02_03_06_Draw
     /* C520 8001BD20 450082A0 */  sb         $v0, 0x45($a0)
     /* C524 8001BD24 0780033C */  lui        $v1, %hi(g_pSpriteRecordWriteCursor)
     /* C528 8001BD28 1057638C */  lw         $v1, %lo(g_pSpriteRecordWriteCursor)($v1)
-    /* C52C 8001BD2C 0780023C */  lui        $v0, %hi(g_dwHudBobSinePhase)
-    /* C530 8001BD30 E47F428C */  lw         $v0, %lo(g_dwHudBobSinePhase)($v0)
+    /* C52C 8001BD2C 0780023C */  lui        $v0, %hi(g_dwHudIconSpinAngle)
+    /* C530 8001BD30 E47F428C */  lw         $v0, %lo(g_dwHudIconSpinAngle)($v0)
     /* C534 8001BD34 21280000 */  addu       $a1, $zero, $zero
     /* C538 8001BD38 460062A0 */  sb         $v0, 0x46($v1)
     /* C53C 8001BD3C 0780023C */  lui        $v0, %hi(g_pSpriteRecordWriteCursor)
@@ -32292,8 +32292,8 @@ glabel SubMenu_Update
     /* 1F334 8002EB34 398E4234 */  ori        $v0, $v0, (0x38E38E39 & 0xFFFF)
     /* 1F338 8002EB38 0780053C */  lui        $a1, %hi(g_nHudFrameCycleMod9)
     /* 1F33C 8002EB3C E87FA58C */  lw         $a1, %lo(g_nHudFrameCycleMod9)($a1)
-    /* 1F340 8002EB40 0780073C */  lui        $a3, %hi(g_dwHudBobSinePhase)
-    /* 1F344 8002EB44 E47FE724 */  addiu      $a3, $a3, %lo(g_dwHudBobSinePhase)
+    /* 1F340 8002EB40 0780073C */  lui        $a3, %hi(g_dwHudIconSpinAngle)
+    /* 1F344 8002EB44 E47FE724 */  addiu      $a3, $a3, %lo(g_dwHudIconSpinAngle)
     /* 1F348 8002EB48 0100A524 */  addiu      $a1, $a1, 0x1
     /* 1F34C 8002EB4C 1800A200 */  mult       $a1, $v0
     /* 1F350 8002EB50 0780063C */  lui        $a2, %hi(g_nFrameStep)
@@ -75316,8 +75316,8 @@ glabel UpdateHudCounters
     /* 45190 80054990 398E4234 */  ori        $v0, $v0, (0x38E38E39 & 0xFFFF)
     /* 45194 80054994 0780043C */  lui        $a0, %hi(g_nHudFrameCycleMod9)
     /* 45198 80054998 E87F848C */  lw         $a0, %lo(g_nHudFrameCycleMod9)($a0)
-    /* 4519C 8005499C 0780063C */  lui        $a2, %hi(g_dwHudBobSinePhase)
-    /* 451A0 800549A0 E47FC624 */  addiu      $a2, $a2, %lo(g_dwHudBobSinePhase)
+    /* 4519C 8005499C 0780063C */  lui        $a2, %hi(g_dwHudIconSpinAngle)
+    /* 451A0 800549A0 E47FC624 */  addiu      $a2, $a2, %lo(g_dwHudIconSpinAngle)
     /* 451A4 800549A4 01008424 */  addiu      $a0, $a0, 0x1
     /* 451A8 800549A8 18008200 */  mult       $a0, $v0
     /* 451AC 800549AC 3400BFAF */  sw         $ra, 0x34($sp)
@@ -75337,8 +75337,8 @@ glabel UpdateHudCounters
     /* 451E4 800549E4 23186200 */  subu       $v1, $v1, $v0
     /* 451E8 800549E8 C0100300 */  sll        $v0, $v1, 3
     /* 451EC 800549EC 21104300 */  addu       $v0, $v0, $v1
-    /* 451F0 800549F0 0780033C */  lui        $v1, %hi(g_dwHudBobSinePhase)
-    /* 451F4 800549F4 E47F638C */  lw         $v1, %lo(g_dwHudBobSinePhase)($v1)
+    /* 451F0 800549F0 0780033C */  lui        $v1, %hi(g_dwHudIconSpinAngle)
+    /* 451F4 800549F4 E47F638C */  lw         $v1, %lo(g_dwHudIconSpinAngle)($v1)
     /* 451F8 800549F8 23208200 */  subu       $a0, $a0, $v0
     /* 451FC 800549FC 0780013C */  lui        $at, %hi(g_nHudFrameCycleMod9)
     /* 45200 80054A00 E87F24AC */  sw         $a0, %lo(g_nHudFrameCycleMod9)($at)
@@ -75660,8 +75660,8 @@ glabel UpdateHudCounters
     /* 45698 80054E98 0051010C */  jal        OffsetHudIconRollAxis
     /* 4569C 80054E9C 03000524 */   addiu     $a1, $zero, 0x3
   .L80054EA0:
-    /* 456A0 80054EA0 0780023C */  lui        $v0, %hi(g_dwHudBobSinePhase)
-    /* 456A4 80054EA4 E47F428C */  lw         $v0, %lo(g_dwHudBobSinePhase)($v0)
+    /* 456A0 80054EA0 0780023C */  lui        $v0, %hi(g_dwHudIconSpinAngle)
+    /* 456A4 80054EA4 E47F428C */  lw         $v0, %lo(g_dwHudIconSpinAngle)($v0)
     /* 456A8 80054EA8 0780033C */  lui        $v1, %hi(g_abHudLivesCounterBlock)
     /* 456AC 80054EAC AA7F6390 */  lbu        $v1, %lo(g_abHudLivesCounterBlock)($v1)
     /* 456B0 80054EB0 0880013C */  lui        $at, %hi(D_800783A2)

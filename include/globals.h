@@ -872,7 +872,7 @@ extern int g_nHudEggCachedCount;                   /* 0x80077fd4 */
 extern int g_nHudKeyCachedState;                   /* 0x80077fd8 */
 extern int g_nHudEggRollRequest;                   /* 0x80077fdc */
 extern int g_nHudButterflyCachedCount;                  /* 0x80077fe0 */
-extern unsigned int g_dwHudBobSinePhase;                        /* 0x80077fe4 */
+extern unsigned int g_dwHudIconSpinAngle;                        /* 0x80077fe4: 8-bit angle the HUD gem / lives icons and the menu gem icons spin on (rotZ), down by the frame step each tick; their rotY tilt is its cosine */
 extern int g_nHudFrameCycleMod9;                        /* 0x80077fe8 */
 extern unsigned char g_abHudIconActorRecords[1056];              /* 0x80077fec */
 extern short g_anHudSpriteRects[128];                   /* 0x8007840c */
@@ -1363,7 +1363,7 @@ extern int g_anHudKeyTimerBlock[]; /* 0x80077fc4 */
 extern int g_anHudLevelGemCachedBlock[]; /* 0x80077fc8: held-base view of the cached level gem count */
 extern int g_anHudDragonCachedCountBlock[]; /* 0x80077fcc */
 extern int g_anHudButterflyCachedBlock[]; /* 0x80077fe0 */
-extern int g_adwHudBobSinePhaseBlock[]; /* 0x80077fe4: held-base view of g_dwHudBobSinePhase; [1] is the mod-9 HUD frame counter, [0x14c] is &g_anLevelSpriteTexWordPairs[2] */
+extern int g_adwHudIconSpinAngleBlock[]; /* 0x80077fe4: held-base view of g_dwHudIconSpinAngle; [1] is the mod-9 HUD frame counter, [0x14c] is &g_anLevelSpriteTexWordPairs[2] */
 extern int g_anHudFrameCycleBlock[]; /* 0x80077fe8: the same block seen from g_nHudFrameCycleMod9; [0x14b] is &g_anLevelSpriteTexWordPairs[2] */
 extern int g_anWorldAnimMeshKeyframeCountBlock[]; /* 0x80078560 */
 extern int g_anWorldAnimUvCycleCountBlock[]; /* 0x80078568 */

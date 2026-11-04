@@ -101,7 +101,7 @@ extern char *g_apBalloonistNames[];          /* [world] balloonist name; [0] is 
 extern char *g_apBalloonistDialogueLines[];          /* dialogue lines */
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
-extern unsigned int g_dwHudBobSinePhase[];
+extern unsigned int g_dwHudIconSpinAngle[];
 
 /* The balloonist actor record (Update reads its fields; Draw links it into
  * the OT as the pending node). */

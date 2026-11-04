@@ -721,10 +721,10 @@ void Gamestate02_03_06_Draw(void) {
       g_pSpriteRecordWriteCursor->posY = 0x2e;
       g_pSpriteRecordWriteCursor->posZ = 0xc00;
       g_pSpriteRecordWriteCursor->rotY =
-          ((unsigned short *)g_anCosineLut)[g_adwHudBobSinePhaseBlock[0]]
+          ((unsigned short *)g_anCosineLut)[g_adwHudIconSpinAngleBlock[0]]
               << 0x10 >>
           0x19;
-      g_pSpriteRecordWriteCursor->rotZ = g_adwHudBobSinePhaseBlock[0];
+      g_pSpriteRecordWriteCursor->rotZ = g_adwHudIconSpinAngleBlock[0];
       g_pSpriteRecordWriteCursor->otBias = 0x7f;
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = 0xff;
@@ -768,8 +768,9 @@ void Gamestate02_03_06_Draw(void) {
             } else {
               EmitTexturedQuad(
                   quad,
-                  &g_adwHudBobSinePhaseBlock[HUD_BOB_TO_EGG_ICON_FRAMES] +
-                      (g_adwHudBobSinePhaseBlock[HUD_BOB_TO_FRAME_CYCLE] + i) %
+                  &g_adwHudIconSpinAngleBlock[HUD_SPIN_TO_EGG_ICON_FRAMES] +
+                      (g_adwHudIconSpinAngleBlock[HUD_SPIN_TO_FRAME_CYCLE] +
+                       i) %
                           9 * 2,
                   (int *)0);
             }
@@ -849,10 +850,10 @@ void Gamestate02_03_06_Draw(void) {
       bp = buf;
       ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posZ) = 0xc00;
       g_pSpriteRecordWriteCursor->rotY =
-          ((unsigned short *)g_anCosineLut)[g_dwHudBobSinePhase] << 0x10 >>
+          ((unsigned short *)g_anCosineLut)[g_dwHudIconSpinAngle] << 0x10 >>
           0x19;
       SCHED_FENCE();
-      g_pSpriteRecordWriteCursor->rotZ = g_dwHudBobSinePhase;
+      g_pSpriteRecordWriteCursor->rotZ = g_dwHudIconSpinAngle;
       g_pSpriteRecordWriteCursor->otBias = 0x7f;
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = 0xff;
