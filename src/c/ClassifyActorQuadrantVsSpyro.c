@@ -3,7 +3,7 @@
 
 /* 0x8003bed8 — classify the actor's position relative to Spyro into a
    quadrant mask: compute actor(+0xC) - Spyro (optionally un-rotated by the
-   actor's yaw byte at +0x46), then AND away the halves of 0xF that the
+   actor's yaw byte rotZ), then AND away the halves of 0xF that the
    X/Y signs rule out. */
 int ClassifyActorQuadrantVsSpyro(Actor *actor) {
   int mtx[8];

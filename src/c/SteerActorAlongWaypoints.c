@@ -9,7 +9,7 @@
  * the remaining turn exceeds `limit`), advances by `speed` (capped at the
  * remaining distance) through the rotated basis, optionally applies a contact
  * probe of radius `contact`, then snaps to the ground within 0x400 below.
- * Within `radius` of the waypoint: clears the actor +0x49 latch, advances
+ * Within `radius` of the waypoint: clears the actor's subMode latch, advances
  * (and wraps) the waypoint index, and returns index + 0x100; else returns 0.
  * `d` carries the turn delta and is reused for the ground height. */
 int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius,
