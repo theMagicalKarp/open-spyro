@@ -1,26 +1,25 @@
 #include "globals.h"
 #include "pad.h"
 
-/* Reset the per-frame pad sub-step table. The header (base[0..7]) is zeroed
-   except for the 0x7F7F7F7F neutral-stick word at +0x14 and the two enable
-   flags at +0x18/+0x1C. Then four 0x18-byte sub-step entries (starting at
-   +0x44) are cleared: each gets its three counters zeroed, the neutral-stick
-   word at +0x58, and copies base[3] into its +0x44 field. */
+/* Reset a PadState's per-frame input (seen as an int array): pressed /
+   released / held cleared, the analog word centred, both idle flags raised;
+   then each of the four ring entries gets the pad type, cleared buttons and a
+   centred analog word (its stickActive is left alone). */
 void ResetPadFrameSubstepTable(int *base) {
   int i;
 
-  base[5] = PAD_ANALOG_CENTERED;
-  base[2] = 0;
-  base[0] = 0;
-  base[1] = 0;
-  base[6] = 1;
-  base[7] = 1;
+  base[PAD_STATE_WORD(analog)] = PAD_ANALOG_CENTERED;
+  base[PAD_STATE_WORD(held)] = 0;
+  base[PAD_STATE_WORD(pressed)] = 0;
+  base[PAD_STATE_WORD(released)] = 0;
+  base[PAD_STATE_WORD(allInputIdle)] = 1;
+  base[PAD_STATE_WORD(directionalIdle)] = 1;
   for (i = 0; i < 4; i++) {
-    int t = base[3];
-    base[i * 6 + 0x12] = 0;
-    base[i * 6 + 0x13] = 0;
-    base[i * 6 + 0x14] = 0;
-    base[i * 6 + 0x16] = PAD_ANALOG_CENTERED;
-    base[i * 6 + 0x11] = t;
+    int t = base[PAD_STATE_WORD(padType)];
+    base[i * PAD_SUBSTEP_WORDS + PAD_RING_WORD(held)] = 0;
+    base[i * PAD_SUBSTEP_WORDS + PAD_RING_WORD(pressed)] = 0;
+    base[i * PAD_SUBSTEP_WORDS + PAD_RING_WORD(released)] = 0;
+    base[i * PAD_SUBSTEP_WORDS + PAD_RING_WORD(analog)] = PAD_ANALOG_CENTERED;
+    base[i * PAD_SUBSTEP_WORDS + PAD_RING_WORD(padType)] = t;
   }
 }
