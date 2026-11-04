@@ -5,9 +5,10 @@
    drawn under the pause and inventory menus. Appends, to the first free slot of
    g_apSpritePrimQueue: the five gem-counter icon records (starting at record
    4 when the counter is in state 4), the gem digit chain built on the fly by
-   sprintf + BuildTextSpriteChain (each digit record gets a cosine bob written
-   to +0x46), then three dragon records, three life records and the level-egg
-   record, terminated with a NULL slot. Skipped wholesale on flight levels.
+   sprintf + BuildTextSpriteChain (each digit record rocks on a cosine wave
+   written to its rotZ), then three dragon records, three life records and the
+   level-egg record, terminated with a NULL slot. Skipped wholesale on flight
+   levels.
 
    Always (flight levels included) the sparx-food butterflies and the egg
    icons are emitted directly as textured quads: the butterflies get a swept

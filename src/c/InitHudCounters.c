@@ -16,7 +16,8 @@
 
    Wipes the 12 big-icon actor records, then per slot hides the render record,
    seeds its rest position from g_anHudIconRestPos and writes the default
-   render bytes (+0x47 OT bias, +0x49/+0x50 colour, +0x4F flags). Wipes the
+   render bytes (otBias 0x20, cullRadius 0xFF so it draws, subMode 0xFF =
+   no pending digit, tintMode TINT_HUD). Wipes the
    sprite-rect table and copies the 12 digit rest rects into it. Places the
    four fixed HUD anchors, arms all five counter state machines (phase and
    hold timer cleared), snapshots the live gem/dragon/life/egg/butterfly
@@ -24,7 +25,7 @@
 
    With `layout_butterflies` set it also clears the egg roll request and
    lays the sparx-food butterflies out around the lives icon's (slot 10) screen
-   position (records +0x37C/+0x380) using the g_abHudButterflyRingXY ring
+   position (its record's posX / posY) using the g_abHudButterflyRingXY ring
    offsets. */
 
 void InitHudCounters(int layout_butterflies) {
@@ -38,7 +39,7 @@ void InitHudCounters(int layout_butterflies) {
   int rect;
   int ring;
   int food;
-  int white;
+  int ff;
   int idx;
   int gems;
   int lives;
@@ -52,7 +53,7 @@ void InitHudCounters(int layout_butterflies) {
   int pad[2];
   FillWord(g_abHudIconActorRecords, 0, 0x420);
   i = 0;
-  white = 0xFF;
+  ff = 0xFF;
   pos = &HUD_ICON(0)->posX;
   rec = g_abHudIconActorRecords;
   off = 0;
@@ -64,8 +65,8 @@ icon_slot:
   pos += sizeof(Actor) / sizeof(int);
   rec += ACTOR_SIZE;
   HUD_ICON(off)->otBias = 0x20;
-  HUD_ICON(off)->cullRadius = white;
-  HUD_ICON(off)->subMode = white;
+  HUD_ICON(off)->cullRadius = ff;
+  HUD_ICON(off)->subMode = ff;
   HUD_ICON(off)->tintMode = TINT_HUD;
   off += ACTOR_SIZE;
   i += 1;
