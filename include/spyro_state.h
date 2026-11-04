@@ -96,6 +96,26 @@ typedef enum SpyroState
 #define SPYRO_EV_MASK_NO_HAZARD 0xFBF9
 #define SPYRO_EV_MASK_SUPERCHARGE (SPYRO_EV_HAZARD | SPYRO_EV_REBOUND)
 
+/* g_nSpyroGroundSlope: the ground's incline as an 8-bit angle from
+ * ProbeSpyroGroundContact (0 flat, 0x40 vertical; 0x400 when the hit faces
+ * down, i.e. a ceiling). */
+#define SLOPE_FLAT 0x0C       /* below: flat enough to launch a charge jump */
+#define SLOPE_STEEP 0x17      /* at or above: too steep to stand; Spyro slides or falls */
+#define SLOPE_NUDGE_MAX 0x20  /* below: still floor, so the wall probes may nudge */
+#define SLOPE_GROUND_MAX 0x21 /* below: counts as ground (clears the airborne count) */
+#define SLOPE_CEILING 0x400   /* the probe hit a downward-facing surface */
+
+/* g_nSpyroAirborneFrames at which a grounded state gives up and falls: a
+ * few frames of grace over gaps and bumps. */
+#define SPYRO_AIRBORNE_GRACE 4
+
+/* g_nSpyroMotionSpeed bands that pick the ground gait on landing / speed
+ * change (SPYRO_ST_WALK / JOG / RUN). */
+#define SPYRO_JOG_SPEED 0x780       /* above: jog */
+#define SPYRO_RUN_SPEED 0xF00       /* above: run */
+#define SPYRO_RUN_DROP_SPEED 0xC80  /* below: a run drops back to a jog; also the
+                                     * fast/slow split for glides, leaps and lean */
+
 /* g_dwSpyroRequestMask bits (SpyroObj.requestMask): a scripted override of
  * Spyro posted by actors and cutscenes, applied by AdvanceSpyroPhysics while
  * SPYRO_RQ_PENDING is set. */
@@ -146,7 +166,7 @@ typedef enum SpyroState
 /* Glide/fly substates >= 8 are scripted: flight levels stop the clock and the
  * path tweens while one runs. */
 #define SPYRO_SUB_SCRIPTED 8
-#define SPYRO_SUB_GLIDE_HOLD 8        /* frozen, turning to g_abSpyroRequestEuler (no-input / forced-jump frames) */
+#define SPYRO_SUB_GLIDE_HOLD 8        /* frozen, turning to g_abSpyroRequestEuler (no-input / level-intro glide-hold frames) */
 #define SPYRO_SUB_GLIDE_TO_TARGET 9   /* no-clip glide to the hand-off point, then LEVEL_GLIDE_HANDOFF */
 #define SPYRO_SUB_GLIDE_ARRIVE 10     /* level-entry glide under GS_ARRIVAL_CAMERA, banks down to the ground */
 #define SPYRO_SUB_GLIDE_ENTER 11      /* level-entry glide straight into gameplay (camera mode 12) */

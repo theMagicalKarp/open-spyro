@@ -251,7 +251,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     } else {
       int lean = 2;
 
-      if (g_nSpyroMotionSpeed < 0xC80) {
+      if (g_nSpyroMotionSpeed < SPYRO_RUN_DROP_SPEED) {
         lean = 1;
       }
       r = TurnSpyroTowardMoveTargetWithLean(lean);
@@ -343,7 +343,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     } else {
       int lean = 2;
 
-      if (g_nSpyroMotionSpeed < 0xC80) {
+      if (g_nSpyroMotionSpeed < SPYRO_RUN_DROP_SPEED) {
         lean = 1;
       }
       r = TurnSpyroTowardMoveTargetWithLean(lean);
@@ -475,7 +475,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     }
     fallDrag[2] = g_nSpyroGravityStep;
     AddVector(vel, vel, fallDrag);
-    if (g_nSpyroGroundProbeSuspendFlag == 0 && g_nSpyroGroundSlope < 0x20) {
+    if (g_nSpyroGroundProbeSuspendFlag == 0 &&
+        g_nSpyroGroundSlope < SLOPE_NUDGE_MAX) {
       NudgeSpyroFromWallProbes();
     }
     vz = &SPY[SPY_VELOCITY + 2];
@@ -1035,9 +1036,11 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       case 3: {
         int p;
 
-        if (g_anCameraPosBlock[12] != (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
+        if (g_anCameraPosBlock[12] /* g_nCameraCurrentMode */ !=
+            (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
           CopyVector(g_anSpyroDeathCamRecordBlock, g_anCameraPosBlock);
-          ActivateScriptedCameraView(g_anSpyroDeathCamRecordBlock - 6);
+          ActivateScriptedCameraView(
+              SCRIPTED_CAM_VIEW_AT_POS(g_anSpyroDeathCamRecordBlock));
         }
         x = (0x400 - SPY[SPY_ROLL]) & 0xFFF;
         if (x > 0x800) {
@@ -1082,7 +1085,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       case SPYRO_SUB_GLIDE_ARRIVE: {
         SPY[SPY_SPEED_TARGET] = 0x1900;
         APPROACH_GLIDE_SPEED(&SPY[SPY_SPEED_TARGET]);
-        if (SPY[SPY_SPEED] < 0x780) {
+        if (SPY[SPY_SPEED] < SPYRO_JOG_SPEED) {
           SPY[SPY_SPEED] = 0x780;
         }
         g_abSpyroPersistentEuler[2] = g_nSpyroBodyYaw >> 4;
@@ -1204,7 +1207,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           }
         }
       }
-      if (SPY[SPY_SPEED] < 0x780) {
+      if (SPY[SPY_SPEED] < SPYRO_JOG_SPEED) {
         SPY[SPY_SPEED] = 0x780;
       }
       g_nSpyroBodyYawStep = OpaqueInt(side * 20) >> 7;
@@ -1413,8 +1416,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     int l;
 
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
-    RotateSpyroBodyTowardKnockbackDir(8, 4);
-    if (g_nSpyroGroundSlope < 0x17) {
+    TurnSpyroYawTowardMotion(8, 4);
+    if (g_nSpyroGroundSlope < SLOPE_STEEP) {
       int *c2 = &SPY[SPY_CARRY];
 
       ZeroVector(slideDrag);

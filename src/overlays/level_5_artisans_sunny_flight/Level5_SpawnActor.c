@@ -23,7 +23,7 @@
  * Spawn one actor ("moby") of type `type`, parented to `parent`.
  *
  * Allocates a pool record (AllocActorRecordSlot), stamps the
- * type into +0x36 and the parent's pool index into +0x56, then runs a per-type
+ * type into ->type and the parent's pool index into ->poolIndex, then runs a per-type
  * init arm: every arm starts from InitActorRenderDefaults (InitActorRenderDefaults) and
  * ends by placing the new actor -- most copy the parent's position
  * (CopyVector) and either register it in the spatial grid
@@ -32,8 +32,6 @@
  *
  * Sunny Flight carries the full flight arm set shared with levels 11/17/23/29.
  */
-
-
 
 Actor *Level5_SpawnActor(int type, Actor *parent) {
   Actor *rec;

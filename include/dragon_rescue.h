@@ -5,6 +5,19 @@
 #ifndef OPEN_SPYRO_DRAGON_RESCUE_H
 #define OPEN_SPYRO_DRAGON_RESCUE_H
 
+/* Word indices into g_anDragonRescueBlock (the held-base view at
+ * g_nDragonRescueSubstate, 0x80077058), each named after the global there. */
+enum DragonRescueWord {
+  DRW_TYPE_SNAPSHOT = -1,  /* g_nDragonRescueTypeSnapshot */
+  DRW_SUBSTATE = 0,        /* g_nDragonRescueSubstate */
+  DRW_STREAM_STATE = 1,    /* g_nDragonRescueStreamState */
+  DRW_TIMER = 5,           /* g_nDragonRescueTimer */
+  DRW_SECONDARY_TIMER = 10, /* g_nDragonRescueSecondaryTimer */
+  DRW_AUDIO_FIRED = 12,    /* g_nDragonRescueAudioFiredFlag */
+  DRW_PAD_HOLD_TIMER = 13, /* g_nDragonRescuePadHoldTimer */
+  DRW_SOURCE_ACTOR = 26    /* g_pDragonRescueSourceActor */
+};
+
 enum DragonRescueSubstate {
   DRAGON_RESCUE_AURA = 0,        /* aura star swells while Spyro keeps playing */
   DRAGON_RESCUE_SWEEP = 1,       /* Spyro swept round the statue, camera eases in */

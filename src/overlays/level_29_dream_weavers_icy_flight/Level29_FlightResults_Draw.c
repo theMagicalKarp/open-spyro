@@ -36,8 +36,6 @@
 #define QUAD ((volatile PolyFT4 *) p)
 #define TILE ((Tile *) ((PolyFT4 *) p + 1))
 
-
-
 void Level29_FlightResults_Draw(void)
 {
   struct 

@@ -99,9 +99,10 @@ void ActorCutscene_Draw(void) {
       if (g_nActorCutsceneSubstate < ACS_DESCEND) {
         g_dwActorMeshFadeColor = 0x401010;
         if (g_nActorCutsceneSubstate == ACS_STREAM_WAIT) {
-          g_nFadeProgress = g_anActorCutsceneTimerBlock[0] * 0x10;
+          g_nFadeProgress = g_anActorCutsceneTimerBlock[ACSW_TIMER] * 0x10;
         } else {
-          g_nFadeProgress = (0x100 - g_anActorCutsceneTimerBlock[0]) * 0x10;
+          g_nFadeProgress =
+              (0x100 - g_anActorCutsceneTimerBlock[ACSW_TIMER]) * 0x10;
         }
         if (g_nFadeProgress < 0) {
           *(volatile int *)&g_nFadeProgress = 0;

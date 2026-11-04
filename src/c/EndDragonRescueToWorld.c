@@ -6,7 +6,7 @@
 #include "hud_counter.h"
 #include "main_shared.h"
 
-/* Leave the dragon-rescue / dragon-rescue overlay back into the world
+/* Leave the dragon-rescue gamestate back into the world
    (0x8002CB6C, gamestate 0): unblock gameplay, release the actor that owned
    the pickup (clear its +0x3C hold byte and re-enable it at +0x48), reset
    Spyro, re-seed the pad-snapshot countdown and point the camera anchor at his
@@ -45,8 +45,8 @@ void EndDragonRescueToWorld(void) {
   g_pCameraTargetParams = dyn;
   g_nSpyroSuperflameTimer = timer;
   g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
-  ComputeCameraToTargetAngle((int *)((char *)cam - 0xA8));
-  CopyWords(dyn, ((char *)cam) - 0x40, 0x18);
+  ComputeCameraToTargetAngle((int *)((char *)cam - 0xA8)); /* g_anCameraPos */
+  CopyWords(dyn, ((char *)cam) - 0x40, 0x18);              /* g_nCameraYaw */
   dyn[0] = (dyn[0] + g_nCameraTargetYawBiasFromMode) & 0xFFF;
   ResetCameraStateToTarget();
   InitHudCounters(0);

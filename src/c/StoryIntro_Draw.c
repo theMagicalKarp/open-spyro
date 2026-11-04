@@ -9,9 +9,9 @@
  * 2 is past frame 0x8C it lays out one of four message strings with
  * BuildTextSprites, rewinds the sprite-record cursor by the number of glyph
  * slots the message still has to reveal, then runs a per-glyph wave: each
- * record's +0x46 alpha byte ramps linearly for the first 0x38 frames of its
- * life and rides the cosine LUT after that. Then the standard sprite flush and
- * the simple (no pace loop) gamestate frame-submit tail. */
+ * record's rotZ byte (its alpha) ramps linearly for the first 0x38 frames of
+ * its life and rides the cosine LUT after that. Then the standard sprite flush
+ * and the simple (no pace loop) gamestate frame-submit tail. */
 
 /* Held-base view of g_nStoryIntroTimer: the original keeps `&timer` in a
    register across the fade-threshold test and the whole glyph loop, which a

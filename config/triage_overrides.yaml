@@ -147,7 +147,7 @@ IsActorInCheckpointKillSet:
   verdict: matched
   class: "matched 2026-08-11 (the word index and the bit index as two locals, in that order - the two independent index insns follow declaration order, not sched1 path length)"
   date: 2026-08-11
-SelectActorLodBand:
+StepActorScorchTint:
   verdict: matched
   class: "matched 2026-08-10-2 (literal 0xA00000 page base, one exit, -n split out of the address sum)"
   date: 2026-08-10
@@ -171,7 +171,7 @@ WriteSpuVoiceAddrRegister:
   verdict: matched
   class: "matched 2026-08-10-3 (A64 asm-order goto transcription of the -2/-1/store ladder; A166 split the round-up RMW)"
   date: 2026-08-10
-RotateSpyroBodyTowardKnockbackDir:
+TurnSpyroYawTowardMotion:
   verdict: parked
   class: "F4 return-reg coalescing (1 insn, 98.0%)"
   date: 2026-07-10

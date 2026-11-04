@@ -59,7 +59,6 @@
  * what the original does (`addiu $t0,$sp,0x40; sw $t0,0x70($sp)`).
  */
 
-
 void Level27_AdvanceEmitList(int step) {
   unsigned char *rec = g_pEmitListBase;
   int p[3];

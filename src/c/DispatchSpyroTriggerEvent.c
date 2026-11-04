@@ -4,6 +4,7 @@
 #include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "spyro_block.h"
 #include "spyro_state.h"
 #include "vecmath.h"
 
@@ -97,7 +98,7 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
     if (g_nActiveLevelId % 10 != 0) {
       g_nReturnPortalLevelId = g_nActiveLevelId;
     }
-    SubtractVector(tmp, (int *)((char *)ready - 0x164), ENT + 0xB);
+    SubtractVector(tmp, ready - (SPY_SPARX_HEALTH - SPY_POS), ENT + 0xB);
     d = -tmp[0] * ENT[2] - tmp[1] * ENT[3] - tmp[2] * ENT[4];
     a = ENT[6];
     if (a < 0) {

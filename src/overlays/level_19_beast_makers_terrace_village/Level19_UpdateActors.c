@@ -14,7 +14,7 @@
  *
  * Load-bearing source forms:
  *   - Level 8's loop top (fp = `one`, s7 = `spy`); the frame is laid out in
- *     the original slot order (o152, o256..o528 are slots shared by arms).
+ *     the original slot order (floorProbe and the o256..o528 slots, shared by arms).
  *   - The `4` hoist group must NOT move: the three pose-4 sites in 466/467
  *     use the split-constant ENTER_POSE_B forms (cookbook A285).
  *   - Case 35 keeps a counter per loop; case 21 indexes g_pActorListBase directly
@@ -29,7 +29,7 @@
  *     are never compared with each other. That keeps the duplicated
  *     `g_pfnLevelEmitParticles(...); despawn` tails of arms 14, 67, 250 and 329 apart, as
  *     in the original.
- *   - Case 14 samples the floor through svF (idle) and o152 (mode 3).
+ *   - Case 14 samples the floor through svF (idle) and floorProbe (mode 3).
  *   - Case 467 reads Spyro's heading and damage flags through SPY, so the
  *     loads stay behind the st->speed and bs->mode stores (cookbook A302).
  */
@@ -51,38 +51,11 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-
-/* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
+/* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. The
+ * clones that need a loop-top carrier for 0x10 declare `int sixteen`; here
+ * it is the plain constant, so arm bodies read the same in every level. */
 #define ANIM_RATE16 sixteen
-
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* Case 328 -- floor-snapped marker. */
-
-
-/* ==== Camera and Spyro globals used by the camera arms ==== */
-
-
 #define sixteen 0x10
-
-
-/* ==== Level 19 classes ==== */
 
 /* ENTER_POSE for arms whose fall-out runs a shared exit after the switch. */
 #define ENTER_POSE_BRK(a, n)                                                   \
@@ -135,7 +108,6 @@ enum AimedBoltMode {
   }                                                                            \
   break
 
-/* ==== The function ==== */
 void Level19_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
@@ -152,12 +124,12 @@ void Level19_UpdateActors(void) {
   int svD[3];
   int eggViewPos[3];
   int svF[3];
-  int o152[3];
+  int floorProbe[3];
   int acc[3][3];
   int bouncePos[3];
   int bounceNormal[3];
   int homingStep[3];
-  int o256[3];
+  int toTargetAhead[3];
   int sparxToTarget[3];
   int o288[3];
   int sparkleTwinkle[3];
@@ -166,7 +138,7 @@ void Level19_UpdateActors(void) {
   int o352[3];
   int podSparkVel[3];
   int o384[3];
-  int o400[3];
+  int toPartner[3];
   int barrelAxis[3];
   int muzzlePos[3];
   int smokeVel[3];
@@ -1080,10 +1052,10 @@ void Level19_UpdateActors(void) {
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
           } else if (st->mode == COLLREST_FIND_TRI) {
-            CopyVector(o152, &actor->posX);
-            o152[2] += 0x400;
+            CopyVector(floorProbe, &actor->posX);
+            floorProbe[2] += 0x400;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
-            if (FindGroundHeightBelow(o152, 0x1000) > 0) {
+            if (FindGroundHeightBelow(floorProbe, 0x1000) > 0) {
               st->groundTri = g_nLastCollisionHitChunkId;
               st->mode = COLLREST_ON_TRI;
             }
@@ -1603,17 +1575,17 @@ void Level19_UpdateActors(void) {
             int reach;
             int limit;
 
-            CopyVector(o256, &st->target->posX);
+            CopyVector(toTargetAhead, &st->target->posX);
 
             if (high == 0) {
-              o256[0] -=
+              toTargetAhead[0] -=
                   (unsigned short)g_anCosineLut[st->target->rotZ] << 16 >> 20;
-              o256[1] -=
+              toTargetAhead[1] -=
                   (unsigned short)g_anSineLut[st->target->rotZ] << 16 >> 20;
             } else {
-              o256[0] -=
+              toTargetAhead[0] -=
                   (unsigned short)g_anCosineLut[st->target->rotZ] << 16 >> 22;
-              o256[1] -=
+              toTargetAhead[1] -=
                   (unsigned short)g_anSineLut[st->target->rotZ] << 16 >> 22;
             }
 
@@ -1638,8 +1610,8 @@ void Level19_UpdateActors(void) {
               }
             }
 
-            SubtractVector(o256, o256, &actor->posX);
-            dist = VectorLength(o256, VEC_LEN_XYZ);
+            SubtractVector(toTargetAhead, toTargetAhead, &actor->posX);
+            dist = VectorLength(toTargetAhead, VEC_LEN_XYZ);
 
             if (high == 0 &&
                 (TICK_DOWN(st->timer) != 0 ||
@@ -1657,13 +1629,13 @@ void Level19_UpdateActors(void) {
             reach = high != 0 ? 0x96 : 0x82;
             limit = reach + 5;
             if (limit < dist) {
-              ScaleVector3ByRatio(o256, dist, limit);
+              ScaleVector3ByRatio(toTargetAhead, dist, limit);
             } else {
-              ScaleVector3ByRatio(o256, dist, reach - 5);
+              ScaleVector3ByRatio(toTargetAhead, dist, reach - 5);
             }
-            AddVector(&actor->posX, &actor->posX, o256);
-            TurnActorYawTowardAngle(actor, ArcTan2(o256[0], o256[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
-            actor->rotY = ArcTan2(VectorLength(o256, VEC_LEN_XY), o256[2], ATAN_ANGLE8);
+            AddVector(&actor->posX, &actor->posX, toTargetAhead);
+            TurnActorYawTowardAngle(actor, ArcTan2(toTargetAhead[0], toTargetAhead[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
+            actor->rotY = ArcTan2(VectorLength(toTargetAhead, VEC_LEN_XY), toTargetAhead[2], ATAN_ANGLE8);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
           }
@@ -1985,7 +1957,7 @@ void Level19_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
@@ -2650,7 +2622,7 @@ void Level19_UpdateActors(void) {
           st->speed += 0x64;
         }
       }
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       st->speed -= 1;
       if (pitch < cur && actor->voiceRow != VOICE_ROW_NONE) {
         g_anSpuVoiceRowPitchStep[actor->voiceRow & 0x7F][0] = -4;
@@ -2708,14 +2680,14 @@ void Level19_UpdateActors(void) {
               a->collision >= 0) {
             continue;
           }
-          SubtractVector(o400, &a->posX, &actor->posX);
-          d = ABS2(o400[0]) + ABS2(o400[1]);
+          SubtractVector(toPartner, &a->posX, &actor->posX);
+          d = ABS2(toPartner[0]) + ABS2(toPartner[1]);
           if (d < 0x6000 &&
-              (unsigned int)(VectorLength(o400, VEC_LEN_XY) - 0x1000) <= 0x2000 &&
-              (unsigned int)(o400[2] + 0x1000) <= 0x2000) {
+              (unsigned int)(VectorLength(toPartner, VEC_LEN_XY) - 0x1000) <= 0x2000 &&
+              (unsigned int)(toPartner[2] + 0x1000) <= 0x2000) {
             d = AbsAngleDelta12(ArcTan2(actor->posX - spy->posX,
                                             actor->posY - spy->posY, ATAN_ANGLE12),
-                              ArcTan2(o400[0], o400[1], ATAN_ANGLE12));
+                              ArcTan2(toPartner[0], toPartner[1], ATAN_ANGLE12));
             if (d < bestAng) {
               bestAng = d;
               best = a;
@@ -2837,7 +2809,7 @@ void Level19_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
         if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE)) && st->shake == 0) {
           st->shake = 1;
           st->rotX = actor->rotX;

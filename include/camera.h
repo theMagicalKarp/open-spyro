@@ -17,6 +17,37 @@ typedef struct CameraAngles {
   int yawBias;   /* 0x14 */
 } CameraAngles;
 
+/* A scripted-camera vantage (0x38 bytes): where the camera sits and how it
+ * is turned, plus the pose Spyro is re-seated in when the record is drawn.
+ * g_aScriptedCamViews holds three ROM presets UpdateScriptedCameraView
+ * picks between, then a fourth, the fall/death vantage, whose camPos the
+ * callers overwrite with the live camera position before activating it
+ * (they reach it as g_anSpyroDeathCamRecordBlock, its camPos). */
+typedef struct ScriptedCamView {
+  int spyroPos[3]; /* 0x00 Spyro's position when a preset is drawn */
+  int spyroPitch;  /* 0x0C -> g_nSpyroBodyPitch */
+  int spyroRoll;   /* 0x10 -> g_nSpyroBodyRoll */
+  int spyroYaw;    /* 0x14 -> g_nSpyroBodyYaw */
+  int camPos[3];   /* 0x18 */
+  int camRoll;     /* 0x24 -> g_nCameraEulerRoll */
+  int camPitch;    /* 0x28 -> g_nCameraEulerPitch */
+  int camYaw;      /* 0x2C -> g_nCameraEulerYaw */
+  int aimAtSpyro;  /* 0x30 1 = re-aim the camera at Spyro every frame */
+  int range;       /* 0x34 retire once Spyro is farther than this */
+} ScriptedCamView;
+
+/* The record whose camPos is at `pos`. */
+#define SCRIPTED_CAM_VIEW_AT_POS(pos) ((ScriptedCamView *)((int *)(pos) - 6))
+
+/* Byte views onto the camera globals from the held bases the original keeps
+ * live (g_anCameraEulerPitchBlock, g_anCameraViewMtx, g_apCameraAnchorBlock);
+ * each is the named global's address. */
+#define CAM_VIEW_MTX_VIA_EULER ((char *)g_anCameraEulerPitchBlock - 0x3A) /* g_anCameraViewMtx */
+#define CAM_W2C_MTX_VIA_EULER ((char *)g_anCameraEulerPitchBlock - 0x4E)  /* g_anWorldToCameraRotMtx */
+#define CAM_W2C_MTX_VIA_VIEW ((char *)g_anCameraViewMtx - 0x14)           /* g_anWorldToCameraRotMtx */
+#define CAM_POS_VIA_ANCHOR ((char *)g_apCameraAnchorBlock - 0xA8)         /* g_anCameraPos */
+#define CAM_YAW_VIA_ANCHOR ((char *)g_apCameraAnchorBlock - 0x40)         /* g_nCameraYaw */
+
 /* g_nCameraCurrentMode / g_nCameraNextMode. Modes 0..6 and 0xF are the
  * per-Spyro-state picks (g_abSpyroStateCameraModeTable, by SpyroState); the
  * rest are entered by request bits, scripts and transitions. CAM_HELD marks a

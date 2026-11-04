@@ -5,6 +5,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "pad_buttons.h"
+#include "spyro_block.h"
 #include "spyro_state.h"
 #include "vecmath.h"
 
@@ -148,7 +149,8 @@ void TickSpyroFlameAttack(void) {
           g_anSpyroFlameTimerBlock[0] = -1;
           g_nSpyroFlameAnimRate = g_abSpyroAnimDescTable
               [(g_abSpyroFlameAnimTable[g_nSpyroFlameState] * 4) + 3];
-          ZeroVector(&g_anSpyroFlameTimerBlock[1]);
+          ZeroVector(
+              &g_anSpyroFlameTimerBlock[SPY_SWING_TARGET - SPY_FLAME_TIMER]);
         }
       }
       break;

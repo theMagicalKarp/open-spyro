@@ -15,7 +15,7 @@
  *   - Level 9's loop top (`oneq`/`one` carriers, `spy = base - 8`), but 16 is
  *     a literal (`sixteen` is a macro), not a hoisted carrier.
  *   - Scratch arrays in the original frame order: the twelve 16-byte slots
- *     after svJ are shared across arms (x256..x432).
+ *     after sparxToTarget are shared across arms (x256..x432).
  *   - Pool-actor reads use `g_pActorListBase[i].field` directly; a `&g_pActorListBase[i]`
  *     pointer local reverses the address add.
  *   - Reads of Spyro's heading/position that the original keeps below a
@@ -42,61 +42,13 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-
-/* Type 286: ambient sound source (AmbientSoundState) with the path seen as
- * bytes, the view the other clones were matched with. */
-
-
-/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
- * saves a checkpoint and starts the rescue. */
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 sixteen
 
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Level 16 classes ==== */
-
-
-/* Case 328 -- floor-snapped marker. */
-
-
-/* ENTER_POSE with the already-there test first. */
-/* ==== Level 2 classes ==== */
-
-
-/* ==== Level 9 classes ==== */
-
-
-/* ==== Camera and Spyro globals used by the camera arms ==== */
-
-
 extern void ApplyEulerRotation(void *euler, int *mtx, int base);
 
-
 #define sixteen 0x10
-/* ==== The function ==== */
+
 void Level15_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
@@ -117,7 +69,7 @@ void Level15_UpdateActors(void) {
   int bouncePos[3];
   int bounceNormal[3];
   int homingStep[3];
-  int svJ[3];
+  int sparxToTarget[3];
   int x256[3];
   int x272[3];
   int prevPos[3];
@@ -2343,8 +2295,8 @@ void Level15_UpdateActors(void) {
             CollectibleState *pk = st->target->state;
             int dist;
 
-            SubtractVector(svJ, &st->target->posX, &actor->posX);
-            dist = VectorLength(svJ, VEC_LEN_XYZ);
+            SubtractVector(sparxToTarget, &st->target->posX, &actor->posX);
+            dist = VectorLength(sparxToTarget, VEC_LEN_XYZ);
 
             if (dist < 0x200) {
               pk->timer = 0;
@@ -2374,13 +2326,13 @@ void Level15_UpdateActors(void) {
               int lim = 0x136;
 
               if (lim < dist) {
-                ScaleVector3ByRatio(svJ, dist, lim);
+                ScaleVector3ByRatio(sparxToTarget, dist, lim);
               } else {
-                ScaleVector3ByRatio(svJ, dist, 0x122);
+                ScaleVector3ByRatio(sparxToTarget, dist, 0x122);
               }
-              AddVector(&actor->posX, &actor->posX, svJ);
-              TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
-              actor->rotY = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], ATAN_ANGLE8);
+              AddVector(&actor->posX, &actor->posX, sparxToTarget);
+              TurnActorYawTowardAngle(actor, ArcTan2(sparxToTarget[0], sparxToTarget[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
+              actor->rotY = ArcTan2(VectorLength(sparxToTarget, VEC_LEN_XY), sparxToTarget[2], ATAN_ANGLE8);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
             break;
@@ -2637,7 +2589,7 @@ void Level15_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
@@ -4054,7 +4006,7 @@ void Level15_UpdateActors(void) {
           st->speed += 0x64;
         }
       }
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       st->speed -= 1;
       if (pitch < cur && actor->voiceRow != VOICE_ROW_NONE) {
         g_anSpuVoiceRowPitchStep[actor->voiceRow & 0x7F][0] = -4;
@@ -4241,7 +4193,7 @@ void Level15_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
         if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE)) && st->shake == 0) {
           st->shake = 1;
           st->rotX = actor->rotX;

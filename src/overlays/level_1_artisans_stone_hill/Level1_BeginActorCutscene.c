@@ -18,10 +18,10 @@
 #include "level_actor_cutscene.h"
 #include "gamestate.h"
 
-
 /* The three position reads go through ACTOR_RAW: written as
  * actor->posX/posY/posZ (or through &actor->posX) sched1 reorders them
  * against the global stores and the function stops matching. */
+
 void Level1_BeginActorCutscene(Actor *actor) {
   int vec[4];
   int *pos;

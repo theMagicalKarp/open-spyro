@@ -89,7 +89,6 @@
 #include "cd_stream.h"
 #include "level_id.h"
 
-
 void Level7_BalloonistCutscene_Update(void)
 {
   int vecA[4];  /* sp+0x10 (PSX VECTOR: 16 bytes) */

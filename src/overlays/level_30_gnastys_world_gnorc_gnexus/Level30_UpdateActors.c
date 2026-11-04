@@ -1,4 +1,11 @@
-/* Level30_UpdateActors (0x8007D938, 23,600 B) -- matching notes.
+/* Level30_UpdateActors -- per-frame actor update for level 30 (Gnorc Gnexus).
+ *
+ * Walks the list of actors due for an update this frame and runs each one's
+ * behaviour. Each `case` of the dispatch switch is one actor class: a small
+ * state machine over the actor's state byte (->mode), often with a sub-state
+ * (->subMode), and usually a class-specific state block behind ->state.
+ *
+ * Matching notes (0x8007D938, 23,600 B):
  *
  * The level_30 actor-update megafunction. Load-bearing source forms, beyond
  * the frame layout (15 scratch arrays + acc[3][3], in first-use order) and
@@ -44,54 +51,10 @@
 #include "cd_stream.h"
 #include "actor_cutscene.h"
 
-/* Level30_UpdateActors -- per-frame actor update for level 30 (Gnorc Gnexus).
- *
- * Walks the list of actors due for an update this frame and runs each one's
- * behaviour. Each `case` of the dispatch switch is one actor class: a small
- * state machine over the actor's state byte (->mode), often with a sub-state
- * (->subMode), and usually a class-specific state block behind ->state.
- *
- * Layout of this file:
- *   Core records      Actor, the per-type Model table, waypoint paths
- *   Per-class blocks  one state struct per actor class, each followed by the
- *                     globals and callees its case uses, in roughly case order
- *   Shared objects    the camera (CAM) and Spyro (SPY), each declared as one
- *                     aggregate over its whole address range
- *   Helper macros     absolute value and the three animation idioms
- *   The function      update-list preamble, then the per-class dispatch
- */
-
-/* ==== Per-class state blocks ====
- *
- * Every actor class keeps its private state behind actor->state. The blocks
- * below sit next to the globals and callees their case needs.
- */
-
-
-/* Callees used by the collectible and fairy behaviours. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
 
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 0x10
 
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== level_30 globals ====
- *
- * The hub's own state: which stage of the balloon sequence the world is in,
- * the scripted-camera block at 0x80078C4C, and the three ambience channels. */
-
-/* ==== The function ==== */
 void Level30_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
@@ -1706,7 +1669,7 @@ void Level30_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;

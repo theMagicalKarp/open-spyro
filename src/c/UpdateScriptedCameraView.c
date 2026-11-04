@@ -14,10 +14,10 @@
    level-load state machine is finished (g_nCdStreamState < LSTREAM_PRESERVE) it
    just re-picks the per-state camera mode, unless Spyro is in one of the states
    that own the camera themselves. Otherwise it retires the active record when
-   the player has walked past its range (field 0x34) or left its screen window
+   the player has walked past its range (range) or left its screen window
    (projected y > 0xf0), draws one of the three ROM records at
-   g_anScriptedCameraPresetRecords (avoiding an immediate repeat) and re-seats
-   Spyro's body angles from it. Records whose type field (0x30) is 1 also
+   g_aScriptedCamViews (avoiding an immediate repeat) and re-seats
+   Spyro's body angles from it. Records with aimAtSpyro set also
    refresh the camera euler angles. (0x800377a8, 632 bytes.) */
 void UpdateScriptedCameraView(void) {
   int delta[3];
@@ -41,7 +41,7 @@ void UpdateScriptedCameraView(void) {
       SubtractVector(delta, CAMPOS, g_anSpyroWorldPos);
       dist = VectorLength(delta, VEC_LEN_XYZ);
       SubtractVector(delta, CAMPOS, g_anSpyroWorldPos + 0x23);
-      if (VIEW[0xd] < dist && VectorLength(delta, VEC_LEN_XYZ) < dist) {
+      if (VIEW->range < dist && VectorLength(delta, VEC_LEN_XYZ) < dist) {
         n = 1;
       } else {
         ProjectWorldPointGTEUnscaled(delta, g_anSpyroWorldPos);
@@ -54,17 +54,17 @@ void UpdateScriptedCameraView(void) {
         g_nCameraCurrentMode != (CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE)) {
       n = GetRandomU32() & 0xfff;
       n = (n * 3) >> 12;
-      if (VIEW == &g_anScriptedCameraPresetRecords[n * 0xe]) {
+      if (VIEW == &g_aScriptedCamViews[n]) {
         n = (n + 1) % 3;
       }
-      ActivateScriptedCameraView(&g_anScriptedCameraPresetRecords[n * 0xe]);
-      CopyVector(g_anSpyroWorldPos, VIEW);
-      *(volatile int *)&g_nSpyroBodyPitch = *(volatile int *)&VIEW[3];
-      *(volatile int *)&g_nSpyroBodyRoll = *(volatile int *)&VIEW[4];
-      *(volatile int *)&g_nSpyroBodyYaw = *(volatile int *)&VIEW[5];
+      ActivateScriptedCameraView(&g_aScriptedCamViews[n]);
+      CopyVector(g_anSpyroWorldPos, VIEW->spyroPos);
+      *(volatile int *)&g_nSpyroBodyPitch = *(volatile int *)&VIEW->spyroPitch;
+      *(volatile int *)&g_nSpyroBodyRoll = *(volatile int *)&VIEW->spyroRoll;
+      *(volatile int *)&g_nSpyroBodyYaw = *(volatile int *)&VIEW->spyroYaw;
     }
   }
-  if (VIEW[0xc] == 1) {
+  if (VIEW->aimAtSpyro == 1) {
     SubtractVector(delta, g_anSpyroWorldPos, CAMPOS);
     g_nCameraTargetInverted = ComputeCameraToTargetAngle(CAMPOS);
     UpdateCameraEulerAngles();

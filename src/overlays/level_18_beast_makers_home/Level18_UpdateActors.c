@@ -47,65 +47,17 @@
 #include "cd_stream.h"
 #include "actor_cutscene.h"
 
-
-/* Type 286: ambient sound source (AmbientSoundState) with the path seen as
- * bytes, the view the other clones were matched with. */
-
-
-/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
- * saves a checkpoint and starts the rescue. */
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
-/* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
+/* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. The
+ * clones that need a loop-top carrier for 0x10 declare `int sixteen`; here
+ * it is the plain constant, so arm bodies read the same in every level. */
 #define ANIM_RATE16 sixteen
-
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Level 16 classes ==== */
-
-
-/* Case 328 -- floor-snapped marker. */
-
-
-/* ENTER_POSE with the already-there test first. */
-/* ==== Level 2 classes ==== */
-
-
-/* ==== Level 9 classes ==== */
-
-
-/* ==== Shared classes (from level 26) ==== */
-
 #define sixteen 0x10
-
-/* ==== Level 18 classes ==== */
-
 
 /* A NOTE-only scope: four NOTE luids and no code. It lengthens the lifetime
  * loop.c sees for any hoistable value live across it (cookbook A294). */
 #define LUID_PAD { int na; { int nb; } }
 #define LUID_PAD5 LUID_PAD LUID_PAD LUID_PAD LUID_PAD LUID_PAD
 
-/* ==== The function ==== */
 void Level18_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
@@ -2171,7 +2123,7 @@ void Level18_UpdateActors(void) {
         break;
       }
 
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       actor->flags = 0;
       continue;
     }
@@ -2327,7 +2279,7 @@ void Level18_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
@@ -3244,7 +3196,7 @@ void Level18_UpdateActors(void) {
           st->speed += 0x64;
         }
       }
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       st->speed -= 1;
       if (pitch < cur && actor->voiceRow != VOICE_ROW_NONE) {
         g_anSpuVoiceRowPitchStep[actor->voiceRow & 0x7F][0] = -4;

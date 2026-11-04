@@ -26,7 +26,7 @@
  *     volatile g_bSpyroPersistentEulerZ), 231 before its other stores; 231's knock-back
  *     call is an if/else of two calls.
  *   - Scratch arrays at function level in first-use order, matching the
- *     level 2 layout up to svS.
+ *     level 2 layout up to keyOffset.
  */
 
 #include "actor.h"
@@ -46,52 +46,9 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-
-/* Type 286: ambient sound source (AmbientSoundState) with the path seen as
- * bytes, the view the other clones were matched with. */
-
-
-/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
- * saves a checkpoint and starts the rescue. */
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 sixteen
 
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Level 16 classes ==== */
-
-/* Case 328 -- floor-snapped marker. */
-
-
-/* ENTER_POSE with the already-there test first. */
-/* ==== Level 2 classes ==== */
-
-
-/* ==== Level 9 classes ==== */
-
-
-/* ==== The function ==== */
 void Level9_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
@@ -115,9 +72,9 @@ void Level9_UpdateActors(void) {
   int homingStep[3];
   int sparxToTarget[3];
   int chestToSpyro[3];
-  int svS[3];
+  int keyOffset[3];
   int svK[3];
-  int svL[3];
+  int orbitPoint[3];
   int svM[3];
   int shardTwinkle[3];
   int svN[3];
@@ -1779,11 +1736,11 @@ void Level9_UpdateActors(void) {
           }
         } else if (st->shake < 0xD0) {
           key->rotZ = actor->rotZ;
-          svS[0] = 0x200 - (st->shake - 0xC0) * 8;
-          svS[1] = 0;
-          svS[2] = 0x140;
-          RotateVectorByMatrix(actor->mtx, svS, svS);
-          AddVector(&key->posX, svS, &actor->posX);
+          keyOffset[0] = 0x200 - (st->shake - 0xC0) * 8;
+          keyOffset[1] = 0;
+          keyOffset[2] = 0x140;
+          RotateVectorByMatrix(actor->mtx, keyOffset, keyOffset);
+          AddVector(&key->posX, keyOffset, &actor->posX);
         }
 
         if (st->shake >= 0xD0 ||
@@ -1832,7 +1789,7 @@ void Level9_UpdateActors(void) {
         break;
       }
 
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       actor->flags = 0;
       continue;
     }
@@ -1940,7 +1897,7 @@ void Level9_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
@@ -2344,17 +2301,17 @@ void Level9_UpdateActors(void) {
       case CBIRD_CIRCLE:
         if (st->timer == 0) {
           SteerActorTowardPoint(actor, st->home, 0x40, 8, 8, 0);
-          SubtractVector(svL, st->home, &actor->posX);
-          if (VectorLength(svL, VEC_LEN_XYZ) < 0x200) {
+          SubtractVector(orbitPoint, st->home, &actor->posX);
+          if (VectorLength(orbitPoint, VEC_LEN_XYZ) < 0x200) {
             st->timer = 0x78;
             ENTER_POSE(actor, CBIRD_LAND);
           }
         } else {
-          svL[0] = (st->radius * LookupCosine(st->angle)) >> 12;
-          svL[1] = (st->radius * LookupSine(st->angle)) >> 12;
-          svL[2] = st->height;
-          AddVector(svL, svL, &SPY.posX);
-          SteerActorTowardPoint(actor, svL, 0x60, 8, 8, 0x100);
+          orbitPoint[0] = (st->radius * LookupCosine(st->angle)) >> 12;
+          orbitPoint[1] = (st->radius * LookupSine(st->angle)) >> 12;
+          orbitPoint[2] = st->height;
+          AddVector(orbitPoint, orbitPoint, &SPY.posX);
+          SteerActorTowardPoint(actor, orbitPoint, 0x60, 8, 8, 0x100);
           st->angle = (st->angle + 0x10) & 0xFFF;
           st->timer--;
         }

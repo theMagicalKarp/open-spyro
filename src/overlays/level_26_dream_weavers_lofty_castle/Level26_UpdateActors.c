@@ -17,7 +17,7 @@
  *     for the last callee-saved register, so every Spyro read the original
  *     makes through fp must go through `spy` (cases 300 and 312 included).
  *   - Scratch arrays at function level in first-use order, with a BLKmode
- *     `idx[2]` after svE for case 62's FindNearestPathPointToActor out-argument.
+ *     `idx[2]` after camRel for case 62's FindNearestPathPointToActor out-argument.
  *   - Case 61 settles with `z ? z : (t = posZ - 0x200, t - depth)`: the comma
  *     temp stops fold from reassociating the subtraction.
  *   - Case 392's |dx| + |dy| goes through `d` (ABS2 form) and its tests are
@@ -47,56 +47,12 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-
-/* Type 286: ambient sound source; mode 2 also coasts along a path. */
-
-
-/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
- * saves a checkpoint and starts the rescue. */
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
-/* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
+/* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. The
+ * clones that need a loop-top carrier for 0x10 declare `int sixteen`; here
+ * it is the plain constant, so arm bodies read the same in every level. */
 #define ANIM_RATE16 sixteen
-
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Level 16 classes ==== */
-
-
-/* Case 328 -- floor-snapped marker. */
-
-
-/* ENTER_POSE with the already-there test first. */
-/* ==== Level 2 classes ==== */
-
-
-/* ==== Level 9 classes ==== */
-
-
-/* ==== Level 26 classes ==== */
-
 #define sixteen 0x10
-/* ==== The function ==== */
+
 void Level26_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
@@ -109,7 +65,7 @@ void Level26_UpdateActors(void) {
   int eggArcBase[3];
   int eggArcOffset[3];
   int svD[3];
-  int svE[3];
+  int camRel[3];
   int idx[2];
   int t144[3];
   int groundProbe[3];
@@ -633,9 +589,9 @@ void Level26_UpdateActors(void) {
       }
 
       case EGG_COLLECTED: {
-        SubtractVector(svE, &actor->posX, &CAM.posX);
-        WorldToCameraRotate(svE, svE);
-        g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, svE, 0);
+        SubtractVector(camRel, &actor->posX, &CAM.posX);
+        WorldToCameraRotate(camRel, camRel);
+        g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, camRel, 0);
         g_nCinematicActive = 0;
         ZeroVector(&g_nSpyroSwingEulerTargetX);
         CommitActorKillGems(0, st->owner);
@@ -2326,7 +2282,7 @@ void Level26_UpdateActors(void) {
         break;
       }
 
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       actor->flags = 0;
       continue;
     }
@@ -2434,7 +2390,7 @@ void Level26_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
@@ -3397,7 +3353,7 @@ void Level26_UpdateActors(void) {
           st->speed += 0x64;
         }
       }
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       st->speed -= 1;
       if (pitch < cur && actor->voiceRow != VOICE_ROW_NONE) {
         g_anSpuVoiceRowPitchStep[actor->voiceRow & 0x7F][0] = -4;

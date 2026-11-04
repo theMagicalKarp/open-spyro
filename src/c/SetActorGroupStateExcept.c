@@ -1,8 +1,8 @@
 #include "actor.h"
 #include "globals.h"
 
-/* Set the mode byte (+0x48) to `value` for every actor in the pickup group
-   named by actor's group index (+0x43) whose current mode is < 0x80 and not
+/* Set ->mode to `value` for every actor in the pickup group
+   named by actor's ->group whose current mode is < 0x80 and not
    equal to `match` (0x8003b47c). Out-of-range group index applies the same
    guarded write to the passed actor itself. */
 void SetActorGroupStateExcept(Actor *actor, int value, int match) {

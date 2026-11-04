@@ -50,41 +50,11 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-/* ==== Per-class state blocks ====
- *
- * Every actor class keeps its private state behind actor->state. The blocks
- * below sit next to the globals and callees their case needs.
- */
-
-
-/* Callees used by the collectible and fairy behaviours. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
-/* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
+/* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. The
+ * clones that need a loop-top carrier for 0x10 declare `int sixteen`; here
+ * it is the plain constant, so arm bodies read the same in every level. */
 #define ANIM_RATE16 sixteen
-
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Globals shared with level 4 ==== */
-
-
-/* Case 328 -- floor-snapped marker. */
-
-
-/* ==== Camera and Spyro globals used by the camera arms ==== */
-
 #define sixteen 0x10
-
 
 /* ==== Level 14 classes ==== */
 extern int g_anCollisionContactPoint[2]; /* wall probe hit x, y */
@@ -113,7 +83,6 @@ typedef struct BoltCasterState {
 /* BoltCasterState.flags. */
 #define BCASTER_F_WOKEN 1    /* has noticed Spyro once: goes straight to AIM */
 #define BCASTER_F_IN_RANGE 2 /* Spyro in range: keeps aiming and casting */
-
 
 /* Type 305: a critter that walks one of three paths and flees Spyro. */
 typedef struct FleeingWalkerState {
@@ -190,10 +159,10 @@ typedef struct CarrierState {
     }                                                                          \
   }
 
-/* ==== The function ==== */
 #define one 1
 #define spy (&SPY)
 #define oneq 1
+
 void Level14_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
@@ -210,7 +179,7 @@ void Level14_UpdateActors(void) {
   int bouncePos[3];
   int bounceNormal[3];
   int homingStep[3];
-  int svJ1[3];
+  int toTargetAhead[3];
   int sparxToTarget[3];
   int twinklePos[3];
   int aheadOfSpyro[3];
@@ -2663,13 +2632,13 @@ void Level14_UpdateActors(void) {
           int dist;
           int targetSpeed;
 
-          CopyVector(svJ1, &target->posX);
+          CopyVector(toTargetAhead, &target->posX);
           if (isPickupAnimPhase == 0) {
-            svJ1[0] -= g_anCosineLut[st->target->rotZ] >> 4;
-            svJ1[1] -= g_anSineLut[st->target->rotZ] >> 4;
+            toTargetAhead[0] -= g_anCosineLut[st->target->rotZ] >> 4;
+            toTargetAhead[1] -= g_anSineLut[st->target->rotZ] >> 4;
           } else {
-            svJ1[0] -= g_anCosineLut[st->target->rotZ] >> 6;
-            svJ1[1] -= g_anSineLut[st->target->rotZ] >> 6;
+            toTargetAhead[0] -= g_anCosineLut[st->target->rotZ] >> 6;
+            toTargetAhead[1] -= g_anSineLut[st->target->rotZ] >> 6;
           }
 
           if (isPickupAnimPhase) {
@@ -2690,8 +2659,8 @@ void Level14_UpdateActors(void) {
             }
           }
 
-          SubtractVector(svJ1, svJ1, &actor->posX);
-          dist = VectorLength(svJ1, VEC_LEN_XYZ);
+          SubtractVector(toTargetAhead, toTargetAhead, &actor->posX);
+          dist = VectorLength(toTargetAhead, VEC_LEN_XYZ);
 
           if (isPickupAnimPhase == 0) {
             if (TICK_DOWN(st->timer) != 0 ||
@@ -2706,13 +2675,13 @@ void Level14_UpdateActors(void) {
           }
           targetSpeed = isPickupAnimPhase ? 150 : 130;
           if (targetSpeed + 5 < dist) {
-            ScaleVector3ByRatio(svJ1, dist, targetSpeed + 5);
+            ScaleVector3ByRatio(toTargetAhead, dist, targetSpeed + 5);
           } else {
-            ScaleVector3ByRatio(svJ1, dist, targetSpeed - 5);
+            ScaleVector3ByRatio(toTargetAhead, dist, targetSpeed - 5);
           }
-          AddVector(&actor->posX, &actor->posX, svJ1);
-          TurnActorYawTowardAngle(actor, ArcTan2(svJ1[0], svJ1[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
-          pitchAngle = ArcTan2(VectorLength(svJ1, VEC_LEN_XY), svJ1[2], ATAN_ANGLE8);
+          AddVector(&actor->posX, &actor->posX, toTargetAhead);
+          TurnActorYawTowardAngle(actor, ArcTan2(toTargetAhead[0], toTargetAhead[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
+          pitchAngle = ArcTan2(VectorLength(toTargetAhead, VEC_LEN_XY), toTargetAhead[2], ATAN_ANGLE8);
           actor->rotY = pitchAngle;
           actor->rotY = StepAngle8Toward(pitchAngle, 0, 0x30);
           break;
@@ -3282,7 +3251,7 @@ void Level14_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
@@ -4902,7 +4871,7 @@ void Level14_UpdateActors(void) {
           st->speed += 0x64;
         }
       }
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       st->speed -= 1;
       if (pitch < cur && actor->voiceRow != VOICE_ROW_NONE) {
         g_anSpuVoiceRowPitchStep[actor->voiceRow & 0x7F][0] = -4;

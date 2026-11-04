@@ -47,62 +47,11 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-
-/* Type 286: ambient sound source (AmbientSoundState) with the path seen as
- * bytes, the view the other clones were matched with. */
-
-
-/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
- * saves a checkpoint and starts the rescue. */
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 sixteen
 
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Level 16 classes ==== */
-
-
-/* Case 328 -- floor-snapped marker. */
-
-
-/* ENTER_POSE with the already-there test first. */
-/* ==== Level 2 classes ==== */
-
-
-/* ==== Level 9 classes ==== */
-
-
-/* ==== Level 26 classes ==== */
-
-#define sixteen 0x10
-
-/* ==== Level 31 classes ==== */
-
-
-/* ==== The function ==== */
-#undef sixteen
 #define spy (&SPY)
+
 void Level31_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
@@ -130,7 +79,7 @@ void Level31_UpdateActors(void) {
   int v200b[3];
   int v201a[3];
   int v201b[3];
-  int v207[3];
+  int toOther[3];
   int v250[3];
   int sparkleTwinkle[3];
   int shardTwinkle[3];
@@ -1629,7 +1578,7 @@ void Level31_UpdateActors(void) {
       int kind;
       int mask;
 
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       kind = st->kind;
       mask = ACTOR_HIT_ANY;
       if (kind != HATCH_KIND_BARREL) {
@@ -1971,7 +1920,7 @@ void Level31_UpdateActors(void) {
         break;
       }
 
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       actor->flags = 0;
       continue;
     }
@@ -2079,7 +2028,7 @@ void Level31_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
@@ -2679,7 +2628,7 @@ void Level31_UpdateActors(void) {
       int i;
       unsigned char s;
 
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       if ((actor->flags & ACTOR_HIT_CHARGE) &&
           (unsigned char)(actor->mode - 2) >= 2 && actor->mode != FLOATBARREL_RUN) {
         if (st->link < 0 || g_pActorListBase[st->link].type != ACTOR_TYPE_CARRIED_THROWER) {
@@ -2705,8 +2654,8 @@ void Level31_UpdateActors(void) {
                 a->collision >= 0) {
               continue;
             }
-            SubtractVector(v207, &a->posX, &actor->posX);
-            len = ABS(v207[0]) + ABS(v207[1]);
+            SubtractVector(toOther, &a->posX, &actor->posX);
+            len = ABS(toOther[0]) + ABS(toOther[1]);
             if (len >= 0x6000) {
               continue;
             }
@@ -2721,7 +2670,7 @@ void Level31_UpdateActors(void) {
             if (d >= 0xC) {
               continue;
             }
-            len = VectorLength(v207, VEC_LEN_XY);
+            len = VectorLength(toOther, VEC_LEN_XY);
             if (len >= 0x4000) {
               continue;
             }
@@ -3963,7 +3912,7 @@ void Level31_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
         if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE)) && st->shake == 0) {
           st->shake = 1;
           st->rotX = actor->rotX;

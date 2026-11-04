@@ -25,8 +25,6 @@
 #include "pad_buttons.h"
 #include "level_sfx.h"
 
-
-
 void Level29_FlightResultsMenu_Update(void) {
   unsigned int *bob;
   unsigned char *rec;

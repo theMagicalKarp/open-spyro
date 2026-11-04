@@ -21,7 +21,19 @@
 #include "sample_bank.h"
 #include "spyro_block.h"
 
-/* Held-base alias views (see config/symbol_addrs.txt). */
+/* The flame-slot arrays and anchor vectors reached from the held anchor-matrix
+   and anchor-mode bases (byte offsets resolve to the named globals). */
+/* g_abSpyroFlameSlotAge / g_abSpyroFlameSlotState */
+#define FLAME_SLOT_AGE ((unsigned char *)&g_anSpyroFlameAnchorMtxBlock[-0x21])
+#define FLAME_SLOT_STATE ((unsigned char *)&g_anSpyroFlameAnchorMtxBlock[-0x1d])
+/* g_anSpyroFlameAnchorPos */
+#define FLAME_ANCHOR_POS ((int *)(&g_abSpyroFlameAnchorModeBlock[-0x9a]))
+/* g_anSpyroWorldPos, from the euler and body-matrix bases */
+#define SPYRO_POS_FROM_EULER ((int *)(&g_abSpyroPersistentEulerBlock[-0xc]))
+#define SPYRO_POS_FROM_MTX (&g_anSpyroBodyMtxBlock[-13])
+/* g_anSpyroFlameAnchorMtx / g_anSpyroFlameAnchorOffset */
+#define FLAME_ANCHOR_MTX (&g_abSpyroFlameAnchorModeBlock[0xa])
+#define FLAME_ANCHOR_OFFSET ((int *)(&g_abSpyroFlameAnchorModeBlock[0x32]))
 
 /* 0x80048d10 (2248 bytes) — per-tick attack-effects driver, two independent
    subsystems sharing one function.  (1) Superflame glow: while
@@ -70,7 +82,7 @@ void TickSpyroAttackEffects(int steps) {
     flame[1] = (GetRandomU32() & 0x7f) - 0x40;
     flame[2] = ((flame[0] >> 1) + (GetRandomU32() & 0x3f)) - 0x60;
     RotateVectorByMatrix(g_anSpyroBodyMtxBlock, flame, flame);
-    AddVector(flame, flame, &g_anSpyroBodyMtxBlock[-13]);
+    AddVector(flame, flame, SPYRO_POS_FROM_MTX);
     g_pfnLevelEmitParticles(1, EMIT_RISING_PUFF, flame, 0);
     g_abSpyroTintRgba[0] = 0x90;
     g_abSpyroTintRgba[1] = 0x20;
@@ -119,7 +131,7 @@ void TickSpyroAttackEffects(int steps) {
       g_abSpyroFlameAnchorEuler[0] = g_abSpyroPersistentEulerBlock[0];
       g_abSpyroFlameAnchorEuler[1] = g_abSpyroPersistentEulerBlock[1];
       g_abSpyroFlameAnchorEuler[2] = g_abSpyroPersistentEulerBlock[2];
-      CopyWords(&g_abSpyroFlameAnchorModeBlock[0xa],
+      CopyWords(FLAME_ANCHOR_MTX,
                 &g_abSpyroPersistentEulerBlock[EULER_TO_COMPOSED_MTX], 0x14);
       rec = (int *)((g_bSpyroFramePrev * 4) +
                     (*((int *)(((g_bSpyroAnimPrev * 4) +
@@ -129,10 +141,10 @@ void TickSpyroAttackEffects(int steps) {
       anchor[0] = n >> 21;
       anchor[1] = (n << 11) >> 21;
       anchor[2] = (n << 22) >> 21;
-      RotateVectorByMatrix((int *)(&g_abSpyroPersistentEulerBlock[0x28]),
-                           anchor, anchor);
-      AddVector((int *)(&g_abSpyroFlameAnchorModeBlock[-0x9a]), anchor,
-                (int *)(&g_abSpyroPersistentEulerBlock[-0xc]));
+      RotateVectorByMatrix(
+          (int *)(&g_abSpyroPersistentEulerBlock[EULER_TO_BODY_MTX]), anchor,
+          anchor);
+      AddVector(FLAME_ANCHOR_POS, anchor, SPYRO_POS_FROM_EULER);
       if (g_bSpyroFlameSegmentIdx < 8) {
         CopyVector(
             anchor,
@@ -146,14 +158,13 @@ void TickSpyroAttackEffects(int steps) {
       AddVector(&amtx[-0x29], &amtx[-0x29], anchor);
       SubtractVector(&amtx[0xa], &amtx[-0x29], wp);
     } else {
-      AddVector((int *)(&g_abSpyroFlameAnchorModeBlock[-0x9a]), wp,
-                (int *)(&g_abSpyroFlameAnchorModeBlock[0x32]));
+      AddVector(FLAME_ANCHOR_POS, wp, FLAME_ANCHOR_OFFSET);
     }
     i = 0;
     mtx = g_anSpyroFlameAnchorMtxBlock;
     pt = &mtx[0xd];
     do {
-      if (((unsigned char *)&g_anSpyroFlameAnchorMtxBlock[-0x21])[i] != 0) {
+      if (FLAME_SLOT_AGE[i] != 0) {
         if (i < 4) {
           count = 0x18;
           limit = 0x20;
@@ -161,14 +172,12 @@ void TickSpyroAttackEffects(int steps) {
           count = 0x20;
           limit = 0x28;
         }
-        if (((unsigned char *)&g_anSpyroFlameAnchorMtxBlock[-0x1d])[i] != 0) {
-          ((unsigned char *)&g_anSpyroFlameAnchorMtxBlock[-0x21])[i] += steps;
+        if (FLAME_SLOT_STATE[i] != 0) {
+          FLAME_SLOT_AGE[i] += steps;
         }
-        if (((unsigned char *)&g_anSpyroFlameAnchorMtxBlock[-0x21])[i] >=
-            limit) {
-          ((unsigned char *)&g_anSpyroFlameAnchorMtxBlock[-0x21])[i] = 0;
-        } else if (((unsigned char *)&g_anSpyroFlameAnchorMtxBlock[-0x1d])[i] !=
-                   2) {
+        if (FLAME_SLOT_AGE[i] >= limit) {
+          FLAME_SLOT_AGE[i] = 0;
+        } else if (FLAME_SLOT_STATE[i] != 2) {
           register short *tbl asm("$2");
           register short *path asm("$3");
 
@@ -181,19 +190,13 @@ void TickSpyroAttackEffects(int steps) {
             tbl = g_anSpyroFlameArcPathsLong;
           }
           path = (short *)(k * 8 + (int)tbl);
-          if (((unsigned char *)&g_anSpyroFlameAnchorMtxBlock[-0x21])[i] <
-              (count - 1)) {
-            SVectorToVector(
-                tip, &path[(((unsigned char
-                                  *)&g_anSpyroFlameAnchorMtxBlock[-0x21])[i] +
-                            1) *
-                           4]);
+          if (FLAME_SLOT_AGE[i] < (count - 1)) {
+            SVectorToVector(tip, &path[(FLAME_SLOT_AGE[i] + 1) * 4]);
             RotateVectorByMatrix(mtx, tip, tip);
             AddVector(tip, tip, &mtx[-0x29]);
-            if (((unsigned char *)&g_anSpyroFlameAnchorMtxBlock[-0x1d])[i] ==
-                0) {
+            if (FLAME_SLOT_STATE[i] == 0) {
               CopyVector(dir, wp);
-              ((unsigned char *)&g_anSpyroFlameAnchorMtxBlock[-0x1d])[i] = 1;
+              FLAME_SLOT_STATE[i] = 1;
             } else {
               CopyVector(dir, &pt[i * 3]);
             }
@@ -205,9 +208,8 @@ void TickSpyroAttackEffects(int steps) {
             if ((DispatchActorContactAtSphere(tip, 0xa0, 0, mask, 0,
                                               CONTACT_STOP_AT_SOLID) != 0) ||
                 (CastRayWorldAndActors(dir, tip) != 0)) {
-              ((unsigned char *)&g_anSpyroFlameAnchorMtxBlock[-0x1d])[i] = 2;
-              g_abSpyroFlameSlotEndAge[i] =
-                  ((unsigned char *)&g_anSpyroFlameAnchorMtxBlock[-0x21])[i];
+              FLAME_SLOT_STATE[i] = 2;
+              g_abSpyroFlameSlotEndAge[i] = FLAME_SLOT_AGE[i];
               dir[0] = -0x10;
               dir[1] = (GetRandomU32() & 0x1f) - 0x10;
               dir[2] = 0;
@@ -232,12 +234,8 @@ void TickSpyroAttackEffects(int steps) {
                 sfxDone = 1;
               }
             }
-          } else if ((count <
-                      ((unsigned char
-                            *)&g_anSpyroFlameAnchorMtxBlock[-0x21])[i]) &&
-                     ((count + steps) >=
-                      ((unsigned char
-                            *)&g_anSpyroFlameAnchorMtxBlock[-0x21])[i])) {
+          } else if ((count < FLAME_SLOT_AGE[i]) &&
+                     ((count + steps) >= FLAME_SLOT_AGE[i])) {
             SVectorToVector(tip, &path[(count - 1) * 4]);
             RotateVectorByMatrix(mtx, tip, tip);
             AddVector(tip, tip, &mtx[-0x29]);

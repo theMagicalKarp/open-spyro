@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "spyro_block.h"
 
 extern unsigned char g_abSpyroAnimLayer1SubstepBlock;
 
@@ -38,7 +39,8 @@ void TickSpyroAnimLayer1(void) {
   switch (g_anSpyroFlamePhaseBlock[0]) {
   case FLAME_LAYER_TRACK:
     state = g_nSpyroFlameState;
-    if (state == g_anSpyroFlamePhaseBlock[2]) {
+    if (state ==
+        g_anSpyroFlamePhaseBlock[SPY_FLAME_LAYER1_STATE - SPY_FLAME_PHASE]) {
       if (state == 0) {
         /* volatile accesses pin the original's load-all-then-store-all
            schedule (the -g3 scheduler otherwise pairs each store with
@@ -68,7 +70,8 @@ void TickSpyroAnimLayer1(void) {
         newAnim = g_abSpyroFlameAnimTable[state];
         *(volatile unsigned char *)&g_bSpyroAnimLayer1Frame = 0;
         *(volatile unsigned char *)&g_abSpyroAnimLayer1SubstepBlock = 4;
-        g_anSpyroFlamePhaseBlock[2] = state;
+        g_anSpyroFlamePhaseBlock[SPY_FLAME_LAYER1_STATE - SPY_FLAME_PHASE] =
+            state;
         *(volatile unsigned char *)&g_bSpyroAnimLayer1Current = newAnim;
         break;
       case FLAME_LAYER_BLEND:
@@ -78,7 +81,8 @@ void TickSpyroAnimLayer1(void) {
         blendCur = *(volatile byte *)&g_bSpyroAnimCurrent;
         blendCurFrame = *(volatile byte *)&g_bSpyroAnimFrame;
         *(volatile unsigned char *)&g_abSpyroAnimLayer1SubstepBlock = 2;
-        g_anSpyroFlamePhaseBlock[2] = state;
+        g_anSpyroFlamePhaseBlock[SPY_FLAME_LAYER1_STATE - SPY_FLAME_PHASE] =
+            state;
         *(volatile unsigned char *)&g_bSpyroAnimLayer1Prev = blendAnim;
         *(volatile unsigned char *)&g_bSpyroAnimLayer1FramePrev = blendFrame;
         *(volatile unsigned char *)&g_bSpyroAnimLayer1Current = blendCur;

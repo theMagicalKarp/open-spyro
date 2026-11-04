@@ -35,7 +35,7 @@
  * Spawn one actor ("moby") of type `type`, parented to `parent`.
  *
  * Allocates a pool record (AllocActorRecordSlot), stamps the
- * type into +0x36 and the parent's pool index into +0x56, then runs a per-type
+ * type into ->type and the parent's pool index into ->poolIndex, then runs a per-type
  * init arm: every arm starts from InitActorRenderDefaults (InitActorRenderDefaults) and
  * ends by placing the new actor -- most copy the parent's position
  * (CopyVector) and either register it in the spatial grid
@@ -43,13 +43,13 @@
  * the position falls back to Spyro's (g_anSpyroWorldPos).
  */
 
-
 extern int g_anSpyroWorldPos[];
 extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type */
 
 /* The body below started as decomp-permuter output (2026-08-14-1) and was
    carried to a full match from there; the earlier hand-written draft and its
    comments are in git history (7623bbd6^). */
+
 Actor *Level16_SpawnActor(int type, Actor *parent)
 {
   Actor *rec;

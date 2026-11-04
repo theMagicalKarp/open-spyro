@@ -15,7 +15,6 @@
  * Verified byte-identical inside the relinked titlescreen.ovl.
  */
 
-
 typedef struct {
   unsigned short nTpage; /* 0x0 */
   unsigned short nClut;  /* 0x2 */
@@ -27,7 +26,6 @@ typedef struct {
 
 extern unsigned int g_adwTitleSelectColors[];       /* selection color words (P_CODEs) */
 extern TitlescreenSprite g_aTitlescreenSprites[];  /* title-screen sprite table */
-
 
 void Titlescreen_EmitSpriteQuad(int nX, int nY, int nSprite, int nColorId) {
   PolyFT4 *p;

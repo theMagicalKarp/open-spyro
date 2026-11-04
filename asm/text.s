@@ -42129,8 +42129,8 @@ glabel UpdateScriptedCameraView
     /* 28118 80037918 C0101200 */  sll        $v0, $s2, 3
     /* 2811C 8003791C 23105200 */  subu       $v0, $v0, $s2
     /* 28120 80037920 C0100200 */  sll        $v0, $v0, 3
-    /* 28124 80037924 0780053C */  lui        $a1, %hi(g_anScriptedCameraPresetRecords)
-    /* 28128 80037928 24EBA524 */  addiu      $a1, $a1, %lo(g_anScriptedCameraPresetRecords)
+    /* 28124 80037924 0780053C */  lui        $a1, %hi(g_aScriptedCamViews)
+    /* 28128 80037928 24EBA524 */  addiu      $a1, $a1, %lo(g_aScriptedCamViews)
     /* 2812C 8003792C 0000038E */  lw         $v1, 0x0($s0)
     /* 28130 80037930 21104500 */  addu       $v0, $v0, $a1
     /* 28134 80037934 0A006214 */  bne        $v1, $v0, .L80037960
@@ -45841,11 +45841,11 @@ glabel BlendVectorPairByMode
 endlabel BlendVectorPairByMode
 .endif
 
-.section .text.SelectActorLodBand, "ax"
-.ifndef HAVE_C_SelectActorLodBand
-nonmatching SelectActorLodBand, 0x98
+.section .text.StepActorScorchTint, "ax"
+.ifndef HAVE_C_StepActorScorchTint
+nonmatching StepActorScorchTint, 0x98
 
-glabel SelectActorLodBand
+glabel StepActorScorchTint
     /* 2B1EC 8003A9EC 2130A000 */  addu       $a2, $a1, $zero
     /* 2B1F0 8003A9F0 0500C014 */  bnez       $a2, .L8003AA08
     /* 2B1F4 8003A9F4 21388000 */   addu      $a3, $a0, $zero
@@ -45890,7 +45890,7 @@ glabel SelectActorLodBand
   .L8003AA7C:
     /* 2B27C 8003AA7C 0800E003 */  jr         $ra
     /* 2B280 8003AA80 2110C000 */   addu      $v0, $a2, $zero
-endlabel SelectActorLodBand
+endlabel StepActorScorchTint
 .endif
 
 .section .text.TickActorFlameGlow, "ax"
@@ -49845,11 +49845,11 @@ glabel ResetSpyroLinearMotion
 endlabel ResetSpyroLinearMotion
 .endif
 
-.section .text.RotateSpyroBodyTowardKnockbackDir, "ax"
-.ifndef HAVE_C_RotateSpyroBodyTowardKnockbackDir
-nonmatching RotateSpyroBodyTowardKnockbackDir, 0xC8
+.section .text.TurnSpyroYawTowardMotion, "ax"
+.ifndef HAVE_C_TurnSpyroYawTowardMotion
+nonmatching TurnSpyroYawTowardMotion, 0xC8
 
-glabel RotateSpyroBodyTowardKnockbackDir
+glabel TurnSpyroYawTowardMotion
     /* 2E7EC 8003DFEC E0FFBD27 */  addiu      $sp, $sp, -0x20
     /* 2E7F0 8003DFF0 1000B0AF */  sw         $s0, 0x10($sp)
     /* 2E7F4 8003DFF4 21808000 */  addu       $s0, $a0, $zero
@@ -49905,7 +49905,7 @@ glabel RotateSpyroBodyTowardKnockbackDir
     /* 2E8A8 8003E0A8 2000BD27 */  addiu      $sp, $sp, 0x20
     /* 2E8AC 8003E0AC 0800E003 */  jr         $ra
     /* 2E8B0 8003E0B0 00000000 */   nop
-endlabel RotateSpyroBodyTowardKnockbackDir
+endlabel TurnSpyroYawTowardMotion
 .endif
 
 .section .text.ApplyGravityAlongSpyroSlopeTangent, "ax"
@@ -51388,8 +51388,8 @@ glabel ChangeSpyroState
     /* 2FDA8 8003F5A8 6C8B638C */  lw         $v1, %lo(g_nSpyroMotionZ)($v1)
     /* 2FDAC 8003F5AC 0880013C */  lui        $at, %hi(g_nSpyroSubstate)
     /* 2FDB0 8003F5B0 D48A20AC */  sw         $zero, %lo(g_nSpyroSubstate)($at)
-    /* 2FDB4 8003F5B4 0880013C */  lui        $at, %hi(g_nSpyroGlideEnteredLatch)
-    /* 2FDB8 8003F5B8 A88B22AC */  sw         $v0, %lo(g_nSpyroGlideEnteredLatch)($at)
+    /* 2FDB4 8003F5B4 0880013C */  lui        $at, %hi(g_nSpyroGlideSpentFlag)
+    /* 2FDB8 8003F5B8 A88B22AC */  sw         $v0, %lo(g_nSpyroGlideSpentFlag)($at)
     /* 2FDBC 8003F5BC 0880013C */  lui        $at, %hi(g_nSpyroBodyYawStep)
     /* 2FDC0 8003F5C0 A08B20AC */  sw         $zero, %lo(g_nSpyroBodyYawStep)($at)
     /* 2FDC4 8003F5C4 0780013C */  lui        $at, %hi(g_nSpyroPitchRateAccum)
@@ -54132,8 +54132,8 @@ glabel UpdateSpyroStateBehavior
     /* 32478 80041C78 F9FF0434 */   ori       $a0, $zero, 0xFFF9
     /* 3247C 80041C7C D2084014 */  bnez       $v0, .L80043FC8
     /* 32480 80041C80 00000000 */   nop
-    /* 32484 80041C84 0880023C */  lui        $v0, %hi(g_nSpyroGlideEnteredLatch)
-    /* 32488 80041C88 A88B428C */  lw         $v0, %lo(g_nSpyroGlideEnteredLatch)($v0)
+    /* 32484 80041C84 0880023C */  lui        $v0, %hi(g_nSpyroGlideSpentFlag)
+    /* 32488 80041C88 A88B428C */  lw         $v0, %lo(g_nSpyroGlideSpentFlag)($v0)
     /* 3248C 80041C8C 00000000 */  nop
     /* 32490 80041C90 09004014 */  bnez       $v0, .L80041CB8
     /* 32494 80041C94 00000000 */   nop
@@ -54258,8 +54258,8 @@ glabel UpdateSpyroStateBehavior
     /* 32658 80041E58 F20F0108 */  j          .L80043FC8
     /* 3265C 80041E5C 00000000 */   nop
   .L80041E60:
-    /* 32660 80041E60 0880023C */  lui        $v0, %hi(g_nSpyroGlideEnteredLatch)
-    /* 32664 80041E64 A88B428C */  lw         $v0, %lo(g_nSpyroGlideEnteredLatch)($v0)
+    /* 32660 80041E60 0880023C */  lui        $v0, %hi(g_nSpyroGlideSpentFlag)
+    /* 32664 80041E64 A88B428C */  lw         $v0, %lo(g_nSpyroGlideSpentFlag)($v0)
     /* 32668 80041E68 00000000 */  nop
     /* 3266C 80041E6C 17004014 */  bnez       $v0, .L80041ECC
     /* 32670 80041E70 01000224 */   addiu     $v0, $zero, 0x1
@@ -54345,8 +54345,8 @@ glabel UpdateSpyroStateBehavior
     /* 327A4 80041FA4 0E006214 */  bne        $v1, $v0, .L80041FE0
     /* 327A8 80041FA8 00000000 */   nop
   .L80041FAC:
-    /* 327AC 80041FAC 0880023C */  lui        $v0, %hi(g_nSpyroGlideEnteredLatch)
-    /* 327B0 80041FB0 A88B428C */  lw         $v0, %lo(g_nSpyroGlideEnteredLatch)($v0)
+    /* 327AC 80041FAC 0880023C */  lui        $v0, %hi(g_nSpyroGlideSpentFlag)
+    /* 327B0 80041FB0 A88B428C */  lw         $v0, %lo(g_nSpyroGlideSpentFlag)($v0)
     /* 327B4 80041FB4 00000000 */  nop
     /* 327B8 80041FB8 01084010 */  beqz       $v0, .L80043FC0
     /* 327BC 80041FBC 20000424 */   addiu     $a0, $zero, 0x20
@@ -54359,8 +54359,8 @@ glabel UpdateSpyroStateBehavior
     /* 327D8 80041FD8 F20F0108 */  j          .L80043FC8
     /* 327DC 80041FDC 00000000 */   nop
   .L80041FE0:
-    /* 327E0 80041FE0 0880023C */  lui        $v0, %hi(g_nSpyroGlideEnteredLatch)
-    /* 327E4 80041FE4 A88B428C */  lw         $v0, %lo(g_nSpyroGlideEnteredLatch)($v0)
+    /* 327E0 80041FE0 0880023C */  lui        $v0, %hi(g_nSpyroGlideSpentFlag)
+    /* 327E4 80041FE4 A88B428C */  lw         $v0, %lo(g_nSpyroGlideSpentFlag)($v0)
     /* 327E8 80041FE8 00000000 */  nop
     /* 327EC 80041FEC F4074010 */  beqz       $v0, .L80043FC0
     /* 327F0 80041FF0 0F000424 */   addiu     $a0, $zero, 0xF
@@ -55266,8 +55266,8 @@ glabel UpdateSpyroStateBehavior
     /* 3351C 80042D1C 40004230 */  andi       $v0, $v0, 0x40
     /* 33520 80042D20 38FD4010 */  beqz       $v0, .L80042204
     /* 33524 80042D24 00000000 */   nop
-    /* 33528 80042D28 0880023C */  lui        $v0, %hi(g_nSpyroGlideEnteredLatch)
-    /* 3352C 80042D2C A88B428C */  lw         $v0, %lo(g_nSpyroGlideEnteredLatch)($v0)
+    /* 33528 80042D28 0880023C */  lui        $v0, %hi(g_nSpyroGlideSpentFlag)
+    /* 3352C 80042D2C A88B428C */  lw         $v0, %lo(g_nSpyroGlideSpentFlag)($v0)
     /* 33530 80042D30 00000000 */  nop
     /* 33534 80042D34 A2044010 */  beqz       $v0, .L80043FC0
     /* 33538 80042D38 0F000424 */   addiu     $a0, $zero, 0xF
@@ -55401,8 +55401,8 @@ glabel UpdateSpyroStateBehavior
     /* 33718 80042F18 F20F0108 */  j          .L80043FC8
     /* 3371C 80042F1C 00000000 */   nop
   jlabel .L80042F20
-    /* 33720 80042F20 0880023C */  lui        $v0, %hi(g_nSpyroGlideEnteredLatch)
-    /* 33724 80042F24 A88B428C */  lw         $v0, %lo(g_nSpyroGlideEnteredLatch)($v0)
+    /* 33720 80042F20 0880023C */  lui        $v0, %hi(g_nSpyroGlideSpentFlag)
+    /* 33724 80042F24 A88B428C */  lw         $v0, %lo(g_nSpyroGlideSpentFlag)($v0)
     /* 33728 80042F28 00000000 */  nop
     /* 3372C 80042F2C 09004014 */  bnez       $v0, .L80042F54
     /* 33730 80042F30 00000000 */   nop
@@ -55699,8 +55699,8 @@ glabel UpdateSpyroStateBehavior
     /* 33B84 80043384 40004230 */  andi       $v0, $v0, 0x40
     /* 33B88 80043388 08004010 */  beqz       $v0, .L800433AC
     /* 33B8C 8004338C 00000000 */   nop
-    /* 33B90 80043390 0880023C */  lui        $v0, %hi(g_nSpyroGlideEnteredLatch)
-    /* 33B94 80043394 A88B428C */  lw         $v0, %lo(g_nSpyroGlideEnteredLatch)($v0)
+    /* 33B90 80043390 0880023C */  lui        $v0, %hi(g_nSpyroGlideSpentFlag)
+    /* 33B94 80043394 A88B428C */  lw         $v0, %lo(g_nSpyroGlideSpentFlag)($v0)
     /* 33B98 80043398 00000000 */  nop
     /* 33B9C 8004339C 03004014 */  bnez       $v0, .L800433AC
     /* 33BA0 800433A0 01000224 */   addiu     $v0, $zero, 0x1
@@ -59770,7 +59770,7 @@ glabel IntegrateSpyroMotionForSubstep
     /* 37604 80046E04 000020AE */  sw         $zero, 0x0($s1)
   .L80046E08:
     /* 37608 80046E08 08000424 */  addiu      $a0, $zero, 0x8
-    /* 3760C 80046E0C FBF7000C */  jal        RotateSpyroBodyTowardKnockbackDir
+    /* 3760C 80046E0C FBF7000C */  jal        TurnSpyroYawTowardMotion
     /* 37610 80046E10 04000524 */   addiu     $a1, $zero, 0x4
     /* 37614 80046E14 0880023C */  lui        $v0, %hi(g_nSpyroGroundSlope)
     /* 37618 80046E18 088B428C */  lw         $v0, %lo(g_nSpyroGroundSlope)($v0)

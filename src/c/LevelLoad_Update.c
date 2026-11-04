@@ -3,10 +3,10 @@
 #include "globals.h"
 #include "main_shared.h"
 
-/* GS 1 per-frame update (intro/forced-jump variant of the gameplay tick): runs
-   the forced-jump spyro tick, camera, and gem-tally particles, then advances
-   the level-transition stream unless the CD stream is past stage 0xB and the
-   tally is still active. (0x8002df9c, 100 bytes.) */
+/* GS 1 per-frame update (the level-intro variant of the gameplay tick): runs
+   the glide-hold Spyro tick (TickSpyroFrameGlideHold), camera, and gem-tally
+   particles, then advances the level-transition stream unless the CD stream is
+   past stage 0xB and the tally is still active. (0x8002df9c, 100 bytes.) */
 void LevelLoad_Update(void) {
   TickSpyroFrameGlideHold();
   UpdateCameraFrame();

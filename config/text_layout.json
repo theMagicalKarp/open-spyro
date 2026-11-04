@@ -1136,7 +1136,7 @@
    "size": 204
   },
   {
-   "name": "SelectActorLodBand",
+   "name": "StepActorScorchTint",
    "vram": 2147723756,
    "size": 152
   },
@@ -1336,7 +1336,7 @@
    "size": 72
   },
   {
-   "name": "RotateSpyroBodyTowardKnockbackDir",
+   "name": "TurnSpyroYawTowardMotion",
    "vram": 2147737580,
    "size": 200
   },

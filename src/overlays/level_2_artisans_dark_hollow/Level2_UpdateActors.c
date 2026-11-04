@@ -12,15 +12,6 @@
  * patroller (166), the locked chest (174) and the wandering
  * critter (412).
  *
- * Layout of this file:
- *   Core records      Actor, the per-type Model table, waypoint paths
- *   Per-class blocks  one state struct per actor class, each followed by the
- *                     globals and callees its case uses, in roughly case order
- *   Shared objects    the camera (CAM) and Spyro (SPY), each declared as one
- *                     aggregate over its whole address range
- *   Helper macros     absolute value and the animation idioms
- *   The function      update-list preamble, then the per-class dispatch
- *
  * Load-bearing source forms (matched 2026-09-28):
  *   - Loop-top constant carriers `sixteen`, `oneq` (a `short`) and `one`, as
  *     in level 4 (see Level4_UpdateActors).
@@ -32,7 +23,7 @@
  *     copy of the constant; without it the 3 and 4 groups live long enough
  *     to be hoisted.
  *   - Stack layout: `idx[2]` (BLKmode, so it gets its slot at declaration)
- *     and the case 166/174 vectors svR/svS sit between svJ and svK; case 421
+ *     and the case 166/174 vectors svR/keyOffset sit between sparxToTarget and svK; case 421
  *     borrows case 76's first vector.
  *   - `do { } while (0);` barriers at the head of cases 165/166 and in 412's
  *     hit block keep cse from folding `spy` into the absolute address.
@@ -58,51 +49,9 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-/* The update list, and the per-actor values the loop publishes before it
- * dispatches. */
-
-/* ==== Per-class state blocks ====
- *
- * Every actor class keeps its private state behind actor->state. The blocks
- * below sit next to the globals and callees their case needs.
- */
-
-/* PathData (waypoint paths) lives in actor_type.h. */
-/* Node accessors for paths held as byte pointers (type 286). */
-
-
-/* Callees used by the collectible and fairy behaviours. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 sixteen
 
-/* ==== Classes shared with level 30 ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Globals shared with level 30 ====
- *
- * The hub's own state: which stage of the balloon sequence the world is in,
- * the scripted-camera block at 0x80078C4C, and the three ambience channels. */
-
-
-/* ==== Globals shared with level 4 ==== */
-
-
-/* ENTER_POSE with the already-there test first. */
-/* ==== Level 2 classes ==== */
-
-
-/* ==== The function ==== */
 void Level2_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
@@ -124,10 +73,10 @@ void Level2_UpdateActors(void) {
   int bouncePos[3];
   int bounceNormal[3];
   int homingStep[3];
-  int svJ[3];
+  int sparxToTarget[3];
   int idx[2];
   int svR[3];
-  int svS[3];
+  int keyOffset[3];
   int svK[3];
   int shardTwinkle[3];
   int svN[3];
@@ -1583,8 +1532,8 @@ void Level2_UpdateActors(void) {
             CollectibleState *pk = st->target->state;
             int dist;
 
-            SubtractVector(svJ, &st->target->posX, &actor->posX);
-            dist = VectorLength(svJ, VEC_LEN_XYZ);
+            SubtractVector(sparxToTarget, &st->target->posX, &actor->posX);
+            dist = VectorLength(sparxToTarget, VEC_LEN_XYZ);
 
             if (dist < 0x200) {
               pk->timer = 0;
@@ -1614,13 +1563,13 @@ void Level2_UpdateActors(void) {
               int lim = 0x136;
 
               if (lim < dist) {
-                ScaleVector3ByRatio(svJ, dist, lim);
+                ScaleVector3ByRatio(sparxToTarget, dist, lim);
               } else {
-                ScaleVector3ByRatio(svJ, dist, 0x122);
+                ScaleVector3ByRatio(sparxToTarget, dist, 0x122);
               }
-              AddVector(&actor->posX, &actor->posX, svJ);
-              TurnActorYawTowardAngle(actor, ArcTan2(svJ[0], svJ[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
-              actor->rotY = ArcTan2(VectorLength(svJ, VEC_LEN_XY), svJ[2], ATAN_ANGLE8);
+              AddVector(&actor->posX, &actor->posX, sparxToTarget);
+              TurnActorYawTowardAngle(actor, ArcTan2(sparxToTarget[0], sparxToTarget[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
+              actor->rotY = ArcTan2(VectorLength(sparxToTarget, VEC_LEN_XY), sparxToTarget[2], ATAN_ANGLE8);
               actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             }
             break;
@@ -2116,8 +2065,8 @@ void Level2_UpdateActors(void) {
             g_nSpyroRequestState = SPYRO_ST_FALL;
             g_anSpyroRequestVelocity.x = svR[0];
             g_nSpyroRequestVelocityY = svR[1];
-            if (g_nHitRumbleTimer < 0xF) {
-              g_nHitRumbleTimer = 0xF;
+            if (g_nHitRumbleTimer < HIT_RUMBLE_FRAMES) {
+              g_nHitRumbleTimer = HIT_RUMBLE_FRAMES;
             }
           }
           if (g_nActorAnimDone != 0) {
@@ -2343,11 +2292,11 @@ void Level2_UpdateActors(void) {
           }
         } else if (st->shake < 0xD0) {
           key->rotZ = actor->rotZ;
-          svS[0] = 0x200 - (st->shake - 0xC0) * 8;
-          svS[1] = 0;
-          svS[2] = 0x140;
-          RotateVectorByMatrix(actor->mtx, svS, svS);
-          AddVector(&key->posX, svS, &actor->posX);
+          keyOffset[0] = 0x200 - (st->shake - 0xC0) * 8;
+          keyOffset[1] = 0;
+          keyOffset[2] = 0x140;
+          RotateVectorByMatrix(actor->mtx, keyOffset, keyOffset);
+          AddVector(&key->posX, keyOffset, &actor->posX);
         }
 
         if (st->shake >= 0xD0 ||
@@ -2396,7 +2345,7 @@ void Level2_UpdateActors(void) {
         break;
       }
 
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       actor->flags = 0;
       continue;
     }

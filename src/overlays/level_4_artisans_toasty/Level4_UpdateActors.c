@@ -30,7 +30,7 @@
  *     the 0x80000012 store (sched1 LUID order of the two hoisted constants).
  *   - Case 314: `limit = 10` after the first call; `mate->rotZ` copied before
  *     the two 0x28 stores.
- *   - Case 335: `&actor->posX` (not `pos`) for the svM copy, so `pos` dies
+ *   - Case 335: `&actor->posX` (not `pos`) for the floorProbe copy, so `pos` dies
  *     early; the `do { } while (0);` barrier sits after the head call.
  *   - Case 349 shares ONE `ENTER_POSE(actor, 4)` through gotos from cases 3
  *     and 5. Three separate copies push the constant-4 movable over loop.c's
@@ -62,52 +62,10 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-/* Level30_UpdateActors -- per-frame actor update for level 30 (Gnorc Gnexus).
- *
- * Walks the list of actors due for an update this frame and runs each one's
- * behaviour. Each `case` of the dispatch switch is one actor class: a small
- * state machine over the actor's state byte (->mode), often with a sub-state
- * (->subMode), and usually a class-specific state block behind ->state.
- *
- * Layout of this file:
- *   Core records      Actor, the per-type Model table, waypoint paths
- *   Per-class blocks  one state struct per actor class, each followed by the
- *                     globals and callees its case uses, in roughly case order
- *   Shared objects    the camera (CAM) and Spyro (SPY), each declared as one
- *                     aggregate over its whole address range
- *   Helper macros     absolute value and the three animation idioms
- *   The function      update-list preamble, then the per-class dispatch
- */
-
-/* ==== Per-class state blocks ====
- *
- * Every actor class keeps its private state behind actor->state. The blocks
- * below sit next to the globals and callees their case needs.
- */
-
-
-/* Callees used by the collectible and fairy behaviours. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
 
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 sixteen
 
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== level_4 globals ==== */
-
-
-/* ==== The function ==== */
 void Level4_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
@@ -132,9 +90,9 @@ void Level4_UpdateActors(void) {
   int sparxToTarget[3];
   int svK[3];
   int shardTwinkle[3];
-  int svM[3];
+  int floorProbe[3];
   int letterFacing[3];
-  int svO[3];
+  int letterOffset[3];
   int letterSlot[3];
   int letterSwingRest[3];
 
@@ -1743,7 +1701,7 @@ void Level4_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
@@ -2467,9 +2425,9 @@ void Level4_UpdateActors(void) {
       }
 
       actor->flags = 0;
-      CopyVector(svM, &actor->posX);
-      svM[2] += 0x400;
-      if (FindGroundHeightBelow(svM, 0x1000) == 0) {
+      CopyVector(floorProbe, &actor->posX);
+      floorProbe[2] += 0x400;
+      if (FindGroundHeightBelow(floorProbe, 0x1000) == 0) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
         MarkActorLiveKill(actor);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -2874,15 +2832,15 @@ void Level4_UpdateActors(void) {
           letterFacing[0] = (g_anCosineLut[bearing] * 3) >> 4;
           letterFacing[1] = (g_anSineLut[bearing] * 3) >> 4;
           letterFacing[2] = 0;
-          svO[0] =
+          letterOffset[0] =
               (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          svO[1] =
+          letterOffset[1] =
               (unsigned short)g_anSineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          svO[2] = 0;
+          letterOffset[2] = 0;
           bearing = (bearing + 0x80) & 0xFF;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
-          ScaleVector3Sat(letterSlot, svO, st->radius - 1);
-          LShiftVector3(svO, 1);
+          ScaleVector3Sat(letterSlot, letterOffset, st->radius - 1);
+          LShiftVector3(letterOffset, 1);
           arm = st->radius - 1;
           letterSlot[2] += (g_anCosineLut[arm * 2] * 3) >> 3;
           letterSwingRest[0] = letterFacing[0] * g_anCosineLut[arm * 2];
@@ -2890,8 +2848,8 @@ void Level4_UpdateActors(void) {
           letterSwingRest[2] = 0;
           bearing = arm << 1;
           bearing = (bearing - (st->phase * 4)) & 0xFF;
-          ScaleVector3Sat(svO, svO, st->phase);
-          SubtractVector(letterSlot, letterSlot, svO);
+          ScaleVector3Sat(letterOffset, letterOffset, st->phase);
+          SubtractVector(letterSlot, letterSlot, letterOffset);
           swing = &g_anCosineLut[bearing];
           actor->posX = letterFacing[0] * *swing;
           actor->posY = letterFacing[1] * *swing;

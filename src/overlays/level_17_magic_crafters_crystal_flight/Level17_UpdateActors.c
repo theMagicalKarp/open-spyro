@@ -1,4 +1,11 @@
-/* Level17_UpdateActors (0x8007CFB4, 20,312 B) -- matching notes.
+/* Level17_UpdateActors -- per-frame actor update for level 17 (Crystal Flight).
+ *
+ * Walks the list of actors due for an update this frame and runs each one's
+ * behaviour. Each `case` of the dispatch switch is one actor class: a small
+ * state machine over the actor's state byte (->mode), often with a sub-state
+ * (->subMode), and usually a class-specific state block behind ->state.
+ *
+ * Matching notes (0x8007CFB4, 20,312 B):
  *
  * Sibling of Level11_UpdateActors (the flight actor-update family head);
  * templated from it arm for arm. See the level_11 file for the load-bearing
@@ -6,7 +13,7 @@
  *   - new arms 0x11 (drift shard), 0x134 (roller) and 0x1E1..0x1E3 (its
  *     embers); 0x190 joins the 405/477 arm; 0x189 replaces 0x1EB in the 0x183
  *     arm; the 0x18D/0x18F trigger arm is gone.
- *   - `svX` is the first scratch vector (0x11's), the embers use a
+ *   - `nextPos` is the first scratch vector (0x11's), the embers use a
  *     block-local `trail[3]`.
  *   - 0x134: the waypoint scan addresses `st->path + ((i << 4) + 8)` so the
  *     node offset is its own giv; `d` holds the old heading and then the
@@ -32,61 +39,9 @@
 #include "level_id.h"
 #include "emit_record.h"
 
-/* Level17_UpdateActors -- per-frame actor update for level 11 (Night Flight).
- *
- * Walks the list of actors due for an update this frame and runs each one's
- * behaviour. Each `case` of the dispatch switch is one actor class: a small
- * state machine over the actor's state byte (->mode), often with a sub-state
- * (->subMode), and usually a class-specific state block behind ->state.
- *
- * Layout of this file:
- *   Core records      Actor, the per-type Model table, waypoint paths
- *   Per-class blocks  one state struct per actor class, each followed by the
- *                     globals and callees its case uses, in roughly case order
- *   Shared objects    the camera (CAM) and Spyro (SPY), each declared as one
- *                     aggregate over its whole address range
- *   Helper macros     absolute value and the three animation idioms
- *   The function      update-list preamble, then the per-class dispatch
- */
-
-
-/* Type 286: ambient sound source; mode 2 also coasts along a path. */
-
-
-/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
- * saves a checkpoint and starts the rescue. */
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
 
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 0x10
-
-/* ==== level_30 per-class state blocks (splice leftovers) ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Flight-level classes ==== */
-
-
-/* ==== The function ==== */
-
 
 void Level17_UpdateActors(void) {
   Actor **actorList;
@@ -96,7 +51,7 @@ void Level17_UpdateActors(void) {
   char *base;
 
   /* Scratch vectors shared by several cases. */
-  int svX[3];
+  int nextPos[3];
   int svA[3];
   int eggArcBase[3];
   int eggArcOffset[3];
@@ -289,10 +244,10 @@ void Level17_UpdateActors(void) {
       DriftState *st = actor->state;
 
       if (TICK_DOWN(st->timer) == 0) {
-        AddVector(svX, &actor->posX, st->vel);
-        if (CastRayWorldAndActors(&actor->posX, svX) == 0 &&
+        AddVector(nextPos, &actor->posX, st->vel);
+        if (CastRayWorldAndActors(&actor->posX, nextPos) == 0 &&
             RaiseSpyroTriggerInRadius(&actor->posX, 0, SPYRO_EV_HIT) == 0) {
-          CopyVector(&actor->posX, svX);
+          CopyVector(&actor->posX, nextPos);
           break;
         }
       }

@@ -38,56 +38,12 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-/* ==== Per-class state blocks ====
- *
- * Every actor class keeps its private state behind actor->state. The blocks
- * below sit next to the globals and callees their case needs.
- */
-
-
 /* Surface normal produced by the collision probes. */
 extern int g_nCollisionProbeVecX; /* g_anCollisionProbeVec[0] */
-
-
-/* Callees used by the collectible and fairy behaviours. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
 
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 sixteen
 
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Globals shared with level 4 ==== */
-
-
-/* ==== Level 16 classes ==== */
-
-/* Case 328 -- floor-snapped marker. */
-
-
-/* ENTER_POSE with the already-there test first. */
-/* ==== Level 2 classes ==== */
-
-
-/* ==== Level 9 classes ==== */
-
-/* ==== level_10 per-class state blocks ==== */
-
-
-/* ==== Level 32 classes ==== */
-
-
-/* ==== The function ==== */
 void Level32_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
@@ -108,7 +64,7 @@ void Level32_UpdateActors(void) {
   int homingStep[3];
   int sparxToTarget[3];
   int spyroDelta[3];
-  int o110[3];
+  int burstDir[3];
   int o120[3];
   int o130[3];
   int o140[3];
@@ -1650,15 +1606,15 @@ void Level32_UpdateActors(void) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 0, &o->posX);
           CopyVector(o120, &spy->posX);
-          SubtractVector(o110, o120, &o->posX);
-          ScaleVector3ByRatio(o110, VectorLength(o110, VEC_LEN_XY), 0x12C);
-          o110[0] += RandomIntInRange(-0x18, 0x18);
-          o110[1] += RandomIntInRange(-0x18, 0x18);
-          o110[2] = 0;
-          VectorLength(o110, VEC_LEN_XY);
+          SubtractVector(burstDir, o120, &o->posX);
+          ScaleVector3ByRatio(burstDir, VectorLength(burstDir, VEC_LEN_XY), 0x12C);
+          burstDir[0] += RandomIntInRange(-0x18, 0x18);
+          burstDir[1] += RandomIntInRange(-0x18, 0x18);
+          burstDir[2] = 0;
+          VectorLength(burstDir, VEC_LEN_XY);
           o->rotY = 0;
           o->rotZ = ArcTan2(spy->posX - o->posX, SPY.posY - o->posY, ATAN_ANGLE8);
-          CopyVector((int *)p, o110);
+          CopyVector((int *)p, burstDir);
           p[6] = 0x26;
           p[7] = 0;
           st->shotGap = 0;
@@ -2381,7 +2337,7 @@ void Level32_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
@@ -3096,7 +3052,7 @@ void Level32_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
         if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE)) && st->shake == 0) {
           st->shake = 1;
           st->rotX = actor->rotX;

@@ -61,51 +61,15 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-
-/* Type 286: ambient sound source (AmbientSoundState) with the path seen as
- * bytes, the view the other clones were matched with. */
-
-
-/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
- * saves a checkpoint and starts the rescue. */
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 sixteen
 
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
 /* The ANIM/ENTER_POSE macros' frame-progress constant. */
 #define sixteen 0x10
-/* ==== Level 16 classes ==== */
-
-
-/* Case 328 -- floor-snapped marker. */
 
 extern int g_nLevelProgress[]; /* hits taken */
 extern int g_nLevelProgressCheckpoint[]; /* stage reached */
 
-/* ==== The function ==== */
 void Level16_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
@@ -122,8 +86,8 @@ void Level16_UpdateActors(void) {
   int bounceNormal[3];
   int acc[3][3];
   int homingStep[3];
-  int svJ[3];
-  int svK[3];
+  int hitNormal[3];
+  int toSpyro[3];
   int sparxTargetPos[3];
   int sparxToTarget[3];
   int fx[6];
@@ -1108,14 +1072,14 @@ void Level16_UpdateActors(void) {
               continue;
             }
 
-            CopyVector(svJ, &g_anCollisionProbeVec);
+            CopyVector(hitNormal, &g_anCollisionProbeVec);
             CopyVector(&actor->posX, &g_anCollisionResolvedPos);
             actor->posZ -= 0xF0;
 
             if (st->count == 0) {
               int groundHeight = FindGroundHeightBelow(homingStep, 0x400);
               int groundAngle =
-                  (signed char)ArcTan2_8bit(svJ[2], VectorLength(svJ, VEC_LEN_XY));
+                  (signed char)ArcTan2_8bit(hitNormal[2], VectorLength(hitNormal, VEC_LEN_XY));
 
               if ((homingStep[2] - 400) < groundHeight && groundAngle < 24) {
                 actor->subMode = COLLECT_REST;
@@ -1125,9 +1089,9 @@ void Level16_UpdateActors(void) {
                 if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
 
                   st->pitch = -ArcTan2_8bit(
-                      IntegerSqrt((svJ[0] * svJ[0]) + (svJ[2] * svJ[2])),
-                      svJ[1]);
-                  st->yaw = -ArcTan2_8bit(svJ[2], svJ[0]);
+                      IntegerSqrt((hitNormal[0] * hitNormal[0]) + (hitNormal[2] * hitNormal[2])),
+                      hitNormal[1]);
+                  st->yaw = -ArcTan2_8bit(hitNormal[2], hitNormal[0]);
 
                   if (st->pitch != 0 || st->yaw != 0) {
                     actor->rotZ = 0;
@@ -1147,7 +1111,7 @@ void Level16_UpdateActors(void) {
 
               PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
 
-              if (ReflectVectorOffNormal(st->vel, svJ, st->vel)) {
+              if (ReflectVectorOffNormal(st->vel, hitNormal, st->vel)) {
                 st->count--;
 
                 st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 32;
@@ -1199,15 +1163,15 @@ void Level16_UpdateActors(void) {
           CopyVector(&actor->posX, &SPY.posX);
         } else {
 
-          SubtractVector(svK, &SPY.posX, st->vel);
-          RShiftVector3(svK, 5);
+          SubtractVector(toSpyro, &SPY.posX, st->vel);
+          RShiftVector3(toSpyro, 5);
 
-          if (VectorLength(svK, VEC_LEN_XYZ) > 480) {
+          if (VectorLength(toSpyro, VEC_LEN_XYZ) > 480) {
             CopyVector(&actor->posX, &SPY.posX);
             st->timer = 32;
           } else {
-            ScaleVector3Sat(svK, svK, st->timer);
-            AddVector(&actor->posX, st->vel, svK);
+            ScaleVector3Sat(toSpyro, toSpyro, st->timer);
+            AddVector(&actor->posX, st->vel, toSpyro);
             actor->posZ += g_anSineLut[st->timer * 4] / 12;
           }
         }
@@ -1947,7 +1911,7 @@ void Level16_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;

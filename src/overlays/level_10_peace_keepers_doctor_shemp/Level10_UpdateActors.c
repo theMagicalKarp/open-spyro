@@ -43,51 +43,9 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-
-/* Type 286: ambient sound source (AmbientSoundState) with the path seen as
- * bytes, the view the other clones were matched with. */
-
-
-/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
- * saves a checkpoint and starts the rescue. */
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
 /* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
 #define ANIM_RATE16 sixteen
 
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Level 16 classes ==== */
-
-/* Case 328 -- floor-snapped marker. */
-
-/* ENTER_POSE with the already-there test first. */
-/* ==== Level 2 classes ==== */
-
-
-/* ==== Level 9 classes ==== */
-
-/* ==== level_10 per-class state blocks ==== */
-
-/* ==== The function ==== */
 void Level10_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
@@ -117,7 +75,7 @@ void Level10_UpdateActors(void) {
   int col2[3];
   int nearestNode[2];
   int pos371[3];
-  int p371[3];
+  int sparkPos[3];
   int letterSwingRest[3];
 
   /* Build this frame's update list. A long frame (delta >= 3) gets an extra
@@ -1834,7 +1792,7 @@ void Level10_UpdateActors(void) {
         break;
       }
 
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       actor->flags = 0;
       continue;
     }
@@ -1942,7 +1900,7 @@ void Level10_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
@@ -3375,12 +3333,12 @@ void Level10_UpdateActors(void) {
             vel371[0] = (unsigned short)g_anCosineLut[bi] << 16 >> 21;
             vel371[1] = (unsigned short)g_anSineLut[bi] << 16 >> 21;
             vel371[2] = RandomIntInRange(-0xF, 0xF) + 0x14;
-            CopyVector(p371, pos371);
+            CopyVector(sparkPos, pos371);
             i++;
-            p371[0] += (GetRandomU32() & 0x1FF) - 0x100;
-            p371[1] += (GetRandomU32() & 0x1FF) - 0x100;
-            p371[2] += (GetRandomU32() & 0x1FF) - 0x100;
-            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, p371, (int)vel371);
+            sparkPos[0] += (GetRandomU32() & 0x1FF) - 0x100;
+            sparkPos[1] += (GetRandomU32() & 0x1FF) - 0x100;
+            sparkPos[2] += (GetRandomU32() & 0x1FF) - 0x100;
+            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, sparkPos, (int)vel371);
           } while (i < 3);
           if (g_nActorAnimDone != 0) {
             actor->frame = 0xF;

@@ -28,7 +28,6 @@
 #include "level_funcs.h"
 #include "level_balloonist_cutscene.h"
 
-
 static const char g_szGoTo[12];
 
 void Level18_BalloonistCutscene_Draw(void) {

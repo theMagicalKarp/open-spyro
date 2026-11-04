@@ -3,6 +3,7 @@
 #include "main_shared.h"
 #include "match_asm.h"
 #include "pad.h"
+#include "spyro_block.h"
 
 /* 0x8003d840 (236 bytes) — steer Spyro's move-target yaw from the analog
    stick.  While the stick is engaged (stickActive set and the left-stick axes
@@ -29,7 +30,7 @@ int ApplyPadInputToSpyroBodyYaw(void) {
     if (mag < 0x60) {
       tgt = g_anSpyroMoveTargetYawBlock[0];
       EBB_BREAK();
-      yaw = g_anSpyroMoveTargetYawBlock[0x14];
+      yaw = g_anSpyroMoveTargetYawBlock[SPY_BODY_YAW - SPY_MOVE_TARGET_YAW];
       delta = (tgt - yaw) & 0xFFF;
       if (delta > 0x800) {
         delta -= 0x1000;

@@ -138,7 +138,7 @@ void ActorCutscene_Update(void) {
   int goal;
   int start;
 
-  g_anActorCutsceneTimerBlock[0] += g_nFrameStep;
+  g_anActorCutsceneTimerBlock[ACSW_TIMER] += g_nFrameStep;
   RotateLightVectorXZ(3);
 
   /* LOAD-BEARING — do not delete, and do not "simplify". The §B-i ebb break:
@@ -150,12 +150,12 @@ void ActorCutscene_Update(void) {
    */
   EBB_BREAK();
 
-  if (g_anActorCutsceneTimerBlock[-1] == ACS_STREAM_WAIT) {
+  if (g_anActorCutsceneTimerBlock[ACSW_SUBSTATE] == ACS_STREAM_WAIT) {
     if (g_nCdStreamState < LSTREAM_RELOCATE) {
       TickLevelTransitionStream(1);
     }
 
-    if (g_anActorCutsceneTimerBlock[0] < 0x100) {
+    if (g_anActorCutsceneTimerBlock[ACSW_TIMER] < 0x100) {
       /* Block-scoped per arm on purpose: one function-scope `cam` spanning both
          arms is a single pseudo with a single live range, and it holds a fifth
          callee-saved register the original does not use. */
@@ -164,7 +164,8 @@ void ActorCutscene_Update(void) {
       /* 0..0x2000 ease: the sine argument sweeps -0x400..+0x400 across the
          0x100-frame window, so the factor runs a full half-cosine of travel.
          Both shifts are in the source — the sra cannot come from a divide. */
-      ease = LookupSine(((g_anActorCutsceneTimerBlock[0] << 11) >> 8) - 0x400) +
+      ease = LookupSine(((g_anActorCutsceneTimerBlock[ACSW_TIMER] << 11) >> 8) -
+                        0x400) +
              0x1000;
 
       /* goal/start are named so both feed the compare AND survive as the call
@@ -178,7 +179,7 @@ void ActorCutscene_Update(void) {
       } else {
         /* Same variable as `start`, but reached through the held base — the
            original re-addresses it here rather than reloading the symbol. */
-        yaw = g_anActorCutsceneTimerBlock[13] -
+        yaw = g_anActorCutsceneTimerBlock[ACSW_CAM_YAW_START] -
               ((AbsAngleDelta12(goal, start) * ease) >> 13);
       }
 
@@ -238,10 +239,12 @@ void ActorCutscene_Update(void) {
       *(WORLDCOUNTERS *)&g_nWorldRenderMeshChunkCount =
           *(WORLDCOUNTERS *)&g_nWorldCollisionTriCount;
 
-      g_anActorCutsceneTimerBlock[-1] = ACS_CRUISE;
-      g_anActorCutsceneTimerBlock[0] = 0;
-      CopyVector((int *)((char *)g_anActorCutsceneTimerBlock[25] + 0xC),
-                 &g_anLevelEntryPoints[g_anActorCutsceneTimerBlock[4] * 4]);
+      g_anActorCutsceneTimerBlock[ACSW_SUBSTATE] = ACS_CRUISE;
+      g_anActorCutsceneTimerBlock[ACSW_TIMER] = 0;
+      CopyVector(
+          &((Actor *)g_anActorCutsceneTimerBlock[ACSW_RECORD])->posX,
+          &g_anLevelEntryPoints[g_anActorCutsceneTimerBlock[ACSW_CARD_VARIANT] *
+                                4]);
 
       /* Read in its own statement rather than inline in the index below. This
          is the one read of this field that expand does NOT force_reg — it comes
@@ -251,32 +254,34 @@ void ActorCutscene_Update(void) {
          first read of the SAME field, in the CopyVector call above, is
          force_reg'd fine; spelling this one differently does not help, as
          A[i + 3], (&A[i])[3] and *(A + i + 3) all parse to one tree. */
-      lvl = g_anActorCutsceneTimerBlock[4];
+      lvl = g_anActorCutsceneTimerBlock[ACSW_CARD_VARIANT];
       g_pActorCutsceneRecord->rotZ = (char)g_anLevelEntryPoints[lvl * 4 + 3];
       CopyVector(g_anSpyroWorldPos,
-                 (int *)((char *)g_anActorCutsceneTimerBlock[25] + 0xC));
+                 &((Actor *)g_anActorCutsceneTimerBlock[ACSW_RECORD])->posX);
       g_nSpyroWorldPosZ += 0x2D4;
 
       g_abSpyroPersistentEuler[2] = g_pActorCutsceneRecord->rotZ + 0x80;
 
       /* Written back to the block before the cosine call so the angle is read
          once and reused as the sine argument. */
-      g_anActorCutsceneTimerBlock[19] =
+      g_anActorCutsceneTimerBlock[ACSW_CAM_YAW_GOAL] =
           ((g_pActorCutsceneRecord->rotZ << 4) + 0x390) & 0xFFF;
 
       cam = g_anCameraPosBlock;
       cam[0] = g_pActorCutsceneRecord->posX +
-               ((LookupCosine(g_anActorCutsceneTimerBlock[19]) *
-                 g_anActorCutsceneTimerBlock[20]) >>
+               ((LookupCosine(g_anActorCutsceneTimerBlock[ACSW_CAM_YAW_GOAL]) *
+                 g_anActorCutsceneTimerBlock[ACSW_CAM_RADIUS_GOAL]) >>
                 12);
-      g_anCameraPos[1] = g_pActorCutsceneRecord->posY +
-                         ((LookupSine(g_anActorCutsceneTimerBlock[19]) *
-                           g_anActorCutsceneTimerBlock[20]) >>
-                          12);
+      g_anCameraPos[1] =
+          g_pActorCutsceneRecord->posY +
+          ((LookupSine(g_anActorCutsceneTimerBlock[ACSW_CAM_YAW_GOAL]) *
+            g_anActorCutsceneTimerBlock[ACSW_CAM_RADIUS_GOAL]) >>
+           12);
       g_anCameraPos[2] = g_pActorCutsceneRecord->posZ + 0x200;
 
-      SubtractVector(
-          settle, (int *)((char *)g_anActorCutsceneTimerBlock[25] + 0xC), cam);
+      SubtractVector(settle,
+                     &((Actor *)g_anActorCutsceneTimerBlock[ACSW_RECORD])->posX,
+                     cam);
       settle[2] += 0x200;
 
       g_nCameraEulerPitch =
@@ -289,9 +294,11 @@ void ActorCutscene_Update(void) {
          g_anCameraPos above the g_nCameraEulerYaw store instead and the nop
          costs one. */
       face = g_pActorCutsceneRecord->rotZ;
-      g_anActorCutsceneTimerBlock[21] = g_anCameraPos[2];
-      g_anActorCutsceneTimerBlock[15] = g_anCameraPos[2] - 0xFCE;
-      g_anActorCutsceneTimerBlock[13] = ((face << 4) + 0xBA0) & 0xFFF;
+      g_anActorCutsceneTimerBlock[ACSW_CAM_HEIGHT_GOAL] = g_anCameraPos[2];
+      g_anActorCutsceneTimerBlock[ACSW_CAM_HEIGHT_START] =
+          g_anCameraPos[2] - 0xFCE;
+      g_anActorCutsceneTimerBlock[ACSW_CAM_YAW_START] =
+          ((face << 4) + 0xBA0) & 0xFFF;
     }
   } else {
     g_pfnActorCutsceneSubstateUpdate();

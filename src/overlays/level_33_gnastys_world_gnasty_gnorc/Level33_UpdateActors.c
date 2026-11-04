@@ -39,66 +39,14 @@
 #include "level_sfx.h"
 #include "emit_record.h"
 
-
-/* Type 286: ambient sound source; mode 2 also coasts along a path. */
-
-
-/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
- * saves a checkpoint and starts the rescue. */
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
 /* 256-entry sine and cosine tables. */
 extern short g_anSineLut_s[];
 
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
-/* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
+/* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. The
+ * clones that need a loop-top carrier for 0x10 declare `int sixteen`; here
+ * it is the plain constant, so arm bodies read the same in every level. */
 #define ANIM_RATE16 sixteen
-
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Level 16 classes ==== */
-
-/* Case 328 -- floor-snapped marker. */
-
-
-/* ENTER_POSE with the already-there test first. */
-/* ==== Level 2 classes ==== */
-
-
-/* ==== Level 9 classes ==== */
-
-/* ==== Level 26 classes ==== */
-
 #define sixteen 0x10
-
-/* ==== Classes shared with level 31 ==== */
-
-
-/* ==== Level 25 classes ==== */
-
-/* Case 50 -- grabber. Only one grabber at a time may hold Spyro; the shared
- * slot names the holder. */
-
-
-/* ==== Level 33 classes ==== */
 
 /* Type 143 state: the shockwave a trail bomb sets off. */
 typedef struct ShockwaveState {
@@ -201,8 +149,8 @@ typedef struct GnastyState {
 extern unsigned char g_abSpyroPersistentEuler; /* SPY.bodyRotX, absolute form */
 #define PATH_END(p) ((int *)((char *)(p) + (((p)->count << 4) - 8)))
 
-/* ==== The function ==== */
 #define spy (&SPY)
+
 void Level33_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
@@ -228,10 +176,10 @@ void Level33_UpdateActors(void) {
   int col[3];
   int spyroDelta[3];
   int nearestNode[2];
-  int o140[3];
+  int sightPoint[3];
   int o150[3];
-  int o160[3];
-  int o170[2];
+  int spyroFloor[3];
+  int pathHit[2];
   int w181[3];
   int sparkleTwinkle[3];
   int shardTwinkle[3];
@@ -1700,13 +1648,13 @@ void Level33_UpdateActors(void) {
       }
 
       if (st->phase < GNASTY_PHASE_MAIN) {
-        CopyVector(o140, &actor->posX);
-        o140[2] += 0x3E8;
+        CopyVector(sightPoint, &actor->posX);
+        sightPoint[2] += 0x3E8;
         if (g_nSpyroState == SPYRO_ST_CHARGE || g_nSpyroState == SPYRO_ST_CHARGE_AIR) {
           st->camTimer = 0x3C;
         }
         if (TICK_DOWN(st->camTimer) != 0 && dist < 0x4000 &&
-            (CheckSpyroLineOfSightTo(o140) != 0 || dist < 0x3000)) {
+            (CheckSpyroLineOfSightTo(sightPoint) != 0 || dist < 0x3000)) {
           g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FOLLOW_CAMERA);
           g_pScriptedCameraActor = actor;
         }
@@ -1843,15 +1791,15 @@ void Level33_UpdateActors(void) {
           GetActorAttachPoint(actor, 0, &o->posX);
           o->rotZ =
               ArcTan2(SPY.posX - o->posX, SPY.posY - o->posY, ATAN_ANGLE8);
-          CopyVector(o160, &SPY.posX);
-          o160[2] = FindGroundHeightBelow(o160, 0x1000);
-          SubtractVector(o150, o160, &o->posX);
+          CopyVector(spyroFloor, &SPY.posX);
+          spyroFloor[2] = FindGroundHeightBelow(spyroFloor, 0x1000);
+          SubtractVector(o150, spyroFloor, &o->posX);
           n = VectorLength(o150, VEC_LEN_XY) / spd;
           q->speed = spd;
           if (n <= 0) {
             n = 1;
           }
-          q->climb = (o160[2] - o->posZ) / n;
+          q->climb = (spyroFloor[2] - o->posZ) / n;
           if (q->climb < -0x1F4) {
             q->climb = -0x1F4;
           }
@@ -1934,9 +1882,9 @@ void Level33_UpdateActors(void) {
           ENTER_POSE(actor, GNASTY_LOOKOUT);
         }
         if (r == PATH_ARRIVED(0)) {
-          FindNearestPathPointToSpyro(st->path, o170);
-          if (dist > 0x4800 && o170[0] > 0x10 &&
-              o170[0] < st->path->count - 1) {
+          FindNearestPathPointToSpyro(st->path, pathHit);
+          if (dist > 0x4800 && pathHit[0] > 0x10 &&
+              pathHit[0] < st->path->count - 1) {
             st->throws = 0;
             actor->mode = GNASTY_THROW;
             continue;
@@ -2665,7 +2613,7 @@ void Level33_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;

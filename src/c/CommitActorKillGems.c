@@ -15,11 +15,11 @@ struct SampleBankRef {
 };
 
 /* 0x8003b854 (0x180) — commit a kill/pickup for `actor` worth `value` gems:
-   bank the gems (per-level tally + world treasure, with a low-health jingle
-   check on the actor's +0x14 field), set the actor's bit in the committed-kill
-   bitmap (by 0x58-byte pool index when the pointer is in the live pool, else
-   by its +0x56 id byte) and in the per-level kill bitmap, then play the
-   level's pickup sound on the actor. */
+   bank the gems (per-level tally + world treasure; floating digits show the
+   value unless the actor is below posZ 0x300), set the actor's bit in the
+   committed-kill bitmap (by 0x58-byte pool index when the pointer is in the
+   live pool, else by its +0x56 id byte) and in the per-level kill bitmap, then
+   play the level's pickup sound on the actor. */
 void CommitActorKillGems(int value, Actor *actor) {
   int id;
   int word;

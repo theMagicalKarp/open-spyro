@@ -4,7 +4,7 @@
  * Spawn one actor ("moby") of type `type`, parented to `parent`.
  *
  * Allocates a pool record (AllocActorRecordSlot), stamps the
- * type into +0x36 and the parent's pool index into +0x56, then runs a per-type
+ * type into ->type and the parent's pool index into ->poolIndex, then runs a per-type
  * init arm: every arm starts from InitActorRenderDefaults (InitActorRenderDefaults) and
  * ends by placing the new actor -- most copy the parent's position
  * (CopyVector) and either register it in the spatial grid
@@ -212,7 +212,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     st->sink = -0xC;
     st->rider = parent;
     st->blast = 0;
-    st->handle = 0;
+    st->scorchBand = 0;
     st->link = -1;
     rec->floorOffset = 0x1CD;
     InsertActorIntoSpatialGrid(rec);

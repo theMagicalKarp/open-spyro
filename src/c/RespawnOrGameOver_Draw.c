@@ -14,10 +14,6 @@ typedef struct LetterPos {
 } LetterPos;
 #define LETTER_POS(k) ((LetterPos *)((char *)g_anGameOverLetterPosXY + (k)))
 
-/* The sprite record being written (Actor layout). */
-
-/* Game-over camera euler snapshot, read unsigned (lhu). */
-
 /* Draw for GS_GAME_OVER (5): three sub-modes driven by
    g_nRespawnOrGameOverMode. Mode 0 = death fade-out: frame 0 renders one full
    gameplay frame then snapshots half the framebuffer (MoveImage) as a frozen
@@ -176,9 +172,8 @@ void RespawnOrGameOver_Draw(void) {
     g_anCameraEulerPitchBlock[0] = g_anGameOverCameraEulerU[2];
     g_nCameraEulerYaw = g_anGameOverCameraEulerU[3];
     BuildCameraViewMatrix();
-    EmitStaticActorMeshList(
-        -1, (MATRIX *)((char *)g_anCameraEulerPitchBlock - 0x3A),
-        (MATRIX *)((char *)g_anCameraEulerPitchBlock - 0x4E));
+    EmitStaticActorMeshList(-1, (MATRIX *)CAM_VIEW_MTX_VIA_EULER,
+                            (MATRIX *)CAM_W2C_MTX_VIA_EULER);
     g_anCameraEulerPitchBlock[0] = g_anGameOverCameraEulerU[0];
     g_nCameraEulerYaw = g_anGameOverCameraEulerU[1];
     if (g_nRespawnOrGameOverFrame < 0x20) {

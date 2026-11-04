@@ -43,7 +43,6 @@
 #include "emit_record.h"
 #include "gamestate.h"
 
-
 void Level33_EmitParticles(int count, int type, int *pos, int effectArg) {
   int v0[3];
   int v1[3];

@@ -132,8 +132,8 @@ void TickSpyroGameplayFrame(void) {
     } else if ((g_anSpyroWorldPos[0] < 0x800) || (g_nSpyroWorldPosY < 0x800)) {
       if ((g_nSpyroState != SPYRO_ST_FALL) &&
           (g_nSpyroState != SPYRO_ST_GLIDE_DROP)) {
-        ZeroVector(pos + (0x104 / 4));
-        ZeroVector(pos + (0xEC / 4));
+        ZeroVector(pos + (SPY_MOTION - SPY_POS_Z));
+        ZeroVector(pos + (SPY_VELOCITY - SPY_POS_Z));
         ChangeSpyroState(SPYRO_ST_FALL);
       }
     } else {
@@ -143,7 +143,7 @@ void TickSpyroGameplayFrame(void) {
     if (fallFrames[0] == 0) {
       camRecord = g_anSpyroDeathCamRecordBlock;
       CopyVector(camRecord, g_anCameraPos);
-      ActivateScriptedCameraView(camRecord - (0x18 / 4));
+      ActivateScriptedCameraView(SCRIPTED_CAM_VIEW_AT_POS(camRecord));
     }
     fallFrames[0] += g_nFrameStep;
   }

@@ -9,7 +9,7 @@
 
 typedef struct Actor {
   void *state;         /* 0x00 class-specific state block */
-  int pad04;           /* 0x04 */
+  struct Actor *gridNext; /* 0x04 next actor in the same spatial-grid cell (InsertActorIntoSpatialGrid) */
   int collision;       /* 0x08 collision record; < 0 (a KSEG0 pointer) when the
                         * actor can be hit, 0 / >= 0 when not (overlay target
                         * scans skip those) */
@@ -59,7 +59,7 @@ typedef struct Actor {
                              * g_apSecondaryDrawEntityList, 0 the sprite queue
                              * g_apSpritePrimQueue */
   /* 0x4C..0x4F tint. Read as one word, 0x4C..0x4E pack three 6-bit levels
-   * under a 0xA tag: 0xA << 20 | c2 << 12 | c1 << 6 | c0. SelectActorLodBand
+   * under a 0xA tag: 0xA << 20 | c2 << 12 | c1 << 6 | c0. StepActorScorchTint
    * builds it with 0x18 as neutral, which gives the 0xA18618 the overlays
    * store, and the flame band raises c2 while lowering c0/c1. With 0x4C..0x4E
    * zeroed, tintMode picks a preset instead: gem colours 1..5 (HUD icons set

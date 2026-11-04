@@ -35,7 +35,6 @@
 #include "gamestate.h"
 #include "level_id.h"
 
-
 void Level21_EmitParticles(int count, int type, int *pos, int effectArg) {
   int v0[3];
   int v1[3];

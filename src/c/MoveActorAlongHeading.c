@@ -5,8 +5,8 @@
 #include "vecmath.h"
 
 /* Guided-move step along the actor's own heading (0x80039398, 0x2f0).
-   Sibling of MoveActorAlongAngle, but the direction comes from the actor's dir
-   byte (+0x46) instead of an angle param. Advances the cached position
+   Sibling of MoveActorAlongAngle, but the direction comes from the actor's rotZ
+   byte instead of an angle param. Advances the cached position
    (+0xC/+0x10) by `speed` (scaled 1.5x/2x at frame delta 3/4), then runs
    the contact/collision checks: actor contact over a `contactRadius` sphere
    (MOVE_PASS_ACTORS pushes the step out of them instead of failing), an

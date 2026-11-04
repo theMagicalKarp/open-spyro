@@ -41,62 +41,15 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
-/* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
+/* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. The
+ * clones that need a loop-top carrier for 0x10 declare `int sixteen`; here
+ * it is the plain constant, so arm bodies read the same in every level. */
 #define ANIM_RATE16 sixteen
-
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* Case 328 -- floor-snapped marker. */
-
-/* ==== Camera and Spyro globals used by the camera arms ==== */
-
 #define sixteen 0x10
 
-/* Types 288/289: bouncing debris. Flies on its velocity until its life runs
- * out; type 288 tumbles, 289 sways as it falls. */
-
-/* ==== Level 7 classes ==== */
-
-
-/* ==== Level 21 classes ==== */
-
-
-/* ==== Level 22 classes ==== */
-
-
-/* ==== Level 28 classes ==== */
-
-
-/* ==== Level 24 classes ==== */
-
-
-/* ==== Level 27 classes ==== */
-
-
-/* ==== The function ==== */
 #define spy (&SPY)
 #define one 1
+
 void Level27_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
@@ -125,8 +78,8 @@ void Level27_UpdateActors(void) {
   int spyroDelta[3];
   int g392[3];
   int g408[3];
-  int g424[3];
-  int g440[3];
+  int boundB[3];
+  int toClamped[3];
   int shardTwinkle[3];
   int jetPos[6];
   int g496[3];
@@ -1899,7 +1852,7 @@ void Level27_UpdateActors(void) {
         }
       }
       if (st->kind == BWALL_ARMORED) {
-        st->lodHandle = SelectActorLodBand(actor, st->lodHandle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       }
       actor->flags = 0;
       for (i = 0; i < 4; i++) {
@@ -2439,7 +2392,7 @@ void Level27_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
@@ -2522,53 +2475,53 @@ void Level27_UpdateActors(void) {
         n = dy * g408[0] + dx * st->path[3];
         k = (dy * g_anSpyroWorldPos + dx * g_nSpyroWorldPosY - n) / len;
         g408[1] = st->path[3];
-        g424[0] = st->path[6];
-        g424[1] = st->path[7];
+        boundB[0] = st->path[6];
+        boundB[1] = st->path[7];
         g392[0] = g_anSpyroWorldPos - k * dy / len;
         g392[1] = g_nSpyroWorldPosY - k * dx / len;
-        if (g392[0] < g408[0] && g392[0] < g424[0]) {
-          if (g408[0] < g424[0]) {
+        if (g392[0] < g408[0] && g392[0] < boundB[0]) {
+          if (g408[0] < boundB[0]) {
             if (g392[0] < g408[0]) {
               g392[0] = g408[0];
             }
-          } else if (g392[0] < g424[0]) {
-            g392[0] = g424[0];
+          } else if (g392[0] < boundB[0]) {
+            g392[0] = boundB[0];
           }
-        } else if (g392[0] > g408[0] && g392[0] > g424[0]) {
-          if (g408[0] > g424[0]) {
+        } else if (g392[0] > g408[0] && g392[0] > boundB[0]) {
+          if (g408[0] > boundB[0]) {
             if (g392[0] > g408[0]) {
               g392[0] = g408[0];
             }
-          } else if (g392[0] > g424[0]) {
-            g392[0] = g424[0];
+          } else if (g392[0] > boundB[0]) {
+            g392[0] = boundB[0];
           }
         }
-        if (g392[1] < g408[1] && g392[1] < g424[1]) {
-          if (g408[1] < g424[1]) {
+        if (g392[1] < g408[1] && g392[1] < boundB[1]) {
+          if (g408[1] < boundB[1]) {
             if (g392[1] < g408[1]) {
               g392[1] = g408[1];
             }
-          } else if (g392[1] < g424[1]) {
-            g392[1] = g424[1];
+          } else if (g392[1] < boundB[1]) {
+            g392[1] = boundB[1];
           }
-        } else if (g392[1] > g408[1] && g392[1] > g424[1]) {
-          if (g408[1] > g424[1]) {
+        } else if (g392[1] > g408[1] && g392[1] > boundB[1]) {
+          if (g408[1] > boundB[1]) {
             if (g392[1] > g408[1]) {
               g392[1] = g408[1];
             }
-          } else if (g392[1] > g424[1]) {
-            g392[1] = g424[1];
+          } else if (g392[1] > boundB[1]) {
+            g392[1] = boundB[1];
           }
         }
-        SubtractVector(g440, g392, &actor->posX);
-        len = VectorLength(g440, VEC_LEN_XY);
+        SubtractVector(toClamped, g392, &actor->posX);
+        len = VectorLength(toClamped, VEC_LEN_XY);
         if (len < 0xC8) {
           actor->posX = g392[0];
           actor->posY = g392[1];
         } else {
-          ScaleVector3ByRatio(g440, len, 0xC8);
-          actor->posX += g440[0];
-          actor->posY += g440[1];
+          ScaleVector3ByRatio(toClamped, len, 0xC8);
+          actor->posX += toClamped[0];
+          actor->posY += toClamped[1];
         }
       }
 
@@ -3624,7 +3577,7 @@ void Level27_UpdateActors(void) {
           st->speed += 0x64;
         }
       }
-      st->handle = SelectActorLodBand(actor, st->handle);
+      st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       st->speed -= 1;
       if (pitch < cur && actor->voiceRow != VOICE_ROW_NONE) {
         g_anSpuVoiceRowPitchStep[actor->voiceRow & 0x7F][0] = -4;
@@ -3811,7 +3764,7 @@ void Level27_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
         if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE)) && st->shake == 0) {
           st->shake = 1;
           st->rotX = actor->rotX;

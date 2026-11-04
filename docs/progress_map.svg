@@ -318,7 +318,7 @@
 <rect x="165.90" y="701.03" width="10.54" height="10.58" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>_dirFailAuto  ·  204 bytes  ·  library</title></rect>
 <rect x="165.90" y="711.61" width="10.54" height="10.37" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DrawFullscreenTint  ·  200 bytes  ·  matched</title></rect>
 <rect x="165.90" y="721.98" width="10.54" height="10.37" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CheckLineOfSightSegment  ·  200 bytes  ·  matched</title></rect>
-<rect x="165.90" y="732.35" width="10.54" height="10.37" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>RotateSpyroBodyTowardKnockbackDir  ·  200 bytes  ·  matched</title></rect>
+<rect x="165.90" y="732.35" width="10.54" height="10.37" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>TurnSpyroYawTowardMotion  ·  200 bytes  ·  matched</title></rect>
 <rect x="165.90" y="742.72" width="10.54" height="10.37" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FUN_80069b40  ·  200 bytes  ·  library</title></rect>
 <rect x="165.90" y="753.09" width="10.54" height="10.16" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>UnpackWorldCollisionTri  ·  196 bytes  ·  handwritten</title></rect>
 <rect x="165.90" y="763.25" width="10.54" height="10.16" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>MoveImage  ·  196 bytes  ·  library</title></rect>
@@ -379,7 +379,7 @@
 <rect x="186.19" y="755.79" width="9.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>InitPadSystem  ·  152 bytes  ·  matched</title></rect>
 <rect x="186.19" y="764.60" width="9.43" height="8.81" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>BuildAudioTrackTable  ·  152 bytes  ·  matched</title></rect>
 <rect x="195.62" y="646.56" width="9.30" height="8.93" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>VectorLength  ·  152 bytes  ·  handwritten</title></rect>
-<rect x="204.92" y="646.56" width="9.30" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SelectActorLodBand  ·  152 bytes  ·  matched</title></rect>
+<rect x="204.92" y="646.56" width="9.30" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>StepActorScorchTint  ·  152 bytes  ·  matched</title></rect>
 <rect x="214.22" y="646.56" width="9.30" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SetActorGroupSubstate  ·  152 bytes  ·  matched</title></rect>
 <rect x="223.52" y="646.56" width="9.30" height="8.93" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>AllocEmitListRecord  ·  152 bytes  ·  handwritten</title></rect>
 <rect x="232.82" y="646.56" width="9.30" height="8.93" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>SyncSoundVoicesWithHardware  ·  152 bytes  ·  matched</title></rect>

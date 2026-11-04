@@ -17,7 +17,7 @@
  *     every other 1 is a literal, so int sites and compares use the hoisted
  *     fp while byte stores stay inline `li`. 16 is a literal, not a carrier.
  *   - Scratch arrays at function level in frame order (the shared slots
- *     s152..s576 are reused across arms).
+ *     sparkVel and s168..s576, reused across arms).
  *   - Case 402 reads its two gain columns as `g_anSineLut[t * 2 - 6]` and
  *     `[t * 2 - 5]`; two separate symbols compile identically but lose the
  *     reload spill slot that makes the frame 0x2D0.
@@ -47,67 +47,14 @@
 #include "cd_stream.h"
 #include "hud_counter.h"
 
-
-/* Type 286: ambient sound source; mode 2 also coasts along a path. */
-
-
-/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
- * saves a checkpoint and starts the rescue. */
-
-/* Type 421: life chest. Shakes and pops its lid on a timer, spawning a
- * child actor; breaks into fragments when damaged. */
-
-
-/* 0x18-byte spherical camera coordinates; g_aCameraXformPresets holds the presets. */
-
-
-/* Glow node owned by Sparx; follows its anchor position. */
-
-
-/* ==== Helper macros ====
- *
- * Absolute value. The two forms differ only at zero; both occur. */
-
-
-/* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. */
+/* ANIM_ADVANCE / ENTER_POSE (level_update_actors_macros.h) rate. The
+ * clones that need a loop-top carrier for 0x10 declare `int sixteen`; here
+ * it is the plain constant, so arm bodies read the same in every level. */
 #define ANIM_RATE16 sixteen
-
-/* ==== level_30 per-class state blocks ====
- *
- * Gnorc Gnexus is the hub for Gnasty's world: the balloonist, the vortex
- * pads, the two boss-door gnorcs and the shared fodder/debris classes. Each
- * block below is the ->state record of one actor class, named after the case
- * that uses it. */
-
-
-/* ==== Level 16 classes ==== */
-
-
-/* Case 328 -- floor-snapped marker. */
-
-
-/* ENTER_POSE with the already-there test first. */
-/* ==== Level 2 classes ==== */
-
-
-/* ==== Level 9 classes ==== */
-
-
-/* ==== Level 26 classes ==== */
-
 #define sixteen 0x10
 
-/* ==== Classes shared with level 31 ==== */
-
-
-/* ==== Level 25 classes ==== */
-
-/* Case 50 -- grabber. Only one grabber at a time may hold Spyro; the shared
- * slot names the holder. */
-
-
-/* ==== The function ==== */
 #define spy (&SPY)
+
 void Level25_UpdateActors(void) {
   Actor **actorList;
   Actor *actor;
@@ -123,7 +70,7 @@ void Level25_UpdateActors(void) {
   int svD[3];
   int eggViewPos[3];
   int prevPos[3];
-  int s152[3];
+  int sparkVel[3];
   int s168[3];
   int groundProbe[3];
   int acc[3][3];
@@ -132,8 +79,8 @@ void Level25_UpdateActors(void) {
   int homingStep[3];
   int sparxTargetPos[3];
   int sparxToTarget[3];
-  int svX[3];
-  int svY[3];
+  int attachA[3];
+  int attachB[3];
   int fx[6];
   int col[3];
   int svW[3];
@@ -1351,10 +1298,10 @@ void Level25_UpdateActors(void) {
       actor->rotZ += st->spin[2];
 
       if (!(st->life & 3)) {
-        s152[0] = GetRandomU32() & 3;
-        s152[1] = GetRandomU32() & 3;
-        s152[2] = 0x14;
-        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, (int)s152);
+        sparkVel[0] = GetRandomU32() & 3;
+        sparkVel[1] = GetRandomU32() & 3;
+        sparkVel[2] = 0x14;
+        g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, &actor->posX, (int)sparkVel);
       }
 
       st->life -= 1;
@@ -2297,9 +2244,9 @@ void Level25_UpdateActors(void) {
       }
       if (st->fx != 0) {
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-        GetActorAttachPoint(actor, 0, svX);
-        GetActorAttachPoint(actor, 1, svY);
-        AddVector(st->pos, svX, svY);
+        GetActorAttachPoint(actor, 0, attachA);
+        GetActorAttachPoint(actor, 1, attachB);
+        AddVector(st->pos, attachA, attachB);
         RShiftVector3(st->pos, 1);
       }
 
@@ -2704,7 +2651,7 @@ void Level25_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
 
         if ((actor->flags & ACTOR_HIT_FLAME) && st->phase == 0) {
           st->phase = 1;
@@ -3552,7 +3499,7 @@ void Level25_UpdateActors(void) {
         MarkActorLiveKill(actor);
         DespawnActorRecord(actor);
       } else {
-        st->handle = SelectActorLodBand(actor, st->handle);
+        st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
         if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE)) && st->shake == 0) {
           st->shake = 1;
           st->rotX = actor->rotX;

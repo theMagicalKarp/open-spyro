@@ -320,16 +320,19 @@ void TickLevelTransitionStream(int full) {
         g_anSpyroSubstateBlock[0] = 10;
         ComputeCameraToTargetAngle(g_anCameraPos);
         g_nCameraYaw += g_nSpyroBodyYaw;
-        CopyVector(&g_anSpyroSubstateBlock[-31], &g_anSpawnAnchorBlock[0x14]);
+        CopyVector(&g_anSpyroSubstateBlock[SPY_POS - SPY_SUBSTATE],
+                   &g_anSpawnAnchorBlock[0x14] /* g_anLevelSpawnPos */);
         *(CameraAngles *)&g_nCameraSpringYaw = *(CameraAngles *)&g_nCameraYaw;
         g_abSpyroPersistentEuler[2] = g_nLevelSpawnYaw;
         g_nSpyroBodyYaw = (g_nLevelSpawnYaw & 0xFF) << 4;
         g_nCameraSpringYaw -= SPYB[SPYB_EULER_Z] << 4;
         ComputeCameraOrbitOffset(g_anCameraPos);
-        AddVector(g_anCameraPos, g_anCameraPos, &g_anSpyroSubstateBlock[-31]);
+        AddVector(g_anCameraPos, g_anCameraPos,
+                  &g_anSpyroSubstateBlock[SPY_POS - SPY_SUBSTATE]);
         UpdateCameraEulerAngles();
         CopyVector(g_anSpyroDeathCamRecordBlock, g_anCameraPos);
-        ActivateScriptedCameraView(g_anSpyroDeathCamRecordBlock - (0x18 / 4));
+        ActivateScriptedCameraView(
+            SCRIPTED_CAM_VIEW_AT_POS(g_anSpyroDeathCamRecordBlock));
         g_nGamestate = GS_ARRIVAL_CAMERA;
       } else if (g_nReturnPortalLevelId != 0) {
         for (i = 0; i < g_nPortalCount; i++) {
@@ -349,7 +352,8 @@ void TickLevelTransitionStream(int full) {
             ChangeSpyroState(SPYRO_ST_GLIDE);
             PE_WORD(SPY_SUBSTATE) = 9;
             ComputeCameraToTargetAngle(cam);
-            g_anCameraSpringYawBlock[6] = g_nCameraYaw + PE_WORD(SPY_BODY_YAW);
+            g_anCameraSpringYawBlock[6] /* g_nCameraYaw */ =
+                g_nCameraYaw + PE_WORD(SPY_BODY_YAW);
             if (actor->reverse != 0) {
               CopyVector((int *)(pe - SPYB_EULER_Z), actor->path + 2);
               CopyVector((int *)(pe + PE_TO(SPY_REQUEST_TARGET)),
@@ -391,7 +395,7 @@ void TickLevelTransitionStream(int full) {
         g_abSpyroPersistentEuler[2] = g_nLevelSpawnYaw;
         *yawp = (g_nLevelSpawnYaw & 0xFF) << 4;
         g_nCameraSpringYaw -= SPYB[SPYB_EULER_Z] << 4;
-        CopyVector(pos, &g_anSpawnAnchorBlock[0x14]);
+        CopyVector(pos, &g_anSpawnAnchorBlock[0x14] /* g_anLevelSpawnPos */);
         ComputeCameraOrbitOffset(g_anCameraPos);
         ZeroVector(yawp - 4);
         if (g_pCameraTargetParams == g_anCameraMode12Params) {
@@ -409,7 +413,8 @@ void TickLevelTransitionStream(int full) {
           AddVector(g_anCameraPos, g_anCameraPos, pos);
           UpdateCameraEulerAngles();
           CopyVector(g_anSpyroDeathCamRecordBlock, g_anCameraPos);
-          ActivateScriptedCameraView(g_anSpyroDeathCamRecordBlock - (0x18 / 4));
+          ActivateScriptedCameraView(
+              SCRIPTED_CAM_VIEW_AT_POS(g_anSpyroDeathCamRecordBlock));
           g_nSpyroSubstate = SPYRO_SUB_GLIDE_ARRIVE;
           g_nGamestate = GS_ARRIVAL_CAMERA;
         }

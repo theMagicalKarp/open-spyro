@@ -163,7 +163,7 @@ void SaveMenu_Update(void) {
         SPYB[SPYB_SUB_FRAME_TIMER] = 4;
         SPYB[SPYB_ANIM_CURRENT] = 0;
         SPYB[SPYB_ANIM_FRAME] = 0;
-        g_anSpyroWorldPosBlock[0x16] = 4;
+        g_anSpyroWorldPosBlock[SPY_ANIM_PLAY_RATE] = 4;
         SM[0] = SAVE_MODE_MENU;
         SM[1] = 0;
         g_anCameraPos[2] = g_nSaveMenuCameraToZ;

@@ -49,7 +49,7 @@ int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius, int radius
 int MoveActorAlongAngle(Actor *actor, int angle, int speed, int contactRadius, int radius, int flags);
 int DriveActorTrackedMove(Actor *actor, int *speed, int heading, int *vz, int friction, int gravity);
 void UpdateActorWander(Actor *actor, WanderBlock *wb);
-int SelectActorLodBand(Actor *actor, int band);
+int StepActorScorchTint(Actor *actor, int band);
 void TickActorFlameGlow(Actor *actor);
 int SpawnActorRotBillboard(Actor *actor, int *offset);
 Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt);
@@ -65,7 +65,7 @@ int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR, int
 #define NAME_LETTERS_RETURN_HOME 0 /* "RETURN HOME", facing Spyro (level exits) */
 #define NAME_LETTERS_LEVEL       1 /* the sign's level name, along its yaw (portals) */
 #endif
-void SpawnNameLetterActors(Actor *actor, int named);
+void SpawnNameLetterActors(Actor *sign, int named);
 void FollowActorWaypointPath(Actor *actor, PathData *path, int threshold, int cap, int radius, int yawLim, int pitchLim);
 void RefreshActorDerivedState(Actor *actor, int mode);
 void SetSpawnAnchorFromActor(Actor *actor, int heading);

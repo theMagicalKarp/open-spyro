@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "level_sfx.h"
 #include "main_shared.h"
+#include "pad_buttons.h"
 #include "sample_bank.h"
 #include "sdata.h"
 #include "spyro_block.h"
@@ -167,7 +168,8 @@ void ChangeSpyroState(int state) {
   case SPYRO_ST_FALL:
     SPY[SPY_SUBSTATE] = 0;
     CopyVector(&SPY[SPY_VELOCITY], &SPY[SPY_MOTION]);
-    if (g_nSpyroGroundProbeSuspendFlag == 0 && g_nSpyroGroundSlope < 0x20) {
+    if (g_nSpyroGroundProbeSuspendFlag == 0 &&
+        g_nSpyroGroundSlope < SLOPE_NUDGE_MAX) {
       NudgeSpyroFromWallProbes();
     }
     g_nSpyroGravityStep = -0xC0;
@@ -179,7 +181,8 @@ void ChangeSpyroState(int state) {
     g_anSpyroVelocity[0] = 0;
     g_anSpyroVelocity[1] = 0;
     g_anSpyroVelocity[2] = g_anSpyroMotionVec[2];
-    if (g_nSpyroGroundProbeSuspendFlag == 0 && g_nSpyroGroundSlope < 0x20) {
+    if (g_nSpyroGroundProbeSuspendFlag == 0 &&
+        g_nSpyroGroundSlope < SLOPE_NUDGE_MAX) {
       NudgeSpyroFromWallProbes();
     }
     g_nSpyroGravityStep = -0xC0;
@@ -333,8 +336,8 @@ void ChangeSpyroState(int state) {
     }
     g_nSpyroGravityEnableFlag = 1;
     g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
-    if (g_nHitRumbleTimer < 0xF) {
-      g_nHitRumbleTimer = 0xF;
+    if (g_nHitRumbleTimer < HIT_RUMBLE_FRAMES) {
+      g_nHitRumbleTimer = HIT_RUMBLE_FRAMES;
     }
     PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT), (Actor *)SPY, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER);
@@ -346,8 +349,8 @@ void ChangeSpyroState(int state) {
     g_anSpyroVelocity[2] = -0xC00;
     g_nSpyroGravityEnableFlag = 1;
     g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
-    if (g_nHitRumbleTimer < 0xF) {
-      g_nHitRumbleTimer = 0xF;
+    if (g_nHitRumbleTimer < HIT_RUMBLE_FRAMES) {
+      g_nHitRumbleTimer = HIT_RUMBLE_FRAMES;
     }
     PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT_PINNED), (Actor *)SPY,
                     SFX_MODE_FLAT, (unsigned char *)SPY + SPYB_VOICE_MARKER);
@@ -358,8 +361,8 @@ void ChangeSpyroState(int state) {
     g_nSpyroGravityStep = -0x300;
     g_nSpyroGravityEnableFlag = 1;
     g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
-    if (g_nHitRumbleTimer < 0xF) {
-      g_nHitRumbleTimer = 0xF;
+    if (g_nHitRumbleTimer < HIT_RUMBLE_FRAMES) {
+      g_nHitRumbleTimer = HIT_RUMBLE_FRAMES;
     }
     break;
   case SPYRO_ST_GLIDE:
@@ -375,7 +378,7 @@ void ChangeSpyroState(int state) {
       break;
     }
     g_nSpyroSubstate = 0;
-    g_nSpyroGlideEnteredLatch = 1;
+    g_nSpyroGlideSpentFlag = 1;
     g_nSpyroBodyYawStep = 0;
     g_nSpyroPitchRateAccum = 0;
     g_nSpyroTurnRateAccum = 0;
@@ -388,7 +391,7 @@ void ChangeSpyroState(int state) {
     if (g_nSpyroMotionSpeed > 0x1900) {
       g_nSpyroMotionSpeed = 0x1900;
     }
-    if (g_nSpyroMotionSpeed < 0x780) {
+    if (g_nSpyroMotionSpeed < SPYRO_JOG_SPEED) {
       g_nSpyroMotionSpeed = 0x780;
     }
     if (*st != SPYRO_ST_FALL || g_nFlightLevelActive ||
@@ -519,8 +522,8 @@ void ChangeSpyroState(int state) {
     g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT), (Actor *)SPY, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER);
-    if (g_nHitRumbleTimer < 0xF) {
-      g_nHitRumbleTimer = 0xF;
+    if (g_nHitRumbleTimer < HIT_RUMBLE_FRAMES) {
+      g_nHitRumbleTimer = HIT_RUMBLE_FRAMES;
     }
     break;
   case SPYRO_ST_HAZARD: {
@@ -539,8 +542,8 @@ void ChangeSpyroState(int state) {
                     (unsigned char *)SPY + SPYB_VOICE_MARKER);
     PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT_EXIT), (Actor *)me, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER);
-    if (g_nHitRumbleTimer < 0xF) {
-      g_nHitRumbleTimer = 0xF;
+    if (g_nHitRumbleTimer < HIT_RUMBLE_FRAMES) {
+      g_nHitRumbleTimer = HIT_RUMBLE_FRAMES;
     }
     break;
   }

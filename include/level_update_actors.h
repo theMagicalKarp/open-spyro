@@ -58,7 +58,7 @@ extern void AimCameraStickTowardPoint(int *target);
 
 extern void SVectorToVectorShl2(int *dst, short *src);
 
-extern void CommitActorKillGems(int value, void *actor);
+extern void CommitActorKillGems(int value, Actor *actor);
 
 /* Types 260..269: a floating gem-value digit (0x104 + digit), spawned by
  * SpawnFloatingDigitActors when a kill pays out gems. */
@@ -273,7 +273,7 @@ typedef struct WobbleState {
   int rotY;   /* 0x08 */
   int restZ;  /* 0x0C */
   int snapToGround;  /* 0x10 nonzero: re-snap to the floor every frame */
-  int handle; /* 0x14 */
+  int scorchBand; /* 0x14 StepActorScorchTint band */
 } WobbleState;
 
 /* Cases 76 and 426..451 — a letter of a floating name (SpawnNameLetterActors:
@@ -380,7 +380,7 @@ typedef struct LockedChestState {
   int rotX;   /* 0x08 rest pose */
   int rotY;   /* 0x0C */
   int restZ;  /* 0x10 */
-  int handle; /* 0x14 for SelectActorLodBand */
+  int scorchBand; /* 0x14 StepActorScorchTint band */
 } LockedChestState;
 
 extern void DivideVector3(int *dst, int *src, int n);
@@ -417,7 +417,7 @@ typedef struct SpinChestState {
   int angle;  /* 0x04 */
   int speed;  /* 0x08 */
   int timer;  /* 0x0C */
-  int handle; /* 0x10 for SelectActorLodBand */
+  int scorchBand; /* 0x10 StepActorScorchTint band */
 } SpinChestState;
 
 /* Case 392 -- the spin chest's lid, launched when the chest bursts. */
@@ -534,7 +534,7 @@ typedef struct AmbientSoundBytesState {
 /* Type 34: dragon egg. Spirals up, flies to Spyro and is collected (the
  * same record as level_actor_states.h EggRiseState). */
 typedef struct EggFlightState {
-  void *killActor;        /* 0x00 actor handed to CommitActorKillGems on collection */
+  Actor *killActor;       /* 0x00 actor handed to CommitActorKillGems on collection */
   short from[3];         /* 0x04 launch point */
   short to[3];           /* 0x0A destination */
   short speed;           /* 0x10 */
@@ -663,7 +663,7 @@ typedef struct FlockState {
 /* Type 391: rides a collision triangle, holding its offset from the
  * triangle's centroid. */
 typedef struct PatchRideState {
-  int handle;    /* 0x00 */
+  int triId;     /* 0x00 collision triangle ridden (-1 until found) */
   int offset[3]; /* 0x04 actor position relative to the centroid */
 } PatchRideState;
 
@@ -926,7 +926,7 @@ typedef struct ChargingYakState {
 typedef struct ToughRamState {
   int knockHeading; /* 0x00 knock-back heading */
   int speed;   /* 0x04 */
-  int rest;    /* 0x08 rest countdown, knock-back height step */
+  int rest;    /* 0x08 butt-hold flag; on a knock, the stagger slide speed (DriveActorTrackedMove) */
   int pad0C;
   int timer;   /* 0x10 grazing timer */
   int dropPos;   /* 0x14 */
@@ -990,7 +990,7 @@ typedef struct BreakableRockState {
   int rotX;   /* 0x04 rest rotation */
   int rotY;   /* 0x08 */
   int restZ;  /* 0x0C */
-  int handle; /* 0x10 for SelectActorLodBand */
+  int scorchBand; /* 0x10 StepActorScorchTint band */
 } BreakableRockState;
 
 typedef struct TetherState {
@@ -1055,6 +1055,8 @@ typedef struct CannonState {
   int init;            /* 0x18 1 = aim the barrel along the path */
 } CannonState;
 
+/* Type 218 (level 8): catapult. Charging it winds it up; when it swings it
+ * flings the linked actor along an arc. */
 typedef struct CatapultState {
   int angle;     /* 0x00 0..0x120 */
   int vel;       /* 0x04 */
@@ -1266,6 +1268,9 @@ typedef struct Debris {
   int life;            /* 0x0C */
 } Debris;
 
+/* Type 177 (level 34): treasure thief. Flies a ring with two spurs
+ * (pathA/pathB), running laps away from Spyro; knocked out it bursts into
+ * loot. */
 typedef struct LootThiefState {
   PathData *path;  /* 0x00 escape path */
   int onRing;     /* 0x04 */
@@ -1369,7 +1374,7 @@ typedef struct HatchState {
   int pad00;
   int kind;     /* 0x04 HatchKind */
   Actor *child; /* 0x08 released occupant */
-  int handle;   /* 0x0C for SelectActorLodBand */
+  int scorchBand;   /* 0x0C StepActorScorchTint band */
 } HatchState;
 
 typedef struct MountState {
@@ -1396,7 +1401,7 @@ typedef struct FloatingBarrelState {
   int heading;  /* 0x08 run heading */
   int sink;     /* 0x0C sink speed */
   int link;     /* 0x10 index into g_pActorListBase, -1 = none; level data: ACTOR_TYPE_MOUNT / CARRIED_THROWER */
-  short handle; /* 0x14 for SelectActorLodBand */
+  short scorchBand; /* 0x14 StepActorScorchTint band */
 } FloatingBarrelState;
 
 typedef struct L31Debris {
@@ -1536,7 +1541,7 @@ extern PortalCamPath *volatile g_pPortalCamPathData;
 extern struct CutscenePath *g_pPathTableHead;
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
-extern int FindNearestPathPointToSpyro(PathData *path, int *nearest);
+extern int FindNearestPathPointToSpyro(PathData *path, int *out_index);
 extern int g_anCameraPos[];
 extern int g_nCameraActiveTargetPitch;
 extern int g_nCameraActiveTargetDistance;

@@ -5,6 +5,7 @@
 #ifndef OPEN_SPYRO_GLOBALS_H
 #define OPEN_SPYRO_GLOBALS_H
 
+#include "camera.h"
 #include "sparx.h"
 
 #include "types.h"
@@ -983,7 +984,7 @@ extern int g_anSpyroPendingImpulse[3];                  /* 0x80078b84 */
 extern int g_nSpyroMoveTargetMag;                       /* 0x80078b9c */
 extern int g_nSpyroBodyYawStep;                         /* 0x80078ba0 */
 extern int g_nSpyroGravityStep;                         /* 0x80078ba4 */
-extern int g_nSpyroGlideEnteredLatch;                       /* 0x80078ba8 set to 1 whenever ChangeSpyroState enters a glide/fly state from another state; only ResetSpyroEntity(1)'s FillWord clears it. While set, the jump-hold latch is off and a fall needs 0x1F (flight: 0x10) frames before Cross glides */
+extern int g_nSpyroGlideSpentFlag;                       /* 0x80078ba8 1 once Spyro has entered a glide/fly state (ChangeSpyroState) or stands on steep ground (slope 0x17..0x20); ProbeSpyroGroundContact clears it on gentler ground. While set, the jump-hold latch is off and a fall needs 0x1F (flight: 0x10) frames before Cross glides */
 extern int g_nSpyroJumpHoldLatch;                       /* 0x80078bac */
 extern int g_nSpyroFloorReferenceZ;                     /* 0x80078bb0 */
 extern int g_nSpyroGravityEnableFlag;                   /* 0x80078bb4 */
@@ -1065,8 +1066,8 @@ extern unsigned char g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *
  * Per-actor tick state (written by each level's UpdateActors before calling
  * the actor's handler; read by the shared actor helpers):
- *   g_nActorAnimDone        0x80075794  actor +0x42 bit 1: animation finished
- *   g_nActorAnimNewFrame    0x800757f4  actor +0x42 bit 0: new anim frame
+ *   g_nActorAnimDone        0x80075794  Actor.animFlags bit 1: animation finished
+ *   g_nActorAnimNewFrame    0x800757f4  Actor.animFlags bit 0: new anim frame
  *   g_nActorFrameDelta      0x800756c4  this actor's frame delta (TickCountdownByFrameDelta)
  *
  * Component aliases of named vectors (absolute-address forms the matches need):
@@ -1227,7 +1228,7 @@ extern char g_szCrashDemoExePath[]; /* 0x80010da0: "cdrom:\\S0\\CRASH.EXE;1" */
 extern char g_szMemCardSaveName[]; /* 0x80010db8: memory card save file name */
 extern void *g_pSharedLoadBuffer; /* 0x800113a0: shared CD/asset/splash load buffer */
 extern unsigned char g_abSpyroStateCameraModeTable[]; /* 0x8006c588 */
-extern short g_anDpadDirectionYaw[]; /* 0x8006c5d0 */
+extern short g_anDpadDirectionYaw[]; /* 0x8006c5d0 D-pad -> yaw, 16 entries indexed by the pad button nibble */
 extern short g_anSpyroTurnRateRows[]; /* 0x8006c5f0 */
 extern int g_anSpyroFlameTipOffsets2[]; /* 0x8006e244: g_anSpyroFlameTipOffsets+0xC */
 extern int g_anWorldSparkleShape[]; /* 0x8006e308: 10-word table in .data (5 signed pairs) */
@@ -1237,7 +1238,7 @@ extern int g_anFlightBoundsRadius[]; /* 0x8006e7e4 */
 extern int g_anHazardEnterSpawnType[]; /* 0x8006ea34 */
 extern int g_anHazardTimeoutSpawnType[]; /* 0x8006ea40 */
 extern int g_anLevelEntryPoints[]; /* 0x8006ea4c: entry points, 4 words per level */
-extern int g_anScriptedCameraPresetRecords[]; /* 0x8006eb24 */
+extern ScriptedCamView g_aScriptedCamViews[]; /* 0x8006eb24 three presets + the fall/death vantage */
 extern int g_anDemoLevelIds[]; /* 0x8006ee7c: level id per attract demo (StoryIntro_Update) */
 extern int g_anLevelMusicPickTable[]; /* 0x8006f05c */
 extern int g_anGameOverRespawnPosVirtualBase[]; /* 0x8006f140 */
@@ -1252,7 +1253,7 @@ extern unsigned char g_abLevelTotalDragonsBlock[]; /* 0x8006f414: held-base view
 extern void *g_apOtDepthBinBlock[]; /* 0x8006fcf4 */
 extern unsigned char g_abSpyroFlameTransitionModes[][2]; /* 0x80075264 */
 extern unsigned char g_abSpyroFlameAnimTable[]; /* 0x80075268 */
-extern unsigned short g_anGameOverCameraEulerU[]; /* 0x800752d8 */
+extern unsigned short g_anGameOverCameraEulerU[]; /* 0x800752d8 g_anGameOverCameraEuler read unsigned (lhu) */
 extern unsigned char g_abWorldTitleGlyphBlock[]; /* 0x8007555c: held-base view (A240) */
 extern int g_nLevelVortexSeen1; /* 0x80075670: a loot vortex (levels 33/34, LootVortexState.seen 1) was entered this visit; read as g_nCutsceneId[1] */
 extern int g_nLevelVortexSeen2; /* 0x80075674: the same for seen 2 (g_nCutsceneId[2]) */
@@ -1281,7 +1282,7 @@ extern short g_nCdDaVolumeCurrent; /* 0x80075f18: SpuCommonAttr CD volume L */
 extern short g_nSpuCommonCdVolumeR; /* 0x80075f1a: SpuCommonAttr CD volume R */
 extern void *g_apSampleBankEntriesBlock[]; /* 0x800761d0 */
 extern char *volatile g_pActiveCutsceneSoundDef; /* 0x800761d0 */
-extern int g_anMusicFadeBlock[]; /* 0x800761d8 */
+extern int g_anMusicFadeBlock[]; /* 0x800761d8 held-base view of g_nMusicVolumeFadeTarget: [0x16] (+0x58) is g_nMusicVolumeFadeStep, the SPU master-volume short pair sits at -0x2C0 */
 extern unsigned short g_nSfxOverridePitch; /* 0x800761f4: override pitch */
 extern int g_nSfxMixVolume_blk[]; /* 0x80076228: held-base view of g_nSfxMixVolume */
 extern int g_anSoundMasterVolumeBlock[]; /* 0x8007622c: g_nSoundMasterVolume */
@@ -1302,8 +1303,8 @@ extern int g_anCameraSpringDeltaStateBlock[]; /* 0x80076e78 */
 extern int g_nCameraSpringYawDelta; /* 0x80076e78 */
 extern int g_nCameraSpringPitchDelta; /* 0x80076e7c */
 extern int g_anCameraScriptStickIntegratorBlock[]; /* 0x80076eac */
-extern int *g_pScriptedCameraView; /* 0x80076ebc */
-extern int *g_apScriptedCameraViewBlock[]; /* 0x80076ebc: held-base view of g_pScriptedCameraView */
+extern ScriptedCamView *g_pScriptedCameraView; /* 0x80076ebc */
+extern ScriptedCamView *g_apScriptedCameraViewBlock[]; /* 0x80076ebc: held-base view of g_pScriptedCameraView */
 extern unsigned char g_abFrameDrawEnvIsbgBlock[]; /* 0x80076ef8 */
 extern char g_abDragonRescueAssetHeader[]; /* 0x80077030: dragon-rescue asset header copy */
 extern int g_anDragonRescueHeaderEndBlock[]; /* 0x8007703c: held-base view of the header-end offset */

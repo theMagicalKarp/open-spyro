@@ -8,7 +8,7 @@
    tagged tint 0xA << 20 | (0x18 + n) << 12 | (0x18 - n) << 6 | (0x18 - n)
    (see Actor.tint0): the flame level rises as the other two fall. Returns
    the adjusted band. */
-int SelectActorLodBand(Actor *actor, int band) {
+int StepActorScorchTint(Actor *actor, int band) {
   int n;
   int tint;
 

@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_block.h"
 #include "vecmath.h"
 
 /* 0x8003d978 (0x90) — build Spyro's world-space velocity: snapshot the body
@@ -22,7 +23,7 @@ void BuildSpyroVelocityFromBodyEuler(void) {
 
   g_anSpyroVelocity[1] = 0;
   g_anSpyroVelocity[2] = 0;
-  g_anSpyroBodyPitchBlock[-12] = g_nSpyroMotionSpeed;
-  RotateVectorByMatrix(mtx, &g_anSpyroBodyPitchBlock[-12],
-                       &g_anSpyroBodyPitchBlock[-12]);
+  g_anSpyroBodyPitchBlock[SPY_VELOCITY - SPY_PITCH] = g_nSpyroMotionSpeed;
+  RotateVectorByMatrix(mtx, &g_anSpyroBodyPitchBlock[SPY_VELOCITY - SPY_PITCH],
+                       &g_anSpyroBodyPitchBlock[SPY_VELOCITY - SPY_PITCH]);
 }

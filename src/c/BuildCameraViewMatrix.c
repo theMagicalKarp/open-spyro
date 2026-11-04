@@ -46,7 +46,7 @@ void BuildCameraViewMatrix(void) {
   axis.m[2][2] = 0x1000;
   MulMatrix(&view, &axis);
 
-  CopyWords((char *)g_anCameraEulerPitchBlock - 0x3a, &view, 0x14);
+  CopyWords(CAM_VIEW_MTX_VIA_EULER, &view, 0x14);
   v = view.m[1][0] * 0x140;
   if (v < 0) {
     v += 0x1ff;
@@ -62,5 +62,5 @@ void BuildCameraViewMatrix(void) {
     v += 0x1ff;
   }
   view.m[1][2] = v >> 9;
-  CopyWords((char *)g_anCameraEulerPitchBlock - 0x4e, &view, 0x14);
+  CopyWords(CAM_W2C_MTX_VIA_EULER, &view, 0x14);
 }
