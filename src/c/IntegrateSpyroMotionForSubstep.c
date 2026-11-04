@@ -251,7 +251,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     } else {
       int lean = 2;
 
-      if (g_nSpyroMotionSpeed < 0xC80) {
+      if (g_nSpyroMotionSpeed < SPYRO_RUN_DROP_SPEED) {
         lean = 1;
       }
       r = TurnSpyroTowardMoveTargetWithLean(lean);
@@ -343,7 +343,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     } else {
       int lean = 2;
 
-      if (g_nSpyroMotionSpeed < 0xC80) {
+      if (g_nSpyroMotionSpeed < SPYRO_RUN_DROP_SPEED) {
         lean = 1;
       }
       r = TurnSpyroTowardMoveTargetWithLean(lean);
@@ -1085,7 +1085,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       case SPYRO_SUB_GLIDE_ARRIVE: {
         SPY[SPY_SPEED_TARGET] = 0x1900;
         APPROACH_GLIDE_SPEED(&SPY[SPY_SPEED_TARGET]);
-        if (SPY[SPY_SPEED] < 0x780) {
+        if (SPY[SPY_SPEED] < SPYRO_JOG_SPEED) {
           SPY[SPY_SPEED] = 0x780;
         }
         g_abSpyroPersistentEuler[2] = g_nSpyroBodyYaw >> 4;
@@ -1207,7 +1207,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           }
         }
       }
-      if (SPY[SPY_SPEED] < 0x780) {
+      if (SPY[SPY_SPEED] < SPYRO_JOG_SPEED) {
         SPY[SPY_SPEED] = 0x780;
       }
       g_nSpyroBodyYawStep = OpaqueInt(side * 20) >> 7;

@@ -2065,8 +2065,8 @@ void Level2_UpdateActors(void) {
             g_nSpyroRequestState = SPYRO_ST_FALL;
             g_anSpyroRequestVelocity.x = svR[0];
             g_nSpyroRequestVelocityY = svR[1];
-            if (g_nHitRumbleTimer < 0xF) {
-              g_nHitRumbleTimer = 0xF;
+            if (g_nHitRumbleTimer < HIT_RUMBLE_FRAMES) {
+              g_nHitRumbleTimer = HIT_RUMBLE_FRAMES;
             }
           }
           if (g_nActorAnimDone != 0) {

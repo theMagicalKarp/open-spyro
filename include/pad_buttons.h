@@ -26,4 +26,8 @@
 
 #define PAD_DPAD (PAD_UP | PAD_RIGHT | PAD_DOWN | PAD_LEFT)
 
+/* g_nHitRumbleTimer top-up for a hit or hard landing: vblanks of strong
+ * DualShock rumble (PollPadAndDistributeInput counts it down). */
+#define HIT_RUMBLE_FRAMES 0xF
+
 #endif /* OPEN_SPYRO_PAD_BUTTONS_H */

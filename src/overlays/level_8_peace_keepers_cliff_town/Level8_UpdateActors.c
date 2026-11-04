@@ -2739,8 +2739,8 @@ void Level8_UpdateActors(void) {
           st->camTimer = 0x28;
           st->camTimer2 = 0x28;
           st->camDist = 0xFA0;
-          if (g_nHitRumbleTimer < 0xF) {
-            g_nHitRumbleTimer = 0xF;
+          if (g_nHitRumbleTimer < HIT_RUMBLE_FRAMES) {
+            g_nHitRumbleTimer = HIT_RUMBLE_FRAMES;
           }
         }
         if (g_nActorAnimDone != 0) {

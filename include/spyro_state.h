@@ -109,6 +109,13 @@ typedef enum SpyroState
  * few frames of grace over gaps and bumps. */
 #define SPYRO_AIRBORNE_GRACE 4
 
+/* g_nSpyroMotionSpeed bands that pick the ground gait on landing / speed
+ * change (SPYRO_ST_WALK / JOG / RUN). */
+#define SPYRO_JOG_SPEED 0x780       /* above: jog */
+#define SPYRO_RUN_SPEED 0xF00       /* above: run */
+#define SPYRO_RUN_DROP_SPEED 0xC80  /* below: a run drops back to a jog; also the
+                                     * fast/slow split for glides, leaps and lean */
+
 /* g_dwSpyroRequestMask bits (SpyroObj.requestMask): a scripted override of
  * Spyro posted by actors and cutscenes, applied by AdvanceSpyroPhysics while
  * SPYRO_RQ_PENDING is set. */

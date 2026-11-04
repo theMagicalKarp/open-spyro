@@ -33,14 +33,14 @@ static inline int OpaqueInt(int p) {
 /* Landing: pick the ground state from the speed target and current speed. */
 #define LAND_ON_GROUND()                                                       \
   if (g_nSpyroSpeedTarget > 0) {                                               \
-    if (g_nSpyroMotionSpeed > 0xF00) {                                         \
+    if (g_nSpyroMotionSpeed > SPYRO_RUN_SPEED) {                               \
       ChangeSpyroState(SPYRO_ST_RUN);                                          \
-    } else if (g_nSpyroMotionSpeed > 0x780) {                                  \
+    } else if (g_nSpyroMotionSpeed > SPYRO_JOG_SPEED) {                        \
       ChangeSpyroState(SPYRO_ST_JOG);                                          \
     } else {                                                                   \
       ChangeSpyroState(SPYRO_ST_WALK);                                         \
     }                                                                          \
-  } else if (g_nSpyroMotionSpeed >= 0x780) {                                   \
+  } else if (g_nSpyroMotionSpeed >= SPYRO_JOG_SPEED) {                         \
     ChangeSpyroState(SPYRO_ST_STOP);                                           \
   } else {                                                                     \
     ResetSpyroLinearMotion();                                                  \
@@ -84,7 +84,8 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_JUMP);
       break;
     }
-    if (g_nSpyroAirborneFrames >= SPYRO_AIRBORNE_GRACE || g_nSpyroGroundSlope >= SLOPE_STEEP) {
+    if (g_nSpyroAirborneFrames >= SPYRO_AIRBORNE_GRACE ||
+        g_nSpyroGroundSlope >= SLOPE_STEEP) {
       ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
@@ -132,7 +133,8 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_JUMP);
       break;
     }
-    if (g_nSpyroAirborneFrames >= SPYRO_AIRBORNE_GRACE || g_nSpyroGroundSlope >= SLOPE_STEEP) {
+    if (g_nSpyroAirborneFrames >= SPYRO_AIRBORNE_GRACE ||
+        g_nSpyroGroundSlope >= SLOPE_STEEP) {
       ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
@@ -153,9 +155,9 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_IDLE);
       break;
     }
-    if (g_nSpyroMotionSpeed > 0xF00) {
+    if (g_nSpyroMotionSpeed > SPYRO_RUN_SPEED) {
       ChangeSpyroState(SPYRO_ST_RUN);
-    } else if (g_nSpyroMotionSpeed > 0x780) {
+    } else if (g_nSpyroMotionSpeed > SPYRO_JOG_SPEED) {
       ChangeSpyroState(SPYRO_ST_JOG);
     }
     break;
@@ -167,7 +169,8 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_JUMP);
       break;
     }
-    if (g_nSpyroAirborneFrames >= SPYRO_AIRBORNE_GRACE || g_nSpyroGroundSlope >= SLOPE_STEEP) {
+    if (g_nSpyroAirborneFrames >= SPYRO_AIRBORNE_GRACE ||
+        g_nSpyroGroundSlope >= SLOPE_STEEP) {
       ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
@@ -218,7 +221,7 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_WALK);
       break;
     }
-    if (g_nSpyroMotionSpeed < 0xC80) {
+    if (g_nSpyroMotionSpeed < SPYRO_RUN_DROP_SPEED) {
       ChangeSpyroState(SPYRO_ST_JOG);
     }
     break;
@@ -230,7 +233,8 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_JUMP);
       break;
     }
-    if (g_nSpyroAirborneFrames >= SPYRO_AIRBORNE_GRACE || g_nSpyroGroundSlope >= SLOPE_STEEP) {
+    if (g_nSpyroAirborneFrames >= SPYRO_AIRBORNE_GRACE ||
+        g_nSpyroGroundSlope >= SLOPE_STEEP) {
       ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
@@ -256,11 +260,11 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_TURN_AROUND);
       break;
     }
-    if (g_nSpyroMotionSpeed > 0xF00 && g_nSpyroSpeedTarget > 0) {
+    if (g_nSpyroMotionSpeed > SPYRO_RUN_SPEED && g_nSpyroSpeedTarget > 0) {
       ChangeSpyroState(SPYRO_ST_RUN);
       break;
     }
-    if (g_nSpyroMotionSpeed > 0x780 && g_nSpyroSpeedTarget > 0) {
+    if (g_nSpyroMotionSpeed > SPYRO_JOG_SPEED && g_nSpyroSpeedTarget > 0) {
       ChangeSpyroState(SPYRO_ST_JOG);
       break;
     }
@@ -272,7 +276,8 @@ void UpdateSpyroStateBehavior(void) {
     if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
-    if (g_nSpyroAirborneFrames >= SPYRO_AIRBORNE_GRACE || g_nSpyroGroundSlope >= SLOPE_STEEP) {
+    if (g_nSpyroAirborneFrames >= SPYRO_AIRBORNE_GRACE ||
+        g_nSpyroGroundSlope >= SLOPE_STEEP) {
       ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
@@ -364,11 +369,11 @@ void UpdateSpyroStateBehavior(void) {
         break;
       }
       if (g_nSpyroSpeedTarget > 0) {
-        if (g_nSpyroMotionSpeed > 0xF00) {
+        if (g_nSpyroMotionSpeed > SPYRO_RUN_SPEED) {
           next = SPYRO_ST_RUN;
         } else {
           next = SPYRO_ST_WALK;
-          if (g_nSpyroMotionSpeed > 0x780) {
+          if (g_nSpyroMotionSpeed > SPYRO_JOG_SPEED) {
             next = SPYRO_ST_JOG;
           }
         }
@@ -376,7 +381,7 @@ void UpdateSpyroStateBehavior(void) {
         LANDING_DUST(fwd);
       } else {
         next = SPYRO_ST_STOP;
-        if (g_nSpyroMotionSpeed < 0x780) {
+        if (g_nSpyroMotionSpeed < SPYRO_JOG_SPEED) {
           ResetSpyroLinearMotion();
           next = SPYRO_ST_IDLE;
         }
@@ -478,7 +483,7 @@ void UpdateSpyroStateBehavior(void) {
       g_nSpyroStateTimer = g_nSpyroPrevStateTimer * 2;
       break;
     }
-    if (g_nSpyroMotionSpeed > 0xC80 &&
+    if (g_nSpyroMotionSpeed > SPYRO_RUN_DROP_SPEED &&
         g_nSpyroFrameMotionLength * 2 < g_nSpyroMotionSpeed &&
         g_nPortalTransitionActive == 0) {
       ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
@@ -525,7 +530,8 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_JUMP);
       break;
     }
-    if (g_nSpyroAirborneFrames >= SPYRO_AIRBORNE_GRACE || g_nSpyroGroundSlope >= SLOPE_STEEP) {
+    if (g_nSpyroAirborneFrames >= SPYRO_AIRBORNE_GRACE ||
+        g_nSpyroGroundSlope >= SLOPE_STEEP) {
       ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
@@ -643,7 +649,8 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
-    if (g_nSpyroMotionSpeed < 0xC80 && g_nSpyroStateTimer > 0x10) {
+    if (g_nSpyroMotionSpeed < SPYRO_RUN_DROP_SPEED &&
+        g_nSpyroStateTimer > 0x10) {
       ChangeSpyroState(SPYRO_ST_GLIDE_SLOW);
     }
     break;
@@ -790,7 +797,8 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
       break;
     }
-    if (g_nSpyroContactedActorFlag == 0 && g_nSpyroMotionSpeed > 0xC80 &&
+    if (g_nSpyroContactedActorFlag == 0 &&
+        g_nSpyroMotionSpeed > SPYRO_RUN_DROP_SPEED &&
         g_nSpyroFrameMotionLength * 2 < g_nSpyroMotionSpeed &&
         g_nPortalTransitionActive == 0) {
       BuildSpyroVelocityFromBodyEuler();
@@ -817,7 +825,8 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_JUMP);
       break;
     }
-    if (g_nSpyroAirborneFrames >= SPYRO_AIRBORNE_GRACE || g_nSpyroGroundSlope >= SLOPE_STEEP) {
+    if (g_nSpyroAirborneFrames >= SPYRO_AIRBORNE_GRACE ||
+        g_nSpyroGroundSlope >= SLOPE_STEEP) {
       ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
@@ -833,7 +842,7 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_SIDESTEP_R1);
       break;
     }
-    if (g_nSpyroMotionSpeed > 0xF00) {
+    if (g_nSpyroMotionSpeed > SPYRO_RUN_SPEED) {
       ChangeSpyroState(SPYRO_ST_RUN);
     } else if (g_nSpyroMotionSpeed < 0x640) {
       ChangeSpyroState(SPYRO_ST_WALK);
@@ -868,7 +877,7 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
-    if (g_nSpyroMotionSpeed > 0xC80) {
+    if (g_nSpyroMotionSpeed > SPYRO_RUN_DROP_SPEED) {
       JUMP_STATE();
     }
     break;
@@ -946,7 +955,8 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_JUMP);
       break;
     }
-    if (g_nSpyroAirborneFrames >= SPYRO_AIRBORNE_GRACE || g_nSpyroGroundSlope >= SLOPE_STEEP) {
+    if (g_nSpyroAirborneFrames >= SPYRO_AIRBORNE_GRACE ||
+        g_nSpyroGroundSlope >= SLOPE_STEEP) {
       ChangeSpyroState(SPYRO_ST_FALL);
       break;
     }
@@ -1147,7 +1157,8 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_CHARGE);
       break;
     }
-    if (g_nSpyroContactedActorFlag == 0 && g_nSpyroMotionSpeed > 0xC80 &&
+    if (g_nSpyroContactedActorFlag == 0 &&
+        g_nSpyroMotionSpeed > SPYRO_RUN_DROP_SPEED &&
         g_nSpyroFrameMotionLength * 2 < g_nSpyroMotionSpeed &&
         g_nPortalTransitionActive == 0) {
       ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
