@@ -1189,11 +1189,11 @@ glabel UnpackWorldDataChunks
 endlabel UnpackWorldDataChunks
 .endif
 
-.section .text.RelocateMobActorTable, "ax"
-.ifndef HAVE_C_RelocateMobActorTable
-nonmatching RelocateMobActorTable, 0x1B0
+.section .text.InstallSpyroAnimStream, "ax"
+.ifndef HAVE_C_InstallSpyroAnimStream
+nonmatching InstallSpyroAnimStream, 0x1B0
 
-glabel RelocateMobActorTable
+glabel InstallSpyroAnimStream
     /* 3A30 80013230 F8FFBD27 */  addiu      $sp, $sp, -0x8
     /* 3A34 80013234 21308000 */  addu       $a2, $a0, $zero
     /* 3A38 80013238 21200000 */  addu       $a0, $zero, $zero
@@ -1309,7 +1309,7 @@ glabel RelocateMobActorTable
     /* 3BD4 800133D4 0800BD27 */  addiu      $sp, $sp, 0x8
     /* 3BD8 800133D8 0800E003 */  jr         $ra
     /* 3BDC 800133DC 00000000 */   nop
-endlabel RelocateMobActorTable
+endlabel InstallSpyroAnimStream
 .endif
 
 .section .text.RelocateActorMeshHeader, "ax"
@@ -3419,7 +3419,7 @@ glabel TickDragonRescueAssetStream
     /* 5A70 80015270 106C428C */  lw         $v0, %lo(g_nWorldDataExtChunkOffset)($v0)
     /* 5A74 80015274 0000038E */  lw         $v1, 0x0($s0)
     /* 5A78 80015278 23208200 */  subu       $a0, $a0, $v0
-    /* 5A7C 8001527C 8C4C000C */  jal        RelocateMobActorTable
+    /* 5A7C 8001527C 8C4C000C */  jal        InstallSpyroAnimStream
     /* 5A80 80015280 21206400 */   addu      $a0, $v1, $a0
     /* 5A84 80015284 FF00053C */  lui        $a1, (0xFFFFFF >> 16)
     /* 5A88 80015288 FFFFA534 */  ori        $a1, $a1, (0xFFFFFF & 0xFFFF)
@@ -3964,7 +3964,7 @@ glabel TickLevelTransitionStream
     /* 626C 80015A6C 0880033C */  lui        $v1, %hi(g_pWorldUnpackHead)
     /* 6270 80015A70 E085638C */  lw         $v1, %lo(g_pWorldUnpackHead)($v1)
     /* 6274 80015A74 23208200 */  subu       $a0, $a0, $v0
-    /* 6278 80015A78 8C4C000C */  jal        RelocateMobActorTable
+    /* 6278 80015A78 8C4C000C */  jal        InstallSpyroAnimStream
     /* 627C 80015A7C 21206400 */   addu      $a0, $v1, $a0
     /* 6280 80015A80 21800000 */  addu       $s0, $zero, $zero
   .L80015A84:

@@ -95,7 +95,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x800127c0` | Initialize | main | 1328 | matched | game |
 | `0x80012cf0` | RelocateLevelSampleBank | main | 104 | matched | game |
 | `0x80012d58` | UnpackWorldDataChunks | main | 1240 | matched | game |
-| `0x80013230` | RelocateMobActorTable | main | 432 | matched | game |
+| `0x80013230` | InstallSpyroAnimStream | main | 432 | matched | game |
 | `0x800133e0` | RelocateActorMeshHeader | main | 620 | matched | game |
 | `0x8001364c` | BuildLoadedLevelRuntime | main | 3708 | matched | game |
 | `0x800144c8` | LoadAndStartLevelFromCd | main | 156 | matched | game |

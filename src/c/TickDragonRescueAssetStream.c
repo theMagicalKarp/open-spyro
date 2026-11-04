@@ -192,7 +192,7 @@ void TickDragonRescueAssetStream(void) {
     }
     break;
   case RESCUE_STREAM_LEVEL_MESHES:
-    RelocateMobActorTable(
+    InstallSpyroAnimStream(
         HEAD + (g_anActorMeshOffsetList - g_nWorldDataExtChunkOffset));
     for (i = 0; i < 0x200; i++) {
       if (((int)g_apActorMeshTableBlock[i] & 0xFFFFFF) <

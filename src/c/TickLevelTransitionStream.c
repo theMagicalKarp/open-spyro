@@ -238,8 +238,8 @@ void TickLevelTransitionStream(int full) {
     void **mesh;
 
     if (full) {
-      RelocateMobActorTable(g_pWorldUnpackHead + (g_anActorMeshOffsetList -
-                                                  g_nWorldDataExtChunkOffset));
+      InstallSpyroAnimStream(g_pWorldUnpackHead + (g_anActorMeshOffsetList -
+                                                   g_nWorldDataExtChunkOffset));
     }
     for (i = 0; i < 0x200; i++) {
       if (((int)g_apActorMeshTableBlock[i] & 0xFFFFFF) <

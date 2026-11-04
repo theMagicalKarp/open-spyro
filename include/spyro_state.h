@@ -252,6 +252,7 @@ enum SpyroAnimId {
   SPYRO_ANIMID_FIDGET_7 = 43,
   SPYRO_ANIMID_FIDGET_8 = 44,
   SPYRO_ANIMID_SUPERCHARGE = 45,
+  SPYRO_ANIMID_COUNT = 46, /* the Model.m_Animations slots InstallSpyroAnimStream fills */
 };
 
 /* g_nSpyroFlameState: the flame-breath machine (TickSpyroFlameAttack). */

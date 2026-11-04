@@ -744,7 +744,7 @@ RelocateActorMeshHeader:
     reproducing the original's alternating v0/v1. (3) `w++` moved into the
     for-increment clause puts `j++` in the exit test's load-delay slot. Frame
     is 0x18 with ZERO locals - do not add a dead pad before checking.
-RelocateMobActorTable:
+InstallSpyroAnimStream:
   verdict: parked
   class: "F1 whole-function a0<->a2 rotation (find_reg pass-0 regs_someone_prefers); 108/108 insns, length- and schedule-exact"
   date: 2026-08-10
@@ -3133,7 +3133,7 @@ A236_screening_2026_08_29_2:
     Screened the harvest inventory for the A236 signature ("the original has value X
     in an argument register, ours picks the next free caller-saved reg") and recorded
     why each fails, so the next session does not re-screen them.
-    `RelocateMobActorTable` (B21, a0<->a2): ZERO `jal`s -- a leaf has nothing to hang
+    `InstallSpyroAnimStream` (B21, a0<->a2): ZERO `jal`s -- a leaf has nothing to hang
     the argument copy on. `HandleHardwareInterrupt` (10/122, the g_pIStatReg POINTER
     wants $a0): the recompute block contains no call. `TweenActorAlongPath` (span wants
     $a2): the a2 assignment is a live-range consequence -- span is live across all

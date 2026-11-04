@@ -226,7 +226,7 @@ extern void EnqueueHudSprites(void);
 extern long GetSpuTransferStatus(int mode);
 extern void InitActorMeshScratchRegions(int split);
 extern void InitNewGameState(void);
-extern void RelocateMobActorTable(void *table);
+extern void InstallSpyroAnimStream(void *stream);
 extern void RotateLightVectorXZ(int steps);
 extern void SetSpuCommonAttr(unsigned char *attr);
 extern void SnapCameraToTarget(void);
