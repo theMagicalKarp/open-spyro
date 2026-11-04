@@ -79,7 +79,7 @@ void PauseMenu_Update(void) {
       int offset = *(volatile int *)&g_nLevelLoadByteOffset;
       void *dst = *(void *volatile *)&g_pSharedLoadBuffer;
 
-      CdReadSyncSectors(lba, dst, count, offset, 600);
+      CdReadSyncSectors(lba, dst, count, offset, CD_STALL_TIMEOUT_TICKS);
     }
     while (g_nCdStreamState < CSTREAM_DONE) {
       TickCutsceneBundleLoadStream();

@@ -14304,11 +14304,11 @@ dlabel g_nCameraShakeMagnitude
     /* 65EDC 800756DC 00000000 */ .word 0x00000000
 enddlabel g_nCameraShakeMagnitude
 
-nonmatching g_nCdStallMarker
+nonmatching g_nCdStallTimeoutTicks
 
-dlabel g_nCdStallMarker
+dlabel g_nCdStallTimeoutTicks
     /* 65EE0 800756E0 00000000 */ .word 0x00000000
-enddlabel g_nCdStallMarker
+enddlabel g_nCdStallTimeoutTicks
 
 nonmatching g_nCreditsGlyphCount
 

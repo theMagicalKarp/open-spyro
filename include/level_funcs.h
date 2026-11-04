@@ -98,8 +98,8 @@ extern int VSync(int mode);
 extern int WrapAngleDelta8(int a, int b);                    /* signed angle delta */
 
 /* Level/asset streaming helpers the credits overlay drives directly. */
-extern void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset, int marker);
-extern void StartCdReadAsync(int lbaBase, void *dst, int size, int offset, int marker);
+extern void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset, int stallTicks);
+extern void StartCdReadAsync(int lbaBase, void *dst, int size, int offset, int stallTicks);
 extern char *UnpackWorldDataChunks(int *p, int flag);
 extern void CopyWords(void *dst, void *src, int len);
 extern int TickCountdownByFrameDelta(void *pValue, int width);

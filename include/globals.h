@@ -572,7 +572,7 @@ extern int g_nPortalTransitionActive;           /* 0x800756d0: set by a portal e
 extern int g_nSubMenuScrollDelta;            /* 0x800756d4 */
 extern int g_nPadIsDualshockFlag;            /* 0x800756d8 */
 extern int g_nCameraShakeMagnitude;          /* 0x800756dc */
-extern int g_nCdStallMarker;                 /* 0x800756e0 */
+extern int g_nCdStallTimeoutTicks;                 /* 0x800756e0: vblanks the in-flight CD read may take before RestartStalledCdRead reissues it (CD_STALL_TIMEOUT_TICKS); 0 = disarmed */
 extern void *g_pActorAuxPoolTop;             /* 0x800756e8 */
 extern int g_anSecondaryActorTexWords[2];    /* 0x800756f0 */
 extern int g_nReturningHomePhase;            /* 0x800756f8 */

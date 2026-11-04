@@ -30,7 +30,7 @@ void PollPadAndDistributeInput(void) {
   int *stick;
 
   g_nVblankTickCount += 1;
-  if (g_nCdStallMarker != 0) {
+  if (g_nCdStallTimeoutTicks != 0) {
     g_nCdStallWatchdogTicks += 1;
   }
   if (g_nDemoMode != DEMO_OFF) {

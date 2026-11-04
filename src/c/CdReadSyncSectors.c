@@ -12,7 +12,7 @@
    with the in-flight bookkeeping raised, and spins on the CdlLOC scratch
    completion word + CdSync until the read drains. */
 void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset,
-                       int marker) {
+                       int stallTicks) {
   unsigned char mode[4];
   byte *loc;
   int pos;
@@ -35,7 +35,7 @@ void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset,
   }
 
   CdControl(CdlSetmode, mode, 0);
-  g_nCdStallMarker = marker;
+  g_nCdStallTimeoutTicks = stallTicks;
   g_nCdStallWatchdogTicks = 0;
 
   pos = lbaBase + offset / 0x800;

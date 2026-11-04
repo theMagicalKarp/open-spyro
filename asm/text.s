@@ -4603,8 +4603,8 @@ endlabel TickLevelTransitionStream
 nonmatching RestartStalledCdRead, 0xAC
 
 glabel RestartStalledCdRead
-    /* 6BE4 800163E4 0780033C */  lui        $v1, %hi(g_nCdStallMarker)
-    /* 6BE8 800163E8 E056638C */  lw         $v1, %lo(g_nCdStallMarker)($v1)
+    /* 6BE4 800163E4 0780033C */  lui        $v1, %hi(g_nCdStallTimeoutTicks)
+    /* 6BE8 800163E8 E056638C */  lw         $v1, %lo(g_nCdStallTimeoutTicks)($v1)
     /* 6BEC 800163EC E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* 6BF0 800163F0 1400BFAF */  sw         $ra, 0x14($sp)
     /* 6BF4 800163F4 21006010 */  beqz       $v1, .L8001647C
@@ -4665,8 +4665,8 @@ glabel CdReadCompleteCallback
     /* 6CA8 800164A8 B86B20AC */  sw         $zero, %lo(g_nCdReadInFlight)($at)
     /* 6CAC 800164AC 0780013C */  lui        $at, %hi(g_nCdStallWatchdogTicks)
     /* 6CB0 800164B0 8C5820AC */  sw         $zero, %lo(g_nCdStallWatchdogTicks)($at)
-    /* 6CB4 800164B4 0780013C */  lui        $at, %hi(g_nCdStallMarker)
-    /* 6CB8 800164B8 E05620AC */  sw         $zero, %lo(g_nCdStallMarker)($at)
+    /* 6CB4 800164B4 0780013C */  lui        $at, %hi(g_nCdStallTimeoutTicks)
+    /* 6CB8 800164B8 E05620AC */  sw         $zero, %lo(g_nCdStallTimeoutTicks)($at)
     /* 6CBC 800164BC 3C590008 */  j          .L800164F0
     /* 6CC0 800164C0 00000000 */   nop
   .L800164C4:
@@ -4742,8 +4742,8 @@ glabel CdReadSyncSectors
     /* 6DA8 800165A8 128F010C */  jal        CdControl
     /* 6DAC 800165AC 21300000 */   addu      $a2, $zero, $zero
     /* 6DB0 800165B0 21382002 */  addu       $a3, $s1, $zero
-    /* 6DB4 800165B4 0780013C */  lui        $at, %hi(g_nCdStallMarker)
-    /* 6DB8 800165B8 E05636AC */  sw         $s6, %lo(g_nCdStallMarker)($at)
+    /* 6DB4 800165B4 0780013C */  lui        $at, %hi(g_nCdStallTimeoutTicks)
+    /* 6DB8 800165B8 E05636AC */  sw         $s6, %lo(g_nCdStallTimeoutTicks)($at)
     /* 6DBC 800165BC 0780013C */  lui        $at, %hi(g_nCdStallWatchdogTicks)
     /* 6DC0 800165C0 8C5820AC */  sw         $zero, %lo(g_nCdStallWatchdogTicks)($at)
     /* 6DC4 800165C4 0300E104 */  bgez       $a3, .L800165D4
@@ -4832,8 +4832,8 @@ glabel StartCdReadAsync
     /* 6EDC 800166DC 1000A2A3 */   sb        $v0, 0x10($sp)
     /* 6EE0 800166E0 0780013C */  lui        $at, %hi(g_nCdStallWatchdogTicks)
     /* 6EE4 800166E4 8C5820AC */  sw         $zero, %lo(g_nCdStallWatchdogTicks)($at)
-    /* 6EE8 800166E8 0780013C */  lui        $at, %hi(g_nCdStallMarker)
-    /* 6EEC 800166EC E05630AC */  sw         $s0, %lo(g_nCdStallMarker)($at)
+    /* 6EE8 800166E8 0780013C */  lui        $at, %hi(g_nCdStallTimeoutTicks)
+    /* 6EEC 800166EC E05630AC */  sw         $s0, %lo(g_nCdStallTimeoutTicks)($at)
     /* 6EF0 800166F0 03002106 */  bgez       $s1, .L80016700
     /* 6EF4 800166F4 C3221100 */   sra       $a0, $s1, 11
     /* 6EF8 800166F8 FF073126 */  addiu      $s1, $s1, 0x7FF
@@ -74347,8 +74347,8 @@ nonmatching PollPadAndDistributeInput, 0x67C
 glabel PollPadAndDistributeInput
     /* 44468 80053C68 0780023C */  lui        $v0, %hi(g_nVblankTickCount)
     /* 4446C 80053C6C C858428C */  lw         $v0, %lo(g_nVblankTickCount)($v0)
-    /* 44470 80053C70 0780033C */  lui        $v1, %hi(g_nCdStallMarker)
-    /* 44474 80053C74 E056638C */  lw         $v1, %lo(g_nCdStallMarker)($v1)
+    /* 44470 80053C70 0780033C */  lui        $v1, %hi(g_nCdStallTimeoutTicks)
+    /* 44474 80053C74 E056638C */  lw         $v1, %lo(g_nCdStallTimeoutTicks)($v1)
     /* 44478 80053C78 D8FFBD27 */  addiu      $sp, $sp, -0x28
     /* 4447C 80053C7C 2000BFAF */  sw         $ra, 0x20($sp)
     /* 44480 80053C80 1C00B1AF */  sw         $s1, 0x1C($sp)

@@ -10,7 +10,7 @@ void CdReadCompleteCallback(unsigned char intr) {
   if (intr == 2) {
     g_nCdReadInFlight = 0;
     g_nCdStallWatchdogTicks = 0;
-    g_nCdStallMarker = 0;
+    g_nCdStallTimeoutTicks = 0;
   } else {
     CdControl(CdlSetloc, &g_abCdlLocScratch, 0);
     CdRead(g_nCdReadSectorCount, g_pCdReadDstBuffer, CdlModeSpeed);

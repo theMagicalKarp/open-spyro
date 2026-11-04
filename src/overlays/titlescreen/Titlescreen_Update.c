@@ -20,6 +20,7 @@
 
 #include "titlescreen.h"
 #include "sparx.h"
+#include "cd_stream.h"
 
 static const char s_SaveFileName[20] = "BASCUS-94228SPYRO";
 
@@ -89,7 +90,7 @@ void Titlescreen_Update(void) {
         cd = *((volatile int *) &g_nCdBaseLba.baseLba);
         t = g_nTitleSceneSectorOffset;
         StartCdReadAsync(cd, g_pRenderScratchRegionBase - 0x40000, 0x40000,
-                      t, 600);
+                      t, CD_STALL_TIMEOUT_TICKS);
         g_nTitleMode.subState = TITLE_ATTRACT_LOAD_WAIT;
       } else if (g_nTitleMode.subState == TITLE_ATTRACT_LOAD_WAIT) {
         /* once loaded, initialize music and upload the sprite sheet to vram */

@@ -135,7 +135,7 @@ void TickLevelTransitionStream(int full) {
       int off = LEVEL_SPLASH_OFFSET(intro);
 
       EBB_BREAK();
-      StartCdReadAsync(lba, dst, size, off, 0x258);
+      StartCdReadAsync(lba, dst, size, off, CD_STALL_TIMEOUT_TICKS);
     }
     g_nCdStreamState++;
   } break;
@@ -145,7 +145,7 @@ void TickLevelTransitionStream(int full) {
     void *dst = *(void *volatile *)&g_pDrawBufB;
     int off = LEVEL_ARCHIVE_OFFSET(intro);
 
-    StartCdReadAsync(lba, dst, 0x800, off, 0x258);
+    StartCdReadAsync(lba, dst, 0x800, off, CD_STALL_TIMEOUT_TICKS);
   }
     g_nCdStreamState++;
     break;
@@ -158,7 +158,7 @@ void TickLevelTransitionStream(int full) {
       int off = *(volatile int *)g_anWorldTimAudioChunkOffsetBlock;
 
       StartCdReadAsync(lba, dst, 0x80000, off + LEVEL_ARCHIVE_OFFSET(intro),
-                       0x258);
+                       CD_STALL_TIMEOUT_TICKS);
     }
     g_nEnteredPortalIdx = 0;
     g_nCdStreamState++;
@@ -179,7 +179,8 @@ void TickLevelTransitionStream(int full) {
       g_nCdStreamState++;
 
       StartCdReadAsync(lba, dst, size - 0x80000,
-                       off + LEVEL_ARCHIVE_OFFSET(intro) + 0x80000, 0x258);
+                       off + LEVEL_ARCHIVE_OFFSET(intro) + 0x80000,
+                       CD_STALL_TIMEOUT_TICKS);
     }
     break;
   case LSTREAM_UPLOAD_AUDIO:
@@ -199,7 +200,8 @@ void TickLevelTransitionStream(int full) {
     int size = *(volatile int *)&g_nWorldBundleChunkSize;
     int off = *(volatile int *)&g_nWorldBundleChunkOffset;
 
-    StartCdReadAsync(lba, dst, size, off + LEVEL_ARCHIVE_OFFSET(intro), 0x258);
+    StartCdReadAsync(lba, dst, size, off + LEVEL_ARCHIVE_OFFSET(intro),
+                     CD_STALL_TIMEOUT_TICKS);
   }
     g_nCdStreamState++;
     break;
@@ -228,7 +230,7 @@ void TickLevelTransitionStream(int full) {
       int off = *(volatile int *)&g_nWorldDataExtChunkOffset;
 
       StartCdReadAsync(lba, dst, size, off + LEVEL_ARCHIVE_OFFSET(intro),
-                       0x258);
+                       CD_STALL_TIMEOUT_TICKS);
     }
     g_nCdStreamState++;
     break;
@@ -270,7 +272,8 @@ void TickLevelTransitionStream(int full) {
     int size = *(volatile int *)&g_nLevelArchiveByteSize;
     int off = *(volatile int *)&g_nLevelArchiveBaseLba;
 
-    StartCdReadAsync(lba, dst, size, off + LEVEL_ARCHIVE_OFFSET(intro), 0x258);
+    StartCdReadAsync(lba, dst, size, off + LEVEL_ARCHIVE_OFFSET(intro),
+                     CD_STALL_TIMEOUT_TICKS);
   }
     g_nCdStreamState++;
     break;

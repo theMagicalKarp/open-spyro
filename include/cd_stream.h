@@ -5,6 +5,10 @@
 #ifndef OPEN_SPYRO_CD_STREAM_H
 #define OPEN_SPYRO_CD_STREAM_H
 
+/* Every CD read arms the stall watchdog with this many vblanks (10 s);
+ * RestartStalledCdRead reissues a read the drive has not finished by then. */
+#define CD_STALL_TIMEOUT_TICKS 600
+
 /* TickCutsceneBundleLoadStream: the bundle g_nCutsceneId selects. */
 enum CutsceneStreamState {
   CSTREAM_READ_HEADER = 0,     /* kick the 0x800-byte header read */
