@@ -9,8 +9,9 @@ void ApplyGravityAlongSpyroSlopeNormal(void) {
   int zero[4];
   int step;
 
-  CopyVector(g_anSpyroSlopeGravityVec,
-             SPY_VIA(g_anSpyroSlopeGravityVec, SPY_PLATFORM, SPY_GROUND_NORMAL));
+  CopyVector(
+      g_anSpyroSlopeGravityVec,
+      SPY_VIA(g_anSpyroSlopeGravityVec, SPY_PLATFORM, SPY_GROUND_NORMAL));
   step = g_nSpyroGravityStep;
   if (step < 0) {
     step = -step;

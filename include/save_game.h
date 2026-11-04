@@ -38,6 +38,9 @@ typedef struct {
   char pad[0x70];
 } SaveGameBuffer;                         /* 0x600 */
 
+#define SAVE_IMAGE_BYTES 0x600
+typedef char SaveGameBufferSizeCheck[sizeof(SaveGameBuffer) == SAVE_IMAGE_BYTES ? 1 : -1];
+
 /* Byte offset of a SaveGameBuffer field, and that field read through a byte
  * pointer `p` offset from the image base (the serializers walk the image
  * with byte-pointer cursors). */

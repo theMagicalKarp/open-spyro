@@ -257,7 +257,7 @@ void Titlescreen_Update(void) {
         /* read save file from the selected card */
         MemCardRead(g_nTitleMode.cardPort << 4, (char *)s_SaveFileName,
                       (unsigned long *)g_nTitleMode.file, 0,
-                      sizeof(TitleSaveFile));
+                      sizeof(MemCardSaveFile));
         g_nTitleMode.menuState = 1;
       } else if (g_nTitleMode.menuState == 1) {
         /* save file has been read */
@@ -600,7 +600,7 @@ void Titlescreen_Update(void) {
           }
           MemCardWrite(g_nTitleMode.cardPort << 4, (char *)s_SaveFileName,
                         (unsigned long *)g_nTitleMode.file, 0,
-                        sizeof(TitleSaveFile));
+                        sizeof(MemCardSaveFile));
 
           g_nTitleMode.menuState = 2;
         } else if (g_nTitleMode.mcResult == McErrBlockFull) {
@@ -624,7 +624,7 @@ void Titlescreen_Update(void) {
           /* save succeeded, let's re-read it off the card */
           MemCardRead(g_nTitleMode.cardPort << 4, (char *)s_SaveFileName,
                         (unsigned long *)g_nTitleMode.file, 0,
-                        sizeof(TitleSaveFile));
+                        sizeof(MemCardSaveFile));
           g_nTitleMode.menuState = 3;
         }
       } else {
