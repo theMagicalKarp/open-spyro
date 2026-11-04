@@ -41,7 +41,8 @@ void StopAllSoundExceptMask(int mask) {
   silence = VOICE_ROW_NONE;
   off = 0;
 top:
-  if (((VOICE_ROW_RAW(off, unsigned short, nFlags)) & 0x83) != 0) {
+  if (((VOICE_ROW_RAW(off, unsigned short, nFlags)) &
+       (VOICE_ROW_ACTIVE | VOICE_ROW_KEYED | VOICE_ROW_FLAG_80)) != 0) {
     int rowAt;
     int mode;
     int row;
@@ -76,7 +77,7 @@ top:
       row = i & 0x7F;
 
       parkOff = row * 0x1C;
-      VOICE_ROW_RAW(parkOff, unsigned short, nFlags) = 0x40;
+      VOICE_ROW_RAW(parkOff, unsigned short, nFlags) = VOICE_ROW_STOPPED;
       VOICE_ROW_RAW(parkOff, int, pOwner) = 0;
       VOICE_ROW_RAW(parkOff, int, pPlaying) = 0;
       VOICE_ROW_RAW(parkOff, unsigned char, nSampleId) = 0xFF;

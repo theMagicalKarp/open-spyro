@@ -7,11 +7,11 @@ extern SPUVOICEROW g_aSpuVoiceRows[]; /* the 24 mixer rows */
 
 /* Stop every software voice row owned by `owner` (0x800562a4). mode 1
    (VOICE_STOP_ALL) stops unconditionally; mode 2 (VOICE_STOP_LOOPING) only
-   stops rows whose nFlags has bit 0x100 set. A stopped row silences its live
-   sample byte (0x7F), clears pPlaying and pOwner, parks nFlags at idle (0x40),
-   zeros nPitchStep, resets nSampleId to 0xFF, and accumulates the voice bit
-   into the pending hardware key-off mask. 24 rows of g_aSpuVoiceRows, walked as
-   three field pointers. */
+   stops rows whose nFlags has VOICE_ROW_LOOPING. A stopped row silences its
+   live sample byte (0x7F), clears pPlaying and pOwner, parks nFlags at
+   VOICE_ROW_STOPPED, zeros nPitchStep, resets nSampleId to 0xFF, and
+   accumulates the voice bit into the pending hardware key-off mask. 24 rows of
+   g_aSpuVoiceRows, walked as three field pointers. */
 
 void StopSoundVoicesByOwner(int owner, int mode) {
   unsigned int kmask = 0;
@@ -19,7 +19,7 @@ void StopSoundVoicesByOwner(int owner, int mode) {
   int one = 1;
   int two = 2;
   int silence = VOICE_ROW_NONE;
-  int idle = 0x40;
+  int idle = VOICE_ROW_STOPPED;
   int noSample = 0xFF;
   int *ownerp = (int *)&g_aSpuVoiceRows[0].pOwner;
   unsigned short *flagsp = &g_aSpuVoiceRows[0].nFlags;
@@ -27,7 +27,7 @@ void StopSoundVoicesByOwner(int owner, int mode) {
   int off = 0;
 top:
   if (*ownerp == owner) {
-    if (mode == one || (mode == two && (*flagsp & 0x100) != 0)) {
+    if (mode == one || (mode == two && (*flagsp & VOICE_ROW_LOOPING) != 0)) {
       kmask |= one << i;
       if (*playingp != 0) {
         **playingp = silence;

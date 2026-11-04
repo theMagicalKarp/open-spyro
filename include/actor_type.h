@@ -555,7 +555,7 @@ enum ActorType {
 
 /* StopSoundVoicesByOwner's mode: which of the owner's voices to stop. */
 #define VOICE_STOP_ALL 1     /* every voice it owns */
-#define VOICE_STOP_LOOPING 2 /* only its looping voices (row flag 0x100) */
+#define VOICE_STOP_LOOPING 2 /* only its looping voices (VOICE_ROW_LOOPING) */
 
 /* SpawnActorDeathDrop's `kind`: how a thrown drop leaves its source. Rolled
  * extra lives, butterflies and Sparx ignore it. */
