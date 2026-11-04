@@ -122,6 +122,8 @@ void TickSpyroAttackEffects(int steps) {
         seg[0]++;
       } while ((++n) < steps);
     }
+    /* the word at g_bSpyroAnimPrev packs the primary prev/current anims and
+       the layer-1 prev/current anims (bytes 2/3): layer 1 holding anim 7 */
     if (((g_bSpyroFlameSegmentIdx < 0x1e) &&
          (((*((int *)(&g_bSpyroAnimPrev))) & 0xffff0000) == 0x07070000)) &&
         (g_bSpyroAnimLayer1FramePrev == 4)) {

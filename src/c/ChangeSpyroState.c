@@ -152,7 +152,8 @@ void ChangeSpyroState(int state) {
     g_nSpyroGravityStep = -0xC00;
     goto slope_gravity;
   case SPYRO_ST_JUMP:
-    CopyVector(g_anSpyroVelocity, g_anSpyroVelocity + 6);
+    CopyVector(g_anSpyroVelocity,
+               SPY_VIA(g_anSpyroVelocity, SPY_VELOCITY, SPY_MOTION));
     g_anSpyroCarryMotionVec[2] = 0xDC0;
     g_nSpyroGravityStep = -0xC0;
     g_nSpyroSubstate = 0;
@@ -201,7 +202,8 @@ void ChangeSpyroState(int state) {
     Actor *actor;
     int *me;
 
-    CopyVector(g_anSpyroCarryMotionVec, g_anSpyroCarryMotionVec + 9);
+    CopyVector(g_anSpyroCarryMotionVec,
+               SPY_VIA(g_anSpyroCarryMotionVec, SPY_CARRY, SPY_MOTION));
     if (g_nSpyroChargeHoldFlag != 0) {
       if (!(g_nSpyroSubstate & SPYRO_SUB_CHARGE_LATCHED)) {
         LATCH_CHARGE_SPEED(g_anSpyroCarryMotionVec);
@@ -461,12 +463,14 @@ void ChangeSpyroState(int state) {
     g_nSpyroGravityEnableFlag = 0;
     break;
   case SPYRO_ST_CHARGE_AIR:
-    CopyVector(g_anSpyroVelocity, g_anSpyroVelocity + 6);
-    CopyVector(g_anSpyroVelocity - 3, g_anSpyroVelocity + 6);
+    CopyVector(g_anSpyroVelocity,
+               SPY_VIA(g_anSpyroVelocity, SPY_VELOCITY, SPY_MOTION));
+    CopyVector(SPY_VIA(g_anSpyroVelocity, SPY_VELOCITY, SPY_CARRY),
+               SPY_VIA(g_anSpyroVelocity, SPY_VELOCITY, SPY_MOTION));
     g_nSpyroBodyYawStep = 0;
     if (g_nSpyroChargeHoldFlag != 0) {
       if (!(g_nSpyroSubstate & SPYRO_SUB_CHARGE_LATCHED)) {
-        LATCH_CHARGE_SPEED(g_anSpyroVelocity - 3);
+        LATCH_CHARGE_SPEED(SPY_VIA(g_anSpyroVelocity, SPY_VELOCITY, SPY_CARRY));
       }
       SPY[SPY_SUBSTATE] |= SPYRO_SUB_CHARGE_LATCHED;
     } else {
@@ -479,8 +483,10 @@ void ChangeSpyroState(int state) {
     g_nSpyroGravityEnableFlag = 0;
     break;
   case SPYRO_ST_SUPERCHARGE_AIR:
-    CopyVector(g_anSpyroVelocity, g_anSpyroVelocity + 6);
-    CopyVector(g_anSpyroVelocity - 3, g_anSpyroVelocity + 6);
+    CopyVector(g_anSpyroVelocity,
+               SPY_VIA(g_anSpyroVelocity, SPY_VELOCITY, SPY_MOTION));
+    CopyVector(SPY_VIA(g_anSpyroVelocity, SPY_VELOCITY, SPY_CARRY),
+               SPY_VIA(g_anSpyroVelocity, SPY_VELOCITY, SPY_MOTION));
     g_nSpyroBodyYawStep = 0;
     g_nSpyroSubstate = SPYRO_SUB_CHARGE_LATCHED | SPYRO_SUB_SUPERCHARGE;
     g_nSpyroGravityStep = 0;
@@ -576,7 +582,8 @@ void ChangeSpyroState(int state) {
     g_nSpyroGravityEnableFlag = 1;
     break;
   case SPYRO_ST_SUPERCHARGE:
-    CopyVector(g_anSpyroCarryMotionVec, g_anSpyroCarryMotionVec + 9);
+    CopyVector(g_anSpyroCarryMotionVec,
+               SPY_VIA(g_anSpyroCarryMotionVec, SPY_CARRY, SPY_MOTION));
     if (!(g_nSpyroSubstate & SPYRO_SUB_CHARGE_LATCHED)) {
       LATCH_CHARGE_SPEED(g_anSpyroCarryMotionVec);
     }

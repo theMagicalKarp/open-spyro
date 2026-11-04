@@ -3,6 +3,7 @@
 #include "main_shared.h"
 #include "match_asm.h"
 #include "sdata.h"
+#include "spyro_block.h"
 #include "spyro_state.h"
 #include "vecmath.h"
 
@@ -88,7 +89,9 @@ int DispatchSpyroChargeStateChanges(void) {
   if (flags & SPYRO_EV_REBOUND) {
     ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
     SetVector3Magnitude(g_anSpyroFirstContactNormal, 0x800);
-    CopyVector(g_anSpyroFirstContactNormal - 0x25, g_anSpyroFirstContactNormal);
+    CopyVector(
+        SPY_VIA(g_anSpyroFirstContactNormal, SPY_FIRST_NORMAL, SPY_VELOCITY),
+        g_anSpyroFirstContactNormal);
     changed = 1;
   }
   if ((flags & SPYRO_EV_LIFT) && g_nSpyroState != SPYRO_ST_LIFT) {

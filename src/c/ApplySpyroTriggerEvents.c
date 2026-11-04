@@ -100,7 +100,9 @@ int ApplySpyroTriggerEvents(int events) {
   if (nonHit & SPYRO_EV_REBOUND) {
     ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
     SetVector3Magnitude(g_anSpyroFirstContactNormal, 0x800);
-    CopyVector(g_anSpyroFirstContactNormal - 0x25, g_anSpyroFirstContactNormal);
+    CopyVector(
+        SPY_VIA(g_anSpyroFirstContactNormal, SPY_FIRST_NORMAL, SPY_VELOCITY),
+        g_anSpyroFirstContactNormal);
     ret = 1;
   }
   if (nonHit & SPYRO_EV_LIFT) {

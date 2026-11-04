@@ -95,7 +95,8 @@ void StoryIntro_Draw(void) {
   g_abFrameDrawEnv1.b0 = 0;
   g_apSpritePrimQueue[0] = 0;
   EnqueuePendingSpritePrims();
-  FillWord(&g_apSpritePrimQueue[-0x900], 0, 0x900);
+  FillWord(&g_apSpritePrimQueue[-0x900], 0,
+           0x900); /* 0x900 bytes from g_pOtDepthBinHead0 */
   RasterizeSpritePrimQueue();
 
   if (g_nStoryIntroSubstate == STORY_INTRO_FLY) {

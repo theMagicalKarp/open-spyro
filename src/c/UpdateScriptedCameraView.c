@@ -3,6 +3,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_block.h"
 #include "spyro_state.h"
 
 /* The active scripted-camera record pointer (g_pScriptedCameraView) and the
@@ -40,7 +41,8 @@ void UpdateScriptedCameraView(void) {
     } else {
       SubtractVector(delta, CAMPOS, g_anSpyroWorldPos);
       dist = VectorLength(delta, VEC_LEN_XYZ);
-      SubtractVector(delta, CAMPOS, g_anSpyroWorldPos + 0x23);
+      SubtractVector(delta, CAMPOS,
+                     SPY_VIA(g_anSpyroWorldPos, SPY_POS, SPY_PREV_POS));
       if (VIEW->range < dist && VectorLength(delta, VEC_LEN_XYZ) < dist) {
         n = 1;
       } else {

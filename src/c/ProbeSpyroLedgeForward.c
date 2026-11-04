@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "spyro_block.h"
 
 /* Probe for a grabbable ledge ahead of Spyro (0x8003e218, 0x100). Cast a ray
    from just above Spyro (body anchor -0x34, +0x164 up) to a point 0x1C4
@@ -22,7 +23,7 @@ void ProbeSpyroLedgeForward(void) {
   to[1] = 0;
   to[2] = -0x1A4;
   RotateVectorByMatrix(g_anSpyroBodyMtx, from, from);
-  anchor = g_anSpyroBodyMtx - 13;
+  anchor = SPY_VIA(g_anSpyroBodyMtx, SPY_BODY_MTX, SPY_POS);
   AddVector(from, from, anchor);
   do {
     tp = to;
@@ -35,7 +36,7 @@ void ProbeSpyroLedgeForward(void) {
     if (((signed char)ArcTan2(g_anCollisionProbeVec[2], len, ATAN_ANGLE8)) >=
         0x17) {
       g_anSpyroBodyMtx[32] = 1;
-      CopyVector(g_anSpyroBodyMtx + 33, cp);
+      CopyVector(SPY_VIA(g_anSpyroBodyMtx, SPY_BODY_MTX, SPY_NUDGE), cp);
     }
   }
 }

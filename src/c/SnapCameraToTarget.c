@@ -10,7 +10,7 @@ SDATA(g_nCameraLosClear, 4);
    raises g_nCameraSnapped + g_nCameraLosClear and rebases the camera-to-target
    angles. */
 void SnapCameraToTarget(void) {
-  CopyVector(g_anCameraPos, g_anCameraPos + 3);
+  CopyVector(g_anCameraPos, g_anCameraPos + 3); /* g_anCameraEyeTarget */
   g_nCameraCollisionRetries = 0;
   g_nCameraStuckFrames = 0;
   g_nCameraSnapped = 1;
