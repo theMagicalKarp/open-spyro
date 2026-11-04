@@ -7,7 +7,8 @@
 typedef struct AnimationHeader {
   short m_NumFrames;              /* 0x00 */
   unsigned short m_NumColors;     /* 0x02 */
-  unsigned char m_IsSpyroAnimation; /* 0x04 */
+  unsigned char m_IsSpyroAnimation; /* 0x04 nonzero: one-word frame records with
+                                     * a >> 1 vertex offset (RelocateActorMeshHeader) */
   unsigned char m_Scale;
   unsigned char m_ShortEncodeShift;
   unsigned char m_Radius;
