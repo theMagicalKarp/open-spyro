@@ -44,7 +44,7 @@ extern void EnqueuePendingSpritePrims(void);
 extern void FillWord(void *dst, unsigned int value, int bytes);
 extern void FreeEmitListRecord(unsigned char *rec);
 extern int ReflectVectorOffNormal(int *v, int *n, int *out);
-extern int GetRandomU32();
+extern int GetRandomU32(void); /* int, not unsigned: the callers' % and >> are signed */
 extern void InitHudCounters(int layout_butterflies);
 extern void InitLightVectorConstants(void);
 struct TriggerBox;

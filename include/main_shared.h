@@ -14,7 +14,7 @@
 
 extern void RestartStalledCdRead(void);
 
-extern int CallCdSync();
+extern int CallCdSync(int mode, unsigned char *result);
 
 extern int SetSpuTransferStartAddr(unsigned int addr);
 

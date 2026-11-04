@@ -1286,7 +1286,7 @@ undefined4 CdReset(int param_1);
 undefined FUN_80063b38(void);
 
 /* 0x80063bd8: Sony SDK internal — pure thunk to public CdSync(mode, result). Compiler-emitted relocation shim; do not rename — the real implementation is CdSync (already labeled). */
-int CallCdSync();
+int CallCdSync(int mode, unsigned char *result);
 
 /* 0x80063c18: libcd CdSyncCallback: installs a callback at 0x80074e34 invoked from CdCommandSync's response-queue drain when status bit 0x02 (CdlDiskReady / command complete) fires. Returns the previous callback for save/restore. CdControl/CdControlBlocking transparently park this to NULL during the CdlSetloc preamble and restore it for the actual command. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */

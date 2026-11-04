@@ -73,17 +73,17 @@ extern unsigned char g_bSpyroPersistentEulerZ;
 
 extern unsigned char g_bSpyroOtBinBias;
 
-extern void RasterizeSpritePrimQueue();
+extern void RasterizeSpritePrimQueue(void);
 
-extern void BuildRenderEntityLists();
+extern void BuildRenderEntityLists(void);
 
-extern void ComposeFrameScene();
+extern void ComposeFrameScene(void);
 
-extern void SetupFrameOT();
+extern void SetupFrameOT(void);
 
-extern void DrawPortalsAndStaticActors();
+extern void DrawPortalsAndStaticActors(void);
 
-extern void RasterizeEmitList();
+extern void RasterizeEmitList(void);
 
 /* The sprite-record write cursor, declared int here: the balloonist Draw
  * clones walk it with int cursors whose loop tests compare signed (as

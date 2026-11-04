@@ -219,7 +219,7 @@ extern int g_nCreditsPageIndex;
 extern char *g_pCreditsGlyphPool;
 
 /* Declared identically by two or more overlay files; hoisted here. */
-extern void MoveImage();
+extern void MoveImage(); /* K&R: the credits pass their own rect views */
 extern int (*g_pfnFlightTimeFormatter)();
 extern void (*g_pfnLevelHandleFlightResults)();
 

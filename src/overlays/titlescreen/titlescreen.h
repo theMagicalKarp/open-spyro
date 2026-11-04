@@ -248,7 +248,7 @@ extern int GetRandomU32(void);
 #endif
 extern void StopSoundVoiceByIndex(int, int);
 extern void RestartStalledCdRead(void);
-extern int CallCdSync(int, int);
+extern int CallCdSync(int mode, unsigned char *result);
 extern void StartCdReadAsync(int, void *, int, int, int);
 extern void HandleMusicCommand(int, int);
 extern void LoadImage(RECT *, void *);

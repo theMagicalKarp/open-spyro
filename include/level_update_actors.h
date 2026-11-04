@@ -21,7 +21,7 @@ extern int g_nActorFrameDelta;      /* frame delta, as seen by the callees */
 
 /* Ground-trigger region type under a probe point. Unprototyped on purpose:
  * some clones pass the point, others call it bare with $a0 already holding it. */
-extern int GetGroundTriggerRegionType();
+extern int GetGroundTriggerRegionType(); /* K&R: the flight clones pass a stray pos argument the original sets in $a0 */
 extern int g_nSparxHealth; /* scalar form; the array users go through g_anSparxHealthBlock */
 
 /* Spyro's persistent euler Z byte, re-read on every access. */
