@@ -38,6 +38,9 @@ extern Actor g_abActorCutsceneActorSnapshot[]; /* focus-actor copy taken at lift
 extern int g_bDebugNoDepletion;
 extern unsigned char g_bWorldBalloonistState1;                         /* per-world "seen it" flags */
 extern int *g_apActorMeshTable_1A0[]; /* g_apActorMeshTable[0x1A0] (balloonist cutscene relocates it) */
+/* Element views of g_anLevelEggsRecovered[slot] (slots 1 Stone Hill, 7 Dry
+ * Canyon, 8 Cliff Town, 12 Magic Crafters home, 15 Wizard Peak): the
+ * balloonists pick their egg-hint pages from them. */
 extern int g_nLevelEggsRecovered1;
 extern int g_nLevelEggsRecovered7;
 extern int g_nLevelEggsRecovered8;

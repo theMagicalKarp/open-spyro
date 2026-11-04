@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_state.h"
 
 /* Held base at g_nSpyroGroundSlope: the slope test, the first persistent-
    euler byte (-0xA4) and the three call-argument addresses (euler -0xA4, body
@@ -12,12 +13,12 @@
    one `la` pseudo and holds it across the calls (A231). */
 
 /* 0x8003dae4 (0x360) — per-frame glide/flight attitude controller near the
-   ground (g_nSpyroGroundSlope < 0x17; otherwise DampenSpyroFreeFallAttitude).
-   Projects the ground normal into Spyro's yaw frame, derives the target pitch
-   and roll from it, spring-damps the body pitch/roll toward them (velocities
-   in g_nSpyroPitchSpringVel/CB4), and when both persistent-euler snapshots are
-   tilted past 0xc0+0x20 layers a ground-hug offset (rotated by the body euler
-   matrix) onto g_anSpyroWorldPos.
+   ground (g_nSpyroGroundSlope < SLOPE_STEEP; otherwise
+   DampenSpyroFreeFallAttitude). Projects the ground normal into Spyro's yaw
+   frame, derives the target pitch and roll from it, spring-damps the body
+   pitch/roll toward them (velocities in g_nSpyroPitchSpringVel/CB4), and when
+   both persistent-euler snapshots are tilted past 0xc0+0x20 layers a ground-hug
+   offset (rotated by the body euler matrix) onto g_anSpyroWorldPos.
 
    Match notes: the angle pair lives in an addressable `ang[2]` (stack 0x20)
    and the frame has one unreferenced 8-byte local after it; the euler and
@@ -34,7 +35,7 @@ void UpdateSpyroFlightAttitudeNearGround(void) {
   int s;
   char *p;
 
-  if (g_anSpyroGroundSlopeBlock[0] >= 0x17) {
+  if (g_anSpyroGroundSlopeBlock[0] >= SLOPE_STEEP) {
     DampenSpyroFreeFallAttitude();
   } else {
     c = LookupCosine(g_nSpyroBodyYaw);

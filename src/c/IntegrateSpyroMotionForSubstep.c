@@ -475,7 +475,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     }
     fallDrag[2] = g_nSpyroGravityStep;
     AddVector(vel, vel, fallDrag);
-    if (g_nSpyroGroundProbeSuspendFlag == 0 && g_nSpyroGroundSlope < 0x20) {
+    if (g_nSpyroGroundProbeSuspendFlag == 0 &&
+        g_nSpyroGroundSlope < SLOPE_NUDGE_MAX) {
       NudgeSpyroFromWallProbes();
     }
     vz = &SPY[SPY_VELOCITY + 2];
@@ -1416,7 +1417,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
 
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
     TurnSpyroYawTowardMotion(8, 4);
-    if (g_nSpyroGroundSlope < 0x17) {
+    if (g_nSpyroGroundSlope < SLOPE_STEEP) {
       int *c2 = &SPY[SPY_CARRY];
 
       ZeroVector(slideDrag);

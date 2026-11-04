@@ -167,7 +167,8 @@ void ChangeSpyroState(int state) {
   case SPYRO_ST_FALL:
     SPY[SPY_SUBSTATE] = 0;
     CopyVector(&SPY[SPY_VELOCITY], &SPY[SPY_MOTION]);
-    if (g_nSpyroGroundProbeSuspendFlag == 0 && g_nSpyroGroundSlope < 0x20) {
+    if (g_nSpyroGroundProbeSuspendFlag == 0 &&
+        g_nSpyroGroundSlope < SLOPE_NUDGE_MAX) {
       NudgeSpyroFromWallProbes();
     }
     g_nSpyroGravityStep = -0xC0;
@@ -179,7 +180,8 @@ void ChangeSpyroState(int state) {
     g_anSpyroVelocity[0] = 0;
     g_anSpyroVelocity[1] = 0;
     g_anSpyroVelocity[2] = g_anSpyroMotionVec[2];
-    if (g_nSpyroGroundProbeSuspendFlag == 0 && g_nSpyroGroundSlope < 0x20) {
+    if (g_nSpyroGroundProbeSuspendFlag == 0 &&
+        g_nSpyroGroundSlope < SLOPE_NUDGE_MAX) {
       NudgeSpyroFromWallProbes();
     }
     g_nSpyroGravityStep = -0xC0;

@@ -13,8 +13,8 @@
    (and, on a shallow hit, a second wider one) through the world + actor
    collision set; on a hit it caches the contact normal, the slope angle from
    ArcTan2 and the hit chunk's triangle, and clears the airborne counter when
-   the slope is walkable (< 0x21). A third, purely vertical probe re-runs the
-   test when the first two missed. (0x8003e318, 784 bytes.) */
+   the slope counts as ground (< SLOPE_GROUND_MAX). A third, purely vertical
+   probe re-runs the test when the first two missed. (0x8003e318, 784 bytes.) */
 void ProbeSpyroGroundContact(void) {
   int down[4];
   int out[4];
@@ -44,13 +44,13 @@ void ProbeSpyroGroundContact(void) {
                                ATAN_ANGLE8);
       g_nSpyroGroundSlope = t;
       if (t < 0) {
-        g_nSpyroGroundSlope = 0x400;
+        g_nSpyroGroundSlope = SLOPE_CEILING;
       }
       BLK(SPY_GROUND_CHUNK) = g_nLastCollisionHitChunkId;
       UnpackWorldCollisionTri(g_nLastCollisionHitChunkId,
                               &BLK(SPY_GROUND_VERTS));
-      if (g_nSpyroGroundSlope < 0x21) {
-        BLK(SPY_GLIDE_SPENT) = g_nSpyroGroundSlope >= 0x17;
+      if (g_nSpyroGroundSlope < SLOPE_GROUND_MAX) {
+        BLK(SPY_GLIDE_SPENT) = g_nSpyroGroundSlope >= SLOPE_STEEP;
         BLK(SPY_AIRBORNE) = 0;
         down[0] = 0x104;
         down[1] = 0;
@@ -85,7 +85,7 @@ void ProbeSpyroGroundContact(void) {
             VectorLength(&BLK(SPY_GROUND_NORMAL), VEC_LEN_XY), ATAN_ANGLE8);
         g_nSpyroGroundSlope = t;
         if (t < 0) {
-          g_nSpyroGroundSlope = 0x400;
+          g_nSpyroGroundSlope = SLOPE_CEILING;
         }
         /* The empty loop is load-bearing: its NOTE_INSN_LOOP_BEG ends cse's
            extended basic block, so the held block base below has no constant
@@ -95,9 +95,9 @@ void ProbeSpyroGroundContact(void) {
            g_nSpyroGroundSlope precisely because there the original DOES
            fold. */
         EBB_BREAK();
-        if (BLK(SPY_GROUND_SLOPE) < 0x21) {
+        if (BLK(SPY_GROUND_SLOPE) < SLOPE_GROUND_MAX) {
           BLK(SPY_AIRBORNE) = 0;
-          BLK(SPY_GLIDE_SPENT) = BLK(SPY_GROUND_SLOPE) >= 0x17;
+          BLK(SPY_GLIDE_SPENT) = BLK(SPY_GROUND_SLOPE) >= SLOPE_STEEP;
         }
       }
     }
