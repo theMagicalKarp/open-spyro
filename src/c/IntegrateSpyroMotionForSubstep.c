@@ -221,7 +221,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         g_nSpyroScriptedMoveMode = 0;
       } else {
         g_nSpyroSubstate = 1;
-        g_adwPadPressedBlock[0] |= 0x20;
+        g_adwPadPressedBlock[0] |= PAD_CIRCLE; /* scripted flame breath */
       }
     }
     ZeroVector(g_anSpyroVelocity);

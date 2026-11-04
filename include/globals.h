@@ -731,7 +731,7 @@ extern int g_nLevelArchiveChunkOffset;                  /* 0x80076c18 */
 extern int g_nLevelArchiveChunkSize;                    /* 0x80076c1c */
 extern int g_nDragonAssetOffset;                        /* 0x80076c20 */
 extern int g_nDragonAssetSize;                          /* 0x80076c24 */
-extern int g_anActorMeshOffsetList;                     /* 0x80076c50 */
+extern int g_anActorMeshOffsetList;                     /* 0x80076c50: file offsets (in the world data-ext chunk) of the models a level or cutscene streams in, 0-terminated; in a level [0] is Spyro's animation stream (InstallSpyroAnimStream) and [1..] are actor models (RelocateActorMeshHeader) */
 extern int g_anWorldToCameraRotMtx[5];                  /* 0x80076dd0 */
 extern int g_anCameraPos[3];                            /* 0x80076df8 */
 extern int g_anCameraEyeTarget[3];                      /* 0x80076e04 */
