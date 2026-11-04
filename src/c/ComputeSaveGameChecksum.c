@@ -1,15 +1,11 @@
-/* ComputeSaveGameChecksum (0x8005956c) — toolchain spike.
- *
- * First matched function. Sums the 1420 (0x58C) bytes of a save-game block and
- * returns the total. A reloc-free leaf in the pure-`addu` game-code region, so
- * the rebuilt object's .text compares byte-for-byte without a link step.
- *
- * Verified byte-identical to the original at its VMA.
- */
+#include "save_game.h"
 
+/* 0x8005956c — the save image checksum: the byte sum of a SaveGameBuffer up
+   to (not including) its checksum field. BuildSaveGameBuffer stamps it and the
+   save menu / title screen compare it after a read. */
 int ComputeSaveGameChecksum(unsigned char *data) {
   int sum = 0;
-  unsigned char *end = data + 1420;
+  unsigned char *end = data + SAVE_OFFSET(checksum);
 
   do {
     sum += *data;
