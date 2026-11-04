@@ -139,7 +139,7 @@ void Level8_BalloonistCutscene_Update(void)
           g_bSpyroAnimPrev[0] = 1;
           g_bSpyroAnimCurrent = SPYRO_ANIMID_WALK;
           g_bSpyroAnimFrame = 1;
-          CopyVector(g_anActorCutsceneSpyroFrom, &g_bSpyroAnimPrev[-0x18]);
+          CopyVector(g_anActorCutsceneSpyroFrom, SPYRO_POS_VIA_ANIM_PREV);
           SPYRO_TO_X_VIA_FROM = 0x4A0;
           g_nActorCutsceneSpyroToY = 0;
           g_nActorCutsceneSpyroToZ = 0x164;

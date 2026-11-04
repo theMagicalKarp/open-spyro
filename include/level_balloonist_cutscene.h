@@ -113,5 +113,8 @@ extern Actor *g_pActorCutsceneRecord;
  * in the Update clones), and the address shares From's lui. The plain
  * scalar store costs an extra lui. */
 #define SPYRO_TO_X_VIA_FROM (*(int *)((char *)g_anActorCutsceneSpyroFrom + 12))
+/* g_anSpyroWorldPos reached off the g_bSpyroAnimPrev base the lift-off
+ * stores just used (0x18 bytes below it in the Spyro block). */
+#define SPYRO_POS_VIA_ANIM_PREV ((int *)&g_bSpyroAnimPrev[-0x18])
 
 #endif /* OPEN_SPYRO_LEVEL_BALLOONIST_CUTSCENE_H */
