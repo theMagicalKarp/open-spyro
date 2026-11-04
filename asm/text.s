@@ -91916,7 +91916,7 @@ nonmatching InitGeom, 0x80
 glabel InitGeom
     /* 52B50 80062350 0780013C */  lui        $at, %hi(D_80074D04)
     /* 52B54 80062354 044D3FAC */  sw         $ra, %lo(D_80074D04)($at)
-    /* 52B58 80062358 9289010C */  jal        FUN_80062648
+    /* 52B58 80062358 9289010C */  jal        PatchGteExceptionHandler
     /* 52B5C 8006235C 00000000 */   nop
     /* 52B60 80062360 07801F3C */  lui        $ra, %hi(D_80074D04)
     /* 52B64 80062364 044DFF8F */  lw         $ra, %lo(D_80074D04)($ra)
@@ -92157,11 +92157,11 @@ endlabel SetGeomScreen
     /* 52E44 80062644 00000000 */  nop
 .endif
 
-.section .text.FUN_80062648, "ax"
-.ifndef HAVE_C_FUN_80062648
-nonmatching FUN_80062648, 0x68
+.section .text.PatchGteExceptionHandler, "ax"
+.ifndef HAVE_C_PatchGteExceptionHandler
+nonmatching PatchGteExceptionHandler, 0x68
 
-glabel FUN_80062648
+glabel PatchGteExceptionHandler
     /* 52E48 80062648 0780013C */  lui        $at, %hi(D_80075648)
     /* 52E4C 8006264C 48563FAC */  sw         $ra, %lo(D_80075648)($at)
     /* 52E50 80062650 E976010C */  jal        EnterCriticalSection
@@ -92189,7 +92189,7 @@ glabel FUN_80062648
     /* 52EA4 800626A4 00000000 */  nop
     /* 52EA8 800626A8 0800E003 */  jr         $ra
     /* 52EAC 800626AC 00000000 */   nop
-endlabel FUN_80062648
+endlabel PatchGteExceptionHandler
 
 /* Handwritten function */
 .endif

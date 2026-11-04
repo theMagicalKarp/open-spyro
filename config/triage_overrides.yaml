@@ -229,7 +229,7 @@ ResetCallback:
   verdict: attempted
   class: "setjmp/held-base-heavy (libgpu bring-up cluster)"
   date: 2026-07-11
-FUN_80062648:
+PatchGteExceptionHandler:
   verdict: wall
   class: "frameless non-leaf: any call reserves 16-byte REG_PARM_STACK_SPACE (addiu sp,-16)"
   date: 2026-10-15

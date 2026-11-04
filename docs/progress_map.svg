@@ -474,7 +474,7 @@
 <rect x="220.98" y="703.40" width="7.31" height="7.78" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>DelaySpuRegisterWrite  ·  104 bytes  ·  library</title></rect>
 <rect x="220.98" y="711.18" width="7.31" height="7.78" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_8005E9C4  ·  104 bytes  ·  library</title></rect>
 <rect x="220.98" y="718.96" width="7.31" height="7.78" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_8005EA2C  ·  104 bytes  ·  library</title></rect>
-<rect x="220.98" y="726.74" width="7.31" height="7.78" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>FUN_80062648  ·  104 bytes  ·  library</title></rect>
+<rect x="220.98" y="726.74" width="7.31" height="7.78" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PatchGteExceptionHandler  ·  104 bytes  ·  library</title></rect>
 <rect x="220.98" y="734.52" width="7.31" height="7.78" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PAD_OBJ_254  ·  104 bytes  ·  library</title></rect>
 <rect x="220.98" y="742.30" width="7.31" height="7.78" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>_remove_ChgclrPAD  ·  104 bytes  ·  library</title></rect>
 <rect x="220.98" y="750.08" width="7.31" height="7.78" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_80068EB0  ·  104 bytes  ·  library</title></rect>

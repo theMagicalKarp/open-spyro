@@ -656,7 +656,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x800625f8` | SetTransMatrix | main | 32 | asm | lib |
 | `0x80062618` | SetGeomOffset | main | 24 | asm | lib |
 | `0x80062638` | SetGeomScreen | main | 12 | asm | lib |
-| `0x80062648` | FUN_80062648 | main | 104 | asm | lib |
+| `0x80062648` | PatchGteExceptionHandler | main | 104 | asm | lib |
 | `0x800626b0` | g_anGteExceptionVectorStub | main | 56 | asm | lib |
 | `0x800626e8` | FlushCache | main | 12 | asm | lib |
 | `0x800626f8` | memcpy | main | 52 | asm | lib |

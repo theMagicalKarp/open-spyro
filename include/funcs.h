@@ -1197,7 +1197,7 @@ undefined memset(undefined1 *param_1, undefined1 param_2, int param_3);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined GPU_cw(void);
 
-/* 0x80062350: libgte InitGeom: enables GTE (Cop0 SR bit 0x40000000), patches the BIOS exception vector for GTE coproc (via FUN_80062648), then loads default GTE constants — ZSF3=0x155, ZSF4=0x100, H=1000, DQA=-4194, DQB=0x1400000, OFX/OFY=0. Stores return address at 0x80074d04. */
+/* 0x80062350: libgte InitGeom: enables GTE (Cop0 SR bit 0x40000000), patches the BIOS exception vector for GTE coproc (via PatchGteExceptionHandler), then loads default GTE constants — ZSF3=0x155, ZSF4=0x100, H=1000, DQA=-4194, DQB=0x1400000, OFX/OFY=0. Stores return address at 0x80074d04. */
 void InitGeom(void);
 
 void MulMatrix0(int *a, int *b, int *out);
@@ -1214,7 +1214,7 @@ void SetGeomScreen(int h);
 
 /* 0x80062648: Sony SDK internal — libgte BIOS exception-vector patcher. Bracketed by EnterCriticalSection/bb4 (interrupt arbitration), calls BIOS B0 jumptable, copies a code stub from g_anGteExceptionVectorStub..FlushCache into the exception vector returned by *(int *)(iVar1+0x18), then FlushCache. Installs the GTE coprocessor-unusable handler so GTE instructions don't trap. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined FUN_80062648(void);
+undefined PatchGteExceptionHandler(void);
 
 void FlushCache(void);
 
