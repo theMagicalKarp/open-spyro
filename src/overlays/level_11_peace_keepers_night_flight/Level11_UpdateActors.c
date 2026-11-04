@@ -7,8 +7,8 @@
  *
  * Matching notes (0x8007CFB4, 18,952 B):
  *
- * Head of the flight-level actor-update family (func_level_{5,11,17,23,29}_
- * 8007CFB4). The arms that share a behaviour with Level0_UpdateActors were
+ * Head of the flight-level actor-update family (Level{5,11,17,23,29}_
+ * UpdateActors, all at 0x8007CFB4). The arms that share a behaviour with Level0_UpdateActors were
  * spliced from it (level_0's 0xff/0x100 arm is 478/479 here, 0x101 is 480,
  * 0xc2 is 299); the case order is the ascending order of the arm addresses.
  * The source forms below are load-bearing -- each one was measured, and the

@@ -109,10 +109,10 @@ extern unsigned char g_bSpyroPersistentEulerY;           /* SPY.bodyRotY, absolu
 extern unsigned char g_bSpyroSubFrameTimer;
 extern unsigned char g_bSpyroSwingByteEuler1;
 extern int g_dwGamestateFrames;                          /* frame counter; the arm acts on every 4th frame */
-extern int g_dwSpyroRequestMask;                         /* scripted camera control word */
+extern int g_dwSpyroRequestMask;                          /* SPYRO_RQ_* scripted override bits */
 extern unsigned int g_dwSpyroTriggerEventFlags;                 /* SPY.triggerEvents, absolute form */
 extern int g_nActiveLevelId;                             /* active level id */
-extern int g_nActiveWorldIndex;                          /* course index */
+extern int g_nActiveWorldIndex;                           /* world index (level id / 10 - 1) */
 extern int g_nActorAnimDone;                             /* current actor's animation finished */
 extern int g_nActorAnimNewFrame;                         /* current actor's new-frame flag */
 extern int g_nActorPoolCapacity;
@@ -128,7 +128,7 @@ extern int g_nCameraCurrentMode;                         /* camera mode */
 extern short g_nCameraEulerRoll;
 extern short g_nCameraEulerYaw;                          /* camera yaw, as the balloonist reads it */
 extern int g_nCameraNextMode;
-extern int g_nCameraPosY;                                /* turret aim target Y */
+extern int g_nCameraPosY;
 extern int g_nCameraPosZ;
 extern int g_nSpyroSwingEulerTargetZ;
 extern int g_nCameraTargetYawBiasFromMode;
@@ -152,7 +152,7 @@ extern int g_nFlightTimeRemaining;                       /* time remaining */
 extern int g_nFrameStep;                                 /* frame delta in ticks */
 extern int g_nGamePaused;
 extern int g_nCinematicActive;
-extern int g_nGamestate;                                 /* g_nGamestate */
+extern int g_nGamestate;
 extern int g_nActorCutsceneCamHeightGoal;
 extern int g_nActorCutsceneCamHeightStart;
 extern int g_nActorCutsceneCamRadiusGoal;
@@ -172,7 +172,7 @@ extern int g_nLevelTransitionPhase;
 extern int g_nLevelTransitionTallyActive;
 extern int g_nPauseMenuCursor;                           /* menu cursor */
 extern int g_nMenuTickFrames;                       /* idle/blink counter */
-extern int g_nMenuDrawFrames;                 /* results frame counter */
+extern int g_nMenuDrawFrames;                             /* frames drawn since the menu opened */
 extern int g_nEnteredPortalIdx;
 extern int g_nPrimBufferOverflowFlag;
 extern int g_nReturnPortalLevelId;
@@ -182,28 +182,28 @@ extern int g_nPortalTransitionActive;
 extern int g_nSfxOverrideFlags;
 extern short g_nSfxOverrideVolL;                         /* sound volume override, left/right */
 extern short g_nSfxOverrideVolR;
-extern int g_nSparxFoodCount;                            /* life orb count */
+extern int g_nSparxFoodCount;                             /* butterflies eaten; 20 make an extra life */
 extern int g_nSpyroAirborneFrames;
 extern int g_nSpyroAnimPlayRate;
-extern int g_nSpyroBodyYaw;                              /* camera yaw accumulator */
-extern int g_nSpyroDrawSuppressed;                       /* Spyro is being carried */
+extern int g_nSpyroBodyYaw;
+extern int g_nSpyroDrawSuppressed;                        /* skip drawing Spyro (ComposeFrameScene); set while a grabber holds Spyro */
 extern int g_nSpyroFlightMode;
 extern int g_nSpyroSuperflameTimer;
 extern int g_nSpyroSuperflameTimerSave;
-extern int g_nSpyroGroundHeightZ;                        /* g_nSpyroGroundHeight */
+extern int g_nSpyroGroundHeightZ;
 extern int g_nSpyroFlameVariant;
 extern int g_nSpyroMotionSpeed;
 extern int g_nSpyroMotionZ;
 extern int g_nSpyroInputBlankCountdown;
-extern int g_nSpyroRequestState;                         /* scripted camera mode */
+extern int g_nSpyroRequestState;                          /* SPYRO_ST_* applied under SPYRO_RQ_FORCE_STATE */
 extern int g_nSpyroRequestVelocityZ;
-extern int g_nSpyroState;                                /* Spyro's state */
+extern int g_nSpyroState;
 extern int g_nSpyroSubstate;
 extern int g_nSpyroStateTimer;
 extern int g_nSpyroSwingEulerTargetX;
 extern int g_nSpyroSwingEulerPrev1;
 extern int g_nSpyroWorldPosZ;                            /* SPY.posZ, absolute form */
-extern int g_nSubMenuCursor;                             /* reveal timer */
+extern int g_nSubMenuCursor;                              /* flight results reuse it as the reveal step */
 extern int g_nSubMenuScrollOffset;
 extern int g_nVsyncFramePaceAnchor;
 extern int g_nTotalDragonsRescued;

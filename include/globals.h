@@ -590,7 +590,7 @@ extern void (*g_pfnLevelUpdateActors)(void); /* 0x80075734 */
 extern void *g_pEmitListWriteCursor;         /* 0x80075738 */
 extern struct Actor *g_pActorPoolFreeHead;   /* 0x8007573c: lowest free slot of the level actor pool (AllocActorRecordSlot) */
 extern int g_nGemTallyHoldEndPhase;          /* 0x80075740: tally phase where the TREASURE FOUND hold ends: 0x8C + 2 per icon, capped at 0xC0 */
-extern int g_nSubMenuCursor;                 /* 0x80075744 */
+extern int g_nSubMenuCursor;                 /* 0x80075744: inventory page's world cursor (Gamestate02_03_06_Draw); the flight results screens reuse it as their reveal step */
 extern int g_nMusicVolume;                   /* 0x80075748 */
 extern int g_nTotalDragonsRescued;           /* 0x80075750: game-wide dragons freed (ApplySaveGameBuffer sums all 36 levels; ComputeInventoryProgressPercent: 80 = 40%) */
 extern int g_nSfxVolume;                     /* 0x80075754 */
@@ -623,7 +623,7 @@ extern struct Actor *g_pSpyroContactActor;           /* 0x80075804 */
 extern int g_nLastCollisionHitChunkId;       /* 0x80075808 */
 extern int g_nSparxHealthStash;           /* 0x8007580c: saved g_nSparxHealth; -1 = none (ResetLevelState, new game) */
 extern int g_nTotalEggsRecovered;            /* 0x80075810: game-wide eggs recovered (ApplySaveGameBuffer sums g_anLevelEggsRecovered; 12 = 10%) */
-extern int g_nSpyroDrawSuppressed;           /* 0x80075814 */
+extern int g_nSpyroDrawSuppressed;           /* 0x80075814: nonzero skips Spyro's model and shadow (ComposeFrameScene); level 20's grabber sets it while it holds Spyro, BuildLoadedLevelRuntime clears it */
 extern int g_nCreditsReturnLevelId;          /* 0x80075818 */
 extern int *g_pOtActiveDepthSlot;            /* 0x8007581c */
 extern void *g_pOtDepthBinArrayBase;         /* 0x80075820 */
@@ -1007,11 +1007,11 @@ extern int g_anSpyroSwingEulerPrev[3];                  /* 0x80078c08 */
 extern int g_anSpyroSwingEulerSpringAccum[3];           /* 0x80078c14 */
 extern int g_anSpyroComposedBodyMtx[5];                 /* 0x80078c20 */
 extern int g_nSpyroInputBlankCountdown;                /* 0x80078c48: frames left during which Spyro's frame tick stashes the pad (no input): 0xC after a level load, >= 2 while SPYRO_RQ_FREEZE_INPUT or a scripted move holds */
-extern unsigned int g_dwSpyroRequestMask;                       /* 0x80078c4c */
+extern unsigned int g_dwSpyroRequestMask;                       /* 0x80078c4c: scripted override of Spyro's motion / state / camera set by actors and cutscenes (SPYRO_RQ_* bits, spyro_state.h) */
 extern int g_anSpyroRequestTargetPos[3];                /* 0x80078c50 */
 extern unsigned char g_abSpyroRequestEuler[3];                   /* 0x80078c5c */
 extern int g_anSpyroRequestVelocity[3];                 /* 0x80078c60 */
-extern int g_nSpyroRequestState;                        /* 0x80078c70 */
+extern int g_nSpyroRequestState;                        /* 0x80078c70: the SPYRO_ST_* state applied while SPYRO_RQ_FORCE_STATE is set */
 extern void *g_pSpyroRequestCameraAnchor;               /* 0x80078c74 */
 extern void *g_pSpyroRequestCameraTargetParams;         /* 0x80078c78 */
 extern struct Actor *g_pScriptedCameraActor;                    /* 0x80078c7c */
