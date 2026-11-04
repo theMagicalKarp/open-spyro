@@ -27,8 +27,7 @@ void StopSoundVoicesByOwner(Actor *actor, int mode);
 void TickActorAnims(struct Actor **list, int mode);
 void TickStatueBurstShard(Actor *actor);
 
-/* Actor behaviour helpers (main 0x80037E98..0x8003C994 and neighbours), not
- * yet named. */
+/* Actor behaviour helpers (main 0x80037E98..0x8003C994 and neighbours). */
 void BeginSaveMenuFromWorld(Actor *actor);
 void OnActorAnimQueued(Actor *actor, ...); /* no-op; SteerActorYawTowardSpyro passes two extra args */
 int ProbeActorGroundHeight(Actor *actor);

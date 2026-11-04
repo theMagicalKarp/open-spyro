@@ -31,7 +31,9 @@
 #define SPY_CLIFF          0x31 /* g_nSpyroCliffEdgeHint */
 #define SPY_SPEED_TARGET   0x32 /* g_nSpyroSpeedTarget */
 #define SPY_MOVE_TARGET_YAW 0x33 /* g_nSpyroMoveTargetYaw */
-#define SPY_PLATFORM       0x37 /* g_anSpyroSlopeGravityVec */
+#define SPY_SLOPE_SLIDE    0x34 /* down-slope gravity along the ground tangent
+                                 (ApplyGravityAlongSpyroSlopeTangent) */
+#define SPY_SLOPE_GRAVITY  0x37 /* g_anSpyroSlopeGravityVec */
 #define SPY_CARRY          0x3A /* g_anSpyroCarryMotionVec */
 #define SPY_VELOCITY       0x3D /* g_anSpyroVelocity */
 #define SPY_VELOCITY_FP6   0x40 /* g_anSpyroVelocityFp6 */

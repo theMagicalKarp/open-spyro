@@ -610,7 +610,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (g_nSpyroCliffEdgeHint != 0) {
           g_nSpyroVelocityZ -= 0xC0;
         } else {
-          AddVector(vel, vel, &SPY[SPY_PLATFORM]);
+          AddVector(vel, vel, &SPY[SPY_SLOPE_GRAVITY]);
         }
       } else {
         int *carry = ch + (SPY_CARRY - SPY_CHARGE_HOLD);
@@ -624,9 +624,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         vel = ch + (SPY_VELOCITY - SPY_CHARGE_HOLD);
         BuildSpyroVelocityFromBodyEuler();
         AddVector(carry, carry, vel);
-        AddVector(carry, carry, ch + (0x34 - SPY_CHARGE_HOLD));
+        AddVector(carry, carry, ch + (SPY_SLOPE_SLIDE - SPY_CHARGE_HOLD));
         g_nSpyroMotionSpeed = VectorLength(carry, VEC_LEN_XYZ);
-        AddVector(vel, carry, ch + (SPY_PLATFORM - SPY_CHARGE_HOLD));
+        AddVector(vel, carry, ch + (SPY_SLOPE_GRAVITY - SPY_CHARGE_HOLD));
       }
     } else {
       int *vel;
@@ -636,7 +636,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       AdvanceSpyroSpeedTowardTarget(0, 0x180);
       vel = &SPY[SPY_VELOCITY];
       BuildSpyroVelocityFromBodyEuler();
-      AddVector(vel, vel, &SPY[0x34]);
+      AddVector(vel, vel, &SPY[SPY_SLOPE_SLIDE]);
       l = VectorLength(vel, VEC_LEN_XYZ);
       g_nSpyroMotionSpeed = l;
       if (l > 0x2300) {
@@ -1601,7 +1601,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         ScaleVector3ByRatio(knockDrag, l, 0x100);
       }
       AddVector(vel, vel, knockDrag);
-      AddVector(vel, vel, &SPY[SPY_PLATFORM]);
+      AddVector(vel, vel, &SPY[SPY_SLOPE_GRAVITY]);
     }
     if (SPY[SPY_VELOCITY + 2] < -0x2300) {
       SPY[SPY_VELOCITY + 2] = -0x2300;
@@ -1676,7 +1676,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     BuildSpyroVelocityFromBodyEuler();
     CopyVector(sp + (SPY_CARRY - SPY_SPEED), vel);
     if (g_nSpyroAirborneFrames == 0) {
-      AddVector(vel, vel, sp + (SPY_PLATFORM - SPY_SPEED));
+      AddVector(vel, vel, sp + (SPY_SLOPE_GRAVITY - SPY_SPEED));
     }
     g_nPulseRumbleAmount = ((sp[0] - 0x1400) >> 7) + 0x14;
     if (g_nPulseRumbleAmount < 0x50) {

@@ -4,9 +4,9 @@
 /* Apply gravity projected along the current ground slope (0x8003e0b4, 0xF8).
    Take the ground normal, rescale it so its Z component equals one gravity
    step (ratio = step*nz/len), flip it downhill if it points up, then reset
-   the slope-slide accumulator (normal block +0x2C) and subtract the tangent
-   vector from it, recording the step in g_nSpyroSlopeGravityStep. No-op on a
-   zero-length normal (free fall). */
+   the slope-slide vector (SPY_SLOPE_SLIDE, normal block +0x2C) and subtract the
+   tangent vector from it, recording the step in g_nSpyroSlopeGravityStep. No-op
+   on a zero-length normal (free fall). */
 
 void ApplyGravityAlongSpyroSlopeTangent(void) {
   int vec[3];
