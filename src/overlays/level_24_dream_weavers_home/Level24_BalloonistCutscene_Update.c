@@ -218,7 +218,7 @@ void Level24_BalloonistCutscene_Update(void)
         }
         g_abSpyroPersistentEuler[0] = 0;
         g_bSpyroPersistentEulerY = 0;
-        g_nSpyroGroundHeightZ = FindGroundHeightBelow((int *) (&g_abSpyroPersistentEuler[-0xC]), 0x10000);
+        g_nSpyroGroundHeightZ = FindGroundHeightBelow((int *) (&g_abSpyroPersistentEuler[-SPYB_EULER]), 0x10000);
         ApplyEulerRotation((int *) (&g_abSpyroPersistentEuler[0]), (int *) (&g_abSpyroPersistentEuler[0x28]), 0);
         SampleSpyroShadowRingHeights(1);
         TickSpyroAttackEffects(g_nFrameStep);

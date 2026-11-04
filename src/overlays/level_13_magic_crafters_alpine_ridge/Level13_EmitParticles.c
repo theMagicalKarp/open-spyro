@@ -430,7 +430,7 @@ void Level13_EmitParticles(int count, int type, int *pos, int effectArg) {
         v2[1] = 0;
         v2[2] = 0;
         RotateVectorByMatrix(g_anSpyroBodyMtx, v2, v2);
-        AddVector(v2, v2, g_anSpyroBodyMtx - 13);
+        AddVector(v2, v2, SPY_VIA(g_anSpyroBodyMtx, SPY_BODY_MTX, SPY_POS));
       } else {
         CopyVector(v2, g_anSpyroWorldPos);
         v2[2] = g_nSpyroGroundHeightZ;

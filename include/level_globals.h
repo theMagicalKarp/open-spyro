@@ -10,6 +10,7 @@
 #define OPEN_SPYRO_LEVEL_GLOBALS_H
 
 #include "actor_type.h"
+#include "spyro_block.h"
 
 extern int g_anSparkleGlowDesc;
 extern int g_anFlightTallyTintPresets[];
