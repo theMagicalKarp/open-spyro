@@ -14,7 +14,7 @@ typedef struct {
   unsigned int v;
 } TriggerFlags;
 
-#define ENT (((int **)g_apPortals)[mob])
+#define ENT (((int **)g_apPortals)[portal])
 #define FLAGS (((TriggerFlags *)g_adwSpyroTriggerEventBlock)->v)
 
 /* The portal guide actor (type 398) reached through g_pActorListBase (0x58
@@ -44,7 +44,7 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
   int *data;
   int *ready;
   int one;
-  int mob;
+  int portal;
   int d;
   int a;
   int *p;
@@ -93,8 +93,8 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
     }
     one = 1;
     g_nPortalTransitionActive = one;
-    mob = data[1];
-    g_nEnteredPortalIdx = mob;
+    portal = data[1];
+    g_nEnteredPortalIdx = portal;
     if (g_nActiveLevelId % 10 != 0) {
       g_nReturnPortalLevelId = g_nActiveLevelId;
     }

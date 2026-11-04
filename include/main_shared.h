@@ -102,11 +102,6 @@ extern short g_nSfxOverrideVolR;
 
 extern int g_nCdAudioVolume_blk;
 
-/* Return to the current world's hub (0x8002c664): reset the level-transition /
-   CD-stream state, arm a scripted respawn back into the hub (camera mode
-   0x80000012, gamestate 1, tally + paused flags), tag the preserve-mob slot as
-   empty, and snap the target level id back to the world's hub id
-   ((active level / 10) * 10). */
 extern void InitLightVectorConstants(void);
 
 /* Held-base alias for &g_nCameraEulerPitch: the pitch reads and both output
@@ -188,12 +183,6 @@ extern int g_nActorFrameDelta;
 
 extern short g_nSpuCommonCdVolumeR;           /* SpuCommonAttr CD volume R */
 
-/* Snap the spring camera to its per-mode target (0x80034358, 0x128).
-   Loads the target angles for the current mode, copies all six target
-   angles into the spring set, zeroes the spring delta state and the
-   collision/stuck counters, recomputes the eye position (orbit offset +
-   anchor), seats the smoothed position on it, refreshes the euler angles,
-   and clears any camera shake. */
 extern void LoadCameraTargetAnglesFromMode(void);
 
 extern void ProjectWorldPointGTEUnscaled(int *out, int *pos);
