@@ -1,6 +1,7 @@
 #include "globals.h"
 #include "funcs.h"
 #include "gpu_prim.h"
+#include "title_state.h"
 /* Titlescreen_EmitSpriteQuad (0x8007CD38, titlescreen overlay).
  *
  * Emit one textured quad (PolyFT4) for a title-screen UI sprite: position it
@@ -14,18 +15,6 @@
  *
  * Verified byte-identical inside the relinked titlescreen.ovl.
  */
-
-typedef struct {
-  unsigned short nTpage; /* 0x0 */
-  unsigned short nClut;  /* 0x2 */
-  unsigned char nW;      /* 0x4 */
-  unsigned char nH;      /* 0x5 */
-  unsigned char nU;      /* 0x6 */
-  unsigned char nV;      /* 0x7 */
-} TitlescreenSprite;
-
-extern unsigned int g_adwTitleSelectColors[];       /* selection color words (P_CODEs) */
-extern TitlescreenSprite g_aTitlescreenSprites[];  /* title-screen sprite table */
 
 void Titlescreen_EmitSpriteQuad(int nX, int nY, int nSprite, int nColorId) {
   PolyFT4 *p;

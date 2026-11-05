@@ -69,4 +69,19 @@ enum StoryIntroStep {
   STORY_INTRO_FLY = 2,    /* fly Spyro along the intro path, then hand off */
 };
 
+/* A title-screen UI sprite (g_aTitlescreenSprites[TITLE_SPR_*], main EXE
+ * data): its texture page, CLUT and the UV rectangle. */
+typedef struct {
+  unsigned short nTpage; /* 0x0 */
+  unsigned short nClut;  /* 0x2 */
+  unsigned char nW;      /* 0x4 */
+  unsigned char nH;      /* 0x5 */
+  unsigned char nU;      /* 0x6 */
+  unsigned char nV;      /* 0x7 */
+} TitlescreenSprite;
+
+extern TitlescreenSprite g_aTitlescreenSprites[]; /* 0x8006facc */
+extern unsigned int g_adwTitleSelectColors[];     /* 0x8006fabc: P_CODE colour words per TITLE_COLOR_* */
+extern int g_anTitleSampleOffsets[];              /* 0x8006fa94: SPU sample offset per TITLE_SFX_* */
+
 #endif

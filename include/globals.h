@@ -915,6 +915,7 @@ extern void *g_pWorldAnimVertexMorphList;               /* 0x800785a4 */
  * +0x04 g_nWorldChunkCount, +0x14 g_anTriggerRegionCount, +0x18 g_pWorldTextureLodRecords, +0x1C
  * g_pWorldTextureDetailRecords, +0x2C g_pWorldCollisionHeader (world_collision.h). */
 extern void *g_pWorldChunkArray;                        /* 0x800785a8 */
+extern unsigned char g_abWorldChunkDrawn[]; /* 0x800771c8: per world chunk, nonzero if RenderWorldChunks drew it this frame (cleared each call); gates actors and portals by their gateChunk */
 extern int g_nWorldChunkCount;                          /* 0x800785ac */
 extern void *g_pTriggerRegionTable;                     /* 0x800785b8 */
 extern void *g_pWorldTextureLodRecords;                   /* 0x800785c0: per world texture, a 0x10-byte UV/tpage record (two 8-byte halves) */

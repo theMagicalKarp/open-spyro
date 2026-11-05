@@ -24,29 +24,6 @@
    - the mesh colour is read through a plain (non-struct) MEM so it is not
      hoisted above the preceding scalar stores. */
 
-/* One projected ring point: screen x/y plus the OT depth term. */
-typedef struct ScreenPt {
-  int x;
-  int y;
-  int z;
-} ScreenPt;
-
-/* One silhouette edge: live flag, the two packed endpoints, the edge normal
-   and its constant term (the half-plane test the rasterizer clips against). */
-typedef struct EdgeRec {
-  int live;
-  int p0;
-  int p1;
-  int nx;
-  int ny;
-  int c;
-} EdgeRec;
-
-extern unsigned char
-    g_abWorldChunkDrawn[]; /* per world chunk, nonzero if RenderWorldChunks drew
-                              it this frame */
-extern EdgeRec g_aPortalSilhouetteEdges[]; /* silhouette edge records */
-extern ScreenPt g_aPortalRingScreenPts[];  /* projected ring points */
 /* point k through a held byte offset (the original keeps k*12 live) */
 #define KPT (*(ScreenPt *)((char *)g_aPortalRingScreenPts + ko))
 extern int g_nCameraVisZone[]; /* [-0x10] view mtx, [-0x15] world mtx */

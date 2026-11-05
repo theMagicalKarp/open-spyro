@@ -76,4 +76,10 @@ enum SaveStep {
   SAVE_STEP_VERIFY = 4,     /* checksum it */
 };
 
+/* A save-menu box rectangle, one per screen (SaveLoadMenu_Draw). */
+typedef struct {
+  short x, y, w, h;
+} MenuBox;
+extern MenuBox g_aSaveMenuBoxes[]; /* 0x8006f350 */
+
 #endif /* OPEN_SPYRO_SAVE_MENU_H */
