@@ -289,6 +289,12 @@ enum ThiefMode {
   THIEF_STAND = 0x3C,       /* stands facing Spyro */
 };
 
+/* Egg-thief ranges to Spyro (2D): a HOP or LEDGE thief sets off once he is
+ * within NOTICE; a LEDGE thief warps home (THIEF_LEDGE_RESET) once he is
+ * within LEDGE_RESET of its path node 6. */
+#define THIEF_NOTICE_RANGE 0x1C00
+#define THIEF_LEDGE_RESET_RANGE 0x1800
+
 /* An egg thief's animations (nextAnim), from what each mode plays. */
 enum ThiefAnim {
   THIEF_ANIM_IDLE = 0,   /* back on its start node */

@@ -625,7 +625,7 @@ void Level14_UpdateActors(void) {
         actor->otBias = 2;
         if (st->mode == THIEFKIND_HOP) {
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-          if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1C00) {
+          if (ApproxDist2D(&actor->posX, &SPY.posX) < THIEF_NOTICE_RANGE) {
             st->landed = 0;
             ANIM_GO(actor, THIEF_ANIM_RUN);
             actor->mode = THIEF_RUN;
@@ -704,11 +704,11 @@ void Level14_UpdateActors(void) {
         } else if (st->mode == THIEFKIND_LEDGE) {
           ANIM_GO(actor, THIEF_ANIM_TAUNT);
           TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-          if (ApproxDist2D(&spy->posX, &st->path->nodes[6].x) < 0x1800) {
+          if (ApproxDist2D(&spy->posX, &st->path->nodes[6].x) < THIEF_LEDGE_RESET_RANGE) {
             actor->mode = THIEF_LEDGE_RESET;
             continue;
           }
-          if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1C00) {
+          if (ApproxDist2D(&actor->posX, &spy->posX) < THIEF_NOTICE_RANGE) {
             actor->mode = THIEF_LEDGE_RUN;
             continue;
           }
@@ -918,7 +918,7 @@ void Level14_UpdateActors(void) {
         break;
 
       case THIEF_LEDGE_WAIT:
-        if (ApproxDist2D(&spy->posX, &st->path->nodes[6].x) < 0x1800) {
+        if (ApproxDist2D(&spy->posX, &st->path->nodes[6].x) < THIEF_LEDGE_RESET_RANGE) {
           actor->mode = THIEF_LEDGE_RESET;
           continue;
         }
