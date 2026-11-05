@@ -8,10 +8,10 @@
    register-form (held-base) views of the clamped / incremented globals. */
 
 /* 0x8004888c (0x310): per-substep Spyro state advance. Runs the state's
-   attitude controller (free-fall damping for state 6, velocity alignment for
-   0x14/0x18, the near-ground flight controller for the rest), derives the
-   anim play rate from the motion speed for the moving states (1, 0x13, 0x15;
-   frame-driven for 5), then bumps g_nSpyroStateTimer. */
+   attitude controller (free-fall damping for SPYRO_ST_FALL, velocity alignment
+   for CHARGE_AIR / SUPERCHARGE_AIR, the near-ground flight controller for the
+   rest), derives the anim play rate from the motion speed for the moving states
+   (WALK, SLIDE, JOG; frame-driven for JUMP), then bumps g_nSpyroStateTimer. */
 void AdvanceSpyroSubstepState(void) {
   int pad[2];
   int *p;

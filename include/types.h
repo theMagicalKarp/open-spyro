@@ -28,6 +28,10 @@ typedef unsigned long ulong;
 typedef void *pointer;
 typedef unsigned char bool;
 
+/* End of the 2 MB of main RAM (KSEG0 0x80000000..0x801FFFFF): the stack sits
+ * just under it, the work area (g_pWorkAreaTop) below that. */
+#define RAM_END 0x80200000
+
 /* --- typedefs (from Ghidra) --- */
 typedef int __jmp_buf[6];
 typedef long __off_t;

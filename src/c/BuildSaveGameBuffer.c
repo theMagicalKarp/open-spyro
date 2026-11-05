@@ -6,8 +6,8 @@
 /* 0x80059864 (484 bytes) — memcard save-block serializer: packs the current
    game state into a SAVE_IMAGE_BYTES buffer (options bytes, per-world tables,
    per-level visited/gem/dragon/egg tallies, kill bitmaps) and stamps the
-   checksum (SaveGameBuffer, save_game.h). Sole caller SaveMenu_Update
-   (save-write). */
+   checksum (SaveGameBuffer, save_game.h). Callers: SaveMenu_Update
+   (save-write) and Titlescreen_Update (fresh saves on a new card). */
 void BuildSaveGameBuffer(unsigned char *buf) {
   unsigned char *start;
   int w;

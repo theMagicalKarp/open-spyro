@@ -13,14 +13,15 @@
 /* The sprite record being written (Actor layout). */
 
 /* The backdrop quad being built at p, read back through volatile accesses,
- * and the TILE bar that follows the last quad. */
+ * and the black line under it (y = 0xE7, LINE_F2: the code reuses the 0x40 in
+ * b). */
 #define QUAD ((volatile PolyFT4 *)p)
-#define TILE ((Tile *)((PolyFT4 *)p + 1))
+#define LINE ((LineF2 *)((PolyFT4 *)p + 1))
 
-/* What follows the last backdrop quad: the TILE bar, then the menu box. */
+/* What follows the last backdrop quad: the line, then the menu box. */
 typedef struct BackdropTail {
   PolyFT4 quad;   /* 0x00 */
-  Tile bar;       /* 0x28 */
+  LineF2 line;    /* 0x28 */
   ModePolyF4 box; /* 0x38 */
 } BackdropTail;
 
@@ -193,8 +194,8 @@ void PauseMenu_Draw(void) {
       register unsigned short ch asm("$6");
       register unsigned char bq asm("$5");
       register unsigned char cq asm("$6");
-      QUAD->tag = 0x9000000;
-      QUAD->code = 0x2C;
+      QUAD->tag = PRIM_TAG(9);
+      QUAD->code = GPU_CODE_POLY_FT4;
       QUAD->r0 = 0x4C;
       QUAD->g0 = 0x80;
       QUAD->x0 = xx;
@@ -239,15 +240,15 @@ void PauseMenu_Draw(void) {
     if (i < 4) {
       goto quad;
     }
-    TILE->tag = 0x3000000;
-    TILE->code = b;
-    TILE->x0 = 0;
-    TILE->y0 = 0xE7;
-    TILE->w = 0x200;
-    TILE->h = 0xE7;
-    TILE->r0 = 0;
-    TILE->g0 = 0;
-    TILE->b0 = 0;
+    LINE->tag = PRIM_TAG(3);
+    LINE->code = b;
+    LINE->x0 = 0;
+    LINE->y0 = 0xE7;
+    LINE->x1 = 0x200;
+    LINE->y1 = 0xE7;
+    LINE->r0 = 0;
+    LINE->g0 = 0;
+    LINE->b0 = 0;
     AddPrimToOT((int)next);
     (*(char **)&g_pPrimBufferWriteCursor) = p + 0x38;
     prim = (BackdropTail *)p;
@@ -270,9 +271,9 @@ void PauseMenu_Draw(void) {
       AddPrimToOT((int)box);
       {
         int k;
-        k = 0x5000000;
+        k = PRIM_TAG(5);
         prim->box.poly.tag = k;
-        k = 0x2a;
+        k = (GPU_CODE_POLY_F4 | GPU_SEMI_TRANS);
         prim->box.poly.code = k;
         k = 0x43;
         prim->box.poly.r0 = h;
@@ -325,14 +326,14 @@ void PauseMenu_Draw(void) {
       if (g_nPauseMenuSubstate == PAUSE_PAGE_QUIT_CONFIRM) {
         styA[0] = 0x10;
         styA[1] = 1;
-        styA[2] = 0x1400;
+        styA[2] = TEXT_SMALL_DEPTH;
         pos[0] = 0xb7;
         pos[1] = 0x77;
-        pos[2] = 0x1100;
+        pos[2] = TEXT_DEPTH;
         BuildTextSprites(g_szQuitGamePrompt, pos, styA, 0x12, TINT_HUD);
         pos[0] = 0xc0;
         pos[1] = 0x94;
-        pos[2] = 0x1100;
+        pos[2] = TEXT_DEPTH;
         BuildTextSprites(g_szUiYes, pos, styA, 0x12, TINT_HUD);
         if (g_nPauseMenuCursor == PAUSE_QUIT_YES) {
           rec = g_pSpriteRecordWriteCursor;
@@ -340,7 +341,7 @@ void PauseMenu_Draw(void) {
         }
         pos[0] = 0x128;
         pos[1] = 0x94;
-        pos[2] = 0x1100;
+        pos[2] = TEXT_DEPTH;
         BuildTextSprites(g_szUiNo, pos, styA, 0x12, TINT_HUD);
         if (g_nPauseMenuCursor == PAUSE_QUIT_NO) {
           rec = g_pSpriteRecordWriteCursor;
@@ -365,7 +366,7 @@ void PauseMenu_Draw(void) {
         styB[1] = 1;
         pos[0] = 0x6b;
         pos[1] = 0x6c;
-        pos[2] = 0x1400;
+        pos[2] = TEXT_SMALL_DEPTH;
         BuildTextSprites(g_szSoundEffects, pos, styB, 0x10, TINT_HUD);
         if (g_nPauseMenuCursor == OPTIONS_ROW_SFX_VOLUME) {
           rec = g_pSpriteRecordWriteCursor;
@@ -373,7 +374,7 @@ void PauseMenu_Draw(void) {
         }
         pos[0] = 0x79;
         pos[1] = 0x7c;
-        pos[2] = 0x1400;
+        pos[2] = TEXT_SMALL_DEPTH;
         BuildTextSprites(g_szMusicVolume, pos, styB, 0x10, TINT_HUD);
         if (g_nPauseMenuCursor == OPTIONS_ROW_MUSIC_VOLUME) {
           rec = g_pSpriteRecordWriteCursor;
@@ -381,7 +382,7 @@ void PauseMenu_Draw(void) {
         }
         pos[0] = 0x6b;
         pos[1] = 0x8c;
-        pos[2] = 0x1400;
+        pos[2] = TEXT_SMALL_DEPTH;
         BuildTextSprites(g_szSpeakerSetup, pos, styB, 0x10, TINT_HUD);
         if (g_nPauseMenuCursor == OPTIONS_ROW_SPEAKERS) {
           rec = g_pSpriteRecordWriteCursor;
@@ -390,7 +391,7 @@ void PauseMenu_Draw(void) {
         if (g_nPadIsDualshockFlag != 0) {
           pos[0] = 0xa3;
           pos[1] = 0x9c;
-          pos[2] = 0x1400;
+          pos[2] = TEXT_SMALL_DEPTH;
           BuildTextSprites(g_szVibration, pos, styB, 0x10, TINT_HUD);
           if (g_nPauseMenuCursor == OPTIONS_ROW_VIBRATION) {
             rec = g_pSpriteRecordWriteCursor;
@@ -398,7 +399,7 @@ void PauseMenu_Draw(void) {
           }
         }
         pos[0] = 0xd0;
-        pos[2] = 0x1100;
+        pos[2] = TEXT_DEPTH;
         v = rows;
         v <<= 4;
         pos[1] = v + 0x9c;
@@ -409,7 +410,7 @@ void PauseMenu_Draw(void) {
         }
         pos[0] = 0xee;
         pos[1] = v + 0xac;
-        pos[2] = 0x1100;
+        pos[2] = TEXT_DEPTH;
         BuildTextSprites(g_szUiDone, pos, styB, 0x10, TINT_HUD);
         if (g_nPauseMenuCursor == OPTIONS_ROW_DONE) {
           rec = g_pSpriteRecordWriteCursor;
@@ -431,7 +432,7 @@ void PauseMenu_Draw(void) {
         if (g_nSfxVolume == 0) {
           pos[0] = 0x142;
           pos[1] = 0x6c;
-          pos[2] = 0x1400;
+          pos[2] = TEXT_SMALL_DEPTH;
           BuildTextSprites(g_szUiOff, pos, styB, 0x10, TINT_HUD);
           phase3 = 0;
           if (g_nPauseMenuCursor == OPTIONS_ROW_SFX_VOLUME) {
@@ -453,7 +454,7 @@ void PauseMenu_Draw(void) {
             x = 0x140;
             do {
               g_pSpriteRecordWriteCursor--;
-              FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
+              FillWord(g_pSpriteRecordWriteCursor, 0, ACTOR_SIZE);
               rp = g_pSpriteRecordWriteCursor;
               cur = g_nPauseMenuCursor;
               rp->type = ACTOR_TYPE_LETTER_GLYPH('I');
@@ -478,7 +479,7 @@ void PauseMenu_Draw(void) {
         if (g_nMusicVolume == 0) {
           pos[0] = 0x142;
           pos[1] = 0x7c;
-          pos[2] = 0x1400;
+          pos[2] = TEXT_SMALL_DEPTH;
           BuildTextSprites(g_szUiOff, pos, styB, 0x10, TINT_HUD);
           phase5 = 0;
           if (g_nPauseMenuCursor == OPTIONS_ROW_MUSIC_VOLUME) {
@@ -500,7 +501,7 @@ void PauseMenu_Draw(void) {
             x = 0x140;
             do {
               g_pSpriteRecordWriteCursor--;
-              FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
+              FillWord(g_pSpriteRecordWriteCursor, 0, ACTOR_SIZE);
               rp = g_pSpriteRecordWriteCursor;
               cur = g_nPauseMenuCursor;
               rp->type = ACTOR_TYPE_LETTER_GLYPH('I');
@@ -524,7 +525,7 @@ void PauseMenu_Draw(void) {
         }
         pos[0] = 0x142;
         pos[1] = 0x8c;
-        pos[2] = 0x1400;
+        pos[2] = TEXT_SMALL_DEPTH;
         if (g_nSoundMonoMixFlag != 0) {
           BuildTextSprites(g_szUiMono, pos, styB, 0x10, TINT_HUD);
           n3 = 4;
@@ -550,7 +551,7 @@ void PauseMenu_Draw(void) {
         if (g_nPadIsDualshockFlag != 0) {
           pos[0] = 0x142;
           pos[1] = 0x9c;
-          pos[2] = 0x1400;
+          pos[2] = TEXT_SMALL_DEPTH;
           if (g_nOptionVibrationEnabled != 0) {
             BuildTextSprites(g_szUiOn, pos, styB, 0x10, TINT_HUD);
             n4 = 2;
@@ -576,7 +577,7 @@ void PauseMenu_Draw(void) {
         }
         pos[0] = 0x142;
         pos[1] = rows * 0x10 + 0x9c;
-        pos[2] = 0x1400;
+        pos[2] = TEXT_SMALL_DEPTH;
         if (g_dwActiveCameraOptions == CAM_OPT_ACTIVE) {
           BuildTextSprites(g_szUiActive, pos, styB, 0x10, TINT_HUD);
           n5 = 6;
@@ -601,11 +602,11 @@ void PauseMenu_Draw(void) {
         }
       } else {
         styC[0] = 0x10;
-        styC[2] = 0x1400;
+        styC[2] = TEXT_SMALL_DEPTH;
         pos[0] = 0xc7;
         styC[1] = 1;
         pos[1] = 0x6e;
-        pos[2] = 0x1100;
+        pos[2] = TEXT_DEPTH;
         BuildTextSprites(g_szContinue, pos, styC, 0x12, TINT_HUD);
         if (g_nPauseMenuCursor == PAUSE_ROW_CONTINUE) {
           rec = g_pSpriteRecordWriteCursor;
@@ -613,7 +614,7 @@ void PauseMenu_Draw(void) {
         }
         pos[0] = 0xcf;
         pos[1] = 0x80;
-        pos[2] = 0x1100;
+        pos[2] = TEXT_DEPTH;
         BuildTextSprites(g_szUiOptions, pos, styC, 0x12, TINT_HUD);
         if (g_nPauseMenuCursor == PAUSE_ROW_OPTIONS) {
           rec = g_pSpriteRecordWriteCursor;
@@ -621,7 +622,7 @@ void PauseMenu_Draw(void) {
         }
         pos[0] = 0xbf;
         pos[1] = 0x92;
-        pos[2] = 0x1100;
+        pos[2] = TEXT_DEPTH;
         BuildTextSprites(g_szInventory, pos, styC, 0x12, TINT_HUD);
         if (g_nPauseMenuCursor == PAUSE_ROW_INVENTORY) {
           rec = g_pSpriteRecordWriteCursor;
@@ -630,7 +631,7 @@ void PauseMenu_Draw(void) {
         if (g_nFlightLevelActive != 0) {
           pos[0] = 0xe7;
           pos[1] = 0xa4;
-          pos[2] = 0x1100;
+          pos[2] = TEXT_DEPTH;
           BuildTextSprites(g_szUiQuit, pos, styC, 0x12, TINT_HUD);
           if (g_nPauseMenuCursor == PAUSE_ROW_EXIT) {
             rec = g_pSpriteRecordWriteCursor;
@@ -640,7 +641,7 @@ void PauseMenu_Draw(void) {
         } else if (g_nActiveLevelId != g_nActiveLevelId / 10 * 10) {
           pos[0] = 0xb7;
           pos[1] = 0xa4;
-          pos[2] = 0x1100;
+          pos[2] = TEXT_DEPTH;
           BuildTextSprites(g_szExitLevel, pos, styC, 0x12, TINT_HUD);
           if (g_nPauseMenuCursor == PAUSE_ROW_EXIT) {
             rec = g_pSpriteRecordWriteCursor;
@@ -650,7 +651,7 @@ void PauseMenu_Draw(void) {
         } else {
           pos[0] = 0xbf;
           pos[1] = 0xa4;
-          pos[2] = 0x1100;
+          pos[2] = TEXT_DEPTH;
           BuildTextSprites(g_szQuitGame, pos, styC, 0x12, TINT_HUD);
           if (g_nPauseMenuCursor == PAUSE_ROW_EXIT) {
             rec = g_pSpriteRecordWriteCursor;
@@ -715,7 +716,7 @@ void PauseMenu_Draw(void) {
       sprintf(buf, fmt, g_nTotalDragonsRescued);
       BuildTextSpriteChain(buf, pos, 0x1b, TINT_GOLD);
       g_pSpriteRecordWriteCursor--;
-      FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
+      FillWord(g_pSpriteRecordWriteCursor, 0, ACTOR_SIZE);
       g_pSpriteRecordWriteCursor->type = ACTOR_TYPE_HUD_GEM_ICON;
       g_pSpriteRecordWriteCursor->posX = 0x2e;
       g_pSpriteRecordWriteCursor->posY = 0x2e;
@@ -729,7 +730,7 @@ void PauseMenu_Draw(void) {
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = 0xff;
       g_pSpriteRecordWriteCursor--;
-      FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
+      FillWord(g_pSpriteRecordWriteCursor, 0, ACTOR_SIZE);
       g_pSpriteRecordWriteCursor->type = ACTOR_TYPE_HUD_DRAGON_ICON;
       g_pSpriteRecordWriteCursor->posX = 0x12c;
       if (g_nTotalDragonsRescued >= 0xa) {
@@ -783,8 +784,8 @@ void PauseMenu_Draw(void) {
       prim3 = g_pPrimBufferWriteCursor;
       SetDrawMode(prim3, 1, 0, 0x40, 0);
       AddPrimToOT((int)prim3);
-      prim3->poly.tag = 0x5000000;
-      prim3->poly.code = 0x2a;
+      prim3->poly.tag = PRIM_TAG(5);
+      prim3->poly.code = (GPU_CODE_POLY_F4 | GPU_SEMI_TRANS);
       prim3->poly.r0 = 0x60;
       prim3->poly.g0 = 0x60;
       prim3->poly.b0 = 0x60;
@@ -803,7 +804,7 @@ void PauseMenu_Draw(void) {
           g_abLevelVisitedFlagVirtualBase[g_nSubMenuCursor * 6] != 0) {
         pos[0] = 0x28;
         pos[1] = 0x48;
-        pos[2] = 0x1100;
+        pos[2] = TEXT_DEPTH;
         EnqueueBlinkingMarkerSprite(pos, g_nMenuDrawFrames * 2, 1);
       }
       if (g_nSubMenuCursor < 5) {
@@ -812,7 +813,7 @@ void PauseMenu_Draw(void) {
                 LEVEL_PEACE_KEEPERS)])[g_nSubMenuCursor * 6] != 0) {
           pos[0] = 0x1d7;
           pos[1] = 0x48;
-          pos[2] = 0x1100;
+          pos[2] = TEXT_DEPTH;
           EnqueueBlinkingMarkerSprite(pa, g_nMenuDrawFrames * 2, 0);
         }
       }
@@ -838,7 +839,7 @@ void PauseMenu_Draw(void) {
         rec++;
       }
       g_pSpriteRecordWriteCursor--;
-      FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
+      FillWord(g_pSpriteRecordWriteCursor, 0, ACTOR_SIZE);
       g_pSpriteRecordWriteCursor->type = ACTOR_TYPE_HUD_GEM_ICON;
       {
         int bF = bias + 0x15a;
@@ -858,7 +859,7 @@ void PauseMenu_Draw(void) {
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = 0xff;
       g_pSpriteRecordWriteCursor--;
-      FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
+      FillWord(g_pSpriteRecordWriteCursor, 0, ACTOR_SIZE);
       {
         int bob;
         ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posX) =
@@ -891,8 +892,8 @@ void PauseMenu_Draw(void) {
           SetDrawMode(prim3, 1, 0, 0x40, 0);
           AddPrimToOT((int)prim3);
           pf = (int)&prim3->poly;
-          prim3->poly.tag = 0x5000000;
-          prim3->poly.code = 0x2a;
+          prim3->poly.tag = PRIM_TAG(5);
+          prim3->poly.code = (GPU_CODE_POLY_F4 | GPU_SEMI_TRANS);
           prim3->poly.r0 = 0x28;
           prim3->poly.g0 = 0x28;
           prim3->poly.b0 = 0x28;
@@ -917,10 +918,10 @@ void PauseMenu_Draw(void) {
                                g_nSubMenuScrollOffset + 0x1ee, y - 0xb);
           pos[0] = g_nSubMenuScrollOffset + 0x24;
           pos[1] = y;
-          pos[2] = 0x1100;
+          pos[2] = TEXT_DEPTH;
           styD[0] = 0x10;
           styD[1] = 1;
-          styD[2] = 0x1400;
+          styD[2] = TEXT_SMALL_DEPTH;
           rec = g_pSpriteRecordWriteCursor;
           BuildTextSprites(g_apLevelNameStrings[g_nSubMenuCursor * 6 + i], pos,
                            styD, 0x12, TINT_GOLD);
@@ -948,7 +949,7 @@ void PauseMenu_Draw(void) {
           bD = bias + 0x15a;
           pos[0] = g_nSubMenuScrollOffset + bD;
           BuildTextSpriteChain(g_szUiSlash, pos, 0x12, TINT_GOLD);
-          pos[2] = 0x1100;
+          pos[2] = TEXT_DEPTH;
           bE = bias + 0x16b;
           pos[0] = g_nSubMenuScrollOffset + bE;
           sprintf(buf, g_szFmtPercentD,
@@ -962,7 +963,7 @@ void PauseMenu_Draw(void) {
             pos[2] = 0x1800;
             pos[0] = g_nSubMenuScrollOffset + 0x1ce;
             BuildTextSpriteChain(g_szUiSlash, pos, 0x12, TINT_GOLD);
-            pos[2] = 0x1100;
+            pos[2] = TEXT_DEPTH;
             pos[0] = g_nSubMenuScrollOffset + 0x1df;
             sprintf(buf, g_szFmtPercentD,
                     g_abLevelTotalDragonsBlock[g_nSubMenuCursor * 6 + i]);

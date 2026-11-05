@@ -25,8 +25,8 @@ void EmitRadialShadedLine(int x0, int y0, int x1, int y1) {
   int dy;
 
   prim = g_pPrimBufferWriteCursor;
-  prim->tag = 0x04000000;
-  prim->code = 0x50;
+  prim->tag = PRIM_TAG(4);
+  prim->code = GPU_CODE_LINE_G2;
   prim->x0 = x0;
   prim->y0 = y0;
   prim->x1 = x1;

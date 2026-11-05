@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "spyro_block.h"
+#include "spyro_state.h"
 
 /* Probe for a grabbable ledge ahead of Spyro (0x8003e218, 0x100). Cast a ray
    from just above Spyro (body anchor -0x34, +0x164 up) to a point 0x1C4
@@ -16,7 +17,7 @@ void ProbeSpyroLedgeForward(void) {
   int *tp;
   int *cp;
   unsigned int len;
-  from[2] = -0x164;
+  from[2] = -SPYRO_RADIUS;
   to[0] = 0x1C4;
   from[1] = 0;
   from[0] = 0;

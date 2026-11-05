@@ -33,7 +33,7 @@ void Cutscene_Update(void) {
     g_pLoadStagingBuffer = g_pSharedLoadBuffer;
     g_pLevelDataBuffer = g_pSharedLoadBuffer;
     if (g_nCutsceneId == CUTSCENE_LOOT_ENDING) {
-      g_pWorkAreaTop = (void *)(0x80200000 - g_nCrt0StackSize);
+      g_pWorkAreaTop = (void *)(RAM_END - g_nCrt0StackSize);
       InitActorMeshScratchRegions(1);
     }
     while (g_nCdStreamState < CSTREAM_DONE) {

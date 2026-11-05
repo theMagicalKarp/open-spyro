@@ -6,10 +6,12 @@
    one base register for the pair (A22 / B-i rule 2). */
 extern volatile int g_nLightSweepAngle;
 
-/* 0x80058cc0: spins the primary light direction vector around the world Y
-   axis. Advances the byte angle accumulator g_nLightSweepAngle by `steps`
-   (wraps mod 256), then looks the rotated X/Y up in the cosine/sine LUTs
-   scaled by 1983/6345; Z is pinned at -0x400 (flat overhead light). */
+/* 0x80058cc0: spins the sprite-queue light direction
+   (g_anWorldLightDirVec[0..2]) around the vertical (Z) axis while a menu, card
+   or cutscene is up (pause, inventory, save, title, credits, respawn). Advances
+   the byte angle accumulator g_nLightSweepAngle by `steps` (wraps mod 256),
+   then looks the rotated X/Y up in the cosine/sine LUTs scaled by 1983/6345; Z
+   is pinned at -0x400 (flat overhead light). */
 void RotateLightVectorXZ(int steps) {
   int angle;
 

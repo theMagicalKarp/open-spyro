@@ -20,7 +20,7 @@ void TickSpyroFrameGlideHold(void) {
   int *vel;
   int *pos;
   unsigned char *euler;
-  int *e28;
+  int *bodyMtx;
   int *m;
   int r;
   int y;
@@ -56,16 +56,16 @@ void TickSpyroFrameGlideHold(void) {
     TickSpyroAnimLayer2();
   }
   euler = g_abSpyroPersistentEulerBlock;
-  e28 = (int *)(euler + EULER_TO_BODY_MTX);
+  bodyMtx = (int *)(euler + EULER_TO_BODY_MTX);
   euler[0] = g_nSpyroBodyPitch >> 4;
   r = g_nSpyroBodyRoll >> 4;
   y = g_nSpyroBodyYaw >> 4;
   euler[1] = r;
   euler[2] = y;
-  ApplyEulerRotation(euler, e28, 0);
+  ApplyEulerRotation(euler, bodyMtx, 0);
   m = (int *)(euler + EULER_TO_COMPOSED_MTX);
   ApplyEulerRotation(euler + 4, m, 0);
-  MulMatrix0(e28, m, m);
+  MulMatrix0(bodyMtx, m, m);
   g_dwSpyroRequestMask = 0;
   MovePadInputState(&g_dwPadStash, &g_dwPadPressed);
 }

@@ -6,7 +6,8 @@
 /* Spyro state-delay updater (0x8002e084): tick Spyro with no input and the
    camera, counting idle frames. At 0x20 frames the counter wraps and bumps
    the transition counter (the second wrap returns to the world hub); at
-   exactly 0x10 frames with no transition pending, kick Spyro to state 0xF. */
+   exactly 0x10 frames with no transition pending, kick Spyro to SPYRO_ST_GLIDE.
+ */
 
 void SpyroStateDelay_Update(void) {
   int frames;

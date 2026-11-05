@@ -86,7 +86,7 @@ void Level20_UpdateActors(void) {
   while (actor = *actorList++) {
     sixteen = 0x10;
     base = (char *)g_anSparxHealthBlock;
-    spy = (SpyroObj *)(base - 0x164);
+    spy = (SpyroObj *)SPY_FROM_SPARX(base);
 
     if (actor->mode >= ACTOR_MODE_DORMANT) {
       continue;
@@ -191,7 +191,7 @@ void Level20_UpdateActors(void) {
 
       EBB_BREAK();
       st = actor->state;
-      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, (int *)(base - 0x164)) < 0x960) {
+      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, (int *)SPY_FROM_SPARX(base)) < 0x960) {
         int height = actor->posZ - actor->floorOffset;
         int drop = height - SPY.posZ;
 
@@ -861,7 +861,7 @@ void Level20_UpdateActors(void) {
           }
 
           if (toSpyro < 0x59A) {
-            int top = actor->posZ + 0x164;
+            int top = actor->posZ + SPYRO_RADIUS;
             register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
             int dz = spyZ - top;
 
@@ -984,7 +984,7 @@ void Level20_UpdateActors(void) {
 
         enemy_settle:
           if (toSpyro < 0x59A) {
-            int top = actor->posZ + 0x164;
+            int top = actor->posZ + SPYRO_RADIUS;
             register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
             int dz = spyZ - top;
 

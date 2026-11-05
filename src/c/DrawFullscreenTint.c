@@ -12,8 +12,8 @@ void DrawFullscreenTint(int abr, int r, int g, int b) {
   prim = g_pPrimBufferWriteCursor;
   SetDrawMode(g_pPrimBufferWriteCursor, 1, 0, abr << 5, 0);
   AddPrimToOT((int)prim);
-  prim->poly.tag = 0x5000000;
-  prim->poly.code = 0x2a;
+  prim->poly.tag = PRIM_TAG(5);
+  prim->poly.code = (GPU_CODE_POLY_F4 | GPU_SEMI_TRANS);
   prim->poly.y0 = 8;
   prim->poly.y1 = 8;
   prim->poly.x0 = 0;

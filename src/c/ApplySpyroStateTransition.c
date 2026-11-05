@@ -7,7 +7,7 @@
    most styles swap in the new state's default anim (g_abSpyroStateAnimIndexMap)
    at a given frame / sub-frame phase and set the anim mode that
    TickSpyroAnimStateMachine then runs; style 4 holds the old anim's
-   loop-end frame (with a landing rumble out of the hard-fall state 6),
+   loop-end frame (with a landing rumble out of the hard-fall SPYRO_ST_FALL),
    style 2 waits for the current anim to reach its loop end. */
 void ApplySpyroStateTransition(void) {
   switch (

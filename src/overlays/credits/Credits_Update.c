@@ -399,10 +399,10 @@ void Credits_Update(void) {
             got:;
             }
               c = *s;
-              if ((unsigned int)(c - 0x41) < 0x1A) {
+              if ((unsigned int)(c - 'A') < 26) {
                 upper = 1;
               }
-              if ((unsigned int)(c - 0x61) < 0x1A) {
+              if ((unsigned int)(c - 'a') < 26) {
                 upper = 0;
               }
               g->state = CRED_GLYPH_FLY_IN;
@@ -418,24 +418,24 @@ void Credits_Update(void) {
                 g->z = st.big;
               }
               c = *s;
-              if ((unsigned int)(c - 0x30) < 0xA) {
-                g->glyph = c + 0xD4;
-              } else if ((unsigned int)(c - 0x41) < 0x1A) {
-                g->glyph = c + 0x169;
-              } else if ((unsigned int)(c - 0x61) < 0x1A) {
-                g->glyph = c + 0x149;
+              if ((unsigned int)(c - '0') < 10) {
+                g->glyph = ACTOR_TYPE_DIGIT_GLYPH(c);
+              } else if ((unsigned int)(c - 'A') < 26) {
+                g->glyph = ACTOR_TYPE_LETTER_GLYPH(c);
+              } else if ((unsigned int)(c - 'a') < 26) {
+                g->glyph = ACTOR_TYPE_LETTER_GLYPH(c - ('a' - 'A'));
               } else {
                 int k = c & 0xFF;
-                if (k == 0x21) {
-                  g->glyph = 0x4B;
-                } else if (k == 0x2C) {
-                  g->glyph = 0x4C;
-                } else if (k == 0x2E) {
-                  g->glyph = 0x147;
-                } else if (k == 0x2D) {
-                  g->glyph = 0x115;
-                } else if (k == 0x3A) {
-                  g->glyph = 0x147;
+                if (k == '!') {
+                  g->glyph = ACTOR_TYPE_GLYPH_BANG;
+                } else if (k == ',') {
+                  g->glyph = ACTOR_TYPE_GLYPH_COMMA;
+                } else if (k == '.') {
+                  g->glyph = ACTOR_TYPE_GLYPH_PERIOD;
+                } else if (k == '-') {
+                  g->glyph = ACTOR_TYPE_GLYPH_SLASH;
+                } else if (k == ':') {
+                  g->glyph = ACTOR_TYPE_GLYPH_PERIOD;
                   g->z = g->z + 0x578;
                   if (colon == 0) {
                     colon = 1;
@@ -444,7 +444,7 @@ void Credits_Update(void) {
                   colon = 0;
                   g->y = g->y - 6;
                 } else {
-                  g->glyph = 0x4C;
+                  g->glyph = ACTOR_TYPE_GLYPH_COMMA;
                   g->y =
                       g->y - (st.adv * 2) / 3;
                 }
@@ -455,7 +455,7 @@ void Credits_Update(void) {
                 st.x = st.x + st.adv;
               }
               {
-                int t = *s - 0x30;
+                int t = *s - '0';
                 upper = (unsigned int)t < 0xA;
               }
             } else {

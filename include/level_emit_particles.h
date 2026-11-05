@@ -9,6 +9,7 @@
 #define OPEN_SPYRO_LEVEL_EMIT_PARTICLES_H
 
 #include "sparx.h"
+#include "spyro_state.h"
 
 extern void *AllocEmitListRecord(int cls);
 

@@ -1,6 +1,6 @@
 /* Level3_BalloonistCutscene_Update (0x8007B0AC, level_3_artisans_town_square overlay).
  *
- * Balloonist cutscene tick — the per-frame update half of gamestate 0xC
+ * Balloonist cutscene tick — the per-frame update half of GS_ACTOR_CUTSCENE
  * (Level0_BalloonistCutscene_Draw is the draw half). Dispatches on the substate word
  * g_nActorCutsceneSubstate through an 8-entry jump table (jtbl_8007AA3C):
  *   0  approach: swing the camera round to the balloonist over 0x60 frames,
@@ -11,7 +11,7 @@
  *   5  cruise:   interpolate the camera along the flight path (0x100 frames),
  *   6  descend:  lower the balloon for 0x80 frames,
  *   7  land:     ease Spyro out of the balloon, then hand the frame back to
- *                gamestate 0 (InitLightVectorConstants).
+ *                GS_GAMEPLAY (InitLightVectorConstants).
  * Substate 4 is the "wait for the level stream" state and falls straight
  * through to the epilogue.  Identical body in the six hub overlays.
  *
@@ -142,7 +142,7 @@ void Level3_BalloonistCutscene_Update(void)
           CopyVector(g_anActorCutsceneSpyroFrom, SPYRO_POS_VIA_ANIM_PREV);
           SPYRO_TO_X_VIA_FROM = 0x4A0;
           g_nActorCutsceneSpyroToY = 0;
-          g_nActorCutsceneSpyroToZ = 0x164;
+          g_nActorCutsceneSpyroToZ = SPYRO_RADIUS;
           RotateVectorByMatrix(g_pActorCutsceneActor->mtx, &g_anActorCutsceneSpyroFrom[3], &g_anActorCutsceneSpyroFrom[3]);
           AddVector(&g_anActorCutsceneSpyroFrom[3], &g_anActorCutsceneSpyroFrom[3], &g_pActorCutsceneActor->posX);
           g_nActorCutsceneSpyroYawStart = g_bSpyroPersistentEulerZ * 0x10;
@@ -664,15 +664,15 @@ void Level3_BalloonistCutscene_Update(void)
         g_nActorCutsceneCamHeightGoal = m + 0x200;
         }
         TickLevelTransitionStream(1);
-        CopyWords(g_aActorCutsceneActorSnapshot, g_pActorCutsceneRecord, 0x58);
+        CopyWords(g_aActorCutsceneActorSnapshot, g_pActorCutsceneRecord, ACTOR_SIZE);
         g_pActorCutsceneRecord = g_aActorCutsceneActorSnapshot;
-        if (((unsigned int) g_pRenderScratchRegionBase) <= 0x801FFFFF)
+        if (((unsigned int) g_pRenderScratchRegionBase) <= RAM_END - 1)
         {
           bank = (int *) (g_pSkyChunkArray - 0x400C);
         }
         else
         {
-          bank = (int *) 0x801FE000;
+          bank = (int *) (RAM_END - 0x2000);
         }
         /* Move the balloon's model (16 KB) into the bank and rebase its first
          * animation pointer and that header's face, colour and 0x24 pointers. */
@@ -787,7 +787,7 @@ void Level3_BalloonistCutscene_Update(void)
         k = g_anActorCutsceneLandingY[m];
         g_nActorCutsceneSpyroToZ = g_nSpyroWorldPosZ;
         g_nActorCutsceneSpyroToY = k;
-        g_nActorCutsceneSpyroToZ = FindGroundHeightBelow(&g_nActorCutsceneTimer[8], 0x10000) + 0x164;
+        g_nActorCutsceneSpyroToZ = FindGroundHeightBelow(&g_nActorCutsceneTimer[8], 0x10000) + SPYRO_RADIUS;
         k = g_bSpyroAnimFrame;
         g_bSpyroAnimCurrent = SPYRO_ANIMID_JUMP;
         g_bSpyroAnimFrame = 0;

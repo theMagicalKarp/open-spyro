@@ -5,7 +5,7 @@
 #include "pad_buttons.h"
 #include "spyro_state.h"
 
-/* 0x8002edf0 (1492 bytes) — update for gamestate 5 (GS_GAME_OVER).
+/* 0x8002edf0 (1492 bytes) — update for GS_RESPAWN and GS_GAME_OVER.
 
    Three arms on g_nRespawnOrGameOverMode. Mode 0 is the load frame: after 16
    frames it either hands straight back to gameplay (when the death happened

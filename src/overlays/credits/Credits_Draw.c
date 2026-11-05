@@ -61,7 +61,7 @@ void Credits_Draw(void) {
       Actor *prim = g_pSpriteRecordWriteCursor - 1;
       g_pSpriteRecordWriteCursor = prim;
       glyph = (CredGlyph *)(g_pCreditsGlyphPool + i * 0x1C);
-      FillWord(prim, 0, 0x58);
+      FillWord(prim, 0, ACTOR_SIZE);
       g_pSpriteRecordWriteCursor->posX = glyph->x;
       g_pSpriteRecordWriteCursor->posY = glyph->y;
       g_pSpriteRecordWriteCursor->posZ = glyph->z;

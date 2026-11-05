@@ -357,13 +357,13 @@ int AdvanceSpyroPhysics(void) {
           case SPYRO_ST_CHARGE_AIR:
             if (st[1] & SPYRO_SUB_SUPERCHARGE) {
               hit = DispatchActorContactAtSphere(
-                  pos, 0x164, &g_dwSpyroTriggerEventFlags, ACTOR_HIT_SUPER, 0,
-                  CONTACT_STOP_AT_SOLID);
+                  pos, SPYRO_RADIUS, &g_dwSpyroTriggerEventFlags,
+                  ACTOR_HIT_SUPER, 0, CONTACT_STOP_AT_SOLID);
               if (hit == 0) {
                 goto collide;
               }
               if (st[SPY_TRIGGER_FLAGS - SPY_STATE] & SPYRO_EV_BLOCKS_SUPER) {
-                hit = DispatchActorContactAtSphere(pos, 0x164,
+                hit = DispatchActorContactAtSphere(pos, SPYRO_RADIUS,
                                                    &g_dwSpyroTriggerEventFlags,
                                                    ACTOR_HIT_SUPER, 0, one);
               }
@@ -372,7 +372,7 @@ int AdvanceSpyroPhysics(void) {
             /* FALLTHROUGH */
           case SPYRO_ST_CHARGE:
             hit = DispatchActorContactAtSphere(
-                st - SPY_STATE, 0x164,
+                st - SPY_STATE, SPYRO_RADIUS,
                 (unsigned int *)(st - (SPY_STATE - SPY_TRIGGER_FLAGS)),
                 ACTOR_HIT_CHARGE, 0, one);
             if (hit == 0) {
@@ -388,7 +388,7 @@ int AdvanceSpyroPhysics(void) {
           case SPYRO_ST_SUPERCHARGE_AIR:
           case SPYRO_ST_SUPERCHARGE:
             mask |= ACTOR_HIT_SUPER;
-            hit = DispatchActorContactAtSphere(pos, 0x164,
+            hit = DispatchActorContactAtSphere(pos, SPYRO_RADIUS,
                                                &g_dwSpyroTriggerEventFlags,
                                                mask, 0, CONTACT_STOP_AT_SOLID);
             if (hit == 0) {
@@ -400,7 +400,7 @@ int AdvanceSpyroPhysics(void) {
             /* FALLTHROUGH */
           default:
             hit = DispatchActorContactAtSphere(
-                pos, 0x164, &g_dwSpyroTriggerEventFlags, mask, 0, one);
+                pos, SPYRO_RADIUS, &g_dwSpyroTriggerEventFlags, mask, 0, one);
             break;
           }
         contact:
@@ -410,7 +410,8 @@ int AdvanceSpyroPhysics(void) {
             LIMIT_STEP(pos, from);
           }
         collide:
-          if (!CollideSphereWithWorldAndActors(pos, 0x164, 0x164)) {
+          if (!CollideSphereWithWorldAndActors(pos, SPYRO_RADIUS,
+                                               SPYRO_RADIUS)) {
             if (hit == 0) {
               break;
             }
@@ -428,7 +429,8 @@ int AdvanceSpyroPhysics(void) {
           p = b + 1;
           base = start;
           do {
-            if (!CollideSphereWithWorldAndActors(pos, 0x164, 0x164)) {
+            if (!CollideSphereWithWorldAndActors(pos, SPYRO_RADIUS,
+                                                 SPYRO_RADIUS)) {
               break;
             }
             SLIDE(base, WALL_RETRY);

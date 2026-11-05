@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 /* shared-base view of g_anSpyroBodyMtx (0x80078a8c): the matrix arg, the
@@ -22,7 +23,7 @@ void StepSpyroOntoLocalFloor(void) {
   int *pos;
   down[0] = 0;
   down[1] = 0;
-  down[2] = -0x164;
+  down[2] = -SPYRO_RADIUS;
   CopyVector(aft, down);
   aft[2] -= 0x80;
   CopyVector(fore, down);

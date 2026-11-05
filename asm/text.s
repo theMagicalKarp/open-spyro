@@ -66269,8 +66269,8 @@ glabel CollideSphereWithWorldAndActors
     /* 3D2DC 8004CADC 080083AC */  sw         $v1, 0x8($a0)
     /* 3D2E0 8004CAE0 01000220 */  addi       $v0, $zero, 0x1 /* handwritten instruction */
   .L8004CAE4:
-    /* 3D2E4 8004CAE4 0780043C */  lui        $a0, %hi(D_80075774)
-    /* 3D2E8 8004CAE8 74578424 */  addiu      $a0, $a0, %lo(D_80075774)
+    /* 3D2E4 8004CAE4 0780043C */  lui        $a0, %hi(g_nSphereContactCount)
+    /* 3D2E8 8004CAE8 74578424 */  addiu      $a0, $a0, %lo(g_nSphereContactCount)
     /* 3D2EC 8004CAEC 5800A58E */  lw         $a1, (0x1F800058 & 0xFFFF)($s5)
     /* 3D2F0 8004CAF0 0780063C */  lui        $a2, %hi(g_apMainDrawEntityList)
     /* 3D2F4 8004CAF4 F4FCC624 */  addiu      $a2, $a2, %lo(g_apMainDrawEntityList)
@@ -66995,8 +66995,8 @@ glabel CollideSphereWithWorldAndActors_Tail
     /* 3DD80 8004D580 000081AC */  sw         $at, 0x0($a0)
     /* 3DD84 8004D584 040082AC */  sw         $v0, 0x4($a0)
     /* 3DD88 8004D588 080083AC */  sw         $v1, 0x8($a0)
-    /* 3DD8C 8004D58C 0780043C */  lui        $a0, %hi(D_80075774)
-    /* 3DD90 8004D590 74578424 */  addiu      $a0, $a0, %lo(D_80075774)
+    /* 3DD8C 8004D58C 0780043C */  lui        $a0, %hi(g_nSphereContactCount)
+    /* 3DD90 8004D590 74578424 */  addiu      $a0, $a0, %lo(g_nSphereContactCount)
     /* 3DD94 8004D594 5800A58E */  lw         $a1, (0x1F800058 & 0xFFFF)($s5)
     /* 3DD98 8004D598 0780063C */  lui        $a2, %hi(g_apMainDrawEntityList)
     /* 3DD9C 8004D59C F4FCC624 */  addiu      $a2, $a2, %lo(g_apMainDrawEntityList)
@@ -72228,8 +72228,8 @@ endlabel DrawPortalsAndSky
 nonmatching BuildActiveActorList, 0x1D4
 
 glabel BuildActiveActorList
-    /* 427EC 80051FEC 0780013C */  lui        $at, %hi(D_80077868)
-    /* 427F0 80051FF0 68782124 */  addiu      $at, $at, %lo(D_80077868)
+    /* 427EC 80051FEC 0780013C */  lui        $at, %hi(g_abActorGroupActive)
+    /* 427F0 80051FF0 68782124 */  addiu      $at, $at, %lo(g_abActorGroupActive)
     /* 427F4 80051FF4 20002220 */  addi       $v0, $at, 0x20 /* handwritten instruction */
   .L80051FF8:
     /* 427F8 80051FF8 000020AC */  sw         $zero, 0x0($at)
@@ -72239,8 +72239,8 @@ glabel BuildActiveActorList
     /* 42808 80052008 0780013C */  lui        $at, %hi(g_pActorListBase)
     /* 4280C 8005200C 28582124 */  addiu      $at, $at, %lo(g_pActorListBase)
     /* 42810 80052010 0000218C */  lw         $at, 0x0($at)
-    /* 42814 80052014 07800A3C */  lui        $t2, %hi(D_80077868)
-    /* 42818 80052018 68784A25 */  addiu      $t2, $t2, %lo(D_80077868)
+    /* 42814 80052014 07800A3C */  lui        $t2, %hi(g_abActorGroupActive)
+    /* 42818 80052018 68784A25 */  addiu      $t2, $t2, %lo(g_abActorGroupActive)
     /* 4281C 8005201C 08800D3C */  lui        $t5, %hi(g_anSpyroWorldPos)
     /* 42820 80052020 588AAD25 */  addiu      $t5, $t5, %lo(g_anSpyroWorldPos)
     /* 42824 80052024 0000AB8D */  lw         $t3, 0x0($t5)
@@ -79974,9 +79974,9 @@ glabel ResetWorldParticleTables
     /* 49380 80058B80 00000000 */   nop
     /* 49384 80058B84 A8000224 */  addiu      $v0, $zero, 0xA8
   .L80058B88:
-    /* 49388 80058B88 0780013C */  lui        $at, %hi(g_abWorldRotatingBillboardTable)
+    /* 49388 80058B88 0780013C */  lui        $at, %hi(g_abRotBillboardLife)
     /* 4938C 80058B8C 21082200 */  addu       $at, $at, $v0
-    /* 49390 80058B90 147120A0 */  sb         $zero, %lo(g_abWorldRotatingBillboardTable)($at)
+    /* 49390 80058B90 147120A0 */  sb         $zero, %lo(g_abRotBillboardLife)($at)
     /* 49394 80058B94 E8FF4224 */  addiu      $v0, $v0, -0x18
     /* 49398 80058B98 FBFF4104 */  bgez       $v0, .L80058B88
     /* 4939C 80058B9C 00000000 */   nop

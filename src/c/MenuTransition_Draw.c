@@ -4,7 +4,7 @@
 #include "gpu_prim.h"
 #include "main_shared.h"
 
-/* Draw gamestate 0xA (pause -> world-map transition, 0x8001c694, 0x3a4).
+/* Draw GS_MENU_TRANSITION (pause -> world-map transition, 0x8001c694, 0x3a4).
    Phase 0: re-darken the frozen gray backdrop by re-loading the CLUT ramp
    shifted by the idle counter, then draw the 4 backdrop quads (clut 0x3820)
    plus a black line into OT slot 0x3ff. Phase 1: fog cross-fade — feed
@@ -71,8 +71,8 @@ void MenuTransition_Draw(void) {
     slot = 0x3FF;
   quad:
     q = (POLY_FT4 *)g_pPrimBufferWriteCursor;
-    *(int *)q = 0x9000000;
-    q->code = 0x2C;
+    *(int *)q = PRIM_TAG(9);
+    q->code = GPU_CODE_POLY_FT4;
     q->r0 = 0x4C;
     q->g0 = 0x80;
     q->x0 = i << 7;
@@ -85,7 +85,7 @@ void MenuTransition_Draw(void) {
     q->x3 = q->x0 + 0x80;
     q->y3 = q->y0 + 0xDF;
     i += 1;
-    lineCode = 0x40;
+    lineCode = GPU_CODE_LINE_F2;
     q->b0 = lineCode;
     q->u0 = 0;
     q->v0 = 0;
@@ -107,7 +107,7 @@ void MenuTransition_Draw(void) {
     }
     /* a full-width line at y = 0xE7, packed right after the last quad */
 #define LINE ((LineF2 *)(p + 0x28))
-    LINE->tag = 0x3000000;
+    LINE->tag = PRIM_TAG(3);
     LINE->code = lineCode;
     LINE->x0 = 0;
     LINE->y0 = 0xE7;

@@ -24,7 +24,7 @@ void LoadActorMeshTables(void) {
 
   i = 0;
   table = g_apActorMeshTableBlock;
-  top = 0x80200000;
+  top = RAM_END;
   hdr = g_nActorMeshDirByteSize;
   lba = *(volatile int *)&g_nCdBaseLba;
   nbytes = *(volatile int *)hdr;

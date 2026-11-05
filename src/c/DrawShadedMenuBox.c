@@ -11,8 +11,8 @@ void DrawShadedMenuBox(int left, int right, int top, int bottom) {
   prim = g_pPrimBufferWriteCursor;
   SetDrawMode(g_pPrimBufferWriteCursor, 1, 0, 0x40, 0);
   AddPrimToOT((int)prim);
-  prim->poly.tag = 0x5000000;
-  prim->poly.code = 0x2a;
+  prim->poly.tag = PRIM_TAG(5);
+  prim->poly.code = (GPU_CODE_POLY_F4 | GPU_SEMI_TRANS);
   prim->poly.x0 = left;
   prim->poly.x1 = right;
   prim->poly.x2 = left;

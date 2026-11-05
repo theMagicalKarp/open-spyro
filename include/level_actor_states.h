@@ -76,7 +76,7 @@ typedef struct RoamingRamState {
   int partner;    /* 0x20 index into g_pActorListBase; level data: ACTOR_TYPE_ROAMING_RAM / GUNNER */
   int target;     /* 0x24 index into g_pActorListBase; level data: ACTOR_TYPE_BOLT_GUARD */
   int triggerSlot;       /* 0x28 g_anLevelTriggerStateSlots index (a war drum sets it), -1 = none */
-  TriggerBox box; /* 0x2C where a set triggerSlot sends it into mode 4 */
+  TriggerBox box; /* 0x2C where a set triggerSlot sends it into RAM_TRAPPED */
   int call;       /* 0x44 */
 } RoamingRamState;
 
@@ -106,8 +106,8 @@ typedef struct ChargingGuardState {
   int speedOverride; /* 0x5C */
 } ChargingGuardState;
 
-/* Type 28 state (level 20): the gunner, paired with a `partner`; fires
- * type 400 shots in mode 5. */
+/* Type 28 state (level 20): the gunner, paired with a `partner`; knocked
+ * into water (GUNNER_KNOCKED) it spawns an ACTOR_TYPE_SPLASH. */
 typedef struct GunnerState {
   PathData *path;  /* 0x00 */
   int partner; /* 0x04 index into g_pActorListBase; level data: ACTOR_TYPE_ONE_SHOT_PROP / CHARGING_GUARD */
@@ -199,9 +199,9 @@ typedef struct BoulderThrowerState {
   int throwRange;         /* 0x48 throw range */
   TriggerBox box0;      /* 0x4C trigger box (halfWidth 0 = unused) */
   TriggerBox box1;      /* 0x64 trigger box */
-  int command;         /* 0x7C posted: 1 = mode 0x28, else reverse along the path (mode 0x32); cleared when taken */
+  int command;         /* 0x7C posted: 1 = BTHROW_PAIR_WAIT, else reverse along the path (BTHROW_RIDE_WAIT); cleared when taken */
   int orbitRadius;         /* 0x80 */
-  int jitterA;         /* 0x84 random 8..15 on entering mode 0x2B; not read here */
+  int jitterA;         /* 0x84 random 8..15 on entering BTHROW_HURTLE; not read here */
   int jitterB;         /* 0x88 likewise */
   int *releaseFlag;        /* 0x8C cleared at the throw's release frame (0xE) */
   int pad90;         /* 0x90 */
@@ -226,7 +226,7 @@ typedef struct GatekeeperState {
   PathData *path;   /* 0x38 */
   TriggerBox box0;      /* 0x3C trigger box */
   TriggerBox box1;      /* 0x54 trigger box */
-  int command;         /* 0x6C posted: 1 = mode 0x28, else reverse along the path (mode 0x32); cleared when taken */
+  int command;         /* 0x6C posted: 1 = GATEKEEPER_KEYS_ARM, else reverse along the path (GATEKEEPER_RIDE_WAIT); cleared when taken */
   int idx;         /* 0x70 next key */
   int range[2];    /* 0x74 release range per key (units of 0x400) */
   int keys[2];     /* 0x7C key actor indices, -1 released; level data: ACTOR_TYPE_BOULDER_THROWER_B */

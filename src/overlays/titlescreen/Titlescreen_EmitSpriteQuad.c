@@ -26,7 +26,7 @@ void Titlescreen_EmitSpriteQuad(int nX, int nY, int nSprite, int nColorId) {
   }
 
   p = g_pPrimBufferWriteCursor;
-  p->tag = 0x09000000;
+  p->tag = PRIM_TAG(9);
   ((unsigned int *)p)[1] = g_adwTitleSelectColors[nColorId];
 
   /* setXY4(p, nX, nY, w + nX, nY, nX, h + nY, w + nX, h + nY) */

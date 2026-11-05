@@ -1,6 +1,7 @@
 #include "globals.h"
 
-/* Seed the world light-direction vector with its two-copy constant default. */
+/* Seed both light directions (sprite queue [0..2], secondary actors [3..5])
+   with the same default. */
 void InitLightVectorConstants(void) {
   g_anWorldLightDirVec[0] = -0x9D5;
   g_anWorldLightDirVec[1] = -0x99A;

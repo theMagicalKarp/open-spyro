@@ -8,13 +8,13 @@
 #include "spyro_state.h"
 
 /* Level-select (cheat menu) pad handler (0x8002d580, 0x290 bytes).
- * Square/Triangle/Circle/Cross/L1/R1/L2 pick a slot 0-6; R2 (0x1000) steps
+ * Circle/Cross/Square/Triangle/Right/Down/Left pick a slot 0-6; Up steps
  * g_nNextLevelId to the next level (wrapping past sub-level 5 into the
- * next world, and past the last level back to 10). With a world already
- * chosen, a slot press either reverts (out of range / sub-level >= 6) or
- * tears down into the level-load transition (gamestate 1, CD stream kick,
- * scripted camera 0x80000012); with no world chosen the slot picks the
- * world. */
+ * next world, and past the last level back to 10) and arms its world.
+ * With a world already chosen, a slot press either reverts (out of range /
+ * sub-level >= 6) or tears down into the level-load transition (gamestate
+ * GS_LEVEL_LOAD, CD stream kick, level-transition camera); with no world
+ * chosen the slot picks the world. */
 void HandleLevelSelectInput(void) {
   int pad;
   int sel;

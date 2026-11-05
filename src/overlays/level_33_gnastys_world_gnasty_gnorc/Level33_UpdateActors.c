@@ -180,7 +180,7 @@ void Level33_UpdateActors(void) {
   int o150[3];
   int spyroFloor[3];
   int pathHit[2];
-  int w181[3];
+  int settleOffset[3];
   int sparkleTwinkle[3];
   int shardTwinkle[3];
   int ps[6];
@@ -335,7 +335,7 @@ void Level33_UpdateActors(void) {
     case ACTOR_TYPE_BUTTERFLY: {
       ButterflyState *st = (ButterflyState *)actor->state;
 
-      if (g_nSparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, (int *)(base - 0x164)) < 2400) {
+      if (g_nSparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, (int *)SPY_FROM_SPARX(base)) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
 
         if (ABS2(actorZ - SPY.posZ) < 1800) {
@@ -831,7 +831,7 @@ void Level33_UpdateActors(void) {
           }
 
           if (toSpyro < 0x59A) {
-            int top = actor->posZ + 0x164;
+            int top = actor->posZ + SPYRO_RADIUS;
             register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
             int dz = spyZ - top;
 
@@ -953,7 +953,7 @@ void Level33_UpdateActors(void) {
 
         enemy_settle:
           if (toSpyro < 0x59A) {
-            int top = actor->posZ + 0x164;
+            int top = actor->posZ + SPYRO_RADIUS;
             register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
             int dz = spyZ - top;
 
@@ -1142,7 +1142,7 @@ void Level33_UpdateActors(void) {
       }
 
       if (st->target != 0 &&
-          ApproxDist2D(&actor->posX, (int *)(base - 0x164)) >=
+          ApproxDist2D(&actor->posX, (int *)SPY_FROM_SPARX(base)) >=
               0x2001) {
         st->timer = 0;
       }
@@ -2457,7 +2457,7 @@ void Level33_UpdateActors(void) {
             actor->rotZ = r + d * (st->timer - 0x80) / 64;
           }
         } else if (st->timer < 0xD0) {
-          int *w = w181;
+          int *w = settleOffset;
 
           actor->rotZ = g_pActorListBase[st->target].rotZ;
           w[0] = 0x200 - (st->timer - 0xC0) * 8;

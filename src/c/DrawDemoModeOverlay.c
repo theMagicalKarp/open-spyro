@@ -17,10 +17,10 @@ void DrawDemoModeOverlay(void) {
   first = g_pSpriteRecordWriteCursor;
   size[0] = 0x10;
   size[1] = 1;
-  size[2] = 0x1400;
+  size[2] = TEXT_SMALL_DEPTH;
   pos[0] = 199;
   pos[1] = 200;
-  pos[2] = 0x1100;
+  pos[2] = TEXT_DEPTH;
   BuildTextSprites(g_szDemoMode, pos, size, 0x12, TINT_GOLD);
   glyph = first - 1;
   phase = 0;

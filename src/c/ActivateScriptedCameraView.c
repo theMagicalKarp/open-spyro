@@ -1,5 +1,6 @@
 #include "camera.h"
 #include "globals.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 /* The active scripted-camera record pointer (g_pScriptedCameraView) and the
@@ -19,7 +20,8 @@ struct CameraEuler {
 /* 0x80037714 (0x94) — make `view` the active scripted-camera record: seat the
    camera at the record's camPos, stop Spyro with a fixed downward
    velocity, copy the record's euler angles into the
-   camera and switch both camera modes to the scripted vantage (0x8000000e).
+   camera and switch both camera modes to the scripted vantage (CAM_HELD |
+   CAM_MODE_SCRIPTED_VANTAGE).
 
    The euler angles are written as record members, so each in-struct store
    depends on the next in-struct record read and the original's load/store
@@ -30,7 +32,7 @@ void ActivateScriptedCameraView(ScriptedCamView *view) {
   VIEW = view;
   CopyVector(CAMPOS, view->camPos);
   ZeroVector(g_anSpyroVelocity);
-  g_anSpyroVelocity[2] = -0x2300;
+  g_anSpyroVelocity[2] = -SPYRO_TERMINAL_SPEED;
   rec = g_pScriptedCameraView;
   CAMERA_EULER.roll = rec->camRoll;
   CAMERA_EULER.pitch = rec->camPitch;

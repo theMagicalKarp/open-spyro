@@ -96,7 +96,7 @@ void Level29_UpdateActors(void) {
   /* Visit every actor on the list; dormant ones (state >= 0x80) are skipped. */
   while (actor = *actorList++) {
     one = 1;
-    spy = (SpyroObj *)(base - 0x164);
+    spy = (SpyroObj *)SPY_FROM_SPARX(base);
 
     if (actor->mode >= ACTOR_MODE_DORMANT) {
       continue;

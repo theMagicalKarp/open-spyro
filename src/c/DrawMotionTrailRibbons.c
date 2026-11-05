@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "gpu_prim.h"
 #include "level_id.h"
 #include "vecmath.h"
 
@@ -124,8 +125,8 @@ void DrawMotionTrailRibbons(void) {
             prim = (TrailQuad *)g_pPrimBufferWriteCursor;
             SetDrawMode(prim, 1, 0, 0x20, 0);
             AddPrimToOTSlot(prim, slot);
-            prim->tag = 0x8000000;
-            prim->code = 0x3A;
+            prim->tag = PRIM_TAG(8);
+            prim->code = (GPU_CODE_POLY_G4 | GPU_SEMI_TRANS);
             prim->x0 = x0;
             prim->x1 = x1;
             prim->x2 = px0;

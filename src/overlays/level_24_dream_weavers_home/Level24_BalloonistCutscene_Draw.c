@@ -1,6 +1,6 @@
 /* Level24_BalloonistCutscene_Draw (0x8007D9B8, level_24_dream_weavers_home overlay, 2568 bytes).
  *
- * Balloonist cutscene DRAW half (gamestate 0xC). Dispatches on the substate
+ * Balloonist cutscene DRAW half (GS_ACTOR_CUTSCENE). Dispatches on the substate
  * word g_nActorCutsceneSubstate[0]:
  *   < 2  — draw the "<world> THE BALLOONIST" title card, then rock every glyph
  *          the draw just appended (its rotZ roll angle, +0x46), sampling the
@@ -32,14 +32,14 @@ static const char g_szGoTo[12];
 
 void Level24_BalloonistCutscene_Draw(void) {
   int titlePos[3];
-  int titleColor[3];
+  int titleGlyph[3];
   char title[32];
   int pagePos[3];
-  int pageColor[3];
+  int pageGlyph[3];
   int menuPos[3];
-  int menuColor[3];
+  int menuGlyph[3];
   int askPos[3];
-  int askColor[3];
+  int askGlyph[3];
   char dest[40];
   Actor *rec;
   int cursor;
@@ -61,11 +61,11 @@ void Level24_BalloonistCutscene_Draw(void) {
       sprintf(title, "%s THE BALLOONIST", g_apBalloonistNames[g_nActiveLevelId / 10]);
       titlePos[0] = 0x108 - strlen(title) * 8;
       titlePos[1] = 0xCC;
-      titlePos[2] = 0x1100;
-      titleColor[0] = 0x10;
-      titleColor[1] = 1;
-      titleColor[2] = 0x1400;
-      BuildTextSprites(title, titlePos, titleColor, 0x12, TINT_HUD);
+      titlePos[2] = TEXT_DEPTH;
+      titleGlyph[0] = 0x10;
+      titleGlyph[1] = 1;
+      titleGlyph[2] = TEXT_SMALL_DEPTH;
+      BuildTextSprites(title, titlePos, titleGlyph, 0x12, TINT_HUD);
       for (cursor -= ACTOR_SIZE, titlePhase = 0; cursor >= g_pSpriteRecordWriteCursor;
            cursor -= ACTOR_SIZE, titlePhase += 1) {
         ((Actor *)cursor)->rotZ =
@@ -76,15 +76,15 @@ void Level24_BalloonistCutscene_Draw(void) {
       if (g_nActorCutsceneSubstate[3] < BPAGE_ROSTER || g_nActorCutsceneSubstate[3] > BPAGE_CONFIRM_HINT) {
         DrawShadedMenuBox(0x48, 0x1B8, 0x1C, 0x68);
         pagePos[1] = 0x2C;
-        pagePos[2] = 0x1100;
-        pageColor[0] = 0x10;
-        pageColor[1] = 1;
-        pageColor[2] = 0x1400;
+        pagePos[2] = TEXT_DEPTH;
+        pageGlyph[0] = 0x10;
+        pageGlyph[1] = 1;
+        pageGlyph[2] = TEXT_SMALL_DEPTH;
         line = g_abBalloonistDialoguePageStarts[g_nActorCutsceneSubstate[3]];
         pageCursor = g_pSpriteRecordWriteCursor;
         while (line < g_abBalloonistDialoguePageEnds[g_nActorCutsceneSubstate[3]]) {
           pagePos[0] = 0x5E;
-          BuildTextSprites(g_apBalloonistDialogueLines[line], pagePos, pageColor, 0x12, TINT_HUD);
+          BuildTextSprites(g_apBalloonistDialogueLines[line], pagePos, pageGlyph, 0x12, TINT_HUD);
           pagePos[1] += 0x12;
           line += 1;
         }
@@ -102,27 +102,27 @@ void Level24_BalloonistCutscene_Draw(void) {
         if (g_nActorCutsceneSubstate[1] >= 0x50) {
           pagePos[0] = 0x19C;
           pagePos[1] = 0x60;
-          pagePos[2] = 0x1100;
+          pagePos[2] = TEXT_DEPTH;
           EnqueueBlinkingMarkerSprite(pagePos, g_nActorCutsceneSubstate[1], 0);
         }
       } else if (g_nActorCutsceneSubstate[3] == BPAGE_ROSTER) {
-        menuColor[0] = 0xE;
-        menuColor[2] = 0x1600;
-        menuPos[2] = 0x1400;
+        menuGlyph[0] = 0xE;
+        menuGlyph[2] = 0x1600;
+        menuPos[2] = TEXT_SMALL_DEPTH;
         menuPos[0] = 0xF0;
-        menuColor[1] = 1;
+        menuGlyph[1] = 1;
         menuPos[1] = 0x24;
         if (g_nActorCutsceneSubstate[4] == 0) {
-          BuildTextSprites("HOP ON, SPYRO!", menuPos, menuColor, 0x10, TINT_HUD);
+          BuildTextSprites("HOP ON, SPYRO!", menuPos, menuGlyph, 0x10, TINT_HUD);
         } else if (g_nActorCutsceneSubstate[4] == 1) {
-          BuildTextSprites("NEED A LIFT?", menuPos, menuColor, 0x10, TINT_HUD);
+          BuildTextSprites("NEED A LIFT?", menuPos, menuGlyph, 0x10, TINT_HUD);
         } else {
-          BuildTextSprites("WHERE TO, SPYRO?", menuPos, menuColor, 0x10, TINT_HUD);
+          BuildTextSprites("WHERE TO, SPYRO?", menuPos, menuGlyph, 0x10, TINT_HUD);
         }
         menuPos[0] = 0x110;
         rec = (Actor *)g_pSpriteRecordWriteCursor - 1;
         menuPos[1] += 0x14;
-        BuildTextSprites("STAY HERE", menuPos, menuColor, 0x10, TINT_HUD);
+        BuildTextSprites("STAY HERE", menuPos, menuGlyph, 0x10, TINT_HUD);
         menuPos[1] += 0xF;
         if (g_nActorCutsceneSubstate[2] == 0) {
           for (greetPhase = 0; rec >= (Actor *)g_pSpriteRecordWriteCursor;
@@ -135,7 +135,7 @@ void Level24_BalloonistCutscene_Draw(void) {
           if (g_nActiveLevelId / 10 - 1 != world && g_abWorldBalloonistState[world] == BALLOONIST_OPEN) {
             menuPos[0] = 0x110;
             rec = (Actor *)g_pSpriteRecordWriteCursor - 1;
-            BuildTextSprites(g_apWorldNameByLevelTens[world], menuPos, menuColor, 0x10, TINT_HUD);
+            BuildTextSprites(g_apWorldNameByLevelTens[world], menuPos, menuGlyph, 0x10, TINT_HUD);
             menuPos[1] += 0xF;
             if (g_nActorCutsceneSubstate[2] == slot) {
               for (rosterPhase = 0; rec >= (Actor *)g_pSpriteRecordWriteCursor;
@@ -149,31 +149,31 @@ void Level24_BalloonistCutscene_Draw(void) {
         DrawShadedMenuBox(0xE0, 0x1D8, 0x19, slot * 0xF + 0x33);
         EmitRadialShadedLine(0xF0, 0x2E, 0x1A0, 0x2E);
         menuPos[0] = 0xF4;
-        menuPos[2] = 0x1100;
+        menuPos[2] = TEXT_DEPTH;
         menuPos[1] = g_nActorCutsceneSubstate[2] * 0xF + 0x36;
         EnqueueBlinkingMarkerSprite(menuPos, g_nActorCutsceneSubstate[1], 0);
       } else if (g_nActorCutsceneSubstate[3] == BPAGE_CONFIRM_NEXT || g_nActorCutsceneSubstate[3] == BPAGE_CONFIRM_HINT) {
         DrawShadedMenuBox(0x48, 0x1B8, 0x1C, 0x66);
         EmitRadialShadedLine(0x64, 0x37, 0x184, 0x37);
         askPos[0] = 0x60;
-        askPos[2] = 0x1100;
+        askPos[2] = TEXT_DEPTH;
         askPos[1] = g_nActorCutsceneSubstate[2] * 0x13 + 0x43;
         EnqueueBlinkingMarkerSprite(askPos, g_nActorCutsceneSubstate[1], 0);
-        askColor[0] = 0x10;
-        askColor[2] = 0x1400;
+        askGlyph[0] = 0x10;
+        askGlyph[2] = TEXT_SMALL_DEPTH;
         askPos[1] = 0x2C;
-        askColor[1] = 1;
-        askPos[2] = 0x1100;
+        askGlyph[1] = 1;
+        askPos[2] = TEXT_DEPTH;
         askPos[0] = 0x60;
         if (g_nActorCutsceneSubstate[3] == BPAGE_CONFIRM_NEXT) {
-          BuildTextSprites("ARE YOU READY TO GO?", askPos, askColor, 0x12, TINT_HUD);
+          BuildTextSprites("ARE YOU READY TO GO?", askPos, askGlyph, 0x12, TINT_HUD);
         } else {
-          BuildTextSprites("WOULD YOU LIKE TO GO?", askPos, askColor, 0x12, TINT_HUD);
+          BuildTextSprites("WOULD YOU LIKE TO GO?", askPos, askGlyph, 0x12, TINT_HUD);
         }
         askPos[0] = 0x80;
         rec = (Actor *)g_pSpriteRecordWriteCursor - 1;
         askPos[1] += 0x19;
-        BuildTextSprites("STAY HERE", askPos, askColor, 0x12, TINT_HUD);
+        BuildTextSprites("STAY HERE", askPos, askGlyph, 0x12, TINT_HUD);
         askPos[1] += 0x13;
         if (g_nActorCutsceneSubstate[2] == 0) {
           for (promptPhase = 0; rec >= (Actor *)g_pSpriteRecordWriteCursor;
@@ -189,7 +189,7 @@ void Level24_BalloonistCutscene_Draw(void) {
           sprintf(dest, g_szGoTo,
                         g_apLevelNameByWorldRow[(g_nNextLevelId / 10) * 6 + g_nNextLevelId % 10]);
         }
-        BuildTextSprites(dest, askPos, askColor, 0x12, TINT_HUD);
+        BuildTextSprites(dest, askPos, askGlyph, 0x12, TINT_HUD);
         if (g_nActorCutsceneSubstate[2] == 1) {
           for (namePhase = 0; rec >= (Actor *)g_pSpriteRecordWriteCursor;
                rec--, namePhase += 1) {

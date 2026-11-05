@@ -8,7 +8,8 @@
 #include "match_asm.h"
 #include "sky.h"
 
-/* Update for gamestate 0xC (level-transition title card, 0x800324d8, 0x548).
+/* Update for GS_ACTOR_CUTSCENE (level-transition title card, 0x800324d8,
+   0x548).
 
    Substate 4 is the only one this function drives; every other substate is
    forwarded to the handler installed at g_pfnActorCutsceneSubstateUpdate. The

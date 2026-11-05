@@ -11,5 +11,5 @@ void LaunchCrashDemo(void) {
   Bios96Remove();
   _96_init();
   WritePrintf(g_szLaunchingCrashDemoMsg);
-  LoadExec(g_szCrashDemoExePath, 0x801FFF00, 0);
+  LoadExec(g_szCrashDemoExePath, RAM_END - 0x100, 0);
 }

@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 /* Views off the held spawn-yaw base (g_nLevelSpawnYaw). */
@@ -38,7 +39,7 @@ void SetSpawnAnchorFromActor(Actor *actor, int heading) {
   t = 1;
   *((volatile int *)(&g_nSpawnAnchorValid)) = t;
   dst = CHECKPOINT_KILLS;
-  *((volatile int *)(&g_nLevelSpawnPosZ)) += 0x164;
+  *((volatile int *)(&g_nLevelSpawnPosZ)) += SPYRO_RADIUS;
   rescued = &g_anLevelDragonsRescued[g_nLevelIndex];
   {
     t = *rescued;

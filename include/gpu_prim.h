@@ -6,6 +6,20 @@
 #ifndef OPEN_SPYRO_GPU_PRIM_H
 #define OPEN_SPYRO_GPU_PRIM_H
 
+/* Tag word of a packet `words` GPU words long (the top byte); AddPrimToOT
+ * fills in the low 24-bit OT link. */
+#define PRIM_TAG(words) ((words) << 24)
+
+/* GPU command codes (the command word's top byte, the packets' `code`). */
+#define GPU_CODE_POLY_F4 0x28  /* flat quad */
+#define GPU_CODE_POLY_FT4 0x2C /* textured quad */
+#define GPU_CODE_POLY_G4 0x38  /* Gouraud quad */
+#define GPU_CODE_LINE_F2 0x40  /* flat line */
+#define GPU_CODE_LINE_G2 0x50  /* Gouraud line */
+#define GPU_CODE_TILE 0x60     /* flat rectangle */
+#define GPU_RAW_TEXTURE 0x01   /* code bit: texture without colour modulation */
+#define GPU_SEMI_TRANS 0x02    /* code bit: semi-transparent */
+
 /* Draw-mode packet (SetDrawMode): tag + two GPU words. */
 typedef struct DrMode {
   unsigned int tag;     /* 0x00 */

@@ -11,8 +11,8 @@ void EmitTexturedQuad(short *rect, unsigned int *uv, unsigned int *rgb) {
   PolyFT4 *q;
 
   q = g_pPrimBufferWriteCursor;
-  q->tag = 0x9000000;
-  q->code = 0x2c;
+  q->tag = PRIM_TAG(9);
+  q->code = GPU_CODE_POLY_FT4;
   if (rgb == 0) {
     q->r0 = 0x80;
     q->g0 = 0x80;

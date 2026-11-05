@@ -3,7 +3,7 @@
 #include "globals.h"
 #include "main_shared.h"
 
-/* Draw gamestate 0xE (GS_CUTSCENE): the scripted in-engine cutscene with
+/* Draw GS_CUTSCENE: the scripted in-engine cutscene with
    a g_nScreenFadeLevel fade-to-black. Copies the world fog color into both
    frame DRAWENVs, renders the actor + world passes, tints, then the standard
    2-vblank frame submit (0x8001e9c8). */

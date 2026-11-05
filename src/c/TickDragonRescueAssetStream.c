@@ -52,7 +52,7 @@ void TickDragonRescueAssetStream(void) {
       g_nDragonRescueReadByteCount = size;
       g_nDragonRescueSplitFlag = 0;
     } else {
-      g_nDragonRescueReadByteCount = avail / 0x800 * 0x800;
+      g_nDragonRescueReadByteCount = avail / CD_SECTOR_BYTES * CD_SECTOR_BYTES;
       g_nDragonRescueSplitFlag = 1;
     }
     StartCdReadAsync(g_nCdBaseLba, g_pWorldUnpackHead,

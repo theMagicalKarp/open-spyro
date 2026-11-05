@@ -8,7 +8,7 @@
 /* g_apSpritePrimQueue, reached from the held main-draw-list base. */
 #define SPRITE_PRIM_QUEUE (&g_apMainDrawEntityListBlock[2304])
 
-/* Draw for gamestate 8 (GS_DRAGON_RESCUE, 0x8001cfdc, 0x73c).
+/* Draw for GS_DRAGON_RESCUE (0x8001cfdc, 0x73c).
 
    The dragon-rescue presentation, one arm per g_nDragonRescueSubstate. Substate
    0 is still an ordinary gameplay frame; 1-3 hand-build the main draw list from

@@ -9,6 +9,9 @@
  * RestartStalledCdRead reissues a read the drive has not finished by then. */
 #define CD_STALL_TIMEOUT_TICKS 600
 
+/* A CD-ROM data sector (mode 2 form 1 payload). */
+#define CD_SECTOR_BYTES 0x800
+
 /* TickCutsceneBundleLoadStream: the bundle g_nCutsceneId selects. */
 enum CutsceneStreamState {
   CSTREAM_READ_HEADER = 0,     /* kick the 0x800-byte header read */

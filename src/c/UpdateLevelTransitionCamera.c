@@ -7,13 +7,13 @@
 
 SDATA(g_nCameraManualYawInput, 4);
 
-/* Level-transition camera, mode 0x80000012 (0x80037a20, 436 bytes), set with
-   GS_LEVEL_LOAD by portal entry, BeginWorldHubReturn and level select:
-   anchors on Spyro with the body yaw as the yaw bias and picks the
-   target-params block (portal exit: by CD stream state; otherwise once, by
-   which side of the camera yaw Spyro faces). Springs column 0 once per frame
-   step with no manual yaw, seats the eye, then copies the recomputed angles
-   into the spring set. */
+/* Level-transition camera, mode CAM_HELD | CAM_MODE_LEVEL_TRANSITION
+   (0x80037a20, 436 bytes), set with GS_LEVEL_LOAD by portal entry,
+   BeginWorldHubReturn and level select: anchors on Spyro with the body yaw as
+   the yaw bias and picks the target-params block (portal exit: by CD stream
+   state; otherwise once, by which side of the camera yaw Spyro faces). Springs
+   column 0 once per frame step with no manual yaw, seats the eye, then copies
+   the recomputed angles into the spring set. */
 void UpdateLevelTransitionCamera(void) {
   int i;
   int yaw = g_nSpyroBodyYaw;

@@ -14,7 +14,7 @@
  * records a best time (g_anFlightClearTimes[course], lower is better, 0 = unset)
  * from the run clock g_nFlightRunClock. Finally spins the reward digit ring
  * (g_abGemTallyIconUvTable, 32 slots, glyphs from g_abGemTallyIconGlyphs[i % 12]) and, if the
- * pending-scene word g_nCameraCurrentMode is 0x8000000E, latches the scene byte
+ * pending-scene word g_nCameraCurrentMode is CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE, latches the scene byte
  * g_abSpyroStateCameraMode[g_nSpyroState] into g_nCameraNextMode.
  * Identical body in the five flight-level overlays.
  */

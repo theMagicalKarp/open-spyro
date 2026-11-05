@@ -7,7 +7,7 @@
 #include "spyro_state.h"
 #include "title_state.h"
 
-/* Update for gamestate 0xd (story-intro / new-game transition, 0x80032b08,
+/* Update for GS_TITLE (story-intro / new-game transition, 0x80032b08,
    0x6a4). Only runs its body while g_nTitleMode is TITLE_MODE_STORY_INTRO;
    three substates: 0 arms the transition (silences audio, picks the destination
    level from the message id — title screen, resume, or the attract demo's level
@@ -138,7 +138,7 @@ void StoryIntro_Update(void) {
             clear.h = 0x1e0;
             ClearImage(&clear, 0, 0, 0);
             DrawSync(0);
-            g_pWorkAreaTop = (void *)(0x80200000 - g_nCrt0StackSize);
+            g_pWorkAreaTop = (void *)(RAM_END - g_nCrt0StackSize);
             InitActorMeshScratchRegions(1);
             while (g_nCdStreamState < CSTREAM_DONE) {
               TickCutsceneBundleLoadStream();

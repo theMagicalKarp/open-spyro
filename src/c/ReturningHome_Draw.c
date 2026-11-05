@@ -4,7 +4,7 @@
 #include "globals.h"
 #include "main_shared.h"
 
-/* Draw gamestate 0xF's post-credits "RETURNING HOME..." card with the animated
+/* Draw GS_CREDITS's post-credits "RETURNING HOME..." card with the animated
    per-glyph brightness wave (g_anCosineLut stepped by g_nReturningHomePhase),
    then the standard sprite-queue rasterize + frame-flush tail (0x8001eb80). */
 void ReturningHome_Draw(void) {
@@ -18,10 +18,10 @@ void ReturningHome_Draw(void) {
   first = g_pSpriteRecordWriteCursor;
   sizeVec[0] = 0x10;
   sizeVec[1] = 1;
-  sizeVec[2] = 0x1400;
+  sizeVec[2] = TEXT_SMALL_DEPTH;
   posVec[0] = 0x76;
   posVec[1] = 0x6e;
-  posVec[2] = 0x1100;
+  posVec[2] = TEXT_DEPTH;
   g_FrameDrawEnv0.r0 = 0;
   g_FrameDrawEnv0.g0 = 0;
   g_FrameDrawEnv0.b0 = 0;

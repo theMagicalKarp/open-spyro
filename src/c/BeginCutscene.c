@@ -5,7 +5,7 @@
 #include "main_shared.h"
 #include "sample_bank.h"
 
-/* Enter the scripted-cutscene gamestate (0x8002d338, gamestate 0xE). The
+/* Enter the scripted-cutscene gamestate (0x8002d338, GS_CUTSCENE). The
    cutscene id is g_nCutsceneId: 0 title backdrop, 1 opening story, 2/3
    ending. Steps: reset the
    generic countdown fade and the path-table head, raise the storm flag for

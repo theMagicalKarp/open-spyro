@@ -1,7 +1,7 @@
 /* Level5_FlightEndHook (0x8007AE08, level_5_artisans_sunny_flight overlay).
  *
  * Flight-level end hook. Once per attempt (guarded by gamestate != 7): enter
- * gamestate 7, clear the six in-flight progress globals, scale the run score
+ * GS_FLIGHT_RESULTS, clear the six in-flight progress globals, scale the run score
  * (g_nFlightRunClock) by ten, and if this level's best-score slot
  * (g_anFlightClearTimes[g_nActiveWorldIndex]) is empty and all four objective counters
  * (g_anFlightTargetTally..3C) sum to 0x20, record the score there.

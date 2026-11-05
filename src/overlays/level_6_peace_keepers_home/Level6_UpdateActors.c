@@ -1431,7 +1431,7 @@ void Level6_UpdateActors(void) {
           }
 
           if (toSpyro < 0x59A) {
-            int top = actor->posZ + 0x164;
+            int top = actor->posZ + SPYRO_RADIUS;
             register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
             int dz = spyZ - top;
 
@@ -1554,7 +1554,7 @@ void Level6_UpdateActors(void) {
 
         enemy_settle:
           if (toSpyro < 0x59A) {
-            int top = actor->posZ + 0x164;
+            int top = actor->posZ + SPYRO_RADIUS;
             register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
             int dz = spyZ - top;
 

@@ -6,7 +6,7 @@
 #include "main_shared.h"
 #include "match_asm.h"
 
-/* Draw handler for gamestate 0xC — the level-transition title card
+/* Draw handler for GS_ACTOR_CUTSCENE — the level-transition title card
    (0x8001E24C, 0x46c).
 
    Only substates 4 and 5 draw the card; every other substate hands the frame
@@ -68,7 +68,7 @@ void ActorCutscene_Draw(void) {
 
       pos[0] = 0x100 - (strlen(buf) - 1) * 7;
       pos[1] = 0xC8;
-      pos[2] = 0x1400;
+      pos[2] = TEXT_SMALL_DEPTH;
       attr[0] = 0xE;
       attr[1] = 1;
       attr[2] = 0x1600;

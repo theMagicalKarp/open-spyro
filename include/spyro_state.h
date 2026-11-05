@@ -12,13 +12,13 @@
 typedef enum SpyroState
 {
   SPYRO_ST_IDLE = 0,          /* standing; cycles the fidgets (CycleSpyroIdleAnim) */
-  SPYRO_ST_WALK = 1,          /* speed <= 0x780 */
-  SPYRO_ST_RUN = 2,           /* speed > 0xF00 */
+  SPYRO_ST_WALK = 1,          /* speed <= SPYRO_JOG_SPEED */
+  SPYRO_ST_RUN = 2,           /* speed > SPYRO_RUN_SPEED */
   SPYRO_ST_STOP = 3,          /* braking with no stick input */
   SPYRO_ST_TURN_AROUND = 4,   /* reversing at speed (heading off by > 0x500) */
   SPYRO_ST_JUMP = 5,          /* Cross */
   SPYRO_ST_FALL = 6,          /* airborne >= 4 frames or on a too-steep slope */
-  SPYRO_ST_HURT_TINT = 7,     /* hit, event 0x20: flashes white/dark (g_abSpyroTintRgba) for 10 frames; exit clears the tint */
+  SPYRO_ST_HURT_TINT = 7,     /* hit, SPYRO_EV_HIT_TINT: flashes white/dark (g_abSpyroTintRgba) for 10 frames; exit clears the tint */
   SPYRO_ST_FACE_TARGET = 8,   /* stands still; reached only as g_nSpyroRequestState (the level 14 carrier, ACTOR_TYPE_CARRIER, sets it at its ride path end); after 0x14 frames snaps yaw to g_nSpyroMoveTargetYaw, negates pitch/roll, then idles or walks */
   SPYRO_ST_SIDESTEP_L1 = 9,   /* L1 */
   SPYRO_ST_SIDESTEP_R1 = 10,  /* R1 */
@@ -28,21 +28,21 @@ typedef enum SpyroState
   SPYRO_ST_HURT = 14,         /* hit, default event */
   SPYRO_ST_GLIDE = 15,        /* Cross again while a jump falls */
   SPYRO_ST_GLIDE_DROP = 16,   /* Triangle while gliding: drop straight down */
-  SPYRO_ST_LIFT = 17,         /* carried up while event 0x800 holds, then glides */
+  SPYRO_ST_LIFT = 17,         /* carried up while SPYRO_EV_LIFT holds, then glides */
   SPYRO_ST_FIDGET_0 = 18,     /* idle fidget animations: 18 and 36..43 */
   SPYRO_ST_SLIDE = 19,        /* sliding down a steep slope */
   SPYRO_ST_CHARGE_AIR = 20,   /* charge leaving the ground (Square in a jump) */
   SPYRO_ST_JOG = 21,          /* speed between WALK and RUN */
-  SPYRO_ST_KNOCKBACK = 22,    /* hit, event 0x100: launched by g_anSpyroRequestVelocity */
-  SPYRO_ST_GLIDE_SLOW = 23,   /* gliding below speed 0xC80 */
+  SPYRO_ST_KNOCKBACK = 22,    /* hit, SPYRO_EV_KNOCKBACK: launched by g_anSpyroRequestVelocity */
+  SPYRO_ST_GLIDE_SLOW = 23,   /* gliding below SPYRO_RUN_DROP_SPEED */
   SPYRO_ST_SUPERCHARGE_AIR = 24, /* SUPERCHARGE leaving the ground */
-  SPYRO_ST_HURT_PINNED = 25,  /* hit, event 0x10, health left: pushed into the ground */
+  SPYRO_ST_HURT_PINNED = 25,  /* hit, SPYRO_EV_HIT_PINNED, health left: pushed into the ground */
   SPYRO_ST_SCRIPTED_WALK = 26, /* slow walk steered round g_pScriptedCameraActor */
-  SPYRO_ST_HURT_LONG = 27,    /* hit, event 0x40: 0x30-frame recovery */
-  SPYRO_ST_KNOCKBACK_2 = 28,  /* hit, event 0x80: as KNOCKBACK */
-  SPYRO_ST_HAZARD = 29,       /* event 0x400 hazard: Cross escapes after 0x10 frames, 0x3C kills */
+  SPYRO_ST_HURT_LONG = 27,    /* hit, SPYRO_EV_HIT_LONG: 0x30-frame recovery */
+  SPYRO_ST_KNOCKBACK_2 = 28,  /* hit, SPYRO_EV_KNOCKBACK_2: as KNOCKBACK */
+  SPYRO_ST_HAZARD = 29,       /* SPYRO_EV_HAZARD: Cross escapes after 0x10 frames, 0x3C kills */
   SPYRO_ST_DEATH = 30,        /* a hurt state ending with g_nSparxHealth < 0 */
-  SPYRO_ST_DEATH_PINNED = 31, /* event 0x10 with no health left */
+  SPYRO_ST_DEATH_PINNED = 31, /* SPYRO_EV_HIT_PINNED with no health left */
   SPYRO_ST_FLY = 32,          /* flight levels (and Gnasty's Loot) instead of GLIDE */
   SPYRO_ST_FLY_CLIMB = 33,
   SPYRO_ST_FLY_DIVE = 34,
@@ -55,7 +55,7 @@ typedef enum SpyroState
   SPYRO_ST_FIDGET_6 = 41,
   SPYRO_ST_FIDGET_7 = 42,
   SPYRO_ST_FIDGET_8 = 43,
-  SPYRO_ST_SUPERCHARGE = 44,  /* charge above speed 0x3000 */
+  SPYRO_ST_SUPERCHARGE = 44,  /* charge above SPYRO_SUPERCHARGE_SPEED */
 } SpyroState;
 
 #define SPYRO_STATE_COUNT 45 /* rows/columns of g_abSpyroStateTransitionAnimMatrix */
@@ -105,6 +105,10 @@ typedef enum SpyroState
 #define SLOPE_GROUND_MAX 0x21 /* below: counts as ground (clears the airborne count) */
 #define SLOPE_CEILING 0x400   /* the probe hit a downward-facing surface */
 
+/* Spyro's collision-sphere radius; standing, his position is this far above
+ * the floor (probes, contact spheres, spawn and landing heights). */
+#define SPYRO_RADIUS 0x164
+
 /* g_nSpyroAirborneFrames at which a grounded state gives up and falls: a
  * few frames of grace over gaps and bumps. */
 #define SPYRO_AIRBORNE_GRACE 4
@@ -115,6 +119,36 @@ typedef enum SpyroState
 #define SPYRO_RUN_SPEED 0xF00       /* above: run */
 #define SPYRO_RUN_DROP_SPEED 0xC80  /* below: a run drops back to a jog; also the
                                      * fast/slow split for glides, leaps and lean */
+
+/* Speed limits (g_nSpyroMotionSpeed / g_nSpyroSpeedTarget, and |velocity| in
+ * the same units), from IntegrateSpyroMotionForSubstep's per-state clamps. */
+#define SPYRO_TERMINAL_SPEED 0x2300 /* fastest fall (-velocity Z); also caps
+                                     * slide and charge-wind-down speed */
+#define SPYRO_MAX_SPEED 0x5900      /* cap for charge, supercharge and flight */
+#define SPYRO_SUPERCHARGE_SPEED 0x3000 /* a held charge (SPYRO_EV_CHARGE_HOLD) past this
+                                        * becomes SPYRO_ST_SUPERCHARGE */
+#define SPYRO_JUMP_SPEED 0xDC0      /* upward velocity a jump (and a charge or
+                                     * supercharge leaving the ground) adds */
+#define SPYRO_CHARGE_SPEED 0x1F80   /* least speed a charge (ground or air) starts at */
+#define SPYRO_CHARGE_MIN_SPEED 0x1400 /* charge / supercharge floor: slower
+                                       * resets the speed target to it */
+#define SPYRO_GLIDE_SPEED 0x1900    /* glide target speed (stick back slows it);
+                                     * a glide starts no faster */
+#define SPYRO_GLIDE_MIN_SPEED 0x780 /* glide and flight floor */
+#define SPYRO_FLIGHT_CRUISE_SPEED 0x1040 /* level flight: falling below the
+                                          * floor reference adds speed, rising
+                                          * above it takes it away */
+
+/* Gravity per substep: ChangeSpyroState sets g_nSpyroGravityStep to minus
+ * one of these on entering a state (LIFT rises at +0x80 instead). */
+#define SPYRO_FALL_ACCEL 0x0C0       /* jump / fall / glide drop; also the pull
+                                      * added at a cliff edge or when airborne */
+#define SPYRO_LIGHT_FALL_ACCEL 0x080 /* idle, glide and flight */
+#define SPYRO_SLIDE_FALL_ACCEL 0x200
+#define SPYRO_CHARGE_FALL_ACCEL 0x240
+#define SPYRO_HURT_FALL_ACCEL 0x300  /* hurt states and the charge bonk */
+#define SPYRO_GROUND_PRESS 0xC00     /* walking / standing states: pins Spyro to
+                                      * the floor, projected along the slope */
 
 /* g_dwSpyroRequestMask bits (SpyroObj.requestMask): a scripted override of
  * Spyro posted by actors and cutscenes, applied by AdvanceSpyroPhysics while
