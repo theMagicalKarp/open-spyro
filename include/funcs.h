@@ -846,7 +846,7 @@ void DrawWorldParticleEmitters(void);
 /* 0x80058bd8: Precomputes the 3 camera-space basis vectors used by the billboard sprite emitter. Calls WorldToCameraRotate on the X-axis (0x1000,0,0), Y-axis (0,0x1000,0), and inverted Z-axis (0,0,-0x1000), packs each result via VectorToSVector to the 3 SVECTOR slots at g_anBillboardBasisVectors (3 SVECTORs). Sole caller GamestateUpdate; runs once per frame after the camera matrix is committed so the billboard emitter can splat sprites with consistent screen-facing orientation. */
 void ComputeBillboardBasisVectors(void);
 
-/* 0x80058c7c: Seeds the 6-component light-direction vector pair at g_anWorldLightDirVec..dc with the fixed default {-0x9d5, -0x99a, -0xb20, -0x9d5, -0x99a, -0xb20} (twice the same vector — likely two light slots sharing the world default). Called by level-init paths before RotateLightVectorXZ tweaks the vector per-frame. */
+/* 0x80058c7c: Seeds the 6-component light-direction vector pair at g_anWorldLightDirVec..dc with the fixed default {-0x9d5, -0x99a, -0xb20, -0x9d5, -0x99a, -0xb20} (the same default for both lights: [0..2] the sprite queue's, [3..5] the secondary actors'). Called by level-init paths before RotateLightVectorXZ tweaks the vector per-frame. */
 void InitLightVectorConstants(void);
 
 /* 0x80058cc0: Spins the primary light direction vector in the XY plane (Z is up). Advances byte angle accumulator g_nLightSweepAngle by steps (wraps mod 256), looks up cos at g_anCosineLut[angle*2] scaled by 0x7bf and sin at g_anSineLut[angle*2] scaled by 0x18c9 (the two scale factors give an asymmetric ellipse, not a circle), pins Z at -0x400 (from above). Writes XYZ to g_anWorldLightDirVec. Used to animate sun/moon direction over time. */
