@@ -34,7 +34,7 @@ void Credits_Draw(void) {
     VSync(0);
     y = 8;
     rect.x = 0;
-    if (g_pActiveFrameDrawEnv != g_abFrameDrawEnv0) {
+    if (g_pActiveFrameDrawEnv != g_FrameDrawEnv0) {
       y = 0xF8;
     }
     rect.w = 0x200;
@@ -96,7 +96,7 @@ void Credits_Draw(void) {
     FillBlock16(ot, 0, 0x1C00);
     g_nFarPlaneDrawDistance = 0x28000;
     RenderWorldChunks(-1);
-    EmitStaticActorMeshList(-1, g_anCameraViewMtx,
+    EmitSkyMesh(-1, g_anCameraViewMtx,
                             (char *)g_anCameraViewMtx - 0x14 /* g_anWorldToCameraRotMtx */);
   }
   DrawSync(0);

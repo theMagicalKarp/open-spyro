@@ -35,7 +35,7 @@ extern char *g_apWorldNameByLevelTens[];                               /* world 
 extern char *g_apLevelNameByWorldRow[];                               /* level names */
 extern unsigned char g_abBalloonistDialoguePageEnds[];                       /* dialogue page end line */
 extern int g_pActiveActorList1;
-extern Actor g_abActorCutsceneActorSnapshot[]; /* focus-actor copy taken at lift-off */
+extern Actor g_aActorCutsceneActorSnapshot[]; /* focus-actor copy taken at lift-off */
 extern int g_bDebugNoDepletion;
 extern unsigned char g_bWorldBalloonistState1;                         /* per-world "seen it" flags */
 extern int *g_apActorMeshTable_1A0[]; /* g_apActorMeshTable[0x1A0] (balloonist cutscene relocates it) */
@@ -64,7 +64,7 @@ extern int g_nActorCutsceneCamEulerPitchStart;
 extern int g_nActorCutsceneCamEulerYawStart;
 extern int g_nActorCutsceneRecordZStart;
 extern int g_nActorCutsceneRecordZGoal;
-extern unsigned char g_abHudIconActorRecords_rotZ[];
+extern unsigned char g_aHudIconActorRecords_rotZ[];
 extern int g_anFlightTallyActiveSlots_e1; /* queue slots 1..3, shifted down as each class is shown */
 extern int g_anFlightTallyActiveSlots_e2;
 extern int g_anFlightTallyActiveSlots_e3;
@@ -132,10 +132,10 @@ extern int g_nCameraNextMode;
 extern int g_nCameraPosY;
 extern int g_nCameraPosZ;
 extern int g_nSpyroSwingEulerTargetZ;
-extern int g_nCameraTargetYawBiasFromMode;
+extern int g_nCameraParamsReferenceYaw;
 extern int g_nCdStreamState;
-extern int g_nCollisionProbeVecY;
-extern int g_nCollisionProbeVecZ;
+extern int g_nCollisionHitNormalY;
+extern int g_nCollisionHitNormalZ;
 extern int g_nCollisionResolvedY;                        /* ..y */
 extern int g_nCurrentLevelId;                            /* current level id */
 extern int g_nDemoActive;
@@ -165,10 +165,10 @@ extern int g_nDragonRescueSubstate;
 extern int g_nDragonRescueTimer;
 extern int g_nGemTallyIconCount;
 extern int g_nGroundSurfaceType;                         /* index of the surface under the probe */
-extern int g_nLastCollisionHitChunkId;                   /* collision triangle index */
+extern int g_nCollisionHitTriIndex;                   /* collision triangle index */
 extern int g_nLevelKeyState;                             /* key collected */
 extern int g_nLevelIndex;
-extern int g_nLevelIntroParallaxCountdown;
+extern int g_nTransitionSkyPitchTilt;
 extern int g_nLevelTransitionPhase;
 extern int g_nLevelTransitionTallyActive;
 extern int g_nPauseMenuCursor;                           /* menu cursor */
@@ -177,8 +177,8 @@ extern int g_nMenuDrawFrames;                             /* frames drawn since 
 extern int g_nEnteredPortalIdx;
 extern int g_nPrimBufferOverflowFlag;
 extern int g_nReturnPortalLevelId;
-extern int g_nPortalViewPitchTilt;
-extern int g_nPortalViewYawSpin;
+extern int g_nPortalSkyPitchTilt;
+extern int g_nPortalSkyYawSpin;
 extern int g_nPortalTransitionActive;
 extern int g_nSfxOverrideFlags;
 extern short g_nSfxOverrideVolL;                         /* sound volume override, left/right */

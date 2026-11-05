@@ -72,8 +72,8 @@ void Initialize(void) {
   start = VSync(-1);
   SetDispMask(0);
   fill = g_apDrawBufBlock[0];
-  g_abFrameDispEnv0.isrgb24 = 1;
-  g_abFrameDispEnv1.isrgb24 = 1;
+  g_FrameDispEnv0.isrgb24 = 1;
+  g_FrameDispEnv1.isrgb24 = 1;
   FillWord(fill, 0, 0x5A000);
   i = 0;
   bias = -0xE0;
@@ -86,7 +86,7 @@ void Initialize(void) {
     LoadImage(&rect, g_apDrawBufBlock[0]);
     DrawSync(0);
     VSync(0);
-    PutDispEnv(&g_abFrameDispEnv1);
+    PutDispEnv(&g_FrameDispEnv1);
     if (i == 0) {
       SetDispMask(1);
     }
@@ -139,7 +139,7 @@ fade_out_title:
   LoadImage(&rect, buf2[0]);
   DrawSync(0);
   VSync(0);
-  PutDispEnv(&g_abFrameDispEnv1);
+  PutDispEnv(&g_FrameDispEnv1);
   j += 1;
   if (j < 8) {
     goto fade_out_title;
@@ -159,7 +159,7 @@ fade_in_splash:
   LoadImage(&rect, src);
   DrawSync(0);
   VSync(0);
-  PutDispEnv(&g_abFrameDispEnv1);
+  PutDispEnv(&g_FrameDispEnv1);
   bias3 += 0x20;
   k += 1;
   if (k < 8) {
@@ -189,16 +189,16 @@ fade_out_splash:
   LoadImage(&rect, src2);
   DrawSync(0);
   VSync(0);
-  PutDispEnv(&g_abFrameDispEnv1);
+  PutDispEnv(&g_FrameDispEnv1);
   n += 1;
   if (n < 8) {
     goto fade_out_splash;
   }
 
   SetDispMask(0);
-  isrgb24 = &g_abFrameDispEnv0.isrgb24;
+  isrgb24 = &g_FrameDispEnv0.isrgb24;
   *isrgb24 = 0;
-  g_abFrameDispEnv1.isrgb24 = 0;
+  g_FrameDispEnv1.isrgb24 = 0;
   PutDispEnv((DISPENV *)(isrgb24 + 0x73));
   clear.x = 0;
   clear.y = 0;

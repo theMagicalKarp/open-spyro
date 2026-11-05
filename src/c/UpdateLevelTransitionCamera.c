@@ -19,7 +19,7 @@ void UpdateLevelTransitionCamera(void) {
   int yaw = g_nSpyroBodyYaw;
 
   g_pCameraAnchorPos = g_anSpyroWorldPos;
-  g_nCameraTargetYawBiasFromMode = yaw;
+  g_nCameraParamsReferenceYaw = yaw;
   if (g_nReturnPortalLevelId != 0) {
     if (g_nCdStreamState >= LSTREAM_RELOCATE) {
       g_pCameraTargetParams = g_anCameraParamFollowFacing;

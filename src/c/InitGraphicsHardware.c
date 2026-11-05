@@ -14,18 +14,18 @@ void InitGraphicsHardware(void) {
   ResetGraph(0);
   SetGraphDebug(0);
 
-  base = FRAME_DB(&g_abFrameDrawEnv0);
+  base = FRAME_DB(&g_FrameDrawEnv0);
   InitDefaultDrawEnv(&base[0].draw, 0, 8, 0x200, 0xE0);
   InitDefaultDrawEnv(&base[1].draw, 0, 0xF8, 0x200, 0xE0);
   InitDefaultDispEnv(&base[0].disp, 0, 0xF0, 0x200, 0xF0);
   InitDefaultDispEnv(&base[1].disp, 0, 0, 0x200, 0xF0);
 
-  g_abFrameDrawEnv1.ofs[1] = 0xF0;
-  g_abFrameDrawEnv0.isbg = 1;
-  g_abFrameDrawEnv1.isbg = 1;
-  g_abFrameDrawEnv0.dtd = 1;
-  g_abFrameDrawEnv1.dtd = 1;
-  g_abFrameDrawEnv0.ofs[1] = 0;
+  g_FrameDrawEnv1.ofs[1] = 0xF0;
+  g_FrameDrawEnv0.isbg = 1;
+  g_FrameDrawEnv1.isbg = 1;
+  g_FrameDrawEnv0.dtd = 1;
+  g_FrameDrawEnv1.dtd = 1;
+  g_FrameDrawEnv0.ofs[1] = 0;
   rect.x = 0;
   rect.y = 0;
   rect.w = 0x200;

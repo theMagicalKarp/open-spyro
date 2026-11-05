@@ -87,12 +87,12 @@ void StoryIntro_Draw(void) {
     }
   }
 
-  g_abFrameDrawEnv0.r0 = 0;
-  g_abFrameDrawEnv0.g0 = 0;
-  g_abFrameDrawEnv0.b0 = 0;
-  g_abFrameDrawEnv1.r0 = 0;
-  g_abFrameDrawEnv1.g0 = 0;
-  g_abFrameDrawEnv1.b0 = 0;
+  g_FrameDrawEnv0.r0 = 0;
+  g_FrameDrawEnv0.g0 = 0;
+  g_FrameDrawEnv0.b0 = 0;
+  g_FrameDrawEnv1.r0 = 0;
+  g_FrameDrawEnv1.g0 = 0;
+  g_FrameDrawEnv1.b0 = 0;
   g_apSpritePrimQueue[0] = 0;
   EnqueuePendingSpritePrims();
   FillWord(&g_apSpritePrimQueue[-0x900], 0,

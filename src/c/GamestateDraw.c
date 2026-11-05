@@ -34,7 +34,7 @@ void GamestateDraw(void) {
   int b;
   int tint;
 
-  env = (char *)&g_abFrameDrawEnv0;
+  env = (char *)&g_FrameDrawEnv0;
   if ((char *)g_pActiveFrameDrawEnv == env) {
     env += sizeof(FrameDB);
   }
@@ -56,15 +56,15 @@ void GamestateDraw(void) {
     if (g_nGamestate == GS_LEVEL_LOAD) {
       LevelTransition_Draw();
     } else if (g_nGamestate == GS_PAUSE_MENU) {
-      Gamestate02_03_06_Draw();
+      PauseMenu_Draw();
     } else if (g_nGamestate == GS_INVENTORY) {
-      Gamestate02_03_06_Draw();
+      PauseMenu_Draw();
     } else if (g_nGamestate == GS_RESPAWN) {
       RespawnOrGameOver_Draw();
     } else if (g_nGamestate == GS_GAME_OVER) {
       RespawnOrGameOver_Draw();
     } else if (g_nGamestate == GS_UNUSED_6) {
-      Gamestate02_03_06_Draw();
+      PauseMenu_Draw();
     } else if (g_nGamestate == GS_FLIGHT_RESULTS) {
       g_pfnFlightResultsDraw();
     } else if (g_nGamestate == GS_DRAGON_RESCUE) {
@@ -96,12 +96,12 @@ void GamestateDraw(void) {
     r = ((unsigned char *)&g_dwWorldFogColor)[0];
     g = ((unsigned char *)&g_dwWorldFogColor)[1];
     b = ((unsigned char *)&g_dwWorldFogColor)[2];
-    g_abFrameDrawEnv0.r0 = r;
-    g_abFrameDrawEnv0.g0 = g;
-    g_abFrameDrawEnv0.b0 = b;
-    g_abFrameDrawEnv1.r0 = r;
-    g_abFrameDrawEnv1.g0 = g;
-    g_abFrameDrawEnv1.b0 = b;
+    g_FrameDrawEnv0.r0 = r;
+    g_FrameDrawEnv0.g0 = g;
+    g_FrameDrawEnv0.b0 = b;
+    g_FrameDrawEnv1.r0 = r;
+    g_FrameDrawEnv1.g0 = g;
+    g_FrameDrawEnv1.b0 = b;
     BuildRenderEntityLists();
     if (g_nFlightLevelActive == 0) {
       EnqueueHudSprites();
@@ -111,7 +111,7 @@ void GamestateDraw(void) {
     }
     ComposeFrameScene();
     SetupFrameOT();
-    DrawPortalsAndStaticActors();
+    DrawPortalsAndSky();
     RasterizeEmitList();
     if (g_nScreenFadeLevel != 0) {
       tint = g_nScreenFadeLevel << 3;

@@ -169,7 +169,7 @@ typedef enum SpyroState
 #define SPYRO_SUB_GLIDE_HOLD 8        /* frozen, turning to g_abSpyroRequestEuler (no-input / level-intro glide-hold frames) */
 #define SPYRO_SUB_GLIDE_TO_TARGET 9   /* no-clip glide to the hand-off point, then LEVEL_GLIDE_HANDOFF */
 #define SPYRO_SUB_GLIDE_ARRIVE 10     /* level-entry glide under GS_ARRIVAL_CAMERA, banks down to the ground */
-#define SPYRO_SUB_GLIDE_ENTER 11      /* level-entry glide straight into gameplay (camera mode 12) */
+#define SPYRO_SUB_GLIDE_ENTER 11      /* level-entry glide straight into gameplay (g_anCameraParamTransitionGlideIn arrival) */
 
 /* Trigger-region record types (byte 0 of a g_pTriggerRegionTable record),
  * dispatched by DispatchSpyroTriggerEvent. */

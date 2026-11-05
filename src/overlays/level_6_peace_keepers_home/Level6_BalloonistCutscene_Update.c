@@ -7,7 +7,7 @@
  *   1  dialogue: pad-driven page/roster menu (g_nActorCutsceneDialogPage submode),
  *   2  board:    fly Spyro to the balloon over 0x66 frames,
  *   3  lift off: raise the balloon (Z) for 0x80 frames, then snapshot the
- *                actor into g_abActorCutsceneActorSnapshot and swap the 0x4000-byte scratch bank,
+ *                actor into g_aActorCutsceneActorSnapshot and swap the 0x4000-byte scratch bank,
  *   5  cruise:   interpolate the camera along the flight path (0x100 frames),
  *   6  descend:  lower the balloon for 0x80 frames,
  *   7  land:     ease Spyro out of the balloon, then hand the frame back to
@@ -664,11 +664,11 @@ void Level6_BalloonistCutscene_Update(void)
         g_nActorCutsceneCamHeightGoal = m + 0x200;
         }
         TickLevelTransitionStream(1);
-        CopyWords(g_abActorCutsceneActorSnapshot, g_pActorCutsceneRecord, 0x58);
-        g_pActorCutsceneRecord = g_abActorCutsceneActorSnapshot;
+        CopyWords(g_aActorCutsceneActorSnapshot, g_pActorCutsceneRecord, 0x58);
+        g_pActorCutsceneRecord = g_aActorCutsceneActorSnapshot;
         if (((unsigned int) g_pRenderScratchRegionBase) <= 0x801FFFFF)
         {
-          bank = (int *) (g_pWorldRenderMeshChunkArray - 0x400C);
+          bank = (int *) (g_pSkyChunkArray - 0x400C);
         }
         else
         {
@@ -826,10 +826,10 @@ void Level6_BalloonistCutscene_Update(void)
         g_nCameraCurrentMode = CAM_MODE_STAND;
         g_nCameraNextMode = CAM_MODE_STAND;
         g_pCameraTargetParams = (int) g_anCameraDynamicTargetParams;
-        g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
+        g_nCameraParamsReferenceYaw = g_nSpyroBodyYaw;
         ComputeCameraToTargetAngle(&g_pCameraAnchorPos[-0x2A]);
         CopyWords(g_anCameraDynamicTargetParams, &g_pCameraAnchorPos[-0x10], 0x18);
-        g_anCameraDynamicTargetParams[0] = (g_anCameraDynamicTargetParams[0] + g_nCameraTargetYawBiasFromMode) & 0xFFF;
+        g_anCameraDynamicTargetParams[0] = (g_anCameraDynamicTargetParams[0] + g_nCameraParamsReferenceYaw) & 0xFFF;
         ResetCameraStateToTarget();
         InitHudCounters(0);
         g_nGamestate = GS_GAMEPLAY;

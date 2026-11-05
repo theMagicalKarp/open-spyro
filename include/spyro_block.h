@@ -31,7 +31,9 @@
 #define SPY_CLIFF          0x31 /* g_nSpyroCliffEdgeHint */
 #define SPY_SPEED_TARGET   0x32 /* g_nSpyroSpeedTarget */
 #define SPY_MOVE_TARGET_YAW 0x33 /* g_nSpyroMoveTargetYaw */
-#define SPY_PLATFORM       0x37 /* g_anSpyroSlopeGravityVec */
+#define SPY_SLOPE_SLIDE    0x34 /* down-slope gravity along the ground tangent
+                                 (ApplyGravityAlongSpyroSlopeTangent) */
+#define SPY_SLOPE_GRAVITY  0x37 /* g_anSpyroSlopeGravityVec */
 #define SPY_CARRY          0x3A /* g_anSpyroCarryMotionVec */
 #define SPY_VELOCITY       0x3D /* g_anSpyroVelocity */
 #define SPY_VELOCITY_FP6   0x40 /* g_anSpyroVelocityFp6 */
@@ -60,8 +62,8 @@
 #define SPY_FLIGHT_MODE    0x93 /* g_nSpyroFlightMode */
 #define SPY_CHARGE_HOLD    0x94 /* g_nSpyroChargeHoldFlag */
 #define SPY_GLIDE_BANK     0x95 /* g_nSpyroGlideBankingFlag */
-#define SPY_GROUND_CHUNK   0x9D /* g_nSpyroGroundChunkId */
-#define SPY_GROUND_VERTS   0x9E /* g_anSpyroGroundChunkVerts */
+#define SPY_GROUND_TRI   0x9D /* g_nSpyroGroundTriIndex */
+#define SPY_GROUND_VERTS   0x9E /* g_anSpyroGroundTriVerts */
 
 /* One Spyro-block global reached off another's address (the original keeps
  * the first one's base register): SPY_VIA(g_anSpyroVelocity, SPY_VELOCITY,

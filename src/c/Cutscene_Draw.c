@@ -17,12 +17,12 @@ void Cutscene_Draw(void) {
   r = ((unsigned char *)&g_dwWorldFogColor)[0];
   g = ((unsigned char *)&g_dwWorldFogColor)[1];
   b = ((unsigned char *)&g_dwWorldFogColor)[2];
-  g_abFrameDrawEnv0.r0 = r;
-  g_abFrameDrawEnv0.g0 = g;
-  g_abFrameDrawEnv0.b0 = b;
-  g_abFrameDrawEnv1.r0 = r;
-  g_abFrameDrawEnv1.g0 = g;
-  g_abFrameDrawEnv1.b0 = b;
+  g_FrameDrawEnv0.r0 = r;
+  g_FrameDrawEnv0.g0 = g;
+  g_FrameDrawEnv0.b0 = b;
+  g_FrameDrawEnv1.r0 = r;
+  g_FrameDrawEnv1.g0 = g;
+  g_FrameDrawEnv1.b0 = b;
   BuildRenderEntityLists();
   BuildActorDrawList();
   otHead = &g_pOtDepthBinHead0;
@@ -31,8 +31,7 @@ void Cutscene_Draw(void) {
   FillWord(otHead, 0, 0x1c00);
   g_nFarPlaneDrawDistance = 0x14000;
   RenderWorldChunks(-1);
-  EmitStaticActorMeshList(-1, (MATRIX *)g_anCameraViewMtx,
-                          (MATRIX *)CAM_W2C_MTX_VIA_VIEW);
+  EmitSkyMesh(-1, (MATRIX *)g_anCameraViewMtx, (MATRIX *)CAM_W2C_MTX_VIA_VIEW);
   if (g_nScreenFadeLevel != 0) {
     int t = g_nScreenFadeLevel << 4;
     DrawFullscreenTint(2, t, t, t);

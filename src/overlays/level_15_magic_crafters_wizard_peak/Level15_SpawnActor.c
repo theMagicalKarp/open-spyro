@@ -190,7 +190,7 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
     CopyVector(probe, pos);
     probe[2] += 0x400;
     FindGroundHeightBelow(probe, 0x10000);
-    EncodeCachedVecToActorDirCode(rec);
+    EncodeHitNormalToActorGroundCode(rec);
     rec->tint0 = 0;
     rec->tint1 = 0;
     rec->tint2 = 0;

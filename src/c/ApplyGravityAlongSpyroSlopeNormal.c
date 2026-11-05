@@ -11,7 +11,7 @@ void ApplyGravityAlongSpyroSlopeNormal(void) {
 
   CopyVector(
       g_anSpyroSlopeGravityVec,
-      SPY_VIA(g_anSpyroSlopeGravityVec, SPY_PLATFORM, SPY_GROUND_NORMAL));
+      SPY_VIA(g_anSpyroSlopeGravityVec, SPY_SLOPE_GRAVITY, SPY_GROUND_NORMAL));
   step = g_nSpyroGravityStep;
   if (step < 0) {
     step = -step;

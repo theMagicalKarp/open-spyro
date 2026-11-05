@@ -403,15 +403,15 @@ void Level5_UpdateActors(void) {
           
           int dot;
 
-          SetVector3Magnitude(&g_anCollisionProbeVec, 0x1000);
-          dot = st->vel[0] * g_anCollisionProbeVec + st->vel[1] * g_nCollisionProbeVecY +
-                    st->vel[2] * g_nCollisionProbeVecZ >>
+          SetVector3Magnitude(&g_anCollisionHitNormal, 0x1000);
+          dot = st->vel[0] * g_anCollisionHitNormal + st->vel[1] * g_nCollisionHitNormalY +
+                    st->vel[2] * g_nCollisionHitNormalZ >>
                 11;
           if (dot < 0) {
-            ScaleVector3ByRatio(&g_anCollisionProbeVec, 0x1000, (dot >> 2) - (dot));
-            st->vel[0] += g_anCollisionProbeVec;
-            st->vel[1] += AS_I32(g_nCollisionProbeVecY);
-            st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
+            ScaleVector3ByRatio(&g_anCollisionHitNormal, 0x1000, (dot >> 2) - (dot));
+            st->vel[0] += g_anCollisionHitNormal;
+            st->vel[1] += AS_I32(g_nCollisionHitNormalY);
+            st->vel[2] += AS_I32(g_nCollisionHitNormalZ);
           }
         }
 
@@ -572,15 +572,15 @@ void Level5_UpdateActors(void) {
 
       switch (actor->subMode) {
       case COLLECT_SETTLE: {
-        int *nrm = &g_anCollisionProbeVec;
+        int *nrm = &g_anCollisionHitNormal;
 
         CopyVector(svA, &actor->posX);
         svA[2] += 0x400;
         FindGroundHeightBelow(svA, 0x10000);
         st->pitch = -ArcTan2_8bit(
-            IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionProbeVecZ * g_nCollisionProbeVecZ)),
-            g_nCollisionProbeVecY);
-        st->yaw = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
+            IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionHitNormalZ * g_nCollisionHitNormalZ)),
+            g_nCollisionHitNormalY);
+        st->yaw = -ArcTan2_8bit(g_nCollisionHitNormalZ, nrm[0]);
 
         if (st->pitch != 0 || st->yaw != 0) {
           actor->rotZ = 0;
@@ -594,14 +594,14 @@ void Level5_UpdateActors(void) {
 
           if (st->restMode == COLLREST_SNAP) {
             SnapActorToGround(actor);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
             if (actor->type >= ACTOR_TYPE_GEM_1) {
-              int *nrm = &g_anCollisionProbeVec;
+              int *nrm = &g_anCollisionHitNormal;
 
               st->pitch = -ArcTan2_8bit(
-                  IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionProbeVecZ * g_nCollisionProbeVecZ)),
-                  g_nCollisionProbeVecY);
-              st->yaw = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
+                  IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionHitNormalZ * g_nCollisionHitNormalZ)),
+                  g_nCollisionHitNormalY);
+              st->yaw = -ArcTan2_8bit(g_nCollisionHitNormalZ, nrm[0]);
             }
 
           } else if (st->restMode == COLLREST_ON_TRI) {
@@ -617,7 +617,7 @@ void Level5_UpdateActors(void) {
 
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
 
           } else if (st->restMode == COLLREST_FIND_TRI) {
             int colIndex;
@@ -628,7 +628,7 @@ void Level5_UpdateActors(void) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
 
             if (FindGroundHeightBelow(svF, 0x1000) > 0) {
-              colIndex = g_nLastCollisionHitChunkId;
+              colIndex = g_nCollisionHitTriIndex;
               st->restMode = COLLREST_ON_TRI;
               st->groundTri = colIndex;
             }
@@ -710,7 +710,7 @@ void Level5_UpdateActors(void) {
               continue;
             }
 
-            CopyVector(bounceNormal, &g_anCollisionProbeVec);
+            CopyVector(bounceNormal, &g_anCollisionHitNormal);
             CopyVector(&actor->posX, &g_anCollisionResolvedPos);
             actor->posZ -= 0xF0;
 
@@ -736,7 +736,7 @@ void Level5_UpdateActors(void) {
                   }
                 }
 
-                EncodeCachedVecToActorDirCode(actor);
+                EncodeHitNormalToActorGroundCode(actor);
               } else {
                 st->count++;
               }
@@ -762,7 +762,7 @@ void Level5_UpdateActors(void) {
             bouncePos[2] -= 240;
             CopyVector(pos, bouncePos);
             FindGroundHeightBelow(bouncePos, 0x10000);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
           }
         }
 
@@ -1253,17 +1253,17 @@ void Level5_UpdateActors(void) {
               actor->posY = AS_I32(g_nCollisionResolvedY);
               actor->posZ = AS_I32(g_nCollisionResolvedZ);
 
-              SetVector3Magnitude(&g_anCollisionProbeVec, 0x1000);
+              SetVector3Magnitude(&g_anCollisionHitNormal, 0x1000);
 
-              dot = (st->vel[0] * g_anCollisionProbeVec + st->vel[1] * g_nCollisionProbeVecY +
-                     st->vel[2] * g_nCollisionProbeVecZ) >>
+              dot = (st->vel[0] * g_anCollisionHitNormal + st->vel[1] * g_nCollisionHitNormalY +
+                     st->vel[2] * g_nCollisionHitNormalZ) >>
                     11;
 
               if (dot < 0) {
-                ScaleVector3ByRatio(&g_anCollisionProbeVec, 0x1000, -dot);
-                st->vel[0] += g_anCollisionProbeVec;
-                st->vel[1] += AS_I32(g_nCollisionProbeVecY);
-                st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
+                ScaleVector3ByRatio(&g_anCollisionHitNormal, 0x1000, -dot);
+                st->vel[0] += g_anCollisionHitNormal;
+                st->vel[1] += AS_I32(g_nCollisionHitNormalY);
+                st->vel[2] += AS_I32(g_nCollisionHitNormalZ);
               }
             }
             st->life--;
@@ -1638,16 +1638,16 @@ void Level5_UpdateActors(void) {
         }
 
         for (i = 0, y = 0x3C; i < 4; i++) {
-          g_abHudIconActorRecords[i].type = st->types[i];
-          InitActorRenderDefaults(&g_abHudIconActorRecords[i]);
-          HideActorRenderRecord(&g_abHudIconActorRecords[i]);
-          g_abHudIconActorRecords[i].posY = y;
+          g_aHudIconActorRecords[i].type = st->types[i];
+          InitActorRenderDefaults(&g_aHudIconActorRecords[i]);
+          HideActorRenderRecord(&g_aHudIconActorRecords[i]);
+          g_aHudIconActorRecords[i].posY = y;
           y += 0x14;
-          g_abHudIconActorRecords[i].otBias = 0x20;
-          g_abHudIconActorRecords[i].cullRadius = 0xFF;
-          g_abHudIconActorRecords[i].posX = 0x3C;
-          g_abHudIconActorRecords[i].posZ = 0x1000;
-          g_abHudIconActorRecords[i].tintMode = i + 3;
+          g_aHudIconActorRecords[i].otBias = 0x20;
+          g_aHudIconActorRecords[i].cullRadius = 0xFF;
+          g_aHudIconActorRecords[i].posX = 0x3C;
+          g_aHudIconActorRecords[i].posZ = 0x1000;
+          g_aHudIconActorRecords[i].tintMode = i + 3;
         }
       }
 
@@ -1875,15 +1875,15 @@ void Level5_UpdateActors(void) {
         if (CollideSphereWithWorldAndActors(&actor->posX, 0x200, 0x200)) {
           int dot;
 
-          SetVector3Magnitude(&g_anCollisionProbeVec, 0x1000);
-          dot = st->vel[0] * g_anCollisionProbeVec + st->vel[1] * g_nCollisionProbeVecY +
-                    st->vel[2] * g_nCollisionProbeVecZ >>
+          SetVector3Magnitude(&g_anCollisionHitNormal, 0x1000);
+          dot = st->vel[0] * g_anCollisionHitNormal + st->vel[1] * g_nCollisionHitNormalY +
+                    st->vel[2] * g_nCollisionHitNormalZ >>
                 11;
           if (dot < 0) {
-            ScaleVector3ByRatio(&g_anCollisionProbeVec, 0x1000, (dot >> 2) - (dot));
-            st->vel[0] += g_anCollisionProbeVec;
-            st->vel[1] += AS_I32(g_nCollisionProbeVecY);
-            st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
+            ScaleVector3ByRatio(&g_anCollisionHitNormal, 0x1000, (dot >> 2) - (dot));
+            st->vel[0] += g_anCollisionHitNormal;
+            st->vel[1] += AS_I32(g_nCollisionHitNormalY);
+            st->vel[2] += AS_I32(g_nCollisionHitNormalZ);
           }
         }
 

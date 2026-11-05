@@ -5,5 +5,5 @@
    then re-encode its packed ground code. */
 void SnapActorToGround(Actor *actor) {
   actor->posZ = ProbeActorGroundHeight(actor) + actor->floorOffset;
-  EncodeCachedVecToActorDirCode(actor);
+  EncodeHitNormalToActorGroundCode(actor);
 }

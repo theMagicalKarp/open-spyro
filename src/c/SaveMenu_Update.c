@@ -10,11 +10,7 @@
 #include "spyro_block.h"
 #include "vecmath.h"
 
-/* The save-menu record at 0x80078d00: [0] mode, [1] phase,
-   [2] cursor, [3] substate, [9]/[10] memcard sync results, then from/to
-   keyframes for the save host (+0x2C/+0x38), Sparx (+0x44/+0x4C),
-   the camera (+0x54/+0x60) and Spyro's yaw (+0x6C/+0x70). */
-
+/* SM indexes the save-menu record by its SaveMenuWord (save_menu.h). */
 #define SM g_anSaveMenuBlock
 #define SPYB ((unsigned char *)g_anSpyroWorldPosBlock)
 #define ACT g_pSaveMenuHostActor
@@ -41,17 +37,17 @@ void SaveMenu_Update(void) {
   int a;
   int d;
 
-  SM[1] += g_nFrameStep;
+  SM[SM_PHASE] += g_nFrameStep;
   RotateLightVectorXZ(3);
   g_apActiveActorListBlock[0] = ACT;
   g_apActiveActorListBlock[1] = 0;
   TickActorAnims(g_apActiveActorListBlock, ANIM_TICK_NORMAL);
-  switch (SM[0]) {
+  switch (SM[SM_MODE]) {
   case SAVE_MODE_SWING_IN:
-    if (SM[1] < 0x40) {
+    if (SM[SM_PHASE] < 0x40) {
       Actor *actor;
 
-      t = LookupSine((SM[1] << 5) - 0x400) + 0x1000;
+      t = LookupSine((SM[SM_PHASE] << 5) - 0x400) + 0x1000;
       actor = &g_pActorListBase[((SaveHostState *)ACT->state)->anchor];
       if (actor->mode == CHECKPT_FLASH) {
         actor->subMode += g_nFrameStep;
@@ -60,7 +56,7 @@ void SaveMenu_Update(void) {
           actor->anim = CHECKPT_ANIM_REST;
         }
       }
-      a = LERP_ANGLE(SM[14], SM[11], t);
+      a = LERP_ANGLE(SM[SM_HOST_TO_ANGLE], SM[SM_HOST_FROM_ANGLE], t);
       d = g_nSaveMenuHostFromDist +
           (((g_nSaveMenuHostToDist - g_nSaveMenuHostFromDist) * t) >> 13);
       ACTOR_RAW(ACT, int, posX) =
@@ -72,7 +68,7 @@ void SaveMenu_Update(void) {
           (((g_nSaveMenuHostToZ - g_nSaveMenuHostFromZ) * t) >> 13);
       TrackEntityYawTowardSpyro(ACT, 3, 0, YAW_HOLD_IN_BAND);
       FindGroundHeightBelow(&ACT->posX, 0x1000);
-      EncodeCachedVecToActorDirCode(ACT);
+      EncodeHitNormalToActorGroundCode(ACT);
       if (g_pSparxActor != 0) {
         a = LERP_ANGLE(g_nSaveMenuSparxToAngle, g_nSaveMenuSparxFromAngle, t);
         d = g_nSaveMenuSparxFromDist +
@@ -81,7 +77,7 @@ void SaveMenu_Update(void) {
             g_anSpyroWorldPos[0] + ((LookupCosine(a) * d) >> 12);
         g_pSparxActor->posY = g_nSpyroWorldPosY + ((LookupSine(a) * d) >> 12);
       }
-      a = LERP_ANGLE(SM[24], SM[21], t);
+      a = LERP_ANGLE(SM[SM_CAMERA_TO_ANGLE], SM[SM_CAMERA_FROM_ANGLE], t);
       d = g_nSaveMenuCameraFromDist +
           (((g_nSaveMenuCameraToDist - g_nSaveMenuCameraFromDist) * t) >> 13);
       g_anCameraPos[0] = g_anSpyroWorldPos[0] + ((LookupCosine(a) * d) >> 12);
@@ -119,12 +115,20 @@ void SaveMenu_Update(void) {
             ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], ATAN_ANGLE12);
         g_nCameraEulerYaw = ArcTan2(vec[0], vec[1], ATAN_ANGLE12);
       }
-      if (((SM[28] - SM[27]) & 0xFFF) < 0x801) {
+      if (((SM[SM_SPYRO_TO_YAW] - SM[SM_SPYRO_FROM_YAW]) & 0xFFF) < 0x801) {
         g_abSpyroPersistentEuler[2] =
-            (SM[27] + ((AbsAngleDelta12(SM[28], SM[27]) * t) >> 13)) >> 4;
+            (SM[SM_SPYRO_FROM_YAW] +
+             ((AbsAngleDelta12(SM[SM_SPYRO_TO_YAW], SM[SM_SPYRO_FROM_YAW]) *
+               t) >>
+              13)) >>
+            4;
       } else {
         g_abSpyroPersistentEuler[2] =
-            (SM[27] - ((AbsAngleDelta12(SM[28], SM[27]) * t) >> 13)) >> 4;
+            (SM[SM_SPYRO_FROM_YAW] -
+             ((AbsAngleDelta12(SM[SM_SPYRO_TO_YAW], SM[SM_SPYRO_FROM_YAW]) *
+               t) >>
+              13)) >>
+            4;
       }
       ApplyEulerRotation(SPYB + SPYB_EULER, (int *)(SPYB + SPYB_BODY_MTX), 0);
       g_bSpyroSwingByteEuler1 = (unsigned int)t >> 9;
@@ -150,9 +154,12 @@ void SaveMenu_Update(void) {
       }
       if (g_pSparxActor != 0) {
         g_pSparxActor->posX =
-            g_anSpyroWorldPos[0] + ((LookupCosine(SM[19]) * SM[20]) >> 12);
+            g_anSpyroWorldPos[0] +
+            ((LookupCosine(SM[SM_SPARX_TO_ANGLE]) * SM[SM_SPARX_TO_DIST]) >>
+             12);
         g_pSparxActor->posY =
-            g_anSpyroWorldPos[1] + ((LookupSine(SM[19]) * SM[20]) >> 12);
+            g_anSpyroWorldPos[1] +
+            ((LookupSine(SM[SM_SPARX_TO_ANGLE]) * SM[SM_SPARX_TO_DIST]) >> 12);
       }
       g_anCameraPos[0] =
           g_anSpyroWorldPos[0] +
@@ -165,8 +172,8 @@ void SaveMenu_Update(void) {
         SPYB[SPYB_ANIM_CURRENT] = 0;
         SPYB[SPYB_ANIM_FRAME] = 0;
         g_anSpyroWorldPosBlock[SPY_ANIM_PLAY_RATE] = 4;
-        SM[0] = SAVE_MODE_MENU;
-        SM[1] = 0;
+        SM[SM_MODE] = SAVE_MODE_MENU;
+        SM[SM_PHASE] = 0;
         g_anCameraPos[2] = g_nSaveMenuCameraToZ;
         SPYB[SPYB_EULER_Z] = g_nSaveMenuSpyroToYaw >> 4;
         g_anCameraPos[1] =
@@ -180,7 +187,7 @@ void SaveMenu_Update(void) {
     TickSpyroAnimLayer2();
     g_dwGamestateFrames++;
     g_pfnLevelAdvanceEmitList(g_nFrameStep);
-    switch (SM[3]) {
+    switch (SM[SM_SUBSTATE]) {
     case SAVE_SCREEN_MAIN:
       if (g_dwPadPressed & PAD_DOWN) {
         PlaySoundEffect(LEVEL_SFX(SFX_MENU_MOVE), 0, SFX_MODE_PANNED, 0);
@@ -195,10 +202,10 @@ void SaveMenu_Update(void) {
           g_nSaveMenuCursor = SAVE_ROW_CONTINUE;
         }
       }
-      if (SM[1] >= 8 && (g_dwPadPressed & PAD_CROSS)) {
+      if (SM[SM_PHASE] >= 8 && (g_dwPadPressed & PAD_CROSS)) {
         PlaySoundEffect(LEVEL_SFX(SFX_MENU_SELECT), 0, SFX_MODE_PANNED, 0);
         if (g_nSaveMenuCursor == SAVE_ROW_SAVE) {
-          SM[1] = 0;
+          SM[SM_PHASE] = 0;
           if (g_nSaveSlotLoaded != 0) {
             g_nSaveMenuSubstate = SAVE_SCREEN_SAVING;
           } else {
@@ -226,15 +233,15 @@ void SaveMenu_Update(void) {
       }
       break;
     case SAVE_SCREEN_NO_SESSION:
-      if (SM[1] >= 0x3C && (g_dwPadPressed & PAD_CROSS)) {
+      if (SM[SM_PHASE] >= 0x3C && (g_dwPadPressed & PAD_CROSS)) {
         PlaySoundEffect(LEVEL_SFX(SFX_MENU_SELECT), 0, SFX_MODE_PANNED, 0);
-        SM[1] = 0;
+        SM[SM_PHASE] = 0;
         g_nSaveMenuSubstate = SAVE_SCREEN_MAIN;
         g_nSaveMenuCursor = SAVE_ROW_CONTINUE;
       }
       break;
     case SAVE_SCREEN_SAVING: {
-      int *cur = &SM[2];
+      int *cur = &SM[SM_CURSOR];
 
       if (*cur == SAVE_STEP_OPEN) {
         MemCardOpenSession();
@@ -245,10 +252,10 @@ void SaveMenu_Update(void) {
       if (*cur == SAVE_STEP_READ_HEADER) {
         int st;
 
-        if (MemCardSync(1, &SM[9], &SM[10]) == 0) {
+        if (MemCardSync(1, &SM[SM_SYNC_CMD], &SM[SM_SYNC_RESULT]) == 0) {
           break;
         }
-        st = SM[10];
+        st = SM[SM_SYNC_RESULT];
         if (st == McErrNone || st == McErrNewCard) {
           MemCardRead(g_nSaveSlotSelected, g_szMemCardSaveName,
                       (char *)g_pRenderScratchPrimTop - SAVE_IMAGE_BYTES, 0,
@@ -265,10 +272,10 @@ void SaveMenu_Update(void) {
       } else if (*cur == SAVE_STEP_WRITE) {
         int st;
 
-        if (MemCardSync(1, &SM[9], &SM[10]) == 0) {
+        if (MemCardSync(1, &SM[SM_SYNC_CMD], &SM[SM_SYNC_RESULT]) == 0) {
           break;
         }
-        st = SM[10];
+        st = SM[SM_SYNC_RESULT];
         if (st == McErrNone) {
           if (g_nSaveFileTag ==
               ((McFileHeader *)((char *)g_pRenderScratchPrimTop -
@@ -290,10 +297,10 @@ void SaveMenu_Update(void) {
           g_nSaveMenuSubstate = SAVE_SCREEN_ERROR;
         }
       } else if (*cur == SAVE_STEP_READ_BACK) {
-        if (MemCardSync(1, &SM[9], &SM[10]) == 0) {
+        if (MemCardSync(1, &SM[SM_SYNC_CMD], &SM[SM_SYNC_RESULT]) == 0) {
           break;
         }
-        if (SM[10] == McErrNone) {
+        if (SM[SM_SYNC_RESULT] == McErrNone) {
           MemCardRead(g_nSaveSlotSelected, g_szMemCardSaveName,
                       (char *)g_pRenderScratchPrimTop - SAVE_IMAGE_BYTES,
                       MEMCARD_SAVE_OFFSET(g_nSaveSlotIndex), SAVE_IMAGE_BYTES);
@@ -304,10 +311,10 @@ void SaveMenu_Update(void) {
       } else {
         int v;
 
-        if (MemCardSync(1, &SM[9], &SM[10]) == 0) {
+        if (MemCardSync(1, &SM[SM_SYNC_CMD], &SM[SM_SYNC_RESULT]) == 0) {
           break;
         }
-        if (SM[10] == McErrNone &&
+        if (SM[SM_SYNC_RESULT] == McErrNone &&
             ComputeSaveGameChecksum((unsigned char *)g_pRenderScratchPrimTop -
                                     SAVE_IMAGE_BYTES) ==
                 SAVE_RAW((char *)g_pRenderScratchPrimTop - SAVE_IMAGE_BYTES,
@@ -323,9 +330,9 @@ void SaveMenu_Update(void) {
     case SAVE_SCREEN_NO_CARD:
     case SAVE_SCREEN_NO_FILE:
     case SAVE_SCREEN_ERROR:
-      if (SM[1] >= 0x3C && (g_dwPadPressed & PAD_CROSS)) {
+      if (SM[SM_PHASE] >= 0x3C && (g_dwPadPressed & PAD_CROSS)) {
         PlaySoundEffect(LEVEL_SFX(SFX_MENU_SELECT), 0, SFX_MODE_PANNED, 0);
-        SM[1] = 0;
+        SM[SM_PHASE] = 0;
         g_nSaveMenuSubstate = SAVE_SCREEN_FAILED;
         g_nSaveMenuCursor = SAVE_FAILED_RETRY;
       }
@@ -333,13 +340,13 @@ void SaveMenu_Update(void) {
     case SAVE_SCREEN_FAILED:
       if (g_adwPadPressedBlock[0] & (PAD_UP | PAD_DOWN)) {
         PlaySoundEffect(LEVEL_SFX(SFX_MENU_MOVE), 0, SFX_MODE_PANNED, 0);
-        SM[2] = 1 - SM[2];
+        SM[SM_CURSOR] = 1 - SM[SM_CURSOR];
       }
-      if (SM[1] >= 0x20 && (g_adwPadPressedBlock[0] & PAD_CROSS)) {
+      if (SM[SM_PHASE] >= 0x20 && (g_adwPadPressedBlock[0] & PAD_CROSS)) {
         MemCardCloseSession();
         if (g_nSaveMenuCursor == SAVE_FAILED_RETRY) {
           PlaySoundEffect(LEVEL_SFX(SFX_MENU_SELECT), 0, SFX_MODE_PANNED, 0);
-          SM[1] = 0;
+          SM[SM_PHASE] = 0;
           g_nSaveMenuSubstate = SAVE_SCREEN_SAVING;
           g_nSaveMenuCursor = SAVE_STEP_OPEN;
         } else {

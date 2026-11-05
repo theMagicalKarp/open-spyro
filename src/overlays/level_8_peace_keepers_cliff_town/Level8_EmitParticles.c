@@ -1,5 +1,5 @@
-/* Level8_EmitParticles (0x8008A9A8, level_8_peace_keepers_cliff_town
- * overlay, 0x10f4 bytes).
+/* Level8_EmitParticles (0x8008a9a8, level_8_peace_keepers_cliff_town overlay,
+ * 0x1150 bytes).
  *
  * Push `count` particle records of effect `type` onto the emit list (the
  * 0x20-byte record stream that RasterizeEmitList walks each frame).
@@ -657,8 +657,7 @@ void Level8_EmitParticles(int count, int type, int *pos, int effectArg) {
  * gives the constant two sets, which kills `reg_equiv_constant` and hands the
  * value a0 instead of leaving it to reload's spill register t0.
  *
- * Word-identical (bar branch displacements) to Level2_EmitParticles,
- * Level4_EmitParticles, Level10_EmitParticles and Level28_EmitParticles,
- * which are sed-clones of this file.  Level3_EmitParticles (3,940 B) is the
- * 985-insn variant of the same walk and carries the same arm 0x18.
+ * This note is inherited from Level1_EmitParticles, the 1085-insn original
+ * (word-identical to the level_2 / 4 / 10 / 28 copies); this overlay's
+ * variant is 1108 insns with its own arm set.
  */

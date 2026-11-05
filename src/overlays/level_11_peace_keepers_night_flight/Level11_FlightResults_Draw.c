@@ -67,11 +67,11 @@ void Level11_FlightResults_Draw(void)
     do {
     strip = 0x200;
     RasterizeEmitList();
-    DrawPortalsAndStaticActors();
+    DrawPortalsAndSky();
     SetupFrameOT();
     DrawSync(0);
     VSync(0);
-    envBase = g_abFrameDrawEnv0;
+    envBase = g_FrameDrawEnv0;
     } while (0);
     do {
     PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
@@ -143,7 +143,7 @@ void Level11_FlightResults_Draw(void)
     unsigned char cq;
     cur = g_pActiveFrameDrawEnv;
     allclear = 0;
-    env = g_abFrameDrawEnv0;
+    env = g_FrameDrawEnv0;
     if (cur == env)
     {
       env += 0x84;
@@ -576,7 +576,7 @@ void Level11_FlightResults_Draw(void)
         char *r;
         slot = g_apSpritePrimQueue;
         i = 0;
-        r = g_abHudIconActorRecords;
+        r = g_aHudIconActorRecords;
         pub:
         *slot = r;
 

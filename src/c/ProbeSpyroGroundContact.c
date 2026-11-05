@@ -38,17 +38,16 @@ void ProbeSpyroGroundContact(void) {
     ApplyActiveGteRotation(out, out);
     AddVector(out, out, &BLK(SPY_POS));
     if (CastRayWorldAndActors(down, out) != 0) {
-      CopyVector(&BLK(SPY_GROUND_NORMAL), g_anCollisionProbeVec);
-      t = (signed char)ArcTan2(g_anCollisionProbeVec[2],
-                               VectorLength(g_anCollisionProbeVec, VEC_LEN_XY),
+      CopyVector(&BLK(SPY_GROUND_NORMAL), g_anCollisionHitNormal);
+      t = (signed char)ArcTan2(g_anCollisionHitNormal[2],
+                               VectorLength(g_anCollisionHitNormal, VEC_LEN_XY),
                                ATAN_ANGLE8);
       g_nSpyroGroundSlope = t;
       if (t < 0) {
         g_nSpyroGroundSlope = SLOPE_CEILING;
       }
-      BLK(SPY_GROUND_CHUNK) = g_nLastCollisionHitChunkId;
-      UnpackWorldCollisionTri(g_nLastCollisionHitChunkId,
-                              &BLK(SPY_GROUND_VERTS));
+      BLK(SPY_GROUND_TRI) = g_nCollisionHitTriIndex;
+      UnpackWorldCollisionTri(g_nCollisionHitTriIndex, &BLK(SPY_GROUND_VERTS));
       if (g_nSpyroGroundSlope < SLOPE_GROUND_MAX) {
         BLK(SPY_GLIDE_SPENT) = g_nSpyroGroundSlope >= SLOPE_STEEP;
         BLK(SPY_AIRBORNE) = 0;
@@ -67,7 +66,7 @@ void ProbeSpyroGroundContact(void) {
         }
       }
     } else {
-      BLK(SPY_GROUND_CHUNK) = -1;
+      BLK(SPY_GROUND_TRI) = -1;
     }
     if ((BLK(SPY_AIRBORNE) != 0) && (g_nSpyroGroundProbeSuspendFlag == 0)) {
       down[0] = 0;
@@ -79,7 +78,7 @@ void ProbeSpyroGroundContact(void) {
       AddVector(down, down, &BLK(SPY_POS));
       AddVector(out, out, &BLK(SPY_POS));
       if (CastRayWorldAndActors(down, out) != 0) {
-        CopyVector(&BLK(SPY_GROUND_NORMAL), g_anCollisionProbeVec);
+        CopyVector(&BLK(SPY_GROUND_NORMAL), g_anCollisionHitNormal);
         t = (signed char)ArcTan2(
             g_anSpyroGroundNormal[2],
             VectorLength(&BLK(SPY_GROUND_NORMAL), VEC_LEN_XY), ATAN_ANGLE8);

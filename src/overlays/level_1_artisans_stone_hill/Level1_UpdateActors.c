@@ -1632,20 +1632,20 @@ void Level1_UpdateActors(void) {
       if (st->life > 0 && actor->drawn != 0) {
 
       if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100) != 0) {
-        int *nrm = &g_anCollisionProbeVec;
+        int *nrm = &g_anCollisionHitNormal;
         int along;
         register int push asm("$7");
 
         SetVector3Magnitude(nrm, 0x1000);
-        along = (st->vel[0] * nrm[0]) + (st->vel[1] * g_nCollisionProbeVecY) +
-                (st->vel[2] * g_nCollisionProbeVecZ);
+        along = (st->vel[0] * nrm[0]) + (st->vel[1] * g_nCollisionHitNormalY) +
+                (st->vel[2] * g_nCollisionHitNormalZ);
         push = along >> 11;
 
         if (push < 0) {
           ScaleVector3ByRatio(nrm, 0x1000, (along >> 13) - push);
           st->vel[0] += nrm[0];
-          st->vel[1] += AS_I32(g_nCollisionProbeVecY);
-          st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
+          st->vel[1] += AS_I32(g_nCollisionHitNormalY);
+          st->vel[2] += AS_I32(g_nCollisionHitNormalZ);
         }
       }
 
@@ -1764,12 +1764,12 @@ void Level1_UpdateActors(void) {
           svA[2] += 0x400;
           FindGroundHeightBelow(svA, 0x10000);
           {
-            int *nrm = &g_anCollisionProbeVec;
+            int *nrm = &g_anCollisionHitNormal;
 
             st->lean = -ArcTan2_8bit(
-                IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionProbeVecZ * g_nCollisionProbeVecZ)),
-                g_nCollisionProbeVecY);
-            st->roll = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
+                IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionHitNormalZ * g_nCollisionHitNormalZ)),
+                g_nCollisionHitNormalY);
+            st->roll = -ArcTan2_8bit(g_nCollisionHitNormalZ, nrm[0]);
           }
 
           if (st->lean != 0 || st->roll != 0) {
@@ -1783,16 +1783,16 @@ void Level1_UpdateActors(void) {
           if (st->mode == COLLREST_STILL) {
           } else if (st->mode == COLLREST_SNAP) {
             SnapActorToGround(actor);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
             if (actor->type >= ACTOR_TYPE_GEM_1) {
               {
-                int *nrm = &g_anCollisionProbeVec;
+                int *nrm = &g_anCollisionHitNormal;
 
                 st->lean =
                     -ArcTan2_8bit(IntegerSqrt((nrm[0] * nrm[0]) +
-                                                 (g_nCollisionProbeVecZ * g_nCollisionProbeVecZ)),
-                                   g_nCollisionProbeVecY);
-                st->roll = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
+                                                 (g_nCollisionHitNormalZ * g_nCollisionHitNormalZ)),
+                                   g_nCollisionHitNormalY);
+                st->roll = -ArcTan2_8bit(g_nCollisionHitNormalZ, nrm[0]);
               }
             }
           } else if (st->mode == COLLREST_ON_TRI) {
@@ -1804,13 +1804,13 @@ void Level1_UpdateActors(void) {
             actor->posZ = acc[0][2] / 3;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
           } else if (st->mode == COLLREST_FIND_TRI) {
             CopyVector(svF, &actor->posX);
             svF[2] += 0x400;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             if (FindGroundHeightBelow(svF, 0x1000) > 0) {
-              st->groundTri = g_nLastCollisionHitChunkId;
+              st->groundTri = g_nCollisionHitTriIndex;
               st->mode = COLLREST_ON_TRI;
             }
           }
@@ -1887,7 +1887,7 @@ void Level1_UpdateActors(void) {
               continue;
             }
 
-            CopyVector(bounceNormal, &g_anCollisionProbeVec);
+            CopyVector(bounceNormal, &g_anCollisionHitNormal);
             CopyVector(at, &g_anCollisionResolvedPos);
             actor->posZ -= 0xF0;
 
@@ -1909,7 +1909,7 @@ void Level1_UpdateActors(void) {
                     actor->rotZ = 0;
                   }
                 }
-                EncodeCachedVecToActorDirCode(actor);
+                EncodeHitNormalToActorGroundCode(actor);
               } else {
                 st->bounce += 1;
               }
@@ -1934,7 +1934,7 @@ void Level1_UpdateActors(void) {
             bouncePos[2] -= 0xF0;
             CopyVector(at, bouncePos);
             FindGroundHeightBelow(bouncePos, 0x10000);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
           }
 
         enemy_settle:
@@ -2119,7 +2119,7 @@ void Level1_UpdateActors(void) {
                 g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, at, 0xC);
                 RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
                 FindGroundHeightBelow(at, 0x1000);
-                EncodeCachedVecToActorDirCode(actor);
+                EncodeHitNormalToActorGroundCode(actor);
                 actor->groundCode |= ACTOR_GROUND_VALID;
               }
             }
@@ -2227,7 +2227,7 @@ void Level1_UpdateActors(void) {
           actor->posY += (svF[1] * wSpan) / wDen;
           actor->rotZ += (turn * wSpan) / wDen;
           FindGroundHeightBelow(here, 0x1000);
-          EncodeCachedVecToActorDirCode(actor);
+          EncodeHitNormalToActorGroundCode(actor);
 
           if (st->wanderTimer == 0x10) {
             actor->mode = SAVEHOST_HOVER;
@@ -3095,9 +3095,9 @@ void Level1_UpdateActors(void) {
         break;
       }
       SnapActorToGround(actor);
-      view = &g_anCollisionProbeVec;
-      actor->rotY = ArcTan2(g_nCollisionProbeVecZ, VectorLength(view, VEC_LEN_XY), ATAN_ANGLE8);
-      actor->rotZ = ArcTan2(-view[0], -g_nCollisionProbeVecY, ATAN_ANGLE8);
+      view = &g_anCollisionHitNormal;
+      actor->rotY = ArcTan2(g_nCollisionHitNormalZ, VectorLength(view, VEC_LEN_XY), ATAN_ANGLE8);
+      actor->rotZ = ArcTan2(-view[0], -g_nCollisionHitNormalY, ATAN_ANGLE8);
       *faced = 1;
       break;
     }
@@ -3284,7 +3284,7 @@ void Level1_UpdateActors(void) {
 
           if (actor->posZ > 1023) {
             if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100)) {
-              int *nrm = &g_anCollisionProbeVec;
+              int *nrm = &g_anCollisionHitNormal;
               int dot;
 
               actor->posX = g_anCollisionResolvedPos;
@@ -3293,15 +3293,15 @@ void Level1_UpdateActors(void) {
 
               SetVector3Magnitude(nrm, 0x1000);
 
-              dot = (st->vel[0] * nrm[0] + st->vel[1] * g_nCollisionProbeVecY +
-                     st->vel[2] * g_nCollisionProbeVecZ) >>
+              dot = (st->vel[0] * nrm[0] + st->vel[1] * g_nCollisionHitNormalY +
+                     st->vel[2] * g_nCollisionHitNormalZ) >>
                     11;
 
               if (dot < 0) {
                 ScaleVector3ByRatio(nrm, 0x1000, -dot);
                 st->vel[0] += nrm[0];
-                st->vel[1] += AS_I32(g_nCollisionProbeVecY);
-                st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
+                st->vel[1] += AS_I32(g_nCollisionHitNormalY);
+                st->vel[2] += AS_I32(g_nCollisionHitNormalZ);
               }
             }
             st->life--;
@@ -3536,19 +3536,19 @@ void Level1_UpdateActors(void) {
         }
 
         if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100) != 0) {
-          int *nrm = &g_anCollisionProbeVec;
+          int *nrm = &g_anCollisionHitNormal;
           int along;
 
           SetVector3Magnitude(nrm, 0x1000);
-          along = (st->vel[0] * nrm[0]) + (st->vel[1] * g_nCollisionProbeVecY) +
-                  (st->vel[2] * g_nCollisionProbeVecZ);
+          along = (st->vel[0] * nrm[0]) + (st->vel[1] * g_nCollisionHitNormalY) +
+                  (st->vel[2] * g_nCollisionHitNormalZ);
           i = along >> 11;
 
           if (i < 0) {
             ScaleVector3ByRatio(nrm, 0x1000, (along >> 13) - i);
             st->vel[0] += nrm[0];
-            st->vel[1] += AS_I32(g_nCollisionProbeVecY);
-            st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
+            st->vel[1] += AS_I32(g_nCollisionHitNormalY);
+            st->vel[2] += AS_I32(g_nCollisionHitNormalZ);
           }
         }
 
@@ -3694,7 +3694,7 @@ void Level1_UpdateActors(void) {
 
       if (st->restMode == COLLREST_SNAP) {
         SnapActorToGround(actor);
-        EncodeCachedVecToActorDirCode(actor);
+        EncodeHitNormalToActorGroundCode(actor);
       }
 
       if (actor->mode == LIFECHEST_CLOSED) {

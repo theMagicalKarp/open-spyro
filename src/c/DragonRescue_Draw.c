@@ -37,7 +37,7 @@ void DragonRescue_Draw(void) {
     BuildRenderEntityLists();
     ComposeFrameScene();
     SetupFrameOT();
-    DrawPortalsAndStaticActors();
+    DrawPortalsAndSky();
     RasterizeEmitList();
     {
       int tint = g_nDragonRescueFullscreenTintLevel;
@@ -78,11 +78,11 @@ void DragonRescue_Draw(void) {
     FillWord(&g_pOtDepthBinHead0, 0, 0x900);
     EmitActorDrawList();
     RasterizeSpritePrimQueue();
-    DrawEntityDirectionalSpikes();
+    DrawActorDropShadows();
     RasterizeSpyroModel();
     DrawSpyroDropShadow();
     SetupFrameOT();
-    DrawPortalsAndStaticActors();
+    DrawPortalsAndSky();
     RasterizeEmitList();
     {
       int tint = g_nDragonRescueFullscreenTintLevel;
@@ -121,10 +121,10 @@ void DragonRescue_Draw(void) {
     FillWord(&g_pOtDepthBinHead0, 0, 0x900);
     EmitActorDrawList();
     RasterizeSpritePrimQueue();
-    DrawEntityDirectionalSpikes();
+    DrawActorDropShadows();
     DrawSpyroDropShadow();
     SetupFrameOT();
-    DrawPortalsAndStaticActors();
+    DrawPortalsAndSky();
     RasterizeEmitList();
     if (g_nCinematicActive != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
@@ -169,7 +169,7 @@ void DragonRescue_Draw(void) {
     RasterizeSpyroModel();
     DrawSpyroDropShadow();
     SetupFrameOT();
-    DrawPortalsAndStaticActors();
+    DrawPortalsAndSky();
     RasterizeEmitList();
     if (g_nCinematicActive != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
@@ -194,7 +194,7 @@ void DragonRescue_Draw(void) {
     RasterizeSpyroModel();
     DrawSpyroDropShadow();
     SetupFrameOT();
-    DrawPortalsAndStaticActors();
+    DrawPortalsAndSky();
     RasterizeEmitList();
     if (g_nCinematicActive != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();
@@ -224,12 +224,12 @@ void DragonRescue_Draw(void) {
       BuildSecondaryActorDrawList();
       EmitSecondaryActorPrimitives();
       RasterizeSpritePrimQueue();
-      DrawEntityDirectionalSpikes();
+      DrawActorDropShadows();
     }
     RasterizeSpyroModel();
     DrawSpyroDropShadow();
     SetupFrameOT();
-    DrawPortalsAndStaticActors();
+    DrawPortalsAndSky();
     RasterizeEmitList();
     if (g_nCinematicActive != 0 || g_nLetterboxBarHeight != 0) {
       DrawCinematicLetterbox();

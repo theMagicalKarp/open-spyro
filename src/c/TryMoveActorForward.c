@@ -76,7 +76,7 @@ int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR,
   }
 gdone:
   CopyVector(&actor->posX, vec);
-  EncodeCachedVecToActorDirCode(actor);
+  EncodeHitNormalToActorGroundCode(actor);
   RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
   return 0;
 }

@@ -3,12 +3,12 @@
 #include "globals.h"
 #include "main_shared.h"
 
-/* Draw gamestates 1 and 9 (level intro / world arrival): copies the world
-   fog color into both frame DRAWENVs, clears the OT bins, draws the
-   transition gem tally when active, Spyro, then the static world mesh —
-   with a temporary pitch-parallax view matrix while the intro countdown
-   (g_nLevelIntroParallaxCountdown, -2/frame) runs. Ends with the standard
-   2-vblank frame submit (0x8001a050, 956 bytes). */
+/* Draw gamestates 1 and 9 (GS_LEVEL_LOAD's portal flight / GS_ARRIVAL_CAMERA):
+   copies the sky colour (g_dwWorldFogColor) into both frame DRAWENVs, clears
+   the OT bins, draws the transition gem tally when active, Spyro, then the
+   sky — through a view matrix tilted by g_nTransitionSkyPitchTilt (the
+   entered portal's sky tilt, -2/frame) until it reaches 0. Ends with the
+   standard 2-vblank frame submit (0x8001a050, 956 bytes). */
 void LevelTransition_Draw(void) {
   int r;
   int g;
@@ -21,37 +21,35 @@ void LevelTransition_Draw(void) {
   r = ((unsigned char *)&g_dwWorldFogColor)[0];
   g = ((unsigned char *)&g_dwWorldFogColor)[1];
   b = ((unsigned char *)&g_dwWorldFogColor)[2];
-  g_abFrameDrawEnv0.r0 = r;
-  g_abFrameDrawEnv0.g0 = g;
-  g_abFrameDrawEnv0.b0 = b;
-  g_abFrameDrawEnv1.r0 = r;
-  g_abFrameDrawEnv1.g0 = g;
-  g_abFrameDrawEnv1.b0 = b;
+  g_FrameDrawEnv0.r0 = r;
+  g_FrameDrawEnv0.g0 = g;
+  g_FrameDrawEnv0.b0 = b;
+  g_FrameDrawEnv1.r0 = r;
+  g_FrameDrawEnv1.g0 = g;
+  g_FrameDrawEnv1.b0 = b;
   FillWord(&g_pOtDepthBinHead0, 0, 0x900);
   if (g_nLevelTransitionTallyActive != 0) {
     DrawLevelTransitionOverlay();
   }
   RasterizeSpyroModel();
-  if (g_nWorldRenderMeshChunkCount != 0) {
-    g_nLevelIntroParallaxCountdown -= 2;
-    if (g_nLevelIntroParallaxCountdown < 0) {
-      g_nLevelIntroParallaxCountdown = 0;
+  if (g_nSkyChunkCount != 0) {
+    g_nTransitionSkyPitchTilt -= 2;
+    if (g_nTransitionSkyPitchTilt < 0) {
+      g_nTransitionSkyPitchTilt = 0;
     }
-    if (g_nLevelIntroParallaxCountdown != 0) {
+    if (g_nTransitionSkyPitchTilt != 0) {
       FillWord(&m1, 0, 0x20);
       SetTransMatrix(&m1);
       m1.m[0][0] = 0x1000;
       v = LookupCosine(g_anCameraEulerPitchBlock[0] -
-                       g_nLevelIntroParallaxCountdown);
+                       g_nTransitionSkyPitchTilt);
       m1.m[1][1] = v;
-      v = LookupSine(g_anCameraEulerPitchBlock[0] -
-                     g_nLevelIntroParallaxCountdown);
+      v = LookupSine(g_anCameraEulerPitchBlock[0] - g_nTransitionSkyPitchTilt);
       m1.m[2][1] = v;
-      v = LookupSine(g_anCameraEulerPitchBlock[0] -
-                     g_nLevelIntroParallaxCountdown);
+      v = LookupSine(g_anCameraEulerPitchBlock[0] - g_nTransitionSkyPitchTilt);
       m1.m[1][2] = -v;
       v = LookupCosine(g_anCameraEulerPitchBlock[0] -
-                       g_nLevelIntroParallaxCountdown);
+                       g_nTransitionSkyPitchTilt);
       m1.m[2][2] = v;
 
       p2 = &m2;
@@ -95,10 +93,10 @@ void LevelTransition_Draw(void) {
         v += 0x1ff;
       }
       m2.m[1][2] = v >> 9;
-      EmitStaticActorMeshList(-1, &m1, p2);
+      EmitSkyMesh(-1, &m1, p2);
     } else {
-      EmitStaticActorMeshList(-1, (MATRIX *)g_anCameraViewMtx,
-                              (MATRIX *)CAM_W2C_MTX_VIA_VIEW);
+      EmitSkyMesh(-1, (MATRIX *)g_anCameraViewMtx,
+                  (MATRIX *)CAM_W2C_MTX_VIA_VIEW);
     }
   }
   DrawSync(0);

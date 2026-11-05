@@ -4,8 +4,8 @@
 #include "level_id.h"
 #include "main_shared.h"
 
-/* Point the per-level hook slots at the overlay just loaded for
-   g_nActiveLevelId (0x8005a470): every level sets the overlay end and its
+/* 0x8005a470: point the per-level hook slots at the overlay just loaded for
+   g_nActiveLevelId: every level sets the overlay end and its
    SpawnActor / UpdateActors / EmitParticles / AdvanceEmitList entries; homes
    add the actor-cutscene and save-menu hooks, flight levels the flight-run and
    results hooks. Ids 0..9 and 99 are the overlays not mapped from WAD.WAD

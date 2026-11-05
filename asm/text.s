@@ -83,8 +83,8 @@ glabel InitGraphicsHardware
     /* 2AC4 800122C4 21200000 */   addu      $a0, $zero, $zero
     /* 2AC8 800122C8 4F7D010C */  jal        SetGraphDebug
     /* 2ACC 800122CC 21200000 */   addu      $a0, $zero, $zero
-    /* 2AD0 800122D0 0780103C */  lui        $s0, %hi(g_abFrameDrawEnv0)
-    /* 2AD4 800122D4 E06E1026 */  addiu      $s0, $s0, %lo(g_abFrameDrawEnv0)
+    /* 2AD0 800122D0 0780103C */  lui        $s0, %hi(g_FrameDrawEnv0)
+    /* 2AD4 800122D4 E06E1026 */  addiu      $s0, $s0, %lo(g_FrameDrawEnv0)
     /* 2AD8 800122D8 21200002 */  addu       $a0, $s0, $zero
     /* 2ADC 800122DC 21280000 */  addu       $a1, $zero, $zero
     /* 2AE0 800122E0 08000624 */  addiu      $a2, $zero, 0x8
@@ -116,20 +116,20 @@ glabel InitGraphicsHardware
     /* 2B48 80012348 21300000 */  addu       $a2, $zero, $zero
     /* 2B4C 8001234C 21380000 */  addu       $a3, $zero, $zero
     /* 2B50 80012350 F0000224 */  addiu      $v0, $zero, 0xF0
-    /* 2B54 80012354 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0xA)
-    /* 2B58 80012358 6E6F22A4 */  sh         $v0, %lo(g_abFrameDrawEnv1 + 0xA)($at)
+    /* 2B54 80012354 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0xA)
+    /* 2B58 80012358 6E6F22A4 */  sh         $v0, %lo(g_FrameDrawEnv1 + 0xA)($at)
     /* 2B5C 8001235C 01000224 */  addiu      $v0, $zero, 0x1
     /* 2B60 80012360 0780013C */  lui        $at, %hi(g_abFrameDrawEnvIsbgBlock)
     /* 2B64 80012364 F86E22A0 */  sb         $v0, %lo(g_abFrameDrawEnvIsbgBlock)($at)
-    /* 2B68 80012368 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x18)
-    /* 2B6C 8001236C 7C6F22A0 */  sb         $v0, %lo(g_abFrameDrawEnv1 + 0x18)($at)
-    /* 2B70 80012370 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0x16)
-    /* 2B74 80012374 F66E22A0 */  sb         $v0, %lo(g_abFrameDrawEnv0 + 0x16)($at)
-    /* 2B78 80012378 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x16)
-    /* 2B7C 8001237C 7A6F22A0 */  sb         $v0, %lo(g_abFrameDrawEnv1 + 0x16)($at)
+    /* 2B68 80012368 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x18)
+    /* 2B6C 8001236C 7C6F22A0 */  sb         $v0, %lo(g_FrameDrawEnv1 + 0x18)($at)
+    /* 2B70 80012370 0780013C */  lui        $at, %hi(g_FrameDrawEnv0 + 0x16)
+    /* 2B74 80012374 F66E22A0 */  sb         $v0, %lo(g_FrameDrawEnv0 + 0x16)($at)
+    /* 2B78 80012378 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x16)
+    /* 2B7C 8001237C 7A6F22A0 */  sb         $v0, %lo(g_FrameDrawEnv1 + 0x16)($at)
     /* 2B80 80012380 00020224 */  addiu      $v0, $zero, 0x200
-    /* 2B84 80012384 0780013C */  lui        $at, %hi(g_abFrameDrawEnv0 + 0xA)
-    /* 2B88 80012388 EA6E20A4 */  sh         $zero, %lo(g_abFrameDrawEnv0 + 0xA)($at)
+    /* 2B84 80012384 0780013C */  lui        $at, %hi(g_FrameDrawEnv0 + 0xA)
+    /* 2B88 80012388 EA6E20A4 */  sh         $zero, %lo(g_FrameDrawEnv0 + 0xA)($at)
     /* 2B8C 8001238C 1800A0A7 */  sh         $zero, 0x18($sp)
     /* 2B90 80012390 1A00A0A7 */  sh         $zero, 0x1A($sp)
     /* 2B94 80012394 1C00A2A7 */  sh         $v0, 0x1C($sp)
@@ -512,10 +512,10 @@ glabel Initialize
     /* 305C 8001285C 0500063C */  lui        $a2, (0x5A000 >> 16)
     /* 3060 80012860 0000048E */  lw         $a0, 0x0($s0)
     /* 3064 80012864 01000224 */  addiu      $v0, $zero, 0x1
-    /* 3068 80012868 0780013C */  lui        $at, %hi(g_abFrameDispEnv0 + 0x11)
-    /* 306C 8001286C 4D6F22A0 */  sb         $v0, %lo(g_abFrameDispEnv0 + 0x11)($at)
-    /* 3070 80012870 0780013C */  lui        $at, %hi(g_abFrameDispEnv1 + 0x11)
-    /* 3074 80012874 D16F22A0 */  sb         $v0, %lo(g_abFrameDispEnv1 + 0x11)($at)
+    /* 3068 80012868 0780013C */  lui        $at, %hi(g_FrameDispEnv0 + 0x11)
+    /* 306C 8001286C 4D6F22A0 */  sb         $v0, %lo(g_FrameDispEnv0 + 0x11)($at)
+    /* 3070 80012870 0780013C */  lui        $at, %hi(g_FrameDispEnv1 + 0x11)
+    /* 3074 80012874 D16F22A0 */  sb         $v0, %lo(g_FrameDispEnv1 + 0x11)($at)
     /* 3078 80012878 455A000C */  jal        FillWord
     /* 307C 8001287C 00A0C634 */   ori       $a2, $a2, (0x5A000 & 0xFFFF)
   .L80012880:
@@ -537,8 +537,8 @@ glabel Initialize
     /* 30BC 800128BC 21200000 */   addu      $a0, $zero, $zero
     /* 30C0 800128C0 F176010C */  jal        VSync
     /* 30C4 800128C4 21200000 */   addu      $a0, $zero, $zero
-    /* 30C8 800128C8 0780043C */  lui        $a0, %hi(g_abFrameDispEnv1)
-    /* 30CC 800128CC C06F8424 */  addiu      $a0, $a0, %lo(g_abFrameDispEnv1)
+    /* 30C8 800128C8 0780043C */  lui        $a0, %hi(g_FrameDispEnv1)
+    /* 30CC 800128CC C06F8424 */  addiu      $a0, $a0, %lo(g_FrameDispEnv1)
     /* 30D0 800128D0 0C80010C */  jal        PutDispEnv
     /* 30D4 800128D4 00000000 */   nop
     /* 30D8 800128D8 03002016 */  bnez       $s1, .L800128E8
@@ -643,8 +643,8 @@ glabel Initialize
     /* 3254 80012A54 21200000 */   addu      $a0, $zero, $zero
     /* 3258 80012A58 F176010C */  jal        VSync
     /* 325C 80012A5C 21200000 */   addu      $a0, $zero, $zero
-    /* 3260 80012A60 0780043C */  lui        $a0, %hi(g_abFrameDispEnv1)
-    /* 3264 80012A64 C06F8424 */  addiu      $a0, $a0, %lo(g_abFrameDispEnv1)
+    /* 3260 80012A60 0780043C */  lui        $a0, %hi(g_FrameDispEnv1)
+    /* 3264 80012A64 C06F8424 */  addiu      $a0, $a0, %lo(g_FrameDispEnv1)
     /* 3268 80012A68 0C80010C */  jal        PutDispEnv
     /* 326C 80012A6C 00000000 */   nop
     /* 3270 80012A70 0800022A */  slti       $v0, $s0, 0x8
@@ -681,8 +681,8 @@ glabel Initialize
     /* 32E8 80012AE8 21200000 */   addu      $a0, $zero, $zero
     /* 32EC 80012AEC F176010C */  jal        VSync
     /* 32F0 80012AF0 21200000 */   addu      $a0, $zero, $zero
-    /* 32F4 80012AF4 0780043C */  lui        $a0, %hi(g_abFrameDispEnv1)
-    /* 32F8 80012AF8 C06F8424 */  addiu      $a0, $a0, %lo(g_abFrameDispEnv1)
+    /* 32F4 80012AF4 0780043C */  lui        $a0, %hi(g_FrameDispEnv1)
+    /* 32F8 80012AF8 C06F8424 */  addiu      $a0, $a0, %lo(g_FrameDispEnv1)
     /* 32FC 80012AFC 0C80010C */  jal        PutDispEnv
     /* 3300 80012B00 20003126 */   addiu     $s1, $s1, 0x20
     /* 3304 80012B04 01005226 */  addiu      $s2, $s2, 0x1
@@ -738,8 +738,8 @@ glabel Initialize
     /* 33BC 80012BBC 21200000 */   addu      $a0, $zero, $zero
     /* 33C0 80012BC0 F176010C */  jal        VSync
     /* 33C4 80012BC4 21200000 */   addu      $a0, $zero, $zero
-    /* 33C8 80012BC8 0780043C */  lui        $a0, %hi(g_abFrameDispEnv1)
-    /* 33CC 80012BCC C06F8424 */  addiu      $a0, $a0, %lo(g_abFrameDispEnv1)
+    /* 33C8 80012BC8 0780043C */  lui        $a0, %hi(g_FrameDispEnv1)
+    /* 33CC 80012BCC C06F8424 */  addiu      $a0, $a0, %lo(g_FrameDispEnv1)
     /* 33D0 80012BD0 0C80010C */  jal        PutDispEnv
     /* 33D4 80012BD4 00000000 */   nop
     /* 33D8 80012BD8 0800022A */  slti       $v0, $s0, 0x8
@@ -747,11 +747,11 @@ glabel Initialize
     /* 33E0 80012BE0 00000000 */   nop
     /* 33E4 80012BE4 B27D010C */  jal        SetDispMask
     /* 33E8 80012BE8 21200000 */   addu      $a0, $zero, $zero
-    /* 33EC 80012BEC 0780023C */  lui        $v0, %hi(g_abFrameDispEnv0 + 0x11)
-    /* 33F0 80012BF0 4D6F4224 */  addiu      $v0, $v0, %lo(g_abFrameDispEnv0 + 0x11)
+    /* 33EC 80012BEC 0780023C */  lui        $v0, %hi(g_FrameDispEnv0 + 0x11)
+    /* 33F0 80012BF0 4D6F4224 */  addiu      $v0, $v0, %lo(g_FrameDispEnv0 + 0x11)
     /* 33F4 80012BF4 000040A0 */  sb         $zero, 0x0($v0)
-    /* 33F8 80012BF8 0780013C */  lui        $at, %hi(g_abFrameDispEnv1 + 0x11)
-    /* 33FC 80012BFC D16F20A0 */  sb         $zero, %lo(g_abFrameDispEnv1 + 0x11)($at)
+    /* 33F8 80012BF8 0780013C */  lui        $at, %hi(g_FrameDispEnv1 + 0x11)
+    /* 33FC 80012BFC D16F20A0 */  sb         $zero, %lo(g_FrameDispEnv1 + 0x11)($at)
     /* 3400 80012C00 0C80010C */  jal        PutDispEnv
     /* 3404 80012C04 73004424 */   addiu     $a0, $v0, 0x73
     /* 3408 80012C08 2000A427 */  addiu      $a0, $sp, 0x20
@@ -931,14 +931,14 @@ glabel UnpackWorldDataChunks
     /* 366C 80012E6C 21380000 */  addu       $a3, $zero, $zero
   .L80012E70:
     /* 3670 80012E70 0400028E */  lw         $v0, 0x4($s0)
-    /* 3674 80012E74 0780043C */  lui        $a0, %hi(g_nWorldMeshIndexCount)
-    /* 3678 80012E78 88778424 */  addiu      $a0, $a0, %lo(g_nWorldMeshIndexCount)
+    /* 3674 80012E74 0780043C */  lui        $a0, %hi(g_nLevelSkyZoneListCount)
+    /* 3678 80012E78 88778424 */  addiu      $a0, $a0, %lo(g_nLevelSkyZoneListCount)
     /* 367C 80012E7C 04004224 */  addiu      $v0, $v0, 0x4
     /* 3680 80012E80 21300202 */  addu       $a2, $s0, $v0
     /* 3684 80012E84 0000C28C */  lw         $v0, 0x0($a2)
     /* 3688 80012E88 0400C624 */  addiu      $a2, $a2, 0x4
-    /* 368C 80012E8C 0780013C */  lui        $at, %hi(g_pWorldMeshIndexTable)
-    /* 3690 80012E90 8C7726AC */  sw         $a2, %lo(g_pWorldMeshIndexTable)($at)
+    /* 368C 80012E8C 0780013C */  lui        $at, %hi(g_pLevelSkyZoneLists)
+    /* 3690 80012E90 8C7726AC */  sw         $a2, %lo(g_pLevelSkyZoneLists)($at)
     /* 3694 80012E94 15004018 */  blez       $v0, .L80012EEC
     /* 3698 80012E98 000082AC */   sw        $v0, 0x0($a0)
   .L80012E9C:
@@ -961,8 +961,8 @@ glabel UnpackWorldDataChunks
     /* 36D8 80012ED8 B48520AC */  sw         $zero, %lo(g_nVisZoneCount)($at)
     /* 36DC 80012EDC 0880013C */  lui        $at, %hi(g_pVisZoneChunkLists)
     /* 36E0 80012EE0 B08520AC */  sw         $zero, %lo(g_pVisZoneChunkLists)($at)
-    /* 36E4 80012EE4 0780013C */  lui        $at, %hi(g_pWorldMeshIndexTable)
-    /* 36E8 80012EE8 8C7720AC */  sw         $zero, %lo(g_pWorldMeshIndexTable)($at)
+    /* 36E4 80012EE4 0780013C */  lui        $at, %hi(g_pLevelSkyZoneLists)
+    /* 36E8 80012EE8 8C7720AC */  sw         $zero, %lo(g_pLevelSkyZoneLists)($at)
   .L80012EEC:
     /* 36EC 80012EEC 0000028E */  lw         $v0, 0x0($s0)
     /* 36F0 80012EF0 4300A014 */  bnez       $a1, .L80013000
@@ -1039,8 +1039,8 @@ glabel UnpackWorldDataChunks
     /* 3800 80013000 2180C000 */  addu       $s0, $a2, $zero
     /* 3804 80013004 0400C624 */  addiu      $a2, $a2, 0x4
     /* 3808 80013008 0000C290 */  lbu        $v0, 0x0($a2)
-    /* 380C 8001300C 0780033C */  lui        $v1, %hi(g_abCollisionHeaderBytes)
-    /* 3810 80013010 90776324 */  addiu      $v1, $v1, %lo(g_abCollisionHeaderBytes)
+    /* 380C 8001300C 0780033C */  lui        $v1, %hi(g_abLevelSkyBgColor)
+    /* 3810 80013010 90776324 */  addiu      $v1, $v1, %lo(g_abLevelSkyBgColor)
     /* 3814 80013014 000062A0 */  sb         $v0, 0x0($v1)
     /* 3818 80013018 0100C290 */  lbu        $v0, 0x1($a2)
     /* 381C 8001301C 0780013C */  lui        $at, %hi(D_80077791)
@@ -1051,10 +1051,10 @@ glabel UnpackWorldDataChunks
     /* 3830 80013030 927722A0 */  sb         $v0, %lo(D_80077792)($at)
     /* 3834 80013034 0000C28C */  lw         $v0, 0x0($a2)
     /* 3838 80013038 0400C624 */  addiu      $a2, $a2, 0x4
-    /* 383C 8001303C 0780013C */  lui        $at, %hi(g_pWorldCollisionTriArray)
-    /* 3840 80013040 847726AC */  sw         $a2, %lo(g_pWorldCollisionTriArray)($at)
-    /* 3844 80013044 0780013C */  lui        $at, %hi(g_nWorldCollisionTriCount)
-    /* 3848 80013048 807722AC */  sw         $v0, %lo(g_nWorldCollisionTriCount)($at)
+    /* 383C 8001303C 0780013C */  lui        $at, %hi(g_pLevelSkyChunkArray)
+    /* 3840 80013040 847726AC */  sw         $a2, %lo(g_pLevelSkyChunkArray)($at)
+    /* 3844 80013044 0780013C */  lui        $at, %hi(g_nLevelSkyChunkCount)
+    /* 3848 80013048 807722AC */  sw         $v0, %lo(g_nLevelSkyChunkCount)($at)
     /* 384C 8001304C 0C004018 */  blez       $v0, .L80013080
     /* 3850 80013050 21380000 */   addu      $a3, $zero, $zero
     /* 3854 80013054 F0FF6324 */  addiu      $v1, $v1, -0x10
@@ -1154,8 +1154,8 @@ glabel UnpackWorldDataChunks
     /* 39B0 800131B0 00000000 */  nop
     /* 39B4 800131B4 0D00E018 */  blez       $a3, .L800131EC
     /* 39B8 800131B8 0400C624 */   addiu     $a2, $a2, 0x4
-    /* 39BC 800131BC 0780033C */  lui        $v1, %hi(g_apMobEntryTable)
-    /* 39C0 800131C0 78626324 */  addiu      $v1, $v1, %lo(g_apMobEntryTable)
+    /* 39BC 800131BC 0780033C */  lui        $v1, %hi(g_apEmitTextureTable)
+    /* 39C0 800131C0 78626324 */  addiu      $v1, $v1, %lo(g_apEmitTextureTable)
   .L800131C4:
     /* 39C4 800131C4 0000C284 */  lh         $v0, 0x0($a2)
     /* 39C8 800131C8 00000000 */  nop
@@ -1812,8 +1812,8 @@ glabel BuildLoadedLevelRuntime
     /* 430C 80013B0C 708622AC */  sw         $v0, %lo(g_anCameraActiveTargetParams + 0x8)($at)
     /* 4310 80013B10 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 4314 80013B14 A86E24AC */  sw         $a0, %lo(g_pCameraTargetParams)($at)
-    /* 4318 80013B18 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 431C 80013B1C A46E23AC */  sw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 4318 80013B18 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 431C 80013B1C A46E23AC */  sw         $v1, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 4320 80013B20 D6D0000C */  jal        ResetCameraStateToTarget
     /* 4324 80013B24 00000000 */   nop
     /* 4328 80013B28 20000224 */  addiu      $v0, $zero, 0x20
@@ -1852,12 +1852,12 @@ glabel BuildLoadedLevelRuntime
     /* 43A4 80013BA4 455A000C */  jal        FillWord
     /* 43A8 80013BA8 08001026 */   addiu     $s0, $s0, 0x8
     /* 43AC 80013BAC 0000028E */  lw         $v0, 0x0($s0)
-    /* 43B0 80013BB0 0780013C */  lui        $at, %hi(g_anEntitySpikeTexWords)
-    /* 43B4 80013BB4 F85E22AC */  sw         $v0, %lo(g_anEntitySpikeTexWords)($at)
+    /* 43B0 80013BB0 0780013C */  lui        $at, %hi(g_anActorShadowTexWords)
+    /* 43B4 80013BB4 F85E22AC */  sw         $v0, %lo(g_anActorShadowTexWords)($at)
     /* 43B8 80013BB8 0400028E */  lw         $v0, 0x4($s0)
     /* 43BC 80013BBC 08001026 */  addiu      $s0, $s0, 0x8
-    /* 43C0 80013BC0 0780013C */  lui        $at, %hi(g_anEntitySpikeTexWords + 0x4)
-    /* 43C4 80013BC4 FC5E22AC */  sw         $v0, %lo(g_anEntitySpikeTexWords + 0x4)($at)
+    /* 43C0 80013BC0 0780013C */  lui        $at, %hi(g_anActorShadowTexWords + 0x4)
+    /* 43C4 80013BC4 FC5E22AC */  sw         $v0, %lo(g_anActorShadowTexWords + 0x4)($at)
     /* 43C8 80013BC8 0800028E */  lw         $v0, 0x8($s0)
     /* 43CC 80013BCC 0880013C */  lui        $at, %hi(g_anLevelSpriteTexWordPairs)
     /* 43D0 80013BD0 0C8522AC */  sw         $v0, %lo(g_anLevelSpriteTexWordPairs)($at)
@@ -2280,7 +2280,7 @@ glabel BuildLoadedLevelRuntime
     /* 49E8 800141E8 1800A2AF */   sw        $v0, 0x18($sp)
     /* 49EC 800141EC 0780043C */  lui        $a0, %hi(g_pActorListBase)
     /* 49F0 800141F0 2858848C */  lw         $a0, %lo(g_pActorListBase)($a0)
-    /* 49F4 800141F4 F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 49F4 800141F4 F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 49F8 800141F8 21209000 */   addu      $a0, $a0, $s0
     /* 49FC 800141FC 0780023C */  lui        $v0, %hi(g_pActorListBase)
     /* 4A00 80014200 2858428C */  lw         $v0, %lo(g_pActorListBase)($v0)
@@ -2702,10 +2702,10 @@ glabel TickCutsceneBundleLoadStream
     /* 4FEC 800147EC 01000524 */   addiu     $a1, $zero, 0x1
     /* 4FF0 800147F0 0780033C */  lui        $v1, %hi(g_nCutsceneId)
     /* 4FF4 800147F4 6C56638C */  lw         $v1, %lo(g_nCutsceneId)($v1)
-    /* 4FF8 800147F8 0780073C */  lui        $a3, %hi(g_nWorldCollisionTriCount)
-    /* 4FFC 800147FC 8077E724 */  addiu      $a3, $a3, %lo(g_nWorldCollisionTriCount)
-    /* 5000 80014800 0880063C */  lui        $a2, %hi(g_nWorldRenderMeshChunkCount)
-    /* 5004 80014804 408AC624 */  addiu      $a2, $a2, %lo(g_nWorldRenderMeshChunkCount)
+    /* 4FF8 800147F8 0780073C */  lui        $a3, %hi(g_nLevelSkyChunkCount)
+    /* 4FFC 800147FC 8077E724 */  addiu      $a3, $a3, %lo(g_nLevelSkyChunkCount)
+    /* 5000 80014800 0880063C */  lui        $a2, %hi(g_nSkyChunkCount)
+    /* 5004 80014804 408AC624 */  addiu      $a2, $a2, %lo(g_nSkyChunkCount)
     /* 5008 80014808 0000E48C */  lw         $a0, 0x0($a3)
     /* 500C 8001480C 0400E58C */  lw         $a1, 0x4($a3)
     /* 5010 80014810 0000C4AC */  sw         $a0, 0x0($a2)
@@ -3170,8 +3170,8 @@ glabel TickDragonRescueAssetStream
     /* 56C8 80014EC8 23208300 */   subu      $a0, $a0, $v1
     /* 56CC 80014ECC 0780033C */  lui        $v1, %hi(g_pActiveFrameDrawEnv)
     /* 56D0 80014ED0 8858638C */  lw         $v1, %lo(g_pActiveFrameDrawEnv)($v1)
-    /* 56D4 80014ED4 0780023C */  lui        $v0, %hi(g_abFrameDrawEnv0)
-    /* 56D8 80014ED8 E06E4224 */  addiu      $v0, $v0, %lo(g_abFrameDrawEnv0)
+    /* 56D4 80014ED4 0780023C */  lui        $v0, %hi(g_FrameDrawEnv0)
+    /* 56D8 80014ED8 E06E4224 */  addiu      $v0, $v0, %lo(g_FrameDrawEnv0)
     /* 56DC 80014EDC 05006214 */  bne        $v1, $v0, .L80014EF4
     /* 56E0 80014EE0 00800334 */   ori       $v1, $zero, 0x8000
     /* 56E4 80014EE4 0780123C */  lui        $s2, %hi(g_pFramePrimBufferBase1)
@@ -3570,10 +3570,10 @@ glabel TickLevelTransitionStream
     /* 5C90 80015490 0000A2AC */  sw         $v0, 0x0($a1)
     /* 5C94 80015494 0000028E */  lw         $v0, 0x0($s0)
     /* 5C98 80015498 04001026 */  addiu      $s0, $s0, 0x4
-    /* 5C9C 8001549C 0880013C */  lui        $at, %hi(g_pWorldRenderMeshChunkArray)
-    /* 5CA0 800154A0 448A30AC */  sw         $s0, %lo(g_pWorldRenderMeshChunkArray)($at)
-    /* 5CA4 800154A4 0880013C */  lui        $at, %hi(g_nWorldRenderMeshChunkCount)
-    /* 5CA8 800154A8 408A22AC */  sw         $v0, %lo(g_nWorldRenderMeshChunkCount)($at)
+    /* 5C9C 8001549C 0880013C */  lui        $at, %hi(g_pSkyChunkArray)
+    /* 5CA0 800154A0 448A30AC */  sw         $s0, %lo(g_pSkyChunkArray)($at)
+    /* 5CA4 800154A4 0880013C */  lui        $at, %hi(g_nSkyChunkCount)
+    /* 5CA8 800154A8 408A22AC */  sw         $v0, %lo(g_nSkyChunkCount)($at)
     /* 5CAC 800154AC 2F004018 */  blez       $v0, .L8001556C
     /* 5CB0 800154B0 21180000 */   addu      $v1, $zero, $zero
     /* 5CB4 800154B4 F0FFA524 */  addiu      $a1, $a1, -0x10
@@ -3591,8 +3591,8 @@ glabel TickLevelTransitionStream
     /* 5CE0 800154E0 5B550008 */  j          .L8001556C
     /* 5CE4 800154E4 00000000 */   nop
   .L800154E8:
-    /* 5CE8 800154E8 0880133C */  lui        $s3, %hi(g_pWorldRenderMeshChunkArray)
-    /* 5CEC 800154EC 448A7326 */  addiu      $s3, $s3, %lo(g_pWorldRenderMeshChunkArray)
+    /* 5CE8 800154E8 0880133C */  lui        $s3, %hi(g_pSkyChunkArray)
+    /* 5CEC 800154EC 448A7326 */  addiu      $s3, $s3, %lo(g_pSkyChunkArray)
     /* 5CF0 800154F0 0000628E */  lw         $v0, 0x0($s3)
     /* 5CF4 800154F4 0880033C */  lui        $v1, %hi(g_pRenderScratchRegionBase)
     /* 5CF8 800154F8 E885638C */  lw         $v1, %lo(g_pRenderScratchRegionBase)($v1)
@@ -3609,8 +3609,8 @@ glabel TickLevelTransitionStream
     /* 5D24 80015524 0000028E */  lw         $v0, 0x0($s0)
     /* 5D28 80015528 04001026 */  addiu      $s0, $s0, 0x4
     /* 5D2C 8001552C 000070AE */  sw         $s0, 0x0($s3)
-    /* 5D30 80015530 0880013C */  lui        $at, %hi(g_nWorldRenderMeshChunkCount)
-    /* 5D34 80015534 408A22AC */  sw         $v0, %lo(g_nWorldRenderMeshChunkCount)($at)
+    /* 5D30 80015530 0880013C */  lui        $at, %hi(g_nSkyChunkCount)
+    /* 5D34 80015534 408A22AC */  sw         $v0, %lo(g_nSkyChunkCount)($at)
     /* 5D38 80015538 0C004018 */  blez       $v0, .L8001556C
     /* 5D3C 8001553C 21180000 */   addu      $v1, $zero, $zero
     /* 5D40 80015540 FCFF6526 */  addiu      $a1, $s3, -0x4
@@ -3650,8 +3650,8 @@ glabel TickLevelTransitionStream
     /* 5DBC 800155BC 0780023C */  lui        $v0, %hi(g_nCdStreamState)
     /* 5DC0 800155C0 6458428C */  lw         $v0, %lo(g_nCdStreamState)($v0)
     /* 5DC4 800155C4 FFFF0324 */  addiu      $v1, $zero, -0x1
-    /* 5DC8 800155C8 0880013C */  lui        $at, %hi(g_nWorldRenderMeshChunkCount)
-    /* 5DCC 800155CC 408A20AC */  sw         $zero, %lo(g_nWorldRenderMeshChunkCount)($at)
+    /* 5DC8 800155C8 0880013C */  lui        $at, %hi(g_nSkyChunkCount)
+    /* 5DCC 800155CC 408A20AC */  sw         $zero, %lo(g_nSkyChunkCount)($at)
     /* 5DD0 800155D0 0780013C */  lui        $at, %hi(g_nCameraVisZone)
     /* 5DD4 800155D4 246E23AC */  sw         $v1, %lo(g_nCameraVisZone)($at)
     /* 5DD8 800155D8 01004224 */  addiu      $v0, $v0, 0x1
@@ -3861,8 +3861,8 @@ glabel TickLevelTransitionStream
     /* 60E4 800158E4 DC85848C */  lw         $a0, %lo(g_pDrawBufB)($a0)
     /* 60E8 800158E8 564B000C */  jal        UnpackWorldDataChunks
     /* 60EC 800158EC 21280000 */   addu      $a1, $zero, $zero
-    /* 60F0 800158F0 0880063C */  lui        $a2, %hi(g_nWorldRenderMeshChunkCount)
-    /* 60F4 800158F4 408AC624 */  addiu      $a2, $a2, %lo(g_nWorldRenderMeshChunkCount)
+    /* 60F0 800158F0 0880063C */  lui        $a2, %hi(g_nSkyChunkCount)
+    /* 60F4 800158F4 408AC624 */  addiu      $a2, $a2, %lo(g_nSkyChunkCount)
     /* 60F8 800158F8 0000C38C */  lw         $v1, 0x0($a2)
     /* 60FC 800158FC 0880013C */  lui        $at, %hi(g_pWorldUnpackHead)
     /* 6100 80015900 E08522AC */  sw         $v0, %lo(g_pWorldUnpackHead)($at)
@@ -3904,8 +3904,8 @@ glabel TickLevelTransitionStream
     /* 618C 8001598C 00000000 */   nop
   .L80015990:
     /* 6190 80015990 0000628C */  lw         $v0, 0x0($v1)
-    /* 6194 80015994 0880063C */  lui        $a2, %hi(g_nWorldRenderMeshChunkCount)
-    /* 6198 80015998 408AC624 */  addiu      $a2, $a2, %lo(g_nWorldRenderMeshChunkCount)
+    /* 6194 80015994 0880063C */  lui        $a2, %hi(g_nSkyChunkCount)
+    /* 6198 80015998 408AC624 */  addiu      $a2, $a2, %lo(g_nSkyChunkCount)
     /* 619C 8001599C 0000438C */  lw         $v1, 0x0($v0)
     /* 61A0 800159A0 0400448C */  lw         $a0, 0x4($v0)
     /* 61A4 800159A4 0800458C */  lw         $a1, 0x8($v0)
@@ -3919,8 +3919,8 @@ glabel TickLevelTransitionStream
     /* 61C4 800159C4 7F560008 */  j          .L800159FC
     /* 61C8 800159C8 00000000 */   nop
   .L800159CC:
-    /* 61CC 800159CC 0780053C */  lui        $a1, %hi(g_nWorldCollisionTriCount)
-    /* 61D0 800159D0 8077A524 */  addiu      $a1, $a1, %lo(g_nWorldCollisionTriCount)
+    /* 61CC 800159CC 0780053C */  lui        $a1, %hi(g_nLevelSkyChunkCount)
+    /* 61D0 800159D0 8077A524 */  addiu      $a1, $a1, %lo(g_nLevelSkyChunkCount)
     /* 61D4 800159D4 0000A28C */  lw         $v0, 0x0($a1)
     /* 61D8 800159D8 0400A38C */  lw         $v1, 0x4($a1)
     /* 61DC 800159DC 0800A48C */  lw         $a0, 0x8($a1)
@@ -4069,8 +4069,8 @@ glabel TickLevelTransitionStream
     /* 63F4 80015BF4 ED580008 */  j          .L800163B4
     /* 63F8 80015BF8 01004224 */   addiu     $v0, $v0, 0x1
   .L80015BFC:
-    /* 63FC 80015BFC 0780023C */  lui        $v0, %hi(g_nLevelIntroParallaxCountdown)
-    /* 6400 80015C00 1059428C */  lw         $v0, %lo(g_nLevelIntroParallaxCountdown)($v0)
+    /* 63FC 80015BFC 0780023C */  lui        $v0, %hi(g_nTransitionSkyPitchTilt)
+    /* 6400 80015C00 1059428C */  lw         $v0, %lo(g_nTransitionSkyPitchTilt)($v0)
     /* 6404 80015C04 00000000 */  nop
     /* 6408 80015C08 EC014014 */  bnez       $v0, .L800163BC
     /* 640C 80015C0C 00000000 */   nop
@@ -4371,12 +4371,12 @@ glabel TickLevelTransitionStream
     /* 687C 8001607C F2FE4392 */  lbu        $v1, -0x10E($s2)
     /* 6880 80016080 7F000224 */  addiu      $v0, $zero, 0x7F
     /* 6884 80016084 0BFF42A2 */  sb         $v0, -0xF5($s2)
-    /* 6888 80016088 0780013C */  lui        $at, %hi(g_nPortalViewPitchTilt)
-    /* 688C 8001608C FC5820AC */  sw         $zero, %lo(g_nPortalViewPitchTilt)($at)
+    /* 6888 80016088 0780013C */  lui        $at, %hi(g_nPortalSkyPitchTilt)
+    /* 688C 8001608C FC5820AC */  sw         $zero, %lo(g_nPortalSkyPitchTilt)($at)
     /* 6890 80016090 2318A302 */  subu       $v1, $s5, $v1
     /* 6894 80016094 00190300 */  sll        $v1, $v1, 4
-    /* 6898 80016098 0780013C */  lui        $at, %hi(g_nPortalViewYawSpin)
-    /* 689C 8001609C 585823AC */  sw         $v1, %lo(g_nPortalViewYawSpin)($at)
+    /* 6898 80016098 0780013C */  lui        $at, %hi(g_nPortalSkyYawSpin)
+    /* 689C 8001609C 585823AC */  sw         $v1, %lo(g_nPortalSkyYawSpin)($at)
     /* 68A0 800160A0 C5580008 */  j          .L80016314
     /* 68A4 800160A4 00000000 */   nop
   .L800160A8:
@@ -4445,8 +4445,8 @@ glabel TickLevelTransitionStream
     /* 699C 8001619C F0FF0426 */   addiu     $a0, $s0, -0x10
     /* 69A0 800161A0 0780033C */  lui        $v1, %hi(g_pCameraTargetParams)
     /* 69A4 800161A4 A86E638C */  lw         $v1, %lo(g_pCameraTargetParams)($v1)
-    /* 69A8 800161A8 0780023C */  lui        $v0, %hi(g_anCameraMode12Params)
-    /* 69AC 800161AC 84CA4224 */  addiu      $v0, $v0, %lo(g_anCameraMode12Params)
+    /* 69A8 800161A8 0780023C */  lui        $v0, %hi(g_anCameraParamTransitionGlideIn)
+    /* 69AC 800161AC 84CA4224 */  addiu      $v0, $v0, %lo(g_anCameraParamTransitionGlideIn)
     /* 69B0 800161B0 34006214 */  bne        $v1, $v0, .L80016284
     /* 69B4 800161B4 21202002 */   addu      $a0, $s1, $zero
     /* 69B8 800161B8 0880023C */  lui        $v0, %hi(g_nSpyroWorldPosZ)
@@ -4541,10 +4541,10 @@ glabel TickLevelTransitionStream
     /* 6B0C 8001630C 9AFA000C */  jal        ChangeSpyroState
     /* 6B10 80016310 21200000 */   addu      $a0, $zero, $zero
   .L80016314:
-    /* 6B14 80016314 0780053C */  lui        $a1, %hi(g_nWorldCollisionTriCount)
-    /* 6B18 80016318 8077A524 */  addiu      $a1, $a1, %lo(g_nWorldCollisionTriCount)
-    /* 6B1C 8001631C 0880043C */  lui        $a0, %hi(g_nWorldRenderMeshChunkCount)
-    /* 6B20 80016320 408A8424 */  addiu      $a0, $a0, %lo(g_nWorldRenderMeshChunkCount)
+    /* 6B14 80016314 0780053C */  lui        $a1, %hi(g_nLevelSkyChunkCount)
+    /* 6B18 80016318 8077A524 */  addiu      $a1, $a1, %lo(g_nLevelSkyChunkCount)
+    /* 6B1C 8001631C 0880043C */  lui        $a0, %hi(g_nSkyChunkCount)
+    /* 6B20 80016320 408A8424 */  addiu      $a0, $a0, %lo(g_nSkyChunkCount)
     /* 6B24 80016324 0000A28C */  lw         $v0, 0x0($a1)
     /* 6B28 80016328 0400A38C */  lw         $v1, 0x4($a1)
     /* 6B2C 8001632C 000082AC */  sw         $v0, 0x0($a0)
@@ -8756,7 +8756,7 @@ glabel ComposeFrameScene
     /* 9ED0 800196D0 00000000 */   nop
     /* 9ED4 800196D4 8B8A000C */  jal        RasterizeSpritePrimQueue
     /* 9ED8 800196D8 00000000 */   nop
-    /* 9EDC 800196DC E367010C */  jal        DrawEntityDirectionalSpikes
+    /* 9EDC 800196DC E367010C */  jal        DrawActorDropShadows
     /* 9EE0 800196E0 00000000 */   nop
     /* 9EE4 800196E4 0780023C */  lui        $v0, %hi(g_nSpyroDrawSuppressed)
     /* 9EE8 800196E8 1458428C */  lw         $v0, %lo(g_nSpyroDrawSuppressed)($v0)
@@ -9442,12 +9442,12 @@ glabel LevelTransition_Draw
     /* A890 8001A090 FA6E23A0 */  sb         $v1, %lo(g_bFrameDrawEnv0BgG)($at)
     /* A894 8001A094 0780013C */  lui        $at, %hi(g_bFrameDrawEnv0BgB)
     /* A898 8001A098 FB6E27A0 */  sb         $a3, %lo(g_bFrameDrawEnv0BgB)($at)
-    /* A89C 8001A09C 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x19)
-    /* A8A0 8001A0A0 7D6F22A0 */  sb         $v0, %lo(g_abFrameDrawEnv1 + 0x19)($at)
-    /* A8A4 8001A0A4 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1A)
-    /* A8A8 8001A0A8 7E6F23A0 */  sb         $v1, %lo(g_abFrameDrawEnv1 + 0x1A)($at)
-    /* A8AC 8001A0AC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1B)
-    /* A8B0 8001A0B0 7F6F27A0 */  sb         $a3, %lo(g_abFrameDrawEnv1 + 0x1B)($at)
+    /* A89C 8001A09C 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x19)
+    /* A8A0 8001A0A0 7D6F22A0 */  sb         $v0, %lo(g_FrameDrawEnv1 + 0x19)($at)
+    /* A8A4 8001A0A4 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1A)
+    /* A8A8 8001A0A8 7E6F23A0 */  sb         $v1, %lo(g_FrameDrawEnv1 + 0x1A)($at)
+    /* A8AC 8001A0AC 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1B)
+    /* A8B0 8001A0B0 7F6F27A0 */  sb         $a3, %lo(g_FrameDrawEnv1 + 0x1B)($at)
     /* A8B4 8001A0B4 455A000C */  jal        FillWord
     /* A8B8 8001A0B8 00090624 */   addiu     $a2, $zero, 0x900
     /* A8BC 8001A0BC 0780023C */  lui        $v0, %hi(g_nLevelTransitionTallyActive)
@@ -9460,24 +9460,24 @@ glabel LevelTransition_Draw
   .L8001A0D8:
     /* A8D8 8001A0D8 B18E000C */  jal        RasterizeSpyroModel
     /* A8DC 8001A0DC 00000000 */   nop
-    /* A8E0 8001A0E0 0880023C */  lui        $v0, %hi(g_nWorldRenderMeshChunkCount)
-    /* A8E4 8001A0E4 408A428C */  lw         $v0, %lo(g_nWorldRenderMeshChunkCount)($v0)
+    /* A8E0 8001A0E0 0880023C */  lui        $v0, %hi(g_nSkyChunkCount)
+    /* A8E4 8001A0E4 408A428C */  lw         $v0, %lo(g_nSkyChunkCount)($v0)
     /* A8E8 8001A0E8 00000000 */  nop
     /* A8EC 8001A0EC 91004010 */  beqz       $v0, .L8001A334
     /* A8F0 8001A0F0 00000000 */   nop
-    /* A8F4 8001A0F4 0780023C */  lui        $v0, %hi(g_nLevelIntroParallaxCountdown)
-    /* A8F8 8001A0F8 1059428C */  lw         $v0, %lo(g_nLevelIntroParallaxCountdown)($v0)
+    /* A8F4 8001A0F4 0780023C */  lui        $v0, %hi(g_nTransitionSkyPitchTilt)
+    /* A8F8 8001A0F8 1059428C */  lw         $v0, %lo(g_nTransitionSkyPitchTilt)($v0)
     /* A8FC 8001A0FC 00000000 */  nop
     /* A900 8001A100 FEFF4224 */  addiu      $v0, $v0, -0x2
-    /* A904 8001A104 0780013C */  lui        $at, %hi(g_nLevelIntroParallaxCountdown)
-    /* A908 8001A108 105922AC */  sw         $v0, %lo(g_nLevelIntroParallaxCountdown)($at)
+    /* A904 8001A104 0780013C */  lui        $at, %hi(g_nTransitionSkyPitchTilt)
+    /* A908 8001A108 105922AC */  sw         $v0, %lo(g_nTransitionSkyPitchTilt)($at)
     /* A90C 8001A10C 03004104 */  bgez       $v0, .L8001A11C
     /* A910 8001A110 00000000 */   nop
-    /* A914 8001A114 0780013C */  lui        $at, %hi(g_nLevelIntroParallaxCountdown)
-    /* A918 8001A118 105920AC */  sw         $zero, %lo(g_nLevelIntroParallaxCountdown)($at)
+    /* A914 8001A114 0780013C */  lui        $at, %hi(g_nTransitionSkyPitchTilt)
+    /* A918 8001A118 105920AC */  sw         $zero, %lo(g_nTransitionSkyPitchTilt)($at)
   .L8001A11C:
-    /* A91C 8001A11C 0780023C */  lui        $v0, %hi(g_nLevelIntroParallaxCountdown)
-    /* A920 8001A120 1059428C */  lw         $v0, %lo(g_nLevelIntroParallaxCountdown)($v0)
+    /* A91C 8001A11C 0780023C */  lui        $v0, %hi(g_nTransitionSkyPitchTilt)
+    /* A920 8001A120 1059428C */  lw         $v0, %lo(g_nTransitionSkyPitchTilt)($v0)
     /* A924 8001A124 00000000 */  nop
     /* A928 8001A128 7C004010 */  beqz       $v0, .L8001A31C
     /* A92C 8001A12C 21280000 */   addu      $a1, $zero, $zero
@@ -9489,27 +9489,27 @@ glabel LevelTransition_Draw
     /* A944 8001A144 0780103C */  lui        $s0, %hi(g_nCameraEulerPitch)
     /* A948 8001A148 1E6E1026 */  addiu      $s0, $s0, %lo(g_nCameraEulerPitch)
     /* A94C 8001A14C 00000286 */  lh         $v0, 0x0($s0)
-    /* A950 8001A150 0780043C */  lui        $a0, %hi(g_nLevelIntroParallaxCountdown)
-    /* A954 8001A154 1059848C */  lw         $a0, %lo(g_nLevelIntroParallaxCountdown)($a0)
+    /* A950 8001A150 0780043C */  lui        $a0, %hi(g_nTransitionSkyPitchTilt)
+    /* A954 8001A154 1059848C */  lw         $a0, %lo(g_nTransitionSkyPitchTilt)($a0)
     /* A958 8001A158 00101124 */  addiu      $s1, $zero, 0x1000
     /* A95C 8001A15C 1000B1A7 */  sh         $s1, 0x10($sp)
     /* A960 8001A160 2C5B000C */  jal        LookupCosine
     /* A964 8001A164 23204400 */   subu      $a0, $v0, $a0
     /* A968 8001A168 00000386 */  lh         $v1, 0x0($s0)
-    /* A96C 8001A16C 0780043C */  lui        $a0, %hi(g_nLevelIntroParallaxCountdown)
-    /* A970 8001A170 1059848C */  lw         $a0, %lo(g_nLevelIntroParallaxCountdown)($a0)
+    /* A96C 8001A16C 0780043C */  lui        $a0, %hi(g_nTransitionSkyPitchTilt)
+    /* A970 8001A170 1059848C */  lw         $a0, %lo(g_nTransitionSkyPitchTilt)($a0)
     /* A974 8001A174 1800A2A7 */  sh         $v0, 0x18($sp)
     /* A978 8001A178 165B000C */  jal        LookupSine
     /* A97C 8001A17C 23206400 */   subu      $a0, $v1, $a0
     /* A980 8001A180 00000386 */  lh         $v1, 0x0($s0)
-    /* A984 8001A184 0780043C */  lui        $a0, %hi(g_nLevelIntroParallaxCountdown)
-    /* A988 8001A188 1059848C */  lw         $a0, %lo(g_nLevelIntroParallaxCountdown)($a0)
+    /* A984 8001A184 0780043C */  lui        $a0, %hi(g_nTransitionSkyPitchTilt)
+    /* A988 8001A188 1059848C */  lw         $a0, %lo(g_nTransitionSkyPitchTilt)($a0)
     /* A98C 8001A18C 1E00A2A7 */  sh         $v0, 0x1E($sp)
     /* A990 8001A190 165B000C */  jal        LookupSine
     /* A994 8001A194 23206400 */   subu      $a0, $v1, $a0
     /* A998 8001A198 00000386 */  lh         $v1, 0x0($s0)
-    /* A99C 8001A19C 0780043C */  lui        $a0, %hi(g_nLevelIntroParallaxCountdown)
-    /* A9A0 8001A1A0 1059848C */  lw         $a0, %lo(g_nLevelIntroParallaxCountdown)($a0)
+    /* A99C 8001A19C 0780043C */  lui        $a0, %hi(g_nTransitionSkyPitchTilt)
+    /* A9A0 8001A1A0 1059848C */  lw         $a0, %lo(g_nTransitionSkyPitchTilt)($a0)
     /* A9A4 8001A1A4 23100200 */  negu       $v0, $v0
     /* A9A8 8001A1A8 1A00A2A7 */  sh         $v0, 0x1A($sp)
     /* A9AC 8001A1AC 2C5B000C */  jal        LookupCosine
@@ -9613,7 +9613,7 @@ glabel LevelTransition_Draw
     /* AB24 8001A324 E46DA524 */  addiu      $a1, $a1, %lo(g_anCameraViewMtx)
     /* AB28 8001A328 ECFFA624 */  addiu      $a2, $a1, -0x14
   .L8001A32C:
-    /* AB2C 8001A32C EA3A010C */  jal        EmitStaticActorMeshList
+    /* AB2C 8001A32C EA3A010C */  jal        EmitSkyMesh
     /* AB30 8001A330 00000000 */   nop
   .L8001A334:
     /* AB34 8001A334 D97D010C */  jal        DrawSync
@@ -9676,11 +9676,11 @@ glabel LevelTransition_Draw
 endlabel LevelTransition_Draw
 .endif
 
-.section .text.Gamestate02_03_06_Draw, "ax"
-.ifndef HAVE_C_Gamestate02_03_06_Draw
-nonmatching Gamestate02_03_06_Draw, 0x2288
+.section .text.PauseMenu_Draw, "ax"
+.ifndef HAVE_C_PauseMenu_Draw
+nonmatching PauseMenu_Draw, 0x2288
 
-glabel Gamestate02_03_06_Draw
+glabel PauseMenu_Draw
     /* AC0C 8001A40C 0780023C */  lui        $v0, %hi(g_nMenuDrawFrames)
     /* AC10 8001A410 B858428C */  lw         $v0, %lo(g_nMenuDrawFrames)($v0)
     /* AC14 8001A414 B0FEBD27 */  addiu      $sp, $sp, -0x150
@@ -9701,7 +9701,7 @@ glabel Gamestate02_03_06_Draw
     /* AC50 8001A450 E0001424 */   addiu     $s4, $zero, 0xE0
     /* AC54 8001A454 F25C010C */  jal        RasterizeEmitList
     /* AC58 8001A458 00021124 */   addiu     $s1, $zero, 0x200
-    /* AC5C 8001A45C F442010C */  jal        DrawPortalsAndStaticActors
+    /* AC5C 8001A45C F442010C */  jal        DrawPortalsAndSky
     /* AC60 8001A460 00000000 */   nop
     /* AC64 8001A464 73AE000C */  jal        SetupFrameOT
     /* AC68 8001A468 00000000 */   nop
@@ -9709,8 +9709,8 @@ glabel Gamestate02_03_06_Draw
     /* AC70 8001A470 21200000 */   addu      $a0, $zero, $zero
     /* AC74 8001A474 F176010C */  jal        VSync
     /* AC78 8001A478 21200000 */   addu      $a0, $zero, $zero
-    /* AC7C 8001A47C 0780153C */  lui        $s5, %hi(g_abFrameDrawEnv0)
-    /* AC80 8001A480 E06EB526 */  addiu      $s5, $s5, %lo(g_abFrameDrawEnv0)
+    /* AC7C 8001A47C 0780153C */  lui        $s5, %hi(g_FrameDrawEnv0)
+    /* AC80 8001A480 E06EB526 */  addiu      $s5, $s5, %lo(g_FrameDrawEnv0)
     /* AC84 8001A484 0780043C */  lui        $a0, %hi(g_pActiveFrameDrawEnv)
     /* AC88 8001A488 8858848C */  lw         $a0, %lo(g_pActiveFrameDrawEnv)($a0)
     /* AC8C 8001A48C 0C80010C */  jal        PutDispEnv
@@ -9803,8 +9803,8 @@ glabel Gamestate02_03_06_Draw
   .L8001A5E0:
     /* ADE0 8001A5E0 0780023C */  lui        $v0, %hi(g_pActiveFrameDrawEnv)
     /* ADE4 8001A5E4 8858428C */  lw         $v0, %lo(g_pActiveFrameDrawEnv)($v0)
-    /* ADE8 8001A5E8 0780043C */  lui        $a0, %hi(g_abFrameDrawEnv0)
-    /* ADEC 8001A5EC E06E8424 */  addiu      $a0, $a0, %lo(g_abFrameDrawEnv0)
+    /* ADE8 8001A5E8 0780043C */  lui        $a0, %hi(g_FrameDrawEnv0)
+    /* ADEC 8001A5EC E06E8424 */  addiu      $a0, $a0, %lo(g_FrameDrawEnv0)
     /* ADF0 8001A5F0 02004414 */  bne        $v0, $a0, .L8001A5FC
     /* ADF4 8001A5F4 00000000 */   nop
     /* ADF8 8001A5F8 84008424 */  addiu      $a0, $a0, 0x84
@@ -11977,7 +11977,7 @@ glabel Gamestate02_03_06_Draw
     /* CE88 8001C688 5001BD27 */  addiu      $sp, $sp, 0x150
     /* CE8C 8001C68C 0800E003 */  jr         $ra
     /* CE90 8001C690 00000000 */   nop
-endlabel Gamestate02_03_06_Draw
+endlabel PauseMenu_Draw
 .endif
 
 .section .text.MenuTransition_Draw, "ax"
@@ -12012,8 +12012,8 @@ glabel MenuTransition_Draw
   .L8001C6F4:
     /* CEF4 8001C6F4 0780023C */  lui        $v0, %hi(g_pActiveFrameDrawEnv)
     /* CEF8 8001C6F8 8858428C */  lw         $v0, %lo(g_pActiveFrameDrawEnv)($v0)
-    /* CEFC 8001C6FC 0780043C */  lui        $a0, %hi(g_abFrameDrawEnv0)
-    /* CF00 8001C700 E06E8424 */  addiu      $a0, $a0, %lo(g_abFrameDrawEnv0)
+    /* CEFC 8001C6FC 0780043C */  lui        $a0, %hi(g_FrameDrawEnv0)
+    /* CF00 8001C700 E06E8424 */  addiu      $a0, $a0, %lo(g_FrameDrawEnv0)
     /* CF04 8001C704 02004414 */  bne        $v0, $a0, .L8001C710
     /* CF08 8001C708 00000000 */   nop
     /* CF0C 8001C70C 84008424 */  addiu      $a0, $a0, 0x84
@@ -12125,8 +12125,8 @@ glabel MenuTransition_Draw
     /* D0A8 8001C8A8 508A848C */  lw         $a0, %lo(g_dwWorldFogColor)($a0)
     /* D0AC 8001C8AC 0780023C */  lui        $v0, %hi(g_nMenuTickFrames)
     /* D0B0 8001C8B0 8C56428C */  lw         $v0, %lo(g_nMenuTickFrames)($v0)
-    /* D0B4 8001C8B4 0780013C */  lui        $at, %hi(g_dwActorMeshFadeColor)
-    /* D0B8 8001C8B8 D45720AC */  sw         $zero, %lo(g_dwActorMeshFadeColor)($at)
+    /* D0B4 8001C8B4 0780013C */  lui        $at, %hi(g_dwSkyFadeColor)
+    /* D0B8 8001C8B8 D45720AC */  sw         $zero, %lo(g_dwSkyFadeColor)($at)
     /* D0BC 8001C8BC 2330C200 */  subu       $a2, $a2, $v0
     /* D0C0 8001C8C0 C0310600 */  sll        $a2, $a2, 7
     /* D0C4 8001C8C4 0780013C */  lui        $at, %hi(g_nFadeProgress)
@@ -12136,19 +12136,19 @@ glabel MenuTransition_Draw
     /* D0D4 8001C8D4 1800A2AF */  sw         $v0, 0x18($sp)
     /* D0D8 8001C8D8 0780023C */  lui        $v0, %hi(g_pActiveFrameDrawEnv)
     /* D0DC 8001C8DC 8858428C */  lw         $v0, %lo(g_pActiveFrameDrawEnv)($v0)
-    /* D0E0 8001C8E0 0780043C */  lui        $a0, %hi(g_abFrameDrawEnv0)
-    /* D0E4 8001C8E4 E06E8424 */  addiu      $a0, $a0, %lo(g_abFrameDrawEnv0)
+    /* D0E0 8001C8E0 0780043C */  lui        $a0, %hi(g_FrameDrawEnv0)
+    /* D0E4 8001C8E4 E06E8424 */  addiu      $a0, $a0, %lo(g_FrameDrawEnv0)
     /* D0E8 8001C8E8 0C004414 */  bne        $v0, $a0, .L8001C91C
     /* D0EC 8001C8EC 00000000 */   nop
     /* D0F0 8001C8F0 1800A293 */  lbu        $v0, 0x18($sp)
     /* D0F4 8001C8F4 1900A393 */  lbu        $v1, 0x19($sp)
     /* D0F8 8001C8F8 1A00A593 */  lbu        $a1, 0x1A($sp)
-    /* D0FC 8001C8FC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x19)
-    /* D100 8001C900 7D6F22A0 */  sb         $v0, %lo(g_abFrameDrawEnv1 + 0x19)($at)
-    /* D104 8001C904 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1A)
-    /* D108 8001C908 7E6F23A0 */  sb         $v1, %lo(g_abFrameDrawEnv1 + 0x1A)($at)
-    /* D10C 8001C90C 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1B)
-    /* D110 8001C910 7F6F25A0 */  sb         $a1, %lo(g_abFrameDrawEnv1 + 0x1B)($at)
+    /* D0FC 8001C8FC 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x19)
+    /* D100 8001C900 7D6F22A0 */  sb         $v0, %lo(g_FrameDrawEnv1 + 0x19)($at)
+    /* D104 8001C904 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1A)
+    /* D108 8001C908 7E6F23A0 */  sb         $v1, %lo(g_FrameDrawEnv1 + 0x1A)($at)
+    /* D10C 8001C90C 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1B)
+    /* D110 8001C910 7F6F25A0 */  sb         $a1, %lo(g_FrameDrawEnv1 + 0x1B)($at)
     /* D114 8001C914 50720008 */  j          .L8001C940
     /* D118 8001C918 84008424 */   addiu     $a0, $a0, 0x84
   .L8001C91C:
@@ -12164,7 +12164,7 @@ glabel MenuTransition_Draw
   .L8001C940:
     /* D140 8001C940 767F010C */  jal        PutDrawEnv
     /* D144 8001C944 00000000 */   nop
-    /* D148 8001C948 003C010C */  jal        EmitStaticActorMeshListFogged
+    /* D148 8001C948 003C010C */  jal        EmitSkyMeshFogged
     /* D14C 8001C94C 00000000 */   nop
   .L8001C950:
     /* D150 8001C950 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
@@ -12256,7 +12256,7 @@ glabel RespawnOrGameOver_Draw
     /* D27C 8001CA7C 00000000 */   nop
     /* D280 8001CA80 F25C010C */  jal        RasterizeEmitList
     /* D284 8001CA84 00000000 */   nop
-    /* D288 8001CA88 F442010C */  jal        DrawPortalsAndStaticActors
+    /* D288 8001CA88 F442010C */  jal        DrawPortalsAndSky
     /* D28C 8001CA8C 00000000 */   nop
     /* D290 8001CA90 73AE000C */  jal        SetupFrameOT
     /* D294 8001CA94 00000000 */   nop
@@ -12465,7 +12465,7 @@ glabel RespawnOrGameOver_Draw
     /* D59C 8001CD9C 00000000 */   nop
     /* D5A0 8001CDA0 FFFF0424 */  addiu      $a0, $zero, -0x1
     /* D5A4 8001CDA4 C6FF0526 */  addiu      $a1, $s0, -0x3A
-    /* D5A8 8001CDA8 EA3A010C */  jal        EmitStaticActorMeshList
+    /* D5A8 8001CDA8 EA3A010C */  jal        EmitSkyMesh
     /* D5AC 8001CDAC B2FF0626 */   addiu     $a2, $s0, -0x4E
     /* D5B0 8001CDB0 0780023C */  lui        $v0, %hi(g_anGameOverCameraEuler)
     /* D5B4 8001CDB4 D8524294 */  lhu        $v0, %lo(g_anGameOverCameraEuler)($v0)
@@ -12514,8 +12514,8 @@ glabel RespawnOrGameOver_Draw
   .L8001CE58:
     /* D658 8001CE58 0780033C */  lui        $v1, %hi(g_pActiveFrameDrawEnv)
     /* D65C 8001CE5C 8858638C */  lw         $v1, %lo(g_pActiveFrameDrawEnv)($v1)
-    /* D660 8001CE60 0780023C */  lui        $v0, %hi(g_abFrameDrawEnv0)
-    /* D664 8001CE64 E06E4224 */  addiu      $v0, $v0, %lo(g_abFrameDrawEnv0)
+    /* D660 8001CE60 0780023C */  lui        $v0, %hi(g_FrameDrawEnv0)
+    /* D664 8001CE64 E06E4224 */  addiu      $v0, $v0, %lo(g_FrameDrawEnv0)
     /* D668 8001CE68 02006210 */  beq        $v1, $v0, .L8001CE74
     /* D66C 8001CE6C 1800A0A7 */   sh        $zero, 0x18($sp)
     /* D670 8001CE70 F8000724 */  addiu      $a3, $zero, 0xF8
@@ -12534,8 +12534,8 @@ glabel RespawnOrGameOver_Draw
     /* D6A0 8001CEA0 21200000 */   addu      $a0, $zero, $zero
     /* D6A4 8001CEA4 0780013C */  lui        $at, %hi(g_abFrameDrawEnvIsbgBlock)
     /* D6A8 8001CEA8 F86E20A0 */  sb         $zero, %lo(g_abFrameDrawEnvIsbgBlock)($at)
-    /* D6AC 8001CEAC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x18)
-    /* D6B0 8001CEB0 7C6F20A0 */  sb         $zero, %lo(g_abFrameDrawEnv1 + 0x18)($at)
+    /* D6AC 8001CEAC 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x18)
+    /* D6B0 8001CEB0 7C6F20A0 */  sb         $zero, %lo(g_FrameDrawEnv1 + 0x18)($at)
     /* D6B4 8001CEB4 EF730008 */  j          .L8001CFBC
     /* D6B8 8001CEB8 00000000 */   nop
   .L8001CEBC:
@@ -12580,8 +12580,8 @@ glabel RespawnOrGameOver_Draw
     /* D74C 8001CF4C F86E6324 */  addiu      $v1, $v1, %lo(g_abFrameDrawEnvIsbgBlock)
     /* D750 8001CF50 01000224 */  addiu      $v0, $zero, 0x1
     /* D754 8001CF54 000062A0 */  sb         $v0, 0x0($v1)
-    /* D758 8001CF58 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x18)
-    /* D75C 8001CF5C 7C6F22A0 */  sb         $v0, %lo(g_abFrameDrawEnv1 + 0x18)($at)
+    /* D758 8001CF58 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x18)
+    /* D75C 8001CF5C 7C6F22A0 */  sb         $v0, %lo(g_FrameDrawEnv1 + 0x18)($at)
     /* D760 8001CF60 0780013C */  lui        $at, %hi(g_bFrameDrawEnv0BgR)
     /* D764 8001CF64 F96E20A0 */  sb         $zero, %lo(g_bFrameDrawEnv0BgR)($at)
     /* D768 8001CF68 0780013C */  lui        $at, %hi(g_bFrameDrawEnv0BgG)
@@ -12649,7 +12649,7 @@ glabel DragonRescue_Draw
     /* D838 8001D038 00000000 */   nop
     /* D83C 8001D03C 73AE000C */  jal        SetupFrameOT
     /* D840 8001D040 00000000 */   nop
-    /* D844 8001D044 F442010C */  jal        DrawPortalsAndStaticActors
+    /* D844 8001D044 F442010C */  jal        DrawPortalsAndSky
     /* D848 8001D048 00000000 */   nop
     /* D84C 8001D04C F25C010C */  jal        RasterizeEmitList
     /* D850 8001D050 00000000 */   nop
@@ -12730,7 +12730,7 @@ glabel DragonRescue_Draw
     /* D964 8001D164 00000000 */   nop
     /* D968 8001D168 8B8A000C */  jal        RasterizeSpritePrimQueue
     /* D96C 8001D16C 00000000 */   nop
-    /* D970 8001D170 E367010C */  jal        DrawEntityDirectionalSpikes
+    /* D970 8001D170 E367010C */  jal        DrawActorDropShadows
     /* D974 8001D174 00000000 */   nop
     /* D978 8001D178 B18E000C */  jal        RasterizeSpyroModel
     /* D97C 8001D17C 00000000 */   nop
@@ -12738,7 +12738,7 @@ glabel DragonRescue_Draw
     /* D984 8001D184 00000000 */   nop
     /* D988 8001D188 73AE000C */  jal        SetupFrameOT
     /* D98C 8001D18C 00000000 */   nop
-    /* D990 8001D190 F442010C */  jal        DrawPortalsAndStaticActors
+    /* D990 8001D190 F442010C */  jal        DrawPortalsAndSky
     /* D994 8001D194 00000000 */   nop
     /* D998 8001D198 F25C010C */  jal        RasterizeEmitList
     /* D99C 8001D19C 00000000 */   nop
@@ -12817,7 +12817,7 @@ glabel DragonRescue_Draw
     /* DAAC 8001D2AC 00000000 */   nop
     /* DAB0 8001D2B0 8B8A000C */  jal        RasterizeSpritePrimQueue
     /* DAB4 8001D2B4 00000000 */   nop
-    /* DAB8 8001D2B8 E367010C */  jal        DrawEntityDirectionalSpikes
+    /* DAB8 8001D2B8 E367010C */  jal        DrawActorDropShadows
     /* DABC 8001D2BC 00000000 */   nop
     /* DAC0 8001D2C0 2E750008 */  j          .L8001D4B8
     /* DAC4 8001D2C4 00000000 */   nop
@@ -12956,7 +12956,7 @@ glabel DragonRescue_Draw
     /* DCBC 8001D4BC 00000000 */   nop
     /* DCC0 8001D4C0 73AE000C */  jal        SetupFrameOT
     /* DCC4 8001D4C4 00000000 */   nop
-    /* DCC8 8001D4C8 F442010C */  jal        DrawPortalsAndStaticActors
+    /* DCC8 8001D4C8 F442010C */  jal        DrawPortalsAndSky
     /* DCCC 8001D4CC 00000000 */   nop
     /* DCD0 8001D4D0 F25C010C */  jal        RasterizeEmitList
     /* DCD4 8001D4D4 00000000 */   nop
@@ -13024,7 +13024,7 @@ glabel DragonRescue_Draw
     /* DDB8 8001D5B8 00000000 */   nop
     /* DDBC 8001D5BC 8B8A000C */  jal        RasterizeSpritePrimQueue
     /* DDC0 8001D5C0 00000000 */   nop
-    /* DDC4 8001D5C4 E367010C */  jal        DrawEntityDirectionalSpikes
+    /* DDC4 8001D5C4 E367010C */  jal        DrawActorDropShadows
     /* DDC8 8001D5C8 00000000 */   nop
   .L8001D5CC:
     /* DDCC 8001D5CC B18E000C */  jal        RasterizeSpyroModel
@@ -13033,7 +13033,7 @@ glabel DragonRescue_Draw
     /* DDD8 8001D5D8 00000000 */   nop
     /* DDDC 8001D5DC 73AE000C */  jal        SetupFrameOT
     /* DDE0 8001D5E0 00000000 */   nop
-    /* DDE4 8001D5E4 F442010C */  jal        DrawPortalsAndStaticActors
+    /* DDE4 8001D5E4 F442010C */  jal        DrawPortalsAndSky
     /* DDE8 8001D5E8 00000000 */   nop
     /* DDEC 8001D5EC F25C010C */  jal        RasterizeEmitList
     /* DDF0 8001D5F0 00000000 */   nop
@@ -13807,7 +13807,7 @@ glabel SaveLoadMenu_Draw
   .L8001E148:
     /* E948 8001E148 73AE000C */  jal        SetupFrameOT
     /* E94C 8001E14C 00000000 */   nop
-    /* E950 8001E150 F442010C */  jal        DrawPortalsAndStaticActors
+    /* E950 8001E150 F442010C */  jal        DrawPortalsAndSky
     /* E954 8001E154 00000000 */   nop
     /* E958 8001E158 F25C010C */  jal        RasterizeEmitList
     /* E95C 8001E15C 00000000 */   nop
@@ -14046,8 +14046,8 @@ glabel ActorCutscene_Draw
     /* ECBC 8001E4BC 47004010 */  beqz       $v0, .L8001E5DC
     /* ECC0 8001E4C0 4000023C */   lui       $v0, (0x401010 >> 16)
     /* ECC4 8001E4C4 10104234 */  ori        $v0, $v0, (0x401010 & 0xFFFF)
-    /* ECC8 8001E4C8 0780013C */  lui        $at, %hi(g_dwActorMeshFadeColor)
-    /* ECCC 8001E4CC D45722AC */  sw         $v0, %lo(g_dwActorMeshFadeColor)($at)
+    /* ECC8 8001E4C8 0780013C */  lui        $at, %hi(g_dwSkyFadeColor)
+    /* ECCC 8001E4CC D45722AC */  sw         $v0, %lo(g_dwSkyFadeColor)($at)
     /* ECD0 8001E4D0 04000224 */  addiu      $v0, $zero, 0x4
     /* ECD4 8001E4D4 05006214 */  bne        $v1, $v0, .L8001E4EC
     /* ECD8 8001E4D8 00010224 */   addiu     $v0, $zero, 0x100
@@ -14083,8 +14083,8 @@ glabel ActorCutscene_Draw
   .L8001E544:
     /* ED44 8001E544 0880043C */  lui        $a0, %hi(g_dwWorldFogColor)
     /* ED48 8001E548 508A848C */  lw         $a0, %lo(g_dwWorldFogColor)($a0)
-    /* ED4C 8001E54C 0780053C */  lui        $a1, %hi(g_dwActorMeshFadeColor)
-    /* ED50 8001E550 D457A58C */  lw         $a1, %lo(g_dwActorMeshFadeColor)($a1)
+    /* ED4C 8001E54C 0780053C */  lui        $a1, %hi(g_dwSkyFadeColor)
+    /* ED50 8001E550 D457A58C */  lw         $a1, %lo(g_dwSkyFadeColor)($a1)
     /* ED54 8001E554 0780063C */  lui        $a2, %hi(g_nFadeProgress)
     /* ED58 8001E558 5C57C68C */  lw         $a2, %lo(g_nFadeProgress)($a2)
     /* ED5C 8001E55C 955F000C */  jal        ComputeDepthCuedColor
@@ -14102,15 +14102,15 @@ glabel ActorCutscene_Draw
     /* ED8C 8001E58C FA6E24A0 */  sb         $a0, %lo(g_bFrameDrawEnv0BgG)($at)
     /* ED90 8001E590 0780013C */  lui        $at, %hi(g_bFrameDrawEnv0BgB)
     /* ED94 8001E594 FB6E25A0 */  sb         $a1, %lo(g_bFrameDrawEnv0BgB)($at)
-    /* ED98 8001E598 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x19)
-    /* ED9C 8001E59C 7D6F23A0 */  sb         $v1, %lo(g_abFrameDrawEnv1 + 0x19)($at)
-    /* EDA0 8001E5A0 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1A)
-    /* EDA4 8001E5A4 7E6F24A0 */  sb         $a0, %lo(g_abFrameDrawEnv1 + 0x1A)($at)
-    /* EDA8 8001E5A8 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1B)
-    /* EDAC 8001E5AC 7F6F25A0 */  sb         $a1, %lo(g_abFrameDrawEnv1 + 0x1B)($at)
+    /* ED98 8001E598 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x19)
+    /* ED9C 8001E59C 7D6F23A0 */  sb         $v1, %lo(g_FrameDrawEnv1 + 0x19)($at)
+    /* EDA0 8001E5A0 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1A)
+    /* EDA4 8001E5A4 7E6F24A0 */  sb         $a0, %lo(g_FrameDrawEnv1 + 0x1A)($at)
+    /* EDA8 8001E5A8 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1B)
+    /* EDAC 8001E5AC 7F6F25A0 */  sb         $a1, %lo(g_FrameDrawEnv1 + 0x1B)($at)
     /* EDB0 8001E5B0 0A004010 */  beqz       $v0, .L8001E5DC
     /* EDB4 8001E5B4 00000000 */   nop
-    /* EDB8 8001E5B8 003C010C */  jal        EmitStaticActorMeshListFogged
+    /* EDB8 8001E5B8 003C010C */  jal        EmitSkyMeshFogged
     /* EDBC 8001E5BC 00000000 */   nop
     /* EDC0 8001E5C0 77790008 */  j          .L8001E5DC
     /* EDC4 8001E5C4 00000000 */   nop
@@ -14335,12 +14335,12 @@ glabel StoryIntro_Draw
     /* F0D8 8001E8D8 FA6E20A0 */  sb         $zero, %lo(g_bFrameDrawEnv0BgG)($at)
     /* F0DC 8001E8DC 0780013C */  lui        $at, %hi(g_bFrameDrawEnv0BgB)
     /* F0E0 8001E8E0 FB6E20A0 */  sb         $zero, %lo(g_bFrameDrawEnv0BgB)($at)
-    /* F0E4 8001E8E4 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x19)
-    /* F0E8 8001E8E8 7D6F20A0 */  sb         $zero, %lo(g_abFrameDrawEnv1 + 0x19)($at)
-    /* F0EC 8001E8EC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1A)
-    /* F0F0 8001E8F0 7E6F20A0 */  sb         $zero, %lo(g_abFrameDrawEnv1 + 0x1A)($at)
-    /* F0F4 8001E8F4 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1B)
-    /* F0F8 8001E8F8 7F6F20A0 */  sb         $zero, %lo(g_abFrameDrawEnv1 + 0x1B)($at)
+    /* F0E4 8001E8E4 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x19)
+    /* F0E8 8001E8E8 7D6F20A0 */  sb         $zero, %lo(g_FrameDrawEnv1 + 0x19)($at)
+    /* F0EC 8001E8EC 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1A)
+    /* F0F0 8001E8F0 7E6F20A0 */  sb         $zero, %lo(g_FrameDrawEnv1 + 0x1A)($at)
+    /* F0F4 8001E8F4 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1B)
+    /* F0F8 8001E8F8 7F6F20A0 */  sb         $zero, %lo(g_FrameDrawEnv1 + 0x1B)($at)
     /* F0FC 8001E8FC 2062000C */  jal        EnqueuePendingSpritePrims
     /* F100 8001E900 000000AE */   sw        $zero, 0x0($s0)
     /* F104 8001E904 00DC0426 */  addiu      $a0, $s0, -0x2400
@@ -14416,12 +14416,12 @@ glabel Cutscene_Draw
     /* F1F8 8001E9F8 FA6E23A0 */  sb         $v1, %lo(g_bFrameDrawEnv0BgG)($at)
     /* F1FC 8001E9FC 0780013C */  lui        $at, %hi(g_bFrameDrawEnv0BgB)
     /* F200 8001EA00 FB6E24A0 */  sb         $a0, %lo(g_bFrameDrawEnv0BgB)($at)
-    /* F204 8001EA04 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x19)
-    /* F208 8001EA08 7D6F22A0 */  sb         $v0, %lo(g_abFrameDrawEnv1 + 0x19)($at)
-    /* F20C 8001EA0C 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1A)
-    /* F210 8001EA10 7E6F23A0 */  sb         $v1, %lo(g_abFrameDrawEnv1 + 0x1A)($at)
-    /* F214 8001EA14 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1B)
-    /* F218 8001EA18 7F6F24A0 */  sb         $a0, %lo(g_abFrameDrawEnv1 + 0x1B)($at)
+    /* F204 8001EA04 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x19)
+    /* F208 8001EA08 7D6F22A0 */  sb         $v0, %lo(g_FrameDrawEnv1 + 0x19)($at)
+    /* F20C 8001EA0C 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1A)
+    /* F210 8001EA10 7E6F23A0 */  sb         $v1, %lo(g_FrameDrawEnv1 + 0x1A)($at)
+    /* F214 8001EA14 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1B)
+    /* F218 8001EA18 7F6F24A0 */  sb         $a0, %lo(g_FrameDrawEnv1 + 0x1B)($at)
     /* F21C 8001EA1C 7048010C */  jal        BuildRenderEntityLists
     /* F220 8001EA20 00000000 */   nop
     /* F224 8001EA24 567C000C */  jal        BuildActorDrawList
@@ -14447,7 +14447,7 @@ glabel Cutscene_Draw
     /* F274 8001EA74 FFFF0424 */  addiu      $a0, $zero, -0x1
     /* F278 8001EA78 0780053C */  lui        $a1, %hi(g_anCameraViewMtx)
     /* F27C 8001EA7C E46DA524 */  addiu      $a1, $a1, %lo(g_anCameraViewMtx)
-    /* F280 8001EA80 EA3A010C */  jal        EmitStaticActorMeshList
+    /* F280 8001EA80 EA3A010C */  jal        EmitSkyMesh
     /* F284 8001EA84 ECFFA624 */   addiu     $a2, $a1, -0x14
     /* F288 8001EA88 0780053C */  lui        $a1, %hi(g_nScreenFadeLevel)
     /* F28C 8001EA8C 1859A58C */  lw         $a1, %lo(g_nScreenFadeLevel)($a1)
@@ -14552,12 +14552,12 @@ glabel ReturningHome_Draw
     /* F3E8 8001EBE8 FA6E20A0 */  sb         $zero, %lo(g_bFrameDrawEnv0BgG)($at)
     /* F3EC 8001EBEC 0780013C */  lui        $at, %hi(g_bFrameDrawEnv0BgB)
     /* F3F0 8001EBF0 FB6E20A0 */  sb         $zero, %lo(g_bFrameDrawEnv0BgB)($at)
-    /* F3F4 8001EBF4 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x19)
-    /* F3F8 8001EBF8 7D6F20A0 */  sb         $zero, %lo(g_abFrameDrawEnv1 + 0x19)($at)
-    /* F3FC 8001EBFC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1A)
-    /* F400 8001EC00 7E6F20A0 */  sb         $zero, %lo(g_abFrameDrawEnv1 + 0x1A)($at)
-    /* F404 8001EC04 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1B)
-    /* F408 8001EC08 7F6F20A0 */  sb         $zero, %lo(g_abFrameDrawEnv1 + 0x1B)($at)
+    /* F3F4 8001EBF4 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x19)
+    /* F3F8 8001EBF8 7D6F20A0 */  sb         $zero, %lo(g_FrameDrawEnv1 + 0x19)($at)
+    /* F3FC 8001EBFC 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1A)
+    /* F400 8001EC00 7E6F20A0 */  sb         $zero, %lo(g_FrameDrawEnv1 + 0x1A)($at)
+    /* F404 8001EC04 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1B)
+    /* F408 8001EC08 7F6F20A0 */  sb         $zero, %lo(g_FrameDrawEnv1 + 0x1B)($at)
     /* F40C 8001EC0C 6B60000C */  jal        BuildTextSprites
     /* F410 8001EC10 1000A2AF */   sw        $v0, 0x10($sp)
     /* F414 8001EC14 0780023C */  lui        $v0, %hi(g_pSpriteRecordWriteCursor)
@@ -14657,8 +14657,8 @@ glabel GamestateDraw
     /* F55C 8001ED5C E8FFBD27 */  addiu      $sp, $sp, -0x18
     /* F560 8001ED60 0780023C */  lui        $v0, %hi(g_pActiveFrameDrawEnv)
     /* F564 8001ED64 8858428C */  lw         $v0, %lo(g_pActiveFrameDrawEnv)($v0)
-    /* F568 8001ED68 0780063C */  lui        $a2, %hi(g_abFrameDrawEnv0)
-    /* F56C 8001ED6C E06EC624 */  addiu      $a2, $a2, %lo(g_abFrameDrawEnv0)
+    /* F568 8001ED68 0780063C */  lui        $a2, %hi(g_FrameDrawEnv0)
+    /* F56C 8001ED6C E06EC624 */  addiu      $a2, $a2, %lo(g_FrameDrawEnv0)
     /* F570 8001ED70 1400BFAF */  sw         $ra, 0x14($sp)
     /* F574 8001ED74 02004614 */  bne        $v0, $a2, .L8001ED80
     /* F578 8001ED78 1000B0AF */   sw        $s0, 0x10($sp)
@@ -14712,7 +14712,7 @@ glabel GamestateDraw
     /* F62C 8001EE2C 05006214 */  bne        $v1, $v0, .L8001EE44
     /* F630 8001EE30 07000224 */   addiu     $v0, $zero, 0x7
   .L8001EE34:
-    /* F634 8001EE34 0369000C */  jal        Gamestate02_03_06_Draw
+    /* F634 8001EE34 0369000C */  jal        PauseMenu_Draw
     /* F638 8001EE38 00000000 */   nop
     /* F63C 8001EE3C 517C0008 */  j          .L8001F144
     /* F640 8001EE40 00000000 */   nop
@@ -14820,12 +14820,12 @@ glabel GamestateDraw
     /* F7A4 8001EFA4 FA6E23A0 */  sb         $v1, %lo(g_bFrameDrawEnv0BgG)($at)
     /* F7A8 8001EFA8 0780013C */  lui        $at, %hi(g_bFrameDrawEnv0BgB)
     /* F7AC 8001EFAC FB6E24A0 */  sb         $a0, %lo(g_bFrameDrawEnv0BgB)($at)
-    /* F7B0 8001EFB0 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x19)
-    /* F7B4 8001EFB4 7D6F22A0 */  sb         $v0, %lo(g_abFrameDrawEnv1 + 0x19)($at)
-    /* F7B8 8001EFB8 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1A)
-    /* F7BC 8001EFBC 7E6F23A0 */  sb         $v1, %lo(g_abFrameDrawEnv1 + 0x1A)($at)
-    /* F7C0 8001EFC0 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1B)
-    /* F7C4 8001EFC4 7F6F24A0 */  sb         $a0, %lo(g_abFrameDrawEnv1 + 0x1B)($at)
+    /* F7B0 8001EFB0 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x19)
+    /* F7B4 8001EFB4 7D6F22A0 */  sb         $v0, %lo(g_FrameDrawEnv1 + 0x19)($at)
+    /* F7B8 8001EFB8 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1A)
+    /* F7BC 8001EFBC 7E6F23A0 */  sb         $v1, %lo(g_FrameDrawEnv1 + 0x1A)($at)
+    /* F7C0 8001EFC0 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1B)
+    /* F7C4 8001EFC4 7F6F24A0 */  sb         $a0, %lo(g_FrameDrawEnv1 + 0x1B)($at)
     /* F7C8 8001EFC8 7048010C */  jal        BuildRenderEntityLists
     /* F7CC 8001EFCC 00000000 */   nop
     /* F7D0 8001EFD0 0780023C */  lui        $v0, %hi(g_nFlightLevelActive)
@@ -14848,7 +14848,7 @@ glabel GamestateDraw
     /* F80C 8001F00C 00000000 */   nop
     /* F810 8001F010 73AE000C */  jal        SetupFrameOT
     /* F814 8001F014 00000000 */   nop
-    /* F818 8001F018 F442010C */  jal        DrawPortalsAndStaticActors
+    /* F818 8001F018 F442010C */  jal        DrawPortalsAndSky
     /* F81C 8001F01C 00000000 */   nop
     /* F820 8001F020 F25C010C */  jal        RasterizeEmitList
     /* F824 8001F024 00000000 */   nop
@@ -15341,8 +15341,8 @@ glabel BuildActorDrawList
   .L8001F744:
     /* FF44 8001F744 0000C0AF */  sw         $zero, 0x0($fp)
     /* FF48 8001F748 12080000 */  mflo       $at
-    /* FF4C 8001F74C 0780023C */  lui        $v0, %hi(g_anEntitySpikeTexWords)
-    /* FF50 8001F750 F85E4224 */  addiu      $v0, $v0, %lo(g_anEntitySpikeTexWords)
+    /* FF4C 8001F74C 0780023C */  lui        $v0, %hi(g_anActorShadowTexWords)
+    /* FF50 8001F750 F85E4224 */  addiu      $v0, $v0, %lo(g_anActorShadowTexWords)
     /* FF54 8001F754 080041AC */  sw         $at, 0x8($v0)
     /* FF58 8001F758 0780013C */  lui        $at, %hi(g_anStaticRegSaveArea)
     /* FF5C 8001F75C D87D2124 */  addiu      $at, $at, %lo(g_anStaticRegSaveArea)
@@ -16611,8 +16611,8 @@ glabel BuildSecondaryActorDrawList
     /* 11128 80020928 24003DAC */  sw         $sp, 0x24($at)
     /* 1112C 8002092C 28003EAC */  sw         $fp, 0x28($at)
     /* 11130 80020930 2C003FAC */  sw         $ra, 0x2C($at)
-    /* 11134 80020934 0780013C */  lui        $at, %hi(g_anEntitySpikeTexWords)
-    /* 11138 80020938 F85E2124 */  addiu      $at, $at, %lo(g_anEntitySpikeTexWords)
+    /* 11134 80020934 0780013C */  lui        $at, %hi(g_anActorShadowTexWords)
+    /* 11138 80020938 F85E2124 */  addiu      $at, $at, %lo(g_anActorShadowTexWords)
     /* 1113C 8002093C 0800218C */  lw         $at, 0x8($at)
     /* 11140 80020940 07801E3C */  lui        $fp, %hi(g_pOtDepthBinHead0)
     /* 11144 80020944 F4FCDE27 */  addiu      $fp, $fp, %lo(g_pOtDepthBinHead0)
@@ -16991,8 +16991,8 @@ glabel BuildSecondaryActorDrawList
   .L80020EE0:
     /* 116E0 80020EE0 0000C0AF */  sw         $zero, 0x0($fp)
     /* 116E4 80020EE4 12080000 */  mflo       $at
-    /* 116E8 80020EE8 0780023C */  lui        $v0, %hi(g_anEntitySpikeTexWords)
-    /* 116EC 80020EEC F85E4224 */  addiu      $v0, $v0, %lo(g_anEntitySpikeTexWords)
+    /* 116E8 80020EE8 0780023C */  lui        $v0, %hi(g_anActorShadowTexWords)
+    /* 116EC 80020EEC F85E4224 */  addiu      $v0, $v0, %lo(g_anActorShadowTexWords)
     /* 116F0 80020EF0 080041AC */  sw         $at, 0x8($v0)
     /* 116F4 80020EF4 0780013C */  lui        $at, %hi(g_anStaticRegSaveArea)
     /* 116F8 80020EF8 D87D2124 */  addiu      $at, $at, %lo(g_anStaticRegSaveArea)
@@ -18941,8 +18941,8 @@ glabel RasterizeSpritePrimQueue
     /* 13264 80022A64 07801F3C */  lui        $ra, %hi(g_pOtDepthBinHead0)
     /* 13268 80022A68 F4FCFF27 */  addiu      $ra, $ra, %lo(g_pOtDepthBinHead0)
     /* 1326C 80022A6C 0024FF23 */  addi       $ra, $ra, 0x2400 /* handwritten instruction */
-    /* 13270 80022A70 07801D3C */  lui        $sp, %hi(g_anEntitySpikeTexWords)
-    /* 13274 80022A74 F85EBD27 */  addiu      $sp, $sp, %lo(g_anEntitySpikeTexWords)
+    /* 13270 80022A70 07801D3C */  lui        $sp, %hi(g_anActorShadowTexWords)
+    /* 13274 80022A74 F85EBD27 */  addiu      $sp, $sp, %lo(g_anActorShadowTexWords)
     /* 13278 80022A78 0800BD8F */  lw         $sp, 0x8($sp)
     /* 1327C 80022A7C 0780013C */  lui        $at, %hi(g_anWorldToCameraRotMtx)
     /* 13280 80022A80 D06D2124 */  addiu      $at, $at, %lo(g_anWorldToCameraRotMtx)
@@ -20044,8 +20044,8 @@ glabel RasterizeSpritePrimQueue
     /* 14270 80023A70 C28A0008 */  j          .L80022B08
     /* 14274 80023A74 040062AC */   sw        $v0, 0x4($v1)
   .L80023A78:
-    /* 14278 80023A78 0780013C */  lui        $at, %hi(g_anEntitySpikeTexWords)
-    /* 1427C 80023A7C F85E2124 */  addiu      $at, $at, %lo(g_anEntitySpikeTexWords)
+    /* 14278 80023A78 0780013C */  lui        $at, %hi(g_anActorShadowTexWords)
+    /* 1427C 80023A7C F85E2124 */  addiu      $at, $at, %lo(g_anActorShadowTexWords)
     /* 14280 80023A80 08003DAC */  sw         $sp, 0x8($at)
     /* 14284 80023A84 0780013C */  lui        $at, %hi(g_anStaticRegSaveArea)
     /* 14288 80023A88 D87D2124 */  addiu      $at, $at, %lo(g_anStaticRegSaveArea)
@@ -29815,12 +29815,12 @@ glabel EndRespawnToGameplay
     /* 1D0D8 8002C8D8 FA6E23A0 */  sb         $v1, %lo(g_bFrameDrawEnv0BgG)($at)
     /* 1D0DC 8002C8DC 0780013C */  lui        $at, %hi(g_bFrameDrawEnv0BgB)
     /* 1D0E0 8002C8E0 FB6E24A0 */  sb         $a0, %lo(g_bFrameDrawEnv0BgB)($at)
-    /* 1D0E4 8002C8E4 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x19)
-    /* 1D0E8 8002C8E8 7D6F22A0 */  sb         $v0, %lo(g_abFrameDrawEnv1 + 0x19)($at)
-    /* 1D0EC 8002C8EC 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1A)
-    /* 1D0F0 8002C8F0 7E6F23A0 */  sb         $v1, %lo(g_abFrameDrawEnv1 + 0x1A)($at)
-    /* 1D0F4 8002C8F4 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1B)
-    /* 1D0F8 8002C8F8 7F6F24A0 */  sb         $a0, %lo(g_abFrameDrawEnv1 + 0x1B)($at)
+    /* 1D0E4 8002C8E4 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x19)
+    /* 1D0E8 8002C8E8 7D6F22A0 */  sb         $v0, %lo(g_FrameDrawEnv1 + 0x19)($at)
+    /* 1D0EC 8002C8EC 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1A)
+    /* 1D0F0 8002C8F0 7E6F23A0 */  sb         $v1, %lo(g_FrameDrawEnv1 + 0x1A)($at)
+    /* 1D0F4 8002C8F4 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1B)
+    /* 1D0F8 8002C8F8 7F6F24A0 */  sb         $a0, %lo(g_FrameDrawEnv1 + 0x1B)($at)
     /* 1D0FC 8002C8FC 1F63010C */  jal        InitLightVectorConstants
     /* 1D100 8002C900 00000000 */   nop
     /* 1D104 8002C904 1000BF8F */  lw         $ra, 0x10($sp)
@@ -30064,8 +30064,8 @@ glabel EndDragonRescueToWorld
     /* 1D424 8002CC24 A86E30AC */  sw         $s0, %lo(g_pCameraTargetParams)($at)
     /* 1D428 8002CC28 0880013C */  lui        $at, %hi(g_nSpyroSuperflameTimer)
     /* 1D42C 8002CC2C 688722AC */  sw         $v0, %lo(g_nSpyroSuperflameTimer)($at)
-    /* 1D430 8002CC30 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 1D434 8002CC34 A46E23AC */  sw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 1D430 8002CC30 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 1D434 8002CC34 A46E23AC */  sw         $v1, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 1D438 8002CC38 C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 1D43C 8002CC3C 58FF2426 */   addiu     $a0, $s1, -0xA8
     /* 1D440 8002CC40 21200002 */  addu       $a0, $s0, $zero
@@ -30073,8 +30073,8 @@ glabel EndDragonRescueToWorld
     /* 1D448 8002CC48 565A000C */  jal        CopyWords
     /* 1D44C 8002CC4C 18000624 */   addiu     $a2, $zero, 0x18
     /* 1D450 8002CC50 0000028E */  lw         $v0, 0x0($s0)
-    /* 1D454 8002CC54 0780033C */  lui        $v1, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 1D458 8002CC58 A46E638C */  lw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($v1)
+    /* 1D454 8002CC54 0780033C */  lui        $v1, %hi(g_nCameraParamsReferenceYaw)
+    /* 1D458 8002CC58 A46E638C */  lw         $v1, %lo(g_nCameraParamsReferenceYaw)($v1)
     /* 1D45C 8002CC5C 00000000 */  nop
     /* 1D460 8002CC60 21104300 */  addu       $v0, $v0, $v1
     /* 1D464 8002CC64 FF0F4230 */  andi       $v0, $v0, 0xFFF
@@ -30382,8 +30382,8 @@ glabel EndSaveMenuToWorld
     /* 1D8CC 8002D0CC A86E30AC */  sw         $s0, %lo(g_pCameraTargetParams)($at)
     /* 1D8D0 8002D0D0 0880013C */  lui        $at, %hi(g_nSpyroSuperflameTimer)
     /* 1D8D4 8002D0D4 688722AC */  sw         $v0, %lo(g_nSpyroSuperflameTimer)($at)
-    /* 1D8D8 8002D0D8 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 1D8DC 8002D0DC A46E23AC */  sw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 1D8D8 8002D0D8 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 1D8DC 8002D0DC A46E23AC */  sw         $v1, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 1D8E0 8002D0E0 C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 1D8E4 8002D0E4 58FF2426 */   addiu     $a0, $s1, -0xA8
     /* 1D8E8 8002D0E8 21200002 */  addu       $a0, $s0, $zero
@@ -30391,8 +30391,8 @@ glabel EndSaveMenuToWorld
     /* 1D8F0 8002D0F0 565A000C */  jal        CopyWords
     /* 1D8F4 8002D0F4 18000624 */   addiu     $a2, $zero, 0x18
     /* 1D8F8 8002D0F8 0000028E */  lw         $v0, 0x0($s0)
-    /* 1D8FC 8002D0FC 0780033C */  lui        $v1, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 1D900 8002D100 A46E638C */  lw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($v1)
+    /* 1D8FC 8002D0FC 0780033C */  lui        $v1, %hi(g_nCameraParamsReferenceYaw)
+    /* 1D900 8002D100 A46E638C */  lw         $v1, %lo(g_nCameraParamsReferenceYaw)($v1)
     /* 1D904 8002D104 00000000 */  nop
     /* 1D908 8002D108 21104300 */  addu       $v0, $v0, $v1
     /* 1D90C 8002D10C FF0F4230 */  andi       $v0, $v0, 0xFFF
@@ -31527,8 +31527,8 @@ glabel CameraSettle_Update
     /* 1E850 8002E050 00000000 */   nop
     /* 1E854 8002E054 0780033C */  lui        $v1, %hi(g_pCameraTargetParams)
     /* 1E858 8002E058 A86E638C */  lw         $v1, %lo(g_pCameraTargetParams)($v1)
-    /* 1E85C 8002E05C 0780023C */  lui        $v0, %hi(g_anCameraMode12Params)
-    /* 1E860 8002E060 84CA4224 */  addiu      $v0, $v0, %lo(g_anCameraMode12Params)
+    /* 1E85C 8002E05C 0780023C */  lui        $v0, %hi(g_anCameraParamTransitionGlideIn)
+    /* 1E860 8002E060 84CA4224 */  addiu      $v0, $v0, %lo(g_anCameraParamTransitionGlideIn)
     /* 1E864 8002E064 03006214 */  bne        $v1, $v0, .L8002E074
     /* 1E868 8002E068 00000000 */   nop
   .L8002E06C:
@@ -32556,22 +32556,22 @@ glabel RespawnOrGameOver_Update
     /* 1F708 8002EF08 F96E24A0 */  sb         $a0, %lo(g_bFrameDrawEnv0BgR)($at)
     /* 1F70C 8002EF0C 0780013C */  lui        $at, %hi(g_bFrameDrawEnv0BgG)
     /* 1F710 8002EF10 FA6E23A0 */  sb         $v1, %lo(g_bFrameDrawEnv0BgG)($at)
-    /* 1F714 8002EF14 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x19)
-    /* 1F718 8002EF18 7D6F24A0 */  sb         $a0, %lo(g_abFrameDrawEnv1 + 0x19)($at)
-    /* 1F71C 8002EF1C 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1A)
-    /* 1F720 8002EF20 7E6F23A0 */  sb         $v1, %lo(g_abFrameDrawEnv1 + 0x1A)($at)
+    /* 1F714 8002EF14 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x19)
+    /* 1F718 8002EF18 7D6F24A0 */  sb         $a0, %lo(g_FrameDrawEnv1 + 0x19)($at)
+    /* 1F71C 8002EF1C 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1A)
+    /* 1F720 8002EF20 7E6F23A0 */  sb         $v1, %lo(g_FrameDrawEnv1 + 0x1A)($at)
     /* 1F724 8002EF24 0880013C */  lui        $at, %hi(g_dwWorldFogColor + 0x2)
     /* 1F728 8002EF28 528A22A0 */  sb         $v0, %lo(g_dwWorldFogColor + 0x2)($at)
     /* 1F72C 8002EF2C 0780013C */  lui        $at, %hi(g_bFrameDrawEnv0BgB)
     /* 1F730 8002EF30 FB6E22A0 */  sb         $v0, %lo(g_bFrameDrawEnv0BgB)($at)
-    /* 1F734 8002EF34 0780013C */  lui        $at, %hi(g_abFrameDrawEnv1 + 0x1B)
-    /* 1F738 8002EF38 7F6F22A0 */  sb         $v0, %lo(g_abFrameDrawEnv1 + 0x1B)($at)
+    /* 1F734 8002EF34 0780013C */  lui        $at, %hi(g_FrameDrawEnv1 + 0x1B)
+    /* 1F738 8002EF38 7F6F22A0 */  sb         $v0, %lo(g_FrameDrawEnv1 + 0x1B)($at)
     /* 1F73C 8002EF3C 0000A28C */  lw         $v0, 0x0($a1)
     /* 1F740 8002EF40 0400A524 */  addiu      $a1, $a1, 0x4
-    /* 1F744 8002EF44 0880013C */  lui        $at, %hi(g_pWorldRenderMeshChunkArray)
-    /* 1F748 8002EF48 448A25AC */  sw         $a1, %lo(g_pWorldRenderMeshChunkArray)($at)
-    /* 1F74C 8002EF4C 0880013C */  lui        $at, %hi(g_nWorldRenderMeshChunkCount)
-    /* 1F750 8002EF50 408A22AC */  sw         $v0, %lo(g_nWorldRenderMeshChunkCount)($at)
+    /* 1F744 8002EF44 0880013C */  lui        $at, %hi(g_pSkyChunkArray)
+    /* 1F748 8002EF48 448A25AC */  sw         $a1, %lo(g_pSkyChunkArray)($at)
+    /* 1F74C 8002EF4C 0880013C */  lui        $at, %hi(g_nSkyChunkCount)
+    /* 1F750 8002EF50 408A22AC */  sw         $v0, %lo(g_nSkyChunkCount)($at)
     /* 1F754 8002EF54 2A104202 */  slt        $v0, $s2, $v0
     /* 1F758 8002EF58 0B004010 */  beqz       $v0, .L8002EF88
     /* 1F75C 8002EF5C 21300000 */   addu      $a2, $zero, $zero
@@ -34095,7 +34095,7 @@ glabel DragonRescue_Update
     /* 20DF0 800305F0 00FC4224 */  addiu      $v0, $v0, -0x400
     /* 20DF4 800305F4 140062AC */  sw         $v0, 0x14($v1)
     /* 20DF8 800305F8 0000048E */  lw         $a0, 0x0($s0)
-    /* 20DFC 800305FC F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 20DFC 800305FC F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 20E00 80030600 00000000 */   nop
     /* 20E04 80030604 0000048E */  lw         $a0, 0x0($s0)
     /* 20E08 80030608 AA49010C */  jal        InsertActorIntoSpatialGrid
@@ -35251,7 +35251,7 @@ glabel SaveMenu_Update
     /* 21F0C 8003170C 0C008424 */   addiu     $a0, $a0, 0xC
     /* 21F10 80031710 0880043C */  lui        $a0, %hi(g_pSaveMenuHostActor)
     /* 21F14 80031714 748D848C */  lw         $a0, %lo(g_pSaveMenuHostActor)($a0)
-    /* 21F18 80031718 F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 21F18 80031718 F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 21F1C 8003171C 00000000 */   nop
     /* 21F20 80031720 0780023C */  lui        $v0, %hi(g_pSparxActor)
     /* 21F24 80031724 9858428C */  lw         $v0, %lo(g_pSparxActor)($v0)
@@ -36372,10 +36372,10 @@ glabel ActorCutscene_Update
     /* 22FC8 800327C8 0A000224 */  addiu      $v0, $zero, 0xA
     /* 22FCC 800327CC 84006214 */  bne        $v1, $v0, .L800329E0
     /* 22FD0 800327D0 00000000 */   nop
-    /* 22FD4 800327D4 0780053C */  lui        $a1, %hi(g_nWorldCollisionTriCount)
-    /* 22FD8 800327D8 8077A524 */  addiu      $a1, $a1, %lo(g_nWorldCollisionTriCount)
-    /* 22FDC 800327DC 0880043C */  lui        $a0, %hi(g_nWorldRenderMeshChunkCount)
-    /* 22FE0 800327E0 408A8424 */  addiu      $a0, $a0, %lo(g_nWorldRenderMeshChunkCount)
+    /* 22FD4 800327D4 0780053C */  lui        $a1, %hi(g_nLevelSkyChunkCount)
+    /* 22FD8 800327D8 8077A524 */  addiu      $a1, $a1, %lo(g_nLevelSkyChunkCount)
+    /* 22FDC 800327DC 0880043C */  lui        $a0, %hi(g_nSkyChunkCount)
+    /* 22FE0 800327E0 408A8424 */  addiu      $a0, $a0, %lo(g_nSkyChunkCount)
     /* 22FE4 800327E4 0000A28C */  lw         $v0, 0x0($a1)
     /* 22FE8 800327E8 0400A38C */  lw         $v1, 0x4($a1)
     /* 22FEC 800327EC 000082AC */  sw         $v0, 0x0($a0)
@@ -38214,8 +38214,8 @@ nonmatching LoadCameraTargetAnglesFromMode, 0x6C
 glabel LoadCameraTargetAnglesFromMode
     /* 24998 80034198 0780043C */  lui        $a0, %hi(g_pCameraTargetParams)
     /* 2499C 8003419C A86E848C */  lw         $a0, %lo(g_pCameraTargetParams)($a0)
-    /* 249A0 800341A0 0780033C */  lui        $v1, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 249A4 800341A4 A46E638C */  lw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($v1)
+    /* 249A0 800341A0 0780033C */  lui        $v1, %hi(g_nCameraParamsReferenceYaw)
+    /* 249A4 800341A4 A46E638C */  lw         $v1, %lo(g_nCameraParamsReferenceYaw)($v1)
     /* 249A8 800341A8 0000828C */  lw         $v0, 0x0($a0)
     /* 249AC 800341AC 00000000 */  nop
     /* 249B0 800341B0 23104300 */  subu       $v0, $v0, $v1
@@ -40503,8 +40503,8 @@ glabel UpdateCameraSpringForMode
     /* 269C0 800361C0 E4FE4224 */  addiu      $v0, $v0, -0x11C
     /* 269C4 800361C4 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 269C8 800361C8 A06E22AC */  sw         $v0, %lo(g_pCameraAnchorPos)($at)
-    /* 269CC 800361CC 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 269D0 800361D0 A46E23AC */  sw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 269CC 800361CC 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 269D0 800361D0 A46E23AC */  sw         $v1, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 269D4 800361D4 C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 269D8 800361D8 00000000 */   nop
     /* 269DC 800361DC 0780033C */  lui        $v1, %hi(g_nCameraYaw)
@@ -40635,8 +40635,8 @@ glabel UpdateCameraSpringForMode
     /* 26BA4 800363A4 E4FE4224 */  addiu      $v0, $v0, -0x11C
     /* 26BA8 800363A8 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 26BAC 800363AC A06E22AC */  sw         $v0, %lo(g_pCameraAnchorPos)($at)
-    /* 26BB0 800363B0 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 26BB4 800363B4 A46E23AC */  sw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 26BB0 800363B0 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 26BB4 800363B4 A46E23AC */  sw         $v1, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 26BB8 800363B8 C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 26BBC 800363BC 60FF4426 */   addiu     $a0, $s2, -0xA0
     /* 26BC0 800363C0 0780033C */  lui        $v1, %hi(g_nCameraYaw)
@@ -40668,8 +40668,8 @@ glabel UpdateCameraSpringForMode
     /* 26C20 80036420 0880023C */  lui        $v0, %hi(g_anSpyroWorldPos)
     /* 26C24 80036424 588A4224 */  addiu      $v0, $v0, %lo(g_anSpyroWorldPos)
     /* 26C28 80036428 000002AE */  sw         $v0, 0x0($s0)
-    /* 26C2C 8003642C 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 26C30 80036430 A46E24AC */  sw         $a0, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 26C2C 8003642C 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 26C30 80036430 A46E24AC */  sw         $a0, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 26C34 80036434 52036014 */  bnez       $v1, .L80037180
     /* 26C38 80036438 0080023C */   lui       $v0, (0x80000009 >> 16)
     /* 26C3C 8003643C 0780053C */  lui        $a1, %hi(g_nCameraEulerYaw)
@@ -40745,8 +40745,8 @@ glabel UpdateCameraSpringForMode
     /* 26D48 80036548 588A4224 */  addiu      $v0, $v0, %lo(g_anSpyroWorldPos)
     /* 26D4C 8003654C 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 26D50 80036550 A06E22AC */  sw         $v0, %lo(g_pCameraAnchorPos)($at)
-    /* 26D54 80036554 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 26D58 80036558 A46E23AC */  sw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 26D54 80036554 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 26D58 80036558 A46E23AC */  sw         $v1, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 26D5C 8003655C C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 26D60 80036560 21200002 */   addu      $a0, $s0, $zero
     /* 26D64 80036564 0780033C */  lui        $v1, %hi(g_nCameraYaw)
@@ -40780,8 +40780,8 @@ glabel UpdateCameraSpringForMode
     /* 26DD0 800365D0 588A7326 */  addiu      $s3, $s3, %lo(g_anSpyroWorldPos)
     /* 26DD4 800365D4 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 26DD8 800365D8 A06E33AC */  sw         $s3, %lo(g_pCameraAnchorPos)($at)
-    /* 26DDC 800365DC 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 26DE0 800365E0 A46E24AC */  sw         $a0, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 26DDC 800365DC 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 26DE0 800365E0 A46E24AC */  sw         $a0, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 26DE4 800365E4 BF004014 */  bnez       $v0, .L800368E4
     /* 26DE8 800365E8 00000000 */   nop
     /* 26DEC 800365EC 0880023C */  lui        $v0, %hi(g_nSpyroFlightMode)
@@ -40815,8 +40815,8 @@ glabel UpdateCameraSpringForMode
     /* 26E54 80036654 7CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamGlideLeftBias)
     /* 26E58 80036658 100042AE */  sw         $v0, 0x10($s2)
   .L8003665C:
-    /* 26E5C 8003665C 0780023C */  lui        $v0, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 26E60 80036660 A46E4224 */  addiu      $v0, $v0, %lo(g_nCameraTargetYawBiasFromMode)
+    /* 26E5C 8003665C 0780023C */  lui        $v0, %hi(g_nCameraParamsReferenceYaw)
+    /* 26E60 80036660 A46E4224 */  addiu      $v0, $v0, %lo(g_nCameraParamsReferenceYaw)
     /* 26E64 80036664 0880033C */  lui        $v1, %hi(g_nSpyroBodyYaw)
     /* 26E68 80036668 748B638C */  lw         $v1, %lo(g_nSpyroBodyYaw)($v1)
     /* 26E6C 8003666C 54FF4424 */  addiu      $a0, $v0, -0xAC
@@ -41117,8 +41117,8 @@ glabel UpdateCameraSpringForMode
     /* 272AC 80036AAC 588A4224 */  addiu      $v0, $v0, %lo(g_anSpyroWorldPos)
     /* 272B0 80036AB0 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 272B4 80036AB4 A06E22AC */  sw         $v0, %lo(g_pCameraAnchorPos)($at)
-    /* 272B8 80036AB8 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 272BC 80036ABC A46E24AC */  sw         $a0, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 272B8 80036AB8 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 272BC 80036ABC A46E24AC */  sw         $a0, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 272C0 80036AC0 1F006014 */  bnez       $v1, .L80036B40
     /* 272C4 80036AC4 00000000 */   nop
     /* 272C8 80036AC8 0780053C */  lui        $a1, %hi(g_nCameraEulerYaw)
@@ -41167,8 +41167,8 @@ glabel UpdateCameraSpringForMode
     /* 27364 80036B64 588A4224 */  addiu      $v0, $v0, %lo(g_anSpyroWorldPos)
     /* 27368 80036B68 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 2736C 80036B6C A06E22AC */  sw         $v0, %lo(g_pCameraAnchorPos)($at)
-    /* 27370 80036B70 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 27374 80036B74 A46E23AC */  sw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 27370 80036B70 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 27374 80036B74 A46E23AC */  sw         $v1, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 27378 80036B78 C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 2737C 80036B7C 60FF4426 */   addiu     $a0, $s2, -0xA0
     /* 27380 80036B80 0780033C */  lui        $v1, %hi(g_nCameraYaw)
@@ -41373,8 +41373,8 @@ glabel UpdateCameraSpringForMode
     /* 27654 80036E54 588A4224 */  addiu      $v0, $v0, %lo(g_anSpyroWorldPos)
     /* 27658 80036E58 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 2765C 80036E5C A06E22AC */  sw         $v0, %lo(g_pCameraAnchorPos)($at)
-    /* 27660 80036E60 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 27664 80036E64 A46E24AC */  sw         $a0, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 27660 80036E60 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 27664 80036E64 A46E24AC */  sw         $a0, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 27668 80036E68 14006014 */  bnez       $v1, .L80036EBC
     /* 2766C 80036E6C 00000000 */   nop
     /* 27670 80036E70 0780053C */  lui        $a1, %hi(g_nCameraEulerYaw)
@@ -41426,8 +41426,8 @@ glabel UpdateCameraSpringForMode
     /* 27714 80036F14 46008290 */  lbu        $v0, 0x46($a0)
     /* 27718 80036F18 00000000 */  nop
     /* 2771C 80036F1C 00110200 */  sll        $v0, $v0, 4
-    /* 27720 80036F20 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 27724 80036F24 A46E22AC */  sw         $v0, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 27720 80036F20 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 27724 80036F24 A46E22AC */  sw         $v0, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 27728 80036F28 C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 2772C 80036F2C 60FF4426 */   addiu     $a0, $s2, -0xA0
     /* 27730 80036F30 0780033C */  lui        $v1, %hi(g_nCameraYaw)
@@ -41463,8 +41463,8 @@ glabel UpdateCameraSpringForMode
     /* 277A4 80036FA4 23284500 */   subu      $a1, $v0, $a1
     /* 277A8 80036FA8 0780033C */  lui        $v1, %hi(g_nCameraCollisionRetries)
     /* 277AC 80036FAC 946E638C */  lw         $v1, %lo(g_nCameraCollisionRetries)($v1)
-    /* 277B0 80036FB0 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 277B4 80036FB4 A46E22AC */  sw         $v0, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 277B0 80036FB0 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 277B4 80036FB4 A46E22AC */  sw         $v0, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 277B8 80036FB8 71006014 */  bnez       $v1, .L80037180
     /* 277BC 80036FBC 0080023C */   lui       $v0, (0x80000009 >> 16)
     /* 277C0 80036FC0 0780023C */  lui        $v0, %hi(g_anCameraParamScriptedFollow)
@@ -41544,8 +41544,8 @@ glabel UpdateCameraSpringForMode
     /* 278D8 800370D8 588A4224 */  addiu      $v0, $v0, %lo(g_anSpyroWorldPos)
     /* 278DC 800370DC 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 278E0 800370E0 A06E22AC */  sw         $v0, %lo(g_pCameraAnchorPos)($at)
-    /* 278E4 800370E4 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 278E8 800370E8 A46E23AC */  sw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 278E4 800370E4 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 278E8 800370E8 A46E23AC */  sw         $v1, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 278EC 800370EC C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 278F0 800370F0 21200002 */   addu      $a0, $s0, $zero
     /* 278F4 800370F4 0780033C */  lui        $v1, %hi(g_nCameraYaw)
@@ -42214,8 +42214,8 @@ glabel UpdateLevelTransitionCamera
     /* 28240 80037A40 1800B0AF */  sw         $s0, 0x18($sp)
     /* 28244 80037A44 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 28248 80037A48 A06E22AC */  sw         $v0, %lo(g_pCameraAnchorPos)($at)
-    /* 2824C 80037A4C 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 28250 80037A50 A46E24AC */  sw         $a0, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 2824C 80037A4C 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 28250 80037A50 A46E24AC */  sw         $a0, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 28254 80037A54 0F006010 */  beqz       $v1, .L80037A94
     /* 28258 80037A58 00000000 */   nop
     /* 2825C 80037A5C 0780023C */  lui        $v0, %hi(g_nCdStreamState)
@@ -42977,15 +42977,15 @@ glabel IsActorGroundFlat
     /* 28BA8 800383A8 DC054224 */  addiu      $v0, $v0, 0x5DC
     /* 28BAC 800383AC 7B35010C */  jal        FindGroundHeightBelow
     /* 28BB0 800383B0 140002AE */   sw        $v0, 0x14($s0)
-    /* 28BB4 800383B4 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec)
-    /* 28BB8 800383B8 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionProbeVec)
+    /* 28BB4 800383B4 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal)
+    /* 28BB8 800383B8 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionHitNormal)
     /* 28BBC 800383BC 1400028E */  lw         $v0, 0x14($s0)
     /* 28BC0 800383C0 21280000 */  addu       $a1, $zero, $zero
     /* 28BC4 800383C4 24FA4224 */  addiu      $v0, $v0, -0x5DC
     /* 28BC8 800383C8 7F5C000C */  jal        VectorLength
     /* 28BCC 800383CC 140002AE */   sw        $v0, 0x14($s0)
-    /* 28BD0 800383D0 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec + 0x8)
-    /* 28BD4 800383D4 7073848C */  lw         $a0, %lo(g_anCollisionProbeVec + 0x8)($a0)
+    /* 28BD0 800383D0 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal + 0x8)
+    /* 28BD4 800383D4 7073848C */  lw         $a0, %lo(g_anCollisionHitNormal + 0x8)($a0)
     /* 28BD8 800383D8 6B5A000C */  jal        ArcTan2_8bit
     /* 28BDC 800383DC 21284000 */   addu      $a1, $v0, $zero
     /* 28BE0 800383E0 00160200 */  sll        $v0, $v0, 24
@@ -43042,7 +43042,7 @@ glabel SnapActorToGround
     /* 28C6C 8003846C 38000386 */  lh         $v1, 0x38($s0)
     /* 28C70 80038470 21200002 */  addu       $a0, $s0, $zero
     /* 28C74 80038474 21104300 */  addu       $v0, $v0, $v1
-    /* 28C78 80038478 F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 28C78 80038478 F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 28C7C 8003847C 140082AC */   sw        $v0, 0x14($a0)
     /* 28C80 80038480 1400BF8F */  lw         $ra, 0x14($sp)
     /* 28C84 80038484 1000B08F */  lw         $s0, 0x10($sp)
@@ -44342,13 +44342,13 @@ glabel MoveActorAlongHeading
   .L80039578:
     /* 29D78 80039578 17004010 */  beqz       $v0, .L800395D8
     /* 29D7C 8003957C 00000000 */   nop
-    /* 29D80 80039580 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec)
-    /* 29D84 80039584 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionProbeVec)
+    /* 29D80 80039580 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal)
+    /* 29D84 80039584 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionHitNormal)
     /* 29D88 80039588 7F5C000C */  jal        VectorLength
     /* 29D8C 8003958C 21280000 */   addu      $a1, $zero, $zero
     /* 29D90 80039590 21204000 */  addu       $a0, $v0, $zero
-    /* 29D94 80039594 0780053C */  lui        $a1, %hi(g_anCollisionProbeVec + 0x8)
-    /* 29D98 80039598 7073A58C */  lw         $a1, %lo(g_anCollisionProbeVec + 0x8)($a1)
+    /* 29D94 80039594 0780053C */  lui        $a1, %hi(g_anCollisionHitNormal + 0x8)
+    /* 29D98 80039598 7073A58C */  lw         $a1, %lo(g_anCollisionHitNormal + 0x8)($a1)
     /* 29D9C 8003959C AD5A000C */  jal        ArcTan2
     /* 29DA0 800395A0 21300000 */   addu      $a2, $zero, $zero
     /* 29DA4 800395A4 21184000 */  addu       $v1, $v0, $zero
@@ -44403,7 +44403,7 @@ glabel MoveActorAlongHeading
   .L80039648:
     /* 29E48 80039648 04004010 */  beqz       $v0, .L8003965C
     /* 29E4C 8003964C 21200002 */   addu      $a0, $s0, $zero
-    /* 29E50 80039650 F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 29E50 80039650 F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 29E54 80039654 21200002 */   addu      $a0, $s0, $zero
     /* 29E58 80039658 21200002 */  addu       $a0, $s0, $zero
   .L8003965C:
@@ -44589,7 +44589,7 @@ glabel MoveActorAlongAngle
   .L800398D0:
     /* 2A0D0 800398D0 04004010 */  beqz       $v0, .L800398E4
     /* 2A0D4 800398D4 21200002 */   addu      $a0, $s0, $zero
-    /* 2A0D8 800398D8 F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 2A0D8 800398D8 F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 2A0DC 800398DC 21200002 */   addu      $a0, $s0, $zero
     /* 2A0E0 800398E0 21200002 */  addu       $a0, $s0, $zero
   .L800398E4:
@@ -44709,7 +44709,7 @@ glabel DriveActorTrackedMove
     /* 2A26C 80039A6C 140023AE */  sw         $v1, 0x14($s1)
     /* 2A270 80039A70 03001324 */  addiu      $s3, $zero, 0x3
   .L80039A74:
-    /* 2A274 80039A74 F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 2A274 80039A74 F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 2A278 80039A78 21202002 */   addu      $a0, $s1, $zero
   .L80039A7C:
     /* 2A27C 80039A7C 21106002 */  addu       $v0, $s3, $zero
@@ -45358,7 +45358,7 @@ glabel SteerActorAlongWaypoints
     /* 2AB60 8003A360 2000B027 */  addiu      $s0, $sp, 0x20
     /* 2AB64 8003A364 C05D000C */  jal        CopyVector
     /* 2AB68 8003A368 21280002 */   addu      $a1, $s0, $zero
-    /* 2AB6C 8003A36C F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 2AB6C 8003A36C F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 2AB70 8003A370 21208002 */   addu      $a0, $s4, $zero
     /* 2AB74 8003A374 21208002 */  addu       $a0, $s4, $zero
     /* 2AB78 8003A378 794A010C */  jal        RefreshActorDerivedState
@@ -45573,7 +45573,7 @@ glabel WalkActorAlongWaypoints
     /* 2AE60 8003A660 2000B027 */  addiu      $s0, $sp, 0x20
     /* 2AE64 8003A664 C05D000C */  jal        CopyVector
     /* 2AE68 8003A668 21280002 */   addu      $a1, $s0, $zero
-    /* 2AE6C 8003A66C F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 2AE6C 8003A66C F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 2AE70 8003A670 21204002 */   addu      $a0, $s2, $zero
     /* 2AE74 8003A674 21204002 */  addu       $a0, $s2, $zero
     /* 2AE78 8003A678 794A010C */  jal        RefreshActorDerivedState
@@ -46275,16 +46275,16 @@ glabel SpawnActorDeathDrop
     /* 2B7AC 8003AFAC 00044224 */  addiu      $v0, $v0, 0x400
     /* 2B7B0 8003AFB0 7B35010C */  jal        FindGroundHeightBelow
     /* 2B7B4 8003AFB4 3000A2AF */   sw        $v0, 0x30($sp)
-    /* 2B7B8 8003AFB8 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec)
-    /* 2B7BC 8003AFBC 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionProbeVec)
+    /* 2B7B8 8003AFB8 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal)
+    /* 2B7BC 8003AFBC 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionHitNormal)
     /* 2B7C0 8003AFC0 21280000 */  addu       $a1, $zero, $zero
     /* 2B7C4 8003AFC4 3000A38F */  lw         $v1, 0x30($sp)
     /* 2B7C8 8003AFC8 21804000 */  addu       $s0, $v0, $zero
     /* 2B7CC 8003AFCC 00FC6324 */  addiu      $v1, $v1, -0x400
     /* 2B7D0 8003AFD0 7F5C000C */  jal        VectorLength
     /* 2B7D4 8003AFD4 3000A3AF */   sw        $v1, 0x30($sp)
-    /* 2B7D8 8003AFD8 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec + 0x8)
-    /* 2B7DC 8003AFDC 7073848C */  lw         $a0, %lo(g_anCollisionProbeVec + 0x8)($a0)
+    /* 2B7D8 8003AFD8 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal + 0x8)
+    /* 2B7DC 8003AFDC 7073848C */  lw         $a0, %lo(g_anCollisionHitNormal + 0x8)($a0)
     /* 2B7E0 8003AFE0 6B5A000C */  jal        ArcTan2_8bit
     /* 2B7E4 8003AFE4 21284000 */   addu      $a1, $v0, $zero
     /* 2B7E8 8003AFE8 00160200 */  sll        $v0, $v0, 24
@@ -47265,7 +47265,7 @@ glabel SteerActorTowardPoint
     /* 2C484 8003BC84 02000524 */   addiu     $a1, $zero, 0x2
     /* 2C488 8003BC88 D0E0000C */  jal        ProbeActorGroundHeight
     /* 2C48C 8003BC8C 21204002 */   addu      $a0, $s2, $zero
-    /* 2C490 8003BC90 F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 2C490 8003BC90 F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 2C494 8003BC94 21204002 */   addu      $a0, $s2, $zero
     /* 2C498 8003BC98 2110A002 */  addu       $v0, $s5, $zero
     /* 2C49C 8003BC9C 6800BF8F */  lw         $ra, 0x68($sp)
@@ -47413,7 +47413,7 @@ glabel TryMoveActorForward
   .L8003BE8C:
     /* 2C68C 8003BE8C C05D000C */  jal        CopyVector
     /* 2C690 8003BE90 3800A527 */   addiu     $a1, $sp, 0x38
-    /* 2C694 8003BE94 F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 2C694 8003BE94 F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 2C698 8003BE98 21204002 */   addu      $a0, $s2, $zero
     /* 2C69C 8003BE9C 21204002 */  addu       $a0, $s2, $zero
     /* 2C6A0 8003BEA0 794A010C */  jal        RefreshActorDerivedState
@@ -50061,13 +50061,13 @@ glabel ProbeSpyroLedgeForward
     /* 2EAA4 8003E2A4 21280002 */   addu      $a1, $s0, $zero
     /* 2EAA8 8003E2A8 14004010 */  beqz       $v0, .L8003E2FC
     /* 2EAAC 8003E2AC 00000000 */   nop
-    /* 2EAB0 8003E2B0 0780103C */  lui        $s0, %hi(g_anCollisionProbeVec)
-    /* 2EAB4 8003E2B4 68731026 */  addiu      $s0, $s0, %lo(g_anCollisionProbeVec)
+    /* 2EAB0 8003E2B0 0780103C */  lui        $s0, %hi(g_anCollisionHitNormal)
+    /* 2EAB4 8003E2B4 68731026 */  addiu      $s0, $s0, %lo(g_anCollisionHitNormal)
     /* 2EAB8 8003E2B8 21200002 */  addu       $a0, $s0, $zero
     /* 2EABC 8003E2BC 7F5C000C */  jal        VectorLength
     /* 2EAC0 8003E2C0 21280000 */   addu      $a1, $zero, $zero
-    /* 2EAC4 8003E2C4 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec + 0x8)
-    /* 2EAC8 8003E2C8 7073848C */  lw         $a0, %lo(g_anCollisionProbeVec + 0x8)($a0)
+    /* 2EAC4 8003E2C4 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal + 0x8)
+    /* 2EAC8 8003E2C8 7073848C */  lw         $a0, %lo(g_anCollisionHitNormal + 0x8)($a0)
     /* 2EACC 8003E2CC 21284000 */  addu       $a1, $v0, $zero
     /* 2EAD0 8003E2D0 AD5A000C */  jal        ArcTan2
     /* 2EAD4 8003E2D4 21300000 */   addu      $a2, $zero, $zero
@@ -50154,16 +50154,16 @@ glabel ProbeSpyroGroundContact
     /* 2EBF4 8003E3F4 21282002 */   addu      $a1, $s1, $zero
     /* 2EBF8 8003E3F8 41004010 */  beqz       $v0, .L8003E500
     /* 2EBFC 8003E3FC 21200002 */   addu      $a0, $s0, $zero
-    /* 2EC00 8003E400 0780103C */  lui        $s0, %hi(g_anCollisionProbeVec)
-    /* 2EC04 8003E404 68731026 */  addiu      $s0, $s0, %lo(g_anCollisionProbeVec)
+    /* 2EC00 8003E400 0780103C */  lui        $s0, %hi(g_anCollisionHitNormal)
+    /* 2EC04 8003E404 68731026 */  addiu      $s0, $s0, %lo(g_anCollisionHitNormal)
     /* 2EC08 8003E408 C05D000C */  jal        CopyVector
     /* 2EC0C 8003E40C 21280002 */   addu      $a1, $s0, $zero
     /* 2EC10 8003E410 21200002 */  addu       $a0, $s0, $zero
     /* 2EC14 8003E414 7F5C000C */  jal        VectorLength
     /* 2EC18 8003E418 21280000 */   addu      $a1, $zero, $zero
     /* 2EC1C 8003E41C 21284000 */  addu       $a1, $v0, $zero
-    /* 2EC20 8003E420 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec + 0x8)
-    /* 2EC24 8003E424 7073848C */  lw         $a0, %lo(g_anCollisionProbeVec + 0x8)($a0)
+    /* 2EC20 8003E420 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal + 0x8)
+    /* 2EC24 8003E424 7073848C */  lw         $a0, %lo(g_anCollisionHitNormal + 0x8)($a0)
     /* 2EC28 8003E428 AD5A000C */  jal        ArcTan2
     /* 2EC2C 8003E42C 21300000 */   addu      $a2, $zero, $zero
     /* 2EC30 8003E430 00160200 */  sll        $v0, $v0, 24
@@ -50175,8 +50175,8 @@ glabel ProbeSpyroGroundContact
     /* 2EC48 8003E448 0880013C */  lui        $at, %hi(g_nSpyroGroundSlope)
     /* 2EC4C 8003E44C 088B22AC */  sw         $v0, %lo(g_nSpyroGroundSlope)($at)
   .L8003E450:
-    /* 2EC50 8003E450 0780043C */  lui        $a0, %hi(g_nLastCollisionHitChunkId)
-    /* 2EC54 8003E454 0858848C */  lw         $a0, %lo(g_nLastCollisionHitChunkId)($a0)
+    /* 2EC50 8003E450 0780043C */  lui        $a0, %hi(g_nCollisionHitTriIndex)
+    /* 2EC54 8003E454 0858848C */  lw         $a0, %lo(g_nCollisionHitTriIndex)($a0)
     /* 2EC58 8003E458 DC014526 */  addiu      $a1, $s2, 0x1DC
     /* 2EC5C 8003E45C 2E5F000C */  jal        UnpackWorldCollisionTri
     /* 2EC60 8003E460 D80144AE */   sw        $a0, 0x1D8($s2)
@@ -50256,8 +50256,8 @@ glabel ProbeSpyroGroundContact
     /* 2ED80 8003E580 21280002 */   addu      $a1, $s0, $zero
     /* 2ED84 8003E584 1D004010 */  beqz       $v0, .L8003E5FC
     /* 2ED88 8003E588 08005026 */   addiu     $s0, $s2, 0x8
-    /* 2ED8C 8003E58C 0780053C */  lui        $a1, %hi(g_anCollisionProbeVec)
-    /* 2ED90 8003E590 6873A524 */  addiu      $a1, $a1, %lo(g_anCollisionProbeVec)
+    /* 2ED8C 8003E58C 0780053C */  lui        $a1, %hi(g_anCollisionHitNormal)
+    /* 2ED90 8003E590 6873A524 */  addiu      $a1, $a1, %lo(g_anCollisionHitNormal)
     /* 2ED94 8003E594 C05D000C */  jal        CopyVector
     /* 2ED98 8003E598 21200002 */   addu      $a0, $s0, $zero
     /* 2ED9C 8003E59C 21200002 */  addu       $a0, $s0, $zero
@@ -50307,8 +50307,8 @@ nonmatching AverageSpyroPlatformMotion, 0x130
 glabel AverageSpyroPlatformMotion
     /* 2EE28 8003E628 A0FFBD27 */  addiu      $sp, $sp, -0x60
     /* 2EE2C 8003E62C 4C00B1AF */  sw         $s1, 0x4C($sp)
-    /* 2EE30 8003E630 0880113C */  lui        $s1, %hi(g_nSpyroGroundChunkId)
-    /* 2EE34 8003E634 CC8C3126 */  addiu      $s1, $s1, %lo(g_nSpyroGroundChunkId)
+    /* 2EE30 8003E630 0880113C */  lui        $s1, %hi(g_nSpyroGroundTriIndex)
+    /* 2EE34 8003E634 CC8C3126 */  addiu      $s1, $s1, %lo(g_nSpyroGroundTriIndex)
     /* 2EE38 8003E638 5800BFAF */  sw         $ra, 0x58($sp)
     /* 2EE3C 8003E63C 5400B3AF */  sw         $s3, 0x54($sp)
     /* 2EE40 8003E640 5000B2AF */  sw         $s2, 0x50($sp)
@@ -50445,8 +50445,8 @@ glabel StepSpyroOntoLocalFloor
     /* 2F024 8003E824 21282002 */   addu      $a1, $s1, $zero
     /* 2F028 8003E828 2A004010 */  beqz       $v0, .L8003E8D4
     /* 2F02C 8003E82C 00000000 */   nop
-    /* 2F030 8003E830 0780023C */  lui        $v0, %hi(g_anCollisionProbeVec + 0x8)
-    /* 2F034 8003E834 7073428C */  lw         $v0, %lo(g_anCollisionProbeVec + 0x8)($v0)
+    /* 2F030 8003E830 0780023C */  lui        $v0, %hi(g_anCollisionHitNormal + 0x8)
+    /* 2F034 8003E834 7073428C */  lw         $v0, %lo(g_anCollisionHitNormal + 0x8)($v0)
     /* 2F038 8003E838 00000000 */  nop
     /* 2F03C 8003E83C 25004018 */  blez       $v0, .L8003E8D4
     /* 2F040 8003E840 1000A427 */   addiu     $a0, $sp, 0x10
@@ -52012,8 +52012,8 @@ glabel AdvanceSpyroPhysics
     /* 3067C 8003FE7C E08A20AC */  sw         $zero, %lo(g_nSpyroContactedActorFlag)($at)
     /* 30680 8003FE80 0000438E */  lw         $v1, 0x0($s2)
     /* 30684 8003FE84 FF000224 */  addiu      $v0, $zero, 0xFF
-    /* 30688 8003FE88 0880013C */  lui        $at, %hi(g_nSpyroFirstContactChunkId)
-    /* 3068C 8003FE8C C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactChunkId)($at)
+    /* 30688 8003FE88 0880013C */  lui        $at, %hi(g_nSpyroFirstContactSurfaceType)
+    /* 3068C 8003FE8C C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactSurfaceType)($at)
     /* 30690 8003FE90 0880013C */  lui        $at, %hi(g_nSpyroWallSlideContributedFlag)
     /* 30694 8003FE94 0C8B20AC */  sw         $zero, %lo(g_nSpyroWallSlideContributedFlag)($at)
     /* 30698 8003FE98 01006324 */  addiu      $v1, $v1, 0x1
@@ -52265,8 +52265,8 @@ glabel AdvanceSpyroPhysics
     /* 30A18 80040218 0880043C */  lui        $a0, %hi(g_pSpyroRequestCameraTargetParams)
     /* 30A1C 8004021C 788C848C */  lw         $a0, %lo(g_pSpyroRequestCameraTargetParams)($a0)
     /* 30A20 80040220 0A004234 */  ori        $v0, $v0, (0x8000000A & 0xFFFF)
-    /* 30A24 80040224 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 30A28 80040228 A46E20AC */  sw         $zero, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 30A24 80040224 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 30A28 80040228 A46E20AC */  sw         $zero, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 30A2C 8004022C 0000C2AC */  sw         $v0, 0x0($a2)
     /* 30A30 80040230 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 30A34 80040234 A06E23AC */  sw         $v1, %lo(g_pCameraAnchorPos)($at)
@@ -52507,8 +52507,8 @@ glabel AdvanceSpyroPhysics
     /* 30D94 80040594 00210400 */  sll        $a0, $a0, 4
     /* 30D98 80040598 0880013C */  lui        $at, %hi(g_dwSpyroRequestMask)
     /* 30D9C 8004059C 4C8C23AC */  sw         $v1, %lo(g_dwSpyroRequestMask)($at)
-    /* 30DA0 800405A0 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 30DA4 800405A4 A46E24AC */  sw         $a0, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 30DA0 800405A0 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 30DA4 800405A4 A46E24AC */  sw         $a0, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 30DA8 800405A8 76010108 */  j          .L800405D8
     /* 30DAC 800405AC 00000000 */   nop
   .L800405B0:
@@ -52635,8 +52635,8 @@ glabel AdvanceSpyroPhysics
     /* 30F5C 8004075C 00FF1226 */  addiu      $s2, $s0, -0x100
     /* 30F60 80040760 78FF1526 */  addiu      $s5, $s0, -0x88
     /* 30F64 80040764 01001424 */  addiu      $s4, $zero, 0x1
-    /* 30F68 80040768 0780173C */  lui        $s7, %hi(g_anCollisionProbeVec)
-    /* 30F6C 8004076C 6873F726 */  addiu      $s7, $s7, %lo(g_anCollisionProbeVec)
+    /* 30F68 80040768 0780173C */  lui        $s7, %hi(g_anCollisionHitNormal)
+    /* 30F6C 8004076C 6873F726 */  addiu      $s7, $s7, %lo(g_anCollisionHitNormal)
   .L80040770:
     /* 30F70 80040770 2120C003 */  addu       $a0, $fp, $zero
     /* 30F74 80040774 C05D000C */  jal        CopyVector
@@ -52852,8 +52852,8 @@ glabel AdvanceSpyroPhysics
   .L80040A78:
     /* 31278 80040A78 7F5C000C */  jal        VectorLength
     /* 3127C 80040A7C 21280000 */   addu      $a1, $zero, $zero
-    /* 31280 80040A80 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec + 0x8)
-    /* 31284 80040A84 7073848C */  lw         $a0, %lo(g_anCollisionProbeVec + 0x8)($a0)
+    /* 31280 80040A80 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal + 0x8)
+    /* 31284 80040A84 7073848C */  lw         $a0, %lo(g_anCollisionHitNormal + 0x8)($a0)
     /* 31288 80040A88 21284000 */  addu       $a1, $v0, $zero
     /* 3128C 80040A8C AD5A000C */  jal        ArcTan2
     /* 31290 80040A90 21300000 */   addu      $a2, $zero, $zero
@@ -52900,8 +52900,8 @@ glabel AdvanceSpyroPhysics
     /* 31328 80040B28 806BA524 */  addiu      $a1, $a1, %lo(g_anCollisionResolvedPos)
     /* 3132C 80040B2C C05D000C */  jal        CopyVector
     /* 31330 80040B30 21204002 */   addu      $a0, $s2, $zero
-    /* 31334 80040B34 0880033C */  lui        $v1, %hi(g_nSpyroFirstContactChunkId)
-    /* 31338 80040B38 C48B638C */  lw         $v1, %lo(g_nSpyroFirstContactChunkId)($v1)
+    /* 31334 80040B34 0880033C */  lui        $v1, %hi(g_nSpyroFirstContactSurfaceType)
+    /* 31338 80040B38 C48B638C */  lw         $v1, %lo(g_nSpyroFirstContactSurfaceType)($v1)
     /* 3133C 80040B3C FF000224 */  addiu      $v0, $zero, 0xFF
     /* 31340 80040B40 0E006214 */  bne        $v1, $v0, .L80040B7C
     /* 31344 80040B44 1800A427 */   addiu     $a0, $sp, 0x18
@@ -52909,12 +52909,12 @@ glabel AdvanceSpyroPhysics
     /* 3134C 80040B4C 1857428C */  lw         $v0, %lo(g_nGroundSurfaceType)($v0)
     /* 31350 80040B50 0780053C */  lui        $a1, %hi(g_anCollisionContactPoint)
     /* 31354 80040B54 5878A524 */  addiu      $a1, $a1, %lo(g_anCollisionContactPoint)
-    /* 31358 80040B58 0880013C */  lui        $at, %hi(g_nSpyroFirstContactChunkId)
-    /* 3135C 80040B5C C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactChunkId)($at)
+    /* 31358 80040B58 0880013C */  lui        $at, %hi(g_nSpyroFirstContactSurfaceType)
+    /* 3135C 80040B5C C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactSurfaceType)($at)
     /* 31360 80040B60 C05D000C */  jal        CopyVector
     /* 31364 80040B64 7C014426 */   addiu     $a0, $s2, 0x17C
-    /* 31368 80040B68 0780053C */  lui        $a1, %hi(g_anCollisionProbeVec)
-    /* 3136C 80040B6C 6873A524 */  addiu      $a1, $a1, %lo(g_anCollisionProbeVec)
+    /* 31368 80040B68 0780053C */  lui        $a1, %hi(g_anCollisionHitNormal)
+    /* 3136C 80040B6C 6873A524 */  addiu      $a1, $a1, %lo(g_anCollisionHitNormal)
     /* 31370 80040B70 C05D000C */  jal        CopyVector
     /* 31374 80040B74 88014426 */   addiu     $a0, $s2, 0x188
     /* 31378 80040B78 1800A427 */  addiu      $a0, $sp, 0x18
@@ -53015,8 +53015,8 @@ glabel AdvanceSpyroPhysics
   .L80040CD4:
     /* 314D4 80040CD4 7F5C000C */  jal        VectorLength
     /* 314D8 80040CD8 21280000 */   addu      $a1, $zero, $zero
-    /* 314DC 80040CDC 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec + 0x8)
-    /* 314E0 80040CE0 7073848C */  lw         $a0, %lo(g_anCollisionProbeVec + 0x8)($a0)
+    /* 314DC 80040CDC 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal + 0x8)
+    /* 314E0 80040CE0 7073848C */  lw         $a0, %lo(g_anCollisionHitNormal + 0x8)($a0)
     /* 314E4 80040CE4 21284000 */  addu       $a1, $v0, $zero
     /* 314E8 80040CE8 AD5A000C */  jal        ArcTan2
     /* 314EC 80040CEC 21300000 */   addu      $a2, $zero, $zero
@@ -53061,8 +53061,8 @@ glabel AdvanceSpyroPhysics
     /* 3157C 80040D7C 806BA524 */  addiu      $a1, $a1, %lo(g_anCollisionResolvedPos)
     /* 31580 80040D80 C05D000C */  jal        CopyVector
     /* 31584 80040D84 21204002 */   addu      $a0, $s2, $zero
-    /* 31588 80040D88 0880033C */  lui        $v1, %hi(g_nSpyroFirstContactChunkId)
-    /* 3158C 80040D8C C48B638C */  lw         $v1, %lo(g_nSpyroFirstContactChunkId)($v1)
+    /* 31588 80040D88 0880033C */  lui        $v1, %hi(g_nSpyroFirstContactSurfaceType)
+    /* 3158C 80040D8C C48B638C */  lw         $v1, %lo(g_nSpyroFirstContactSurfaceType)($v1)
     /* 31590 80040D90 FF000224 */  addiu      $v0, $zero, 0xFF
     /* 31594 80040D94 0E006214 */  bne        $v1, $v0, .L80040DD0
     /* 31598 80040D98 1800A427 */   addiu     $a0, $sp, 0x18
@@ -53070,12 +53070,12 @@ glabel AdvanceSpyroPhysics
     /* 315A0 80040DA0 1857428C */  lw         $v0, %lo(g_nGroundSurfaceType)($v0)
     /* 315A4 80040DA4 0780053C */  lui        $a1, %hi(g_anCollisionContactPoint)
     /* 315A8 80040DA8 5878A524 */  addiu      $a1, $a1, %lo(g_anCollisionContactPoint)
-    /* 315AC 80040DAC 0880013C */  lui        $at, %hi(g_nSpyroFirstContactChunkId)
-    /* 315B0 80040DB0 C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactChunkId)($at)
+    /* 315AC 80040DAC 0880013C */  lui        $at, %hi(g_nSpyroFirstContactSurfaceType)
+    /* 315B0 80040DB0 C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactSurfaceType)($at)
     /* 315B4 80040DB4 C05D000C */  jal        CopyVector
     /* 315B8 80040DB8 7C014426 */   addiu     $a0, $s2, 0x17C
-    /* 315BC 80040DBC 0780053C */  lui        $a1, %hi(g_anCollisionProbeVec)
-    /* 315C0 80040DC0 6873A524 */  addiu      $a1, $a1, %lo(g_anCollisionProbeVec)
+    /* 315BC 80040DBC 0780053C */  lui        $a1, %hi(g_anCollisionHitNormal)
+    /* 315C0 80040DC0 6873A524 */  addiu      $a1, $a1, %lo(g_anCollisionHitNormal)
     /* 315C4 80040DC4 C05D000C */  jal        CopyVector
     /* 315C8 80040DC8 88014426 */   addiu     $a0, $s2, 0x188
     /* 315CC 80040DCC 1800A427 */  addiu      $a0, $sp, 0x18
@@ -61910,8 +61910,8 @@ glabel AdvanceSpyroFrameMotion
     /* 3949C 80048C9C 15004014 */  bnez       $v0, .L80048CF4
     /* 394A0 80048CA0 02000524 */   addiu     $a1, $zero, 0x2
   .L80048CA4:
-    /* 394A4 80048CA4 0880023C */  lui        $v0, %hi(g_nSpyroFirstContactChunkId)
-    /* 394A8 80048CA8 C48B428C */  lw         $v0, %lo(g_nSpyroFirstContactChunkId)($v0)
+    /* 394A4 80048CA4 0880023C */  lui        $v0, %hi(g_nSpyroFirstContactSurfaceType)
+    /* 394A8 80048CA8 C48B428C */  lw         $v0, %lo(g_nSpyroFirstContactSurfaceType)($v0)
     /* 394AC 80048CAC 00000000 */  nop
     /* 394B0 80048CB0 3F004330 */  andi       $v1, $v0, 0x3F
     /* 394B4 80048CB4 3F000224 */  addiu      $v0, $zero, 0x3F
@@ -64219,8 +64219,8 @@ glabel ResetSpyroEntity
     /* 3B50C 8004AD0C FFFF0224 */  addiu      $v0, $zero, -0x1
     /* 3B510 8004AD10 0880013C */  lui        $at, %hi(g_nSparxHealth)
     /* 3B514 8004AD14 BC8B31AC */  sw         $s1, %lo(g_nSparxHealth)($at)
-    /* 3B518 8004AD18 0880013C */  lui        $at, %hi(g_nSpyroGroundChunkId)
-    /* 3B51C 8004AD1C CC8C22AC */  sw         $v0, %lo(g_nSpyroGroundChunkId)($at)
+    /* 3B518 8004AD18 0880013C */  lui        $at, %hi(g_nSpyroGroundTriIndex)
+    /* 3B51C 8004AD1C CC8C22AC */  sw         $v0, %lo(g_nSpyroGroundTriIndex)($at)
     /* 3B520 8004AD20 0880013C */  lui        $at, %hi(g_abSpyroPersistentEuler)
     /* 3B524 8004AD24 648A23A0 */  sb         $v1, %lo(g_abSpyroPersistentEuler)($at)
     /* 3B528 8004AD28 00190300 */  sll        $v1, $v1, 4
@@ -64239,8 +64239,8 @@ glabel ResetSpyroEntity
     /* 3B55C 8004AD5C 9AFA000C */  jal        ChangeSpyroState
     /* 3B560 8004AD60 21200000 */   addu      $a0, $zero, $zero
     /* 3B564 8004AD64 FF000224 */  addiu      $v0, $zero, 0xFF
-    /* 3B568 8004AD68 0880013C */  lui        $at, %hi(g_nSpyroFirstContactChunkId)
-    /* 3B56C 8004AD6C C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactChunkId)($at)
+    /* 3B568 8004AD68 0880013C */  lui        $at, %hi(g_nSpyroFirstContactSurfaceType)
+    /* 3B56C 8004AD6C C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactSurfaceType)($at)
     /* 3B570 8004AD70 3F000224 */  addiu      $v0, $zero, 0x3F
     /* 3B574 8004AD74 0880013C */  lui        $at, %hi(g_bSpyroSfxVoiceMarker)
     /* 3B578 8004AD78 F88C22A0 */  sb         $v0, %lo(g_bSpyroSfxVoiceMarker)($at)
@@ -64252,11 +64252,11 @@ glabel ResetSpyroEntity
     /* 3B58C 8004AD8C 0880033C */  lui        $v1, %hi(g_abSpyroPersistentEuler)
     /* 3B590 8004AD90 648A6390 */  lbu        $v1, %lo(g_abSpyroPersistentEuler)($v1)
     /* 3B594 8004AD94 FFFF0224 */  addiu      $v0, $zero, -0x1
-    /* 3B598 8004AD98 0880013C */  lui        $at, %hi(g_nSpyroGroundChunkId)
-    /* 3B59C 8004AD9C CC8C22AC */  sw         $v0, %lo(g_nSpyroGroundChunkId)($at)
+    /* 3B598 8004AD98 0880013C */  lui        $at, %hi(g_nSpyroGroundTriIndex)
+    /* 3B59C 8004AD9C CC8C22AC */  sw         $v0, %lo(g_nSpyroGroundTriIndex)($at)
     /* 3B5A0 8004ADA0 FF000224 */  addiu      $v0, $zero, 0xFF
-    /* 3B5A4 8004ADA4 0880013C */  lui        $at, %hi(g_nSpyroFirstContactChunkId)
-    /* 3B5A8 8004ADA8 C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactChunkId)($at)
+    /* 3B5A4 8004ADA4 0880013C */  lui        $at, %hi(g_nSpyroFirstContactSurfaceType)
+    /* 3B5A8 8004ADA8 C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactSurfaceType)($at)
     /* 3B5AC 8004ADAC 0880023C */  lui        $v0, %hi(g_abSpyroPersistentEuler + 0x1)
     /* 3B5B0 8004ADB0 658A4290 */  lbu        $v0, %lo(g_abSpyroPersistentEuler + 0x1)($v0)
     /* 3B5B4 8004ADB4 0880013C */  lui        $at, %hi(g_abSpyroTintRgba)
@@ -64863,16 +64863,16 @@ glabel CastRayWorldAndActors
     /* 3BE68 8004B668 000081AC */  sw         $at, 0x0($a0)
     /* 3BE6C 8004B66C 040082AC */  sw         $v0, 0x4($a0)
     /* 3BE70 8004B670 080083AC */  sw         $v1, 0x8($a0)
-    /* 3BE74 8004B674 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec)
-    /* 3BE78 8004B678 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionProbeVec)
+    /* 3BE74 8004B674 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal)
+    /* 3BE78 8004B678 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionHitNormal)
     /* 3BE7C 8004B67C 00008DAC */  sw         $t5, 0x0($a0)
     /* 3BE80 8004B680 04008EAC */  sw         $t6, 0x4($a0)
     /* 3BE84 8004B684 08008FAC */  sw         $t7, 0x8($a0)
     /* 3BE88 8004B688 0780043C */  lui        $a0, %hi(g_pCollisionHitActor)
     /* 3BE8C 8004B68C E4578424 */  addiu      $a0, $a0, %lo(g_pCollisionHitActor)
     /* 3BE90 8004B690 000080AC */  sw         $zero, 0x0($a0)
-    /* 3BE94 8004B694 0780043C */  lui        $a0, %hi(g_nLastCollisionHitChunkId)
-    /* 3BE98 8004B698 08588424 */  addiu      $a0, $a0, %lo(g_nLastCollisionHitChunkId)
+    /* 3BE94 8004B694 0780043C */  lui        $a0, %hi(g_nCollisionHitTriIndex)
+    /* 3BE98 8004B698 08588424 */  addiu      $a0, $a0, %lo(g_nCollisionHitTriIndex)
     /* 3BE9C 8004B69C 00009CAC */  sw         $gp, 0x0($a0)
     /* 3BEA0 8004B6A0 5800618E */  lw         $at, 0x58($s3)
     /* 3BEA4 8004B6A4 7E2C0108 */  j          .L8004B1F8
@@ -65351,16 +65351,16 @@ glabel CastRayWorldAndActors
     /* 3C5A0 8004BDA0 000081AC */  sw         $at, 0x0($a0)
     /* 3C5A4 8004BDA4 040082AC */  sw         $v0, 0x4($a0)
     /* 3C5A8 8004BDA8 080083AC */  sw         $v1, 0x8($a0)
-    /* 3C5AC 8004BDAC 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec)
-    /* 3C5B0 8004BDB0 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionProbeVec)
+    /* 3C5AC 8004BDAC 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal)
+    /* 3C5B0 8004BDB0 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionHitNormal)
     /* 3C5B4 8004BDB4 00008DAC */  sw         $t5, 0x0($a0)
     /* 3C5B8 8004BDB8 04008EAC */  sw         $t6, 0x4($a0)
     /* 3C5BC 8004BDBC 08008FAC */  sw         $t7, 0x8($a0)
     /* 3C5C0 8004BDC0 0780043C */  lui        $a0, %hi(g_pCollisionHitActor)
     /* 3C5C4 8004BDC4 E4578424 */  addiu      $a0, $a0, %lo(g_pCollisionHitActor)
     /* 3C5C8 8004BDC8 00009EAC */  sw         $fp, 0x0($a0)
-    /* 3C5CC 8004BDCC 0780043C */  lui        $a0, %hi(g_nLastCollisionHitChunkId)
-    /* 3C5D0 8004BDD0 08588424 */  addiu      $a0, $a0, %lo(g_nLastCollisionHitChunkId)
+    /* 3C5CC 8004BDCC 0780043C */  lui        $a0, %hi(g_nCollisionHitTriIndex)
+    /* 3C5D0 8004BDD0 08588424 */  addiu      $a0, $a0, %lo(g_nCollisionHitTriIndex)
     /* 3C5D4 8004BDD4 FFFF0120 */  addi       $at, $zero, -0x1 /* handwritten instruction */
     /* 3C5D8 8004BDD8 000081AC */  sw         $at, 0x0($a0)
     /* 3C5DC 8004BDDC D8FF618E */  lw         $at, -0x28($s3)
@@ -66146,16 +66146,16 @@ glabel CollideSphereWithWorldAndActors
     /* 3D104 8004C904 4C00A2AE */  sw         $v0, 0x4C($s5)
     /* 3D108 8004C908 5000A3AE */  sw         $v1, 0x50($s5)
     /* 3D10C 8004C90C 5400A4AE */  sw         $a0, 0x54($s5)
-    /* 3D110 8004C910 0780013C */  lui        $at, %hi(g_anCollisionProbeVec)
-    /* 3D114 8004C914 68732124 */  addiu      $at, $at, %lo(g_anCollisionProbeVec)
+    /* 3D110 8004C910 0780013C */  lui        $at, %hi(g_anCollisionHitNormal)
+    /* 3D114 8004C914 68732124 */  addiu      $at, $at, %lo(g_anCollisionHitNormal)
     /* 3D118 8004C918 00002DAC */  sw         $t5, 0x0($at)
     /* 3D11C 8004C91C 04002EAC */  sw         $t6, 0x4($at)
     /* 3D120 8004C920 08002FAC */  sw         $t7, 0x8($at)
     /* 3D124 8004C924 0780013C */  lui        $at, %hi(g_pCollisionHitActor)
     /* 3D128 8004C928 E4572124 */  addiu      $at, $at, %lo(g_pCollisionHitActor)
     /* 3D12C 8004C92C 000020AC */  sw         $zero, 0x0($at)
-    /* 3D130 8004C930 0780013C */  lui        $at, %hi(g_nLastCollisionHitChunkId)
-    /* 3D134 8004C934 08582124 */  addiu      $at, $at, %lo(g_nLastCollisionHitChunkId)
+    /* 3D130 8004C930 0780013C */  lui        $at, %hi(g_nCollisionHitTriIndex)
+    /* 3D134 8004C934 08582124 */  addiu      $at, $at, %lo(g_nCollisionHitTriIndex)
     /* 3D138 8004C938 00003CAC */  sw         $gp, 0x0($at)
     /* 3D13C 8004C93C 0880013C */  lui        $at, %hi(g_pWorldChunkArray)
     /* 3D140 8004C940 A8852124 */  addiu      $at, $at, %lo(g_pWorldChunkArray)
@@ -66879,16 +66879,16 @@ glabel CollideSphereWithWorldAndActors_Tail
     /* 3DBC4 8004D3C4 CCFFA2AE */  sw         $v0, -0x34($s5)
     /* 3DBC8 8004D3C8 D0FFA3AE */  sw         $v1, -0x30($s5)
     /* 3DBCC 8004D3CC D4FFA4AE */  sw         $a0, -0x2C($s5)
-    /* 3DBD0 8004D3D0 0780013C */  lui        $at, %hi(g_anCollisionProbeVec)
-    /* 3DBD4 8004D3D4 68732124 */  addiu      $at, $at, %lo(g_anCollisionProbeVec)
+    /* 3DBD0 8004D3D0 0780013C */  lui        $at, %hi(g_anCollisionHitNormal)
+    /* 3DBD4 8004D3D4 68732124 */  addiu      $at, $at, %lo(g_anCollisionHitNormal)
     /* 3DBD8 8004D3D8 00002DAC */  sw         $t5, 0x0($at)
     /* 3DBDC 8004D3DC 04002EAC */  sw         $t6, 0x4($at)
     /* 3DBE0 8004D3E0 08002FAC */  sw         $t7, 0x8($at)
     /* 3DBE4 8004D3E4 0780013C */  lui        $at, %hi(g_pCollisionHitActor)
     /* 3DBE8 8004D3E8 E4572124 */  addiu      $at, $at, %lo(g_pCollisionHitActor)
     /* 3DBEC 8004D3EC 00003EAC */  sw         $fp, 0x0($at)
-    /* 3DBF0 8004D3F0 0780013C */  lui        $at, %hi(g_nLastCollisionHitChunkId)
-    /* 3DBF4 8004D3F4 08582124 */  addiu      $at, $at, %lo(g_nLastCollisionHitChunkId)
+    /* 3DBF0 8004D3F0 0780013C */  lui        $at, %hi(g_nCollisionHitTriIndex)
+    /* 3DBF4 8004D3F4 08582124 */  addiu      $at, $at, %lo(g_nCollisionHitTriIndex)
     /* 3DBF8 8004D3F8 FFFF0220 */  addi       $v0, $zero, -0x1 /* handwritten instruction */
     /* 3DBFC 8004D3FC 000022AC */  sw         $v0, 0x0($at)
     /* 3DC00 8004D400 FF000120 */  addi       $at, $zero, 0xFF /* handwritten instruction */
@@ -67320,16 +67320,16 @@ glabel FindGroundHeightBelow
     /* 3E230 8004DA30 7CFF0106 */  bgez       $s0, .L8004D824
     /* 3E234 8004DA34 00000000 */   nop
     /* 3E238 8004DA38 00003621 */  addi       $s6, $t1, 0x0 /* handwritten instruction */
-    /* 3E23C 8004DA3C 0780013C */  lui        $at, %hi(g_anCollisionProbeVec)
-    /* 3E240 8004DA40 68732124 */  addiu      $at, $at, %lo(g_anCollisionProbeVec)
+    /* 3E23C 8004DA3C 0780013C */  lui        $at, %hi(g_anCollisionHitNormal)
+    /* 3E240 8004DA40 68732124 */  addiu      $at, $at, %lo(g_anCollisionHitNormal)
     /* 3E244 8004DA44 00002DAC */  sw         $t5, 0x0($at)
     /* 3E248 8004DA48 04002EAC */  sw         $t6, 0x4($at)
     /* 3E24C 8004DA4C 08002FAC */  sw         $t7, 0x8($at)
     /* 3E250 8004DA50 0780013C */  lui        $at, %hi(g_pCollisionHitActor)
     /* 3E254 8004DA54 E4572124 */  addiu      $at, $at, %lo(g_pCollisionHitActor)
     /* 3E258 8004DA58 000020AC */  sw         $zero, 0x0($at)
-    /* 3E25C 8004DA5C 0780013C */  lui        $at, %hi(g_nLastCollisionHitChunkId)
-    /* 3E260 8004DA60 08582124 */  addiu      $at, $at, %lo(g_nLastCollisionHitChunkId)
+    /* 3E25C 8004DA5C 0780013C */  lui        $at, %hi(g_nCollisionHitTriIndex)
+    /* 3E260 8004DA60 08582124 */  addiu      $at, $at, %lo(g_nCollisionHitTriIndex)
     /* 3E264 8004DA64 000033AC */  sw         $s3, 0x0($at)
     /* 3E268 8004DA68 0880013C */  lui        $at, %hi(g_pWorldChunkArray)
     /* 3E26C 8004DA6C A8852124 */  addiu      $at, $at, %lo(g_pWorldChunkArray)
@@ -67622,16 +67622,16 @@ glabel FindGroundHeightBelow
     /* 3E6B8 8004DEB8 78FF0106 */  bgez       $s0, .L8004DC9C
     /* 3E6BC 8004DEBC 00000000 */   nop
     /* 3E6C0 8004DEC0 00003621 */  addi       $s6, $t1, 0x0 /* handwritten instruction */
-    /* 3E6C4 8004DEC4 0780013C */  lui        $at, %hi(g_anCollisionProbeVec)
-    /* 3E6C8 8004DEC8 68732124 */  addiu      $at, $at, %lo(g_anCollisionProbeVec)
+    /* 3E6C4 8004DEC4 0780013C */  lui        $at, %hi(g_anCollisionHitNormal)
+    /* 3E6C8 8004DEC8 68732124 */  addiu      $at, $at, %lo(g_anCollisionHitNormal)
     /* 3E6CC 8004DECC 00002DAC */  sw         $t5, 0x0($at)
     /* 3E6D0 8004DED0 04002EAC */  sw         $t6, 0x4($at)
     /* 3E6D4 8004DED4 08002FAC */  sw         $t7, 0x8($at)
     /* 3E6D8 8004DED8 0780013C */  lui        $at, %hi(g_pCollisionHitActor)
     /* 3E6DC 8004DEDC E4572124 */  addiu      $at, $at, %lo(g_pCollisionHitActor)
     /* 3E6E0 8004DEE0 00003EAC */  sw         $fp, 0x0($at)
-    /* 3E6E4 8004DEE4 0780013C */  lui        $at, %hi(g_nLastCollisionHitChunkId)
-    /* 3E6E8 8004DEE8 08582124 */  addiu      $at, $at, %lo(g_nLastCollisionHitChunkId)
+    /* 3E6E4 8004DEE4 0780013C */  lui        $at, %hi(g_nCollisionHitTriIndex)
+    /* 3E6E8 8004DEE8 08582124 */  addiu      $at, $at, %lo(g_nCollisionHitTriIndex)
     /* 3E6EC 8004DEEC FFFF0220 */  addi       $v0, $zero, -0x1 /* handwritten instruction */
     /* 3E6F0 8004DEF0 000022AC */  sw         $v0, 0x0($at)
     /* 3E6F4 8004DEF4 FF000120 */  addi       $at, $zero, 0xFF /* handwritten instruction */
@@ -68545,11 +68545,11 @@ endlabel DispatchActorContactAtSphere_Tail
 /* Handwritten function */
 .endif
 
-.section .text.EmitStaticActorMeshList, "ax"
-.ifndef HAVE_C_EmitStaticActorMeshList
-nonmatching EmitStaticActorMeshList, 0x458
+.section .text.EmitSkyMesh, "ax"
+.ifndef HAVE_C_EmitSkyMesh
+nonmatching EmitSkyMesh, 0x458
 
-glabel EmitStaticActorMeshList
+glabel EmitSkyMesh
     /* 3F3A8 8004EBA8 0780013C */  lui        $at, %hi(g_anStaticRegSaveArea)
     /* 3F3AC 8004EBAC D87D2124 */  addiu      $at, $at, %lo(g_anStaticRegSaveArea)
     /* 3F3B0 8004EBB0 000030AC */  sw         $s0, 0x0($at)
@@ -68577,8 +68577,8 @@ glabel EmitStaticActorMeshList
     /* 3F408 8004EC08 0028C048 */  ctc2       $zero, $5 /* handwritten instruction */
     /* 3F40C 8004EC0C 0030C048 */  ctc2       $zero, $6 /* handwritten instruction */
     /* 3F410 8004EC10 0038C048 */  ctc2       $zero, $7 /* handwritten instruction */
-    /* 3F414 8004EC14 0880013C */  lui        $at, %hi(g_nWorldRenderMeshChunkCount)
-    /* 3F418 8004EC18 408A2124 */  addiu      $at, $at, %lo(g_nWorldRenderMeshChunkCount)
+    /* 3F414 8004EC14 0880013C */  lui        $at, %hi(g_nSkyChunkCount)
+    /* 3F418 8004EC18 408A2124 */  addiu      $at, $at, %lo(g_nSkyChunkCount)
     /* 3F41C 8004EC1C 00008F20 */  addi       $t7, $a0, 0x0 /* handwritten instruction */
     /* 3F420 8004EC20 07800D3C */  lui        $t5, %hi(g_pOtDepthBinHead0)
     /* 3F424 8004EC24 F4FCAD25 */  addiu      $t5, $t5, %lo(g_pOtDepthBinHead0)
@@ -68846,16 +68846,16 @@ glabel EmitStaticActorMeshList
     /* 3F7F4 8004EFF4 0000308C */  lw         $s0, 0x0($at)
     /* 3F7F8 8004EFF8 0800E003 */  jr         $ra
     /* 3F7FC 8004EFFC 00000000 */   nop
-endlabel EmitStaticActorMeshList
+endlabel EmitSkyMesh
 
 /* Handwritten function */
 .endif
 
-.section .text.EmitStaticActorMeshListFogged, "ax"
-.ifndef HAVE_C_EmitStaticActorMeshListFogged
-nonmatching EmitStaticActorMeshListFogged, 0x4BC
+.section .text.EmitSkyMeshFogged, "ax"
+.ifndef HAVE_C_EmitSkyMeshFogged
+nonmatching EmitSkyMeshFogged, 0x4BC
 
-glabel EmitStaticActorMeshListFogged
+glabel EmitSkyMeshFogged
     /* 3F800 8004F000 0780013C */  lui        $at, %hi(g_anStaticRegSaveArea)
     /* 3F804 8004F004 D87D2124 */  addiu      $at, $at, %lo(g_anStaticRegSaveArea)
     /* 3F808 8004F008 000030AC */  sw         $s0, 0x0($at)
@@ -68885,8 +68885,8 @@ glabel EmitStaticActorMeshListFogged
     /* 3F868 8004F068 0028C048 */  ctc2       $zero, $5 /* handwritten instruction */
     /* 3F86C 8004F06C 0030C048 */  ctc2       $zero, $6 /* handwritten instruction */
     /* 3F870 8004F070 0038C048 */  ctc2       $zero, $7 /* handwritten instruction */
-    /* 3F874 8004F074 0880013C */  lui        $at, %hi(g_nWorldRenderMeshChunkCount)
-    /* 3F878 8004F078 408A2124 */  addiu      $at, $at, %lo(g_nWorldRenderMeshChunkCount)
+    /* 3F874 8004F074 0880013C */  lui        $at, %hi(g_nSkyChunkCount)
+    /* 3F878 8004F078 408A2124 */  addiu      $at, $at, %lo(g_nSkyChunkCount)
     /* 3F87C 8004F07C 07800D3C */  lui        $t5, %hi(g_pOtDepthBinHead0)
     /* 3F880 8004F080 F4FCAD25 */  addiu      $t5, $t5, %lo(g_pOtDepthBinHead0)
     /* 3F884 8004F084 0000AD21 */  addi       $t5, $t5, 0x0 /* handwritten instruction */
@@ -68967,8 +68967,8 @@ glabel EmitStaticActorMeshListFogged
     /* 3F9A4 8004F1A4 00010E3C */  lui        $t6, (0x1000000 >> 16)
     /* 3F9A8 8004F1A8 00020F3C */  lui        $t7, (0x2000000 >> 16)
     /* 3F9AC 8004F1AC FFFF1020 */  addi       $s0, $zero, -0x1 /* handwritten instruction */
-    /* 3F9B0 8004F1B0 0780013C */  lui        $at, %hi(g_dwActorMeshFadeColor)
-    /* 3F9B4 8004F1B4 D4572124 */  addiu      $at, $at, %lo(g_dwActorMeshFadeColor)
+    /* 3F9B0 8004F1B0 0780013C */  lui        $at, %hi(g_dwSkyFadeColor)
+    /* 3F9B4 8004F1B4 D4572124 */  addiu      $at, $at, %lo(g_dwSkyFadeColor)
     /* 3F9B8 8004F1B8 0000218C */  lw         $at, 0x0($at)
     /* 3F9BC 8004F1BC 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
     /* 3F9C0 8004F1C0 F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
@@ -69175,16 +69175,16 @@ glabel EmitStaticActorMeshListFogged
     /* 3FCB0 8004F4B0 0000308C */  lw         $s0, 0x0($at)
     /* 3FCB4 8004F4B4 0800E003 */  jr         $ra
     /* 3FCB8 8004F4B8 00000000 */   nop
-endlabel EmitStaticActorMeshListFogged
+endlabel EmitSkyMeshFogged
 
 /* Handwritten function */
 .endif
 
-.section .text.EmitDynamicActorMeshScissored, "ax"
-.ifndef HAVE_C_EmitDynamicActorMeshScissored
-nonmatching EmitDynamicActorMeshScissored, 0x32C
+.section .text.EmitPortalSky, "ax"
+.ifndef HAVE_C_EmitPortalSky
+nonmatching EmitPortalSky, 0x32C
 
-glabel EmitDynamicActorMeshScissored
+glabel EmitPortalSky
     /* 3FCBC 8004F4BC 0780013C */  lui        $at, %hi(g_anStaticRegSaveArea)
     /* 3FCC0 8004F4C0 D87D2124 */  addiu      $at, $at, %lo(g_anStaticRegSaveArea)
     /* 3FCC4 8004F4C4 000030AC */  sw         $s0, 0x0($at)
@@ -69266,8 +69266,8 @@ glabel EmitDynamicActorMeshScissored
     /* 3FDEC 8004F5EC 0000DC23 */  addi       $gp, $fp, 0x0 /* handwritten instruction */
     /* 3FDF0 8004F5F0 FCFFDD23 */  addi       $sp, $fp, -0x4 /* handwritten instruction */
     /* 3FDF4 8004F5F4 00001920 */  addi       $t9, $zero, 0x0 /* handwritten instruction */
-    /* 3FDF8 8004F5F8 0880033C */  lui        $v1, %hi(g_anActorScissorRect)
-    /* 3FDFC 8004F5FC 00AA6324 */  addiu      $v1, $v1, %lo(g_anActorScissorRect)
+    /* 3FDF8 8004F5F8 0880033C */  lui        $v1, %hi(g_anPortalScissorRect)
+    /* 3FDFC 8004F5FC 00AA6324 */  addiu      $v1, $v1, %lo(g_anPortalScissorRect)
     /* 3FE00 8004F600 0000678C */  lw         $a3, 0x0($v1)
     /* 3FE04 8004F604 0400688C */  lw         $t0, 0x4($v1)
     /* 3FE08 8004F608 0800698C */  lw         $t1, 0x8($v1)
@@ -69391,22 +69391,22 @@ glabel EmitDynamicActorMeshScissored
     /* 3FFC4 8004F7C4 43090100 */  sra        $at, $at, 5
     /* 3FFC8 8004F7C8 43110200 */  sra        $v0, $v0, 5
     /* 3FFCC 8004F7CC 43190300 */  sra        $v1, $v1, 5
-    /* 3FFD0 8004F7D0 07800A3C */  lui        $t2, %hi(g_aMobSilhouetteEdges)
-    /* 3FFD4 8004F7D4 A07E4A25 */  addiu      $t2, $t2, %lo(g_aMobSilhouetteEdges)
-    /* 3FFD8 8004F7D8 FA3D010C */  jal        ClipAndEmitActorTriangle
+    /* 3FFD0 8004F7D0 07800A3C */  lui        $t2, %hi(g_aPortalSilhouetteEdges)
+    /* 3FFD4 8004F7D4 A07E4A25 */  addiu      $t2, $t2, %lo(g_aPortalSilhouetteEdges)
+    /* 3FFD8 8004F7D8 FA3D010C */  jal        ClipAndEmitPortalSkyTriangle
     /* 3FFDC 8004F7DC 00000000 */   nop
     /* 3FFE0 8004F7E0 D53D0108 */  j          .L8004F754
     /* 3FFE4 8004F7E4 00000000 */   nop
-endlabel EmitDynamicActorMeshScissored
+endlabel EmitPortalSky
 
 /* Handwritten function */
 .endif
 
-.section .text.ClipAndEmitActorTriangle, "ax"
-.ifndef HAVE_C_ClipAndEmitActorTriangle
-nonmatching ClipAndEmitActorTriangle, 0x104
+.section .text.ClipAndEmitPortalSkyTriangle, "ax"
+.ifndef HAVE_C_ClipAndEmitPortalSkyTriangle
+nonmatching ClipAndEmitPortalSkyTriangle, 0x104
 
-glabel ClipAndEmitActorTriangle
+glabel ClipAndEmitPortalSkyTriangle
     /* 3FFE8 8004F7E8 0000448D */  lw         $a0, 0x0($t2)
     /* 3FFEC 8004F7EC 00000000 */  nop
     /* 3FFF0 8004F7F0 12018010 */  beqz       $a0, .L8004FC3C
@@ -69453,7 +69453,7 @@ glabel ClipAndEmitActorTriangle
     /* 40088 8004F888 08008000 */  jr         $a0
     /* 4008C 8004F88C 00000000 */   nop
   alabel D_8004F890
-    /* 40090 8004F890 FA3D0108 */  j          ClipAndEmitActorTriangle
+    /* 40090 8004F890 FA3D0108 */  j          ClipAndEmitPortalSkyTriangle
     /* 40094 8004F894 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
     /* 40098 8004F898 343E0108 */  j          .L8004F8D0
     /* 4009C 8004F89C 00000000 */   nop
@@ -69477,16 +69477,16 @@ glabel ClipAndEmitActorTriangle
     /* 400E0 8004F8E0 380063AD */  sw         $v1, 0x38($t3)
     /* 400E4 8004F8E4 3C0066AD */  sw         $a2, 0x3C($t3)
     /* 400E8 8004F8E8 400067AD */  sw         $a3, 0x40($t3)
-endlabel ClipAndEmitActorTriangle
+endlabel ClipAndEmitPortalSkyTriangle
 
 /* Handwritten function */
 .endif
 
-.section .text.ClipAndEmitActorTriangle_Tail, "ax"
-.ifndef HAVE_C_ClipAndEmitActorTriangle_Tail
-nonmatching ClipAndEmitActorTriangle_Tail, 0x4C0
+.section .text.ClipAndEmitPortalSkyTriangle_Tail, "ax"
+.ifndef HAVE_C_ClipAndEmitPortalSkyTriangle_Tail
+nonmatching ClipAndEmitPortalSkyTriangle_Tail, 0x4C0
 
-glabel ClipAndEmitActorTriangle_Tail
+glabel ClipAndEmitPortalSkyTriangle_Tail
     /* 400EC 8004F8EC 440068AD */  sw         $t0, 0x44($t3)
     /* 400F0 8004F8F0 48007FAD */  sw         $ra, 0x48($t3)
     /* 400F4 8004F8F4 21204000 */  addu       $a0, $v0, $zero
@@ -69501,8 +69501,8 @@ glabel ClipAndEmitActorTriangle_Tail
     /* 40118 8004F918 300061AD */  sw         $at, 0x30($t3)
     /* 4011C 8004F91C 6B3F010C */  jal        BlendDepthCuedEdgeColor
     /* 40120 8004F920 21704000 */   addu      $t6, $v0, $zero
-    /* 40124 8004F924 0780043C */  lui        $a0, %hi(g_pActorDeferredTriStackTop)
-    /* 40128 8004F928 98578424 */  addiu      $a0, $a0, %lo(g_pActorDeferredTriStackTop)
+    /* 40124 8004F924 0780043C */  lui        $a0, %hi(g_pPortalDeferredTriStackTop)
+    /* 40128 8004F928 98578424 */  addiu      $a0, $a0, %lo(g_pPortalDeferredTriStackTop)
     /* 4012C 8004F92C 0000858C */  lw         $a1, 0x0($a0)
     /* 40130 8004F930 3800638D */  lw         $v1, 0x38($t3)
     /* 40134 8004F934 0000A1AC */  sw         $at, 0x0($a1)
@@ -69520,7 +69520,7 @@ glabel ClipAndEmitActorTriangle_Tail
     /* 40164 8004F964 4000678D */  lw         $a3, 0x40($t3)
     /* 40168 8004F968 4400688D */  lw         $t0, 0x44($t3)
     /* 4016C 8004F96C 48007F8D */  lw         $ra, 0x48($t3)
-    /* 40170 8004F970 FA3D0108 */  j          ClipAndEmitActorTriangle
+    /* 40170 8004F970 FA3D0108 */  j          ClipAndEmitPortalSkyTriangle
     /* 40174 8004F974 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
   .L8004F978:
     /* 40178 8004F978 07800B3C */  lui        $t3, %hi(g_anStaticRegSaveArea)
@@ -69544,8 +69544,8 @@ glabel ClipAndEmitActorTriangle_Tail
     /* 401C0 8004F9C0 340061AD */  sw         $at, 0x34($t3)
     /* 401C4 8004F9C4 6B3F010C */  jal        BlendDepthCuedEdgeColor
     /* 401C8 8004F9C8 21784000 */   addu      $t7, $v0, $zero
-    /* 401CC 8004F9CC 0780043C */  lui        $a0, %hi(g_pActorDeferredTriStackTop)
-    /* 401D0 8004F9D0 98578424 */  addiu      $a0, $a0, %lo(g_pActorDeferredTriStackTop)
+    /* 401CC 8004F9CC 0780043C */  lui        $a0, %hi(g_pPortalDeferredTriStackTop)
+    /* 401D0 8004F9D0 98578424 */  addiu      $a0, $a0, %lo(g_pPortalDeferredTriStackTop)
     /* 401D4 8004F9D4 0000858C */  lw         $a1, 0x0($a0)
     /* 401D8 8004F9D8 3800638D */  lw         $v1, 0x38($t3)
     /* 401DC 8004F9DC 0000A1AC */  sw         $at, 0x0($a1)
@@ -69563,7 +69563,7 @@ glabel ClipAndEmitActorTriangle_Tail
     /* 4020C 8004FA0C 4000678D */  lw         $a3, 0x40($t3)
     /* 40210 8004FA10 4400688D */  lw         $t0, 0x44($t3)
     /* 40214 8004FA14 48007F8D */  lw         $ra, 0x48($t3)
-    /* 40218 8004FA18 FA3D0108 */  j          ClipAndEmitActorTriangle
+    /* 40218 8004FA18 FA3D0108 */  j          ClipAndEmitPortalSkyTriangle
     /* 4021C 8004FA1C 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
   .L8004FA20:
     /* 40220 8004FA20 07800B3C */  lui        $t3, %hi(g_anStaticRegSaveArea)
@@ -69595,7 +69595,7 @@ glabel ClipAndEmitActorTriangle_Tail
     /* 40288 8004FA88 4000678D */  lw         $a3, 0x40($t3)
     /* 4028C 8004FA8C 4400688D */  lw         $t0, 0x44($t3)
     /* 40290 8004FA90 48007F8D */  lw         $ra, 0x48($t3)
-    /* 40294 8004FA94 FA3D0108 */  j          ClipAndEmitActorTriangle
+    /* 40294 8004FA94 FA3D0108 */  j          ClipAndEmitPortalSkyTriangle
     /* 40298 8004FA98 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
   .L8004FA9C:
     /* 4029C 8004FA9C 07800B3C */  lui        $t3, %hi(g_anStaticRegSaveArea)
@@ -69619,8 +69619,8 @@ glabel ClipAndEmitActorTriangle_Tail
     /* 402E4 8004FAE4 380061AD */  sw         $at, 0x38($t3)
     /* 402E8 8004FAE8 6B3F010C */  jal        BlendDepthCuedEdgeColor
     /* 402EC 8004FAEC 21804000 */   addu      $s0, $v0, $zero
-    /* 402F0 8004FAF0 0780043C */  lui        $a0, %hi(g_pActorDeferredTriStackTop)
-    /* 402F4 8004FAF4 98578424 */  addiu      $a0, $a0, %lo(g_pActorDeferredTriStackTop)
+    /* 402F0 8004FAF0 0780043C */  lui        $a0, %hi(g_pPortalDeferredTriStackTop)
+    /* 402F4 8004FAF4 98578424 */  addiu      $a0, $a0, %lo(g_pPortalDeferredTriStackTop)
     /* 402F8 8004FAF8 0000858C */  lw         $a1, 0x0($a0)
     /* 402FC 8004FAFC 3800638D */  lw         $v1, 0x38($t3)
     /* 40300 8004FB00 0000A1AC */  sw         $at, 0x0($a1)
@@ -69638,7 +69638,7 @@ glabel ClipAndEmitActorTriangle_Tail
     /* 40330 8004FB30 4000678D */  lw         $a3, 0x40($t3)
     /* 40334 8004FB34 4400688D */  lw         $t0, 0x44($t3)
     /* 40338 8004FB38 48007F8D */  lw         $ra, 0x48($t3)
-    /* 4033C 8004FB3C FA3D0108 */  j          ClipAndEmitActorTriangle
+    /* 4033C 8004FB3C FA3D0108 */  j          ClipAndEmitPortalSkyTriangle
     /* 40340 8004FB40 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
   .L8004FB44:
     /* 40344 8004FB44 07800B3C */  lui        $t3, %hi(g_anStaticRegSaveArea)
@@ -69670,7 +69670,7 @@ glabel ClipAndEmitActorTriangle_Tail
     /* 403AC 8004FBAC 4000678D */  lw         $a3, 0x40($t3)
     /* 403B0 8004FBB0 4400688D */  lw         $t0, 0x44($t3)
     /* 403B4 8004FBB4 48007F8D */  lw         $ra, 0x48($t3)
-    /* 403B8 8004FBB8 FA3D0108 */  j          ClipAndEmitActorTriangle
+    /* 403B8 8004FBB8 FA3D0108 */  j          ClipAndEmitPortalSkyTriangle
     /* 403BC 8004FBBC 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
   .L8004FBC0:
     /* 403C0 8004FBC0 07800B3C */  lui        $t3, %hi(g_anStaticRegSaveArea)
@@ -69702,7 +69702,7 @@ glabel ClipAndEmitActorTriangle_Tail
     /* 40428 8004FC28 4000678D */  lw         $a3, 0x40($t3)
     /* 4042C 8004FC2C 4400688D */  lw         $t0, 0x44($t3)
     /* 40430 8004FC30 48007F8D */  lw         $ra, 0x48($t3)
-    /* 40434 8004FC34 FA3D0108 */  j          ClipAndEmitActorTriangle
+    /* 40434 8004FC34 FA3D0108 */  j          ClipAndEmitPortalSkyTriangle
     /* 40438 8004FC38 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
   .L8004FC3C:
     /* 4043C 8004FC3C 26203E03 */  xor        $a0, $t9, $fp
@@ -69730,8 +69730,8 @@ glabel ClipAndEmitActorTriangle_Tail
     /* 40490 8004FC90 0800E003 */  jr         $ra
     /* 40494 8004FC94 1C00DE23 */   addi      $fp, $fp, 0x1C /* handwritten instruction */
   .L8004FC98:
-    /* 40498 8004FC98 0780043C */  lui        $a0, %hi(g_pActorDeferredTriStackTop)
-    /* 4049C 8004FC9C 98578424 */  addiu      $a0, $a0, %lo(g_pActorDeferredTriStackTop)
+    /* 40498 8004FC98 0780043C */  lui        $a0, %hi(g_pPortalDeferredTriStackTop)
+    /* 4049C 8004FC9C 98578424 */  addiu      $a0, $a0, %lo(g_pPortalDeferredTriStackTop)
     /* 404A0 8004FCA0 00008B8C */  lw         $t3, 0x0($a0)
     /* 404A4 8004FCA4 07800A3C */  lui        $t2, %hi(g_pOtDepthBinHead0)
     /* 404A8 8004FCA8 F4FC4A25 */  addiu      $t2, $t2, %lo(g_pOtDepthBinHead0)
@@ -69746,13 +69746,13 @@ glabel ClipAndEmitActorTriangle_Tail
     /* 404CC 8004FCCC 10006F8D */  lw         $t7, 0x10($t3)
     /* 404D0 8004FCD0 1400708D */  lw         $s0, 0x14($t3)
     /* 404D4 8004FCD4 18006A8D */  lw         $t2, 0x18($t3)
-    /* 404D8 8004FCD8 FA3D010C */  jal        ClipAndEmitActorTriangle
+    /* 404D8 8004FCD8 FA3D010C */  jal        ClipAndEmitPortalSkyTriangle
     /* 404DC 8004FCDC 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
     /* 404E0 8004FCE0 263F0108 */  j          .L8004FC98
     /* 404E4 8004FCE4 00000000 */   nop
   .L8004FCE8:
-    /* 404E8 8004FCE8 07800B3C */  lui        $t3, %hi(g_pActorDeferredTriStackTop)
-    /* 404EC 8004FCEC 98576B25 */  addiu      $t3, $t3, %lo(g_pActorDeferredTriStackTop)
+    /* 404E8 8004FCE8 07800B3C */  lui        $t3, %hi(g_pPortalDeferredTriStackTop)
+    /* 404EC 8004FCEC 98576B25 */  addiu      $t3, $t3, %lo(g_pPortalDeferredTriStackTop)
     /* 404F0 8004FCF0 07800A3C */  lui        $t2, %hi(g_pOtDepthBinHead0)
     /* 404F4 8004FCF4 F4FC4A25 */  addiu      $t2, $t2, %lo(g_pOtDepthBinHead0)
     /* 404F8 8004FCF8 00084A21 */  addi       $t2, $t2, 0x800 /* handwritten instruction */
@@ -69769,8 +69769,8 @@ glabel ClipAndEmitActorTriangle_Tail
     /* 40520 8004FD20 0780013C */  lui        $at, %hi(g_pOtDepthBinArrayBase)
     /* 40524 8004FD24 20582124 */  addiu      $at, $at, %lo(g_pOtDepthBinArrayBase)
     /* 40528 8004FD28 0000218C */  lw         $at, 0x0($at)
-    /* 4052C 8004FD2C 0780043C */  lui        $a0, %hi(g_nActorMeshOtDepthBin)
-    /* 40530 8004FD30 34598424 */  addiu      $a0, $a0, %lo(g_nActorMeshOtDepthBin)
+    /* 4052C 8004FD2C 0780043C */  lui        $a0, %hi(g_nPortalOtDepthBin)
+    /* 40530 8004FD30 34598424 */  addiu      $a0, $a0, %lo(g_nPortalOtDepthBin)
     /* 40534 8004FD34 0000848C */  lw         $a0, 0x0($a0)
     /* 40538 8004FD38 0080023C */  lui        $v0, (0x80000000 >> 16)
     /* 4053C 8004FD3C 26C82203 */  xor        $t9, $t9, $v0
@@ -69803,7 +69803,7 @@ glabel ClipAndEmitActorTriangle_Tail
     /* 405A0 8004FDA0 0000308C */  lw         $s0, 0x0($at)
     /* 405A4 8004FDA4 0800E003 */  jr         $ra
     /* 405A8 8004FDA8 00000000 */   nop
-endlabel ClipAndEmitActorTriangle_Tail
+endlabel ClipAndEmitPortalSkyTriangle_Tail
 
 /* Handwritten function */
 .endif
@@ -69880,11 +69880,11 @@ endlabel BlendDepthCuedEdgeColor
 /* Handwritten function */
 .endif
 
-.section .text.EmitDynamicActorMeshFogged, "ax"
-.ifndef HAVE_C_EmitDynamicActorMeshFogged
-nonmatching EmitDynamicActorMeshFogged, 0xF0
+.section .text.EmitPortalColorFill, "ax"
+.ifndef HAVE_C_EmitPortalColorFill
+nonmatching EmitPortalColorFill, 0xF0
 
-glabel EmitDynamicActorMeshFogged
+glabel EmitPortalColorFill
     /* 406A0 8004FEA0 0780013C */  lui        $at, %hi(g_anStaticRegSaveArea)
     /* 406A4 8004FEA4 D87D2124 */  addiu      $at, $at, %lo(g_anStaticRegSaveArea)
     /* 406A8 8004FEA8 000030AC */  sw         $s0, 0x0($at)
@@ -69913,8 +69913,8 @@ glabel EmitDynamicActorMeshFogged
     /* 40704 8004FF04 0780123C */  lui        $s2, %hi(g_pPrimBufferWriteCursor)
     /* 40708 8004FF08 B0575226 */  addiu      $s2, $s2, %lo(g_pPrimBufferWriteCursor)
     /* 4070C 8004FF0C 0000528E */  lw         $s2, 0x0($s2)
-    /* 40710 8004FF10 0780043C */  lui        $a0, %hi(g_nActorMeshOtDepthBin)
-    /* 40714 8004FF14 34598424 */  addiu      $a0, $a0, %lo(g_nActorMeshOtDepthBin)
+    /* 40710 8004FF10 0780043C */  lui        $a0, %hi(g_nPortalOtDepthBin)
+    /* 40714 8004FF14 34598424 */  addiu      $a0, $a0, %lo(g_nPortalOtDepthBin)
     /* 40718 8004FF18 0000848C */  lw         $a0, 0x0($a0)
     /* 4071C 8004FF1C 0780133C */  lui        $s3, %hi(g_pOtDepthBinArrayBase)
     /* 40720 8004FF20 20587326 */  addiu      $s3, $s3, %lo(g_pOtDepthBinArrayBase)
@@ -69928,9 +69928,9 @@ glabel EmitDynamicActorMeshFogged
     /* 4073C 8004FF3C 04006D8D */  lw         $t5, 0x4($t3)
     /* 40740 8004FF40 08006E8D */  lw         $t6, 0x8($t3)
     /* 40744 8004FF44 0C006B21 */  addi       $t3, $t3, 0xC /* handwritten instruction */
-    /* 40748 8004FF48 07800A3C */  lui        $t2, %hi(g_aMobSilhouetteEdges)
-    /* 4074C 8004FF4C A07E4A25 */  addiu      $t2, $t2, %lo(g_aMobSilhouetteEdges)
-    /* 40750 8004FF50 E43F010C */  jal        ClipAndEmitFoggedActorTriangle
+    /* 40748 8004FF48 07800A3C */  lui        $t2, %hi(g_aPortalSilhouetteEdges)
+    /* 4074C 8004FF4C A07E4A25 */  addiu      $t2, $t2, %lo(g_aPortalSilhouetteEdges)
+    /* 40750 8004FF50 E43F010C */  jal        ClipAndEmitPortalFillTriangle
     /* 40754 8004FF54 FFFFEF21 */   addi      $t7, $t7, -0x1 /* handwritten instruction */
     /* 40758 8004FF58 CD3F0108 */  j          .L8004FF34
     /* 4075C 8004FF5C 00000000 */   nop
@@ -69944,20 +69944,20 @@ glabel EmitDynamicActorMeshFogged
     /* 40774 8004FF74 04006D8D */  lw         $t5, 0x4($t3)
     /* 40778 8004FF78 08006E8D */  lw         $t6, 0x8($t3)
     /* 4077C 8004FF7C 0C006A8D */  lw         $t2, 0xC($t3)
-    /* 40780 8004FF80 E43F010C */  jal        ClipAndEmitFoggedActorTriangle
+    /* 40780 8004FF80 E43F010C */  jal        ClipAndEmitPortalFillTriangle
     /* 40784 8004FF84 10006B21 */   addi      $t3, $t3, 0x10 /* handwritten instruction */
     /* 40788 8004FF88 DB3F0108 */  j          .L8004FF6C
     /* 4078C 8004FF8C 00000000 */   nop
-endlabel EmitDynamicActorMeshFogged
+endlabel EmitPortalColorFill
 
 /* Handwritten function */
 .endif
 
-.section .text.ClipAndEmitFoggedActorTriangle, "ax"
-.ifndef HAVE_C_ClipAndEmitFoggedActorTriangle
-nonmatching ClipAndEmitFoggedActorTriangle, 0xD4
+.section .text.ClipAndEmitPortalFillTriangle, "ax"
+.ifndef HAVE_C_ClipAndEmitPortalFillTriangle
+nonmatching ClipAndEmitPortalFillTriangle, 0xD4
 
-glabel ClipAndEmitFoggedActorTriangle
+glabel ClipAndEmitPortalFillTriangle
     /* 40790 8004FF90 0000448D */  lw         $a0, 0x0($t2)
     /* 40794 8004FF94 0800458D */  lw         $a1, 0x8($t2)
     /* 40798 8004FF98 87008010 */  beqz       $a0, .L800501B8
@@ -70000,9 +70000,9 @@ glabel ClipAndEmitFoggedActorTriangle
     /* 40820 80050020 08008000 */  jr         $a0
     /* 40824 80050024 00000000 */   nop
   alabel D_80050028
-    /* 40828 80050028 E43F0108 */  j          ClipAndEmitFoggedActorTriangle
+    /* 40828 80050028 E43F0108 */  j          ClipAndEmitPortalFillTriangle
     /* 4082C 8005002C 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
-    /* 40830 80050030 1A400108 */  j          ClipAndEmitFoggedActorTriangle_Tail
+    /* 40830 80050030 1A400108 */  j          ClipAndEmitPortalFillTriangle_Tail
     /* 40834 80050034 00000000 */   nop
     /* 40838 80050038 2A400108 */  j          .L800500A8
     /* 4083C 8005003C 00000000 */   nop
@@ -70015,17 +70015,17 @@ glabel ClipAndEmitFoggedActorTriangle
     /* 40858 80050058 62400108 */  j          .L80050188
     /* 4085C 8005005C 00000000 */   nop
     /* 40860 80050060 0800E003 */  jr         $ra
-endlabel ClipAndEmitFoggedActorTriangle
+endlabel ClipAndEmitPortalFillTriangle
     /* 40864 80050064 00000000 */   nop
 
 /* Handwritten function */
 .endif
 
-.section .text.ClipAndEmitFoggedActorTriangle_Tail, "ax"
-.ifndef HAVE_C_ClipAndEmitFoggedActorTriangle_Tail
-nonmatching ClipAndEmitFoggedActorTriangle_Tail, 0x1D8
+.section .text.ClipAndEmitPortalFillTriangle_Tail, "ax"
+.ifndef HAVE_C_ClipAndEmitPortalFillTriangle_Tail
+nonmatching ClipAndEmitPortalFillTriangle_Tail, 0x1D8
 
-glabel ClipAndEmitFoggedActorTriangle_Tail
+glabel ClipAndEmitPortalFillTriangle_Tail
     /* 40868 80050068 2180E003 */  addu       $s0, $ra, $zero
     /* 4086C 8005006C 2120A001 */  addu       $a0, $t5, $zero
     /* 40870 80050070 6B3F010C */  jal        BlendDepthCuedEdgeColor
@@ -70040,7 +70040,7 @@ glabel ClipAndEmitFoggedActorTriangle_Tail
     /* 40894 80050094 18004A21 */  addi       $t2, $t2, 0x18 /* handwritten instruction */
     /* 40898 80050098 0C002AAE */  sw         $t2, 0xC($s1)
     /* 4089C 8005009C 10003122 */  addi       $s1, $s1, 0x10 /* handwritten instruction */
-    /* 408A0 800500A0 E43F0108 */  j          ClipAndEmitFoggedActorTriangle
+    /* 408A0 800500A0 E43F0108 */  j          ClipAndEmitPortalFillTriangle
     /* 408A4 800500A4 21F80002 */   addu      $ra, $s0, $zero
   .L800500A8:
     /* 408A8 800500A8 2180E003 */  addu       $s0, $ra, $zero
@@ -70057,7 +70057,7 @@ glabel ClipAndEmitFoggedActorTriangle_Tail
     /* 408D4 800500D4 18004A21 */  addi       $t2, $t2, 0x18 /* handwritten instruction */
     /* 408D8 800500D8 0C002AAE */  sw         $t2, 0xC($s1)
     /* 408DC 800500DC 10003122 */  addi       $s1, $s1, 0x10 /* handwritten instruction */
-    /* 408E0 800500E0 E43F0108 */  j          ClipAndEmitFoggedActorTriangle
+    /* 408E0 800500E0 E43F0108 */  j          ClipAndEmitPortalFillTriangle
     /* 408E4 800500E4 21F80002 */   addu      $ra, $s0, $zero
   .L800500E8:
     /* 408E8 800500E8 2180E003 */  addu       $s0, $ra, $zero
@@ -70070,7 +70070,7 @@ glabel ClipAndEmitFoggedActorTriangle_Tail
     /* 40904 80050104 21602000 */   addu      $t4, $at, $zero
     /* 40908 80050108 21682000 */  addu       $t5, $at, $zero
     /* 4090C 8005010C 21F80002 */  addu       $ra, $s0, $zero
-    /* 40910 80050110 E43F0108 */  j          ClipAndEmitFoggedActorTriangle
+    /* 40910 80050110 E43F0108 */  j          ClipAndEmitPortalFillTriangle
     /* 40914 80050114 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
   .L80050118:
     /* 40918 80050118 2180E003 */  addu       $s0, $ra, $zero
@@ -70087,7 +70087,7 @@ glabel ClipAndEmitFoggedActorTriangle_Tail
     /* 40944 80050144 18004A21 */  addi       $t2, $t2, 0x18 /* handwritten instruction */
     /* 40948 80050148 0C002AAE */  sw         $t2, 0xC($s1)
     /* 4094C 8005014C 10003122 */  addi       $s1, $s1, 0x10 /* handwritten instruction */
-    /* 40950 80050150 E43F0108 */  j          ClipAndEmitFoggedActorTriangle
+    /* 40950 80050150 E43F0108 */  j          ClipAndEmitPortalFillTriangle
     /* 40954 80050154 21F80002 */   addu      $ra, $s0, $zero
   .L80050158:
     /* 40958 80050158 2180E003 */  addu       $s0, $ra, $zero
@@ -70100,7 +70100,7 @@ glabel ClipAndEmitFoggedActorTriangle_Tail
     /* 40974 80050174 21602000 */   addu      $t4, $at, $zero
     /* 40978 80050178 21702000 */  addu       $t6, $at, $zero
     /* 4097C 8005017C 21F80002 */  addu       $ra, $s0, $zero
-    /* 40980 80050180 E43F0108 */  j          ClipAndEmitFoggedActorTriangle
+    /* 40980 80050180 E43F0108 */  j          ClipAndEmitPortalFillTriangle
     /* 40984 80050184 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
   .L80050188:
     /* 40988 80050188 2180E003 */  addu       $s0, $ra, $zero
@@ -70113,7 +70113,7 @@ glabel ClipAndEmitFoggedActorTriangle_Tail
     /* 409A4 800501A4 21682000 */   addu      $t5, $at, $zero
     /* 409A8 800501A8 21702000 */  addu       $t6, $at, $zero
     /* 409AC 800501AC 21F80002 */  addu       $ra, $s0, $zero
-    /* 409B0 800501B0 E43F0108 */  j          ClipAndEmitFoggedActorTriangle
+    /* 409B0 800501B0 E43F0108 */  j          ClipAndEmitPortalFillTriangle
     /* 409B4 800501B4 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
   .L800501B8:
     /* 409B8 800501B8 000054AE */  sw         $s4, 0x0($s2)
@@ -70153,16 +70153,16 @@ glabel ClipAndEmitFoggedActorTriangle_Tail
     /* 40A34 80050234 0000308C */  lw         $s0, 0x0($at)
     /* 40A38 80050238 0800E003 */  jr         $ra
     /* 40A3C 8005023C 00000000 */   nop
-endlabel ClipAndEmitFoggedActorTriangle_Tail
+endlabel ClipAndEmitPortalFillTriangle_Tail
 
 /* Handwritten function */
 .endif
 
-.section .text.EmitDynamicActorMeshFogShaded, "ax"
-.ifndef HAVE_C_EmitDynamicActorMeshFogShaded
-nonmatching EmitDynamicActorMeshFogShaded, 0x3CC
+.section .text.EmitPortalSkyFogShaded, "ax"
+.ifndef HAVE_C_EmitPortalSkyFogShaded
+nonmatching EmitPortalSkyFogShaded, 0x3CC
 
-glabel EmitDynamicActorMeshFogShaded
+glabel EmitPortalSkyFogShaded
     /* 40A40 80050240 0780013C */  lui        $at, %hi(g_anStaticRegSaveArea)
     /* 40A44 80050244 D87D2124 */  addiu      $at, $at, %lo(g_anStaticRegSaveArea)
     /* 40A48 80050248 000030AC */  sw         $s0, 0x0($at)
@@ -70244,8 +70244,8 @@ glabel EmitDynamicActorMeshFogShaded
     /* 40B70 80050370 0000DC23 */  addi       $gp, $fp, 0x0 /* handwritten instruction */
     /* 40B74 80050374 FCFFDD23 */  addi       $sp, $fp, -0x4 /* handwritten instruction */
     /* 40B78 80050378 00001920 */  addi       $t9, $zero, 0x0 /* handwritten instruction */
-    /* 40B7C 8005037C 0880033C */  lui        $v1, %hi(g_anActorScissorRect)
-    /* 40B80 80050380 00AA6324 */  addiu      $v1, $v1, %lo(g_anActorScissorRect)
+    /* 40B7C 8005037C 0880033C */  lui        $v1, %hi(g_anPortalScissorRect)
+    /* 40B80 80050380 00AA6324 */  addiu      $v1, $v1, %lo(g_anPortalScissorRect)
     /* 40B84 80050384 0000678C */  lw         $a3, 0x0($v1)
     /* 40B88 80050388 0400688C */  lw         $t0, 0x4($v1)
     /* 40B8C 8005038C 0800698C */  lw         $t1, 0x8($v1)
@@ -70268,8 +70268,8 @@ glabel EmitDynamicActorMeshFogShaded
     /* 40BCC 800503CC 1000788E */  lw         $t8, 0x10($s3)
     /* 40BD0 800503D0 801F173C */  lui        $s7, (0x1F800004 >> 16)
     /* 40BD4 800503D4 FFFF1020 */  addi       $s0, $zero, -0x1 /* handwritten instruction */
-    /* 40BD8 800503D8 0780013C */  lui        $at, %hi(g_dwActorMeshFadeColor)
-    /* 40BDC 800503DC D4572124 */  addiu      $at, $at, %lo(g_dwActorMeshFadeColor)
+    /* 40BD8 800503D8 0780013C */  lui        $at, %hi(g_dwSkyFadeColor)
+    /* 40BDC 800503DC D4572124 */  addiu      $at, $at, %lo(g_dwSkyFadeColor)
     /* 40BE0 800503E0 0000218C */  lw         $at, 0x0($at)
     /* 40BE4 800503E4 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
     /* 40BE8 800503E8 F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
@@ -70410,22 +70410,22 @@ glabel EmitDynamicActorMeshFogShaded
     /* 40DE8 800505E8 43090100 */  sra        $at, $at, 5
     /* 40DEC 800505EC 43110200 */  sra        $v0, $v0, 5
     /* 40DF0 800505F0 43190300 */  sra        $v1, $v1, 5
-    /* 40DF4 800505F4 07800A3C */  lui        $t2, %hi(g_aMobSilhouetteEdges)
-    /* 40DF8 800505F8 A07E4A25 */  addiu      $t2, $t2, %lo(g_aMobSilhouetteEdges)
-    /* 40DFC 800505FC 8341010C */  jal        ClipAndEmitFogShadedActorTriangle
+    /* 40DF4 800505F4 07800A3C */  lui        $t2, %hi(g_aPortalSilhouetteEdges)
+    /* 40DF8 800505F8 A07E4A25 */  addiu      $t2, $t2, %lo(g_aPortalSilhouetteEdges)
+    /* 40DFC 800505FC 8341010C */  jal        ClipAndEmitPortalSkyFogShadedTriangle
     /* 40E00 80050600 00000000 */   nop
     /* 40E04 80050604 5E410108 */  j          .L80050578
     /* 40E08 80050608 00000000 */   nop
-endlabel EmitDynamicActorMeshFogShaded
+endlabel EmitPortalSkyFogShaded
 
 /* Handwritten function */
 .endif
 
-.section .text.ClipAndEmitFogShadedActorTriangle, "ax"
-.ifndef HAVE_C_ClipAndEmitFogShadedActorTriangle
-nonmatching ClipAndEmitFogShadedActorTriangle, 0x104
+.section .text.ClipAndEmitPortalSkyFogShadedTriangle, "ax"
+.ifndef HAVE_C_ClipAndEmitPortalSkyFogShadedTriangle
+nonmatching ClipAndEmitPortalSkyFogShadedTriangle, 0x104
 
-glabel ClipAndEmitFogShadedActorTriangle
+glabel ClipAndEmitPortalSkyFogShadedTriangle
     /* 40E0C 8005060C 0000448D */  lw         $a0, 0x0($t2)
     /* 40E10 80050610 00000000 */  nop
     /* 40E14 80050614 12018010 */  beqz       $a0, .L80050A60
@@ -70472,7 +70472,7 @@ glabel ClipAndEmitFogShadedActorTriangle
     /* 40EAC 800506AC 08008000 */  jr         $a0
     /* 40EB0 800506B0 00000000 */   nop
   alabel D_800506B4
-    /* 40EB4 800506B4 83410108 */  j          ClipAndEmitFogShadedActorTriangle
+    /* 40EB4 800506B4 83410108 */  j          ClipAndEmitPortalSkyFogShadedTriangle
     /* 40EB8 800506B8 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
     /* 40EBC 800506BC BD410108 */  j          .L800506F4
     /* 40EC0 800506C0 00000000 */   nop
@@ -70496,16 +70496,16 @@ glabel ClipAndEmitFogShadedActorTriangle
     /* 40F04 80050704 380063AD */  sw         $v1, 0x38($t3)
     /* 40F08 80050708 3C0066AD */  sw         $a2, 0x3C($t3)
     /* 40F0C 8005070C 400067AD */  sw         $a3, 0x40($t3)
-endlabel ClipAndEmitFogShadedActorTriangle
+endlabel ClipAndEmitPortalSkyFogShadedTriangle
 
 /* Handwritten function */
 .endif
 
-.section .text.func_80050710, "ax"
-.ifndef HAVE_C_func_80050710
-nonmatching func_80050710, 0x4C0
+.section .text.ClipAndEmitPortalSkyFogShadedTriangle_Tail, "ax"
+.ifndef HAVE_C_ClipAndEmitPortalSkyFogShadedTriangle_Tail
+nonmatching ClipAndEmitPortalSkyFogShadedTriangle_Tail, 0x4C0
 
-glabel func_80050710
+glabel ClipAndEmitPortalSkyFogShadedTriangle_Tail
     /* 40F10 80050710 440068AD */  sw         $t0, 0x44($t3)
     /* 40F14 80050714 48007FAD */  sw         $ra, 0x48($t3)
     /* 40F18 80050718 21204000 */  addu       $a0, $v0, $zero
@@ -70520,8 +70520,8 @@ glabel func_80050710
     /* 40F3C 8005073C 300061AD */  sw         $at, 0x30($t3)
     /* 40F40 80050740 6B3F010C */  jal        BlendDepthCuedEdgeColor
     /* 40F44 80050744 21704000 */   addu      $t6, $v0, $zero
-    /* 40F48 80050748 0780043C */  lui        $a0, %hi(g_pActorDeferredTriStackTop)
-    /* 40F4C 8005074C 98578424 */  addiu      $a0, $a0, %lo(g_pActorDeferredTriStackTop)
+    /* 40F48 80050748 0780043C */  lui        $a0, %hi(g_pPortalDeferredTriStackTop)
+    /* 40F4C 8005074C 98578424 */  addiu      $a0, $a0, %lo(g_pPortalDeferredTriStackTop)
     /* 40F50 80050750 0000858C */  lw         $a1, 0x0($a0)
     /* 40F54 80050754 3800638D */  lw         $v1, 0x38($t3)
     /* 40F58 80050758 0000A1AC */  sw         $at, 0x0($a1)
@@ -70539,7 +70539,7 @@ glabel func_80050710
     /* 40F88 80050788 4000678D */  lw         $a3, 0x40($t3)
     /* 40F8C 8005078C 4400688D */  lw         $t0, 0x44($t3)
     /* 40F90 80050790 48007F8D */  lw         $ra, 0x48($t3)
-    /* 40F94 80050794 83410108 */  j          ClipAndEmitFogShadedActorTriangle
+    /* 40F94 80050794 83410108 */  j          ClipAndEmitPortalSkyFogShadedTriangle
     /* 40F98 80050798 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
   .L8005079C:
     /* 40F9C 8005079C 07800B3C */  lui        $t3, %hi(g_anStaticRegSaveArea)
@@ -70563,8 +70563,8 @@ glabel func_80050710
     /* 40FE4 800507E4 340061AD */  sw         $at, 0x34($t3)
     /* 40FE8 800507E8 6B3F010C */  jal        BlendDepthCuedEdgeColor
     /* 40FEC 800507EC 21784000 */   addu      $t7, $v0, $zero
-    /* 40FF0 800507F0 0780043C */  lui        $a0, %hi(g_pActorDeferredTriStackTop)
-    /* 40FF4 800507F4 98578424 */  addiu      $a0, $a0, %lo(g_pActorDeferredTriStackTop)
+    /* 40FF0 800507F0 0780043C */  lui        $a0, %hi(g_pPortalDeferredTriStackTop)
+    /* 40FF4 800507F4 98578424 */  addiu      $a0, $a0, %lo(g_pPortalDeferredTriStackTop)
     /* 40FF8 800507F8 0000858C */  lw         $a1, 0x0($a0)
     /* 40FFC 800507FC 3800638D */  lw         $v1, 0x38($t3)
     /* 41000 80050800 0000A1AC */  sw         $at, 0x0($a1)
@@ -70582,7 +70582,7 @@ glabel func_80050710
     /* 41030 80050830 4000678D */  lw         $a3, 0x40($t3)
     /* 41034 80050834 4400688D */  lw         $t0, 0x44($t3)
     /* 41038 80050838 48007F8D */  lw         $ra, 0x48($t3)
-    /* 4103C 8005083C 83410108 */  j          ClipAndEmitFogShadedActorTriangle
+    /* 4103C 8005083C 83410108 */  j          ClipAndEmitPortalSkyFogShadedTriangle
     /* 41040 80050840 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
   .L80050844:
     /* 41044 80050844 07800B3C */  lui        $t3, %hi(g_anStaticRegSaveArea)
@@ -70614,7 +70614,7 @@ glabel func_80050710
     /* 410AC 800508AC 4000678D */  lw         $a3, 0x40($t3)
     /* 410B0 800508B0 4400688D */  lw         $t0, 0x44($t3)
     /* 410B4 800508B4 48007F8D */  lw         $ra, 0x48($t3)
-    /* 410B8 800508B8 83410108 */  j          ClipAndEmitFogShadedActorTriangle
+    /* 410B8 800508B8 83410108 */  j          ClipAndEmitPortalSkyFogShadedTriangle
     /* 410BC 800508BC 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
   .L800508C0:
     /* 410C0 800508C0 07800B3C */  lui        $t3, %hi(g_anStaticRegSaveArea)
@@ -70638,8 +70638,8 @@ glabel func_80050710
     /* 41108 80050908 380061AD */  sw         $at, 0x38($t3)
     /* 4110C 8005090C 6B3F010C */  jal        BlendDepthCuedEdgeColor
     /* 41110 80050910 21804000 */   addu      $s0, $v0, $zero
-    /* 41114 80050914 0780043C */  lui        $a0, %hi(g_pActorDeferredTriStackTop)
-    /* 41118 80050918 98578424 */  addiu      $a0, $a0, %lo(g_pActorDeferredTriStackTop)
+    /* 41114 80050914 0780043C */  lui        $a0, %hi(g_pPortalDeferredTriStackTop)
+    /* 41118 80050918 98578424 */  addiu      $a0, $a0, %lo(g_pPortalDeferredTriStackTop)
     /* 4111C 8005091C 0000858C */  lw         $a1, 0x0($a0)
     /* 41120 80050920 3800638D */  lw         $v1, 0x38($t3)
     /* 41124 80050924 0000A1AC */  sw         $at, 0x0($a1)
@@ -70657,7 +70657,7 @@ glabel func_80050710
     /* 41154 80050954 4000678D */  lw         $a3, 0x40($t3)
     /* 41158 80050958 4400688D */  lw         $t0, 0x44($t3)
     /* 4115C 8005095C 48007F8D */  lw         $ra, 0x48($t3)
-    /* 41160 80050960 83410108 */  j          ClipAndEmitFogShadedActorTriangle
+    /* 41160 80050960 83410108 */  j          ClipAndEmitPortalSkyFogShadedTriangle
     /* 41164 80050964 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
   .L80050968:
     /* 41168 80050968 07800B3C */  lui        $t3, %hi(g_anStaticRegSaveArea)
@@ -70689,7 +70689,7 @@ glabel func_80050710
     /* 411D0 800509D0 4000678D */  lw         $a3, 0x40($t3)
     /* 411D4 800509D4 4400688D */  lw         $t0, 0x44($t3)
     /* 411D8 800509D8 48007F8D */  lw         $ra, 0x48($t3)
-    /* 411DC 800509DC 83410108 */  j          ClipAndEmitFogShadedActorTriangle
+    /* 411DC 800509DC 83410108 */  j          ClipAndEmitPortalSkyFogShadedTriangle
     /* 411E0 800509E0 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
   .L800509E4:
     /* 411E4 800509E4 07800B3C */  lui        $t3, %hi(g_anStaticRegSaveArea)
@@ -70721,7 +70721,7 @@ glabel func_80050710
     /* 4124C 80050A4C 4000678D */  lw         $a3, 0x40($t3)
     /* 41250 80050A50 4400688D */  lw         $t0, 0x44($t3)
     /* 41254 80050A54 48007F8D */  lw         $ra, 0x48($t3)
-    /* 41258 80050A58 83410108 */  j          ClipAndEmitFogShadedActorTriangle
+    /* 41258 80050A58 83410108 */  j          ClipAndEmitPortalSkyFogShadedTriangle
     /* 4125C 80050A5C 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
   .L80050A60:
     /* 41260 80050A60 26203E03 */  xor        $a0, $t9, $fp
@@ -70749,8 +70749,8 @@ glabel func_80050710
     /* 412B4 80050AB4 0800E003 */  jr         $ra
     /* 412B8 80050AB8 1C00DE23 */   addi      $fp, $fp, 0x1C /* handwritten instruction */
   .L80050ABC:
-    /* 412BC 80050ABC 0780043C */  lui        $a0, %hi(g_pActorDeferredTriStackTop)
-    /* 412C0 80050AC0 98578424 */  addiu      $a0, $a0, %lo(g_pActorDeferredTriStackTop)
+    /* 412BC 80050ABC 0780043C */  lui        $a0, %hi(g_pPortalDeferredTriStackTop)
+    /* 412C0 80050AC0 98578424 */  addiu      $a0, $a0, %lo(g_pPortalDeferredTriStackTop)
     /* 412C4 80050AC4 00008B8C */  lw         $t3, 0x0($a0)
     /* 412C8 80050AC8 07800A3C */  lui        $t2, %hi(g_pOtDepthBinHead0)
     /* 412CC 80050ACC F4FC4A25 */  addiu      $t2, $t2, %lo(g_pOtDepthBinHead0)
@@ -70765,13 +70765,13 @@ glabel func_80050710
     /* 412F0 80050AF0 10006F8D */  lw         $t7, 0x10($t3)
     /* 412F4 80050AF4 1400708D */  lw         $s0, 0x14($t3)
     /* 412F8 80050AF8 18006A8D */  lw         $t2, 0x18($t3)
-    /* 412FC 80050AFC 8341010C */  jal        ClipAndEmitFogShadedActorTriangle
+    /* 412FC 80050AFC 8341010C */  jal        ClipAndEmitPortalSkyFogShadedTriangle
     /* 41300 80050B00 18004A21 */   addi      $t2, $t2, 0x18 /* handwritten instruction */
     /* 41304 80050B04 AF420108 */  j          .L80050ABC
     /* 41308 80050B08 00000000 */   nop
   .L80050B0C:
-    /* 4130C 80050B0C 07800B3C */  lui        $t3, %hi(g_pActorDeferredTriStackTop)
-    /* 41310 80050B10 98576B25 */  addiu      $t3, $t3, %lo(g_pActorDeferredTriStackTop)
+    /* 4130C 80050B0C 07800B3C */  lui        $t3, %hi(g_pPortalDeferredTriStackTop)
+    /* 41310 80050B10 98576B25 */  addiu      $t3, $t3, %lo(g_pPortalDeferredTriStackTop)
     /* 41314 80050B14 07800A3C */  lui        $t2, %hi(g_pOtDepthBinHead0)
     /* 41318 80050B18 F4FC4A25 */  addiu      $t2, $t2, %lo(g_pOtDepthBinHead0)
     /* 4131C 80050B1C 00084A21 */  addi       $t2, $t2, 0x800 /* handwritten instruction */
@@ -70788,8 +70788,8 @@ glabel func_80050710
     /* 41344 80050B44 0780013C */  lui        $at, %hi(g_pOtDepthBinArrayBase)
     /* 41348 80050B48 20582124 */  addiu      $at, $at, %lo(g_pOtDepthBinArrayBase)
     /* 4134C 80050B4C 0000218C */  lw         $at, 0x0($at)
-    /* 41350 80050B50 0780043C */  lui        $a0, %hi(g_nActorMeshOtDepthBin)
-    /* 41354 80050B54 34598424 */  addiu      $a0, $a0, %lo(g_nActorMeshOtDepthBin)
+    /* 41350 80050B50 0780043C */  lui        $a0, %hi(g_nPortalOtDepthBin)
+    /* 41354 80050B54 34598424 */  addiu      $a0, $a0, %lo(g_nPortalOtDepthBin)
     /* 41358 80050B58 0000848C */  lw         $a0, 0x0($a0)
     /* 4135C 80050B5C 0080023C */  lui        $v0, (0x80000000 >> 16)
     /* 41360 80050B60 26C82203 */  xor        $t9, $t9, $v0
@@ -70822,18 +70822,18 @@ glabel func_80050710
     /* 413C4 80050BC4 0000308C */  lw         $s0, 0x0($at)
     /* 413C8 80050BC8 0800E003 */  jr         $ra
     /* 413CC 80050BCC 00000000 */   nop
-endlabel func_80050710
+endlabel ClipAndEmitPortalSkyFogShadedTriangle_Tail
 .endif
 
-.section .text.DrawPortalsAndStaticActors, "ax"
-.ifndef HAVE_C_DrawPortalsAndStaticActors
-nonmatching DrawPortalsAndStaticActors, 0x141C
+.section .text.DrawPortalsAndSky, "ax"
+.ifndef HAVE_C_DrawPortalsAndSky
+nonmatching DrawPortalsAndSky, 0x141C
 
-glabel DrawPortalsAndStaticActors
-    /* 413D0 80050BD0 0780023C */  lui        $v0, %hi(g_nPortalViewYawSpin)
-    /* 413D4 80050BD4 5858428C */  lw         $v0, %lo(g_nPortalViewYawSpin)($v0)
-    /* 413D8 80050BD8 0780033C */  lui        $v1, %hi(g_nPortalViewPitchTilt)
-    /* 413DC 80050BDC FC58638C */  lw         $v1, %lo(g_nPortalViewPitchTilt)($v1)
+glabel DrawPortalsAndSky
+    /* 413D0 80050BD0 0780023C */  lui        $v0, %hi(g_nPortalSkyYawSpin)
+    /* 413D4 80050BD4 5858428C */  lw         $v0, %lo(g_nPortalSkyYawSpin)($v0)
+    /* 413D8 80050BD8 0780033C */  lui        $v1, %hi(g_nPortalSkyPitchTilt)
+    /* 413DC 80050BDC FC58638C */  lw         $v1, %lo(g_nPortalSkyPitchTilt)($v1)
     /* 413E0 80050BE0 60FEBD27 */  addiu      $sp, $sp, -0x1A0
     /* 413E4 80050BE4 9C01BFAF */  sw         $ra, 0x19C($sp)
     /* 413E8 80050BE8 9801BEAF */  sw         $fp, 0x198($sp)
@@ -70849,24 +70849,24 @@ glabel DrawPortalsAndStaticActors
     /* 41410 80050C10 FF0F4230 */  andi       $v0, $v0, 0xFFF
     /* 41414 80050C14 02006324 */  addiu      $v1, $v1, 0x2
     /* 41418 80050C18 FF0F6330 */  andi       $v1, $v1, 0xFFF
-    /* 4141C 80050C1C 0780013C */  lui        $at, %hi(g_nPortalViewYawSpin)
-    /* 41420 80050C20 585822AC */  sw         $v0, %lo(g_nPortalViewYawSpin)($at)
+    /* 4141C 80050C1C 0780013C */  lui        $at, %hi(g_nPortalSkyYawSpin)
+    /* 41420 80050C20 585822AC */  sw         $v0, %lo(g_nPortalSkyYawSpin)($at)
     /* 41424 80050C24 01086228 */  slti       $v0, $v1, 0x801
-    /* 41428 80050C28 0780013C */  lui        $at, %hi(g_nPortalViewPitchTilt)
-    /* 4142C 80050C2C FC5823AC */  sw         $v1, %lo(g_nPortalViewPitchTilt)($at)
+    /* 41428 80050C28 0780013C */  lui        $at, %hi(g_nPortalSkyPitchTilt)
+    /* 4142C 80050C2C FC5823AC */  sw         $v1, %lo(g_nPortalSkyPitchTilt)($at)
     /* 41430 80050C30 03004014 */  bnez       $v0, .L80050C40
     /* 41434 80050C34 00F06224 */   addiu     $v0, $v1, -0x1000
-    /* 41438 80050C38 0780013C */  lui        $at, %hi(g_nPortalViewPitchTilt)
-    /* 4143C 80050C3C FC5822AC */  sw         $v0, %lo(g_nPortalViewPitchTilt)($at)
+    /* 41438 80050C38 0780013C */  lui        $at, %hi(g_nPortalSkyPitchTilt)
+    /* 4143C 80050C3C FC5822AC */  sw         $v0, %lo(g_nPortalSkyPitchTilt)($at)
   .L80050C40:
-    /* 41440 80050C40 0780023C */  lui        $v0, %hi(g_nPortalViewPitchTilt)
-    /* 41444 80050C44 FC58428C */  lw         $v0, %lo(g_nPortalViewPitchTilt)($v0)
+    /* 41440 80050C40 0780023C */  lui        $v0, %hi(g_nPortalSkyPitchTilt)
+    /* 41444 80050C44 FC58428C */  lw         $v0, %lo(g_nPortalSkyPitchTilt)($v0)
     /* 41448 80050C48 00000000 */  nop
     /* 4144C 80050C4C 81004228 */  slti       $v0, $v0, 0x81
     /* 41450 80050C50 03004014 */  bnez       $v0, .L80050C60
     /* 41454 80050C54 80000224 */   addiu     $v0, $zero, 0x80
-    /* 41458 80050C58 0780013C */  lui        $at, %hi(g_nPortalViewPitchTilt)
-    /* 4145C 80050C5C FC5822AC */  sw         $v0, %lo(g_nPortalViewPitchTilt)($at)
+    /* 41458 80050C58 0780013C */  lui        $at, %hi(g_nPortalSkyPitchTilt)
+    /* 4145C 80050C5C FC5822AC */  sw         $v0, %lo(g_nPortalSkyPitchTilt)($at)
   .L80050C60:
     /* 41460 80050C60 1000A427 */  addiu      $a0, $sp, 0x10
     /* 41464 80050C64 21280000 */  addu       $a1, $zero, $zero
@@ -70877,27 +70877,27 @@ glabel DrawPortalsAndStaticActors
     /* 41478 80050C78 0780103C */  lui        $s0, %hi(g_nCameraEulerPitch)
     /* 4147C 80050C7C 1E6E1026 */  addiu      $s0, $s0, %lo(g_nCameraEulerPitch)
     /* 41480 80050C80 00000286 */  lh         $v0, 0x0($s0)
-    /* 41484 80050C84 0780043C */  lui        $a0, %hi(g_nPortalViewPitchTilt)
-    /* 41488 80050C88 FC58848C */  lw         $a0, %lo(g_nPortalViewPitchTilt)($a0)
+    /* 41484 80050C84 0780043C */  lui        $a0, %hi(g_nPortalSkyPitchTilt)
+    /* 41488 80050C88 FC58848C */  lw         $a0, %lo(g_nPortalSkyPitchTilt)($a0)
     /* 4148C 80050C8C 00101124 */  addiu      $s1, $zero, 0x1000
     /* 41490 80050C90 1000B1A7 */  sh         $s1, 0x10($sp)
     /* 41494 80050C94 2C5B000C */  jal        LookupCosine
     /* 41498 80050C98 23204400 */   subu      $a0, $v0, $a0
     /* 4149C 80050C9C 00000386 */  lh         $v1, 0x0($s0)
-    /* 414A0 80050CA0 0780043C */  lui        $a0, %hi(g_nPortalViewPitchTilt)
-    /* 414A4 80050CA4 FC58848C */  lw         $a0, %lo(g_nPortalViewPitchTilt)($a0)
+    /* 414A0 80050CA0 0780043C */  lui        $a0, %hi(g_nPortalSkyPitchTilt)
+    /* 414A4 80050CA4 FC58848C */  lw         $a0, %lo(g_nPortalSkyPitchTilt)($a0)
     /* 414A8 80050CA8 1800A2A7 */  sh         $v0, 0x18($sp)
     /* 414AC 80050CAC 165B000C */  jal        LookupSine
     /* 414B0 80050CB0 23206400 */   subu      $a0, $v1, $a0
     /* 414B4 80050CB4 00000386 */  lh         $v1, 0x0($s0)
-    /* 414B8 80050CB8 0780043C */  lui        $a0, %hi(g_nPortalViewPitchTilt)
-    /* 414BC 80050CBC FC58848C */  lw         $a0, %lo(g_nPortalViewPitchTilt)($a0)
+    /* 414B8 80050CB8 0780043C */  lui        $a0, %hi(g_nPortalSkyPitchTilt)
+    /* 414BC 80050CBC FC58848C */  lw         $a0, %lo(g_nPortalSkyPitchTilt)($a0)
     /* 414C0 80050CC0 1E00A2A7 */  sh         $v0, 0x1E($sp)
     /* 414C4 80050CC4 165B000C */  jal        LookupSine
     /* 414C8 80050CC8 23206400 */   subu      $a0, $v1, $a0
     /* 414CC 80050CCC 00000386 */  lh         $v1, 0x0($s0)
-    /* 414D0 80050CD0 0780043C */  lui        $a0, %hi(g_nPortalViewPitchTilt)
-    /* 414D4 80050CD4 FC58848C */  lw         $a0, %lo(g_nPortalViewPitchTilt)($a0)
+    /* 414D0 80050CD0 0780043C */  lui        $a0, %hi(g_nPortalSkyPitchTilt)
+    /* 414D4 80050CD4 FC58848C */  lw         $a0, %lo(g_nPortalSkyPitchTilt)($a0)
     /* 414D8 80050CD8 23100200 */  negu       $v0, $v0
     /* 414DC 80050CDC 1A00A2A7 */  sh         $v0, 0x1A($sp)
     /* 414E0 80050CE0 2C5B000C */  jal        LookupCosine
@@ -70910,21 +70910,21 @@ glabel DrawPortalsAndStaticActors
     /* 414FC 80050CFC 2000A2A7 */   sh        $v0, 0x20($sp)
     /* 41500 80050D00 0780023C */  lui        $v0, %hi(g_nCameraEulerYaw)
     /* 41504 80050D04 206E4284 */  lh         $v0, %lo(g_nCameraEulerYaw)($v0)
-    /* 41508 80050D08 0780043C */  lui        $a0, %hi(g_nPortalViewYawSpin)
-    /* 4150C 80050D0C 5858848C */  lw         $a0, %lo(g_nPortalViewYawSpin)($a0)
+    /* 41508 80050D08 0780043C */  lui        $a0, %hi(g_nPortalSkyYawSpin)
+    /* 4150C 80050D0C 5858848C */  lw         $a0, %lo(g_nPortalSkyYawSpin)($a0)
     /* 41510 80050D10 2C5B000C */  jal        LookupCosine
     /* 41514 80050D14 21204400 */   addu      $a0, $v0, $a0
     /* 41518 80050D18 0780033C */  lui        $v1, %hi(g_nCameraEulerYaw)
     /* 4151C 80050D1C 206E6384 */  lh         $v1, %lo(g_nCameraEulerYaw)($v1)
-    /* 41520 80050D20 0780043C */  lui        $a0, %hi(g_nPortalViewYawSpin)
-    /* 41524 80050D24 5858848C */  lw         $a0, %lo(g_nPortalViewYawSpin)($a0)
+    /* 41520 80050D20 0780043C */  lui        $a0, %hi(g_nPortalSkyYawSpin)
+    /* 41524 80050D24 5858848C */  lw         $a0, %lo(g_nPortalSkyYawSpin)($a0)
     /* 41528 80050D28 3000A2A7 */  sh         $v0, 0x30($sp)
     /* 4152C 80050D2C 165B000C */  jal        LookupSine
     /* 41530 80050D30 21206400 */   addu      $a0, $v1, $a0
     /* 41534 80050D34 0780033C */  lui        $v1, %hi(g_nCameraEulerYaw)
     /* 41538 80050D38 206E6384 */  lh         $v1, %lo(g_nCameraEulerYaw)($v1)
-    /* 4153C 80050D3C 0780043C */  lui        $a0, %hi(g_nPortalViewYawSpin)
-    /* 41540 80050D40 5858848C */  lw         $a0, %lo(g_nPortalViewYawSpin)($a0)
+    /* 4153C 80050D3C 0780043C */  lui        $a0, %hi(g_nPortalSkyYawSpin)
+    /* 41540 80050D40 5858848C */  lw         $a0, %lo(g_nPortalSkyYawSpin)($a0)
     /* 41544 80050D44 23100200 */  negu       $v0, $v0
     /* 41548 80050D48 3C00A2A7 */  sh         $v0, 0x3C($sp)
     /* 4154C 80050D4C 3800B1A7 */  sh         $s1, 0x38($sp)
@@ -70932,8 +70932,8 @@ glabel DrawPortalsAndStaticActors
     /* 41554 80050D54 21206400 */   addu      $a0, $v1, $a0
     /* 41558 80050D58 0780033C */  lui        $v1, %hi(g_nCameraEulerYaw)
     /* 4155C 80050D5C 206E6384 */  lh         $v1, %lo(g_nCameraEulerYaw)($v1)
-    /* 41560 80050D60 0780043C */  lui        $a0, %hi(g_nPortalViewYawSpin)
-    /* 41564 80050D64 5858848C */  lw         $a0, %lo(g_nPortalViewYawSpin)($a0)
+    /* 41560 80050D60 0780043C */  lui        $a0, %hi(g_nPortalSkyYawSpin)
+    /* 41564 80050D64 5858848C */  lw         $a0, %lo(g_nPortalSkyYawSpin)($a0)
     /* 41568 80050D68 3400A2A7 */  sh         $v0, 0x34($sp)
     /* 4156C 80050D6C 2C5B000C */  jal        LookupCosine
     /* 41570 80050D70 21206400 */   addu      $a0, $v1, $a0
@@ -71136,8 +71136,8 @@ glabel DrawPortalsAndStaticActors
     /* 41848 80051048 21900000 */   addu      $s2, $zero, $zero
     /* 4184C 8005104C 6000B327 */  addiu      $s3, $sp, 0x60
     /* 41850 80051050 20001024 */  addiu      $s0, $zero, 0x20
-    /* 41854 80051054 0880113C */  lui        $s1, %hi(g_aMobRingScreenPts)
-    /* 41858 80051058 D88D3126 */  addiu      $s1, $s1, %lo(g_aMobRingScreenPts)
+    /* 41854 80051054 0880113C */  lui        $s1, %hi(g_aPortalRingScreenPts)
+    /* 41858 80051058 D88D3126 */  addiu      $s1, $s1, %lo(g_aPortalRingScreenPts)
   .L8005105C:
     /* 4185C 8005105C 21202002 */  addu       $a0, $s1, $zero
     /* 41860 80051060 21308002 */  addu       $a2, $s4, $zero
@@ -71244,14 +71244,14 @@ glabel DrawPortalsAndStaticActors
     /* 419D8 800511D8 21900000 */  addu       $s2, $zero, $zero
     /* 419DC 800511DC 21980000 */  addu       $s3, $zero, $zero
     /* 419E0 800511E0 21A00000 */  addu       $s4, $zero, $zero
-    /* 419E4 800511E4 0780013C */  lui        $at, %hi(g_nActorMeshOtDepthBin)
-    /* 419E8 800511E8 345920AC */  sw         $zero, %lo(g_nActorMeshOtDepthBin)($at)
+    /* 419E4 800511E4 0780013C */  lui        $at, %hi(g_nPortalOtDepthBin)
+    /* 419E8 800511E8 345920AC */  sw         $zero, %lo(g_nPortalOtDepthBin)($at)
     /* 419EC 800511EC 2801A0AF */  sw         $zero, 0x128($sp)
     /* 419F0 800511F0 3001A0AF */  sw         $zero, 0x130($sp)
-    /* 419F4 800511F4 0780023C */  lui        $v0, %hi(g_anActorDeferredTriStack)
-    /* 419F8 800511F8 F4044224 */  addiu      $v0, $v0, %lo(g_anActorDeferredTriStack)
-    /* 419FC 800511FC 0780013C */  lui        $at, %hi(g_pActorDeferredTriStackTop)
-    /* 41A00 80051200 985722AC */  sw         $v0, %lo(g_pActorDeferredTriStackTop)($at)
+    /* 419F4 800511F4 0780023C */  lui        $v0, %hi(g_anPortalDeferredTriStack)
+    /* 419F8 800511F8 F4044224 */  addiu      $v0, $v0, %lo(g_anPortalDeferredTriStack)
+    /* 419FC 800511FC 0780013C */  lui        $at, %hi(g_pPortalDeferredTriStackTop)
+    /* 41A00 80051200 985722AC */  sw         $v0, %lo(g_pPortalDeferredTriStackTop)($at)
     /* 41A04 80051204 0000A28E */  lw         $v0, 0x0($s5)
     /* 41A08 80051208 2318C500 */  subu       $v1, $a2, $a1
     /* 41A0C 8005120C 0400428C */  lw         $v0, 0x4($v0)
@@ -71291,9 +71291,9 @@ glabel DrawPortalsAndStaticActors
   .L80051288:
     /* 41A88 80051288 21104500 */  addu       $v0, $v0, $a1
     /* 41A8C 8005128C 80300200 */  sll        $a2, $v0, 2
-    /* 41A90 80051290 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 41A90 80051290 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 41A94 80051294 21082600 */  addu       $at, $at, $a2
-    /* 41A98 80051298 D88D228C */  lw         $v0, %lo(g_aMobRingScreenPts)($at)
+    /* 41A98 80051298 D88D228C */  lw         $v0, %lo(g_aPortalRingScreenPts)($at)
     /* 41A9C 8005129C 2801AC8F */  lw         $t4, 0x128($sp)
     /* 41AA0 800512A0 0880013C */  lui        $at, %hi(D_80078DDC)
     /* 41AA4 800512A4 21082600 */  addu       $at, $at, $a2
@@ -71303,20 +71303,20 @@ glabel DrawPortalsAndStaticActors
     /* 41AB4 800512B4 3001AC8F */  lw         $t4, 0x130($sp)
     /* 41AB8 800512B8 00000000 */  nop
     /* 41ABC 800512BC 21608301 */  addu       $t4, $t4, $v1
-    /* 41AC0 800512C0 0780033C */  lui        $v1, %hi(g_nActorMeshOtDepthBin)
-    /* 41AC4 800512C4 3459638C */  lw         $v1, %lo(g_nActorMeshOtDepthBin)($v1)
+    /* 41AC0 800512C0 0780033C */  lui        $v1, %hi(g_nPortalOtDepthBin)
+    /* 41AC4 800512C4 3459638C */  lw         $v1, %lo(g_nPortalOtDepthBin)($v1)
     /* 41AC8 800512C8 3001ACAF */  sw         $t4, 0x130($sp)
     /* 41ACC 800512CC 0880013C */  lui        $at, %hi(D_80078DE0)
     /* 41AD0 800512D0 21082600 */  addu       $at, $at, $a2
     /* 41AD4 800512D4 E08D248C */  lw         $a0, %lo(D_80078DE0)($at)
-    /* 41AD8 800512D8 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 41AD8 800512D8 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 41ADC 800512DC 21082600 */  addu       $at, $at, $a2
-    /* 41AE0 800512E0 D88D228C */  lw         $v0, %lo(g_aMobRingScreenPts)($at)
+    /* 41AE0 800512E0 D88D228C */  lw         $v0, %lo(g_aPortalRingScreenPts)($at)
     /* 41AE4 800512E4 21186400 */  addu       $v1, $v1, $a0
     /* 41AE8 800512E8 FFFF4224 */  addiu      $v0, $v0, -0x1
     /* 41AEC 800512EC FF01422C */  sltiu      $v0, $v0, 0x1FF
-    /* 41AF0 800512F0 0780013C */  lui        $at, %hi(g_nActorMeshOtDepthBin)
-    /* 41AF4 800512F4 345923AC */  sw         $v1, %lo(g_nActorMeshOtDepthBin)($at)
+    /* 41AF0 800512F0 0780013C */  lui        $at, %hi(g_nPortalOtDepthBin)
+    /* 41AF4 800512F4 345923AC */  sw         $v1, %lo(g_nPortalOtDepthBin)($at)
     /* 41AF8 800512F8 10004010 */  beqz       $v0, .L8005133C
     /* 41AFC 800512FC 40100500 */   sll       $v0, $a1, 1
     /* 41B00 80051300 0880013C */  lui        $at, %hi(D_80078DDC)
@@ -71337,9 +71337,9 @@ glabel DrawPortalsAndStaticActors
   .L8005133C:
     /* 41B3C 8005133C 21104500 */  addu       $v0, $v0, $a1
     /* 41B40 80051340 80380200 */  sll        $a3, $v0, 2
-    /* 41B44 80051344 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 41B44 80051344 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 41B48 80051348 21082700 */  addu       $at, $at, $a3
-    /* 41B4C 8005134C D88D248C */  lw         $a0, %lo(g_aMobRingScreenPts)($at)
+    /* 41B4C 8005134C D88D248C */  lw         $a0, %lo(g_aPortalRingScreenPts)($at)
     /* 41B50 80051350 00000000 */  nop
     /* 41B54 80051354 2A108402 */  slt        $v0, $s4, $a0
     /* 41B58 80051358 02004010 */  beqz       $v0, .L80051364
@@ -71363,9 +71363,9 @@ glabel DrawPortalsAndStaticActors
     /* 41B94 80051394 00000000 */   nop
     /* 41B98 80051398 21B06000 */  addu       $s6, $v1, $zero
   .L8005139C:
-    /* 41B9C 8005139C 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 41B9C 8005139C 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 41BA0 800513A0 21082800 */  addu       $at, $at, $t0
-    /* 41BA4 800513A4 D88D268C */  lw         $a2, %lo(g_aMobRingScreenPts)($at)
+    /* 41BA4 800513A4 D88D268C */  lw         $a2, %lo(g_aPortalRingScreenPts)($at)
     /* 41BA8 800513A8 00000000 */  nop
     /* 41BAC 800513AC 0002C228 */  slti       $v0, $a2, 0x200
     /* 41BB0 800513B0 03004014 */  bnez       $v0, .L800513C0
@@ -71411,15 +71411,15 @@ glabel DrawPortalsAndStaticActors
     /* 41C34 80051434 01000224 */   addiu     $v0, $zero, 0x1
     /* 41C38 80051438 1801A0AF */  sw         $zero, 0x118($sp)
   .L8005143C:
-    /* 41C3C 8005143C 0780013C */  lui        $at, %hi(g_aMobSilhouetteEdges)
+    /* 41C3C 8005143C 0780013C */  lui        $at, %hi(g_aPortalSilhouetteEdges)
     /* 41C40 80051440 21082900 */  addu       $at, $at, $t1
-    /* 41C44 80051444 A07E22AC */  sw         $v0, %lo(g_aMobSilhouetteEdges)($at)
+    /* 41C44 80051444 A07E22AC */  sw         $v0, %lo(g_aPortalSilhouetteEdges)($at)
     /* 41C48 80051448 0880013C */  lui        $at, %hi(D_80078DDC)
     /* 41C4C 8005144C 21082800 */  addu       $at, $at, $t0
     /* 41C50 80051450 DC8D228C */  lw         $v0, %lo(D_80078DDC)($at)
-    /* 41C54 80051454 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 41C54 80051454 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 41C58 80051458 21082800 */  addu       $at, $at, $t0
-    /* 41C5C 8005145C D88D2394 */  lhu        $v1, %lo(g_aMobRingScreenPts)($at)
+    /* 41C5C 8005145C D88D2394 */  lhu        $v1, %lo(g_aPortalRingScreenPts)($at)
     /* 41C60 80051460 00140200 */  sll        $v0, $v0, 16
     /* 41C64 80051464 25104300 */  or         $v0, $v0, $v1
     /* 41C68 80051468 0780013C */  lui        $at, %hi(D_80077EA4)
@@ -71428,9 +71428,9 @@ glabel DrawPortalsAndStaticActors
     /* 41C74 80051474 0880013C */  lui        $at, %hi(D_80078DDC)
     /* 41C78 80051478 21082700 */  addu       $at, $at, $a3
     /* 41C7C 8005147C DC8D228C */  lw         $v0, %lo(D_80078DDC)($at)
-    /* 41C80 80051480 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 41C80 80051480 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 41C84 80051484 21082700 */  addu       $at, $at, $a3
-    /* 41C88 80051488 D88D2394 */  lhu        $v1, %lo(g_aMobRingScreenPts)($at)
+    /* 41C88 80051488 D88D2394 */  lhu        $v1, %lo(g_aPortalRingScreenPts)($at)
     /* 41C8C 8005148C 00140200 */  sll        $v0, $v0, 16
     /* 41C90 80051490 25104300 */  or         $v0, $v0, $v1
     /* 41C94 80051494 0780013C */  lui        $at, %hi(D_80077EA8)
@@ -71445,21 +71445,21 @@ glabel DrawPortalsAndStaticActors
     /* 41CB8 800514B8 00000000 */  nop
     /* 41CBC 800514BC 23104300 */  subu       $v0, $v0, $v1
     /* 41CC0 800514C0 000042AD */  sw         $v0, 0x0($t2)
-    /* 41CC4 800514C4 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 41CC4 800514C4 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 41CC8 800514C8 21082700 */  addu       $at, $at, $a3
-    /* 41CCC 800514CC D88D248C */  lw         $a0, %lo(g_aMobRingScreenPts)($at)
-    /* 41CD0 800514D0 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 41CCC 800514CC D88D248C */  lw         $a0, %lo(g_aPortalRingScreenPts)($at)
+    /* 41CD0 800514D0 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 41CD4 800514D4 21082800 */  addu       $at, $at, $t0
-    /* 41CD8 800514D8 D88D228C */  lw         $v0, %lo(g_aMobRingScreenPts)($at)
+    /* 41CD8 800514D8 D88D228C */  lw         $v0, %lo(g_aPortalRingScreenPts)($at)
     /* 41CDC 800514DC 00000000 */  nop
     /* 41CE0 800514E0 23208200 */  subu       $a0, $a0, $v0
     /* 41CE4 800514E4 0780013C */  lui        $at, %hi(D_80077EB0)
     /* 41CE8 800514E8 21082900 */  addu       $at, $at, $t1
     /* 41CEC 800514EC B07E24AC */  sw         $a0, %lo(D_80077EB0)($at)
     /* 41CF0 800514F0 0000428D */  lw         $v0, 0x0($t2)
-    /* 41CF4 800514F4 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 41CF4 800514F4 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 41CF8 800514F8 21082800 */  addu       $at, $at, $t0
-    /* 41CFC 800514FC D88D238C */  lw         $v1, %lo(g_aMobRingScreenPts)($at)
+    /* 41CFC 800514FC D88D238C */  lw         $v1, %lo(g_aPortalRingScreenPts)($at)
     /* 41D00 80051500 23100200 */  negu       $v0, $v0
     /* 41D04 80051504 18004300 */  mult       $v0, $v1
     /* 41D08 80051508 12180000 */  mflo       $v1
@@ -71514,8 +71514,8 @@ glabel DrawPortalsAndStaticActors
     /* 41DB8 800515B8 0D000600 */  break      6
   .L800515BC:
     /* 41DBC 800515BC 12600000 */  mflo       $t4
-    /* 41DC0 800515C0 0780033C */  lui        $v1, %hi(g_nActorMeshOtDepthBin)
-    /* 41DC4 800515C4 3459638C */  lw         $v1, %lo(g_nActorMeshOtDepthBin)($v1)
+    /* 41DC0 800515C0 0780033C */  lui        $v1, %hi(g_nPortalOtDepthBin)
+    /* 41DC4 800515C4 3459638C */  lw         $v1, %lo(g_nPortalOtDepthBin)($v1)
     /* 41DC8 800515C8 00000000 */  nop
     /* 41DCC 800515CC 1A006200 */  div        $zero, $v1, $v0
     /* 41DD0 800515D0 02004014 */  bnez       $v0, .L800515DC
@@ -71548,23 +71548,23 @@ glabel DrawPortalsAndStaticActors
     /* 41E2C 8005162C 12600000 */  mflo       $t4
     /* 41E30 80051630 C3190300 */  sra        $v1, $v1, 7
     /* 41E34 80051634 00016228 */  slti       $v0, $v1, 0x100
-    /* 41E38 80051638 0780013C */  lui        $at, %hi(g_nActorMeshOtDepthBin)
-    /* 41E3C 8005163C 345923AC */  sw         $v1, %lo(g_nActorMeshOtDepthBin)($at)
+    /* 41E38 80051638 0780013C */  lui        $at, %hi(g_nPortalOtDepthBin)
+    /* 41E3C 8005163C 345923AC */  sw         $v1, %lo(g_nPortalOtDepthBin)($at)
     /* 41E40 80051640 04004014 */  bnez       $v0, .L80051654
     /* 41E44 80051644 3001ACAF */   sw        $t4, 0x130($sp)
     /* 41E48 80051648 40006224 */  addiu      $v0, $v1, 0x40
-    /* 41E4C 8005164C 0780013C */  lui        $at, %hi(g_nActorMeshOtDepthBin)
-    /* 41E50 80051650 345922AC */  sw         $v0, %lo(g_nActorMeshOtDepthBin)($at)
+    /* 41E4C 8005164C 0780013C */  lui        $at, %hi(g_nPortalOtDepthBin)
+    /* 41E50 80051650 345922AC */  sw         $v0, %lo(g_nPortalOtDepthBin)($at)
   .L80051654:
-    /* 41E54 80051654 0780023C */  lui        $v0, %hi(g_nActorMeshOtDepthBin)
-    /* 41E58 80051658 3459428C */  lw         $v0, %lo(g_nActorMeshOtDepthBin)($v0)
+    /* 41E54 80051654 0780023C */  lui        $v0, %hi(g_nPortalOtDepthBin)
+    /* 41E58 80051658 3459428C */  lw         $v0, %lo(g_nPortalOtDepthBin)($v0)
     /* 41E5C 8005165C 00000000 */  nop
     /* 41E60 80051660 00084228 */  slti       $v0, $v0, 0x800
     /* 41E64 80051664 05004014 */  bnez       $v0, .L8005167C
     /* 41E68 80051668 0002C22B */   slti      $v0, $fp, 0x200
     /* 41E6C 8005166C FF070224 */  addiu      $v0, $zero, 0x7FF
-    /* 41E70 80051670 0780013C */  lui        $at, %hi(g_nActorMeshOtDepthBin)
-    /* 41E74 80051674 345922AC */  sw         $v0, %lo(g_nActorMeshOtDepthBin)($at)
+    /* 41E70 80051670 0780013C */  lui        $at, %hi(g_nPortalOtDepthBin)
+    /* 41E74 80051674 345922AC */  sw         $v0, %lo(g_nPortalOtDepthBin)($at)
     /* 41E78 80051678 0002C22B */  slti       $v0, $fp, 0x200
   .L8005167C:
     /* 41E7C 8005167C 0E004010 */  beqz       $v0, .L800516B8
@@ -71575,8 +71575,8 @@ glabel DrawPortalsAndStaticActors
     /* 41E90 80051690 00000000 */   nop
     /* 41E94 80051694 0800E01A */  blez       $s7, .L800516B8
     /* 41E98 80051698 00000000 */   nop
-    /* 41E9C 8005169C 0780023C */  lui        $v0, %hi(g_nActorMeshOtDepthBin)
-    /* 41EA0 800516A0 3459428C */  lw         $v0, %lo(g_nActorMeshOtDepthBin)($v0)
+    /* 41E9C 8005169C 0780023C */  lui        $v0, %hi(g_nPortalOtDepthBin)
+    /* 41EA0 800516A0 3459428C */  lw         $v0, %lo(g_nPortalOtDepthBin)($v0)
     /* 41EA4 800516A4 00000000 */  nop
     /* 41EA8 800516A8 03004018 */  blez       $v0, .L800516B8
     /* 41EAC 800516AC 00000000 */   nop
@@ -71591,8 +71591,8 @@ glabel DrawPortalsAndStaticActors
     /* 41ECC 800516CC F000E22A */   slti      $v0, $s7, 0xF0
     /* 41ED0 800516D0 08004014 */  bnez       $v0, .L800516F4
     /* 41ED4 800516D4 00000000 */   nop
-    /* 41ED8 800516D8 0780023C */  lui        $v0, %hi(g_nActorMeshOtDepthBin)
-    /* 41EDC 800516DC 3459428C */  lw         $v0, %lo(g_nActorMeshOtDepthBin)($v0)
+    /* 41ED8 800516D8 0780023C */  lui        $v0, %hi(g_nPortalOtDepthBin)
+    /* 41EDC 800516DC 3459428C */  lw         $v0, %lo(g_nPortalOtDepthBin)($v0)
     /* 41EE0 800516E0 00000000 */  nop
     /* 41EE4 800516E4 03004018 */  blez       $v0, .L800516F4
     /* 41EE8 800516E8 00000000 */   nop
@@ -71678,23 +71678,23 @@ glabel DrawPortalsAndStaticActors
     /* 4200C 8005180C 00141600 */   sll       $v0, $s6, 16
     /* 42010 80051810 F0001724 */  addiu      $s7, $zero, 0xF0
   .L80051814:
-    /* 42014 80051814 0880013C */  lui        $at, %hi(g_anActorScissorRect)
-    /* 42018 80051818 00AA22AC */  sw         $v0, %lo(g_anActorScissorRect)($at)
+    /* 42014 80051814 0880013C */  lui        $at, %hi(g_anPortalScissorRect)
+    /* 42018 80051818 00AA22AC */  sw         $v0, %lo(g_anPortalScissorRect)($at)
     /* 4201C 8005181C 00141700 */  sll        $v0, $s7, 16
-    /* 42020 80051820 0880013C */  lui        $at, %hi(g_anActorScissorRect + 0x4)
-    /* 42024 80051824 04AA22AC */  sw         $v0, %lo(g_anActorScissorRect + 0x4)($at)
+    /* 42020 80051820 0880013C */  lui        $at, %hi(g_anPortalScissorRect + 0x4)
+    /* 42024 80051824 04AA22AC */  sw         $v0, %lo(g_anPortalScissorRect + 0x4)($at)
     /* 42028 80051828 00141400 */  sll        $v0, $s4, 16
-    /* 4202C 8005182C 0880013C */  lui        $at, %hi(g_anActorScissorRect + 0x8)
-    /* 42030 80051830 08AA22AC */  sw         $v0, %lo(g_anActorScissorRect + 0x8)($at)
+    /* 4202C 8005182C 0880013C */  lui        $at, %hi(g_anPortalScissorRect + 0x8)
+    /* 42030 80051830 08AA22AC */  sw         $v0, %lo(g_anPortalScissorRect + 0x8)($at)
     /* 42034 80051834 00141E00 */  sll        $v0, $fp, 16
-    /* 42038 80051838 0880013C */  lui        $at, %hi(g_anActorScissorRect + 0xC)
-    /* 4203C 8005183C 0CAA22AC */  sw         $v0, %lo(g_anActorScissorRect + 0xC)($at)
+    /* 42038 80051838 0880013C */  lui        $at, %hi(g_anPortalScissorRect + 0xC)
+    /* 4203C 8005183C 0CAA22AC */  sw         $v0, %lo(g_anPortalScissorRect + 0xC)($at)
     /* 42040 80051840 40101300 */  sll        $v0, $s3, 1
     /* 42044 80051844 21105300 */  addu       $v0, $v0, $s3
     /* 42048 80051848 C0100200 */  sll        $v0, $v0, 3
-    /* 4204C 8005184C 0780013C */  lui        $at, %hi(g_aMobSilhouetteEdges)
+    /* 4204C 8005184C 0780013C */  lui        $at, %hi(g_aPortalSilhouetteEdges)
     /* 42050 80051850 21082200 */  addu       $at, $at, $v0
-    /* 42054 80051854 A07E20AC */  sw         $zero, %lo(g_aMobSilhouetteEdges)($at)
+    /* 42054 80051854 A07E20AC */  sw         $zero, %lo(g_aPortalSilhouetteEdges)($at)
     /* 42058 80051858 3801AC8F */  lw         $t4, 0x138($sp)
     /* 4205C 8005185C 00000000 */  nop
     /* 42060 80051860 00408229 */  slti       $v0, $t4, 0x4000
@@ -71710,10 +71710,10 @@ glabel DrawPortalsAndStaticActors
     /* 42088 80051888 1000448C */  lw         $a0, 0x10($v0)
     /* 4208C 8005188C 955F000C */  jal        ComputeDepthCuedColor
     /* 42090 80051890 00000000 */   nop
-    /* 42094 80051894 0780043C */  lui        $a0, %hi(g_dwActorMeshFadeColor)
-    /* 42098 80051898 D4578424 */  addiu      $a0, $a0, %lo(g_dwActorMeshFadeColor)
-    /* 4209C 8005189C 0780013C */  lui        $at, %hi(g_dwActorMeshFadeColor)
-    /* 420A0 800518A0 D45722AC */  sw         $v0, %lo(g_dwActorMeshFadeColor)($at)
+    /* 42094 80051894 0780043C */  lui        $a0, %hi(g_dwSkyFadeColor)
+    /* 42098 80051898 D4578424 */  addiu      $a0, $a0, %lo(g_dwSkyFadeColor)
+    /* 4209C 8005189C 0780013C */  lui        $at, %hi(g_dwSkyFadeColor)
+    /* 420A0 800518A0 D45722AC */  sw         $v0, %lo(g_dwSkyFadeColor)($at)
     /* 420A4 800518A4 31460108 */  j          .L800518C4
     /* 420A8 800518A8 00000000 */   nop
   .L800518AC:
@@ -71725,7 +71725,7 @@ glabel DrawPortalsAndStaticActors
   .L800518C0:
     /* 420C0 800518C0 B800A427 */  addiu      $a0, $sp, 0xB8
   .L800518C4:
-    /* 420C4 800518C4 A83F010C */  jal        EmitDynamicActorMeshFogged
+    /* 420C4 800518C4 A83F010C */  jal        EmitPortalColorFill
     /* 420C8 800518C8 00000000 */   nop
   .L800518CC:
     /* 420CC 800518CC 3801AC8F */  lw         $t4, 0x138($sp)
@@ -71741,17 +71741,17 @@ glabel DrawPortalsAndStaticActors
     /* 420F4 800518F4 0000A28E */  lw         $v0, 0x0($s5)
     /* 420F8 800518F8 00000000 */  nop
     /* 420FC 800518FC 0400438C */  lw         $v1, 0x4($v0)
-    /* 42100 80051900 0780023C */  lui        $v0, %hi(g_anActorDeferredTriStack)
-    /* 42104 80051904 F4044224 */  addiu      $v0, $v0, %lo(g_anActorDeferredTriStack)
-    /* 42108 80051908 0780013C */  lui        $at, %hi(g_pActorDeferredTriStackTop)
-    /* 4210C 8005190C 985722AC */  sw         $v0, %lo(g_pActorDeferredTriStackTop)($at)
+    /* 42100 80051900 0780023C */  lui        $v0, %hi(g_anPortalDeferredTriStack)
+    /* 42104 80051904 F4044224 */  addiu      $v0, $v0, %lo(g_anPortalDeferredTriStack)
+    /* 42108 80051908 0780013C */  lui        $at, %hi(g_pPortalDeferredTriStackTop)
+    /* 4210C 8005190C 985722AC */  sw         $v0, %lo(g_pPortalDeferredTriStackTop)($at)
     /* 42110 80051910 3C006018 */  blez       $v1, .L80051A04
     /* 42114 80051914 21980000 */   addu      $s3, $zero, $zero
     /* 42118 80051918 0880023C */  lui        $v0, %hi(g_apPortals)
     /* 4211C 8005191C 40864224 */  addiu      $v0, $v0, %lo(g_apPortals)
     /* 42120 80051920 7001AC8F */  lw         $t4, 0x170($sp)
-    /* 42124 80051924 0880053C */  lui        $a1, %hi(g_aMobRingScreenPts)
-    /* 42128 80051928 D88DA524 */  addiu      $a1, $a1, %lo(g_aMobRingScreenPts)
+    /* 42124 80051924 0880053C */  lui        $a1, %hi(g_aPortalRingScreenPts)
+    /* 42128 80051928 D88DA524 */  addiu      $a1, $a1, %lo(g_aPortalRingScreenPts)
     /* 4212C 8005192C 21200000 */  addu       $a0, $zero, $zero
     /* 42130 80051930 21308201 */  addu       $a2, $t4, $v0
   .L80051934:
@@ -71858,9 +71858,9 @@ glabel DrawPortalsAndStaticActors
   .L80051A94:
     /* 42294 80051A94 21104500 */  addu       $v0, $v0, $a1
     /* 42298 80051A98 80180200 */  sll        $v1, $v0, 2
-    /* 4229C 80051A9C 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 4229C 80051A9C 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 422A0 80051AA0 21082300 */  addu       $at, $at, $v1
-    /* 422A4 80051AA4 D88D228C */  lw         $v0, %lo(g_aMobRingScreenPts)($at)
+    /* 422A4 80051AA4 D88D228C */  lw         $v0, %lo(g_aPortalRingScreenPts)($at)
     /* 422A8 80051AA8 00000000 */  nop
     /* 422AC 80051AAC FFFF4224 */  addiu      $v0, $v0, -0x1
     /* 422B0 80051AB0 FF01422C */  sltiu      $v0, $v0, 0x1FF
@@ -71882,18 +71882,18 @@ glabel DrawPortalsAndStaticActors
     /* 422F0 80051AF0 00000000 */   nop
     /* 422F4 80051AF4 01001124 */  addiu      $s1, $zero, 0x1
   .L80051AF8:
-    /* 422F8 80051AF8 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 422F8 80051AF8 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 422FC 80051AFC 21082600 */  addu       $at, $at, $a2
-    /* 42300 80051B00 D88D238C */  lw         $v1, %lo(g_aMobRingScreenPts)($at)
+    /* 42300 80051B00 D88D238C */  lw         $v1, %lo(g_aPortalRingScreenPts)($at)
     /* 42304 80051B04 00000000 */  nop
     /* 42308 80051B08 00026228 */  slti       $v0, $v1, 0x200
     /* 4230C 80051B0C 0A004014 */  bnez       $v0, .L80051B38
     /* 42310 80051B10 40100500 */   sll       $v0, $a1, 1
     /* 42314 80051B14 21104500 */  addu       $v0, $v0, $a1
     /* 42318 80051B18 80100200 */  sll        $v0, $v0, 2
-    /* 4231C 80051B1C 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 4231C 80051B1C 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 42320 80051B20 21082200 */  addu       $at, $at, $v0
-    /* 42324 80051B24 D88D228C */  lw         $v0, %lo(g_aMobRingScreenPts)($at)
+    /* 42324 80051B24 D88D228C */  lw         $v0, %lo(g_aPortalRingScreenPts)($at)
     /* 42328 80051B28 00000000 */  nop
     /* 4232C 80051B2C 00024228 */  slti       $v0, $v0, 0x200
     /* 42330 80051B30 6A004010 */  beqz       $v0, .L80051CDC
@@ -71903,9 +71903,9 @@ glabel DrawPortalsAndStaticActors
     /* 4233C 80051B3C 40100500 */   sll       $v0, $a1, 1
     /* 42340 80051B40 21104500 */  addu       $v0, $v0, $a1
     /* 42344 80051B44 80100200 */  sll        $v0, $v0, 2
-    /* 42348 80051B48 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 42348 80051B48 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 4234C 80051B4C 21082200 */  addu       $at, $at, $v0
-    /* 42350 80051B50 D88D228C */  lw         $v0, %lo(g_aMobRingScreenPts)($at)
+    /* 42350 80051B50 D88D228C */  lw         $v0, %lo(g_aPortalRingScreenPts)($at)
     /* 42354 80051B54 00000000 */  nop
     /* 42358 80051B58 60004018 */  blez       $v0, .L80051CDC
     /* 4235C 80051B5C 00000000 */   nop
@@ -71942,15 +71942,15 @@ glabel DrawPortalsAndStaticActors
     /* 423CC 80051BCC 40200500 */  sll        $a0, $a1, 1
     /* 423D0 80051BD0 21208500 */  addu       $a0, $a0, $a1
     /* 423D4 80051BD4 80200400 */  sll        $a0, $a0, 2
-    /* 423D8 80051BD8 0780013C */  lui        $at, %hi(g_aMobSilhouetteEdges)
+    /* 423D8 80051BD8 0780013C */  lui        $at, %hi(g_aPortalSilhouetteEdges)
     /* 423DC 80051BDC 21082700 */  addu       $at, $at, $a3
-    /* 423E0 80051BE0 A07E22AC */  sw         $v0, %lo(g_aMobSilhouetteEdges)($at)
+    /* 423E0 80051BE0 A07E22AC */  sw         $v0, %lo(g_aPortalSilhouetteEdges)($at)
     /* 423E4 80051BE4 0880013C */  lui        $at, %hi(D_80078DDC)
     /* 423E8 80051BE8 21082600 */  addu       $at, $at, $a2
     /* 423EC 80051BEC DC8D228C */  lw         $v0, %lo(D_80078DDC)($at)
-    /* 423F0 80051BF0 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 423F0 80051BF0 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 423F4 80051BF4 21082600 */  addu       $at, $at, $a2
-    /* 423F8 80051BF8 D88D2394 */  lhu        $v1, %lo(g_aMobRingScreenPts)($at)
+    /* 423F8 80051BF8 D88D2394 */  lhu        $v1, %lo(g_aPortalRingScreenPts)($at)
     /* 423FC 80051BFC 00140200 */  sll        $v0, $v0, 16
     /* 42400 80051C00 25104300 */  or         $v0, $v0, $v1
     /* 42404 80051C04 0780013C */  lui        $at, %hi(D_80077EA4)
@@ -71959,9 +71959,9 @@ glabel DrawPortalsAndStaticActors
     /* 42410 80051C10 0880013C */  lui        $at, %hi(D_80078DDC)
     /* 42414 80051C14 21082400 */  addu       $at, $at, $a0
     /* 42418 80051C18 DC8D228C */  lw         $v0, %lo(D_80078DDC)($at)
-    /* 4241C 80051C1C 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 4241C 80051C1C 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 42420 80051C20 21082400 */  addu       $at, $at, $a0
-    /* 42424 80051C24 D88D2394 */  lhu        $v1, %lo(g_aMobRingScreenPts)($at)
+    /* 42424 80051C24 D88D2394 */  lhu        $v1, %lo(g_aPortalRingScreenPts)($at)
     /* 42428 80051C28 00140200 */  sll        $v0, $v0, 16
     /* 4242C 80051C2C 25104300 */  or         $v0, $v0, $v1
     /* 42430 80051C30 0780013C */  lui        $at, %hi(D_80077EA8)
@@ -71976,21 +71976,21 @@ glabel DrawPortalsAndStaticActors
     /* 42454 80051C54 00000000 */  nop
     /* 42458 80051C58 23104300 */  subu       $v0, $v0, $v1
     /* 4245C 80051C5C 000002AD */  sw         $v0, 0x0($t0)
-    /* 42460 80051C60 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 42460 80051C60 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 42464 80051C64 21082400 */  addu       $at, $at, $a0
-    /* 42468 80051C68 D88D248C */  lw         $a0, %lo(g_aMobRingScreenPts)($at)
-    /* 4246C 80051C6C 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 42468 80051C68 D88D248C */  lw         $a0, %lo(g_aPortalRingScreenPts)($at)
+    /* 4246C 80051C6C 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 42470 80051C70 21082600 */  addu       $at, $at, $a2
-    /* 42474 80051C74 D88D228C */  lw         $v0, %lo(g_aMobRingScreenPts)($at)
+    /* 42474 80051C74 D88D228C */  lw         $v0, %lo(g_aPortalRingScreenPts)($at)
     /* 42478 80051C78 00000000 */  nop
     /* 4247C 80051C7C 23208200 */  subu       $a0, $a0, $v0
     /* 42480 80051C80 0780013C */  lui        $at, %hi(D_80077EB0)
     /* 42484 80051C84 21082700 */  addu       $at, $at, $a3
     /* 42488 80051C88 B07E24AC */  sw         $a0, %lo(D_80077EB0)($at)
     /* 4248C 80051C8C 0000028D */  lw         $v0, 0x0($t0)
-    /* 42490 80051C90 0880013C */  lui        $at, %hi(g_aMobRingScreenPts)
+    /* 42490 80051C90 0880013C */  lui        $at, %hi(g_aPortalRingScreenPts)
     /* 42494 80051C94 21082600 */  addu       $at, $at, $a2
-    /* 42498 80051C98 D88D238C */  lw         $v1, %lo(g_aMobRingScreenPts)($at)
+    /* 42498 80051C98 D88D238C */  lw         $v1, %lo(g_aPortalRingScreenPts)($at)
     /* 4249C 80051C9C 23100200 */  negu       $v0, $v0
     /* 424A0 80051CA0 18004300 */  mult       $v0, $v1
     /* 424A4 80051CA4 12180000 */  mflo       $v1
@@ -72030,8 +72030,8 @@ glabel DrawPortalsAndStaticActors
     /* 42524 80051D24 00000000 */   nop
     /* 42528 80051D28 0800E01A */  blez       $s7, .L80051D4C
     /* 4252C 80051D2C 00000000 */   nop
-    /* 42530 80051D30 0780023C */  lui        $v0, %hi(g_nActorMeshOtDepthBin)
-    /* 42534 80051D34 3459428C */  lw         $v0, %lo(g_nActorMeshOtDepthBin)($v0)
+    /* 42530 80051D30 0780023C */  lui        $v0, %hi(g_nPortalOtDepthBin)
+    /* 42534 80051D34 3459428C */  lw         $v0, %lo(g_nPortalOtDepthBin)($v0)
     /* 42538 80051D38 00000000 */  nop
     /* 4253C 80051D3C 03004018 */  blez       $v0, .L80051D4C
     /* 42540 80051D40 00000000 */   nop
@@ -72046,8 +72046,8 @@ glabel DrawPortalsAndStaticActors
     /* 42560 80051D60 F000E22A */   slti      $v0, $s7, 0xF0
     /* 42564 80051D64 08004014 */  bnez       $v0, .L80051D88
     /* 42568 80051D68 00000000 */   nop
-    /* 4256C 80051D6C 0780023C */  lui        $v0, %hi(g_nActorMeshOtDepthBin)
-    /* 42570 80051D70 3459428C */  lw         $v0, %lo(g_nActorMeshOtDepthBin)($v0)
+    /* 4256C 80051D6C 0780023C */  lui        $v0, %hi(g_nPortalOtDepthBin)
+    /* 42570 80051D70 3459428C */  lw         $v0, %lo(g_nPortalOtDepthBin)($v0)
     /* 42574 80051D74 00000000 */  nop
     /* 42578 80051D78 03004018 */  blez       $v0, .L80051D88
     /* 4257C 80051D7C 00000000 */   nop
@@ -72133,23 +72133,23 @@ glabel DrawPortalsAndStaticActors
     /* 426A0 80051EA0 00141600 */   sll       $v0, $s6, 16
     /* 426A4 80051EA4 F0001724 */  addiu      $s7, $zero, 0xF0
   .L80051EA8:
-    /* 426A8 80051EA8 0880013C */  lui        $at, %hi(g_anActorScissorRect)
-    /* 426AC 80051EAC 00AA22AC */  sw         $v0, %lo(g_anActorScissorRect)($at)
+    /* 426A8 80051EA8 0880013C */  lui        $at, %hi(g_anPortalScissorRect)
+    /* 426AC 80051EAC 00AA22AC */  sw         $v0, %lo(g_anPortalScissorRect)($at)
     /* 426B0 80051EB0 00141700 */  sll        $v0, $s7, 16
-    /* 426B4 80051EB4 0880013C */  lui        $at, %hi(g_anActorScissorRect + 0x4)
-    /* 426B8 80051EB8 04AA22AC */  sw         $v0, %lo(g_anActorScissorRect + 0x4)($at)
+    /* 426B4 80051EB4 0880013C */  lui        $at, %hi(g_anPortalScissorRect + 0x4)
+    /* 426B8 80051EB8 04AA22AC */  sw         $v0, %lo(g_anPortalScissorRect + 0x4)($at)
     /* 426BC 80051EBC 00141400 */  sll        $v0, $s4, 16
-    /* 426C0 80051EC0 0880013C */  lui        $at, %hi(g_anActorScissorRect + 0x8)
-    /* 426C4 80051EC4 08AA22AC */  sw         $v0, %lo(g_anActorScissorRect + 0x8)($at)
+    /* 426C0 80051EC0 0880013C */  lui        $at, %hi(g_anPortalScissorRect + 0x8)
+    /* 426C4 80051EC4 08AA22AC */  sw         $v0, %lo(g_anPortalScissorRect + 0x8)($at)
     /* 426C8 80051EC8 00141E00 */  sll        $v0, $fp, 16
-    /* 426CC 80051ECC 0880013C */  lui        $at, %hi(g_anActorScissorRect + 0xC)
-    /* 426D0 80051ED0 0CAA22AC */  sw         $v0, %lo(g_anActorScissorRect + 0xC)($at)
+    /* 426CC 80051ECC 0880013C */  lui        $at, %hi(g_anPortalScissorRect + 0xC)
+    /* 426D0 80051ED0 0CAA22AC */  sw         $v0, %lo(g_anPortalScissorRect + 0xC)($at)
     /* 426D4 80051ED4 40101300 */  sll        $v0, $s3, 1
     /* 426D8 80051ED8 21105300 */  addu       $v0, $v0, $s3
     /* 426DC 80051EDC C0100200 */  sll        $v0, $v0, 3
-    /* 426E0 80051EE0 0780013C */  lui        $at, %hi(g_aMobSilhouetteEdges)
+    /* 426E0 80051EE0 0780013C */  lui        $at, %hi(g_aPortalSilhouetteEdges)
     /* 426E4 80051EE4 21082200 */  addu       $at, $at, $v0
-    /* 426E8 80051EE8 A07E20AC */  sw         $zero, %lo(g_aMobSilhouetteEdges)($at)
+    /* 426E8 80051EE8 A07E20AC */  sw         $zero, %lo(g_aPortalSilhouetteEdges)($at)
     /* 426EC 80051EEC 3801AC8F */  lw         $t4, 0x138($sp)
     /* 426F0 80051EF0 00000000 */  nop
     /* 426F4 80051EF4 01308229 */  slti       $v0, $t4, 0x3001
@@ -72167,9 +72167,9 @@ glabel DrawPortalsAndStaticActors
     /* 42724 80051F24 0000A38E */  lw         $v1, 0x0($s5)
     /* 42728 80051F28 1000A527 */  addiu      $a1, $sp, 0x10
     /* 4272C 80051F2C 0000648C */  lw         $a0, 0x0($v1)
-    /* 42730 80051F30 0780013C */  lui        $at, %hi(g_dwActorMeshFadeColor)
-    /* 42734 80051F34 D45722AC */  sw         $v0, %lo(g_dwActorMeshFadeColor)($at)
-    /* 42738 80051F38 9040010C */  jal        EmitDynamicActorMeshFogShaded
+    /* 42730 80051F30 0780013C */  lui        $at, %hi(g_dwSkyFadeColor)
+    /* 42734 80051F34 D45722AC */  sw         $v0, %lo(g_dwSkyFadeColor)($at)
+    /* 42738 80051F38 9040010C */  jal        EmitPortalSkyFogShaded
     /* 4273C 80051F3C 3000A627 */   addiu     $a2, $sp, 0x30
     /* 42740 80051F40 D7470108 */  j          .L80051F5C
     /* 42744 80051F44 00000000 */   nop
@@ -72177,7 +72177,7 @@ glabel DrawPortalsAndStaticActors
     /* 42748 80051F48 0000A28E */  lw         $v0, 0x0($s5)
     /* 4274C 80051F4C 00000000 */  nop
     /* 42750 80051F50 0000448C */  lw         $a0, 0x0($v0)
-    /* 42754 80051F54 2F3D010C */  jal        EmitDynamicActorMeshScissored
+    /* 42754 80051F54 2F3D010C */  jal        EmitPortalSky
     /* 42758 80051F58 3000A627 */   addiu     $a2, $sp, 0x30
   .L80051F5C:
     /* 4275C 80051F5C 7001AC8F */  lw         $t4, 0x170($sp)
@@ -72203,7 +72203,7 @@ glabel DrawPortalsAndStaticActors
     /* 427A8 80051FA8 C0FFC524 */   addiu     $a1, $a2, -0x40
     /* 427AC 80051FAC FFFF0424 */  addiu      $a0, $zero, -0x1
   .L80051FB0:
-    /* 427B0 80051FB0 EA3A010C */  jal        EmitStaticActorMeshList
+    /* 427B0 80051FB0 EA3A010C */  jal        EmitSkyMesh
     /* 427B4 80051FB4 ACFFC624 */   addiu     $a2, $a2, -0x54
     /* 427B8 80051FB8 9C01BF8F */  lw         $ra, 0x19C($sp)
     /* 427BC 80051FBC 9801BE8F */  lw         $fp, 0x198($sp)
@@ -72218,7 +72218,7 @@ glabel DrawPortalsAndStaticActors
     /* 427E0 80051FE0 A001BD27 */  addiu      $sp, $sp, 0x1A0
     /* 427E4 80051FE4 0800E003 */  jr         $ra
     /* 427E8 80051FE8 00000000 */   nop
-endlabel DrawPortalsAndStaticActors
+endlabel DrawPortalsAndSky
 
 /* Handwritten function */
 .endif
@@ -73666,13 +73666,13 @@ endlabel BurstActorIntoSparks
 /* Handwritten function */
 .endif
 
-.section .text.EncodeCachedVecToActorDirCode, "ax"
-.ifndef HAVE_C_EncodeCachedVecToActorDirCode
-nonmatching EncodeCachedVecToActorDirCode, 0x1A0
+.section .text.EncodeHitNormalToActorGroundCode, "ax"
+.ifndef HAVE_C_EncodeHitNormalToActorGroundCode
+nonmatching EncodeHitNormalToActorGroundCode, 0x1A0
 
-glabel EncodeCachedVecToActorDirCode
-    /* 43BD0 800533D0 0780033C */  lui        $v1, %hi(g_anCollisionProbeVec)
-    /* 43BD4 800533D4 68736324 */  addiu      $v1, $v1, %lo(g_anCollisionProbeVec)
+glabel EncodeHitNormalToActorGroundCode
+    /* 43BD0 800533D0 0780033C */  lui        $v1, %hi(g_anCollisionHitNormal)
+    /* 43BD4 800533D4 68736324 */  addiu      $v1, $v1, %lo(g_anCollisionHitNormal)
     /* 43BD8 800533D8 0000618C */  lw         $at, 0x0($v1)
     /* 43BDC 800533DC 0400628C */  lw         $v0, 0x4($v1)
     /* 43BE0 800533E0 0800638C */  lw         $v1, 0x8($v1)
@@ -73786,7 +73786,7 @@ glabel EncodeCachedVecToActorDirCode
   .L80053568:
     /* 43D68 80053568 0800E003 */  jr         $ra
     /* 43D6C 8005356C 1C0087AC */   sw        $a3, 0x1C($a0)
-endlabel EncodeCachedVecToActorDirCode
+endlabel EncodeHitNormalToActorGroundCode
 
 /* Handwritten function */
 .endif
@@ -74853,9 +74853,9 @@ glabel SetHudCounterDigits
     /* 44B64 80054364 23104400 */  subu       $v0, $v0, $a0
     /* 44B68 80054368 00000391 */  lbu        $v1, 0x0($t0)
     /* 44B6C 8005436C C0100200 */  sll        $v0, $v0, 3
-    /* 44B70 80054370 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x49)
+    /* 44B70 80054370 0880013C */  lui        $at, %hi(g_aHudIconActorRecords + 0x49)
     /* 44B74 80054374 21082200 */  addu       $at, $at, $v0
-    /* 44B78 80054378 358023A0 */  sb         $v1, %lo(g_abHudIconActorRecords + 0x49)($at)
+    /* 44B78 80054378 358023A0 */  sb         $v1, %lo(g_aHudIconActorRecords + 0x49)($at)
     /* 44B7C 8005437C FA500108 */  j          .L800543E8
     /* 44B80 80054380 0100C624 */   addiu     $a2, $a2, 0x1
   .L80054384:
@@ -74865,13 +74865,13 @@ glabel SetHudCounterDigits
     /* 44B90 80054390 23104400 */  subu       $v0, $v0, $a0
     /* 44B94 80054394 00000391 */  lbu        $v1, 0x0($t0)
     /* 44B98 80054398 C0100200 */  sll        $v0, $v0, 3
-    /* 44B9C 8005439C 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x50)
+    /* 44B9C 8005439C 0880013C */  lui        $at, %hi(g_aHudIconActorRecords + 0x50)
     /* 44BA0 800543A0 21082200 */  addu       $at, $at, $v0
-    /* 44BA4 800543A4 3C8029A0 */  sb         $t1, %lo(g_abHudIconActorRecords + 0x50)($at)
+    /* 44BA4 800543A4 3C8029A0 */  sb         $t1, %lo(g_aHudIconActorRecords + 0x50)($at)
     /* 44BA8 800543A8 04016324 */  addiu      $v1, $v1, 0x104
-    /* 44BAC 800543AC 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x36)
+    /* 44BAC 800543AC 0880013C */  lui        $at, %hi(g_aHudIconActorRecords + 0x36)
     /* 44BB0 800543B0 21082200 */  addu       $at, $at, $v0
-    /* 44BB4 800543B4 228023A4 */  sh         $v1, %lo(g_abHudIconActorRecords + 0x36)($at)
+    /* 44BB4 800543B4 228023A4 */  sh         $v1, %lo(g_aHudIconActorRecords + 0x36)($at)
     /* 44BB8 800543B8 FA500108 */  j          .L800543E8
     /* 44BBC 800543BC 0100C624 */   addiu     $a2, $a2, 0x1
   .L800543C0:
@@ -74881,9 +74881,9 @@ glabel SetHudCounterDigits
     /* 44BCC 800543CC 80100200 */  sll        $v0, $v0, 2
     /* 44BD0 800543D0 23104400 */  subu       $v0, $v0, $a0
     /* 44BD4 800543D4 C0100200 */  sll        $v0, $v0, 3
-    /* 44BD8 800543D8 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x50)
+    /* 44BD8 800543D8 0880013C */  lui        $at, %hi(g_aHudIconActorRecords + 0x50)
     /* 44BDC 800543DC 21082200 */  addu       $at, $at, $v0
-    /* 44BE0 800543E0 3C8020A0 */  sb         $zero, %lo(g_abHudIconActorRecords + 0x50)($at)
+    /* 44BE0 800543E0 3C8020A0 */  sb         $zero, %lo(g_aHudIconActorRecords + 0x50)($at)
   .L800543E4:
     /* 44BE4 800543E4 0100C624 */  addiu      $a2, $a2, 0x1
   .L800543E8:
@@ -74917,9 +74917,9 @@ glabel OffsetHudIconRollAxis
     /* 44C2C 8005442C 90E6228C */  lw         $v0, %lo(g_anHudIconRestPos + 0x4)($at)
     /* 44C30 80054430 C0180300 */  sll        $v1, $v1, 3
     /* 44C34 80054434 21104600 */  addu       $v0, $v0, $a2
-    /* 44C38 80054438 0780013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x10)
+    /* 44C38 80054438 0780013C */  lui        $at, %hi(g_aHudIconActorRecords + 0x10)
     /* 44C3C 8005443C 21082300 */  addu       $at, $at, $v1
-    /* 44C40 80054440 FC7F22AC */  sw         $v0, %lo(g_abHudIconActorRecords + 0x10)($at)
+    /* 44C40 80054440 FC7F22AC */  sw         $v0, %lo(g_aHudIconActorRecords + 0x10)($at)
     /* 44C44 80054444 2A10E500 */  slt        $v0, $a3, $a1
     /* 44C48 80054448 F1FF4014 */  bnez       $v0, .L80054410
     /* 44C4C 8005444C 21188700 */   addu      $v1, $a0, $a3
@@ -74974,45 +74974,45 @@ glabel CommitHudCounterAnimState
     /* 44CC0 800544C0 80100200 */  sll        $v0, $v0, 2
     /* 44CC4 800544C4 23104400 */  subu       $v0, $v0, $a0
     /* 44CC8 800544C8 C0380200 */  sll        $a3, $v0, 3
-    /* 44CCC 800544CC 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x46)
+    /* 44CCC 800544CC 0880013C */  lui        $at, %hi(g_aHudIconActorRecords + 0x46)
     /* 44CD0 800544D0 21082700 */  addu       $at, $at, $a3
-    /* 44CD4 800544D4 32802290 */  lbu        $v0, %lo(g_abHudIconActorRecords + 0x46)($at)
+    /* 44CD4 800544D4 32802290 */  lbu        $v0, %lo(g_aHudIconActorRecords + 0x46)($at)
     /* 44CD8 800544D8 00000000 */  nop
     /* 44CDC 800544DC 0A004014 */  bnez       $v0, .L80054508
     /* 44CE0 800544E0 00000000 */   nop
-    /* 44CE4 800544E4 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x36)
+    /* 44CE4 800544E4 0880013C */  lui        $at, %hi(g_aHudIconActorRecords + 0x36)
     /* 44CE8 800544E8 21082700 */  addu       $at, $at, $a3
-    /* 44CEC 800544EC 22802284 */  lh         $v0, %lo(g_abHudIconActorRecords + 0x36)($at)
-    /* 44CF0 800544F0 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x49)
+    /* 44CEC 800544EC 22802284 */  lh         $v0, %lo(g_aHudIconActorRecords + 0x36)($at)
+    /* 44CF0 800544F0 0880013C */  lui        $at, %hi(g_aHudIconActorRecords + 0x49)
     /* 44CF4 800544F4 21082700 */  addu       $at, $at, $a3
-    /* 44CF8 800544F8 35802390 */  lbu        $v1, %lo(g_abHudIconActorRecords + 0x49)($at)
+    /* 44CF8 800544F8 35802390 */  lbu        $v1, %lo(g_aHudIconActorRecords + 0x49)($at)
     /* 44CFC 800544FC FCFE4224 */  addiu      $v0, $v0, -0x104
     /* 44D00 80054500 05006210 */  beq        $v1, $v0, .L80054518
     /* 44D04 80054504 40100400 */   sll       $v0, $a0, 1
   .L80054508:
-    /* 44D08 80054508 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x46)
+    /* 44D08 80054508 0880013C */  lui        $at, %hi(g_aHudIconActorRecords + 0x46)
     /* 44D0C 8005450C 21082700 */  addu       $at, $at, $a3
-    /* 44D10 80054510 328026A0 */  sb         $a2, %lo(g_abHudIconActorRecords + 0x46)($at)
+    /* 44D10 80054510 328026A0 */  sb         $a2, %lo(g_aHudIconActorRecords + 0x46)($at)
     /* 44D14 80054514 40100400 */  sll        $v0, $a0, 1
   .L80054518:
     /* 44D18 80054518 21104400 */  addu       $v0, $v0, $a0
     /* 44D1C 8005451C 80100200 */  sll        $v0, $v0, 2
     /* 44D20 80054520 23104400 */  subu       $v0, $v0, $a0
     /* 44D24 80054524 C0180200 */  sll        $v1, $v0, 3
-    /* 44D28 80054528 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x49)
+    /* 44D28 80054528 0880013C */  lui        $at, %hi(g_aHudIconActorRecords + 0x49)
     /* 44D2C 8005452C 21082300 */  addu       $at, $at, $v1
-    /* 44D30 80054530 35802290 */  lbu        $v0, %lo(g_abHudIconActorRecords + 0x49)($at)
+    /* 44D30 80054530 35802290 */  lbu        $v0, %lo(g_aHudIconActorRecords + 0x49)($at)
     /* 44D34 80054534 00000000 */  nop
     /* 44D38 80054538 09004810 */  beq        $v0, $t0, .L80054560
     /* 44D3C 8005453C 00000000 */   nop
     /* 44D40 80054540 0700C914 */  bne        $a2, $t1, .L80054560
     /* 44D44 80054544 04014224 */   addiu     $v0, $v0, 0x104
-    /* 44D48 80054548 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x36)
+    /* 44D48 80054548 0880013C */  lui        $at, %hi(g_aHudIconActorRecords + 0x36)
     /* 44D4C 8005454C 21082300 */  addu       $at, $at, $v1
-    /* 44D50 80054550 228022A4 */  sh         $v0, %lo(g_abHudIconActorRecords + 0x36)($at)
-    /* 44D54 80054554 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x50)
+    /* 44D50 80054550 228022A4 */  sh         $v0, %lo(g_aHudIconActorRecords + 0x36)($at)
+    /* 44D54 80054554 0880013C */  lui        $at, %hi(g_aHudIconActorRecords + 0x50)
     /* 44D58 80054558 21082300 */  addu       $at, $at, $v1
-    /* 44D5C 8005455C 3C8028A0 */  sb         $t0, %lo(g_abHudIconActorRecords + 0x50)($at)
+    /* 44D5C 8005455C 3C8028A0 */  sb         $t0, %lo(g_aHudIconActorRecords + 0x50)($at)
   .L80054560:
     /* 44D60 80054560 01008424 */  addiu      $a0, $a0, 0x1
     /* 44D64 80054564 2A108500 */  slt        $v0, $a0, $a1
@@ -75077,8 +75077,8 @@ glabel InitHudCounters
     /* 44E04 80054604 3000B6AF */  sw         $s6, 0x30($sp)
     /* 44E08 80054608 21B08000 */  addu       $s6, $a0, $zero
     /* 44E0C 8005460C 1800B0AF */  sw         $s0, 0x18($sp)
-    /* 44E10 80054610 0780103C */  lui        $s0, %hi(g_abHudIconActorRecords)
-    /* 44E14 80054614 EC7F1026 */  addiu      $s0, $s0, %lo(g_abHudIconActorRecords)
+    /* 44E10 80054610 0780103C */  lui        $s0, %hi(g_aHudIconActorRecords)
+    /* 44E14 80054614 EC7F1026 */  addiu      $s0, $s0, %lo(g_aHudIconActorRecords)
     /* 44E18 80054618 21200002 */  addu       $a0, $s0, $zero
     /* 44E1C 8005461C 21280000 */  addu       $a1, $zero, $zero
     /* 44E20 80054620 20040624 */  addiu      $a2, $zero, 0x420
@@ -75106,19 +75106,19 @@ glabel InitHudCounters
     /* 44E74 80054674 58009426 */  addiu      $s4, $s4, 0x58
     /* 44E78 80054678 58007326 */  addiu      $s3, $s3, 0x58
     /* 44E7C 8005467C 20000224 */  addiu      $v0, $zero, 0x20
-    /* 44E80 80054680 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x47)
+    /* 44E80 80054680 0880013C */  lui        $at, %hi(g_aHudIconActorRecords + 0x47)
     /* 44E84 80054684 21083000 */  addu       $at, $at, $s0
-    /* 44E88 80054688 338022A0 */  sb         $v0, %lo(g_abHudIconActorRecords + 0x47)($at)
+    /* 44E88 80054688 338022A0 */  sb         $v0, %lo(g_aHudIconActorRecords + 0x47)($at)
     /* 44E8C 8005468C 0B000224 */  addiu      $v0, $zero, 0xB
-    /* 44E90 80054690 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x50)
+    /* 44E90 80054690 0880013C */  lui        $at, %hi(g_aHudIconActorRecords + 0x50)
     /* 44E94 80054694 21083000 */  addu       $at, $at, $s0
-    /* 44E98 80054698 3C8035A0 */  sb         $s5, %lo(g_abHudIconActorRecords + 0x50)($at)
-    /* 44E9C 8005469C 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x49)
+    /* 44E98 80054698 3C8035A0 */  sb         $s5, %lo(g_aHudIconActorRecords + 0x50)($at)
+    /* 44E9C 8005469C 0880013C */  lui        $at, %hi(g_aHudIconActorRecords + 0x49)
     /* 44EA0 800546A0 21083000 */  addu       $at, $at, $s0
-    /* 44EA4 800546A4 358035A0 */  sb         $s5, %lo(g_abHudIconActorRecords + 0x49)($at)
-    /* 44EA8 800546A8 0880013C */  lui        $at, %hi(g_abHudIconActorRecords + 0x4F)
+    /* 44EA4 800546A4 358035A0 */  sb         $s5, %lo(g_aHudIconActorRecords + 0x49)($at)
+    /* 44EA8 800546A8 0880013C */  lui        $at, %hi(g_aHudIconActorRecords + 0x4F)
     /* 44EAC 800546AC 21083000 */  addu       $at, $at, $s0
-    /* 44EB0 800546B0 3B8022A0 */  sb         $v0, %lo(g_abHudIconActorRecords + 0x4F)($at)
+    /* 44EB0 800546B0 3B8022A0 */  sb         $v0, %lo(g_aHudIconActorRecords + 0x4F)($at)
     /* 44EB4 800546B4 58001026 */  addiu      $s0, $s0, 0x58
     /* 44EB8 800546B8 01003126 */  addiu      $s1, $s1, 0x1
     /* 44EBC 800546BC 0C00222A */  slti       $v0, $s1, 0xC
@@ -78378,8 +78378,8 @@ glabel RasterizeEmitList
     /* 47C98 80057498 00FCEF21 */  addi       $t7, $t7, -0x400 /* handwritten instruction */
     /* 47C9C 8005749C 0780103C */  lui        $s0, %hi(g_anSineLut)
     /* 47CA0 800574A0 F8CB1026 */  addiu      $s0, $s0, %lo(g_anSineLut)
-    /* 47CA4 800574A4 0780113C */  lui        $s1, %hi(g_apMobEntryTable)
-    /* 47CA8 800574A8 78623126 */  addiu      $s1, $s1, %lo(g_apMobEntryTable)
+    /* 47CA4 800574A4 0780113C */  lui        $s1, %hi(g_apEmitTextureTable)
+    /* 47CA8 800574A8 78623126 */  addiu      $s1, $s1, %lo(g_apEmitTextureTable)
     /* 47CAC 800574AC 01001220 */  addi       $s2, $zero, 0x1 /* handwritten instruction */
     /* 47CB0 800574B0 02001320 */  addi       $s3, $zero, 0x2 /* handwritten instruction */
     /* 47CB4 800574B4 0100143C */  lui        $s4, (0x10000 >> 16)
@@ -81389,11 +81389,11 @@ endlabel DrawSpyroDropShadow
 /* Handwritten function */
 .endif
 
-.section .text.DrawEntityDirectionalSpikes, "ax"
-.ifndef HAVE_C_DrawEntityDirectionalSpikes
-nonmatching DrawEntityDirectionalSpikes, 0x4E4
+.section .text.DrawActorDropShadows, "ax"
+.ifndef HAVE_C_DrawActorDropShadows
+nonmatching DrawActorDropShadows, 0x4E4
 
-glabel DrawEntityDirectionalSpikes
+glabel DrawActorDropShadows
     /* 4A78C 80059F8C 0780013C */  lui        $at, %hi(g_anWorldToCameraRotMtx)
     /* 4A790 80059F90 D06D2124 */  addiu      $at, $at, %lo(g_anWorldToCameraRotMtx)
     /* 4A794 80059F94 2800228C */  lw         $v0, 0x28($at)
@@ -81419,8 +81419,8 @@ glabel DrawEntityDirectionalSpikes
     /* 4A7E4 80059FE4 0780183C */  lui        $t8, %hi(g_pOtDepthBinHead0)
     /* 4A7E8 80059FE8 F4FC1827 */  addiu      $t8, $t8, %lo(g_pOtDepthBinHead0)
     /* 4A7EC 80059FEC 00281823 */  addi       $t8, $t8, 0x2800 /* handwritten instruction */
-    /* 4A7F0 80059FF0 0780193C */  lui        $t9, %hi(g_anEntitySpikeTexWords)
-    /* 4A7F4 80059FF4 F85E3927 */  addiu      $t9, $t9, %lo(g_anEntitySpikeTexWords)
+    /* 4A7F0 80059FF0 0780193C */  lui        $t9, %hi(g_anActorShadowTexWords)
+    /* 4A7F4 80059FF4 F85E3927 */  addiu      $t9, $t9, %lo(g_anActorShadowTexWords)
     /* 4A7F8 80059FF8 0000228F */  lw         $v0, 0x0($t9)
     /* 4A7FC 80059FFC 0400238F */  lw         $v1, 0x4($t9)
     /* 4A800 8005A000 0800398F */  lw         $t9, 0x8($t9)
@@ -81717,7 +81717,7 @@ glabel DrawEntityDirectionalSpikes
     /* 4AC64 8005A464 B0574224 */  addiu      $v0, $v0, %lo(g_pPrimBufferWriteCursor)
     /* 4AC68 8005A468 0800E003 */  jr         $ra
     /* 4AC6C 8005A46C 000041AC */   sw        $at, 0x0($v0)
-endlabel DrawEntityDirectionalSpikes
+endlabel DrawActorDropShadows
 .endif
 
 .section .text.ApplyPerLevelGlobalsTable, "ax"

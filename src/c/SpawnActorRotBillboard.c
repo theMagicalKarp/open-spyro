@@ -4,8 +4,8 @@
 #include "rot_billboard.h"
 #include "vecmath.h"
 
-/* 0x8003aaec — allocate a particle record (24-byte stride table at
-   0x80077108), seed its color to white, rotate the spawn offset by the
+/* 0x8003aaec — allocate a particle record (g_aRotBillboards, 24-byte
+   stride), seed its color to white, rotate the spawn offset by the
    actor's matrix into the record, add the actor position, then fill
    the lifetime/phase bytes. Returns the record index (or the negative
    allocation failure). */

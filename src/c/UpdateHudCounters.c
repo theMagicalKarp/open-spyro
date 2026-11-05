@@ -165,7 +165,7 @@ void UpdateHudCounters(void) {
   /* --- counter 1: dragons --------------------------------------------- */
   /* the RMWs stay byte-indexed: through the struct form gcc holds the
      address in a register instead of re-forming %hi/%lo for the store */
-  g_abHudIconActorRecords[0x2B1] += 8; /* dragon icon ->subMode */
+  g_aHudIconActorRecords[0x2B1] += 8; /* dragon icon ->subMode */
   HUD_ICON_SLOT(HUD_SLOT_DRAGONS)->rotZ =
       (unsigned short)g_anCosineLut[HUD_ICON_SLOT(HUD_SLOT_DRAGONS)->subMode] >>
       8;
@@ -401,7 +401,7 @@ void UpdateHudCounters(void) {
   }
 
   /* --- the key icon spin, and butterflies -> extra lives -------------- */
-  g_abHudIconActorRecords[0x411] +=
+  g_aHudIconActorRecords[0x411] +=
       4; /* key icon ->subMode (byte-indexed RMW) */
   HUD_ICON_SLOT(HUD_SLOT_KEY)->rotX =
       (unsigned short)g_anCosineLut[HUD_ICON_SLOT(HUD_SLOT_KEY)->subMode] >> 7;

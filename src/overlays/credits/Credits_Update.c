@@ -72,8 +72,8 @@
  *     `upper = 1` keeps the li out of the st.adv load's delay slot.
  * 18. `i = 0;` sits above `if (g_nCreditsGlyphCount > 0)` so jump.c does not
  *     thread that branch past the first state loop.
- * 19. The 20-byte copy goes to its own symbol (g_nWorldRenderMeshChunkCount
- *     = g_nWorldCollisionTriCount) and C1C is read through the non-volatile
+ * 19. The 20-byte copy goes to its own symbol (g_nSkyChunkCount
+ *     = g_nLevelSkyChunkCount) and C1C is read through the non-volatile
  *     g_nLevelArchiveChunkSize_n, which picks the movstr scratch registers
  *     a3/t0/t1/t2.
  * 20. `register char *src asm("$5")` for the e4 re-read takes away its
@@ -111,8 +111,8 @@ extern int g_nWorldTimAudioChunkOffset[];
 extern volatile int g_nLevelArchiveChunkSize;
 extern int g_anCameraPos;
 extern short g_nCameraEulerPitch;
-extern Blk20 g_nWorldCollisionTriCount;
-extern Blk20 g_nWorldRenderMeshChunkCount;
+extern Blk20 g_nLevelSkyChunkCount;
+extern Blk20 g_nSkyChunkCount;
 extern int g_nLevelArchiveChunkSize_n;
 
 extern char g_CutsceneSoundDef[];
@@ -208,7 +208,7 @@ void Credits_Update(void) {
       register char *src asm("$5");
       S.pathTableBuffer = S.worldUnpackHead;
       src = S.pathTableBuffer;
-      g_nWorldRenderMeshChunkCount = g_nWorldCollisionTriCount;
+      g_nSkyChunkCount = g_nLevelSkyChunkCount;
       S.levelArchiveBaseLba = g_nLevelArchiveChunkOffset;
       S.levelArchiveByteSize = g_nLevelArchiveChunkSize_n;
       g_nPortalCount = 0;
@@ -649,7 +649,7 @@ void Credits_Update(void) {
           S.worldUnpackHead = UnpackWorldDataChunks((int *)g_pDrawBufB, 1);
           {
           char *dc = S.drawBufB;
-          S.blk = g_nWorldCollisionTriCount;
+          S.blk = g_nLevelSkyChunkCount;
           g_pPathTableBuffer = dc + g_nWorldBundleChunkSize;
           }
           g_pCreditsScrollHeader = g_pPathTableBuffer;

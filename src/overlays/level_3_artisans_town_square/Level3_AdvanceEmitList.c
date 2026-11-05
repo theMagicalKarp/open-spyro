@@ -1,7 +1,7 @@
 /* Level3_AdvanceEmitList (0x80087e20, level_3_artisans_town_square overlay,
  * 0x1148 bytes).
  *
- * The emit-list ADVANCE pass -- the ground-level (non-flight) 1163-insn
+ * The emit-list ADVANCE pass -- the ground-level (non-flight) 1106-insn
  * variant of the walk matched in level_11 / level_5.  Walks the 0x20-byte
  * record stream at g_pEmitListBase and ages one record per iteration: integrates
  * its position, fades its colour, ticks its life counter and, when the record

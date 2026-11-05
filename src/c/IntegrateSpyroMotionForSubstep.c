@@ -568,7 +568,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           int l;
 
           SubtractVector(toHomingTarget, &g_pSpyroHomingTargetActor->posX,
-                         &SPY[0]);
+                         &SPY[SPY_POS]);
           l = VectorLength(toHomingTarget, VEC_LEN_XYZ);
           d = (ArcTan2(toHomingTarget[0], toHomingTarget[1], ATAN_ANGLE12) -
                SPY[SPY_BODY_YAW]) &
@@ -610,7 +610,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (g_nSpyroCliffEdgeHint != 0) {
           g_nSpyroVelocityZ -= 0xC0;
         } else {
-          AddVector(vel, vel, &SPY[SPY_PLATFORM]);
+          AddVector(vel, vel, &SPY[SPY_SLOPE_GRAVITY]);
         }
       } else {
         int *carry = ch + (SPY_CARRY - SPY_CHARGE_HOLD);
@@ -624,9 +624,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         vel = ch + (SPY_VELOCITY - SPY_CHARGE_HOLD);
         BuildSpyroVelocityFromBodyEuler();
         AddVector(carry, carry, vel);
-        AddVector(carry, carry, ch + (0x34 - SPY_CHARGE_HOLD));
+        AddVector(carry, carry, ch + (SPY_SLOPE_SLIDE - SPY_CHARGE_HOLD));
         g_nSpyroMotionSpeed = VectorLength(carry, VEC_LEN_XYZ);
-        AddVector(vel, carry, ch + (SPY_PLATFORM - SPY_CHARGE_HOLD));
+        AddVector(vel, carry, ch + (SPY_SLOPE_GRAVITY - SPY_CHARGE_HOLD));
       }
     } else {
       int *vel;
@@ -636,7 +636,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       AdvanceSpyroSpeedTowardTarget(0, 0x180);
       vel = &SPY[SPY_VELOCITY];
       BuildSpyroVelocityFromBodyEuler();
-      AddVector(vel, vel, &SPY[0x34]);
+      AddVector(vel, vel, &SPY[SPY_SLOPE_SLIDE]);
       l = VectorLength(vel, VEC_LEN_XYZ);
       g_nSpyroMotionSpeed = l;
       if (l > 0x2300) {
@@ -783,7 +783,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (g_nSpyroWorldPosZ < g_nSpyroFloorReferenceZ) {
           v40[2] = (g_nSpyroVelocityZ >> 3) - 0x400;
           if (v40[2] < 0) {
-            int *pos = &SPY[0];
+            int *pos = &SPY[SPY_POS];
 
             v40[0] = g_anSpyroVelocity[0] >> 3;
             v40[1] = g_nSpyroVelocityY >> 3;
@@ -1239,7 +1239,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (g_nSpyroInputBlankCountdown <= 0) {
           g_nSpyroInputBlankCountdown = 1;
         }
-        if (ApproxDist2D(&SPY[0], &SPY[0x7E]) < 0x300) {
+        if (ApproxDist2D(&SPY[SPY_POS], &SPY[SPY_REQUEST_TARGET]) < 0x300) {
           LEVEL_GLIDE_HANDOFF();
         }
         g_nSpyroBodyRoll = 0;
@@ -1259,7 +1259,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (g_nSpyroStateTimer < 0x10) {
           y = 0;
         } else {
-          y = FindGroundHeightBelow(&SPY[0], 0x10000);
+          y = FindGroundHeightBelow(&SPY[SPY_POS], 0x10000);
           if (g_nSpyroGlideBankingFlag != 0) {
             int d = g_nSpyroWorldPosZ - y;
 
@@ -1531,7 +1531,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     obj = ((int **)g_pScriptedCameraActor)[0];
     obj2 = obj;
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
-    SubtractVector(orbitStep, &g_pScriptedCameraActor->posX, &SPY[0]);
+    SubtractVector(orbitStep, &g_pScriptedCameraActor->posX, &SPY[SPY_POS]);
     dist = VectorLength(orbitStep, VEC_LEN_XY);
     ang = ArcTan2(orbitStep[0], orbitStep[1], ATAN_ANGLE12);
     dt = (g_nSpyroSubstate == SPYRO_SUB_ORBIT_NEG ? -g_nSpyroTurnRateAccum
@@ -1601,7 +1601,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         ScaleVector3ByRatio(knockDrag, l, 0x100);
       }
       AddVector(vel, vel, knockDrag);
-      AddVector(vel, vel, &SPY[SPY_PLATFORM]);
+      AddVector(vel, vel, &SPY[SPY_SLOPE_GRAVITY]);
     }
     if (SPY[SPY_VELOCITY + 2] < -0x2300) {
       SPY[SPY_VELOCITY + 2] = -0x2300;
@@ -1676,7 +1676,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     BuildSpyroVelocityFromBodyEuler();
     CopyVector(sp + (SPY_CARRY - SPY_SPEED), vel);
     if (g_nSpyroAirborneFrames == 0) {
-      AddVector(vel, vel, sp + (SPY_PLATFORM - SPY_SPEED));
+      AddVector(vel, vel, sp + (SPY_SLOPE_GRAVITY - SPY_SPEED));
     }
     g_nPulseRumbleAmount = ((sp[0] - 0x1400) >> 7) + 0x14;
     if (g_nPulseRumbleAmount < 0x50) {

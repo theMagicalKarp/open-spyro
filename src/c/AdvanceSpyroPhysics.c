@@ -63,8 +63,8 @@ SDATA(g_pSpyroContactActor, 4);
     }                                                                          \
     g_nSpyroGroundProbeSuspendFlag = 0;                                        \
     keep##from : if ((signed char)ArcTan2(                                     \
-                         g_anCollisionProbeVec[2],                             \
-                         VectorLength(g_anCollisionProbeVec, VEC_LEN_XY),      \
+                         g_anCollisionHitNormal[2],                            \
+                         VectorLength(g_anCollisionHitNormal, VEC_LEN_XY),     \
                          ATAN_ANGLE8) >= 0x17) {                               \
       int t = g_nGroundSurfaceType & 0x3F;                                     \
       unsigned char kind;                                                      \
@@ -79,10 +79,10 @@ SDATA(g_pSpyroContactActor, 4);
       }                                                                        \
     }                                                                          \
     CopyVector(pos, g_anCollisionResolvedPos);                                 \
-    if (g_nSpyroFirstContactChunkId == 0xFF) {                                 \
-      g_nSpyroFirstContactChunkId = g_nGroundSurfaceType;                      \
+    if (g_nSpyroFirstContactSurfaceType == 0xFF) {                             \
+      g_nSpyroFirstContactSurfaceType = g_nGroundSurfaceType;                  \
       CopyVector(pos + SPY_FIRST_POINT, g_anCollisionContactPoint);            \
-      CopyVector(pos + SPY_FIRST_NORMAL, g_anCollisionProbeVec);               \
+      CopyVector(pos + SPY_FIRST_NORMAL, g_anCollisionHitNormal);              \
     }                                                                          \
     LIMIT_STEP(pos, from);                                                     \
   }
@@ -93,15 +93,15 @@ SDATA(g_pSpyroContactActor, 4);
   {                                                                            \
     int *w = WS;                                                               \
     *w = one;                                                                  \
-    SetVector3Magnitude(g_anCollisionProbeVec, 0x400);                         \
+    SetVector3Magnitude(g_anCollisionHitNormal, 0x400);                        \
     w++;                                                                       \
-    AddVector(w, w, g_anCollisionProbeVec);                                    \
+    AddVector(w, w, g_anCollisionHitNormal);                                   \
   }
 #define WALL_RETRY                                                             \
   {                                                                            \
     *b = one;                                                                  \
-    SetVector3Magnitude(g_anCollisionProbeVec, 0x400);                         \
-    AddVector(p, p, g_anCollisionProbeVec);                                    \
+    SetVector3Magnitude(g_anCollisionHitNormal, 0x400);                        \
+    AddVector(p, p, g_anCollisionHitNormal);                                   \
   }
 
 /* Spyro's world collision step (0x8003fe40, 4392 bytes). Applies the pending
@@ -122,7 +122,7 @@ int AdvanceSpyroPhysics(void) {
   int hole;
 
   g_nSpyroContactedActorFlag = 0;
-  g_nSpyroFirstContactChunkId = 0xFF;
+  g_nSpyroFirstContactSurfaceType = 0xFF;
   g_nSpyroWallSlideContributedFlag = 0;
   {
     int *q = &SPY[SPY_PROBE_SUSPEND];
@@ -197,7 +197,7 @@ int AdvanceSpyroPhysics(void) {
     }
     if (g_nCameraNextMode_blk[0] != (CAM_HELD | CAM_MODE_FREE_LOOK)) {
       if (m & SPYRO_RQ_CAMERA) {
-        g_nCameraTargetYawBiasFromMode = 0;
+        g_nCameraParamsReferenceYaw = 0;
         g_nCameraNextMode_blk[0] = (CAM_HELD | CAM_MODE_REQUEST);
         g_pCameraAnchorPos = g_pSpyroRequestCameraAnchor;
         g_pCameraTargetParams = g_pSpyroRequestCameraTargetParams;
@@ -298,7 +298,7 @@ int AdvanceSpyroPhysics(void) {
         CopyVector(g_anCameraLatchedAnchorPos,
                    ACTOR_POS(g_pScriptedCameraActor));
         g_anCameraLatchedAnchorPos[2] += 0x200;
-        g_nCameraTargetYawBiasFromMode = g_pScriptedCameraActor->rotZ << 4;
+        g_nCameraParamsReferenceYaw = g_pScriptedCameraActor->rotZ << 4;
         g_pCameraTargetParams = g_anCameraParamEnemyLock;
         g_nCameraNextMode = (CAM_HELD | CAM_MODE_REQUEST);
         g_nSpyroMoveTargetYaw = keepYaw;

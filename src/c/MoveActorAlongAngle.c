@@ -90,7 +90,7 @@ commit:
     }
   }
   if (flags & MOVE_PROBES_FLOOR) {
-    EncodeCachedVecToActorDirCode(actor);
+    EncodeHitNormalToActorGroundCode(actor);
   }
   RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
   return MOVED_OK;

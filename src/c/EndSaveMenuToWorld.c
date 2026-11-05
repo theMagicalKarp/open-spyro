@@ -35,12 +35,12 @@ void EndSaveMenuToWorld(void) {
   g_nCameraNextMode = CAM_MODE_STAND;
   g_pCameraTargetParams = dyn;
   g_nSpyroSuperflameTimer = g_nSpyroSuperflameTimerSave;
-  g_nCameraTargetYawBiasFromMode =
+  g_nCameraParamsReferenceYaw =
       g_anSpyroMoveTargetYawBlock[SPY_BODY_YAW - SPY_MOVE_TARGET_YAW];
 
   ComputeCameraToTargetAngle((int *)CAM_POS_VIA_ANCHOR);
   CopyWords(dyn, CAM_YAW_VIA_ANCHOR, 0x18);
-  dyn[0] = (dyn[0] + g_nCameraTargetYawBiasFromMode) & 0xFFF;
+  dyn[0] = (dyn[0] + g_nCameraParamsReferenceYaw) & 0xFFF;
 
   ResetCameraStateToTarget();
   InitHudCounters(0);

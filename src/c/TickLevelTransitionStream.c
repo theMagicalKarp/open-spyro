@@ -5,20 +5,18 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "portal.h"
 #include "spyro_block.h"
 #include "spyro_state.h"
 #include "vecmath.h"
 
-typedef struct {
-  int w[5];
-} Words5;
 typedef struct {
   int *path;
   int pad[3];
   int reverse;
 } PortalActor;
 
-#define MESH g_anWorldRenderMeshBlock
+#define SKY g_anSkyBlock /* the active sky header, word by word (SkyHeader) */
 #define CAM g_anCameraPosBlock
 #define SPYB ((unsigned char *)g_anSpyroWorldPosBlock)
 
@@ -32,7 +30,6 @@ typedef struct {
 #define LEVEL_SPLASH_OFFSET(i) ((&g_nLevelSplashOffset)[(i) * 4])
 #define LEVEL_SPLASH_SIZE(i) ((&g_nLevelSplashByteSize)[(i) * 4])
 #define LEVEL_ARCHIVE_OFFSET(i) ((&g_nLevelArchiveOffset)[(i) * 4])
-#define PORTAL_ENTRY(i) ((int *)g_apPortals[i])
 
 /* 0x80015370 (0x1074): the level-transition loader. Each tick (once the
    drive is idle past the first two stages) it runs one stage: preserve the
@@ -73,7 +70,7 @@ void TickLevelTransitionStream(int full) {
     if (g_nEnteredPortalIdx >= 0) {
       char *rec;
 
-      rec = *(char **)g_apPortals[g_nEnteredPortalIdx];
+      rec = (char *)g_apPortals[g_nEnteredPortalIdx]->pSky;
       src = rec + 0x14;
       size = *(int *)src + 0x400;
       p = (int *)((char *)g_pRenderScratchRegionBase - size);
@@ -81,25 +78,25 @@ void TickLevelTransitionStream(int full) {
       p += 5;
       base = (char *)p;
       p++;
-      MESH[4] = *p++;
+      SKY[4] = *p++;
       n = *p++;
-      MESH[1] = (int)p;
-      MESH[0] = n;
-      for (k = 0; k < MESH[0]; k++) {
+      SKY[1] = (int)p;
+      SKY[0] = n;
+      for (k = 0; k < SKY[0]; k++) {
         *p = (base + *p) - src;
         p++;
       }
     } else {
-      src = (char *)MESH[1] - 0xC;
+      src = (char *)SKY[1] - 0xC;
       size = *(int *)src + 0x400;
       p = (int *)((char *)g_pRenderScratchRegionBase - size);
       CopyWords(p, src, size);
       base = (char *)p;
       p += 2;
       n = *p++;
-      MESH[1] = (int)p;
-      MESH[0] = n;
-      for (k = 0; k < MESH[0]; k++) {
+      SKY[1] = (int)p;
+      SKY[0] = n;
+      for (k = 0; k < SKY[0]; k++) {
         *p = (base + *p) - src;
         p++;
       }
@@ -113,7 +110,7 @@ void TickLevelTransitionStream(int full) {
   } break;
   case LSTREAM_FRESH:
     StopAllSoundExceptMask(0);
-    g_nWorldRenderMeshChunkCount = 0;
+    g_nSkyChunkCount = 0;
     g_nCameraVisZone = -1;
     g_nCdStreamState++;
   case LSTREAM_SELECT_LEVEL: {
@@ -207,19 +204,19 @@ void TickLevelTransitionStream(int full) {
     break;
   case LSTREAM_UNPACK:
     g_pWorldUnpackHead = UnpackWorldDataChunks(g_pDrawBufB, 0);
-    if (MESH[0] != 0 && g_nGamestate != GS_GAME_OVER &&
+    if (SKY[0] != 0 && g_nGamestate != GS_GAME_OVER &&
         g_nGamestate != GS_ACTOR_CUTSCENE) {
       if (g_nReturnPortalLevelId != 0) {
         for (i = 0; i < g_nPortalCount; i++) {
-          int *e = PORTAL_ENTRY(i);
+          Portal *e = g_apPortals[i];
 
-          if (e[7] == g_nReturnPortalLevelId) {
-            *(Words5 *)MESH = *(Words5 *)e[0];
+          if (e->levelId == g_nReturnPortalLevelId) {
+            *(SkyHeader *)SKY = *(SkyHeader *)e->pSky;
             break;
           }
         }
       } else {
-        *(Words5 *)MESH = *(Words5 *)&g_nWorldCollisionTriCount;
+        *(SkyHeader *)SKY = *(SkyHeader *)&g_nLevelSkyChunkCount;
       }
     }
     {
@@ -284,7 +281,7 @@ void TickLevelTransitionStream(int full) {
       g_nCdStreamState++;
       break;
     }
-    if (g_nLevelIntroParallaxCountdown != 0) {
+    if (g_nTransitionSkyPitchTilt != 0) {
       break;
     }
     if (g_nReturnPortalLevelId != 0) {
@@ -339,21 +336,21 @@ void TickLevelTransitionStream(int full) {
         g_nGamestate = GS_ARRIVAL_CAMERA;
       } else if (g_nReturnPortalLevelId != 0) {
         for (i = 0; i < g_nPortalCount; i++) {
-          int *e = PORTAL_ENTRY(i);
+          Portal *e = g_apPortals[i];
           unsigned char *pe = SPYB + SPYB_EULER_Z;
           int *pyaw = (int *)(SPYB + SPY_BODY_YAW * 4);
           int *cam = CAM;
           int *spring = CAM + 0x14;
 
-          if (e[7] == g_nReturnPortalLevelId) {
+          if (e->levelId == g_nReturnPortalLevelId) {
             unsigned char yaw;
             PortalActor *actor;
 
             yaw = *pe;
-            actor = (PortalActor *)g_pActorListBase[e[6]].state;
+            actor = (PortalActor *)g_pActorListBase[e->actor].state;
             EBB_BREAK();
             ChangeSpyroState(SPYRO_ST_GLIDE);
-            PE_WORD(SPY_SUBSTATE) = 9;
+            PE_WORD(SPY_SUBSTATE) = SPYRO_SUB_GLIDE_TO_TARGET;
             ComputeCameraToTargetAngle(cam);
             g_anCameraSpringYawBlock[6] /* g_nCameraYaw */ =
                 g_nCameraYaw + PE_WORD(SPY_BODY_YAW);
@@ -378,8 +375,8 @@ void TickLevelTransitionStream(int full) {
             AddVector(cam, cam, (int *)((char *)pyaw - PYAW_BACK_TO(0)));
             UpdateCameraEulerAngles();
             *((unsigned char *)pyaw - PYAW_BACK_TO(SPYB_OT_BIN_BIAS)) = 0x7F;
-            g_nPortalViewPitchTilt = 0;
-            g_nPortalViewYawSpin =
+            g_nPortalSkyPitchTilt = 0;
+            g_nPortalSkyYawSpin =
                 (yaw - *((unsigned char *)pyaw - PYAW_BACK_TO(SPYB_EULER_Z)))
                 << 4;
             break;
@@ -401,7 +398,7 @@ void TickLevelTransitionStream(int full) {
         CopyVector(pos, &g_anSpawnAnchorBlock[0x14] /* g_anLevelSpawnPos */);
         ComputeCameraOrbitOffset(g_anCameraPos);
         ZeroVector(yawp - 4);
-        if (g_pCameraTargetParams == g_anCameraMode12Params) {
+        if (g_pCameraTargetParams == g_anCameraParamTransitionGlideIn) {
           g_anSpyroWorldPosZBlock[0] = g_nSpyroWorldPosZ - 0x1600;
           pos[0] -= (g_anCosineLut[g_abSpyroPersistentEuler[2]] * 5) >> 1;
           g_nSpyroWorldPosY -=
@@ -427,8 +424,7 @@ void TickLevelTransitionStream(int full) {
     } else if (g_nGamestate != GS_ACTOR_CUTSCENE) {
       ChangeSpyroState(SPYRO_ST_IDLE);
     }
-    *(Words5 *)&g_nWorldRenderMeshChunkCount =
-        *(Words5 *)&g_nWorldCollisionTriCount;
+    *(SkyHeader *)&g_nSkyChunkCount = *(SkyHeader *)&g_nLevelSkyChunkCount;
     g_nPortalTransitionActive = 0;
     g_nReturnPortalLevelId = 0;
     g_anLevelRunnerArrived = 0;

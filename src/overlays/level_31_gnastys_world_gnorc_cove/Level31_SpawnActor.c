@@ -123,7 +123,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     CopyVector(probe, pos);
     probe[2] += 0x400;
     FindGroundHeightBelow(probe, 0x10000);
-    EncodeCachedVecToActorDirCode(rec);
+    EncodeHitNormalToActorGroundCode(rec);
     rec->tint0 = 0;
     rec->tint1 = 0;
     rec->tint2 = 0;
@@ -197,7 +197,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     CopyVector(probe, pos);
     probe[2] += 0x400;
     FindGroundHeightBelow(probe, 0x10000);
-    EncodeCachedVecToActorDirCode(rec);
+    EncodeHitNormalToActorGroundCode(rec);
     break;
   }
 
@@ -223,7 +223,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     CopyVector(probe, pos);
     probe[2] += 0x400;
     FindGroundHeightBelow(probe, 0x10000);
-    EncodeCachedVecToActorDirCode(rec);
+    EncodeHitNormalToActorGroundCode(rec);
     break;
   }
 

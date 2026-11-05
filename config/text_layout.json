@@ -496,7 +496,7 @@
    "size": 956
   },
   {
-   "name": "Gamestate02_03_06_Draw",
+   "name": "PauseMenu_Draw",
    "vram": 2147591180,
    "size": 8840
   },
@@ -1541,27 +1541,27 @@
    "size": 1436
   },
   {
-   "name": "EmitStaticActorMeshList",
+   "name": "EmitSkyMesh",
    "vram": 2147806120,
    "size": 1112
   },
   {
-   "name": "EmitStaticActorMeshListFogged",
+   "name": "EmitSkyMeshFogged",
    "vram": 2147807232,
    "size": 1212
   },
   {
-   "name": "EmitDynamicActorMeshScissored",
+   "name": "EmitPortalSky",
    "vram": 2147808444,
    "size": 812
   },
   {
-   "name": "ClipAndEmitActorTriangle",
+   "name": "ClipAndEmitPortalSkyTriangle",
    "vram": 2147809256,
    "size": 260
   },
   {
-   "name": "ClipAndEmitActorTriangle_Tail",
+   "name": "ClipAndEmitPortalSkyTriangle_Tail",
    "vram": 2147809516,
    "size": 1216
   },
@@ -1571,37 +1571,37 @@
    "size": 244
   },
   {
-   "name": "EmitDynamicActorMeshFogged",
+   "name": "EmitPortalColorFill",
    "vram": 2147810976,
    "size": 240
   },
   {
-   "name": "ClipAndEmitFoggedActorTriangle",
+   "name": "ClipAndEmitPortalFillTriangle",
    "vram": 2147811216,
    "size": 212
   },
   {
-   "name": "ClipAndEmitFoggedActorTriangle_Tail",
+   "name": "ClipAndEmitPortalFillTriangle_Tail",
    "vram": 2147811432,
    "size": 472
   },
   {
-   "name": "EmitDynamicActorMeshFogShaded",
+   "name": "EmitPortalSkyFogShaded",
    "vram": 2147811904,
    "size": 972
   },
   {
-   "name": "ClipAndEmitFogShadedActorTriangle",
+   "name": "ClipAndEmitPortalSkyFogShadedTriangle",
    "vram": 2147812876,
    "size": 260
   },
   {
-   "name": "func_80050710",
+   "name": "ClipAndEmitPortalSkyFogShadedTriangle_Tail",
    "vram": 2147813136,
    "size": 1216
   },
   {
-   "name": "DrawPortalsAndStaticActors",
+   "name": "DrawPortalsAndSky",
    "vram": 2147814352,
    "size": 5148
   },
@@ -1661,7 +1661,7 @@
    "size": 784
   },
   {
-   "name": "EncodeCachedVecToActorDirCode",
+   "name": "EncodeHitNormalToActorGroundCode",
    "vram": 2147824592,
    "size": 416
   },
@@ -1906,7 +1906,7 @@
    "size": 1348
   },
   {
-   "name": "DrawEntityDirectionalSpikes",
+   "name": "DrawActorDropShadows",
    "vram": 2147852172,
    "size": 1252
   },

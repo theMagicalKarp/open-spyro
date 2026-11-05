@@ -69,7 +69,7 @@ typedef struct GemDigitState {
 } GemDigitState;
 
 /* Surface normal produced by the collision probes. */
-extern int g_anCollisionProbeVec;
+extern int g_anCollisionHitNormal;
 
 /* Single-field views for reading a scalar symbol through a struct type. */
 typedef struct {

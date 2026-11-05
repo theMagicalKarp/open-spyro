@@ -470,7 +470,7 @@ void DragonRescue_Update(void) {
         STATUE->posZ += 0x400;
         FindWorldFloorBelowPoint(&((Actor *)GB[24])->posX);
         STATUE->posZ -= 0x400;
-        EncodeCachedVecToActorDirCode((void *)GB[24]);
+        EncodeHitNormalToActorGroundCode((void *)GB[24]);
         InsertActorIntoSpatialGrid((void *)GB[24]);
         g_pDragonRescueSpyroMirrorActor = AllocActorRecordSlot();
         InitActorRenderDefaults(g_pDragonRescueSpyroMirrorActor);

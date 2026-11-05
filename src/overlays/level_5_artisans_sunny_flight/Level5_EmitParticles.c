@@ -1,5 +1,5 @@
-/* Level5_EmitParticles (0x80084128, level_5_artisans_sunny_flight
- * overlay, 0xc98 bytes).
+/* Level5_EmitParticles (0x80084128, level_5_artisans_sunny_flight overlay,
+ * 0xda8 bytes).
  *
  * Push `count` particle records of effect `type` onto the emit list (the
  * 0x20-byte record stream that RasterizeEmitList walks each frame).

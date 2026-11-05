@@ -53,7 +53,7 @@ typedef struct BackdropTail {
      `$2` pin to get the original's la/sll and load/store order.
    - The second marker test is nested so `pa = pos` sits in the guard block,
      where reorg moves it into the branch delay slot. */
-void Gamestate02_03_06_Draw(void) {
+void PauseMenu_Draw(void) {
   RECT rect;          /* sp18 */
   char buf[0x20];     /* sp20 */
   int pos[3];         /* sp40 */
@@ -84,11 +84,11 @@ void Gamestate02_03_06_Draw(void) {
     do {
       strip = 0x200;
       RasterizeEmitList();
-      DrawPortalsAndStaticActors();
+      DrawPortalsAndSky();
       SetupFrameOT();
       DrawSync(0);
       VSync(0);
-      envBase = &g_abFrameDrawEnv0;
+      envBase = &g_FrameDrawEnv0;
     } while (0);
     do {
       PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
@@ -154,7 +154,7 @@ void Gamestate02_03_06_Draw(void) {
     unsigned char bq;
     unsigned char cq;
     cur = (*(char **)&g_pActiveFrameDrawEnv);
-    env = ((char *)&g_abFrameDrawEnv0);
+    env = ((char *)&g_FrameDrawEnv0);
     if (cur == env) {
       env += 0x84;
     }

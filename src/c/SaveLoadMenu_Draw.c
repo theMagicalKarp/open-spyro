@@ -49,57 +49,57 @@ void SaveLoadMenu_Draw(void) {
     switch (g_nSaveMenuSubstate) {
     case SAVE_SCREEN_MAIN:
       pos[1] = 0x32;
-      pos[0] = SM[4] + 0x40;
+      pos[0] = SM[SM_X_OFFSET] + 0x40;
       BuildTextSprites(g_szHiSpyro, pos, size, 0x12, TINT_HUD);
       pos[1] += 0x18;
-      pos[0] = SM[4] + 0x4C;
+      pos[0] = SM[SM_X_OFFSET] + 0x4C;
       BuildTextSprites(g_szSaveGame, pos, size, 0x12, TINT_HUD);
       pos[1] += 0x13;
-      if (SM[2] == SAVE_ROW_SAVE) {
+      if (SM[SM_CURSOR] == SAVE_ROW_SAVE) {
         rec = (unsigned char *)g_pSpriteRecordWriteCursor;
         n = 8;
       }
-      pos[0] = SM[4] + 0x4C;
+      pos[0] = SM[SM_X_OFFSET] + 0x4C;
       BuildTextSprites(g_szReplayDragon, pos, size, 0x12, TINT_HUD);
       pos[1] += 0x13;
-      if (SM[2] == SAVE_ROW_REPLAY_DRAGON) {
+      if (SM[SM_CURSOR] == SAVE_ROW_REPLAY_DRAGON) {
         rec = (unsigned char *)g_pSpriteRecordWriteCursor;
         n = 0xC;
       }
-      pos[0] = SM[4] + 0x4C;
+      pos[0] = SM[SM_X_OFFSET] + 0x4C;
       BuildTextSprites(g_szContinue, pos, size, 0x12, TINT_HUD);
-      if (SM[2] == SAVE_ROW_CONTINUE) {
+      if (SM[SM_CURSOR] == SAVE_ROW_CONTINUE) {
         rec = (unsigned char *)g_pSpriteRecordWriteCursor;
         n = 8;
       }
-      WAVE(rec, n, SM[1]);
+      WAVE(rec, n, SM[SM_PHASE]);
       break;
     case SAVE_SCREEN_NO_SESSION:
       pos[1] = 0x32;
-      pos[0] = SM[4] + 0x52;
+      pos[0] = SM[SM_X_OFFSET] + 0x52;
       BuildTextSprites(g_szNoSaveFile, pos, size, 0x12, TINT_HUD);
       rec = (unsigned char *)g_pSpriteRecordWriteCursor;
       pos[1] += 0x1A;
-      WAVE(rec, 10, SM[1]);
+      WAVE(rec, 10, SM[SM_PHASE]);
       size[0] = 0xE;
       size[1] = 1;
       size[2] = 0x1600;
       pos[2] = 0x1400;
-      pos[0] = SM[4] + 0x2D;
+      pos[0] = SM[SM_X_OFFSET] + 0x2D;
       BuildTextSprites(g_szPleaseRestartWith, pos, size, 0x10, TINT_HUD);
       pos[1] += 0x11;
-      pos[0] = SM[4] + 0x43;
+      pos[0] = SM[SM_X_OFFSET] + 0x43;
       BuildTextSprites(g_szAMemoryCardTo, pos, size, 0x10, TINT_HUD);
       pos[1] += 0x11;
-      pos[0] = SM[4] + 0x38;
+      pos[0] = SM[SM_X_OFFSET] + 0x38;
       BuildTextSprites(g_szEnableGameSaves, pos, size, 0x10, TINT_HUD);
       break;
     case SAVE_SCREEN_SAVING:
       pos[1] = 0x52;
-      pos[0] = SM[4] + 0x6A;
+      pos[0] = SM[SM_X_OFFSET] + 0x6A;
       BuildTextSprites(g_szSaving, pos, size, 0x12, TINT_HUD);
       rec = (unsigned char *)g_pSpriteRecordWriteCursor;
-      WAVE(rec, 9, SM[1]);
+      WAVE(rec, 9, SM[SM_PHASE]);
       break;
     case SAVE_SCREEN_NO_CARD:
     case SAVE_SCREEN_NO_FILE:
@@ -115,66 +115,66 @@ void SaveLoadMenu_Draw(void) {
       }
       rec = (unsigned char *)g_pSpriteRecordWriteCursor;
       pos[1] += 0x1A;
-      WAVE(rec, n, SM[1]);
+      WAVE(rec, n, SM[SM_PHASE]);
       size[0] = 0xE;
       size[1] = 1;
       size[2] = 0x1600;
       pos[2] = 0x1400;
-      pos[0] = SM[4] + 0x3B;
+      pos[0] = SM[SM_X_OFFSET] + 0x3B;
       BuildTextSprites(g_szPleaseInsertThe, pos, size, 0x10, TINT_HUD);
       pos[1] += 0x11;
-      pos[0] = SM[4] + 0x43;
+      pos[0] = SM[SM_X_OFFSET] + 0x43;
       BuildTextSprites(g_szMemoryCardWith, pos, size, 0x10, TINT_HUD);
       pos[1] += 0x11;
-      pos[0] = SM[4] + 0x2D;
+      pos[0] = SM[SM_X_OFFSET] + 0x2D;
       BuildTextSprites(g_szThisGameSaveFile, pos, size, 0x10, TINT_HUD);
       break;
     case SAVE_SCREEN_ERROR:
       pos[1] = 0x32;
-      pos[0] = SM[4] + 0x5E;
+      pos[0] = SM[SM_X_OFFSET] + 0x5E;
       BuildTextSprites(g_szSaveError, pos, size, 0x12, TINT_HUD);
       rec = (unsigned char *)g_pSpriteRecordWriteCursor;
       pos[1] += 0x1A;
-      WAVE(rec, 9, SM[1]);
+      WAVE(rec, 9, SM[SM_PHASE]);
       size[0] = 0xE;
       size[1] = 1;
       size[2] = 0x1600;
       pos[2] = 0x1400;
-      pos[0] = SM[4] + 0x3B;
+      pos[0] = SM[SM_X_OFFSET] + 0x3B;
       BuildTextSprites(g_szPleaseCheckThat, pos, size, 0x10, TINT_HUD);
       pos[1] += 0x11;
-      pos[0] = SM[4] + 0x49;
+      pos[0] = SM[SM_X_OFFSET] + 0x49;
       BuildTextSprites(g_szTheMemoryCard, pos, size, 0x10, TINT_HUD);
       pos[1] += 0x11;
-      pos[0] = SM[4] + 0x36;
+      pos[0] = SM[SM_X_OFFSET] + 0x36;
       BuildTextSprites(g_szIsStillInPlace, pos, size, 0x10, TINT_HUD);
       break;
     case SAVE_SCREEN_FAILED:
       pos[1] = 0x35;
-      pos[0] = SM[4] + 0x56;
+      pos[0] = SM[SM_X_OFFSET] + 0x56;
       BuildTextSprites(g_szSaveFailed, pos, size, 0x12, TINT_HUD);
       pos[1] += 0x28;
-      pos[0] = SM[4] + 0x87;
+      pos[0] = SM[SM_X_OFFSET] + 0x87;
       BuildTextSprites(g_szUiRetry, pos, size, 0x12, TINT_HUD);
       pos[1] += 0x13;
-      if (SM[2] == SAVE_FAILED_RETRY) {
+      if (SM[SM_CURSOR] == SAVE_FAILED_RETRY) {
         rec = (unsigned char *)g_pSpriteRecordWriteCursor;
         n = 5;
       }
-      pos[0] = SM[4] + 0x87;
+      pos[0] = SM[SM_X_OFFSET] + 0x87;
       BuildTextSprites(g_szUiAbort, pos, size, 0x12, TINT_HUD);
-      if (SM[2] == SAVE_FAILED_ABORT) {
+      if (SM[SM_CURSOR] == SAVE_FAILED_ABORT) {
         rec = (unsigned char *)g_pSpriteRecordWriteCursor;
         n = 5;
       }
-      WAVE(rec, n, SM[1]);
+      WAVE(rec, n, SM[SM_PHASE]);
       break;
     case SAVE_SCREEN_SAVED:
       pos[1] = 0x52;
-      pos[0] = SM[4] + 0x5E;
+      pos[0] = SM[SM_X_OFFSET] + 0x5E;
       BuildTextSprites(g_szGameSaved, pos, size, 0x12, TINT_HUD);
       rec = (unsigned char *)g_pSpriteRecordWriteCursor;
-      WAVE(rec, 9, SM[1]);
+      WAVE(rec, 9, SM[SM_PHASE]);
       break;
     }
     if (g_nSaveMenuSubstate >= SAVE_SCREEN_SAVING) {
@@ -200,7 +200,7 @@ void SaveLoadMenu_Draw(void) {
     RasterizeSpritePrimQueue();
   }
   SetupFrameOT();
-  DrawPortalsAndStaticActors();
+  DrawPortalsAndSky();
   RasterizeEmitList();
   DrawCinematicLetterbox();
   DrawSync(0);

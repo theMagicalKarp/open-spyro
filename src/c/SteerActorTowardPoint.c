@@ -70,6 +70,6 @@ int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim,
   }
   RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
   ProbeActorGroundHeight(actor);
-  EncodeCachedVecToActorDirCode(actor);
+  EncodeHitNormalToActorGroundCode(actor);
   return moved;
 }

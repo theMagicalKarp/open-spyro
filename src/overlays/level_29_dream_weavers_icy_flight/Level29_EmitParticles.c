@@ -1,5 +1,5 @@
-/* Level29_EmitParticles (0x80083B8C, level_29_dream_weavers_icy_flight
- * overlay, 0xc98 bytes).
+/* Level29_EmitParticles (0x80083b8c, level_29_dream_weavers_icy_flight overlay,
+ * 0xda8 bytes).
  *
  * Push `count` particle records of effect `type` onto the emit list (the
  * 0x20-byte record stream that RasterizeEmitList walks each frame).

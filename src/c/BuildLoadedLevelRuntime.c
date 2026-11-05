@@ -160,7 +160,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_nCameraNextMode = CAM_MODE_STAND;
     g_anCameraActiveTargetParams[2] = 0x600;
     g_pCameraTargetParams = g_anCameraActiveTargetParams;
-    g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
+    g_nCameraParamsReferenceYaw = g_nSpyroBodyYaw;
     ResetCameraStateToTarget();
     g_nScreenFadeLevel = 0x20;
   }
@@ -177,8 +177,8 @@ emitlist:
   g_anSpyroFlameRibbonTexWords[1] = p[1];
   FillWord(g_abSpyroShadowRingHeights, 0, 0x28);
   p += 2;
-  g_anEntitySpikeTexWords[0] = p[0];
-  g_anEntitySpikeTexWords[1] = p[1];
+  g_anActorShadowTexWords[0] = p[0];
+  g_anActorShadowTexWords[1] = p[1];
   p += 2;
   g_anLevelSpriteTexWordPairs[0] = p[2];
   g_anLevelSpriteTexWordPairs[1] = p[3];
@@ -415,7 +415,7 @@ sprites:
       CopyVector(pos, &g_pActorListBase[i].posX);
       pos[2] += 0x400;
       FindGroundHeightBelow(pos, 0x10000);
-      EncodeCachedVecToActorDirCode(&g_pActorListBase[i]);
+      EncodeHitNormalToActorGroundCode(&g_pActorListBase[i]);
       type = g_pActorListBase[i].killGroup;
       if (((unsigned int)(type & 0x7F)) < 0x20) {
         register int runBit asm("$5");

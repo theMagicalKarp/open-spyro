@@ -1,6 +1,6 @@
 /* portal.h — the level portals listed by g_apPortals (g_nPortalCount
  * entries), unpacked from the level bundle by UnpackWorldDataChunks and drawn
- * by DrawPortalsAndStaticActors as a swirling ring (g_nPortalViewYawSpin / PitchTilt).
+ * by DrawPortalsAndSky as a swirling ring (g_nPortalSkyYawSpin / PitchTilt).
  * Entry word 6 is the portal's actor (its path is where Spyro glides out) and
  * word 7 the level it leads to: returning from a level, TickLevelTransitionStream
  * finds the portal whose word 7 is g_nReturnPortalLevelId and places Spyro
@@ -8,6 +8,8 @@
 
 #ifndef OPEN_SPYRO_PORTAL_H
 #define OPEN_SPYRO_PORTAL_H
+
+#include "sky.h"
 
 /* A hub portal's camera path (type 398's desc; g_pPortalCamPathData): node
  * count and current node, then `count` waypoints. UpdatePortalPathCamera walks
@@ -25,19 +27,11 @@ typedef struct PortalCamPath {
   PortalCamPoint point[2]; /* 0x08 `count` of them */
 } PortalCamPath;
 
-/* One portal mesh header; only the tint word at +0x10 is read here. */
-typedef struct PortalMesh {
-  int pad00;
-  int pad04;
-  int pad08;
-  int pad0C;
-  unsigned int color; /* +0x10 */
-} PortalMesh;
 
 /* A portal: a convex ring of world-space points (its opening) that gets
    projected to screen space and stroked as an outline. */
 typedef struct Portal {
-  PortalMesh *pMesh; /* +0x00 */
+  SkyHeader *pSky;   /* +0x00 the destination level's sky */
   int nPoints;            /* +0x04 */
   int nx;                 /* +0x08 */
   int ny;                 /* +0x0c */
