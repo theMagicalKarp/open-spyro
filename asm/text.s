@@ -864,15 +864,15 @@ glabel UnpackWorldDataChunks
     /* 356C 80012D6C 4C00BFAF */  sw         $ra, 0x4C($sp)
     /* 3570 80012D70 0000C38C */  lw         $v1, 0x0($a2)
     /* 3574 80012D74 0400C624 */  addiu      $a2, $a2, 0x4
-    /* 3578 80012D78 0880043C */  lui        $a0, %hi(g_nWorldMeshCount)
-    /* 357C 80012D7C C8858424 */  addiu      $a0, $a0, %lo(g_nWorldMeshCount)
-    /* 3580 80012D80 0880013C */  lui        $at, %hi(g_pWorldMeshHeaderArray)
-    /* 3584 80012D84 C08526AC */  sw         $a2, %lo(g_pWorldMeshHeaderArray)($at)
+    /* 3578 80012D78 0880043C */  lui        $a0, %hi(g_nWorldTextureCount)
+    /* 357C 80012D7C C8858424 */  addiu      $a0, $a0, %lo(g_nWorldTextureCount)
+    /* 3580 80012D80 0880013C */  lui        $at, %hi(g_pWorldTextureLodRecords)
+    /* 3584 80012D84 C08526AC */  sw         $a2, %lo(g_pWorldTextureLodRecords)($at)
     /* 3588 80012D88 00110300 */  sll        $v0, $v1, 4
     /* 358C 80012D8C 2130C200 */  addu       $a2, $a2, $v0
     /* 3590 80012D90 000083AC */  sw         $v1, 0x0($a0)
-    /* 3594 80012D94 0880013C */  lui        $at, %hi(g_pWorldMeshVertexData)
-    /* 3598 80012D98 C48526AC */  sw         $a2, %lo(g_pWorldMeshVertexData)($at)
+    /* 3594 80012D94 0880013C */  lui        $at, %hi(g_pWorldTextureDetailRecords)
+    /* 3598 80012D98 C48526AC */  sw         $a2, %lo(g_pWorldTextureDetailRecords)($at)
     /* 359C 80012D9C 0000028E */  lw         $v0, 0x0($s0)
     /* 35A0 80012DA0 00000000 */  nop
     /* 35A4 80012DA4 21300202 */  addu       $a2, $s0, $v0
@@ -1892,8 +1892,8 @@ glabel BuildLoadedLevelRuntime
     /* 4440 80013C40 0880013C */  lui        $at, %hi(g_anSpyroFlameRibbonTexWords + 0xC)
     /* 4444 80013C44 E48622AC */  sw         $v0, %lo(g_anSpyroFlameRibbonTexWords + 0xC)($at)
     /* 4448 80013C48 0000028E */  lw         $v0, 0x0($s0)
-    /* 444C 80013C4C 0880033C */  lui        $v1, %hi(g_nWorldAnimMeshKeyframeCount)
-    /* 4450 80013C50 60856324 */  addiu      $v1, $v1, %lo(g_nWorldAnimMeshKeyframeCount)
+    /* 444C 80013C4C 0880033C */  lui        $v1, %hi(g_nWorldAnimTextureFrameCount)
+    /* 4450 80013C50 60856324 */  addiu      $v1, $v1, %lo(g_nWorldAnimTextureFrameCount)
     /* 4454 80013C54 0780013C */  lui        $at, %hi(g_anSecondaryActorTexWords)
     /* 4458 80013C58 F05622AC */  sw         $v0, %lo(g_anSecondaryActorTexWords)($at)
     /* 445C 80013C5C 0400028E */  lw         $v0, 0x4($s0)
@@ -1904,8 +1904,8 @@ glabel BuildLoadedLevelRuntime
     /* 4470 80013C70 F45622AC */  sw         $v0, %lo(g_anSecondaryActorTexWords + 0x4)($at)
     /* 4474 80013C74 0000028E */  lw         $v0, 0x0($s0)
     /* 4478 80013C78 04001026 */  addiu      $s0, $s0, 0x4
-    /* 447C 80013C7C 0880013C */  lui        $at, %hi(g_pWorldAnimMeshKeyframeList)
-    /* 4480 80013C80 648530AC */  sw         $s0, %lo(g_pWorldAnimMeshKeyframeList)($at)
+    /* 447C 80013C7C 0880013C */  lui        $at, %hi(g_pWorldAnimTextureFrameList)
+    /* 4480 80013C80 648530AC */  sw         $s0, %lo(g_pWorldAnimTextureFrameList)($at)
     /* 4484 80013C84 0C004018 */  blez       $v0, .L80013CB8
     /* 4488 80013C88 000062AC */   sw        $v0, 0x0($v1)
   .L80013C8C:
@@ -2078,8 +2078,8 @@ glabel BuildLoadedLevelRuntime
     /* 46F0 80013EF0 C94F0008 */  j          .L80013F24
     /* 46F4 80013EF4 21280002 */   addu      $a1, $s0, $zero
   .L80013EF8:
-    /* 46F8 80013EF8 0880013C */  lui        $at, %hi(g_nWorldAnimMeshKeyframeCount)
-    /* 46FC 80013EFC 608520AC */  sw         $zero, %lo(g_nWorldAnimMeshKeyframeCount)($at)
+    /* 46F8 80013EF8 0880013C */  lui        $at, %hi(g_nWorldAnimTextureFrameCount)
+    /* 46FC 80013EFC 608520AC */  sw         $zero, %lo(g_nWorldAnimTextureFrameCount)($at)
     /* 4700 80013F00 0880013C */  lui        $at, %hi(g_nWorldAnimUvCycleCount)
     /* 4704 80013F04 688520AC */  sw         $zero, %lo(g_nWorldAnimUvCycleCount)($at)
     /* 4708 80013F08 0880013C */  lui        $at, %hi(g_nWorldAnimVertexMorphCount)
@@ -27381,8 +27381,8 @@ endlabel RenderWorldChunks
 nonmatching TickWorldChunkAnimations, 0xC94
 
 glabel TickWorldChunkAnimations
-    /* 1AEFC 8002A6FC 0880193C */  lui        $t9, %hi(g_nWorldAnimMeshKeyframeCount)
-    /* 1AF00 8002A700 60853927 */  addiu      $t9, $t9, %lo(g_nWorldAnimMeshKeyframeCount)
+    /* 1AEFC 8002A6FC 0880193C */  lui        $t9, %hi(g_nWorldAnimTextureFrameCount)
+    /* 1AF00 8002A700 60853927 */  addiu      $t9, $t9, %lo(g_nWorldAnimTextureFrameCount)
     /* 1AF04 8002A704 00009820 */  addi       $t8, $a0, 0x0 /* handwritten instruction */
     /* 1AF08 8002A708 00002F8F */  lw         $t7, 0x0($t9)
     /* 1AF0C 8002A70C 04002E8F */  lw         $t6, 0x4($t9)
@@ -28244,8 +28244,8 @@ glabel ModifyWorldChunkAnimFlags
     /* 1BB90 8002B390 00008D20 */  addi       $t5, $a0, 0x0 /* handwritten instruction */
     /* 1BB94 8002B394 0000AE20 */  addi       $t6, $a1, 0x0 /* handwritten instruction */
     /* 1BB98 8002B398 0000CF20 */  addi       $t7, $a2, 0x0 /* handwritten instruction */
-    /* 1BB9C 8002B39C 0880183C */  lui        $t8, %hi(g_nWorldAnimMeshKeyframeCount)
-    /* 1BBA0 8002B3A0 60851827 */  addiu      $t8, $t8, %lo(g_nWorldAnimMeshKeyframeCount)
+    /* 1BB9C 8002B39C 0880183C */  lui        $t8, %hi(g_nWorldAnimTextureFrameCount)
+    /* 1BBA0 8002B3A0 60851827 */  addiu      $t8, $t8, %lo(g_nWorldAnimTextureFrameCount)
     /* 1BBA4 8002B3A4 48001923 */  addi       $t9, $t8, 0x48 /* handwritten instruction */
   .L8002B3A8:
     /* 1BBA8 8002B3A8 10001913 */  beq        $t8, $t9, .L8002B3EC
@@ -28280,8 +28280,8 @@ nonmatching GetWorldChunkAnimState, 0x50
 
 glabel GetWorldChunkAnimState
     /* 1BBF4 8002B3F4 006E0400 */  sll        $t5, $a0, 24
-    /* 1BBF8 8002B3F8 0880183C */  lui        $t8, %hi(g_nWorldAnimMeshKeyframeCount)
-    /* 1BBFC 8002B3FC 60851827 */  addiu      $t8, $t8, %lo(g_nWorldAnimMeshKeyframeCount)
+    /* 1BBF8 8002B3F8 0880183C */  lui        $t8, %hi(g_nWorldAnimTextureFrameCount)
+    /* 1BBFC 8002B3FC 60851827 */  addiu      $t8, $t8, %lo(g_nWorldAnimTextureFrameCount)
     /* 1BC00 8002B400 48001923 */  addi       $t9, $t8, 0x48 /* handwritten instruction */
   .L8002B404:
     /* 1BC04 8002B404 0D001913 */  beq        $t8, $t9, .L8002B43C
@@ -28315,8 +28315,8 @@ glabel SetWorldChunkAnimStep
     /* 1BC44 8002B444 00008D20 */  addi       $t5, $a0, 0x0 /* handwritten instruction */
     /* 1BC48 8002B448 0000AE20 */  addi       $t6, $a1, 0x0 /* handwritten instruction */
     /* 1BC4C 8002B44C 0000CF20 */  addi       $t7, $a2, 0x0 /* handwritten instruction */
-    /* 1BC50 8002B450 0880183C */  lui        $t8, %hi(g_nWorldAnimMeshKeyframeCount)
-    /* 1BC54 8002B454 60851827 */  addiu      $t8, $t8, %lo(g_nWorldAnimMeshKeyframeCount)
+    /* 1BC50 8002B450 0880183C */  lui        $t8, %hi(g_nWorldAnimTextureFrameCount)
+    /* 1BC54 8002B454 60851827 */  addiu      $t8, $t8, %lo(g_nWorldAnimTextureFrameCount)
     /* 1BC58 8002B458 48001923 */  addi       $t9, $t8, 0x48 /* handwritten instruction */
   .L8002B45C:
     /* 1BC5C 8002B45C 11001913 */  beq        $t8, $t9, .L8002B4A4
@@ -28351,8 +28351,8 @@ endlabel SetWorldChunkAnimStep
 nonmatching ResetWorldChunkAnimations, 0x520
 
 glabel ResetWorldChunkAnimations
-    /* 1BCAC 8002B4AC 0880193C */  lui        $t9, %hi(g_nWorldAnimMeshKeyframeCount)
-    /* 1BCB0 8002B4B0 60853927 */  addiu      $t9, $t9, %lo(g_nWorldAnimMeshKeyframeCount)
+    /* 1BCAC 8002B4AC 0880193C */  lui        $t9, %hi(g_nWorldAnimTextureFrameCount)
+    /* 1BCB0 8002B4B0 60853927 */  addiu      $t9, $t9, %lo(g_nWorldAnimTextureFrameCount)
     /* 1BCB4 8002B4B4 00002F8F */  lw         $t7, 0x0($t9)
     /* 1BCB8 8002B4B8 04002E8F */  lw         $t6, 0x4($t9)
     /* 1BCBC 8002B4BC 80780F00 */  sll        $t7, $t7, 2

@@ -22,9 +22,9 @@
    block-local (v0/v1), and pad[14] reproduces the original 0x50 frame. */
 void *UnpackWorldDataChunks(int *p, int reduced) {
   int *base;
-  int *meshCountRef;
+  int *textureCountRef;
   int i;
-  int meshCount;
+  int textureCount;
   int chunkCount;
   int visZoneCount;
   int skyZoneListCount;
@@ -33,16 +33,17 @@ void *UnpackWorldDataChunks(int *p, int reduced) {
   int portalCount;
   int pad[14];
 
-  /* section: mesh headers */
+  /* section: world textures (0x10-byte LOD UV records, then 0xA8-byte detail
+   * records) */
   base = p;
   p++;
-  meshCount = *p;
+  textureCount = *p;
   p++;
-  meshCountRef = g_anWorldMeshCountBlock;
-  g_pWorldMeshHeaderArray = p;
-  *meshCountRef = meshCount;
-  p += meshCount * 4;
-  g_pWorldMeshVertexData = p;
+  textureCountRef = g_anWorldTextureCountBlock;
+  g_pWorldTextureLodRecords = p;
+  *textureCountRef = textureCount;
+  p += textureCount * 4;
+  g_pWorldTextureDetailRecords = p;
   p = (int *)((char *)base + *base);
 
   /* section: world chunks */
@@ -54,7 +55,7 @@ void *UnpackWorldDataChunks(int *p, int reduced) {
   g_nWorldChunkCount = chunkCount;
   i = 0;
   if (chunkCount > 0) {
-    int *chunkCountRef = meshCountRef - 7; /* g_nWorldChunkCount */
+    int *chunkCountRef = textureCountRef - 7; /* g_nWorldChunkCount */
 
     do {
       int rel = *p + 4;

@@ -204,8 +204,8 @@ sprites:
   p++;
   w = *p;
   p++;
-  g_pWorldAnimMeshKeyframeList = p;
-  pcount = g_anWorldAnimMeshKeyframeCountBlock;
+  g_pWorldAnimTextureFrameList = p;
+  pcount = g_anWorldAnimTextureFrameCountBlock;
   *pcount = w;
   if ((*pcount) > 0) {
     do {
@@ -321,7 +321,7 @@ sprites:
   if (fullSetup != 0) {
     ResetWorldChunkAnimations();
   } else {
-    g_nWorldAnimMeshKeyframeCount = 0;
+    g_nWorldAnimTextureFrameCount = 0;
     g_nWorldAnimUvCycleCount = 0;
     g_nWorldAnimVertexMorphCount = 0;
     g_nWorldAnimDetailColorsCount = 0;

@@ -890,8 +890,8 @@ extern int g_nHudFrameCycleMod9;                        /* 0x80077fe8 */
 extern unsigned char g_aHudIconActorRecords[1056];              /* 0x80077fec */
 extern short g_anHudSpriteRects[128];                   /* 0x8007840c */
 extern int g_anLevelSpriteTexWordPairs[20];             /* 0x8007850c */
-extern int g_nWorldAnimMeshKeyframeCount;               /* 0x80078560 */
-extern void *g_pWorldAnimMeshKeyframeList;              /* 0x80078564 */
+extern int g_nWorldAnimTextureFrameCount;               /* 0x80078560 */
+extern void *g_pWorldAnimTextureFrameList;              /* 0x80078564 */
 extern int g_nWorldAnimUvCycleCount;                    /* 0x80078568 */
 extern void *g_pWorldAnimUvCycleList;                   /* 0x8007856c */
 /* The four deferred chunk-anim tables: TickWorldChunkAnimations only writes
@@ -912,14 +912,14 @@ extern void *g_pWorldAnimDetailColorsList;                    /* 0x8007858c */
 extern int g_nWorldAnimVertexMorphCount;                /* 0x800785a0 */
 extern void *g_pWorldAnimVertexMorphList;               /* 0x800785a4 */
 /* 0x800785a8: base of the world-table block the hand-asm probes index:
- * +0x04 g_nWorldChunkCount, +0x14 g_anTriggerRegionCount, +0x18 g_pWorldMeshHeaderArray, +0x1C
- * g_pWorldMeshVertexData, +0x2C g_pWorldCollisionHeader (world_collision.h). */
+ * +0x04 g_nWorldChunkCount, +0x14 g_anTriggerRegionCount, +0x18 g_pWorldTextureLodRecords, +0x1C
+ * g_pWorldTextureDetailRecords, +0x2C g_pWorldCollisionHeader (world_collision.h). */
 extern void *g_pWorldChunkArray;                        /* 0x800785a8 */
 extern int g_nWorldChunkCount;                          /* 0x800785ac */
 extern void *g_pTriggerRegionTable;                     /* 0x800785b8 */
-extern void *g_pWorldMeshHeaderArray;                   /* 0x800785c0 */
-extern void *g_pWorldMeshVertexData;                    /* 0x800785c4 */
-extern int g_nWorldMeshCount;                           /* 0x800785c8 */
+extern void *g_pWorldTextureLodRecords;                   /* 0x800785c0: per world texture, a 0x10-byte UV/tpage record (two 8-byte halves) */
+extern void *g_pWorldTextureDetailRecords;                    /* 0x800785c4: per world texture, a 0xA8-byte record (21 8-byte UV records, presumably 1 + 4 + 16 for the subdivided close-up draw) */
+extern int g_nWorldTextureCount;                           /* 0x800785c8 */
 extern void *g_pWorldCollisionHeader;                   /* 0x800785d4: WorldCollisionHeader * */
 extern void *g_pDrawBufA;                               /* 0x800785d8 */
 extern void *g_pDrawBufB;                               /* 0x800785dc */
@@ -1391,7 +1391,7 @@ extern int g_anHudDragonCachedCountBlock[]; /* 0x80077fcc */
 extern int g_anHudButterflyCachedBlock[]; /* 0x80077fe0 */
 extern int g_adwHudIconSpinAngleBlock[]; /* 0x80077fe4: held-base view of g_dwHudIconSpinAngle; [1] is the mod-9 HUD frame counter, [0x14c] is &g_anLevelSpriteTexWordPairs[2] */
 extern int g_anHudFrameCycleBlock[]; /* 0x80077fe8: the same block seen from g_nHudFrameCycleMod9; [0x14b] is &g_anLevelSpriteTexWordPairs[2] */
-extern int g_anWorldAnimMeshKeyframeCountBlock[]; /* 0x80078560 */
+extern int g_anWorldAnimTextureFrameCountBlock[]; /* 0x80078560 */
 extern int g_anWorldAnimUvCycleCountBlock[]; /* 0x80078568 */
 extern int g_anWorldAnimLodVertsCountBlock[]; /* 0x80078570 */
 extern int g_anWorldAnimLodColorsCountBlock[]; /* 0x80078578 */
@@ -1401,7 +1401,7 @@ extern int g_anWorldAnimVertexMorphCountBlock[]; /* 0x800785a0 */
 extern void *g_pVisZoneChunkLists; /* 0x800785b0: per visibility zone, a 0xFF-terminated list of the world chunks drawn from it (count g_nVisZoneCount); the camera's zone is the floor under it (g_nCameraVisZone) */
 extern int g_anVisZoneCountBlock[]; /* 0x800785b4: held-base view of g_nVisZoneCount */
 extern int g_anTriggerRegionCount[]; /* 0x800785bc: trigger-region count (array view; the loop bound is re-read through it) */
-extern int g_anWorldMeshCountBlock[]; /* 0x800785c8: held-base view of g_nWorldMeshCount (-7 words: g_nWorldChunkCount) */
+extern int g_anWorldTextureCountBlock[]; /* 0x800785c8: held-base view of g_nWorldTextureCount (-7 words: g_nWorldChunkCount) */
 extern int g_nWorldChunkLodDepth; /* 0x800785cc: view-depth split RenderWorldChunks reads (>> 4) to sort chunks: a chunk whose near edge (depth - radius) is closer goes on the list at g_pOtDepthBinHead0 + 0x1C00, one whose far edge (+ 0x100) is beyond it on the list at + 0x2000 (a chunk straddling it goes on both). Initialize sets 0x8000 */
 extern void *g_apDrawBufBlock2[]; /* 0x800785d8: distinct alias, fade-out pass (A23) */
 extern void *g_apDrawBufBBlock[]; /* 0x800785dc */
