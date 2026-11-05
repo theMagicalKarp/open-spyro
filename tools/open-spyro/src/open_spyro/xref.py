@@ -14,7 +14,7 @@ any surprising hit in the asm before relying on it.
     open-spyro xref data g_nSpyroCliffEdgeHint     # readers / writers by function
     open-spyro xref data 0x80077868 --size 0x20    # a raw range
     open-spyro xref callers WriteSpuRam            # jal callers (overlays included)
-    open-spyro xref audit                          # unreferenced / write-only globals
+    open-spyro xref audit                          # unreferenced / write-only / never-stored
 
 Besides loads (``R``) and stores (``W``) it reports address references
 (``&``): an address formed by ``%lo`` / a raw ``lui`` + ``addiu`` pair, a
@@ -305,8 +305,13 @@ _GLOBAL_DECL = re.compile(
 )
 
 
+_MAIN_BSS = 0x80075800  # main's .bss start (config/spyro.main.yaml)
+
+
 def audit() -> None:
-    """Flag ``include/globals.h`` globals nothing references, or that are only ever written.
+    """Flag ``include/globals.h`` globals nothing references, that are only ever written,
+    or (in main's .bss) that are read but never stored, so stay 0 unless a block copy or
+    CD read fills them.
 
     Each global covers its address up to the next seeded symbol (capped at 1 KiB),
     so a held-base read of a later field still counts. Hardware registers are skipped.
@@ -349,3 +354,5 @@ def audit() -> None:
             print(f"unreferenced {addr:#x} {name}")
         elif seen <= {"W", "A"} and "W" in seen:
             print(f"write-only   {addr:#x} {name}: {' '.join(sorted(funcs))}")
+        elif addr >= _MAIN_BSS and "R" in seen and not seen & {"W", "&"}:
+            print(f"never-stored {addr:#x} {name}")

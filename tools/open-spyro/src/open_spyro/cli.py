@@ -290,7 +290,7 @@ def xref_callers(func: Annotated[str, typer.Argument(help="function name")]) -> 
 
 @xref_app.command("audit")
 def xref_audit() -> None:
-    """globals.h globals nothing references, or that are only ever written."""
+    """globals.h globals nothing references, only ever written, or (.bss) never stored."""
     xref.audit()
 
 
