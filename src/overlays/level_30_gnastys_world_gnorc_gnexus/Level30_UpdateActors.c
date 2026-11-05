@@ -664,7 +664,7 @@ void Level30_UpdateActors(void) {
       }
 
       if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
-        if (st->attach != 0xFF) {
+        if (st->attach != ROT_BILLBOARD_NONE) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
             RotateVectorByMatrix(&actor->mtx[0], &g_anRotBillboardOffset5,
@@ -677,7 +677,7 @@ void Level30_UpdateActors(void) {
                         g_aRotBillboards[st->attach].pos, &actor->posX);
 
           if (g_aRotBillboards[st->attach].life < 5) {
-            st->attach = 0xFF;
+            st->attach = ROT_BILLBOARD_NONE;
           }
         } else if (st->timer >= 0xF8) {
           int handle = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset3);
@@ -1507,14 +1507,14 @@ void Level30_UpdateActors(void) {
           }
         }
 
-        if (st->attach != 0xFF) {
+        if (st->attach != ROT_BILLBOARD_NONE) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           RotateVectorByMatrix(&actor->mtx[0], &g_anRotBillboardOffset4,
                         g_aRotBillboards[st->attach].pos);
           AddVector(g_aRotBillboards[st->attach].pos,
                         g_aRotBillboards[st->attach].pos, &actor->posX);
           if (g_aRotBillboards[st->attach].life < 5) {
-            st->attach = 0xFF;
+            st->attach = ROT_BILLBOARD_NONE;
           }
         } else if (st->timer >= 0xF8) {
           int handle = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset4);

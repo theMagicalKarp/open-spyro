@@ -267,7 +267,7 @@ typedef struct FollowState {
 typedef struct KeyState {
   short timer;          /* 0x00 */
   unsigned char angle;  /* 0x02 */
-  unsigned char attach; /* 0x03 attached spark billboard, 0xFF = none */
+  unsigned char attach; /* 0x03 attached glint (g_aRotBillboards index), ROT_BILLBOARD_NONE = none */
 } KeyState;
 
 /* Case 195 — the same chest with a wobble pose played before it breaks. */

@@ -23,4 +23,8 @@ typedef struct RotBillboard {
  * billboard is left to fade where it spawned. */
 #define ROT_BILLBOARD_ATTACH_RANGE 0x4000
 
+/* An actor state's `attach` handle (g_aRotBillboards index) while it has
+ * no glint attached. */
+#define ROT_BILLBOARD_NONE 0xFF
+
 #endif /* OPEN_SPYRO_ROT_BILLBOARD_H */
