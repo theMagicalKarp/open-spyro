@@ -1435,9 +1435,9 @@ extern unsigned char g_bSpyroAnimLayer1Frame; /* 0x80078a79 */
 extern unsigned int g_adwSpyroTriggerEventBlock[]; /* 0x80078a84: held-base view of g_dwSpyroTriggerEventFlags */
 extern int g_anSpyroFlamePhaseBlock[]; /* 0x80078ab8 */
 extern int g_nSpyroFlameLayer1State; /* 0x80078ac0 */
-extern int g_nSpyroAnimLayer2Phase; /* 0x80078ac4: 0 = tracking the primary anim */
-extern int g_nSpyroAnimLayer2Rate; /* 0x80078ac8: frame advance per tick */
-extern int g_nSpyroAnimLayer2Active; /* 0x80078acc: layer-2 anim now playing */
+extern int g_nSpyroAnimLayer2Phase; /* 0x80078ac4: 0 = tracking the primary anim; never stored (xref audit), so always 0 */
+extern int g_nSpyroAnimLayer2Rate; /* 0x80078ac8: frame advance per tick; never stored (xref audit) */
+extern int g_nSpyroAnimLayer2Active; /* 0x80078acc: layer-2 anim now playing; never stored (xref audit), so always 0 */
 extern int g_nSpyroStateTimer_blk[]; /* 0x80078ad8: held-base view of g_nSpyroStateTimer (clamp/increment sites) */
 extern int g_anSpyroAirborneFramesBlock[]; /* 0x80078af4: held-base view of g_nSpyroAirborneFrames */
 extern int g_anSpyroGroundNormalPost[]; /* 0x80078afc */
