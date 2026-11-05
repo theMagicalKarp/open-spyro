@@ -344,7 +344,7 @@ void Level30_UpdateActors(void) {
             EBB_BREAK();
             step = actor->posZ - ProbeActorGroundHeight(actor);
 
-            if (step < 0x12C) {
+            if (step < BUTTERFLY_FLUTTER_MIN_HEIGHT) {
               st->vz = RandomIntInRange(0xA, 0x19);
               st->climbTimer = RandomIntInRange(0x50, 0x8C);
             }
@@ -408,7 +408,7 @@ void Level30_UpdateActors(void) {
             EBB_BREAK();
             step = actor->posZ - ProbeActorGroundHeight(actor);
 
-            if (step < 0xC8) {
+            if (step < BUTTERFLY_CIRCLE_MIN_HEIGHT) {
               st->vz = RandomIntInRange(5, 0x14);
               st->climbTimer = RandomIntInRange(0x28, 0x50);
             }

@@ -392,12 +392,12 @@ void Level22_UpdateActors(void) {
 
           refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
-          if (refHeight < 300) {
+          if (refHeight < BUTTERFLY_FLUTTER_MIN_HEIGHT) {
             st->vz = RandomIntInRange(10, 25);
             st->climbTimer = RandomIntInRange(80, 140);
           }
 
-          if (1024 < refHeight && refHeight < 2048) {
+          if (BUTTERFLY_FLUTTER_MAX_HEIGHT < refHeight && refHeight < BUTTERFLY_DROP_HEIGHT) {
             st->vz = -RandomIntInRange(10, 25);
             st->climbTimer = RandomIntInRange(80, 140);
           }
@@ -448,12 +448,12 @@ void Level22_UpdateActors(void) {
 
           refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
-          if (refHeight < 200) {
+          if (refHeight < BUTTERFLY_CIRCLE_MIN_HEIGHT) {
             st->vz = RandomIntInRange(5, 20);
             st->climbTimer = RandomIntInRange(40, 80);
           }
 
-          if (1000 < refHeight && refHeight < 2048) {
+          if (BUTTERFLY_CIRCLE_MAX_HEIGHT < refHeight && refHeight < BUTTERFLY_DROP_HEIGHT) {
             st->vz = -RandomIntInRange(5, 20);
             st->climbTimer = RandomIntInRange(40, 80);
           }

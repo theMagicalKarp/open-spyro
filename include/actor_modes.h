@@ -128,6 +128,17 @@ enum ButterflyMode {
 #define BUTTERFLY_CALL_RANGE 2400
 #define BUTTERFLY_CALL_DZ 1800
 #define BUTTERFLY_LEASH 2000
+/* Height bands over the ground (ProbeActorGroundHeight): a fluttering
+ * butterfly climbs when below FLUTTER_MIN_HEIGHT and sinks when above
+ * FLUTTER_MAX_HEIGHT, a circling one uses CIRCLE_MIN / MAX; at DROP_HEIGHT or
+ * more it is over a drop and keeps its height. */
+#define BUTTERFLY_FLUTTER_MIN_HEIGHT 300
+#define BUTTERFLY_FLUTTER_MAX_HEIGHT 1024
+#define BUTTERFLY_CIRCLE_MIN_HEIGHT 200
+#define BUTTERFLY_CIRCLE_MAX_HEIGHT 1000
+#define BUTTERFLY_DROP_HEIGHT 2048
+/* ButterflyState.offscreenTimer seed: frames it keeps fluttering undrawn. */
+#define BUTTERFLY_OFFSCREEN_FRAMES 0x708
 
 /* ->mode of a seed pod (ACTOR_TYPE_SEED_POD, SeedPodState). */
 enum SeedPodMode {

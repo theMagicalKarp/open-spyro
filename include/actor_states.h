@@ -71,8 +71,9 @@ typedef struct DragonStatueState {
 } DragonStatueState;
 
 /* Type 16 (ACTOR_TYPE_BUTTERFLY): flutters about its spawn point, turning
- * and climbing on random timers and staying 0..0x7D0 out from home and
- * 300..1024 above the ground. SpawnActor seeds offscreenTimer with 0x708:
+ * and climbing on random timers and staying within BUTTERFLY_LEASH of home and
+ * BUTTERFLY_FLUTTER_MIN..MAX_HEIGHT above the ground. SpawnActor seeds
+ * offscreenTimer with BUTTERFLY_OFFSCREEN_FRAMES:
  * until it runs out the butterfly flutters even when it was not drawn last
  * frame, after that only while drawn. Sparx eating it (BUTTERFLY_CIRCLE)
  * makes it circle Spyro on the side circleDir picks. */

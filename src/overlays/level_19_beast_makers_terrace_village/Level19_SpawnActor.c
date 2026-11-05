@@ -100,7 +100,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     CopyVector(st->home, pos);
     st->climbTimer = 0;
     st->headingTimer = 0;
-    st->offscreenTimer = 0x708;
+    st->offscreenTimer = BUTTERFLY_OFFSCREEN_FRAMES;
     break;
   }
 
