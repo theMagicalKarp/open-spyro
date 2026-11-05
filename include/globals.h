@@ -892,14 +892,21 @@ extern int g_nWorldAnimMeshKeyframeCount;               /* 0x80078560 */
 extern void *g_pWorldAnimMeshKeyframeList;              /* 0x80078564 */
 extern int g_nWorldAnimUvCycleCount;                    /* 0x80078568 */
 extern void *g_pWorldAnimUvCycleList;                   /* 0x8007856c */
-extern int g_nWorldAnimColor0Count;                     /* 0x80078570 */
-extern void *g_pWorldAnimColor0List;                    /* 0x80078574 */
-extern int g_nWorldAnimColor1Count;                     /* 0x80078578 */
-extern void *g_pWorldAnimColor1List;                    /* 0x8007857c */
-extern int g_nWorldAnimColor2Count;                     /* 0x80078580 */
-extern void *g_pWorldAnimColor2List;                    /* 0x80078584 */
-extern int g_nWorldAnimColor3Count;                     /* 0x80078588 */
-extern void *g_pWorldAnimColor3List;                    /* 0x8007858c */
+/* The four deferred chunk-anim tables: TickWorldChunkAnimations only writes
+ * the due keyframe index into the chunk (bytes 0x18..0x1B, 0xFF = none);
+ * RenderWorldChunks applies it when it draws the chunk and clears the byte.
+ * Vertex frames are packed 11/11/10-bit positions lerped with intpl, colour
+ * frames RGB words lerped with dpcs. "Lod" = the far mesh (counts at chunk
+ * +0x10, drawn from the + 0x2000 list), "Detail" = the near mesh (counts at
+ * +0x14, offset by byte 0x17, drawn from the + 0x1C00 list). */
+extern int g_nWorldAnimLodVertsCount;                     /* 0x80078570 */
+extern void *g_pWorldAnimLodVertsList;                    /* 0x80078574 */
+extern int g_nWorldAnimLodColorsCount;                     /* 0x80078578 */
+extern void *g_pWorldAnimLodColorsList;                    /* 0x8007857c */
+extern int g_nWorldAnimDetailVertsCount;                     /* 0x80078580 */
+extern void *g_pWorldAnimDetailVertsList;                    /* 0x80078584 */
+extern int g_nWorldAnimDetailColorsCount;                     /* 0x80078588 */
+extern void *g_pWorldAnimDetailColorsList;                    /* 0x8007858c */
 extern int g_nWorldAnimVertexMorphCount;                /* 0x800785a0 */
 extern void *g_pWorldAnimVertexMorphList;               /* 0x800785a4 */
 /* 0x800785a8: base of the world-table block the hand-asm probes index:
@@ -1384,10 +1391,10 @@ extern int g_adwHudIconSpinAngleBlock[]; /* 0x80077fe4: held-base view of g_dwHu
 extern int g_anHudFrameCycleBlock[]; /* 0x80077fe8: the same block seen from g_nHudFrameCycleMod9; [0x14b] is &g_anLevelSpriteTexWordPairs[2] */
 extern int g_anWorldAnimMeshKeyframeCountBlock[]; /* 0x80078560 */
 extern int g_anWorldAnimUvCycleCountBlock[]; /* 0x80078568 */
-extern int g_anWorldAnimColor0CountBlock[]; /* 0x80078570 */
-extern int g_anWorldAnimColor1CountBlock[]; /* 0x80078578 */
-extern int g_anWorldAnimColor2CountBlock[]; /* 0x80078580 */
-extern int g_anWorldAnimColor3CountBlock[]; /* 0x80078588 */
+extern int g_anWorldAnimLodVertsCountBlock[]; /* 0x80078570 */
+extern int g_anWorldAnimLodColorsCountBlock[]; /* 0x80078578 */
+extern int g_anWorldAnimDetailVertsCountBlock[]; /* 0x80078580 */
+extern int g_anWorldAnimDetailColorsCountBlock[]; /* 0x80078588 */
 extern int g_anWorldAnimVertexMorphCountBlock[]; /* 0x800785a0 */
 extern void *g_pVisZoneChunkLists; /* 0x800785b0: per visibility zone, a 0xFF-terminated list of the world chunks drawn from it (count g_nVisZoneCount); the camera's zone is the floor under it (g_nCameraVisZone) */
 extern int g_anVisZoneCountBlock[]; /* 0x800785b4: held-base view of g_nVisZoneCount */

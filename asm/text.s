@@ -1947,15 +1947,15 @@ glabel BuildLoadedLevelRuntime
   .L80013D10:
     /* 4510 80013D10 21880000 */  addu       $s1, $zero, $zero
     /* 4514 80013D14 0000A28C */  lw         $v0, 0x0($a1)
-    /* 4518 80013D18 0880033C */  lui        $v1, %hi(g_nWorldAnimColor2Count)
-    /* 451C 80013D1C 80856324 */  addiu      $v1, $v1, %lo(g_nWorldAnimColor2Count)
+    /* 4518 80013D18 0880033C */  lui        $v1, %hi(g_nWorldAnimDetailVertsCount)
+    /* 451C 80013D1C 80856324 */  addiu      $v1, $v1, %lo(g_nWorldAnimDetailVertsCount)
     /* 4520 80013D20 2180A200 */  addu       $s0, $a1, $v0
     /* 4524 80013D24 21280002 */  addu       $a1, $s0, $zero
     /* 4528 80013D28 04001026 */  addiu      $s0, $s0, 0x4
     /* 452C 80013D2C 0000028E */  lw         $v0, 0x0($s0)
     /* 4530 80013D30 04001026 */  addiu      $s0, $s0, 0x4
-    /* 4534 80013D34 0880013C */  lui        $at, %hi(g_pWorldAnimColor2List)
-    /* 4538 80013D38 848530AC */  sw         $s0, %lo(g_pWorldAnimColor2List)($at)
+    /* 4534 80013D34 0880013C */  lui        $at, %hi(g_pWorldAnimDetailVertsList)
+    /* 4538 80013D38 848530AC */  sw         $s0, %lo(g_pWorldAnimDetailVertsList)($at)
     /* 453C 80013D3C 0C004018 */  blez       $v0, .L80013D70
     /* 4540 80013D40 000062AC */   sw        $v0, 0x0($v1)
   .L80013D44:
@@ -1972,15 +1972,15 @@ glabel BuildLoadedLevelRuntime
     /* 456C 80013D6C 21880000 */  addu       $s1, $zero, $zero
   .L80013D70:
     /* 4570 80013D70 0000A28C */  lw         $v0, 0x0($a1)
-    /* 4574 80013D74 0880033C */  lui        $v1, %hi(g_nWorldAnimColor0Count)
-    /* 4578 80013D78 70856324 */  addiu      $v1, $v1, %lo(g_nWorldAnimColor0Count)
+    /* 4574 80013D74 0880033C */  lui        $v1, %hi(g_nWorldAnimLodVertsCount)
+    /* 4578 80013D78 70856324 */  addiu      $v1, $v1, %lo(g_nWorldAnimLodVertsCount)
     /* 457C 80013D7C 2180A200 */  addu       $s0, $a1, $v0
     /* 4580 80013D80 21280002 */  addu       $a1, $s0, $zero
     /* 4584 80013D84 04001026 */  addiu      $s0, $s0, 0x4
     /* 4588 80013D88 0000028E */  lw         $v0, 0x0($s0)
     /* 458C 80013D8C 04001026 */  addiu      $s0, $s0, 0x4
-    /* 4590 80013D90 0880013C */  lui        $at, %hi(g_pWorldAnimColor0List)
-    /* 4594 80013D94 748530AC */  sw         $s0, %lo(g_pWorldAnimColor0List)($at)
+    /* 4590 80013D90 0880013C */  lui        $at, %hi(g_pWorldAnimLodVertsList)
+    /* 4594 80013D94 748530AC */  sw         $s0, %lo(g_pWorldAnimLodVertsList)($at)
     /* 4598 80013D98 0B004018 */  blez       $v0, .L80013DC8
     /* 459C 80013D9C 000062AC */   sw        $v0, 0x0($v1)
   .L80013DA0:
@@ -2022,15 +2022,15 @@ glabel BuildLoadedLevelRuntime
     /* 4624 80013E24 21880000 */  addu       $s1, $zero, $zero
   .L80013E28:
     /* 4628 80013E28 0000A28C */  lw         $v0, 0x0($a1)
-    /* 462C 80013E2C 0880033C */  lui        $v1, %hi(g_nWorldAnimColor3Count)
-    /* 4630 80013E30 88856324 */  addiu      $v1, $v1, %lo(g_nWorldAnimColor3Count)
+    /* 462C 80013E2C 0880033C */  lui        $v1, %hi(g_nWorldAnimDetailColorsCount)
+    /* 4630 80013E30 88856324 */  addiu      $v1, $v1, %lo(g_nWorldAnimDetailColorsCount)
     /* 4634 80013E34 2180A200 */  addu       $s0, $a1, $v0
     /* 4638 80013E38 21280002 */  addu       $a1, $s0, $zero
     /* 463C 80013E3C 04001026 */  addiu      $s0, $s0, 0x4
     /* 4640 80013E40 0000028E */  lw         $v0, 0x0($s0)
     /* 4644 80013E44 04001026 */  addiu      $s0, $s0, 0x4
-    /* 4648 80013E48 0880013C */  lui        $at, %hi(g_pWorldAnimColor3List)
-    /* 464C 80013E4C 8C8530AC */  sw         $s0, %lo(g_pWorldAnimColor3List)($at)
+    /* 4648 80013E48 0880013C */  lui        $at, %hi(g_pWorldAnimDetailColorsList)
+    /* 464C 80013E4C 8C8530AC */  sw         $s0, %lo(g_pWorldAnimDetailColorsList)($at)
     /* 4650 80013E50 0B004018 */  blez       $v0, .L80013E80
     /* 4654 80013E54 000062AC */   sw        $v0, 0x0($v1)
   .L80013E58:
@@ -2047,15 +2047,15 @@ glabel BuildLoadedLevelRuntime
   .L80013E80:
     /* 4680 80013E80 21880000 */  addu       $s1, $zero, $zero
     /* 4684 80013E84 0000A28C */  lw         $v0, 0x0($a1)
-    /* 4688 80013E88 0880033C */  lui        $v1, %hi(g_nWorldAnimColor1Count)
-    /* 468C 80013E8C 78856324 */  addiu      $v1, $v1, %lo(g_nWorldAnimColor1Count)
+    /* 4688 80013E88 0880033C */  lui        $v1, %hi(g_nWorldAnimLodColorsCount)
+    /* 468C 80013E8C 78856324 */  addiu      $v1, $v1, %lo(g_nWorldAnimLodColorsCount)
     /* 4690 80013E90 2180A200 */  addu       $s0, $a1, $v0
     /* 4694 80013E94 21280002 */  addu       $a1, $s0, $zero
     /* 4698 80013E98 04001026 */  addiu      $s0, $s0, 0x4
     /* 469C 80013E9C 0000028E */  lw         $v0, 0x0($s0)
     /* 46A0 80013EA0 04001026 */  addiu      $s0, $s0, 0x4
-    /* 46A4 80013EA4 0880013C */  lui        $at, %hi(g_pWorldAnimColor1List)
-    /* 46A8 80013EA8 7C8530AC */  sw         $s0, %lo(g_pWorldAnimColor1List)($at)
+    /* 46A4 80013EA4 0880013C */  lui        $at, %hi(g_pWorldAnimLodColorsList)
+    /* 46A8 80013EA8 7C8530AC */  sw         $s0, %lo(g_pWorldAnimLodColorsList)($at)
     /* 46AC 80013EAC 0B004018 */  blez       $v0, .L80013EDC
     /* 46B0 80013EB0 000062AC */   sw        $v0, 0x0($v1)
   .L80013EB4:
@@ -2084,10 +2084,10 @@ glabel BuildLoadedLevelRuntime
     /* 4704 80013F04 688520AC */  sw         $zero, %lo(g_nWorldAnimUvCycleCount)($at)
     /* 4708 80013F08 0880013C */  lui        $at, %hi(g_nWorldAnimVertexMorphCount)
     /* 470C 80013F0C A08520AC */  sw         $zero, %lo(g_nWorldAnimVertexMorphCount)($at)
-    /* 4710 80013F10 0880013C */  lui        $at, %hi(g_nWorldAnimColor3Count)
-    /* 4714 80013F14 888520AC */  sw         $zero, %lo(g_nWorldAnimColor3Count)($at)
-    /* 4718 80013F18 0880013C */  lui        $at, %hi(g_nWorldAnimColor1Count)
-    /* 471C 80013F1C 788520AC */  sw         $zero, %lo(g_nWorldAnimColor1Count)($at)
+    /* 4710 80013F10 0880013C */  lui        $at, %hi(g_nWorldAnimDetailColorsCount)
+    /* 4714 80013F14 888520AC */  sw         $zero, %lo(g_nWorldAnimDetailColorsCount)($at)
+    /* 4718 80013F18 0880013C */  lui        $at, %hi(g_nWorldAnimLodColorsCount)
+    /* 471C 80013F1C 788520AC */  sw         $zero, %lo(g_nWorldAnimLodColorsCount)($at)
     /* 4720 80013F20 21280002 */  addu       $a1, $s0, $zero
   .L80013F24:
     /* 4724 80013F24 04001026 */  addiu      $s0, $s0, 0x4

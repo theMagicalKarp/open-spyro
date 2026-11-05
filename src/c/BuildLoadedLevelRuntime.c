@@ -238,8 +238,8 @@ sprites:
   p++;
   w = *p;
   p++;
-  g_pWorldAnimColor2List = p;
-  pcount = g_anWorldAnimColor2CountBlock;
+  g_pWorldAnimDetailVertsList = p;
+  pcount = g_anWorldAnimDetailVertsCountBlock;
   *pcount = w;
   if ((*pcount) > 0) {
     do {
@@ -255,8 +255,8 @@ sprites:
   p++;
   w = *p;
   p++;
-  g_pWorldAnimColor0List = p;
-  pcount = g_anWorldAnimColor0CountBlock;
+  g_pWorldAnimLodVertsList = p;
+  pcount = g_anWorldAnimLodVertsCountBlock;
   *pcount = w;
   if ((*pcount) > 0) {
     do {
@@ -289,8 +289,8 @@ sprites:
   p++;
   w = *p;
   p++;
-  g_pWorldAnimColor3List = p;
-  pcount = g_anWorldAnimColor3CountBlock;
+  g_pWorldAnimDetailColorsList = p;
+  pcount = g_anWorldAnimDetailColorsCountBlock;
   *pcount = w;
   if ((*pcount) > 0) {
     do {
@@ -306,8 +306,8 @@ sprites:
   p++;
   w = *p;
   p++;
-  g_pWorldAnimColor1List = p;
-  pcount = g_anWorldAnimColor1CountBlock;
+  g_pWorldAnimLodColorsList = p;
+  pcount = g_anWorldAnimLodColorsCountBlock;
   *pcount = w;
   if ((*pcount) > 0) {
     do {
@@ -324,8 +324,8 @@ sprites:
     g_nWorldAnimMeshKeyframeCount = 0;
     g_nWorldAnimUvCycleCount = 0;
     g_nWorldAnimVertexMorphCount = 0;
-    g_nWorldAnimColor3Count = 0;
-    g_nWorldAnimColor1Count = 0;
+    g_nWorldAnimDetailColorsCount = 0;
+    g_nWorldAnimLodColorsCount = 0;
   }
   base = p;
   p++;
