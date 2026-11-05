@@ -282,7 +282,7 @@ void Level16_EmitParticles(int count, int type, int *pos, int effectArg) {
       }
       break;
     }
-    case EMIT_SPEED_DUST: {
+    case EMIT_SUPERCHARGE_TRAIL: {
       rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_LIT_QUAD);
       rec->type = type;
       rec->phase = 0;
@@ -292,15 +292,15 @@ void Level16_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.toggle = 0;
       rec->u.spark.life = 0x18;
       rec->u.spark.seed = GetRandomU32();
-      if (g_nSpyroMotionSpeed >= 0x5781) {
+      if (g_nSpyroMotionSpeed > SUPERCHARGE_TRAIL_RED_SPEED) {
         rec->u.spark.r = 0xFF;
         rec->u.spark.g = 0;
         rec->u.spark.b = 0;
-      } else if (g_nSpyroMotionSpeed >= 0x4241) {
+      } else if (g_nSpyroMotionSpeed > SUPERCHARGE_TRAIL_ORANGE_SPEED) {
         rec->u.spark.r = 0xF0;
         rec->u.spark.g = 0x60;
         rec->u.spark.b = 0;
-      } else if (g_nSpyroMotionSpeed >= 0x3681) {
+      } else if (g_nSpyroMotionSpeed > SUPERCHARGE_TRAIL_YELLOW_SPEED) {
         rec->u.spark.r = 0xE0;
         rec->u.spark.g = 0xE0;
         rec->u.spark.b = 0;
