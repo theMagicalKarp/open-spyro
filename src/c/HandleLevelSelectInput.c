@@ -9,7 +9,7 @@
 
 /* Level-select (cheat menu) pad handler (0x8002d580, 0x290 bytes).
  * Square/Triangle/Circle/Cross/L1/R1/L2 pick a slot 0-6; R2 (0x1000) steps
- * g_nCurrentLevelId to the next level (wrapping past sub-level 5 into the
+ * g_nNextLevelId to the next level (wrapping past sub-level 5 into the
  * next world, and past the last level back to 10). With a world already
  * chosen, a slot press either reverts (out of range / sub-level >= 6) or
  * tears down into the level-load transition (gamestate 1, CD stream kick,
@@ -44,23 +44,23 @@ void HandleLevelSelectInput(void) {
       sel = 6;
       break;
     case PAD_UP:
-      g_nCurrentLevelId = g_nActiveLevelId + 1;
-      if (g_nCurrentLevelId % 10 >= 6) {
-        g_nCurrentLevelId = (g_nCurrentLevelId / 10 + 1) * 10;
+      g_nNextLevelId = g_nActiveLevelId + 1;
+      if (g_nNextLevelId % 10 >= 6) {
+        g_nNextLevelId = (g_nNextLevelId / 10 + 1) * 10;
       }
-      if ((unsigned int)(g_nCurrentLevelId - 10) >= 0x37U) {
-        g_nCurrentLevelId = LEVEL_ARTISANS;
+      if ((unsigned int)(g_nNextLevelId - 10) >= 0x37U) {
+        g_nNextLevelId = LEVEL_ARTISANS;
       }
-      g_nLevelSelectWorldIndex = g_nCurrentLevelId / 10;
-      sel = g_nCurrentLevelId % 10;
+      g_nLevelSelectWorldIndex = g_nNextLevelId / 10;
+      sel = g_nNextLevelId % 10;
       break;
     }
     if (sel >= 0) {
       if (g_nLevelSelectWorldIndex != 0) {
-        g_nCurrentLevelId = g_nLevelSelectWorldIndex * 10 + sel;
+        g_nNextLevelId = g_nLevelSelectWorldIndex * 10 + sel;
         g_nLevelSelectSubIndex = sel;
-        if ((unsigned int)(g_nCurrentLevelId - 10) >= 0x37U || sel >= 6) {
-          g_nCurrentLevelId = g_nActiveLevelId;
+        if ((unsigned int)(g_nNextLevelId - 10) >= 0x37U || sel >= 6) {
+          g_nNextLevelId = g_nActiveLevelId;
         } else {
           StopAllSoundExceptMask(0);
           InitLightVectorConstants();

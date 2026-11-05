@@ -86,9 +86,9 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
     if (*ready < 0) {
       break;
     }
-    g_nCurrentLevelId = data[0];
-    if (g_nCurrentLevelId > LEVEL_GNASTYS_LOOT) {
-      g_nCurrentLevelId = g_nActiveLevelId;
+    g_nNextLevelId = data[0];
+    if (g_nNextLevelId > LEVEL_GNASTYS_LOOT) {
+      g_nNextLevelId = g_nActiveLevelId;
       break;
     }
     one = 1;

@@ -24,7 +24,7 @@ enum CutsceneStreamState {
   CSTREAM_DONE = 10,
 };
 
-/* TickLevelTransitionStream: load g_nCurrentLevelId's world. */
+/* TickLevelTransitionStream: load g_nNextLevelId's world. */
 enum LevelStreamState {
   LSTREAM_DONE = -1,
   LSTREAM_PRESERVE = 0,        /* keep the chunks that survive the swap (portal / exit) */

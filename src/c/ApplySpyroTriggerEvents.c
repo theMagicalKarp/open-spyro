@@ -30,7 +30,7 @@ int ApplySpyroTriggerEvents(int events) {
   int next;
 
   ret = 0;
-  if (g_nCurrentLevelId != g_nActiveLevelId) {
+  if (g_nNextLevelId != g_nActiveLevelId) {
     return 0;
   }
   if (g_nSpyroInputLockoutCountdown != 0) {

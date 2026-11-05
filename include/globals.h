@@ -658,7 +658,7 @@ extern int g_nSpyroTurnRateAccum;            /* 0x800758a0 */
 extern int g_nSpyroSuperflameTimerSave;     /* 0x800758a4 */
 extern int g_nReturnPortalLevelId;                /* 0x800758ac: level being left (0 = none); the hub places Spyro at the portal leading to it */
 extern int g_nPrimBufferOverflowFlag;        /* 0x800758b0 */
-extern int g_nCurrentLevelId;                /* 0x800758b4 */
+extern int g_nNextLevelId;                /* 0x800758b4: the level to load next: equals g_nActiveLevelId in play; a portal / balloonist / level select / death sets it; while the two differ a transition is pending (ApplySpyroTriggerEvents and DispatchSpyroChargeStateChanges ignore events), and TickLevelTransitionStream copies it to g_nActiveLevelId on arrival */
 extern int g_nMenuDrawFrames;     /* 0x800758b8: frames the menu (PauseMenu_Draw) has drawn since entry; 0 = the entry frame, pause/sub menu input waits for 5, MenuTransition_Draw switches on it; drives the menu bob/blink phases. SpyroStateDelay_Update reuses it as its pass count */
 extern int g_nPortalCount;              /* 0x800758bc */
 extern int g_nSpyroFallReferenceZ;           /* 0x800758c0 */

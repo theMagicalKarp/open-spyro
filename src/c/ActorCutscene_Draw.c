@@ -12,7 +12,7 @@
    Only substates 4 and 5 draw the card; every other substate hands the frame
    to the handler installed at g_pfnActorCutsceneSubstateDraw. The card text is
    "<world>" for the first five hub arrivals, and "<world> <level>" past that,
-   indexed out of g_apWorldNames by g_nCurrentLevelId / 10 (world); the level
+   indexed out of g_apWorldNames by g_nNextLevelId / 10 (world); the level
    form indexes [world * 6 + level + 2], which runs past the eight world names
    into g_apLevelNameStrings[(world - 1) * 6 + level]. The string
    is centred by its glyph count (7px each) and handed to BuildTextSprites; the
@@ -57,13 +57,12 @@ void ActorCutscene_Draw(void) {
 
       variant = *(volatile int *)&g_nActorCutsceneCardVariant;
       if (variant < 5) {
-        sprintf(buf, g_szEnteringWorldFmt,
-                g_apWorldNames[g_nCurrentLevelId / 10]);
+        sprintf(buf, g_szEnteringWorldFmt, g_apWorldNames[g_nNextLevelId / 10]);
       } else if (variant == 5) {
-        sprintf(buf, g_szEnteringFmt, g_apWorldNames[g_nCurrentLevelId / 10]);
+        sprintf(buf, g_szEnteringFmt, g_apWorldNames[g_nNextLevelId / 10]);
       } else {
-        world = g_nCurrentLevelId / 10;
-        level = g_nCurrentLevelId - world * 10;
+        world = g_nNextLevelId / 10;
+        level = g_nNextLevelId - world * 10;
         sprintf(buf, g_szEnteringFmt, g_apWorldNames[world * 6 + level + 2]);
       }
 

@@ -10,7 +10,7 @@
 /* 0x8001973c — the level-entry/exit banner and post-level treasure tally
    (2324 b), drawn by LevelTransition_Draw.
 
-   The banner line is built from g_nCurrentLevelId: level 0 of a world is
+   The banner line is built from g_nNextLevelId: level 0 of a world is
    "RETURNING HOME...", the boss level (4) of a world and the Gnasty fight
    (0x3f) get the "CONFRONTING %s..." wording, everything else "ENTERING
    %s...", with the name taken from g_apLevelNameStrings at the flattened
@@ -60,12 +60,12 @@ void DrawLevelTransitionOverlay(void) {
   int y;
   int gx;
 
-  idx = (g_nCurrentLevelId / 10 - 1) * 6 + g_nCurrentLevelId % 10;
-  sub = g_nCurrentLevelId % 10;
+  idx = (g_nNextLevelId / 10 - 1) * 6 + g_nNextLevelId % 10;
+  sub = g_nNextLevelId % 10;
   if (sub == 0) {
     sprintf(buf, g_szReturningHome);
-  } else if ((g_nCurrentLevelId < LEVEL_GNORC_GNEXUS && sub == 4) ||
-             g_nCurrentLevelId == LEVEL_GNASTY_GNORC) {
+  } else if ((g_nNextLevelId < LEVEL_GNORC_GNEXUS && sub == 4) ||
+             g_nNextLevelId == LEVEL_GNASTY_GNORC) {
     sprintf(buf, g_szConfrontingFmt, g_apLevelNameStrings[idx]);
   } else {
     sprintf(buf, g_szEnteringDotsFmt, g_apLevelNameStrings[idx]);

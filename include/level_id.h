@@ -1,4 +1,4 @@
-/* level_id.h — level ids (g_nActiveLevelId, g_nCurrentLevelId).
+/* level_id.h — level ids (g_nActiveLevelId, g_nNextLevelId).
  *
  * A level id is world * 10 + n: n = 0 is the world's home, 1..4 its
  * levels (4 the boss in the first five worlds) and 5 its flight level,

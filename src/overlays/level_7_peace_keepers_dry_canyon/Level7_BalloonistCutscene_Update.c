@@ -408,12 +408,12 @@ void Level7_BalloonistCutscene_Update(void)
         StopAllSoundExceptMask(0);
         g_nActorCutsceneSubstate[0] = ACS_BOARD;
         g_nActorCutsceneTimer[0] = 0;
-        g_nCurrentLevelId = g_nActorCutsceneTimer[1] * 0xA;
-        if (g_nCurrentLevelId >= g_nActiveLevelId)
+        g_nNextLevelId = g_nActorCutsceneTimer[1] * 0xA;
+        if (g_nNextLevelId >= g_nActiveLevelId)
         {
-          g_nCurrentLevelId = g_nCurrentLevelId + 0xA;
+          g_nNextLevelId = g_nNextLevelId + 0xA;
         }
-        g_nActorCutsceneCardVariant = (g_nCurrentLevelId / 10) - 1;
+        g_nActorCutsceneCardVariant = (g_nNextLevelId / 10) - 1;
       }
       else
         if (((unsigned int) (t - BPAGE_CONFIRM_NEXT)) < 2)
@@ -449,8 +449,8 @@ void Level7_BalloonistCutscene_Update(void)
         g_nActorCutsceneTimer[0] = 0;
         if (g_nActorCutsceneDialogPage[0] == BPAGE_CONFIRM_NEXT)
         {
-          g_nCurrentLevelId = g_nActiveLevelId + 0xA;
-          g_nActorCutsceneCardVariant = (g_nCurrentLevelId / 10) - 1;
+          g_nNextLevelId = g_nActiveLevelId + 0xA;
+          g_nActorCutsceneCardVariant = (g_nNextLevelId / 10) - 1;
         }
       }
       else
@@ -471,17 +471,17 @@ void Level7_BalloonistCutscene_Update(void)
         }
         if (t == BPAGE_HINT_STONE_HILL)
         {
-          g_nCurrentLevelId = LEVEL_STONE_HILL;
+          g_nNextLevelId = LEVEL_STONE_HILL;
         }
         else
           if (t == BPAGE_HINT_DRY_CANYON)
         {
-          g_nCurrentLevelId = LEVEL_DRY_CANYON;
+          g_nNextLevelId = LEVEL_DRY_CANYON;
         }
         else
           if (t == BPAGE_HINT_CLIFF_TOWN)
         {
-          g_nCurrentLevelId = LEVEL_CLIFF_TOWN;
+          g_nNextLevelId = LEVEL_CLIFF_TOWN;
         }
         n = g_nActorCutsceneDialogPage_s;
         g_nActorCutsceneDialogPage_s = BPAGE_CONFIRM_HINT;

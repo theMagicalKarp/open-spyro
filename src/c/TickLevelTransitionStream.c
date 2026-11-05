@@ -117,7 +117,7 @@ void TickLevelTransitionStream(int full) {
     int world;
     int intro;
 
-    g_nActiveLevelId = g_nCurrentLevelId;
+    g_nActiveLevelId = g_nNextLevelId;
     ApplyPerLevelGlobalsTable();
     g_nPrevLevelIndex = g_nLevelIndex;
     world = g_nActiveLevelId / 10 - 1;

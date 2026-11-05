@@ -29,7 +29,7 @@ int DispatchSpyroChargeStateChanges(void) {
   int angle;
   int state;
 
-  if (g_nCurrentLevelId != g_nActiveLevelId) {
+  if (g_nNextLevelId != g_nActiveLevelId) {
     return 0;
   }
   OPAQUE_COPY(lock, &g_nSpyroInputLockoutCountdown);

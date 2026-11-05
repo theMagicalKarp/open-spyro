@@ -20,5 +20,5 @@ void BeginWorldHubReturn(void) {
   g_nPortalTransitionActive = 1;
   g_nLevelTransitionTallyActive = 1;
   g_nGamePaused = 1;
-  g_nCurrentLevelId = hub;
+  g_nNextLevelId = hub;
 }

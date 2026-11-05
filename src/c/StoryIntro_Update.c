@@ -37,7 +37,7 @@ void StoryIntro_Update(void) {
         g_nCdStreamState = LSTREAM_FRESH;
         g_nReturnPortalLevelId = 0;
         g_nPortalTransitionActive = 0;
-        g_nCurrentLevelId = g_nActiveLevelId;
+        g_nNextLevelId = g_nActiveLevelId;
       } else if (g_nTitleExitPath == TITLE_EXIT_DEMO) {
         InitNewGameState();
         g_nFlightLevelActive = 0;
@@ -45,7 +45,7 @@ void StoryIntro_Update(void) {
         g_nReturnPortalLevelId = 0;
         g_nPortalTransitionActive = 0;
         g_nActiveLevelId = g_anDemoLevelIds[g_nDemoIndex];
-        g_nCurrentLevelId = g_nActiveLevelId;
+        g_nNextLevelId = g_nActiveLevelId;
       }
       g_nCameraEulerYaw = 0x400;
       g_nCameraEulerRoll = 0;

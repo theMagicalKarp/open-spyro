@@ -8,7 +8,7 @@
    from gameplay (stop SFX first, reset the pause transition frames). Plays the
    menu-open sound (sample id at g_pLevelSampleBankHeader+0x2c), zeros the
    sub-menu scroll state, switches to gamestate 3, seats the cursor on the
-   current world (level intro index / 6), then clears the cheat-code pad-history
+   current world (g_nLevelIndex / 6), then clears the cheat-code pad-history
    ring. */
 
 void EnterInventoryMenu(int fromGameplay) {

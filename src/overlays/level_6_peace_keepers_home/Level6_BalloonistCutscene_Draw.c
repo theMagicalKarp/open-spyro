@@ -187,7 +187,7 @@ void Level6_BalloonistCutscene_Draw(void) {
           sprintf(dest, g_szGoTo, g_apWorldNameByLevelTens[g_nActiveLevelId / 10]);
         } else {
           sprintf(dest, g_szGoTo,
-                        g_apLevelNameByWorldRow[(g_nCurrentLevelId / 10) * 6 + g_nCurrentLevelId % 10]);
+                        g_apLevelNameByWorldRow[(g_nNextLevelId / 10) * 6 + g_nNextLevelId % 10]);
         }
         BuildTextSprites(dest, askPos, askColor, 0x12, TINT_HUD);
         if (g_nActorCutsceneSubstate[2] == 1) {

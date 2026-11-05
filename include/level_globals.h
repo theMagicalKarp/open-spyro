@@ -137,7 +137,7 @@ extern int g_nCdStreamState;
 extern int g_nCollisionHitNormalY;
 extern int g_nCollisionHitNormalZ;
 extern int g_nCollisionResolvedY;                        /* ..y */
-extern int g_nCurrentLevelId;                            /* current level id */
+extern int g_nNextLevelId;                            /* level to load next (globals.h) */
 extern int g_nDemoActive;
 extern int g_nExtraLives;                                /* life count, capped at 99 */
 extern int g_nFlightQuitFlag;

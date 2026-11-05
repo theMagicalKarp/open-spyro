@@ -184,7 +184,7 @@ void Level27_UpdateActors(void) {
                 g_nGamestate = GS_LEVEL_LOAD;
                 g_nGamePaused = 1;
                 g_nReturnPortalLevelId = g_nActiveLevelId;
-                g_nCurrentLevelId = g_nActiveLevelId / 10 * 10;
+                g_nNextLevelId = g_nActiveLevelId / 10 * 10;
                 g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
                 g_dwSpyroRequestMask = 0;
                 ResetSpyroEntity(RESET_SPYRO_SOFT);
