@@ -425,8 +425,8 @@ extern char *g_apBalloonistDialogueLines[108];               /* 0x8006f8c4 */
 extern unsigned char g_abPadActAlignTable[6];                         /* 0x8006fccc */
 extern void *g_pOtMergedChainHead;                           /* 0x8006fcec */
 extern void *g_pOtMergedChainTail;                           /* 0x8006fcf0 */
-extern void *g_pOtDepthBinHead0;                             /* 0x8006fcf4: the ordering table (0x1C00 bytes) and the frame scratch lists after it; its initial EXE contents are the boot title art as a run list (AddBiasToColorRuns, Initialize) */
-extern void *g_pOtDepthBinTail0;                             /* 0x8006fcf8 */
+extern void *g_apMainDrawEntityList;                             /* 0x8006fcf4: BuildRenderEntityLists' main mesh list (NULL-terminated actor pointers, read by BuildActorDrawList; cutscene draws append actors to it), and the base of the frame scratch arena whose later sub-buffers the hand-asm often reaches by offset from here (g_apActiveActorList +0x400, g_anPortalDeferredTriStack +0x800, g_anActorDrawList +0x1600, g_apSpritePrimQueue +0x2400, g_anActorShadowQueue +0x2800, g_anOtPrimSaveList +0x2A00; RenderWorldChunks' chunk lists +0x1C00 / +0x1E00 / +0x2000 reuse the actor space before the actor passes). SetupFrameOT zeroes the first 0x1C00 bytes each frame. Its initial EXE contents are the boot title art as a run list (AddBiasToColorRuns, Initialize) */
+extern void *g_pMainDrawEntityList1;                             /* 0x8006fcf8 */
 extern void *g_apActiveActorList[2];                   /* 0x800700f4: NULL-terminated pointer list of the actors updated this frame (BuildActiveActorList; TickActorAnims) */
 extern int g_anPortalDeferredTriStack[64];                    /* 0x800704f4 */
 extern int g_anActorVertSzOverflow[256];                     /* 0x800705f4 */
@@ -434,7 +434,7 @@ extern int g_anActorDepthCuedVtxColor[32];                   /* 0x80070df4 */
 extern int g_anActorDrawList[768];                           /* 0x800712f4 */
 extern void *g_apSecondaryDrawEntityList[128];               /* 0x80071ef4 */
 extern void *g_apSpritePrimQueue[256];                       /* 0x800720f4 */
-extern int g_anActorShadowQueue[128];                     /* 0x800724f4: BuildActorDrawList queues (actor, shadow size) pairs here for DrawActorDropShadows (the hand-asm reaches it as g_pOtDepthBinHead0 + 0x2800). Frame scratch: EmitSkyMeshFogged writes its depth-cued vertex colours here and the gem tally borrows it as its particle pool */
+extern int g_anActorShadowQueue[128];                     /* 0x800724f4: BuildActorDrawList queues (actor, shadow size) pairs here for DrawActorDropShadows (the hand-asm reaches it as g_apMainDrawEntityList + 0x2800). Frame scratch: EmitSkyMeshFogged writes its depth-cued vertex colours here and the gem tally borrows it as its particle pool */
 extern int g_anOtPrimSaveList[64];                           /* 0x800726f4 */
 extern int g_anCheatCodeSequences[128];                      /* 0x80072e94: 8 cheat-code button sequences, 16 pad words each, 0-terminated (CheckCheatCodeMatch); only slots 2..4 have an effect (ApplyCheatCodeEffect) */
 extern int g_nSnCrtInitFlag;                                 /* 0x800730bc */
@@ -1287,7 +1287,7 @@ extern unsigned char g_abDragonRescueFlickerPairs2Y[]; /* 0x8006f399 */
 extern short g_anDragonRescueScaleCurve[]; /* 0x8006f3c0: dragon-rescue timer scale curve */
 extern int g_anDragonRescueIconRestPos[]; /* 0x8006f3f0: HUD icon rest positions, 3 x vec3 */
 extern unsigned char g_abLevelTotalDragonsBlock[]; /* 0x8006f414: held-base view; the sized decl stays in use where the original addresses it absolutely (A240) */
-extern void *g_apOtDepthBinBlock[]; /* 0x8006fcf4 */
+extern void *g_apMainDrawEntityListBlock[]; /* 0x8006fcf4 */
 extern unsigned char g_abSpyroFlameTransitionModes[][2]; /* 0x80075264 */
 extern unsigned char g_abSpyroFlameAnimTable[]; /* 0x80075268 */
 extern unsigned short g_anGameOverCameraEulerU[]; /* 0x800752d8 g_anGameOverCameraEuler read unsigned (lhu) */
@@ -1413,7 +1413,7 @@ extern void *g_pVisZoneChunkLists; /* 0x800785b0: per visibility zone, a 0xFF-te
 extern int g_anVisZoneCountBlock[]; /* 0x800785b4: held-base view of g_nVisZoneCount */
 extern int g_anTriggerRegionCount[]; /* 0x800785bc: trigger-region count (array view; the loop bound is re-read through it) */
 extern int g_anWorldTextureCountBlock[]; /* 0x800785c8: held-base view of g_nWorldTextureCount (-7 words: g_nWorldChunkCount) */
-extern int g_nWorldChunkLodDepth; /* 0x800785cc: view-depth split RenderWorldChunks reads (>> 4) to sort chunks: a chunk whose near edge (depth - radius) is closer goes on the list at g_pOtDepthBinHead0 + 0x1C00, one whose far edge (+ 0x100) is beyond it on the list at + 0x2000 (a chunk straddling it goes on both). Initialize sets 0x8000 */
+extern int g_nWorldChunkLodDepth; /* 0x800785cc: view-depth split RenderWorldChunks reads (>> 4) to sort chunks: a chunk whose near edge (depth - radius) is closer goes on the list at g_apMainDrawEntityList + 0x1C00, one whose far edge (+ 0x100) is beyond it on the list at + 0x2000 (a chunk straddling it goes on both). Initialize sets 0x8000 */
 extern void *g_apDrawBufBlock2[]; /* 0x800785d8: distinct alias, fade-out pass (A23) */
 extern void *g_apDrawBufBBlock[]; /* 0x800785dc */
 extern void *volatile g_apPathTableBufferBlock[]; /* 0x800785e4 */

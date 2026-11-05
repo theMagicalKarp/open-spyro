@@ -25,7 +25,7 @@
    to 0..0x1000, and the fogged static mesh is re-emitted until the fade
    completes. Ends with the standard 2-vblank frame submit.
 
-   The OT bin-head pair is written through an asm-opaque copy of the block
+   The main draw list pair is written through an asm-opaque copy of the block
    address so cse keeps it as a held base; the empty volatile asm keeps the
    g_pActorCutsceneRecord load ahead of it.
 */
@@ -44,14 +44,14 @@ void ActorCutscene_Draw(void) {
   if (g_nActorCutsceneSubstate >= ACS_STREAM_WAIT) {
     if (g_nActorCutsceneSubstate < ACS_DESCEND) {
       {
-        register void **ot asm("$3");
+        register void **drawList asm("$3");
         register void *h asm("$2");
 
         h = g_pActorCutsceneRecord;
         KEEP_IN_REG(h);
-        OPAQUE_COPY(ot, g_apOtDepthBinBlock);
-        ot[1] = 0;
-        ot[0] = h;
+        OPAQUE_COPY(drawList, g_apMainDrawEntityListBlock);
+        drawList[1] = 0;
+        drawList[0] = h;
       }
       EBB_BREAK();
 
@@ -88,7 +88,7 @@ void ActorCutscene_Draw(void) {
       }
 
       BuildActorDrawList();
-      FillWord(g_apOtDepthBinBlock, 0, 0x900);
+      FillWord(g_apMainDrawEntityListBlock, 0, 0x900);
       EmitActorDrawList();
       g_apSpritePrimQueue[0] = 0;
       EnqueuePendingSpritePrims();

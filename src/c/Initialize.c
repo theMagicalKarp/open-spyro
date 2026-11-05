@@ -78,7 +78,7 @@ void Initialize(void) {
   i = 0;
   bias = -0xE0;
   do {
-    AddBiasToColorRuns(&g_pOtDepthBinHead0, g_apDrawBufBlock[0], bias);
+    AddBiasToColorRuns(&g_apMainDrawEntityList, g_apDrawBufBlock[0], bias);
     rect.w = 0x300;
     rect.x = 0;
     rect.y = 0;
@@ -131,7 +131,7 @@ hold_title:
   j = 0;
   buf2 = g_apDrawBufBlock2;
 fade_out_title:
-  AddBiasToColorRuns(&g_pOtDepthBinHead0, buf2[0], -(j + 1) << 5);
+  AddBiasToColorRuns(&g_apMainDrawEntityList, buf2[0], -(j + 1) << 5);
   rect.w = 0x300;
   rect.x = 0;
   rect.y = 0;

@@ -25,7 +25,7 @@ void Cutscene_Draw(void) {
   g_FrameDrawEnv1.b0 = b;
   BuildRenderEntityLists();
   BuildActorDrawList();
-  otHead = &g_pOtDepthBinHead0;
+  otHead = &g_apMainDrawEntityList;
   FillWord(otHead, 0, 0x900);
   EmitActorDrawList();
   FillWord(otHead, 0, 0x1c00);

@@ -27,7 +27,7 @@ void LevelTransition_Draw(void) {
   g_FrameDrawEnv1.r0 = r;
   g_FrameDrawEnv1.g0 = g;
   g_FrameDrawEnv1.b0 = b;
-  FillWord(&g_pOtDepthBinHead0, 0, 0x900);
+  FillWord(&g_apMainDrawEntityList, 0, 0x900);
   if (g_nLevelTransitionTallyActive != 0) {
     DrawLevelTransitionOverlay();
   }

@@ -329,11 +329,11 @@ void Titlescreen_Draw(void) {
   /* draw the mobys */
   BuildRenderEntityLists();
   BuildActorDrawList();
-  FillWord(g_pOtDepthBinHead0, 0, 0x900);
+  FillWord(g_apMainDrawEntityList, 0, 0x900);
   EmitActorDrawList();
 
   /* draw the environment */
-  FillWord(g_pOtDepthBinHead0, 0, 0x1C00);
+  FillWord(g_apMainDrawEntityList, 0, 0x1C00);
   g_nFarPlaneDrawDistance = 0x1c000;
   RenderWorldChunks(-1);
 

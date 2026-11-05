@@ -6183,17 +6183,17 @@ dlabel g_pOtMergedChainTail
     /* 604F0 8006FCF0 B5564A29 */ .word 0x294A56B5
 enddlabel g_pOtMergedChainTail
 
-nonmatching g_pOtDepthBinHead0
+nonmatching g_apMainDrawEntityList
 
-dlabel g_pOtDepthBinHead0
+dlabel g_apMainDrawEntityList
     /* 604F4 8006FCF4 9BA60E00 */ .word 0x000EA69B
-enddlabel g_pOtDepthBinHead0
+enddlabel g_apMainDrawEntityList
 
-nonmatching g_pOtDepthBinTail0
+nonmatching g_pMainDrawEntityList1
 
-dlabel g_pOtDepthBinTail0
+dlabel g_pMainDrawEntityList1
     /* 604F8 8006FCF8 0000000E */ .word 0x0E000000
-enddlabel g_pOtDepthBinTail0
+enddlabel g_pMainDrawEntityList1
 
 nonmatching D_8006FCFC
 

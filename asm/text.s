@@ -519,8 +519,8 @@ glabel Initialize
     /* 3078 80012878 455A000C */  jal        FillWord
     /* 307C 8001287C 00A0C634 */   ori       $a2, $a2, (0x5A000 & 0xFFFF)
   .L80012880:
-    /* 3080 80012880 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
-    /* 3084 80012884 F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
+    /* 3080 80012880 0780043C */  lui        $a0, %hi(g_apMainDrawEntityList)
+    /* 3084 80012884 F4FC8424 */  addiu      $a0, $a0, %lo(g_apMainDrawEntityList)
     /* 3088 80012888 0000058E */  lw         $a1, 0x0($s0)
     /* 308C 8001288C C95F000C */  jal        AddBiasToColorRuns
     /* 3090 80012890 21304002 */   addu      $a2, $s2, $zero
@@ -623,8 +623,8 @@ glabel Initialize
     /* 3208 80012A08 21884000 */   addu      $s1, $v0, $zero
     /* 320C 80012A0C 21800000 */  addu       $s0, $zero, $zero
   .L80012A10:
-    /* 3210 80012A10 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
-    /* 3214 80012A14 F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
+    /* 3210 80012A10 0780043C */  lui        $a0, %hi(g_apMainDrawEntityList)
+    /* 3214 80012A14 F4FC8424 */  addiu      $a0, $a0, %lo(g_apMainDrawEntityList)
     /* 3218 80012A18 01001026 */  addiu      $s0, $s0, 0x1
     /* 321C 80012A1C 23301000 */  negu       $a2, $s0
     /* 3220 80012A20 0000258E */  lw         $a1, 0x0($s1)
@@ -8743,8 +8743,8 @@ glabel ComposeFrameScene
     /* 9E9C 8001969C 1000BFAF */  sw         $ra, 0x10($sp)
     /* 9EA0 800196A0 567C000C */  jal        BuildActorDrawList
     /* 9EA4 800196A4 00000000 */   nop
-    /* 9EA8 800196A8 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
-    /* 9EAC 800196AC F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
+    /* 9EA8 800196A8 0780043C */  lui        $a0, %hi(g_apMainDrawEntityList)
+    /* 9EAC 800196AC F4FC8424 */  addiu      $a0, $a0, %lo(g_apMainDrawEntityList)
     /* 9EB0 800196B0 21280000 */  addu       $a1, $zero, $zero
     /* 9EB4 800196B4 455A000C */  jal        FillWord
     /* 9EB8 800196B8 00090624 */   addiu     $a2, $zero, 0x900
@@ -9424,8 +9424,8 @@ nonmatching LevelTransition_Draw, 0x3BC
 
 glabel LevelTransition_Draw
     /* A850 8001A050 A0FFBD27 */  addiu      $sp, $sp, -0x60
-    /* A854 8001A054 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
-    /* A858 8001A058 F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
+    /* A854 8001A054 0780043C */  lui        $a0, %hi(g_apMainDrawEntityList)
+    /* A858 8001A058 F4FC8424 */  addiu      $a0, $a0, %lo(g_apMainDrawEntityList)
     /* A85C 8001A05C 21280000 */  addu       $a1, $zero, $zero
     /* A860 8001A060 0880023C */  lui        $v0, %hi(g_dwWorldFogColor)
     /* A864 8001A064 508A4290 */  lbu        $v0, %lo(g_dwWorldFogColor)($v0)
@@ -11903,8 +11903,8 @@ glabel PauseMenu_Draw
   .L8001C574:
     /* CD74 8001C574 2062000C */  jal        EnqueuePendingSpritePrims
     /* CD78 8001C578 00000000 */   nop
-    /* CD7C 8001C57C 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
-    /* CD80 8001C580 F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
+    /* CD7C 8001C57C 0780043C */  lui        $a0, %hi(g_apMainDrawEntityList)
+    /* CD80 8001C580 F4FC8424 */  addiu      $a0, $a0, %lo(g_apMainDrawEntityList)
     /* CD84 8001C584 21280000 */  addu       $a1, $zero, $zero
     /* CD88 8001C588 455A000C */  jal        FillWord
     /* CD8C 8001C58C 00090624 */   addiu     $a2, $zero, 0x900
@@ -12167,8 +12167,8 @@ glabel MenuTransition_Draw
     /* D148 8001C948 003C010C */  jal        EmitSkyMeshFogged
     /* D14C 8001C94C 00000000 */   nop
   .L8001C950:
-    /* D150 8001C950 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
-    /* D154 8001C954 F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
+    /* D150 8001C950 0780043C */  lui        $a0, %hi(g_apMainDrawEntityList)
+    /* D154 8001C954 F4FC8424 */  addiu      $a0, $a0, %lo(g_apMainDrawEntityList)
     /* D158 8001C958 21280000 */  addu       $a1, $zero, $zero
     /* D15C 8001C95C 455A000C */  jal        FillWord
     /* D160 8001C960 00090624 */   addiu     $a2, $zero, 0x900
@@ -12670,8 +12670,8 @@ glabel DragonRescue_Draw
     /* D888 8001D088 C070A58C */  lw         $a1, %lo(g_pDragonRescueSourceActor)($a1)
     /* D88C 8001D08C 00000000 */  nop
     /* D890 8001D090 4800A290 */  lbu        $v0, 0x48($a1)
-    /* D894 8001D094 0780033C */  lui        $v1, %hi(g_pOtDepthBinHead0)
-    /* D898 8001D098 F4FC6324 */  addiu      $v1, $v1, %lo(g_pOtDepthBinHead0)
+    /* D894 8001D094 0780033C */  lui        $v1, %hi(g_apMainDrawEntityList)
+    /* D898 8001D098 F4FC6324 */  addiu      $v1, $v1, %lo(g_apMainDrawEntityList)
     /* D89C 8001D09C 8000422C */  sltiu      $v0, $v0, 0x80
     /* D8A0 8001D0A0 03004010 */  beqz       $v0, .L8001D0B0
     /* D8A4 8001D0A4 03000224 */   addiu     $v0, $zero, 0x3
@@ -12721,8 +12721,8 @@ glabel DragonRescue_Draw
     /* D940 8001D140 00000000 */   nop
     /* D944 8001D144 567C000C */  jal        BuildActorDrawList
     /* D948 8001D148 00000000 */   nop
-    /* D94C 8001D14C 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
-    /* D950 8001D150 F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
+    /* D94C 8001D14C 0780043C */  lui        $a0, %hi(g_apMainDrawEntityList)
+    /* D950 8001D150 F4FC8424 */  addiu      $a0, $a0, %lo(g_apMainDrawEntityList)
     /* D954 8001D154 21280000 */  addu       $a1, $zero, $zero
     /* D958 8001D158 455A000C */  jal        FillWord
     /* D95C 8001D15C 00090624 */   addiu     $a2, $zero, 0x900
@@ -12757,8 +12757,8 @@ glabel DragonRescue_Draw
     /* D9CC 8001D1CC 05000224 */   addiu     $v0, $zero, 0x5
     /* D9D0 8001D1D0 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueActor)
     /* D9D4 8001D1D4 B870638C */  lw         $v1, %lo(g_pDragonRescueStatueActor)($v1)
-    /* D9D8 8001D1D8 0780023C */  lui        $v0, %hi(g_pOtDepthBinHead0)
-    /* D9DC 8001D1DC F4FC4224 */  addiu      $v0, $v0, %lo(g_pOtDepthBinHead0)
+    /* D9D8 8001D1D8 0780023C */  lui        $v0, %hi(g_apMainDrawEntityList)
+    /* D9DC 8001D1DC F4FC4224 */  addiu      $v0, $v0, %lo(g_apMainDrawEntityList)
     /* D9E0 8001D1E0 000043AC */  sw         $v1, 0x0($v0)
     /* D9E4 8001D1E4 0780033C */  lui        $v1, %hi(g_pDragonRescueSpyroMirrorActor)
     /* D9E8 8001D1E8 BC70638C */  lw         $v1, %lo(g_pDragonRescueSpyroMirrorActor)($v1)
@@ -12808,8 +12808,8 @@ glabel DragonRescue_Draw
   .L8001D28C:
     /* DA8C 8001D28C 567C000C */  jal        BuildActorDrawList
     /* DA90 8001D290 00000000 */   nop
-    /* DA94 8001D294 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
-    /* DA98 8001D298 F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
+    /* DA94 8001D294 0780043C */  lui        $a0, %hi(g_apMainDrawEntityList)
+    /* DA98 8001D298 F4FC8424 */  addiu      $a0, $a0, %lo(g_apMainDrawEntityList)
     /* DA9C 8001D29C 21280000 */  addu       $a1, $zero, $zero
     /* DAA0 8001D2A0 455A000C */  jal        FillWord
     /* DAA4 8001D2A4 00090624 */   addiu     $a2, $zero, 0x900
@@ -12824,8 +12824,8 @@ glabel DragonRescue_Draw
   .L8001D2C8:
     /* DAC8 8001D2C8 64008214 */  bne        $a0, $v0, .L8001D45C
     /* DACC 8001D2CC 06000224 */   addiu     $v0, $zero, 0x6
-    /* DAD0 8001D2D0 0780023C */  lui        $v0, %hi(g_pOtDepthBinHead0)
-    /* DAD4 8001D2D4 F4FC4224 */  addiu      $v0, $v0, %lo(g_pOtDepthBinHead0)
+    /* DAD0 8001D2D0 0780023C */  lui        $v0, %hi(g_apMainDrawEntityList)
+    /* DAD4 8001D2D4 F4FC4224 */  addiu      $v0, $v0, %lo(g_apMainDrawEntityList)
     /* DAD8 8001D2D8 21280000 */  addu       $a1, $zero, $zero
     /* DADC 8001D2DC 0780033C */  lui        $v1, %hi(g_pDragonRescueStatueActor)
     /* DAE0 8001D2E0 B870638C */  lw         $v1, %lo(g_pDragonRescueStatueActor)($v1)
@@ -12916,8 +12916,8 @@ glabel DragonRescue_Draw
     /* DC30 8001D430 0780013C */  lui        $at, %hi(g_anActorDrawList + 0x26)
     /* DC34 8001D434 1A1322A4 */  sh         $v0, %lo(g_anActorDrawList + 0x26)($at)
   .L8001D438:
-    /* DC38 8001D438 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
-    /* DC3C 8001D43C F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
+    /* DC38 8001D438 0780043C */  lui        $a0, %hi(g_apMainDrawEntityList)
+    /* DC3C 8001D43C F4FC8424 */  addiu      $a0, $a0, %lo(g_apMainDrawEntityList)
     /* DC40 8001D440 21280000 */  addu       $a1, $zero, $zero
     /* DC44 8001D444 455A000C */  jal        FillWord
     /* DC48 8001D448 00090624 */   addiu     $a2, $zero, 0x900
@@ -12940,8 +12940,8 @@ glabel DragonRescue_Draw
     /* DC84 8001D484 03008228 */  slti       $v0, $a0, 0x3
     /* DC88 8001D488 FBFF4014 */  bnez       $v0, .L8001D478
     /* DC8C 8001D48C 58006324 */   addiu     $v1, $v1, 0x58
-    /* DC90 8001D490 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
-    /* DC94 8001D494 F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
+    /* DC90 8001D490 0780043C */  lui        $a0, %hi(g_apMainDrawEntityList)
+    /* DC94 8001D494 F4FC8424 */  addiu      $a0, $a0, %lo(g_apMainDrawEntityList)
     /* DC98 8001D498 21280000 */  addu       $a1, $zero, $zero
     /* DC9C 8001D49C 00090624 */  addiu      $a2, $zero, 0x900
     /* DCA0 8001D4A0 455A000C */  jal        FillWord
@@ -12997,8 +12997,8 @@ glabel DragonRescue_Draw
     /* DD50 8001D550 FBFF4014 */  bnez       $v0, .L8001D540
     /* DD54 8001D554 58008424 */   addiu     $a0, $a0, 0x58
     /* DD58 8001D558 000060AC */  sw         $zero, 0x0($v1)
-    /* DD5C 8001D55C 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
-    /* DD60 8001D560 F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
+    /* DD5C 8001D55C 0780043C */  lui        $a0, %hi(g_apMainDrawEntityList)
+    /* DD60 8001D560 F4FC8424 */  addiu      $a0, $a0, %lo(g_apMainDrawEntityList)
     /* DD64 8001D564 21280000 */  addu       $a1, $zero, $zero
     /* DD68 8001D568 455A000C */  jal        FillWord
     /* DD6C 8001D56C 00090624 */   addiu     $a2, $zero, 0x900
@@ -13011,8 +13011,8 @@ glabel DragonRescue_Draw
     /* DD84 8001D584 00000000 */   nop
     /* DD88 8001D588 567C000C */  jal        BuildActorDrawList
     /* DD8C 8001D58C 00000000 */   nop
-    /* DD90 8001D590 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
-    /* DD94 8001D594 F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
+    /* DD90 8001D590 0780043C */  lui        $a0, %hi(g_apMainDrawEntityList)
+    /* DD94 8001D594 F4FC8424 */  addiu      $a0, $a0, %lo(g_apMainDrawEntityList)
     /* DD98 8001D598 21280000 */  addu       $a1, $zero, $zero
     /* DD9C 8001D59C 455A000C */  jal        FillWord
     /* DDA0 8001D5A0 00090624 */   addiu     $a2, $zero, 0x900
@@ -13893,8 +13893,8 @@ glabel ActorCutscene_Draw
     /* EA70 8001E270 00000000 */   nop
     /* EA74 8001E274 0780023C */  lui        $v0, %hi(g_pActorCutsceneRecord)
     /* EA78 8001E278 5078428C */  lw         $v0, %lo(g_pActorCutsceneRecord)($v0)
-    /* EA7C 8001E27C 0780033C */  lui        $v1, %hi(g_pOtDepthBinHead0)
-    /* EA80 8001E280 F4FC6324 */  addiu      $v1, $v1, %lo(g_pOtDepthBinHead0)
+    /* EA7C 8001E27C 0780033C */  lui        $v1, %hi(g_apMainDrawEntityList)
+    /* EA80 8001E280 F4FC6324 */  addiu      $v1, $v1, %lo(g_apMainDrawEntityList)
     /* EA84 8001E284 040060AC */  sw         $zero, 0x4($v1)
     /* EA88 8001E288 000062AC */  sw         $v0, 0x0($v1)
     /* EA8C 8001E28C 0780033C */  lui        $v1, %hi(g_nActorCutsceneCardVariant)
@@ -14024,8 +14024,8 @@ glabel ActorCutscene_Draw
   .L8001E468:
     /* EC68 8001E468 567C000C */  jal        BuildActorDrawList
     /* EC6C 8001E46C 00000000 */   nop
-    /* EC70 8001E470 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
-    /* EC74 8001E474 F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
+    /* EC70 8001E470 0780043C */  lui        $a0, %hi(g_apMainDrawEntityList)
+    /* EC74 8001E474 F4FC8424 */  addiu      $a0, $a0, %lo(g_apMainDrawEntityList)
     /* EC78 8001E478 21280000 */  addu       $a1, $zero, $zero
     /* EC7C 8001E47C 455A000C */  jal        FillWord
     /* EC80 8001E480 00090624 */   addiu     $a2, $zero, 0x900
@@ -14426,8 +14426,8 @@ glabel Cutscene_Draw
     /* F220 8001EA20 00000000 */   nop
     /* F224 8001EA24 567C000C */  jal        BuildActorDrawList
     /* F228 8001EA28 00000000 */   nop
-    /* F22C 8001EA2C 0780103C */  lui        $s0, %hi(g_pOtDepthBinHead0)
-    /* F230 8001EA30 F4FC1026 */  addiu      $s0, $s0, %lo(g_pOtDepthBinHead0)
+    /* F22C 8001EA2C 0780103C */  lui        $s0, %hi(g_apMainDrawEntityList)
+    /* F230 8001EA30 F4FC1026 */  addiu      $s0, $s0, %lo(g_apMainDrawEntityList)
     /* F234 8001EA34 21200002 */  addu       $a0, $s0, $zero
     /* F238 8001EA38 21280000 */  addu       $a1, $zero, $zero
     /* F23C 8001EA3C 455A000C */  jal        FillWord
@@ -14959,8 +14959,8 @@ glabel BuildActorDrawList
     /* F984 8001F184 24003DAC */  sw         $sp, 0x24($at)
     /* F988 8001F188 28003EAC */  sw         $fp, 0x28($at)
     /* F98C 8001F18C 2C003FAC */  sw         $ra, 0x2C($at)
-    /* F990 8001F190 0780013C */  lui        $at, %hi(g_pOtDepthBinHead0)
-    /* F994 8001F194 F4FC2124 */  addiu      $at, $at, %lo(g_pOtDepthBinHead0)
+    /* F990 8001F190 0780013C */  lui        $at, %hi(g_apMainDrawEntityList)
+    /* F994 8001F194 F4FC2124 */  addiu      $at, $at, %lo(g_apMainDrawEntityList)
     /* F998 8001F198 00003F20 */  addi       $ra, $at, 0x0 /* handwritten instruction */
     /* F99C 8001F19C 00163E20 */  addi       $fp, $at, 0x1600 /* handwritten instruction */
     /* F9A0 8001F1A0 00282120 */  addi       $at, $at, 0x2800 /* handwritten instruction */
@@ -15331,8 +15331,8 @@ glabel BuildActorDrawList
     /* FF1C 8001F71C 2800CAAF */  sw         $t2, 0x28($fp)
     /* FF20 8001F720 3800C123 */  addi       $at, $fp, 0x38 /* handwritten instruction */
     /* FF24 8001F724 38002120 */  addi       $at, $at, 0x38 /* handwritten instruction */
-    /* FF28 8001F728 0780023C */  lui        $v0, %hi(g_pOtDepthBinHead0)
-    /* FF2C 8001F72C F4FC4224 */  addiu      $v0, $v0, %lo(g_pOtDepthBinHead0)
+    /* FF28 8001F728 0780023C */  lui        $v0, %hi(g_apMainDrawEntityList)
+    /* FF2C 8001F72C F4FC4224 */  addiu      $v0, $v0, %lo(g_apMainDrawEntityList)
     /* FF30 8001F730 00224220 */  addi       $v0, $v0, 0x2200 /* handwritten instruction */
     /* FF34 8001F734 22084100 */  sub        $at, $v0, $at /* handwritten instruction */
     /* FF38 8001F738 2C00CBA7 */  sh         $t3, 0x2C($fp)
@@ -16614,8 +16614,8 @@ glabel BuildSecondaryActorDrawList
     /* 11134 80020934 0780013C */  lui        $at, %hi(g_anActorShadowTexWords)
     /* 11138 80020938 F85E2124 */  addiu      $at, $at, %lo(g_anActorShadowTexWords)
     /* 1113C 8002093C 0800218C */  lw         $at, 0x8($at)
-    /* 11140 80020940 07801E3C */  lui        $fp, %hi(g_pOtDepthBinHead0)
-    /* 11144 80020944 F4FCDE27 */  addiu      $fp, $fp, %lo(g_pOtDepthBinHead0)
+    /* 11140 80020940 07801E3C */  lui        $fp, %hi(g_apMainDrawEntityList)
+    /* 11144 80020944 F4FCDE27 */  addiu      $fp, $fp, %lo(g_apMainDrawEntityList)
     /* 11148 80020948 0022DF23 */  addi       $ra, $fp, 0x2200 /* handwritten instruction */
     /* 1114C 8002094C 0016DE23 */  addi       $fp, $fp, 0x1600 /* handwritten instruction */
     /* 11150 80020950 13002000 */  mtlo       $at
@@ -18938,8 +18938,8 @@ glabel RasterizeSpritePrimQueue
     /* 13258 80022A58 24003DAC */  sw         $sp, 0x24($at)
     /* 1325C 80022A5C 28003EAC */  sw         $fp, 0x28($at)
     /* 13260 80022A60 2C003FAC */  sw         $ra, 0x2C($at)
-    /* 13264 80022A64 07801F3C */  lui        $ra, %hi(g_pOtDepthBinHead0)
-    /* 13268 80022A68 F4FCFF27 */  addiu      $ra, $ra, %lo(g_pOtDepthBinHead0)
+    /* 13264 80022A64 07801F3C */  lui        $ra, %hi(g_apMainDrawEntityList)
+    /* 13268 80022A68 F4FCFF27 */  addiu      $ra, $ra, %lo(g_apMainDrawEntityList)
     /* 1326C 80022A6C 0024FF23 */  addi       $ra, $ra, 0x2400 /* handwritten instruction */
     /* 13270 80022A70 07801D3C */  lui        $sp, %hi(g_anActorShadowTexWords)
     /* 13274 80022A74 F85EBD27 */  addiu      $sp, $sp, %lo(g_anActorShadowTexWords)
@@ -19384,8 +19384,8 @@ glabel RasterizeSpritePrimQueue
     /* 138FC 800230FC 0800D48E */   lw        $s4, 0x8($s6)
     /* 13900 80023100 0000D582 */  lb         $s5, 0x0($s6)
     /* 13904 80023104 4C00D18F */  lw         $s1, 0x4C($fp)
-    /* 13908 80023108 0780143C */  lui        $s4, %hi(g_pOtDepthBinHead0)
-    /* 1390C 8002310C F4FC9426 */  addiu      $s4, $s4, %lo(g_pOtDepthBinHead0)
+    /* 13908 80023108 0780143C */  lui        $s4, %hi(g_apMainDrawEntityList)
+    /* 1390C 8002310C F4FC9426 */  addiu      $s4, $s4, %lo(g_apMainDrawEntityList)
     /* 13910 80023110 002A9422 */  addi       $s4, $s4, 0x2A00 /* handwritten instruction */
     /* 13914 80023114 80A81500 */  sll        $s5, $s5, 2
     /* 13918 80023118 20A8B402 */  add        $s5, $s5, $s4 /* handwritten instruction */
@@ -19475,8 +19475,8 @@ glabel RasterizeSpritePrimQueue
   .L80023254:
     /* 13A54 80023254 BCFF9516 */  bne        $s4, $s5, .L80023148
     /* 13A58 80023258 FCFF84AE */   sw        $a0, -0x4($s4)
-    /* 13A5C 8002325C 0780143C */  lui        $s4, %hi(g_pOtDepthBinHead0)
-    /* 13A60 80023260 F4FC9426 */  addiu      $s4, $s4, %lo(g_pOtDepthBinHead0)
+    /* 13A5C 8002325C 0780143C */  lui        $s4, %hi(g_apMainDrawEntityList)
+    /* 13A60 80023260 F4FC9426 */  addiu      $s4, $s4, %lo(g_apMainDrawEntityList)
     /* 13A64 80023264 002A9422 */  addi       $s4, $s4, 0x2A00 /* handwritten instruction */
   .L80023268:
     /* 13A68 80023268 4C00C18F */  lw         $at, 0x4C($fp)
@@ -19489,8 +19489,8 @@ glabel RasterizeSpritePrimQueue
     /* 13A84 80023284 B0572124 */  addiu      $at, $at, %lo(g_pPrimBufferWriteCursor)
     /* 13A88 80023288 00E0D948 */  ctc2       $t9, $28 /* handwritten instruction */
     /* 13A8C 8002328C 0000398C */  lw         $t9, 0x0($at)
-    /* 13A90 80023290 0780113C */  lui        $s1, %hi(g_pOtDepthBinHead0)
-    /* 13A94 80023294 F4FC3126 */  addiu      $s1, $s1, %lo(g_pOtDepthBinHead0)
+    /* 13A90 80023290 0780113C */  lui        $s1, %hi(g_apMainDrawEntityList)
+    /* 13A94 80023294 F4FC3126 */  addiu      $s1, $s1, %lo(g_apMainDrawEntityList)
     /* 13A98 80023298 00003122 */  addi       $s1, $s1, 0x0 /* handwritten instruction */
     /* 13A9C 8002329C 00093222 */  addi       $s2, $s1, 0x900 /* handwritten instruction */
     /* 13AA0 800232A0 00003322 */  addi       $s3, $s1, 0x0 /* handwritten instruction */
@@ -28707,8 +28707,8 @@ nonmatching SetupFrameOT, 0x9C
 
 glabel SetupFrameOT
     /* 1C1CC 8002B9CC E8FFBD27 */  addiu      $sp, $sp, -0x18
-    /* 1C1D0 8002B9D0 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
-    /* 1C1D4 8002B9D4 F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
+    /* 1C1D0 8002B9D0 0780043C */  lui        $a0, %hi(g_apMainDrawEntityList)
+    /* 1C1D4 8002B9D4 F4FC8424 */  addiu      $a0, $a0, %lo(g_apMainDrawEntityList)
     /* 1C1D8 8002B9D8 21280000 */  addu       $a1, $zero, $zero
     /* 1C1DC 8002B9DC 1000BFAF */  sw         $ra, 0x10($sp)
     /* 1C1E0 8002B9E0 4C5A000C */  jal        FillBlock16
@@ -65436,8 +65436,8 @@ glabel CollideSphereWithWorldAndActors
     /* 3C69C 8004BE9C 12280000 */  mflo       $a1
     /* 3C6A0 8004BEA0 5400A5AE */  sw         $a1, (0x1F800054 & 0xFFFF)($s5)
     /* 3C6A4 8004BEA4 5C00A6AE */  sw         $a2, (0x1F80005C & 0xFFFF)($s5)
-    /* 3C6A8 8004BEA8 0780063C */  lui        $a2, %hi(g_pOtDepthBinHead0)
-    /* 3C6AC 8004BEAC F4FCC624 */  addiu      $a2, $a2, %lo(g_pOtDepthBinHead0)
+    /* 3C6A8 8004BEA8 0780063C */  lui        $a2, %hi(g_apMainDrawEntityList)
+    /* 3C6AC 8004BEAC F4FCC624 */  addiu      $a2, $a2, %lo(g_apMainDrawEntityList)
     /* 3C6B0 8004BEB0 5800A6AE */  sw         $a2, (0x1F800058 & 0xFFFF)($s5)
     /* 3C6B4 8004BEB4 00000220 */  addi       $v0, $zero, 0x0 /* handwritten instruction */
     /* 3C6B8 8004BEB8 22083603 */  sub        $at, $t9, $s6 /* handwritten instruction */
@@ -66272,8 +66272,8 @@ glabel CollideSphereWithWorldAndActors
     /* 3D2E4 8004CAE4 0780043C */  lui        $a0, %hi(D_80075774)
     /* 3D2E8 8004CAE8 74578424 */  addiu      $a0, $a0, %lo(D_80075774)
     /* 3D2EC 8004CAEC 5800A58E */  lw         $a1, (0x1F800058 & 0xFFFF)($s5)
-    /* 3D2F0 8004CAF0 0780063C */  lui        $a2, %hi(g_pOtDepthBinHead0)
-    /* 3D2F4 8004CAF4 F4FCC624 */  addiu      $a2, $a2, %lo(g_pOtDepthBinHead0)
+    /* 3D2F0 8004CAF0 0780063C */  lui        $a2, %hi(g_apMainDrawEntityList)
+    /* 3D2F4 8004CAF4 F4FCC624 */  addiu      $a2, $a2, %lo(g_apMainDrawEntityList)
     /* 3D2F8 8004CAF8 2228A600 */  sub        $a1, $a1, $a2 /* handwritten instruction */
     /* 3D2FC 8004CAFC 02290500 */  srl        $a1, $a1, 4
     /* 3D300 8004CB00 000085AC */  sw         $a1, 0x0($a0)
@@ -66998,8 +66998,8 @@ glabel CollideSphereWithWorldAndActors_Tail
     /* 3DD8C 8004D58C 0780043C */  lui        $a0, %hi(D_80075774)
     /* 3DD90 8004D590 74578424 */  addiu      $a0, $a0, %lo(D_80075774)
     /* 3DD94 8004D594 5800A58E */  lw         $a1, (0x1F800058 & 0xFFFF)($s5)
-    /* 3DD98 8004D598 0780063C */  lui        $a2, %hi(g_pOtDepthBinHead0)
-    /* 3DD9C 8004D59C F4FCC624 */  addiu      $a2, $a2, %lo(g_pOtDepthBinHead0)
+    /* 3DD98 8004D598 0780063C */  lui        $a2, %hi(g_apMainDrawEntityList)
+    /* 3DD9C 8004D59C F4FCC624 */  addiu      $a2, $a2, %lo(g_apMainDrawEntityList)
     /* 3DDA0 8004D5A0 2228A600 */  sub        $a1, $a1, $a2 /* handwritten instruction */
     /* 3DDA4 8004D5A4 02290500 */  srl        $a1, $a1, 4
     /* 3DDA8 8004D5A8 000085AC */  sw         $a1, 0x0($a0)
@@ -68580,8 +68580,8 @@ glabel EmitSkyMesh
     /* 3F414 8004EC14 0880013C */  lui        $at, %hi(g_nSkyChunkCount)
     /* 3F418 8004EC18 408A2124 */  addiu      $at, $at, %lo(g_nSkyChunkCount)
     /* 3F41C 8004EC1C 00008F20 */  addi       $t7, $a0, 0x0 /* handwritten instruction */
-    /* 3F420 8004EC20 07800D3C */  lui        $t5, %hi(g_pOtDepthBinHead0)
-    /* 3F424 8004EC24 F4FCAD25 */  addiu      $t5, $t5, %lo(g_pOtDepthBinHead0)
+    /* 3F420 8004EC20 07800D3C */  lui        $t5, %hi(g_apMainDrawEntityList)
+    /* 3F424 8004EC24 F4FCAD25 */  addiu      $t5, $t5, %lo(g_apMainDrawEntityList)
     /* 3F428 8004EC28 0000AD21 */  addi       $t5, $t5, 0x0 /* handwritten instruction */
     /* 3F42C 8004EC2C 0600E005 */  bltz       $t7, .L8004EC48
     /* 3F430 8004EC30 04002B8C */   lw        $t3, 0x4($at)
@@ -68647,8 +68647,8 @@ glabel EmitSkyMesh
     /* 3F50C 8004ED0C 07801E3C */  lui        $fp, %hi(g_pPrimBufferWriteCursor)
     /* 3F510 8004ED10 B057DE27 */  addiu      $fp, $fp, %lo(g_pPrimBufferWriteCursor)
     /* 3F514 8004ED14 0000DE8F */  lw         $fp, 0x0($fp)
-    /* 3F518 8004ED18 07801F3C */  lui        $ra, %hi(g_pOtDepthBinHead0)
-    /* 3F51C 8004ED1C F4FCFF27 */  addiu      $ra, $ra, %lo(g_pOtDepthBinHead0)
+    /* 3F518 8004ED18 07801F3C */  lui        $ra, %hi(g_apMainDrawEntityList)
+    /* 3F51C 8004ED1C F4FCFF27 */  addiu      $ra, $ra, %lo(g_apMainDrawEntityList)
     /* 3F520 8004ED20 0000FF23 */  addi       $ra, $ra, 0x0 /* handwritten instruction */
     /* 3F524 8004ED24 0780183C */  lui        $t8, %hi(g_pPrimBufferLimit)
     /* 3F528 8004ED28 80571827 */  addiu      $t8, $t8, %lo(g_pPrimBufferLimit)
@@ -68887,8 +68887,8 @@ glabel EmitSkyMeshFogged
     /* 3F870 8004F070 0038C048 */  ctc2       $zero, $7 /* handwritten instruction */
     /* 3F874 8004F074 0880013C */  lui        $at, %hi(g_nSkyChunkCount)
     /* 3F878 8004F078 408A2124 */  addiu      $at, $at, %lo(g_nSkyChunkCount)
-    /* 3F87C 8004F07C 07800D3C */  lui        $t5, %hi(g_pOtDepthBinHead0)
-    /* 3F880 8004F080 F4FCAD25 */  addiu      $t5, $t5, %lo(g_pOtDepthBinHead0)
+    /* 3F87C 8004F07C 07800D3C */  lui        $t5, %hi(g_apMainDrawEntityList)
+    /* 3F880 8004F080 F4FCAD25 */  addiu      $t5, $t5, %lo(g_apMainDrawEntityList)
     /* 3F884 8004F084 0000AD21 */  addi       $t5, $t5, 0x0 /* handwritten instruction */
     /* 3F888 8004F088 04002B8C */  lw         $t3, 0x4($at)
     /* 3F88C 8004F08C 0000218C */  lw         $at, 0x0($at)
@@ -68935,8 +68935,8 @@ glabel EmitSkyMeshFogged
     /* 3F928 8004F128 07801E3C */  lui        $fp, %hi(g_pPrimBufferWriteCursor)
     /* 3F92C 8004F12C B057DE27 */  addiu      $fp, $fp, %lo(g_pPrimBufferWriteCursor)
     /* 3F930 8004F130 0000DE8F */  lw         $fp, 0x0($fp)
-    /* 3F934 8004F134 07801F3C */  lui        $ra, %hi(g_pOtDepthBinHead0)
-    /* 3F938 8004F138 F4FCFF27 */  addiu      $ra, $ra, %lo(g_pOtDepthBinHead0)
+    /* 3F934 8004F134 07801F3C */  lui        $ra, %hi(g_apMainDrawEntityList)
+    /* 3F938 8004F138 F4FCFF27 */  addiu      $ra, $ra, %lo(g_apMainDrawEntityList)
     /* 3F93C 8004F13C 0000FF23 */  addi       $ra, $ra, 0x0 /* handwritten instruction */
     /* 3F940 8004F140 0780183C */  lui        $t8, %hi(g_pPrimBufferLimit)
     /* 3F944 8004F144 80571827 */  addiu      $t8, $t8, %lo(g_pPrimBufferLimit)
@@ -68970,8 +68970,8 @@ glabel EmitSkyMeshFogged
     /* 3F9B0 8004F1B0 0780013C */  lui        $at, %hi(g_dwSkyFadeColor)
     /* 3F9B4 8004F1B4 D4572124 */  addiu      $at, $at, %lo(g_dwSkyFadeColor)
     /* 3F9B8 8004F1B8 0000218C */  lw         $at, 0x0($at)
-    /* 3F9BC 8004F1BC 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
-    /* 3F9C0 8004F1C0 F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
+    /* 3F9BC 8004F1BC 0780043C */  lui        $a0, %hi(g_apMainDrawEntityList)
+    /* 3F9C0 8004F1C0 F4FC8424 */  addiu      $a0, $a0, %lo(g_apMainDrawEntityList)
     /* 3F9C4 8004F1C4 00288420 */  addi       $a0, $a0, 0x2800 /* handwritten instruction */
     /* 3F9C8 8004F1C8 FF002230 */  andi       $v0, $at, 0xFF
     /* 3F9CC 8004F1CC 00110200 */  sll        $v0, $v0, 4
@@ -69064,8 +69064,8 @@ glabel EmitSkyMeshFogged
     /* 3FB10 8004F310 F8FF5422 */  addi       $s4, $s2, -0x8 /* handwritten instruction */
     /* 3FB14 8004F314 82AB0C00 */  srl        $s5, $t4, 14
     /* 3FB18 8004F318 20A8B402 */  add        $s5, $s5, $s4 /* handwritten instruction */
-    /* 3FB1C 8004F31C 0780143C */  lui        $s4, %hi(g_pOtDepthBinHead0)
-    /* 3FB20 8004F320 F4FC9426 */  addiu      $s4, $s4, %lo(g_pOtDepthBinHead0)
+    /* 3FB1C 8004F31C 0780143C */  lui        $s4, %hi(g_apMainDrawEntityList)
+    /* 3FB20 8004F320 F4FC9426 */  addiu      $s4, $s4, %lo(g_apMainDrawEntityList)
     /* 3FB24 8004F324 00289422 */  addi       $s4, $s4, 0x2800 /* handwritten instruction */
     /* 3FB28 8004F328 C0B00C00 */  sll        $s6, $t4, 3
     /* 3FB2C 8004F32C F8FFD632 */  andi       $s6, $s6, 0xFFF8
@@ -69214,8 +69214,8 @@ glabel EmitPortalSky
     /* 3FD24 8004F524 0038C048 */  ctc2       $zero, $7 /* handwritten instruction */
     /* 3FD28 8004F528 04008B8C */  lw         $t3, 0x4($a0)
     /* 3FD2C 8004F52C 0000818C */  lw         $at, 0x0($a0)
-    /* 3FD30 8004F530 07800D3C */  lui        $t5, %hi(g_pOtDepthBinHead0)
-    /* 3FD34 8004F534 F4FCAD25 */  addiu      $t5, $t5, %lo(g_pOtDepthBinHead0)
+    /* 3FD30 8004F530 07800D3C */  lui        $t5, %hi(g_apMainDrawEntityList)
+    /* 3FD34 8004F534 F4FCAD25 */  addiu      $t5, $t5, %lo(g_apMainDrawEntityList)
     /* 3FD38 8004F538 0000AD21 */  addi       $t5, $t5, 0x0 /* handwritten instruction */
     /* 3FD3C 8004F53C 80080100 */  sll        $at, $at, 2
     /* 3FD40 8004F540 20606101 */  add        $t4, $t3, $at /* handwritten instruction */
@@ -69259,8 +69259,8 @@ glabel EmitPortalSky
     /* 3FDD0 8004F5D0 07801E3C */  lui        $fp, %hi(g_pPrimBufferWriteCursor)
     /* 3FDD4 8004F5D4 B057DE27 */  addiu      $fp, $fp, %lo(g_pPrimBufferWriteCursor)
     /* 3FDD8 8004F5D8 0000DE8F */  lw         $fp, 0x0($fp)
-    /* 3FDDC 8004F5DC 07801F3C */  lui        $ra, %hi(g_pOtDepthBinHead0)
-    /* 3FDE0 8004F5E0 F4FCFF27 */  addiu      $ra, $ra, %lo(g_pOtDepthBinHead0)
+    /* 3FDDC 8004F5DC 07801F3C */  lui        $ra, %hi(g_apMainDrawEntityList)
+    /* 3FDE0 8004F5E0 F4FCFF27 */  addiu      $ra, $ra, %lo(g_apMainDrawEntityList)
     /* 3FDE4 8004F5E4 0000FF23 */  addi       $ra, $ra, 0x0 /* handwritten instruction */
     /* 3FDE8 8004F5E8 0400DE23 */  addi       $fp, $fp, 0x4 /* handwritten instruction */
     /* 3FDEC 8004F5EC 0000DC23 */  addi       $gp, $fp, 0x0 /* handwritten instruction */
@@ -69733,8 +69733,8 @@ glabel ClipAndEmitPortalSkyTriangle_Tail
     /* 40498 8004FC98 0780043C */  lui        $a0, %hi(g_pPortalDeferredTriStackTop)
     /* 4049C 8004FC9C 98578424 */  addiu      $a0, $a0, %lo(g_pPortalDeferredTriStackTop)
     /* 404A0 8004FCA0 00008B8C */  lw         $t3, 0x0($a0)
-    /* 404A4 8004FCA4 07800A3C */  lui        $t2, %hi(g_pOtDepthBinHead0)
-    /* 404A8 8004FCA8 F4FC4A25 */  addiu      $t2, $t2, %lo(g_pOtDepthBinHead0)
+    /* 404A4 8004FCA4 07800A3C */  lui        $t2, %hi(g_apMainDrawEntityList)
+    /* 404A8 8004FCA8 F4FC4A25 */  addiu      $t2, $t2, %lo(g_apMainDrawEntityList)
     /* 404AC 8004FCAC 00084A21 */  addi       $t2, $t2, 0x800 /* handwritten instruction */
     /* 404B0 8004FCB0 0D004B11 */  beq        $t2, $t3, .L8004FCE8
     /* 404B4 8004FCB4 E4FF6B21 */   addi      $t3, $t3, -0x1C /* handwritten instruction */
@@ -69753,8 +69753,8 @@ glabel ClipAndEmitPortalSkyTriangle_Tail
   .L8004FCE8:
     /* 404E8 8004FCE8 07800B3C */  lui        $t3, %hi(g_pPortalDeferredTriStackTop)
     /* 404EC 8004FCEC 98576B25 */  addiu      $t3, $t3, %lo(g_pPortalDeferredTriStackTop)
-    /* 404F0 8004FCF0 07800A3C */  lui        $t2, %hi(g_pOtDepthBinHead0)
-    /* 404F4 8004FCF4 F4FC4A25 */  addiu      $t2, $t2, %lo(g_pOtDepthBinHead0)
+    /* 404F0 8004FCF0 07800A3C */  lui        $t2, %hi(g_apMainDrawEntityList)
+    /* 404F4 8004FCF4 F4FC4A25 */  addiu      $t2, $t2, %lo(g_apMainDrawEntityList)
     /* 404F8 8004FCF8 00084A21 */  addi       $t2, $t2, 0x800 /* handwritten instruction */
     /* 404FC 8004FCFC 0780043C */  lui        $a0, %hi(g_anStaticRegSaveArea)
     /* 40500 8004FD00 D87D8424 */  addiu      $a0, $a0, %lo(g_anStaticRegSaveArea)
@@ -69907,8 +69907,8 @@ glabel EmitPortalColorFill
     /* 406EC 8004FEEC 02000F34 */  ori        $t7, $zero, 0x2
     /* 406F0 8004FEF0 07800B3C */  lui        $t3, %hi(g_anFogFullScreenTriPairSxy)
     /* 406F4 8004FEF4 8CCB6B25 */  addiu      $t3, $t3, %lo(g_anFogFullScreenTriPairSxy)
-    /* 406F8 8004FEF8 0780113C */  lui        $s1, %hi(g_pOtDepthBinHead0)
-    /* 406FC 8004FEFC F4FC3126 */  addiu      $s1, $s1, %lo(g_pOtDepthBinHead0)
+    /* 406F8 8004FEF8 0780113C */  lui        $s1, %hi(g_apMainDrawEntityList)
+    /* 406FC 8004FEFC F4FC3126 */  addiu      $s1, $s1, %lo(g_apMainDrawEntityList)
     /* 40700 8004FF00 00083122 */  addi       $s1, $s1, 0x800 /* handwritten instruction */
     /* 40704 8004FF04 0780123C */  lui        $s2, %hi(g_pPrimBufferWriteCursor)
     /* 40708 8004FF08 B0575226 */  addiu      $s2, $s2, %lo(g_pPrimBufferWriteCursor)
@@ -69935,8 +69935,8 @@ glabel EmitPortalColorFill
     /* 40758 8004FF58 CD3F0108 */  j          .L8004FF34
     /* 4075C 8004FF5C 00000000 */   nop
   .L8004FF60:
-    /* 40760 8004FF60 07800B3C */  lui        $t3, %hi(g_pOtDepthBinHead0)
-    /* 40764 8004FF64 F4FC6B25 */  addiu      $t3, $t3, %lo(g_pOtDepthBinHead0)
+    /* 40760 8004FF60 07800B3C */  lui        $t3, %hi(g_apMainDrawEntityList)
+    /* 40764 8004FF64 F4FC6B25 */  addiu      $t3, $t3, %lo(g_apMainDrawEntityList)
     /* 40768 8004FF68 00086B21 */  addi       $t3, $t3, 0x800 /* handwritten instruction */
   .L8004FF6C:
     /* 4076C 8004FF6C A1007111 */  beq        $t3, $s1, .L800501F4
@@ -70192,8 +70192,8 @@ glabel EmitPortalSkyFogShaded
     /* 40AA8 800502A8 0038C048 */  ctc2       $zero, $7 /* handwritten instruction */
     /* 40AAC 800502AC 04008B8C */  lw         $t3, 0x4($a0)
     /* 40AB0 800502B0 0000818C */  lw         $at, 0x0($a0)
-    /* 40AB4 800502B4 07800D3C */  lui        $t5, %hi(g_pOtDepthBinHead0)
-    /* 40AB8 800502B8 F4FCAD25 */  addiu      $t5, $t5, %lo(g_pOtDepthBinHead0)
+    /* 40AB4 800502B4 07800D3C */  lui        $t5, %hi(g_apMainDrawEntityList)
+    /* 40AB8 800502B8 F4FCAD25 */  addiu      $t5, $t5, %lo(g_apMainDrawEntityList)
     /* 40ABC 800502BC 0000AD21 */  addi       $t5, $t5, 0x0 /* handwritten instruction */
     /* 40AC0 800502C0 80080100 */  sll        $at, $at, 2
     /* 40AC4 800502C4 20606101 */  add        $t4, $t3, $at /* handwritten instruction */
@@ -70237,8 +70237,8 @@ glabel EmitPortalSkyFogShaded
     /* 40B54 80050354 07801E3C */  lui        $fp, %hi(g_pPrimBufferWriteCursor)
     /* 40B58 80050358 B057DE27 */  addiu      $fp, $fp, %lo(g_pPrimBufferWriteCursor)
     /* 40B5C 8005035C 0000DE8F */  lw         $fp, 0x0($fp)
-    /* 40B60 80050360 07801F3C */  lui        $ra, %hi(g_pOtDepthBinHead0)
-    /* 40B64 80050364 F4FCFF27 */  addiu      $ra, $ra, %lo(g_pOtDepthBinHead0)
+    /* 40B60 80050360 07801F3C */  lui        $ra, %hi(g_apMainDrawEntityList)
+    /* 40B64 80050364 F4FCFF27 */  addiu      $ra, $ra, %lo(g_apMainDrawEntityList)
     /* 40B68 80050368 0000FF23 */  addi       $ra, $ra, 0x0 /* handwritten instruction */
     /* 40B6C 8005036C 0400DE23 */  addi       $fp, $fp, 0x4 /* handwritten instruction */
     /* 40B70 80050370 0000DC23 */  addi       $gp, $fp, 0x0 /* handwritten instruction */
@@ -70271,8 +70271,8 @@ glabel EmitPortalSkyFogShaded
     /* 40BD8 800503D8 0780013C */  lui        $at, %hi(g_dwSkyFadeColor)
     /* 40BDC 800503DC D4572124 */  addiu      $at, $at, %lo(g_dwSkyFadeColor)
     /* 40BE0 800503E0 0000218C */  lw         $at, 0x0($at)
-    /* 40BE4 800503E4 0780043C */  lui        $a0, %hi(g_pOtDepthBinHead0)
-    /* 40BE8 800503E8 F4FC8424 */  addiu      $a0, $a0, %lo(g_pOtDepthBinHead0)
+    /* 40BE4 800503E4 0780043C */  lui        $a0, %hi(g_apMainDrawEntityList)
+    /* 40BE8 800503E8 F4FC8424 */  addiu      $a0, $a0, %lo(g_apMainDrawEntityList)
     /* 40BEC 800503EC 00288420 */  addi       $a0, $a0, 0x2800 /* handwritten instruction */
     /* 40BF0 800503F0 FF002230 */  andi       $v0, $at, 0xFF
     /* 40BF4 800503F4 00110200 */  sll        $v0, $v0, 4
@@ -70366,8 +70366,8 @@ glabel EmitPortalSkyFogShaded
     /* 40D3C 8005053C F8FF5422 */  addi       $s4, $s2, -0x8 /* handwritten instruction */
     /* 40D40 80050540 82AB1800 */  srl        $s5, $t8, 14
     /* 40D44 80050544 20A8B402 */  add        $s5, $s5, $s4 /* handwritten instruction */
-    /* 40D48 80050548 0780143C */  lui        $s4, %hi(g_pOtDepthBinHead0)
-    /* 40D4C 8005054C F4FC9426 */  addiu      $s4, $s4, %lo(g_pOtDepthBinHead0)
+    /* 40D48 80050548 0780143C */  lui        $s4, %hi(g_apMainDrawEntityList)
+    /* 40D4C 8005054C F4FC9426 */  addiu      $s4, $s4, %lo(g_apMainDrawEntityList)
     /* 40D50 80050550 00289422 */  addi       $s4, $s4, 0x2800 /* handwritten instruction */
     /* 40D54 80050554 C0B01800 */  sll        $s6, $t8, 3
     /* 40D58 80050558 F8FFD632 */  andi       $s6, $s6, 0xFFF8
@@ -70752,8 +70752,8 @@ glabel ClipAndEmitPortalSkyFogShadedTriangle_Tail
     /* 412BC 80050ABC 0780043C */  lui        $a0, %hi(g_pPortalDeferredTriStackTop)
     /* 412C0 80050AC0 98578424 */  addiu      $a0, $a0, %lo(g_pPortalDeferredTriStackTop)
     /* 412C4 80050AC4 00008B8C */  lw         $t3, 0x0($a0)
-    /* 412C8 80050AC8 07800A3C */  lui        $t2, %hi(g_pOtDepthBinHead0)
-    /* 412CC 80050ACC F4FC4A25 */  addiu      $t2, $t2, %lo(g_pOtDepthBinHead0)
+    /* 412C8 80050AC8 07800A3C */  lui        $t2, %hi(g_apMainDrawEntityList)
+    /* 412CC 80050ACC F4FC4A25 */  addiu      $t2, $t2, %lo(g_apMainDrawEntityList)
     /* 412D0 80050AD0 00084A21 */  addi       $t2, $t2, 0x800 /* handwritten instruction */
     /* 412D4 80050AD4 0D004B11 */  beq        $t2, $t3, .L80050B0C
     /* 412D8 80050AD8 E4FF6B21 */   addi      $t3, $t3, -0x1C /* handwritten instruction */
@@ -70772,8 +70772,8 @@ glabel ClipAndEmitPortalSkyFogShadedTriangle_Tail
   .L80050B0C:
     /* 4130C 80050B0C 07800B3C */  lui        $t3, %hi(g_pPortalDeferredTriStackTop)
     /* 41310 80050B10 98576B25 */  addiu      $t3, $t3, %lo(g_pPortalDeferredTriStackTop)
-    /* 41314 80050B14 07800A3C */  lui        $t2, %hi(g_pOtDepthBinHead0)
-    /* 41318 80050B18 F4FC4A25 */  addiu      $t2, $t2, %lo(g_pOtDepthBinHead0)
+    /* 41314 80050B14 07800A3C */  lui        $t2, %hi(g_apMainDrawEntityList)
+    /* 41318 80050B18 F4FC4A25 */  addiu      $t2, $t2, %lo(g_apMainDrawEntityList)
     /* 4131C 80050B1C 00084A21 */  addi       $t2, $t2, 0x800 /* handwritten instruction */
     /* 41320 80050B20 0780043C */  lui        $a0, %hi(g_anStaticRegSaveArea)
     /* 41324 80050B24 D87D8424 */  addiu      $a0, $a0, %lo(g_anStaticRegSaveArea)
@@ -72246,8 +72246,8 @@ glabel BuildActiveActorList
     /* 42824 80052024 0000AB8D */  lw         $t3, 0x0($t5)
     /* 42828 80052028 0400AC8D */  lw         $t4, 0x4($t5)
     /* 4282C 8005202C 0800AD8D */  lw         $t5, 0x8($t5)
-    /* 42830 80052030 07800E3C */  lui        $t6, %hi(g_pOtDepthBinHead0)
-    /* 42834 80052034 F4FCCE25 */  addiu      $t6, $t6, %lo(g_pOtDepthBinHead0)
+    /* 42830 80052030 07800E3C */  lui        $t6, %hi(g_apMainDrawEntityList)
+    /* 42834 80052034 F4FCCE25 */  addiu      $t6, $t6, %lo(g_apMainDrawEntityList)
     /* 42838 80052038 0004CE21 */  addi       $t6, $t6, 0x400 /* handwritten instruction */
     /* 4283C 8005203C A8FF2120 */  addi       $at, $at, -0x58 /* handwritten instruction */
   .L80052040:
@@ -72367,8 +72367,8 @@ glabel BuildRenderEntityLists
     /* 429C0 800521C0 0780013C */  lui        $at, %hi(g_pActorListBase)
     /* 429C4 800521C4 28582124 */  addiu      $at, $at, %lo(g_pActorListBase)
     /* 429C8 800521C8 0000218C */  lw         $at, 0x0($at)
-    /* 429CC 800521CC 0780023C */  lui        $v0, %hi(g_pOtDepthBinHead0)
-    /* 429D0 800521D0 F4FC4224 */  addiu      $v0, $v0, %lo(g_pOtDepthBinHead0)
+    /* 429CC 800521CC 0780023C */  lui        $v0, %hi(g_apMainDrawEntityList)
+    /* 429D0 800521D0 F4FC4224 */  addiu      $v0, $v0, %lo(g_apMainDrawEntityList)
     /* 429D4 800521D4 00244420 */  addi       $a0, $v0, 0x2400 /* handwritten instruction */
     /* 429D8 800521D8 00224320 */  addi       $v1, $v0, 0x2200 /* handwritten instruction */
     /* 429DC 800521DC 00004220 */  addi       $v0, $v0, 0x0 /* handwritten instruction */
@@ -72442,8 +72442,8 @@ endlabel BuildRenderEntityLists
 nonmatching TickActorAnims, 0x204
 
 glabel TickActorAnims
-    /* 42AC0 800522C0 0780013C */  lui        $at, %hi(g_pOtDepthBinHead0)
-    /* 42AC4 800522C4 F4FC2124 */  addiu      $at, $at, %lo(g_pOtDepthBinHead0)
+    /* 42AC0 800522C0 0780013C */  lui        $at, %hi(g_apMainDrawEntityList)
+    /* 42AC4 800522C4 F4FC2124 */  addiu      $at, $at, %lo(g_apMainDrawEntityList)
     /* 42AC8 800522C8 13002000 */  mtlo       $at
     /* 42ACC 800522CC 00009920 */  addi       $t9, $a0, 0x0 /* handwritten instruction */
     /* 42AD0 800522D0 801F183C */  lui        $t8, (0x1F800002 >> 16)
@@ -72547,8 +72547,8 @@ glabel TickActorAnims
     /* 42C40 80052440 B8480108 */  j          .L800522E0
     /* 42C44 80052444 3C00A2AD */   sw        $v0, 0x3C($t5)
   .L80052448:
-    /* 42C48 80052448 0780013C */  lui        $at, %hi(g_pOtDepthBinHead0)
-    /* 42C4C 8005244C F4FC2124 */  addiu      $at, $at, %lo(g_pOtDepthBinHead0)
+    /* 42C48 80052448 0780013C */  lui        $at, %hi(g_apMainDrawEntityList)
+    /* 42C4C 8005244C F4FC2124 */  addiu      $at, $at, %lo(g_apMainDrawEntityList)
     /* 42C50 80052450 12200000 */  mflo       $a0
     /* 42C54 80052454 03002414 */  bne        $at, $a0, .L80052464
     /* 42C58 80052458 00000000 */   nop
@@ -81416,8 +81416,8 @@ glabel DrawActorDropShadows
     /* 4A7D8 80059FD8 140027AC */  sw         $a3, (0x1F800014 & 0xFFFF)($at)
     /* 4A7DC 80059FDC 180028AC */  sw         $t0, (0x1F800018 & 0xFFFF)($at)
     /* 4A7E0 80059FE0 1C0029AC */  sw         $t1, (0x1F80001C & 0xFFFF)($at)
-    /* 4A7E4 80059FE4 0780183C */  lui        $t8, %hi(g_pOtDepthBinHead0)
-    /* 4A7E8 80059FE8 F4FC1827 */  addiu      $t8, $t8, %lo(g_pOtDepthBinHead0)
+    /* 4A7E4 80059FE4 0780183C */  lui        $t8, %hi(g_apMainDrawEntityList)
+    /* 4A7E8 80059FE8 F4FC1827 */  addiu      $t8, $t8, %lo(g_apMainDrawEntityList)
     /* 4A7EC 80059FEC 00281823 */  addi       $t8, $t8, 0x2800 /* handwritten instruction */
     /* 4A7F0 80059FF0 0780193C */  lui        $t9, %hi(g_anActorShadowTexWords)
     /* 4A7F4 80059FF4 F85E3927 */  addiu      $t9, $t9, %lo(g_anActorShadowTexWords)

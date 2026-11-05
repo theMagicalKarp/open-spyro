@@ -13,7 +13,7 @@
  *          The highlighted entry is the one whose index equals g_nActorCutsceneMenuCursor;
  *          its glyphs get the pulse, the rest stay flat.
  *   >= 4 — append the pending OT node (g_pActorCutsceneRecord) to the depth-bin list at
- *          g_pOtDepthBinHead0 instead.
+ *          g_apMainDrawEntityList instead.
  * Every path finishes with the frame pipeline (BuildRenderEntityLists / ComposeFrameScene /
  * SetupFrameOT / DrawPortalsAndSky / RasterizeEmitList).
  *
@@ -209,7 +209,7 @@ void Level18_BalloonistCutscene_Draw(void) {
     int *node;
 
     BuildRenderEntityLists();
-    node = g_pOtDepthBinHead0;
+    node = g_apMainDrawEntityList;
     if (*node != 0) {
       do {
         node++;

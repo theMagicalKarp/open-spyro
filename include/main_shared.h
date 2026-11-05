@@ -281,7 +281,7 @@ extern unsigned char g_bSpyroAnimLayer2FramePrev;
 extern unsigned char g_bSpyroAnimLayer2Prev;
 extern unsigned int g_adwPadHeldBlock[];
 extern unsigned int g_adwPadPressedBlock[];
-extern void *g_apOtDepthBinBlock[];
+extern void *g_apMainDrawEntityListBlock[];
 extern void (*g_pfnActorCutsceneSubstateDraw)(void);
 extern void BuildSecondaryActorDrawList(void);
 extern void ClearPadHistoryRing(void);

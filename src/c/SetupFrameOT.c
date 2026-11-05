@@ -18,7 +18,7 @@
 void SetupFrameOT(void) {
   int dist;
 
-  FillBlock16(&g_pOtDepthBinHead0, 0, 0x1c00);
+  FillBlock16(&g_apMainDrawEntityList, 0, 0x1c00);
   if (g_nCameraVisZone < g_nVisZoneCount) {
     g_nFarPlaneDrawDistance = 0x28000;
     RenderWorldChunks(g_nCameraVisZone);

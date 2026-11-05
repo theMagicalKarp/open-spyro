@@ -5,13 +5,13 @@
 #include "hud.h"
 #include "main_shared.h"
 
-/* g_apSpritePrimQueue, reached from the held OT depth-bin base. */
-#define SPRITE_PRIM_QUEUE (&g_apOtDepthBinBlock[2304])
+/* g_apSpritePrimQueue, reached from the held main-draw-list base. */
+#define SPRITE_PRIM_QUEUE (&g_apMainDrawEntityListBlock[2304])
 
 /* Draw for gamestate 8 (GS_DRAGON_RESCUE, 0x8001cfdc, 0x73c).
 
    The dragon-rescue presentation, one arm per g_nDragonRescueSubstate. Substate
-   0 is still an ordinary gameplay frame; 1-3 hand-build the OT head list from
+   0 is still an ordinary gameplay frame; 1-3 hand-build the main draw list from
    the rescuing actor (plus the statue once the statue arm is live) and sweep
    the actor pool for the 0xfb marker actors that go into the sprite queue; 4
    does the same around the statue + Spyro mirror pair and shows the name banner
@@ -51,16 +51,16 @@ void DragonRescue_Draw(void) {
   } else if (g_nDragonRescueSubstate < DRAGON_RESCUE_CAMERA_PATH) {
     Actor *act;
     unsigned char id;
-    void **ot;
+    void **drawList;
     void **q;
-    ot = g_apOtDepthBinBlock;
+    drawList = g_apMainDrawEntityListBlock;
     if (((Actor *)g_pDragonRescueSourceActor)->mode < ACTOR_MODE_DORMANT) {
-      *ot++ = g_pDragonRescueSourceActor;
+      *drawList++ = g_pDragonRescueSourceActor;
     }
     if (g_nDragonRescueSubstate == DRAGON_RESCUE_TURN) {
-      *ot++ = g_pDragonRescueStatueActor;
+      *drawList++ = g_pDragonRescueStatueActor;
     }
-    *ot = 0;
+    *drawList = 0;
     act = g_pActorListBase;
     q = SPRITE_PRIM_QUEUE;
     id = act->mode;
@@ -75,7 +75,7 @@ void DragonRescue_Draw(void) {
     DrawDragonRescuedBanner();
     EnqueuePendingSpritePrims();
     BuildActorDrawList();
-    FillWord(&g_pOtDepthBinHead0, 0, 0x900);
+    FillWord(&g_apMainDrawEntityList, 0, 0x900);
     EmitActorDrawList();
     RasterizeSpritePrimQueue();
     DrawActorDropShadows();
@@ -96,12 +96,12 @@ void DragonRescue_Draw(void) {
   } else if (g_nDragonRescueSubstate == DRAGON_RESCUE_CAMERA_PATH) {
     Actor *act;
     unsigned char id;
-    void **ot;
+    void **drawList;
     void **q;
-    ot = g_apOtDepthBinBlock;
-    *ot++ = g_pDragonRescueStatueActor;
-    *ot++ = g_pDragonRescueSpyroMirrorActor;
-    *ot = 0;
+    drawList = g_apMainDrawEntityListBlock;
+    *drawList++ = g_pDragonRescueStatueActor;
+    *drawList++ = g_pDragonRescueSpyroMirrorActor;
+    *drawList = 0;
     q = SPRITE_PRIM_QUEUE;
     act = g_pActorListBase;
     id = act->mode;
@@ -118,7 +118,7 @@ void DragonRescue_Draw(void) {
       EnqueuePendingSpritePrims();
     }
     BuildActorDrawList();
-    FillWord(&g_pOtDepthBinHead0, 0, 0x900);
+    FillWord(&g_apMainDrawEntityList, 0, 0x900);
     EmitActorDrawList();
     RasterizeSpritePrimQueue();
     DrawActorDropShadows();
@@ -130,13 +130,13 @@ void DragonRescue_Draw(void) {
       DrawCinematicLetterbox();
     }
   } else if (g_nDragonRescueSubstate == DRAGON_RESCUE_LIGHT_UP) {
-    void **ot;
+    void **drawList;
     void **q;
     int i;
-    ot = g_apOtDepthBinBlock;
+    drawList = g_apMainDrawEntityListBlock;
     i = 0;
-    *ot++ = g_pDragonRescueStatueActor;
-    *ot = 0;
+    *drawList++ = g_pDragonRescueStatueActor;
+    *drawList = 0;
     q = SPRITE_PRIM_QUEUE;
     icon = (unsigned char *)HUD_ICON_SLOT(HUD_SLOT_DRAGON_DIGITS);
   icon5:
@@ -163,7 +163,7 @@ void DragonRescue_Draw(void) {
         dl[0x13] = (dl[0x13] * scale) >> 12;
       }
     }
-    FillWord(&g_pOtDepthBinHead0, 0, 0x900);
+    FillWord(&g_apMainDrawEntityList, 0, 0x900);
     EmitActorDrawList();
     RasterizeSpritePrimQueue();
     RasterizeSpyroModel();
@@ -189,7 +189,7 @@ void DragonRescue_Draw(void) {
       goto icon6;
     }
     *q = 0;
-    FillWord(&g_pOtDepthBinHead0, 0, 0x900);
+    FillWord(&g_apMainDrawEntityList, 0, 0x900);
     RasterizeSpritePrimQueue();
     RasterizeSpyroModel();
     DrawSpyroDropShadow();
@@ -214,12 +214,12 @@ void DragonRescue_Draw(void) {
         goto icon7;
       }
       *q = 0;
-      FillWord(&g_pOtDepthBinHead0, 0, 0x900);
+      FillWord(&g_apMainDrawEntityList, 0, 0x900);
       RasterizeSpritePrimQueue();
     } else {
       BuildRenderEntityLists();
       BuildActorDrawList();
-      FillWord(&g_pOtDepthBinHead0, 0, 0x900);
+      FillWord(&g_apMainDrawEntityList, 0, 0x900);
       EmitActorDrawList();
       BuildSecondaryActorDrawList();
       EmitSecondaryActorPrimitives();

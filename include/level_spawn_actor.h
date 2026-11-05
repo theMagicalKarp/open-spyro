@@ -62,7 +62,7 @@ extern int StepAndLerpAngle8(int to, int from, int maxStep, int frac);
 extern int g_anFlightTargetTally;
 extern char *g_apSpritePrimQueue[];
 extern int g_dwHudIconSpinAngle;
-extern char g_pOtDepthBinHead0[];
+extern char g_apMainDrawEntityList[];
 extern char *g_pRenderScratchRegionBase;
 extern struct Actor *g_pSpriteRecordWriteCursor; /* sprite-record queue tail (grows down) */
 
