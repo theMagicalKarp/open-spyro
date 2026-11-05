@@ -1910,7 +1910,7 @@ void Level11_UpdateActors(void) {
       if (st->owner->mode == ORBIT_OWNER_FAR || st->owner->subMode != actor->mode) {
         DespawnActorRecord(actor);
       } else if (st->owner->type == ACTOR_TYPE_LEVEL_EXIT) {
-        if (ApproxDist2D(&st->owner->posX, &spy->posX) < 0x400) {
+        if (ApproxDist2D(&st->owner->posX, &spy->posX) < LEVELEXIT_ENTER_RANGE) {
           int oldval;
           oldval = g_anCosineLut[actor->subMode];
           actor->subMode += 8;
