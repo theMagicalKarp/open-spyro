@@ -4,10 +4,11 @@
 #include "vecmath.h"
 
 /* 0x8004ac24 (0x214): resets Spyro's entity record. Leaving a looping-sfx
-   state stops Spyro's voices (state 7 just clears the fx alpha). With
-   `full` set the whole 0x2a4-byte record is wiped, keeping only the world
+   state stops Spyro's voices (SPYRO_ST_HURT_TINT just clears the tint alpha).
+   With `full` set the whole 0x2a4-byte record is wiped, keeping only the world
    position, the persistent euler and the level-health flag, then Spyro is
-   put back into state 0; otherwise only the transient flags/timers clear. */
+   put back into SPYRO_ST_IDLE; otherwise only the transient flags/timers clear.
+ */
 void ResetSpyroEntity(int full) {
   int pos[3];
   unsigned char euler[3];

@@ -9,12 +9,13 @@
 
 SDATA(g_nCameraSpringReengageCountdown, 4);
 
-/* Per-frame camera driver (0x80037bd4, 708 bytes): latches look-around
-   (Spyro state 0x1B), picks the next mode from the per-state table unless a
-   scripted move or a sentinel holds it, arbitrates via SelectCameraMode and
-   runs the mode's updater. Non-scripted modes then apply the decaying
-   vertical camera shake and, while no CD stream runs, refresh the floor
-   lookup under the camera. Pad snapshots bracket the frame. */
+/* Per-frame camera driver (0x80037bd4, 708 bytes): forces the passive follow
+   (g_nCameraForcePassiveFollow) during SPYRO_ST_HURT_LONG, picks the next mode
+   from the per-state table unless a scripted move or a sentinel holds it,
+   arbitrates via SelectCameraMode and runs the mode's updater. Non-scripted
+   modes then apply the decaying vertical camera shake and, while no CD stream
+   runs, refresh the floor lookup under the camera. Pad snapshots bracket the
+   frame. */
 void UpdateCameraFrame(void) {
   if (g_nSpyroState == SPYRO_ST_HURT_LONG) {
     g_nCameraForcePassiveFollow = 1;

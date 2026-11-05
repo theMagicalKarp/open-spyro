@@ -7,9 +7,9 @@
 /* Camera-to-target angle solver (0x80033f08, 0x290). Builds the anchor→
    target delta vector, refines the 2D/3D distances, and derives the
    camera pitch/yaw from it. When the wrapped yaw delta is closer to the
-   inverted heading (and the mode is 0x80000009 or the target is flagged
-   inverted), flips the framing: yaw += half-turn (or snaps to the spring
-   yaw when the target is nearly overhead), pitch mirrored around 0x800,
+   inverted heading (and the mode is CAM_HELD | CAM_MODE_FREE_LOOK or the target
+   is flagged inverted), flips the framing: yaw += half-turn (or snaps to the
+   spring yaw when the target is nearly overhead), pitch mirrored around 0x800,
    and returns 1; otherwise commits the plain yaw (or spring yaw) and
    returns 0. Tail publishes the draft roll and the wrapped pitch/yaw
    biases against the euler camera state. */

@@ -7,8 +7,8 @@
    swap it out under us). */
 #define PATH (*(PortalCamPath *volatile *)&g_pPortalCamPathData)
 
-/* Camera updater for mode 0x8000000b (portal spline path). Walks
-   g_anCameraPos along the overlay-provided path at g_pPortalCamPathData:
+/* Camera updater for mode CAM_HELD | CAM_MODE_PORTAL_PATH (portal spline path).
+   Walks g_anCameraPos along the overlay-provided path at g_pPortalCamPathData:
    count byte [0], current index byte [1], waypoint vec3s at +8 + i*0x10.
    Within 0x200 of the current waypoint the index advances (forward) or
    retreats (g_nPortalCamPathReverseFlag). Speed: while an onward waypoint

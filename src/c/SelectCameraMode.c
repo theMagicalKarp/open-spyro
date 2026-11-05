@@ -29,13 +29,15 @@ SDATA(g_nCameraPassiveModeHoldTimer, 4);
 SDATA(g_nCameraSpringReengageCountdown, 4);
 
 /* Per-frame camera-mode arbiter (0x800357a4, 1972 bytes). Holds or releases
-   the sentinel modes against the request bits (0x200 mode 0xA, 0x400 gem
-   path 0xB, 0x8000 scripted target 7, 0x10000 scripted follow 0xC) and
-   otherwise falls back to the per-state mode table. Free-look (9) exits to the
-   passive hold 0x80000010 when L1 releases; the passive modes persist while
-   the hold timer runs; an idle Spyro near the screen anchor re-enters passive
-   mode. On a mode change, re-seats the spring angles where needed and, on
-   entering 9, clears the script-stick integrator. */
+   the sentinel modes against the request bits (SPYRO_RQ_CAMERA ->
+   CAM_MODE_REQUEST, SPYRO_RQ_PORTAL_PATH_CAMERA -> CAM_MODE_PORTAL_PATH,
+   SPYRO_RQ_TARGET_CAMERA -> CAM_MODE_SCRIPTED_TARGET, SPYRO_RQ_FOLLOW_CAMERA
+   -> CAM_MODE_SCRIPTED_FOLLOW) and otherwise falls back to the per-state mode
+   table. Free-look exits to the passive hold CAM_HELD | CAM_MODE_PASSIVE when
+   Triangle releases; the passive modes persist while the hold timer runs; an
+   idle Spyro near the screen anchor re-enters passive mode. On a mode change,
+   re-seats the spring angles where needed and, on entering free-look, clears
+   the script-stick integrator. */
 void SelectCameraMode(void) {
   int pt[3];
   int *nextp = &CAM[CAM_NEXT_MODE];

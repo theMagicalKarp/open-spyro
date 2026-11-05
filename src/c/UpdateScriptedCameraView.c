@@ -11,14 +11,14 @@
 #define VIEW (g_apScriptedCameraViewBlock[0])
 #define CAMPOS ((int *)&g_apScriptedCameraViewBlock[-49])
 
-/* Camera updater for mode 0x8000000e (scripted vantage triplet). While the
-   level-load state machine is finished (g_nCdStreamState < LSTREAM_PRESERVE) it
-   just re-picks the per-state camera mode, unless Spyro is in one of the states
-   that own the camera themselves. Otherwise it retires the active record when
-   the player has walked past its range (range) or left its screen window
-   (projected y > 0xf0), draws one of the three ROM records at
-   g_aScriptedCamViews (avoiding an immediate repeat) and re-seats
-   Spyro's body angles from it. Records with aimAtSpyro set also
+/* Camera updater for mode CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE (scripted
+   vantage triplet). While the level-load state machine is finished
+   (g_nCdStreamState < LSTREAM_PRESERVE) it just re-picks the per-state camera
+   mode, unless Spyro is in one of the states that own the camera themselves.
+   Otherwise it retires the active record when the player has walked past its
+   range (range) or left its screen window (projected y > 0xf0), draws one of
+   the three ROM records at g_aScriptedCamViews (avoiding an immediate repeat)
+   and re-seats Spyro's body angles from it. Records with aimAtSpyro set also
    refresh the camera euler angles. (0x800377a8, 632 bytes.) */
 void UpdateScriptedCameraView(void) {
   int delta[3];
