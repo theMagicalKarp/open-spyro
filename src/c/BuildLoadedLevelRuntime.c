@@ -1,6 +1,6 @@
 /* 0x8001364c — post-CD-stream level finalization driver, the "level-loader
    meat" (3708 b). Builds every piece of per-level runtime state out of the
-   bundle the CD stream just dropped in g_pPathTableBuffer. Callers:
+   bundle the CD stream just dropped in g_pLevelArchiveBuffer. Callers:
    LoadAndStartLevelFromCd and TickLevelTransitionStream (case 0xd);
    fullSetup == 0 is the light path (no chunk-anim reset, no overlay hook).
 
@@ -64,7 +64,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   unsigned char type;
   StopAllSoundExceptMask(0);
   InitLightVectorConstants();
-  p = (int *)g_pPathTableBuffer;
+  p = (int *)g_pLevelArchiveBuffer;
   g_nVblankTickCount = 0;
   g_dwGamestateFrames = 0;
   g_nSpyroDrawSuppressed = 0;

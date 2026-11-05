@@ -22,7 +22,7 @@ void LoadAndStartLevelFromCd(void) {
   level = *(volatile int *)&g_nLevelIndex;
   base = *(volatile int *)&g_nCdBaseLba;
   archiveBase = *(volatile int *)&g_nLevelArchiveBaseLba;
-  dst = *(void *volatile *)&g_pPathTableBuffer;
+  dst = *(void *volatile *)&g_pLevelArchiveBuffer;
   size = *(volatile int *)&g_nLevelArchiveByteSize;
   offset = *(int *)((char *)&g_nLevelArchiveOffset + level * 0x10);
   CdReadSyncSectors(base, dst, size, archiveBase + offset,

@@ -64,7 +64,7 @@
  *     keep their original order without barriers.
  * 15. `g_nWorldTimAudioChunkOffset[3]` (an array reference, not a scalar) as
  *     a call argument puts its load after the fifth argument's chain.
- * 16. `e4 = g_pPathTableBuffer` right after the call, `sz` loaded before the
+ * 16. `e4 = g_pLevelArchiveBuffer` right after the call, `sz` loaded before the
  *     g_nCreditsLineCount store, and `f = g_nReturningHomePhase` before the
  *     g_pLevelSampleBankEntries re-read fix three load orders.
  * 17. In the glyph loop the digit test is a block temp, `c = (st.adv * 3) /
@@ -119,14 +119,14 @@ extern char g_CutsceneSoundDef[];
 extern char *g_pLoadStagingBuffer;
 extern char *g_pLevelDataBuffer;
 extern char *g_pLevelDataBuffer_blk[];
-extern char *g_pPathTableBuffer;
+extern char *g_pLevelArchiveBuffer;
 extern volatile int g_nLevelArchiveByteSize;
 
 typedef struct {
   char *loadStaging;             /* 0x800785D8 g_pLoadStagingBuffer */
   char *levelData;               /* 0x800785DC g_pLevelDataBuffer */
   char *volatile worldUnpackHead; /* 0x800785E0 g_pWorldUnpackHead */
-  char *volatile pathTableBuffer; /* 0x800785E4 g_pPathTableBuffer */
+  char *volatile pathTableBuffer; /* 0x800785E4 g_pLevelArchiveBuffer */
   char padE8[0x18];
   int levelArchiveBaseLba;           /* 0x80078600 g_nLevelArchiveBaseLba */
   volatile int levelArchiveByteSize; /* 0x80078604 g_nLevelArchiveByteSize */
@@ -150,7 +150,7 @@ typedef struct CredText {
 #define CRED_TEXT(hdr, f) (*(int *)((char *)(hdr) + (int)&((CredText *)0)->f))
 
 /* The credits camera track (g_pCreditsScrollHeader): a frame clock, the
- * offset of the page's text block in g_pPathTableBuffer, the key count, then
+ * offset of the page's text block in g_pLevelArchiveBuffer, the key count, then
  * one CamKey per two frames. CAM_KEY reads a field of the current key in the
  * original's byte-offset form. */
 typedef struct CamKey {
@@ -159,7 +159,7 @@ typedef struct CamKey {
 } CamKey;
 typedef struct CamTrack {
   int clock;     /* 0x00 frames since the page started */
-  int text;      /* 0x04 CredText offset in g_pPathTableBuffer */
+  int text;      /* 0x04 CredText offset in g_pLevelArchiveBuffer */
   int keyCount;  /* 0x08 */
   CamKey key[1]; /* 0x0C one per two frames */
 } CamTrack;
@@ -216,7 +216,7 @@ void Credits_Update(void) {
                     S.levelArchiveBaseLba + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], CD_STALL_TIMEOUT_TICKS);
     }
     {
-    char *e4 = g_pPathTableBuffer;
+    char *e4 = g_pLevelArchiveBuffer;
     g_pLevelSampleBankEntries = g_CutsceneSoundDef;
     SAMPLE_RAW(g_pLevelSampleBankEntries, int, nSampleAddr) = 0x1010;
     SAMPLE_RAW(g_pLevelSampleBankEntries, int, nLoopAddr) = -1;
@@ -234,7 +234,7 @@ void Credits_Update(void) {
     {
       char *hdr;
       char *shift;
-      hdr = g_pPathTableBuffer + ((CamTrack *)g_pCreditsScrollHeader)->text;
+      hdr = g_pLevelArchiveBuffer + ((CamTrack *)g_pCreditsScrollHeader)->text;
       {
       int sz;
       g_pCreditsLoadBuf = hdr;
@@ -650,9 +650,9 @@ void Credits_Update(void) {
           {
           char *dc = S.levelData;
           S.blk = g_nLevelSkyChunkCount;
-          g_pPathTableBuffer = dc + g_nWorldBundleChunkSize;
+          g_pLevelArchiveBuffer = dc + g_nWorldBundleChunkSize;
           }
-          g_pCreditsScrollHeader = g_pPathTableBuffer;
+          g_pCreditsScrollHeader = g_pLevelArchiveBuffer;
           g_nLevelArchiveByteSize = g_nLevelArchiveChunkSize;
           g_nLevelArchiveBaseLba = g_nLevelArchiveChunkOffset;
           if (g_nCreditsPageIndex % 10 < 9) {

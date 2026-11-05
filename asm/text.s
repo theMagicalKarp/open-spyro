@@ -1505,8 +1505,8 @@ glabel BuildLoadedLevelRuntime
     /* 3E74 80013674 6000B0AF */   sw        $s0, 0x60($sp)
     /* 3E78 80013678 1F63010C */  jal        InitLightVectorConstants
     /* 3E7C 8001367C 00000000 */   nop
-    /* 3E80 80013680 0880103C */  lui        $s0, %hi(g_pPathTableBuffer)
-    /* 3E84 80013684 E485108E */  lw         $s0, %lo(g_pPathTableBuffer)($s0)
+    /* 3E80 80013680 0880103C */  lui        $s0, %hi(g_pLevelArchiveBuffer)
+    /* 3E84 80013684 E485108E */  lw         $s0, %lo(g_pLevelArchiveBuffer)($s0)
     /* 3E88 80013688 0780033C */  lui        $v1, %hi(g_nActiveLevelId)
     /* 3E8C 8001368C 6C59638C */  lw         $v1, %lo(g_nActiveLevelId)($v1)
     /* 3E90 80013690 40000224 */  addiu      $v0, $zero, 0x40
@@ -2493,8 +2493,8 @@ glabel LoadAndStartLevelFromCd
     /* 4CE4 800144E4 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
     /* 4CE8 800144E8 0880073C */  lui        $a3, %hi(g_nLevelArchiveBaseLba)
     /* 4CEC 800144EC 0086E78C */  lw         $a3, %lo(g_nLevelArchiveBaseLba)($a3)
-    /* 4CF0 800144F0 0880053C */  lui        $a1, %hi(g_pPathTableBuffer)
-    /* 4CF4 800144F4 E485A58C */  lw         $a1, %lo(g_pPathTableBuffer)($a1)
+    /* 4CF0 800144F0 0880053C */  lui        $a1, %hi(g_pLevelArchiveBuffer)
+    /* 4CF4 800144F4 E485A58C */  lw         $a1, %lo(g_pLevelArchiveBuffer)($a1)
     /* 4CF8 800144F8 0880063C */  lui        $a2, %hi(g_nLevelArchiveByteSize)
     /* 4CFC 800144FC 0486C68C */  lw         $a2, %lo(g_nLevelArchiveByteSize)($a2)
     /* 4D00 80014500 00110200 */  sll        $v0, $v0, 4
@@ -2811,8 +2811,8 @@ glabel TickCutsceneBundleLoadStream
     /* 518C 8001498C F4FF401C */  bgtz       $v0, .L80014960
     /* 5190 80014990 04003126 */   addiu     $s1, $s1, 0x4
   .L80014994:
-    /* 5194 80014994 0880053C */  lui        $a1, %hi(g_pPathTableBuffer)
-    /* 5198 80014998 E485A524 */  addiu      $a1, $a1, %lo(g_pPathTableBuffer)
+    /* 5194 80014994 0880053C */  lui        $a1, %hi(g_pLevelArchiveBuffer)
+    /* 5198 80014998 E485A524 */  addiu      $a1, $a1, %lo(g_pLevelArchiveBuffer)
     /* 519C 8001499C 0880023C */  lui        $v0, %hi(g_pWorldUnpackHead)
     /* 51A0 800149A0 E085428C */  lw         $v0, %lo(g_pWorldUnpackHead)($v0)
     /* 51A4 800149A4 0780033C */  lui        $v1, %hi(g_nWorldDataExtChunkSize)
@@ -2847,8 +2847,8 @@ glabel TickCutsceneBundleLoadStream
   .L80014A18:
     /* 5218 80014A18 4E006214 */  bne        $v1, $v0, .L80014B54
     /* 521C 80014A1C 21880000 */   addu      $s1, $zero, $zero
-    /* 5220 80014A20 0880053C */  lui        $a1, %hi(g_pPathTableBuffer)
-    /* 5224 80014A24 E485A524 */  addiu      $a1, $a1, %lo(g_pPathTableBuffer)
+    /* 5220 80014A20 0880053C */  lui        $a1, %hi(g_pLevelArchiveBuffer)
+    /* 5224 80014A24 E485A524 */  addiu      $a1, $a1, %lo(g_pLevelArchiveBuffer)
     /* 5228 80014A28 0000A48C */  lw         $a0, 0x0($a1)
     /* 522C 80014A2C 00000000 */  nop
     /* 5230 80014A30 1000828C */  lw         $v0, 0x10($a0)
@@ -2872,8 +2872,8 @@ glabel TickCutsceneBundleLoadStream
     /* 5274 80014A74 F7FF4014 */  bnez       $v0, .L80014A54
     /* 5278 80014A78 04008424 */   addiu     $a0, $a0, 0x4
   .L80014A7C:
-    /* 527C 80014A7C 0880023C */  lui        $v0, %hi(g_pPathTableBuffer)
-    /* 5280 80014A80 E485428C */  lw         $v0, %lo(g_pPathTableBuffer)($v0)
+    /* 527C 80014A7C 0880023C */  lui        $v0, %hi(g_pLevelArchiveBuffer)
+    /* 5280 80014A80 E485428C */  lw         $v0, %lo(g_pLevelArchiveBuffer)($v0)
     /* 5284 80014A84 0780033C */  lui        $v1, %hi(g_pPathTableHead)
     /* 5288 80014A88 8056638C */  lw         $v1, %lo(g_pPathTableHead)($v1)
     /* 528C 80014A8C 0880043C */  lui        $a0, %hi(g_nLevelArchiveByteSize)
@@ -4025,8 +4025,8 @@ glabel TickLevelTransitionStream
     /* 634C 80015B4C 6458638C */  lw         $v1, %lo(g_nCdStreamState)($v1)
     /* 6350 80015B50 21104400 */  addu       $v0, $v0, $a0
     /* 6354 80015B54 01006324 */  addiu      $v1, $v1, 0x1
-    /* 6358 80015B58 0880013C */  lui        $at, %hi(g_pPathTableBuffer)
-    /* 635C 80015B5C E48522AC */  sw         $v0, %lo(g_pPathTableBuffer)($at)
+    /* 6358 80015B58 0880013C */  lui        $at, %hi(g_pLevelArchiveBuffer)
+    /* 635C 80015B5C E48522AC */  sw         $v0, %lo(g_pLevelArchiveBuffer)($at)
     /* 6360 80015B60 0880013C */  lui        $at, %hi(g_nLevelArchiveByteSize)
     /* 6364 80015B64 048625AC */  sw         $a1, %lo(g_nLevelArchiveByteSize)($at)
     /* 6368 80015B68 0880013C */  lui        $at, %hi(g_nLevelArchiveBaseLba)
@@ -4038,8 +4038,8 @@ glabel TickLevelTransitionStream
   jlabel .L80015B80
     /* 6380 80015B80 0780043C */  lui        $a0, %hi(g_nCdBaseLba)
     /* 6384 80015B84 906B848C */  lw         $a0, %lo(g_nCdBaseLba)($a0)
-    /* 6388 80015B88 0880053C */  lui        $a1, %hi(g_pPathTableBuffer)
-    /* 638C 80015B8C E485A58C */  lw         $a1, %lo(g_pPathTableBuffer)($a1)
+    /* 6388 80015B88 0880053C */  lui        $a1, %hi(g_pLevelArchiveBuffer)
+    /* 638C 80015B8C E485A58C */  lw         $a1, %lo(g_pLevelArchiveBuffer)($a1)
     /* 6390 80015B90 0780023C */  lui        $v0, %hi(g_nLevelIndex)
     /* 6394 80015B94 6459428C */  lw         $v0, %lo(g_nLevelIndex)($v0)
     /* 6398 80015B98 0880063C */  lui        $a2, %hi(g_nLevelArchiveByteSize)

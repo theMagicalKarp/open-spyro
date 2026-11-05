@@ -935,7 +935,7 @@ extern void *g_pWorldCollisionHeader;                   /* 0x800785d4: WorldColl
 extern void *g_pLoadStagingBuffer;                               /* 0x800785d8: first free byte past the loaded overlay (ApplyPerLevelGlobalsTable: Level<N>_OverlayEnd; title/demo/pause paths: g_abTitlescreenOverlayEnd): the CD staging buffer (asset headers, TIMs, audio before the SPU upload) */
 extern void *g_pLevelDataBuffer;                               /* 0x800785dc: where the world bundle is read and unpacked in place (UnpackWorldDataChunks); set equal to g_pLoadStagingBuffer */
 extern char *g_pWorldUnpackHead;                        /* 0x800785e0 */
-extern void *g_pPathTableBuffer;                        /* 0x800785e4 */
+extern void *g_pLevelArchiveBuffer;                        /* 0x800785e4: where the level archive chunk (g_nLevelArchiveByteSize bytes) is read, past the unpacked world data: BuildLoadedLevelRuntime builds the level's runtime from it; for a cutscene it holds the CutscenePath table with the actor pool after it */
 extern void *g_pRenderScratchRegionBase;                /* 0x800785e8 */
 extern void *g_pRenderScratchPrimBase1;                 /* 0x800785ec */
 extern void *g_pRenderScratchPrimTop;                   /* 0x800785f0 */
@@ -1416,7 +1416,7 @@ extern int g_anWorldTextureCountBlock[]; /* 0x800785c8: held-base view of g_nWor
 extern int g_nWorldChunkLodDepth; /* 0x800785cc: view-depth split RenderWorldChunks reads (>> 4) to sort chunks: a chunk whose near edge (depth - radius) is closer goes on the list at g_apMainDrawEntityList + 0x1C00, one whose far edge (+ 0x100) is beyond it on the list at + 0x2000 (a chunk straddling it goes on both). Initialize sets 0x8000 */
 extern void *g_apLoadStagingBufferBlock2[]; /* 0x800785d8: distinct alias, fade-out pass (A23) */
 extern void *g_apLevelDataBufferBlock[]; /* 0x800785dc */
-extern void *volatile g_apPathTableBufferBlock[]; /* 0x800785e4 */
+extern void *volatile g_apLevelArchiveBufferBlock[]; /* 0x800785e4 */
 extern unsigned char *g_apRenderScratchRegionBlock[]; /* 0x800785e8: g_pRenderScratchRegionBase */
 extern int g_anFlightTallyActiveSlots[]; /* 0x80078608 */
 extern void *g_apMotionTrailSlices[]; /* 0x80078658: per-ribbon slice list */

@@ -257,14 +257,14 @@ void TickLevelTransitionStream(int full) {
       mesh[*slot++] = RelocateActorMeshHeader(
           (int *)(g_pWorldUnpackHead + (list[i] - list[-16])));
     }
-    g_pPathTableBuffer = g_pWorldUnpackHead + list[-15];
+    g_pLevelArchiveBuffer = g_pWorldUnpackHead + list[-15];
     g_nLevelArchiveByteSize = list[-13];
     g_nLevelArchiveBaseLba = list[-14];
     g_nCdStreamState++;
   } break;
   case LSTREAM_READ_PATHS: {
     int lba = *(volatile int *)&g_nCdBaseLba;
-    void *dst = *(void *volatile *)&g_pPathTableBuffer;
+    void *dst = *(void *volatile *)&g_pLevelArchiveBuffer;
     int intro = *(volatile int *)&g_nLevelIndex;
     int size = *(volatile int *)&g_nLevelArchiveByteSize;
     int off = *(volatile int *)&g_nLevelArchiveBaseLba;

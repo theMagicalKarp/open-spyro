@@ -160,7 +160,7 @@ void TickCutsceneBundleLoadStream(void) {
       } while (g_anActorMeshOffsetBlock[i] > 0);
     }
     {
-      register void *volatile *pb asm("$5") = g_apPathTableBufferBlock;
+      register void *volatile *pb asm("$5") = g_apLevelArchiveBufferBlock;
       void *head2 = *((void *volatile *)(&g_pWorldUnpackHead));
       int extsz = *((volatile int *)(&g_nWorldDataExtChunkSize));
       int lba = *((volatile int *)(&g_nCdBaseLba));
@@ -184,7 +184,7 @@ void TickCutsceneBundleLoadStream(void) {
     g_nCdStreamState = CSTREAM_REBASE_PATHS;
   } else if (state == CSTREAM_REBASE_PATHS) {
     i = 0;
-    buf = g_apPathTableBufferBlock;
+    buf = g_apLevelArchiveBufferBlock;
     ent = buf[0];
     g_pPathTableHead = (CutscenePath *)ent;
     ent[4] = ((int)ent) + ent[4];
@@ -201,7 +201,7 @@ void TickCutsceneBundleLoadStream(void) {
       }
     }
     g_pActorListBase =
-        (Actor *)(((char *)g_pPathTableBuffer) + g_nLevelArchiveByteSize);
+        (Actor *)(((char *)g_pLevelArchiveBuffer) + g_nLevelArchiveByteSize);
     i = 0;
     if (g_pPathTableHead->actorCount > 0) {
       def = 0x20;
