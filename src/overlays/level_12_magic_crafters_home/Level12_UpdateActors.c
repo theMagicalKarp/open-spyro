@@ -2050,8 +2050,8 @@ void Level12_UpdateActors(void) {
       }
 
       if (st->target != 0 &&
-          ApproxDist2D(&actor->posX, (int *)((char *)SPY_VIA(g_anSparxHealthBlock, SPY_SPARX_HEALTH, SPY_POS))) >=
-              0x2001) {
+          ApproxDist2D(&actor->posX, (int *)((char *)SPY_VIA(g_anSparxHealthBlock, SPY_SPARX_HEALTH, SPY_POS))) >
+              SPARX_TARGET_LEASH) {
         st->timer = 0;
       }
 
@@ -2157,7 +2157,7 @@ void Level12_UpdateActors(void) {
             SubtractVector(sparxToTarget, &st->target->posX, &actor->posX);
             dist = VectorLength(sparxToTarget, VEC_LEN_XYZ);
 
-            if (dist < 0x200) {
+            if (dist < SPARX_CATCH_RANGE) {
               pk->timer = 0;
               pk->lean = GetRandomU32() & 0xE;
               pk->roll = GetRandomU32() & 0xE;
@@ -4896,7 +4896,7 @@ void Level12_UpdateActors(void) {
       }
 
       if (st->parent->type == ACTOR_TYPE_LEVEL_EXIT) {
-        if (ApproxDist2D(&st->parent->posX, &spy->posX) < 0x400) {
+        if (ApproxDist2D(&st->parent->posX, &spy->posX) < LEVELEXIT_ENTER_RANGE) {
           unsigned char was = actor->subMode;
           int prev = g_anCosineLut[was];
           unsigned char now = was + 8;

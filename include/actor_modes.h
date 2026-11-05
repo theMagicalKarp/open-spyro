@@ -40,6 +40,11 @@ enum SparxSubMode {
 #define SPARX_FETCH_RANGE 0x59A
 #define SPARX_FETCH_DZ 0x200
 
+/* Sparx drops his target once Spyro is farther than TARGET_LEASH (2D) from
+ * him, and reaches it within CATCH_RANGE (3D, Sparx to target). */
+#define SPARX_TARGET_LEASH 0x2000
+#define SPARX_CATCH_RANGE 0x200
+
 /* Sparx's hover animation per health colour; the odd index after each is the
  * same colour's catch animation (the chase steps up to it, EAT_DONE back). */
 enum SparxAnim {
@@ -143,7 +148,8 @@ enum LevelExitMode {
 
 /* Level-exit ranges (2D ApproxDist2D): its name letters appear once the
  * camera is within SHOW and go once it leaves HIDE; it emits the full spiral
- * while Spyro is within SPARKLE and lifts him out within ENTER. */
+ * while Spyro is within SPARKLE and lifts him out within ENTER (its name
+ * letters spin while he is that close). */
 #define LEVELEXIT_SHOW_RANGE 0x2400
 #define LEVELEXIT_HIDE_RANGE 0x2800
 #define LEVELEXIT_SPARKLE_RANGE 0x4000

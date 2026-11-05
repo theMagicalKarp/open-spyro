@@ -939,7 +939,7 @@ void Level5_UpdateActors(void) {
         break;
       }
 
-      if (st->target != 0 && ApproxDist2D(&actor->posX, &SPY.posX) > 8192) {
+      if (st->target != 0 && ApproxDist2D(&actor->posX, &SPY.posX) > SPARX_TARGET_LEASH) {
         st->timer = 0;
       }
 
@@ -1034,7 +1034,7 @@ void Level5_UpdateActors(void) {
           SubtractVector(sparxToTarget, &st->target->posX, &actor->posX);
           dist = VectorLength(sparxToTarget, VEC_LEN_XYZ);
 
-          if (dist < 512) {
+          if (dist < SPARX_CATCH_RANGE) {
             cp->timer = 0;
             cp->pitch = GetRandomU32() & 0xE;
             cp->yaw = GetRandomU32() & 0xE;
