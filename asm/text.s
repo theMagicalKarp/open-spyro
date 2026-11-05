@@ -79974,9 +79974,9 @@ glabel ResetWorldParticleTables
     /* 49380 80058B80 00000000 */   nop
     /* 49384 80058B84 A8000224 */  addiu      $v0, $zero, 0xA8
   .L80058B88:
-    /* 49388 80058B88 0780013C */  lui        $at, %hi(g_abWorldRotatingBillboardTable)
+    /* 49388 80058B88 0780013C */  lui        $at, %hi(g_abRotBillboardLife)
     /* 4938C 80058B8C 21082200 */  addu       $at, $at, $v0
-    /* 49390 80058B90 147120A0 */  sb         $zero, %lo(g_abWorldRotatingBillboardTable)($at)
+    /* 49390 80058B90 147120A0 */  sb         $zero, %lo(g_abRotBillboardLife)($at)
     /* 49394 80058B94 E8FF4224 */  addiu      $v0, $v0, -0x18
     /* 49398 80058B98 FBFF4104 */  bgez       $v0, .L80058B88
     /* 4939C 80058B9C 00000000 */   nop
