@@ -60,7 +60,7 @@
  *     is a `short gx`, g_nCdReadInFlight is volatile, and case 2's rect is
  *     written in [0..3] order.
  * 14. The CD-stream state block is one struct symbol (Cd85D8,
- *     g_pDrawBufA_s), so its block copy and field stores share a base and
+ *     g_pLoadStagingBuffer_s), so its block copy and field stores share a base and
  *     keep their original order without barriers.
  * 15. `g_nWorldTimAudioChunkOffset[3]` (an array reference, not a scalar) as
  *     a call argument puts its load after the fifth argument's chain.
@@ -78,7 +78,7 @@
  *     a3/t0/t1/t2.
  * 20. `register char *src asm("$5")` for the e4 re-read takes away its
  *     scheduling boost, so the C1C load goes first.
- * Also: g_pDrawBufB has a second spelling (g_pDrawBufB_blk) for the setup
+ * Also: g_pLevelDataBuffer has a second spelling (g_pLevelDataBuffer_blk) for the setup
  * block's shared base (A240); a `do { } while (0)` sits before the 20-byte
  * struct assignment (A232); and the trim loop re-reads g_pCreditsGlyphPool
  * instead of sharing `tab` so jump.c does not cross-jump its guard (B24).
@@ -116,15 +116,15 @@ extern Blk20 g_nSkyChunkCount;
 extern int g_nLevelArchiveChunkSize_n;
 
 extern char g_CutsceneSoundDef[];
-extern char *g_pDrawBufA;
-extern char *g_pDrawBufB;
-extern char *g_pDrawBufB_blk[];
+extern char *g_pLoadStagingBuffer;
+extern char *g_pLevelDataBuffer;
+extern char *g_pLevelDataBuffer_blk[];
 extern char *g_pPathTableBuffer;
 extern volatile int g_nLevelArchiveByteSize;
 
 typedef struct {
-  char *drawBufA;                /* 0x800785D8 g_pDrawBufA */
-  char *drawBufB;                /* 0x800785DC g_pDrawBufB */
+  char *loadStaging;             /* 0x800785D8 g_pLoadStagingBuffer */
+  char *levelData;               /* 0x800785DC g_pLevelDataBuffer */
   char *volatile worldUnpackHead; /* 0x800785E0 g_pWorldUnpackHead */
   char *volatile pathTableBuffer; /* 0x800785E4 g_pPathTableBuffer */
   char padE8[0x18];
@@ -133,8 +133,8 @@ typedef struct {
   char pad608[0x8A40 - 0x8608];
   Blk20 blk;
 } Cd85D8;
-extern Cd85D8 g_pDrawBufA_s;
-#define S g_pDrawBufA_s
+extern Cd85D8 g_pLoadStagingBuffer_s;
+#define S g_pLoadStagingBuffer_s
 
 #define POOL ((CredGlyph *)g_pCreditsGlyphPool)
 #define LINES ((CredLine *)g_pCreditsLineTable)
@@ -182,28 +182,28 @@ void Credits_Update(void) {
       }
       g_pCreditsLineTable = pool + 0xAF0;
       g_pCreditsScratchBuf = pool + 0x2800;
-      g_pDrawBufA = g_pCreditsScratchBuf;
-      g_pDrawBufB = g_pCreditsScratchBuf;
+      g_pLoadStagingBuffer = g_pCreditsScratchBuf;
+      g_pLevelDataBuffer = g_pCreditsScratchBuf;
     }
     sector = g_anCreditsPageSectors[g_nCreditsPageIndex * 2];
-    CdReadSyncSectors(g_nCdBaseLba[0], g_pDrawBufB_blk[0], 0x800, sector, CD_STALL_TIMEOUT_TICKS);
-    CopyWords(g_nWorldTimAudioChunkOffset, g_pDrawBufB_blk[0], 0x1D0);
-    CdReadSyncSectors(g_nCdBaseLba[0], g_pDrawBufB_blk[0], 0x60000,
+    CdReadSyncSectors(g_nCdBaseLba[0], g_pLevelDataBuffer_blk[0], 0x800, sector, CD_STALL_TIMEOUT_TICKS);
+    CopyWords(g_nWorldTimAudioChunkOffset, g_pLevelDataBuffer_blk[0], 0x1D0);
+    CdReadSyncSectors(g_nCdBaseLba[0], g_pLevelDataBuffer_blk[0], 0x60000,
                   g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], CD_STALL_TIMEOUT_TICKS);
     rect0[0] = 0x200;
     rect0[2] = 0x200;
     rect0[1] = 0;
     rect0[3] = 0x180;
-    LoadImage(rect0, g_pDrawBufB_blk[0]);
-    CdReadSyncSectors(g_nCdBaseLba[0], g_pDrawBufB_blk[0], g_nWorldTimAudioChunkSize - 0x60000,
+    LoadImage(rect0, g_pLevelDataBuffer_blk[0]);
+    CdReadSyncSectors(g_nCdBaseLba[0], g_pLevelDataBuffer_blk[0], g_nWorldTimAudioChunkSize - 0x60000,
                   g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2] + 0x60000, CD_STALL_TIMEOUT_TICKS);
     SetSpuTransferStartAddr(0x1010);
-    WriteSpuRam(g_pDrawBufB_blk[0], 0x7EFF0);
+    WriteSpuRam(g_pLevelDataBuffer_blk[0], 0x7EFF0);
     while (GetSpuTransferStatus(0) == 0) {
     }
-    CdReadSyncSectors(g_nCdBaseLba[0], g_pDrawBufB_blk[0], g_nWorldTimAudioChunkOffset[3],
+    CdReadSyncSectors(g_nCdBaseLba[0], g_pLevelDataBuffer_blk[0], g_nWorldTimAudioChunkOffset[3],
                   g_nWorldBundleChunkOffset + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], CD_STALL_TIMEOUT_TICKS);
-    S.worldUnpackHead = UnpackWorldDataChunks((int *)g_pDrawBufB_blk[0], 1);
+    S.worldUnpackHead = UnpackWorldDataChunks((int *)g_pLevelDataBuffer_blk[0], 1);
     {
       register char *src asm("$5");
       S.pathTableBuffer = S.worldUnpackHead;
@@ -634,8 +634,8 @@ void Credits_Update(void) {
           rect[1] = 0x80;
           rect[2] = 0x200;
           rect[3] = 0x100;
-          g_pDrawBufA = g_pCreditsScratchBuf;
-          g_pDrawBufB = g_pCreditsScratchBuf;
+          g_pLoadStagingBuffer = g_pCreditsScratchBuf;
+          g_pLevelDataBuffer = g_pCreditsScratchBuf;
           DrawSync(0);
           LoadImage(rect, g_pCreditsLoadBuf);
           rect[0] = 0x200;
@@ -646,9 +646,9 @@ void Credits_Update(void) {
           DrawSync(0);
           CopyWords(g_pCreditsScratchBuf, g_pCreditsLoadBuf + 0x40000, g_nCreditsLoadSpan - 0x40000);
           g_pCreditsLoadBuf = g_pCreditsScratchBuf + g_nCreditsLoadSpan - 0x40000;
-          S.worldUnpackHead = UnpackWorldDataChunks((int *)g_pDrawBufB, 1);
+          S.worldUnpackHead = UnpackWorldDataChunks((int *)g_pLevelDataBuffer, 1);
           {
-          char *dc = S.drawBufB;
+          char *dc = S.levelData;
           S.blk = g_nLevelSkyChunkCount;
           g_pPathTableBuffer = dc + g_nWorldBundleChunkSize;
           }

@@ -219,7 +219,7 @@ extern void InstallSpyroAnimStream(void *stream);
 extern void RotateLightVectorXZ(int steps);
 extern void SetSpuCommonAttr(unsigned char *attr);
 extern void SnapCameraToTarget(void);
-extern int g_abDrawBufPool;          /* draw-buffer sentinel */
+extern int g_abTitlescreenOverlayEnd;          /* first free byte past the titlescreen overlay */
 extern unsigned int g_adwSpyroRequestMaskBlock[];
 extern int g_anCameraViewMtx[]; /* camera view matrix (worldToCam at -0x14) */
 extern int g_anDragonRescueAuraStarBlock[]; /* 0x80076248 aura-star state block */
@@ -227,7 +227,7 @@ extern int g_anSaveMenuBlock[];
 extern int g_anSpawnAnchorBlock[];
 extern int g_anSpyroStateBlock[];
 extern int *g_apCameraAnchorBlock[]; /* alias of g_pCameraAnchorPos */
-extern void *g_apDrawBufBlock[];  /* alias of g_pDrawBufA */
+extern void *g_apLoadStagingBufferBlock[];  /* alias of g_pLoadStagingBuffer */
 extern void *g_apRenderScratchPrimTopBlock[]; /* held-base alias of g_pRenderScratchPrimTop;
                                               * [-2] is g_pRenderScratchRegionBase */
 extern struct Actor *g_apActiveActorListBlock[];

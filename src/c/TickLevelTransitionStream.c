@@ -26,7 +26,7 @@ typedef struct {
 #define PE_TO(word) ((word) * 4 - SPYB_EULER_Z)
 #define PE_WORD(word) (*(int *)(pe + PE_TO(word)))
 #define PYAW_BACK_TO(byte) (SPY_BODY_YAW * 4 - (byte))
-#define DRAWBUF_B (g_apDrawBufBBlock[0])
+#define LEVEL_DATA_BUF (g_apLevelDataBufferBlock[0])
 #define LEVEL_SPLASH_OFFSET(i) ((&g_nLevelSplashOffset)[(i) * 4])
 #define LEVEL_SPLASH_SIZE(i) ((&g_nLevelSplashByteSize)[(i) * 4])
 #define LEVEL_ARCHIVE_OFFSET(i) ((&g_nLevelArchiveOffset)[(i) * 4])
@@ -139,7 +139,7 @@ void TickLevelTransitionStream(int full) {
   case LSTREAM_READ_HEADER: {
     int lba = *(volatile int *)&g_nCdBaseLba;
     int intro = *(volatile int *)&g_nLevelIndex;
-    void *dst = *(void *volatile *)&g_pDrawBufB;
+    void *dst = *(void *volatile *)&g_pLevelDataBuffer;
     int off = LEVEL_ARCHIVE_OFFSET(intro);
 
     StartCdReadAsync(lba, dst, 0x800, off, CD_STALL_TIMEOUT_TICKS);
@@ -147,11 +147,11 @@ void TickLevelTransitionStream(int full) {
     g_nCdStreamState++;
     break;
   case LSTREAM_READ_TIM:
-    CopyWords(g_anWorldTimAudioChunkOffsetBlock, DRAWBUF_B, 0x1D0);
+    CopyWords(g_anWorldTimAudioChunkOffsetBlock, LEVEL_DATA_BUF, 0x1D0);
     {
       int lba = *(volatile int *)&g_nCdBaseLba;
       int intro = *(volatile int *)&g_nLevelIndex;
-      void *dst = *(void *volatile *)g_apDrawBufBBlock;
+      void *dst = *(void *volatile *)g_apLevelDataBufferBlock;
       int off = *(volatile int *)g_anWorldTimAudioChunkOffsetBlock;
 
       StartCdReadAsync(lba, dst, 0x80000, off + LEVEL_ARCHIVE_OFFSET(intro),
@@ -165,10 +165,10 @@ void TickLevelTransitionStream(int full) {
     rect.w = 0x200;
     rect.h = 0x100;
     rect.y = g_nEnteredPortalIdx << 8;
-    LoadImage(&rect, (char *)DRAWBUF_B + (g_nEnteredPortalIdx << 18));
+    LoadImage(&rect, (char *)LEVEL_DATA_BUF + (g_nEnteredPortalIdx << 18));
     if (++g_nEnteredPortalIdx == 2) {
       int lba = *(volatile int *)&g_nCdBaseLba;
-      void *dst = DRAWBUF_B;
+      void *dst = LEVEL_DATA_BUF;
       int size = *(volatile int *)&g_nWorldTimAudioChunkSize;
       int intro = *(volatile int *)&g_nLevelIndex;
       int off = *(volatile int *)&g_nWorldTimAudioChunkOffset;
@@ -182,7 +182,7 @@ void TickLevelTransitionStream(int full) {
     break;
   case LSTREAM_UPLOAD_AUDIO:
     SetSpuTransferStartAddr(0x1010);
-    WriteSpuRam(g_pDrawBufB, 0x7EFF0);
+    WriteSpuRam(g_pLevelDataBuffer, 0x7EFF0);
     g_nCdStreamState++;
     break;
   case LSTREAM_WAIT_AUDIO:
@@ -192,7 +192,7 @@ void TickLevelTransitionStream(int full) {
     break;
   case LSTREAM_READ_BUNDLE: {
     int lba = *(volatile int *)&g_nCdBaseLba;
-    void *dst = *(void *volatile *)&g_pDrawBufB;
+    void *dst = *(void *volatile *)&g_pLevelDataBuffer;
     int intro = *(volatile int *)&g_nLevelIndex;
     int size = *(volatile int *)&g_nWorldBundleChunkSize;
     int off = *(volatile int *)&g_nWorldBundleChunkOffset;
@@ -203,7 +203,7 @@ void TickLevelTransitionStream(int full) {
     g_nCdStreamState++;
     break;
   case LSTREAM_UNPACK:
-    g_pWorldUnpackHead = UnpackWorldDataChunks(g_pDrawBufB, 0);
+    g_pWorldUnpackHead = UnpackWorldDataChunks(g_pLevelDataBuffer, 0);
     if (SKY[0] != 0 && g_nGamestate != GS_GAME_OVER &&
         g_nGamestate != GS_ACTOR_CUTSCENE) {
       if (g_nReturnPortalLevelId != 0) {

@@ -13,7 +13,7 @@
 void ApplyPerLevelGlobalsTable(void) {
   switch (g_nActiveLevelId) {
   case 0:
-    g_pDrawBufA = LevelId0_OverlayEnd;
+    g_pLoadStagingBuffer = LevelId0_OverlayEnd;
     g_pfnLevelSpawnActor = LevelId0_SpawnActor;
     g_pfnLevelUpdateActors = LevelId0_UpdateActors;
     g_pfnLevelEmitParticles = LevelId0_EmitParticles;
@@ -24,49 +24,49 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnActorCutsceneSubstateDraw = LevelId0_BalloonistCutscene_Draw;
     break;
   case 1:
-    g_pDrawBufA = LevelId1_OverlayEnd;
+    g_pLoadStagingBuffer = LevelId1_OverlayEnd;
     g_pfnLevelSpawnActor = LevelId1_SpawnActor;
     g_pfnLevelUpdateActors = LevelId1_UpdateActors;
     g_pfnLevelEmitParticles = LevelId1_EmitParticles;
     g_pfnLevelAdvanceEmitList = LevelId1_AdvanceEmitList;
     break;
   case 2:
-    g_pDrawBufA = LevelId2_OverlayEnd;
+    g_pLoadStagingBuffer = LevelId2_OverlayEnd;
     g_pfnLevelSpawnActor = LevelId2_SpawnActor;
     g_pfnLevelUpdateActors = LevelId2_UpdateActors;
     g_pfnLevelEmitParticles = LevelId2_EmitParticles;
     g_pfnLevelAdvanceEmitList = LevelId2_AdvanceEmitList;
     break;
   case 3:
-    g_pDrawBufA = LevelId3_OverlayEnd;
+    g_pLoadStagingBuffer = LevelId3_OverlayEnd;
     g_pfnLevelSpawnActor = LevelId3_SpawnActor;
     g_pfnLevelUpdateActors = LevelId3_UpdateActors;
     g_pfnLevelEmitParticles = LevelId3_EmitParticles;
     g_pfnLevelAdvanceEmitList = LevelId3_AdvanceEmitList;
     break;
   case 4:
-    g_pDrawBufA = LevelId4_OverlayEnd;
+    g_pLoadStagingBuffer = LevelId4_OverlayEnd;
     g_pfnLevelSpawnActor = LevelId4_SpawnActor;
     g_pfnLevelUpdateActors = LevelId4_UpdateActors;
     g_pfnLevelEmitParticles = LevelId4_EmitParticles;
     g_pfnLevelAdvanceEmitList = LevelId4_AdvanceEmitList;
     break;
   case 7:
-    g_pDrawBufA = LevelId7_OverlayEnd;
+    g_pLoadStagingBuffer = LevelId7_OverlayEnd;
     g_pfnLevelSpawnActor = LevelId7_SpawnActor;
     g_pfnLevelUpdateActors = LevelId7_UpdateActors;
     g_pfnLevelEmitParticles = LevelId7_EmitParticles;
     g_pfnLevelAdvanceEmitList = LevelId7_AdvanceEmitList;
     break;
   case 9:
-    g_pDrawBufA = LevelId9_OverlayEnd;
+    g_pLoadStagingBuffer = LevelId9_OverlayEnd;
     g_pfnLevelSpawnActor = LevelId9_SpawnActor;
     g_pfnLevelUpdateActors = LevelId9_UpdateActors;
     g_pfnLevelEmitParticles = LevelId9_EmitParticles;
     g_pfnLevelAdvanceEmitList = LevelId9_AdvanceEmitList;
     break;
   case LEVEL_ARTISANS:
-    g_pDrawBufA = Level0_OverlayEnd;
+    g_pLoadStagingBuffer = Level0_OverlayEnd;
     g_pfnLevelSpawnActor = Level0_SpawnActor;
     g_pfnLevelUpdateActors = Level0_UpdateActors;
     g_pfnLevelEmitParticles = Level0_EmitParticles;
@@ -77,7 +77,7 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnActorCutsceneSubstateDraw = Level0_BalloonistCutscene_Draw;
     break;
   case LEVEL_STONE_HILL:
-    g_pDrawBufA = Level1_OverlayEnd;
+    g_pLoadStagingBuffer = Level1_OverlayEnd;
     g_pfnLevelSpawnActor = Level1_SpawnActor;
     g_pfnLevelUpdateActors = Level1_UpdateActors;
     g_pfnLevelEmitParticles = Level1_EmitParticles;
@@ -88,14 +88,14 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnActorCutsceneSubstateDraw = Level1_BalloonistCutscene_Draw;
     break;
   case LEVEL_DARK_HOLLOW:
-    g_pDrawBufA = Level2_OverlayEnd;
+    g_pLoadStagingBuffer = Level2_OverlayEnd;
     g_pfnLevelSpawnActor = Level2_SpawnActor;
     g_pfnLevelUpdateActors = Level2_UpdateActors;
     g_pfnLevelEmitParticles = Level2_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level2_AdvanceEmitList;
     break;
   case LEVEL_TOWN_SQUARE:
-    g_pDrawBufA = Level3_OverlayEnd;
+    g_pLoadStagingBuffer = Level3_OverlayEnd;
     g_pfnLevelSpawnActor = Level3_SpawnActor;
     g_pfnLevelUpdateActors = Level3_UpdateActors;
     g_pfnLevelEmitParticles = Level3_EmitParticles;
@@ -106,14 +106,14 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnActorCutsceneSubstateDraw = Level3_BalloonistCutscene_Draw;
     break;
   case LEVEL_TOASTY:
-    g_pDrawBufA = Level4_OverlayEnd;
+    g_pLoadStagingBuffer = Level4_OverlayEnd;
     g_pfnLevelSpawnActor = Level4_SpawnActor;
     g_pfnLevelUpdateActors = Level4_UpdateActors;
     g_pfnLevelEmitParticles = Level4_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level4_AdvanceEmitList;
     break;
   case LEVEL_SUNNY_FLIGHT:
-    g_pDrawBufA = Level5_OverlayEnd;
+    g_pLoadStagingBuffer = Level5_OverlayEnd;
     g_pfnLevelSpawnActor = Level5_SpawnActor;
     g_pfnLevelUpdateActors = Level5_UpdateActors;
     g_pfnLevelEmitParticles = Level5_EmitParticles;
@@ -125,7 +125,7 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnFlightTimeFormatter = Level5_DrawFlightRaceTime;
     break;
   case LEVEL_PEACE_KEEPERS:
-    g_pDrawBufA = Level6_OverlayEnd;
+    g_pLoadStagingBuffer = Level6_OverlayEnd;
     g_pfnLevelSpawnActor = Level6_SpawnActor;
     g_pfnLevelUpdateActors = Level6_UpdateActors;
     g_pfnLevelEmitParticles = Level6_EmitParticles;
@@ -136,7 +136,7 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnActorCutsceneSubstateDraw = Level6_BalloonistCutscene_Draw;
     break;
   case LEVEL_DRY_CANYON:
-    g_pDrawBufA = Level7_OverlayEnd;
+    g_pLoadStagingBuffer = Level7_OverlayEnd;
     g_pfnLevelSpawnActor = Level7_SpawnActor;
     g_pfnLevelUpdateActors = Level7_UpdateActors;
     g_pfnLevelEmitParticles = Level7_EmitParticles;
@@ -147,7 +147,7 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnActorCutsceneSubstateDraw = Level7_BalloonistCutscene_Draw;
     break;
   case LEVEL_CLIFF_TOWN:
-    g_pDrawBufA = Level8_OverlayEnd;
+    g_pLoadStagingBuffer = Level8_OverlayEnd;
     g_pfnLevelSpawnActor = Level8_SpawnActor;
     g_pfnLevelUpdateActors = Level8_UpdateActors;
     g_pfnLevelEmitParticles = Level8_EmitParticles;
@@ -158,21 +158,21 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnActorCutsceneSubstateDraw = Level8_BalloonistCutscene_Draw;
     break;
   case LEVEL_ICE_CAVERN:
-    g_pDrawBufA = Level9_OverlayEnd;
+    g_pLoadStagingBuffer = Level9_OverlayEnd;
     g_pfnLevelSpawnActor = Level9_SpawnActor;
     g_pfnLevelUpdateActors = Level9_UpdateActors;
     g_pfnLevelEmitParticles = Level9_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level9_AdvanceEmitList;
     break;
   case LEVEL_DOCTOR_SHEMP:
-    g_pDrawBufA = Level10_OverlayEnd;
+    g_pLoadStagingBuffer = Level10_OverlayEnd;
     g_pfnLevelSpawnActor = Level10_SpawnActor;
     g_pfnLevelUpdateActors = Level10_UpdateActors;
     g_pfnLevelEmitParticles = Level10_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level10_AdvanceEmitList;
     break;
   case LEVEL_NIGHT_FLIGHT:
-    g_pDrawBufA = Level11_OverlayEnd;
+    g_pLoadStagingBuffer = Level11_OverlayEnd;
     g_pfnLevelSpawnActor = Level11_SpawnActor;
     g_pfnLevelUpdateActors = Level11_UpdateActors;
     g_pfnLevelEmitParticles = Level11_EmitParticles;
@@ -184,7 +184,7 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnFlightTimeFormatter = Level11_DrawFlightRaceTime;
     break;
   case LEVEL_MAGIC_CRAFTERS:
-    g_pDrawBufA = Level12_OverlayEnd;
+    g_pLoadStagingBuffer = Level12_OverlayEnd;
     g_pfnLevelSpawnActor = Level12_SpawnActor;
     g_pfnLevelUpdateActors = Level12_UpdateActors;
     g_pfnLevelEmitParticles = Level12_EmitParticles;
@@ -195,35 +195,35 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnActorCutsceneSubstateDraw = Level12_BalloonistCutscene_Draw;
     break;
   case LEVEL_ALPINE_RIDGE:
-    g_pDrawBufA = Level13_OverlayEnd;
+    g_pLoadStagingBuffer = Level13_OverlayEnd;
     g_pfnLevelSpawnActor = Level13_SpawnActor;
     g_pfnLevelUpdateActors = Level13_UpdateActors;
     g_pfnLevelEmitParticles = Level13_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level13_AdvanceEmitList;
     break;
   case LEVEL_HIGH_CAVES:
-    g_pDrawBufA = Level14_OverlayEnd;
+    g_pLoadStagingBuffer = Level14_OverlayEnd;
     g_pfnLevelSpawnActor = Level14_SpawnActor;
     g_pfnLevelUpdateActors = Level14_UpdateActors;
     g_pfnLevelEmitParticles = Level14_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level14_AdvanceEmitList;
     break;
   case LEVEL_WIZARD_PEAK:
-    g_pDrawBufA = Level15_OverlayEnd;
+    g_pLoadStagingBuffer = Level15_OverlayEnd;
     g_pfnLevelSpawnActor = Level15_SpawnActor;
     g_pfnLevelUpdateActors = Level15_UpdateActors;
     g_pfnLevelEmitParticles = Level15_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level15_AdvanceEmitList;
     break;
   case LEVEL_BLOWHARD:
-    g_pDrawBufA = Level16_OverlayEnd;
+    g_pLoadStagingBuffer = Level16_OverlayEnd;
     g_pfnLevelSpawnActor = Level16_SpawnActor;
     g_pfnLevelUpdateActors = Level16_UpdateActors;
     g_pfnLevelEmitParticles = Level16_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level16_AdvanceEmitList;
     break;
   case LEVEL_CRYSTAL_FLIGHT:
-    g_pDrawBufA = Level17_OverlayEnd;
+    g_pLoadStagingBuffer = Level17_OverlayEnd;
     g_pfnLevelSpawnActor = Level17_SpawnActor;
     g_pfnLevelUpdateActors = Level17_UpdateActors;
     g_pfnLevelEmitParticles = Level17_EmitParticles;
@@ -235,7 +235,7 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnFlightTimeFormatter = Level17_DrawFlightRaceTime;
     break;
   case LEVEL_BEAST_MAKERS:
-    g_pDrawBufA = Level18_OverlayEnd;
+    g_pLoadStagingBuffer = Level18_OverlayEnd;
     g_pfnLevelSpawnActor = Level18_SpawnActor;
     g_pfnLevelUpdateActors = Level18_UpdateActors;
     g_pfnLevelEmitParticles = Level18_EmitParticles;
@@ -246,35 +246,35 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnActorCutsceneSubstateDraw = Level18_BalloonistCutscene_Draw;
     break;
   case LEVEL_TERRACE_VILLAGE:
-    g_pDrawBufA = Level19_OverlayEnd;
+    g_pLoadStagingBuffer = Level19_OverlayEnd;
     g_pfnLevelSpawnActor = Level19_SpawnActor;
     g_pfnLevelUpdateActors = Level19_UpdateActors;
     g_pfnLevelEmitParticles = Level19_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level19_AdvanceEmitList;
     break;
   case LEVEL_MISTY_BOG:
-    g_pDrawBufA = Level20_OverlayEnd;
+    g_pLoadStagingBuffer = Level20_OverlayEnd;
     g_pfnLevelSpawnActor = Level20_SpawnActor;
     g_pfnLevelUpdateActors = Level20_UpdateActors;
     g_pfnLevelEmitParticles = Level20_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level20_AdvanceEmitList;
     break;
   case LEVEL_TREE_TOPS:
-    g_pDrawBufA = Level21_OverlayEnd;
+    g_pLoadStagingBuffer = Level21_OverlayEnd;
     g_pfnLevelSpawnActor = Level21_SpawnActor;
     g_pfnLevelUpdateActors = Level21_UpdateActors;
     g_pfnLevelEmitParticles = Level21_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level21_AdvanceEmitList;
     break;
   case LEVEL_METALHEAD:
-    g_pDrawBufA = Level22_OverlayEnd;
+    g_pLoadStagingBuffer = Level22_OverlayEnd;
     g_pfnLevelSpawnActor = Level22_SpawnActor;
     g_pfnLevelUpdateActors = Level22_UpdateActors;
     g_pfnLevelEmitParticles = Level22_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level22_AdvanceEmitList;
     break;
   case LEVEL_WILD_FLIGHT:
-    g_pDrawBufA = Level23_OverlayEnd;
+    g_pLoadStagingBuffer = Level23_OverlayEnd;
     g_pfnLevelSpawnActor = Level23_SpawnActor;
     g_pfnLevelUpdateActors = Level23_UpdateActors;
     g_pfnLevelEmitParticles = Level23_EmitParticles;
@@ -286,7 +286,7 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnFlightTimeFormatter = Level23_DrawFlightRaceTime;
     break;
   case LEVEL_DREAM_WEAVERS:
-    g_pDrawBufA = Level24_OverlayEnd;
+    g_pLoadStagingBuffer = Level24_OverlayEnd;
     g_pfnLevelSpawnActor = Level24_SpawnActor;
     g_pfnLevelUpdateActors = Level24_UpdateActors;
     g_pfnLevelEmitParticles = Level24_EmitParticles;
@@ -297,35 +297,35 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnActorCutsceneSubstateDraw = Level24_BalloonistCutscene_Draw;
     break;
   case LEVEL_DARK_PASSAGE:
-    g_pDrawBufA = Level25_OverlayEnd;
+    g_pLoadStagingBuffer = Level25_OverlayEnd;
     g_pfnLevelSpawnActor = Level25_SpawnActor;
     g_pfnLevelUpdateActors = Level25_UpdateActors;
     g_pfnLevelEmitParticles = Level25_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level25_AdvanceEmitList;
     break;
   case LEVEL_LOFTY_CASTLE:
-    g_pDrawBufA = Level26_OverlayEnd;
+    g_pLoadStagingBuffer = Level26_OverlayEnd;
     g_pfnLevelSpawnActor = Level26_SpawnActor;
     g_pfnLevelUpdateActors = Level26_UpdateActors;
     g_pfnLevelEmitParticles = Level26_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level26_AdvanceEmitList;
     break;
   case LEVEL_HAUNTED_TOWERS:
-    g_pDrawBufA = Level27_OverlayEnd;
+    g_pLoadStagingBuffer = Level27_OverlayEnd;
     g_pfnLevelSpawnActor = Level27_SpawnActor;
     g_pfnLevelUpdateActors = Level27_UpdateActors;
     g_pfnLevelEmitParticles = Level27_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level27_AdvanceEmitList;
     break;
   case LEVEL_JACQUES:
-    g_pDrawBufA = Level28_OverlayEnd;
+    g_pLoadStagingBuffer = Level28_OverlayEnd;
     g_pfnLevelSpawnActor = Level28_SpawnActor;
     g_pfnLevelUpdateActors = Level28_UpdateActors;
     g_pfnLevelEmitParticles = Level28_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level28_AdvanceEmitList;
     break;
   case LEVEL_ICY_FLIGHT:
-    g_pDrawBufA = Level29_OverlayEnd;
+    g_pLoadStagingBuffer = Level29_OverlayEnd;
     g_pfnLevelSpawnActor = Level29_SpawnActor;
     g_pfnLevelUpdateActors = Level29_UpdateActors;
     g_pfnLevelEmitParticles = Level29_EmitParticles;
@@ -337,7 +337,7 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnFlightTimeFormatter = Level29_DrawFlightRaceTime;
     break;
   case LEVEL_GNORC_GNEXUS:
-    g_pDrawBufA = Level30_OverlayEnd;
+    g_pLoadStagingBuffer = Level30_OverlayEnd;
     g_pfnLevelSpawnActor = Level30_SpawnActor;
     g_pfnLevelUpdateActors = Level30_UpdateActors;
     g_pfnLevelEmitParticles = Level30_EmitParticles;
@@ -348,40 +348,40 @@ void ApplyPerLevelGlobalsTable(void) {
     g_pfnActorCutsceneSubstateDraw = Level30_BalloonistCutscene_Draw;
     break;
   case LEVEL_GNORC_COVE:
-    g_pDrawBufA = Level31_OverlayEnd;
+    g_pLoadStagingBuffer = Level31_OverlayEnd;
     g_pfnLevelSpawnActor = Level31_SpawnActor;
     g_pfnLevelUpdateActors = Level31_UpdateActors;
     g_pfnLevelEmitParticles = Level31_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level31_AdvanceEmitList;
     break;
   case LEVEL_TWILIGHT_HARBOR:
-    g_pDrawBufA = Level32_OverlayEnd;
+    g_pLoadStagingBuffer = Level32_OverlayEnd;
     g_pfnLevelSpawnActor = Level32_SpawnActor;
     g_pfnLevelUpdateActors = Level32_UpdateActors;
     g_pfnLevelEmitParticles = Level32_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level32_AdvanceEmitList;
     break;
   case LEVEL_GNASTY_GNORC:
-    g_pDrawBufA = Level33_OverlayEnd;
+    g_pLoadStagingBuffer = Level33_OverlayEnd;
     g_pfnLevelSpawnActor = Level33_SpawnActor;
     g_pfnLevelUpdateActors = Level33_UpdateActors;
     g_pfnLevelEmitParticles = Level33_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level33_AdvanceEmitList;
     break;
   case LEVEL_GNASTYS_LOOT:
-    g_pDrawBufA = Level34_OverlayEnd;
+    g_pLoadStagingBuffer = Level34_OverlayEnd;
     g_pfnLevelSpawnActor = Level34_SpawnActor;
     g_pfnLevelUpdateActors = Level34_UpdateActors;
     g_pfnLevelEmitParticles = Level34_EmitParticles;
     g_pfnLevelAdvanceEmitList = Level34_AdvanceEmitList;
     break;
   case 99:
-    g_pDrawBufA = LevelId99_OverlayEnd;
+    g_pLoadStagingBuffer = LevelId99_OverlayEnd;
     g_pfnLevelSpawnActor = LevelId99_SpawnActor;
     g_pfnLevelUpdateActors = LevelId99_UpdateActors;
     g_pfnLevelEmitParticles = LevelId99_EmitParticles;
     g_pfnLevelAdvanceEmitList = LevelId99_AdvanceEmitList;
     break;
   }
-  g_pDrawBufB = g_pDrawBufA;
+  g_pLevelDataBuffer = g_pLoadStagingBuffer;
 }

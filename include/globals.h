@@ -932,8 +932,8 @@ extern void *g_pWorldTextureLodRecords;                   /* 0x800785c0: per wor
 extern void *g_pWorldTextureDetailRecords;                    /* 0x800785c4: per world texture, a 0xA8-byte record (21 8-byte UV records, presumably 1 + 4 + 16 for the subdivided close-up draw) */
 extern int g_nWorldTextureCount;                           /* 0x800785c8 */
 extern void *g_pWorldCollisionHeader;                   /* 0x800785d4: WorldCollisionHeader * */
-extern void *g_pDrawBufA;                               /* 0x800785d8 */
-extern void *g_pDrawBufB;                               /* 0x800785dc */
+extern void *g_pLoadStagingBuffer;                               /* 0x800785d8: first free byte past the loaded overlay (ApplyPerLevelGlobalsTable: Level<N>_OverlayEnd; title/demo/pause paths: g_abTitlescreenOverlayEnd): the CD staging buffer (asset headers, TIMs, audio before the SPU upload) */
+extern void *g_pLevelDataBuffer;                               /* 0x800785dc: where the world bundle is read and unpacked in place (UnpackWorldDataChunks); set equal to g_pLoadStagingBuffer */
 extern char *g_pWorldUnpackHead;                        /* 0x800785e0 */
 extern void *g_pPathTableBuffer;                        /* 0x800785e4 */
 extern void *g_pRenderScratchRegionBase;                /* 0x800785e8 */
@@ -1414,8 +1414,8 @@ extern int g_anVisZoneCountBlock[]; /* 0x800785b4: held-base view of g_nVisZoneC
 extern int g_anTriggerRegionCount[]; /* 0x800785bc: trigger-region count (array view; the loop bound is re-read through it) */
 extern int g_anWorldTextureCountBlock[]; /* 0x800785c8: held-base view of g_nWorldTextureCount (-7 words: g_nWorldChunkCount) */
 extern int g_nWorldChunkLodDepth; /* 0x800785cc: view-depth split RenderWorldChunks reads (>> 4) to sort chunks: a chunk whose near edge (depth - radius) is closer goes on the list at g_apMainDrawEntityList + 0x1C00, one whose far edge (+ 0x100) is beyond it on the list at + 0x2000 (a chunk straddling it goes on both). Initialize sets 0x8000 */
-extern void *g_apDrawBufBlock2[]; /* 0x800785d8: distinct alias, fade-out pass (A23) */
-extern void *g_apDrawBufBBlock[]; /* 0x800785dc */
+extern void *g_apLoadStagingBufferBlock2[]; /* 0x800785d8: distinct alias, fade-out pass (A23) */
+extern void *g_apLevelDataBufferBlock[]; /* 0x800785dc */
 extern void *volatile g_apPathTableBufferBlock[]; /* 0x800785e4 */
 extern unsigned char *g_apRenderScratchRegionBlock[]; /* 0x800785e8: g_pRenderScratchRegionBase */
 extern int g_anFlightTallyActiveSlots[]; /* 0x80078608 */

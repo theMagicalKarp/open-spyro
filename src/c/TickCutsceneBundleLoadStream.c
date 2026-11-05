@@ -14,9 +14,9 @@
    CdSync == 2, music stream table built) and runs exactly one stage of
    g_nCdStreamState:
 
-     0  kick the 0x800-byte id header read into g_pDrawBufA
+     0  kick the 0x800-byte id header read into g_pLoadStagingBuffer
      1  copy the header to the chunk-descriptor scratch, kick the TIM chunk
-     2  DMA the TIM chunk from g_pDrawBufA into VRAM at (512, 0)
+     2  DMA the TIM chunk from g_pLoadStagingBuffer into VRAM at (512, 0)
      3  kick the remaining TIM/audio bytes above the 0x80000 split
      4  upload the audio half to SPU RAM, kick the id bundle read
      5  unpack the bundle, snapshot the section-4 header, kick the ext chunk
@@ -60,7 +60,7 @@ void TickCutsceneBundleLoadStream(void) {
   if (state == CSTREAM_READ_HEADER) {
     int lba = *((volatile int *)(&g_nCdBaseLba));
     int id = *((volatile int *)(&g_nCutsceneId));
-    void *dst = *((void *volatile *)(&g_pDrawBufA));
+    void *dst = *((void *volatile *)(&g_pLoadStagingBuffer));
     archiveOff = (&g_nCutsceneArchiveOffset)[id * 2];
     StartCdReadAsync(lba, dst, 0x800, archiveOff, CD_STALL_TIMEOUT_TICKS);
     g_nCdStreamState = CSTREAM_READ_TIM;
@@ -68,10 +68,11 @@ void TickCutsceneBundleLoadStream(void) {
     int lba;
     int id;
     void *dst;
-    CopyWords(g_anWorldTimAudioChunkOffsetBlock, g_apDrawBufBlock[0], 0x1D0);
+    CopyWords(g_anWorldTimAudioChunkOffsetBlock, g_apLoadStagingBufferBlock[0],
+              0x1D0);
     lba = *((volatile int *)(&g_nCdBaseLba));
     id = *((volatile int *)(&g_nCutsceneId));
-    dst = *((void *volatile *)(&g_apDrawBufBlock[0]));
+    dst = *((void *volatile *)(&g_apLoadStagingBufferBlock[0]));
     StartCdReadAsync(lba, dst, (&g_nCutsceneHeaderChunkSize)[id],
                      g_anWorldTimAudioChunkOffsetBlock[0] +
                          (&g_nCutsceneArchiveOffset)[id * 2],
@@ -83,11 +84,11 @@ void TickCutsceneBundleLoadStream(void) {
     tim.y = 0;
     tim.w = 0x200;
     tim.h = (&g_nCutsceneHeaderChunkSize)[g_nCutsceneId] >> 10;
-    LoadImage(&tim, g_pDrawBufA);
+    LoadImage(&tim, g_pLoadStagingBuffer);
     g_nCdStreamState = CSTREAM_READ_AUDIO;
   } else if (state == CSTREAM_READ_AUDIO) {
     int lba = *((volatile int *)(&g_nCdBaseLba));
-    void *dst = *((void *volatile *)(&g_pDrawBufA));
+    void *dst = *((void *volatile *)(&g_pLoadStagingBuffer));
     int size = (*((volatile int *)(&g_nWorldTimAudioChunkSize))) - 0x80000;
     int id = *((volatile int *)(&g_nCutsceneId));
     int off = *((volatile int *)(&g_nWorldTimAudioChunkOffset));
@@ -97,13 +98,13 @@ void TickCutsceneBundleLoadStream(void) {
     g_nCdStreamState = CSTREAM_UPLOAD_AUDIO;
   } else if (state == CSTREAM_UPLOAD_AUDIO) {
     SetSpuTransferStartAddr(0x1010);
-    WriteSpuRam(g_pDrawBufA, 0x7EFF0);
+    WriteSpuRam(g_pLoadStagingBuffer, 0x7EFF0);
     while (GetSpuTransferStatus(0) == 0) {
     }
 
     {
       int lba = *((volatile int *)(&g_nCdBaseLba));
-      void *dst = *((void *volatile *)(&g_pDrawBufB));
+      void *dst = *((void *volatile *)(&g_pLevelDataBuffer));
       int id = *((volatile int *)(&g_nCutsceneId));
       int size = *((volatile int *)(&g_nWorldBundleChunkSize));
       int off = *((volatile int *)(&g_nWorldBundleChunkOffset));
@@ -113,7 +114,7 @@ void TickCutsceneBundleLoadStream(void) {
     }
     g_nCdStreamState = CSTREAM_UNPACK;
   } else if (state == CSTREAM_UNPACK) {
-    unpacked = UnpackWorldDataChunks(g_pDrawBufB, 1);
+    unpacked = UnpackWorldDataChunks(g_pLevelDataBuffer, 1);
     *((SkyHeader *)(&g_nSkyChunkCount)) =
         *((SkyHeader *)(&g_nLevelSkyChunkCount));
     g_pWorldUnpackHead = (char *)unpacked;

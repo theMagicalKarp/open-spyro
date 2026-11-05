@@ -9,7 +9,8 @@
 #include "sample_bank.h"
 #include "vecmath.h"
 
-extern unsigned char g_abDrawBufPool[]; /* draw buffer pool */
+extern unsigned char g_abTitlescreenOverlayEnd[]; /* first free byte past the
+                                                     titlescreen overlay */
 extern int
     g_nCdAudioVolume_blk[]; /* [0] music volume, -0x31c bytes SpuCommonAttr */
 
@@ -69,8 +70,8 @@ void PauseMenu_Update(void) {
     r.h = 0x1E0;
     ClearImage(&r, 0, 0, 0);
     DrawSync(0);
-    g_pDrawBufA = g_abDrawBufPool;
-    g_pDrawBufB = g_abDrawBufPool;
+    g_pLoadStagingBuffer = g_abTitlescreenOverlayEnd;
+    g_pLevelDataBuffer = g_abTitlescreenOverlayEnd;
     g_nCdStreamState = CSTREAM_READ_HEADER;
     g_nCutsceneId = CUTSCENE_TITLE_BACKDROP;
     {

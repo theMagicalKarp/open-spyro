@@ -5,21 +5,22 @@
 #include "main_shared.h"
 
 /* Boot-time bring-up + title sequence (0x800127C0, 0x530). Brings up the GPU,
-   SPU, pad, sound engine, CD and GTE, publishes both draw buffers, then runs
-   the boot presentation as four 8-frame fades driven by AddBiasToColorRuns:
-   the title art fades in and back out around the four sync CD loads, then the
-   splash art (loaded into its own buffer 0x5A000 below the world chunk) fades
-   in while the world bundle streams, each pair separated by a 210-vblank hold.
-   Ends by clearing the screen, blitting the loaded frame back into VRAM,
-   carving the work-area top out of the crt0 stack size and handing off to the
-   story intro.
+   SPU, pad, sound engine, CD and GTE, points both load buffers past the
+   titlescreen overlay, then runs the boot presentation as four 8-frame fades
+   driven by AddBiasToColorRuns: the title art fades in and back out around the
+   four sync CD loads, then the splash art (loaded into its own buffer 0x5A000
+   below the world chunk) fades in while the world bundle streams, each pair
+   separated by a 210-vblank hold. Ends by clearing the screen, blitting the
+   loaded frame back into VRAM, carving the work-area top out of the crt0 stack
+   size and handing off to the story intro.
 
    Loop forms are NOT uniform and the difference is load-bearing. Fade 1 is a
    real do/while over the direct alias array: loop.c hoists the invariant
-   `&g_pDrawBufA` into the preheader, which is what gives the original its held
-   s0 base, and the RECT literals still re-materialize per iteration because
-   the inner `if (i == 0)` splits the body. Fades 2/3/4 must be goto-loops --
-   as do/while, loop.c hoists their RECT literals into callee-saved registers
+   `&g_pLoadStagingBuffer` into the preheader, which is what gives the original
+   its held s0 base, and the RECT literals still re-materialize per iteration
+   because the inner `if (i == 0)` splits the body. Fades 2/3/4 must be
+   goto-loops -- as do/while, loop.c hoists their RECT literals into
+   callee-saved registers
    (+4 insns each). Each fade also carries its OWN counter/bias/buffer locals:
    one shared counter lives across the whole body and steals the low
    callee-saved register the buffer base needs.
@@ -67,23 +68,24 @@ void Initialize(void) {
   InitGeom();
   SetGeomOffset(0x100, 0x78);
   SetGeomScreen(0x155);
-  g_apDrawBufBlock[0] = &g_abDrawBufPool;
-  g_pDrawBufB = &g_abDrawBufPool;
+  g_apLoadStagingBufferBlock[0] = &g_abTitlescreenOverlayEnd;
+  g_pLevelDataBuffer = &g_abTitlescreenOverlayEnd;
   start = VSync(-1);
   SetDispMask(0);
-  fill = g_apDrawBufBlock[0];
+  fill = g_apLoadStagingBufferBlock[0];
   g_FrameDispEnv0.isrgb24 = 1;
   g_FrameDispEnv1.isrgb24 = 1;
   FillWord(fill, 0, 0x5A000);
   i = 0;
   bias = -0xE0;
   do {
-    AddBiasToColorRuns(&g_apMainDrawEntityList, g_apDrawBufBlock[0], bias);
+    AddBiasToColorRuns(&g_apMainDrawEntityList, g_apLoadStagingBufferBlock[0],
+                       bias);
     rect.w = 0x300;
     rect.x = 0;
     rect.y = 0;
     rect.h = 0xF0;
-    LoadImage(&rect, g_apDrawBufBlock[0]);
+    LoadImage(&rect, g_apLoadStagingBufferBlock[0]);
     DrawSync(0);
     VSync(0);
     PutDispEnv(&g_FrameDispEnv1);
@@ -127,9 +129,9 @@ hold_title:
     VSync(0);
     goto hold_title;
   }
-  FillWord(g_apDrawBufBlock2[0], 0, 0x5A000);
+  FillWord(g_apLoadStagingBufferBlock2[0], 0, 0x5A000);
   j = 0;
-  buf2 = g_apDrawBufBlock2;
+  buf2 = g_apLoadStagingBufferBlock2;
 fade_out_title:
   AddBiasToColorRuns(&g_apMainDrawEntityList, buf2[0], -(j + 1) << 5);
   rect.w = 0x300;

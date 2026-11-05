@@ -30,8 +30,8 @@ void StoryIntro_Update(void) {
       if (g_nTitleExitPath == TITLE_EXIT_NEW_GAME) {
         g_nCutsceneId = CUTSCENE_OPENING;
         g_nCdStreamState = CSTREAM_READ_HEADER;
-        g_pDrawBufA = g_pSharedLoadBuffer;
-        g_pDrawBufB = g_pSharedLoadBuffer;
+        g_pLoadStagingBuffer = g_pSharedLoadBuffer;
+        g_pLevelDataBuffer = g_pSharedLoadBuffer;
       } else if (g_nTitleExitPath == TITLE_EXIT_LOADED_GAME) {
         g_nFlightLevelActive = 0;
         g_nCdStreamState = LSTREAM_FRESH;

@@ -42,8 +42,8 @@ int TickDemoPlayback(void) {
       rect[0].h = 0x1e0;
       ClearImage(rect, 0, 0, 0);
       DrawSync(0);
-      g_pDrawBufA = &g_abDrawBufPool;
-      g_pDrawBufB = &g_abDrawBufPool;
+      g_pLoadStagingBuffer = &g_abTitlescreenOverlayEnd;
+      g_pLevelDataBuffer = &g_abTitlescreenOverlayEnd;
       g_nHitRumbleTimer = 0;
       g_nVibrationLevel = 0;
       g_nPulseRumbleTimer = 0;
