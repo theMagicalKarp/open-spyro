@@ -76,6 +76,10 @@ enum EggMode {
   EGG_COLLECTED = 5,    /* counts the egg and despawns */
 };
 
+/* EMIT_ACTOR_SPARK colour of the sparks a flying egg trails
+ * (EGG_SPIRAL_UP .. EGG_SPIRAL_DOWN). */
+#define EGG_SPARK_COLOR 0x602080
+
 /* ->mode of the save-prompt host (ACTOR_TYPE_SAVE_HOST, SaveHostState). */
 enum SaveHostMode {
   SAVEHOST_WAIT_AWAY = 0,  /* until Spyro is away from the anchor */

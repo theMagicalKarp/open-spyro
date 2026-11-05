@@ -265,9 +265,9 @@ void Level5_UpdateActors(void) {
           actor->mode = EGG_COLLECTED;
         }
       }
-      if ((unsigned int)(actor->mode - 2) < 3) {
+      if ((unsigned int)(actor->mode - EGG_SPIRAL_UP) < 3) {
         AimCameraStickTowardPoint(&actor->posX);
-        g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, 0x602080);
+        g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, EGG_SPARK_COLOR);
       }
 
       switch (actor->mode) {
