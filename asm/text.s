@@ -24,11 +24,11 @@ glabel main
     /* 2A24 80012224 02001124 */  addiu      $s1, $zero, 0x2
     /* 2A28 80012228 04001024 */  addiu      $s0, $zero, 0x4
   .L8001222C:
-    /* 2A2C 8001222C 040680A3 */  sb         $zero, %gp_rel(g_nInGameTick)($gp)
+    /* 2A2C 8001222C 040680A3 */  sb         $zero, %gp_rel(g_nPadLatchOpen)($gp)
     /* 2A30 80012230 17CE000C */  jal        GamestateUpdate
     /* 2A34 80012234 00000000 */   nop
     /* 2A38 80012238 FC04828F */  lw         $v0, %gp_rel(g_nFrameTicks)($gp)
-    /* 2A3C 8001223C 040692A3 */  sb         $s2, %gp_rel(g_nInGameTick)($gp)
+    /* 2A3C 8001223C 040692A3 */  sb         $s2, %gp_rel(g_nPadLatchOpen)($gp)
     /* 2A40 80012240 680482AF */  sw         $v0, %gp_rel(g_nFrameStep)($gp)
     /* 2A44 80012244 02004228 */  slti       $v0, $v0, 0x2
     /* 2A48 80012248 02004010 */  beqz       $v0, .L80012254
@@ -74668,8 +74668,8 @@ glabel PollPadAndDistributeInput
     /* 448D8 800540D8 0780063C */  lui        $a2, %hi(g_dwPadHeld)
     /* 448DC 800540DC 8073C624 */  addiu      $a2, $a2, %lo(g_dwPadHeld)
     /* 448E0 800540E0 0000C48C */  lw         $a0, 0x0($a2)
-    /* 448E4 800540E4 0780033C */  lui        $v1, %hi(g_nInGameTick)
-    /* 448E8 800540E8 68586390 */  lbu        $v1, %lo(g_nInGameTick)($v1)
+    /* 448E4 800540E4 0780033C */  lui        $v1, %hi(g_nPadLatchOpen)
+    /* 448E8 800540E8 68586390 */  lbu        $v1, %lo(g_nPadLatchOpen)($v1)
     /* 448EC 800540EC 27100400 */  nor        $v0, $zero, $a0
     /* 448F0 800540F0 24285000 */  and        $a1, $v0, $s0
     /* 448F4 800540F4 27101000 */  nor        $v0, $zero, $s0
@@ -74785,8 +74785,8 @@ glabel PollPadAndDistributeInput
     /* 44A90 80054290 AD500108 */  j          .L800542B4
     /* 44A94 80054294 000044AC */   sw        $a0, 0x0($v0)
   .L80054298:
-    /* 44A98 80054298 0780023C */  lui        $v0, %hi(g_nInGameTick)
-    /* 44A9C 8005429C 68584290 */  lbu        $v0, %lo(g_nInGameTick)($v0)
+    /* 44A98 80054298 0780023C */  lui        $v0, %hi(g_nPadLatchOpen)
+    /* 44A9C 8005429C 68584290 */  lbu        $v0, %lo(g_nPadLatchOpen)($v0)
     /* 44AA0 800542A0 00000000 */  nop
     /* 44AA4 800542A4 03004010 */  beqz       $v0, .L800542B4
     /* 44AA8 800542A8 00000000 */   nop

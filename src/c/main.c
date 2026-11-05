@@ -2,7 +2,7 @@
 #include "globals.h"
 #include "sdata.h"
 
-SDATA(g_nInGameTick, 4);
+SDATA(g_nPadLatchOpen, 4);
 SDATA(g_nFrameTicks, 4);
 SDATA(g_nFrameStep, 4);
 SDATA(g_nSkipGamestateDraw, 4);
@@ -11,14 +11,15 @@ SDATA(g_nSkipGamestateDraw, 4);
    loop. g_nFrameStep is the number of VBlanks the last frame took, clamped to
    2..4; GamestateDraw is skipped on a frame whose update switched gamestate
    (g_nSkipGamestateDraw). The low byte of
-   g_nInGameTick flags "between update and draw". */
+   g_nPadLatchOpen is 0 while the update runs, so the VBlank pad callback
+   does not latch new pad state under it. */
 int main(void) {
   Initialize();
   for (;;) {
-    *(char *)&g_nInGameTick = 0;
+    *(char *)&g_nPadLatchOpen = 0;
     GamestateUpdate();
     g_nFrameStep = g_nFrameTicks;
-    *(char *)&g_nInGameTick = 1;
+    *(char *)&g_nPadLatchOpen = 1;
     if (g_nFrameStep < 2) {
       g_nFrameStep = 2;
     }

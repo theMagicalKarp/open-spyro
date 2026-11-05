@@ -645,7 +645,7 @@ extern int g_nPortalSkyYawSpin;        /* 0x80075858: portal-surface view spin, 
 extern void *g_pDemoPadCursor;           /* 0x8007585c: read/write cursor into the recorded demo pad stream (SampleDemoPadFrame) */
 extern int g_nTotalTreasureCollected;        /* 0x80075860: game-wide treasure (gem) total: pickups, flight bonuses; 14000 (0x36B0) picks the post-game credits return */
 extern int g_nCdStreamState;                 /* 0x80075864: enum CutsceneStreamState or LevelStreamState (cd_stream.h), by which machine runs */
-extern int g_nInGameTick;                    /* 0x80075868 */
+extern int g_nPadLatchOpen;                    /* 0x80075868: low byte 0 while GamestateUpdate runs, 1 otherwise (main); PollPadAndDistributeInput only latches pad type / held / pressed into the globals when it is set */
 extern int g_nLevelGemsAtEntry;              /* 0x8007587c: g_anLevelGemsCollected[level] on entry; the tally shows the difference */
 extern int g_nLevelSelectModeActive;         /* 0x80075880 */
 extern int g_nDemoExitFadeFrame;                /* 0x80075884: demo-end fade frame, 0 until the demo ends; at 0x10 the demo tears down */

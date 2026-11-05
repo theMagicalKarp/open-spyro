@@ -177,7 +177,7 @@ void PollPadAndDistributeInput(void) {
     held = g_adwPadHeldBlock[0];
     pressed = ~held & buttons;
     released = held & ~buttons;
-    if (*(unsigned char *)&g_nInGameTick != 0) {
+    if (*(unsigned char *)&g_nPadLatchOpen != 0) {
       g_nPadType = padType;
       g_adwPadHeldBlock[0] = buttons;
       if (g_nFrameTicks != 0) {
@@ -219,7 +219,7 @@ void PollPadAndDistributeInput(void) {
       analog = &ring[18];
       *(unsigned int *)((char *)analog + slot) = g_dwPadAnalogCalibrated;
     }
-  } else if (*(unsigned char *)&g_nInGameTick != 0) {
+  } else if (*(unsigned char *)&g_nPadLatchOpen != 0) {
     g_nPadType = padType;
   }
 
