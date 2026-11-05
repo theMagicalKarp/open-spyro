@@ -274,7 +274,7 @@ enum ActorType {
   ACTOR_TYPE_AIMED_SHOT = 17, /* levels 5/17/23/34: leaves its parent's facing aimed at Spyro (speed 0xA0); despawns on timeout, a world hit or reaching Spyro (DriftState) */
   ACTOR_TYPE_PRESSURE_SWITCH = 18, /* level 0: pressure switch (SwitchState) */
   ACTOR_TYPE_PATROL_WARD = 23, /* level 3: patrol guard (WardState) */
-  ACTOR_TYPE_GUNNER = 28, /* level 20: wakes its partner, turns to it, fires type 400 shots (GunnerState) */
+  ACTOR_TYPE_GUNNER = 28, /* level 20: wakes its partner, turns to it, guards and fires at Spyro (GunnerState) */
   ACTOR_TYPE_LURKER_TETHER = 31, /* level 20: the tether ACTOR_TYPE_LURKER drags Spyro with; no UpdateActors arm */
   ACTOR_TYPE_CARRIED_EGG = 32, /* level 19: rides attach point 0 of the bolt sentry that spawns it while the sentry stays in BSENTRY_THROW */
   ACTOR_TYPE_EGG_THIEF = 33,       /* runs off with a dragon egg (34), drops it when hit (ThiefState) */

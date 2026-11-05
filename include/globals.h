@@ -1040,8 +1040,8 @@ extern int g_nSpyroScriptedMoveMode;                    /* 0x80078bec */
 extern int g_nSpyroFlameState;                     /* 0x80078bf0 */
 extern int g_nSpyroFlameTimer;                     /* 0x80078bf8 */
 extern int g_nSpyroSwingEulerTargetX;               /* 0x80078bfc: spring targets of Spyro's swing euler (x, y, z = this and the next two words), smoothed into g_abSpyroSwingByteEuler by SmoothSpyroByteEulerSpring */
-extern int g_nSpyroSwingEulerTargetY;                /* 0x80078c00: swing-euler y target: free-look stick pitch (camera mode 9, +-0x200), carried-prop shake in the levels */
-extern int g_nSpyroSwingEulerTargetZ;                /* 0x80078c04: swing-euler z target: free-look stick yaw (camera mode 9, +-0x300) */
+extern int g_nSpyroSwingEulerTargetY;                /* 0x80078c00: swing-euler y target: free-look stick pitch (CAM_MODE_FREE_LOOK, +-0x200), carried-prop shake in the levels */
+extern int g_nSpyroSwingEulerTargetZ;                /* 0x80078c04: swing-euler z target: free-look stick yaw (CAM_MODE_FREE_LOOK, +-0x300) */
 extern int g_anSpyroSwingEulerPrev[3];                  /* 0x80078c08 */
 extern int g_anSpyroSwingEulerSpringAccum[3];           /* 0x80078c14 */
 extern int g_anSpyroComposedBodyMtx[5];                 /* 0x80078c20 */
@@ -1371,7 +1371,7 @@ extern unsigned char g_bCdMixRightToLeft; /* 0x800776d3: CdMix attenuation R->L 
 extern int g_anLevelSkyZoneListCountBlock[]; /* 0x80077788: held-base view of g_nLevelSkyZoneListCount */
 extern unsigned char g_abLevelSkyBgColor[]; /* 0x80077790: the level sky's background colour (r, g, b; SkyHeader.color) */
 extern int g_anActorCutsceneTimerBlock[]; /* 0x800777ec */
-extern int g_nActorCutsceneTimer; /* 0x800777ec: gamestate 0xC transition timer (array view g_anActorCutsceneTimerBlock) */
+extern int g_nActorCutsceneTimer; /* 0x800777ec: GS_ACTOR_CUTSCENE transition timer (array view g_anActorCutsceneTimerBlock) */
 extern int g_nActorCutsceneCardVariant; /* 0x800777fc: transition card variant */
 extern int g_nActorCutsceneCamYawStart; /* 0x80077820: camera yaw start   (block +0x34) */
 extern int g_nActorCutsceneCamRadiusStart; /* 0x80077824: camera radius start (block +0x38) */
