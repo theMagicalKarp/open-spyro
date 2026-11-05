@@ -376,7 +376,9 @@ extern unsigned char g_abWorldChunkTriangleSubdiv4UvRotIdx[64];       /* 0x8006d
 extern int g_anWorldChunkTriangleUvOrientPairs[128];         /* 0x8006d3c8 */
 extern int g_anWorldChunkTriList6Vert[7];                    /* 0x8006d5c8 */
 extern int g_anWorldChunkTriList9Vert[12];                   /* 0x8006d5e4 */
-extern int g_anAnimRootMotionDeltaLut[128];                  /* 0x8006d614 */
+extern int g_anAnimRootMotionDeltaLut[125];                  /* 0x8006d614 */
+extern signed char g_abArcSinLut[256]; /* 0x8006d808: 0x40 + asin(s) in 8-bit angle units (0x80 = 180 deg) for s = (i - 0x80) / 0x80; EmitSecondaryActorPrimitives (raw address) */
+extern unsigned char g_abArcTanOctantLut[68]; /* 0x8006d908: atan(i / 64) for i = 0..64 in 8-bit angle units (0x20 = 45 deg), 3 pad bytes; ArcTan2_8bit and EmitSecondaryActorPrimitives */
 extern int g_anSpyroFlameAgeConfigShort[32];            /* 0x8006d94c */
 extern int g_anSpyroFlameAgeConfigLong[40];             /* 0x8006d9cc */
 extern int g_anSpyroFlameWindupAnchorOffsets[12];       /* 0x8006da6c */

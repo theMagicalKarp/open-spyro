@@ -2726,15 +2726,14 @@ dlabel g_anAnimRootMotionDeltaLut
     /* 5DFFC 8006D7FC 06300000 */ .word 0x00003006
     /* 5E000 8006D800 0630C000 */ .word 0x00C03006
     /* 5E004 8006D804 06308001 */ .word 0x01803006
+enddlabel g_anAnimRootMotionDeltaLut
+
+nonmatching g_abArcSinLut
+
+dlabel g_abArcSinLut
     /* 5E008 8006D808 0406080A */ .word 0x0A080604
     /* 5E00C 8006D80C 0B0C0D0E */ .word 0x0E0D0C0B
     /* 5E010 8006D810 0F101111 */ .word 0x1111100F
-enddlabel g_anAnimRootMotionDeltaLut
-
-nonmatching D_8006D814
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8006D814
     /* 5E014 8006D814 12131414 */ .word 0x14141312
     /* 5E018 8006D818 15161617 */ .word 0x17161615
     /* 5E01C 8006D81C 17181919 */ .word 0x19191817
@@ -2796,11 +2795,11 @@ dlabel D_8006D814
     /* 5E0FC 8006D8FC 6F6F7071 */ .word 0x71706F6F
     /* 5E100 8006D900 72737475 */ .word 0x75747372
     /* 5E104 8006D904 76787A7C */ .word 0x7C7A7876
-enddlabel D_8006D814
+enddlabel g_abArcSinLut
 
-nonmatching D_8006D908
+nonmatching g_abArcTanOctantLut
 
-dlabel D_8006D908
+dlabel g_abArcTanOctantLut
     /* 5E108 8006D908 00010102 */ .word 0x02010100
     /* 5E10C 8006D90C 03030404 */ .word 0x04040303
     /* 5E110 8006D910 05060607 */ .word 0x07060605
@@ -2818,7 +2817,7 @@ dlabel D_8006D908
     /* 5E140 8006D940 1D1E1E1E */ .word 0x1E1E1E1D
     /* 5E144 8006D944 1F1F1F20 */ .word 0x201F1F1F
     /* 5E148 8006D948 20000000 */ .word 0x00000020
-enddlabel D_8006D908
+enddlabel g_abArcTanOctantLut
 
 nonmatching g_anSpyroFlameAgeConfigShort
 

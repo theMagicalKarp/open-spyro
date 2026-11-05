@@ -102,7 +102,7 @@ void FillBlock16(void *dst, int value, int count);
 /* 0x80016958 (hand-written): Copies byte_count bytes (a non-zero multiple of 4) word by word; reads the source four words at a time, so it may read up to 12 bytes past its end. */
 void CopyWords(void *dst, void *src, int byte_count);
 
-/* 0x800169ac: 2-arg arctan returning 8-bit angle (0..0xff = 0..360deg). Smaller, lower-precision sibling of ArcTan2 — uses the byte LUT D_8006D908. Arguments are (x, y): angle 0 lies along +x and 0x40 along +y. */
+/* 0x800169ac: 2-arg arctan returning 8-bit angle (0..0xff = 0..360deg). Smaller, lower-precision sibling of ArcTan2 — uses the byte LUT g_abArcTanOctantLut (one octant). Arguments are (x, y): angle 0 lies along +x and 0x40 along +y. */
 int ArcTan2_8bit(int x, int y);
 
 #ifndef ATAN_ANGLE8
@@ -301,7 +301,7 @@ void EmitActorDrawList(void);
 /* 0x800208fc: Sibling of BuildActorDrawList. Walks the actor pointer table at g_apSecondaryDrawEntityList (terminated by NULL) — a different source than BuildActorDrawList's g_pOtDepthBinHead0 depth-bin list — performs frustum culling against bounds in g_anCameraPos, then composes each actor's per-axis Euler rotation (packed in *(actor + 0x44)) onto the camera matrix g_anWorldToCameraRotMtx..de0 via GTE rtv0 + sine/cosine LUTs. Appends 0x38-byte entries (transform + matrix + back-pointer) to the visible-actor list at g_anActorDrawList. Writes the terminator 0 at the end. */
 void BuildSecondaryActorDrawList(void);
 
-/* 0x80020f34: Sibling of EmitActorDrawList. Walks the visible-actor list at g_anActorDrawList (filled by BuildActorDrawList + BuildSecondaryActorDrawList). For each entry, loads the per-actor 3x3 matrix and translation into the GTE, sets background depth via gte_ldbkdir for per-vertex lighting, and emits transformed mesh primitives to the scratch buffer at g_anOtPrimSaveList / the active prim buffer at g_pPrimBufferWriteCursor. Restores g_pPrimBufferWriteCursor on completion. */
+/* 0x80020f34: Sibling of EmitActorDrawList. Walks the visible-actor list at g_anActorDrawList (filled by BuildActorDrawList + BuildSecondaryActorDrawList). For each entry, loads the per-actor 3x3 matrix and translation into the GTE, sets background depth via gte_ldbkdir for per-vertex lighting, and emits transformed mesh primitives to the scratch buffer at g_anOtPrimSaveList / the active prim buffer at g_pPrimBufferWriteCursor. Restores g_pPrimBufferWriteCursor on completion. Per vertex it also derives a byte pair from the rotated normal for the texture lookup: an 8-bit atan2 heading (octant + g_abArcTanOctantLut) and an asin pitch (g_abArcSinLut). */
 void EmitSecondaryActorPrimitives(void);
 
 /* 0x80022a2c: Walks the sprite/HUD request queue at g_apSpritePrimQueue (refilled by EnqueuePendingSpritePrims) and rasterizes each request. For each actor record: builds its rotation from the record's rotX / rotY / rotZ bytes (sine-LUT matrices, each skipped when 0; otBias is the top byte of the same word), runs the per-vertex GTE transform with optional Z-bias depth cueing, emits POLY_F3/POLY_F4/POLY_G4 primitives into the OT depth bins, and updates the per-bin head/tail pointers (g_pOtDepthBinHead0 / g_pOtDepthBinTail0) directly for depth-sorted insertion. Inserts a TPAGE/DRAWMODE command before the first run of primitives in a frame. */

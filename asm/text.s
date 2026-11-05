@@ -5159,8 +5159,8 @@ glabel ArcTan2_8bit
     /* 7284 80016A84 01000120 */  addi       $at, $zero, 0x1 /* handwritten instruction */
     /* 7288 80016A88 C0000220 */  addi       $v0, $zero, 0xC0 /* handwritten instruction */
   .L80016A8C:
-    /* 728C 80016A8C 0780033C */  lui        $v1, %hi(D_8006D908)
-    /* 7290 80016A90 08D96324 */  addiu      $v1, $v1, %lo(D_8006D908)
+    /* 728C 80016A8C 0780033C */  lui        $v1, %hi(g_abArcTanOctantLut)
+    /* 7290 80016A90 08D96324 */  addiu      $v1, $v1, %lo(g_abArcTanOctantLut)
     /* 7294 80016A94 12200000 */  mflo       $a0
     /* 7298 80016A98 20186400 */  add        $v1, $v1, $a0 /* handwritten instruction */
     /* 729C 80016A9C 00006390 */  lbu        $v1, 0x0($v1)
