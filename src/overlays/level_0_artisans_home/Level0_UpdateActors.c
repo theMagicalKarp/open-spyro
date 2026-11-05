@@ -1931,10 +1931,10 @@ void Level0_UpdateActors(void) {
       actor->rotY = (unsigned short)g_anSineLut[st->angle] >> 7;
       st->angle = st->angle + g_nFrameStep * 2;
 
-      if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x200) {
+      if (ApproxDist2D(&actor->posX, &SPY.posX) < KEY_TOUCH_RANGE) {
         dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
-        if (dz > 0 ? dz < 0x200
-                   : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x200) {
+        if (dz > 0 ? dz < KEY_TOUCH_DZ
+                   : SPY.posZ - (actor->posZ - actor->floorOffset) < KEY_TOUCH_DZ) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
@@ -2110,11 +2110,11 @@ void Level0_UpdateActors(void) {
           }
         }
 
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 2048) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < STATUE_NEAR_RANGE) {
 
           SubtractVector(svK, &actor->posX, &SPY.posX);
           svK[2] = (svK[2] * 3) >> 2;
-          if (VectorLength(svK, VEC_LEN_XYZ) < 1088) {
+          if (VectorLength(svK, VEC_LEN_XYZ) < STATUE_TOUCH_RADIUS) {
             int rotZ;
             int cutsceneId;
             if (st->partner != -1) {

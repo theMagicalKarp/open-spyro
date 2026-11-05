@@ -2973,11 +2973,11 @@ void Level22_UpdateActors(void) {
         actor->rotY = (unsigned short)g_anSineLut[st->angle] >> 7;
         st->angle += g_nFrameStep * 2;
 
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x200) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < KEY_TOUCH_RANGE) {
           int height = actor->posZ - actor->floorOffset;
           int drop = height - SPY.posZ;
 
-          if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
+          if (drop > 0 ? drop < KEY_TOUCH_DZ : (SPY.posZ - height) < KEY_TOUCH_DZ) {
             int i;
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
@@ -3420,11 +3420,11 @@ void Level22_UpdateActors(void) {
         }
 
         at = &actor->posX;
-        if (ApproxDist2D(at, &SPY.posX) < 0x800) {
+        if (ApproxDist2D(at, &SPY.posX) < STATUE_NEAR_RANGE) {
           SubtractVector(g536, at, &SPY.posX);
           g536[2] = (g536[2] * 3) >> 2;
 
-          if (VectorLength(g536, VEC_LEN_XYZ) < 0x440) {
+          if (VectorLength(g536, VEC_LEN_XYZ) < STATUE_TOUCH_RADIUS) {
             int facing;
 
             facing =

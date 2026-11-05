@@ -1410,11 +1410,11 @@ void Level34_UpdateActors(void) {
         actor->rotY = (unsigned short)g_anSineLut[st->angle] >> 7;
         st->angle += g_nFrameStep * 2;
 
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x200) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < KEY_TOUCH_RANGE) {
           int height = actor->posZ - actor->floorOffset;
           int drop = height - SPY.posZ;
 
-          if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
+          if (drop > 0 ? drop < KEY_TOUCH_DZ : (SPY.posZ - height) < KEY_TOUCH_DZ) {
             int i;
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);

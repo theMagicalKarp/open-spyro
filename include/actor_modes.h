@@ -89,6 +89,11 @@ enum DragonStatueMode {
   STATUE_RESCUING = 2,  /* BeginDragonRescue ran (also the save menu's replay) */
 };
 
+/* A statue is freed when Spyro comes within TOUCH_RADIUS of it (3D, height
+ * scaled by 3/4), tested once he is within NEAR_RANGE (2D). */
+#define STATUE_NEAR_RANGE 0x800
+#define STATUE_TOUCH_RADIUS 0x440
+
 /* ->mode of a butterfly (ACTOR_TYPE_BUTTERFLY, WanderState). */
 enum ButterflyMode {
   BUTTERFLY_FLUTTER = 0, /* drifts about its spawn point */
@@ -157,6 +162,10 @@ enum KeySubMode {
   KEY_WAITING = 0, /* rocks and sparkles until Spyro touches it */
   KEY_TAKEN = 2,   /* picked up (hidden); the locked chest flies it to its lock */
 };
+
+/* Spyro picks the key up within this 2D distance and height of it. */
+#define KEY_TOUCH_RANGE 0x200
+#define KEY_TOUCH_DZ 0x200
 
 /* ->subMode of the locked chest (ACTOR_TYPE_LOCKED_CHEST, LockedChestState). */
 enum LockedChestSubMode {

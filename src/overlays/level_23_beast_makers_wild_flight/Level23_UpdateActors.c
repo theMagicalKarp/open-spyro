@@ -1245,10 +1245,10 @@ void Level23_UpdateActors(void) {
       actor->rotY = (unsigned short)g_anSineLut[st->angle] >> 7;
       st->angle = st->angle + g_nFrameStep * 2;
 
-      if (ApproxDist2D(&actor->posX, &spy->posX) < 0x200) {
+      if (ApproxDist2D(&actor->posX, &spy->posX) < KEY_TOUCH_RANGE) {
         dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
-        if (dz > 0 ? dz < 0x200
-                   : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x200) {
+        if (dz > 0 ? dz < KEY_TOUCH_DZ
+                   : SPY.posZ - (actor->posZ - actor->floorOffset) < KEY_TOUCH_DZ) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
