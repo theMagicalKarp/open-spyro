@@ -142,7 +142,7 @@ void Level1_BalloonistCutscene_Update(void)
           CopyVector(g_anActorCutsceneSpyroFrom, SPYRO_POS_VIA_ANIM_PREV);
           SPYRO_TO_X_VIA_FROM = 0x4A0;
           g_nActorCutsceneSpyroToY = 0;
-          g_nActorCutsceneSpyroToZ = 0x164;
+          g_nActorCutsceneSpyroToZ = SPYRO_RADIUS;
           RotateVectorByMatrix(g_pActorCutsceneActor->mtx, &g_anActorCutsceneSpyroFrom[3], &g_anActorCutsceneSpyroFrom[3]);
           AddVector(&g_anActorCutsceneSpyroFrom[3], &g_anActorCutsceneSpyroFrom[3], &g_pActorCutsceneActor->posX);
           g_nActorCutsceneSpyroYawStart = g_bSpyroPersistentEulerZ * 0x10;
@@ -787,7 +787,7 @@ void Level1_BalloonistCutscene_Update(void)
         k = g_anActorCutsceneLandingY[m];
         g_nActorCutsceneSpyroToZ = g_nSpyroWorldPosZ;
         g_nActorCutsceneSpyroToY = k;
-        g_nActorCutsceneSpyroToZ = FindGroundHeightBelow(&g_nActorCutsceneTimer[8], 0x10000) + 0x164;
+        g_nActorCutsceneSpyroToZ = FindGroundHeightBelow(&g_nActorCutsceneTimer[8], 0x10000) + SPYRO_RADIUS;
         k = g_bSpyroAnimFrame;
         g_bSpyroAnimCurrent = SPYRO_ANIMID_JUMP;
         g_bSpyroAnimFrame = 0;

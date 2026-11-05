@@ -222,7 +222,8 @@ void DispatchSpyroPhysicsByState(void) {
       if (g_nFlightLevelActive != 0) {
         TRACK_FLOOR_REFERENCE();
         if (g_nSpyroSubstate == SPYRO_SUB_FLY_RUN &&
-            CollideSphereWithWorldAndActors(&SPY[SPY_POS], 0x164, 0x164) != 0) {
+            CollideSphereWithWorldAndActors(&SPY[SPY_POS], SPYRO_RADIUS,
+                                            SPYRO_RADIUS) != 0) {
           g_pfnLevelEndFlightRun();
         }
       } else {
@@ -306,7 +307,7 @@ void DispatchSpyroPhysicsByState(void) {
     if (*timer != 0) {
       n = *timer + 8;
       *timer = n;
-      g_nSpyroWorldPosZ = g_nSpyroTriggerEntryZ + 0x164;
+      g_nSpyroWorldPosZ = g_nSpyroTriggerEntryZ + SPYRO_RADIUS;
       if (g_nSparxHealth >= SPARX_GONE) {
         if (n > 0x96) {
           *timer = 0x96;
@@ -327,7 +328,7 @@ void DispatchSpyroPhysicsByState(void) {
     CopyVector(trail, &SPY[SPY_POS]);
     trail[0] += (GetRandomU32() & 0xFE) - 0x7F;
     trail[1] += (GetRandomU32() & 0xFE) - 0x7F;
-    trail[2] -= 0x164;
+    trail[2] -= SPYRO_RADIUS;
     CopyVector(trailVel, &SPY[SPY_MOTION]);
     RShiftVector3(trailVel, 6);
     g_pfnLevelEmitParticles(1, EMIT_SPEED_DUST, trail, (int)trailVel);

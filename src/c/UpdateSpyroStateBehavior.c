@@ -466,7 +466,7 @@ void UpdateSpyroStateBehavior(void) {
     if ((g_dwPadHeld & (PAD_CROSS | PAD_SQUARE)) == (PAD_CROSS | PAD_SQUARE) &&
         g_nSpyroGroundSlope < SLOPE_FLAT) {
       ChangeSpyroState(SPYRO_ST_CHARGE_AIR);
-      g_nSpyroVelocityZ += 0xDC0;
+      g_nSpyroVelocityZ += SPYRO_JUMP_SPEED;
       g_nSpyroAirborneFrames++;
       break;
     }
@@ -490,7 +490,7 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (SPY[SPY_CHARGE_HOLD] != 0) {
-      if (g_nSpyroMotionSpeed > 0x3000) {
+      if (g_nSpyroMotionSpeed > SPYRO_SUPERCHARGE_SPEED) {
         ChangeSpyroState(SPYRO_ST_SUPERCHARGE);
         break;
       }
@@ -889,7 +889,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     if ((g_dwPadHeld & PAD_CROSS) && g_nSpyroGravityEnableFlag != 0) {
       g_nSpyroGravityEnableFlag = 0;
-      g_nSpyroVelocityZ += 0xDC0;
+      g_nSpyroVelocityZ += SPYRO_JUMP_SPEED;
     } else if ((g_dwPadPressed & PAD_CROSS) && g_nSpyroGlideSpentFlag == 0) {
       g_nSpyroJumpHoldLatch = 1;
     }
@@ -1138,7 +1138,7 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_SUPERCHARGE_AIR);
       vz = &SPY[SPY_VELOCITY + 2];
       g_nSpyroGravityEnableFlag = 0;
-      *vz += 0xDC0;
+      *vz += SPYRO_JUMP_SPEED;
       g_nSpyroAirborneFrames++;
       break;
     }

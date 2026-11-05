@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "match_asm.h"
 #include "spyro_block.h"
+#include "spyro_state.h"
 
 /* Views this function reads through (declared in globals.h):
    g_anSpyroBodyMtx — the matrix pointer, the -0x34 (== -13 words)
@@ -36,7 +37,7 @@ void SampleSpyroShadowRingHeights(int probe) {
 
   v[0] = 0;
   v[1] = 0;
-  v[2] = -0x164;
+  v[2] = -SPYRO_RADIUS;
   RotateVectorByMatrix(g_anSpyroBodyMtx, v, v);
   AddVector(v, v, SPY_VIA(g_anSpyroBodyMtx, SPY_BODY_MTX, SPY_POS));
   CopyVector(g_anSpyroShadowPos, v);

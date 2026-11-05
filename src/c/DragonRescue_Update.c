@@ -413,7 +413,7 @@ void DragonRescue_Update(void) {
       TickSpyroAnimLayer2();
       g_nSpyroWorldPosZ += 0x400;
       g_nSpyroGroundHeightZ = FindWorldFloorBelowPoint(g_anSpyroWorldPosBlock);
-      g_nSpyroWorldPosZ = g_nSpyroGroundHeightZ + 0x164;
+      g_nSpyroWorldPosZ = g_nSpyroGroundHeightZ + SPYRO_RADIUS;
       SampleSpyroShadowRingHeights(0);
     }
     break;

@@ -154,7 +154,7 @@ void ChangeSpyroState(int state) {
   case SPYRO_ST_JUMP:
     CopyVector(g_anSpyroVelocity,
                SPY_VIA(g_anSpyroVelocity, SPY_VELOCITY, SPY_MOTION));
-    g_anSpyroCarryMotionVec[2] = 0xDC0;
+    g_anSpyroCarryMotionVec[2] = SPYRO_JUMP_SPEED;
     g_nSpyroGravityStep = -SPYRO_FALL_ACCEL;
     g_nSpyroSubstate = 0;
     g_nSpyroJumpHoldLatch = 0;
