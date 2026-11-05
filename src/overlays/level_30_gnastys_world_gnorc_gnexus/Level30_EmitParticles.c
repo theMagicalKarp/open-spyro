@@ -224,7 +224,7 @@ void Level30_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->phase = 0;
       rec->visible = 1;
       if (effectArg != 0) {
-        v2[0] = 0x164;
+        v2[0] = SPYRO_RADIUS; /* his front */
         v2[1] = 0;
         v2[2] = 0;
         RotateVectorByMatrix(g_anSpyroBodyMtx, v2, v2);

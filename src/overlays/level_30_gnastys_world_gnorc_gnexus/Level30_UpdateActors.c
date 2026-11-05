@@ -101,7 +101,7 @@ void Level30_UpdateActors(void) {
   while (actor = *actorList++) {
     one = 1;
     two = 2;
-    spy = (SpyroObj *)(base - 0x164);
+    spy = (SpyroObj *)SPY_FROM_SPARX(base);
 
     if (actor->mode >= ACTOR_MODE_DORMANT) {
       continue;
@@ -272,7 +272,7 @@ void Level30_UpdateActors(void) {
 
       EBB_BREAK();
       st = actor->state;
-      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, (int *)(base - 0x164)) < 0x960) {
+      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, (int *)SPY_FROM_SPARX(base)) < 0x960) {
         int height = actor->posZ - actor->floorOffset;
         int drop = height - SPY.posZ;
 
@@ -1242,7 +1242,7 @@ void Level30_UpdateActors(void) {
         continue;
       }
 
-      if (st->target != 0 && ApproxDist2D(&actor->posX, (int *)(base - 0x164)) >= 0x2001) {
+      if (st->target != 0 && ApproxDist2D(&actor->posX, (int *)SPY_FROM_SPARX(base)) >= 0x2001) {
         st->timer = 0;
       }
 

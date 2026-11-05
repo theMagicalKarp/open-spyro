@@ -335,7 +335,7 @@ void Level33_UpdateActors(void) {
     case ACTOR_TYPE_BUTTERFLY: {
       ButterflyState *st = (ButterflyState *)actor->state;
 
-      if (g_nSparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, (int *)(base - 0x164)) < 2400) {
+      if (g_nSparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, (int *)SPY_FROM_SPARX(base)) < 2400) {
         int actorZ = actor->posZ - actor->floorOffset;
 
         if (ABS2(actorZ - SPY.posZ) < 1800) {
@@ -1142,7 +1142,7 @@ void Level33_UpdateActors(void) {
       }
 
       if (st->target != 0 &&
-          ApproxDist2D(&actor->posX, (int *)(base - 0x164)) >=
+          ApproxDist2D(&actor->posX, (int *)SPY_FROM_SPARX(base)) >=
               0x2001) {
         st->timer = 0;
       }

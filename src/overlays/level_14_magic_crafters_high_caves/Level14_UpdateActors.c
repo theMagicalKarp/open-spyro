@@ -4062,7 +4062,7 @@ void Level14_UpdateActors(void) {
         st->mode |= FWALK_F_HOLD;
       }
       if (g_nSpyroAirborneFrames == 0) {
-        if (ABS2(actor->posZ - SPY.posZ + 0x164) < 0x140 &&
+        if (ABS2(actor->posZ - SPY.posZ + SPYRO_RADIUS) < 0x140 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < st->range) {
           st->mode |= FWALK_F_CLOSE;
           ZeroVector(st->vel);

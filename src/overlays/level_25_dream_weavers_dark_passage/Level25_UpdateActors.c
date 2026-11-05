@@ -655,7 +655,7 @@ void Level25_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1800) {
           break;
         }
-        if (ABS(actor->posZ - actor->floorOffset - g_nSpyroWorldPosZ + 0x164) >= 0x200) {
+        if (ABS(actor->posZ - actor->floorOffset - g_nSpyroWorldPosZ + SPYRO_RADIUS) >= 0x200) {
           break;
         }
         if (g_nSpyroAirborneFrames != 0 || g_nSpyroState == SPYRO_ST_CHARGE || g_nSpyroState == SPYRO_ST_CHARGE_AIR) {
@@ -752,7 +752,7 @@ void Level25_UpdateActors(void) {
           if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x5DC) {
             break;
           }
-          if (ABS(actor->posZ - actor->floorOffset - g_nSpyroWorldPosZ + 0x164) >= 0x200) {
+          if (ABS(actor->posZ - actor->floorOffset - g_nSpyroWorldPosZ + SPYRO_RADIUS) >= 0x200) {
             break;
           }
           actor->subMode = 0;

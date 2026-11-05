@@ -235,6 +235,10 @@ typedef struct {
   int camPathReverse;             /* 0x248 g_nPortalCamPathReverseFlag */
 } SpyroObj;
 
+/* The SpyroObj start reached back from a register that holds &g_nSparxHealth
+ * (the clones keep that one base for both). */
+#define SPY_FROM_SPARX(base) ((base) - (int)&((SpyroObj *)0)->sparxHealth)
+
 extern SpyroObj g_anSpyroWorldPosBlock;
 
 /* A SpyroObj field addressed off the UpdateActors clones' held base
