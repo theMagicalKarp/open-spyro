@@ -455,7 +455,7 @@ typedef struct CritterKnockState {
 typedef struct BrawlerState {
   PathData *boltPath; /* 0x00 handed to the spawned bolt (a path in the level data) */
   int sending; /* 0x04 set each BRAWLER_SEND frame; never read */
-  int u08;     /* 0x08 */
+  int unread08;     /* 0x08 */
   int heading; /* 0x0C */
   int speed;   /* 0x10 */
   int timer;   /* 0x14 */
@@ -463,14 +463,14 @@ typedef struct BrawlerState {
 
 /* Type 183, the bolt level 7's type 184 spawns at frame 0x11 of its mode 1.
  * Nothing in case 184 enters mode 1, and Level7_UpdateActors has no arm for
- * type 183, so these fields are write-only here and keep raw names. */
+ * type 183, so its unreadNN fields are written here and never read. */
 typedef struct BrawlerSpawnState {
   PathData *path; /* 0x00 the brawler's boltPath */
-  int u04;     /* 0x04 */
-  int u08;     /* 0x08 */
+  int unread04;     /* 0x04 */
+  int unread08;     /* 0x08 */
   int heading; /* 0x0C */
-  int u10;     /* 0x10 */
-  int u14;     /* 0x14 */
+  int unread10;     /* 0x10 */
+  int unread14;     /* 0x14 */
 } BrawlerSpawnState;
 
 /* Type 186 (level 7): a blinking sentry that wakes inside `range` (or 0x2800)

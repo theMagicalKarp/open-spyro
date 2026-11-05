@@ -1682,7 +1682,7 @@ void Level27_UpdateActors(void) {
           c->spin[1] = RandomSignedInRange(7, 0xF);
           c->spin[2] = RandomSignedInRange(7, 0xF);
           c->grav = 0;
-          c->u0E = 0;
+          c->unread0E = 0;
         }
         if (g_nActorAnimDone != 0) {
           actor->subMode = 0;

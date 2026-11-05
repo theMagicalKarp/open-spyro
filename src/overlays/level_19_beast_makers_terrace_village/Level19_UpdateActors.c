@@ -71,12 +71,12 @@ typedef struct BoltSentryState {
   PathData *path; /* 0x04 */
   int range;     /* 0x08 in 1024s */
   int timer;     /* 0x0C */
-  int u10;       /* 0x10 */
+  int pad10;       /* 0x10 */
   Actor *bolt;   /* 0x14 */
-  int u18;       /* 0x18 */
+  int pad18;       /* 0x18 */
   int heading;   /* 0x1C */
   int speed;     /* 0x20 */
-  int u24;       /* 0x24 */
+  int unread24;       /* 0x24 */
   int guards;    /* 0x28 */
   Actor *kids[3]; /* 0x2C */
   Actor *fx;     /* 0x38 */
@@ -3570,7 +3570,7 @@ void Level19_UpdateActors(void) {
               ABS2(SPY_DZ(actor)) < 0x3E8) {
             st->mode = BSENTRY_CUE_NONE;
             st->speed = ApproxDist2D(&actor->posX, &st->path->nodes[1].x) / 12;
-            st->u24 = 0x6E;
+            st->unread24 = 0x6E;
             ENTER_POSE_BRK(actor, BSENTRY_LEAP);
           }
           break;

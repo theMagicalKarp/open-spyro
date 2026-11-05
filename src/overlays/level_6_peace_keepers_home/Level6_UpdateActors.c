@@ -55,9 +55,9 @@ typedef struct FireballState {
 typedef struct FireballCannonState {
   int link;    /* 0x00 index into g_pActorListBase (its trigger); level data: ACTOR_TYPE_SOLDIER */
   int rival;   /* 0x04 index into g_pActorListBase: the cannon it duels; level data: ACTOR_TYPE_FIREBALL_CANNON */
-  int u08;     /* 0x08 */
+  int pad08;     /* 0x08 */
   int hold;    /* 0x0C ticks until the trigger is released */
-  int u10;     /* 0x10 */
+  int pad10;     /* 0x10 */
   int heading; /* 0x14 */
   int timer;   /* 0x18 */
   int camFlag; /* 0x1C */

@@ -2513,12 +2513,12 @@ void Level7_UpdateActors(void) {
           s328[2] = 0;
           AddVector(&c->posX, &c->posX, s328);
           cs->heading = c->rotZ = WrapAddAngle8(actor->rotZ, 5);
-          cs->u08 = 0x28;
-          cs->u14 = one;
-          cs->u10 = 0xF0;
+          cs->unread08 = 0x28;
+          cs->unread14 = one;
+          cs->unread10 = 0xF0;
           cs->path = st->boltPath;
-          cs->u04 = 0x6E;
-          st->u08 = 0x78;
+          cs->unread04 = 0x6E;
+          st->unread08 = 0x78;
         }
         if (g_nActorAnimDone != 0) {
           ENTER_POSE(actor, BRAWLER_IDLE);

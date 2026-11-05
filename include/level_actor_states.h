@@ -325,7 +325,7 @@ typedef struct CarriedRockState {
   unsigned char spinY;  /* 0x02 */
   unsigned char mode;   /* 0x03 enum CarriedRockHold */
   short speed;          /* 0x04 */
-  short u06;            /* 0x06 */
+  short unread06;            /* 0x06 */
   short vz;             /* 0x08 */
   short flightTimer; /* 0x0A flight cap after the throw (0x78) */
   Actor *partner;       /* 0x0C the thrower */
@@ -352,7 +352,7 @@ typedef struct JacquesState {
   int pad48;                 /* 0x48 */
   int freezesSpyro;                 /* 0x4C level data: hops block gameplay and freeze Spyro's input */
   int standGround;                 /* 0x50 1 at stops 0/7/11: does not hop away from a close Spyro */
-  int u54;                 /* 0x54 */
+  int unread54;                 /* 0x54 */
 } JacquesState;
 
 /* Types 45/46 state: a charging ram (45 is the bigger one). */
@@ -501,7 +501,7 @@ typedef struct FallingChunkState {
   short pad08;              /* 0x08 */
   short age;              /* 0x0A */
   short grav;             /* 0x0C */
-  short u0E;              /* 0x0E */
+  short unread0E;              /* 0x0E */
   unsigned char spin[3];  /* 0x10 */
 } FallingChunkState;
 

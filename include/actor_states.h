@@ -205,7 +205,7 @@ typedef struct BoltGuardState {
   int knockHeading; /* 0x0C knock-back heading (12-bit), set when it is hit */
   int speed;   /* 0x10 */
   int zSpeed;    /* 0x14 vertical speed (DriveActorTrackedMove) */
-  int u18;     /* 0x18 */
+  int pad18;     /* 0x18 */
   struct PathData *path; /* 0x1C */
   int range;   /* 0x20 in 1024s */
   int countdown;     /* 0x24 */

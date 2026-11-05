@@ -815,7 +815,7 @@ void Level28_UpdateActors(void) {
 
         if (st->partner->mode == JACQUES_HOP) {
           ((JacquesState *)st->partner->state)->timer = 0;
-          ((JacquesState *)st->partner->state)->u54 = 0;
+          ((JacquesState *)st->partner->state)->unread54 = 0;
           ((JacquesState *)st->partner->state)->child = 0;
           actor->mode = TROCK_BREAK;
           ANIM_RESET(actor, TROCK_BREAK);
@@ -865,7 +865,7 @@ void Level28_UpdateActors(void) {
           d = d / st->speed;
           st->vz = (g168[2] - actor->posZ) / d;
           st->spinY = 2;
-          st->u06 = 0;
+          st->unread06 = 0;
           st->spinX = 1;
         }
         actor->mode = TROCK_FLY;
@@ -898,7 +898,7 @@ void Level28_UpdateActors(void) {
           CopyVector(g056, &actor->posX);
           g056[2] += 0xC8;
           if (CollideSphereWithWorldAndActors(g056, 0xDC, 0xDC) != 0) {
-            st->u06 = 0;
+            st->unread06 = 0;
             st->speed = 0;
             st->spinX = 0;
             st->spinY = 0;
@@ -909,7 +909,7 @@ void Level28_UpdateActors(void) {
           }
         }
         if (TICK_DOWN(st->flightTimer) != 0) {
-          st->u06 = 0;
+          st->unread06 = 0;
           st->speed = 0;
           st->spinX = 0;
           st->spinY = 0;
@@ -2111,7 +2111,7 @@ void Level28_UpdateActors(void) {
         st->stops[1] = 6;
         st->stops[2] = 7;
         st->stops[3] = 10;
-        st->u54 = 0;
+        st->unread54 = 0;
         st->init = one;
         st->stops[4] = 11;
         st->stops[5] = 13;
@@ -2169,7 +2169,7 @@ void Level28_UpdateActors(void) {
           if (st->path->cur == 13) {
             ModifyWorldChunkAnimFlags(JACQUES_CHUNK_STOP13, CHUNK_ANIM_RESUME, 0);
           }
-          st->u54 = 0;
+          st->unread54 = 0;
           ANIM_GO(actor, JACQUES_WATCH);
           actor->mode = JACQUES_HOP;
           continue;

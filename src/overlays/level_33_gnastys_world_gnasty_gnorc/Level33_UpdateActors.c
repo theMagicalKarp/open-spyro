@@ -57,7 +57,7 @@ typedef struct ShockwaveState {
 /* Type 169's trail point. */
 typedef struct L33Trail {
   int pos[3]; /* 0x00 */
-  int u0C[3]; /* 0x0C */
+  int pad0C[3]; /* 0x0C */
   int age;    /* 0x18 */
 } L33Trail;   /* 0x1C */
 
@@ -81,7 +81,7 @@ typedef struct LanePatrollerState {
   PathData *path; /* 0x00 */
   int lane;       /* 0x04 lane; indexes g_anLevelEscapeRunCount */
   int slowTimer;       /* 0x08 slow-down timer */
-  int u0C;       /* 0x0C */
+  int pad0C;       /* 0x0C */
   int speed;       /* 0x10 speed */
   int knockHeading;       /* 0x14 knock-back heading */
   int knockSpeed;       /* 0x18 knock-back speed */
@@ -100,24 +100,24 @@ typedef struct GnastyState {
   PathData *path;            /* 0x00 current escape path */
   PathData *path2;           /* 0x04 the other escape path */
   PathData *path3;           /* 0x08 camera reference path */
-  int u0C;                  /* 0x0C */
-  int u10;                  /* 0x10 */
+  int pad0C;                  /* 0x0C */
+  int pad10;                  /* 0x10 */
   int knockHeading;                  /* 0x14 knock-back heading */
   int speed;                  /* 0x18 speed */
   int vSpeed;                  /* 0x1C vertical speed */
   int queuedJumpSpeed;                  /* 0x20 queued jump speed */
-  int u24[12];              /* 0x24 */
-  int u54;                  /* 0x54 */
+  int pad24[12];              /* 0x24 */
+  int unread54;                  /* 0x54 */
   int stateTimer;                  /* 0x58 timer */
   int phase;                /* 0x5C fight phase */
   int timer;                /* 0x60 throw timer */
-  int u64;                  /* 0x64 */
+  int pad64;                  /* 0x64 */
   int throws;               /* 0x68 bombs thrown */
   int passedPt6;                  /* 0x6C latched on nearing path point 6 (mode 0xB once per phase) */
   TriggerBox box70;             /* 0x70 trigger box */
   TriggerBox box88;             /* 0x88 trigger box */
   TriggerBox boxA0;             /* 0xA0 trigger box */
-  int uB8;                  /* 0xB8 */
+  int padB8;                  /* 0xB8 */
   int key2;                 /* 0xBC actor index, -1 none; level data: ACTOR_TYPE_LOOT_VORTEX */
   int key;                  /* 0xC0 actor index; level data: ACTOR_TYPE_FOLLOWER */
   int seen;                 /* 0xC4 */
@@ -1829,7 +1829,7 @@ void Level33_UpdateActors(void) {
         GNASTY_FALL(actor, st);
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if ((dist < 0x2000 && SPY_DZ(actor) >= -0x6A3) || dist < 0x16A8) {
-          st->u54 = 0;
+          st->unread54 = 0;
           actor->mode = GNASTY_RUN;
           continue;
         }
