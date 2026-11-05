@@ -145,7 +145,7 @@ void StoryIntro_Update(void) {
               TickCdMusicStream();
             }
             BeginCutscene();
-            g_nGamePaused = 1;
+            g_nSkipGamestateDraw = 1;
             return;
           }
         } else {

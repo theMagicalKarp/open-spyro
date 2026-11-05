@@ -95,7 +95,7 @@ int TickDemoPlayback(void) {
         StartCdReadAsync(lba, (void *)dst, 0x40000, offset,
                          CD_STALL_TIMEOUT_TICKS);
       }
-      g_nGamePaused = 1;
+      g_nSkipGamestateDraw = 1;
       g_nDemoIndex = (g_nDemoIndex + 1) & 3;
       return 1;
     }

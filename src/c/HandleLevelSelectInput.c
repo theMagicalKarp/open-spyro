@@ -72,7 +72,7 @@ void HandleLevelSelectInput(void) {
           g_nCdStreamState = LSTREAM_FRESH;
           g_nPortalTransitionActive = 0;
           g_nLevelTransitionTallyActive = 0;
-          g_nGamePaused = 1;
+          g_nSkipGamestateDraw = 1;
           g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
         }
         g_nLevelSelectModeActive = 0;

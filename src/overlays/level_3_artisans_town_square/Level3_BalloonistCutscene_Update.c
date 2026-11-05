@@ -833,7 +833,7 @@ void Level3_BalloonistCutscene_Update(void)
         ResetCameraStateToTarget();
         InitHudCounters(0);
         g_nGamestate = GS_GAMEPLAY;
-        g_nGamePaused = 1;
+        g_nSkipGamestateDraw = 1;
         g_nCinematicActive = 0;
         InitLightVectorConstants();
       }

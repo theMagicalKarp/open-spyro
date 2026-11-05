@@ -58,7 +58,7 @@ void BeginDragonRescue(Actor *actor) {
   prevDragons = *dragons;
   one = 1;
   g_nCinematicActive = one;
-  g_nGamePaused = one;
+  g_nSkipGamestateDraw = one;
   *dragons = prevDragons + 1;
   g_anDragonRescueBlock[DRW_SUBSTATE] = DRAGON_RESCUE_AURA;
   g_anDragonRescueBlock[DRW_STREAM_STATE] = RESCUE_STREAM_READ;

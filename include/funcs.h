@@ -343,7 +343,7 @@ void ExitPauseMenuToGame(int resumeMusic);
 /* 0x8002c618: Begins the pause→world-map curtain animation: g_nGamestate=10 (GS_MENU_TRANSITION), zeros pause idle frames, kicks ChangeSpyroState(NULL,…) to freeze the player. */
 void BeginPauseToMenuTransition(void);
 
-/* 0x8002c664: Returns to the current world hub from a sub-level: g_nGamestate=GS_LEVEL_LOAD (logo/splash), g_nGamePaused=1, snaps g_nNextLevelId down to world id (id/10*10). Called from SpyroStateDelay_Update at homecoming-portal exit. */
+/* 0x8002c664: Returns to the current world hub from a sub-level: g_nGamestate=GS_LEVEL_LOAD (logo/splash), g_nSkipGamestateDraw=1, snaps g_nNextLevelId down to world id (id/10*10). Called from SpyroStateDelay_Update at homecoming-portal exit. */
 void BeginWorldHubReturn(void);
 
 /* 0x8002c714: Enters GS_INVENTORY (g_nGamestate=GS_INVENTORY); seeds g_nSubMenuCursor to g_nLevelIndex/6 so the cursor lands on the active world row; zeros scroll state and clears the pad-history ring. */
@@ -361,7 +361,7 @@ void EndRespawnToGameplay(void);
 /* 0x8002c91c: Empty body (single `jr ra`); Gamestate06_Update's only call, so gamestate 6 updates nothing. */
 void Gamestate06SubstateStub_Noop(void);
 
-/* 0x8002c924: Begins the dragon-rescue statue cutscene overlay (g_nGamestate = GS_DRAGON_RESCUE). Seeds the cutscene substate/timer globals, increments BOTH dragon counters in lockstep (g_anLevelDragonsRescued[g_nLevelIndex] per-level + g_nTotalDragonsRescued game-wide total, with the HUD cache primed from the latter), blocks gameplay (g_nCinematicActive=1, g_nGamePaused=1), sets the statue's partner checkpoint to CHECKPT_ANIM_FLASH, anchors the aura star above the statue, and fires the rescue chime sfx. Special cases: Artisans home (level 10) upgrades pickup type 1->2 once any sibling-level g_abLevelExited entry is nonzero; Gnasty's Loot (level 0x3c) rewrites the actor params for the key-locked treasure variant. */
+/* 0x8002c924: Begins the dragon-rescue statue cutscene overlay (g_nGamestate = GS_DRAGON_RESCUE). Seeds the cutscene substate/timer globals, increments BOTH dragon counters in lockstep (g_anLevelDragonsRescued[g_nLevelIndex] per-level + g_nTotalDragonsRescued game-wide total, with the HUD cache primed from the latter), blocks gameplay (g_nCinematicActive=1, g_nSkipGamestateDraw=1), sets the statue's partner checkpoint to CHECKPT_ANIM_FLASH, anchors the aura star above the statue, and fires the rescue chime sfx. Special cases: Artisans home (level 10) upgrades pickup type 1->2 once any sibling-level g_abLevelExited entry is nonzero; Gnasty's Loot (level 0x3c) rewrites the actor params for the key-locked treasure variant. */
 void BeginDragonRescue(Actor *actor);
 
 /* 0x8002cb6c: Returns from the dragon rescue to gameplay: GS_GAMEPLAY, gameplay unblocked, the rescued dragon's checkpoint armed (CHECKPT_HELD -> CHECKPT_ARMED), ResetSpyroEntity(1), a 0xC-frame pad snapshot, the camera anchor back on Spyro with the standing camera (CAM_MODE_STAND) on the dynamic target params, the superflame timer restored and the HUD counters reset (InitHudCounters(0)). */

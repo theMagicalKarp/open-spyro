@@ -611,7 +611,7 @@ extern void *g_pPrimBufferLimit;             /* 0x80075780 */
 extern int g_nDemoActive;           /* 0x80075784: 1 while a demo level runs: the draw handlers add a VSync so frames pace at 2 vblanks */
 extern short g_nSpyroIdleAnimTimeout;        /* 0x80075788 */
 extern int *g_pPortalDeferredTriStackTop;     /* 0x80075798 */
-extern int g_nGamePaused;                    /* 0x8007579c */
+extern int g_nSkipGamestateDraw;                    /* 0x8007579c: main skips this frame's GamestateDraw when set; GamestateUpdate clears it first thing and handlers that switch gamestate mid-update set it */
 extern int g_nOptionVibrationEnabled;        /* 0x800757a4 */
 extern void *g_pPrimBufferWriteCursor;       /* 0x800757b0 */
 extern int g_nLevelPickupTableCount;         /* 0x800757b4 */

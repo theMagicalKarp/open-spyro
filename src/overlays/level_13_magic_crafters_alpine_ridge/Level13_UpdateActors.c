@@ -183,7 +183,7 @@ void Level13_UpdateActors(void) {
                 g_nLevelTransitionTallyActive = 1;
                 g_nLevelTransitionPhase = 0;
                 g_nGamestate = GS_LEVEL_LOAD;
-                g_nGamePaused = 1;
+                g_nSkipGamestateDraw = 1;
                 g_nReturnPortalLevelId = g_nActiveLevelId;
                 g_nNextLevelId = g_nActiveLevelId / 10 * 10;
                 g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
@@ -5159,7 +5159,7 @@ void Level13_UpdateActors(void) {
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
           g_nGamestate = GS_LEVEL_LOAD;
-          g_nGamePaused = 1;
+          g_nSkipGamestateDraw = 1;
           SPY.requestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 
@@ -5198,7 +5198,7 @@ void Level13_UpdateActors(void) {
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
           g_nGamestate = GS_LEVEL_LOAD;
-          g_nGamePaused = 1;
+          g_nSkipGamestateDraw = 1;
           SPY.requestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 

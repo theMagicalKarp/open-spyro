@@ -182,7 +182,7 @@ void Level34_UpdateActors(void) {
                 g_nLevelTransitionTallyActive = 1;
                 g_nLevelTransitionPhase = 0;
                 g_nGamestate = GS_LEVEL_LOAD;
-                g_nGamePaused = 1;
+                g_nSkipGamestateDraw = 1;
                 g_nReturnPortalLevelId = g_nActiveLevelId;
                 g_nNextLevelId = g_nActiveLevelId / 10 * 10;
                 g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
@@ -2389,7 +2389,7 @@ void Level34_UpdateActors(void) {
           g_abLevelExited[g_nLevelIndex] = 1;
           g_nCutsceneId[0] = CUTSCENE_LOOT_ENDING;
           g_nGamestate = GS_CUTSCENE;
-          g_nGamePaused = one;
+          g_nSkipGamestateDraw = one;
           g_pPathTableHead->frame = 0;
         }
       }

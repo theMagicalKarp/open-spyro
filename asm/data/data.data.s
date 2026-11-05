@@ -14591,11 +14591,11 @@ dlabel g_pPortalDeferredTriStackTop
     /* 65F98 80075798 00000000 */ .word 0x00000000
 enddlabel g_pPortalDeferredTriStackTop
 
-nonmatching g_nGamePaused
+nonmatching g_nSkipGamestateDraw
 
-dlabel g_nGamePaused
+dlabel g_nSkipGamestateDraw
     /* 65F9C 8007579C 00000000 */ .word 0x00000000
-enddlabel g_nGamePaused
+enddlabel g_nSkipGamestateDraw
 
 nonmatching g_pfnLevelBeginActorCutscene
 

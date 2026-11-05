@@ -220,7 +220,7 @@ typedef struct {
 #define setRECT(r, _x, _y, _w, _h) \
   (r)->x = (_x), (r)->y = (_y), (r)->w = (_w), (r)->h = (_h)
 
-extern int g_nGamePaused;
+extern int g_nSkipGamestateDraw;
 extern int g_nSparxFoodCount;
 extern int g_nSparxHealthStash;
 extern int g_nSparxHealth;

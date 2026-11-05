@@ -19,6 +19,6 @@ void BeginWorldHubReturn(void) {
   g_nGamestate = GS_LEVEL_LOAD;
   g_nPortalTransitionActive = 1;
   g_nLevelTransitionTallyActive = 1;
-  g_nGamePaused = 1;
+  g_nSkipGamestateDraw = 1;
   g_nNextLevelId = hub;
 }

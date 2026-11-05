@@ -151,7 +151,7 @@ extern int g_nFlightTargetTally3;
 extern int g_nFlightTimeBonus;                           /* time bonus accumulator */
 extern int g_nFlightTimeRemaining;                       /* time remaining */
 extern int g_nFrameStep;                                 /* frame delta in ticks */
-extern int g_nGamePaused;
+extern int g_nSkipGamestateDraw;
 extern int g_nCinematicActive;
 extern int g_nGamestate;
 extern int g_nActorCutsceneCamHeightGoal;

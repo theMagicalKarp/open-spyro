@@ -26,7 +26,9 @@ struct CameraParamBlock {
 };
 
 /* The kill-table else-arm reserves v1/a0 with empty asm defs/uses so global
-   alloc hands `group` a1, as in the original. */
+   alloc hands `group` a1, as in the original. The block-scoped register
+   pins (demo/poseWord, runBit, bitIdx/tbl/levelBit) put each value in the
+   original's register (A374). */
 void BuildLoadedLevelRuntime(int fullSetup) {
   int pos[3];
   int pad[8];
@@ -166,7 +168,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   }
   if (g_nGamestate != GS_ACTOR_CUTSCENE) {
     g_nGamestate = GS_GAMEPLAY;
-    g_nGamePaused = 1;
+    g_nSkipGamestateDraw = 1;
     g_nCinematicActive = 0;
     g_nLetterboxBarHeight = 0;
   }

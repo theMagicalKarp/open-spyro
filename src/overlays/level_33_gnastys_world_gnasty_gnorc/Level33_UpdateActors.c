@@ -2027,7 +2027,7 @@ void Level33_UpdateActors(void) {
           g_nCreditsPageIndex = 0;
           g_nCutsceneId[0] = CUTSCENE_GNASTY_ENDING;
           g_nGamestate = GS_CUTSCENE;
-          g_nGamePaused = 1;
+          g_nSkipGamestateDraw = 1;
           g_nCinematicActive = 0;
           g_nSpyroDrawSuppressed = 0;
           g_pPathTableHead->frame = 0;

@@ -34,13 +34,13 @@ void DispatchSpecialCutscene(void) {
     g_nTitleExitPath = TITLE_EXIT_LOADED_GAME;
     InitNewGameState();
     g_nActiveLevelId = LEVEL_ARTISANS;
-    g_nGamePaused = 1;
+    g_nSkipGamestateDraw = 1;
   } else if (id == CUTSCENE_GNASTY_ENDING) {
     BeginCreditsSequence(0);
-    g_nGamePaused = 1;
+    g_nSkipGamestateDraw = 1;
   } else if (id == CUTSCENE_LOOT_ENDING) {
     g_nCreditsPageIndex = 0xA;
     BeginCreditsSequence(1);
-    g_nGamePaused = 1;
+    g_nSkipGamestateDraw = 1;
   }
 }

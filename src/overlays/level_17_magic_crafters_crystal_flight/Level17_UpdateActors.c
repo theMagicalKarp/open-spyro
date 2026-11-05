@@ -652,7 +652,7 @@ void Level17_UpdateActors(void) {
           continue;
         } else {
           int r;
-          register int *pos asm("$4");
+          register int *pos asm("$4"); /* a0, as in the original (A374) */
 
           bouncePos[2] += 240;
 

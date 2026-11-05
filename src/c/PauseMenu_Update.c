@@ -87,7 +87,7 @@ void PauseMenu_Update(void) {
     }
     BeginCutscene();
     BeginStoryIntro();
-    g_nGamePaused = 1;
+    g_nSkipGamestateDraw = 1;
     return;
   }
 

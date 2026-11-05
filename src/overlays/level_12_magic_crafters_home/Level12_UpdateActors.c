@@ -4580,7 +4580,7 @@ void Level12_UpdateActors(void) {
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
           g_nGamestate = GS_LEVEL_LOAD;
-          g_nGamePaused = 1;
+          g_nSkipGamestateDraw = 1;
           SPY.requestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 
@@ -4619,7 +4619,7 @@ void Level12_UpdateActors(void) {
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
           g_nGamestate = GS_LEVEL_LOAD;
-          g_nGamePaused = 1;
+          g_nSkipGamestateDraw = 1;
           SPY.requestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 
