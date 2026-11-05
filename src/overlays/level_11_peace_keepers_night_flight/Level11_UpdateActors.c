@@ -19,8 +19,8 @@
  *   - `one = 1` ahead of `spy` at the loop top (and used once): the constant
  *     1 is then the first movable loop.c hoists, so `li s7,1` leads the
  *     preheader.
- *   - `int *nrm = &g_anCollisionProbeVec` at the two arm-14/15 yaw sites (the dot arms
- *     stay absolute). It makes the &g_anCollisionProbeVec group the first to hoist,
+ *   - `int *nrm = &g_anCollisionHitNormal` at the two arm-14/15 yaw sites (the dot arms
+ *     stay absolute). It makes the &g_anCollisionHitNormal group the first to hoist,
  *     unallocated, so reload rematerialises it per call; the move also drops
  *     loop.c's threshold by 3, which keeps the constant 32 in place.
  *   - `Model **models = g_apActorMeshTable` around the 0x12B GetSoundVoiceStatusByOwner test
@@ -402,15 +402,15 @@ void Level11_UpdateActors(void) {
           
           int dot;
 
-          SetVector3Magnitude(&g_anCollisionProbeVec, 0x1000);
-          dot = st->vel[0] * g_anCollisionProbeVec + st->vel[1] * g_nCollisionProbeVecY +
-                    st->vel[2] * g_nCollisionProbeVecZ >>
+          SetVector3Magnitude(&g_anCollisionHitNormal, 0x1000);
+          dot = st->vel[0] * g_anCollisionHitNormal + st->vel[1] * g_nCollisionHitNormalY +
+                    st->vel[2] * g_nCollisionHitNormalZ >>
                 11;
           if (dot < 0) {
-            ScaleVector3ByRatio(&g_anCollisionProbeVec, 0x1000, (dot >> 2) - (dot));
-            st->vel[0] += g_anCollisionProbeVec;
-            st->vel[1] += AS_I32(g_nCollisionProbeVecY);
-            st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
+            ScaleVector3ByRatio(&g_anCollisionHitNormal, 0x1000, (dot >> 2) - (dot));
+            st->vel[0] += g_anCollisionHitNormal;
+            st->vel[1] += AS_I32(g_nCollisionHitNormalY);
+            st->vel[2] += AS_I32(g_nCollisionHitNormalZ);
           }
         }
 
@@ -526,15 +526,15 @@ void Level11_UpdateActors(void) {
 
       switch (actor->subMode) {
       case COLLECT_SETTLE: {
-        int *nrm = &g_anCollisionProbeVec;
+        int *nrm = &g_anCollisionHitNormal;
 
         CopyVector(svA, &actor->posX);
         svA[2] += 0x400;
         FindGroundHeightBelow(svA, 0x10000);
         st->pitch = -ArcTan2_8bit(
-            IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionProbeVecZ * g_nCollisionProbeVecZ)),
-            g_nCollisionProbeVecY);
-        st->yaw = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
+            IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionHitNormalZ * g_nCollisionHitNormalZ)),
+            g_nCollisionHitNormalY);
+        st->yaw = -ArcTan2_8bit(g_nCollisionHitNormalZ, nrm[0]);
 
         if (st->pitch != 0 || st->yaw != 0) {
           actor->rotZ = 0;
@@ -550,12 +550,12 @@ void Level11_UpdateActors(void) {
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
             if (actor->type >= ACTOR_TYPE_GEM_1) {
-              int *nrm = &g_anCollisionProbeVec;
+              int *nrm = &g_anCollisionHitNormal;
 
               st->pitch = -ArcTan2_8bit(
-                  IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionProbeVecZ * g_nCollisionProbeVecZ)),
-                  g_nCollisionProbeVecY);
-              st->yaw = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
+                  IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionHitNormalZ * g_nCollisionHitNormalZ)),
+                  g_nCollisionHitNormalY);
+              st->yaw = -ArcTan2_8bit(g_nCollisionHitNormalZ, nrm[0]);
             }
 
           } else if (st->restMode == COLLREST_ON_TRI) {
@@ -664,7 +664,7 @@ void Level11_UpdateActors(void) {
               continue;
             }
 
-            CopyVector(bounceNormal, &g_anCollisionProbeVec);
+            CopyVector(bounceNormal, &g_anCollisionHitNormal);
             CopyVector(&actor->posX, &g_anCollisionResolvedPos);
             actor->posZ -= 0xF0;
 
@@ -1207,17 +1207,17 @@ void Level11_UpdateActors(void) {
               actor->posY = AS_I32(g_nCollisionResolvedY);
               actor->posZ = AS_I32(g_nCollisionResolvedZ);
 
-              SetVector3Magnitude(&g_anCollisionProbeVec, 0x1000);
+              SetVector3Magnitude(&g_anCollisionHitNormal, 0x1000);
 
-              dot = (st->vel[0] * g_anCollisionProbeVec + st->vel[1] * g_nCollisionProbeVecY +
-                     st->vel[2] * g_nCollisionProbeVecZ) >>
+              dot = (st->vel[0] * g_anCollisionHitNormal + st->vel[1] * g_nCollisionHitNormalY +
+                     st->vel[2] * g_nCollisionHitNormalZ) >>
                     11;
 
               if (dot < 0) {
-                ScaleVector3ByRatio(&g_anCollisionProbeVec, 0x1000, -dot);
-                st->vel[0] += g_anCollisionProbeVec;
-                st->vel[1] += AS_I32(g_nCollisionProbeVecY);
-                st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
+                ScaleVector3ByRatio(&g_anCollisionHitNormal, 0x1000, -dot);
+                st->vel[0] += g_anCollisionHitNormal;
+                st->vel[1] += AS_I32(g_nCollisionHitNormalY);
+                st->vel[2] += AS_I32(g_nCollisionHitNormalZ);
               }
             }
             st->life--;

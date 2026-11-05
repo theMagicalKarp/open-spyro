@@ -63,8 +63,8 @@ SDATA(g_pSpyroContactActor, 4);
     }                                                                          \
     g_nSpyroGroundProbeSuspendFlag = 0;                                        \
     keep##from : if ((signed char)ArcTan2(                                     \
-                         g_anCollisionProbeVec[2],                             \
-                         VectorLength(g_anCollisionProbeVec, VEC_LEN_XY),      \
+                         g_anCollisionHitNormal[2],                            \
+                         VectorLength(g_anCollisionHitNormal, VEC_LEN_XY),     \
                          ATAN_ANGLE8) >= 0x17) {                               \
       int t = g_nGroundSurfaceType & 0x3F;                                     \
       unsigned char kind;                                                      \
@@ -82,7 +82,7 @@ SDATA(g_pSpyroContactActor, 4);
     if (g_nSpyroFirstContactSurfaceType == 0xFF) {                             \
       g_nSpyroFirstContactSurfaceType = g_nGroundSurfaceType;                  \
       CopyVector(pos + SPY_FIRST_POINT, g_anCollisionContactPoint);            \
-      CopyVector(pos + SPY_FIRST_NORMAL, g_anCollisionProbeVec);               \
+      CopyVector(pos + SPY_FIRST_NORMAL, g_anCollisionHitNormal);              \
     }                                                                          \
     LIMIT_STEP(pos, from);                                                     \
   }
@@ -93,15 +93,15 @@ SDATA(g_pSpyroContactActor, 4);
   {                                                                            \
     int *w = WS;                                                               \
     *w = one;                                                                  \
-    SetVector3Magnitude(g_anCollisionProbeVec, 0x400);                         \
+    SetVector3Magnitude(g_anCollisionHitNormal, 0x400);                        \
     w++;                                                                       \
-    AddVector(w, w, g_anCollisionProbeVec);                                    \
+    AddVector(w, w, g_anCollisionHitNormal);                                   \
   }
 #define WALL_RETRY                                                             \
   {                                                                            \
     *b = one;                                                                  \
-    SetVector3Magnitude(g_anCollisionProbeVec, 0x400);                         \
-    AddVector(p, p, g_anCollisionProbeVec);                                    \
+    SetVector3Magnitude(g_anCollisionHitNormal, 0x400);                        \
+    AddVector(p, p, g_anCollisionHitNormal);                                   \
   }
 
 /* Spyro's world collision step (0x8003fe40, 4392 bytes). Applies the pending

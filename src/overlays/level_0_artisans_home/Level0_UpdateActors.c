@@ -706,18 +706,18 @@ void Level0_UpdateActors(void) {
 
       if (st->life > 0 && actor->drawn) {
         if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100)) {
-          int *nrm = &g_anCollisionProbeVec;
+          int *nrm = &g_anCollisionHitNormal;
           int dot;
 
           SetVector3Magnitude(nrm, 0x1000);
-          dot = st->vel[0] * nrm[0] + st->vel[1] * g_nCollisionProbeVecY +
-                    st->vel[2] * g_nCollisionProbeVecZ >>
+          dot = st->vel[0] * nrm[0] + st->vel[1] * g_nCollisionHitNormalY +
+                    st->vel[2] * g_nCollisionHitNormalZ >>
                 11;
           if (dot < 0) {
             ScaleVector3ByRatio(nrm, 0x1000, (dot >> 2) - (dot));
             st->vel[0] += nrm[0];
-            st->vel[1] += AS_I32(g_nCollisionProbeVecY);
-            st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
+            st->vel[1] += AS_I32(g_nCollisionHitNormalY);
+            st->vel[2] += AS_I32(g_nCollisionHitNormalZ);
           }
         }
 
@@ -834,15 +834,15 @@ void Level0_UpdateActors(void) {
 
       switch (actor->subMode) {
       case COLLECT_SETTLE: {
-        int *nrm = &g_anCollisionProbeVec;
+        int *nrm = &g_anCollisionHitNormal;
 
         CopyVector(svA, &actor->posX);
         svA[2] += 0x400;
         FindGroundHeightBelow(svA, 0x10000);
         st->pitch = -ArcTan2_8bit(
-            IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionProbeVecZ * g_nCollisionProbeVecZ)),
-            g_nCollisionProbeVecY);
-        st->yaw = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
+            IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionHitNormalZ * g_nCollisionHitNormalZ)),
+            g_nCollisionHitNormalY);
+        st->yaw = -ArcTan2_8bit(g_nCollisionHitNormalZ, nrm[0]);
 
         if (st->pitch != 0 || st->yaw != 0) {
           actor->rotZ = 0;
@@ -858,12 +858,12 @@ void Level0_UpdateActors(void) {
             SnapActorToGround(actor);
             EncodeCachedVecToActorDirCode(actor);
             if (actor->type >= ACTOR_TYPE_GEM_1) {
-              int *nrm = &g_anCollisionProbeVec;
+              int *nrm = &g_anCollisionHitNormal;
 
               st->pitch = -ArcTan2_8bit(
-                  IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionProbeVecZ * g_nCollisionProbeVecZ)),
-                  g_nCollisionProbeVecY);
-              st->yaw = -ArcTan2_8bit(g_nCollisionProbeVecZ, nrm[0]);
+                  IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionHitNormalZ * g_nCollisionHitNormalZ)),
+                  g_nCollisionHitNormalY);
+              st->yaw = -ArcTan2_8bit(g_nCollisionHitNormalZ, nrm[0]);
             }
 
           } else if (st->restMode == COLLREST_ON_TRI) {
@@ -967,7 +967,7 @@ void Level0_UpdateActors(void) {
               continue;
             }
 
-            CopyVector(bounceNormal, &g_anCollisionProbeVec);
+            CopyVector(bounceNormal, &g_anCollisionHitNormal);
             CopyVector(&actor->posX, &g_anCollisionResolvedPos);
             actor->posZ -= 0xF0;
 
@@ -2213,7 +2213,7 @@ void Level0_UpdateActors(void) {
 
           if (actor->posZ > 1023) {
             if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100)) {
-              int *nrm = &g_anCollisionProbeVec;
+              int *nrm = &g_anCollisionHitNormal;
               int dot;
 
               actor->posX = g_anCollisionResolvedPos;
@@ -2222,15 +2222,15 @@ void Level0_UpdateActors(void) {
 
               SetVector3Magnitude(nrm, 0x1000);
 
-              dot = (st->vel[0] * nrm[0] + st->vel[1] * g_nCollisionProbeVecY +
-                     st->vel[2] * g_nCollisionProbeVecZ) >>
+              dot = (st->vel[0] * nrm[0] + st->vel[1] * g_nCollisionHitNormalY +
+                     st->vel[2] * g_nCollisionHitNormalZ) >>
                     11;
 
               if (dot < 0) {
                 ScaleVector3ByRatio(nrm, 0x1000, -dot);
                 st->vel[0] += nrm[0];
-                st->vel[1] += AS_I32(g_nCollisionProbeVecY);
-                st->vel[2] += AS_I32(g_nCollisionProbeVecZ);
+                st->vel[1] += AS_I32(g_nCollisionHitNormalY);
+                st->vel[2] += AS_I32(g_nCollisionHitNormalZ);
               }
             }
             st->life--;

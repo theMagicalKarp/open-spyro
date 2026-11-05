@@ -38,9 +38,9 @@ void ProbeSpyroGroundContact(void) {
     ApplyActiveGteRotation(out, out);
     AddVector(out, out, &BLK(SPY_POS));
     if (CastRayWorldAndActors(down, out) != 0) {
-      CopyVector(&BLK(SPY_GROUND_NORMAL), g_anCollisionProbeVec);
-      t = (signed char)ArcTan2(g_anCollisionProbeVec[2],
-                               VectorLength(g_anCollisionProbeVec, VEC_LEN_XY),
+      CopyVector(&BLK(SPY_GROUND_NORMAL), g_anCollisionHitNormal);
+      t = (signed char)ArcTan2(g_anCollisionHitNormal[2],
+                               VectorLength(g_anCollisionHitNormal, VEC_LEN_XY),
                                ATAN_ANGLE8);
       g_nSpyroGroundSlope = t;
       if (t < 0) {
@@ -78,7 +78,7 @@ void ProbeSpyroGroundContact(void) {
       AddVector(down, down, &BLK(SPY_POS));
       AddVector(out, out, &BLK(SPY_POS));
       if (CastRayWorldAndActors(down, out) != 0) {
-        CopyVector(&BLK(SPY_GROUND_NORMAL), g_anCollisionProbeVec);
+        CopyVector(&BLK(SPY_GROUND_NORMAL), g_anCollisionHitNormal);
         t = (signed char)ArcTan2(
             g_anSpyroGroundNormal[2],
             VectorLength(&BLK(SPY_GROUND_NORMAL), VEC_LEN_XY), ATAN_ANGLE8);

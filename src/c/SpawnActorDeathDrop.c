@@ -142,8 +142,8 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
   hit = FindGroundHeightBelow(throw_, 0x800);
   throw_[2] -= 0x400;
   ang = (signed char)ArcTan2_8bit(
-      g_anCollisionProbeVec[2],
-      VectorLength(g_anCollisionProbeVec, VEC_LEN_XY));
+      g_anCollisionHitNormal[2],
+      VectorLength(g_anCollisionHitNormal, VEC_LEN_XY));
   if (hit == 0 || ang >= 0x18 ||
       DispatchActorContactAtSphere(throw_, 0xc8, 0, 0, 0,
                                    CONTACT_STOP_AT_SOLID) != 0) {

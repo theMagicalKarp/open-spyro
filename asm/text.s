@@ -42977,15 +42977,15 @@ glabel IsActorGroundFlat
     /* 28BA8 800383A8 DC054224 */  addiu      $v0, $v0, 0x5DC
     /* 28BAC 800383AC 7B35010C */  jal        FindGroundHeightBelow
     /* 28BB0 800383B0 140002AE */   sw        $v0, 0x14($s0)
-    /* 28BB4 800383B4 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec)
-    /* 28BB8 800383B8 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionProbeVec)
+    /* 28BB4 800383B4 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal)
+    /* 28BB8 800383B8 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionHitNormal)
     /* 28BBC 800383BC 1400028E */  lw         $v0, 0x14($s0)
     /* 28BC0 800383C0 21280000 */  addu       $a1, $zero, $zero
     /* 28BC4 800383C4 24FA4224 */  addiu      $v0, $v0, -0x5DC
     /* 28BC8 800383C8 7F5C000C */  jal        VectorLength
     /* 28BCC 800383CC 140002AE */   sw        $v0, 0x14($s0)
-    /* 28BD0 800383D0 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec + 0x8)
-    /* 28BD4 800383D4 7073848C */  lw         $a0, %lo(g_anCollisionProbeVec + 0x8)($a0)
+    /* 28BD0 800383D0 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal + 0x8)
+    /* 28BD4 800383D4 7073848C */  lw         $a0, %lo(g_anCollisionHitNormal + 0x8)($a0)
     /* 28BD8 800383D8 6B5A000C */  jal        ArcTan2_8bit
     /* 28BDC 800383DC 21284000 */   addu      $a1, $v0, $zero
     /* 28BE0 800383E0 00160200 */  sll        $v0, $v0, 24
@@ -44342,13 +44342,13 @@ glabel MoveActorAlongHeading
   .L80039578:
     /* 29D78 80039578 17004010 */  beqz       $v0, .L800395D8
     /* 29D7C 8003957C 00000000 */   nop
-    /* 29D80 80039580 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec)
-    /* 29D84 80039584 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionProbeVec)
+    /* 29D80 80039580 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal)
+    /* 29D84 80039584 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionHitNormal)
     /* 29D88 80039588 7F5C000C */  jal        VectorLength
     /* 29D8C 8003958C 21280000 */   addu      $a1, $zero, $zero
     /* 29D90 80039590 21204000 */  addu       $a0, $v0, $zero
-    /* 29D94 80039594 0780053C */  lui        $a1, %hi(g_anCollisionProbeVec + 0x8)
-    /* 29D98 80039598 7073A58C */  lw         $a1, %lo(g_anCollisionProbeVec + 0x8)($a1)
+    /* 29D94 80039594 0780053C */  lui        $a1, %hi(g_anCollisionHitNormal + 0x8)
+    /* 29D98 80039598 7073A58C */  lw         $a1, %lo(g_anCollisionHitNormal + 0x8)($a1)
     /* 29D9C 8003959C AD5A000C */  jal        ArcTan2
     /* 29DA0 800395A0 21300000 */   addu      $a2, $zero, $zero
     /* 29DA4 800395A4 21184000 */  addu       $v1, $v0, $zero
@@ -46275,16 +46275,16 @@ glabel SpawnActorDeathDrop
     /* 2B7AC 8003AFAC 00044224 */  addiu      $v0, $v0, 0x400
     /* 2B7B0 8003AFB0 7B35010C */  jal        FindGroundHeightBelow
     /* 2B7B4 8003AFB4 3000A2AF */   sw        $v0, 0x30($sp)
-    /* 2B7B8 8003AFB8 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec)
-    /* 2B7BC 8003AFBC 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionProbeVec)
+    /* 2B7B8 8003AFB8 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal)
+    /* 2B7BC 8003AFBC 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionHitNormal)
     /* 2B7C0 8003AFC0 21280000 */  addu       $a1, $zero, $zero
     /* 2B7C4 8003AFC4 3000A38F */  lw         $v1, 0x30($sp)
     /* 2B7C8 8003AFC8 21804000 */  addu       $s0, $v0, $zero
     /* 2B7CC 8003AFCC 00FC6324 */  addiu      $v1, $v1, -0x400
     /* 2B7D0 8003AFD0 7F5C000C */  jal        VectorLength
     /* 2B7D4 8003AFD4 3000A3AF */   sw        $v1, 0x30($sp)
-    /* 2B7D8 8003AFD8 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec + 0x8)
-    /* 2B7DC 8003AFDC 7073848C */  lw         $a0, %lo(g_anCollisionProbeVec + 0x8)($a0)
+    /* 2B7D8 8003AFD8 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal + 0x8)
+    /* 2B7DC 8003AFDC 7073848C */  lw         $a0, %lo(g_anCollisionHitNormal + 0x8)($a0)
     /* 2B7E0 8003AFE0 6B5A000C */  jal        ArcTan2_8bit
     /* 2B7E4 8003AFE4 21284000 */   addu      $a1, $v0, $zero
     /* 2B7E8 8003AFE8 00160200 */  sll        $v0, $v0, 24
@@ -50061,13 +50061,13 @@ glabel ProbeSpyroLedgeForward
     /* 2EAA4 8003E2A4 21280002 */   addu      $a1, $s0, $zero
     /* 2EAA8 8003E2A8 14004010 */  beqz       $v0, .L8003E2FC
     /* 2EAAC 8003E2AC 00000000 */   nop
-    /* 2EAB0 8003E2B0 0780103C */  lui        $s0, %hi(g_anCollisionProbeVec)
-    /* 2EAB4 8003E2B4 68731026 */  addiu      $s0, $s0, %lo(g_anCollisionProbeVec)
+    /* 2EAB0 8003E2B0 0780103C */  lui        $s0, %hi(g_anCollisionHitNormal)
+    /* 2EAB4 8003E2B4 68731026 */  addiu      $s0, $s0, %lo(g_anCollisionHitNormal)
     /* 2EAB8 8003E2B8 21200002 */  addu       $a0, $s0, $zero
     /* 2EABC 8003E2BC 7F5C000C */  jal        VectorLength
     /* 2EAC0 8003E2C0 21280000 */   addu      $a1, $zero, $zero
-    /* 2EAC4 8003E2C4 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec + 0x8)
-    /* 2EAC8 8003E2C8 7073848C */  lw         $a0, %lo(g_anCollisionProbeVec + 0x8)($a0)
+    /* 2EAC4 8003E2C4 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal + 0x8)
+    /* 2EAC8 8003E2C8 7073848C */  lw         $a0, %lo(g_anCollisionHitNormal + 0x8)($a0)
     /* 2EACC 8003E2CC 21284000 */  addu       $a1, $v0, $zero
     /* 2EAD0 8003E2D0 AD5A000C */  jal        ArcTan2
     /* 2EAD4 8003E2D4 21300000 */   addu      $a2, $zero, $zero
@@ -50154,16 +50154,16 @@ glabel ProbeSpyroGroundContact
     /* 2EBF4 8003E3F4 21282002 */   addu      $a1, $s1, $zero
     /* 2EBF8 8003E3F8 41004010 */  beqz       $v0, .L8003E500
     /* 2EBFC 8003E3FC 21200002 */   addu      $a0, $s0, $zero
-    /* 2EC00 8003E400 0780103C */  lui        $s0, %hi(g_anCollisionProbeVec)
-    /* 2EC04 8003E404 68731026 */  addiu      $s0, $s0, %lo(g_anCollisionProbeVec)
+    /* 2EC00 8003E400 0780103C */  lui        $s0, %hi(g_anCollisionHitNormal)
+    /* 2EC04 8003E404 68731026 */  addiu      $s0, $s0, %lo(g_anCollisionHitNormal)
     /* 2EC08 8003E408 C05D000C */  jal        CopyVector
     /* 2EC0C 8003E40C 21280002 */   addu      $a1, $s0, $zero
     /* 2EC10 8003E410 21200002 */  addu       $a0, $s0, $zero
     /* 2EC14 8003E414 7F5C000C */  jal        VectorLength
     /* 2EC18 8003E418 21280000 */   addu      $a1, $zero, $zero
     /* 2EC1C 8003E41C 21284000 */  addu       $a1, $v0, $zero
-    /* 2EC20 8003E420 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec + 0x8)
-    /* 2EC24 8003E424 7073848C */  lw         $a0, %lo(g_anCollisionProbeVec + 0x8)($a0)
+    /* 2EC20 8003E420 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal + 0x8)
+    /* 2EC24 8003E424 7073848C */  lw         $a0, %lo(g_anCollisionHitNormal + 0x8)($a0)
     /* 2EC28 8003E428 AD5A000C */  jal        ArcTan2
     /* 2EC2C 8003E42C 21300000 */   addu      $a2, $zero, $zero
     /* 2EC30 8003E430 00160200 */  sll        $v0, $v0, 24
@@ -50256,8 +50256,8 @@ glabel ProbeSpyroGroundContact
     /* 2ED80 8003E580 21280002 */   addu      $a1, $s0, $zero
     /* 2ED84 8003E584 1D004010 */  beqz       $v0, .L8003E5FC
     /* 2ED88 8003E588 08005026 */   addiu     $s0, $s2, 0x8
-    /* 2ED8C 8003E58C 0780053C */  lui        $a1, %hi(g_anCollisionProbeVec)
-    /* 2ED90 8003E590 6873A524 */  addiu      $a1, $a1, %lo(g_anCollisionProbeVec)
+    /* 2ED8C 8003E58C 0780053C */  lui        $a1, %hi(g_anCollisionHitNormal)
+    /* 2ED90 8003E590 6873A524 */  addiu      $a1, $a1, %lo(g_anCollisionHitNormal)
     /* 2ED94 8003E594 C05D000C */  jal        CopyVector
     /* 2ED98 8003E598 21200002 */   addu      $a0, $s0, $zero
     /* 2ED9C 8003E59C 21200002 */  addu       $a0, $s0, $zero
@@ -50445,8 +50445,8 @@ glabel StepSpyroOntoLocalFloor
     /* 2F024 8003E824 21282002 */   addu      $a1, $s1, $zero
     /* 2F028 8003E828 2A004010 */  beqz       $v0, .L8003E8D4
     /* 2F02C 8003E82C 00000000 */   nop
-    /* 2F030 8003E830 0780023C */  lui        $v0, %hi(g_anCollisionProbeVec + 0x8)
-    /* 2F034 8003E834 7073428C */  lw         $v0, %lo(g_anCollisionProbeVec + 0x8)($v0)
+    /* 2F030 8003E830 0780023C */  lui        $v0, %hi(g_anCollisionHitNormal + 0x8)
+    /* 2F034 8003E834 7073428C */  lw         $v0, %lo(g_anCollisionHitNormal + 0x8)($v0)
     /* 2F038 8003E838 00000000 */  nop
     /* 2F03C 8003E83C 25004018 */  blez       $v0, .L8003E8D4
     /* 2F040 8003E840 1000A427 */   addiu     $a0, $sp, 0x10
@@ -52635,8 +52635,8 @@ glabel AdvanceSpyroPhysics
     /* 30F5C 8004075C 00FF1226 */  addiu      $s2, $s0, -0x100
     /* 30F60 80040760 78FF1526 */  addiu      $s5, $s0, -0x88
     /* 30F64 80040764 01001424 */  addiu      $s4, $zero, 0x1
-    /* 30F68 80040768 0780173C */  lui        $s7, %hi(g_anCollisionProbeVec)
-    /* 30F6C 8004076C 6873F726 */  addiu      $s7, $s7, %lo(g_anCollisionProbeVec)
+    /* 30F68 80040768 0780173C */  lui        $s7, %hi(g_anCollisionHitNormal)
+    /* 30F6C 8004076C 6873F726 */  addiu      $s7, $s7, %lo(g_anCollisionHitNormal)
   .L80040770:
     /* 30F70 80040770 2120C003 */  addu       $a0, $fp, $zero
     /* 30F74 80040774 C05D000C */  jal        CopyVector
@@ -52852,8 +52852,8 @@ glabel AdvanceSpyroPhysics
   .L80040A78:
     /* 31278 80040A78 7F5C000C */  jal        VectorLength
     /* 3127C 80040A7C 21280000 */   addu      $a1, $zero, $zero
-    /* 31280 80040A80 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec + 0x8)
-    /* 31284 80040A84 7073848C */  lw         $a0, %lo(g_anCollisionProbeVec + 0x8)($a0)
+    /* 31280 80040A80 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal + 0x8)
+    /* 31284 80040A84 7073848C */  lw         $a0, %lo(g_anCollisionHitNormal + 0x8)($a0)
     /* 31288 80040A88 21284000 */  addu       $a1, $v0, $zero
     /* 3128C 80040A8C AD5A000C */  jal        ArcTan2
     /* 31290 80040A90 21300000 */   addu      $a2, $zero, $zero
@@ -52913,8 +52913,8 @@ glabel AdvanceSpyroPhysics
     /* 3135C 80040B5C C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactSurfaceType)($at)
     /* 31360 80040B60 C05D000C */  jal        CopyVector
     /* 31364 80040B64 7C014426 */   addiu     $a0, $s2, 0x17C
-    /* 31368 80040B68 0780053C */  lui        $a1, %hi(g_anCollisionProbeVec)
-    /* 3136C 80040B6C 6873A524 */  addiu      $a1, $a1, %lo(g_anCollisionProbeVec)
+    /* 31368 80040B68 0780053C */  lui        $a1, %hi(g_anCollisionHitNormal)
+    /* 3136C 80040B6C 6873A524 */  addiu      $a1, $a1, %lo(g_anCollisionHitNormal)
     /* 31370 80040B70 C05D000C */  jal        CopyVector
     /* 31374 80040B74 88014426 */   addiu     $a0, $s2, 0x188
     /* 31378 80040B78 1800A427 */  addiu      $a0, $sp, 0x18
@@ -53015,8 +53015,8 @@ glabel AdvanceSpyroPhysics
   .L80040CD4:
     /* 314D4 80040CD4 7F5C000C */  jal        VectorLength
     /* 314D8 80040CD8 21280000 */   addu      $a1, $zero, $zero
-    /* 314DC 80040CDC 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec + 0x8)
-    /* 314E0 80040CE0 7073848C */  lw         $a0, %lo(g_anCollisionProbeVec + 0x8)($a0)
+    /* 314DC 80040CDC 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal + 0x8)
+    /* 314E0 80040CE0 7073848C */  lw         $a0, %lo(g_anCollisionHitNormal + 0x8)($a0)
     /* 314E4 80040CE4 21284000 */  addu       $a1, $v0, $zero
     /* 314E8 80040CE8 AD5A000C */  jal        ArcTan2
     /* 314EC 80040CEC 21300000 */   addu      $a2, $zero, $zero
@@ -53074,8 +53074,8 @@ glabel AdvanceSpyroPhysics
     /* 315B0 80040DB0 C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactSurfaceType)($at)
     /* 315B4 80040DB4 C05D000C */  jal        CopyVector
     /* 315B8 80040DB8 7C014426 */   addiu     $a0, $s2, 0x17C
-    /* 315BC 80040DBC 0780053C */  lui        $a1, %hi(g_anCollisionProbeVec)
-    /* 315C0 80040DC0 6873A524 */  addiu      $a1, $a1, %lo(g_anCollisionProbeVec)
+    /* 315BC 80040DBC 0780053C */  lui        $a1, %hi(g_anCollisionHitNormal)
+    /* 315C0 80040DC0 6873A524 */  addiu      $a1, $a1, %lo(g_anCollisionHitNormal)
     /* 315C4 80040DC4 C05D000C */  jal        CopyVector
     /* 315C8 80040DC8 88014426 */   addiu     $a0, $s2, 0x188
     /* 315CC 80040DCC 1800A427 */  addiu      $a0, $sp, 0x18
@@ -64863,8 +64863,8 @@ glabel CastRayWorldAndActors
     /* 3BE68 8004B668 000081AC */  sw         $at, 0x0($a0)
     /* 3BE6C 8004B66C 040082AC */  sw         $v0, 0x4($a0)
     /* 3BE70 8004B670 080083AC */  sw         $v1, 0x8($a0)
-    /* 3BE74 8004B674 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec)
-    /* 3BE78 8004B678 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionProbeVec)
+    /* 3BE74 8004B674 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal)
+    /* 3BE78 8004B678 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionHitNormal)
     /* 3BE7C 8004B67C 00008DAC */  sw         $t5, 0x0($a0)
     /* 3BE80 8004B680 04008EAC */  sw         $t6, 0x4($a0)
     /* 3BE84 8004B684 08008FAC */  sw         $t7, 0x8($a0)
@@ -65351,8 +65351,8 @@ glabel CastRayWorldAndActors
     /* 3C5A0 8004BDA0 000081AC */  sw         $at, 0x0($a0)
     /* 3C5A4 8004BDA4 040082AC */  sw         $v0, 0x4($a0)
     /* 3C5A8 8004BDA8 080083AC */  sw         $v1, 0x8($a0)
-    /* 3C5AC 8004BDAC 0780043C */  lui        $a0, %hi(g_anCollisionProbeVec)
-    /* 3C5B0 8004BDB0 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionProbeVec)
+    /* 3C5AC 8004BDAC 0780043C */  lui        $a0, %hi(g_anCollisionHitNormal)
+    /* 3C5B0 8004BDB0 68738424 */  addiu      $a0, $a0, %lo(g_anCollisionHitNormal)
     /* 3C5B4 8004BDB4 00008DAC */  sw         $t5, 0x0($a0)
     /* 3C5B8 8004BDB8 04008EAC */  sw         $t6, 0x4($a0)
     /* 3C5BC 8004BDBC 08008FAC */  sw         $t7, 0x8($a0)
@@ -66146,8 +66146,8 @@ glabel CollideSphereWithWorldAndActors
     /* 3D104 8004C904 4C00A2AE */  sw         $v0, 0x4C($s5)
     /* 3D108 8004C908 5000A3AE */  sw         $v1, 0x50($s5)
     /* 3D10C 8004C90C 5400A4AE */  sw         $a0, 0x54($s5)
-    /* 3D110 8004C910 0780013C */  lui        $at, %hi(g_anCollisionProbeVec)
-    /* 3D114 8004C914 68732124 */  addiu      $at, $at, %lo(g_anCollisionProbeVec)
+    /* 3D110 8004C910 0780013C */  lui        $at, %hi(g_anCollisionHitNormal)
+    /* 3D114 8004C914 68732124 */  addiu      $at, $at, %lo(g_anCollisionHitNormal)
     /* 3D118 8004C918 00002DAC */  sw         $t5, 0x0($at)
     /* 3D11C 8004C91C 04002EAC */  sw         $t6, 0x4($at)
     /* 3D120 8004C920 08002FAC */  sw         $t7, 0x8($at)
@@ -66879,8 +66879,8 @@ glabel CollideSphereWithWorldAndActors_Tail
     /* 3DBC4 8004D3C4 CCFFA2AE */  sw         $v0, -0x34($s5)
     /* 3DBC8 8004D3C8 D0FFA3AE */  sw         $v1, -0x30($s5)
     /* 3DBCC 8004D3CC D4FFA4AE */  sw         $a0, -0x2C($s5)
-    /* 3DBD0 8004D3D0 0780013C */  lui        $at, %hi(g_anCollisionProbeVec)
-    /* 3DBD4 8004D3D4 68732124 */  addiu      $at, $at, %lo(g_anCollisionProbeVec)
+    /* 3DBD0 8004D3D0 0780013C */  lui        $at, %hi(g_anCollisionHitNormal)
+    /* 3DBD4 8004D3D4 68732124 */  addiu      $at, $at, %lo(g_anCollisionHitNormal)
     /* 3DBD8 8004D3D8 00002DAC */  sw         $t5, 0x0($at)
     /* 3DBDC 8004D3DC 04002EAC */  sw         $t6, 0x4($at)
     /* 3DBE0 8004D3E0 08002FAC */  sw         $t7, 0x8($at)
@@ -67320,8 +67320,8 @@ glabel FindGroundHeightBelow
     /* 3E230 8004DA30 7CFF0106 */  bgez       $s0, .L8004D824
     /* 3E234 8004DA34 00000000 */   nop
     /* 3E238 8004DA38 00003621 */  addi       $s6, $t1, 0x0 /* handwritten instruction */
-    /* 3E23C 8004DA3C 0780013C */  lui        $at, %hi(g_anCollisionProbeVec)
-    /* 3E240 8004DA40 68732124 */  addiu      $at, $at, %lo(g_anCollisionProbeVec)
+    /* 3E23C 8004DA3C 0780013C */  lui        $at, %hi(g_anCollisionHitNormal)
+    /* 3E240 8004DA40 68732124 */  addiu      $at, $at, %lo(g_anCollisionHitNormal)
     /* 3E244 8004DA44 00002DAC */  sw         $t5, 0x0($at)
     /* 3E248 8004DA48 04002EAC */  sw         $t6, 0x4($at)
     /* 3E24C 8004DA4C 08002FAC */  sw         $t7, 0x8($at)
@@ -67622,8 +67622,8 @@ glabel FindGroundHeightBelow
     /* 3E6B8 8004DEB8 78FF0106 */  bgez       $s0, .L8004DC9C
     /* 3E6BC 8004DEBC 00000000 */   nop
     /* 3E6C0 8004DEC0 00003621 */  addi       $s6, $t1, 0x0 /* handwritten instruction */
-    /* 3E6C4 8004DEC4 0780013C */  lui        $at, %hi(g_anCollisionProbeVec)
-    /* 3E6C8 8004DEC8 68732124 */  addiu      $at, $at, %lo(g_anCollisionProbeVec)
+    /* 3E6C4 8004DEC4 0780013C */  lui        $at, %hi(g_anCollisionHitNormal)
+    /* 3E6C8 8004DEC8 68732124 */  addiu      $at, $at, %lo(g_anCollisionHitNormal)
     /* 3E6CC 8004DECC 00002DAC */  sw         $t5, 0x0($at)
     /* 3E6D0 8004DED0 04002EAC */  sw         $t6, 0x4($at)
     /* 3E6D4 8004DED4 08002FAC */  sw         $t7, 0x8($at)
@@ -73671,8 +73671,8 @@ endlabel BurstActorIntoSparks
 nonmatching EncodeCachedVecToActorDirCode, 0x1A0
 
 glabel EncodeCachedVecToActorDirCode
-    /* 43BD0 800533D0 0780033C */  lui        $v1, %hi(g_anCollisionProbeVec)
-    /* 43BD4 800533D4 68736324 */  addiu      $v1, $v1, %lo(g_anCollisionProbeVec)
+    /* 43BD0 800533D0 0780033C */  lui        $v1, %hi(g_anCollisionHitNormal)
+    /* 43BD4 800533D4 68736324 */  addiu      $v1, $v1, %lo(g_anCollisionHitNormal)
     /* 43BD8 800533D8 0000618C */  lw         $at, 0x0($v1)
     /* 43BDC 800533DC 0400628C */  lw         $v0, 0x4($v1)
     /* 43BE0 800533E0 0800638C */  lw         $v1, 0x8($v1)

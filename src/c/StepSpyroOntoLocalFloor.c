@@ -36,7 +36,7 @@ void StepSpyroOntoLocalFloor(void) {
   ApplyActiveGteRotation(down, down);
   AddVector(down, pos, down);
   if ((CastRayWorldAndActors(fore, aft) != 0) &&
-      (g_anCollisionProbeVec[2] > 0)) {
+      (g_anCollisionHitNormal[2] > 0)) {
     idx = 26;
     SubtractVector(down, g_anCollisionResolvedPos, down);
     if (((!down) && (!down)) && (!down)) {

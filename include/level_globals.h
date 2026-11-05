@@ -134,8 +134,8 @@ extern int g_nCameraPosZ;
 extern int g_nSpyroSwingEulerTargetZ;
 extern int g_nCameraTargetYawBiasFromMode;
 extern int g_nCdStreamState;
-extern int g_nCollisionProbeVecY;
-extern int g_nCollisionProbeVecZ;
+extern int g_nCollisionHitNormalY;
+extern int g_nCollisionHitNormalZ;
 extern int g_nCollisionResolvedY;                        /* ..y */
 extern int g_nCurrentLevelId;                            /* current level id */
 extern int g_nDemoActive;

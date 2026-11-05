@@ -827,7 +827,7 @@ extern short g_anBillboardBasisVectors[9];              /* 0x800770e0 */
 extern int g_nLightSweepAngle;                          /* 0x800770f4 */
 extern unsigned char g_abWorldRotatingBillboardTable[128];       /* 0x80077114 */
 extern int g_anLevelDragonsRescued[36];                 /* 0x800772d8 */
-extern int g_anCollisionProbeVec[3];                    /* 0x80077368 */
+extern int g_anCollisionHitNormal[3];                    /* 0x80077368 */
 extern unsigned int g_dwPadPressed;                             /* 0x80077378 */
 extern unsigned int g_dwPadReleased;                            /* 0x8007737c */
 extern unsigned int g_dwPadHeld;                                /* 0x80077380 */
@@ -1083,7 +1083,7 @@ extern unsigned char g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *
  * Component aliases of named vectors (absolute-address forms the matches need):
  *   g_bSpyroPersistentEulerZ   0x80078a66  g_abSpyroPersistentEuler[2]
- *   g_nCollisionProbeVecY/Z    0x8007736c/70  g_anCollisionProbeVec[1..2]
+ *   g_nCollisionHitNormalY/Z    0x8007736c/70  g_anCollisionHitNormal[1..2]
  *   g_nCollisionResolvedY      0x80076b84  g_anCollisionResolvedPos[1]
  *   g_nSpyroRequestVelocityY/Z 0x80078c64/68  g_anSpyroRequestVelocity[1..2]
  *   g_nCameraPosY/Z            0x80076dfc/e00  g_anCameraPos[1..2]
