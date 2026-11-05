@@ -317,7 +317,17 @@ def audit() -> None:
     kinds: dict[int, set[str]] = defaultdict(set)
     writers: dict[int, set[str]] = defaultdict(set)
     for acc in scan_accesses(root):
-        kind = "&" if acc.op.startswith("&") else "R" if acc.op.startswith("l") else "W"
+        # A bare "&addr" (an address formed, then loaded / stored through) is a
+        # reference but not a read; passed / stored / tabled addresses may be.
+        kind = (
+            "A"
+            if acc.op == "&addr"
+            else "&"
+            if acc.op.startswith("&")
+            else "R"
+            if acc.op.startswith("l")
+            else "W"
+        )
         kinds[acc.addr].add(kind)
         if kind == "W":
             writers[acc.addr].add(acc.func)
@@ -337,5 +347,5 @@ def audit() -> None:
             funcs |= writers[a]
         if not seen:
             print(f"unreferenced {addr:#x} {name}")
-        elif seen == {"W"}:
+        elif seen <= {"W", "A"} and "W" in seen:
             print(f"write-only   {addr:#x} {name}: {' '.join(sorted(funcs))}")

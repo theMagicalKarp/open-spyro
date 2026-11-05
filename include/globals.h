@@ -624,7 +624,7 @@ extern int g_nPulseRumbleTimer;              /* 0x800757d0 */
 extern unsigned int g_dwSkyFadeColor;          /* 0x800757d4 */
 extern int g_nGamestate;                     /* 0x800757d8: enum Gamestate (gamestate.h): selects GamestateUpdate / GamestateDraw handlers */
 extern struct PadSubstep *g_pPadSubstepState; /* 0x800757e0: this substep's g_anPadSubstepRing entry (pad.h) */
-extern void *g_pCollisionHitActor;           /* 0x800757e4 */
+extern void *g_pCollisionHitActor;           /* 0x800757e4: actor whose mesh the last CastRayWorldAndActors / CollideSphereWithWorldAndActors / FindGroundHeightBelow hit (NULL = world); write-only, callers go by g_nCollisionHitTriIndex (-1 = actor hit) instead (xref audit) */
 extern int g_nGameOverLevelIndex;       /* 0x800757e8: g_nLevelIndex at game over; picks the continue spawn in g_anGameOverRespawnPosTable / g_abGameOverRespawnYawTable (BuildLoadedLevelRuntime) */
 extern unsigned short **g_pLevelPickupTableEntries; /* 0x800757f8: per pickup group, its actor-id list (bit 15 marks the last) */
 extern unsigned char g_abPadActCommand[2];            /* 0x80075800 */
@@ -658,7 +658,7 @@ extern struct Actor *g_pSparxActor;      /* 0x80075898: the Sparx actor (type 0x
 extern int g_nSpyroTurnRateAccum;            /* 0x800758a0 */
 extern int g_nSpyroSuperflameTimerSave;     /* 0x800758a4 */
 extern int g_nReturnPortalLevelId;                /* 0x800758ac: level being left (0 = none); the hub places Spyro at the portal leading to it */
-extern int g_nPrimBufferOverflowFlag;        /* 0x800758b0 */
+extern int g_nPrimBufferOverflowFlag;        /* 0x800758b0: cleared with each frame's prim buffer setup, set to 1 by the hand-asm emitters (EmitSkyMesh, EmitSkyMeshFogged, RasterizeEmitList) when g_pPrimBufferLimit stops them; write-only, nothing reacts to it (xref audit) */
 extern int g_nNextLevelId;                /* 0x800758b4: the level to load next: equals g_nActiveLevelId in play; a portal / balloonist / level select / death sets it; while the two differ a transition is pending (ApplySpyroTriggerEvents and DispatchSpyroChargeStateChanges ignore events), and TickLevelTransitionStream copies it to g_nActiveLevelId on arrival */
 extern int g_nMenuDrawFrames;     /* 0x800758b8: frames the menu (PauseMenu_Draw) has drawn since entry; 0 = the entry frame, pause/sub menu input waits for 5, MenuTransition_Draw switches on it; drives the menu bob/blink phases. SpyroStateDelay_Update reuses it as its pass count */
 extern int g_nPortalCount;              /* 0x800758bc */
@@ -932,7 +932,7 @@ extern int g_nWorldChunkCount;                          /* 0x800785ac */
 extern void *g_pTriggerRegionTable;                     /* 0x800785b8 */
 extern void *g_pWorldTextureLodRecords;                   /* 0x800785c0: per world texture, a 0x10-byte UV/tpage record (two 8-byte halves) */
 extern void *g_pWorldTextureDetailRecords;                    /* 0x800785c4: per world texture, a 0xA8-byte record (21 8-byte UV records, presumably 1 + 4 + 16 for the subdivided close-up draw) */
-extern int g_nWorldTextureCount;                           /* 0x800785c8 */
+extern int g_nWorldTextureCount;                           /* 0x800785c8: texture-section record count (UnpackWorldDataChunks); write-only, the texture tables are indexed without a bound (xref audit) */
 extern void *g_pWorldCollisionHeader;                   /* 0x800785d4: WorldCollisionHeader * */
 extern void *g_pLoadStagingBuffer;                               /* 0x800785d8: first free byte past the loaded overlay (ApplyPerLevelGlobalsTable: Level<N>_OverlayEnd; title/demo/pause paths: g_abTitlescreenOverlayEnd): the CD staging buffer (asset headers, TIMs, audio before the SPU upload) */
 extern void *g_pLevelDataBuffer;                               /* 0x800785dc: where the world bundle is read and unpacked in place (UnpackWorldDataChunks); set equal to g_pLoadStagingBuffer */
