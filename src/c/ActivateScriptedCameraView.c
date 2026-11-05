@@ -1,5 +1,6 @@
 #include "camera.h"
 #include "globals.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 /* The active scripted-camera record pointer (g_pScriptedCameraView) and the
@@ -30,7 +31,7 @@ void ActivateScriptedCameraView(ScriptedCamView *view) {
   VIEW = view;
   CopyVector(CAMPOS, view->camPos);
   ZeroVector(g_anSpyroVelocity);
-  g_anSpyroVelocity[2] = -0x2300;
+  g_anSpyroVelocity[2] = -SPYRO_TERMINAL_SPEED;
   rec = g_pScriptedCameraView;
   CAMERA_EULER.roll = rec->camRoll;
   CAMERA_EULER.pitch = rec->camPitch;

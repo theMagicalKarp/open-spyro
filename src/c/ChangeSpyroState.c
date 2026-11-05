@@ -24,15 +24,15 @@ SDATA(g_pSpyroHomingTargetActor, 4);
 SDATA(g_nSpyroScriptedLiftTurn, 4);
 
 /* Charge-speed latch: the first charge frame takes the carried speed, at
-   least 0x1F80, as the speed target. */
+   least SPYRO_CHARGE_SPEED, as the speed target. */
 #define LATCH_CHARGE_SPEED(vec)                                                \
   {                                                                            \
     int v;                                                                     \
                                                                                \
     g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;                               \
     v = VectorLength(vec, VEC_LEN_XYZ);                                        \
-    if (v < 0x1F80) {                                                          \
-      v = 0x1F80;                                                              \
+    if (v < SPYRO_CHARGE_SPEED) {                                              \
+      v = SPYRO_CHARGE_SPEED;                                                  \
     }                                                                          \
     g_nSpyroSpeedTarget = v;                                                   \
   }
@@ -390,11 +390,11 @@ void ChangeSpyroState(int state) {
     }
     g_nSpyroMotionSpeed =
         VectorLength(&st[SPY_VELOCITY - SPY_STATE], VEC_LEN_XY);
-    if (g_nSpyroMotionSpeed > 0x1900) {
-      g_nSpyroMotionSpeed = 0x1900;
+    if (g_nSpyroMotionSpeed > SPYRO_GLIDE_SPEED) {
+      g_nSpyroMotionSpeed = SPYRO_GLIDE_SPEED;
     }
-    if (g_nSpyroMotionSpeed < SPYRO_JOG_SPEED) {
-      g_nSpyroMotionSpeed = 0x780;
+    if (g_nSpyroMotionSpeed < SPYRO_GLIDE_MIN_SPEED) {
+      g_nSpyroMotionSpeed = SPYRO_GLIDE_MIN_SPEED;
     }
     if (*st != SPYRO_ST_FALL || g_nFlightLevelActive ||
         g_nSpyroFloorReferenceZ < g_nSpyroWorldPosZ) {

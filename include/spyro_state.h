@@ -116,6 +116,21 @@ typedef enum SpyroState
 #define SPYRO_RUN_DROP_SPEED 0xC80  /* below: a run drops back to a jog; also the
                                      * fast/slow split for glides, leaps and lean */
 
+/* Speed limits (g_nSpyroMotionSpeed / g_nSpyroSpeedTarget, and |velocity| in
+ * the same units), from IntegrateSpyroMotionForSubstep's per-state clamps. */
+#define SPYRO_TERMINAL_SPEED 0x2300 /* fastest fall (-velocity Z); also caps
+                                     * slide and charge-wind-down speed */
+#define SPYRO_MAX_SPEED 0x5900      /* cap for charge, supercharge and flight */
+#define SPYRO_CHARGE_SPEED 0x1F80   /* least speed a charge (ground or air) starts at */
+#define SPYRO_CHARGE_MIN_SPEED 0x1400 /* charge / supercharge floor: slower
+                                       * resets the speed target to it */
+#define SPYRO_GLIDE_SPEED 0x1900    /* glide target speed (stick back slows it);
+                                     * a glide starts no faster */
+#define SPYRO_GLIDE_MIN_SPEED 0x780 /* glide and flight floor */
+#define SPYRO_FLIGHT_CRUISE_SPEED 0x1040 /* level flight: falling below the
+                                          * floor reference adds speed, rising
+                                          * above it takes it away */
+
 /* g_dwSpyroRequestMask bits (SpyroObj.requestMask): a scripted override of
  * Spyro posted by actors and cutscenes, applied by AdvanceSpyroPhysics while
  * SPYRO_RQ_PENDING is set. */

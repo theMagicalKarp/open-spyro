@@ -320,7 +320,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (g_dwPadHeld & PAD_SQUARE) {
       ChangeSpyroState(SPYRO_ST_CHARGE_AIR);
-      g_nSpyroMotionSpeed = 0x1F80;
+      g_nSpyroMotionSpeed = SPYRO_CHARGE_SPEED;
       break;
     }
     if (g_nSpyroGlideSpentFlag == 0 &&
@@ -499,8 +499,8 @@ void UpdateSpyroStateBehavior(void) {
 
         g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ;
         v = VectorLength(&SPY[SPY_CARRY], VEC_LEN_XYZ);
-        if (v < 0x1F80) {
-          v = 0x1F80;
+        if (v < SPYRO_CHARGE_SPEED) {
+          v = SPYRO_CHARGE_SPEED;
         }
         g_nSpyroSpeedTarget = v;
         g_nSpyroSubstate |= SPYRO_SUB_CHARGE_LATCHED;
