@@ -367,7 +367,7 @@ void BeginDragonRescue(Actor *actor);
 /* 0x8002cb6c: Returns from the dragon rescue to gameplay: GS_GAMEPLAY, gameplay unblocked, the rescued dragon's checkpoint armed (CHECKPT_HELD -> CHECKPT_ARMED), ResetSpyroEntity(1), a 0xC-frame pad snapshot, the camera anchor back on Spyro with the standing camera (CAM_MODE_STAND) on the dynamic target params, the superflame timer restored and the HUD counters reset (InitHudCounters(0)). */
 void EndDragonRescueToWorld(void);
 
-/* 0x8002d02c: Ends the save-menu (GS_SAVE_MENU) back to gameplay: g_nGamestate=GS_GAMEPLAY, resets Spyro (ResetSpyroEntity) + camera mode 0, snapshots the live camera pose INTO g_anCameraDynamicTargetParams (CopyWords from &g_nCameraYaw, 0x18 BYTES = 6 ints), biases slot[0] yaw by g_nCameraTargetYawBiasFromMode, and points g_pCameraTargetParams at it so the world-return camera eases from the menu pose instead of a canned table. Re-inits HUD counters, restores music track. Mirrors EndDragonRescueToWorld. */
+/* 0x8002d02c: Ends the save-menu (GS_SAVE_MENU) back to gameplay: g_nGamestate=GS_GAMEPLAY, resets Spyro (ResetSpyroEntity) + camera mode 0, snapshots the live camera pose INTO g_anCameraDynamicTargetParams (CopyWords from &g_nCameraYaw, 0x18 BYTES = 6 ints), biases slot[0] yaw by g_nCameraParamsReferenceYaw, and points g_pCameraTargetParams at it so the world-return camera eases from the menu pose instead of a canned table. Re-inits HUD counters, restores music track. Mirrors EndDragonRescueToWorld. */
 void EndSaveMenuToWorld(void);
 
 /* 0x8002d170: Begins the "IN THE WORLD OF DRAGONS…" story intro: g_nGamestate=13 (GS_TITLE, story-intro mode). FillWord zeros 0x5c bytes starting at g_nTitleMode, resets sfx/music volume to 10, primes the title-CD anchor at g_pStoryIntroStreamCursor to the CD buffer end-2000, and kicks the libpress audio start at srand(0x159). */
@@ -451,7 +451,7 @@ int CheckLineOfSightSegment(int *from, int *to);
 /* 0x80033f08: Derives the camera pitch / yaw from the anchor -> `target` delta; when the inverted heading is closer (or the mode / target asks for it) flips the framing half a turn and returns 1, else commits the plain yaw and returns 0. */
 int ComputeCameraToTargetAngle(int *target);
 
-/* 0x80034198: Loads the current camera-mode's 6-int parameter block from g_pCameraTargetParams into the g_nCameraTarget* set (Yaw, Pitch, Distance, Roll, PitchBias, YawBias). The yaw is biased by -g_nCameraTargetYawBiasFromMode & 0xfff so the params can be stored in world-space yaw. */
+/* 0x80034198: Loads the current camera-mode's 6-int parameter block from g_pCameraTargetParams into the g_nCameraTarget* set (Yaw, Pitch, Distance, Roll, PitchBias, YawBias). The yaw is biased by -g_nCameraParamsReferenceYaw & 0xfff so the params can be stored in world-space yaw. */
 void LoadCameraTargetAnglesFromMode(void);
 
 /* 0x80034204: Polar-to-Cartesian for the camera orbit. Writes (x = D*Cos(P)*Cos(Y), y = -D*Cos(P)*Sin(Y), z = D*Sin(P)) into *out using g_nCameraSpringYaw/Pitch/Distance. The result is the offset from g_pCameraAnchorPos to the eye position. */

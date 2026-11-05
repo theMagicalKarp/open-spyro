@@ -160,7 +160,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_nCameraNextMode = CAM_MODE_STAND;
     g_anCameraActiveTargetParams[2] = 0x600;
     g_pCameraTargetParams = g_anCameraActiveTargetParams;
-    g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
+    g_nCameraParamsReferenceYaw = g_nSpyroBodyYaw;
     ResetCameraStateToTarget();
     g_nScreenFadeLevel = 0x20;
   }

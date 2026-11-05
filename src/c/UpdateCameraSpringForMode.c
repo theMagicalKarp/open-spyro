@@ -103,7 +103,7 @@ void UpdateCameraSpringForMode(void) {
       *(int **)&CAM[CAM_TARGET_PARAMS] = g_anCameraParamDefault;
       yaw = SPY[SPY_BODY_YAW];
       g_pCameraAnchorPos = SPY;
-      g_nCameraTargetYawBiasFromMode = yaw;
+      g_nCameraParamsReferenceYaw = yaw;
       g_nCameraTargetInverted = ComputeCameraToTargetAngle(CAM);
       g_nCameraSpringYaw = g_nCameraYaw;
       if (g_nCameraCollisionRetries == 0 || (int)g_dwGamestateFrames < 0x78) {
@@ -153,7 +153,7 @@ void UpdateCameraSpringForMode(void) {
     g_pCameraTargetParams = g_anCameraParamDefault;
     yaw = SPY[SPY_BODY_YAW];
     g_pCameraAnchorPos = SPY;
-    g_nCameraTargetYawBiasFromMode = yaw;
+    g_nCameraParamsReferenceYaw = yaw;
     g_nCameraTargetInverted = ComputeCameraToTargetAngle(&s[S_POS]);
     g_nCameraSpringYaw = g_nCameraYaw;
     if (g_nCameraCollisionRetries == 0) {
@@ -168,7 +168,7 @@ void UpdateCameraSpringForMode(void) {
     int yaw = g_nSpyroBodyYaw;
 
     *(int **)&CAM[CAM_ANCHOR] = g_anSpyroWorldPos;
-    g_nCameraTargetYawBiasFromMode = yaw;
+    g_nCameraParamsReferenceYaw = yaw;
     if (g_nCameraCollisionRetries != 0) {
       break;
     }
@@ -190,7 +190,7 @@ void UpdateCameraSpringForMode(void) {
 
     g_pCameraTargetParams = g_anCameraParamCharge;
     g_pCameraAnchorPos = g_anSpyroWorldPos;
-    g_nCameraTargetYawBiasFromMode = yaw;
+    g_nCameraParamsReferenceYaw = yaw;
     g_nCameraTargetInverted = ComputeCameraToTargetAngle(&s[S_POS]);
     g_nCameraSpringYaw = g_nCameraYaw;
     if (g_nCameraCollisionRetries != 0) {
@@ -205,7 +205,7 @@ void UpdateCameraSpringForMode(void) {
     int yaw = g_nSpyroBodyYaw;
 
     g_pCameraAnchorPos = g_anSpyroWorldPos;
-    g_nCameraTargetYawBiasFromMode = yaw;
+    g_nCameraParamsReferenceYaw = yaw;
     if (g_nCameraCollisionRetries == 0) {
       if (g_nSpyroFlightMode != 0) {
         if (g_nSpyroSubstate == SPYRO_SUB_GLIDE_L1) {
@@ -296,7 +296,7 @@ void UpdateCameraSpringForMode(void) {
     int yaw = g_nSpyroBodyYaw;
 
     g_pCameraAnchorPos = g_anSpyroWorldPos;
-    g_nCameraTargetYawBiasFromMode = yaw;
+    g_nCameraParamsReferenceYaw = yaw;
     if (g_nCameraCollisionRetries == 0) {
       if (AbsAngleDelta12(yaw, g_nCameraEulerYaw) > 0x578) {
         g_pCameraTargetParams = g_anCameraParamFallFacing;
@@ -321,7 +321,7 @@ void UpdateCameraSpringForMode(void) {
 
     g_pCameraTargetParams = g_anCameraParamFreeLook;
     g_pCameraAnchorPos = g_anSpyroWorldPos;
-    g_nCameraTargetYawBiasFromMode = yaw;
+    g_nCameraParamsReferenceYaw = yaw;
     g_nCameraTargetInverted = ComputeCameraToTargetAngle(&s[S_POS]);
     g_nCameraSpringYaw = g_nCameraYaw;
     g_nCameraSpringPitch = g_nCameraPitch;
@@ -395,7 +395,7 @@ void UpdateCameraSpringForMode(void) {
     int yaw = g_nSpyroBodyYaw;
 
     g_pCameraAnchorPos = g_anSpyroWorldPos;
-    g_nCameraTargetYawBiasFromMode = yaw;
+    g_nCameraParamsReferenceYaw = yaw;
     if (g_nCameraCollisionRetries == 0) {
       if (AbsAngleDelta12(yaw, g_nCameraEulerYaw) > 0x578) {
         g_pCameraTargetParams = g_anCameraParamFollowFacing;
@@ -421,7 +421,7 @@ void UpdateCameraSpringForMode(void) {
     y = actor->posY;
     g_anCameraScriptedTargetPos[2] = z;
     g_anCameraScriptedTargetPos[1] = y;
-    g_nCameraTargetYawBiasFromMode = actor->rotZ << 4;
+    g_nCameraParamsReferenceYaw = actor->rotZ << 4;
     g_nCameraTargetInverted = ComputeCameraToTargetAngle(&s[S_POS]);
     g_nCameraSpringYaw = g_nCameraYaw;
     g_nCameraSpringPitch = g_nCameraPitch;
@@ -433,7 +433,7 @@ void UpdateCameraSpringForMode(void) {
     Actor *actor = g_pScriptedCameraActor;
 
     g_pCameraAnchorPos = g_anSpyroWorldPos;
-    g_nCameraTargetYawBiasFromMode =
+    g_nCameraParamsReferenceYaw =
         ArcTan2(ACTOR_X(actor) - g_pCameraAnchorPos[0],
                 actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE12);
     if (g_nCameraCollisionRetries != 0) {
@@ -463,7 +463,7 @@ void UpdateCameraSpringForMode(void) {
 
     g_pCameraTargetParams = g_anCameraParamDefault;
     g_pCameraAnchorPos = g_anSpyroWorldPos;
-    g_nCameraTargetYawBiasFromMode = yaw;
+    g_nCameraParamsReferenceYaw = yaw;
     g_nCameraTargetInverted = ComputeCameraToTargetAngle(&s[S_POS]);
     g_nCameraSpringYaw = g_nCameraYaw;
     g_nCameraSpringDistance = g_nCameraDistance;

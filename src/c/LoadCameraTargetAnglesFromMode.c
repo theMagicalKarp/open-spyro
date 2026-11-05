@@ -22,7 +22,7 @@ struct CameraTarget {
 void LoadCameraTargetAnglesFromMode(void) {
   int *params = g_pCameraTargetParams;
 
-  CAMERA_TARGET.yaw = (params[0] - g_nCameraTargetYawBiasFromMode) & 0xfff;
+  CAMERA_TARGET.yaw = (params[0] - g_nCameraParamsReferenceYaw) & 0xfff;
   CAMERA_TARGET.pitch = params[1];
   CAMERA_TARGET.distance = params[2];
   CAMERA_TARGET.roll = params[3];

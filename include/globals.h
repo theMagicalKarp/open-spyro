@@ -771,7 +771,7 @@ extern int g_nCameraCollisionRetries;                   /* 0x80076e94 */
 extern int g_nCameraStuckFrames;                        /* 0x80076e98 */
 extern int g_nCameraSnapped;                            /* 0x80076e9c */
 extern int *g_pCameraAnchorPos;                         /* 0x80076ea0 */
-extern int g_nCameraTargetYawBiasFromMode;              /* 0x80076ea4 */
+extern int g_nCameraParamsReferenceYaw;              /* 0x80076ea4: heading the camera-param yaw is relative to (Spyro's body yaw, or a scripted actor's rotZ << 4); LoadCameraTargetAnglesFromMode subtracts it */
 extern int *g_pCameraTargetParams;                      /* 0x80076ea8 */
 extern int g_anCameraScriptStickIntegrator[2];          /* 0x80076eac */
 extern int g_nCameraTargetInverted;                     /* 0x80076eb8 */

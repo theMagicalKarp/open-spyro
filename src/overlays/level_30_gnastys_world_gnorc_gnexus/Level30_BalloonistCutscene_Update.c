@@ -826,10 +826,10 @@ void Level30_BalloonistCutscene_Update(void)
         g_nCameraCurrentMode = CAM_MODE_STAND;
         g_nCameraNextMode = CAM_MODE_STAND;
         g_pCameraTargetParams = (int) g_anCameraDynamicTargetParams;
-        g_nCameraTargetYawBiasFromMode = g_nSpyroBodyYaw;
+        g_nCameraParamsReferenceYaw = g_nSpyroBodyYaw;
         ComputeCameraToTargetAngle(&g_pCameraAnchorPos[-0x2A]);
         CopyWords(g_anCameraDynamicTargetParams, &g_pCameraAnchorPos[-0x10], 0x18);
-        g_anCameraDynamicTargetParams[0] = (g_anCameraDynamicTargetParams[0] + g_nCameraTargetYawBiasFromMode) & 0xFFF;
+        g_anCameraDynamicTargetParams[0] = (g_anCameraDynamicTargetParams[0] + g_nCameraParamsReferenceYaw) & 0xFFF;
         ResetCameraStateToTarget();
         InitHudCounters(0);
         g_nGamestate = GS_GAMEPLAY;

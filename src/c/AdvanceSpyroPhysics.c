@@ -197,7 +197,7 @@ int AdvanceSpyroPhysics(void) {
     }
     if (g_nCameraNextMode_blk[0] != (CAM_HELD | CAM_MODE_FREE_LOOK)) {
       if (m & SPYRO_RQ_CAMERA) {
-        g_nCameraTargetYawBiasFromMode = 0;
+        g_nCameraParamsReferenceYaw = 0;
         g_nCameraNextMode_blk[0] = (CAM_HELD | CAM_MODE_REQUEST);
         g_pCameraAnchorPos = g_pSpyroRequestCameraAnchor;
         g_pCameraTargetParams = g_pSpyroRequestCameraTargetParams;
@@ -298,7 +298,7 @@ int AdvanceSpyroPhysics(void) {
         CopyVector(g_anCameraLatchedAnchorPos,
                    ACTOR_POS(g_pScriptedCameraActor));
         g_anCameraLatchedAnchorPos[2] += 0x200;
-        g_nCameraTargetYawBiasFromMode = g_pScriptedCameraActor->rotZ << 4;
+        g_nCameraParamsReferenceYaw = g_pScriptedCameraActor->rotZ << 4;
         g_pCameraTargetParams = g_anCameraParamEnemyLock;
         g_nCameraNextMode = (CAM_HELD | CAM_MODE_REQUEST);
         g_nSpyroMoveTargetYaw = keepYaw;

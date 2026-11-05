@@ -132,7 +132,7 @@ extern int g_nCameraNextMode;
 extern int g_nCameraPosY;
 extern int g_nCameraPosZ;
 extern int g_nSpyroSwingEulerTargetZ;
-extern int g_nCameraTargetYawBiasFromMode;
+extern int g_nCameraParamsReferenceYaw;
 extern int g_nCdStreamState;
 extern int g_nCollisionHitNormalY;
 extern int g_nCollisionHitNormalZ;

@@ -1812,8 +1812,8 @@ glabel BuildLoadedLevelRuntime
     /* 430C 80013B0C 708622AC */  sw         $v0, %lo(g_anCameraActiveTargetParams + 0x8)($at)
     /* 4310 80013B10 0780013C */  lui        $at, %hi(g_pCameraTargetParams)
     /* 4314 80013B14 A86E24AC */  sw         $a0, %lo(g_pCameraTargetParams)($at)
-    /* 4318 80013B18 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 431C 80013B1C A46E23AC */  sw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 4318 80013B18 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 431C 80013B1C A46E23AC */  sw         $v1, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 4320 80013B20 D6D0000C */  jal        ResetCameraStateToTarget
     /* 4324 80013B24 00000000 */   nop
     /* 4328 80013B28 20000224 */  addiu      $v0, $zero, 0x20
@@ -30064,8 +30064,8 @@ glabel EndDragonRescueToWorld
     /* 1D424 8002CC24 A86E30AC */  sw         $s0, %lo(g_pCameraTargetParams)($at)
     /* 1D428 8002CC28 0880013C */  lui        $at, %hi(g_nSpyroSuperflameTimer)
     /* 1D42C 8002CC2C 688722AC */  sw         $v0, %lo(g_nSpyroSuperflameTimer)($at)
-    /* 1D430 8002CC30 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 1D434 8002CC34 A46E23AC */  sw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 1D430 8002CC30 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 1D434 8002CC34 A46E23AC */  sw         $v1, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 1D438 8002CC38 C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 1D43C 8002CC3C 58FF2426 */   addiu     $a0, $s1, -0xA8
     /* 1D440 8002CC40 21200002 */  addu       $a0, $s0, $zero
@@ -30073,8 +30073,8 @@ glabel EndDragonRescueToWorld
     /* 1D448 8002CC48 565A000C */  jal        CopyWords
     /* 1D44C 8002CC4C 18000624 */   addiu     $a2, $zero, 0x18
     /* 1D450 8002CC50 0000028E */  lw         $v0, 0x0($s0)
-    /* 1D454 8002CC54 0780033C */  lui        $v1, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 1D458 8002CC58 A46E638C */  lw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($v1)
+    /* 1D454 8002CC54 0780033C */  lui        $v1, %hi(g_nCameraParamsReferenceYaw)
+    /* 1D458 8002CC58 A46E638C */  lw         $v1, %lo(g_nCameraParamsReferenceYaw)($v1)
     /* 1D45C 8002CC5C 00000000 */  nop
     /* 1D460 8002CC60 21104300 */  addu       $v0, $v0, $v1
     /* 1D464 8002CC64 FF0F4230 */  andi       $v0, $v0, 0xFFF
@@ -30382,8 +30382,8 @@ glabel EndSaveMenuToWorld
     /* 1D8CC 8002D0CC A86E30AC */  sw         $s0, %lo(g_pCameraTargetParams)($at)
     /* 1D8D0 8002D0D0 0880013C */  lui        $at, %hi(g_nSpyroSuperflameTimer)
     /* 1D8D4 8002D0D4 688722AC */  sw         $v0, %lo(g_nSpyroSuperflameTimer)($at)
-    /* 1D8D8 8002D0D8 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 1D8DC 8002D0DC A46E23AC */  sw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 1D8D8 8002D0D8 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 1D8DC 8002D0DC A46E23AC */  sw         $v1, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 1D8E0 8002D0E0 C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 1D8E4 8002D0E4 58FF2426 */   addiu     $a0, $s1, -0xA8
     /* 1D8E8 8002D0E8 21200002 */  addu       $a0, $s0, $zero
@@ -30391,8 +30391,8 @@ glabel EndSaveMenuToWorld
     /* 1D8F0 8002D0F0 565A000C */  jal        CopyWords
     /* 1D8F4 8002D0F4 18000624 */   addiu     $a2, $zero, 0x18
     /* 1D8F8 8002D0F8 0000028E */  lw         $v0, 0x0($s0)
-    /* 1D8FC 8002D0FC 0780033C */  lui        $v1, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 1D900 8002D100 A46E638C */  lw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($v1)
+    /* 1D8FC 8002D0FC 0780033C */  lui        $v1, %hi(g_nCameraParamsReferenceYaw)
+    /* 1D900 8002D100 A46E638C */  lw         $v1, %lo(g_nCameraParamsReferenceYaw)($v1)
     /* 1D904 8002D104 00000000 */  nop
     /* 1D908 8002D108 21104300 */  addu       $v0, $v0, $v1
     /* 1D90C 8002D10C FF0F4230 */  andi       $v0, $v0, 0xFFF
@@ -38214,8 +38214,8 @@ nonmatching LoadCameraTargetAnglesFromMode, 0x6C
 glabel LoadCameraTargetAnglesFromMode
     /* 24998 80034198 0780043C */  lui        $a0, %hi(g_pCameraTargetParams)
     /* 2499C 8003419C A86E848C */  lw         $a0, %lo(g_pCameraTargetParams)($a0)
-    /* 249A0 800341A0 0780033C */  lui        $v1, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 249A4 800341A4 A46E638C */  lw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($v1)
+    /* 249A0 800341A0 0780033C */  lui        $v1, %hi(g_nCameraParamsReferenceYaw)
+    /* 249A4 800341A4 A46E638C */  lw         $v1, %lo(g_nCameraParamsReferenceYaw)($v1)
     /* 249A8 800341A8 0000828C */  lw         $v0, 0x0($a0)
     /* 249AC 800341AC 00000000 */  nop
     /* 249B0 800341B0 23104300 */  subu       $v0, $v0, $v1
@@ -40503,8 +40503,8 @@ glabel UpdateCameraSpringForMode
     /* 269C0 800361C0 E4FE4224 */  addiu      $v0, $v0, -0x11C
     /* 269C4 800361C4 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 269C8 800361C8 A06E22AC */  sw         $v0, %lo(g_pCameraAnchorPos)($at)
-    /* 269CC 800361CC 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 269D0 800361D0 A46E23AC */  sw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 269CC 800361CC 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 269D0 800361D0 A46E23AC */  sw         $v1, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 269D4 800361D4 C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 269D8 800361D8 00000000 */   nop
     /* 269DC 800361DC 0780033C */  lui        $v1, %hi(g_nCameraYaw)
@@ -40635,8 +40635,8 @@ glabel UpdateCameraSpringForMode
     /* 26BA4 800363A4 E4FE4224 */  addiu      $v0, $v0, -0x11C
     /* 26BA8 800363A8 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 26BAC 800363AC A06E22AC */  sw         $v0, %lo(g_pCameraAnchorPos)($at)
-    /* 26BB0 800363B0 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 26BB4 800363B4 A46E23AC */  sw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 26BB0 800363B0 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 26BB4 800363B4 A46E23AC */  sw         $v1, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 26BB8 800363B8 C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 26BBC 800363BC 60FF4426 */   addiu     $a0, $s2, -0xA0
     /* 26BC0 800363C0 0780033C */  lui        $v1, %hi(g_nCameraYaw)
@@ -40668,8 +40668,8 @@ glabel UpdateCameraSpringForMode
     /* 26C20 80036420 0880023C */  lui        $v0, %hi(g_anSpyroWorldPos)
     /* 26C24 80036424 588A4224 */  addiu      $v0, $v0, %lo(g_anSpyroWorldPos)
     /* 26C28 80036428 000002AE */  sw         $v0, 0x0($s0)
-    /* 26C2C 8003642C 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 26C30 80036430 A46E24AC */  sw         $a0, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 26C2C 8003642C 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 26C30 80036430 A46E24AC */  sw         $a0, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 26C34 80036434 52036014 */  bnez       $v1, .L80037180
     /* 26C38 80036438 0080023C */   lui       $v0, (0x80000009 >> 16)
     /* 26C3C 8003643C 0780053C */  lui        $a1, %hi(g_nCameraEulerYaw)
@@ -40745,8 +40745,8 @@ glabel UpdateCameraSpringForMode
     /* 26D48 80036548 588A4224 */  addiu      $v0, $v0, %lo(g_anSpyroWorldPos)
     /* 26D4C 8003654C 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 26D50 80036550 A06E22AC */  sw         $v0, %lo(g_pCameraAnchorPos)($at)
-    /* 26D54 80036554 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 26D58 80036558 A46E23AC */  sw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 26D54 80036554 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 26D58 80036558 A46E23AC */  sw         $v1, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 26D5C 8003655C C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 26D60 80036560 21200002 */   addu      $a0, $s0, $zero
     /* 26D64 80036564 0780033C */  lui        $v1, %hi(g_nCameraYaw)
@@ -40780,8 +40780,8 @@ glabel UpdateCameraSpringForMode
     /* 26DD0 800365D0 588A7326 */  addiu      $s3, $s3, %lo(g_anSpyroWorldPos)
     /* 26DD4 800365D4 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 26DD8 800365D8 A06E33AC */  sw         $s3, %lo(g_pCameraAnchorPos)($at)
-    /* 26DDC 800365DC 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 26DE0 800365E0 A46E24AC */  sw         $a0, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 26DDC 800365DC 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 26DE0 800365E0 A46E24AC */  sw         $a0, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 26DE4 800365E4 BF004014 */  bnez       $v0, .L800368E4
     /* 26DE8 800365E8 00000000 */   nop
     /* 26DEC 800365EC 0880023C */  lui        $v0, %hi(g_nSpyroFlightMode)
@@ -40815,8 +40815,8 @@ glabel UpdateCameraSpringForMode
     /* 26E54 80036654 7CC94224 */  addiu      $v0, $v0, %lo(g_anCameraParamGlideLeftBias)
     /* 26E58 80036658 100042AE */  sw         $v0, 0x10($s2)
   .L8003665C:
-    /* 26E5C 8003665C 0780023C */  lui        $v0, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 26E60 80036660 A46E4224 */  addiu      $v0, $v0, %lo(g_nCameraTargetYawBiasFromMode)
+    /* 26E5C 8003665C 0780023C */  lui        $v0, %hi(g_nCameraParamsReferenceYaw)
+    /* 26E60 80036660 A46E4224 */  addiu      $v0, $v0, %lo(g_nCameraParamsReferenceYaw)
     /* 26E64 80036664 0880033C */  lui        $v1, %hi(g_nSpyroBodyYaw)
     /* 26E68 80036668 748B638C */  lw         $v1, %lo(g_nSpyroBodyYaw)($v1)
     /* 26E6C 8003666C 54FF4424 */  addiu      $a0, $v0, -0xAC
@@ -41117,8 +41117,8 @@ glabel UpdateCameraSpringForMode
     /* 272AC 80036AAC 588A4224 */  addiu      $v0, $v0, %lo(g_anSpyroWorldPos)
     /* 272B0 80036AB0 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 272B4 80036AB4 A06E22AC */  sw         $v0, %lo(g_pCameraAnchorPos)($at)
-    /* 272B8 80036AB8 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 272BC 80036ABC A46E24AC */  sw         $a0, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 272B8 80036AB8 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 272BC 80036ABC A46E24AC */  sw         $a0, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 272C0 80036AC0 1F006014 */  bnez       $v1, .L80036B40
     /* 272C4 80036AC4 00000000 */   nop
     /* 272C8 80036AC8 0780053C */  lui        $a1, %hi(g_nCameraEulerYaw)
@@ -41167,8 +41167,8 @@ glabel UpdateCameraSpringForMode
     /* 27364 80036B64 588A4224 */  addiu      $v0, $v0, %lo(g_anSpyroWorldPos)
     /* 27368 80036B68 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 2736C 80036B6C A06E22AC */  sw         $v0, %lo(g_pCameraAnchorPos)($at)
-    /* 27370 80036B70 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 27374 80036B74 A46E23AC */  sw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 27370 80036B70 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 27374 80036B74 A46E23AC */  sw         $v1, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 27378 80036B78 C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 2737C 80036B7C 60FF4426 */   addiu     $a0, $s2, -0xA0
     /* 27380 80036B80 0780033C */  lui        $v1, %hi(g_nCameraYaw)
@@ -41373,8 +41373,8 @@ glabel UpdateCameraSpringForMode
     /* 27654 80036E54 588A4224 */  addiu      $v0, $v0, %lo(g_anSpyroWorldPos)
     /* 27658 80036E58 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 2765C 80036E5C A06E22AC */  sw         $v0, %lo(g_pCameraAnchorPos)($at)
-    /* 27660 80036E60 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 27664 80036E64 A46E24AC */  sw         $a0, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 27660 80036E60 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 27664 80036E64 A46E24AC */  sw         $a0, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 27668 80036E68 14006014 */  bnez       $v1, .L80036EBC
     /* 2766C 80036E6C 00000000 */   nop
     /* 27670 80036E70 0780053C */  lui        $a1, %hi(g_nCameraEulerYaw)
@@ -41426,8 +41426,8 @@ glabel UpdateCameraSpringForMode
     /* 27714 80036F14 46008290 */  lbu        $v0, 0x46($a0)
     /* 27718 80036F18 00000000 */  nop
     /* 2771C 80036F1C 00110200 */  sll        $v0, $v0, 4
-    /* 27720 80036F20 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 27724 80036F24 A46E22AC */  sw         $v0, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 27720 80036F20 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 27724 80036F24 A46E22AC */  sw         $v0, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 27728 80036F28 C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 2772C 80036F2C 60FF4426 */   addiu     $a0, $s2, -0xA0
     /* 27730 80036F30 0780033C */  lui        $v1, %hi(g_nCameraYaw)
@@ -41463,8 +41463,8 @@ glabel UpdateCameraSpringForMode
     /* 277A4 80036FA4 23284500 */   subu      $a1, $v0, $a1
     /* 277A8 80036FA8 0780033C */  lui        $v1, %hi(g_nCameraCollisionRetries)
     /* 277AC 80036FAC 946E638C */  lw         $v1, %lo(g_nCameraCollisionRetries)($v1)
-    /* 277B0 80036FB0 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 277B4 80036FB4 A46E22AC */  sw         $v0, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 277B0 80036FB0 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 277B4 80036FB4 A46E22AC */  sw         $v0, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 277B8 80036FB8 71006014 */  bnez       $v1, .L80037180
     /* 277BC 80036FBC 0080023C */   lui       $v0, (0x80000009 >> 16)
     /* 277C0 80036FC0 0780023C */  lui        $v0, %hi(g_anCameraParamScriptedFollow)
@@ -41544,8 +41544,8 @@ glabel UpdateCameraSpringForMode
     /* 278D8 800370D8 588A4224 */  addiu      $v0, $v0, %lo(g_anSpyroWorldPos)
     /* 278DC 800370DC 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 278E0 800370E0 A06E22AC */  sw         $v0, %lo(g_pCameraAnchorPos)($at)
-    /* 278E4 800370E4 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 278E8 800370E8 A46E23AC */  sw         $v1, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 278E4 800370E4 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 278E8 800370E8 A46E23AC */  sw         $v1, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 278EC 800370EC C2CF000C */  jal        ComputeCameraToTargetAngle
     /* 278F0 800370F0 21200002 */   addu      $a0, $s0, $zero
     /* 278F4 800370F4 0780033C */  lui        $v1, %hi(g_nCameraYaw)
@@ -42214,8 +42214,8 @@ glabel UpdateLevelTransitionCamera
     /* 28240 80037A40 1800B0AF */  sw         $s0, 0x18($sp)
     /* 28244 80037A44 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 28248 80037A48 A06E22AC */  sw         $v0, %lo(g_pCameraAnchorPos)($at)
-    /* 2824C 80037A4C 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 28250 80037A50 A46E24AC */  sw         $a0, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 2824C 80037A4C 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 28250 80037A50 A46E24AC */  sw         $a0, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 28254 80037A54 0F006010 */  beqz       $v1, .L80037A94
     /* 28258 80037A58 00000000 */   nop
     /* 2825C 80037A5C 0780023C */  lui        $v0, %hi(g_nCdStreamState)
@@ -52265,8 +52265,8 @@ glabel AdvanceSpyroPhysics
     /* 30A18 80040218 0880043C */  lui        $a0, %hi(g_pSpyroRequestCameraTargetParams)
     /* 30A1C 8004021C 788C848C */  lw         $a0, %lo(g_pSpyroRequestCameraTargetParams)($a0)
     /* 30A20 80040220 0A004234 */  ori        $v0, $v0, (0x8000000A & 0xFFFF)
-    /* 30A24 80040224 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 30A28 80040228 A46E20AC */  sw         $zero, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 30A24 80040224 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 30A28 80040228 A46E20AC */  sw         $zero, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 30A2C 8004022C 0000C2AC */  sw         $v0, 0x0($a2)
     /* 30A30 80040230 0780013C */  lui        $at, %hi(g_pCameraAnchorPos)
     /* 30A34 80040234 A06E23AC */  sw         $v1, %lo(g_pCameraAnchorPos)($at)
@@ -52507,8 +52507,8 @@ glabel AdvanceSpyroPhysics
     /* 30D94 80040594 00210400 */  sll        $a0, $a0, 4
     /* 30D98 80040598 0880013C */  lui        $at, %hi(g_dwSpyroRequestMask)
     /* 30D9C 8004059C 4C8C23AC */  sw         $v1, %lo(g_dwSpyroRequestMask)($at)
-    /* 30DA0 800405A0 0780013C */  lui        $at, %hi(g_nCameraTargetYawBiasFromMode)
-    /* 30DA4 800405A4 A46E24AC */  sw         $a0, %lo(g_nCameraTargetYawBiasFromMode)($at)
+    /* 30DA0 800405A0 0780013C */  lui        $at, %hi(g_nCameraParamsReferenceYaw)
+    /* 30DA4 800405A4 A46E24AC */  sw         $a0, %lo(g_nCameraParamsReferenceYaw)($at)
     /* 30DA8 800405A8 76010108 */  j          .L800405D8
     /* 30DAC 800405AC 00000000 */   nop
   .L800405B0:
