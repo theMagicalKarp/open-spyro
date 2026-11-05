@@ -11,12 +11,13 @@
 #ifndef OPEN_SPYRO_VECMATH_H
 #define OPEN_SPYRO_VECMATH_H
 
-/* Trig: LUT sine/cosine of a 12-bit angle (result 12-bit fraction). */
+/* Trig: sine/cosine of a 12-bit angle (result 12-bit fraction), linearly
+ * interpolated between the 256 entries of g_anSineLut / g_anCosineLut. */
 int LookupSine(int angle);
 int LookupCosine(int angle);
 
-/* 2-arg arctangent: 12-bit angle (`mode` is a third, still-unanalysed
- * argument), and the byte-LUT 8-bit sibling. */
+/* 2-arg arctangent of (x, y) in the scale ATAN_ANGLE8 / ATAN_ANGLE12, and
+ * the byte-LUT 8-bit sibling (g_abArcTanOctantLut). */
 #ifndef ATAN_ANGLE8
 #define ATAN_ANGLE8 0  /* ArcTan2: 8-bit angle, 0..0xFF per turn */
 #define ATAN_ANGLE12 1 /* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */

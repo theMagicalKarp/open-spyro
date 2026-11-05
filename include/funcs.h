@@ -112,6 +112,7 @@ int ArcTan2_8bit(int x, int y);
 /* 0x80016ab4: Angle of the vector (x, y) (0 along +x) in the scale ATAN_ANGLE8 (0..0xFF) or ATAN_ANGLE12 (0..0xFFF, GTE-normalized LUT with one division of interpolation). */
 int ArcTan2(int x, int y, int scale);
 
+/* 0x80016c58 / 0x80016cb0: sine / cosine of a 12-bit angle (1.12 result), linearly interpolated between the 256 LUT entries (angle >> 4, 4-bit fraction). */
 int LookupSine(int angle);
 
 int LookupCosine(int angle);
@@ -1028,7 +1029,7 @@ undefined FUN_8005ddf8(void);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined DmaCallback(void);
 
-/* 0x8005de58: PSY-Q VSyncCallback equivalent — installs a VBlank-driven periodic callback. Dispatches via *(g_pLibapiSysVtable+0x14)(channel=4, fn). Sole caller InitPadSystem registers PollPadAndDistributeInput as the per-VBlank pad/rumble driver. Channel 4 is the libapi RCnt slot bound to VBlank. */
+/* 0x8005de58: PSY-Q VSyncCallback equivalent — installs a VBlank-driven periodic callback. Dispatches via *(g_pLibapiSysVtable+0x14)(channel=4, fn). InitPadSystem registers PollPadAndDistributeInput as the per-VBlank pad/rumble driver; QuiesceHardwareForExec removes it (cb 0). Channel 4 is the libapi RCnt slot bound to VBlank. */
 void InstallVSyncCallback(unsigned int cb);
 
 /* 0x8005de8c: libapi system-vector slot[5] no-arg thunk — dispatches via *(g_pLibapiSysVtable+0x14)(). Callers (MemCardOpenSession, MemCardCloseSession) use this as a CD-bus arbitration release / VSync-callback clear when handing the system off between memcard and CD subsystems. SDK internal — plate-only. */
