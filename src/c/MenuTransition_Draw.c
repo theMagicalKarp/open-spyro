@@ -4,7 +4,7 @@
 #include "gpu_prim.h"
 #include "main_shared.h"
 
-/* Draw gamestate 0xA (pause -> world-map transition, 0x8001c694, 0x3a4).
+/* Draw GS_MENU_TRANSITION (pause -> world-map transition, 0x8001c694, 0x3a4).
    Phase 0: re-darken the frozen gray backdrop by re-loading the CLUT ramp
    shifted by the idle counter, then draw the 4 backdrop quads (clut 0x3820)
    plus a black line into OT slot 0x3ff. Phase 1: fog cross-fade — feed

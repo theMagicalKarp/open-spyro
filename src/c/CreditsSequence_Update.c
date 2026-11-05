@@ -5,7 +5,7 @@
 #include "level_id.h"
 #include "main_shared.h"
 
-/* Gamestate 0x0F updater (0x800333dc) — the credits/return-home transition.
+/* GS_CREDITS updater (0x800333dc) — the credits/return-home transition.
    Spins the light vector each frame. Mode 0x63 arms the CD stream and picks
    the destination level: a pending credits-return level if one is latched,
    otherwise Gnasty's Loot (0x3C), or Dream Weavers home (0xA) once every

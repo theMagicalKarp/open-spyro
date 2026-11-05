@@ -4,7 +4,7 @@
 #include "globals.h"
 #include "main_shared.h"
 
-/* Enter the credits gamestate (0x8002d228, gamestate 0xF): clear the whole
+/* Enter the credits gamestate (0x8002d228, GS_CREDITS): clear the whole
    VRAM framebuffer, silence all sound, optionally reload the actor mesh tables
    (param nonzero), reset Spyro, zero the credits/returning-home phase globals
    (g_nCreditsPageIndex only when it is not the level-select magic 0xA), then

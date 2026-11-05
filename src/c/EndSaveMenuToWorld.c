@@ -8,7 +8,7 @@
 #include "vecmath.h"
 
 /* 0x8002d02c, 324 bytes — leave the save/load menu back into the world
-   (gamestate 0): unblock gameplay, rebuild the light constants, zero Spyro's
+   (GS_GAMEPLAY): unblock gameplay, rebuild the light constants, zero Spyro's
    swing-euler target and reset him, re-seed the swing-euler defaults and the
    pad-snapshot countdown, point the camera anchor 0x1A4 below the swing-target
    block, retarget the dynamic camera params (yaw re-biased to Spyro's body yaw

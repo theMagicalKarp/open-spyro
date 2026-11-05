@@ -7,7 +7,7 @@
 /* Enter the inventory / sub-menu gamestate (0x8002c714). param nonzero = opened
    from gameplay (stop SFX first, reset the pause transition frames). Plays the
    menu-open sound (sample id at g_pLevelSampleBankHeader+0x2c), zeros the
-   sub-menu scroll state, switches to gamestate 3, seats the cursor on the
+   sub-menu scroll state, switches to GS_INVENTORY, seats the cursor on the
    current world (g_nLevelIndex / 6), then clears the cheat-code pad-history
    ring. */
 

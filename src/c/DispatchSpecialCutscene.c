@@ -7,7 +7,7 @@
 
 /* Special-cutscene dispatcher (0x8002d440), by g_nCutsceneId, at the end of a
    cutscene. The opening: full story-intro restart — clear VRAM, silence sound,
-   reload actor meshes, gamestate 0xD with the 0x5C-byte mode block zeroed
+   reload actor meshes, GS_TITLE with the 0x5C-byte mode block zeroed
    (TITLE_MODE_STORY_INTRO, exit path TITLE_EXIT_LOADED_GAME), fresh game state,
    level 0xA. The Gnasty ending: credits without a mesh reload. The Loot ending:
    credits with a mesh reload, seeding g_nCreditsPageIndex = 0xA so

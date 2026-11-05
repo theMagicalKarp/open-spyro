@@ -3,7 +3,7 @@
 
 /* 0x8002e000 (132 bytes) — the camera-settle gamestate tick: run one gameplay
    frame and one camera frame, wrap the camera pitch back into signed 12-bit
-   range, and drop out to gamestate 0 once the camera has either pitched below
+   range, and drop out to GS_GAMEPLAY once the camera has either pitched below
    -0x200 or handed control back to the mode-12 parameter block. */
 void CameraSettle_Update(void) {
   int pitch;

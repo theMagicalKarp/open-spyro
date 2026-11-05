@@ -7,7 +7,7 @@
 #include "spyro_state.h"
 #include "title_state.h"
 
-/* Update for gamestate 0xd (story-intro / new-game transition, 0x80032b08,
+/* Update for GS_TITLE (story-intro / new-game transition, 0x80032b08,
    0x6a4). Only runs its body while g_nTitleMode is TITLE_MODE_STORY_INTRO;
    three substates: 0 arms the transition (silences audio, picks the destination
    level from the message id — title screen, resume, or the attract demo's level

@@ -8,10 +8,10 @@
 
 /* Enter the pause menu gamestate (0x8002c420). param nonzero = paused from
    gameplay (stop SFX, reset the transition frames). Plays the menu-open sound,
-   switches to gamestate 2 and zeros the pause-menu cursor/substate/idle timer.
-   Flight levels skip all HUD work; otherwise re-init the HUD counters, and on
-   the param==0 re-entry path force all five counters visible with roll phase
-   0xc, then refresh the counters. */
+   switches to GS_PAUSE_MENU and zeros the pause-menu cursor/substate/idle
+   timer. Flight levels skip all HUD work; otherwise re-init the HUD counters,
+   and on the param==0 re-entry path force all five counters visible with roll
+   phase 0xc, then refresh the counters. */
 
 void EnterPauseMenu(int fromGameplay) {
   if (fromGameplay != 0) {

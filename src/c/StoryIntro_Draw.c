@@ -5,7 +5,7 @@
 #include "main_shared.h"
 #include "title_state.h"
 
-/* 0x8001e6b8: Draw routine for the story intro (gamestate 0xD). While substate
+/* 0x8001e6b8: Draw routine for the story intro (GS_TITLE). While substate
  * 2 is past frame 0x8C it lays out one of four message strings with
  * BuildTextSprites, rewinds the sprite-record cursor by the number of glyph
  * slots the message still has to reveal, then runs a per-glyph wave: each

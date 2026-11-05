@@ -1,6 +1,6 @@
 /* Level3_BalloonistCutscene_Draw (0x8007D04C, level_3_artisans_town_square overlay, 2568 bytes).
  *
- * Balloonist cutscene DRAW half (gamestate 0xC). Dispatches on the substate
+ * Balloonist cutscene DRAW half (GS_ACTOR_CUTSCENE). Dispatches on the substate
  * word g_nActorCutsceneSubstate[0]:
  *   < 2  — draw the "<world> THE BALLOONIST" title card, then rock every glyph
  *          the draw just appended (its rotZ roll angle, +0x46), sampling the

@@ -1,6 +1,6 @@
 /* Level6_BalloonistCutscene_Update (0x8007B9F8, level_6_peace_keepers_home overlay).
  *
- * Balloonist cutscene tick — the per-frame update half of gamestate 0xC
+ * Balloonist cutscene tick — the per-frame update half of GS_ACTOR_CUTSCENE
  * (Level0_BalloonistCutscene_Draw is the draw half). Dispatches on the substate word
  * g_nActorCutsceneSubstate through an 8-entry jump table (jtbl_8007AA3C):
  *   0  approach: swing the camera round to the balloonist over 0x60 frames,
@@ -11,7 +11,7 @@
  *   5  cruise:   interpolate the camera along the flight path (0x100 frames),
  *   6  descend:  lower the balloon for 0x80 frames,
  *   7  land:     ease Spyro out of the balloon, then hand the frame back to
- *                gamestate 0 (InitLightVectorConstants).
+ *                GS_GAMEPLAY (InitLightVectorConstants).
  * Substate 4 is the "wait for the level stream" state and falls straight
  * through to the epilogue.  Identical body in the six hub overlays.
  *

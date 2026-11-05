@@ -7,7 +7,7 @@
 
 /* Leave the pause menu back to gameplay (0x8002c534). Blit the saved 0x200x0xE1
    backdrop tile from render scratch back into the frame buffer, wait for the
-   transfer, return to gamestate 0 and re-init lighting, then force all five HUD
+   transfer, return to GS_GAMEPLAY and re-init lighting, then force all five HUD
    counters visible with roll phase 0xd. When leaving from gameplay (param != 0)
    resume the current music track. */
 

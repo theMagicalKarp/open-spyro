@@ -80,9 +80,9 @@ typedef struct CamPathKey {
     }                                                                          \
   }
 
-/* 0x8002f3e4 (0x20d0): the dragon-rescue gamestate (GS 8). Substates:
-   0 the aura star swells while Spyro keeps playing, 1 Spyro is swept round
-   the statue and the camera eases in, 2 waits for the dragon assets and
+/* 0x8002f3e4 (0x20d0): the dragon-rescue gamestate (GS_DRAGON_RESCUE).
+   Substates: 0 the aura star swells while Spyro keeps playing, 1 Spyro is swept
+   round the statue and the camera eases in, 2 waits for the dragon assets and
    spawns the statue and Spyro's stand-in, 3 the statue turns to face its
    heading, 4 the camera path plays (with the dragon's voice line), 5 the
    statue lights up and the HUD icons roll in, 6 the dragon counter ticks,

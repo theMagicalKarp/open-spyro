@@ -1,7 +1,7 @@
 #include "globals.h"
 #include "main_shared.h"
 
-/* Finishes the respawn->gameplay transition: returns to gamestate 0, copies the
+/* Finishes the respawn->gameplay transition: returns to GS_GAMEPLAY, copies the
    world fog RGB into both frame draw-env background-fill colors, then rebuilds
    the light vector constants. (0x8002c8a4, 112 bytes.) */
 void EndRespawnToGameplay(void) {
