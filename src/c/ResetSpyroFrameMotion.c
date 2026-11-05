@@ -5,7 +5,9 @@
    vector (g_anSpyroMotionVec, +0x10c) and the frame motion length. The two
    position vectors are reached through a single base pointer, so they share one
    address register; the motion length keeps its own global. (0x8003df60,
-   68 bytes.) */
+   68 bytes.)
+   Unreferenced: no call, branch, pointer or table entry in main or any overlay
+   (xref). */
 void ResetSpyroFrameMotion(void) {
   int *p = g_anSpyroWorldPos;
   CopyVector(p, p + 0x23);

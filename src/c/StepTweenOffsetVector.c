@@ -5,7 +5,9 @@
 /* 0x8003a850 — clamp the record's step counter (byte +2) from byte +3,
    then rebuild its offset vector: copy, scale by half the counter, add the
    actor anchor (+0xC), subtract the indexed sub-record vector, and blend
-   by the remaining step fraction. */
+   by the remaining step fraction.
+   Unreferenced: no call, branch, pointer or table entry in main or any overlay
+   (xref). */
 void StepTweenOffsetVector(Actor *actor, unsigned char *tween, int *out,
                            int *base) {
   unsigned int t;

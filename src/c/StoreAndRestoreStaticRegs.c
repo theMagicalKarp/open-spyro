@@ -10,7 +10,9 @@
    so gcc writes them directly with no prologue; the incoming $at/$v0 are
    local register variables seeded by an empty asm (A410), and $at is then
    reused as the save-area base through an asm-opaque copy (A383). The trailing
-   empty asm keeps reorg out of the return's delay slot. */
+   empty asm keeps reorg out of the return's delay slot.
+   Unreferenced: no call, branch, pointer or table entry in main or any overlay
+   (xref). */
 register int rr_ra asm("$31");
 register int rr_gp asm("$28");
 register int rr_sp asm("$29");

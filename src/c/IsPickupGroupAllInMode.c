@@ -4,7 +4,9 @@
 /* Scan pickup group `group`'s actor-id list (0x8003b160). Each entry is a u16:
    low 15 bits index the actor pool, bit 15 marks the last entry. Returns 0 as
    soon as one of the group's actors is not in `mode`; returns 1 if every actor
-   is (also 0 when the group index is out of range). Nothing calls it. */
+   is (also 0 when the group index is out of range). Nothing calls it.
+   Unreferenced: no call, branch, pointer or table entry in main or any overlay
+   (xref). */
 int IsPickupGroupAllInMode(int group, int mode) {
   unsigned short *ptr;
   unsigned short id;
