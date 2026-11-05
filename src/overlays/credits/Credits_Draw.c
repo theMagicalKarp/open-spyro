@@ -91,7 +91,7 @@ void Credits_Draw(void) {
     q[0] = 0;
     EnqueuePendingSpritePrims();
     ot = (char *)q - 0x2400; /* the frame scratch arena (g_apMainDrawEntityList) */
-    FillWord(ot, 0, 0x900);
+    FillWord(ot, 0, FRAME_ARENA_LIST_WORDS);
     RasterizeSpritePrimQueue();
     FillBlock16(ot, 0, 0x1C00);
     g_nFarPlaneDrawDistance = 0x28000;

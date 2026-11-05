@@ -1,3 +1,4 @@
+#include "frame_arena.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -11,7 +12,7 @@
 
 void ComposeFrameScene(void) {
   BuildActorDrawList();
-  FillWord(&g_apMainDrawEntityList, 0, 0x900);
+  FillWord(&g_apMainDrawEntityList, 0, FRAME_ARENA_LIST_WORDS);
   EmitActorDrawList();
   BuildSecondaryActorDrawList();
   EmitSecondaryActorPrimitives();

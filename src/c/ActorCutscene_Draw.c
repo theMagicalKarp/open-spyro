@@ -88,7 +88,7 @@ void ActorCutscene_Draw(void) {
       }
 
       BuildActorDrawList();
-      FillWord(g_apMainDrawEntityListBlock, 0, 0x900);
+      FillWord(g_apMainDrawEntityListBlock, 0, FRAME_ARENA_LIST_WORDS);
       EmitActorDrawList();
       g_apSpritePrimQueue[0] = 0;
       EnqueuePendingSpritePrims();

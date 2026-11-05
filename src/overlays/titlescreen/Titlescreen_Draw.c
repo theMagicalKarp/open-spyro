@@ -12,6 +12,7 @@
  */
 
 #include "titlescreen.h"
+#include "frame_arena.h"
 
 #define DRAW_OPTIONS(op1, op2)                                                 \
   if (g_nTitleMode.animTimer > 7) {                                              \
@@ -329,7 +330,7 @@ void Titlescreen_Draw(void) {
   /* draw the mobys */
   BuildRenderEntityLists();
   BuildActorDrawList();
-  FillWord(g_apMainDrawEntityList, 0, 0x900);
+  FillWord(g_apMainDrawEntityList, 0, FRAME_ARENA_LIST_WORDS);
   EmitActorDrawList();
 
   /* draw the environment */

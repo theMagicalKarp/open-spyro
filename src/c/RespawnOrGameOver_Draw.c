@@ -163,7 +163,7 @@ void RespawnOrGameOver_Draw(void) {
       q = g_apSpritePrimQueue;
       q[0] = 0;
       EnqueuePendingSpritePrims();
-      FillWord((char *)q - 0x2400, 0, 0x900);
+      FillWord((char *)q - 0x2400, 0, FRAME_ARENA_LIST_WORDS);
       RasterizeSpritePrimQueue();
       if (g_nRespawnOrGameOverFrame >= 0xB5) {
         RasterizeSpyroModel();

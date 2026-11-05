@@ -144,7 +144,7 @@ void MenuTransition_Draw(void) {
     break;
   }
   }
-  FillWord(&g_apMainDrawEntityList, 0, 0x900);
+  FillWord(&g_apMainDrawEntityList, 0, FRAME_ARENA_LIST_WORDS);
   RasterizeSpyroModel();
   DrawOTag(LinkOTPrimitives(0x800));
   DrawSync(0);
