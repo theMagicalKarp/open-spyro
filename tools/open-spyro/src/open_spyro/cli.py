@@ -32,6 +32,7 @@ from open_spyro import (
     sectionize,
     triage,
     wad,
+    xref,
 )
 
 app = typer.Typer(
@@ -263,6 +264,28 @@ app.command("verify-overlays")(_verify_overlays)
 app.command("rename")(_rename)
 app.command("canonicalize")(_canonicalize)
 app.command("readability")(_readability)
+
+
+# ---- xref: nested group -----------------------------------------------------
+xref_app = typer.Typer(
+    help="Data / call cross-references from the disassembly.", no_args_is_help=True
+)
+app.add_typer(xref_app, name="xref")
+
+
+@xref_app.command("data")
+def xref_data(
+    target: Annotated[str, typer.Argument(help="symbol name or 0x address")],
+    size: Annotated[str, typer.Option("--size", help="bytes to cover (hex ok)")] = "4",
+) -> None:
+    """Functions that read / write an address range (held bases and raw lui/addiu resolved)."""
+    xref.data(target, int(size, 0))
+
+
+@xref_app.command("callers")
+def xref_callers(func: Annotated[str, typer.Argument(help="function name")]) -> None:
+    """jal callers of a function across main and every overlay."""
+    xref.callers(func)
 
 
 # ---- wad: nested group ------------------------------------------------------
