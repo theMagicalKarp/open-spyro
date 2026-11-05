@@ -664,15 +664,15 @@ void Level0_BalloonistCutscene_Update(void)
         g_nActorCutsceneCamHeightGoal = m + 0x200;
         }
         TickLevelTransitionStream(1);
-        CopyWords(g_aActorCutsceneActorSnapshot, g_pActorCutsceneRecord, 0x58);
+        CopyWords(g_aActorCutsceneActorSnapshot, g_pActorCutsceneRecord, ACTOR_SIZE);
         g_pActorCutsceneRecord = g_aActorCutsceneActorSnapshot;
-        if (((unsigned int) g_pRenderScratchRegionBase) <= 0x801FFFFF)
+        if (((unsigned int) g_pRenderScratchRegionBase) <= RAM_END - 1)
         {
           bank = (int *) (g_pSkyChunkArray - 0x400C);
         }
         else
         {
-          bank = (int *) 0x801FE000;
+          bank = (int *) (RAM_END - 0x2000);
         }
         /* Move the balloon's model (16 KB) into the bank and rebase its first
          * animation pointer and that header's face, colour and 0x24 pointers. */

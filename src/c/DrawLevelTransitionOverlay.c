@@ -220,7 +220,7 @@ void DrawLevelTransitionOverlay(void) {
     do {
       if (PARTICLES[i].live != 0) {
         g_pSpriteRecordWriteCursor--;
-        FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
+        FillWord(g_pSpriteRecordWriteCursor, 0, ACTOR_SIZE);
         SPR->uv = g_abGemTallyIconUvTable[i];
         gx = PARTICLES[i].x + 0x140;
         SPR->x = x0 + gx;
@@ -239,7 +239,7 @@ void DrawLevelTransitionOverlay(void) {
     } while (i < 0x20);
 
     g_pSpriteRecordWriteCursor--;
-    FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
+    FillWord(g_pSpriteRecordWriteCursor, 0, ACTOR_SIZE);
     spr = (TallySprite *)g_pSpriteRecordWriteCursor;
     spr->uv = 0x1d9;
     spr->x = x0 + 0x140;

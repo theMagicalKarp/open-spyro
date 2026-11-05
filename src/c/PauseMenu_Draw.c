@@ -454,7 +454,7 @@ void PauseMenu_Draw(void) {
             x = 0x140;
             do {
               g_pSpriteRecordWriteCursor--;
-              FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
+              FillWord(g_pSpriteRecordWriteCursor, 0, ACTOR_SIZE);
               rp = g_pSpriteRecordWriteCursor;
               cur = g_nPauseMenuCursor;
               rp->type = ACTOR_TYPE_LETTER_GLYPH('I');
@@ -501,7 +501,7 @@ void PauseMenu_Draw(void) {
             x = 0x140;
             do {
               g_pSpriteRecordWriteCursor--;
-              FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
+              FillWord(g_pSpriteRecordWriteCursor, 0, ACTOR_SIZE);
               rp = g_pSpriteRecordWriteCursor;
               cur = g_nPauseMenuCursor;
               rp->type = ACTOR_TYPE_LETTER_GLYPH('I');
@@ -716,7 +716,7 @@ void PauseMenu_Draw(void) {
       sprintf(buf, fmt, g_nTotalDragonsRescued);
       BuildTextSpriteChain(buf, pos, 0x1b, TINT_GOLD);
       g_pSpriteRecordWriteCursor--;
-      FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
+      FillWord(g_pSpriteRecordWriteCursor, 0, ACTOR_SIZE);
       g_pSpriteRecordWriteCursor->type = ACTOR_TYPE_HUD_GEM_ICON;
       g_pSpriteRecordWriteCursor->posX = 0x2e;
       g_pSpriteRecordWriteCursor->posY = 0x2e;
@@ -730,7 +730,7 @@ void PauseMenu_Draw(void) {
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = 0xff;
       g_pSpriteRecordWriteCursor--;
-      FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
+      FillWord(g_pSpriteRecordWriteCursor, 0, ACTOR_SIZE);
       g_pSpriteRecordWriteCursor->type = ACTOR_TYPE_HUD_DRAGON_ICON;
       g_pSpriteRecordWriteCursor->posX = 0x12c;
       if (g_nTotalDragonsRescued >= 0xa) {
@@ -839,7 +839,7 @@ void PauseMenu_Draw(void) {
         rec++;
       }
       g_pSpriteRecordWriteCursor--;
-      FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
+      FillWord(g_pSpriteRecordWriteCursor, 0, ACTOR_SIZE);
       g_pSpriteRecordWriteCursor->type = ACTOR_TYPE_HUD_GEM_ICON;
       {
         int bF = bias + 0x15a;
@@ -859,7 +859,7 @@ void PauseMenu_Draw(void) {
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = 0xff;
       g_pSpriteRecordWriteCursor--;
-      FillWord(g_pSpriteRecordWriteCursor, 0, 0x58);
+      FillWord(g_pSpriteRecordWriteCursor, 0, ACTOR_SIZE);
       {
         int bob;
         ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posX) =

@@ -216,7 +216,7 @@ fade_out_splash:
   rect.h = 0x100;
   LoadImage(&rect, top);
   DrawSync(0);
-  g_pWorkAreaTop = (char *)0x80200000 - g_nCrt0StackSize;
+  g_pWorkAreaTop = (char *)RAM_END - g_nCrt0StackSize;
   LoadActorMeshTables();
   BeginCutscene();
   g_nScreenFadeLevel = 0xF;

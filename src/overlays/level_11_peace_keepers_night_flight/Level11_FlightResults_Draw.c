@@ -267,7 +267,7 @@ void Level11_FlightResults_Draw(void)
       BuildTextSpriteChain(buf, pos, 0x18, TINT_HUD);
       fp = g_pSpriteRecordWriteCursor - 1;
       g_pSpriteRecordWriteCursor = fp;
-      FillWord(fp, 0, 0x58);
+      FillWord(fp, 0, ACTOR_SIZE);
       {
         char *r = (char *)g_pSpriteRecordWriteCursor;
         ACTOR_RAW(r, short, type) = ACTOR_TYPE_HUD_GEM_ICON;

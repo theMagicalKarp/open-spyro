@@ -46,13 +46,13 @@ void *BuildTextSprites(char *text, int *pos, int *attr, int spacing,
   c = *text;
   flag = 1;
   while (c != 0) {
-    if ((c & 0xFF) != 0x20) {
+    if ((c & 0xFF) != ' ') {
       Actor *rec = CURSOR_V - 1;
       g_pSpriteRecordWriteCursor = rec;
-      FillWord(rec, 0, 0x58);
+      FillWord(rec, 0, ACTOR_SIZE);
       CopyVector(&CURSOR_V->posX, pos);
       c = *text;
-      if ((c == 0x21) || (c == 0x3f)) {
+      if ((c == '!') || (c == '?')) {
         flag = 1;
       }
       if (flag == 0) {
@@ -61,17 +61,17 @@ void *BuildTextSprites(char *text, int *pos, int *attr, int spacing,
         r->posZ = attr[2];
       }
       ch = *text;
-      if (((unsigned int)(ch - 0x30)) < 10) {
+      if (((unsigned int)(ch - '0')) < 10) {
         g_pSpriteRecordWriteCursor->type = ACTOR_TYPE_DIGIT_GLYPH(ch);
-      } else if (((unsigned int)(ch - 0x41)) < 0x1a) {
+      } else if (((unsigned int)(ch - 'A')) < 26) {
         g_pSpriteRecordWriteCursor->type = ACTOR_TYPE_LETTER_GLYPH(ch);
-      } else if ((ch & 0xFF) == 0x21) {
+      } else if ((ch & 0xFF) == '!') {
         CURSOR_V->type = ACTOR_TYPE_GLYPH_BANG;
-      } else if ((ch & 0xFF) == 0x2c) {
+      } else if ((ch & 0xFF) == ',') {
         CURSOR_V->type = ACTOR_TYPE_GLYPH_COMMA;
-      } else if ((ch & 0xFF) == 0x3f) {
+      } else if ((ch & 0xFF) == '?') {
         CURSOR_V->type = ACTOR_TYPE_GLYPH_QUESTION;
-      } else if ((ch & 0xFF) == 0x2e) {
+      } else if ((ch & 0xFF) == '.') {
         CURSOR_V->type = ACTOR_TYPE_GLYPH_PERIOD;
       } else {
         Actor *r = CURSOR_V;
@@ -113,7 +113,7 @@ void *BuildTextSprites(char *text, int *pos, int *attr, int spacing,
         } while (0);
       }
       {
-        int t = (*text) - 0x30;
+        int t = (*text) - '0';
         flag = ((unsigned int)t) < 10;
       }
     } else {

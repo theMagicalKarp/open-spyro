@@ -138,7 +138,7 @@ void StoryIntro_Update(void) {
             clear.h = 0x1e0;
             ClearImage(&clear, 0, 0, 0);
             DrawSync(0);
-            g_pWorkAreaTop = (void *)(0x80200000 - g_nCrt0StackSize);
+            g_pWorkAreaTop = (void *)(RAM_END - g_nCrt0StackSize);
             InitActorMeshScratchRegions(1);
             while (g_nCdStreamState < CSTREAM_DONE) {
               TickCutsceneBundleLoadStream();

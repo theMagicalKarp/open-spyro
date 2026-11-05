@@ -121,7 +121,7 @@ void RespawnOrGameOver_Draw(void) {
         if (t >= 0) {
           rec = (char *)g_pSpriteRecordWriteCursor - ACTOR_SIZE;
           g_pSpriteRecordWriteCursor = (Actor *)rec;
-          FillWord(rec, 0, 0x58);
+          FillWord(rec, 0, ACTOR_SIZE);
           if (t < 0x18) {
             g_pSpriteRecordWriteCursor->posZ = *(short *)(t * 2 + (int)ramp);
           } else {
