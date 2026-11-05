@@ -13,14 +13,15 @@
 /* The sprite record being written (Actor layout). */
 
 /* The backdrop quad being built at p, read back through volatile accesses,
- * and the TILE bar that follows the last quad. */
+ * and the black line under it (y = 0xE7, LINE_F2: the code reuses the 0x40 in
+ * b). */
 #define QUAD ((volatile PolyFT4 *)p)
-#define TILE ((Tile *)((PolyFT4 *)p + 1))
+#define LINE ((LineF2 *)((PolyFT4 *)p + 1))
 
-/* What follows the last backdrop quad: the TILE bar, then the menu box. */
+/* What follows the last backdrop quad: the line, then the menu box. */
 typedef struct BackdropTail {
   PolyFT4 quad;   /* 0x00 */
-  Tile bar;       /* 0x28 */
+  LineF2 line;    /* 0x28 */
   ModePolyF4 box; /* 0x38 */
 } BackdropTail;
 
@@ -193,8 +194,8 @@ void PauseMenu_Draw(void) {
       register unsigned short ch asm("$6");
       register unsigned char bq asm("$5");
       register unsigned char cq asm("$6");
-      QUAD->tag = 0x9000000;
-      QUAD->code = 0x2C;
+      QUAD->tag = PRIM_TAG(9);
+      QUAD->code = GPU_CODE_POLY_FT4;
       QUAD->r0 = 0x4C;
       QUAD->g0 = 0x80;
       QUAD->x0 = xx;
@@ -239,15 +240,15 @@ void PauseMenu_Draw(void) {
     if (i < 4) {
       goto quad;
     }
-    TILE->tag = 0x3000000;
-    TILE->code = b;
-    TILE->x0 = 0;
-    TILE->y0 = 0xE7;
-    TILE->w = 0x200;
-    TILE->h = 0xE7;
-    TILE->r0 = 0;
-    TILE->g0 = 0;
-    TILE->b0 = 0;
+    LINE->tag = PRIM_TAG(3);
+    LINE->code = b;
+    LINE->x0 = 0;
+    LINE->y0 = 0xE7;
+    LINE->x1 = 0x200;
+    LINE->y1 = 0xE7;
+    LINE->r0 = 0;
+    LINE->g0 = 0;
+    LINE->b0 = 0;
     AddPrimToOT((int)next);
     (*(char **)&g_pPrimBufferWriteCursor) = p + 0x38;
     prim = (BackdropTail *)p;
@@ -270,9 +271,9 @@ void PauseMenu_Draw(void) {
       AddPrimToOT((int)box);
       {
         int k;
-        k = 0x5000000;
+        k = PRIM_TAG(5);
         prim->box.poly.tag = k;
-        k = 0x2a;
+        k = (GPU_CODE_POLY_F4 | GPU_SEMI_TRANS);
         prim->box.poly.code = k;
         k = 0x43;
         prim->box.poly.r0 = h;
@@ -783,8 +784,8 @@ void PauseMenu_Draw(void) {
       prim3 = g_pPrimBufferWriteCursor;
       SetDrawMode(prim3, 1, 0, 0x40, 0);
       AddPrimToOT((int)prim3);
-      prim3->poly.tag = 0x5000000;
-      prim3->poly.code = 0x2a;
+      prim3->poly.tag = PRIM_TAG(5);
+      prim3->poly.code = (GPU_CODE_POLY_F4 | GPU_SEMI_TRANS);
       prim3->poly.r0 = 0x60;
       prim3->poly.g0 = 0x60;
       prim3->poly.b0 = 0x60;
@@ -891,8 +892,8 @@ void PauseMenu_Draw(void) {
           SetDrawMode(prim3, 1, 0, 0x40, 0);
           AddPrimToOT((int)prim3);
           pf = (int)&prim3->poly;
-          prim3->poly.tag = 0x5000000;
-          prim3->poly.code = 0x2a;
+          prim3->poly.tag = PRIM_TAG(5);
+          prim3->poly.code = (GPU_CODE_POLY_F4 | GPU_SEMI_TRANS);
           prim3->poly.r0 = 0x28;
           prim3->poly.g0 = 0x28;
           prim3->poly.b0 = 0x28;

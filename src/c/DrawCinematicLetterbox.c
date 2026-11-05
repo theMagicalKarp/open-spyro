@@ -19,8 +19,8 @@ void DrawCinematicLetterbox(void) {
     if (g_nLetterboxBarHeight > 0x16) {
       g_nLetterboxBarHeight = 0x16;
     }
-    tag = 0x5000000;
-    code = 0x28;
+    tag = PRIM_TAG(5);
+    code = GPU_CODE_POLY_F4;
   } else {
     if (g_nLetterboxBarHeight > 0) {
       g_nLetterboxBarHeight -= g_nFrameStep;
@@ -28,8 +28,8 @@ void DrawCinematicLetterbox(void) {
     if (g_nLetterboxBarHeight < 0) {
       g_nLetterboxBarHeight = 0;
     }
-    tag = 0x5000000;
-    code = 0x28;
+    tag = PRIM_TAG(5);
+    code = GPU_CODE_POLY_F4;
   }
   q = g_pPrimBufferWriteCursor;
   q->code = code;
