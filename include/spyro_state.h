@@ -131,6 +131,17 @@ typedef enum SpyroState
                                           * floor reference adds speed, rising
                                           * above it takes it away */
 
+/* Gravity per substep: ChangeSpyroState sets g_nSpyroGravityStep to minus
+ * one of these on entering a state (LIFT rises at +0x80 instead). */
+#define SPYRO_FALL_ACCEL 0x0C0       /* jump / fall / glide drop; also the pull
+                                      * added at a cliff edge or when airborne */
+#define SPYRO_LIGHT_FALL_ACCEL 0x080 /* idle, glide and flight */
+#define SPYRO_SLIDE_FALL_ACCEL 0x200
+#define SPYRO_CHARGE_FALL_ACCEL 0x240
+#define SPYRO_HURT_FALL_ACCEL 0x300  /* hurt states and the charge bonk */
+#define SPYRO_GROUND_PRESS 0xC00     /* walking / standing states: pins Spyro to
+                                      * the floor, projected along the slope */
+
 /* g_dwSpyroRequestMask bits (SpyroObj.requestMask): a scripted override of
  * Spyro posted by actors and cutscenes, applied by AdvanceSpyroPhysics while
  * SPYRO_RQ_PENDING is set. */

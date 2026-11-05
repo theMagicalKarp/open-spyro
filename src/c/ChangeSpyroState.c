@@ -80,7 +80,7 @@ void ChangeSpyroState(int state) {
     g_nSpyroSubstate = 0;
     t = g_abSpyroIdleDelayRandTable[GetRandomU32() & 7] *
         g_abSpyroAnimDescTable[2];
-    g_nSpyroGravityStep = -0x80;
+    g_nSpyroGravityStep = -SPYRO_LIGHT_FALL_ACCEL;
     g_nSpyroGravityEnableFlag = 1;
     g_nSpyroIdleAnimTimeout = t - 2;
     break;
@@ -103,7 +103,7 @@ void ChangeSpyroState(int state) {
     if (state == SPYRO_ST_STOP && SPY[SPY_SPEED] > 0x1400) {
       SPY[SPY_SPEED] = 0x1400;
     }
-    g_nSpyroGravityStep = -0xC00;
+    g_nSpyroGravityStep = -SPYRO_GROUND_PRESS;
     ApplyGravityAlongSpyroSlopeNormal();
     if (g_nSpyroGroundSlope != 0) {
       int k;
@@ -149,13 +149,13 @@ void ChangeSpyroState(int state) {
   }
   case SPYRO_ST_TURN_AROUND:
     g_nSpyroSubstate = 0;
-    g_nSpyroGravityStep = -0xC00;
+    g_nSpyroGravityStep = -SPYRO_GROUND_PRESS;
     goto slope_gravity;
   case SPYRO_ST_JUMP:
     CopyVector(g_anSpyroVelocity,
                SPY_VIA(g_anSpyroVelocity, SPY_VELOCITY, SPY_MOTION));
     g_anSpyroCarryMotionVec[2] = 0xDC0;
-    g_nSpyroGravityStep = -0xC0;
+    g_nSpyroGravityStep = -SPYRO_FALL_ACCEL;
     g_nSpyroSubstate = 0;
     g_nSpyroJumpHoldLatch = 0;
     g_nSpyroGravityEnableFlag = 0;
@@ -173,7 +173,7 @@ void ChangeSpyroState(int state) {
         g_nSpyroGroundSlope < SLOPE_NUDGE_MAX) {
       NudgeSpyroFromWallProbes();
     }
-    g_nSpyroGravityStep = -0xC0;
+    g_nSpyroGravityStep = -SPYRO_FALL_ACCEL;
     g_nSpyroJumpHoldLatch = 0;
     g_nSpyroGravityEnableFlag = 0;
     break;
@@ -186,7 +186,7 @@ void ChangeSpyroState(int state) {
         g_nSpyroGroundSlope < SLOPE_NUDGE_MAX) {
       NudgeSpyroFromWallProbes();
     }
-    g_nSpyroGravityStep = -0xC0;
+    g_nSpyroGravityStep = -SPYRO_FALL_ACCEL;
     g_nSpyroJumpHoldLatch = 0;
     g_nSpyroGravityEnableFlag = 0;
     break;
@@ -195,7 +195,7 @@ void ChangeSpyroState(int state) {
     SPY[SPY_SUBSTATE] = 0;
     CopyVector(&SPY[SPY_CARRY], &SPY[SPY_MOTION]);
     g_nSpyroMotionSpeed = 0;
-    g_nSpyroGravityStep = -0xC00;
+    g_nSpyroGravityStep = -SPYRO_GROUND_PRESS;
     goto slope_gravity;
   case SPYRO_ST_CHARGE: {
     int best;
@@ -213,7 +213,7 @@ void ChangeSpyroState(int state) {
       g_nSpyroSubstate = 1;
     }
     SPY[SPY_BODY_YAW_STEP] = 0;
-    g_nSpyroGravityStep = -0x240;
+    g_nSpyroGravityStep = -SPYRO_CHARGE_FALL_ACCEL;
     me = SPY;
     ApplyGravityAlongSpyroSlopeNormal();
     ApplyGravityAlongSpyroSlopeTangent();
@@ -288,7 +288,7 @@ void ChangeSpyroState(int state) {
     ZeroVector(&SPY[SPY_CARRY]);
     SubtractVector(&SPY[SPY_VELOCITY], &SPY[SPY_CARRY], &SPY[SPY_VELOCITY]);
     RShiftVector3(&SPY[SPY_VELOCITY], 2);
-    g_nSpyroGravityStep = -0x300;
+    g_nSpyroGravityStep = -SPYRO_HURT_FALL_ACCEL;
     g_nSpyroGravityEnableFlag = 1;
     if (g_nPulseRumbleAmount < 0x78) {
       g_nPulseRumbleAmount = 0x78;
@@ -299,7 +299,7 @@ void ChangeSpyroState(int state) {
     break;
   }
   case SPYRO_ST_TEETER:
-    g_nSpyroGravityStep = -0xC00;
+    g_nSpyroGravityStep = -SPYRO_GROUND_PRESS;
     goto stand;
   case SPYRO_ST_HURT_TINT: {
     int len;
@@ -311,7 +311,7 @@ void ChangeSpyroState(int state) {
     if (len > 0x1E00) {
       ScaleVector3ByRatio(&SPY[SPY_VELOCITY], len, 0x1E00);
     }
-    g_nSpyroGravityStep = -0x300;
+    g_nSpyroGravityStep = -SPYRO_HURT_FALL_ACCEL;
     if (g_nSpyroAirborneFrames == 0) {
       ApplyGravityAlongSpyroSlopeNormal();
     }
@@ -332,7 +332,7 @@ void ChangeSpyroState(int state) {
     if (len > 0x1E00) {
       ScaleVector3ByRatio(&SPY[SPY_VELOCITY], len, 0x1E00);
     }
-    g_nSpyroGravityStep = -0x300;
+    g_nSpyroGravityStep = -SPYRO_HURT_FALL_ACCEL;
     if (g_nSpyroAirborneFrames == 0) {
       ApplyGravityAlongSpyroSlopeNormal();
     }
@@ -360,7 +360,7 @@ void ChangeSpyroState(int state) {
   case SPYRO_ST_HURT_LONG:
     SPY[SPY_SUBSTATE] = 0;
     ZeroVector(&SPY[SPY_VELOCITY]);
-    g_nSpyroGravityStep = -0x300;
+    g_nSpyroGravityStep = -SPYRO_HURT_FALL_ACCEL;
     g_nSpyroGravityEnableFlag = 1;
     g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     if (g_nHitRumbleTimer < HIT_RUMBLE_FRAMES) {
@@ -405,7 +405,7 @@ void ChangeSpyroState(int state) {
     } else {
       g_nSpyroGlideBankingFlag = 0;
     }
-    g_nSpyroGravityStep = -0x80;
+    g_nSpyroGravityStep = -SPYRO_LIGHT_FALL_ACCEL;
     g_nSpyroGravityEnableFlag = 0;
     break;
   }
@@ -447,7 +447,7 @@ void ChangeSpyroState(int state) {
 
     g_nSpyroSubstate = 0;
     t = g_abSpyroAnimDescTable[state * 4 + 2];
-    g_nSpyroGravityStep = -0xC00;
+    g_nSpyroGravityStep = -SPYRO_GROUND_PRESS;
     g_nSpyroIdleAnimTimeout = t << 4;
     break;
   }
@@ -457,7 +457,7 @@ void ChangeSpyroState(int state) {
     if (g_nSpyroCarryMotionZ > 0) {
       g_nSpyroCarryMotionZ = 0;
     }
-    g_nSpyroGravityStep = -0x200;
+    g_nSpyroGravityStep = -SPYRO_SLIDE_FALL_ACCEL;
     ApplyGravityAlongSpyroSlopeNormal();
     ApplyGravityAlongSpyroSlopeTangent();
     g_nSpyroGravityEnableFlag = 0;
@@ -478,7 +478,7 @@ void ChangeSpyroState(int state) {
       g_anSpyroVelocity[2] = 0;
       g_anSpyroCarryMotionVec[2] = 0;
     }
-    g_nSpyroGravityStep = -0x240;
+    g_nSpyroGravityStep = -SPYRO_CHARGE_FALL_ACCEL;
     g_nSpyroJumpHoldLatch = 0;
     g_nSpyroGravityEnableFlag = 0;
     break;
@@ -503,7 +503,7 @@ void ChangeSpyroState(int state) {
     } else {
       g_nSpyroMotionSpeed = VectorLength(&SPY[SPY_MOTION], VEC_LEN_XY);
     }
-    g_nSpyroGravityStep = -0xC00;
+    g_nSpyroGravityStep = -SPYRO_GROUND_PRESS;
     ApplyGravityAlongSpyroSlopeNormal();
     g_nSpyroMoveTargetMag = 0x280;
     g_nSpyroTurnRateAccum = 0;
@@ -520,7 +520,7 @@ void ChangeSpyroState(int state) {
       g_anSpyroVelocity[2] = g_anSpyroMotionVec[2];
     }
     ArcTan2(SPY[SPY_VELOCITY], g_anSpyroVelocity[1], ATAN_ANGLE12);
-    g_nSpyroGravityStep = -0x300;
+    g_nSpyroGravityStep = -SPYRO_HURT_FALL_ACCEL;
     if (g_nSpyroAirborneFrames == 0) {
       ApplyGravityAlongSpyroSlopeNormal();
     }
@@ -537,7 +537,7 @@ void ChangeSpyroState(int state) {
     int *me;
 
     *p = 0;
-    g_nSpyroGravityStep = -0x80;
+    g_nSpyroGravityStep = -SPYRO_LIGHT_FALL_ACCEL;
     g_nSpyroGravityEnableFlag = 1;
     if (g_nSpyroInputLockoutCountdown == 0) {
       g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
@@ -556,7 +556,7 @@ void ChangeSpyroState(int state) {
   case SPYRO_ST_DEATH:
     SPY[SPY_SUBSTATE] = 0;
     CopyVector(&SPY[SPY_CARRY], &SPY[SPY_MOTION]);
-    g_nSpyroGravityStep = -0x300;
+    g_nSpyroGravityStep = -SPYRO_HURT_FALL_ACCEL;
     if (g_nSpyroAirborneFrames == 0) {
     slope_gravity:
       ApplyGravityAlongSpyroSlopeNormal();
@@ -566,7 +566,7 @@ void ChangeSpyroState(int state) {
   case SPYRO_ST_DEATH_PINNED:
     SPY[SPY_SUBSTATE] = 0;
     CopyVector(&SPY[SPY_CARRY], &SPY[SPY_MOTION]);
-    g_nSpyroGravityStep = -0x300;
+    g_nSpyroGravityStep = -SPYRO_HURT_FALL_ACCEL;
     if (g_nSpyroAirborneFrames == 0) {
       ApplyGravityAlongSpyroSlopeNormal();
     }
@@ -574,7 +574,7 @@ void ChangeSpyroState(int state) {
     g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     break;
   case SPYRO_ST_SCRIPTED_HOLD:
-    g_nSpyroGravityStep = -0x80;
+    g_nSpyroGravityStep = -SPYRO_LIGHT_FALL_ACCEL;
     /* FALLTHROUGH */
   case SPYRO_ST_FACE_TARGET:
   stand:
@@ -589,7 +589,7 @@ void ChangeSpyroState(int state) {
     }
     SPY[SPY_SUBSTATE] = SPYRO_SUB_CHARGE_LATCHED | SPYRO_SUB_SUPERCHARGE;
     g_nSpyroBodyYawStep = 0;
-    g_nSpyroGravityStep = -0x240;
+    g_nSpyroGravityStep = -SPYRO_CHARGE_FALL_ACCEL;
     ApplyGravityAlongSpyroSlopeNormal();
     ApplyGravityAlongSpyroSlopeTangent();
     g_nSpyroGravityEnableFlag = 1;

@@ -463,7 +463,7 @@ void UpdateSpyroStateBehavior(void) {
     if (DispatchSpyroChargeStateChanges()) {
       break;
     }
-    if ((g_dwPadHeld & (PAD_CROSS | PAD_SQUARE)) == 0xC0 &&
+    if ((g_dwPadHeld & (PAD_CROSS | PAD_SQUARE)) == (PAD_CROSS | PAD_SQUARE) &&
         g_nSpyroGroundSlope < SLOPE_FLAT) {
       ChangeSpyroState(SPYRO_ST_CHARGE_AIR);
       g_nSpyroVelocityZ += 0xDC0;
