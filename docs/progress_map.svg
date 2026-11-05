@@ -189,7 +189,7 @@
 <rect x="164.06" y="563.29" width="15.61" height="14.71" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ArcTan2  ·  420 bytes  ·  handwritten</title></rect>
 <rect x="179.66" y="563.29" width="15.61" height="14.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DrawCinematicLetterbox  ·  420 bytes  ·  matched</title></rect>
 <rect x="195.27" y="563.29" width="15.61" height="14.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>IntegrateSpyroBodyEuler  ·  420 bytes  ·  matched</title></rect>
-<rect x="210.87" y="563.29" width="15.46" height="14.71" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>EncodeCachedVecToActorDirCode  ·  416 bytes  ·  handwritten</title></rect>
+<rect x="210.87" y="563.29" width="15.46" height="14.71" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>EncodeHitNormalToActorGroundCode  ·  416 bytes  ·  handwritten</title></rect>
 <rect x="226.33" y="563.29" width="15.16" height="14.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>CdReadSyncSectors  ·  408 bytes  ·  matched</title></rect>
 <rect x="241.49" y="563.29" width="15.16" height="14.71" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>DriveActorTrackedMove  ·  408 bytes  ·  matched</title></rect>
 <rect x="256.65" y="563.29" width="15.16" height="14.71" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>PADCMD_OBJ_3A0  ·  408 bytes  ·  library</title></rect>

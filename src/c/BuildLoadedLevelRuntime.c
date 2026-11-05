@@ -415,7 +415,7 @@ sprites:
       CopyVector(pos, &g_pActorListBase[i].posX);
       pos[2] += 0x400;
       FindGroundHeightBelow(pos, 0x10000);
-      EncodeCachedVecToActorDirCode(&g_pActorListBase[i]);
+      EncodeHitNormalToActorGroundCode(&g_pActorListBase[i]);
       type = g_pActorListBase[i].killGroup;
       if (((unsigned int)(type & 0x7F)) < 0x20) {
         register int runBit asm("$5");

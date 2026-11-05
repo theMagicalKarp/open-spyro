@@ -414,7 +414,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80052d64` | GetActorAttachPoint | main | 468 | asm | handwritten |
 | `0x80052f38` | AccumulateAnimRootMotionDelta | main | 392 | asm | handwritten |
 | `0x800530c0` | BurstActorIntoSparks | main | 784 | asm | handwritten |
-| `0x800533d0` | EncodeCachedVecToActorDirCode | main | 416 | asm | handwritten |
+| `0x800533d0` | EncodeHitNormalToActorGroundCode | main | 416 | asm | handwritten |
 | `0x80053570` | AllocEmitListRecord | main | 152 | asm | handwritten |
 | `0x80053608` | FreeEmitListRecord | main | 156 | asm | handwritten |
 | `0x800536a4` | ResetPadFrameSubstepTable | main | 100 | matched | game |

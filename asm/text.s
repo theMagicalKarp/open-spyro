@@ -2280,7 +2280,7 @@ glabel BuildLoadedLevelRuntime
     /* 49E8 800141E8 1800A2AF */   sw        $v0, 0x18($sp)
     /* 49EC 800141EC 0780043C */  lui        $a0, %hi(g_pActorListBase)
     /* 49F0 800141F0 2858848C */  lw         $a0, %lo(g_pActorListBase)($a0)
-    /* 49F4 800141F4 F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 49F4 800141F4 F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 49F8 800141F8 21209000 */   addu      $a0, $a0, $s0
     /* 49FC 800141FC 0780023C */  lui        $v0, %hi(g_pActorListBase)
     /* 4A00 80014200 2858428C */  lw         $v0, %lo(g_pActorListBase)($v0)
@@ -34095,7 +34095,7 @@ glabel DragonRescue_Update
     /* 20DF0 800305F0 00FC4224 */  addiu      $v0, $v0, -0x400
     /* 20DF4 800305F4 140062AC */  sw         $v0, 0x14($v1)
     /* 20DF8 800305F8 0000048E */  lw         $a0, 0x0($s0)
-    /* 20DFC 800305FC F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 20DFC 800305FC F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 20E00 80030600 00000000 */   nop
     /* 20E04 80030604 0000048E */  lw         $a0, 0x0($s0)
     /* 20E08 80030608 AA49010C */  jal        InsertActorIntoSpatialGrid
@@ -35251,7 +35251,7 @@ glabel SaveMenu_Update
     /* 21F0C 8003170C 0C008424 */   addiu     $a0, $a0, 0xC
     /* 21F10 80031710 0880043C */  lui        $a0, %hi(g_pSaveMenuHostActor)
     /* 21F14 80031714 748D848C */  lw         $a0, %lo(g_pSaveMenuHostActor)($a0)
-    /* 21F18 80031718 F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 21F18 80031718 F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 21F1C 8003171C 00000000 */   nop
     /* 21F20 80031720 0780023C */  lui        $v0, %hi(g_pSparxActor)
     /* 21F24 80031724 9858428C */  lw         $v0, %lo(g_pSparxActor)($v0)
@@ -43042,7 +43042,7 @@ glabel SnapActorToGround
     /* 28C6C 8003846C 38000386 */  lh         $v1, 0x38($s0)
     /* 28C70 80038470 21200002 */  addu       $a0, $s0, $zero
     /* 28C74 80038474 21104300 */  addu       $v0, $v0, $v1
-    /* 28C78 80038478 F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 28C78 80038478 F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 28C7C 8003847C 140082AC */   sw        $v0, 0x14($a0)
     /* 28C80 80038480 1400BF8F */  lw         $ra, 0x14($sp)
     /* 28C84 80038484 1000B08F */  lw         $s0, 0x10($sp)
@@ -44403,7 +44403,7 @@ glabel MoveActorAlongHeading
   .L80039648:
     /* 29E48 80039648 04004010 */  beqz       $v0, .L8003965C
     /* 29E4C 8003964C 21200002 */   addu      $a0, $s0, $zero
-    /* 29E50 80039650 F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 29E50 80039650 F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 29E54 80039654 21200002 */   addu      $a0, $s0, $zero
     /* 29E58 80039658 21200002 */  addu       $a0, $s0, $zero
   .L8003965C:
@@ -44589,7 +44589,7 @@ glabel MoveActorAlongAngle
   .L800398D0:
     /* 2A0D0 800398D0 04004010 */  beqz       $v0, .L800398E4
     /* 2A0D4 800398D4 21200002 */   addu      $a0, $s0, $zero
-    /* 2A0D8 800398D8 F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 2A0D8 800398D8 F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 2A0DC 800398DC 21200002 */   addu      $a0, $s0, $zero
     /* 2A0E0 800398E0 21200002 */  addu       $a0, $s0, $zero
   .L800398E4:
@@ -44709,7 +44709,7 @@ glabel DriveActorTrackedMove
     /* 2A26C 80039A6C 140023AE */  sw         $v1, 0x14($s1)
     /* 2A270 80039A70 03001324 */  addiu      $s3, $zero, 0x3
   .L80039A74:
-    /* 2A274 80039A74 F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 2A274 80039A74 F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 2A278 80039A78 21202002 */   addu      $a0, $s1, $zero
   .L80039A7C:
     /* 2A27C 80039A7C 21106002 */  addu       $v0, $s3, $zero
@@ -45358,7 +45358,7 @@ glabel SteerActorAlongWaypoints
     /* 2AB60 8003A360 2000B027 */  addiu      $s0, $sp, 0x20
     /* 2AB64 8003A364 C05D000C */  jal        CopyVector
     /* 2AB68 8003A368 21280002 */   addu      $a1, $s0, $zero
-    /* 2AB6C 8003A36C F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 2AB6C 8003A36C F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 2AB70 8003A370 21208002 */   addu      $a0, $s4, $zero
     /* 2AB74 8003A374 21208002 */  addu       $a0, $s4, $zero
     /* 2AB78 8003A378 794A010C */  jal        RefreshActorDerivedState
@@ -45573,7 +45573,7 @@ glabel WalkActorAlongWaypoints
     /* 2AE60 8003A660 2000B027 */  addiu      $s0, $sp, 0x20
     /* 2AE64 8003A664 C05D000C */  jal        CopyVector
     /* 2AE68 8003A668 21280002 */   addu      $a1, $s0, $zero
-    /* 2AE6C 8003A66C F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 2AE6C 8003A66C F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 2AE70 8003A670 21204002 */   addu      $a0, $s2, $zero
     /* 2AE74 8003A674 21204002 */  addu       $a0, $s2, $zero
     /* 2AE78 8003A678 794A010C */  jal        RefreshActorDerivedState
@@ -47265,7 +47265,7 @@ glabel SteerActorTowardPoint
     /* 2C484 8003BC84 02000524 */   addiu     $a1, $zero, 0x2
     /* 2C488 8003BC88 D0E0000C */  jal        ProbeActorGroundHeight
     /* 2C48C 8003BC8C 21204002 */   addu      $a0, $s2, $zero
-    /* 2C490 8003BC90 F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 2C490 8003BC90 F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 2C494 8003BC94 21204002 */   addu      $a0, $s2, $zero
     /* 2C498 8003BC98 2110A002 */  addu       $v0, $s5, $zero
     /* 2C49C 8003BC9C 6800BF8F */  lw         $ra, 0x68($sp)
@@ -47413,7 +47413,7 @@ glabel TryMoveActorForward
   .L8003BE8C:
     /* 2C68C 8003BE8C C05D000C */  jal        CopyVector
     /* 2C690 8003BE90 3800A527 */   addiu     $a1, $sp, 0x38
-    /* 2C694 8003BE94 F44C010C */  jal        EncodeCachedVecToActorDirCode
+    /* 2C694 8003BE94 F44C010C */  jal        EncodeHitNormalToActorGroundCode
     /* 2C698 8003BE98 21204002 */   addu      $a0, $s2, $zero
     /* 2C69C 8003BE9C 21204002 */  addu       $a0, $s2, $zero
     /* 2C6A0 8003BEA0 794A010C */  jal        RefreshActorDerivedState
@@ -73666,11 +73666,11 @@ endlabel BurstActorIntoSparks
 /* Handwritten function */
 .endif
 
-.section .text.EncodeCachedVecToActorDirCode, "ax"
-.ifndef HAVE_C_EncodeCachedVecToActorDirCode
-nonmatching EncodeCachedVecToActorDirCode, 0x1A0
+.section .text.EncodeHitNormalToActorGroundCode, "ax"
+.ifndef HAVE_C_EncodeHitNormalToActorGroundCode
+nonmatching EncodeHitNormalToActorGroundCode, 0x1A0
 
-glabel EncodeCachedVecToActorDirCode
+glabel EncodeHitNormalToActorGroundCode
     /* 43BD0 800533D0 0780033C */  lui        $v1, %hi(g_anCollisionHitNormal)
     /* 43BD4 800533D4 68736324 */  addiu      $v1, $v1, %lo(g_anCollisionHitNormal)
     /* 43BD8 800533D8 0000618C */  lw         $at, 0x0($v1)
@@ -73786,7 +73786,7 @@ glabel EncodeCachedVecToActorDirCode
   .L80053568:
     /* 43D68 80053568 0800E003 */  jr         $ra
     /* 43D6C 8005356C 1C0087AC */   sw        $a3, 0x1C($a0)
-endlabel EncodeCachedVecToActorDirCode
+endlabel EncodeHitNormalToActorGroundCode
 
 /* Handwritten function */
 .endif

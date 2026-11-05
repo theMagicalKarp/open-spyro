@@ -856,7 +856,7 @@ void Level0_UpdateActors(void) {
 
           if (st->restMode == COLLREST_SNAP) {
             SnapActorToGround(actor);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
             if (actor->type >= ACTOR_TYPE_GEM_1) {
               int *nrm = &g_anCollisionHitNormal;
 
@@ -879,7 +879,7 @@ void Level0_UpdateActors(void) {
 
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
 
           } else if (st->restMode == COLLREST_FIND_TRI) {
             int colIndex;
@@ -993,7 +993,7 @@ void Level0_UpdateActors(void) {
                   }
                 }
 
-                EncodeCachedVecToActorDirCode(actor);
+                EncodeHitNormalToActorGroundCode(actor);
               } else {
                 st->count++;
               }
@@ -1019,7 +1019,7 @@ void Level0_UpdateActors(void) {
             bouncePos[2] -= 240;
             CopyVector(&actor->posX, bouncePos);
             FindGroundHeightBelow(bouncePos, 0x10000);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
           }
         }
 
@@ -1182,7 +1182,7 @@ void Level0_UpdateActors(void) {
 
                 RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
                 FindGroundHeightBelow(&actor->posX, 0x1000);
-                EncodeCachedVecToActorDirCode(actor);
+                EncodeHitNormalToActorGroundCode(actor);
                 actor->groundCode |= ACTOR_GROUND_VALID;
               }
             }
@@ -1284,7 +1284,7 @@ void Level0_UpdateActors(void) {
           actor->rotZ += (angleDiff * cosDelta) / totalWeight;
 
           FindGroundHeightBelow(&actor->posX, 0x1000);
-          EncodeCachedVecToActorDirCode(actor);
+          EncodeHitNormalToActorGroundCode(actor);
 
           if (st->wanderTimer == 0x10) {
             actor->mode = SAVEHOST_HOVER;
@@ -2955,7 +2955,7 @@ void Level0_UpdateActors(void) {
 
       if (st->restMode == COLLREST_SNAP) {
         SnapActorToGround(actor);
-        EncodeCachedVecToActorDirCode(actor);
+        EncodeHitNormalToActorGroundCode(actor);
       }
 
       if (actor->mode == LIFECHEST_CLOSED) {

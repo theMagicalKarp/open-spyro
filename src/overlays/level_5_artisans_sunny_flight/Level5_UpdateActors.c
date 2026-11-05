@@ -594,7 +594,7 @@ void Level5_UpdateActors(void) {
 
           if (st->restMode == COLLREST_SNAP) {
             SnapActorToGround(actor);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
             if (actor->type >= ACTOR_TYPE_GEM_1) {
               int *nrm = &g_anCollisionHitNormal;
 
@@ -617,7 +617,7 @@ void Level5_UpdateActors(void) {
 
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
 
           } else if (st->restMode == COLLREST_FIND_TRI) {
             int colIndex;
@@ -736,7 +736,7 @@ void Level5_UpdateActors(void) {
                   }
                 }
 
-                EncodeCachedVecToActorDirCode(actor);
+                EncodeHitNormalToActorGroundCode(actor);
               } else {
                 st->count++;
               }
@@ -762,7 +762,7 @@ void Level5_UpdateActors(void) {
             bouncePos[2] -= 240;
             CopyVector(pos, bouncePos);
             FindGroundHeightBelow(bouncePos, 0x10000);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
           }
         }
 

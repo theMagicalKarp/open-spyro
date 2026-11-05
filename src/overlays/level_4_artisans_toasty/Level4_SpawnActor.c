@@ -14,7 +14,7 @@
  * The interesting arms:
  *  - 0xE / 0x53..0x57 (collectible drops: life statue, life orb, gems): fill the pickup state block,
  *    take a ground probe (FindGroundHeightBelow) 0x400 above the spawn point, encode
- *    the cached direction (EncodeCachedVecToActorDirCode) and select the per-type
+ *    the cached direction (EncodeHitNormalToActorGroundCode) and select the per-type
  *    tintMode preset (0xE: 0xC, 0x53..0x57: 1..5).
  *  - 0x43..0x45 / 0xFF..0x101 / 0x135..0x137 (debris bursts):
  *    give the fragment a random unit velocity built from a random yaw
@@ -145,7 +145,7 @@ Actor *Level4_SpawnActor(int type, Actor *parent) {
     CopyVector(probe, pos);
     probe[2] += 0x400;
     FindGroundHeightBelow(probe, 0x10000);
-    EncodeCachedVecToActorDirCode(rec);
+    EncodeHitNormalToActorGroundCode(rec);
     rec->tint0 = 0;
     rec->tint1 = 0;
     rec->tint2 = 0;

@@ -18,7 +18,7 @@ typedef struct Actor {
   int posZ;            /* 0x14 */
   int flags;           /* 0x18 damage flags */
   int groundCode;      /* 0x1C packed ground contact, written by
-                        * EncodeCachedVecToActorDirCode from the last ground
+                        * EncodeHitNormalToActorGroundCode from the last ground
                         * probe: bit 31 valid, two 6-bit floor-normal angles
                         * at bits 22 and 16, floor z >> 2 below. Overlays
                         * store -1 / 0 to reset it and toggle bit 31 (bit 31

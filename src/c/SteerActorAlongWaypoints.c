@@ -69,7 +69,7 @@ int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius,
     vec[2] -= 0x400;
   }
   CopyVector(&actor->posX, vec);
-  EncodeCachedVecToActorDirCode(actor);
+  EncodeHitNormalToActorGroundCode(actor);
   RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
   ret = 0;
   SubtractVector(vec, &path->nodes[path->cur].x, &actor->posX);

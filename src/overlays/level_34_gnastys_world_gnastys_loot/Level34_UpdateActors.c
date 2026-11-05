@@ -783,7 +783,7 @@ void Level34_UpdateActors(void) {
           if (st->mode == COLLREST_STILL) {
           } else if (st->mode == COLLREST_SNAP) {
             SnapActorToGround(actor);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
             if (actor->type >= ACTOR_TYPE_GEM_1) {
               {
                 int *nrm = &g_anCollisionHitNormal;
@@ -804,7 +804,7 @@ void Level34_UpdateActors(void) {
             actor->posZ = acc[0][2] / 3;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
           } else if (st->mode == COLLREST_FIND_TRI) {
             CopyVector(svF, &actor->posX);
             svF[2] += 0x400;
@@ -909,7 +909,7 @@ void Level34_UpdateActors(void) {
                     actor->rotZ = 0;
                   }
                 }
-                EncodeCachedVecToActorDirCode(actor);
+                EncodeHitNormalToActorGroundCode(actor);
               } else {
                 st->bounce += 1;
               }
@@ -934,7 +934,7 @@ void Level34_UpdateActors(void) {
             bouncePos[2] -= 0xF0;
             CopyVector(at, bouncePos);
             FindGroundHeightBelow(bouncePos, 0x10000);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
           }
 
         enemy_settle:

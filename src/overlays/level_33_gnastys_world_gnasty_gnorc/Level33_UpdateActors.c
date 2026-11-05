@@ -799,7 +799,7 @@ void Level33_UpdateActors(void) {
           if (st->mode == COLLREST_STILL) {
           } else if (st->mode == COLLREST_SNAP) {
             SnapActorToGround(actor);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
             if (actor->type >= ACTOR_TYPE_GEM_1) {
               {
                 int *nrm = &g_anCollisionHitNormal;
@@ -819,7 +819,7 @@ void Level33_UpdateActors(void) {
             actor->posZ = acc[0][2] / 3;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
           } else if (st->mode == COLLREST_FIND_TRI) {
             CopyVector(svF, &actor->posX);
             svF[2] += 0x400;
@@ -923,7 +923,7 @@ void Level33_UpdateActors(void) {
                     actor->rotZ = 0;
                   }
                 }
-                EncodeCachedVecToActorDirCode(actor);
+                EncodeHitNormalToActorGroundCode(actor);
               } else {
                 st->bounce += 1;
               }
@@ -948,7 +948,7 @@ void Level33_UpdateActors(void) {
             bouncePos[2] -= 0xF0;
             CopyVector(at, bouncePos);
             FindGroundHeightBelow(bouncePos, 0x10000);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
           }
 
         enemy_settle:
@@ -1598,7 +1598,7 @@ void Level33_UpdateActors(void) {
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(actor, 0, &g_pActorListBase[st->partner].posX);
         ProbeActorGroundHeight(&g_pActorListBase[st->partner]);
-        EncodeCachedVecToActorDirCode(&g_pActorListBase[st->partner]);
+        EncodeHitNormalToActorGroundCode(&g_pActorListBase[st->partner]);
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
       continue;

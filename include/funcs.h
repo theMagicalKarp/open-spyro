@@ -695,7 +695,7 @@ void ClipAndEmitPortalSkyTriangle(void); /* register-convention helper: no C cal
 /* 0x8004f8ec: continuation of ClipAndEmitPortalSkyTriangle (hand-written asm). Splat starts a symbol at this address, but the code there is the rest of the same routine: it falls in mid-way through saving the deferred-triangle slot and blends the clipped edge colours (BlendDepthCuedEdgeColor). No callers. */
 void ClipAndEmitPortalSkyTriangle_Tail(void);
 
-/* 0x8004fdac: GTE depth-cue color helper for a clipped polygon edge. Loads vertex RGB + fog direction (the fog color in a register) into GTE, runs gte_gpl12 (general-purpose linear interp along edge) followed by gte_dpcs_b (depth-cue single-color) to produce the blended RGB at the clip point. Returns the depth-cued color packed with POLY_F2 prim code (0x30000000). No direct callers: invoked exclusively via the D_8004F890 / D_80050028 clip jumptables from ClipAndEmit{Actor,FoggedActor}Triangle. */
+/* 0x8004fdac: GTE depth-cue color helper for a clipped polygon edge. Loads vertex RGB + fog direction (the fog color in a register) into GTE, runs gte_gpl12 (general-purpose linear interp along edge) followed by gte_dpcs_b (depth-cue single-color) to produce the blended RGB at the clip point. Returns the depth-cued color packed with POLY_F2 prim code (0x30000000). No direct callers: invoked exclusively via the D_8004F890 / D_80050028 clip jumptables from ClipAndEmitPortalSkyTriangle / ClipAndEmitPortalFillTriangle. */
 unsigned int BlendDepthCuedEdgeColor(void); /* register-convention helper: no C callers */
 
 /* 0x8004fea0: Fills a portal's screen outline with one flat colour (*color, the destination sky's background or its depth-cued fade): clips the full-screen triangle pair g_anFogFullScreenTriPairSxy against g_aPortalSilhouetteEdges via ClipAndEmitPortalFillTriangle into OT bin g_nPortalOtDepthBin. Saves s-regs in g_anStaticRegSaveArea. Caller: DrawPortalsAndSky (portals nearer than 0x4000) */
@@ -738,7 +738,7 @@ void HideActorRenderRecord(Actor *actor);
 void AccumulateAnimRootMotionDelta(int frame, int *out, int anim, int sub);
 
 /* 0x800533d0: Encodes the last hit normal g_anCollisionHitNormal (X/Y/Z, written by FindGroundHeightBelow / CastRayWorldAndActors / sphere-probe paths) plus a 14-bit scalar at g_nCollisionResolvedZ into a packed direction code at ->groundCode. Only re-encodes when bit 31 of the existing field is set (caller flips bit 31 as a "needs recompute" sentinel). Magnitude path: gte_sqr0 on (X,Z), sqrt-LUT lookup at g_anSqrtLUT → 2D XZ-plane magnitude. Then two arctan2 quadrant-decompositions: (XZmag vs Y) → pitch byte angle, (Z vs X) → yaw byte angle (each = quadrant + 5-bit frac, packed to 6 bits via >>2). Output layout: bit 31 set + pitch<<22 + yaw<<16 + (g_nCollisionResolvedZ>>2) in low 14 bits. Callers: BuildLoadedLevelRuntime (level loader, spawn-time encoding), SaveMenu_Update (save-host pan re-encode), DragonRescue_Update (per-frame burst direction). */
-void EncodeCachedVecToActorDirCode(Actor *actor);
+void EncodeHitNormalToActorGroundCode(Actor *actor);
 
 /* 0x800536a4: Resets a PadState's per-frame input: pressed / released / held cleared, analog centred (PAD_ANALOG_CENTERED), allInputIdle / directionalIdle raised; each of the 4 ring PadSubsteps gets the block's padType, cleared buttons and a centred analog word. Called by MovePadInputState (end-of-frame) and the level-loader BuildLoadedLevelRuntime. */
 void ResetPadFrameSubstepTable(int *base);

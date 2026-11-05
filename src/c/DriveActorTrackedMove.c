@@ -59,7 +59,7 @@ int DriveActorTrackedMove(Actor *actor, int *speed, int heading, int *vz,
         ret = MOVED_LANDED;
       }
     }
-    EncodeCachedVecToActorDirCode(actor);
+    EncodeHitNormalToActorGroundCode(actor);
   }
   return ret;
 }

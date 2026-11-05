@@ -1611,7 +1611,7 @@ void Level14_UpdateActors(void) {
 
           if (st->restMode == COLLREST_SNAP) {
             SnapActorToGround(actor);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
             if (actor->type >= ACTOR_TYPE_GEM_1) {
               int *nrm = &g_anCollisionHitNormal;
 
@@ -1634,7 +1634,7 @@ void Level14_UpdateActors(void) {
 
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             SnapActorToGround(actor);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
 
           } else if (st->restMode == COLLREST_FIND_TRI) {
             int colIndex;
@@ -1748,7 +1748,7 @@ void Level14_UpdateActors(void) {
                   }
                 }
 
-                EncodeCachedVecToActorDirCode(actor);
+                EncodeHitNormalToActorGroundCode(actor);
               } else {
                 st->count++;
               }
@@ -1774,7 +1774,7 @@ void Level14_UpdateActors(void) {
             bouncePos[2] -= 240;
             CopyVector(&actor->posX, bouncePos);
             FindGroundHeightBelow(bouncePos, 0x10000);
-            EncodeCachedVecToActorDirCode(actor);
+            EncodeHitNormalToActorGroundCode(actor);
           }
         }
 
@@ -2329,7 +2329,7 @@ void Level14_UpdateActors(void) {
           CopyVector(&actor->posX, svF);
           TurnActorYawTowardAngle(actor, g_nSpyroBodyYaw >> 4, 8, 0x20, YAW_STEP_IN_BAND);
           st->bob = (st->bob + g_nFrameStep * 2) & 0xFF;
-          EncodeCachedVecToActorDirCode(actor);
+          EncodeHitNormalToActorGroundCode(actor);
           RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
           continue;
         } else {
@@ -2421,7 +2421,7 @@ void Level14_UpdateActors(void) {
 
                 RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
                 FindGroundHeightBelow(&actor->posX, 0x1000);
-                EncodeCachedVecToActorDirCode(actor);
+                EncodeHitNormalToActorGroundCode(actor);
                 actor->groundCode |= ACTOR_GROUND_VALID;
               }
             }
@@ -2523,7 +2523,7 @@ void Level14_UpdateActors(void) {
           actor->rotZ += (angleDiff * cosDelta) / totalWeight;
 
           FindGroundHeightBelow(&actor->posX, 0x1000);
-          EncodeCachedVecToActorDirCode(actor);
+          EncodeHitNormalToActorGroundCode(actor);
 
           if (st->wanderTimer == 0x10) {
             actor->mode = SAVEHOST_HOVER;
@@ -4026,7 +4026,7 @@ void Level14_UpdateActors(void) {
         break;
       }
       FindGroundHeightBelow(&actor->posX, 0x10000);
-      EncodeCachedVecToActorDirCode(actor);
+      EncodeHitNormalToActorGroundCode(actor);
       break;
     }
 

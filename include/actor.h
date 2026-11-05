@@ -17,7 +17,7 @@
 /* Named actor-system entry points. */
 void BeginDragonRescue(Actor *actor);
 void DespawnActorRecord(Actor *actor);
-void EncodeCachedVecToActorDirCode(Actor *actor);
+void EncodeHitNormalToActorGroundCode(Actor *actor);
 int GetSoundVoiceStatusByOwner(Actor *actor, int sampleId);
 void HideActorRenderRecord(Actor *actor);
 void InitActorRenderDefaults(Actor *actor);

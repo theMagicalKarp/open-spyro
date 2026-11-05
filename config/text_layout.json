@@ -1661,7 +1661,7 @@
    "size": 784
   },
   {
-   "name": "EncodeCachedVecToActorDirCode",
+   "name": "EncodeHitNormalToActorGroundCode",
    "vram": 2147824592,
    "size": 416
   },

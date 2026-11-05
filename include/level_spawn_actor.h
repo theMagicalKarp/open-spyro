@@ -20,7 +20,7 @@ extern struct Actor *AllocActorRecordSlot(void);
 extern void InitActorRenderDefaults(struct Actor *actor);
 extern void InsertActorIntoSpatialGrid(struct Actor *actor);
 extern void HideActorRenderRecord(struct Actor *actor);
-extern void EncodeCachedVecToActorDirCode(struct Actor *actor);
+extern void EncodeHitNormalToActorGroundCode(struct Actor *actor);
 extern void DespawnActorRecord(struct Actor *actor);
 
 /* Collectible drop (types 0xE, 0xF, 0x53..0x57: life statue, life orb,

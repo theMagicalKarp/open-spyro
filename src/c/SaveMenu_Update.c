@@ -68,7 +68,7 @@ void SaveMenu_Update(void) {
           (((g_nSaveMenuHostToZ - g_nSaveMenuHostFromZ) * t) >> 13);
       TrackEntityYawTowardSpyro(ACT, 3, 0, YAW_HOLD_IN_BAND);
       FindGroundHeightBelow(&ACT->posX, 0x1000);
-      EncodeCachedVecToActorDirCode(ACT);
+      EncodeHitNormalToActorGroundCode(ACT);
       if (g_pSparxActor != 0) {
         a = LERP_ANGLE(g_nSaveMenuSparxToAngle, g_nSaveMenuSparxFromAngle, t);
         d = g_nSaveMenuSparxFromDist +
