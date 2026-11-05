@@ -86,11 +86,11 @@ void Credits_Draw(void) {
     }
   }
   {
-    int *q = g_apSpritePrimQueue;
+    int *q = (int *)g_apSpritePrimQueue;
     char *ot;
     q[0] = 0;
     EnqueuePendingSpritePrims();
-    ot = (char *)q - 0x2400;
+    ot = (char *)q - 0x2400; /* the frame scratch arena (g_apMainDrawEntityList) */
     FillWord(ot, 0, 0x900);
     RasterizeSpritePrimQueue();
     FillBlock16(ot, 0, 0x1C00);

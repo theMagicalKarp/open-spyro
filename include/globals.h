@@ -309,7 +309,7 @@ extern pointer switchdataD_800115bc;    /* 0x800115bc */
 extern pointer switchdataD_800115dc;    /* 0x800115dc */
 extern pointer switchdataD_800119d8;    /* 0x800119d8 */
 extern pointer switchdataD_80011be4;    /* 0x80011be4 */
-extern char g_szNullPlaceholder[7];     /* 0x80011c98 */
+extern char g_szNullPlaceholder[7];     /* 0x80011c98: "<NULL>", printed for a NULL %s */
 extern pointer switchdataD_80011e70;    /* 0x80011e70 */
 extern pointer switchdataD_80011f7c;    /* 0x80011f7c */
 extern pointer switchdataD_800120c4;    /* 0x800120c4 */

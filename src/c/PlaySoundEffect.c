@@ -194,7 +194,7 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
                         ATAN_ANGLE8) &
                     0xFF) &
                 0xFF,
-            range, &g_aSpuVoiceRows[voice].anPanCache[0]);
+            range, (short *)&g_aSpuVoiceRows[voice].anPanCache[0]);
         break;
       }
       }

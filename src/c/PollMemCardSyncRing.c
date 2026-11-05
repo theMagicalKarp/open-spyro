@@ -8,7 +8,8 @@
  */
 
 void PollMemCardSyncRing(void) {
-  int r = MemCardSync(1, &g_anMemCardSyncRing[4], &g_anMemCardSyncRing[5]);
+  int r = MemCardSync(1, (int *)&g_anMemCardSyncRing[4],
+                      (int *)&g_anMemCardSyncRing[5]);
   if (r == 0) {
     return;
   }

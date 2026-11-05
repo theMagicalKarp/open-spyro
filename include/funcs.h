@@ -1253,7 +1253,7 @@ int sprintf(char *buf, char *fmt, ...);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined1 *memmove(undefined1 *param_1, undefined1 *param_2, int param_3);
 
-/* 0x8006389c: PSn00bSDK-style _print: iterates a null-terminated string and calls WriteChar per byte. NULL input is replaced by g_szNullPlaceholder (likely "(null)"). No newline appended. Building block for WritePrintf's %s. */
+/* 0x8006389c: PSn00bSDK-style _print: iterates a null-terminated string and calls WriteChar per byte. NULL input is replaced by g_szNullPlaceholder ("<NULL>"). No newline appended. Building block for WritePrintf's %s. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined WriteString(byte *param_1);
 

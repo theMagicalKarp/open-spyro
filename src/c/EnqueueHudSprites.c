@@ -144,10 +144,10 @@ void EnqueueHudSprites(void) {
         scratch[0] = shade;
         scratch[1] = shade;
         scratch[2] = shade;
-        EmitTexturedQuad((short *)(g_abHudButterflyRingBlock + 0x4C2 + i * 8),
-                         g_abHudButterflyRingBlock +
-                             0x562, /* uv words (byte block: warns) */
-                         (unsigned int *)scratch);
+        EmitTexturedQuad(
+            (short *)(g_abHudButterflyRingBlock + 0x4C2 + i * 8),
+            (unsigned int *)(g_abHudButterflyRingBlock + 0x562), /* uv words */
+            (unsigned int *)scratch);
         i += 1;
       } while (i < BUTTERFLY_COUNT);
     }

@@ -546,7 +546,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       READ_STICK(stickX, stickY);
       relYaw = (SPY[SPY_BODY_YAW] - g_anCameraEulerYawBlock[0]) & 0xFFF;
       cosYaw = LookupCosine(relYaw);
-      ramp = (int *)g_abSpyroEulerRateRampSigned;
+      ramp = (signed char *)g_abSpyroEulerRateRampSigned;
       OPAQUE(ramp);
       d = LookupSine(relYaw);
       rateMin = ramp[0];

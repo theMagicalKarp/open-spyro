@@ -99,7 +99,7 @@ void Initialize(void) {
   LoadAssetDirectoryFromCd();
   {
     register int stallTicks asm("$16") = CD_STALL_TIMEOUT_TICKS;
-    lba = g_anCdBaseLbaBlock;
+    lba = (int *)g_anCdBaseLbaBlock;
     archOff = g_anWorldArchiveOffsetBlock;
     {
       register int lba1 asm("$4") = lba[0];
