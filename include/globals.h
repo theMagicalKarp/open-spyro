@@ -427,7 +427,7 @@ extern void *g_pOtMergedChainHead;                           /* 0x8006fcec */
 extern void *g_pOtMergedChainTail;                           /* 0x8006fcf0 */
 extern void *g_pOtDepthBinHead0;                             /* 0x8006fcf4: the ordering table (0x1C00 bytes) and the frame scratch lists after it; its initial EXE contents are the boot title art as a run list (AddBiasToColorRuns, Initialize) */
 extern void *g_pOtDepthBinTail0;                             /* 0x8006fcf8 */
-extern void *g_apActiveActorList[2];                   /* 0x800700f4 */
+extern void *g_apActiveActorList[2];                   /* 0x800700f4: NULL-terminated pointer list of the actors updated this frame (BuildActiveActorList; TickActorAnims) */
 extern int g_anPortalDeferredTriStack[64];                    /* 0x800704f4 */
 extern int g_anActorVertSzOverflow[256];                     /* 0x800705f4 */
 extern int g_anActorDepthCuedVtxColor[32];                   /* 0x80070df4 */
@@ -575,7 +575,7 @@ extern int g_nCameraLosClear;                /* 0x800756b8 */
 extern void (*g_pfnLevelAdvanceEmitList)(int frameStep); /* 0x800756bc */
 extern int g_nLetterboxBarHeight;            /* 0x800756c0 */
 extern int g_nGemTallyIconCount;             /* 0x800756c8: gems picked up this level visit (CollectPickupActor logs each type in g_abGemTallyIconUvTable[n & 0x1F]); flight bonuses add 0xC; the tally flies in up to 0x20 */
-extern int g_nFrameStep;                     /* 0x800756cc */
+extern int g_nFrameStep;                     /* 0x800756cc: VBlanks the last frame took, clamped to 2..4 (main); the per-frame time step every tick scales by */
 extern int g_nPortalTransitionActive;           /* 0x800756d0: set by a portal exit or hub return, cleared when TickLevelTransitionStream finishes; Spyro takes the scripted arrival (the hub portal glide-out, or the exit nudge) instead of the plain level spawn, and cannot bonk meanwhile */
 extern int g_nSubMenuScrollDelta;            /* 0x800756d4 */
 extern int g_nPadIsDualshockFlag;            /* 0x800756d8 */
@@ -621,7 +621,7 @@ extern int g_nPauseMenuSubstate;             /* 0x800757c8: pause menu page, enu
 extern int g_nSubMenuScrollOffset;           /* 0x800757cc */
 extern int g_nPulseRumbleTimer;              /* 0x800757d0 */
 extern unsigned int g_dwSkyFadeColor;          /* 0x800757d4 */
-extern int g_nGamestate;                     /* 0x800757d8 */
+extern int g_nGamestate;                     /* 0x800757d8: enum Gamestate (gamestate.h): selects GamestateUpdate / GamestateDraw handlers */
 extern struct PadSubstep *g_pPadSubstepState; /* 0x800757e0: this substep's g_anPadSubstepRing entry (pad.h) */
 extern void *g_pCollisionHitActor;           /* 0x800757e4 */
 extern int g_nGameOverLevelIndex;       /* 0x800757e8: g_nLevelIndex at game over; picks the continue spawn in g_anGameOverRespawnPosTable / g_abGameOverRespawnYawTable (BuildLoadedLevelRuntime) */
@@ -635,9 +635,9 @@ extern int g_nSpyroDrawSuppressed;           /* 0x80075814: nonzero skips Spyro'
 extern int g_nCreditsReturnLevelId;          /* 0x80075818 */
 extern int *g_pOtActiveDepthSlot;            /* 0x8007581c */
 extern void *g_pOtDepthBinArrayBase;         /* 0x80075820 */
-extern void *g_pEmitListBase;                /* 0x80075824 */
+extern void *g_pEmitListBase;                /* 0x80075824: the emit list RasterizeEmitList walks (0x20-byte records, opcode 0xFF ends it) */
 extern struct Actor *g_pActorListBase;       /* 0x80075828: the level actor pool (0x58-byte Actor records, mode 0xFF ends it) */
-extern int g_nExtraLives;                    /* 0x8007582c */
+extern int g_nExtraLives;                    /* 0x8007582c: spare lives */
 extern int g_nLevelKeyState;                 /* 0x80075830: the level key (enum LevelKeyState): none, carried (key 173 picked up), locked chest (174) opened, its reward collected; shown as HUD counter 4 */
 extern int g_nCameraShakePeakAmplitude;      /* 0x80075848 */
 extern int g_nPulseRumbleAmount;             /* 0x8007584c */
@@ -649,7 +649,7 @@ extern int g_nPadLatchOpen;                    /* 0x80075868: low byte 0 while G
 extern int g_nLevelGemsAtEntry;              /* 0x8007587c: g_anLevelGemsCollected[level] on entry; the tally shows the difference */
 extern int g_nLevelSelectModeActive;         /* 0x80075880 */
 extern int g_nDemoExitFadeFrame;                /* 0x80075884: demo-end fade frame, 0 until the demo ends; at 0x10 the demo tears down */
-extern DRAWENV *g_pActiveFrameDrawEnv;       /* 0x80075888 */
+extern DRAWENV *g_pActiveFrameDrawEnv;       /* 0x80075888: the draw env of the buffer being built this frame (&g_FrameDrawEnv0 or 1) */
 extern int g_nCdStallWatchdogTicks;          /* 0x8007588c */
 extern struct Actor *g_pActorPoolDynBase;    /* 0x80075890: end of the loaded actors, start of the dynamically spawned ones */
 extern int g_nCameraSpringReengageCountdown; /* 0x80075894 */
@@ -693,7 +693,7 @@ extern int g_nVsyncFramePaceAnchor;          /* 0x80075950 */
 extern int g_nVsyncFrameEndCount;            /* 0x80075954 */
 extern int g_nSpyroPitchRateAccum;           /* 0x80075960 */
 extern int g_nLevelIndex;               /* 0x80075964: the active level as 0..35, (id / 10 - 1) * 6 + id % 10; indexes every per-level table */
-extern int g_nActiveLevelId;                 /* 0x8007596c */
+extern int g_nActiveLevelId;                 /* 0x8007596c: the loaded level's id (level_id.h): id / 10 is the world, id % 10 the level in it */
 extern int g_nSpyroIdleAnimSeqCursor;        /* 0x80075970 */
 
 /* ---- .bss ---- */
@@ -703,7 +703,7 @@ extern int g_anActorShadowTexWords[2];                  /* 0x80075ef8 */
 extern void *g_pEntityListEnd;                          /* 0x80075f00 */
 extern unsigned char g_abSpuCommonAttr[76];                      /* 0x80075f08 */
 extern void *g_pLevelSampleBankEntries;                 /* 0x800761d0 */
-extern void *g_pLevelSampleBankHeader;                  /* 0x800761d4 */
+extern void *g_pLevelSampleBankHeader;                  /* 0x800761d4: the level's sound-id table, one byte per slot (level_sfx.h, LEVEL_SFX) */
 extern int g_nMusicVolumeFadeTarget;                    /* 0x800761d8 */
 extern int g_nSoundMasterVolume;                        /* 0x8007622c */
 extern int g_nMusicVolumeFadeStep;                      /* 0x80076230 */
@@ -743,7 +743,7 @@ extern int g_nDragonAssetOffset;                        /* 0x80076c20 */
 extern int g_nDragonAssetSize;                          /* 0x80076c24 */
 extern int g_anActorMeshOffsetList;                     /* 0x80076c50: file offsets (in the world data-ext chunk) of the models a level or cutscene streams in, 0-terminated; in a level [0] is Spyro's animation stream (InstallSpyroAnimStream) and [1..] are actor models (RelocateActorMeshHeader) */
 extern int g_anWorldToCameraRotMtx[5];                  /* 0x80076dd0 */
-extern int g_anCameraPos[3];                            /* 0x80076df8 */
+extern int g_anCameraPos[3];                            /* 0x80076df8: camera world position */
 extern int g_anCameraEyeTarget[3];                      /* 0x80076e04 */
 extern short g_nCameraEulerRoll;                        /* 0x80076e1c */
 extern short g_nCameraEulerPitch;                       /* 0x80076e1e */
@@ -829,10 +829,10 @@ extern short g_anBillboardBasisVectors[9];              /* 0x800770e0 */
 extern int g_nLightSweepAngle;                          /* 0x800770f4 */
 extern unsigned char g_abWorldRotatingBillboardTable[128];       /* 0x80077114 */
 extern int g_anLevelDragonsRescued[36];                 /* 0x800772d8 */
-extern int g_anCollisionHitNormal[3];                    /* 0x80077368 */
-extern unsigned int g_dwPadPressed;                             /* 0x80077378 */
+extern int g_anCollisionHitNormal[3];                    /* 0x80077368: surface normal (1.12) of the last world/actor collision hit */
+extern unsigned int g_dwPadPressed;                             /* 0x80077378: buttons newly pressed since the last update (PollPadAndDistributeInput edge-detects against g_dwPadHeld) */
 extern unsigned int g_dwPadReleased;                            /* 0x8007737c */
-extern unsigned int g_dwPadHeld;                                /* 0x80077380 */
+extern unsigned int g_dwPadHeld;                                /* 0x80077380: buttons held at the last VBlank poll */
 extern int g_nPadType;                                  /* 0x80077384: enum PadType (pad.h) */
 extern int g_nPadStickActiveFlag;                       /* 0x80077388 */
 extern unsigned int g_dwPadAnalogCalibrated;                    /* 0x8007738c */
