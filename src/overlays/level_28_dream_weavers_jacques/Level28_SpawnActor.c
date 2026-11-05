@@ -225,7 +225,7 @@ Actor *Level28_SpawnActor(int type, Actor *parent) {
     st->spin[2] = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
-    if ((unsigned int)((unsigned short)rec->type - 0x135) < 3) {
+    if ((unsigned int)((unsigned short)rec->type - ACTOR_TYPE_SPARKLE_SHARD) < 3) {
       *(int *)&rec->tint0 = ACTOR_TINT_NEUTRAL;
       rec->renderList |= ACTOR_RENDER_SECONDARY;
     }
