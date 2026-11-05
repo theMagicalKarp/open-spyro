@@ -95,6 +95,13 @@ enum ButterflyMode {
   BUTTERFLY_CIRCLE = 1,  /* Sparx is coming to eat it: circles Spyro */
 };
 
+/* A butterfly calls Sparx (spawning him if Spyro has none) while Spyro is
+ * below full health and within CALL_RANGE (2D) / CALL_DZ (height) of it; a
+ * fluttering one turns back once LEASH from its spawn point. */
+#define BUTTERFLY_CALL_RANGE 2400
+#define BUTTERFLY_CALL_DZ 1800
+#define BUTTERFLY_LEASH 2000
+
 /* ->mode of a seed pod (ACTOR_TYPE_SEED_POD, SeedPodState). */
 enum SeedPodMode {
   SEEDPOD_CLOSED = 0, /* struck: spawns its prize (COLLECT_INERT) and opens */

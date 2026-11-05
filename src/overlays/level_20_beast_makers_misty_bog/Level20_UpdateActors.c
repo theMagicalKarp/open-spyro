@@ -191,11 +191,11 @@ void Level20_UpdateActors(void) {
 
       EBB_BREAK();
       st = actor->state;
-      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, (int *)SPY_FROM_SPARX(base)) < 0x960) {
+      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, (int *)SPY_FROM_SPARX(base)) < BUTTERFLY_CALL_RANGE) {
         int height = actor->posZ - actor->floorOffset;
         int drop = height - SPY.posZ;
 
-        if (drop > 0 ? drop < 0x708 : (SPY.posZ - height) < 0x708) {
+        if (drop > 0 ? drop < BUTTERFLY_CALL_DZ : (SPY.posZ - height) < BUTTERFLY_CALL_DZ) {
           if (g_pSparxActor == 0) {
             if (g_nSparxHealth >= SPARX_GONE) {
               Actor *sparx = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
@@ -284,7 +284,7 @@ void Level20_UpdateActors(void) {
               }
             }
 
-            if (ApproxDist2D(&actor->posX, st->home) >= 0x7D1) {
+            if (ApproxDist2D(&actor->posX, st->home) > BUTTERFLY_LEASH) {
               st->heading = ArcTan2(st->home[0] - actor->posX,
                                           st->home[1] - actor->posY, ATAN_ANGLE8);
               st->headingTimer = 0x28;

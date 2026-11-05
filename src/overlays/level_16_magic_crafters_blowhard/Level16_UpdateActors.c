@@ -328,10 +328,10 @@ void Level16_UpdateActors(void) {
     case ACTOR_TYPE_BUTTERFLY: {
       ButterflyState *st = (ButterflyState *)actor->state;
 
-      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
+      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < BUTTERFLY_CALL_RANGE) {
         int actorZ = actor->posZ - actor->floorOffset;
 
-        if (ABS2(actorZ - SPY.posZ) < 1800) {
+        if (ABS2(actorZ - SPY.posZ) < BUTTERFLY_CALL_DZ) {
           if (g_pSparxActor == 0) {
             if (SPY.sparxHealth >= SPARX_GONE) {
               g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
@@ -414,7 +414,7 @@ void Level16_UpdateActors(void) {
             st->headingTimer = RandomIntInRange(30, 80);
           }
 
-          if (ApproxDist2D(&actor->posX, st->home) > 2000) {
+          if (ApproxDist2D(&actor->posX, st->home) > BUTTERFLY_LEASH) {
             int angle = ArcTan2(st->home[0] - actor->posX,
                                       st->home[1] - actor->posY, ATAN_ANGLE8);
 
@@ -1002,10 +1002,10 @@ void Level16_UpdateActors(void) {
           }
         }
 
-        if (dist < 1434) {
-          int zDist = (SPY.posZ - 356) - actor->posZ;
+        if (dist < SPARX_FETCH_RANGE) {
+          int zDist = (SPY.posZ - SPYRO_RADIUS) - actor->posZ;
 
-          if (ABS2(zDist) < 512) {
+          if (ABS2(zDist) < SPARX_FETCH_DZ) {
 
             if (g_pSparxActor != 0) {
 
@@ -1128,10 +1128,10 @@ void Level16_UpdateActors(void) {
           }
         }
 
-        if (dist < 1434) {
-          int zDist = (((int *)&SPY.posX)[2] - 356) - actor->posZ;
+        if (dist < SPARX_FETCH_RANGE) {
+          int zDist = (((int *)&SPY.posX)[2] - SPYRO_RADIUS) - actor->posZ;
 
-          if (ABS2(zDist) < 512) {
+          if (ABS2(zDist) < SPARX_FETCH_DZ) {
 
             if (g_pSparxActor != 0) {
 
