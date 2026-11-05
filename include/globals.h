@@ -674,7 +674,7 @@ extern int g_nPadActAlignedFlag;             /* 0x800758e0 */
 extern void (*g_pfnLevelEmitParticles)(int count, int type, void *pos, int effectArg);
 extern int g_nSparxFoodCount;                /* 0x800758e8: type-15 pickups collected; every 20 become an extra life (UpdateHudCounters) */
 extern int g_nLevelSelectWorldIndex;         /* 0x800758ec */
-extern int g_nLevelSelectSubIndex;           /* 0x800758f0 */
+extern int g_nLevelSelectSubIndex;           /* 0x800758f0: level slot (id % 10) last committed in level-select (warp) mode (HandleLevelSelectInput); write-only, nothing reads it back (xref audit) */
 extern int g_nPortalSkyPitchTilt;      /* 0x800758fc: portal-surface view tilt, +2 a frame (DrawPortalsAndSky) */
 extern int g_nHitRumbleTimer;                /* 0x80075904 */
 extern int g_nCameraShakeDuration;           /* 0x8007590c */
@@ -839,7 +839,7 @@ extern int g_nPadStickActiveFlag;                       /* 0x80077388 */
 extern unsigned int g_dwPadAnalogCalibrated;                    /* 0x8007738c */
 extern int g_nPadAllInputIdleFlag;                      /* 0x80077390 */
 extern int g_nPadDirectionalIdleFlag;                   /* 0x80077394 */
-extern unsigned int g_dwPadAnalogRawSnapshot;                   /* 0x80077398 */
+extern unsigned int g_dwPadAnalogRawSnapshot;                   /* 0x80077398: raw report bytes 4..7 (both sticks) latched when an analog pad is first seen, between the calibration reset and FinalizePadCalibration; write-only (xref audit) */
 extern int g_anPadSubstepRing[24];                      /* 0x800773bc */
 extern int g_anLevelGemsCollected[36];                  /* 0x80077420 */
 extern int g_nCurrentMusicTrack;                        /* 0x800774b0 */
@@ -952,7 +952,7 @@ extern int g_anCameraActiveTargetParams[6];             /* 0x80078668 */
 extern unsigned char g_abFlightBonusPaid[30];             /* 0x80078680: per flight level, 5 bytes: [0..3] target-class bonus paid, [4] all-clear bonus paid (HandleFlightResults); saved */
 extern unsigned char g_abPadRawReport[34];                       /* 0x800786a0 */
 extern int g_anSpyroFlameAnchorPos[3];             /* 0x800786c8 */
-extern unsigned char g_abSpyroFlameAnchorEuler[3];          /* 0x800786d4 */
+extern unsigned char g_abSpyroFlameAnchorEuler[3];          /* 0x800786d4: copy of g_abSpyroPersistentEuler taken when the flame anchor latches (TickSpyroAttackEffects); write-only, the anchor matrix g_anSpyroFlameAnchorMtx is what the flame reads (xref audit) */
 extern int g_anSpyroFlameRibbonTexWords[4];        /* 0x800786d8 */
 extern unsigned char g_abSpyroFlameSlotAge[8];              /* 0x800786e8 */
 extern unsigned char g_abSpyroFlameSlotEndAge[8];           /* 0x800786f0 */
@@ -973,7 +973,7 @@ extern unsigned char g_abWorldSparkleParticleTable[576];         /* 0x80078800 *
  * (Portal.pSky). Its colour word is g_dwWorldFogColor. */
 extern int g_nSkyChunkCount;                /* 0x80078a40 */
 extern void *g_pSkyChunkArray;              /* 0x80078a44 */
-extern int g_nSkyZoneListCount;                /* 0x80078a48 */
+extern int g_nSkyZoneListCount;                /* 0x80078a48: SkyHeader.zoneListCount of the active sky; only ever written by the whole-header copies; no reader, EmitSkyMesh is handed the zone index (xref audit) */
 extern void *g_pSkyZoneLists;              /* 0x80078a4c */
 extern unsigned int g_dwWorldFogColor;                          /* 0x80078a50 */
 extern int g_anSpyroWorldPos[3];                        /* 0x80078a58 */
@@ -1033,7 +1033,7 @@ extern int g_nSpyroHazardSinkDepth;                         /* 0x80078bc0 */
 extern int g_nSpyroFirstContactSurfaceType;                 /* 0x80078bc4 */
 extern int g_nSpyroTriggerCurrentEventId;               /* 0x80078bc8 */
 extern int g_nSpyroTriggerEntryZ;                       /* 0x80078bcc */
-extern void *g_pSpyroLiftRegionData;                 /* 0x80078bd0 */
+extern void *g_pSpyroLiftRegionData;                 /* 0x80078bd0: trigger record of the lift region Spyro entered (DispatchSpyroTriggerEvent, TRIGGER_LIFT); write-only, unlike g_pSpyroHazardRegionData nothing reads it back (xref audit) */
 extern int g_anSpyroFirstContactPoint[3];               /* 0x80078bd4 */
 extern int g_anSpyroFirstContactNormal[3];              /* 0x80078be0 */
 extern int g_nSpyroScriptedMoveMode;                    /* 0x80078bec */
@@ -1296,7 +1296,7 @@ extern unsigned short g_anGameOverCameraEulerU[]; /* 0x800752d8 g_anGameOverCame
 extern unsigned char g_abWorldTitleGlyphBlock[]; /* 0x8007555c: held-base view (A240) */
 extern int g_nLevelVortexSeen1; /* 0x80075670: a loot vortex (levels 33/34, LootVortexState.seen 1) was entered this visit; read as g_nCutsceneId[1] */
 extern int g_nLevelVortexSeen2; /* 0x80075674: the same for seen 2 (g_nCutsceneId[2]) */
-extern int g_nLevelLoadUnreadWord; /* 0x80075698 */
+extern int g_nLevelLoadUnreadWord; /* 0x80075698: zeroed on every level load (BuildLoadedLevelRuntime); nothing else touches it (xref audit) */
 extern void (*g_pfnActorCutsceneSubstateUpdate)(void); /* 0x8007574c: per-level handler for the other 0xC substates (ApplyPerLevelGlobalsTable) */
 extern struct Actor *g_pLockedChestReward; /* 0x80075758: the reward the opened locked chest dropped (key state 3 once collected) */
 extern char *g_pCreditsScratchBuf; /* 0x80075768: credits CD page scratch / draw buffers (credits.h) */
@@ -1308,7 +1308,7 @@ extern void (*g_pfnLevelHandleFlightResults)(int reload); /* 0x800757a8 */
 extern char *g_pCreditsScrollHeader; /* 0x800757bc: credits camera/scroll track (credits.h) */
 extern int g_nWorldFloorVisZone; /* 0x80075844 */
 extern int g_bLevelPhasedBossKilled; /* 0x80075850 */
-extern int g_bLevelBossDefeated; /* 0x80075854: cleared on level load */
+extern int g_bLevelBossDefeated; /* 0x80075854: cleared on level load; set to 1 when Metalhead (Level22_UpdateActors) finishes dying; write-only, nothing reads it (xref audit) */
 extern int g_anLevelRunnerArrived; /* 0x80075870 */
 extern int g_nLevelRunnerArrivedGoal1; /* 0x80075874 */
 extern void (*g_pfnLevelOnSaveMenuExit)(void); /* 0x800758a8 */
@@ -1379,9 +1379,9 @@ extern int g_nActorCutsceneCamHeightStart; /* 0x80077828: camera height start (b
 extern int g_nActorCutsceneCamYawGoal; /* 0x80077838: camera yaw goal     (block +0x4c) */
 extern int g_nActorCutsceneCamRadiusGoal; /* 0x8007783c: camera radius goal  (block +0x50) */
 extern int g_nActorCutsceneCamHeightGoal; /* 0x80077840: camera height goal  (block +0x54) */
-extern int g_nSpawnAnchorDragonsRescued; /* 0x8007788c */
-extern int g_nSpawnAnchorGemsCollected; /* 0x80077890 */
-extern int g_nSpawnAnchorReserved; /* 0x80077894 */
+extern int g_nSpawnAnchorDragonsRescued; /* 0x8007788c: level dragons-rescued count snapshotted with the spawn anchor (SetSpawnAnchorFromActor); write-only (xref audit) */
+extern int g_nSpawnAnchorGemsCollected; /* 0x80077890: level gem count snapshotted with the spawn anchor; write-only (xref audit) */
+extern int g_nSpawnAnchorReserved; /* 0x80077894: zeroed with the spawn-anchor snapshot; write-only (xref audit) */
 extern int g_nLevelSpawnPosX; /* 0x800778d8 */
 extern int g_nLevelSpawnPosY; /* 0x800778dc */
 extern int g_anLevelSpawnPosZBlock[]; /* 0x800778e0 */
