@@ -1852,12 +1852,12 @@ glabel BuildLoadedLevelRuntime
     /* 43A4 80013BA4 455A000C */  jal        FillWord
     /* 43A8 80013BA8 08001026 */   addiu     $s0, $s0, 0x8
     /* 43AC 80013BAC 0000028E */  lw         $v0, 0x0($s0)
-    /* 43B0 80013BB0 0780013C */  lui        $at, %hi(g_anEntitySpikeTexWords)
-    /* 43B4 80013BB4 F85E22AC */  sw         $v0, %lo(g_anEntitySpikeTexWords)($at)
+    /* 43B0 80013BB0 0780013C */  lui        $at, %hi(g_anActorShadowTexWords)
+    /* 43B4 80013BB4 F85E22AC */  sw         $v0, %lo(g_anActorShadowTexWords)($at)
     /* 43B8 80013BB8 0400028E */  lw         $v0, 0x4($s0)
     /* 43BC 80013BBC 08001026 */  addiu      $s0, $s0, 0x8
-    /* 43C0 80013BC0 0780013C */  lui        $at, %hi(g_anEntitySpikeTexWords + 0x4)
-    /* 43C4 80013BC4 FC5E22AC */  sw         $v0, %lo(g_anEntitySpikeTexWords + 0x4)($at)
+    /* 43C0 80013BC0 0780013C */  lui        $at, %hi(g_anActorShadowTexWords + 0x4)
+    /* 43C4 80013BC4 FC5E22AC */  sw         $v0, %lo(g_anActorShadowTexWords + 0x4)($at)
     /* 43C8 80013BC8 0800028E */  lw         $v0, 0x8($s0)
     /* 43CC 80013BCC 0880013C */  lui        $at, %hi(g_anLevelSpriteTexWordPairs)
     /* 43D0 80013BD0 0C8522AC */  sw         $v0, %lo(g_anLevelSpriteTexWordPairs)($at)
@@ -8756,7 +8756,7 @@ glabel ComposeFrameScene
     /* 9ED0 800196D0 00000000 */   nop
     /* 9ED4 800196D4 8B8A000C */  jal        RasterizeSpritePrimQueue
     /* 9ED8 800196D8 00000000 */   nop
-    /* 9EDC 800196DC E367010C */  jal        DrawEntityDirectionalSpikes
+    /* 9EDC 800196DC E367010C */  jal        DrawActorDropShadows
     /* 9EE0 800196E0 00000000 */   nop
     /* 9EE4 800196E4 0780023C */  lui        $v0, %hi(g_nSpyroDrawSuppressed)
     /* 9EE8 800196E8 1458428C */  lw         $v0, %lo(g_nSpyroDrawSuppressed)($v0)
@@ -12730,7 +12730,7 @@ glabel DragonRescue_Draw
     /* D964 8001D164 00000000 */   nop
     /* D968 8001D168 8B8A000C */  jal        RasterizeSpritePrimQueue
     /* D96C 8001D16C 00000000 */   nop
-    /* D970 8001D170 E367010C */  jal        DrawEntityDirectionalSpikes
+    /* D970 8001D170 E367010C */  jal        DrawActorDropShadows
     /* D974 8001D174 00000000 */   nop
     /* D978 8001D178 B18E000C */  jal        RasterizeSpyroModel
     /* D97C 8001D17C 00000000 */   nop
@@ -12817,7 +12817,7 @@ glabel DragonRescue_Draw
     /* DAAC 8001D2AC 00000000 */   nop
     /* DAB0 8001D2B0 8B8A000C */  jal        RasterizeSpritePrimQueue
     /* DAB4 8001D2B4 00000000 */   nop
-    /* DAB8 8001D2B8 E367010C */  jal        DrawEntityDirectionalSpikes
+    /* DAB8 8001D2B8 E367010C */  jal        DrawActorDropShadows
     /* DABC 8001D2BC 00000000 */   nop
     /* DAC0 8001D2C0 2E750008 */  j          .L8001D4B8
     /* DAC4 8001D2C4 00000000 */   nop
@@ -13024,7 +13024,7 @@ glabel DragonRescue_Draw
     /* DDB8 8001D5B8 00000000 */   nop
     /* DDBC 8001D5BC 8B8A000C */  jal        RasterizeSpritePrimQueue
     /* DDC0 8001D5C0 00000000 */   nop
-    /* DDC4 8001D5C4 E367010C */  jal        DrawEntityDirectionalSpikes
+    /* DDC4 8001D5C4 E367010C */  jal        DrawActorDropShadows
     /* DDC8 8001D5C8 00000000 */   nop
   .L8001D5CC:
     /* DDCC 8001D5CC B18E000C */  jal        RasterizeSpyroModel
@@ -15341,8 +15341,8 @@ glabel BuildActorDrawList
   .L8001F744:
     /* FF44 8001F744 0000C0AF */  sw         $zero, 0x0($fp)
     /* FF48 8001F748 12080000 */  mflo       $at
-    /* FF4C 8001F74C 0780023C */  lui        $v0, %hi(g_anEntitySpikeTexWords)
-    /* FF50 8001F750 F85E4224 */  addiu      $v0, $v0, %lo(g_anEntitySpikeTexWords)
+    /* FF4C 8001F74C 0780023C */  lui        $v0, %hi(g_anActorShadowTexWords)
+    /* FF50 8001F750 F85E4224 */  addiu      $v0, $v0, %lo(g_anActorShadowTexWords)
     /* FF54 8001F754 080041AC */  sw         $at, 0x8($v0)
     /* FF58 8001F758 0780013C */  lui        $at, %hi(g_anStaticRegSaveArea)
     /* FF5C 8001F75C D87D2124 */  addiu      $at, $at, %lo(g_anStaticRegSaveArea)
@@ -16611,8 +16611,8 @@ glabel BuildSecondaryActorDrawList
     /* 11128 80020928 24003DAC */  sw         $sp, 0x24($at)
     /* 1112C 8002092C 28003EAC */  sw         $fp, 0x28($at)
     /* 11130 80020930 2C003FAC */  sw         $ra, 0x2C($at)
-    /* 11134 80020934 0780013C */  lui        $at, %hi(g_anEntitySpikeTexWords)
-    /* 11138 80020938 F85E2124 */  addiu      $at, $at, %lo(g_anEntitySpikeTexWords)
+    /* 11134 80020934 0780013C */  lui        $at, %hi(g_anActorShadowTexWords)
+    /* 11138 80020938 F85E2124 */  addiu      $at, $at, %lo(g_anActorShadowTexWords)
     /* 1113C 8002093C 0800218C */  lw         $at, 0x8($at)
     /* 11140 80020940 07801E3C */  lui        $fp, %hi(g_pOtDepthBinHead0)
     /* 11144 80020944 F4FCDE27 */  addiu      $fp, $fp, %lo(g_pOtDepthBinHead0)
@@ -16991,8 +16991,8 @@ glabel BuildSecondaryActorDrawList
   .L80020EE0:
     /* 116E0 80020EE0 0000C0AF */  sw         $zero, 0x0($fp)
     /* 116E4 80020EE4 12080000 */  mflo       $at
-    /* 116E8 80020EE8 0780023C */  lui        $v0, %hi(g_anEntitySpikeTexWords)
-    /* 116EC 80020EEC F85E4224 */  addiu      $v0, $v0, %lo(g_anEntitySpikeTexWords)
+    /* 116E8 80020EE8 0780023C */  lui        $v0, %hi(g_anActorShadowTexWords)
+    /* 116EC 80020EEC F85E4224 */  addiu      $v0, $v0, %lo(g_anActorShadowTexWords)
     /* 116F0 80020EF0 080041AC */  sw         $at, 0x8($v0)
     /* 116F4 80020EF4 0780013C */  lui        $at, %hi(g_anStaticRegSaveArea)
     /* 116F8 80020EF8 D87D2124 */  addiu      $at, $at, %lo(g_anStaticRegSaveArea)
@@ -18941,8 +18941,8 @@ glabel RasterizeSpritePrimQueue
     /* 13264 80022A64 07801F3C */  lui        $ra, %hi(g_pOtDepthBinHead0)
     /* 13268 80022A68 F4FCFF27 */  addiu      $ra, $ra, %lo(g_pOtDepthBinHead0)
     /* 1326C 80022A6C 0024FF23 */  addi       $ra, $ra, 0x2400 /* handwritten instruction */
-    /* 13270 80022A70 07801D3C */  lui        $sp, %hi(g_anEntitySpikeTexWords)
-    /* 13274 80022A74 F85EBD27 */  addiu      $sp, $sp, %lo(g_anEntitySpikeTexWords)
+    /* 13270 80022A70 07801D3C */  lui        $sp, %hi(g_anActorShadowTexWords)
+    /* 13274 80022A74 F85EBD27 */  addiu      $sp, $sp, %lo(g_anActorShadowTexWords)
     /* 13278 80022A78 0800BD8F */  lw         $sp, 0x8($sp)
     /* 1327C 80022A7C 0780013C */  lui        $at, %hi(g_anWorldToCameraRotMtx)
     /* 13280 80022A80 D06D2124 */  addiu      $at, $at, %lo(g_anWorldToCameraRotMtx)
@@ -20044,8 +20044,8 @@ glabel RasterizeSpritePrimQueue
     /* 14270 80023A70 C28A0008 */  j          .L80022B08
     /* 14274 80023A74 040062AC */   sw        $v0, 0x4($v1)
   .L80023A78:
-    /* 14278 80023A78 0780013C */  lui        $at, %hi(g_anEntitySpikeTexWords)
-    /* 1427C 80023A7C F85E2124 */  addiu      $at, $at, %lo(g_anEntitySpikeTexWords)
+    /* 14278 80023A78 0780013C */  lui        $at, %hi(g_anActorShadowTexWords)
+    /* 1427C 80023A7C F85E2124 */  addiu      $at, $at, %lo(g_anActorShadowTexWords)
     /* 14280 80023A80 08003DAC */  sw         $sp, 0x8($at)
     /* 14284 80023A84 0780013C */  lui        $at, %hi(g_anStaticRegSaveArea)
     /* 14288 80023A88 D87D2124 */  addiu      $at, $at, %lo(g_anStaticRegSaveArea)
@@ -81389,11 +81389,11 @@ endlabel DrawSpyroDropShadow
 /* Handwritten function */
 .endif
 
-.section .text.DrawEntityDirectionalSpikes, "ax"
-.ifndef HAVE_C_DrawEntityDirectionalSpikes
-nonmatching DrawEntityDirectionalSpikes, 0x4E4
+.section .text.DrawActorDropShadows, "ax"
+.ifndef HAVE_C_DrawActorDropShadows
+nonmatching DrawActorDropShadows, 0x4E4
 
-glabel DrawEntityDirectionalSpikes
+glabel DrawActorDropShadows
     /* 4A78C 80059F8C 0780013C */  lui        $at, %hi(g_anWorldToCameraRotMtx)
     /* 4A790 80059F90 D06D2124 */  addiu      $at, $at, %lo(g_anWorldToCameraRotMtx)
     /* 4A794 80059F94 2800228C */  lw         $v0, 0x28($at)
@@ -81419,8 +81419,8 @@ glabel DrawEntityDirectionalSpikes
     /* 4A7E4 80059FE4 0780183C */  lui        $t8, %hi(g_pOtDepthBinHead0)
     /* 4A7E8 80059FE8 F4FC1827 */  addiu      $t8, $t8, %lo(g_pOtDepthBinHead0)
     /* 4A7EC 80059FEC 00281823 */  addi       $t8, $t8, 0x2800 /* handwritten instruction */
-    /* 4A7F0 80059FF0 0780193C */  lui        $t9, %hi(g_anEntitySpikeTexWords)
-    /* 4A7F4 80059FF4 F85E3927 */  addiu      $t9, $t9, %lo(g_anEntitySpikeTexWords)
+    /* 4A7F0 80059FF0 0780193C */  lui        $t9, %hi(g_anActorShadowTexWords)
+    /* 4A7F4 80059FF4 F85E3927 */  addiu      $t9, $t9, %lo(g_anActorShadowTexWords)
     /* 4A7F8 80059FF8 0000228F */  lw         $v0, 0x0($t9)
     /* 4A7FC 80059FFC 0400238F */  lw         $v1, 0x4($t9)
     /* 4A800 8005A000 0800398F */  lw         $t9, 0x8($t9)
@@ -81717,7 +81717,7 @@ glabel DrawEntityDirectionalSpikes
     /* 4AC64 8005A464 B0574224 */  addiu      $v0, $v0, %lo(g_pPrimBufferWriteCursor)
     /* 4AC68 8005A468 0800E003 */  jr         $ra
     /* 4AC6C 8005A46C 000041AC */   sw        $at, 0x0($v0)
-endlabel DrawEntityDirectionalSpikes
+endlabel DrawActorDropShadows
 .endif
 
 .section .text.ApplyPerLevelGlobalsTable, "ax"

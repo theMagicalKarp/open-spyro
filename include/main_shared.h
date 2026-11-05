@@ -286,7 +286,7 @@ extern void (*g_pfnActorCutsceneSubstateDraw)(void);
 extern void BuildSecondaryActorDrawList(void);
 extern void ClearPadHistoryRing(void);
 extern void ComputeVoicePanAndFalloff(short *out, int vol, unsigned char pan, unsigned int range, short *base);
-extern void DrawEntityDirectionalSpikes(void);
+extern void DrawActorDropShadows(void);
 extern void DrawSpyroDropShadow(void);
 extern void EmitSecondaryActorPrimitives(void);
 extern void MapPadAxisToCalibratedRange(unsigned char *axes, int calib);

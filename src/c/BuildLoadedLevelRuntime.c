@@ -177,8 +177,8 @@ emitlist:
   g_anSpyroFlameRibbonTexWords[1] = p[1];
   FillWord(g_abSpyroShadowRingHeights, 0, 0x28);
   p += 2;
-  g_anEntitySpikeTexWords[0] = p[0];
-  g_anEntitySpikeTexWords[1] = p[1];
+  g_anActorShadowTexWords[0] = p[0];
+  g_anActorShadowTexWords[1] = p[1];
   p += 2;
   g_anLevelSpriteTexWordPairs[0] = p[2];
   g_anLevelSpriteTexWordPairs[1] = p[3];

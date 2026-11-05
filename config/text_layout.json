@@ -1906,7 +1906,7 @@
    "size": 1348
   },
   {
-   "name": "DrawEntityDirectionalSpikes",
+   "name": "DrawActorDropShadows",
    "vram": 2147852172,
    "size": 1252
   },

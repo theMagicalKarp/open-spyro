@@ -463,7 +463,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80059594` | ApplySaveGameBuffer | main | 720 | matched | game |
 | `0x80059864` | BuildSaveGameBuffer | main | 484 | matched | game |
 | `0x80059a48` | DrawSpyroDropShadow | main | 1348 | asm | handwritten |
-| `0x80059f8c` | DrawEntityDirectionalSpikes | main | 1252 | asm | handwritten |
+| `0x80059f8c` | DrawActorDropShadows | main | 1252 | asm | handwritten |
 | `0x8005a470` | ApplyPerLevelGlobalsTable | main | 4744 | matched | game |
 | `0x8005b6f8` | InitActorMeshScratchRegions | main | 224 | matched | game |
 | `0x8005b7d8` | LoadActorMeshTables | main | 264 | matched | game |

@@ -23,7 +23,7 @@ typedef struct Actor {
                         * at bits 22 and 16, floor z >> 2 below. Overlays
                         * store -1 / 0 to reset it and toggle bit 31 (bit 31
                         * also puts the actor on BuildActorDrawList's near
-                        * list). */
+                        * list: DrawActorDropShadows). */
   int mtx[5];          /* 0x20 rotation matrix (packed GTE, see RefreshActorDerivedState) */
   short gridCell;      /* 0x34 spatial-grid cell (RefreshActorDerivedState bit 2) */
   short type;          /* 0x36 actor class */

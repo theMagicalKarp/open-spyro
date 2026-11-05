@@ -697,7 +697,7 @@ extern int g_nSpyroIdleAnimSeqCursor;        /* 0x80075970 */
 /* ---- .bss ---- */
 extern unsigned char g_abGpuStatusShadow[256];                   /* 0x800759bc */
 extern unsigned int g_dwRandSeed;                               /* 0x80075ac0 */
-extern int g_anEntitySpikeTexWords[2];                  /* 0x80075ef8 */
+extern int g_anActorShadowTexWords[2];                  /* 0x80075ef8 */
 extern void *g_pEntityListEnd;                          /* 0x80075f00 */
 extern unsigned char g_abSpuCommonAttr[76];                      /* 0x80075f08 */
 extern void *g_pLevelSampleBankEntries;                 /* 0x800761d0 */
