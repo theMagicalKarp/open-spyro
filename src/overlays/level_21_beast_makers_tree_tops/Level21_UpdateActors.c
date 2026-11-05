@@ -1951,7 +1951,7 @@ void Level21_UpdateActors(void) {
       switch (actor->mode) {
       case SAVEHOST_WAIT_AWAY:
         actor->collision = 0;
-        if (ApproxDist2D(&anchor->posX, &SPY.posX) < 0xA01) {
+        if (ApproxDist2D(&anchor->posX, &SPY.posX) <= SAVEHOST_REARM_RANGE) {
           break;
         }
         actor->mode = SAVEHOST_WAIT_ARMED;
@@ -1970,11 +1970,11 @@ void Level21_UpdateActors(void) {
           st->timer -= 1;
         } else {
           actor->collision = 0;
-          if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000) {
+          if (ApproxDist2D(&actor->posX, &spy->posX) < SAVEHOST_APPEAR_RANGE) {
             int height = actor->posZ - actor->floorOffset;
             int drop = height - SPY.posZ;
 
-            if (drop > 0 ? drop < 0x800 : (SPY.posZ - height) < 0x800) {
+            if (drop > 0 ? drop < SAVEHOST_APPEAR_DZ : (SPY.posZ - height) < SAVEHOST_APPEAR_DZ) {
               if (st->prompted == 0 || anchor->mode == CHECKPT_ARMED) {
                 int *at = &actor->posX;
 
@@ -2017,9 +2017,9 @@ void Level21_UpdateActors(void) {
         actor->posZ = st->baseZ + (LookupCosine(st->timer << 7) >> 6);
 
         if (CHECKPT_SETTLED(anchor) &&
-            ApproxDist2D(&anchor->posX, &spy->posX) < 0x400 &&
+            ApproxDist2D(&anchor->posX, &spy->posX) < SAVEHOST_PROMPT_RANGE &&
             (height = anchor->posZ - anchor->floorOffset, drop = height - SPY.posZ,
-             drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
+             drop > 0 ? drop < SAVEHOST_PROMPT_DZ : (SPY.posZ - height) < SAVEHOST_PROMPT_DZ) &&
             (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
           actor->mode = SAVEHOST_POP_OUT;
           st->prompted = 1;
@@ -2027,9 +2027,9 @@ void Level21_UpdateActors(void) {
           break;
         }
 
-        if (ApproxDist2D(&actor->posX, &spy->posX) >= 0x2401 ||
+        if (ApproxDist2D(&actor->posX, &spy->posX) > SAVEHOST_HOVER_LEASH ||
             (height = actor->posZ - actor->floorOffset, drop = height - SPY.posZ,
-             close = drop > 0 ? drop < 0xC01 : (SPY.posZ - height) < 0xC01,
+             close = drop > 0 ? drop <= SAVEHOST_LEASH_DZ : (SPY.posZ - height) <= SAVEHOST_LEASH_DZ,
              close == 0)) {
           actor->mode = SAVEHOST_POP_OUT;
           break;
@@ -2064,9 +2064,9 @@ void Level21_UpdateActors(void) {
         actor->posZ = st->baseZ + (LookupCosine(st->timer << 7) >> 6);
 
         if (CHECKPT_SETTLED(anchor) &&
-            ApproxDist2D(&anchor->posX, &spy->posX) < 0x400 &&
+            ApproxDist2D(&anchor->posX, &spy->posX) < SAVEHOST_PROMPT_RANGE &&
             (height = anchor->posZ - anchor->floorOffset, drop = height - SPY.posZ,
-             drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
+             drop > 0 ? drop < SAVEHOST_PROMPT_DZ : (SPY.posZ - height) < SAVEHOST_PROMPT_DZ) &&
             (g_nSpyroState == SPYRO_ST_IDLE || g_nSpyroState == SPYRO_ST_TEETER) && g_nSpyroStateTimer > 0) {
           actor->mode = SAVEHOST_POP_OUT;
           st->prompted = 1;
@@ -2074,9 +2074,9 @@ void Level21_UpdateActors(void) {
           break;
         }
 
-        if (ApproxDist2D(&actor->posX, &spy->posX) >= 0x2801 ||
+        if (ApproxDist2D(&actor->posX, &spy->posX) > SAVEHOST_WANDER_LEASH ||
             (height = actor->posZ - actor->floorOffset, drop = height - SPY.posZ,
-             drop > 0 ? drop >= 0xC01 : (SPY.posZ - height) >= 0xC01)) {
+             drop > 0 ? drop > SAVEHOST_LEASH_DZ : (SPY.posZ - height) > SAVEHOST_LEASH_DZ)) {
           actor->mode = SAVEHOST_POP_OUT;
           break;
         }

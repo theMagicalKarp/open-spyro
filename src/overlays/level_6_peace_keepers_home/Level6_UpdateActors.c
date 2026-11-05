@@ -1430,7 +1430,7 @@ void Level6_UpdateActors(void) {
             }
           }
 
-          if (toSpyro < 0x59A) {
+          if (toSpyro < SPARX_FETCH_RANGE) {
             int top = actor->posZ + SPYRO_RADIUS;
             register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
             int dz = spyZ - top;
@@ -1439,7 +1439,7 @@ void Level6_UpdateActors(void) {
               dz = -dz;
             }
 
-            if (dz < 0x200 && g_pSparxActor != 0 && g_nSpyroAirborneFrames == 0 &&
+            if (dz < SPARX_FETCH_DZ && g_pSparxActor != 0 && g_nSpyroAirborneFrames == 0 &&
                 CheckLineOfSightSegment(&g_pSparxActor->posX, &actor->posX) != 0) {
               {
                 SparxState *sparx = g_pSparxActor->state;
@@ -1553,7 +1553,7 @@ void Level6_UpdateActors(void) {
           }
 
         enemy_settle:
-          if (toSpyro < 0x59A) {
+          if (toSpyro < SPARX_FETCH_RANGE) {
             int top = actor->posZ + SPYRO_RADIUS;
             register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
             int dz = spyZ - top;
@@ -1562,7 +1562,7 @@ void Level6_UpdateActors(void) {
               dz = -dz;
             }
 
-            if (dz < 0x200 && g_pSparxActor != 0 && g_nSpyroAirborneFrames == 0 &&
+            if (dz < SPARX_FETCH_DZ && g_pSparxActor != 0 && g_nSpyroAirborneFrames == 0 &&
                 st->bounce < 3) {
               {
                 SparxState *sparx = g_pSparxActor->state;
@@ -1697,7 +1697,7 @@ void Level6_UpdateActors(void) {
       switch (actor->mode) {
       case SAVEHOST_WAIT_AWAY: {
         actor->collision = 0;
-        if (ApproxDist2D(&anchor->posX, &SPY.posX) < 0xA01) {
+        if (ApproxDist2D(&anchor->posX, &SPY.posX) <= SAVEHOST_REARM_RANGE) {
           break;
         }
         actor->mode = SAVEHOST_WAIT_ARMED;
@@ -1719,8 +1719,8 @@ void Level6_UpdateActors(void) {
         } else {
           actor->collision = 0;
 
-          if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
-            if (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 2048) {
+          if (ApproxDist2D(&actor->posX, &SPY.posX) < SAVEHOST_APPEAR_RANGE) {
+            if (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < SAVEHOST_APPEAR_DZ) {
               if (st->prompted == 0 || anchor->mode == CHECKPT_ARMED) {
                 st->prompted = 0;
                 actor->posZ = st->baseZ + 0x80;
@@ -1761,8 +1761,8 @@ void Level6_UpdateActors(void) {
         actor->posZ = st->baseZ + (LookupCosine(st->timer << 7) >> 6);
 
         if (CHECKPT_SETTLED(anchor) &&
-            ApproxDist2D(&anchor->posX, &SPY.posX) < 1024 &&
-            ABS2(anchor->posZ - anchor->floorOffset - SPY.posZ) < 512) {
+            ApproxDist2D(&anchor->posX, &SPY.posX) < SAVEHOST_PROMPT_RANGE &&
+            ABS2(anchor->posZ - anchor->floorOffset - SPY.posZ) < SAVEHOST_PROMPT_DZ) {
 
           if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_TEETER) && SPY.stateTimer > 0) {
             actor->mode = SAVEHOST_POP_OUT;
@@ -1772,8 +1772,8 @@ void Level6_UpdateActors(void) {
           }
         }
 
-        if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x2400 ||
-            (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) > 0xC00)) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) > SAVEHOST_HOVER_LEASH ||
+            (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) > SAVEHOST_LEASH_DZ)) {
           actor->mode = SAVEHOST_POP_OUT;
         } else {
           st->wanderTimer--;
@@ -1802,8 +1802,8 @@ void Level6_UpdateActors(void) {
         actor->posZ = st->baseZ + (LookupCosine(st->timer << 7) >> 6);
 
         if (CHECKPT_SETTLED(anchor) &&
-            ApproxDist2D(&anchor->posX, &SPY.posX) < 0x400 &&
-            ABS2(anchor->posZ - anchor->floorOffset - SPY.posZ) < 512) {
+            ApproxDist2D(&anchor->posX, &SPY.posX) < SAVEHOST_PROMPT_RANGE &&
+            ABS2(anchor->posZ - anchor->floorOffset - SPY.posZ) < SAVEHOST_PROMPT_DZ) {
 
           if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_TEETER) && SPY.stateTimer > 0) {
             actor->mode = SAVEHOST_POP_OUT;
@@ -1813,8 +1813,8 @@ void Level6_UpdateActors(void) {
           }
         }
 
-        if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x2800 ||
-            ABS2(actor->posZ - actor->floorOffset - SPY.posZ) >= 0xC01) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) > SAVEHOST_WANDER_LEASH ||
+            ABS2(actor->posZ - actor->floorOffset - SPY.posZ) > SAVEHOST_LEASH_DZ) {
           actor->mode = SAVEHOST_POP_OUT;
         } else {
           int angleDiff;

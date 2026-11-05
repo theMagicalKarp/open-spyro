@@ -35,6 +35,11 @@ enum SparxSubMode {
                            * overlay), so the ~100 tests of it are dead */
 };
 
+/* A resting collectible calls Sparx over (SPARX_SUB_FETCH) once Spyro, on the
+ * ground, is within this 2D distance (ApproxDist2D) and height of it. */
+#define SPARX_FETCH_RANGE 0x59A
+#define SPARX_FETCH_DZ 0x200
+
 /* Sparx's hover animation per health colour; the odd index after each is the
  * same colour's catch animation (the chase steps up to it, EAT_DONE back). */
 enum SparxAnim {
@@ -63,6 +68,18 @@ enum SaveHostMode {
   SAVEHOST_WANDER = 5,     /* glides to a new hover point near the anchor */
   SAVEHOST_POP_OUT = 6,    /* spins and grows out, back to SAVEHOST_HIDDEN */
 };
+
+/* Save-host ranges to Spyro (2D ApproxDist2D / height difference): it re-arms
+ * once Spyro leaves REARM of the anchor, pops in within APPEAR, prompts when
+ * Spyro idles within PROMPT of the anchor, and pops out past a mode's LEASH. */
+#define SAVEHOST_REARM_RANGE 0xA00
+#define SAVEHOST_APPEAR_RANGE 0x2000
+#define SAVEHOST_APPEAR_DZ 0x800
+#define SAVEHOST_PROMPT_RANGE 0x400
+#define SAVEHOST_PROMPT_DZ 0x200
+#define SAVEHOST_HOVER_LEASH 0x2400
+#define SAVEHOST_WANDER_LEASH 0x2800
+#define SAVEHOST_LEASH_DZ 0xC00
 
 /* ->mode of a crystal dragon statue (ACTOR_TYPE_DRAGON_STATUE,
  * DragonStatueState). */

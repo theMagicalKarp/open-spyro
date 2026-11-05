@@ -830,7 +830,7 @@ void Level33_UpdateActors(void) {
             }
           }
 
-          if (toSpyro < 0x59A) {
+          if (toSpyro < SPARX_FETCH_RANGE) {
             int top = actor->posZ + SPYRO_RADIUS;
             register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
             int dz = spyZ - top;
@@ -839,7 +839,7 @@ void Level33_UpdateActors(void) {
               dz = -dz;
             }
 
-            if (dz < 0x200 && g_pSparxActor != 0 && g_nSpyroAirborneFrames == 0 &&
+            if (dz < SPARX_FETCH_DZ && g_pSparxActor != 0 && g_nSpyroAirborneFrames == 0 &&
                 CheckLineOfSightSegment(&g_pSparxActor->posX, &actor->posX) != 0) {
               {
                 SparxState *sparx = g_pSparxActor->state;
@@ -952,7 +952,7 @@ void Level33_UpdateActors(void) {
           }
 
         enemy_settle:
-          if (toSpyro < 0x59A) {
+          if (toSpyro < SPARX_FETCH_RANGE) {
             int top = actor->posZ + SPYRO_RADIUS;
             register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
             int dz = spyZ - top;
@@ -961,7 +961,7 @@ void Level33_UpdateActors(void) {
               dz = -dz;
             }
 
-            if (dz < 0x200 && g_pSparxActor != 0 && g_nSpyroAirborneFrames == 0 &&
+            if (dz < SPARX_FETCH_DZ && g_pSparxActor != 0 && g_nSpyroAirborneFrames == 0 &&
                 st->bounce < 3) {
               {
                 SparxState *sparx = g_pSparxActor->state;
