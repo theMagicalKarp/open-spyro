@@ -1,5 +1,6 @@
 #include "funcs.h"
 #include "globals.h"
+#include "portal.h"
 #include "world_collision.h"
 /* The section counts that are re-read through held pointers go through
    incomplete-array views (g_an...Block, globals.h) so the pointer access keeps
@@ -21,9 +22,9 @@
    block-local (v0/v1), and pad[14] reproduces the original 0x50 frame. */
 void *UnpackWorldDataChunks(int *p, int reduced) {
   int *base;
-  int *meshCountRef;
+  int *textureCountRef;
   int i;
-  int meshCount;
+  int textureCount;
   int chunkCount;
   int visZoneCount;
   int skyZoneListCount;
@@ -32,16 +33,17 @@ void *UnpackWorldDataChunks(int *p, int reduced) {
   int portalCount;
   int pad[14];
 
-  /* section: mesh headers */
+  /* section: world textures (0x10-byte LOD UV records, then 0xA8-byte detail
+   * records) */
   base = p;
   p++;
-  meshCount = *p;
+  textureCount = *p;
   p++;
-  meshCountRef = g_anWorldMeshCountBlock;
-  g_pWorldMeshHeaderArray = p;
-  *meshCountRef = meshCount;
-  p += meshCount * 4;
-  g_pWorldMeshVertexData = p;
+  textureCountRef = g_anWorldTextureCountBlock;
+  g_pWorldTextureLodRecords = p;
+  *textureCountRef = textureCount;
+  p += textureCount * 4;
+  g_pWorldTextureDetailRecords = p;
   p = (int *)((char *)base + *base);
 
   /* section: world chunks */
@@ -53,7 +55,7 @@ void *UnpackWorldDataChunks(int *p, int reduced) {
   g_nWorldChunkCount = chunkCount;
   i = 0;
   if (chunkCount > 0) {
-    int *chunkCountRef = meshCountRef - 7;
+    int *chunkCountRef = textureCountRef - 7; /* g_nWorldChunkCount */
 
     do {
       int rel = *p + 4;
@@ -209,34 +211,34 @@ void *UnpackWorldDataChunks(int *p, int reduced) {
   g_nPortalCount = portalCount;
   i = 0;
   if (portalCount > 0) {
-    int **portalSlot = (int **)g_apPortals;
+    Portal **portalSlot = g_apPortals;
 
     do {
       int j;
-      int *portal;
+      Portal *portal;
 
-      *portalSlot = p;
-      portal = p;
-      p += p[1] * 3 + 8;
-      *(int **)portal = p;
+      *portalSlot = (Portal *)p;
+      portal = (Portal *)p;
+      p += portal->nPoints * 3 + 8; /* the header words + nPoints xyz points */
+      portal->pSky = (SkyHeader *)p;
       p += 5;
       base = p;
       p++;
-      ((int *)**portalSlot)[4] = *p;
+      (*portalSlot)->pSky->color = *p;
       p++;
-      ((int *)**portalSlot)[0] = *p;
+      (*portalSlot)->pSky->chunkCount = *p;
       p++;
-      ((int *)**portalSlot)[1] = (int)p;
+      (*portalSlot)->pSky->chunks = (void **)p;
       j = 0;
-      if (*(int *)**portalSlot > 0) {
-        int **slot = portalSlot;
+      if ((*portalSlot)->pSky->chunkCount > 0) {
+        Portal **slot = portalSlot;
 
         do {
           int rel = *p + 4;
           *p = (int)base + rel;
           j++;
           p++;
-        } while (j < *(int *)**slot);
+        } while (j < (*slot)->pSky->chunkCount);
       }
       portalSlot++;
       i++;

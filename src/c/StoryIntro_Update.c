@@ -30,14 +30,14 @@ void StoryIntro_Update(void) {
       if (g_nTitleExitPath == TITLE_EXIT_NEW_GAME) {
         g_nCutsceneId = CUTSCENE_OPENING;
         g_nCdStreamState = CSTREAM_READ_HEADER;
-        g_pDrawBufA = g_pSharedLoadBuffer;
-        g_pDrawBufB = g_pSharedLoadBuffer;
+        g_pLoadStagingBuffer = g_pSharedLoadBuffer;
+        g_pLevelDataBuffer = g_pSharedLoadBuffer;
       } else if (g_nTitleExitPath == TITLE_EXIT_LOADED_GAME) {
         g_nFlightLevelActive = 0;
         g_nCdStreamState = LSTREAM_FRESH;
         g_nReturnPortalLevelId = 0;
         g_nPortalTransitionActive = 0;
-        g_nCurrentLevelId = g_nActiveLevelId;
+        g_nNextLevelId = g_nActiveLevelId;
       } else if (g_nTitleExitPath == TITLE_EXIT_DEMO) {
         InitNewGameState();
         g_nFlightLevelActive = 0;
@@ -45,7 +45,7 @@ void StoryIntro_Update(void) {
         g_nReturnPortalLevelId = 0;
         g_nPortalTransitionActive = 0;
         g_nActiveLevelId = g_anDemoLevelIds[g_nDemoIndex];
-        g_nCurrentLevelId = g_nActiveLevelId;
+        g_nNextLevelId = g_nActiveLevelId;
       }
       g_nCameraEulerYaw = 0x400;
       g_nCameraEulerRoll = 0;
@@ -145,7 +145,7 @@ void StoryIntro_Update(void) {
               TickCdMusicStream();
             }
             BeginCutscene();
-            g_nGamePaused = 1;
+            g_nSkipGamestateDraw = 1;
             return;
           }
         } else {

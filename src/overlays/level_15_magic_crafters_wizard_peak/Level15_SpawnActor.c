@@ -22,7 +22,6 @@
 extern volatile int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
 
 extern volatile int g_anSpyroWorldPos[];
-extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type */
 
 Actor *Level15_SpawnActor(int type, Actor *parent) {
   Actor *rec;

@@ -4,11 +4,6 @@
 #include "main_shared.h"
 #include "save_menu.h"
 
-typedef struct {
-  short x, y, w, h;
-} MenuBox;
-extern MenuBox g_aSaveMenuBoxes[]; /* per-substate menu box */
-
 #define SM g_anSaveMenuBlock
 
 /* Rocks the glyphs of the highlighted line on a cosine wave that travels

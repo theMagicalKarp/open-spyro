@@ -167,9 +167,9 @@ void Level20_UpdateActors(void) {
                 g_nLevelTransitionTallyActive = 1;
                 g_nLevelTransitionPhase = 0;
                 g_nGamestate = GS_LEVEL_LOAD;
-                g_nGamePaused = 1;
+                g_nSkipGamestateDraw = 1;
                 g_nReturnPortalLevelId = g_nActiveLevelId;
-                g_nCurrentLevelId = g_nActiveLevelId / 10 * 10;
+                g_nNextLevelId = g_nActiveLevelId / 10 * 10;
                 g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
                 g_dwSpyroRequestMask = 0;
                 ResetSpyroEntity(RESET_SPYRO_SOFT);
@@ -862,8 +862,8 @@ void Level20_UpdateActors(void) {
 
           if (toSpyro < 0x59A) {
             int top = actor->posZ + 0x164;
-            register int py asm("$2") = SPY.posZ;
-            int dz = py - top;
+            register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
+            int dz = spyZ - top;
 
             if (dz < 0) {
               dz = -dz;
@@ -985,8 +985,8 @@ void Level20_UpdateActors(void) {
         enemy_settle:
           if (toSpyro < 0x59A) {
             int top = actor->posZ + 0x164;
-            register int py asm("$2") = SPY.posZ;
-            int dz = py - top;
+            register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
+            int dz = spyZ - top;
 
             if (dz < 0) {
               dz = -dz;
@@ -1173,7 +1173,7 @@ void Level20_UpdateActors(void) {
         break;
 
       case SAVEHOST_POP_IN:
-        if (actor->scale >= 0x21) {
+        if (actor->scale > ACTOR_SCALE_UNIT) {
           actor->scale -= 4;
           actor->rotZ += 8;
         } else {
@@ -1959,7 +1959,7 @@ void Level20_UpdateActors(void) {
             actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
             actor->drawn = 0;
             actor->groundCode = 0;
-            actor->visZone = VIS_ZONE_ALWAYS;
+            actor->gateChunk = GATE_CHUNK_ALWAYS;
             actor->subMode = KEY_TAKEN;
           }
         }

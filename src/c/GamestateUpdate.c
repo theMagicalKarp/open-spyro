@@ -25,7 +25,7 @@
    except the early returns. */
 
 void GamestateUpdate(void) {
-  g_nGamePaused = 0;
+  g_nSkipGamestateDraw = 0;
   TickActiveSoundVoices();
   TickCdMusicStream();
 

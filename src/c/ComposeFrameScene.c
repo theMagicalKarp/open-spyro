@@ -11,7 +11,7 @@
 
 void ComposeFrameScene(void) {
   BuildActorDrawList();
-  FillWord(&g_pOtDepthBinHead0, 0, 0x900);
+  FillWord(&g_apMainDrawEntityList, 0, 0x900);
   EmitActorDrawList();
   BuildSecondaryActorDrawList();
   EmitSecondaryActorPrimitives();

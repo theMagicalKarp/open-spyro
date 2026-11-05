@@ -1,3 +1,4 @@
+#include "actor_states.h"
 #include "funcs.h"
 #include "globals.h"
 #include "level_sfx.h"
@@ -49,7 +50,7 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   owner = ACTOR_RAW(actor, int, state); /* actor->state moves the load (A400) */
   g_nGamestate = GS_SAVE_MENU;
   g_nCinematicActive = 1;
-  g_nGamePaused = 1;
+  g_nSkipGamestateDraw = 1;
   g_nSaveMenuMode = SAVE_MODE_SWING_IN;
   g_nSaveMenuAnimPhase = 0;
   g_nSaveMenuSubstate = SAVE_SCREEN_MAIN;
@@ -73,8 +74,8 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   g_nSaveMenuSpyroFromYaw = yaw;
   /* state word 1 is the pool index of the host's anchor actor; the
      int add before the cast is load-bearing (((int *)owner)[1] reorders cse) */
-  /* owner + 4 is SaveHostState.anchor (level_update_actors.h). */
-  rec = (char *)(*(int *)(owner + 4) * sizeof(Actor) + (int)g_pActorListBase);
+  rec = (char *)(FIELD_RAW(owner, SaveHostState, int, anchor) * sizeof(Actor) +
+                 (int)g_pActorListBase);
   {
     register int ry asm("$2");
     ry = ((Actor *)rec)->posY;

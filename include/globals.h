@@ -376,7 +376,9 @@ extern unsigned char g_abWorldChunkTriangleSubdiv4UvRotIdx[64];       /* 0x8006d
 extern int g_anWorldChunkTriangleUvOrientPairs[128];         /* 0x8006d3c8 */
 extern int g_anWorldChunkTriList6Vert[7];                    /* 0x8006d5c8 */
 extern int g_anWorldChunkTriList9Vert[12];                   /* 0x8006d5e4 */
-extern int g_anAnimRootMotionDeltaLut[128];                  /* 0x8006d614 */
+extern int g_anAnimRootMotionDeltaLut[125];                  /* 0x8006d614 */
+extern signed char g_abArcSinLut[256]; /* 0x8006d808: 0x40 + asin(s) in 8-bit angle units (0x80 = 180 deg) for s = (i - 0x80) / 0x80; EmitSecondaryActorPrimitives (raw address) */
+extern unsigned char g_abArcTanOctantLut[68]; /* 0x8006d908: atan(i / 64) for i = 0..64 in 8-bit angle units (0x20 = 45 deg), 3 pad bytes; ArcTan2_8bit and EmitSecondaryActorPrimitives */
 extern int g_anSpyroFlameAgeConfigShort[32];            /* 0x8006d94c */
 extern int g_anSpyroFlameAgeConfigLong[40];             /* 0x8006d9cc */
 extern int g_anSpyroFlameWindupAnchorOffsets[12];       /* 0x8006da6c */
@@ -423,16 +425,16 @@ extern char *g_apBalloonistDialogueLines[108];               /* 0x8006f8c4 */
 extern unsigned char g_abPadActAlignTable[6];                         /* 0x8006fccc */
 extern void *g_pOtMergedChainHead;                           /* 0x8006fcec */
 extern void *g_pOtMergedChainTail;                           /* 0x8006fcf0 */
-extern void *g_pOtDepthBinHead0;                             /* 0x8006fcf4 */
-extern void *g_pOtDepthBinTail0;                             /* 0x8006fcf8 */
-extern void *g_apActiveActorList[2];                   /* 0x800700f4 */
+extern void *g_apMainDrawEntityList;                             /* 0x8006fcf4: BuildRenderEntityLists' main mesh list (NULL-terminated actor pointers, read by BuildActorDrawList; cutscene draws append actors to it), and the base of the frame scratch arena whose later sub-buffers the hand-asm often reaches by offset from here (g_apActiveActorList +0x400, g_anPortalDeferredTriStack +0x800, g_anActorDrawList +0x1600, g_apSpritePrimQueue +0x2400, g_anActorShadowQueue +0x2800, g_anOtPrimSaveList +0x2A00; RenderWorldChunks' chunk lists +0x1C00 / +0x1E00 / +0x2000 reuse the actor space before the actor passes). SetupFrameOT zeroes the first 0x1C00 bytes each frame. Its initial EXE contents are the boot title art as a run list (AddBiasToColorRuns, Initialize) */
+extern void *g_pMainDrawEntityList1;                             /* 0x8006fcf8 */
+extern void *g_apActiveActorList[2];                   /* 0x800700f4: NULL-terminated pointer list of the actors updated this frame (BuildActiveActorList; TickActorAnims) */
 extern int g_anPortalDeferredTriStack[64];                    /* 0x800704f4 */
 extern int g_anActorVertSzOverflow[256];                     /* 0x800705f4 */
 extern int g_anActorDepthCuedVtxColor[32];                   /* 0x80070df4 */
 extern int g_anActorDrawList[768];                           /* 0x800712f4 */
 extern void *g_apSecondaryDrawEntityList[128];               /* 0x80071ef4 */
 extern void *g_apSpritePrimQueue[256];                       /* 0x800720f4 */
-extern int g_apSecondaryEntityList[128];                     /* 0x800724f4 */
+extern int g_anActorShadowQueue[128];                     /* 0x800724f4: BuildActorDrawList queues (actor, shadow size) pairs here for DrawActorDropShadows (the hand-asm reaches it as g_apMainDrawEntityList + 0x2800). Frame scratch: EmitSkyMeshFogged writes its depth-cued vertex colours here and the gem tally borrows it as its particle pool */
 extern int g_anOtPrimSaveList[64];                           /* 0x800726f4 */
 extern int g_anCheatCodeSequences[128];                      /* 0x80072e94: 8 cheat-code button sequences, 16 pad words each, 0-terminated (CheckCheatCodeMatch); only slots 2..4 have an effect (ApplyCheatCodeEffect) */
 extern int g_nSnCrtInitFlag;                                 /* 0x800730bc */
@@ -573,7 +575,7 @@ extern int g_nCameraLosClear;                /* 0x800756b8 */
 extern void (*g_pfnLevelAdvanceEmitList)(int frameStep); /* 0x800756bc */
 extern int g_nLetterboxBarHeight;            /* 0x800756c0 */
 extern int g_nGemTallyIconCount;             /* 0x800756c8: gems picked up this level visit (CollectPickupActor logs each type in g_abGemTallyIconUvTable[n & 0x1F]); flight bonuses add 0xC; the tally flies in up to 0x20 */
-extern int g_nFrameStep;                     /* 0x800756cc */
+extern int g_nFrameStep;                     /* 0x800756cc: VBlanks the last frame took, clamped to 2..4 (main); the per-frame time step every tick scales by */
 extern int g_nPortalTransitionActive;           /* 0x800756d0: set by a portal exit or hub return, cleared when TickLevelTransitionStream finishes; Spyro takes the scripted arrival (the hub portal glide-out, or the exit nudge) instead of the plain level spawn, and cannot bonk meanwhile */
 extern int g_nSubMenuScrollDelta;            /* 0x800756d4 */
 extern int g_nPadIsDualshockFlag;            /* 0x800756d8 */
@@ -588,7 +590,7 @@ extern int g_nCinematicActive;               /* 0x8007570c: nonzero while a cine
 extern struct Actor *g_pSpriteRecordWriteCursor; /* 0x80075710: sprite-record queue tail; Actor-sized records, grows down from g_pSpriteRecordBufferTop */
 extern int g_nDemoMode;                    /* 0x80075714: attract demo, enum DemoMode (gamestate.h) */
 extern int g_nGroundSurfaceType;             /* 0x80075718 */
-extern void *g_pGemTallyParticleRecords;     /* 0x8007571c: the tally particle pool (GemTallyParticle, gem_tally.h), borrowed from g_apSecondaryEntityList */
+extern void *g_pGemTallyParticleRecords;     /* 0x8007571c: the tally particle pool (GemTallyParticle, gem_tally.h), borrowed from g_anActorShadowQueue */
 extern int g_nPauseMenuCursor;               /* 0x80075720: row on the pause page (enum PauseMainRow / PauseOptionsRow / PauseQuitRow); flight results menu reuses it */
 extern unsigned int g_dwGamestateFrames;             /* 0x8007572c */
 extern int g_nPadSetMainModePending;         /* 0x80075730 */
@@ -609,7 +611,7 @@ extern void *g_pPrimBufferLimit;             /* 0x80075780 */
 extern int g_nDemoActive;           /* 0x80075784: 1 while a demo level runs: the draw handlers add a VSync so frames pace at 2 vblanks */
 extern short g_nSpyroIdleAnimTimeout;        /* 0x80075788 */
 extern int *g_pPortalDeferredTriStackTop;     /* 0x80075798 */
-extern int g_nGamePaused;                    /* 0x8007579c */
+extern int g_nSkipGamestateDraw;                    /* 0x8007579c: main skips this frame's GamestateDraw when set; GamestateUpdate clears it first thing and handlers that switch gamestate mid-update set it */
 extern int g_nOptionVibrationEnabled;        /* 0x800757a4 */
 extern void *g_pPrimBufferWriteCursor;       /* 0x800757b0 */
 extern int g_nLevelPickupTableCount;         /* 0x800757b4 */
@@ -619,7 +621,7 @@ extern int g_nPauseMenuSubstate;             /* 0x800757c8: pause menu page, enu
 extern int g_nSubMenuScrollOffset;           /* 0x800757cc */
 extern int g_nPulseRumbleTimer;              /* 0x800757d0 */
 extern unsigned int g_dwSkyFadeColor;          /* 0x800757d4 */
-extern int g_nGamestate;                     /* 0x800757d8 */
+extern int g_nGamestate;                     /* 0x800757d8: enum Gamestate (gamestate.h): selects GamestateUpdate / GamestateDraw handlers */
 extern struct PadSubstep *g_pPadSubstepState; /* 0x800757e0: this substep's g_anPadSubstepRing entry (pad.h) */
 extern void *g_pCollisionHitActor;           /* 0x800757e4 */
 extern int g_nGameOverLevelIndex;       /* 0x800757e8: g_nLevelIndex at game over; picks the continue spawn in g_anGameOverRespawnPosTable / g_abGameOverRespawnYawTable (BuildLoadedLevelRuntime) */
@@ -633,9 +635,9 @@ extern int g_nSpyroDrawSuppressed;           /* 0x80075814: nonzero skips Spyro'
 extern int g_nCreditsReturnLevelId;          /* 0x80075818 */
 extern int *g_pOtActiveDepthSlot;            /* 0x8007581c */
 extern void *g_pOtDepthBinArrayBase;         /* 0x80075820 */
-extern void *g_pEmitListBase;                /* 0x80075824 */
+extern void *g_pEmitListBase;                /* 0x80075824: the emit list RasterizeEmitList walks (0x20-byte records, opcode 0xFF ends it) */
 extern struct Actor *g_pActorListBase;       /* 0x80075828: the level actor pool (0x58-byte Actor records, mode 0xFF ends it) */
-extern int g_nExtraLives;                    /* 0x8007582c */
+extern int g_nExtraLives;                    /* 0x8007582c: spare lives */
 extern int g_nLevelKeyState;                 /* 0x80075830: the level key (enum LevelKeyState): none, carried (key 173 picked up), locked chest (174) opened, its reward collected; shown as HUD counter 4 */
 extern int g_nCameraShakePeakAmplitude;      /* 0x80075848 */
 extern int g_nPulseRumbleAmount;             /* 0x8007584c */
@@ -643,11 +645,11 @@ extern int g_nPortalSkyYawSpin;        /* 0x80075858: portal-surface view spin, 
 extern void *g_pDemoPadCursor;           /* 0x8007585c: read/write cursor into the recorded demo pad stream (SampleDemoPadFrame) */
 extern int g_nTotalTreasureCollected;        /* 0x80075860: game-wide treasure (gem) total: pickups, flight bonuses; 14000 (0x36B0) picks the post-game credits return */
 extern int g_nCdStreamState;                 /* 0x80075864: enum CutsceneStreamState or LevelStreamState (cd_stream.h), by which machine runs */
-extern int g_nInGameTick;                    /* 0x80075868 */
+extern int g_nPadLatchOpen;                    /* 0x80075868: low byte 0 while GamestateUpdate runs, 1 otherwise (main); PollPadAndDistributeInput only latches pad type / held / pressed into the globals when it is set */
 extern int g_nLevelGemsAtEntry;              /* 0x8007587c: g_anLevelGemsCollected[level] on entry; the tally shows the difference */
 extern int g_nLevelSelectModeActive;         /* 0x80075880 */
 extern int g_nDemoExitFadeFrame;                /* 0x80075884: demo-end fade frame, 0 until the demo ends; at 0x10 the demo tears down */
-extern DRAWENV *g_pActiveFrameDrawEnv;       /* 0x80075888 */
+extern DRAWENV *g_pActiveFrameDrawEnv;       /* 0x80075888: the draw env of the buffer being built this frame (&g_FrameDrawEnv0 or 1) */
 extern int g_nCdStallWatchdogTicks;          /* 0x8007588c */
 extern struct Actor *g_pActorPoolDynBase;    /* 0x80075890: end of the loaded actors, start of the dynamically spawned ones */
 extern int g_nCameraSpringReengageCountdown; /* 0x80075894 */
@@ -656,7 +658,7 @@ extern int g_nSpyroTurnRateAccum;            /* 0x800758a0 */
 extern int g_nSpyroSuperflameTimerSave;     /* 0x800758a4 */
 extern int g_nReturnPortalLevelId;                /* 0x800758ac: level being left (0 = none); the hub places Spyro at the portal leading to it */
 extern int g_nPrimBufferOverflowFlag;        /* 0x800758b0 */
-extern int g_nCurrentLevelId;                /* 0x800758b4 */
+extern int g_nNextLevelId;                /* 0x800758b4: the level to load next: equals g_nActiveLevelId in play; a portal / balloonist / level select / death sets it; while the two differ a transition is pending (ApplySpyroTriggerEvents and DispatchSpyroChargeStateChanges ignore events), and TickLevelTransitionStream copies it to g_nActiveLevelId on arrival */
 extern int g_nMenuDrawFrames;     /* 0x800758b8: frames the menu (PauseMenu_Draw) has drawn since entry; 0 = the entry frame, pause/sub menu input waits for 5, MenuTransition_Draw switches on it; drives the menu bob/blink phases. SpyroStateDelay_Update reuses it as its pass count */
 extern int g_nPortalCount;              /* 0x800758bc */
 extern int g_nSpyroFallReferenceZ;           /* 0x800758c0 */
@@ -691,7 +693,7 @@ extern int g_nVsyncFramePaceAnchor;          /* 0x80075950 */
 extern int g_nVsyncFrameEndCount;            /* 0x80075954 */
 extern int g_nSpyroPitchRateAccum;           /* 0x80075960 */
 extern int g_nLevelIndex;               /* 0x80075964: the active level as 0..35, (id / 10 - 1) * 6 + id % 10; indexes every per-level table */
-extern int g_nActiveLevelId;                 /* 0x8007596c */
+extern int g_nActiveLevelId;                 /* 0x8007596c: the loaded level's id (level_id.h): id / 10 is the world, id % 10 the level in it */
 extern int g_nSpyroIdleAnimSeqCursor;        /* 0x80075970 */
 
 /* ---- .bss ---- */
@@ -701,7 +703,7 @@ extern int g_anActorShadowTexWords[2];                  /* 0x80075ef8 */
 extern void *g_pEntityListEnd;                          /* 0x80075f00 */
 extern unsigned char g_abSpuCommonAttr[76];                      /* 0x80075f08 */
 extern void *g_pLevelSampleBankEntries;                 /* 0x800761d0 */
-extern void *g_pLevelSampleBankHeader;                  /* 0x800761d4 */
+extern void *g_pLevelSampleBankHeader;                  /* 0x800761d4: the level's sound-id table, one byte per slot (level_sfx.h, LEVEL_SFX) */
 extern int g_nMusicVolumeFadeTarget;                    /* 0x800761d8 */
 extern int g_nSoundMasterVolume;                        /* 0x8007622c */
 extern int g_nMusicVolumeFadeStep;                      /* 0x80076230 */
@@ -741,7 +743,7 @@ extern int g_nDragonAssetOffset;                        /* 0x80076c20 */
 extern int g_nDragonAssetSize;                          /* 0x80076c24 */
 extern int g_anActorMeshOffsetList;                     /* 0x80076c50: file offsets (in the world data-ext chunk) of the models a level or cutscene streams in, 0-terminated; in a level [0] is Spyro's animation stream (InstallSpyroAnimStream) and [1..] are actor models (RelocateActorMeshHeader) */
 extern int g_anWorldToCameraRotMtx[5];                  /* 0x80076dd0 */
-extern int g_anCameraPos[3];                            /* 0x80076df8 */
+extern int g_anCameraPos[3];                            /* 0x80076df8: camera world position */
 extern int g_anCameraEyeTarget[3];                      /* 0x80076e04 */
 extern short g_nCameraEulerRoll;                        /* 0x80076e1c */
 extern short g_nCameraEulerPitch;                       /* 0x80076e1e */
@@ -827,10 +829,10 @@ extern short g_anBillboardBasisVectors[9];              /* 0x800770e0 */
 extern int g_nLightSweepAngle;                          /* 0x800770f4 */
 extern unsigned char g_abWorldRotatingBillboardTable[128];       /* 0x80077114 */
 extern int g_anLevelDragonsRescued[36];                 /* 0x800772d8 */
-extern int g_anCollisionHitNormal[3];                    /* 0x80077368 */
-extern unsigned int g_dwPadPressed;                             /* 0x80077378 */
+extern int g_anCollisionHitNormal[3];                    /* 0x80077368: surface normal (1.12) of the last world/actor collision hit */
+extern unsigned int g_dwPadPressed;                             /* 0x80077378: buttons newly pressed since the last update (PollPadAndDistributeInput edge-detects against g_dwPadHeld) */
 extern unsigned int g_dwPadReleased;                            /* 0x8007737c */
-extern unsigned int g_dwPadHeld;                                /* 0x80077380 */
+extern unsigned int g_dwPadHeld;                                /* 0x80077380: buttons held at the last VBlank poll */
 extern int g_nPadType;                                  /* 0x80077384: enum PadType (pad.h) */
 extern int g_nPadStickActiveFlag;                       /* 0x80077388 */
 extern unsigned int g_dwPadAnalogCalibrated;                    /* 0x8007738c */
@@ -888,34 +890,52 @@ extern int g_nHudFrameCycleMod9;                        /* 0x80077fe8 */
 extern unsigned char g_aHudIconActorRecords[1056];              /* 0x80077fec */
 extern short g_anHudSpriteRects[128];                   /* 0x8007840c */
 extern int g_anLevelSpriteTexWordPairs[20];             /* 0x8007850c */
-extern int g_nWorldAnimMeshKeyframeCount;               /* 0x80078560 */
-extern void *g_pWorldAnimMeshKeyframeList;              /* 0x80078564 */
+extern int g_nWorldAnimTextureFrameCount;               /* 0x80078560 */
+extern void *g_pWorldAnimTextureFrameList;              /* 0x80078564 */
 extern int g_nWorldAnimUvCycleCount;                    /* 0x80078568 */
 extern void *g_pWorldAnimUvCycleList;                   /* 0x8007856c */
-extern int g_nWorldAnimColor0Count;                     /* 0x80078570 */
-extern void *g_pWorldAnimColor0List;                    /* 0x80078574 */
-extern int g_nWorldAnimColor1Count;                     /* 0x80078578 */
-extern void *g_pWorldAnimColor1List;                    /* 0x8007857c */
-extern int g_nWorldAnimColor2Count;                     /* 0x80078580 */
-extern void *g_pWorldAnimColor2List;                    /* 0x80078584 */
-extern int g_nWorldAnimColor3Count;                     /* 0x80078588 */
-extern void *g_pWorldAnimColor3List;                    /* 0x8007858c */
+/* The four deferred chunk-anim tables: TickWorldChunkAnimations only writes
+ * the due keyframe index into the chunk (bytes 0x18..0x1B, 0xFF = none);
+ * RenderWorldChunks applies it when it draws the chunk and clears the byte.
+ * Vertex frames are packed 11/11/10-bit positions lerped with intpl, colour
+ * frames RGB words lerped with dpcs. "Lod" = the far mesh (counts at chunk
+ * +0x10, drawn from the + 0x2000 list), "Detail" = the near mesh (counts at
+ * +0x14, offset by byte 0x17, drawn from the + 0x1C00 list). */
+extern int g_nWorldAnimLodVertsCount;                     /* 0x80078570 */
+extern void *g_pWorldAnimLodVertsList;                    /* 0x80078574 */
+extern int g_nWorldAnimLodColorsCount;                     /* 0x80078578 */
+extern void *g_pWorldAnimLodColorsList;                    /* 0x8007857c */
+extern int g_nWorldAnimDetailVertsCount;                     /* 0x80078580 */
+extern void *g_pWorldAnimDetailVertsList;                    /* 0x80078584 */
+extern int g_nWorldAnimDetailColorsCount;                     /* 0x80078588 */
+extern void *g_pWorldAnimDetailColorsList;                    /* 0x8007858c */
 extern int g_nWorldAnimVertexMorphCount;                /* 0x800785a0 */
 extern void *g_pWorldAnimVertexMorphList;               /* 0x800785a4 */
 /* 0x800785a8: base of the world-table block the hand-asm probes index:
- * +0x04 g_nWorldChunkCount, +0x14 g_anTriggerRegionCount, +0x18 g_pWorldMeshHeaderArray, +0x1C
- * g_pWorldMeshVertexData, +0x2C g_pWorldCollisionHeader (world_collision.h). */
+ * +0x04 g_nWorldChunkCount, +0x14 g_anTriggerRegionCount, +0x18 g_pWorldTextureLodRecords, +0x1C
+ * g_pWorldTextureDetailRecords, +0x2C g_pWorldCollisionHeader (world_collision.h). */
+/* The world chunks (g_pWorldChunkArray[g_nWorldChunkCount], drawn only by the
+ * hand-written RenderWorldChunks). Layout as RenderWorldChunks and
+ * TickWorldChunkAnimations read it:
+ *   +0x00 cull centre x << 16 | y, +0x04 z << 16 | flags 0xE000 | radius 0x1FFF
+ *   +0x08 / +0x0C the draw origin (x, y / z) and the chunk's OT offset
+ *   +0x10 far (LOD) mesh counts, byte 0 = vertex count (colours follow them)
+ *   +0x14 near (detail) mesh counts; byte 3 = where that mesh starts, in words
+ *   +0x18..+0x1B pending deferred chunk-anim keyframe per table (g_pWorldAnimLod
+ *         VertsList..DetailColorsList), bit 7 set = none
+ *   +0x1C the far mesh, then the near mesh */
 extern void *g_pWorldChunkArray;                        /* 0x800785a8 */
+extern unsigned char g_abWorldChunkDrawn[]; /* 0x800771c8: per world chunk, nonzero if RenderWorldChunks drew it this frame (cleared each call); gates actors and portals by their gateChunk */
 extern int g_nWorldChunkCount;                          /* 0x800785ac */
 extern void *g_pTriggerRegionTable;                     /* 0x800785b8 */
-extern void *g_pWorldMeshHeaderArray;                   /* 0x800785c0 */
-extern void *g_pWorldMeshVertexData;                    /* 0x800785c4 */
-extern int g_nWorldMeshCount;                           /* 0x800785c8 */
+extern void *g_pWorldTextureLodRecords;                   /* 0x800785c0: per world texture, a 0x10-byte UV/tpage record (two 8-byte halves) */
+extern void *g_pWorldTextureDetailRecords;                    /* 0x800785c4: per world texture, a 0xA8-byte record (21 8-byte UV records, presumably 1 + 4 + 16 for the subdivided close-up draw) */
+extern int g_nWorldTextureCount;                           /* 0x800785c8 */
 extern void *g_pWorldCollisionHeader;                   /* 0x800785d4: WorldCollisionHeader * */
-extern void *g_pDrawBufA;                               /* 0x800785d8 */
-extern void *g_pDrawBufB;                               /* 0x800785dc */
+extern void *g_pLoadStagingBuffer;                               /* 0x800785d8: first free byte past the loaded overlay (ApplyPerLevelGlobalsTable: Level<N>_OverlayEnd; title/demo/pause paths: g_abTitlescreenOverlayEnd): the CD staging buffer (asset headers, TIMs, audio before the SPU upload) */
+extern void *g_pLevelDataBuffer;                               /* 0x800785dc: where the world bundle is read and unpacked in place (UnpackWorldDataChunks); set equal to g_pLoadStagingBuffer */
 extern char *g_pWorldUnpackHead;                        /* 0x800785e0 */
-extern void *g_pPathTableBuffer;                        /* 0x800785e4 */
+extern void *g_pLevelArchiveBuffer;                        /* 0x800785e4: where the level archive chunk (g_nLevelArchiveByteSize bytes) is read, past the unpacked world data: BuildLoadedLevelRuntime builds the level's runtime from it; for a cutscene it holds the CutscenePath table with the actor pool after it */
 extern void *g_pRenderScratchRegionBase;                /* 0x800785e8 */
 extern void *g_pRenderScratchPrimBase1;                 /* 0x800785ec */
 extern void *g_pRenderScratchPrimTop;                   /* 0x800785f0 */
@@ -1267,7 +1287,7 @@ extern unsigned char g_abDragonRescueFlickerPairs2Y[]; /* 0x8006f399 */
 extern short g_anDragonRescueScaleCurve[]; /* 0x8006f3c0: dragon-rescue timer scale curve */
 extern int g_anDragonRescueIconRestPos[]; /* 0x8006f3f0: HUD icon rest positions, 3 x vec3 */
 extern unsigned char g_abLevelTotalDragonsBlock[]; /* 0x8006f414: held-base view; the sized decl stays in use where the original addresses it absolutely (A240) */
-extern void *g_apOtDepthBinBlock[]; /* 0x8006fcf4 */
+extern void *g_apMainDrawEntityListBlock[]; /* 0x8006fcf4 */
 extern unsigned char g_abSpyroFlameTransitionModes[][2]; /* 0x80075264 */
 extern unsigned char g_abSpyroFlameAnimTable[]; /* 0x80075268 */
 extern unsigned short g_anGameOverCameraEulerU[]; /* 0x800752d8 g_anGameOverCameraEuler read unsigned (lhu) */
@@ -1382,21 +1402,21 @@ extern int g_anHudDragonCachedCountBlock[]; /* 0x80077fcc */
 extern int g_anHudButterflyCachedBlock[]; /* 0x80077fe0 */
 extern int g_adwHudIconSpinAngleBlock[]; /* 0x80077fe4: held-base view of g_dwHudIconSpinAngle; [1] is the mod-9 HUD frame counter, [0x14c] is &g_anLevelSpriteTexWordPairs[2] */
 extern int g_anHudFrameCycleBlock[]; /* 0x80077fe8: the same block seen from g_nHudFrameCycleMod9; [0x14b] is &g_anLevelSpriteTexWordPairs[2] */
-extern int g_anWorldAnimMeshKeyframeCountBlock[]; /* 0x80078560 */
+extern int g_anWorldAnimTextureFrameCountBlock[]; /* 0x80078560 */
 extern int g_anWorldAnimUvCycleCountBlock[]; /* 0x80078568 */
-extern int g_anWorldAnimColor0CountBlock[]; /* 0x80078570 */
-extern int g_anWorldAnimColor1CountBlock[]; /* 0x80078578 */
-extern int g_anWorldAnimColor2CountBlock[]; /* 0x80078580 */
-extern int g_anWorldAnimColor3CountBlock[]; /* 0x80078588 */
+extern int g_anWorldAnimLodVertsCountBlock[]; /* 0x80078570 */
+extern int g_anWorldAnimLodColorsCountBlock[]; /* 0x80078578 */
+extern int g_anWorldAnimDetailVertsCountBlock[]; /* 0x80078580 */
+extern int g_anWorldAnimDetailColorsCountBlock[]; /* 0x80078588 */
 extern int g_anWorldAnimVertexMorphCountBlock[]; /* 0x800785a0 */
 extern void *g_pVisZoneChunkLists; /* 0x800785b0: per visibility zone, a 0xFF-terminated list of the world chunks drawn from it (count g_nVisZoneCount); the camera's zone is the floor under it (g_nCameraVisZone) */
 extern int g_anVisZoneCountBlock[]; /* 0x800785b4: held-base view of g_nVisZoneCount */
 extern int g_anTriggerRegionCount[]; /* 0x800785bc: trigger-region count (array view; the loop bound is re-read through it) */
-extern int g_anWorldMeshCountBlock[]; /* 0x800785c8: held-base view of g_nWorldMeshCount (-7 words: g_nWorldChunkCount) */
-extern int g_nInitUnreadWord; /* 0x800785cc */
-extern void *g_apDrawBufBlock2[]; /* 0x800785d8: distinct alias, fade-out pass (A23) */
-extern void *g_apDrawBufBBlock[]; /* 0x800785dc */
-extern void *volatile g_apPathTableBufferBlock[]; /* 0x800785e4 */
+extern int g_anWorldTextureCountBlock[]; /* 0x800785c8: held-base view of g_nWorldTextureCount (-7 words: g_nWorldChunkCount) */
+extern int g_nWorldChunkLodDepth; /* 0x800785cc: view-depth split RenderWorldChunks reads (>> 4) to sort chunks: a chunk whose near edge (depth - radius) is closer goes on the list at g_apMainDrawEntityList + 0x1C00, one whose far edge (+ 0x100) is beyond it on the list at + 0x2000 (a chunk straddling it goes on both). Initialize sets 0x8000 */
+extern void *g_apLoadStagingBufferBlock2[]; /* 0x800785d8: distinct alias, fade-out pass (A23) */
+extern void *g_apLevelDataBufferBlock[]; /* 0x800785dc */
+extern void *volatile g_apLevelArchiveBufferBlock[]; /* 0x800785e4 */
 extern unsigned char *g_apRenderScratchRegionBlock[]; /* 0x800785e8: g_pRenderScratchRegionBase */
 extern int g_anFlightTallyActiveSlots[]; /* 0x80078608 */
 extern void *g_apMotionTrailSlices[]; /* 0x80078658: per-ribbon slice list */

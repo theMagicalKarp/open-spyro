@@ -92,7 +92,7 @@ extern int g_pSpriteRecordWriteCursor;
 
 extern int g_apSpritePrimQueue;              /* sprite prim queue head */
 
-extern int g_pOtDepthBinHead0[];            /* OT depth-bin list */
+extern int g_apMainDrawEntityList[];            /* main draw list (NULL-terminated actor pointers) */
 
 extern unsigned short g_anCosineLut[]; /* cosine LUT */
 

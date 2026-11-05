@@ -704,7 +704,7 @@ void Level29_UpdateActors(void) {
           continue;
         } else {
           int r;
-          register int *pos asm("$4");
+          register int *pos asm("$4"); /* a0, as in the original (A374) */
 
           bouncePos[2] += 240;
 
@@ -1259,7 +1259,7 @@ void Level29_UpdateActors(void) {
           actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
           actor->drawn = 0;
           actor->groundCode = 0;
-          actor->visZone = VIS_ZONE_ALWAYS;
+          actor->gateChunk = GATE_CHUNK_ALWAYS;
           actor->subMode = KEY_TAKEN;
         }
       }

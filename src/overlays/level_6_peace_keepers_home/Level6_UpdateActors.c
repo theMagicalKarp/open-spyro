@@ -55,9 +55,9 @@ typedef struct FireballState {
 typedef struct FireballCannonState {
   int link;    /* 0x00 index into g_pActorListBase (its trigger); level data: ACTOR_TYPE_SOLDIER */
   int rival;   /* 0x04 index into g_pActorListBase: the cannon it duels; level data: ACTOR_TYPE_FIREBALL_CANNON */
-  int u08;     /* 0x08 */
+  int pad08;     /* 0x08 */
   int hold;    /* 0x0C ticks until the trigger is released */
-  int u10;     /* 0x10 */
+  int pad10;     /* 0x10 */
   int heading; /* 0x14 */
   int timer;   /* 0x18 */
   int camFlag; /* 0x1C */
@@ -1248,7 +1248,7 @@ void Level6_UpdateActors(void) {
       if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100) != 0) {
         int *nrm = &g_anCollisionHitNormal;
         int along;
-        register int push asm("$7");
+        register int push asm("$7"); /* a3, as in the original (A374) */
 
         SetVector3Magnitude(nrm, 0x1000);
         along = (st->vel[0] * nrm[0]) + (st->vel[1] * g_nCollisionHitNormalY) +
@@ -1432,8 +1432,8 @@ void Level6_UpdateActors(void) {
 
           if (toSpyro < 0x59A) {
             int top = actor->posZ + 0x164;
-            register int py asm("$2") = SPY.posZ;
-            int dz = py - top;
+            register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
+            int dz = spyZ - top;
 
             if (dz < 0) {
               dz = -dz;
@@ -1555,8 +1555,8 @@ void Level6_UpdateActors(void) {
         enemy_settle:
           if (toSpyro < 0x59A) {
             int top = actor->posZ + 0x164;
-            register int py asm("$2") = SPY.posZ;
-            int dz = py - top;
+            register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
+            int dz = spyZ - top;
 
             if (dz < 0) {
               dz = -dz;
@@ -1745,7 +1745,7 @@ void Level6_UpdateActors(void) {
       }
 
       case SAVEHOST_POP_IN: {
-        if (actor->scale >= 0x21) {
+        if (actor->scale > ACTOR_SCALE_UNIT) {
           actor->scale -= 4;
           actor->rotZ = actor->rotZ + 8;
         } else {
@@ -2234,7 +2234,7 @@ void Level6_UpdateActors(void) {
             actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
             actor->drawn = 0;
             actor->groundCode = 0;
-            actor->visZone = VIS_ZONE_ALWAYS;
+            actor->gateChunk = GATE_CHUNK_ALWAYS;
             actor->subMode = KEY_TAKEN;
           }
         }
@@ -2320,7 +2320,7 @@ void Level6_UpdateActors(void) {
           actor->subMode = LOCKCHEST_KEY_READY;
           key->scale = 0x40;
           key->groundCode = 0;
-          key->visZone = VIS_ZONE_ALWAYS;
+          key->gateChunk = GATE_CHUNK_ALWAYS;
           key->subMode = KEY_TAKEN;
         }
         break;
@@ -4191,7 +4191,7 @@ void Level6_UpdateActors(void) {
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
           g_nGamestate = GS_LEVEL_LOAD;
-          g_nGamePaused = 1;
+          g_nSkipGamestateDraw = 1;
           SPY.requestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 
@@ -4230,7 +4230,7 @@ void Level6_UpdateActors(void) {
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
           g_nGamestate = GS_LEVEL_LOAD;
-          g_nGamePaused = 1;
+          g_nSkipGamestateDraw = 1;
           SPY.requestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 

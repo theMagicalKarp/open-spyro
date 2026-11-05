@@ -29,4 +29,11 @@
  * scheduler's basic block (nothing moves across it). */
 #define EBB_BREAK() do { } while (0)
 
+/* A400: p->field of struct type S as a plain byte-offset memory reference.
+ * Same address and width, but gcc 2.7 does not mark it in-struct, so the
+ * scheduler and cse treat it like the original's pointer arithmetic. Use it
+ * only where p->field was measured to change the output. */
+#define FIELD_RAW(p, S, type, field) \
+  (*(type *)((char *)(p) + (int)&((S *)0)->field))
+
 #endif /* OPEN_SPYRO_MATCH_ASM_H */

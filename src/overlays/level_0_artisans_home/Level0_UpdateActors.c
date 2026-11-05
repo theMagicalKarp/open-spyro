@@ -1192,7 +1192,7 @@ void Level0_UpdateActors(void) {
       }
 
       case SAVEHOST_POP_IN: {
-        if (actor->scale >= 0x21) {
+        if (actor->scale > ACTOR_SCALE_UNIT) {
           actor->scale -= 4;
           actor->rotZ = actor->rotZ + 8;
         } else {
@@ -1948,7 +1948,7 @@ void Level0_UpdateActors(void) {
           actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
           actor->drawn = 0;
           actor->groundCode = 0;
-          actor->visZone = VIS_ZONE_ALWAYS;
+          actor->gateChunk = GATE_CHUNK_ALWAYS;
           actor->subMode = KEY_TAKEN;
         }
       }
@@ -2863,7 +2863,7 @@ void Level0_UpdateActors(void) {
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
           g_nGamestate = GS_LEVEL_LOAD;
-          g_nGamePaused = 1;
+          g_nSkipGamestateDraw = 1;
           SPY.requestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 
@@ -2902,7 +2902,7 @@ void Level0_UpdateActors(void) {
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
           g_nGamestate = GS_LEVEL_LOAD;
-          g_nGamePaused = 1;
+          g_nSkipGamestateDraw = 1;
           SPY.requestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 

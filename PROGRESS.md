@@ -1007,7 +1007,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x8007d9c8` | Level0_UpdateActors | ovl/level_0_artisans_home | 32260 | matched | game |
 | `0x8007da54` | Level3_UpdateActors | ovl/level_3_artisans_town_square | 38992 | matched | game |
 | `0x8007da78` | Level1_UpdateActors | ovl/level_1_artisans_stone_hill | 40116 | matched | game |
-| `0x8007dde8` | Titlescreen_Nop | ovl/titlescreen | 8 | matched | game |
+| `0x8007dde8` | Titlescreen_OverlayEnd | ovl/titlescreen | 8 | matched | game |
 | `0x8007e18c` | Level18_UpdateActors | ovl/level_18_beast_makers_home | 40292 | matched | game |
 | `0x8007e240` | Level7_UpdateActors | ovl/level_7_peace_keepers_dry_canyon | 49808 | matched | game |
 | `0x8007e240` | Level8_UpdateActors | ovl/level_8_peace_keepers_cliff_town | 43336 | matched | game |

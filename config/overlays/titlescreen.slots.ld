@@ -13,5 +13,5 @@
     build/overlays/titlescreen/asm/overlays/titlescreen/text.o(.text.Titlescreen_Draw)
     build/overlays/titlescreen/c/Titlescreen_Draw.o(.text)
     . = 0x000033b0 ;
-    build/overlays/titlescreen/asm/overlays/titlescreen/text.o(.text.Titlescreen_Nop)
-    build/overlays/titlescreen/c/Titlescreen_Nop.o(.text)
+    build/overlays/titlescreen/asm/overlays/titlescreen/text.o(.text.Titlescreen_OverlayEnd)
+    build/overlays/titlescreen/c/Titlescreen_OverlayEnd.o(.text)

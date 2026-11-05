@@ -277,7 +277,7 @@ void Titlescreen_Update(void) {
             g_nTitleMode.mode = TITLE_MODE_SAVE_SELECT;
             g_nTitleMode.menuState = TITLE_MENU_NEW_OR_LOAD;
             g_nTitleMode.selection = 1;
-            g_nGamePaused = 1;
+            g_nSkipGamestateDraw = 1;
             Titlescreen_PlayUiSound(TITLE_SFX_SUCCESS);
           } else if (g_nTitleMode.retryCount < 2) {
             /* save checksums didn't match, retry the read up to 2 times */
@@ -303,7 +303,7 @@ void Titlescreen_Update(void) {
             g_nTitleMode.mode = TITLE_MODE_SAVE_SELECT;
             g_nTitleMode.menuState = TITLE_MENU_NEW_OR_LOAD;
             g_nTitleMode.selection = 1;
-            g_nGamePaused = 1;
+            g_nSkipGamestateDraw = 1;
             Titlescreen_PlayUiSound(TITLE_SFX_SUCCESS);
           }
         } else if (g_nTitleMode.mcResult == McErrFileNotExist) {
@@ -643,7 +643,7 @@ void Titlescreen_Update(void) {
             g_nTitleMode.mode = TITLE_MODE_SAVE_SELECT;
             g_nTitleMode.menuState = TITLE_MENU_NEW_OR_LOAD;
             g_nTitleMode.selection = 0;
-            g_nGamePaused = 1;
+            g_nSkipGamestateDraw = 1;
             Titlescreen_PlayUiSound(TITLE_SFX_SUCCESS);
           } else {
             if (g_nTitleMode.retryCount < 2) {
@@ -666,7 +666,7 @@ void Titlescreen_Update(void) {
               g_nTitleMode.mode = TITLE_MODE_SAVE_SELECT;
               g_nTitleMode.menuState = TITLE_MENU_NEW_OR_LOAD;
               g_nTitleMode.selection = 0;
-              g_nGamePaused = 1;
+              g_nSkipGamestateDraw = 1;
               Titlescreen_PlayUiSound(TITLE_SFX_SUCCESS);
             }
           }
@@ -926,7 +926,7 @@ void Titlescreen_Update(void) {
             Titlescreen_PlayUiSound(TITLE_SFX_ERROR);
           } else {
             g_nTitleMode.menuState = TITLE_MENU_ROUTE;
-            g_nGamePaused = 1;
+            g_nSkipGamestateDraw = 1;
             g_nTitleMode.savedSelection = g_nTitleMode.selection;
             Titlescreen_PlayUiSound(TITLE_SFX_SELECT);
           }

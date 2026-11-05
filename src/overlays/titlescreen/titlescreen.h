@@ -145,7 +145,7 @@ extern struct {
   int pre;  /* 0x80075954 */
 } g_nVsyncFramePaceAnchor; /* vsync frame pacing pair */
 
-extern u_char g_pOtDepthBinHead0[];  /* scratch image buffer */
+extern u_char g_apMainDrawEntityList[];  /* scratch image buffer */
 extern int g_nFarPlaneDrawDistance;       /* far-plane culling distance */
 extern char g_anCameraViewMtx[];    /* camera view matrix (g_anWorldToCameraRotMtx at -0x14) */
 
@@ -220,7 +220,7 @@ typedef struct {
 #define setRECT(r, _x, _y, _w, _h) \
   (r)->x = (_x), (r)->y = (_y), (r)->w = (_w), (r)->h = (_h)
 
-extern int g_nGamePaused;
+extern int g_nSkipGamestateDraw;
 extern int g_nSparxFoodCount;
 extern int g_nSparxHealthStash;
 extern int g_nSparxHealth;

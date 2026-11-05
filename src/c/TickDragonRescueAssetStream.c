@@ -94,7 +94,8 @@ void TickDragonRescueAssetStream(void) {
     }
     if (g_nDragonRescueSplitFlag == 0) {
       {
-        register int top asm("$2") = 0x80000;
+        register int top asm("$2") =
+            0x80000; /* SPU RAM end; v0 as in the original (A374) */
         SetSpuTransferStartAddr(top + (g_nDragonRescueSpuChunkIndex << 15) -
                                 g_nDragonRescueAudioSampleSize);
       }
@@ -113,7 +114,8 @@ void TickDragonRescueAssetStream(void) {
       while (GetSpuTransferStatus(0) == 0) {
       }
       {
-        register int top asm("$2") = 0x80000;
+        register int top asm("$2") =
+            0x80000; /* SPU RAM end; v0 as in the original (A374) */
         SetSpuTransferStartAddr(top + (CHUNK << 15) -
                                 g_nDragonRescueAudioSampleSize);
       }
@@ -135,7 +137,7 @@ void TickDragonRescueAssetStream(void) {
     }
     {
       char **h = g_apWorldUnpackHeadBlock;
-      register char *p asm("$3");
+      register char *p asm("$3"); /* v1, as in the original (A374) */
 
       p = *h + g_nDragonRescueCameraPathOffset;
       g_pDragonRescueCameraPath = p - g_nDragonRescueHeaderEndOffset;

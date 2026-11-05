@@ -5,21 +5,22 @@
 #include "main_shared.h"
 
 /* Boot-time bring-up + title sequence (0x800127C0, 0x530). Brings up the GPU,
-   SPU, pad, sound engine, CD and GTE, publishes both draw buffers, then runs
-   the boot presentation as four 8-frame fades driven by AddBiasToColorRuns:
-   the title art fades in and back out around the four sync CD loads, then the
-   splash art (loaded into its own buffer 0x5A000 below the world chunk) fades
-   in while the world bundle streams, each pair separated by a 210-vblank hold.
-   Ends by clearing the screen, blitting the loaded frame back into VRAM,
-   carving the work-area top out of the crt0 stack size and handing off to the
-   story intro.
+   SPU, pad, sound engine, CD and GTE, points both load buffers past the
+   titlescreen overlay, then runs the boot presentation as four 8-frame fades
+   driven by AddBiasToColorRuns: the title art fades in and back out around the
+   four sync CD loads, then the splash art (loaded into its own buffer 0x5A000
+   below the world chunk) fades in while the world bundle streams, each pair
+   separated by a 210-vblank hold. Ends by clearing the screen, blitting the
+   loaded frame back into VRAM, carving the work-area top out of the crt0 stack
+   size and handing off to the story intro.
 
    Loop forms are NOT uniform and the difference is load-bearing. Fade 1 is a
    real do/while over the direct alias array: loop.c hoists the invariant
-   `&g_pDrawBufA` into the preheader, which is what gives the original its held
-   s0 base, and the RECT literals still re-materialize per iteration because
-   the inner `if (i == 0)` splits the body. Fades 2/3/4 must be goto-loops --
-   as do/while, loop.c hoists their RECT literals into callee-saved registers
+   `&g_pLoadStagingBuffer` into the preheader, which is what gives the original
+   its held s0 base, and the RECT literals still re-materialize per iteration
+   because the inner `if (i == 0)` splits the body. Fades 2/3/4 must be
+   goto-loops -- as do/while, loop.c hoists their RECT literals into
+   callee-saved registers
    (+4 insns each). Each fade also carries its OWN counter/bias/buffer locals:
    one shared counter lives across the whole body and steals the low
    callee-saved register the buffer base needs.
@@ -46,14 +47,14 @@ void Initialize(void) {
   int *archOff;
   int *timOff;
   char *top;
-  char *dst;
+  char *splashRuns;
   void **buf2;
   int j;
-  char *src;
+  char *splashFrame;
   int k;
   int bias3;
   int n;
-  char *src2;
+  char *splashFrame2;
   unsigned char *isrgb24;
   RECT rect;
   RECT clear;
@@ -67,23 +68,24 @@ void Initialize(void) {
   InitGeom();
   SetGeomOffset(0x100, 0x78);
   SetGeomScreen(0x155);
-  g_apDrawBufBlock[0] = &g_abDrawBufPool;
-  g_pDrawBufB = &g_abDrawBufPool;
+  g_apLoadStagingBufferBlock[0] = &g_abTitlescreenOverlayEnd;
+  g_pLevelDataBuffer = &g_abTitlescreenOverlayEnd;
   start = VSync(-1);
   SetDispMask(0);
-  fill = g_apDrawBufBlock[0];
+  fill = g_apLoadStagingBufferBlock[0];
   g_FrameDispEnv0.isrgb24 = 1;
   g_FrameDispEnv1.isrgb24 = 1;
   FillWord(fill, 0, 0x5A000);
   i = 0;
   bias = -0xE0;
   do {
-    AddBiasToColorRuns(&g_pOtDepthBinHead0, g_apDrawBufBlock[0], bias);
+    AddBiasToColorRuns(&g_apMainDrawEntityList, g_apLoadStagingBufferBlock[0],
+                       bias);
     rect.w = 0x300;
     rect.x = 0;
     rect.y = 0;
     rect.h = 0xF0;
-    LoadImage(&rect, g_apDrawBufBlock[0]);
+    LoadImage(&rect, g_apLoadStagingBufferBlock[0]);
     DrawSync(0);
     VSync(0);
     PutDispEnv(&g_FrameDispEnv1);
@@ -118,8 +120,8 @@ void Initialize(void) {
     {
       int cnt4 = *(volatile int *)&g_nAssetDirBootBlockSize;
       int off4 = *(volatile int *)&g_anAssetDirectory;
-      dst = top - *(volatile int *)&g_nAssetDirBootBlockSize;
-      CdReadSyncSectors(lba[0], dst, cnt4, off4, stallTicks);
+      splashRuns = top - *(volatile int *)&g_nAssetDirBootBlockSize;
+      CdReadSyncSectors(lba[0], splashRuns, cnt4, off4, stallTicks);
     }
   }
 hold_title:
@@ -127,11 +129,11 @@ hold_title:
     VSync(0);
     goto hold_title;
   }
-  FillWord(g_apDrawBufBlock2[0], 0, 0x5A000);
+  FillWord(g_apLoadStagingBufferBlock2[0], 0, 0x5A000);
   j = 0;
-  buf2 = g_apDrawBufBlock2;
+  buf2 = g_apLoadStagingBufferBlock2;
 fade_out_title:
-  AddBiasToColorRuns(&g_pOtDepthBinHead0, buf2[0], -(j + 1) << 5);
+  AddBiasToColorRuns(&g_apMainDrawEntityList, buf2[0], -(j + 1) << 5);
   rect.w = 0x300;
   rect.x = 0;
   rect.y = 0;
@@ -146,17 +148,17 @@ fade_out_title:
   }
 
   start = VSync(-1);
-  FillWord(dst - 0x5A000, 0, 0x5A000);
-  src = dst - 0x5A000;
+  FillWord(splashRuns - 0x5A000, 0, 0x5A000);
+  splashFrame = splashRuns - 0x5A000;
   k = 0;
   bias3 = -0xE0;
 fade_in_splash:
-  AddBiasToColorRuns(dst, src, bias3);
+  AddBiasToColorRuns(splashRuns, splashFrame, bias3);
   rect.w = 0x300;
   rect.x = 0;
   rect.y = 0;
   rect.h = 0xF0;
-  LoadImage(&rect, src);
+  LoadImage(&rect, splashFrame);
   DrawSync(0);
   VSync(0);
   PutDispEnv(&g_FrameDispEnv1);
@@ -179,14 +181,14 @@ hold_splash:
     goto hold_splash;
   }
   n = 0;
-  src2 = dst - 0x5A000;
+  splashFrame2 = splashRuns - 0x5A000;
 fade_out_splash:
-  AddBiasToColorRuns(dst, src2, -(n + 1) << 5);
+  AddBiasToColorRuns(splashRuns, splashFrame2, -(n + 1) << 5);
   rect.w = 0x300;
   rect.x = 0;
   rect.y = 0;
   rect.h = 0xF0;
-  LoadImage(&rect, src2);
+  LoadImage(&rect, splashFrame2);
   DrawSync(0);
   VSync(0);
   PutDispEnv(&g_FrameDispEnv1);
@@ -199,7 +201,8 @@ fade_out_splash:
   isrgb24 = &g_FrameDispEnv0.isrgb24;
   *isrgb24 = 0;
   g_FrameDispEnv1.isrgb24 = 0;
-  PutDispEnv((DISPENV *)(isrgb24 + 0x73));
+  PutDispEnv(
+      (DISPENV *)(isrgb24 + 0x73)); /* g_FrameDispEnv1, off the held base */
   clear.x = 0;
   clear.y = 0;
   clear.w = 0x200;
@@ -220,5 +223,5 @@ fade_out_splash:
   BeginStoryIntro();
   g_nFrameStep = 2;
   g_nFrameTicks = 0;
-  g_nInitUnreadWord = 0x8000;
+  g_nWorldChunkLodDepth = 0x8000;
 }

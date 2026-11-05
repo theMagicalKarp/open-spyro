@@ -1038,7 +1038,7 @@ void PauseMenu_Draw(void) {
       EnqueueHudSprites();
     }
     EnqueuePendingSpritePrims();
-    FillWord(&g_pOtDepthBinHead0, 0, 0x900);
+    FillWord(&g_apMainDrawEntityList, 0, 0x900);
     RasterizeSpritePrimQueue();
     DrawOTag(LinkOTPrimitives(0));
     DrawSync(0);

@@ -4098,7 +4098,7 @@ Gamestate0C_Draw_2026_09_15:
     which B-i rule 3 predicts should work ("reachable iff the pointer has
     enough refs to win global allocation"). Twenty builds — nesting depth
     0,1,2,3,4 x trailing-barrier kept/dropped x seed from the incomplete-array
-    alias / from `&g_pOtDepthBinHead0` — and EVERY depth >= 1 scores exactly 4,
+    alias / from `&g_apMainDrawEntityList` — and EVERY depth >= 1 scores exactly 4,
     byte-identical to the baseline. The dial saturates at depth 1 and never
     moves the addressing form, because the pointer's def is a plain copy of a
     constant address and is deleted before allocation, so the inflated
@@ -4264,7 +4264,7 @@ Gamestate0C_Draw_2026_09_18_1:
     original holds `la v1,sym-780` and stores 4(v1)/0(v1); we emit the absolute
     `lui at; sw %lo` pair twice. One new escape measured and closed this
     session (8 builds): give the pointer local a THIRD reference by passing it
-    to the later `FillWord(g_apOtDepthBinBlock, 0, 0x900)` call, so it is no
+    to the later `FillWord(g_apMainDrawEntityListBlock, 0, 0x900)` call, so it is no
     longer a 2-ref pseudo that `update_equiv_regs` can delete — with and
     without an ebb-breaking `do {} while (0)` between the init and the stores,
     and with the decl at both positions. Every `FillWord(p, ...)` variant is
@@ -4985,7 +4985,7 @@ func_8005D628_2026_10_05:
   date: 2026-10-05
 Initialize_2026_10_05:
   verdict: attempted
-  class: "fade-loop delay slot: the original body starts with the two-word `la &g_pOtDepthBinHead0` (reorg cannot fill, nop); ours starts with j+1"
+  class: "fade-loop delay slot: the original body starts with the two-word `la &g_apMainDrawEntityList` (reorg cannot fill, nop); ours starts with j+1"
   date: 2026-10-05
   note: "sched1 T-22 tie: la uid 367 outranks j+1 uid 362 on LUID. Inert: ++j in the arg, an ot pointer local, a b temp, do/while forms (loop.c hoists the RECT literals). A shared two-set ot local is folded by cse into s3."
 EnqueueLoadingScreenSprites_2026_10_05:

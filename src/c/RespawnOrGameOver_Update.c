@@ -90,7 +90,7 @@ void RespawnOrGameOver_Update(void) {
         g_nGameOverLevelIndex = g_nLevelIndex;
         FillWord(&g_nSpawnAnchorValid, 0, 0x68);
         if (g_nActiveLevelId != (((lba = g_nActiveLevelId) / 10) * 10)) {
-          g_nCurrentLevelId = (g_nActiveLevelId / 10) * 10;
+          g_nNextLevelId = (g_nActiveLevelId / 10) * 10;
           g_nCdStreamState = LSTREAM_SELECT_LEVEL;
           g_nEnteredPortalIdx = -1;
         } else {

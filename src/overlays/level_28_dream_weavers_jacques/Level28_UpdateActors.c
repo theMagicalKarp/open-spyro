@@ -185,9 +185,9 @@ void Level28_UpdateActors(void) {
                 g_nLevelTransitionTallyActive = 1;
                 g_nLevelTransitionPhase = 0;
                 g_nGamestate = GS_LEVEL_LOAD;
-                g_nGamePaused = 1;
+                g_nSkipGamestateDraw = 1;
                 g_nReturnPortalLevelId = g_nActiveLevelId;
-                g_nCurrentLevelId = g_nActiveLevelId / 10 * 10;
+                g_nNextLevelId = g_nActiveLevelId / 10 * 10;
                 g_nCameraNextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
                 g_dwSpyroRequestMask = 0;
                 ResetSpyroEntity(RESET_SPYRO_SOFT);
@@ -815,7 +815,7 @@ void Level28_UpdateActors(void) {
 
         if (st->partner->mode == JACQUES_HOP) {
           ((JacquesState *)st->partner->state)->timer = 0;
-          ((JacquesState *)st->partner->state)->u54 = 0;
+          ((JacquesState *)st->partner->state)->unread54 = 0;
           ((JacquesState *)st->partner->state)->child = 0;
           actor->mode = TROCK_BREAK;
           ANIM_RESET(actor, TROCK_BREAK);
@@ -865,7 +865,7 @@ void Level28_UpdateActors(void) {
           d = d / st->speed;
           st->vz = (g168[2] - actor->posZ) / d;
           st->spinY = 2;
-          st->u06 = 0;
+          st->unread06 = 0;
           st->spinX = 1;
         }
         actor->mode = TROCK_FLY;
@@ -898,7 +898,7 @@ void Level28_UpdateActors(void) {
           CopyVector(g056, &actor->posX);
           g056[2] += 0xC8;
           if (CollideSphereWithWorldAndActors(g056, 0xDC, 0xDC) != 0) {
-            st->u06 = 0;
+            st->unread06 = 0;
             st->speed = 0;
             st->spinX = 0;
             st->spinY = 0;
@@ -909,7 +909,7 @@ void Level28_UpdateActors(void) {
           }
         }
         if (TICK_DOWN(st->flightTimer) != 0) {
-          st->u06 = 0;
+          st->unread06 = 0;
           st->speed = 0;
           st->spinX = 0;
           st->spinY = 0;
@@ -945,7 +945,7 @@ void Level28_UpdateActors(void) {
       if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100) != 0) {
         int *nrm = &g_anCollisionHitNormal;
         int along;
-        register int push asm("$7");
+        register int push asm("$7"); /* a3, as in the original (A374) */
 
         SetVector3Magnitude(nrm, 0x1000);
         along = (st->vel[0] * nrm[0]) + (st->vel[1] * g_nCollisionHitNormalY) +
@@ -1129,8 +1129,8 @@ void Level28_UpdateActors(void) {
 
           if (toSpyro < 0x59A) {
             int top = actor->posZ + 0x164;
-            register int py asm("$2") = SPY.posZ;
-            int dz = py - top;
+            register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
+            int dz = spyZ - top;
 
             if (dz < 0) {
               dz = -dz;
@@ -1252,8 +1252,8 @@ void Level28_UpdateActors(void) {
         enemy_settle:
           if (toSpyro < 0x59A) {
             int top = actor->posZ + 0x164;
-            register int py asm("$2") = SPY.posZ;
-            int dz = py - top;
+            register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
+            int dz = spyZ - top;
 
             if (dz < 0) {
               dz = -dz;
@@ -1439,7 +1439,7 @@ void Level28_UpdateActors(void) {
         break;
 
       case SAVEHOST_POP_IN:
-        if (actor->scale >= 0x21) {
+        if (actor->scale > ACTOR_SCALE_UNIT) {
           actor->scale -= 4;
           actor->rotZ += 8;
         } else {
@@ -2111,7 +2111,7 @@ void Level28_UpdateActors(void) {
         st->stops[1] = 6;
         st->stops[2] = 7;
         st->stops[3] = 10;
-        st->u54 = 0;
+        st->unread54 = 0;
         st->init = one;
         st->stops[4] = 11;
         st->stops[5] = 13;
@@ -2169,7 +2169,7 @@ void Level28_UpdateActors(void) {
           if (st->path->cur == 13) {
             ModifyWorldChunkAnimFlags(JACQUES_CHUNK_STOP13, CHUNK_ANIM_RESUME, 0);
           }
-          st->u54 = 0;
+          st->unread54 = 0;
           ANIM_GO(actor, JACQUES_WATCH);
           actor->mode = JACQUES_HOP;
           continue;
@@ -2307,7 +2307,7 @@ void Level28_UpdateActors(void) {
             actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
             actor->drawn = 0;
             actor->groundCode = 0;
-            actor->visZone = VIS_ZONE_ALWAYS;
+            actor->gateChunk = GATE_CHUNK_ALWAYS;
             actor->subMode = KEY_TAKEN;
           }
         }
@@ -2393,7 +2393,7 @@ void Level28_UpdateActors(void) {
           actor->subMode = LOCKCHEST_KEY_READY;
           key->scale = 0x40;
           key->groundCode = 0;
-          key->visZone = VIS_ZONE_ALWAYS;
+          key->gateChunk = GATE_CHUNK_ALWAYS;
           key->subMode = KEY_TAKEN;
         }
         break;

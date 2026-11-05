@@ -51,8 +51,10 @@ typedef struct Actor {
   unsigned char mode;  /* 0x48 behaviour state; >= ACTOR_MODE_DORMANT dormant,
                           ACTOR_MODE_END ends the pool */
   unsigned char subMode; /* 0x49 sub-state */
-  unsigned char visZone; /* 0x4A visibility-gate index into g_abVisZoneGates;
-                          * 0xFF = always drawn (BuildRenderEntityLists) */
+  unsigned char gateChunk; /* 0x4A the world chunk gating the actor: it is
+                            * drawn only if RenderWorldChunks drew that chunk
+                            * this frame (g_abWorldChunkDrawn); 0xFF = always
+                            * drawn (BuildRenderEntityLists) */
   unsigned char renderList; /* 0x4B signed; picks the BuildRenderEntityLists
                              * list: > 0 the main mesh list (default 0x20,
                              * BuildActorDrawList), < 0 (ACTOR_RENDER_SECONDARY)
@@ -64,8 +66,11 @@ typedef struct Actor {
    * store, and the flame band raises c2 while lowering c0/c1. With 0x4C..0x4E
    * zeroed, tintMode picks a preset instead: gem colours 1..5 (HUD icons set
    * type - 0x52) and 0xB for HUD sprites. TickActorFlameGlow drives tint2 as a
-   * 0..0x60 glow on its own. These names describe the byte layout only; the
-   * renderer that reads them is hand-written asm and not decoded yet. */
+   * 0..0x60 glow on its own. Only two hand-written renderers read the word:
+   * BuildSecondaryActorDrawList copies it into the draw record (+0x30) for
+   * EmitSecondaryActorPrimitives (which branches on a nonzero tintMode
+   * byte), and RasterizeSpritePrimQueue reads it for sprite records. Main-list
+   * actors (BuildActorDrawList / EmitActorDrawList) never read it. */
   unsigned char tint0; /* 0x4C */
   unsigned char tint1; /* 0x4D */
   unsigned char tint2; /* 0x4E */
@@ -84,13 +89,16 @@ typedef struct Actor {
                            * VOICE_ROW_NONE when silent */
   unsigned char soundRange; /* 0x55 voice audible range >> 10 (TickActiveSoundVoices) */
   unsigned char poolIndex; /* 0x56 id byte for actors outside the pool */
-  unsigned char scale; /* 0x57 draw scale override, 0 = mesh default (likely; overlay
-                        * grow/shrink tweens drive it 0x20..0x60, BuildActorDrawList
-                        * packs it into the draw word) */
+  unsigned char scale; /* 0x57 draw scale, 0 = none: BuildActorDrawList packs it
+                        * into the draw word and EmitActorDrawList multiplies the
+                        * view-space translation by scale / 0x20 before
+                        * projecting, so the mesh draws at 0x20 / scale of its
+                        * size (overlay grow/shrink tweens drive it 0x20..0x60) */
 } Actor; /* 0x58 */
 
 /* Actor.voiceRow while no voice row plays the actor's sound. */
 #define VOICE_ROW_NONE 0x7F
+#define ACTOR_SCALE_UNIT 0x20 /* ->scale drawing the mesh at its own size (0x40 = half, 0x14 = 1.6x) */
 #define ACTOR_CULL_HIDDEN 0 /* ->cullRadius: a zero bound fails the view cull, so the actor is hidden */
 #define ACTOR_TINT_NEUTRAL 0xA18618 /* the 0x4C tint word at neutral levels (0x18 each, tag 0xA) */
 /* Actor.tintMode presets, used with tint0..2 zeroed.
@@ -132,7 +140,7 @@ typedef struct Actor {
                                   * a negative radius keeps the actor updating anywhere */
 #define ACTOR_UPDATE_WHEN_DRAWN 0 /* ->updateDist: no activation radius, so it only
                                   * updates while it was drawn last frame */
-#define VIS_ZONE_ALWAYS 0xFF     /* ->visZone: no vis-zone gate, always drawn */
+#define GATE_CHUNK_ALWAYS 0xFF     /* ->gateChunk: no chunk gate, always drawn */
 #define DROP_GEM_ROLL 0xFF       /* ->dropKind: a random gem roll (and counts in the
                                   * checkpoint kill set, IsActorInCheckpointKillSet) */
 
@@ -211,7 +219,9 @@ typedef struct Actor {
 #define ACTOR_KILL_GROUP_NEVER_RESPAWN 0x7D  /* any saved kill despawns it */
 #define ACTOR_KILL_GROUP_ALWAYS_RESPAWN 0x7E /* always back, as a gem roll */
 /* Actor.renderList sign bit: draw through BuildSecondaryActorDrawList, which
- * builds the rotation from the euler bytes, instead of the main mesh list. */
+ * builds the rotation from the euler bytes, instead of the main mesh list.
+ * It is also the only mesh path that applies the tint word (Metalhead's
+ * SpawnActor sets it on the scorchable parts, StepActorScorchTint). */
 #define ACTOR_RENDER_SECONDARY 0x80
 
 /* Size of one actor record: the stride of the actor pool, the sprite-record

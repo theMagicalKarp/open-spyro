@@ -4,8 +4,8 @@
 /* Reset an actor's animation, render and activation fields to their defaults
    (0x8003a720, 0x7c): anim/frame state cleared with frameRate 0x20 and
    nextFrame 1, euler bytes and mode/subMode zeroed, flags/groundCode/tint
-   words cleared, otBias 4, renderList 0x20, cullRadius 0x10, group, visZone,
-   updateDist and dropKind 0xFF (visZone 0xFF = always drawn, updateDist the
+   words cleared, otBias 4, renderList 0x20, cullRadius 0x10, group, gateChunk,
+   updateDist and dropKind 0xFF (gateChunk 0xFF = always drawn, updateDist the
    widest activation radius, dropKind the random gem roll) and voiceRow 0x7F. */
 void InitActorRenderDefaults(Actor *actor) {
   actor->cullRadius = 0x10;
@@ -20,7 +20,7 @@ void InitActorRenderDefaults(Actor *actor) {
   actor->frameProgress = 0;
   actor->frameRate = 0x20;
   actor->group = 0xff;
-  actor->visZone = VIS_ZONE_ALWAYS;
+  actor->gateChunk = GATE_CHUNK_ALWAYS;
   actor->dropKind = DROP_GEM_ROLL;
   actor->flags = 0;
   actor->rotX = 0;

@@ -1,6 +1,6 @@
 /* 0x8001364c — post-CD-stream level finalization driver, the "level-loader
    meat" (3708 b). Builds every piece of per-level runtime state out of the
-   bundle the CD stream just dropped in g_pPathTableBuffer. Callers:
+   bundle the CD stream just dropped in g_pLevelArchiveBuffer. Callers:
    LoadAndStartLevelFromCd and TickLevelTransitionStream (case 0xd);
    fullSetup == 0 is the light path (no chunk-anim reset, no overlay hook).
 
@@ -26,7 +26,9 @@ struct CameraParamBlock {
 };
 
 /* The kill-table else-arm reserves v1/a0 with empty asm defs/uses so global
-   alloc hands `group` a1, as in the original. */
+   alloc hands `group` a1, as in the original. The block-scoped register
+   pins (demo/poseWord, runBit, bitIdx/tbl/levelBit) put each value in the
+   original's register (A374). */
 void BuildLoadedLevelRuntime(int fullSetup) {
   int pos[3];
   int pad[8];
@@ -62,7 +64,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   unsigned char type;
   StopAllSoundExceptMask(0);
   InitLightVectorConstants();
-  p = (int *)g_pPathTableBuffer;
+  p = (int *)g_pLevelArchiveBuffer;
   g_nVblankTickCount = 0;
   g_dwGamestateFrames = 0;
   g_nSpyroDrawSuppressed = 0;
@@ -166,7 +168,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   }
   if (g_nGamestate != GS_ACTOR_CUTSCENE) {
     g_nGamestate = GS_GAMEPLAY;
-    g_nGamePaused = 1;
+    g_nSkipGamestateDraw = 1;
     g_nCinematicActive = 0;
     g_nLetterboxBarHeight = 0;
   }
@@ -204,8 +206,8 @@ sprites:
   p++;
   w = *p;
   p++;
-  g_pWorldAnimMeshKeyframeList = p;
-  pcount = g_anWorldAnimMeshKeyframeCountBlock;
+  g_pWorldAnimTextureFrameList = p;
+  pcount = g_anWorldAnimTextureFrameCountBlock;
   *pcount = w;
   if ((*pcount) > 0) {
     do {
@@ -238,8 +240,8 @@ sprites:
   p++;
   w = *p;
   p++;
-  g_pWorldAnimColor2List = p;
-  pcount = g_anWorldAnimColor2CountBlock;
+  g_pWorldAnimDetailVertsList = p;
+  pcount = g_anWorldAnimDetailVertsCountBlock;
   *pcount = w;
   if ((*pcount) > 0) {
     do {
@@ -255,8 +257,8 @@ sprites:
   p++;
   w = *p;
   p++;
-  g_pWorldAnimColor0List = p;
-  pcount = g_anWorldAnimColor0CountBlock;
+  g_pWorldAnimLodVertsList = p;
+  pcount = g_anWorldAnimLodVertsCountBlock;
   *pcount = w;
   if ((*pcount) > 0) {
     do {
@@ -289,8 +291,8 @@ sprites:
   p++;
   w = *p;
   p++;
-  g_pWorldAnimColor3List = p;
-  pcount = g_anWorldAnimColor3CountBlock;
+  g_pWorldAnimDetailColorsList = p;
+  pcount = g_anWorldAnimDetailColorsCountBlock;
   *pcount = w;
   if ((*pcount) > 0) {
     do {
@@ -306,8 +308,8 @@ sprites:
   p++;
   w = *p;
   p++;
-  g_pWorldAnimColor1List = p;
-  pcount = g_anWorldAnimColor1CountBlock;
+  g_pWorldAnimLodColorsList = p;
+  pcount = g_anWorldAnimLodColorsCountBlock;
   *pcount = w;
   if ((*pcount) > 0) {
     do {
@@ -321,11 +323,11 @@ sprites:
   if (fullSetup != 0) {
     ResetWorldChunkAnimations();
   } else {
-    g_nWorldAnimMeshKeyframeCount = 0;
+    g_nWorldAnimTextureFrameCount = 0;
     g_nWorldAnimUvCycleCount = 0;
     g_nWorldAnimVertexMorphCount = 0;
-    g_nWorldAnimColor3Count = 0;
-    g_nWorldAnimColor1Count = 0;
+    g_nWorldAnimDetailColorsCount = 0;
+    g_nWorldAnimLodColorsCount = 0;
   }
   base = p;
   p++;

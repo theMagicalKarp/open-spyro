@@ -12,8 +12,8 @@
  *            * 0x1F/0x20: the confirm prompt + "GO TO <name>".
  *          The highlighted entry is the one whose index equals g_nActorCutsceneMenuCursor;
  *          its glyphs get the pulse, the rest stay flat.
- *   >= 4 — append the pending OT node (g_pActorCutsceneRecord) to the depth-bin list at
- *          g_pOtDepthBinHead0 instead.
+ *   >= 4 — append the cutscene actor (g_pActorCutsceneRecord) to the main draw list at
+ *          g_apMainDrawEntityList instead.
  * Every path finishes with the frame pipeline (BuildRenderEntityLists / ComposeFrameScene /
  * SetupFrameOT / DrawPortalsAndSky / RasterizeEmitList).
  *
@@ -187,7 +187,7 @@ void Level0_BalloonistCutscene_Draw(void) {
           sprintf(dest, g_szGoTo, g_apWorldNameByLevelTens[g_nActiveLevelId / 10]);
         } else {
           sprintf(dest, g_szGoTo,
-                        g_apLevelNameByWorldRow[(g_nCurrentLevelId / 10) * 6 + g_nCurrentLevelId % 10]);
+                        g_apLevelNameByWorldRow[(g_nNextLevelId / 10) * 6 + g_nNextLevelId % 10]);
         }
         BuildTextSprites(dest, askPos, askColor, 0x12, TINT_HUD);
         if (g_nActorCutsceneSubstate[2] == 1) {
@@ -209,7 +209,7 @@ void Level0_BalloonistCutscene_Draw(void) {
     int *node;
 
     BuildRenderEntityLists();
-    node = g_pOtDepthBinHead0;
+    node = g_apMainDrawEntityList;
     if (*node != 0) {
       do {
         node++;

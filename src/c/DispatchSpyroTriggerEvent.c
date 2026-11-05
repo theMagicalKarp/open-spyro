@@ -51,7 +51,7 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
   void (*hook)(int, int);
 
   rec = ((unsigned char **)g_pTriggerRegionTable)[idx];
-  data = (int *)(rec + 4);
+  data = TRIGGER_REGION_DATA(rec);
   switch (rec[0]) {
   case TRIGGER_HAZARD:
     if (event == 1 && g_nSpyroWorldPosZ - g_nSpyroGroundHeightZ > 0x200) {
@@ -86,9 +86,9 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
     if (*ready < 0) {
       break;
     }
-    g_nCurrentLevelId = data[0];
-    if (g_nCurrentLevelId > LEVEL_GNASTYS_LOOT) {
-      g_nCurrentLevelId = g_nActiveLevelId;
+    g_nNextLevelId = data[0];
+    if (g_nNextLevelId > LEVEL_GNASTYS_LOOT) {
+      g_nNextLevelId = g_nActiveLevelId;
       break;
     }
     one = 1;

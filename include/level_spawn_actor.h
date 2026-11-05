@@ -14,6 +14,7 @@
  * view (A400) can include this header too. */
 struct Actor;
 extern struct Actor *g_pActorListBase;
+extern struct Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type (model.h) */
 
 /* Actor-record lifecycle (main, actor.h spells them with the typedef). */
 extern struct Actor *AllocActorRecordSlot(void);
@@ -61,7 +62,7 @@ extern int StepAndLerpAngle8(int to, int from, int maxStep, int frac);
 extern int g_anFlightTargetTally;
 extern char *g_apSpritePrimQueue[];
 extern int g_dwHudIconSpinAngle;
-extern char g_pOtDepthBinHead0[];
+extern char g_apMainDrawEntityList[];
 extern char *g_pRenderScratchRegionBase;
 extern struct Actor *g_pSpriteRecordWriteCursor; /* sprite-record queue tail (grows down) */
 

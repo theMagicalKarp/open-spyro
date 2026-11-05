@@ -894,7 +894,7 @@ void Level24_UpdateActors(void) {
             st->range = 0;
           }
           if (st->kind != LGKIND_SMALL) {
-            actor->scale = 0x20;
+            actor->scale = ACTOR_SCALE_UNIT;
             actor->mode = LGUARD_GROW;
             continue;
           }
@@ -1039,8 +1039,8 @@ void Level24_UpdateActors(void) {
       case LGUARD_SHRINK:
         TICK_DOWN(st->reloadTimer);
         actor->scale -= g_nFrameStep * 2;
-        if (actor->scale < 0x21) {
-          actor->scale = 0x20;
+        if (actor->scale <= ACTOR_SCALE_UNIT) {
+          actor->scale = ACTOR_SCALE_UNIT;
           st->kind = !st->kind;
           actor->mode = LGUARD_IDLE;
           continue;
@@ -1051,7 +1051,7 @@ void Level24_UpdateActors(void) {
         TICK_DOWN(st->reloadTimer);
         actor->scale += g_nFrameStep * 2;
         if (actor->scale >= 0x38) {
-          actor->scale = 0x20;
+          actor->scale = ACTOR_SCALE_UNIT;
           BurstActorWithSound(actor, 0x20);
           st->base = 4;
           ANIM_SET(actor, st->base);
@@ -1190,7 +1190,7 @@ void Level24_UpdateActors(void) {
       if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100) != 0) {
         int *nrm = &g_anCollisionHitNormal;
         int along;
-        register int push asm("$7");
+        register int push asm("$7"); /* a3, as in the original (A374) */
 
         SetVector3Magnitude(nrm, 0x1000);
         along = (st->vel[0] * nrm[0]) + (st->vel[1] * g_nCollisionHitNormalY) +
@@ -1375,8 +1375,8 @@ void Level24_UpdateActors(void) {
 
           if (toSpyro < 0x59A) {
             int top = actor->posZ + 0x164;
-            register int py asm("$2") = SPY.posZ;
-            int dz = py - top;
+            register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
+            int dz = spyZ - top;
 
             if (dz < 0) {
               dz = -dz;
@@ -1498,8 +1498,8 @@ void Level24_UpdateActors(void) {
         enemy_settle:
           if (toSpyro < 0x59A) {
             int top = actor->posZ + 0x164;
-            register int py asm("$2") = SPY.posZ;
-            int dz = py - top;
+            register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
+            int dz = spyZ - top;
 
             if (dz < 0) {
               dz = -dz;
@@ -1688,7 +1688,7 @@ void Level24_UpdateActors(void) {
       }
 
       case SAVEHOST_POP_IN: {
-        if (actor->scale >= 0x21) {
+        if (actor->scale > ACTOR_SCALE_UNIT) {
           actor->scale -= 4;
           actor->rotZ = actor->rotZ + 8;
         } else {
@@ -2420,7 +2420,7 @@ void Level24_UpdateActors(void) {
             continue;
           }
           st->kind = !st->kind;
-          actor->scale = 0x20;
+          actor->scale = ACTOR_SCALE_UNIT;
           actor->mode = LGUARD_GROW;
           continue;
         } else if (st->range < 0) {
@@ -2559,8 +2559,8 @@ void Level24_UpdateActors(void) {
       case LGUARD_SHRINK:
         TICK_DOWN(st->reloadTimer);
         actor->scale -= g_nFrameStep * 2;
-        if (actor->scale < 0x21) {
-          actor->scale = 0x20;
+        if (actor->scale <= ACTOR_SCALE_UNIT) {
+          actor->scale = ACTOR_SCALE_UNIT;
           actor->mode = LGUARD_IDLE;
           continue;
         }
@@ -2571,7 +2571,7 @@ void Level24_UpdateActors(void) {
         actor->scale += g_nFrameStep * 2;
         if (actor->scale >= 0x38) {
           StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-          actor->scale = 0x20;
+          actor->scale = ACTOR_SCALE_UNIT;
           BurstActorWithSound(actor, 0x20);
           st->base = 4;
           ANIM_SET(actor, st->base);
@@ -2705,7 +2705,7 @@ void Level24_UpdateActors(void) {
             actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
             actor->drawn = 0;
             actor->groundCode = 0;
-            actor->visZone = VIS_ZONE_ALWAYS;
+            actor->gateChunk = GATE_CHUNK_ALWAYS;
             actor->subMode = KEY_TAKEN;
           }
         }
@@ -3839,7 +3839,7 @@ void Level24_UpdateActors(void) {
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
           g_nGamestate = GS_LEVEL_LOAD;
-          g_nGamePaused = 1;
+          g_nSkipGamestateDraw = 1;
           SPY.requestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 
@@ -3878,7 +3878,7 @@ void Level24_UpdateActors(void) {
           g_nLevelTransitionTallyActive = 1;
           g_nLevelTransitionPhase = 0;
           g_nGamestate = GS_LEVEL_LOAD;
-          g_nGamePaused = 1;
+          g_nSkipGamestateDraw = 1;
           SPY.requestYaw = st->dest;
           ComputeCameraToTargetAngle(&CAM.posX);
 

@@ -172,7 +172,9 @@ typedef enum SpyroState
 #define SPYRO_SUB_GLIDE_ENTER 11      /* level-entry glide straight into gameplay (g_anCameraParamTransitionGlideIn arrival) */
 
 /* Trigger-region record types (byte 0 of a g_pTriggerRegionTable record),
- * dispatched by DispatchSpyroTriggerEvent. */
+ * dispatched by DispatchSpyroTriggerEvent. The type-specific data words
+ * follow the 4-byte header. */
+#define TRIGGER_REGION_DATA(rec) ((int *)((rec) + 4))
 enum TriggerRegionType {
   TRIGGER_HAZARD = 0,       /* raises SPYRO_EV_HAZARD; data: [0] instant death, [1] g_nSpyroHazardKind */
   TRIGGER_LIFT = 1,         /* raises SPYRO_EV_LIFT (g_pSpyroLiftRegionData) */

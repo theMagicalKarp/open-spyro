@@ -38,7 +38,7 @@ void Level12_BeginActorCutscene(Actor *actor) {
   count = *p;
   pos = g_anCameraPos;
   g_nCinematicActive = 1;
-  g_nGamePaused = 1;
+  g_nSkipGamestateDraw = 1;
   g_pActorCutsceneRecord = &g_pActorListBase[count];
   g_nActorCutsceneCamYawStart = ArcTan2(pos[0] - ACTOR_RAW(actor, int, posX),
                              g_nCameraPosY - ACTOR_RAW(actor, int, posY), ATAN_ANGLE12);

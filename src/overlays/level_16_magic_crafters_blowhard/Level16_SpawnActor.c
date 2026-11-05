@@ -44,7 +44,6 @@
  */
 
 extern int g_anSpyroWorldPos[];
-extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type */
 
 /* The body below started as decomp-permuter output (2026-08-14-1) and was
    carried to a full match from there; the earlier hand-written draft and its

@@ -304,9 +304,10 @@ extern char Level34_OverlayEnd[];
 
 /* 0x8005a470 (0x1288): after a level overlay loads, points the engine's
    per-level hook slots (overlay init, gamestate-0 early/late hooks, particle
-   spawner, fall-impact callback, gamestate-7 handlers, ...) and the level's
-   draw buffer at that overlay's entry points, keyed on g_nActiveLevelId.
-   Levels without an entry keep their previous hooks. Finally mirrors the
-   draw buffer into g_pDrawBufB. */
+   spawner, fall-impact callback, gamestate-7 handlers, ...) at that overlay's entry
+   points and g_pLoadStagingBuffer at its end (Level<N>_OverlayEnd, the first
+   free byte), keyed on g_nActiveLevelId. Levels without an entry keep their
+   previous hooks. Finally copies g_pLoadStagingBuffer into
+   g_pLevelDataBuffer. */
 
 #endif /* OPEN_SPYRO_LEVEL_ENTRY_POINTS_H */

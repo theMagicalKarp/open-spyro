@@ -18,13 +18,13 @@ void CreditsSequence_Update(void) {
   case CREDITS_MODE_RETURN_HOME:
     g_nCdStreamState = LSTREAM_FRESH;
     if (g_nCreditsReturnLevelId != -1) {
-      g_nCurrentLevelId = g_nCreditsReturnLevelId;
+      g_nNextLevelId = g_nCreditsReturnLevelId;
       g_nCreditsReturnLevelId = -1;
     } else {
       if (g_nTotalTreasureCollected == 0x36B0) {
-        g_nCurrentLevelId = LEVEL_ARTISANS;
+        g_nNextLevelId = LEVEL_ARTISANS;
       } else {
-        g_nCurrentLevelId = LEVEL_GNORC_GNEXUS;
+        g_nNextLevelId = LEVEL_GNORC_GNEXUS;
       }
     }
     g_nReturnPortalLevelId = 0;

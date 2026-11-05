@@ -3550,13 +3550,13 @@ glabel Titlescreen_Draw
 endlabel Titlescreen_Draw
 .endif
 
-.section .text.Titlescreen_Nop, "ax"
-.ifndef HAVE_C_Titlescreen_Nop
-nonmatching Titlescreen_Nop, 0x8
+.section .text.Titlescreen_OverlayEnd, "ax"
+.ifndef HAVE_C_Titlescreen_OverlayEnd
+nonmatching Titlescreen_OverlayEnd, 0x8
 
-glabel Titlescreen_Nop
+glabel Titlescreen_OverlayEnd
     /* 33B0 8007DDE8 0800E003 */  jr         $ra
     /* 33B4 8007DDEC 00000000 */   nop
-endlabel Titlescreen_Nop
+endlabel Titlescreen_OverlayEnd
 .endif
 

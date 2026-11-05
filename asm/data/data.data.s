@@ -2726,15 +2726,14 @@ dlabel g_anAnimRootMotionDeltaLut
     /* 5DFFC 8006D7FC 06300000 */ .word 0x00003006
     /* 5E000 8006D800 0630C000 */ .word 0x00C03006
     /* 5E004 8006D804 06308001 */ .word 0x01803006
+enddlabel g_anAnimRootMotionDeltaLut
+
+nonmatching g_abArcSinLut
+
+dlabel g_abArcSinLut
     /* 5E008 8006D808 0406080A */ .word 0x0A080604
     /* 5E00C 8006D80C 0B0C0D0E */ .word 0x0E0D0C0B
     /* 5E010 8006D810 0F101111 */ .word 0x1111100F
-enddlabel g_anAnimRootMotionDeltaLut
-
-nonmatching D_8006D814
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8006D814
     /* 5E014 8006D814 12131414 */ .word 0x14141312
     /* 5E018 8006D818 15161617 */ .word 0x17161615
     /* 5E01C 8006D81C 17181919 */ .word 0x19191817
@@ -2796,11 +2795,11 @@ dlabel D_8006D814
     /* 5E0FC 8006D8FC 6F6F7071 */ .word 0x71706F6F
     /* 5E100 8006D900 72737475 */ .word 0x75747372
     /* 5E104 8006D904 76787A7C */ .word 0x7C7A7876
-enddlabel D_8006D814
+enddlabel g_abArcSinLut
 
-nonmatching D_8006D908
+nonmatching g_abArcTanOctantLut
 
-dlabel D_8006D908
+dlabel g_abArcTanOctantLut
     /* 5E108 8006D908 00010102 */ .word 0x02010100
     /* 5E10C 8006D90C 03030404 */ .word 0x04040303
     /* 5E110 8006D910 05060607 */ .word 0x07060605
@@ -2818,7 +2817,7 @@ dlabel D_8006D908
     /* 5E140 8006D940 1D1E1E1E */ .word 0x1E1E1E1D
     /* 5E144 8006D944 1F1F1F20 */ .word 0x201F1F1F
     /* 5E148 8006D948 20000000 */ .word 0x00000020
-enddlabel D_8006D908
+enddlabel g_abArcTanOctantLut
 
 nonmatching g_anSpyroFlameAgeConfigShort
 
@@ -6184,17 +6183,17 @@ dlabel g_pOtMergedChainTail
     /* 604F0 8006FCF0 B5564A29 */ .word 0x294A56B5
 enddlabel g_pOtMergedChainTail
 
-nonmatching g_pOtDepthBinHead0
+nonmatching g_apMainDrawEntityList
 
-dlabel g_pOtDepthBinHead0
+dlabel g_apMainDrawEntityList
     /* 604F4 8006FCF4 9BA60E00 */ .word 0x000EA69B
-enddlabel g_pOtDepthBinHead0
+enddlabel g_apMainDrawEntityList
 
-nonmatching g_pOtDepthBinTail0
+nonmatching g_pMainDrawEntityList1
 
-dlabel g_pOtDepthBinTail0
+dlabel g_pMainDrawEntityList1
     /* 604F8 8006FCF8 0000000E */ .word 0x0E000000
-enddlabel g_pOtDepthBinTail0
+enddlabel g_pMainDrawEntityList1
 
 nonmatching D_8006FCFC
 
@@ -8861,9 +8860,9 @@ dlabel g_apSpritePrimQueue
     /* 62CF0 800724F0 4E4E4E4E */ .word 0x4E4E4E4E
 enddlabel g_apSpritePrimQueue
 
-nonmatching g_apSecondaryEntityList
+nonmatching g_anActorShadowQueue
 
-dlabel g_apSecondaryEntityList
+dlabel g_anActorShadowQueue
     /* 62CF4 800724F4 4E4E5757 */ .word 0x57574E4E
     /* 62CF8 800724F8 570B0B0B */ .word 0x0B0B0B57
     /* 62CFC 800724FC B22A1000 */ .word 0x00102AB2
@@ -8992,7 +8991,7 @@ dlabel g_apSecondaryEntityList
     /* 62EE8 800726E8 FFFFF8F8 */ .word 0xF8F8FFFF
     /* 62EEC 800726EC F8ECECEC */ .word 0xECECECF8
     /* 62EF0 800726F0 FBFBFBC3 */ .word 0xC3FBFBFB
-enddlabel g_apSecondaryEntityList
+enddlabel g_anActorShadowQueue
 
 nonmatching g_anOtPrimSaveList
 
@@ -14592,11 +14591,11 @@ dlabel g_pPortalDeferredTriStackTop
     /* 65F98 80075798 00000000 */ .word 0x00000000
 enddlabel g_pPortalDeferredTriStackTop
 
-nonmatching g_nGamePaused
+nonmatching g_nSkipGamestateDraw
 
-dlabel g_nGamePaused
+dlabel g_nSkipGamestateDraw
     /* 65F9C 8007579C 00000000 */ .word 0x00000000
-enddlabel g_nGamePaused
+enddlabel g_nSkipGamestateDraw
 
 nonmatching g_pfnLevelBeginActorCutscene
 

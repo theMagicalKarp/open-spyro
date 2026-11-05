@@ -30,8 +30,8 @@ void Cutscene_Update(void) {
     ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
     g_nCdStreamState = CSTREAM_READ_HEADER;
-    g_pDrawBufA = g_pSharedLoadBuffer;
-    g_pDrawBufB = g_pSharedLoadBuffer;
+    g_pLoadStagingBuffer = g_pSharedLoadBuffer;
+    g_pLevelDataBuffer = g_pSharedLoadBuffer;
     if (g_nCutsceneId == CUTSCENE_LOOT_ENDING) {
       g_pWorkAreaTop = (void *)(0x80200000 - g_nCrt0StackSize);
       InitActorMeshScratchRegions(1);

@@ -57,7 +57,7 @@ typedef struct ShockwaveState {
 /* Type 169's trail point. */
 typedef struct L33Trail {
   int pos[3]; /* 0x00 */
-  int u0C[3]; /* 0x0C */
+  int pad0C[3]; /* 0x0C */
   int age;    /* 0x18 */
 } L33Trail;   /* 0x1C */
 
@@ -81,7 +81,7 @@ typedef struct LanePatrollerState {
   PathData *path; /* 0x00 */
   int lane;       /* 0x04 lane; indexes g_anLevelEscapeRunCount */
   int slowTimer;       /* 0x08 slow-down timer */
-  int u0C;       /* 0x0C */
+  int pad0C;       /* 0x0C */
   int speed;       /* 0x10 speed */
   int knockHeading;       /* 0x14 knock-back heading */
   int knockSpeed;       /* 0x18 knock-back speed */
@@ -100,24 +100,24 @@ typedef struct GnastyState {
   PathData *path;            /* 0x00 current escape path */
   PathData *path2;           /* 0x04 the other escape path */
   PathData *path3;           /* 0x08 camera reference path */
-  int u0C;                  /* 0x0C */
-  int u10;                  /* 0x10 */
+  int pad0C;                  /* 0x0C */
+  int pad10;                  /* 0x10 */
   int knockHeading;                  /* 0x14 knock-back heading */
   int speed;                  /* 0x18 speed */
   int vSpeed;                  /* 0x1C vertical speed */
   int queuedJumpSpeed;                  /* 0x20 queued jump speed */
-  int u24[12];              /* 0x24 */
-  int u54;                  /* 0x54 */
+  int pad24[12];              /* 0x24 */
+  int unread54;                  /* 0x54 */
   int stateTimer;                  /* 0x58 timer */
   int phase;                /* 0x5C fight phase */
   int timer;                /* 0x60 throw timer */
-  int u64;                  /* 0x64 */
+  int pad64;                  /* 0x64 */
   int throws;               /* 0x68 bombs thrown */
   int passedPt6;                  /* 0x6C latched on nearing path point 6 (mode 0xB once per phase) */
   TriggerBox box70;             /* 0x70 trigger box */
   TriggerBox box88;             /* 0x88 trigger box */
   TriggerBox boxA0;             /* 0xA0 trigger box */
-  int uB8;                  /* 0xB8 */
+  int padB8;                  /* 0xB8 */
   int key2;                 /* 0xBC actor index, -1 none; level data: ACTOR_TYPE_LOOT_VORTEX */
   int key;                  /* 0xC0 actor index; level data: ACTOR_TYPE_FOLLOWER */
   int seen;                 /* 0xC4 */
@@ -649,7 +649,7 @@ void Level33_UpdateActors(void) {
       if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100) != 0) {
         int *nrm = &g_anCollisionHitNormal;
         int along;
-        register int push asm("$7");
+        register int push asm("$7"); /* a3, as in the original (A374) */
 
         SetVector3Magnitude(nrm, 0x1000);
         along = (st->vel[0] * nrm[0]) + (st->vel[1] * g_nCollisionHitNormalY) +
@@ -832,8 +832,8 @@ void Level33_UpdateActors(void) {
 
           if (toSpyro < 0x59A) {
             int top = actor->posZ + 0x164;
-            register int py asm("$2") = SPY.posZ;
-            int dz = py - top;
+            register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
+            int dz = spyZ - top;
 
             if (dz < 0) {
               dz = -dz;
@@ -954,8 +954,8 @@ void Level33_UpdateActors(void) {
         enemy_settle:
           if (toSpyro < 0x59A) {
             int top = actor->posZ + 0x164;
-            register int py asm("$2") = SPY.posZ;
-            int dz = py - top;
+            register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
+            int dz = spyZ - top;
 
             if (dz < 0) {
               dz = -dz;
@@ -1692,9 +1692,9 @@ void Level33_UpdateActors(void) {
           int *anc;
 
           g_dwSpyroRequestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FREEZE_INPUT);
-          /* st->path2, read by byte offset: the in-struct form reorders
-             the loads (9/8304 insns differ). */
-          anc = PATH_END(*(PathData **)((char *)st + 4));
+          /* st->path2 by byte offset: the in-struct form reorders the
+             loads (9/8304 insns differ). */
+          anc = PATH_END(FIELD_RAW(st, GnastyState, PathData *, path2));
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
           *(int *)&g_anCameraActiveTargetParams = -ca << 4;
           g_nCameraActiveTargetDistance = 0x1770;
@@ -1829,7 +1829,7 @@ void Level33_UpdateActors(void) {
         GNASTY_FALL(actor, st);
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if ((dist < 0x2000 && SPY_DZ(actor) >= -0x6A3) || dist < 0x16A8) {
-          st->u54 = 0;
+          st->unread54 = 0;
           actor->mode = GNASTY_RUN;
           continue;
         }
@@ -2027,7 +2027,7 @@ void Level33_UpdateActors(void) {
           g_nCreditsPageIndex = 0;
           g_nCutsceneId[0] = CUTSCENE_GNASTY_ENDING;
           g_nGamestate = GS_CUTSCENE;
-          g_nGamePaused = 1;
+          g_nSkipGamestateDraw = 1;
           g_nCinematicActive = 0;
           g_nSpyroDrawSuppressed = 0;
           g_pPathTableHead->frame = 0;
@@ -2261,7 +2261,7 @@ void Level33_UpdateActors(void) {
             actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
             actor->drawn = 0;
             actor->groundCode = 0;
-            actor->visZone = VIS_ZONE_ALWAYS;
+            actor->gateChunk = GATE_CHUNK_ALWAYS;
             actor->subMode = KEY_TAKEN;
           }
         }
@@ -2330,7 +2330,7 @@ void Level33_UpdateActors(void) {
           actor->drawn = 0;
           actor->groundCode = 0;
           actor->scale = 0x40;
-          actor->visZone = VIS_ZONE_ALWAYS;
+          actor->gateChunk = GATE_CHUNK_ALWAYS;
           actor->subMode = 1;
           st->mode = LVORTEX_OPEN;
         }
@@ -2364,7 +2364,7 @@ void Level33_UpdateActors(void) {
           actor->drawn = 0;
           actor->groundCode = 0;
           actor->scale = 0x40;
-          actor->visZone = VIS_ZONE_ALWAYS;
+          actor->gateChunk = GATE_CHUNK_ALWAYS;
           break;
         }
         actor->subMode = 1;
