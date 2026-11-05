@@ -16,6 +16,11 @@ enum CollectSubMode {
   COLLECT_INERT = 4,  /* skipped: a seed pod's displayed prize (the pod moves it) */
 };
 
+/* Spyro collects a pickup within TOUCH_RANGE (2D; height -0x180..+0x200).
+ * An undrawn one resting still beyond IDLE_RANGE skips its update. */
+#define COLLECT_TOUCH_RANGE 0x200
+#define COLLECT_IDLE_RANGE 0x2000
+
 /* CollectibleState.mode: how a COLLECT_REST collectible holds its place. */
 enum CollectRestMode {
   COLLREST_STILL = 0,    /* stays put */
@@ -117,6 +122,10 @@ enum SeedPodMode {
   SEEDPOD_CLOSED = 0, /* struck: spawns its prize (COLLECT_INERT) and opens */
   SEEDPOD_OPEN = 1,   /* shakes with the prize floating above; closes after a while */
 };
+
+/* An open pod's prize is taken once Spyro is within this 2D distance of it
+ * (height -0xDF..+0x1DF), or at once by a supercharge. */
+#define SEEDPOD_PRIZE_RANGE 0x1E0
 
 /* A seed pod's voices (PlayActorMeshVoice). */
 enum SeedPodVoice {

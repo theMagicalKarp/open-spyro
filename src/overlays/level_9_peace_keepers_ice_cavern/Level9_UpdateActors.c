@@ -737,7 +737,7 @@ void Level9_UpdateActors(void) {
         }
       }
 
-      if (actor->drawn != 0 || toSpyro <= 0x2000 || actor->subMode != COLLECT_REST ||
+      if (actor->drawn != 0 || toSpyro <= COLLECT_IDLE_RANGE || actor->subMode != COLLECT_REST ||
           st->mode != COLLREST_STILL) {
         switch (actor->subMode) {
         case COLLECT_SETTLE:
@@ -1012,7 +1012,7 @@ void Level9_UpdateActors(void) {
             }
           }
 
-          if ((st->timer >= 0x21 && toSpyro < 0x200 &&
+          if ((st->timer >= 0x21 && toSpyro < COLLECT_TOUCH_RANGE &&
                (unsigned int)((SPY.posZ - actor->posZ) + 0x17F) < 0x37F) ||
               (actor->subMode == COLLECT_HOMING && st->timer >= 0x41)) {
             if (g_pSparxActor != 0) {
@@ -3021,7 +3021,7 @@ void Level9_UpdateActors(void) {
           ZeroVector(svN);
           g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &st->prize->posX, (int)svN);
         }
-        if ((ApproxDist2D(&st->prize->posX, &spy->posX) < 0x1E0 &&
+        if ((ApproxDist2D(&st->prize->posX, &spy->posX) < SEEDPOD_PRIZE_RANGE &&
              (unsigned int)(SPY.posZ - st->prize->posZ + 0xDF) < 0x2BF) ||
             g_nSpyroState == SPYRO_ST_SUPERCHARGE || g_nSpyroState == SPYRO_ST_SUPERCHARGE_AIR ||
             (g_nSpyroState == SPYRO_ST_CHARGE_AIR && (g_nSpyroSubstate & SPYRO_SUB_SUPERCHARGE))) {

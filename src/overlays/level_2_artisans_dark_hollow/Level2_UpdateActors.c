@@ -735,7 +735,7 @@ void Level2_UpdateActors(void) {
         }
       }
 
-      if (actor->drawn != 0 || toSpyro <= 0x2000 || actor->subMode != COLLECT_REST ||
+      if (actor->drawn != 0 || toSpyro <= COLLECT_IDLE_RANGE || actor->subMode != COLLECT_REST ||
           st->mode != COLLREST_STILL) {
         switch (actor->subMode) {
         case COLLECT_SETTLE:
@@ -1010,7 +1010,7 @@ void Level2_UpdateActors(void) {
             }
           }
 
-          if ((st->timer >= 0x21 && toSpyro < 0x200 &&
+          if ((st->timer >= 0x21 && toSpyro < COLLECT_TOUCH_RANGE &&
                (unsigned int)((SPY.posZ - actor->posZ) + 0x17F) < 0x37F) ||
               (actor->subMode == COLLECT_HOMING && st->timer >= 0x41)) {
             if (g_pSparxActor != 0) {
