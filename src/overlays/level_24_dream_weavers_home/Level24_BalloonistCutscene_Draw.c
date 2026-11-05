@@ -12,7 +12,7 @@
  *            * 0x1F/0x20: the confirm prompt + "GO TO <name>".
  *          The highlighted entry is the one whose index equals g_nActorCutsceneMenuCursor;
  *          its glyphs get the pulse, the rest stay flat.
- *   >= 4 — append the pending OT node (g_pActorCutsceneRecord) to the depth-bin list at
+ *   >= 4 — append the cutscene actor (g_pActorCutsceneRecord) to the main draw list at
  *          g_apMainDrawEntityList instead.
  * Every path finishes with the frame pipeline (BuildRenderEntityLists / ComposeFrameScene /
  * SetupFrameOT / DrawPortalsAndSky / RasterizeEmitList).
