@@ -70501,11 +70501,11 @@ endlabel ClipAndEmitPortalSkyFogShadedTriangle
 /* Handwritten function */
 .endif
 
-.section .text.func_80050710, "ax"
-.ifndef HAVE_C_func_80050710
-nonmatching func_80050710, 0x4C0
+.section .text.ClipAndEmitPortalSkyFogShadedTriangle_Tail, "ax"
+.ifndef HAVE_C_ClipAndEmitPortalSkyFogShadedTriangle_Tail
+nonmatching ClipAndEmitPortalSkyFogShadedTriangle_Tail, 0x4C0
 
-glabel func_80050710
+glabel ClipAndEmitPortalSkyFogShadedTriangle_Tail
     /* 40F10 80050710 440068AD */  sw         $t0, 0x44($t3)
     /* 40F14 80050714 48007FAD */  sw         $ra, 0x48($t3)
     /* 40F18 80050718 21204000 */  addu       $a0, $v0, $zero
@@ -70822,7 +70822,7 @@ glabel func_80050710
     /* 413C4 80050BC4 0000308C */  lw         $s0, 0x0($at)
     /* 413C8 80050BC8 0800E003 */  jr         $ra
     /* 413CC 80050BCC 00000000 */   nop
-endlabel func_80050710
+endlabel ClipAndEmitPortalSkyFogShadedTriangle_Tail
 .endif
 
 .section .text.DrawPortalsAndSky, "ax"

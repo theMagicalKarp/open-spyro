@@ -2567,3 +2567,4 @@ FitVector3ToInt16 = 0x80017188; // type:func size:0x74
 CrossProductOfEdges = 0x80017548; // type:func size:0x70
 VectorsEqual = 0x8001771C; // type:func size:0x3c
 CrossProduct = 0x80017854; // type:func size:0x40
+ClipAndEmitPortalSkyFogShadedTriangle_Tail = 0x80050710; // type:func size:0x4c0

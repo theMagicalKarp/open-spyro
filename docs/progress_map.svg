@@ -79,7 +79,7 @@
 <rect x="14.00" y="540.01" width="25.50" height="26.84" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>DrawEntityDirectionalSpikes  ·  1252 bytes  ·  handwritten</title></rect>
 <rect x="14.00" y="566.85" width="25.50" height="26.58" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>UnpackWorldDataChunks  ·  1240 bytes  ·  matched</title></rect>
 <rect x="14.00" y="593.43" width="25.50" height="26.07" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ClipAndEmitPortalSkyTriangle_Tail  ·  1216 bytes  ·  handwritten</title></rect>
-<rect x="14.00" y="619.50" width="25.50" height="26.07" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>func_80050710  ·  1216 bytes  ·  handwritten</title></rect>
+<rect x="14.00" y="619.50" width="25.50" height="26.07" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>ClipAndEmitPortalSkyFogShadedTriangle_Tail  ·  1216 bytes  ·  handwritten</title></rect>
 <rect x="14.00" y="645.57" width="25.50" height="26.07" fill="#8957e5" stroke="#0d1117" stroke-width="0.5"><title>func_800658FC  ·  1216 bytes  ·  library</title></rect>
 <rect x="14.00" y="671.63" width="25.50" height="25.98" fill="#8b949e" stroke="#0d1117" stroke-width="0.5"><title>EmitSkyMeshFogged  ·  1212 bytes  ·  handwritten</title></rect>
 <rect x="14.00" y="697.61" width="25.50" height="25.72" fill="#3fb950" stroke="#0d1117" stroke-width="0.5"><title>ApplySpyroStateTransition  ·  1200 bytes  ·  matched</title></rect>
