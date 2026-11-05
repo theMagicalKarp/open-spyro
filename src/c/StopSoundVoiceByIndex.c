@@ -1,3 +1,4 @@
+#include "actor_type.h"
 #include "globals.h"
 #include "spu.h"
 
@@ -18,7 +19,7 @@ void StopSoundVoiceByIndex(int index, int mode) {
       off = voice * 28;
       cb = VOICE_ROW_RAW(off, char *, pPlaying);
       if (cb != 0) {
-        *cb = 0x7F;
+        *cb = VOICE_ROW_NONE;
       }
       VOICE_ROW_RAW(off, short, nFlags) = VOICE_ROW_STOPPED;
       VOICE_ROW_RAW(off, int, pPlaying) = 0;

@@ -97,7 +97,7 @@ typedef struct Actor {
 } Actor; /* 0x58 */
 
 /* Actor.voiceRow while no voice row plays the actor's sound. */
-#define VOICE_ROW_NONE 0x7F
+#define VOICE_ROW_NONE 0x7F /* also what a finished or dropped sound stamps into its pPlaying byte */
 #define ACTOR_SCALE_UNIT 0x20 /* ->scale drawing the mesh at its own size (0x40 = half, 0x14 = 1.6x) */
 #define ACTOR_CULL_HIDDEN 0 /* ->cullRadius: a zero bound fails the view cull, so the actor is hidden */
 #define ACTOR_TINT_NEUTRAL 0xA18618 /* the 0x4C tint word at neutral levels (0x18 each, tag 0xA) */

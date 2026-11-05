@@ -85,7 +85,7 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
     }
     if (range < dist) {
       if (pPlaying != 0) {
-        *pPlaying = 0x7F;
+        *pPlaying = VOICE_ROW_NONE;
       }
       return 0x7F;
     }
