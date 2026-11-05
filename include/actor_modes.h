@@ -20,6 +20,9 @@ enum CollectSubMode {
  * An undrawn one resting still beyond IDLE_RANGE skips its update. */
 #define COLLECT_TOUCH_RANGE 0x200
 #define COLLECT_IDLE_RANGE 0x2000
+/* A knocked-loose pickup's bounce chime volume (g_nSfxOverrideVolL/R), shifted
+ * right by 3 - bounces left so each bounce is half as loud as the last. */
+#define COLLECT_BOUNCE_VOLUME 0x3CCC
 
 /* CollectibleState.mode: how a COLLECT_REST collectible holds its place. */
 enum CollectRestMode {
@@ -49,6 +52,11 @@ enum SparxSubMode {
  * him, and reaches it within CATCH_RANGE (3D, Sparx to target). */
 #define SPARX_TARGET_LEASH 0x2000
 #define SPARX_CATCH_RANGE 0x200
+
+/* g_nSfxOverrideVolL/R (SPU volume, 0x3FFF = full) for Sparx's buzz when he
+ * sets off to fetch, and for the chime when he hands the pickup over. */
+#define SPARX_BUZZ_VOLUME 0x2000
+#define SPARX_HANDOVER_VOLUME 0x3600
 
 /* Sparx's hover animation per health colour; the odd index after each is the
  * same colour's catch animation (the chase steps up to it, EAT_DONE back). */

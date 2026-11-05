@@ -1722,8 +1722,8 @@ void Level21_UpdateActors(void) {
                     if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                        g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                       g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
-                      g_nSfxOverrideVolR = 0x2000;
-                      g_nSfxOverrideVolL = 0x2000;
+                      g_nSfxOverrideVolR = SPARX_BUZZ_VOLUME;
+                      g_nSfxOverrideVolL = SPARX_BUZZ_VOLUME;
                       PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                     }
 
@@ -1808,8 +1808,8 @@ void Level21_UpdateActors(void) {
 
             if (st->count != 0) {
               g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
-              g_nSfxOverrideVolL = 0x3CCC >> (3 - st->count);
-              g_nSfxOverrideVolR = 0x3CCC >> (3 - st->count);
+              g_nSfxOverrideVolL = COLLECT_BOUNCE_VOLUME >> (3 - st->count);
+              g_nSfxOverrideVolR = COLLECT_BOUNCE_VOLUME >> (3 - st->count);
 
               PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
 
@@ -1845,8 +1845,8 @@ void Level21_UpdateActors(void) {
                   if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                      g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
-                    g_nSfxOverrideVolR = 0x2000;
-                    g_nSfxOverrideVolL = 0x2000;
+                    g_nSfxOverrideVolR = SPARX_BUZZ_VOLUME;
+                    g_nSfxOverrideVolL = SPARX_BUZZ_VOLUME;
                     PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                   }
 
@@ -2311,8 +2311,8 @@ void Level21_UpdateActors(void) {
 
               if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[SFX_GEM_BOUNCE]) == 0) {
                 g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
-                g_nSfxOverrideVolR = 0x3600;
-                g_nSfxOverrideVolL = 0x3600;
+                g_nSfxOverrideVolR = SPARX_HANDOVER_VOLUME;
+                g_nSfxOverrideVolL = SPARX_HANDOVER_VOLUME;
                 PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
               }
             } else {
