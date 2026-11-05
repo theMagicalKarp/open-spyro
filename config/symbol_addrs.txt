@@ -2570,3 +2570,5 @@ VectorsEqual = 0x8001771C; // type:func size:0x3c
 CrossProduct = 0x80017854; // type:func size:0x40
 ClipAndEmitPortalSkyFogShadedTriangle_Tail = 0x80050710; // type:func size:0x4c0
 g_abArcTanOctantLut = 0x8006D908; // type:data size:0x44
+g_nSphereContactCount = 0x80075774; // type:data
+g_abActorGroupActive = 0x80077868; // type:data

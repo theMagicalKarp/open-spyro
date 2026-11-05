@@ -14524,11 +14524,11 @@ dlabel D_80075770
     /* 65F70 80075770 00000000 */ .word 0x00000000
 enddlabel D_80075770
 
-nonmatching D_80075774
+nonmatching g_nSphereContactCount
 
-dlabel D_80075774
+dlabel g_nSphereContactCount
     /* 65F74 80075774 00000000 */ .word 0x00000000
-enddlabel D_80075774
+enddlabel g_nSphereContactCount
 
 nonmatching g_pActorSpatialGridBase
 

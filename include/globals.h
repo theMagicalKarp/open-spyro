@@ -606,6 +606,7 @@ extern int g_nFadeProgress;                  /* 0x8007575c */
 extern int g_nFrameTicks;                    /* 0x80075760 */
 extern int g_nVibrationLevel;                /* 0x80075764 */
 extern int g_nEnteredPortalIdx;                /* 0x8007576c: g_apPortals index of the portal just entered (exit trigger data[1]); -1 none. TickLevelTransitionStream also counts its two texture pages in it */
+extern int g_nSphereContactCount;            /* 0x80075774: CollideSphereWithWorldAndActors' contact count, stored on exit as (cursor - arena base) / 0x10: each penetrating triangle appends a {x, y, z, squared distance from the centre} record at the frame scratch arena (g_apMainDrawEntityList). Write-only */
 extern void *g_pActorSpatialGridBase;        /* 0x80075778 */
 extern void *g_pPrimBufferLimit;             /* 0x80075780 */
 extern int g_nDemoActive;           /* 0x80075784: 1 while a demo level runs: the draw handlers add a VSync so frames pace at 2 vblanks */
@@ -741,7 +742,7 @@ extern int g_nLevelArchiveChunkOffset;                  /* 0x80076c18 */
 extern int g_nLevelArchiveChunkSize;                    /* 0x80076c1c */
 extern int g_nDragonAssetOffset;                        /* 0x80076c20 */
 extern int g_nDragonAssetSize;                          /* 0x80076c24 */
-extern int g_anActorMeshOffsetList;                     /* 0x80076c50: file offsets (in the world data-ext chunk) of the models a level or cutscene streams in, 0-terminated; in a level [0] is Spyro's animation stream (InstallSpyroAnimStream) and [1..] are actor models (RelocateActorMeshHeader) */
+extern int g_anActorMeshOffsetList;                     /* 0x80076c50: file offsets (in the world data-ext chunk) of the models a level or cutscene streams in, 0-terminated; in a level [0] is Spyro's animation stream (InstallSpyroAnimStream) and [1..] are actor models (RelocateActorMeshHeader). 64 words, then at +0x100 64 shorts: the g_apActorMeshTable slot each model installs into (ACTOR_MESH_INDEX_LIST) */
 extern int g_anWorldToCameraRotMtx[5];                  /* 0x80076dd0 */
 extern int g_anCameraPos[3];                            /* 0x80076df8: camera world position */
 extern int g_anCameraEyeTarget[3];                      /* 0x80076e04 */
@@ -858,7 +859,8 @@ extern void *g_pLevelSkyZoneLists;                    /* 0x8007778c */
 extern int g_anCameraLatchedAnchorPos[3];               /* 0x80077798 */
 extern int g_anLevelTriggerStateSlots[10];              /* 0x800777c0 */
 extern int g_nActorCutsceneSubstate;                      /* 0x800777e8: enum ActorCutsceneSubstate (actor_cutscene.h) */
-extern int g_anCollisionContactPoint[3];                /* 0x80077858 */
+extern int g_anCollisionContactPoint[3];                /* 0x80077858: CollideSphereWithWorldAndActors' contact point (written on a hit); the Spyro wall-push and Level14's chase heading read it */
+extern unsigned char g_abActorGroupActive[32];          /* 0x80077868: per-activation-group flag BuildActiveActorList clears each frame and sets for every active actor's Actor.group (>= 0); a second pass then activates the whole group */
 extern int g_nSpawnAnchorValid;                         /* 0x80077888 */
 extern int g_anCheckpointKillBitmap[8];                /* 0x80077898: per pool slot, killed as of the last checkpoint (SetSpawnAnchorFromActor snapshots the live set here) */
 extern int g_anLiveKillBitmap[8];                      /* 0x800778b8: per pool slot, killed in this attempt (MarkActorLiveKill/CommitActorKillGems); BuildLoadedLevelRuntime restores it from the checkpoint set */
@@ -866,7 +868,7 @@ extern int g_anLevelSpawnPos[3];                        /* 0x800778d8 */
 extern int g_nLevelSpawnYaw;                            /* 0x800778e4 */
 extern int g_anLevelKillBitmapTable[288];               /* 0x80077908 */
 extern unsigned char g_abGemTallyIconUvTable[32];                /* 0x80077db8 */
-extern int g_anStaticRegSaveArea[19];                   /* 0x80077dd8 */
+extern int g_anStaticRegSaveArea[22];                   /* 0x80077dd8: static spill area of the hand-written asm (not reentrant): +0x00..+0x2C s0-s7, gp, sp, fp, ra saved on entry; the portal-sky clippers use +0x30..+0x4C as vertex scratch and +0x54 for their own return address */
 extern unsigned char g_abHudCounterDisplayState[5];              /* 0x80077fa8: per HudCounter, a HudCounterState (hud_counter.h) */
 extern unsigned char g_bHudLevelGemRollPhase;                    /* 0x80077fad */
 extern unsigned char g_bHudDragonRollPhase;                      /* 0x80077fae */
