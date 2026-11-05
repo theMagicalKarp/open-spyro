@@ -1048,7 +1048,7 @@ extern int g_anSpyroComposedBodyMtx[5];                 /* 0x80078c20 */
 extern int g_nSpyroInputBlankCountdown;                /* 0x80078c48: frames left during which Spyro's frame tick stashes the pad (no input): 0xC after a level load, >= 2 while SPYRO_RQ_FREEZE_INPUT or a scripted move holds */
 extern unsigned int g_dwSpyroRequestMask;                       /* 0x80078c4c: scripted override of Spyro's motion / state / camera set by actors and cutscenes (SPYRO_RQ_* bits, spyro_state.h) */
 extern int g_anSpyroRequestTargetPos[3];                /* 0x80078c50 */
-extern unsigned char g_abSpyroRequestEuler[3];                   /* 0x80078c5c */
+extern unsigned char g_abSpyroRequestEuler[3];                   /* 0x80078c5c: requested pitch / roll / yaw bytes (SPYRO_RQ_PITCH / ROLL / YAW); only the yaw byte is ever stored (overlays, as g_bSpyroRequestYaw / SpyroObj.requestYaw) */
 extern int g_anSpyroRequestVelocity[3];                 /* 0x80078c60 */
 extern int g_nSpyroRequestState;                        /* 0x80078c70: the SPYRO_ST_* state applied while SPYRO_RQ_FORCE_STATE is set */
 extern void *g_pSpyroRequestCameraAnchor;               /* 0x80078c74 */
