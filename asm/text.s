@@ -800,8 +800,8 @@ glabel Initialize
     /* 34B4 80012CB4 00800234 */  ori        $v0, $zero, 0x8000
     /* 34B8 80012CB8 0780013C */  lui        $at, %hi(g_nFrameTicks)
     /* 34BC 80012CBC 605720AC */  sw         $zero, %lo(g_nFrameTicks)($at)
-    /* 34C0 80012CC0 0880013C */  lui        $at, %hi(g_nInitUnreadWord)
-    /* 34C4 80012CC4 CC8522AC */  sw         $v0, %lo(g_nInitUnreadWord)($at)
+    /* 34C0 80012CC0 0880013C */  lui        $at, %hi(g_nWorldChunkLodDepth)
+    /* 34C4 80012CC4 CC8522AC */  sw         $v0, %lo(g_nWorldChunkLodDepth)($at)
     /* 34C8 80012CC8 4000BF8F */  lw         $ra, 0x40($sp)
     /* 34CC 80012CCC 3C00B58F */  lw         $s5, 0x3C($sp)
     /* 34D0 80012CD0 3800B48F */  lw         $s4, 0x38($sp)
@@ -31121,8 +31121,8 @@ glabel AnimateGemTallyParticles
     /* 1E274 8002DA74 C8FFBD27 */  addiu      $sp, $sp, -0x38
     /* 1E278 8002DA78 0780033C */  lui        $v1, %hi(g_nLevelTransitionPhase)
     /* 1E27C 8002DA7C AC56638C */  lw         $v1, %lo(g_nLevelTransitionPhase)($v1)
-    /* 1E280 8002DA80 0780023C */  lui        $v0, %hi(g_apSecondaryEntityList)
-    /* 1E284 8002DA84 F4244224 */  addiu      $v0, $v0, %lo(g_apSecondaryEntityList)
+    /* 1E280 8002DA80 0780023C */  lui        $v0, %hi(g_anActorShadowQueue)
+    /* 1E284 8002DA84 F4244224 */  addiu      $v0, $v0, %lo(g_anActorShadowQueue)
     /* 1E288 8002DA88 3400BFAF */  sw         $ra, 0x34($sp)
     /* 1E28C 8002DA8C 3000B4AF */  sw         $s4, 0x30($sp)
     /* 1E290 8002DA90 2C00B3AF */  sw         $s3, 0x2C($sp)
@@ -71018,9 +71018,9 @@ glabel DrawPortalsAndSky
     /* 4169C 80050E9C 00000000 */  nop
     /* 416A0 80050EA0 07004004 */  bltz       $v0, .L80050EC0
     /* 416A4 80050EA4 00000000 */   nop
-    /* 416A8 80050EA8 0780013C */  lui        $at, %hi(g_abVisZoneGates)
+    /* 416A8 80050EA8 0780013C */  lui        $at, %hi(g_abWorldChunkDrawn)
     /* 416AC 80050EAC 21082200 */  addu       $at, $at, $v0
-    /* 416B0 80050EB0 C8712290 */  lbu        $v0, %lo(g_abVisZoneGates)($at)
+    /* 416B0 80050EB0 C8712290 */  lbu        $v0, %lo(g_abWorldChunkDrawn)($at)
     /* 416B4 80050EB4 00000000 */  nop
     /* 416B8 80050EB8 28044010 */  beqz       $v0, .L80051F5C
     /* 416BC 80050EBC 00000000 */   nop
@@ -72372,8 +72372,8 @@ glabel BuildRenderEntityLists
     /* 429D4 800521D4 00244420 */  addi       $a0, $v0, 0x2400 /* handwritten instruction */
     /* 429D8 800521D8 00224320 */  addi       $v1, $v0, 0x2200 /* handwritten instruction */
     /* 429DC 800521DC 00004220 */  addi       $v0, $v0, 0x0 /* handwritten instruction */
-    /* 429E0 800521E0 0780053C */  lui        $a1, %hi(g_abVisZoneGates)
-    /* 429E4 800521E4 C871A524 */  addiu      $a1, $a1, %lo(g_abVisZoneGates)
+    /* 429E0 800521E0 0780053C */  lui        $a1, %hi(g_abWorldChunkDrawn)
+    /* 429E4 800521E4 C871A524 */  addiu      $a1, $a1, %lo(g_abWorldChunkDrawn)
     /* 429E8 800521E8 4800278C */  lw         $a3, 0x48($at)
     /* 429EC 800521EC FF000620 */  addi       $a2, $zero, 0xFF /* handwritten instruction */
     /* 429F0 800521F0 A8FF2120 */  addi       $at, $at, -0x58 /* handwritten instruction */

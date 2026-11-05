@@ -1262,7 +1262,7 @@ void Level23_UpdateActors(void) {
           actor->drawn = 0;
           actor->groundCode = 0;
           actor->scale = 0x40;
-          actor->visZone = VIS_ZONE_ALWAYS;
+          actor->gateChunk = GATE_CHUNK_ALWAYS;
           actor->subMode = KEY_TAKEN;
         }
       }

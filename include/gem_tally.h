@@ -1,7 +1,7 @@
 /* gem_tally.h — the level-transition treasure tally's gem particles
  * (AnimateGemTallyParticles animates them, DrawLevelTransitionOverlay draws
  * them). The pool is 64 sixteen-byte records borrowed from
- * g_apSecondaryEntityList (g_pGemTallyParticleRecords). */
+ * g_anActorShadowQueue (g_pGemTallyParticleRecords). */
 
 #ifndef OPEN_SPYRO_GEM_TALLY_H
 #define OPEN_SPYRO_GEM_TALLY_H

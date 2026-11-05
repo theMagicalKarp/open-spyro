@@ -1561,7 +1561,7 @@ void Level9_UpdateActors(void) {
             actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
             actor->drawn = 0;
             actor->groundCode = 0;
-            actor->visZone = VIS_ZONE_ALWAYS;
+            actor->gateChunk = GATE_CHUNK_ALWAYS;
             actor->subMode = KEY_TAKEN;
           }
         }
@@ -1647,7 +1647,7 @@ void Level9_UpdateActors(void) {
           actor->subMode = LOCKCHEST_KEY_READY;
           key->scale = 0x40;
           key->groundCode = 0;
-          key->visZone = VIS_ZONE_ALWAYS;
+          key->gateChunk = GATE_CHUNK_ALWAYS;
           key->subMode = KEY_TAKEN;
         }
         break;

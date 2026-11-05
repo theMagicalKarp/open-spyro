@@ -43,7 +43,8 @@ typedef struct EdgeRec {
 } EdgeRec;
 
 extern unsigned char
-    g_abVisZoneGates[]; /* per-vis-zone gate bytes (one per portal zone) */
+    g_abWorldChunkDrawn[]; /* per world chunk, nonzero if RenderWorldChunks drew
+                              it this frame */
 extern EdgeRec g_aPortalSilhouetteEdges[]; /* silhouette edge records */
 extern ScreenPt g_aPortalRingScreenPts[];  /* projected ring points */
 /* point k through a held byte offset (the original keeps k*12 live) */
@@ -160,8 +161,8 @@ void DrawPortalsAndSky(void) {
   outMtx.m[1][2] = v >> 9;
 
   for (i = 0; i < g_nPortalCount; i++) {
-    if (g_apPortals[i]->nGateIndex < 0 ||
-        g_abVisZoneGates[g_apPortals[i]->nGateIndex] != 0) {
+    if (g_apPortals[i]->gateChunk < 0 ||
+        g_abWorldChunkDrawn[g_apPortals[i]->gateChunk] != 0) {
       flagY = 1;
       flagX = 1;
       n = LookupCosine(g_nVblankTickCount * 16 + (i << 9));

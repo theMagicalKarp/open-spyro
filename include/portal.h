@@ -36,7 +36,7 @@ typedef struct Portal {
   int nx;                 /* +0x08 */
   int ny;                 /* +0x0c */
   int nz;                 /* +0x10 */
-  int nGateIndex;         /* +0x14 */
+  int gateChunk;          /* +0x14 world chunk gating the portal (g_abWorldChunkDrawn); < 0 = always drawn */
   int actor;  /* +0x18 g_pActorListBase index of the portal actor */
   int levelId; /* +0x1c level it leads to */
   int pts[8][3]; /* +0x20 */

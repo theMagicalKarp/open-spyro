@@ -506,7 +506,7 @@ void Level30_BalloonistCutscene_Update(void)
         cn = LookupSine(((t << 11) / 102) - 0x400) + 0x1000;
         if (g_nActorCutsceneTimer[0] == g_nFrameStep)
         {
-          g_pActorCutsceneRecord->visZone = VIS_ZONE_ALWAYS;
+          g_pActorCutsceneRecord->gateChunk = GATE_CHUNK_ALWAYS;
           g_nActorCutsceneCamYawStart = ArcTan2(g_anCameraPos[0] - g_pActorCutsceneRecord->posX, g_nCameraPosY - g_pActorCutsceneRecord->posY, ATAN_ANGLE12);
           SubtractVector(vecB, g_anCameraPos, &g_pActorCutsceneRecord->posX);
           g_nActorCutsceneCamRadiusStart = VectorLength(vecB, VEC_LEN_XY);

@@ -2261,7 +2261,7 @@ void Level33_UpdateActors(void) {
             actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
             actor->drawn = 0;
             actor->groundCode = 0;
-            actor->visZone = VIS_ZONE_ALWAYS;
+            actor->gateChunk = GATE_CHUNK_ALWAYS;
             actor->subMode = KEY_TAKEN;
           }
         }
@@ -2330,7 +2330,7 @@ void Level33_UpdateActors(void) {
           actor->drawn = 0;
           actor->groundCode = 0;
           actor->scale = 0x40;
-          actor->visZone = VIS_ZONE_ALWAYS;
+          actor->gateChunk = GATE_CHUNK_ALWAYS;
           actor->subMode = 1;
           st->mode = LVORTEX_OPEN;
         }
@@ -2364,7 +2364,7 @@ void Level33_UpdateActors(void) {
           actor->drawn = 0;
           actor->groundCode = 0;
           actor->scale = 0x40;
-          actor->visZone = VIS_ZONE_ALWAYS;
+          actor->gateChunk = GATE_CHUNK_ALWAYS;
           break;
         }
         actor->subMode = 1;

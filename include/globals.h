@@ -432,7 +432,7 @@ extern int g_anActorDepthCuedVtxColor[32];                   /* 0x80070df4 */
 extern int g_anActorDrawList[768];                           /* 0x800712f4 */
 extern void *g_apSecondaryDrawEntityList[128];               /* 0x80071ef4 */
 extern void *g_apSpritePrimQueue[256];                       /* 0x800720f4 */
-extern int g_apSecondaryEntityList[128];                     /* 0x800724f4 */
+extern int g_anActorShadowQueue[128];                     /* 0x800724f4: BuildActorDrawList queues (actor, shadow size) pairs here for DrawActorDropShadows (the hand-asm reaches it as g_pOtDepthBinHead0 + 0x2800). Frame scratch: EmitSkyMeshFogged writes its depth-cued vertex colours here and the gem tally borrows it as its particle pool */
 extern int g_anOtPrimSaveList[64];                           /* 0x800726f4 */
 extern int g_anCheatCodeSequences[128];                      /* 0x80072e94: 8 cheat-code button sequences, 16 pad words each, 0-terminated (CheckCheatCodeMatch); only slots 2..4 have an effect (ApplyCheatCodeEffect) */
 extern int g_nSnCrtInitFlag;                                 /* 0x800730bc */
@@ -588,7 +588,7 @@ extern int g_nCinematicActive;               /* 0x8007570c: nonzero while a cine
 extern struct Actor *g_pSpriteRecordWriteCursor; /* 0x80075710: sprite-record queue tail; Actor-sized records, grows down from g_pSpriteRecordBufferTop */
 extern int g_nDemoMode;                    /* 0x80075714: attract demo, enum DemoMode (gamestate.h) */
 extern int g_nGroundSurfaceType;             /* 0x80075718 */
-extern void *g_pGemTallyParticleRecords;     /* 0x8007571c: the tally particle pool (GemTallyParticle, gem_tally.h), borrowed from g_apSecondaryEntityList */
+extern void *g_pGemTallyParticleRecords;     /* 0x8007571c: the tally particle pool (GemTallyParticle, gem_tally.h), borrowed from g_anActorShadowQueue */
 extern int g_nPauseMenuCursor;               /* 0x80075720: row on the pause page (enum PauseMainRow / PauseOptionsRow / PauseQuitRow); flight results menu reuses it */
 extern unsigned int g_dwGamestateFrames;             /* 0x8007572c */
 extern int g_nPadSetMainModePending;         /* 0x80075730 */
@@ -1393,7 +1393,7 @@ extern void *g_pVisZoneChunkLists; /* 0x800785b0: per visibility zone, a 0xFF-te
 extern int g_anVisZoneCountBlock[]; /* 0x800785b4: held-base view of g_nVisZoneCount */
 extern int g_anTriggerRegionCount[]; /* 0x800785bc: trigger-region count (array view; the loop bound is re-read through it) */
 extern int g_anWorldMeshCountBlock[]; /* 0x800785c8: held-base view of g_nWorldMeshCount (-7 words: g_nWorldChunkCount) */
-extern int g_nInitUnreadWord; /* 0x800785cc */
+extern int g_nWorldChunkLodDepth; /* 0x800785cc: view-depth split RenderWorldChunks reads (>> 4) to sort chunks: a chunk whose near edge (depth - radius) is closer goes on the list at g_pOtDepthBinHead0 + 0x1C00, one whose far edge (+ 0x100) is beyond it on the list at + 0x2000 (a chunk straddling it goes on both). Initialize sets 0x8000 */
 extern void *g_apDrawBufBlock2[]; /* 0x800785d8: distinct alias, fade-out pass (A23) */
 extern void *g_apDrawBufBBlock[]; /* 0x800785dc */
 extern void *volatile g_apPathTableBufferBlock[]; /* 0x800785e4 */

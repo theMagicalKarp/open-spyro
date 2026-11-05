@@ -8861,9 +8861,9 @@ dlabel g_apSpritePrimQueue
     /* 62CF0 800724F0 4E4E4E4E */ .word 0x4E4E4E4E
 enddlabel g_apSpritePrimQueue
 
-nonmatching g_apSecondaryEntityList
+nonmatching g_anActorShadowQueue
 
-dlabel g_apSecondaryEntityList
+dlabel g_anActorShadowQueue
     /* 62CF4 800724F4 4E4E5757 */ .word 0x57574E4E
     /* 62CF8 800724F8 570B0B0B */ .word 0x0B0B0B57
     /* 62CFC 800724FC B22A1000 */ .word 0x00102AB2
@@ -8992,7 +8992,7 @@ dlabel g_apSecondaryEntityList
     /* 62EE8 800726E8 FFFFF8F8 */ .word 0xF8F8FFFF
     /* 62EEC 800726EC F8ECECEC */ .word 0xECECECF8
     /* 62EF0 800726F0 FBFBFBC3 */ .word 0xC3FBFBFB
-enddlabel g_apSecondaryEntityList
+enddlabel g_anActorShadowQueue
 
 nonmatching g_anOtPrimSaveList
 

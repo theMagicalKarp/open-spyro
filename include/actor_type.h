@@ -51,8 +51,10 @@ typedef struct Actor {
   unsigned char mode;  /* 0x48 behaviour state; >= ACTOR_MODE_DORMANT dormant,
                           ACTOR_MODE_END ends the pool */
   unsigned char subMode; /* 0x49 sub-state */
-  unsigned char visZone; /* 0x4A visibility-gate index into g_abVisZoneGates;
-                          * 0xFF = always drawn (BuildRenderEntityLists) */
+  unsigned char gateChunk; /* 0x4A the world chunk gating the actor: it is
+                            * drawn only if RenderWorldChunks drew that chunk
+                            * this frame (g_abWorldChunkDrawn); 0xFF = always
+                            * drawn (BuildRenderEntityLists) */
   unsigned char renderList; /* 0x4B signed; picks the BuildRenderEntityLists
                              * list: > 0 the main mesh list (default 0x20,
                              * BuildActorDrawList), < 0 (ACTOR_RENDER_SECONDARY)
@@ -132,7 +134,7 @@ typedef struct Actor {
                                   * a negative radius keeps the actor updating anywhere */
 #define ACTOR_UPDATE_WHEN_DRAWN 0 /* ->updateDist: no activation radius, so it only
                                   * updates while it was drawn last frame */
-#define VIS_ZONE_ALWAYS 0xFF     /* ->visZone: no vis-zone gate, always drawn */
+#define GATE_CHUNK_ALWAYS 0xFF     /* ->gateChunk: no chunk gate, always drawn */
 #define DROP_GEM_ROLL 0xFF       /* ->dropKind: a random gem roll (and counts in the
                                   * checkpoint kill set, IsActorInCheckpointKillSet) */
 

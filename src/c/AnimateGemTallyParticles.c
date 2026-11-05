@@ -7,7 +7,7 @@
 
 /* 0x8002da74 — level-transition gem tally sparkle animation (1320 b).
 
-   The tally screen reuses g_apSecondaryEntityList as a pool of 64 sixteen-byte
+   The tally screen reuses g_anActorShadowQueue as a pool of 64 sixteen-byte
    particle records (one per gem icon, plus slack). Phase 0 of the transition
    arms the pool: the hold-end phase is 0x8C + two frames per icon, capped at
    0xC0, and every record is marked free.
@@ -28,7 +28,7 @@ void AnimateGemTallyParticles(void) {
   int i;
   int spawn;
 
-  g_pGemTallyParticleRecords = g_apSecondaryEntityList;
+  g_pGemTallyParticleRecords = g_anActorShadowQueue;
   if (g_nLevelTransitionPhase == 0) {
     g_nGemTallyHoldEndPhase = g_nGemTallyIconCount * 2 + 0x8C;
     if (g_nGemTallyHoldEndPhase > 0xC0) {

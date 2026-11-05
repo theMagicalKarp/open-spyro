@@ -220,5 +220,5 @@ fade_out_splash:
   BeginStoryIntro();
   g_nFrameStep = 2;
   g_nFrameTicks = 0;
-  g_nInitUnreadWord = 0x8000;
+  g_nWorldChunkLodDepth = 0x8000;
 }
