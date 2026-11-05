@@ -128,6 +128,11 @@ typedef struct Actor {
 #define TINT_GREEN 9        /* 0x006000 (G) */
 #define TINT_BLUE 0xA       /* 0x600000 (B): the flight results' "X" */
 #define TINT_HUD 0xB        /* HUD sprites and text (BuildTextSprites default); same word as TINT_GOLD */
+/* Screen-text depths (BuildTextSprites): a word's first letter is drawn at
+ * pos[2], the rest of the word lower by attr[1] and farther, at attr[2], so
+ * smaller (small caps). */
+#define TEXT_DEPTH 0x1100       /* the large first letters */
+#define TEXT_SMALL_DEPTH 0x1400 /* the small-caps letters; also small text's pos[2] */
 #define TINT_EXTRA_LIFE 0xC
 #define TINT_BOULDER_SPARK 0xD /* boulder debris 152/153 */
 #define TINT_STATUE_SHARD 0xE

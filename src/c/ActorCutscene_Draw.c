@@ -68,7 +68,7 @@ void ActorCutscene_Draw(void) {
 
       pos[0] = 0x100 - (strlen(buf) - 1) * 7;
       pos[1] = 0xC8;
-      pos[2] = 0x1400;
+      pos[2] = TEXT_SMALL_DEPTH;
       attr[0] = 0xE;
       attr[1] = 1;
       attr[2] = 0x1600;

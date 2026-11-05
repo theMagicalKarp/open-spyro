@@ -38,9 +38,9 @@ void SaveLoadMenu_Draw(void) {
         g_aSaveMenuBoxes[g_nSaveMenuSubstate].w,
         g_aSaveMenuBoxes[g_nSaveMenuSubstate].h);
     size[0] = 0x10;
-    size[2] = 0x1400;
+    size[2] = TEXT_SMALL_DEPTH;
     size[1] = 1;
-    pos[2] = 0x1100;
+    pos[2] = TEXT_DEPTH;
     switch (g_nSaveMenuSubstate) {
     case SAVE_SCREEN_MAIN:
       pos[1] = 0x32;
@@ -79,7 +79,7 @@ void SaveLoadMenu_Draw(void) {
       size[0] = 0xE;
       size[1] = 1;
       size[2] = 0x1600;
-      pos[2] = 0x1400;
+      pos[2] = TEXT_SMALL_DEPTH;
       pos[0] = SM[SM_X_OFFSET] + 0x2D;
       BuildTextSprites(g_szPleaseRestartWith, pos, size, 0x10, TINT_HUD);
       pos[1] += 0x11;
@@ -114,7 +114,7 @@ void SaveLoadMenu_Draw(void) {
       size[0] = 0xE;
       size[1] = 1;
       size[2] = 0x1600;
-      pos[2] = 0x1400;
+      pos[2] = TEXT_SMALL_DEPTH;
       pos[0] = SM[SM_X_OFFSET] + 0x3B;
       BuildTextSprites(g_szPleaseInsertThe, pos, size, 0x10, TINT_HUD);
       pos[1] += 0x11;
@@ -134,7 +134,7 @@ void SaveLoadMenu_Draw(void) {
       size[0] = 0xE;
       size[1] = 1;
       size[2] = 0x1600;
-      pos[2] = 0x1400;
+      pos[2] = TEXT_SMALL_DEPTH;
       pos[0] = SM[SM_X_OFFSET] + 0x3B;
       BuildTextSprites(g_szPleaseCheckThat, pos, size, 0x10, TINT_HUD);
       pos[1] += 0x11;

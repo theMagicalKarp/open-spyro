@@ -34,7 +34,7 @@ void StoryIntro_Draw(void) {
 
   if (g_nStoryIntroSubstate == STORY_INTRO_FLY && g_nStoryIntroTimer >= 0x8C) {
     pos[1] = 0x78;
-    pos[2] = 0x1400;
+    pos[2] = TEXT_SMALL_DEPTH;
     rec = (int)g_pSpriteRecordWriteCursor;
     col[0] = 0xE;
     col[1] = 1;

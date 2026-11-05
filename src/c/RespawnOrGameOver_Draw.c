@@ -143,10 +143,10 @@ void RespawnOrGameOver_Draw(void) {
           g_nRespawnOrGameOverFrame >= 0x1A5) {
         size[0] = 0x10;
         size[1] = 1;
-        size[2] = 0x1400;
+        size[2] = TEXT_SMALL_DEPTH;
         pos[0] = 0xAE;
         pos[1] = 0xD0;
-        pos[2] = 0x1100;
+        pos[2] = TEXT_DEPTH;
         BuildTextSprites(g_szPressStart, pos, size, 0x12, TINT_HUD);
         i = 0;
         sbase = &g_anSineLut[0x40];

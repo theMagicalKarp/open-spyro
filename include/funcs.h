@@ -218,7 +218,7 @@ void AddBiasToColorRuns(void *runs, void *dst, int bias);
 /* 0x80017fe4: Emits a glyph-sprite chain for a string: per non-space byte allocates a 0x58-byte slot at g_pSpriteRecordWriteCursor (queue tail, grows down), maps '0'-'9' and 'A'-'Z' (+ a few specials: '/', '?', '%', '^', '+') to font tile indices, copies the cursor position from pPen and advances *pPen by nAdvance between glyphs. Sibling of BuildTextSprites. */
 void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance, int nPalette);
 
-/* 0x800181ac: Queues one glyph sprite record per non-space character of `text` at g_pSpriteRecordWriteCursor, advancing the pen from *pos by the glyph width attr[0] (digits / '!' / '?' by `spacing`, spaces by 3/4 width). Returns the cursor. */
+/* 0x800181ac: Queues one glyph sprite record per non-space character of `text` at g_pSpriteRecordWriteCursor, advancing the pen from *pos by the glyph width attr[0] (after digits / '!' / '?' by `spacing`, spaces by 3/4 width). Spyro's small caps: a word's first letter (and any digit, '!', '?' or letter after a digit) is drawn at pos's depth (TEXT_DEPTH); the rest of the word attr[1] lower and at depth attr[2] (TEXT_SMALL_DEPTH), so smaller. Returns the cursor. */
 void *BuildTextSprites(char *text, int *pos, int *attr, int spacing, int flags);
 
 /* 0x8001844c: Emits a 2-point gradient line (LineG2) into the OT. Each endpoint's RGB is tinted by the angular distance between its screen-relative angle (vs (256,120)) and a reference angle in g_nLightSweepAngle — radial-light effect for menu borders. Called by PauseMenu_Draw and DrawShadedMenuBox. */
