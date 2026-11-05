@@ -995,7 +995,7 @@ void Level16_UpdateActors(void) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
 
             if (FindGroundHeightBelow(bounceNormal, 0x1000) > 0) {
-              colIndex = g_nLastCollisionHitChunkId;
+              colIndex = g_nCollisionHitTriIndex;
               st->restMode = COLLREST_ON_TRI;
               st->groundTri = colIndex;
             }
@@ -2746,7 +2746,7 @@ void Level16_UpdateActors(void) {
         }
         if (d < 0x400) {
           actor->posZ = z;
-          *hitTri = g_nLastCollisionHitChunkId;
+          *hitTri = g_nCollisionHitTriIndex;
         } else {
           actor->posZ -= 0x200;
         }

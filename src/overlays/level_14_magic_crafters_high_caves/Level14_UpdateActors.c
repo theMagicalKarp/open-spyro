@@ -1645,7 +1645,7 @@ void Level14_UpdateActors(void) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
 
             if (FindGroundHeightBelow(svF, 0x1000) > 0) {
-              colIndex = g_nLastCollisionHitChunkId;
+              colIndex = g_nCollisionHitTriIndex;
               st->restMode = COLLREST_ON_TRI;
               st->groundTri = colIndex;
             }
@@ -3802,8 +3802,8 @@ void Level14_UpdateActors(void) {
         i = FindGroundHeightBelow(&actor->posX, 0x1000);
         if (i > 0) {
           actor->posZ = i;
-          st->node = g_nLastCollisionHitChunkId;
-          UnpackWorldCollisionTri(g_nLastCollisionHitChunkId, st->pts[0]);
+          st->node = g_nCollisionHitTriIndex;
+          UnpackWorldCollisionTri(g_nCollisionHitTriIndex, st->pts[0]);
         } else {
           st->node = -1;
         }
@@ -4628,7 +4628,7 @@ void Level14_UpdateActors(void) {
         d = actor->posZ - floor;
         if (ABS(d) < 0x400) {
           actor->posZ = floor;
-          *tri = g_nLastCollisionHitChunkId;
+          *tri = g_nCollisionHitTriIndex;
         } else {
           actor->posZ -= 0x200;
         }

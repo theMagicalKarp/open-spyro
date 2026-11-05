@@ -165,7 +165,7 @@ extern int g_nDragonRescueSubstate;
 extern int g_nDragonRescueTimer;
 extern int g_nGemTallyIconCount;
 extern int g_nGroundSurfaceType;                         /* index of the surface under the probe */
-extern int g_nLastCollisionHitChunkId;                   /* collision triangle index */
+extern int g_nCollisionHitTriIndex;                   /* collision triangle index */
 extern int g_nLevelKeyState;                             /* key collected */
 extern int g_nLevelIndex;
 extern int g_nLevelIntroParallaxCountdown;

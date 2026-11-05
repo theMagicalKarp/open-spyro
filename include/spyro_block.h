@@ -62,8 +62,8 @@
 #define SPY_FLIGHT_MODE    0x93 /* g_nSpyroFlightMode */
 #define SPY_CHARGE_HOLD    0x94 /* g_nSpyroChargeHoldFlag */
 #define SPY_GLIDE_BANK     0x95 /* g_nSpyroGlideBankingFlag */
-#define SPY_GROUND_CHUNK   0x9D /* g_nSpyroGroundChunkId */
-#define SPY_GROUND_VERTS   0x9E /* g_anSpyroGroundChunkVerts */
+#define SPY_GROUND_TRI   0x9D /* g_nSpyroGroundTriIndex */
+#define SPY_GROUND_VERTS   0x9E /* g_anSpyroGroundTriVerts */
 
 /* One Spyro-block global reached off another's address (the original keeps
  * the first one's base register): SPY_VIA(g_anSpyroVelocity, SPY_VELOCITY,

@@ -46,9 +46,8 @@ void ProbeSpyroGroundContact(void) {
       if (t < 0) {
         g_nSpyroGroundSlope = SLOPE_CEILING;
       }
-      BLK(SPY_GROUND_CHUNK) = g_nLastCollisionHitChunkId;
-      UnpackWorldCollisionTri(g_nLastCollisionHitChunkId,
-                              &BLK(SPY_GROUND_VERTS));
+      BLK(SPY_GROUND_TRI) = g_nCollisionHitTriIndex;
+      UnpackWorldCollisionTri(g_nCollisionHitTriIndex, &BLK(SPY_GROUND_VERTS));
       if (g_nSpyroGroundSlope < SLOPE_GROUND_MAX) {
         BLK(SPY_GLIDE_SPENT) = g_nSpyroGroundSlope >= SLOPE_STEEP;
         BLK(SPY_AIRBORNE) = 0;
@@ -67,7 +66,7 @@ void ProbeSpyroGroundContact(void) {
         }
       }
     } else {
-      BLK(SPY_GROUND_CHUNK) = -1;
+      BLK(SPY_GROUND_TRI) = -1;
     }
     if ((BLK(SPY_AIRBORNE) != 0) && (g_nSpyroGroundProbeSuspendFlag == 0)) {
       down[0] = 0;

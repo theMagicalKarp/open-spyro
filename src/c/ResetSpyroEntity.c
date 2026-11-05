@@ -36,7 +36,7 @@ void ResetSpyroEntity(int full) {
     g_bSpyroOtBinBias = 4;
     g_bSpyroAnimFrame = 1;
     g_nSparxHealth = health;
-    g_nSpyroGroundChunkId = -1;
+    g_nSpyroGroundTriIndex = -1;
     g_abSpyroPersistentEuler[0] = euler[0];
     g_abSpyroPersistentEuler[1] = euler[1];
     g_abSpyroPersistentEuler[2] = euler[2];
@@ -44,12 +44,12 @@ void ResetSpyroEntity(int full) {
     g_nSpyroBodyRoll = euler[1] << 4;
     g_nSpyroBodyYaw = euler[2] << 4;
     ChangeSpyroState(SPYRO_ST_IDLE);
-    g_nSpyroFirstContactChunkId = 0xFF;
+    g_nSpyroFirstContactSurfaceType = 0xFF;
     g_bSpyroSfxVoiceMarker = 0x3F;
     g_nSpyroSuperflameTimer = 0;
   } else {
-    g_nSpyroGroundChunkId = -1;
-    g_nSpyroFirstContactChunkId = 0xFF;
+    g_nSpyroGroundTriIndex = -1;
+    g_nSpyroFirstContactSurfaceType = 0xFF;
     *(int *)g_abSpyroTintRgba = 0;
     g_dwSpyroTriggerEventFlags = 0;
     g_nSpyroHazardFloorZ = 0;

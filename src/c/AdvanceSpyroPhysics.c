@@ -79,8 +79,8 @@ SDATA(g_pSpyroContactActor, 4);
       }                                                                        \
     }                                                                          \
     CopyVector(pos, g_anCollisionResolvedPos);                                 \
-    if (g_nSpyroFirstContactChunkId == 0xFF) {                                 \
-      g_nSpyroFirstContactChunkId = g_nGroundSurfaceType;                      \
+    if (g_nSpyroFirstContactSurfaceType == 0xFF) {                             \
+      g_nSpyroFirstContactSurfaceType = g_nGroundSurfaceType;                  \
       CopyVector(pos + SPY_FIRST_POINT, g_anCollisionContactPoint);            \
       CopyVector(pos + SPY_FIRST_NORMAL, g_anCollisionProbeVec);               \
     }                                                                          \
@@ -122,7 +122,7 @@ int AdvanceSpyroPhysics(void) {
   int hole;
 
   g_nSpyroContactedActorFlag = 0;
-  g_nSpyroFirstContactChunkId = 0xFF;
+  g_nSpyroFirstContactSurfaceType = 0xFF;
   g_nSpyroWallSlideContributedFlag = 0;
   {
     int *q = &SPY[SPY_PROBE_SUSPEND];

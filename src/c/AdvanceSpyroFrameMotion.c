@@ -12,13 +12,13 @@
 /* 0x80048b9c (372 bytes) — per-frame Spyro physics driver: zero the motion
    accumulator, run the per-substep integrate loop, the footing-state
    dispatch, the per-substep finalize loop, then probe the ground below and
-   fire the surface/chunk trigger event (skipped while request bit 0x4000
-   is set). */
+   fire the trigger-region event under Spyro: the ground he stands on, else
+   the first surface he touched this frame (skipped under SPYRO_RQ_NO_CLIP). */
 void AdvanceSpyroFrameMotion(void) {
   int i;
   int ground;
   int surface;
-  int chunk;
+  int contact;
   unsigned int *req;
 
   ZeroVector(g_anSpyroVelocityFp6);
@@ -39,10 +39,10 @@ void AdvanceSpyroFrameMotion(void) {
         (surface = g_nGroundSurfaceType & 0x3F) != 0x3F &&
         g_anSpyroWorldPos[2] - ground < 0x201) {
       DispatchSpyroTriggerEvent(surface, 2);
-    } else if ((chunk = g_nSpyroFirstContactChunkId & 0x3F) != 0x3F) {
-      DispatchSpyroTriggerEvent(chunk, 0);
+    } else if ((contact = g_nSpyroFirstContactSurfaceType & 0x3F) != 0x3F) {
+      DispatchSpyroTriggerEvent(contact, 0);
     } else if (g_nSpyroGroundHeightZ > 0 &&
-               (surface = g_nGroundSurfaceType & 0x3F) != chunk) {
+               (surface = g_nGroundSurfaceType & 0x3F) != contact) {
       DispatchSpyroTriggerEvent(surface, 1);
     }
   }

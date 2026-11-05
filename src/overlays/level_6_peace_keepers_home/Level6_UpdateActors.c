@@ -1425,7 +1425,7 @@ void Level6_UpdateActors(void) {
             g136[2] += 0x400;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             if (FindGroundHeightBelow(g136, 0x1000) > 0) {
-              st->groundTri = g_nLastCollisionHitChunkId;
+              st->groundTri = g_nCollisionHitTriIndex;
               st->mode = COLLREST_ON_TRI;
             }
           }

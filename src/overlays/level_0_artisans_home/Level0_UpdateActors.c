@@ -890,7 +890,7 @@ void Level0_UpdateActors(void) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
 
             if (FindGroundHeightBelow(svF, 0x1000) > 0) {
-              colIndex = g_nLastCollisionHitChunkId;
+              colIndex = g_nCollisionHitTriIndex;
               st->restMode = COLLREST_ON_TRI;
               st->groundTri = colIndex;
             }
@@ -2783,7 +2783,7 @@ void Level0_UpdateActors(void) {
           break;
         }
 
-        st->triId = g_nLastCollisionHitChunkId;
+        st->triId = g_nCollisionHitTriIndex;
         UnpackWorldCollisionTri(st->triId, tri[0]);
         AddVector(tri[0], tri[0], tri[1]);
         AddVector(tri[0], tri[0], tri[2]);

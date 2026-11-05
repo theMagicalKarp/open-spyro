@@ -626,7 +626,7 @@ extern int g_nGameOverLevelIndex;       /* 0x800757e8: g_nLevelIndex at game ove
 extern unsigned short **g_pLevelPickupTableEntries; /* 0x800757f8: per pickup group, its actor-id list (bit 15 marks the last) */
 extern unsigned char g_abPadActCommand[2];            /* 0x80075800 */
 extern struct Actor *g_pSpyroContactActor;           /* 0x80075804 */
-extern int g_nLastCollisionHitChunkId;       /* 0x80075808 */
+extern int g_nCollisionHitTriIndex;       /* 0x80075808 */
 extern int g_nSparxHealthStash;           /* 0x8007580c: saved g_nSparxHealth; -1 = none (ResetLevelState, new game) */
 extern int g_nTotalEggsRecovered;            /* 0x80075810: game-wide eggs recovered (ApplySaveGameBuffer sums g_anLevelEggsRecovered; 12 = 10%) */
 extern int g_nSpyroDrawSuppressed;           /* 0x80075814: nonzero skips Spyro's model and shadow (ComposeFrameScene); level 20's grabber sets it while it holds Spyro, BuildLoadedLevelRuntime clears it */
@@ -1002,7 +1002,7 @@ extern int g_nSpyroGravityEnableFlag;                   /* 0x80078bb4 */
 extern int g_nSpyroInputLockoutCountdown;               /* 0x80078bb8 */
 extern int g_nSparxHealth;                           /* 0x80078bbc: Sparx health: 3 gold, 2 blue, 1 green, 0 Sparx gone, -1 after the fatal hit. Hits decrement it (ApplySpyroTriggerEvents / DispatchSpyroChargeStateChanges pick the death state once it goes negative); the Sparx actor eating a butterfly adds 1; a new game sets 3. */
 extern int g_nSpyroHazardSinkDepth;                         /* 0x80078bc0 */
-extern int g_nSpyroFirstContactChunkId;                 /* 0x80078bc4 */
+extern int g_nSpyroFirstContactSurfaceType;                 /* 0x80078bc4 */
 extern int g_nSpyroTriggerCurrentEventId;               /* 0x80078bc8 */
 extern int g_nSpyroTriggerEntryZ;                       /* 0x80078bcc */
 extern void *g_pSpyroLiftRegionData;                 /* 0x80078bd0 */
@@ -1034,8 +1034,8 @@ extern int g_nSpyroChargeHoldFlag;                      /* 0x80078ca8 */
 extern int g_nSpyroGlideBankingFlag;                    /* 0x80078cac */
 extern unsigned int g_dwSpyroFootstepPrimarySfxKey;             /* 0x80078cbc */
 extern unsigned int g_dwSpyroFootstepSecondarySfxKey;           /* 0x80078cc0 */
-extern int g_nSpyroGroundChunkId;                       /* 0x80078ccc */
-extern int g_anSpyroGroundChunkVerts[9];                /* 0x80078cd0 */
+extern int g_nSpyroGroundTriIndex;                       /* 0x80078ccc */
+extern int g_anSpyroGroundTriVerts[9];                /* 0x80078cd0 */
 extern void *g_pSpyroHazardRegionData;                /* 0x80078cf4 */
 extern unsigned char g_bSpyroSfxVoiceMarker;                     /* 0x80078cf8 */
 extern int g_nSaveMenuMode;                             /* 0x80078d00: enum SaveMenuMode (save_menu.h) */

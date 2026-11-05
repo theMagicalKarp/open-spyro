@@ -50175,8 +50175,8 @@ glabel ProbeSpyroGroundContact
     /* 2EC48 8003E448 0880013C */  lui        $at, %hi(g_nSpyroGroundSlope)
     /* 2EC4C 8003E44C 088B22AC */  sw         $v0, %lo(g_nSpyroGroundSlope)($at)
   .L8003E450:
-    /* 2EC50 8003E450 0780043C */  lui        $a0, %hi(g_nLastCollisionHitChunkId)
-    /* 2EC54 8003E454 0858848C */  lw         $a0, %lo(g_nLastCollisionHitChunkId)($a0)
+    /* 2EC50 8003E450 0780043C */  lui        $a0, %hi(g_nCollisionHitTriIndex)
+    /* 2EC54 8003E454 0858848C */  lw         $a0, %lo(g_nCollisionHitTriIndex)($a0)
     /* 2EC58 8003E458 DC014526 */  addiu      $a1, $s2, 0x1DC
     /* 2EC5C 8003E45C 2E5F000C */  jal        UnpackWorldCollisionTri
     /* 2EC60 8003E460 D80144AE */   sw        $a0, 0x1D8($s2)
@@ -50307,8 +50307,8 @@ nonmatching AverageSpyroPlatformMotion, 0x130
 glabel AverageSpyroPlatformMotion
     /* 2EE28 8003E628 A0FFBD27 */  addiu      $sp, $sp, -0x60
     /* 2EE2C 8003E62C 4C00B1AF */  sw         $s1, 0x4C($sp)
-    /* 2EE30 8003E630 0880113C */  lui        $s1, %hi(g_nSpyroGroundChunkId)
-    /* 2EE34 8003E634 CC8C3126 */  addiu      $s1, $s1, %lo(g_nSpyroGroundChunkId)
+    /* 2EE30 8003E630 0880113C */  lui        $s1, %hi(g_nSpyroGroundTriIndex)
+    /* 2EE34 8003E634 CC8C3126 */  addiu      $s1, $s1, %lo(g_nSpyroGroundTriIndex)
     /* 2EE38 8003E638 5800BFAF */  sw         $ra, 0x58($sp)
     /* 2EE3C 8003E63C 5400B3AF */  sw         $s3, 0x54($sp)
     /* 2EE40 8003E640 5000B2AF */  sw         $s2, 0x50($sp)
@@ -52012,8 +52012,8 @@ glabel AdvanceSpyroPhysics
     /* 3067C 8003FE7C E08A20AC */  sw         $zero, %lo(g_nSpyroContactedActorFlag)($at)
     /* 30680 8003FE80 0000438E */  lw         $v1, 0x0($s2)
     /* 30684 8003FE84 FF000224 */  addiu      $v0, $zero, 0xFF
-    /* 30688 8003FE88 0880013C */  lui        $at, %hi(g_nSpyroFirstContactChunkId)
-    /* 3068C 8003FE8C C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactChunkId)($at)
+    /* 30688 8003FE88 0880013C */  lui        $at, %hi(g_nSpyroFirstContactSurfaceType)
+    /* 3068C 8003FE8C C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactSurfaceType)($at)
     /* 30690 8003FE90 0880013C */  lui        $at, %hi(g_nSpyroWallSlideContributedFlag)
     /* 30694 8003FE94 0C8B20AC */  sw         $zero, %lo(g_nSpyroWallSlideContributedFlag)($at)
     /* 30698 8003FE98 01006324 */  addiu      $v1, $v1, 0x1
@@ -52900,8 +52900,8 @@ glabel AdvanceSpyroPhysics
     /* 31328 80040B28 806BA524 */  addiu      $a1, $a1, %lo(g_anCollisionResolvedPos)
     /* 3132C 80040B2C C05D000C */  jal        CopyVector
     /* 31330 80040B30 21204002 */   addu      $a0, $s2, $zero
-    /* 31334 80040B34 0880033C */  lui        $v1, %hi(g_nSpyroFirstContactChunkId)
-    /* 31338 80040B38 C48B638C */  lw         $v1, %lo(g_nSpyroFirstContactChunkId)($v1)
+    /* 31334 80040B34 0880033C */  lui        $v1, %hi(g_nSpyroFirstContactSurfaceType)
+    /* 31338 80040B38 C48B638C */  lw         $v1, %lo(g_nSpyroFirstContactSurfaceType)($v1)
     /* 3133C 80040B3C FF000224 */  addiu      $v0, $zero, 0xFF
     /* 31340 80040B40 0E006214 */  bne        $v1, $v0, .L80040B7C
     /* 31344 80040B44 1800A427 */   addiu     $a0, $sp, 0x18
@@ -52909,8 +52909,8 @@ glabel AdvanceSpyroPhysics
     /* 3134C 80040B4C 1857428C */  lw         $v0, %lo(g_nGroundSurfaceType)($v0)
     /* 31350 80040B50 0780053C */  lui        $a1, %hi(g_anCollisionContactPoint)
     /* 31354 80040B54 5878A524 */  addiu      $a1, $a1, %lo(g_anCollisionContactPoint)
-    /* 31358 80040B58 0880013C */  lui        $at, %hi(g_nSpyroFirstContactChunkId)
-    /* 3135C 80040B5C C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactChunkId)($at)
+    /* 31358 80040B58 0880013C */  lui        $at, %hi(g_nSpyroFirstContactSurfaceType)
+    /* 3135C 80040B5C C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactSurfaceType)($at)
     /* 31360 80040B60 C05D000C */  jal        CopyVector
     /* 31364 80040B64 7C014426 */   addiu     $a0, $s2, 0x17C
     /* 31368 80040B68 0780053C */  lui        $a1, %hi(g_anCollisionProbeVec)
@@ -53061,8 +53061,8 @@ glabel AdvanceSpyroPhysics
     /* 3157C 80040D7C 806BA524 */  addiu      $a1, $a1, %lo(g_anCollisionResolvedPos)
     /* 31580 80040D80 C05D000C */  jal        CopyVector
     /* 31584 80040D84 21204002 */   addu      $a0, $s2, $zero
-    /* 31588 80040D88 0880033C */  lui        $v1, %hi(g_nSpyroFirstContactChunkId)
-    /* 3158C 80040D8C C48B638C */  lw         $v1, %lo(g_nSpyroFirstContactChunkId)($v1)
+    /* 31588 80040D88 0880033C */  lui        $v1, %hi(g_nSpyroFirstContactSurfaceType)
+    /* 3158C 80040D8C C48B638C */  lw         $v1, %lo(g_nSpyroFirstContactSurfaceType)($v1)
     /* 31590 80040D90 FF000224 */  addiu      $v0, $zero, 0xFF
     /* 31594 80040D94 0E006214 */  bne        $v1, $v0, .L80040DD0
     /* 31598 80040D98 1800A427 */   addiu     $a0, $sp, 0x18
@@ -53070,8 +53070,8 @@ glabel AdvanceSpyroPhysics
     /* 315A0 80040DA0 1857428C */  lw         $v0, %lo(g_nGroundSurfaceType)($v0)
     /* 315A4 80040DA4 0780053C */  lui        $a1, %hi(g_anCollisionContactPoint)
     /* 315A8 80040DA8 5878A524 */  addiu      $a1, $a1, %lo(g_anCollisionContactPoint)
-    /* 315AC 80040DAC 0880013C */  lui        $at, %hi(g_nSpyroFirstContactChunkId)
-    /* 315B0 80040DB0 C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactChunkId)($at)
+    /* 315AC 80040DAC 0880013C */  lui        $at, %hi(g_nSpyroFirstContactSurfaceType)
+    /* 315B0 80040DB0 C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactSurfaceType)($at)
     /* 315B4 80040DB4 C05D000C */  jal        CopyVector
     /* 315B8 80040DB8 7C014426 */   addiu     $a0, $s2, 0x17C
     /* 315BC 80040DBC 0780053C */  lui        $a1, %hi(g_anCollisionProbeVec)
@@ -61910,8 +61910,8 @@ glabel AdvanceSpyroFrameMotion
     /* 3949C 80048C9C 15004014 */  bnez       $v0, .L80048CF4
     /* 394A0 80048CA0 02000524 */   addiu     $a1, $zero, 0x2
   .L80048CA4:
-    /* 394A4 80048CA4 0880023C */  lui        $v0, %hi(g_nSpyroFirstContactChunkId)
-    /* 394A8 80048CA8 C48B428C */  lw         $v0, %lo(g_nSpyroFirstContactChunkId)($v0)
+    /* 394A4 80048CA4 0880023C */  lui        $v0, %hi(g_nSpyroFirstContactSurfaceType)
+    /* 394A8 80048CA8 C48B428C */  lw         $v0, %lo(g_nSpyroFirstContactSurfaceType)($v0)
     /* 394AC 80048CAC 00000000 */  nop
     /* 394B0 80048CB0 3F004330 */  andi       $v1, $v0, 0x3F
     /* 394B4 80048CB4 3F000224 */  addiu      $v0, $zero, 0x3F
@@ -64219,8 +64219,8 @@ glabel ResetSpyroEntity
     /* 3B50C 8004AD0C FFFF0224 */  addiu      $v0, $zero, -0x1
     /* 3B510 8004AD10 0880013C */  lui        $at, %hi(g_nSparxHealth)
     /* 3B514 8004AD14 BC8B31AC */  sw         $s1, %lo(g_nSparxHealth)($at)
-    /* 3B518 8004AD18 0880013C */  lui        $at, %hi(g_nSpyroGroundChunkId)
-    /* 3B51C 8004AD1C CC8C22AC */  sw         $v0, %lo(g_nSpyroGroundChunkId)($at)
+    /* 3B518 8004AD18 0880013C */  lui        $at, %hi(g_nSpyroGroundTriIndex)
+    /* 3B51C 8004AD1C CC8C22AC */  sw         $v0, %lo(g_nSpyroGroundTriIndex)($at)
     /* 3B520 8004AD20 0880013C */  lui        $at, %hi(g_abSpyroPersistentEuler)
     /* 3B524 8004AD24 648A23A0 */  sb         $v1, %lo(g_abSpyroPersistentEuler)($at)
     /* 3B528 8004AD28 00190300 */  sll        $v1, $v1, 4
@@ -64239,8 +64239,8 @@ glabel ResetSpyroEntity
     /* 3B55C 8004AD5C 9AFA000C */  jal        ChangeSpyroState
     /* 3B560 8004AD60 21200000 */   addu      $a0, $zero, $zero
     /* 3B564 8004AD64 FF000224 */  addiu      $v0, $zero, 0xFF
-    /* 3B568 8004AD68 0880013C */  lui        $at, %hi(g_nSpyroFirstContactChunkId)
-    /* 3B56C 8004AD6C C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactChunkId)($at)
+    /* 3B568 8004AD68 0880013C */  lui        $at, %hi(g_nSpyroFirstContactSurfaceType)
+    /* 3B56C 8004AD6C C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactSurfaceType)($at)
     /* 3B570 8004AD70 3F000224 */  addiu      $v0, $zero, 0x3F
     /* 3B574 8004AD74 0880013C */  lui        $at, %hi(g_bSpyroSfxVoiceMarker)
     /* 3B578 8004AD78 F88C22A0 */  sb         $v0, %lo(g_bSpyroSfxVoiceMarker)($at)
@@ -64252,11 +64252,11 @@ glabel ResetSpyroEntity
     /* 3B58C 8004AD8C 0880033C */  lui        $v1, %hi(g_abSpyroPersistentEuler)
     /* 3B590 8004AD90 648A6390 */  lbu        $v1, %lo(g_abSpyroPersistentEuler)($v1)
     /* 3B594 8004AD94 FFFF0224 */  addiu      $v0, $zero, -0x1
-    /* 3B598 8004AD98 0880013C */  lui        $at, %hi(g_nSpyroGroundChunkId)
-    /* 3B59C 8004AD9C CC8C22AC */  sw         $v0, %lo(g_nSpyroGroundChunkId)($at)
+    /* 3B598 8004AD98 0880013C */  lui        $at, %hi(g_nSpyroGroundTriIndex)
+    /* 3B59C 8004AD9C CC8C22AC */  sw         $v0, %lo(g_nSpyroGroundTriIndex)($at)
     /* 3B5A0 8004ADA0 FF000224 */  addiu      $v0, $zero, 0xFF
-    /* 3B5A4 8004ADA4 0880013C */  lui        $at, %hi(g_nSpyroFirstContactChunkId)
-    /* 3B5A8 8004ADA8 C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactChunkId)($at)
+    /* 3B5A4 8004ADA4 0880013C */  lui        $at, %hi(g_nSpyroFirstContactSurfaceType)
+    /* 3B5A8 8004ADA8 C48B22AC */  sw         $v0, %lo(g_nSpyroFirstContactSurfaceType)($at)
     /* 3B5AC 8004ADAC 0880023C */  lui        $v0, %hi(g_abSpyroPersistentEuler + 0x1)
     /* 3B5B0 8004ADB0 658A4290 */  lbu        $v0, %lo(g_abSpyroPersistentEuler + 0x1)($v0)
     /* 3B5B4 8004ADB4 0880013C */  lui        $at, %hi(g_abSpyroTintRgba)
@@ -64871,8 +64871,8 @@ glabel CastRayWorldAndActors
     /* 3BE88 8004B688 0780043C */  lui        $a0, %hi(g_pCollisionHitActor)
     /* 3BE8C 8004B68C E4578424 */  addiu      $a0, $a0, %lo(g_pCollisionHitActor)
     /* 3BE90 8004B690 000080AC */  sw         $zero, 0x0($a0)
-    /* 3BE94 8004B694 0780043C */  lui        $a0, %hi(g_nLastCollisionHitChunkId)
-    /* 3BE98 8004B698 08588424 */  addiu      $a0, $a0, %lo(g_nLastCollisionHitChunkId)
+    /* 3BE94 8004B694 0780043C */  lui        $a0, %hi(g_nCollisionHitTriIndex)
+    /* 3BE98 8004B698 08588424 */  addiu      $a0, $a0, %lo(g_nCollisionHitTriIndex)
     /* 3BE9C 8004B69C 00009CAC */  sw         $gp, 0x0($a0)
     /* 3BEA0 8004B6A0 5800618E */  lw         $at, 0x58($s3)
     /* 3BEA4 8004B6A4 7E2C0108 */  j          .L8004B1F8
@@ -65359,8 +65359,8 @@ glabel CastRayWorldAndActors
     /* 3C5C0 8004BDC0 0780043C */  lui        $a0, %hi(g_pCollisionHitActor)
     /* 3C5C4 8004BDC4 E4578424 */  addiu      $a0, $a0, %lo(g_pCollisionHitActor)
     /* 3C5C8 8004BDC8 00009EAC */  sw         $fp, 0x0($a0)
-    /* 3C5CC 8004BDCC 0780043C */  lui        $a0, %hi(g_nLastCollisionHitChunkId)
-    /* 3C5D0 8004BDD0 08588424 */  addiu      $a0, $a0, %lo(g_nLastCollisionHitChunkId)
+    /* 3C5CC 8004BDCC 0780043C */  lui        $a0, %hi(g_nCollisionHitTriIndex)
+    /* 3C5D0 8004BDD0 08588424 */  addiu      $a0, $a0, %lo(g_nCollisionHitTriIndex)
     /* 3C5D4 8004BDD4 FFFF0120 */  addi       $at, $zero, -0x1 /* handwritten instruction */
     /* 3C5D8 8004BDD8 000081AC */  sw         $at, 0x0($a0)
     /* 3C5DC 8004BDDC D8FF618E */  lw         $at, -0x28($s3)
@@ -66154,8 +66154,8 @@ glabel CollideSphereWithWorldAndActors
     /* 3D124 8004C924 0780013C */  lui        $at, %hi(g_pCollisionHitActor)
     /* 3D128 8004C928 E4572124 */  addiu      $at, $at, %lo(g_pCollisionHitActor)
     /* 3D12C 8004C92C 000020AC */  sw         $zero, 0x0($at)
-    /* 3D130 8004C930 0780013C */  lui        $at, %hi(g_nLastCollisionHitChunkId)
-    /* 3D134 8004C934 08582124 */  addiu      $at, $at, %lo(g_nLastCollisionHitChunkId)
+    /* 3D130 8004C930 0780013C */  lui        $at, %hi(g_nCollisionHitTriIndex)
+    /* 3D134 8004C934 08582124 */  addiu      $at, $at, %lo(g_nCollisionHitTriIndex)
     /* 3D138 8004C938 00003CAC */  sw         $gp, 0x0($at)
     /* 3D13C 8004C93C 0880013C */  lui        $at, %hi(g_pWorldChunkArray)
     /* 3D140 8004C940 A8852124 */  addiu      $at, $at, %lo(g_pWorldChunkArray)
@@ -66887,8 +66887,8 @@ glabel CollideSphereWithWorldAndActors_Tail
     /* 3DBE4 8004D3E4 0780013C */  lui        $at, %hi(g_pCollisionHitActor)
     /* 3DBE8 8004D3E8 E4572124 */  addiu      $at, $at, %lo(g_pCollisionHitActor)
     /* 3DBEC 8004D3EC 00003EAC */  sw         $fp, 0x0($at)
-    /* 3DBF0 8004D3F0 0780013C */  lui        $at, %hi(g_nLastCollisionHitChunkId)
-    /* 3DBF4 8004D3F4 08582124 */  addiu      $at, $at, %lo(g_nLastCollisionHitChunkId)
+    /* 3DBF0 8004D3F0 0780013C */  lui        $at, %hi(g_nCollisionHitTriIndex)
+    /* 3DBF4 8004D3F4 08582124 */  addiu      $at, $at, %lo(g_nCollisionHitTriIndex)
     /* 3DBF8 8004D3F8 FFFF0220 */  addi       $v0, $zero, -0x1 /* handwritten instruction */
     /* 3DBFC 8004D3FC 000022AC */  sw         $v0, 0x0($at)
     /* 3DC00 8004D400 FF000120 */  addi       $at, $zero, 0xFF /* handwritten instruction */
@@ -67328,8 +67328,8 @@ glabel FindGroundHeightBelow
     /* 3E250 8004DA50 0780013C */  lui        $at, %hi(g_pCollisionHitActor)
     /* 3E254 8004DA54 E4572124 */  addiu      $at, $at, %lo(g_pCollisionHitActor)
     /* 3E258 8004DA58 000020AC */  sw         $zero, 0x0($at)
-    /* 3E25C 8004DA5C 0780013C */  lui        $at, %hi(g_nLastCollisionHitChunkId)
-    /* 3E260 8004DA60 08582124 */  addiu      $at, $at, %lo(g_nLastCollisionHitChunkId)
+    /* 3E25C 8004DA5C 0780013C */  lui        $at, %hi(g_nCollisionHitTriIndex)
+    /* 3E260 8004DA60 08582124 */  addiu      $at, $at, %lo(g_nCollisionHitTriIndex)
     /* 3E264 8004DA64 000033AC */  sw         $s3, 0x0($at)
     /* 3E268 8004DA68 0880013C */  lui        $at, %hi(g_pWorldChunkArray)
     /* 3E26C 8004DA6C A8852124 */  addiu      $at, $at, %lo(g_pWorldChunkArray)
@@ -67630,8 +67630,8 @@ glabel FindGroundHeightBelow
     /* 3E6D8 8004DED8 0780013C */  lui        $at, %hi(g_pCollisionHitActor)
     /* 3E6DC 8004DEDC E4572124 */  addiu      $at, $at, %lo(g_pCollisionHitActor)
     /* 3E6E0 8004DEE0 00003EAC */  sw         $fp, 0x0($at)
-    /* 3E6E4 8004DEE4 0780013C */  lui        $at, %hi(g_nLastCollisionHitChunkId)
-    /* 3E6E8 8004DEE8 08582124 */  addiu      $at, $at, %lo(g_nLastCollisionHitChunkId)
+    /* 3E6E4 8004DEE4 0780013C */  lui        $at, %hi(g_nCollisionHitTriIndex)
+    /* 3E6E8 8004DEE8 08582124 */  addiu      $at, $at, %lo(g_nCollisionHitTriIndex)
     /* 3E6EC 8004DEEC FFFF0220 */  addi       $v0, $zero, -0x1 /* handwritten instruction */
     /* 3E6F0 8004DEF0 000022AC */  sw         $v0, 0x0($at)
     /* 3E6F4 8004DEF4 FF000120 */  addi       $at, $zero, 0xFF /* handwritten instruction */
