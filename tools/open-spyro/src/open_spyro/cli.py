@@ -288,6 +288,12 @@ def xref_callers(func: Annotated[str, typer.Argument(help="function name")]) -> 
     xref.callers(func)
 
 
+@xref_app.command("audit")
+def xref_audit() -> None:
+    """globals.h globals nothing references, or that are only ever written."""
+    xref.audit()
+
+
 # ---- wad: nested group ------------------------------------------------------
 wad_app = typer.Typer(help="Byte-identical WAD.WAD repack.", no_args_is_help=True)
 app.add_typer(wad_app, name="wad")
