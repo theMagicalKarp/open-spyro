@@ -281,7 +281,7 @@ void TickLevelTransitionStream(int full) {
       g_nCdStreamState++;
       break;
     }
-    if (g_nLevelIntroParallaxCountdown != 0) {
+    if (g_nTransitionSkyPitchTilt != 0) {
       break;
     }
     if (g_nReturnPortalLevelId != 0) {
@@ -375,8 +375,8 @@ void TickLevelTransitionStream(int full) {
             AddVector(cam, cam, (int *)((char *)pyaw - PYAW_BACK_TO(0)));
             UpdateCameraEulerAngles();
             *((unsigned char *)pyaw - PYAW_BACK_TO(SPYB_OT_BIN_BIAS)) = 0x7F;
-            g_nPortalViewPitchTilt = 0;
-            g_nPortalViewYawSpin =
+            g_nPortalSkyPitchTilt = 0;
+            g_nPortalSkyYawSpin =
                 (yaw - *((unsigned char *)pyaw - PYAW_BACK_TO(SPYB_EULER_Z)))
                 << 4;
             break;

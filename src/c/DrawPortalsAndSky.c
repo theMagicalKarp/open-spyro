@@ -54,7 +54,7 @@ extern int g_nCameraVisZone[]; /* [-0x10] view mtx, [-0x15] world mtx */
    (EmitPortalSky / EmitPortalSkyFogShaded, or a flat EmitPortalColorFill up
    close), then the active sky (EmitSkyMesh). The portal-sky view matrix is
    rebuilt every frame from the camera euler angles plus a slow spin/tilt
-   (g_nPortalViewYawSpin /
+   (g_nPortalSkyYawSpin /
    ...PitchTilt, both advanced 2/frame here) and squashed to 5/8 on the middle
    row. Each live portal ring is projected point-by-point into
    g_aPortalRingScreenPts, depth-cued (and fog-blended during storms), then
@@ -97,36 +97,36 @@ void DrawPortalsAndSky(void) {
   int dy;
   int zone;
 
-  g_nPortalViewYawSpin = (g_nPortalViewYawSpin + 2) & 0xfff;
-  g_nPortalViewPitchTilt = (g_nPortalViewPitchTilt + 2) & 0xfff;
-  if (g_nPortalViewPitchTilt >= 0x801) {
-    g_nPortalViewPitchTilt -= 0x1000;
+  g_nPortalSkyYawSpin = (g_nPortalSkyYawSpin + 2) & 0xfff;
+  g_nPortalSkyPitchTilt = (g_nPortalSkyPitchTilt + 2) & 0xfff;
+  if (g_nPortalSkyPitchTilt >= 0x801) {
+    g_nPortalSkyPitchTilt -= 0x1000;
   }
-  if (g_nPortalViewPitchTilt >= 0x81) {
-    g_nPortalViewPitchTilt = 0x80;
+  if (g_nPortalSkyPitchTilt >= 0x81) {
+    g_nPortalSkyPitchTilt = 0x80;
   }
 
   FillWord(&viewMtx, 0, 0x20);
   SetTransMatrix(&viewMtx);
   viewMtx.m[0][0] = 0x1000;
-  v = LookupCosine(g_anCameraEulerPitchBlock[0] - g_nPortalViewPitchTilt);
+  v = LookupCosine(g_anCameraEulerPitchBlock[0] - g_nPortalSkyPitchTilt);
   viewMtx.m[1][1] = v;
-  v = LookupSine(g_anCameraEulerPitchBlock[0] - g_nPortalViewPitchTilt);
+  v = LookupSine(g_anCameraEulerPitchBlock[0] - g_nPortalSkyPitchTilt);
   viewMtx.m[2][1] = v;
-  v = LookupSine(g_anCameraEulerPitchBlock[0] - g_nPortalViewPitchTilt);
+  v = LookupSine(g_anCameraEulerPitchBlock[0] - g_nPortalSkyPitchTilt);
   viewMtx.m[1][2] = -v;
-  v = LookupCosine(g_anCameraEulerPitchBlock[0] - g_nPortalViewPitchTilt);
+  v = LookupCosine(g_anCameraEulerPitchBlock[0] - g_nPortalSkyPitchTilt);
   viewMtx.m[2][2] = v;
 
   FillWord(&outMtx, 0, 0x20);
-  v = LookupCosine(g_nCameraEulerYaw + g_nPortalViewYawSpin);
+  v = LookupCosine(g_nCameraEulerYaw + g_nPortalSkyYawSpin);
   outMtx.m[0][0] = v;
-  v = LookupSine(g_nCameraEulerYaw + g_nPortalViewYawSpin);
+  v = LookupSine(g_nCameraEulerYaw + g_nPortalSkyYawSpin);
   outMtx.m[2][0] = -v;
   outMtx.m[1][1] = 0x1000;
-  v = LookupSine(g_nCameraEulerYaw + g_nPortalViewYawSpin);
+  v = LookupSine(g_nCameraEulerYaw + g_nPortalSkyYawSpin);
   outMtx.m[0][2] = v;
-  v = LookupCosine(g_nCameraEulerYaw + g_nPortalViewYawSpin);
+  v = LookupCosine(g_nCameraEulerYaw + g_nPortalSkyYawSpin);
   outMtx.m[2][2] = v;
   MulMatrix(&viewMtx, &outMtx);
 

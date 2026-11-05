@@ -639,7 +639,7 @@ extern int g_nExtraLives;                    /* 0x8007582c */
 extern int g_nLevelKeyState;                 /* 0x80075830: the level key (enum LevelKeyState): none, carried (key 173 picked up), locked chest (174) opened, its reward collected; shown as HUD counter 4 */
 extern int g_nCameraShakePeakAmplitude;      /* 0x80075848 */
 extern int g_nPulseRumbleAmount;             /* 0x8007584c */
-extern int g_nPortalViewYawSpin;        /* 0x80075858: portal-surface view spin, +2 a frame (DrawPortalsAndSky) */
+extern int g_nPortalSkyYawSpin;        /* 0x80075858: portal-surface view spin, +2 a frame (DrawPortalsAndSky) */
 extern void *g_pDemoPadCursor;           /* 0x8007585c: read/write cursor into the recorded demo pad stream (SampleDemoPadFrame) */
 extern int g_nTotalTreasureCollected;        /* 0x80075860: game-wide treasure (gem) total: pickups, flight bonuses; 14000 (0x36B0) picks the post-game credits return */
 extern int g_nCdStreamState;                 /* 0x80075864: enum CutsceneStreamState or LevelStreamState (cd_stream.h), by which machine runs */
@@ -672,7 +672,7 @@ extern void (*g_pfnLevelEmitParticles)(int count, int type, void *pos, int effec
 extern int g_nSparxFoodCount;                /* 0x800758e8: type-15 pickups collected; every 20 become an extra life (UpdateHudCounters) */
 extern int g_nLevelSelectWorldIndex;         /* 0x800758ec */
 extern int g_nLevelSelectSubIndex;           /* 0x800758f0 */
-extern int g_nPortalViewPitchTilt;      /* 0x800758fc: portal-surface view tilt, +2 a frame (DrawPortalsAndSky) */
+extern int g_nPortalSkyPitchTilt;      /* 0x800758fc: portal-surface view tilt, +2 a frame (DrawPortalsAndSky) */
 extern int g_nHitRumbleTimer;                /* 0x80075904 */
 extern int g_nCameraShakeDuration;           /* 0x8007590c */
 extern unsigned int g_dwActiveCameraOptions;         /* 0x80075914: camera option word, CAM_OPT_ACTIVE or CAM_OPT_PASSIVE (camera.h); saved */
@@ -1118,7 +1118,7 @@ extern unsigned char g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_nFlightRunClock             0x800758f4  flight-level run timer
  *   g_nFlightTallyShownClass      0x800758f8  tally class the HUD is showing
  *   g_nFlightResultsRevealStep    0x8007569c  results-screen reveal sound step
- *   g_nLevelIntroParallaxCountdown 0x80075910 level-intro camera parallax countdown (-2/frame)
+ *   g_nTransitionSkyPitchTilt 0x80075910 portal sky tilt carried into the level load (-2/frame to 0)
  *
  * Batch 2 (documentation only, same reasons):
  *   g_anEmitSlotOffsets / g_anEmitStepOffsets 0x8006e4e0 / 0x8006e498  EmitParticles per-slot / per-step int[3] offsets
@@ -1196,7 +1196,7 @@ extern int g_anSkyBlock[];
 extern int g_bDebugNoDepletion;
 extern unsigned char g_bSpyroSwingByteEuler1;
 extern int g_nCreditsPageIndex;
-extern int g_nLevelIntroParallaxCountdown;
+extern int g_nTransitionSkyPitchTilt;
 extern int g_nSpyroSwingEulerPrev1;
 extern int g_nVisZoneCount;
 

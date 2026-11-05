@@ -168,7 +168,7 @@ extern int g_nGroundSurfaceType;                         /* index of the surface
 extern int g_nCollisionHitTriIndex;                   /* collision triangle index */
 extern int g_nLevelKeyState;                             /* key collected */
 extern int g_nLevelIndex;
-extern int g_nLevelIntroParallaxCountdown;
+extern int g_nTransitionSkyPitchTilt;
 extern int g_nLevelTransitionPhase;
 extern int g_nLevelTransitionTallyActive;
 extern int g_nPauseMenuCursor;                           /* menu cursor */
@@ -177,8 +177,8 @@ extern int g_nMenuDrawFrames;                             /* frames drawn since 
 extern int g_nEnteredPortalIdx;
 extern int g_nPrimBufferOverflowFlag;
 extern int g_nReturnPortalLevelId;
-extern int g_nPortalViewPitchTilt;
-extern int g_nPortalViewYawSpin;
+extern int g_nPortalSkyPitchTilt;
+extern int g_nPortalSkyYawSpin;
 extern int g_nPortalTransitionActive;
 extern int g_nSfxOverrideFlags;
 extern short g_nSfxOverrideVolL;                         /* sound volume override, left/right */

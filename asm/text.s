@@ -4069,8 +4069,8 @@ glabel TickLevelTransitionStream
     /* 63F4 80015BF4 ED580008 */  j          .L800163B4
     /* 63F8 80015BF8 01004224 */   addiu     $v0, $v0, 0x1
   .L80015BFC:
-    /* 63FC 80015BFC 0780023C */  lui        $v0, %hi(g_nLevelIntroParallaxCountdown)
-    /* 6400 80015C00 1059428C */  lw         $v0, %lo(g_nLevelIntroParallaxCountdown)($v0)
+    /* 63FC 80015BFC 0780023C */  lui        $v0, %hi(g_nTransitionSkyPitchTilt)
+    /* 6400 80015C00 1059428C */  lw         $v0, %lo(g_nTransitionSkyPitchTilt)($v0)
     /* 6404 80015C04 00000000 */  nop
     /* 6408 80015C08 EC014014 */  bnez       $v0, .L800163BC
     /* 640C 80015C0C 00000000 */   nop
@@ -4371,12 +4371,12 @@ glabel TickLevelTransitionStream
     /* 687C 8001607C F2FE4392 */  lbu        $v1, -0x10E($s2)
     /* 6880 80016080 7F000224 */  addiu      $v0, $zero, 0x7F
     /* 6884 80016084 0BFF42A2 */  sb         $v0, -0xF5($s2)
-    /* 6888 80016088 0780013C */  lui        $at, %hi(g_nPortalViewPitchTilt)
-    /* 688C 8001608C FC5820AC */  sw         $zero, %lo(g_nPortalViewPitchTilt)($at)
+    /* 6888 80016088 0780013C */  lui        $at, %hi(g_nPortalSkyPitchTilt)
+    /* 688C 8001608C FC5820AC */  sw         $zero, %lo(g_nPortalSkyPitchTilt)($at)
     /* 6890 80016090 2318A302 */  subu       $v1, $s5, $v1
     /* 6894 80016094 00190300 */  sll        $v1, $v1, 4
-    /* 6898 80016098 0780013C */  lui        $at, %hi(g_nPortalViewYawSpin)
-    /* 689C 8001609C 585823AC */  sw         $v1, %lo(g_nPortalViewYawSpin)($at)
+    /* 6898 80016098 0780013C */  lui        $at, %hi(g_nPortalSkyYawSpin)
+    /* 689C 8001609C 585823AC */  sw         $v1, %lo(g_nPortalSkyYawSpin)($at)
     /* 68A0 800160A0 C5580008 */  j          .L80016314
     /* 68A4 800160A4 00000000 */   nop
   .L800160A8:
@@ -9465,19 +9465,19 @@ glabel LevelTransition_Draw
     /* A8E8 8001A0E8 00000000 */  nop
     /* A8EC 8001A0EC 91004010 */  beqz       $v0, .L8001A334
     /* A8F0 8001A0F0 00000000 */   nop
-    /* A8F4 8001A0F4 0780023C */  lui        $v0, %hi(g_nLevelIntroParallaxCountdown)
-    /* A8F8 8001A0F8 1059428C */  lw         $v0, %lo(g_nLevelIntroParallaxCountdown)($v0)
+    /* A8F4 8001A0F4 0780023C */  lui        $v0, %hi(g_nTransitionSkyPitchTilt)
+    /* A8F8 8001A0F8 1059428C */  lw         $v0, %lo(g_nTransitionSkyPitchTilt)($v0)
     /* A8FC 8001A0FC 00000000 */  nop
     /* A900 8001A100 FEFF4224 */  addiu      $v0, $v0, -0x2
-    /* A904 8001A104 0780013C */  lui        $at, %hi(g_nLevelIntroParallaxCountdown)
-    /* A908 8001A108 105922AC */  sw         $v0, %lo(g_nLevelIntroParallaxCountdown)($at)
+    /* A904 8001A104 0780013C */  lui        $at, %hi(g_nTransitionSkyPitchTilt)
+    /* A908 8001A108 105922AC */  sw         $v0, %lo(g_nTransitionSkyPitchTilt)($at)
     /* A90C 8001A10C 03004104 */  bgez       $v0, .L8001A11C
     /* A910 8001A110 00000000 */   nop
-    /* A914 8001A114 0780013C */  lui        $at, %hi(g_nLevelIntroParallaxCountdown)
-    /* A918 8001A118 105920AC */  sw         $zero, %lo(g_nLevelIntroParallaxCountdown)($at)
+    /* A914 8001A114 0780013C */  lui        $at, %hi(g_nTransitionSkyPitchTilt)
+    /* A918 8001A118 105920AC */  sw         $zero, %lo(g_nTransitionSkyPitchTilt)($at)
   .L8001A11C:
-    /* A91C 8001A11C 0780023C */  lui        $v0, %hi(g_nLevelIntroParallaxCountdown)
-    /* A920 8001A120 1059428C */  lw         $v0, %lo(g_nLevelIntroParallaxCountdown)($v0)
+    /* A91C 8001A11C 0780023C */  lui        $v0, %hi(g_nTransitionSkyPitchTilt)
+    /* A920 8001A120 1059428C */  lw         $v0, %lo(g_nTransitionSkyPitchTilt)($v0)
     /* A924 8001A124 00000000 */  nop
     /* A928 8001A128 7C004010 */  beqz       $v0, .L8001A31C
     /* A92C 8001A12C 21280000 */   addu      $a1, $zero, $zero
@@ -9489,27 +9489,27 @@ glabel LevelTransition_Draw
     /* A944 8001A144 0780103C */  lui        $s0, %hi(g_nCameraEulerPitch)
     /* A948 8001A148 1E6E1026 */  addiu      $s0, $s0, %lo(g_nCameraEulerPitch)
     /* A94C 8001A14C 00000286 */  lh         $v0, 0x0($s0)
-    /* A950 8001A150 0780043C */  lui        $a0, %hi(g_nLevelIntroParallaxCountdown)
-    /* A954 8001A154 1059848C */  lw         $a0, %lo(g_nLevelIntroParallaxCountdown)($a0)
+    /* A950 8001A150 0780043C */  lui        $a0, %hi(g_nTransitionSkyPitchTilt)
+    /* A954 8001A154 1059848C */  lw         $a0, %lo(g_nTransitionSkyPitchTilt)($a0)
     /* A958 8001A158 00101124 */  addiu      $s1, $zero, 0x1000
     /* A95C 8001A15C 1000B1A7 */  sh         $s1, 0x10($sp)
     /* A960 8001A160 2C5B000C */  jal        LookupCosine
     /* A964 8001A164 23204400 */   subu      $a0, $v0, $a0
     /* A968 8001A168 00000386 */  lh         $v1, 0x0($s0)
-    /* A96C 8001A16C 0780043C */  lui        $a0, %hi(g_nLevelIntroParallaxCountdown)
-    /* A970 8001A170 1059848C */  lw         $a0, %lo(g_nLevelIntroParallaxCountdown)($a0)
+    /* A96C 8001A16C 0780043C */  lui        $a0, %hi(g_nTransitionSkyPitchTilt)
+    /* A970 8001A170 1059848C */  lw         $a0, %lo(g_nTransitionSkyPitchTilt)($a0)
     /* A974 8001A174 1800A2A7 */  sh         $v0, 0x18($sp)
     /* A978 8001A178 165B000C */  jal        LookupSine
     /* A97C 8001A17C 23206400 */   subu      $a0, $v1, $a0
     /* A980 8001A180 00000386 */  lh         $v1, 0x0($s0)
-    /* A984 8001A184 0780043C */  lui        $a0, %hi(g_nLevelIntroParallaxCountdown)
-    /* A988 8001A188 1059848C */  lw         $a0, %lo(g_nLevelIntroParallaxCountdown)($a0)
+    /* A984 8001A184 0780043C */  lui        $a0, %hi(g_nTransitionSkyPitchTilt)
+    /* A988 8001A188 1059848C */  lw         $a0, %lo(g_nTransitionSkyPitchTilt)($a0)
     /* A98C 8001A18C 1E00A2A7 */  sh         $v0, 0x1E($sp)
     /* A990 8001A190 165B000C */  jal        LookupSine
     /* A994 8001A194 23206400 */   subu      $a0, $v1, $a0
     /* A998 8001A198 00000386 */  lh         $v1, 0x0($s0)
-    /* A99C 8001A19C 0780043C */  lui        $a0, %hi(g_nLevelIntroParallaxCountdown)
-    /* A9A0 8001A1A0 1059848C */  lw         $a0, %lo(g_nLevelIntroParallaxCountdown)($a0)
+    /* A99C 8001A19C 0780043C */  lui        $a0, %hi(g_nTransitionSkyPitchTilt)
+    /* A9A0 8001A1A0 1059848C */  lw         $a0, %lo(g_nTransitionSkyPitchTilt)($a0)
     /* A9A4 8001A1A4 23100200 */  negu       $v0, $v0
     /* A9A8 8001A1A8 1A00A2A7 */  sh         $v0, 0x1A($sp)
     /* A9AC 8001A1AC 2C5B000C */  jal        LookupCosine
@@ -70830,10 +70830,10 @@ endlabel ClipAndEmitPortalSkyFogShadedTriangle_Tail
 nonmatching DrawPortalsAndSky, 0x141C
 
 glabel DrawPortalsAndSky
-    /* 413D0 80050BD0 0780023C */  lui        $v0, %hi(g_nPortalViewYawSpin)
-    /* 413D4 80050BD4 5858428C */  lw         $v0, %lo(g_nPortalViewYawSpin)($v0)
-    /* 413D8 80050BD8 0780033C */  lui        $v1, %hi(g_nPortalViewPitchTilt)
-    /* 413DC 80050BDC FC58638C */  lw         $v1, %lo(g_nPortalViewPitchTilt)($v1)
+    /* 413D0 80050BD0 0780023C */  lui        $v0, %hi(g_nPortalSkyYawSpin)
+    /* 413D4 80050BD4 5858428C */  lw         $v0, %lo(g_nPortalSkyYawSpin)($v0)
+    /* 413D8 80050BD8 0780033C */  lui        $v1, %hi(g_nPortalSkyPitchTilt)
+    /* 413DC 80050BDC FC58638C */  lw         $v1, %lo(g_nPortalSkyPitchTilt)($v1)
     /* 413E0 80050BE0 60FEBD27 */  addiu      $sp, $sp, -0x1A0
     /* 413E4 80050BE4 9C01BFAF */  sw         $ra, 0x19C($sp)
     /* 413E8 80050BE8 9801BEAF */  sw         $fp, 0x198($sp)
@@ -70849,24 +70849,24 @@ glabel DrawPortalsAndSky
     /* 41410 80050C10 FF0F4230 */  andi       $v0, $v0, 0xFFF
     /* 41414 80050C14 02006324 */  addiu      $v1, $v1, 0x2
     /* 41418 80050C18 FF0F6330 */  andi       $v1, $v1, 0xFFF
-    /* 4141C 80050C1C 0780013C */  lui        $at, %hi(g_nPortalViewYawSpin)
-    /* 41420 80050C20 585822AC */  sw         $v0, %lo(g_nPortalViewYawSpin)($at)
+    /* 4141C 80050C1C 0780013C */  lui        $at, %hi(g_nPortalSkyYawSpin)
+    /* 41420 80050C20 585822AC */  sw         $v0, %lo(g_nPortalSkyYawSpin)($at)
     /* 41424 80050C24 01086228 */  slti       $v0, $v1, 0x801
-    /* 41428 80050C28 0780013C */  lui        $at, %hi(g_nPortalViewPitchTilt)
-    /* 4142C 80050C2C FC5823AC */  sw         $v1, %lo(g_nPortalViewPitchTilt)($at)
+    /* 41428 80050C28 0780013C */  lui        $at, %hi(g_nPortalSkyPitchTilt)
+    /* 4142C 80050C2C FC5823AC */  sw         $v1, %lo(g_nPortalSkyPitchTilt)($at)
     /* 41430 80050C30 03004014 */  bnez       $v0, .L80050C40
     /* 41434 80050C34 00F06224 */   addiu     $v0, $v1, -0x1000
-    /* 41438 80050C38 0780013C */  lui        $at, %hi(g_nPortalViewPitchTilt)
-    /* 4143C 80050C3C FC5822AC */  sw         $v0, %lo(g_nPortalViewPitchTilt)($at)
+    /* 41438 80050C38 0780013C */  lui        $at, %hi(g_nPortalSkyPitchTilt)
+    /* 4143C 80050C3C FC5822AC */  sw         $v0, %lo(g_nPortalSkyPitchTilt)($at)
   .L80050C40:
-    /* 41440 80050C40 0780023C */  lui        $v0, %hi(g_nPortalViewPitchTilt)
-    /* 41444 80050C44 FC58428C */  lw         $v0, %lo(g_nPortalViewPitchTilt)($v0)
+    /* 41440 80050C40 0780023C */  lui        $v0, %hi(g_nPortalSkyPitchTilt)
+    /* 41444 80050C44 FC58428C */  lw         $v0, %lo(g_nPortalSkyPitchTilt)($v0)
     /* 41448 80050C48 00000000 */  nop
     /* 4144C 80050C4C 81004228 */  slti       $v0, $v0, 0x81
     /* 41450 80050C50 03004014 */  bnez       $v0, .L80050C60
     /* 41454 80050C54 80000224 */   addiu     $v0, $zero, 0x80
-    /* 41458 80050C58 0780013C */  lui        $at, %hi(g_nPortalViewPitchTilt)
-    /* 4145C 80050C5C FC5822AC */  sw         $v0, %lo(g_nPortalViewPitchTilt)($at)
+    /* 41458 80050C58 0780013C */  lui        $at, %hi(g_nPortalSkyPitchTilt)
+    /* 4145C 80050C5C FC5822AC */  sw         $v0, %lo(g_nPortalSkyPitchTilt)($at)
   .L80050C60:
     /* 41460 80050C60 1000A427 */  addiu      $a0, $sp, 0x10
     /* 41464 80050C64 21280000 */  addu       $a1, $zero, $zero
@@ -70877,27 +70877,27 @@ glabel DrawPortalsAndSky
     /* 41478 80050C78 0780103C */  lui        $s0, %hi(g_nCameraEulerPitch)
     /* 4147C 80050C7C 1E6E1026 */  addiu      $s0, $s0, %lo(g_nCameraEulerPitch)
     /* 41480 80050C80 00000286 */  lh         $v0, 0x0($s0)
-    /* 41484 80050C84 0780043C */  lui        $a0, %hi(g_nPortalViewPitchTilt)
-    /* 41488 80050C88 FC58848C */  lw         $a0, %lo(g_nPortalViewPitchTilt)($a0)
+    /* 41484 80050C84 0780043C */  lui        $a0, %hi(g_nPortalSkyPitchTilt)
+    /* 41488 80050C88 FC58848C */  lw         $a0, %lo(g_nPortalSkyPitchTilt)($a0)
     /* 4148C 80050C8C 00101124 */  addiu      $s1, $zero, 0x1000
     /* 41490 80050C90 1000B1A7 */  sh         $s1, 0x10($sp)
     /* 41494 80050C94 2C5B000C */  jal        LookupCosine
     /* 41498 80050C98 23204400 */   subu      $a0, $v0, $a0
     /* 4149C 80050C9C 00000386 */  lh         $v1, 0x0($s0)
-    /* 414A0 80050CA0 0780043C */  lui        $a0, %hi(g_nPortalViewPitchTilt)
-    /* 414A4 80050CA4 FC58848C */  lw         $a0, %lo(g_nPortalViewPitchTilt)($a0)
+    /* 414A0 80050CA0 0780043C */  lui        $a0, %hi(g_nPortalSkyPitchTilt)
+    /* 414A4 80050CA4 FC58848C */  lw         $a0, %lo(g_nPortalSkyPitchTilt)($a0)
     /* 414A8 80050CA8 1800A2A7 */  sh         $v0, 0x18($sp)
     /* 414AC 80050CAC 165B000C */  jal        LookupSine
     /* 414B0 80050CB0 23206400 */   subu      $a0, $v1, $a0
     /* 414B4 80050CB4 00000386 */  lh         $v1, 0x0($s0)
-    /* 414B8 80050CB8 0780043C */  lui        $a0, %hi(g_nPortalViewPitchTilt)
-    /* 414BC 80050CBC FC58848C */  lw         $a0, %lo(g_nPortalViewPitchTilt)($a0)
+    /* 414B8 80050CB8 0780043C */  lui        $a0, %hi(g_nPortalSkyPitchTilt)
+    /* 414BC 80050CBC FC58848C */  lw         $a0, %lo(g_nPortalSkyPitchTilt)($a0)
     /* 414C0 80050CC0 1E00A2A7 */  sh         $v0, 0x1E($sp)
     /* 414C4 80050CC4 165B000C */  jal        LookupSine
     /* 414C8 80050CC8 23206400 */   subu      $a0, $v1, $a0
     /* 414CC 80050CCC 00000386 */  lh         $v1, 0x0($s0)
-    /* 414D0 80050CD0 0780043C */  lui        $a0, %hi(g_nPortalViewPitchTilt)
-    /* 414D4 80050CD4 FC58848C */  lw         $a0, %lo(g_nPortalViewPitchTilt)($a0)
+    /* 414D0 80050CD0 0780043C */  lui        $a0, %hi(g_nPortalSkyPitchTilt)
+    /* 414D4 80050CD4 FC58848C */  lw         $a0, %lo(g_nPortalSkyPitchTilt)($a0)
     /* 414D8 80050CD8 23100200 */  negu       $v0, $v0
     /* 414DC 80050CDC 1A00A2A7 */  sh         $v0, 0x1A($sp)
     /* 414E0 80050CE0 2C5B000C */  jal        LookupCosine
@@ -70910,21 +70910,21 @@ glabel DrawPortalsAndSky
     /* 414FC 80050CFC 2000A2A7 */   sh        $v0, 0x20($sp)
     /* 41500 80050D00 0780023C */  lui        $v0, %hi(g_nCameraEulerYaw)
     /* 41504 80050D04 206E4284 */  lh         $v0, %lo(g_nCameraEulerYaw)($v0)
-    /* 41508 80050D08 0780043C */  lui        $a0, %hi(g_nPortalViewYawSpin)
-    /* 4150C 80050D0C 5858848C */  lw         $a0, %lo(g_nPortalViewYawSpin)($a0)
+    /* 41508 80050D08 0780043C */  lui        $a0, %hi(g_nPortalSkyYawSpin)
+    /* 4150C 80050D0C 5858848C */  lw         $a0, %lo(g_nPortalSkyYawSpin)($a0)
     /* 41510 80050D10 2C5B000C */  jal        LookupCosine
     /* 41514 80050D14 21204400 */   addu      $a0, $v0, $a0
     /* 41518 80050D18 0780033C */  lui        $v1, %hi(g_nCameraEulerYaw)
     /* 4151C 80050D1C 206E6384 */  lh         $v1, %lo(g_nCameraEulerYaw)($v1)
-    /* 41520 80050D20 0780043C */  lui        $a0, %hi(g_nPortalViewYawSpin)
-    /* 41524 80050D24 5858848C */  lw         $a0, %lo(g_nPortalViewYawSpin)($a0)
+    /* 41520 80050D20 0780043C */  lui        $a0, %hi(g_nPortalSkyYawSpin)
+    /* 41524 80050D24 5858848C */  lw         $a0, %lo(g_nPortalSkyYawSpin)($a0)
     /* 41528 80050D28 3000A2A7 */  sh         $v0, 0x30($sp)
     /* 4152C 80050D2C 165B000C */  jal        LookupSine
     /* 41530 80050D30 21206400 */   addu      $a0, $v1, $a0
     /* 41534 80050D34 0780033C */  lui        $v1, %hi(g_nCameraEulerYaw)
     /* 41538 80050D38 206E6384 */  lh         $v1, %lo(g_nCameraEulerYaw)($v1)
-    /* 4153C 80050D3C 0780043C */  lui        $a0, %hi(g_nPortalViewYawSpin)
-    /* 41540 80050D40 5858848C */  lw         $a0, %lo(g_nPortalViewYawSpin)($a0)
+    /* 4153C 80050D3C 0780043C */  lui        $a0, %hi(g_nPortalSkyYawSpin)
+    /* 41540 80050D40 5858848C */  lw         $a0, %lo(g_nPortalSkyYawSpin)($a0)
     /* 41544 80050D44 23100200 */  negu       $v0, $v0
     /* 41548 80050D48 3C00A2A7 */  sh         $v0, 0x3C($sp)
     /* 4154C 80050D4C 3800B1A7 */  sh         $s1, 0x38($sp)
@@ -70932,8 +70932,8 @@ glabel DrawPortalsAndSky
     /* 41554 80050D54 21206400 */   addu      $a0, $v1, $a0
     /* 41558 80050D58 0780033C */  lui        $v1, %hi(g_nCameraEulerYaw)
     /* 4155C 80050D5C 206E6384 */  lh         $v1, %lo(g_nCameraEulerYaw)($v1)
-    /* 41560 80050D60 0780043C */  lui        $a0, %hi(g_nPortalViewYawSpin)
-    /* 41564 80050D64 5858848C */  lw         $a0, %lo(g_nPortalViewYawSpin)($a0)
+    /* 41560 80050D60 0780043C */  lui        $a0, %hi(g_nPortalSkyYawSpin)
+    /* 41564 80050D64 5858848C */  lw         $a0, %lo(g_nPortalSkyYawSpin)($a0)
     /* 41568 80050D68 3400A2A7 */  sh         $v0, 0x34($sp)
     /* 4156C 80050D6C 2C5B000C */  jal        LookupCosine
     /* 41570 80050D70 21206400 */   addu      $a0, $v1, $a0

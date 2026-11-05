@@ -1,6 +1,6 @@
 /* portal.h — the level portals listed by g_apPortals (g_nPortalCount
  * entries), unpacked from the level bundle by UnpackWorldDataChunks and drawn
- * by DrawPortalsAndSky as a swirling ring (g_nPortalViewYawSpin / PitchTilt).
+ * by DrawPortalsAndSky as a swirling ring (g_nPortalSkyYawSpin / PitchTilt).
  * Entry word 6 is the portal's actor (its path is where Spyro glides out) and
  * word 7 the level it leads to: returning from a level, TickLevelTransitionStream
  * finds the portal whose word 7 is g_nReturnPortalLevelId and places Spyro

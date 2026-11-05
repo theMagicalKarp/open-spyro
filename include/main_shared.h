@@ -314,7 +314,7 @@ extern int g_nCreditsLineCount;
 extern int g_nCreditsPageIndex;
 extern int g_nCreditsMode;
 extern int g_nScreenFadeLevel;
-extern int g_nLevelIntroParallaxCountdown;
+extern int g_nTransitionSkyPitchTilt;
 extern int g_nVisZoneCount;
 
 /* C library. */
