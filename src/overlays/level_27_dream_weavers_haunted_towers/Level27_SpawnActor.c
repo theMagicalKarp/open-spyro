@@ -43,7 +43,6 @@
 #include "level_emit_particles.h"
 #include "emit_record.h"
 
-extern Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type */
 
 Actor *Level27_SpawnActor(int type, Actor *parent) {
   Actor *rec;

@@ -14,6 +14,7 @@
  * view (A400) can include this header too. */
 struct Actor;
 extern struct Actor *g_pActorListBase;
+extern struct Model *g_apActorMeshTable[]; /* per-type model table, indexed by ->type (model.h) */
 
 /* Actor-record lifecycle (main, actor.h spells them with the typedef). */
 extern struct Actor *AllocActorRecordSlot(void);
