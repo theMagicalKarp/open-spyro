@@ -162,7 +162,7 @@ extern void ComposeFrameScene(void);
 
 extern void RasterizeEmitList(void);
 
-extern void DrawPortalsAndStaticActors(void);
+extern void DrawPortalsAndSky(void);
 
 extern void SetupFrameOT(void);
 
@@ -210,7 +210,7 @@ extern short g_anTweenBlendWeights6[];
 extern short g_anTweenBlendWeights8[];
 extern short g_anTweenBlendWeights2[];
 extern void DrawFullscreenTint(int abr, int r, int g, int b);
-extern void EmitStaticActorMeshListFogged(void);
+extern void EmitSkyMeshFogged(void);
 extern void EnqueueHudSprites(void);
 extern long GetSpuTransferStatus(int mode);
 extern void InitActorMeshScratchRegions(int split);
@@ -246,7 +246,7 @@ extern int g_anSpyroSlopeGravityVec[];
 extern int g_anSpyroSubstateBlock[];
 extern int g_anSpyroWorldPosZBlock[];
 extern int g_anStoryIntroTimerBlock[];
-extern int g_anWorldRenderMeshBlock[];
+extern int g_anSkyBlock[];
 extern int g_nCameraNextMode_blk[];
 extern int g_nFarPlaneDrawDistance;
 extern int g_nLevelSpawnPosZ;

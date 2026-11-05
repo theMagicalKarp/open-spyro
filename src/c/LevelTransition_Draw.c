@@ -32,7 +32,7 @@ void LevelTransition_Draw(void) {
     DrawLevelTransitionOverlay();
   }
   RasterizeSpyroModel();
-  if (g_nWorldRenderMeshChunkCount != 0) {
+  if (g_nSkyChunkCount != 0) {
     g_nLevelIntroParallaxCountdown -= 2;
     if (g_nLevelIntroParallaxCountdown < 0) {
       g_nLevelIntroParallaxCountdown = 0;
@@ -95,10 +95,10 @@ void LevelTransition_Draw(void) {
         v += 0x1ff;
       }
       m2.m[1][2] = v >> 9;
-      EmitStaticActorMeshList(-1, &m1, p2);
+      EmitSkyMesh(-1, &m1, p2);
     } else {
-      EmitStaticActorMeshList(-1, (MATRIX *)g_anCameraViewMtx,
-                              (MATRIX *)CAM_W2C_MTX_VIA_VIEW);
+      EmitSkyMesh(-1, (MATRIX *)g_anCameraViewMtx,
+                  (MATRIX *)CAM_W2C_MTX_VIA_VIEW);
     }
   }
   DrawSync(0);

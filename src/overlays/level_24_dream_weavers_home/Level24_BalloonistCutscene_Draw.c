@@ -15,7 +15,7 @@
  *   >= 4 — append the pending OT node (g_pActorCutsceneRecord) to the depth-bin list at
  *          g_pOtDepthBinHead0 instead.
  * Every path finishes with the frame pipeline (BuildRenderEntityLists / ComposeFrameScene /
- * SetupFrameOT / DrawPortalsAndStaticActors / RasterizeEmitList).
+ * SetupFrameOT / DrawPortalsAndSky / RasterizeEmitList).
  *
  * g_pSpriteRecordWriteCursor is the sprite-record write cursor; records are 0x58 bytes and it
  * grows downward, so "walk what the draw just added" is
@@ -220,7 +220,7 @@ void Level24_BalloonistCutscene_Draw(void) {
     ComposeFrameScene();
   }
   SetupFrameOT();
-  DrawPortalsAndStaticActors();
+  DrawPortalsAndSky();
   RasterizeEmitList();
 }
 

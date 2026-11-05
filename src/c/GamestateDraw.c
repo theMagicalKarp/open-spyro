@@ -111,7 +111,7 @@ void GamestateDraw(void) {
     }
     ComposeFrameScene();
     SetupFrameOT();
-    DrawPortalsAndStaticActors();
+    DrawPortalsAndSky();
     RasterizeEmitList();
     if (g_nScreenFadeLevel != 0) {
       tint = g_nScreenFadeLevel << 3;

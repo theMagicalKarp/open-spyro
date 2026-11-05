@@ -5,7 +5,7 @@
 #include "types.h"
 #include "vecmath.h"
 
-/* DrawPortalsAndStaticActors - VMA 0x80050bd0, 5148 bytes, frame 0x1a0.
+/* DrawPortalsAndSky - VMA 0x80050bd0, 5148 bytes, frame 0x1a0.
 
    Matching notes (all load-bearing):
    - `maxX` is the same variable as the earlier CLZ `shift` (both s4): its
@@ -50,9 +50,11 @@ extern ScreenPt g_aPortalRingScreenPts[];  /* projected ring points */
 #define KPT (*(ScreenPt *)((char *)g_aPortalRingScreenPts + ko))
 extern int g_nCameraVisZone[]; /* [-0x10] view mtx, [-0x15] world mtx */
 
-/* Render stage 4: draw the portals, then the static actor
-   mesh list. The camera-relative view matrix is rebuilt every frame from the
-   camera euler angles plus a slow spin/tilt (g_nPortalViewYawSpin /
+/* Render stage 4: draw the portals, each filled with its destination's sky
+   (EmitPortalSky / EmitPortalSkyFogShaded, or a flat EmitPortalColorFill up
+   close), then the active sky (EmitSkyMesh). The portal-sky view matrix is
+   rebuilt every frame from the camera euler angles plus a slow spin/tilt
+   (g_nPortalViewYawSpin /
    ...PitchTilt, both advanced 2/frame here) and squashed to 5/8 on the middle
    row. Each live portal ring is projected point-by-point into
    g_aPortalRingScreenPts, depth-cued (and fog-blended during storms), then
@@ -61,7 +63,7 @@ extern int g_nCameraVisZone[]; /* [-0x10] view mtx, [-0x15] world mtx */
    more with every point pushed 2 px away from the centroid, giving the fattened
    outline pass. A pass is emitted only when its extents fall inside the 512x240
    frame and the ring faces the camera. (0x80050bd0, 5148 bytes.) */
-void DrawPortalsAndStaticActors(void) {
+void DrawPortalsAndSky(void) {
   MATRIX viewMtx;         /* sp+0x10 */
   MATRIX outMtx;          /* sp+0x30 */
   int vDelta[3];          /* sp+0x50 */
@@ -165,7 +167,7 @@ void DrawPortalsAndStaticActors(void) {
       n = LookupCosine(g_nVblankTickCount * 16 + (i << 9));
       color = abs(n) >> 1;
       color = ComputeDepthCuedColor(
-          *(unsigned int *)((char *)g_apPortals[i]->pMesh + 0x10), 0xffffff,
+          *(unsigned int *)((char *)g_apPortals[i]->pSky + 0x10), 0xffffff,
           color);
       SubtractVector(vDelta, g_apPortals[i]->pts[0], g_anCameraPos);
       maxX =
@@ -213,10 +215,10 @@ void DrawPortalsAndStaticActors(void) {
       j = 0;
       nEdges = 0;
       maxX = 0;
-      g_nActorMeshOtDepthBin = 0;
+      g_nPortalOtDepthBin = 0;
       sumX = 0;
       sumY = 0;
-      g_pActorDeferredTriStackTop = g_anActorDeferredTriStack;
+      g_pPortalDeferredTriStackTop = g_anPortalDeferredTriStack;
 
       for (; j < g_apPortals[i]->nPoints; j++) {
         register int k asm("$5");
@@ -238,7 +240,7 @@ void DrawPortalsAndStaticActors(void) {
         }
         sumX += g_aPortalRingScreenPts[k].x;
         sumY += g_aPortalRingScreenPts[k].y;
-        g_nActorMeshOtDepthBin += g_aPortalRingScreenPts[k].z;
+        g_nPortalOtDepthBin += g_aPortalRingScreenPts[k].z;
         if ((unsigned int)(g_aPortalRingScreenPts[k].x - 1) < 0x1ff &&
             (unsigned int)(g_aPortalRingScreenPts[k].y - 1) < 0xef &&
             g_aPortalRingScreenPts[k].z > 0) {
@@ -303,19 +305,19 @@ void DrawPortalsAndStaticActors(void) {
           register int np asm("$2") = g_apPortals[i]->nPoints;
 
           sumX /= np;
-          g_nActorMeshOtDepthBin = (g_nActorMeshOtDepthBin / np) >> 7;
+          g_nPortalOtDepthBin = (g_nPortalOtDepthBin / np) >> 7;
           sumY /= np;
         }
-        if (g_nActorMeshOtDepthBin >= 0x100) {
-          g_nActorMeshOtDepthBin += 0x40;
+        if (g_nPortalOtDepthBin >= 0x100) {
+          g_nPortalOtDepthBin += 0x40;
         }
-        if (g_nActorMeshOtDepthBin >= 0x800) {
-          g_nActorMeshOtDepthBin = 0x7ff;
+        if (g_nPortalOtDepthBin >= 0x800) {
+          g_nPortalOtDepthBin = 0x7ff;
         }
         if ((minX < 0x200 && minY < 0xf0 && maxX > 0 && maxY > 0 &&
-             g_nActorMeshOtDepthBin > 0 && nEdges != 0) ||
+             g_nPortalOtDepthBin > 0 && nEdges != 0) ||
             (minX <= 0 && minY <= 0 && maxX >= 0x200 && maxY >= 0xf0 &&
-             g_nActorMeshOtDepthBin > 0)) {
+             g_nPortalOtDepthBin > 0)) {
           flags |= 2;
         } else {
           flags = 0;
@@ -352,23 +354,23 @@ void DrawPortalsAndStaticActors(void) {
           if (maxY >= 0xf1) {
             maxY = 0xf0;
           }
-          g_anActorScissorRect[0] = minY << 16;
-          g_anActorScissorRect[1] = maxY << 16;
-          g_anActorScissorRect[2] = maxX << 16;
-          g_anActorScissorRect[3] = minX << 16;
+          g_anPortalScissorRect[0] = minY << 16;
+          g_anPortalScissorRect[1] = maxY << 16;
+          g_anPortalScissorRect[2] = maxX << 16;
+          g_anPortalScissorRect[3] = minX << 16;
           g_aPortalSilhouetteEdges[nEdges].live = 0;
           if (dist < 0x4000) {
             if (dist >= 0x3001) {
               g_nFadeProgress = dist - 0x3000;
-              g_dwActorMeshFadeColor = ComputeDepthCuedColor(
-                  *(unsigned int *)((char *)g_apPortals[i]->pMesh + 0x10),
-                  color, dist - 0x3000);
-              EmitDynamicActorMeshFogged(&g_dwActorMeshFadeColor);
+              g_dwSkyFadeColor = ComputeDepthCuedColor(
+                  *(unsigned int *)((char *)g_apPortals[i]->pSky + 0x10), color,
+                  dist - 0x3000);
+              EmitPortalColorFill(&g_dwSkyFadeColor);
             } else {
-              EmitDynamicActorMeshFogged(&g_apPortals[i]->pMesh->color);
+              EmitPortalColorFill(&g_apPortals[i]->pSky->color);
             }
           } else {
-            EmitDynamicActorMeshFogged(&color);
+            EmitPortalColorFill(&color);
           }
         }
 
@@ -378,7 +380,7 @@ void DrawPortalsAndStaticActors(void) {
           minY = 0xf0;
           maxY = 0;
           flags = 0;
-          g_pActorDeferredTriStackTop = g_anActorDeferredTriStack;
+          g_pPortalDeferredTriStackTop = g_anPortalDeferredTriStack;
           nEdges = 0;
           for (j = 0; j < g_apPortals[i]->nPoints; j++) {
             int t;
@@ -463,9 +465,9 @@ void DrawPortalsAndStaticActors(void) {
           }
 
           if ((minX < 0x200 && minY < 0xf0 && maxX > 0 && maxY > 0 &&
-               g_nActorMeshOtDepthBin > 0 && nEdges != 0) ||
+               g_nPortalOtDepthBin > 0 && nEdges != 0) ||
               (minX <= 0 && minY <= 0 && maxX >= 0x200 && maxY >= 0xf0 &&
-               g_nActorMeshOtDepthBin > 0)) {
+               g_nPortalOtDepthBin > 0)) {
             flags |= 2;
           } else {
             flags = 0;
@@ -504,21 +506,20 @@ void DrawPortalsAndStaticActors(void) {
             if (maxY >= 0xf1) {
               maxY = 0xf0;
             }
-            g_anActorScissorRect[0] = minY << 16;
-            g_anActorScissorRect[1] = maxY << 16;
-            g_anActorScissorRect[2] = maxX << 16;
-            g_anActorScissorRect[3] = minX << 16;
+            g_anPortalScissorRect[0] = minY << 16;
+            g_anPortalScissorRect[1] = maxY << 16;
+            g_anPortalScissorRect[2] = maxX << 16;
+            g_anPortalScissorRect[3] = minX << 16;
             g_aPortalSilhouetteEdges[nEdges].live = 0;
             if (dist >= 0x3001) {
               g_nFadeProgress = dist - 0x3000;
-              g_dwActorMeshFadeColor = ComputeDepthCuedColor(
-                  *(unsigned int *)((char *)g_apPortals[i]->pMesh + 0x10),
-                  color, dist - 0x3000);
-              EmitDynamicActorMeshFogShaded((int *)g_apPortals[i]->pMesh,
-                                            &viewMtx, &outMtx);
+              g_dwSkyFadeColor = ComputeDepthCuedColor(
+                  *(unsigned int *)((char *)g_apPortals[i]->pSky + 0x10), color,
+                  dist - 0x3000);
+              EmitPortalSkyFogShaded((int *)g_apPortals[i]->pSky, &viewMtx,
+                                     &outMtx);
             } else {
-              EmitDynamicActorMeshScissored((int *)g_apPortals[i]->pMesh,
-                                            &viewMtx, &outMtx);
+              EmitPortalSky((int *)g_apPortals[i]->pSky, &viewMtx, &outMtx);
             }
           }
         }
@@ -530,6 +531,6 @@ void DrawPortalsAndStaticActors(void) {
   if (zone >= g_nVisZoneCount) {
     zone = -1;
   }
-  EmitStaticActorMeshList(zone, (MATRIX *)&g_nCameraVisZone[-0x10],
-                          (MATRIX *)&g_nCameraVisZone[-0x15]);
+  EmitSkyMesh(zone, (MATRIX *)&g_nCameraVisZone[-0x10],
+              (MATRIX *)&g_nCameraVisZone[-0x15]);
 }

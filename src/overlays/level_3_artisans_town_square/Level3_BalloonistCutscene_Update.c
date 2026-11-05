@@ -668,7 +668,7 @@ void Level3_BalloonistCutscene_Update(void)
         g_pActorCutsceneRecord = g_aActorCutsceneActorSnapshot;
         if (((unsigned int) g_pRenderScratchRegionBase) <= 0x801FFFFF)
         {
-          bank = (int *) (g_pWorldRenderMeshChunkArray - 0x400C);
+          bank = (int *) (g_pSkyChunkArray - 0x400C);
         }
         else
         {

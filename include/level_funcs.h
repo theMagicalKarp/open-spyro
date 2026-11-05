@@ -115,6 +115,6 @@ extern int RandomSignedInRange(int lo, int hi);
 /* World/OT render entry points the credits backdrop calls. */
 extern void FillBlock16(void *dst, int value, int count);
 extern void RenderWorldChunks(int lod);
-extern void EmitStaticActorMeshList(int lod, void *viewMtx, void *worldMtx);
+extern void EmitSkyMesh(int lod, void *viewMtx, void *worldMtx);
 
 #endif /* OPEN_SPYRO_LEVEL_FUNCS_H */

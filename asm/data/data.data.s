@@ -6769,9 +6769,9 @@ dlabel D_800700FC
     /* 60CF0 800704F0 DFDFDFDF */ .word 0xDFDFDFDF
 enddlabel D_800700FC
 
-nonmatching g_anActorDeferredTriStack
+nonmatching g_anPortalDeferredTriStack
 
-dlabel g_anActorDeferredTriStack
+dlabel g_anPortalDeferredTriStack
     /* 60CF4 800704F4 DFDFDF3C */ .word 0x3CDFDFDF
     /* 60CF8 800704F8 3C3C0000 */ .word 0x00003C3C
     /* 60CFC 800704FC 06000800 */ .word 0x00080006
@@ -6836,7 +6836,7 @@ dlabel g_anActorDeferredTriStack
     /* 60DE8 800705E8 FFFFFFFF */ .word 0xFFFFFFFF
     /* 60DEC 800705EC FFFF5F5F */ .word 0x5F5FFFFF
     /* 60DF0 800705F0 5F202020 */ .word 0x2020205F
-enddlabel g_anActorDeferredTriStack
+enddlabel g_anPortalDeferredTriStack
 
 nonmatching g_anActorVertSzOverflow
 
@@ -14586,11 +14586,11 @@ dlabel g_nActorAnimDone
     /* 65F94 80075794 00000000 */ .word 0x00000000
 enddlabel g_nActorAnimDone
 
-nonmatching g_pActorDeferredTriStackTop
+nonmatching g_pPortalDeferredTriStackTop
 
-dlabel g_pActorDeferredTriStackTop
+dlabel g_pPortalDeferredTriStackTop
     /* 65F98 80075798 00000000 */ .word 0x00000000
-enddlabel g_pActorDeferredTriStackTop
+enddlabel g_pPortalDeferredTriStackTop
 
 nonmatching g_nGamePaused
 
@@ -14677,11 +14677,11 @@ dlabel g_nPulseRumbleTimer
     /* 65FD0 800757D0 00000000 */ .word 0x00000000
 enddlabel g_nPulseRumbleTimer
 
-nonmatching g_dwActorMeshFadeColor
+nonmatching g_dwSkyFadeColor
 
-dlabel g_dwActorMeshFadeColor
+dlabel g_dwSkyFadeColor
     /* 65FD4 800757D4 00000000 */ .word 0x00000000
-enddlabel g_dwActorMeshFadeColor
+enddlabel g_dwSkyFadeColor
 
 nonmatching g_nGamestate
 

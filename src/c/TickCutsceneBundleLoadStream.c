@@ -5,6 +5,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "sky.h"
 
 /* 0x80014564, 1548 bytes — the id-bundle CD streaming state machine.
    Ticked from Initialize, PauseMenu_Update, Cutscene_Update,
@@ -28,14 +29,6 @@
 
    The cutscene id (g_nCutsceneId) indexes the per-cutscene archive table
    (8-byte stride) and the per-cutscene header-size table (4-byte stride). */
-
-struct SECTION4HDR {
-  int a;
-  int b;
-  int c;
-  int d;
-  int e;
-};
 
 /* Register pins (`off` in v1, `pb` in a1) reproduce the original's
    local-alloc choices in arms 7 and 8: a hard reg is outside qty priority,
@@ -121,8 +114,8 @@ void TickCutsceneBundleLoadStream(void) {
     g_nCdStreamState = CSTREAM_UNPACK;
   } else if (state == CSTREAM_UNPACK) {
     unpacked = UnpackWorldDataChunks(g_pDrawBufB, 1);
-    *((struct SECTION4HDR *)(&g_nWorldRenderMeshChunkCount)) =
-        *((struct SECTION4HDR *)(&g_nWorldCollisionTriCount));
+    *((SkyHeader *)(&g_nSkyChunkCount)) =
+        *((SkyHeader *)(&g_nLevelSkyChunkCount));
     g_pWorldUnpackHead = (char *)unpacked;
     if (g_nCutsceneId == CUTSCENE_OPENING) {
       g_nCdStreamState = CSTREAM_EXT_WAIT;

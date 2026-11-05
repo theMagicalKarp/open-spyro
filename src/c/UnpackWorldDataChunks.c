@@ -9,7 +9,7 @@
    sections (word 0 of each section links to the next), publish each
    section's table pointer + count globals and patch the relative offsets in
    each pointer table to absolute addresses (1240 b). reduced != 0 unpacks the
-   reduced stream (mesh index / trigger / collision-header and the
+   reduced stream (vis-zone / trigger / collision-header and the
    portal, emit-texture and sample-bank sections are absent). Returns the cursor
    past the consumed data.
 
@@ -26,9 +26,9 @@ void *UnpackWorldDataChunks(int *p, int reduced) {
   int meshCount;
   int chunkCount;
   int visZoneCount;
-  int meshIndexCount;
+  int skyZoneListCount;
   int triggerCount;
-  int triCount;
+  int skyChunkCount;
   int portalCount;
   int pad[14];
 
@@ -65,7 +65,8 @@ void *UnpackWorldDataChunks(int *p, int reduced) {
   p = (int *)((char *)base + *base);
 
   if (reduced == 0) {
-    /* section: mesh index tables */
+    /* section: vis zones (world chunk lists, then the sky chunk lists, per
+     * zone) */
     base = p;
     if (*base >= 5) {
       p += 2;
@@ -88,14 +89,14 @@ void *UnpackWorldDataChunks(int *p, int reduced) {
       }
       i = 0;
       p = (int *)((char *)base + (base[1] + 4));
-      meshIndexCount = *p;
+      skyZoneListCount = *p;
       p++;
       {
-        int *meshIndexCountRef = g_anWorldMeshIndexCountBlock;
+        int *skyZoneListCountRef = g_anLevelSkyZoneListCountBlock;
 
-        g_pWorldMeshIndexTable = p;
-        *meshIndexCountRef = meshIndexCount;
-        if (meshIndexCount > 0) {
+        g_pLevelSkyZoneLists = p;
+        *skyZoneListCountRef = skyZoneListCount;
+        if (skyZoneListCount > 0) {
           do {
             int tableBase;
             int rel;
@@ -105,13 +106,13 @@ void *UnpackWorldDataChunks(int *p, int reduced) {
             rel = *p + 4;
             *p = tableBase + rel;
             p++;
-          } while (i < *meshIndexCountRef);
+          } while (i < *skyZoneListCountRef);
         }
       }
     } else {
       g_anVisZoneCountBlock[0] = 0;
       g_pVisZoneChunkLists = 0;
-      g_pWorldMeshIndexTable = 0;
+      g_pLevelSkyZoneLists = 0;
     }
     p = (int *)((char *)base + *base);
     if (reduced == 0) {
@@ -171,30 +172,30 @@ void *UnpackWorldDataChunks(int *p, int reduced) {
     }
   }
 
-  /* section: collision tris */
+  /* section: the level sky (background colour, then its chunk pointers) */
   base = p;
   p++;
   {
-    unsigned char *collisionHdrBytes = g_abCollisionHeaderBytes;
+    unsigned char *skyBg = g_abLevelSkyBgColor;
 
-    collisionHdrBytes[0] = ((unsigned char *)p)[0];
-    collisionHdrBytes[1] = ((unsigned char *)p)[1];
-    collisionHdrBytes[2] = ((unsigned char *)p)[2];
+    skyBg[0] = ((unsigned char *)p)[0];
+    skyBg[1] = ((unsigned char *)p)[1];
+    skyBg[2] = ((unsigned char *)p)[2];
     p++;
-    triCount = *p;
+    skyChunkCount = *p;
     p++;
-    g_pWorldCollisionTriArray = p;
-    g_nWorldCollisionTriCount = triCount;
+    g_pLevelSkyChunkArray = p;
+    g_nLevelSkyChunkCount = skyChunkCount;
     i = 0;
-    if (triCount > 0) {
-      int *triCountRef = (int *)(collisionHdrBytes - 0x10);
+    if (skyChunkCount > 0) {
+      int *skyChunkCountRef = (int *)(skyBg - 0x10);
 
       do {
         int rel = *p + 4;
         *p = (int)base + rel;
         i++;
         p++;
-      } while (i < *triCountRef);
+      } while (i < *skyChunkCountRef);
     }
   }
   p = (int *)((char *)base + *base);

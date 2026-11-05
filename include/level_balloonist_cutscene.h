@@ -61,7 +61,7 @@ extern int g_nActorCutsceneCamYawGoal[];
 
 extern int g_pRenderScratchRegionBase;
 
-extern int g_pWorldRenderMeshChunkArray;
+extern int g_pSkyChunkArray;
 
 extern int g_anSpyroWorldPos[];
 
@@ -81,7 +81,7 @@ extern void ComposeFrameScene(void);
 
 extern void SetupFrameOT(void);
 
-extern void DrawPortalsAndStaticActors(void);
+extern void DrawPortalsAndSky(void);
 
 extern void RasterizeEmitList(void);
 

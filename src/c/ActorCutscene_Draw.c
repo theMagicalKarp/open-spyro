@@ -97,7 +97,7 @@ void ActorCutscene_Draw(void) {
       RasterizeSpyroModel();
 
       if (g_nActorCutsceneSubstate < ACS_DESCEND) {
-        g_dwActorMeshFadeColor = 0x401010;
+        g_dwSkyFadeColor = 0x401010;
         if (g_nActorCutsceneSubstate == ACS_STREAM_WAIT) {
           g_nFadeProgress = g_anActorCutsceneTimerBlock[ACSW_TIMER] * 0x10;
         } else {
@@ -110,7 +110,7 @@ void ActorCutscene_Draw(void) {
         if (g_nFadeProgress > 0x1000) {
           g_nFadeProgress = 0x1000;
         }
-        color = ComputeDepthCuedColor(g_dwWorldFogColor, g_dwActorMeshFadeColor,
+        color = ComputeDepthCuedColor(g_dwWorldFogColor, g_dwSkyFadeColor,
                                       g_nFadeProgress);
         g_FrameDrawEnv0.r0 = ((unsigned char *)&color)[0];
         g_FrameDrawEnv0.g0 = ((unsigned char *)&color)[1];
@@ -119,7 +119,7 @@ void ActorCutscene_Draw(void) {
         g_FrameDrawEnv1.g0 = ((unsigned char *)&color)[1];
         g_FrameDrawEnv1.b0 = ((unsigned char *)&color)[2];
         if (g_nFadeProgress < 0x1000) {
-          EmitStaticActorMeshListFogged();
+          EmitSkyMeshFogged();
         }
       }
     } else {

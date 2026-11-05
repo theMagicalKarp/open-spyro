@@ -56,7 +56,7 @@ void RespawnOrGameOver_Draw(void) {
       BuildRenderEntityLists();
       ComposeFrameScene();
       RasterizeEmitList();
-      DrawPortalsAndStaticActors();
+      DrawPortalsAndSky();
       SetupFrameOT();
       DrawSync(0);
       VSync(0);
@@ -172,8 +172,8 @@ void RespawnOrGameOver_Draw(void) {
     g_anCameraEulerPitchBlock[0] = g_anGameOverCameraEulerU[2];
     g_nCameraEulerYaw = g_anGameOverCameraEulerU[3];
     BuildCameraViewMatrix();
-    EmitStaticActorMeshList(-1, (MATRIX *)CAM_VIEW_MTX_VIA_EULER,
-                            (MATRIX *)CAM_W2C_MTX_VIA_EULER);
+    EmitSkyMesh(-1, (MATRIX *)CAM_VIEW_MTX_VIA_EULER,
+                (MATRIX *)CAM_W2C_MTX_VIA_EULER);
     g_anCameraEulerPitchBlock[0] = g_anGameOverCameraEulerU[0];
     g_nCameraEulerYaw = g_anGameOverCameraEulerU[1];
     if (g_nRespawnOrGameOverFrame < 0x20) {

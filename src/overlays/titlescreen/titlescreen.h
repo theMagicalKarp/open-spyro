@@ -155,7 +155,7 @@ extern void BuildRenderEntityLists(void);
 extern void BuildActorDrawList(void);
 extern void EmitActorDrawList(void);
 extern void RenderWorldChunks(int);
-extern void EmitStaticActorMeshList(int, void *, void *);
+extern void EmitSkyMesh(int, void *, void *);
 extern void DrawFullscreenTint(int, int, int, int);
 extern void DrawSync(int);
 extern int VSync(int);

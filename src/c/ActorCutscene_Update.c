@@ -6,6 +6,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "sky.h"
 
 /* Update for gamestate 0xC (level-transition title card, 0x800324d8, 0x548).
 
@@ -122,11 +123,8 @@
    g_anActorCutsceneTimerBlock[0]: the aim ramp reads the timer after the camera
    calls, where the original drops the held base and re-addresses it. */
 
-/* 20-byte block view for the counter handoff, which the original does as one
-   struct assignment (lw/lw + sw/sw pairs), not five scalar copies. */
-typedef struct {
-  int words[5];
-} WORLDCOUNTERS;
+/* The sky handoff is one SkyHeader struct assignment (lw/lw + sw/sw pairs),
+   as in the original, not five scalar copies. */
 
 void ActorCutscene_Update(void) {
   int delta[4];
@@ -236,8 +234,7 @@ void ActorCutscene_Update(void) {
          hardest (13 of the 14). */
       EBB_BREAK();
 
-      *(WORLDCOUNTERS *)&g_nWorldRenderMeshChunkCount =
-          *(WORLDCOUNTERS *)&g_nWorldCollisionTriCount;
+      *(SkyHeader *)&g_nSkyChunkCount = *(SkyHeader *)&g_nLevelSkyChunkCount;
 
       g_anActorCutsceneTimerBlock[ACSW_SUBSTATE] = ACS_CRUISE;
       g_anActorCutsceneTimerBlock[ACSW_TIMER] = 0;

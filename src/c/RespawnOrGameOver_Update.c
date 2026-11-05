@@ -51,7 +51,7 @@ void RespawnOrGameOver_Update(void) {
         CdReadSyncSectors(lba, g_apRenderScratchRegionBlock[0] - (*size), i,
                           g_nGameOverSceneSectorOffset, CD_STALL_TIMEOUT_TICKS);
         p = g_apRenderScratchRegionBlock[0] - (*size);
-        fog = (unsigned char *)(&g_anWorldRenderMeshBlock[4]);
+        fog = (unsigned char *)(&g_anSkyBlock[4]);
         fog[0] = p[0];
         fog[1] = p[1];
         fog[2] = p[2];
@@ -65,9 +65,9 @@ void RespawnOrGameOver_Update(void) {
         p += 4;
         count = *((int *)p);
         p += 4;
-        g_anWorldRenderMeshBlock[1] = (int)p;
-        g_anWorldRenderMeshBlock[0] = count;
-        for (i = 0; i < g_anWorldRenderMeshBlock[0]; i++) {
+        g_anSkyBlock[1] = (int)p;
+        g_anSkyBlock[0] = count;
+        for (i = 0; i < g_anSkyBlock[0]; i++) {
           *((int *)p) = ((int)scene) + (*((int *)p));
           p += 4;
         }

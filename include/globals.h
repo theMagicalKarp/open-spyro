@@ -426,7 +426,7 @@ extern void *g_pOtMergedChainTail;                           /* 0x8006fcf0 */
 extern void *g_pOtDepthBinHead0;                             /* 0x8006fcf4 */
 extern void *g_pOtDepthBinTail0;                             /* 0x8006fcf8 */
 extern void *g_apActiveActorList[2];                   /* 0x800700f4 */
-extern int g_anActorDeferredTriStack[64];                    /* 0x800704f4 */
+extern int g_anPortalDeferredTriStack[64];                    /* 0x800704f4 */
 extern int g_anActorVertSzOverflow[256];                     /* 0x800705f4 */
 extern int g_anActorDepthCuedVtxColor[32];                   /* 0x80070df4 */
 extern int g_anActorDrawList[768];                           /* 0x800712f4 */
@@ -608,7 +608,7 @@ extern void *g_pActorSpatialGridBase;        /* 0x80075778 */
 extern void *g_pPrimBufferLimit;             /* 0x80075780 */
 extern int g_nDemoActive;           /* 0x80075784: 1 while a demo level runs: the draw handlers add a VSync so frames pace at 2 vblanks */
 extern short g_nSpyroIdleAnimTimeout;        /* 0x80075788 */
-extern int *g_pActorDeferredTriStackTop;     /* 0x80075798 */
+extern int *g_pPortalDeferredTriStackTop;     /* 0x80075798 */
 extern int g_nGamePaused;                    /* 0x8007579c */
 extern int g_nOptionVibrationEnabled;        /* 0x800757a4 */
 extern void *g_pPrimBufferWriteCursor;       /* 0x800757b0 */
@@ -618,7 +618,7 @@ extern void (*g_pfnFlightResultsUpdate)(void);  /* 0x800757c0: flight levels' Fl
 extern int g_nPauseMenuSubstate;             /* 0x800757c8: pause menu page, enum PausePage (pause_menu.h) */
 extern int g_nSubMenuScrollOffset;           /* 0x800757cc */
 extern int g_nPulseRumbleTimer;              /* 0x800757d0 */
-extern unsigned int g_dwActorMeshFadeColor;          /* 0x800757d4 */
+extern unsigned int g_dwSkyFadeColor;          /* 0x800757d4 */
 extern int g_nGamestate;                     /* 0x800757d8 */
 extern struct PadSubstep *g_pPadSubstepState; /* 0x800757e0: this substep's g_anPadSubstepRing entry (pad.h) */
 extern void *g_pCollisionHitActor;           /* 0x800757e4 */
@@ -639,7 +639,7 @@ extern int g_nExtraLives;                    /* 0x8007582c */
 extern int g_nLevelKeyState;                 /* 0x80075830: the level key (enum LevelKeyState): none, carried (key 173 picked up), locked chest (174) opened, its reward collected; shown as HUD counter 4 */
 extern int g_nCameraShakePeakAmplitude;      /* 0x80075848 */
 extern int g_nPulseRumbleAmount;             /* 0x8007584c */
-extern int g_nPortalViewYawSpin;        /* 0x80075858: portal-surface view spin, +2 a frame (DrawPortalsAndStaticActors) */
+extern int g_nPortalViewYawSpin;        /* 0x80075858: portal-surface view spin, +2 a frame (DrawPortalsAndSky) */
 extern void *g_pDemoPadCursor;           /* 0x8007585c: read/write cursor into the recorded demo pad stream (SampleDemoPadFrame) */
 extern int g_nTotalTreasureCollected;        /* 0x80075860: game-wide treasure (gem) total: pickups, flight bonuses; 14000 (0x36B0) picks the post-game credits return */
 extern int g_nCdStreamState;                 /* 0x80075864: enum CutsceneStreamState or LevelStreamState (cd_stream.h), by which machine runs */
@@ -672,17 +672,17 @@ extern void (*g_pfnLevelEmitParticles)(int count, int type, void *pos, int effec
 extern int g_nSparxFoodCount;                /* 0x800758e8: type-15 pickups collected; every 20 become an extra life (UpdateHudCounters) */
 extern int g_nLevelSelectWorldIndex;         /* 0x800758ec */
 extern int g_nLevelSelectSubIndex;           /* 0x800758f0 */
-extern int g_nPortalViewPitchTilt;      /* 0x800758fc: portal-surface view tilt, +2 a frame (DrawPortalsAndStaticActors) */
+extern int g_nPortalViewPitchTilt;      /* 0x800758fc: portal-surface view tilt, +2 a frame (DrawPortalsAndSky) */
 extern int g_nHitRumbleTimer;                /* 0x80075904 */
 extern int g_nCameraShakeDuration;           /* 0x8007590c */
 extern unsigned int g_dwActiveCameraOptions;         /* 0x80075914: camera option word, CAM_OPT_ACTIVE or CAM_OPT_PASSIVE (camera.h); saved */
 extern int g_nScreenFadeLevel;              /* 0x80075918: fade-to-black level (drawn as a subtractive fullscreen tint, decays by g_nFrameStep in gameplay) */
-extern int g_nPortalDistanceFogEnabled;                /* 0x8007591c: portals beyond 0x4000 fade into g_dwWorldFogColor (DrawPortalsAndStaticActors); set for Beast Makers home + Misty Bog and the opening-story cutscene */
+extern int g_nPortalDistanceFogEnabled;                /* 0x8007591c: portals beyond 0x4000 fade into g_dwWorldFogColor (DrawPortalsAndSky); set for Beast Makers home + Misty Bog and the opening-story cutscene */
 extern int g_nCameraManualYawInput;          /* 0x80075924 */
 extern int g_nPadHistoryIndex;               /* 0x80075928 */
 extern int g_nCameraForcePassiveFollow;        /* 0x8007592c: 1 while Spyro is in SPYRO_ST_HURT_LONG (UpdateCameraFrame): the camera behaves as if CAM_OPT_PASSIVE_FOLLOW were set */
 extern void *g_pActorAuxPoolFreeHead;        /* 0x80075930: one past the next free 0x18-byte actor ->state record; the aux pool grows down (AllocActorRecordSlot) */
-extern int g_nActorMeshOtDepthBin;           /* 0x80075934 */
+extern int g_nPortalOtDepthBin;           /* 0x80075934 */
 extern int g_nCameraPassiveModeHoldTimer;    /* 0x80075938 */
 extern int g_nRespawnOrGameOverFrame;             /* 0x8007593c: frame counter of the respawn / game-over sequence (RespawnOrGameOver_Update / _Draw) */
 extern int g_nRespawnOrGameOverMode;              /* 0x80075940: respawn / game-over sub-mode: 0 load frame (respawn returns here), 1 game-over presentation, 2 wait for the level stream (RespawnOrGameOver_Update) */
@@ -846,10 +846,13 @@ extern unsigned int g_dwCdMusicReadHead;                        /* 0x800776b8 */
 extern int g_nLastCdMusicCommand;                       /* 0x800776c4: libcd command the music stream is waiting on: CdlReadS while starting, CdlPause queued for the end of a fade-out (CdlStop/CdlPause handled alike) */
 extern int g_nPendingMusicCommand;                      /* 0x800776c8: MUSIC_CMD_* to retry on the next TickCdMusicStream (the drive was busy) */
 extern unsigned int g_dwPadStash;                            /* 0x800776d8: first word of a 0xA4-byte stash of the pad state block (g_dwPadPressed..); MovePadInputState parks live input here to blank it for a frame */
-extern int g_nWorldCollisionTriCount;                   /* 0x80077780 */
-extern void *g_pWorldCollisionTriArray;                 /* 0x80077784 */
-extern int g_nWorldMeshIndexCount;                      /* 0x80077788 */
-extern void *g_pWorldMeshIndexTable;                    /* 0x8007778c */
+/* 0x80077780..0x80077793: the level's own sky (SkyHeader, sky.h), unpacked
+ * by UnpackWorldDataChunks and copied into the active sky at 0x80078a40 when
+ * the level starts. */
+extern int g_nLevelSkyChunkCount;                   /* 0x80077780 */
+extern void *g_pLevelSkyChunkArray;                 /* 0x80077784 */
+extern int g_nLevelSkyZoneListCount;                      /* 0x80077788 */
+extern void *g_pLevelSkyZoneLists;                    /* 0x8007778c */
 extern int g_anCameraLatchedAnchorPos[3];               /* 0x80077798 */
 extern int g_anLevelTriggerStateSlots[10];              /* 0x800777c0 */
 extern int g_nActorCutsceneSubstate;                      /* 0x800777e8: enum ActorCutsceneSubstate (actor_cutscene.h) */
@@ -943,10 +946,13 @@ extern int g_anSpyroFlameRenderMtx[5];             /* 0x80078780 */
 extern int g_anSpyroFlameAnchorOffset[3];          /* 0x80078794 */
 extern int g_anSpyroFlameSlotPrevPos[24];          /* 0x800787a0 */
 extern unsigned char g_abWorldSparkleParticleTable[576];         /* 0x80078800 */
-extern int g_nWorldRenderMeshChunkCount;                /* 0x80078a40 */
-extern void *g_pWorldRenderMeshChunkArray;              /* 0x80078a44 */
-extern int g_nWorldRenderMeshIndexCount;                /* 0x80078a48 */
-extern void *g_pWorldRenderMeshIndexTable;              /* 0x80078a4c */
+/* 0x80078a40..0x80078a53: the active sky EmitSkyMesh draws (SkyHeader,
+ * sky.h): the level's own, or during a portal trip the destination's
+ * (Portal.pSky). Its colour word is g_dwWorldFogColor. */
+extern int g_nSkyChunkCount;                /* 0x80078a40 */
+extern void *g_pSkyChunkArray;              /* 0x80078a44 */
+extern int g_nSkyZoneListCount;                /* 0x80078a48 */
+extern void *g_pSkyZoneLists;              /* 0x80078a4c */
 extern unsigned int g_dwWorldFogColor;                          /* 0x80078a50 */
 extern int g_anSpyroWorldPos[3];                        /* 0x80078a58 */
 extern unsigned char g_abSpyroPersistentEuler[3];                /* 0x80078a64 */
@@ -1058,7 +1064,7 @@ extern int g_nGameOverSceneSectorOffset;                /* 0x8007a708 */
 extern int g_nGameOverSceneByteSize;                    /* 0x8007a70c */
 extern int g_nLevelSplashOffset;                        /* 0x8007a718 */
 extern int g_nLevelArchiveOffset;                       /* 0x8007a720 */
-extern int g_anActorScissorRect[4];                     /* 0x8007aa00 */
+extern int g_anPortalScissorRect[4];                     /* 0x8007aa00 */
 extern unsigned char g_abSpyroShadowRingHeights[8];              /* 0x8007aa10 */
 extern unsigned char g_abSpyroShadowRingNoGroundFlags[8];        /* 0x8007aa18 */
 extern int g_anSpyroShadowPos[3];                       /* 0x8007aa20 */
@@ -1186,7 +1192,7 @@ extern unsigned char g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
 extern int g_anSpyroSlopeGravityVec[];
-extern int g_anWorldRenderMeshBlock[];
+extern int g_anSkyBlock[];
 extern int g_bDebugNoDepletion;
 extern unsigned char g_bSpyroSwingByteEuler1;
 extern int g_nCreditsPageIndex;
@@ -1340,8 +1346,8 @@ extern unsigned char g_bCdMixLeftToLeft; /* 0x800776d0: CdMix attenuation L->L *
 extern unsigned char g_bCdMixLeftToRight; /* 0x800776d1: CdMix attenuation L->R */
 extern unsigned char g_bCdMixRightToRight; /* 0x800776d2: CdMix attenuation R->R */
 extern unsigned char g_bCdMixRightToLeft; /* 0x800776d3: CdMix attenuation R->L */
-extern int g_anWorldMeshIndexCountBlock[]; /* 0x80077788: held-base view of g_nWorldMeshIndexCount */
-extern unsigned char g_abCollisionHeaderBytes[]; /* 0x80077790: 3 header bytes copied from the collision-tri section */
+extern int g_anLevelSkyZoneListCountBlock[]; /* 0x80077788: held-base view of g_nLevelSkyZoneListCount */
+extern unsigned char g_abLevelSkyBgColor[]; /* 0x80077790: the level sky's background colour (r, g, b; SkyHeader.color) */
 extern int g_anActorCutsceneTimerBlock[]; /* 0x800777ec */
 extern int g_nActorCutsceneTimer; /* 0x800777ec: gamestate 0xC transition timer (array view g_anActorCutsceneTimerBlock) */
 extern int g_nActorCutsceneCardVariant; /* 0x800777fc: transition card variant */

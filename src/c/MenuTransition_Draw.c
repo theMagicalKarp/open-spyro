@@ -124,7 +124,7 @@ void MenuTransition_Draw(void) {
   case 1: {
     register DRAWENV *env asm("$4");
 
-    g_dwActorMeshFadeColor = 0;
+    g_dwSkyFadeColor = 0;
     prog = (0x20 - g_nMenuTickFrames) << 7;
     g_nFadeProgress = prog;
     *(volatile int *)&color = ComputeDepthCuedColor(g_dwWorldFogColor, 0, prog);
@@ -140,7 +140,7 @@ void MenuTransition_Draw(void) {
       g_FrameDrawEnv0.b0 = ((unsigned char *)&color)[2];
     }
     PutDrawEnv(env);
-    EmitStaticActorMeshListFogged();
+    EmitSkyMeshFogged();
     break;
   }
   }
