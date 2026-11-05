@@ -1,3 +1,4 @@
+#include "cd_stream.h"
 #include "funcs.h"
 #include "globals.h"
 #include "libcd.h"
@@ -19,12 +20,12 @@ void StartCdReadAsync(int lbaBase, void *dst, int size, int offset,
   g_nCdStallWatchdogTicks = 0;
   g_nCdStallTimeoutTicks = stallTicks;
 
-  pos = lbaBase + offset / 0x800;
+  pos = lbaBase + offset / CD_SECTOR_BYTES;
   loc = &g_abCdlLocScratch;
   CdIntToPos(pos, loc);
   CdControl(CdlSetloc, loc, 0);
 
-  sectors = (size + 0x7FF) / 0x800;
+  sectors = (size + CD_SECTOR_BYTES - 1) / CD_SECTOR_BYTES;
   g_nCdReadSectorCount = sectors;
   g_pCdReadDstBuffer = dst;
   g_nCdReadInFlight = 1;
