@@ -596,7 +596,7 @@ extern void (*g_pfnLevelUpdateActors)(void); /* 0x80075734 */
 extern void *g_pEmitListWriteCursor;         /* 0x80075738 */
 extern struct Actor *g_pActorPoolFreeHead;   /* 0x8007573c: lowest free slot of the level actor pool (AllocActorRecordSlot) */
 extern int g_nGemTallyHoldEndPhase;          /* 0x80075740: tally phase where the TREASURE FOUND hold ends: 0x8C + 2 per icon, capped at 0xC0 */
-extern int g_nSubMenuCursor;                 /* 0x80075744: inventory page's world cursor (Gamestate02_03_06_Draw); the flight results screens reuse it as their reveal step */
+extern int g_nSubMenuCursor;                 /* 0x80075744: inventory page's world cursor (PauseMenu_Draw); the flight results screens reuse it as their reveal step */
 extern int g_nMusicVolume;                   /* 0x80075748 */
 extern int g_nTotalDragonsRescued;           /* 0x80075750: game-wide dragons freed (ApplySaveGameBuffer sums all 36 levels; ComputeInventoryProgressPercent: 80 = 40%) */
 extern int g_nSfxVolume;                     /* 0x80075754 */
@@ -657,7 +657,7 @@ extern int g_nSpyroSuperflameTimerSave;     /* 0x800758a4 */
 extern int g_nReturnPortalLevelId;                /* 0x800758ac: level being left (0 = none); the hub places Spyro at the portal leading to it */
 extern int g_nPrimBufferOverflowFlag;        /* 0x800758b0 */
 extern int g_nCurrentLevelId;                /* 0x800758b4 */
-extern int g_nMenuDrawFrames;     /* 0x800758b8: frames the menu (Gamestate02_03_06_Draw) has drawn since entry; 0 = the entry frame, pause/sub menu input waits for 5, MenuTransition_Draw switches on it; drives the menu bob/blink phases. SpyroStateDelay_Update reuses it as its pass count */
+extern int g_nMenuDrawFrames;     /* 0x800758b8: frames the menu (PauseMenu_Draw) has drawn since entry; 0 = the entry frame, pause/sub menu input waits for 5, MenuTransition_Draw switches on it; drives the menu bob/blink phases. SpyroStateDelay_Update reuses it as its pass count */
 extern int g_nPortalCount;              /* 0x800758bc */
 extern int g_nSpyroFallReferenceZ;           /* 0x800758c0 */
 extern int g_nVblankTickCount;               /* 0x800758c8 */

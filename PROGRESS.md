@@ -181,7 +181,7 @@ Note: each level overlay contains one ~30-40 KB moby-dispatch megafunction (`fun
 | `0x80019698` | ComposeFrameScene | main | 164 | matched | game |
 | `0x8001973c` | DrawLevelTransitionOverlay | main | 2324 | matched | game |
 | `0x8001a050` | LevelTransition_Draw | main | 956 | matched | game |
-| `0x8001a40c` | Gamestate02_03_06_Draw | main | 8840 | matched | game |
+| `0x8001a40c` | PauseMenu_Draw | main | 8840 | matched | game |
 | `0x8001c694` | MenuTransition_Draw | main | 932 | matched | game |
 | `0x8001ca38` | RespawnOrGameOver_Draw | main | 1444 | matched | game |
 | `0x8001cfdc` | DragonRescue_Draw | main | 1852 | matched | game |

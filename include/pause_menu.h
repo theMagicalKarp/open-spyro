@@ -1,5 +1,5 @@
 /* pause_menu.h — GS_PAUSE_MENU pages and rows (PauseMenu_Update, drawn by
- * Gamestate02_03_06_Draw). g_nPauseMenuSubstate is the page,
+ * PauseMenu_Draw). g_nPauseMenuSubstate is the page,
  * g_nPauseMenuCursor the row on it. */
 
 #ifndef OPEN_SPYRO_PAUSE_MENU_H

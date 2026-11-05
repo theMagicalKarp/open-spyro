@@ -9676,11 +9676,11 @@ glabel LevelTransition_Draw
 endlabel LevelTransition_Draw
 .endif
 
-.section .text.Gamestate02_03_06_Draw, "ax"
-.ifndef HAVE_C_Gamestate02_03_06_Draw
-nonmatching Gamestate02_03_06_Draw, 0x2288
+.section .text.PauseMenu_Draw, "ax"
+.ifndef HAVE_C_PauseMenu_Draw
+nonmatching PauseMenu_Draw, 0x2288
 
-glabel Gamestate02_03_06_Draw
+glabel PauseMenu_Draw
     /* AC0C 8001A40C 0780023C */  lui        $v0, %hi(g_nMenuDrawFrames)
     /* AC10 8001A410 B858428C */  lw         $v0, %lo(g_nMenuDrawFrames)($v0)
     /* AC14 8001A414 B0FEBD27 */  addiu      $sp, $sp, -0x150
@@ -11977,7 +11977,7 @@ glabel Gamestate02_03_06_Draw
     /* CE88 8001C688 5001BD27 */  addiu      $sp, $sp, 0x150
     /* CE8C 8001C68C 0800E003 */  jr         $ra
     /* CE90 8001C690 00000000 */   nop
-endlabel Gamestate02_03_06_Draw
+endlabel PauseMenu_Draw
 .endif
 
 .section .text.MenuTransition_Draw, "ax"
@@ -14712,7 +14712,7 @@ glabel GamestateDraw
     /* F62C 8001EE2C 05006214 */  bne        $v1, $v0, .L8001EE44
     /* F630 8001EE30 07000224 */   addiu     $v0, $zero, 0x7
   .L8001EE34:
-    /* F634 8001EE34 0369000C */  jal        Gamestate02_03_06_Draw
+    /* F634 8001EE34 0369000C */  jal        PauseMenu_Draw
     /* F638 8001EE38 00000000 */   nop
     /* F63C 8001EE3C 517C0008 */  j          .L8001F144
     /* F640 8001EE40 00000000 */   nop

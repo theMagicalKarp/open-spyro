@@ -3672,7 +3672,7 @@ UpdateHudCounters:
     and drops linked credit 244 -> 148 B). Next probe is the `-dR` sched2 trace
     of one roll-out block.
 
-Gamestate02_03_06_Draw:
+PauseMenu_Draw:
   verdict: parked
   class: "positional: a 4-insn head knot at orig[28..50] zeroes all partial credit; then A133 constant-in-callee-saved allocation"
   date: 2026-09-10

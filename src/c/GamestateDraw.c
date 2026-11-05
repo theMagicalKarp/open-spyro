@@ -56,15 +56,15 @@ void GamestateDraw(void) {
     if (g_nGamestate == GS_LEVEL_LOAD) {
       LevelTransition_Draw();
     } else if (g_nGamestate == GS_PAUSE_MENU) {
-      Gamestate02_03_06_Draw();
+      PauseMenu_Draw();
     } else if (g_nGamestate == GS_INVENTORY) {
-      Gamestate02_03_06_Draw();
+      PauseMenu_Draw();
     } else if (g_nGamestate == GS_RESPAWN) {
       RespawnOrGameOver_Draw();
     } else if (g_nGamestate == GS_GAME_OVER) {
       RespawnOrGameOver_Draw();
     } else if (g_nGamestate == GS_UNUSED_6) {
-      Gamestate02_03_06_Draw();
+      PauseMenu_Draw();
     } else if (g_nGamestate == GS_FLIGHT_RESULTS) {
       g_pfnFlightResultsDraw();
     } else if (g_nGamestate == GS_DRAGON_RESCUE) {
