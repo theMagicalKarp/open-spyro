@@ -702,7 +702,7 @@ extern unsigned char g_abGpuStatusShadow[256];                   /* 0x800759bc *
 extern unsigned int g_dwRandSeed;                               /* 0x80075ac0 */
 extern int g_anActorShadowTexWords[2];                  /* 0x80075ef8 */
 extern void *g_pEntityListEnd;                          /* 0x80075f00 */
-extern unsigned char g_abSpuCommonAttr[76];                      /* 0x80075f08 */
+extern unsigned char g_abSpuCommonAttr[0x28];                    /* 0x80075f08: the SpuCommonAttr record SetSpuCommonAttr applies (mask, master and CD volumes / mix); g_aSpuVoiceRows follows at +0x28, and the sound-stop paths reach the rows off this base (VOICE_ROW_RAW, spu.h) */
 extern void *g_pLevelSampleBankEntries;                 /* 0x800761d0 */
 extern void *g_pLevelSampleBankHeader;                  /* 0x800761d4: the level's sound-id table, one byte per slot (level_sfx.h, LEVEL_SFX) */
 extern int g_nMusicVolumeFadeTarget;                    /* 0x800761d8 */
