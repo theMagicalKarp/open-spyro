@@ -10,7 +10,7 @@
  *   - A loop-top `spyc = &g_anSpyroWorldPos` carrier, used only by case 177's
  *     camera anchor and case 181's headLook: loop.c hoists and spills it,
  *     which drops the threshold so g_anSineLut is NOT hoisted (original).
- *   - The four path-index locals (near177/far177/n179/m179) are scalars
+ *   - The four path-index locals (thiefSpyroNode/thiefSpyroNode2/critterSpyroNode/critterAwayNode) are scalars
  *     (scalar MEMs do not alias the state block), and every array used from
  *     case 181 on is declared in a block that opens at case 181, so the
  *     scalars get their slots first (312..324) as in the original frame.
@@ -22,7 +22,7 @@
  *   - Single-set temps (cookbook F14d): case 177's case-0 clamp uses its
  *     own `d0`; case 181 reads `SPY.bodyRotZ` (a struct MEM, so it depends
  *     on the preceding `st->timer` store) and writes the BFC..C04 triple as
- *     `g_nSpyroSwingEulerTargetY[-1..1]` so the `st->chunkAnim` load waits for them; the w181
+ *     `g_nSpyroSwingEulerTargetY[-1..1]` so the `st->chunkAnim` load waits for them; the settleOffset
  *     init stores `w[0]` (the timer read) first.
  *
  *   - Case 177's camera block writes every camera word as an aggregate
@@ -65,14 +65,14 @@ void Level34_UpdateActors(void) {
   SpyroObj *spyc;
   char *base;
   int dt;
-  int near177;
-  int far177;
-  int n179;
-  int m179;
+  int thiefSpyroNode;
+  int thiefSpyroNode2;
+  int critterSpyroNode;
+  int critterAwayNode;
 
   /* Scratch vectors, in frame order. */
   int nextPos[3];
-  int s72[3];
+  int apex[3];
   int eggArcBase[3];
   int eggArcOffset[3];
   int svD[3];
@@ -529,18 +529,18 @@ void Level34_UpdateActors(void) {
           int x;
           int y;
 
-          CopyVector(s72, &SPY.posX);
+          CopyVector(apex, &SPY.posX);
           cb = LookupCosine(g_bSpyroPersistentEulerZ * 0x10);
           cs = LookupSine(g_bSpyroPersistentEulerZ * 0x10);
           x = cb * 0xB5;
           y = cs * 0xB5;
-          s72[0] += (y + x) * 4 >> 12;
-          s72[1] += (int)((LookupSine(g_bSpyroPersistentEulerZ * 0x10) * 0xB5) -
+          apex[0] += (y + x) * 4 >> 12;
+          apex[1] += (int)((LookupSine(g_bSpyroPersistentEulerZ * 0x10) * 0xB5) -
                           (LookupCosine(g_bSpyroPersistentEulerZ * 0x10) * 0xB5U)) *
                         4 >>
                     12;
-          s72[2] += 0x300;
-          VectorToSVectorShr2(st->apex, s72);
+          apex[2] += 0x300;
+          VectorToSVectorShr2(st->apex, apex);
           VectorToSVectorShr2(st->centre, &actor->posX);
           st->phase = 0;
           actor->mode += 1;
@@ -760,9 +760,9 @@ void Level34_UpdateActors(void) {
         switch (actor->subMode) {
         case COLLECT_SETTLE:
           /* Idle: sample the floor normal and face along it. */
-          CopyVector(s72, &actor->posX);
-          s72[2] += 0x400;
-          FindGroundHeightBelow(s72, 0x10000);
+          CopyVector(apex, &actor->posX);
+          apex[2] += 0x400;
+          FindGroundHeightBelow(apex, 0x10000);
           {
             int *nrm = &g_anCollisionHitNormal;
 
@@ -1147,17 +1147,17 @@ void Level34_UpdateActors(void) {
             int reach;
             int limit;
 
-            CopyVector(s72, &st->target->posX);
+            CopyVector(apex, &st->target->posX);
 
             if (high == 0) {
-              s72[0] -=
+              apex[0] -=
                   (unsigned short)g_anCosineLut[st->target->rotZ] << 16 >> 20;
-              s72[1] -=
+              apex[1] -=
                   (unsigned short)g_anSineLut[st->target->rotZ] << 16 >> 20;
             } else {
-              s72[0] -=
+              apex[0] -=
                   (unsigned short)g_anCosineLut[st->target->rotZ] << 16 >> 22;
-              s72[1] -=
+              apex[1] -=
                   (unsigned short)g_anSineLut[st->target->rotZ] << 16 >> 22;
             }
 
@@ -1182,8 +1182,8 @@ void Level34_UpdateActors(void) {
               }
             }
 
-            SubtractVector(s72, s72, &actor->posX);
-            dist = VectorLength(s72, VEC_LEN_XYZ);
+            SubtractVector(apex, apex, &actor->posX);
+            dist = VectorLength(apex, VEC_LEN_XYZ);
 
             if (high == 0 &&
                 (TICK_DOWN(st->timer) != 0 ||
@@ -1201,13 +1201,13 @@ void Level34_UpdateActors(void) {
             reach = high != 0 ? 0x96 : 0x82;
             limit = reach + 5;
             if (limit < dist) {
-              ScaleVector3ByRatio(s72, dist, limit);
+              ScaleVector3ByRatio(apex, dist, limit);
             } else {
-              ScaleVector3ByRatio(s72, dist, reach - 5);
+              ScaleVector3ByRatio(apex, dist, reach - 5);
             }
-            AddVector(&actor->posX, &actor->posX, s72);
-            TurnActorYawTowardAngle(actor, ArcTan2(s72[0], s72[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
-            actor->rotY = ArcTan2(VectorLength(s72, VEC_LEN_XY), s72[2], ATAN_ANGLE8);
+            AddVector(&actor->posX, &actor->posX, apex);
+            TurnActorYawTowardAngle(actor, ArcTan2(apex[0], apex[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
+            actor->rotY = ArcTan2(VectorLength(apex, VEC_LEN_XY), apex[2], ATAN_ANGLE8);
             actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
             break;
           }
@@ -1519,12 +1519,12 @@ void Level34_UpdateActors(void) {
           switch (st->leg) {
           case 0:
             if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
-              FindNearestPathPointToSpyro(st->ring, &near177);
-              if (near177 < st->ring->cur) {
-                near177 += st->ring->count;
+              FindNearestPathPointToSpyro(st->ring, &thiefSpyroNode);
+              if (thiefSpyroNode < st->ring->cur) {
+                thiefSpyroNode += st->ring->count;
               }
-              near177 -= st->ring->cur;
-              if (near177 < st->ring->count >> 1) {
+              thiefSpyroNode -= st->ring->cur;
+              if (thiefSpyroNode < st->ring->count >> 1) {
                 st->ring->dir = one;
               } else {
                 st->ring->dir = -1;
@@ -1634,12 +1634,12 @@ void Level34_UpdateActors(void) {
             break;
 
           case 4:
-            FindNearestPathPointToSpyro(st->ring, &far177);
-            if (far177 < st->ring->cur) {
-              far177 += st->ring->count;
+            FindNearestPathPointToSpyro(st->ring, &thiefSpyroNode2);
+            if (thiefSpyroNode2 < st->ring->cur) {
+              thiefSpyroNode2 += st->ring->count;
             }
-            far177 -= st->ring->cur;
-            if (far177 < st->ring->count >> 1) {
+            thiefSpyroNode2 -= st->ring->cur;
+            if (thiefSpyroNode2 < st->ring->count >> 1) {
               st->ring->dir = one;
             } else {
               st->ring->dir = -1;
@@ -1914,16 +1914,16 @@ void Level34_UpdateActors(void) {
           case LCRITTER_RUN_PICK: {
             int dir;
 
-            FindNearestPathPointToSpyro(st->path, &n179);
-            if (st->path->cur == n179) {
+            FindNearestPathPointToSpyro(st->path, &critterSpyroNode);
+            if (st->path->cur == critterSpyroNode) {
               dir = -st->path->dir;
             } else {
-              if (n179 < st->path->cur) {
-                n179 += st->path->count;
+              if (critterSpyroNode < st->path->cur) {
+                critterSpyroNode += st->path->count;
               }
-              n179 -= st->path->cur;
+              critterSpyroNode -= st->path->cur;
               dir = -1;
-              if (n179 < st->path->count >> 1) {
+              if (critterSpyroNode < st->path->count >> 1) {
                 dir = 1;
               }
             }
@@ -1938,19 +1938,19 @@ void Level34_UpdateActors(void) {
             int dir;
             int r;
 
-            if (FindNearestPathPointToSpyro(st->path, &m179) > 0x3000) {
+            if (FindNearestPathPointToSpyro(st->path, &critterAwayNode) > 0x3000) {
               st->mode = LCRITTER_RUN_WANDER;
             }
-            m179 = (m179 + (st->path->count >> 1)) % st->path->count;
-            if (st->path->cur == m179) {
+            critterAwayNode = (critterAwayNode + (st->path->count >> 1)) % st->path->count;
+            if (st->path->cur == critterAwayNode) {
               dir = -st->path->dir;
             } else {
-              if (m179 < st->path->cur) {
-                m179 += st->path->count;
+              if (critterAwayNode < st->path->cur) {
+                critterAwayNode += st->path->count;
               }
-              m179 -= st->path->cur;
+              critterAwayNode -= st->path->cur;
               dir = 1;
-              if (m179 < st->path->count >> 1) {
+              if (critterAwayNode < st->path->count >> 1) {
                 dir = -1;
               }
             }
@@ -2019,16 +2019,16 @@ void Level34_UpdateActors(void) {
     }
 
     {
-    int v181[3];
-    int w181[3];
-    int svO[3];
-    int svP[3];
+    int swoopPos[3];
+    int settleOffset[3];
+    int twinklePos[3];
+    int twinklePos2[3];
     int ps[6];
     int w416[3];
     int w432[3];
     int w448[3];
-    int y368[3];
-    int y384[3];
+    int fusePos[3];
+    int fuseVel[3];
     int y400[3];
     int w512[3];
     int svR[3];
@@ -2164,7 +2164,7 @@ void Level34_UpdateActors(void) {
         st->timer += g_nFrameStep;
         g_nCinematicActive = one;
         if (st->timer < 0xC0) {
-          int *v = v181;
+          int *v = swoopPos;
 
           v[0] = 0x200;
           v[1] = 0;
@@ -2202,7 +2202,7 @@ void Level34_UpdateActors(void) {
             actor->rotZ = r + d * (st->timer - 0x80) / 64;
           }
         } else if (st->timer < 0xD0) {
-          int *w = w181;
+          int *w = settleOffset;
 
           actor->rotZ = g_pActorListBase[st->target].rotZ;
           w[0] = 0x200 - (st->timer - 0xC0) * 8;
@@ -2583,11 +2583,11 @@ void Level34_UpdateActors(void) {
         actor->rotY += st->spin[1];
         actor->rotZ += st->spin[2];
 
-        svO[0] = (GetRandomU32() & 0xFE) - 0x7F;
-        svO[1] = (GetRandomU32() & 0xFE) - 0x7F;
-        svO[2] = (GetRandomU32() & 0xFE) - 0x40;
-        AddVector(svO, svO, &actor->posX);
-        g_pfnLevelEmitParticles(1, EMIT_TWINKLE, svO, 1);
+        twinklePos[0] = (GetRandomU32() & 0xFE) - 0x7F;
+        twinklePos[1] = (GetRandomU32() & 0xFE) - 0x7F;
+        twinklePos[2] = (GetRandomU32() & 0xFE) - 0x40;
+        AddVector(twinklePos, twinklePos, &actor->posX);
+        g_pfnLevelEmitParticles(1, EMIT_TWINKLE, twinklePos, 1);
         st->life -= 1;
       } else {
         DespawnActorRecord(actor);
@@ -2641,11 +2641,11 @@ void Level34_UpdateActors(void) {
 
           do {
             i += 1;
-            svP[0] = (GetRandomU32() & 0xFE) - 0x7F;
-            svP[1] = (GetRandomU32() & 0xFE) - 0x7F;
-            svP[2] = (GetRandomU32() & 0xFE) - 0x40;
-            AddVector(svP, svP, &actor->posX);
-            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, svP, 1);
+            twinklePos2[0] = (GetRandomU32() & 0xFE) - 0x7F;
+            twinklePos2[1] = (GetRandomU32() & 0xFE) - 0x7F;
+            twinklePos2[2] = (GetRandomU32() & 0xFE) - 0x40;
+            AddVector(twinklePos2, twinklePos2, &actor->posX);
+            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, twinklePos2, 1);
           } while (i < 3);
         }
 
@@ -3277,18 +3277,18 @@ void Level34_UpdateActors(void) {
       case CANNON_FUSE:
         st->timer += g_nFrameStep;
         if (st->timer < 0x5A) {
-          y368[0] = 0;
-          y368[1] = 0;
-          y368[2] = 0x14C;
-          RotateVectorByMatrix(actor->mtx, y368, y368);
-          AddVector(y368, y368, &actor->posX);
-          y384[0] = 0;
-          y384[1] = 6;
-          y384[2] = -0xC;
-          RotateVectorByMatrix(actor->mtx, y384, y384);
-          y384[0] += (GetRandomU32() & 0xF) - 8;
-          y384[1] += (GetRandomU32() & 0xF) - 8;
-          g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, y368, (int)y384);
+          fusePos[0] = 0;
+          fusePos[1] = 0;
+          fusePos[2] = 0x14C;
+          RotateVectorByMatrix(actor->mtx, fusePos, fusePos);
+          AddVector(fusePos, fusePos, &actor->posX);
+          fuseVel[0] = 0;
+          fuseVel[1] = 6;
+          fuseVel[2] = -0xC;
+          RotateVectorByMatrix(actor->mtx, fuseVel, fuseVel);
+          fuseVel[0] += (GetRandomU32() & 0xF) - 8;
+          fuseVel[1] += (GetRandomU32() & 0xF) - 8;
+          g_pfnLevelEmitParticles(1, EMIT_YELLOW_DUST, fusePos, (int)fuseVel);
           if (actor->voiceRow != VOICE_ROW_NONE) {
             continue;
           }
@@ -3297,16 +3297,16 @@ void Level34_UpdateActors(void) {
         }
         if (st->timer < 0xB4 &&
             (st->timer & 3) <= ((st->timer + g_nFrameStep) & 3)) {
-          y368[0] = 0;
-          y368[1] = 0;
-          y368[2] = 0x14C;
-          RotateVectorByMatrix(actor->mtx, y368, y368);
-          AddVector(y368, y368, &actor->posX);
-          y384[0] = 0;
-          y384[1] = ((st->timer - 0x5A) >> 3) + 9;
-          y384[2] = -0x12 - ((st->timer - 0x5A) >> 2);
-          RotateVectorByMatrix(actor->mtx, y384, y384);
-          g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, y368, (int)y384);
+          fusePos[0] = 0;
+          fusePos[1] = 0;
+          fusePos[2] = 0x14C;
+          RotateVectorByMatrix(actor->mtx, fusePos, fusePos);
+          AddVector(fusePos, fusePos, &actor->posX);
+          fuseVel[0] = 0;
+          fuseVel[1] = ((st->timer - 0x5A) >> 3) + 9;
+          fuseVel[2] = -0x12 - ((st->timer - 0x5A) >> 2);
+          RotateVectorByMatrix(actor->mtx, fuseVel, fuseVel);
+          g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, fusePos, (int)fuseVel);
           if (actor->rotX < 0x80) {
             actor->rotX = -((st->timer - 0x5A) >> 5);
           } else {

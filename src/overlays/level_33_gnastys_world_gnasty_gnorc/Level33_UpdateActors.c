@@ -180,7 +180,7 @@ void Level33_UpdateActors(void) {
   int o150[3];
   int spyroFloor[3];
   int pathHit[2];
-  int w181[3];
+  int settleOffset[3];
   int sparkleTwinkle[3];
   int shardTwinkle[3];
   int ps[6];
@@ -2457,7 +2457,7 @@ void Level33_UpdateActors(void) {
             actor->rotZ = r + d * (st->timer - 0x80) / 64;
           }
         } else if (st->timer < 0xD0) {
-          int *w = w181;
+          int *w = settleOffset;
 
           actor->rotZ = g_pActorListBase[st->target].rotZ;
           w[0] = 0x200 - (st->timer - 0xC0) * 8;
