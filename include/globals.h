@@ -425,7 +425,7 @@ extern char *g_apBalloonistDialogueLines[108];               /* 0x8006f8c4 */
 extern unsigned char g_abPadActAlignTable[6];                         /* 0x8006fccc */
 extern void *g_pOtMergedChainHead;                           /* 0x8006fcec */
 extern void *g_pOtMergedChainTail;                           /* 0x8006fcf0 */
-extern void *g_pOtDepthBinHead0;                             /* 0x8006fcf4 */
+extern void *g_pOtDepthBinHead0;                             /* 0x8006fcf4: the ordering table (0x1C00 bytes) and the frame scratch lists after it; its initial EXE contents are the boot title art as a run list (AddBiasToColorRuns, Initialize) */
 extern void *g_pOtDepthBinTail0;                             /* 0x8006fcf8 */
 extern void *g_apActiveActorList[2];                   /* 0x800700f4 */
 extern int g_anPortalDeferredTriStack[64];                    /* 0x800704f4 */

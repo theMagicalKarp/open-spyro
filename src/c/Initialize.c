@@ -46,14 +46,14 @@ void Initialize(void) {
   int *archOff;
   int *timOff;
   char *top;
-  char *dst;
+  char *splashRuns;
   void **buf2;
   int j;
-  char *src;
+  char *splashFrame;
   int k;
   int bias3;
   int n;
-  char *src2;
+  char *splashFrame2;
   unsigned char *isrgb24;
   RECT rect;
   RECT clear;
@@ -118,8 +118,8 @@ void Initialize(void) {
     {
       int cnt4 = *(volatile int *)&g_nAssetDirBootBlockSize;
       int off4 = *(volatile int *)&g_anAssetDirectory;
-      dst = top - *(volatile int *)&g_nAssetDirBootBlockSize;
-      CdReadSyncSectors(lba[0], dst, cnt4, off4, stallTicks);
+      splashRuns = top - *(volatile int *)&g_nAssetDirBootBlockSize;
+      CdReadSyncSectors(lba[0], splashRuns, cnt4, off4, stallTicks);
     }
   }
 hold_title:
@@ -146,17 +146,17 @@ fade_out_title:
   }
 
   start = VSync(-1);
-  FillWord(dst - 0x5A000, 0, 0x5A000);
-  src = dst - 0x5A000;
+  FillWord(splashRuns - 0x5A000, 0, 0x5A000);
+  splashFrame = splashRuns - 0x5A000;
   k = 0;
   bias3 = -0xE0;
 fade_in_splash:
-  AddBiasToColorRuns(dst, src, bias3);
+  AddBiasToColorRuns(splashRuns, splashFrame, bias3);
   rect.w = 0x300;
   rect.x = 0;
   rect.y = 0;
   rect.h = 0xF0;
-  LoadImage(&rect, src);
+  LoadImage(&rect, splashFrame);
   DrawSync(0);
   VSync(0);
   PutDispEnv(&g_FrameDispEnv1);
@@ -179,14 +179,14 @@ hold_splash:
     goto hold_splash;
   }
   n = 0;
-  src2 = dst - 0x5A000;
+  splashFrame2 = splashRuns - 0x5A000;
 fade_out_splash:
-  AddBiasToColorRuns(dst, src2, -(n + 1) << 5);
+  AddBiasToColorRuns(splashRuns, splashFrame2, -(n + 1) << 5);
   rect.w = 0x300;
   rect.x = 0;
   rect.y = 0;
   rect.h = 0xF0;
-  LoadImage(&rect, src2);
+  LoadImage(&rect, splashFrame2);
   DrawSync(0);
   VSync(0);
   PutDispEnv(&g_FrameDispEnv1);

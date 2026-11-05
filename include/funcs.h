@@ -211,8 +211,8 @@ unsigned int ComputeDepthCuedColor(unsigned int base, unsigned int color, int t)
 /* 0x80017e98: Convert a buffer of RGB15 pixels (two per 32-bit word) to packed 8-bit luminance bytes. Luma = (4*R + G*(1/16+1/32) + B/1024) >> 3. count = end-offset in bytes. */
 void ConvertRGB15ToLuma8(void *buf, int count);
 
-/* 0x80017f24: RLE color-run bias applier. Each run header word encodes byte-offset (low 17 bits, *4-aligned) and count (bits 17..30); negative header = terminator. For each 32-bit RGBA packet, adds bias to each byte saturating at 0. Called once from Initialize, likely tinting boot CLUT/HUD palette. */
-void AddBiasToColorRuns(void *dst, void *src, int bias);
+/* 0x80017f24 (hand-written): Expands a sparse run list of 24-bit image words into dst with every byte biased: each run is a header word (bits 0..16 = word offset into dst, bits 17..30 = word count; negative = end) followed by its words, and each byte gets bias added, clamped at 0 (callers pass bias <= 0, so it only fades toward black). Initialize's boot fades: the title art is the EXE's initial contents of the OT area (&g_pOtDepthBinHead0), the splash art a CD-loaded run list; dst is the 0x300 x 0xF0 frame uploaded with LoadImage after each step. */
+void AddBiasToColorRuns(void *runs, void *dst, int bias);
 
 /* 0x80017fe4: Emits a glyph-sprite chain for a string: per non-space byte allocates a 0x58-byte slot at g_pSpriteRecordWriteCursor (queue tail, grows down), maps '0'-'9' and 'A'-'Z' (+ a few specials: '/', '?', '%', '^', '+') to font tile indices, copies the cursor position from pPen and advances *pPen by nAdvance between glyphs. Sibling of BuildTextSprites. */
 void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance, int nPalette);
