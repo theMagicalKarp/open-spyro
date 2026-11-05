@@ -89,9 +89,11 @@ typedef struct Actor {
                            * VOICE_ROW_NONE when silent */
   unsigned char soundRange; /* 0x55 voice audible range >> 10 (TickActiveSoundVoices) */
   unsigned char poolIndex; /* 0x56 id byte for actors outside the pool */
-  unsigned char scale; /* 0x57 draw scale override, 0 = mesh default (likely; overlay
-                        * grow/shrink tweens drive it 0x20..0x60, BuildActorDrawList
-                        * packs it into the draw word) */
+  unsigned char scale; /* 0x57 draw scale, 0 = none: BuildActorDrawList packs it
+                        * into the draw word and EmitActorDrawList multiplies the
+                        * view-space translation by scale / 0x20 before
+                        * projecting, so the mesh draws at 0x20 / scale of its
+                        * size (overlay grow/shrink tweens drive it 0x20..0x60) */
 } Actor; /* 0x58 */
 
 /* Actor.voiceRow while no voice row plays the actor's sound. */
