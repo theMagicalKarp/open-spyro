@@ -33,13 +33,13 @@ typedef struct PortalCamPath {
 typedef struct Portal {
   SkyHeader *pSky;   /* +0x00 the destination level's sky */
   int nPoints;            /* +0x04 */
-  int nx;                 /* +0x08 */
+  int nx;                 /* +0x08 ring plane normal: the camera's side of it picks the winding DrawPortalsAndSky walks the ring in */
   int ny;                 /* +0x0c */
   int nz;                 /* +0x10 */
   int gateChunk;          /* +0x14 world chunk gating the portal (g_abWorldChunkDrawn); < 0 = always drawn */
   int actor;  /* +0x18 g_pActorListBase index of the portal actor */
   int levelId; /* +0x1c level it leads to */
-  int pts[8][3]; /* +0x20 */
+  int pts[8][3]; /* +0x20 nPoints ring points (UnpackWorldDataChunks skips 8 + nPoints * 3 words) */
 } Portal;
 
 /* One projected ring point: screen x/y plus the OT depth term. */

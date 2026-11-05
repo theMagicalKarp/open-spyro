@@ -914,6 +914,16 @@ extern void *g_pWorldAnimVertexMorphList;               /* 0x800785a4 */
 /* 0x800785a8: base of the world-table block the hand-asm probes index:
  * +0x04 g_nWorldChunkCount, +0x14 g_anTriggerRegionCount, +0x18 g_pWorldTextureLodRecords, +0x1C
  * g_pWorldTextureDetailRecords, +0x2C g_pWorldCollisionHeader (world_collision.h). */
+/* The world chunks (g_pWorldChunkArray[g_nWorldChunkCount], drawn only by the
+ * hand-written RenderWorldChunks). Layout as RenderWorldChunks and
+ * TickWorldChunkAnimations read it:
+ *   +0x00 cull centre x << 16 | y, +0x04 z << 16 | flags 0xE000 | radius 0x1FFF
+ *   +0x08 / +0x0C the draw origin (x, y / z) and the chunk's OT offset
+ *   +0x10 far (LOD) mesh counts, byte 0 = vertex count (colours follow them)
+ *   +0x14 near (detail) mesh counts; byte 3 = where that mesh starts, in words
+ *   +0x18..+0x1B pending deferred chunk-anim keyframe per table (g_pWorldAnimLod
+ *         VertsList..DetailColorsList), bit 7 set = none
+ *   +0x1C the far mesh, then the near mesh */
 extern void *g_pWorldChunkArray;                        /* 0x800785a8 */
 extern unsigned char g_abWorldChunkDrawn[]; /* 0x800771c8: per world chunk, nonzero if RenderWorldChunks drew it this frame (cleared each call); gates actors and portals by their gateChunk */
 extern int g_nWorldChunkCount;                          /* 0x800785ac */
