@@ -764,7 +764,7 @@ void Level33_UpdateActors(void) {
         } else if (st->timer >= 0xF8) {
           int handle = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset3);
 
-          if (handle >= 0 && toSpyro < 0x4000) {
+          if (handle >= 0 && toSpyro < ROT_BILLBOARD_ATTACH_RANGE) {
             st->attach = handle;
           }
           st->timer = (GetRandomU32() & 0x1F) + 0x21;
@@ -2278,7 +2278,7 @@ void Level33_UpdateActors(void) {
         } else if (st->timer >= 0xF8) {
           int handle = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset4);
 
-          if (handle >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
+          if (handle >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < ROT_BILLBOARD_ATTACH_RANGE) {
             st->attach = handle;
           }
           st->timer = (GetRandomU32() & 0x3F) + 0x18;
@@ -2345,7 +2345,7 @@ void Level33_UpdateActors(void) {
         } else if (st->timer >= 0xF8 && actor->cullRadius != ACTOR_CULL_HIDDEN) {
           int s = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset4);
 
-          if (s >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
+          if (s >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < ROT_BILLBOARD_ATTACH_RANGE) {
             st->spark = s;
           }
           st->timer = (GetRandomU32() & 0x3F) + 0x18;

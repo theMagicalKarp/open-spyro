@@ -514,7 +514,7 @@ void Level17_UpdateActors(void) {
         } else {
           if (st->timer > 0xf7) {
             int handle = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset3);
-            if (handle >= 0 && dist < 0x4000) {
+            if (handle >= 0 && dist < ROT_BILLBOARD_ATTACH_RANGE) {
               st->sparkle = handle;
             }
 
@@ -1163,7 +1163,7 @@ void Level17_UpdateActors(void) {
         }
       } else if (st->timer >= 0xF8) {
         ang = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset4);
-        if (ang >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
+        if (ang >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < ROT_BILLBOARD_ATTACH_RANGE) {
           st->attach = ang;
         }
         st->timer = (GetRandomU32() & 0x3F) + 0x18;

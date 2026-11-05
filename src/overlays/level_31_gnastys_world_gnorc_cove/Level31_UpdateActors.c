@@ -123,7 +123,7 @@ void Level31_UpdateActors(void) {
       int dist = ApproxDist2D(&actor->posX, &CAM.posX);
       int i;
 
-      if (actor->mode != LEVELEXIT_FAR ? dist < 0x2800 : dist < 0x2400) {
+      if (actor->mode != LEVELEXIT_FAR ? dist < LEVELEXIT_HIDE_RANGE : dist < LEVELEXIT_SHOW_RANGE) {
         if (actor->mode == LEVELEXIT_FAR) {
           actor->posZ += 0x600;
           SpawnNameLetterActors(actor, NAME_LETTERS_RETURN_HOME);
@@ -139,7 +139,7 @@ void Level31_UpdateActors(void) {
       for (i = 0; i < g_nFrameStep; i++) {
         int tick = ++st->tick;
 
-        if (dist < 0x4000) {
+        if (dist < LEVELEXIT_SPARKLE_RANGE) {
           if (!(tick & 3)) {
             g_pfnLevelEmitParticles(1, EMIT_RISING_SPIRAL, &actor->posX, tick);
           }
@@ -148,7 +148,7 @@ void Level31_UpdateActors(void) {
         }
       }
 
-      if (dist < 0x400) {
+      if (dist < LEVELEXIT_ENTER_RANGE) {
         int top = g_nSpyroWorldPosZ;
         int z = actor->posZ;
         int drop = top - z;
@@ -735,7 +735,7 @@ void Level31_UpdateActors(void) {
         } else if (st->timer >= 0xF8) {
           int handle = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset3);
 
-          if (handle >= 0 && toSpyro < 0x4000) {
+          if (handle >= 0 && toSpyro < ROT_BILLBOARD_ATTACH_RANGE) {
             st->attach = handle;
           }
           st->timer = (GetRandomU32() & 0x1F) + 0x21;
@@ -1709,7 +1709,7 @@ void Level31_UpdateActors(void) {
         } else if (st->timer >= 0xF8) {
           int handle = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset4);
 
-          if (handle >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
+          if (handle >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < ROT_BILLBOARD_ATTACH_RANGE) {
             st->attach = handle;
           }
           st->timer = (GetRandomU32() & 0x3F) + 0x18;
@@ -1790,10 +1790,10 @@ void Level31_UpdateActors(void) {
         if (g_nLevelKeyState == KEYSTATE_CARRIED &&
             (SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
              SPY.state == SPYRO_ST_RUN) &&
-            ApproxDist2D(&actor->posX, &spy->posX) < 0x600) {
+            ApproxDist2D(&actor->posX, &spy->posX) < LOCKCHEST_KEY_RANGE) {
           height = actor->posZ - actor->floorOffset;
           drop = height - SPY.posZ;
-          if ((drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) &&
+          if ((drop > 0 ? drop < LOCKCHEST_KEY_DZ : (SPY.posZ - height) < LOCKCHEST_KEY_DZ) &&
               AbsAngleDelta8(spy->bodyRotZ,
                             ArcTan2(actor->posX - spy->posX,
                                           actor->posY - spy->posY, ATAN_ANGLE8)) < 0x30 &&
@@ -3283,7 +3283,7 @@ void Level31_UpdateActors(void) {
         if (g_pActorListBase[st->idx].type == ACTOR_TYPE_KEY) {
           if (g_pActorListBase[st->idx].subMode == KEY_WAITING)
             break;
-          if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1C01)
+          if (ApproxDist2D(&actor->posX, &SPY.posX) > WHIRL_KEY_RANGE)
             break;
         } else if (g_pActorListBase[st->idx].type == ACTOR_TYPE_DRAGON_STATUE ||
                    g_pActorListBase[st->idx].type == ACTOR_TYPE_GEM_1) {
@@ -3300,8 +3300,8 @@ void Level31_UpdateActors(void) {
             st->flags = (st->flags & ~WHIRL_F_IDLE) | WHIRL_F_WOKEN;
           break;
         }
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000 &&
-            ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < 0x400) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < WHIRL_WAKE_RANGE &&
+            ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < WHIRL_WAKE_DZ) {
           st->timer = 0xB4;
         }
         break;
@@ -3637,7 +3637,7 @@ void Level31_UpdateActors(void) {
 
         for (scan = g_pActorListBase; scan < g_pActorPoolDynBase; scan++) {
           if (scan->type == st->type && scan->mode >= ACTOR_MODE_DORMANT &&
-              ApproxDist2D(&SPY.posX, scan->state) >= 0x6001) {
+              ApproxDist2D(&SPY.posX, scan->state) > RESPAWN_RANGE) {
             CopyVector(&scan->posX, scan->state);
             InsertActorIntoSpatialGrid(scan);
             scan->flags = 0;
@@ -3803,7 +3803,7 @@ void Level31_UpdateActors(void) {
     case ACTOR_TYPE_CHECKPOINT:
       switch (actor->mode) {
       case CHECKPT_REARM:
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xA01) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) <= CHECKPT_REARM_RANGE) {
           break;
         }
         actor->mode = CHECKPT_ARMED;
@@ -3813,14 +3813,14 @@ void Level31_UpdateActors(void) {
         int height;
         int drop;
 
-        if (ApproxDist2D(&actor->posX, &spy->posX) >= 0x380) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) >= CHECKPT_TOUCH_RANGE) {
           break;
         }
 
         height = actor->posZ - actor->floorOffset;
         drop = height - SPY.posZ;
 
-        if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
+        if (drop > 0 ? drop < CHECKPT_TOUCH_DZ : (SPY.posZ - height) < CHECKPT_TOUCH_DZ) {
           SetSpawnAnchorFromActor(actor, actor->rotZ);
           actor->mode = CHECKPT_FLASH;
           actor->anim = CHECKPT_ANIM_FLASH;
@@ -3835,7 +3835,7 @@ void Level31_UpdateActors(void) {
         int tick = actor->subMode + d;
 
         actor->subMode = tick;
-        if ((unsigned char)tick < 0x30) {
+        if ((unsigned char)tick < CHECKPT_FLASH_FRAMES) {
           break;
         }
         actor->mode = CHECKPT_REARM;

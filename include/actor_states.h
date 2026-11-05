@@ -126,6 +126,13 @@ typedef struct WhirlwindState {
 #define WHIRL_F_GATED 0x08      /* waits on its owner (`idx`: a key's subMode, a statue or gem gone) */
 #define WHIRL_F_MARK 0x10       /* also sets ->subMode to 1 while active */
 
+/* Whirlwind ranges to Spyro (2D / height): an idle one wakes within WAKE /
+ * WAKE_DZ; one gated on a key that was taken stays shut until Spyro is
+ * within KEY_RANGE. */
+#define WHIRL_WAKE_RANGE 0x1000
+#define WHIRL_WAKE_DZ 0x400
+#define WHIRL_KEY_RANGE 0x1C00
+
 /* Level 14 type 303 (ACTOR_TYPE_RUNNER_SPAWNER): every so often (`timer`,
  * 0xB4) rewinds `path` and spawns one waypoint runner (304), handing it the
  * path and `value`; killable. */

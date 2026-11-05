@@ -136,6 +136,14 @@ enum LevelExitMode {
   LEVELEXIT_NEAR = 1, /* camera close: its name letters were spawned */
 };
 
+/* Level-exit ranges (2D ApproxDist2D): its name letters appear once the
+ * camera is within SHOW and go once it leaves HIDE; it emits the full spiral
+ * while Spyro is within SPARKLE and lifts him out within ENTER. */
+#define LEVELEXIT_SHOW_RANGE 0x2400
+#define LEVELEXIT_HIDE_RANGE 0x2800
+#define LEVELEXIT_SPARKLE_RANGE 0x4000
+#define LEVELEXIT_ENTER_RANGE 0x400
+
 /* g_nLevelKeyState: the level key's progress (HUD counter 4). */
 enum LevelKeyState {
   KEYSTATE_NONE = 0,         /* key not picked up */
@@ -157,6 +165,11 @@ enum LockedChestSubMode {
   LOCKCHEST_OPENING = 2,   /* the key flies into the lock, then it bursts
                             * (a superflame hit skips straight to the burst) */
 };
+
+/* How close (2D / height) Spyro, carrying the key, must stand to the locked
+ * chest for LOCKCHEST_KEY_READY to open it. */
+#define LOCKCHEST_KEY_RANGE 0x600
+#define LOCKCHEST_KEY_DZ 0x200
 
 /* ->subMode of a cracking boulder (ACTOR_TYPE_CRACKING_BOULDER,
  * CrackingBoulderState). */
@@ -2240,11 +2253,19 @@ enum RoamingCritterAnim {
 
 /* ->mode of a checkpoint (ACTOR_TYPE_CHECKPOINT .. + 2; every ground level). */
 enum CheckpointMode {
-  CHECKPT_REARM = 0,     /* waits for Spyro to walk away (> 2560), then ARMED */
+  CHECKPT_REARM = 0,     /* waits for Spyro to walk away (> CHECKPT_REARM_RANGE), then ARMED */
   CHECKPT_ARMED = 1,     /* Spyro touches it: sets the respawn anchor, FLASH */
   CHECKPT_FLASH = 2,     /* subMode counts frames to 0x30, then REARM */
   CHECKPT_HELD = 3,      /* its dragon statue holds it until the rescue (no arm runs) */
 };
+
+/* Checkpoint ranges to Spyro (2D ApproxDist2D / height difference) and the
+ * flash length. The save host re-arms on the same distance from its anchor
+ * checkpoint (SAVEHOST_REARM_RANGE). */
+#define CHECKPT_REARM_RANGE 0xA00
+#define CHECKPT_TOUCH_RANGE 0x380
+#define CHECKPT_TOUCH_DZ 0x200
+#define CHECKPT_FLASH_FRAMES 0x30
 
 /* A checkpoint's animations: the flash plays while CHECKPT_FLASH runs. */
 enum CheckpointAnim {

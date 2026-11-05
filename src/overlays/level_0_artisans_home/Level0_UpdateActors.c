@@ -819,7 +819,7 @@ void Level0_UpdateActors(void) {
         } else {
           if (st->timer > 0xf7) {
             int handle = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset3);
-            if (handle >= 0 && dist < 0x4000) {
+            if (handle >= 0 && dist < ROT_BILLBOARD_ATTACH_RANGE) {
               st->sparkle = handle;
             }
 
@@ -1963,7 +1963,7 @@ void Level0_UpdateActors(void) {
         }
       } else if (st->timer >= 0xF8) {
         ang = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset4);
-        if (ang >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
+        if (ang >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < ROT_BILLBOARD_ATTACH_RANGE) {
           st->attach = ang;
         }
         st->timer = (GetRandomU32() & 0x3F) + 0x18;
@@ -2358,7 +2358,7 @@ void Level0_UpdateActors(void) {
         if (g_pActorListBase[st->idx].type == ACTOR_TYPE_KEY) {
           if (g_pActorListBase[st->idx].subMode == KEY_WAITING)
             break;
-          if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1C01)
+          if (ApproxDist2D(&actor->posX, &SPY.posX) > WHIRL_KEY_RANGE)
             break;
         } else if (g_pActorListBase[st->idx].type == ACTOR_TYPE_DRAGON_STATUE ||
                    g_pActorListBase[st->idx].type == ACTOR_TYPE_GEM_1) {
@@ -2375,8 +2375,8 @@ void Level0_UpdateActors(void) {
             st->flags = (st->flags & ~WHIRL_F_IDLE) | WHIRL_F_WOKEN;
           break;
         }
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000 &&
-            ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < 0x400) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < WHIRL_WAKE_RANGE &&
+            ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < WHIRL_WAKE_DZ) {
           st->timer = 0xB4;
         }
         break;
@@ -2433,7 +2433,7 @@ void Level0_UpdateActors(void) {
         if (p->mode < ACTOR_MODE_DORMANT) {
           continue;
         }
-        if (ApproxDist2D(&SPY.posX, p->state) < 0x6001) {
+        if (ApproxDist2D(&SPY.posX, p->state) <= RESPAWN_RANGE) {
           continue;
         }
 
@@ -2457,15 +2457,15 @@ void Level0_UpdateActors(void) {
     case ACTOR_TYPE_CHECKPOINT: {
       switch (actor->mode) {
       case CHECKPT_REARM: {
-        if (ApproxDist2D(&actor->posX, &SPY.posX) > 2560) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) > CHECKPT_REARM_RANGE) {
           actor->mode = CHECKPT_ARMED;
         }
         break;
       }
 
       case CHECKPT_ARMED: {
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 896 &&
-            ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 512) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < CHECKPT_TOUCH_RANGE &&
+            ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < CHECKPT_TOUCH_DZ) {
 
           SetSpawnAnchorFromActor(actor, actor->rotZ);
           actor->mode = CHECKPT_FLASH;
@@ -2478,7 +2478,7 @@ void Level0_UpdateActors(void) {
       case CHECKPT_FLASH: {
         actor->subMode += g_nFrameStep;
 
-        if (actor->subMode >= 0x30) {
+        if (actor->subMode >= CHECKPT_FLASH_FRAMES) {
           actor->mode = CHECKPT_REARM;
           actor->anim = CHECKPT_ANIM_REST;
         }

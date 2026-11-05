@@ -632,13 +632,15 @@ extern Xform6 g_anCameraActiveTargetParams; /* live camera transform */
 extern Xform6 g_anCameraParamFollowBehind; /* template it is seeded from */
 
 /* Type 323: respawner. It rides on Spyro and, every `period` frames, puts
- * each dormant actor of `type` farther than 0x6000 from him back at its home
+ * each dormant actor of `type` farther than RESPAWN_RANGE from him back at its home
  * position (the first words of its state block). */
 typedef struct RespawnState {
   int type;   /* 0x00 the actor type this manager owns */
   int timer;  /* 0x04 */
   int period; /* 0x08 reload for ->timer */
 } RespawnState;
+
+#define RESPAWN_RANGE 0x6000
 
 
 /* Type 114: path-following enemy that runs from Spyro and can be knocked
