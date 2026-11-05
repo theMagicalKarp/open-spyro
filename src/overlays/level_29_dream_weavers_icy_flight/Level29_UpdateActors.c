@@ -927,8 +927,8 @@ void Level29_UpdateActors(void) {
           }
         } else {
           st->glow->size += 0x20;
-          if (st->glow->size > 0x400) {
-            st->glow->size = 0x400;
+          if (st->glow->size > SPARX_GLOW_MAX_SIZE) {
+            st->glow->size = SPARX_GLOW_MAX_SIZE;
           }
         }
       } else {

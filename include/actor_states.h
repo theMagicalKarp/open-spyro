@@ -41,6 +41,9 @@ typedef struct SparxState {
   struct Actor *target;  /* 0x10 butterfly or pickup being chased */
 } SparxState;
 
+/* SparxState.glow's FxNode.size grows to this at full health. */
+#define SPARX_GLOW_MAX_SIZE 0x400
+
 /* Crystal dragon statue (ACTOR_TYPE_DRAGON_STATUE). The UpdateActors clones
  * shake it and, once Spyro is close, count the rescue or hand it to
  * BeginDragonRescue; DragonRescue_Update stages the cutscene from the camera,
