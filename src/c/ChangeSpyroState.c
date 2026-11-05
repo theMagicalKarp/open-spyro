@@ -81,7 +81,7 @@ void ChangeSpyroState(int state) {
     t = g_abSpyroIdleDelayRandTable[GetRandomU32() & 7] *
         g_abSpyroAnimDescTable[2];
     g_nSpyroGravityStep = -SPYRO_LIGHT_FALL_ACCEL;
-    g_nSpyroGravityEnableFlag = 1;
+    g_nSpyroLateJumpAllowed = 1;
     g_nSpyroIdleAnimTimeout = t - 2;
     break;
   }
@@ -140,7 +140,7 @@ void ChangeSpyroState(int state) {
     } else {
       g_nSpyroMoveTargetMag = g_anSpyroSlopeSpeedTargets[0];
     }
-    g_nSpyroGravityEnableFlag = 1;
+    g_nSpyroLateJumpAllowed = 1;
     if (g_nSpyroScriptedMoveMode != 0) {
       g_nSpyroSpeedTarget = 0;
       g_nSpyroMoveTargetYaw = g_abSpyroRequestEuler[2] << 4;
@@ -157,8 +157,8 @@ void ChangeSpyroState(int state) {
     g_anSpyroCarryMotionVec[2] = SPYRO_JUMP_SPEED;
     g_nSpyroGravityStep = -SPYRO_FALL_ACCEL;
     g_nSpyroSubstate = 0;
-    g_nSpyroJumpHoldLatch = 0;
-    g_nSpyroGravityEnableFlag = 0;
+    g_nSpyroGlideQueued = 0;
+    g_nSpyroLateJumpAllowed = 0;
     g_nSpyroFloorReferenceZ = g_nSpyroWorldPosZ + (g_anSpyroVelocity[2] >> 6);
     if (g_nSpyroState == SPYRO_ST_HAZARD) {
       g_bSpyroJumpHoldForced = 1;
@@ -174,8 +174,8 @@ void ChangeSpyroState(int state) {
       NudgeSpyroFromWallProbes();
     }
     g_nSpyroGravityStep = -SPYRO_FALL_ACCEL;
-    g_nSpyroJumpHoldLatch = 0;
-    g_nSpyroGravityEnableFlag = 0;
+    g_nSpyroGlideQueued = 0;
+    g_nSpyroLateJumpAllowed = 0;
     break;
   case SPYRO_ST_GLIDE_DROP:
     g_nSpyroSubstate = 0;
@@ -187,8 +187,8 @@ void ChangeSpyroState(int state) {
       NudgeSpyroFromWallProbes();
     }
     g_nSpyroGravityStep = -SPYRO_FALL_ACCEL;
-    g_nSpyroJumpHoldLatch = 0;
-    g_nSpyroGravityEnableFlag = 0;
+    g_nSpyroGlideQueued = 0;
+    g_nSpyroLateJumpAllowed = 0;
     break;
   case SPYRO_ST_SIDESTEP_L1:
   case SPYRO_ST_SIDESTEP_R1:
@@ -217,7 +217,7 @@ void ChangeSpyroState(int state) {
     me = SPY;
     ApplyGravityAlongSpyroSlopeNormal();
     ApplyGravityAlongSpyroSlopeTangent();
-    g_nSpyroGravityEnableFlag = 1;
+    g_nSpyroLateJumpAllowed = 1;
     PlaySoundEffect(LEVEL_SFX(SFX_CHARGE), (Actor *)me, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER + 1);
     g_pSpyroHomingTargetActor = 0;
@@ -289,7 +289,7 @@ void ChangeSpyroState(int state) {
     SubtractVector(&SPY[SPY_VELOCITY], &SPY[SPY_CARRY], &SPY[SPY_VELOCITY]);
     RShiftVector3(&SPY[SPY_VELOCITY], 2);
     g_nSpyroGravityStep = -SPYRO_HURT_FALL_ACCEL;
-    g_nSpyroGravityEnableFlag = 1;
+    g_nSpyroLateJumpAllowed = 1;
     if (g_nPulseRumbleAmount < 0x78) {
       g_nPulseRumbleAmount = 0x78;
     }
@@ -315,7 +315,7 @@ void ChangeSpyroState(int state) {
     if (g_nSpyroAirborneFrames == 0) {
       ApplyGravityAlongSpyroSlopeNormal();
     }
-    g_nSpyroGravityEnableFlag = 1;
+    g_nSpyroLateJumpAllowed = 1;
     g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     if (g_nVibrationLevel < 0x2D) {
       g_nVibrationLevel = 0x2D;
@@ -336,7 +336,7 @@ void ChangeSpyroState(int state) {
     if (g_nSpyroAirborneFrames == 0) {
       ApplyGravityAlongSpyroSlopeNormal();
     }
-    g_nSpyroGravityEnableFlag = 1;
+    g_nSpyroLateJumpAllowed = 1;
     g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     if (g_nHitRumbleTimer < HIT_RUMBLE_FRAMES) {
       g_nHitRumbleTimer = HIT_RUMBLE_FRAMES;
@@ -349,7 +349,7 @@ void ChangeSpyroState(int state) {
     SPY[SPY_SUBSTATE] = 0;
     ZeroVector(&SPY[SPY_VELOCITY]);
     g_anSpyroVelocity[2] = -0xC00;
-    g_nSpyroGravityEnableFlag = 1;
+    g_nSpyroLateJumpAllowed = 1;
     g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     if (g_nHitRumbleTimer < HIT_RUMBLE_FRAMES) {
       g_nHitRumbleTimer = HIT_RUMBLE_FRAMES;
@@ -361,7 +361,7 @@ void ChangeSpyroState(int state) {
     SPY[SPY_SUBSTATE] = 0;
     ZeroVector(&SPY[SPY_VELOCITY]);
     g_nSpyroGravityStep = -SPYRO_HURT_FALL_ACCEL;
-    g_nSpyroGravityEnableFlag = 1;
+    g_nSpyroLateJumpAllowed = 1;
     g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     if (g_nHitRumbleTimer < HIT_RUMBLE_FRAMES) {
       g_nHitRumbleTimer = HIT_RUMBLE_FRAMES;
@@ -376,7 +376,7 @@ void ChangeSpyroState(int state) {
 
     if (*st == SPYRO_ST_GLIDE || *st == SPYRO_ST_GLIDE_SLOW ||
         (unsigned)(*st - SPYRO_ST_FLY) < 2 || *st == SPYRO_ST_FLY_DIVE) {
-      g_nSpyroGravityEnableFlag = 0;
+      g_nSpyroLateJumpAllowed = 0;
       break;
     }
     g_nSpyroSubstate = 0;
@@ -406,7 +406,7 @@ void ChangeSpyroState(int state) {
       g_nSpyroGlideBankingFlag = 0;
     }
     g_nSpyroGravityStep = -SPYRO_LIGHT_FALL_ACCEL;
-    g_nSpyroGravityEnableFlag = 0;
+    g_nSpyroLateJumpAllowed = 0;
     break;
   }
   case SPYRO_ST_LIFT: {
@@ -431,7 +431,7 @@ void ChangeSpyroState(int state) {
       CopyVector(&SPY[SPY_VELOCITY], &SPY[SPY_MOTION]);
     }
     g_nSpyroGravityStep = 0x80;
-    g_nSpyroGravityEnableFlag = 0;
+    g_nSpyroLateJumpAllowed = 0;
     break;
   }
   case SPYRO_ST_FIDGET_0:
@@ -460,7 +460,7 @@ void ChangeSpyroState(int state) {
     g_nSpyroGravityStep = -SPYRO_SLIDE_FALL_ACCEL;
     ApplyGravityAlongSpyroSlopeNormal();
     ApplyGravityAlongSpyroSlopeTangent();
-    g_nSpyroGravityEnableFlag = 0;
+    g_nSpyroLateJumpAllowed = 0;
     break;
   case SPYRO_ST_CHARGE_AIR:
     CopyVector(g_anSpyroVelocity,
@@ -479,8 +479,8 @@ void ChangeSpyroState(int state) {
       g_anSpyroCarryMotionVec[2] = 0;
     }
     g_nSpyroGravityStep = -SPYRO_CHARGE_FALL_ACCEL;
-    g_nSpyroJumpHoldLatch = 0;
-    g_nSpyroGravityEnableFlag = 0;
+    g_nSpyroGlideQueued = 0;
+    g_nSpyroLateJumpAllowed = 0;
     break;
   case SPYRO_ST_SUPERCHARGE_AIR:
     CopyVector(g_anSpyroVelocity,
@@ -490,7 +490,7 @@ void ChangeSpyroState(int state) {
     g_nSpyroBodyYawStep = 0;
     g_nSpyroSubstate = SPYRO_SUB_CHARGE_LATCHED | SPYRO_SUB_SUPERCHARGE;
     g_nSpyroGravityStep = 0;
-    g_nSpyroJumpHoldLatch = 0;
+    g_nSpyroGlideQueued = 0;
     break;
   case SPYRO_ST_SCRIPTED_WALK:
     SPY[SPY_SUBSTATE] = 0;
@@ -507,7 +507,7 @@ void ChangeSpyroState(int state) {
     ApplyGravityAlongSpyroSlopeNormal();
     g_nSpyroMoveTargetMag = 0x280;
     g_nSpyroTurnRateAccum = 0;
-    g_nSpyroGravityEnableFlag = 1;
+    g_nSpyroLateJumpAllowed = 1;
     break;
   case SPYRO_ST_KNOCKBACK:
   case SPYRO_ST_KNOCKBACK_2:
@@ -524,7 +524,7 @@ void ChangeSpyroState(int state) {
     if (g_nSpyroAirborneFrames == 0) {
       ApplyGravityAlongSpyroSlopeNormal();
     }
-    g_nSpyroGravityEnableFlag = 1;
+    g_nSpyroLateJumpAllowed = 1;
     g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT), (Actor *)SPY, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER);
@@ -538,7 +538,7 @@ void ChangeSpyroState(int state) {
 
     *p = 0;
     g_nSpyroGravityStep = -SPYRO_LIGHT_FALL_ACCEL;
-    g_nSpyroGravityEnableFlag = 1;
+    g_nSpyroLateJumpAllowed = 1;
     if (g_nSpyroInputLockoutCountdown == 0) {
       g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     }
@@ -561,7 +561,7 @@ void ChangeSpyroState(int state) {
     slope_gravity:
       ApplyGravityAlongSpyroSlopeNormal();
     }
-    g_nSpyroGravityEnableFlag = 1;
+    g_nSpyroLateJumpAllowed = 1;
     break;
   case SPYRO_ST_DEATH_PINNED:
     SPY[SPY_SUBSTATE] = 0;
@@ -570,7 +570,7 @@ void ChangeSpyroState(int state) {
     if (g_nSpyroAirborneFrames == 0) {
       ApplyGravityAlongSpyroSlopeNormal();
     }
-    g_nSpyroGravityEnableFlag = 1;
+    g_nSpyroLateJumpAllowed = 1;
     g_pfnLevelEmitParticles(5, EMIT_SPYRO_ORBIT_SPARKLE, 0, 0);
     break;
   case SPYRO_ST_SCRIPTED_HOLD:
@@ -579,7 +579,7 @@ void ChangeSpyroState(int state) {
   case SPYRO_ST_FACE_TARGET:
   stand:
     g_nSpyroSubstate = 0;
-    g_nSpyroGravityEnableFlag = 1;
+    g_nSpyroLateJumpAllowed = 1;
     break;
   case SPYRO_ST_SUPERCHARGE:
     CopyVector(g_anSpyroCarryMotionVec,
@@ -592,7 +592,7 @@ void ChangeSpyroState(int state) {
     g_nSpyroGravityStep = -SPYRO_CHARGE_FALL_ACCEL;
     ApplyGravityAlongSpyroSlopeNormal();
     ApplyGravityAlongSpyroSlopeTangent();
-    g_nSpyroGravityEnableFlag = 1;
+    g_nSpyroLateJumpAllowed = 1;
     g_nSpyroMotionAux = 0;
     PlaySoundEffect(LEVEL_SFX(SFX_SUPERCHARGE), (Actor *)SPY, SFX_MODE_FLAT,
                     (unsigned char *)SPY + SPYB_VOICE_MARKER + 1);

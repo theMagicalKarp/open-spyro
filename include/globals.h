@@ -1024,9 +1024,9 @@ extern int g_nSpyroMoveTargetMag;                       /* 0x80078b9c */
 extern int g_nSpyroBodyYawStep;                         /* 0x80078ba0 */
 extern int g_nSpyroGravityStep;                         /* 0x80078ba4 */
 extern int g_nSpyroGlideSpentFlag;                       /* 0x80078ba8 1 once Spyro has entered a glide/fly state (ChangeSpyroState) or stands on steep ground (slope 0x17..0x20); ProbeSpyroGroundContact clears it on gentler ground. While set, the jump-hold latch is off and a fall needs 0x1F (flight: 0x10) frames before Cross glides */
-extern int g_nSpyroJumpHoldLatch;                       /* 0x80078bac */
+extern int g_nSpyroGlideQueued;                       /* 0x80078bac: Cross pressed again mid-jump (glide not spent): SPYRO_ST_JUMP / SUPERCHARGE_AIR glide (or fly) once Spyro starts falling; cleared entering JUMP / FALL / GLIDE_DROP */
 extern int g_nSpyroFloorReferenceZ;                     /* 0x80078bb0 */
-extern int g_nSpyroGravityEnableFlag;                   /* 0x80078bb4 */
+extern int g_nSpyroLateJumpAllowed;                   /* 0x80078bb4: ChangeSpyroState sets 1 entering a grounded state, 0 entering an airborne one (jump, fall, glide, fly, lift, charge air) or a slide: Spyro left the ground without jumping. SUPERCHARGE_AIR still takes a Cross jump in its first 4 frames; FALL tests it too, but FALL entry clears it, so that test never passes */
 extern int g_nSpyroInputLockoutCountdown;               /* 0x80078bb8 */
 extern int g_nSparxHealth;                           /* 0x80078bbc: Sparx health: 3 gold, 2 blue, 1 green, 0 Sparx gone, -1 after the fatal hit. Hits decrement it (ApplySpyroTriggerEvents / DispatchSpyroChargeStateChanges pick the death state once it goes negative); the Sparx actor eating a butterfly adds 1; a new game sets 3. */
 extern int g_nSpyroHazardSinkDepth;                         /* 0x80078bc0 */
