@@ -199,7 +199,8 @@ fade_out_splash:
   isrgb24 = &g_FrameDispEnv0.isrgb24;
   *isrgb24 = 0;
   g_FrameDispEnv1.isrgb24 = 0;
-  PutDispEnv((DISPENV *)(isrgb24 + 0x73));
+  PutDispEnv(
+      (DISPENV *)(isrgb24 + 0x73)); /* g_FrameDispEnv1, off the held base */
   clear.x = 0;
   clear.y = 0;
   clear.w = 0x200;
