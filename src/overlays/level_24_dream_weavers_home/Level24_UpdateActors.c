@@ -894,7 +894,7 @@ void Level24_UpdateActors(void) {
             st->range = 0;
           }
           if (st->kind != LGKIND_SMALL) {
-            actor->scale = 0x20;
+            actor->scale = ACTOR_SCALE_UNIT;
             actor->mode = LGUARD_GROW;
             continue;
           }
@@ -1039,8 +1039,8 @@ void Level24_UpdateActors(void) {
       case LGUARD_SHRINK:
         TICK_DOWN(st->reloadTimer);
         actor->scale -= g_nFrameStep * 2;
-        if (actor->scale < 0x21) {
-          actor->scale = 0x20;
+        if (actor->scale <= ACTOR_SCALE_UNIT) {
+          actor->scale = ACTOR_SCALE_UNIT;
           st->kind = !st->kind;
           actor->mode = LGUARD_IDLE;
           continue;
@@ -1051,7 +1051,7 @@ void Level24_UpdateActors(void) {
         TICK_DOWN(st->reloadTimer);
         actor->scale += g_nFrameStep * 2;
         if (actor->scale >= 0x38) {
-          actor->scale = 0x20;
+          actor->scale = ACTOR_SCALE_UNIT;
           BurstActorWithSound(actor, 0x20);
           st->base = 4;
           ANIM_SET(actor, st->base);
@@ -1688,7 +1688,7 @@ void Level24_UpdateActors(void) {
       }
 
       case SAVEHOST_POP_IN: {
-        if (actor->scale >= 0x21) {
+        if (actor->scale > ACTOR_SCALE_UNIT) {
           actor->scale -= 4;
           actor->rotZ = actor->rotZ + 8;
         } else {
@@ -2420,7 +2420,7 @@ void Level24_UpdateActors(void) {
             continue;
           }
           st->kind = !st->kind;
-          actor->scale = 0x20;
+          actor->scale = ACTOR_SCALE_UNIT;
           actor->mode = LGUARD_GROW;
           continue;
         } else if (st->range < 0) {
@@ -2559,8 +2559,8 @@ void Level24_UpdateActors(void) {
       case LGUARD_SHRINK:
         TICK_DOWN(st->reloadTimer);
         actor->scale -= g_nFrameStep * 2;
-        if (actor->scale < 0x21) {
-          actor->scale = 0x20;
+        if (actor->scale <= ACTOR_SCALE_UNIT) {
+          actor->scale = ACTOR_SCALE_UNIT;
           actor->mode = LGUARD_IDLE;
           continue;
         }
@@ -2571,7 +2571,7 @@ void Level24_UpdateActors(void) {
         actor->scale += g_nFrameStep * 2;
         if (actor->scale >= 0x38) {
           StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-          actor->scale = 0x20;
+          actor->scale = ACTOR_SCALE_UNIT;
           BurstActorWithSound(actor, 0x20);
           st->base = 4;
           ANIM_SET(actor, st->base);

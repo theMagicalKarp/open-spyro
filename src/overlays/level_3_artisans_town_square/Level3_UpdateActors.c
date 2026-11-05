@@ -1904,7 +1904,7 @@ void Level3_UpdateActors(void) {
         break;
 
       case SAVEHOST_POP_IN:
-        if (actor->scale >= 0x21) {
+        if (actor->scale > ACTOR_SCALE_UNIT) {
           actor->scale -= 4;
           actor->rotZ += 8;
         } else {

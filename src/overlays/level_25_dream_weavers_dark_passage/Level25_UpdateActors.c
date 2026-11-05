@@ -1769,7 +1769,7 @@ void Level25_UpdateActors(void) {
       }
 
       case SAVEHOST_POP_IN: {
-        if (actor->scale >= 0x21) {
+        if (actor->scale > ACTOR_SCALE_UNIT) {
           actor->scale -= 4;
           actor->rotZ = actor->rotZ + 8;
         } else {

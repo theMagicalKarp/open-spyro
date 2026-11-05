@@ -194,7 +194,7 @@ Actor *Level22_SpawnActor(int type, Actor *parent) {
       st->vel[1] = speed * LookupSine(yaw) >> 12;
       st->vel[2] = LookupSine(pitch) >> 4;
       st->life = RandomIntInRange(0x23, 0x32);
-      rec->scale = 0x20 - RandomIntInRange(6, 0x14);
+      rec->scale = ACTOR_SCALE_UNIT - RandomIntInRange(6, 0x14);
       st->vel[0] += g_anSpyroVelocity[0] >> 6;
       st->vel[1] += g_anSpyroVelocity[1] >> 6;
       st->vel[2] += g_anSpyroVelocity[2] >> 6;
