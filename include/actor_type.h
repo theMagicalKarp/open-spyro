@@ -66,8 +66,11 @@ typedef struct Actor {
    * store, and the flame band raises c2 while lowering c0/c1. With 0x4C..0x4E
    * zeroed, tintMode picks a preset instead: gem colours 1..5 (HUD icons set
    * type - 0x52) and 0xB for HUD sprites. TickActorFlameGlow drives tint2 as a
-   * 0..0x60 glow on its own. These names describe the byte layout only; the
-   * renderer that reads them is hand-written asm and not decoded yet. */
+   * 0..0x60 glow on its own. Only two hand-written renderers read the word:
+   * BuildSecondaryActorDrawList copies it into the draw record (+0x30) for
+   * EmitSecondaryActorPrimitives (which branches on a nonzero tintMode
+   * byte), and RasterizeSpritePrimQueue reads it for sprite records. Main-list
+   * actors (BuildActorDrawList / EmitActorDrawList) never read it. */
   unsigned char tint0; /* 0x4C */
   unsigned char tint1; /* 0x4D */
   unsigned char tint2; /* 0x4E */
@@ -213,7 +216,9 @@ typedef struct Actor {
 #define ACTOR_KILL_GROUP_NEVER_RESPAWN 0x7D  /* any saved kill despawns it */
 #define ACTOR_KILL_GROUP_ALWAYS_RESPAWN 0x7E /* always back, as a gem roll */
 /* Actor.renderList sign bit: draw through BuildSecondaryActorDrawList, which
- * builds the rotation from the euler bytes, instead of the main mesh list. */
+ * builds the rotation from the euler bytes, instead of the main mesh list.
+ * It is also the only mesh path that applies the tint word (Metalhead's
+ * SpawnActor sets it on the scorchable parts, StepActorScorchTint). */
 #define ACTOR_RENDER_SECONDARY 0x80
 
 /* Size of one actor record: the stride of the actor pool, the sprite-record
