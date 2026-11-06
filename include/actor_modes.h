@@ -2008,6 +2008,45 @@ enum LungingGuardKind {
   LGKIND_BIG = 1,   /* lunges from far; shrugs off a plain charge; a blast grows it */
 };
 
+/* Lunging guard tuning. Hit it spins off at KNOCK_SPEED (CHARGE_KNOCK_SPEED
+ * for a charge). It lunges with Spyro within LUNGE_DZ of its height and
+ * SMALL_LUNGE_RANGE (small) / BIG_LUNGE_RANGE (big). A small lunge bumps
+ * Spyro back at SMALL_BUMP_SPEED (SMALL_BUMP_VZ up), resting
+ * SMALL_LUNGE_REST; a big one gives up past BIG_LUNGE_LEAVE (rest
+ * BIG_LUNGE_REST) and skips to its strike within BIG_STRIKE_RANGE. A pacer
+ * walks PACE_SPEED until Spyro is within PACE_STOP_RANGE. A blasted big one
+ * grows to GROW_SCALE and bursts into the small kind; an escort orbits its
+ * cannon at ESCORT_RADIUS, ESCORT_SPEED. */
+#define LGUARD_KNOCK_SPEED 0xC8
+#define LGUARD_CHARGE_KNOCK_SPEED 0x15E
+#define LGUARD_LUNGE_DZ 0x190
+#define LGUARD_SMALL_LUNGE_RANGE 0x5DC
+#define LGUARD_BIG_LUNGE_RANGE 0x1F40
+#define LGUARD_SMALL_BUMP_SPEED 0x23
+#define LGUARD_SMALL_BUMP_VZ 0x46
+#define LGUARD_SMALL_LUNGE_REST 0x78
+#define LGUARD_BIG_LUNGE_LEAVE 0x2328
+#define LGUARD_BIG_LUNGE_REST 0x96
+#define LGUARD_BIG_STRIKE_RANGE 0x9C4
+#define LGUARD_PACE_SPEED 0x8C
+#define LGUARD_PACE_STOP_RANGE 0xC00
+#define LGUARD_GROW_SCALE 0x38
+#define LGUARD_ESCORT_RADIUS 0x5DC
+#define LGUARD_ESCORT_SPEED 0x32
+/* The big-lunging-guard variant (ACTOR_TYPE_BIG_LUNGING_GUARD) shares these
+ * but is knocked off at BLG_KNOCK_SPEED / BLG_KNOCK_VZ (BLG_CHARGE_KNOCK_SPEED
+ * for a charge), lunges small within BLG_SMALL_LUNGE_RANGE, gives up a big
+ * lunge past BLG_LUNGE_LEAVE and strikes within BLG_STRIKE_RANGE; its
+ * followers reload FOLLOW1_RELOAD / FOLLOW2_RELOAD after it fires. */
+#define LGUARD_BLG_KNOCK_SPEED 0x118
+#define LGUARD_BLG_KNOCK_VZ 0x96
+#define LGUARD_BLG_CHARGE_KNOCK_SPEED 0x17C
+#define LGUARD_BLG_SMALL_LUNGE_RANGE 0x4B0
+#define LGUARD_BLG_LUNGE_LEAVE 0x2710
+#define LGUARD_BLG_STRIKE_RANGE 0x6A4
+#define LGUARD_FOLLOW1_RELOAD 0x28
+#define LGUARD_FOLLOW2_RELOAD 0x50
+
 /* ->mode of a grabber (ACTOR_TYPE_GRABBER, GrabberState; level 20).
  * GrabberState.held is shared: one grabber goes for Spyro at a time. */
 enum GrabberMode {

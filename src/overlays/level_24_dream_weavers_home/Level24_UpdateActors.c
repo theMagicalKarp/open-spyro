@@ -849,9 +849,9 @@ void Level24_UpdateActors(void) {
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != LGUARD_KNOCKED &&
           (st->kind != LGKIND_BIG || !(actor->flags & ACTOR_HIT_CHARGE))) {
         st->knockZSpeed = 0;
-        st->knockSpeed = 0xC8;
+        st->knockSpeed = LGUARD_KNOCK_SPEED;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->knockSpeed = 0x15E;
+          st->knockSpeed = LGUARD_CHARGE_KNOCK_SPEED;
         }
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
                                                   actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
@@ -925,15 +925,15 @@ void Level24_UpdateActors(void) {
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (TICK_DOWN(st->timer) != 0 &&
-            (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x190
-                               : -SPY_DZ(actor) < 0x190)) {
+            (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < LGUARD_LUNGE_DZ
+                               : -SPY_DZ(actor) < LGUARD_LUNGE_DZ)) {
           if (st->kind == LGKIND_SMALL) {
-            if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x5DC) {
+            if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < LGUARD_SMALL_LUNGE_RANGE) {
               actor->mode = LGUARD_LUNGE;
               continue;
             }
           } else if (st->kind == LGKIND_BIG &&
-                     ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1F40) {
+                     ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < LGUARD_BIG_LUNGE_RANGE) {
             actor->mode = LGUARD_LUNGE;
             continue;
           }
@@ -942,8 +942,8 @@ void Level24_UpdateActors(void) {
 
       case LGUARD_PACE:
         st->flags &= ~LGUARD_F_PACE;
-        if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0xC00 ||
-            PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, PIVOT_TURN_ANY, one) ==
+        if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < LGUARD_PACE_STOP_RANGE ||
+            PivotActorAlongPath(actor, st->path, 0x100, LGUARD_PACE_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, one) ==
                 PATH_ARRIVED(0)) {
           ANIM_GO(actor, st->base);
           actor->mode = LGUARD_IDLE;
@@ -955,11 +955,11 @@ void Level24_UpdateActors(void) {
         if (st->kind == LGKIND_SMALL) {
           ANIM_GO(actor, st->base + 2);
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-          g_anSpyroRequestVelocity.x = (g_anCosineLut[actor->rotZ] * 0x23) >> 10;
-          g_nSpyroRequestVelocityY = (g_anSineLut[actor->rotZ] * 0x23) >> 10;
-          g_nSpyroRequestVelocityZ = 0x46;
+          g_anSpyroRequestVelocity.x = (g_anCosineLut[actor->rotZ] * LGUARD_SMALL_BUMP_SPEED) >> 10;
+          g_nSpyroRequestVelocityY = (g_anSineLut[actor->rotZ] * LGUARD_SMALL_BUMP_SPEED) >> 10;
+          g_nSpyroRequestVelocityZ = LGUARD_SMALL_BUMP_VZ;
           if (g_nActorAnimDone != 0) {
-            st->timer = 0x78;
+            st->timer = LGUARD_SMALL_LUNGE_REST;
             ANIM_GO(actor, st->base);
             actor->mode = LGUARD_IDLE;
             continue;
@@ -968,13 +968,13 @@ void Level24_UpdateActors(void) {
         }
         ANIM_GO(actor, st->base + 2);
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if (g_nActorAnimDone != 0 || dist > 0x2328) {
-          st->timer = 0x96;
+        if (g_nActorAnimDone != 0 || dist > LGUARD_BIG_LUNGE_LEAVE) {
+          st->timer = LGUARD_BIG_LUNGE_REST;
           ANIM_GO(actor, st->base);
           actor->mode = LGUARD_IDLE;
           continue;
         }
-        if (dist < 0x9C4 && actor->anim == actor->nextAnim &&
+        if (dist < LGUARD_BIG_STRIKE_RANGE && actor->anim == actor->nextAnim &&
             actor->nextFrame < 0x12) {
           actor->frame = 0x15;
           actor->nextFrame = 0x16;
@@ -1050,7 +1050,7 @@ void Level24_UpdateActors(void) {
       case LGUARD_GROW:
         TICK_DOWN(st->reloadTimer);
         actor->scale += g_nFrameStep * 2;
-        if (actor->scale >= 0x38) {
+        if (actor->scale >= LGUARD_GROW_SCALE) {
           actor->scale = ACTOR_SCALE_UNIT;
           BurstActorWithSound(actor, 0x20);
           st->base = 4;
@@ -1065,11 +1065,11 @@ void Level24_UpdateActors(void) {
         Actor *partner = &g_pActorListBase[st->partner];
         int h = ArcTan2(partner->posX - actor->posX, partner->posY - actor->posY, ATAN_ANGLE8);
 
-        SteerActorAroundPoint(actor, &partner->posX, 0x5DC,
+        SteerActorAroundPoint(actor, &partner->posX, LGUARD_ESCORT_RADIUS,
                       WrapAddAngle8(ArcTan2(g_anSpyroWorldPos - partner->posX,
                                                   g_nSpyroWorldPosY - partner->posY, ATAN_ANGLE8),
                                     0x80),
-                      4, 0x32, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
+                      4, LGUARD_ESCORT_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
         if (partner->mode != CCANNON_LOB) {
           if (TICK_DOWN(st->timer) != 0) {
             TurnActorYawTowardAngle(partner, h, 4, 0, YAW_HOLD_IN_BAND);
@@ -2355,10 +2355,10 @@ void Level24_UpdateActors(void) {
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != LGUARD_KNOCKED &&
           (st->kind != LGKIND_BIG || !(actor->flags & ACTOR_HIT_CHARGE))) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        st->knockZSpeed = 0x96;
-        st->knockSpeed = 0x118;
+        st->knockZSpeed = LGUARD_BLG_KNOCK_VZ;
+        st->knockSpeed = LGUARD_BLG_KNOCK_SPEED;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->knockSpeed = 0x17C;
+          st->knockSpeed = LGUARD_BLG_CHARGE_KNOCK_SPEED;
         }
         st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
                                                   actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
@@ -2398,10 +2398,10 @@ void Level24_UpdateActors(void) {
           *(int *)g_pActorListBase[st->partner].state = st->cometSteps;
           st->reloadTimer = st->reload;
           if (st->follow1 != -1) {
-            ((BigLungingGuardState *)g_pActorListBase[st->follow1].state)->reloadTimer = 0x28;
+            ((BigLungingGuardState *)g_pActorListBase[st->follow1].state)->reloadTimer = LGUARD_FOLLOW1_RELOAD;
           }
           if (st->follow2 != -1) {
-            ((BigLungingGuardState *)g_pActorListBase[st->follow2].state)->reloadTimer = 0x50;
+            ((BigLungingGuardState *)g_pActorListBase[st->follow2].state)->reloadTimer = LGUARD_FOLLOW2_RELOAD;
           }
         } else if (actor->flags & ACTOR_HIT_BLAST) {
           actor->flags = 0;
@@ -2439,15 +2439,15 @@ void Level24_UpdateActors(void) {
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (TICK_DOWN(st->timer) != 0 &&
-            (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x190
-                               : -SPY_DZ(actor) < 0x190)) {
+            (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < LGUARD_LUNGE_DZ
+                               : -SPY_DZ(actor) < LGUARD_LUNGE_DZ)) {
           if (st->kind == LGKIND_SMALL) {
-            if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x4B0) {
+            if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < LGUARD_BLG_SMALL_LUNGE_RANGE) {
               actor->mode = LGUARD_LUNGE;
               continue;
             }
           } else if (st->kind == LGKIND_BIG &&
-                     ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1F40) {
+                     ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < LGUARD_BIG_LUNGE_RANGE) {
             actor->mode = LGUARD_LUNGE;
             continue;
           }
@@ -2456,8 +2456,8 @@ void Level24_UpdateActors(void) {
 
       case LGUARD_PACE:
         st->flags &= ~LGUARD_F_PACE;
-        if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0xC00 ||
-            PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+        if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < LGUARD_PACE_STOP_RANGE ||
+            PivotActorAlongPath(actor, st->path, 0x100, LGUARD_PACE_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
                 PATH_ARRIVED(0)) {
           ANIM_GO(actor, st->base);
           actor->mode = LGUARD_IDLE;
@@ -2469,11 +2469,11 @@ void Level24_UpdateActors(void) {
         if (st->kind == LGKIND_SMALL) {
           ANIM_GO(actor, st->base + 2);
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-          g_anSpyroRequestVelocity.x = (g_anCosineLut[actor->rotZ] * 0x23) >> 10;
-          g_nSpyroRequestVelocityY = (g_anSineLut[actor->rotZ] * 0x23) >> 10;
-          g_nSpyroRequestVelocityZ = 0x46;
+          g_anSpyroRequestVelocity.x = (g_anCosineLut[actor->rotZ] * LGUARD_SMALL_BUMP_SPEED) >> 10;
+          g_nSpyroRequestVelocityY = (g_anSineLut[actor->rotZ] * LGUARD_SMALL_BUMP_SPEED) >> 10;
+          g_nSpyroRequestVelocityZ = LGUARD_SMALL_BUMP_VZ;
           if (g_nActorAnimDone != 0) {
-            st->timer = 0x78;
+            st->timer = LGUARD_SMALL_LUNGE_REST;
             ANIM_GO(actor, st->base);
             actor->mode = LGUARD_IDLE;
             continue;
@@ -2484,13 +2484,13 @@ void Level24_UpdateActors(void) {
 
           ANIM_GO(actor, st->base + 2);
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-          if (g_nActorAnimDone != 0 || dist > 0x2710) {
-            st->timer = 0x96;
+          if (g_nActorAnimDone != 0 || dist > LGUARD_BLG_LUNGE_LEAVE) {
+            st->timer = LGUARD_BIG_LUNGE_REST;
             ANIM_GO(actor, st->base);
             actor->mode = LGUARD_IDLE;
             continue;
           }
-          if (dist < 0x6A4 && actor->anim == actor->nextAnim &&
+          if (dist < LGUARD_BLG_STRIKE_RANGE && actor->anim == actor->nextAnim &&
               actor->nextFrame < 0xE) {
             actor->frame = 0x10;
             actor->nextFrame = 0x11;
@@ -2569,7 +2569,7 @@ void Level24_UpdateActors(void) {
       case LGUARD_GROW:
         TICK_DOWN(st->reloadTimer);
         actor->scale += g_nFrameStep * 2;
-        if (actor->scale >= 0x38) {
+        if (actor->scale >= LGUARD_GROW_SCALE) {
           StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
           actor->scale = ACTOR_SCALE_UNIT;
           BurstActorWithSound(actor, 0x20);
@@ -2587,11 +2587,11 @@ void Level24_UpdateActors(void) {
         p = &g_pActorListBase[st->partner];
         ApproxDist2D(&actor->posX, &g_anSpyroWorldPos);
         h = ArcTan2(p->posX - actor->posX, p->posY - actor->posY, ATAN_ANGLE8);
-        SteerActorAroundPoint(actor, &p->posX, 0x5DC,
+        SteerActorAroundPoint(actor, &p->posX, LGUARD_ESCORT_RADIUS,
                       WrapAddAngle8(ArcTan2(g_anSpyroWorldPos - p->posX,
                                                   g_nSpyroWorldPosY - p->posY, ATAN_ANGLE8),
                                     0x80),
-                      4, 0x32, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
+                      4, LGUARD_ESCORT_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
         TurnActorYawTowardAngle(p, h, 4, 0, YAW_HOLD_IN_BAND);
         break;
       }
