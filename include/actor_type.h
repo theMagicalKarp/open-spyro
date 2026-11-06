@@ -167,7 +167,8 @@ typedef struct Actor {
 /* `flags` of the actor movers (MoveActorAlongHeading, MoveActorAlongAngle,
  * MoveActorByDelta, which reads only MOVE_LIFT, TryMoveActorForward), passed
  * through by SteerActorAroundPoint and PivotActorAlongPath. */
-#define MOVE_LIFT 0x01         /* probe the world 0x12C + radius higher (undone after) */
+#define MOVE_LIFT 0x01         /* probe the world MOVE_LIFT_HEIGHT + radius higher (undone after) */
+#define MOVE_LIFT_HEIGHT 0x12C /* MOVE_LIFT's probe lift above the actor, before its radius */
 #define MOVE_PASS_ACTORS 0x02  /* actors never block: the step is pushed out of them (CONTACT_PUSH_OUT) */
 #define MOVE_FOLLOW_FLOOR 0x04 /* ease Z toward the probed floor (snap when close) */
 #define MOVE_STEP_LIMIT 0x10   /* reject a step up or down past the step height */
