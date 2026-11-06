@@ -1101,7 +1101,7 @@ void Level12_UpdateActors(void) {
       case EGG_SPIRAL_UP: {
         st->phase += g_nFrameStep;
 
-        if (st->phase < 0x80) {
+        if (st->phase < EGG_SPIRAL_FRAMES) {
           int step = g_nFrameStep * 4;
 
           st->radius += step;
@@ -1129,7 +1129,7 @@ void Level12_UpdateActors(void) {
                           (LookupCosine(g_bSpyroPersistentEulerZ * 0x10) * 0xB5U)) *
                         4 >>
                     12;
-          svA[2] += 0x300;
+          svA[2] += EGG_APEX_HEIGHT;
           VectorToSVectorShr2(st->apex, svA);
           VectorToSVectorShr2(st->centre, &actor->posX);
           st->phase = 0;
@@ -1144,7 +1144,7 @@ void Level12_UpdateActors(void) {
       case EGG_TO_SPYRO: {
         st->phase += g_nFrameStep;
 
-        if (st->phase < 0x40) {
+        if (st->phase < EGG_FLIGHT_FRAMES) {
           SVectorToVectorShl2(eggArcBase, st->centre);
           SVectorToVectorShl2(eggArcOffset, st->apex);
           SubtractVector(eggArcOffset, eggArcOffset, eggArcBase);
@@ -1156,9 +1156,9 @@ void Level12_UpdateActors(void) {
           CopyVector(svD, &spy->posX);
           svD[0] += LookupCosine(g_bSpyroPersistentEulerZ * 0x10) >> 3;
           svD[1] += LookupSine(g_bSpyroPersistentEulerZ * 0x10) >> 3;
-          svD[2] += 0x300;
+          svD[2] += EGG_APEX_HEIGHT;
           VectorToSVectorShr2(st->centre, svD);
-          st->radius = 0x200;
+          st->radius = EGG_SPIRAL_RADIUS;
           st->angle = g_bSpyroPersistentEulerZ - 0x40;
           st->phase = 0;
           actor->mode += 1;
@@ -1172,7 +1172,7 @@ void Level12_UpdateActors(void) {
       case EGG_SPIRAL_DOWN: {
         st->phase += g_nFrameStep;
 
-        if (st->phase < 0x80) {
+        if (st->phase < EGG_SPIRAL_FRAMES) {
           int step = g_nFrameStep * 4;
 
           st->radius -= step;

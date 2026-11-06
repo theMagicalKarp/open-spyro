@@ -458,11 +458,11 @@ void Level27_UpdateActors(void) {
       break;
     }
 
-    /* Dragon egg (EggFlightState). */
+    /* Dragon egg (EggRiseState). */
     case ACTOR_TYPE_DRAGON_EGG: {
-      EggFlightState *st;
+      EggRiseState *st;
 
-      st = (EggFlightState *)actor->state;
+      st = (EggRiseState *)actor->state;
 
       if (actor->mode != EGG_CARRIED && actor->mode < EGG_COLLECTED) {
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
@@ -478,11 +478,11 @@ void Level27_UpdateActors(void) {
       switch (actor->mode) {
       case EGG_RELEASED:
         g_nCinematicActive = 1;
-        VectorToSVectorShr2(st->from, &actor->posX);
-        st->heading =
+        VectorToSVectorShr2(st->centre, &actor->posX);
+        st->angle =
             ArcTan2_8bit(actor->posX - SPY.posX, actor->posY - SPY.posY) +
             0x40;
-        st->speed = 0;
+        st->radius = 0;
         st->phase = 0;
         g_nHudEggRollRequest.v = 1;
         actor->rotX = 0;
@@ -492,13 +492,13 @@ void Level27_UpdateActors(void) {
 
       case EGG_SPIRAL_UP:
         st->phase = st->phase + g_nFrameStep;
-        if (st->phase < 0x80) {
+        if (st->phase < EGG_SPIRAL_FRAMES) {
           int step = g_nFrameStep << 2;
-          st->speed = st->speed + step;
-          st->heading = st->heading + step;
-          SVectorToVectorShl2(&actor->posX, st->from);
-          actor->posX += (LookupCosine(st->heading << 4) * st->speed) >> 12;
-          actor->posY += (LookupSine(st->heading << 4) * st->speed) >> 12;
+          st->radius = st->radius + step;
+          st->angle = st->angle + step;
+          SVectorToVectorShl2(&actor->posX, st->centre);
+          actor->posX += (LookupCosine(st->angle << 4) * (short)st->radius) >> 12;
+          actor->posY += (LookupSine(st->angle << 4) * (short)st->radius) >> 12;
           {
             int ph = st->phase;
             actor->rotZ = actor->rotZ + (g_nFrameStep << 2);
@@ -520,9 +520,9 @@ void Level27_UpdateActors(void) {
             int cr = c * 724;
             g056[1] = g056[1] + ((sr - cr) >> 12);
           }
-          g056[2] = g056[2] + 0x300;
-          VectorToSVectorShr2(st->to, g056);
-          VectorToSVectorShr2(st->from, &actor->posX);
+          g056[2] = g056[2] + EGG_APEX_HEIGHT;
+          VectorToSVectorShr2(st->apex, g056);
+          VectorToSVectorShr2(st->centre, &actor->posX);
           st->phase = 0;
           actor->mode = actor->mode + 1;
         }
@@ -533,9 +533,9 @@ void Level27_UpdateActors(void) {
 
       case EGG_TO_SPYRO:
         st->phase = st->phase + g_nFrameStep;
-        if (st->phase < 0x40) {
-          SVectorToVectorShl2(eggArcBase, st->from);
-          SVectorToVectorShl2(eggArcOffset, st->to);
+        if (st->phase < EGG_FLIGHT_FRAMES) {
+          SVectorToVectorShl2(eggArcBase, st->centre);
+          SVectorToVectorShl2(eggArcOffset, st->apex);
           SubtractVector(eggArcOffset, eggArcOffset, eggArcBase);
           ScaleVector3Sat(eggArcOffset, eggArcOffset, st->phase);
           RShiftVector3(eggArcOffset, 6);
@@ -545,10 +545,10 @@ void Level27_UpdateActors(void) {
           CopyVector(g104, &SPY.posX);
           g104[0] = g104[0] + (LookupCosine(SPY.bodyRotZ << 4) >> 3);
           g104[1] = g104[1] + (LookupSine(SPY.bodyRotZ << 4) >> 3);
-          g104[2] = g104[2] + 0x300;
-          VectorToSVectorShr2(st->from, g104);
-          st->heading = SPY.bodyRotZ - 0x40;
-          st->speed = 0x200;
+          g104[2] = g104[2] + EGG_APEX_HEIGHT;
+          VectorToSVectorShr2(st->centre, g104);
+          st->angle = SPY.bodyRotZ - 0x40;
+          st->radius = EGG_SPIRAL_RADIUS;
           st->phase = 0;
           actor->mode = actor->mode + 1;
         }
@@ -559,13 +559,13 @@ void Level27_UpdateActors(void) {
 
       case EGG_SPIRAL_DOWN:
         st->phase = st->phase + g_nFrameStep;
-        if (st->phase < 0x80) {
+        if (st->phase < EGG_SPIRAL_FRAMES) {
           int step = g_nFrameStep << 2;
-          st->speed = st->speed - step;
-          st->heading = st->heading - step;
-          SVectorToVectorShl2(&actor->posX, st->from);
-          actor->posX += (LookupCosine(st->heading << 4) * st->speed) >> 12;
-          actor->posY += (LookupSine(st->heading << 4) * st->speed) >> 12;
+          st->radius = st->radius - step;
+          st->angle = st->angle - step;
+          SVectorToVectorShl2(&actor->posX, st->centre);
+          actor->posX += (LookupCosine(st->angle << 4) * (short)st->radius) >> 12;
+          actor->posY += (LookupSine(st->angle << 4) * (short)st->radius) >> 12;
           {
             int ph = st->phase;
             actor->rotZ = actor->rotZ + (g_nFrameStep << 2);
@@ -585,7 +585,7 @@ void Level27_UpdateActors(void) {
         g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, eggViewPos, 0);
         g_nCinematicActive = 0;
         ZeroVector(&SPY.headLook);
-        CommitActorKillGems(0, st->killActor);
+        CommitActorKillGems(0, st->owner);
         g_nTotalEggsRecovered = g_nTotalEggsRecovered + 1;
         g_anLevelEggsRecovered[g_nLevelIndex] += 1;
         g_nHudEggRollRequest.v = 0;

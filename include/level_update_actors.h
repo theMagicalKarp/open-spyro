@@ -535,16 +535,16 @@ typedef struct AmbientSoundBytesState {
   int count;           /* 0x24 frames left on the current leg */
 } AmbientSoundBytesState;
 
-/* Type 34: dragon egg. Spirals up, flies to Spyro and is collected (the
- * same record as level_actor_states.h EggRiseState). */
-typedef struct EggFlightState {
-  Actor *killActor;       /* 0x00 actor handed to CommitActorKillGems on collection */
-  short from[3];         /* 0x04 launch point */
-  short to[3];           /* 0x0A destination */
-  short speed;           /* 0x10 */
-  unsigned char phase;   /* 0x12 timer */
-  unsigned char heading; /* 0x13 */
-} EggFlightState;
+/* Case 34 — a recovered dragon egg: spirals up off its spot, flies to just
+ * above Spyro, then requests the HUD egg-counter roll (Cross skips). */
+typedef struct EggRiseState {
+  Actor *owner;          /* 0x00 the egg thief that carried it (credited the kill gems) */
+  short centre[3];       /* 0x04 where it rose from (spiral centre) */
+  short apex[3];         /* 0x0A the point above Spyro it flies to */
+  unsigned short radius; /* 0x10 */
+  unsigned char phase;   /* 0x12 */
+  unsigned char angle;   /* 0x13 */
+} EggRiseState;
 
 /* Type 18: pressure switch. Toggles one bit in a linked actor's sub-state. */
 typedef struct SwitchState {

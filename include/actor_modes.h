@@ -98,6 +98,13 @@ enum EggMode {
 /* EMIT_ACTOR_SPARK colour of the sparks a flying egg trails
  * (EGG_SPIRAL_UP .. EGG_SPIRAL_DOWN). */
 #define EGG_SPARK_COLOR 0x602080
+/* The rise (EggRiseState.phase, frames): SPIRAL_UP and SPIRAL_DOWN each last
+ * SPIRAL_FRAMES, EGG_TO_SPYRO FLIGHT_FRAMES; it flies to APEX_HEIGHT above
+ * Spyro and spirals down into him from SPIRAL_RADIUS. */
+#define EGG_SPIRAL_FRAMES 0x80
+#define EGG_FLIGHT_FRAMES 0x40
+#define EGG_APEX_HEIGHT 0x300
+#define EGG_SPIRAL_RADIUS 0x200
 
 /* ->mode of the save-prompt host (ACTOR_TYPE_SAVE_HOST, SaveHostState). */
 enum SaveHostMode {
