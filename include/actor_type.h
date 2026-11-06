@@ -549,6 +549,11 @@ enum ActorType {
   ACTOR_TYPE_RESCUE_SPYRO = 511, /* Spyro's stand-in during the rescue cutscene (g_pDragonRescueSpyroMirrorActor) */
 };
 
+/* Lives cap at MAX_EXTRA_LIVES (an extra-life pickup is wasted there); every
+ * SPARX_FOOD_PER_LIFE Sparx-food pickups make one (UpdateHudCounters). */
+#define MAX_EXTRA_LIVES 99
+#define SPARX_FOOD_PER_LIFE 20
+
 /* A flight time bonus is typed by its size: type ACTOR_TYPE_TIME_BONUS + n - 1
  * adds n seconds to the flight clock (n = 1..3). */
 #define TIME_BONUS_TYPE(n) ((n) + (ACTOR_TYPE_TIME_BONUS - 1))

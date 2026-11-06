@@ -407,11 +407,11 @@ void UpdateHudCounters(void) {
       (unsigned short)g_anCosineLut[HUD_ICON_SLOT(HUD_SLOT_KEY)->subMode] >> 7;
   HUD_ICON_SLOT(HUD_SLOT_KEY)->rotY =
       (unsigned short)g_anSineLut[HUD_ICON_SLOT(HUD_SLOT_KEY)->subMode] >> 7;
-  if (g_nSparxFoodCount >= 0x14) {
+  if (g_nSparxFoodCount >= SPARX_FOOD_PER_LIFE) {
     g_nExtraLives = g_nExtraLives + 1;
-    if (g_nExtraLives >= 0x64) {
-      g_nExtraLives = 0x63;
+    if (g_nExtraLives > MAX_EXTRA_LIVES) {
+      g_nExtraLives = MAX_EXTRA_LIVES;
     }
-    g_nSparxFoodCount = g_nSparxFoodCount - 0x14;
+    g_nSparxFoodCount = g_nSparxFoodCount - SPARX_FOOD_PER_LIFE;
   }
 }

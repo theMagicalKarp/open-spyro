@@ -795,9 +795,9 @@ void Level17_UpdateActors(void) {
           st->roll += g_nFrameStep << 1;
         }
       }
-      if ((st->timer > 32 && dist < COLLECT_TOUCH_RANGE && (-384 < (SPY.posZ - actor->posZ)) &&
+      if ((st->timer > COLLECT_ARM_FRAMES && dist < COLLECT_TOUCH_RANGE && (-384 < (SPY.posZ - actor->posZ)) &&
            ((SPY.posZ - actor->posZ) < 512)) ||
-          (actor->subMode == COLLECT_HOMING && st->timer > 64)) {
+          (actor->subMode == COLLECT_HOMING && st->timer > COLLECT_HOMING_COLLECT_TICK)) {
 
         if (g_pSparxActor != 0) {
           SparxState *cs = g_pSparxActor->state;
@@ -813,7 +813,7 @@ void Level17_UpdateActors(void) {
           g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, 8);
           g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, 0x10);
 
-          if (g_nExtraLives < 99) {
+          if (g_nExtraLives < MAX_EXTRA_LIVES) {
             g_nExtraLives++;
           }
 

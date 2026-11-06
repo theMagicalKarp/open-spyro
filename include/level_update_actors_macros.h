@@ -46,7 +46,7 @@
 
 #define AS_PTRU8(sym) (((PtrU8 *)&(sym))->v)
 
-#define LIFECHEST_SHAKE_STEP(st) (((st)->phase - 0x1A0) >> 1)
+#define LIFECHEST_SHAKE_STEP(st) (((st)->phase - LIFECHEST_SHAKE_TICK) >> 1)
 
 #define CAM g_anWorldToCameraRotMtx
 

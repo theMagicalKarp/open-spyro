@@ -16,9 +16,16 @@ enum CollectSubMode {
   COLLECT_INERT = 4,  /* skipped: a seed pod's displayed prize (the pod moves it) */
 };
 
-/* Spyro collects a pickup within TOUCH_RANGE (2D; height -0x180..+0x200).
- * An undrawn one resting still beyond IDLE_RANGE skips its update. */
+/* Spyro collects a pickup within TOUCH_RANGE (2D) and from TOUCH_BELOW under
+ * it to TOUCH_ABOVE over it, once its clock (CollectibleState.timer) is past
+ * ARM_FRAMES; a homing one is collected once the clock passes
+ * HOMING_COLLECT_TICK. An undrawn one resting still beyond IDLE_RANGE skips
+ * its update. */
 #define COLLECT_TOUCH_RANGE 0x200
+#define COLLECT_TOUCH_BELOW 0x17F
+#define COLLECT_TOUCH_ABOVE 0x200
+#define COLLECT_ARM_FRAMES 0x20
+#define COLLECT_HOMING_COLLECT_TICK 0x40
 #define COLLECT_IDLE_RANGE 0x2000
 /* COLLECT_HOMING: the pickup sits st->timer / 32 of the way from where the
  * pull began (the state's first vector) to Spyro, on a sine arc; it snaps
@@ -186,8 +193,16 @@ enum SeedPodVoice {
 /* ->mode of a life chest (ACTOR_TYPE_LIFE_CHEST, LifeChestState). */
 enum LifeChestMode {
   LIFECHEST_CLOSED = 0, /* shakes on a timer, then lifts its lid */
-  LIFECHEST_OPEN = 1,   /* lid up, its rider showing; closes after 0xE6 frames */
+  LIFECHEST_OPEN = 1,   /* lid up, its rider showing; closes after LIFECHEST_OPEN_FRAMES */
 };
+/* LifeChestState.phase while closed (frames): at SETTLE_TICK it snapshots its
+ * rest pose (a COLLREST_SNAP chest restarts the clock there instead), from
+ * SHAKE_TICK it rattles, and past OPEN_TICK it opens; it stays open for
+ * OPEN_FRAMES of the open animation, then closes with a random phase. */
+#define LIFECHEST_SETTLE_TICK 0x19C
+#define LIFECHEST_SHAKE_TICK 0x1A0
+#define LIFECHEST_OPEN_TICK 0x1E0
+#define LIFECHEST_OPEN_FRAMES 0xE6
 
 /* A life chest's voices (PlayActorMeshVoice, or m_Sounds[] for BURST). */
 enum LifeChestVoice {

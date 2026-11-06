@@ -2413,9 +2413,9 @@ void Level22_UpdateActors(void) {
           st->roll += g_nFrameStep << 1;
         }
       }
-      if ((st->timer > 32 && dist < COLLECT_TOUCH_RANGE && (-384 < (SPY.posZ - actor->posZ)) &&
+      if ((st->timer > COLLECT_ARM_FRAMES && dist < COLLECT_TOUCH_RANGE && (-384 < (SPY.posZ - actor->posZ)) &&
            ((SPY.posZ - actor->posZ) < 512)) ||
-          (actor->subMode == COLLECT_HOMING && st->timer > 64)) {
+          (actor->subMode == COLLECT_HOMING && st->timer > COLLECT_HOMING_COLLECT_TICK)) {
 
         if (g_pSparxActor != 0) {
           SparxState *cs = g_pSparxActor->state;
@@ -2431,7 +2431,7 @@ void Level22_UpdateActors(void) {
           g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, 8);
           g_pfnLevelEmitParticles(16, EMIT_STREAK_BURST, &actor->posX, 0x10);
 
-          if (g_nExtraLives < 99) {
+          if (g_nExtraLives < MAX_EXTRA_LIVES) {
             g_nExtraLives++;
           }
 
@@ -4161,7 +4161,7 @@ void Level22_UpdateActors(void) {
       if (actor->mode == LIFECHEST_CLOSED) {
         st->phase += g_nFrameStep;
 
-        if (st->phase >= 0x1E1) {
+        if (st->phase > LIFECHEST_OPEN_TICK) {
           st->phase = 0;
           actor->rotX = st->savedRotX;
           actor->rotY = st->savedRotY;
@@ -4182,7 +4182,7 @@ void Level22_UpdateActors(void) {
           st->passenger->otBias = 5;
 
           PlayActorMeshVoice(actor, LIFECHEST_VOICE_OPEN, 0);
-        } else if (st->phase >= 0x1A0) {
+        } else if (st->phase >= LIFECHEST_SHAKE_TICK) {
           actor->rotX = g_aShakeRotOffsets[LIFECHEST_SHAKE_STEP(st)].a + st->savedRotX;
           actor->rotY = g_aShakeRotOffsets[LIFECHEST_SHAKE_STEP(st)].b + st->savedRotY;
           a = (signed char)g_aShakeRotOffsets[LIFECHEST_SHAKE_STEP(st)].a;
@@ -4198,7 +4198,7 @@ void Level22_UpdateActors(void) {
           if (actor->voiceRow == VOICE_ROW_NONE) {
             PlayActorMeshVoice(actor, LIFECHEST_VOICE_RATTLE, 0);
           }
-        } else if (st->phase >= 0x19C) {
+        } else if (st->phase >= LIFECHEST_SETTLE_TICK) {
           /* Just before the shake: remember the rest pose. */
           st->savedRotX = actor->rotX;
           st->savedRotY = actor->rotY;
@@ -4214,7 +4214,7 @@ void Level22_UpdateActors(void) {
           st->passenger->updateDist = ACTOR_UPDATE_ALWAYS;
         }
 
-        if (st->phase >= 0xE6) {
+        if (st->phase >= LIFECHEST_OPEN_FRAMES) {
           DespawnActorRecord(st->passenger);
           st->phase = GetRandomU32() & 0xFF;
           actor->frameProgress = 8;

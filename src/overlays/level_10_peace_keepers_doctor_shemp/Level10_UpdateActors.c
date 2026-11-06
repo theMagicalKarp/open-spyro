@@ -1014,9 +1014,9 @@ void Level10_UpdateActors(void) {
             }
           }
 
-          if ((st->timer >= 0x21 && toSpyro < COLLECT_TOUCH_RANGE &&
-               (unsigned int)((SPY.posZ - actor->posZ) + 0x17F) < 0x37F) ||
-              (actor->subMode == COLLECT_HOMING && st->timer >= 0x41)) {
+          if ((st->timer > COLLECT_ARM_FRAMES && toSpyro < COLLECT_TOUCH_RANGE &&
+               (unsigned int)((SPY.posZ - actor->posZ) + COLLECT_TOUCH_BELOW) < COLLECT_TOUCH_BELOW + COLLECT_TOUCH_ABOVE) ||
+              (actor->subMode == COLLECT_HOMING && st->timer > COLLECT_HOMING_COLLECT_TICK)) {
             if (g_pSparxActor != 0) {
               SparxState *sparx = g_pSparxActor->state;
 
@@ -1030,7 +1030,7 @@ void Level10_UpdateActors(void) {
               RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
               g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 8);
               g_pfnLevelEmitParticles(0x10, EMIT_STREAK_BURST, &actor->posX, 0x10);
-              if (g_nExtraLives < 0x63) {
+              if (g_nExtraLives < MAX_EXTRA_LIVES) {
                 g_nExtraLives += 1;
               }
               CommitActorKillGems(0, actor);
