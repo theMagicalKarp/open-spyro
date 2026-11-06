@@ -606,21 +606,6 @@ typedef struct CrystalDragonState {
   int savedPosZ;    /* 0x50 saved actor->posZ */
 } CrystalDragonState;
 
-/* Type 398 (ACTOR_TYPE_PORTAL_GUIDE): flies Spyro through a portal. The
- * portal record's word 6 names it; DispatchSpyroTriggerEvent wakes it when
- * Spyro enters the portal region (mode 1, subMode = which side he came from,
- * offset = half the portal normal toward that side, updateDist 0xFF). Mode 1
- * homes Spyro on the midpoint of the path's first two waypoints (plus offset)
- * along the portal camera path; mode 2 glides him along it. When the camera
- * sphere touches a TRIGGER_PORTAL region it starts the level load. */
-typedef struct PortalState {
-  PortalCamPath *desc; /* 0x00 the portal's camera path */
-  int offset[3];    /* 0x04 nudge applied to the homing vector */
-  int pad10;        /* 0x10 */
-  int dest;         /* 0x14 destination yaw, published to SPY.requestYaw */
-  int cameraPreset;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
-} PortalState;
-
 /* Type 300 (whirlwind): the camera it requests while lifting Spyro, and the
  * template that camera is seeded from. */
 typedef struct Xform6 {

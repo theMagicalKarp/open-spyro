@@ -55,16 +55,16 @@ typedef struct BackdropTail {
    - The second marker test is nested so `pa = pos` sits in the guard block,
      where reorg moves it into the branch delay slot. */
 void PauseMenu_Draw(void) {
-  RECT rect;          /* sp18 */
-  char buf[0x20];     /* sp20 */
-  int pos[3];         /* sp40 */
-  int styA[3];        /* sp50 */
-  int styB[3];        /* sp60 */
-  int styC[3];        /* sp70 */
-  short quad[4];      /* sp80 */
-  short quad2[4];     /* sp88 */
-  int styD[3];        /* sp90 */
-  unsigned char rows; /* spA0 */
+  RECT rect;             /* sp18 */
+  char buf[0x20];        /* sp20 */
+  int pos[3];            /* sp40 */
+  int quitGlyph[3];      /* sp50 */
+  int optionsGlyph[3];   /* sp60 */
+  int pauseGlyph[3];     /* sp70 */
+  short quad[4];         /* sp80 */
+  short quad2[4];        /* sp88 */
+  int inventoryGlyph[3]; /* sp90 */
+  unsigned char rows;    /* spA0 */
   int h0, h1, h2, h3, h4, h5, h6, h7;
 
   if (g_nMenuDrawFrames == 0) {
@@ -324,17 +324,17 @@ void PauseMenu_Draw(void) {
       pos[2] = 0xc00;
       BuildTextSpriteChain(g_szUiPaused, pos, 0x1c, TINT_HUD);
       if (g_nPauseMenuSubstate == PAUSE_PAGE_QUIT_CONFIRM) {
-        styA[0] = 0x10;
-        styA[1] = 1;
-        styA[2] = TEXT_SMALL_DEPTH;
+        quitGlyph[0] = 0x10;
+        quitGlyph[1] = 1;
+        quitGlyph[2] = TEXT_SMALL_DEPTH;
         pos[0] = 0xb7;
         pos[1] = 0x77;
         pos[2] = TEXT_DEPTH;
-        BuildTextSprites(g_szQuitGamePrompt, pos, styA, 0x12, TINT_HUD);
+        BuildTextSprites(g_szQuitGamePrompt, pos, quitGlyph, 0x12, TINT_HUD);
         pos[0] = 0xc0;
         pos[1] = 0x94;
         pos[2] = TEXT_DEPTH;
-        BuildTextSprites(g_szUiYes, pos, styA, 0x12, TINT_HUD);
+        BuildTextSprites(g_szUiYes, pos, quitGlyph, 0x12, TINT_HUD);
         if (g_nPauseMenuCursor == PAUSE_QUIT_YES) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 3;
@@ -342,7 +342,7 @@ void PauseMenu_Draw(void) {
         pos[0] = 0x128;
         pos[1] = 0x94;
         pos[2] = TEXT_DEPTH;
-        BuildTextSprites(g_szUiNo, pos, styA, 0x12, TINT_HUD);
+        BuildTextSprites(g_szUiNo, pos, quitGlyph, 0x12, TINT_HUD);
         if (g_nPauseMenuCursor == PAUSE_QUIT_NO) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 2;
@@ -361,13 +361,13 @@ void PauseMenu_Draw(void) {
           } while (i < n1);
         }
       } else if (g_nPauseMenuSubstate == PAUSE_PAGE_OPTIONS) {
-        styB[0] = 0xf;
-        styB[2] = 0x1600;
-        styB[1] = 1;
+        optionsGlyph[0] = 0xf;
+        optionsGlyph[2] = 0x1600;
+        optionsGlyph[1] = 1;
         pos[0] = 0x6b;
         pos[1] = 0x6c;
         pos[2] = TEXT_SMALL_DEPTH;
-        BuildTextSprites(g_szSoundEffects, pos, styB, 0x10, TINT_HUD);
+        BuildTextSprites(g_szSoundEffects, pos, optionsGlyph, 0x10, TINT_HUD);
         if (g_nPauseMenuCursor == OPTIONS_ROW_SFX_VOLUME) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 0xb;
@@ -375,7 +375,7 @@ void PauseMenu_Draw(void) {
         pos[0] = 0x79;
         pos[1] = 0x7c;
         pos[2] = TEXT_SMALL_DEPTH;
-        BuildTextSprites(g_szMusicVolume, pos, styB, 0x10, TINT_HUD);
+        BuildTextSprites(g_szMusicVolume, pos, optionsGlyph, 0x10, TINT_HUD);
         if (g_nPauseMenuCursor == OPTIONS_ROW_MUSIC_VOLUME) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 0xb;
@@ -383,7 +383,7 @@ void PauseMenu_Draw(void) {
         pos[0] = 0x6b;
         pos[1] = 0x8c;
         pos[2] = TEXT_SMALL_DEPTH;
-        BuildTextSprites(g_szSpeakerSetup, pos, styB, 0x10, TINT_HUD);
+        BuildTextSprites(g_szSpeakerSetup, pos, optionsGlyph, 0x10, TINT_HUD);
         if (g_nPauseMenuCursor == OPTIONS_ROW_SPEAKERS) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 0xc;
@@ -392,7 +392,7 @@ void PauseMenu_Draw(void) {
           pos[0] = 0xa3;
           pos[1] = 0x9c;
           pos[2] = TEXT_SMALL_DEPTH;
-          BuildTextSprites(g_szVibration, pos, styB, 0x10, TINT_HUD);
+          BuildTextSprites(g_szVibration, pos, optionsGlyph, 0x10, TINT_HUD);
           if (g_nPauseMenuCursor == OPTIONS_ROW_VIBRATION) {
             rec = g_pSpriteRecordWriteCursor;
             nGlyphs = 9;
@@ -403,7 +403,7 @@ void PauseMenu_Draw(void) {
         v = rows;
         v <<= 4;
         pos[1] = v + 0x9c;
-        BuildTextSprites(g_szUiCamera, pos, styB, 0x10, TINT_HUD);
+        BuildTextSprites(g_szUiCamera, pos, optionsGlyph, 0x10, TINT_HUD);
         if (g_nPauseMenuCursor == OPTIONS_ROW_CAMERA) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 6;
@@ -411,7 +411,7 @@ void PauseMenu_Draw(void) {
         pos[0] = 0xee;
         pos[1] = v + 0xac;
         pos[2] = TEXT_DEPTH;
-        BuildTextSprites(g_szUiDone, pos, styB, 0x10, TINT_HUD);
+        BuildTextSprites(g_szUiDone, pos, optionsGlyph, 0x10, TINT_HUD);
         if (g_nPauseMenuCursor == OPTIONS_ROW_DONE) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 4;
@@ -433,7 +433,7 @@ void PauseMenu_Draw(void) {
           pos[0] = 0x142;
           pos[1] = 0x6c;
           pos[2] = TEXT_SMALL_DEPTH;
-          BuildTextSprites(g_szUiOff, pos, styB, 0x10, TINT_HUD);
+          BuildTextSprites(g_szUiOff, pos, optionsGlyph, 0x10, TINT_HUD);
           phase3 = 0;
           if (g_nPauseMenuCursor == OPTIONS_ROW_SFX_VOLUME) {
             rec = g_pSpriteRecordWriteCursor;
@@ -480,7 +480,7 @@ void PauseMenu_Draw(void) {
           pos[0] = 0x142;
           pos[1] = 0x7c;
           pos[2] = TEXT_SMALL_DEPTH;
-          BuildTextSprites(g_szUiOff, pos, styB, 0x10, TINT_HUD);
+          BuildTextSprites(g_szUiOff, pos, optionsGlyph, 0x10, TINT_HUD);
           phase5 = 0;
           if (g_nPauseMenuCursor == OPTIONS_ROW_MUSIC_VOLUME) {
             rec = g_pSpriteRecordWriteCursor;
@@ -527,10 +527,10 @@ void PauseMenu_Draw(void) {
         pos[1] = 0x8c;
         pos[2] = TEXT_SMALL_DEPTH;
         if (g_nSoundMonoMixFlag != 0) {
-          BuildTextSprites(g_szUiMono, pos, styB, 0x10, TINT_HUD);
+          BuildTextSprites(g_szUiMono, pos, optionsGlyph, 0x10, TINT_HUD);
           n3 = 4;
         } else {
-          BuildTextSprites(g_szUiStereo, pos, styB, 0x10, TINT_HUD);
+          BuildTextSprites(g_szUiStereo, pos, optionsGlyph, 0x10, TINT_HUD);
           n3 = 6;
         }
         if (g_nPauseMenuCursor == OPTIONS_ROW_SPEAKERS) {
@@ -553,10 +553,10 @@ void PauseMenu_Draw(void) {
           pos[1] = 0x9c;
           pos[2] = TEXT_SMALL_DEPTH;
           if (g_nOptionVibrationEnabled != 0) {
-            BuildTextSprites(g_szUiOn, pos, styB, 0x10, TINT_HUD);
+            BuildTextSprites(g_szUiOn, pos, optionsGlyph, 0x10, TINT_HUD);
             n4 = 2;
           } else {
-            BuildTextSprites(g_szUiOff, pos, styB, 0x10, TINT_HUD);
+            BuildTextSprites(g_szUiOff, pos, optionsGlyph, 0x10, TINT_HUD);
             n4 = 3;
           }
           if (g_nPauseMenuCursor == OPTIONS_ROW_VIBRATION) {
@@ -579,10 +579,10 @@ void PauseMenu_Draw(void) {
         pos[1] = rows * 0x10 + 0x9c;
         pos[2] = TEXT_SMALL_DEPTH;
         if (g_dwActiveCameraOptions == CAM_OPT_ACTIVE) {
-          BuildTextSprites(g_szUiActive, pos, styB, 0x10, TINT_HUD);
+          BuildTextSprites(g_szUiActive, pos, optionsGlyph, 0x10, TINT_HUD);
           n5 = 6;
         } else {
-          BuildTextSprites(g_szUiPassive, pos, styB, 0x10, TINT_HUD);
+          BuildTextSprites(g_szUiPassive, pos, optionsGlyph, 0x10, TINT_HUD);
           n5 = 7;
         }
         if (g_nPauseMenuCursor == OPTIONS_ROW_CAMERA) {
@@ -601,13 +601,13 @@ void PauseMenu_Draw(void) {
           }
         }
       } else {
-        styC[0] = 0x10;
-        styC[2] = TEXT_SMALL_DEPTH;
+        pauseGlyph[0] = 0x10;
+        pauseGlyph[2] = TEXT_SMALL_DEPTH;
         pos[0] = 0xc7;
-        styC[1] = 1;
+        pauseGlyph[1] = 1;
         pos[1] = 0x6e;
         pos[2] = TEXT_DEPTH;
-        BuildTextSprites(g_szContinue, pos, styC, 0x12, TINT_HUD);
+        BuildTextSprites(g_szContinue, pos, pauseGlyph, 0x12, TINT_HUD);
         if (g_nPauseMenuCursor == PAUSE_ROW_CONTINUE) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 8;
@@ -615,7 +615,7 @@ void PauseMenu_Draw(void) {
         pos[0] = 0xcf;
         pos[1] = 0x80;
         pos[2] = TEXT_DEPTH;
-        BuildTextSprites(g_szUiOptions, pos, styC, 0x12, TINT_HUD);
+        BuildTextSprites(g_szUiOptions, pos, pauseGlyph, 0x12, TINT_HUD);
         if (g_nPauseMenuCursor == PAUSE_ROW_OPTIONS) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 7;
@@ -623,7 +623,7 @@ void PauseMenu_Draw(void) {
         pos[0] = 0xbf;
         pos[1] = 0x92;
         pos[2] = TEXT_DEPTH;
-        BuildTextSprites(g_szInventory, pos, styC, 0x12, TINT_HUD);
+        BuildTextSprites(g_szInventory, pos, pauseGlyph, 0x12, TINT_HUD);
         if (g_nPauseMenuCursor == PAUSE_ROW_INVENTORY) {
           rec = g_pSpriteRecordWriteCursor;
           nGlyphs = 9;
@@ -632,7 +632,7 @@ void PauseMenu_Draw(void) {
           pos[0] = 0xe7;
           pos[1] = 0xa4;
           pos[2] = TEXT_DEPTH;
-          BuildTextSprites(g_szUiQuit, pos, styC, 0x12, TINT_HUD);
+          BuildTextSprites(g_szUiQuit, pos, pauseGlyph, 0x12, TINT_HUD);
           if (g_nPauseMenuCursor == PAUSE_ROW_EXIT) {
             rec = g_pSpriteRecordWriteCursor;
             nGlyphs = 4;
@@ -642,7 +642,7 @@ void PauseMenu_Draw(void) {
           pos[0] = 0xb7;
           pos[1] = 0xa4;
           pos[2] = TEXT_DEPTH;
-          BuildTextSprites(g_szExitLevel, pos, styC, 0x12, TINT_HUD);
+          BuildTextSprites(g_szExitLevel, pos, pauseGlyph, 0x12, TINT_HUD);
           if (g_nPauseMenuCursor == PAUSE_ROW_EXIT) {
             rec = g_pSpriteRecordWriteCursor;
             nGlyphs = 9;
@@ -652,7 +652,7 @@ void PauseMenu_Draw(void) {
           pos[0] = 0xbf;
           pos[1] = 0xa4;
           pos[2] = TEXT_DEPTH;
-          BuildTextSprites(g_szQuitGame, pos, styC, 0x12, TINT_HUD);
+          BuildTextSprites(g_szQuitGame, pos, pauseGlyph, 0x12, TINT_HUD);
           if (g_nPauseMenuCursor == PAUSE_ROW_EXIT) {
             rec = g_pSpriteRecordWriteCursor;
             nGlyphs = 8;
@@ -822,13 +822,13 @@ void PauseMenu_Draw(void) {
       v = strlen((&g_apWorldNames[1])[g_nSubMenuCursor]);
       pos[1] = 0x5c;
       pos[2] = 0xe00;
-      styD[0] = 0x14;
-      styD[1] = 2;
-      styD[2] = 0x1000;
+      inventoryGlyph[0] = 0x14;
+      inventoryGlyph[1] = 2;
+      inventoryGlyph[2] = 0x1000;
       v = (v - 1) * 0xa - 0x9e;
       pos[0] = g_nSubMenuScrollOffset - v;
-      BuildTextSprites((&g_apWorldNames[1])[g_nSubMenuCursor], pos, styD, 0x17,
-                       TINT_GOLD);
+      BuildTextSprites((&g_apWorldNames[1])[g_nSubMenuCursor], pos,
+                       inventoryGlyph, 0x17, TINT_GOLD);
       rec = g_pSpriteRecordWriteCursor;
       phase = 0;
       while (i < (int)g_abWorldTitleGlyphBlock[g_nSubMenuCursor]) {
@@ -919,12 +919,12 @@ void PauseMenu_Draw(void) {
           pos[0] = g_nSubMenuScrollOffset + 0x24;
           pos[1] = y;
           pos[2] = TEXT_DEPTH;
-          styD[0] = 0x10;
-          styD[1] = 1;
-          styD[2] = TEXT_SMALL_DEPTH;
+          inventoryGlyph[0] = 0x10;
+          inventoryGlyph[1] = 1;
+          inventoryGlyph[2] = TEXT_SMALL_DEPTH;
           rec = g_pSpriteRecordWriteCursor;
           BuildTextSprites(g_apLevelNameStrings[g_nSubMenuCursor * 6 + i], pos,
-                           styD, 0x12, TINT_GOLD);
+                           inventoryGlyph, 0x12, TINT_GOLD);
           bC = bias + 0x113;
           gx = g_nSubMenuScrollOffset + bC;
           {

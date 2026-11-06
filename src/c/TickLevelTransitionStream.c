@@ -10,12 +10,6 @@
 #include "spyro_state.h"
 #include "vecmath.h"
 
-typedef struct {
-  int *path;
-  int pad[3];
-  int reverse;
-} PortalActor;
-
 #define SKY g_anSkyBlock /* the active sky header, word by word (SkyHeader) */
 #define CAM g_anCameraPosBlock
 #define SPYB ((unsigned char *)g_anSpyroWorldPosBlock)
@@ -344,28 +338,32 @@ void TickLevelTransitionStream(int full) {
 
           if (e->levelId == g_nReturnPortalLevelId) {
             unsigned char yaw;
-            PortalActor *actor;
+            PortalState *guide;
 
             yaw = *pe;
-            actor = (PortalActor *)g_pActorListBase[e->actor].state;
+            guide = g_pActorListBase[e->actor].state;
             EBB_BREAK();
             ChangeSpyroState(SPYRO_ST_GLIDE);
             PE_WORD(SPY_SUBSTATE) = SPYRO_SUB_GLIDE_TO_TARGET;
             ComputeCameraToTargetAngle(cam);
             g_anCameraSpringYawBlock[6] /* g_nCameraYaw */ =
                 g_nCameraYaw + PE_WORD(SPY_BODY_YAW);
-            if (actor->reverse != 0) {
-              CopyVector((int *)(pe - SPYB_EULER_Z), actor->path + 2);
+            if (guide->returnReversed != 0) {
+              CopyVector((int *)(pe - SPYB_EULER_Z), guide->desc->point[0].pos);
               CopyVector((int *)(pe + PE_TO(SPY_REQUEST_TARGET)),
-                         actor->path + 6);
-              *pe = ArcTan2(actor->path[6] - actor->path[2],
-                            actor->path[7] - actor->path[3], ATAN_ANGLE8);
+                         guide->desc->point[1].pos);
+              *pe = ArcTan2(
+                  guide->desc->point[1].pos[0] - guide->desc->point[0].pos[0],
+                  guide->desc->point[1].pos[1] - guide->desc->point[0].pos[1],
+                  ATAN_ANGLE8);
             } else {
-              CopyVector((int *)(pe - SPYB_EULER_Z), actor->path + 6);
+              CopyVector((int *)(pe - SPYB_EULER_Z), guide->desc->point[1].pos);
               CopyVector((int *)(pe + PE_TO(SPY_REQUEST_TARGET)),
-                         actor->path + 2);
-              *pe = ArcTan2(actor->path[2] - actor->path[6],
-                            actor->path[3] - actor->path[7], ATAN_ANGLE8);
+                         guide->desc->point[0].pos);
+              *pe = ArcTan2(
+                  guide->desc->point[0].pos[0] - guide->desc->point[1].pos[0],
+                  guide->desc->point[0].pos[1] - guide->desc->point[1].pos[1],
+                  ATAN_ANGLE8);
             }
             *(CameraAngles *)spring = ((CameraAngles *)spring)[1];
             *pyaw = *((unsigned char *)pyaw - PYAW_BACK_TO(SPYB_EULER_Z)) << 4;

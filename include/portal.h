@@ -27,6 +27,23 @@ typedef struct PortalCamPath {
   PortalCamPoint point[2]; /* 0x08 `count` of them */
 } PortalCamPath;
 
+/* Type 398 (ACTOR_TYPE_PORTAL_GUIDE): flies Spyro through a portal. The
+ * portal record's word 6 names it; DispatchSpyroTriggerEvent wakes it when
+ * Spyro enters the portal region (mode 1, subMode = which side he came from,
+ * offset = half the portal normal toward that side, updateDist 0xFF). Mode 1
+ * homes Spyro on the midpoint of the path's first two waypoints (plus offset)
+ * along the portal camera path; mode 2 glides him along it. When the camera
+ * sphere touches a TRIGGER_PORTAL region it starts the level load. */
+typedef struct PortalState {
+  PortalCamPath *desc; /* 0x00 the portal's camera path */
+  int offset[3];    /* 0x04 nudge applied to the homing vector */
+  int returnReversed; /* 0x10 the glide back out of its level (level data):
+                       * 0 starts at point[1] and heads for point[0],
+                       * nonzero the other way (TickLevelTransitionStream) */
+  int dest;         /* 0x14 destination yaw, published to SPY.requestYaw */
+  int cameraPreset;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
+} PortalState;
+
 
 /* A portal: a convex ring of world-space points (its opening) that gets
    projected to screen space and stroked as an outline. */
