@@ -731,6 +731,25 @@ enum BlowhardAnim {
   BLOWHARD_ANIM_DROP_END = 6,
 };
 
+/* Blowhard's tuning. The follow camera holds on him with Spyro in sight
+ * within CAM_DZ and NEAR_RANGE (except while he travels between phases);
+ * NEAR_RANGE also wakes his patrols, and he drops a rider once Spyro is past
+ * DROP_MIN_RANGE (in phases 2/3, facing him within DROP_FACING). Hit checks
+ * and rider drops need a clear line from EYE_HEIGHT over him to Spyro. He
+ * bobs BOB_HEIGHT up and down (st->floorZ, eased 1/8 a frame until within
+ * BOB_SETTLE), patrols at PATROL_SPEED, tweens TRAVEL_STEP a frame between
+ * phases, and waits WAIT_FRAMES after each drop. */
+#define BLOWHARD_CAM_DZ 0x578
+#define BLOWHARD_NEAR_RANGE 0x2800
+#define BLOWHARD_DROP_MIN_RANGE 0x1000
+#define BLOWHARD_DROP_FACING 0x30
+#define BLOWHARD_EYE_HEIGHT 0x400
+#define BLOWHARD_BOB_HEIGHT 0x578
+#define BLOWHARD_BOB_SETTLE 0x20
+#define BLOWHARD_PATROL_SPEED 0xB4
+#define BLOWHARD_TRAVEL_STEP 0x20
+#define BLOWHARD_WAIT_FRAMES 0x6E
+
 /* ->mode of Doctor Shemp, the level 10 boss (ACTOR_TYPE_DOCTOR_SHEMP,
  * ShempState). SHEMP_IDLE starts the routine for ShempState.phase 0..2;
  * a flame or charge from behind (or into the phase-2 slam) stuns him and he
@@ -2658,6 +2677,38 @@ enum LootThiefMode {
   LTHIEF_RUN = 0,     /* runs its ring and spur paths away from Spyro */
   LTHIEF_KNOCKED = 1, /* flamed: shatters into chest shards */
 };
+
+/* LootThiefState.leg for a ring thief (onRing). */
+enum LootThiefLeg {
+  LTHIEF_LEG_PARKED = 0,   /* hovers at its spur end; Spyro within NOTICE_RANGE: SPUR_IN on
+                            * the spur that leads round the ring away from him */
+  LTHIEF_LEG_SPUR_IN = 1,  /* flies the spur onto the ring, then RING */
+  LTHIEF_LEG_RING = 2,     /* flies the ring to its end, then CROSS (a lap);
+                            * Spyro past LOSE_RANGE: RING_OUT */
+  LTHIEF_LEG_CROSS = 3,    /* flies the cross path (LootThiefState.path), then RING */
+  LTHIEF_LEG_RING_OUT = 4, /* rounds the ring away from Spyro to a spur (a lap), then
+                            * SPUR_OUT; Spyro back within NOTICE_RANGE: RING */
+  LTHIEF_LEG_SPUR_OUT = 5, /* flies a spur back out, then PARKED */
+};
+
+/* A ring thief flies RING_SPEED less LAP_SLOWDOWN a lap (laps cap at
+ * MAX_LAPS - 1), easing 1/8 of the way to each node's height a frame (at
+ * most CLIMB_STEP on the spurs, RING_CLIMB_STEP on the ring). Flamed it is
+ * knocked off at KNOCK_SPEED. A first-run thief starts its intro tween at
+ * INTRO_SPEED, slowing INTRO_DRAG a leg to INTRO_MIN_SPEED, and while facing
+ * Spyro climbs toward DODGE_Z. */
+#define LTHIEF_NOTICE_RANGE 0x2000
+#define LTHIEF_LOSE_RANGE 0x3800
+#define LTHIEF_RING_SPEED 0x190
+#define LTHIEF_LAP_SLOWDOWN 10
+#define LTHIEF_MAX_LAPS 6
+#define LTHIEF_CLIMB_STEP 0x100
+#define LTHIEF_RING_CLIMB_STEP 0x80
+#define LTHIEF_KNOCK_SPEED 0x15E
+#define LTHIEF_INTRO_SPEED 0x18
+#define LTHIEF_INTRO_DRAG 8
+#define LTHIEF_INTRO_MIN_SPEED 2
+#define LTHIEF_DODGE_Z 0x61A8
 
 /* ->mode of a two-path runner (ACTOR_TYPE_TWO_PATH_RUNNER, RunnerState; level
  * 8); the mode is also the animation index. With RunnerState.mode TPARM_RUN it runs
