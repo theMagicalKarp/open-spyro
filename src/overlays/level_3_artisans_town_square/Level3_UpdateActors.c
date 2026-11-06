@@ -689,7 +689,7 @@ void Level3_UpdateActors(void) {
             int home = ArcTan2(st->path->nodes[0].x - actor->posX,
                                      st->path->nodes[0].y - actor->posY, ATAN_ANGLE8);
 
-            if (ApproxDist2D(&actor->posX, &st->path->nodes[0].x) < 0x1000) {
+            if (ApproxDist2D(&actor->posX, &st->path->nodes[0].x) < THIEF_GUARD_HOME_RANGE) {
               TurnActorYawTowardAngle(actor,
                             ArcTan2(actor->posX - spy->posX,
                                           actor->posY - SPY.posY, ATAN_ANGLE8),
@@ -708,8 +708,8 @@ void Level3_UpdateActors(void) {
                 lim = 0x28;
               }
               if (AbsAngleDelta8(a, b) > lim &&
-                  ApproxDist2D(&actor->posX, &spy->posX) < 0x3000) {
-                r = SteerActorAroundPoint(actor, &st->path->nodes[0].x, 0x1800, a, 5,
+                  ApproxDist2D(&actor->posX, &spy->posX) < THIEF_GUARD_STEER_RANGE) {
+                r = SteerActorAroundPoint(actor, &st->path->nodes[0].x, THIEF_GUARD_ORBIT_RADIUS, a, 5,
                                   spd, 0xE, 0x14, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_FOLLOW_FLOOR);
               }
               if (r > 0x5A) {
@@ -741,7 +741,7 @@ void Level3_UpdateActors(void) {
             if (AbsAngleDelta8(a, b) > 0x50) {
               actor->subMode = THIEFSUB_ORBIT;
             }
-            if (ApproxDist2D(&actor->posX, &st->path->nodes[0].x) > 0x1800) {
+            if (ApproxDist2D(&actor->posX, &st->path->nodes[0].x) > THIEF_GUARD_ORBIT_RADIUS) {
               actor->subMode = THIEFSUB_ORBIT;
             }
           }
@@ -765,7 +765,7 @@ void Level3_UpdateActors(void) {
             if (st->node - st->path->dir != st->path->cur) {
               st->turned = 0;
               if (ApproxDist2D(&actor->posX,
-                                &st->path->nodes[st->path->cur].x) < 0x100) {
+                                &st->path->nodes[st->path->cur].x) < THIEF_NODE_REACHED_RANGE) {
                 st->path->cur = (st->path->cur + st->path->dir +
                                  st->path->count) %
                                 st->path->count;
@@ -791,7 +791,7 @@ void Level3_UpdateActors(void) {
             st->dist = ApproxDist2D(&actor->posX,
                                      &st->path->nodes[st->path->cur].x);
           }
-          if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000) {
+          if (ApproxDist2D(&actor->posX, &spy->posX) < THIEF_NEAR_RANGE) {
             int d = ArcTan2(spy->posX - st->path->nodes[st->path->cur].x,
                                   SPY.posY - st->path->nodes[st->path->cur].y, ATAN_ANGLE8);
             int b = ArcTan2(actor->posX - st->path->nodes[st->path->cur].x,
@@ -843,7 +843,7 @@ void Level3_UpdateActors(void) {
                       6, 0, YAW_HOLD_IN_BAND);
         MoveActorAlongHeading(actor, 0x96, 0, 0, MOVE_LIFT);
         if (ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x) <
-            0x100) {
+            THIEF_NODE_REACHED_RANGE) {
           actor->mode = THIEF_PERCH;
           continue;
         }
@@ -881,12 +881,12 @@ void Level3_UpdateActors(void) {
           }
           h = ArcTan2(st->path->nodes[k].x - actor->posX,
                             st->path->nodes[k].y - actor->posY, ATAN_ANGLE8);
-          if (ApproxDist2D(&actor->posX, &st->path->nodes[k].x) > 0x100) {
+          if (ApproxDist2D(&actor->posX, &st->path->nodes[k].x) > THIEF_NODE_REACHED_RANGE) {
             if (TurnActorYawTowardAngle(actor, h, 8, 0x14, YAW_STEP_IN_BAND) != 0) {
               MoveActorAlongHeading(actor, 0x96, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             }
-          } else if (ApproxDist2D(&spy->posX, &st->path->nodes[6].x) < 0x800 ||
-                     ApproxDist2D(&spy->posX, &st->path->nodes[7].x) < 0x800) {
+          } else if (ApproxDist2D(&spy->posX, &st->path->nodes[6].x) < THIEF_PERCH_LEAVE_RANGE ||
+                     ApproxDist2D(&spy->posX, &st->path->nodes[7].x) < THIEF_PERCH_LEAVE_RANGE) {
             st->vz = 0x96;
             actor->mode = THIEF_LEAP_HOME;
             continue;
@@ -902,7 +902,7 @@ void Level3_UpdateActors(void) {
                       ArcTan2(st->path->nodes[0].x - actor->posX,
                                     st->path->nodes[0].y - actor->posY, ATAN_ANGLE8),
                       6, 0, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&actor->posX, &st->path->nodes[0].x) > 0x100) {
+        if (ApproxDist2D(&actor->posX, &st->path->nodes[0].x) > THIEF_NODE_REACHED_RANGE) {
           MoveActorAlongHeading(actor, 0x82, 0, 0, MOVE_LIFT);
         }
         actor->posZ += st->vz;
@@ -966,7 +966,7 @@ void Level3_UpdateActors(void) {
           actor->mode = THIEF_LEDGE_RESET;
           continue;
         }
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < THIEF_NEAR_RANGE) {
           actor->mode = THIEF_LEDGE_RUN_ON;
           continue;
         }
@@ -988,7 +988,7 @@ void Level3_UpdateActors(void) {
 
         ANIM_GO(actor, THIEF_ANIM_TAUNT);
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (d < 0x2000 && SPY.posZ - actor->posZ >= -0xC7) {
+        if (d < THIEF_NEAR_RANGE && SPY.posZ - actor->posZ >= -0xC7) {
           st->vz = 0x96;
           st->landed = 0;
           actor->mode = THIEF_LEDGE_JUMP;
@@ -1011,7 +1011,7 @@ void Level3_UpdateActors(void) {
           break;
         }
         MoveActorAlongHeading(actor, 0xFA, 0, 0, sp);
-        if (ApproxDist2D(&actor->posX, &st->path->nodes[2].x) < 0x100) {
+        if (ApproxDist2D(&actor->posX, &st->path->nodes[2].x) < THIEF_NODE_REACHED_RANGE) {
           st->path->cur = 3;
           actor->mode = THIEF_LEDGE_WAIT;
           continue;
@@ -1061,7 +1061,7 @@ void Level3_UpdateActors(void) {
                st->path->count;
         dCur = ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x);
         dNext = ApproxDist2D(&actor->posX, &st->path->nodes[next].x);
-        if (dCur > 0x190 && dNext > 0x190) {
+        if (dCur > THIEF_FLEE_TURN_CLEARANCE && dNext > THIEF_FLEE_TURN_CLEARANCE) {
           int aCur = ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                                    st->path->nodes[st->path->cur].y - actor->posY,
                                    ATAN_ANGLE8);
@@ -1098,7 +1098,7 @@ void Level3_UpdateActors(void) {
 
       case THIEF_CLIMB_RUN:
         ANIM_GO(actor, THIEF_ANIM_RUN);
-        if (actor->posZ < 0x800) {
+        if (actor->posZ < THIEF_FELL_BELOW_Z) {
           CopyVector(&actor->posX, &st->path->nodes[st->path->cur].x);
           SnapActorToGround(actor);
         }
@@ -1118,7 +1118,7 @@ void Level3_UpdateActors(void) {
         int g = ProbeActorGroundHeight(actor);
         int d = ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x);
 
-        if (actor->posZ < 0x800) {
+        if (actor->posZ < THIEF_FELL_BELOW_Z) {
           CopyVector(&actor->posX, &st->path->nodes[st->path->cur].x);
           SnapActorToGround(actor);
         }
@@ -1127,10 +1127,10 @@ void Level3_UpdateActors(void) {
                                     st->path->nodes[st->path->cur].y - actor->posY,
                                     ATAN_ANGLE8),
                       6, 0, YAW_HOLD_IN_BAND);
-        if (d > 0x100) {
+        if (d > THIEF_NODE_REACHED_RANGE) {
           MoveActorAlongHeading(actor, 0x96, 0, 0, MOVE_LIFT);
         }
-        if (d < 0x100 && actor->posZ == g) {
+        if (d < THIEF_NODE_REACHED_RANGE && actor->posZ == g) {
           if (++st->path->cur == 0xD) {
             actor->mode = THIEF_CLIMB_TOP;
             continue;
@@ -1152,7 +1152,7 @@ void Level3_UpdateActors(void) {
       case THIEF_CLIMB_TOP:
         ANIM_GO(actor, THIEF_ANIM_TAUNT);
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if (actor->posZ < 0x800) {
+        if (actor->posZ < THIEF_FELL_BELOW_Z) {
           CopyVector(&actor->posX, &st->path->nodes[st->path->cur].x);
           SnapActorToGround(actor);
         }
@@ -1175,10 +1175,10 @@ void Level3_UpdateActors(void) {
                                     st->path->nodes[st->path->cur].y - actor->posY,
                                     ATAN_ANGLE8),
                       6, 0, YAW_HOLD_IN_BAND);
-        if (d > 0x100) {
+        if (d > THIEF_NODE_REACHED_RANGE) {
           MoveActorAlongHeading(actor, 0x96, 0, 0, MOVE_LIFT);
         }
-        if (d < 0x100 && actor->posZ == g) {
+        if (d < THIEF_NODE_REACHED_RANGE && actor->posZ == g) {
           st->path->dir = -st->path->dir;
           st->path->cur = 8;
           actor->mode = THIEF_CLIMB_RUN_BACK;
@@ -1198,7 +1198,7 @@ void Level3_UpdateActors(void) {
       case THIEF_CLIMB_RUN_BACK:
         ANIM_GO(actor, THIEF_ANIM_RUN);
         st->speed = 0xC8;
-        if (actor->posZ < 0x800) {
+        if (actor->posZ < THIEF_FELL_BELOW_Z) {
           CopyVector(&actor->posX, &st->path->nodes[st->path->cur].x);
           SnapActorToGround(actor);
         }
@@ -1213,7 +1213,7 @@ void Level3_UpdateActors(void) {
 
       case THIEF_CIRCLE:
         ANIM_GO(actor, THIEF_ANIM_RUN);
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < THIEF_NEAR_RANGE) {
           int a = (ArcTan2(spy->posX - st->path->nodes[st->path->cur].x,
                                  SPY.posY - st->path->nodes[st->path->cur].y,
                                  ATAN_ANGLE8) +

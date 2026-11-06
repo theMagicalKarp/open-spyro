@@ -317,6 +317,24 @@ enum ThiefMode {
  * within LEDGE_RESET of its path node 6. */
 #define THIEF_NOTICE_RANGE 0x1C00
 #define THIEF_LEDGE_RESET_RANGE 0x1800
+/* Spyro within NEAR (2D): a CIRCLE thief starts circling, a LEDGE thief runs
+ * on from its wait node or jumps across from its taunt node. */
+#define THIEF_NEAR_RANGE 0x2000
+/* A GUARD thief: inside HOME of node 0 it backs away from Spyro; otherwise,
+ * with Spyro inside STEER, it orbits node 0 at ORBIT_RADIUS to keep node 0
+ * between them, and a broken-off chase returns to orbiting past ORBIT_RADIUS. */
+#define THIEF_GUARD_HOME_RANGE 0x1000
+#define THIEF_GUARD_STEER_RANGE 0x3000
+#define THIEF_GUARD_ORBIT_RADIUS 0x1800
+/* A perched HOP thief leaps home once Spyro is this close to node 6 or 7. */
+#define THIEF_PERCH_LEAVE_RANGE 0x800
+/* A path node counts as reached inside this 2D distance (leaps, hops). */
+#define THIEF_NODE_REACHED_RANGE 0x100
+/* A CLIMB thief below this world Z has fallen off: it is put back on its node. */
+#define THIEF_FELL_BELOW_Z 0x800
+/* A FLEE thief only reconsiders its ring direction while this far from both
+ * the node it is heading for and the one after. */
+#define THIEF_FLEE_TURN_CLEARANCE 0x190
 
 /* An egg thief's animations (nextAnim), from what each mode plays. */
 enum ThiefAnim {
