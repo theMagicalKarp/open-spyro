@@ -3302,11 +3302,11 @@ void Level19_UpdateActors(void) {
           st->call = (GetRandomU32() & 0x1F) + 0x50;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
-        if (st->mode == RAMKIND_PATH && ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
+        if (st->mode == RAMKIND_PATH && ApproxDist2D(&actor->posX, &SPY.posX) < RAM_PATH_RANGE) {
           actor->mode = RAM_RUN_PATH;
           continue;
         }
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1388) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < RAM_FLEE_RANGE) {
           int ang = ArcTan2(spy->posX - actor->posX,
                                   SPY.posY - actor->posY, ATAN_ANGLE8);
           int best = 0;

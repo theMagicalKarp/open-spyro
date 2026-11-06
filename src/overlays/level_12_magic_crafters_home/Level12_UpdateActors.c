@@ -1226,11 +1226,11 @@ void Level12_UpdateActors(void) {
 
       switch (actor->mode) {
       case PATHWALK_WAIT:
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1800) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < PATHWALK_NOTICE_RANGE) {
           int height = actor->posZ - actor->floorOffset;
           int drop = height - SPY.posZ;
 
-          if (drop > 0 ? drop < 0x800 : (SPY.posZ - height) < 0x800) {
+          if (drop > 0 ? drop < PATHWALK_NOTICE_DZ : (SPY.posZ - height) < PATHWALK_NOTICE_DZ) {
             ENTER_POSE4(actor, PATHWALK_PACE);
           }
         }
@@ -1239,11 +1239,11 @@ void Level12_UpdateActors(void) {
       case PATHWALK_PACE:
         if (ApproxDist2D(&actor->posX,
                           &st->path->nodes[st->path->cur].x) < 0x400) {
-          if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1801) {
+          if (ApproxDist2D(&actor->posX, &spy->posX) <= PATHWALK_NOTICE_RANGE) {
             int height = actor->posZ - actor->floorOffset;
             int drop = height - SPY.posZ;
 
-            if (drop > 0 ? drop >= 0x801 : (SPY.posZ - height) >= 0x801) {
+            if (drop > 0 ? drop > PATHWALK_NOTICE_DZ : (SPY.posZ - height) > PATHWALK_NOTICE_DZ) {
               goto pose0;
             }
             goto walk;
@@ -2554,20 +2554,20 @@ void Level12_UpdateActors(void) {
      * lines. */
     case ACTOR_TYPE_HOME_TALKER + 2: {
       if (actor->mode == TALKER_REARM) {
-        if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1000) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) >= TALKER_REARM_RANGE) {
           actor->mode = TALKER_READY;
         }
       } else if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
                   SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_CHARGE) &&
-                 ApproxDist2D(&actor->posX, &spy->posX) < 0x780 &&
+                 ApproxDist2D(&actor->posX, &spy->posX) < TALKER_TALK_RANGE &&
                  AbsAngleDelta8(SPY.bodyRotZ,
                                ArcTan2(actor->posX - spy->posX,
                                              actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8)) <
-                     0x20 &&
+                     TALKER_SPYRO_FACING_ANGLE &&
                  AbsAngleDelta8(actor->rotZ,
                                ArcTan2(spy->posX - actor->posX,
                                              g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8)) <
-                     0x28) {
+                     TALKER_FACING_ANGLE) {
         actor->mode = TALKER_REARM;
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         ResetSpyroLinearMotion();

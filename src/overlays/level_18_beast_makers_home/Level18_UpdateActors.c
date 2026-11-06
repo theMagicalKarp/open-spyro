@@ -2131,20 +2131,20 @@ void Level18_UpdateActors(void) {
     /* Talking dragon: when Spyro faces it up close, start its dialogue. */
     case ACTOR_TYPE_HOME_TALKER + 3: {
       if (actor->mode == TALKER_REARM) {
-        if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1000) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) >= TALKER_REARM_RANGE) {
           actor->mode = TALKER_READY;
         }
       } else if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
                   SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_CHARGE) &&
-                 ApproxDist2D(&actor->posX, &SPY.posX) < 0x780 &&
+                 ApproxDist2D(&actor->posX, &SPY.posX) < TALKER_TALK_RANGE &&
                  AbsAngleDelta8(SPY.bodyRotZ,
                                ArcTan2(actor->posX - SPY.posX,
                                              actor->posY - SPY.posY, ATAN_ANGLE8)) <
-                     0x20 &&
+                     TALKER_SPYRO_FACING_ANGLE &&
                  AbsAngleDelta8(actor->rotZ,
                                ArcTan2(SPY.posX - actor->posX,
                                              SPY.posY - actor->posY, ATAN_ANGLE8)) <
-                     0x28) {
+                     TALKER_FACING_ANGLE) {
         actor->mode = TALKER_REARM;
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         ResetSpyroLinearMotion();
@@ -3834,11 +3834,11 @@ void Level18_UpdateActors(void) {
           st->call = (GetRandomU32() & 0x1F) + 0x50;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
-        if (st->mode == RAMKIND_PATH && ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
+        if (st->mode == RAMKIND_PATH && ApproxDist2D(&actor->posX, &SPY.posX) < RAM_PATH_RANGE) {
           actor->mode = RAM_RUN_PATH;
           continue;
         }
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1388) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < RAM_FLEE_RANGE) {
           int ang = ArcTan2(spy->posX - actor->posX,
                                   SPY.posY - actor->posY, ATAN_ANGLE8);
           int best = 0;

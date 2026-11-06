@@ -1535,7 +1535,7 @@ void Level30_UpdateActors(void) {
      */
     case ACTOR_TYPE_HOME_TALKER + 5:
       if (actor->mode == TALKER_REARM) {
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < TALKER_REARM_RANGE) {
           break;
         }
         actor->mode = TALKER_READY;
@@ -1544,13 +1544,13 @@ void Level30_UpdateActors(void) {
 
       if (((unsigned int)g_nSpyroState <= SPYRO_ST_WALK || g_nSpyroState == SPYRO_ST_JOG ||
            g_nSpyroState == SPYRO_ST_RUN || g_nSpyroState == SPYRO_ST_CHARGE) &&
-          ApproxDist2D(&actor->posX, &spy->posX) < 0x780 &&
+          ApproxDist2D(&actor->posX, &spy->posX) < TALKER_TALK_RANGE &&
           AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                         ArcTan2(actor->posX - spy->posX,
-                                      actor->posY - SPY.posY, ATAN_ANGLE8)) < 0x20 &&
+                                      actor->posY - SPY.posY, ATAN_ANGLE8)) < TALKER_SPYRO_FACING_ANGLE &&
           AbsAngleDelta8(actor->rotZ,
                         ArcTan2(spy->posX - actor->posX,
-                                      g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8)) < 0x28) {
+                                      g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8)) < TALKER_FACING_ANGLE) {
         actor->mode = TALKER_REARM;
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         ResetSpyroLinearMotion();

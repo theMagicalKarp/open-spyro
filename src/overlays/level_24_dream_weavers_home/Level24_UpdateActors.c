@@ -2738,20 +2738,20 @@ void Level24_UpdateActors(void) {
      * facing it; the line depends on how far through the level he is. */
     case ACTOR_TYPE_HOME_TALKER + 4: {
       if (actor->mode == TALKER_REARM) {
-        if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1000) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) >= TALKER_REARM_RANGE) {
           actor->mode = TALKER_READY;
         }
       } else if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
                   SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_CHARGE) &&
-                 ApproxDist2D(&actor->posX, &spy->posX) < 0x780 &&
+                 ApproxDist2D(&actor->posX, &spy->posX) < TALKER_TALK_RANGE &&
                  AbsAngleDelta8(SPY.bodyRotZ,
                                ArcTan2(actor->posX - spy->posX,
                                              actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8)) <
-                     0x20 &&
+                     TALKER_SPYRO_FACING_ANGLE &&
                  AbsAngleDelta8(actor->rotZ,
                                ArcTan2(spy->posX - actor->posX,
                                              g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8)) <
-                     0x28) {
+                     TALKER_FACING_ANGLE) {
         actor->mode = TALKER_REARM;
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         ResetSpyroLinearMotion();

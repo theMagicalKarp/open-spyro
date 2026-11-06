@@ -1386,16 +1386,16 @@ void Level11_UpdateActors(void) {
         st->helper = g_pfnLevelSpawnActor(TIME_BONUS_TYPE(st->helperType), actor);
       }
 
-      if (ApproxDist2D(&actor->posX, &spy->posX) < 3000) {
+      if (ApproxDist2D(&actor->posX, &spy->posX) < FLIGHT_TARGET_NEAR_RANGE) {
         int height = actor->posZ - actor->floorOffset;
         int drop = height - SPY.posZ;
 
-        if (drop > 0 ? drop < 4000 : SPY.posZ - height < 4000) {
+        if (drop > 0 ? drop < FLIGHT_TARGET_NEAR_DZ : SPY.posZ - height < FLIGHT_TARGET_NEAR_DZ) {
           SubtractVector(targetFromSpyro, &actor->posX, &spy->posX);
           svW[2] = (targetFromSpyro[2] - 0xC0) * 4;
           targetFromSpyro[2] = (svW[2] - targetFromSpyro[2]) >> 2;
-          if (VectorLength(targetFromSpyro, VEC_LEN_XYZ) < 0x578 &&
-              PlaneDistanceAbs(&spy->posX, st) < 0x200) {
+          if (VectorLength(targetFromSpyro, VEC_LEN_XYZ) < FLIGHT_TARGET_HIT_RANGE &&
+              PlaneDistanceAbs(&spy->posX, st) < FLIGHT_TARGET_PLANE_DIST) {
             int i;
 
             TallyFlightTarget(st->tallyClass);

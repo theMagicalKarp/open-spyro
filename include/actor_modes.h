@@ -399,6 +399,10 @@ enum RoamingRamKind {
   RAMKIND_ROAMER = 0,
   RAMKIND_PATH = 1, /* RAM_GRAZE with Spyro close: RAM_RUN_PATH */
 };
+/* A grazing ram: a PATH ram sets off within PATH_RANGE (2D) of Spyro; any ram
+ * within FLEE_RANGE picks the path node facing away from him. */
+#define RAM_PATH_RANGE 0x1800
+#define RAM_FLEE_RANGE 0x1388
 
 /* ->mode of a path walker (ACTOR_TYPE_PATH_WALKER, PathState). */
 enum PathWalkerMode {
@@ -406,6 +410,10 @@ enum PathWalkerMode {
   PATHWALK_PACE = 1,  /* paces its path, heading for the node away from Spyro */
   PATHWALK_DYING = 2, /* hit: plays out its death animation */
 };
+/* "Near and level": Spyro within NOTICE_RANGE (2D) and NOTICE_DZ of its feet.
+ * A pacing walker drops back to WAIT at a node once he is not. */
+#define PATHWALK_NOTICE_RANGE 0x1800
+#define PATHWALK_NOTICE_DZ 0x800
 
 /* ->mode of a wandering critter (ACTOR_TYPE_WANDERING_CRITTER / _B / _C,
  * CritterKnockState / WanderKnockState). */
@@ -665,6 +673,14 @@ enum CannonSubMode {
   CANNON_FUSE = 1,   /* smokes, then sparks and recoils, then fires */
   CANNON_FLIGHT = 2, /* flies the shot along its path; at the end strikes the link */
 };
+
+/* ACTOR_TYPE_FLIGHT_TARGET is flown through when Spyro, within NEAR_RANGE (2D)
+ * and NEAR_DZ, is within HIT_RANGE (3D, height weighted) of it and
+ * PLANE_DIST of its plane. */
+#define FLIGHT_TARGET_NEAR_RANGE 3000
+#define FLIGHT_TARGET_NEAR_DZ 4000
+#define FLIGHT_TARGET_HIT_RANGE 0x578
+#define FLIGHT_TARGET_PLANE_DIST 0x200
 
 /* ->mode of a banking flight target (ACTOR_TYPE_BANKING_FLIGHT_TARGET,
  * RollerState; flight levels 5/17/23). */
@@ -2493,9 +2509,16 @@ enum SinkingBlockMode {
 /* ->mode of a homeworld talker (ACTOR_TYPE_HOME_TALKER .. + 4; levels
  * 0/6/12/18/24). Level 30's boss-door trigger (+ 5) runs the same two. */
 enum HomeTalkerMode {
-  TALKER_REARM = 0, /* waits for Spyro to walk away (>= 0x1000), then READY */
+  TALKER_REARM = 0, /* waits for Spyro to walk away (TALKER_REARM_RANGE), then READY */
   TALKER_READY = 1, /* Spyro walks up facing it: starts its actor cutscene, REARM */
 };
+/* A READY talker starts talking when Spyro, on foot or charging, is within
+ * TALK_RANGE (2D), heading within SPYRO_FACING_ANGLE (8-bit) of it, and it
+ * faces him within FACING_ANGLE; it re-arms once he is REARM_RANGE away. */
+#define TALKER_REARM_RANGE 0x1000
+#define TALKER_TALK_RANGE 0x780
+#define TALKER_SPYRO_FACING_ANGLE 0x20
+#define TALKER_FACING_ANGLE 0x28
 
 /* ->mode of the level 32 flame chunk switch (ACTOR_TYPE_FLAME_CHUNK_SWITCH,
  * FlameChunkSwitchState); the mode is also the animation index. */

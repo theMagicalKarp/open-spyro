@@ -1143,11 +1143,11 @@ void Level15_UpdateActors(void) {
 
       switch (actor->mode) {
       case PATHWALK_WAIT:
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1800) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < PATHWALK_NOTICE_RANGE) {
           int height = actor->posZ - actor->floorOffset;
           int drop = height - SPY.posZ;
 
-          if (drop > 0 ? drop < 0x800 : (SPY.posZ - height) < 0x800) {
+          if (drop > 0 ? drop < PATHWALK_NOTICE_DZ : (SPY.posZ - height) < PATHWALK_NOTICE_DZ) {
             ENTER_POSE4(actor, PATHWALK_PACE);
           }
         }
@@ -1156,11 +1156,11 @@ void Level15_UpdateActors(void) {
       case PATHWALK_PACE:
         if (ApproxDist2D(&actor->posX,
                           &st->path->nodes[st->path->cur].x) < 0x400) {
-          if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1801) {
+          if (ApproxDist2D(&actor->posX, &spy->posX) <= PATHWALK_NOTICE_RANGE) {
             int height = actor->posZ - actor->floorOffset;
             int drop = height - SPY.posZ;
 
-            if (drop > 0 ? drop >= 0x801 : (SPY.posZ - height) >= 0x801) {
+            if (drop > 0 ? drop > PATHWALK_NOTICE_DZ : (SPY.posZ - height) > PATHWALK_NOTICE_DZ) {
               goto pose0;
             }
             goto walk;
