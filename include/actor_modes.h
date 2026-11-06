@@ -26,6 +26,17 @@ enum CollectSubMode {
 #define COLLECT_TOUCH_ABOVE 0x200
 #define COLLECT_ARM_FRAMES 0x20
 #define COLLECT_HOMING_COLLECT_TICK 0x40
+/* COLLECT_BOUNCE: a knocked-loose pickup moves at most BOUNCE_MAX_STEP a
+ * frame, falls BOUNCE_GRAVITY faster a frame down to BOUNCE_MAX_FALL, and
+ * collides as a COLLECT_RADIUS sphere centred that far above its base. On its
+ * last bounce it rests once within REST_DROP of the floor on a slope under
+ * REST_MAX_SLOPE (8-bit). */
+#define COLLECT_BOUNCE_MAX_STEP 0xDC
+#define COLLECT_BOUNCE_GRAVITY 5
+#define COLLECT_BOUNCE_MAX_FALL 0xDC
+#define COLLECT_RADIUS 0xF0
+#define COLLECT_REST_DROP 0x190
+#define COLLECT_REST_MAX_SLOPE 0x18
 #define COLLECT_IDLE_RANGE 0x2000
 /* COLLECT_HOMING: the pickup sits st->timer / 32 of the way from where the
  * pull began (the state's first vector) to Spyro, on a sine arc; it snaps

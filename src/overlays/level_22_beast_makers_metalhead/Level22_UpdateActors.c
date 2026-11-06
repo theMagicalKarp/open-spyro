@@ -2257,14 +2257,14 @@ void Level22_UpdateActors(void) {
 
         speed = VectorLength(g232, VEC_LEN_XYZ);
 
-        if (220 < speed) {
-          ScaleVector3ByRatio(g232, speed, 220);
+        if (COLLECT_BOUNCE_MAX_STEP < speed) {
+          ScaleVector3ByRatio(g232, speed, COLLECT_BOUNCE_MAX_STEP);
         }
 
         AddVector(g232, &actor->posX, g232);
 
-        if (-220 < st->vel[2]) {
-          st->vel[2] -= g_nFrameStep * 5;
+        if (-COLLECT_BOUNCE_MAX_FALL < st->vel[2]) {
+          st->vel[2] -= g_nFrameStep * COLLECT_BOUNCE_GRAVITY;
         }
 
         if (g232[2] < 0) {
@@ -2274,9 +2274,9 @@ void Level22_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         } else {
-          g232[2] += 240;
+          g232[2] += COLLECT_RADIUS;
 
-          if (CollideSphereWithWorldAndActors(g232, 240, 240)) {
+          if (CollideSphereWithWorldAndActors(g232, COLLECT_RADIUS, COLLECT_RADIUS)) {
             if (GetGroundTriggerRegionType() == 0) {
               if (actor->type != ACTOR_TYPE_EXTRA_LIFE && actor->type != ACTOR_TYPE_SPARX_FOOD) {
                 CollectPickupActor(actor);
@@ -2287,14 +2287,14 @@ void Level22_UpdateActors(void) {
 
             CopyVector(bounceNormal, &g_anCollisionHitNormal);
             CopyVector(&actor->posX, &g_anCollisionResolvedPos);
-            actor->posZ -= 0xF0;
+            actor->posZ -= COLLECT_RADIUS;
 
             if (st->bounces == 0) {
               int groundHeight = FindGroundHeightBelow(g232, 0x400);
               int groundAngle =
                   (signed char)ArcTan2_8bit(bounceNormal[2], VectorLength(bounceNormal, VEC_LEN_XY));
 
-              if ((g232[2] - 400) < groundHeight && groundAngle < 24) {
+              if ((g232[2] - COLLECT_REST_DROP) < groundHeight && groundAngle < COLLECT_REST_MAX_SLOPE) {
                 actor->subMode = COLLECT_REST;
                 CopyVector(&actor->posX, g232);
                 actor->posZ = groundHeight;

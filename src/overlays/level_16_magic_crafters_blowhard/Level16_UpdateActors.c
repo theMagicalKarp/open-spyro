@@ -1044,14 +1044,14 @@ void Level16_UpdateActors(void) {
 
         speed = VectorLength(homingStep, VEC_LEN_XYZ);
 
-        if (220 < speed) {
-          ScaleVector3ByRatio(homingStep, speed, 220);
+        if (COLLECT_BOUNCE_MAX_STEP < speed) {
+          ScaleVector3ByRatio(homingStep, speed, COLLECT_BOUNCE_MAX_STEP);
         }
 
         AddVector(homingStep, &actor->posX, homingStep);
 
-        if (-220 < st->vel[2]) {
-          st->vel[2] -= g_nFrameStep * 5;
+        if (-COLLECT_BOUNCE_MAX_FALL < st->vel[2]) {
+          st->vel[2] -= g_nFrameStep * COLLECT_BOUNCE_GRAVITY;
         }
 
         if (homingStep[2] < 0) {
@@ -1061,9 +1061,9 @@ void Level16_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         } else {
-          homingStep[2] += 240;
+          homingStep[2] += COLLECT_RADIUS;
 
-          if (CollideSphereWithWorldAndActors(homingStep, 240, 240)) {
+          if (CollideSphereWithWorldAndActors(homingStep, COLLECT_RADIUS, COLLECT_RADIUS)) {
             if (GetGroundTriggerRegionType() == 0) {
               if (actor->type != ACTOR_TYPE_EXTRA_LIFE && actor->type != ACTOR_TYPE_SPARX_FOOD) {
                 CollectPickupActor(actor);
@@ -1074,14 +1074,14 @@ void Level16_UpdateActors(void) {
 
             CopyVector(hitNormal, &g_anCollisionHitNormal);
             CopyVector(&actor->posX, &g_anCollisionResolvedPos);
-            actor->posZ -= 0xF0;
+            actor->posZ -= COLLECT_RADIUS;
 
             if (st->bounces == 0) {
               int groundHeight = FindGroundHeightBelow(homingStep, 0x400);
               int groundAngle =
                   (signed char)ArcTan2_8bit(hitNormal[2], VectorLength(hitNormal, VEC_LEN_XY));
 
-              if ((homingStep[2] - 400) < groundHeight && groundAngle < 24) {
+              if ((homingStep[2] - COLLECT_REST_DROP) < groundHeight && groundAngle < COLLECT_REST_MAX_SLOPE) {
                 actor->subMode = COLLECT_REST;
                 CopyVector(&actor->posX, homingStep);
                 actor->posZ = groundHeight;

@@ -640,14 +640,14 @@ void Level23_UpdateActors(void) {
 
         speed = VectorLength(bouncePos, VEC_LEN_XYZ);
 
-        if (220 < speed) {
-          ScaleVector3ByRatio(bouncePos, speed, 220);
+        if (COLLECT_BOUNCE_MAX_STEP < speed) {
+          ScaleVector3ByRatio(bouncePos, speed, COLLECT_BOUNCE_MAX_STEP);
         }
 
         AddVector(bouncePos, &actor->posX, bouncePos);
 
-        if (-220 < st->vel[2]) {
-          st->vel[2] -= g_nFrameStep * 5;
+        if (-COLLECT_BOUNCE_MAX_FALL < st->vel[2]) {
+          st->vel[2] -= g_nFrameStep * COLLECT_BOUNCE_GRAVITY;
         }
 
         if (bouncePos[2] < 0) {
@@ -660,9 +660,9 @@ void Level23_UpdateActors(void) {
           int r;
           register int *pos asm("$4"); /* a0, as in the original (A374) */
 
-          bouncePos[2] += 240;
+          bouncePos[2] += COLLECT_RADIUS;
 
-          r = CollideSphereWithWorldAndActors(bouncePos, 240, 240);
+          r = CollideSphereWithWorldAndActors(bouncePos, COLLECT_RADIUS, COLLECT_RADIUS);
           pos = &actor->posX;
           if (r) {
             if (GetGroundTriggerRegionType(pos) == 0) {
@@ -675,14 +675,14 @@ void Level23_UpdateActors(void) {
 
             CopyVector(bounceNormal, &g_anCollisionHitNormal);
             CopyVector(&actor->posX, &g_anCollisionResolvedPos);
-            actor->posZ -= 0xF0;
+            actor->posZ -= COLLECT_RADIUS;
 
             if (st->bounces == 0) {
               int groundHeight = FindGroundHeightBelow(bouncePos, 0x400);
               int groundAngle =
                   (signed char)ArcTan2_8bit(bounceNormal[2], VectorLength(bounceNormal, VEC_LEN_XY));
 
-              if ((bouncePos[2] - 400) < groundHeight && groundAngle < 24) {
+              if ((bouncePos[2] - COLLECT_REST_DROP) < groundHeight && groundAngle < COLLECT_REST_MAX_SLOPE) {
                 actor->subMode = COLLECT_REST;
                 CopyVector(&actor->posX, bouncePos);
                 actor->posZ = groundHeight;
@@ -722,7 +722,7 @@ void Level23_UpdateActors(void) {
             }
 
           } else {
-            bouncePos[2] -= 240;
+            bouncePos[2] -= COLLECT_RADIUS;
             CopyVector(pos, bouncePos);
             FindGroundHeightBelow(bouncePos, 0x10000);
             EncodeHitNormalToActorGroundCode(actor);

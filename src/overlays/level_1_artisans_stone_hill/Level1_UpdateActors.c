@@ -1857,15 +1857,15 @@ void Level1_UpdateActors(void) {
           RShiftVector3(bouncePos, 1);
           dist = VectorLength(bouncePos, VEC_LEN_XYZ);
 
-          if (dist >= 0xDD) {
-            ScaleVector3ByRatio(bouncePos, dist, 0xDC);
+          if (dist > COLLECT_BOUNCE_MAX_STEP) {
+            ScaleVector3ByRatio(bouncePos, dist, COLLECT_BOUNCE_MAX_STEP);
           }
 
           at = &actor->posX;
           AddVector(bouncePos, at, bouncePos);
 
-          if (st->vel[2] >= -0xDB) {
-            st->vel[2] -= g_nFrameStep * 5;
+          if (st->vel[2] > -COLLECT_BOUNCE_MAX_FALL) {
+            st->vel[2] -= g_nFrameStep * COLLECT_BOUNCE_GRAVITY;
           }
 
           if (bouncePos[2] < 0) {
@@ -1876,9 +1876,9 @@ void Level1_UpdateActors(void) {
             continue;
           }
 
-          bouncePos[2] += 0xF0;
+          bouncePos[2] += COLLECT_RADIUS;
 
-          if (CollideSphereWithWorldAndActors(bouncePos, 0xF0, 0xF0) != 0) {
+          if (CollideSphereWithWorldAndActors(bouncePos, COLLECT_RADIUS, COLLECT_RADIUS) != 0) {
             if (GetGroundTriggerRegionType() == 0) {
               if (actor->type != ACTOR_TYPE_EXTRA_LIFE && actor->type != ACTOR_TYPE_SPARX_FOOD) {
                 CollectPickupActor(actor);
@@ -1889,14 +1889,14 @@ void Level1_UpdateActors(void) {
 
             CopyVector(bounceNormal, &g_anCollisionHitNormal);
             CopyVector(at, &g_anCollisionResolvedPos);
-            actor->posZ -= 0xF0;
+            actor->posZ -= COLLECT_RADIUS;
 
             if (st->bounce == 0) {
               int floor = FindGroundHeightBelow(bouncePos, 0x400);
               int slope =
                   (signed char)ArcTan2_8bit(bounceNormal[2], VectorLength(bounceNormal, VEC_LEN_XY));
 
-              if ((bouncePos[2] - 0x190) < floor && slope < 0x18) {
+              if ((bouncePos[2] - COLLECT_REST_DROP) < floor && slope < COLLECT_REST_MAX_SLOPE) {
                 actor->subMode = COLLECT_REST;
                 CopyVector(at, bouncePos);
                 actor->posZ = floor;
