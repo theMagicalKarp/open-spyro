@@ -3,6 +3,7 @@
 #include "main_shared.h"
 #include "match_asm.h"
 #include "save_game.h"
+#include "spu.h"
 
 /* 0x80059594 (720 bytes) — memcard save-block deserializer: the inverse of
    BuildSaveGameBuffer.  Unpacks a 0x600-byte save buffer back into live game
@@ -47,7 +48,7 @@ int ApplySaveGameBuffer(unsigned char *buf) {
   int hasEggs;
   g_nActiveLevelId = buf[SAVE_OFFSET(levelId)];
   sfx = buf[SAVE_OFFSET(sfxVolume)];
-  sfxMix = (sfx * 0x3FFF) / 10;
+  sfxMix = (sfx * SPU_VOLUME_MAX) / 10;
   g_nSfxMixVolume_blk[0] = sfxMix;
   g_nSfxVolume = sfx;
   g_nSoundMasterVolume = (sfxMix << 0xC) / 16383;

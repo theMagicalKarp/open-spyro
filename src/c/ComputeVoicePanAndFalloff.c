@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "spu.h"
 
 /* 3D positional sound pan + distance falloff. out[L,R] gains are derived from
    the pan byte (0x80 = center; wraps to full-L/full-R via the 0x40/0xbf
@@ -48,12 +49,12 @@ void ComputeVoicePanAndFalloff(short *out, int vol, int pan, unsigned int range,
     if (out[0] < 0) {
       out[0] = 0;
     } else if (out[0] >= 0x4000) {
-      out[0] = 0x3FFF;
+      out[0] = SPU_VOLUME_MAX;
     }
     if (out[1] < 0) {
       out[1] = 0;
     } else if (out[1] >= 0x4000) {
-      out[1] = 0x3FFF;
+      out[1] = SPU_VOLUME_MAX;
     }
     if (g_nSoundMonoMixFlag != 0) {
       cur = (short)(((unsigned int)(out[1] + out[0])) >> 1);

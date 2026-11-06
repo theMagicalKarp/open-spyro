@@ -93,6 +93,7 @@
 #include "actor.h"
 #include "match_asm.h"
 #include "cd_stream.h"
+#include "spu.h"
 
 extern void exit() __attribute__((noreturn));
 
@@ -227,8 +228,8 @@ void Credits_Update(void) {
     g_pCreditsScrollHeader = e4;
     SAMPLE_RAW(g_pLevelSampleBankEntries, int, nPitchMode) = 0;
     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
-    g_nSfxOverrideVolL = 0x3FFF;
-    g_nSfxOverrideVolR = 0x3FFF;
+    g_nSfxOverrideVolL = SPU_VOLUME_MAX;
+    g_nSfxOverrideVolR = SPU_VOLUME_MAX;
     PlaySoundEffect(0, 0, SFX_MODE_PANNED, 0);
     }
     {

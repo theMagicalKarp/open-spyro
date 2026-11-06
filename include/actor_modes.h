@@ -53,7 +53,7 @@ enum SparxSubMode {
 #define SPARX_TARGET_LEASH 0x2000
 #define SPARX_CATCH_RANGE 0x200
 
-/* g_nSfxOverrideVolL/R (SPU volume, 0x3FFF = full) for Sparx's buzz when he
+/* g_nSfxOverrideVolL/R (of SPU_VOLUME_MAX) for Sparx's buzz when he
  * sets off to fetch, and for the chime when he hands the pickup over. */
 #define SPARX_BUZZ_VOLUME 0x2000
 #define SPARX_HANDOVER_VOLUME 0x3600

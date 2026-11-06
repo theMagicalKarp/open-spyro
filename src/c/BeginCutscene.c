@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "sample_bank.h"
+#include "spu.h"
 
 /* Enter the scripted-cutscene gamestate (0x8002d338, GS_CUTSCENE). The
    cutscene id is g_nCutsceneId: 0 title backdrop, 1 opening story, 2/3
@@ -40,8 +41,8 @@ void BeginCutscene(void) {
   SAMPLE_RAW(g_pActiveCutsceneSoundDef, short, nPitchSpread) = 0;
   SAMPLE_RAW(g_pActiveCutsceneSoundDef, short, nPitchStep) = 0;
   SAMPLE_RAW(g_pActiveCutsceneSoundDef, int, nPitchMode) = 0;
-  g_nSfxOverrideVolL = 0x3FFF;
-  g_nSfxOverrideVolR = 0x3FFF;
+  g_nSfxOverrideVolL = SPU_VOLUME_MAX;
+  g_nSfxOverrideVolR = SPU_VOLUME_MAX;
   g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
 
   PlaySoundEffect(0, 0, SFX_MODE_PANNED, &g_bSceneSfxVoiceMarker);

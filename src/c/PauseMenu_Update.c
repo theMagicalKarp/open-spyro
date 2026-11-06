@@ -7,6 +7,7 @@
 #include "pad_buttons.h"
 #include "pause_menu.h"
 #include "sample_bank.h"
+#include "spu.h"
 #include "vecmath.h"
 
 extern unsigned char g_abTitlescreenOverlayEnd[]; /* first free byte past the
@@ -126,8 +127,8 @@ void PauseMenu_Update(void) {
         SFX(SFX_MENU_SELECT);
         g_nSfxVolume++;
       }
-      g_nSfxMixVolume_blk[0] = g_nSfxVolume * 0x3FFF / 10;
-      g_nSoundMasterVolume = (g_nSfxMixVolume_blk[0] << 12) / 0x3FFF;
+      g_nSfxMixVolume_blk[0] = g_nSfxVolume * SPU_VOLUME_MAX / 10;
+      g_nSoundMasterVolume = (g_nSfxMixVolume_blk[0] << 12) / SPU_VOLUME_MAX;
       return;
     case OPTIONS_ROW_MUSIC_VOLUME:
       if ((g_dwPadPressed & PAD_LEFT) && g_nMusicVolume > 0) {
