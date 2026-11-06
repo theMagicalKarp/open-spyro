@@ -4,7 +4,9 @@
 
 /* 0x8003a920 — blend two vectors by a per-mode weight pair: pick the
    weight table from the record's mode byte (+2), scale vecA/vecB by the
-   idx'th pair, sum into out, then >>10 to renormalize. */
+   idx'th pair, sum into out, then >>10 to renormalize.
+   Unreferenced: no call, branch, pointer or table entry in main or any overlay
+   (xref). */
 void BlendVectorPairByMode(int *out, unsigned char *rec, int idx, int *vecA,
                            int *vecB) {
   int va[4];

@@ -205,8 +205,10 @@ enum EmitEffect {
   EMIT_ACTOR_PLUME = 0x6,    /* class-3 plume jittered around the Actor * in pos;
                               * radius and rise come from its state words 1 and 0;
                               * random colour when its subMode is set */
-  EMIT_SPEED_DUST = 0x9,     /* Spyro's run dust: a spark at the velocity effectArg
-                              * points to, red/orange/yellow/grey by g_nSpyroMotionSpeed */
+  EMIT_SUPERCHARGE_TRAIL = 0x9, /* Spyro's supercharge trail (DispatchSpyroPhysicsByState:
+                              * SUPERCHARGE, and an airborne charge while supercharged): a
+                              * spark at the velocity effectArg points to, red / orange /
+                              * yellow / grey by g_nSpyroMotionSpeed (SUPERCHARGE_TRAIL_*) */
   EMIT_SPYRO_ORBIT_SPARKLE = 0xA, /* sparkle circling Spyro; freed when he is hidden */
   EMIT_FADING_SPARK = 0x10,  /* spark from pos[0..2] at velocity pos[3..5]; effectArg ->
                               * {life, grey >> 3}; all channels fade by 4 a frame */
@@ -265,5 +267,11 @@ enum EmitEffect {
   EMIT_DUST_PUFF = 0x21,     /* Spyro's dust puff (landing, skid, turn, bonk) at his feet, or
                               * 0x164 ahead of his body for effectArg 1, moving at pos */
 };
+
+/* g_nSpyroMotionSpeed above which a supercharge trail spark is red, orange or
+ * yellow (grey below the last). */
+#define SUPERCHARGE_TRAIL_RED_SPEED 0x5780
+#define SUPERCHARGE_TRAIL_ORANGE_SPEED 0x4240
+#define SUPERCHARGE_TRAIL_YELLOW_SPEED 0x3680
 
 #endif /* OPEN_SPYRO_EMIT_RECORD_H */

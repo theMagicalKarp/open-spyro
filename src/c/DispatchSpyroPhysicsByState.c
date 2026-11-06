@@ -284,7 +284,7 @@ void DispatchSpyroPhysicsByState(void) {
       dust[1] += (GetRandomU32() & 0xFE) - 0x7F;
       CopyVector(dustVel, &SPY[SPY_MOTION]);
       RShiftVector3(dustVel, 6);
-      g_pfnLevelEmitParticles(1, EMIT_SPEED_DUST, dust, (int)dustVel);
+      g_pfnLevelEmitParticles(1, EMIT_SUPERCHARGE_TRAIL, dust, (int)dustVel);
     }
     break;
   case SPYRO_ST_SIDESTEP_L1:
@@ -331,7 +331,7 @@ void DispatchSpyroPhysicsByState(void) {
     trail[2] -= SPYRO_RADIUS;
     CopyVector(trailVel, &SPY[SPY_MOTION]);
     RShiftVector3(trailVel, 6);
-    g_pfnLevelEmitParticles(1, EMIT_SPEED_DUST, trail, (int)trailVel);
+    g_pfnLevelEmitParticles(1, EMIT_SUPERCHARGE_TRAIL, trail, (int)trailVel);
     break;
   }
   if (SPY[SPY_STATE] == SPYRO_ST_HAZARD) {

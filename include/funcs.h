@@ -115,6 +115,7 @@ int ArcTan2(int x, int y, int scale);
 /* 0x80016c58 / 0x80016cb0: sine / cosine of a 12-bit angle (1.12 result), linearly interpolated between the 256 LUT entries (angle >> 4, 4-bit fraction). */
 int LookupSine(int angle);
 
+/* 0x80016cb0 (hand-written): cosine of a 12-bit angle (0x1000 per turn) from g_anCosineLut (one entry per 0x10), linearly interpolated between entries; 0x1000 = 1.0. */
 int LookupCosine(int angle);
 
 /* 0x80016d08: Wraps GTE LZCS/LZCR. Returns 0 if input is 0, otherwise returns (0x1f - leading_zeros), i.e. the bit position of the most-significant set bit. Used by lighting/depth normalization in DrawPortalsAndSky. */
@@ -136,6 +137,7 @@ void WorldToCameraRotate(int *src, int *dst);
 #define VEC_LEN_XY 0  /* VectorLength: X/Y only (Z ignored) */
 #define VEC_LEN_XYZ 1 /* VectorLength: all three components */
 #endif
+/* 0x800171fc (hand-written): integer length of `vec` (X/Y only with VEC_LEN_XY): squares via the GTE, then a leading-zero normalised g_anSqrtLUT square root. */
 int VectorLength(int *vec, int withZ);
 
 /* 0x8001729c: One Newton-Raphson refinement step for sqrt(x^2+y^2[+z^2]). Loads vec into IR1/IR2/IR3 (Z skipped when mode==0), squares via gte_sqr0_b, uses GTE LZCS/LZCR to derive a half-bit-length shift, then returns refined estimate. Skips refinement when len^2 fits in <=12 bits. */
@@ -156,12 +158,16 @@ void LShiftVector3(int *vec, int shift);
 /* 0x800176c8: Arithmetic right-shifts each of the 3 signed ints at *v by (n & 0x1f). Used for fixed-point precision conversion in the actor draw path. */
 void RShiftVector3(int *vec, int shift);
 
+/* 0x800176f0 (hand-written): vec[0..2] = 0. */
 void ZeroVector(int *vec);
 
+/* 0x80017700 (hand-written): dst[0..2] = src[0..2]. */
 void CopyVector(int *dst, int *src);
 
+/* 0x80017758 (hand-written): dst = a + b, per component (dst may alias either). */
 void AddVector(int *dst, int *a, int *b);
 
+/* 0x8001778c (hand-written): dst = a - b, per component (dst may alias either). */
 void SubtractVector(int *dst, int *a, int *b);
 
 /* 0x800177c0: Scale VECTOR by IR0 fixed-point factor (gte_gpl0 with MAC=0); store saturated IR1/IR2/IR3 packed via stlvnl0 into long*. Sibling of LerpVectorGTE but single-input + saturated short output. */
@@ -502,6 +508,7 @@ void UpdateCameraFrame(void);
 #define YAW_HOLD_IN_BAND 0 /* inside the threshold band: stop turning */
 #define YAW_STEP_IN_BAND 1 /* inside the band: keep stepping onto the target */
 #endif
+/* 0x80038dc0: turns actor->rotZ toward Spyro by at most `step` (x1.5 / x2 at frame delta 3 / 4); returns 0 while outside the `threshold` dead-band, 1 inside it (with one more step when `flag` is YAW_STEP_IN_BAND). */
 int TrackEntityYawTowardSpyro(Actor *actor, int step, int threshold, int flag);
 
 /* 0x8003a720: Resets a newly allocated actor to its spawn defaults: mode ACTOR_SPAWN_MODE with anim/nextAnim ACTOR_SPAWN_ANIM at frame 0 (nextFrame 1, frameRate 0x20), cullRadius 0x10, updateDist ACTOR_UPDATE_ALWAYS, otBias 4, group 0xFF, gateChunk GATE_CHUNK_ALWAYS, dropKind DROP_GEM_ROLL, renderList 0x20, voiceRow VOICE_ROW_NONE; flags, rotation, groundCode, scale, floorOffset and the tint word are zeroed. Every level's SpawnActor runs it first; so do the flight UpdateActors, DragonRescue_Update and TickCutsceneBundleLoadStream. */
@@ -627,7 +634,7 @@ void TickSpyroFlameAttack(void);
 /* 0x80049dfc: Anim-layer-2 sub-frame advance: g_bSpyroAnimLayer2Substep += step; on overflow >= 0x10 wraps and advances g_bSpyroAnimLayer2Frame (frame), snapshots g_bSpyroAnimLayer2Current → g_bSpyroAnimLayer2Prev and g_bSpyroAnimLayer2Frame → g_bSpyroAnimLayer2FramePrev. Wraps to the anim's SPYRO_ANIM_DESC_LOOP_START frame when it reaches SPYRO_ANIM_DESC_LOOP_END. Layer-2 byte set at g_bSpyroAnimLayer2Prev / Current / FramePrev / Frame / Substep. */
 void AdvanceSpyroAnimLayer2Frame(int step);
 
-/* 0x80049e8c: Per-tick anim-layer-2 state machine (analogous to TickSpyroAnimLayer1 but for the second overlay). Only ticks when g_nSpyroAnimLayer2Phase == 0 (layer-2 enabled) AND g_nSpyroAnimLayer2Request == g_nSpyroAnimLayer2Active (state stable). If g_nSpyroAnimLayer2Request == 0 snapshots primary g_bSpyro* into layer-2 byte set (g_bSpyroAnimLayer2Prev / Current / FramePrev / Frame / Substep); else AdvanceSpyroAnimLayer2Frame(g_nSpyroAnimLayer2Rate rate). g_nSpyroAnimLayer2Request is forcibly zeroed by TickSpyroAnimLayer2GateTimer when primary anims block layer 2. */
+/* 0x80049e8c: Per-tick anim-layer-2 state machine (analogous to TickSpyroAnimLayer1 but for the second overlay). Vestigial in the shipped game: nothing stores a nonzero g_nSpyroAnimLayer2Phase / Rate / Active, and g_nSpyroAnimLayer2Request is only ever cleared (TickSpyroAnimLayer2GateTimer), so layer 2 always mirrors the primary anim for RasterizeSpyroModel and the AdvanceSpyroAnimLayer2Frame arm never runs (xref). Only ticks when g_nSpyroAnimLayer2Phase == 0 (layer-2 enabled) AND g_nSpyroAnimLayer2Request == g_nSpyroAnimLayer2Active (state stable). If g_nSpyroAnimLayer2Request == 0 snapshots primary g_bSpyro* into layer-2 byte set (g_bSpyroAnimLayer2Prev / Current / FramePrev / Frame / Substep); else AdvanceSpyroAnimLayer2Frame(g_nSpyroAnimLayer2Rate rate). g_nSpyroAnimLayer2Request is forcibly zeroed by TickSpyroAnimLayer2GateTimer when primary anims block layer 2. */
 void TickSpyroAnimLayer2(void);
 
 /* 0x80049f3c: Layer-2 gate timer. If neither g_bSpyroAnimPrev nor g_bSpyroAnimCurrent has SPYRO_ANIM_NO_OVERLAY, counts g_nSpyroAnimLayer2GateFrames up (how long layer 2 has been allowed); otherwise drops the layer-2 request (g_nSpyroAnimLayer2Request = 0). */
@@ -650,6 +657,7 @@ void TickSpyroFrameNoInput(void);
 #define RESET_SPYRO_SOFT 0 /* clears input/charge flags, rebuilds body angles */
 #define RESET_SPYRO_FULL 1 /* wipes the Spyro block (keeps pos, euler, Sparx), state IDLE */
 #endif
+/* 0x8004ac24: resets Spyro's entity record. Stops a looping-sfx state's voices; with `full` wipes the 0x2A4-byte record (keeping world position, persistent euler and the level-health flag) and re-enters SPYRO_ST_IDLE, else clears only the transient flags and timers. */
 void ResetSpyroEntity(int full);
 
 /* 0x8004ae38: Ray cast against world geometry + dynamic actor meshes. Args: ray-start (vec3), ray-end (vec3), unused, scratch buffer. Walks the 4-cell actor grid at g_pActorSpatialGridBase+0x1000 (testing each actor's local-frame mesh via the per-actor-mesh table at &g_apActorMeshTable[idx]+0x38) and the world-chunk index at g_pWorldCollisionHeader. On hit writes: g_anCollisionResolvedPos..b88 = hit point, g_anCollisionHitNormal..70 = hit normal (or surface vector), g_pCollisionHitActor = hit actor ptr (NULL = world hit), g_nCollisionHitTriIndex = hit triangle index (-1 = actor hit). Returns 1 on hit, 0 otherwise. Shared by every Spyro line probe (ProbeSpyroLedgeForward / ProbeSpyroGroundContact / StepSpyroOntoLocalFloor / NudgeSpyroFromWallProbes) and CheckLineOfSightSegment. */
@@ -796,6 +804,7 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner, unsigned int m
 #ifndef VOICE_RELEASE
 #define VOICE_RELEASE 4 /* StopSoundVoiceByIndex: key off and free the voice row (2 does the same; other modes only key off) */
 #endif
+/* 0x80056200: queues an SPU key-off for voice row `index`; with `mode` 2 or 4 also frees its sample-callback slot and resets its common-attr shadow record. */
 void StopSoundVoiceByIndex(int index, int mode);
 
 /* 0x800562a4: Stops every voice row owned by actor: all of them with VOICE_STOP_ALL, only the VOICE_ROW_LOOPING ones with VOICE_STOP_LOOPING. Each is freed as in StopSoundVoiceByIndex and the voice bits are ORed into g_dwSpuPendingKeyOff. Callers: ChangeSpyroState, ResetSpyroEntity, PlayActorMeshVoice and most levels' UpdateActors. */
@@ -1253,7 +1262,7 @@ int sprintf(char *buf, char *fmt, ...);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined1 *memmove(undefined1 *param_1, undefined1 *param_2, int param_3);
 
-/* 0x8006389c: PSn00bSDK-style _print: iterates a null-terminated string and calls WriteChar per byte. NULL input is replaced by g_szNullPlaceholder (likely "(null)"). No newline appended. Building block for WritePrintf's %s. */
+/* 0x8006389c: PSn00bSDK-style _print: iterates a null-terminated string and calls WriteChar per byte. NULL input is replaced by g_szNullPlaceholder ("<NULL>"). No newline appended. Building block for WritePrintf's %s. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined WriteString(byte *param_1);
 
@@ -2110,6 +2119,7 @@ int PlaneDistanceAbs(int *pos, int *plane);
 #ifndef STEER_NO_BLOCK
 #define STEER_NO_BLOCK 0xFF /* blockA / blockB: no blocked heading */
 #endif
+/* 0x80038638: steers `actor` around `tgt` rather than at it: aims at the point `radius` from it on the side the actor is turning toward and walks that heading (`speed`, turn `turnStep` / `turnThreshold`). Returns the residual |angle error| when lined up within `deadzone` or nothing moved, 0x100 when the heading is within 5 of a blocked one (`blockA` / `blockB`, STEER_NO_BLOCK = none) on the turn side, else the negated MoveActorAlongHeading result. */
 int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int deadzone, int speed, int turnStep, int turnThreshold, int blockA, int blockB, int contactRadius, int wallRadius, int flags);
 
 /* 0x80039e94: Path-follow that turns in place while the heading error exceeds
@@ -2121,6 +2131,7 @@ int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int dead
 #define PIVOT_SUB_WALKING 1 /* heading within `lim`: walking to the node */
 #define PIVOT_SUB_TURNING 2 /* turning in place toward the node */
 #endif
+/* 0x80039e94: waypoint path follower: turns in place toward path node `path->cur` (deferred while a walker of `turnGroup` moves) once the heading error exceeds `lim`, else walks to it; on arrival within `thresh` (2D, plus Z with flags bit 8) steps the node forward or back with wrap and returns 0x100 + the new index. */
 int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed, int contactRadius, int step, int lim, int turnGroup, int flags);
 
 /* 0x8003a16c: Path-follow steering step with clamped yaw, pitch toward the
@@ -2152,6 +2163,7 @@ int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim, int 
 #define TWEEN_NEXT_LEG 1 /* result: this step finished a leg */
 #define TWEEN_WRAPPED 2  /* result: ... and the cursor wrapped back to node 0 */
 #endif
+/* 0x8003bfc0: moves an actor one sub-step along its waypoint ring, `legFrames` frames per leg, cross-fading the start of each leg with the previous one (`prev`) and re-aiming yaw / pitch along the step; returns 2 when the cursor wraps to node 0, else 1. */
 int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legFrames, int flags);
 
 /* 0x8003c358: Spell a level name (portal signs) or "RETURN HOME" (level exits) in floating letter actors around a sign. */
@@ -2159,6 +2171,7 @@ int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int 
 #define NAME_LETTERS_RETURN_HOME 0 /* "RETURN HOME", facing Spyro (level exits) */
 #define NAME_LETTERS_LEVEL       1 /* the sign's level name, along its yaw (portals) */
 #endif
+/* 0x8003c358: spells a name in floating letter actors on an arc around `sign`: its level's name with NAME_LETTERS_LEVEL (hung off the sign's yaw), else "RETURN HOME" facing Spyro (level exits). Letters are g_pfnLevelSpawnActor ids 0x1AA + (c - 'A'); spaces only advance. */
 void SpawnNameLetterActors(Actor *sign, int named);
 
 /* 0x8003c85c: Convert the bearing from Spyro to `target` into scripted-camera stick requests. */

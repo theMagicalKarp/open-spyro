@@ -7,8 +7,8 @@
    0x170). At frame delta 3 the delta is scaled by 1.5x (half added), at
    4 doubled. Actors inside the `contactRadius` sphere get their contact
    handlers (0 skips the test); MOVE_LIFT lifts the probe point by
-   0x12C+radius during the world-collision check. Returns 1 on actor contact, 2
-   on world collision, 0 when the move was committed. */
+   MOVE_LIFT_HEIGHT + radius during the world-collision check. Returns 1 on
+   actor contact, 2 on world collision, 0 when the move was committed. */
 /* Local prototypes, not funcs.h: its caller-side MoveActorByDelta splits the
    DeltaVec into three ints and conflicts with the definition below. */
 #ifndef CONTACT_STOP_AT_SOLID
@@ -52,7 +52,7 @@ int MoveActorByDelta(Actor *actor, DeltaVec delta, int contactRadius,
   }
   AddVector(newpos, &actor->posX, (int *)&delta);
   if (flags & MOVE_LIFT) {
-    t = newpos[2] + 0x12C;
+    t = newpos[2] + MOVE_LIFT_HEIGHT;
     newpos[2] = t + radius;
   }
   if (contactRadius != 0) {
@@ -67,7 +67,7 @@ int MoveActorByDelta(Actor *actor, DeltaVec delta, int contactRadius,
     }
   }
   if (flags & MOVE_LIFT) {
-    t = newpos[2] - 0x12C;
+    t = newpos[2] - MOVE_LIFT_HEIGHT;
     newpos[2] = t - radius;
   }
   CopyVector(&actor->posX, newpos);

@@ -147,7 +147,7 @@ void Level19_AdvanceEmitList(int step) {
       }
       break;
 
-    case EMIT_SPEED_DUST:
+    case EMIT_SUPERCHARGE_TRAIL:
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
       rec[0xA] += step * 2;

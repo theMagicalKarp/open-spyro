@@ -18,4 +18,13 @@ typedef struct RotBillboard {
   unsigned char pad16[2];
 } RotBillboard; /* 0x18 */
 
+/* An actor keeps the glint SpawnActorRotBillboard just gave it (follows it
+ * each frame) only while Spyro is within this 2D distance; past it the
+ * billboard is left to fade where it spawned. */
+#define ROT_BILLBOARD_ATTACH_RANGE 0x4000
+
+/* An actor state's `attach` handle (g_aRotBillboards index) while it has
+ * no glint attached. */
+#define ROT_BILLBOARD_NONE 0xFF
+
 #endif /* OPEN_SPYRO_ROT_BILLBOARD_H */

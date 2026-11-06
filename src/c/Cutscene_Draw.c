@@ -26,7 +26,7 @@ void Cutscene_Draw(void) {
   BuildRenderEntityLists();
   BuildActorDrawList();
   otHead = &g_apMainDrawEntityList;
-  FillWord(otHead, 0, 0x900);
+  FillWord(otHead, 0, FRAME_ARENA_LIST_WORDS);
   EmitActorDrawList();
   FillWord(otHead, 0, 0x1c00);
   g_nFarPlaneDrawDistance = 0x14000;

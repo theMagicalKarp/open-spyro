@@ -336,7 +336,7 @@ void Level13_AdvanceEmitList(int step) {
       break;
     }
 
-    case EMIT_SPEED_DUST:  /* <- Level15_AdvanceEmitList */
+    case EMIT_SUPERCHARGE_TRAIL:  /* <- Level15_AdvanceEmitList */
     /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();

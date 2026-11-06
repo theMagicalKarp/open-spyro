@@ -11,6 +11,7 @@
 #include "model.h"
 #include "pad_buttons.h"
 #include "sample_bank.h"
+#include "spu.h"
 #include "spyro_state.h"
 #include "vecmath.h"
 
@@ -537,8 +538,8 @@ void DragonRescue_Update(void) {
         SBE->nPitchStep = 0;
         SBE->nPitchMode = 0;
         ((struct { int v; } *)&g_nSfxOverrideFlags)->v = SFX_OVERRIDE_VOLUME;
-        ((struct { short v; } *)&g_nSfxOverrideVolL)->v = 0x3FFF;
-        ((struct { short v; } *)&g_nSfxOverrideVolR)->v = 0x3FFF;
+        ((struct { short v; } *)&g_nSfxOverrideVolL)->v = SPU_VOLUME_MAX;
+        ((struct { short v; } *)&g_nSfxOverrideVolR)->v = SPU_VOLUME_MAX;
         StopSoundVoiceByIndex(GB[11], VOICE_RELEASE);
         PlaySoundEffect(0, 0, SFX_MODE_PANNED, (unsigned char *)&GB[11]);
         CopyWords(*(void *volatile *)g_apSampleBankEntriesBlock, save, 0x14);

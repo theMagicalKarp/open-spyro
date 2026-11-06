@@ -31,7 +31,7 @@ typedef struct CollectibleState {
   signed char lean;     /* 0x11 body pitch */
   signed char roll;     /* 0x12 */
   unsigned char spin;   /* 0x13 */
-  unsigned char attach; /* 0x14 attached smoke/spark handle, 0xFF = none */
+  unsigned char attach; /* 0x14 attached glint (g_aRotBillboards index), ROT_BILLBOARD_NONE = none */
 } CollectibleState;
 
 /* Type 227 (levels 14, 27): superflame giver. When Spyro faces it in range

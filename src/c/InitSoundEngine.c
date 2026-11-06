@@ -18,7 +18,7 @@ void InitSoundEngine(void) {
   InitSpu();
   common = g_abSpuCommonAttr;
   *(int *)common = 0xC3;
-  g_nSfxMixVolume_blk[0] = 0x3FFF;
+  g_nSfxMixVolume_blk[0] = SPU_VOLUME_MAX;
   g_nSoundMasterVolume = 0x1000;
   g_anSpuCommonVolAttr[0] = 0x3CCC;
   g_anSpuCommonVolAttr[1] = 0x3CCC;

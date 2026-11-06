@@ -111,10 +111,10 @@ void Level11_UpdateActors(void) {
     case ACTOR_TYPE_BUTTERFLY: {
       ButterflyState *st = (ButterflyState *)actor->state;
 
-      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
+      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < BUTTERFLY_CALL_RANGE) {
         int actorZ = actor->posZ - actor->floorOffset;
 
-        if (ABS2(actorZ - SPY.posZ) < 1800) {
+        if (ABS2(actorZ - SPY.posZ) < BUTTERFLY_CALL_DZ) {
           if (g_pSparxActor == 0) {
             if (SPY.sparxHealth >= SPARX_GONE) {
               g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
@@ -179,12 +179,12 @@ void Level11_UpdateActors(void) {
 
           refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
-          if (refHeight < 300) {
+          if (refHeight < BUTTERFLY_FLUTTER_MIN_HEIGHT) {
             st->vz = RandomIntInRange(10, 25);
             st->climbTimer = RandomIntInRange(80, 140);
           }
 
-          if (1024 < refHeight && refHeight < 2048) {
+          if (BUTTERFLY_FLUTTER_MAX_HEIGHT < refHeight && refHeight < BUTTERFLY_DROP_HEIGHT) {
             st->vz = -RandomIntInRange(10, 25);
             st->climbTimer = RandomIntInRange(80, 140);
           }
@@ -197,7 +197,7 @@ void Level11_UpdateActors(void) {
             st->headingTimer = RandomIntInRange(30, 80);
           }
 
-          if (ApproxDist2D(&actor->posX, st->home) > 2000) {
+          if (ApproxDist2D(&actor->posX, st->home) > BUTTERFLY_LEASH) {
             int angle = ArcTan2(st->home[0] - actor->posX,
                                       st->home[1] - actor->posY, ATAN_ANGLE8);
 
@@ -235,12 +235,12 @@ void Level11_UpdateActors(void) {
 
           refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
-          if (refHeight < 200) {
+          if (refHeight < BUTTERFLY_CIRCLE_MIN_HEIGHT) {
             st->vz = RandomIntInRange(5, 20);
             st->climbTimer = RandomIntInRange(40, 80);
           }
 
-          if (1000 < refHeight && refHeight < 2048) {
+          if (BUTTERFLY_CIRCLE_MAX_HEIGHT < refHeight && refHeight < BUTTERFLY_DROP_HEIGHT) {
             st->vz = -RandomIntInRange(5, 20);
             st->climbTimer = RandomIntInRange(40, 80);
           }
@@ -264,9 +264,9 @@ void Level11_UpdateActors(void) {
           actor->mode = EGG_COLLECTED;
         }
       }
-      if ((unsigned int)(actor->mode - 2) < 3) {
+      if ((unsigned int)(actor->mode - EGG_SPIRAL_UP) < 3) {
         AimCameraStickTowardPoint(&actor->posX);
-        g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, 0x602080);
+        g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, EGG_SPARK_COLOR);
       }
 
       switch (actor->mode) {
@@ -511,7 +511,7 @@ void Level11_UpdateActors(void) {
         } else {
           if (st->timer > 0xf7) {
             int handle = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset3);
-            if (handle >= 0 && dist < 0x4000) {
+            if (handle >= 0 && dist < ROT_BILLBOARD_ATTACH_RANGE) {
               st->sparkle = handle;
             }
 
@@ -520,7 +520,7 @@ void Level11_UpdateActors(void) {
         }
       }
 
-      if (!actor->drawn && dist > 0x2000 && actor->subMode == COLLECT_REST && st->restMode == COLLREST_STILL) {
+      if (!actor->drawn && dist > COLLECT_IDLE_RANGE && actor->subMode == COLLECT_REST && st->restMode == COLLREST_STILL) {
         break;
       }
 
@@ -589,10 +589,10 @@ void Level11_UpdateActors(void) {
           }
         }
 
-        if (dist < 1434) {
-          int zDist = (SPY.posZ - 356) - actor->posZ;
+        if (dist < SPARX_FETCH_RANGE) {
+          int zDist = (SPY.posZ - SPYRO_RADIUS) - actor->posZ;
 
-          if (ABS2(zDist) < 512) {
+          if (ABS2(zDist) < SPARX_FETCH_DZ) {
 
             if (g_pSparxActor != 0) {
 
@@ -607,8 +607,8 @@ void Level11_UpdateActors(void) {
                     if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                        g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                       g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
-                      g_nSfxOverrideVolR = 0x2000;
-                      g_nSfxOverrideVolL = 0x2000;
+                      g_nSfxOverrideVolR = SPARX_BUZZ_VOLUME;
+                      g_nSfxOverrideVolL = SPARX_BUZZ_VOLUME;
                       PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                     }
 
@@ -698,8 +698,8 @@ void Level11_UpdateActors(void) {
 
             if (st->count != 0) {
               g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
-              g_nSfxOverrideVolL = 0x3CCC >> (3 - st->count);
-              g_nSfxOverrideVolR = 0x3CCC >> (3 - st->count);
+              g_nSfxOverrideVolL = COLLECT_BOUNCE_VOLUME >> (3 - st->count);
+              g_nSfxOverrideVolR = COLLECT_BOUNCE_VOLUME >> (3 - st->count);
 
               PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
 
@@ -720,10 +720,10 @@ void Level11_UpdateActors(void) {
           }
         }
 
-        if (dist < 1434) {
-          int zDist = (((int *)&SPY.posX)[2] - 356) - actor->posZ;
+        if (dist < SPARX_FETCH_RANGE) {
+          int zDist = (((int *)&SPY.posX)[2] - SPYRO_RADIUS) - actor->posZ;
 
-          if (ABS2(zDist) < 512) {
+          if (ABS2(zDist) < SPARX_FETCH_DZ) {
 
             if (g_pSparxActor != 0) {
 
@@ -735,8 +735,8 @@ void Level11_UpdateActors(void) {
                   if (!GetSoundVoiceStatusByOwner(g_pSparxActor,
                                      g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ])) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
-                    g_nSfxOverrideVolR = 0x2000;
-                    g_nSfxOverrideVolL = 0x2000;
+                    g_nSfxOverrideVolR = SPARX_BUZZ_VOLUME;
+                    g_nSfxOverrideVolL = SPARX_BUZZ_VOLUME;
                     PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                   }
 
@@ -792,7 +792,7 @@ void Level11_UpdateActors(void) {
           st->roll += g_nFrameStep << 1;
         }
       }
-      if ((st->timer > 32 && dist < 512 && (-384 < (SPY.posZ - actor->posZ)) &&
+      if ((st->timer > 32 && dist < COLLECT_TOUCH_RANGE && (-384 < (SPY.posZ - actor->posZ)) &&
            ((SPY.posZ - actor->posZ) < 512)) ||
           (actor->subMode == COLLECT_HOMING && st->timer > 64)) {
 
@@ -872,8 +872,8 @@ void Level11_UpdateActors(void) {
           }
         } else {
           st->glow->size += 0x20;
-          if (st->glow->size > 0x400) {
-            st->glow->size = 0x400;
+          if (st->glow->size > SPARX_GLOW_MAX_SIZE) {
+            st->glow->size = SPARX_GLOW_MAX_SIZE;
           }
         }
       } else {
@@ -893,7 +893,7 @@ void Level11_UpdateActors(void) {
         break;
       }
 
-      if (st->target != 0 && ApproxDist2D(&actor->posX, &SPY.posX) > 8192) {
+      if (st->target != 0 && ApproxDist2D(&actor->posX, &SPY.posX) > SPARX_TARGET_LEASH) {
         st->timer = 0;
       }
 
@@ -988,7 +988,7 @@ void Level11_UpdateActors(void) {
           SubtractVector(sparxToTarget, &st->target->posX, &actor->posX);
           dist = VectorLength(sparxToTarget, VEC_LEN_XYZ);
 
-          if (dist < 512) {
+          if (dist < SPARX_CATCH_RANGE) {
             cp->timer = 0;
             cp->pitch = GetRandomU32() & 0xE;
             cp->yaw = GetRandomU32() & 0xE;
@@ -1007,8 +1007,8 @@ void Level11_UpdateActors(void) {
             st->target = 0;
             if (!GetSoundVoiceStatusByOwner(actor, AS_PTRU8(g_pLevelSampleBankHeader)[SFX_GEM_BOUNCE])) {
               g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
-              g_nSfxOverrideVolR = 0x3600;
-              g_nSfxOverrideVolL = 0x3600;
+              g_nSfxOverrideVolR = SPARX_HANDOVER_VOLUME;
+              g_nSfxOverrideVolL = SPARX_HANDOVER_VOLUME;
               PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
             }
           } else {
@@ -1128,10 +1128,10 @@ void Level11_UpdateActors(void) {
       actor->rotY = (unsigned short)g_anSineLut[st->angle] >> 7;
       st->angle = st->angle + g_nFrameStep * 2;
 
-      if (ApproxDist2D(&actor->posX, &spy->posX) < 0x200) {
+      if (ApproxDist2D(&actor->posX, &spy->posX) < KEY_TOUCH_RANGE) {
         dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
-        if (dz > 0 ? dz < 0x200
-                   : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x200) {
+        if (dz > 0 ? dz < KEY_TOUCH_DZ
+                   : SPY.posZ - (actor->posZ - actor->floorOffset) < KEY_TOUCH_DZ) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
@@ -1150,17 +1150,17 @@ void Level11_UpdateActors(void) {
         }
       }
 
-      if (st->attach != 0xFF) {
+      if (st->attach != ROT_BILLBOARD_NONE) {
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset4, g_aRotBillboards[st->attach].pos);
         AddVector(g_aRotBillboards[st->attach].pos, g_aRotBillboards[st->attach].pos,
                       &actor->posX);
         if (g_aRotBillboards[st->attach].life < 5) {
-          st->attach = 0xFF;
+          st->attach = ROT_BILLBOARD_NONE;
         }
       } else if (st->timer >= 0xF8) {
         ang = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset4);
-        if (ang >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
+        if (ang >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < ROT_BILLBOARD_ATTACH_RANGE) {
           st->attach = ang;
         }
         st->timer = (GetRandomU32() & 0x3F) + 0x18;
@@ -1910,7 +1910,7 @@ void Level11_UpdateActors(void) {
       if (st->owner->mode == ORBIT_OWNER_FAR || st->owner->subMode != actor->mode) {
         DespawnActorRecord(actor);
       } else if (st->owner->type == ACTOR_TYPE_LEVEL_EXIT) {
-        if (ApproxDist2D(&st->owner->posX, &spy->posX) < 0x400) {
+        if (ApproxDist2D(&st->owner->posX, &spy->posX) < LEVELEXIT_ENTER_RANGE) {
           int oldval;
           oldval = g_anCosineLut[actor->subMode];
           actor->subMode += 8;

@@ -44,7 +44,7 @@ void ReturningHome_Draw(void) {
   queue = g_apSpritePrimQueue;
   queue[0] = 0;
   EnqueuePendingSpritePrims();
-  FillWord((char *)queue - 0x2400, 0, 0x900);
+  FillWord((char *)queue - FRAME_ARENA_SPRITE_QUEUE, 0, FRAME_ARENA_LIST_WORDS);
   RasterizeSpritePrimQueue();
   DrawSync(0);
   g_nVsyncFrameEndCount = VSync(-1);

@@ -156,7 +156,9 @@ typedef enum SpyroState
 #define SPYRO_RQ_VEL_X 0x00001         /* drive X toward g_anSpyroRequestTargetPos */
 #define SPYRO_RQ_VEL_Y 0x00002
 #define SPYRO_RQ_VEL_Z 0x00004
-#define SPYRO_RQ_PITCH 0x00008         /* take g_abSpyroRequestEuler[0] */
+#define SPYRO_RQ_PITCH 0x00008         /* take g_abSpyroRequestEuler[0]; PITCH and ROLL are
+                                        * handled but no caller requests them, and
+                                        * nothing stores euler [0] / [1] (xref audit) */
 #define SPYRO_RQ_ROLL 0x00010          /* [1] */
 #define SPYRO_RQ_YAW 0x00020           /* [2] */
 #define SPYRO_RQ_RAW_VELOCITY 0x00040  /* VEL_* take g_anSpyroRequestVelocity */

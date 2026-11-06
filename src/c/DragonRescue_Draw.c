@@ -75,7 +75,7 @@ void DragonRescue_Draw(void) {
     DrawDragonRescuedBanner();
     EnqueuePendingSpritePrims();
     BuildActorDrawList();
-    FillWord(&g_apMainDrawEntityList, 0, 0x900);
+    FillWord(&g_apMainDrawEntityList, 0, FRAME_ARENA_LIST_WORDS);
     EmitActorDrawList();
     RasterizeSpritePrimQueue();
     DrawActorDropShadows();
@@ -118,7 +118,7 @@ void DragonRescue_Draw(void) {
       EnqueuePendingSpritePrims();
     }
     BuildActorDrawList();
-    FillWord(&g_apMainDrawEntityList, 0, 0x900);
+    FillWord(&g_apMainDrawEntityList, 0, FRAME_ARENA_LIST_WORDS);
     EmitActorDrawList();
     RasterizeSpritePrimQueue();
     DrawActorDropShadows();
@@ -163,7 +163,7 @@ void DragonRescue_Draw(void) {
         dl[0x13] = (dl[0x13] * scale) >> 12;
       }
     }
-    FillWord(&g_apMainDrawEntityList, 0, 0x900);
+    FillWord(&g_apMainDrawEntityList, 0, FRAME_ARENA_LIST_WORDS);
     EmitActorDrawList();
     RasterizeSpritePrimQueue();
     RasterizeSpyroModel();
@@ -189,7 +189,7 @@ void DragonRescue_Draw(void) {
       goto icon6;
     }
     *q = 0;
-    FillWord(&g_apMainDrawEntityList, 0, 0x900);
+    FillWord(&g_apMainDrawEntityList, 0, FRAME_ARENA_LIST_WORDS);
     RasterizeSpritePrimQueue();
     RasterizeSpyroModel();
     DrawSpyroDropShadow();
@@ -214,12 +214,12 @@ void DragonRescue_Draw(void) {
         goto icon7;
       }
       *q = 0;
-      FillWord(&g_apMainDrawEntityList, 0, 0x900);
+      FillWord(&g_apMainDrawEntityList, 0, FRAME_ARENA_LIST_WORDS);
       RasterizeSpritePrimQueue();
     } else {
       BuildRenderEntityLists();
       BuildActorDrawList();
-      FillWord(&g_apMainDrawEntityList, 0, 0x900);
+      FillWord(&g_apMainDrawEntityList, 0, FRAME_ARENA_LIST_WORDS);
       EmitActorDrawList();
       BuildSecondaryActorDrawList();
       EmitSecondaryActorPrimitives();

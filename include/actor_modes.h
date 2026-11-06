@@ -16,6 +16,14 @@ enum CollectSubMode {
   COLLECT_INERT = 4,  /* skipped: a seed pod's displayed prize (the pod moves it) */
 };
 
+/* Spyro collects a pickup within TOUCH_RANGE (2D; height -0x180..+0x200).
+ * An undrawn one resting still beyond IDLE_RANGE skips its update. */
+#define COLLECT_TOUCH_RANGE 0x200
+#define COLLECT_IDLE_RANGE 0x2000
+/* A knocked-loose pickup's bounce chime volume (g_nSfxOverrideVolL/R), shifted
+ * right by 3 - bounces left so each bounce is half as loud as the last. */
+#define COLLECT_BOUNCE_VOLUME 0x3CCC
+
 /* CollectibleState.mode: how a COLLECT_REST collectible holds its place. */
 enum CollectRestMode {
   COLLREST_STILL = 0,    /* stays put */
@@ -35,6 +43,21 @@ enum SparxSubMode {
                            * overlay), so the ~100 tests of it are dead */
 };
 
+/* A resting collectible calls Sparx over (SPARX_SUB_FETCH) once Spyro, on the
+ * ground, is within this 2D distance (ApproxDist2D) and height of it. */
+#define SPARX_FETCH_RANGE 0x59A
+#define SPARX_FETCH_DZ 0x200
+
+/* Sparx drops his target once Spyro is farther than TARGET_LEASH (2D) from
+ * him, and reaches it within CATCH_RANGE (3D, Sparx to target). */
+#define SPARX_TARGET_LEASH 0x2000
+#define SPARX_CATCH_RANGE 0x200
+
+/* g_nSfxOverrideVolL/R (of SPU_VOLUME_MAX) for Sparx's buzz when he
+ * sets off to fetch, and for the chime when he hands the pickup over. */
+#define SPARX_BUZZ_VOLUME 0x2000
+#define SPARX_HANDOVER_VOLUME 0x3600
+
 /* Sparx's hover animation per health colour; the odd index after each is the
  * same colour's catch animation (the chase steps up to it, EAT_DONE back). */
 enum SparxAnim {
@@ -53,6 +76,10 @@ enum EggMode {
   EGG_COLLECTED = 5,    /* counts the egg and despawns */
 };
 
+/* EMIT_ACTOR_SPARK colour of the sparks a flying egg trails
+ * (EGG_SPIRAL_UP .. EGG_SPIRAL_DOWN). */
+#define EGG_SPARK_COLOR 0x602080
+
 /* ->mode of the save-prompt host (ACTOR_TYPE_SAVE_HOST, SaveHostState). */
 enum SaveHostMode {
   SAVEHOST_WAIT_AWAY = 0,  /* until Spyro is away from the anchor */
@@ -64,6 +91,18 @@ enum SaveHostMode {
   SAVEHOST_POP_OUT = 6,    /* spins and grows out, back to SAVEHOST_HIDDEN */
 };
 
+/* Save-host ranges to Spyro (2D ApproxDist2D / height difference): it re-arms
+ * once Spyro leaves REARM of the anchor, pops in within APPEAR, prompts when
+ * Spyro idles within PROMPT of the anchor, and pops out past a mode's LEASH. */
+#define SAVEHOST_REARM_RANGE 0xA00
+#define SAVEHOST_APPEAR_RANGE 0x2000
+#define SAVEHOST_APPEAR_DZ 0x800
+#define SAVEHOST_PROMPT_RANGE 0x400
+#define SAVEHOST_PROMPT_DZ 0x200
+#define SAVEHOST_HOVER_LEASH 0x2400
+#define SAVEHOST_WANDER_LEASH 0x2800
+#define SAVEHOST_LEASH_DZ 0xC00
+
 /* ->mode of a crystal dragon statue (ACTOR_TYPE_DRAGON_STATUE,
  * DragonStatueState). */
 enum DragonStatueMode {
@@ -72,17 +111,44 @@ enum DragonStatueMode {
   STATUE_RESCUING = 2,  /* BeginDragonRescue ran (also the save menu's replay) */
 };
 
+/* A statue is freed when Spyro comes within TOUCH_RADIUS of it (3D, height
+ * scaled by 3/4), tested once he is within NEAR_RANGE (2D). */
+#define STATUE_NEAR_RANGE 0x800
+#define STATUE_TOUCH_RADIUS 0x440
+
 /* ->mode of a butterfly (ACTOR_TYPE_BUTTERFLY, WanderState). */
 enum ButterflyMode {
   BUTTERFLY_FLUTTER = 0, /* drifts about its spawn point */
   BUTTERFLY_CIRCLE = 1,  /* Sparx is coming to eat it: circles Spyro */
 };
 
+/* A butterfly calls Sparx (spawning him if Spyro has none) while Spyro is
+ * below full health and within CALL_RANGE (2D) / CALL_DZ (height) of it; a
+ * fluttering one turns back once LEASH from its spawn point. */
+#define BUTTERFLY_CALL_RANGE 2400
+#define BUTTERFLY_CALL_DZ 1800
+#define BUTTERFLY_LEASH 2000
+/* Height bands over the ground (ProbeActorGroundHeight): a fluttering
+ * butterfly climbs when below FLUTTER_MIN_HEIGHT and sinks when above
+ * FLUTTER_MAX_HEIGHT, a circling one uses CIRCLE_MIN / MAX; at DROP_HEIGHT or
+ * more it is over a drop and keeps its height. */
+#define BUTTERFLY_FLUTTER_MIN_HEIGHT 300
+#define BUTTERFLY_FLUTTER_MAX_HEIGHT 1024
+#define BUTTERFLY_CIRCLE_MIN_HEIGHT 200
+#define BUTTERFLY_CIRCLE_MAX_HEIGHT 1000
+#define BUTTERFLY_DROP_HEIGHT 2048
+/* ButterflyState.offscreenTimer seed: frames it keeps fluttering undrawn. */
+#define BUTTERFLY_OFFSCREEN_FRAMES 0x708
+
 /* ->mode of a seed pod (ACTOR_TYPE_SEED_POD, SeedPodState). */
 enum SeedPodMode {
   SEEDPOD_CLOSED = 0, /* struck: spawns its prize (COLLECT_INERT) and opens */
   SEEDPOD_OPEN = 1,   /* shakes with the prize floating above; closes after a while */
 };
+
+/* An open pod's prize is taken once Spyro is within this 2D distance of it
+ * (height -0xDF..+0x1DF), or at once by a supercharge. */
+#define SEEDPOD_PRIZE_RANGE 0x1E0
 
 /* A seed pod's voices (PlayActorMeshVoice). */
 enum SeedPodVoice {
@@ -112,6 +178,15 @@ enum LevelExitMode {
   LEVELEXIT_NEAR = 1, /* camera close: its name letters were spawned */
 };
 
+/* Level-exit ranges (2D ApproxDist2D): its name letters appear once the
+ * camera is within SHOW and go once it leaves HIDE; it emits the full spiral
+ * while Spyro is within SPARKLE and lifts him out within ENTER (its name
+ * letters spin while he is that close). */
+#define LEVELEXIT_SHOW_RANGE 0x2400
+#define LEVELEXIT_HIDE_RANGE 0x2800
+#define LEVELEXIT_SPARKLE_RANGE 0x4000
+#define LEVELEXIT_ENTER_RANGE 0x400
+
 /* g_nLevelKeyState: the level key's progress (HUD counter 4). */
 enum LevelKeyState {
   KEYSTATE_NONE = 0,         /* key not picked up */
@@ -126,6 +201,10 @@ enum KeySubMode {
   KEY_TAKEN = 2,   /* picked up (hidden); the locked chest flies it to its lock */
 };
 
+/* Spyro picks the key up within this 2D distance and height of it. */
+#define KEY_TOUCH_RANGE 0x200
+#define KEY_TOUCH_DZ 0x200
+
 /* ->subMode of the locked chest (ACTOR_TYPE_LOCKED_CHEST, LockedChestState). */
 enum LockedChestSubMode {
   LOCKCHEST_NO_KEY = 0,    /* waits for KEYSTATE_CARRIED */
@@ -133,6 +212,11 @@ enum LockedChestSubMode {
   LOCKCHEST_OPENING = 2,   /* the key flies into the lock, then it bursts
                             * (a superflame hit skips straight to the burst) */
 };
+
+/* How close (2D / height) Spyro, carrying the key, must stand to the locked
+ * chest for LOCKCHEST_KEY_READY to open it. */
+#define LOCKCHEST_KEY_RANGE 0x600
+#define LOCKCHEST_KEY_DZ 0x200
 
 /* ->subMode of a cracking boulder (ACTOR_TYPE_CRACKING_BOULDER,
  * CrackingBoulderState). */
@@ -227,6 +311,12 @@ enum ThiefMode {
   THIEF_CIRCLE = 0x32,      /* circles the current node away from Spyro */
   THIEF_STAND = 0x3C,       /* stands facing Spyro */
 };
+
+/* Egg-thief ranges to Spyro (2D): a HOP or LEDGE thief sets off once he is
+ * within NOTICE; a LEDGE thief warps home (THIEF_LEDGE_RESET) once he is
+ * within LEDGE_RESET of its path node 6. */
+#define THIEF_NOTICE_RANGE 0x1C00
+#define THIEF_LEDGE_RESET_RANGE 0x1800
 
 /* An egg thief's animations (nextAnim), from what each mode plays. */
 enum ThiefAnim {
@@ -2216,11 +2306,19 @@ enum RoamingCritterAnim {
 
 /* ->mode of a checkpoint (ACTOR_TYPE_CHECKPOINT .. + 2; every ground level). */
 enum CheckpointMode {
-  CHECKPT_REARM = 0,     /* waits for Spyro to walk away (> 2560), then ARMED */
+  CHECKPT_REARM = 0,     /* waits for Spyro to walk away (> CHECKPT_REARM_RANGE), then ARMED */
   CHECKPT_ARMED = 1,     /* Spyro touches it: sets the respawn anchor, FLASH */
   CHECKPT_FLASH = 2,     /* subMode counts frames to 0x30, then REARM */
   CHECKPT_HELD = 3,      /* its dragon statue holds it until the rescue (no arm runs) */
 };
+
+/* Checkpoint ranges to Spyro (2D ApproxDist2D / height difference) and the
+ * flash length. The save host re-arms on the same distance from its anchor
+ * checkpoint (SAVEHOST_REARM_RANGE). */
+#define CHECKPT_REARM_RANGE 0xA00
+#define CHECKPT_TOUCH_RANGE 0x380
+#define CHECKPT_TOUCH_DZ 0x200
+#define CHECKPT_FLASH_FRAMES 0x30
 
 /* A checkpoint's animations: the flash plays while CHECKPT_FLASH runs. */
 enum CheckpointAnim {

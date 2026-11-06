@@ -2,6 +2,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spu.h"
 
 /* Enter the story-intro gamestate (0x8002d170, GS_TITLE): zero the
    0x5C-byte mode block, prime the SPU common attr (mask 0xC0, master volume
@@ -19,7 +20,7 @@ void BeginStoryIntro(void) {
   g_nGamestate = GS_TITLE;
   FillWord(&g_nTitleMode, 0, 0x5C);
   blk = g_nSfxMixVolume_blk;
-  blk[0] = 0x3FFF;
+  blk[0] = SPU_VOLUME_MAX;
   vol = 0x5000;
   g_nCdAudioVolume_blk = vol;
   g_nSfxVolume = 0xA;

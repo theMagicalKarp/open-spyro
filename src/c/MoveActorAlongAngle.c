@@ -44,7 +44,7 @@ int MoveActorAlongAngle(Actor *actor, int angle, int speed, int contactRadius,
     }
   }
   if (flags & MOVE_LIFT) {
-    t = newpos[2] + 0x12C;
+    t = newpos[2] + MOVE_LIFT_HEIGHT;
     newpos[2] = t + radius;
   }
   if (radius != 0) {

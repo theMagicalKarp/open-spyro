@@ -1,6 +1,11 @@
 #include "funcs.h"
 #include "globals.h"
 
+/* g_anLevelSpriteTexWordPairs (0x8007850c), reached off the held HUD block
+ * base the butterfly quads use. */
+#define LEVEL_SPRITE_TEX_VIA_HUD                                               \
+  ((unsigned int *)(g_abHudButterflyRingBlock + 0x562))
+
 /* Rebuilds the in-level HUD sprite-record queue (0x80019300, 0x398); also
    drawn under the pause and inventory menus. Appends, to the first free slot of
    g_apSpritePrimQueue: the five gem-counter icon records (starting at record
@@ -145,8 +150,7 @@ void EnqueueHudSprites(void) {
         scratch[1] = shade;
         scratch[2] = shade;
         EmitTexturedQuad((short *)(g_abHudButterflyRingBlock + 0x4C2 + i * 8),
-                         g_abHudButterflyRingBlock +
-                             0x562, /* uv words (byte block: warns) */
+                         LEVEL_SPRITE_TEX_VIA_HUD, /* uv words */
                          (unsigned int *)scratch);
         i += 1;
       } while (i < BUTTERFLY_COUNT);

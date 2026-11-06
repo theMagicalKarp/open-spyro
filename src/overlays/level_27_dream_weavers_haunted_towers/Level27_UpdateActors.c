@@ -120,7 +120,7 @@ void Level27_UpdateActors(void) {
       int dist = ApproxDist2D(&actor->posX, &CAM.posX);
       int i;
 
-      if (actor->mode != LEVELEXIT_FAR ? dist < 0x2800 : dist < 0x2400) {
+      if (actor->mode != LEVELEXIT_FAR ? dist < LEVELEXIT_HIDE_RANGE : dist < LEVELEXIT_SHOW_RANGE) {
         if (actor->mode == LEVELEXIT_FAR) {
           actor->posZ += 0x600;
           SpawnNameLetterActors(actor, NAME_LETTERS_RETURN_HOME);
@@ -136,7 +136,7 @@ void Level27_UpdateActors(void) {
       for (i = 0; i < g_nFrameStep; i++) {
         int tick = ++st->tick;
 
-        if (dist < 0x4000) {
+        if (dist < LEVELEXIT_SPARKLE_RANGE) {
           if (!(tick & 3)) {
             g_pfnLevelEmitParticles(1, EMIT_RISING_SPIRAL, &actor->posX, tick);
           }
@@ -145,7 +145,7 @@ void Level27_UpdateActors(void) {
         }
       }
 
-      if (dist < 0x400) {
+      if (dist < LEVELEXIT_ENTER_RANGE) {
         char *base = (char *)&g_nSpyroWorldPosZ;
         int top = *(int *)base;
         int z = actor->posZ;
@@ -315,10 +315,10 @@ void Level27_UpdateActors(void) {
     case ACTOR_TYPE_BUTTERFLY: {
       ButterflyState *st = (ButterflyState *)actor->state;
 
-      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < 2400) {
+      if (SPY.sparxHealth < SPARX_GOLD && ApproxDist2D(&actor->posX, &SPY.posX) < BUTTERFLY_CALL_RANGE) {
         int actorZ = actor->posZ - actor->floorOffset;
 
-        if (ABS2(actorZ - SPY.posZ) < 1800) {
+        if (ABS2(actorZ - SPY.posZ) < BUTTERFLY_CALL_DZ) {
           if (g_pSparxActor == 0) {
             if (SPY.sparxHealth >= SPARX_GONE) {
               g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, actor);
@@ -385,12 +385,12 @@ void Level27_UpdateActors(void) {
 
           refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
-          if (refHeight < 300) {
+          if (refHeight < BUTTERFLY_FLUTTER_MIN_HEIGHT) {
             st->vz = RandomIntInRange(10, 25);
             st->climbTimer = RandomIntInRange(80, 140);
           }
 
-          if (1024 < refHeight && refHeight < 2048) {
+          if (BUTTERFLY_FLUTTER_MAX_HEIGHT < refHeight && refHeight < BUTTERFLY_DROP_HEIGHT) {
             st->vz = -RandomIntInRange(10, 25);
             st->climbTimer = RandomIntInRange(80, 140);
           }
@@ -403,7 +403,7 @@ void Level27_UpdateActors(void) {
             st->headingTimer = RandomIntInRange(30, 80);
           }
 
-          if (ApproxDist2D(&actor->posX, st->home) > 2000) {
+          if (ApproxDist2D(&actor->posX, st->home) > BUTTERFLY_LEASH) {
             int angle = ArcTan2(st->home[0] - actor->posX,
                                       st->home[1] - actor->posY, ATAN_ANGLE8);
 
@@ -441,12 +441,12 @@ void Level27_UpdateActors(void) {
 
           refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
-          if (refHeight < 200) {
+          if (refHeight < BUTTERFLY_CIRCLE_MIN_HEIGHT) {
             st->vz = RandomIntInRange(5, 20);
             st->climbTimer = RandomIntInRange(40, 80);
           }
 
-          if (1000 < refHeight && refHeight < 2048) {
+          if (BUTTERFLY_CIRCLE_MAX_HEIGHT < refHeight && refHeight < BUTTERFLY_DROP_HEIGHT) {
             st->vz = -RandomIntInRange(5, 20);
             st->climbTimer = RandomIntInRange(40, 80);
           }
@@ -470,9 +470,9 @@ void Level27_UpdateActors(void) {
           actor->mode = EGG_COLLECTED;
         }
       }
-      if ((unsigned int)(actor->mode - 2) < 3) {
+      if ((unsigned int)(actor->mode - EGG_SPIRAL_UP) < 3) {
         AimCameraStickTowardPoint(&actor->posX);
-        g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, 0x602080);
+        g_pfnLevelEmitParticles(1, EMIT_ACTOR_SPARK, actor, EGG_SPARK_COLOR);
       }
 
       switch (actor->mode) {
@@ -764,7 +764,7 @@ void Level27_UpdateActors(void) {
       }
 
       if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
-        if (st->attach != 0xFF) {
+        if (st->attach != ROT_BILLBOARD_NONE) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
             RotateVectorByMatrix(&actor->mtx[0], &g_anRotBillboardOffset5,
@@ -777,19 +777,19 @@ void Level27_UpdateActors(void) {
                         &actor->posX);
 
           if (g_aRotBillboards[st->attach].life < 5) {
-            st->attach = 0xFF;
+            st->attach = ROT_BILLBOARD_NONE;
           }
         } else if (st->timer >= 0xF8) {
           int handle = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset3);
 
-          if (handle >= 0 && toSpyro < 0x4000) {
+          if (handle >= 0 && toSpyro < ROT_BILLBOARD_ATTACH_RANGE) {
             st->attach = handle;
           }
           st->timer = (GetRandomU32() & 0x1F) + 0x21;
         }
       }
 
-      if (actor->drawn != 0 || toSpyro <= 0x2000 || actor->subMode != COLLECT_REST ||
+      if (actor->drawn != 0 || toSpyro <= COLLECT_IDLE_RANGE || actor->subMode != COLLECT_REST ||
           st->mode != COLLREST_STILL) {
         switch (actor->subMode) {
         case COLLECT_SETTLE:
@@ -849,7 +849,7 @@ void Level27_UpdateActors(void) {
             }
           }
 
-          if (toSpyro < 0x59A) {
+          if (toSpyro < SPARX_FETCH_RANGE) {
             int top = actor->posZ + SPYRO_RADIUS;
             register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
             int dz = spyZ - top;
@@ -858,7 +858,7 @@ void Level27_UpdateActors(void) {
               dz = -dz;
             }
 
-            if (dz < 0x200 && g_pSparxActor != 0 && g_nSpyroAirborneFrames == 0 &&
+            if (dz < SPARX_FETCH_DZ && g_pSparxActor != 0 && g_nSpyroAirborneFrames == 0 &&
                 CheckLineOfSightSegment(&g_pSparxActor->posX, &actor->posX) != 0) {
               {
                 SparxState *sparx = g_pSparxActor->state;
@@ -868,8 +868,8 @@ void Level27_UpdateActors(void) {
                           g_pSparxActor,
                           g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ]) == 0) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
-                    g_nSfxOverrideVolR = 0x2000;
-                    g_nSfxOverrideVolL = 0x2000;
+                    g_nSfxOverrideVolR = SPARX_BUZZ_VOLUME;
+                    g_nSfxOverrideVolL = SPARX_BUZZ_VOLUME;
                     PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                   }
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
@@ -954,8 +954,8 @@ void Level27_UpdateActors(void) {
             }
 
             g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
-            g_nSfxOverrideVolL = 0x3CCC >> (3 - st->bounce);
-            g_nSfxOverrideVolR = 0x3CCC >> (3 - st->bounce);
+            g_nSfxOverrideVolL = COLLECT_BOUNCE_VOLUME >> (3 - st->bounce);
+            g_nSfxOverrideVolR = COLLECT_BOUNCE_VOLUME >> (3 - st->bounce);
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
 
             if (ReflectVectorOffNormal((int *)st, bounceNormal, (int *)st) != 0) {
@@ -972,7 +972,7 @@ void Level27_UpdateActors(void) {
           }
 
         enemy_settle:
-          if (toSpyro < 0x59A) {
+          if (toSpyro < SPARX_FETCH_RANGE) {
             int top = actor->posZ + SPYRO_RADIUS;
             register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
             int dz = spyZ - top;
@@ -981,7 +981,7 @@ void Level27_UpdateActors(void) {
               dz = -dz;
             }
 
-            if (dz < 0x200 && g_pSparxActor != 0 && g_nSpyroAirborneFrames == 0 &&
+            if (dz < SPARX_FETCH_DZ && g_pSparxActor != 0 && g_nSpyroAirborneFrames == 0 &&
                 st->bounce < 3) {
               {
                 SparxState *sparx = g_pSparxActor->state;
@@ -991,8 +991,8 @@ void Level27_UpdateActors(void) {
                           g_pSparxActor,
                           g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ]) == 0) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
-                    g_nSfxOverrideVolR = 0x2000;
-                    g_nSfxOverrideVolL = 0x2000;
+                    g_nSfxOverrideVolR = SPARX_BUZZ_VOLUME;
+                    g_nSfxOverrideVolL = SPARX_BUZZ_VOLUME;
                     PlayActorMeshVoice(g_pSparxActor, SPARX_VOICE_BUZZ, 0);
                   }
                   g_pSparxActor->subMode = SPARX_SUB_FETCH;
@@ -1064,7 +1064,7 @@ void Level27_UpdateActors(void) {
             }
           }
 
-          if ((st->timer >= 0x21 && toSpyro < 0x200 &&
+          if ((st->timer >= 0x21 && toSpyro < COLLECT_TOUCH_RANGE &&
                (unsigned int)((SPY.posZ - actor->posZ) + 0x17F) < 0x37F) ||
               (actor->subMode == COLLECT_HOMING && st->timer >= 0x41)) {
             if (g_pSparxActor != 0) {
@@ -1116,7 +1116,7 @@ void Level27_UpdateActors(void) {
       switch (actor->mode) {
       case SAVEHOST_WAIT_AWAY: {
         actor->collision = 0;
-        if (ApproxDist2D(&anchor->posX, &SPY.posX) < 0xA01) {
+        if (ApproxDist2D(&anchor->posX, &SPY.posX) <= SAVEHOST_REARM_RANGE) {
           break;
         }
         actor->mode = SAVEHOST_WAIT_ARMED;
@@ -1138,8 +1138,8 @@ void Level27_UpdateActors(void) {
         } else {
           actor->collision = 0;
 
-          if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
-            if (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 2048) {
+          if (ApproxDist2D(&actor->posX, &SPY.posX) < SAVEHOST_APPEAR_RANGE) {
+            if (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < SAVEHOST_APPEAR_DZ) {
               if (st->prompted == 0 || anchor->mode == CHECKPT_ARMED) {
                 st->prompted = 0;
                 actor->posZ = st->baseZ + 0x80;
@@ -1180,8 +1180,8 @@ void Level27_UpdateActors(void) {
         actor->posZ = st->baseZ + (LookupCosine(st->timer << 7) >> 6);
 
         if (CHECKPT_SETTLED(anchor) &&
-            ApproxDist2D(&anchor->posX, &SPY.posX) < 1024 &&
-            ABS2(anchor->posZ - anchor->floorOffset - SPY.posZ) < 512) {
+            ApproxDist2D(&anchor->posX, &SPY.posX) < SAVEHOST_PROMPT_RANGE &&
+            ABS2(anchor->posZ - anchor->floorOffset - SPY.posZ) < SAVEHOST_PROMPT_DZ) {
 
           if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_TEETER) && SPY.stateTimer > 0) {
             actor->mode = SAVEHOST_POP_OUT;
@@ -1191,8 +1191,8 @@ void Level27_UpdateActors(void) {
           }
         }
 
-        if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x2400 ||
-            (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) > 0xC00)) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) > SAVEHOST_HOVER_LEASH ||
+            (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) > SAVEHOST_LEASH_DZ)) {
           actor->mode = SAVEHOST_POP_OUT;
         } else {
           st->wanderTimer--;
@@ -1221,8 +1221,8 @@ void Level27_UpdateActors(void) {
         actor->posZ = st->baseZ + (LookupCosine(st->timer << 7) >> 6);
 
         if (CHECKPT_SETTLED(anchor) &&
-            ApproxDist2D(&anchor->posX, &SPY.posX) < 0x400 &&
-            ABS2(anchor->posZ - anchor->floorOffset - SPY.posZ) < 512) {
+            ApproxDist2D(&anchor->posX, &SPY.posX) < SAVEHOST_PROMPT_RANGE &&
+            ABS2(anchor->posZ - anchor->floorOffset - SPY.posZ) < SAVEHOST_PROMPT_DZ) {
 
           if ((SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_TEETER) && SPY.stateTimer > 0) {
             actor->mode = SAVEHOST_POP_OUT;
@@ -1232,8 +1232,8 @@ void Level27_UpdateActors(void) {
           }
         }
 
-        if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x2800 ||
-            ABS2(actor->posZ - actor->floorOffset - SPY.posZ) >= 0xC01) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) > SAVEHOST_WANDER_LEASH ||
+            ABS2(actor->posZ - actor->floorOffset - SPY.posZ) > SAVEHOST_LEASH_DZ) {
           actor->mode = SAVEHOST_POP_OUT;
         } else {
           int angleDiff;
@@ -1328,8 +1328,8 @@ void Level27_UpdateActors(void) {
           }
         } else {
           fx->size += 0x20;
-          if (st->glow->size >= 0x401) {
-            st->glow->size = 0x400;
+          if (st->glow->size > SPARX_GLOW_MAX_SIZE) {
+            st->glow->size = SPARX_GLOW_MAX_SIZE;
           }
         }
       } else if (st->glow != 0) {
@@ -1347,8 +1347,8 @@ void Level27_UpdateActors(void) {
       }
 
       if (st->target != 0 &&
-          ApproxDist2D(&actor->posX, (int *)((char *)SPY_VIA(g_anSparxHealthBlock, SPY_SPARX_HEALTH, SPY_POS))) >=
-              0x2001) {
+          ApproxDist2D(&actor->posX, (int *)((char *)SPY_VIA(g_anSparxHealthBlock, SPY_SPARX_HEALTH, SPY_POS))) >
+              SPARX_TARGET_LEASH) {
         st->timer = 0;
       }
 
@@ -1454,7 +1454,7 @@ void Level27_UpdateActors(void) {
             SubtractVector(sparxToTarget, &st->target->posX, &actor->posX);
             dist = VectorLength(sparxToTarget, VEC_LEN_XYZ);
 
-            if (dist < 0x200) {
+            if (dist < SPARX_CATCH_RANGE) {
               pk->timer = 0;
               pk->lean = GetRandomU32() & 0xE;
               pk->roll = GetRandomU32() & 0xE;
@@ -1474,8 +1474,8 @@ void Level27_UpdateActors(void) {
 
               if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[SFX_GEM_BOUNCE]) == 0) {
                 g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
-                g_nSfxOverrideVolR = 0x3600;
-                g_nSfxOverrideVolL = 0x3600;
+                g_nSfxOverrideVolR = SPARX_HANDOVER_VOLUME;
+                g_nSfxOverrideVolL = SPARX_HANDOVER_VOLUME;
                 PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
               }
             } else {
@@ -2240,11 +2240,11 @@ void Level27_UpdateActors(void) {
         actor->rotY = (unsigned short)g_anSineLut[st->angle] >> 7;
         st->angle += g_nFrameStep * 2;
 
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x200) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < KEY_TOUCH_RANGE) {
           int height = actor->posZ - actor->floorOffset;
           int drop = height - SPY.posZ;
 
-          if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
+          if (drop > 0 ? drop < KEY_TOUCH_DZ : (SPY.posZ - height) < KEY_TOUCH_DZ) {
             int i;
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_REWARD], actor, SFX_MODE_PANNED, 0);
@@ -2265,19 +2265,19 @@ void Level27_UpdateActors(void) {
           }
         }
 
-        if (st->attach != 0xFF) {
+        if (st->attach != ROT_BILLBOARD_NONE) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           RotateVectorByMatrix(&actor->mtx[0], &g_anRotBillboardOffset4,
                         g_aRotBillboards[st->attach].pos);
           AddVector(g_aRotBillboards[st->attach].pos, g_aRotBillboards[st->attach].pos,
                         &actor->posX);
           if (g_aRotBillboards[st->attach].life < 5) {
-            st->attach = 0xFF;
+            st->attach = ROT_BILLBOARD_NONE;
           }
         } else if (st->timer >= 0xF8) {
           int handle = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset4);
 
-          if (handle >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
+          if (handle >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < ROT_BILLBOARD_ATTACH_RANGE) {
             st->attach = handle;
           }
           st->timer = (GetRandomU32() & 0x3F) + 0x18;
@@ -2820,11 +2820,11 @@ void Level27_UpdateActors(void) {
         }
 
         at = &actor->posX;
-        if (ApproxDist2D(at, &spy->posX) < 0x800) {
+        if (ApproxDist2D(at, &spy->posX) < STATUE_NEAR_RANGE) {
           SubtractVector(g392, at, &spy->posX);
           g392[2] = (g392[2] * 3) >> 2;
 
-          if (VectorLength(g392, VEC_LEN_XYZ) < 0x440) {
+          if (VectorLength(g392, VEC_LEN_XYZ) < STATUE_TOUCH_RADIUS) {
             int facing;
 
             facing =
@@ -2974,7 +2974,7 @@ void Level27_UpdateActors(void) {
         if (g_pActorListBase[st->idx].type == ACTOR_TYPE_KEY) {
           if (g_pActorListBase[st->idx].subMode == KEY_WAITING)
             break;
-          if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1C01)
+          if (ApproxDist2D(&actor->posX, &SPY.posX) > WHIRL_KEY_RANGE)
             break;
         } else if (g_pActorListBase[st->idx].type == ACTOR_TYPE_DRAGON_STATUE ||
                    g_pActorListBase[st->idx].type == ACTOR_TYPE_GEM_1) {
@@ -2991,8 +2991,8 @@ void Level27_UpdateActors(void) {
             st->flags = (st->flags & ~WHIRL_F_IDLE) | WHIRL_F_WOKEN;
           break;
         }
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000 &&
-            ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < 0x400) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < WHIRL_WAKE_RANGE &&
+            ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < WHIRL_WAKE_DZ) {
           st->timer = 0xB4;
         }
         break;
@@ -3328,7 +3328,7 @@ void Level27_UpdateActors(void) {
 
         for (scan = g_pActorListBase; scan < g_pActorPoolDynBase; scan++) {
           if (scan->type == st->type && scan->mode >= ACTOR_MODE_DORMANT &&
-              ApproxDist2D(&SPY.posX, scan->state) >= 0x6001) {
+              ApproxDist2D(&SPY.posX, scan->state) > RESPAWN_RANGE) {
             CopyVector(&scan->posX, scan->state);
             InsertActorIntoSpatialGrid(scan);
             scan->flags = 0;
@@ -3410,7 +3410,7 @@ void Level27_UpdateActors(void) {
           ZeroVector(g496);
           g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &st->prize->posX, (int)g496);
         }
-        if ((ApproxDist2D(&st->prize->posX, &spy->posX) < 0x1E0 &&
+        if ((ApproxDist2D(&st->prize->posX, &spy->posX) < SEEDPOD_PRIZE_RANGE &&
              (unsigned int)(SPY.posZ - st->prize->posZ + 0xDF) < 0x2BF) ||
             g_nSpyroState == SPYRO_ST_SUPERCHARGE || g_nSpyroState == SPYRO_ST_SUPERCHARGE_AIR ||
             (g_nSpyroState == SPYRO_ST_CHARGE_AIR && (g_nSpyroSubstate & SPYRO_SUB_SUPERCHARGE))) {
@@ -3494,7 +3494,7 @@ void Level27_UpdateActors(void) {
     case ACTOR_TYPE_CHECKPOINT:
       switch (actor->mode) {
       case CHECKPT_REARM:
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xA01) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) <= CHECKPT_REARM_RANGE) {
           break;
         }
         actor->mode = CHECKPT_ARMED;
@@ -3504,14 +3504,14 @@ void Level27_UpdateActors(void) {
         int height;
         int drop;
 
-        if (ApproxDist2D(&actor->posX, &spy->posX) >= 0x380) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) >= CHECKPT_TOUCH_RANGE) {
           break;
         }
 
         height = actor->posZ - actor->floorOffset;
         drop = height - SPY.posZ;
 
-        if (drop > 0 ? drop < 0x200 : (SPY.posZ - height) < 0x200) {
+        if (drop > 0 ? drop < CHECKPT_TOUCH_DZ : (SPY.posZ - height) < CHECKPT_TOUCH_DZ) {
           SetSpawnAnchorFromActor(actor, actor->rotZ);
           actor->mode = CHECKPT_FLASH;
           actor->anim = CHECKPT_ANIM_FLASH;
@@ -3526,7 +3526,7 @@ void Level27_UpdateActors(void) {
         int tick = actor->subMode + d;
 
         actor->subMode = tick;
-        if ((unsigned char)tick < 0x30) {
+        if ((unsigned char)tick < CHECKPT_FLASH_FRAMES) {
           break;
         }
         actor->mode = CHECKPT_REARM;
@@ -3943,7 +3943,7 @@ void Level27_UpdateActors(void) {
       }
 
       if (st->parent->type == ACTOR_TYPE_LEVEL_EXIT) {
-        if (ApproxDist2D(&st->parent->posX, &spy->posX) < 0x400) {
+        if (ApproxDist2D(&st->parent->posX, &spy->posX) < LEVELEXIT_ENTER_RANGE) {
           unsigned char was = actor->subMode;
           int prev = g_anCosineLut[was];
           unsigned char now = was + 8;

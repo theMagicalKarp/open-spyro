@@ -757,7 +757,7 @@ void Level29_FlightResults_Draw(void)
   if (g_nMenuDrawFrames > 0)
   {
     EnqueuePendingSpritePrims();
-    FillWord(g_apMainDrawEntityList, 0, 0x900);
+    FillWord(g_apMainDrawEntityList, 0, FRAME_ARENA_LIST_WORDS);
     RasterizeSpritePrimQueue();
   }
   DrawOTag(LinkOTPrimitives(0));

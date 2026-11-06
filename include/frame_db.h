@@ -7,6 +7,7 @@
 #ifndef OPEN_SPYRO_FRAME_DB_H
 #define OPEN_SPYRO_FRAME_DB_H
 
+#include "frame_arena.h"
 #include "types.h"
 
 typedef struct FrameDB {

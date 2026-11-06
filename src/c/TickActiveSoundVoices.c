@@ -91,7 +91,7 @@ int TickActiveSoundVoices(void) {
         playing = g_aSpuVoiceRows[i].pPlaying;
         keyOff |= bit << i;
         if (playing != 0) {
-          *playing = 0x7F;
+          *playing = VOICE_ROW_NONE;
         }
         g_aSpuVoiceRows[i].nFlags = VOICE_ROW_STOPPED;
         g_aSpuVoiceRows[i].pPlaying = 0;
@@ -132,7 +132,7 @@ int TickActiveSoundVoices(void) {
           playing = g_aSpuVoiceRows[i].pPlaying;
           keyOff |= bit << i;
           if (playing != 0) {
-            *playing = 0x7F;
+            *playing = VOICE_ROW_NONE;
           }
           g_aSpuVoiceRows[i].nFlags = VOICE_ROW_STOPPED;
           g_aSpuVoiceRows[i].pPlaying = 0;

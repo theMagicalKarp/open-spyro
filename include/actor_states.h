@@ -41,6 +41,9 @@ typedef struct SparxState {
   struct Actor *target;  /* 0x10 butterfly or pickup being chased */
 } SparxState;
 
+/* SparxState.glow's FxNode.size grows to this at full health. */
+#define SPARX_GLOW_MAX_SIZE 0x400
+
 /* Crystal dragon statue (ACTOR_TYPE_DRAGON_STATUE). The UpdateActors clones
  * shake it and, once Spyro is close, count the rescue or hand it to
  * BeginDragonRescue; DragonRescue_Update stages the cutscene from the camera,
@@ -71,8 +74,9 @@ typedef struct DragonStatueState {
 } DragonStatueState;
 
 /* Type 16 (ACTOR_TYPE_BUTTERFLY): flutters about its spawn point, turning
- * and climbing on random timers and staying 0..0x7D0 out from home and
- * 300..1024 above the ground. SpawnActor seeds offscreenTimer with 0x708:
+ * and climbing on random timers and staying within BUTTERFLY_LEASH of home and
+ * BUTTERFLY_FLUTTER_MIN..MAX_HEIGHT above the ground. SpawnActor seeds
+ * offscreenTimer with BUTTERFLY_OFFSCREEN_FRAMES:
  * until it runs out the butterfly flutters even when it was not drawn last
  * frame, after that only while drawn. Sparx eating it (BUTTERFLY_CIRCLE)
  * makes it circle Spyro on the side circleDir picks. */
@@ -125,6 +129,13 @@ typedef struct WhirlwindState {
 #define WHIRL_F_WOKEN 0x04      /* woken: idles again 0x78 frames after a lift */
 #define WHIRL_F_GATED 0x08      /* waits on its owner (`idx`: a key's subMode, a statue or gem gone) */
 #define WHIRL_F_MARK 0x10       /* also sets ->subMode to 1 while active */
+
+/* Whirlwind ranges to Spyro (2D / height): an idle one wakes within WAKE /
+ * WAKE_DZ; one gated on a key that was taken stays shut until Spyro is
+ * within KEY_RANGE. */
+#define WHIRL_WAKE_RANGE 0x1000
+#define WHIRL_WAKE_DZ 0x400
+#define WHIRL_KEY_RANGE 0x1C00
 
 /* Level 14 type 303 (ACTOR_TYPE_RUNNER_SPAWNER): every so often (`timer`,
  * 0xB4) rewinds `path` and spawns one waypoint runner (304), handing it the

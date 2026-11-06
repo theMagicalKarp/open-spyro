@@ -86,12 +86,12 @@ void Credits_Draw(void) {
     }
   }
   {
-    int *q = g_apSpritePrimQueue;
+    int *q = (int *)g_apSpritePrimQueue;
     char *ot;
     q[0] = 0;
     EnqueuePendingSpritePrims();
-    ot = (char *)q - 0x2400;
-    FillWord(ot, 0, 0x900);
+    ot = (char *)q - FRAME_ARENA_SPRITE_QUEUE; /* g_apMainDrawEntityList */
+    FillWord(ot, 0, FRAME_ARENA_LIST_WORDS);
     RasterizeSpritePrimQueue();
     FillBlock16(ot, 0, 0x1C00);
     g_nFarPlaneDrawDistance = 0x28000;

@@ -10,12 +10,12 @@
    (+0xC/+0x10) by `speed` (scaled 1.5x/2x at frame delta 3/4), then runs
    the contact/collision checks: actor contact over a `contactRadius` sphere
    (MOVE_PASS_ACTORS pushes the step out of them instead of failing), an
-   optional +0x12C+radius Z bias around the world collision (flags bit 0, undone
-   after), world collision over `radius` (flags bit 5 slides to the resolved
-   contact), a ground probe (flags bits 2/4/6), a step-height reject >= 0x191
-   (bit 4), and a probe-normal slope reject within 0x17 of vertical (bit 6).
-   Returns 1 on actor contact, 2 on world/step/slope rejection, 0 when the move
-   was committed. */
+   optional +MOVE_LIFT_HEIGHT + radius Z bias around the world collision (flags
+   bit 0, undone after), world collision over `radius` (flags bit 5 slides to
+   the resolved contact), a ground probe (flags bits 2/4/6), a step-height
+   reject >= 0x191 (bit 4), and a probe-normal slope reject within 0x17 of
+   vertical (bit 6). Returns 1 on actor contact, 2 on world/step/slope
+   rejection, 0 when the move was committed. */
 
 int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius,
                           int radius, int flags) {
@@ -48,7 +48,7 @@ int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius,
     }
   }
   if (flags & MOVE_LIFT) {
-    t = newpos[2] + 0x12C;
+    t = newpos[2] + MOVE_LIFT_HEIGHT;
     newpos[2] = t + radius;
   }
   if (radius != 0) {
@@ -60,7 +60,7 @@ int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius,
     }
   }
   if (flags & MOVE_LIFT) {
-    t = newpos[2] - 0x12C;
+    t = newpos[2] - MOVE_LIFT_HEIGHT;
     newpos[2] = t - radius;
   }
   if (flags & MOVE_PROBES_FLOOR) {

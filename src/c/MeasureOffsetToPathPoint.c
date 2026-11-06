@@ -3,7 +3,9 @@
 #include "globals.h"
 
 /* 0x8003a79c: the distance from the actor to its path's current node,
-   divided by divisor. */
+   divided by divisor.
+   Unreferenced: no call, branch, pointer or table entry in main or any overlay
+   (xref). */
 int MeasureOffsetToPathPoint(Actor *actor, PathData *path, int divisor) {
   int v[3];
 

@@ -77,7 +77,7 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
     CopyVector(st->home, pos);
     st->climbTimer = 0;
     st->headingTimer = 0;
-    st->offscreenTimer = 0x708;
+    st->offscreenTimer = BUTTERFLY_OFFSCREEN_FRAMES;
     break;
   }
 
@@ -260,7 +260,7 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
     st->spin[2] = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
-    if ((unsigned int)((unsigned short)rec->type - 0x135) < 3) {
+    if ((unsigned int)((unsigned short)rec->type - ACTOR_TYPE_SPARKLE_SHARD) < 3) {
       *(int *)&rec->tint0 = ACTOR_TINT_NEUTRAL;
       rec->renderList |= ACTOR_RENDER_SECONDARY;
     }

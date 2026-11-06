@@ -3,7 +3,9 @@
 #include "vecmath.h"
 
 /* True when the actor's byte yaw (rotZ) points within `threshold` of the
-   direction from the actor to Spyro. */
+   direction from the actor to Spyro.
+   Unreferenced: no call, branch, pointer or table entry in main or any overlay
+   (xref). */
 int IsActorFacingSpyro(Actor *actor, int threshold) {
   return AbsAngleDelta8(ArcTan2(g_anSpyroWorldPos[0] - actor->posX,
                                 g_anSpyroWorldPos[1] - actor->posY,

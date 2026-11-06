@@ -7,9 +7,9 @@
 /* Trial-move actor `actor` `speed` units along its facing and commit the new
    position if nothing blocks it (0x8003bccc). Global pace g_nActorFrameDelta
    scales speed (3 -> 1.5x, 4 -> 2x). flags: bit 0 biases the probe Z up by
-   0x12C+collideR for the contact tests (undone after), bit 1 selects the
-   fire-and-forget contact dispatch (mode 3) over the blocking one, bits
-   2/4 (0x14) probe the ground below, bit 4 also rejects a commit when the
+   MOVE_LIFT_HEIGHT + collideR for the contact tests (undone after), bit 1
+   selects the fire-and-forget contact dispatch (mode 3) over the blocking one,
+   bits 2/4 (0x14) probe the ground below, bit 4 also rejects a commit when the
    ground height differs from the actor's cached Z by >= 0xC9. Returns 1 on
    contact block, 2 on world collision / ground-step reject, 0 on commit. */
 
@@ -33,7 +33,7 @@ int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR,
   AddVector(vec, vec, &actor->posX);
 
   if (flags & MOVE_LIFT) {
-    d = vec[2] + 0x12C;
+    d = vec[2] + MOVE_LIFT_HEIGHT;
     vec[2] = d + collideR;
   }
   if (contactR != 0) {
@@ -53,7 +53,7 @@ int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR,
     }
   }
   if (flags & MOVE_LIFT) {
-    d = vec[2] - 0x12C;
+    d = vec[2] - MOVE_LIFT_HEIGHT;
     vec[2] = d - collideR;
   }
   if (flags & (MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT)) {

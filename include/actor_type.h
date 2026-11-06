@@ -97,7 +97,7 @@ typedef struct Actor {
 } Actor; /* 0x58 */
 
 /* Actor.voiceRow while no voice row plays the actor's sound. */
-#define VOICE_ROW_NONE 0x7F
+#define VOICE_ROW_NONE 0x7F /* also what a finished or dropped sound stamps into its pPlaying byte */
 #define ACTOR_SCALE_UNIT 0x20 /* ->scale drawing the mesh at its own size (0x40 = half, 0x14 = 1.6x) */
 #define ACTOR_CULL_HIDDEN 0 /* ->cullRadius: a zero bound fails the view cull, so the actor is hidden */
 #define ACTOR_TINT_NEUTRAL 0xA18618 /* the 0x4C tint word at neutral levels (0x18 each, tag 0xA) */
@@ -167,7 +167,8 @@ typedef struct Actor {
 /* `flags` of the actor movers (MoveActorAlongHeading, MoveActorAlongAngle,
  * MoveActorByDelta, which reads only MOVE_LIFT, TryMoveActorForward), passed
  * through by SteerActorAroundPoint and PivotActorAlongPath. */
-#define MOVE_LIFT 0x01         /* probe the world 0x12C + radius higher (undone after) */
+#define MOVE_LIFT 0x01         /* probe the world MOVE_LIFT_HEIGHT + radius higher (undone after) */
+#define MOVE_LIFT_HEIGHT 0x12C /* MOVE_LIFT's probe lift above the actor, before its radius */
 #define MOVE_PASS_ACTORS 0x02  /* actors never block: the step is pushed out of them (CONTACT_PUSH_OUT) */
 #define MOVE_FOLLOW_FLOOR 0x04 /* ease Z toward the probed floor (snap when close) */
 #define MOVE_STEP_LIMIT 0x10   /* reject a step up or down past the step height */
