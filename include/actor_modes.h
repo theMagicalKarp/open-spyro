@@ -71,6 +71,23 @@ enum SparxSubMode {
 #define SPARX_CHASE_MIN_FRAMES 150
 #define SPARX_CHASE_MAX_FRAMES 210
 #define SPARX_CATCH_EARLY_FRAMES 80
+/* With no target Sparx hovers at a random drift HOVER_BEHIND behind Spyro
+ * (his body frame), FREE_LOOK_PULLBACK further back under the free-look
+ * camera, and at least CHARGE_HOVER_MIN_Z up during a charge; his pitch
+ * follows his climb within +-MAX_PITCH. A fetch moves him FETCH_STEP_FAR a
+ * frame toward the pickup (FETCH_STEP_NEAR once within that). */
+#define SPARX_HOVER_BEHIND 0x258
+#define SPARX_FREE_LOOK_PULLBACK 0x200
+#define SPARX_CHARGE_HOVER_MIN_Z 0x64
+#define SPARX_MAX_PITCH 0x20
+#define SPARX_FETCH_STEP_FAR 0x136
+#define SPARX_FETCH_STEP_NEAR 0x122
+/* Blue or better he twinkles from both wingtips, WING_SPAN to either side;
+ * gold adds a glow that starts at GLOW_START_SIZE and grows GLOW_GROW a frame
+ * to SPARX_GLOW_MAX_SIZE. */
+#define SPARX_WING_SPAN 0x64
+#define SPARX_GLOW_START_SIZE 0x40
+#define SPARX_GLOW_GROW 0x20
 
 /* g_nSfxOverrideVolL/R (of SPU_VOLUME_MAX) for Sparx's buzz when he
  * sets off to fetch, and for the chime when he hands the pickup over. */

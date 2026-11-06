@@ -2563,14 +2563,14 @@ void Level14_UpdateActors(void) {
       if (SPY.sparxHealth >= SPARX_BLUE) {
 
         svA[0] = 0;
-        svA[1] = 0x64;
+        svA[1] = SPARX_WING_SPAN;
         svA[2] = 0;
         RotateVectorByMatrix(actor->mtx, svA, svA);
         AddVector(svA, svA, &actor->posX);
         g_pfnLevelEmitParticles(2, EMIT_TWINKLE, svA, 0);
 
         svA[0] = 0;
-        svA[1] = -0x64;
+        svA[1] = -SPARX_WING_SPAN;
         svA[2] = 0;
         ApplyActiveGteRotation(svA, svA);
         AddVector(svA, svA, &actor->posX);
@@ -2583,7 +2583,7 @@ void Level14_UpdateActors(void) {
           st->glow = g;
           if (g != 0) {
             g->anchor = &actor->posX;
-            st->glow->size = 0x40;
+            st->glow->size = SPARX_GLOW_START_SIZE;
             st->glow->offX = 0;
             st->glow->offY = 0;
             st->glow->offZ = 0;
@@ -2594,7 +2594,7 @@ void Level14_UpdateActors(void) {
             st->glow->desc = &g_anSparkleGlowDesc;
           }
         } else {
-          st->glow->size += 0x20;
+          st->glow->size += SPARX_GLOW_GROW;
           if (st->glow->size > SPARX_GLOW_MAX_SIZE) {
             st->glow->size = SPARX_GLOW_MAX_SIZE;
           }
@@ -2735,12 +2735,12 @@ void Level14_UpdateActors(void) {
               PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
             }
           } else {
-            int dcheck = 310;
+            int dcheck = SPARX_FETCH_STEP_FAR;
 
             if (dcheck < dist)
-              ScaleVector3ByRatio(sparxToTarget, dist, 310);
+              ScaleVector3ByRatio(sparxToTarget, dist, SPARX_FETCH_STEP_FAR);
             else
-              ScaleVector3ByRatio(sparxToTarget, dist, 290);
+              ScaleVector3ByRatio(sparxToTarget, dist, SPARX_FETCH_STEP_NEAR);
 
             AddVector(&actor->posX, &actor->posX, sparxToTarget);
             TurnActorYawTowardAngle(actor, ArcTan2(sparxToTarget[0], sparxToTarget[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
@@ -2756,10 +2756,10 @@ void Level14_UpdateActors(void) {
         actor->cullRadius = 0x10;
         if (st->timer <= 0) {
 
-          svA[0] = -0x258;
+          svA[0] = -SPARX_HOVER_BEHIND;
           svA[1] = (GetRandomU32() & 0x310) - 0x188;
           if (CAM.state == CAM_MODE_CHARGE) {
-            svA[2] = (GetRandomU32() & 0x7F) + 0x64;
+            svA[2] = (GetRandomU32() & 0x7F) + SPARX_CHARGE_HOVER_MIN_Z;
           } else {
             svA[2] = (GetRandomU32() & 0x1FF) - 0xC8;
           }
@@ -2773,11 +2773,11 @@ void Level14_UpdateActors(void) {
             svA[0] = st->drift[0] + (SPY.motionSpeed >> 2);
             svA[1] = st->drift[1];
             svA[2] = st->drift[2];
-            if (svA[2] < 0x64)
-              svA[2] = 0x64;
+            if (svA[2] < SPARX_CHARGE_HOVER_MIN_Z)
+              svA[2] = SPARX_CHARGE_HOVER_MIN_Z;
           } else {
             if (CAM.state == (CAM_HELD | CAM_MODE_FREE_LOOK))
-              svA[0] = st->drift[0] - 512;
+              svA[0] = st->drift[0] - SPARX_FREE_LOOK_PULLBACK;
             else {
               svA[0] = st->drift[0];
             }
@@ -2794,10 +2794,10 @@ void Level14_UpdateActors(void) {
             CopyVector(&actor->posX, &g_anCollisionResolvedPos);
           }
 
-          if (svA[2] > 32)
-            svA[2] = 32;
-          if (svA[2] < -32)
-            svA[2] = -32;
+          if (svA[2] > SPARX_MAX_PITCH)
+            svA[2] = SPARX_MAX_PITCH;
+          if (svA[2] < -SPARX_MAX_PITCH)
+            svA[2] = -SPARX_MAX_PITCH;
           actor->rotX = 0;
           actor->rotY = svA[2];
           TurnActorYawTowardAngle(actor, SPY.bodyRotZ, 4, 0, YAW_HOLD_IN_BAND);

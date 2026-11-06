@@ -2416,13 +2416,13 @@ void Level1_UpdateActors(void) {
 
       if (g_anSparxHealthBlock[0] >= SPARX_BLUE) {
         svF[0] = 0;
-        svF[1] = 0x64;
+        svF[1] = SPARX_WING_SPAN;
         svF[2] = 0;
         RotateVectorByMatrix(&actor->mtx[0], svF, svF);
         AddVector(svF, svF, &actor->posX);
         g_pfnLevelEmitParticles(2, EMIT_TWINKLE, svF, 0);
         svF[0] = 0;
-        svF[1] = -0x64;
+        svF[1] = -SPARX_WING_SPAN;
         svF[2] = 0;
         ApplyActiveGteRotation(svF, svF);
         AddVector(svF, svF, &actor->posX);
@@ -2437,7 +2437,7 @@ void Level1_UpdateActors(void) {
           st->glow = fx;
           if (fx != 0) {
             fx->anchor = &actor->posX;
-            st->glow->size = 0x40;
+            st->glow->size = SPARX_GLOW_START_SIZE;
             st->glow->offX = 0;
             st->glow->offY = 0;
             st->glow->offZ = 0;
@@ -2448,7 +2448,7 @@ void Level1_UpdateActors(void) {
             st->glow->desc = &g_anSparkleGlowDesc;
           }
         } else {
-          fx->size += 0x20;
+          fx->size += SPARX_GLOW_GROW;
           if (st->glow->size > SPARX_GLOW_MAX_SIZE) {
             st->glow->size = SPARX_GLOW_MAX_SIZE;
           }
@@ -2600,12 +2600,12 @@ void Level1_UpdateActors(void) {
                 PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
               }
             } else {
-              int lim = 0x136;
+              int lim = SPARX_FETCH_STEP_FAR;
 
               if (lim < dist) {
                 ScaleVector3ByRatio(sparxToTarget, dist, lim);
               } else {
-                ScaleVector3ByRatio(sparxToTarget, dist, 0x122);
+                ScaleVector3ByRatio(sparxToTarget, dist, SPARX_FETCH_STEP_NEAR);
               }
               AddVector(&actor->posX, &actor->posX, sparxToTarget);
               TurnActorYawTowardAngle(actor, ArcTan2(sparxToTarget[0], sparxToTarget[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
@@ -2620,9 +2620,9 @@ void Level1_UpdateActors(void) {
           actor->cullRadius = 0x10;
 
           if (st->timer <= 0) {
-            svF[0] = -0x258;
+            svF[0] = -SPARX_HOVER_BEHIND;
             svF[1] = (GetRandomU32() & 0x310) - 0x188;
-            svF[2] = g_nCameraCurrentMode == CAM_MODE_CHARGE ? (GetRandomU32() & 0x7F) + 0x64
+            svF[2] = g_nCameraCurrentMode == CAM_MODE_CHARGE ? (GetRandomU32() & 0x7F) + SPARX_CHARGE_HOVER_MIN_Z
                                      : (GetRandomU32() & 0x1FF) - 0xC8;
             EBB_BREAK();
             st->drift[0] = svF[0];
@@ -2639,12 +2639,12 @@ void Level1_UpdateActors(void) {
               svF[0] = st->drift[0] + (g_nSpyroMotionSpeed >> 2);
               svF[1] = st->drift[1];
               svF[2] = st->drift[2];
-              if (svF[2] < 0x64) {
-                svF[2] = 0x64;
+              if (svF[2] < SPARX_CHARGE_HOVER_MIN_Z) {
+                svF[2] = SPARX_CHARGE_HOVER_MIN_Z;
               }
             } else {
               if (g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_FREE_LOOK)) {
-                svF[0] = st->drift[0] - 0x200;
+                svF[0] = st->drift[0] - SPARX_FREE_LOOK_PULLBACK;
               } else {
                 svF[0] = st->drift[0];
               }
@@ -2663,11 +2663,11 @@ void Level1_UpdateActors(void) {
               CopyVector(at, &g_anCollisionResolvedPos);
             }
 
-            if (svF[2] >= 0x21) {
-              svF[2] = 0x20;
+            if (svF[2] > SPARX_MAX_PITCH) {
+              svF[2] = SPARX_MAX_PITCH;
             }
-            if (svF[2] < -0x20) {
-              svF[2] = -0x20;
+            if (svF[2] < -SPARX_MAX_PITCH) {
+              svF[2] = -SPARX_MAX_PITCH;
             }
 
             actor->rotX = 0;
