@@ -612,7 +612,7 @@ void Level28_UpdateActors(void) {
     case ACTOR_TYPE_BIG_CHARGING_RAM:
     case ACTOR_TYPE_CHARGING_RAM: {
       ChargingRamState *st = actor->state;
-      int range = 0x708;
+      int range = CRAM_BUTT_RANGE;
       int dist;
 
       SubtractVector(g104, &spy->posX, &actor->posX);
@@ -621,7 +621,7 @@ void Level28_UpdateActors(void) {
         dist = VectorLength(g104, VEC_LEN_XY);
       }
       if (actor->type == ACTOR_TYPE_BIG_CHARGING_RAM) {
-        range = 0x5DC;
+        range = CRAM_BIG_BUTT_RANGE;
       }
       if (st->init == 0) {
         st->init = one;
@@ -638,8 +638,8 @@ void Level28_UpdateActors(void) {
       if (actor->mode != CRAM_KNOCKED &&
           ((actor->type == ACTOR_TYPE_BIG_CHARGING_RAM && (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER))) ||
            (actor->type == ACTOR_TYPE_CHARGING_RAM && (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER))))) {
-        st->knockSpeed = 0x190;
-        st->knockZSpeed = 0xAA;
+        st->knockSpeed = CRAM_KNOCK_SPEED;
+        st->knockZSpeed = CRAM_KNOCK_VZ;
         st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
                                     spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
@@ -656,7 +656,7 @@ void Level28_UpdateActors(void) {
       }
       actor->flags = 0;
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
-      if (dist > 0xC00) {
+      if (dist > CRAM_CHARGED_RESET_RANGE) {
         st->charged = 0;
       }
 
@@ -664,15 +664,15 @@ void Level28_UpdateActors(void) {
       case CRAM_GRAZE:
       case CRAM_WATCH:
         TICK_DOWN(st->timer);
-        if (st->timer == 0 && dist < 0x2000 && actor->type == ACTOR_TYPE_CHARGING_RAM &&
+        if (st->timer == 0 && dist < CRAM_REAR_RANGE && actor->type == ACTOR_TYPE_CHARGING_RAM &&
             st->mode != 0 &&
             AbsAngleDelta8(spy->bodyRotZ,
                           ArcTan2(actor->posX - spy->posX,
-                                        actor->posY - spy->posY, ATAN_ANGLE8)) < 0x26 &&
+                                        actor->posY - spy->posY, ATAN_ANGLE8)) < CRAM_REAR_FACING &&
             AbsAngleDelta8(g_nCameraEulerYaw >> 4,
                           ArcTan2(actor->posX - g_anCameraPos[0],
                                         actor->posY - g_anCameraPos[1], ATAN_ANGLE8)) <
-                0x23) {
+                CRAM_REAR_CAM_CONE) {
           if (actor->nextAnim < 2) {
             actor->mode = CRAM_REAR;
             ANIM_RESET(actor, CRAM_REAR);
@@ -682,7 +682,7 @@ void Level28_UpdateActors(void) {
         }
         TrackEntityYawTowardSpyro(actor, 7, 5, YAW_HOLD_IN_BAND);
         if (st->timer == 0 && dist < range) {
-          st->timer = 0xA0;
+          st->timer = CRAM_BUTT_REST;
           st->saved = actor->mode;
           if (st->mode == 0) {
             ENTER_POSE(actor, CRAM_BUTT);
@@ -700,7 +700,7 @@ void Level28_UpdateActors(void) {
             h = (h + 0x1E) & 0xFF;
           }
           g_anSpyroRequestVelocity.x = (g_anCosineLut[h] * 5) >> 8;
-          g_nSpyroRequestVelocityZ = 0x1E;
+          g_nSpyroRequestVelocityZ = CRAM_BUTT_VZ;
           g_nSpyroRequestVelocityY = (g_anSineLut[h] * 5) >> 8;
         }
         TrackEntityYawTowardSpyro(actor, 7, 5, YAW_HOLD_IN_BAND);
@@ -725,22 +725,22 @@ void Level28_UpdateActors(void) {
           continue;
         }
         if (TICK_DOWN(st->reaimTimer) != 0) {
-          st->reaimTimer = 0x1E;
+          st->reaimTimer = CRAM_REAIM_FRAMES;
           st->heading = *(unsigned char *)&g_bSpyroPersistentEulerZ;
         }
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(spy->posX - actor->posX,
                                         spy->posY - actor->posY, ATAN_ANGLE8),
                           4, 0x1E, one) != 0) {
-          if (MoveActorAlongHeading(actor, 0x64, 0x300, 0x200, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_SLIDE) != 0 ||
-              ApproxDist2D(&actor->posX, st->home) > 0x2800) {
+          if (MoveActorAlongHeading(actor, CRAM_CHARGE_SPEED, 0x300, 0x200, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_SLIDE) != 0 ||
+              ApproxDist2D(&actor->posX, st->home) > CRAM_LEASH) {
             actor->mode = CRAM_GO_HOME;
             continue;
           }
         }
         if (AbsAngleDelta8(spy->bodyRotZ,
                           ArcTan2(actor->posX - spy->posX,
-                                        actor->posY - spy->posY, ATAN_ANGLE8)) >= 0x31) {
+                                        actor->posY - spy->posY, ATAN_ANGLE8)) >= CRAM_GIVE_UP_FACING) {
           if (st->lookAwayTimer != 0) {
             if (TICK_DOWN(st->lookAwayTimer) != 0) {
               st->lookAwayTimer = 0;
@@ -748,16 +748,16 @@ void Level28_UpdateActors(void) {
               continue;
             }
           } else {
-            st->lookAwayTimer = 0x28;
+            st->lookAwayTimer = CRAM_GIVE_UP_FRAMES;
           }
         } else {
           st->lookAwayTimer = 0;
         }
-        if (st->charged == 0 && dist < range - 0x258 &&
+        if (st->charged == 0 && dist < range - CRAM_CHARGE_BUTT_INSET &&
             AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
-                                        spy->posY - actor->posY, ATAN_ANGLE8)) < 0x40) {
-          st->timer = 0xA0;
+                                        spy->posY - actor->posY, ATAN_ANGLE8)) < CRAM_CHARGE_CONE) {
+          st->timer = CRAM_BUTT_REST;
           st->charged = one;
           st->saved = CRAM_REAR;
           RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
@@ -777,10 +777,10 @@ void Level28_UpdateActors(void) {
 
         RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
         if (TurnActorYawTowardAngle(actor, h, 4, 0x14, one) != 0) {
-          MoveActorAlongHeading(actor, 0x5A, 0x300, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
+          MoveActorAlongHeading(actor, CRAM_HOME_SPEED, 0x300, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
         }
         ANIM_GO(actor, CRAM_CHARGE);
-        if (ApproxDist2D(&actor->posX, st->home) < 0x80) {
+        if (ApproxDist2D(&actor->posX, st->home) < CRAM_HOME_ARRIVE) {
           ENTER_POSE(actor, CRAM_WATCH);
         }
         continue;

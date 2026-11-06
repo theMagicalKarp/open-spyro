@@ -2472,6 +2472,36 @@ enum ChargingRamMode {
   CRAM_GO_HOME = 100,  /* walks home, then WATCH */
 };
 
+/* Charging ram tuning. It butts Spyro within BUTT_RANGE (BIG_BUTT_RANGE for
+ * the big kind), shoving him at 5/256 of the unit vector (BUTT_VZ up; the
+ * big one 0x1E off its heading) and resting BUTT_REST; once Spyro is past
+ * CHARGED_RESET_RANGE it may butt again. The awake kind rears and charges
+ * once Spyro, within REAR_RANGE, faces it (REAR_FACING) and it is in the
+ * camera's REAR_CAM_CONE. Charging at CHARGE_SPEED (re-aiming every
+ * REAIM_FRAMES) it butts within BUTT_RANGE - CHARGE_BUTT_INSET inside
+ * CHARGE_CONE, and goes home past LEASH or after Spyro looks away
+ * (GIVE_UP_FACING) for GIVE_UP_FRAMES. Hit it is knocked off at KNOCK_SPEED
+ * / KNOCK_VZ; home walks HOME_SPEED, within HOME_ARRIVE. */
+#define CRAM_BUTT_RANGE 0x708
+#define CRAM_BIG_BUTT_RANGE 0x5DC
+#define CRAM_BUTT_VZ 0x1E
+#define CRAM_BUTT_REST 0xA0
+#define CRAM_CHARGED_RESET_RANGE 0xC00
+#define CRAM_REAR_RANGE 0x2000
+#define CRAM_REAR_FACING 0x26
+#define CRAM_REAR_CAM_CONE 0x23
+#define CRAM_CHARGE_SPEED 0x64
+#define CRAM_REAIM_FRAMES 0x1E
+#define CRAM_CHARGE_BUTT_INSET 0x258
+#define CRAM_CHARGE_CONE 0x40
+#define CRAM_LEASH 0x2800
+#define CRAM_GIVE_UP_FACING 0x31
+#define CRAM_GIVE_UP_FRAMES 0x28
+#define CRAM_KNOCK_SPEED 0x190
+#define CRAM_KNOCK_VZ 0xAA
+#define CRAM_HOME_SPEED 0x5A
+#define CRAM_HOME_ARRIVE 0x80
+
 /* ->mode of a rock thrower (ACTOR_TYPE_ROCK_THROWER, RockThrowerState;
  * level 27); the mode is also the animation index. */
 enum RockThrowerMode {
@@ -3514,6 +3544,33 @@ enum LanePatrollerMode {
   LANEPAT_RUN = 1,     /* runs its lane path, turning back at Spyro, to the far end */
   LANEPAT_KNOCKED = 2, /* knocked away, then bursts */
 };
+
+/* Lane patroller tuning. Hit it is knocked off at KNOCK_SPEED
+ * (CHARGE_KNOCK_SPEED for a charge; KNOCK_VZ up). It runs its lane once
+ * Spyro is within NOTICE_RANGE / NOTICE_DZ, from RUN_SPEED, slowing
+ * SLOW_STEP a frame to MIN_SPEED after SLOW_FRAMES (LANE1_SLOW_FRAMES on
+ * lane 1); each finished run (up to MAX_RUNS - 1, g_anLevelEscapeRunCount)
+ * takes 6 off both. It falls GRAVITY a frame down to -MAX_FALL (floor
+ * probed FLOOR_PROBE_RAISE up), jumps at JUMP_VZ on PATH_JUMP_LOW nodes, is
+ * put back on its node below FELL_BELOW_Z, and within TURN_RANGE turns back
+ * at Spyro just ahead on its lane. */
+#define LANEPAT_KNOCK_SPEED 0xFA
+#define LANEPAT_CHARGE_KNOCK_SPEED 0x145
+#define LANEPAT_KNOCK_VZ 0x28
+#define LANEPAT_NOTICE_RANGE 0x1964
+#define LANEPAT_NOTICE_DZ 0x578
+#define LANEPAT_RUN_SPEED 0x12C
+#define LANEPAT_SLOW_FRAMES 0x6E
+#define LANEPAT_LANE1_SLOW_FRAMES 0x96
+#define LANEPAT_SLOW_STEP 0xA
+#define LANEPAT_MIN_SPEED 0xDC
+#define LANEPAT_MAX_RUNS 6
+#define LANEPAT_GRAVITY 0x1E
+#define LANEPAT_MAX_FALL 0x190
+#define LANEPAT_FLOOR_PROBE_RAISE 0xBB8
+#define LANEPAT_JUMP_VZ 0x12C
+#define LANEPAT_FELL_BELOW_Z 0x800
+#define LANEPAT_TURN_RANGE 0x3000
 
 /* ->mode of a runner spawner (ACTOR_TYPE_RUNNER_SPAWNER, RunnerSpawnerState;
  * level 14); the mode is also the animation index. */

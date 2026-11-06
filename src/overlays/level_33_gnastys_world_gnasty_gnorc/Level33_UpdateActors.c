@@ -1448,14 +1448,14 @@ void Level33_UpdateActors(void) {
       }
 
       if (actor->flags != 0 && actor->mode != LANEPAT_KNOCKED) {
-        st->knockSpeed = 0xFA;
+        st->knockSpeed = LANEPAT_KNOCK_SPEED;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->knockSpeed = 0x145;
+          st->knockSpeed = LANEPAT_CHARGE_KNOCK_SPEED;
         }
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8),
                                 g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->knockZSpeed = 0x28;
+        st->knockZSpeed = LANEPAT_KNOCK_VZ;
         ENTER_POSE(actor, LANEPAT_KNOCKED);
       }
       actor->flags = 0;
@@ -1480,16 +1480,16 @@ void Level33_UpdateActors(void) {
       switch (actor->mode) {
       case LANEPAT_WATCH:
         TrackEntityYawTowardSpyro(actor, 5, 0, YAW_HOLD_IN_BAND);
-        if (dist < 0x1964 &&
-            (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x578
-                               : -SPY_DZ(actor) < 0x578)) {
-          st->speed = 0x12C;
+        if (dist < LANEPAT_NOTICE_RANGE &&
+            (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < LANEPAT_NOTICE_DZ
+                               : -SPY_DZ(actor) < LANEPAT_NOTICE_DZ)) {
+          st->speed = LANEPAT_RUN_SPEED;
           if (st->lane == 0) {
             st->path->dir = 1;
-            st->slowTimer = 0x6E;
+            st->slowTimer = LANEPAT_SLOW_FRAMES;
           } else {
             st->path->dir = 1;
-            st->slowTimer = 0x96;
+            st->slowTimer = LANEPAT_LANE1_SLOW_FRAMES;
           }
           st->slowTimer -= g_anLevelEscapeRunCount[st->lane] * 6;
           if (IsPointInRotatedBox(&SPY.posX, &st->box) != 0) {
@@ -1511,15 +1511,15 @@ void Level33_UpdateActors(void) {
         int h;
         int z;
 
-        if (actor->posZ < 0x800) {
+        if (actor->posZ < LANEPAT_FELL_BELOW_Z) {
           CopyVector(&actor->posX,
                         PATH_PT(st->path, st->path->cur));
           SnapActorToGround(actor);
         }
         if (TICK_DOWN(st->slowTimer) != 0) {
-          int lo = 0xDC - g_anLevelEscapeRunCount[st->lane] * 6;
+          int lo = LANEPAT_MIN_SPEED - g_anLevelEscapeRunCount[st->lane] * 6;
 
-          st->speed -= 0xA;
+          st->speed -= LANEPAT_SLOW_STEP;
           if (st->speed < lo) {
             st->speed = lo;
           }
@@ -1529,10 +1529,10 @@ void Level33_UpdateActors(void) {
           spd = FLY_FLAGS(st->path, st->path->cur) & PATH_NODE_SPEED;
         }
         r = PivotActorAlongPath(actor, st->path, 0x1C2, spd, 0, 0xA, 0x28, PIVOT_TURN_ANY, MOVE_LIFT);
-        h = ProbeActorGroundHeightRaised(actor, 0xBB8);
-        st->knockZSpeed -= 0x1E;
-        if (st->knockZSpeed < -0x190) {
-          st->knockZSpeed = -0x190;
+        h = ProbeActorGroundHeightRaised(actor, LANEPAT_FLOOR_PROBE_RAISE);
+        st->knockZSpeed -= LANEPAT_GRAVITY;
+        if (st->knockZSpeed < -LANEPAT_MAX_FALL) {
+          st->knockZSpeed = -LANEPAT_MAX_FALL;
         }
         z = actor->posZ + st->knockZSpeed;
         if (z < h) {
@@ -1541,19 +1541,19 @@ void Level33_UpdateActors(void) {
           actor->posZ = z;
         }
         if ((r & PATH_ARRIVED_FLAG) && (FLY_FLAGS(st->path, st->path->cur) & PATH_NODE_JUMP) == PATH_JUMP_LOW) {
-          st->knockZSpeed = 0x12C;
+          st->knockZSpeed = LANEPAT_JUMP_VZ;
         }
         if ((st->path->dir == -1 && r == (st->endNodeBack | 0x100)) ||
             (st->path->dir == 1 && r == (st->endNodeFwd | 0x100))) {
           g_anLevelEscapeRunCount[st->lane]++;
-          if (g_anLevelEscapeRunCount[st->lane] >= 6) {
-            g_anLevelEscapeRunCount[st->lane] = 5;
+          if (g_anLevelEscapeRunCount[st->lane] >= LANEPAT_MAX_RUNS) {
+            g_anLevelEscapeRunCount[st->lane] = LANEPAT_MAX_RUNS - 1;
           }
           ENTER_POSE(actor, LANEPAT_WATCH);
         }
         FindFarthestPathPointFromSpyro(st->path);
         FindNearestPathPointToSpyro(st->path, nearestNode);
-        if (dist < 0x3000) {
+        if (dist < LANEPAT_TURN_RANGE) {
           int a;
           int n;
           int i;
