@@ -21,10 +21,6 @@
 #include "spyro_state.h"
 #include "vecmath.h"
 
-struct CameraParamBlock {
-  int w[6];
-};
-
 /* The kill-table else-arm reserves v1/a0 with empty asm defs/uses so global
    alloc hands `group` a1, as in the original. The block-scoped register
    pins (demo/poseWord, runBit, bitIdx/tbl/levelBit) put each value in the
@@ -155,8 +151,8 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     if (g_nGamestate == GS_ACTOR_CUTSCENE) {
       goto emitlist;
     }
-    *((struct CameraParamBlock *)g_anCameraActiveTargetParams) =
-        *((struct CameraParamBlock *)g_anCameraParamFollowBehind);
+    *((CameraAngles *)g_anCameraActiveTargetParams) =
+        *((CameraAngles *)g_anCameraParamFollowBehind);
     g_pCameraAnchorPos = g_anSpyroWorldPos;
     g_nCameraCurrentMode = CAM_MODE_STAND;
     g_nCameraNextMode = CAM_MODE_STAND;
