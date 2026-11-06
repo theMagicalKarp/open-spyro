@@ -35,6 +35,8 @@ typedef struct BurstShardState {
 #define DEBRIS_MAX_FALL 0x80
 /* ...and bounces off the world as a sphere of this radius. */
 #define DEBRIS_RADIUS 0x100
+/* A popped gem digit at or below this height fell out of the world: despawned. */
+#define DEBRIS_FLOOR_Z 1023
 
 /* Sparx (type 0x78, case 120 in the UpdateActors clones; g_pSparxActor):
  * hovers at an offset beside Spyro and chases one target at a time, a

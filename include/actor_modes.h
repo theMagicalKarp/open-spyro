@@ -209,6 +209,33 @@ enum ButterflyMode {
 #define BUTTERFLY_DROP_HEIGHT 2048
 /* ButterflyState.offscreenTimer seed: frames it keeps fluttering undrawn. */
 #define BUTTERFLY_OFFSCREEN_FRAMES 0x708
+/* Flutter random ranges (RandomIntInRange lo, hi): every VEER_MIN..MAX_FRAMES
+ * the heading veers by VEER_MIN..MAX either way; every CLIMB_MIN..MAX_FRAMES
+ * vz takes a new VZ_MIN..MAX (either sign, forced up / down at the height
+ * band edges). A circling butterfly bobs with the CIRCLE_ ranges instead. */
+#define BUTTERFLY_VEER_MIN 30
+#define BUTTERFLY_VEER_MAX 90
+#define BUTTERFLY_VEER_MIN_FRAMES 60
+#define BUTTERFLY_VEER_MAX_FRAMES 140
+#define BUTTERFLY_FLUTTER_VZ_MIN 10
+#define BUTTERFLY_FLUTTER_VZ_MAX 25
+#define BUTTERFLY_FLUTTER_CLIMB_MIN_FRAMES 80
+#define BUTTERFLY_FLUTTER_CLIMB_MAX_FRAMES 140
+#define BUTTERFLY_CIRCLE_VZ_MIN 5
+#define BUTTERFLY_CIRCLE_VZ_MAX 20
+#define BUTTERFLY_CIRCLE_CLIMB_MIN_FRAMES 40
+#define BUTTERFLY_CIRCLE_CLIMB_MAX_FRAMES 80
+/* Lined up on its heading but blocked: it turns back by BOUNCE_MIN..MAX
+ * (about 0x80, a half turn) and holds that for BOUNCE_MIN..MAX_FRAMES; past
+ * BUTTERFLY_LEASH it heads home for LEASH_TURN_FRAMES. */
+#define BUTTERFLY_BOUNCE_MIN 98
+#define BUTTERFLY_BOUNCE_MAX 158
+#define BUTTERFLY_BOUNCE_MIN_FRAMES 30
+#define BUTTERFLY_BOUNCE_MAX_FRAMES 80
+#define BUTTERFLY_LEASH_TURN_FRAMES 40
+/* Flutter step: MoveActorAlongHeading speed / radius. */
+#define BUTTERFLY_SPEED 30
+#define BUTTERFLY_RADIUS 50
 
 /* ->mode of a seed pod (ACTOR_TYPE_SEED_POD, SeedPodState). */
 enum SeedPodMode {
@@ -319,6 +346,14 @@ enum LockedChestSubMode {
 #define LOCKCHEST_INSERT_TICK 0xC0
 #define LOCKCHEST_BURST_TICK 0xD0
 #define LOCKCHEST_SKIP_TICK 0xD2
+/* The lock sits LOCK_FWD ahead of and LOCK_UP above the chest's origin (chest
+ * space); the key flies there from Spyro along a sine arc, turning to face
+ * the chest over KEY_SPIN_TICK..KEY_TURN_TICK..INSERT_TICK, then slides
+ * LOCK_FWD back in, 8 a tick. */
+#define LOCKCHEST_LOCK_FWD 0x200
+#define LOCKCHEST_LOCK_UP 0x140
+#define LOCKCHEST_KEY_SPIN_TICK 0x40
+#define LOCKCHEST_KEY_TURN_TICK 0x80
 
 /* ->subMode of a cracking boulder (ACTOR_TYPE_CRACKING_BOULDER,
  * CrackingBoulderState). */
@@ -332,6 +367,13 @@ enum CrackingBoulderSubMode {
  * CRACK_FRAMES; a blast (intact or cracking) jumps the clock to BLAST_TICK. */
 #define BOULDER_CRACK_FRAMES 0x78
 #define BOULDER_BLAST_TICK 0x5A
+/* Its last SHAKE_TICKS of cracking the boulder rattles (g_aShakeRotOffsets
+ * indexed by the frames left). BOULDER_BURST lasts BURST_TICKS, its blast
+ * sphere growing 0x100 a tick; Spyro caught in it is pushed off at
+ * (PUSH_RANGE - distance) / 48 with PUSH_VZ up. */
+#define BOULDER_BURST_TICKS 8
+#define BOULDER_PUSH_RANGE 0x1000
+#define BOULDER_PUSH_VZ 0x46
 
 /* ->subMode of a spin chest (ACTOR_TYPE_SPIN_CHEST, SpinChestState). */
 enum SpinChestSubMode {
@@ -467,6 +509,49 @@ enum ThiefMode {
 /* A CIRCLE thief starts circling once Spyro, within THIEF_NEAR_RANGE, is more
  * than this (8-bit) off the far side of its node from it. */
 #define THIEF_CIRCLE_ENTER_ANGLE 0x30
+/* Hit (THIEF_CAUGHT), a thief slides from KNOCK_SPEED (CHARGE_KNOCK_SPEED
+ * when charged), losing KNOCK_DRAG a frame, and lets go of its egg on
+ * EGG_RELEASE_FRAME of THIEF_ANIM_CAUGHT. */
+#define THIEF_KNOCK_SPEED 0x96
+#define THIEF_CHARGE_KNOCK_SPEED 0xE1
+#define THIEF_KNOCK_DRAG 0x10
+#define THIEF_EGG_RELEASE_FRAME 5
+/* THIEF_ANIM_TAUNT may voice a taunt on these frames. */
+#define THIEF_TAUNT_EARLY_FRAME 2
+#define THIEF_TAUNT_LATE_FRAME 0xC
+/* GUARD and RUN speeds: BASE_SPEED less 1/32 of Spyro's 2D distance, clamped
+ * to GUARD_MIN..MAX_SPEED / RUN_MIN..MAX_SPEED (the closer he is, the
+ * faster). */
+#define THIEF_BASE_SPEED 0x154
+#define THIEF_GUARD_MIN_SPEED 0x8C
+#define THIEF_GUARD_MAX_SPEED 0xF0
+#define THIEF_RUN_MIN_SPEED 0x46
+#define THIEF_RUN_MAX_SPEED 0xDC
+/* Leaps and hops: vz loses GRAVITY a frame down to -MAX_FALL. LEAP_VZ is the
+ * RUN thief's leap to its perch, HOP_VZ every other hop, CLIMB_DOWN_VZ the
+ * climber's hop down; airborne thieves move HOP_SPEED (LEAP_HOME_SPEED on the
+ * way home). */
+#define THIEF_GRAVITY 0x14
+#define THIEF_MAX_FALL 0xC8
+#define THIEF_LEAP_VZ 0x12C
+#define THIEF_HOP_VZ 0x96
+#define THIEF_CLIMB_DOWN_VZ 0x1A4
+#define THIEF_HOP_SPEED 0x96
+#define THIEF_LEAP_HOME_SPEED 0x82
+/* LEDGE: runs to its wait node at LEDGE_RUN_SPEED, on at LEDGE_RUN_ON_SPEED,
+ * and jumps across at LEDGE_JUMP_SPEED. */
+#define THIEF_LEDGE_RUN_SPEED 0xF0
+#define THIEF_LEDGE_RUN_ON_SPEED 0xDA
+#define THIEF_LEDGE_JUMP_SPEED 0xFA
+/* FLEE: runs toward its node's speed (FLEE_SPEED when the node has none),
+ * changing FLEE_ACCEL a frame. */
+#define THIEF_FLEE_SPEED 0xCD
+#define THIEF_FLEE_ACCEL 0x1E
+/* CLIMB: runs CLIMB_SPEED up (CLIMB_BACK_SPEED back), hopping from node 11
+ * up to CLIMB_TOP_NODE. */
+#define THIEF_CLIMB_SPEED 0xB4
+#define THIEF_CLIMB_BACK_SPEED 0xC8
+#define THIEF_CLIMB_TOP_NODE 0xD
 
 /* An egg thief's animations (nextAnim), from what each mode plays. */
 enum ThiefAnim {
@@ -564,6 +649,53 @@ enum GnastyAnim {
   GNASTY_ANIM_RUN = 1,
 };
 
+/* Gnasty's fight tuning. He is flamed into the next phase only within
+ * FLAME_END_RANGE of his current path's end. Before his main path the follow
+ * camera holds on him (CAM_HOLD_FRAMES after a charge) within CAM_RANGE, in
+ * sight or within CAM_NEAR_RANGE. Phase 2 starts once Spyro, facing him
+ * within ESCAPE_FACING, comes within ESCAPE_RANGE (or he has thrown
+ * THROW_VOLLEY bombs). */
+#define GNASTY_FLAME_END_RANGE 0xBB8
+#define GNASTY_CAM_HOLD_FRAMES 0x3C
+#define GNASTY_CAM_RANGE 0x4000
+#define GNASTY_CAM_NEAR_RANGE 0x3000
+#define GNASTY_ESCAPE_FACING 0x28
+#define GNASTY_ESCAPE_RANGE 0x1B58
+/* Trail bombs (GNASTY_THROW): THROW_VOLLEY of them, released on frame
+ * THROW_FRAME every THROW_GAP frames, fly BOMB_SPEED (climbing at most
+ * BOMB_MAX_DROP a step down) and live BOMB_LIFE frames. */
+#define GNASTY_THROW_VOLLEY 4
+#define GNASTY_THROW_FRAME 9
+#define GNASTY_THROW_GAP 0x50
+#define GNASTY_BOMB_SPEED 0x190
+#define GNASTY_BOMB_MAX_DROP 0x1F4
+#define GNASTY_BOMB_LIFE 0xA0
+/* Gravity (GNASTY_FALL, ESCAPE, STAND): vSpeed loses GRAVITY a frame down to
+ * -MAX_FALL, landing on the floor found FLOOR_PROBE_RAISE above him. Escape
+ * jumps launch at JUMP_LOW / MID / HIGH (PATH_JUMP_*). */
+#define GNASTY_GRAVITY 0x19
+#define GNASTY_MAX_FALL 0x190
+#define GNASTY_FLOOR_PROBE_RAISE 0xBB8
+#define GNASTY_JUMP_LOW 0xDC
+#define GNASTY_JUMP_MID 0x10E
+#define GNASTY_JUMP_HIGH 0x140
+/* GNASTY_RUN speed: RUN_SPEED (or the node's), from node 0xE LATE_SPEED
+ * (0x1D on: LAST_SPEED), CHASED_SPEED while Spyro is within CHASE_RANGE
+ * (CHASE_RANGE_FAST once already fast) and CHASE_DZ. Escape: ESCAPE_SPEED;
+ * to the escape start: TO_ESCAPE_SPEED. Beaten: slides from KNOCK_SPEED. */
+#define GNASTY_RUN_SPEED 0x13B
+#define GNASTY_LATE_SPEED 0xEB
+#define GNASTY_LAST_SPEED 0xD7
+#define GNASTY_CHASED_SPEED 0x122
+#define GNASTY_CHASE_RANGE 0x1964
+#define GNASTY_CHASE_RANGE_FAST 0x1F40
+#define GNASTY_CHASE_DZ 0x4B0
+#define GNASTY_ESCAPE_SPEED 0x104
+#define GNASTY_TO_ESCAPE_SPEED 0xF0
+#define GNASTY_KNOCK_SPEED 0xD2
+/* Within SWIPE_RANGE he swipes instead of throwing. */
+#define GNASTY_SWIPE_RANGE 0xE10
+
 /* ->mode of Blowhard, the level 16 boss (ACTOR_TYPE_BLOWHARD,
  * BlowhardState). Each of its three phases rises (floorZ + 0x578), hovers
  * or patrols its path, and sinks to drop an ACTOR_TYPE_RIM_RIDER on Spyro;
@@ -598,6 +730,25 @@ enum BlowhardAnim {
   BLOWHARD_ANIM_DROP_RIDER = 5, /* the rim rider leaves it from frame 6 */
   BLOWHARD_ANIM_DROP_END = 6,
 };
+
+/* Blowhard's tuning. The follow camera holds on him with Spyro in sight
+ * within CAM_DZ and NEAR_RANGE (except while he travels between phases);
+ * NEAR_RANGE also wakes his patrols, and he drops a rider once Spyro is past
+ * DROP_MIN_RANGE (in phases 2/3, facing him within DROP_FACING). Hit checks
+ * and rider drops need a clear line from EYE_HEIGHT over him to Spyro. He
+ * bobs BOB_HEIGHT up and down (st->floorZ, eased 1/8 a frame until within
+ * BOB_SETTLE), patrols at PATROL_SPEED, tweens TRAVEL_STEP a frame between
+ * phases, and waits WAIT_FRAMES after each drop. */
+#define BLOWHARD_CAM_DZ 0x578
+#define BLOWHARD_NEAR_RANGE 0x2800
+#define BLOWHARD_DROP_MIN_RANGE 0x1000
+#define BLOWHARD_DROP_FACING 0x30
+#define BLOWHARD_EYE_HEIGHT 0x400
+#define BLOWHARD_BOB_HEIGHT 0x578
+#define BLOWHARD_BOB_SETTLE 0x20
+#define BLOWHARD_PATROL_SPEED 0xB4
+#define BLOWHARD_TRAVEL_STEP 0x20
+#define BLOWHARD_WAIT_FRAMES 0x6E
 
 /* ->mode of Doctor Shemp, the level 10 boss (ACTOR_TYPE_DOCTOR_SHEMP,
  * ShempState). SHEMP_IDLE starts the routine for ShempState.phase 0..2;
@@ -645,6 +796,59 @@ enum ShempAnim {
   SHEMP_ANIM_STAND = 0x12, /* between gestures; the sweep blends back to it */
   SHEMP_ANIM_GESTURE = 0x13, /* starts each taunt round of 1..2 stands */
 };
+
+/* Doctor Shemp's tuning. Within CAM_RANGE the follow camera holds on him.
+ * Flame or superflame hurts him only from behind (Spyro outside BACK_ARC of
+ * his facing) or during frames SLAM_OPEN..SLAM_CLOSE of his slam. Phase 1
+ * starts within P1_WAKE_RANGE, phases 2/3 within WAKE_RANGE with Spyro
+ * above. His blows (slam, strike, sweep) land on Spyro within their range,
+ * at least HIT_ABOVE over his base and within HIT_DZ of it. */
+#define SHEMP_CAM_RANGE 0x2000
+#define SHEMP_BACK_ARC 0x55
+#define SHEMP_SLAM_OPEN_FRAME 0x16
+#define SHEMP_SLAM_CLOSE_FRAME 0x30
+#define SHEMP_P1_WAKE_RANGE 0x2328
+#define SHEMP_WAKE_RANGE 0x1964
+#define SHEMP_HIT_ABOVE 300
+#define SHEMP_HIT_DZ 0x5DC
+/* Phase 2: slams (animation 16) within P2_SLAM_RANGE, hitting on frames
+ * SLAM_HIT..SLAM_HIT_END within SLAM_HIT_RANGE; then rests SLAM_REST. */
+#define SHEMP_P2_SLAM_RANGE 0x16A8
+#define SHEMP_SLAM_HIT_FRAME 0x34
+#define SHEMP_SLAM_HIT_END 0x38
+#define SHEMP_SLAM_HIT_RANGE 0x189C
+#define SHEMP_SLAM_REST 0xA0
+/* Phase 1: after P1_START_DELAY he circles his node (CIRCLE_RADIUS, at
+ * CIRCLE_SPEED) for CIRCLE_FRAMES, winds up and charges at CHARGE_SPEED for
+ * up to CHARGE_FRAMES (or until within STRIKE_RANGE, lined up), strikes on
+ * frames STRIKE_HIT..STRIKE_HIT_END within STRIKE_HIT_RANGE, and walks back
+ * (RETURN_SPEED, within RETURN_ARRIVE). */
+#define SHEMP_P1_START_DELAY 0x5A
+#define SHEMP_CIRCLE_RADIUS 0xC80
+#define SHEMP_CIRCLE_SPEED 0xB4
+#define SHEMP_CIRCLE_FRAMES 0x8C
+#define SHEMP_CHARGE_SPEED 0xAA
+#define SHEMP_CHARGE_FRAMES 0x32
+#define SHEMP_STRIKE_RANGE 0x9C4
+#define SHEMP_STRIKE_HIT_FRAME 4
+#define SHEMP_STRIKE_HIT_END 0xA
+#define SHEMP_STRIKE_HIT_RANGE 0x1194
+#define SHEMP_RETURN_SPEED 0x5A
+#define SHEMP_RETURN_ARRIVE 0x100
+/* Phase 3: within P3_SWEEP_RANGE he sweeps his staff round SWEEP_ARC (8-bit,
+ * at SWEEP_RATE / 16 a frame), knocking Spyro back within SWEEP_HIT_RANGE
+ * unless he is SWEEP_HIT_CLEARANCE or more off the ground; then rests
+ * SWEEP_REST. */
+#define SHEMP_P3_SWEEP_RANGE 0x1388
+#define SHEMP_SWEEP_RATE 0x38
+#define SHEMP_SWEEP_ARC 0x105
+#define SHEMP_SWEEP_HIT_RANGE 0x13EC
+#define SHEMP_SWEEP_HIT_CLEARANCE 0x320
+#define SHEMP_SWEEP_REST 0x3C
+/* Stunned, the camera shows his retreat for STUN_FRAMES while he walks to
+ * the next node at RETREAT_SPEED. */
+#define SHEMP_STUN_FRAMES 0xC8
+#define SHEMP_RETREAT_SPEED 0xA0
 
 /* ->mode of a shepherd (ACTOR_TYPE_SHEPHERD, ShepherdState; levels 12/13).
  * SHEPHERD_IDLE runs ShepherdState.post's waiting behaviour; shepherds
@@ -703,6 +907,69 @@ enum ShepherdAnim {
   SHEPHERD_ANIM_FACE_PARTNER = 0xE, /* the pair patrol's stop */
 };
 
+/* Shepherd ranges (2D, from Spyro). A guard swings within SWING_RANGE of him
+ * and SWING_DZ of his height (POST_GUARD: GUARD_SWING_RANGE with him up to
+ * GUARD_SWING_ABOVE over it); a chaser swings only once he faces it
+ * (SPY_FACING under FACING_BAND), he is under SWING_ABOVE above it and
+ * within SWING_CHASE_DZ. The waiting posts wake within WAKE_RANGE
+ * (RUN_PATH_WAKE / THROWER_WAKE / WATCH_WAKE for those posts, FLANK_RANGE
+ * for the pair split) and NOTICE_DZ of his height. */
+#define SHEPHERD_SWING_RANGE 0x4B0
+#define SHEPHERD_SWING_DZ 0x320
+#define SHEPHERD_GUARD_SWING_RANGE 0x898
+#define SHEPHERD_GUARD_SWING_ABOVE 0x7D0
+#define SHEPHERD_FACING_BAND 0x32
+#define SHEPHERD_SWING_ABOVE 0xC8
+#define SHEPHERD_SWING_CHASE_DZ 0x3E8
+#define SHEPHERD_WAKE_RANGE 0x1C00
+#define SHEPHERD_RUN_PATH_WAKE_RANGE 0x3800
+#define SHEPHERD_THROWER_WAKE_RANGE 0x3000
+#define SHEPHERD_WATCH_WAKE_RANGE 0x2000
+#define SHEPHERD_FLANK_RANGE 0x1000
+#define SHEPHERD_NOTICE_DZ 0x320
+/* POST_COVER guards (stops throwing) once Spyro is within COVER_GUARD_RANGE
+ * and goes back to throwing past COVER_RELEASE_RANGE. */
+#define SHEPHERD_COVER_GUARD_RANGE 0x1800
+#define SHEPHERD_COVER_RELEASE_RANGE 0x2000
+/* SHEPHERD_CHASE: steps CHASE_SPEED a frame; Spyro turning away (SPY_FACING
+ * past TURNED_AWAY) swaps the flank side and sends a loiterer home. A chaser
+ * gives up past its leash: LOITER_LEASH / WATCH_LEASH from home, LEAPER_LEASH
+ * for the leaper, PATH_LEASH from its nearest path point. */
+#define SHEPHERD_CHASE_SPEED 0x32
+#define SHEPHERD_TURNED_AWAY 0x40
+#define SHEPHERD_LOITER_LEASH 0x1800
+#define SHEPHERD_WATCH_LEASH 0x1800
+#define SHEPHERD_LEAPER_LEASH 0x2000
+#define SHEPHERD_PATH_LEASH 0x1000
+/* SHEPHERD_SWING ends at SWING_END_FRAME and rests SWING_COOLDOWN frames. */
+#define SHEPHERD_SWING_END_FRAME 0x1C
+#define SHEPHERD_SWING_COOLDOWN 0xA0
+/* SHEPHERD_ANIM_THROW lets go of a crook (ACTOR_TYPE_SHEPHERD_THROW) on
+ * THROW_FRAME: it flies CROOK_SPEED for CROOK_LIFE frames (the thrower's
+ * CROOK_LIFE_SHORT). */
+#define SHEPHERD_THROW_FRAME 0xE
+#define SHEPHERD_CROOK_SPEED 0x50
+#define SHEPHERD_CROOK_LIFE 0x1E
+#define SHEPHERD_CROOK_LIFE_SHORT 0x14
+/* SHEPHERD_KNOCKED launch speeds (DriveActorTrackedMove). */
+#define SHEPHERD_KNOCK_SPEED 0x1C2
+#define SHEPHERD_KNOCK_VZ 0x8C
+/* LEAP_ON / THROWN: vz loses GRAVITY a frame (down to -LEAP_MAX_FALL /
+ * -THROWN_MAX_FALL); LEAP_VZ is the leap, THROWN_VZ / THROWN_SPEED the throw
+ * off a knocked partner (the speed loses THROWN_DRAG a frame). */
+#define SHEPHERD_GRAVITY 0x14
+#define SHEPHERD_LEAP_VZ 0xD2
+#define SHEPHERD_LEAP_MAX_FALL 0x12C
+#define SHEPHERD_THROWN_VZ 0xC8
+#define SHEPHERD_THROWN_MAX_FALL 0xC8
+#define SHEPHERD_THROWN_SPEED 0x190
+#define SHEPHERD_THROWN_DRAG 0x14
+/* SHEPHERD_GO_HOME walks HOME_SPEED, arriving within HOME_ARRIVE, and rests
+ * HOME_REST frames. */
+#define SHEPHERD_HOME_SPEED 0x5A
+#define SHEPHERD_HOME_ARRIVE 0x80
+#define SHEPHERD_HOME_REST 0x3C
+
 /* ->mode of a singing path walker (ACTOR_TYPE_SINGING_PATH_WALKER,
  * PathWalkerState; levels 24/28). The mode doubles as the pose's animation
  * index (ENTER_POSE). PathWalkerState.mode is its SingerRole. */
@@ -756,6 +1023,70 @@ enum ChargerRole {
   CHARGER_ROLE_FOLLOW = 3, /* follows ChargingGuardState.target (PATROL once alerted) */
 };
 
+/* A lurking guard (ChargingGuardState.lurk) Spyro is already within
+ * LURK_RANGE of on its first update is removed, its drop scattered. */
+#define CHARGER_LURK_RANGE 0x2000
+/* While camHold runs the camera frames the guard from CAM_PULLBACK past it. */
+#define CHARGER_CAM_PULLBACK 0x1000
+/* Roles: a patroller walks PATROL_MIN_SPEED or more, picking a new node and a
+ * PATROL_MIN..MAX_SPEED within NODE_ARRIVE of one; a follower walks
+ * FOLLOW_SPEED, FOLLOW_NEAR_SPEED within FOLLOW_NEAR of its target and
+ * FOLLOW_FAR_SPEED past FOLLOW_FAR; a post guard charges once Spyro is within
+ * POST_TRIGGER_RANGE of path node 1 or 2. The others charge with Spyro in
+ * sight range and within SIGHT_DZ of their height. */
+#define CHARGER_PATROL_MIN_SPEED 0x96
+#define CHARGER_PATROL_SPEED_MIN 0xB4
+#define CHARGER_PATROL_SPEED_MAX 0xE6
+#define CHARGER_NODE_ARRIVE 0x100
+#define CHARGER_FOLLOW_SPEED 0xA0
+#define CHARGER_FOLLOW_NEAR 0xFA0
+#define CHARGER_FOLLOW_NEAR_SPEED 0x8C
+#define CHARGER_FOLLOW_FAR 0x1770
+#define CHARGER_FOLLOW_FAR_SPEED 0xB4
+#define CHARGER_POST_TRIGGER_RANGE 0x5DC
+#define CHARGER_SIGHT_DZ 0x320
+/* CHARGER_CHARGE runs CHARGE_SPEED (or speedOverride), re-reading Spyro's
+ * heading every REAIM_FRAMES; it rams (RAM_SPEED, POST_RAM_SPEED for a post
+ * guard) within RAM_RANGE once lined up within RAM_CONE. It gives up (rest
+ * REST_FRAMES, GO_HOME) when blocked, when Spyro turns away (SPY facing delta
+ * GIVE_UP_FACING or more) or past LEASH from where it set off. A guard with a
+ * `filter` type super-hits those (and lurkers) within TRAMPLE_RANGE and
+ * TRAMPLE_CONE of its heading. */
+#define CHARGER_CHARGE_SPEED 0x15E
+#define CHARGER_REAIM_FRAMES 0x1E
+#define CHARGER_RAM_RANGE 0xED8
+#define CHARGER_RAM_CONE 0x14
+#define CHARGER_RAM_SPEED 0xFA
+#define CHARGER_POST_RAM_SPEED 0xE6
+#define CHARGER_REST_FRAMES 0x78
+#define CHARGER_GIVE_UP_FACING 0x3D
+#define CHARGER_LEASH 0x4000
+#define CHARGER_TRAMPLE_BOX 0xBB8
+#define CHARGER_TRAMPLE_RANGE 0x7D0
+#define CHARGER_TRAMPLE_CONE 0x19
+/* CHARGER_RAM slows by RAM_DRAG a frame from frame 4 down to RAM_MIN_SPEED,
+ * and hits Spyro within HIT_RANGE / HIT_DZ: he is knocked back at
+ * HIT_KNOCK_SPEED (HIT_KNOCK_VZ up), the guard rests HIT_REST_FRAMES and the
+ * camera holds on it for CAM_HOLD_FRAMES from CAM_HIT_PULLBACK past Spyro. */
+#define CHARGER_RAM_DRAG 0x1E
+#define CHARGER_RAM_MIN_SPEED 0x28
+#define CHARGER_HIT_RANGE 0x5DC
+#define CHARGER_HIT_DZ 0x384
+#define CHARGER_HIT_KNOCK_SPEED 0x87
+#define CHARGER_HIT_KNOCK_VZ 0x32
+#define CHARGER_HIT_REST_FRAMES 0xDC
+#define CHARGER_CAM_HOLD_FRAMES 0x1E
+#define CHARGER_CAM_HIT_PULLBACK 0xC00
+/* CHARGER_KNOCKED slides from KNOCK_SPEED, losing KNOCK_DRAG a frame. */
+#define CHARGER_KNOCK_SPEED 0xFA
+#define CHARGER_KNOCK_DRAG 0xF
+/* CHARGER_GO_HOME walks HOME_SPEED (a post guard orbits back at
+ * POST_HOME_SPEED) and is home within HOME_ARRIVE (POST_HOME_ARRIVE). */
+#define CHARGER_HOME_SPEED 0xA0
+#define CHARGER_HOME_ARRIVE 0xB4
+#define CHARGER_POST_HOME_SPEED 0xC8
+#define CHARGER_POST_HOME_ARRIVE 0x200
+
 /* ->mode of a path guard (ACTOR_TYPE_PATH_GUARD, PathGuardState; levels
  * 12/15/16). */
 enum PathGuardMode {
@@ -763,6 +1094,21 @@ enum PathGuardMode {
   PATHGUARD_THROW = 1,   /* winds up and throws ACTOR_TYPE_SPLIT_SHOTs */
   PATHGUARD_KNOCKED = 2, /* flamed or charged: knocked away, then bursts */
 };
+
+/* A path guard throws once Spyro is within THROW_RANGE (2D) and THROW_DZ of
+ * its height; a held guard waits within NODE_ARRIVE of its node. It walks
+ * WALK_SPEED (the ring pair steers at RING_SPEED). Hit, it slides from
+ * KNOCK_SPEED (+ CHARGE_KNOCK_BONUS when charged). Its THROW pose releases a
+ * split shot at once, on frame 2 and on frame 6, then the timer holds
+ * THROW_COOLDOWN. */
+#define PATHGUARD_THROW_RANGE 0x1000
+#define PATHGUARD_THROW_DZ 0x800
+#define PATHGUARD_NODE_ARRIVE 0x100
+#define PATHGUARD_WALK_SPEED 0x60
+#define PATHGUARD_RING_SPEED 0x40
+#define PATHGUARD_KNOCK_SPEED 0xDC
+#define PATHGUARD_CHARGE_KNOCK_BONUS 0x8C
+#define PATHGUARD_THROW_COOLDOWN 0x3C
 
 /* ->mode of a split shot (ACTOR_TYPE_SPLIT_SHOT), set at spawn from the
  * thrower's animation frame; the mode doubles as the animation index. */
@@ -839,6 +1185,47 @@ enum SoldierAnim {
   SOLDIER_ANIM_POP_OUT = 0x11,  /* up out of the post while Spyro looks away */
 };
 
+/* Soldier tuning. Patrols walk WALK_SPEED, pausing LOOK_MIN..MAX_FRAMES at
+ * each point. Kinds notice Spyro within NOTICE_RANGE (a sentry within
+ * SENTRY_RANGE, a short-leash one SHORT_LEASH_RANGE) and shove him within
+ * SHOVE_RANGE; chasers give up past LEASH from home (SHORT_LEASH,
+ * BOUNDED_LEASH). Knocked, it slides from KNOCK_SPEED, losing KNOCK_DRAG a
+ * frame. GO_HOME walks HOME_SPEED, home within HOME_ARRIVE. */
+#define SOLDIER_WALK_SPEED 0x46
+#define SOLDIER_LOOK_MIN_FRAMES 0x78
+#define SOLDIER_LOOK_MAX_FRAMES 0xB4
+#define SOLDIER_NOTICE_RANGE 0x2000
+#define SOLDIER_SENTRY_RANGE 0x2800
+#define SOLDIER_SHORT_LEASH_RANGE 0x1800
+#define SOLDIER_SHOVE_RANGE 0x44C
+#define SOLDIER_LEASH 0x1800
+#define SOLDIER_SHORT_LEASH 0x1000
+#define SOLDIER_BOUNDED_LEASH 0x3000
+#define SOLDIER_KNOCK_SPEED 0xFA
+#define SOLDIER_KNOCK_DRAG 0x14
+#define SOLDIER_HOME_SPEED 0x5A
+#define SOLDIER_HOME_ARRIVE 0x80
+/* A cannon runner runs from RUN_START_SPEED up to RUN_SPEED (RUN_ACCEL a
+ * frame) and mans the cannon within CANNON_REACH, orbiting it at that
+ * radius. A gunner fires once Spyro is FIRE_MIN..MAX_RANGE away and it has
+ * been drawn FIRE_SEEN_FRAMES: fireballs fly FIREBALL_SPEED and live
+ * FIREBALL_LIFE; it then waits FIRE_GAP (its partner half that). TO_POST
+ * runs at up to POST_RUN_SPEED (POST_RUN_ACCEL a frame), arriving within
+ * POST_ARRIVE of the post's front. */
+#define SOLDIER_RUN_START_SPEED 0x32
+#define SOLDIER_RUN_SPEED 0xAA
+#define SOLDIER_RUN_ACCEL 0x1E
+#define SOLDIER_CANNON_REACH 0x5DC
+#define SOLDIER_FIRE_MIN_RANGE 0x1400
+#define SOLDIER_FIRE_MAX_RANGE 0x3C00
+#define SOLDIER_FIRE_SEEN_FRAMES 0x50
+#define SOLDIER_FIREBALL_SPEED 0xB4
+#define SOLDIER_FIREBALL_LIFE 0xB4
+#define SOLDIER_FIRE_GAP 0xB4
+#define SOLDIER_POST_RUN_SPEED 0x82
+#define SOLDIER_POST_RUN_ACCEL 0x14
+#define SOLDIER_POST_ARRIVE 0x200
+
 /* ->mode of a level 6 fireball cannon (ACTOR_TYPE_FIREBALL_CANNON,
  * FireballCannonState). While its crew (FireballCannonState.link) stands, the
  * crew fires it; once the crew is down, Spyro can flame the fuse. */
@@ -857,6 +1244,27 @@ enum FireballCannonAnim {
   FBCANNON_ANIM_TURN_POS = 2, /* the same, positive */
   FBCANNON_ANIM_FIRE = 3,     /* the lob; back to REST from frame 8 */
 };
+
+/* Fireball cannon tuning (the level 6 cousin of the comet cannon). With
+ * Spyro beside it (within LOCK_RANGE, LOCK_RANGE_HELD once locked) the
+ * camera locks on it; flamed from behind it lights a FUSE_FRAMES fuse and
+ * fires a fireball from MUZZLE_FWD ahead and MUZZLE_UP above at BALL_SPEED,
+ * re-aimed at the best target within SEEK_CONE (under SEEK_QUICK Manhattan
+ * and SEEK_RANGE exact, scored by distance outside SEEK_NEAR..SEEK_FAR plus
+ * 4096 per unit of angle, a reward burst's score quartered) and lobbed when
+ * over LOB_MIN_DROP below the target's level. */
+#define FBCANNON_LOCK_RANGE 0x4E2
+#define FBCANNON_LOCK_RANGE_HELD 0x578
+#define FBCANNON_FUSE_FRAMES 0x3C
+#define FBCANNON_MUZZLE_FWD 0x546
+#define FBCANNON_MUZZLE_UP 0x47E
+#define FBCANNON_BALL_SPEED 0xF0
+#define FBCANNON_SEEK_QUICK 0xBFFF
+#define FBCANNON_SEEK_CONE 7
+#define FBCANNON_SEEK_RANGE 0x6800
+#define FBCANNON_SEEK_NEAR 0x3800
+#define FBCANNON_SEEK_FAR 0x4800
+#define FBCANNON_LOB_MIN_DROP 0x400
 
 /* ->mode of a guard captain (ACTOR_TYPE_GUARD_CAPTAIN, CaptainState;
  * level 13). CAPTAIN_IDLE runs CaptainState.mode's post (partnered sentry,
@@ -889,7 +1297,7 @@ enum CaptainPost {
 
 /* CaptainState.step during CAPTAIN_FIGHT: the sword-fight sequence. */
 enum CaptainFightStep {
-  CAPTAIN_STEP_GUARD = 0,    /* waits for Spyro within 0x1800 */
+  CAPTAIN_STEP_GUARD = 0,    /* waits for Spyro within CAPTAIN_NOTICE_RANGE */
   CAPTAIN_STEP_DRAW = 1,     /* draw animation */
   CAPTAIN_STEP_SPAR = 2,     /* close: STRIKE; far: SHEATHE_RESET; timer2 out: SHEATHE */
   CAPTAIN_STEP_STRIKE = 3,   /* the swing; hits on frames 0x25..0x28 */
@@ -912,6 +1320,47 @@ enum CaptainAnim {
                               * captain still in it draws (DRAW) before fighting */
   CAPTAIN_ANIM_DRAW = 0xC,   /* alerted: draws before DRAW / DRAW_ADVANCE */
 };
+
+/* Guard captain tuning. Flamed it is knocked off at KNOCK_SPEED. A sentry
+ * fights within SENTRY_RANGE; a patroller draws within NOTICE_RANGE /
+ * NOTICE_DZ and walks at PATROL_SPEED (new point within NODE_ARRIVE); a
+ * lookout walks LOOKOUT_SPEED and fights within LOOKOUT_RANGE; a ledge guard
+ * stalks within LEDGE_RANGE at STALK_SPEED. Advancing (ADVANCE_SPEED) it
+ * bashes within BASH_RANGE / NOTICE_DZ, Spyro flung at BASH_SPEED (BASH_VZ
+ * up), and gives up past LEASH (STALK_LEASH stalking; STALK_REST after a
+ * blocked stalk). Fighting: it draws within NOTICE_RANGE, spars
+ * SPAR_MIN..MAX_FRAMES, strikes within STRIKE_RANGE / STRIKE_DZ (rest
+ * STRIKE_REST, the blow landing within STRIKE_HIT_RANGE on frames
+ * 0x25..0x28), rests REST_MIN..MAX_FRAMES and sheathes past FIGHT_LEAVE.
+ * GO_HOME walks HOME_SPEED, home within HOME_ARRIVE. */
+#define CAPTAIN_KNOCK_SPEED 0x96
+#define CAPTAIN_SENTRY_RANGE 0x1400
+#define CAPTAIN_NOTICE_RANGE 0x1800
+#define CAPTAIN_NOTICE_DZ 0x320
+#define CAPTAIN_PATROL_SPEED 0x78
+#define CAPTAIN_NODE_ARRIVE 0x100
+#define CAPTAIN_LOOKOUT_SPEED 0x5A
+#define CAPTAIN_LOOKOUT_RANGE 0xC00
+#define CAPTAIN_LEDGE_RANGE 0x2800
+#define CAPTAIN_ADVANCE_SPEED 0x96
+#define CAPTAIN_LEASH 0x2800
+#define CAPTAIN_BASH_RANGE 0x7D0
+#define CAPTAIN_BASH_SPEED 0x8C
+#define CAPTAIN_BASH_VZ 0x19
+#define CAPTAIN_STALK_SPEED 0x6E
+#define CAPTAIN_STALK_LEASH 0x2000
+#define CAPTAIN_STALK_REST 0xF0
+#define CAPTAIN_SPAR_MIN_FRAMES 0x96
+#define CAPTAIN_SPAR_MAX_FRAMES 0x15E
+#define CAPTAIN_STRIKE_RANGE 0x1000
+#define CAPTAIN_STRIKE_DZ 0x384
+#define CAPTAIN_STRIKE_REST 0xB4
+#define CAPTAIN_STRIKE_HIT_RANGE 0xED8
+#define CAPTAIN_REST_MIN_FRAMES 0x3C
+#define CAPTAIN_REST_MAX_FRAMES 0x78
+#define CAPTAIN_FIGHT_LEAVE 0x1C00
+#define CAPTAIN_HOME_SPEED 0x6E
+#define CAPTAIN_HOME_ARRIVE 0x80
 /* CaptainState.step on a ledge post instead: nonzero once armed. */
 #define CAPTAIN_LEDGE_ARMED 1
 
@@ -941,6 +1390,49 @@ enum ShempGuardAnim {
   SGUARD_ANIM_SWIPE = 5,
   SGUARD_ANIM_FALL = 6,
 };
+
+/* A Shemp guard is hurt by a charge, or a flame from behind (Spyro outside
+ * BACK_ARC of its facing) unless it is chasing; it is knocked off at
+ * KNOCK_SPEED / KNOCK_VZ. It wakes for Spyro in its range and within
+ * NOTICE_DZ; a holder rushes its path once Spyro, in its HOLD_CONE, is within
+ * HOLD_RANGE of path node 3. */
+#define SGUARD_BACK_ARC 0x55
+#define SGUARD_KNOCK_SPEED 0x15E
+#define SGUARD_KNOCK_VZ 0xA0
+#define SGUARD_NOTICE_DZ 0x800
+#define SGUARD_HOLD_CONE 0x40
+#define SGUARD_HOLD_RANGE 0x898
+/* Chasing it gains RAMP_ACCEL a frame up to RAMP_SPEED and rushes once
+ * lined up within RUSH_RANGE. A rush butts Spyro back (BUTT_VZ up) within
+ * BUTT_RANGE, BUTT_DZ and BUTT_CONE, and brakes once he is off its heading
+ * by BRAKE_ANGLE. Braking loses BRAKE_DRAG a frame (steering only after the
+ * first BRAKE_AIM_DELAY frames), then it rests RECOVER_FRAMES. */
+#define SGUARD_RAMP_ACCEL 0x14
+#define SGUARD_RAMP_SPEED 0xC8
+#define SGUARD_RUSH_RANGE 0xC00
+#define SGUARD_BUTT_RANGE 0x4B0
+#define SGUARD_BUTT_DZ 0x1F4
+#define SGUARD_BUTT_CONE 0x14
+#define SGUARD_BUTT_VZ 0x6E
+#define SGUARD_BRAKE_ANGLE 0x41
+#define SGUARD_BRAKE_FRAMES 0xB4
+#define SGUARD_BRAKE_AIM_DELAY 0xF
+#define SGUARD_BRAKE_DRAG 0x10
+#define SGUARD_RECOVER_FRAMES 0x3C
+/* Over a drop of LEDGE_DROP (BRAKE: BRAKE_LEDGE_DROP or unflat ground) it
+ * falls: at least FALL_MIN_SPEED, FALL_VZ up, despawning after FALL_FRAMES
+ * and leaving its drop on the nearest path point. */
+#define SGUARD_LEDGE_DROP 0x1F4
+#define SGUARD_BRAKE_LEDGE_DROP 0x320
+#define SGUARD_FALL_MIN_SPEED 0x50
+#define SGUARD_FALL_VZ 0x28
+#define SGUARD_FALL_FRAMES 0x3C
+/* GUARD swipes within SWIPE_RANGE, then waits SWIPE_REST. Path runs go at
+ * PATH_CHASE_SPEED / PATH_RUSH_SPEED. */
+#define SGUARD_SWIPE_RANGE 0x578
+#define SGUARD_SWIPE_REST 0x78
+#define SGUARD_PATH_CHASE_SPEED 0xA0
+#define SGUARD_PATH_RUSH_SPEED 0xB4
 
 /* ->mode of a path runner (ACTOR_TYPE_PATH_RUNNER..+1, PathRunnerState;
  * level 21). PathRunnerState.mode picks which of the two runs it makes. */
@@ -986,6 +1478,39 @@ enum SwoopKind {
   SWOOP_KIND_RANDOM = -1, /* each dive picks side 0 or 1 at random */
   SWOOP_KIND_STRAIGHT = 2, /* no weave; dives to Spyro's height and turns back sharply */
 };
+
+/* A perched swooper dives at Spyro once he is in its range but at least
+ * MIN_RANGE away, within SIGHT_DZ of its height, facing it (within
+ * SPY_FACING_CONE) with it facing him (FACING_CONE) and in sight, for
+ * SIGHT_FRAMES in a row (any check failing restarts the count). */
+#define SWOOP_MIN_RANGE 0x7D1
+#define SWOOP_SIGHT_DZ 0xBB8
+#define SWOOP_SPY_FACING_CONE 0x19
+#define SWOOP_FACING_CONE 0x30
+#define SWOOP_SIGHT_FRAMES 0x28
+/* SWOOP_DIVE: speeds up by DIVE_ACCEL a frame to DIVE_SPEED, flying
+ * DIVE_CLEARANCE over the ground (a STRAIGHT one STRAIGHT_CLEARANCE over
+ * Spyro) and changing height CLIMB_STEP a frame; it weaves within
+ * WEAVE_RANGE. It hits Spyro within HIT_RANGE, HIT_CONE of its heading and
+ * HIT_DZ of his height, and turns back past range + LEASH_SLACK from home. */
+#define SWOOP_DIVE_SPEED 0xAA
+#define SWOOP_DIVE_ACCEL 0xA
+#define SWOOP_DIVE_CLEARANCE 0x226
+#define SWOOP_STRAIGHT_CLEARANCE 0x12C
+#define SWOOP_CLIMB_STEP 0x78
+#define SWOOP_WEAVE_RANGE 0x4000
+#define SWOOP_HIT_RANGE 0x578
+#define SWOOP_HIT_CONE 0x28
+#define SWOOP_HIT_DZ 0x258
+#define SWOOP_LEASH_SLACK 0x800
+/* SWOOP_RETURN / PERCH change height RETURN_CLIMB_STEP a frame; home within
+ * HOME_ARRIVE. Knocked, it slides from KNOCK_SPEED (losing KNOCK_DRAG a
+ * frame), sinking KNOCK_SINK a frame. */
+#define SWOOP_RETURN_CLIMB_STEP 0x64
+#define SWOOP_HOME_ARRIVE 0x80
+#define SWOOP_KNOCK_SPEED 0x12C
+#define SWOOP_KNOCK_DRAG 0x10
+#define SWOOP_KNOCK_SINK 0x32
 
 /* Per-type mesh voice indices: PlayActorMeshVoice's voiceOffset and the
  * matching m_Sounds[] slot of the type's mesh record. */
@@ -1133,6 +1658,34 @@ enum VillagerAnim {
   VILLAGER_ANIM_REACT = 9,   /* VROLE_LEADER: cued at the leader's animation 4, frame 8; back to IDLE at frame 0x14 */
 };
 
+/* A villager Spyro faces (within CAM_FACING_CONE) inside its camDist pulls
+ * the camera to CAM_DISTANCE behind Spyro. A talker's range grows by
+ * TALK_BOOST unless Spyro is charging at a noBoost one, and it stops once he
+ * is TALK_SLACK past it. A pair partner wakes within PAIR_WAKE_RANGE and
+ * flees once its partner is down and Spyro is within flee range +
+ * PAIR_FLEE_SLACK. */
+#define VILLAGER_CAM_FACING_CONE 0x20
+#define VILLAGER_CAM_DISTANCE 0xC00
+#define VILLAGER_TALK_BOOST 0xC00
+#define VILLAGER_TALK_SLACK 0x800
+#define VILLAGER_PAIR_WAKE_RANGE 0x3400
+#define VILLAGER_PAIR_FLEE_SLACK 0x7D0
+/* VILLAGER_PANIC sends it running at PANIC_SPEED for RUN_MIN..MAX_FRAMES;
+ * VILLAGER_RUN picks a new path point within NODE_ARRIVE at
+ * RUN_MIN..MAX_SPEED and calms down past flee range + CALM_SLACK. Stopped, it
+ * panics again once Spyro is STOP_SLACK closer than when it stopped.
+ * Knocked, it slides from KNOCK_SPEED, losing KNOCK_DRAG a frame. */
+#define VILLAGER_PANIC_SPEED 0x5F
+#define VILLAGER_RUN_MIN_FRAMES 0xF0
+#define VILLAGER_RUN_MAX_FRAMES 0x168
+#define VILLAGER_NODE_ARRIVE 0x96
+#define VILLAGER_RUN_MIN_SPEED 0x3C
+#define VILLAGER_RUN_MAX_SPEED 0x6E
+#define VILLAGER_CALM_SLACK 0x1388
+#define VILLAGER_STOP_SLACK 0x80
+#define VILLAGER_KNOCK_SPEED 0xFA
+#define VILLAGER_KNOCK_DRAG 0x14
+
 /* VillagerState.mode: the villager's role. */
 enum VillagerRole {
   VROLE_CHAT = 0,   /* faces Spyro; talks (its chunk anim) when he is in talk range */
@@ -1192,6 +1745,39 @@ enum PostGuardAnim {
   POSTGUARD_ANIM_SHOUT = 7,       /* the ambush rouse and POSTGUARD_SHOUT */
 };
 
+/* Post guard tuning. Hit it spins off at KNOCK_SPEED / KNOCK_VZ for
+ * KNOCK_FRAMES (a charge: CHARGE_KNOCK_*). A picker steps to the post Spyro
+ * comes within POST_RANGE of (unless he is in line with it, within
+ * POST_CONE, and nearer than it), running TO_POST_SPEED until within
+ * POST_ARRIVE (or Spyro within POST_STOP_RANGE). A patroller walks
+ * PATROL_SPEED and alerts its group within PATROL_ALERT_RANGE; a watcher
+ * hops within WATCH_RANGE; an ambusher wakes within AMBUSH_RANGE and runs at
+ * AMBUSH_SPEED. Hopping, it rests REST_MIN..MAX_FRAMES and lunges within
+ * LUNGE_RANGE / LUNGE_DZ (then waits LUNGE_REST), giving up past
+ * HOP_LEAVE_RANGE. */
+#define POSTGUARD_KNOCK_SPEED 0x118
+#define POSTGUARD_KNOCK_VZ 0x8C
+#define POSTGUARD_KNOCK_FRAMES 0x28
+#define POSTGUARD_CHARGE_KNOCK_SPEED 0x15E
+#define POSTGUARD_CHARGE_KNOCK_VZ 0xAA
+#define POSTGUARD_CHARGE_KNOCK_FRAMES 0x3C
+#define POSTGUARD_POST_RANGE 0x1C00
+#define POSTGUARD_POST_CONE 0x15
+#define POSTGUARD_TO_POST_SPEED 0x8C
+#define POSTGUARD_POST_ARRIVE 0x100
+#define POSTGUARD_POST_STOP_RANGE 0xC00
+#define POSTGUARD_PATROL_SPEED 0x5A
+#define POSTGUARD_PATROL_ALERT_RANGE 0x1400
+#define POSTGUARD_WATCH_RANGE 0x1800
+#define POSTGUARD_AMBUSH_RANGE 0x2000
+#define POSTGUARD_AMBUSH_SPEED 0x96
+#define POSTGUARD_REST_MIN_FRAMES 0x8C
+#define POSTGUARD_REST_MAX_FRAMES 0xC8
+#define POSTGUARD_LUNGE_RANGE 0x578
+#define POSTGUARD_LUNGE_DZ 0x3E8
+#define POSTGUARD_LUNGE_REST 0xB4
+#define POSTGUARD_HOP_LEAVE_RANGE 0x2000
+
 /* ->mode of a patrol ward (ACTOR_TYPE_PATROL_WARD, WardState; level 3).
  * WARD_IDLE runs WardState.mode's role (sentry, node patrol, partner ring);
  * its shove (animation 8) knocks Spyro back. */
@@ -1220,6 +1806,38 @@ enum WardAnim {
   WARD_ANIM_DAZED_STIR = 6, /* between dazed loops; back to WARD_DAZED from frame 0x2C */
   WARD_ANIM_SHOVE = 8,      /* Spyro close and facing it */
 };
+
+/* Patrol ward tuning. Its shove lands on Spyro within SHOVE_HIT_RANGE and
+ * SHOVE_HIT_CONE (knocked back at 5/256 of the unit vector, SHOVE_VZ up); it
+ * starts one within SHOVE_RANGE and SHOVE_CONE, then waits SHOVE_REST
+ * (cleared once Spyro is past SHOVE_RESET_RANGE). A sentry advances within
+ * ADVANCE_RANGE / ADVANCE_DZ at WALK_SPEED (re-reading Spyro's heading every
+ * RETARGET_FRAMES), going home after he looks away (GIVE_UP_FACING) for
+ * GIVE_UP_FRAMES or past LEASH; a ring ward leaves its ring past RING_LEASH.
+ * Nodes are reached within NODE_ARRIVE; home walks HOME_SPEED. Charged it
+ * slides from KNOCK_SPEED (losing KNOCK_DRAG a frame), then lies dazed
+ * DAZE_MIN.. +0x3F frames, bursting if Spyro is past DAZE_LEAVE_RANGE. */
+#define WARD_SHOVE_HIT_RANGE 0x600
+#define WARD_SHOVE_HIT_CONE 0x20
+#define WARD_SHOVE_VZ 0x78
+#define WARD_SHOVE_RANGE 0x800
+#define WARD_SHOVE_CONE 0x40
+#define WARD_SHOVE_REST 0x78
+#define WARD_SHOVE_RESET_RANGE 0xC00
+#define WARD_ADVANCE_RANGE 0x2000
+#define WARD_ADVANCE_DZ 0x320
+#define WARD_WALK_SPEED 0x64
+#define WARD_RETARGET_FRAMES 0x1E
+#define WARD_GIVE_UP_FACING 0x31
+#define WARD_GIVE_UP_FRAMES 0x28
+#define WARD_LEASH 0x2800
+#define WARD_RING_LEASH 0x400
+#define WARD_NODE_ARRIVE 0x80
+#define WARD_HOME_SPEED 0x5A
+#define WARD_KNOCK_SPEED 0xFA
+#define WARD_KNOCK_DRAG 0xF
+#define WARD_DAZE_MIN 0x40
+#define WARD_DAZE_LEAVE_RANGE 0x2800
 
 /* ->mode of a shooter sentry (ACTOR_TYPE_SHOOTER, ShooterState; level 7).
  * Flames bounce off while it hides behind its shield (SHOOTER_SHIELD,
@@ -1253,10 +1871,36 @@ enum ShooterAnim {
 
 /* ShooterState.mode: the sentry's role. */
 enum ShooterRole {
-  SHOOTER_ROLE_DOZER = 0, /* blinks in SHOOTER_IDLE until Spyro comes near; fires inside 0x2800 */
-  SHOOTER_ROLE_GUARD = 1, /* starts behind its shield; ducks while Spyro is 0x2000..0x3C00 away,
-                           * fires once he is inside 0x2000 */
+  SHOOTER_ROLE_DOZER = 0, /* blinks in SHOOTER_IDLE until Spyro comes near; fires inside
+                           * SHOOTER_DOZER_FIRE_RANGE */
+  SHOOTER_ROLE_GUARD = 1, /* starts behind its shield; ducks while Spyro is
+                           * SHOOTER_GUARD_FIRE_RANGE..+SHOOTER_GUARD_DUCK_SPAN away, fires
+                           * once he is inside SHOOTER_GUARD_FIRE_RANGE */
 };
+
+/* Shooter tuning. Hit it is knocked off at KNOCK_SPEED (CHARGE_KNOCK_SPEED
+ * for a charge; KNOCK_VZ up), except a non-charge blow on shield frames
+ * 4..0x1E. A dozer wakes within WAKE_RANGE / WAKE_DZ (or its level-data
+ * range). Shots leave at SHOT_SPEED aimed SHOT_AIM_DROP under Spyro and live
+ * SHOT_LIFE; it then rests FIRE_REST. It walks home at HOME_SPEED (home
+ * within HOME_ARRIVE) and advances at ADVANCE_SPEED until Spyro is within
+ * ADVANCE_STOP_RANGE. */
+#define SHOOTER_KNOCK_SPEED 0x118
+#define SHOOTER_CHARGE_KNOCK_SPEED 0x15E
+#define SHOOTER_KNOCK_VZ 0x1E
+#define SHOOTER_WAKE_RANGE 0x2800
+#define SHOOTER_WAKE_DZ 0x3E8
+#define SHOOTER_DOZER_FIRE_RANGE 0x2800
+#define SHOOTER_GUARD_FIRE_RANGE 0x2000
+#define SHOOTER_GUARD_DUCK_SPAN 0x1C00
+#define SHOOTER_SHOT_SPEED 0x96
+#define SHOOTER_SHOT_AIM_DROP 0x12C
+#define SHOOTER_SHOT_LIFE 0x88
+#define SHOOTER_FIRE_REST 0x64
+#define SHOOTER_HOME_SPEED 0x3C
+#define SHOOTER_HOME_ARRIVE 0x100
+#define SHOOTER_ADVANCE_SPEED 0x5A
+#define SHOOTER_ADVANCE_STOP_RANGE 0x800
 
 /* ->mode of Metalhead, the level 22 boss (ACTOR_TYPE_METALHEAD,
  * MetalheadState). Clearing the current phase's pickup group starts
@@ -1296,7 +1940,7 @@ enum MetalheadAnim {
 enum MetalheadAttack {
   METALHEAD_ATTACK_NONE = 0,
   METALHEAD_ATTACK_FLING = 1, /* needs a live minion in the phase's group and Spyro at least
-                               * 0x2000 away and level: raises MHEAD_CATCH_READY until a
+                               * METALHEAD_FLING_MIN away and level: raises MHEAD_CATCH_READY until a
                                * minion jumps in, then METALHEAD_FLING */
   METALHEAD_ATTACK_SPRAY = 2, /* METALHEAD_SPRAY */
   METALHEAD_ATTACK_LOB = 3,   /* METALHEAD_LOB */
@@ -1309,6 +1953,43 @@ enum MetalheadCatch {
   MHEAD_CATCH_READY = 1, /* Spyro is in fling range: a facing minion may jump */
   MHEAD_CATCH_GO = 2,    /* set by the minion as it jumps: enter METALHEAD_FLING */
 };
+
+/* Metalhead's tuning. While attacking, the follow camera holds on him with
+ * Spyro within CAM_DZ and CAM_RANGE (CAM_RANGE_LATE after phase 0), off for
+ * CAM_HOLD_FRAMES after a charge; within SEEN_RANGE the arena chunk starts.
+ * Attacks: FLING (60 in 100, only with a live minion, Spyro over FLING_MIN
+ * away and within FLING_PICK_DZ; flung within the phase range and FLING_DZ),
+ * SPRAY (25 in 100, SPRAY_MIN..ATTACK_MAX away) and LOB (the rest,
+ * LOB_MIN..ATTACK_MAX), both within ATTACK_DZ; each ends with ATTACK_REST
+ * frames idle. */
+#define METALHEAD_CAM_DZ 0x578
+#define METALHEAD_CAM_RANGE 0x6400
+#define METALHEAD_CAM_RANGE_LATE 0x6000
+#define METALHEAD_CAM_HOLD_FRAMES 0x3C
+#define METALHEAD_SEEN_RANGE 0x6800
+#define METALHEAD_FLING_MIN 0x2000
+#define METALHEAD_FLING_PICK_DZ 0x385
+#define METALHEAD_FLING_DZ 0x320
+#define METALHEAD_FLING_ODDS 0x3C
+#define METALHEAD_SPRAY_ODDS_END 0x55
+#define METALHEAD_SPRAY_MIN 0x800
+#define METALHEAD_LOB_MIN 0x2800
+#define METALHEAD_ATTACK_MAX 0x7000
+#define METALHEAD_ATTACK_DZ 0x3E8
+#define METALHEAD_ATTACK_REST 0x50
+/* SPRAY fires a pod shot each frame of 5..0x14, aimed SPRAY_REACH (+150 a
+ * shot, ± SPRAY_SCATTER) ahead; shots live SHOT_LIFE. LOB throws on frames
+ * 4..8 every 7 frames: bolts live BOLT_LIFE at BOLT_SPEED + distance / 256. */
+#define METALHEAD_SPRAY_REACH 3000
+#define METALHEAD_SPRAY_SCATTER 0x320
+#define METALHEAD_SHOT_LIFE 0xB4
+#define METALHEAD_BOLT_LIFE 0xF0
+#define METALHEAD_BOLT_SPEED 0x190
+/* Between phases he staggers for STAGGER_FRAMES at STAGGER_SPEED, then runs
+ * at RUN_SPEED to the next phase's node. */
+#define METALHEAD_STAGGER_FRAMES 0x46
+#define METALHEAD_STAGGER_SPEED 0x78
+#define METALHEAD_RUN_SPEED 0x118
 
 /* ->mode of a lunger (ACTOR_TYPE_LUNGER, LungeState; level 4). It takes
  * LungeState.hits hits (each one switches its animation set, anim += 7)
@@ -1325,6 +2006,36 @@ enum LungerMode {
   LUNGER_ALERTED = 20,   /* marks LungeState.alerted, then IDLE */
   LUNGER_GO_HOME = 100,  /* walks back home and faces its heading, then IDLE */
 };
+
+/* Lunger tuning. On its last hit it is knocked off at KNOCK_SPEED / KNOCK_VZ.
+ * Waiting, it aims at Spyro's spot once he is within AIM_RANGE. The leap
+ * launches at LEAP_VZ plus 35/1024 of the distance, falls LEAP_GRAVITY a
+ * frame down to -LEAP_MAX_FALL and flies LEAP_SPEED until within
+ * LEAP_ARRIVE of the spot; high enough (LEAP_HOMING_HEIGHT) and with Spyro
+ * LEAP_HOMING_MIN..+0x2CF away it homes on him at LEAP_HOMING_SPEED, and
+ * within PIN_RANGE it holds him PIN_DEPTH under it. Landed, a pinned Spyro
+ * burns for BURN_FRAMES; it walks home at HOME_SPEED (within HOME_ARRIVE)
+ * and waits WAIT_FRAMES. Close to home it nudges Spyro off (NUDGE_RANGE)
+ * every NUDGE_FRAMES. */
+#define LUNGER_KNOCK_SPEED 0xE6
+#define LUNGER_KNOCK_VZ 0x14
+#define LUNGER_AIM_RANGE 0x898
+#define LUNGER_LEAP_VZ 0x12C
+#define LUNGER_LEAP_GRAVITY 0x32
+#define LUNGER_LEAP_MAX_FALL 0x258
+#define LUNGER_LEAP_SPEED 0xE6
+#define LUNGER_LEAP_ARRIVE 0x97
+#define LUNGER_LEAP_HOMING_HEIGHT 0x1F5
+#define LUNGER_LEAP_HOMING_MIN 0x51
+#define LUNGER_LEAP_HOMING_SPEED 0x50
+#define LUNGER_PIN_RANGE 0x2BC
+#define LUNGER_PIN_DEPTH 0xC8
+#define LUNGER_BURN_FRAMES 0x1E
+#define LUNGER_HOME_SPEED 0x82
+#define LUNGER_HOME_ARRIVE 0xB4
+#define LUNGER_WAIT_FRAMES 0x78
+#define LUNGER_NUDGE_RANGE 0x3E8
+#define LUNGER_NUDGE_FRAMES 0x10
 
 /* ->mode of an alarm post guard (ACTOR_TYPE_ALARM_POST_GUARD, GuardState;
  * level 4). It falls back post by post (GuardState.stage 0..2); the
@@ -1372,6 +2083,29 @@ enum PatrollerAnim {
   PATROLLER_ANIM_KNOCKED = 3,
 };
 
+/* A waiting patroller (and its group on the same node) scatters once Spyro
+ * is within NOTICE_RANGE (2D) and NOTICE_DZ, after a START_MIN..MAX_DELAY;
+ * it runs for a neighbour node at up to MIN..MAX_SPEED (gaining ACCEL a
+ * frame), its flee heading 108/128 of the way from Spyro's bearing to the
+ * node's (± AIM_JITTER), for up to FLEE_MAX_FRAMES before curving onto the
+ * node. It waits again within ARRIVE_RANGE of the node, or within
+ * NOTICE_RANGE after 4 blocked moves (else it veers BLOCKED_VEER_MIN..MAX).
+ * Knocked, it slides from KNOCK_SPEED, losing KNOCK_DRAG a frame. */
+#define PATROLLER_NOTICE_RANGE 0x1400
+#define PATROLLER_NOTICE_DZ 0x400
+#define PATROLLER_START_MIN_DELAY 6
+#define PATROLLER_START_MAX_DELAY 0x28
+#define PATROLLER_AIM_JITTER 0x20
+#define PATROLLER_MIN_SPEED 0x6E
+#define PATROLLER_MAX_SPEED 0xA0
+#define PATROLLER_ACCEL 0xA
+#define PATROLLER_FLEE_MAX_FRAMES 0x5A
+#define PATROLLER_ARRIVE_RANGE 0xC00
+#define PATROLLER_BLOCKED_VEER_MIN 0x3C
+#define PATROLLER_BLOCKED_VEER_MAX 0x64
+#define PATROLLER_KNOCK_SPEED 0x190
+#define PATROLLER_KNOCK_DRAG 0xF
+
 /* ->mode of a lunging guard (ACTOR_TYPE_LUNGING_GUARD and
  * ACTOR_TYPE_BIG_LUNGING_GUARD; level 24). A blast toggles its size kind
  * through SHRINK / GROW. */
@@ -1391,6 +2125,45 @@ enum LungingGuardKind {
   LGKIND_SMALL = 0, /* lunges from close; a blast shrinks it away */
   LGKIND_BIG = 1,   /* lunges from far; shrugs off a plain charge; a blast grows it */
 };
+
+/* Lunging guard tuning. Hit it spins off at KNOCK_SPEED (CHARGE_KNOCK_SPEED
+ * for a charge). It lunges with Spyro within LUNGE_DZ of its height and
+ * SMALL_LUNGE_RANGE (small) / BIG_LUNGE_RANGE (big). A small lunge bumps
+ * Spyro back at SMALL_BUMP_SPEED (SMALL_BUMP_VZ up), resting
+ * SMALL_LUNGE_REST; a big one gives up past BIG_LUNGE_LEAVE (rest
+ * BIG_LUNGE_REST) and skips to its strike within BIG_STRIKE_RANGE. A pacer
+ * walks PACE_SPEED until Spyro is within PACE_STOP_RANGE. A blasted big one
+ * grows to GROW_SCALE and bursts into the small kind; an escort orbits its
+ * cannon at ESCORT_RADIUS, ESCORT_SPEED. */
+#define LGUARD_KNOCK_SPEED 0xC8
+#define LGUARD_CHARGE_KNOCK_SPEED 0x15E
+#define LGUARD_LUNGE_DZ 0x190
+#define LGUARD_SMALL_LUNGE_RANGE 0x5DC
+#define LGUARD_BIG_LUNGE_RANGE 0x1F40
+#define LGUARD_SMALL_BUMP_SPEED 0x23
+#define LGUARD_SMALL_BUMP_VZ 0x46
+#define LGUARD_SMALL_LUNGE_REST 0x78
+#define LGUARD_BIG_LUNGE_LEAVE 0x2328
+#define LGUARD_BIG_LUNGE_REST 0x96
+#define LGUARD_BIG_STRIKE_RANGE 0x9C4
+#define LGUARD_PACE_SPEED 0x8C
+#define LGUARD_PACE_STOP_RANGE 0xC00
+#define LGUARD_GROW_SCALE 0x38
+#define LGUARD_ESCORT_RADIUS 0x5DC
+#define LGUARD_ESCORT_SPEED 0x32
+/* The big-lunging-guard variant (ACTOR_TYPE_BIG_LUNGING_GUARD) shares these
+ * but is knocked off at BLG_KNOCK_SPEED / BLG_KNOCK_VZ (BLG_CHARGE_KNOCK_SPEED
+ * for a charge), lunges small within BLG_SMALL_LUNGE_RANGE, gives up a big
+ * lunge past BLG_LUNGE_LEAVE and strikes within BLG_STRIKE_RANGE; its
+ * followers reload FOLLOW1_RELOAD / FOLLOW2_RELOAD after it fires. */
+#define LGUARD_BLG_KNOCK_SPEED 0x118
+#define LGUARD_BLG_KNOCK_VZ 0x96
+#define LGUARD_BLG_CHARGE_KNOCK_SPEED 0x17C
+#define LGUARD_BLG_SMALL_LUNGE_RANGE 0x4B0
+#define LGUARD_BLG_LUNGE_LEAVE 0x2710
+#define LGUARD_BLG_STRIKE_RANGE 0x6A4
+#define LGUARD_FOLLOW1_RELOAD 0x28
+#define LGUARD_FOLLOW2_RELOAD 0x50
 
 /* ->mode of a grabber (ACTOR_TYPE_GRABBER, GrabberState; level 20).
  * GrabberState.held is shared: one grabber goes for Spyro at a time. */
@@ -1412,7 +2185,7 @@ enum GrabberMode {
 enum GrabberAnim {
   GRABBER_ANIM_LURK = 0,
   GRABBER_ANIM_EMERGE = 1,  /* the lurk's grab roll came up; voice 2 plays over it */
-  GRABBER_ANIM_REACH = 2,   /* rushing, Spyro inside 0xFA0 */
+  GRABBER_ANIM_REACH = 2,   /* rushing, Spyro inside GRABBER_REACH_RANGE */
   GRABBER_ANIM_MOVE = 3,    /* rushing from further out, and retreating */
   GRABBER_ANIM_CARRY = 4,
   GRABBER_ANIM_THROW = 5,
@@ -1421,6 +2194,39 @@ enum GrabberAnim {
   GRABBER_ANIM_HIT = 9,     /* flamed: entering GRABBER_KNOCKED */
   GRABBER_ANIM_HUSK = 0xA,  /* GRABBER_HUSK, the copy a flame knock leaves */
 };
+
+/* Grabber tuning. Flamed it is knocked off at KNOCK_SPEED / KNOCK_VZ. Lurking,
+ * it resets its grab chance past CALM_RANGE and rolls one
+ * (CHANCE_MIN..+0x3F) within NOTICE_RANGE; each tick it grabs if a byte roll
+ * is under chance - distance / 64, it is inside the camera's CAM_CONE and
+ * Spyro is within GRAB_DZ (no more than GRAB_BELOW below it), then waits
+ * GRAB_COOLDOWN. It rushes at RUSH_SPEED (reaching within REACH_RANGE,
+ * super-hitting gunners in its path) and seizes within SEIZE_RANGE, closing
+ * at SEIZE_SLOW_SPEED (SEIZE_FAST_SPEED from SEIZE_FAST_RANGE out); the
+ * throw sets Spyro down THROW_OFFSET ahead, flung at THROW_SPEED / THROW_VZ.
+ * It walks home at RETREAT_SPEED, home within HOME_ARRIVE, resting
+ * HOME_REST. */
+#define GRABBER_KNOCK_SPEED 0x15E
+#define GRABBER_KNOCK_VZ 0xF0
+#define GRABBER_CALM_RANGE 0x2C00
+#define GRABBER_NOTICE_RANGE 0x2400
+#define GRABBER_CHANCE_MIN 0x50
+#define GRABBER_CAM_CONE 0x28
+#define GRABBER_GRAB_BELOW 0x1F3
+#define GRABBER_GRAB_DZ 0x578
+#define GRABBER_GRAB_COOLDOWN 0x3C
+#define GRABBER_REACH_RANGE 0xFA0
+#define GRABBER_RUSH_SPEED 0x15E
+#define GRABBER_SEIZE_RANGE 0x44C
+#define GRABBER_SEIZE_SLOW_SPEED 0x50
+#define GRABBER_SEIZE_FAST_SPEED 0xFA
+#define GRABBER_SEIZE_FAST_RANGE 0x12D
+#define GRABBER_THROW_OFFSET 0x4B
+#define GRABBER_THROW_SPEED 0x64
+#define GRABBER_THROW_VZ 0x37
+#define GRABBER_RETREAT_SPEED 0xC8
+#define GRABBER_HOME_ARRIVE 0x100
+#define GRABBER_HOME_REST 0x78
 
 /* ->mode of a sorcerer (ACTOR_TYPE_SORCERER, SorcererState; level 13).
  * Modes below 0x60 double as the pose's animation index; the cue modes
@@ -1581,6 +2387,29 @@ enum SweepGunnerAnim {
   SWEEPGUN_ANIM_TURN = 5, /* SWEEPGUN_STEP_REVERSE */
 };
 
+/* Sweep gunner tuning. Flamed it is knocked off at KNOCK_SPEED / KNOCK_VZ,
+ * sinking SINK_STEP a frame when it lands in water within SPLASH_DZ. It
+ * sweeps once Spyro is within SWEEP_RANGE / SWEEP_DZ and stops past
+ * LEAVE_RANGE / LEAVE_DZ; it reverses once its aim overshoots him by
+ * OVERSHOOT (then holds REVERSE_HOLD frames). Shots leave every other frame
+ * from MUZZLE_FWD ahead and MUZZLE_UP up at SHOT_SPEED, dipping SHOT_DROP a
+ * frame. It walks its path at ADVANCE_SPEED. */
+#define SWEEPGUN_KNOCK_SPEED 0xC8
+#define SWEEPGUN_KNOCK_VZ 0x104
+#define SWEEPGUN_SPLASH_DZ 0x64
+#define SWEEPGUN_SINK_STEP 0x64
+#define SWEEPGUN_SWEEP_RANGE 0x3400
+#define SWEEPGUN_SWEEP_DZ 0x5DC
+#define SWEEPGUN_LEAVE_RANGE 0x4000
+#define SWEEPGUN_LEAVE_DZ 0x898
+#define SWEEPGUN_OVERSHOOT 0x1A
+#define SWEEPGUN_REVERSE_HOLD 0x1E
+#define SWEEPGUN_MUZZLE_FWD 0x177
+#define SWEEPGUN_MUZZLE_UP 0x258
+#define SWEEPGUN_SHOT_SPEED 0x190
+#define SWEEPGUN_SHOT_DROP 0x29
+#define SWEEPGUN_ADVANCE_SPEED 0xA0
+
 /* ->mode of a lurker (ACTOR_TYPE_LURKER, LurkerState; level 20). */
 enum LurkerMode {
   LURKER_WATCH = 0,    /* Spyro close in front: LASH; else hops between path nodes */
@@ -1598,6 +2427,37 @@ enum LurkerAnim {
   LURKER_ANIM_TURN = 1, /* LURKER_AIM and LURKER_FACE */
   LURKER_ANIM_LASH = 3,
 };
+
+/* Lurker tuning. Struck, it is knocked off at KNOCK_SPEED (FLAME_KNOCK_SPEED
+ * for a flame; KNOCK_VZ up) and bursts after STUN_FRAMES, or sinks
+ * (SINK_STEP a frame) when it lands in water within SPLASH_DZ. It lashes once
+ * Spyro is within LASH_RANGE / LASH_DZ (and NOTICE_RANGE), inside the
+ * camera's CAM_CONE and its own LASH_CONE, then rests LASH_REST frames. The
+ * tether's scale is TETHER_SCALE_NUM / length (5..0x7F), the length held to
+ * TETHER_MIN..TETHER_MAX. A roamer hops to a random node after
+ * ROAM_MIN..MAX_FRAMES with Spyro past NOTICE_RANGE, or toward him once he is
+ * past CHASE_MIN_RANGE and a node is CHASE_GAIN closer; it turns to face him
+ * past FACE_CONE. */
+#define LURKER_KNOCK_SPEED 0x140
+#define LURKER_FLAME_KNOCK_SPEED 0xF0
+#define LURKER_KNOCK_VZ 0x64
+#define LURKER_STUN_FRAMES 0x50
+#define LURKER_SPLASH_DZ 0x64
+#define LURKER_SINK_STEP 0x64
+#define LURKER_NOTICE_RANGE 0x2000
+#define LURKER_LASH_RANGE 0xC80
+#define LURKER_LASH_DZ 0x5DC
+#define LURKER_CAM_CONE 0x28
+#define LURKER_LASH_CONE 0x14
+#define LURKER_LASH_REST 0xB4
+#define LURKER_TETHER_SCALE_NUM 0x1C000
+#define LURKER_TETHER_MIN 0x578
+#define LURKER_TETHER_MAX 0xC80
+#define LURKER_ROAM_MIN_FRAMES 0x28
+#define LURKER_ROAM_MAX_FRAMES 0x5A
+#define LURKER_CHASE_MIN_RANGE 0xFA1
+#define LURKER_CHASE_GAIN 0x5DD
+#define LURKER_FACE_CONE 0x13
 
 /* ->mode of a gunner (ACTOR_TYPE_GUNNER, GunnerState; level 20).
  * GUNNER_IDLE runs GunnerState.mode's role (guard, patrol, lookout). */
@@ -1635,6 +2495,36 @@ enum ChargingRamMode {
   CRAM_GO_HOME = 100,  /* walks home, then WATCH */
 };
 
+/* Charging ram tuning. It butts Spyro within BUTT_RANGE (BIG_BUTT_RANGE for
+ * the big kind), shoving him at 5/256 of the unit vector (BUTT_VZ up; the
+ * big one 0x1E off its heading) and resting BUTT_REST; once Spyro is past
+ * CHARGED_RESET_RANGE it may butt again. The awake kind rears and charges
+ * once Spyro, within REAR_RANGE, faces it (REAR_FACING) and it is in the
+ * camera's REAR_CAM_CONE. Charging at CHARGE_SPEED (re-aiming every
+ * REAIM_FRAMES) it butts within BUTT_RANGE - CHARGE_BUTT_INSET inside
+ * CHARGE_CONE, and goes home past LEASH or after Spyro looks away
+ * (GIVE_UP_FACING) for GIVE_UP_FRAMES. Hit it is knocked off at KNOCK_SPEED
+ * / KNOCK_VZ; home walks HOME_SPEED, within HOME_ARRIVE. */
+#define CRAM_BUTT_RANGE 0x708
+#define CRAM_BIG_BUTT_RANGE 0x5DC
+#define CRAM_BUTT_VZ 0x1E
+#define CRAM_BUTT_REST 0xA0
+#define CRAM_CHARGED_RESET_RANGE 0xC00
+#define CRAM_REAR_RANGE 0x2000
+#define CRAM_REAR_FACING 0x26
+#define CRAM_REAR_CAM_CONE 0x23
+#define CRAM_CHARGE_SPEED 0x64
+#define CRAM_REAIM_FRAMES 0x1E
+#define CRAM_CHARGE_BUTT_INSET 0x258
+#define CRAM_CHARGE_CONE 0x40
+#define CRAM_LEASH 0x2800
+#define CRAM_GIVE_UP_FACING 0x31
+#define CRAM_GIVE_UP_FRAMES 0x28
+#define CRAM_KNOCK_SPEED 0x190
+#define CRAM_KNOCK_VZ 0xAA
+#define CRAM_HOME_SPEED 0x5A
+#define CRAM_HOME_ARRIVE 0x80
+
 /* ->mode of a rock thrower (ACTOR_TYPE_ROCK_THROWER, RockThrowerState;
  * level 27); the mode is also the animation index. */
 enum RockThrowerMode {
@@ -1662,6 +2552,21 @@ enum RollingBoulderSub {
   BOULDER_THROWN = 1,  /* rolls along its velocity; bursts on Spyro, a wall or its timer */
   BOULDER_DROPPED = 2, /* its thrower was knocked: bursts at once, shards along the knock */
 };
+
+/* A thrown boulder rides ROLL_HOVER over the ground (height steps capped at
+ * ROLL_MAX_VZ, ignored under ROLL_VZ_DEADBAND and for its first 10 ticks)
+ * and bursts on Spyro (within ROLL_HIT_RADIUS: knocked back at 3/8 of its
+ * velocity, ROLL_PUSH_VZ up), on a wall, or after ROLL_LIFE ticks. Its
+ * shards fall SHARD_GRAVITY faster a tick down to -SHARD_MAX_FALL and keep
+ * 7/8 of their speed off each bounce. */
+#define BOULDER_ROLL_HOVER 0x50
+#define BOULDER_ROLL_MAX_VZ 0x50
+#define BOULDER_ROLL_VZ_DEADBAND 0x32
+#define BOULDER_ROLL_LIFE 0x78
+#define BOULDER_ROLL_HIT_RADIUS 0xDC
+#define BOULDER_ROLL_PUSH_VZ 0x1E
+#define BOULDER_SHARD_GRAVITY 0x14
+#define BOULDER_SHARD_MAX_FALL 0xA0
 
 /* ->mode of a boulder thrower (ACTOR_TYPE_BOULDER_THROWER / _B,
  * BoulderThrowerState; levels 21/22). Modes 40-43 are the paired charge
@@ -1699,6 +2604,46 @@ enum BoulderThrowerAnim {
   BTHROW_ANIM_HURTLE = 7, /* BTHROW_HURTLE */
 };
 
+/* Boulder thrower tuning. Hit it is knocked off at KNOCK_SPEED
+ * (CHARGE_KNOCK_SPEED for a charge; KNOCK_VZ up, a blast just pops it up
+ * BLAST_VZ). It throws (and an advancing one patrols) with Spyro within
+ * SIGHT_DZ of its height; a patroller throws within PATROL_THROW_RANGE and
+ * walks at PATROL_SPEED. A boulder spawns in its hands on frames 3..7 and
+ * leaves on frame RELEASE_FRAME at ROCK_SPEED; it rests REST_FRAMES
+ * (REST_FRAMES_B for the type-B thrower) between throws. */
+#define BTHROW_KNOCK_SPEED 0x118
+#define BTHROW_CHARGE_KNOCK_SPEED 0x15E
+#define BTHROW_KNOCK_VZ 0x1E
+#define BTHROW_BLAST_VZ 0x28
+#define BTHROW_SIGHT_DZ 0x1F4
+#define BTHROW_PATROL_THROW_RANGE 0x1400
+#define BTHROW_PATROL_SPEED 0x8C
+#define BTHROW_RELEASE_FRAME 0x10
+#define BTHROW_ROCK_SPEED 0x4B
+#define BTHROW_REST_FRAMES 0x78
+#define BTHROW_REST_FRAMES_B 0x50
+/* Paired throwers circle their partner at PAIR_CIRCLE_SPEED, then hurtle at
+ * Spyro at HURTLE_SPEED for HURTLE_FRAMES, lofted at distance / 128 (at most
+ * HURTLE_MAX_VZ; flat within HURTLE_FLAT_RANGE, or HURTLE_LOFT_RANGE with
+ * him over HURTLE_LOFT_DZ off its height), bouncing at HURTLE_BOUNCE_VZ.
+ * A hurtle hits Spyro within HURTLE_HIT_RANGE / HURTLE_HIT_DZ, knocking him
+ * at HURTLE_KNOCK_SPEED and itself off at HURTLE_RECOIL_SPEED; it bursts past
+ * HURTLE_MAX_RANGE. A flung one (RIDE_HELD) hurtles at FLUNG_SPEED. */
+#define BTHROW_PAIR_CIRCLE_SPEED 0x64
+#define BTHROW_HURTLE_SPEED 0x15E
+#define BTHROW_HURTLE_FRAMES 0xF0
+#define BTHROW_HURTLE_MAX_VZ 0x6E
+#define BTHROW_HURTLE_FLAT_RANGE 0x1800
+#define BTHROW_HURTLE_LOFT_RANGE 0x2800
+#define BTHROW_HURTLE_LOFT_DZ 0x3E8
+#define BTHROW_HURTLE_BOUNCE_VZ 0x50
+#define BTHROW_HURTLE_HIT_RANGE 0x2BC
+#define BTHROW_HURTLE_HIT_DZ 0x2BC
+#define BTHROW_HURTLE_KNOCK_SPEED 0x6E
+#define BTHROW_HURTLE_RECOIL_SPEED 0xDC
+#define BTHROW_HURTLE_MAX_RANGE 0x9470
+#define BTHROW_FLUNG_SPEED 0x1C2
+
 /* ->mode of a gatekeeper (ACTOR_TYPE_GATEKEEPER / _B, GatekeeperState;
  * levels 21/22). Modes 40-44 hand out its run of keys (GatekeeperState.keys)
  * one at a time; 43 and 50-54 match the boulder thrower's. */
@@ -1734,6 +2679,42 @@ enum GatekeeperAnim {
   GATEKEEPER_ANIM_HURTLE = 8, /* GATEKEEPER_HURTLE */
 };
 
+/* Gatekeeper tuning. Flamed or blasted it is knocked off at KNOCK_SPEED
+ * (KNOCK_VZ up; a blast just pops it up BLAST_VZ). It stalks Spyro within
+ * STALK_RANGE (back to WATCH past WATCH_RANGE) and swipes within SWIPE_RANGE
+ * with him 0xC9..0x577 above it (one unsigned dz test), resting SWIPE_REST
+ * after. The swipe reaches (frame - 5) * SWIPE_REACH_STEP on
+ * frames 6..9 (capped at SWIPE_REACH_MAX), knocking Spyro back at
+ * SWIPE_KNOCK_SPEED, SWIPE_KNOCK_VZ up. */
+#define GATEKEEPER_KNOCK_SPEED 0xF0
+#define GATEKEEPER_KNOCK_VZ 0x1E
+#define GATEKEEPER_BLAST_VZ 0x28
+#define GATEKEEPER_STALK_RANGE 0x1C00
+#define GATEKEEPER_WATCH_RANGE 0x2400
+#define GATEKEEPER_SWIPE_RANGE 0xD48
+#define GATEKEEPER_SWIPE_REST 0x78
+#define GATEKEEPER_SWIPE_REACH_STEP 0x3E8
+#define GATEKEEPER_SWIPE_REACH_MAX 0xDAC
+#define GATEKEEPER_SWIPE_KNOCK_SPEED 0x8C
+#define GATEKEEPER_SWIPE_KNOCK_VZ 0x46
+/* Flung by its catcher (RIDE_HELD past the throw frame): it hurtles at
+ * Spyro at HURTLE_SPEED for HURTLE_FRAMES (bouncing at HURTLE_BOUNCE_VZ),
+ * hitting him within HURTLE_HIT_RANGE / HURTLE_HIT_DZ (knocked back at
+ * HURTLE_KNOCK_SPEED, HURTLE_KNOCK_VZ up) and bursting platform pods it
+ * passes; it bursts past HURTLE_MAX_RANGE from him. On the ride it walks at
+ * RIDE_WALK_SPEED and leaps at RIDE_LEAP_SPEED / RIDE_LEAP_VZ. */
+#define GATEKEEPER_HURTLE_SPEED 0x1F4
+#define GATEKEEPER_HURTLE_FRAMES 0xB4
+#define GATEKEEPER_HURTLE_BOUNCE_VZ 0x5A
+#define GATEKEEPER_HURTLE_HIT_RANGE 0x3E8
+#define GATEKEEPER_HURTLE_HIT_DZ 0x320
+#define GATEKEEPER_HURTLE_KNOCK_SPEED 0x6E
+#define GATEKEEPER_HURTLE_KNOCK_VZ 0x28
+#define GATEKEEPER_HURTLE_MAX_RANGE 0x9470
+#define GATEKEEPER_RIDE_WALK_SPEED 0x78
+#define GATEKEEPER_RIDE_LEAP_SPEED 0x5A
+#define GATEKEEPER_RIDE_LEAP_VZ 0x78
+
 /* ->mode of a tethered guard (ACTOR_TYPE_TETHERED_GUARD, TetherState; level
  * 15); the mode is also the animation index. TetherState.mode is the TetherCommand
  * a tether keeper or sentinel hands it (1 bound to its owner, 4-6 keeper
@@ -1750,6 +2731,19 @@ enum TetheredGuardMode {
   TGUARD_LOOK = 8,        /* looks about (or toward its keeper), then RISE */
   TGUARD_SIGNAL = 9,      /* cues its keeper (who watches for this mode) */
 };
+
+/* A tethered guard rises for Spyro within RISE_RANGE (2D) and RANGE_DZ of its
+ * height, strikes within STRIKE_RANGE and lowers past LOWER_RANGE. Risen, it
+ * looks about after GUARD_FRAMES, and after a look waits LOOK_REST_FRAMES.
+ * Flamed, it slides from KNOCK_SPEED, losing KNOCK_DRAG a frame. */
+#define TGUARD_RISE_RANGE 0x1770
+#define TGUARD_RANGE_DZ 0x5DC
+#define TGUARD_STRIKE_RANGE 0xFA0
+#define TGUARD_LOWER_RANGE 0x1B58
+#define TGUARD_GUARD_FRAMES 0x40
+#define TGUARD_LOOK_REST_FRAMES 0x5A
+#define TGUARD_KNOCK_SPEED 0xC8
+#define TGUARD_KNOCK_DRAG 0x10
 
 /* TetherState.mode / KeeperState.mode: the command a tether keeper hands its
  * tethered guard once the guard reports READY. */
@@ -1776,6 +2770,20 @@ enum TetherKeeperMode {
   KEEPER_STRUCK = 7,     /* struck by its guard's SIGNAL (cue 4), then bursts */
 };
 
+/* A tether keeper faces Spyro within FACE_RANGE and reacts to him within
+ * REACT_RANGE and under REACT_ABOVE above him, resting REACT_REST_FRAMES
+ * after. Knocked or struck, it slides from KNOCK_SPEED. KEEPER_STEP_OUT
+ * slides it up to STEP_OUT_DIST along its facing from its post (animation
+ * position (nextFrame << 7) + (frameProgress << 1)), back from
+ * STEP_BACK_AT. */
+#define KEEPER_FACE_RANGE 0x1000
+#define KEEPER_REACT_RANGE 0x898
+#define KEEPER_REACT_ABOVE 0x190
+#define KEEPER_REACT_REST_FRAMES 0x78
+#define KEEPER_KNOCK_SPEED 0x15E
+#define KEEPER_STEP_OUT_DIST 0x180
+#define KEEPER_STEP_BACK_AT 0x780
+
 /* ->mode of a sentinel (ACTOR_TYPE_SENTINEL, SentinelState; level 15); the
  * mode is also the animation index. A sentinel walks its waypoints past a
  * chain of tethered guards (SentinelState.link), powering each with homing
@@ -1793,6 +2801,29 @@ enum SentinelMode {
   SENTINEL_RELAY_ALERT = 0x62,      /* group cue: ALERT once back at animation 0 */
   SENTINEL_RELAY_TRACK = 0x63,      /* group cue: TRACK once back at animation 0 */
 };
+
+/* Sentinel tuning. Struck it is knocked off at SUPER_KNOCK_SPEED plus Spyro's
+ * speed / 64 (SUPER_KNOCK_VZ up), or FLAME_KNOCK_SPEED / FLAME_KNOCK_VZ for a
+ * flame, its chain of guards powered down with homing orbs. In its range it
+ * engages Spyro within ENGAGE_DZ of its height (an aiming one also within
+ * AIM_CONE of its facing) and only while he is above it, by under
+ * ABOVE_LIMIT. CAST fires up to 3 homing wisps, 4 frames apart from frame 7;
+ * one lands on Spyro within WISP_DROP_RANGE / WISP_DROP_DZ. POWER_GUARD sends
+ * orbs from POWER_ORB_FWD ahead, POWER_ORB_SIDE aside and POWER_ORB_UP up.
+ * It walks its waypoints at WALK_SPEED. */
+#define SENTINEL_SUPER_KNOCK_SPEED 0x1C2
+#define SENTINEL_SUPER_KNOCK_VZ 0x50
+#define SENTINEL_FLAME_KNOCK_SPEED 0xAA
+#define SENTINEL_FLAME_KNOCK_VZ 0x5A
+#define SENTINEL_ENGAGE_DZ 0x200
+#define SENTINEL_AIM_CONE 0x30
+#define SENTINEL_ABOVE_LIMIT 0x1000
+#define SENTINEL_WISP_DROP_RANGE 0xA00
+#define SENTINEL_WISP_DROP_DZ 0x400
+#define SENTINEL_POWER_ORB_FWD 0x800
+#define SENTINEL_POWER_ORB_SIDE (-0x100)
+#define SENTINEL_POWER_ORB_UP 0x400
+#define SENTINEL_WALK_SPEED 0x80
 
 /* ->mode of a mount (ACTOR_TYPE_MOUNT, MountState; level 31); the mode is
  * also the animation index. Its rider is a floating barrel or mine
@@ -1843,6 +2874,32 @@ enum FloatingBarrelMode {
   FLOATBARREL_RUN = 4,   /* the mine was charged: runs at the nearest target, then BURST */
 };
 
+/* Barrel / mine tuning. A charged mine hops RUN_HOP up and runs at RUN_SPEED
+ * along the knock heading, re-aimed at the best target within SEEK_CONE of it
+ * (under SEEK_QUICK Manhattan and SEEK_RANGE exact, scored by distance outside
+ * SEEK_NEAR..SEEK_FAR plus 256 per unit of angle); its contact arms after
+ * RUN_ARM_FRAMES. Airborne, sink speed starts at RUN_SINK and loses
+ * SINK_GRAVITY a frame down to -RUN_SINK. A burst drops it BURST_DROP; the
+ * blast grows 0x90 a tick for BLAST_TICKS, pushing Spyro at
+ * (PUSH_RANGE - distance) / 64 with PUSH_VZ up. A tumbling one floats
+ * TUMBLE_HEIGHT over the ground, rolling at TUMBLE_SPEED. */
+#define FLOATBARREL_RUN_HOP 0xC8
+#define FLOATBARREL_RUN_SPEED 0xF0
+#define FLOATBARREL_RUN_ARM_FRAMES 0x10
+#define FLOATBARREL_RUN_SINK 0x80
+#define FLOATBARREL_SINK_GRAVITY 0xA
+#define FLOATBARREL_SEEK_QUICK 0x6000
+#define FLOATBARREL_SEEK_CONE 0xC
+#define FLOATBARREL_SEEK_RANGE 0x4000
+#define FLOATBARREL_SEEK_NEAR 0x1800
+#define FLOATBARREL_SEEK_FAR 0x2800
+#define FLOATBARREL_BURST_DROP 0x1CD
+#define FLOATBARREL_BLAST_TICKS 8
+#define FLOATBARREL_PUSH_RANGE 0x1000
+#define FLOATBARREL_PUSH_VZ 0x46
+#define FLOATBARREL_TUMBLE_HEIGHT 0x180
+#define FLOATBARREL_TUMBLE_SPEED 0x80
+
 /* ->mode of a level 0 path enemy (ACTOR_TYPE_PATH_ENEMY, WalkerState); the
  * mode is also the animation index. It flees from Spyro along its path. */
 enum PathEnemyMode {
@@ -1858,6 +2915,30 @@ enum PathEnemyMode {
   PENEMY_FALL = 9,         /* lands, then bursts */
   PENEMY_COWER = 0x14,     /* while Spyro charges, then FLEE */
 };
+
+/* Path enemy tuning. It spots Spyro once he passes a QUICK_RANGE Manhattan
+ * pre-test and is within SPOT_RANGE (2D) / SPOT_DZ; its partner within
+ * PARTNER_RANGE (Manhattan PARTNER_QUICK) gets a face-to-face instead of a
+ * fidget. It walks a path node within NODE_ARRIVE, moving only once within
+ * WALK_CONE of its bearing and turning at most TURN_STEP a frame (RETURN at
+ * RETURN_SPEED, FLEE at FLEE_SPEED); hidden at the end it waits HIDE_FRAMES
+ * out of Spyro's sight. Flamed it is thrown at FLAME_SPEED / FLAME_VZ,
+ * charged at CHARGE_SPEED / CHARGE_VZ. */
+#define PENEMY_QUICK_RANGE 0x4000
+#define PENEMY_SPOT_RANGE 0x2800
+#define PENEMY_SPOT_DZ 0x800
+#define PENEMY_PARTNER_QUICK 0x1800
+#define PENEMY_PARTNER_RANGE 0x1000
+#define PENEMY_NODE_ARRIVE 0x200
+#define PENEMY_WALK_CONE 0x20
+#define PENEMY_TURN_STEP 8
+#define PENEMY_RETURN_SPEED 0x40
+#define PENEMY_FLEE_SPEED 0x82
+#define PENEMY_HIDE_FRAMES 0x78
+#define PENEMY_FLAME_SPEED 0x118
+#define PENEMY_FLAME_VZ 0xB4
+#define PENEMY_CHARGE_SPEED 0x190
+#define PENEMY_CHARGE_VZ 0x46
 
 /* ->mode of a flock leader (ACTOR_TYPE_FLOCK_LEADER, FlockState; level 0);
  * the mode is also the animation index. Each hit costs it one follower
@@ -1931,6 +3012,28 @@ enum SnowballThrowerMode {
   SNOWTHROW_AIM = 5,       /* faces Spyro; in sight on the timer: THROW */
   SNOWTHROW_TURN_AWAY = 6, /* faces away from Spyro, then WAIT */
 };
+
+/* Snowball thrower tuning. Hit it slides from KNOCK_SPEED (CHARGE_KNOCK_SPEED
+ * for a charge), losing KNOCK_DRAG a frame. It wakes its group within
+ * WAKE_RANGE (or its level-data range) and throws once a clear line from its
+ * hand (EYE_FWD ahead, EYE_UP up) to Spyro has held SIGHT_FRAMES; the ball
+ * leaves on THROW_FRAME (THROW_FRAME_B for the second type) at BALL_SPEED
+ * and lives BALL_LIFE, the recoil losing RECOIL_DRAG a frame. Back on its
+ * ring it rests TURN_AWAY_FRAMES facing away, or aims AIM_FRAMES. */
+#define SNOWTHROW_KNOCK_SPEED 0xB4
+#define SNOWTHROW_CHARGE_KNOCK_SPEED 0x12C
+#define SNOWTHROW_KNOCK_DRAG 0xC
+#define SNOWTHROW_WAKE_RANGE 0x3800
+#define SNOWTHROW_EYE_FWD 175
+#define SNOWTHROW_EYE_UP 0x2BC
+#define SNOWTHROW_SIGHT_FRAMES 0x1E
+#define SNOWTHROW_THROW_FRAME 0x17
+#define SNOWTHROW_THROW_FRAME_B 0x13
+#define SNOWTHROW_BALL_SPEED 0xC8
+#define SNOWTHROW_BALL_LIFE 0x8C
+#define SNOWTHROW_RECOIL_DRAG 0x14
+#define SNOWTHROW_TURN_AWAY_FRAMES 0x5A
+#define SNOWTHROW_AIM_FRAMES 0x78
 
 /* ->mode of a circling bird (ACTOR_TYPE_CIRCLING_BIRD, CirclingBirdState;
  * level 9); the mode is also the animation index. */
@@ -2042,6 +3145,37 @@ enum SentryMode {
   SENTRY_GO_HOME = 0x64, /* walks home, then WATCH */
 };
 
+/* Sentry tuning (the level 1 cousin of the charging guard). Hit it slides
+ * from KNOCK_SPEED (FLAME_KNOCK_SPEED for a flame), losing KNOCK_DRAG a frame.
+ * It engages Spyro within ENGAGE_RANGE / ENGAGE_DZ, circles at CIRCLE_SPEED
+ * re-reading his heading every RETARGET_FRAMES, and gives up when he turns
+ * away (GIVE_UP_FACING) or it strays past LEASH from home. Within LUNGE_RANGE
+ * and lined up (LUNGE_CONE) it lunges at LUNGE_SPEED, slowing 5 a frame to
+ * LUNGE_MIN_SPEED; within HIT_RANGE / HIT_DZ Spyro is knocked back (camera
+ * held CAM_HOLD_FRAMES from CAM_HIT_PULLBACK behind; while camHold runs the
+ * camera frames it from CAM_PULLBACK past it). GO_HOME walks HOME_SPEED, home
+ * within HOME_ARRIVE. */
+#define SENTRY_KNOCK_SPEED 0x1C2
+#define SENTRY_FLAME_KNOCK_SPEED 0xFA
+#define SENTRY_KNOCK_DRAG 0xF
+#define SENTRY_ENGAGE_RANGE 0x2800
+#define SENTRY_ENGAGE_DZ 0x5DC
+#define SENTRY_CIRCLE_SPEED 0x64
+#define SENTRY_RETARGET_FRAMES 0x1E
+#define SENTRY_GIVE_UP_FACING 0x31
+#define SENTRY_LEASH 0x2800
+#define SENTRY_LUNGE_RANGE 0xED8
+#define SENTRY_LUNGE_CONE 0x14
+#define SENTRY_LUNGE_SPEED 0x64
+#define SENTRY_LUNGE_MIN_SPEED 0x50
+#define SENTRY_HIT_RANGE 0x5DC
+#define SENTRY_HIT_DZ 0x384
+#define SENTRY_CAM_HOLD_FRAMES 0x32
+#define SENTRY_CAM_PULLBACK 0x1000
+#define SENTRY_CAM_HIT_PULLBACK 0xC00
+#define SENTRY_HOME_SPEED 0x5A
+#define SENTRY_HOME_ARRIVE 0x80
+
 /* ->mode of a post grabber (ACTOR_TYPE_POST_GRABBER, PostGrabberState; level
  * 25); the mode is also the animation index. A grabber and its lookout are
  * one actor that swaps ->type: a lookout whose partner is roused becomes a
@@ -2124,6 +3258,38 @@ enum LootThiefMode {
   LTHIEF_KNOCKED = 1, /* flamed: shatters into chest shards */
 };
 
+/* LootThiefState.leg for a ring thief (onRing). */
+enum LootThiefLeg {
+  LTHIEF_LEG_PARKED = 0,   /* hovers at its spur end; Spyro within NOTICE_RANGE: SPUR_IN on
+                            * the spur that leads round the ring away from him */
+  LTHIEF_LEG_SPUR_IN = 1,  /* flies the spur onto the ring, then RING */
+  LTHIEF_LEG_RING = 2,     /* flies the ring to its end, then CROSS (a lap);
+                            * Spyro past LOSE_RANGE: RING_OUT */
+  LTHIEF_LEG_CROSS = 3,    /* flies the cross path (LootThiefState.path), then RING */
+  LTHIEF_LEG_RING_OUT = 4, /* rounds the ring away from Spyro to a spur (a lap), then
+                            * SPUR_OUT; Spyro back within NOTICE_RANGE: RING */
+  LTHIEF_LEG_SPUR_OUT = 5, /* flies a spur back out, then PARKED */
+};
+
+/* A ring thief flies RING_SPEED less LAP_SLOWDOWN a lap (laps cap at
+ * MAX_LAPS - 1), easing 1/8 of the way to each node's height a frame (at
+ * most CLIMB_STEP on the spurs, RING_CLIMB_STEP on the ring). Flamed it is
+ * knocked off at KNOCK_SPEED. A first-run thief starts its intro tween at
+ * INTRO_SPEED, slowing INTRO_DRAG a leg to INTRO_MIN_SPEED, and while facing
+ * Spyro climbs toward DODGE_Z. */
+#define LTHIEF_NOTICE_RANGE 0x2000
+#define LTHIEF_LOSE_RANGE 0x3800
+#define LTHIEF_RING_SPEED 0x190
+#define LTHIEF_LAP_SLOWDOWN 10
+#define LTHIEF_MAX_LAPS 6
+#define LTHIEF_CLIMB_STEP 0x100
+#define LTHIEF_RING_CLIMB_STEP 0x80
+#define LTHIEF_KNOCK_SPEED 0x15E
+#define LTHIEF_INTRO_SPEED 0x18
+#define LTHIEF_INTRO_DRAG 8
+#define LTHIEF_INTRO_MIN_SPEED 2
+#define LTHIEF_DODGE_Z 0x61A8
+
 /* ->mode of a two-path runner (ACTOR_TYPE_TWO_PATH_RUNNER, RunnerState; level
  * 8); the mode is also the animation index. With RunnerState.mode TPARM_RUN it runs
  * whichever of its two paths ends nearer Spyro (RunnerState.which). */
@@ -2190,6 +3356,33 @@ enum ChasingPathGuardMode {
   CPGUARD_ATTACK = 3,  /* lunges, then RETURN */
   CPGUARD_KNOCKED = 4, /* knocked away, then bursts */
 };
+
+/* Chasing path guard tuning. Knocked off at KNOCK_SPEED / KNOCK_VZ
+ * (CHARGE_KNOCK_*, SUPER_KNOCK_* plus Spyro's speed / 64 for a superflame).
+ * A patroller walks PATROL_SPEED and chases Spyro once he is drawn, in sight,
+ * within SIGHT_RANGE / SIGHT_DZ and its SIGHT_CONE, for CHASE_FRAMES; it
+ * chases at CHASE_SPEED and attacks (lunging at ATTACK_SPEED) once lined up
+ * within ATTACK_CONE. Returning it steers at up to RETURN_SPEED (1/16 of the
+ * distance) once within RETURN_CONE, home within RETURN_ARRIVE; RETURN_FRAMES
+ * of blocked steering give up. */
+#define CPGUARD_KNOCK_SPEED 0x12C
+#define CPGUARD_KNOCK_VZ 0x10
+#define CPGUARD_CHARGE_KNOCK_SPEED 0x1F4
+#define CPGUARD_CHARGE_KNOCK_VZ 0x20
+#define CPGUARD_SUPER_KNOCK_SPEED 0x1C2
+#define CPGUARD_SUPER_KNOCK_VZ 0x50
+#define CPGUARD_PATROL_SPEED 0x5C
+#define CPGUARD_SIGHT_RANGE 0x800
+#define CPGUARD_SIGHT_DZ 0x800
+#define CPGUARD_SIGHT_CONE 0x20
+#define CPGUARD_CHASE_FRAMES 0x78
+#define CPGUARD_CHASE_SPEED 0x80
+#define CPGUARD_ATTACK_CONE 0x18
+#define CPGUARD_ATTACK_SPEED 0x40
+#define CPGUARD_RETURN_CONE 0x18
+#define CPGUARD_RETURN_SPEED 0x5C
+#define CPGUARD_RETURN_ARRIVE 0x200
+#define CPGUARD_RETURN_FRAMES 0x3C
 
 /* ->mode of a formation escort (ACTOR_TYPE_FORMATION_ESCORT,
  * FormationEscortState; level 26). */
@@ -2339,6 +3532,34 @@ enum CometCannonMode {
   CCANNON_LOB = 10,   /* turns to the cued target and lobs a comet at it, then WATCH */
 };
 
+/* Comet cannon tuning. With Spyro beside it (within LOCK_RANGE, LOCK_RANGE_HELD
+ * once locked) the camera locks on it. Flamed from behind with its fuse
+ * clear it fires: the comet leaves MUZZLE_FWD ahead and MUZZLE_UP above at
+ * COMET_SPEED (COMET_VZ up, live COMET_LIFE), re-aimed at the best target
+ * within SEEK_CONE ahead (under SEEK_QUICK Manhattan, exact under SEEK_EXACT,
+ * at most SEEK_RANGE; scored by distance outside SEEK_NEAR..SEEK_FAR plus
+ * 4096 per unit of angle) and lobbed at AIM_SPEED (a lunging guard aimed
+ * GUARD_AIM_LIFT up). A cued LOB fires LOB_SPEED from LOB_UP up. */
+#define CCANNON_LOCK_RANGE 0x4E2
+#define CCANNON_LOCK_RANGE_HELD 0x578
+#define CCANNON_FUSE_FRAMES 0x4B
+#define CCANNON_MUZZLE_FWD 0x258
+#define CCANNON_MUZZLE_UP 0x352
+#define CCANNON_COMET_SPEED 0x320
+#define CCANNON_COMET_VZ 0x96
+#define CCANNON_COMET_LIFE 0x8C
+#define CCANNON_SEEK_QUICK 0x10FFF
+#define CCANNON_SEEK_CONE 7
+#define CCANNON_SEEK_EXACT 0xBFFF
+#define CCANNON_SEEK_RANGE 0xAFFF
+#define CCANNON_SEEK_NEAR 0x4000
+#define CCANNON_SEEK_FAR 0x5800
+#define CCANNON_AIM_SPEED 0x258
+#define CCANNON_GUARD_AIM_LIFT 0x320
+#define CCANNON_LOB_SPEED 0x320
+#define CCANNON_LOB_UP 0x578
+#define CCANNON_LOB_LIFE 0x78
+
 /* ->mode of a comet (ACTOR_TYPE_COMET, CometState; level 24). */
 enum CometMode {
   COMET_FLY = 0,  /* flies its arc, dropping sparks and laying its trail */
@@ -2368,6 +3589,33 @@ enum LanePatrollerMode {
   LANEPAT_RUN = 1,     /* runs its lane path, turning back at Spyro, to the far end */
   LANEPAT_KNOCKED = 2, /* knocked away, then bursts */
 };
+
+/* Lane patroller tuning. Hit it is knocked off at KNOCK_SPEED
+ * (CHARGE_KNOCK_SPEED for a charge; KNOCK_VZ up). It runs its lane once
+ * Spyro is within NOTICE_RANGE / NOTICE_DZ, from RUN_SPEED, slowing
+ * SLOW_STEP a frame to MIN_SPEED after SLOW_FRAMES (LANE1_SLOW_FRAMES on
+ * lane 1); each finished run (up to MAX_RUNS - 1, g_anLevelEscapeRunCount)
+ * takes 6 off both. It falls GRAVITY a frame down to -MAX_FALL (floor
+ * probed FLOOR_PROBE_RAISE up), jumps at JUMP_VZ on PATH_JUMP_LOW nodes, is
+ * put back on its node below FELL_BELOW_Z, and within TURN_RANGE turns back
+ * at Spyro just ahead on its lane. */
+#define LANEPAT_KNOCK_SPEED 0xFA
+#define LANEPAT_CHARGE_KNOCK_SPEED 0x145
+#define LANEPAT_KNOCK_VZ 0x28
+#define LANEPAT_NOTICE_RANGE 0x1964
+#define LANEPAT_NOTICE_DZ 0x578
+#define LANEPAT_RUN_SPEED 0x12C
+#define LANEPAT_SLOW_FRAMES 0x6E
+#define LANEPAT_LANE1_SLOW_FRAMES 0x96
+#define LANEPAT_SLOW_STEP 0xA
+#define LANEPAT_MIN_SPEED 0xDC
+#define LANEPAT_MAX_RUNS 6
+#define LANEPAT_GRAVITY 0x1E
+#define LANEPAT_MAX_FALL 0x190
+#define LANEPAT_FLOOR_PROBE_RAISE 0xBB8
+#define LANEPAT_JUMP_VZ 0x12C
+#define LANEPAT_FELL_BELOW_Z 0x800
+#define LANEPAT_TURN_RANGE 0x3000
 
 /* ->mode of a runner spawner (ACTOR_TYPE_RUNNER_SPAWNER, RunnerSpawnerState;
  * level 14); the mode is also the animation index. */
@@ -2474,7 +3722,7 @@ enum RoamingCritterAnim {
 enum CheckpointMode {
   CHECKPT_REARM = 0,     /* waits for Spyro to walk away (> CHECKPT_REARM_RANGE), then ARMED */
   CHECKPT_ARMED = 1,     /* Spyro touches it: sets the respawn anchor, FLASH */
-  CHECKPT_FLASH = 2,     /* subMode counts frames to 0x30, then REARM */
+  CHECKPT_FLASH = 2,     /* subMode counts frames to CHECKPT_FLASH_FRAMES, then REARM */
   CHECKPT_HELD = 3,      /* its dragon statue holds it until the rescue (no arm runs) */
 };
 
@@ -2667,6 +3915,12 @@ enum LootVortexStage {
   LVORTEX_ACTIVE = 2, /* freezes Spyro and plays its sequence; when he is free again: FINISH */
   LVORTEX_FINISH = 3, /* runs its chunk anim, resets the camera stick and the key state */
 };
+/* A loot vortex opens once its key actor is dormant or, for a lane
+ * patroller key, knocked; Spyro then collects it within TOUCH_RANGE (2D and
+ * height). LVORTEX_ACTIVE replays the locked chest's key sequence on the
+ * same clock (LOCKCHEST_LOCK_FWD/UP, KEY_SPIN/TURN_TICK, INSERT/BURST/
+ * SKIP_TICK), with its target actor as the chest. */
+#define LVORTEX_TOUCH_RANGE 0x200
 
 /* ->mode of a flight-level HUD tally icon (the per-class icon types the
  * flight HUD controller's HudState.types lists; TallyState). */

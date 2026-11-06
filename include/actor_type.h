@@ -166,6 +166,18 @@ typedef struct NameLetterState {
 #define DROP_GEM_ROLL 0xFF       /* ->dropKind: a random gem roll (and counts in the
                                   * checkpoint kill set, IsActorInCheckpointKillSet) */
 
+/* Bosses and big actors take Spyro's 2D distance from ApproxDist2D, then
+ * measure it exactly (VectorLength VEC_LEN_XY) once the estimate is under
+ * EXACT_DIST_RANGE, where the estimate's error would show. */
+#define EXACT_DIST_RANGE 0x32C8
+
+/* Knockback headings (StepAndLerpAngle8(away, facing, STEP, FRAC)): Spyro's
+ * facing, bent toward the bearing away from him by its delta capped at
+ * KNOCK_BEND_STEP, scaled by KNOCK_BEND_FRAC / 256 (at most 8 units). A few
+ * actors use their own step/fraction. */
+#define KNOCK_BEND_STEP 0x20
+#define KNOCK_BEND_FRAC 0x40
+
 /* Actor.flags hit bits that Spyro's attacks raise through
  * DispatchActorContactAtSphere (AdvanceSpyroPhysics, TickSpyroAttackEffects). */
 #define ACTOR_HIT_FLAME 0x10000  /* the flame breath */
@@ -189,6 +201,8 @@ typedef struct NameLetterState {
 /* How far above a point the FindGroundHeightBelow probes start, so a point
  * resting on (or just under) a floor still finds it. */
 #define GROUND_PROBE_LIFT 0x400
+/* FindGroundHeightBelow depth that reaches any floor under the point. */
+#define GROUND_PROBE_FAR 0x10000
 #define MOVE_PASS_ACTORS 0x02  /* actors never block: the step is pushed out of them (CONTACT_PUSH_OUT) */
 #define MOVE_FOLLOW_FLOOR 0x04 /* ease Z toward the probed floor (snap when close) */
 #define MOVE_STEP_LIMIT 0x10   /* reject a step up or down past the step height */
