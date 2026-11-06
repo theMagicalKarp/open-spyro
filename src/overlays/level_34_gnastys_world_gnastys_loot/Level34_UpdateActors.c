@@ -2042,7 +2042,7 @@ void Level34_UpdateActors(void) {
       int kt = g_pActorListBase[st->key].type;
       int open = 0;
 
-      if (ks >= 0x80 || (kt == 0x9F && ks == 2)) {
+      if (ks >= ACTOR_MODE_DORMANT || (kt == ACTOR_TYPE_LANE_PATROLLER && ks == LANEPAT_KNOCKED)) {
         open = 1;
       }
       if (actor->subMode == 0) {
@@ -2051,8 +2051,8 @@ void Level34_UpdateActors(void) {
           actor->rotY = (unsigned short)g_anSineLut[st->phase] >> 7;
           st->phase += g_nFrameStep * 2;
         }
-        if ((ApproxDist2D(&actor->posX, &SPY.posX) < 0x200 &&
-             ABS2(SPY_DZ(actor)) < 0x200 && open) ||
+        if ((ApproxDist2D(&actor->posX, &SPY.posX) < LVORTEX_TOUCH_RANGE &&
+             ABS2(SPY_DZ(actor)) < LVORTEX_TOUCH_RANGE && open) ||
             (g_pActorListBase[st->key].mode >= ACTOR_MODE_DORMANT &&
              g_pActorListBase[st->key].type == ACTOR_TYPE_LOOT_THIEF)) {
           int i;
@@ -2079,15 +2079,15 @@ void Level34_UpdateActors(void) {
           actor->subMode = 1;
           st->mode = one;
         }
-        if (st->spark != 0xFF && actor->cullRadius != ACTOR_CULL_HIDDEN) {
+        if (st->spark != ROT_BILLBOARD_NONE && actor->cullRadius != ACTOR_CULL_HIDDEN) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset4, g_aRotBillboards[st->spark].pos);
           AddVector(g_aRotBillboards[st->spark].pos, g_aRotBillboards[st->spark].pos,
                         &actor->posX);
           if (g_aRotBillboards[st->spark].life < 5) {
-            st->spark = 0xFF;
+            st->spark = ROT_BILLBOARD_NONE;
           }
-        } else if (st->timer >= 0xF8 && actor->cullRadius != ACTOR_CULL_HIDDEN) {
+        } else if (st->timer >= ROT_BILLBOARD_GLINT_TICK && actor->cullRadius != ACTOR_CULL_HIDDEN) {
           int s = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset4);
 
           if (s >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < ROT_BILLBOARD_ATTACH_RANGE) {
@@ -2124,7 +2124,7 @@ void Level34_UpdateActors(void) {
             AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(g_pActorListBase[st->target].posX - SPY.posX,
                                         g_pActorListBase[st->target].posY - SPY.posY,
-                                        ATAN_ANGLE8)) < 0x30) {
+                                        ATAN_ANGLE8)) < LOCKCHEST_FACING_ANGLE) {
           g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
           ResetSpyroLinearMotion();
           ZeroVector(&spyc->headLook);
@@ -2141,12 +2141,12 @@ void Level34_UpdateActors(void) {
               int d;
               int r;
 
-              st->timer = 0x80;
+              st->timer = LOCKCHEST_KEY_TURN_TICK;
               d = AbsAngleDelta8(g_pActorListBase[st->target].rotZ,
                                 (unsigned char)(SPY.bodyRotZ + 0x40));
               actor->rotY = 0xC0;
               r = g_bSpyroPersistentEulerZ + 0x40;
-              actor->rotZ = r + d * (st->timer - 0x80) / 64;
+              actor->rotZ = r + d * (st->timer - LOCKCHEST_KEY_TURN_TICK) / 64;
             } else {
               g_nCutsceneId[st->seen] = one;
             }
@@ -2157,18 +2157,18 @@ void Level34_UpdateActors(void) {
 
       case LVORTEX_ACTIVE:
         if (g_dwPadPressed & PAD_CROSS) {
-          st->timer = 0xD2;
+          st->timer = LOCKCHEST_SKIP_TICK;
         }
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         actor->cullRadius = 0x18;
         st->timer += g_nFrameStep;
         g_nCinematicActive = one;
-        if (st->timer < 0xC0) {
+        if (st->timer < LOCKCHEST_INSERT_TICK) {
           int *v = swoopPos;
 
-          v[0] = 0x200;
+          v[0] = LOCKCHEST_LOCK_FWD;
           v[1] = 0;
-          v[2] = 0x140;
+          v[2] = LOCKCHEST_LOCK_UP;
           RotateVectorByMatrix(actor->mtx, v, v);
           AddVector(v, v, &g_pActorListBase[st->target].posX);
           SubtractVector(v, v, &SPY.posX);
@@ -2182,36 +2182,36 @@ void Level34_UpdateActors(void) {
           CopyVector(&actor->posX, v);
           g_nSpyroSwingEulerTargetY[0] =
               (unsigned short)g_anSineLut[(st->timer << 7) / 192] << 16 >> 19;
-          if (st->timer < 0x40) {
+          if (st->timer < LOCKCHEST_KEY_SPIN_TICK) {
             int r;
 
             actor->rotY = -st->timer;
             r = g_bSpyroPersistentEulerZ + 0x80;
             actor->rotZ = r + st->timer * 4;
-          } else if (st->timer < 0x80) {
+          } else if (st->timer < LOCKCHEST_KEY_TURN_TICK) {
             int r;
 
             actor->rotY = 0xC0;
             r = g_bSpyroPersistentEulerZ + 0x80;
-            actor->rotZ = r + (st->timer - 0x40) * 3;
+            actor->rotZ = r + (st->timer - LOCKCHEST_KEY_SPIN_TICK) * 3;
           } else {
             int d = AbsAngleDelta8(g_pActorListBase[st->target].rotZ,
                                   (unsigned char)(g_bSpyroPersistentEulerZ + 0x40));
             int r = g_bSpyroPersistentEulerZ + 0x40;
 
-            actor->rotZ = r + d * (st->timer - 0x80) / 64;
+            actor->rotZ = r + d * (st->timer - LOCKCHEST_KEY_TURN_TICK) / 64;
           }
-        } else if (st->timer < 0xD0) {
+        } else if (st->timer < LOCKCHEST_BURST_TICK) {
           int *w = settleOffset;
 
           actor->rotZ = g_pActorListBase[st->target].rotZ;
-          w[0] = 0x200 - (st->timer - 0xC0) * 8;
-          w[2] = 0x140;
+          w[0] = LOCKCHEST_LOCK_FWD - (st->timer - LOCKCHEST_INSERT_TICK) * 8;
+          w[2] = LOCKCHEST_LOCK_UP;
           w[1] = 0;
           RotateVectorByMatrix(actor->mtx, w, w);
           AddVector(&actor->posX, w, &g_pActorListBase[st->target].posX);
         }
-        if (st->timer >= 0xD0 || !((unsigned)SPY.state <= SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
+        if (st->timer >= LOCKCHEST_BURST_TICK || !((unsigned)SPY.state <= SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
                                     SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_STOP)) {
           actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;

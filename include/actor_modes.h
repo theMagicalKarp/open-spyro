@@ -649,6 +649,53 @@ enum GnastyAnim {
   GNASTY_ANIM_RUN = 1,
 };
 
+/* Gnasty's fight tuning. He is flamed into the next phase only within
+ * FLAME_END_RANGE of his current path's end. Before his main path the follow
+ * camera holds on him (CAM_HOLD_FRAMES after a charge) within CAM_RANGE, in
+ * sight or within CAM_NEAR_RANGE. Phase 2 starts once Spyro, facing him
+ * within ESCAPE_FACING, comes within ESCAPE_RANGE (or he has thrown
+ * THROW_VOLLEY bombs). */
+#define GNASTY_FLAME_END_RANGE 0xBB8
+#define GNASTY_CAM_HOLD_FRAMES 0x3C
+#define GNASTY_CAM_RANGE 0x4000
+#define GNASTY_CAM_NEAR_RANGE 0x3000
+#define GNASTY_ESCAPE_FACING 0x28
+#define GNASTY_ESCAPE_RANGE 0x1B58
+/* Trail bombs (GNASTY_THROW): THROW_VOLLEY of them, released on frame
+ * THROW_FRAME every THROW_GAP frames, fly BOMB_SPEED (climbing at most
+ * BOMB_MAX_DROP a step down) and live BOMB_LIFE frames. */
+#define GNASTY_THROW_VOLLEY 4
+#define GNASTY_THROW_FRAME 9
+#define GNASTY_THROW_GAP 0x50
+#define GNASTY_BOMB_SPEED 0x190
+#define GNASTY_BOMB_MAX_DROP 0x1F4
+#define GNASTY_BOMB_LIFE 0xA0
+/* Gravity (GNASTY_FALL, ESCAPE, STAND): vSpeed loses GRAVITY a frame down to
+ * -MAX_FALL, landing on the floor found FLOOR_PROBE_RAISE above him. Escape
+ * jumps launch at JUMP_LOW / MID / HIGH (PATH_JUMP_*). */
+#define GNASTY_GRAVITY 0x19
+#define GNASTY_MAX_FALL 0x190
+#define GNASTY_FLOOR_PROBE_RAISE 0xBB8
+#define GNASTY_JUMP_LOW 0xDC
+#define GNASTY_JUMP_MID 0x10E
+#define GNASTY_JUMP_HIGH 0x140
+/* GNASTY_RUN speed: RUN_SPEED (or the node's), from node 0xE LATE_SPEED
+ * (0x1D on: LAST_SPEED), CHASED_SPEED while Spyro is within CHASE_RANGE
+ * (CHASE_RANGE_FAST once already fast) and CHASE_DZ. Escape: ESCAPE_SPEED;
+ * to the escape start: TO_ESCAPE_SPEED. Beaten: slides from KNOCK_SPEED. */
+#define GNASTY_RUN_SPEED 0x13B
+#define GNASTY_LATE_SPEED 0xEB
+#define GNASTY_LAST_SPEED 0xD7
+#define GNASTY_CHASED_SPEED 0x122
+#define GNASTY_CHASE_RANGE 0x1964
+#define GNASTY_CHASE_RANGE_FAST 0x1F40
+#define GNASTY_CHASE_DZ 0x4B0
+#define GNASTY_ESCAPE_SPEED 0x104
+#define GNASTY_TO_ESCAPE_SPEED 0xF0
+#define GNASTY_KNOCK_SPEED 0xD2
+/* Within SWIPE_RANGE he swipes instead of throwing. */
+#define GNASTY_SWIPE_RANGE 0xE10
+
 /* ->mode of Blowhard, the level 16 boss (ACTOR_TYPE_BLOWHARD,
  * BlowhardState). Each of its three phases rises (floorZ + 0x578), hovers
  * or patrols its path, and sinks to drop an ACTOR_TYPE_RIM_RIDER on Spyro;
@@ -3020,6 +3067,12 @@ enum LootVortexStage {
   LVORTEX_ACTIVE = 2, /* freezes Spyro and plays its sequence; when he is free again: FINISH */
   LVORTEX_FINISH = 3, /* runs its chunk anim, resets the camera stick and the key state */
 };
+/* A loot vortex opens once its key actor is dormant or, for a lane
+ * patroller key, knocked; Spyro then collects it within TOUCH_RANGE (2D and
+ * height). LVORTEX_ACTIVE replays the locked chest's key sequence on the
+ * same clock (LOCKCHEST_LOCK_FWD/UP, KEY_SPIN/TURN_TICK, INSERT/BURST/
+ * SKIP_TICK), with its target actor as the chest. */
+#define LVORTEX_TOUCH_RANGE 0x200
 
 /* ->mode of a flight-level HUD tally icon (the per-class icon types the
  * flight HUD controller's HudState.types lists; TallyState). */
