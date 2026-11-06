@@ -1629,7 +1629,7 @@ void Level23_UpdateActors(void) {
     case ACTOR_TYPE_FLIGHT_HUD: {
       HudState *st = actor->state;
       int i;
-      int prevMin;
+      int prevSec;
       int prevTenth;
       int t;
       int y;
@@ -1730,11 +1730,11 @@ void Level23_UpdateActors(void) {
       if (t < 0) {
         t = 0;
       }
-      prevMin = t / 60;
+      prevSec = t / 60;
       prevTenth = t / 6;
 
       if (g_anFlightTargetTally[0] + g_anFlightTargetTally[1] + g_anFlightTargetTally[2] + g_anFlightTargetTally[3] !=
-          0x20) {
+          FLIGHT_TARGET_TOTAL) {
         if (g_bDebugNoDepletion == 0 && g_nSpyroSubstate < SPYRO_SUB_SCRIPTED &&
             g_anFlightClearTimes[g_nActiveWorldIndex] == 0) {
           g_nFlightTimeBonus -= g_nFrameStep;
@@ -1744,8 +1744,8 @@ void Level23_UpdateActors(void) {
           }
         }
         g_nFlightRunClock += g_nFrameStep;
-        if (g_nFlightRunClock > 0x8C9F) {
-          g_nFlightRunClock = 0x8C9F;
+        if (g_nFlightRunClock > FLIGHT_RUN_CLOCK_MAX) {
+          g_nFlightRunClock = FLIGHT_RUN_CLOCK_MAX;
         }
       } else {
         ChangeSpyroState(SPYRO_ST_FLY);
@@ -1786,22 +1786,22 @@ void Level23_UpdateActors(void) {
       }
 
       {
-        int min = t / 60;
+        int sec = t / 60;
 
-        i = min % 10;
+        i = sec % 10;
         st->digit[1]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
-        i = t / 6 - min * 10;
+        i = t / 6 - sec * 10;
         st->digit[3]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
 
         if (g_anFlightClearTimes[g_nActiveWorldIndex] == 0) {
-          i = min;
-          if (i < prevMin) {
-            if (i < 6) {
+          i = sec;
+          if (i < prevSec) {
+            if (i < FLIGHT_HURRY_SECONDS) {
               st->hurry = 1;
             } else {
               st->hurry = 0;
             }
-            if (i < 10) {
+            if (i < FLIGHT_CLOCK_TICK_SECONDS) {
               PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_CLOCK], actor, SFX_MODE_PANNED, 0);
             }
           }
@@ -1875,13 +1875,13 @@ void Level23_UpdateActors(void) {
             }
 
             g_anFlightTallyShown[g_nFlightTallyShownClass] = g_anFlightTargetTally[g_nFlightTallyShownClass];
-            if (g_anFlightTargetTally[g_nFlightTallyShownClass] == 8) {
+            if (g_anFlightTargetTally[g_nFlightTallyShownClass] == FLIGHT_CLASS_TARGETS) {
               for (i = 0; i < 8; i++) {
                 st->spent[i] = st->icon[i];
                 st->icon[i] = g_pfnLevelSpawnActor(st->types[0], actor);
               }
               st->timer = 0;
-              st->count = 8;
+              st->count = FLIGHT_CLASS_TARGETS;
               g_nFlightTallySlot = g_nFlightTallyShownClass;
             }
           }
