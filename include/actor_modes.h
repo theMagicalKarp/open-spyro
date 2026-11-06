@@ -976,6 +976,21 @@ enum PathGuardMode {
   PATHGUARD_KNOCKED = 2, /* flamed or charged: knocked away, then bursts */
 };
 
+/* A path guard throws once Spyro is within THROW_RANGE (2D) and THROW_DZ of
+ * its height; a held guard waits within NODE_ARRIVE of its node. It walks
+ * WALK_SPEED (the ring pair steers at RING_SPEED). Hit, it slides from
+ * KNOCK_SPEED (+ CHARGE_KNOCK_BONUS when charged). Its THROW pose releases a
+ * split shot at once, on frame 2 and on frame 6, then the timer holds
+ * THROW_COOLDOWN. */
+#define PATHGUARD_THROW_RANGE 0x1000
+#define PATHGUARD_THROW_DZ 0x800
+#define PATHGUARD_NODE_ARRIVE 0x100
+#define PATHGUARD_WALK_SPEED 0x60
+#define PATHGUARD_RING_SPEED 0x40
+#define PATHGUARD_KNOCK_SPEED 0xDC
+#define PATHGUARD_CHARGE_KNOCK_BONUS 0x8C
+#define PATHGUARD_THROW_COOLDOWN 0x3C
+
 /* ->mode of a split shot (ACTOR_TYPE_SPLIT_SHOT), set at spawn from the
  * thrower's animation frame; the mode doubles as the animation index. */
 enum SplitShotMode {
@@ -1199,6 +1214,39 @@ enum SwoopKind {
   SWOOP_KIND_STRAIGHT = 2, /* no weave; dives to Spyro's height and turns back sharply */
 };
 
+/* A perched swooper dives at Spyro once he is in its range but at least
+ * MIN_RANGE away, within SIGHT_DZ of its height, facing it (within
+ * SPY_FACING_CONE) with it facing him (FACING_CONE) and in sight, for
+ * SIGHT_FRAMES in a row (any check failing restarts the count). */
+#define SWOOP_MIN_RANGE 0x7D1
+#define SWOOP_SIGHT_DZ 0xBB8
+#define SWOOP_SPY_FACING_CONE 0x19
+#define SWOOP_FACING_CONE 0x30
+#define SWOOP_SIGHT_FRAMES 0x28
+/* SWOOP_DIVE: speeds up by DIVE_ACCEL a frame to DIVE_SPEED, flying
+ * DIVE_CLEARANCE over the ground (a STRAIGHT one STRAIGHT_CLEARANCE over
+ * Spyro) and changing height CLIMB_STEP a frame; it weaves within
+ * WEAVE_RANGE. It hits Spyro within HIT_RANGE, HIT_CONE of its heading and
+ * HIT_DZ of his height, and turns back past range + LEASH_SLACK from home. */
+#define SWOOP_DIVE_SPEED 0xAA
+#define SWOOP_DIVE_ACCEL 0xA
+#define SWOOP_DIVE_CLEARANCE 0x226
+#define SWOOP_STRAIGHT_CLEARANCE 0x12C
+#define SWOOP_CLIMB_STEP 0x78
+#define SWOOP_WEAVE_RANGE 0x4000
+#define SWOOP_HIT_RANGE 0x578
+#define SWOOP_HIT_CONE 0x28
+#define SWOOP_HIT_DZ 0x258
+#define SWOOP_LEASH_SLACK 0x800
+/* SWOOP_RETURN / PERCH change height RETURN_CLIMB_STEP a frame; home within
+ * HOME_ARRIVE. Knocked, it slides from KNOCK_SPEED (losing KNOCK_DRAG a
+ * frame), sinking KNOCK_SINK a frame. */
+#define SWOOP_RETURN_CLIMB_STEP 0x64
+#define SWOOP_HOME_ARRIVE 0x80
+#define SWOOP_KNOCK_SPEED 0x12C
+#define SWOOP_KNOCK_DRAG 0x10
+#define SWOOP_KNOCK_SINK 0x32
+
 /* Per-type mesh voice indices: PlayActorMeshVoice's voiceOffset and the
  * matching m_Sounds[] slot of the type's mesh record. */
 enum SparxVoice {
@@ -1344,6 +1392,34 @@ enum VillagerAnim {
   VILLAGER_ANIM_RUN = 8,
   VILLAGER_ANIM_REACT = 9,   /* VROLE_LEADER: cued at the leader's animation 4, frame 8; back to IDLE at frame 0x14 */
 };
+
+/* A villager Spyro faces (within CAM_FACING_CONE) inside its camDist pulls
+ * the camera to CAM_DISTANCE behind Spyro. A talker's range grows by
+ * TALK_BOOST unless Spyro is charging at a noBoost one, and it stops once he
+ * is TALK_SLACK past it. A pair partner wakes within PAIR_WAKE_RANGE and
+ * flees once its partner is down and Spyro is within flee range +
+ * PAIR_FLEE_SLACK. */
+#define VILLAGER_CAM_FACING_CONE 0x20
+#define VILLAGER_CAM_DISTANCE 0xC00
+#define VILLAGER_TALK_BOOST 0xC00
+#define VILLAGER_TALK_SLACK 0x800
+#define VILLAGER_PAIR_WAKE_RANGE 0x3400
+#define VILLAGER_PAIR_FLEE_SLACK 0x7D0
+/* VILLAGER_PANIC sends it running at PANIC_SPEED for RUN_MIN..MAX_FRAMES;
+ * VILLAGER_RUN picks a new path point within NODE_ARRIVE at
+ * RUN_MIN..MAX_SPEED and calms down past flee range + CALM_SLACK. Stopped, it
+ * panics again once Spyro is STOP_SLACK closer than when it stopped.
+ * Knocked, it slides from KNOCK_SPEED, losing KNOCK_DRAG a frame. */
+#define VILLAGER_PANIC_SPEED 0x5F
+#define VILLAGER_RUN_MIN_FRAMES 0xF0
+#define VILLAGER_RUN_MAX_FRAMES 0x168
+#define VILLAGER_NODE_ARRIVE 0x96
+#define VILLAGER_RUN_MIN_SPEED 0x3C
+#define VILLAGER_RUN_MAX_SPEED 0x6E
+#define VILLAGER_CALM_SLACK 0x1388
+#define VILLAGER_STOP_SLACK 0x80
+#define VILLAGER_KNOCK_SPEED 0xFA
+#define VILLAGER_KNOCK_DRAG 0x14
 
 /* VillagerState.mode: the villager's role. */
 enum VillagerRole {
@@ -1583,6 +1659,29 @@ enum PatrollerAnim {
   PATROLLER_ANIM_RUN = 1,
   PATROLLER_ANIM_KNOCKED = 3,
 };
+
+/* A waiting patroller (and its group on the same node) scatters once Spyro
+ * is within NOTICE_RANGE (2D) and NOTICE_DZ, after a START_MIN..MAX_DELAY;
+ * it runs for a neighbour node at up to MIN..MAX_SPEED (gaining ACCEL a
+ * frame), its flee heading 108/128 of the way from Spyro's bearing to the
+ * node's (± AIM_JITTER), for up to FLEE_MAX_FRAMES before curving onto the
+ * node. It waits again within ARRIVE_RANGE of the node, or within
+ * NOTICE_RANGE after 4 blocked moves (else it veers BLOCKED_VEER_MIN..MAX).
+ * Knocked, it slides from KNOCK_SPEED, losing KNOCK_DRAG a frame. */
+#define PATROLLER_NOTICE_RANGE 0x1400
+#define PATROLLER_NOTICE_DZ 0x400
+#define PATROLLER_START_MIN_DELAY 6
+#define PATROLLER_START_MAX_DELAY 0x28
+#define PATROLLER_AIM_JITTER 0x20
+#define PATROLLER_MIN_SPEED 0x6E
+#define PATROLLER_MAX_SPEED 0xA0
+#define PATROLLER_ACCEL 0xA
+#define PATROLLER_FLEE_MAX_FRAMES 0x5A
+#define PATROLLER_ARRIVE_RANGE 0xC00
+#define PATROLLER_BLOCKED_VEER_MIN 0x3C
+#define PATROLLER_BLOCKED_VEER_MAX 0x64
+#define PATROLLER_KNOCK_SPEED 0x190
+#define PATROLLER_KNOCK_DRAG 0xF
 
 /* ->mode of a lunging guard (ACTOR_TYPE_LUNGING_GUARD and
  * ACTOR_TYPE_BIG_LUNGING_GUARD; level 24). A blast toggles its size kind
@@ -1874,6 +1973,21 @@ enum RollingBoulderSub {
   BOULDER_THROWN = 1,  /* rolls along its velocity; bursts on Spyro, a wall or its timer */
   BOULDER_DROPPED = 2, /* its thrower was knocked: bursts at once, shards along the knock */
 };
+
+/* A thrown boulder rides ROLL_HOVER over the ground (height steps capped at
+ * ROLL_MAX_VZ, ignored under ROLL_VZ_DEADBAND and for its first 10 ticks)
+ * and bursts on Spyro (within ROLL_HIT_RADIUS: knocked back at 3/8 of its
+ * velocity, ROLL_PUSH_VZ up), on a wall, or after ROLL_LIFE ticks. Its
+ * shards fall SHARD_GRAVITY faster a tick down to -SHARD_MAX_FALL and keep
+ * 7/8 of their speed off each bounce. */
+#define BOULDER_ROLL_HOVER 0x50
+#define BOULDER_ROLL_MAX_VZ 0x50
+#define BOULDER_ROLL_VZ_DEADBAND 0x32
+#define BOULDER_ROLL_LIFE 0x78
+#define BOULDER_ROLL_HIT_RADIUS 0xDC
+#define BOULDER_ROLL_PUSH_VZ 0x1E
+#define BOULDER_SHARD_GRAVITY 0x14
+#define BOULDER_SHARD_MAX_FALL 0xA0
 
 /* ->mode of a boulder thrower (ACTOR_TYPE_BOULDER_THROWER / _B,
  * BoulderThrowerState; levels 21/22). Modes 40-43 are the paired charge

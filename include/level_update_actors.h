@@ -518,10 +518,11 @@ typedef struct PathState {
   int pad14;
   int pad18;
   int heading; /* 0x1C */
-  int speed;   /* 0x20 walk speed; ramps +0xA up to stepDivisor, knockback 0xC8/0x190 */
-  int stepDivisor;   /* 0x24 divisor, random 0x6E..0xA0 */
-  int travelTimer; /* 0x28 leg countdown, (dist / stepDivisor) / 2 clamped to <= 0x5A */
-  int successCount;   /* 0x2C consecutive-success counter */
+  int speed;   /* 0x20 run speed; ramps +PATROLLER_ACCEL up to topSpeed; the knockback slide */
+  int topSpeed;   /* 0x24 this leg's top speed, PATROLLER_MIN..MAX_SPEED */
+  int travelTimer; /* 0x28 frames it runs its flee heading before curving onto the node:
+                    * (dist / topSpeed) / 2, at most PATROLLER_FLEE_MAX_FRAMES */
+  int blockedCount;   /* 0x2C consecutive blocked moves (MoveActorAlongHeading != 0) */
   int startDelay; /* 0x30 random 6..0x28 countdown before walking */
 } PathState;
 

@@ -2140,12 +2140,12 @@ void Level16_UpdateActors(void) {
       if (actor->mode != PATHGUARD_KNOCKED) {
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_WHITE_STREAK, actor, 0);
         if (actor->flags & ACTOR_HITS_SPYRO) {
-          st->knockSpeed = 0xDC;
+          st->knockSpeed = PATHGUARD_KNOCK_SPEED;
           st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                   actor->posY - SPY.posY, ATAN_ANGLE8),
                                     g_bSpyroPersistentEulerZ, 0x20, 0x60);
           if (actor->flags & ACTOR_HIT_CHARGE) {
-            st->knockSpeed += 0x8C;
+            st->knockSpeed += PATHGUARD_CHARGE_KNOCK_BONUS;
           }
           StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2159,14 +2159,14 @@ void Level16_UpdateActors(void) {
         if (st->flags & PATHGUARD_F_HOLD) {
           st->path->cur = st->node;
           if (ApproxDist2D(&actor->posX,
-                            &st->path->nodes[st->path->cur].x) <= 0x100) {
+                            &st->path->nodes[st->path->cur].x) <= PATHGUARD_NODE_ARRIVE) {
             int dz;
 
             TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
-            if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
+            if (ApproxDist2D(&actor->posX, &SPY.posX) < PATHGUARD_THROW_RANGE) {
               dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
-              if (dz > 0 ? dz < 0x800
-                         : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x800) {
+              if (dz > 0 ? dz < PATHGUARD_THROW_DZ
+                         : SPY.posZ - (actor->posZ - actor->floorOffset) < PATHGUARD_THROW_DZ) {
                 st->timer = 0;
                 ENTER_POSE(actor, PATHGUARD_THROW);
               }
@@ -2177,11 +2177,11 @@ void Level16_UpdateActors(void) {
             break;
           }
         } else {
-          if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
+          if (ApproxDist2D(&actor->posX, &SPY.posX) < PATHGUARD_THROW_RANGE) {
             int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
-            if (dz > 0 ? dz < 0x800
-                       : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x800) {
+            if (dz > 0 ? dz < PATHGUARD_THROW_DZ
+                       : SPY.posZ - (actor->posZ - actor->floorOffset) < PATHGUARD_THROW_DZ) {
               TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
               if (st->timer == 0 || --st->timer <= 0) {
                 st->flags |= PATHGUARD_F_HOLD;
@@ -2204,7 +2204,7 @@ void Level16_UpdateActors(void) {
             if (ps->heading != 0) {
               st->heading = (ps->heading + 0x80) & 0xFF;
               SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist,
-                            st->heading, 8, 0x40, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0x180,
+                            st->heading, 8, PATHGUARD_RING_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0x180,
                             0x15C, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
               st->heading = 0;
               ps->heading = 0;
@@ -2216,14 +2216,14 @@ void Level16_UpdateActors(void) {
                    st->angle) &
                   0xFF;
               SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist,
-                            st->heading, 8, 0x40, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0,
+                            st->heading, 8, PATHGUARD_RING_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0,
                             MOVE_FOLLOW_FLOOR);
             }
             break;
           }
           st->path->cur = 0;
           if (ApproxDist2D(&actor->posX,
-                            &st->path->nodes[st->path->cur].x) <= 0x100) {
+                            &st->path->nodes[st->path->cur].x) <= PATHGUARD_NODE_ARRIVE) {
             break;
           }
         }
@@ -2232,7 +2232,7 @@ void Level16_UpdateActors(void) {
             ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                           st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8),
             8, 0x10, YAW_STEP_IN_BAND);
-        MoveActorAlongHeading(actor, 0x60, 0x180, 0x180, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
+        MoveActorAlongHeading(actor, PATHGUARD_WALK_SPEED, 0x180, 0x180, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
         break;
 
       case PATHGUARD_THROW:
@@ -2248,8 +2248,8 @@ void Level16_UpdateActors(void) {
         } else if (st->timer < 2 && actor->nextFrame >= 2) {
           st->timer = 2;
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
-        } else if (st->timer < 0x3C && actor->nextFrame >= 6) {
-          st->timer = 0x3C;
+        } else if (st->timer < PATHGUARD_THROW_COOLDOWN && actor->nextFrame >= 6) {
+          st->timer = PATHGUARD_THROW_COOLDOWN;
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         }
         break;

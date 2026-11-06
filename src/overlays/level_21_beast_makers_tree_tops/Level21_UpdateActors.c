@@ -622,17 +622,17 @@ void Level21_UpdateActors(void) {
         }
         {
           int h = ProbeActorGroundHeight(actor);
-          int z = actor->posZ - 0x50;
+          int z = actor->posZ - BOULDER_ROLL_HOVER;
 
           st->vz = h - z;
         }
-        if (st->vz > 0x50) {
-          st->vz = 0x50;
+        if (st->vz > BOULDER_ROLL_MAX_VZ) {
+          st->vz = BOULDER_ROLL_MAX_VZ;
         }
-        if (st->vz < -0x50) {
-          st->vz = -0x50;
+        if (st->vz < -BOULDER_ROLL_MAX_VZ) {
+          st->vz = -BOULDER_ROLL_MAX_VZ;
         }
-        if (ABS(st->vz) < 0x32) {
+        if (ABS(st->vz) < BOULDER_ROLL_VZ_DEADBAND) {
           st->vz = 0;
         }
         if (st->life > 0xA) {
@@ -646,8 +646,8 @@ void Level21_UpdateActors(void) {
         actor->rotY += st->spin[1];
         actor->rotZ += st->spin[2];
         st->life += g_nFrameStep;
-        if (actor->subMode != BOULDER_DROPPED && st->life < 0x79 &&
-            RaiseSpyroTriggerInRadius(&actor->posX, 0xDC, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) == 0 &&
+        if (actor->subMode != BOULDER_DROPPED && st->life <= BOULDER_ROLL_LIFE &&
+            RaiseSpyroTriggerInRadius(&actor->posX, BOULDER_ROLL_HIT_RADIUS, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) == 0 &&
             CastRayWorldAndActors(svB, &actor->posX) == 0) {
           continue;
         }
@@ -684,7 +684,7 @@ void Level21_UpdateActors(void) {
           q->spin[2] = RandomSignedInRange(7, 0xF);
         }
         g_anSpyroRequestVelocity.x = (st->vx * 3) >> 3;
-        g_nSpyroRequestVelocityZ = 0x1E;
+        g_nSpyroRequestVelocityZ = BOULDER_ROLL_PUSH_VZ;
         g_nSpyroRequestVelocityY = (st->vy * 3) >> 3;
         DespawnActorRecord(actor);
         continue;
@@ -698,9 +698,9 @@ void Level21_UpdateActors(void) {
         actor->rotX += st->spin[0];
         actor->rotY += st->spin[1];
         actor->rotZ += st->spin[2];
-        st->vz -= 0x14;
-        if (st->vz < -0xA0) {
-          st->vz = -0xA0;
+        st->vz -= BOULDER_SHARD_GRAVITY;
+        if (st->vz < -BOULDER_SHARD_MAX_FALL) {
+          st->vz = -BOULDER_SHARD_MAX_FALL;
         }
         svA[0] = st->vx;
         svA[1] = st->vy;
@@ -711,7 +711,7 @@ void Level21_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100) == 0) {
+        if (CollideSphereWithWorldAndActors(&actor->posX, DEBRIS_RADIUS, DEBRIS_RADIUS) == 0) {
           continue;
         }
         CopyVector(svC, &g_anCollisionHitNormal);

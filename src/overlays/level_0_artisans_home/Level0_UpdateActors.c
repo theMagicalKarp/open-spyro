@@ -115,14 +115,14 @@ void Level0_UpdateActors(void) {
       PathState *st = (PathState *)actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != PATROLLER_KNOCKED) {
-        actor->flags = 0;
+        actor->flags = 0; /* cleared first: the FLAME test below never passes */
         st->heading = ArcTan2(actor->posX - SPY.posX,
                                     actor->posY - SPY.posY, ATAN_ANGLE8);
 
         if ((actor->flags & ACTOR_HIT_FLAME) != 0) {
           st->speed = 0xC8;
         } else {
-          st->speed = 0x190;
+          st->speed = PATROLLER_KNOCK_SPEED;
         }
 
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -136,8 +136,8 @@ void Level0_UpdateActors(void) {
       case PATROLLER_WAIT: {
         SnapActorToGround(actor);
 
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400 &&
-            ABS2(actor->posZ - SPY.posZ) < 0x400) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < PATROLLER_NOTICE_RANGE &&
+            ABS2(actor->posZ - SPY.posZ) < PATROLLER_NOTICE_DZ) {
           if (actor->group != 0xFF) {
             Actor **scan = g_apActiveActorList;
             Actor *other;
@@ -148,7 +148,7 @@ void Level0_UpdateActors(void) {
               if (other->group == actor->group && other->mode == PATROLLER_WAIT) {
                 if (ost->path->cur == st->path->cur) {
                   other->mode = PATROLLER_PICK;
-                  ost->startDelay = RandomIntInRange(6, 0x28);
+                  ost->startDelay = RandomIntInRange(PATROLLER_START_MIN_DELAY, PATROLLER_START_MAX_DELAY);
                 }
               }
             }
@@ -196,21 +196,21 @@ void Level0_UpdateActors(void) {
 
         angle = ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                               st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8);
-        angle = (angle + RandomIntInRange(-0x20, 0x20)) & 0xFF;
+        angle = (angle + RandomIntInRange(-PATROLLER_AIM_JITTER, PATROLLER_AIM_JITTER)) & 0xFF;
         angle2 =
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8);
         angleScale = 108;
         angle2 += (WrapAngleDelta8(angle2, angle) * angleScale) >> 7;
         angle2 &= 0xFF;
         st->heading = angle2;
-        st->stepDivisor = RandomIntInRange(0x6E, 0xA0);
+        st->topSpeed = RandomIntInRange(PATROLLER_MIN_SPEED, PATROLLER_MAX_SPEED);
         st->speed = 0;
         distance = ApproxDist2D(&actor->posX,
                                  (int *)&st->path->nodes[st->path->cur]);
-        st->travelTimer = (distance / st->stepDivisor) >> 1;
+        st->travelTimer = (distance / st->topSpeed) >> 1;
 
-        if (st->travelTimer >= 0x5B) {
-          st->travelTimer = 0x5A;
+        if (st->travelTimer > PATROLLER_FLEE_MAX_FRAMES) {
+          st->travelTimer = PATROLLER_FLEE_MAX_FRAMES;
         }
 
         actor->mode = PATROLLER_FLEE;
@@ -224,8 +224,8 @@ void Level0_UpdateActors(void) {
           break;
         }
 
-        if (st->speed < st->stepDivisor) {
-          st->speed += 0xA;
+        if (st->speed < st->topSpeed) {
+          st->speed += PATROLLER_ACCEL;
         }
 
         if (actor->nextAnim != PATROLLER_ANIM_RUN) {
@@ -258,19 +258,19 @@ void Level0_UpdateActors(void) {
 
         if (TurnActorYawTowardAngle(actor, st->heading, 6, 0x14, YAW_STEP_IN_BAND) != 0) {
           if (MoveActorAlongHeading(actor, st->speed, 0x12C, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0) {
-            st->successCount++;
+            st->blockedCount++;
           } else {
-            st->successCount = 0;
+            st->blockedCount = 0;
           }
-          if (st->successCount >= 4 && g_nActorAnimDone != 0) {
-            if (distance < 0x1400) {
+          if (st->blockedCount >= 4 && g_nActorAnimDone != 0) {
+            if (distance < PATROLLER_NOTICE_RANGE) {
               actor->mode = PATROLLER_WAIT;
               continue;
             }
-            st->heading = WrapAddAngle8(st->heading, RandomSignedInRange(0x3C, 0x64));
+            st->heading = WrapAddAngle8(st->heading, RandomSignedInRange(PATROLLER_BLOCKED_VEER_MIN, PATROLLER_BLOCKED_VEER_MAX));
           }
         }
-        if (distance < 0xC00 && g_nActorAnimDone != 0) {
+        if (distance < PATROLLER_ARRIVE_RANGE && g_nActorAnimDone != 0) {
           actor->mode = PATROLLER_WAIT;
           continue;
         }
@@ -279,8 +279,8 @@ void Level0_UpdateActors(void) {
       }
 
       case PATROLLER_KNOCKED: {
-        if (st->speed >= 0x10) {
-          st->speed -= 0xF;
+        if (st->speed > PATROLLER_KNOCK_DRAG) {
+          st->speed -= PATROLLER_KNOCK_DRAG;
           MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
 

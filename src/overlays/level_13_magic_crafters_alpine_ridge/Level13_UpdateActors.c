@@ -3143,7 +3143,7 @@ void Level13_UpdateActors(void) {
       }
 
       if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != VILLAGER_KNOCKED) {
-        st->speed = 0xFA;
+        st->speed = VILLAGER_KNOCK_SPEED;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
@@ -3173,11 +3173,11 @@ void Level13_UpdateActors(void) {
             SPY.state != SPYRO_ST_CHARGE && SPY.state != SPYRO_ST_CHARGE_AIR &&
             AbsAngleDelta8(SPY.bodyRotZ,
                           ArcTan2(actor->posX - SPY.posX,
-                                        actor->posY - SPY.posY, ATAN_ANGLE8)) < 0x20) {
+                                        actor->posY - SPY.posY, ATAN_ANGLE8)) < VILLAGER_CAM_FACING_CONE) {
           g_pSpyroRequestCameraAnchor = &spy->posX;
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
           g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
-          g_nCameraActiveTargetDistance = 0xC00;
+          g_nCameraActiveTargetDistance = VILLAGER_CAM_DISTANCE;
           g_nCameraActiveTargetPitch = 0x80;
           g_nCameraActiveTargetPitchBias = -0xB0;
           g_nCameraActiveTargetRoll = 0;
@@ -3196,7 +3196,7 @@ void Level13_UpdateActors(void) {
           range = st->talkDist << 10;
 
           if (SPY.state != SPYRO_ST_CHARGE || st->noBoost == 0) {
-            range += 0xC00;
+            range += VILLAGER_TALK_BOOST;
           }
           SnapActorToGround(actor);
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
@@ -3218,7 +3218,7 @@ void Level13_UpdateActors(void) {
               PlayActorMeshVoice(actor, (GetRandomU32() & 1) | 4, 0);
             }
             ANIM_GO(actor, VILLAGER_ANIM_CHATTER);
-            if (range + 0x800 < dist && (animState & CHUNK_ANIM_HALTED)) {
+            if (range + VILLAGER_TALK_SLACK < dist && (animState & CHUNK_ANIM_HALTED)) {
               ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
               st->timer = 0x1E;
             }
@@ -3255,7 +3255,7 @@ void Level13_UpdateActors(void) {
           }
         } else if (st->mode == VROLE_PAIR) {
           if (actor->subMode == 0 &&
-              (ApproxDist2D(&actor->posX, &SPY.posX) < 0x3400 ||
+              (ApproxDist2D(&actor->posX, &SPY.posX) < VILLAGER_PAIR_WAKE_RANGE ||
                g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT)) {
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             actor->subMode = 1;
@@ -3265,7 +3265,7 @@ void Level13_UpdateActors(void) {
           }
           if ((g_pActorListBase[st->link].nextAnim == VILLAGER_KNOCKED || g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) &&
               ApproxDist2D(&actor->posX, &SPY.posX) <
-                  (st->fleeDist << 10) + 0x7D0) {
+                  (st->fleeDist << 10) + VILLAGER_PAIR_FLEE_SLACK) {
             actor->mode = VILLAGER_PANIC;
             continue;
           }
@@ -3308,7 +3308,7 @@ void Level13_UpdateActors(void) {
       case VILLAGER_KNOCKED:
         if (st->speed != 0) {
           MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-          st->speed -= 0x14;
+          st->speed -= VILLAGER_KNOCK_DRAG;
           if (st->speed < 0) {
             st->speed = 0;
           }
@@ -3349,8 +3349,8 @@ void Level13_UpdateActors(void) {
         }
         ANIM_GO(actor, VILLAGER_ANIM_COWER);
         if (g_nActorAnimDone != 0) {
-          st->speed = 0x5F;
-          st->timer = RandomIntInRange(0xF0, 0x168);
+          st->speed = VILLAGER_PANIC_SPEED;
+          st->timer = RandomIntInRange(VILLAGER_RUN_MIN_FRAMES, VILLAGER_RUN_MAX_FRAMES);
           actor->mode = VILLAGER_RUN;
           continue;
         }
@@ -3369,14 +3369,14 @@ void Level13_UpdateActors(void) {
           }
         }
         ANIM_GO(actor, VILLAGER_ANIM_RUN);
-        if (ApproxDist2D(&actor->posX, PATH_PT(st->path, st->path->cur)) < 0x96) {
+        if (ApproxDist2D(&actor->posX, PATH_PT(st->path, st->path->cur)) < VILLAGER_NODE_ARRIVE) {
           int next;
 
           do {
             next = RandomIntInRange(0, st->path->count - 1);
           } while (next == st->path->cur);
           st->path->cur = next;
-          st->speed = RandomIntInRange(0x3C, 0x6E);
+          st->speed = RandomIntInRange(VILLAGER_RUN_MIN_SPEED, VILLAGER_RUN_MAX_SPEED);
         }
         if (TurnActorYawTowardAngle(actor,
                           ArcTan2(PATH_X(st->path, st->path->cur) - actor->posX,
@@ -3386,7 +3386,7 @@ void Level13_UpdateActors(void) {
           MoveActorAlongHeading(actor, st->speed, 0, 0, one);
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) >
-                (st->fleeDist << 10) + 0x1388 &&
+                (st->fleeDist << 10) + VILLAGER_CALM_SLACK &&
             (st->mode != VROLE_PAIR || g_pActorListBase[st->link].nextAnim != VILLAGER_KNOCKED)) {
           ENTER_POSE(actor, VILLAGER_IDLE);
         }
@@ -3405,7 +3405,7 @@ void Level13_UpdateActors(void) {
           PlayActorMeshVoice(actor, (GetRandomU32() & 1) | 4, 0);
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < st->runFrom - 0x80) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < st->runFrom - VILLAGER_STOP_SLACK) {
           actor->mode = VILLAGER_PANIC;
           continue;
         }
