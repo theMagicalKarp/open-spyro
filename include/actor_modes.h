@@ -147,7 +147,7 @@ enum DragonStatueMode {
  * scaled by 3/4), tested once he is within NEAR_RANGE (2D). */
 #define STATUE_NEAR_RANGE 0x800
 #define STATUE_TOUCH_RADIUS 0x440
-/* CrystalDragonState.phase, an idle statue's clock (frames, wraps past
+/* DragonStatueState.phase, an idle statue's clock (frames, wraps past
  * CYCLE_TICKS): glints may spawn on the way, at SETTLE_TICK it snapshots its
  * rest pose and from SHAKE_TICK it rattles. A hit jumps it to SETTLE_TICK. */
 #define STATUE_SETTLE_TICK 188

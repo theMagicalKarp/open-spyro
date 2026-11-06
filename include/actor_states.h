@@ -64,7 +64,7 @@ typedef struct DragonStatueState {
                      * none: CHECKPT_HELD while the statue stands, anim 1
                      * during the rescue, CHECKPT_ARMED after; its yaw is the
                      * respawn heading */
-  int reward;       /* 0x24 */
+  int reward;       /* 0x24 script id handed to StubRewardHook, -1 for none */
   int orbitYaw;     /* 0x28 Spyro's orbit target yaw around the statue */
   int orbitRadius;  /* 0x2C and radius */
   int dragonYaw;    /* 0x30 12-bit yaw the freed dragon turns to (>> 4) */
@@ -72,7 +72,7 @@ typedef struct DragonStatueState {
   int dragonName;   /* 0x38 g_apDragonNames index (DrawDragonRescuedBanner) */
   int speechRate;   /* 0x3C speech sample rate in Hz (pitch = rate * 1024 / 11025) */
   int speechFrame;  /* 0x40 rescue frame the speech starts on */
-  int phase;        /* 0x44 shake phase */
+  int phase;        /* 0x44 idle shake clock (STATUE_SETTLE_TICK ..) */
   int rotX;         /* 0x48 rest pose */
   int rotY;         /* 0x4C */
   int restZ;        /* 0x50 */

@@ -591,21 +591,6 @@ typedef struct PickupState {
   unsigned char sparkle; /* 0x14 g_aRotBillboards handle, 0xFF = none */
 } PickupState;
 
-/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
- * saves a checkpoint and starts the rescue. */
-typedef struct CrystalDragonState {
-  int pad00[6]; /* 0x00 */
-  int cutsceneId;    /* 0x18 rescue cutscene id (see DragonStatueState) */
-  int fallbackHeading;    /* 0x1C fallback heading when ->partner is unset */
-  int partner;    /* 0x20 its checkpoint (see DragonStatueState), -1 for none */
-  int rewardScript;    /* 0x24 script id handed to StubRewardHook, -1 for none */
-  int pad28[7]; /* 0x28 */
-  int phase;    /* 0x44 phase counter, 0 .. 0x100 */
-  int savedRotX;    /* 0x48 saved actor->rotX */
-  int savedRotY;    /* 0x4C saved actor->rotY */
-  int savedPosZ;    /* 0x50 saved actor->posZ */
-} CrystalDragonState;
-
 /* Type 300 (whirlwind): the camera it requests while lifting Spyro, and the
  * template that camera is seeded from. */
 typedef struct Xform6 {
@@ -672,12 +657,6 @@ typedef struct OrbitState {
   short ring;  /* 0x04 ring index; the arm always uses it as ring - 1 */
   short ringPhase;  /* 0x06 phase offset within the ring */
 } OrbitState;
-
-/* Case 194 — breakable chest: one hit spawns its gem shower. */
-typedef struct ChestState {
-  int pad00;
-  int shake; /* 0x04 */
-} ChestState;
 
 /* Case 208 — the hub's music/voice trigger. */
 typedef struct PathGateState {

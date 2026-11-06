@@ -2057,9 +2057,9 @@ void Level0_UpdateActors(void) {
       continue;
     }
 
-    /* Crystal dragon (CrystalDragonState). */
+    /* Crystal dragon statue (DragonStatueState). */
     case ACTOR_TYPE_DRAGON_STATUE: {
-      CrystalDragonState *st = (CrystalDragonState *)actor->state;
+      DragonStatueState *st = (DragonStatueState *)actor->state;
 
       if (actor->mode == STATUE_INIT) {
         int padIdx = st->partner;
@@ -2067,16 +2067,16 @@ void Level0_UpdateActors(void) {
           g_pActorListBase[padIdx].mode = CHECKPT_HELD;
         }
         actor->mode = STATUE_IDLE;
-        st->savedRotX = actor->rotX;
-        st->savedRotY = actor->rotY;
-        st->savedPosZ = actor->posZ;
+        st->rotX = actor->rotX;
+        st->rotY = actor->rotY;
+        st->restZ = actor->posZ;
       } else if (actor->mode == STATUE_IDLE) {
         st->phase += g_nFrameStep;
         if (st->phase > STATUE_CYCLE_TICKS) {
           st->phase = 0;
-          actor->rotX = st->savedRotX;
-          actor->rotY = st->savedRotY;
-          actor->posZ = st->savedPosZ;
+          actor->rotX = st->rotX;
+          actor->rotY = st->rotY;
+          actor->posZ = st->restZ;
           actor->flags = 0;
           StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         } else if (st->phase >= STATUE_SHAKE_TICK) {
@@ -2085,18 +2085,18 @@ void Level0_UpdateActors(void) {
             PlayActorMeshVoice(actor, STATUE_VOICE_RATTLE, 0);
           }
           actor->rotX =
-              (signed char)g_aShakeRotOffsets[(st->phase - STATUE_SHAKE_TICK) >> 1].a + st->savedRotX;
+              (signed char)g_aShakeRotOffsets[(st->phase - STATUE_SHAKE_TICK) >> 1].a + st->rotX;
           actor->rotY =
-              (signed char)g_aShakeRotOffsets[(st->phase - STATUE_SHAKE_TICK) >> 1].b + st->savedRotY;
+              (signed char)g_aShakeRotOffsets[(st->phase - STATUE_SHAKE_TICK) >> 1].b + st->rotY;
           actor->posZ =
-              st->savedPosZ +
+              st->restZ +
               (ABS2((signed char)g_aShakeRotOffsets[(st->phase - STATUE_SHAKE_TICK) >> 1].a) +
                ABS2((signed char)g_aShakeRotOffsets[(st->phase - STATUE_SHAKE_TICK) >> 1].b)) *
                   6;
         } else if (st->phase >= STATUE_SETTLE_TICK) {
-          st->savedRotX = actor->rotX;
-          st->savedRotY = actor->rotY;
-          st->savedPosZ = actor->posZ;
+          st->rotX = actor->rotX;
+          st->rotY = actor->rotY;
+          st->restZ = actor->posZ;
         } else if (actor->flags != 0) {
           st->phase = STATUE_SETTLE_TICK;
           StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
@@ -2120,21 +2120,21 @@ void Level0_UpdateActors(void) {
             if (st->partner != -1) {
               rotZ = g_pActorListBase[st->partner].rotZ;
             } else {
-              rotZ = st->fallbackHeading;
+              rotZ = st->facing;
             }
             CommitActorKillGems(0, actor);
             SetSpawnAnchorFromActor(actor, rotZ);
 
-            if (st->rewardScript != -1) {
+            if (st->reward != -1) {
               g_anLevelDragonsRescued[g_nLevelIndex]++;
               g_nTotalDragonsRescued++;
-              StubRewardHook(st->rewardScript, 0);
+              StubRewardHook(st->reward, 0);
               if (st->partner != -1) {
                 g_pActorListBase[st->partner].mode = CHECKPT_ARMED;
               }
               DespawnActorRecord(actor);
               continue;
-            } else if (cutsceneId = st->cutsceneId, cutsceneId == st->rewardScript) {
+            } else if (cutsceneId = st->cutsceneId, cutsceneId == st->reward) {
               g_anLevelDragonsRescued[g_nLevelIndex]++;
               g_nTotalDragonsRescued++;
               if (st->partner != cutsceneId) {
@@ -2144,9 +2144,9 @@ void Level0_UpdateActors(void) {
               continue;
             } else {
               actor->mode = STATUE_RESCUING;
-              actor->rotX = st->savedRotX;
-              actor->rotY = st->savedRotY;
-              actor->posZ = st->savedPosZ;
+              actor->rotX = st->rotX;
+              actor->rotY = st->rotY;
+              actor->posZ = st->restZ;
               BeginDragonRescue(actor);
               ZeroVector(&SPY.headLook);
               SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT);

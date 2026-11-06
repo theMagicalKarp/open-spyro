@@ -1565,11 +1565,11 @@ void Level30_UpdateActors(void) {
       }
       break;
 
-    /* Breakable chest (ChestState): one hit showers gems. */
+    /* Breakable chest (BreakState): one hit showers gems. */
     case ACTOR_TYPE_WOOD_CHEST: {
-      ChestState *st = actor->state;
+      BreakState *st = actor->state;
 
-      if (st->shake != 0) {
+      if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
 
