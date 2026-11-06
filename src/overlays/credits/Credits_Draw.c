@@ -90,7 +90,7 @@ void Credits_Draw(void) {
     char *ot;
     q[0] = 0;
     EnqueuePendingSpritePrims();
-    ot = (char *)q - 0x2400; /* the frame scratch arena (g_apMainDrawEntityList) */
+    ot = (char *)q - FRAME_ARENA_SPRITE_QUEUE; /* g_apMainDrawEntityList */
     FillWord(ot, 0, FRAME_ARENA_LIST_WORDS);
     RasterizeSpritePrimQueue();
     FillBlock16(ot, 0, 0x1C00);
