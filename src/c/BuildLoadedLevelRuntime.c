@@ -411,7 +411,7 @@ sprites:
         HideActorRenderRecord(placed);
       }
       CopyVector(pos, &g_pActorListBase[i].posX);
-      pos[2] += 0x400;
+      pos[2] += GROUND_PROBE_LIFT;
       FindGroundHeightBelow(pos, 0x10000);
       EncodeHitNormalToActorGroundCode(&g_pActorListBase[i]);
       type = g_pActorListBase[i].killGroup;

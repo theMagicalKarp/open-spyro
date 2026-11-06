@@ -280,7 +280,7 @@ void Level16_UpdateActors(void) {
               CopyVector(&actor->posX, &parent->posX);
             }
 
-            st->pos[2] += 0x400;
+            st->pos[2] += GROUND_PROBE_LIFT;
 
             if (st->dropToSpyro != 0) {
               SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
@@ -621,7 +621,7 @@ void Level16_UpdateActors(void) {
       RimState *st = actor->state;
 
       CopyVector(svD, &actor->posX);
-      svD[2] += 0x400;
+      svD[2] += GROUND_PROBE_LIFT;
       FindGroundHeightBelow(svD, 0x10000);
       EncodeHitNormalToActorGroundCode(actor);
 
@@ -942,7 +942,7 @@ void Level16_UpdateActors(void) {
         int *nrm = &g_anCollisionHitNormal;
 
         CopyVector(svG, &actor->posX);
-        svG[2] += 0x400;
+        svG[2] += GROUND_PROBE_LIFT;
         FindGroundHeightBelow(svG, 0x10000);
         st->pitch = -ArcTan2_8bit(
             IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionHitNormalZ * g_nCollisionHitNormalZ)),
@@ -990,7 +990,7 @@ void Level16_UpdateActors(void) {
             int colIndex;
 
             CopyVector(bounceNormal, &actor->posX);
-            bounceNormal[2] += 0x400;
+            bounceNormal[2] += GROUND_PROBE_LIFT;
 
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
 
@@ -3114,7 +3114,7 @@ void Level16_UpdateActors(void) {
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
       CopyVector(svQ, &actor->posX);
-      svQ[2] += 0x400;
+      svQ[2] += GROUND_PROBE_LIFT;
       FindGroundHeightBelow(svQ, 0x10000);
       EncodeHitNormalToActorGroundCode(actor);
       if (st->floorZ > 0) {

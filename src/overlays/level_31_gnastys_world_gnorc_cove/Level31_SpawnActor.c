@@ -121,7 +121,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     HideActorRenderRecord(rec);
     rec->groundCode = -1;
     CopyVector(probe, pos);
-    probe[2] += 0x400;
+    probe[2] += GROUND_PROBE_LIFT;
     FindGroundHeightBelow(probe, 0x10000);
     EncodeHitNormalToActorGroundCode(rec);
     rec->tint0 = 0;
@@ -195,7 +195,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     rec->cullRadius = 0x20;
     rec->groundCode = -1;
     CopyVector(probe, pos);
-    probe[2] += 0x400;
+    probe[2] += GROUND_PROBE_LIFT;
     FindGroundHeightBelow(probe, 0x10000);
     EncodeHitNormalToActorGroundCode(rec);
     break;
@@ -221,7 +221,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     *(int *)&rec->tint0 = ACTOR_TINT_NEUTRAL;
     rec->groundCode = -1;
     CopyVector(probe, pos);
-    probe[2] += 0x400;
+    probe[2] += GROUND_PROBE_LIFT;
     FindGroundHeightBelow(probe, 0x10000);
     EncodeHitNormalToActorGroundCode(rec);
     break;

@@ -57,7 +57,7 @@ int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR,
     vec[2] = d - collideR;
   }
   if (flags & (MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT)) {
-    vec[2] += 0x400;
+    vec[2] += GROUND_PROBE_LIFT;
     ground = FindGroundHeightBelow(vec, 0x800);
   }
   if (flags & MOVE_STEP_LIMIT) {

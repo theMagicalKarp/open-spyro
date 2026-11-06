@@ -145,7 +145,7 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     HideActorRenderRecord(rec);
     rec->groundCode = -1;
     CopyVector(probe, pos);
-    probe[2] += 0x400;
+    probe[2] += GROUND_PROBE_LIFT;
     FindGroundHeightBelow(probe, 0x10000);
     EncodeHitNormalToActorGroundCode(rec);
     rec->tint0 = 0;
@@ -354,7 +354,7 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     InsertActorIntoSpatialGrid(rec);
     rec->groundCode = -1;
     CopyVector(probe, pos);
-    probe[2] += 0x400;
+    probe[2] += GROUND_PROBE_LIFT;
     FindGroundHeightBelow(probe, 0x10000);
     EncodeHitNormalToActorGroundCode(rec);
     break;

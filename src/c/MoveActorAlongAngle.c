@@ -56,7 +56,7 @@ int MoveActorAlongAngle(Actor *actor, int angle, int speed, int contactRadius,
     }
   }
   if (flags & (MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT)) {
-    newpos[2] += 0x400;
+    newpos[2] += GROUND_PROBE_LIFT;
     ground = FindGroundHeightBelow(newpos, 0x1388);
   }
   if (flags & MOVE_STEP_LIMIT) {

@@ -272,7 +272,7 @@ void Level21_UpdateActors(void) {
               CopyVector(&actor->posX, &parent->posX);
             }
 
-            st->pos[2] += 0x400;
+            st->pos[2] += GROUND_PROBE_LIFT;
 
             if (st->dropToSpyro != 0) {
               SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
@@ -1644,7 +1644,7 @@ void Level21_UpdateActors(void) {
         int *nrm = &g_anCollisionHitNormal;
 
         CopyVector(svF, &actor->posX);
-        svF[2] += 0x400;
+        svF[2] += GROUND_PROBE_LIFT;
         FindGroundHeightBelow(svF, 0x10000);
         st->pitch = -ArcTan2_8bit(
             IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionHitNormalZ * g_nCollisionHitNormalZ)),
@@ -1692,7 +1692,7 @@ void Level21_UpdateActors(void) {
             int colIndex;
 
             CopyVector(svG, &actor->posX);
-            svG[2] += 0x400;
+            svG[2] += GROUND_PROBE_LIFT;
 
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
 

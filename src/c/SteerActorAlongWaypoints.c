@@ -61,7 +61,7 @@ int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius,
     DispatchActorContactAtSphere(vec, contact, 0, 0, actor,
                                  CONTACT_STOP_AT_SOLID);
   }
-  vec[2] += 0x400;
+  vec[2] += GROUND_PROBE_LIFT;
   d = FindGroundHeightBelow(vec, 0x400);
   if (d != 0) {
     vec[2] = d;

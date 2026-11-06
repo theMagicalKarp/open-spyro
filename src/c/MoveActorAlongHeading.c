@@ -64,7 +64,7 @@ int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius,
     newpos[2] = t - radius;
   }
   if (flags & MOVE_PROBES_FLOOR) {
-    newpos[2] += 0x400;
+    newpos[2] += GROUND_PROBE_LIFT;
     ground = FindGroundHeightBelow(newpos, 0x1388);
   }
   if (flags & MOVE_STEP_LIMIT) {

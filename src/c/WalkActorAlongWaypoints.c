@@ -72,7 +72,7 @@ int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist,
     DispatchActorContactAtSphere(vec, contactRadius, 0, 0, actor,
                                  CONTACT_STOP_AT_SOLID);
   }
-  vec[2] += 0x400;
+  vec[2] += GROUND_PROBE_LIFT;
   {
     register int ground asm("$3");
     ground = FindGroundHeightBelow(vec, 0x400);

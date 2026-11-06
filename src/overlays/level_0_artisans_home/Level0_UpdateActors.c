@@ -837,7 +837,7 @@ void Level0_UpdateActors(void) {
         int *nrm = &g_anCollisionHitNormal;
 
         CopyVector(svA, &actor->posX);
-        svA[2] += 0x400;
+        svA[2] += GROUND_PROBE_LIFT;
         FindGroundHeightBelow(svA, 0x10000);
         st->pitch = -ArcTan2_8bit(
             IntegerSqrt((nrm[0] * nrm[0]) + (g_nCollisionHitNormalZ * g_nCollisionHitNormalZ)),
@@ -885,7 +885,7 @@ void Level0_UpdateActors(void) {
             int colIndex;
 
             CopyVector(svF, &actor->posX);
-            svF[2] += 0x400;
+            svF[2] += GROUND_PROBE_LIFT;
 
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
 

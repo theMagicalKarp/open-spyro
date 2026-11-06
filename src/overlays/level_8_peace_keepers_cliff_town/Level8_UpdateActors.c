@@ -265,7 +265,7 @@ void Level8_UpdateActors(void) {
               CopyVector(&actor->posX, &parent->posX);
             }
 
-            st->pos[2] += 0x400;
+            st->pos[2] += GROUND_PROBE_LIFT;
 
             if (st->dropToSpyro != 0) {
               SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
@@ -1380,7 +1380,7 @@ void Level8_UpdateActors(void) {
         case COLLECT_SETTLE:
           /* Idle: sample the floor normal and face along it. */
           CopyVector(svA, &actor->posX);
-          svA[2] += 0x400;
+          svA[2] += GROUND_PROBE_LIFT;
           FindGroundHeightBelow(svA, 0x10000);
           {
             int *nrm = &g_anCollisionHitNormal;
@@ -1426,7 +1426,7 @@ void Level8_UpdateActors(void) {
             EncodeHitNormalToActorGroundCode(actor);
           } else if (st->mode == COLLREST_FIND_TRI) {
             CopyVector(svF, &actor->posX);
-            svF[2] += 0x400;
+            svF[2] += GROUND_PROBE_LIFT;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             if (FindGroundHeightBelow(svF, 0x1000) > 0) {
               st->groundTri = g_nCollisionHitTriIndex;
@@ -2995,12 +2995,12 @@ void Level8_UpdateActors(void) {
         CopyVector(floorProbe, &actor->posX);
         floorProbe[0] += g_anCosineLut[actor->rotZ] >> 3;
         floorProbe[1] += g_anSineLut[actor->rotZ] >> 3;
-        floorProbe[2] += 0x400;
+        floorProbe[2] += GROUND_PROBE_LIFT;
         g1 = FindGroundHeightBelow(floorProbe, 0x800);
         CopyVector(floorProbe, &actor->posX);
         floorProbe[0] += (g_anCosineLut[WrapAddAngle8(actor->rotZ, 0x80)] * 175) >> 10;
         floorProbe[1] += (g_anSineLut[WrapAddAngle8(actor->rotZ, 0x80)] * 175) >> 10;
-        floorProbe[2] += 0x400;
+        floorProbe[2] += GROUND_PROBE_LIFT;
         g2 = FindGroundHeightBelow(floorProbe, 0x800);
         if (ABS2(g1 - g2) < 0x200) {
           actor->rotY = ArcTan2(0x578, g1 - g2, ATAN_ANGLE8);

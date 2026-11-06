@@ -256,7 +256,7 @@ void Level6_UpdateActors(void) {
               CopyVector(&actor->posX, &parent->posX);
             }
 
-            st->pos[2] += 0x400;
+            st->pos[2] += GROUND_PROBE_LIFT;
 
             if (st->dropToSpyro != 0) {
               SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
@@ -1376,7 +1376,7 @@ void Level6_UpdateActors(void) {
         case COLLECT_SETTLE:
           /* Idle: sample the floor normal and face along it. */
           CopyVector(g056, &actor->posX);
-          g056[2] += 0x400;
+          g056[2] += GROUND_PROBE_LIFT;
           FindGroundHeightBelow(g056, 0x10000);
           {
             int *nrm = &g_anCollisionHitNormal;
@@ -1422,7 +1422,7 @@ void Level6_UpdateActors(void) {
             EncodeHitNormalToActorGroundCode(actor);
           } else if (st->mode == COLLREST_FIND_TRI) {
             CopyVector(g136, &actor->posX);
-            g136[2] += 0x400;
+            g136[2] += GROUND_PROBE_LIFT;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);
             if (FindGroundHeightBelow(g136, 0x1000) > 0) {
               st->groundTri = g_nCollisionHitTriIndex;
@@ -2726,7 +2726,7 @@ void Level6_UpdateActors(void) {
         }
       }
       CopyVector(groundProbe, &actor->posX);
-      groundProbe[2] += 0x400;
+      groundProbe[2] += GROUND_PROBE_LIFT;
       FindGroundHeightBelow(groundProbe, 0x10000);
       EncodeHitNormalToActorGroundCode(actor);
 
