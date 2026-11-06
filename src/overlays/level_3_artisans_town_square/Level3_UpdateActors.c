@@ -351,7 +351,7 @@ void Level3_UpdateActors(void) {
         MarkActorLiveKill(actor);
         st->spin = 2;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->speed = 0xFA;
+          st->speed = WARD_KNOCK_SPEED;
         }
         if (actor->flags & ACTOR_HIT_FLAME) {
           actor->mode = WARD_BURN;
@@ -369,20 +369,20 @@ void Level3_UpdateActors(void) {
       }
 
       TICK_DOWN(st->camLock);
-      if (ApproxDist2D(&actor->posX, &spy->posX) > 0xC00) {
+      if (ApproxDist2D(&actor->posX, &spy->posX) > WARD_SHOVE_RESET_RANGE) {
         st->camLock = 0;
       }
       if (actor->anim == WARD_ANIM_SHOVE && st->camDone == 0 &&
-          ApproxDist2D(&actor->posX, &spy->posX) < 0x600 &&
+          ApproxDist2D(&actor->posX, &spy->posX) < WARD_SHOVE_HIT_RANGE &&
           AbsAngleDelta8(actor->rotZ,
                         ArcTan2(spy->posX - actor->posX,
-                                      SPY.posY - actor->posY, ATAN_ANGLE8)) < 0x20) {
+                                      SPY.posY - actor->posY, ATAN_ANGLE8)) < WARD_SHOVE_HIT_CONE) {
         int a;
 
         a = (actor->rotZ + 0x20) & 0xFF;
         SPY.triggerEvents |= SPYRO_EV_KNOCKBACK_2;
         g_anSpyroRequestVelocity.x = (g_anCosineLut[a] * 5) >> 8;
-        g_nSpyroRequestVelocityZ = 0x78;
+        g_nSpyroRequestVelocityZ = WARD_SHOVE_VZ;
         g_nSpyroRequestVelocityY = (g_anSineLut[a] * 5) >> 8;
         st->camDone = 1;
       }
@@ -392,19 +392,19 @@ void Level3_UpdateActors(void) {
         switch (st->mode) {
         case WARD_ROLE_SENTRY:
           TrackEntityYawTowardSpyro(actor, 10, 0, YAW_HOLD_IN_BAND);
-          if (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x320 &&
-              ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
+          if (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < WARD_ADVANCE_DZ &&
+              ApproxDist2D(&actor->posX, &SPY.posX) < WARD_ADVANCE_RANGE) {
             st->timer = 0;
             ENTER_POSE(actor, WARD_ADVANCE);
           }
           break;
         case WARD_ROLE_PATROL:
-          st->speed = 0x64;
+          st->speed = WARD_WALK_SPEED;
           ANIM_GO(actor, WARD_ADVANCE);
           actor->mode = WARD_TO_NODE;
           continue;
         case WARD_ROLE_RING:
-          st->speed = 0x64;
+          st->speed = WARD_WALK_SPEED;
           st->path->cur = 0;
           ENTER_POSE(actor, WARD_ADVANCE);
         }
@@ -414,7 +414,7 @@ void Level3_UpdateActors(void) {
         switch (st->mode) {
         case WARD_ROLE_SENTRY:
           if (TICK_DOWN(st->retarget) != 0) {
-            st->retarget = 0x1E;
+            st->retarget = WARD_RETARGET_FRAMES;
             st->heading = *(unsigned char *)&g_bSpyroPersistentEulerZ;
           }
           TurnActorYawTowardAngle(actor,
@@ -423,7 +423,7 @@ void Level3_UpdateActors(void) {
                         4, 0x1E, YAW_STEP_IN_BAND);
           if (AbsAngleDelta8(spy->bodyRotZ,
                             ArcTan2(actor->posX - spy->posX,
-                                          actor->posY - spy->posY, ATAN_ANGLE8)) >= 0x31) {
+                                          actor->posY - spy->posY, ATAN_ANGLE8)) >= WARD_GIVE_UP_FACING) {
             if (st->timer != 0) {
               if (TICK_DOWN(st->timer) != 0) {
                 st->timer = 0;
@@ -431,22 +431,22 @@ void Level3_UpdateActors(void) {
                 continue;
               }
             } else {
-              st->timer = 0x28;
+              st->timer = WARD_GIVE_UP_FRAMES;
             }
           } else {
             st->timer = 0;
           }
-          if (MoveActorAlongHeading(actor, 0x64, 0x300, 0x200, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_SLIDE) != 0 ||
-              ApproxDist2D(&actor->posX, &st->homeX) >= 0x2801) {
+          if (MoveActorAlongHeading(actor, WARD_WALK_SPEED, 0x300, 0x200, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_SLIDE) != 0 ||
+              ApproxDist2D(&actor->posX, &st->homeX) > WARD_LEASH) {
             actor->mode = WARD_GO_HOME;
             continue;
           }
           if (st->camLock == 0 &&
-              ApproxDist2D(&actor->posX, &spy->posX) < 0x800 &&
+              ApproxDist2D(&actor->posX, &spy->posX) < WARD_SHOVE_RANGE &&
               AbsAngleDelta8(actor->rotZ,
                             ArcTan2(spy->posX - actor->posX,
-                                          SPY.posY - actor->posY, ATAN_ANGLE8)) < 0x40) {
-            st->camLock = 0x78;
+                                          SPY.posY - actor->posY, ATAN_ANGLE8)) < WARD_SHOVE_CONE) {
+            st->camLock = WARD_SHOVE_REST;
             st->camDone = 0;
             ANIM_GO(actor, WARD_ANIM_SHOVE);
           }
@@ -456,8 +456,8 @@ void Level3_UpdateActors(void) {
           }
           break;
         case WARD_ROLE_RING:
-          if (!(g_pActorListBase[st->link].mode & 0x80) ||
-              ApproxDist2D(&actor->posX, &st->homeX) >= 0x401) {
+          if (!(g_pActorListBase[st->link].mode & ACTOR_MODE_DORMANT) ||
+              ApproxDist2D(&actor->posX, &st->homeX) > WARD_RING_LEASH) {
             SteerActorAroundPoint(
                 actor, &st->path->nodes[0].x, st->pathDist,
                 (ArcTan2(actor->posX - st->path->nodes[st->path->cur].x,
@@ -467,11 +467,11 @@ void Level3_UpdateActors(void) {
                     0xFF,
                 0, st->speed, 0x1E, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_FOLLOW_FLOOR);
             if (st->camLock == 0 &&
-                ApproxDist2D(&actor->posX, &spy->posX) < 0x800 &&
+                ApproxDist2D(&actor->posX, &spy->posX) < WARD_SHOVE_RANGE &&
                 AbsAngleDelta8(actor->rotZ,
                               ArcTan2(spy->posX - actor->posX,
-                                            SPY.posY - actor->posY, ATAN_ANGLE8)) < 0x40) {
-              st->camLock = 0x78;
+                                            SPY.posY - actor->posY, ATAN_ANGLE8)) < WARD_SHOVE_CONE) {
+              st->camLock = WARD_SHOVE_REST;
               st->camDone = 0;
               ANIM_GO(actor, WARD_ANIM_SHOVE);
             }
@@ -500,13 +500,12 @@ void Level3_UpdateActors(void) {
           st->path->cur++;
         }
         ENTER_POSE(actor, WARD_IDLE);
-
       case WARD_KNOCKED:
         if (actor->flags & ACTOR_HIT_FLAME) {
           goto pose9;
         }
         if (g_nActorAnimDone != 0) {
-          st->timer = (GetRandomU32() & 0x3F) + 0x40;
+          st->timer = (GetRandomU32() & 0x3F) + WARD_DAZE_MIN;
           actor->mode = WARD_DAZED;
           ANIM_RESET(actor, WARD_DAZED);
           continue;
@@ -514,8 +513,8 @@ void Level3_UpdateActors(void) {
         if (actor->frame < 5) {
           actor->rotZ += st->spin;
         }
-        if (st->speed >= 0x10) {
-          st->speed -= 0xF;
+        if (st->speed > WARD_KNOCK_DRAG) {
+          st->speed -= WARD_KNOCK_DRAG;
           MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         break;
@@ -537,7 +536,7 @@ void Level3_UpdateActors(void) {
           if (TICK_DOWN(st->timer) == 0) {
             break;
           }
-          if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x2800) {
+          if (ApproxDist2D(&actor->posX, &SPY.posX) > WARD_DAZE_LEAVE_RANGE) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
             BurstActorWithSound(actor, 0x20);
             DespawnActorRecord(actor);
@@ -551,7 +550,7 @@ void Level3_UpdateActors(void) {
         case WARD_ANIM_DAZED_STIR:
           if (actor->frame >= 0x2C && actor->frame < 0x32) {
             actor->flags = 0;
-            st->timer = (GetRandomU32() & 0x3F) + 0x40;
+            st->timer = (GetRandomU32() & 0x3F) + WARD_DAZE_MIN;
             ANIM_SET(actor, WARD_DAZED);
           }
           break;
@@ -569,7 +568,7 @@ void Level3_UpdateActors(void) {
 
       case WARD_TO_NODE:
         if (ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x) <
-            0x80) {
+            WARD_NODE_ARRIVE) {
           ENTER_POSE(actor, WARD_TURN);
         }
         TurnActorYawTowardAngle(actor,
@@ -581,11 +580,11 @@ void Level3_UpdateActors(void) {
                       4, 0x14, YAW_STEP_IN_BAND);
         MoveActorAlongHeading(actor, st->speed, 0x300, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
         if (st->camLock == 0 &&
-            ApproxDist2D(&actor->posX, &spy->posX) < 0x800 &&
+            ApproxDist2D(&actor->posX, &spy->posX) < WARD_SHOVE_RANGE &&
             AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
-                                        SPY.posY - actor->posY, ATAN_ANGLE8)) < 0x40) {
-          st->camLock = 0x78;
+                                        SPY.posY - actor->posY, ATAN_ANGLE8)) < WARD_SHOVE_CONE) {
+          st->camLock = WARD_SHOVE_REST;
           st->camDone = 0;
           ANIM_GO(actor, WARD_ANIM_SHOVE);
         }
@@ -599,10 +598,10 @@ void Level3_UpdateActors(void) {
                           ArcTan2_8bit(st->homeX - actor->posX,
                                         st->homeY - actor->posY),
                           4, 0x14, YAW_STEP_IN_BAND) != 0) {
-          MoveActorAlongHeading(actor, 0x5A, 0x300, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
+          MoveActorAlongHeading(actor, WARD_HOME_SPEED, 0x300, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
         }
         ANIM_GO(actor, WARD_ADVANCE);
-        if (ApproxDist2D(&actor->posX, &st->homeX) < 0x80) {
+        if (ApproxDist2D(&actor->posX, &st->homeX) < WARD_NODE_ARRIVE) {
           ENTER_POSE(actor, WARD_IDLE);
         }
         break;

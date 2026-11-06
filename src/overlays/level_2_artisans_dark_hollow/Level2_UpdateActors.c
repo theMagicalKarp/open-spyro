@@ -1703,13 +1703,13 @@ void Level2_UpdateActors(void) {
       EBB_BREAK();
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != POSTGUARD_KNOCKED &&
           (actor->flags != ACTOR_HIT_FLAME || st->flameProof == 0)) {
-        st->knockZSpeed = 0x8C;
-        st->knockSpeed = 0x118;
-        st->timer = 0x28;
+        st->knockZSpeed = POSTGUARD_KNOCK_VZ;
+        st->knockSpeed = POSTGUARD_KNOCK_SPEED;
+        st->timer = POSTGUARD_KNOCK_FRAMES;
         if (actor->flags == ACTOR_HIT_CHARGE) {
-          st->knockZSpeed = 0xAA;
-          st->knockSpeed = 0x15E;
-          st->timer = 0x3C;
+          st->knockZSpeed = POSTGUARD_CHARGE_KNOCK_VZ;
+          st->knockSpeed = POSTGUARD_CHARGE_KNOCK_SPEED;
+          st->timer = POSTGUARD_CHARGE_KNOCK_FRAMES;
         }
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
@@ -1727,24 +1727,24 @@ void Level2_UpdateActors(void) {
       case POSTGUARD_IDLE:
         switch (st->mode) {
         case POSTGUARD_POST_PICK:
-          if (ApproxDist2D(&spy->posX, &st->path->nodes[0].x) < 0x1C00) {
+          if (ApproxDist2D(&spy->posX, &st->path->nodes[0].x) < POSTGUARD_POST_RANGE) {
             if (AbsAngleDelta8(ArcTan2(spy->posX - actor->posX,
                                             SPY.posY - actor->posY, ATAN_ANGLE8),
                               ArcTan2(st->path->nodes[0].x - actor->posX,
                                             st->path->nodes[0].y - actor->posY,
-                                            ATAN_ANGLE8)) >= 0x15 ||
+                                            ATAN_ANGLE8)) >= POSTGUARD_POST_CONE ||
                 ApproxDist2D(&actor->posX, &spy->posX) >
                     ApproxDist2D(&actor->posX, &st->path->nodes[0].x)) {
               st->path->cur = 0;
               actor->mode = POSTGUARD_TO_POST;
               continue;
             }
-          } else if (ApproxDist2D(&spy->posX, &st->path->nodes[1].x) < 0x1C00) {
+          } else if (ApproxDist2D(&spy->posX, &st->path->nodes[1].x) < POSTGUARD_POST_RANGE) {
             if (AbsAngleDelta8(ArcTan2(spy->posX - actor->posX,
                                             SPY.posY - actor->posY, ATAN_ANGLE8),
                               ArcTan2(st->path->nodes[1].x - actor->posX,
                                             st->path->nodes[1].y - actor->posY,
-                                            ATAN_ANGLE8)) >= 0x15 ||
+                                            ATAN_ANGLE8)) >= POSTGUARD_POST_CONE ||
                 ApproxDist2D(&actor->posX, &spy->posX) >
                     ApproxDist2D(&actor->posX, &st->path->nodes[1].x)) {
               st->path->cur = 1;
@@ -1755,9 +1755,9 @@ void Level2_UpdateActors(void) {
           break;
         case POSTGUARD_POST_PATROL:
           ANIM_GO(actor, POSTGUARD_ANIM_RUN);
-          PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0xC8, 5, 0xA, actor->group,
+          PivotActorAlongPath(actor, st->path, 0x100, POSTGUARD_PATROL_SPEED, 0xC8, 5, 0xA, actor->group,
                         MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-          if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400) {
+          if (ApproxDist2D(&actor->posX, &SPY.posX) < POSTGUARD_PATROL_ALERT_RANGE) {
             SetActorGroupState(actor, POSTGUARD_ALERTED);
           }
           break;
@@ -1766,9 +1766,9 @@ void Level2_UpdateActors(void) {
           if (g_nActorAnimDone != 0) {
             ANIM_GO(actor, POSTGUARD_ANIM_STAND);
           }
-          if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
+          if (ApproxDist2D(&actor->posX, &SPY.posX) < POSTGUARD_WATCH_RANGE) {
             actor->subMode = 0;
-            st->timer = RandomIntInRange(0x8C, 0xC8);
+            st->timer = RandomIntInRange(POSTGUARD_REST_MIN_FRAMES, POSTGUARD_REST_MAX_FRAMES);
             actor->mode = POSTGUARD_HOP;
             continue;
           }
@@ -1777,7 +1777,7 @@ void Level2_UpdateActors(void) {
           switch (st->phase) {
           case POSTGUARD_AMBUSH_WAIT:
             TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-            if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000 &&
+            if (ApproxDist2D(&actor->posX, &spy->posX) < POSTGUARD_AMBUSH_RANGE &&
                 actor->posZ - actor->floorOffset - SPY.posZ < 0 && SPY.airborneFrames == 0) {
               PostState *other = g_pActorListBase[st->partner].state;
 
@@ -1799,7 +1799,7 @@ void Level2_UpdateActors(void) {
             break;
           case POSTGUARD_AMBUSH_RUN:
             ANIM_GO(actor, POSTGUARD_ANIM_RUN);
-            if (PivotActorAlongPath(actor, st->path, 0x100, 0x96, 0, 8, 0x32, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->path, 0x100, POSTGUARD_AMBUSH_SPEED, 0, 8, 0x32, PIVOT_TURN_ANY,
                               MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(0)) {
               st->phase++;
             }
@@ -1829,13 +1829,13 @@ void Level2_UpdateActors(void) {
           break;
         case POSTGUARD_HOP_READY:
           if (TICK_DOWN(st->timer) &&
-              ApproxDist2D(&actor->posX, &spy->posX) < 0x578) {
+              ApproxDist2D(&actor->posX, &spy->posX) < POSTGUARD_LUNGE_RANGE) {
             int height = actor->posZ - actor->floorOffset;
             int drop = height - SPY.posZ;
 
-            if ((drop > 0 ? drop < 0x3E8 : (SPY.posZ - height) < 0x3E8) &&
+            if ((drop > 0 ? drop < POSTGUARD_LUNGE_DZ : (SPY.posZ - height) < POSTGUARD_LUNGE_DZ) &&
                 actor->anim == POSTGUARD_ANIM_READY) {
-              st->timer = 0xB4;
+              st->timer = POSTGUARD_LUNGE_REST;
               ANIM_GO(actor, POSTGUARD_ANIM_LUNGE);
             }
           }
@@ -1845,13 +1845,13 @@ void Level2_UpdateActors(void) {
             } else {
               st->flameProof = 1;
               st->sub = POSTGUARD_HOP_REST;
-              st->timer = RandomIntInRange(0x8C, 0xC8);
+              st->timer = RandomIntInRange(POSTGUARD_REST_MIN_FRAMES, POSTGUARD_REST_MAX_FRAMES);
               ANIM_BLEND(actor, POSTGUARD_ANIM_REST);
             }
           }
           break;
         }
-        if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x2000) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) > POSTGUARD_HOP_LEAVE_RANGE) {
           actor->mode = POSTGUARD_IDLE;
           continue;
         }
@@ -1880,10 +1880,10 @@ void Level2_UpdateActors(void) {
                 ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                               st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8),
                 6, 0x14, one)) {
-          MoveActorAlongHeading(actor, 0x8C, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          MoveActorAlongHeading(actor, POSTGUARD_TO_POST_SPEED, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
-        if (ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x) < 0x100 ||
-            ApproxDist2D(&actor->posX, &SPY.posX) < 0xC00) {
+        if (ApproxDist2D(&actor->posX, &st->path->nodes[st->path->cur].x) < POSTGUARD_POST_ARRIVE ||
+            ApproxDist2D(&actor->posX, &SPY.posX) < POSTGUARD_POST_STOP_RANGE) {
           ANIM_BLEND(actor, POSTGUARD_ANIM_REST);
           actor->mode = POSTGUARD_HOP;
           continue;

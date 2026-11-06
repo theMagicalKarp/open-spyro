@@ -1413,7 +1413,6 @@ void Level15_UpdateActors(void) {
           ANIM_QUEUE(actor, TGUARD_RISE);
         }
         ANIM_QUEUE(actor, TGUARD_IDLE);
-        /* fall through */
       case TGUARD_LOWER:
         if (g_nActorAnimDone != 0) {
           ANIM_QUEUE(actor, TGUARD_IDLE);

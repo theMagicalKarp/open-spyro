@@ -1683,6 +1683,39 @@ enum PostGuardAnim {
   POSTGUARD_ANIM_SHOUT = 7,       /* the ambush rouse and POSTGUARD_SHOUT */
 };
 
+/* Post guard tuning. Hit it spins off at KNOCK_SPEED / KNOCK_VZ for
+ * KNOCK_FRAMES (a charge: CHARGE_KNOCK_*). A picker steps to the post Spyro
+ * comes within POST_RANGE of (unless he is in line with it, within
+ * POST_CONE, and nearer than it), running TO_POST_SPEED until within
+ * POST_ARRIVE (or Spyro within POST_STOP_RANGE). A patroller walks
+ * PATROL_SPEED and alerts its group within PATROL_ALERT_RANGE; a watcher
+ * hops within WATCH_RANGE; an ambusher wakes within AMBUSH_RANGE and runs at
+ * AMBUSH_SPEED. Hopping, it rests REST_MIN..MAX_FRAMES and lunges within
+ * LUNGE_RANGE / LUNGE_DZ (then waits LUNGE_REST), giving up past
+ * HOP_LEAVE_RANGE. */
+#define POSTGUARD_KNOCK_SPEED 0x118
+#define POSTGUARD_KNOCK_VZ 0x8C
+#define POSTGUARD_KNOCK_FRAMES 0x28
+#define POSTGUARD_CHARGE_KNOCK_SPEED 0x15E
+#define POSTGUARD_CHARGE_KNOCK_VZ 0xAA
+#define POSTGUARD_CHARGE_KNOCK_FRAMES 0x3C
+#define POSTGUARD_POST_RANGE 0x1C00
+#define POSTGUARD_POST_CONE 0x15
+#define POSTGUARD_TO_POST_SPEED 0x8C
+#define POSTGUARD_POST_ARRIVE 0x100
+#define POSTGUARD_POST_STOP_RANGE 0xC00
+#define POSTGUARD_PATROL_SPEED 0x5A
+#define POSTGUARD_PATROL_ALERT_RANGE 0x1400
+#define POSTGUARD_WATCH_RANGE 0x1800
+#define POSTGUARD_AMBUSH_RANGE 0x2000
+#define POSTGUARD_AMBUSH_SPEED 0x96
+#define POSTGUARD_REST_MIN_FRAMES 0x8C
+#define POSTGUARD_REST_MAX_FRAMES 0xC8
+#define POSTGUARD_LUNGE_RANGE 0x578
+#define POSTGUARD_LUNGE_DZ 0x3E8
+#define POSTGUARD_LUNGE_REST 0xB4
+#define POSTGUARD_HOP_LEAVE_RANGE 0x2000
+
 /* ->mode of a patrol ward (ACTOR_TYPE_PATROL_WARD, WardState; level 3).
  * WARD_IDLE runs WardState.mode's role (sentry, node patrol, partner ring);
  * its shove (animation 8) knocks Spyro back. */
@@ -1711,6 +1744,38 @@ enum WardAnim {
   WARD_ANIM_DAZED_STIR = 6, /* between dazed loops; back to WARD_DAZED from frame 0x2C */
   WARD_ANIM_SHOVE = 8,      /* Spyro close and facing it */
 };
+
+/* Patrol ward tuning. Its shove lands on Spyro within SHOVE_HIT_RANGE and
+ * SHOVE_HIT_CONE (knocked back at 5/256 of the unit vector, SHOVE_VZ up); it
+ * starts one within SHOVE_RANGE and SHOVE_CONE, then waits SHOVE_REST
+ * (cleared once Spyro is past SHOVE_RESET_RANGE). A sentry advances within
+ * ADVANCE_RANGE / ADVANCE_DZ at WALK_SPEED (re-reading Spyro's heading every
+ * RETARGET_FRAMES), going home after he looks away (GIVE_UP_FACING) for
+ * GIVE_UP_FRAMES or past LEASH; a ring ward leaves its ring past RING_LEASH.
+ * Nodes are reached within NODE_ARRIVE; home walks HOME_SPEED. Charged it
+ * slides from KNOCK_SPEED (losing KNOCK_DRAG a frame), then lies dazed
+ * DAZE_MIN.. +0x3F frames, bursting if Spyro is past DAZE_LEAVE_RANGE. */
+#define WARD_SHOVE_HIT_RANGE 0x600
+#define WARD_SHOVE_HIT_CONE 0x20
+#define WARD_SHOVE_VZ 0x78
+#define WARD_SHOVE_RANGE 0x800
+#define WARD_SHOVE_CONE 0x40
+#define WARD_SHOVE_REST 0x78
+#define WARD_SHOVE_RESET_RANGE 0xC00
+#define WARD_ADVANCE_RANGE 0x2000
+#define WARD_ADVANCE_DZ 0x320
+#define WARD_WALK_SPEED 0x64
+#define WARD_RETARGET_FRAMES 0x1E
+#define WARD_GIVE_UP_FACING 0x31
+#define WARD_GIVE_UP_FRAMES 0x28
+#define WARD_LEASH 0x2800
+#define WARD_RING_LEASH 0x400
+#define WARD_NODE_ARRIVE 0x80
+#define WARD_HOME_SPEED 0x5A
+#define WARD_KNOCK_SPEED 0xFA
+#define WARD_KNOCK_DRAG 0xF
+#define WARD_DAZE_MIN 0x40
+#define WARD_DAZE_LEAVE_RANGE 0x2800
 
 /* ->mode of a shooter sentry (ACTOR_TYPE_SHOOTER, ShooterState; level 7).
  * Flames bounce off while it hides behind its shield (SHOOTER_SHIELD,
