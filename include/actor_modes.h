@@ -2608,6 +2608,32 @@ enum FloatingBarrelMode {
   FLOATBARREL_RUN = 4,   /* the mine was charged: runs at the nearest target, then BURST */
 };
 
+/* Barrel / mine tuning. A charged mine hops RUN_HOP up and runs at RUN_SPEED
+ * along the knock heading, re-aimed at the best target within SEEK_CONE of it
+ * (under SEEK_QUICK Manhattan and SEEK_RANGE exact, scored by distance outside
+ * SEEK_NEAR..SEEK_FAR plus 256 per unit of angle); its contact arms after
+ * RUN_ARM_FRAMES. Airborne, sink speed starts at RUN_SINK and loses
+ * SINK_GRAVITY a frame down to -RUN_SINK. A burst drops it BURST_DROP; the
+ * blast grows 0x90 a tick for BLAST_TICKS, pushing Spyro at
+ * (PUSH_RANGE - distance) / 64 with PUSH_VZ up. A tumbling one floats
+ * TUMBLE_HEIGHT over the ground, rolling at TUMBLE_SPEED. */
+#define FLOATBARREL_RUN_HOP 0xC8
+#define FLOATBARREL_RUN_SPEED 0xF0
+#define FLOATBARREL_RUN_ARM_FRAMES 0x10
+#define FLOATBARREL_RUN_SINK 0x80
+#define FLOATBARREL_SINK_GRAVITY 0xA
+#define FLOATBARREL_SEEK_QUICK 0x6000
+#define FLOATBARREL_SEEK_CONE 0xC
+#define FLOATBARREL_SEEK_RANGE 0x4000
+#define FLOATBARREL_SEEK_NEAR 0x1800
+#define FLOATBARREL_SEEK_FAR 0x2800
+#define FLOATBARREL_BURST_DROP 0x1CD
+#define FLOATBARREL_BLAST_TICKS 8
+#define FLOATBARREL_PUSH_RANGE 0x1000
+#define FLOATBARREL_PUSH_VZ 0x46
+#define FLOATBARREL_TUMBLE_HEIGHT 0x180
+#define FLOATBARREL_TUMBLE_SPEED 0x80
+
 /* ->mode of a level 0 path enemy (ACTOR_TYPE_PATH_ENEMY, WalkerState); the
  * mode is also the animation index. It flees from Spyro along its path. */
 enum PathEnemyMode {

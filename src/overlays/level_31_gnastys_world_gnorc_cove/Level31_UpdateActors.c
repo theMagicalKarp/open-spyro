@@ -2456,7 +2456,7 @@ void Level31_UpdateActors(void) {
       case FLOATBARREL_BURST: {
         Actor *w;
 
-        actor->posZ -= 0x1CD;
+        actor->posZ -= FLOATBARREL_BURST_DROP;
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         PlayActorMeshVoice(actor, FLOATBARREL_VOICE_BURST, 0);
         if (actor->drawn != 0) {
@@ -2567,16 +2567,16 @@ void Level31_UpdateActors(void) {
             g_nSpyroRequestVelocityY = y = (SPY.posY - actor->posY) >> 1;
             if (x != 0 || y != 0) {
               ScaleVector3ByRatio(&g_anSpyroRequestVelocity.x, VectorLength(&g_anSpyroRequestVelocity.x, VEC_LEN_XYZ),
-                            (0x1000 -
+                            (FLOATBARREL_PUSH_RANGE -
                              ApproxDist2D(&actor->posX, &SPY.posX)) >>
                                 6);
             }
-            g_nSpyroRequestVelocityZ = 0x46;
+            g_nSpyroRequestVelocityZ = FLOATBARREL_PUSH_VZ;
           }
         }
         DispatchActorContactAtSphere(&actor->posX, (st->timer + 2) << 8, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER), actor,
                       CONTACT_ALL);
-        if (++st->timer >= 8) {
+        if (++st->timer >= FLOATBARREL_BLAST_TICKS) {
           MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
           continue;
@@ -2589,19 +2589,19 @@ void Level31_UpdateActors(void) {
         PlayActorMeshVoice(actor, FLOATBARREL_VOICE_TUMBLE, &actor->voiceRow);
         actor->rotX += 6;
         f = FindGroundHeightBelow(&actor->posX, 0x800);
-        if (actor->posZ - f > 0x180) {
-          st->sink -= 0xA;
-          if (st->sink < -0x80) {
-            st->sink = -0x80;
+        if (actor->posZ - f > FLOATBARREL_TUMBLE_HEIGHT) {
+          st->sink -= FLOATBARREL_SINK_GRAVITY;
+          if (st->sink < -FLOATBARREL_RUN_SINK) {
+            st->sink = -FLOATBARREL_RUN_SINK;
           }
           actor->posZ = actor->posZ + st->sink;
         } else if ((g_nGroundSurfaceType & 0x3F) == 0) {
           BARREL_BURST(actor, st);
         } else {
           st->sink = -0xA;
-          actor->posZ = f + 0x180;
+          actor->posZ = f + FLOATBARREL_TUMBLE_HEIGHT;
         }
-        if (MoveActorAlongAngle(actor, (actor->rotZ - 0x40) & 0xFF, 0x80, 0x200,
+        if (MoveActorAlongAngle(actor, (actor->rotZ - 0x40) & 0xFF, FLOATBARREL_TUMBLE_SPEED, 0x200,
                           0x200, MOVE_LIFT) != 0) {
           actor->mode = FLOATBARREL_BURST;
         }
@@ -2630,7 +2630,7 @@ void Level31_UpdateActors(void) {
 
       st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
       if ((actor->flags & ACTOR_HIT_CHARGE) &&
-          (unsigned char)(actor->mode - 2) >= 2 && actor->mode != FLOATBARREL_RUN) {
+          (unsigned char)(actor->mode - FLOATBARREL_BURST) >= 2 /* not BURST or BLAST */ && actor->mode != FLOATBARREL_RUN) {
         if (st->link < 0 || g_pActorListBase[st->link].type != ACTOR_TYPE_CARRIED_THROWER) {
           Actor *best;
           Actor *a;
@@ -2638,11 +2638,11 @@ void Level31_UpdateActors(void) {
           st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                     actor->posY - SPY.posY, ATAN_ANGLE8),
                                       SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-          st->sink = 0x80;
+          st->sink = FLOATBARREL_RUN_SINK;
           st->timer = 0;
           actor->subMode = 0;
           actor->mode = FLOATBARREL_RUN;
-          actor->posZ += 0xC8;
+          actor->posZ += FLOATBARREL_RUN_HOP;
           PlayActorMeshVoice(actor, FLOATBARREL_VOICE_RUN, 0);
           best = 0;
           i = 0x7530;
@@ -2656,7 +2656,7 @@ void Level31_UpdateActors(void) {
             }
             SubtractVector(toOther, &a->posX, &actor->posX);
             len = ABS(toOther[0]) + ABS(toOther[1]);
-            if (len >= 0x6000) {
+            if (len >= FLOATBARREL_SEEK_QUICK) {
               continue;
             }
             d = (ArcTan2(a->posX - actor->posX, a->posY - actor->posY,
@@ -2667,17 +2667,17 @@ void Level31_UpdateActors(void) {
               d -= 0x100;
             }
             d = ABS(d);
-            if (d >= 0xC) {
+            if (d >= FLOATBARREL_SEEK_CONE) {
               continue;
             }
             len = VectorLength(toOther, VEC_LEN_XY);
-            if (len >= 0x4000) {
+            if (len >= FLOATBARREL_SEEK_RANGE) {
               continue;
             }
-            if (len > 0x2800) {
-              len -= 0x2800;
-            } else if (len < 0x1800) {
-              len = 0x1800 - len;
+            if (len > FLOATBARREL_SEEK_FAR) {
+              len -= FLOATBARREL_SEEK_FAR;
+            } else if (len < FLOATBARREL_SEEK_NEAR) {
+              len = FLOATBARREL_SEEK_NEAR - len;
             } else {
               len = 0;
             }
@@ -2693,7 +2693,7 @@ void Level31_UpdateActors(void) {
           }
         }
       } else if ((actor->flags & ACTOR_HIT_SUPER) &&
-                 (unsigned char)(actor->mode - 2) >= 2 && actor->mode != FLOATBARREL_RUN) {
+                 (unsigned char)(actor->mode - FLOATBARREL_BURST) >= 2 /* not BURST or BLAST */ && actor->mode != FLOATBARREL_RUN) {
         actor->mode = FLOATBARREL_BURST;
       }
       actor->flags = 0;
@@ -2709,7 +2709,7 @@ void Level31_UpdateActors(void) {
       case FLOATBARREL_BURST: {
         Actor *w;
 
-        actor->posZ -= 0x1CD;
+        actor->posZ -= FLOATBARREL_BURST_DROP;
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         PlayActorMeshVoice(actor, FLOATBARREL_VOICE_BURST, 0);
         if (actor->drawn != 0) {
@@ -2819,16 +2819,16 @@ void Level31_UpdateActors(void) {
             g_nSpyroRequestVelocityY = y = (SPY.posY - actor->posY) >> 1;
             if (x != 0 || y != 0) {
               ScaleVector3ByRatio(&g_anSpyroRequestVelocity.x, VectorLength(&g_anSpyroRequestVelocity.x, VEC_LEN_XYZ),
-                            (0x1000 -
+                            (FLOATBARREL_PUSH_RANGE -
                              ApproxDist2D(&actor->posX, &SPY.posX)) >>
                                 6);
             }
-            g_nSpyroRequestVelocityZ = 0x46;
+            g_nSpyroRequestVelocityZ = FLOATBARREL_PUSH_VZ;
           }
         }
         DispatchActorContactAtSphere(&actor->posX, (st->timer + 2) << 8, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER), actor,
                       CONTACT_ALL);
-        if (++st->timer >= 8) {
+        if (++st->timer >= FLOATBARREL_BLAST_TICKS) {
           MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
           continue;
@@ -2839,8 +2839,8 @@ void Level31_UpdateActors(void) {
 
         actor->posZ += st->sink;
         st->timer += g_nFrameStep;
-        if (st->timer >= 0x10) {
-          r = MoveActorAlongAngle(actor, st->heading, 0xF0, 0x200, 0x200, 0);
+        if (st->timer >= FLOATBARREL_RUN_ARM_FRAMES) {
+          r = MoveActorAlongAngle(actor, st->heading, FLOATBARREL_RUN_SPEED, 0x200, 0x200, 0);
           if (r != 0) {
             if (r == MOVED_BLOCKED && (g_nGroundSurfaceType & 0x3F) == 0) {
               BARREL_BURST(actor, st);
@@ -2848,7 +2848,7 @@ void Level31_UpdateActors(void) {
             actor->mode = FLOATBARREL_BURST;
           }
         } else {
-          r = MoveActorAlongAngle(actor, st->heading, 0xF0, 0, 0x200, 0);
+          r = MoveActorAlongAngle(actor, st->heading, FLOATBARREL_RUN_SPEED, 0, 0x200, 0);
           if (r != 0) {
             if (r == MOVED_BLOCKED && (g_nGroundSurfaceType & 0x3F) == 0) {
               BARREL_BURST(actor, st);
@@ -2859,9 +2859,9 @@ void Level31_UpdateActors(void) {
         actor->rotX += 7;
         actor->rotY -= 4;
         actor->rotZ += 3;
-        st->sink -= 0xA;
-        if (st->sink < -0x80) {
-          st->sink = -0x80;
+        st->sink -= FLOATBARREL_SINK_GRAVITY;
+        if (st->sink < -FLOATBARREL_RUN_SINK) {
+          st->sink = -FLOATBARREL_RUN_SINK;
         }
         FindGroundHeightBelow(&actor->posX, 0x2000);
         EncodeHitNormalToActorGroundCode(actor);
@@ -2874,19 +2874,19 @@ void Level31_UpdateActors(void) {
         PlayActorMeshVoice(actor, FLOATBARREL_VOICE_TUMBLE, &actor->voiceRow);
         actor->rotX += 6;
         f = FindGroundHeightBelow(&actor->posX, 0x800);
-        if (actor->posZ - f > 0x180) {
-          st->sink -= 0xA;
-          if (st->sink < -0x80) {
-            st->sink = -0x80;
+        if (actor->posZ - f > FLOATBARREL_TUMBLE_HEIGHT) {
+          st->sink -= FLOATBARREL_SINK_GRAVITY;
+          if (st->sink < -FLOATBARREL_RUN_SINK) {
+            st->sink = -FLOATBARREL_RUN_SINK;
           }
           actor->posZ = actor->posZ + st->sink;
         } else if ((g_nGroundSurfaceType & 0x3F) == 0) {
           BARREL_BURST(actor, st);
         } else {
           st->sink = -0xA;
-          actor->posZ = f + 0x180;
+          actor->posZ = f + FLOATBARREL_TUMBLE_HEIGHT;
         }
-        if (MoveActorAlongAngle(actor, (actor->rotZ - 0x40) & 0xFF, 0x80, 0x200,
+        if (MoveActorAlongAngle(actor, (actor->rotZ - 0x40) & 0xFF, FLOATBARREL_TUMBLE_SPEED, 0x200,
                           0x200, MOVE_LIFT) != 0) {
           actor->mode = FLOATBARREL_BURST;
         }
