@@ -346,6 +346,14 @@ enum LockedChestSubMode {
 #define LOCKCHEST_INSERT_TICK 0xC0
 #define LOCKCHEST_BURST_TICK 0xD0
 #define LOCKCHEST_SKIP_TICK 0xD2
+/* The lock sits LOCK_FWD ahead of and LOCK_UP above the chest's origin (chest
+ * space); the key flies there from Spyro along a sine arc, turning to face
+ * the chest over KEY_SPIN_TICK..KEY_TURN_TICK..INSERT_TICK, then slides
+ * LOCK_FWD back in, 8 a tick. */
+#define LOCKCHEST_LOCK_FWD 0x200
+#define LOCKCHEST_LOCK_UP 0x140
+#define LOCKCHEST_KEY_SPIN_TICK 0x40
+#define LOCKCHEST_KEY_TURN_TICK 0x80
 
 /* ->subMode of a cracking boulder (ACTOR_TYPE_CRACKING_BOULDER,
  * CrackingBoulderState). */
@@ -359,6 +367,13 @@ enum CrackingBoulderSubMode {
  * CRACK_FRAMES; a blast (intact or cracking) jumps the clock to BLAST_TICK. */
 #define BOULDER_CRACK_FRAMES 0x78
 #define BOULDER_BLAST_TICK 0x5A
+/* Its last SHAKE_TICKS of cracking the boulder rattles (g_aShakeRotOffsets
+ * indexed by the frames left). BOULDER_BURST lasts BURST_TICKS, its blast
+ * sphere growing 0x100 a tick; Spyro caught in it is pushed off at
+ * (PUSH_RANGE - distance) / 48 with PUSH_VZ up. */
+#define BOULDER_BURST_TICKS 8
+#define BOULDER_PUSH_RANGE 0x1000
+#define BOULDER_PUSH_VZ 0x46
 
 /* ->subMode of a spin chest (ACTOR_TYPE_SPIN_CHEST, SpinChestState). */
 enum SpinChestSubMode {
@@ -494,6 +509,49 @@ enum ThiefMode {
 /* A CIRCLE thief starts circling once Spyro, within THIEF_NEAR_RANGE, is more
  * than this (8-bit) off the far side of its node from it. */
 #define THIEF_CIRCLE_ENTER_ANGLE 0x30
+/* Hit (THIEF_CAUGHT), a thief slides from KNOCK_SPEED (CHARGE_KNOCK_SPEED
+ * when charged), losing KNOCK_DRAG a frame, and lets go of its egg on
+ * EGG_RELEASE_FRAME of THIEF_ANIM_CAUGHT. */
+#define THIEF_KNOCK_SPEED 0x96
+#define THIEF_CHARGE_KNOCK_SPEED 0xE1
+#define THIEF_KNOCK_DRAG 0x10
+#define THIEF_EGG_RELEASE_FRAME 5
+/* THIEF_ANIM_TAUNT may voice a taunt on these frames. */
+#define THIEF_TAUNT_EARLY_FRAME 2
+#define THIEF_TAUNT_LATE_FRAME 0xC
+/* GUARD and RUN speeds: BASE_SPEED less 1/32 of Spyro's 2D distance, clamped
+ * to GUARD_MIN..MAX_SPEED / RUN_MIN..MAX_SPEED (the closer he is, the
+ * faster). */
+#define THIEF_BASE_SPEED 0x154
+#define THIEF_GUARD_MIN_SPEED 0x8C
+#define THIEF_GUARD_MAX_SPEED 0xF0
+#define THIEF_RUN_MIN_SPEED 0x46
+#define THIEF_RUN_MAX_SPEED 0xDC
+/* Leaps and hops: vz loses GRAVITY a frame down to -MAX_FALL. LEAP_VZ is the
+ * RUN thief's leap to its perch, HOP_VZ every other hop, CLIMB_DOWN_VZ the
+ * climber's hop down; airborne thieves move HOP_SPEED (LEAP_HOME_SPEED on the
+ * way home). */
+#define THIEF_GRAVITY 0x14
+#define THIEF_MAX_FALL 0xC8
+#define THIEF_LEAP_VZ 0x12C
+#define THIEF_HOP_VZ 0x96
+#define THIEF_CLIMB_DOWN_VZ 0x1A4
+#define THIEF_HOP_SPEED 0x96
+#define THIEF_LEAP_HOME_SPEED 0x82
+/* LEDGE: runs to its wait node at LEDGE_RUN_SPEED, on at LEDGE_RUN_ON_SPEED,
+ * and jumps across at LEDGE_JUMP_SPEED. */
+#define THIEF_LEDGE_RUN_SPEED 0xF0
+#define THIEF_LEDGE_RUN_ON_SPEED 0xDA
+#define THIEF_LEDGE_JUMP_SPEED 0xFA
+/* FLEE: runs toward its node's speed (FLEE_SPEED when the node has none),
+ * changing FLEE_ACCEL a frame. */
+#define THIEF_FLEE_SPEED 0xCD
+#define THIEF_FLEE_ACCEL 0x1E
+/* CLIMB: runs CLIMB_SPEED up (CLIMB_BACK_SPEED back), hopping from node 11
+ * up to CLIMB_TOP_NODE. */
+#define THIEF_CLIMB_SPEED 0xB4
+#define THIEF_CLIMB_BACK_SPEED 0xC8
+#define THIEF_CLIMB_TOP_NODE 0xD
 
 /* An egg thief's animations (nextAnim), from what each mode plays. */
 enum ThiefAnim {
