@@ -404,7 +404,7 @@ void Level29_UpdateActors(void) {
           {
             int *nrm = &g_anCollisionHitNormal;
 
-            SetVector3Magnitude(nrm, 0x1000);
+            SetVector3Magnitude(nrm, FIXED_ONE);
             dot = st->vel[0] * nrm[0] + st->vel[1] * g_nCollisionHitNormalY +
                       st->vel[2] * g_nCollisionHitNormalZ >>
                   11;
@@ -415,7 +415,7 @@ void Level29_UpdateActors(void) {
             EBB_BREAK();
             nrm = &g_anCollisionHitNormal;
 
-            ScaleVector3ByRatio(nrm, 0x1000, (dot >> 2) - (dot));
+            ScaleVector3ByRatio(nrm, FIXED_ONE, (dot >> 2) - (dot));
             st->vel[0] += nrm[0];
             st->vel[1] += AS_I32(g_nCollisionHitNormalY);
             st->vel[2] += AS_I32(g_nCollisionHitNormalZ);
@@ -1339,7 +1339,7 @@ void Level29_UpdateActors(void) {
               {
                 int *nrm = &g_anCollisionHitNormal;
 
-                SetVector3Magnitude(nrm, 0x1000);
+                SetVector3Magnitude(nrm, FIXED_ONE);
 
                 dot = (st->vel[0] * nrm[0] + st->vel[1] * g_nCollisionHitNormalY +
                        st->vel[2] * g_nCollisionHitNormalZ) >>
@@ -1352,7 +1352,7 @@ void Level29_UpdateActors(void) {
                 EBB_BREAK();
                 nrm = &g_anCollisionHitNormal;
 
-                ScaleVector3ByRatio(nrm, 0x1000, -dot);
+                ScaleVector3ByRatio(nrm, FIXED_ONE, -dot);
                 st->vel[0] += nrm[0];
                 st->vel[1] += AS_I32(g_nCollisionHitNormalY);
                 st->vel[2] += AS_I32(g_nCollisionHitNormalZ);
@@ -1805,7 +1805,7 @@ void Level29_UpdateActors(void) {
           {
             int *nrm = &g_anCollisionHitNormal;
 
-            SetVector3Magnitude(nrm, 0x1000);
+            SetVector3Magnitude(nrm, FIXED_ONE);
             dot = st->vel[0] * nrm[0] + st->vel[1] * g_nCollisionHitNormalY +
                       st->vel[2] * g_nCollisionHitNormalZ >>
                   11;
@@ -1816,7 +1816,7 @@ void Level29_UpdateActors(void) {
             EBB_BREAK();
             nrm = &g_anCollisionHitNormal;
 
-            ScaleVector3ByRatio(nrm, 0x1000, (dot >> 2) - (dot));
+            ScaleVector3ByRatio(nrm, FIXED_ONE, (dot >> 2) - (dot));
             st->vel[0] += nrm[0];
             st->vel[1] += AS_I32(g_nCollisionHitNormalY);
             st->vel[2] += AS_I32(g_nCollisionHitNormalZ);

@@ -419,13 +419,13 @@ void Level23_UpdateActors(void) {
           
           int dot;
 
-          SetVector3Magnitude(&g_anCollisionHitNormal, 0x1000);
+          SetVector3Magnitude(&g_anCollisionHitNormal, FIXED_ONE);
           { int pad0; { int pad1; } } /* see header: loop.c lifetime dial */
           dot = st->vel[0] * g_anCollisionHitNormal + st->vel[1] * g_nCollisionHitNormalY +
                     st->vel[2] * g_nCollisionHitNormalZ >>
                 11;
           if (dot < 0) {
-            ScaleVector3ByRatio(&g_anCollisionHitNormal, 0x1000, (dot >> 2) - (dot));
+            ScaleVector3ByRatio(&g_anCollisionHitNormal, FIXED_ONE, (dot >> 2) - (dot));
             st->vel[0] += g_anCollisionHitNormal;
             st->vel[1] += AS_I32(g_nCollisionHitNormalY);
             st->vel[2] += AS_I32(g_nCollisionHitNormalZ);
@@ -1324,14 +1324,14 @@ void Level23_UpdateActors(void) {
               actor->posY = AS_I32(g_nCollisionResolvedY);
               actor->posZ = AS_I32(g_nCollisionResolvedZ);
 
-              SetVector3Magnitude(&g_anCollisionHitNormal, 0x1000);
+              SetVector3Magnitude(&g_anCollisionHitNormal, FIXED_ONE);
 
               dot = (st->vel[0] * g_anCollisionHitNormal + st->vel[1] * g_nCollisionHitNormalY +
                      st->vel[2] * g_nCollisionHitNormalZ) >>
                     11;
 
               if (dot < 0) {
-                ScaleVector3ByRatio(&g_anCollisionHitNormal, 0x1000, -dot);
+                ScaleVector3ByRatio(&g_anCollisionHitNormal, FIXED_ONE, -dot);
                 st->vel[0] += g_anCollisionHitNormal;
                 st->vel[1] += AS_I32(g_nCollisionHitNormalY);
                 st->vel[2] += AS_I32(g_nCollisionHitNormalZ);

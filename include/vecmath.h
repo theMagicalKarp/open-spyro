@@ -11,6 +11,11 @@
 #ifndef OPEN_SPYRO_VECMATH_H
 #define OPEN_SPYRO_VECMATH_H
 
+/* 1.0 in the 12-bit-fraction fixed point (a unit vector's length, the
+ * SetVector3Magnitude / ScaleVector3ByRatio scale for "normalise" and "times a
+ * 4.12 factor"). */
+#define FIXED_ONE 0x1000
+
 /* Trig: sine/cosine of a 12-bit angle (result 12-bit fraction), linearly
  * interpolated between the 256 entries of g_anSineLut / g_anCosineLut. */
 int LookupSine(int angle);

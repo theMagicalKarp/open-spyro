@@ -611,13 +611,13 @@ void Level32_UpdateActors(void) {
         int along;
         register int push asm("$7"); /* a3, as in the original (A374) */
 
-        SetVector3Magnitude(&g_nCollisionHitNormalX, 0x1000);
+        SetVector3Magnitude(&g_nCollisionHitNormalX, FIXED_ONE);
         along = (st->vel[0] * g_nCollisionHitNormalX) + (st->vel[1] * g_nCollisionHitNormalY) +
                 (st->vel[2] * g_nCollisionHitNormalZ);
         push = along >> 11;
 
         if (push < 0) {
-          ScaleVector3ByRatio(&g_anCollisionHitNormal, 0x1000, (along >> 13) - push);
+          ScaleVector3ByRatio(&g_anCollisionHitNormal, FIXED_ONE, (along >> 13) - push);
           st->vel[0] += g_nCollisionHitNormalX;
           st->vel[1] += AS_I32(g_nCollisionHitNormalY);
           st->vel[2] += AS_I32(g_nCollisionHitNormalZ);
@@ -2582,14 +2582,14 @@ void Level32_UpdateActors(void) {
               actor->posY = AS_I32(g_nCollisionResolvedY);
               actor->posZ = AS_I32(g_nCollisionResolvedZ);
 
-              SetVector3Magnitude(&g_nCollisionHitNormalX, 0x1000);
+              SetVector3Magnitude(&g_nCollisionHitNormalX, FIXED_ONE);
 
               dot = (st->vel[0] * g_nCollisionHitNormalX + st->vel[1] * g_nCollisionHitNormalY +
                      st->vel[2] * g_nCollisionHitNormalZ) >>
                     11;
 
               if (dot < 0) {
-                ScaleVector3ByRatio(&g_anCollisionHitNormal, 0x1000, -dot);
+                ScaleVector3ByRatio(&g_anCollisionHitNormal, FIXED_ONE, -dot);
                 st->vel[0] += g_nCollisionHitNormalX;
                 st->vel[1] += AS_I32(g_nCollisionHitNormalY);
                 st->vel[2] += AS_I32(g_nCollisionHitNormalZ);
@@ -2720,13 +2720,13 @@ void Level32_UpdateActors(void) {
         if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100) != 0) {
           int along;
 
-          SetVector3Magnitude(&g_nCollisionHitNormalX, 0x1000);
+          SetVector3Magnitude(&g_nCollisionHitNormalX, FIXED_ONE);
           along = (st->vel[0] * g_nCollisionHitNormalX) + (st->vel[1] * g_nCollisionHitNormalY) +
                   (st->vel[2] * g_nCollisionHitNormalZ);
           i = along >> 11;
 
           if (i < 0) {
-            ScaleVector3ByRatio(&g_anCollisionHitNormal, 0x1000, (along >> 13) - i);
+            ScaleVector3ByRatio(&g_anCollisionHitNormal, FIXED_ONE, (along >> 13) - i);
             st->vel[0] += g_nCollisionHitNormalX;
             st->vel[1] += AS_I32(g_nCollisionHitNormalY);
             st->vel[2] += AS_I32(g_nCollisionHitNormalZ);
@@ -3299,13 +3299,13 @@ void Level32_UpdateActors(void) {
         int along;
         register int push asm("$7"); /* a3, as in the original (A374) */
 
-        SetVector3Magnitude(&g_nCollisionHitNormalX, 0x1000);
+        SetVector3Magnitude(&g_nCollisionHitNormalX, FIXED_ONE);
         along = (st->vel[0] * g_nCollisionHitNormalX) + (st->vel[1] * g_nCollisionHitNormalY) +
                 (st->vel[2] * g_nCollisionHitNormalZ);
         push = along >> 11;
 
         if (push < 0) {
-          ScaleVector3ByRatio(&g_anCollisionHitNormal, 0x1000, (along >> 13) - push);
+          ScaleVector3ByRatio(&g_anCollisionHitNormal, FIXED_ONE, (along >> 13) - push);
           st->vel[0] += g_nCollisionHitNormalX;
           st->vel[1] += AS_I32(g_nCollisionHitNormalY);
           st->vel[2] += AS_I32(g_nCollisionHitNormalZ);

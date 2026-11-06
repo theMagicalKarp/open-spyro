@@ -79,13 +79,13 @@ static inline int *Opaque(int *p) {
     int k;                                                                     \
                                                                                \
     g_anSpyroWallSlideNudgeAccum[2] = 0;                                       \
-    SetVector3Magnitude(nudge, 0x1000);                                        \
+    SetVector3Magnitude(nudge, FIXED_ONE);                                     \
     k = (-(w)[0x10] * (w)[1] -                                                 \
          g_nSpyroVelocityY * g_anSpyroWallSlideNudgeAccum[1]) >>               \
         12;                                                                    \
     (w) += 0x10;                                                               \
     if (k > 0) {                                                               \
-      ScaleVector3ByRatio(nudge, 0x1000, k);                                   \
+      ScaleVector3ByRatio(nudge, FIXED_ONE, k);                                \
       AddVector((w), (w), nudge);                                              \
       setspeed;                                                                \
     }                                                                          \
@@ -408,12 +408,12 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       int *nudge = cd + (SPY_NUDGE - SPY_LOCKOUT);
 
       g_anSpyroWallSlideNudgeAccum[2] = 0;
-      SetVector3Magnitude(nudge, 0x1000);
+      SetVector3Magnitude(nudge, FIXED_ONE);
       l = (-cd[SPY_VELOCITY - SPY_LOCKOUT] * cd[SPY_NUDGE - SPY_LOCKOUT] -
            g_nSpyroVelocityY * g_anSpyroWallSlideNudgeAccum[1]) >>
           12;
       if (l > 0) {
-        ScaleVector3ByRatio(nudge, 0x1000, l);
+        ScaleVector3ByRatio(nudge, FIXED_ONE, l);
         AddVector(vel, vel, nudge);
       }
     }
@@ -489,13 +489,13 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       int k;
 
       g_anSpyroWallSlideNudgeAccum[2] = 0;
-      SetVector3Magnitude(nudge, 0x1000);
+      SetVector3Magnitude(nudge, FIXED_ONE);
       k = (-vz[-2] * vz[SPY_NUDGE - SPY_VELOCITY - 2] -
            g_nSpyroVelocityY * g_anSpyroWallSlideNudgeAccum[1]) >>
           12;
       if (k > 0) {
         vz -= 2;
-        ScaleVector3ByRatio(nudge, 0x1000, k);
+        ScaleVector3ByRatio(nudge, FIXED_ONE, k);
         AddVector(vz, vz, nudge);
       }
     }
