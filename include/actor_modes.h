@@ -209,6 +209,33 @@ enum ButterflyMode {
 #define BUTTERFLY_DROP_HEIGHT 2048
 /* ButterflyState.offscreenTimer seed: frames it keeps fluttering undrawn. */
 #define BUTTERFLY_OFFSCREEN_FRAMES 0x708
+/* Flutter random ranges (RandomIntInRange lo, hi): every VEER_MIN..MAX_FRAMES
+ * the heading veers by VEER_MIN..MAX either way; every CLIMB_MIN..MAX_FRAMES
+ * vz takes a new VZ_MIN..MAX (either sign, forced up / down at the height
+ * band edges). A circling butterfly bobs with the CIRCLE_ ranges instead. */
+#define BUTTERFLY_VEER_MIN 30
+#define BUTTERFLY_VEER_MAX 90
+#define BUTTERFLY_VEER_MIN_FRAMES 60
+#define BUTTERFLY_VEER_MAX_FRAMES 140
+#define BUTTERFLY_FLUTTER_VZ_MIN 10
+#define BUTTERFLY_FLUTTER_VZ_MAX 25
+#define BUTTERFLY_FLUTTER_CLIMB_MIN_FRAMES 80
+#define BUTTERFLY_FLUTTER_CLIMB_MAX_FRAMES 140
+#define BUTTERFLY_CIRCLE_VZ_MIN 5
+#define BUTTERFLY_CIRCLE_VZ_MAX 20
+#define BUTTERFLY_CIRCLE_CLIMB_MIN_FRAMES 40
+#define BUTTERFLY_CIRCLE_CLIMB_MAX_FRAMES 80
+/* Lined up on its heading but blocked: it turns back by BOUNCE_MIN..MAX
+ * (about 0x80, a half turn) and holds that for BOUNCE_MIN..MAX_FRAMES; past
+ * BUTTERFLY_LEASH it heads home for LEASH_TURN_FRAMES. */
+#define BUTTERFLY_BOUNCE_MIN 98
+#define BUTTERFLY_BOUNCE_MAX 158
+#define BUTTERFLY_BOUNCE_MIN_FRAMES 30
+#define BUTTERFLY_BOUNCE_MAX_FRAMES 80
+#define BUTTERFLY_LEASH_TURN_FRAMES 40
+/* Flutter step: MoveActorAlongHeading speed / radius. */
+#define BUTTERFLY_SPEED 30
+#define BUTTERFLY_RADIUS 50
 
 /* ->mode of a seed pod (ACTOR_TYPE_SEED_POD, SeedPodState). */
 enum SeedPodMode {

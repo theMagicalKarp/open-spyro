@@ -807,7 +807,7 @@ void Level20_UpdateActors(void) {
           /* Idle: sample the floor normal and face along it. */
           CopyVector(svA, &actor->posX);
           svA[2] += GROUND_PROBE_LIFT;
-          FindGroundHeightBelow(svA, 0x10000);
+          FindGroundHeightBelow(svA, GROUND_PROBE_FAR);
           {
             int *nrm = &g_anCollisionHitNormal;
 
@@ -976,9 +976,9 @@ void Level20_UpdateActors(void) {
               st->vel[2] = (st->vel[2] >> 2) + (GetRandomU32() & 0xF);
             }
           } else {
-            bouncePos[2] -= 0xF0;
+            bouncePos[2] -= COLLECT_RADIUS;
             CopyVector(at, bouncePos);
-            FindGroundHeightBelow(bouncePos, 0x10000);
+            FindGroundHeightBelow(bouncePos, GROUND_PROBE_FAR);
             EncodeHitNormalToActorGroundCode(actor);
           }
 
@@ -2041,7 +2041,7 @@ void Level20_UpdateActors(void) {
 
         st->phase = phase;
 
-        if (phase < 0x40) {
+        if (phase < SHAKE_TICKS) {
           int dx;
           int dy;
 

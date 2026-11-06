@@ -189,6 +189,8 @@ typedef struct NameLetterState {
 /* How far above a point the FindGroundHeightBelow probes start, so a point
  * resting on (or just under) a floor still finds it. */
 #define GROUND_PROBE_LIFT 0x400
+/* FindGroundHeightBelow depth that reaches any floor under the point. */
+#define GROUND_PROBE_FAR 0x10000
 #define MOVE_PASS_ACTORS 0x02  /* actors never block: the step is pushed out of them (CONTACT_PUSH_OUT) */
 #define MOVE_FOLLOW_FLOOR 0x04 /* ease Z toward the probed floor (snap when close) */
 #define MOVE_STEP_LIMIT 0x10   /* reject a step up or down past the step height */

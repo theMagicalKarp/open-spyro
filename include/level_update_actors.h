@@ -98,6 +98,10 @@ typedef struct AngPair {
 } AngPair;
 
 extern AngPair g_aShakeRotOffsets[];
+/* g_aShakeRotOffsets spans this many shake ticks (one pair per two): the
+ * wobbling chest's hit recoil and the dragon statue's rattle past
+ * STATUE_SHAKE_TICK both run for it. */
+#define SHAKE_TICKS 0x40
 
 /* Type 421: life chest. Shakes and pops its lid on a timer, showing its
  * rider (ACTOR_TYPE_LIFE_CHEST_RIDER); breaks into fragments and drops its
@@ -260,6 +264,14 @@ typedef struct FollowState {
   int count;    /* 0x20 number of followers sharing this parent */
   int dropToSpyro;    /* 0x24 nonzero: the death drop flies straight to Spyro (kind 4) */
 } FollowState;
+
+/* A parent's followers release FOLLOWER_RELEASE_STAGGER frames apart (each
+ * earlier one adds a step), each popping with a higher tone (count << 7). A
+ * dropped item is placed on the ground found within
+ * FOLLOWER_DROP_PROBE_DEPTH of the lifted point (the probe starts
+ * GROUND_PROBE_LIFT up, 0x1000 below the point). */
+#define FOLLOWER_RELEASE_STAGGER 9
+#define FOLLOWER_DROP_PROBE_DEPTH (GROUND_PROBE_LIFT + 0x1000)
 
 /* Case 173 — the level key (ACTOR_TYPE_KEY): rocks in place and sparkles;
  * touching it sets g_nLevelKeyState = 1, and the locked chest (174) then
