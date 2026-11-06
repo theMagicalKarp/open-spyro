@@ -3280,33 +3280,33 @@ void Level14_UpdateActors(void) {
         st->savedPosZ = actor->posZ;
       } else if (actor->mode == STATUE_IDLE) {
         st->phase += g_nFrameStep;
-        if (st->phase > 256) {
+        if (st->phase > STATUE_CYCLE_TICKS) {
           st->phase = 0;
           actor->rotX = st->savedRotX;
           actor->rotY = st->savedRotY;
           actor->posZ = st->savedPosZ;
           actor->flags = 0;
           StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        } else if (st->phase >= 192) {
+        } else if (st->phase >= STATUE_SHAKE_TICK) {
 
           if (!GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[STATUE_VOICE_RATTLE])) {
             PlayActorMeshVoice(actor, STATUE_VOICE_RATTLE, 0);
           }
           actor->rotX =
-              (signed char)g_aShakeRotOffsets[(st->phase - 192) >> 1].a + st->savedRotX;
+              (signed char)g_aShakeRotOffsets[(st->phase - STATUE_SHAKE_TICK) >> 1].a + st->savedRotX;
           actor->rotY =
-              (signed char)g_aShakeRotOffsets[(st->phase - 192) >> 1].b + st->savedRotY;
+              (signed char)g_aShakeRotOffsets[(st->phase - STATUE_SHAKE_TICK) >> 1].b + st->savedRotY;
           actor->posZ =
               st->savedPosZ +
-              (ABS2((signed char)g_aShakeRotOffsets[(st->phase - 192) >> 1].a) +
-               ABS2((signed char)g_aShakeRotOffsets[(st->phase - 192) >> 1].b)) *
+              (ABS2((signed char)g_aShakeRotOffsets[(st->phase - STATUE_SHAKE_TICK) >> 1].a) +
+               ABS2((signed char)g_aShakeRotOffsets[(st->phase - STATUE_SHAKE_TICK) >> 1].b)) *
                   6;
-        } else if (st->phase >= 188) {
+        } else if (st->phase >= STATUE_SETTLE_TICK) {
           st->savedRotX = actor->rotX;
           st->savedRotY = actor->rotY;
           st->savedPosZ = actor->posZ;
         } else if (actor->flags != 0) {
-          st->phase = 188;
+          st->phase = STATUE_SETTLE_TICK;
           StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         } else {
           if ((st->phase >> 1) == 16 && (GetRandomU32() & 3) == 0) {

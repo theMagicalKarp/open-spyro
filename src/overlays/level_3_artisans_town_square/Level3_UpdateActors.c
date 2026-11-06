@@ -2527,14 +2527,14 @@ void Level3_UpdateActors(void) {
       if (actor->mode == STATUE_IDLE) {
         st->phase += g_nFrameStep;
 
-        if (st->phase >= 0x101) {
+        if (st->phase > STATUE_CYCLE_TICKS) {
           st->phase = 0;
           actor->rotX = st->rotX;
           actor->rotY = st->rotY;
           actor->posZ = st->restZ;
           actor->flags = 0;
           StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        } else if (st->phase >= 0xC0) {
+        } else if (st->phase >= STATUE_SHAKE_TICK) {
           int dx;
           int dy;
 
@@ -2542,11 +2542,11 @@ void Level3_UpdateActors(void) {
             PlayActorMeshVoice(actor, STATUE_VOICE_RATTLE, 0);
           }
 
-          actor->rotX = g_aShakeRotOffsets[(st->phase - 0xC0) >> 1].a + st->rotX;
-          actor->rotY = g_aShakeRotOffsets[(st->phase - 0xC0) >> 1].b + st->rotY;
+          actor->rotX = g_aShakeRotOffsets[(st->phase - STATUE_SHAKE_TICK) >> 1].a + st->rotX;
+          actor->rotY = g_aShakeRotOffsets[(st->phase - STATUE_SHAKE_TICK) >> 1].b + st->rotY;
 
-          dx = (signed char)g_aShakeRotOffsets[(st->phase - 0xC0) >> 1].a;
-          dy = (signed char)g_aShakeRotOffsets[(st->phase - 0xC0) >> 1].b;
+          dx = (signed char)g_aShakeRotOffsets[(st->phase - STATUE_SHAKE_TICK) >> 1].a;
+          dy = (signed char)g_aShakeRotOffsets[(st->phase - STATUE_SHAKE_TICK) >> 1].b;
           if (dx < 0) {
             dx = -dx;
           }
@@ -2555,12 +2555,12 @@ void Level3_UpdateActors(void) {
           }
           dx += dy;
           actor->posZ = st->restZ + dx * 6;
-        } else if (st->phase >= 0xBC) {
+        } else if (st->phase >= STATUE_SETTLE_TICK) {
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
           st->restZ = actor->posZ;
         } else if (actor->flags != 0) {
-          st->phase = 0xBC;
+          st->phase = STATUE_SETTLE_TICK;
           StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         } else if ((st->phase >> 1) == 0x10 && !(GetRandomU32() & 3)) {
           SpawnActorRotBillboard(actor, &g_anRotBillboardOffset0);
