@@ -114,6 +114,12 @@ enum SaveHostMode {
 #define SAVEHOST_HOVER_LEASH 0x2400
 #define SAVEHOST_WANDER_LEASH 0x2800
 #define SAVEHOST_LEASH_DZ 0xC00
+/* Frame counts: a hidden host waits APPEAR_DELAY before it may pop in (after
+ * arming, and again after popping out); it hovers WANDER_DELAY (then
+ * WANDER_DELAY + 0..0x1F) between glides, each WANDER_FRAMES long. */
+#define SAVEHOST_APPEAR_DELAY 0x10
+#define SAVEHOST_WANDER_DELAY 0x1E
+#define SAVEHOST_WANDER_FRAMES 0x10
 
 /* ->mode of a crystal dragon statue (ACTOR_TYPE_DRAGON_STATUE,
  * DragonStatueState). */

@@ -1335,7 +1335,7 @@ void Level19_UpdateActors(void) {
       case SAVEHOST_WAIT_ARMED:
         if (armer->mode >= ACTOR_MODE_DORMANT) {
           actor->mode = SAVEHOST_HIDDEN;
-          st->timer = 0x10;
+          st->timer = SAVEHOST_APPEAR_DELAY;
           st->baseZ = actor->posZ;
         }
         break;
@@ -1379,7 +1379,7 @@ void Level19_UpdateActors(void) {
         } else {
           actor->mode = SAVEHOST_HOVER;
           st->timer = 0;
-          st->wanderTimer = 0x1E;
+          st->wanderTimer = SAVEHOST_WANDER_DELAY;
         }
         break;
 
@@ -1474,9 +1474,9 @@ void Level19_UpdateActors(void) {
           FindGroundHeightBelow(here, 0x1000);
           EncodeHitNormalToActorGroundCode(actor);
 
-          if (st->wanderTimer == 0x10) {
+          if (st->wanderTimer == SAVEHOST_WANDER_FRAMES) {
             actor->mode = SAVEHOST_HOVER;
-            st->wanderTimer = (GetRandomU32() & 0x1F) + 0x1E;
+            st->wanderTimer = (GetRandomU32() & 0x1F) + SAVEHOST_WANDER_DELAY;
           }
         }
         break;
@@ -1490,7 +1490,7 @@ void Level19_UpdateActors(void) {
           actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;
           actor->mode = SAVEHOST_HIDDEN;
-          st->timer = 0x10;
+          st->timer = SAVEHOST_APPEAR_DELAY;
           g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, 0xC);
           actor->groundCode &= ~ACTOR_GROUND_VALID;
         }

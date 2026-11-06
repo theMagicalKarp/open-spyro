@@ -2605,9 +2605,9 @@ void Level22_UpdateActors(void) {
           FindGroundHeightBelow(&actor->posX, 0x1000);
           EncodeHitNormalToActorGroundCode(actor);
 
-          if (st->wanderTimer == 0x10) {
+          if (st->wanderTimer == SAVEHOST_WANDER_FRAMES) {
             actor->mode = SAVEHOST_HOVER;
-            st->wanderTimer = (GetRandomU32() & 0x1F) + 0x1E;
+            st->wanderTimer = (GetRandomU32() & 0x1F) + SAVEHOST_WANDER_DELAY;
           }
         }
 
