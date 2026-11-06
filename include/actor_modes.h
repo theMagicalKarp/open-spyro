@@ -1727,7 +1727,7 @@ enum MetalheadAnim {
 enum MetalheadAttack {
   METALHEAD_ATTACK_NONE = 0,
   METALHEAD_ATTACK_FLING = 1, /* needs a live minion in the phase's group and Spyro at least
-                               * 0x2000 away and level: raises MHEAD_CATCH_READY until a
+                               * METALHEAD_FLING_MIN away and level: raises MHEAD_CATCH_READY until a
                                * minion jumps in, then METALHEAD_FLING */
   METALHEAD_ATTACK_SPRAY = 2, /* METALHEAD_SPRAY */
   METALHEAD_ATTACK_LOB = 3,   /* METALHEAD_LOB */
@@ -1740,6 +1740,45 @@ enum MetalheadCatch {
   MHEAD_CATCH_READY = 1, /* Spyro is in fling range: a facing minion may jump */
   MHEAD_CATCH_GO = 2,    /* set by the minion as it jumps: enter METALHEAD_FLING */
 };
+
+/* Metalhead's tuning. Spyro's distance is measured exactly inside
+ * EXACT_RANGE. While attacking, the follow camera holds on him with Spyro
+ * within CAM_DZ and CAM_RANGE (CAM_RANGE_LATE after phase 0), off for
+ * CAM_HOLD_FRAMES after a charge; within SEEN_RANGE the arena chunk starts.
+ * Attacks: FLING (60 in 100, only with a live minion, Spyro over FLING_MIN
+ * away and within FLING_PICK_DZ; flung within the phase range and FLING_DZ),
+ * SPRAY (25 in 100, SPRAY_MIN..ATTACK_MAX away) and LOB (the rest,
+ * LOB_MIN..ATTACK_MAX), both within ATTACK_DZ; each ends with ATTACK_REST
+ * frames idle. */
+#define METALHEAD_EXACT_RANGE 0x32C8
+#define METALHEAD_CAM_DZ 0x578
+#define METALHEAD_CAM_RANGE 0x6400
+#define METALHEAD_CAM_RANGE_LATE 0x6000
+#define METALHEAD_CAM_HOLD_FRAMES 0x3C
+#define METALHEAD_SEEN_RANGE 0x6800
+#define METALHEAD_FLING_MIN 0x2000
+#define METALHEAD_FLING_PICK_DZ 0x385
+#define METALHEAD_FLING_DZ 0x320
+#define METALHEAD_FLING_ODDS 0x3C
+#define METALHEAD_SPRAY_ODDS_END 0x55
+#define METALHEAD_SPRAY_MIN 0x800
+#define METALHEAD_LOB_MIN 0x2800
+#define METALHEAD_ATTACK_MAX 0x7000
+#define METALHEAD_ATTACK_DZ 0x3E8
+#define METALHEAD_ATTACK_REST 0x50
+/* SPRAY fires a pod shot each frame of 5..0x14, aimed SPRAY_REACH (+150 a
+ * shot, ± SPRAY_SCATTER) ahead; shots live SHOT_LIFE. LOB throws on frames
+ * 4..8 every 7 frames: bolts live BOLT_LIFE at BOLT_SPEED + distance / 256. */
+#define METALHEAD_SPRAY_REACH 3000
+#define METALHEAD_SPRAY_SCATTER 0x320
+#define METALHEAD_SHOT_LIFE 0xB4
+#define METALHEAD_BOLT_LIFE 0xF0
+#define METALHEAD_BOLT_SPEED 0x190
+/* Between phases he staggers for STAGGER_FRAMES at STAGGER_SPEED, then runs
+ * at RUN_SPEED to the next phase's node. */
+#define METALHEAD_STAGGER_FRAMES 0x46
+#define METALHEAD_STAGGER_SPEED 0x78
+#define METALHEAD_RUN_SPEED 0x118
 
 /* ->mode of a lunger (ACTOR_TYPE_LUNGER, LungeState; level 4). It takes
  * LungeState.hits hits (each one switches its animation set, anim += 7)
@@ -2970,7 +3009,7 @@ enum RoamingCritterAnim {
 enum CheckpointMode {
   CHECKPT_REARM = 0,     /* waits for Spyro to walk away (> CHECKPT_REARM_RANGE), then ARMED */
   CHECKPT_ARMED = 1,     /* Spyro touches it: sets the respawn anchor, FLASH */
-  CHECKPT_FLASH = 2,     /* subMode counts frames to 0x30, then REARM */
+  CHECKPT_FLASH = 2,     /* subMode counts frames to CHECKPT_FLASH_FRAMES, then REARM */
   CHECKPT_HELD = 3,      /* its dragon statue holds it until the rescue (no arm runs) */
 };
 

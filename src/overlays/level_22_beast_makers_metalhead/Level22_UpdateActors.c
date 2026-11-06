@@ -619,7 +619,7 @@ void Level22_UpdateActors(void) {
 
       SubtractVector(g104, &spy->posX, &actor->posX);
       dist = ApproxDist2D(&actor->posX, &g_anSpyroWorldPos);
-      if (dist < 0x32C8) {
+      if (dist < METALHEAD_EXACT_RANGE) {
         dist = VectorLength(g104, VEC_LEN_XY);
       }
       if (st->init == 0) {
@@ -647,31 +647,31 @@ void Level22_UpdateActors(void) {
       if (actor->mode < METALHEAD_PHASE_TURN) {
         if (st->phase == 0) {
           if (TICK_DOWN(st->camTimer) != 0 &&
-              (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x578
-                                 : -SPY_DZ(actor) < 0x578) &&
-              dist < 0x6400 && g_nSpyroState != SPYRO_ST_CHARGE && g_nSpyroState != SPYRO_ST_CHARGE_AIR) {
+              (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < METALHEAD_CAM_DZ
+                                 : -SPY_DZ(actor) < METALHEAD_CAM_DZ) &&
+              dist < METALHEAD_CAM_RANGE && g_nSpyroState != SPYRO_ST_CHARGE && g_nSpyroState != SPYRO_ST_CHARGE_AIR) {
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FOLLOW_CAMERA);
             g_pScriptedCameraActor = actor;
           }
         } else {
           if (TICK_DOWN(st->camTimer) != 0 &&
-              (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x578
-                                 : -SPY_DZ(actor) < 0x578) &&
-              dist < 0x6000 && g_nSpyroState != SPYRO_ST_CHARGE && g_nSpyroState != SPYRO_ST_CHARGE_AIR) {
+              (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < METALHEAD_CAM_DZ
+                                 : -SPY_DZ(actor) < METALHEAD_CAM_DZ) &&
+              dist < METALHEAD_CAM_RANGE_LATE && g_nSpyroState != SPYRO_ST_CHARGE && g_nSpyroState != SPYRO_ST_CHARGE_AIR) {
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FOLLOW_CAMERA);
             g_pScriptedCameraActor = actor;
           }
         }
       }
       if (g_nSpyroState == SPYRO_ST_CHARGE || g_nSpyroState == SPYRO_ST_CHARGE_AIR) {
-        st->camTimer = 0x3C;
+        st->camTimer = METALHEAD_CAM_HOLD_FRAMES;
       }
-      if (PickupGroupHasLiveActor(st->phase + 2) == 0 && actor->mode < 4) {
+      if (PickupGroupHasLiveActor(st->phase + 2) == 0 && actor->mode <= METALHEAD_LOB) {
         ModifyWorldChunkAnimFlags(METALHEAD_CHUNK_PHASE(st->phase), CHUNK_ANIM_RESUME, 0);
         actor->mode = METALHEAD_PHASE_TURN;
         continue;
       }
-      if (st->seen == 0 && dist < 0x6800) {
+      if (st->seen == 0 && dist < METALHEAD_SEEN_RANGE) {
         st->seen = 1;
         ModifyWorldChunkAnimFlags(METALHEAD_CHUNK_ARENA, CHUNK_ANIM_RESUME, 0);
       }
@@ -683,9 +683,9 @@ void Level22_UpdateActors(void) {
 
         d = ApproxDist2D(&actor->posX, &g_anSpyroWorldPos);
         sel = 1;
-        if (!(PickupGroupHasLiveActor(st->phase) != 0 && d >= 0x2000 &&
-              (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x385
-                                 : -SPY_DZ(actor) < 0x385))) {
+        if (!(PickupGroupHasLiveActor(st->phase) != 0 && d >= METALHEAD_FLING_MIN &&
+              (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < METALHEAD_FLING_PICK_DZ
+                                 : -SPY_DZ(actor) < METALHEAD_FLING_PICK_DZ))) {
           sel = 2;
           if (st->choice == METALHEAD_ATTACK_FLING) {
             st->choice = METALHEAD_ATTACK_NONE;
@@ -696,11 +696,11 @@ void Level22_UpdateActors(void) {
           int r = RandomIntInRange(0, 100);
 
           if (sel >= 2) {
-            r = RandomIntInRange(0x3C, 100);
+            r = RandomIntInRange(METALHEAD_FLING_ODDS, 100);
           }
-          if (r < 0x3C) {
+          if (r < METALHEAD_FLING_ODDS) {
             st->choice = METALHEAD_ATTACK_FLING;
-          } else if (r < 0x55) {
+          } else if (r < METALHEAD_SPRAY_ODDS_END) {
             st->choice = METALHEAD_ATTACK_SPRAY;
           } else {
             st->choice = METALHEAD_ATTACK_LOB;
@@ -711,9 +711,9 @@ void Level22_UpdateActors(void) {
         }
         switch (st->choice) {
         case METALHEAD_ATTACK_FLING:
-          if (d < st->range[st->phase] << 10 && d > 0x2000 &&
-              (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x320
-                                 : -SPY_DZ(actor) < 0x320)) {
+          if (d < st->range[st->phase] << 10 && d > METALHEAD_FLING_MIN &&
+              (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < METALHEAD_FLING_DZ
+                                 : -SPY_DZ(actor) < METALHEAD_FLING_DZ)) {
             if (actor->subMode == MHEAD_CATCH_NONE) {
               actor->subMode = MHEAD_CATCH_READY;
             }
@@ -727,9 +727,9 @@ void Level22_UpdateActors(void) {
           continue;
 
         case METALHEAD_ATTACK_SPRAY:
-          if (d > 0x800 && d < 0x7000 &&
-              (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x3E8
-                                 : -SPY_DZ(actor) < 0x3E8)) {
+          if (d > METALHEAD_SPRAY_MIN && d < METALHEAD_ATTACK_MAX &&
+              (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < METALHEAD_ATTACK_DZ
+                                 : -SPY_DZ(actor) < METALHEAD_ATTACK_DZ)) {
             st->shots = 0;
             actor->mode = METALHEAD_SPRAY;
             continue;
@@ -738,9 +738,9 @@ void Level22_UpdateActors(void) {
           continue;
 
         case METALHEAD_ATTACK_LOB:
-          if (d > 0x2800 && d < 0x7000 &&
-              (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x3E8
-                                 : -SPY_DZ(actor) < 0x3E8)) {
+          if (d > METALHEAD_LOB_MIN && d < METALHEAD_ATTACK_MAX &&
+              (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < METALHEAD_ATTACK_DZ
+                                 : -SPY_DZ(actor) < METALHEAD_ATTACK_DZ)) {
             st->count = 0;
             CopyVector(st->aim, &g_anSpyroWorldPos);
             actor->mode = METALHEAD_LOB;
@@ -755,7 +755,7 @@ void Level22_UpdateActors(void) {
       case METALHEAD_FLING:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (g_nActorAnimDone != 0) {
-          st->timer = 0x50;
+          st->timer = METALHEAD_ATTACK_REST;
           st->choice = METALHEAD_ATTACK_NONE;
           ENTER_POSE(actor, METALHEAD_IDLE);
         }
@@ -771,10 +771,10 @@ void Level22_UpdateActors(void) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 3, &o->posX);
           CopyVector(g056, &actor->posX);
-          g056[0] += ((st->shots * 150 + 3000) * g_anCosineLut[actor->rotZ]) >> 12;
-          g056[1] += ((st->shots * 150 + 3000) * g_anSineLut[actor->rotZ]) >> 12;
-          g056[0] += RandomIntInRange(-0x320, 0x320);
-          g056[1] += RandomIntInRange(-0x320, 0x320);
+          g056[0] += ((st->shots * 150 + METALHEAD_SPRAY_REACH) * g_anCosineLut[actor->rotZ]) >> 12;
+          g056[1] += ((st->shots * 150 + METALHEAD_SPRAY_REACH) * g_anSineLut[actor->rotZ]) >> 12;
+          g056[0] += RandomIntInRange(-METALHEAD_SPRAY_SCATTER, METALHEAD_SPRAY_SCATTER);
+          g056[1] += RandomIntInRange(-METALHEAD_SPRAY_SCATTER, METALHEAD_SPRAY_SCATTER);
           g056[2] += 0x12C;
           SubtractVector(sh->vel, g056, &o->posX);
           d = ApproxDist2D(&actor->posX, g056) / 500;
@@ -785,13 +785,13 @@ void Level22_UpdateActors(void) {
           o->rotZ = ArcTan2(g056[0] - o->posX, g056[1] - o->posY, ATAN_ANGLE8);
           o->rotY = ArcTan2(ApproxDist2D(&o->posX, g056),
                                    g056[2] - o->posZ, ATAN_ANGLE8);
-          sh->timer = 0xB4;
+          sh->timer = METALHEAD_SHOT_LIFE;
           sh->heading = st->phase + 2;
           sh->mode = 0;
           st->shots += g_nFrameStep;
         }
         if (g_nActorAnimDone != 0) {
-          st->timer = 0x50;
+          st->timer = METALHEAD_ATTACK_REST;
           st->choice = METALHEAD_ATTACK_NONE;
           ENTER_POSE(actor, METALHEAD_IDLE);
         }
@@ -805,14 +805,14 @@ void Level22_UpdateActors(void) {
 
           CopyVector(&o->posX, st->hand);
           b = o->state;
-          b->timer = 0xF0;
+          b->timer = METALHEAD_BOLT_LIFE;
           o->rotZ = ArcTan2(st->aim[0] - o->posX, st->aim[1] - o->posY,
                                    ATAN_ANGLE8);
           o->cullRadius = 0x28;
           st->count = 0;
           b->heading = st->phase + 2;
           b->dvz = -7;
-          b->speed = (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) >> 8) + 0x190;
+          b->speed = (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) >> 8) + METALHEAD_BOLT_SPEED;
           b->vz = ComputeLobVelocityZ(&o->posX, st->aim, b->speed, b->dvz, &b->flightTime);
         }
         if (actor->nextFrame < 3) {
@@ -821,7 +821,7 @@ void Level22_UpdateActors(void) {
         }
         st->count += g_nFrameStep;
         if (g_nActorAnimDone != 0) {
-          st->timer = 0x50;
+          st->timer = METALHEAD_ATTACK_REST;
           st->choice = METALHEAD_ATTACK_NONE;
           ENTER_POSE(actor, METALHEAD_IDLE);
         }
@@ -851,14 +851,14 @@ void Level22_UpdateActors(void) {
         ANIM_GO(actor, METALHEAD_ANIM_ROAR);
         if (g_nActorAnimDone != 0) {
           ANIM_THEN(actor, METALHEAD_ANIM_STAGGER);
-          st->staggerTimer = 0x46;
+          st->staggerTimer = METALHEAD_STAGGER_FRAMES;
           actor->mode++;
           continue;
         }
         continue;
 
       case METALHEAD_PHASE_STAGGER:
-        PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 3, 5, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        PivotActorAlongPath(actor, st->path, 0x100, METALHEAD_STAGGER_SPEED, 0, 3, 5, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         if (TICK_DOWN(st->staggerTimer) != 0) {
           actor->mode++;
           continue;
@@ -875,7 +875,7 @@ void Level22_UpdateActors(void) {
         continue;
 
       case METALHEAD_PHASE_RUN:
-        if (PivotActorAlongPath(actor, st->path, 0x15E, 0x118, 0, 8, 0x80, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+        if (PivotActorAlongPath(actor, st->path, 0x15E, METALHEAD_RUN_SPEED, 0, 8, 0x80, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             st->pathEnd[st->phase] + 0x100) {
           actor->mode++;
           continue;
