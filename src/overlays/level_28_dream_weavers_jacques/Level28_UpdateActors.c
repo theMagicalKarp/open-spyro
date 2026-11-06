@@ -2900,7 +2900,7 @@ void Level28_UpdateActors(void) {
         }
         if (ApproxDist2D(&actor->posX, &spy->posX) < WHIRL_WAKE_RANGE &&
             ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < WHIRL_WAKE_DZ) {
-          st->timer = 0xB4;
+          st->timer = WHIRL_WAKE_DELAY;
         }
         break;
       }
@@ -2911,8 +2911,8 @@ void Level28_UpdateActors(void) {
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, actor, 0);
       SubtractVector(g400, &spy->posX, &actor->posX);
       distance = VectorLength(g400, VEC_LEN_XY);
-      if (distance < st->radius && g400[2] >= -0x3FF && g400[2] < st->spanZ &&
-          (SPY.state == SPYRO_ST_LIFT || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
+      if (distance < st->radius && g400[2] >= -WHIRL_BELOW_REACH && g400[2] < st->spanZ &&
+          (SPY.state == SPYRO_ST_LIFT || SPY.posZ + WHIRL_TOP_MARGIN < actor->posZ + st->spanZ)) {
         spyro = &SPY;
         spyro->requestMask = SPYRO_RQ_PENDING;
         SPY.pScriptedActor = actor;
@@ -2928,7 +2928,7 @@ void Level28_UpdateActors(void) {
           spyro->requestMask |= SPYRO_RQ_CAMERA;
           g_anCameraActiveTargetParams.w[0] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
         }
-        st->timer = 0x78;
+        st->timer = WHIRL_IDLE_DELAY;
         break;
       }
       if ((st->flags & ~WHIRL_F_TARGET_CAM) == WHIRL_F_WOKEN && st->timer != 0 &&

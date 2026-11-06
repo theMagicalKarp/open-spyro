@@ -125,8 +125,8 @@ typedef struct WhirlwindState {
 
 /* WhirlwindState.flags. */
 #define WHIRL_F_TARGET_CAM 0x01 /* lift with the target camera (else the front spring camera) */
-#define WHIRL_F_IDLE 0x02       /* idle: wakes 0xB4 frames after Spyro comes near */
-#define WHIRL_F_WOKEN 0x04      /* woken: idles again 0x78 frames after a lift */
+#define WHIRL_F_IDLE 0x02       /* idle: wakes WHIRL_WAKE_DELAY frames after Spyro comes near */
+#define WHIRL_F_WOKEN 0x04      /* woken: idles again WHIRL_IDLE_DELAY frames after a lift */
 #define WHIRL_F_GATED 0x08      /* waits on its owner (`idx`: a key's subMode, a statue or gem gone) */
 #define WHIRL_F_MARK 0x10       /* also sets ->subMode to 1 while active */
 
@@ -136,6 +136,13 @@ typedef struct WhirlwindState {
 #define WHIRL_WAKE_RANGE 0x1000
 #define WHIRL_WAKE_DZ 0x400
 #define WHIRL_KEY_RANGE 0x1C00
+#define WHIRL_WAKE_DELAY 0xB4
+#define WHIRL_IDLE_DELAY 0x78
+/* Spyro is lifted while inside `radius`, from WHIRL_BELOW_REACH under its base
+ * up to spanZ, and either already lifting or more than WHIRL_TOP_MARGIN
+ * below the top. */
+#define WHIRL_BELOW_REACH 0x3FF
+#define WHIRL_TOP_MARGIN 0xC00
 
 /* Level 14 type 303 (ACTOR_TYPE_RUNNER_SPAWNER): every so often (`timer`,
  * 0xB4) rewinds `path` and spawns one waypoint runner (304), handing it the

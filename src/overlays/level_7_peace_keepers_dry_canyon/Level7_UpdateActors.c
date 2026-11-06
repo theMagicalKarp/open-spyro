@@ -3880,8 +3880,8 @@ void Level7_UpdateActors(void) {
           actor->subMode = BOULDER_CRACKING;
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
           actor->cullRadius = 0x7F;
-          if (st->timer < 0x5A) {
-            st->timer = 0x5A;
+          if (st->timer < BOULDER_BLAST_TICK) {
+            st->timer = BOULDER_BLAST_TICK;
           }
         } else if (actor->flags & ACTOR_HIT_FLAME) {
           actor->subMode = BOULDER_CRACKING;
@@ -3911,9 +3911,9 @@ void Level7_UpdateActors(void) {
         int n;
 
         st->timer = t;
-        if (t < 0x78) {
-        if ((actor->flags & ACTOR_HIT_BLAST) && t < 0x5A) {
-          st->timer = 0x5A;
+        if (t < BOULDER_CRACK_FRAMES) {
+        if ((actor->flags & ACTOR_HIT_BLAST) && t < BOULDER_BLAST_TICK) {
+          st->timer = BOULDER_BLAST_TICK;
         }
         for (i = 0; i < 6; i++) {
           ps[0] = g_aSmokeJetEmitters[i >> 1].pos[0];

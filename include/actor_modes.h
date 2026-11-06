@@ -245,9 +245,13 @@ enum LockedChestSubMode {
 enum CrackingBoulderSubMode {
   BOULDER_INIT = 0,     /* take the drop-kind tint */
   BOULDER_INTACT = 1,   /* a charge bursts it at once, a flame or blast cracks it */
-  BOULDER_CRACKING = 2, /* shakes and smokes for 0x78 frames */
+  BOULDER_CRACKING = 2, /* shakes and smokes for BOULDER_CRACK_FRAMES */
   BOULDER_BURST = 3,    /* debris rings, the drop, and a push on Spyro */
 };
+/* CrackingBoulderState.timer while BOULDER_CRACKING: it bursts at
+ * CRACK_FRAMES; a blast (intact or cracking) jumps the clock to BLAST_TICK. */
+#define BOULDER_CRACK_FRAMES 0x78
+#define BOULDER_BLAST_TICK 0x5A
 
 /* ->subMode of a spin chest (ACTOR_TYPE_SPIN_CHEST, SpinChestState). */
 enum SpinChestSubMode {

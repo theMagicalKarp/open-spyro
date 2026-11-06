@@ -3246,7 +3246,7 @@ void Level24_UpdateActors(void) {
         }
         if (ApproxDist2D(&actor->posX, &SPY.posX) < WHIRL_WAKE_RANGE &&
             ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < WHIRL_WAKE_DZ) {
-          st->timer = 0xB4;
+          st->timer = WHIRL_WAKE_DELAY;
         }
         break;
       }
@@ -3257,8 +3257,8 @@ void Level24_UpdateActors(void) {
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, actor, 0);
       SubtractVector(g408, &SPY.posX, &actor->posX);
       distance = VectorLength(g408, VEC_LEN_XY);
-      if (distance < st->radius && g408[2] >= -0x3FF && g408[2] < st->spanZ &&
-          (SPY.state == SPYRO_ST_LIFT || SPY.posZ + 0xC00 < actor->posZ + st->spanZ)) {
+      if (distance < st->radius && g408[2] >= -WHIRL_BELOW_REACH && g408[2] < st->spanZ &&
+          (SPY.state == SPYRO_ST_LIFT || SPY.posZ + WHIRL_TOP_MARGIN < actor->posZ + st->spanZ)) {
         spyro = &SPY;
         spyro->requestMask = SPYRO_RQ_PENDING;
         SPY.pScriptedActor = actor;
@@ -3274,7 +3274,7 @@ void Level24_UpdateActors(void) {
           spyro->requestMask |= SPYRO_RQ_CAMERA;
           g_anCameraActiveTargetParams.w[0] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
         }
-        st->timer = 0x78;
+        st->timer = WHIRL_IDLE_DELAY;
         break;
       }
       if ((st->flags & ~WHIRL_F_TARGET_CAM) == WHIRL_F_WOKEN && st->timer != 0 &&
@@ -3394,8 +3394,8 @@ void Level24_UpdateActors(void) {
           actor->subMode = BOULDER_CRACKING;
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
           actor->cullRadius = 0x7F;
-          if (st->timer < 0x5A) {
-            st->timer = 0x5A;
+          if (st->timer < BOULDER_BLAST_TICK) {
+            st->timer = BOULDER_BLAST_TICK;
           }
         } else if (actor->flags & ACTOR_HIT_FLAME) {
           actor->subMode = BOULDER_CRACKING;
@@ -3425,9 +3425,9 @@ void Level24_UpdateActors(void) {
         int n;
 
         st->timer = t;
-        if (t < 0x78) {
-        if ((actor->flags & ACTOR_HIT_BLAST) && t < 0x5A) {
-          st->timer = 0x5A;
+        if (t < BOULDER_CRACK_FRAMES) {
+        if ((actor->flags & ACTOR_HIT_BLAST) && t < BOULDER_BLAST_TICK) {
+          st->timer = BOULDER_BLAST_TICK;
         }
         for (i = 0; i < 6; i++) {
           jetPos[0] = g_aSmokeJetEmitters[i >> 1].pos[0];
