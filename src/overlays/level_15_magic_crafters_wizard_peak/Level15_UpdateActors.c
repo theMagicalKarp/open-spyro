@@ -1306,7 +1306,7 @@ void Level15_UpdateActors(void) {
         }
       }
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != TGUARD_KNOCKED) {
-        st->knockSpeed = 0xC8;
+        st->knockSpeed = TGUARD_KNOCK_SPEED;
         st->knockHeading = SPY.bodyRotZ;
         st->mode = TCMD_NONE;
         actor->flags = 0;
@@ -1327,8 +1327,8 @@ void Level15_UpdateActors(void) {
           ENTER_POSE(actor, TGUARD_RISE);
         }
         TrackEntityYawTowardSpyro(actor, 3, 0x10, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1770 &&
-            ABS2(actor->posZ - SPY.posZ) < 0x5DC) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < TGUARD_RISE_RANGE &&
+            ABS2(actor->posZ - SPY.posZ) < TGUARD_RANGE_DZ) {
           ENTER_POSE(actor, TGUARD_RISE);
         }
         if (st->link >= 0) {
@@ -1352,11 +1352,11 @@ void Level15_UpdateActors(void) {
 
       case TGUARD_RISE:
         if (g_nActorAnimDone != 0) {
-          st->timer = 0x40;
+          st->timer = TGUARD_GUARD_FRAMES;
           ANIM_QUEUE(actor, TGUARD_GUARD);
         }
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1770 &&
-            ABS2(actor->posZ - SPY.posZ) < 0x5DC) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < TGUARD_RISE_RANGE &&
+            ABS2(actor->posZ - SPY.posZ) < TGUARD_RANGE_DZ) {
           TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
         }
         break;
@@ -1364,7 +1364,7 @@ void Level15_UpdateActors(void) {
       case TGUARD_GUARD: {
         int d = ApproxDist2D(&actor->posX, &spy->posX);
 
-        if (d < 0xFA0 && ABS2(actor->posZ - SPY.posZ) < 0x5DC) {
+        if (d < TGUARD_STRIKE_RANGE && ABS2(actor->posZ - SPY.posZ) < TGUARD_RANGE_DZ) {
           st->timer = 0;
           ENTER_POSE(actor, TGUARD_STRIKE);
         }
@@ -1373,7 +1373,7 @@ void Level15_UpdateActors(void) {
             st->mode = TCMD_NONE;
             ENTER_POSE(actor, TGUARD_IDLE);
           }
-          if (d < 0x1770 && ABS2(actor->posZ - SPY.posZ) < 0x5DC) {
+          if (d < TGUARD_RISE_RANGE && ABS2(actor->posZ - SPY.posZ) < TGUARD_RANGE_DZ) {
             TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
             break;
           }
@@ -1388,7 +1388,7 @@ void Level15_UpdateActors(void) {
           break;
         }
         TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
-        if (d > 0x1B58) {
+        if (d > TGUARD_LOWER_RANGE) {
           ENTER_POSE(actor, TGUARD_LOWER);
         }
         if (TICK_DOWN(st->timer) != 0) {
@@ -1408,12 +1408,12 @@ void Level15_UpdateActors(void) {
         if (st->timer != 0) {
           ANIM_QUEUE(actor, TGUARD_STRIKE_HOLD);
         }
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1770 &&
-            ABS2(actor->posZ - SPY.posZ) < 0x5DC) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < TGUARD_RISE_RANGE &&
+            ABS2(actor->posZ - SPY.posZ) < TGUARD_RANGE_DZ) {
           ANIM_QUEUE(actor, TGUARD_RISE);
         }
         ANIM_QUEUE(actor, TGUARD_IDLE);
-
+        /* fall through */
       case TGUARD_LOWER:
         if (g_nActorAnimDone != 0) {
           ANIM_QUEUE(actor, TGUARD_IDLE);
@@ -1423,7 +1423,7 @@ void Level15_UpdateActors(void) {
       case TGUARD_KNOCKED:
         if (st->knockSpeed > 0) {
           MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0x1F4, 0x2BC, 0);
-          st->knockSpeed -= 0x10;
+          st->knockSpeed -= TGUARD_KNOCK_DRAG;
         }
         if (g_nActorAnimDone == 0) {
           break;
@@ -1452,8 +1452,8 @@ void Level15_UpdateActors(void) {
             st->mode = TCMD_NONE;
             ENTER_POSE(actor, TGUARD_IDLE);
           }
-          if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1770 &&
-              ABS2(actor->posZ - SPY.posZ) < 0x5DC) {
+          if (ApproxDist2D(&actor->posX, &spy->posX) < TGUARD_RISE_RANGE &&
+              ABS2(actor->posZ - SPY.posZ) < TGUARD_RANGE_DZ) {
             TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
             ENTER_POSE(actor, TGUARD_RISE);
           }
@@ -1466,7 +1466,7 @@ void Level15_UpdateActors(void) {
         }
         TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
         if (g_nActorAnimDone != 0) {
-          st->timer = 0x5A;
+          st->timer = TGUARD_LOOK_REST_FRAMES;
           ENTER_POSE(actor, TGUARD_RISE);
         }
         break;
@@ -2952,7 +2952,7 @@ void Level15_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode < KEEPER_KNOCKED) {
-        st->knockSpeed = 0x15E;
+        st->knockSpeed = KEEPER_KNOCK_SPEED;
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
@@ -2978,7 +2978,7 @@ void Level15_UpdateActors(void) {
           switch (st->mode) {
           case TCMD_SWAT:
             if (actor->mode < KEEPER_KNOCKED && g_pActorListBase[st->link].nextFrame >= 4) {
-              st->knockSpeed = 0x15E;
+              st->knockSpeed = KEEPER_KNOCK_SPEED;
               st->knockHeading = g_pActorListBase[st->link].rotZ;
               SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
               MarkActorLiveKill(actor);
@@ -3000,7 +3000,7 @@ void Level15_UpdateActors(void) {
       case KEEPER_IDLE: {
         int d = ApproxDist2D(&actor->posX, &SPY.posX);
 
-        if (d < 0x1000) {
+        if (d < KEEPER_FACE_RANGE) {
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         } else if (st->mode == TCMD_NONE && st->link >= 0) {
           if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
@@ -3018,7 +3018,7 @@ void Level15_UpdateActors(void) {
           st->count--;
           break;
         }
-        if (d < 0x898 && actor->posZ - actor->floorOffset - SPY.posZ < 0x190) {
+        if (d < KEEPER_REACT_RANGE && actor->posZ - actor->floorOffset - SPY.posZ < KEEPER_REACT_ABOVE) {
           ENTER_POSE(actor, KEEPER_REACT);
         }
         break;
@@ -3027,7 +3027,7 @@ void Level15_UpdateActors(void) {
       case KEEPER_REACT:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (g_nActorAnimDone != 0) {
-          st->count = 0x78;
+          st->count = KEEPER_REACT_REST_FRAMES;
           ENTER_POSE(actor, KEEPER_IDLE);
         }
         break;
@@ -3043,7 +3043,7 @@ void Level15_UpdateActors(void) {
         break;
 
       case KEEPER_WATCH_GUARD:
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < KEEPER_FACE_RANGE) {
           ENTER_POSE(actor, KEEPER_IDLE);
         }
         if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {
@@ -3063,18 +3063,18 @@ void Level15_UpdateActors(void) {
           ENTER_POSE(actor, KEEPER_WATCH_GUARD);
         }
         v = (actor->nextFrame << 7) + (actor->frameProgress << 1);
-        if (v > 0x780) {
-          v -= 0x780;
-          if (v > 0x180) {
-            v = 0x180;
+        if (v > KEEPER_STEP_BACK_AT) {
+          v -= KEEPER_STEP_BACK_AT;
+          if (v > KEEPER_STEP_OUT_DIST) {
+            v = KEEPER_STEP_OUT_DIST;
           }
-          v = 0x180 - v;
-        } else if (v > 0x180) {
-          v = 0x180;
+          v = KEEPER_STEP_OUT_DIST - v;
+        } else if (v > KEEPER_STEP_OUT_DIST) {
+          v = KEEPER_STEP_OUT_DIST;
         }
         actor->posX = st->baseX - ((v * LookupSine(actor->rotZ * 16)) >> 10);
         actor->posY = st->baseY + ((v * LookupCosine(actor->rotZ * 16)) >> 10);
-        actor->posZ += 0x400;
+        actor->posZ += GROUND_PROBE_LIFT;
         actor->posZ = FindGroundHeightBelow(&actor->posX, 0x1000);
         break;
       }

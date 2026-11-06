@@ -3418,15 +3418,15 @@ void Level13_UpdateActors(void) {
     /* Type 271: shepherd (ShepherdState). */
     case ACTOR_TYPE_SHEPHERD: {
       ShepherdState *st = actor->state;
-      int near = 0x4B0;
+      int near = SHEPHERD_SWING_RANGE;
 
       TickActorFlameGlow(actor);
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) != 0 && actor->mode != SHEPHERD_KNOCKED) {
-        st->knockSpeed = 0x1C2;
+        st->knockSpeed = SHEPHERD_KNOCK_SPEED;
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20, 0x40);
-        st->knockZSpeed = 0x8C;
+        st->knockZSpeed = SHEPHERD_KNOCK_VZ;
         actor->flags = 0;
         ((CollectibleState *)SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0)->state)->mode = COLLREST_SNAP;
         MarkActorLiveKill(actor);
@@ -3444,8 +3444,8 @@ void Level13_UpdateActors(void) {
           ANIM_GO(actor, SHEPHERD_IDLE);
           TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
           if (TICK_DOWN(st->timer) &&
-              ApproxDist2D(&actor->posX, (int *)(base - 8)) < 0x898 &&
-              h < 0 && h > -0x7D0) {
+              ApproxDist2D(&actor->posX, (int *)(base - 8)) < SHEPHERD_GUARD_SWING_RANGE &&
+              h < 0 && h > -SHEPHERD_GUARD_SWING_ABOVE) {
             ENTER_POSE(actor, SHEPHERD_SWING);
           }
           break;
@@ -3453,7 +3453,7 @@ void Level13_UpdateActors(void) {
 
         case SHEPHERD_POST_RUN_PATH:
           ANIM_GO(actor, SHEPHERD_ANIM_RUN);
-          if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x3800) {
+          if (ApproxDist2D(&actor->posX, &SPY.posX) < SHEPHERD_RUN_PATH_WAKE_RANGE) {
             st->done = 0;
             *st->doneFlag = 0;
             SetActorGroupStateExcept(actor, SHEPHERD_CHASE, SHEPHERD_KNOCKED);
@@ -3470,7 +3470,7 @@ void Level13_UpdateActors(void) {
             st->heading = actor->rotZ;
           }
           TurnActorYawTowardAngle(actor, st->heading, 4, 0, YAW_HOLD_IN_BAND);
-          if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1C00) {
+          if (ApproxDist2D(&actor->posX, &SPY.posX) < SHEPHERD_WAKE_RANGE) {
             SetActorGroupStateExcept(actor, SHEPHERD_CHASE, SHEPHERD_KNOCKED);
           }
           break;
@@ -3481,7 +3481,7 @@ void Level13_UpdateActors(void) {
           SnapActorToGround(actor);
           if (TICK_DOWN(st->timer) &&
               ApproxDist2D(&actor->posX, &spy->posX) < near &&
-              ABS2(SPY_DZ(actor)) < 0x320) {
+              ABS2(SPY_DZ(actor)) < SHEPHERD_SWING_DZ) {
             ENTER_POSE(actor, SHEPHERD_SWING);
           }
           break;
@@ -3492,7 +3492,7 @@ void Level13_UpdateActors(void) {
           }
           TurnActorYawTowardAngle(actor, st->heading, 4, 0, YAW_HOLD_IN_BAND);
           ANIM_GO(actor, SHEPHERD_ANIM_THROW);
-          if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x3000) {
+          if (ApproxDist2D(&actor->posX, &SPY.posX) < SHEPHERD_THROWER_WAKE_RANGE) {
             Actor *partner = &g_pActorListBase[st->partner];
             ShepherdState *ps;
 
@@ -3504,7 +3504,7 @@ void Level13_UpdateActors(void) {
             actor->mode = SHEPHERD_WATCH;
             continue;
           }
-          if (g_nActorAnimNewFrame != 0 && actor->nextFrame == 0xE) {
+          if (g_nActorAnimNewFrame != 0 && actor->nextFrame == SHEPHERD_THROW_FRAME) {
             Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_SHEPHERD_THROW, actor);
             CrookState *cs = c->state;
 
@@ -3513,15 +3513,15 @@ void Level13_UpdateActors(void) {
             cs->owner = actor;
             cs->live = one;
             cs->heading = actor->rotZ;
-            cs->life = 0x14;
-            cs->speed = 0x50;
+            cs->life = SHEPHERD_CROOK_LIFE_SHORT;
+            cs->speed = SHEPHERD_CROOK_SPEED;
           }
           break;
 
         case SHEPHERD_POST_LEAPER:
           if (actor->subMode != 0) {
             TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-            if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1C00) {
+            if (ApproxDist2D(&actor->posX, &SPY.posX) < SHEPHERD_WAKE_RANGE) {
               if (actor->nextAnim == SHEPHERD_SWING) {
                 g_nActorAnimDone = 0;
                 actor->frameProgress = sixteen;
@@ -3541,11 +3541,11 @@ void Level13_UpdateActors(void) {
               Actor *partner = &g_pActorListBase[st->partner];
 
               partner->mode = SHEPHERD_ROUSE;
-              st->vz = 0xD2;
+              st->vz = SHEPHERD_LEAP_VZ;
               ENTER_POSE(actor, SHEPHERD_LEAP_ON);
             }
           }
-          if (g_nActorAnimNewFrame != 0 && actor->nextFrame == 0xE) {
+          if (g_nActorAnimNewFrame != 0 && actor->nextFrame == SHEPHERD_THROW_FRAME) {
             Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_SHEPHERD_THROW, actor);
             CrookState *cs = c->state;
 
@@ -3554,8 +3554,8 @@ void Level13_UpdateActors(void) {
             cs->owner = actor;
             cs->live = one;
             cs->heading = actor->rotZ;
-            cs->life = 0x1E;
-            cs->speed = 0x50;
+            cs->life = SHEPHERD_CROOK_LIFE;
+            cs->speed = SHEPHERD_CROOK_SPEED;
           }
           break;
 
@@ -3563,7 +3563,7 @@ void Level13_UpdateActors(void) {
           Actor *partner = &g_pActorListBase[st->partner];
 
           if (TICK_DOWN(st->flankTimer) &&
-              ApproxDist2D(&actor->posX, &spy->posX) < 0x1000) {
+              ApproxDist2D(&actor->posX, &spy->posX) < SHEPHERD_FLANK_RANGE) {
             int mine = ArcTan2(actor->posX - spy->posX,
                                      actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8);
             int theirs =
@@ -3606,8 +3606,8 @@ void Level13_UpdateActors(void) {
 
         case SHEPHERD_POST_PATROL:
           if (TICK_DOWN(st->flankTimer) &&
-              ABS2(SPY_DZ(actor)) < 0x320 &&
-              ApproxDist2D(&actor->posX, &SPY.posX) < 0x1C00) {
+              ABS2(SPY_DZ(actor)) < SHEPHERD_NOTICE_DZ &&
+              ApproxDist2D(&actor->posX, &SPY.posX) < SHEPHERD_WAKE_RANGE) {
             actor->mode = SHEPHERD_CHASE;
             continue;
           }
@@ -3617,8 +3617,8 @@ void Level13_UpdateActors(void) {
 
         case SHEPHERD_POST_WATCH:
           TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-          if (g_nSpyroAirborneFrames == 0 && ABS2(SPY_DZ(actor)) < 0x320 &&
-              ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
+          if (g_nSpyroAirborneFrames == 0 && ABS2(SPY_DZ(actor)) < SHEPHERD_NOTICE_DZ &&
+              ApproxDist2D(&actor->posX, &SPY.posX) < SHEPHERD_WATCH_WAKE_RANGE) {
             actor->mode = SHEPHERD_CHASE;
             continue;
           }
@@ -3639,10 +3639,10 @@ void Level13_UpdateActors(void) {
 
             ANIM_GO(actor, SHEPHERD_ANIM_THROW);
             TurnActorYawTowardAngle(actor, ang, 4, 0, YAW_HOLD_IN_BAND);
-            if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
+            if (ApproxDist2D(&actor->posX, &SPY.posX) < SHEPHERD_COVER_GUARD_RANGE) {
               actor->subMode = 1;
             }
-            if (g_nActorAnimNewFrame != 0 && actor->nextFrame == 0xE) {
+            if (g_nActorAnimNewFrame != 0 && actor->nextFrame == SHEPHERD_THROW_FRAME) {
               Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_SHEPHERD_THROW, actor);
               CrookState *cs = c->state;
 
@@ -3651,8 +3651,8 @@ void Level13_UpdateActors(void) {
               cs->owner = actor;
               cs->live = one;
               cs->heading = actor->rotZ;
-              cs->life = 0x1E;
-              cs->speed = 0x50;
+              cs->life = SHEPHERD_CROOK_LIFE;
+              cs->speed = SHEPHERD_CROOK_SPEED;
             }
             break;
           }
@@ -3662,12 +3662,12 @@ void Level13_UpdateActors(void) {
 
             ANIM_GO(actor, SHEPHERD_IDLE);
             TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-            if (d > 0x2000) {
+            if (d > SHEPHERD_COVER_RELEASE_RANGE) {
               actor->subMode = 0;
             }
             if (TICK_DOWN(st->timer) &&
                 ApproxDist2D(pos, &spy->posX) < near &&
-                ABS2(SPY_DZ(actor)) < 0x320) {
+                ABS2(SPY_DZ(actor)) < SHEPHERD_SWING_DZ) {
               ENTER_POSE(actor, SHEPHERD_SWING);
             }
             break;
@@ -3698,7 +3698,7 @@ void Level13_UpdateActors(void) {
           int side = st->side;
           int ang;
 
-          if (side != 0 && SPY_FACING(actor) > 0x40) {
+          if (side != 0 && SPY_FACING(actor) > SHEPHERD_TURNED_AWAY) {
             side = 3 - side;
           }
           CopyVector(x272, &spy->posX);
@@ -3713,22 +3713,22 @@ void Level13_UpdateActors(void) {
                               ATAN_ANGLE8);
           if (TICK_DOWN(st->timer) &&
               TurnActorYawTowardAngle(actor, ang, 6, 0x14, one) &&
-              SPY_FACING(actor) < 0x32 &&
-              MoveActorAlongHeading(actor, 0x32, 0x12C, 0x1F4, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT)) {
+              SPY_FACING(actor) < SHEPHERD_FACING_BAND &&
+              MoveActorAlongHeading(actor, SHEPHERD_CHASE_SPEED, 0x12C, 0x1F4, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT)) {
             actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
-          if (st->post == SHEPHERD_POST_LOITER && SPY_FACING(actor) > 0x40) {
+          if (st->post == SHEPHERD_POST_LOITER && SPY_FACING(actor) > SHEPHERD_TURNED_AWAY) {
             actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
           if (st->post == SHEPHERD_POST_LOITER &&
-              ApproxDist2D(&actor->posX, st->home) > 0x1800) {
+              ApproxDist2D(&actor->posX, st->home) > SHEPHERD_LOITER_LEASH) {
             actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
           if (st->post == SHEPHERD_POST_PAIR_PATROL || st->post == SHEPHERD_POST_PATROL) {
-            if (FindNearestPathPointToActor(actor, st->path, nearestNode) > 0x1000) {
+            if (FindNearestPathPointToActor(actor, st->path, nearestNode) > SHEPHERD_PATH_LEASH) {
               if (st->post == SHEPHERD_POST_PATROL) {
                 st->path->cur = nearestNode[0];
                 CopyVector(st->home, PATH_PT(st->path, nearestNode[0]));
@@ -3737,10 +3737,10 @@ void Level13_UpdateActors(void) {
               continue;
             }
           }
-          if (TICK_DOWN(st->timer) && SPY_FACING(actor) < 0x32 &&
+          if (TICK_DOWN(st->timer) && SPY_FACING(actor) < SHEPHERD_FACING_BAND &&
               ApproxDist2D(&actor->posX, &spy->posX) < near &&
-              g_nSpyroAirborneFrames == 0 && SPY_DZ(actor) < 0xC8 &&
-              ABS2(SPY_DZ(actor)) < 0x3E8) {
+              g_nSpyroAirborneFrames == 0 && SPY_DZ(actor) < SHEPHERD_SWING_ABOVE &&
+              ABS2(SPY_DZ(actor)) < SHEPHERD_SWING_CHASE_DZ) {
             ENTER_POSE(actor, SHEPHERD_SWING);
           }
           break;
@@ -3753,20 +3753,20 @@ void Level13_UpdateActors(void) {
             if (TICK_DOWN(st->timer) == 0) {
               break;
             }
-            if (SPY_FACING(actor) < 0x32 &&
-                MoveActorAlongHeading(actor, 0x32, 0, 0x1F4, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE)) {
+            if (SPY_FACING(actor) < SHEPHERD_FACING_BAND &&
+                MoveActorAlongHeading(actor, SHEPHERD_CHASE_SPEED, 0, 0x1F4, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE)) {
               actor->mode = SHEPHERD_GO_HOME;
               continue;
             }
           }
           pos = &actor->posX;
-          if (ApproxDist2D(pos, st->home) > 0x2000) {
+          if (ApproxDist2D(pos, st->home) > SHEPHERD_LEAPER_LEASH) {
             actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
-          if (TICK_DOWN(st->timer) && SPY_FACING(actor) < 0x32 &&
-              ApproxDist2D(pos, &spy->posX) < near && SPY_DZ(actor) < 0xC8 &&
-              ABS2(SPY_DZ(actor)) < 0x3E8) {
+          if (TICK_DOWN(st->timer) && SPY_FACING(actor) < SHEPHERD_FACING_BAND &&
+              ApproxDist2D(pos, &spy->posX) < near && SPY_DZ(actor) < SHEPHERD_SWING_ABOVE &&
+              ABS2(SPY_DZ(actor)) < SHEPHERD_SWING_CHASE_DZ) {
             ENTER_POSE(actor, SHEPHERD_SWING);
           }
           break;
@@ -3775,18 +3775,18 @@ void Level13_UpdateActors(void) {
         case SHEPHERD_POST_WATCH: {
           int *pos;
 
-          if (TrackEntityYawTowardSpyro(actor, 6, 0x14, YAW_STEP_IN_BAND) && SPY_FACING(actor) < 0x32 &&
-              MoveActorAlongHeading(actor, 0x32, 0x12C, 0x1F4, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT)) {
+          if (TrackEntityYawTowardSpyro(actor, 6, 0x14, YAW_STEP_IN_BAND) && SPY_FACING(actor) < SHEPHERD_FACING_BAND &&
+              MoveActorAlongHeading(actor, SHEPHERD_CHASE_SPEED, 0x12C, 0x1F4, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT)) {
             actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
           pos = &actor->posX;
-          if (ApproxDist2D(pos, st->home) > 0x1800) {
+          if (ApproxDist2D(pos, st->home) > SHEPHERD_WATCH_LEASH) {
             actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
-          if (TICK_DOWN(st->timer) && SPY_FACING(actor) < 0x32 &&
-              ApproxDist2D(pos, &spy->posX) < near && SPY_DZ(actor) < 0xC8) {
+          if (TICK_DOWN(st->timer) && SPY_FACING(actor) < SHEPHERD_FACING_BAND &&
+              ApproxDist2D(pos, &spy->posX) < near && SPY_DZ(actor) < SHEPHERD_SWING_ABOVE) {
             ENTER_POSE(actor, SHEPHERD_SWING);
           }
           break;
@@ -3808,12 +3808,12 @@ void Level13_UpdateActors(void) {
       case SHEPHERD_SWING:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         SnapActorToGround(actor);
-        if (actor->nextFrame >= 0x1C) {
+        if (actor->nextFrame >= SHEPHERD_SWING_END_FRAME) {
           if (st->post == SHEPHERD_POST_LOITER) {
             actor->mode = SHEPHERD_GO_HOME;
             continue;
           }
-          st->timer = 0xA0;
+          st->timer = SHEPHERD_SWING_COOLDOWN;
           actor->mode = SHEPHERD_IDLE;
           continue;
         }
@@ -3869,12 +3869,12 @@ void Level13_UpdateActors(void) {
         ((ShepherdState *)partner->state)->timer = 0xE;
         RefreshActorDerivedState(partner, ACTOR_REFRESH_MATRIX);
         GetActorAttachPoint(partner, 0, x272);
-        if (st->vz < -0x12C) {
-          st->vz = -0x12C;
+        if (st->vz < -SHEPHERD_LEAP_MAX_FALL) {
+          st->vz = -SHEPHERD_LEAP_MAX_FALL;
         }
         if (partner->mode == SHEPHERD_KNOCKED) {
-          st->vz = 0xC8;
-          st->knockSpeed = 0x190;
+          st->vz = SHEPHERD_THROWN_VZ;
+          st->knockSpeed = SHEPHERD_THROWN_SPEED;
           st->knockHeading = ArcTan2(actor->posX - spy->posX,
                                            actor->posY - spy->posY, ATAN_ANGLE8);
           actor->mode = SHEPHERD_THROWN;
@@ -3887,7 +3887,7 @@ void Level13_UpdateActors(void) {
           continue;
         }
         actor->posZ += st->vz;
-        st->vz -= 0x14;
+        st->vz -= SHEPHERD_GRAVITY;
         d = ApproxDist2D(&actor->posX, x272);
         if (d > 0xC8) {
           MoveActorAlongAngle(actor,
@@ -3911,8 +3911,8 @@ void Level13_UpdateActors(void) {
         ((ShepherdState *)partner->state)->timer = 0xA;
         ANIM_GO(actor, SHEPHERD_ANIM_RIDE);
         if (partner->nextAnim == SHEPHERD_KNOCKED) {
-          st->vz = 0xC8;
-          st->knockSpeed = 0x190;
+          st->vz = SHEPHERD_THROWN_VZ;
+          st->knockSpeed = SHEPHERD_THROWN_SPEED;
           st->knockHeading = ArcTan2(actor->posX - spy->posX,
                                            actor->posY - spy->posY, ATAN_ANGLE8);
           actor->mode = SHEPHERD_THROWN;
@@ -3930,16 +3930,16 @@ void Level13_UpdateActors(void) {
 
         if (floor + actor->floorOffset < z) {
           actor->posZ = z;
-          st->vz -= 0x14;
-          if (st->vz < -0xC8) {
-            st->vz = -0xC8;
+          st->vz -= SHEPHERD_GRAVITY;
+          if (st->vz < -SHEPHERD_THROWN_MAX_FALL) {
+            st->vz = -SHEPHERD_THROWN_MAX_FALL;
           }
         } else {
           actor->posZ = floor + actor->floorOffset;
         }
         if (st->knockSpeed != 0) {
           MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x2BC, one);
-          st->knockSpeed -= 0x14;
+          st->knockSpeed -= SHEPHERD_THROWN_DRAG;
           if (st->knockSpeed < 0) {
             st->knockSpeed = 0;
           }
@@ -3963,10 +3963,10 @@ void Level13_UpdateActors(void) {
 
         ANIM_GO(actor, SHEPHERD_ANIM_RUN);
         if (TurnActorYawTowardAngle(actor, ang, 4, 0x14, one)) {
-          MoveActorAlongHeading(actor, 0x5A, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-          if (ApproxDist2D(&actor->posX, st->home) < 0x80) {
+          MoveActorAlongHeading(actor, SHEPHERD_HOME_SPEED, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          if (ApproxDist2D(&actor->posX, st->home) < SHEPHERD_HOME_ARRIVE) {
             actor->subMode = 1;
-            st->timer = 0x3C;
+            st->timer = SHEPHERD_HOME_REST;
             st->vz = 0;
             ENTER_POSE(actor, SHEPHERD_IDLE);
           }
