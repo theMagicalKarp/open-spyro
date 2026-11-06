@@ -616,7 +616,7 @@ void Level12_UpdateActors(void) {
             if (d > 0x80) {
               d -= 0x100;
             }
-            if (ABS(d) > 0x30) {
+            if (ABS(d) > THIEF_CIRCLE_ENTER_ANGLE) {
               actor->mode = THIEF_CIRCLE;
               continue;
             }
@@ -971,8 +971,8 @@ void Level12_UpdateActors(void) {
         {
           char *base = (char *)&g_nSpyroWorldPosZ;
 
-          if (*(int *)base - st->path->nodes[10].z < -0x5DC &&
-              ApproxDist2D(&actor->posX, (int *)(base - 8)) < 0x1800) {
+          if (*(int *)base - st->path->nodes[10].z < -THIEF_CLIMB_DOWN_DZ &&
+              ApproxDist2D(&actor->posX, (int *)(base - 8)) < THIEF_CLIMB_DOWN_RANGE) {
             st->vz = 0x1A4;
             st->path->cur = 9;
             actor->mode = THIEF_CLIMB_HOP_DOWN;

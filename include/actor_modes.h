@@ -361,6 +361,13 @@ enum ThiefMode {
 /* A FLEE thief notices Spyro within its level-data range (st->range << 10, 2D)
  * and this height of its feet. */
 #define THIEF_FLEE_NOTICE_DZ 0x708
+/* A CLIMB thief on top hops back down once Spyro is CLIMB_DOWN_DZ below node
+ * 10 and within CLIMB_DOWN_RANGE (2D) of the thief. */
+#define THIEF_CLIMB_DOWN_DZ 0x5DC
+#define THIEF_CLIMB_DOWN_RANGE 0x1800
+/* A CIRCLE thief starts circling once Spyro, within THIEF_NEAR_RANGE, is more
+ * than this (8-bit) off the far side of its node from it. */
+#define THIEF_CIRCLE_ENTER_ANGLE 0x30
 
 /* An egg thief's animations (nextAnim), from what each mode plays. */
 enum ThiefAnim {
