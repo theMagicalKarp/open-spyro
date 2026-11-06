@@ -604,7 +604,7 @@ void Level8_UpdateActors(void) {
           }
         } else if (st->mode == THIEFKIND_FLEE) {
           if (ApproxDist2D(&actor->posX, &spy->posX) < st->range << 10 &&
-              ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x708 &&
+              ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < THIEF_FLEE_NOTICE_DZ &&
               (st->needLos == 0 || CheckSpyroLineOfSightTo(&actor->posX) != 0)) {
             st->node = FindFarthestPathPointFromSpyro(st->path);
             st->speed = 0;
@@ -1594,15 +1594,15 @@ void Level8_UpdateActors(void) {
 
         case COLLECT_HOMING:
           /* Fetched by Sparx: pulled toward Spyro, then collected. */
-          if (st->timer >= 0x20) {
+          if (st->timer >= COLLECT_HOMING_DONE) {
             CopyVector(&actor->posX, &SPY.posX);
           } else {
             SubtractVector(homingStep, &spy->posX, (int *)st);
             RShiftVector3(homingStep, 5);
 
-            if (VectorLength(homingStep, VEC_LEN_XYZ) >= 0x1E1) {
+            if (VectorLength(homingStep, VEC_LEN_XYZ) > COLLECT_HOMING_SNAP_STEP) {
               CopyVector(&actor->posX, &spy->posX);
-              st->timer = 0x20;
+              st->timer = COLLECT_HOMING_DONE;
             } else {
               ScaleVector3Sat(homingStep, homingStep, st->timer);
               AddVector(&actor->posX, (int *)st, homingStep);

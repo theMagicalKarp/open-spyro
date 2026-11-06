@@ -1861,16 +1861,16 @@ void Level21_UpdateActors(void) {
         break;
       }
       case COLLECT_HOMING: {
-        if (st->timer >= 32) {
+        if (st->timer >= COLLECT_HOMING_DONE) {
           CopyVector(&actor->posX, &SPY.posX);
         } else {
 
           SubtractVector(pickupToSpyro, &spy->posX, st->vel);
           RShiftVector3(pickupToSpyro, 5);
 
-          if (VectorLength(pickupToSpyro, VEC_LEN_XYZ) > 480) {
+          if (VectorLength(pickupToSpyro, VEC_LEN_XYZ) > COLLECT_HOMING_SNAP_STEP) {
             CopyVector(&actor->posX, &spy->posX);
-            st->timer = 32;
+            st->timer = COLLECT_HOMING_DONE;
           } else {
             ScaleVector3Sat(pickupToSpyro, pickupToSpyro, st->timer);
             AddVector(&actor->posX, st->vel, pickupToSpyro);
@@ -3888,7 +3888,7 @@ void Level21_UpdateActors(void) {
 
       if (actor->subMode == LID_LAUNCH) {
         Actor *best = 0;
-        int bestAng = 0x180;
+        int bestAng = LID_TARGET_MAX_ANGLE;
         Actor *a;
 
         for (a = g_pActorListBase; a < g_pActorPoolDynBase; a++) {
@@ -3900,9 +3900,10 @@ void Level21_UpdateActors(void) {
           }
           SubtractVector(svI, &a->posX, &actor->posX);
           d = ABS2(svI[0]) + ABS2(svI[1]);
-          if (d < 0x6000 &&
-              (unsigned int)(VectorLength(svI, VEC_LEN_XY) - 0x1000) <= 0x2000 &&
-              (unsigned int)(svI[2] + 0x1000) <= 0x2000) {
+          if (d < LID_TARGET_PREFILTER &&
+              (unsigned int)(VectorLength(svI, VEC_LEN_XY) - LID_TARGET_MIN_RANGE) <=
+                  LID_TARGET_MAX_RANGE - LID_TARGET_MIN_RANGE &&
+              (unsigned int)(svI[2] + LID_TARGET_DZ) <= 2 * LID_TARGET_DZ) {
             d = AbsAngleDelta12(ArcTan2(actor->posX - spy->posX,
                                             actor->posY - spy->posY, ATAN_ANGLE12),
                               ArcTan2(svI[0], svI[1], ATAN_ANGLE12));

@@ -923,15 +923,15 @@ void Level18_UpdateActors(void) {
 
         case COLLECT_HOMING:
           /* Fetched by Sparx: pulled toward Spyro, then collected. */
-          if (st->timer >= 0x20) {
+          if (st->timer >= COLLECT_HOMING_DONE) {
             CopyVector(&actor->posX, &SPY.posX);
           } else {
             SubtractVector(homingStep, &spy->posX, (int *)st);
             RShiftVector3(homingStep, 5);
 
-            if (VectorLength(homingStep, VEC_LEN_XYZ) >= 0x1E1) {
+            if (VectorLength(homingStep, VEC_LEN_XYZ) > COLLECT_HOMING_SNAP_STEP) {
               CopyVector(&actor->posX, &spy->posX);
-              st->timer = 0x20;
+              st->timer = COLLECT_HOMING_DONE;
             } else {
               ScaleVector3Sat(homingStep, homingStep, st->timer);
               AddVector(&actor->posX, (int *)st, homingStep);
@@ -3244,7 +3244,7 @@ void Level18_UpdateActors(void) {
 
       if (actor->subMode == LID_LAUNCH) {
         Actor *best = 0;
-        int bestAng = 0x180;
+        int bestAng = LID_TARGET_MAX_ANGLE;
         Actor *a;
 
         for (a = g_pActorListBase; a < g_pActorPoolDynBase; a++) {
@@ -3256,9 +3256,10 @@ void Level18_UpdateActors(void) {
           }
           SubtractVector(t456, &a->posX, &actor->posX);
           d = ABS2(t456[0]) + ABS2(t456[1]);
-          if (d < 0x6000 &&
-              (unsigned int)(VectorLength(t456, VEC_LEN_XY) - 0x1000) <= 0x2000 &&
-              (unsigned int)(t456[2] + 0x1000) <= 0x2000) {
+          if (d < LID_TARGET_PREFILTER &&
+              (unsigned int)(VectorLength(t456, VEC_LEN_XY) - LID_TARGET_MIN_RANGE) <=
+                  LID_TARGET_MAX_RANGE - LID_TARGET_MIN_RANGE &&
+              (unsigned int)(t456[2] + LID_TARGET_DZ) <= 2 * LID_TARGET_DZ) {
             d = AbsAngleDelta12(ArcTan2(actor->posX - spy->posX,
                                             actor->posY - spy->posY, ATAN_ANGLE12),
                               ArcTan2(t456[0], t456[1], ATAN_ANGLE12));

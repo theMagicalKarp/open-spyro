@@ -20,6 +20,12 @@ enum CollectSubMode {
  * An undrawn one resting still beyond IDLE_RANGE skips its update. */
 #define COLLECT_TOUCH_RANGE 0x200
 #define COLLECT_IDLE_RANGE 0x2000
+/* COLLECT_HOMING: the pickup sits st->timer / 32 of the way from where the
+ * pull began (the state's first vector) to Spyro, on a sine arc; it snaps
+ * onto Spyro (timer = DONE) once a 1/32 step of that gap exceeds SNAP_STEP,
+ * and stays on him from DONE on. */
+#define COLLECT_HOMING_SNAP_STEP 480
+#define COLLECT_HOMING_DONE 0x20
 /* A knocked-loose pickup's bounce chime volume (g_nSfxOverrideVolL/R), shifted
  * right by 3 - bounces left so each bounce is half as loud as the last. */
 #define COLLECT_BOUNCE_VOLUME 0x3CCC
@@ -248,6 +254,15 @@ enum SpinChestLidSubMode {
   LID_LAUNCH = 1,   /* the chest burst: aim at an enemy (or away from Spyro) */
   LID_FLYING = 2,   /* in flight; breaks on what it hits */
 };
+/* A launching lid aims at the live enemy (negative collision) best lined up
+ * with Spyro's line through the lid, within MAX_ANGLE (12-bit) of it, at
+ * MIN_RANGE..MAX_RANGE (2D) from the lid and within DZ of its height;
+ * PREFILTER bounds |dx| + |dy| before the length is taken. */
+#define LID_TARGET_MAX_ANGLE 0x180
+#define LID_TARGET_MIN_RANGE 0x1000
+#define LID_TARGET_MAX_RANGE 0x3000
+#define LID_TARGET_DZ 0x1000
+#define LID_TARGET_PREFILTER 0x6000
 
 /* ->mode of a portal guide (ACTOR_TYPE_PORTAL_GUIDE, PortalState); set to
  * PORTALGUIDE_ENTER by DispatchSpyroTriggerEvent when Spyro enters a
@@ -343,6 +358,9 @@ enum ThiefMode {
 /* A FLEE thief only reconsiders its ring direction while this far from both
  * the node it is heading for and the one after. */
 #define THIEF_FLEE_TURN_CLEARANCE 0x190
+/* A FLEE thief notices Spyro within its level-data range (st->range << 10, 2D)
+ * and this height of its feet. */
+#define THIEF_FLEE_NOTICE_DZ 0x708
 
 /* An egg thief's animations (nextAnim), from what each mode plays. */
 enum ThiefAnim {

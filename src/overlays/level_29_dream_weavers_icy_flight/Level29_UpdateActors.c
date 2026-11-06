@@ -806,16 +806,16 @@ void Level29_UpdateActors(void) {
         break;
       }
       case COLLECT_HOMING: {
-        if (st->timer >= 32) {
+        if (st->timer >= COLLECT_HOMING_DONE) {
           CopyVector(&actor->posX, &SPY.posX);
         } else {
 
           SubtractVector(homingStep, &spy->posX, st->vel);
           RShiftVector3(homingStep, 5);
 
-          if (VectorLength(homingStep, VEC_LEN_XYZ) > 480) {
+          if (VectorLength(homingStep, VEC_LEN_XYZ) > COLLECT_HOMING_SNAP_STEP) {
             CopyVector(&actor->posX, &spy->posX);
-            st->timer = 32;
+            st->timer = COLLECT_HOMING_DONE;
           } else {
             ScaleVector3Sat(homingStep, homingStep, st->timer);
             AddVector(&actor->posX, st->vel, homingStep);

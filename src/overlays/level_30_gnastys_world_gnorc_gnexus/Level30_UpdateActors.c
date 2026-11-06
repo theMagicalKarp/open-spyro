@@ -908,15 +908,15 @@ void Level30_UpdateActors(void) {
 
         case COLLECT_HOMING:
           /* Fetched by Sparx: pulled toward Spyro, then collected. */
-          if (st->timer >= 0x20) {
+          if (st->timer >= COLLECT_HOMING_DONE) {
             CopyVector(&actor->posX, &SPY.posX);
           } else {
             SubtractVector(homingStep, &spy->posX, (int *)st);
             RShiftVector3(homingStep, 5);
 
-            if (VectorLength(homingStep, VEC_LEN_XYZ) >= 0x1E1) {
+            if (VectorLength(homingStep, VEC_LEN_XYZ) > COLLECT_HOMING_SNAP_STEP) {
               CopyVector(&actor->posX, &spy->posX);
-              st->timer = 0x20;
+              st->timer = COLLECT_HOMING_DONE;
             } else {
               ScaleVector3Sat(homingStep, homingStep, st->timer);
               AddVector(&actor->posX, (int *)st, homingStep);
