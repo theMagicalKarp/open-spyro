@@ -4306,13 +4306,13 @@ void Level22_UpdateActors(void) {
     case ACTOR_TYPE_LETTER_A + 25: {
       NameLetterState *st = actor->state;
 
-      if (st->parent->mode == ORBIT_OWNER_FAR || st->parent->subMode != actor->mode) {
+      if (st->sign->mode == ORBIT_OWNER_FAR || st->sign->subMode != actor->mode) {
         DespawnActorRecord(actor);
         continue;
       }
 
-      if (st->parent->type == ACTOR_TYPE_LEVEL_EXIT) {
-        if (ApproxDist2D(&st->parent->posX, &SPY.posX) < LEVELEXIT_ENTER_RANGE) {
+      if (st->sign->type == ACTOR_TYPE_LEVEL_EXIT) {
+        if (ApproxDist2D(&st->sign->posX, &SPY.posX) < LEVELEXIT_ENTER_RANGE) {
           unsigned char was = actor->subMode;
           int prev = g_anCosineLut[was];
           unsigned char now = was + 8;
@@ -4327,8 +4327,8 @@ void Level22_UpdateActors(void) {
           short *swing;
 
           actor->subMode += 8;
-          bearing = ArcTan2(SPY.posX - st->parent->posX,
-                                  SPY.posY - st->parent->posY, ATAN_ANGLE8);
+          bearing = ArcTan2(SPY.posX - st->sign->posX,
+                                  SPY.posY - st->sign->posY, ATAN_ANGLE8);
           g608[0] = (g_anCosineLut[bearing] * 3) >> 4;
           g608[1] = (g_anSineLut[bearing] * 3) >> 4;
           g608[2] = 0;
@@ -4337,16 +4337,16 @@ void Level22_UpdateActors(void) {
           g624[2] = 0;
           bearing = (bearing + 0x80) & 0xFF;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
-          ScaleVector3Sat(letterSlot, g624, st->radius - 1);
+          ScaleVector3Sat(letterSlot, g624, st->count - 1);
           LShiftVector3(g624, 1);
-          arm = st->radius - 1;
+          arm = st->count - 1;
           letterSlot[2] += (g_anCosineLut[arm * 2] * 3) >> 3;
           letterSwingRest[0] = g608[0] * g_anCosineLut[arm * 2];
           letterSwingRest[1] = g608[1] * g_anCosineLut[arm * 2];
           letterSwingRest[2] = 0;
           bearing = arm << 1;
-          bearing = (bearing - (st->phase * 4)) & 0xFF;
-          ScaleVector3Sat(g624, g624, st->phase);
+          bearing = (bearing - (st->index * 4)) & 0xFF;
+          ScaleVector3Sat(g624, g624, st->index);
           SubtractVector(letterSlot, letterSlot, g624);
           swing = &g_anCosineLut[bearing];
           actor->posX = g608[0] * *swing;
@@ -4355,7 +4355,7 @@ void Level22_UpdateActors(void) {
           SubtractVector(&actor->posX, &actor->posX, letterSwingRest);
           RShiftVector3(&actor->posX, 0xA);
           AddVector(&actor->posX, &actor->posX, g608);
-          AddVector(&actor->posX, &actor->posX, &st->parent->posX);
+          AddVector(&actor->posX, &actor->posX, &st->sign->posX);
           SubtractVector(&actor->posX, &actor->posX, letterSlot);
           actor->posZ = actor->posZ + ((*swing * 3) >> 3) + 0x600;
         }

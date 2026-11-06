@@ -2353,7 +2353,7 @@ void Level32_UpdateActors(void) {
 
     /* Type 236. */
     case ACTOR_TYPE_WANDERING_CRITTER_C: {
-      WandererState *st = actor->state;
+      RoamingCritterState *st = actor->state;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
@@ -2373,7 +2373,7 @@ void Level32_UpdateActors(void) {
       switch (actor->mode) {
       case CRITTER_WANDER:
         UpdateActorWander(actor, &st->wander);
-        if (TICK_DOWN(st->idleTimer) != 0) {
+        if (TICK_DOWN(st->wait) != 0) {
           ENTER_POSE(actor, CRITTER_REST);
         }
         break;
@@ -2393,7 +2393,7 @@ void Level32_UpdateActors(void) {
 
       case CRITTER_REST:
         if (g_nActorAnimDone != 0) {
-          st->idleTimer = RandomIntInRange(0x5A, 0x12C);
+          st->wait = RandomIntInRange(0x5A, 0x12C);
           ENTER_POSE(actor, CRITTER_WANDER);
         }
         break;
@@ -3225,13 +3225,13 @@ void Level32_UpdateActors(void) {
     case ACTOR_TYPE_LETTER_A + 25: {
       NameLetterState *st = actor->state;
 
-      if (st->parent->mode == ORBIT_OWNER_FAR || st->parent->subMode != actor->mode) {
+      if (st->sign->mode == ORBIT_OWNER_FAR || st->sign->subMode != actor->mode) {
         DespawnActorRecord(actor);
         continue;
       }
 
-      if (st->parent->type == ACTOR_TYPE_LEVEL_EXIT) {
-        if (ApproxDist2D(&st->parent->posX, &spy->posX) < LEVELEXIT_ENTER_RANGE) {
+      if (st->sign->type == ACTOR_TYPE_LEVEL_EXIT) {
+        if (ApproxDist2D(&st->sign->posX, &spy->posX) < LEVELEXIT_ENTER_RANGE) {
           unsigned char was = actor->subMode;
           int prev = g_anCosineLut[was];
           unsigned char now = was + 8;
@@ -3246,8 +3246,8 @@ void Level32_UpdateActors(void) {
           short *swing;
 
           actor->subMode += 8;
-          bearing = ArcTan2(spy->posX - st->parent->posX,
-                                  SPY.posY - st->parent->posY, ATAN_ANGLE8);
+          bearing = ArcTan2(spy->posX - st->sign->posX,
+                                  SPY.posY - st->sign->posY, ATAN_ANGLE8);
           q432[0] = (g_anCosineLut[bearing] * 3) >> 4;
           q432[1] = (g_anSineLut[bearing] * 3) >> 4;
           q432[2] = 0;
@@ -3256,16 +3256,16 @@ void Level32_UpdateActors(void) {
           q448[2] = 0;
           bearing = (bearing + 0x80) & 0xFF;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
-          ScaleVector3Sat(letterSlot, q448, st->radius - 1);
+          ScaleVector3Sat(letterSlot, q448, st->count - 1);
           LShiftVector3(q448, 1);
-          arm = st->radius - 1;
+          arm = st->count - 1;
           letterSlot[2] += (g_anCosineLut[arm * 2] * 3) >> 3;
           letterSwingRest[0] = q432[0] * g_anCosineLut[arm * 2];
           letterSwingRest[1] = q432[1] * g_anCosineLut[arm * 2];
           letterSwingRest[2] = 0;
           bearing = arm << 1;
-          bearing = (bearing - (st->phase * 4)) & 0xFF;
-          ScaleVector3Sat(q448, q448, st->phase);
+          bearing = (bearing - (st->index * 4)) & 0xFF;
+          ScaleVector3Sat(q448, q448, st->index);
           SubtractVector(letterSlot, letterSlot, q448);
           swing = &g_anCosineLut[bearing];
           actor->posX = q432[0] * *swing;
@@ -3274,7 +3274,7 @@ void Level32_UpdateActors(void) {
           SubtractVector(&actor->posX, &actor->posX, letterSwingRest);
           RShiftVector3(&actor->posX, 0xA);
           AddVector(&actor->posX, &actor->posX, q432);
-          AddVector(&actor->posX, &actor->posX, &st->parent->posX);
+          AddVector(&actor->posX, &actor->posX, &st->sign->posX);
           SubtractVector(&actor->posX, &actor->posX, letterSlot);
           actor->posZ = actor->posZ + ((*swing * 3) >> 3) + 0x600;
         }

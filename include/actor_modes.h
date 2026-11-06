@@ -350,7 +350,7 @@ enum PortalNameMode {
   PORTALNAME_NEAR = 1, /* camera close and facing one side: letters shown */
 };
 
-/* The owner mode that removes a floating name's letters (OrbitState.owner
+/* The owner mode that removes a floating name's letters (NameLetterState.sign
  * is a portal name or a level exit; PORTALNAME_FAR and LEVELEXIT_FAR are
  * both 0). */
 #define ORBIT_OWNER_FAR 0

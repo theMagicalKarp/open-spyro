@@ -4,17 +4,10 @@
 #include "main_shared.h"
 #include "vecmath.h"
 
-/* The per-letter banner record hung off a letter actor's ->state pointer (a
-   sign actor's ->state holds its level id instead). */
-struct NameRec {
-  void *owner; /* 0x00 */
-  short count; /* 0x04 */
-  short index; /* 0x06 */
-};
-
-/* The banner record pointer (->state) is re-read before every field store
-   (the original never proves the letter actor's +0 stays put across them). */
-#define REC(p) (*(struct NameRec *volatile *)&(p)->state)
+/* The letter's NameLetterState pointer (->state; a sign actor's ->state holds
+   its level id instead) is re-read before every field store (the original
+   never proves the letter actor's +0 stays put across them). */
+#define REC(p) (*(NameLetterState *volatile *)&(p)->state)
 
 /* Spells a name out in floating letter actors around `sign`. With `named` set
    (NAME_LETTERS_LEVEL) the text is the level name for the sign's own level id
@@ -108,7 +101,7 @@ void SpawnNameLetterActors(Actor *sign, int named) {
           ch = ACTOR_TYPE_GLYPH_COMMA;
         }
         letter = g_pfnLevelSpawnActor(ch, sign);
-        REC(letter)->owner = sign;
+        REC(letter)->sign = sign;
         REC(letter)->count = len;
         REC(letter)->index = i;
 

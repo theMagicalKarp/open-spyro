@@ -96,6 +96,16 @@ typedef struct Actor {
                         * size (overlay grow/shrink tweens drive it 0x20..0x60) */
 } Actor; /* 0x58 */
 
+/* The state block SpawnNameLetterActors hangs off each letter of a floating
+ * name (letters A..Z are ACTOR_TYPE_LETTER_A.., anything else
+ * ACTOR_TYPE_GLYPH_COMMA): the letters ride their sign at slots laid out
+ * from count and index, or spin in place when the sign does not spin. */
+typedef struct NameLetterState {
+  Actor *sign; /* 0x00 the portal sign / level exit it spells for */
+  short count; /* 0x04 characters in the name, spaces included */
+  short index; /* 0x06 this letter's position in it */
+} NameLetterState;
+
 /* Actor.voiceRow while no voice row plays the actor's sound. */
 #define VOICE_ROW_NONE 0x7F /* also what a finished or dropped sound stamps into its pPlaying byte */
 #define ACTOR_SCALE_UNIT 0x20 /* ->scale drawing the mesh at its own size (0x40 = half, 0x14 = 1.6x) */

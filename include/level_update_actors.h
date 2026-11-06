@@ -280,15 +280,6 @@ typedef struct WobbleState {
   int scorchBand; /* 0x14 StepActorScorchTint band */
 } WobbleState;
 
-/* Cases 76 and 426..451 — a letter of a floating name (SpawnNameLetterActors:
- * A..Z are 426..451, anything else 76): rides its sign at a fixed radius, or
- * falls back to a plain spin when the sign is not a spinner. */
-typedef struct NameLetterState {
-  Actor *parent; /* 0x00 */
-  short radius;  /* 0x04 */
-  short phase;   /* 0x06 */
-} NameLetterState;
-
 /* Case 286 — ambient sound source: plays random ambient sounds at its
  * sound range; mode 2 also steps it along a waypoint path. */
 typedef struct AmbientSoundState {
@@ -649,14 +640,6 @@ typedef struct PropAnimState {
   int timer;  /* 0x04 */
   int primed; /* 0x08 */
 } PropAnimState;
-
-/* Types 76/426..451: letters of a floating word, placed relative to their
- * parent actor. */
-typedef struct OrbitState {
-  Actor *owner; /* 0x00 */
-  short ring;  /* 0x04 ring index; the arm always uses it as ring - 1 */
-  short ringPhase;  /* 0x06 phase offset within the ring */
-} OrbitState;
 
 /* Case 208 — the hub's music/voice trigger. */
 typedef struct PathGateState {
@@ -1035,11 +1018,14 @@ typedef struct CatapultState {
   int timer;     /* 0x10 */
 } CatapultState;
 
+/* Wandering critters (ACTOR_TYPE_ROAMING_CRITTER, level 8; type 236
+ * ACTOR_TYPE_WANDERING_CRITTER_C, levels 31 / 32): UpdateActorWander's block,
+ * then the knock-away and the pause between wanders. */
 typedef struct RoamingCritterState {
   WanderBlock wander; /* 0x00 UpdateActorWander's block */
   int knockSpeed; /* 0x20 knock-back speed */
   int knockHeading; /* 0x24 knock-back heading */
-  char pad28[0x4];
+  int pad28;      /* 0x28 a level-data pointer (relocated at load), never read */
   int wait;  /* 0x2C pause timer */
 } RoamingCritterState;
 

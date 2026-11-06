@@ -648,13 +648,4 @@ typedef struct FlameChunkSwitchState {
   int rearmTimer; /* 0x04 re-arm timer */
 } FlameChunkSwitchState;
 
-/* Type 236 state (level 32 wanderer; the head is UpdateActorWander's wander block). */
-typedef struct WandererState {
-  WanderBlock wander; /* 0x00 UpdateActorWander's block */
-  int knockSpeed;    /* 0x20 knock-back speed */
-  int knockHeading;    /* 0x24 knock-back heading */
-  int pad28; /* 0x28 a level-data pointer (relocated at load), never read */
-  int idleTimer;    /* 0x2C idle timer */
-} WandererState;
-
 #endif /* OPEN_SPYRO_LEVEL_ACTOR_STATES_H */

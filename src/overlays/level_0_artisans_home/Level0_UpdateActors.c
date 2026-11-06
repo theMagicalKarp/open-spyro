@@ -3076,7 +3076,7 @@ void Level0_UpdateActors(void) {
       continue;
     }
 
-    /* Floating-word letters (OrbitState). */
+    /* Floating-word letters (NameLetterState). */
     case ACTOR_TYPE_GLYPH_COMMA:
     case ACTOR_TYPE_LETTER_A:
     case ACTOR_TYPE_LETTER_A + 1:
@@ -3104,12 +3104,12 @@ void Level0_UpdateActors(void) {
     case ACTOR_TYPE_LETTER_A + 23:
     case ACTOR_TYPE_LETTER_A + 24:
     case ACTOR_TYPE_LETTER_A + 25: {
-      OrbitState *st = actor->state;
+      NameLetterState *st = actor->state;
 
-      if (st->owner->mode == ORBIT_OWNER_FAR || st->owner->subMode != actor->mode) {
+      if (st->sign->mode == ORBIT_OWNER_FAR || st->sign->subMode != actor->mode) {
         DespawnActorRecord(actor);
-      } else if (st->owner->type == ACTOR_TYPE_LEVEL_EXIT) {
-        if (ApproxDist2D(&st->owner->posX, &SPY.posX) < LEVELEXIT_ENTER_RANGE) {
+      } else if (st->sign->type == ACTOR_TYPE_LEVEL_EXIT) {
+        if (ApproxDist2D(&st->sign->posX, &SPY.posX) < LEVELEXIT_ENTER_RANGE) {
           int oldval;
           oldval = g_anCosineLut[actor->subMode];
           actor->subMode += 8;
@@ -3123,8 +3123,8 @@ void Level0_UpdateActors(void) {
           int vecD[3];
 
           actor->subMode += 8;
-          anglespyro = ArcTan2(SPY.posX - st->owner->posX,
-                                     SPY.posY - st->owner->posY, ATAN_ANGLE8);
+          anglespyro = ArcTan2(SPY.posX - st->sign->posX,
+                                     SPY.posY - st->sign->posY, ATAN_ANGLE8);
           vecA[0] = g_anCosineLut[anglespyro] * 3 >> 4;
           vecA[1] = g_anSineLut[anglespyro] * 3 >> 4;
           vecA[2] = 0;
@@ -3133,16 +3133,16 @@ void Level0_UpdateActors(void) {
           vecB[2] = 0;
           anglespyro = (anglespyro + 0x80) & 0xFF;
           actor->rotZ = anglespyro + (g_anCosineLut[actor->subMode] * 3 >> 9);
-          ScaleVector3Sat(vecC, vecB, st->ring - 1);
+          ScaleVector3Sat(vecC, vecB, st->count - 1);
           LShiftVector3(vecB, 1);
           anglespyro = 2;
-          anglespyro = (st->ring - 1) * anglespyro;
+          anglespyro = (st->count - 1) * anglespyro;
           vecC[2] += g_anCosineLut[anglespyro] * 3 >> 3;
           vecD[0] = vecA[0] * g_anCosineLut[anglespyro];
           vecD[1] = vecA[1] * g_anCosineLut[anglespyro];
           vecD[2] = 0;
-          anglespyro = ((anglespyro - st->ringPhase * 4)) & 0xFF;
-          ScaleVector3Sat(vecB, vecB, st->ringPhase);
+          anglespyro = ((anglespyro - st->index * 4)) & 0xFF;
+          ScaleVector3Sat(vecB, vecB, st->index);
           SubtractVector(vecC, vecC, vecB);
           actor->posX = vecA[0] * g_anCosineLut[anglespyro];
           actor->posY = vecA[1] * g_anCosineLut[anglespyro];
@@ -3150,7 +3150,7 @@ void Level0_UpdateActors(void) {
           SubtractVector(&actor->posX, &actor->posX, vecD);
           RShiftVector3(&actor->posX, 10);
           AddVector(&actor->posX, &actor->posX, vecA);
-          AddVector(&actor->posX, &actor->posX, &st->owner->posX);
+          AddVector(&actor->posX, &actor->posX, &st->sign->posX);
           SubtractVector(&actor->posX, &actor->posX, vecC);
           actor->posZ = actor->posZ + (g_anCosineLut[anglespyro] * 3 >> 3) + 0x600;
         }
