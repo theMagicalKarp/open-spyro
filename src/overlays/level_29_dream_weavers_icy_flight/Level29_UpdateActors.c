@@ -140,7 +140,7 @@ void Level29_UpdateActors(void) {
 
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
               cs->target = actor;
-              cs->timer = RandomIntInRange(150, 210);
+              cs->timer = RandomIntInRange(SPARX_CHASE_MIN_FRAMES, SPARX_CHASE_MAX_FRAMES);
 
               actor->mode = BUTTERFLY_CIRCLE;
             }
@@ -148,7 +148,7 @@ void Level29_UpdateActors(void) {
         }
       }
 
-      if (actor->cullRadius & 0x80)
+      if (actor->cullRadius & ACTOR_CULL_ALWAYS_BIT)
         break;
 
       switch (actor->mode) {
@@ -211,7 +211,7 @@ void Level29_UpdateActors(void) {
         break;
       }
       case BUTTERFLY_CIRCLE: {
-        SteerActorAroundPoint(actor, &spy->posX, 0x320,
+        SteerActorAroundPoint(actor, &spy->posX, BUTTERFLY_CIRCLE_RADIUS,
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
                                     st->circleDir * 8),
@@ -996,7 +996,7 @@ void Level29_UpdateActors(void) {
 
           if (isPickupAnimPhase == 0) {
             if (TICK_DOWN(st->timer) != 0 ||
-                (st->timer < 80 &&
+                (st->timer < SPARX_CATCH_EARLY_FRAMES &&
                  AbsAngleDelta8((actor->rotZ + (bp->circleDir * 110)) & 0xFF,
                                ((CAM.rotZ >> 4) + 0x80) & 0xFF) < 8)) {
               if (actor->nextAnim != actor->nextAnim + 1) {
@@ -1312,7 +1312,7 @@ void Level29_UpdateActors(void) {
     case ACTOR_TYPE_GEM_DIGIT_0 + 9: {
       GemDigitState *st = actor->state;
 
-      if (!(actor->cullRadius & 0x80) && (actor->cullRadius != ACTOR_CULL_HIDDEN)) {
+      if (!(actor->cullRadius & ACTOR_CULL_ALWAYS_BIT) && (actor->cullRadius != ACTOR_CULL_HIDDEN)) {
 
         if (st->life >= 1) {
 
@@ -1442,7 +1442,7 @@ void Level29_UpdateActors(void) {
         actor->rotX = 0;
         actor->rotY = 0;
         actor->rotZ = 0xC0;
-        actor->cullRadius = 0xFF;
+        actor->cullRadius = ACTOR_CULL_ALWAYS;
         actor->otBias = 0x20;
         actor->mode = TIMEBONUS_TO_HUD;
         PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_COLLECT], actor, SFX_MODE_PANNED, 0);
@@ -1514,7 +1514,7 @@ void Level29_UpdateActors(void) {
 
         for (i = 3; i >= 0; i--) {
           st->digit[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_GLYPH_PERIOD, actor);
-          st->digit[i]->cullRadius = 0xFF;
+          st->digit[i]->cullRadius = ACTOR_CULL_ALWAYS;
           st->digit[i]->otBias = 0x20;
           st->digit[i]->posZ = 0x1000;
           st->digit[i]->rotZ = 0;
@@ -1531,7 +1531,7 @@ void Level29_UpdateActors(void) {
         if (g_anFlightClearTimes[g_nActiveWorldIndex] != 0) {
           for (i = 4; i < 8; i++) {
             st->digit[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_GLYPH_PERIOD, actor);
-            st->digit[i]->cullRadius = 0xFF;
+            st->digit[i]->cullRadius = ACTOR_CULL_ALWAYS;
             st->digit[i]->otBias = 0x20;
             st->digit[i]->rotZ = 0;
           }
@@ -1571,7 +1571,7 @@ void Level29_UpdateActors(void) {
           g_aHudIconActorRecords[i].posY = y;
           y += 0x14;
           g_aHudIconActorRecords[i].otBias = 0x20;
-          g_aHudIconActorRecords[i].cullRadius = 0xFF;
+          g_aHudIconActorRecords[i].cullRadius = ACTOR_CULL_ALWAYS;
           g_aHudIconActorRecords[i].posX = 0x3C;
           g_aHudIconActorRecords[i].posZ = 0x1000;
           g_aHudIconActorRecords[i].tintMode = i + 3;
@@ -1614,9 +1614,9 @@ void Level29_UpdateActors(void) {
         i = t / 3600;
         if (i != 0) {
           st->digit[6]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
-          st->digit[4]->cullRadius = 0xFF;
-          st->digit[5]->cullRadius = 0xFF;
-          st->digit[6]->cullRadius = 0xFF;
+          st->digit[4]->cullRadius = ACTOR_CULL_ALWAYS;
+          st->digit[5]->cullRadius = ACTOR_CULL_ALWAYS;
+          st->digit[6]->cullRadius = ACTOR_CULL_ALWAYS;
         } else {
           st->digit[4]->cullRadius = ACTOR_CULL_HIDDEN;
           st->digit[5]->cullRadius = ACTOR_CULL_HIDDEN;
@@ -1624,7 +1624,7 @@ void Level29_UpdateActors(void) {
         }
         i = t * 10 / 6 % 10;
         st->digit[7]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
-        st->digit[7]->cullRadius = 0xFF;
+        st->digit[7]->cullRadius = ACTOR_CULL_ALWAYS;
       } else {
         t = g_nFlightTimeRemaining;
         if (t < 0) {
@@ -1636,7 +1636,7 @@ void Level29_UpdateActors(void) {
       if (i != 0) {
         i = i % 6;
         st->digit[0]->type = ACTOR_TYPE_GEM_DIGIT_0 + i;
-        st->digit[0]->cullRadius = 0xFF;
+        st->digit[0]->cullRadius = ACTOR_CULL_ALWAYS;
       } else {
         st->digit[0]->cullRadius = ACTOR_CULL_HIDDEN;
       }
@@ -1716,13 +1716,13 @@ void Level29_UpdateActors(void) {
             for (i = 0, x = 0x1E; i < 8; i++) {
               st->icon[i]->type = st->types[g_nFlightTallyShownClass];
               if (cnt[g_nFlightTallyShownClass] < i + 1) {
-                st->icon[i]->cullRadius = 0xFF;
+                st->icon[i]->cullRadius = ACTOR_CULL_ALWAYS;
                 st->icon[i]->posX = x;
                 st->icon[i]->tintMode = 0;
                 st->icon[i]->rotZ = 0;
                 st->icon[i]->mode = TALLY_ICON_UNLIT;
               } else {
-                st->icon[i]->cullRadius = 0xFF;
+                st->icon[i]->cullRadius = ACTOR_CULL_ALWAYS;
                 st->icon[i]->posX = x;
                 st->icon[i]->tintMode = g_nFlightTallyShownClass + 3;
                 st->icon[i]->mode = TALLY_ICON_LIT;

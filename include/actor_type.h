@@ -79,7 +79,7 @@ typedef struct Actor {
                             * loads it as a halfword with ->drawn and tests each
                             * axis against (cullRadius << 8) + (drawn & 1) * 0x200,
                             * so 0 hides the actor. The renderer gives bit 7 no
-                            * meaning of its own; overlays test it as "large". */
+                            * meaning of its own (ACTOR_CULL_ALWAYS_BIT). */
   unsigned char drawn; /* 0x51 drawn last frame: always kept active */
   unsigned char updateDist; /* 0x52 activation radius >> 10 */
   unsigned char dropKind; /* 0x53 death-drop item id (& 0x7F, 1..0x7E fixed;
@@ -100,6 +100,13 @@ typedef struct Actor {
 #define VOICE_ROW_NONE 0x7F /* also what a finished or dropped sound stamps into its pPlaying byte */
 #define ACTOR_SCALE_UNIT 0x20 /* ->scale drawing the mesh at its own size (0x40 = half, 0x14 = 1.6x) */
 #define ACTOR_CULL_HIDDEN 0 /* ->cullRadius: a zero bound fails the view cull, so the actor is hidden */
+/* ->cullRadius 0xFF: a bound every view-space point passes. Only these stamps
+ * set bit 7 (level data and spawns stay at or below 0x7F): HUD counter digits
+ * and icons, text sprites, the portal guide and a collected flight time bonus.
+ * Gem digits test the bit to leave HUD digits alone; the butterfly's test of
+ * it is dead (it spawns at 0x10 and nothing restamps it). */
+#define ACTOR_CULL_ALWAYS 0xFF
+#define ACTOR_CULL_ALWAYS_BIT 0x80
 #define ACTOR_TINT_NEUTRAL 0xA18618 /* the 0x4C tint word at neutral levels (0x18 each, tag 0xA) */
 /* Actor.tintMode presets, used with tint0..2 zeroed.
  * RasterizeSpritePrimQueue reads the preset word at 0x8006E3D8 + (tint word

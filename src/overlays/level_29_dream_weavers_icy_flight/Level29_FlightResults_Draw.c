@@ -277,7 +277,7 @@ void Level29_FlightResults_Draw(void)
       g_pSpriteRecordWriteCursor->rotZ = g_dwHudIconSpinAngle;
       g_pSpriteRecordWriteCursor->otBias = 0x7F;
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
-      g_pSpriteRecordWriteCursor->cullRadius = 0xFF;
+      g_pSpriteRecordWriteCursor->cullRadius = ACTOR_CULL_ALWAYS;
       EmitRadialShadedLine(0x3C, 0x2E, 0x1C4, 0x2E);
       pos[0] = 0x64;
       pos[1] = 0x3C;

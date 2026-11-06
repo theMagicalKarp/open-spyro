@@ -301,14 +301,14 @@ void Level30_UpdateActors(void) {
               }
               g_pSparxActor->subMode = SPARX_SUB_CHASE;
               sparx->target = actor;
-              sparx->timer = RandomIntInRange(0x96, 0xD2);
+              sparx->timer = RandomIntInRange(SPARX_CHASE_MIN_FRAMES, SPARX_CHASE_MAX_FRAMES);
               actor->mode = BUTTERFLY_CIRCLE;
             }
           }
         }
       }
 
-      if (!(actor->cullRadius & 0x80)) {
+      if (!(actor->cullRadius & ACTOR_CULL_ALWAYS_BIT)) {
         switch (actor->mode) {
         case BUTTERFLY_FLUTTER:
           if (TICK_DOWN(st->offscreenTimer) == 0 || actor->drawn != 0) {
@@ -377,7 +377,7 @@ void Level30_UpdateActors(void) {
           break;
 
         case BUTTERFLY_CIRCLE:
-          SteerActorAroundPoint(actor, &spy->posX, 0x320,
+          SteerActorAroundPoint(actor, &spy->posX, BUTTERFLY_CIRCLE_RADIUS,
                         WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                     actor->posY - spy->posY, ATAN_ANGLE8),
                                       st->circleDir * 8),
@@ -1293,7 +1293,7 @@ void Level30_UpdateActors(void) {
 
             if (high == 0 &&
                 (TICK_DOWN(st->timer) != 0 ||
-                 (st->timer < 0x50 &&
+                 (st->timer < SPARX_CATCH_EARLY_FRAMES &&
                   AbsAngleDelta8((actor->rotZ + (pk->vel[0] * 0x6E)) & 0xFF,
                                 (((unsigned short)g_nCameraEulerYaw << 16 >> 20) + 0x80) &
                                     0xFF) < 8))) {

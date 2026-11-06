@@ -80,7 +80,7 @@ void *BuildTextSprites(char *text, int *pos, int *attr, int spacing,
       }
       CURSOR_V->otBias = 0x7f;
       CURSOR_V->tintMode = flags;
-      CURSOR_V->cullRadius = 0xff;
+      CURSOR_V->cullRadius = ACTOR_CULL_ALWAYS;
       if (flag != 0) {
         int adv = (*pos) + spacing;
         do {

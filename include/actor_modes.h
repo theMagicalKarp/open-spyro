@@ -52,6 +52,12 @@ enum SparxSubMode {
  * him, and reaches it within CATCH_RANGE (3D, Sparx to target). */
 #define SPARX_TARGET_LEASH 0x2000
 #define SPARX_CATCH_RANGE 0x200
+/* SparxState.timer when a butterfly calls him (RandomIntInRange): he steps
+ * to the catch animation when it runs out, or once it is under
+ * CATCH_EARLY_FRAMES and the butterfly's heading lines up with the camera. */
+#define SPARX_CHASE_MIN_FRAMES 150
+#define SPARX_CHASE_MAX_FRAMES 210
+#define SPARX_CATCH_EARLY_FRAMES 80
 
 /* g_nSfxOverrideVolL/R (of SPU_VOLUME_MAX) for Sparx's buzz when he
  * sets off to fetch, and for the chime when he hands the pickup over. */
@@ -128,6 +134,8 @@ enum ButterflyMode {
 #define BUTTERFLY_CALL_RANGE 2400
 #define BUTTERFLY_CALL_DZ 1800
 #define BUTTERFLY_LEASH 2000
+/* A butterfly Sparx is chasing (BUTTERFLY_CIRCLE) orbits Spyro at this radius. */
+#define BUTTERFLY_CIRCLE_RADIUS 0x320
 /* Height bands over the ground (ProbeActorGroundHeight): a fluttering
  * butterfly climbs when below FLUTTER_MIN_HEIGHT and sinks when above
  * FLUTTER_MAX_HEIGHT, a circling one uses CIRCLE_MIN / MAX; at DROP_HEIGHT or

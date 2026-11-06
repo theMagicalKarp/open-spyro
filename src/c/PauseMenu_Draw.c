@@ -470,7 +470,7 @@ void PauseMenu_Draw(void) {
               phase4 += 0xc;
               g_pSpriteRecordWriteCursor->otBias = 0x7f;
               g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
-              g_pSpriteRecordWriteCursor->cullRadius = 0xff;
+              g_pSpriteRecordWriteCursor->cullRadius = ACTOR_CULL_ALWAYS;
               x += 0xa;
               i++;
             } while (i < g_nSfxVolume);
@@ -517,7 +517,7 @@ void PauseMenu_Draw(void) {
               phase6 += 0xc;
               g_pSpriteRecordWriteCursor->otBias = 0x7f;
               g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
-              g_pSpriteRecordWriteCursor->cullRadius = 0xff;
+              g_pSpriteRecordWriteCursor->cullRadius = ACTOR_CULL_ALWAYS;
               x += 0xa;
               i++;
             } while (i < g_nMusicVolume);
@@ -728,7 +728,7 @@ void PauseMenu_Draw(void) {
       g_pSpriteRecordWriteCursor->rotZ = g_adwHudIconSpinAngleBlock[0];
       g_pSpriteRecordWriteCursor->otBias = 0x7f;
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
-      g_pSpriteRecordWriteCursor->cullRadius = 0xff;
+      g_pSpriteRecordWriteCursor->cullRadius = ACTOR_CULL_ALWAYS;
       g_pSpriteRecordWriteCursor--;
       FillWord(g_pSpriteRecordWriteCursor, 0, ACTOR_SIZE);
       g_pSpriteRecordWriteCursor->type = ACTOR_TYPE_HUD_DRAGON_ICON;
@@ -746,7 +746,7 @@ void PauseMenu_Draw(void) {
       }
       g_pSpriteRecordWriteCursor->otBias = 0x7f;
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
-      g_pSpriteRecordWriteCursor->cullRadius = 0xff;
+      g_pSpriteRecordWriteCursor->cullRadius = ACTOR_CULL_ALWAYS;
       {
         int x3;
         x3 = 0x24;
@@ -857,7 +857,7 @@ void PauseMenu_Draw(void) {
       g_pSpriteRecordWriteCursor->rotZ = g_dwHudIconSpinAngle;
       g_pSpriteRecordWriteCursor->otBias = 0x7f;
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
-      g_pSpriteRecordWriteCursor->cullRadius = 0xff;
+      g_pSpriteRecordWriteCursor->cullRadius = ACTOR_CULL_ALWAYS;
       g_pSpriteRecordWriteCursor--;
       FillWord(g_pSpriteRecordWriteCursor, 0, ACTOR_SIZE);
       {
@@ -879,7 +879,7 @@ void PauseMenu_Draw(void) {
       i = 0;
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       y = 0x7b;
-      g_pSpriteRecordWriteCursor->cullRadius = 0xff;
+      g_pSpriteRecordWriteCursor->cullRadius = ACTOR_CULL_ALWAYS;
       do {
         if (g_abLevelVisitedFlag[g_nSubMenuCursor * 6 + i] != 0) {
           int bA, bB, bC, bD, bE;

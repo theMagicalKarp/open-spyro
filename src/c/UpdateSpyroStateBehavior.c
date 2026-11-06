@@ -1164,7 +1164,7 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_CHARGE_BONK);
       break;
     }
-    if (g_nSpyroMotionSpeed < 0x1E00) {
+    if (g_nSpyroMotionSpeed < SPYRO_SUPERCHARGE_EXIT_SPEED) {
       ChangeSpyroState(SPYRO_ST_CHARGE);
     }
     break;

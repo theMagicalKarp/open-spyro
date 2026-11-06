@@ -70,7 +70,7 @@ void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance,
 
       CURSOR->otBias = 0x7F;
       CURSOR->tintMode = nPalette;
-      CURSOR->cullRadius = 0xFF;
+      CURSOR->cullRadius = ACTOR_CULL_ALWAYS;
     }
     *pPen += nAdvance;
     pszText++;

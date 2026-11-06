@@ -925,7 +925,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (SPY[SPY_SPEED] > SPYRO_MAX_SPEED) {
           SPY[SPY_SPEED] = SPYRO_MAX_SPEED;
         }
-        if (SPY[SPY_SPEED] < 0x1E00 && g_nSpyroGlideBankingFlag == 0) {
+        if (SPY[SPY_SPEED] < SPYRO_BANK_MIN_SPEED &&
+            g_nSpyroGlideBankingFlag == 0) {
           g_nSpyroSubstate = 0;
           g_nSpyroTurnRateAccum = 0;
           g_nSpyroMotionAux = 0;
@@ -1033,8 +1034,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (SPY[SPY_SPEED] > SPYRO_MAX_SPEED) {
           SPY[SPY_SPEED] = SPYRO_MAX_SPEED;
         }
-        if (SPY[SPY_SPEED] < 0x1E00 && g_nSpyroGlideBankingFlag == 0 &&
-            g_nSpyroBodyRoll < 0x400) {
+        if (SPY[SPY_SPEED] < SPYRO_BANK_MIN_SPEED &&
+            g_nSpyroGlideBankingFlag == 0 && g_nSpyroBodyRoll < 0x400) {
           g_nSpyroSubstate = 0;
           g_nSpyroTurnRateAccum = 0;
           g_nSpyroMotionAux = 0;
@@ -1479,7 +1480,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       g_nSpyroVelocityY = (sp[0] * LookupSine(g_nSpyroBodyYaw)) >> 12;
       CopyVector(sp + (SPY_CARRY - SPY_SPEED), sp + (SPY_VELOCITY - SPY_SPEED));
     } else {
-      g_nSpyroSpeedTarget = 0x1E00;
+      g_nSpyroSpeedTarget = SPYRO_CHARGE_AIR_SPEED;
       AdvanceSpyroSpeedTowardTarget(0x240, 0x180);
       g_anSpyroVelocity[0] =
           (g_nSpyroMotionSpeed * LookupCosine(SPY[SPY_BODY_YAW])) >> 12;

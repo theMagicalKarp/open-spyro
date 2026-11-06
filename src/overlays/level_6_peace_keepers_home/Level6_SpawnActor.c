@@ -292,7 +292,7 @@ Actor *Level6_SpawnActor(int type, Actor *parent) {
 
   case ACTOR_TYPE_PORTAL_GUIDE:
     InitActorRenderDefaults(rec);
-    rec->cullRadius = 0xFF;
+    rec->cullRadius = ACTOR_CULL_ALWAYS;
     rec->posX = 0x1CC;
     rec->posY = 0x28;
     rec->posZ = 0x1000;
