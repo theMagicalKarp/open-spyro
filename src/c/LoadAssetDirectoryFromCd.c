@@ -3,7 +3,7 @@
 #include "globals.h"
 
 /* Boot-time asset directory load: sector 0x25 read synchronously into the
-   shared CD buffer, then 0x330 words copied out to the asset directory that
+   shared CD buffer, then 0x330 bytes copied out to the asset directory that
    Initialize consults for the follow-up art/world/texture/CLUT loads. The
    LBA global is volatile-reloaded for the call argument, reusing the
    store's base register. (0x8001250c, 96 bytes.) */

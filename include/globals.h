@@ -732,16 +732,16 @@ extern unsigned char g_abCdlLocScratch;                          /* 0x80076b98 *
 extern void *g_pCdReadDstBuffer;                        /* 0x80076b9c */
 extern int g_nCdReadInFlight;                           /* 0x80076bb8 */
 extern int g_anPadHistoryRing[16];                      /* 0x80076bc0 */
-extern int g_nWorldTimAudioChunkOffset;                 /* 0x80076c00 */
-extern int g_nWorldTimAudioChunkSize;                   /* 0x80076c04 */
-extern int g_nWorldBundleChunkOffset;                   /* 0x80076c08 */
-extern int g_nWorldBundleChunkSize;                     /* 0x80076c0c */
-extern int g_nWorldDataExtChunkOffset;                  /* 0x80076c10 */
-extern int g_nWorldDataExtChunkSize;                    /* 0x80076c14 */
-extern int g_nLevelArchiveChunkOffset;                  /* 0x80076c18 */
-extern int g_nLevelArchiveChunkSize;                    /* 0x80076c1c */
-extern int g_nDragonAssetOffset;                        /* 0x80076c20 */
-extern int g_nDragonAssetSize;                          /* 0x80076c24 */
+extern int g_nWorldTimAudioChunkOffset;                 /* 0x80076c00: world/level header word 0: the loaded chunk's first 0x1D0 bytes are CopyWords'd here (Initialize, TickCutsceneBundleLoadStream, TickLevelTransitionStream, Credits_Update), so this header (to 0x80076dd0) is only ever filled by those copies; offset of the TIM + SPU audio chunk */
+extern int g_nWorldTimAudioChunkSize;                   /* 0x80076c04: header copy (see g_nWorldTimAudioChunkOffset): TIM + audio chunk byte size */
+extern int g_nWorldBundleChunkOffset;                   /* 0x80076c08: header copy: bundle chunk offset */
+extern int g_nWorldBundleChunkSize;                     /* 0x80076c0c: header copy: bundle chunk byte size */
+extern int g_nWorldDataExtChunkOffset;                  /* 0x80076c10: header copy: data-ext chunk offset (the models g_anActorMeshOffsetList points into) */
+extern int g_nWorldDataExtChunkSize;                    /* 0x80076c14: header copy: data-ext chunk byte size */
+extern int g_nLevelArchiveChunkOffset;                  /* 0x80076c18: header copy: level archive chunk offset */
+extern int g_nLevelArchiveChunkSize;                    /* 0x80076c1c: header copy: level archive chunk byte size */
+extern int g_nDragonAssetOffset;                        /* 0x80076c20: header copy: first word of the per-dragon asset (offset, size) table TickDragonRescueAssetStream indexes (DRAGON_ASSET_OFFSET) */
+extern int g_nDragonAssetSize;                          /* 0x80076c24: header copy: size column of that table (DRAGON_ASSET_SIZE) */
 extern int g_anActorMeshOffsetList;                     /* 0x80076c50: file offsets (in the world data-ext chunk) of the models a level or cutscene streams in, 0-terminated; in a level [0] is Spyro's animation stream (InstallSpyroAnimStream) and [1..] are actor models (RelocateActorMeshHeader). 64 words, then at +0x100 64 shorts: the g_apActorMeshTable slot each model installs into (ACTOR_MESH_INDEX_LIST) */
 extern int g_anWorldToCameraRotMtx[5];                  /* 0x80076dd0 */
 extern int g_anCameraPos[3];                            /* 0x80076df8: camera world position */
@@ -791,12 +791,12 @@ extern void *g_pFramePrimBufferBase1;                   /* 0x80076fd4 */
 extern void *g_pFrameOtDepthBinBase1;                   /* 0x80076fd8 */
 extern void *g_pFrameOtMergedChainSlot1;                /* 0x80076fdc */
 extern int g_anLevelEggsRecovered[18];                  /* 0x80076fe8 */
-extern int g_nDragonRescueAudioSampleOffset;               /* 0x80077034 */
-extern int g_nDragonRescueAudioSampleSize;                 /* 0x80077038 */
-extern int g_nDragonRescueHeaderEndOffset;                 /* 0x8007703c */
-extern int g_nDragonRescueMirrorMeshOffset;                /* 0x80077044 */
-extern int g_nDragonRescueCameraPathOffset;                /* 0x8007704c */
-extern int g_nDragonRescueCameraPathSize;                  /* 0x80077050 */
+extern int g_nDragonRescueAudioSampleOffset;               /* 0x80077034: g_abDragonRescueAssetHeader word 1, filled only by its 0x24-byte header copy (TickDragonRescueAssetStream): SPU sample data offset in the asset */
+extern int g_nDragonRescueAudioSampleSize;                 /* 0x80077038: rescue header copy: SPU sample byte size (uploaded to the top of SPU RAM) */
+extern int g_nDragonRescueHeaderEndOffset;                 /* 0x8007703c: rescue header copy: statue model offset, which is also where the header ends (a split read drops that many bytes) */
+extern int g_nDragonRescueMirrorMeshOffset;                /* 0x80077044: rescue header copy: mirror mesh offset */
+extern int g_nDragonRescueCameraPathOffset;                /* 0x8007704c: rescue header copy: camera path offset (g_pDragonRescueCameraPath) */
+extern int g_nDragonRescueCameraPathSize;                  /* 0x80077050: rescue header copy: camera path byte size (24-byte keys) */
 extern int g_nDragonRescueTypeSnapshot;                    /* 0x80077054 */
 extern int g_nDragonRescueSubstate;                        /* 0x80077058: enum DragonRescueSubstate (dragon_rescue.h) */
 extern int g_nDragonRescueStreamState;                     /* 0x8007705c */
@@ -1081,11 +1081,11 @@ extern unsigned char g_abLevelVisitedFlagVirtualBase[]; /* 0x80078e72: g_abLevel
 extern unsigned char g_abLevelVisitedFlag[36];                   /* 0x80078e78 */
 extern unsigned char g_abGpuOpQueueRing[6144];                   /* 0x80078ea0 */
 extern unsigned char g_abLevelExited[36];                    /* 0x8007a6a8: per-level flag, set to 1 when Spyro leaves through the level-exit whirlwind (saved) */
-extern int g_nCutsceneArchiveOffset;                       /* 0x8007a6e8 */
-extern int g_nGameOverSceneSectorOffset;                /* 0x8007a708 */
-extern int g_nGameOverSceneByteSize;                    /* 0x8007a70c */
-extern int g_nLevelSplashOffset;                        /* 0x8007a718 */
-extern int g_nLevelArchiveOffset;                       /* 0x8007a720 */
+extern int g_nCutsceneArchiveOffset;                       /* 0x8007a6e8: asset directory: per-cutscene (offset, size) table, 8-byte stride (TickCutsceneBundleLoadStream) */
+extern int g_nGameOverSceneSectorOffset;                /* 0x8007a708: asset directory (LoadAssetDirectoryFromCd copies 0x330 bytes of sector 0x25 over 0x8007a6d0..0x8007aa00, the only fill of these words): game-over scene offset */
+extern int g_nGameOverSceneByteSize;                    /* 0x8007a70c: asset directory: game-over scene byte size */
+extern int g_nLevelSplashOffset;                        /* 0x8007a718: asset directory: per-level (splash offset, size, archive offset, size) table */
+extern int g_nLevelArchiveOffset;                       /* 0x8007a720: asset directory: level archive offset column of the per-level table */
 extern int g_anPortalScissorRect[4];                     /* 0x8007aa00 */
 extern unsigned char g_abSpyroShadowRingHeights[8];              /* 0x8007aa10 */
 extern unsigned char g_abSpyroShadowRingNoGroundFlags[8];        /* 0x8007aa18 */
@@ -1478,18 +1478,18 @@ extern int g_anTitleExitPathBlock[]; /* 0x80078d94: held-base view of the messag
 extern volatile int g_nMemCardRingIndex; /* 0x80078da4 */
 extern volatile int g_anMemCardSyncRing[]; /* 0x80078da8 */
 extern char *g_pStoryIntroStreamCursor; /* 0x80078dc4 */
-extern int g_anAssetDirectory; /* 0x8007a6d0: first word of the CD asset directory (0x330 bytes; scalar so reads fold into lui/lw) */
+extern int g_anAssetDirectory; /* 0x8007a6d0: first word of the CD asset directory (0x330 bytes, copied from sector 0x25 by LoadAssetDirectoryFromCd, never stored otherwise; scalar so reads fold into lui/lw) */
 extern int g_nAssetDirBootBlockSize; /* 0x8007a6d4: boot-splash chunk byte count */
 extern int g_nTitleSceneSectorOffset; /* 0x8007a6d8: async-read byte offset */
 extern int g_nLevelLoadByteOffset; /* 0x8007a6e0: level-load byte offset */
 extern int g_nLevelLoadChunkSize; /* 0x8007a6e4: level-load chunk size */
 extern int g_anWorldArchiveOffsetBlock[]; /* 0x8007a6e8: alias, held across the reads */
 extern volatile int g_anGameOverSceneBlock[]; /* 0x8007a70c: g_nGameOverSceneByteSize */
-extern int g_nActorMeshDirSectorOffset; /* 0x8007a710 */
-extern int g_nActorMeshDirByteSize[4]; /* 0x8007a714 */
+extern int g_nActorMeshDirSectorOffset; /* 0x8007a710: asset directory (filled only by LoadAssetDirectoryFromCd) */
+extern int g_nActorMeshDirByteSize[4]; /* 0x8007a714: asset directory (filled only by LoadAssetDirectoryFromCd) */
 extern int g_nLevelSplashByteSize; /* 0x8007a71c: splash size column of the level archive table */
-extern int g_nCreditsSceneSectorOffset; /* 0x8007a958 */
-extern int g_nCreditsSceneByteSize; /* 0x8007a95c */
+extern int g_nCreditsSceneSectorOffset; /* 0x8007a958: asset directory (filled only by LoadAssetDirectoryFromCd) */
+extern int g_nCreditsSceneByteSize; /* 0x8007a95c: asset directory (filled only by LoadAssetDirectoryFromCd) */
 extern int g_anSpyroShadowRingIndexBlock[]; /* 0x8007aa30 */
 extern int g_anSpyroShadowHidden[1]; /* 0x8007aa34 */
 
