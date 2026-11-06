@@ -164,7 +164,7 @@ typedef struct WaypointRunnerState {
 typedef struct AttachBeadState {
   struct Actor *owner; /* 0x00 */
   int t;               /* 0x04 */
-  int pad08;           /* 0x08 cleared at spawn, never read */
+  int unread08;        /* 0x08 cleared at spawn, never read */
 } AttachBeadState;
 
 /* Level 29 type 232 (ACTOR_TYPE_BOBBER_SPINOFF): spins off its bobbing

@@ -42,6 +42,12 @@ typedef struct PickupDropState {
   unsigned char sparkle; /* 0x14 g_aRotBillboards handle, 0xFF = none */
 } PickupDropState;
 
+/* A dropped pickup (gem, extra life, Sparx food) pops up at POP_VZ and bounces
+ * BOUNCES times before it rests; a follower's drop bounces FOLLOWER_BOUNCES. */
+#define PICKUP_DROP_POP_VZ 0x8C
+#define PICKUP_DROP_BOUNCES 3
+#define PICKUP_DROP_FOLLOWER_BOUNCES 2
+
 extern int FindGroundHeightBelow(int *pos, int depth);
 
 /* pos: a world vec3, or the Actor * for actor-anchored types; effectArg: a

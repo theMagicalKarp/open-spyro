@@ -49,8 +49,8 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     PickupDropState *st = rec->state;
 
     InitActorRenderDefaults(rec);
-    st->velZ = 0x8C;
-    st->bounces = 3;
+    st->velZ = PICKUP_DROP_POP_VZ;
+    st->bounces = PICKUP_DROP_BOUNCES;
     st->sparkle = BILLBOARD_NONE;
     st->velX = 0;
     st->velY = 0;
@@ -139,16 +139,16 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     InitActorRenderDefaults(rec);
     st->velX = 0;
     st->velY = 0;
-    st->velZ = 0x8C;
+    st->velZ = PICKUP_DROP_POP_VZ;
     st->restMode = COLLREST_STILL;
     st->timer = 0;
     st->pitch = 0;
     st->yaw = 0;
     st->roll = 0;
     if (parent->type == ACTOR_TYPE_FOLLOWER) {
-      st->bounces = 2;
+      st->bounces = PICKUP_DROP_FOLLOWER_BOUNCES;
     } else {
-      st->bounces = 3;
+      st->bounces = PICKUP_DROP_BOUNCES;
     }
     pos = &rec->posX;
     st->sparkle = BILLBOARD_NONE;
