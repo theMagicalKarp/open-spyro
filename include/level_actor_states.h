@@ -425,7 +425,9 @@ typedef struct CometCannonState {
   int pad1C;        /* 0x1C */
   int idx;        /* 0x20 trail buffer in use */
   int init;       /* 0x24 */
-  char trails[1]; /* 0x28 */
+  char trails[1]; /* 0x28 three CometTrailPoint buffers: CCANNON_FIRE spaces them
+                   * 0xFDC (145 points) apart, CCANNON_LOB 0xE38 (130), the
+                   * original's two strides */
 } CometCannonState;
 
 /* LungingGuardState / BigLungingGuardState flags (level 24). */

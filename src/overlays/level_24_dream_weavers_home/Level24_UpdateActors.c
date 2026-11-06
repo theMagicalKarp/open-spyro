@@ -600,12 +600,12 @@ void Level24_UpdateActors(void) {
           continue;
         }
         if (p->mode >= ACTOR_MODE_DORMANT) {
-          int range = 0x4E2;
+          int range = CCANNON_LOCK_RANGE;
           int a = 0x20;
           int b = 0x50;
 
           if (st->camFlag != 0) {
-            range = 0x578;
+            range = CCANNON_LOCK_RANGE_HELD;
             a = 0x2C;
             b = 0x41;
           }
@@ -649,7 +649,7 @@ void Level24_UpdateActors(void) {
         break;
 
       case CCANNON_ARM:
-        st->timer = 0x4B;
+        st->timer = CCANNON_FUSE_FRAMES;
         actor->mode = CCANNON_FIRE;
         continue;
 
@@ -692,12 +692,12 @@ void Level24_UpdateActors(void) {
         cs = o->state;
         CopyVector(&o->posX, &actor->posX);
         o->rotZ = actor->rotZ;
-        MoveActorAlongHeading(o, 0x258, 0, 0, 0);
-        o->posZ += 0x352;
-        cs->speed = 0x320;
+        MoveActorAlongHeading(o, CCANNON_MUZZLE_FWD, 0, 0, 0);
+        o->posZ += CCANNON_MUZZLE_UP;
+        cs->speed = CCANNON_COMET_SPEED;
         cs->dvz = -6;
-        cs->vz = 0x96;
-        cs->timer = 0x8C;
+        cs->vz = CCANNON_COMET_VZ;
+        cs->timer = CCANNON_COMET_LIFE;
         cs->steps = 0;
         cs->count = 0;
         cs->spark = 0;
@@ -719,7 +719,7 @@ void Level24_UpdateActors(void) {
           }
           SubtractVector(g152, &q->posX, &actor->posX);
           d = ABS(g152[0]) + ABS(g152[1]);
-          if (d > 0x10FFF) {
+          if (d > CCANNON_SEEK_QUICK) {
             continue;
           }
           ang = (ArcTan2(q->posX - actor->posX, q->posY - actor->posY,
@@ -730,21 +730,21 @@ void Level24_UpdateActors(void) {
             ang -= 0x100;
           }
           ang = ABS(ang);
-          if (ang >= 7) {
+          if (ang >= CCANNON_SEEK_CONE) {
             continue;
           }
-          if (d <= 0xBFFF) {
+          if (d <= CCANNON_SEEK_EXACT) {
             d = VectorLength(g152, VEC_LEN_XY);
           } else {
             d = ApproxDist2D(&q->posX, &actor->posX);
           }
-          if (d > 0xAFFF) {
+          if (d > CCANNON_SEEK_RANGE) {
             continue;
           }
-          if (d > 0x5800) {
-            d -= 0x5800;
-          } else if (d < 0x4000) {
-            d = 0x4000 - d;
+          if (d > CCANNON_SEEK_FAR) {
+            d -= CCANNON_SEEK_FAR;
+          } else if (d < CCANNON_SEEK_NEAR) {
+            d = CCANNON_SEEK_NEAR - d;
           } else {
             d = 0;
           }
@@ -757,14 +757,14 @@ void Level24_UpdateActors(void) {
         if (best != 0) {
           CopyVector(lobTarget, &best->posX);
           if (best->type == ACTOR_TYPE_LUNGING_GUARD || best->type == ACTOR_TYPE_BIG_LUNGING_GUARD) {
-            lobTarget[2] += 0x320;
+            lobTarget[2] += CCANNON_GUARD_AIM_LIFT;
           }
           o->rotZ = ArcTan2(best->posX - actor->posX,
                                    best->posY - actor->posY, ATAN_ANGLE8);
           cs->dvz = -8;
-          cs->speed = 0x258;
+          cs->speed = CCANNON_AIM_SPEED;
           {
-            int t = ComputeLobVelocityZ(&o->posX, lobTarget, 0x258, cs->dvz, lobFrames);
+            int t = ComputeLobVelocityZ(&o->posX, lobTarget, CCANNON_AIM_SPEED, cs->dvz, lobFrames);
 
             cs->life = lobFrames[0];
             cs->vz = t;
@@ -799,21 +799,21 @@ void Level24_UpdateActors(void) {
           o = g_pfnLevelSpawnActor(ACTOR_TYPE_COMET, actor);
           o->rotZ = ArcTan2(targetPos[0] - o->posX, targetPos[1] - o->posY, ATAN_ANGLE8);
           CopyVector(&o->posX, &actor->posX);
-          targetPos[2] += 0x320;
+          targetPos[2] += CCANNON_GUARD_AIM_LIFT;
           cs = o->state;
           o->posX += (g_anCosineLut[o->rotZ] * 0x7D) >> 8;
           o->posY += (g_anSineLut[o->rotZ] * 0x7D) >> 8;
-          o->posZ += 0x578;
+          o->posZ += CCANNON_LOB_UP;
           o->cullRadius = ACTOR_CULL_HIDDEN;
           o->updateDist = ACTOR_UPDATE_ALWAYS;
-          cs->timer = 0x78;
+          cs->timer = CCANNON_LOB_LIFE;
           cs->steps = st->steps;
           cs->count = 0;
           cs->dvz = -7;
-          cs->speed = 0x320;
+          cs->speed = CCANNON_LOB_SPEED;
           cs->spark = 0;
-          cs->vz = ComputeLobVelocityZ(&o->posX, targetPos, 0x320, cs->dvz, (int *)&g208v);
-          cs->trail = (CometTrailPoint *)((char *)st + (st->idx * 0xE38 + 0x28));
+          cs->vz = ComputeLobVelocityZ(&o->posX, targetPos, CCANNON_LOB_SPEED, cs->dvz, (int *)&g208v);
+          cs->trail = (CometTrailPoint *)((char *)st + (st->idx * 0xE38 + 0x28)); /* not FIRE's 0xFDC stride (CometCannonState.trails) */
           cs->lifeOn = one;
           v = cs->vz;
           cs->life = g208v;

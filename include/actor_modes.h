@@ -2067,7 +2067,7 @@ enum GrabberMode {
 enum GrabberAnim {
   GRABBER_ANIM_LURK = 0,
   GRABBER_ANIM_EMERGE = 1,  /* the lurk's grab roll came up; voice 2 plays over it */
-  GRABBER_ANIM_REACH = 2,   /* rushing, Spyro inside 0xFA0 */
+  GRABBER_ANIM_REACH = 2,   /* rushing, Spyro inside GRABBER_REACH_RANGE */
   GRABBER_ANIM_MOVE = 3,    /* rushing from further out, and retreating */
   GRABBER_ANIM_CARRY = 4,
   GRABBER_ANIM_THROW = 5,
@@ -2076,6 +2076,39 @@ enum GrabberAnim {
   GRABBER_ANIM_HIT = 9,     /* flamed: entering GRABBER_KNOCKED */
   GRABBER_ANIM_HUSK = 0xA,  /* GRABBER_HUSK, the copy a flame knock leaves */
 };
+
+/* Grabber tuning. Flamed it is knocked off at KNOCK_SPEED / KNOCK_VZ. Lurking,
+ * it resets its grab chance past CALM_RANGE and rolls one
+ * (CHANCE_MIN..+0x3F) within NOTICE_RANGE; each tick it grabs if a byte roll
+ * is under chance - distance / 64, it is inside the camera's CAM_CONE and
+ * Spyro is within GRAB_DZ (no more than GRAB_BELOW below it), then waits
+ * GRAB_COOLDOWN. It rushes at RUSH_SPEED (reaching within REACH_RANGE,
+ * super-hitting gunners in its path) and seizes within SEIZE_RANGE, closing
+ * at SEIZE_SLOW_SPEED (SEIZE_FAST_SPEED from SEIZE_FAST_RANGE out); the
+ * throw sets Spyro down THROW_OFFSET ahead, flung at THROW_SPEED / THROW_VZ.
+ * It walks home at RETREAT_SPEED, home within HOME_ARRIVE, resting
+ * HOME_REST. */
+#define GRABBER_KNOCK_SPEED 0x15E
+#define GRABBER_KNOCK_VZ 0xF0
+#define GRABBER_CALM_RANGE 0x2C00
+#define GRABBER_NOTICE_RANGE 0x2400
+#define GRABBER_CHANCE_MIN 0x50
+#define GRABBER_CAM_CONE 0x28
+#define GRABBER_GRAB_BELOW 0x1F3
+#define GRABBER_GRAB_DZ 0x578
+#define GRABBER_GRAB_COOLDOWN 0x3C
+#define GRABBER_REACH_RANGE 0xFA0
+#define GRABBER_RUSH_SPEED 0x15E
+#define GRABBER_SEIZE_RANGE 0x44C
+#define GRABBER_SEIZE_SLOW_SPEED 0x50
+#define GRABBER_SEIZE_FAST_SPEED 0xFA
+#define GRABBER_SEIZE_FAST_RANGE 0x12D
+#define GRABBER_THROW_OFFSET 0x4B
+#define GRABBER_THROW_SPEED 0x64
+#define GRABBER_THROW_VZ 0x37
+#define GRABBER_RETREAT_SPEED 0xC8
+#define GRABBER_HOME_ARRIVE 0x100
+#define GRABBER_HOME_REST 0x78
 
 /* ->mode of a sorcerer (ACTOR_TYPE_SORCERER, SorcererState; level 13).
  * Modes below 0x60 double as the pose's animation index; the cue modes
@@ -3282,6 +3315,34 @@ enum CometCannonMode {
   CCANNON_FIRE = 3,   /* fires an ACTOR_TYPE_COMET at the best target ahead, then WATCH */
   CCANNON_LOB = 10,   /* turns to the cued target and lobs a comet at it, then WATCH */
 };
+
+/* Comet cannon tuning. With Spyro beside it (within LOCK_RANGE, LOCK_RANGE_HELD
+ * once locked) the camera locks on it. Flamed from behind with its fuse
+ * clear it fires: the comet leaves MUZZLE_FWD ahead and MUZZLE_UP above at
+ * COMET_SPEED (COMET_VZ up, live COMET_LIFE), re-aimed at the best target
+ * within SEEK_CONE ahead (under SEEK_QUICK Manhattan, exact under SEEK_EXACT,
+ * at most SEEK_RANGE; scored by distance outside SEEK_NEAR..SEEK_FAR plus
+ * 4096 per unit of angle) and lobbed at AIM_SPEED (a lunging guard aimed
+ * GUARD_AIM_LIFT up). A cued LOB fires LOB_SPEED from LOB_UP up. */
+#define CCANNON_LOCK_RANGE 0x4E2
+#define CCANNON_LOCK_RANGE_HELD 0x578
+#define CCANNON_FUSE_FRAMES 0x4B
+#define CCANNON_MUZZLE_FWD 0x258
+#define CCANNON_MUZZLE_UP 0x352
+#define CCANNON_COMET_SPEED 0x320
+#define CCANNON_COMET_VZ 0x96
+#define CCANNON_COMET_LIFE 0x8C
+#define CCANNON_SEEK_QUICK 0x10FFF
+#define CCANNON_SEEK_CONE 7
+#define CCANNON_SEEK_EXACT 0xBFFF
+#define CCANNON_SEEK_RANGE 0xAFFF
+#define CCANNON_SEEK_NEAR 0x4000
+#define CCANNON_SEEK_FAR 0x5800
+#define CCANNON_AIM_SPEED 0x258
+#define CCANNON_GUARD_AIM_LIFT 0x320
+#define CCANNON_LOB_SPEED 0x320
+#define CCANNON_LOB_UP 0x578
+#define CCANNON_LOB_LIFE 0x78
 
 /* ->mode of a comet (ACTOR_TYPE_COMET, CometState; level 24). */
 enum CometMode {

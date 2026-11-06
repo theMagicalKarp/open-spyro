@@ -3405,14 +3405,14 @@ void Level20_UpdateActors(void) {
         }
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);
-        st->knockSpeed = 0x15E;
+        st->knockSpeed = GRABBER_KNOCK_SPEED;
         if (actor->mode >= GRABBER_SEIZE) {
           g_nSpyroDrawSuppressed = 0;
         }
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8),
                                 g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->knockZSpeed = 0xF0;
+        st->knockZSpeed = GRABBER_KNOCK_VZ;
         if (actor->mode != GRABBER_LURK) {
           *st->held = 0;
         }
@@ -3430,7 +3430,7 @@ void Level20_UpdateActors(void) {
       switch (actor->mode) {
       case GRABBER_LURK:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if (d0 > 0x2C00) {
+        if (d0 > GRABBER_CALM_RANGE) {
           st->grabChance = 0;
           ANIM_GO(actor, GRABBER_ANIM_LURK);
         }
@@ -3448,8 +3448,8 @@ void Level20_UpdateActors(void) {
             g_nActorAnimDone = 0;
             ANIM_ADVANCE(actor, GRABBER_ANIM_EMERGE);
           }
-          if (st->grabChance == 0 && d0 < 0x2400) {
-            st->grabChance = RandomIntInRange(0, 0x3F) + 0x50;
+          if (st->grabChance == 0 && d0 < GRABBER_NOTICE_RANGE) {
+            st->grabChance = RandomIntInRange(0, 0x3F) + GRABBER_CHANCE_MIN;
           }
           k = st->grabChance - (d0 >> 6);
           r = GetRandomU32() & 0xFF;
@@ -3457,10 +3457,10 @@ void Level20_UpdateActors(void) {
               AbsAngleDelta8(((unsigned short)g_nCameraEulerYaw << 16 >> 20),
                             ArcTan2(actor->posX - g_anCameraPos[0],
                                           actor->posY - g_anCameraPos[1], ATAN_ANGLE8)) <
-                  0x28 &&
-              SPY_DZ(actor) >= -0x1F3 &&
-              (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x578
-                                 : -SPY_DZ(actor) < 0x578)) {
+                  GRABBER_CAM_CONE &&
+              SPY_DZ(actor) >= -GRABBER_GRAB_BELOW &&
+              (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < GRABBER_GRAB_DZ
+                                 : -SPY_DZ(actor) < GRABBER_GRAB_DZ)) {
             *st->held = 1;
             st->timer = sixteen;
             StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
@@ -3468,7 +3468,7 @@ void Level20_UpdateActors(void) {
             continue;
           }
           if (*st->held != 0) {
-            st->grabCoolDown = 0x3C;
+            st->grabCoolDown = GRABBER_GRAB_COOLDOWN;
           }
         }
         break;
@@ -3476,7 +3476,7 @@ void Level20_UpdateActors(void) {
       case GRABBER_RUSH: {
         int d1 = ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos);
 
-        if (d1 < 0xFA0) {
+        if (d1 < GRABBER_REACH_RANGE) {
           ANIM_GO(actor, GRABBER_ANIM_REACH);
         } else {
           ANIM_GO(actor, GRABBER_ANIM_MOVE);
@@ -3488,7 +3488,7 @@ void Level20_UpdateActors(void) {
           if (MoveActorAlongAngle(actor,
                             ArcTan2(spy->posX - actor->posX,
                                           spy->posY - actor->posY, ATAN_ANGLE8),
-                            0x15E, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0 ||
+                            GRABBER_RUSH_SPEED, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0 ||
               spy->triggerEventId != 0) {
             actor->mode = GRABBER_RETREAT;
             continue;
@@ -3507,7 +3507,7 @@ void Level20_UpdateActors(void) {
               o->flags |= ACTOR_HIT_SUPER;
             }
           }
-          if (d1 < 0x44C) {
+          if (d1 < GRABBER_SEIZE_RANGE) {
             st->hasSpyro = 0;
             actor->mode = GRABBER_SEIZE;
             continue;
@@ -3525,11 +3525,11 @@ void Level20_UpdateActors(void) {
           MoveActorAlongAngle(actor,
                         ArcTan2(st->home[0] - actor->posX,
                                       st->home[1] - actor->posY, ATAN_ANGLE8),
-                        0xC8, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+                        GRABBER_RETREAT_SPEED, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
-        if (ApproxDist2D(&actor->posX, st->home) < 0x100) {
+        if (ApproxDist2D(&actor->posX, st->home) < GRABBER_HOME_ARRIVE) {
           *st->held = 0;
-          st->timer = 0x78;
+          st->timer = GRABBER_HOME_REST;
           ENTER_POSE(actor, GRABBER_LURK);
         }
         break;
@@ -3554,11 +3554,11 @@ void Level20_UpdateActors(void) {
 
       case GRABBER_SEIZE: {
         int dd = ApproxDist2D(&actor->posX, &spy->posX);
-        int lim = 0x50;
+        int lim = GRABBER_SEIZE_SLOW_SPEED;
         int v;
 
-        if (dd >= 0x12D) {
-          lim = 0xFA;
+        if (dd >= GRABBER_SEIZE_FAST_RANGE) {
+          lim = GRABBER_SEIZE_FAST_SPEED;
         }
         if (dd < 0x190) {
           g_nSpyroDrawSuppressed = 1;
@@ -3620,12 +3620,12 @@ void Level20_UpdateActors(void) {
             g_nSpyroDrawSuppressed = 0;
             SPY.triggerEvents = (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
             SPY.posX =
-                actor->posX + ((g_anCosineLut[actor->rotZ] * 0x4B) >> 10);
+                actor->posX + ((g_anCosineLut[actor->rotZ] * GRABBER_THROW_OFFSET) >> 10);
             SPY.posY =
-                actor->posY + ((g_anSineLut[actor->rotZ] * 0x4B) >> 10);
+                actor->posY + ((g_anSineLut[actor->rotZ] * GRABBER_THROW_OFFSET) >> 10);
             SubtractVector(A408, &SPY.posX, &actor->posX);
-            ScaleVector3ByRatio(A408, VectorLength(A408, VEC_LEN_XY), 0x64);
-            g_nSpyroRequestVelocityZ = 0x37;
+            ScaleVector3ByRatio(A408, VectorLength(A408, VEC_LEN_XY), GRABBER_THROW_SPEED);
+            g_nSpyroRequestVelocityZ = GRABBER_THROW_VZ;
             g_anSpyroRequestVelocity.x = A408[0];
             g_nSpyroRequestVelocityY = A408[1];
           } else {
@@ -3652,12 +3652,12 @@ void Level20_UpdateActors(void) {
             g_nSpyroDrawSuppressed = 0;
             SPY.triggerEvents = (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
             SPY.posX =
-                actor->posX + ((g_anCosineLut[actor->rotZ] * 0x4B) >> 10);
+                actor->posX + ((g_anCosineLut[actor->rotZ] * GRABBER_THROW_OFFSET) >> 10);
             SPY.posY =
-                actor->posY + ((g_anSineLut[actor->rotZ] * 0x4B) >> 10);
+                actor->posY + ((g_anSineLut[actor->rotZ] * GRABBER_THROW_OFFSET) >> 10);
             SubtractVector(A376, &SPY.posX, &actor->posX);
-            ScaleVector3ByRatio(A376, VectorLength(A376, VEC_LEN_XY), 0x64);
-            g_nSpyroRequestVelocityZ = 0x37;
+            ScaleVector3ByRatio(A376, VectorLength(A376, VEC_LEN_XY), GRABBER_THROW_SPEED);
+            g_nSpyroRequestVelocityZ = GRABBER_THROW_VZ;
             g_anSpyroRequestVelocity.x = A376[0];
             g_nSpyroRequestVelocityY = A376[1];
           } else {
