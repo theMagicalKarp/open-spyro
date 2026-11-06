@@ -1272,7 +1272,7 @@ void Level29_UpdateActors(void) {
         if (g_aRotBillboards[st->attach].life < 5) {
           st->attach = ROT_BILLBOARD_NONE;
         }
-      } else if (st->timer >= 0xF8) {
+      } else if (st->timer >= ROT_BILLBOARD_GLINT_TICK) {
         ang = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset4);
         if (ang >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < ROT_BILLBOARD_ATTACH_RANGE) {
           st->attach = ang;

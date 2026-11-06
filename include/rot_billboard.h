@@ -27,4 +27,9 @@ typedef struct RotBillboard {
  * no glint attached. */
 #define ROT_BILLBOARD_NONE 0xFF
 
+/* Glinting pickups (resting gems, the key, closed seed pods) count a timer up
+ * a frame at a time and spawn a glint once it reaches GLINT_TICK, then
+ * restart it at a random point below. */
+#define ROT_BILLBOARD_GLINT_TICK 0xF8
+
 #endif /* OPEN_SPYRO_ROT_BILLBOARD_H */

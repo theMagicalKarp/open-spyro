@@ -679,7 +679,7 @@ void Level30_UpdateActors(void) {
           if (g_aRotBillboards[st->attach].life < 5) {
             st->attach = ROT_BILLBOARD_NONE;
           }
-        } else if (st->timer >= 0xF8) {
+        } else if (st->timer >= ROT_BILLBOARD_GLINT_TICK) {
           int handle = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset3);
 
           if (handle >= 0 && toSpyro < ROT_BILLBOARD_ATTACH_RANGE) {
@@ -1516,7 +1516,7 @@ void Level30_UpdateActors(void) {
           if (g_aRotBillboards[st->attach].life < 5) {
             st->attach = ROT_BILLBOARD_NONE;
           }
-        } else if (st->timer >= 0xF8) {
+        } else if (st->timer >= ROT_BILLBOARD_GLINT_TICK) {
           int handle = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset4);
 
           if (handle >= 0 && ApproxDist2D(&actor->posX, &SPY.posX) < ROT_BILLBOARD_ATTACH_RANGE) {
