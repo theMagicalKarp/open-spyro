@@ -1297,7 +1297,7 @@ enum CaptainPost {
 
 /* CaptainState.step during CAPTAIN_FIGHT: the sword-fight sequence. */
 enum CaptainFightStep {
-  CAPTAIN_STEP_GUARD = 0,    /* waits for Spyro within 0x1800 */
+  CAPTAIN_STEP_GUARD = 0,    /* waits for Spyro within CAPTAIN_NOTICE_RANGE */
   CAPTAIN_STEP_DRAW = 1,     /* draw animation */
   CAPTAIN_STEP_SPAR = 2,     /* close: STRIKE; far: SHEATHE_RESET; timer2 out: SHEATHE */
   CAPTAIN_STEP_STRIKE = 3,   /* the swing; hits on frames 0x25..0x28 */
@@ -1320,6 +1320,47 @@ enum CaptainAnim {
                               * captain still in it draws (DRAW) before fighting */
   CAPTAIN_ANIM_DRAW = 0xC,   /* alerted: draws before DRAW / DRAW_ADVANCE */
 };
+
+/* Guard captain tuning. Flamed it is knocked off at KNOCK_SPEED. A sentry
+ * fights within SENTRY_RANGE; a patroller draws within NOTICE_RANGE /
+ * NOTICE_DZ and walks at PATROL_SPEED (new point within NODE_ARRIVE); a
+ * lookout walks LOOKOUT_SPEED and fights within LOOKOUT_RANGE; a ledge guard
+ * stalks within LEDGE_RANGE at STALK_SPEED. Advancing (ADVANCE_SPEED) it
+ * bashes within BASH_RANGE / NOTICE_DZ, Spyro flung at BASH_SPEED (BASH_VZ
+ * up), and gives up past LEASH (STALK_LEASH stalking; STALK_REST after a
+ * blocked stalk). Fighting: it draws within NOTICE_RANGE, spars
+ * SPAR_MIN..MAX_FRAMES, strikes within STRIKE_RANGE / STRIKE_DZ (rest
+ * STRIKE_REST, the blow landing within STRIKE_HIT_RANGE on frames
+ * 0x25..0x28), rests REST_MIN..MAX_FRAMES and sheathes past FIGHT_LEAVE.
+ * GO_HOME walks HOME_SPEED, home within HOME_ARRIVE. */
+#define CAPTAIN_KNOCK_SPEED 0x96
+#define CAPTAIN_SENTRY_RANGE 0x1400
+#define CAPTAIN_NOTICE_RANGE 0x1800
+#define CAPTAIN_NOTICE_DZ 0x320
+#define CAPTAIN_PATROL_SPEED 0x78
+#define CAPTAIN_NODE_ARRIVE 0x100
+#define CAPTAIN_LOOKOUT_SPEED 0x5A
+#define CAPTAIN_LOOKOUT_RANGE 0xC00
+#define CAPTAIN_LEDGE_RANGE 0x2800
+#define CAPTAIN_ADVANCE_SPEED 0x96
+#define CAPTAIN_LEASH 0x2800
+#define CAPTAIN_BASH_RANGE 0x7D0
+#define CAPTAIN_BASH_SPEED 0x8C
+#define CAPTAIN_BASH_VZ 0x19
+#define CAPTAIN_STALK_SPEED 0x6E
+#define CAPTAIN_STALK_LEASH 0x2000
+#define CAPTAIN_STALK_REST 0xF0
+#define CAPTAIN_SPAR_MIN_FRAMES 0x96
+#define CAPTAIN_SPAR_MAX_FRAMES 0x15E
+#define CAPTAIN_STRIKE_RANGE 0x1000
+#define CAPTAIN_STRIKE_DZ 0x384
+#define CAPTAIN_STRIKE_REST 0xB4
+#define CAPTAIN_STRIKE_HIT_RANGE 0xED8
+#define CAPTAIN_REST_MIN_FRAMES 0x3C
+#define CAPTAIN_REST_MAX_FRAMES 0x78
+#define CAPTAIN_FIGHT_LEAVE 0x1C00
+#define CAPTAIN_HOME_SPEED 0x6E
+#define CAPTAIN_HOME_ARRIVE 0x80
 /* CaptainState.step on a ledge post instead: nonzero once armed. */
 #define CAPTAIN_LEDGE_ARMED 1
 
