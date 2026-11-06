@@ -1387,9 +1387,9 @@ void Level12_UpdateActors(void) {
 
       actor->posX += st->vel[0];
       actor->posY += st->vel[1];
-      st->vel[2] -= 6;
-      if (st->vel[2] < -0x80) {
-        st->vel[2] = -0x80;
+      st->vel[2] -= DEBRIS_GRAVITY;
+      if (st->vel[2] < -DEBRIS_MAX_FALL) {
+        st->vel[2] = -DEBRIS_MAX_FALL;
       }
       actor->posZ += st->vel[2];
       actor->rotX += st->spin[0];
@@ -1434,9 +1434,9 @@ void Level12_UpdateActors(void) {
       actor->posX += st->vel[0];
       actor->posY += st->vel[1];
 
-      st->vel[2] -= 6;
-      if (st->vel[2] < -0x80) {
-        st->vel[2] = -0x80;
+      st->vel[2] -= DEBRIS_GRAVITY;
+      if (st->vel[2] < -DEBRIS_MAX_FALL) {
+        st->vel[2] = -DEBRIS_MAX_FALL;
       }
       actor->posZ += st->vel[2];
 
@@ -2878,9 +2878,9 @@ void Level12_UpdateActors(void) {
 
           actor->rotZ += 1;
 
-          st->vel[2] -= 6;
-          if (st->vel[2] < -0x80) {
-            st->vel[2] = -0x80;
+          st->vel[2] -= DEBRIS_GRAVITY;
+          if (st->vel[2] < -DEBRIS_MAX_FALL) {
+            st->vel[2] = -DEBRIS_MAX_FALL;
           }
 
           actor->posX += st->vel[0];
@@ -4059,9 +4059,9 @@ void Level12_UpdateActors(void) {
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
         actor->posY += st->vel[1];
-        st->vel[2] -= 6;
-        if (st->vel[2] < -0x80) {
-          st->vel[2] = -0x80;
+        st->vel[2] -= DEBRIS_GRAVITY;
+        if (st->vel[2] < -DEBRIS_MAX_FALL) {
+          st->vel[2] = -DEBRIS_MAX_FALL;
         }
         actor->posZ += st->vel[2];
         actor->rotX += st->spin[0];
@@ -4113,9 +4113,9 @@ void Level12_UpdateActors(void) {
 
         actor->posX += st->vel[0];
         actor->posY += st->vel[1];
-        st->vel[2] -= 6;
-        if (st->vel[2] < -0x80) {
-          st->vel[2] = -0x80;
+        st->vel[2] -= DEBRIS_GRAVITY;
+        if (st->vel[2] < -DEBRIS_MAX_FALL) {
+          st->vel[2] = -DEBRIS_MAX_FALL;
         }
         actor->posZ += st->vel[2];
         actor->rotX += st->spin[0];

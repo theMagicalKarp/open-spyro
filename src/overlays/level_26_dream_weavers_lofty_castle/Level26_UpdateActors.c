@@ -126,9 +126,9 @@ void Level26_UpdateActors(void) {
 
       if (actor->mode != LEVELEXIT_FAR ? dist < LEVELEXIT_HIDE_RANGE : dist < LEVELEXIT_SHOW_RANGE) {
         if (actor->mode == LEVELEXIT_FAR) {
-          actor->posZ += 0x600;
+          actor->posZ += LEVELEXIT_NAME_HEIGHT;
           SpawnNameLetterActors(actor, NAME_LETTERS_RETURN_HOME);
-          actor->posZ -= 0x600;
+          actor->posZ -= LEVELEXIT_NAME_HEIGHT;
         }
         actor->mode = LEVELEXIT_NEAR;
       } else {
@@ -154,21 +154,21 @@ void Level26_UpdateActors(void) {
         int z = actor->posZ;
         int drop = top - z;
 
-        if ((unsigned int)(drop - 0x201) < 0x3DFF) {
-          int depth = 0x2000;
+        if ((unsigned int)(drop - LEVELEXIT_LIFT_BOTTOM) < LEVELEXIT_LIFT_TOP - LEVELEXIT_LIFT_BOTTOM) {
+          int depth = LEVELEXIT_DEFAULT_DEPTH;
 
           if (st->depth != 0) {
             depth = st->depth;
           }
 
-          if (g_nSpyroState == SPYRO_ST_LIFT || top + 0xC00 < z + depth) {
+          if (g_nSpyroState == SPYRO_ST_LIFT || top + LEVELEXIT_TOP_MARGIN < z + depth) {
             if (g_abHudCounterDisplayState == HUD_CTR_SHOWN) {
               RefreshHudLevelGemCounter();
             }
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_TARGET_CAMERA);
             g_pScriptedCameraActor = actor;
             g_dwSpyroTriggerEventFlags |= SPYRO_EV_LIFT;
-            g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + 0x4000;
+            g_nSpyroRequestTargetZ = ACTOR_RAW(actor, int, posZ) + LEVELEXIT_LIFT_TOP;
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
             if (depth < drop) {
@@ -177,7 +177,7 @@ void Level26_UpdateActors(void) {
               if (yaw > 0x800) {
                 yaw -= 0x1000;
               }
-              if (yaw < -0x200) {
+              if (yaw < -LEVELEXIT_LEAVE_PITCH) {
                 g_abLevelExited[g_nLevelIndex] = 1;
                 g_nCdStreamState = LSTREAM_PRESERVE;
                 g_nEnteredPortalIdx = -1;
@@ -954,9 +954,9 @@ void Level26_UpdateActors(void) {
 
       actor->posX += st->vel[0];
       actor->posY += st->vel[1];
-      st->vel[2] -= 6;
-      if (st->vel[2] < -0x80) {
-        st->vel[2] = -0x80;
+      st->vel[2] -= DEBRIS_GRAVITY;
+      if (st->vel[2] < -DEBRIS_MAX_FALL) {
+        st->vel[2] = -DEBRIS_MAX_FALL;
       }
       actor->posZ += st->vel[2];
       actor->rotX += st->spin[0];
@@ -1002,9 +1002,9 @@ void Level26_UpdateActors(void) {
       actor->posX += st->vel[0];
       actor->posY += st->vel[1];
 
-      st->vel[2] -= 6;
-      if (st->vel[2] < -0x80) {
-        st->vel[2] = -0x80;
+      st->vel[2] -= DEBRIS_GRAVITY;
+      if (st->vel[2] < -DEBRIS_MAX_FALL) {
+        st->vel[2] = -DEBRIS_MAX_FALL;
       }
       actor->posZ += st->vel[2];
 
@@ -2567,9 +2567,9 @@ void Level26_UpdateActors(void) {
 
           actor->rotZ += 1;
 
-          st->vel[2] -= 6;
-          if (st->vel[2] < -0x80) {
-            st->vel[2] = -0x80;
+          st->vel[2] -= DEBRIS_GRAVITY;
+          if (st->vel[2] < -DEBRIS_MAX_FALL) {
+            st->vel[2] = -DEBRIS_MAX_FALL;
           }
 
           actor->posX += st->vel[0];
@@ -2813,9 +2813,9 @@ void Level26_UpdateActors(void) {
       if (st->life != 0 && actor->drawn != 0) {
         actor->posX += st->vel[0];
         actor->posY += st->vel[1];
-        st->vel[2] -= 6;
-        if (st->vel[2] < -0x80) {
-          st->vel[2] = -0x80;
+        st->vel[2] -= DEBRIS_GRAVITY;
+        if (st->vel[2] < -DEBRIS_MAX_FALL) {
+          st->vel[2] = -DEBRIS_MAX_FALL;
         }
         actor->posZ += st->vel[2];
         actor->rotX += st->spin[0];
@@ -2867,9 +2867,9 @@ void Level26_UpdateActors(void) {
 
         actor->posX += st->vel[0];
         actor->posY += st->vel[1];
-        st->vel[2] -= 6;
-        if (st->vel[2] < -0x80) {
-          st->vel[2] = -0x80;
+        st->vel[2] -= DEBRIS_GRAVITY;
+        if (st->vel[2] < -DEBRIS_MAX_FALL) {
+          st->vel[2] = -DEBRIS_MAX_FALL;
         }
         actor->posZ += st->vel[2];
         actor->rotX += st->spin[0];

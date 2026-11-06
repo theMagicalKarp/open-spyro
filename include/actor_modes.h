@@ -212,6 +212,17 @@ enum LevelExitMode {
 #define LEVELEXIT_HIDE_RANGE 0x2800
 #define LEVELEXIT_SPARKLE_RANGE 0x4000
 #define LEVELEXIT_ENTER_RANGE 0x400
+/* Inside ENTER, Spyro LIFT_BOTTOM..LIFT_TOP above it is lifted toward
+ * LIFT_TOP while he is lifting already or more than TOP_MARGIN under its
+ * depth (ExitWhirlState.depth, else DEFAULT_DEPTH); above the depth with the
+ * camera pitched past LEAVE_PITCH (12-bit) he leaves the level. Its name
+ * letters spawn NAME_HEIGHT above it. */
+#define LEVELEXIT_LIFT_BOTTOM 0x201
+#define LEVELEXIT_LIFT_TOP 0x4000
+#define LEVELEXIT_DEFAULT_DEPTH 0x2000
+#define LEVELEXIT_TOP_MARGIN 0xC00
+#define LEVELEXIT_LEAVE_PITCH 0x200
+#define LEVELEXIT_NAME_HEIGHT 0x600
 
 /* g_nLevelKeyState: the level key's progress (HUD counter 4). */
 enum LevelKeyState {

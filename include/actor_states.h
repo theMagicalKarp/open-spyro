@@ -29,6 +29,11 @@ typedef struct BurstShardState {
   unsigned char life;  /* 0x13 ticks left */
 } BurstShardState;
 
+/* Falling debris (burst / chest / wood / sparkle shards, popped gem digits):
+ * vel[2] loses DEBRIS_GRAVITY a tick down to -DEBRIS_MAX_FALL. */
+#define DEBRIS_GRAVITY 6
+#define DEBRIS_MAX_FALL 0x80
+
 /* Sparx (type 0x78, case 120 in the UpdateActors clones; g_pSparxActor):
  * hovers at an offset beside Spyro and chases one target at a time, a
  * butterfly to eat (g_nSparxHealth + 1) or a pickup to fetch. SpawnActor
