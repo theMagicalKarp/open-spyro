@@ -1245,6 +1245,27 @@ enum FireballCannonAnim {
   FBCANNON_ANIM_FIRE = 3,     /* the lob; back to REST from frame 8 */
 };
 
+/* Fireball cannon tuning (the level 6 cousin of the comet cannon). With
+ * Spyro beside it (within LOCK_RANGE, LOCK_RANGE_HELD once locked) the
+ * camera locks on it; flamed from behind it lights a FUSE_FRAMES fuse and
+ * fires a fireball from MUZZLE_FWD ahead and MUZZLE_UP above at BALL_SPEED,
+ * re-aimed at the best target within SEEK_CONE (under SEEK_QUICK Manhattan
+ * and SEEK_RANGE exact, scored by distance outside SEEK_NEAR..SEEK_FAR plus
+ * 4096 per unit of angle, a reward burst's score quartered) and lobbed when
+ * over LOB_MIN_DROP below the target's level. */
+#define FBCANNON_LOCK_RANGE 0x4E2
+#define FBCANNON_LOCK_RANGE_HELD 0x578
+#define FBCANNON_FUSE_FRAMES 0x3C
+#define FBCANNON_MUZZLE_FWD 0x546
+#define FBCANNON_MUZZLE_UP 0x47E
+#define FBCANNON_BALL_SPEED 0xF0
+#define FBCANNON_SEEK_QUICK 0xBFFF
+#define FBCANNON_SEEK_CONE 7
+#define FBCANNON_SEEK_RANGE 0x6800
+#define FBCANNON_SEEK_NEAR 0x3800
+#define FBCANNON_SEEK_FAR 0x4800
+#define FBCANNON_LOB_MIN_DROP 0x400
+
 /* ->mode of a guard captain (ACTOR_TYPE_GUARD_CAPTAIN, CaptainState;
  * level 13). CAPTAIN_IDLE runs CaptainState.mode's post (partnered sentry,
  * group lookout, ledge guard, wanderer...). */
@@ -1944,6 +1965,36 @@ enum LungerMode {
   LUNGER_ALERTED = 20,   /* marks LungeState.alerted, then IDLE */
   LUNGER_GO_HOME = 100,  /* walks back home and faces its heading, then IDLE */
 };
+
+/* Lunger tuning. On its last hit it is knocked off at KNOCK_SPEED / KNOCK_VZ.
+ * Waiting, it aims at Spyro's spot once he is within AIM_RANGE. The leap
+ * launches at LEAP_VZ plus 35/1024 of the distance, falls LEAP_GRAVITY a
+ * frame down to -LEAP_MAX_FALL and flies LEAP_SPEED until within
+ * LEAP_ARRIVE of the spot; high enough (LEAP_HOMING_HEIGHT) and with Spyro
+ * LEAP_HOMING_MIN..+0x2CF away it homes on him at LEAP_HOMING_SPEED, and
+ * within PIN_RANGE it holds him PIN_DEPTH under it. Landed, a pinned Spyro
+ * burns for BURN_FRAMES; it walks home at HOME_SPEED (within HOME_ARRIVE)
+ * and waits WAIT_FRAMES. Close to home it nudges Spyro off (NUDGE_RANGE)
+ * every NUDGE_FRAMES. */
+#define LUNGER_KNOCK_SPEED 0xE6
+#define LUNGER_KNOCK_VZ 0x14
+#define LUNGER_AIM_RANGE 0x898
+#define LUNGER_LEAP_VZ 0x12C
+#define LUNGER_LEAP_GRAVITY 0x32
+#define LUNGER_LEAP_MAX_FALL 0x258
+#define LUNGER_LEAP_SPEED 0xE6
+#define LUNGER_LEAP_ARRIVE 0x97
+#define LUNGER_LEAP_HOMING_HEIGHT 0x1F5
+#define LUNGER_LEAP_HOMING_MIN 0x51
+#define LUNGER_LEAP_HOMING_SPEED 0x50
+#define LUNGER_PIN_RANGE 0x2BC
+#define LUNGER_PIN_DEPTH 0xC8
+#define LUNGER_BURN_FRAMES 0x1E
+#define LUNGER_HOME_SPEED 0x82
+#define LUNGER_HOME_ARRIVE 0xB4
+#define LUNGER_WAIT_FRAMES 0x78
+#define LUNGER_NUDGE_RANGE 0x3E8
+#define LUNGER_NUDGE_FRAMES 0x10
 
 /* ->mode of an alarm post guard (ACTOR_TYPE_ALARM_POST_GUARD, GuardState;
  * level 4). It falls back post by post (GuardState.stage 0..2); the

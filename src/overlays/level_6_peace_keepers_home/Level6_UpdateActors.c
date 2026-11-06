@@ -3242,12 +3242,12 @@ void Level6_UpdateActors(void) {
       switch (actor->mode) {
       case FBCANNON_IDLE:
         if (p->mode >= ACTOR_MODE_DORMANT || (p->nextAnim == SOLDIER_KNOCKED && p->nextFrame >= 0x15)) {
-          int range = 0x4E2;
+          int range = FBCANNON_LOCK_RANGE;
           int a = 0x20;
           int b = 0x5A;
 
           if (st->camFlag != 0) {
-            range = 0x578;
+            range = FBCANNON_LOCK_RANGE_HELD;
             a = 0x2C;
             b = 0x4B;
           }
@@ -3289,7 +3289,7 @@ void Level6_UpdateActors(void) {
         break;
 
       case FBCANNON_LIT:
-        st->timer = 0x3C;
+        st->timer = FBCANNON_FUSE_FRAMES;
         PlayActorMeshVoice(actor, FBCANNON_VOICE_FUSE, &st->voice);
         actor->mode = FBCANNON_FUSE;
         continue;
@@ -3335,11 +3335,11 @@ void Level6_UpdateActors(void) {
           cs = o->state;
           CopyVector(&o->posX, &actor->posX);
           o->rotZ = actor->rotZ;
-          MoveActorAlongHeading(o, 0x546, 0, 0, 0);
+          MoveActorAlongHeading(o, FBCANNON_MUZZLE_FWD, 0, 0, 0);
         } while (0);
         best = 0;
-        h = 0xF0;
-        o->posZ += 0x47E;
+        h = FBCANNON_BALL_SPEED;
+        o->posZ += FBCANNON_MUZZLE_UP;
         cs->grav = -5;
         cs->link = -1;
         cs->speed = h;
@@ -3361,7 +3361,7 @@ void Level6_UpdateActors(void) {
           }
           SubtractVector(toTarget, &q->posX, &actor->posX);
           d = ABS(toTarget[0]) + ABS(toTarget[1]);
-          if (d > 0xBFFF) {
+          if (d > FBCANNON_SEEK_QUICK) {
             continue;
           }
           ang = (ArcTan2(q->posX - actor->posX, q->posY - actor->posY,
@@ -3372,17 +3372,17 @@ void Level6_UpdateActors(void) {
             ang -= 0x100;
           }
           ang = ABS(ang);
-          if (ang >= 7) {
+          if (ang >= FBCANNON_SEEK_CONE) {
             continue;
           }
           d = VectorLength(toTarget, VEC_LEN_XY);
-          if (d >= 0x6800) {
+          if (d >= FBCANNON_SEEK_RANGE) {
             continue;
           }
-          if (d > 0x4800) {
-            d -= 0x4800;
-          } else if (d < 0x3800) {
-            d = 0x3800 - d;
+          if (d > FBCANNON_SEEK_FAR) {
+            d -= FBCANNON_SEEK_FAR;
+          } else if (d < FBCANNON_SEEK_NEAR) {
+            d = FBCANNON_SEEK_NEAR - d;
           } else {
             d = 0;
           }
@@ -3402,7 +3402,7 @@ void Level6_UpdateActors(void) {
           SubtractVector(toTarget, &best->posX, &o->posX);
           ang = VectorLength(toTarget, VEC_LEN_XY);
           h = ang - toTarget[2];
-          if (h > 0x400) {
+          if (h > FBCANNON_LOB_MIN_DROP) {
             bestScore = ((ang * 5 >> 8) * ang / h) >> 1;
             if ((unsigned)(bestScore - 0x11) <= 0xFFFEE) {
               bestScore = IntegerSqrt(bestScore) << 4;
