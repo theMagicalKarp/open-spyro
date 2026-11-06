@@ -1677,8 +1677,8 @@ void Level32_UpdateActors(void) {
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != SWEEPGUN_KNOCKED &&
           actor->mode != SWEEPGUN_SINK) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        st->knockSpeed = 0xC8;
-        st->knockZSpeed = 0x104;
+        st->knockSpeed = SWEEPGUN_KNOCK_SPEED;
+        st->knockZSpeed = SWEEPGUN_KNOCK_VZ;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8),
                                 g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
@@ -1707,7 +1707,7 @@ void Level32_UpdateActors(void) {
           ENTER_POSE(actor, SWEEPGUN_ADVANCE);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (st->flags != GUNNER_F_ARMED && dist < 0x3400 && ABS2(SPY_DZ(actor)) < 0x5DC) {
+        if (st->flags != GUNNER_F_ARMED && dist < SWEEPGUN_SWEEP_RANGE && ABS2(SPY_DZ(actor)) < SWEEPGUN_SWEEP_DZ) {
           st->yawToSpyro = actor->rotZ;
           st->sweepYaw = actor->rotZ << 4;
           actor->subMode = SWEEPGUN_STEP_FIRE;
@@ -1717,7 +1717,7 @@ void Level32_UpdateActors(void) {
         continue;
 
       case SWEEPGUN_ADVANCE:
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0xA0, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, SWEEPGUN_ADVANCE_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             PATH_ARRIVED(0)) {
           actor->mode = SWEEPGUN_IDLE;
         }
@@ -1729,7 +1729,7 @@ void Level32_UpdateActors(void) {
           int t;
           int d;
 
-          if (dist > 0x4000 || ABS2(SPY_DZ(actor)) > 0x898) {
+          if (dist > SWEEPGUN_LEAVE_RANGE || ABS2(SPY_DZ(actor)) > SWEEPGUN_LEAVE_DZ) {
             ENTER_POSE(actor, SWEEPGUN_IDLE);
           }
           t = ApproachAngle8(ArcTan2(spy->posX - actor->posX,
@@ -1745,7 +1745,7 @@ void Level32_UpdateActors(void) {
           }
           st->sweepYaw += st->sweepRate;
           d = WrapAngleDelta8(st->yawToSpyro, st->sweepYaw >> 4);
-          if (TICK_DOWN(st->timer) != 0 && ABS(d) > 0x1A &&
+          if (TICK_DOWN(st->timer) != 0 && ABS(d) > SWEEPGUN_OVERSHOOT &&
               ((d < 0 && st->sweepRate < 0) || (d > 0 && st->sweepRate > 0))) {
             actor->subMode = SWEEPGUN_STEP_REVERSE;
           }
@@ -1753,17 +1753,17 @@ void Level32_UpdateActors(void) {
           if (g_dwGamestateFrames & 1) {
             Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_BURST_GUNNER_SHOT, actor);
             unsigned char i = actor->rotZ - 5;
-            int spd = 0x190;
+            int spd = SWEEPGUN_SHOT_SPEED;
             short *p;
 
-            o->posX = actor->posX + ((g_anCosineLut[i] * 0x177) >> 10);
-            o->posY = actor->posY + ((g_anSineLut[i] * 0x177) >> 10);
-            o->posZ = actor->posZ + 0x258;
+            o->posX = actor->posX + ((g_anCosineLut[i] * SWEEPGUN_MUZZLE_FWD) >> 10);
+            o->posY = actor->posY + ((g_anSineLut[i] * SWEEPGUN_MUZZLE_FWD) >> 10);
+            o->posZ = actor->posZ + SWEEPGUN_MUZZLE_UP;
             p = o->state;
             o130[0] = (g_anCosineLut[actor->rotZ] * spd) >> 12;
             o130[1] = (g_anSineLut[actor->rotZ] * spd) >> 12;
-            o130[2] = -0x29;
-            o->rotY = ArcTan2(0x190, -0x29, ATAN_ANGLE8);
+            o130[2] = -SWEEPGUN_SHOT_DROP;
+            o->rotY = ArcTan2(SWEEPGUN_SHOT_SPEED, -SWEEPGUN_SHOT_DROP, ATAN_ANGLE8);
             o->rotZ = actor->rotZ;
             CopyVector((int *)p, o130);
             p[6] = 0x32;
@@ -1783,7 +1783,7 @@ void Level32_UpdateActors(void) {
               actor->nextFrame = 0;
               OnActorAnimQueued(actor);
             }
-            st->timer = 0x1E;
+            st->timer = SWEEPGUN_REVERSE_HOLD;
             actor->subMode = SWEEPGUN_STEP_FIRE;
             st->sweepRate = -st->sweepRate;
           }
@@ -1797,7 +1797,7 @@ void Level32_UpdateActors(void) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
 
-          if (ABS2(z - h) < 0x64) {
+          if (ABS2(z - h) < SWEEPGUN_SPLASH_DZ) {
             Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_HAZARD2_ENTER_FX, actor);
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
@@ -1825,7 +1825,7 @@ void Level32_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        actor->posZ -= 0x64;
+        actor->posZ -= SWEEPGUN_SINK_STEP;
         continue;
       }
       continue;

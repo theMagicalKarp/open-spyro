@@ -2102,9 +2102,9 @@ void Level9_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->knockSpeed = 0xB4;
+        st->knockSpeed = SNOWTHROW_KNOCK_SPEED;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->knockSpeed = 0x12C;
+          st->knockSpeed = SNOWTHROW_CHARGE_KNOCK_SPEED;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
@@ -2129,7 +2129,7 @@ void Level9_UpdateActors(void) {
           }
           break;
         }
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x3800) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < SNOWTHROW_WAKE_RANGE) {
           SetActorGroupState(actor, SNOWTHROW_ADVANCE);
           ENTER_POSE(actor, SNOWTHROW_ADVANCE);
         }
@@ -2144,22 +2144,22 @@ void Level9_UpdateActors(void) {
         if (r == 0x100 || r < 0x40) {
           int ang = WrapAddAngle8(actor->rotZ, 0xE0);
 
-          svK[0] = actor->posX + ((g_anCosineLut[ang] * 175) >> 10);
-          svK[1] = actor->posY + ((g_anSineLut[ang] * 175) >> 10);
-          svK[2] = actor->posZ + 0x2BC;
+          svK[0] = actor->posX + ((g_anCosineLut[ang] * SNOWTHROW_EYE_FWD) >> 10);
+          svK[1] = actor->posY + ((g_anSineLut[ang] * SNOWTHROW_EYE_FWD) >> 10);
+          svK[2] = actor->posZ + SNOWTHROW_EYE_UP;
           if (CheckSpyroLineOfSightTo(svK) != 0 && actor->drawn != 0) {
             if (TICK_DOWN(st->throwT) != 0) {
               ENTER_POSE(actor, SNOWTHROW_THROW);
             }
           } else {
-            st->throwT = 0x1E;
+            st->throwT = SNOWTHROW_SIGHT_FRAMES;
           }
         }
         ANIM_GO(actor, SNOWTHROW_ADVANCE);
         break;
 
       case SNOWTHROW_THROW: {
-        int frame = actor->type == ACTOR_TYPE_PATH_SNOWBALL_THROWER ? 0x17 : 0x13;
+        int frame = actor->type == ACTOR_TYPE_PATH_SNOWBALL_THROWER ? SNOWTHROW_THROW_FRAME : SNOWTHROW_THROW_FRAME_B;
 
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (g_nActorAnimNewFrame != 0 && actor->frame == frame) {
@@ -2173,15 +2173,15 @@ void Level9_UpdateActors(void) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 0, &ball->posX);
           SubtractVector(bv, &SPY.posX, &ball->posX);
-          ScaleVector3ByRatio(bv, VectorLength(bv, VEC_LEN_XYZ), 0xC8);
-          ((ThrownSnowballState *)bv)->timer = 0x8C;
+          ScaleVector3ByRatio(bv, VectorLength(bv, VEC_LEN_XYZ), SNOWTHROW_BALL_SPEED);
+          ((ThrownSnowballState *)bv)->timer = SNOWTHROW_BALL_LIFE;
           st->knockHeading = WrapAddAngle8(actor->rotZ, 0x80);
           st->knockSpeed = 0;
-          st->throwT = 0x1E;
+          st->throwT = SNOWTHROW_SIGHT_FRAMES;
         }
         if (st->knockSpeed != 0) {
           MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0x12C, 0x12C, MOVE_LIFT);
-          st->knockSpeed -= 0x14;
+          st->knockSpeed -= SNOWTHROW_RECOIL_DRAG;
           if (st->knockSpeed < 0) {
             st->knockSpeed = 0;
           }
@@ -2196,7 +2196,7 @@ void Level9_UpdateActors(void) {
       case SNOWTHROW_KNOCKED:
         if (st->knockSpeed != 0) {
           MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0x12C, 0x12C, MOVE_LIFT);
-          st->knockSpeed -= 0xC;
+          st->knockSpeed -= SNOWTHROW_KNOCK_DRAG;
           if (st->knockSpeed < 0) {
             st->knockSpeed = 0;
           }
@@ -2216,13 +2216,13 @@ void Level9_UpdateActors(void) {
                           st->path->nodes[st->path->cur].y - spy->posY, ATAN_ANGLE8),
             8, st->retreatSpeed, 0xE, 0x80, st->blockHeadingA, st->blockHeadingB, 0, 0, MOVE_FOLLOW_FLOOR);
         if (r < 0xA) {
-          st->timer = 0x5A;
+          st->timer = SNOWTHROW_TURN_AWAY_FRAMES;
           ANIM_GO(actor, SNOWTHROW_WAIT);
           actor->mode = SNOWTHROW_TURN_AWAY;
           continue;
         }
         if (r == 0x100) {
-          st->timer = 0x78;
+          st->timer = SNOWTHROW_AIM_FRAMES;
           actor->mode = SNOWTHROW_AIM;
           continue;
         }
@@ -2239,16 +2239,16 @@ void Level9_UpdateActors(void) {
         if (TICK_DOWN(st->timer) != 0) {
           int ang = WrapAddAngle8(actor->rotZ, 0xE0);
 
-          svK[0] = actor->posX + ((g_anCosineLut[ang] * 175) >> 10);
-          svK[1] = actor->posY + ((g_anSineLut[ang] * 175) >> 10);
-          svK[2] = actor->posZ + 0x2BC;
+          svK[0] = actor->posX + ((g_anCosineLut[ang] * SNOWTHROW_EYE_FWD) >> 10);
+          svK[1] = actor->posY + ((g_anSineLut[ang] * SNOWTHROW_EYE_FWD) >> 10);
+          svK[2] = actor->posZ + SNOWTHROW_EYE_UP;
           if (CheckSpyroLineOfSightTo(svK) != 0 && actor->drawn != 0) {
             if (TICK_DOWN(st->throwT) != 0) {
-              st->timer = 0x78;
+              st->timer = SNOWTHROW_AIM_FRAMES;
               ENTER_POSE(actor, SNOWTHROW_THROW);
             }
           } else {
-            st->throwT = 0x1E;
+            st->throwT = SNOWTHROW_SIGHT_FRAMES;
           }
         }
         break;

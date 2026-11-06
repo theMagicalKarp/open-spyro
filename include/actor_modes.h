@@ -2387,6 +2387,29 @@ enum SweepGunnerAnim {
   SWEEPGUN_ANIM_TURN = 5, /* SWEEPGUN_STEP_REVERSE */
 };
 
+/* Sweep gunner tuning. Flamed it is knocked off at KNOCK_SPEED / KNOCK_VZ,
+ * sinking SINK_STEP a frame when it lands in water within SPLASH_DZ. It
+ * sweeps once Spyro is within SWEEP_RANGE / SWEEP_DZ and stops past
+ * LEAVE_RANGE / LEAVE_DZ; it reverses once its aim overshoots him by
+ * OVERSHOOT (then holds REVERSE_HOLD frames). Shots leave every other frame
+ * from MUZZLE_FWD ahead and MUZZLE_UP up at SHOT_SPEED, dipping SHOT_DROP a
+ * frame. It walks its path at ADVANCE_SPEED. */
+#define SWEEPGUN_KNOCK_SPEED 0xC8
+#define SWEEPGUN_KNOCK_VZ 0x104
+#define SWEEPGUN_SPLASH_DZ 0x64
+#define SWEEPGUN_SINK_STEP 0x64
+#define SWEEPGUN_SWEEP_RANGE 0x3400
+#define SWEEPGUN_SWEEP_DZ 0x5DC
+#define SWEEPGUN_LEAVE_RANGE 0x4000
+#define SWEEPGUN_LEAVE_DZ 0x898
+#define SWEEPGUN_OVERSHOOT 0x1A
+#define SWEEPGUN_REVERSE_HOLD 0x1E
+#define SWEEPGUN_MUZZLE_FWD 0x177
+#define SWEEPGUN_MUZZLE_UP 0x258
+#define SWEEPGUN_SHOT_SPEED 0x190
+#define SWEEPGUN_SHOT_DROP 0x29
+#define SWEEPGUN_ADVANCE_SPEED 0xA0
+
 /* ->mode of a lurker (ACTOR_TYPE_LURKER, LurkerState; level 20). */
 enum LurkerMode {
   LURKER_WATCH = 0,    /* Spyro close in front: LASH; else hops between path nodes */
@@ -2989,6 +3012,28 @@ enum SnowballThrowerMode {
   SNOWTHROW_AIM = 5,       /* faces Spyro; in sight on the timer: THROW */
   SNOWTHROW_TURN_AWAY = 6, /* faces away from Spyro, then WAIT */
 };
+
+/* Snowball thrower tuning. Hit it slides from KNOCK_SPEED (CHARGE_KNOCK_SPEED
+ * for a charge), losing KNOCK_DRAG a frame. It wakes its group within
+ * WAKE_RANGE (or its level-data range) and throws once a clear line from its
+ * hand (EYE_FWD ahead, EYE_UP up) to Spyro has held SIGHT_FRAMES; the ball
+ * leaves on THROW_FRAME (THROW_FRAME_B for the second type) at BALL_SPEED
+ * and lives BALL_LIFE, the recoil losing RECOIL_DRAG a frame. Back on its
+ * ring it rests TURN_AWAY_FRAMES facing away, or aims AIM_FRAMES. */
+#define SNOWTHROW_KNOCK_SPEED 0xB4
+#define SNOWTHROW_CHARGE_KNOCK_SPEED 0x12C
+#define SNOWTHROW_KNOCK_DRAG 0xC
+#define SNOWTHROW_WAKE_RANGE 0x3800
+#define SNOWTHROW_EYE_FWD 175
+#define SNOWTHROW_EYE_UP 0x2BC
+#define SNOWTHROW_SIGHT_FRAMES 0x1E
+#define SNOWTHROW_THROW_FRAME 0x17
+#define SNOWTHROW_THROW_FRAME_B 0x13
+#define SNOWTHROW_BALL_SPEED 0xC8
+#define SNOWTHROW_BALL_LIFE 0x8C
+#define SNOWTHROW_RECOIL_DRAG 0x14
+#define SNOWTHROW_TURN_AWAY_FRAMES 0x5A
+#define SNOWTHROW_AIM_FRAMES 0x78
 
 /* ->mode of a circling bird (ACTOR_TYPE_CIRCLING_BIRD, CirclingBirdState;
  * level 9); the mode is also the animation index. */
