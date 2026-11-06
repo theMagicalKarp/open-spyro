@@ -1125,7 +1125,7 @@ void Level22_UpdateActors(void) {
           }
           st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
-                                  spy->bodyRotZ, 0x20, 0x40);
+                                  spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
           if (actor->mode != BTHROW_HURTLE) {
             st->zSpeed = BTHROW_KNOCK_VZ;
           }
@@ -1519,7 +1519,7 @@ void Level22_UpdateActors(void) {
           st->speed = GATEKEEPER_KNOCK_SPEED;
           st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
-                                  spy->bodyRotZ, 0x20, 0x40);
+                                  spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         }
         if (actor->mode != GATEKEEPER_HURTLE) {
           st->zSpeed = GATEKEEPER_KNOCK_VZ;
@@ -4386,7 +4386,7 @@ void Level22_UpdateActors(void) {
         } else {
           st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
-                                    spy->bodyRotZ, 0x20, 0x40);
+                                    spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
           st->speed = 0xC8;
           st->zSpeed = 0x32;
           if (actor->flags & ACTOR_HIT_CHARGE) {

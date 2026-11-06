@@ -1454,7 +1454,7 @@ void Level33_UpdateActors(void) {
         }
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8),
-                                g_bSpyroPersistentEulerZ, 0x20, 0x40);
+                                g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         st->knockZSpeed = 0x28;
         ENTER_POSE(actor, LANEPAT_KNOCKED);
       }

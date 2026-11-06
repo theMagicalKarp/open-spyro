@@ -2052,7 +2052,7 @@ void Level31_UpdateActors(void) {
         st->rider = -1;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
-                                  SPY.bodyRotZ, 0x20, 0x40);
+                                  SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         st->zSpeed = 0x78;
         if (actor->flags & ACTOR_HIT_CHARGE) {
           st->speed = 0xF0;
@@ -2134,7 +2134,7 @@ void Level31_UpdateActors(void) {
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != HCARRIER_KNOCKED) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
-                                  SPY.bodyRotZ, 0x20, 0x40);
+                                  SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         st->zSpeed = 0x3C;
         st->speed = 0x78;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
@@ -2231,7 +2231,7 @@ void Level31_UpdateActors(void) {
       if ((unsigned int)(actor->mode - 6) < 5 && (actor->flags & ACTOR_HIT_FLAME)) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
-                                  SPY.bodyRotZ, 0x20, 0x40);
+                                  SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         st->zSpeed = 0x3C;
         st->speed = 0x78;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
@@ -2637,7 +2637,7 @@ void Level31_UpdateActors(void) {
 
           st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                     actor->posY - SPY.posY, ATAN_ANGLE8),
-                                      SPY.bodyRotZ, 0x20, 0x40);
+                                      SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
           st->sink = 0x80;
           st->timer = 0;
           actor->subMode = 0;
@@ -2913,7 +2913,7 @@ void Level31_UpdateActors(void) {
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
-                                  SPY.bodyRotZ, 0x20, 0x40);
+                                  SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         if (actor->flags & ACTOR_HIT_FLAME) {
           st->knockSpeed = 0xC8;
         } else {

@@ -1340,7 +1340,7 @@ void Level0_UpdateActors(void) {
         st->moveSpeed = 0x118;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
-            SPY.bodyRotZ, 0x20, 0x40);
+            SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         ENTER_POSE(actor, PENEMY_FLAMED);
       }
 
@@ -2569,7 +2569,7 @@ void Level0_UpdateActors(void) {
           st->knockSpeed = 0x118;
           st->knockHeading = StepAndLerpAngle8(
               ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
-              SPY.bodyRotZ, 0x20, 0x40);
+              SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
           actor->mode = FLOCK_KNOCKED;
           ANIM_RESET(actor, FLOCK_KNOCKED);
           continue;

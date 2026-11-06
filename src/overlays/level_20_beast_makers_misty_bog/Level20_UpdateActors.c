@@ -359,7 +359,7 @@ void Level20_UpdateActors(void) {
           st->knockZSpeed = 0xAA;
           st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
-                                  spy->bodyRotZ, 0x20, 0x40);
+                                  spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         }
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2794,7 +2794,7 @@ void Level20_UpdateActors(void) {
         st->stunTimer = 0x50;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8),
-                                g_bSpyroPersistentEulerZ, 0x20, 0x40);
+                                g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         st->knockZSpeed = 0x64;
         if (actor->flags & ACTOR_HIT_FLAME) {
           st->knockSpeed = 0xF0;
@@ -3252,7 +3252,7 @@ void Level20_UpdateActors(void) {
         } else {
           st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
-                                    spy->bodyRotZ, 0x20, 0x40);
+                                    spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
           st->speed = 0xC8;
           st->zSpeed = 0x32;
           if (actor->flags & ACTOR_HIT_CHARGE) {
@@ -3411,7 +3411,7 @@ void Level20_UpdateActors(void) {
         }
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8),
-                                g_bSpyroPersistentEulerZ, 0x20, 0x40);
+                                g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         st->knockZSpeed = 0xF0;
         if (actor->mode != GRABBER_LURK) {
           *st->held = 0;

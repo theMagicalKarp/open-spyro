@@ -2394,7 +2394,7 @@ void Level4_UpdateActors(void) {
           st->knockSpeed = 0xE6;
           st->knockHeading = StepAndLerpAngle8(
               ArcTan2(actor->posX - spy->posX, actor->posY - SPY.posY, ATAN_ANGLE8),
-              g_bSpyroPersistentEulerZ, 0x20, 0x40);
+              g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
           st->knockZSpeed = 0x14;
           actor->mode = LUNGER_KNOCKED;
           continue;
@@ -2634,7 +2634,7 @@ void Level4_UpdateActors(void) {
         SetActorGroupSubstate(actor, 1);
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
-            spy->bodyRotZ, 0x20, 0x40);
+            spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         st->speed = 0x190;
         if (actor->flags & ACTOR_HIT_CHARGE) {
           st->speed = 0x1F4;

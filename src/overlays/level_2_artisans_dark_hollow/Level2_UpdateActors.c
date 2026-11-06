@@ -1713,7 +1713,7 @@ void Level2_UpdateActors(void) {
         }
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
-            spy->bodyRotZ, 0x20, 0x40);
+            spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         st->spinX = sixteen - (GetRandomU32() & 0x1F);
         st->spinY = sixteen - (GetRandomU32() & 0x1F);
         actor->flags = 0;
@@ -2889,7 +2889,7 @@ void Level2_UpdateActors(void) {
         actor->flags = 0;
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
-            spy->bodyRotZ, 0x20, 0x40);
+            spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         if (actor->flags & ACTOR_HIT_FLAME) {
           st->knockSpeed = 0x96;
         } else {

@@ -697,7 +697,7 @@ void Level19_UpdateActors(void) {
         st->knockHeading =
             StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                         actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
-                          g_bSpyroPersistentEulerZ, 0x20, 0x40);
+                          g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         actor->flags = 0;
         st->spinX = RandomSignedInRange(6, 0xA);
         st->spinY = RandomSignedInRange(6, 0xA);
@@ -3182,7 +3182,7 @@ void Level19_UpdateActors(void) {
         actor->flags = 0;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
-                                  spy->bodyRotZ, 0x20, 0x40);
+                                  spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         st->zSpeed = 0x46;
         st->life = 0x32;
         if (actor->flags & ACTOR_HIT_FLAME) {
@@ -3268,7 +3268,7 @@ void Level19_UpdateActors(void) {
         } else {
           st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
-                                    spy->bodyRotZ, 0x20, 0x40);
+                                    spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
           st->speed = 0xC8;
           st->zSpeed = 0x32;
           if (actor->flags & ACTOR_HIT_CHARGE) {

@@ -855,7 +855,7 @@ void Level24_UpdateActors(void) {
         }
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
                                                   actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
-                                    g_bSpyroPersistentEulerZ, 0x20, 0x40);
+                                    g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         actor->flags = 0;
         st->spin = RandomSignedInRange(8, 0xE);
         actor->subMode = 0;
@@ -2362,7 +2362,7 @@ void Level24_UpdateActors(void) {
         }
         st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
                                                   actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
-                                    g_bSpyroPersistentEulerZ, 0x20, 0x40);
+                                    g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         actor->flags = 0;
         actor->probeDist = ACTOR_PROBE_NONE;
         st->spin = RandomSignedInRange(8, 0xE);
@@ -2641,7 +2641,7 @@ void Level24_UpdateActors(void) {
         actor->flags = 0;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
-                                  spy->bodyRotZ, 0x20, 0x40);
+                                  spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         {
           if (actor->flags & ACTOR_HIT_FLAME) {
             st->knockSpeed = 0x8C;

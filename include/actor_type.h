@@ -166,6 +166,13 @@ typedef struct NameLetterState {
 #define DROP_GEM_ROLL 0xFF       /* ->dropKind: a random gem roll (and counts in the
                                   * checkpoint kill set, IsActorInCheckpointKillSet) */
 
+/* Knockback headings (StepAndLerpAngle8(away, facing, STEP, FRAC)): Spyro's
+ * facing, bent toward the bearing away from him by its delta capped at
+ * KNOCK_BEND_STEP, scaled by KNOCK_BEND_FRAC / 256 (at most 8 units). A few
+ * actors use their own step/fraction. */
+#define KNOCK_BEND_STEP 0x20
+#define KNOCK_BEND_FRAC 0x40
+
 /* Actor.flags hit bits that Spyro's attacks raise through
  * DispatchActorContactAtSphere (AdvanceSpyroPhysics, TickSpyroAttackEffects). */
 #define ACTOR_HIT_FLAME 0x10000  /* the flame breath */
