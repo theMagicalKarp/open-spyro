@@ -2226,6 +2226,46 @@ enum BoulderThrowerAnim {
   BTHROW_ANIM_HURTLE = 7, /* BTHROW_HURTLE */
 };
 
+/* Boulder thrower tuning. Hit it is knocked off at KNOCK_SPEED
+ * (CHARGE_KNOCK_SPEED for a charge; KNOCK_VZ up, a blast just pops it up
+ * BLAST_VZ). It throws (and an advancing one patrols) with Spyro within
+ * SIGHT_DZ of its height; a patroller throws within PATROL_THROW_RANGE and
+ * walks at PATROL_SPEED. A boulder spawns in its hands on frames 3..7 and
+ * leaves on frame RELEASE_FRAME at ROCK_SPEED; it rests REST_FRAMES
+ * (REST_FRAMES_B for the type-B thrower) between throws. */
+#define BTHROW_KNOCK_SPEED 0x118
+#define BTHROW_CHARGE_KNOCK_SPEED 0x15E
+#define BTHROW_KNOCK_VZ 0x1E
+#define BTHROW_BLAST_VZ 0x28
+#define BTHROW_SIGHT_DZ 0x1F4
+#define BTHROW_PATROL_THROW_RANGE 0x1400
+#define BTHROW_PATROL_SPEED 0x8C
+#define BTHROW_RELEASE_FRAME 0x10
+#define BTHROW_ROCK_SPEED 0x4B
+#define BTHROW_REST_FRAMES 0x78
+#define BTHROW_REST_FRAMES_B 0x50
+/* Paired throwers circle their partner at PAIR_CIRCLE_SPEED, then hurtle at
+ * Spyro at HURTLE_SPEED for HURTLE_FRAMES, lofted at distance / 128 (at most
+ * HURTLE_MAX_VZ; flat within HURTLE_FLAT_RANGE, or HURTLE_LOFT_RANGE with
+ * him over HURTLE_LOFT_DZ off its height), bouncing at HURTLE_BOUNCE_VZ.
+ * A hurtle hits Spyro within HURTLE_HIT_RANGE / HURTLE_HIT_DZ, knocking him
+ * at HURTLE_KNOCK_SPEED and itself off at HURTLE_RECOIL_SPEED; it bursts past
+ * HURTLE_MAX_RANGE. A flung one (RIDE_HELD) hurtles at FLUNG_SPEED. */
+#define BTHROW_PAIR_CIRCLE_SPEED 0x64
+#define BTHROW_HURTLE_SPEED 0x15E
+#define BTHROW_HURTLE_FRAMES 0xF0
+#define BTHROW_HURTLE_MAX_VZ 0x6E
+#define BTHROW_HURTLE_FLAT_RANGE 0x1800
+#define BTHROW_HURTLE_LOFT_RANGE 0x2800
+#define BTHROW_HURTLE_LOFT_DZ 0x3E8
+#define BTHROW_HURTLE_BOUNCE_VZ 0x50
+#define BTHROW_HURTLE_HIT_RANGE 0x2BC
+#define BTHROW_HURTLE_HIT_DZ 0x2BC
+#define BTHROW_HURTLE_KNOCK_SPEED 0x6E
+#define BTHROW_HURTLE_RECOIL_SPEED 0xDC
+#define BTHROW_HURTLE_MAX_RANGE 0x9470
+#define BTHROW_FLUNG_SPEED 0x1C2
+
 /* ->mode of a gatekeeper (ACTOR_TYPE_GATEKEEPER / _B, GatekeeperState;
  * levels 21/22). Modes 40-44 hand out its run of keys (GatekeeperState.keys)
  * one at a time; 43 and 50-54 match the boulder thrower's. */
@@ -2260,6 +2300,42 @@ enum GatekeeperAnim {
   GATEKEEPER_ANIM_LEAP = 7,   /* GATEKEEPER_RIDE_LEAP */
   GATEKEEPER_ANIM_HURTLE = 8, /* GATEKEEPER_HURTLE */
 };
+
+/* Gatekeeper tuning. Flamed or blasted it is knocked off at KNOCK_SPEED
+ * (KNOCK_VZ up; a blast just pops it up BLAST_VZ). It stalks Spyro within
+ * STALK_RANGE (back to WATCH past WATCH_RANGE) and swipes within SWIPE_RANGE
+ * with him 0xC9..0x577 above it (one unsigned dz test), resting SWIPE_REST
+ * after. The swipe reaches (frame - 5) * SWIPE_REACH_STEP on
+ * frames 6..9 (capped at SWIPE_REACH_MAX), knocking Spyro back at
+ * SWIPE_KNOCK_SPEED, SWIPE_KNOCK_VZ up. */
+#define GATEKEEPER_KNOCK_SPEED 0xF0
+#define GATEKEEPER_KNOCK_VZ 0x1E
+#define GATEKEEPER_BLAST_VZ 0x28
+#define GATEKEEPER_STALK_RANGE 0x1C00
+#define GATEKEEPER_WATCH_RANGE 0x2400
+#define GATEKEEPER_SWIPE_RANGE 0xD48
+#define GATEKEEPER_SWIPE_REST 0x78
+#define GATEKEEPER_SWIPE_REACH_STEP 0x3E8
+#define GATEKEEPER_SWIPE_REACH_MAX 0xDAC
+#define GATEKEEPER_SWIPE_KNOCK_SPEED 0x8C
+#define GATEKEEPER_SWIPE_KNOCK_VZ 0x46
+/* Flung by its catcher (RIDE_HELD past the throw frame): it hurtles at
+ * Spyro at HURTLE_SPEED for HURTLE_FRAMES (bouncing at HURTLE_BOUNCE_VZ),
+ * hitting him within HURTLE_HIT_RANGE / HURTLE_HIT_DZ (knocked back at
+ * HURTLE_KNOCK_SPEED, HURTLE_KNOCK_VZ up) and bursting platform pods it
+ * passes; it bursts past HURTLE_MAX_RANGE from him. On the ride it walks at
+ * RIDE_WALK_SPEED and leaps at RIDE_LEAP_SPEED / RIDE_LEAP_VZ. */
+#define GATEKEEPER_HURTLE_SPEED 0x1F4
+#define GATEKEEPER_HURTLE_FRAMES 0xB4
+#define GATEKEEPER_HURTLE_BOUNCE_VZ 0x5A
+#define GATEKEEPER_HURTLE_HIT_RANGE 0x3E8
+#define GATEKEEPER_HURTLE_HIT_DZ 0x320
+#define GATEKEEPER_HURTLE_KNOCK_SPEED 0x6E
+#define GATEKEEPER_HURTLE_KNOCK_VZ 0x28
+#define GATEKEEPER_HURTLE_MAX_RANGE 0x9470
+#define GATEKEEPER_RIDE_WALK_SPEED 0x78
+#define GATEKEEPER_RIDE_LEAP_SPEED 0x5A
+#define GATEKEEPER_RIDE_LEAP_VZ 0x78
 
 /* ->mode of a tethered guard (ACTOR_TYPE_TETHERED_GUARD, TetherState; level
  * 15); the mode is also the animation index. TetherState.mode is the TetherCommand

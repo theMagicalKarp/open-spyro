@@ -1116,18 +1116,18 @@ void Level22_UpdateActors(void) {
 
         if (f & ACTOR_HIT_BLAST) {
           st->speed = 0;
-          st->zSpeed = 0x28;
+          st->zSpeed = BTHROW_BLAST_VZ;
         } else {
           if (f == ACTOR_HIT_CHARGE) {
-            st->speed = 0x15E;
+            st->speed = BTHROW_CHARGE_KNOCK_SPEED;
           } else {
-            st->speed = 0x118;
+            st->speed = BTHROW_KNOCK_SPEED;
           }
           st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, 0x20, 0x40);
           if (actor->mode != BTHROW_HURTLE) {
-            st->zSpeed = 0x1E;
+            st->zSpeed = BTHROW_KNOCK_VZ;
           }
         }
         actor->flags = 0;
@@ -1215,8 +1215,8 @@ void Level22_UpdateActors(void) {
       case BTHROW_WATCH:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if ((st->flags & THROWER_F_ADVANCE) &&
-            (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x1F4
-                               : -SPY_DZ(actor) < 0x1F4) &&
+            (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < BTHROW_SIGHT_DZ
+                               : -SPY_DZ(actor) < BTHROW_SIGHT_DZ) &&
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < st->throwRange) {
           goto pose5;
         }
@@ -1227,8 +1227,8 @@ void Level22_UpdateActors(void) {
         }
         if (TICK_DOWN(st->timer) != 0 &&
             ApproxDist2D(&actor->posX, &spy->posX) < st->sightRange &&
-            (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x1F4
-                               : -SPY_DZ(actor) < 0x1F4) &&
+            (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < BTHROW_SIGHT_DZ
+                               : -SPY_DZ(actor) < BTHROW_SIGHT_DZ) &&
             CheckSpyroLineOfSightTo(&actor->posX) != 0) {
           ENTER_POSE(actor, BTHROW_THROW);
         }
@@ -1260,12 +1260,12 @@ void Level22_UpdateActors(void) {
           GetActorAttachPoint(actor, 0, &st->rock->posX);
           st->rock->rotZ = ArcTan2(spy->posX - st->rock->posX,
                                           spy->posY - st->rock->posY, ATAN_ANGLE8);
-          if (actor->nextFrame >= 0x10) {
+          if (actor->nextFrame >= BTHROW_RELEASE_FRAME) {
             BoulderState *q = st->rock->state;
 
             q->life = 0;
-            q->vx = (g_anCosineLut[st->rock->rotZ] * 0x4B) >> 10;
-            q->vy = (g_anSineLut[st->rock->rotZ] * 0x4B) >> 10;
+            q->vx = (g_anCosineLut[st->rock->rotZ] * BTHROW_ROCK_SPEED) >> 10;
+            q->vy = (g_anSineLut[st->rock->rotZ] * BTHROW_ROCK_SPEED) >> 10;
             q->vz = 0;
             st->rock->subMode = BOULDER_THROWN;
             st->rock = 0;
@@ -1275,9 +1275,9 @@ void Level22_UpdateActors(void) {
           }
         }
         if (g_nActorAnimDone != 0) {
-          st->timer = 0x78;
+          st->timer = BTHROW_REST_FRAMES;
           if (actor->type == ACTOR_TYPE_BOULDER_THROWER_B) {
-            st->timer = 0x50;
+            st->timer = BTHROW_REST_FRAMES_B;
           }
           st->rock = 0;
           ENTER_POSE(actor, BTHROW_WATCH);
@@ -1286,10 +1286,10 @@ void Level22_UpdateActors(void) {
 
       case BTHROW_PATROL:
         st->flags &= ~THROWER_F_ADVANCE;
-        if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x1400) {
+        if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < BTHROW_PATROL_THROW_RANGE) {
           ENTER_POSE(actor, BTHROW_THROW);
         }
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+        if (PivotActorAlongPath(actor, st->path, 0x100, BTHROW_PATROL_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             PATH_ARRIVED(0)) {
           ENTER_POSE(actor, BTHROW_WATCH);
         }
@@ -1309,7 +1309,7 @@ void Level22_UpdateActors(void) {
 
         ANIM_GO(actor, BTHROW_PATROL);
         if (SteerActorAroundPoint(actor, &g_pActorListBase[st->partner].posX, st->orbitRadius, h, 4,
-                          0x64, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0) < 6) {
+                          BTHROW_PAIR_CIRCLE_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0) < 6) {
           g_pActorListBase[st->partner].subMode = 1;
           actor->subMode = 0;
           actor->mode = BTHROW_PAIR_READY;
@@ -1327,19 +1327,19 @@ void Level22_UpdateActors(void) {
           ANIM_GO(actor, BTHROW_WATCH);
           st->heading = ArcTan2(spy->posX - actor->posX,
                                   SPY.posY - actor->posY, ATAN_ANGLE8);
-          st->speed = 0x15E;
+          st->speed = BTHROW_HURTLE_SPEED;
           st->zSpeed = d >> 7;
-          if (d < 0x1800 ||
-              (d < 0x2800 && !(SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x3E9
-                                                 : -SPY_DZ(actor) < 0x3E9))) {
+          if (d < BTHROW_HURTLE_FLAT_RANGE ||
+              (d < BTHROW_HURTLE_LOFT_RANGE && !(SPY_DZ(actor) > 0 ? SPY_DZ(actor) <= BTHROW_HURTLE_LOFT_DZ
+                                                 : -SPY_DZ(actor) <= BTHROW_HURTLE_LOFT_DZ))) {
             st->zSpeed = 0;
           }
-          if (st->zSpeed >= 0x6F) {
-            st->zSpeed = 0x6E;
+          if (st->zSpeed > BTHROW_HURTLE_MAX_VZ) {
+            st->zSpeed = BTHROW_HURTLE_MAX_VZ;
           }
           st->jitterA = RandomSignedInRange(8, 0xF);
           st->jitterB = RandomSignedInRange(8, 0xF);
-          st->timer = 0xF0;
+          st->timer = BTHROW_HURTLE_FRAMES;
           actor->mode = BTHROW_HURTLE;
           continue;
         } else {
@@ -1366,15 +1366,15 @@ void Level22_UpdateActors(void) {
         CopyVector(g200, &actor->posX);
         r = DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0, 0x12);
         if (r == MOVED_LANDED) {
-          st->zSpeed = 0x50;
+          st->zSpeed = BTHROW_HURTLE_BOUNCE_VZ;
         }
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
         actor->probeDist = ACTOR_PROBE_NONE;
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
         ANIM_GO(actor, BTHROW_ANIM_HURTLE);
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2BC &&
-            (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x2BC
-                               : -SPY_DZ(actor) < 0x2BC) &&
+        if (ApproxDist2D(&actor->posX, &spy->posX) < BTHROW_HURTLE_HIT_RANGE &&
+            (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < BTHROW_HURTLE_HIT_DZ
+                               : -SPY_DZ(actor) < BTHROW_HURTLE_HIT_DZ) &&
             g_nSpyroState != SPYRO_ST_CHARGE && g_nSpyroState != SPYRO_ST_CHARGE_AIR) {
           int a = StepAngle8Toward(ArcTan2(g_anSpyroWorldPos - actor->posX,
                                               g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8),
@@ -1382,18 +1382,18 @@ void Level22_UpdateActors(void) {
                   << 4;
 
           g_dwSpyroTriggerEventFlags |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
-          g_anSpyroRequestVelocity.x = (LookupCosine(a) * 0x6E) >> 12;
-          g_nSpyroRequestVelocityY = (LookupSine(a) * 0x6E) >> 12;
+          g_anSpyroRequestVelocity.x = (LookupCosine(a) * BTHROW_HURTLE_KNOCK_SPEED) >> 12;
+          g_nSpyroRequestVelocityY = (LookupSine(a) * BTHROW_HURTLE_KNOCK_SPEED) >> 12;
           CAM_LOOK.z = 0x28;
           st->heading = ArcTan2(actor->posX - g_anSpyroWorldPos,
                                   actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8);
-          st->speed = 0xDC;
+          st->speed = BTHROW_HURTLE_RECOIL_SPEED;
           st->zSpeed = 0x3C;
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           ENTER_POSE(actor, BTHROW_KNOCKED);
         }
         if (TICK_DOWN(st->timer) != 0 || r == 2 ||
-            ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > 0x9470) {
+            ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > BTHROW_HURTLE_MAX_RANGE) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x18);
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
@@ -1493,7 +1493,7 @@ void Level22_UpdateActors(void) {
           *st->releaseFlag = 0;
           st->heading = ArcTan2(spy->posX - actor->posX,
                                   spy->posY - actor->posY, ATAN_ANGLE8);
-          st->speed = 0x1C2;
+          st->speed = BTHROW_FLUNG_SPEED;
           st->timer = 0xB4;
           st->zSpeed = 0;
           actor->mode = BTHROW_HURTLE;
@@ -1514,15 +1514,15 @@ void Level22_UpdateActors(void) {
       if ((f & (ACTOR_HIT_FLAME | ACTOR_HIT_BLAST | ACTOR_HIT_SUPER)) && actor->mode != GATEKEEPER_KNOCKED) {
         if (f & ACTOR_HIT_BLAST) {
           st->speed = 0;
-          st->zSpeed = 0x28;
+          st->zSpeed = GATEKEEPER_BLAST_VZ;
         } else {
-          st->speed = 0xF0;
+          st->speed = GATEKEEPER_KNOCK_SPEED;
           st->heading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, 0x20, 0x40);
         }
         if (actor->mode != GATEKEEPER_HURTLE) {
-          st->zSpeed = 0x1E;
+          st->zSpeed = GATEKEEPER_KNOCK_VZ;
         }
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
@@ -1595,7 +1595,7 @@ void Level22_UpdateActors(void) {
 
       case GATEKEEPER_WATCH:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x1C00) {
+        if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < GATEKEEPER_STALK_RANGE) {
           ENTER_POSE(actor, GATEKEEPER_STALK);
         }
         break;
@@ -1605,10 +1605,10 @@ void Level22_UpdateActors(void) {
         int dz = SPY_DZ(actor);
 
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (d > 0x2400) {
+        if (d > GATEKEEPER_WATCH_RANGE) {
           ENTER_POSE(actor, GATEKEEPER_WATCH);
         }
-        if (TICK_DOWN(st->timer) != 0 && d < 0xD48 &&
+        if (TICK_DOWN(st->timer) != 0 && d < GATEKEEPER_SWIPE_RANGE &&
             (unsigned)(dz + 0x577) < 0x4AF) {
           ENTER_POSE(actor, GATEKEEPER_SWIPE);
         }
@@ -1620,23 +1620,23 @@ void Level22_UpdateActors(void) {
 
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if ((unsigned)(actor->nextFrame - 6) < 4) {
-          int r = (actor->nextFrame - 5) * 0x3E8;
+          int r = (actor->nextFrame - 5) * GATEKEEPER_SWIPE_REACH_STEP;
 
-          if (r < 0x3E8) {
-            r = 0x3E8;
+          if (r < GATEKEEPER_SWIPE_REACH_STEP) {
+            r = GATEKEEPER_SWIPE_REACH_STEP;
           }
-          if (r >= 0xDAD) {
-            r = 0xDAC;
+          if (r > GATEKEEPER_SWIPE_REACH_MAX) {
+            r = GATEKEEPER_SWIPE_REACH_MAX;
           }
           if (d < r && SPY_DZ(actor) < -0xC8) {
             g_dwSpyroTriggerEventFlags |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
-            g_anSpyroRequestVelocity.x = (LookupCosine(actor->rotZ << 4) * 0x8C) >> 12;
-            g_nSpyroRequestVelocityY = (LookupSine(actor->rotZ << 4) * 0x8C) >> 12;
-            g_nSpyroRequestVelocityZ = 0x46;
+            g_anSpyroRequestVelocity.x = (LookupCosine(actor->rotZ << 4) * GATEKEEPER_SWIPE_KNOCK_SPEED) >> 12;
+            g_nSpyroRequestVelocityY = (LookupSine(actor->rotZ << 4) * GATEKEEPER_SWIPE_KNOCK_SPEED) >> 12;
+            g_nSpyroRequestVelocityZ = GATEKEEPER_SWIPE_KNOCK_VZ;
           }
         }
         if (g_nActorAnimDone != 0) {
-          st->timer = 0x78;
+          st->timer = GATEKEEPER_SWIPE_REST;
           ENTER_POSE(actor, GATEKEEPER_STALK);
         }
         break;
@@ -1725,32 +1725,32 @@ void Level22_UpdateActors(void) {
         r = DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0, 0x12);
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
         if (r == MOVED_LANDED) {
-          st->zSpeed = 0x5A;
+          st->zSpeed = GATEKEEPER_HURTLE_BOUNCE_VZ;
         }
         ANIM_GO(actor, GATEKEEPER_ANIM_HURTLE);
         actor->probeDist = ACTOR_PROBE_NONE;
         TurnActorYawTowardAngle(actor, st->heading, 6, 0, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x3E8 &&
-            (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x320
-                               : -SPY_DZ(actor) < 0x320)) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < GATEKEEPER_HURTLE_HIT_RANGE &&
+            (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < GATEKEEPER_HURTLE_HIT_DZ
+                               : -SPY_DZ(actor) < GATEKEEPER_HURTLE_HIT_DZ)) {
           int a = StepAngle8Toward(ArcTan2(spy->posX - actor->posX,
                                               spy->posY - actor->posY, ATAN_ANGLE8),
                                 st->heading, 0x20)
                   << 4;
 
           spy->triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
-          spy->requestVelX = (LookupCosine(a) * 0x6E) >> 12;
-          spy->requestVelY = (LookupSine(a) * 0x6E) >> 12;
-          spy->requestVelZ = 0x28;
+          spy->requestVelX = (LookupCosine(a) * GATEKEEPER_HURTLE_KNOCK_SPEED) >> 12;
+          spy->requestVelY = (LookupSine(a) * GATEKEEPER_HURTLE_KNOCK_SPEED) >> 12;
+          spy->requestVelZ = GATEKEEPER_HURTLE_KNOCK_VZ;
           st->heading = ArcTan2(actor->posX - spy->posX,
                                   actor->posY - spy->posY, ATAN_ANGLE8);
-          st->speed = 0xF0;
+          st->speed = GATEKEEPER_KNOCK_SPEED;
           st->zSpeed = 0x3C;
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           ENTER_POSE(actor, GATEKEEPER_KNOCKED);
         }
         if (TICK_DOWN(st->timer) != 0 || r == 2 ||
-            ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > 0x9470) {
+            ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > GATEKEEPER_HURTLE_MAX_RANGE) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, 0x34);
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
@@ -1796,7 +1796,7 @@ void Level22_UpdateActors(void) {
         break;
 
       case GATEKEEPER_RIDE_WALK: {
-        int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        int r = PivotActorAlongPath(actor, st->path, 0x100, GATEKEEPER_RIDE_WALK_SPEED, 0, 8, 0x80, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
         ANIM_GO(actor, GATEKEEPER_ANIM_WALK);
         if (r == PATH_ARRIVED(0)) {
@@ -1811,8 +1811,8 @@ void Level22_UpdateActors(void) {
         if (catcher->subMode != MHEAD_CATCH_NONE) {
           st->heading = ArcTan2(catcher->posX - actor->posX, catcher->posY - actor->posY,
                                   ATAN_ANGLE8);
-          st->speed = 0x5A;
-          st->zSpeed = 0x78;
+          st->speed = GATEKEEPER_RIDE_LEAP_SPEED;
+          st->zSpeed = GATEKEEPER_RIDE_LEAP_VZ;
           catcher->subMode = MHEAD_CATCH_GO;
           actor->mode++;
           break;
@@ -1860,8 +1860,8 @@ void Level22_UpdateActors(void) {
           *st->releaseFlag = 0;
           st->heading = ArcTan2(spy->posX - actor->posX,
                                   spy->posY - actor->posY, ATAN_ANGLE8);
-          st->speed = 0x1F4;
-          st->timer = 0xB4;
+          st->speed = GATEKEEPER_HURTLE_SPEED;
+          st->timer = GATEKEEPER_HURTLE_FRAMES;
           st->zSpeed = 0;
           actor->mode = GATEKEEPER_HURTLE;
         }
