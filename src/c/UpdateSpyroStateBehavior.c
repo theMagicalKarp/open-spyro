@@ -338,7 +338,8 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_dwPadPressed & PAD_CROSS) {
-      if (g_nSpyroLateJumpAllowed != 0 && g_nSpyroStateTimer < 4) {
+      if (g_nSpyroLateJumpAllowed != 0 &&
+          g_nSpyroStateTimer < SPYRO_LATE_JUMP_TICKS) {
         ChangeSpyroState(SPYRO_ST_JUMP);
         break;
       }
@@ -391,7 +392,7 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
   fall_timeout:
-    if (g_nSpyroStateTimer > 0x12C) {
+    if (g_nSpyroStateTimer > SPYRO_STUCK_RESPAWN_TICKS) {
       if (g_nFlightLevelActive != 0) {
         g_pfnLevelEndFlightRun();
         g_pfnLevelUpdateActors();
@@ -619,7 +620,8 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_CHARGE_AIR);
       break;
     }
-    if (g_nSpyroStateTimer > 0x10 && (g_dwPadPressed & PAD_TRIANGLE)) {
+    if (g_nSpyroStateTimer > SPYRO_GLIDE_DROP_DELAY &&
+        (g_dwPadPressed & PAD_TRIANGLE)) {
       ChangeSpyroState(SPYRO_ST_GLIDE_DROP);
       break;
     }
@@ -754,7 +756,8 @@ void UpdateSpyroStateBehavior(void) {
     if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_DEFAULT)) {
       break;
     }
-    if ((g_dwPadHeld & PAD_CROSS) && g_nSpyroStateTimer < 4) {
+    if ((g_dwPadHeld & PAD_CROSS) &&
+        g_nSpyroStateTimer < SPYRO_LATE_JUMP_TICKS) {
       ChangeSpyroState(SPYRO_ST_JUMP);
       break;
     }
@@ -772,7 +775,7 @@ void UpdateSpyroStateBehavior(void) {
       LAND_ON_GROUND();
       break;
     }
-    if (g_nSpyroStateTimer > 0x12C) {
+    if (g_nSpyroStateTimer > SPYRO_STUCK_RESPAWN_TICKS) {
       if (g_nFlightLevelActive != 0) {
         g_pfnLevelEndFlightRun();
         g_pfnLevelUpdateActors();
@@ -1023,7 +1026,8 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_CHARGE_AIR);
       break;
     }
-    if (g_nSpyroStateTimer > 0x10 && (g_dwPadPressed & PAD_TRIANGLE)) {
+    if (g_nSpyroStateTimer > SPYRO_GLIDE_DROP_DELAY &&
+        (g_dwPadPressed & PAD_TRIANGLE)) {
       ChangeSpyroState(SPYRO_ST_GLIDE_DROP);
     }
     break;
@@ -1040,7 +1044,8 @@ void UpdateSpyroStateBehavior(void) {
     } else if (g_nSpyroGroundProbeSuspendFlag == 0 ||
                g_nSpyroFrameMotionLength < 0x400) {
       ChangeSpyroState(SPYRO_ST_FALL);
-    } else if (g_nSpyroStateTimer >= 0x1F && g_anSpyroMotionVec[2] < 0x600) {
+    } else if (g_nSpyroStateTimer >= SPYRO_FLY_PITCH_MIN_TICKS &&
+               g_anSpyroMotionVec[2] < 0x600) {
       ChangeSpyroState(SPYRO_ST_FLY);
     } else if (SPY[SPY_SUBSTATE] == 0) {
       int d = g_nSpyroWorldPosZ;
@@ -1065,7 +1070,8 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_CHARGE_AIR);
       break;
     }
-    if (g_nSpyroStateTimer > 0x10 && (g_dwPadPressed & PAD_TRIANGLE)) {
+    if (g_nSpyroStateTimer > SPYRO_GLIDE_DROP_DELAY &&
+        (g_dwPadPressed & PAD_TRIANGLE)) {
       ChangeSpyroState(SPYRO_ST_GLIDE_DROP);
     }
     break;
@@ -1084,7 +1090,8 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_FALL);
     } else if (g_dwPadPressed & PAD_CROSS) {
       ChangeSpyroState(SPYRO_ST_FLY_CLIMB);
-    } else if (g_nSpyroStateTimer >= 0x1F && g_anSpyroMotionVec[2] >= -0xBFF) {
+    } else if (g_nSpyroStateTimer >= SPYRO_FLY_PITCH_MIN_TICKS &&
+               g_anSpyroMotionVec[2] >= -0xBFF) {
       ChangeSpyroState(SPYRO_ST_FLY);
     } else if (SPY[SPY_SUBSTATE] == 0) {
       int d = g_nSpyroWorldPosZ;
@@ -1109,7 +1116,8 @@ void UpdateSpyroStateBehavior(void) {
       ChangeSpyroState(SPYRO_ST_CHARGE_AIR);
       break;
     }
-    if (g_nSpyroStateTimer > 0x10 && (g_dwPadPressed & PAD_TRIANGLE)) {
+    if (g_nSpyroStateTimer > SPYRO_GLIDE_DROP_DELAY &&
+        (g_dwPadPressed & PAD_TRIANGLE)) {
       ChangeSpyroState(SPYRO_ST_GLIDE_DROP);
     }
     break;
