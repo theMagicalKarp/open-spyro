@@ -3117,15 +3117,15 @@ void Level15_UpdateActors(void) {
       SentinelState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode < SENTINEL_KNOCKED) {
-        st->knockSpeed = (g_nSpyroMotionSpeed >> 6) + 0x1C2;
+        st->knockSpeed = (g_nSpyroMotionSpeed >> 6) + SENTINEL_SUPER_KNOCK_SPEED;
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - ((SpyroObj *)&g_anSpyroWorldPos)->posX,
                           actor->posY - ((SpyroObj *)&g_anSpyroWorldPos)->posY, ATAN_ANGLE8),
             g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->knockZSpeed = 0x50;
+        st->knockZSpeed = SENTINEL_SUPER_KNOCK_VZ;
         if (actor->flags & ACTOR_HIT_FLAME) {
-          st->knockSpeed = 0xAA;
-          st->knockZSpeed = 0x5A;
+          st->knockSpeed = SENTINEL_FLAME_KNOCK_SPEED;
+          st->knockZSpeed = SENTINEL_FLAME_KNOCK_VZ;
         }
         while (st->link >= 0) {
           TetherState *cs = g_pActorListBase[st->link].state;
@@ -3155,7 +3155,7 @@ void Level15_UpdateActors(void) {
             if (ApproxDist2D(&actor->posX, &spy->posX) < st->range) {
               int dz = actor->posZ - SPY.posZ;
 
-              if (g_nSpyroAirborneFrames == 0 && ABS(dz) < 0x200) {
+              if (g_nSpyroAirborneFrames == 0 && ABS(dz) < SENTINEL_ENGAGE_DZ) {
                 if (st->flags & SENTINEL_F_ALERTED) {
                   ENTER_POSE(actor, SENTINEL_TRACK);
                 }
@@ -3163,8 +3163,8 @@ void Level15_UpdateActors(void) {
               }
               if (AbsAngleDelta8(actor->rotZ,
                                 ArcTan2(spy->posX - actor->posX,
-                                              spy->posY - actor->posY, ATAN_ANGLE8)) < 0x30 &&
-                  dz < 0 && dz > -0x1000) {
+                                              spy->posY - actor->posY, ATAN_ANGLE8)) < SENTINEL_AIM_CONE &&
+                  dz < 0 && dz > -SENTINEL_ABOVE_LIMIT) {
                 if (st->flags & SENTINEL_F_ALERTED) {
                   ENTER_POSE(actor, SENTINEL_TRACK);
                 }
@@ -3180,7 +3180,7 @@ void Level15_UpdateActors(void) {
           if (ApproxDist2D(&actor->posX, &spy->posX) < st->range) {
             int dz = actor->posZ - SPY.posZ;
 
-            if (dz < 0 && dz > -0x1000) {
+            if (dz < 0 && dz > -SENTINEL_ABOVE_LIMIT) {
               TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
               if (st->flags & SENTINEL_F_ALERTED) {
                 if (actor->group >= 0xFF) {
@@ -3211,7 +3211,7 @@ void Level15_UpdateActors(void) {
         ENTER_POSE(actor, SENTINEL_ALERT);
 
       case SENTINEL_WALK:
-        if (WalkActorAlongWaypoints(actor, st->path, 0x200, 0x80, 0x300, 8, 0x10, 0) ==
+        if (WalkActorAlongWaypoints(actor, st->path, 0x200, SENTINEL_WALK_SPEED, 0x300, 8, 0x10, 0) ==
             0x100) {
           if (st->link >= 0) {
             if (g_pActorListBase[st->link].mode < ACTOR_MODE_DORMANT) {
@@ -3267,8 +3267,8 @@ void Level15_UpdateActors(void) {
             st->count < 3) {
           Actor *b = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_WISP, actor);
 
-          if (ApproxDist2D(&actor->posX, &spy->posX) < 0xA00 &&
-              ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x400) {
+          if (ApproxDist2D(&actor->posX, &spy->posX) < SENTINEL_WISP_DROP_RANGE &&
+              ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < SENTINEL_WISP_DROP_DZ) {
             CopyVector(&b->posX, &SPY.posX);
           }
           st->timer = 4;
@@ -3281,7 +3281,7 @@ void Level15_UpdateActors(void) {
             RESET_IDLE(actor);
           }
           dz = actor->posZ - SPY.posZ;
-          if (!(dz < 0 && dz > -0x1000)) {
+          if (!(dz < 0 && dz > -SENTINEL_ABOVE_LIMIT)) {
             RESET_IDLE(actor);
           }
           if (st->flags & SENTINEL_F_PATROL) {
@@ -3316,14 +3316,14 @@ void Level15_UpdateActors(void) {
         }
         actor->rotZ += d;
         if (!(st->flags & SENTINEL_F_AT_END) &&
-            SteerActorAlongWaypoints(actor, st->path, 0x200, 0x80, 0x300, 8, 0x10,
+            SteerActorAlongWaypoints(actor, st->path, 0x200, SENTINEL_WALK_SPEED, 0x300, 8, 0x10,
                           &st->heading) == PATH_ARRIVED(0)) {
           st->flags |= SENTINEL_F_AT_END;
         }
         if (actor->nextFrame >= 9) {
-          x256[0] = 0x800;
-          x256[1] = -0x100;
-          x256[2] = 0x400;
+          x256[0] = SENTINEL_POWER_ORB_FWD;
+          x256[1] = SENTINEL_POWER_ORB_SIDE;
+          x256[2] = SENTINEL_POWER_ORB_UP;
           ApplyEulerRotation(&actor->rotX, x272, 0);
           RotateVectorByMatrix(x272, x256, x256);
           AddVector(x256, x256, &actor->posX);

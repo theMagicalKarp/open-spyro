@@ -2621,17 +2621,17 @@ void Level7_UpdateActors(void) {
       TickActorFlameGlow(actor);
       if (actor->flags & ACTOR_HITS_SPYRO && actor->mode != SHOOTER_KNOCKED) {
         if (actor->flags == ACTOR_HIT_CHARGE) {
-          st->speed = 0x15E;
+          st->speed = SHOOTER_CHARGE_KNOCK_SPEED;
         } else if (actor->mode == SHOOTER_SHIELD && actor->frame - 4U < 0x1B) {
           goto idle;
         } else {
-          st->speed = 0x118;
+          st->speed = SHOOTER_KNOCK_SPEED;
         }
         st->heading =
             StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                         actor->posY - spy->posY, ATAN_ANGLE8),
                           spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->zSpeed = 0x1E;
+        st->zSpeed = SHOOTER_KNOCK_VZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
@@ -2672,8 +2672,8 @@ void Level7_UpdateActors(void) {
             st->triggered = one;
             ENTER_POSE(actor, SHOOTER_WAKE);
           }
-          if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2800 &&
-              ABS2(SPY_DZ(actor)) < 0x3E8 && st->triggered == 0) {
+          if (ApproxDist2D(&actor->posX, &spy->posX) < SHOOTER_WAKE_RANGE &&
+              ABS2(SPY_DZ(actor)) < SHOOTER_WAKE_DZ && st->triggered == 0) {
             st->triggered = one;
             ENTER_POSE(actor, SHOOTER_WAKE);
           }
@@ -2695,17 +2695,17 @@ void Level7_UpdateActors(void) {
           c = g_pfnLevelSpawnActor(ACTOR_TYPE_SHOOTER_SHOT, actor);
           cs = c->state;
           c->rotZ = actor->rotZ;
-          cs->countdown0 = 0x88;
+          cs->countdown0 = SHOOTER_SHOT_LIFE;
           cs->countdown1 = 0x1E;
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 0, &c->posX);
           CopyVector(v, &SPY.posX);
-          v[2] -= 0x12C;
+          v[2] -= SHOOTER_SHOT_AIM_DROP;
           SubtractVector(cs->vel, v, &c->posX);
-          ScaleVector3ByRatio(cs->vel, VectorLength(cs->vel, VEC_LEN_XYZ), 0x96);
+          ScaleVector3ByRatio(cs->vel, VectorLength(cs->vel, VEC_LEN_XYZ), SHOOTER_SHOT_SPEED);
           cs->vel[2] = 0;
           AddVector(&c->posX, &c->posX, cs->vel);
-          st->timer = 0x64;
+          st->timer = SHOOTER_FIRE_REST;
         }
         if (g_nActorAnimDone != 0) {
           st->spawned = 0;
@@ -2737,7 +2737,7 @@ void Level7_UpdateActors(void) {
         break;
 
       case SHOOTER_GO_HOME:
-        if (ApproxDist2D(&actor->posX, st->home) < 0x100) {
+        if (ApproxDist2D(&actor->posX, st->home) < SHOOTER_HOME_ARRIVE) {
           actor->mode = SHOOTER_IDLE;
           continue;
         }
@@ -2745,7 +2745,7 @@ void Level7_UpdateActors(void) {
                       ArcTan2(st->home[0] - actor->posX,
                                     st->home[1] - actor->posY, ATAN_ANGLE8),
                       4, 0, YAW_HOLD_IN_BAND);
-        MoveActorAlongHeading(actor, 0x3C, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        MoveActorAlongHeading(actor, SHOOTER_HOME_SPEED, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         break;
 
       case SHOOTER_AIM:
@@ -2756,7 +2756,7 @@ void Level7_UpdateActors(void) {
             break;
           }
           if (actor->drawn != 0 &&
-              ApproxDist2D(&actor->posX, &SPY.posX) < 0x2800 &&
+              ApproxDist2D(&actor->posX, &SPY.posX) < SHOOTER_DOZER_FIRE_RANGE &&
               CheckSpyroLineOfSightTo(&actor->posX) != 0) {
             ENTER_POSE(actor, SHOOTER_FIRE);
           }
@@ -2773,12 +2773,12 @@ void Level7_UpdateActors(void) {
         } else {
           int d = ApproxDist2D(&actor->posX, &SPY.posX);
 
-          if (actor->drawn != 0 && d - 0x2000U >= 0x1C01 &&
+          if (actor->drawn != 0 && d - (unsigned)SHOOTER_GUARD_FIRE_RANGE > SHOOTER_GUARD_DUCK_SPAN &&
               CheckSpyroLineOfSightTo(&actor->posX) != 0) {
             if (TICK_DOWN(st->timer) == 0 || g_nActorAnimDone == 0) {
               break;
             }
-            if (d < 0x2000) {
+            if (d < SHOOTER_GUARD_FIRE_RANGE) {
               ENTER_POSE(actor, SHOOTER_FIRE);
             }
             g_nActorAnimDone = 0;
@@ -2802,7 +2802,7 @@ void Level7_UpdateActors(void) {
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (st->mode == one /* SHOOTER_ROLE_GUARD */ &&
-            ApproxDist2D(&actor->posX, &SPY.posX) - 0x2001U < 0x1BFF) {
+            ApproxDist2D(&actor->posX, &SPY.posX) - (SHOOTER_GUARD_FIRE_RANGE + 1U) < SHOOTER_GUARD_DUCK_SPAN - 1) {
           actor->frame = 0x12;
           actor->nextFrame = 0x13;
           actor->frameProgress = 0;
@@ -2849,8 +2849,8 @@ void Level7_UpdateActors(void) {
 
       case SHOOTER_ADVANCE:
         ANIM_GO(actor, SHOOTER_ANIM_WALK);
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x800 ||
-            PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < SHOOTER_ADVANCE_STOP_RANGE ||
+            PivotActorAlongPath(actor, st->path, 0x100, SHOOTER_ADVANCE_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
                 PATH_ARRIVED(0)) {
           st->timer = 0x3C;
           actor->anim = SHOOTER_ANIM_SHIELD;

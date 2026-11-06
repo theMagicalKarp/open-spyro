@@ -1809,10 +1809,36 @@ enum ShooterAnim {
 
 /* ShooterState.mode: the sentry's role. */
 enum ShooterRole {
-  SHOOTER_ROLE_DOZER = 0, /* blinks in SHOOTER_IDLE until Spyro comes near; fires inside 0x2800 */
-  SHOOTER_ROLE_GUARD = 1, /* starts behind its shield; ducks while Spyro is 0x2000..0x3C00 away,
-                           * fires once he is inside 0x2000 */
+  SHOOTER_ROLE_DOZER = 0, /* blinks in SHOOTER_IDLE until Spyro comes near; fires inside
+                           * SHOOTER_DOZER_FIRE_RANGE */
+  SHOOTER_ROLE_GUARD = 1, /* starts behind its shield; ducks while Spyro is
+                           * SHOOTER_GUARD_FIRE_RANGE..+SHOOTER_GUARD_DUCK_SPAN away, fires
+                           * once he is inside SHOOTER_GUARD_FIRE_RANGE */
 };
+
+/* Shooter tuning. Hit it is knocked off at KNOCK_SPEED (CHARGE_KNOCK_SPEED
+ * for a charge; KNOCK_VZ up), except a non-charge blow on shield frames
+ * 4..0x1E. A dozer wakes within WAKE_RANGE / WAKE_DZ (or its level-data
+ * range). Shots leave at SHOT_SPEED aimed SHOT_AIM_DROP under Spyro and live
+ * SHOT_LIFE; it then rests FIRE_REST. It walks home at HOME_SPEED (home
+ * within HOME_ARRIVE) and advances at ADVANCE_SPEED until Spyro is within
+ * ADVANCE_STOP_RANGE. */
+#define SHOOTER_KNOCK_SPEED 0x118
+#define SHOOTER_CHARGE_KNOCK_SPEED 0x15E
+#define SHOOTER_KNOCK_VZ 0x1E
+#define SHOOTER_WAKE_RANGE 0x2800
+#define SHOOTER_WAKE_DZ 0x3E8
+#define SHOOTER_DOZER_FIRE_RANGE 0x2800
+#define SHOOTER_GUARD_FIRE_RANGE 0x2000
+#define SHOOTER_GUARD_DUCK_SPAN 0x1C00
+#define SHOOTER_SHOT_SPEED 0x96
+#define SHOOTER_SHOT_AIM_DROP 0x12C
+#define SHOOTER_SHOT_LIFE 0x88
+#define SHOOTER_FIRE_REST 0x64
+#define SHOOTER_HOME_SPEED 0x3C
+#define SHOOTER_HOME_ARRIVE 0x100
+#define SHOOTER_ADVANCE_SPEED 0x5A
+#define SHOOTER_ADVANCE_STOP_RANGE 0x800
 
 /* ->mode of Metalhead, the level 22 boss (ACTOR_TYPE_METALHEAD,
  * MetalheadState). Clearing the current phase's pickup group starts
@@ -2630,6 +2656,29 @@ enum SentinelMode {
   SENTINEL_RELAY_ALERT = 0x62,      /* group cue: ALERT once back at animation 0 */
   SENTINEL_RELAY_TRACK = 0x63,      /* group cue: TRACK once back at animation 0 */
 };
+
+/* Sentinel tuning. Struck it is knocked off at SUPER_KNOCK_SPEED plus Spyro's
+ * speed / 64 (SUPER_KNOCK_VZ up), or FLAME_KNOCK_SPEED / FLAME_KNOCK_VZ for a
+ * flame, its chain of guards powered down with homing orbs. In its range it
+ * engages Spyro within ENGAGE_DZ of its height (an aiming one also within
+ * AIM_CONE of its facing) and only while he is above it, by under
+ * ABOVE_LIMIT. CAST fires up to 3 homing wisps, 4 frames apart from frame 7;
+ * one lands on Spyro within WISP_DROP_RANGE / WISP_DROP_DZ. POWER_GUARD sends
+ * orbs from POWER_ORB_FWD ahead, POWER_ORB_SIDE aside and POWER_ORB_UP up.
+ * It walks its waypoints at WALK_SPEED. */
+#define SENTINEL_SUPER_KNOCK_SPEED 0x1C2
+#define SENTINEL_SUPER_KNOCK_VZ 0x50
+#define SENTINEL_FLAME_KNOCK_SPEED 0xAA
+#define SENTINEL_FLAME_KNOCK_VZ 0x5A
+#define SENTINEL_ENGAGE_DZ 0x200
+#define SENTINEL_AIM_CONE 0x30
+#define SENTINEL_ABOVE_LIMIT 0x1000
+#define SENTINEL_WISP_DROP_RANGE 0xA00
+#define SENTINEL_WISP_DROP_DZ 0x400
+#define SENTINEL_POWER_ORB_FWD 0x800
+#define SENTINEL_POWER_ORB_SIDE (-0x100)
+#define SENTINEL_POWER_ORB_UP 0x400
+#define SENTINEL_WALK_SPEED 0x80
 
 /* ->mode of a mount (ACTOR_TYPE_MOUNT, MountState; level 31); the mode is
  * also the animation index. Its rider is a floating barrel or mine
