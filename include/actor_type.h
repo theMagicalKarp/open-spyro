@@ -166,6 +166,11 @@ typedef struct NameLetterState {
 #define DROP_GEM_ROLL 0xFF       /* ->dropKind: a random gem roll (and counts in the
                                   * checkpoint kill set, IsActorInCheckpointKillSet) */
 
+/* Bosses and big actors take Spyro's 2D distance from ApproxDist2D, then
+ * measure it exactly (VectorLength VEC_LEN_XY) once the estimate is under
+ * EXACT_DIST_RANGE, where the estimate's error would show. */
+#define EXACT_DIST_RANGE 0x32C8
+
 /* Knockback headings (StepAndLerpAngle8(away, facing, STEP, FRAC)): Spyro's
  * facing, bent toward the bearing away from him by its delta capped at
  * KNOCK_BEND_STEP, scaled by KNOCK_BEND_FRAC / 256 (at most 8 units). A few

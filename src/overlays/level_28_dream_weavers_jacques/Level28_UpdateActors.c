@@ -617,7 +617,7 @@ void Level28_UpdateActors(void) {
 
       SubtractVector(g104, &spy->posX, &actor->posX);
       dist = ApproxDist2D(&actor->posX, &spy->posX);
-      if (dist < 0x32C8) {
+      if (dist < EXACT_DIST_RANGE) {
         dist = VectorLength(g104, VEC_LEN_XY);
       }
       if (actor->type == ACTOR_TYPE_BIG_CHARGING_RAM) {

@@ -685,7 +685,7 @@ void Level19_UpdateActors(void) {
 
       SubtractVector(v, &spy->posX, &actor->posX);
       d = ApproxDist2D(&actor->posX, &spy->posX);
-      if (d < 0x32C8) {
+      if (d < EXACT_DIST_RANGE) {
         d = VectorLength(v, VEC_LEN_XY);
       }
       TickActorFlameGlow(actor);

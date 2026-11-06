@@ -1801,16 +1801,14 @@ enum MetalheadCatch {
   MHEAD_CATCH_GO = 2,    /* set by the minion as it jumps: enter METALHEAD_FLING */
 };
 
-/* Metalhead's tuning. Spyro's distance is measured exactly inside
- * EXACT_RANGE. While attacking, the follow camera holds on him with Spyro
- * within CAM_DZ and CAM_RANGE (CAM_RANGE_LATE after phase 0), off for
+/* Metalhead's tuning. While attacking, the follow camera holds on him with
+ * Spyro within CAM_DZ and CAM_RANGE (CAM_RANGE_LATE after phase 0), off for
  * CAM_HOLD_FRAMES after a charge; within SEEN_RANGE the arena chunk starts.
  * Attacks: FLING (60 in 100, only with a live minion, Spyro over FLING_MIN
  * away and within FLING_PICK_DZ; flung within the phase range and FLING_DZ),
  * SPRAY (25 in 100, SPRAY_MIN..ATTACK_MAX away) and LOB (the rest,
  * LOB_MIN..ATTACK_MAX), both within ATTACK_DZ; each ends with ATTACK_REST
  * frames idle. */
-#define METALHEAD_EXACT_RANGE 0x32C8
 #define METALHEAD_CAM_DZ 0x578
 #define METALHEAD_CAM_RANGE 0x6400
 #define METALHEAD_CAM_RANGE_LATE 0x6000
@@ -2151,6 +2149,37 @@ enum LurkerAnim {
   LURKER_ANIM_TURN = 1, /* LURKER_AIM and LURKER_FACE */
   LURKER_ANIM_LASH = 3,
 };
+
+/* Lurker tuning. Struck, it is knocked off at KNOCK_SPEED (FLAME_KNOCK_SPEED
+ * for a flame; KNOCK_VZ up) and bursts after STUN_FRAMES, or sinks
+ * (SINK_STEP a frame) when it lands in water within SPLASH_DZ. It lashes once
+ * Spyro is within LASH_RANGE / LASH_DZ (and NOTICE_RANGE), inside the
+ * camera's CAM_CONE and its own LASH_CONE, then rests LASH_REST frames. The
+ * tether's scale is TETHER_SCALE_NUM / length (5..0x7F), the length held to
+ * TETHER_MIN..TETHER_MAX. A roamer hops to a random node after
+ * ROAM_MIN..MAX_FRAMES with Spyro past NOTICE_RANGE, or toward him once he is
+ * past CHASE_MIN_RANGE and a node is CHASE_GAIN closer; it turns to face him
+ * past FACE_CONE. */
+#define LURKER_KNOCK_SPEED 0x140
+#define LURKER_FLAME_KNOCK_SPEED 0xF0
+#define LURKER_KNOCK_VZ 0x64
+#define LURKER_STUN_FRAMES 0x50
+#define LURKER_SPLASH_DZ 0x64
+#define LURKER_SINK_STEP 0x64
+#define LURKER_NOTICE_RANGE 0x2000
+#define LURKER_LASH_RANGE 0xC80
+#define LURKER_LASH_DZ 0x5DC
+#define LURKER_CAM_CONE 0x28
+#define LURKER_LASH_CONE 0x14
+#define LURKER_LASH_REST 0xB4
+#define LURKER_TETHER_SCALE_NUM 0x1C000
+#define LURKER_TETHER_MIN 0x578
+#define LURKER_TETHER_MAX 0xC80
+#define LURKER_ROAM_MIN_FRAMES 0x28
+#define LURKER_ROAM_MAX_FRAMES 0x5A
+#define LURKER_CHASE_MIN_RANGE 0xFA1
+#define LURKER_CHASE_GAIN 0x5DD
+#define LURKER_FACE_CONE 0x13
 
 /* ->mode of a gunner (ACTOR_TYPE_GUNNER, GunnerState; level 20).
  * GUNNER_IDLE runs GunnerState.mode's role (guard, patrol, lookout). */
@@ -2893,6 +2922,33 @@ enum ChasingPathGuardMode {
   CPGUARD_ATTACK = 3,  /* lunges, then RETURN */
   CPGUARD_KNOCKED = 4, /* knocked away, then bursts */
 };
+
+/* Chasing path guard tuning. Knocked off at KNOCK_SPEED / KNOCK_VZ
+ * (CHARGE_KNOCK_*, SUPER_KNOCK_* plus Spyro's speed / 64 for a superflame).
+ * A patroller walks PATROL_SPEED and chases Spyro once he is drawn, in sight,
+ * within SIGHT_RANGE / SIGHT_DZ and its SIGHT_CONE, for CHASE_FRAMES; it
+ * chases at CHASE_SPEED and attacks (lunging at ATTACK_SPEED) once lined up
+ * within ATTACK_CONE. Returning it steers at up to RETURN_SPEED (1/16 of the
+ * distance) once within RETURN_CONE, home within RETURN_ARRIVE; RETURN_FRAMES
+ * of blocked steering give up. */
+#define CPGUARD_KNOCK_SPEED 0x12C
+#define CPGUARD_KNOCK_VZ 0x10
+#define CPGUARD_CHARGE_KNOCK_SPEED 0x1F4
+#define CPGUARD_CHARGE_KNOCK_VZ 0x20
+#define CPGUARD_SUPER_KNOCK_SPEED 0x1C2
+#define CPGUARD_SUPER_KNOCK_VZ 0x50
+#define CPGUARD_PATROL_SPEED 0x5C
+#define CPGUARD_SIGHT_RANGE 0x800
+#define CPGUARD_SIGHT_DZ 0x800
+#define CPGUARD_SIGHT_CONE 0x20
+#define CPGUARD_CHASE_FRAMES 0x78
+#define CPGUARD_CHASE_SPEED 0x80
+#define CPGUARD_ATTACK_CONE 0x18
+#define CPGUARD_ATTACK_SPEED 0x40
+#define CPGUARD_RETURN_CONE 0x18
+#define CPGUARD_RETURN_SPEED 0x5C
+#define CPGUARD_RETURN_ARRIVE 0x200
+#define CPGUARD_RETURN_FRAMES 0x3C
 
 /* ->mode of a formation escort (ACTOR_TYPE_FORMATION_ESCORT,
  * FormationEscortState; level 26). */

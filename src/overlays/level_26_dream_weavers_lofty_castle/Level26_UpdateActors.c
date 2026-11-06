@@ -744,14 +744,14 @@ void Level26_UpdateActors(void) {
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         if (actor->flags & ACTOR_HIT_SUPER) {
-          st->speed = (spy->motionSpeed >> 6) + 0x1C2;
-          st->zSpeed = 0x50;
+          st->speed = (spy->motionSpeed >> 6) + CPGUARD_SUPER_KNOCK_SPEED;
+          st->zSpeed = CPGUARD_SUPER_KNOCK_VZ;
         } else if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->speed = 0x1F4;
-          st->zSpeed = 0x20;
+          st->speed = CPGUARD_CHARGE_KNOCK_SPEED;
+          st->zSpeed = CPGUARD_CHARGE_KNOCK_VZ;
         } else {
-          st->speed = 0x12C;
-          st->zSpeed = 0x10;
+          st->speed = CPGUARD_KNOCK_SPEED;
+          st->zSpeed = CPGUARD_KNOCK_VZ;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
         MarkActorLiveKill(actor);
@@ -779,7 +779,7 @@ void Level26_UpdateActors(void) {
       switch (actor->mode) {
       case CPGUARD_PATROL:
         if (st->onPath != 0) {
-          FollowActorWaypointPath(actor, st->path, 0x400, 0x5C, 0x180, 4, 2);
+          FollowActorWaypointPath(actor, st->path, 0x400, CPGUARD_PATROL_SPEED, 0x180, 4, 2);
         } else {
           int r;
           int e;
@@ -799,17 +799,17 @@ void Level26_UpdateActors(void) {
           actor->rotY = r + e;
         }
         if (actor->drawn != 0 &&
-            ApproxDist2D(&actor->posX, &spy->posX) < 0x800) {
+            ApproxDist2D(&actor->posX, &spy->posX) < CPGUARD_SIGHT_RANGE) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
-          if ((dz > 0 ? dz < 0x800
-                      : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x800) &&
+          if ((dz > 0 ? dz < CPGUARD_SIGHT_DZ
+                      : SPY.posZ - (actor->posZ - actor->floorOffset) < CPGUARD_SIGHT_DZ) &&
               AbsAngleDelta8(actor->rotZ,
                             ArcTan2(spy->posX - actor->posX,
                                           spy->posY - actor->posY, ATAN_ANGLE8)) <
-                  0x20 &&
+                  CPGUARD_SIGHT_CONE &&
               CheckSpyroLineOfSightTo(&actor->posX) != 0) {
-            st->timer = 0x78;
+            st->timer = CPGUARD_CHASE_FRAMES;
             ENTER_POSE(actor, CPGUARD_CHASE);
           }
         }
@@ -819,7 +819,7 @@ void Level26_UpdateActors(void) {
         if (st->onPath != 0) {
           d = FindNearestPathPointToActor(actor, st->path, idx);
           st->path->cur = idx[0];
-          if (d < 0x200) {
+          if (d < CPGUARD_RETURN_ARRIVE) {
             ENTER_POSE(actor, CPGUARD_PATROL);
           }
           ang = ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
@@ -829,17 +829,17 @@ void Level26_UpdateActors(void) {
           if (a > 0x80) {
             a -= 0x100;
           }
-          if (ABS2(a) < 0x18) {
+          if (ABS2(a) < CPGUARD_RETURN_CONE) {
             d >>= 4;
-            if (d > 0x5C) {
-              d = 0x5C;
+            if (d > CPGUARD_RETURN_SPEED) {
+              d = CPGUARD_RETURN_SPEED;
             }
             if (st->timer != 0) {
               if (SteerActorTowardPoint(actor, &st->path->nodes[st->path->cur].x, d,
                                 4, 2, 0x180) != 0) {
                 TICK_DOWN(st->timer);
               } else {
-                st->timer = 0x3C;
+                st->timer = CPGUARD_RETURN_FRAMES;
               }
             } else {
               SteerActorTowardPoint(actor, &st->path->nodes[st->path->cur].x, d, 4,
@@ -850,7 +850,7 @@ void Level26_UpdateActors(void) {
         } else {
           SubtractVector(svA, &actor->posX, st->home);
           d = VectorLength(svA, VEC_LEN_XYZ);
-          if (d < 0x200) {
+          if (d < CPGUARD_RETURN_ARRIVE) {
             ENTER_POSE(actor, CPGUARD_PATROL);
           }
           ang = ArcTan2(st->home[0] - actor->posX,
@@ -859,16 +859,16 @@ void Level26_UpdateActors(void) {
           if (a > 0x80) {
             a -= 0x100;
           }
-          if (ABS2(a) < 0x18) {
+          if (ABS2(a) < CPGUARD_RETURN_CONE) {
             d >>= 4;
-            if (d > 0x5C) {
-              d = 0x5C;
+            if (d > CPGUARD_RETURN_SPEED) {
+              d = CPGUARD_RETURN_SPEED;
             }
             if (st->timer != 0) {
               if (SteerActorTowardPoint(actor, st->home, d, 4, 2, 0x180) != 0) {
                 TICK_DOWN(st->timer);
               } else {
-                st->timer = 0x3C;
+                st->timer = CPGUARD_RETURN_FRAMES;
               }
             } else {
               SteerActorTowardPoint(actor, st->home, d, 4, 2, 0);
@@ -880,15 +880,15 @@ void Level26_UpdateActors(void) {
         break;
 
       case CPGUARD_CHASE:
-        SteerActorTowardPoint(actor, &spy->posX, 0x80, 4, 2, 0x180);
+        SteerActorTowardPoint(actor, &spy->posX, CPGUARD_CHASE_SPEED, 4, 2, 0x180);
         if (actor->drawn != 0 && CheckSpyroLineOfSightTo(&actor->posX) != 0) {
           if (AbsAngleDelta8(actor->rotZ,
                             ArcTan2(spy->posX - actor->posX,
-                                          SPY.posY - actor->posY, ATAN_ANGLE8)) < 0x18) {
+                                          SPY.posY - actor->posY, ATAN_ANGLE8)) < CPGUARD_ATTACK_CONE) {
             ENTER_POSE(actor, CPGUARD_ATTACK);
           }
           if (TICK_DOWN(st->timer) != 0) {
-            st->timer = 0x3C;
+            st->timer = CPGUARD_RETURN_FRAMES;
             ENTER_POSE(actor, CPGUARD_RETURN);
           }
           break;
@@ -896,9 +896,9 @@ void Level26_UpdateActors(void) {
         ENTER_POSE(actor, CPGUARD_RETURN);
 
       case CPGUARD_ATTACK:
-        SteerActorTowardPoint(actor, &SPY.posX, 0x40, 4, 2, 0x180);
+        SteerActorTowardPoint(actor, &SPY.posX, CPGUARD_ATTACK_SPEED, 4, 2, 0x180);
         if (g_nActorAnimDone != 0) {
-          st->timer = 0x3C;
+          st->timer = CPGUARD_RETURN_FRAMES;
           ENTER_POSE(actor, CPGUARD_RETURN);
         }
         break;

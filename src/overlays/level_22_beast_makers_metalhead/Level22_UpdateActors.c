@@ -619,7 +619,7 @@ void Level22_UpdateActors(void) {
 
       SubtractVector(g104, &spy->posX, &actor->posX);
       dist = ApproxDist2D(&actor->posX, &g_anSpyroWorldPos);
-      if (dist < METALHEAD_EXACT_RANGE) {
+      if (dist < EXACT_DIST_RANGE) {
         dist = VectorLength(g104, VEC_LEN_XY);
       }
       if (st->init == 0) {

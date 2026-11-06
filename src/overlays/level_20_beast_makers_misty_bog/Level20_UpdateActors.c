@@ -2783,7 +2783,7 @@ void Level20_UpdateActors(void) {
 
       SubtractVector(A304, &spy->posX, &actor->posX);
       dist = ApproxDist2D(&actor->posX, &spy->posX);
-      if (dist < 0x32C8) {
+      if (dist < EXACT_DIST_RANGE) {
         dist = VectorLength(A304, VEC_LEN_XY);
       }
 
@@ -2791,15 +2791,15 @@ void Level20_UpdateActors(void) {
           actor->mode != LURKER_SINK) {
         EBB_BREAK();
         actor->flags = 0;
-        st->stunTimer = 0x50;
+        st->stunTimer = LURKER_STUN_FRAMES;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8),
                                 g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->knockZSpeed = 0x64;
+        st->knockZSpeed = LURKER_KNOCK_VZ;
         if (actor->flags & ACTOR_HIT_FLAME) {
-          st->knockSpeed = 0xF0;
+          st->knockSpeed = LURKER_FLAME_KNOCK_SPEED;
         } else {
-          st->knockSpeed = 0x140;
+          st->knockSpeed = LURKER_KNOCK_SPEED;
         }
         if (st->tether != 0) {
           DespawnActorRecord(st->tether);
@@ -2815,17 +2815,17 @@ void Level20_UpdateActors(void) {
 
       switch (actor->mode) {
       case LURKER_WATCH:
-        if (dist < 0x2000 && TICK_DOWN(st->coolDown) != 0 &&
-            (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x5DC
-                               : -SPY_DZ(actor) < 0x5DC) &&
+        if (dist < LURKER_NOTICE_RANGE && TICK_DOWN(st->coolDown) != 0 &&
+            (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < LURKER_LASH_DZ
+                               : -SPY_DZ(actor) < LURKER_LASH_DZ) &&
             AbsAngleDelta8(((unsigned short)g_nCameraEulerYaw << 16 >> 20),
                           ArcTan2(actor->posX - g_anCameraPos[0],
                                         actor->posY - g_anCameraPos[1], ATAN_ANGLE8)) <
-                0x28 &&
-            dist < 0xC80 &&
+                LURKER_CAM_CONE &&
+            dist < LURKER_LASH_RANGE &&
             AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
-                                        spy->posY - actor->posY, ATAN_ANGLE8)) < 0x14) {
+                                        spy->posY - actor->posY, ATAN_ANGLE8)) < LURKER_LASH_CONE) {
           int k;
 
           st->tether = g_pfnLevelSpawnActor(ACTOR_TYPE_LURKER_TETHER, actor);
@@ -2835,7 +2835,7 @@ void Level20_UpdateActors(void) {
           AddVector(&st->tether->posX, A336, A352);
           RShiftVector3(&st->tether->posX, 1);
           SubtractVector(A336, &st->tether->posX, &spy->posX);
-          k = 0x1C000 / VectorLength(A336, VEC_LEN_XYZ);
+          k = LURKER_TETHER_SCALE_NUM / VectorLength(A336, VEC_LEN_XYZ);
           if (k < 5) {
             k = 5;
           }
@@ -2848,7 +2848,7 @@ void Level20_UpdateActors(void) {
           continue;
         }
         if (st->mode == LURKER_POST_ROAM) {
-          if (dist > 0x2000) {
+          if (dist > LURKER_NOTICE_RANGE) {
             if (TICK_DOWN(st->roamTimer) != 0) {
               PathData *p = st->path;
               int c = p->cur;
@@ -2860,13 +2860,13 @@ void Level20_UpdateActors(void) {
               actor->mode = LURKER_AIM;
               continue;
             }
-          } else if (dist >= 0xFA1) {
+          } else if (dist >= LURKER_CHASE_MIN_RANGE) {
             FindNearestPathPointToSpyro(st->path, A368);
             if (st->path->cur != A368[0] &&
                 dist - ApproxDist2D((int *)&g_anSpyroWorldPos,
                                      PATH_PT(st->path,
                                              A368[0])) >=
-                    0x5DD) {
+                    LURKER_CHASE_GAIN) {
               st->path->cur = A368[0];
               actor->mode = LURKER_AIM;
               continue;
@@ -2875,7 +2875,7 @@ void Level20_UpdateActors(void) {
         }
         if (AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
-                                        spy->posY - actor->posY, ATAN_ANGLE8)) >= 0x13) {
+                                        spy->posY - actor->posY, ATAN_ANGLE8)) >= LURKER_FACE_CONE) {
           actor->mode = LURKER_FACE;
           continue;
         }
@@ -2887,7 +2887,7 @@ void Level20_UpdateActors(void) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
 
-          if (z - h > 0 ? z - h < 0x64 : h - z < 0x64) {
+          if (z - h > 0 ? z - h < LURKER_SPLASH_DZ : h - z < LURKER_SPLASH_DZ) {
             Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
@@ -2936,7 +2936,7 @@ void Level20_UpdateActors(void) {
       case LURKER_HOP:
         MoveActorAlongHeading(actor, st->hopSpeed, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         if (g_nActorAnimDone != 0) {
-          st->roamTimer = RandomIntInRange(0x28, 0x5A);
+          st->roamTimer = RandomIntInRange(LURKER_ROAM_MIN_FRAMES, LURKER_ROAM_MAX_FRAMES);
           ENTER_POSE(actor, LURKER_WATCH);
         }
         break;
@@ -2960,13 +2960,13 @@ void Level20_UpdateActors(void) {
         RShiftVector3(&st->tether->posX, 1);
         SubtractVector(A352, &st->tether->posX, (int *)&g_anSpyroWorldPos);
         d = VectorLength(A352, VEC_LEN_XYZ) + 0x1F4;
-        if (d < 0x578) {
-          d = 0x578;
+        if (d < LURKER_TETHER_MIN) {
+          d = LURKER_TETHER_MIN;
         }
-        if (d >= 0xC81) {
-          d = 0xC80;
+        if (d > LURKER_TETHER_MAX) {
+          d = LURKER_TETHER_MAX;
         }
-        k = 0x1C000 / d;
+        k = LURKER_TETHER_SCALE_NUM / d;
         if (k < 5) {
           k = 5;
         }
@@ -2979,7 +2979,7 @@ void Level20_UpdateActors(void) {
         } else {
           st->tether->cullRadius = 0x20;
         }
-        if (actor->nextFrame >= 4 && dist < 0xC80) {
+        if (actor->nextFrame >= 4 && dist < LURKER_LASH_RANGE) {
           SPY.triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_HIT);
         }
         actor->rotZ = ArcTan2(spy->posX - actor->posX,
@@ -2993,7 +2993,7 @@ void Level20_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(st->tether);
           st->tether = 0;
-          st->coolDown = 0xB4;
+          st->coolDown = LURKER_LASH_REST;
           ENTER_POSE(actor, LURKER_WATCH);
         }
         break;
@@ -3004,7 +3004,7 @@ void Level20_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        actor->posZ -= 0x64;
+        actor->posZ -= LURKER_SINK_STEP;
         break;
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);

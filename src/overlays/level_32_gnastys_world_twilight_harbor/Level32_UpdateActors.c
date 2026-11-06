@@ -1531,7 +1531,7 @@ void Level32_UpdateActors(void) {
 
       SubtractVector(spyroDelta, &spy->posX, &actor->posX);
       dist = ApproxDist2D(&actor->posX, &spy->posX);
-      if (dist < 0x32C8) {
+      if (dist < EXACT_DIST_RANGE) {
         dist = VectorLength(spyroDelta, VEC_LEN_XY);
       }
 
@@ -1670,7 +1670,7 @@ void Level32_UpdateActors(void) {
 
       SubtractVector(o120, &spy->posX, &actor->posX);
       dist = ApproxDist2D(&actor->posX, &spy->posX);
-      if (dist < 0x32C8) {
+      if (dist < EXACT_DIST_RANGE) {
         dist = VectorLength(o120, VEC_LEN_XY);
       }
 
@@ -1837,7 +1837,7 @@ void Level32_UpdateActors(void) {
 
       SubtractVector(o130, &spy->posX, &actor->posX);
       dist = ApproxDist2D(&actor->posX, &spy->posX);
-      if (dist < 0x32C8) {
+      if (dist < EXACT_DIST_RANGE) {
         dist = VectorLength(o130, VEC_LEN_XY);
       }
 

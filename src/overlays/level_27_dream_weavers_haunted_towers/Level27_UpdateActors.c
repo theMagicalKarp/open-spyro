@@ -2416,7 +2416,7 @@ void Level27_UpdateActors(void) {
 
       SubtractVector(spyroDelta, &spy->posX, &actor->posX);
       dist = ApproxDist2D(&actor->posX, &g_anSpyroWorldPos);
-      if (dist < 0x32C8) {
+      if (dist < EXACT_DIST_RANGE) {
         dist = VectorLength(spyroDelta, VEC_LEN_XY);
       }
       TickActorFlameGlow(actor);

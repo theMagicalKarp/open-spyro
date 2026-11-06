@@ -1443,7 +1443,7 @@ void Level33_UpdateActors(void) {
 
       SubtractVector(spyroDelta, &SPY.posX, &actor->posX);
       dist = ApproxDist2D(&actor->posX, &SPY.posX);
-      if (dist < 0x32C8) {
+      if (dist < EXACT_DIST_RANGE) {
         dist = VectorLength(spyroDelta, VEC_LEN_XY);
       }
 
