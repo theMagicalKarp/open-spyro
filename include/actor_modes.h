@@ -778,6 +778,59 @@ enum ShempAnim {
   SHEMP_ANIM_GESTURE = 0x13, /* starts each taunt round of 1..2 stands */
 };
 
+/* Doctor Shemp's tuning. Within CAM_RANGE the follow camera holds on him.
+ * Flame or superflame hurts him only from behind (Spyro outside BACK_ARC of
+ * his facing) or during frames SLAM_OPEN..SLAM_CLOSE of his slam. Phase 1
+ * starts within P1_WAKE_RANGE, phases 2/3 within WAKE_RANGE with Spyro
+ * above. His blows (slam, strike, sweep) land on Spyro within their range,
+ * at least HIT_ABOVE over his base and within HIT_DZ of it. */
+#define SHEMP_CAM_RANGE 0x2000
+#define SHEMP_BACK_ARC 0x55
+#define SHEMP_SLAM_OPEN_FRAME 0x16
+#define SHEMP_SLAM_CLOSE_FRAME 0x30
+#define SHEMP_P1_WAKE_RANGE 0x2328
+#define SHEMP_WAKE_RANGE 0x1964
+#define SHEMP_HIT_ABOVE 300
+#define SHEMP_HIT_DZ 0x5DC
+/* Phase 2: slams (animation 16) within P2_SLAM_RANGE, hitting on frames
+ * SLAM_HIT..SLAM_HIT_END within SLAM_HIT_RANGE; then rests SLAM_REST. */
+#define SHEMP_P2_SLAM_RANGE 0x16A8
+#define SHEMP_SLAM_HIT_FRAME 0x34
+#define SHEMP_SLAM_HIT_END 0x38
+#define SHEMP_SLAM_HIT_RANGE 0x189C
+#define SHEMP_SLAM_REST 0xA0
+/* Phase 1: after P1_START_DELAY he circles his node (CIRCLE_RADIUS, at
+ * CIRCLE_SPEED) for CIRCLE_FRAMES, winds up and charges at CHARGE_SPEED for
+ * up to CHARGE_FRAMES (or until within STRIKE_RANGE, lined up), strikes on
+ * frames STRIKE_HIT..STRIKE_HIT_END within STRIKE_HIT_RANGE, and walks back
+ * (RETURN_SPEED, within RETURN_ARRIVE). */
+#define SHEMP_P1_START_DELAY 0x5A
+#define SHEMP_CIRCLE_RADIUS 0xC80
+#define SHEMP_CIRCLE_SPEED 0xB4
+#define SHEMP_CIRCLE_FRAMES 0x8C
+#define SHEMP_CHARGE_SPEED 0xAA
+#define SHEMP_CHARGE_FRAMES 0x32
+#define SHEMP_STRIKE_RANGE 0x9C4
+#define SHEMP_STRIKE_HIT_FRAME 4
+#define SHEMP_STRIKE_HIT_END 0xA
+#define SHEMP_STRIKE_HIT_RANGE 0x1194
+#define SHEMP_RETURN_SPEED 0x5A
+#define SHEMP_RETURN_ARRIVE 0x100
+/* Phase 3: within P3_SWEEP_RANGE he sweeps his staff round SWEEP_ARC (8-bit,
+ * at SWEEP_RATE / 16 a frame), knocking Spyro back within SWEEP_HIT_RANGE
+ * unless he is SWEEP_HIT_CLEARANCE or more off the ground; then rests
+ * SWEEP_REST. */
+#define SHEMP_P3_SWEEP_RANGE 0x1388
+#define SHEMP_SWEEP_RATE 0x38
+#define SHEMP_SWEEP_ARC 0x105
+#define SHEMP_SWEEP_HIT_RANGE 0x13EC
+#define SHEMP_SWEEP_HIT_CLEARANCE 0x320
+#define SHEMP_SWEEP_REST 0x3C
+/* Stunned, the camera shows his retreat for STUN_FRAMES while he walks to
+ * the next node at RETREAT_SPEED. */
+#define SHEMP_STUN_FRAMES 0xC8
+#define SHEMP_RETREAT_SPEED 0xA0
+
 /* ->mode of a shepherd (ACTOR_TYPE_SHEPHERD, ShepherdState; levels 12/13).
  * SHEPHERD_IDLE runs ShepherdState.post's waiting behaviour; shepherds
  * work in pairs (ShepherdState.partner), one riding the other's shoulders. */
@@ -1215,6 +1268,49 @@ enum ShempGuardAnim {
   SGUARD_ANIM_SWIPE = 5,
   SGUARD_ANIM_FALL = 6,
 };
+
+/* A Shemp guard is hurt by a charge, or a flame from behind (Spyro outside
+ * BACK_ARC of its facing) unless it is chasing; it is knocked off at
+ * KNOCK_SPEED / KNOCK_VZ. It wakes for Spyro in its range and within
+ * NOTICE_DZ; a holder rushes its path once Spyro, in its HOLD_CONE, is within
+ * HOLD_RANGE of path node 3. */
+#define SGUARD_BACK_ARC 0x55
+#define SGUARD_KNOCK_SPEED 0x15E
+#define SGUARD_KNOCK_VZ 0xA0
+#define SGUARD_NOTICE_DZ 0x800
+#define SGUARD_HOLD_CONE 0x40
+#define SGUARD_HOLD_RANGE 0x898
+/* Chasing it gains RAMP_ACCEL a frame up to RAMP_SPEED and rushes once
+ * lined up within RUSH_RANGE. A rush butts Spyro back (BUTT_VZ up) within
+ * BUTT_RANGE, BUTT_DZ and BUTT_CONE, and brakes once he is off its heading
+ * by BRAKE_ANGLE. Braking loses BRAKE_DRAG a frame (steering only after the
+ * first BRAKE_AIM_DELAY frames), then it rests RECOVER_FRAMES. */
+#define SGUARD_RAMP_ACCEL 0x14
+#define SGUARD_RAMP_SPEED 0xC8
+#define SGUARD_RUSH_RANGE 0xC00
+#define SGUARD_BUTT_RANGE 0x4B0
+#define SGUARD_BUTT_DZ 0x1F4
+#define SGUARD_BUTT_CONE 0x14
+#define SGUARD_BUTT_VZ 0x6E
+#define SGUARD_BRAKE_ANGLE 0x41
+#define SGUARD_BRAKE_FRAMES 0xB4
+#define SGUARD_BRAKE_AIM_DELAY 0xF
+#define SGUARD_BRAKE_DRAG 0x10
+#define SGUARD_RECOVER_FRAMES 0x3C
+/* Over a drop of LEDGE_DROP (BRAKE: BRAKE_LEDGE_DROP or unflat ground) it
+ * falls: at least FALL_MIN_SPEED, FALL_VZ up, despawning after FALL_FRAMES
+ * and leaving its drop on the nearest path point. */
+#define SGUARD_LEDGE_DROP 0x1F4
+#define SGUARD_BRAKE_LEDGE_DROP 0x320
+#define SGUARD_FALL_MIN_SPEED 0x50
+#define SGUARD_FALL_VZ 0x28
+#define SGUARD_FALL_FRAMES 0x3C
+/* GUARD swipes within SWIPE_RANGE, then waits SWIPE_REST. Path runs go at
+ * PATH_CHASE_SPEED / PATH_RUSH_SPEED. */
+#define SGUARD_SWIPE_RANGE 0x578
+#define SGUARD_SWIPE_REST 0x78
+#define SGUARD_PATH_CHASE_SPEED 0xA0
+#define SGUARD_PATH_RUSH_SPEED 0xB4
 
 /* ->mode of a path runner (ACTOR_TYPE_PATH_RUNNER..+1, PathRunnerState;
  * level 21). PathRunnerState.mode picks which of the two runs it makes. */
