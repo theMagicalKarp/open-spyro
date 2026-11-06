@@ -1447,9 +1447,9 @@ void Level1_UpdateActors(void) {
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20);
         if ((actor->flags & ACTOR_HIT_FLAME) != 0) {
-          st->speed = 0xFA;
+          st->speed = SENTRY_FLAME_KNOCK_SPEED;
         } else {
-          st->speed = 0x1C2;
+          st->speed = SENTRY_KNOCK_SPEED;
         }
         st->spin = 0;
         if (actor->mode != SENTRY_WATCH) {
@@ -1461,7 +1461,7 @@ void Level1_UpdateActors(void) {
       }
 
       if (TICK_DOWN(st->camTimer) == 0) {
-        int cd = ApproxDist2D(&actor->posX, &spy->posX) + 0x1000;
+        int cd = ApproxDist2D(&actor->posX, &spy->posX) + SENTRY_CAM_PULLBACK;
 
         if (st->camDist < cd) {
           st->camDist = cd;
@@ -1477,8 +1477,8 @@ void Level1_UpdateActors(void) {
       case SENTRY_WATCH:
         TrackEntityYawTowardSpyro(actor, 10, 0, YAW_HOLD_IN_BAND);
         if (*st->alert == 0 &&
-            ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x5DC &&
-            ApproxDist2D(&actor->posX, &SPY.posX) < 0x2800) {
+            ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < SENTRY_ENGAGE_DZ &&
+            ApproxDist2D(&actor->posX, &SPY.posX) < SENTRY_ENGAGE_RANGE) {
           *st->alert = 1;
           st->timer = 0;
           actor->mode = SENTRY_CIRCLE;
@@ -1494,7 +1494,7 @@ void Level1_UpdateActors(void) {
         }
         ANIM_GO(actor, SENTRY_CIRCLE);
         if (TICK_DOWN(st->retarget) != 0) {
-          st->retarget = 0x1E;
+          st->retarget = SENTRY_RETARGET_FRAMES;
           st->heading = *(unsigned char *)&g_bSpyroPersistentEulerZ;
         }
         d = ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8) -
@@ -1508,7 +1508,7 @@ void Level1_UpdateActors(void) {
                           4, 0x1E, YAW_STEP_IN_BAND) == 0) {
           break;
         }
-        if (MoveActorAlongHeading(actor, 0x64, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR) != 0) {
+        if (MoveActorAlongHeading(actor, SENTRY_CIRCLE_SPEED, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR) != 0) {
         flee:
           *st->alert = 0;
           actor->mode = SENTRY_GO_HOME;
@@ -1516,15 +1516,15 @@ void Level1_UpdateActors(void) {
         }
         if (AbsAngleDelta8(spy->bodyRotZ,
                           ArcTan2(actor->posX - spy->posX,
-                                        actor->posY - spy->posY, ATAN_ANGLE8)) >= 0x31 ||
-            ApproxDist2D(&actor->posX, &st->homeX) >= 0x2801) {
+                                        actor->posY - spy->posY, ATAN_ANGLE8)) >= SENTRY_GIVE_UP_FACING ||
+            ApproxDist2D(&actor->posX, &st->homeX) > SENTRY_LEASH) {
           goto flee;
         }
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0xED8 &&
+        if (ApproxDist2D(&actor->posX, &spy->posX) < SENTRY_LUNGE_RANGE &&
             AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
-                                        SPY.posY - actor->posY, ATAN_ANGLE8)) < 0x14) {
-          st->speed = 0x64;
+                                        SPY.posY - actor->posY, ATAN_ANGLE8)) < SENTRY_LUNGE_CONE) {
+          st->speed = SENTRY_LUNGE_SPEED;
           st->camStage = 0;
           ENTER_POSE(actor, SENTRY_LUNGE);
         }
@@ -1535,8 +1535,8 @@ void Level1_UpdateActors(void) {
         if (actor->frame < 5) {
           actor->rotZ += st->spin;
         }
-        if (st->speed >= 0x10) {
-          st->speed -= 0xF;
+        if (st->speed > SENTRY_KNOCK_DRAG) {
+          st->speed -= SENTRY_KNOCK_DRAG;
           MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (g_nActorAnimDone == 0) {
@@ -1550,11 +1550,11 @@ void Level1_UpdateActors(void) {
       case SENTRY_LUNGE:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         MoveActorAlongHeading(actor, st->speed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-        if (actor->frame >= 5 && st->speed >= 0x51) {
+        if (actor->frame >= 5 && st->speed > SENTRY_LUNGE_MIN_SPEED) {
           st->speed -= 5;
         }
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x5DC &&
-            ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x384) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < SENTRY_HIT_RANGE &&
+            ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < SENTRY_HIT_DZ) {
           if (st->camStage == 0 && g_nSpyroState != SPYRO_ST_CHARGE && g_nSpyroState != SPYRO_ST_CHARGE_AIR) {
             st->camStage = 1;
             EBB_BREAK();
@@ -1564,7 +1564,7 @@ void Level1_UpdateActors(void) {
             CAM_LOOK.z = 0x32;
           } else if (st->camStage == 1) {
             st->camStage = 2;
-            st->camTimer = 0x32;
+            st->camTimer = SENTRY_CAM_HOLD_FRAMES;
             AS_PTRV(g_pSpyroRequestCameraAnchor) = &actor->posX;
             g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
             SPY.requestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
@@ -1572,7 +1572,7 @@ void Level1_UpdateActors(void) {
                 -ArcTan2(((SpyroObj *)&g_anSpyroWorldPos)->posX - actor->posX,
                                ((SpyroObj *)&g_anSpyroWorldPos)->posY - actor->posY, ATAN_ANGLE8)
                 << 4;
-            g_nCameraActiveTargetDistance = ApproxDist2D(&actor->posX, &SPY.posX) + 0xC00;
+            g_nCameraActiveTargetDistance = ApproxDist2D(&actor->posX, &SPY.posX) + SENTRY_CAM_HIT_PULLBACK;
             g_nCameraActiveTargetPitch = 0x64;
             g_nCameraActiveTargetRoll = 0;
             g_nCameraActiveTargetPitchBias = -0xC8;
@@ -1582,7 +1582,7 @@ void Level1_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           ENTER_POSE(actor, SENTRY_RECOVER);
         }
-
+        /* fall through */
       case SENTRY_RECOVER:
         if (g_nActorAnimNewFrame != 0 && actor->frame >= 6) {
           if (st->speed >= 0xD) {
@@ -1609,10 +1609,10 @@ void Level1_UpdateActors(void) {
                           ArcTan2_8bit(st->homeX - actor->posX,
                                         st->homeY - actor->posY),
                           4, 0x14, YAW_STEP_IN_BAND) != 0) {
-          MoveActorAlongHeading(actor, 0x5A, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          MoveActorAlongHeading(actor, SENTRY_HOME_SPEED, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         ANIM_GO(actor, SENTRY_CIRCLE);
-        if (ApproxDist2D(&actor->posX, &st->homeX) < 0x80) {
+        if (ApproxDist2D(&actor->posX, &st->homeX) < SENTRY_HOME_ARRIVE) {
           ENTER_POSE(actor, SENTRY_WATCH);
         }
         break;

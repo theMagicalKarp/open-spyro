@@ -1322,13 +1322,13 @@ void Level0_UpdateActors(void) {
       int distance;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) != 0 &&
-          (unsigned int)(actor->mode - 7) >= 3) {
+          (unsigned int)(actor->mode - PENEMY_FLAMED) >= 3) { /* not FLAMED, CHARGED or FALL */
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
 
         if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
-          st->moveSpeed = 0x190;
-          st->zSpeed = 0x46;
+          st->moveSpeed = PENEMY_CHARGE_SPEED;
+          st->zSpeed = PENEMY_CHARGE_VZ;
           st->heading = StepAndLerpAngle8(
               ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
               SPY.bodyRotZ, 0x28, 0x80);
@@ -1336,8 +1336,8 @@ void Level0_UpdateActors(void) {
         }
 
         PlaySoundEffect(g_pLevelSampleBankHeader[0x27], actor, SFX_MODE_3D, &actor->voiceRow);
-        st->zSpeed = 0xB4;
-        st->moveSpeed = 0x118;
+        st->zSpeed = PENEMY_FLAME_VZ;
+        st->moveSpeed = PENEMY_FLAME_SPEED;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
             SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
@@ -1362,15 +1362,15 @@ void Level0_UpdateActors(void) {
         deltaZ = SPY.posZ - actor->posZ;
         deltaZ = ABS(deltaZ);
         distance = xyDistance + deltaZ;
-        if (distance < 0x4000 &&
-            ApproxDist2D(&actor->posX, &SPY.posX) < 0x2800 &&
-            ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < 0x800) {
+        if (distance < PENEMY_QUICK_RANGE &&
+            ApproxDist2D(&actor->posX, &SPY.posX) < PENEMY_SPOT_RANGE &&
+            ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < PENEMY_SPOT_DZ) {
           ENTER_POSE(actor, PENEMY_SPOT);
         }
 
         if (st->tgtIdx >= 0 && TICK_DOWN(st->timer) != 0) {
           if (ApproxDist2D(&actor->posX, &g_pActorListBase[st->tgtIdx].posX) <
-              0x1000) {
+              PENEMY_PARTNER_RANGE) {
             ENTER_POSE(actor, PENEMY_FACE_PARTNER);
           }
 
@@ -1394,9 +1394,9 @@ void Level0_UpdateActors(void) {
         deltaZ = ABS(deltaZ);
         distance = xyDistance + deltaZ;
 
-        if (distance < 0x1800 &&
+        if (distance < PENEMY_PARTNER_QUICK &&
             ApproxDist2D(&actor->posX, &g_pActorListBase[st->tgtIdx].posX) <
-                0x1000) {
+                PENEMY_PARTNER_RANGE) {
           ENTER_POSE(actor, PENEMY_FACE_PARTNER);
         }
 
@@ -1422,9 +1422,9 @@ void Level0_UpdateActors(void) {
         deltaZ = SPY.posZ - actor->posZ;
         deltaZ = ABS(deltaZ);
         distance = xyDistance + deltaZ;
-        if (distance < 0x4000 &&
-            ApproxDist2D(&actor->posX, &SPY.posX) < 0x2800 &&
-            ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < 0x800) {
+        if (distance < PENEMY_QUICK_RANGE &&
+            ApproxDist2D(&actor->posX, &SPY.posX) < PENEMY_SPOT_RANGE &&
+            ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < PENEMY_SPOT_DZ) {
           ENTER_POSE(actor, PENEMY_SPOT);
         }
 
@@ -1458,9 +1458,9 @@ void Level0_UpdateActors(void) {
         deltaZ = SPY.posZ - actor->posZ;
         deltaZ = ABS(deltaZ);
         distance = xyDistance + deltaZ;
-        if (distance < 0x4000 &&
-            ApproxDist2D(&actor->posX, &SPY.posX) < 0x2800 &&
-            ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < 0x800) {
+        if (distance < PENEMY_QUICK_RANGE &&
+            ApproxDist2D(&actor->posX, &SPY.posX) < PENEMY_SPOT_RANGE &&
+            ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < PENEMY_SPOT_DZ) {
           if (st->path->cur < st->path->count - 1) {
             st->path->cur++;
           }
@@ -1468,7 +1468,7 @@ void Level0_UpdateActors(void) {
         }
 
         if (ApproxDist2D(&actor->posX,
-                          (int *)&st->path->nodes[st->path->cur]) < 0x200) {
+                          (int *)&st->path->nodes[st->path->cur]) < PENEMY_NODE_ARRIVE) {
           if (st->path->cur == 0) {
             ENTER_POSE(actor, PENEMY_IDLE);
           }
@@ -1482,15 +1482,15 @@ void Level0_UpdateActors(void) {
           angleDelta -= 0x100;
         }
 
-        if (ABS2(angleDelta) < 0x20) {
-          MoveActorAlongHeading(actor, 0x40, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
+        if (ABS2(angleDelta) < PENEMY_WALK_CONE) {
+          MoveActorAlongHeading(actor, PENEMY_RETURN_SPEED, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
         }
 
-        if (angleDelta < -8) {
-          angleDelta = -8;
+        if (angleDelta < -PENEMY_TURN_STEP) {
+          angleDelta = -PENEMY_TURN_STEP;
         }
-        if (angleDelta > 8) {
-          angleDelta = 8;
+        if (angleDelta > PENEMY_TURN_STEP) {
+          angleDelta = PENEMY_TURN_STEP;
         }
 
         actor->rotZ += angleDelta;
@@ -1520,11 +1520,11 @@ void Level0_UpdateActors(void) {
         int angleDelta;
 
         if (ApproxDist2D(&actor->posX,
-                          (int *)&st->path->nodes[st->path->cur]) < 0x200) {
+                          (int *)&st->path->nodes[st->path->cur]) < PENEMY_NODE_ARRIVE) {
           if (st->path->cur < st->path->count - 1) {
             st->path->cur++;
           } else {
-            st->timer = 0x78;
+            st->timer = PENEMY_HIDE_FRAMES;
             ENTER_POSE(actor, PENEMY_HIDE);
           }
         }
@@ -1536,15 +1536,15 @@ void Level0_UpdateActors(void) {
           angleDelta -= 0x100;
         }
 
-        if (ABS2(angleDelta) < 0x20) {
-          MoveActorAlongHeading(actor, 0x82, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
+        if (ABS2(angleDelta) < PENEMY_WALK_CONE) {
+          MoveActorAlongHeading(actor, PENEMY_FLEE_SPEED, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
         }
 
-        if (angleDelta < -8) {
-          angleDelta = -8;
+        if (angleDelta < -PENEMY_TURN_STEP) {
+          angleDelta = -PENEMY_TURN_STEP;
         }
-        if (angleDelta > 8) {
-          angleDelta = 8;
+        if (angleDelta > PENEMY_TURN_STEP) {
+          angleDelta = PENEMY_TURN_STEP;
         }
 
         actor->rotZ += angleDelta;
@@ -1564,11 +1564,11 @@ void Level0_UpdateActors(void) {
         deltaZ = SPY.posZ - actor->posZ;
         deltaZ = ABS(deltaZ);
         distance = xyDistance + deltaZ;
-        if (distance < 0x4000 &&
-            ApproxDist2D(&actor->posX, &SPY.posX) < 0x2800 &&
-            ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < 0x800) {
+        if (distance < PENEMY_QUICK_RANGE &&
+            ApproxDist2D(&actor->posX, &SPY.posX) < PENEMY_SPOT_RANGE &&
+            ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < PENEMY_SPOT_DZ) {
           TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
-          st->timer = 0x78;
+          st->timer = PENEMY_HIDE_FRAMES;
           break;
         }
 

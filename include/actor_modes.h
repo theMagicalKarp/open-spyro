@@ -2559,6 +2559,30 @@ enum PathEnemyMode {
   PENEMY_COWER = 0x14,     /* while Spyro charges, then FLEE */
 };
 
+/* Path enemy tuning. It spots Spyro once he passes a QUICK_RANGE Manhattan
+ * pre-test and is within SPOT_RANGE (2D) / SPOT_DZ; its partner within
+ * PARTNER_RANGE (Manhattan PARTNER_QUICK) gets a face-to-face instead of a
+ * fidget. It walks a path node within NODE_ARRIVE, moving only once within
+ * WALK_CONE of its bearing and turning at most TURN_STEP a frame (RETURN at
+ * RETURN_SPEED, FLEE at FLEE_SPEED); hidden at the end it waits HIDE_FRAMES
+ * out of Spyro's sight. Flamed it is thrown at FLAME_SPEED / FLAME_VZ,
+ * charged at CHARGE_SPEED / CHARGE_VZ. */
+#define PENEMY_QUICK_RANGE 0x4000
+#define PENEMY_SPOT_RANGE 0x2800
+#define PENEMY_SPOT_DZ 0x800
+#define PENEMY_PARTNER_QUICK 0x1800
+#define PENEMY_PARTNER_RANGE 0x1000
+#define PENEMY_NODE_ARRIVE 0x200
+#define PENEMY_WALK_CONE 0x20
+#define PENEMY_TURN_STEP 8
+#define PENEMY_RETURN_SPEED 0x40
+#define PENEMY_FLEE_SPEED 0x82
+#define PENEMY_HIDE_FRAMES 0x78
+#define PENEMY_FLAME_SPEED 0x118
+#define PENEMY_FLAME_VZ 0xB4
+#define PENEMY_CHARGE_SPEED 0x190
+#define PENEMY_CHARGE_VZ 0x46
+
 /* ->mode of a flock leader (ACTOR_TYPE_FLOCK_LEADER, FlockState; level 0);
  * the mode is also the animation index. Each hit costs it one follower
  * (FlockState.chainA) until none are left. */
@@ -2741,6 +2765,37 @@ enum SentryMode {
   SENTRY_RECOVER = 4,    /* slides to a stop, then CIRCLE */
   SENTRY_GO_HOME = 0x64, /* walks home, then WATCH */
 };
+
+/* Sentry tuning (the level 1 cousin of the charging guard). Hit it slides
+ * from KNOCK_SPEED (FLAME_KNOCK_SPEED for a flame), losing KNOCK_DRAG a frame.
+ * It engages Spyro within ENGAGE_RANGE / ENGAGE_DZ, circles at CIRCLE_SPEED
+ * re-reading his heading every RETARGET_FRAMES, and gives up when he turns
+ * away (GIVE_UP_FACING) or it strays past LEASH from home. Within LUNGE_RANGE
+ * and lined up (LUNGE_CONE) it lunges at LUNGE_SPEED, slowing 5 a frame to
+ * LUNGE_MIN_SPEED; within HIT_RANGE / HIT_DZ Spyro is knocked back (camera
+ * held CAM_HOLD_FRAMES from CAM_HIT_PULLBACK behind; while camHold runs the
+ * camera frames it from CAM_PULLBACK past it). GO_HOME walks HOME_SPEED, home
+ * within HOME_ARRIVE. */
+#define SENTRY_KNOCK_SPEED 0x1C2
+#define SENTRY_FLAME_KNOCK_SPEED 0xFA
+#define SENTRY_KNOCK_DRAG 0xF
+#define SENTRY_ENGAGE_RANGE 0x2800
+#define SENTRY_ENGAGE_DZ 0x5DC
+#define SENTRY_CIRCLE_SPEED 0x64
+#define SENTRY_RETARGET_FRAMES 0x1E
+#define SENTRY_GIVE_UP_FACING 0x31
+#define SENTRY_LEASH 0x2800
+#define SENTRY_LUNGE_RANGE 0xED8
+#define SENTRY_LUNGE_CONE 0x14
+#define SENTRY_LUNGE_SPEED 0x64
+#define SENTRY_LUNGE_MIN_SPEED 0x50
+#define SENTRY_HIT_RANGE 0x5DC
+#define SENTRY_HIT_DZ 0x384
+#define SENTRY_CAM_HOLD_FRAMES 0x32
+#define SENTRY_CAM_PULLBACK 0x1000
+#define SENTRY_CAM_HIT_PULLBACK 0xC00
+#define SENTRY_HOME_SPEED 0x5A
+#define SENTRY_HOME_ARRIVE 0x80
 
 /* ->mode of a post grabber (ACTOR_TYPE_POST_GRABBER, PostGrabberState; level
  * 25); the mode is also the animation index. A grabber and its lookout are
