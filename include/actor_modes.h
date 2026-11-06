@@ -1185,6 +1185,47 @@ enum SoldierAnim {
   SOLDIER_ANIM_POP_OUT = 0x11,  /* up out of the post while Spyro looks away */
 };
 
+/* Soldier tuning. Patrols walk WALK_SPEED, pausing LOOK_MIN..MAX_FRAMES at
+ * each point. Kinds notice Spyro within NOTICE_RANGE (a sentry within
+ * SENTRY_RANGE, a short-leash one SHORT_LEASH_RANGE) and shove him within
+ * SHOVE_RANGE; chasers give up past LEASH from home (SHORT_LEASH,
+ * BOUNDED_LEASH). Knocked, it slides from KNOCK_SPEED, losing KNOCK_DRAG a
+ * frame. GO_HOME walks HOME_SPEED, home within HOME_ARRIVE. */
+#define SOLDIER_WALK_SPEED 0x46
+#define SOLDIER_LOOK_MIN_FRAMES 0x78
+#define SOLDIER_LOOK_MAX_FRAMES 0xB4
+#define SOLDIER_NOTICE_RANGE 0x2000
+#define SOLDIER_SENTRY_RANGE 0x2800
+#define SOLDIER_SHORT_LEASH_RANGE 0x1800
+#define SOLDIER_SHOVE_RANGE 0x44C
+#define SOLDIER_LEASH 0x1800
+#define SOLDIER_SHORT_LEASH 0x1000
+#define SOLDIER_BOUNDED_LEASH 0x3000
+#define SOLDIER_KNOCK_SPEED 0xFA
+#define SOLDIER_KNOCK_DRAG 0x14
+#define SOLDIER_HOME_SPEED 0x5A
+#define SOLDIER_HOME_ARRIVE 0x80
+/* A cannon runner runs from RUN_START_SPEED up to RUN_SPEED (RUN_ACCEL a
+ * frame) and mans the cannon within CANNON_REACH, orbiting it at that
+ * radius. A gunner fires once Spyro is FIRE_MIN..MAX_RANGE away and it has
+ * been drawn FIRE_SEEN_FRAMES: fireballs fly FIREBALL_SPEED and live
+ * FIREBALL_LIFE; it then waits FIRE_GAP (its partner half that). TO_POST
+ * runs at up to POST_RUN_SPEED (POST_RUN_ACCEL a frame), arriving within
+ * POST_ARRIVE of the post's front. */
+#define SOLDIER_RUN_START_SPEED 0x32
+#define SOLDIER_RUN_SPEED 0xAA
+#define SOLDIER_RUN_ACCEL 0x1E
+#define SOLDIER_CANNON_REACH 0x5DC
+#define SOLDIER_FIRE_MIN_RANGE 0x1400
+#define SOLDIER_FIRE_MAX_RANGE 0x3C00
+#define SOLDIER_FIRE_SEEN_FRAMES 0x50
+#define SOLDIER_FIREBALL_SPEED 0xB4
+#define SOLDIER_FIREBALL_LIFE 0xB4
+#define SOLDIER_FIRE_GAP 0xB4
+#define SOLDIER_POST_RUN_SPEED 0x82
+#define SOLDIER_POST_RUN_ACCEL 0x14
+#define SOLDIER_POST_ARRIVE 0x200
+
 /* ->mode of a level 6 fireball cannon (ACTOR_TYPE_FIREBALL_CANNON,
  * FireballCannonState). While its crew (FireballCannonState.link) stands, the
  * crew fires it; once the crew is down, Spyro can flame the fuse. */

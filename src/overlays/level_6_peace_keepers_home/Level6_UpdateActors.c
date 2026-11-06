@@ -2692,8 +2692,8 @@ void Level6_UpdateActors(void) {
               ArcTan2(actor->posX - g_anSpyroWorldPos, actor->posY - g_nSpyroWorldPosY,
                             ATAN_ANGLE8),
               g_bSpyroPersistentEulerZ, 0x20, 0x40);
-          st->knockSpeed = 0xFA;
-          if ((unsigned)(st->kind - 2) < 2 || st->kind == SOLDIERKIND_GUNNER) {
+          st->knockSpeed = SOLDIER_KNOCK_SPEED;
+          if ((unsigned)(st->kind - SOLDIERKIND_CANNON_RUNNER) < 2 /* CANNON_RUNNER or DUELIST */ || st->kind == SOLDIERKIND_GUNNER) {
             Actor *a = &g_pActorListBase[st->link];
 
             if (a->nextAnim != FBCANNON_ANIM_REST) {
@@ -2716,7 +2716,7 @@ void Level6_UpdateActors(void) {
       }
       if (st->gone != 0) {
         st->gone = 0;
-        if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
+        if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < SOLDIER_NOTICE_RANGE) {
           if (actor->dropKind != DROP_GEM_ROLL) {
             SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
             MarkActorLiveKill(actor);
@@ -2738,20 +2738,20 @@ void Level6_UpdateActors(void) {
             TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
           } else {
             ANIM_GO(actor, SOLDIER_CHASE);
-            if (PivotActorAlongPath(actor, st->path, 0x80, 0x46, 0, 4, 0x14, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->path, 0x80, SOLDIER_WALK_SPEED, 0, 4, 0x14, PIVOT_TURN_ANY,
                               MOVE_LIFT | MOVE_FOLLOW_FLOOR) != 0) {
-              st->timer = RandomIntInRange(0x78, 0xB4);
+              st->timer = RandomIntInRange(SOLDIER_LOOK_MIN_FRAMES, SOLDIER_LOOK_MAX_FRAMES);
               ANIM_GO(actor, SOLDIER_ANIM_LOOK_AROUND);
             }
           }
-          if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
+          if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < SOLDIER_NOTICE_RANGE) {
             actor->mode = SOLDIER_ALERT;
             continue;
           }
           break;
         case SOLDIERKIND_SENTRY:
         case SOLDIERKIND_CANNON_RUNNER:
-          if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2800) {
+          if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < SOLDIER_SENTRY_RANGE) {
             SetActorGroupStateExcept(actor, SOLDIER_ALERT, SOLDIER_KNOCKED);
           }
           break;
@@ -2764,13 +2764,13 @@ void Level6_UpdateActors(void) {
             TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
           } else {
             ANIM_GO(actor, SOLDIER_CHASE);
-            if (PivotActorAlongPath(actor, st->path, 0x80, 0x46, 0, 4, 0x14, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->path, 0x80, SOLDIER_WALK_SPEED, 0, 4, 0x14, PIVOT_TURN_ANY,
                               MOVE_LIFT | MOVE_FOLLOW_FLOOR) != 0) {
-              st->timer = RandomIntInRange(0x78, 0xB4);
+              st->timer = RandomIntInRange(SOLDIER_LOOK_MIN_FRAMES, SOLDIER_LOOK_MAX_FRAMES);
               ANIM_GO(actor, SOLDIER_ANIM_LOOK_AROUND);
             }
           }
-          if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
+          if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < SOLDIER_NOTICE_RANGE) {
             ReplaceActorGroupState(actor, SOLDIER_ALERT, SOLDIER_IDLE);
           }
           break;
@@ -2779,7 +2779,7 @@ void Level6_UpdateActors(void) {
           ANIM_GO(actor, SOLDIER_CHASE);
           SnapActorToGround(actor);
           UpdateActorWander(actor, &st->wander);
-          if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
+          if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < SOLDIER_NOTICE_RANGE) {
             ReplaceActorGroupState(actor, SOLDIER_TO_POST, SOLDIER_IDLE);
           }
           break;
@@ -2788,18 +2788,18 @@ void Level6_UpdateActors(void) {
           continue;
         case SOLDIERKIND_SHORT_LEASH:
           TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-          if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1800) {
+          if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < SOLDIER_SHORT_LEASH_RANGE) {
             ReplaceActorGroupState(actor, SOLDIER_CHASE, SOLDIER_IDLE);
           }
           break;
         case SOLDIERKIND_BOUNDED_SENTRY:
-          if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
+          if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < SOLDIER_NOTICE_RANGE) {
             ReplaceActorGroupState(actor, SOLDIER_ALERT, SOLDIER_IDLE);
           }
           break;
         case SOLDIERKIND_SHOVER:
           TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-          if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x44C) {
+          if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < SOLDIER_SHOVE_RANGE) {
             ENTER_POSE(actor, SOLDIER_SHOVE);
           }
           break;
@@ -2816,19 +2816,19 @@ void Level6_UpdateActors(void) {
           ANIM_GO(actor, SOLDIER_CHASE);
           if (TICK_DOWN(st->timer2) != 0) {
             TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-            if (MoveActorAlongHeading(actor, 0x46, 0x12C, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0) {
+            if (MoveActorAlongHeading(actor, SOLDIER_WALK_SPEED, 0x12C, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0) {
               actor->mode = SOLDIER_GO_HOME;
               continue;
             }
-            if (d < 0x44C) {
+            if (d < SOLDIER_SHOVE_RANGE) {
               ENTER_POSE(actor, SOLDIER_SHOVE);
             }
             if (st->kind == SOLDIERKIND_SHORT_LEASH) {
-              if (ApproxDist2D(&actor->posX, st->home) > 0x1000) {
+              if (ApproxDist2D(&actor->posX, st->home) > SOLDIER_SHORT_LEASH) {
                 actor->mode = SOLDIER_GO_HOME;
                 continue;
               }
-            } else if (ApproxDist2D(&actor->posX, st->home) > 0x1800) {
+            } else if (ApproxDist2D(&actor->posX, st->home) > SOLDIER_LEASH) {
               actor->mode = SOLDIER_GO_HOME;
               continue;
             }
@@ -2842,14 +2842,14 @@ void Level6_UpdateActors(void) {
 
           if (actor->subMode == 0) {
             actor->subMode = 1;
-            st->speed = 0x32;
+            st->speed = SOLDIER_RUN_START_SPEED;
           }
           if (TurnActorYawTowardAngle(actor, h, 8, 0x28, YAW_STEP_IN_BAND) != 0) {
-            if (st->speed < 0xAA) {
-              st->speed += 0x1E;
+            if (st->speed < SOLDIER_RUN_SPEED) {
+              st->speed += SOLDIER_RUN_ACCEL;
             }
             MoveActorAlongHeading(actor, st->speed, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-            if (d < 0x5DC) {
+            if (d < SOLDIER_CANNON_REACH) {
               st->timer = 0x50;
               actor->mode = SOLDIER_GUNNER;
               continue;
@@ -2867,14 +2867,14 @@ void Level6_UpdateActors(void) {
               continue;
             }
             TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-            if (MoveActorAlongHeading(actor, 0x46, 0x12C, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR) != 0) {
+            if (MoveActorAlongHeading(actor, SOLDIER_WALK_SPEED, 0x12C, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR) != 0) {
               actor->mode = SOLDIER_GO_HOME;
               continue;
             }
-            if (d < 0x44C) {
+            if (d < SOLDIER_SHOVE_RANGE) {
               ENTER_POSE(actor, SOLDIER_SHOVE);
             }
-            if (ApproxDist2D(&actor->posX, st->home) > 0x3000) {
+            if (ApproxDist2D(&actor->posX, st->home) > SOLDIER_BOUNDED_LEASH) {
               actor->mode = SOLDIER_GO_HOME;
               continue;
             }
@@ -2898,7 +2898,7 @@ void Level6_UpdateActors(void) {
       case SOLDIER_KNOCKED:
         if (st->knockSpeed != 0) {
           MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0x12C, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-          st->knockSpeed -= 0x14;
+          st->knockSpeed -= SOLDIER_KNOCK_DRAG;
           if (st->knockSpeed < 0) {
             st->knockSpeed = 0;
           }
@@ -2937,7 +2937,7 @@ void Level6_UpdateActors(void) {
         h = ArcTan2(a->posX - actor->posX, a->posY - actor->posY, ATAN_ANGLE8);
         h2 = WrapAddAngle8(
             ArcTan2(g_anSpyroWorldPos - a->posX, g_nSpyroWorldPosY - a->posY, ATAN_ANGLE8), 0x80);
-        r = SteerActorAroundPoint(actor, &a->posX, 0x5DC, h2, 4, 0x32, 0xE, 0x80, STEER_NO_BLOCK,
+        r = SteerActorAroundPoint(actor, &a->posX, SOLDIER_CANNON_REACH, h2, 4, 0x32, 0xE, 0x80, STEER_NO_BLOCK,
                           STEER_NO_BLOCK, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
         TurnActorYawTowardAngle(a, h, 4, 0, YAW_HOLD_IN_BAND);
         if (r < 0xA) {
@@ -2972,7 +2972,7 @@ void Level6_UpdateActors(void) {
           } else {
             st->seen = 0;
           }
-          if (r < 4 && d > 0x1400 && d < 0x3C00 && st->seen > 0x50 &&
+          if (r < 4 && d > SOLDIER_FIRE_MIN_RANGE && d < SOLDIER_FIRE_MAX_RANGE && st->seen > SOLDIER_FIRE_SEEN_FRAMES &&
               CheckLineOfSightSegment(&actor->posX, &g_anSpyroWorldPos) != 0) {
             Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_FIREBALL, actor);
             FireballState *fs = o->state;
@@ -2985,18 +2985,18 @@ void Level6_UpdateActors(void) {
                                      spy->posY - o->posY, ATAN_ANGLE8);
             CopyVector(g304, &spy->posX);
             g304[2] -= 0x12C;
-            fs->speed = 0xB4;
+            fs->speed = SOLDIER_FIREBALL_SPEED;
             fs->grav = -5;
             fs->vz = ComputeLobVelocityZ(&o->posX, g304, fs->speed, fs->grav, 0);
-            fs->age = 0xB4;
+            fs->age = SOLDIER_FIREBALL_LIFE;
             fs->spent = 0;
             fs->link = -1;
             fs->delay = 0;
-            st->timer = 0xB4;
+            st->timer = SOLDIER_FIRE_GAP;
             if (st->link2 != -1) {
               Actor *b = &g_pActorListBase[st->link2];
 
-              ((SoldierState *)b->state)->timer = 0x5A;
+              ((SoldierState *)b->state)->timer = SOLDIER_FIRE_GAP / 2;
             }
             if (a->anim != FBCANNON_ANIM_FIRE) {
               ANIM_RESET(a, FBCANNON_ANIM_FIRE);
@@ -3014,7 +3014,7 @@ void Level6_UpdateActors(void) {
                       ArcTan2(a->posX - actor->posX,
                                     a->posY - actor->posY, ATAN_ANGLE8),
                       4, 0, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2000) {
+        if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < SOLDIER_NOTICE_RANGE) {
           if (b->mode < ACTOR_MODE_DORMANT) {
             ((SoldierState *)b->state)->timer = 0xB4;
             if (b->nextAnim != SOLDIER_GUNNER) {
@@ -3043,7 +3043,7 @@ void Level6_UpdateActors(void) {
             g304[2] += 0x52D;
             g304[0] += (g_anCosineLut[c->rotZ] * 0x433) >> 12;
             g304[1] += (g_anSineLut[c->rotZ] * 0x433) >> 12;
-            fs->speed = 0xB4;
+            fs->speed = SOLDIER_FIREBALL_SPEED;
             fs->grav = -5;
             fs->vz = ComputeLobVelocityZ(&o->posX, g304, fs->speed, fs->grav, lobFrames);
             fs->spent = 1;
@@ -3097,7 +3097,7 @@ void Level6_UpdateActors(void) {
         CopyVector(g304, &a->posX);
         g304[0] += (g_anCosineLut[a->rotZ] * 0x271) >> 10;
         g304[1] += (g_anSineLut[a->rotZ] * 0x271) >> 10;
-        if (ApproxDist2D(&actor->posX, g304) < 0x200) {
+        if (ApproxDist2D(&actor->posX, g304) < SOLDIER_POST_ARRIVE) {
           if (TurnActorYawTowardAngle(actor,
                             ArcTan2(a->posX - actor->posX,
                                           a->posY - actor->posY, ATAN_ANGLE8),
@@ -3111,8 +3111,8 @@ void Level6_UpdateActors(void) {
                                  ArcTan2(g304[0] - actor->posX,
                                                g304[1] - actor->posY, ATAN_ANGLE8),
                                  6, 0x14, YAW_STEP_IN_BAND) != 0) {
-          if (st->speed < 0x82) {
-            st->speed += 0x14;
+          if (st->speed < SOLDIER_POST_RUN_SPEED) {
+            st->speed += SOLDIER_POST_RUN_ACCEL;
           }
           MoveActorAlongHeading(actor, st->speed, 0, 0, MOVE_FOLLOW_FLOOR);
         }
@@ -3202,9 +3202,9 @@ void Level6_UpdateActors(void) {
                           ArcTan2(st->home[0] - actor->posX,
                                         st->home[1] - actor->posY, ATAN_ANGLE8),
                           4, 0x14, YAW_STEP_IN_BAND) != 0) {
-          MoveActorAlongHeading(actor, 0x5A, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          MoveActorAlongHeading(actor, SOLDIER_HOME_SPEED, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
-        if (ApproxDist2D(&actor->posX, st->home) < 0x80) {
+        if (ApproxDist2D(&actor->posX, st->home) < SOLDIER_HOME_ARRIVE) {
           ENTER_POSE(actor, SOLDIER_IDLE);
         }
         break;
