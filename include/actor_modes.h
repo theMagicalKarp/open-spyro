@@ -231,6 +231,14 @@ enum LockedChestSubMode {
  * chest for LOCKCHEST_KEY_READY to open it. */
 #define LOCKCHEST_KEY_RANGE 0x600
 #define LOCKCHEST_KEY_DZ 0x200
+/* ...and face it within FACING_ANGLE (8-bit), with it facing him as well.
+ * LOCKCHEST_OPENING runs on LockedChestState.shake as a clock: the key flies
+ * round to the lock until INSERT_TICK, slides in until BURST_TICK, then the
+ * chest bursts. A superflame hit or Cross sets the clock to SKIP_TICK. */
+#define LOCKCHEST_FACING_ANGLE 0x30
+#define LOCKCHEST_INSERT_TICK 0xC0
+#define LOCKCHEST_BURST_TICK 0xD0
+#define LOCKCHEST_SKIP_TICK 0xD2
 
 /* ->subMode of a cracking boulder (ACTOR_TYPE_CRACKING_BOULDER,
  * CrackingBoulderState). */

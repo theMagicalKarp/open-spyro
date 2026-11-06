@@ -1602,7 +1602,7 @@ void Level10_UpdateActors(void) {
 
       if (actor->flags & ACTOR_HIT_SUPER) {
         actor->subMode = LOCKCHEST_OPENING;
-        st->shake = 0xD2;
+        st->shake = LOCKCHEST_SKIP_TICK;
       }
 
       if (actor->subMode < LOCKCHEST_OPENING) {
@@ -1668,10 +1668,10 @@ void Level10_UpdateActors(void) {
           if ((drop > 0 ? drop < LOCKCHEST_KEY_DZ : (SPY.posZ - height) < LOCKCHEST_KEY_DZ) &&
               AbsAngleDelta8(spy->bodyRotZ,
                             ArcTan2(actor->posX - spy->posX,
-                                          actor->posY - spy->posY, ATAN_ANGLE8)) < 0x30 &&
+                                          actor->posY - spy->posY, ATAN_ANGLE8)) < LOCKCHEST_FACING_ANGLE &&
               AbsAngleDelta8(actor->rotZ,
                             ArcTan2(spy->posX - actor->posX,
-                                          spy->posY - actor->posY, ATAN_ANGLE8)) < 0x30) {
+                                          spy->posY - actor->posY, ATAN_ANGLE8)) < LOCKCHEST_FACING_ANGLE) {
             spy->requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
             ResetSpyroLinearMotion();
             ZeroVector(&spy->headLook);
@@ -1692,14 +1692,14 @@ void Level10_UpdateActors(void) {
 
       case LOCKCHEST_OPENING:
         if (g_dwPadPressed & PAD_CROSS) {
-          st->shake = 0xD2;
+          st->shake = LOCKCHEST_SKIP_TICK;
         }
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         key->cullRadius = 0x18;
         st->shake += g_nFrameStep;
         g_nCinematicActive = 1;
 
-        if (st->shake < 0xC0) {
+        if (st->shake < LOCKCHEST_INSERT_TICK) {
           chestToSpyro[0] = 0x200;
           chestToSpyro[1] = 0;
           chestToSpyro[2] = 0x140;
@@ -1737,16 +1737,16 @@ void Level10_UpdateActors(void) {
 
             key->rotZ = rot + turn / 64;
           }
-        } else if (st->shake < 0xD0) {
+        } else if (st->shake < LOCKCHEST_BURST_TICK) {
           key->rotZ = actor->rotZ;
-          keySlotOffset[0] = 0x200 - (st->shake - 0xC0) * 8;
+          keySlotOffset[0] = 0x200 - (st->shake - LOCKCHEST_INSERT_TICK) * 8;
           keySlotOffset[1] = 0;
           keySlotOffset[2] = 0x140;
           RotateVectorByMatrix(actor->mtx, keySlotOffset, keySlotOffset);
           AddVector(&key->posX, keySlotOffset, &actor->posX);
         }
 
-        if (st->shake >= 0xD0 ||
+        if (st->shake >= LOCKCHEST_BURST_TICK ||
             !(SPY.state == SPYRO_ST_IDLE || SPY.state == SPYRO_ST_WALK || SPY.state == SPYRO_ST_JOG ||
               SPY.state == SPYRO_ST_RUN || SPY.state == SPYRO_ST_STOP)) {
           int i;
