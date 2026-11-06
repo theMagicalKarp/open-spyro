@@ -259,4 +259,25 @@ typedef struct TumbleState {
   int floorZ;    /* 0x10 retire once the actor sinks to this height */
 } TumbleState;
 
+/* Types 14/15/83..87: collectibles (life statue, life orb, gems). ->vel
+ * doubles as the pickup origin once Sparx has fetched the item. SpawnActor
+ * pops a dropped one out at PICKUP_DROP_POP_VZ. */
+typedef struct PickupState {
+  int vel[3];          /* 0x00 */
+  short groundTri;         /* 0x0C collision triangle it rests on (UnpackWorldCollisionTri) */
+  unsigned char restMode; /* 0x0E CollectRestMode while COLLECT_REST */
+  unsigned char timer; /* 0x0F sparkle timer */
+  unsigned char bounces; /* 0x10 bounces left (PICKUP_DROP_BOUNCES at spawn) */
+  unsigned char pitch; /* 0x11 ground-normal tilt */
+  unsigned char yaw;   /* 0x12 */
+  unsigned char roll;  /* 0x13 */
+  unsigned char sparkle; /* 0x14 g_aRotBillboards handle, 0xFF = none */
+} PickupState;
+
+/* A dropped pickup (gem, extra life, Sparx food) pops up at POP_VZ and bounces
+ * BOUNCES times before it rests; a follower's drop bounces FOLLOWER_BOUNCES. */
+#define PICKUP_DROP_POP_VZ 0x8C
+#define PICKUP_DROP_BOUNCES 3
+#define PICKUP_DROP_FOLLOWER_BOUNCES 2
+
 #endif /* OPEN_SPYRO_ACTOR_STATES_H */

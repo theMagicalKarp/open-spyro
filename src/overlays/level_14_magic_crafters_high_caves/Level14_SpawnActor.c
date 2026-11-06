@@ -56,14 +56,14 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
 
   switch (type) {
   case ACTOR_TYPE_SPARX_FOOD: {
-    PickupDropState *st = rec->state;
+    PickupState *st = rec->state;
 
     InitActorRenderDefaults(rec);
-    st->velZ = PICKUP_DROP_POP_VZ;
+    st->vel[2] = PICKUP_DROP_POP_VZ;
     st->bounces = PICKUP_DROP_BOUNCES;
     st->sparkle = BILLBOARD_NONE;
-    st->velX = 0;
-    st->velY = 0;
+    st->vel[0] = 0;
+    st->vel[1] = 0;
     st->restMode = COLLREST_STILL;
     st->timer = 0;
     st->pitch = 0;
@@ -115,14 +115,14 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
 
   case ACTOR_TYPE_EXTRA_LIFE:
   case ACTOR_TYPE_GEM_1 ... ACTOR_TYPE_GEM_25: {
-    PickupDropState *st = rec->state;
+    PickupState *st = rec->state;
     int *pos;
     int probe[3];
 
     InitActorRenderDefaults(rec);
-    st->velX = 0;
-    st->velY = 0;
-    st->velZ = PICKUP_DROP_POP_VZ;
+    st->vel[0] = 0;
+    st->vel[1] = 0;
+    st->vel[2] = PICKUP_DROP_POP_VZ;
     st->restMode = COLLREST_STILL;
     st->timer = 0;
     st->pitch = 0;

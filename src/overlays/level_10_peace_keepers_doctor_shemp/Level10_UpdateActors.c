@@ -1943,7 +1943,7 @@ void Level10_UpdateActors(void) {
                     16;
 
           g_pActorListBase[*held].subMode = COLLECT_BOUNCE;
-          gem->count = 3;
+          gem->bounces = PICKUP_DROP_BOUNCES;
           gem->vel[0] = (LookupCosine(ang) * 0x1C) >> 12;
           gem->vel[1] = (LookupSine(ang) * 0x1C) >> 12;
           gem->vel[2] = 0x32;

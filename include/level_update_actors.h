@@ -568,20 +568,6 @@ typedef struct {
   unsigned char *v;
 } PtrU8;
 
-/* Types 14/15/83..87: collectibles (life statue, life orb, gems). ->vel
- * doubles as the pickup origin once Sparx has fetched the item. */
-typedef struct PickupState {
-  int vel[3];          /* 0x00 */
-  short groundTri;         /* 0x0C collision triangle it rests on (UnpackWorldCollisionTri) */
-  unsigned char restMode; /* 0x0E CollectRestMode while COLLECT_REST */
-  unsigned char timer; /* 0x0F */
-  unsigned char count; /* 0x10 bounces left */
-  unsigned char pitch; /* 0x11 */
-  unsigned char yaw;   /* 0x12 */
-  unsigned char roll;  /* 0x13 */
-  unsigned char sparkle; /* 0x14 g_aRotBillboards handle, 0xFF = none */
-} PickupState;
-
 /* Type 300 (whirlwind): the camera it requests while lifting Spyro, and the
  * template that camera is seeded from. */
 typedef struct Xform6 {

@@ -24,30 +24,6 @@ extern void HideActorRenderRecord(struct Actor *actor);
 extern void EncodeHitNormalToActorGroundCode(struct Actor *actor);
 extern void DespawnActorRecord(struct Actor *actor);
 
-/* Collectible drop (types 0xE, 0xF, 0x53..0x57: life statue, life orb,
- * gems) — SpawnActor's view of UpdateActors' PickupState, with 0x0C split
- * into two bytes. */
-typedef struct PickupDropState {
-  int velX;              /* 0x00 pop-out velocity */
-  int velY;              /* 0x04 */
-  int velZ;              /* 0x08 */
-  unsigned char pad0C;   /* 0x0C (PickupState: groundTri, a short) */
-  unsigned char pad0D;
-  unsigned char restMode; /* 0x0E CollectRestMode */
-  unsigned char timer;   /* 0x0F sparkle timer */
-  unsigned char bounces; /* 0x10 bounces left */
-  unsigned char pitch;   /* 0x11 ground-normal tilt */
-  unsigned char yaw;     /* 0x12 */
-  unsigned char roll;    /* 0x13 */
-  unsigned char sparkle; /* 0x14 g_aRotBillboards handle, 0xFF = none */
-} PickupDropState;
-
-/* A dropped pickup (gem, extra life, Sparx food) pops up at POP_VZ and bounces
- * BOUNCES times before it rests; a follower's drop bounces FOLLOWER_BOUNCES. */
-#define PICKUP_DROP_POP_VZ 0x8C
-#define PICKUP_DROP_BOUNCES 3
-#define PICKUP_DROP_FOLLOWER_BOUNCES 2
-
 extern int FindGroundHeightBelow(int *pos, int depth);
 
 /* pos: a world vec3, or the Actor * for actor-anchored types; effectArg: a

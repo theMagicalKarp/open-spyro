@@ -677,7 +677,7 @@ void Level23_UpdateActors(void) {
             CopyVector(&actor->posX, &g_anCollisionResolvedPos);
             actor->posZ -= 0xF0;
 
-            if (st->count == 0) {
+            if (st->bounces == 0) {
               int groundHeight = FindGroundHeightBelow(bouncePos, 0x400);
               int groundAngle =
                   (signed char)ArcTan2_8bit(bounceNormal[2], VectorLength(bounceNormal, VEC_LEN_XY));
@@ -701,19 +701,19 @@ void Level23_UpdateActors(void) {
 
                 EncodeHitNormalToActorGroundCode(actor);
               } else {
-                st->count++;
+                st->bounces++;
               }
             }
 
-            if (st->count != 0) {
+            if (st->bounces != 0) {
               g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
-              g_nSfxOverrideVolL = COLLECT_BOUNCE_VOLUME >> (3 - st->count);
-              g_nSfxOverrideVolR = COLLECT_BOUNCE_VOLUME >> (3 - st->count);
+              g_nSfxOverrideVolL = COLLECT_BOUNCE_VOLUME >> (3 - st->bounces);
+              g_nSfxOverrideVolR = COLLECT_BOUNCE_VOLUME >> (3 - st->bounces);
 
               PlaySoundEffect(g_pLevelSampleBankHeader[SFX_GEM_BOUNCE], actor, SFX_MODE_3D, &actor->voiceRow);
 
               if (ReflectVectorOffNormal(st->vel, bounceNormal, st->vel)) {
-                st->count--;
+                st->bounces--;
 
                 st->vel[0] = (st->vel[0] >> 3) + (GetRandomU32() & 0x3F) - 32;
                 st->vel[1] = (st->vel[1] >> 3) + (GetRandomU32() & 0x3F) - 32;
@@ -736,7 +736,7 @@ void Level23_UpdateActors(void) {
 
             if (g_pSparxActor != 0) {
 
-              if (SPY.airborneFrames == 0 && st->count < 3) {
+              if (SPY.airborneFrames == 0 && st->bounces < 3) {
 
                 SparxState *cs = g_pSparxActor->state;
 
