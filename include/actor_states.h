@@ -33,6 +33,8 @@ typedef struct BurstShardState {
  * vel[2] loses DEBRIS_GRAVITY a tick down to -DEBRIS_MAX_FALL. */
 #define DEBRIS_GRAVITY 6
 #define DEBRIS_MAX_FALL 0x80
+/* ...and bounces off the world as a sphere of this radius. */
+#define DEBRIS_RADIUS 0x100
 
 /* Sparx (type 0x78, case 120 in the UpdateActors clones; g_pSparxActor):
  * hovers at an offset beside Spyro and chases one target at a time, a

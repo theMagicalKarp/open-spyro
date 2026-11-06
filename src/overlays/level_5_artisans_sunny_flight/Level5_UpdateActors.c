@@ -399,7 +399,7 @@ void Level5_UpdateActors(void) {
       ChestShardState *st = actor->state;
 
       if (st->life > 0 && actor->drawn) {
-        if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100)) {
+        if (CollideSphereWithWorldAndActors(&actor->posX, DEBRIS_RADIUS, DEBRIS_RADIUS)) {
           
           int dot;
 
@@ -1113,7 +1113,7 @@ void Level5_UpdateActors(void) {
           RShiftVector3(svF, 2);
           AddVector(&actor->posX, &actor->posX, svF);
 
-          if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100)) {
+          if (CollideSphereWithWorldAndActors(&actor->posX, SPARX_COLLIDE_RADIUS, SPARX_COLLIDE_RADIUS)) {
             CopyVector(&actor->posX, &g_anCollisionResolvedPos);
           }
 
@@ -1245,7 +1245,7 @@ void Level5_UpdateActors(void) {
           actor->posZ += st->vel[2];
 
           if (actor->posZ > 1023) {
-            if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100)) {
+            if (CollideSphereWithWorldAndActors(&actor->posX, DEBRIS_RADIUS, DEBRIS_RADIUS)) {
               
               int dot;
 

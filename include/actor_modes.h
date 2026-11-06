@@ -93,6 +93,8 @@ enum SparxSubMode {
 #define SPARX_MAX_PITCH 0x20
 #define SPARX_FETCH_STEP_FAR 0x136
 #define SPARX_FETCH_STEP_NEAR 0x122
+/* Hovering Sparx is pushed out of the world as a sphere of this radius. */
+#define SPARX_COLLIDE_RADIUS 0x100
 /* Blue or better he twinkles from both wingtips, WING_SPAN to either side;
  * gold adds a glow that starts at GLOW_START_SIZE and grows GLOW_GROW a frame
  * to SPARX_GLOW_MAX_SIZE. */

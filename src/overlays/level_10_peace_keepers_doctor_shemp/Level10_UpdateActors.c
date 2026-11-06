@@ -615,7 +615,7 @@ void Level10_UpdateActors(void) {
 
       if (st->life > 0 && actor->drawn != 0) {
 
-      if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100) != 0) {
+      if (CollideSphereWithWorldAndActors(&actor->posX, DEBRIS_RADIUS, DEBRIS_RADIUS) != 0) {
         int *nrm = &g_anCollisionHitNormal;
         int along;
         register int push asm("$7"); /* a3, as in the original (A374) */
@@ -1489,7 +1489,7 @@ void Level10_UpdateActors(void) {
             RShiftVector3(svF, 2);
             AddVector(at, at, svF);
 
-            if (CollideSphereWithWorldAndActors(at, 0x100, 0x100) != 0) {
+            if (CollideSphereWithWorldAndActors(at, SPARX_COLLIDE_RADIUS, SPARX_COLLIDE_RADIUS) != 0) {
               CopyVector(at, &g_anCollisionResolvedPos);
             }
 
@@ -2130,7 +2130,7 @@ void Level10_UpdateActors(void) {
           actor->posZ += st->vel[2];
 
           if (actor->posZ > 1023) {
-            if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100)) {
+            if (CollideSphereWithWorldAndActors(&actor->posX, DEBRIS_RADIUS, DEBRIS_RADIUS)) {
               int *nrm = &g_anCollisionHitNormal;
               int dot;
 
@@ -2382,7 +2382,7 @@ void Level10_UpdateActors(void) {
           continue;
         }
 
-        if (CollideSphereWithWorldAndActors(&actor->posX, 0x100, 0x100) != 0) {
+        if (CollideSphereWithWorldAndActors(&actor->posX, DEBRIS_RADIUS, DEBRIS_RADIUS) != 0) {
           int *nrm = &g_anCollisionHitNormal;
           int along;
 
