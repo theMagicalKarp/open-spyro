@@ -138,7 +138,7 @@ Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt) {
     land[2] += 0x100;
   }
 
-  throw_[2] += 0x400;
+  throw_[2] += GROUND_PROBE_LIFT;
   hit = FindGroundHeightBelow(throw_, 0x800);
   throw_[2] -= 0x400;
   ang = (signed char)ArcTan2_8bit(

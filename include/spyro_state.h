@@ -135,6 +135,24 @@ typedef enum SpyroState
 #define SPYRO_GLIDE_SPEED 0x1900    /* glide target speed (stick back slows it);
                                      * a glide starts no faster */
 #define SPYRO_GLIDE_MIN_SPEED 0x780 /* glide and flight floor */
+/* g_nSpyroStateTimer limits (substeps since the state began): */
+#define SPYRO_LATE_JUMP_TICKS 4        /* FALL (g_nSpyroLateJumpAllowed) / SLIDE:
+                                        * Cross this early still jumps */
+#define SPYRO_GLIDE_DROP_DELAY 0x10    /* GLIDE / FLY*: Triangle drops out of the
+                                        * glide (GLIDE_DROP) only after this */
+#define SPYRO_FLY_PITCH_MIN_TICKS 0x1F /* FLY_CLIMB / FLY_DIVE: least time before
+                                        * levelling back out to FLY */
+#define SPYRO_STUCK_RESPAWN_TICKS 0x12C /* FALL / SLIDE held this long: respawn,
+                                         * refunding the life (or end a flight run) */
+
+/* Four separate 0x1E00 limits: */
+#define SPYRO_HURT_KNOCK_MAX_SPEED 0x1E00 /* HURT / HURT_TINT: cap on the knock-back
+                                           * velocity (the reversed motion) */
+#define SPYRO_BANK_MIN_SPEED 0x1E00      /* glide / fly with R1 or L1 held: slower,
+                                          * and not banking, ends the substate */
+#define SPYRO_CHARGE_AIR_SPEED 0x1E00    /* CHARGE_AIR speed target, unless entered
+                                          * from a supercharge */
+#define SPYRO_SUPERCHARGE_EXIT_SPEED 0x1E00 /* SUPERCHARGE: slower drops to CHARGE */
 #define SPYRO_FLIGHT_CRUISE_SPEED 0x1040 /* level flight: falling below the
                                           * floor reference adds speed, rising
                                           * above it takes it away */

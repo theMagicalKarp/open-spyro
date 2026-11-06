@@ -308,8 +308,8 @@ void ChangeSpyroState(int state) {
     ZeroVector(&SPY[SPY_VELOCITY]);
     SubtractVector(&SPY[SPY_VELOCITY], &SPY[SPY_VELOCITY], &SPY[SPY_MOTION]);
     len = VectorLength(&SPY[SPY_VELOCITY], VEC_LEN_XYZ);
-    if (len > 0x1E00) {
-      ScaleVector3ByRatio(&SPY[SPY_VELOCITY], len, 0x1E00);
+    if (len > SPYRO_HURT_KNOCK_MAX_SPEED) {
+      ScaleVector3ByRatio(&SPY[SPY_VELOCITY], len, SPYRO_HURT_KNOCK_MAX_SPEED);
     }
     g_nSpyroGravityStep = -SPYRO_HURT_FALL_ACCEL;
     if (g_nSpyroAirborneFrames == 0) {
@@ -329,8 +329,8 @@ void ChangeSpyroState(int state) {
     ZeroVector(&SPY[SPY_VELOCITY]);
     SubtractVector(&SPY[SPY_VELOCITY], &SPY[SPY_VELOCITY], &SPY[SPY_MOTION]);
     len = VectorLength(&SPY[SPY_VELOCITY], VEC_LEN_XYZ);
-    if (len > 0x1E00) {
-      ScaleVector3ByRatio(&SPY[SPY_VELOCITY], len, 0x1E00);
+    if (len > SPYRO_HURT_KNOCK_MAX_SPEED) {
+      ScaleVector3ByRatio(&SPY[SPY_VELOCITY], len, SPYRO_HURT_KNOCK_MAX_SPEED);
     }
     g_nSpyroGravityStep = -SPYRO_HURT_FALL_ACCEL;
     if (g_nSpyroAirborneFrames == 0) {

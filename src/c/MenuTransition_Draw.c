@@ -20,25 +20,8 @@
    `$4` register local, and the color spill store plus the active-env load
    are both volatile, so the spill stays above the compare load. */
 
-typedef struct {
-  unsigned int tag;
-  unsigned char r0, g0, b0, code;
-  short x0, y0;
-  unsigned char u0, v0;
-  unsigned short clut;
-  short x1, y1;
-  unsigned char u1, v1;
-  unsigned short tpage;
-  short x2, y2;
-  unsigned char u2, v2;
-  unsigned short pad1;
-  short x3, y3;
-  unsigned char u3, v3;
-  unsigned short pad2;
-} POLY_FT4;
-
 void MenuTransition_Draw(void) {
-  POLY_FT4 *q;
+  PolyFT4 *q;
   RECT rect;
   int color;
   unsigned char *p;
@@ -70,7 +53,7 @@ void MenuTransition_Draw(void) {
     DrawSync(0);
     slot = 0x3FF;
   quad:
-    q = (POLY_FT4 *)g_pPrimBufferWriteCursor;
+    q = (PolyFT4 *)g_pPrimBufferWriteCursor;
     *(int *)q = PRIM_TAG(9);
     q->code = GPU_CODE_POLY_FT4;
     q->r0 = 0x4C;

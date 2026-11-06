@@ -280,15 +280,6 @@ typedef struct WobbleState {
   int scorchBand; /* 0x14 StepActorScorchTint band */
 } WobbleState;
 
-/* Cases 76 and 426..451 — a letter of a floating name (SpawnNameLetterActors:
- * A..Z are 426..451, anything else 76): rides its sign at a fixed radius, or
- * falls back to a plain spin when the sign is not a spinner. */
-typedef struct NameLetterState {
-  Actor *parent; /* 0x00 */
-  short radius;  /* 0x04 */
-  short phase;   /* 0x06 */
-} NameLetterState;
-
 /* Case 286 — ambient sound source: plays random ambient sounds at its
  * sound range; mode 2 also steps it along a waypoint path. */
 typedef struct AmbientSoundState {
@@ -535,16 +526,16 @@ typedef struct AmbientSoundBytesState {
   int count;           /* 0x24 frames left on the current leg */
 } AmbientSoundBytesState;
 
-/* Type 34: dragon egg. Spirals up, flies to Spyro and is collected (the
- * same record as level_actor_states.h EggRiseState). */
-typedef struct EggFlightState {
-  Actor *killActor;       /* 0x00 actor handed to CommitActorKillGems on collection */
-  short from[3];         /* 0x04 launch point */
-  short to[3];           /* 0x0A destination */
-  short speed;           /* 0x10 */
-  unsigned char phase;   /* 0x12 timer */
-  unsigned char heading; /* 0x13 */
-} EggFlightState;
+/* Case 34 — a recovered dragon egg: spirals up off its spot, flies to just
+ * above Spyro, then requests the HUD egg-counter roll (Cross skips). */
+typedef struct EggRiseState {
+  Actor *owner;          /* 0x00 the egg thief that carried it (credited the kill gems) */
+  short centre[3];       /* 0x04 where it rose from (spiral centre) */
+  short apex[3];         /* 0x0A the point above Spyro it flies to */
+  unsigned short radius; /* 0x10 */
+  unsigned char phase;   /* 0x12 */
+  unsigned char angle;   /* 0x13 */
+} EggRiseState;
 
 /* Type 18: pressure switch. Toggles one bit in a linked actor's sub-state. */
 typedef struct SwitchState {
@@ -576,50 +567,6 @@ typedef struct ChestShardState {
 typedef struct {
   unsigned char *v;
 } PtrU8;
-
-/* Types 14/15/83..87: collectibles (life statue, life orb, gems). ->vel
- * doubles as the pickup origin once Sparx has fetched the item. */
-typedef struct PickupState {
-  int vel[3];          /* 0x00 */
-  short groundTri;         /* 0x0C collision triangle it rests on (UnpackWorldCollisionTri) */
-  unsigned char restMode; /* 0x0E CollectRestMode while COLLECT_REST */
-  unsigned char timer; /* 0x0F */
-  unsigned char count; /* 0x10 bounces left */
-  unsigned char pitch; /* 0x11 */
-  unsigned char yaw;   /* 0x12 */
-  unsigned char roll;  /* 0x13 */
-  unsigned char sparkle; /* 0x14 g_aRotBillboards handle, 0xFF = none */
-} PickupState;
-
-/* Type 250: crystal dragon. Shakes and sparkles; when Spyro walks into it,
- * saves a checkpoint and starts the rescue. */
-typedef struct CrystalDragonState {
-  int pad00[6]; /* 0x00 */
-  int cutsceneId;    /* 0x18 rescue cutscene id (see DragonStatueState) */
-  int fallbackHeading;    /* 0x1C fallback heading when ->partner is unset */
-  int partner;    /* 0x20 its checkpoint (see DragonStatueState), -1 for none */
-  int rewardScript;    /* 0x24 script id handed to StubRewardHook, -1 for none */
-  int pad28[7]; /* 0x28 */
-  int phase;    /* 0x44 phase counter, 0 .. 0x100 */
-  int savedRotX;    /* 0x48 saved actor->rotX */
-  int savedRotY;    /* 0x4C saved actor->rotY */
-  int savedPosZ;    /* 0x50 saved actor->posZ */
-} CrystalDragonState;
-
-/* Type 398 (ACTOR_TYPE_PORTAL_GUIDE): flies Spyro through a portal. The
- * portal record's word 6 names it; DispatchSpyroTriggerEvent wakes it when
- * Spyro enters the portal region (mode 1, subMode = which side he came from,
- * offset = half the portal normal toward that side, updateDist 0xFF). Mode 1
- * homes Spyro on the midpoint of the path's first two waypoints (plus offset)
- * along the portal camera path; mode 2 glides him along it. When the camera
- * sphere touches a TRIGGER_PORTAL region it starts the level load. */
-typedef struct PortalState {
-  PortalCamPath *desc; /* 0x00 the portal's camera path */
-  int offset[3];    /* 0x04 nudge applied to the homing vector */
-  int pad10;        /* 0x10 */
-  int dest;         /* 0x14 destination yaw, published to SPY.requestYaw */
-  int cameraPreset;        /* 0x18 index into g_aCameraXformPresets; negative selects none */
-} PortalState;
 
 /* Type 300 (whirlwind): the camera it requests while lifting Spyro, and the
  * template that camera is seeded from. */
@@ -679,20 +626,6 @@ typedef struct PropAnimState {
   int timer;  /* 0x04 */
   int primed; /* 0x08 */
 } PropAnimState;
-
-/* Types 76/426..451: letters of a floating word, placed relative to their
- * parent actor. */
-typedef struct OrbitState {
-  Actor *owner; /* 0x00 */
-  short ring;  /* 0x04 ring index; the arm always uses it as ring - 1 */
-  short ringPhase;  /* 0x06 phase offset within the ring */
-} OrbitState;
-
-/* Case 194 — breakable chest: one hit spawns its gem shower. */
-typedef struct ChestState {
-  int pad00;
-  int shake; /* 0x04 */
-} ChestState;
 
 /* Case 208 — the hub's music/voice trigger. */
 typedef struct PathGateState {
@@ -1071,11 +1004,14 @@ typedef struct CatapultState {
   int timer;     /* 0x10 */
 } CatapultState;
 
+/* Wandering critters (ACTOR_TYPE_ROAMING_CRITTER, level 8; type 236
+ * ACTOR_TYPE_WANDERING_CRITTER_C, levels 31 / 32): UpdateActorWander's block,
+ * then the knock-away and the pause between wanders. */
 typedef struct RoamingCritterState {
   WanderBlock wander; /* 0x00 UpdateActorWander's block */
   int knockSpeed; /* 0x20 knock-back speed */
   int knockHeading; /* 0x24 knock-back heading */
-  char pad28[0x4];
+  int pad28;      /* 0x28 a level-data pointer (relocated at load), never read */
   int wait;  /* 0x2C pause timer */
 } RoamingCritterState;
 

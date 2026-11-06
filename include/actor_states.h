@@ -29,6 +29,13 @@ typedef struct BurstShardState {
   unsigned char life;  /* 0x13 ticks left */
 } BurstShardState;
 
+/* Falling debris (burst / chest / wood / sparkle shards, popped gem digits):
+ * vel[2] loses DEBRIS_GRAVITY a tick down to -DEBRIS_MAX_FALL. */
+#define DEBRIS_GRAVITY 6
+#define DEBRIS_MAX_FALL 0x80
+/* ...and bounces off the world as a sphere of this radius. */
+#define DEBRIS_RADIUS 0x100
+
 /* Sparx (type 0x78, case 120 in the UpdateActors clones; g_pSparxActor):
  * hovers at an offset beside Spyro and chases one target at a time, a
  * butterfly to eat (g_nSparxHealth + 1) or a pickup to fetch. SpawnActor
@@ -59,7 +66,7 @@ typedef struct DragonStatueState {
                      * none: CHECKPT_HELD while the statue stands, anim 1
                      * during the rescue, CHECKPT_ARMED after; its yaw is the
                      * respawn heading */
-  int reward;       /* 0x24 */
+  int reward;       /* 0x24 script id handed to StubRewardHook, -1 for none */
   int orbitYaw;     /* 0x28 Spyro's orbit target yaw around the statue */
   int orbitRadius;  /* 0x2C and radius */
   int dragonYaw;    /* 0x30 12-bit yaw the freed dragon turns to (>> 4) */
@@ -67,7 +74,7 @@ typedef struct DragonStatueState {
   int dragonName;   /* 0x38 g_apDragonNames index (DrawDragonRescuedBanner) */
   int speechRate;   /* 0x3C speech sample rate in Hz (pitch = rate * 1024 / 11025) */
   int speechFrame;  /* 0x40 rescue frame the speech starts on */
-  int phase;        /* 0x44 shake phase */
+  int phase;        /* 0x44 idle shake clock (STATUE_SETTLE_TICK ..) */
   int rotX;         /* 0x48 rest pose */
   int rotY;         /* 0x4C */
   int restZ;        /* 0x50 */
@@ -125,8 +132,8 @@ typedef struct WhirlwindState {
 
 /* WhirlwindState.flags. */
 #define WHIRL_F_TARGET_CAM 0x01 /* lift with the target camera (else the front spring camera) */
-#define WHIRL_F_IDLE 0x02       /* idle: wakes 0xB4 frames after Spyro comes near */
-#define WHIRL_F_WOKEN 0x04      /* woken: idles again 0x78 frames after a lift */
+#define WHIRL_F_IDLE 0x02       /* idle: wakes WHIRL_WAKE_DELAY frames after Spyro comes near */
+#define WHIRL_F_WOKEN 0x04      /* woken: idles again WHIRL_IDLE_DELAY frames after a lift */
 #define WHIRL_F_GATED 0x08      /* waits on its owner (`idx`: a key's subMode, a statue or gem gone) */
 #define WHIRL_F_MARK 0x10       /* also sets ->subMode to 1 while active */
 
@@ -136,6 +143,13 @@ typedef struct WhirlwindState {
 #define WHIRL_WAKE_RANGE 0x1000
 #define WHIRL_WAKE_DZ 0x400
 #define WHIRL_KEY_RANGE 0x1C00
+#define WHIRL_WAKE_DELAY 0xB4
+#define WHIRL_IDLE_DELAY 0x78
+/* Spyro is lifted while inside `radius`, from WHIRL_BELOW_REACH under its base
+ * up to spanZ, and either already lifting or more than WHIRL_TOP_MARGIN
+ * below the top. */
+#define WHIRL_BELOW_REACH 0x3FF
+#define WHIRL_TOP_MARGIN 0xC00
 
 /* Level 14 type 303 (ACTOR_TYPE_RUNNER_SPAWNER): every so often (`timer`,
  * 0xB4) rewinds `path` and spawns one waypoint runner (304), handing it the
@@ -164,7 +178,7 @@ typedef struct WaypointRunnerState {
 typedef struct AttachBeadState {
   struct Actor *owner; /* 0x00 */
   int t;               /* 0x04 */
-  int pad08;           /* 0x08 cleared at spawn, never read */
+  int unread08;        /* 0x08 cleared at spawn, never read */
 } AttachBeadState;
 
 /* Level 29 type 232 (ACTOR_TYPE_BOBBER_SPINOFF): spins off its bobbing
@@ -246,5 +260,26 @@ typedef struct TumbleState {
   int life;      /* 0x0C ticks remaining */
   int floorZ;    /* 0x10 retire once the actor sinks to this height */
 } TumbleState;
+
+/* Types 14/15/83..87: collectibles (life statue, life orb, gems). ->vel
+ * doubles as the pickup origin once Sparx has fetched the item. SpawnActor
+ * pops a dropped one out at PICKUP_DROP_POP_VZ. */
+typedef struct PickupState {
+  int vel[3];          /* 0x00 */
+  short groundTri;         /* 0x0C collision triangle it rests on (UnpackWorldCollisionTri) */
+  unsigned char restMode; /* 0x0E CollectRestMode while COLLECT_REST */
+  unsigned char timer; /* 0x0F sparkle timer */
+  unsigned char bounces; /* 0x10 bounces left (PICKUP_DROP_BOUNCES at spawn) */
+  unsigned char pitch; /* 0x11 ground-normal tilt */
+  unsigned char yaw;   /* 0x12 */
+  unsigned char roll;  /* 0x13 */
+  unsigned char sparkle; /* 0x14 g_aRotBillboards handle, 0xFF = none */
+} PickupState;
+
+/* A dropped pickup (gem, extra life, Sparx food) pops up at POP_VZ and bounces
+ * BOUNCES times before it rests; a follower's drop bounces FOLLOWER_BOUNCES. */
+#define PICKUP_DROP_POP_VZ 0x8C
+#define PICKUP_DROP_BOUNCES 3
+#define PICKUP_DROP_FOLLOWER_BOUNCES 2
 
 #endif /* OPEN_SPYRO_ACTOR_STATES_H */

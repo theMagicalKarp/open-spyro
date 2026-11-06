@@ -6,17 +6,6 @@
 #ifndef OPEN_SPYRO_LEVEL_ACTOR_STATES_H
 #define OPEN_SPYRO_LEVEL_ACTOR_STATES_H
 
-/* Case 34 — a recovered dragon egg: spirals up off its spot, flies to just
- * above Spyro, then requests the HUD egg-counter roll (Cross skips). */
-typedef struct EggRiseState {
-  Actor *owner;          /* 0x00 the egg thief that carried it (credited the kill gems) */
-  short centre[3];       /* 0x04 where it rose from (spiral centre) */
-  short apex[3];         /* 0x0A the point above Spyro it flies to */
-  unsigned short radius; /* 0x10 */
-  unsigned char phase;   /* 0x12 */
-  unsigned char angle;   /* 0x13 */
-} EggRiseState;
-
 /* Cases 14/15/83..87 — collectibles: 14 extra life, 15 Sparx food, 83..87
  * gems (CollectPickupActor). They bounce out of a broken chest or fodder,
  * glitter, and home in on Spyro once he (or Sparx, fetching) gets close. The
@@ -658,14 +647,5 @@ typedef struct FlameChunkSwitchState {
   int pad00; /* 0x00 */
   int rearmTimer; /* 0x04 re-arm timer */
 } FlameChunkSwitchState;
-
-/* Type 236 state (level 32 wanderer; the head is UpdateActorWander's wander block). */
-typedef struct WandererState {
-  WanderBlock wander; /* 0x00 UpdateActorWander's block */
-  int knockSpeed;    /* 0x20 knock-back speed */
-  int knockHeading;    /* 0x24 knock-back heading */
-  int pad28; /* 0x28 a level-data pointer (relocated at load), never read */
-  int idleTimer;    /* 0x2C idle timer */
-} WandererState;
 
 #endif /* OPEN_SPYRO_LEVEL_ACTOR_STATES_H */

@@ -79,7 +79,7 @@ typedef struct Actor {
                             * loads it as a halfword with ->drawn and tests each
                             * axis against (cullRadius << 8) + (drawn & 1) * 0x200,
                             * so 0 hides the actor. The renderer gives bit 7 no
-                            * meaning of its own; overlays test it as "large". */
+                            * meaning of its own (ACTOR_CULL_ALWAYS_BIT). */
   unsigned char drawn; /* 0x51 drawn last frame: always kept active */
   unsigned char updateDist; /* 0x52 activation radius >> 10 */
   unsigned char dropKind; /* 0x53 death-drop item id (& 0x7F, 1..0x7E fixed;
@@ -96,10 +96,27 @@ typedef struct Actor {
                         * size (overlay grow/shrink tweens drive it 0x20..0x60) */
 } Actor; /* 0x58 */
 
+/* The state block SpawnNameLetterActors hangs off each letter of a floating
+ * name (letters A..Z are ACTOR_TYPE_LETTER_A.., anything else
+ * ACTOR_TYPE_GLYPH_COMMA): the letters ride their sign at slots laid out
+ * from count and index, or spin in place when the sign does not spin. */
+typedef struct NameLetterState {
+  Actor *sign; /* 0x00 the portal sign / level exit it spells for */
+  short count; /* 0x04 characters in the name, spaces included */
+  short index; /* 0x06 this letter's position in it */
+} NameLetterState;
+
 /* Actor.voiceRow while no voice row plays the actor's sound. */
 #define VOICE_ROW_NONE 0x7F /* also what a finished or dropped sound stamps into its pPlaying byte */
 #define ACTOR_SCALE_UNIT 0x20 /* ->scale drawing the mesh at its own size (0x40 = half, 0x14 = 1.6x) */
 #define ACTOR_CULL_HIDDEN 0 /* ->cullRadius: a zero bound fails the view cull, so the actor is hidden */
+/* ->cullRadius 0xFF: a bound every view-space point passes. Only these stamps
+ * set bit 7 (level data and spawns stay at or below 0x7F): HUD counter digits
+ * and icons, text sprites, the portal guide and a collected flight time bonus.
+ * Gem digits test the bit to leave HUD digits alone; the butterfly's test of
+ * it is dead (it spawns at 0x10 and nothing restamps it). */
+#define ACTOR_CULL_ALWAYS 0xFF
+#define ACTOR_CULL_ALWAYS_BIT 0x80
 #define ACTOR_TINT_NEUTRAL 0xA18618 /* the 0x4C tint word at neutral levels (0x18 each, tag 0xA) */
 /* Actor.tintMode presets, used with tint0..2 zeroed.
  * RasterizeSpritePrimQueue reads the preset word at 0x8006E3D8 + (tint word
@@ -169,6 +186,9 @@ typedef struct Actor {
  * through by SteerActorAroundPoint and PivotActorAlongPath. */
 #define MOVE_LIFT 0x01         /* probe the world MOVE_LIFT_HEIGHT + radius higher (undone after) */
 #define MOVE_LIFT_HEIGHT 0x12C /* MOVE_LIFT's probe lift above the actor, before its radius */
+/* How far above a point the FindGroundHeightBelow probes start, so a point
+ * resting on (or just under) a floor still finds it. */
+#define GROUND_PROBE_LIFT 0x400
 #define MOVE_PASS_ACTORS 0x02  /* actors never block: the step is pushed out of them (CONTACT_PUSH_OUT) */
 #define MOVE_FOLLOW_FLOOR 0x04 /* ease Z toward the probed floor (snap when close) */
 #define MOVE_STEP_LIMIT 0x10   /* reject a step up or down past the step height */
@@ -541,6 +561,11 @@ enum ActorType {
   ACTOR_TYPE_RESCUED_DRAGON = 510, /* the freed dragon DragonRescue_Update puts in the statue's place (g_pDragonRescueStatueActor) */
   ACTOR_TYPE_RESCUE_SPYRO = 511, /* Spyro's stand-in during the rescue cutscene (g_pDragonRescueSpyroMirrorActor) */
 };
+
+/* Lives cap at MAX_EXTRA_LIVES (an extra-life pickup is wasted there); every
+ * SPARX_FOOD_PER_LIFE Sparx-food pickups make one (UpdateHudCounters). */
+#define MAX_EXTRA_LIVES 99
+#define SPARX_FOOD_PER_LIFE 20
 
 /* A flight time bonus is typed by its size: type ACTOR_TYPE_TIME_BONUS + n - 1
  * adds n seconds to the flight clock (n = 1..3). */
