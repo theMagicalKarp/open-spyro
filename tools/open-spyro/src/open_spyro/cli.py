@@ -276,10 +276,13 @@ app.add_typer(xref_app, name="xref")
 @xref_app.command("data")
 def xref_data(
     target: Annotated[str, typer.Argument(help="symbol name or 0x address")],
-    size: Annotated[str, typer.Option("--size", help="bytes to cover (hex ok)")] = "4",
+    size: Annotated[
+        str | None,
+        typer.Option("--size", help="bytes to cover (hex ok); default: the declared size:, else 4"),
+    ] = None,
 ) -> None:
     """Functions that read / write an address range (held bases and raw lui/addiu resolved)."""
-    xref.data(target, int(size, 0))
+    xref.data(target, int(size, 0) if size else None)
 
 
 @xref_app.command("callers")

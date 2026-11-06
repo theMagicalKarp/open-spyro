@@ -68,6 +68,18 @@ def _symbols(root: Path) -> tuple[dict[str, int], dict[int, str]]:
     return names, funcs
 
 
+def _data_sizes(root: Path) -> dict[int, int]:
+    """Address -> declared ``size:`` for every non-function seed that has one."""
+    sizes: dict[int, int] = {}
+    for line in (root / "config/symbol_addrs.txt").read_text().splitlines():
+        m = re.match(r"\s*[A-Za-z_]\w*\s*=\s*(0x[0-9a-fA-F]+);(.*)", line)
+        if m and "type:func" not in m.group(2):
+            sz = re.search(r"\bsize:(0x[0-9a-fA-F]+|\d+)", m.group(2))
+            if sz:
+                sizes.setdefault(int(m.group(1), 16), int(sz.group(1), 0))
+    return sizes
+
+
 def _num(tok: str) -> int:
     neg = tok.startswith("-")
     tok = tok.lstrip("-")
@@ -271,7 +283,9 @@ def call_graph(root: Path) -> dict[str, set[str]]:
     return callers
 
 
-def data(target: str, size: int = 4) -> None:
+def data(target: str, size: int | None = None) -> None:
+    """Accesses to ``target``'s bytes: ``size`` bytes, else the symbol's declared
+    ``size:``, else 4."""
     root = repo_root()
     names, _ = _symbols(root)
     if target.lower().startswith("0x"):
@@ -280,6 +294,8 @@ def data(target: str, size: int = 4) -> None:
         base = names[target]
     else:
         raise SystemExit(f"xref: unknown symbol {target}")
+    if size is None:
+        size = _data_sizes(root).get(base, 4)
     hits: dict[int, dict[str, set[str]]] = defaultdict(lambda: defaultdict(set))
     for acc in scan_accesses(root):
         if base <= acc.addr < base + size:
@@ -314,11 +330,14 @@ def audit() -> None:
     CD read fills them.
 
     Each global covers its address up to the next seeded symbol (capped at 1 KiB),
-    so a held-base read of a later field still counts. Hardware registers are skipped.
+    so a held-base read of a later field still counts, or its declared ``size:`` when
+    that reaches further (a view symbol seeded inside an array does not cut it short).
+    Hardware registers are skipped.
     """
     root = repo_root()
     names, _ = _symbols(root)
     starts = sorted({a for a in names.values() if 0x80010000 <= a < 0x80200000})
+    sizes = _data_sizes(root)
     kinds: dict[int, set[str]] = defaultdict(set)
     writers: dict[int, set[str]] = defaultdict(set)
     for acc in scan_accesses(root):
@@ -344,6 +363,7 @@ def audit() -> None:
             continue
         i = bisect.bisect_right(starts, addr)
         end = min(starts[i] if i < len(starts) else addr + 4, addr + 0x400)
+        end = max(end, addr + sizes.get(addr, 0))
         lo, hi = bisect.bisect_left(hit, addr), bisect.bisect_left(hit, end)
         seen: set[str] = set()
         funcs: set[str] = set()
