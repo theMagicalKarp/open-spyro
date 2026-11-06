@@ -264,6 +264,13 @@ enum SpinChestSubMode {
   SPINCHEST_INIT = 0,     /* spawn the lid */
   SPINCHEST_SPINNING = 1, /* flames spin it up; fast enough (or a superflame) bursts it */
 };
+/* SpinChestState.speed: a flame adds FLAME_SPIN at most every FLAME_COOLDOWN
+ * frames; it spins down by 1 a frame to MIN_SPEED (silent there) and bursts
+ * past BURST_SPEED. */
+#define SPINCHEST_FLAME_COOLDOWN 0x10
+#define SPINCHEST_FLAME_SPIN 0x64
+#define SPINCHEST_MIN_SPEED 0x18
+#define SPINCHEST_BURST_SPEED 0xE0
 
 /* ->subMode of the spin chest's lid (ACTOR_TYPE_SPIN_CHEST_LID,
  * SpinChestLidState). */

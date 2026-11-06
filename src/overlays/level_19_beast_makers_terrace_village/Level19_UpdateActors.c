@@ -2606,7 +2606,7 @@ void Level19_UpdateActors(void) {
           g_anSpuVoiceRowPitch[actor->voiceRow & 0x7F][0] = pitch + st->speed * 4;
         }
       }
-      if (st->speed < 0x19) {
+      if (st->speed <= SPINCHEST_MIN_SPEED) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
       if (actor->subMode == SPINCHEST_INIT) {
@@ -2618,8 +2618,8 @@ void Level19_UpdateActors(void) {
       }
       if (st->timer == 0 || --st->timer == 0) {
         if (actor->flags & ACTOR_HIT_FLAME) {
-          st->timer = 0x10;
-          st->speed += 0x64;
+          st->timer = SPINCHEST_FLAME_COOLDOWN;
+          st->speed += SPINCHEST_FLAME_SPIN;
         }
       }
       st->scorchBand = StepActorScorchTint(actor, st->scorchBand);
@@ -2627,15 +2627,15 @@ void Level19_UpdateActors(void) {
       if (pitch < cur && actor->voiceRow != VOICE_ROW_NONE) {
         g_anSpuVoiceRowPitchStep[actor->voiceRow & 0x7F][0] = -4;
       }
-      if (st->speed < 0x18) {
-        st->speed = 0x18;
+      if (st->speed < SPINCHEST_MIN_SPEED) {
+        st->speed = SPINCHEST_MIN_SPEED;
         actor->updateDist = 0x10;
       } else {
         actor->updateDist = 0x40;
       }
       st->angle += (st->speed * g_nFrameStep) >> 1;
       st->lid->rotZ = st->angle >> 4;
-      if (st->speed > 0xE0 || (actor->flags & ACTOR_HIT_SUPER)) {
+      if (st->speed > SPINCHEST_BURST_SPEED || (actor->flags & ACTOR_HIT_SUPER)) {
         st->lid->subMode = LID_LAUNCH;
         PlayActorMeshVoice(actor, SPINCHEST_VOICE_LAUNCH, 0);
         for (i = 0; i < 2; i++) {
