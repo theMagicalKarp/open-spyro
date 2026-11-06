@@ -185,6 +185,11 @@ enum SeedPodMode {
   SEEDPOD_CLOSED = 0, /* struck: spawns its prize (COLLECT_INERT) and opens */
   SEEDPOD_OPEN = 1,   /* shakes with the prize floating above; closes after a while */
 };
+/* ->subMode of a closed seed pod: its first tick takes the drop-kind tint. */
+enum SeedPodSubMode {
+  SEEDPOD_SUB_UNTINTED = 0,
+  SEEDPOD_SUB_TINTED = 1,
+};
 
 /* An open pod's prize is taken once Spyro is within this 2D distance of it
  * (height -0xDF..+0x1DF), or at once by a supercharge. */

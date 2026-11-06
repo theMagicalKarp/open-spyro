@@ -3792,9 +3792,9 @@ void Level15_UpdateActors(void) {
       actor->soundRange = 0x20;
       switch (actor->mode) {
       case SEEDPOD_CLOSED:
-        if (actor->subMode == 0) {
+        if (actor->subMode == SEEDPOD_SUB_UNTINTED) {
           *(int *)&actor->tint0 = g_anTintByDropKind[actor->dropKind];
-          actor->subMode = 1;
+          actor->subMode = SEEDPOD_SUB_TINTED;
           actor->updateDist = 0x10;
         }
         if (actor->flags & ACTOR_HITS_SPYRO) {
