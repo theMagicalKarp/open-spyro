@@ -2985,6 +2985,29 @@ enum CarriedThrowerMode {
   CTHROW_DROP = 11,      /* its prop burst or ran: drop animation, then BARE_WAIT */
   CTHROW_KNOCKED = 12,   /* flamed while bare: knocked away, then bursts */
 };
+/* Carried-thrower tuning. WAIT rises with Spyro within NOTICE_RANGE and
+ * NOTICE_DZ (holding: after RISE_DELAY ticks); READY swings within
+ * HELD_SWING_RANGE (bare: BARE_SWING_RANGE, after SWING_DELAY ticks) and
+ * SWING_DZ, and gives up beyond HELD_LOSE_RANGE (BARE_LOSE_RANGE) or
+ * LOSE_DZ. A held swing hits Spyro within HIT_RADIUS of the prop and of the
+ * point between it and the thrower. Flamed bare, it slides from KNOCK_SPEED
+ * and KNOCK_VZ up, losing KNOCK_DRAG a frame, and bursts with
+ * BURST_SPARK_LIFE sparks. */
+#define CTHROW_NOTICE_RANGE 0x1400
+#define CTHROW_NOTICE_DZ 0xC00
+#define CTHROW_RISE_DELAY 0x2D
+#define CTHROW_HELD_SWING_RANGE 0xE00
+#define CTHROW_BARE_SWING_RANGE 0x1000
+#define CTHROW_SWING_DELAY 0x2D
+#define CTHROW_SWING_DZ 0x800
+#define CTHROW_HELD_LOSE_RANGE 0x1600
+#define CTHROW_BARE_LOSE_RANGE 0x1800
+#define CTHROW_LOSE_DZ 0x1000
+#define CTHROW_HIT_RADIUS 0x200
+#define CTHROW_KNOCK_SPEED 0x78
+#define CTHROW_KNOCK_VZ 0x3C
+#define CTHROW_KNOCK_DRAG 0xC
+#define CTHROW_BURST_SPARK_LIFE 0x30
 
 /* ->mode of a floating barrel or mine (ACTOR_TYPE_FLOATING_BARREL /
  * ACTOR_TYPE_FLOATING_MINE, FloatingBarrelState; level 31). Mounts, hatch
@@ -3319,6 +3342,39 @@ enum BoltGuardCue {
   BGUARD_CUE_RUN = 1,  /* Spyro in its box or range: BGUARD_RUN (the whole group) */
   BGUARD_CUE_LINK = 2, /* Spyro in range: fires along its link chain (BGUARD_FACE_LINK) */
 };
+/* Bolt-guard tuning (`range` is in 0x400 units). Charged, it shatters
+ * into SHARDS ground-bounce shards and tumbles from KNOCK_SPEED and KNOCK_VZ
+ * up (losing KNOCK_DRAG and KNOCK_GRAVITY a frame), bursting with
+ * BURST_SPARK_LIFE sparks on landing. Cues fire with Spyro within CUE_DZ;
+ * WATCH winds up with him within FIRE_RANGE and FIRE_DZ. A volley fires a
+ * pair of BOLT_SCALE bolts every VOLLEY_GAP ticks for FIRE_TICKS
+ * (LINK_FIRE_TICKS at a link), reloading RELOAD_TICKS; bolts at Spyro live
+ * BOLT_LIFE, at a link LINK_BOLT_LIFE, aimed LINK_AIM_RAISE above it.
+ * FACE_LINK turns for FACE_LINK_TICKS and gives up once Spyro is within
+ * LINK_ABORT_RANGE. RUN runs its path at RUN_SPEED (nodes within
+ * PIVOT_THRESH), stopping within RUN_STOP_RANGE of Spyro. */
+#define BGUARD_SHARDS 0xA
+#define BGUARD_KNOCK_SPEED 0x12C
+#define BGUARD_KNOCK_VZ 0xE6
+#define BGUARD_KNOCK_DRAG 0xC
+#define BGUARD_KNOCK_GRAVITY 0x10
+#define BGUARD_BURST_SPARK_LIFE 0x18
+#define BGUARD_CUE_DZ 0xBB8
+#define BGUARD_FIRE_RANGE 0xFA0
+#define BGUARD_FIRE_DZ 0x320
+#define BGUARD_BOLT_SCALE 0x48
+#define BGUARD_VOLLEY_GAP 8
+#define BGUARD_FIRE_TICKS 0x28
+#define BGUARD_LINK_FIRE_TICKS 0x19
+#define BGUARD_RELOAD_TICKS 0xB4
+#define BGUARD_BOLT_LIFE 0x1E
+#define BGUARD_LINK_BOLT_LIFE 0x2D
+#define BGUARD_LINK_AIM_RAISE 0xFA
+#define BGUARD_FACE_LINK_TICKS 0x3C
+#define BGUARD_LINK_ABORT_RANGE 0x1400
+#define BGUARD_RUN_SPEED 0x5A
+#define BGUARD_PIVOT_THRESH 0x100
+#define BGUARD_RUN_STOP_RANGE 0xC00
 
 /* ->mode of a bolt caster (ACTOR_TYPE_BOLT_CASTER, BoltCasterState; level
  * 14); the mode is also the animation index. With no Spyro about it practises

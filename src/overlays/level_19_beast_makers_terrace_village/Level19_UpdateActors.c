@@ -701,8 +701,8 @@ void Level19_UpdateActors(void) {
       if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER) && actor->mode != BGUARD_KNOCKED) {
         int i;
 
-        st->zSpeed = 0xE6;
-        st->speed = 0x12C;
+        st->zSpeed = BGUARD_KNOCK_VZ;
+        st->speed = BGUARD_KNOCK_SPEED;
         st->knockHeading =
             StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                         actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
@@ -710,7 +710,7 @@ void Level19_UpdateActors(void) {
         actor->flags = 0;
         st->spinX = RandomSignedInRange(6, 0xA);
         st->spinY = RandomSignedInRange(6, 0xA);
-        for (i = 0; i < 0xA; i++) {
+        for (i = 0; i < BGUARD_SHARDS; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
@@ -729,7 +729,7 @@ void Level19_UpdateActors(void) {
         ANIM_GO(actor, BGUARD_WATCH);
         if (st->mode == one /* BGUARD_CUE_RUN */ &&
             (IsPointInRotatedBox(&spy->posX, &st->box) != 0 || d < st->range << 10) &&
-            ABS2(SPY_DZ(actor)) < 0xBB8) {
+            ABS2(SPY_DZ(actor)) < BGUARD_CUE_DZ) {
           if (actor->group != 0xFF) {
             SetActorGroupStateExcept(actor, BGUARD_RUN, BGUARD_KNOCKED);
           }
@@ -737,14 +737,14 @@ void Level19_UpdateActors(void) {
           continue;
         }
         if (st->mode == BGUARD_CUE_LINK && st->link != -1 && d < st->range << 10 &&
-            ABS2(SPY_DZ(actor)) < 0xBB8) {
-          st->timer2 = 0x3C;
+            ABS2(SPY_DZ(actor)) < BGUARD_CUE_DZ) {
+          st->timer2 = BGUARD_FACE_LINK_TICKS;
           actor->mode = BGUARD_FACE_LINK;
           continue;
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if (TICK_DOWN(st->timer) != 0 && d < 0xFA0 &&
-            ABS2(SPY_DZ(actor)) < 0x320 && TICK_DOWN(st->countdown) != 0) {
+        if (TICK_DOWN(st->timer) != 0 && d < BGUARD_FIRE_RANGE &&
+            ABS2(SPY_DZ(actor)) < BGUARD_FIRE_DZ && TICK_DOWN(st->countdown) != 0) {
           ENTER_POSE(actor, BGUARD_WIND_UP);
         }
         break;
@@ -765,17 +765,17 @@ void Level19_UpdateActors(void) {
             Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_AIMED_BOLT, actor);
             AimedBoltState *cs;
 
-            c->scale = 0x48;
+            c->scale = BGUARD_BOLT_SCALE;
             c->rotZ = actor->rotZ;
             cs = c->state;
             cs->mode = one; /* AIMBOLT_AT_SPYRO */
-            cs->timer = 0x1E;
+            cs->timer = BGUARD_BOLT_LIFE;
             GetActorAttachPoint(actor, i, &c->posX);
           }
-          st->timer = 8;
+          st->timer = BGUARD_VOLLEY_GAP;
         }
         if (TICK_DOWN(st->timer2) != 0 && g_nActorAnimDone != 0) {
-          st->timer = 0xB4;
+          st->timer = BGUARD_RELOAD_TICKS;
           ENTER_POSE(actor, BGUARD_WATCH);
         }
         break;
@@ -783,10 +783,10 @@ void Level19_UpdateActors(void) {
       case BGUARD_KNOCKED:
         actor->rotX += st->spinX;
         actor->rotY += st->spinY;
-        if (DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC,
-                          0x10) == MOVED_LANDED) {
+        if (DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, BGUARD_KNOCK_DRAG,
+                          BGUARD_KNOCK_GRAVITY) == MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, BGUARD_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -794,19 +794,19 @@ void Level19_UpdateActors(void) {
 
       case BGUARD_WIND_UP:
         if (g_nActorAnimDone != 0) {
-          st->timer2 = 0x28;
+          st->timer2 = BGUARD_FIRE_TICKS;
           ENTER_POSE(actor, BGUARD_FIRE);
         }
         break;
 
       case BGUARD_RUN:
         ANIM_GO(actor, BGUARD_ANIM_RUN);
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x5A, 0, 8, 0x10, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+        if (PivotActorAlongPath(actor, st->path, BGUARD_PIVOT_THRESH, BGUARD_RUN_SPEED, 0, 8, 0x10, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             PATH_ARRIVED(0)) {
           st->mode = BGUARD_CUE_NONE;
           ENTER_POSE(actor, BGUARD_WATCH);
         }
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xC00) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < BGUARD_RUN_STOP_RANGE) {
           st->mode = BGUARD_CUE_NONE;
           ENTER_POSE(actor, BGUARD_WATCH);
         }
@@ -815,7 +815,7 @@ void Level19_UpdateActors(void) {
       case BGUARD_FACE_LINK:
         ANIM_GO(actor, BGUARD_WATCH);
         if (g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT ||
-            ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400 || st->link == -1) {
+            ApproxDist2D(&actor->posX, &SPY.posX) < BGUARD_LINK_ABORT_RANGE || st->link == -1) {
           st->mode = BGUARD_CUE_NONE;
           ENTER_POSE(actor, BGUARD_WATCH);
         }
@@ -824,7 +824,7 @@ void Level19_UpdateActors(void) {
                                     g_pActorListBase[st->link].posY - actor->posY, ATAN_ANGLE8),
                       6, 0, YAW_HOLD_IN_BAND);
         if (TICK_DOWN(st->timer2) != 0) {
-          st->timer2 = 0x19;
+          st->timer2 = BGUARD_LINK_FIRE_TICKS;
           actor->mode = BGUARD_FIRE_AT_LINK;
           continue;
         }
@@ -844,16 +844,16 @@ void Level19_UpdateActors(void) {
             Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_AIMED_BOLT, actor);
             AimedBoltState *cs;
 
-            c->scale = 0x48;
+            c->scale = BGUARD_BOLT_SCALE;
             cs = c->state;
             c->rotZ = actor->rotZ;
             cs->mode = AIMBOLT_AT_LINK;
-            cs->timer = 0x2D;
+            cs->timer = BGUARD_LINK_BOLT_LIFE;
             CopyVector(cs->target, &g_pActorListBase[st->link].posX);
-            cs->target[2] += 0xFA;
+            cs->target[2] += BGUARD_LINK_AIM_RAISE;
             GetActorAttachPoint(actor, i, &c->posX);
           }
-          st->timer = 8;
+          st->timer = BGUARD_VOLLEY_GAP;
         }
         if (TICK_DOWN(st->timer2) != 0 && g_nActorAnimDone != 0) {
           RoamingRamState *ts = g_pActorListBase[st->link].state;
@@ -863,7 +863,7 @@ void Level19_UpdateActors(void) {
             ENTER_POSE(actor, BGUARD_WATCH);
           }
           st->link = ts->partner; /* on along the rams' partner chain */
-          st->timer2 = 0x3C;
+          st->timer2 = BGUARD_FACE_LINK_TICKS;
           actor->mode = BGUARD_FACE_LINK;
           continue;
         }

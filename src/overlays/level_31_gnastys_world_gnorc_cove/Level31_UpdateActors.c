@@ -2228,12 +2228,12 @@ void Level31_UpdateActors(void) {
       int thrown = 0;
 
       TickActorFlameGlow(actor);
-      if ((unsigned int)(actor->mode - 6) < 5 && (actor->flags & ACTOR_HIT_FLAME)) {
+      if ((unsigned int)(actor->mode - CTHROW_BARE_WAIT) < CTHROW_DROP - CTHROW_BARE_WAIT && (actor->flags & ACTOR_HIT_FLAME)) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
                                   SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->zSpeed = 0x3C;
-        st->speed = 0x78;
+        st->zSpeed = CTHROW_KNOCK_VZ;
+        st->speed = CTHROW_KNOCK_SPEED;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);
         ENTER_POSE(actor, CTHROW_KNOCKED);
@@ -2249,12 +2249,12 @@ void Level31_UpdateActors(void) {
           if (TICK_DOWN(st->timer) != 0) {
             ENTER_POSE(actor, CTHROW_HELD_RISE);
           }
-        } else if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400) {
+        } else if (ApproxDist2D(&actor->posX, &SPY.posX) < CTHROW_NOTICE_RANGE) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
-          if (dz > 0 ? dz < 0xC00
-                     : SPY.posZ - (actor->posZ - actor->floorOffset) < 0xC00) {
-            st->timer = 0x2D;
+          if (dz > 0 ? dz < CTHROW_NOTICE_DZ
+                     : SPY.posZ - (actor->posZ - actor->floorOffset) < CTHROW_NOTICE_DZ) {
+            st->timer = CTHROW_RISE_DELAY;
           }
         }
         break;
@@ -2266,21 +2266,21 @@ void Level31_UpdateActors(void) {
         break;
 
       case CTHROW_HELD_READY:
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xE00) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < CTHROW_HELD_SWING_RANGE) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
-          if (dz > 0 ? dz < 0x800
-                     : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x800) {
+          if (dz > 0 ? dz < CTHROW_SWING_DZ
+                     : SPY.posZ - (actor->posZ - actor->floorOffset) < CTHROW_SWING_DZ) {
             ENTER_POSE(actor, CTHROW_HELD_SWING);
           }
         }
         {
           int dz;
 
-          if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1601 ||
+          if (ApproxDist2D(&actor->posX, &SPY.posX) > CTHROW_HELD_LOSE_RANGE ||
               ((dz = (actor->posZ - actor->floorOffset) - SPY.posZ) > 0
-                   ? dz >= 0x1001
-                   : SPY.posZ - (actor->posZ - actor->floorOffset) >= 0x1001)) {
+                   ? dz > CTHROW_LOSE_DZ
+                   : SPY.posZ - (actor->posZ - actor->floorOffset) > CTHROW_LOSE_DZ)) {
             ENTER_POSE(actor, CTHROW_HELD_LOWER);
           }
         }
@@ -2315,11 +2315,11 @@ void Level31_UpdateActors(void) {
         break;
 
       case CTHROW_BARE_WAIT:
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < CTHROW_NOTICE_RANGE) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
-          if (dz > 0 ? dz < 0xC00
-                     : SPY.posZ - (actor->posZ - actor->floorOffset) < 0xC00) {
+          if (dz > 0 ? dz < CTHROW_NOTICE_DZ
+                     : SPY.posZ - (actor->posZ - actor->floorOffset) < CTHROW_NOTICE_DZ) {
             ENTER_POSE(actor, CTHROW_BARE_RISE);
           }
         }
@@ -2333,17 +2333,17 @@ void Level31_UpdateActors(void) {
         break;
 
       case CTHROW_BARE_READY:
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < CTHROW_BARE_SWING_RANGE) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
-          if (dz > 0 ? dz < 0x800
-                     : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x800) {
+          if (dz > 0 ? dz < CTHROW_SWING_DZ
+                     : SPY.posZ - (actor->posZ - actor->floorOffset) < CTHROW_SWING_DZ) {
             if (st->timer != 0) {
               if (TICK_DOWN(st->timer) != 0) {
                 ENTER_POSE(actor, CTHROW_BARE_SWING);
               }
             } else {
-              st->timer = 0x2D;
+              st->timer = CTHROW_SWING_DELAY;
             }
             break;
           }
@@ -2351,10 +2351,10 @@ void Level31_UpdateActors(void) {
         {
           int dz;
 
-          if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1801 ||
+          if (ApproxDist2D(&actor->posX, &SPY.posX) > CTHROW_BARE_LOSE_RANGE ||
               ((dz = (actor->posZ - actor->floorOffset) - SPY.posZ) > 0
-                   ? dz >= 0x1001
-                   : SPY.posZ - (actor->posZ - actor->floorOffset) >= 0x1001)) {
+                   ? dz > CTHROW_LOSE_DZ
+                   : SPY.posZ - (actor->posZ - actor->floorOffset) > CTHROW_LOSE_DZ)) {
             ENTER_POSE(actor, CTHROW_BARE_WAIT);
           }
         }
@@ -2386,10 +2386,10 @@ void Level31_UpdateActors(void) {
         break;
 
       case CTHROW_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, CTHROW_KNOCK_DRAG, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x30);
+          BurstActorWithSound(actor, CTHROW_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2413,10 +2413,10 @@ void Level31_UpdateActors(void) {
         RShiftVector3(v201b, 1);
         AddVector(&g_pActorListBase[st->held].posX, v201a, v201b);
         if (thrown) {
-          RaiseSpyroTriggerInRadius(&g_pActorListBase[st->held].posX, 0x200, SPYRO_EV_HIT_PINNED | SPYRO_EV_CHARGE_HIT);
+          RaiseSpyroTriggerInRadius(&g_pActorListBase[st->held].posX, CTHROW_HIT_RADIUS, SPYRO_EV_HIT_PINNED | SPYRO_EV_CHARGE_HIT);
           AddVector(v201a, &g_pActorListBase[st->held].posX, &actor->posX);
           RShiftVector3(v201a, 1);
-          RaiseSpyroTriggerInRadius(v201a, 0x200, SPYRO_EV_HIT_PINNED | SPYRO_EV_CHARGE_HIT);
+          RaiseSpyroTriggerInRadius(v201a, CTHROW_HIT_RADIUS, SPYRO_EV_HIT_PINNED | SPYRO_EV_CHARGE_HIT);
         }
       }
       break;
