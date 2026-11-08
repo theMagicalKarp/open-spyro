@@ -3843,6 +3843,26 @@ enum FormationEscortMode {
   ESCORT_HOLD = 3,     /* holds formation; the formation breaks: BREAK_AWAY */
   ESCORT_BREAK_AWAY = 4, /* spirals up and away, then bursts into streaks */
 };
+/* Formation-escort tuning. An escort tweens in at TWEEN_SPEED, then joins
+ * its slot (SLOT_ANGLE apart) on a RING_RADIUS ring round the leader at
+ * JOIN_SPEED, holding once within JOIN_SETTLED; it keeps HOVER_DROP below
+ * the leader, climbing at most CLIMB a frame. The lead escort breaks away
+ * with Spyro within BREAK_RANGE of the leader (its partners follow): it
+ * spirals out BREAK_SPIRAL ahead of the bearing from the leader, speeding up
+ * from BREAK_SPEED to MAX_SPEED and rising with it, then bursts after
+ * BREAK_TICKS. */
+#define ESCORT_TWEEN_SPEED 0x20
+#define ESCORT_SLOT_ANGLE 0x55
+#define ESCORT_RING_RADIUS 0x600
+#define ESCORT_JOIN_SPEED 0x80
+#define ESCORT_JOIN_SETTLED 0x10
+#define ESCORT_HOVER_DROP 0x200
+#define ESCORT_CLIMB 0x40
+#define ESCORT_BREAK_RANGE 0x1800
+#define ESCORT_BREAK_SPIRAL 0x78
+#define ESCORT_BREAK_SPEED 0x20
+#define ESCORT_MAX_SPEED 0x100
+#define ESCORT_BREAK_TICKS 0x78
 
 /* ->mode of a partner bouncer (ACTOR_TYPE_PARTNER_BOUNCER,
  * PartnerBouncerState; level 26); the mode is also the animation index. */

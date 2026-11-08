@@ -1391,16 +1391,16 @@ void Level26_UpdateActors(void) {
         break;
 
       case ESCORT_TWEEN_IN:
-        if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->timer, 0x20, TWEEN_FLY) == TWEEN_WRAPPED) {
+        if (TweenActorAlongPath(actor, st->path, st->tweenLeg, &st->timer, ESCORT_TWEEN_SPEED, TWEEN_FLY) == TWEEN_WRAPPED) {
           actor->mode = ESCORT_JOIN;
         }
         break;
 
       case ESCORT_JOIN: {
-        int ang = st->slot * 0x55;
+        int ang = st->slot * ESCORT_SLOT_ANGLE;
 
-        if (SteerActorAroundPoint(actor, &g_pActorListBase[st->leader].posX, 0x600, ang, 0,
-                          0x80, 3, 0, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_STRAFE) < 0x10) {
+        if (SteerActorAroundPoint(actor, &g_pActorListBase[st->leader].posX, ESCORT_RING_RADIUS, ang, 0,
+                          ESCORT_JOIN_SPEED, 3, 0, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_STRAFE) < ESCORT_JOIN_SETTLED) {
           actor->mode = ESCORT_HOLD;
         }
         goto follow;
@@ -1411,18 +1411,18 @@ void Level26_UpdateActors(void) {
           g_pActorListBase[st->partner].subMode |= 1 << st->slot;
           if (g_pActorListBase[st->partner].mode == ESCORT_BREAK_AWAY) {
             actor->mode = ESCORT_BREAK_AWAY;
-            st->speed = 0x20;
-            st->timer = 0x78;
+            st->speed = ESCORT_BREAK_SPEED;
+            st->timer = ESCORT_BREAK_TICKS;
           }
         } else if (actor->subMode == 6 &&
                    ApproxDist2D(&g_pActorListBase[st->leader].posX, &SPY.posX) <
-                       0x1800) {
+                       ESCORT_BREAK_RANGE) {
           int *ls = g_pActorListBase[st->leader].state;
 
           actor->mode = ESCORT_BREAK_AWAY;
           ls[2] = 0x10;
-          st->speed = 0x20;
-          st->timer = 0x78;
+          st->speed = ESCORT_BREAK_SPEED;
+          st->timer = ESCORT_BREAK_TICKS;
         }
         TurnActorYawTowardAngle(
             actor,
@@ -1431,14 +1431,14 @@ void Level26_UpdateActors(void) {
             2, 0, YAW_HOLD_IN_BAND);
       follow: {
         int z = actor->posZ;
-        int t = z - 0x200;
+        int t = z - ESCORT_HOVER_DROP;
         int d = g_pActorListBase[st->leader].posZ - t;
 
-        if (d < -0x40) {
-          d = -0x40;
+        if (d < -ESCORT_CLIMB) {
+          d = -ESCORT_CLIMB;
         }
-        if (d > 0x40) {
-          d = 0x40;
+        if (d > ESCORT_CLIMB) {
+          d = ESCORT_CLIMB;
         }
         actor->posZ = z + d;
         break;
@@ -1446,16 +1446,16 @@ void Level26_UpdateActors(void) {
 
       case ESCORT_BREAK_AWAY:
         SteerActorAroundPoint(
-            actor, &g_pActorListBase[st->leader].posX, 0x600,
+            actor, &g_pActorListBase[st->leader].posX, ESCORT_RING_RADIUS,
             (ArcTan2(actor->posX - g_pActorListBase[st->leader].posX,
                            actor->posY - g_pActorListBase[st->leader].posY, ATAN_ANGLE8) +
-             0x78) &
+             ESCORT_BREAK_SPIRAL) &
                 0xFF,
             0, st->speed, 0x10, 0, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_STRAFE);
-        actor->posZ += (st->speed - 0x20) >> 3;
+        actor->posZ += (st->speed - ESCORT_BREAK_SPEED) >> 3;
         st->speed += g_nFrameStep * 2;
-        if (st->speed > 0x100) {
-          st->speed = 0x100;
+        if (st->speed > ESCORT_MAX_SPEED) {
+          st->speed = ESCORT_MAX_SPEED;
         }
         if (TICK_DOWN(st->timer) != 0) {
           g_pfnLevelEmitParticles(0x10, EMIT_FALLING_STREAK_BURST, &actor->posX, 0xC);
