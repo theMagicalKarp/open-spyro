@@ -320,15 +320,15 @@ void Level23_UpdateActors(void) {
           {
             int c = LookupCosine(g_bSpyroPersistentEulerZ << 4);
             int s = LookupSine(g_bSpyroPersistentEulerZ << 4);
-            int cr = c * 724;
-            int sr = s * 724;
+            int cr = c * EGG_APEX_DIAG;
+            int sr = s * EGG_APEX_DIAG;
             svA[0] = svA[0] + ((sr + cr) >> 12);
           }
           {
             int s = LookupSine(g_bSpyroPersistentEulerZ << 4);
             int c = LookupCosine(g_bSpyroPersistentEulerZ << 4);
-            int sr = s * 724;
-            int cr = c * 724;
+            int sr = s * EGG_APEX_DIAG;
+            int cr = c * EGG_APEX_DIAG;
             svA[1] = svA[1] + ((sr - cr) >> 12);
           }
           svA[2] = svA[2] + EGG_APEX_HEIGHT;

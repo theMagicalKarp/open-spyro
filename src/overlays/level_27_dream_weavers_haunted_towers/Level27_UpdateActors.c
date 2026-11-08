@@ -509,15 +509,15 @@ void Level27_UpdateActors(void) {
           {
             int c = LookupCosine(SPY.bodyRotZ << 4);
             int s = LookupSine(SPY.bodyRotZ << 4);
-            int cr = c * 724;
-            int sr = s * 724;
+            int cr = c * EGG_APEX_DIAG;
+            int sr = s * EGG_APEX_DIAG;
             g056[0] = g056[0] + ((sr + cr) >> 12);
           }
           {
             int s = LookupSine(SPY.bodyRotZ << 4);
             int c = LookupCosine(SPY.bodyRotZ << 4);
-            int sr = s * 724;
-            int cr = c * 724;
+            int sr = s * EGG_APEX_DIAG;
+            int cr = c * EGG_APEX_DIAG;
             g056[1] = g056[1] + ((sr - cr) >> 12);
           }
           g056[2] = g056[2] + EGG_APEX_HEIGHT;

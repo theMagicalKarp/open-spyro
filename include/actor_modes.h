@@ -135,6 +135,11 @@ enum EggMode {
 #define EGG_FLIGHT_FRAMES 0x40
 #define EGG_APEX_HEIGHT 0x300
 #define EGG_SPIRAL_RADIUS 0x200
+/* The apex sits 0x400 out from Spyro at 45 degrees to his heading: each
+ * axis takes APEX_DIAG (0x400 / sqrt 2) times the sum / difference of his
+ * heading's cosine and sine (some clones spell it APEX_DIAG_4 * 4). */
+#define EGG_APEX_DIAG 724
+#define EGG_APEX_DIAG_4 0xB5
 
 /* ->mode of the save-prompt host (ACTOR_TYPE_SAVE_HOST, SaveHostState). */
 enum SaveHostMode {

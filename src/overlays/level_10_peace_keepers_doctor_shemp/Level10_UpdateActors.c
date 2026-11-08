@@ -517,11 +517,11 @@ void Level10_UpdateActors(void) {
           CopyVector(svA, &spy->posX);
           cb = LookupCosine(g_bSpyroPersistentEulerZ * 0x10);
           cs = LookupSine(g_bSpyroPersistentEulerZ * 0x10);
-          x = cb * 0xB5;
-          y = cs * 0xB5;
+          x = cb * EGG_APEX_DIAG_4;
+          y = cs * EGG_APEX_DIAG_4;
           svA[0] += (y + x) * 4 >> 12;
-          svA[1] += (int)((LookupSine(g_bSpyroPersistentEulerZ * 0x10) * 0xB5) -
-                          (LookupCosine(g_bSpyroPersistentEulerZ * 0x10) * 0xB5U)) *
+          svA[1] += (int)((LookupSine(g_bSpyroPersistentEulerZ * 0x10) * EGG_APEX_DIAG_4) -
+                          (LookupCosine(g_bSpyroPersistentEulerZ * 0x10) * (unsigned)EGG_APEX_DIAG_4)) *
                         4 >>
                     12;
           svA[2] += EGG_APEX_HEIGHT;
