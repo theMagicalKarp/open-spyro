@@ -4,7 +4,7 @@
  * GS_FLIGHT_RESULTS, clear the six in-flight progress globals, scale the run score
  * (g_nFlightRunClock) by ten, and if this level's best-score slot
  * (g_anFlightClearTimes[g_nActiveWorldIndex]) is empty and all four objective counters
- * (g_anFlightTargetTally..3C) sum to 0x20, record the score there.
+ * (g_anFlightTargetTally..3C) sum to FLIGHT_TARGET_TOTAL, record the score there.
  * Identical body in the five flight-level overlays (level_5/11/17/23/29).
  */
 
@@ -37,7 +37,7 @@ void Level5_FlightEndHook(void) {
     ten = five << 1;
     g_nFlightRunClock = ten;
     if (cur == 0) {
-      if (g_anFlightTargetTally + g_nFlightTargetTally1 + g_nFlightTargetTally2 + g_nFlightTargetTally3 == 0x20) {
+      if (g_anFlightTargetTally + g_nFlightTargetTally1 + g_nFlightTargetTally2 + g_nFlightTargetTally3 == FLIGHT_TARGET_TOTAL) {
         *slot = ten;
       }
     }

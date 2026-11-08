@@ -9,7 +9,7 @@
  * (g_abFlightBonusPaid[course*5 + i]) pays the class bonus from the course reward
  * table (g_anFlightCourseBonusTable[course*5 + i]) into the level gem total
  * (g_anLevelGemsCollected[g_nLevelIndex]) and running score (g_nTotalTreasureCollected), 12 digits
- * (g_nGemTallyIconCount) per payout. A perfect run (tallies sum to 0x20) pays the
+ * (g_nGemTallyIconCount) per payout. A perfect run (tallies sum to FLIGHT_TARGET_TOTAL) pays the
  * fifth "all clear" bonus (g_anFlightCourseBonusTable_r4[course*5], flag g_abFlightBonusPaid_r4) and
  * records a best time (g_anFlightClearTimes[course], lower is better, 0 = unset)
  * from the run clock g_nFlightRunClock. Finally spins the reward digit ring
@@ -47,7 +47,7 @@ void Level23_HandleFlightResults(int reload) {
   g_nGamestate = GS_GAMEPLAY;
   InitLightVectorConstants();
   for (i = 0; i < 4; i++) {
-    if ((&g_anFlightTargetTally)[i] == 8) {
+    if ((&g_anFlightTargetTally)[i] == FLIGHT_CLASS_TARGETS) {
       int idx = g_nActiveWorldIndex * 5;
       int fbase = idx + (int)g_abFlightBonusPaid;
       unsigned char *flag = (unsigned char *)fbase + i;
@@ -61,7 +61,7 @@ void Level23_HandleFlightResults(int reload) {
       }
     }
   }
-  if (g_anFlightTargetTally + g_nFlightTargetTally1 + g_nFlightTargetTally2 + g_nFlightTargetTally3 == 0x20) {
+  if (g_anFlightTargetTally + g_nFlightTargetTally1 + g_nFlightTargetTally2 + g_nFlightTargetTally3 == FLIGHT_TARGET_TOTAL) {
     int idx = g_nActiveWorldIndex * 5;
     if (g_abFlightBonusPaid_r4[idx] == 0) {
       int off;

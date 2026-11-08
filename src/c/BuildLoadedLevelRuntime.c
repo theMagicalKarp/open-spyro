@@ -412,7 +412,7 @@ sprites:
       }
       CopyVector(pos, &g_pActorListBase[i].posX);
       pos[2] += GROUND_PROBE_LIFT;
-      FindGroundHeightBelow(pos, 0x10000);
+      FindGroundHeightBelow(pos, GROUND_PROBE_FAR);
       EncodeHitNormalToActorGroundCode(&g_pActorListBase[i]);
       type = g_pActorListBase[i].killGroup;
       if (((unsigned int)(type & 0x7F)) < 0x20) {

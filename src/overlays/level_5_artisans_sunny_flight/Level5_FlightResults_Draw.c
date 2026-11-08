@@ -240,7 +240,7 @@ void Level5_FlightResults_Draw(void)
     if (g_nSubMenuCursor < FLIGHT_REVEAL_TIME_BOARD)
     {
       bonus = 0;
-      if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == 0x20)
+      if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == FLIGHT_TARGET_TOTAL)
       {
         memcpy(buf, "COMPLETED", 10);
         allclear = 1;
@@ -293,7 +293,7 @@ void Level5_FlightResults_Draw(void)
       }
       if (g_nSubMenuCursor >= 2)
       {
-        if (g_anFlightTargetTally == 8)
+        if (g_anFlightTargetTally == FLIGHT_CLASS_TARGETS)
         {
           int k = g_nActiveWorldIndex * 5;
           if (g_abFlightBonusPaid[k] != 0)
@@ -336,7 +336,7 @@ void Level5_FlightResults_Draw(void)
       }
       if (g_nSubMenuCursor >= 4)
       {
-        if (g_nFlightTargetTally1 == 8)
+        if (g_nFlightTargetTally1 == FLIGHT_CLASS_TARGETS)
         {
           int k = g_nActiveWorldIndex * 5;
           if (g_abFlightBonusPaid_r1[k] != 0)
@@ -379,7 +379,7 @@ void Level5_FlightResults_Draw(void)
       }
       if (g_nSubMenuCursor >= 6)
       {
-        if (g_nFlightTargetTally2 == 8)
+        if (g_nFlightTargetTally2 == FLIGHT_CLASS_TARGETS)
         {
           int k = g_nActiveWorldIndex * 5;
           if (g_abFlightBonusPaid_r2[k] != 0)
@@ -422,7 +422,7 @@ void Level5_FlightResults_Draw(void)
       }
       if (g_nSubMenuCursor >= 8)
       {
-        if (g_nFlightTargetTally3 == 8)
+        if (g_nFlightTargetTally3 == FLIGHT_CLASS_TARGETS)
         {
           int k = g_nActiveWorldIndex * 5;
           if (g_abFlightBonusPaid_r3[k] != 0)
@@ -457,7 +457,7 @@ void Level5_FlightResults_Draw(void)
       BuildTextSpriteChain("ALL IN ONE", pos, 0x12, TINT_HUD);
       if (g_nSubMenuCursor >= FLIGHT_REVEAL_ALL)
       {
-        if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == 0x20)
+        if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == FLIGHT_TARGET_TOTAL)
         {
           int k = g_nActiveWorldIndex * 5;
           if (g_abFlightBonusPaid_r4[k] != 0)
@@ -621,7 +621,7 @@ void Level5_FlightResults_Draw(void)
       {
         snd = TINT_RED;
       }
-      if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == 0x20)
+      if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) == FLIGHT_TARGET_TOTAL)
       {
         count = g_pfnFlightTimeFormatter(g_nFlightRunClock, pos, snd);
         rec = g_pSpriteRecordWriteCursor;
@@ -644,7 +644,7 @@ void Level5_FlightResults_Draw(void)
       {
         g_pfnFlightTimeFormatter(-1, pos, TINT_HUD);
       }
-      if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) < 0x20)
+      if ((((g_anFlightTargetTally + g_nFlightTargetTally1) + g_nFlightTargetTally2) + g_nFlightTargetTally3) < FLIGHT_TARGET_TOTAL)
       {
         if (g_nFlightQuitFlag != 0)
         {

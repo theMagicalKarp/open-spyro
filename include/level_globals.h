@@ -123,6 +123,12 @@ extern int g_nActorPoolCapacity;
 #define ACTOR_POOL_RESERVE 0x15
 #define ACTOR_POOL_LOW() (g_nActorPoolCapacity - g_nActorPoolLiveCount < ACTOR_POOL_RESERVE)
 #define ACTOR_POOL_HAS_ROOM() (g_nActorPoolCapacity - g_nActorPoolLiveCount >= ACTOR_POOL_RESERVE)
+
+/* Flight levels: each of the four target classes (g_anFlightTargetTally) has
+ * FLIGHT_CLASS_TARGETS targets; all FLIGHT_TARGET_TOTAL taken is a full
+ * clear (the HUD ends the run, the results board shows it). */
+#define FLIGHT_CLASS_TARGETS 8
+#define FLIGHT_TARGET_TOTAL (4 * FLIGHT_CLASS_TARGETS)
 #endif
 extern int g_nActorPoolLiveCount;
 extern int g_nCameraCurrentMode;                         /* camera mode */

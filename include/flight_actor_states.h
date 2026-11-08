@@ -52,8 +52,18 @@ typedef struct HudState {
                      * tint presets 3..6 (g_anFlightTallyTintPresets); icons use tintMode class + 3 */
   int timer;        /* 0x94 */
   int count;        /* 0x98 icons still to spend */
-  int hurry;        /* 0x9C under a minute left */
+  int hurry;        /* 0x9C under FLIGHT_HURRY_SECONDS left: a tick every tenth */
 } HudState;
+
+/* The flight clocks count frames (60 a second). The countdown shows
+ * seconds as two digits, a point and tenths (HudState.digit[0..3]); time
+ * attack adds a minutes digit, a colon (digits 4/5) and hundredths, its run
+ * clock stopping at FLIGHT_RUN_CLOCK_MAX (9:59.98). Under
+ * FLIGHT_CLOCK_TICK_SECONDS each whole second sounds SFX_FLIGHT_CLOCK; under
+ * FLIGHT_HURRY_SECONDS each tenth sounds SFX_FLIGHT_HURRY. */
+#define FLIGHT_RUN_CLOCK_MAX 0x8C9F
+#define FLIGHT_CLOCK_TICK_SECONDS 10
+#define FLIGHT_HURRY_SECONDS 6
 
 /* ACTOR_TYPE_AIMED_SHOT: moves by ->vel until its timer runs out or
  * it hits something. */
