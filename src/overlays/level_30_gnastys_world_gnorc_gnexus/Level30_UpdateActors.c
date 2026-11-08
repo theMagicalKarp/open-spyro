@@ -2314,9 +2314,9 @@ void Level30_UpdateActors(void) {
         g_nPortalCamPathReverseFlag = actor->subMode;
         EBB_BREAK();
         portal = st->desc;
-        g_nPortalCamPathMaxStep = 0x60;
+        g_nPortalCamPathMaxStep = PORTALGUIDE_PATH_MAX_STEP;
         g_nSpyroRequestState = SPYRO_ST_JUMP;
-        g_bSpyroOtBinBias = 0x7F;
+        g_bSpyroOtBinBias = SPYRO_OT_BIAS_PINNED;
         g_pPortalCamPathData = portal;
         {
           PortalCamPath *pd = *(PortalCamPath **)st;
@@ -2329,8 +2329,8 @@ void Level30_UpdateActors(void) {
         AddVector(aim, aim, st->offset);
         span = VectorLength(aim, VEC_LEN_XYZ);
 
-        if (span >= 0x81) {
-          ScaleVector3ByRatio(aim, span, 0x80);
+        if (span > PORTALGUIDE_JUMP_SPEED) {
+          ScaleVector3ByRatio(aim, span, PORTALGUIDE_JUMP_SPEED);
         } else {
           int more;
 
@@ -2346,7 +2346,7 @@ void Level30_UpdateActors(void) {
           }
         }
 
-        if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
+        if (CollideSphereWithWorldAndActors(&CAM.posX, PORTALGUIDE_CAM_PROBE_RADIUS, PORTALGUIDE_CAM_PROBE_RADIUS) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && *g_pTriggerRegionTable[g_nGroundSurfaceType] == 6) {
           actor->mode = PORTALGUIDE_IDLE;
           AS_I32(g_nCameraNextMode) = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
@@ -2385,12 +2385,12 @@ void Level30_UpdateActors(void) {
 
       case PORTALGUIDE_GLIDE:
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT | SPYRO_RQ_NO_CLIP);
-        g_nPortalCamPathMaxStep = 0x60;
+        g_nPortalCamPathMaxStep = PORTALGUIDE_PATH_MAX_STEP;
         g_nSpyroRequestState = SPYRO_ST_GLIDE;
-        g_bSpyroOtBinBias = 0x7F;
+        g_bSpyroOtBinBias = SPYRO_OT_BIAS_PINNED;
         g_pPortalCamPathData = st->desc;
 
-        if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
+        if (CollideSphereWithWorldAndActors(&CAM.posX, PORTALGUIDE_CAM_PROBE_RADIUS, PORTALGUIDE_CAM_PROBE_RADIUS) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && *g_pTriggerRegionTable[g_nGroundSurfaceType] == 6) {
           actor->mode = PORTALGUIDE_IDLE;
           AS_I32(g_nCameraNextMode) = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);

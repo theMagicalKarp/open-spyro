@@ -4546,9 +4546,9 @@ void Level12_UpdateActors(void) {
              SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
         SPY.camPathReverse = actor->subMode;
         SPY.pPortalCamPath = st->desc;
-        SPY.camPathMaxStep = 0x60;
+        SPY.camPathMaxStep = PORTALGUIDE_PATH_MAX_STEP;
         SPY.requestState = SPYRO_ST_JUMP;
-        SPY.otBinBias = 0x7F;
+        SPY.otBinBias = SPYRO_OT_BIAS_PINNED;
 
         p = st->desc;
         AddVector(x368, p->point[0].pos, p->point[1].pos);
@@ -4558,8 +4558,8 @@ void Level12_UpdateActors(void) {
         AddVector(&SPY.requestVelX, &SPY.requestVelX, st->offset);
 
         mag = VectorLength(&SPY.requestVelX, VEC_LEN_XYZ);
-        if (mag > 128) {
-          ScaleVector3ByRatio(&SPY.requestVelX, mag, 128);
+        if (mag > PORTALGUIDE_JUMP_SPEED) {
+          ScaleVector3ByRatio(&SPY.requestVelX, mag, PORTALGUIDE_JUMP_SPEED);
         } else {
           if (actor->subMode != PORTAL_SIDE_FORWARD) {
             progressed = (st->desc->index < (st->desc->count - 1));
@@ -4572,7 +4572,7 @@ void Level12_UpdateActors(void) {
           }
         }
 
-        if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
+        if (CollideSphereWithWorldAndActors(&CAM.posX, PORTALGUIDE_CAM_PROBE_RADIUS, PORTALGUIDE_CAM_PROBE_RADIUS) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == TRIGGER_PORTAL) {
           actor->mode = PORTALGUIDE_IDLE;
           CAM.nextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
@@ -4606,13 +4606,13 @@ void Level12_UpdateActors(void) {
         break;
       }
       case PORTALGUIDE_GLIDE: {
-        SPY.requestMask = SPYRO_RQ_PENDING | 0x4000 | 0x2000 | 0x100;
+        SPY.requestMask = SPYRO_RQ_PENDING | SPYRO_RQ_NO_CLIP | SPYRO_RQ_FREEZE_INPUT | SPYRO_RQ_FORCE_STATE;
         SPY.pPortalCamPath = st->desc;
-        SPY.camPathMaxStep = 0x60;
+        SPY.camPathMaxStep = PORTALGUIDE_PATH_MAX_STEP;
         SPY.requestState = SPYRO_ST_GLIDE;
-        SPY.otBinBias = 0x7F;
+        SPY.otBinBias = SPYRO_OT_BIAS_PINNED;
 
-        if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
+        if (CollideSphereWithWorldAndActors(&CAM.posX, PORTALGUIDE_CAM_PROBE_RADIUS, PORTALGUIDE_CAM_PROBE_RADIUS) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == TRIGGER_PORTAL) {
           actor->mode = PORTALGUIDE_IDLE;
           CAM.nextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);

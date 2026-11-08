@@ -1697,10 +1697,10 @@ void Level33_UpdateActors(void) {
           anc = PATH_END(FIELD_RAW(st, GnastyState, PathData *, path2));
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
           *(int *)&g_anCameraActiveTargetParams = -ca << 4;
-          g_nCameraActiveTargetDistance = 0x1770;
-          g_nCameraActiveTargetPitch = 0x19;
+          g_nCameraActiveTargetDistance = GNASTY_SHOT_DIST;
+          g_nCameraActiveTargetPitch = BOSS_SHOT_PITCH;
           g_nCameraActiveTargetRoll = 0;
-          g_nCameraActiveTargetPitchBias = -0x32;
+          g_nCameraActiveTargetPitchBias = BOSS_SHOT_PITCH_BIAS;
           g_nCameraActiveTargetYawBias = 0;
           g_nCinematicActive = 1;
           g_pSpyroRequestCameraAnchor = anc;
@@ -1720,10 +1720,10 @@ void Level33_UpdateActors(void) {
         anc = (int *)((char *)*(PathData **)st + 8);
         g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
         *(int *)&g_anCameraActiveTargetParams = -ca << 4;
-        g_nCameraActiveTargetDistance = 0xFA0;
-        g_nCameraActiveTargetPitch = 0x19;
+        g_nCameraActiveTargetDistance = GNASTY_DEFEAT_SHOT_DIST;
+        g_nCameraActiveTargetPitch = BOSS_SHOT_PITCH;
         g_nCameraActiveTargetRoll = 0;
-        g_nCameraActiveTargetPitchBias = -0x32;
+        g_nCameraActiveTargetPitchBias = BOSS_SHOT_PITCH_BIAS;
         g_nCameraActiveTargetYawBias = 0;
         g_pSpyroRequestCameraAnchor = anc;
       }

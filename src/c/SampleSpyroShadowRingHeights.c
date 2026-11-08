@@ -43,8 +43,8 @@ void SampleSpyroShadowRingHeights(int probe) {
   CopyVector(g_anSpyroShadowPos, v);
   gz = g_nSpyroGroundHeightZ;
   g_anSpyroShadowPos[2] = gz;
-  if (g_bSpyroOtBinBias < 0x7F) {
-    g_bSpyroOtBinBias = 5;
+  if (g_bSpyroOtBinBias < SPYRO_OT_BIAS_PINNED) {
+    g_bSpyroOtBinBias = SPYRO_OT_BIAS_DEFAULT;
   }
   g_nSpyroShadowOtBinBias = 3;
   if ((g_anSpyroWorldPos[2] - gz) >= 0x365) {

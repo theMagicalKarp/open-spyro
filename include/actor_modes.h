@@ -472,6 +472,13 @@ enum PortalGuideMode {
   PORTALGUIDE_ENTER = 1, /* Spyro jumps toward the portal's midpoint */
   PORTALGUIDE_GLIDE = 2, /* Spyro glides along the portal camera path */
 };
+/* ENTER flies Spyro at up to JUMP_SPEED a frame toward the portal's
+ * midpoint (plus its offset); the portal camera path steps at most
+ * PATH_MAX_STEP a frame. The load starts once a CAM_PROBE_RADIUS sphere at
+ * the camera touches the portal's trigger region. */
+#define PORTALGUIDE_JUMP_SPEED 0x80
+#define PORTALGUIDE_PATH_MAX_STEP 0x60
+#define PORTALGUIDE_CAM_PROBE_RADIUS 0x300
 
 /* ->subMode of a portal guide: the side of the portal plane Spyro entered
  * from (g_nPortalCamPathReverseFlag). */
@@ -747,6 +754,14 @@ enum GnastyAnim {
 #define GNASTY_CAM_HOLD_FRAMES 0x3C
 #define GNASTY_CAM_RANGE 0x4000
 #define GNASTY_CAM_NEAR_RANGE 0x3000
+/* The scripted boss shots (Gnasty's path change and defeat, Doctor
+ * Shemp's retreat) look down BOSS_SHOT_PITCH with BOSS_SHOT_PITCH_BIAS from
+ * a boss-specific distance: GNASTY_SHOT_DIST (DEFEAT_SHOT_DIST once
+ * beaten). */
+#define BOSS_SHOT_PITCH 0x19
+#define BOSS_SHOT_PITCH_BIAS (-0x32)
+#define GNASTY_SHOT_DIST 0x1770
+#define GNASTY_DEFEAT_SHOT_DIST 0xFA0
 #define GNASTY_ESCAPE_FACING 0x28
 #define GNASTY_ESCAPE_RANGE 0x1B58
 /* Trail bombs (GNASTY_THROW): THROW_VOLLEY of them, released on frame
@@ -892,6 +907,7 @@ enum ShempAnim {
  * above. His blows (slam, strike, sweep) land on Spyro within their range,
  * at least HIT_ABOVE over his base and within HIT_DZ of it. */
 #define SHEMP_CAM_RANGE 0x2000
+#define SHEMP_RETREAT_SHOT_DIST 0x1770 /* SHEMP_RETREAT's shot (BOSS_SHOT_PITCH) */
 #define SHEMP_BACK_ARC 0x55
 #define SHEMP_SLAM_OPEN_FRAME 0x16
 #define SHEMP_SLAM_CLOSE_FRAME 0x30

@@ -3309,9 +3309,9 @@ void Level10_UpdateActors(void) {
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
           g_pSpyroRequestCameraAnchor = (int *)((unsigned char *)st->path + (off + 8));
           *(int *)&g_anCameraActiveTargetParams = -ca << 4;
-          g_nCameraActiveTargetDistance = 0x1770;
-          g_nCameraActiveTargetPitch = 0x19;
-          g_nCameraActiveTargetPitchBias = -0x32;
+          g_nCameraActiveTargetDistance = SHEMP_RETREAT_SHOT_DIST;
+          g_nCameraActiveTargetPitch = BOSS_SHOT_PITCH;
+          g_nCameraActiveTargetPitchBias = BOSS_SHOT_PITCH_BIAS;
           g_nCameraActiveTargetRoll = 0;
           g_nCameraActiveTargetYawBias = 0;
         } else {
