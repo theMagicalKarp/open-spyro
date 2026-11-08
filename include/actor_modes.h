@@ -2366,8 +2366,49 @@ enum BoltSentryMode {
 enum BoltSentryCue {
   BSENTRY_CUE_NONE = 0,
   BSENTRY_CUE_LEAP = 1,   /* Spyro in range and level: BSENTRY_LEAP down its path */
-  BSENTRY_CUE_PATROL = 2, /* Spyro ahead within 0x3000: BSENTRY_PATROL */
+  BSENTRY_CUE_PATROL = 2, /* Spyro ahead within PATROL_CUE_RANGE: BSENTRY_PATROL */
 };
+/* Bolt-sentry tuning (`range` is in 0x400 units). Only flamed within
+ * HIT_RANGE: it slides off along Spyro's heading from KNOCK_SPEED, losing
+ * KNOCK_DRAG a frame (contact KNOCK_CONTACT, radius MOVE_RADIUS), and bursts
+ * with BURST_SPARK_LIFE sparks. IDLE rouses with Spyro within ROUSE_RANGE
+ * and ROUSE_DZ; PATROL walks its path at PATROL_SPEED (nodes within
+ * PIVOT_THRESH) and throws at Spyro within THROW_RANGE and THROW_FACING;
+ * WATCH throws (THROW_GAP ticks apart) within WATCH_THROW_RANGE and ROUSE_DZ
+ * and lowers beyond LOWER_RANGE. A throw holds a glow over frames FX_FRAME
+ * .. +FX_FRAMES, spawns the bolt in hand on frames BOLT_FRAME .. +BOLT_FRAMES
+ * (Spyro within THROW_RANGE) and lets go on RELEASE_FRAME; hitting Spyro
+ * gloats RECOVER_TICKS. CUE_LEAP leaps with Spyro within `range` and
+ * LEAP_DZ, covering the distance in LEAP_STEPS moves over frames LEAP_FRAME
+ * .. +LEAP_FRAMES; CUE_PATROL fires within PATROL_CUE_RANGE and
+ * THROW_FACING. SUMMON raises its guards from frame SUMMON_FRAME. */
+#define BSENTRY_HIT_RANGE 0xE10
+#define BSENTRY_KNOCK_SPEED 0xF0
+#define BSENTRY_KNOCK_DRAG 0x10
+#define BSENTRY_KNOCK_CONTACT 0x1F4
+#define BSENTRY_MOVE_RADIUS 0x2BC
+#define BSENTRY_BURST_SPARK_LIFE 0x34
+#define BSENTRY_ROUSE_RANGE 0x1C00
+#define BSENTRY_ROUSE_DZ 0x44C
+#define BSENTRY_PATROL_SPEED 0x6E
+#define BSENTRY_PIVOT_THRESH 0x100
+#define BSENTRY_THROW_RANGE 0x1194
+#define BSENTRY_THROW_FACING 0x40
+#define BSENTRY_WATCH_THROW_RANGE 0xFA0
+#define BSENTRY_LOWER_RANGE 0x2000
+#define BSENTRY_THROW_GAP 0x3C
+#define BSENTRY_FX_FRAME 2
+#define BSENTRY_FX_FRAMES 0x1A
+#define BSENTRY_BOLT_FRAME 0xF
+#define BSENTRY_BOLT_FRAMES 3
+#define BSENTRY_RELEASE_FRAME 0x1C
+#define BSENTRY_RECOVER_TICKS 3
+#define BSENTRY_LEAP_DZ 0x3E8
+#define BSENTRY_LEAP_STEPS 12
+#define BSENTRY_LEAP_FRAME 8
+#define BSENTRY_LEAP_FRAMES 7
+#define BSENTRY_PATROL_CUE_RANGE 0x3000
+#define BSENTRY_SUMMON_FRAME 4
 
 /* ->mode of a paired guard (ACTOR_TYPE_GUARD_PAIR, GuardPairState; level 2);
  * the mode is also the animation index. */

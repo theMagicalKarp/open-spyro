@@ -98,6 +98,15 @@ enum AimedBoltMode {
   AIMBOLT_AT_LINK = 2,  /* steers toward `target` (the guard's link) and hits actors there */
 };
 
+/* An aimed bolt flies at SPEED (contact CONTACT_RADIUS) until its timer,
+ * a wall or a hit: AT_SPYRO hits him within HIT_RADIUS (a 1/32-unit shove
+ * along its heading), AT_LINK turns at most TURN_STEP a frame in yaw and
+ * pitch toward `target` and blasts actors within SPEED of it. */
+#define AIMBOLT_SPEED 0x15E
+#define AIMBOLT_CONTACT_RADIUS 0x96
+#define AIMBOLT_HIT_RADIUS 0xFA
+#define AIMBOLT_TURN_STEP 2
+
 /* ENTER_POSE_BRK with the pose constant split from the queue store (A285). */
 #define ENTER_POSE_BRK_B(a, n)                                                 \
   (a)->mode = (n);                                                            \
@@ -3407,9 +3416,9 @@ void Level19_UpdateActors(void) {
       BoltSentryState *st = actor->state;
       int i;
 
-      if (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER) && ApproxDist2D(&actor->posX, &spy->posX) < 0xE10 &&
+      if (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER) && ApproxDist2D(&actor->posX, &spy->posX) < BSENTRY_HIT_RANGE &&
           actor->mode != BSENTRY_KNOCKED) {
-        st->speed = 0xF0;
+        st->speed = BSENTRY_KNOCK_SPEED;
         st->heading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
@@ -3438,25 +3447,25 @@ void Level19_UpdateActors(void) {
         }
         ANIM_GO(actor, BSENTRY_IDLE);
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1C00 &&
-            ABS2(actor->posZ - SPY.posZ) < 0x44C) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < BSENTRY_ROUSE_RANGE &&
+            ABS2(actor->posZ - SPY.posZ) < BSENTRY_ROUSE_DZ) {
           ENTER_POSE_BRK(actor, BSENTRY_ROUSE);
         }
         break;
 
       case BSENTRY_PATROL:
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x6E, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+        if (PivotActorAlongPath(actor, st->path, BSENTRY_PIVOT_THRESH, BSENTRY_PATROL_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             PATH_ARRIVED(0)) {
-          if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1C00 &&
-              ABS2(actor->posZ - SPY.posZ) < 0x44C) {
+          if (ApproxDist2D(&actor->posX, &spy->posX) < BSENTRY_ROUSE_RANGE &&
+              ABS2(actor->posZ - SPY.posZ) < BSENTRY_ROUSE_DZ) {
             ENTER_POSE_BRK(actor, BSENTRY_ROUSE);
           }
           ENTER_POSE_BRK(actor, BSENTRY_IDLE);
         }
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1194 &&
+        if (ApproxDist2D(&actor->posX, &spy->posX) < BSENTRY_THROW_RANGE &&
             AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
-                                        g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8)) < 0x40) {
+                                        g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8)) < BSENTRY_THROW_FACING) {
           ENTER_POSE_BRK_B(actor, BSENTRY_THROW);
         }
         break;
@@ -3476,11 +3485,11 @@ void Level19_UpdateActors(void) {
           ENTER_POSE(actor, BSENTRY_SUMMON);
         }
         TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
-        if (TICK_DOWN(st->timer) != 0 && d < 0xFA0 &&
-            ABS2(actor->posZ - SPY.posZ) < 0x44C) {
+        if (TICK_DOWN(st->timer) != 0 && d < BSENTRY_WATCH_THROW_RANGE &&
+            ABS2(actor->posZ - SPY.posZ) < BSENTRY_ROUSE_DZ) {
           ENTER_POSE_BRK_B(actor, BSENTRY_THROW);
         }
-        if (d > 0x2000) {
+        if (d > BSENTRY_LOWER_RANGE) {
           ENTER_POSE_BRK(actor, BSENTRY_LOWER);
         }
         break;
@@ -3488,23 +3497,23 @@ void Level19_UpdateActors(void) {
 
       case BSENTRY_THROW:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if (st->fx == 0 && actor->nextFrame - 2U < 0x1A) {
+        if (st->fx == 0 && (unsigned)(actor->nextFrame - BSENTRY_FX_FRAME) < BSENTRY_FX_FRAMES) {
           st->fx = g_pfnLevelSpawnActor(ACTOR_TYPE_CARRIED_EGG, actor);
         }
-        if (st->bolt == 0 && actor->nextFrame - 0xFU < 3 &&
-            ApproxDist2D(&actor->posX, &spy->posX) < 0x1194) {
+        if (st->bolt == 0 && (unsigned)(actor->nextFrame - BSENTRY_BOLT_FRAME) < BSENTRY_BOLT_FRAMES &&
+            ApproxDist2D(&actor->posX, &spy->posX) < BSENTRY_THROW_RANGE) {
           AimedBoltState *bs;
 
           st->bolt = g_pfnLevelSpawnActor(ACTOR_TYPE_AIMED_BOLT, actor);
           st->bolt->rotZ = actor->rotZ;
           bs = st->bolt->state;
           bs->mode = AIMBOLT_HELD;
-          g_dwSpyroTriggerEventFlags = SPY.triggerEvents | 0x26;
+          g_dwSpyroTriggerEventFlags = SPY.triggerEvents | SPYRO_EV_HIT_TINT | SPYRO_EV_CHARGE_HIT;
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 0, &st->bolt->posX);
           bs->parent = actor;
         }
-        if (actor->nextFrame >= 0x1C && st->bolt != 0) {
+        if (actor->nextFrame >= BSENTRY_RELEASE_FRAME && st->bolt != 0) {
           st->bolt->subMode = 1;
           st->bolt = 0;
           if (st->fx != 0) {
@@ -3515,7 +3524,7 @@ void Level19_UpdateActors(void) {
           }
         }
         if (g_nSpyroState == SPYRO_ST_HURT_TINT) {
-          st->timer = 3;
+          st->timer = BSENTRY_RECOVER_TICKS;
         }
         if (g_nActorAnimDone != 0) {
           if (st->timer != 0) {
@@ -3523,7 +3532,7 @@ void Level19_UpdateActors(void) {
             ANIM_RESET(actor, BSENTRY_RECOVER);
             break;
           }
-          st->timer = 0x3C;
+          st->timer = BSENTRY_THROW_GAP;
           actor->mode = BSENTRY_IDLE;
           ANIM_RESET(actor, BSENTRY_IDLE);
         }
@@ -3542,8 +3551,8 @@ void Level19_UpdateActors(void) {
           st->bolt = 0;
         }
         if (st->speed > 0) {
-          MoveActorAlongAngle(actor, st->heading, st->speed, 0x1F4, 0x2BC, one);
-          st->speed -= 0x10;
+          MoveActorAlongAngle(actor, st->heading, st->speed, BSENTRY_KNOCK_CONTACT, BSENTRY_MOVE_RADIUS, one);
+          st->speed -= BSENTRY_KNOCK_DRAG;
         }
         if (g_nActorAnimDone != 0) {
           for (i = 0; i < 3; i++) {
@@ -3552,7 +3561,7 @@ void Level19_UpdateActors(void) {
             }
           }
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x34);
+          BurstActorWithSound(actor, BSENTRY_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3568,18 +3577,18 @@ void Level19_UpdateActors(void) {
         switch (st->mode) {
         case BSENTRY_CUE_LEAP:
           if (ApproxDist2D(&actor->posX, &spy->posX) < st->range << 10 &&
-              ABS2(SPY_DZ(actor)) < 0x3E8) {
+              ABS2(SPY_DZ(actor)) < BSENTRY_LEAP_DZ) {
             st->mode = BSENTRY_CUE_NONE;
-            st->speed = ApproxDist2D(&actor->posX, &st->path->nodes[1].x) / 12;
+            st->speed = ApproxDist2D(&actor->posX, &st->path->nodes[1].x) / BSENTRY_LEAP_STEPS;
             st->unread24 = 0x6E;
             ENTER_POSE_BRK(actor, BSENTRY_LEAP);
           }
           break;
         case BSENTRY_CUE_PATROL:
-          if (ApproxDist2D(&actor->posX, &spy->posX) < 0x3000 &&
+          if (ApproxDist2D(&actor->posX, &spy->posX) < BSENTRY_PATROL_CUE_RANGE &&
               AbsAngleDelta8(actor->rotZ,
                             ArcTan2(spy->posX - actor->posX,
-                                          g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8)) < 0x40) {
+                                          g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8)) < BSENTRY_THROW_FACING) {
             st->mode = BSENTRY_CUE_NONE;
             ENTER_POSE_BRK(actor, BSENTRY_PATROL);
           }
@@ -3600,14 +3609,14 @@ void Level19_UpdateActors(void) {
           }
           ANIM_QUEUE(actor, BSENTRY_IDLE);
         }
-        if (actor->nextFrame - 8U < 7 && st->speed < d) {
+        if ((unsigned)(actor->nextFrame - BSENTRY_LEAP_FRAME) < BSENTRY_LEAP_FRAMES && st->speed < d) {
           MoveActorAlongAngle(actor, h, st->speed, 0, 0, 0);
         }
         break;
       }
 
       case BSENTRY_SUMMON:
-        if (actor->nextFrame >= 4) {
+        if (actor->nextFrame >= BSENTRY_SUMMON_FRAME) {
           st->guards = one;
         }
         if (g_nActorAnimDone != 0) {
@@ -3654,11 +3663,11 @@ void Level19_UpdateActors(void) {
         if (t > 0x80) {
           t -= 0x100;
         }
-        if (t > 2) {
-          t = 2;
+        if (t > AIMBOLT_TURN_STEP) {
+          t = AIMBOLT_TURN_STEP;
         }
-        if (t < -2) {
-          t = -2;
+        if (t < -AIMBOLT_TURN_STEP) {
+          t = -AIMBOLT_TURN_STEP;
         }
         actor->rotZ += t;
         t = (ArcTan2(ApproxDist2D(&actor->posX, st->target),
@@ -3668,16 +3677,16 @@ void Level19_UpdateActors(void) {
         if (t > 0x80) {
           t -= 0x100;
         }
-        if (t > 2) {
-          t = 2;
+        if (t > AIMBOLT_TURN_STEP) {
+          t = AIMBOLT_TURN_STEP;
         }
-        if (t < -2) {
-          t = -2;
+        if (t < -AIMBOLT_TURN_STEP) {
+          t = -AIMBOLT_TURN_STEP;
         }
         actor->rotY += t;
       }
       CopyVector(o480, &actor->posX);
-      if (st->mode == one /* AIMBOLT_AT_SPYRO */ && RaiseSpyroTriggerInRadius(&actor->posX, 0xFA, SPYRO_EV_HIT_TINT | SPYRO_EV_CHARGE_HIT) != 0) {
+      if (st->mode == one /* AIMBOLT_AT_SPYRO */ && RaiseSpyroTriggerInRadius(&actor->posX, AIMBOLT_HIT_RADIUS, SPYRO_EV_HIT_TINT | SPYRO_EV_CHARGE_HIT) != 0) {
         g_anSpyroRequestVelocity.x = (short)((unsigned short *)g_anCosineLut)[actor->rotZ] >> 5;
         g_nSpyroRequestVelocityY = (short)((unsigned short *)g_anSineLut)[actor->rotZ] >> 5;
         g_nSpyroRequestVelocityZ = 0;
@@ -3685,7 +3694,7 @@ void Level19_UpdateActors(void) {
         continue;
       }
       if (st->mode == AIMBOLT_AT_LINK &&
-          DispatchActorContactAtSphere(&actor->posX, 0x15E, 0, ACTOR_HIT_BLAST, actor, CONTACT_STOP_AT_SOLID) != 0) {
+          DispatchActorContactAtSphere(&actor->posX, AIMBOLT_SPEED, 0, ACTOR_HIT_BLAST, actor, CONTACT_STOP_AT_SOLID) != 0) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -3693,7 +3702,7 @@ void Level19_UpdateActors(void) {
         DespawnActorRecord(actor);
         continue;
       }
-      if (TryMoveActorForward(actor, 0x15E, 0x96, 0, 0) != 0) {
+      if (TryMoveActorForward(actor, AIMBOLT_SPEED, AIMBOLT_CONTACT_RADIUS, 0, 0) != 0) {
         DespawnActorRecord(actor);
         continue;
       }
