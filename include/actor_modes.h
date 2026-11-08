@@ -3238,11 +3238,11 @@ enum LootCritterMode {
 enum LootCritterHomeStep {
   LCRITTER_HOME_ORBIT = 0,    /* steers round its home point away from Spyro; stuck there with
                                * Spyro off the home side: BREAKOUT */
-  LCRITTER_HOME_BREAKOUT = 1, /* runs on along Spyro-to-home; turned or 0x1800 out: ORBIT */
+  LCRITTER_HOME_BREAKOUT = 1, /* runs on along Spyro-to-home; turned or ORBIT_RADIUS out: ORBIT */
 };
 
 /* CritterState.mode: how a homeless loot critter (no CritterState.hasHome)
- * runs its path during LCRITTER_FLEE. Spyro within 0x1800 always restarts at
+ * runs its path during LCRITTER_FLEE. Spyro within NOTICE_RANGE always restarts at
  * PICK; reaching a path end drops it to LCRITTER_WATCH. */
 enum LootCritterRun {
   LCRITTER_RUN_PICK = 0,     /* sets the path direction away from Spyro, then DASH */
@@ -3250,6 +3250,44 @@ enum LootCritterRun {
   LCRITTER_RUN_WANDER = 2,   /* walks the path */
   LCRITTER_RUN_DASH = 3,     /* runs fast; once clear of Spyro: OPPOSITE */
 };
+/* Loot-critter tuning. Hit, it slides from KNOCK_SPEED (CHARGE_KNOCK_SPEED
+ * charged) and KNOCK_VZ up, losing KNOCK_DRAG and KNOCK_GRAVITY a frame, and
+ * bursts with BURST_SPARK_LIFE sparks. LCRITTER_WATCH flees once Spyro is
+ * within NOTICE_RANGE. A homed critter flees at FLEE_BASE_SPEED less 1/32 of
+ * Spyro's distance (FLEE_MIN_SPEED..FLEE_MAX_SPEED): within HOME_NEAR of
+ * home it just runs from him; else it orbits home at ORBIT_RADIUS while
+ * Spyro is within ORBIT_RANGE and off its home bearing by ORBIT_FACING
+ * (ORBIT_FACING_WIDE on animation 4), settling back to WATCH within
+ * ORBIT_SETTLED. Turning harder than STUCK_TURN for STUCK_FRAMES with Spyro
+ * off the home side by BREAKOUT_FACING breaks out, until turned BREAKOUT_TURN
+ * off or ORBIT_RADIUS from home. A homeless critter runs its path (reaching
+ * nodes within PIVOT_THRESH) at WANDER_SPEED, DASH_SPEED when dashing; DASH
+ * ends beyond CLEAR_RANGE, OPPOSITE beyond WANDER_RANGE. */
+#define LCRITTER_KNOCK_SPEED 0x96
+#define LCRITTER_CHARGE_KNOCK_SPEED 0xE1
+#define LCRITTER_KNOCK_VZ 0x80
+#define LCRITTER_KNOCK_DRAG 0xC
+#define LCRITTER_KNOCK_GRAVITY 0x10
+#define LCRITTER_BURST_SPARK_LIFE 0x18
+#define LCRITTER_NOTICE_RANGE 0x1800
+#define LCRITTER_FLEE_BASE_SPEED 0x154
+#define LCRITTER_FLEE_MIN_SPEED 0x8C
+#define LCRITTER_FLEE_MAX_SPEED 0xF0
+#define LCRITTER_HOME_NEAR 0x1000
+#define LCRITTER_ORBIT_RADIUS 0x1800
+#define LCRITTER_ORBIT_RANGE 0x3000
+#define LCRITTER_ORBIT_FACING 10
+#define LCRITTER_ORBIT_FACING_WIDE 0x28
+#define LCRITTER_ORBIT_SETTLED 0x1E
+#define LCRITTER_STUCK_TURN 0x5A
+#define LCRITTER_STUCK_FRAMES 0x1E
+#define LCRITTER_BREAKOUT_FACING 0x20
+#define LCRITTER_BREAKOUT_TURN 0x50
+#define LCRITTER_PIVOT_THRESH 0x200
+#define LCRITTER_WANDER_SPEED 0xC8
+#define LCRITTER_DASH_SPEED 0xF0
+#define LCRITTER_CLEAR_RANGE 0x2800
+#define LCRITTER_WANDER_RANGE 0x3000
 
 /* ->mode of a loot thief (ACTOR_TYPE_LOOT_THIEF, LootThiefState; level 34);
  * the mode is also the animation index. LootThiefState.leg steps its run. */
@@ -3896,17 +3934,117 @@ enum BreakableWallAnim {
 
 /* SuperflameGiverState.kind: how long the granted superflame lasts. */
 enum SuperflameGiverKind {
-  SFKIND_TIMED = 0,       /* 0x384 frames */
-  SFKIND_ENDLESS = 1,     /* g_nSpyroSuperflameTimer 0x9450C00: effectively for good */
-  SFKIND_SHORT = 2,       /* 0x30C frames */
-  SFKIND_ENDLESS_FAR = 3, /* ENDLESS, granted from a wider range (0xD48) */
+  SFKIND_TIMED = 0,       /* SFGIVER_TIMED_FRAMES */
+  SFKIND_ENDLESS = 1,     /* SFGIVER_ENDLESS_FRAMES: effectively for good */
+  SFKIND_SHORT = 2,       /* SFGIVER_SHORT_FRAMES */
+  SFKIND_ENDLESS_FAR = 3, /* ENDLESS, granted from SFGIVER_GRANT_RANGE_FAR */
 };
+/* Superflame durations (g_nSpyroSuperflameTimer frames) per kind. */
+#define SFGIVER_TIMED_FRAMES 0x384
+#define SFGIVER_SHORT_FRAMES 0x30C
+#define SFGIVER_ENDLESS_FRAMES 0x9450C00
+/* Superflame-giver tuning. SFGIVER_IDLE grants once Spyro (no superflame
+ * yet) is within GRANT_RANGE (GRANT_RANGE_FAR for SFKIND_ENDLESS_FAR) and
+ * GRANT_DZ, facing it within GRANT_FACING; an alert drops it CIRCLE_DROP
+ * into SFGIVER_CIRCLE, which steers round its first path node at
+ * CIRCLE_RADIUS and CIRCLE_SPEED. SFGIVER_GRANT flies (FLY_SPEED, snapping
+ * within ARRIVE_RANGE; climbing at most CLIMB a frame, snapping within
+ * SETTLE_DZ) to AHEAD in front of and AHEAD_DROP below Spyro for
+ * APPROACH_TICKS, with the camera anchored CAM_AHEAD in front of and
+ * CAM_RAISE above him at CAM_DISTANCE. The cast throws a spread mote
+ * MOTE_REACH ahead (MOTE_REACH_ALT for the ALT giver) from frame MOTE_FRAME
+ * and grants on frame GRANT_FRAME (GRANT_FRAME_ALT), lingering LINGER_TICKS.
+ * SFGIVER_RETURN flies home the same way; SFGIVER_WALK walks its path at
+ * WALK_SPEED. */
+#define SFGIVER_GRANT_RANGE 0xA8C
+#define SFGIVER_GRANT_RANGE_FAR 0xD48
+#define SFGIVER_GRANT_DZ 0x7D0
+#define SFGIVER_GRANT_FACING 0x1E
+#define SFGIVER_CIRCLE_DROP 0x1F4
+#define SFGIVER_CIRCLE_RADIUS 0xBB8
+#define SFGIVER_CIRCLE_SPEED 0x78
+#define SFGIVER_FLY_SPEED 0x64
+#define SFGIVER_ARRIVE_RANGE 0x50
+#define SFGIVER_CLIMB 0x32
+#define SFGIVER_SETTLE_DZ 0x28
+#define SFGIVER_AHEAD 0xE1
+#define SFGIVER_AHEAD_DROP 0x17C
+#define SFGIVER_APPROACH_TICKS 0x4B
+#define SFGIVER_CAM_AHEAD 0x4B
+#define SFGIVER_CAM_RAISE 0x64
+#define SFGIVER_CAM_DISTANCE 0x400
+#define SFGIVER_MOTE_REACH 0x140
+#define SFGIVER_MOTE_REACH_ALT 0x190
+#define SFGIVER_MOTE_FRAME 6
+#define SFGIVER_GRANT_FRAME 7
+#define SFGIVER_GRANT_FRAME_ALT 0xE
+#define SFGIVER_LINGER_TICKS 0xA
+#define SFGIVER_WALK_SPEED 0x96
 
 /* PathRunnerState.mode: which of its two runs a path runner makes. */
 enum PathRunnerRun {
   PRUN_FIRST = 0,  /* drives goal flag 0 */
   PRUN_SECOND = 1, /* drives goal flag 1 */
 };
+/* Path-runner tuning. Hit, it slides from KNOCK_SPEED (CHARGE_KNOCK_SPEED
+ * charged) and KNOCK_VZ up, losing KNOCK_DRAG and KNOCK_GRAVITY a frame, and
+ * bursts with BURST_SPARK_LIFE sparks. RUNNER_RUN: RUN_SPEED (or the
+ * node's), at least CHASED_SPEED with Spyro within CHASED_RANGE; it reaches
+ * a node within PIVOT_THRESH, falls RUN_GRAVITY a frame (FLEE_GRAVITY when
+ * fleeing) to -MAX_FALL onto the floor found FLOOR_PROBE_RAISE above it, and
+ * stops to prod its target within PROD_RANGE. A run's goal flag is raised
+ * at its goal node with Spyro within GOAL_RANGE and GOAL_DZ. */
+#define PRUN_KNOCK_SPEED 0x3C
+#define PRUN_CHARGE_KNOCK_SPEED 0x55
+#define PRUN_KNOCK_VZ 0x3C
+#define PRUN_KNOCK_DRAG 0xC
+#define PRUN_KNOCK_GRAVITY 0xC
+#define PRUN_BURST_SPARK_LIFE 0x18
+#define PRUN_RUN_SPEED 0xB4
+#define PRUN_CHASED_SPEED 0xAA
+#define PRUN_CHASED_RANGE 0x1400
+#define PRUN_PIVOT_THRESH 0x17C
+#define PRUN_RUN_GRAVITY 0x1E
+#define PRUN_FLEE_GRAVITY 10
+#define PRUN_MAX_FALL 0x190
+#define PRUN_FLOOR_PROBE_RAISE 0xBB8
+#define PRUN_PROD_RANGE 0x9C4
+#define PRUN_FIRST_GOAL_NODE 0x1C
+#define PRUN_FIRST_GOAL_RANGE 0x1C00
+#define PRUN_FIRST_GOAL_DZ 0x898
+#define PRUN_SECOND_GOAL_NODE 0xA
+#define PRUN_SECOND_GOAL_RANGE 0x1D4C
+#define PRUN_SECOND_GOAL_DZ 0xBB8
+/* Jump launches (PATH_JUMP_*): running RUN_JUMP_LOW / MID; fleeing
+ * FLEE_JUMP_LOW, FLEE_JUMP_MID (FLEE_JUMP_MID_SECOND on the second run),
+ * FLEE_JUMP_HIGH. */
+#define PRUN_RUN_JUMP_LOW 0xDC
+#define PRUN_RUN_JUMP_MID 0x140
+#define PRUN_FLEE_JUMP_LOW 0x17C
+#define PRUN_FLEE_JUMP_MID 0x104
+#define PRUN_FLEE_JUMP_MID_SECOND 0xD2
+#define PRUN_FLEE_JUMP_HIGH 0xC8
+/* RUNNER_WAIT flees once Spyro is within `range` and facing it within
+ * SPOT_FACING; RUNNER_FLEE runs at FLEE_SPEED (or the node's), kicking up
+ * sparks above SPARK_SPEED. RUNNER_DODGE circles its path point away from
+ * Spyro at DODGE_SPEED, creeping (CREEP_SPEED) after DODGE_TICKS lined up
+ * within DODGE_SETTLED; CREEP taunts once within CREEP_SETTLED and both
+ * dodge again when Spyro charges or comes within CREEP_ALERT_RANGE /
+ * TAUNT_ALERT_RANGE. LOOKOUT returns home (RETURN_SPEED, arriving within
+ * HOME_RANGE) once Spyro is below it and within LOOKOUT_RANGE of its base. */
+#define PRUN_SPOT_FACING 0x20
+#define PRUN_FLEE_SPEED 0xF0
+#define PRUN_SPARK_SPEED 0x118
+#define PRUN_DODGE_SPEED 0x64
+#define PRUN_DODGE_SETTLED 0x23
+#define PRUN_DODGE_TICKS 0x78
+#define PRUN_CREEP_SPEED 0xC8
+#define PRUN_CREEP_SETTLED 0x46
+#define PRUN_CREEP_ALERT_RANGE 0xFA0
+#define PRUN_TAUNT_ALERT_RANGE 0x12C0
+#define PRUN_LOOKOUT_RANGE 0x1964
+#define PRUN_RETURN_SPEED 0x118
+#define PRUN_HOME_RANGE 0x12C
 
 /* LootVortexState.mode (ACTOR_TYPE_LOOT_VORTEX; levels 33/34). */
 enum LootVortexStage {

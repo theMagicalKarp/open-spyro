@@ -1784,14 +1784,14 @@ void Level34_UpdateActors(void) {
       int turn;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != LCRITTER_KNOCKED) {
-        st->knockSpeed = 0x96;
+        st->knockSpeed = LCRITTER_KNOCK_SPEED;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->knockSpeed = 0xE1;
+          st->knockSpeed = LCRITTER_CHARGE_KNOCK_SPEED;
         }
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
             g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->knockZSpeed = 0x80;
+        st->knockZSpeed = LCRITTER_KNOCK_VZ;
         if (actor->dropKind == DROP_GEM_ROLL) {
           actor->dropKind = ACTOR_TYPE_SPARX_FOOD;
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -1829,7 +1829,7 @@ void Level34_UpdateActors(void) {
       switch (actor->mode) {
       case LCRITTER_WATCH:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < LCRITTER_NOTICE_RANGE) {
           actor->subMode = LCRITTER_HOME_ORBIT;
           ENTER_POSE(actor, LCRITTER_FLEE);
         }
@@ -1838,13 +1838,13 @@ void Level34_UpdateActors(void) {
       case LCRITTER_FLEE:
         if (st->hasHome != 0) {
           pos = &actor->posX;
-          speed = 0x154;
+          speed = LCRITTER_FLEE_BASE_SPEED;
           speed -= ApproxDist2D(pos, &SPY.posX) >> 5;
-          if (speed < 0x8C) {
-            speed = 0x8C;
+          if (speed < LCRITTER_FLEE_MIN_SPEED) {
+            speed = LCRITTER_FLEE_MIN_SPEED;
           }
-          if (speed > 0xF0) {
-            speed = 0xF0;
+          if (speed > LCRITTER_FLEE_MAX_SPEED) {
+            speed = LCRITTER_FLEE_MAX_SPEED;
           }
           switch (actor->subMode) {
           case LCRITTER_HOME_ORBIT: {
@@ -1854,7 +1854,7 @@ void Level34_UpdateActors(void) {
             int a;
             int b;
 
-            if (ApproxDist2D(pos, FP_PT(st->path, 0)) < 0x1000) {
+            if (ApproxDist2D(pos, FP_PT(st->path, 0)) < LCRITTER_HOME_NEAR) {
               TurnActorYawTowardAngle(actor,
                             ArcTan2(actor->posX - SPY.posX,
                                           actor->posY - SPY.posY, ATAN_ANGLE8),
@@ -1862,31 +1862,31 @@ void Level34_UpdateActors(void) {
               MoveActorAlongHeading(actor, speed, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
               break;
             }
-            lim = 10;
+            lim = LCRITTER_ORBIT_FACING;
             a = ArcTan2(FP_X(st->path, st->path->cur) - SPY.posX,
                               FP_Y(st->path, st->path->cur) - SPY.posY, ATAN_ANGLE8);
             b = ArcTan2(actor->posX - FP_X(st->path, 0),
                               actor->posY - FP_Y(st->path, 0), ATAN_ANGLE8);
             if (actor->nextAnim == 4) {
-              lim = 0x28;
+              lim = LCRITTER_ORBIT_FACING_WIDE;
             }
             if (AbsAngleDelta8(a, b) > lim &&
-                ApproxDist2D(pos, &SPY.posX) < 0x3000) {
-              turn = SteerActorAroundPoint(actor, FP_PT(st->path, 0), 0x1800, a, 5,
+                ApproxDist2D(pos, &SPY.posX) < LCRITTER_ORBIT_RANGE) {
+              turn = SteerActorAroundPoint(actor, FP_PT(st->path, 0), LCRITTER_ORBIT_RADIUS, a, 5,
                                    speed, 0xE, 0x14, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_FOLLOW_FLOOR);
             }
-            if (turn > 0x5A) {
+            if (turn > LCRITTER_STUCK_TURN) {
               st->stuck++;
             } else {
               st->stuck = 0;
             }
-            if (turn < 0x1E) {
+            if (turn < LCRITTER_ORBIT_SETTLED) {
               ENTER_POSE(actor, LCRITTER_WATCH);
             }
-            if (st->stuck >= 0x1E &&
+            if (st->stuck >= LCRITTER_STUCK_FRAMES &&
                 AbsAngleDelta8(home, ArcTan2(SPY.posX - actor->posX,
                                                   SPY.posY - actor->posY, ATAN_ANGLE8)) >
-                    0x20) {
+                    LCRITTER_BREAKOUT_FACING) {
               actor->subMode = LCRITTER_HOME_BREAKOUT;
             }
             break;
@@ -1900,10 +1900,10 @@ void Level34_UpdateActors(void) {
 
             TurnActorYawTowardAngle(actor, a, 8, 0, YAW_HOLD_IN_BAND);
             MoveActorAlongHeading(actor, speed, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-            if (AbsAngleDelta8(a, b) > 0x50) {
+            if (AbsAngleDelta8(a, b) > LCRITTER_BREAKOUT_TURN) {
               actor->subMode = LCRITTER_HOME_ORBIT;
             }
-            if (ApproxDist2D(pos, FP_PT(st->path, 0)) > 0x1800) {
+            if (ApproxDist2D(pos, FP_PT(st->path, 0)) > LCRITTER_ORBIT_RADIUS) {
               actor->subMode = LCRITTER_HOME_ORBIT;
             }
             break;
@@ -1938,7 +1938,7 @@ void Level34_UpdateActors(void) {
             int dir;
             int r;
 
-            if (FindNearestPathPointToSpyro(st->path, &critterAwayNode) > 0x3000) {
+            if (FindNearestPathPointToSpyro(st->path, &critterAwayNode) > LCRITTER_WANDER_RANGE) {
               st->mode = LCRITTER_RUN_WANDER;
             }
             critterAwayNode = (critterAwayNode + (st->path->count >> 1)) % st->path->count;
@@ -1957,7 +1957,7 @@ void Level34_UpdateActors(void) {
             if (dir != st->path->dir) {
               st->path->dir = dir;
             }
-            r = PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+            r = PivotActorAlongPath(actor, st->path, LCRITTER_PIVOT_THRESH, LCRITTER_WANDER_SPEED, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             if (r & PATH_ARRIVED_FLAG) {
               r &= ~PATH_ARRIVED_FLAG;
               if (st->path->dir == -1) {
@@ -1968,14 +1968,14 @@ void Level34_UpdateActors(void) {
                 ENTER_POSE(actor, LCRITTER_WATCH);
               }
             }
-            if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
+            if (ApproxDist2D(&actor->posX, &SPY.posX) < LCRITTER_NOTICE_RANGE) {
               st->mode = LCRITTER_RUN_PICK;
             }
             break;
           }
 
           case LCRITTER_RUN_WANDER: {
-            int r = PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 8, 0x1E,
+            int r = PivotActorAlongPath(actor, st->path, LCRITTER_PIVOT_THRESH, LCRITTER_WANDER_SPEED, 0, 8, 0x1E,
                                   PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
             if (r & PATH_ARRIVED_FLAG) {
@@ -1988,17 +1988,17 @@ void Level34_UpdateActors(void) {
                 ENTER_POSE(actor, LCRITTER_WATCH);
               }
             }
-            if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
+            if (ApproxDist2D(&actor->posX, &SPY.posX) < LCRITTER_NOTICE_RANGE) {
               st->mode = LCRITTER_RUN_PICK;
             }
             break;
           }
 
           case LCRITTER_RUN_DASH:
-            if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x2800) {
+            if (ApproxDist2D(&actor->posX, &SPY.posX) > LCRITTER_CLEAR_RANGE) {
               st->mode = one;
             }
-            PivotActorAlongPath(actor, st->path, 0x200, 0xF0, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+            PivotActorAlongPath(actor, st->path, LCRITTER_PIVOT_THRESH, LCRITTER_DASH_SPEED, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             break;
           }
         }
@@ -2006,10 +2006,10 @@ void Level34_UpdateActors(void) {
 
       case LCRITTER_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed,
-                      0xC, 0x10);
+                      LCRITTER_KNOCK_DRAG, LCRITTER_KNOCK_GRAVITY);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, LCRITTER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

@@ -3014,11 +3014,11 @@ void Level21_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode >= RUNNER_WAIT &&
           actor->mode != RUNNER_FLEE) {
-        st->knockSpeed = 0x3C;
+        st->knockSpeed = PRUN_KNOCK_SPEED;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->knockSpeed = 0x55;
+          st->knockSpeed = PRUN_CHARGE_KNOCK_SPEED;
         }
-        st->knockZSpeed = 0x3C;
+        st->knockZSpeed = PRUN_KNOCK_VZ;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                    actor->posY - spy->posY, ATAN_ANGLE8),
                                      spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
@@ -3139,18 +3139,18 @@ void Level21_UpdateActors(void) {
         int z;
 
         t = RUN_FLAGS(st->path) & PATH_NODE_SPEED;
-        spd = 0xB4;
+        spd = PRUN_RUN_SPEED;
         if (t != 0) {
           spd = t;
         }
-        if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1400 && spd < 0xAA) {
-          spd = 0xAA;
+        if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < PRUN_CHASED_RANGE && spd < PRUN_CHASED_SPEED) {
+          spd = PRUN_CHASED_SPEED;
         }
-        r = PivotActorAlongPath(actor, st->path, 0x17C, spd, 0, 8, 0x28, PIVOT_TURN_ANY, 0);
-        floor = ProbeActorGroundHeightRaised(actor, 0xBB8);
-        st->knockZSpeed -= 0x1E;
-        if (st->knockZSpeed < -0x190) {
-          st->knockZSpeed = -0x190;
+        r = PivotActorAlongPath(actor, st->path, PRUN_PIVOT_THRESH, spd, 0, 8, 0x28, PIVOT_TURN_ANY, 0);
+        floor = ProbeActorGroundHeightRaised(actor, PRUN_FLOOR_PROBE_RAISE);
+        st->knockZSpeed -= PRUN_RUN_GRAVITY;
+        if (st->knockZSpeed < -PRUN_MAX_FALL) {
+          st->knockZSpeed = -PRUN_MAX_FALL;
         }
         z = actor->posZ + st->knockZSpeed;
         if (z < floor) {
@@ -3158,14 +3158,14 @@ void Level21_UpdateActors(void) {
         } else {
           actor->posZ = z;
         }
-        if (st->mode == PRUN_FIRST && r == PATH_ARRIVED(0x1C) &&
-            ApproxDist2D(&actor->posX, &spy->posX) < 0x1C00 &&
-            ABS2(SPY_DZ(actor)) < 0x898) {
+        if (st->mode == PRUN_FIRST && r == PATH_ARRIVED(PRUN_FIRST_GOAL_NODE) &&
+            ApproxDist2D(&actor->posX, &spy->posX) < PRUN_FIRST_GOAL_RANGE &&
+            ABS2(SPY_DZ(actor)) < PRUN_FIRST_GOAL_DZ) {
           g_anLevelRunnerArrived[st->mode] = 1;
         }
-        if (st->mode == PRUN_SECOND && r == PATH_ARRIVED(0xA) &&
-            ApproxDist2D(&actor->posX, &spy->posX) < 0x1D4C &&
-            ABS2(SPY_DZ(actor)) < 0xBB8) {
+        if (st->mode == PRUN_SECOND && r == PATH_ARRIVED(PRUN_SECOND_GOAL_NODE) &&
+            ApproxDist2D(&actor->posX, &spy->posX) < PRUN_SECOND_GOAL_RANGE &&
+            ABS2(SPY_DZ(actor)) < PRUN_SECOND_GOAL_DZ) {
           g_anLevelRunnerArrived[st->mode] = 1;
         }
         if (r == PATH_ARRIVED(0)) {
@@ -3191,16 +3191,16 @@ void Level21_UpdateActors(void) {
         } else if (r & PATH_ARRIVED_FLAG) {
           switch (RUN_FLAGS(st->path) & PATH_NODE_JUMP) {
           case PATH_JUMP_LOW:
-            st->knockZSpeed = 0xDC;
+            st->knockZSpeed = PRUN_RUN_JUMP_LOW;
             break;
           case PATH_JUMP_MID:
-            st->knockZSpeed = 0x140;
+            st->knockZSpeed = PRUN_RUN_JUMP_MID;
             break;
           }
         }
         if (st->target != -1 && actor->posZ == floor &&
             ApproxDist2D(&actor->posX, &g_pActorListBase[st->target].posX) <
-                0x9C4) {
+                PRUN_PROD_RANGE) {
           actor->mode = RUNNER_PROD;
           continue;
         }
@@ -3222,10 +3222,10 @@ void Level21_UpdateActors(void) {
         continue;
 
       case RUNNER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, PRUN_KNOCK_DRAG, PRUN_KNOCK_GRAVITY);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, PRUN_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3237,7 +3237,7 @@ void Level21_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &spy->posX) < st->range &&
             AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(actor->posX - spy->posX,
-                                        actor->posY - SPY.posY, ATAN_ANGLE8)) < 0x20) {
+                                        actor->posY - SPY.posY, ATAN_ANGLE8)) < PRUN_SPOT_FACING) {
           st->path = st->home;
           st->path->cur = 0;
           st->knockZSpeed = 0;
@@ -3256,15 +3256,15 @@ void Level21_UpdateActors(void) {
 
         ANIM_GO(actor, RUNNER_RUN);
         t = RUN_FLAGS(st->path) & PATH_NODE_SPEED;
-        spd = 0xF0;
+        spd = PRUN_FLEE_SPEED;
         if (t != 0) {
           spd = t;
         }
-        r = PivotActorAlongPath(actor, st->path, 0x17C, spd, 0, 10, 0x28, PIVOT_TURN_ANY, 0);
-        floor = ProbeActorGroundHeightRaised(actor, 0xBB8);
-        st->knockZSpeed -= 10;
-        if (st->knockZSpeed < -0x190) {
-          st->knockZSpeed = -0x190;
+        r = PivotActorAlongPath(actor, st->path, PRUN_PIVOT_THRESH, spd, 0, 10, 0x28, PIVOT_TURN_ANY, 0);
+        floor = ProbeActorGroundHeightRaised(actor, PRUN_FLOOR_PROBE_RAISE);
+        st->knockZSpeed -= PRUN_FLEE_GRAVITY;
+        if (st->knockZSpeed < -PRUN_MAX_FALL) {
+          st->knockZSpeed = -PRUN_MAX_FALL;
         }
         z = actor->posZ + st->knockZSpeed;
         if (z < floor) {
@@ -3272,7 +3272,7 @@ void Level21_UpdateActors(void) {
         } else {
           actor->posZ = z;
         }
-        if (spd > 0x118) {
+        if (spd > PRUN_SPARK_SPEED) {
           int k = 0;
 
           do {
@@ -3292,7 +3292,7 @@ void Level21_UpdateActors(void) {
           } while (k < 3);
         }
         last = st->mode < 2 ? st->path->count - 1 : 0;
-        if (r == 0x103 && st->mode == PRUN_FIRST && g_anLevelRunnerArrived[0] == 0) {
+        if (r == PATH_ARRIVED(3) && st->mode == PRUN_FIRST && g_anLevelRunnerArrived[0] == 0) {
           st->path->cur = st->path->count - 1;
           CopyVector(&actor->posX,
                         (int *)((unsigned char *)st->path + (st->path->count * 16 - 0x18)));
@@ -3313,17 +3313,17 @@ void Level21_UpdateActors(void) {
         if (r & PATH_ARRIVED_FLAG) {
           switch (RUN_FLAGS(st->path) & PATH_NODE_JUMP) {
           case PATH_JUMP_LOW:
-            st->knockZSpeed = 0x17C;
+            st->knockZSpeed = PRUN_FLEE_JUMP_LOW;
             break;
           case PATH_JUMP_MID:
             if (st->mode == PRUN_FIRST) {
-              st->knockZSpeed = 0x104;
+              st->knockZSpeed = PRUN_FLEE_JUMP_MID;
             } else if (st->mode == PRUN_SECOND) {
-              st->knockZSpeed = 0xD2;
+              st->knockZSpeed = PRUN_FLEE_JUMP_MID_SECOND;
             }
             break;
-          case 3:
-            st->knockZSpeed = 0xC8;
+          case PATH_JUMP_HIGH:
+            st->knockZSpeed = PRUN_FLEE_JUMP_HIGH;
             break;
           }
         }
@@ -3340,16 +3340,16 @@ void Level21_UpdateActors(void) {
                            spy->posY - PATH_Y(st->path, st->path->cur), ATAN_ANGLE8) +
              0x80) &
                 0xFF,
-            0x1E, 0x64, 0xF, 0x20, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
+            0x1E, PRUN_DODGE_SPEED, 0xF, 0x20, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
         SnapActorToGround(actor);
-        if (r < 0x23 && spy->state != SPYRO_ST_CHARGE && spy->state != SPYRO_ST_CHARGE_AIR) {
+        if (r < PRUN_DODGE_SETTLED && spy->state != SPYRO_ST_CHARGE && spy->state != SPYRO_ST_CHARGE_AIR) {
           if (TICK_DOWN(st->timer) != 0) {
             actor->mode = RUNNER_CREEP;
             continue;
           }
           continue;
         }
-        st->timer = 0x78;
+        st->timer = PRUN_DODGE_TICKS;
         continue;
       }
 
@@ -3361,9 +3361,9 @@ void Level21_UpdateActors(void) {
             actor, PATH_PT(st->path, st->path->cur), st->dodgeRadius,
             ArcTan2(spy->posX - PATH_X(st->path, st->path->cur),
                           spy->posY - PATH_Y(st->path, st->path->cur), ATAN_ANGLE8),
-            5, 0xC8, 0xF, 0x20, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
+            5, PRUN_CREEP_SPEED, 0xF, 0x20, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
         SnapActorToGround(actor);
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0xFA0) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < PRUN_CREEP_ALERT_RANGE) {
           actor->mode = RUNNER_DODGE;
           continue;
         }
@@ -3371,7 +3371,7 @@ void Level21_UpdateActors(void) {
           actor->mode = RUNNER_DODGE;
           continue;
         }
-        if (r < 0x46) {
+        if (r < PRUN_CREEP_SETTLED) {
           actor->mode = RUNNER_TAUNT;
           continue;
         }
@@ -3381,7 +3381,7 @@ void Level21_UpdateActors(void) {
       case RUNNER_TAUNT:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         ANIM_GO(actor, RUNNER_ANIM_STAND);
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x12C0) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < PRUN_TAUNT_ALERT_RANGE) {
           actor->mode = RUNNER_DODGE;
           continue;
         }
@@ -3395,7 +3395,7 @@ void Level21_UpdateActors(void) {
         ANIM_GO(actor, RUNNER_ANIM_STAND);
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (SPY_DZ(actor) < 0 &&
-            ApproxDist2D(&actor->posX, (int *)(base - 8)) < 0x1964) {
+            ApproxDist2D(&actor->posX, (int *)(base - 8)) < PRUN_LOOKOUT_RANGE) {
           actor->mode = RUNNER_RETURN;
           continue;
         }
@@ -3407,11 +3407,11 @@ void Level21_UpdateActors(void) {
                           ArcTan2(PATH_X(st->home, 0) - actor->posX,
                                         PATH_Y(st->home, 0) - actor->posY, ATAN_ANGLE8),
                           8, 0x14, YAW_STEP_IN_BAND) != 0) {
-          if (ApproxDist2D(&actor->posX, PATH_PT(st->home, 0)) < 0x12C) {
+          if (ApproxDist2D(&actor->posX, PATH_PT(st->home, 0)) < PRUN_HOME_RANGE) {
             actor->mode = RUNNER_WAIT;
             continue;
           }
-          MoveActorAlongHeading(actor, 0x118, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          MoveActorAlongHeading(actor, PRUN_RETURN_SPEED, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         continue;
 

@@ -2910,14 +2910,14 @@ void Level14_UpdateActors(void) {
       }
       switch (actor->mode) {
       case SFGIVER_IDLE: {
-        int range = 0xA8C;
+        int range = SFGIVER_GRANT_RANGE;
 
         if (st->kind == SFKIND_ENDLESS_FAR) {
-          range = 0xD48;
+          range = SFGIVER_GRANT_RANGE_FAR;
         }
         if (st->alert != 0) {
           actor->mode = SFGIVER_CIRCLE;
-          actor->posZ -= 0x1F4;
+          actor->posZ -= SFGIVER_CIRCLE_DROP;
           continue;
         }
         if (actor->subMode != 0) {
@@ -2930,11 +2930,11 @@ void Level14_UpdateActors(void) {
         if ((st->link == -1 || g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) &&
             st->cool == 0 && g_nSpyroSuperflameTimer == 0 &&
             ApproxDist2D(&actor->posX, &SPY.posX) < range &&
-            ABS2(SPY_DZ(actor)) < 0x7D0 &&
+            ABS2(SPY_DZ(actor)) < SFGIVER_GRANT_DZ &&
             AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(actor->posX - SPY.posX,
-                                        actor->posY - SPY.posY, ATAN_ANGLE8)) < 0x1E) {
-          st->timer = 0x4B;
+                                        actor->posY - SPY.posY, ATAN_ANGLE8)) < SFGIVER_GRANT_FACING) {
+          st->timer = SFGIVER_APPROACH_TICKS;
           actor->subMode = 0;
           actor->mode = SFGIVER_GRANT;
           continue;
@@ -2949,18 +2949,18 @@ void Level14_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         CopyVector(aheadOfSpyro, &SPY.posX);
         g_nCinematicActive = 1;
-        aheadOfSpyro[0] += (g_anCosineLut[SPY.bodyRotZ] * 0xE1) >> 10;
-        aheadOfSpyro[1] += (g_anSineLut[SPY.bodyRotZ] * 0xE1) >> 10;
-        aheadOfSpyro[2] -= 0x17C;
+        aheadOfSpyro[0] += (g_anCosineLut[SPY.bodyRotZ] * SFGIVER_AHEAD) >> 10;
+        aheadOfSpyro[1] += (g_anSineLut[SPY.bodyRotZ] * SFGIVER_AHEAD) >> 10;
+        aheadOfSpyro[2] -= SFGIVER_AHEAD_DROP;
         dz = aheadOfSpyro[2] - actor->posZ;
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         CopyVector(st->cam, &SPY.posX);
-        st->cam[0] += (g_anCosineLut[SPY.bodyRotZ] * 0x4B) >> 10;
-        st->cam[1] += (*(nv = &g_anSineLut[SPY.bodyRotZ]) * 0x4B) >> 10;
-        st->cam[2] += 0x64;
+        st->cam[0] += (g_anCosineLut[SPY.bodyRotZ] * SFGIVER_CAM_AHEAD) >> 10;
+        st->cam[1] += (*(nv = &g_anSineLut[SPY.bodyRotZ]) * SFGIVER_CAM_AHEAD) >> 10;
+        st->cam[2] += SFGIVER_CAM_RAISE;
         g_pSpyroRequestCameraAnchor = st->cam;
         g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
-        g_anCameraActiveTargetParams.w[2] = 0x400;
+        g_anCameraActiveTargetParams.w[2] = SFGIVER_CAM_DISTANCE;
         g_anCameraActiveTargetParams.w[1] = 0;
         g_anCameraActiveTargetParams.w[3] = 0;
         g_anCameraActiveTargetParams.w[4] = 0;
@@ -2969,22 +2969,22 @@ void Level14_UpdateActors(void) {
         g_anCameraActiveTargetParams.w[0] = -(SPY.bodyRotZ + 0x40) << 4;
         switch (actor->subMode) {
         case SFGIVER_SUB_APPROACH:
-          if (ApproxDist2D(&actor->posX, aheadOfSpyro) > 0x50) {
+          if (ApproxDist2D(&actor->posX, aheadOfSpyro) > SFGIVER_ARRIVE_RANGE) {
             MoveActorAlongAngle(actor,
                           ArcTan2(aheadOfSpyro[0] - actor->posX,
                                         aheadOfSpyro[1] - actor->posY, ATAN_ANGLE8),
-                          0x64, 0, 0, 0);
+                          SFGIVER_FLY_SPEED, 0, 0, 0);
           } else {
             actor->posX = aheadOfSpyro[0];
             actor->posY = aheadOfSpyro[1];
           }
-          if (ABS2(dz) > 0x28) {
+          if (ABS2(dz) > SFGIVER_SETTLE_DZ) {
             if (dz < 0) {
-              if (dz < -0x32) {
-                dz = -0x32;
+              if (dz < -SFGIVER_CLIMB) {
+                dz = -SFGIVER_CLIMB;
               }
-            } else if (dz > 0 && dz > 0x32) {
-              dz = 0x32;
+            } else if (dz > 0 && dz > SFGIVER_CLIMB) {
+              dz = SFGIVER_CLIMB;
             }
             actor->posZ += dz;
           } else {
@@ -3002,12 +3002,12 @@ void Level14_UpdateActors(void) {
           int *p;
           int *q;
 
-          if (actor->nextFrame >= 6 &&
+          if (actor->nextFrame >= SFGIVER_MOTE_FRAME &&
               (++st->count == 2 || actor->type == ACTOR_TYPE_SUPERFLAME_GIVER_ALT)) {
-            int r = 0x140;
+            int r = SFGIVER_MOTE_REACH;
 
             if (actor->type == ACTOR_TYPE_SUPERFLAME_GIVER_ALT) {
-              r = 0x190;
+              r = SFGIVER_MOTE_REACH_ALT;
             }
             CopyVector(aheadOfSpyro, &SPY.posX);
             aheadOfSpyro[0] += (r * g_anCosineLut[SPY.bodyRotZ]) >> 12;
@@ -3017,21 +3017,21 @@ void Level14_UpdateActors(void) {
           }
           if (g_nActorAnimDone != 0) {
             ANIM_GO(actor, SFGIVER_ANIM_IDLE);
-            st->timer = 0xA;
+            st->timer = SFGIVER_LINGER_TICKS;
             actor->subMode = SFGIVER_SUB_LINGER;
             PlayActorMeshVoice(actor, SFGIVER_VOICE_CAST_END, 0);
           }
-          f = 7;
+          f = SFGIVER_GRANT_FRAME;
           if (actor->type == ACTOR_TYPE_SUPERFLAME_GIVER_ALT) {
-            f = 0xE;
+            f = SFGIVER_GRANT_FRAME_ALT;
           }
           if (actor->nextFrame >= f && *(p = &g_nSpyroSuperflameTimer) == 0) {
             if (st->kind == SFKIND_ENDLESS || st->kind == SFKIND_ENDLESS_FAR) {
-              *p = 0x9450C00;
+              *p = SFGIVER_ENDLESS_FRAMES;
             } else if (st->kind == SFKIND_SHORT) {
-              *p = 0x30C;
+              *p = SFGIVER_SHORT_FRAMES;
             } else {
-              *p = 0x384;
+              *p = SFGIVER_TIMED_FRAMES;
             }
             *(q = &g_dwSpyroRequestMask) |= (SPYRO_RQ_PENDING | SPYRO_RQ_SCRIPTED_WALK);
             g_bSpyroRequestYaw = st->heading;
@@ -3062,26 +3062,26 @@ void Level14_UpdateActors(void) {
         } else {
           TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         }
-        if (ApproxDist2D(&actor->posX, st->home) > 0x50) {
+        if (ApproxDist2D(&actor->posX, st->home) > SFGIVER_ARRIVE_RANGE) {
           MoveActorAlongAngle(actor,
                         ArcTan2(st->home[0] - actor->posX,
                                       st->home[1] - actor->posY, ATAN_ANGLE8),
-                        0x64, 0, 0, 0);
+                        SFGIVER_FLY_SPEED, 0, 0, 0);
         } else {
           actor->posX = st->home[0];
           actor->posY = st->home[1];
         }
-        if (ABS2(dz) > 0x28) {
+        if (ABS2(dz) > SFGIVER_SETTLE_DZ) {
           if (dz < 0) {
-            if (dz < -0x32) {
-              dz = -0x32;
+            if (dz < -SFGIVER_CLIMB) {
+              dz = -SFGIVER_CLIMB;
             }
-          } else if (dz > 0 && dz > 0x32) {
-            dz = 0x32;
+          } else if (dz > 0 && dz > SFGIVER_CLIMB) {
+            dz = SFGIVER_CLIMB;
           }
           actor->posZ += dz;
         }
-        if (ApproxDist2D(&actor->posX, st->home) < 0x51 && ABS2(dz) < 0x29) {
+        if (ApproxDist2D(&actor->posX, st->home) < SFGIVER_ARRIVE_RANGE + 1 && ABS2(dz) < SFGIVER_SETTLE_DZ + 1) {
           actor->subMode = 0;
           actor->mode = SFGIVER_IDLE;
           continue;
@@ -3090,8 +3090,8 @@ void Level14_UpdateActors(void) {
       }
 
       case SFGIVER_WALK:
-        if (WalkActorAlongWaypoints(actor, st->path, 0x200, 0x96, 0, 6, 0x10, 0) ==
-            0x100) {
+        if (WalkActorAlongWaypoints(actor, st->path, 0x200, SFGIVER_WALK_SPEED, 0, 6, 0x10, 0) ==
+            PATH_ARRIVED(0)) {
           actor->subMode = 0;
           CopyVector(st->home, &actor->posX);
           actor->mode = SFGIVER_IDLE;
@@ -3113,7 +3113,7 @@ void Level14_UpdateActors(void) {
           actor->mode = SFGIVER_RETURN;
           continue;
         }
-        SteerActorAroundPoint(actor, &st->path->nodes[0].x, 0xBB8, h, 8, 0x78, 0xE,
+        SteerActorAroundPoint(actor, &st->path->nodes[0].x, SFGIVER_CIRCLE_RADIUS, h, 8, SFGIVER_CIRCLE_SPEED, 0xE,
                       0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
         break;
       }
