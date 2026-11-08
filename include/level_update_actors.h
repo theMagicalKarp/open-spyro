@@ -220,7 +220,8 @@ typedef struct {
   int headLook;                   /* 0x1A4 */
   char pad1A8[0x4C];
   int requestMask;               /* 0x1F4 g_dwSpyroRequestMask (SPYRO_RQ_*) */
-  char pad1F8[0x8];
+  int requestTargetX;             /* 0x1F8 g_anSpyroRequestTargetPos[0] */
+  int requestTargetY;             /* 0x1FC g_anSpyroRequestTargetPos[1] */
   int requestTargetZ;             /* 0x200 g_nSpyroRequestTargetZ */
   char pad204[0x2];
   unsigned char requestYaw;       /* 0x206 g_bSpyroRequestYaw */

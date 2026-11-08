@@ -652,10 +652,10 @@ void Level25_UpdateActors(void) {
         if (TICK_DOWN(st->timer) == 0) {
           break;
         }
-        if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1800) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) >= PGRAB_NOTICE_RANGE) {
           break;
         }
-        if (ABS(actor->posZ - actor->floorOffset - g_nSpyroWorldPosZ + SPYRO_RADIUS) >= 0x200) {
+        if (ABS(actor->posZ - actor->floorOffset - g_nSpyroWorldPosZ + SPYRO_RADIUS) >= PGRAB_GRAB_DZ) {
           break;
         }
         if (g_nSpyroAirborneFrames != 0 || g_nSpyroState == SPYRO_ST_CHARGE || g_nSpyroState == SPYRO_ST_CHARGE_AIR) {
@@ -666,23 +666,23 @@ void Level25_UpdateActors(void) {
         }
         if (AbsAngleDelta8(actor->rotZ,
                           ArcTan2(SPY.posX - actor->posX,
-                                        SPY.posY - actor->posY, ATAN_ANGLE8)) >= 0x20) {
+                                        SPY.posY - actor->posY, ATAN_ANGLE8)) >= PGRAB_FACING) {
           break;
         }
         actor->subMode = 0;
         *st->slot = actor;
-        st->hold = 0x3C;
-        st->timer = 0x3C;
+        st->hold = PGRAB_HOLD_TICKS;
+        st->timer = PGRAB_ENGAGE_TICKS;
         ENTER_POSE(actor, PGRAB_CHASE);
 
       case PGRAB_GRAB:
         if (g_nActorAnimDone != 0) {
           actor->subMode = 1;
           L25_UNLINK(st);
-          st->timer = 0xF0;
+          st->timer = PGRAB_RETURN_TICKS;
           ENTER_POSE(actor, PGRAB_CHASE);
         }
-        if (g_nSpyroDrawSuppressed != 0 && actor->nextFrame >= 0x20) {
+        if (g_nSpyroDrawSuppressed != 0 && actor->nextFrame >= PGRAB_RELEASE_FRAME) {
           SubtractVector((int *)&g_anSpyroRequestVelocity, st->grip, &actor->posX);
           RShiftVector3((int *)&g_anSpyroRequestVelocity, 4);
           g_dwSpyroTriggerEventFlags = SPYRO_EV_KNOCKBACK_2;
@@ -693,11 +693,11 @@ void Level25_UpdateActors(void) {
         if (actor->subMode != 0) {
           break;
         }
-        if (actor->nextFrame >= 7) {
+        if (actor->nextFrame >= PGRAB_PULL_FRAME) {
           if (g_nSpyroDrawSuppressed == 0) {
-            st->grip[0] = 0x25F;
+            st->grip[0] = PGRAB_GRIP_FWD;
             st->grip[1] = 0;
-            st->grip[2] = 0x367;
+            st->grip[2] = PGRAB_GRIP_UP;
             RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
             RotateVectorByMatrix(actor->mtx, st->grip, st->grip);
             AddVector(st->grip, &actor->posX, st->grip);
@@ -706,9 +706,9 @@ void Level25_UpdateActors(void) {
             int *v = svD;
 
             SubtractVector(v, st->grip, &SPY.posX);
-            ScaleVector3Sat(v, v, ((actor->nextFrame - 7) << 12) / 25);
+            ScaleVector3Sat(v, v, ((actor->nextFrame - PGRAB_PULL_FRAME) << 12) / PGRAB_PULL_FRAMES);
             RShiftVector3(v, 0xC);
-            AddVector((int *)((char *)&SPY + 0x1F8), &SPY.posX, v);
+            AddVector(&SPY.requestTargetX, &SPY.posX, v);
           }
           g_nSpyroRequestState = SPYRO_ST_IDLE;
           g_nSpyroDrawSuppressed = 1;
@@ -730,29 +730,29 @@ void Level25_UpdateActors(void) {
           heading = ArcTan2(st->homeX - actor->posX,
                                   st->homeY - actor->posY, ATAN_ANGLE8);
           dist = ApproxDist2D(&actor->posX, &st->homeX);
-          if (TICK_DOWN(st->timer) || dist < 0x20) {
-            st->timer = 0x3C;
+          if (TICK_DOWN(st->timer) || dist < PGRAB_HOME_RANGE) {
+            st->timer = PGRAB_ENGAGE_TICKS;
             ENTER_POSE(actor, PGRAB_WAIT);
           }
-          if (dist > 0x80) {
-            dist = 0x80;
+          if (dist > PGRAB_HOME_SPEED) {
+            dist = PGRAB_HOME_SPEED;
           }
           if (TurnActorYawTowardAngle(actor, heading, 4, 0x18, YAW_STEP_IN_BAND) == 0) {
             break;
           }
-          MoveActorAlongHeading(actor, dist, 0x500, 0x500, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE);
+          MoveActorAlongHeading(actor, dist, PGRAB_MOVE_RADIUS, PGRAB_MOVE_RADIUS, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE);
           break;
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         MoveActorAlongAngle(actor,
                       ArcTan2(SPY.posX - actor->posX,
                                     SPY.posY - actor->posY, ATAN_ANGLE8),
-                      0x200, 0x500, 0x500, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE);
+                      PGRAB_CHASE_SPEED, PGRAB_MOVE_RADIUS, PGRAB_MOVE_RADIUS, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE);
         if (TICK_DOWN(st->timer) == 0) {
-          if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x5DC) {
+          if (ApproxDist2D(&actor->posX, &SPY.posX) >= PGRAB_GRAB_RANGE) {
             break;
           }
-          if (ABS(actor->posZ - actor->floorOffset - g_nSpyroWorldPosZ + SPYRO_RADIUS) >= 0x200) {
+          if (ABS(actor->posZ - actor->floorOffset - g_nSpyroWorldPosZ + SPYRO_RADIUS) >= PGRAB_GRAB_DZ) {
             break;
           }
           actor->subMode = 0;
@@ -765,7 +765,7 @@ void Level25_UpdateActors(void) {
         }
         L25_DROP(st);
         actor->subMode = 1;
-        st->timer = 0xF0;
+        st->timer = PGRAB_RETURN_TICKS;
         break;
       grab:
         g_pActorListBase[st->link].subMode |= LANTERN_F_HELD;
@@ -779,16 +779,16 @@ void Level25_UpdateActors(void) {
         }
         actor->type = ACTOR_TYPE_GRABBER_LOOKOUT;
         actor->subMode = 1;
-        st->timer = 0xF0;
+        st->timer = PGRAB_RETURN_TICKS;
         actor->mode = LOOKOUT_CHASE;
         ANIM_RESET(actor, PGRAB_GRAB);
         continue;
 
       case PGRAB_EMERGE: {
-        int reach = (actor->nextFrame << 7) + 0x200;
+        int reach = (actor->nextFrame << 7) + PGRAB_EMERGE_REACH;
 
-        if (reach > 0x500) {
-          reach = 0x500;
+        if (reach > PGRAB_MOVE_RADIUS) {
+          reach = PGRAB_MOVE_RADIUS;
         }
         DispatchActorContactAtSphere(&actor->posX, reach, 0, 0, actor, CONTACT_PUSH_OUT);
         if (g_nActorAnimDone == 0) {
@@ -803,7 +803,7 @@ void Level25_UpdateActors(void) {
           break;
         }
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-        BurstActorWithSound(actor, 0x34);
+        BurstActorWithSound(actor, PGRAB_BURST_SPARK_LIFE);
         DespawnActorRecord(actor);
         continue;
       }
@@ -822,9 +822,9 @@ void Level25_UpdateActors(void) {
             *st->slot = 0;
           }
           if (actor->flags & ACTOR_HIT_FLAME) {
-            st->fleeSpeed = 0xC8;
+            st->fleeSpeed = LOOKOUT_FLAME_KNOCK_SPEED;
           } else {
-            st->fleeSpeed = 0x190;
+            st->fleeSpeed = LOOKOUT_KNOCK_SPEED;
           }
           st->fleeZSpeed = 0;
           st->fleeDir = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
@@ -854,15 +854,15 @@ void Level25_UpdateActors(void) {
       case LOOKOUT_WAIT:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (TICK_DOWN(st->timer) &&
-            ApproxDist2D(&actor->posX, &SPY.posX) < 0xC00 &&
-            ABS2(actor->posZ - actor->floorOffset - g_nSpyroWorldPosZ) < 0x400 &&
+            ApproxDist2D(&actor->posX, &SPY.posX) < LOOKOUT_NOTICE_RANGE &&
+            ABS2(actor->posZ - actor->floorOffset - g_nSpyroWorldPosZ) < LOOKOUT_NOTICE_DZ &&
             g_nSpyroState != SPYRO_ST_CHARGE && g_nSpyroState != SPYRO_ST_CHARGE_AIR && *st->slot == 0 &&
             AbsAngleDelta8(actor->rotZ,
                           ArcTan2(SPY.posX - actor->posX,
-                                        SPY.posY - actor->posY, ATAN_ANGLE8)) < 0x20) {
+                                        SPY.posY - actor->posY, ATAN_ANGLE8)) < PGRAB_FACING) {
           actor->subMode = 0;
           *st->slot = actor;
-          st->timer = 0x3C;
+          st->timer = PGRAB_ENGAGE_TICKS;
           ENTER_POSE(actor, LOOKOUT_CHASE);
         }
         break;
@@ -875,32 +875,32 @@ void Level25_UpdateActors(void) {
           heading = ArcTan2(st->homeX - actor->posX,
                                   st->homeY - actor->posY, ATAN_ANGLE8);
           dist = ApproxDist2D(&actor->posX, &st->homeX);
-          if (TICK_DOWN(st->timer) || dist < 0x20) {
-            st->timer = 0x3C;
+          if (TICK_DOWN(st->timer) || dist < PGRAB_HOME_RANGE) {
+            st->timer = PGRAB_ENGAGE_TICKS;
             ENTER_POSE(actor, LOOKOUT_WAIT);
           }
-          if (dist > 0x80) {
-            dist = 0x80;
+          if (dist > PGRAB_HOME_SPEED) {
+            dist = PGRAB_HOME_SPEED;
           }
           if (TurnActorYawTowardAngle(actor, heading, 4, 0x18, YAW_STEP_IN_BAND) == 0) {
             break;
           }
-          MoveActorAlongHeading(actor, dist, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE);
+          MoveActorAlongHeading(actor, dist, LOOKOUT_MOVE_RADIUS, LOOKOUT_MOVE_RADIUS, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE);
           break;
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         MoveActorAlongAngle(actor,
                       ArcTan2(SPY.posX - actor->posX,
                                     SPY.posY - actor->posY, ATAN_ANGLE8),
-                      0xF0, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE);
+                      LOOKOUT_CHASE_SPEED, LOOKOUT_MOVE_RADIUS, LOOKOUT_MOVE_RADIUS, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLIDE);
         if (TICK_DOWN(st->timer)) {
           *st->slot = 0;
           actor->subMode = 1;
-          st->timer = 0xF0;
+          st->timer = PGRAB_RETURN_TICKS;
           break;
         }
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x300 &&
-            ABS2(actor->posZ - actor->floorOffset - g_nSpyroWorldPosZ) < 0x320) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < LOOKOUT_SNAP_RANGE &&
+            ABS2(actor->posZ - actor->floorOffset - g_nSpyroWorldPosZ) < LOOKOUT_SNAP_DZ) {
           actor->mode = LOOKOUT_SNAP;
           actor->subMode = 0;
           if (actor->nextAnim != LOOKOUT_SNAP) {
@@ -916,18 +916,18 @@ void Level25_UpdateActors(void) {
         }
         actor->subMode = 1;
         *st->slot = 0;
-        st->timer = 0xF0;
+        st->timer = PGRAB_RETURN_TICKS;
         ENTER_POSE(actor, LOOKOUT_CHASE);
 
       case LOOKOUT_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, LOOKOUT_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
-        DriveActorTrackedMove(actor, &st->fleeSpeed, st->fleeDir, &st->fleeZSpeed, 0xC,
-                      0x10);
+        DriveActorTrackedMove(actor, &st->fleeSpeed, st->fleeDir, &st->fleeZSpeed, LOOKOUT_KNOCK_DRAG,
+                      LOOKOUT_KNOCK_GRAVITY);
         break;
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);

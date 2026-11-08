@@ -3376,6 +3376,50 @@ enum GrabberLookoutMode {
   LOOKOUT_SNAP = 2,    /* snaps at Spyro, then CHASE back home */
   LOOKOUT_KNOCKED = 3, /* knocked away, then bursts */
 };
+/* Grabber / lookout tuning, shared by both forms. Either engages Spyro in
+ * front of it within FACING, chasing for ENGAGE_TICKS (the grabber holding
+ * the slot HOLD_TICKS), then walks back to its post for up to RETURN_TICKS
+ * at up to HOME_SPEED, arriving within HOME_RANGE. The grabber notices
+ * Spyro (on the ground, not charging) within NOTICE_RANGE and GRAB_DZ,
+ * chases at CHASE_SPEED and grabs within GRAB_RANGE and GRAB_DZ, moving with
+ * MOVE_RADIUS. Its grab pulls Spyro to GRIP_FWD / GRIP_UP in front of it
+ * over PULL_FRAMES from frame PULL_FRAME and throws him out on
+ * RELEASE_FRAME. EMERGE pushes Spyro out of a sphere growing from
+ * EMERGE_REACH to MOVE_RADIUS. It bursts with BURST_SPARK_LIFE sparks. */
+#define PGRAB_FACING 0x20
+#define PGRAB_ENGAGE_TICKS 0x3C
+#define PGRAB_HOLD_TICKS 0x3C
+#define PGRAB_RETURN_TICKS 0xF0
+#define PGRAB_HOME_SPEED 0x80
+#define PGRAB_HOME_RANGE 0x20
+#define PGRAB_NOTICE_RANGE 0x1800
+#define PGRAB_GRAB_DZ 0x200
+#define PGRAB_GRAB_RANGE 0x5DC
+#define PGRAB_CHASE_SPEED 0x200
+#define PGRAB_MOVE_RADIUS 0x500
+#define PGRAB_GRIP_FWD 0x25F
+#define PGRAB_GRIP_UP 0x367
+#define PGRAB_PULL_FRAME 7
+#define PGRAB_PULL_FRAMES 25
+#define PGRAB_RELEASE_FRAME 0x20
+#define PGRAB_EMERGE_REACH 0x200
+#define PGRAB_BURST_SPARK_LIFE 0x34
+/* The lookout notices Spyro within NOTICE_RANGE and NOTICE_DZ, chases at
+ * CHASE_SPEED (moving with MOVE_RADIUS) and snaps within SNAP_RANGE and
+ * SNAP_DZ. Struck, it slides from KNOCK_SPEED (FLAME_KNOCK_SPEED when
+ * flamed) losing KNOCK_DRAG and KNOCK_GRAVITY a frame, then bursts with
+ * BURST_SPARK_LIFE sparks. */
+#define LOOKOUT_NOTICE_RANGE 0xC00
+#define LOOKOUT_NOTICE_DZ 0x400
+#define LOOKOUT_CHASE_SPEED 0xF0
+#define LOOKOUT_MOVE_RADIUS 0x200
+#define LOOKOUT_SNAP_RANGE 0x300
+#define LOOKOUT_SNAP_DZ 0x320
+#define LOOKOUT_KNOCK_SPEED 0x190
+#define LOOKOUT_FLAME_KNOCK_SPEED 0xC8
+#define LOOKOUT_KNOCK_DRAG 0xC
+#define LOOKOUT_KNOCK_GRAVITY 0x10
+#define LOOKOUT_BURST_SPARK_LIFE 0x18
 
 /* ->mode of a bomb lobber (ACTOR_TYPE_BOMB_LOBBER, BombLobberState; levels
  * 25/26); the mode is also the animation index. */
