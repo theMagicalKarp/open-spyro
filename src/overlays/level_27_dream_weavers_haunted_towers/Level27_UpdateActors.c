@@ -619,14 +619,14 @@ void Level27_UpdateActors(void) {
         int a;
 
         CopyVector(g104, &actor->posX);
-        if (actor->posX < 0x400 || actor->posY < 0x400 || actor->posZ < 0x400) {
+        if (actor->posX < SPLITSHOT_MIN_COORD || actor->posY < SPLITSHOT_MIN_COORD || actor->posZ < SPLITSHOT_MIN_COORD) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x80, SPYRO_EV_HIT_TINT | SPYRO_EV_UNREAD_20000) != 0) {
+        if (RaiseSpyroTriggerInRadius(&actor->posX, SPLITSHOT_HIT_RADIUS, SPYRO_EV_HIT_TINT | SPYRO_EV_UNREAD_20000) != 0) {
           i = 0;
           a = GetRandomU32() & 0x3F;
-          for (; i < 4; i++, a += 0x40) {
+          for (; i < SPLITSHOT_FRAGMENTS; i++, a += 0x40) {
             if (ACTOR_POOL_LOW()) {
               break;
             }
@@ -636,7 +636,7 @@ void Level27_UpdateActors(void) {
           continue;
         }
         if (TICK_DOWN(*timer) != 0 ||
-            TryMoveActorForward(actor, 0x80, 0, 0x100, 0) != 0 ||
+            TryMoveActorForward(actor, SPLITSHOT_SPEED, 0, SPLITSHOT_RADIUS, 0) != 0 ||
             CastRayWorldAndActors(g104, &actor->posX) != 0) {
           DespawnActorRecord(actor);
           continue;
@@ -2199,9 +2199,9 @@ void Level27_UpdateActors(void) {
                                   spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         {
           if (actor->flags & ACTOR_HIT_FLAME) {
-            st->knockSpeed = 0x8C;
+            st->knockSpeed = CRITTER_FLAME_KNOCK_SPEED;
           } else {
-            st->knockSpeed = 0xFA;
+            st->knockSpeed = CRITTER_KNOCK_SPEED;
           }
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2217,9 +2217,9 @@ void Level27_UpdateActors(void) {
         break;
 
       case CRITTER_KNOCKED:
-        if (st->knockSpeed >= 0x10) {
-          st->knockSpeed -= 0xF;
-          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        if (st->knockSpeed >= CRITTER_KNOCK_MIN_SPEED) {
+          st->knockSpeed -= CRITTER_KNOCK_DRAG;
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, CRITTER_MOVE_RADIUS, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);

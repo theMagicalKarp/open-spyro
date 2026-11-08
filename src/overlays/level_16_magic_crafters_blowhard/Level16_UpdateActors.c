@@ -738,16 +738,16 @@ void Level16_UpdateActors(void) {
 
       case SPLITSHOT_FLY:
         CopyVector(svA, &actor->posX);
-        if (actor->posX < 0x400 || actor->posY < 0x400 ||
-            actor->posZ < 0x400) {
+        if (actor->posX < SPLITSHOT_MIN_COORD || actor->posY < SPLITSHOT_MIN_COORD ||
+            actor->posZ < SPLITSHOT_MIN_COORD) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (RaiseSpyroTriggerInRadius(&actor->posX, 0x80, SPYRO_EV_HIT_TINT | SPYRO_EV_UNREAD_20000) != 0) {
+        if (RaiseSpyroTriggerInRadius(&actor->posX, SPLITSHOT_HIT_RADIUS, SPYRO_EV_HIT_TINT | SPYRO_EV_UNREAD_20000) != 0) {
           int i;
           int ang;
 
-          for (i = 0, ang = GetRandomU32() & 0x3F; i < 4; i++) {
+          for (i = 0, ang = GetRandomU32() & 0x3F; i < SPLITSHOT_FRAGMENTS; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
             }
@@ -758,7 +758,7 @@ void Level16_UpdateActors(void) {
           continue;
         }
         if (TICK_DOWN(*timer) != 0 ||
-            TryMoveActorForward(actor, 0x80, 0, 0x100, 0) != 0 ||
+            TryMoveActorForward(actor, SPLITSHOT_SPEED, 0, SPLITSHOT_RADIUS, 0) != 0 ||
             CastRayWorldAndActors(svA, &actor->posX) != 0) {
           DespawnActorRecord(actor);
           continue;

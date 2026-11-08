@@ -708,6 +708,14 @@ enum WanderingCritterMode {
   CRITTER_KNOCKED = 1, /* hit: slides away and despawns */
   CRITTER_REST = 2,    /* the _C kind's pause, then WANDER */
 };
+/* A hit wandering critter slides off from KNOCK_SPEED (FLAME_KNOCK_SPEED
+ * when flamed), losing KNOCK_DRAG a frame while at least KNOCK_MIN_SPEED,
+ * moving with MOVE_RADIUS. */
+#define CRITTER_KNOCK_SPEED 0xFA
+#define CRITTER_FLAME_KNOCK_SPEED 0x8C
+#define CRITTER_KNOCK_DRAG 0xF
+#define CRITTER_KNOCK_MIN_SPEED 0x10
+#define CRITTER_MOVE_RADIUS 0x2BC
 
 /* ->mode of Gnasty Gnorc (ACTOR_TYPE_GNASTY_GNORC, GnastyState). GnastyState
  * .phase counts the fight: flamed near the end of his phase-2 path he swaps
@@ -1243,6 +1251,14 @@ enum SplitShotMode {
   SPLITSHOT_FLY = 2,      /* frame 6+: launched; splits on reaching Spyro */
   SPLITSHOT_FRAGMENT = 3, /* one of the four a split leaves behind */
 };
+/* A flying split shot moves at SPEED (radius RADIUS) until its timer, a
+ * wall or leaving the level floor (any axis under MIN_COORD); within
+ * HIT_RADIUS of Spyro it splits into FRAGMENTS a quarter turn apart. */
+#define SPLITSHOT_SPEED 0x80
+#define SPLITSHOT_RADIUS 0x100
+#define SPLITSHOT_MIN_COORD 0x400
+#define SPLITSHOT_HIT_RADIUS 0x80
+#define SPLITSHOT_FRAGMENTS 4
 
 /* ->subMode of a cannon (ACTOR_TYPE_CANNON, CannonState; levels 8/19/25/34). */
 enum CannonSubMode {

@@ -3652,13 +3652,13 @@ void Level14_UpdateActors(void) {
       WispState *st = actor->state;
       int i;
 
-      if (actor->posX < 0x400 || actor->posY < 0x400 || actor->posZ < 0x400) {
+      if (actor->posX < WISP_MIN_COORD || actor->posY < WISP_MIN_COORD || actor->posZ < WISP_MIN_COORD) {
         DespawnActorRecord(actor);
         continue;
       }
       if (st->target != 0) {
         CopyVector(svK, &st->target->posX);
-        svK[2] += 0x2BC;
+        svK[2] += WISP_TARGET_RAISE;
       } else {
         CopyVector(svK, &SPY.posX);
       }
@@ -3670,17 +3670,17 @@ void Level14_UpdateActors(void) {
         if (d > 0x80) {
           d -= 0x100;
         }
-        if (d > 2) {
-          d = 2;
+        if (d > WISP_TURN_STEP) {
+          d = WISP_TURN_STEP;
         }
-        if (d < -2) {
-          d = -2;
+        if (d < -WISP_TURN_STEP) {
+          d = -WISP_TURN_STEP;
         }
         actor->rotZ += d;
       }
       CopyVector(prevPos, &actor->posX);
-      if (RaiseSpyroTriggerInRadius(&actor->posX, 0x64, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
-        for (i = 0; i < 3; i++) {
+      if (RaiseSpyroTriggerInRadius(&actor->posX, WISP_HIT_RADIUS, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT) != 0) {
+        for (i = 0; i < WISP_DEBRIS; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
@@ -3693,16 +3693,16 @@ void Level14_UpdateActors(void) {
         continue;
       }
       if (TICK_DOWN(st->timer) != 0 ||
-          TryMoveActorForward(actor, 0x12C, 0, 0x100, 0) != 0) {
+          TryMoveActorForward(actor, WISP_SPEED, 0, WISP_RADIUS, 0) != 0) {
         DespawnActorRecord(actor);
         continue;
       }
       if (st->target != 0) {
-        if (ApproxDist2D(&actor->posX, svK) < 0x200) {
+        if (ApproxDist2D(&actor->posX, svK) < WISP_TARGET_RANGE) {
           int dz = actor->posZ - svK[2];
 
-          if (ABS(dz) < 0x200) {
-            for (i = 0; i < 3; i++) {
+          if (ABS(dz) < WISP_TARGET_RANGE) {
+            for (i = 0; i < WISP_DEBRIS; i++) {
               if (ACTOR_POOL_LOW()) {
                 break;
               }

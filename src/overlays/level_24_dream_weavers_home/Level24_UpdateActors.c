@@ -2644,9 +2644,9 @@ void Level24_UpdateActors(void) {
                                   spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         {
           if (actor->flags & ACTOR_HIT_FLAME) {
-            st->knockSpeed = 0x8C;
+            st->knockSpeed = CRITTER_FLAME_KNOCK_SPEED;
           } else {
-            st->knockSpeed = 0xFA;
+            st->knockSpeed = CRITTER_KNOCK_SPEED;
           }
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2662,9 +2662,9 @@ void Level24_UpdateActors(void) {
         break;
 
       case CRITTER_KNOCKED:
-        if (st->knockSpeed >= 0x10) {
-          st->knockSpeed -= 0xF;
-          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        if (st->knockSpeed >= CRITTER_KNOCK_MIN_SPEED) {
+          st->knockSpeed -= CRITTER_KNOCK_DRAG;
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, CRITTER_MOVE_RADIUS, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (g_nActorAnimDone != 0) {
           DespawnActorRecord(actor);
