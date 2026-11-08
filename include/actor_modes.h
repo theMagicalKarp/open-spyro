@@ -3902,6 +3902,39 @@ enum PathChargerTurn {
 enum PathChargerAnim {
   PCHARGER_ANIM_BUTT = 4, /* reaching Spyro: butts him off the path on frame 4 */
 };
+/* Path-charger tuning. Only flamed from behind (Spyro at least
+ * GUARDED_ARC off its heading); it bursts with BURST_SPARK_LIFE sparks.
+ * PATROL walks its path at WALK_SPEED when lined up within WALK_FACING,
+ * reaching nodes within NODE_RANGE; at a path end it taunts Spyro within
+ * TAUNT_RANGE and TAUNT_FACING. Off cooldown, with its feet no more than
+ * CHARGE_DROP below Spyro, it charges a Spyro within CHARGE_LEAD of the
+ * node distance (and CHARGE_RANGE; after a taunt NEAR_CHARGE_LEAD /
+ * NEAR_CHARGE_RANGE) whose bearing is within CHARGE_FACING of the node's.
+ * A charge runs at CHARGE_SPEED (radius MOVE_RADIUS), butting within
+ * BUTT_RANGE and giving up (COOLDOWN_TICKS) when blocked or past
+ * BUTT_RANGE off its path with path and Spyro behind lined up. The butt on
+ * frame BUTT_FRAME throws Spyro along the path at BUTT_PUSH, BUTT_PUSH_VZ
+ * up. */
+#define PCHARGER_GUARDED_ARC 0x47
+#define PCHARGER_BURST_SPARK_LIFE 0x48
+#define PCHARGER_WALK_SPEED 0x50
+#define PCHARGER_WALK_FACING 0x10
+#define PCHARGER_NODE_RANGE 0x80
+#define PCHARGER_TAUNT_RANGE 0x2000
+#define PCHARGER_TAUNT_FACING 0x40
+#define PCHARGER_CHARGE_DROP 0x1F4
+#define PCHARGER_CHARGE_LEAD 0x1400
+#define PCHARGER_CHARGE_RANGE 0x1800
+#define PCHARGER_NEAR_CHARGE_LEAD 0x2000
+#define PCHARGER_NEAR_CHARGE_RANGE 0x2400
+#define PCHARGER_CHARGE_FACING 0x20
+#define PCHARGER_CHARGE_SPEED 0x78
+#define PCHARGER_MOVE_RADIUS 0x1F4
+#define PCHARGER_BUTT_RANGE 0x5DC
+#define PCHARGER_COOLDOWN_TICKS 0x78
+#define PCHARGER_BUTT_FRAME 4
+#define PCHARGER_BUTT_PUSH 0x96
+#define PCHARGER_BUTT_PUSH_VZ 0x78
 
 /* ->mode of a linked follower (ACTOR_TYPE_LINKED_FOLLOWER, Follower; level
  * 3); the mode is also the animation index. It trails its leader
@@ -4224,6 +4257,40 @@ enum GuardLookoutAnim {
   GLOOK_ANIM_WATCH_ALT = 5,
   GLOOK_ANIM_CALL = 8,      /* GLOOK_ROUSE: the guard wakes on frame 5 */
 };
+/* Shemp-lookout tuning (`range` is in 0x400 units). WATCH rouses its
+ * guard with Spyro above it within `range` and ROUSE_DZ, idles with him
+ * beyond IDLE_RANGE (its idle loops from IDLE_LOOP_END back to
+ * IDLE_LOOP_START), and swipes (SWIPE_GAP ticks apart) at Spyro above it
+ * within SWIPE_RANGE and SWIPE_DZ. The swipe on frame SWIPE_FRAME throws
+ * Spyro within SWIPE_HIT_RANGE back at SWIPE_PUSH, SWIPE_PUSH_VZ up, and
+ * holds the camera on the lookout for CAM_TICKS at least CAM_DIST (or
+ * CAM_BACK past Spyro) away. ROUSE calls on frame CALL_FRAME, cueing the
+ * guard CUE_TICKS and waiting CHASE_WAIT (or the guard's chaseDelay) before
+ * the next. Flamed, it slides off along Spyro's heading from KNOCK_SPEED,
+ * losing KNOCK_DRAG a frame (contact KNOCK_CONTACT, radius MOVE_RADIUS),
+ * and bursts with BURST_SPARK_LIFE sparks. */
+#define GLOOK_ROUSE_DZ 0x5DC
+#define GLOOK_IDLE_RANGE 0x2000
+#define GLOOK_IDLE_LOOP_END 0xF
+#define GLOOK_IDLE_LOOP_START 5
+#define GLOOK_SWIPE_GAP 0x8C
+#define GLOOK_SWIPE_RANGE 0x9C4
+#define GLOOK_SWIPE_DZ 0x3E8
+#define GLOOK_SWIPE_FRAME 3
+#define GLOOK_SWIPE_HIT_RANGE 0xA8C
+#define GLOOK_SWIPE_PUSH 0x82
+#define GLOOK_SWIPE_PUSH_VZ 0x32
+#define GLOOK_CAM_TICKS 0x28
+#define GLOOK_CAM_DIST 0xFA0
+#define GLOOK_CAM_BACK 0xC00
+#define GLOOK_CALL_FRAME 5
+#define GLOOK_CUE_TICKS 0x1A
+#define GLOOK_CHASE_WAIT 0x14
+#define GLOOK_KNOCK_SPEED 0xF0
+#define GLOOK_KNOCK_DRAG 0x10
+#define GLOOK_KNOCK_CONTACT 0x1F4
+#define GLOOK_MOVE_RADIUS 0x2BC
+#define GLOOK_BURST_SPARK_LIFE 0x30
 
 /* ->mode of the level 16 humming bell (ACTOR_TYPE_HUMMING_BELL,
  * HummingBellState). */

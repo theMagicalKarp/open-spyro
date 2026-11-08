@@ -1922,7 +1922,7 @@ void Level2_UpdateActors(void) {
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != PCHARGER_KNOCKED &&
           AbsAngleDelta8(actor->rotZ,
                         ArcTan2(spy->posX - actor->posX,
-                                      spy->posY - actor->posY, ATAN_ANGLE8)) >= 0x47) {
+                                      spy->posY - actor->posY, ATAN_ANGLE8)) >= PCHARGER_GUARDED_ARC) {
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);
@@ -1939,12 +1939,12 @@ void Level2_UpdateActors(void) {
 
         turned = 0;
 
-        if (AbsAngleDelta8(ang, actor->rotZ) < 0x10) {
+        if (AbsAngleDelta8(ang, actor->rotZ) < PCHARGER_WALK_FACING) {
           TurnActorYawTowardAngle(actor, ang, 5, 0, YAW_HOLD_IN_BAND);
-          MoveActorAlongAngle(actor, ang, 0x50, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          MoveActorAlongAngle(actor, ang, PCHARGER_WALK_SPEED, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (st->afterCharge != 0 ||
               ApproxDist2D(&actor->posX,
-                            &st->path->nodes[st->path->cur].x) < 0x80) {
+                            &st->path->nodes[st->path->cur].x) < PCHARGER_NODE_RANGE) {
             PathData *path = st->path;
 
             if (path->dir == 1) {
@@ -1973,10 +1973,10 @@ void Level2_UpdateActors(void) {
           } else {
             st->near = 0;
           }
-          if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000 &&
+          if (ApproxDist2D(&actor->posX, &spy->posX) < PCHARGER_TAUNT_RANGE &&
               AbsAngleDelta8(actor->rotZ,
                             ArcTan2(spy->posX - actor->posX,
-                                          SPY.posY - actor->posY, ATAN_ANGLE8)) < 0x40 &&
+                                          SPY.posY - actor->posY, ATAN_ANGLE8)) < PCHARGER_TAUNT_FACING &&
               (st->mode == PCTURN_FIRST || RandomIntInRange(0, 2) == 0)) {
             st->mode = PCTURN_TAUNTED;
             ENTER_POSE(actor, PCHARGER_TAUNT);
@@ -1986,16 +1986,16 @@ void Level2_UpdateActors(void) {
 
         st->afterCharge = 0;
         if (TICK_DOWN(st->timer) &&
-            actor->posZ - actor->floorOffset - SPY.posZ > -0x1F4) {
+            actor->posZ - actor->floorOffset - SPY.posZ > -PCHARGER_CHARGE_DROP) {
           int dSpy = ApproxDist2D(&actor->posX, &((SpyroObj *)(base - 8))->posX);
           int dPost = ApproxDist2D(&actor->posX,
                                     &st->path->nodes[st->path->cur].x);
           int ok;
 
           if (st->near) {
-            ok = dSpy < dPost + 0x2000 && dSpy < 0x2400;
+            ok = dSpy < dPost + PCHARGER_NEAR_CHARGE_LEAD && dSpy < PCHARGER_NEAR_CHARGE_RANGE;
           } else {
-            ok = dSpy < dPost + 0x1400 && dSpy < 0x1800;
+            ok = dSpy < dPost + PCHARGER_CHARGE_LEAD && dSpy < PCHARGER_CHARGE_RANGE;
           }
 
           if (ok &&
@@ -2004,7 +2004,7 @@ void Level2_UpdateActors(void) {
                                 ATAN_ANGLE8),
                   ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                                 st->path->nodes[st->path->cur].y - actor->posY,
-                                ATAN_ANGLE8)) < 0x20) {
+                                ATAN_ANGLE8)) < PCHARGER_CHARGE_FACING) {
             actor->subMode = 0;
             ENTER_POSE(actor, PCHARGER_CHARGE);
           }
@@ -2015,7 +2015,7 @@ void Level2_UpdateActors(void) {
       case PCHARGER_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x48);
+          BurstActorWithSound(actor, PCHARGER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2030,38 +2030,38 @@ void Level2_UpdateActors(void) {
           if (!TrackEntityYawTowardSpyro(actor, 5, 0x14, YAW_STEP_IN_BAND)) {
             continue;
           }
-          if (MoveActorAlongHeading(actor, 0x78, 0, 0x1F4, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT)) {
-            st->timer = 0x78;
+          if (MoveActorAlongHeading(actor, PCHARGER_CHARGE_SPEED, 0, PCHARGER_MOVE_RADIUS, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT)) {
+            st->timer = PCHARGER_COOLDOWN_TICKS;
             ENTER_POSE(actor, PCHARGER_PATROL);
           }
-          if (dist < 0x5DC) {
+          if (dist < PCHARGER_BUTT_RANGE) {
             actor->subMode++;
           }
-          if (FindNearestPathPointToActor(actor, st->path, idx) > 0x5DC) {
+          if (FindNearestPathPointToActor(actor, st->path, idx) > PCHARGER_BUTT_RANGE) {
             ang = ArcTan2(st->path->nodes[idx[0]].x - actor->posX,
                                 st->path->nodes[idx[0]].y - actor->posY, ATAN_ANGLE8);
             if (AbsAngleDelta8(
                     ang, ArcTan2(st->path->nodes[one - idx[0]].x - actor->posX,
                                        st->path->nodes[one - idx[0]].y - actor->posY,
-                                       ATAN_ANGLE8)) < 0x20 &&
+                                       ATAN_ANGLE8)) < PCHARGER_CHARGE_FACING &&
                 AbsAngleDelta8(ang, ArcTan2(spy->posX - actor->posX,
                                                  SPY.posY - actor->posY, ATAN_ANGLE8)) <
-                    0x20) {
-              st->timer = 0x78;
+                    PCHARGER_CHARGE_FACING) {
+              st->timer = PCHARGER_COOLDOWN_TICKS;
               ENTER_POSE(actor, PCHARGER_PATROL);
             }
           }
         } else {
           ANIM_GO(actor, PCHARGER_ANIM_BUTT);
-          if (g_nActorAnimNewFrame != 0 && actor->frame == 4) {
+          if (g_nActorAnimNewFrame != 0 && actor->frame == PCHARGER_BUTT_FRAME) {
             PathData *p = st->path;
             int prev = p->count - 1;
 
             SubtractVector(svR, &p->nodes[p->cur].x,
                           &p->nodes[(p->cur + prev) % p->count].x);
-            ScaleVector3ByRatio(svR, VectorLength(svR, VEC_LEN_XY), 0x96);
+            ScaleVector3ByRatio(svR, VectorLength(svR, VEC_LEN_XY), PCHARGER_BUTT_PUSH);
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FORCE_STATE);
-            g_nSpyroRequestVelocityZ = 0x78;
+            g_nSpyroRequestVelocityZ = PCHARGER_BUTT_PUSH_VZ;
             g_nSpyroRequestState = SPYRO_ST_FALL;
             g_anSpyroRequestVelocity.x = svR[0];
             g_nSpyroRequestVelocityY = svR[1];

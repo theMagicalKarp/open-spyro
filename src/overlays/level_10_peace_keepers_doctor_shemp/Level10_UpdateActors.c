@@ -3400,7 +3400,7 @@ void Level10_UpdateActors(void) {
         link = &g_pActorListBase[st->link];
       }
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != GLOOK_KNOCKED) {
-        st->knockSpeed = 0xF0;
+        st->knockSpeed = GLOOK_KNOCK_SPEED;
         st->knockHeading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
@@ -3411,7 +3411,7 @@ void Level10_UpdateActors(void) {
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT);
       }
       if (TICK_DOWN(st->camTimer2) == 0) {
-        int cd = ApproxDist2D(&actor->posX, &spy->posX) + 0xC00;
+        int cd = ApproxDist2D(&actor->posX, &spy->posX) + GLOOK_CAM_BACK;
 
         if (st->camDist < cd) {
           st->camDist = cd;
@@ -3444,18 +3444,18 @@ void Level10_UpdateActors(void) {
         if (link != 0 && TICK_DOWN(st->wait) != 0 &&
             actor->subMode == 0 && link->mode == SGUARD_IDLE && d < st->range << 10 &&
             actor->posZ < SPY.posZ &&
-            ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x5DC) {
+            ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < GLOOK_ROUSE_DZ) {
           actor->subMode = 1;
           ANIM_GO(actor, GLOOK_ANIM_STAND);
           actor->mode = GLOOK_ROUSE;
           continue;
         }
-        if (d > 0x2000) {
+        if (d > GLOOK_IDLE_RANGE) {
           TurnActorYawTowardAngle(actor, st->homeHeading, 4, 0, YAW_HOLD_IN_BAND);
-          if (actor->anim == GLOOK_ANIM_IDLE && g_nActorAnimNewFrame != 0 && actor->frame == 0xF &&
+          if (actor->anim == GLOOK_ANIM_IDLE && g_nActorAnimNewFrame != 0 && actor->frame == GLOOK_IDLE_LOOP_END &&
               --st->count > 0) {
-            actor->frame = 5;
-            actor->nextFrame = 6;
+            actor->frame = GLOOK_IDLE_LOOP_START;
+            actor->nextFrame = GLOOK_IDLE_LOOP_START + 1;
             actor->frameProgress = 0;
           }
           if (st->count == 0) {
@@ -3491,8 +3491,8 @@ void Level10_UpdateActors(void) {
             }
           }
         }
-        if (TICK_DOWN(st->timer) != 0 && d < 0x9C4 &&
-            ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < 0x3E8 &&
+        if (TICK_DOWN(st->timer) != 0 && d < GLOOK_SWIPE_RANGE &&
+            ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < GLOOK_SWIPE_DZ &&
             actor->posZ - actor->floorOffset - SPY.posZ < 0) {
           ENTER_POSE(actor, GLOOK_SWIPE);
         }
@@ -3504,33 +3504,33 @@ void Level10_UpdateActors(void) {
                                                   spy->posY - actor->posY, ATAN_ANGLE8),
                                     5),
                       6, 0, YAW_HOLD_IN_BAND);
-        if (g_nActorAnimNewFrame != 0 && actor->frame == 3 &&
-            ApproxDist2D(&actor->posX, &spy->posX) < 0xA8C) {
+        if (g_nActorAnimNewFrame != 0 && actor->frame == GLOOK_SWIPE_FRAME &&
+            ApproxDist2D(&actor->posX, &spy->posX) < GLOOK_SWIPE_HIT_RANGE) {
           SubtractVector(pos371, &spy->posX, &actor->posX);
-          ScaleVector3ByRatio(pos371, VectorLength(pos371, VEC_LEN_XY), 0x82);
+          ScaleVector3ByRatio(pos371, VectorLength(pos371, VEC_LEN_XY), GLOOK_SWIPE_PUSH);
           g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_VEL_X | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_Z | SPYRO_RQ_RAW_VELOCITY);
-          g_nSpyroRequestVelocityZ = 0x32;
+          g_nSpyroRequestVelocityZ = GLOOK_SWIPE_PUSH_VZ;
           g_nSpyroRequestState = mode;
           g_anSpyroRequestVelocity.x = pos371[0];
           g_nSpyroRequestVelocityY = pos371[1];
-          st->camTimer = 0x28;
-          st->camTimer2 = 0x28;
-          st->camDist = 0xFA0;
+          st->camTimer = GLOOK_CAM_TICKS;
+          st->camTimer2 = GLOOK_CAM_TICKS;
+          st->camDist = GLOOK_CAM_DIST;
         }
         if (g_nActorAnimDone != 0) {
-          st->timer = 0x8C;
+          st->timer = GLOOK_SWIPE_GAP;
           ENTER_POSE(actor, GLOOK_WATCH);
         }
         break;
 
       case GLOOK_KNOCKED:
         if (st->knockSpeed > 0) {
-          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0x1F4, 0x2BC, MOVE_LIFT);
-          st->knockSpeed -= 0x10;
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, GLOOK_KNOCK_CONTACT, GLOOK_MOVE_RADIUS, MOVE_LIFT);
+          st->knockSpeed -= GLOOK_KNOCK_DRAG;
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x30);
+          BurstActorWithSound(actor, GLOOK_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3543,13 +3543,13 @@ void Level10_UpdateActors(void) {
                           8, 6, YAW_STEP_IN_BAND) != 0) {
           ANIM_GO(actor, GLOOK_ANIM_CALL);
         }
-        if (actor->anim == GLOOK_ANIM_CALL && g_nActorAnimNewFrame != 0 && actor->frame == 5) {
+        if (actor->anim == GLOOK_ANIM_CALL && g_nActorAnimNewFrame != 0 && actor->frame == GLOOK_CALL_FRAME) {
           ShempGuardState *ls = link->state;
 
           if (link->mode < 0x7F && link->nextAnim != SGUARD_KNOCKED) {
             link->mode = SGUARD_CHASE;
           }
-          ls->cueTimer = 0x1A;
+          ls->cueTimer = GLOOK_CUE_TICKS;
           if (ls->watch != -1) {
             st->link = ls->watch;
             ls->watch = -1;
@@ -3558,7 +3558,7 @@ void Level10_UpdateActors(void) {
               st->wait = ls->chaseDelay;
               ls->chaseDelay = 0;
             } else {
-              st->wait = 0x14;
+              st->wait = GLOOK_CHASE_WAIT;
             }
           }
         }
