@@ -1965,7 +1965,7 @@ void Level26_UpdateActors(void) {
         continue;
       }
       AddVector(&actor->posX, &actor->posX, st->vel);
-      st->vel[2] -= 0xC;
+      st->vel[2] -= DEBRIS_FALL_GRAVITY;
       actor->rotX += st->spin[0];
       actor->rotY += st->spin[1];
       actor->rotZ += st->spin[2];
@@ -3025,7 +3025,7 @@ void Level26_UpdateActors(void) {
             }
             c = g_pfnLevelSpawnActor(ACTOR_TYPE_BOULDER_DEBRIS + 2, actor);
             cs = c->state;
-            c->subMode = (GetRandomU32() & 1) + 0x12;
+            c->subMode = (GetRandomU32() & 1) + SPARK_DEBRIS_LIFE;
             CopyVector(&c->posX, &actor->posX);
             c->posX += (g_anCosineLut[i * 16] >> 4) + (GetRandomU32() & 0x1F) - 0xF;
             c->posY += (g_anSineLut[i * 16] >> 4) + (GetRandomU32() & 0x1F) - 0xF;
@@ -3047,7 +3047,7 @@ void Level26_UpdateActors(void) {
             }
             c = g_pfnLevelSpawnActor(ACTOR_TYPE_BOULDER_DEBRIS + 1, actor);
             cs = c->state;
-            c->subMode = (GetRandomU32() & 3) + 0x19;
+            c->subMode = (GetRandomU32() & 3) + CHUNK_DEBRIS_LIFE;
             CopyVector(&c->posX, &actor->posX);
             c->posX += (g_anCosineLut[(i << 8) / 12] >> 4) + (GetRandomU32() & 0x3F) - 0x1F;
             c->posY += (g_anSineLut[(i << 8) / 12] >> 4) + (GetRandomU32() & 0x3F) - 0x1F;

@@ -349,6 +349,14 @@ typedef struct DebrisFallState {
   int floor;              /* 0x0C */
   unsigned char spin[3];  /* 0x10 */
 } DebrisFallState;
+/* A sparking-debris piece's ->subMode is its life in ticks (it pops when
+ * that runs out or it falls below `floor`, sparking on even ticks): the
+ * bursts that throw it (cracking boulder, floating barrel / mine) give
+ * ACTOR_TYPE_BOULDER_DEBRIS + 2 SPARK_DEBRIS_LIFE + 0..1 and + 1
+ * CHUNK_DEBRIS_LIFE + 0..3. It falls DEBRIS_FALL_GRAVITY faster a tick. */
+#define SPARK_DEBRIS_LIFE 0x12
+#define CHUNK_DEBRIS_LIFE 0x19
+#define DEBRIS_FALL_GRAVITY 0xC
 
 /* Case 312 -- cracking boulder. */
 typedef struct CrackingBoulderState {
