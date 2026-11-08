@@ -1031,6 +1031,27 @@ enum SingerRole {
   SINGER_ROLE_TWO_GATE = 4, /* releases chunk animation 1, else 2 */
   SINGER_ROLE_ABSENT = 6,  /* despawns at init */
 };
+/* Singing-walker tuning. Spyro within WALK_RANGE sets it walking (calling
+ * every CALL_MIN.. ticks while he stays close, else tweening at FAST_TWEEN
+ * back to REST); within WATCH_RANGE it watches. A thrown walker lands on
+ * hitting anything within THROWN_RADIUS. Struck, it sinks STRUCK_SINK a
+ * frame while over a floor gap, and a CARRIED one drops DROPPED_PATH_TRIM
+ * nodes off its path. A PAIRED / TWO_GATE walker sings PAIRED_SING_TICKS
+ * (RESUME_SING_TICKS once its partner's gate halts), then its last verse
+ * SING_END_TICKS; a paired walker rewinds a halted gate below
+ * GATE_REWIND_BELOW to step GATE_REWIND_STEP. */
+#define SINGER_WALK_RANGE 0x1000
+#define SINGER_WATCH_RANGE 0x2000
+#define SINGER_CALL_MIN 100
+#define SINGER_FAST_TWEEN 0x16
+#define SINGER_THROWN_RADIUS 0x100
+#define SINGER_STRUCK_SINK 0x40
+#define SINGER_DROPPED_PATH_TRIM 4
+#define SINGER_PAIRED_SING_TICKS 0x1C2
+#define SINGER_RESUME_SING_TICKS 0x14A
+#define SINGER_SING_END_TICKS 0x50
+#define SINGER_GATE_REWIND_BELOW 0x14
+#define SINGER_GATE_REWIND_STEP 0x1E
 
 /* ->mode of a charging guard (ACTOR_TYPE_CHARGING_GUARD, ChargingGuardState;
  * levels 18/20). ChargingGuardState.flag is shared by the guards of one
@@ -2554,6 +2575,33 @@ enum GunnerRole {
   GUNNER_ROLE_PATROL = 1,  /* walks its path until its partner leaves idle, then GUARD */
   GUNNER_ROLE_LOOKOUT = 2, /* Spyro close (partner idle): STARTLE; cued (subMode): WAKE */
 };
+/* Gunner tuning (`range` under 0x20 is in 0x400 units). Charged, it
+ * slides from KNOCK_SPEED and KNOCK_VZ up (supercharged: straight up at
+ * SUPER_KNOCK_VZ), losing KNOCK_DRAG a frame; landing in water within
+ * SPLASH_DZ it sinks SINK_STEP a frame for SINK_TICKS, else bursts with
+ * BURST_SPARK_LIFE sparks. A patroller walks its path at WALK_SPEED (nodes
+ * within PIVOT_THRESH); a lookout startles at Spyro within STARTLE_RANGE and
+ * wakes its partner on frame WAKE_FRAME. It chats CHAT_TICKS (or until
+ * Spyro is within FIRE_RANGE); GUARD advances on Spyro within `range` for
+ * up to ADVANCE_TICKS at WALK_SPEED (moving with MOVE_RADIUS), firing on
+ * the timer within FIRE_RANGE or once within ADVANCE_STOP_RANGE. */
+#define GUNNER_KNOCK_SPEED 0x190
+#define GUNNER_KNOCK_VZ 0xAA
+#define GUNNER_SUPER_KNOCK_VZ 0x104
+#define GUNNER_KNOCK_DRAG 0xC
+#define GUNNER_SPLASH_DZ 0x64
+#define GUNNER_SINK_STEP 0x64
+#define GUNNER_SINK_TICKS 0xA
+#define GUNNER_BURST_SPARK_LIFE 0x20
+#define GUNNER_WALK_SPEED 0xA0
+#define GUNNER_PIVOT_THRESH 0x100
+#define GUNNER_MOVE_RADIUS 0x12C
+#define GUNNER_STARTLE_RANGE 0x640
+#define GUNNER_WAKE_FRAME 4
+#define GUNNER_CHAT_TICKS 0x78
+#define GUNNER_ADVANCE_TICKS 0x78
+#define GUNNER_FIRE_RANGE 0x514
+#define GUNNER_ADVANCE_STOP_RANGE 0x3E8
 
 /* ->mode of a charging ram (ACTOR_TYPE_CHARGING_RAM / _BIG_, ChargingRamState;
  * level 28); the mode is also the animation index. A butt returns to the
@@ -3169,6 +3217,32 @@ enum ToughRamAnim {
   TRAM_ANIM_GRAZE = 8,
   TRAM_ANIM_GRAZE_ALT = 9,
 };
+/* Tough-ram tuning. It takes HITS charges; each staggers it along Spyro's
+ * heading from STAGGER_SPEED (losing STAGGER_DRAG a frame from frame
+ * STAGGER_DRAG_FRAME), riding FLOOR_LIFT over the floor found PROBE_RAISE
+ * up and PROBE_DEPTH down; staggered over a drop deeper than FALL_DEPTH it
+ * is knocked off. Knocked, it slides at KNOCK_SPEED and falls GRAVITY
+ * faster a frame up to MAX_FALL, bursting with BURST_SPARK_LIFE sparks.
+ * GRAZE rouses with Spyro within ROUSE_RANGE and LEVEL_DZ; WATCH butts
+ * within BUTT_RANGE and LEVEL_DZ and calms beyond CALM_RANGE; a butt that
+ * pins Spyro holds PIN_HOLD_TICKS. */
+#define TRAM_HITS 4
+#define TRAM_STAGGER_SPEED 0x80
+#define TRAM_STAGGER_DRAG 8
+#define TRAM_STAGGER_DRAG_FRAME 4
+#define TRAM_FLOOR_LIFT 0x10
+#define TRAM_PROBE_RAISE 0x200
+#define TRAM_PROBE_DEPTH 0x1000
+#define TRAM_FALL_DEPTH 0x800
+#define TRAM_KNOCK_SPEED 0x80
+#define TRAM_GRAVITY 0xC
+#define TRAM_MAX_FALL 0xF0
+#define TRAM_BURST_SPARK_LIFE 0x18
+#define TRAM_ROUSE_RANGE 0x1C00
+#define TRAM_LEVEL_DZ 0x5DC
+#define TRAM_BUTT_RANGE 0xFA0
+#define TRAM_CALM_RANGE 0x2000
+#define TRAM_PIN_HOLD_TICKS 3
 
 /* ->mode of a path snowball thrower (ACTOR_TYPE_PATH_SNOWBALL_THROWER / +1,
  * SnowballThrowerState; level 9). */

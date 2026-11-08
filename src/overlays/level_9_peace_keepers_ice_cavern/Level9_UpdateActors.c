@@ -2359,10 +2359,10 @@ void Level9_UpdateActors(void) {
       TickActorFlameGlow(actor);
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != TRAM_KNOCKED) {
         st->knockHeading = SPY.bodyRotZ;
-        st->speed = 0x80;
-        st->rest = 0x80;
+        st->speed = TRAM_KNOCK_SPEED;
+        st->rest = TRAM_STAGGER_SPEED;
         actor->flags = 0;
-        if (++st->hits == 4) {
+        if (++st->hits == TRAM_HITS) {
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorLiveKill(actor);
           ENTER_POSE(actor, TRAM_KNOCKED);
@@ -2390,10 +2390,10 @@ void Level9_UpdateActors(void) {
           }
         }
         TrackEntityYawTowardSpyro(actor, 3, 0x10, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1C00) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < TRAM_ROUSE_RANGE) {
           int dz = actor->posZ - SPY.posZ;
 
-          if (dz > 0 ? dz < 0x5DC : SPY.posZ - actor->posZ < 0x5DC) {
+          if (dz > 0 ? dz < TRAM_LEVEL_DZ : SPY.posZ - actor->posZ < TRAM_LEVEL_DZ) {
             st->speed = 0x48;
             ENTER_POSE(actor, TRAM_ROUSE);
           }
@@ -2412,16 +2412,16 @@ void Level9_UpdateActors(void) {
         int dist = ApproxDist2D(&actor->posX, &spy->posX);
 
         TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
-        if (dist < 0xFA0) {
+        if (dist < TRAM_BUTT_RANGE) {
           int dz = actor->posZ - SPY.posZ;
 
-          if (dz > 0 ? dz < 0x5DC : SPY.posZ - actor->posZ < 0x5DC) {
+          if (dz > 0 ? dz < TRAM_LEVEL_DZ : SPY.posZ - actor->posZ < TRAM_LEVEL_DZ) {
             st->speed = 0x48;
             st->rest = 0;
             ENTER_POSE(actor, TRAM_BUTT);
           }
         }
-        if (dist > 0x2000) {
+        if (dist > TRAM_CALM_RANGE) {
           ENTER_POSE(actor, TRAM_GRAZE);
         }
         break;
@@ -2430,7 +2430,7 @@ void Level9_UpdateActors(void) {
       case TRAM_BUTT:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (g_nSpyroState == SPYRO_ST_HURT_PINNED) {
-          st->rest = 3;
+          st->rest = TRAM_PIN_HOLD_TICKS;
         }
         if (g_nActorAnimDone != 0) {
           if (st->rest != 0) {
@@ -2452,23 +2452,23 @@ void Level9_UpdateActors(void) {
         int z;
 
         if (st->rest != 0) {
-          if (actor->nextFrame >= 4) {
-            DriveActorTrackedMove(actor, &st->rest, st->knockHeading, 0, 8, 0);
+          if (actor->nextFrame >= TRAM_STAGGER_DRAG_FRAME) {
+            DriveActorTrackedMove(actor, &st->rest, st->knockHeading, 0, TRAM_STAGGER_DRAG, 0);
           } else {
             DriveActorTrackedMove(actor, &st->rest, st->knockHeading, 0, 0, 0);
           }
         }
-        actor->posZ += 0x200;
-        z = FindGroundHeightBelow(&actor->posX, 0x1000);
+        actor->posZ += TRAM_PROBE_RAISE;
+        z = FindGroundHeightBelow(&actor->posX, TRAM_PROBE_DEPTH);
         EncodeHitNormalToActorGroundCode(actor);
-        if (actor->posZ - z > 0x800) {
+        if (actor->posZ - z > TRAM_FALL_DEPTH) {
           SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, &st->dropPos);
           MarkActorLiveKill(actor);
-          actor->posZ -= 0x200;
+          actor->posZ -= TRAM_PROBE_RAISE;
           st->rest = 0;
           ENTER_POSE(actor, TRAM_KNOCKED);
         }
-        actor->posZ = z + 0x10;
+        actor->posZ = z + TRAM_FLOOR_LIFT;
         if (g_nActorAnimDone != 0) {
           actor->flags = 0;
           ENTER_POSE(actor, TRAM_GRAZE);
@@ -2481,7 +2481,7 @@ void Level9_UpdateActors(void) {
 
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, TRAM_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2491,17 +2491,17 @@ void Level9_UpdateActors(void) {
           actor->posY +=
               (st->speed * LookupSine(st->knockHeading << 4)) >> 12;
         }
-        actor->posZ += 0x200;
-        z = FindGroundHeightBelow(&actor->posX, 0x1000);
+        actor->posZ += TRAM_PROBE_RAISE;
+        z = FindGroundHeightBelow(&actor->posX, TRAM_PROBE_DEPTH);
         EncodeHitNormalToActorGroundCode(actor);
-        if (actor->posZ - z < 0x200) {
+        if (actor->posZ - z < TRAM_PROBE_RAISE) {
           actor->posZ = z;
           st->rest = 0;
         } else {
-          actor->posZ -= 0x200;
-          st->rest += 0xC;
-          if (st->rest > 0xF0) {
-            st->rest = 0xF0;
+          actor->posZ -= TRAM_PROBE_RAISE;
+          st->rest += TRAM_GRAVITY;
+          if (st->rest > TRAM_MAX_FALL) {
+            st->rest = TRAM_MAX_FALL;
           }
           actor->posZ -= st->rest;
         }

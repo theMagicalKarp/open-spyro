@@ -353,10 +353,10 @@ void Level20_UpdateActors(void) {
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) && actor->mode != GUNNER_KNOCKED) {
         if (actor->flags & ACTOR_HIT_SUPER) {
           st->knockSpeed = 0;
-          st->knockZSpeed = 0x104;
+          st->knockZSpeed = GUNNER_SUPER_KNOCK_VZ;
         } else {
-          st->knockSpeed = 0x190;
-          st->knockZSpeed = 0xAA;
+          st->knockSpeed = GUNNER_KNOCK_SPEED;
+          st->knockZSpeed = GUNNER_KNOCK_VZ;
           st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
@@ -380,10 +380,10 @@ void Level20_UpdateActors(void) {
             ENTER_POSE(actor, GUNNER_GUARD);
           }
           ANIM_GO(actor, GUNNER_ADVANCE);
-          PivotActorAlongPath(actor, st->path, 0x100, 0xA0, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          PivotActorAlongPath(actor, st->path, GUNNER_PIVOT_THRESH, GUNNER_WALK_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         } else if (st->mode == GUNNER_ROLE_LOOKOUT) {
           ANIM_GO(actor, GUNNER_IDLE);
-          if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x640 &&
+          if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < GUNNER_STARTLE_RANGE &&
               g_pActorListBase[st->partner].mode == ONESHOT_IDLE) {
             ENTER_POSE(actor, GUNNER_STARTLE);
           }
@@ -394,7 +394,7 @@ void Level20_UpdateActors(void) {
         break;
 
       case GUNNER_WAKE:
-        if (actor->nextFrame >= 4 && g_pActorListBase[st->partner].mode == ONESHOT_IDLE) {
+        if (actor->nextFrame >= GUNNER_WAKE_FRAME && g_pActorListBase[st->partner].mode == ONESHOT_IDLE) {
           g_pActorListBase[st->partner].mode = ONESHOT_PLAY;
         }
         if (g_nActorAnimDone != 0) {
@@ -409,7 +409,7 @@ void Level20_UpdateActors(void) {
                           g_pActorListBase[st->partner].posY - actor->posY, ATAN_ANGLE8),
             4, 0, YAW_HOLD_IN_BAND);
         if (g_nActorAnimDone != 0) {
-          st->timer = 0x78;
+          st->timer = GUNNER_CHAT_TICKS;
           ENTER_POSE(actor, GUNNER_CHAT);
         }
         break;
@@ -421,7 +421,7 @@ void Level20_UpdateActors(void) {
                           g_pActorListBase[st->partner].posY - actor->posY, ATAN_ANGLE8),
             6, 0, YAW_HOLD_IN_BAND);
         if ((TICK_DOWN(st->timer) != 0 ||
-             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x514) &&
+             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < GUNNER_FIRE_RANGE) &&
             g_nActorAnimDone != 0) {
           if (actor->anim != GUNNER_GUARD) {
             actor->frameProgress = 8;
@@ -445,28 +445,28 @@ void Level20_UpdateActors(void) {
           r <<= 10;
         }
         if (d < r && g_nSpyroState != SPYRO_ST_CHARGE && g_nSpyroState != SPYRO_ST_CHARGE_AIR) {
-          st->timer = 0x78;
+          st->timer = GUNNER_ADVANCE_TICKS;
           ENTER_POSE(actor, GUNNER_ADVANCE);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (TICK_DOWN(st->timer) != 0 && d < 0x514) {
-          st->timer = 0x78;
+        if (TICK_DOWN(st->timer) != 0 && d < GUNNER_FIRE_RANGE) {
+          st->timer = GUNNER_ADVANCE_TICKS;
           ENTER_POSE_B(actor, GUNNER_FIRE);
         }
         break;
       }
 
       case GUNNER_KNOCKED: {
-        int r = DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, sixteen);
+        int r = DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, GUNNER_KNOCK_DRAG, sixteen);
 
         if ((g_nGroundSurfaceType & 0x3F) == 0) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
 
-          if (z - h > 0 ? z - h < 0x64 : h - z < 0x64) {
+          if (z - h > 0 ? z - h < GUNNER_SPLASH_DZ : h - z < GUNNER_SPLASH_DZ) {
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
             g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
-            st->timer = 0xA;
+            st->timer = GUNNER_SINK_TICKS;
             actor->mode = GUNNER_SINK;
             continue;
           }
@@ -477,7 +477,7 @@ void Level20_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x20);
+          BurstActorWithSound(actor, GUNNER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -486,13 +486,13 @@ void Level20_UpdateActors(void) {
 
       case GUNNER_ADVANCE:
         if (TICK_DOWN(st->timer) != 0 ||
-            ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < 0x3E8) {
+            ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < GUNNER_ADVANCE_STOP_RANGE) {
           st->range = 0;
           st->timer = 0;
           ENTER_POSE_B(actor, GUNNER_FIRE);
         }
         if (TrackEntityYawTowardSpyro(actor, 6, 0x14, YAW_STEP_IN_BAND) != 0 &&
-            MoveActorAlongHeading(actor, 0xA0, 0x12C, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0) {
+            MoveActorAlongHeading(actor, GUNNER_WALK_SPEED, GUNNER_MOVE_RADIUS, GUNNER_MOVE_RADIUS, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) != 0) {
           st->timer = 0;
           ENTER_POSE(actor, GUNNER_GUARD);
         }
@@ -515,7 +515,7 @@ void Level20_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        actor->posZ -= 0x64;
+        actor->posZ -= GUNNER_SINK_STEP;
         break;
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);

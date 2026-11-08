@@ -1884,7 +1884,7 @@ void Level28_UpdateActors(void) {
         actor->flags = 0;
         if (st->mode == SINGER_ROLE_CARRIED) {
           ((int *)g_pActorListBase[st->rider].state)[18] = one;
-          st->path->count -= 4;
+          st->path->count -= SINGER_DROPPED_PATH_TRIM;
           st->mode = one;
         }
         actor->mode = SINGER_STRUCK;
@@ -1900,12 +1900,12 @@ void Level28_UpdateActors(void) {
         if (st->mode == SINGER_ROLE_CARRIED) {
           continue;
         }
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1000) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < SINGER_WALK_RANGE) {
           st->next = SINGER_WALK;
           st->legStep[0] = 0xFF;
           ENTER_POSE(actor, SINGER_TURN);
         }
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < SINGER_WATCH_RANGE) {
           st->next = SINGER_WATCH;
           ENTER_POSE(actor, SINGER_TURN);
         }
@@ -1920,10 +1920,10 @@ void Level28_UpdateActors(void) {
       case SINGER_REST:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (st->mode != SINGER_ROLE_CARRIED) {
-          if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1000) {
+          if (ApproxDist2D(&actor->posX, &spy->posX) < SINGER_WALK_RANGE) {
             ENTER_POSE(actor, SINGER_WALK);
           }
-          if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000 &&
+          if (ApproxDist2D(&actor->posX, &spy->posX) < SINGER_WATCH_RANGE &&
               g_nActorAnimDone != 0 && (GetRandomU32() & 4)) {
             ANIM_QUEUE(actor, SINGER_WATCH);
           }
@@ -1944,7 +1944,7 @@ void Level28_UpdateActors(void) {
           actor->posX += (st->speed * g_anCosineLut[actor->rotZ]) >> 12;
           actor->posY += (st->speed * g_anSineLut[actor->rotZ]) >> 12;
           CopyVector(g368, &actor->posX);
-          if (CollideSphereWithWorldAndActors(g368, 0x100, 0x100) != 0) {
+          if (CollideSphereWithWorldAndActors(g368, SINGER_THROWN_RADIUS, SINGER_THROWN_RADIUS) != 0) {
             actor->mode = SINGER_LANDED;
             ANIM_RESET(actor, SINGER_LANDED);
             continue;
@@ -1956,22 +1956,22 @@ void Level28_UpdateActors(void) {
         continue;
 
       case SINGER_WALK:
-        if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1000) {
+        if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < SINGER_WALK_RANGE) {
           if (TICK_DOWN(st->call) != 0) {
-            st->call = (int)GetRandomU32() % 32 + 100;
+            st->call = (int)GetRandomU32() % 32 + SINGER_CALL_MIN;
             PlayActorMeshVoice(actor, (int)GetRandomU32() % 3 + 2, 0);
           }
           TweenActorAlongPath(actor, st->path, st->prevLeg, st->legStep, sixteen, 0);
           continue;
         }
-        if (TweenActorAlongPath(actor, st->path, st->prevLeg, st->legStep, 0x16, 0) != 0) {
+        if (TweenActorAlongPath(actor, st->path, st->prevLeg, st->legStep, SINGER_FAST_TWEEN, 0) != 0) {
           ENTER_POSE(actor, SINGER_REST);
         }
         continue;
 
       case SINGER_WATCH:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1000) {
+        if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < SINGER_WALK_RANGE) {
           ENTER_POSE(actor, SINGER_WALK);
         }
         if (g_nActorAnimDone != 0 && (GetRandomU32() & 4)) {
@@ -1988,7 +1988,7 @@ void Level28_UpdateActors(void) {
 
       case SINGER_STRUCK:
         if ((unsigned)(FindGroundHeightBelow(&actor->posX, GROUND_PROBE_FAR) - 0x81) < 0x177F) {
-          actor->posZ -= 0x40;
+          actor->posZ -= SINGER_STRUCK_SINK;
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
@@ -2005,18 +2005,18 @@ void Level28_UpdateActors(void) {
                 ((PathWalkerState *)g_pActorListBase[st->partner].state)->resumePending == 0) {
               st->resumePending = one;
             } else {
-              st->timer = 0x1C2;
+              st->timer = SINGER_PAIRED_SING_TICKS;
               ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             }
             break;
           case SINGER_ROLE_TWO_GATE:
             if (CHUNK_ANIM_STEP(GetWorldChunkAnimState(SINGER_CHUNK_GATE_A)) > 0 ||
                 !(GetWorldChunkAnimState(SINGER_CHUNK_GATE_A) & CHUNK_ANIM_HALTED)) {
-              st->timer = 0x1C2;
+              st->timer = SINGER_PAIRED_SING_TICKS;
               ModifyWorldChunkAnimFlags(SINGER_CHUNK_GATE_B, CHUNK_ANIM_RESUME, 0);
               st->chunkAnim = SINGER_CHUNK_GATE_B;
             } else {
-              st->timer = 0x1C2;
+              st->timer = SINGER_PAIRED_SING_TICKS;
               ModifyWorldChunkAnimFlags(SINGER_CHUNK_GATE_A, CHUNK_ANIM_RESUME, 0);
               st->chunkAnim = one;
             }
@@ -2035,11 +2035,11 @@ void Level28_UpdateActors(void) {
         }
         if (st->resumePending != 0 && (GetWorldChunkAnimState(st->chunkAnim) & CHUNK_ANIM_HALTED)) {
           st->resumePending = 0;
-          st->timer = 0x14A;
+          st->timer = SINGER_RESUME_SING_TICKS;
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         }
         if (TICK_DOWN(st->timer) != 0) {
-          st->timer = 0x50;
+          st->timer = SINGER_SING_END_TICKS;
           PlayActorMeshVoice(actor, SINGER_VOICE_SING_END, 0);
           ENTER_POSE(actor, SINGER_SING_END);
         }
@@ -2067,8 +2067,8 @@ void Level28_UpdateActors(void) {
               ((PathWalkerState *)g_pActorListBase[st->partner].state)->next = SINGER_CUE_STOP;
             }
             s = GetWorldChunkAnimState(st->chunkAnim);
-            if ((s & CHUNK_ANIM_HALTED) && CHUNK_ANIM_STEP(s) < 0x14) {
-              SetWorldChunkAnimStep(st->chunkAnim, 0x1E, 0);
+            if ((s & CHUNK_ANIM_HALTED) && CHUNK_ANIM_STEP(s) < SINGER_GATE_REWIND_BELOW) {
+              SetWorldChunkAnimStep(st->chunkAnim, SINGER_GATE_REWIND_STEP, 0);
             }
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
             ENTER_POSE(actor, SINGER_SETTLE);
