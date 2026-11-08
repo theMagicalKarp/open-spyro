@@ -2557,14 +2557,14 @@ void Level28_UpdateActors(void) {
       PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
       /* Two of each of the first pair, then six of the third. */
-      for (i = 0; i < 2; i++) {
+      for (i = 0; i < WOODCHEST_SHARD_PAIRS; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
         }
         g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_CHEST_SHARD, actor);
         g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_CHEST_SHARD + 1, actor);
       }
-      for (i = 0; i < 6; i++) {
+      for (i = 0; i < WOODCHEST_CHIPS; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
         }
@@ -2623,7 +2623,7 @@ void Level28_UpdateActors(void) {
         actor->soundRange = 0x20;
         PlayActorMeshVoice(actor, WOBBLECHEST_VOICE_BREAK, 0);
 
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < WOBBLECHEST_SHARD_PAIRS; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
@@ -2631,7 +2631,7 @@ void Level28_UpdateActors(void) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD + 1, actor);
         }
 
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < WOBBLECHEST_CHIPS; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
@@ -3307,7 +3307,7 @@ void Level28_UpdateActors(void) {
       PlayActorMeshVoice(actor, LIFECHEST_VOICE_BREAK, 0);
 
       /* Fragment bursts; each stops early once the dynamic pool is full. */
-      for (i = 0; i < 2; i++) {
+      for (i = 0; i < LIFECHEST_SHARD_PAIRS; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
         }
@@ -3315,14 +3315,14 @@ void Level28_UpdateActors(void) {
         g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_SHARD + 1, actor);
       }
 
-      for (i = 0; i < 6; i++) {
+      for (i = 0; i < LIFECHEST_CHIPS; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
         }
         g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_SHARD + 2, actor);
       }
 
-      for (i = 0; i < 8; i++) {
+      for (i = 0; i < LIFECHEST_SPARK_RING; i++) {
         g448[0] = (g_anCosineLut[i * 32] >> 8) * 3;
         g448[1] = (g_anSineLut[i * 32] >> 8) * 3;
         g448[2] = 0x18;

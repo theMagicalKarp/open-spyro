@@ -307,6 +307,11 @@ enum LifeChestMode {
 #define LIFECHEST_SHAKE_TICK 0x1A0
 #define LIFECHEST_OPEN_TICK 0x1E0
 #define LIFECHEST_OPEN_FRAMES 0xE6
+/* Broken, it throws SHARD_PAIRS shard pairs, CHIPS chips and a SPARK_RING
+ * spark ring. */
+#define LIFECHEST_SHARD_PAIRS 2
+#define LIFECHEST_CHIPS 6
+#define LIFECHEST_SPARK_RING 8
 
 /* A life chest's voices (PlayActorMeshVoice, or m_Sounds[] for BURST). */
 enum LifeChestVoice {
@@ -439,6 +444,25 @@ enum SpinChestLidSubMode {
 #define LID_TARGET_MAX_RANGE 0x3000
 #define LID_TARGET_DZ 0x1000
 #define LID_TARGET_PREFILTER 0x6000
+/* At a target the lid flies 1/128 of the gap a frame, aimed AIM_RAISE above
+ * it; with none it flies away from Spyro at MISS_SPEED. Either way it
+ * launches LAUNCH_VZ up, spinning SPIN_STEP a frame, and falls 2.5 a frame
+ * faster down to -MAX_FALL. After ARM_TICKS it bursts on a wall (a
+ * HIT_RADIUS sphere HIT_RAISE up) or an actor within CONTACT_RADIUS,
+ * blasting actors within BLAST_RADIUS, into SHARD_PAIRS wood-shard pairs
+ * and SPARKLES sparkle shards. */
+#define LID_AIM_RAISE 0x200
+#define LID_MISS_SPEED 0x50
+#define LID_LAUNCH_VZ 0xA0
+#define LID_SPIN_STEP 8
+#define LID_MAX_FALL 0xA0
+#define LID_ARM_TICKS 5
+#define LID_HIT_RAISE 0xB4
+#define LID_HIT_RADIUS 0xB4
+#define LID_CONTACT_RADIUS 0x100
+#define LID_BLAST_RADIUS 0x400
+#define LID_SHARD_PAIRS 2
+#define LID_SPARKLES 6
 
 /* ->mode of a portal guide (ACTOR_TYPE_PORTAL_GUIDE, PortalState); set to
  * PORTALGUIDE_ENTER by DispatchSpyroTriggerEvent when Spyro enters a
@@ -1612,6 +1636,12 @@ enum ChestVoice {
   SPINCHEST_VOICE_LAUNCH = 0,  /* ACTOR_TYPE_SPIN_CHEST spun fast enough: the lid flies */
   SPINLID_VOICE_BURST = 0,     /* ACTOR_TYPE_SPIN_CHEST_LID bursting */
 };
+/* A broken wood / wobble chest throws SHARD_PAIRS shard pairs and CHIPS
+ * chips (sparkle shards for the wobble chest). */
+#define WOODCHEST_SHARD_PAIRS 2
+#define WOODCHEST_CHIPS 6
+#define WOBBLECHEST_SHARD_PAIRS 2
+#define WOBBLECHEST_CHIPS 6
 enum BreakableVoice {
   BROCK_VOICE_BREAK = 0,     /* ACTOR_TYPE_BREAKABLE_ROCK supercharged */
   CBOULDER_VOICE_CRACK = 0,  /* ACTOR_TYPE_CRACKING_BOULDER: sparks while it cracks */

@@ -1880,14 +1880,14 @@ void Level19_UpdateActors(void) {
       PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
       /* Two of each of the first pair, then six of the third. */
-      for (i = 0; i < 2; i++) {
+      for (i = 0; i < WOODCHEST_SHARD_PAIRS; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
         }
         g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_CHEST_SHARD, actor);
         g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_CHEST_SHARD + 1, actor);
       }
-      for (i = 0; i < 6; i++) {
+      for (i = 0; i < WOODCHEST_CHIPS; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
         }
@@ -1946,7 +1946,7 @@ void Level19_UpdateActors(void) {
         actor->soundRange = 0x20;
         PlayActorMeshVoice(actor, WOBBLECHEST_VOICE_BREAK, 0);
 
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < WOBBLECHEST_SHARD_PAIRS; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
@@ -1954,7 +1954,7 @@ void Level19_UpdateActors(void) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD + 1, actor);
         }
 
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < WOBBLECHEST_CHIPS; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
@@ -2706,14 +2706,14 @@ void Level19_UpdateActors(void) {
         }
         if (best != 0) {
           SubtractVector(st->vel, &best->posX, &actor->posX);
-          st->vel[2] += 0x200;
+          st->vel[2] += LID_AIM_RAISE;
           RShiftVector3(st->vel, 7);
         } else {
           SubtractVector(st->vel, &actor->posX, &SPY.posX);
           st->vel[2] = 0;
-          ScaleVector3ByRatio(st->vel, VectorLength(st->vel, VEC_LEN_XY), 0x50);
+          ScaleVector3ByRatio(st->vel, VectorLength(st->vel, VEC_LEN_XY), LID_MISS_SPEED);
         }
-        st->vel[2] += 0xA0;
+        st->vel[2] += LID_LAUNCH_VZ;
         st->timer = 0;
         actor->subMode = LID_FLYING;
         actor->cullRadius = 0x20;
@@ -2726,8 +2726,8 @@ void Level19_UpdateActors(void) {
         continue;
       }
       st->timer += g_nFrameStep;
-      actor->rotZ += g_nFrameStep * 8;
-      if (st->vel[2] >= -0x9F) {
+      actor->rotZ += g_nFrameStep * LID_SPIN_STEP;
+      if (st->vel[2] > -LID_MAX_FALL) {
         st->vel[2] -= (g_nFrameStep * 5) >> 1;
       }
       for (i = 0; i < g_nFrameStep; i++) {
@@ -2736,19 +2736,19 @@ void Level19_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        actor->posZ += 0xB4;
-        if (st->timer >= 5 &&
-            (CollideSphereWithWorldAndActors(&actor->posX, 0xB4, 0xB4) != 0 ||
-             DispatchActorContactAtSphere(&actor->posX, 0x100, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, CONTACT_STOP_AT_SOLID) != 0)) {
-          DispatchActorContactAtSphere(&actor->posX, 0x400, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, CONTACT_STOP_AT_SOLID);
-          for (i = 0; i < 2; i++) {
+        actor->posZ += LID_HIT_RAISE;
+        if (st->timer >= LID_ARM_TICKS &&
+            (CollideSphereWithWorldAndActors(&actor->posX, LID_HIT_RADIUS, LID_HIT_RADIUS) != 0 ||
+             DispatchActorContactAtSphere(&actor->posX, LID_CONTACT_RADIUS, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, CONTACT_STOP_AT_SOLID) != 0)) {
+          DispatchActorContactAtSphere(&actor->posX, LID_BLAST_RADIUS, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, CONTACT_STOP_AT_SOLID);
+          for (i = 0; i < LID_SHARD_PAIRS; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
             }
             g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD, actor);
             g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD + 1, actor);
           }
-          for (i = 0; i < 6; i++) {
+          for (i = 0; i < LID_SPARKLES; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
             }
@@ -2759,7 +2759,7 @@ void Level19_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        actor->posZ -= 0xB4;
+        actor->posZ -= LID_HIT_RAISE;
       }
       continue;
     }
@@ -3051,7 +3051,7 @@ void Level19_UpdateActors(void) {
       PlayActorMeshVoice(actor, LIFECHEST_VOICE_BREAK, 0);
 
       /* Fragment bursts; each stops early once the dynamic pool is full. */
-      for (i = 0; i < 2; i++) {
+      for (i = 0; i < LIFECHEST_SHARD_PAIRS; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
         }
@@ -3059,14 +3059,14 @@ void Level19_UpdateActors(void) {
         g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_SHARD + 1, actor);
       }
 
-      for (i = 0; i < 6; i++) {
+      for (i = 0; i < LIFECHEST_CHIPS; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
         }
         g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_SHARD + 2, actor);
       }
 
-      for (i = 0; i < 8; i++) {
+      for (i = 0; i < LIFECHEST_SPARK_RING; i++) {
         o480[0] = (g_anCosineLut[i * 32] >> 8) * 3;
         o480[1] = (g_anSineLut[i * 32] >> 8) * 3;
         o480[2] = 0x18;
