@@ -4275,17 +4275,17 @@ void Level21_UpdateActors(void) {
           st->knockHeading = ArcTan2(actor->posX - g_pActorListBase[st->target].posX,
                                     actor->posY - g_pActorListBase[st->target].posY,
                                     ATAN_ANGLE8);
-          st->speed = 0x8C;
-          st->zSpeed = 0x23;
+          st->speed = RAM_BLAST_KNOCK_SPEED;
+          st->zSpeed = RAM_BLAST_KNOCK_VZ;
         } else {
           st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
                                     spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-          st->speed = 0xC8;
-          st->zSpeed = 0x32;
+          st->speed = RAM_KNOCK_SPEED;
+          st->zSpeed = RAM_KNOCK_VZ;
           if (actor->flags & ACTOR_HIT_CHARGE) {
-            st->speed += 0x46;
-            st->zSpeed += 0x32;
+            st->speed += RAM_CHARGE_KNOCK_BONUS;
+            st->zSpeed += RAM_CHARGE_KNOCK_VZ_BONUS;
           }
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorLiveKill(actor);
@@ -4305,14 +4305,14 @@ void Level21_UpdateActors(void) {
       switch (actor->mode) {
       case RAM_GRAZE:
         if (TICK_DOWN(st->call) != 0) {
-          st->call = (GetRandomU32() & 0x1F) + 0x50;
+          st->call = (GetRandomU32() & 0x1F) + RAM_CALL_MIN;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
-        if (st->mode == RAMKIND_PATH && ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
+        if (st->mode == RAMKIND_PATH && ApproxDist2D(&actor->posX, &SPY.posX) < RAM_QUIET_PATH_RANGE) {
           actor->mode = RAM_RUN_PATH;
           continue;
         }
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1388) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < RAM_FLEE_RANGE) {
           int ang = ArcTan2(spy->posX - actor->posX,
                                   SPY.posY - actor->posY, ATAN_ANGLE8);
           int best = 0;
@@ -4333,7 +4333,7 @@ void Level21_UpdateActors(void) {
               sel = k;
             }
           }
-          if (best > 0x40) {
+          if (best > RAM_FLEE_MIN_TURN) {
             st->path->cur = sel;
             ENTER_POSE(actor, RAM_WANDER);
           }
@@ -4346,13 +4346,13 @@ void Level21_UpdateActors(void) {
                           st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8);
 
         if (TICK_DOWN(st->call) != 0) {
-          st->call = (GetRandomU32() & 0x1F) + 0x50;
+          st->call = (GetRandomU32() & 0x1F) + RAM_CALL_MIN;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
         if (TurnActorYawTowardAngle(actor, ang, 6, 0x14, YAW_STEP_IN_BAND) != 0) {
-          MoveActorAlongAngle(actor, ang, 0x50, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          MoveActorAlongAngle(actor, ang, RAM_WANDER_SPEED, 0, RAM_MOVE_RADIUS, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (ApproxDist2D(&actor->posX,
-                            &st->path->nodes[st->path->cur].x) < 0x100) {
+                            &st->path->nodes[st->path->cur].x) < RAM_NODE_RANGE) {
             ENTER_POSE(actor, RAM_GRAZE);
           }
         }
@@ -4360,10 +4360,10 @@ void Level21_UpdateActors(void) {
       }
 
       case RAM_QUIET_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, 0x10);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, RAM_KNOCK_DRAG, RAM_KNOCK_GRAVITY);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x10);
+          BurstActorWithSound(actor, RAM_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4374,7 +4374,7 @@ void Level21_UpdateActors(void) {
           break;
         }
         ANIM_GO(actor, RAM_WANDER);
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+        if (PivotActorAlongPath(actor, st->path, RAM_PIVOT_THRESH, RAM_RUN_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             PATH_ARRIVED(0)) {
           g_pActorListBase[st->partner].subMode = 1;
           actor->mode = RAM_PATH_END;
@@ -4384,7 +4384,7 @@ void Level21_UpdateActors(void) {
 
       case RAM_PATH_END:
         if (TICK_DOWN(st->call) != 0) {
-          st->call = (GetRandomU32() & 0x3F) + 0x78;
+          st->call = (GetRandomU32() & 0x3F) + RAM_END_CALL_MIN;
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
         ANIM_GO(actor, RAM_GRAZE);

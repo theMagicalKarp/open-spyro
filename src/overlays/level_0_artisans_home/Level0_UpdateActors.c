@@ -2549,8 +2549,8 @@ void Level0_UpdateActors(void) {
 
             if (p->mode < ACTOR_MODE_DORMANT) {
               CopyVector(&p->posX, &actor->posX);
-              st->slots[n][0] = actor->posX + (LookupCosine(n * 0x555) >> 2);
-              st->slots[n][1] = actor->posY + (LookupSine(n * 0x555) >> 2);
+              st->slots[n][0] = actor->posX + (LookupCosine(n * FLOCK_PRIZE_ANGLE_STEP) >> 2);
+              st->slots[n][1] = actor->posY + (LookupSine(n * FLOCK_PRIZE_ANGLE_STEP) >> 2);
               st->slots[n][2] = actor->posZ;
               SpawnActorDeathDrop(p, DROP_AT_POINT, 0, st->slots[n]);
               n++;
@@ -2561,12 +2561,12 @@ void Level0_UpdateActors(void) {
             st->chainB = *link;
           }
 
-          st->slots[n][0] = actor->posX + (LookupCosine(n * 0x555) >> 2);
-          st->slots[n][1] = actor->posY + (LookupSine(n * 0x555) >> 2);
+          st->slots[n][0] = actor->posX + (LookupCosine(n * FLOCK_PRIZE_ANGLE_STEP) >> 2);
+          st->slots[n][1] = actor->posY + (LookupSine(n * FLOCK_PRIZE_ANGLE_STEP) >> 2);
           st->slots[n][2] = actor->posZ;
           SpawnActorDeathDrop(actor, DROP_AT_POINT, 0, st->slots[n]);
           MarkActorLiveKill(actor);
-          st->knockSpeed = 0x118;
+          st->knockSpeed = FLOCK_KNOCK_SPEED;
           st->knockHeading = StepAndLerpAngle8(
               ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
               SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
@@ -2580,12 +2580,12 @@ void Level0_UpdateActors(void) {
       case FLOCK_IDLE: {
         int distance = ApproxDist2D(&actor->posX, &SPY.posX);
 
-        if (distance < 0x1400 &&
-            ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < 0x400) {
+        if (distance < FLOCK_ROUSE_RANGE &&
+            ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) < FLOCK_ROUSE_DZ) {
           ENTER_POSE(actor, FLOCK_ROUSE);
         }
 
-        if (distance < 0x2800) {
+        if (distance < FLOCK_WATCH_RANGE) {
           TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
         }
         break;
@@ -2615,9 +2615,9 @@ void Level0_UpdateActors(void) {
         }
 
         if (ApproxDist2D(&actor->posX,
-                          (int *)&st->path->nodes[st->path->cur]) < 0x400) {
-          if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x1400 ||
-              ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) > 0x800) {
+                          (int *)&st->path->nodes[st->path->cur]) < FLOCK_NODE_RANGE) {
+          if (ApproxDist2D(&actor->posX, &SPY.posX) > FLOCK_ROUSE_RANGE ||
+              ABS2((actor->posZ - actor->floorOffset) - SPY.posZ) > FLOCK_LOSE_DZ) {
             ENTER_POSE(actor, FLOCK_IDLE);
           } else {
             spyroAngle =
@@ -2650,19 +2650,19 @@ void Level0_UpdateActors(void) {
         }
         nextAngle = previousAngle;
 
-        if (previousAngle > 8) {
-          previousAngle = 8;
+        if (previousAngle > FLOCK_TURN_STEP) {
+          previousAngle = FLOCK_TURN_STEP;
         }
-        if (previousAngle < -8) {
-          previousAngle = -8;
+        if (previousAngle < -FLOCK_TURN_STEP) {
+          previousAngle = -FLOCK_TURN_STEP;
         }
         actor->rotZ += previousAngle;
 
-        if (ABS2(nextAngle) < 0x20) {
+        if (ABS2(nextAngle) < FLOCK_MOVE_FACING) {
           if (actor->mode == FLOCK_BOLT) {
-            MoveActorAlongHeading(actor, 0xD2, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
+            MoveActorAlongHeading(actor, FLOCK_BOLT_SPEED, FLOCK_MOVE_RADIUS, FLOCK_MOVE_RADIUS, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
           } else {
-            MoveActorAlongHeading(actor, 0x60, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
+            MoveActorAlongHeading(actor, FLOCK_RUN_SPEED, FLOCK_MOVE_RADIUS, FLOCK_MOVE_RADIUS, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
           }
         }
 
@@ -2685,12 +2685,12 @@ void Level0_UpdateActors(void) {
 
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x20);
+          BurstActorWithSound(actor, FLOCK_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
 
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, FLOCK_KNOCK_DRAG, 0);
         break;
       }
       }

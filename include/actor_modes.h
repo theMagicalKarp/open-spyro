@@ -594,6 +594,35 @@ enum RoamingRamKind {
  * within FLEE_RANGE picks the path node facing away from him. */
 #define RAM_PATH_RANGE 0x1800
 #define RAM_FLEE_RANGE 0x1388
+/* The quiet ram's PATH kind sets off within QUIET_PATH_RANGE instead. A
+ * fleeing ram only moves on when the best node is FLEE_MIN_TURN off Spyro's
+ * bearing; it walks at WANDER_SPEED (moving with MOVE_RADIUS) and reaches it
+ * within NODE_RANGE. A path ram runs at RUN_SPEED (nodes within
+ * PIVOT_THRESH). It calls every CALL_MIN.. ticks (END_CALL_MIN.. once at the
+ * path end). Hit, it slides from KNOCK_SPEED and KNOCK_VZ up (a charge adds
+ * CHARGE_KNOCK_BONUS / CHARGE_KNOCK_VZ_BONUS; a blast knocks it off its
+ * target at BLAST_KNOCK_SPEED / BLAST_KNOCK_VZ), losing KNOCK_DRAG and
+ * KNOCK_GRAVITY a frame, then bursts with BURST_SPARK_LIFE sparks. Trapped,
+ * its struggle loops back before frame TRAPPED_LOOP_FRAME. */
+#define RAM_QUIET_PATH_RANGE 0x1000
+#define RAM_FLEE_MIN_TURN 0x40
+#define RAM_WANDER_SPEED 0x50
+#define RAM_MOVE_RADIUS 0x12C
+#define RAM_NODE_RANGE 0x100
+#define RAM_RUN_SPEED 0x78
+#define RAM_PIVOT_THRESH 0x100
+#define RAM_CALL_MIN 0x50
+#define RAM_END_CALL_MIN 0x78
+#define RAM_KNOCK_SPEED 0xC8
+#define RAM_KNOCK_VZ 0x32
+#define RAM_CHARGE_KNOCK_BONUS 0x46
+#define RAM_CHARGE_KNOCK_VZ_BONUS 0x32
+#define RAM_BLAST_KNOCK_SPEED 0x8C
+#define RAM_BLAST_KNOCK_VZ 0x23
+#define RAM_KNOCK_DRAG 0xC
+#define RAM_KNOCK_GRAVITY 0x10
+#define RAM_BURST_SPARK_LIFE 0x10
+#define RAM_TRAPPED_LOOP_FRAME 0xF
 
 /* ->mode of a path walker (ACTOR_TYPE_PATH_WALKER, PathState). */
 enum PathWalkerMode {
@@ -3004,6 +3033,29 @@ enum FlockLeaderMode {
   FLOCK_BOLT = 4,     /* lost a follower: runs fast */
   FLOCK_KNOCKED = 5,  /* the last hit: drops its flock's prizes, then bursts */
 };
+/* Flock-leader tuning. The last hit drops each prize a third of a turn
+ * (PRIZE_ANGLE_STEP, 12-bit) apart round the leader, then it slides from
+ * KNOCK_SPEED losing KNOCK_DRAG a frame and bursts with BURST_SPARK_LIFE
+ * sparks. IDLE rouses with Spyro within ROUSE_RANGE and ROUSE_DZ (and faces
+ * him within WATCH_RANGE); RUN picks the ring node away from him on reaching
+ * one (within NODE_RANGE), dropping back to IDLE once he is beyond
+ * ROUSE_RANGE or LOSE_DZ. It turns at most TURN_STEP a frame, moves only
+ * when lined up within MOVE_FACING, at RUN_SPEED (BOLT_SPEED bolting) with
+ * MOVE_RADIUS. */
+#define FLOCK_PRIZE_ANGLE_STEP 0x555
+#define FLOCK_KNOCK_SPEED 0x118
+#define FLOCK_KNOCK_DRAG 0xC
+#define FLOCK_BURST_SPARK_LIFE 0x20
+#define FLOCK_ROUSE_RANGE 0x1400
+#define FLOCK_ROUSE_DZ 0x400
+#define FLOCK_WATCH_RANGE 0x2800
+#define FLOCK_NODE_RANGE 0x400
+#define FLOCK_LOSE_DZ 0x800
+#define FLOCK_TURN_STEP 8
+#define FLOCK_MOVE_FACING 0x20
+#define FLOCK_RUN_SPEED 0x60
+#define FLOCK_BOLT_SPEED 0xD2
+#define FLOCK_MOVE_RADIUS 0x200
 
 /* ->mode of a sequenced prop (ACTOR_TYPE_SEQUENCED_PROP, PropAnimState;
  * level 0): a world-chunk animation started by a subMode cue. */
@@ -3510,6 +3562,25 @@ enum BrawlerMode {
   BRAWLER_LOWER = 5,   /* lowers its fists, then IDLE */
   BRAWLER_KNOCKED = 6, /* flamed: its swooper flies off, then it bursts */
 };
+/* Brawler tuning. IDLE raises its fists with Spyro within ROUSE_RANGE and
+ * ROUSE_DZ; GUARD punches (PUNCH_GAP ticks apart) within PUNCH_RANGE and
+ * PUNCH_DZ, and lowers them beyond LOWER_RANGE. Flamed, it slides from
+ * KNOCK_SPEED losing KNOCK_DRAG a frame (moving with MOVE_RADIUS) and
+ * bursts with BURST_SPARK_LIFE sparks; its swooper flies off SWOOPER_RAISE
+ * up at SWOOPER_SPEED with DEBRIS_PAIRS bounce-debris pairs. */
+#define BRAWLER_ROUSE_RANGE 0x2000
+#define BRAWLER_ROUSE_DZ 0x3E8
+#define BRAWLER_PUNCH_RANGE 0x9C4
+#define BRAWLER_PUNCH_DZ 0x320
+#define BRAWLER_LOWER_RANGE 0x2400
+#define BRAWLER_PUNCH_GAP 0x8C
+#define BRAWLER_KNOCK_SPEED 0xFA
+#define BRAWLER_KNOCK_DRAG 0x14
+#define BRAWLER_MOVE_RADIUS 0x2BC
+#define BRAWLER_BURST_SPARK_LIFE 0x30
+#define BRAWLER_SWOOPER_RAISE 0x5DC
+#define BRAWLER_SWOOPER_SPEED 0x12C
+#define BRAWLER_DEBRIS_PAIRS 7
 
 /* ->mode of a chasing path guard (ACTOR_TYPE_CHASING_PATH_GUARD,
  * ChasingPathGuardState; level 26); the mode is also the animation index. */

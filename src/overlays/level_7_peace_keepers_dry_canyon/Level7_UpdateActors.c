@@ -2478,7 +2478,7 @@ void Level7_UpdateActors(void) {
             StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                         actor->posY - spy->posY, ATAN_ANGLE8),
                           spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->speed = 0xFA;
+        st->speed = BRAWLER_KNOCK_SPEED;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);
         actor->mode = BRAWLER_KNOCKED;
@@ -2494,7 +2494,7 @@ void Level7_UpdateActors(void) {
                                                   SPY.posY - actor->posY, ATAN_ANGLE8),
                                     -5),
                       5, 0, YAW_HOLD_IN_BAND);
-        if (d < 0x2000 && ABS2(SPY_DZ(actor)) < 0x3E8) {
+        if (d < BRAWLER_ROUSE_RANGE && ABS2(SPY_DZ(actor)) < BRAWLER_ROUSE_DZ) {
           ENTER_POSE(actor, BRAWLER_RAISE);
         }
         break;
@@ -2535,12 +2535,12 @@ void Level7_UpdateActors(void) {
         int d = ApproxDist2D(&actor->posX, &spy->posX);
 
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (TICK_DOWN(st->timer) != 0 && d < 0x9C4 &&
-            ABS2(SPY_DZ(actor)) < 0x320) {
+        if (TICK_DOWN(st->timer) != 0 && d < BRAWLER_PUNCH_RANGE &&
+            ABS2(SPY_DZ(actor)) < BRAWLER_PUNCH_DZ) {
           st->timer = 0;
           ENTER_POSE(actor, BRAWLER_PUNCH);
         }
-        if (d > 0x2400) {
+        if (d > BRAWLER_LOWER_RANGE) {
           ENTER_POSE(actor, BRAWLER_LOWER);
         }
         break;
@@ -2549,10 +2549,10 @@ void Level7_UpdateActors(void) {
       case BRAWLER_PUNCH:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (g_nSpyroState == SPYRO_ST_HURT) {
-          st->timer = 0x8C;
+          st->timer = BRAWLER_PUNCH_GAP;
         }
         if (g_nActorAnimDone != 0) {
-          st->timer = 0x8C;
+          st->timer = BRAWLER_PUNCH_GAP;
           ENTER_POSE(actor, BRAWLER_RAISE);
         }
         break;
@@ -2574,17 +2574,17 @@ void Level7_UpdateActors(void) {
           actor->subMode = 1;
           s344[0] = (g_anCosineLut[h] * 0x19) >> 7;
           s344[1] = (g_anSineLut[h] * 0x19) >> 7;
-          s344[2] = 0x5DC;
+          s344[2] = BRAWLER_SWOOPER_RAISE;
           AddVector(&c->posX, &c->posX, s344);
           i = 0;
           if (c->anim != SWOOP_ANIM_KNOCKED) {
             ANIM_RESET(c, SWOOP_ANIM_KNOCKED);
           }
           c->mode = SWOOP_KNOCKED;
-          cs->speed = 0x12C;
+          cs->speed = BRAWLER_SWOOPER_SPEED;
           cs->heading = g_bSpyroPersistentEulerZ;
           c->rotZ = actor->rotZ;
-          for (; i < 7; i++) {
+          for (; i < BRAWLER_DEBRIS_PAIRS; i++) {
             Actor *p;
 
             if (ACTOR_POOL_LOW()) {
@@ -2598,13 +2598,13 @@ void Level7_UpdateActors(void) {
             }
           }
         }
-        if (st->speed > 0x14) {
-          st->speed -= 0x14;
+        if (st->speed > BRAWLER_KNOCK_DRAG) {
+          st->speed -= BRAWLER_KNOCK_DRAG;
         }
-        MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x2BC, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        MoveActorAlongAngle(actor, st->heading, st->speed, 0, BRAWLER_MOVE_RADIUS, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x30);
+          BurstActorWithSound(actor, BRAWLER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
