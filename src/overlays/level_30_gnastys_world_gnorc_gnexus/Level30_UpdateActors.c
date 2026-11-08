@@ -1038,16 +1038,16 @@ void Level30_UpdateActors(void) {
                 int *at = &actor->posX;
 
                 st->prompted = 0;
-                actor->posZ = st->baseZ + 0x80;
+                actor->posZ = st->baseZ + SAVEHOST_POP_RAISE;
                 actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                              spy->posY - actor->posY, ATAN_ANGLE8) -
                                0x80;
-                actor->cullRadius = 0x20;
+                actor->cullRadius = SAVEHOST_CULL_RADIUS;
                 actor->mode = SAVEHOST_POP_IN;
-                actor->scale = 0x60;
+                actor->scale = SAVEHOST_POP_SCALE;
                 g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, at, 0xC);
                 RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
-                FindGroundHeightBelow(at, 0x1000);
+                FindGroundHeightBelow(at, SAVEHOST_PROBE_DEPTH);
                 EncodeHitNormalToActorGroundCode(actor);
                 actor->groundCode |= ACTOR_GROUND_VALID;
               }
@@ -1058,8 +1058,8 @@ void Level30_UpdateActors(void) {
 
       case SAVEHOST_POP_IN:
         if (actor->scale > ACTOR_SCALE_UNIT) {
-          actor->scale -= 4;
-          actor->rotZ += 8;
+          actor->scale -= SAVEHOST_SCALE_STEP;
+          actor->rotZ += SAVEHOST_SPIN_STEP;
         } else {
           actor->mode = SAVEHOST_HOVER;
           st->timer = 0;
@@ -1096,7 +1096,7 @@ void Level30_UpdateActors(void) {
 
         st->wanderTimer -= 1;
         if (st->wanderTimer == 0) {
-          int reach = (GetRandomU32() & 0x3F) + 0x140;
+          int reach = (GetRandomU32() & 0x3F) + SAVEHOST_WANDER_DIST;
           int bearing = ArcTan2(spy->posX - anchor->posX,
                                       spy->posY - anchor->posY, ATAN_ANGLE8);
           int aim = (bearing + (GetRandomU32() & 0xF)) - 8;
@@ -1155,7 +1155,7 @@ void Level30_UpdateActors(void) {
         actor->posX += (svF[0] * wSpan) / wDen;
         actor->posY += (svF[1] * wSpan) / wDen;
         actor->rotZ += (turn * wSpan) / wDen;
-        FindGroundHeightBelow(here, 0x1000);
+        FindGroundHeightBelow(here, SAVEHOST_PROBE_DEPTH);
         EncodeHitNormalToActorGroundCode(actor);
 
         if (st->wanderTimer == SAVEHOST_WANDER_FRAMES) {
@@ -1167,9 +1167,9 @@ void Level30_UpdateActors(void) {
       }
 
       case SAVEHOST_POP_OUT:
-        if (actor->scale < 0x60) {
-          actor->scale += 4;
-          actor->rotZ += 8;
+        if (actor->scale < SAVEHOST_POP_SCALE) {
+          actor->scale += SAVEHOST_SCALE_STEP;
+          actor->rotZ += SAVEHOST_SPIN_STEP;
         } else {
           actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;

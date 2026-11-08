@@ -164,6 +164,18 @@ enum SaveHostMode {
 #define SAVEHOST_APPEAR_DELAY 0x10
 #define SAVEHOST_WANDER_DELAY 0x1E
 #define SAVEHOST_WANDER_FRAMES 0x10
+/* Popping in it appears POP_RAISE above its base at POP_SCALE (drawn
+ * within CULL_RADIUS), shrinking SCALE_STEP and spinning SPIN_STEP a frame
+ * to ACTOR_SCALE_UNIT (popping out grows back to POP_SCALE); it snaps to the
+ * floor found within PROBE_DEPTH below. A glide aims WANDER_DIST
+ * (+0..0x3F) from the anchor toward Spyro. */
+#define SAVEHOST_POP_RAISE 0x80
+#define SAVEHOST_POP_SCALE 0x60
+#define SAVEHOST_CULL_RADIUS 0x20
+#define SAVEHOST_SCALE_STEP 4
+#define SAVEHOST_SPIN_STEP 8
+#define SAVEHOST_PROBE_DEPTH 0x1000
+#define SAVEHOST_WANDER_DIST 0x140
 
 /* ->mode of a crystal dragon statue (ACTOR_TYPE_DRAGON_STATUE,
  * DragonStatueState). */
@@ -249,8 +261,26 @@ enum SeedPodSubMode {
 };
 
 /* An open pod's prize is taken once Spyro is within this 2D distance of it
- * (height -0xDF..+0x1DF), or at once by a supercharge. */
+ * and his height is within PRIZE_DZ_BELOW below it (a PRIZE_DZ_SPAN band:
+ * -0xDF..+0x1DF), or at once by a supercharge. */
 #define SEEDPOD_PRIZE_RANGE 0x1E0
+#define SEEDPOD_PRIZE_DZ_BELOW 0xDF
+#define SEEDPOD_PRIZE_DZ_SPAN 0x2BF
+/* A closed pod updates within IDLE_UPDATE_DIST, an open one within
+ * OPEN_UPDATE_DIST. Open, its prize bobs PRIZE_HOVER above it (drawn within
+ * PRIZE_CULL), the pod shakes for SHAKE_TICKS and sparks for SPARK_TICKS,
+ * and it closes after OPEN_TICKS with a RING_SPARKS spark ring. Bursting, it
+ * throws SHARD_PAIRS shard pairs and CHIPS chips. */
+#define SEEDPOD_IDLE_UPDATE_DIST 0x10
+#define SEEDPOD_OPEN_UPDATE_DIST 0x40
+#define SEEDPOD_PRIZE_HOVER 0x1A4
+#define SEEDPOD_PRIZE_CULL 0x18
+#define SEEDPOD_SHAKE_TICKS 0x40
+#define SEEDPOD_SPARK_TICKS 0x20
+#define SEEDPOD_OPEN_TICKS 0x56
+#define SEEDPOD_RING_SPARKS 6
+#define SEEDPOD_SHARD_PAIRS 2
+#define SEEDPOD_CHIPS 6
 
 /* A seed pod's voices (PlayActorMeshVoice). */
 enum SeedPodVoice {
