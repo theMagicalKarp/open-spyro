@@ -1250,6 +1250,16 @@ enum CannonSubMode {
   CANNON_FUSE = 1,   /* smokes, then sparks and recoils, then fires */
   CANNON_FLIGHT = 2, /* flies the shot along its path; at the end strikes the link */
 };
+/* A lit cannon smokes from its muzzle (MUZZLE_LEN along the barrel) until
+ * SMOKE_TICKS, then sparks and recoils until FIRE_TICK, when it fires; the
+ * shot takes LEG_TICKS a path leg. Barrels pitched within LOW_PITCH_SPAN
+ * above flat aim at LOW_PITCH. */
+#define CANNON_MUZZLE_LEN 0x14C
+#define CANNON_SMOKE_TICKS 0x5A
+#define CANNON_FIRE_TICK 0xB4
+#define CANNON_LEG_TICKS 4
+#define CANNON_LOW_PITCH_SPAN 0x60
+#define CANNON_LOW_PITCH 0xE0
 
 /* ACTOR_TYPE_FLIGHT_TARGET is flown through when Spyro, within NEAR_RANGE (2D)
  * and NEAR_DZ, is within HIT_RANGE (3D, height weighted) of it and

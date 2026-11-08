@@ -3522,8 +3522,8 @@ void Level25_UpdateActors(void) {
         SubtractVector(s496, PATH_PT(st->path, 1), PATH_PT(st->path, 0));
         pitch = ArcTan2(VectorLength(s496, VEC_LEN_XY), s496[2], ATAN_ANGLE8);
         actor->rotY = pitch - 0x40;
-        if (((unsigned int)(pitch + 0x40) & 0xFF) < 0x60) {
-          actor->rotY = 0xE0;
+        if (((unsigned int)(pitch + 0x40) & 0xFF) < CANNON_LOW_PITCH_SPAN) {
+          actor->rotY = CANNON_LOW_PITCH;
         }
         actor->rotZ = ArcTan2(s496[0], s496[1], ATAN_ANGLE8);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -3546,10 +3546,10 @@ void Level25_UpdateActors(void) {
 
       case CANNON_FUSE:
         st->timer += g_nFrameStep;
-        if (st->timer < 0x5A) {
+        if (st->timer < CANNON_SMOKE_TICKS) {
           s512[0] = 0;
           s512[1] = 0;
-          s512[2] = 0x14C;
+          s512[2] = CANNON_MUZZLE_LEN;
           RotateVectorByMatrix(actor->mtx, s512, s512);
           AddVector(s512, s512, &actor->posX);
           smokeVel[0] = 0;
@@ -3565,26 +3565,26 @@ void Level25_UpdateActors(void) {
           PlayActorMeshVoice(actor, CANNON_VOICE_FUSE, 0);
           continue;
         }
-        if (st->timer < 0xB4 &&
+        if (st->timer < CANNON_FIRE_TICK &&
             (st->timer & 3) <= ((st->timer + g_nFrameStep) & 3)) {
           s512[0] = 0;
           s512[1] = 0;
-          s512[2] = 0x14C;
+          s512[2] = CANNON_MUZZLE_LEN;
           RotateVectorByMatrix(actor->mtx, s512, s512);
           AddVector(s512, s512, &actor->posX);
           smokeVel[0] = 0;
-          smokeVel[1] = ((st->timer - 0x5A) >> 3) + 9;
-          smokeVel[2] = -0x12 - ((st->timer - 0x5A) >> 2);
+          smokeVel[1] = ((st->timer - CANNON_SMOKE_TICKS) >> 3) + 9;
+          smokeVel[2] = -0x12 - ((st->timer - CANNON_SMOKE_TICKS) >> 2);
           RotateVectorByMatrix(actor->mtx, smokeVel, smokeVel);
           g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, s512, (int)smokeVel);
           if (actor->rotX < 0x80) {
-            actor->rotX = -((st->timer - 0x5A) >> 5);
+            actor->rotX = -((st->timer - CANNON_SMOKE_TICKS) >> 5);
           } else {
-            actor->rotX = (st->timer - 0x5A) >> 5;
+            actor->rotX = (st->timer - CANNON_SMOKE_TICKS) >> 5;
           }
           continue;
         }
-        if (st->timer <= 0xB4) {
+        if (st->timer <= CANNON_FIRE_TICK) {
           continue;
         }
         actor->subMode = CANNON_FLIGHT;
@@ -3597,7 +3597,7 @@ void Level25_UpdateActors(void) {
         continue;
 
       case CANNON_FLIGHT:
-        if (st->timer == 4) {
+        if (st->timer == CANNON_LEG_TICKS) {
           SubtractVector(ballToNode, PATH_PT(st->path, st->path->cur), &actor->posX);
           CopyVector(st->vel, ballToNode);
           st->path->cur++;
