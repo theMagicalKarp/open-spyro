@@ -446,7 +446,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       st->spinY = GetRandomU32() & 0xF;
       st->spinZ = GetRandomU32() & 0xF;
       st->floorZ = parent->posZ;
-      st->life = (GetRandomU32() & 3) + 0x10;
+      st->life = (GetRandomU32() & 3) + STATUE_SHARD_LIFE;
       break;
     }
 
@@ -483,21 +483,21 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
       {
         CopyVector(&rec->posX, g_anSpyroWorldPos);
       }
-      rec->posZ += 0x200;
-      ground = FindGroundHeightBelow(&rec->posX, 0x800);
+      rec->posZ += HAZARD_FX_PROBE_RAISE;
+      ground = FindGroundHeightBelow(&rec->posX, HAZARD_FX_SNAP_RANGE);
       z = rec->posZ;
       gap = ground - z;
       if (gap < 0)
       {
         gap = -gap;
       }
-      if (gap < 0x800)
+      if (gap < HAZARD_FX_SNAP_RANGE)
       {
         rec->posZ = ground;
       }
       else
       {
-        rec->posZ = z - 0x200;
+        rec->posZ = z - HAZARD_FX_PROBE_RAISE;
       }
       InsertActorIntoSpatialGrid(rec);
       break;

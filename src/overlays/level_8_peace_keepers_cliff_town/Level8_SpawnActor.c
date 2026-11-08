@@ -223,9 +223,9 @@ Actor *Level8_SpawnActor(int type, Actor *parent) {
     rec->tint2 = 0;
     rec->tintMode = TINT_STATUE_SHARD;
     if (g_nDragonRescueSubstate == DRAGON_RESCUE_TURN) {
-      rec->scale = 0x14;
+      rec->scale = STATUE_SHARD_TURN_SCALE;
     } else if (g_nDragonRescueSubstate == DRAGON_RESCUE_SWEEP) {
-      rec->scale = 0x30;
+      rec->scale = STATUE_SHARD_SWEEP_SCALE;
     }
     i = GetRandomU32() & 7;
     dir[0] = g_anLaunchDirTable[i * 2];
@@ -248,7 +248,7 @@ Actor *Level8_SpawnActor(int type, Actor *parent) {
     st->spinY = GetRandomU32() & 0xF;
     st->spinZ = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ;
-    st->life = (GetRandomU32() & 3) + 0x10;
+    st->life = (GetRandomU32() & 3) + STATUE_SHARD_LIFE;
     break;
   }
 
@@ -332,17 +332,17 @@ Actor *Level8_SpawnActor(int type, Actor *parent) {
     } else {
       CopyVector(&rec->posX, g_anSpyroWorldPos);
     }
-    rec->posZ += 0x200;
-    ground = FindGroundHeightBelow(&rec->posX, 0x800);
+    rec->posZ += HAZARD_FX_PROBE_RAISE;
+    ground = FindGroundHeightBelow(&rec->posX, HAZARD_FX_SNAP_RANGE);
     z = rec->posZ;
     gap = ground - z;
     if (gap < 0) {
       gap = -gap;
     }
-    if (gap < 0x800) {
+    if (gap < HAZARD_FX_SNAP_RANGE) {
       rec->posZ = ground;
     } else {
-      rec->posZ = z - 0x200;
+      rec->posZ = z - HAZARD_FX_PROBE_RAISE;
     }
     InsertActorIntoSpatialGrid(rec);
     break;

@@ -26,6 +26,20 @@ extern void DespawnActorRecord(struct Actor *actor);
 
 extern int FindGroundHeightBelow(int *pos, int depth);
 
+/* A hazard enter / death effect (ACTOR_TYPE_HAZARD0..2_*_FX) spawns at its
+ * parent (or Spyro), probes from HAZARD_FX_PROBE_RAISE above it and snaps to
+ * a floor within HAZARD_FX_SNAP_RANGE, else sits HAZARD_FX_PROBE_RAISE back
+ * down where it was. */
+#define HAZARD_FX_PROBE_RAISE 0x200
+#define HAZARD_FX_SNAP_RANGE 0x800
+
+/* A dragon-statue shard is drawn at STATUE_SHARD_TURN_SCALE while the rescue
+ * turns (DRAGON_RESCUE_TURN), STATUE_SHARD_SWEEP_SCALE while it sweeps, and
+ * lives STATUE_SHARD_LIFE + 0..3 ticks. */
+#define STATUE_SHARD_TURN_SCALE 0x14
+#define STATUE_SHARD_SWEEP_SCALE 0x30
+#define STATUE_SHARD_LIFE 0x10
+
 /* pos: a world vec3, or the Actor * for actor-anchored types; effectArg: a
  * colour / radius / life word, or a velocity pointer cast to int (EmitEffect). */
 extern void (*g_pfnLevelEmitParticles)(int count, int type, void *pos, int effectArg);
