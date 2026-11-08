@@ -2426,7 +2426,7 @@ void Level27_UpdateActors(void) {
         MarkActorLiveKill(actor);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
         PlayActorMeshVoice(actor, FGUARD_VOICE_KNOCKED, 0);
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < FGUARD_PIECES; i++) {
           Actor *o;
           FenceGuardPieceState *c;
 
@@ -2434,13 +2434,13 @@ void Level27_UpdateActors(void) {
 
           actor->rotY = h;
           if (i == 2) {
-            actor->rotY = h + 0x14;
+            actor->rotY = h + FGUARD_PIECE_FAN;
           } else if (i == 3) {
-            actor->rotY = h - 0x14;
+            actor->rotY = h - FGUARD_PIECE_FAN;
           } else if (i == 4) {
-            actor->rotY = h + 0x19;
+            actor->rotY = h + FGUARD_PIECE_FAN_WIDE;
           } else if (i == 5) {
-            actor->rotY = h - 0x19;
+            actor->rotY = h - FGUARD_PIECE_FAN_WIDE;
           }
           o = g_pfnLevelSpawnActor(ACTOR_TYPE_RUBBLE_SHARD_B, actor);
           c = o->state;
@@ -2449,7 +2449,7 @@ void Level27_UpdateActors(void) {
           o->rotX = 0;
           o->rotY = 0;
           if (actor->mode == FGUARD_ASLEEP) {
-            c->lift -= 0x1E;
+            c->lift -= FGUARD_ASLEEP_LIFT;
           }
           if (o->anim != i) {
             ANIM_RESET(o, i);
@@ -2515,11 +2515,11 @@ void Level27_UpdateActors(void) {
         }
         SubtractVector(toClamped, g392, &actor->posX);
         len = VectorLength(toClamped, VEC_LEN_XY);
-        if (len < 0xC8) {
+        if (len < FGUARD_SLIDE_STEP) {
           actor->posX = g392[0];
           actor->posY = g392[1];
         } else {
-          ScaleVector3ByRatio(toClamped, len, 0xC8);
+          ScaleVector3ByRatio(toClamped, len, FGUARD_SLIDE_STEP);
           actor->posX += toClamped[0];
           actor->posY += toClamped[1];
         }
@@ -2552,7 +2552,7 @@ void Level27_UpdateActors(void) {
       case FGUARD_WATCH:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         TICK_DOWN(st->timer);
-        if (st->onPath == 0 && st->timer < 0x3C && dist < 0x1194 &&
+        if (st->onPath == 0 && st->timer < FGUARD_ATTACK_TIMER && dist < FGUARD_NOTICE_RANGE &&
             (st->link == -1 || g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) &&
             CheckSpyroLineOfSightTo(&actor->posX) != 0) {
           ENTER_POSE(actor, FGUARD_ATTACK);
@@ -2560,38 +2560,38 @@ void Level27_UpdateActors(void) {
         break;
 
       case FGUARD_ATTACK: {
-        int range = 0xAF0;
+        int range = FGUARD_STRIKE_RANGE;
 
         if (AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(actor->posX - g_anSpyroWorldPos,
-                                        actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8)) >= 0x47) {
-          range = 0x7D0;
+                                        actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8)) >= FGUARD_GUARDED_ARC) {
+          range = FGUARD_SIDE_STRIKE_RANGE;
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (g_nActorAnimDone == 0) {
-          if (dist < 0x1771) {
+          if (dist <= FGUARD_LOSE_RANGE) {
             goto near3;
           }
         } else {
-          st->timer = 0xB4;
+          st->timer = FGUARD_RELOAD_TICKS;
         }
         ENTER_POSE(actor, FGUARD_WATCH);
       near3:
         if (TICK_DOWN(st->timer) != 0 && dist < range &&
-            DZ203(actor) < 0x320 && actor->nextFrame < 0x1C) {
-          actor->frame = 0x1F;
-          actor->nextFrame = 0x20;
+            DZ203(actor) < FGUARD_STRIKE_DZ && actor->nextFrame < FGUARD_WINDUP_END) {
+          actor->frame = FGUARD_SWING_FRAME;
+          actor->nextFrame = FGUARD_SWING_FRAME + 1;
           actor->frameProgress = 0;
         }
-        if (actor->nextFrame == 0x1E) {
-          actor->frame = 0xA;
-          actor->nextFrame = 0xB;
+        if (actor->nextFrame == FGUARD_LOOP_END) {
+          actor->frame = FGUARD_LOOP_START;
+          actor->nextFrame = FGUARD_LOOP_START + 1;
           actor->frameProgress = 0;
         }
-        if (dist < range && DZ203(actor) < 0x320 &&
-            (DZ203(actor) > 0 ? DZ203(actor) < 0x320
-                               : -DZ203(actor) < 0x320) &&
-            actor->nextFrame >= 0x2D && actor->nextFrame < 0x33) {
+        if (dist < range && DZ203(actor) < FGUARD_STRIKE_DZ &&
+            (DZ203(actor) > 0 ? DZ203(actor) < FGUARD_STRIKE_DZ
+                               : -DZ203(actor) < FGUARD_STRIKE_DZ) &&
+            actor->nextFrame >= FGUARD_HIT_FRAME && actor->nextFrame < FGUARD_HIT_FRAME_END) {
           SPY.triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_HIT_PINNED);
         }
         break;

@@ -84,6 +84,24 @@ typedef struct BoltCasterState {
 #define BCASTER_F_WOKEN 1    /* has noticed Spyro once: goes straight to AIM */
 #define BCASTER_F_IN_RANGE 2 /* Spyro in range: keeps aiming and casting */
 
+/* Bolt-caster tuning. Spyro within NOTICE_RANGE and NOTICE_DZ draws its
+ * aim, kept while he stays within AIM_RANGE. From frame CAST_FRAME a cast
+ * throws WISPS homing wisps WISP_GAP ticks apart: at Spyro (spawned on him
+ * within SNAP_RANGE and SNAP_DZ) or at its target, aimed TARGET_RAISE above
+ * it. Idle, it re-aims at its target every IDLE_MIN.. ticks. Flamed, it
+ * bursts with BURST_SPARK_LIFE sparks. */
+#define BCASTER_NOTICE_RANGE 0x1000
+#define BCASTER_NOTICE_DZ 0xC00
+#define BCASTER_AIM_RANGE 0x1800
+#define BCASTER_CAST_FRAME 4
+#define BCASTER_WISPS 3
+#define BCASTER_WISP_GAP 4
+#define BCASTER_SNAP_RANGE 0xA00
+#define BCASTER_SNAP_DZ 0x400
+#define BCASTER_TARGET_RAISE 0x2BC
+#define BCASTER_IDLE_MIN 0x20
+#define BCASTER_BURST_SPARK_LIFE 0x30
+
 /* Type 305: a critter that walks one of three paths and flees Spyro. */
 typedef struct FleeingWalkerState {
   PathData *cur;   /* 0x00 path being walked */
@@ -3722,8 +3740,8 @@ void Level14_UpdateActors(void) {
       }
       switch (actor->mode) {
       case BCASTER_IDLE:
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000 &&
-            ABS2(SPY_DZ(actor)) < 0xC00) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < BCASTER_NOTICE_RANGE &&
+            ABS2(SPY_DZ(actor)) < BCASTER_NOTICE_DZ) {
           if (st->flags & BCASTER_F_WOKEN) {
             st->flags |= BCASTER_F_IN_RANGE;
             ENTER_POSE(actor, BCASTER_AIM);
@@ -3760,8 +3778,8 @@ void Level14_UpdateActors(void) {
 
       case BCASTER_AIM:
         if (st->flags & BCASTER_F_IN_RANGE) {
-          if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800 &&
-              ABS2(SPY_DZ(actor)) < 0xC00) {
+          if (ApproxDist2D(&actor->posX, &SPY.posX) < BCASTER_AIM_RANGE &&
+              ABS2(SPY_DZ(actor)) < BCASTER_NOTICE_DZ) {
             TrackEntityYawTowardSpyro(actor, 8, 0x10, YAW_STEP_IN_BAND);
           } else {
             st->flags &= ~BCASTER_F_IN_RANGE;
@@ -3785,20 +3803,20 @@ void Level14_UpdateActors(void) {
         break;
 
       case BCASTER_CAST:
-        if (TICK_DOWN(st->timer) && actor->nextFrame >= 4 &&
-            st->count < 3) {
+        if (TICK_DOWN(st->timer) && actor->nextFrame >= BCASTER_CAST_FRAME &&
+            st->count < BCASTER_WISPS) {
           Actor *b = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_WISP, actor);
 
           if (st->flags & BCASTER_F_IN_RANGE) {
-            if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xA00 &&
-                ABS2(SPY_DZ(actor)) < 0x400) {
+            if (ApproxDist2D(&actor->posX, &SPY.posX) < BCASTER_SNAP_RANGE &&
+                ABS2(SPY_DZ(actor)) < BCASTER_SNAP_DZ) {
               CopyVector(&b->posX, &SPY.posX);
             }
           } else {
             Actor **bs = b->state;
 
             CopyVector(v376, &g_pActorListBase[st->target].posX);
-            v376[2] += 0x2BC;
+            v376[2] += BCASTER_TARGET_RAISE;
             b->rotY = ArcTan2(ApproxDist2D(&actor->posX, v376),
                                      v376[2] - actor->posZ, ATAN_ANGLE8);
             b->rotZ = ArcTan2(v376[0] - actor->posX,
@@ -3806,19 +3824,19 @@ void Level14_UpdateActors(void) {
             b->cullRadius = 0x24;
             *bs = &g_pActorListBase[st->target];
           }
-          st->timer = 4;
+          st->timer = BCASTER_WISP_GAP;
           st->count++;
         }
         if (g_nActorAnimDone != 0) {
           if ((st->flags & BCASTER_F_IN_RANGE) &&
-              ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000 &&
-              ABS2(SPY_DZ(actor)) < 0xC00) {
+              ApproxDist2D(&actor->posX, &SPY.posX) < BCASTER_NOTICE_RANGE &&
+              ABS2(SPY_DZ(actor)) < BCASTER_NOTICE_DZ) {
             actor->mode = BCASTER_AIM;
             ANIM_RESET(actor, BCASTER_AIM);
             continue;
           }
           st->flags &= ~BCASTER_F_IN_RANGE;
-          st->timer = (GetRandomU32() & 0x1F) + 0x20;
+          st->timer = (GetRandomU32() & 0x1F) + BCASTER_IDLE_MIN;
           actor->mode = BCASTER_IDLE;
           ANIM_RESET(actor, BCASTER_IDLE);
           continue;
@@ -3828,7 +3846,7 @@ void Level14_UpdateActors(void) {
       case BCASTER_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x30);
+          BurstActorWithSound(actor, BCASTER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

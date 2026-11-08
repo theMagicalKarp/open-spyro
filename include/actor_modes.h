@@ -3877,8 +3877,37 @@ enum FenceGuardMode {
   FGUARD_ASLEEP = 0, /* until woken */
   FGUARD_WAKE = 1,   /* waking animation, then WATCH */
   FGUARD_WATCH = 2,  /* faces Spyro along its fence; close and in sight: ATTACK */
-  FGUARD_ATTACK = 3, /* swings, pinning Spyro on frames 0x2D-0x32 */
+  FGUARD_ATTACK = 3, /* swings, pinning Spyro on frames HIT_FRAME .. HIT_FRAME_END - 1 */
 };
+/* Fence-guard tuning. Supercharged, it shatters into PIECES rubble shards
+ * fanned PIECE_FAN / PIECE_FAN_WIDE either side of Spyro's heading (lifting
+ * ASLEEP_LIFT less when asleep). On its fence it slides at most SLIDE_STEP a
+ * frame toward Spyro's nearest fence point. WATCH attacks once its timer is
+ * under ATTACK_TIMER with Spyro within NOTICE_RANGE and in sight. ATTACK
+ * reaches STRIKE_RANGE (SIDE_STRIKE_RANGE when Spyro faces GUARDED_ARC away
+ * from it) and STRIKE_DZ, gives up beyond LOSE_RANGE (RELOAD_TICKS once a
+ * swing ends), jumps from the wind-up to SWING_FRAME while Spyro is in
+ * reach before WINDUP_END, loops LOOP_END back to LOOP_START, and pins Spyro
+ * on frames HIT_FRAME .. HIT_FRAME_END - 1. */
+#define FGUARD_PIECES 6
+#define FGUARD_PIECE_FAN 0x14
+#define FGUARD_PIECE_FAN_WIDE 0x19
+#define FGUARD_ASLEEP_LIFT 0x1E
+#define FGUARD_SLIDE_STEP 0xC8
+#define FGUARD_ATTACK_TIMER 0x3C
+#define FGUARD_NOTICE_RANGE 0x1194
+#define FGUARD_STRIKE_RANGE 0xAF0
+#define FGUARD_SIDE_STRIKE_RANGE 0x7D0
+#define FGUARD_GUARDED_ARC 0x47
+#define FGUARD_STRIKE_DZ 0x320
+#define FGUARD_LOSE_RANGE 0x1770
+#define FGUARD_RELOAD_TICKS 0xB4
+#define FGUARD_WINDUP_END 0x1C
+#define FGUARD_SWING_FRAME 0x1F
+#define FGUARD_LOOP_END 0x1E
+#define FGUARD_LOOP_START 0xA
+#define FGUARD_HIT_FRAME 0x2D
+#define FGUARD_HIT_FRAME_END 0x33
 
 /* ->mode of a path charger (ACTOR_TYPE_PATH_CHARGER, PatrolState; level 2);
  * the mode is also the animation index. Only a flame from behind or the side
@@ -3902,8 +3931,8 @@ enum PathChargerTurn {
 enum PathChargerAnim {
   PCHARGER_ANIM_BUTT = 4, /* reaching Spyro: butts him off the path on frame 4 */
 };
-/* Path-charger tuning. Only flamed from behind (Spyro at least
- * GUARDED_ARC off its heading); it bursts with BURST_SPARK_LIFE sparks.
+/* Path-charger tuning. Only flamed from behind or the side (Spyro at
+ * least GUARDED_ARC off its heading); it bursts with BURST_SPARK_LIFE sparks.
  * PATROL walks its path at WALK_SPEED when lined up within WALK_FACING,
  * reaching nodes within NODE_RANGE; at a path end it taunts Spyro within
  * TAUNT_RANGE and TAUNT_FACING. Off cooldown, with its feet no more than
