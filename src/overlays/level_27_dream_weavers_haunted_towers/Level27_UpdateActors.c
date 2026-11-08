@@ -1594,12 +1594,12 @@ void Level27_UpdateActors(void) {
         Actor *o;
         FallingChunkState *c;
 
-        st->speed = 0x15E;
+        st->speed = ROCKTHROW_KNOCK_SPEED;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - g_anSpyroWorldPos,
                                                   actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
                                     g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->zSpeed = 0x8C;
-        st->timer = 0x3C;
+        st->zSpeed = ROCKTHROW_KNOCK_VZ;
+        st->timer = ROCKTHROW_KNOCK_TICKS;
         actor->flags = 0;
         o = g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_CHUNK, actor);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -1608,13 +1608,13 @@ void Level27_UpdateActors(void) {
         c = o->state;
         c->noFloor = 1;
         c->age = 0;
-        c->vx = (g_anCosineLut[(st->knockHeading - 10) & 0xFF] * 0x4B) >> 10;
-        c->vy = (g_anSineLut[(st->knockHeading - 10) & 0xFF] * 0x4B) >> 10;
-        c->vz = 0xDC;
+        c->vx = (g_anCosineLut[(st->knockHeading - ROCKTHROW_DROP_SKEW) & 0xFF] * ROCKTHROW_ROCK_SPEED) >> 10;
+        c->vy = (g_anSineLut[(st->knockHeading - ROCKTHROW_DROP_SKEW) & 0xFF] * ROCKTHROW_ROCK_SPEED) >> 10;
+        c->vz = ROCKTHROW_DROP_VZ;
         c->spin[0] = RandomSignedInRange(7, 0xF);
         c->spin[1] = RandomSignedInRange(7, 0xF);
         c->spin[2] = RandomSignedInRange(7, 0xF);
-        c->grav = -0xC;
+        c->grav = -ROCKTHROW_DROP_GRAVITY;
         if (st->flags & ROCKTHROW_F_ESCORT) {
           g_pActorListBase[st->partner].subMode = 1;
         }
@@ -1628,8 +1628,8 @@ void Level27_UpdateActors(void) {
       case ROCKTHROW_WATCH:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if ((st->flags & THROWER_F_ADVANCE) &&
-            (((SPY_DZ(actor) > 0 ? SPY_DZ(actor) < 0x1F4
-                                 : -SPY_DZ(actor) < 0x1F4) &&
+            (((SPY_DZ(actor) > 0 ? SPY_DZ(actor) < ROCKTHROW_ADVANCE_DZ
+                                 : -SPY_DZ(actor) < ROCKTHROW_ADVANCE_DZ) &&
               ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range) ||
              (st->link != -1 && g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) ||
              IsPointInRotatedBox(&g_anSpyroWorldPos, &st->vol) != 0)) {
@@ -1641,7 +1641,7 @@ void Level27_UpdateActors(void) {
         }
         if (TICK_DOWN(st->timer) != 0 && g_nCinematicActive == 0 &&
             ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < st->range2 &&
-            SPY_DZ(actor) < 0xC8 && CheckSpyroLineOfSightTo(&actor->posX) != 0) {
+            SPY_DZ(actor) < ROCKTHROW_THROW_DZ && CheckSpyroLineOfSightTo(&actor->posX) != 0) {
           actor->subMode = 0;
           ENTER_POSE(actor, ROCKTHROW_THROW);
         }
@@ -1651,11 +1651,11 @@ void Level27_UpdateActors(void) {
       case ROCKTHROW_WALK:
         st->flags &= ~THROWER_F_ADVANCE;
         if (st->range != 0 &&
-            ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x1400) {
+            ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < ROCKTHROW_WALK_THROW_RANGE) {
           actor->subMode = 0;
           ENTER_POSE(actor, ROCKTHROW_THROW);
         }
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+        if (PivotActorAlongPath(actor, st->path, ROCKTHROW_PIVOT_THRESH, ROCKTHROW_WALK_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             PATH_ARRIVED(0)) {
           actor->mode = ROCKTHROW_TURN;
           continue;
@@ -1664,7 +1664,7 @@ void Level27_UpdateActors(void) {
 
       case ROCKTHROW_THROW:
         TrackEntityYawTowardSpyro(actor, 8, 0, YAW_HOLD_IN_BAND);
-        if (actor->nextFrame >= 0x1A && g_nCinematicActive == 0 && actor->subMode == 0) {
+        if (actor->nextFrame >= ROCKTHROW_THROW_FRAME && g_nCinematicActive == 0 && actor->subMode == 0) {
           Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_CHUNK, actor);
           FallingChunkState *c;
 
@@ -1675,8 +1675,8 @@ void Level27_UpdateActors(void) {
           c = o->state;
           c->noFloor = 0;
           c->age = 0;
-          c->vx = (g_anCosineLut[o->rotZ] * 0x4B) >> 10;
-          c->vy = (g_anSineLut[o->rotZ] * 0x4B) >> 10;
+          c->vx = (g_anCosineLut[o->rotZ] * ROCKTHROW_ROCK_SPEED) >> 10;
+          c->vy = (g_anSineLut[o->rotZ] * ROCKTHROW_ROCK_SPEED) >> 10;
           c->vz = 0;
           c->spin[0] = RandomSignedInRange(7, 0xF);
           c->spin[1] = RandomSignedInRange(7, 0xF);
@@ -1686,33 +1686,33 @@ void Level27_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           actor->subMode = 0;
-          st->timer = 0x28;
+          st->timer = ROCKTHROW_THROW_GAP;
           ENTER_POSE(actor, ROCKTHROW_WATCH);
         }
         break;
 
       case ROCKTHROW_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, 0x10);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, ROCKTHROW_KNOCK_DRAG, ROCKTHROW_KNOCK_GRAVITY);
         if (g_nActorAnimDone != 0 && actor->nextAnim == ROCKTHROW_KNOCKED) {
           ANIM_SET(actor, ROCKTHROW_ANIM_DOWN);
         }
         if (TICK_DOWN(st->timer) != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, ROCKTHROW_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
         break;
 
       case ROCKTHROW_ESCORT: {
-        int spd = 0x78;
+        int spd = ROCKTHROW_ESCORT_SPEED;
         int d = ApproxDist2D(&actor->posX, &g_pActorListBase[st->partner].posX);
 
         ANIM_GO(actor, ROCKTHROW_WALK);
-        if (d < 0xA8C) {
-          spd = 0x64;
-        } else if (d > 0xC80) {
-          spd = 0x8C;
+        if (d < ROCKTHROW_ESCORT_NEAR) {
+          spd = ROCKTHROW_ESCORT_SLOW_SPEED;
+        } else if (d > ROCKTHROW_ESCORT_FAR) {
+          spd = ROCKTHROW_ESCORT_FAST_SPEED;
         }
         TurnActorYawTowardAngle(actor,
                       ArcTan2(g_pActorListBase[st->partner].posX - actor->posX,
@@ -1754,24 +1754,24 @@ void Level27_UpdateActors(void) {
       }
       if (st->grav != 0) {
         st->vz += st->grav;
-        if (st->vz < -0xF0) {
-          st->vz = -0xF0;
+        if (st->vz < -FCHUNK_MAX_FALL) {
+          st->vz = -FCHUNK_MAX_FALL;
         }
       } else {
         int h = ProbeActorGroundHeight(actor);
-        int z = actor->posZ - 0x78;
+        int z = actor->posZ - FCHUNK_HOVER;
 
         st->vz = h - z;
-        if (st->vz > 0x28) {
-          st->vz = 0x28;
+        if (st->vz > FCHUNK_MAX_VZ) {
+          st->vz = FCHUNK_MAX_VZ;
         }
-        if (st->vz < -0x28) {
-          st->vz = -0x28;
+        if (st->vz < -FCHUNK_MAX_VZ) {
+          st->vz = -FCHUNK_MAX_VZ;
         }
-        if (ABS(st->vz) < 0x1E) {
+        if (ABS(st->vz) < FCHUNK_VZ_DEADBAND) {
           st->vz = 0;
         }
-        if (st->age > 0x28) {
+        if (st->age > FCHUNK_RIDE_TICKS) {
           st->vz = 0;
         }
       }
@@ -1788,26 +1788,26 @@ void Level27_UpdateActors(void) {
       actor->rotZ += st->spin[2];
       st->age += g_nFrameStep;
       if (st->noFloor == 0) {
-        hit = RaiseSpyroTriggerInRadius(&actor->posX, 0xDC, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT);
+        hit = RaiseSpyroTriggerInRadius(&actor->posX, FCHUNK_HIT_RADIUS, SPYRO_EV_KNOCKBACK_2 | SPYRO_EV_CHARGE_HIT);
       }
-      if (actor->subMode != 2 && st->age < 0x5B && hit == 0 &&
+      if (actor->subMode != 2 && st->age < FCHUNK_LIFE && hit == 0 &&
           CastRayWorldAndActors(sparkVel, &actor->posX) == 0) {
         continue;
       }
       if (hit != 0) {
         g_anSpyroRequestVelocity.x = st->vx >> 2;
         g_nSpyroRequestVelocityY = st->vy >> 2;
-        g_nSpyroRequestVelocityZ = 0x28;
+        g_nSpyroRequestVelocityZ = FCHUNK_PUSH_VZ;
       }
       PlayActorMeshVoice(actor, FCHUNK_VOICE_BURST, 0);
-      for (i = 0; i < 6; i++) {
+      for (i = 0; i < FCHUNK_DEBRIS_PAIRS; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
         }
         g_pfnLevelSpawnActor(ACTOR_TYPE_REBOUND_DEBRIS, actor);
         g_pfnLevelSpawnActor(ACTOR_TYPE_REBOUND_DEBRIS + 1, actor);
       }
-      for (i = 0; i < 0x12; i++) {
+      for (i = 0; i < FCHUNK_BURST_SPARKS; i++) {
         sparkStep[0] = RandomIntInRange(-0x5A, 0x5A);
         sparkStep[1] = RandomIntInRange(-0x5A, 0x5A);
         sparkStep[2] = RandomIntInRange(-0x19, 0x3C);

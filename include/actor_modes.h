@@ -2409,6 +2409,10 @@ enum SweepGunnerAnim {
 #define SWEEPGUN_SHOT_SPEED 0x190
 #define SWEEPGUN_SHOT_DROP 0x29
 #define SWEEPGUN_ADVANCE_SPEED 0xA0
+/* Knocked out of the water it bursts with BURST_SPARK_LIFE sparks; it
+ * sinks for SINK_TICKS. */
+#define SWEEPGUN_BURST_SPARK_LIFE 0x30
+#define SWEEPGUN_SINK_TICKS 0xA
 
 /* ->mode of a lurker (ACTOR_TYPE_LURKER, LurkerState; level 20). */
 enum LurkerMode {
@@ -2540,6 +2544,55 @@ enum RockThrowerMode {
 enum RockThrowerAnim {
   ROCKTHROW_ANIM_DOWN = 4, /* after the knock plays out, until it bursts */
 };
+/* Rock-thrower tuning. Hit, it slides from KNOCK_SPEED and KNOCK_VZ up
+ * (losing KNOCK_DRAG and KNOCK_GRAVITY a frame) for KNOCK_TICKS, then bursts
+ * with BURST_SPARK_LIFE sparks; it drops its rock DROP_SKEW off the knock
+ * heading at ROCK_SPEED, DROP_VZ up, falling DROP_GRAVITY a frame. WATCH
+ * advances (when allowed) with Spyro within ADVANCE_DZ and `range`, and
+ * throws with him in sight, within `range2` and less than THROW_DZ above;
+ * WALK walks its path at WALK_SPEED (nodes within PIVOT_THRESH), throwing
+ * once Spyro is within WALK_THROW_RANGE. The rock leaves on frame
+ * THROW_FRAME at ROCK_SPEED; THROW_GAP ticks pass between throws. An escort
+ * walks at ESCORT_SPEED, ESCORT_SLOW_SPEED within ESCORT_NEAR of its partner,
+ * ESCORT_FAST_SPEED beyond ESCORT_FAR. */
+#define ROCKTHROW_KNOCK_SPEED 0x15E
+#define ROCKTHROW_KNOCK_VZ 0x8C
+#define ROCKTHROW_KNOCK_TICKS 0x3C
+#define ROCKTHROW_KNOCK_DRAG 0xC
+#define ROCKTHROW_KNOCK_GRAVITY 0x10
+#define ROCKTHROW_BURST_SPARK_LIFE 0x18
+#define ROCKTHROW_DROP_SKEW 10
+#define ROCKTHROW_ROCK_SPEED 0x4B
+#define ROCKTHROW_DROP_VZ 0xDC
+#define ROCKTHROW_DROP_GRAVITY 0xC
+#define ROCKTHROW_ADVANCE_DZ 0x1F4
+#define ROCKTHROW_THROW_DZ 0xC8
+#define ROCKTHROW_WALK_SPEED 0x8C
+#define ROCKTHROW_PIVOT_THRESH 0x100
+#define ROCKTHROW_WALK_THROW_RANGE 0x1400
+#define ROCKTHROW_THROW_FRAME 0x1A
+#define ROCKTHROW_THROW_GAP 0x28
+#define ROCKTHROW_ESCORT_SPEED 0x78
+#define ROCKTHROW_ESCORT_SLOW_SPEED 0x64
+#define ROCKTHROW_ESCORT_FAST_SPEED 0x8C
+#define ROCKTHROW_ESCORT_NEAR 0xA8C
+#define ROCKTHROW_ESCORT_FAR 0xC80
+/* A falling chunk (a thrower's rock) with `grav` falls to -MAX_FALL;
+ * without, it rides HOVER over the ground (height steps capped at MAX_VZ,
+ * ignored under VZ_DEADBAND and after RIDE_TICKS). Thrown, it bursts on
+ * Spyro (within HIT_RADIUS: pushed at a quarter of its velocity, PUSH_VZ
+ * up), on a wall, or after LIFE ticks, into DEBRIS_PAIRS rebound-debris
+ * pairs and BURST_SPARKS sparks. */
+#define FCHUNK_MAX_FALL 0xF0
+#define FCHUNK_HOVER 0x78
+#define FCHUNK_MAX_VZ 0x28
+#define FCHUNK_VZ_DEADBAND 0x1E
+#define FCHUNK_RIDE_TICKS 0x28
+#define FCHUNK_HIT_RADIUS 0xDC
+#define FCHUNK_LIFE 0x5B
+#define FCHUNK_PUSH_VZ 0x28
+#define FCHUNK_DEBRIS_PAIRS 6
+#define FCHUNK_BURST_SPARKS 0x12
 
 /* ->mode / ->subMode of a thrown boulder (ACTOR_TYPE_ROLLING_BOULDER,
  * BoulderState; levels 21/22). */
@@ -3061,6 +3114,34 @@ enum LobGunnerMode {
 enum LobGunnerAnim {
   LOBGUN_ANIM_FIDGET = 1, /* LOBGUN_WATCH: half the time once an animation ends */
 };
+/* Lob-gunner tuning. Flamed, it slides from KNOCK_SPEED and KNOCK_VZ up,
+ * losing KNOCK_DRAG a frame; landing in water within SPLASH_DZ it sinks
+ * SINK_STEP a frame for SINK_TICKS, else bursts with BURST_SPARK_LIFE
+ * sparks. WATCH swipes (SWIPE_GAP ticks apart) at Spyro within SWIPE_RANGE
+ * and SWIPE_DZ, and lobs beyond SWIPE_RANGE every THROW_GAP ticks; WALK
+ * walks its path at WALK_SPEED (nodes within PIVOT_THRESH). The lob spawns
+ * in hand on frame SPAWN_FRAME and leaves on THROW_FRAME at LOB_SPEED
+ * (LOB_GRAVITY a frame, living LOB_LIFE), at its target path's next point
+ * when Spyro is past `aimRange`, else AIM_DROP below Spyro. */
+#define LOBGUN_KNOCK_SPEED 0x12C
+#define LOBGUN_KNOCK_VZ 0x104
+#define LOBGUN_KNOCK_DRAG 0xC
+#define LOBGUN_SPLASH_DZ 0x64
+#define LOBGUN_SINK_STEP 0x64
+#define LOBGUN_SINK_TICKS 0xA
+#define LOBGUN_BURST_SPARK_LIFE 0x30
+#define LOBGUN_SWIPE_RANGE 0x9C4
+#define LOBGUN_SWIPE_DZ 0x258
+#define LOBGUN_SWIPE_GAP 0x64
+#define LOBGUN_THROW_GAP 0x3C
+#define LOBGUN_WALK_SPEED 0xAA
+#define LOBGUN_PIVOT_THRESH 0x100
+#define LOBGUN_SPAWN_FRAME 5
+#define LOBGUN_THROW_FRAME 0xA
+#define LOBGUN_LOB_SPEED 0x104
+#define LOBGUN_LOB_GRAVITY 6
+#define LOBGUN_LOB_LIFE 0x8C
+#define LOBGUN_AIM_DROP 0x17C
 
 /* ->mode of a burst gunner (ACTOR_TYPE_BURST_GUNNER, BurstGunnerState; level
  * 32); the mode is also the animation index. */
@@ -3072,6 +3153,51 @@ enum BurstGunnerMode {
   BURSTGUN_TURN = 10,   /* turns to Spyro, then WATCH */
   BURSTGUN_SINK = 20,   /* splashed down: despawns after a delay */
 };
+/* Burst-gunner tuning. Hit, it slides from KNOCK_SPEED (CHARGE_KNOCK_SPEED
+ * charged) and KNOCK_VZ up, losing KNOCK_DRAG a frame; landing in water
+ * within SPLASH_DZ it sinks SINK_STEP a frame for SINK_TICKS, else bursts
+ * with BURST_SPARK_LIFE sparks. WATCH fires with Spyro within FIRE_RANGE,
+ * itself within FIRE_FACING of the camera's view and its feet at least
+ * FIRE_RISE below Spyro; WALK walks its path at WALK_SPEED (nodes within
+ * PIVOT_THRESH) until he is within WATCH_RANGE. A burst throws a shot every
+ * SHOT_GAP ticks on frames FIRE_FRAME .. FIRE_FRAME + FIRE_FRAMES - 1, at
+ * SHOT_SPEED toward Spyro (jittered up to SHOT_SPREAD), living SHOT_LIFE. */
+#define BURSTGUN_KNOCK_SPEED 0xDC
+#define BURSTGUN_CHARGE_KNOCK_SPEED 0x154
+#define BURSTGUN_KNOCK_VZ 0x82
+#define BURSTGUN_KNOCK_DRAG 0xC
+#define BURSTGUN_SPLASH_DZ 0x64
+#define BURSTGUN_SINK_STEP 0x64
+#define BURSTGUN_SINK_TICKS 0xA
+#define BURSTGUN_BURST_SPARK_LIFE 0x18
+#define BURSTGUN_FIRE_RANGE 0x1388
+#define BURSTGUN_FIRE_FACING 0x28
+#define BURSTGUN_FIRE_RISE 0xC8
+#define BURSTGUN_WALK_SPEED 0x8C
+#define BURSTGUN_PIVOT_THRESH 0x100
+#define BURSTGUN_WATCH_RANGE 0x9C4
+#define BURSTGUN_SHOT_GAP 4
+#define BURSTGUN_FIRE_FRAME 0x10
+#define BURSTGUN_FIRE_FRAMES 0xA
+#define BURSTGUN_SHOT_SPEED 0x12C
+#define BURSTGUN_SHOT_SPREAD 0x18
+#define BURSTGUN_SHOT_LIFE 0x26
+/* A gunner's shot (ACTOR_TYPE_BURST_GUNNER_SHOT) hits Spyro within
+ * SHOT_REACH and SHOT_HIGH (while longReachTimer runs: LONG_REACH,
+ * BEHIND_REACH when he is over SHOT_BEHIND off its heading, and LONG_HIGH),
+ * knocking him back at a quarter of its velocity and SHOT_PUSH_VZ up. It
+ * despawns outside the level box (0..SHOT_MAX_X, 0..SHOT_MAX_Y, Z under
+ * SHOT_MAX_Z). */
+#define BGSHOT_REACH 0x12C
+#define BGSHOT_HIGH 0x384
+#define BGSHOT_LONG_REACH 0x1F4
+#define BGSHOT_LONG_HIGH 0x640
+#define BGSHOT_BEHIND 0x64
+#define BGSHOT_BEHIND_REACH 0x708
+#define BGSHOT_PUSH_VZ 0x28
+#define BGSHOT_MAX_X 0x20800
+#define BGSHOT_MAX_Y 0x1F000
+#define BGSHOT_MAX_Z 0x4800
 
 /* ->mode of a bolt guard (ACTOR_TYPE_BOLT_GUARD, BoltGuardState; level 19).
  * BoltGuardState.mode picks its trigger: 1 runs its path when Spyro trips its

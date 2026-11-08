@@ -1538,11 +1538,11 @@ void Level32_UpdateActors(void) {
       if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != BURSTGUN_KNOCKED &&
           actor->mode != BURSTGUN_SINK) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        st->knockSpeed = 0xDC;
+        st->knockSpeed = BURSTGUN_KNOCK_SPEED;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->knockSpeed = 0x154;
+          st->knockSpeed = BURSTGUN_CHARGE_KNOCK_SPEED;
         }
-        st->knockZSpeed = 0x82;
+        st->knockZSpeed = BURSTGUN_KNOCK_VZ;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8),
                                 g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
@@ -1571,12 +1571,12 @@ void Level32_UpdateActors(void) {
           ENTER_POSE(actor, BURSTGUN_WALK);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (TICK_DOWN(st->shotTimer) != 0 && dist < 0x1388 &&
+        if (TICK_DOWN(st->shotTimer) != 0 && dist < BURSTGUN_FIRE_RANGE &&
             AbsAngleDelta8(((unsigned short)g_nCameraEulerYaw << 16 >> 20),
                           ArcTan2(actor->posX - g_anCameraPos[0],
                                         actor->posY - g_anCameraPos[1], ATAN_ANGLE8)) <
-                0x28 &&
-            actor->posZ - actor->floorOffset - SPY.posZ < -0xC8 &&
+                BURSTGUN_FIRE_FACING &&
+            actor->posZ - actor->floorOffset - SPY.posZ < -BURSTGUN_FIRE_RISE &&
             TICK_DOWN(st->countdown) != 0) {
           st->shotGap = 0;
           st->shotTimer = st->shotReload;
@@ -1586,11 +1586,11 @@ void Level32_UpdateActors(void) {
         continue;
 
       case BURSTGUN_WALK:
-        if (dist < 0x9C4) {
+        if (dist < BURSTGUN_WATCH_RANGE) {
           actor->mode = BURSTGUN_WATCH;
           continue;
         }
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+        if (PivotActorAlongPath(actor, st->path, BURSTGUN_PIVOT_THRESH, BURSTGUN_WALK_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             PATH_ARRIVED(0)) {
           actor->mode = BURSTGUN_TURN;
         }
@@ -1599,7 +1599,7 @@ void Level32_UpdateActors(void) {
       case BURSTGUN_FIRE:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         st->shotGap += g_nFrameStep;
-        if ((unsigned)(actor->nextFrame - 0x10) < 0xA && st->shotGap >= 4) {
+        if ((unsigned)(actor->nextFrame - BURSTGUN_FIRE_FRAME) < BURSTGUN_FIRE_FRAMES && st->shotGap >= BURSTGUN_SHOT_GAP) {
           Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_BURST_GUNNER_SHOT, actor);
           short *p = o->state;
 
@@ -1607,15 +1607,15 @@ void Level32_UpdateActors(void) {
           GetActorAttachPoint(actor, 0, &o->posX);
           CopyVector(o120, &spy->posX);
           SubtractVector(burstDir, o120, &o->posX);
-          ScaleVector3ByRatio(burstDir, VectorLength(burstDir, VEC_LEN_XY), 0x12C);
-          burstDir[0] += RandomIntInRange(-0x18, 0x18);
-          burstDir[1] += RandomIntInRange(-0x18, 0x18);
+          ScaleVector3ByRatio(burstDir, VectorLength(burstDir, VEC_LEN_XY), BURSTGUN_SHOT_SPEED);
+          burstDir[0] += RandomIntInRange(-BURSTGUN_SHOT_SPREAD, BURSTGUN_SHOT_SPREAD);
+          burstDir[1] += RandomIntInRange(-BURSTGUN_SHOT_SPREAD, BURSTGUN_SHOT_SPREAD);
           burstDir[2] = 0;
           VectorLength(burstDir, VEC_LEN_XY);
           o->rotY = 0;
           o->rotZ = ArcTan2(spy->posX - o->posX, SPY.posY - o->posY, ATAN_ANGLE8);
           CopyVector((int *)p, burstDir);
-          p[6] = 0x26;
+          p[6] = BURSTGUN_SHOT_LIFE;
           p[7] = 0;
           st->shotGap = 0;
         }
@@ -1625,24 +1625,24 @@ void Level32_UpdateActors(void) {
         continue;
 
       case BURSTGUN_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, BURSTGUN_KNOCK_DRAG, sixteen);
         if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
 
-          if (z - h > 0 ? z - h < 0x64 : h - z < 0x64) {
+          if (z - h > 0 ? z - h < BURSTGUN_SPLASH_DZ : h - z < BURSTGUN_SPLASH_DZ) {
             Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_HAZARD2_ENTER_FX, actor);
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
             o->otBias = 0xFE;
-            st->sinkTimer = 0xA;
+            st->sinkTimer = BURSTGUN_SINK_TICKS;
             actor->mode = BURSTGUN_SINK;
             continue;
           }
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, BURSTGUN_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
         }
         continue;
@@ -1658,7 +1658,7 @@ void Level32_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        actor->posZ -= 0x64;
+        actor->posZ -= BURSTGUN_SINK_STEP;
         continue;
       }
       continue;
@@ -1802,14 +1802,14 @@ void Level32_UpdateActors(void) {
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
             o->otBias = 0xFE;
-            st->timer = 0xA;
+            st->timer = SWEEPGUN_SINK_TICKS;
             actor->mode = SWEEPGUN_SINK;
             continue;
           }
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x30);
+          BurstActorWithSound(actor, SWEEPGUN_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
         }
         continue;
@@ -1846,8 +1846,8 @@ void Level32_UpdateActors(void) {
         Actor *c;
 
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
-        st->knockSpeed = 0x12C;
-        st->knockZSpeed = 0x104;
+        st->knockSpeed = LOBGUN_KNOCK_SPEED;
+        st->knockZSpeed = LOBGUN_KNOCK_VZ;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                               actor->posY - SPY.posY, ATAN_ANGLE8),
                                 g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
@@ -1881,11 +1881,11 @@ void Level32_UpdateActors(void) {
           ENTER_POSE(actor, LOBGUN_WALK);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (TICK_DOWN(st->timer) != 0 && dist < 0x9C4 &&
-            ABS2(SPY_DZ(actor)) < 0x258) {
+        if (TICK_DOWN(st->timer) != 0 && dist < LOBGUN_SWIPE_RANGE &&
+            ABS2(SPY_DZ(actor)) < LOBGUN_SWIPE_DZ) {
           ENTER_POSE_B(actor, LOBGUN_SWIPE);
         }
-        if (st->flags != GUNNER_F_ARMED && dist > 0x9C4 && TICK_DOWN(st->throwTimer) != 0) {
+        if (st->flags != GUNNER_F_ARMED && dist > LOBGUN_SWIPE_RANGE && TICK_DOWN(st->throwTimer) != 0) {
           if (st->aimRange < dist) {
             unsigned char *p = st->targetPath;
 
@@ -1904,7 +1904,7 @@ void Level32_UpdateActors(void) {
         break;
 
       case LOBGUN_WALK:
-        if (PivotActorAlongPath(actor, st->path, 0x100, 0xAA, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+        if (PivotActorAlongPath(actor, st->path, LOBGUN_PIVOT_THRESH, LOBGUN_WALK_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             PATH_ARRIVED(0)) {
           actor->mode = LOBGUN_TURN;
           continue;
@@ -1914,30 +1914,30 @@ void Level32_UpdateActors(void) {
       case LOBGUN_SWIPE:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (g_nActorAnimDone != 0) {
-          st->timer = 0x64;
+          st->timer = LOBGUN_SWIPE_GAP;
           ENTER_POSE(actor, LOBGUN_WATCH);
         }
         break;
 
       case LOBGUN_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0x16);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, LOBGUN_KNOCK_DRAG, 0x16);
         if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
 
-          if (z - h > 0 ? z - h < 0x64 : h - z < 0x64) {
+          if (z - h > 0 ? z - h < LOBGUN_SPLASH_DZ : h - z < LOBGUN_SPLASH_DZ) {
             Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_HAZARD2_ENTER_FX, actor);
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
             o->otBias = 0xFE;
-            st->timer = 0xA;
+            st->timer = LOBGUN_SINK_TICKS;
             actor->mode = LOBGUN_SINK;
             continue;
           }
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x30);
+          BurstActorWithSound(actor, LOBGUN_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -1946,7 +1946,7 @@ void Level32_UpdateActors(void) {
       case LOBGUN_LOB: {
         unsigned char *p = st->targetPath;
 
-        if (st->heldLob == 0 && actor->nextFrame >= 5) {
+        if (st->heldLob == 0 && actor->nextFrame >= LOBGUN_SPAWN_FRAME) {
           st->heldLob = g_pfnLevelSpawnActor(ACTOR_TYPE_LOB_GUNNER_LOB, actor);
           st->heldLob->cullRadius = 0x28;
           st->heldLob->updateDist = ACTOR_UPDATE_ALWAYS;
@@ -1954,7 +1954,7 @@ void Level32_UpdateActors(void) {
         if (st->heldLob != 0 && st->heldLob != (Actor *)-1 && st->heldLob->subMode == 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 0, &st->heldLob->posX);
-          if (actor->nextFrame >= 0xA) {
+          if (actor->nextFrame >= LOBGUN_THROW_FRAME) {
             LobState *q = st->heldLob->state;
 
             if (st->aimRange < dist) {
@@ -1963,18 +1963,18 @@ void Level32_UpdateActors(void) {
               RandomIntInRange(-0xA, 0xA);
               o150[0] = SPY.posX;
               o150[1] = SPY.posY;
-              o150[2] = SPY.posZ - 0x17C;
+              o150[2] = SPY.posZ - LOBGUN_AIM_DROP;
             }
-            q->gravity = -6;
-            q->speed = 0x104;
-            q->zSpeed = ComputeLobVelocityZ(&st->heldLob->posX, o150, 0x104, q->gravity, (int *)q);
+            q->gravity = -LOBGUN_LOB_GRAVITY;
+            q->speed = LOBGUN_LOB_SPEED;
+            q->zSpeed = ComputeLobVelocityZ(&st->heldLob->posX, o150, LOBGUN_LOB_SPEED, q->gravity, (int *)q);
             if (q->flightTime == 0) {
               st->heldLob->mode = LGLOB_DESPAWN;
             }
             q->spinX = RandomSignedInRange(7, 0xF);
             q->spinY = RandomSignedInRange(7, 0xF);
             q->spinZ = RandomSignedInRange(7, 0xF);
-            q->life = 0x8C;
+            q->life = LOBGUN_LOB_LIFE;
             q->heading = ArcTan2(o150[0] - actor->posX, o150[1] - actor->posY,
                                   ATAN_ANGLE8);
             st->heldLob->subMode = 1;
@@ -1982,7 +1982,7 @@ void Level32_UpdateActors(void) {
           }
         }
         if (g_nActorAnimDone != 0) {
-          st->throwTimer = 0x3C;
+          st->throwTimer = LOBGUN_THROW_GAP;
           ENTER_POSE(actor, LOBGUN_WATCH);
         }
         break;
@@ -1999,7 +1999,7 @@ void Level32_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        actor->posZ -= 0x64;
+        actor->posZ -= LOBGUN_SINK_STEP;
         break;
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
@@ -2012,25 +2012,25 @@ void Level32_UpdateActors(void) {
 
       switch (actor->mode) {
       case SHOT_FLY: {
-        int reach = 0x12C;
-        int high = 0x384;
+        int reach = BGSHOT_REACH;
+        int high = BGSHOT_HIGH;
 
         EBB_BREAK();
         if (st->longReachTimer != 0) {
-          high = 0x640;
-          reach = 0x1F4;
+          high = BGSHOT_LONG_HIGH;
+          reach = BGSHOT_LONG_REACH;
           if (AbsAngleDelta8(actor->rotZ,
                             ArcTan2(spy->posX - actor->posX,
-                                          spy->posY - actor->posY, ATAN_ANGLE8)) > 0x64) {
-            reach = 0x708;
+                                          spy->posY - actor->posY, ATAN_ANGLE8)) > BGSHOT_BEHIND) {
+            reach = BGSHOT_BEHIND_REACH;
           }
         }
         TICK_DOWN(st->longReachTimer);
         CopyVector(o140, &actor->posX);
         AddVector(&actor->posX, &actor->posX, st->vel);
         if (actor->posX < 0 || actor->posY < 0 ||
-            (unsigned)actor->posZ > 0x4800 || actor->posY > 0x1F000 ||
-            actor->posX > 0x20800) {
+            (unsigned)actor->posZ > BGSHOT_MAX_Z || actor->posY > BGSHOT_MAX_Y ||
+            actor->posX > BGSHOT_MAX_X) {
           DespawnActorRecord(actor);
           continue;
         }
@@ -2045,7 +2045,7 @@ void Level32_UpdateActors(void) {
           AS_I32(g_dwSpyroRequestMask) = (SPYRO_RQ_PENDING | SPYRO_RQ_RAW_VELOCITY | SPYRO_RQ_VEL_Z | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
           SPY.triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
           g_anSpyroRequestVelocity.x = (st->vel[0] * 2) >> 3;
-          g_nSpyroRequestVelocityZ = 0x28;
+          g_nSpyroRequestVelocityZ = BGSHOT_PUSH_VZ;
           g_nSpyroRequestVelocityY = (st->vel[1] * 2) >> 3;
           actor->mode = SHOT_BURST;
           continue;
