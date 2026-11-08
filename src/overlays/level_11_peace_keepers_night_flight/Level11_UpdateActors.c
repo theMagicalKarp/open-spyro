@@ -1335,33 +1335,33 @@ void Level11_UpdateActors(void) {
                       4, 0, YAW_HOLD_IN_BAND);
         break;
       case TIMEBONUS_COLLECT:
-        g_nFlightTimeBonus += TIME_BONUS_SECONDS(actor->type) * 60;
+        g_nFlightTimeBonus += TIME_BONUS_SECONDS(actor->type) * TIMEBONUS_FRAMES_PER_SECOND;
         ProjectWorldPointGTEUnscaled(&actor->posX, &actor->posX);
         actor->rotX = 0;
         actor->rotY = 0;
-        actor->rotZ = 0xC0;
+        actor->rotZ = TIMEBONUS_SCREEN_ROLL;
         actor->cullRadius = ACTOR_CULL_ALWAYS;
-        actor->otBias = 0x20;
+        actor->otBias = TIMEBONUS_OT_BIAS;
         actor->mode = TIMEBONUS_TO_HUD;
         PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_COLLECT], actor, SFX_MODE_PANNED, 0);
         break;
       case TIMEBONUS_TO_HUD: {
         int d;
 
-        bonusStep[0] = 0x1A4;
-        bonusStep[1] = 0x30;
-        bonusStep[2] = 0x157C;
+        bonusStep[0] = TIMEBONUS_HUD_X;
+        bonusStep[1] = TIMEBONUS_HUD_Y;
+        bonusStep[2] = TIMEBONUS_HUD_DEPTH;
         SubtractVector(bonusStep, bonusStep, &actor->posX);
         d = VectorLength(bonusStep, VEC_LEN_XYZ);
-        if (d < 0x20) {
+        if (d < TIMEBONUS_ARRIVE_RANGE) {
           actor->mode = TIMEBONUS_ARRIVED;
-          actor->posX = 0x1A4;
-          actor->posY = 0x30;
-          actor->posZ = 0x157C;
-          *st = 0x1E;
+          actor->posX = TIMEBONUS_HUD_X;
+          actor->posY = TIMEBONUS_HUD_Y;
+          actor->posZ = TIMEBONUS_HUD_DEPTH;
+          *st = TIMEBONUS_HOLD_TICKS;
         } else {
-          if (d > 0x80) {
-            ScaleVector3ByRatio(bonusStep, d, 0x80);
+          if (d > TIMEBONUS_FLY_SPEED) {
+            ScaleVector3ByRatio(bonusStep, d, TIMEBONUS_FLY_SPEED);
           }
           AddVector(&actor->posX, &actor->posX, bonusStep);
         }
@@ -1369,7 +1369,7 @@ void Level11_UpdateActors(void) {
       }
       case TIMEBONUS_ARRIVED:
         if (TICK_DOWN(*st) != 0) {
-          g_nFlightTimeRemaining += TIME_BONUS_SECONDS(actor->type) * 60;
+          g_nFlightTimeRemaining += TIME_BONUS_SECONDS(actor->type) * TIMEBONUS_FRAMES_PER_SECOND;
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_TIME_ADDED], actor, SFX_MODE_PANNED, 0);
           DespawnActorRecord(actor);
         }

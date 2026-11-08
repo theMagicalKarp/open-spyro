@@ -1276,6 +1276,20 @@ enum BankerMode {
   BANKER_STRUCK = 1, /* flamed: pays out a time bonus, tallies, flees */
   BANKER_FLEE = 2,   /* keeps running until it splashes down */
 };
+/* A banking flight target flies its path (tween speed TWEEN_SPEED; FLAT_TWEEN
+ * on levels 5 and 23, which fly it with TWEEN_FLY), banking with its turns
+ * up to MAX_ROLL (12-bit). Struck, it is knocked from KNOCK_SPEED along
+ * Spyro's heading bent KNOCK_BEND_STEP_WIDE toward his yaw, losing
+ * KNOCK_DRAG and KNOCK_GRAVITY a frame, throwing SPARK_TRIPLES spark-debris
+ * triples. */
+#define BANKER_TWEEN_SPEED 0x16
+#define BANKER_FLAT_TWEEN 0xC
+#define BANKER_MAX_ROLL 0x200
+#define BANKER_KNOCK_SPEED 0x15E
+#define BANKER_KNOCK_BEND_STEP_WIDE 0x28
+#define BANKER_KNOCK_DRAG 0xC
+#define BANKER_KNOCK_GRAVITY 0xC
+#define BANKER_SPARK_TRIPLES 3
 
 /* ->mode of a flight time bonus (ACTOR_TYPE_TIME_BONUS..+2), set to
  * TIMEBONUS_COLLECT by the target that pays it out. */
@@ -1285,6 +1299,19 @@ enum TimeBonusMode {
   TIMEBONUS_TO_HUD = 2,  /* flies to the HUD clock */
   TIMEBONUS_ARRIVED = 3, /* adds the seconds after a short hold */
 };
+/* A collected time bonus (TIME_BONUS_SECONDS(type) seconds of 60 frames)
+ * moves to screen space (rolled SCREEN_ROLL, OT bias OT_BIAS) and flies at
+ * FLY_SPEED to the HUD clock at HUD_X / HUD_Y / HUD_DEPTH, arriving within
+ * ARRIVE_RANGE; it adds its seconds after HOLD_TICKS there. */
+#define TIMEBONUS_FRAMES_PER_SECOND 60
+#define TIMEBONUS_SCREEN_ROLL 0xC0
+#define TIMEBONUS_OT_BIAS 0x20
+#define TIMEBONUS_FLY_SPEED 0x80
+#define TIMEBONUS_HUD_X 0x1A4
+#define TIMEBONUS_HUD_Y 0x30
+#define TIMEBONUS_HUD_DEPTH 0x157C
+#define TIMEBONUS_ARRIVE_RANGE 0x20
+#define TIMEBONUS_HOLD_TICKS 0x1E
 
 /* ->mode of a Peace Keeper soldier (ACTOR_TYPE_SOLDIER / _B, SoldierState;
  * level 6). SOLDIER_IDLE runs SoldierState.kind's patrol/guard behaviour;
