@@ -2915,9 +2915,9 @@ void Level31_UpdateActors(void) {
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
                                   SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         if (actor->flags & ACTOR_HIT_FLAME) {
-          st->knockSpeed = 0xC8;
+          st->knockSpeed = CRITTER_STRONG_FLAME_KNOCK_SPEED;
         } else {
-          st->knockSpeed = 0x190;
+          st->knockSpeed = CRITTER_STRONG_KNOCK_SPEED;
         }
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2934,13 +2934,13 @@ void Level31_UpdateActors(void) {
         break;
 
       case CRITTER_KNOCKED:
-        if (st->knockSpeed > 0xF) {
-          st->knockSpeed -= 0xF;
-          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x1F4, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        if (st->knockSpeed >= CRITTER_KNOCK_MIN_SPEED) {
+          st->knockSpeed -= CRITTER_KNOCK_DRAG;
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, CRITTER_C_MOVE_RADIUS, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x10);
+          BurstActorWithSound(actor, CRITTER_C_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2948,7 +2948,7 @@ void Level31_UpdateActors(void) {
 
       case CRITTER_REST:
         if (g_nActorAnimDone != 0) {
-          st->wait = RandomIntInRange(0x5A, 0x12C);
+          st->wait = RandomIntInRange(CRITTER_C_REST_MIN, CRITTER_C_REST_MAX);
           ENTER_POSE(actor, CRITTER_WANDER);
         }
         break;

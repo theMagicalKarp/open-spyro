@@ -1746,9 +1746,9 @@ void Level30_UpdateActors(void) {
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         if (actor->flags & ACTOR_HIT_FLAME) {
-          st->speed = 0xC8;
+          st->speed = CRITTER_STRONG_FLAME_KNOCK_SPEED;
         } else {
-          st->speed = 0x190;
+          st->speed = CRITTER_STRONG_KNOCK_SPEED;
         }
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -1773,13 +1773,13 @@ void Level30_UpdateActors(void) {
           break;
 
         case CRITTER_KNOCKED:
-          if (st->speed >= 0x10) {
-            st->speed -= 0xF;
-            MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x1F4, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          if (st->speed >= CRITTER_KNOCK_MIN_SPEED) {
+            st->speed -= CRITTER_KNOCK_DRAG;
+            MoveActorAlongAngle(actor, st->heading, st->speed, 0, CRITTER_C_MOVE_RADIUS, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           }
           if (g_nActorAnimDone != 0) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-            BurstActorWithSound(actor, 0x10);
+            BurstActorWithSound(actor, CRITTER_C_BURST_SPARK_LIFE);
             DespawnActorRecord(actor);
             continue;
           }
@@ -1788,7 +1788,7 @@ void Level30_UpdateActors(void) {
 
         case CRITTER_REST:
           if (g_nActorAnimDone != 0) {
-            st->rest = RandomIntInRange(0x5A, 0x12C);
+            st->rest = RandomIntInRange(CRITTER_C_REST_MIN, CRITTER_C_REST_MAX);
             actor->mode = CRITTER_WANDER;
             if (actor->nextAnim != CRITTER_WANDER) {
               ANIM_ADVANCE(actor, CRITTER_WANDER);

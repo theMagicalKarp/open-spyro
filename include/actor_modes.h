@@ -727,6 +727,15 @@ enum WanderingCritterMode {
 #define CRITTER_KNOCK_DRAG 0xF
 #define CRITTER_KNOCK_MIN_SPEED 0x10
 #define CRITTER_MOVE_RADIUS 0x2BC
+/* The _B and _C kinds slide from STRONG_KNOCK_SPEED (STRONG_FLAME_KNOCK_SPEED
+ * when flamed); _C moves with C_MOVE_RADIUS, rests C_REST_MIN..C_REST_MAX ticks
+ * between wanders and bursts with C_BURST_SPARK_LIFE sparks. */
+#define CRITTER_STRONG_KNOCK_SPEED 0x190
+#define CRITTER_STRONG_FLAME_KNOCK_SPEED 0xC8
+#define CRITTER_C_MOVE_RADIUS 0x1F4
+#define CRITTER_C_REST_MIN 0x5A
+#define CRITTER_C_REST_MAX 0x12C
+#define CRITTER_C_BURST_SPARK_LIFE 0x10
 
 /* ->mode of Gnasty Gnorc (ACTOR_TYPE_GNASTY_GNORC, GnastyState). GnastyState
  * .phase counts the fight: flamed near the end of his phase-2 path he swaps
@@ -4595,6 +4604,7 @@ enum GrazerMode {
   GRAZER_KNOCKED = 2, /* hit: bursts */
 };
 #define GRAZER_BURST_SPARK_LIFE 0x10 /* BurstActorWithSound spark life */
+#define GRAZER_KNOCK_SPEED 0xFA /* knock-back speed */
 #define GRAZER_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 
 /* ->mode of a lobbed bomb (ACTOR_TYPE_LOBBED_BOMB; levels 25/26). */

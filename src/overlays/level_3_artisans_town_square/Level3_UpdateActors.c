@@ -3414,7 +3414,7 @@ void Level3_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->knockSpeed = 0xFA;
+        st->knockSpeed = GRAZER_KNOCK_SPEED;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
         ENTER_POSE(actor, GRAZER_KNOCKED);
