@@ -3325,11 +3325,21 @@ enum MountMode {
  * level 31); the mode is also the animation index. */
 enum HatchCarrierMode {
   HCARRIER_WAIT = 0,    /* on the timer, if its hatch waits: LIFT */
-  HCARRIER_LIFT = 1,    /* lifts the hatch's barrel or mine out on frame 4 */
-  HCARRIER_THROW = 2,   /* throws it on frame 6, then WAIT */
+  HCARRIER_LIFT = 1,    /* lifts the hatch's barrel or mine out on HCARRIER_LIFT_FRAME */
+  HCARRIER_THROW = 2,   /* throws it on HCARRIER_THROW_FRAME, then WAIT */
   HCARRIER_KNOCKED = 3, /* flamed: knocked away, then bursts */
 };
 #define HCARRIER_BURST_SPARK_LIFE 0x30 /* BurstActorWithSound spark life */
+/* A hatch carrier lifts its prop out on LIFT_FRAME and throws it a quarter
+ * turn off its heading at THROW_SPEED on THROW_FRAME, waiting THROW_GAP
+ * ticks between throws. Flamed, it slides from KNOCK_SPEED with KNOCK_VZ
+ * up. */
+#define HCARRIER_LIFT_FRAME 4
+#define HCARRIER_THROW_FRAME 6
+#define HCARRIER_THROW_SPEED 0x12C
+#define HCARRIER_THROW_GAP 0x1E
+#define HCARRIER_KNOCK_SPEED 0x78
+#define HCARRIER_KNOCK_VZ 0x3C
 #define HCARRIER_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 
 /* ->mode of a carried-prop thrower (ACTOR_TYPE_CARRIED_THROWER,
@@ -4633,6 +4643,13 @@ enum GrazerMode {
 };
 #define GRAZER_BURST_SPARK_LIFE 0x10 /* BurstActorWithSound spark life */
 #define GRAZER_KNOCK_SPEED 0xFA /* knock-back speed */
+/* The hopping kind (level 2) is knocked at HOP_KNOCK_SPEED
+ * (HOP_FLAME_KNOCK_SPEED when flamed). Both wander WANDER_MIN..WANDER_MAX
+ * ticks between pauses. */
+#define GRAZER_HOP_KNOCK_SPEED 0x12C
+#define GRAZER_HOP_FLAME_KNOCK_SPEED 0x96
+#define GRAZER_WANDER_MIN 0x78
+#define GRAZER_WANDER_MAX 0xF0
 #define GRAZER_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 
 /* ->mode of a lobbed bomb (ACTOR_TYPE_LOBBED_BOMB; levels 25/26). */

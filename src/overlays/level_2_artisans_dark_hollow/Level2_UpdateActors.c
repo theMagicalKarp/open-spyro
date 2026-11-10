@@ -2891,9 +2891,9 @@ void Level2_UpdateActors(void) {
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         if (actor->flags & ACTOR_HIT_FLAME) {
-          st->knockSpeed = 0x96;
+          st->knockSpeed = GRAZER_HOP_FLAME_KNOCK_SPEED;
         } else {
-          st->knockSpeed = 0x12C;
+          st->knockSpeed = GRAZER_HOP_KNOCK_SPEED;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
@@ -2913,7 +2913,7 @@ void Level2_UpdateActors(void) {
       case GRAZER_PAUSE:
         SnapActorToGround(actor);
         if (g_nActorAnimDone != 0) {
-          st->timer = RandomIntInRange(0x78, 0xF0);
+          st->timer = RandomIntInRange(GRAZER_WANDER_MIN, GRAZER_WANDER_MAX);
           ENTER_POSE(actor, GRAZER_WANDER);
         }
         break;

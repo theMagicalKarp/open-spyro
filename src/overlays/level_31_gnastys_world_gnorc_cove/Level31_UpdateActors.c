@@ -2135,8 +2135,8 @@ void Level31_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
                                   SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->zSpeed = 0x3C;
-        st->speed = 0x78;
+        st->zSpeed = HCARRIER_KNOCK_VZ;
+        st->speed = HCARRIER_KNOCK_SPEED;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);
         ENTER_POSE(actor, HCARRIER_KNOCKED);
@@ -2154,7 +2154,7 @@ void Level31_UpdateActors(void) {
         break;
 
       case HCARRIER_LIFT:
-        if (st->held == 0 && actor->nextFrame >= 4) {
+        if (st->held == 0 && actor->nextFrame >= HCARRIER_LIFT_FRAME) {
           HatchState *hs = g_pActorListBase[st->hatch].state;
 
           if (hs->child != 0) {
@@ -2177,17 +2177,17 @@ void Level31_UpdateActors(void) {
       case HCARRIER_THROW: {
         Actor *h = st->held;
 
-        if (h != 0 && actor->nextFrame >= 6) {
+        if (h != 0 && actor->nextFrame >= HCARRIER_THROW_FRAME) {
           short *hs;
 
           h->subMode = 1;
           hs = h->state;
           st->held->rotZ = actor->rotZ + 0x40;
-          *hs = 0x12C;
+          *hs = HCARRIER_THROW_SPEED;
           st->held = 0;
         }
         if (g_nActorAnimDone != 0) {
-          st->timer = 0x1E;
+          st->timer = HCARRIER_THROW_GAP;
           ANIM_QUEUE(actor, HCARRIER_WAIT);
         }
         break;

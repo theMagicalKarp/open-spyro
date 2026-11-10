@@ -3439,7 +3439,7 @@ void Level3_UpdateActors(void) {
           PlayActorMeshVoice(actor, (int)GetRandomU32() % 3, 0);
         }
         if (g_nActorAnimDone != 0) {
-          st->wait = RandomIntInRange(0x78, 0xF0);
+          st->wait = RandomIntInRange(GRAZER_WANDER_MIN, GRAZER_WANDER_MAX);
           st->voice = 0;
           ENTER_POSE(actor, GRAZER_WANDER);
         }
