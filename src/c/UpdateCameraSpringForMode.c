@@ -106,7 +106,8 @@ void UpdateCameraSpringForMode(void) {
       g_nCameraParamsReferenceYaw = yaw;
       g_nCameraTargetInverted = ComputeCameraToTargetAngle(CAM);
       g_nCameraSpringYaw = g_nCameraYaw;
-      if (g_nCameraCollisionRetries == 0 || (int)g_dwGamestateFrames < 0x78) {
+      if (g_nCameraCollisionRetries == 0 ||
+          (int)g_dwGamestateFrames < CAM_SETTLE_FRAMES) {
         LoadCameraTargetAnglesFromMode();
       }
     }
@@ -129,7 +130,7 @@ void UpdateCameraSpringForMode(void) {
       if (p > 0x800) {
         p -= 0x1000;
       }
-      if (abs(d) < 0x191 && abs(p) < 0x101) {
+      if (abs(d) < CAM_REENGAGE_YAW && abs(p) < CAM_REENGAGE_PITCH) {
         break;
       }
       g_nCameraSpringReengageCountdown = left - g_nFrameStep;
@@ -144,7 +145,7 @@ void UpdateCameraSpringForMode(void) {
       g_anCameraSpringDeltaState[4] = 0;
       g_anCameraSpringDeltaState[5] = 0;
     } else {
-      g_nCameraSpringReengageCountdown = 0x5A;
+      g_nCameraSpringReengageCountdown = CAM_REENGAGE_FRAMES;
     }
     break;
   case (CAM_HELD | CAM_MODE_PASSIVE): {
@@ -172,7 +173,7 @@ void UpdateCameraSpringForMode(void) {
     if (g_nCameraCollisionRetries != 0) {
       break;
     }
-    if (AbsAngleDelta12(yaw, g_nCameraEulerYaw) > 0x578) {
+    if (AbsAngleDelta12(yaw, g_nCameraEulerYaw) > CAM_FACING_ANGLE) {
       g_pCameraTargetParams = g_anCameraParamFollowFacing;
     } else {
       g_pCameraTargetParams = g_anCameraParamFollowBehind;
@@ -227,9 +228,9 @@ void UpdateCameraSpringForMode(void) {
           if (yaw > 0x800) {
             yaw -= 0x1000;
           }
-          if (yaw > 0x100) {
+          if (yaw > CAM_GLIDE_BIAS_ANGLE) {
             *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamGlideRightBias;
-          } else if (yaw < -0x100) {
+          } else if (yaw < -CAM_GLIDE_BIAS_ANGLE) {
             *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamGlideLeftBias;
           } else {
             *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamFollowBehind;
@@ -247,7 +248,7 @@ void UpdateCameraSpringForMode(void) {
       } else {
         int r = AbsAngleDelta12(yaw, g_nCameraEulerYaw);
 
-        if (g_nSpyroSubstate != SPYRO_SUB_GLIDE_ENTER && r > 0x578) {
+        if (g_nSpyroSubstate != SPYRO_SUB_GLIDE_ENTER && r > CAM_FACING_ANGLE) {
           g_pCameraTargetParams = g_anCameraParamFollowFacing;
         } else {
           *(int **)&CAM[CAM_TARGET_PARAMS] = g_anCameraParamFollowBehind;
@@ -275,7 +276,7 @@ void UpdateCameraSpringForMode(void) {
             abs(g_anCameraSpringDeltaState[3]) +
             abs(g_anCameraSpringDeltaState[4]) +
             abs(g_anCameraSpringDeltaState[5]) >
-        0x20) {
+        CAM_SPRING_REST) {
       for (i = 0; i < g_nFrameStep; i++) {
         AdvanceCameraSpringStep(0);
       }
@@ -298,7 +299,7 @@ void UpdateCameraSpringForMode(void) {
     g_pCameraAnchorPos = g_anSpyroWorldPos;
     g_nCameraParamsReferenceYaw = yaw;
     if (g_nCameraCollisionRetries == 0) {
-      if (AbsAngleDelta12(yaw, g_nCameraEulerYaw) > 0x578) {
+      if (AbsAngleDelta12(yaw, g_nCameraEulerYaw) > CAM_FACING_ANGLE) {
         g_pCameraTargetParams = g_anCameraParamFallFacing;
       } else {
         g_pCameraTargetParams = g_anCameraParamFallBehind;
@@ -340,51 +341,51 @@ void UpdateCameraSpringForMode(void) {
             (0x7F - ((PadSubstep *)pad)->analog.axis[PAD_AXIS_LY]) >> 1;
       } else {
         if (g_dwPadHeld & PAD_LEFT) {
-          STICK[0] -= 0x30;
+          STICK[0] -= CAM_LOOK_DPAD_STEP;
         } else if (g_dwPadHeld & PAD_RIGHT) {
-          STICK[0] += 0x30;
+          STICK[0] += CAM_LOOK_DPAD_STEP;
         }
         if (g_dwPadHeld & PAD_UP) {
-          STICK[1] += 0x30;
+          STICK[1] += CAM_LOOK_DPAD_STEP;
         } else if (g_dwPadHeld & PAD_DOWN) {
-          STICK[1] -= 0x30;
+          STICK[1] -= CAM_LOOK_DPAD_STEP;
         }
       }
       OPAQUE_COPY(ig, STICK);
-      if (ig[0] < -0x400) {
-        ig[0] = -0x400;
+      if (ig[0] < -CAM_LOOK_MAX_YAW) {
+        ig[0] = -CAM_LOOK_MAX_YAW;
       }
-      if (ig[0] > 0x400) {
-        ig[0] = 0x400;
+      if (ig[0] > CAM_LOOK_MAX_YAW) {
+        ig[0] = CAM_LOOK_MAX_YAW;
       }
-      if (ig[1] < -0x3D0) {
-        ig[1] = -0x3D0;
+      if (ig[1] < -CAM_LOOK_MAX_DOWN) {
+        ig[1] = -CAM_LOOK_MAX_DOWN;
       }
-      if (ig[1] > 0x500) {
-        ig[1] = 0x500;
+      if (ig[1] > CAM_LOOK_MAX_UP) {
+        ig[1] = CAM_LOOK_MAX_UP;
       }
       g_nCameraTargetYaw += ig[0];
       t = ig[1];
-      if (t < -0x140) {
-        g_nCameraTargetPitch -= 0x140;
-        g_nCameraTargetPitchBias += 0x140 + t;
+      if (t < -CAM_LOOK_PITCH_SPLIT) {
+        g_nCameraTargetPitch -= CAM_LOOK_PITCH_SPLIT;
+        g_nCameraTargetPitchBias += CAM_LOOK_PITCH_SPLIT + t;
       } else {
         g_nCameraTargetPitch += t;
       }
       r = -g_anCameraScriptStickIntegrator[0];
-      if (r < -0x300) {
-        r = -0x300;
+      if (r < -CAM_LOOK_HEAD_YAW) {
+        r = -CAM_LOOK_HEAD_YAW;
       }
-      if (r > 0x300) {
-        r = 0x300;
+      if (r > CAM_LOOK_HEAD_YAW) {
+        r = CAM_LOOK_HEAD_YAW;
       }
       g_nSpyroSwingEulerTargetZ = r;
       r = -g_anCameraScriptStickIntegrator[1];
-      if (r < -0x200) {
-        r = -0x200;
+      if (r < -CAM_LOOK_HEAD_PITCH) {
+        r = -CAM_LOOK_HEAD_PITCH;
       }
-      if (r > 0x200) {
-        r = 0x200;
+      if (r > CAM_LOOK_HEAD_PITCH) {
+        r = CAM_LOOK_HEAD_PITCH;
       }
       g_nSpyroSwingEulerTargetY = r;
     }
@@ -397,7 +398,7 @@ void UpdateCameraSpringForMode(void) {
     g_pCameraAnchorPos = g_anSpyroWorldPos;
     g_nCameraParamsReferenceYaw = yaw;
     if (g_nCameraCollisionRetries == 0) {
-      if (AbsAngleDelta12(yaw, g_nCameraEulerYaw) > 0x578) {
+      if (AbsAngleDelta12(yaw, g_nCameraEulerYaw) > CAM_FACING_ANGLE) {
         g_pCameraTargetParams = g_anCameraParamFollowFacing;
       } else {
         g_pCameraTargetParams = g_anCameraParamFollowBehind;
@@ -510,7 +511,7 @@ void UpdateCameraSpringForMode(void) {
   g_nCameraTargetInverted = ComputeCameraToTargetAngle(g_anCameraPos);
   if (!((g_dwActiveCameraOptions & CAM_OPT_PASSIVE_FOLLOW) &&
         g_nSpyroState == SPYRO_ST_JUMP && g_nCameraSpringSuppressFlag == 0 &&
-        g_nSpyroMotionSpeed < 0x400)) {
+        g_nSpyroMotionSpeed < SPYRO_PAD_TURN_SPEED)) {
     g_nCameraSpringYaw = g_nCameraYaw;
   }
   g_nCameraSpringPitch = g_nCameraPitch;

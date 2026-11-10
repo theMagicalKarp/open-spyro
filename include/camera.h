@@ -96,4 +96,31 @@ enum CameraMode {
                                       * +-0x2000; keep the yaw on sidestep/fall entry */
 #define CAM_OPT_PASSIVE (CAM_OPT_ACTIVE | CAM_OPT_PASSIVE_FOLLOW | CAM_OPT_SMOOTH_SWING)
 
+/* UpdateCameraSpringForMode tuning (12-bit angles). Spyro facing more than
+ * FACING_ANGLE off the camera yaw switches MOVE / SIDESTEP / glide / fall to
+ * the ...FollowFacing block; an R1 roll that far right / left of it
+ * (GLIDE_BIAS_ANGLE) picks the glide bias blocks. The passive follow
+ * re-engages REENGAGE_FRAMES after the camera leaves REENGAGE_YAW /
+ * REENGAGE_PITCH (exclusive) of behind-Spyro; the first SETTLE_FRAMES of a
+ * gamestate reload the target even while colliding; HAZARD stops springing
+ * once the six deltas sum to SPRING_REST or less. Free look: the d-pad steps
+ * the look integrator LOOK_DPAD_STEP a frame, the look is held within
+ * +-LOOK_MAX_YAW and -LOOK_MAX_DOWN..LOOK_MAX_UP (looking down past
+ * LOOK_PITCH_SPLIT moves the pitch bias instead), and Spyro's head follows
+ * within +-LOOK_HEAD_YAW / +-LOOK_HEAD_PITCH. */
+#define CAM_FACING_ANGLE 0x578
+#define CAM_GLIDE_BIAS_ANGLE 0x100
+#define CAM_REENGAGE_FRAMES 0x5A
+#define CAM_REENGAGE_YAW 0x191
+#define CAM_REENGAGE_PITCH 0x101
+#define CAM_SETTLE_FRAMES 0x78
+#define CAM_SPRING_REST 0x20
+#define CAM_LOOK_DPAD_STEP 0x30
+#define CAM_LOOK_MAX_YAW 0x400
+#define CAM_LOOK_MAX_DOWN 0x3D0
+#define CAM_LOOK_MAX_UP 0x500
+#define CAM_LOOK_PITCH_SPLIT 0x140
+#define CAM_LOOK_HEAD_YAW 0x300
+#define CAM_LOOK_HEAD_PITCH 0x200
+
 #endif /* OPEN_SPYRO_CAMERA_H */

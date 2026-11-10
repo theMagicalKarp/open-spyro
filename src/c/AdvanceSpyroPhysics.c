@@ -30,14 +30,14 @@ SDATA(g_pSpyroContactActor, 4);
 
 #define ACTOR_POS(a) (&((Actor *)a)->posX)
 
-/* Pull `pos` back to at most 0x140 from `from`. */
+/* Pull `pos` back to at most SPYRO_MAX_CORRECTION from `from`. */
 #define LIMIT_STEP(pos, from)                                                  \
   {                                                                            \
                                                                                \
     SubtractVector(d, pos, from);                                              \
     len = VectorLength(d, VEC_LEN_XYZ);                                        \
-    if (len > 0x140) {                                                         \
-      ScaleVector3ByRatio(d, len, 0x140);                                      \
+    if (len > SPYRO_MAX_CORRECTION) {                                          \
+      ScaleVector3ByRatio(d, len, SPYRO_MAX_CORRECTION);                       \
       AddVector(pos, from, d);                                                 \
     }                                                                          \
   }
@@ -45,12 +45,14 @@ SDATA(g_pSpyroContactActor, 4);
 /* World-collision response at `pos`: keep the ground probe only for a ledge
    or glide contact facing the motion, slide off steep walls (unless the
    surface is a trigger of kind 6), take the resolved position, latch the
-   first contact and limit the correction to 0x140 from `from`. */
+   first contact and limit the correction to SPYRO_MAX_CORRECTION from `from`.
+ */
 #define SLIDE(from, SET_WALL)                                                  \
   {                                                                            \
     int s = g_nSpyroState;                                                     \
                                                                                \
-    if (s == 0xF || (unsigned)(s - 0x20) < 2 || s == 0x22) {                   \
+    if (s == SPYRO_ST_GLIDE || (unsigned)(s - SPYRO_ST_FLY) < 2 ||             \
+        s == SPYRO_ST_FLY_DIVE) {                                              \
       SubtractVector(d, g_anCollisionContactPoint, pos);                       \
       SetVector3Magnitude(d, 0x100);                                           \
       if (d[2] >= -0xC8) {                                                     \
@@ -66,7 +68,7 @@ SDATA(g_pSpyroContactActor, 4);
     keep##from : if ((signed char)ArcTan2(                                     \
                          g_anCollisionHitNormal[2],                            \
                          VectorLength(g_anCollisionHitNormal, VEC_LEN_XY),     \
-                         ATAN_ANGLE8) >= 0x17) {                               \
+                         ATAN_ANGLE8) >= SLOPE_STEEP) {                        \
       int t = g_nGroundSurfaceType & 0x3F;                                     \
       unsigned char kind;                                                      \
                                                                                \
@@ -75,7 +77,7 @@ SDATA(g_pSpyroContactActor, 4);
       } else {                                                                 \
         kind = 0;                                                              \
       }                                                                        \
-      if (kind != 6) {                                                         \
+      if (kind != TRIGGER_PORTAL) {                                            \
         SET_WALL;                                                              \
       }                                                                        \
     }                                                                          \
@@ -94,24 +96,25 @@ SDATA(g_pSpyroContactActor, 4);
   {                                                                            \
     int *w = WS;                                                               \
     *w = one;                                                                  \
-    SetVector3Magnitude(g_anCollisionHitNormal, 0x400);                        \
+    SetVector3Magnitude(g_anCollisionHitNormal, SPYRO_WALL_NUDGE);             \
     w++;                                                                       \
     AddVector(w, w, g_anCollisionHitNormal);                                   \
   }
 #define WALL_RETRY                                                             \
   {                                                                            \
     *b = one;                                                                  \
-    SetVector3Magnitude(g_anCollisionHitNormal, 0x400);                        \
+    SetVector3Magnitude(g_anCollisionHitNormal, SPYRO_WALL_NUDGE);             \
     AddVector(p, p, g_anCollisionHitNormal);                                   \
   }
 
 /* Spyro's world collision step (0x8003fe40, 4392 bytes). Applies the pending
    impulse, then the scripted requests (state, velocity toward a target,
    euler, camera modes, the enemy-lock/ledge approach with its alignment test).
-   Moves Spyro along the frame velocity in substeps of at most 0x154,
-   resolving actor contacts and world collisions (wall-slide nudges, the first
-   contact, at most 0x140 of correction per try, 6 tries then 6 more from the
-   substep start) and finally derives the frame's motion vector. */
+   Moves Spyro along the frame velocity in substeps of at most
+   SPYRO_COLLIDE_STEP, resolving actor contacts and world collisions (wall-slide
+   nudges, the first contact, at most SPYRO_MAX_CORRECTION per try, 6 tries then
+   6 more from the substep start) and finally derives the frame's motion vector.
+ */
 int AdvanceSpyroPhysics(void) {
   int d[3];
   int n[3];
@@ -327,7 +330,7 @@ int AdvanceSpyroPhysics(void) {
               g_anSpyroVelocityFp6 - SPY_VELOCITY_FP6, g_anSpyroVelocityFp6);
   } else {
     len = VectorLength(g_anSpyroVelocityFp6, VEC_LEN_XYZ);
-    steps = len / 340 + 1;
+    steps = len / SPYRO_COLLIDE_STEP + 1;
     if (steps >= 2) {
       g_anSpyroVelocityFp6[0] /= steps;
       g_anSpyroVelocityFp6[1] /= steps;

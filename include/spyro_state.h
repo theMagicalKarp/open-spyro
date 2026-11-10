@@ -108,6 +108,12 @@ typedef enum SpyroState
 /* Spyro's collision-sphere radius; standing, his position is this far above
  * the floor (probes, contact spheres, spawn and landing heights). */
 #define SPYRO_RADIUS 0x164
+/* AdvanceSpyroPhysics moves him in substeps of at most COLLIDE_STEP, a
+ * collision try correcting him by at most MAX_CORRECTION; each steep-wall
+ * contact adds its normal at WALL_NUDGE length to the wall-slide nudge. */
+#define SPYRO_COLLIDE_STEP 340
+#define SPYRO_MAX_CORRECTION 0x140
+#define SPYRO_WALL_NUDGE 0x400
 
 /* g_nSpyroAirborneFrames at which a grounded state gives up and falls: a
  * few frames of grace over gaps and bumps. */
