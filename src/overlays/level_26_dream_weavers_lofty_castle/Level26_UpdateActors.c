@@ -906,14 +906,14 @@ void Level26_UpdateActors(void) {
       case CPGUARD_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, CPGUARD_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
         if (DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC,
                           0x10) != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, CPGUARD_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

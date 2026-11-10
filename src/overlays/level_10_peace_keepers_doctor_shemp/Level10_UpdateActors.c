@@ -2750,7 +2750,7 @@ void Level10_UpdateActors(void) {
       case SGUARD_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, SGUARD_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3372,7 +3372,7 @@ void Level10_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           g_bLevelPhasedBossKilled = 1;
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x40);
+          BurstActorWithSound(actor, SHEMP_BURST_SPARK_LIFE);
           actor->floorOffset = 0;
           SnapActorToGround(actor);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);

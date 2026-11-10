@@ -810,7 +810,7 @@ void Level13_UpdateActors(void) {
           break;
         }
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-        BurstActorWithSound(actor, 0x18);
+        BurstActorWithSound(actor, THIEF_BURST_SPARK_LIFE);
         DespawnActorRecord(actor);
         continue;
 
@@ -2847,7 +2847,7 @@ void Level13_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x46);
+          BurstActorWithSound(actor, CAPTAIN_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3330,7 +3330,7 @@ void Level13_UpdateActors(void) {
         }
         if (actor->cullRadius == 0 && st->chunkAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, VILLAGER_BURST_SPARK_LIFE);
           StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
           DespawnActorRecord(actor);
           continue;
@@ -3799,7 +3799,7 @@ void Level13_UpdateActors(void) {
                       0x12, 0xC);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, SHEPHERD_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

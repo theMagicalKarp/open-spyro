@@ -795,7 +795,7 @@ void Level7_UpdateActors(void) {
           break;
         }
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-        BurstActorWithSound(actor, 0x18);
+        BurstActorWithSound(actor, THIEF_BURST_SPARK_LIFE);
         DespawnActorRecord(actor);
         continue;
 
@@ -2730,7 +2730,7 @@ void Level7_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC, 0xA);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, SHOOTER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

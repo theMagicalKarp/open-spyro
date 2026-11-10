@@ -713,7 +713,7 @@ void Level28_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->knockSpeed, st->heading, &st->knockZSpeed, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x20);
+          BurstActorWithSound(actor, CRAM_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

@@ -1587,7 +1587,7 @@ void Level33_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x20);
+          BurstActorWithSound(actor, LANEPAT_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2006,7 +2006,7 @@ void Level33_UpdateActors(void) {
           actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x40);
+          BurstActorWithSound(actor, GNASTY_BURST_SPARK_LIFE);
           st->stateTimer = 0x3C;
           actor->mode = GNASTY_FADE_OUT;
           continue;

@@ -2735,7 +2735,7 @@ void Level27_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xA, 0x10);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, FCAPTAIN_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

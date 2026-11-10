@@ -786,7 +786,7 @@ void Level6_UpdateActors(void) {
           break;
         }
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-        BurstActorWithSound(actor, 0x18);
+        BurstActorWithSound(actor, THIEF_BURST_SPARK_LIFE);
         DespawnActorRecord(actor);
         continue;
 
@@ -2905,7 +2905,7 @@ void Level6_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, SOLDIER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

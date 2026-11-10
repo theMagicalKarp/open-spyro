@@ -988,7 +988,7 @@ void Level1_UpdateActors(void) {
           break;
         }
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-        BurstActorWithSound(actor, 0x18);
+        BurstActorWithSound(actor, THIEF_BURST_SPARK_LIFE);
         DespawnActorRecord(actor);
         continue;
 
@@ -1543,7 +1543,7 @@ void Level1_UpdateActors(void) {
           break;
         }
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-        BurstActorWithSound(actor, 0x18);
+        BurstActorWithSound(actor, SENTRY_BURST_SPARK_LIFE);
         DespawnActorRecord(actor);
         continue;
 

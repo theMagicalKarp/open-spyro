@@ -1838,7 +1838,7 @@ void Level20_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x28);
+          BurstActorWithSound(actor, CHARGER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2899,7 +2899,7 @@ void Level20_UpdateActors(void) {
         }
         if (TICK_DOWN(st->stunTimer) != 0 || g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, LURKER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

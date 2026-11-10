@@ -869,7 +869,7 @@ void Level21_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, BTHROW_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -1021,7 +1021,7 @@ void Level21_UpdateActors(void) {
         if (TICK_DOWN(st->timer) != 0 || r == 2 ||
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > BTHROW_HURTLE_MAX_RANGE) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, BTHROW_BURST_SPARK_LIFE);
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
@@ -1272,7 +1272,7 @@ void Level21_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xE, 0xA);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x34);
+          BurstActorWithSound(actor, GATEKEEPER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -1378,7 +1378,7 @@ void Level21_UpdateActors(void) {
         if (TICK_DOWN(st->timer) != 0 || r == 2 ||
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > GATEKEEPER_HURTLE_MAX_RANGE) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x34);
+          BurstActorWithSound(actor, GATEKEEPER_BURST_SPARK_LIFE);
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           MarkActorLiveKill(actor);
           DespawnActorRecord(actor);

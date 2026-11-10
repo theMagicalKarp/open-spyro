@@ -681,7 +681,7 @@ void Level15_UpdateActors(void) {
           break;
         }
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-        BurstActorWithSound(actor, 0x18);
+        BurstActorWithSound(actor, THIEF_BURST_SPARK_LIFE);
         DespawnActorRecord(actor);
         continue;
 
@@ -1428,7 +1428,7 @@ void Level15_UpdateActors(void) {
           break;
         }
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-        BurstActorWithSound(actor, 0x32);
+        BurstActorWithSound(actor, TGUARD_BURST_SPARK_LIFE);
         DespawnActorRecord(actor);
         continue;
 
@@ -3082,7 +3082,7 @@ void Level15_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, KEEPER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3092,7 +3092,7 @@ void Level15_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, KEEPER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3101,7 +3101,7 @@ void Level15_UpdateActors(void) {
       case KEEPER_STRUCK:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, KEEPER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3349,7 +3349,7 @@ void Level15_UpdateActors(void) {
                       &st->knockZSpeed, 0xC, 0xC);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x30);
+          BurstActorWithSound(actor, SENTINEL_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

@@ -897,7 +897,7 @@ void Level22_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           ModifyWorldChunkAnimFlags(METALHEAD_CHUNK_ARENA, CHUNK_ANIM_RESUME, 0);
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x40);
+          BurstActorWithSound(actor, METALHEAD_BURST_SPARK_LIFE);
           g_bLevelBossDefeated = 1;
           DespawnActorRecord(actor);
           continue;
@@ -1243,7 +1243,7 @@ void Level22_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, BTHROW_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -1395,7 +1395,7 @@ void Level22_UpdateActors(void) {
         if (TICK_DOWN(st->timer) != 0 || r == 2 ||
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > BTHROW_HURTLE_MAX_RANGE) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, BTHROW_BURST_SPARK_LIFE);
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
@@ -1646,7 +1646,7 @@ void Level22_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xE, 0xA);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x34);
+          BurstActorWithSound(actor, GATEKEEPER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -1752,7 +1752,7 @@ void Level22_UpdateActors(void) {
         if (TICK_DOWN(st->timer) != 0 || r == 2 ||
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > GATEKEEPER_HURTLE_MAX_RANGE) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x34);
+          BurstActorWithSound(actor, GATEKEEPER_BURST_SPARK_LIFE);
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           MarkActorLiveKill(actor);
           DespawnActorRecord(actor);

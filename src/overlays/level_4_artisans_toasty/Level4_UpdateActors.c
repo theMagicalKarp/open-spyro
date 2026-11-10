@@ -2250,7 +2250,7 @@ void Level4_UpdateActors(void) {
           ModifyWorldChunkAnimFlags(APGUARD_STAGE_CHUNK(2), CHUNK_ANIM_RESUME, 0);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorLiveKill(actor);
-          BurstActorWithSound(actor, 0x20);
+          BurstActorWithSound(actor, APGUARD_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2431,7 +2431,7 @@ void Level4_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
         MarkActorLiveKill(actor);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-        BurstActorWithSound(actor, 0x18);
+        BurstActorWithSound(actor, LUNGER_BURST_SPARK_LIFE);
         DespawnActorRecord(actor);
         continue;
       }
@@ -2530,7 +2530,7 @@ void Level4_UpdateActors(void) {
                       0xA);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, LUNGER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2543,7 +2543,7 @@ void Level4_UpdateActors(void) {
           ANIM_GO(actor, st->anim + 5);
         }
         if (g_nActorAnimDone != 0) {
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, LUNGER_BURST_SPARK_LIFE);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorLiveKill(actor);
           DespawnActorRecord(actor);

@@ -618,6 +618,7 @@ enum ThiefMode {
 #define THIEF_CLIMB_SPEED 0xB4
 #define THIEF_CLIMB_BACK_SPEED 0xC8
 #define THIEF_CLIMB_TOP_NODE 0xD
+#define THIEF_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* An egg thief's animations (nextAnim), from what each mode plays. */
 enum ThiefAnim {
@@ -816,6 +817,7 @@ enum GnastyAnim {
 #define GNASTY_KNOCK_SPEED 0xD2
 /* Within SWIPE_RANGE he swipes instead of throwing. */
 #define GNASTY_SWIPE_RANGE 0xE10
+#define GNASTY_BURST_SPARK_LIFE 0x40 /* BurstActorWithSound spark life */
 
 /* ->mode of Blowhard, the level 16 boss (ACTOR_TYPE_BLOWHARD,
  * BlowhardState). Each of its three phases rises (floorZ + 0x578), hovers
@@ -1091,6 +1093,7 @@ enum ShepherdAnim {
 #define SHEPHERD_HOME_SPEED 0x5A
 #define SHEPHERD_HOME_ARRIVE 0x80
 #define SHEPHERD_HOME_REST 0x3C
+#define SHEPHERD_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of a singing path walker (ACTOR_TYPE_SINGING_PATH_WALKER,
  * PathWalkerState; levels 24/28). The mode doubles as the pose's animation
@@ -1229,6 +1232,7 @@ enum ChargerRole {
 #define CHARGER_HOME_ARRIVE 0xB4
 #define CHARGER_POST_HOME_SPEED 0xC8
 #define CHARGER_POST_HOME_ARRIVE 0x200
+#define CHARGER_BURST_SPARK_LIFE 0x28 /* BurstActorWithSound spark life */
 
 /* ->mode of a path guard (ACTOR_TYPE_PATH_GUARD, PathGuardState; levels
  * 12/15/16). */
@@ -1429,6 +1433,7 @@ enum SoldierAnim {
 #define SOLDIER_POST_RUN_SPEED 0x82
 #define SOLDIER_POST_RUN_ACCEL 0x14
 #define SOLDIER_POST_ARRIVE 0x200
+#define SOLDIER_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of a level 6 fireball cannon (ACTOR_TYPE_FIREBALL_CANNON,
  * FireballCannonState). While its crew (FireballCannonState.link) stands, the
@@ -1567,6 +1572,7 @@ enum CaptainAnim {
 #define CAPTAIN_HOME_ARRIVE 0x80
 /* CaptainState.step on a ledge post instead: nonzero once armed. */
 #define CAPTAIN_LEDGE_ARMED 1
+#define CAPTAIN_BURST_SPARK_LIFE 0x46 /* BurstActorWithSound spark life */
 
 /* ->mode of Doctor Shemp's guard (ACTOR_TYPE_SHEMP_GUARD, ShempGuardState;
  * level 10). A charge, or a flame from outside its front, knocks it away. */
@@ -1637,6 +1643,7 @@ enum ShempGuardAnim {
 #define SGUARD_SWIPE_REST 0x78
 #define SGUARD_PATH_CHASE_SPEED 0xA0
 #define SGUARD_PATH_RUSH_SPEED 0xB4
+#define SGUARD_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of a path runner (ACTOR_TYPE_PATH_RUNNER..+1, PathRunnerState;
  * level 21). PathRunnerState.mode picks which of the two runs it makes. */
@@ -1939,6 +1946,7 @@ enum VillagerAnim {
 #define VILLAGER_STOP_SLACK 0x80
 #define VILLAGER_KNOCK_SPEED 0xFA
 #define VILLAGER_KNOCK_DRAG 0x14
+#define VILLAGER_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* VillagerState.mode: the villager's role. */
 enum VillagerRole {
@@ -2155,6 +2163,7 @@ enum ShooterRole {
 #define SHOOTER_HOME_ARRIVE 0x100
 #define SHOOTER_ADVANCE_SPEED 0x5A
 #define SHOOTER_ADVANCE_STOP_RANGE 0x800
+#define SHOOTER_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of Metalhead, the level 22 boss (ACTOR_TYPE_METALHEAD,
  * MetalheadState). Clearing the current phase's pickup group starts
@@ -2290,6 +2299,7 @@ enum LungerMode {
 #define LUNGER_WAIT_FRAMES 0x78
 #define LUNGER_NUDGE_RANGE 0x3E8
 #define LUNGER_NUDGE_FRAMES 0x10
+#define LUNGER_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of an alarm post guard (ACTOR_TYPE_ALARM_POST_GUARD, GuardState;
  * level 4). It falls back post by post (GuardState.stage 0..2); the
@@ -2803,6 +2813,7 @@ enum LurkerAnim {
 #define LURKER_CHASE_MIN_RANGE 0xFA1
 #define LURKER_CHASE_GAIN 0x5DD
 #define LURKER_FACE_CONE 0x13
+#define LURKER_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of a gunner (ACTOR_TYPE_GUNNER, GunnerState; level 20).
  * GUNNER_IDLE runs GunnerState.mode's role (guard, patrol, lookout). */
@@ -2896,6 +2907,7 @@ enum ChargingRamMode {
 #define CRAM_KNOCK_VZ 0xAA
 #define CRAM_HOME_SPEED 0x5A
 #define CRAM_HOME_ARRIVE 0x80
+#define CRAM_BURST_SPARK_LIFE 0x20 /* BurstActorWithSound spark life */
 
 /* ->mode of a rock thrower (ACTOR_TYPE_ROCK_THROWER, RockThrowerState;
  * level 27); the mode is also the animation index. */
@@ -3064,6 +3076,7 @@ enum BoulderThrowerAnim {
 #define BTHROW_HURTLE_RECOIL_SPEED 0xDC
 #define BTHROW_HURTLE_MAX_RANGE 0x9470
 #define BTHROW_FLUNG_SPEED 0x1C2
+#define BTHROW_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of a gatekeeper (ACTOR_TYPE_GATEKEEPER / _B, GatekeeperState;
  * levels 21/22). Modes 40-44 hand out its run of keys (GatekeeperState.keys)
@@ -3135,6 +3148,7 @@ enum GatekeeperAnim {
 #define GATEKEEPER_RIDE_WALK_SPEED 0x78
 #define GATEKEEPER_RIDE_LEAP_SPEED 0x5A
 #define GATEKEEPER_RIDE_LEAP_VZ 0x78
+#define GATEKEEPER_BURST_SPARK_LIFE 0x34 /* BurstActorWithSound spark life */
 
 /* ->mode of a tethered guard (ACTOR_TYPE_TETHERED_GUARD, TetherState; level
  * 15); the mode is also the animation index. TetherState.mode is the TetherCommand
@@ -3165,6 +3179,7 @@ enum TetheredGuardMode {
 #define TGUARD_LOOK_REST_FRAMES 0x5A
 #define TGUARD_KNOCK_SPEED 0xC8
 #define TGUARD_KNOCK_DRAG 0x10
+#define TGUARD_BURST_SPARK_LIFE 0x32 /* BurstActorWithSound spark life */
 
 /* TetherState.mode / KeeperState.mode: the command a tether keeper hands its
  * tethered guard once the guard reports READY. */
@@ -3204,6 +3219,7 @@ enum TetherKeeperMode {
 #define KEEPER_KNOCK_SPEED 0x15E
 #define KEEPER_STEP_OUT_DIST 0x180
 #define KEEPER_STEP_BACK_AT 0x780
+#define KEEPER_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of a sentinel (ACTOR_TYPE_SENTINEL, SentinelState; level 15); the
  * mode is also the animation index. A sentinel walks its waypoints past a
@@ -3245,6 +3261,7 @@ enum SentinelMode {
 #define SENTINEL_POWER_ORB_SIDE (-0x100)
 #define SENTINEL_POWER_ORB_UP 0x400
 #define SENTINEL_WALK_SPEED 0x80
+#define SENTINEL_BURST_SPARK_LIFE 0x30 /* BurstActorWithSound spark life */
 
 /* ->mode of a mount (ACTOR_TYPE_MOUNT, MountState; level 31); the mode is
  * also the animation index. Its rider is a floating barrel or mine
@@ -3527,6 +3544,7 @@ enum SnowballThrowerMode {
 #define SNOWTHROW_RECOIL_DRAG 0x14
 #define SNOWTHROW_TURN_AWAY_FRAMES 0x5A
 #define SNOWTHROW_AIM_FRAMES 0x78
+#define SNOWTHROW_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of a circling bird (ACTOR_TYPE_CIRCLING_BIRD, CirclingBirdState;
  * level 9); the mode is also the animation index. */
@@ -3797,6 +3815,7 @@ enum SentryMode {
 #define SENTRY_CAM_HIT_PULLBACK 0xC00
 #define SENTRY_HOME_SPEED 0x5A
 #define SENTRY_HOME_ARRIVE 0x80
+#define SENTRY_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of a post grabber (ACTOR_TYPE_POST_GRABBER, PostGrabberState; level
  * 25); the mode is also the animation index. A grabber and its lookout are
@@ -4006,6 +4025,7 @@ enum LootThiefLeg {
 #define LTHIEF_INTRO_DRAG 8
 #define LTHIEF_INTRO_MIN_SPEED 2
 #define LTHIEF_DODGE_Z 0x61A8
+#define LTHIEF_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of a two-path runner (ACTOR_TYPE_TWO_PATH_RUNNER, RunnerState; level
  * 8); the mode is also the animation index. With RunnerState.mode TPARM_RUN it runs
@@ -4143,6 +4163,7 @@ enum ChasingPathGuardMode {
 #define CPGUARD_RETURN_SPEED 0x5C
 #define CPGUARD_RETURN_ARRIVE 0x200
 #define CPGUARD_RETURN_FRAMES 0x3C
+#define CPGUARD_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of a formation escort (ACTOR_TYPE_FORMATION_ESCORT,
  * FormationEscortState; level 26). */
@@ -4199,6 +4220,7 @@ enum FenceCaptainMode {
 #define FCAPTAIN_SHOTS_1 1
 #define FCAPTAIN_SHOTS_2 2
 #define FCAPTAIN_SHOTS_3 0x3C
+#define FCAPTAIN_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of a fence guard (ACTOR_TYPE_FENCE_GUARD, FenceGuardState; level
  * 27); the mode is also the animation index. subMode 1 wakes it, 2 (the
@@ -4474,6 +4496,7 @@ enum LanePatrollerMode {
 #define LANEPAT_JUMP_VZ 0x12C
 #define LANEPAT_FELL_BELOW_Z 0x800
 #define LANEPAT_TURN_RANGE 0x3000
+#define LANEPAT_BURST_SPARK_LIFE 0x20 /* BurstActorWithSound spark life */
 
 /* ->mode of a runner spawner (ACTOR_TYPE_RUNNER_SPAWNER, RunnerSpawnerState;
  * level 14); the mode is also the animation index. */
@@ -5025,9 +5048,12 @@ enum ChunkAnimHandle {
 /* Level 10 (Doctor Shemp): chunk N is resumed as phase N ends (stunned; in
  * SHEMP_PHASE_3, dying); all three when he is already beaten. */
 #define SHEMP_PHASE_CHUNK(phase) (phase)
+#define SHEMP_BURST_SPARK_LIFE 0x40 /* BurstActorWithSound spark life */
 /* Level 22: Metalhead's phase N (0, 1) ends by resuming chunk N + 4. */
 #define METALHEAD_CHUNK_PHASE(phase) ((phase) + 4)
+#define METALHEAD_BURST_SPARK_LIFE 0x40 /* BurstActorWithSound spark life */
 /* Level 4: an alarm post guard hit at stage N (0..2) resumes chunk N. */
 #define APGUARD_STAGE_CHUNK(stage) (stage)
+#define APGUARD_BURST_SPARK_LIFE 0x20 /* BurstActorWithSound spark life */
 
 #endif
