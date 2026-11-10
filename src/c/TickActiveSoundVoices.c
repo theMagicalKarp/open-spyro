@@ -117,9 +117,9 @@ int TickActiveSoundVoices(void) {
       pVol = &g_aSpuVoiceRows[i].nVolL;
       SpuGetVoiceVolume(i, pVol, pVol + 1);
       owner = g_aSpuVoiceRows[i].pOwner;
-      range = ((Actor *)owner)->soundRange << 10;
+      range = ((Actor *)owner)->soundRange << SOUND_RANGE_SHIFT;
       if (range == 0) {
-        range = 0x4000;
+        range = SOUND_RANGE_DEFAULT;
       }
       SubtractVector(vec, &((Actor *)owner)->posX, g_anCameraPos);
       dist = VectorLength(vec, VEC_LEN_XYZ);

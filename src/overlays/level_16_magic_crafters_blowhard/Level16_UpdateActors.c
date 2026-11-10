@@ -1821,7 +1821,7 @@ void Level16_UpdateActors(void) {
         continue;
       }
 
-      actor->soundRange = 0x20;
+      actor->soundRange = SOUND_RANGE(0x8000);
       PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
       /* Two of each of the first pair, then six of the third. */
@@ -1888,7 +1888,7 @@ void Level16_UpdateActors(void) {
       if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
-        actor->soundRange = 0x20;
+        actor->soundRange = SOUND_RANGE(0x8000);
         PlayActorMeshVoice(actor, WOBBLECHEST_VOICE_BREAK, 0);
 
         for (i = 0; i < WOBBLECHEST_SHARD_PAIRS; i++) {
@@ -2770,7 +2770,7 @@ void Level16_UpdateActors(void) {
     case ACTOR_TYPE_SEED_POD: {
       SeedPodState *st = actor->state;
 
-      actor->soundRange = 0x20;
+      actor->soundRange = SOUND_RANGE(0x8000);
       switch (actor->mode) {
       case SEEDPOD_CLOSED:
         if (actor->subMode == SEEDPOD_SUB_UNTINTED) {
@@ -3068,7 +3068,7 @@ void Level16_UpdateActors(void) {
         g_pScriptedCameraActor = actor;
       }
       if (IsPointInRotatedBox(&SPY.posX, &st->soundBox) != 0) {
-        actor->soundRange = 0x10;
+        actor->soundRange = SOUND_RANGE(0x4000);
       }
       if (actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) {
         int v[3];

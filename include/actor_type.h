@@ -153,6 +153,15 @@ typedef struct NameLetterState {
 #define TINT_EXTRA_LIFE 0xC
 #define TINT_BOULDER_SPARK 0xD /* boulder debris 152/153 */
 #define TINT_STATUE_SHARD 0xE
+/* Actor.soundRange stores a positional voice's audible distance >> 10
+ * (PlaySoundEffect drops, TickActiveSoundVoices fades, a voice beyond it);
+ * 0 means SOUND_RANGE_DEFAULT. Most actors that set it use SOUND_RANGE(0x8000). */
+#define SOUND_RANGE_SHIFT 10
+#define SOUND_RANGE_DEFAULT 0x4000
+#define SOUND_RANGE(dist) ((dist) >> SOUND_RANGE_SHIFT)
+/* Thrown and lobbed projectiles (levels 25, 26, 28) burst once any
+ * coordinate falls below WORLD_MIN_COORD: they have left the level box. */
+#define WORLD_MIN_COORD 0x400
 #define BILLBOARD_NONE 0xFF          /* no g_aRotBillboards handle */
 /* Actor.probeDist sentinels (DriveActorTrackedMove; other values are the
  * ground-probe distance / 4, 0 = the default 0x12C). */

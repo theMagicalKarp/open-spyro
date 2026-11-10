@@ -681,7 +681,7 @@ void Level0_UpdateActors(void) {
           if (g_pActorListBase[st->idx].mode >= ACTOR_MODE_DORMANT &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
-            actor->soundRange = 0x30;
+            actor->soundRange = SOUND_RANGE(0xC000);
             PlaySoundEffect(g_pLevelSampleBankHeader[0x41], actor, SFX_MODE_3D, &actor->voiceRow);
           }
         }
@@ -2031,7 +2031,7 @@ void Level0_UpdateActors(void) {
         continue;
       }
 
-      actor->soundRange = 0x20;
+      actor->soundRange = SOUND_RANGE(0x8000);
       PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
       /* Two of each of the first pair, then six of the third. */
@@ -2722,7 +2722,7 @@ void Level0_UpdateActors(void) {
         ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         actor->mode = SEQPROP_RUN;
         st->timer = 0x1E;
-        actor->soundRange = 0x30;
+        actor->soundRange = SOUND_RANGE(0xC000);
         PlaySoundEffect(g_pLevelSampleBankHeader[0x41], actor, SFX_MODE_3D, &actor->voiceRow);
         break;
 
@@ -3036,7 +3036,7 @@ void Level0_UpdateActors(void) {
         ((CollectibleState *)prize->state)->mode = COLLREST_SNAP;
       }
 
-      actor->soundRange = 0x20;
+      actor->soundRange = SOUND_RANGE(0x8000);
       PlayActorMeshVoice(actor, LIFECHEST_VOICE_BREAK, 0);
 
       /* Fragment bursts; each stops early once the dynamic pool is full. */
