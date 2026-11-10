@@ -150,6 +150,26 @@ typedef enum SpyroState
                                         * levelling back out to FLY */
 #define SPYRO_STUCK_RESPAWN_TICKS 0x12C /* FALL / SLIDE held this long: respawn,
                                          * refunding the life (or end a flight run) */
+/* TickSpyroAttackEffects. A superflame tints Spyro SUPERFLAME_TINT_R/G/B
+ * with a sine alpha (minus TINT_ALPHA_BIAS); under WARN_FRAMES left the tint
+ * blinks off from BLINK_OFF of every BLINK_PERIOD frames. Each flame-breath
+ * slot (four short arcs, four long) walks its arc path's ARC_POINTS points
+ * and frees itself at ARC_LIFE frames, probing actors at FLAME_HIT_RADIUS;
+ * a slot arms with end age FLAME_SLOT_END_AGE (its burst frame if it hits). */
+#define SUPERFLAME_TINT_R 0x90
+#define SUPERFLAME_TINT_G 0x20
+#define SUPERFLAME_TINT_B 0x10
+#define SUPERFLAME_TINT_ALPHA_BIAS 0x28
+#define SUPERFLAME_WARN_FRAMES 0x78
+#define SUPERFLAME_BLINK_PERIOD 24
+#define SUPERFLAME_BLINK_OFF 0xE
+#define FLAME_SHORT_ARC_POINTS 0x18
+#define FLAME_SHORT_ARC_LIFE 0x20
+#define FLAME_LONG_ARC_POINTS 0x20
+#define FLAME_LONG_ARC_LIFE 0x28
+#define FLAME_HIT_RADIUS 0xA0
+#define FLAME_SLOT_END_AGE 0x20
+
 /* UpdateSpyroStateBehavior's other g_nSpyroStateTimer thresholds: */
 #define SPYRO_WALK_MIN_TICKS 0x10      /* WALK / SCRIPTED_WALK: least time before
                                         * stopping back to IDLE */

@@ -20,6 +20,7 @@
 #include "match_asm.h"
 #include "sample_bank.h"
 #include "spyro_block.h"
+#include "spyro_state.h"
 
 /* The flame-slot arrays and anchor vectors reached from the held anchor-matrix
    and anchor-mode bases (byte offsets resolve to the named globals). */
@@ -40,15 +41,16 @@
    g_nSpyroSuperflameTimer runs, spawn one particle per frame at a random offset
    in Spyro's body frame and pulse his red tint (g_abSpyroTintRgba; the
    alpha follows a sine, and blinks off for part of every 24-frame cycle once
-   the timer is under 0x78, warning that the power-up is running out).
-   (2) Flame breath: arm this frame's flame slots through the ring permutation,
-   rebuild the anchor frame (either the body-frame matrix of the current anim
-   frame's packed offset, or a static offset from the world position), then walk
-   each of the 8 slots along its arc path — probing actors and world geometry
-   between the previous and current point, freezing the slot and spawning the
-   hit burst (plus one SFX_ATTACK_HIT per frame) on contact, or spawning the
-   end-of-arc burst when the slot runs off the end of its path.  param steps =
-   frame delta.  Clears g_bSpyroFlameActive once all 8 slots are idle.
+   the timer is under SUPERFLAME_WARN_FRAMES, warning that the power-up is
+   running out). (2) Flame breath: arm this frame's flame slots through the ring
+   permutation, rebuild the anchor frame (either the body-frame matrix of the
+   current anim frame's packed offset, or a static offset from the world
+   position), then walk each of the 8 slots along its arc path — probing actors
+   and world geometry between the previous and current point, freezing the slot
+   and spawning the hit burst (plus one SFX_ATTACK_HIT per frame) on contact, or
+   spawning the end-of-arc burst when the slot runs off the end of its path.
+   param steps = frame delta.  Clears g_bSpyroFlameActive once all 8 slots are
+   idle.
  */
 void TickSpyroAttackEffects(int steps) {
   int flame[3];
@@ -84,15 +86,16 @@ void TickSpyroAttackEffects(int steps) {
     RotateVectorByMatrix(g_anSpyroBodyMtxBlock, flame, flame);
     AddVector(flame, flame, SPYRO_POS_FROM_MTX);
     g_pfnLevelEmitParticles(1, EMIT_RISING_PUFF, flame, 0);
-    g_abSpyroTintRgba[0] = 0x90;
-    g_abSpyroTintRgba[1] = 0x20;
-    g_abSpyroTintRgba[2] = 0x10;
-    if ((g_anSpyroSuperflameTimerBlock[0] < 0x78) &&
-        ((g_anSpyroSuperflameTimerBlock[0] % 24) >= 0xe)) {
+    g_abSpyroTintRgba[0] = SUPERFLAME_TINT_R;
+    g_abSpyroTintRgba[1] = SUPERFLAME_TINT_G;
+    g_abSpyroTintRgba[2] = SUPERFLAME_TINT_B;
+    if ((g_anSpyroSuperflameTimerBlock[0] < SUPERFLAME_WARN_FRAMES) &&
+        ((g_anSpyroSuperflameTimerBlock[0] % SUPERFLAME_BLINK_PERIOD) >=
+         SUPERFLAME_BLINK_OFF)) {
       g_abSpyroTintRgba[3] = 0;
     } else {
-      g_abSpyroTintRgba[3] =
-          (LookupSine(g_nSpyroSuperflameTimer << 7) / 256) - 0x28;
+      g_abSpyroTintRgba[3] = (LookupSine(g_nSpyroSuperflameTimer << 7) / 256) -
+                             SUPERFLAME_TINT_ALPHA_BIAS;
     }
     g_anSpyroSuperflameTimerBlock[0] -= g_nFrameStep;
     if (g_anSpyroSuperflameTimerBlock[0] <= 0) {
@@ -116,7 +119,8 @@ void TickSpyroAttackEffects(int steps) {
       do {
         if (seg[0] < 8) {
           g_abSpyroFlameSlotAge[(map + (seg[2] * 8))[seg[0]]] = steps - n;
-          g_abSpyroFlameSlotEndAge[(map + (seg[2] * 8))[seg[0]]] = 0x20;
+          g_abSpyroFlameSlotEndAge[(map + (seg[2] * 8))[seg[0]]] =
+              FLAME_SLOT_END_AGE;
           g_abSpyroFlameSlotState[(map + (seg[2] * 8))[seg[0]]] = 0;
         }
         seg[0]++;
@@ -168,11 +172,11 @@ void TickSpyroAttackEffects(int steps) {
     do {
       if (FLAME_SLOT_AGE[i] != 0) {
         if (i < 4) {
-          count = 0x18;
-          limit = 0x20;
+          count = FLAME_SHORT_ARC_POINTS;
+          limit = FLAME_SHORT_ARC_LIFE;
         } else {
-          count = 0x20;
-          limit = 0x28;
+          count = FLAME_LONG_ARC_POINTS;
+          limit = FLAME_LONG_ARC_LIFE;
         }
         if (FLAME_SLOT_STATE[i] != 0) {
           FLAME_SLOT_AGE[i] += steps;
@@ -207,7 +211,7 @@ void TickSpyroAttackEffects(int steps) {
             if ((*((volatile int *)(&pt[-0xf]))) != 0) {
               mask = ACTOR_HIT_FLAME | ACTOR_HIT_SUPER;
             }
-            if ((DispatchActorContactAtSphere(tip, 0xa0, 0, mask, 0,
+            if ((DispatchActorContactAtSphere(tip, FLAME_HIT_RADIUS, 0, mask, 0,
                                               CONTACT_STOP_AT_SOLID) != 0) ||
                 (CastRayWorldAndActors(dir, tip) != 0)) {
               FLAME_SLOT_STATE[i] = 2;
