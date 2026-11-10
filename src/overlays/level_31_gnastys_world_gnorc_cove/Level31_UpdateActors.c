@@ -2112,7 +2112,7 @@ void Level31_UpdateActors(void) {
         break;
 
       case MOUNT_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, MOUNT_KNOCK_DRAG, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, MOUNT_BURST_SPARK_LIFE);
@@ -2194,7 +2194,7 @@ void Level31_UpdateActors(void) {
       }
 
       case HCARRIER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, HCARRIER_KNOCK_DRAG, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, HCARRIER_BURST_SPARK_LIFE);

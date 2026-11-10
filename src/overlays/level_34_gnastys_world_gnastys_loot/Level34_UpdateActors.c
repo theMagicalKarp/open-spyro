@@ -1765,7 +1765,7 @@ void Level34_UpdateActors(void) {
 
       case LTHIEF_KNOCKED:
         if (DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->knockZSpeed,
-                          0xC, 0xC) == MOVED_LANDED) {
+                          LTHIEF_KNOCK_DRAG, LTHIEF_KNOCK_GRAVITY) == MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, LTHIEF_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);

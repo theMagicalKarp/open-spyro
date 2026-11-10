@@ -3624,7 +3624,7 @@ void Level12_UpdateActors(void) {
 
       case SHEPHERD_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed,
-                      0x12, 0xC);
+                      SHEPHERD_KNOCK_DRAG, SHEPHERD_KNOCK_GRAVITY);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, SHEPHERD_BURST_SPARK_LIFE);

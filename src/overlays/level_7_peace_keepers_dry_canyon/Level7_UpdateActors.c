@@ -2727,7 +2727,7 @@ void Level7_UpdateActors(void) {
         break;
 
       case SHOOTER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC, 0xA);
+        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, SHOOTER_KNOCK_DRAG, SHOOTER_KNOCK_GRAVITY);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, SHOOTER_BURST_SPARK_LIFE);

@@ -2526,8 +2526,8 @@ void Level4_UpdateActors(void) {
 
       case LUNGER_KNOCKED:
         ANIM_GO(actor, st->anim + 4);
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC,
-                      0xA);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, LUNGER_KNOCK_DRAG,
+                      LUNGER_KNOCK_GRAVITY);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, LUNGER_BURST_SPARK_LIFE);

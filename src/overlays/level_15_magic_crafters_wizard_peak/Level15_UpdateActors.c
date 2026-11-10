@@ -3079,7 +3079,7 @@ void Level15_UpdateActors(void) {
       }
 
       case KEEPER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, KEEPER_KNOCK_DRAG, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, KEEPER_BURST_SPARK_LIFE);
@@ -3089,7 +3089,7 @@ void Level15_UpdateActors(void) {
         break;
 
       case KEEPER_KNOCKED_ALT:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, KEEPER_KNOCK_DRAG, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, KEEPER_BURST_SPARK_LIFE);
@@ -3346,7 +3346,7 @@ void Level15_UpdateActors(void) {
 
       case SENTINEL_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading,
-                      &st->knockZSpeed, 0xC, 0xC);
+                      &st->knockZSpeed, SENTINEL_KNOCK_DRAG, SENTINEL_KNOCK_GRAVITY);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, SENTINEL_BURST_SPARK_LIFE);

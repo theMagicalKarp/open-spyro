@@ -910,8 +910,8 @@ void Level26_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC,
-                          0x10) != 0) {
+        if (DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, CPGUARD_KNOCK_DRAG,
+                          CPGUARD_KNOCK_GRAVITY) != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, CPGUARD_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
@@ -2700,8 +2700,8 @@ void Level26_UpdateActors(void) {
         break;
 
       case PBOUNCER_THROWN:
-        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC,
-                          0x10) != 0) {
+        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, PBOUNCER_KNOCK_DRAG,
+                          PBOUNCER_KNOCK_GRAVITY) != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, PBOUNCER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
@@ -2721,8 +2721,8 @@ void Level26_UpdateActors(void) {
         break;
 
       case PBOUNCER_FALL:
-        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC,
-                          0x10) != 0) {
+        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, PBOUNCER_KNOCK_DRAG,
+                          PBOUNCER_KNOCK_GRAVITY) != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, PBOUNCER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);

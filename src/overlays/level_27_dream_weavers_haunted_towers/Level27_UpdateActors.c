@@ -2732,7 +2732,7 @@ void Level27_UpdateActors(void) {
         break;
 
       case FCAPTAIN_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xA, 0x10);
+        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, FCAPTAIN_KNOCK_DRAG, FCAPTAIN_KNOCK_GRAVITY);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, FCAPTAIN_BURST_SPARK_LIFE);

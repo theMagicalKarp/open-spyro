@@ -710,7 +710,7 @@ void Level28_UpdateActors(void) {
         continue;
 
       case CRAM_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->heading, &st->knockZSpeed, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->heading, &st->knockZSpeed, CRAM_KNOCK_DRAG, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION | ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, CRAM_BURST_SPARK_LIFE);

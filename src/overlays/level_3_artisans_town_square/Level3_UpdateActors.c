@@ -3446,7 +3446,7 @@ void Level3_UpdateActors(void) {
         break;
 
       case GRAZER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, GRAZER_KNOCK_DRAG, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, GRAZER_BURST_SPARK_LIFE);

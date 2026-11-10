@@ -1584,7 +1584,7 @@ void Level33_UpdateActors(void) {
       }
 
       case LANEPAT_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, LANEPAT_KNOCK_DRAG, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, LANEPAT_BURST_SPARK_LIFE);
@@ -1979,7 +1979,7 @@ void Level33_UpdateActors(void) {
         g_nSpyroSwingEulerTargetY[19] = /* g_dwSpyroRequestMask */
             g_dwSpyroRequestMask | (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
         g_nCinematicActive = 1;
-        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, 0, GNASTY_KNOCK_DRAG, 0);
         if (st->drop[0] != -1 && actor->nextFrame >= 6) {
           g_pActorListBase[st->drop[0]].subMode = 1;
           st->drop[0] = -1;

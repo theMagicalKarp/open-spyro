@@ -1860,7 +1860,7 @@ void Level2_UpdateActors(void) {
       case POSTGUARD_KNOCKED:
         actor->rotX += st->spinX;
         actor->rotY += st->spinY;
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, POSTGUARD_KNOCK_DRAG, POSTGUARD_KNOCK_GRAVITY);
         if (g_nActorAnimDone != 0 && actor->nextAnim == POSTGUARD_ANIM_KNOCKED && actor->anim != POSTGUARD_ANIM_KNOCKED_END) {
           g_nActorAnimDone = 0;
           ANIM_RESET(actor, POSTGUARD_ANIM_KNOCKED_END);
@@ -2918,7 +2918,7 @@ void Level2_UpdateActors(void) {
         }
         break;
       case GRAZER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, GRAZER_KNOCK_DRAG, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, GRAZER_BURST_SPARK_LIFE);

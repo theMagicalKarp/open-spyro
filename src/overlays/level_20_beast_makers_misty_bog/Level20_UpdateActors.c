@@ -2882,7 +2882,7 @@ void Level20_UpdateActors(void) {
         break;
 
       case LURKER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, LURKER_KNOCK_DRAG, sixteen);
         if ((g_nGroundSurfaceType & 0x3F) == 0) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
@@ -3537,7 +3537,7 @@ void Level20_UpdateActors(void) {
       case GRABBER_KNOCKED:
         actor->rotX += 4;
         actor->rotY += 4;
-        if (DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0xE) == MOVED_LANDED) {
+        if (DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, GRABBER_KNOCK_DRAG, GRABBER_KNOCK_GRAVITY) == MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, GRABBER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);

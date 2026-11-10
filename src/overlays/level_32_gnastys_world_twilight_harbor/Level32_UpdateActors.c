@@ -1792,7 +1792,7 @@ void Level32_UpdateActors(void) {
         continue;
 
       case SWEEPGUN_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0x16);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, SWEEPGUN_KNOCK_DRAG, SWEEPGUN_KNOCK_GRAVITY);
         if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;

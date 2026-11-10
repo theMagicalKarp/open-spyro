@@ -818,6 +818,7 @@ enum GnastyAnim {
 /* Within SWIPE_RANGE he swipes instead of throwing. */
 #define GNASTY_SWIPE_RANGE 0xE10
 #define GNASTY_BURST_SPARK_LIFE 0x40 /* BurstActorWithSound spark life */
+#define GNASTY_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 
 /* ->mode of Blowhard, the level 16 boss (ACTOR_TYPE_BLOWHARD,
  * BlowhardState). Each of its three phases rises (floorZ + 0x578), hovers
@@ -1094,6 +1095,8 @@ enum ShepherdAnim {
 #define SHEPHERD_HOME_ARRIVE 0x80
 #define SHEPHERD_HOME_REST 0x3C
 #define SHEPHERD_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
+#define SHEPHERD_KNOCK_DRAG 0x12 /* DriveActorTrackedMove friction */
+#define SHEPHERD_KNOCK_GRAVITY 0xC /* DriveActorTrackedMove gravity */
 
 /* ->mode of a singing path walker (ACTOR_TYPE_SINGING_PATH_WALKER,
  * PathWalkerState; levels 24/28). The mode doubles as the pose's animation
@@ -1644,6 +1647,8 @@ enum ShempGuardAnim {
 #define SGUARD_PATH_CHASE_SPEED 0xA0
 #define SGUARD_PATH_RUSH_SPEED 0xB4
 #define SGUARD_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
+#define SGUARD_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
+#define SGUARD_KNOCK_GRAVITY 0xC /* DriveActorTrackedMove gravity */
 
 /* ->mode of a path runner (ACTOR_TYPE_PATH_RUNNER..+1, PathRunnerState;
  * level 21). PathRunnerState.mode picks which of the two runs it makes. */
@@ -2040,6 +2045,8 @@ enum PostGuardAnim {
 #define POSTGUARD_LUNGE_REST 0xB4
 #define POSTGUARD_HOP_LEAVE_RANGE 0x2000
 #define POSTGUARD_BURST_SPARK_LIFE 0x20 /* BurstActorWithSound spark life */
+#define POSTGUARD_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
+#define POSTGUARD_KNOCK_GRAVITY 0xC /* DriveActorTrackedMove gravity */
 
 /* ->mode of a patrol ward (ACTOR_TYPE_PATROL_WARD, WardState; level 3).
  * WARD_IDLE runs WardState.mode's role (sentry, node patrol, partner ring);
@@ -2166,6 +2173,8 @@ enum ShooterRole {
 #define SHOOTER_ADVANCE_SPEED 0x5A
 #define SHOOTER_ADVANCE_STOP_RANGE 0x800
 #define SHOOTER_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
+#define SHOOTER_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
+#define SHOOTER_KNOCK_GRAVITY 0xA /* DriveActorTrackedMove gravity */
 
 /* ->mode of Metalhead, the level 22 boss (ACTOR_TYPE_METALHEAD,
  * MetalheadState). Clearing the current phase's pickup group starts
@@ -2302,6 +2311,8 @@ enum LungerMode {
 #define LUNGER_NUDGE_RANGE 0x3E8
 #define LUNGER_NUDGE_FRAMES 0x10
 #define LUNGER_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
+#define LUNGER_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
+#define LUNGER_KNOCK_GRAVITY 0xA /* DriveActorTrackedMove gravity */
 
 /* ->mode of an alarm post guard (ACTOR_TYPE_ALARM_POST_GUARD, GuardState;
  * level 4). It falls back post by post (GuardState.stage 0..2); the
@@ -2494,6 +2505,8 @@ enum GrabberAnim {
 #define GRABBER_HOME_ARRIVE 0x100
 #define GRABBER_HOME_REST 0x78
 #define GRABBER_BURST_SPARK_LIFE 0x30 /* BurstActorWithSound spark life */
+#define GRABBER_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
+#define GRABBER_KNOCK_GRAVITY 0xE /* DriveActorTrackedMove gravity */
 
 /* ->mode of a sorcerer (ACTOR_TYPE_SORCERER, SorcererState; level 13).
  * Modes below 0x60 double as the pose's animation index; the cue modes
@@ -2768,6 +2781,8 @@ enum SweepGunnerAnim {
  * sinks for SINK_TICKS. */
 #define SWEEPGUN_BURST_SPARK_LIFE 0x30
 #define SWEEPGUN_SINK_TICKS 0xA
+#define SWEEPGUN_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
+#define SWEEPGUN_KNOCK_GRAVITY 0x16 /* DriveActorTrackedMove gravity */
 
 /* ->mode of a lurker (ACTOR_TYPE_LURKER, LurkerState; level 20). */
 enum LurkerMode {
@@ -2818,6 +2833,7 @@ enum LurkerAnim {
 #define LURKER_CHASE_GAIN 0x5DD
 #define LURKER_FACE_CONE 0x13
 #define LURKER_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
+#define LURKER_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 
 /* ->mode of a gunner (ACTOR_TYPE_GUNNER, GunnerState; level 20).
  * GUNNER_IDLE runs GunnerState.mode's role (guard, patrol, lookout). */
@@ -2912,6 +2928,7 @@ enum ChargingRamMode {
 #define CRAM_HOME_SPEED 0x5A
 #define CRAM_HOME_ARRIVE 0x80
 #define CRAM_BURST_SPARK_LIFE 0x20 /* BurstActorWithSound spark life */
+#define CRAM_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 
 /* ->mode of a rock thrower (ACTOR_TYPE_ROCK_THROWER, RockThrowerState;
  * level 27); the mode is also the animation index. */
@@ -3224,6 +3241,7 @@ enum TetherKeeperMode {
 #define KEEPER_STEP_OUT_DIST 0x180
 #define KEEPER_STEP_BACK_AT 0x780
 #define KEEPER_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
+#define KEEPER_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 
 /* ->mode of a sentinel (ACTOR_TYPE_SENTINEL, SentinelState; level 15); the
  * mode is also the animation index. A sentinel walks its waypoints past a
@@ -3266,6 +3284,8 @@ enum SentinelMode {
 #define SENTINEL_POWER_ORB_UP 0x400
 #define SENTINEL_WALK_SPEED 0x80
 #define SENTINEL_BURST_SPARK_LIFE 0x30 /* BurstActorWithSound spark life */
+#define SENTINEL_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
+#define SENTINEL_KNOCK_GRAVITY 0xC /* DriveActorTrackedMove gravity */
 
 /* ->mode of a mount (ACTOR_TYPE_MOUNT, MountState; level 31); the mode is
  * also the animation index. Its rider is a floating barrel or mine
@@ -3276,6 +3296,7 @@ enum MountMode {
   MOUNT_KNOCKED = 2, /* struck, or its rider burst or ran: knocked away, then bursts */
 };
 #define MOUNT_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
+#define MOUNT_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 
 /* ->mode of a hatch carrier (ACTOR_TYPE_HATCH_CARRIER, HatchCarrierState;
  * level 31); the mode is also the animation index. */
@@ -3286,6 +3307,7 @@ enum HatchCarrierMode {
   HCARRIER_KNOCKED = 3, /* flamed: knocked away, then bursts */
 };
 #define HCARRIER_BURST_SPARK_LIFE 0x30 /* BurstActorWithSound spark life */
+#define HCARRIER_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 
 /* ->mode of a carried-prop thrower (ACTOR_TYPE_CARRIED_THROWER,
  * CarriedThrowerState; level 31); the mode is also the animation index.
@@ -4034,6 +4056,8 @@ enum LootThiefLeg {
 #define LTHIEF_INTRO_MIN_SPEED 2
 #define LTHIEF_DODGE_Z 0x61A8
 #define LTHIEF_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
+#define LTHIEF_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
+#define LTHIEF_KNOCK_GRAVITY 0xC /* DriveActorTrackedMove gravity */
 
 /* ->mode of a two-path runner (ACTOR_TYPE_TWO_PATH_RUNNER, RunnerState; level
  * 8); the mode is also the animation index. With RunnerState.mode TPARM_RUN it runs
@@ -4172,6 +4196,8 @@ enum ChasingPathGuardMode {
 #define CPGUARD_RETURN_ARRIVE 0x200
 #define CPGUARD_RETURN_FRAMES 0x3C
 #define CPGUARD_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
+#define CPGUARD_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
+#define CPGUARD_KNOCK_GRAVITY 0x10 /* DriveActorTrackedMove gravity */
 
 /* ->mode of a formation escort (ACTOR_TYPE_FORMATION_ESCORT,
  * FormationEscortState; level 26). */
@@ -4212,6 +4238,8 @@ enum PartnerBouncerMode {
   PBOUNCER_FALL = 3,   /* falls until it lands (burst) or drops out of the level */
 };
 #define PBOUNCER_BURST_SPARK_LIFE 0x30 /* BurstActorWithSound spark life */
+#define PBOUNCER_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
+#define PBOUNCER_KNOCK_GRAVITY 0x10 /* DriveActorTrackedMove gravity */
 
 /* ->mode of a fence captain (ACTOR_TYPE_FENCE_CAPTAIN, FenceCaptainState;
  * level 27); the mode is also the animation index. */
@@ -4230,6 +4258,8 @@ enum FenceCaptainMode {
 #define FCAPTAIN_SHOTS_2 2
 #define FCAPTAIN_SHOTS_3 0x3C
 #define FCAPTAIN_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
+#define FCAPTAIN_KNOCK_DRAG 0xA /* DriveActorTrackedMove friction */
+#define FCAPTAIN_KNOCK_GRAVITY 0x10 /* DriveActorTrackedMove gravity */
 
 /* ->mode of a fence guard (ACTOR_TYPE_FENCE_GUARD, FenceGuardState; level
  * 27); the mode is also the animation index. subMode 1 wakes it, 2 (the
@@ -4507,6 +4537,7 @@ enum LanePatrollerMode {
 #define LANEPAT_FELL_BELOW_Z 0x800
 #define LANEPAT_TURN_RANGE 0x3000
 #define LANEPAT_BURST_SPARK_LIFE 0x20 /* BurstActorWithSound spark life */
+#define LANEPAT_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 
 /* ->mode of a runner spawner (ACTOR_TYPE_RUNNER_SPAWNER, RunnerSpawnerState;
  * level 14); the mode is also the animation index. */
@@ -4564,6 +4595,7 @@ enum GrazerMode {
   GRAZER_KNOCKED = 2, /* hit: bursts */
 };
 #define GRAZER_BURST_SPARK_LIFE 0x10 /* BurstActorWithSound spark life */
+#define GRAZER_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 
 /* ->mode of a lobbed bomb (ACTOR_TYPE_LOBBED_BOMB; levels 25/26). */
 enum LobbedBombMode {

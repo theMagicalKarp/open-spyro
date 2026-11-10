@@ -2754,8 +2754,8 @@ void Level10_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC,
-                          0xC) == MOVED_LANDED &&
+        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, SGUARD_KNOCK_DRAG,
+                          SGUARD_KNOCK_GRAVITY) == MOVED_LANDED &&
             actor->nextFrame < 0xD) {
           int c;
           int f;
@@ -2911,7 +2911,7 @@ void Level10_UpdateActors(void) {
           MarkActorLiveKill(actor);
           actor->subMode = 1;
         }
-        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC, 0xC);
+        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, SGUARD_KNOCK_DRAG, SGUARD_KNOCK_GRAVITY);
         break;
 
       case SGUARD_PATH_CHASE:
