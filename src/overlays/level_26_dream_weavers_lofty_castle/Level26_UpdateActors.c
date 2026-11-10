@@ -612,7 +612,7 @@ void Level26_UpdateActors(void) {
       BombLobberState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != BLOBBER_KNOCKED) {
-        st->knockSpeed = 0xF0;
+        st->knockSpeed = BLOBBER_KNOCK_SPEED;
         st->knockHeading = SPY.bodyRotZ;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);
@@ -623,11 +623,11 @@ void Level26_UpdateActors(void) {
       case BLOBBER_WATCH:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (TICK_DOWN(st->timer) != 0 && actor->drawn != 0 &&
-            ApproxDist2D(&actor->posX, &spy->posX) < 0x2800) {
+            ApproxDist2D(&actor->posX, &spy->posX) < BLOBBER_LOB_RANGE) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
-          if (dz > 0 ? dz < 0xA00
-                     : SPY.posZ - (actor->posZ - actor->floorOffset) < 0xA00) {
+          if (dz > 0 ? dz < BLOBBER_LOB_DZ
+                     : SPY.posZ - (actor->posZ - actor->floorOffset) < BLOBBER_LOB_DZ) {
             ENTER_POSE(actor, BLOBBER_LOB);
           }
         }
@@ -638,7 +638,7 @@ void Level26_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           ENTER_POSE(actor, BLOBBER_WATCH);
         }
-        if (actor->nextFrame >= 6 && st->timer == 0) {
+        if (actor->nextFrame >= BLOBBER_LOB_FRAME && st->timer == 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           g_pfnLevelEmitParticles(0x10, EMIT_ACTOR_RING_SPARK, g_pfnLevelSpawnActor(ACTOR_TYPE_LOBBED_BOMB, actor), 0x10);
           st->timer = st->reload;
@@ -648,13 +648,13 @@ void Level26_UpdateActors(void) {
       case BLOBBER_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x28);
+          BurstActorWithSound(actor, BLOBBER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
         if (st->knockSpeed > 0) {
-          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0x1F4, 0x2BC, MOVE_LIFT);
-          st->knockSpeed -= 0x10;
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, BLOBBER_KNOCK_CONTACT, BLOBBER_MOVE_RADIUS, MOVE_LIFT);
+          st->knockSpeed -= BLOBBER_KNOCK_DRAG;
         }
         break;
       }

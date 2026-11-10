@@ -3845,6 +3845,19 @@ enum BombLobberMode {
   BLOBBER_LOB = 1,     /* lobs an ACTOR_TYPE_LOBBED_BOMB on frame 6, then WATCH */
   BLOBBER_KNOCKED = 2, /* flamed: knocked away, then bursts */
 };
+/* Bomb-lobber tuning. WATCH lobs (drawn, off its `reload` timer) with Spyro
+ * within LOB_RANGE and LOB_DZ; the bomb leaves on frame LOB_FRAME. Flamed,
+ * it slides off along Spyro's heading from KNOCK_SPEED losing KNOCK_DRAG a
+ * frame (contact KNOCK_CONTACT, radius MOVE_RADIUS), and bursts with
+ * BURST_SPARK_LIFE sparks. */
+#define BLOBBER_LOB_RANGE 0x2800
+#define BLOBBER_LOB_DZ 0xA00
+#define BLOBBER_LOB_FRAME 6
+#define BLOBBER_KNOCK_SPEED 0xF0
+#define BLOBBER_KNOCK_DRAG 0x10
+#define BLOBBER_KNOCK_CONTACT 0x1F4
+#define BLOBBER_MOVE_RADIUS 0x2BC
+#define BLOBBER_BURST_SPARK_LIFE 0x28
 
 /* ->mode of an alarm sentry (ACTOR_TYPE_ALARM_SENTRY, AlarmSentryState; level
  * 25); the mode is also the animation index. Like the grabber pair, an alarm
@@ -4285,6 +4298,22 @@ enum WarDrumMode {
   WARDRUM_KNOCKED = 3, /* knocked spinning away, then bursts: GONE */
   WARDRUM_GONE = 4,    /* burst; despawns once its chunk animation halts */
 };
+/* War-drum tuning. A beat on frame BEAT_FRAME runs its chunk animation for
+ * BEAT_TICKS, then branches it back over FADE_TICKS. Hit, it spins off from
+ * KNOCK_SPEED (FLAME_KNOCK_SPEED flamed) with KNOCK_VZ (FLAME_KNOCK_VZ) up,
+ * losing KNOCK_DRAG and KNOCK_GRAVITY a frame, and bursts with
+ * BURST_SPARK_LIFE sparks on landing or after KNOCK_LIFE ticks. */
+#define WARDRUM_BEAT_FRAME 6
+#define WARDRUM_BEAT_TICKS 0x64
+#define WARDRUM_FADE_TICKS 0x14
+#define WARDRUM_KNOCK_SPEED 0x12C
+#define WARDRUM_KNOCK_VZ 0x82
+#define WARDRUM_FLAME_KNOCK_SPEED 0x96
+#define WARDRUM_FLAME_KNOCK_VZ 0x46
+#define WARDRUM_KNOCK_DRAG 0xC
+#define WARDRUM_KNOCK_GRAVITY 0xC
+#define WARDRUM_KNOCK_LIFE 0x32
+#define WARDRUM_BURST_SPARK_LIFE 0x18
 
 /* ->mode of a lantern (ACTOR_TYPE_LANTERN, LanternState; level 25); the mode
  * is also the animation index. ->subMode holds the LANTERN_F_* bits, which

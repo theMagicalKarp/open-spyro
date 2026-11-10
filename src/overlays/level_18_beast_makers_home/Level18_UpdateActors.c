@@ -3709,18 +3709,18 @@ void Level18_UpdateActors(void) {
     case ACTOR_TYPE_WAR_DRUM: {
       WarDrumState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && (unsigned int)(actor->mode - 3) >= 2) {
+      if ((actor->flags & ACTOR_HITS_SPYRO) && (unsigned int)(actor->mode - WARDRUM_KNOCKED) >= 2) {
         actor->flags = 0;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->zSpeed = 0x46;
-        st->life = 0x32;
+        st->zSpeed = WARDRUM_FLAME_KNOCK_VZ;
+        st->life = WARDRUM_KNOCK_LIFE;
         if (actor->flags & ACTOR_HIT_FLAME) {
-          st->speed = 0x96;
+          st->speed = WARDRUM_FLAME_KNOCK_SPEED;
         } else {
-          st->speed = 0x12C;
-          st->zSpeed = 0x82;
+          st->speed = WARDRUM_KNOCK_SPEED;
+          st->zSpeed = WARDRUM_KNOCK_VZ;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
@@ -3728,7 +3728,7 @@ void Level18_UpdateActors(void) {
         ENTER_POSE(actor, WARDRUM_KNOCKED);
       }
       if (TICK_DOWN(st->beat) == 2) {
-        st->fade = 0x14;
+        st->fade = WARDRUM_FADE_TICKS;
         st->wait = st->reload;
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
       }
@@ -3747,9 +3747,9 @@ void Level18_UpdateActors(void) {
         break;
 
       case WARDRUM_BEAT:
-        if (actor->nextFrame >= 6 && st->beat == 0) {
+        if (actor->nextFrame >= WARDRUM_BEAT_FRAME && st->beat == 0) {
           ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
-          st->beat = 0x64;
+          st->beat = WARDRUM_BEAT_TICKS;
           g_anLevelTriggerStateSlots[st->chunkAnim] = 1;
           PlaySoundEffect(g_apActorMeshTable[actor->type]->m_Sounds[WARDRUM_VOICE_BEAT], actor, SFX_MODE_3D,
                         (unsigned char *)&st->voice);
@@ -3762,10 +3762,10 @@ void Level18_UpdateActors(void) {
       case WARDRUM_KNOCKED:
         actor->rotY += g_nFrameStep * 2;
         if (TICK_DOWN(st->life) != 0 ||
-            DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, 0xC) ==
+            DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, WARDRUM_KNOCK_DRAG, WARDRUM_KNOCK_GRAVITY) ==
                 MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, WARDRUM_BURST_SPARK_LIFE);
           actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->mode = WARDRUM_GONE;
           continue;
