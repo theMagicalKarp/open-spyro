@@ -3509,6 +3509,20 @@ enum ChargingYakMode {
   YAK_BUTT_HOLD = 7, /* holds after pinning Spyro, then GRAZE */
 };
 #define YAK_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
+/* Charging-yak tuning. GRAZE rouses with Spyro within ROUSE_RANGE and
+ * LEVEL_DZ; WATCH butts within BUTT_RANGE and LEVEL_DZ and settles beyond
+ * CALM_RANGE; a butt that pins Spyro holds PIN_HOLD_TICKS. Flamed, it slides
+ * off along Spyro's heading from KNOCK_SPEED losing KNOCK_DRAG a frame
+ * (contact KNOCK_CONTACT, radius MOVE_RADIUS). */
+#define YAK_ROUSE_RANGE 0x1C00
+#define YAK_LEVEL_DZ 0x5DC
+#define YAK_BUTT_RANGE 0xCE4
+#define YAK_CALM_RANGE 0x2000
+#define YAK_PIN_HOLD_TICKS 3
+#define YAK_KNOCK_SPEED 0xF0
+#define YAK_KNOCK_DRAG 0x10
+#define YAK_KNOCK_CONTACT 0x1F4
+#define YAK_MOVE_RADIUS 0x2BC
 
 /* The grazing pair a charging yak alternates in YAK_GRAZE (8 a random 2..4
  * times, then 9); its other animations are its mode indices. */

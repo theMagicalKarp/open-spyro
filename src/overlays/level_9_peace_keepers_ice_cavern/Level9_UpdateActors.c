@@ -1917,7 +1917,7 @@ void Level9_UpdateActors(void) {
       ChargingYakState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != YAK_KNOCKED) {
-        st->speed = 0xF0;
+        st->speed = YAK_KNOCK_SPEED;
         st->knockHeading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
@@ -1939,10 +1939,10 @@ void Level9_UpdateActors(void) {
           }
         }
         TrackEntityYawTowardSpyro(actor, 3, 0x10, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x1C00) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < YAK_ROUSE_RANGE) {
           int dz = actor->posZ - SPY.posZ;
 
-          if (dz > 0 ? dz < 0x5DC : SPY.posZ - actor->posZ < 0x5DC) {
+          if (dz > 0 ? dz < YAK_LEVEL_DZ : SPY.posZ - actor->posZ < YAK_LEVEL_DZ) {
             st->speed = 0x48;
             ENTER_POSE(actor, YAK_ROUSE);
           }
@@ -1961,16 +1961,16 @@ void Level9_UpdateActors(void) {
         int dist = ApproxDist2D(&actor->posX, &spy->posX);
 
         TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
-        if (dist < 0xCE4) {
+        if (dist < YAK_BUTT_RANGE) {
           int dz = actor->posZ - SPY.posZ;
 
-          if (dz > 0 ? dz < 0x5DC : SPY.posZ - actor->posZ < 0x5DC) {
+          if (dz > 0 ? dz < YAK_LEVEL_DZ : SPY.posZ - actor->posZ < YAK_LEVEL_DZ) {
             st->speed = 0x48;
             st->rest = 0;
             ENTER_POSE(actor, YAK_BUTT);
           }
         }
-        if (dist > 0x2000) {
+        if (dist > YAK_CALM_RANGE) {
           ENTER_POSE(actor, YAK_SETTLE);
         }
         break;
@@ -1979,7 +1979,7 @@ void Level9_UpdateActors(void) {
       case YAK_BUTT:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (g_nSpyroState == SPYRO_ST_HURT_PINNED) {
-          st->rest = 3;
+          st->rest = YAK_PIN_HOLD_TICKS;
         }
         if (g_nActorAnimDone != 0) {
           if (st->rest != 0) {
@@ -2001,8 +2001,8 @@ void Level9_UpdateActors(void) {
 
       case YAK_KNOCKED:
         if (st->speed > 0) {
-          MoveActorAlongAngle(actor, st->knockHeading, st->speed, 0x1F4, 0x2BC, MOVE_LIFT);
-          st->speed -= 0x10;
+          MoveActorAlongAngle(actor, st->knockHeading, st->speed, YAK_KNOCK_CONTACT, YAK_MOVE_RADIUS, MOVE_LIFT);
+          st->speed -= YAK_KNOCK_DRAG;
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
