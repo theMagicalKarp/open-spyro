@@ -3879,6 +3879,30 @@ enum TwoPathRunnerArm {
   TPARM_GUARD = 1, /* GUARD only (set again once a run ends) */
   TPARM_RUN = 2,   /* GUARD, and RUN when Spyro nears a path's node */
 };
+/* Two-path-runner tuning (`range` is in 0x400 units). GUARD swipes
+ * (SWIPE_GAP ticks apart) at Spyro within SWIPE_RANGE and SWIPE_DZ. A run
+ * takes path A at RUN_SPEED (OFFSCREEN_SPEED while not drawn) or path B at
+ * B_SPEED (nodes within PIVOT_THRESH), ending at its node or once Spyro is
+ * within CATCH_RANGE. WALK_BACK walks at WALK_SPEED, arriving within
+ * PIVOT_THRESH. Charged, it slides from KNOCK_SPEED and KNOCK_VZ up (losing
+ * KNOCK_DRAG and KNOCK_GRAVITY a frame; blocked, it drops at WALL_DROP),
+ * probing PROBE_DIST, then bursts with BURST_SPARK_LIFE sparks. */
+#define TPRUNNER_SWIPE_RANGE 0x44C
+#define TPRUNNER_SWIPE_DZ 0x2BC
+#define TPRUNNER_SWIPE_GAP 0x78
+#define TPRUNNER_RUN_SPEED 0x64
+#define TPRUNNER_OFFSCREEN_SPEED 0x8C
+#define TPRUNNER_B_SPEED 0x50
+#define TPRUNNER_PIVOT_THRESH 0x80
+#define TPRUNNER_CATCH_RANGE 0x5DC
+#define TPRUNNER_WALK_SPEED 0x6E
+#define TPRUNNER_KNOCK_SPEED 0x190
+#define TPRUNNER_KNOCK_VZ 0xAA
+#define TPRUNNER_KNOCK_DRAG 0xC
+#define TPRUNNER_KNOCK_GRAVITY 0x10
+#define TPRUNNER_WALL_DROP 0x64
+#define TPRUNNER_PROBE_DIST 0x64
+#define TPRUNNER_BURST_SPARK_LIFE 0x10
 
 /* ->mode of a rim rider (ACTOR_TYPE_RIM_RIDER, RimState; level 16); the mode
  * is also the animation index. RimState.mode picks how it drifts. */
@@ -4440,7 +4464,7 @@ enum GuardLookoutAnim {
   GLOOK_ANIM_WATCH_ALT = 5,
   GLOOK_ANIM_CALL = 8,      /* GLOOK_ROUSE: the guard wakes on frame 5 */
 };
-/* Shemp-lookout tuning (`range` is in 0x400 units). WATCH rouses its
+/* Lookout tuning (levels 8 and 10; `range` in 0x400 units). WATCH rouses its
  * guard with Spyro above it within `range` and ROUSE_DZ, idles with him
  * beyond IDLE_RANGE (its idle loops from IDLE_LOOP_END back to
  * IDLE_LOOP_START), and swipes (SWIPE_GAP ticks apart) at Spyro above it
@@ -4474,6 +4498,12 @@ enum GuardLookoutAnim {
 #define GLOOK_KNOCK_CONTACT 0x1F4
 #define GLOOK_MOVE_RADIUS 0x2BC
 #define GLOOK_BURST_SPARK_LIFE 0x30
+/* Level 8's guard lookout shares the tuning above, but swipes (no
+ * cooldown) within GUARD_SWIPE_RANGE, throwing Spyro back at
+ * GUARD_SWIPE_PUSH, GUARD_SWIPE_PUSH_VZ up. */
+#define GLOOK_GUARD_SWIPE_RANGE 0xA8C
+#define GLOOK_GUARD_SWIPE_PUSH 0x78
+#define GLOOK_GUARD_SWIPE_PUSH_VZ 0x28
 
 /* ->mode of the level 16 humming bell (ACTOR_TYPE_HUMMING_BELL,
  * HummingBellState). */

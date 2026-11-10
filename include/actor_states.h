@@ -193,8 +193,8 @@ typedef struct SpinRunState {
 } SpinRunState;
 
 /* Levels 13/14/15 type 295 (ACTOR_TYPE_HOMING_WISP): steers toward its
- * target actor (or Spyro), and bursts into three sparks when it arrives or
- * touches the ground. */
+ * target actor (or Spyro) and bursts into WISP_DEBRIS falling debris on
+ * reaching it; a wall, its timer or leaving the level box just despawns it. */
 typedef struct WispState {
   struct Actor *target; /* 0x00 actor to reach, or null to chase Spyro */
   int timer;            /* 0x04 lifetime */
