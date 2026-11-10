@@ -157,6 +157,40 @@ typedef enum SpyroState
                                           * floor reference adds speed, rising
                                           * above it takes it away */
 
+/* Ground and air motion per substep (IntegrateSpyroMotionForSubstep). */
+#define SPYRO_GROUND_ACCEL 0x140     /* AdvanceSpyroSpeedTowardTarget accel: walk /
+                                      * jog / run / stop, jump, sidestep */
+#define SPYRO_GROUND_DECEL 0x0C0     /* its decel (also hurt), and the brake while
+                                      * a gait substate is set */
+#define SPYRO_PAD_TURN_SPEED 0x400   /* slower: the pad turns his body directly
+                                      * (ApplyPadInputToSpyroBodyYaw); faster:
+                                      * TurnSpyroTowardMoveTargetWithLean */
+#define SPYRO_SHARP_TURN 0x200       /* heading error (12-bit) past which a gait
+                                      * stops accelerating */
+#define SPYRO_TURN_AROUND_BRAKE 0x100 /* TURN_AROUND: speed lost per substep */
+#define SPYRO_JUMP_MOVE_SPEED 0xC80  /* JUMP: the stick's full-tilt speed target */
+#define SPYRO_JUMP_STEER_MAX 0x280   /* JUMP: most the stick bends his air velocity */
+#define SPYRO_JUMP_HOLD_TICKS 0xD    /* JUMP: Cross held this early in the rise... */
+#define SPYRO_JUMP_HOLD_LIFT 0xD7    /* ...adds this lift (on top of gravity) */
+#define SPYRO_FALL_STEER_MAX 0x40    /* FALL: most air drag removes per substep */
+#define SPYRO_SIDESTEP_SPEED 0x1000  /* SIDESTEP_L1 / _R1 speed target */
+#define SPYRO_SCRIPTED_FLAME_DELAY 0x2C /* idle under a scripted move: breathe
+                                         * flame after this many substeps */
+/* CHARGE: a homing target (g_pSpyroHomingTargetActor) pulls his heading for
+ * HOMING_TICKS while his heading is at least HOMING_CONE off the camera's and it is
+ * within SPYRO_HOMING_CONE of his heading and HOMING_RANGE of him. Off a
+ * charge-hold strip his carried motion loses CHARGE_DRAG / 4096 a substep
+ * and gains CHARGE_THRUST along his heading; letting go of the charge slows
+ * him by CHARGE_STOP_DECEL. */
+#define SPYRO_HOMING_TICKS 0x78
+#define SPYRO_HOMING_CONE 0x200
+#define SPYRO_HOMING_RANGE 0x1800
+#define SPYRO_CHARGE_DRAG 300
+#define SPYRO_CHARGE_THRUST 0x240
+#define SPYRO_CHARGE_STOP_DECEL 0x180
+#define SPYRO_PINNED_FALL_ACCEL 0x600 /* HURT_PINNED / HURT_LONG airborne */
+#define SPYRO_HURT_LONG_SPIN 0x55     /* HURT_LONG: body yaw added per substep */
+
 /* Gravity per substep: ChangeSpyroState sets g_nSpyroGravityStep to minus
  * one of these on entering a state (LIFT rises at +0x80 instead). */
 #define SPYRO_FALL_ACCEL 0x0C0       /* jump / fall / glide drop; also the pull
