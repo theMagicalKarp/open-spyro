@@ -857,7 +857,7 @@ void Level24_UpdateActors(void) {
                                                   actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
                                     g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         actor->flags = 0;
-        st->spin = RandomSignedInRange(8, 0xE);
+        st->spin = RandomSignedInRange(LGUARD_SPIN_MIN, LGUARD_SPIN_MAX);
         actor->subMode = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
@@ -895,14 +895,14 @@ void Level24_UpdateActors(void) {
           }
           if (st->kind != LGKIND_SMALL) {
             actor->scale = ACTOR_SCALE_UNIT;
-            actor->mode = LGUARD_GROW;
+            actor->mode = LGUARD_TO_SMALL;
             continue;
           }
-          BurstActorWithSound(actor, 0x28);
-          actor->scale = 0x40;
+          BurstActorWithSound(actor, LGUARD_TO_BIG_SPARK_LIFE);
+          actor->scale = LGUARD_TO_BIG_SCALE;
           st->base = 0;
           ANIM_SET(actor, st->base);
-          actor->mode = LGUARD_SHRINK;
+          actor->mode = LGUARD_TO_BIG;
           continue;
         } else if (st->range < 0) {
           TICK_DOWN(st->reloadTimer);
@@ -1006,11 +1006,11 @@ void Level24_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, LGUARD_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
-        r = DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0x10);
+        r = DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, LGUARD_KNOCK_DRAG, LGUARD_KNOCK_GRAVITY);
         if (st->kind == LGKIND_SMALL) {
           if (r == MOVED_LANDED && (unsigned)(actor->nextFrame - 0xB) < 9) {
             g_nActorAnimDone = 0;
@@ -1036,7 +1036,7 @@ void Level24_UpdateActors(void) {
         break;
       }
 
-      case LGUARD_SHRINK:
+      case LGUARD_TO_BIG:
         TICK_DOWN(st->reloadTimer);
         actor->scale -= g_nFrameStep * 2;
         if (actor->scale <= ACTOR_SCALE_UNIT) {
@@ -1047,12 +1047,12 @@ void Level24_UpdateActors(void) {
         }
         break;
 
-      case LGUARD_GROW:
+      case LGUARD_TO_SMALL:
         TICK_DOWN(st->reloadTimer);
         actor->scale += g_nFrameStep * 2;
-        if (actor->scale >= LGUARD_GROW_SCALE) {
+        if (actor->scale >= LGUARD_TO_SMALL_SCALE) {
           actor->scale = ACTOR_SCALE_UNIT;
-          BurstActorWithSound(actor, 0x20);
+          BurstActorWithSound(actor, LGUARD_TO_SMALL_SPARK_LIFE);
           st->base = 4;
           ANIM_SET(actor, st->base);
           st->kind = !st->kind;
@@ -1076,7 +1076,7 @@ void Level24_UpdateActors(void) {
           }
           break;
         }
-        st->timer = 0x3C;
+        st->timer = LGUARD_ESCORT_TURN_DELAY;
         break;
       }
       }
@@ -2365,7 +2365,7 @@ void Level24_UpdateActors(void) {
                                     g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         actor->flags = 0;
         actor->probeDist = ACTOR_PROBE_NONE;
-        st->spin = RandomSignedInRange(8, 0xE);
+        st->spin = RandomSignedInRange(LGUARD_SPIN_MIN, LGUARD_SPIN_MAX);
         actor->subMode = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
@@ -2412,16 +2412,16 @@ void Level24_UpdateActors(void) {
           }
           if (st->kind == LGKIND_SMALL) {
             st->kind = !st->kind;
-            BurstActorWithSound(actor, 0x28);
-            actor->scale = 0x40;
+            BurstActorWithSound(actor, LGUARD_TO_BIG_SPARK_LIFE);
+            actor->scale = LGUARD_TO_BIG_SCALE;
             st->base = 0;
             ANIM_SET(actor, st->base);
-            actor->mode = LGUARD_SHRINK;
+            actor->mode = LGUARD_TO_BIG;
             continue;
           }
           st->kind = !st->kind;
           actor->scale = ACTOR_SCALE_UNIT;
-          actor->mode = LGUARD_GROW;
+          actor->mode = LGUARD_TO_SMALL;
           continue;
         } else if (st->range < 0) {
           TICK_DOWN(st->reloadTimer);
@@ -2513,7 +2513,7 @@ void Level24_UpdateActors(void) {
 
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, LGUARD_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2531,7 +2531,7 @@ void Level24_UpdateActors(void) {
             }
           }
         }
-        r = DriveActorTrackedMove(actor, &st->knockSpeed, st->heading, &st->knockZSpeed, 0xC, 0x10);
+        r = DriveActorTrackedMove(actor, &st->knockSpeed, st->heading, &st->knockZSpeed, LGUARD_KNOCK_DRAG, LGUARD_KNOCK_GRAVITY);
         if (r == MOVED_LANDED && actor->nextFrame < 0xA) {
           g_nActorAnimDone = 0;
           actor->frameProgress = sixteen;
@@ -2556,7 +2556,7 @@ void Level24_UpdateActors(void) {
         break;
       }
 
-      case LGUARD_SHRINK:
+      case LGUARD_TO_BIG:
         TICK_DOWN(st->reloadTimer);
         actor->scale -= g_nFrameStep * 2;
         if (actor->scale <= ACTOR_SCALE_UNIT) {
@@ -2566,13 +2566,13 @@ void Level24_UpdateActors(void) {
         }
         break;
 
-      case LGUARD_GROW:
+      case LGUARD_TO_SMALL:
         TICK_DOWN(st->reloadTimer);
         actor->scale += g_nFrameStep * 2;
-        if (actor->scale >= LGUARD_GROW_SCALE) {
+        if (actor->scale >= LGUARD_TO_SMALL_SCALE) {
           StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
           actor->scale = ACTOR_SCALE_UNIT;
-          BurstActorWithSound(actor, 0x20);
+          BurstActorWithSound(actor, LGUARD_TO_SMALL_SPARK_LIFE);
           st->base = 4;
           ANIM_SET(actor, st->base);
           actor->mode = LGUARD_IDLE;

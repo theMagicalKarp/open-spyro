@@ -2400,16 +2400,19 @@ enum LungingGuardMode {
   LGUARD_PACE = 1,     /* paces its path once, then IDLE */
   LGUARD_LUNGE = 2,    /* lunges (the small kind bumps Spyro back) */
   LGUARD_KNOCKED = 3,  /* spins away, then bursts */
-  LGUARD_SHRINK = 10,  /* scales down to the other kind, then IDLE */
-  LGUARD_GROW = 20,    /* scales up and bursts into the other kind, then IDLE */
+  LGUARD_TO_BIG = 10,   /* a blasted small guard: bursts, then swells from
+                         * TO_BIG_SCALE (half size) to full as the big kind */
+  LGUARD_TO_SMALL = 20, /* a blasted big guard: dwindles to TO_SMALL_SCALE,
+                         * then bursts into the small kind */
   LGUARD_ESCORT = 30,  /* keeps its partner between itself and Spyro */
 };
 
 /* LungingGuardState.kind: the guard's current size (a big guard toggles it
  * as it shrinks and grows back). */
 enum LungingGuardKind {
-  LGKIND_SMALL = 0, /* lunges from close; a blast shrinks it away */
-  LGKIND_BIG = 1,   /* lunges from far; shrugs off a plain charge; a blast grows it */
+  LGKIND_SMALL = 0, /* lunges from close; a blast turns it big (LGUARD_TO_BIG) */
+  LGKIND_BIG = 1,   /* lunges from far; shrugs off a plain charge; a blast turns it
+                     * small (LGUARD_TO_SMALL) */
 };
 
 /* Lunging guard tuning. Hit it spins off at KNOCK_SPEED (CHARGE_KNOCK_SPEED
@@ -2418,9 +2421,12 @@ enum LungingGuardKind {
  * Spyro back at SMALL_BUMP_SPEED (SMALL_BUMP_VZ up), resting
  * SMALL_LUNGE_REST; a big one gives up past BIG_LUNGE_LEAVE (rest
  * BIG_LUNGE_REST) and skips to its strike within BIG_STRIKE_RANGE. A pacer
- * walks PACE_SPEED until Spyro is within PACE_STOP_RANGE. A blasted big one
- * grows to GROW_SCALE and bursts into the small kind; an escort orbits its
- * cannon at ESCORT_RADIUS, ESCORT_SPEED. */
+ * walks PACE_SPEED until Spyro is within PACE_STOP_RANGE. A knocked guard
+ * spins RandomSignedInRange(SPIN_MIN, SPIN_MAX) a frame, slides with
+ * KNOCK_DRAG / KNOCK_GRAVITY and bursts with BURST_SPARK_LIFE sparks; a size
+ * change bursts with TO_BIG_SPARK_LIFE / TO_SMALL_SPARK_LIFE. An escort orbits
+ * its cannon at ESCORT_RADIUS, ESCORT_SPEED, and holds off turning the cannon
+ * for ESCORT_TURN_DELAY after each lob. */
 #define LGUARD_KNOCK_SPEED 0xC8
 #define LGUARD_CHARGE_KNOCK_SPEED 0x15E
 #define LGUARD_LUNGE_DZ 0x190
@@ -2434,7 +2440,16 @@ enum LungingGuardKind {
 #define LGUARD_BIG_STRIKE_RANGE 0x9C4
 #define LGUARD_PACE_SPEED 0x8C
 #define LGUARD_PACE_STOP_RANGE 0xC00
-#define LGUARD_GROW_SCALE 0x38
+#define LGUARD_TO_BIG_SCALE 0x40   /* ->scale (half size) a small guard swells from */
+#define LGUARD_TO_SMALL_SCALE 0x38 /* ->scale (about 0.57x) a big guard dwindles to */
+#define LGUARD_SPIN_MIN 8
+#define LGUARD_SPIN_MAX 0xE
+#define LGUARD_KNOCK_DRAG 0xC
+#define LGUARD_KNOCK_GRAVITY 0x10
+#define LGUARD_BURST_SPARK_LIFE 0x18
+#define LGUARD_TO_BIG_SPARK_LIFE 0x28
+#define LGUARD_TO_SMALL_SPARK_LIFE 0x20
+#define LGUARD_ESCORT_TURN_DELAY 0x3C
 #define LGUARD_ESCORT_RADIUS 0x5DC
 #define LGUARD_ESCORT_SPEED 0x32
 /* The big-lunging-guard variant (ACTOR_TYPE_BIG_LUNGING_GUARD) shares these
@@ -2737,6 +2752,8 @@ enum GuardPairAnim {
 #define GPAIR_CUE_GAP 0x258
 #define GPAIR_SIGNAL_FRAME 8
 #define GPAIR_KNOCK_SPEED 0xF0
+#define GPAIR_ROUSE_SPEED 0x48 /* ->speed on rouse and on each charge; never read:
+                               * every way into KNOCKED stores KNOCK_SPEED first */
 #define GPAIR_KNOCK_DRAG 0x10
 #define GPAIR_KNOCK_CONTACT 0x1F4
 #define GPAIR_MOVE_RADIUS 0x2BC
@@ -3530,6 +3547,8 @@ enum ChargingYakMode {
 #define YAK_CALM_RANGE 0x2000
 #define YAK_PIN_HOLD_TICKS 3
 #define YAK_KNOCK_SPEED 0xF0
+#define YAK_ROUSE_SPEED 0x48 /* ->speed on rouse and on each charge; never read:
+                               * every way into KNOCKED stores KNOCK_SPEED first */
 #define YAK_KNOCK_DRAG 0x10
 #define YAK_KNOCK_CONTACT 0x1F4
 #define YAK_MOVE_RADIUS 0x2BC
@@ -3578,6 +3597,8 @@ enum ToughRamAnim {
 #define TRAM_PROBE_DEPTH 0x1000
 #define TRAM_FALL_DEPTH 0x800
 #define TRAM_KNOCK_SPEED 0x80
+#define TRAM_ROUSE_SPEED 0x48 /* ->speed on rouse and on each charge; never read:
+                               * every way into KNOCKED stores KNOCK_SPEED first */
 #define TRAM_GRAVITY 0xC
 #define TRAM_MAX_FALL 0xF0
 #define TRAM_BURST_SPARK_LIFE 0x18

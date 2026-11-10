@@ -1943,7 +1943,7 @@ void Level9_UpdateActors(void) {
           int dz = actor->posZ - SPY.posZ;
 
           if (dz > 0 ? dz < YAK_LEVEL_DZ : SPY.posZ - actor->posZ < YAK_LEVEL_DZ) {
-            st->speed = 0x48;
+            st->speed = YAK_ROUSE_SPEED;
             ENTER_POSE(actor, YAK_ROUSE);
           }
         }
@@ -1965,7 +1965,7 @@ void Level9_UpdateActors(void) {
           int dz = actor->posZ - SPY.posZ;
 
           if (dz > 0 ? dz < YAK_LEVEL_DZ : SPY.posZ - actor->posZ < YAK_LEVEL_DZ) {
-            st->speed = 0x48;
+            st->speed = YAK_ROUSE_SPEED;
             st->rest = 0;
             ENTER_POSE(actor, YAK_BUTT);
           }
@@ -2394,7 +2394,7 @@ void Level9_UpdateActors(void) {
           int dz = actor->posZ - SPY.posZ;
 
           if (dz > 0 ? dz < TRAM_LEVEL_DZ : SPY.posZ - actor->posZ < TRAM_LEVEL_DZ) {
-            st->speed = 0x48;
+            st->speed = TRAM_ROUSE_SPEED;
             ENTER_POSE(actor, TRAM_ROUSE);
           }
         }
@@ -2416,7 +2416,7 @@ void Level9_UpdateActors(void) {
           int dz = actor->posZ - SPY.posZ;
 
           if (dz > 0 ? dz < TRAM_LEVEL_DZ : SPY.posZ - actor->posZ < TRAM_LEVEL_DZ) {
-            st->speed = 0x48;
+            st->speed = TRAM_ROUSE_SPEED;
             st->rest = 0;
             ENTER_POSE(actor, TRAM_BUTT);
           }

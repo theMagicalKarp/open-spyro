@@ -1257,7 +1257,7 @@ void Level2_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &spy->posX) < GPAIR_ROUSE_RANGE &&
             ((dz = actor->posZ - SPY.posZ) > 0 ? dz < GPAIR_LEVEL_DZ
                                                : SPY.posZ - actor->posZ < GPAIR_LEVEL_DZ)) {
-          st->speed = 0x48;
+          st->speed = GPAIR_ROUSE_SPEED;
           ENTER_POSE_B(actor, GPAIR_ROUSE);
         }
 
@@ -1289,7 +1289,7 @@ void Level2_UpdateActors(void) {
         if (dist < GPAIR_SWING_RANGE &&
             ((dz = actor->posZ - SPY.posZ) > 0 ? dz < GPAIR_LEVEL_DZ
                                                : SPY.posZ - actor->posZ < GPAIR_LEVEL_DZ)) {
-          st->speed = 0x48;
+          st->speed = GPAIR_ROUSE_SPEED;
           st->gloatCount = 0;
           ENTER_POSE_B(actor, GPAIR_SWING);
         }
