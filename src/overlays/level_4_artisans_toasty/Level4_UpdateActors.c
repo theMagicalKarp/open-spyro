@@ -2635,9 +2635,9 @@ void Level4_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->speed = 0x190;
+        st->speed = REAR_KNOCK_SPEED;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->speed = 0x1F4;
+          st->speed = REAR_CHARGE_KNOCK_SPEED;
         }
         st->spin = RandomIntInRange(2, 5);
         if (GetRandomU32() & 1) {
@@ -2661,7 +2661,7 @@ void Level4_UpdateActors(void) {
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (TICK_DOWN(st->timer) != 0 &&
-            ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
+            ApproxDist2D(&actor->posX, &SPY.posX) < REAR_ROUSE_RANGE) {
           if (actor->anim == REAR_IDLE) {
             ENTER_POSE4(actor, REAR_NOTICE);
           }
@@ -2684,7 +2684,7 @@ void Level4_UpdateActors(void) {
         int dist = ApproxDist2D(&actor->posX, &SPY.posX);
 
         if (g_nActorAnimDone != 0) {
-          if (dist > 0xC00) {
+          if (dist > REAR_FIDGET_RANGE) {
             if (st->count == 0) {
               st->count = RandomIntInRange(3, 6);
               ANIM_GO(actor, REAR_ANIM_REARED_FIDGET);
@@ -2697,15 +2697,15 @@ void Level4_UpdateActors(void) {
           }
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if (dist < 0xBB8) {
+        if (dist < REAR_SHOVE_RANGE) {
           int height = actor->posZ - actor->floorOffset;
           int drop = height - SPY.posZ;
 
-          if (drop > 0 ? drop < 0x4B0 : (SPY.posZ - height) < 0x4B0) {
+          if (drop > 0 ? drop < REAR_SHOVE_DZ : (SPY.posZ - height) < REAR_SHOVE_DZ) {
             ENTER_POSE4(actor, REAR_SHOVE);
           }
         }
-        if (dist > 0x2400) {
+        if (dist > REAR_LOSE_RANGE) {
           ENTER_POSE4(actor, REAR_DROP);
         }
         break;
@@ -2714,7 +2714,7 @@ void Level4_UpdateActors(void) {
       case REAR_SHOVE:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (g_nSpyroState == SPYRO_ST_KNOCKBACK) {
-          st->timer = 0x8C;
+          st->timer = REAR_GLOAT_TICKS;
         }
         if (g_nActorAnimDone != 0) {
           if (st->timer != 0) {
@@ -2734,24 +2734,24 @@ void Level4_UpdateActors(void) {
         break;
 
       case REAR_KNOCKED:
-        if (actor->frame < 0xA) {
+        if (actor->frame < REAR_SPIN_FRAMES) {
           actor->rotZ += st->spin;
         }
-        if (st->speed > 0x1E) {
-          st->speed -= 0x1E;
-          MoveActorAlongAngle(actor, st->knockHeading, st->speed, 0, 0x12C, MOVE_LIFT);
+        if (st->speed > REAR_KNOCK_DRAG) {
+          st->speed -= REAR_KNOCK_DRAG;
+          MoveActorAlongAngle(actor, st->knockHeading, st->speed, 0, REAR_MOVE_RADIUS, MOVE_LIFT);
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x20);
+          BurstActorWithSound(actor, REAR_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
         break;
 
       case REAR_GLOAT:
-        if (actor->frame >= 0x1C && TICK_DOWN(st->timer) != 0) {
-          actor->frame = 0xF;
+        if (actor->frame >= REAR_GLOAT_LOOP_END && TICK_DOWN(st->timer) != 0) {
+          actor->frame = REAR_GLOAT_LOOP_START;
         }
       spin_wait:
         if (g_nActorAnimDone != 0) {

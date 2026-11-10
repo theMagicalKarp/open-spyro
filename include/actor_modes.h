@@ -3801,7 +3801,7 @@ enum RearAnim {
   REAR_ANIM_FIDGET = 1,         /* REAR_IDLE */
   REAR_ANIM_REARED_FIDGET = 10, /* REAR_REARED, Spyro beyond REAR_FIDGET_RANGE */
 };
-/* Rearing-critter tuning. IDLE rears with Spyro within ROUSE_RANGE and
+/* Rearing-critter tuning (level 4's spinner shares it). IDLE rears within ROUSE_RANGE and
  * ROUSE_DZ (off cooldown); REARED fidgets beyond FIDGET_RANGE, shoves within
  * SHOVE_RANGE and SHOVE_DZ, and drops back beyond LOSE_RANGE or LOSE_DZ. A
  * shove that knocks Spyro back gloats GLOAT_TICKS (looping GLOAT_LOOP_END
