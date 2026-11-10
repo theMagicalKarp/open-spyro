@@ -2729,7 +2729,7 @@ void Level1_UpdateActors(void) {
             }
 
             g_nLevelKeyState = KEYSTATE_CARRIED;
-            actor->scale = 0x40;
+            actor->scale = ACTOR_SCALE_HALF;
             actor->cullRadius = ACTOR_CULL_HIDDEN;
             actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
             actor->drawn = 0;
@@ -2818,7 +2818,7 @@ void Level1_UpdateActors(void) {
         } else {
           g_nLevelKeyState = KEYSTATE_CARRIED;
           actor->subMode = LOCKCHEST_KEY_READY;
-          key->scale = 0x40;
+          key->scale = ACTOR_SCALE_HALF;
           key->groundCode = 0;
           key->gateChunk = GATE_CHUNK_ALWAYS;
           key->subMode = KEY_TAKEN;

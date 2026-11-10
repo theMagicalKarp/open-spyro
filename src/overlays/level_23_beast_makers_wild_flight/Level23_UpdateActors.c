@@ -1261,7 +1261,7 @@ void Level23_UpdateActors(void) {
           actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
           actor->drawn = 0;
           actor->groundCode = 0;
-          actor->scale = 0x40;
+          actor->scale = ACTOR_SCALE_HALF;
           actor->gateChunk = GATE_CHUNK_ALWAYS;
           actor->subMode = KEY_TAKEN;
         }

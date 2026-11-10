@@ -109,6 +109,7 @@ typedef struct NameLetterState {
 /* Actor.voiceRow while no voice row plays the actor's sound. */
 #define VOICE_ROW_NONE 0x7F /* also what a finished or dropped sound stamps into its pPlaying byte */
 #define ACTOR_SCALE_UNIT 0x20 /* ->scale drawing the mesh at its own size (0x40 = half, 0x14 = 1.6x) */
+#define ACTOR_SCALE_HALF 0x40 /* ->scale drawing the mesh at half size */
 #define ACTOR_CULL_HIDDEN 0 /* ->cullRadius: a zero bound fails the view cull, so the actor is hidden */
 /* ->cullRadius 0xFF: a bound every view-space point passes. Only these stamps
  * set bit 7 (level data and spawns stay at or below 0x7F): HUD counter digits
@@ -117,6 +118,7 @@ typedef struct NameLetterState {
  * it is dead (it spawns at 0x10 and nothing restamps it). */
 #define ACTOR_CULL_ALWAYS 0xFF
 #define ACTOR_CULL_ALWAYS_BIT 0x80
+#define ACTOR_CULL_MAX 0x7F /* ->cullRadius: the widest bound below ACTOR_CULL_ALWAYS_BIT */
 #define ACTOR_TINT_NEUTRAL 0xA18618 /* the 0x4C tint word at neutral levels (0x18 each, tag 0xA) */
 /* Actor.tintMode presets, used with tint0..2 zeroed.
  * RasterizeSpritePrimQueue reads the preset word at 0x8006E3D8 + (tint word
