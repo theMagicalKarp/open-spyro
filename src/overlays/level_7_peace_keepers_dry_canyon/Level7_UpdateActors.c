@@ -1050,7 +1050,7 @@ void Level7_UpdateActors(void) {
           SnapActorToGround(actor);
         }
         if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, PIVOT_TURN_ANY,
-                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == st->path->count + 0xFF) {
+                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(st->path->count - 1)) {
           st->path->dir = -st->path->dir;
           st->path->cur = 1;
           actor->mode = THIEF_IDLE;

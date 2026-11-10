@@ -1543,8 +1543,8 @@ void Level33_UpdateActors(void) {
         if ((r & PATH_ARRIVED_FLAG) && (FLY_FLAGS(st->path, st->path->cur) & PATH_NODE_JUMP) == PATH_JUMP_LOW) {
           st->knockZSpeed = LANEPAT_JUMP_VZ;
         }
-        if ((st->path->dir == -1 && r == (st->endNodeBack | 0x100)) ||
-            (st->path->dir == 1 && r == (st->endNodeFwd | 0x100))) {
+        if ((st->path->dir == -1 && r == (st->endNodeBack | PATH_ARRIVED_FLAG)) ||
+            (st->path->dir == 1 && r == (st->endNodeFwd | PATH_ARRIVED_FLAG))) {
           g_anLevelEscapeRunCount[st->lane]++;
           if (g_anLevelEscapeRunCount[st->lane] >= LANEPAT_MAX_RUNS) {
             g_anLevelEscapeRunCount[st->lane] = LANEPAT_MAX_RUNS - 1;

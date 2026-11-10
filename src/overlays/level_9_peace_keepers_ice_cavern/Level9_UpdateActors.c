@@ -2141,7 +2141,7 @@ void Level9_UpdateActors(void) {
             ArcTan2(spy->posX - st->path->nodes[st->path->cur].x,
                           spy->posY - st->path->nodes[st->path->cur].y, ATAN_ANGLE8),
             8, st->advanceSpeed, 0xE, 0x80, st->blockHeadingA, st->blockHeadingB, 0, 0, MOVE_FOLLOW_FLOOR);
-        if (r == 0x100 || r < 0x40) {
+        if (r == STEER_BLOCKED || r < 0x40) {
           int ang = WrapAddAngle8(actor->rotZ, 0xE0);
 
           svK[0] = actor->posX + ((g_anCosineLut[ang] * SNOWTHROW_EYE_FWD) >> 10);
@@ -2221,7 +2221,7 @@ void Level9_UpdateActors(void) {
           actor->mode = SNOWTHROW_TURN_AWAY;
           continue;
         }
-        if (r == 0x100) {
+        if (r == STEER_BLOCKED) {
           st->timer = SNOWTHROW_AIM_FRAMES;
           actor->mode = SNOWTHROW_AIM;
           continue;

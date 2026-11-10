@@ -1248,7 +1248,7 @@ void Level14_UpdateActors(void) {
           SnapActorToGround(actor);
         }
         if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, PIVOT_TURN_ANY,
-                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == st->path->count + 0xFF) {
+                          MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(st->path->count - 1)) {
           st->path->dir = -st->path->dir;
           st->path->cur = 1;
           actor->mode = THIEF_IDLE;
@@ -4087,7 +4087,7 @@ void Level14_UpdateActors(void) {
           continue;
         }
         if (WalkActorAlongWaypoints(actor, st->path, 0x100, 0x40, 0, 0x20, 0xFF,
-                          st->smoothVel) == 0x100) {
+                          st->smoothVel) == PATH_ARRIVED(0)) {
           ((RunnerSpawnerState *)st->spawner->state)->flags &= ~1;
           ENTER_POSE(actor, WPRUNNER_POP);
           continue;
