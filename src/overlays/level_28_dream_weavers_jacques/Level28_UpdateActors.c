@@ -214,7 +214,7 @@ void Level28_UpdateActors(void) {
           SubtractVector(st->pos, st->pos, &parent->posX);
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
         } else {
-          actor->updateDist = 0x20;
+          actor->updateDist = UPDATE_DIST(0x8000);
         }
 
         if (st->active != 0 &&
@@ -2106,7 +2106,7 @@ void Level28_UpdateActors(void) {
       JacquesState *st = actor->state;
 
       if (st->init == 0) {
-        actor->updateDist = 0x20;
+        actor->updateDist = UPDATE_DIST(0x8000);
         st->stops[0] = 3;
         st->stops[1] = 6;
         st->stops[2] = 7;
@@ -2386,7 +2386,7 @@ void Level28_UpdateActors(void) {
         if (g_nLevelKeyState == KEYSTATE_NONE || g_nLevelKeyState == KEYSTATE_REWARD_TAKEN) {
           g_nLevelKeyState = KEYSTATE_NONE;
           actor->updateDist = sixteen;
-          key->updateDist = 0x40;
+          key->updateDist = UPDATE_DIST(0x10000);
           key->cullRadius = 0x18;
         } else {
           g_nLevelKeyState = KEYSTATE_CARRIED;

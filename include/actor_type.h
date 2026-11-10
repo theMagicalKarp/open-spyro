@@ -175,6 +175,8 @@ typedef struct NameLetterState {
  * ground-probe distance / 4, 0 = the default 0x12C). */
 #define ACTOR_PROBE_LIFT_ONLY 0xFE /* probe with MOVE_LIFT alone (no slide, no floor follow) */
 #define ACTOR_PROBE_NONE 0xFF      /* probe distance 0 */
+/* Actor.updateDist from a distance: the activation radius is stored >> 10. */
+#define UPDATE_DIST(dist) ((dist) >> 10)
 #define ACTOR_UPDATE_ALWAYS 0xFF /* ->updateDist: read signed by BuildActiveActorList, so
                                   * a negative radius keeps the actor updating anywhere */
 #define ACTOR_UPDATE_WHEN_DRAWN 0 /* ->updateDist: no activation radius, so it only

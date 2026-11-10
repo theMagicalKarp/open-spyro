@@ -69,7 +69,7 @@ Actor *Level9_SpawnActor(int type, Actor *parent) {
     st->roll = 0;
     rec->subMode = COLLECT_BOUNCE;
     rec->cullRadius = 0x18;
-    rec->updateDist = 0x10;
+    rec->updateDist = UPDATE_DIST(0x4000);
     rec->rotX = 0x20;
     rec->rotY = 0;
     rec->rotZ = 0;
@@ -135,7 +135,7 @@ Actor *Level9_SpawnActor(int type, Actor *parent) {
     st->sparkle = BILLBOARD_NONE;
     rec->subMode = COLLECT_BOUNCE;
     rec->cullRadius = 0x18;
-    rec->updateDist = 0x40;
+    rec->updateDist = UPDATE_DIST(0x10000);
     rec->rotX = 0x20;
     rec->rotY = 0;
     rec->rotZ = 0;

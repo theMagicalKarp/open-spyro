@@ -232,7 +232,7 @@ void Level33_UpdateActors(void) {
           SubtractVector(st->pos, st->pos, &parent->posX);
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
         } else {
-          actor->updateDist = 0x20;
+          actor->updateDist = UPDATE_DIST(0x8000);
         }
 
         if (st->active != 0 &&

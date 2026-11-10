@@ -282,7 +282,7 @@ void Level19_UpdateActors(void) {
           SubtractVector(st->pos, st->pos, &parent->posX);
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
         } else {
-          actor->updateDist = 0x20;
+          actor->updateDist = UPDATE_DIST(0x8000);
         }
 
         if (st->active != 0 &&
@@ -2621,7 +2621,7 @@ void Level19_UpdateActors(void) {
       if (actor->subMode == SPINCHEST_INIT) {
         st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_SPIN_CHEST_LID, actor);
         st->lid->cullRadius = 0x1A;
-        actor->updateDist = 0x10;
+        actor->updateDist = UPDATE_DIST(0x4000);
         actor->subMode = SPINCHEST_SPINNING;
         continue;
       }
@@ -2638,9 +2638,9 @@ void Level19_UpdateActors(void) {
       }
       if (st->speed < SPINCHEST_MIN_SPEED) {
         st->speed = SPINCHEST_MIN_SPEED;
-        actor->updateDist = 0x10;
+        actor->updateDist = UPDATE_DIST(0x4000);
       } else {
-        actor->updateDist = 0x40;
+        actor->updateDist = UPDATE_DIST(0x10000);
       }
       st->angle += (st->speed * g_nFrameStep) >> 1;
       st->lid->rotZ = st->angle >> 4;
@@ -2909,7 +2909,7 @@ void Level19_UpdateActors(void) {
         }
         actor->subMode = CANNON_FLIGHT;
         actor->cullRadius = 0x40;
-        actor->updateDist = 0x40;
+        actor->updateDist = UPDATE_DIST(0x10000);
         st->path->cur = 1;
         st->timer = 0;
         ZeroVector(st->vel);

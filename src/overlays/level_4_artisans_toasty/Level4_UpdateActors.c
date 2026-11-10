@@ -222,7 +222,7 @@ void Level4_UpdateActors(void) {
           SubtractVector(st->pos, st->pos, &parent->posX);
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
         } else {
-          actor->updateDist = 0x20;
+          actor->updateDist = UPDATE_DIST(0x8000);
         }
 
         if (st->active != 0 &&
@@ -2213,7 +2213,7 @@ void Level4_UpdateActors(void) {
           CopyVector(&mate->posX, &actor->posX);
           mate->rotZ = actor->rotZ;
           mate->cullRadius = 0x28;
-          mate->updateDist = 0x28;
+          mate->updateDist = UPDATE_DIST(0xA000);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorLiveKill(actor);
           ANIM_SET(actor, APGUARD_ANIM_HAND_OFF);
