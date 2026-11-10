@@ -37,6 +37,20 @@
  * pending digit (->subMode) into ->type and the counter's cached value
  * advances. */
 #define HUD_DIGIT_SWAP_PHASE 0xC0
+/* UpdateHudCounters' counter machines: a roll-in / roll-out runs
+ * HUD_ROLL_STEPS + 1 steps of g_anHudRollIn/OutStepTable; shown, a counter
+ * holds HUD_HOLD_FRAMES unchanged before rolling out (HUD_HOLD_DELAY more
+ * when it rolled in with nothing new to show); the all-gems flourish holds
+ * HUD_ALL_GEMS_HOLD. The gem digits catch up HUD_GEM_FAST_STEP a frame while
+ * more than HUD_GEM_FAST_DELTA behind, one a frame while more than
+ * HUD_GEM_STEP_DELTA behind, else one per digit roll. */
+#define HUD_ROLL_STEPS 0xD
+#define HUD_HOLD_FRAMES 0x14
+#define HUD_HOLD_DELAY 0x28
+#define HUD_ALL_GEMS_HOLD 0xF0
+#define HUD_GEM_FAST_DELTA 200
+#define HUD_GEM_FAST_STEP 8
+#define HUD_GEM_STEP_DELTA 20
 
 /* SetHudCounterDigits' last argument. */
 #define HUD_DIGITS_PENDING 0 /* store as ->subMode for a roll to swap in */
