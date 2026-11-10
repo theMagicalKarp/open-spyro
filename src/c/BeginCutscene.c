@@ -33,7 +33,7 @@ void BeginCutscene(void) {
   /* g_pActiveCutsceneSoundDef is the volatile view of
      g_pLevelSampleBankEntries: the original reloads the pointer before every
      field store. */
-  SAMPLE_RAW(g_pActiveCutsceneSoundDef, int, nSampleAddr) = 0x1010;
+  SAMPLE_RAW(g_pActiveCutsceneSoundDef, int, nSampleAddr) = SPU_SAMPLE_BASE;
   SAMPLE_RAW(g_pActiveCutsceneSoundDef, int, nLoopAddr) = -1;
   SAMPLE_RAW(g_pActiveCutsceneSoundDef, short, nVolume) = 0x50;
   SAMPLE_RAW(g_pActiveCutsceneSoundDef, short, nPitch) =

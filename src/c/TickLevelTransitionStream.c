@@ -6,6 +6,7 @@
 #include "main_shared.h"
 #include "match_asm.h"
 #include "portal.h"
+#include "spu.h"
 #include "spyro_block.h"
 #include "spyro_state.h"
 #include "vecmath.h"
@@ -175,8 +176,8 @@ void TickLevelTransitionStream(int full) {
     }
     break;
   case LSTREAM_UPLOAD_AUDIO:
-    SetSpuTransferStartAddr(0x1010);
-    WriteSpuRam(g_pLevelDataBuffer, 0x7EFF0);
+    SetSpuTransferStartAddr(SPU_SAMPLE_BASE);
+    WriteSpuRam(g_pLevelDataBuffer, SPU_RAM_SIZE - SPU_SAMPLE_BASE);
     g_nCdStreamState++;
     break;
   case LSTREAM_WAIT_AUDIO:

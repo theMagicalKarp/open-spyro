@@ -535,11 +535,12 @@ void DragonRescue_Update(void) {
       if (g_nDragonRescueAudioFiredFlag == 0 &&
           GB[5] >= STATUE_ST(SRC)->speechFrame) {
         CopyWords(save, *(void *volatile *)g_apSampleBankEntriesBlock, 0x14);
-        SBE->nSampleAddr = 0x80000 - g_nDragonRescueAudioSampleSize;
+        SBE->nSampleAddr = SPU_RAM_SIZE - g_nDragonRescueAudioSampleSize;
         SBE->nLoopAddr = -1;
-        SBE->nVolume = 0x32;
+        SBE->nVolume = RESCUE_VOICE_VOLUME;
         {
-          int rate = (STATUE_ST(SRCS)->speechRate << 10) / 11025;
+          int rate =
+              (STATUE_ST(SRCS)->speechRate << 10) / RESCUE_VOICE_BASE_RATE;
 
           SBE->nPitch = rate;
         }
@@ -555,7 +556,7 @@ void DragonRescue_Update(void) {
         g_nDragonRescueAudioFiredFlag = 1;
       }
       {
-        int *p = (int *)((g_nDragonRescueTimer >> 1) * 0x18 +
+        int *p = (int *)((g_nDragonRescueTimer >> 1) * (int)sizeof(CamPathKey) +
                          (int)g_pDragonRescueCameraPath);
 
         g_anCameraPos[0] = CAM_KEY_RAW(p, x);
@@ -619,7 +620,7 @@ void DragonRescue_Update(void) {
 
       g_nDragonRescueSubstate = DRAGON_RESCUE_LIGHT_UP;
       g_nDragonRescueTimer = 0;
-      p = (int *)(g_nDragonRescueCameraPathCount * 0x18 +
+      p = (int *)(g_nDragonRescueCameraPathCount * (int)sizeof(CamPathKey) +
                   (int)g_pDragonRescueCameraPath);
       g_anCameraPos[0] = CAM_KEY_RAW((CamPathKey *)p - 1, x);
       g_anCameraPos[1] = CAM_KEY_RAW((CamPathKey *)p - 1, y);
@@ -648,7 +649,7 @@ void DragonRescue_Update(void) {
       StopSoundVoiceByIndex(*(int *)&g_bSceneSfxVoiceMarker, 2);
       TickSpuPerFrame();
       if (g_nDragonRescueSplitFlag == 0) {
-        SetSpuTransferStartAddr(0x80000 - g_nDragonRescueAudioSampleSize);
+        SetSpuTransferStartAddr(SPU_RAM_SIZE - g_nDragonRescueAudioSampleSize);
         WriteSpuRam(g_pWorldUnpackHead + g_nDragonRescueAudioSampleOffset,
                     g_nDragonRescueAudioSampleSize);
         while (GetSpuTransferStatus(0) == 0) {
@@ -657,7 +658,7 @@ void DragonRescue_Update(void) {
     }
     if (GB[13] != 0) {
       GB[13] += g_nFrameStep;
-      if (GB[13] >= 0x78) {
+      if (GB[13] >= RESCUE_PAD_HOLD_FRAMES) {
         GB[13] = 0;
       }
     }
@@ -692,7 +693,7 @@ void DragonRescue_Update(void) {
   roll_in:
     CopyVector(&HUD_ICON(5 * ACTOR_SIZE + k)->posX,
                (int *)((char *)g_anDragonRescueIconRestPos + off));
-    if (g_nDragonRescueTimer < 0x19) {
+    if (g_nDragonRescueTimer < RESCUE_LIGHT_UP_FRAMES) {
       *icon += (((short *)done)[g_nDragonRescueTimer >> 1] * 3) >> 1;
     } else {
       *icon += (g_anHudRollInStepTable[0xC] * 3) >> 1;
@@ -704,13 +705,13 @@ void DragonRescue_Update(void) {
     if (i < 3) {
       goto roll_in;
     }
-    if (GB[5] >= 0x19) {
+    if (GB[5] >= RESCUE_LIGHT_UP_FRAMES) {
       g_nDragonRescueSubstate = DRAGON_RESCUE_COUNT;
       GB[5] = 0;
       g_bHudDragonRollPhase = 0;
       CopyVector((int *)ang, &g_pDragonRescueStatueActor->posX);
-      ((int *)ang)[2] += 0x40;
-      g_pfnLevelEmitParticles(0x20, EMIT_RESCUE_SWIRL, ang, 0);
+      ((int *)ang)[2] += RESCUE_SWIRL_RAISE;
+      g_pfnLevelEmitParticles(RESCUE_SWIRL_COUNT, EMIT_RESCUE_SWIRL, ang, 0);
       CopyVector(g_anDragonRescueAuraStarAnchor, (int *)ang);
       DespawnActorRecord(STATUE);
       DespawnActorRecord(MIRROR);
@@ -724,7 +725,7 @@ void DragonRescue_Update(void) {
     TickSpyroAnimLayer2();
     if (g_anHudDragonCachedCountBlock[0] != g_nTotalDragonsRescued ||
         g_bHudDragonRollPhase != 0) {
-      g_bHudDragonRollPhase += 0x10;
+      g_bHudDragonRollPhase += RESCUE_COUNT_ROLL_STEP;
       SetHudCounterDigits(HUD_SLOT_DRAGON_DIGITS, 2,
                           g_anHudDragonCachedCountBlock[0] + 1,
                           HUD_DIGITS_PENDING);
@@ -737,7 +738,8 @@ void DragonRescue_Update(void) {
                         &g_bSceneSfxVoiceMarker);
       }
     }
-    if (GB[5] >= 0x60 && g_nDragonRescueStreamState == RESCUE_STREAM_DONE) {
+    if (GB[5] >= RESCUE_COUNT_FRAMES &&
+        g_nDragonRescueStreamState == RESCUE_STREAM_DONE) {
       g_nDragonRescueSubstate = DRAGON_RESCUE_FADE_OUT;
       GB[5] = 0;
       g_pEmitListWriteCursor = g_pEmitListBase;
@@ -777,14 +779,15 @@ void DragonRescue_Update(void) {
     if (g_nDragonRescueTimer < 0x10) {
       k = g_nDragonRescueTimer;
     } else {
-      k = 0x20 - g_nDragonRescueTimer;
+      k = RESCUE_FADE_FRAMES - g_nDragonRescueTimer;
     }
     g_nDragonRescueFullscreenTintLevel = k * 0x10 - 1;
     g_anDragonRescueAuraStarBlock[0] = 1;
-    g_bDragonRescueAuraStarColor = k * 8 + 0x40;
-    g_nDragonRescueAuraStarRadius = k * 0x50;
+    g_bDragonRescueAuraStarColor =
+        k * RESCUE_FADE_COLOR_STEP + RESCUE_AURA_COLOR_BASE;
+    g_nDragonRescueAuraStarRadius = k * RESCUE_FADE_RADIUS_STEP;
     g_abDragonRescueAuraStarEuler[2] += 8;
-    if (g_nDragonRescueTimer >= 0x20) {
+    if (g_nDragonRescueTimer >= RESCUE_FADE_FRAMES) {
       g_anDragonRescueAuraStarBlock[0] = 0;
       EndDragonRescueToWorld();
     }

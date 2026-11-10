@@ -51,6 +51,13 @@ typedef struct SpuVoiceRow {
  * pair g_nSfxOverrideVolL/R). */
 #define SPU_VOLUME_MAX 0x3FFF
 
+/* SPU RAM layout: 512 KB, the level's sample bank uploaded from
+ * SPU_SAMPLE_BASE to the end (bank entries hold addresses relative to it,
+ * RelocateLevelSampleBank); a rescued dragon's voice line is written at the
+ * very top (SPU_RAM_SIZE - its size) over the bank's tail. */
+#define SPU_SAMPLE_BASE 0x1010
+#define SPU_RAM_SIZE 0x80000
+
 /* SpuVoiceRow.nFlags. A row is free while none of VOICE_ROW_BUSY is set;
  * bits 0x1C are the PlaySoundEffect mode (SFX_MODE_*, actor_type.h). */
 #define VOICE_ROW_ACTIVE 0x01   /* allocated to a sound (PlaySoundEffect) */

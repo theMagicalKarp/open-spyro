@@ -73,5 +73,24 @@ enum DragonRescueStreamState {
 #define RESCUE_DRAGON_START_SCALE 0x60
 #define RESCUE_DRAGON_GROW_STEP 3
 #define RESCUE_TURN_FRAMES 0x18
+/* DRAGON_RESCUE_CAMERA_PATH plays the dragon's voice at RESCUE_VOICE_VOLUME,
+ * pitched speechRate / RESCUE_VOICE_BASE_RATE (Hz) * 1024, and clears the
+ * pad-hold latch after PAD_HOLD_FRAMES. DRAGON_RESCUE_LIGHT_UP rolls the HUD
+ * icons in over LIGHT_UP_FRAMES, then bursts SWIRL_COUNT swirl particles
+ * SWIRL_RAISE above the dragon; DRAGON_RESCUE_COUNT rolls the counter
+ * COUNT_ROLL_STEP a frame and holds COUNT_FRAMES; DRAGON_RESCUE_FADE_OUT
+ * tints up and back down over FADE_FRAMES with the star swelling
+ * FADE_RADIUS_STEP / brightening FADE_COLOR_STEP a frame. */
+#define RESCUE_VOICE_VOLUME 0x32
+#define RESCUE_VOICE_BASE_RATE 11025
+#define RESCUE_PAD_HOLD_FRAMES 0x78
+#define RESCUE_LIGHT_UP_FRAMES 0x19
+#define RESCUE_SWIRL_COUNT 0x20
+#define RESCUE_SWIRL_RAISE 0x40
+#define RESCUE_COUNT_ROLL_STEP 0x10
+#define RESCUE_COUNT_FRAMES 0x60
+#define RESCUE_FADE_FRAMES 0x20
+#define RESCUE_FADE_RADIUS_STEP 0x50
+#define RESCUE_FADE_COLOR_STEP 8
 
 #endif /* OPEN_SPYRO_DRAGON_RESCUE_H */

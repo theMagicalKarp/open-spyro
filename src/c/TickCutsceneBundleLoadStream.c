@@ -6,6 +6,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "sky.h"
+#include "spu.h"
 
 /* 0x80014564, 1548 bytes — the id-bundle CD streaming state machine.
    Ticked from Initialize, PauseMenu_Update, Cutscene_Update,
@@ -97,8 +98,8 @@ void TickCutsceneBundleLoadStream(void) {
                      CD_STALL_TIMEOUT_TICKS);
     g_nCdStreamState = CSTREAM_UPLOAD_AUDIO;
   } else if (state == CSTREAM_UPLOAD_AUDIO) {
-    SetSpuTransferStartAddr(0x1010);
-    WriteSpuRam(g_pLoadStagingBuffer, 0x7EFF0);
+    SetSpuTransferStartAddr(SPU_SAMPLE_BASE);
+    WriteSpuRam(g_pLoadStagingBuffer, SPU_RAM_SIZE - SPU_SAMPLE_BASE);
     while (GetSpuTransferStatus(0) == 0) {
     }
 
