@@ -115,6 +115,8 @@ typedef struct NameLetterState {
 #define OT_BIAS_DEEPER 0xFE  /* -2: one bin pair behind its depth */
 #define ACTOR_SCALE_UNIT 0x20 /* ->scale drawing the mesh at its own size (0x40 = half, 0x14 = 1.6x) */
 #define ACTOR_SCALE_HALF 0x40 /* ->scale drawing the mesh at half size */
+/* Actor.cullRadius from a view-space bound: stored >> 8. */
+#define CULL_RADIUS(dist) ((dist) >> 8)
 #define ACTOR_CULL_HIDDEN 0 /* ->cullRadius: a zero bound fails the view cull, so the actor is hidden */
 /* ->cullRadius 0xFF: a bound every view-space point passes. Only these stamps
  * set bit 7 (level data and spawns stay at or below 0x7F): HUD counter digits

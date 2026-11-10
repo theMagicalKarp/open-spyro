@@ -1085,7 +1085,7 @@ void Level29_UpdateActors(void) {
         }
       } else {
 
-        actor->cullRadius = 0x10;
+        actor->cullRadius = CULL_RADIUS(0x1000);
         if (st->timer <= 0) {
 
           svF[0] = -SPARX_HOVER_BEHIND;

@@ -2838,7 +2838,7 @@ void Level14_UpdateActors(void) {
         }
       } else {
 
-        actor->cullRadius = 0x10;
+        actor->cullRadius = CULL_RADIUS(0x1000);
         if (st->timer <= 0) {
 
           svA[0] = -SPARX_HOVER_BEHIND;
@@ -3821,7 +3821,7 @@ void Level14_UpdateActors(void) {
                                      v376[2] - actor->posZ, ATAN_ANGLE8);
             b->rotZ = ArcTan2(v376[0] - actor->posX,
                                      v376[1] - actor->posY, ATAN_ANGLE8);
-            b->cullRadius = 0x24;
+            b->cullRadius = CULL_RADIUS(0x2400);
             *bs = &g_pActorListBase[st->target];
           }
           st->timer = BCASTER_WISP_GAP;
@@ -4945,7 +4945,7 @@ void Level14_UpdateActors(void) {
       }
       if (actor->subMode == SPINCHEST_INIT) {
         st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_SPIN_CHEST_LID, actor);
-        st->lid->cullRadius = 0x1A;
+        st->lid->cullRadius = CULL_RADIUS(0x1A00);
         actor->updateDist = UPDATE_DIST(0x4000);
         actor->subMode = SPINCHEST_SPINNING;
         continue;
@@ -5041,7 +5041,7 @@ void Level14_UpdateActors(void) {
         st->vel[2] += LID_LAUNCH_VZ;
         st->timer = 0;
         actor->subMode = LID_FLYING;
-        actor->cullRadius = 0x20;
+        actor->cullRadius = CULL_RADIUS(0x2000);
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
         actor->rotX = 0xA;
         actor->rotY = 0;

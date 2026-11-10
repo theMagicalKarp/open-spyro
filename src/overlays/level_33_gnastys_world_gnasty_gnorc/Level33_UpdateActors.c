@@ -1292,7 +1292,7 @@ void Level33_UpdateActors(void) {
           }
         } else {
           /* No target: hover at a jittered offset beside Spyro. */
-          actor->cullRadius = 0x10;
+          actor->cullRadius = CULL_RADIUS(0x1000);
 
           if (st->timer <= 0) {
             svF[0] = -SPARX_HOVER_BEHIND;
@@ -1463,7 +1463,7 @@ void Level33_UpdateActors(void) {
 
       if (st->lane == 1 && actor->cullRadius == 0 &&
           CHUNK_ANIM_STEP(GetWorldChunkAnimState(LANEPAT_CHUNK_REVEAL)) > 0) {
-        actor->cullRadius = 0x28;
+        actor->cullRadius = CULL_RADIUS(0x2800);
         g_pActorListBase[st->partner].cullRadius = 0x28;
       }
 
@@ -2160,7 +2160,7 @@ void Level33_UpdateActors(void) {
             o->subMode = 0;
             o->rotY = ArcTan2(st->speed, st->climb, ATAN_ANGLE8);
             o->rotZ = actor->rotZ;
-            o->cullRadius = 0x50;
+            o->cullRadius = CULL_RADIUS(0x5000);
             st->spawnTimer = 0;
           }
           actor->posX += (st->speed * g_anCosineLut[actor->rotZ]) >> 12;
@@ -2389,7 +2389,7 @@ void Level33_UpdateActors(void) {
           actor->rotY = 0;
           actor->rotZ = g_bSpyroPersistentEulerZ + 0x80;
           actor->drawn = 1;
-          actor->cullRadius = 0x18;
+          actor->cullRadius = CULL_RADIUS(0x1800);
           st->mode = LVORTEX_ACTIVE;
           st->timer = 0;
           if (st->seen != 0) {
@@ -2416,7 +2416,7 @@ void Level33_UpdateActors(void) {
           st->timer = LOCKCHEST_SKIP_TICK;
         }
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
-        actor->cullRadius = 0x18;
+        actor->cullRadius = CULL_RADIUS(0x1800);
         st->timer += g_nFrameStep;
         g_nCinematicActive = 1;
         if (st->timer < LOCKCHEST_INSERT_TICK) {

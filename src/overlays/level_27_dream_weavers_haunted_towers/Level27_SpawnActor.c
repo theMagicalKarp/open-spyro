@@ -71,7 +71,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     st->yaw = 0;
     st->roll = 0;
     rec->subMode = COLLECT_BOUNCE;
-    rec->cullRadius = 0x18;
+    rec->cullRadius = CULL_RADIUS(0x1800);
     rec->updateDist = UPDATE_DIST(0x4000);
     rec->rotX = 0x20;
     rec->rotY = 0;
@@ -106,7 +106,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
 
   case ACTOR_TYPE_DRAGON_EGG:
     InitActorRenderDefaults(rec);
-    rec->cullRadius = 0x20;
+    rec->cullRadius = CULL_RADIUS(0x2000);
     rec->updateDist = ACTOR_UPDATE_ALWAYS;
     if (parent != 0) {
       CopyVector(&rec->posX, &parent->posX);
@@ -199,7 +199,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     pos = &rec->posX;
     st->sparkle = BILLBOARD_NONE;
     rec->subMode = COLLECT_BOUNCE;
-    rec->cullRadius = 0x18;
+    rec->cullRadius = CULL_RADIUS(0x1800);
     rec->updateDist = UPDATE_DIST(0x10000);
     rec->rotX = 0x20;
     rec->rotY = 0;
@@ -243,7 +243,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     speed = RandomIntInRange(0x78, 0x96);
     st = rec->state;
     InitActorRenderDefaults(rec);
-    rec->cullRadius = 0x20;
+    rec->cullRadius = CULL_RADIUS(0x2000);
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
     dir = (parent->rotY + RandomIntInRange(-0xF, 0xF)) & 0xFF;
@@ -280,7 +280,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
 
   case ACTOR_TYPE_BOULDER_DEBRIS + 1 ... ACTOR_TYPE_BOULDER_DEBRIS + 2:
     InitActorRenderDefaults(rec);
-    rec->cullRadius = 0x20;
+    rec->cullRadius = CULL_RADIUS(0x2000);
     rec->updateDist = ACTOR_UPDATE_ALWAYS;
     HideActorRenderRecord(rec);
     rec->tint0 = 0;
@@ -300,7 +300,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     int pitch;
 
     InitActorRenderDefaults(rec);
-    rec->cullRadius = 0x20;
+    rec->cullRadius = CULL_RADIUS(0x2000);
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
     yaw = GetRandomU32() & 0xFFF;
@@ -335,7 +335,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     int i;
 
     InitActorRenderDefaults(rec);
-    rec->cullRadius = 0x20;
+    rec->cullRadius = CULL_RADIUS(0x2000);
     rec->updateDist = ACTOR_UPDATE_ALWAYS;
     HideActorRenderRecord(rec);
     rec->tint0 = 0;
@@ -428,7 +428,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
   case ACTOR_TYPE_GLYPH_COMMA:
   case ACTOR_TYPE_LETTER_A ... ACTOR_TYPE_LETTER_A + 25:
     InitActorRenderDefaults(rec);
-    rec->cullRadius = 0x20;
+    rec->cullRadius = CULL_RADIUS(0x2000);
     rec->updateDist = ACTOR_UPDATE_ALWAYS;
     HideActorRenderRecord(rec);
     break;
@@ -437,7 +437,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     TumbleState *st = rec->state;
 
     InitActorRenderDefaults(rec);
-    rec->cullRadius = 0x20;
+    rec->cullRadius = CULL_RADIUS(0x2000);
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
     if (parent->type == ACTOR_TYPE_LOB_GUNNER_LOB) {

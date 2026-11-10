@@ -1629,7 +1629,7 @@ void Level16_UpdateActors(void) {
           }
         } else {
           /* No target: hover at a jittered offset beside Spyro. */
-          actor->cullRadius = 0x10;
+          actor->cullRadius = CULL_RADIUS(0x1000);
 
           if (st->timer <= 0) {
             svG[0] = -SPARX_HOVER_BEHIND;

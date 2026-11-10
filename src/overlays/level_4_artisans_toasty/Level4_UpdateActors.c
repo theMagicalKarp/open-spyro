@@ -1452,7 +1452,7 @@ void Level4_UpdateActors(void) {
           }
         } else {
           /* No target: hover at a jittered offset beside Spyro. */
-          actor->cullRadius = 0x10;
+          actor->cullRadius = CULL_RADIUS(0x1000);
 
           if (st->timer <= 0) {
             svF[0] = -SPARX_HOVER_BEHIND;
@@ -2212,7 +2212,7 @@ void Level4_UpdateActors(void) {
           ms->path->cur = st->path->cur;
           CopyVector(&mate->posX, &actor->posX);
           mate->rotZ = actor->rotZ;
-          mate->cullRadius = 0x28;
+          mate->cullRadius = CULL_RADIUS(0x2800);
           mate->updateDist = UPDATE_DIST(0xA000);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorLiveKill(actor);

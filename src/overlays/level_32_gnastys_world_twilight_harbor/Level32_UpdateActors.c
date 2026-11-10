@@ -1437,7 +1437,7 @@ void Level32_UpdateActors(void) {
           }
         } else {
           /* No target: hover at a jittered offset beside Spyro. */
-          actor->cullRadius = 0x10;
+          actor->cullRadius = CULL_RADIUS(0x1000);
 
           if (st->timer <= 0) {
             svF[0] = -SPARX_HOVER_BEHIND;
@@ -1948,7 +1948,7 @@ void Level32_UpdateActors(void) {
 
         if (st->heldLob == 0 && actor->nextFrame >= LOBGUN_SPAWN_FRAME) {
           st->heldLob = g_pfnLevelSpawnActor(ACTOR_TYPE_LOB_GUNNER_LOB, actor);
-          st->heldLob->cullRadius = 0x28;
+          st->heldLob->cullRadius = CULL_RADIUS(0x2800);
           st->heldLob->updateDist = ACTOR_UPDATE_ALWAYS;
         }
         if (st->heldLob != 0 && st->heldLob != (Actor *)-1 && st->heldLob->subMode == 0) {
@@ -3129,7 +3129,7 @@ void Level32_UpdateActors(void) {
       } else {
         if (actor->anim == LIFECHEST_OPEN) {
           st->phase += g_nFrameStep;
-          st->passenger->cullRadius = 0x10;
+          st->passenger->cullRadius = CULL_RADIUS(0x1000);
           st->passenger->updateDist = ACTOR_UPDATE_ALWAYS;
         }
 

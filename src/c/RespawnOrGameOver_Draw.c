@@ -134,7 +134,7 @@ void RespawnOrGameOver_Draw(void) {
           g_pSpriteRecordWriteCursor->rotZ = g_abGameOverLetterAngle[i];
           g_pSpriteRecordWriteCursor->otBias = OT_BIAS_DEFAULT;
           g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
-          g_pSpriteRecordWriteCursor->cullRadius = 0x20;
+          g_pSpriteRecordWriteCursor->cullRadius = CULL_RADIUS(0x2000);
         }
         i += 1;
         k += 4;

@@ -2077,7 +2077,7 @@ void Level6_UpdateActors(void) {
           }
         } else {
           /* No target: hover at a jittered offset beside Spyro. */
-          actor->cullRadius = 0x10;
+          actor->cullRadius = CULL_RADIUS(0x1000);
 
           if (st->timer <= 0) {
             g136[0] = -SPARX_HOVER_BEHIND;
@@ -2314,7 +2314,7 @@ void Level6_UpdateActors(void) {
           g_nLevelKeyState = KEYSTATE_NONE;
           actor->updateDist = sixteen;
           key->updateDist = UPDATE_DIST(0x10000);
-          key->cullRadius = 0x18;
+          key->cullRadius = CULL_RADIUS(0x1800);
         } else {
           g_nLevelKeyState = KEYSTATE_CARRIED;
           actor->subMode = LOCKCHEST_KEY_READY;
@@ -2365,7 +2365,7 @@ void Level6_UpdateActors(void) {
           st->shake = LOCKCHEST_SKIP_TICK;
         }
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
-        key->cullRadius = 0x18;
+        key->cullRadius = CULL_RADIUS(0x1800);
         st->shake += g_nFrameStep;
         g_nCinematicActive = 1;
 
@@ -3050,7 +3050,7 @@ void Level6_UpdateActors(void) {
             fs->age = lobFrames[0] + 1;
             fs->link = -1;
             fs->delay = 0;
-            o->cullRadius = 0x30;
+            o->cullRadius = CULL_RADIUS(0x3000);
             cs->hold = lobFrames[0] + 1;
             if (a->anim != FBCANNON_ANIM_FIRE) {
               ANIM_RESET(a, FBCANNON_ANIM_FIRE);
@@ -3129,7 +3129,7 @@ void Level6_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (actor->subMode == 0) {
           CopyVector(&actor->posX, &a->posX);
-          actor->cullRadius = 0x20;
+          actor->cullRadius = CULL_RADIUS(0x2000);
           actor->subMode = 1;
           actor->rotZ = ArcTan2(g_anSpyroWorldPos - actor->posX,
                                        g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8);
@@ -3347,7 +3347,7 @@ void Level6_UpdateActors(void) {
         cs->age = 0;
         cs->spent = 0;
         cs->delay = 0;
-        o->cullRadius = 0x34;
+        o->cullRadius = CULL_RADIUS(0x3400);
         o->updateDist = ACTOR_UPDATE_ALWAYS;
         bestScore = 0x7530;
         actor->flags = 0;
@@ -4442,7 +4442,7 @@ void Level6_UpdateActors(void) {
       } else {
         if (actor->anim == LIFECHEST_OPEN) {
           st->phase += g_nFrameStep;
-          st->passenger->cullRadius = 0x10;
+          st->passenger->cullRadius = CULL_RADIUS(0x1000);
           st->passenger->updateDist = ACTOR_UPDATE_ALWAYS;
         }
 

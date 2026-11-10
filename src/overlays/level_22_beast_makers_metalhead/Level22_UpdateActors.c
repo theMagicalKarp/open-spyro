@@ -781,7 +781,7 @@ void Level22_UpdateActors(void) {
           sh->vel[0] /= d;
           sh->vel[1] /= d;
           sh->vel[2] /= d;
-          o->cullRadius = 0x28;
+          o->cullRadius = CULL_RADIUS(0x2800);
           o->rotZ = ArcTan2(g056[0] - o->posX, g056[1] - o->posY, ATAN_ANGLE8);
           o->rotY = ArcTan2(ApproxDist2D(&o->posX, g056),
                                    g056[2] - o->posZ, ATAN_ANGLE8);
@@ -808,7 +808,7 @@ void Level22_UpdateActors(void) {
           b->timer = METALHEAD_BOLT_LIFE;
           o->rotZ = ArcTan2(st->aim[0] - o->posX, st->aim[1] - o->posY,
                                    ATAN_ANGLE8);
-          o->cullRadius = 0x28;
+          o->cullRadius = CULL_RADIUS(0x2800);
           st->count = 0;
           b->heading = st->phase + 2;
           b->dvz = -7;
@@ -1981,7 +1981,7 @@ void Level22_UpdateActors(void) {
           sh->vel[0] /= d;
           sh->vel[1] /= d;
           sh->vel[2] /= d;
-          o->cullRadius = 0x28;
+          o->cullRadius = CULL_RADIUS(0x2800);
           o->rotZ = ArcTan2(g200[0] - o->posX, g200[1] - o->posY, ATAN_ANGLE8);
           o->rotY = ArcTan2(ApproxDist2D(&o->posX, g200),
                                    g200[2] - o->posZ, ATAN_ANGLE8);
@@ -2843,7 +2843,7 @@ void Level22_UpdateActors(void) {
           }
         } else {
           /* No target: hover at a jittered offset beside Spyro. */
-          actor->cullRadius = 0x10;
+          actor->cullRadius = CULL_RADIUS(0x1000);
 
           if (st->timer <= 0) {
             g296[0] = -SPARX_HOVER_BEHIND;
@@ -3073,7 +3073,7 @@ void Level22_UpdateActors(void) {
           g_nLevelKeyState = KEYSTATE_NONE;
           actor->updateDist = sixteen;
           key->updateDist = UPDATE_DIST(0x10000);
-          key->cullRadius = 0x18;
+          key->cullRadius = CULL_RADIUS(0x1800);
         } else {
           g_nLevelKeyState = KEYSTATE_CARRIED;
           actor->subMode = LOCKCHEST_KEY_READY;
@@ -3124,7 +3124,7 @@ void Level22_UpdateActors(void) {
           st->shake = LOCKCHEST_SKIP_TICK;
         }
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
-        key->cullRadius = 0x18;
+        key->cullRadius = CULL_RADIUS(0x1800);
         st->shake += g_nFrameStep;
         g_nCinematicActive = 1;
 
@@ -3347,7 +3347,7 @@ void Level22_UpdateActors(void) {
     case ACTOR_TYPE_BOBBING_PLATFORM: {
       BobbingPlatformState *st = actor->state;
 
-      actor->cullRadius = 0x20;
+      actor->cullRadius = CULL_RADIUS(0x2000);
       actor->rotZ += actor->subMode;
       if (st->z > st->period) {
         st->z -= st->period;
@@ -4210,7 +4210,7 @@ void Level22_UpdateActors(void) {
       } else {
         if (actor->anim == LIFECHEST_OPEN) {
           st->phase += g_nFrameStep;
-          st->passenger->cullRadius = 0x10;
+          st->passenger->cullRadius = CULL_RADIUS(0x1000);
           st->passenger->updateDist = ACTOR_UPDATE_ALWAYS;
         }
 

@@ -1717,7 +1717,7 @@ void Level19_UpdateActors(void) {
           }
         } else {
           /* No target: hover at a jittered offset beside Spyro. */
-          actor->cullRadius = 0x10;
+          actor->cullRadius = CULL_RADIUS(0x1000);
 
           if (st->timer <= 0) {
             svF[0] = -SPARX_HOVER_BEHIND;
@@ -2561,7 +2561,7 @@ void Level19_UpdateActors(void) {
         int *c = o336;
         int k;
 
-        actor->cullRadius = 0x20;
+        actor->cullRadius = CULL_RADIUS(0x2000);
         st->t += g_nFrameStep;
         k = (st->t << 5) & 0x3FF;
         GetActorAttachPoint(st->owner, 0, a);
@@ -2620,7 +2620,7 @@ void Level19_UpdateActors(void) {
       }
       if (actor->subMode == SPINCHEST_INIT) {
         st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_SPIN_CHEST_LID, actor);
-        st->lid->cullRadius = 0x1A;
+        st->lid->cullRadius = CULL_RADIUS(0x1A00);
         actor->updateDist = UPDATE_DIST(0x4000);
         actor->subMode = SPINCHEST_SPINNING;
         continue;
@@ -2716,7 +2716,7 @@ void Level19_UpdateActors(void) {
         st->vel[2] += LID_LAUNCH_VZ;
         st->timer = 0;
         actor->subMode = LID_FLYING;
-        actor->cullRadius = 0x20;
+        actor->cullRadius = CULL_RADIUS(0x2000);
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
         actor->rotX = 0xA;
         actor->rotY = 0;
@@ -2908,7 +2908,7 @@ void Level19_UpdateActors(void) {
           continue;
         }
         actor->subMode = CANNON_FLIGHT;
-        actor->cullRadius = 0x40;
+        actor->cullRadius = CULL_RADIUS(0x4000);
         actor->updateDist = UPDATE_DIST(0x10000);
         st->path->cur = 1;
         st->timer = 0;
@@ -3021,7 +3021,7 @@ void Level19_UpdateActors(void) {
       } else {
         if (actor->anim == LIFECHEST_OPEN) {
           st->phase += g_nFrameStep;
-          st->passenger->cullRadius = 0x10;
+          st->passenger->cullRadius = CULL_RADIUS(0x1000);
           st->passenger->updateDist = ACTOR_UPDATE_ALWAYS;
         }
 

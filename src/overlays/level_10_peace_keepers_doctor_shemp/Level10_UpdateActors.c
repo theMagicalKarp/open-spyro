@@ -1447,7 +1447,7 @@ void Level10_UpdateActors(void) {
           }
         } else {
           /* No target: hover at a jittered offset beside Spyro. */
-          actor->cullRadius = 0x10;
+          actor->cullRadius = CULL_RADIUS(0x1000);
 
           if (st->timer <= 0) {
             svF[0] = -SPARX_HOVER_BEHIND;
@@ -1644,7 +1644,7 @@ void Level10_UpdateActors(void) {
           g_nLevelKeyState = KEYSTATE_NONE;
           actor->updateDist = sixteen;
           key->updateDist = UPDATE_DIST(0x10000);
-          key->cullRadius = 0x18;
+          key->cullRadius = CULL_RADIUS(0x1800);
         } else {
           g_nLevelKeyState = KEYSTATE_CARRIED;
           actor->subMode = LOCKCHEST_KEY_READY;
@@ -1695,7 +1695,7 @@ void Level10_UpdateActors(void) {
           st->shake = LOCKCHEST_SKIP_TICK;
         }
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
-        key->cullRadius = 0x18;
+        key->cullRadius = CULL_RADIUS(0x1800);
         st->shake += g_nFrameStep;
         g_nCinematicActive = 1;
 

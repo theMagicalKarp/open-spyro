@@ -1106,7 +1106,7 @@ void Level24_UpdateActors(void) {
             o->subMode = 7;
             o->rotY = ArcTan2(st->speed, st->vz, ATAN_ANGLE8);
             o->rotZ = actor->rotZ;
-            o->cullRadius = 0x50;
+            o->cullRadius = CULL_RADIUS(0x5000);
             st->spark = 0;
           }
           do {
@@ -2020,7 +2020,7 @@ void Level24_UpdateActors(void) {
           }
         } else {
           /* No target: hover at a jittered offset beside Spyro. */
-          actor->cullRadius = 0x10;
+          actor->cullRadius = CULL_RADIUS(0x1000);
 
           if (st->timer <= 0) {
             g136[0] = -SPARX_HOVER_BEHIND;
@@ -3986,7 +3986,7 @@ void Level24_UpdateActors(void) {
       } else {
         if (actor->anim == LIFECHEST_OPEN) {
           st->phase += g_nFrameStep;
-          st->passenger->cullRadius = 0x10;
+          st->passenger->cullRadius = CULL_RADIUS(0x1000);
           st->passenger->updateDist = ACTOR_UPDATE_ALWAYS;
         }
 

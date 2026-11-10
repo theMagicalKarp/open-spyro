@@ -2101,7 +2101,7 @@ void Level25_UpdateActors(void) {
           }
         } else {
           /* No target: hover at a jittered offset beside Spyro. */
-          actor->cullRadius = 0x10;
+          actor->cullRadius = CULL_RADIUS(0x1000);
 
           if (st->timer <= 0) {
             s168[0] = -SPARX_HOVER_BEHIND;
@@ -3588,7 +3588,7 @@ void Level25_UpdateActors(void) {
           continue;
         }
         actor->subMode = CANNON_FLIGHT;
-        actor->cullRadius = 0x40;
+        actor->cullRadius = CULL_RADIUS(0x4000);
         actor->updateDist = UPDATE_DIST(0x10000);
         st->path->cur = 1;
         st->timer = 0;
@@ -3701,7 +3701,7 @@ void Level25_UpdateActors(void) {
       } else {
         if (actor->anim == LIFECHEST_OPEN) {
           st->phase += g_nFrameStep;
-          st->passenger->cullRadius = 0x10;
+          st->passenger->cullRadius = CULL_RADIUS(0x1000);
           st->passenger->updateDist = ACTOR_UPDATE_ALWAYS;
         }
 

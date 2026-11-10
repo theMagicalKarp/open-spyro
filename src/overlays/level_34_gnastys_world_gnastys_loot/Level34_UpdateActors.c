@@ -1280,7 +1280,7 @@ void Level34_UpdateActors(void) {
           }
         } else {
           /* No target: hover at a jittered offset beside Spyro. */
-          actor->cullRadius = 0x10;
+          actor->cullRadius = CULL_RADIUS(0x1000);
 
           if (st->timer <= 0) {
             svF[0] = -SPARX_HOVER_BEHIND;
@@ -1475,7 +1475,7 @@ void Level34_UpdateActors(void) {
         if (CHUNK_ANIM_STEP(GetWorldChunkAnimState(st->chunkAnim)) > 0) {
           st->init = one;
           actor->frameRate = 0x10;
-          actor->cullRadius = 0x40;
+          actor->cullRadius = CULL_RADIUS(0x4000);
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
           ZeroVector(st->look);
           actor->subMode = 0;
@@ -2133,7 +2133,7 @@ void Level34_UpdateActors(void) {
           actor->rotY = 0;
           actor->rotZ = g_bSpyroPersistentEulerZ + 0x80;
           actor->drawn = 1;
-          actor->cullRadius = 0x18;
+          actor->cullRadius = CULL_RADIUS(0x1800);
           st->mode = LVORTEX_ACTIVE;
           st->timer = 0;
           if (st->seen != 0) {
@@ -2160,7 +2160,7 @@ void Level34_UpdateActors(void) {
           st->timer = LOCKCHEST_SKIP_TICK;
         }
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
-        actor->cullRadius = 0x18;
+        actor->cullRadius = CULL_RADIUS(0x1800);
         st->timer += g_nFrameStep;
         g_nCinematicActive = one;
         if (st->timer < LOCKCHEST_INSERT_TICK) {
@@ -3031,7 +3031,7 @@ void Level34_UpdateActors(void) {
       }
       if (actor->subMode == SPINCHEST_INIT) {
         st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_SPIN_CHEST_LID, actor);
-        st->lid->cullRadius = 0x1A;
+        st->lid->cullRadius = CULL_RADIUS(0x1A00);
         actor->updateDist = UPDATE_DIST(0x4000);
         actor->subMode = SPINCHEST_SPINNING;
         continue;
@@ -3127,7 +3127,7 @@ void Level34_UpdateActors(void) {
         st->vel[2] += LID_LAUNCH_VZ;
         st->timer = 0;
         actor->subMode = LID_FLYING;
-        actor->cullRadius = 0x20;
+        actor->cullRadius = CULL_RADIUS(0x2000);
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
         actor->rotX = 0xA;
         actor->rotY = 0;
@@ -3319,7 +3319,7 @@ void Level34_UpdateActors(void) {
           continue;
         }
         actor->subMode = CANNON_FLIGHT;
-        actor->cullRadius = 0x40;
+        actor->cullRadius = CULL_RADIUS(0x4000);
         actor->updateDist = UPDATE_DIST(0x10000);
         st->path->cur = 1;
         st->timer = 0;

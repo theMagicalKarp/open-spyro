@@ -21,6 +21,6 @@ void Level3_OnSaveMenuExit(void) {
   g_nSpyroSwingEulerPrev1 = 0;
   g_bSpyroSwingByteEuler1 = 0;
   if (actor != 0) {
-    actor->cullRadius = 0x10;
+    actor->cullRadius = CULL_RADIUS(0x1000);
   }
 }

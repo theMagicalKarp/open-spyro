@@ -1833,7 +1833,7 @@ void Level0_UpdateActors(void) {
         }
       } else {
 
-        actor->cullRadius = 0x10;
+        actor->cullRadius = CULL_RADIUS(0x1000);
         if (st->timer <= 0) {
 
           svF[0] = -SPARX_HOVER_BEHIND;
@@ -3010,7 +3010,7 @@ void Level0_UpdateActors(void) {
       } else {
         if (actor->anim == LIFECHEST_OPEN) {
           st->phase += g_nFrameStep;
-          st->passenger->cullRadius = 0x10;
+          st->passenger->cullRadius = CULL_RADIUS(0x1000);
           st->passenger->updateDist = ACTOR_UPDATE_ALWAYS;
         }
 
