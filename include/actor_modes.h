@@ -700,6 +700,16 @@ enum PathWalkerMode {
  * A pacing walker drops back to WAIT at a node once he is not. */
 #define PATHWALK_NOTICE_RANGE 0x1800
 #define PATHWALK_NOTICE_DZ 0x800
+/* PACE walks at SPEED (moving with MOVE_RADIUS) and reaches a node within
+ * NODE_RANGE, then picks the neighbour leading away from Spyro. */
+#define PATHWALK_SPEED 0x60
+#define PATHWALK_MOVE_RADIUS 0x200
+#define PATHWALK_NODE_RANGE 0x400
+/* A floor marker (ACTOR_TYPE_FLOOR_MARKER) probes from FLOOR_MARKER_RAISE
+ * above itself and lands on a floor within FLOOR_MARKER_SNAP_RANGE, then
+ * sits at the centroid of the triangle it landed on. */
+#define FLOOR_MARKER_RAISE 0x200
+#define FLOOR_MARKER_SNAP_RANGE 0x400
 
 /* ->mode of a wandering critter (ACTOR_TYPE_WANDERING_CRITTER / _B / _C,
  * CritterKnockState / WanderKnockState). */
@@ -1284,6 +1294,12 @@ enum CannonSubMode {
 #define FLIGHT_TARGET_NEAR_DZ 4000
 #define FLIGHT_TARGET_HIT_RANGE 0x578
 #define FLIGHT_TARGET_PLANE_DIST 0x200
+/* Spyro's height is taken from FLIGHT_TARGET_CENTRE_DROP above the target's
+ * centre; flown through, it bursts into FLIGHT_TARGET_SHARDS shards living
+ * FLIGHT_TARGET_SHARD_LIFE ticks. */
+#define FLIGHT_TARGET_CENTRE_DROP 0xC0
+#define FLIGHT_TARGET_SHARDS 13
+#define FLIGHT_TARGET_SHARD_LIFE 0x3C
 
 /* ->mode of a banking flight target (ACTOR_TYPE_BANKING_FLIGHT_TARGET,
  * RollerState; flight levels 5/17/23). */

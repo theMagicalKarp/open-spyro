@@ -2738,17 +2738,17 @@ void Level16_UpdateActors(void) {
         int z;
         int d;
 
-        actor->posZ += 0x200;
-        z = FindGroundHeightBelow(&actor->posX, 0x400);
+        actor->posZ += FLOOR_MARKER_RAISE;
+        z = FindGroundHeightBelow(&actor->posX, FLOOR_MARKER_SNAP_RANGE);
         d = actor->posZ - z;
         if (d < 0) {
           d = -d;
         }
-        if (d < 0x400) {
+        if (d < FLOOR_MARKER_SNAP_RANGE) {
           actor->posZ = z;
           *hitTri = g_nCollisionHitTriIndex;
         } else {
-          actor->posZ -= 0x200;
+          actor->posZ -= FLOOR_MARKER_RAISE;
         }
         if (*hitTri < 0) {
           break;

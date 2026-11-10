@@ -1238,7 +1238,7 @@ void Level12_UpdateActors(void) {
 
       case PATHWALK_PACE:
         if (ApproxDist2D(&actor->posX,
-                          &st->path->nodes[st->path->cur].x) < 0x400) {
+                          &st->path->nodes[st->path->cur].x) < PATHWALK_NODE_RANGE) {
           if (ApproxDist2D(&actor->posX, &spy->posX) <= PATHWALK_NOTICE_RANGE) {
             int height = actor->posZ - actor->floorOffset;
             int drop = height - SPY.posZ;
@@ -1288,7 +1288,7 @@ void Level12_UpdateActors(void) {
                                             actor->posY,
                                         ATAN_ANGLE8),
                           8, 0x20, YAW_STEP_IN_BAND) != 0) {
-          MoveActorAlongHeading(actor, 0x60, 0x200, 0x200, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
+          MoveActorAlongHeading(actor, PATHWALK_SPEED, PATHWALK_MOVE_RADIUS, PATHWALK_MOVE_RADIUS, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
         }
         break;
 
@@ -4154,14 +4154,14 @@ void Level12_UpdateActors(void) {
         int floor;
         int d;
 
-        actor->posZ += 0x200;
-        floor = FindGroundHeightBelow(&actor->posX, 0x400);
+        actor->posZ += FLOOR_MARKER_RAISE;
+        floor = FindGroundHeightBelow(&actor->posX, FLOOR_MARKER_SNAP_RANGE);
         d = actor->posZ - floor;
-        if (ABS(d) < 0x400) {
+        if (ABS(d) < FLOOR_MARKER_SNAP_RANGE) {
           actor->posZ = floor;
           *tri = g_nCollisionHitTriIndex;
         } else {
-          actor->posZ -= 0x200;
+          actor->posZ -= FLOOR_MARKER_RAISE;
         }
         if (*tri < 0) {
           break;
