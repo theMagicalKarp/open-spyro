@@ -2429,7 +2429,7 @@ void Level31_UpdateActors(void) {
       FloatingBarrelState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) &&
-          (unsigned int)(actor->mode - 2) >= 2) {
+          (unsigned int)(actor->mode - FLOATBARREL_BURST) >= 2) { /* not BURST or BLAST */
         actor->mode = FLOATBARREL_BURST;
       } else if ((actor->flags & ACTOR_HIT_FLAME) && actor->mode == FLOATBARREL_FLOAT) {
         st->timer = 0x3C;

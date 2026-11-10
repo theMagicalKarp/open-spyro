@@ -788,7 +788,7 @@ void Level21_UpdateActors(void) {
                    actor->rotZ,
                    ArcTan2(FLY_X(st->path, st->path->cur) - actor->posX,
                                  FLY_Y(st->path, st->path->cur) - actor->posY,
-                                 ATAN_ANGLE8)) >= 0x40) {
+                                 ATAN_ANGLE8)) >= BTHROW_RIDE_AHEAD_ANGLE) {
           st->path->cur++;
         }
         st->command = 0;
@@ -861,7 +861,7 @@ void Level21_UpdateActors(void) {
         break;
 
       case BTHROW_KNOCKED:
-        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC, 0xA) ==
+        if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, BTHROW_KNOCK_DRAG, BTHROW_KNOCK_GRAVITY) ==
                 MOVED_LANDED &&
             st->speed == 0 && st->landSoundPlayed == 0) {
           PlayActorMeshVoice(actor, BTHROW_VOICE_LAND, 0);
@@ -877,7 +877,7 @@ void Level21_UpdateActors(void) {
 
       case BTHROW_THROW:
         TrackEntityYawTowardSpyro(actor, 8, 0, YAW_HOLD_IN_BAND);
-        if ((unsigned)(actor->nextFrame - 3) < 5 && st->rock == 0) {
+        if (BTHROW_GRAB_FIRST_FRAME <= actor->nextFrame && actor->nextFrame <= BTHROW_GRAB_LAST_FRAME && st->rock == 0) {
           st->rock = g_pfnLevelSpawnActor(ACTOR_TYPE_ROLLING_BOULDER, actor);
           st->rock->subMode = BOULDER_HELD;
         }
@@ -895,9 +895,9 @@ void Level21_UpdateActors(void) {
             q->vz = 0;
             st->rock->subMode = BOULDER_THROWN;
             st->rock = 0;
-            q->spin[0] = RandomSignedInRange(7, 0xF);
-            q->spin[1] = RandomSignedInRange(7, 0xF);
-            q->spin[2] = RandomSignedInRange(7, 0xF);
+            q->spin[0] = RandomSignedInRange(BTHROW_ROCK_SPIN_MIN, BTHROW_ROCK_SPIN_MAX);
+            q->spin[1] = RandomSignedInRange(BTHROW_ROCK_SPIN_MIN, BTHROW_ROCK_SPIN_MAX);
+            q->spin[2] = RandomSignedInRange(BTHROW_ROCK_SPIN_MIN, BTHROW_ROCK_SPIN_MAX);
           }
         }
         if (g_nActorAnimDone != 0) {
@@ -935,7 +935,7 @@ void Level21_UpdateActors(void) {
 
         ANIM_GO(actor, BTHROW_PATROL);
         if (SteerActorAroundPoint(actor, &g_pActorListBase[st->partner].posX, st->orbitRadius, h, 4,
-                          BTHROW_PAIR_CIRCLE_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0) < 6) {
+                          BTHROW_PAIR_CIRCLE_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0) < BTHROW_PAIR_LINED_UP) {
           g_pActorListBase[st->partner].subMode = 1;
           actor->subMode = 0;
           actor->mode = BTHROW_PAIR_READY;
@@ -963,8 +963,8 @@ void Level21_UpdateActors(void) {
           if (st->zSpeed > BTHROW_HURTLE_MAX_VZ) {
             st->zSpeed = BTHROW_HURTLE_MAX_VZ;
           }
-          st->jitterA = RandomSignedInRange(8, 0xF);
-          st->jitterB = RandomSignedInRange(8, 0xF);
+          st->jitterA = RandomSignedInRange(BTHROW_JITTER_MIN, BTHROW_JITTER_MAX);
+          st->jitterB = RandomSignedInRange(BTHROW_JITTER_MIN, BTHROW_JITTER_MAX);
           st->timer = BTHROW_HURTLE_FRAMES;
           actor->mode = BTHROW_HURTLE;
           continue;
@@ -978,7 +978,7 @@ void Level21_UpdateActors(void) {
           if (AbsAngleDelta8(
                   h, ArcTan2(actor->posX - g_pActorListBase[st->partner].posX,
                                    actor->posY - g_pActorListBase[st->partner].posY,
-                                   ATAN_ANGLE8)) < 0xD) {
+                                   ATAN_ANGLE8)) < BTHROW_PAIR_KEEP_ANGLE) {
             break;
           }
           g_pActorListBase[st->partner].subMode = 0;
@@ -990,7 +990,7 @@ void Level21_UpdateActors(void) {
         int r;
 
         CopyVector(svC, &actor->posX);
-        r = DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0, 0x12);
+        r = DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0, BTHROW_HURTLE_GRAVITY);
         if (r == MOVED_LANDED) {
           st->zSpeed = BTHROW_HURTLE_BOUNCE_VZ;
         }
@@ -1004,21 +1004,21 @@ void Level21_UpdateActors(void) {
             g_nSpyroState != SPYRO_ST_CHARGE && g_nSpyroState != SPYRO_ST_CHARGE_AIR) {
           int a = StepAngle8Toward(ArcTan2(g_anSpyroWorldPos - actor->posX,
                                               g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8),
-                                st->heading, 0x20)
+                                st->heading, BTHROW_HURTLE_KNOCK_BEND)
                   << 4;
 
           g_dwSpyroTriggerEventFlags |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
           g_anSpyroRequestVelocity.x = (LookupCosine(a) * BTHROW_HURTLE_KNOCK_SPEED) >> 12;
           g_nSpyroRequestVelocityY = (LookupSine(a) * BTHROW_HURTLE_KNOCK_SPEED) >> 12;
-          CAM_LOOK.z = 0x28;
+          CAM_LOOK.z = BTHROW_HURTLE_CAM_JOLT;
           st->heading = ArcTan2(actor->posX - g_anSpyroWorldPos,
                                   actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8);
           st->speed = BTHROW_HURTLE_RECOIL_SPEED;
-          st->zSpeed = 0x3C;
+          st->zSpeed = BTHROW_HURTLE_RECOIL_VZ;
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           ENTER_POSE(actor, BTHROW_KNOCKED);
         }
-        if (TICK_DOWN(st->timer) != 0 || r == 2 ||
+        if (TICK_DOWN(st->timer) != 0 || r == MOVED_BLOCKED ||
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > BTHROW_HURTLE_MAX_RANGE) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, BTHROW_BURST_SPARK_LIFE);
@@ -1032,14 +1032,14 @@ void Level21_UpdateActors(void) {
 
           while ((o = *lp++) != 0) {
             if (o->type == ACTOR_TYPE_PLATFORM_POD &&
-                (actor->posX - o->posX > 0 ? actor->posX - o->posX < 0xBB8
-                                           : o->posX - actor->posX < 0xBB8) &&
-                (actor->posY - o->posY > 0 ? actor->posY - o->posY < 0xBB8
-                                           : o->posY - actor->posY < 0xBB8) &&
-                ApproxDist2D(&actor->posX, &o->posX) < 0x384 &&
+                (actor->posX - o->posX > 0 ? actor->posX - o->posX < BTHROW_POD_BOX
+                                           : o->posX - actor->posX < BTHROW_POD_BOX) &&
+                (actor->posY - o->posY > 0 ? actor->posY - o->posY < BTHROW_POD_BOX
+                                           : o->posY - actor->posY < BTHROW_POD_BOX) &&
+                ApproxDist2D(&actor->posX, &o->posX) < BTHROW_POD_HIT_RANGE &&
                 AbsAngleDelta8(st->heading,
                               ArcTan2(o->posX - actor->posX,
-                                            o->posY - actor->posY, ATAN_ANGLE8)) < 0x28) {
+                                            o->posY - actor->posY, ATAN_ANGLE8)) < BTHROW_POD_HIT_CONE) {
               o->flags |= ACTOR_HIT_BLAST | ACTOR_HIT_SUPER;
             }
           }
@@ -1049,13 +1049,13 @@ void Level21_UpdateActors(void) {
 
       case BTHROW_RIDE_WAIT:
         if (st->partnerSignal != 0) {
-          actor->cullRadius = 0x28;
+          actor->cullRadius = BTHROW_RIDE_CULL_RADIUS;
           actor->mode++;
         }
         break;
 
       case BTHROW_RIDE_WALK: {
-        int r = PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0, 8, 0x80, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        int r = PivotActorAlongPath(actor, st->path, 0x100, BTHROW_RIDE_WALK_SPEED, 0, 8, 0x80, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
         ANIM_GO(actor, BTHROW_PATROL);
         if (r == PATH_ARRIVED(0)) {
@@ -1070,8 +1070,8 @@ void Level21_UpdateActors(void) {
         if (catcher->subMode != 0) {
           st->heading = ArcTan2(catcher->posX - actor->posX, catcher->posY - actor->posY,
                                   ATAN_ANGLE8);
-          st->speed = 0x5A;
-          st->zSpeed = 0x78;
+          st->speed = BTHROW_RIDE_LEAP_SPEED;
+          st->zSpeed = BTHROW_RIDE_LEAP_VZ;
           catcher->subMode = 2;
           actor->mode++;
           break;
@@ -1112,7 +1112,7 @@ void Level21_UpdateActors(void) {
         AddVector(throwCarryMid, svE, svF);
         RShiftVector3(throwCarryMid, 1);
         CopyVector(&actor->posX, throwCarryMid);
-        if (catcher->nextFrame >= 0xE) {
+        if (catcher->nextFrame >= BTHROW_FLING_FRAME) {
           if (st->partner != -1) {
             ((BoulderThrowerState *)g_pActorListBase[st->partner].state)->partnerSignal = 1;
           }
@@ -1120,7 +1120,7 @@ void Level21_UpdateActors(void) {
           st->heading = ArcTan2(spy->posX - actor->posX,
                                   spy->posY - actor->posY, ATAN_ANGLE8);
           st->speed = BTHROW_FLUNG_SPEED;
-          st->timer = 0xB4;
+          st->timer = BTHROW_FLUNG_FRAMES;
           st->zSpeed = 0;
           actor->mode = BTHROW_HURTLE;
         }

@@ -3211,6 +3211,12 @@ enum BoulderThrowerAnim {
  * walks at PATROL_SPEED. A boulder spawns in its hands on frames 3..7 and
  * leaves on frame RELEASE_FRAME at ROCK_SPEED; it rests REST_FRAMES
  * (REST_FRAMES_B for the type-B thrower) between throws. */
+#define BTHROW_GRAB_FIRST_FRAME 3
+#define BTHROW_GRAB_LAST_FRAME 7
+#define BTHROW_ROCK_SPIN_MIN 7  /* RandomSignedInRange per axis */
+#define BTHROW_ROCK_SPIN_MAX 0xF
+#define BTHROW_KNOCK_DRAG 0xC   /* DriveActorTrackedMove friction */
+#define BTHROW_KNOCK_GRAVITY 0xA
 #define BTHROW_KNOCK_SPEED 0x118
 #define BTHROW_CHARGE_KNOCK_SPEED 0x15E
 #define BTHROW_KNOCK_VZ 0x1E
@@ -3244,6 +3250,36 @@ enum BoulderThrowerAnim {
 #define BTHROW_HURTLE_MAX_RANGE 0x9470
 #define BTHROW_FLUNG_SPEED 0x1C2
 #define BTHROW_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
+/* The pair: a circler is lined up once its steer error is under
+ * PAIR_LINED_UP; the ready one goes back to circling once the partner's
+ * facing drifts PAIR_KEEP_ANGLE off it. A hurtle wobbles by JITTER_MIN ..
+ * JITTER_MAX, falls with HURTLE_GRAVITY, bends Spyro's knock toward its
+ * heading by HURTLE_KNOCK_BEND, jolts the camera look HURTLE_CAM_JOLT and
+ * recoils HURTLE_RECOIL_VZ up; a blocked hurtle bursts. On the way it blasts
+ * any ACTOR_TYPE_PLATFORM_POD within POD_BOX on both axes, POD_HIT_RANGE and
+ * POD_HIT_CONE of its heading. */
+#define BTHROW_PAIR_LINED_UP 6
+#define BTHROW_PAIR_KEEP_ANGLE 0xD
+#define BTHROW_JITTER_MIN 8
+#define BTHROW_JITTER_MAX 0xF
+#define BTHROW_HURTLE_GRAVITY 0x12
+#define BTHROW_HURTLE_KNOCK_BEND 0x20
+#define BTHROW_HURTLE_CAM_JOLT 0x28
+#define BTHROW_HURTLE_RECOIL_VZ 0x3C
+#define BTHROW_POD_BOX 0xBB8
+#define BTHROW_POD_HIT_RANGE 0x384
+#define BTHROW_POD_HIT_CONE 0x28
+/* The ride: told to ride, it skips to the first path node within
+ * RIDE_AHEAD_ANGLE ahead; it walks to the catcher at RIDE_WALK_SPEED, leaps
+ * at RIDE_LEAP_SPEED / RIDE_LEAP_VZ, and is flung on the catcher's
+ * FLING_FRAME to hurtle for FLUNG_FRAMES. */
+#define BTHROW_RIDE_AHEAD_ANGLE 0x40
+#define BTHROW_RIDE_CULL_RADIUS 0x28
+#define BTHROW_RIDE_WALK_SPEED 0x78
+#define BTHROW_RIDE_LEAP_SPEED 0x5A
+#define BTHROW_RIDE_LEAP_VZ 0x78
+#define BTHROW_FLING_FRAME 0xE
+#define BTHROW_FLUNG_FRAMES 0xB4
 
 /* ->mode of a gatekeeper (ACTOR_TYPE_GATEKEEPER / _B, GatekeeperState;
  * levels 21/22). Modes 40-44 hand out its run of keys (GatekeeperState.keys)
