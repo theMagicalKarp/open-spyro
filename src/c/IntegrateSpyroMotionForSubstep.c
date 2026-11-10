@@ -56,8 +56,8 @@ static inline int *Opaque(int *p) {
 /* Analog stick (or d-pad) as signed x/y in -0x7F..0x7F. */
 #define READ_STICK(x, y)                                                       \
   if (g_pPadSubstepState->stickActive != 0) {                                  \
-    x = PADB[0x16] - 0x7F;                                                     \
-    y = 0x7F - PADB[0x17];                                                     \
+    x = PADB[PAD_LX_OFFSET] - PAD_STICK_CENTER;                                \
+    y = PAD_STICK_CENTER - PADB[PAD_LY_OFFSET];                                \
   } else {                                                                     \
     if (g_pPadSubstepState->held & PAD_UP) {                                   \
       y = 0x7F;                                                                \
@@ -723,8 +723,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         register int *sp asm("$21");
 
         if (g_pPadSubstepState->stickActive != 0) {
-          x = PADB[0x16] - 0x7F;
-          y = 0x7F - PADB[0x17];
+          x = PADB[PAD_LX_OFFSET] - PAD_STICK_CENTER;
+          y = PAD_STICK_CENTER - PADB[PAD_LY_OFFSET];
         } else {
           if (g_pPadSubstepState->held & PAD_UP) {
             g_nSpyroMotionAux += SPYRO_FLY_DPAD_STEP;
@@ -1649,7 +1649,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
 
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
     if (g_pPadSubstepState->stickActive != 0) {
-      g_nSpyroBodyYawStep = (0x7F - PADB[0x16]) >> 1;
+      g_nSpyroBodyYawStep = (PAD_STICK_CENTER - PADB[PAD_LX_OFFSET]) >> 1;
       if (g_nSpyroBodyYawStep < RAMP[0]) {
         g_nSpyroBodyYawStep = RAMP[0];
       } else if (g_nSpyroBodyYawStep > RAMP[12]) {

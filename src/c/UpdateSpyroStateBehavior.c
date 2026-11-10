@@ -199,7 +199,8 @@ void UpdateSpyroStateBehavior(void) {
         int d;
 
         KEEP_IN_REG(a0);
-        d = ((unsigned char *)g_pPadSubstepState)[0x17] - 0x7F;
+        d = ((unsigned char *)g_pPadSubstepState)[PAD_LY_OFFSET] -
+            PAD_STICK_CENTER;
 
         if (d < 0) {
           d = -d;

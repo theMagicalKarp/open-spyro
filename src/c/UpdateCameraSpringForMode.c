@@ -336,9 +336,13 @@ void UpdateCameraSpringForMode(void) {
           (((PadSubstep *)pad)->analog.word & PAD_LEFT_STICK_MASK) !=
               PAD_LEFT_STICK_CENTERED) {
         g_anCameraScriptStickIntegrator[0] +=
-            (((PadSubstep *)pad)->analog.axis[PAD_AXIS_LX] - 0x7F) >> 1;
+            (((PadSubstep *)pad)->analog.axis[PAD_AXIS_LX] -
+             PAD_STICK_CENTER) >>
+            1;
         g_anCameraScriptStickIntegrator[1] +=
-            (0x7F - ((PadSubstep *)pad)->analog.axis[PAD_AXIS_LY]) >> 1;
+            (PAD_STICK_CENTER -
+             ((PadSubstep *)pad)->analog.axis[PAD_AXIS_LY]) >>
+            1;
       } else {
         if (g_dwPadHeld & PAD_LEFT) {
           STICK[0] -= CAM_LOOK_DPAD_STEP;

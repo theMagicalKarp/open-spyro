@@ -159,8 +159,9 @@ typedef struct NameLetterState {
 #define SOUND_RANGE_SHIFT 10
 #define SOUND_RANGE_DEFAULT 0x4000
 #define SOUND_RANGE(dist) ((dist) >> SOUND_RANGE_SHIFT)
-/* Thrown and lobbed projectiles (levels 25, 26, 28) burst once any
- * coordinate falls below WORLD_MIN_COORD: they have left the level box. */
+/* The level box's floor: Spyro below WORLD_MIN_COORD respawns
+ * (TickSpyroGameplayFrame), and thrown / lobbed projectiles (levels 25, 26,
+ * 28) burst once any coordinate falls below it. */
 #define WORLD_MIN_COORD 0x400
 #define BILLBOARD_NONE 0xFF          /* no g_aRotBillboards handle */
 /* Actor.probeDist sentinels (DriveActorTrackedMove; other values are the
