@@ -516,11 +516,11 @@ void Level31_UpdateActors(void) {
           CopyVector(svA, &SPY.posX);
           cb = LookupCosine(g_bSpyroPersistentEulerZ * 0x10);
           cs = LookupSine(g_bSpyroPersistentEulerZ * 0x10);
-          x = cb * 0xB5;
-          y = cs * 0xB5;
+          x = cb * EGG_APEX_DIAG_4;
+          y = cs * EGG_APEX_DIAG_4;
           svA[0] += (y + x) * 4 >> 12;
-          svA[1] += (int)((LookupSine(g_bSpyroPersistentEulerZ * 0x10) * 0xB5) -
-                          (LookupCosine(g_bSpyroPersistentEulerZ * 0x10) * 0xB5U)) *
+          svA[1] += (int)((LookupSine(g_bSpyroPersistentEulerZ * 0x10) * EGG_APEX_DIAG_4) -
+                          (LookupCosine(g_bSpyroPersistentEulerZ * 0x10) * (unsigned)EGG_APEX_DIAG_4)) *
                         4 >>
                     12;
           svA[2] += EGG_APEX_HEIGHT;
@@ -1079,7 +1079,7 @@ void Level31_UpdateActors(void) {
       case SAVEHOST_WAIT_ARMED: {
         if (armer->mode >= (unsigned)ACTOR_MODE_DORMANT) {
           actor->mode = SAVEHOST_HIDDEN;
-          st->timer = 16;
+          st->timer = SAVEHOST_APPEAR_DELAY;
           st->baseZ = actor->posZ;
         }
         break;
@@ -1095,18 +1095,18 @@ void Level31_UpdateActors(void) {
             if (ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < SAVEHOST_APPEAR_DZ) {
               if (st->prompted == 0 || anchor->mode == CHECKPT_ARMED) {
                 st->prompted = 0;
-                actor->posZ = st->baseZ + 0x80;
+                actor->posZ = st->baseZ + SAVEHOST_POP_RAISE;
                 actor->rotZ = ArcTan2(SPY.posX - actor->posX,
                                              SPY.posY - actor->posY, ATAN_ANGLE8) -
                                128;
-                actor->cullRadius = 0x20;
+                actor->cullRadius = SAVEHOST_CULL_RADIUS;
                 actor->mode = SAVEHOST_POP_IN;
-                actor->scale = 0x60;
+                actor->scale = SAVEHOST_POP_SCALE;
 
                 g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, 0xC);
 
                 RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
-                FindGroundHeightBelow(&actor->posX, 0x1000);
+                FindGroundHeightBelow(&actor->posX, SAVEHOST_PROBE_DEPTH);
                 EncodeHitNormalToActorGroundCode(actor);
                 actor->groundCode |= ACTOR_GROUND_VALID;
               }
@@ -1118,12 +1118,12 @@ void Level31_UpdateActors(void) {
 
       case SAVEHOST_POP_IN: {
         if (actor->scale > ACTOR_SCALE_UNIT) {
-          actor->scale -= 4;
-          actor->rotZ = actor->rotZ + 8;
+          actor->scale -= SAVEHOST_SCALE_STEP;
+          actor->rotZ = actor->rotZ + SAVEHOST_SPIN_STEP;
         } else {
           actor->mode = SAVEHOST_HOVER;
           st->timer = 0;
-          st->wanderTimer = 30;
+          st->wanderTimer = SAVEHOST_WANDER_DELAY;
         }
         break;
       }
@@ -1150,7 +1150,7 @@ void Level31_UpdateActors(void) {
         } else {
           st->wanderTimer--;
           if (st->wanderTimer == 0) {
-            int baseDistance = (GetRandomU32() & 0x3F) + 0x140;
+            int baseDistance = (GetRandomU32() & 0x3F) + SAVEHOST_WANDER_DIST;
             char finalAngle = (ArcTan2(SPY.posX - anchor->posX,
                                              SPY.posY - anchor->posY, ATAN_ANGLE8) +
                                (GetRandomU32() & 0xF) - 8);
@@ -1208,7 +1208,7 @@ void Level31_UpdateActors(void) {
           actor->posY += ((svF[1] * cosDelta) / totalWeight);
           actor->rotZ += (angleDiff * cosDelta) / totalWeight;
 
-          FindGroundHeightBelow(&actor->posX, 0x1000);
+          FindGroundHeightBelow(&actor->posX, SAVEHOST_PROBE_DEPTH);
           EncodeHitNormalToActorGroundCode(actor);
 
           if (st->wanderTimer == SAVEHOST_WANDER_FRAMES) {
@@ -1221,14 +1221,14 @@ void Level31_UpdateActors(void) {
       }
 
       case SAVEHOST_POP_OUT: {
-        if (actor->scale < 96) {
-          actor->scale += 4;
-          actor->rotZ = actor->rotZ + 8;
+        if (actor->scale < SAVEHOST_POP_SCALE) {
+          actor->scale += SAVEHOST_SCALE_STEP;
+          actor->rotZ = actor->rotZ + SAVEHOST_SPIN_STEP;
         } else {
           actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;
           actor->mode = SAVEHOST_HIDDEN;
-          st->timer = 16;
+          st->timer = SAVEHOST_APPEAR_DELAY;
 
           g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, &actor->posX, 0xC);
 
@@ -1553,7 +1553,7 @@ void Level31_UpdateActors(void) {
         continue;
       }
       AddVector(&actor->posX, &actor->posX, st->vel);
-      st->vel[2] -= 0xC;
+      st->vel[2] -= DEBRIS_FALL_GRAVITY;
       actor->rotX += st->spin[0];
       actor->rotY += st->spin[1];
       actor->rotZ += st->spin[2];
@@ -1942,14 +1942,14 @@ void Level31_UpdateActors(void) {
       PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
       /* Two of each of the first pair, then six of the third. */
-      for (i = 0; i < 2; i++) {
+      for (i = 0; i < WOODCHEST_SHARD_PAIRS; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
         }
         g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_CHEST_SHARD, actor);
         g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_CHEST_SHARD + 1, actor);
       }
-      for (i = 0; i < 6; i++) {
+      for (i = 0; i < WOODCHEST_CHIPS; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
         }
@@ -2008,7 +2008,7 @@ void Level31_UpdateActors(void) {
         actor->soundRange = 0x20;
         PlayActorMeshVoice(actor, WOBBLECHEST_VOICE_BREAK, 0);
 
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < WOBBLECHEST_SHARD_PAIRS; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
@@ -2016,7 +2016,7 @@ void Level31_UpdateActors(void) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD + 1, actor);
         }
 
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < WOBBLECHEST_CHIPS; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
@@ -2053,11 +2053,11 @@ void Level31_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
                                   SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->zSpeed = 0x78;
+        st->zSpeed = MOUNT_KNOCK_VZ;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->speed = 0xF0;
+          st->speed = MOUNT_CHARGE_KNOCK_SPEED;
         } else {
-          st->speed = 0x78;
+          st->speed = MOUNT_KNOCK_SPEED;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
@@ -2069,7 +2069,7 @@ void Level31_UpdateActors(void) {
         if (s == FLOATBARREL_BLAST) {
           st->rider = -1;
           st->speed = 0;
-          st->zSpeed = 0xF0;
+          st->zSpeed = MOUNT_BLAST_VZ;
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorLiveKill(actor);
           ENTER_POSE(actor, MOUNT_KNOCKED);
@@ -2077,27 +2077,27 @@ void Level31_UpdateActors(void) {
         if (s == FLOATBARREL_RUN) {
           st->rider = -1;
           st->speed = 0;
-          st->zSpeed = 0x78;
+          st->zSpeed = MOUNT_KNOCK_VZ;
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorLiveKill(actor);
           ENTER_POSE(actor, MOUNT_KNOCKED);
         }
       }
       if (st->init == 0) {
-        g_pActorListBase[st->rider].posZ += 0x1CD;
-        g_pActorListBase[st->rider].rotY = 0x40;
-        actor->posZ += 0x384;
+        g_pActorListBase[st->rider].posZ += MOUNT_RIDER_RAISE;
+        g_pActorListBase[st->rider].rotY = MOUNT_RIDER_PITCH;
+        actor->posZ += MOUNT_RAISE;
         st->init = 1;
       }
 
       switch (actor->mode) {
       case MOUNT_IDLE:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x800) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < MOUNT_REACT_RANGE) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
-          if (dz > 0 ? dz < 0x800
-                     : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x800) {
+          if (dz > 0 ? dz < MOUNT_REACT_DZ
+                     : SPY.posZ - (actor->posZ - actor->floorOffset) < MOUNT_REACT_DZ) {
             ENTER_POSE(actor, MOUNT_REACT);
           }
         }
@@ -2112,10 +2112,10 @@ void Level31_UpdateActors(void) {
         break;
 
       case MOUNT_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, MOUNT_KNOCK_DRAG, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, MOUNT_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2135,8 +2135,8 @@ void Level31_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
                                   SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->zSpeed = 0x3C;
-        st->speed = 0x78;
+        st->zSpeed = HCARRIER_KNOCK_VZ;
+        st->speed = HCARRIER_KNOCK_SPEED;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);
         ENTER_POSE(actor, HCARRIER_KNOCKED);
@@ -2154,7 +2154,7 @@ void Level31_UpdateActors(void) {
         break;
 
       case HCARRIER_LIFT:
-        if (st->held == 0 && actor->nextFrame >= 4) {
+        if (st->held == 0 && actor->nextFrame >= HCARRIER_LIFT_FRAME) {
           HatchState *hs = g_pActorListBase[st->hatch].state;
 
           if (hs->child != 0) {
@@ -2177,27 +2177,27 @@ void Level31_UpdateActors(void) {
       case HCARRIER_THROW: {
         Actor *h = st->held;
 
-        if (h != 0 && actor->nextFrame >= 6) {
+        if (h != 0 && actor->nextFrame >= HCARRIER_THROW_FRAME) {
           short *hs;
 
           h->subMode = 1;
           hs = h->state;
           st->held->rotZ = actor->rotZ + 0x40;
-          *hs = 0x12C;
+          *hs = HCARRIER_THROW_SPEED;
           st->held = 0;
         }
         if (g_nActorAnimDone != 0) {
-          st->timer = 0x1E;
+          st->timer = HCARRIER_THROW_GAP;
           ANIM_QUEUE(actor, HCARRIER_WAIT);
         }
         break;
       }
 
       case HCARRIER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, HCARRIER_KNOCK_DRAG, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x30);
+          BurstActorWithSound(actor, HCARRIER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2228,12 +2228,12 @@ void Level31_UpdateActors(void) {
       int thrown = 0;
 
       TickActorFlameGlow(actor);
-      if ((unsigned int)(actor->mode - 6) < 5 && (actor->flags & ACTOR_HIT_FLAME)) {
+      if ((unsigned int)(actor->mode - CTHROW_BARE_WAIT) < CTHROW_DROP - CTHROW_BARE_WAIT && (actor->flags & ACTOR_HIT_FLAME)) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
                                   SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->zSpeed = 0x3C;
-        st->speed = 0x78;
+        st->zSpeed = CTHROW_KNOCK_VZ;
+        st->speed = CTHROW_KNOCK_SPEED;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
         MarkActorLiveKill(actor);
         ENTER_POSE(actor, CTHROW_KNOCKED);
@@ -2249,12 +2249,12 @@ void Level31_UpdateActors(void) {
           if (TICK_DOWN(st->timer) != 0) {
             ENTER_POSE(actor, CTHROW_HELD_RISE);
           }
-        } else if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400) {
+        } else if (ApproxDist2D(&actor->posX, &SPY.posX) < CTHROW_NOTICE_RANGE) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
-          if (dz > 0 ? dz < 0xC00
-                     : SPY.posZ - (actor->posZ - actor->floorOffset) < 0xC00) {
-            st->timer = 0x2D;
+          if (dz > 0 ? dz < CTHROW_NOTICE_DZ
+                     : SPY.posZ - (actor->posZ - actor->floorOffset) < CTHROW_NOTICE_DZ) {
+            st->timer = CTHROW_RISE_DELAY;
           }
         }
         break;
@@ -2266,21 +2266,21 @@ void Level31_UpdateActors(void) {
         break;
 
       case CTHROW_HELD_READY:
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0xE00) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < CTHROW_HELD_SWING_RANGE) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
-          if (dz > 0 ? dz < 0x800
-                     : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x800) {
+          if (dz > 0 ? dz < CTHROW_SWING_DZ
+                     : SPY.posZ - (actor->posZ - actor->floorOffset) < CTHROW_SWING_DZ) {
             ENTER_POSE(actor, CTHROW_HELD_SWING);
           }
         }
         {
           int dz;
 
-          if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1601 ||
+          if (ApproxDist2D(&actor->posX, &SPY.posX) > CTHROW_HELD_LOSE_RANGE ||
               ((dz = (actor->posZ - actor->floorOffset) - SPY.posZ) > 0
-                   ? dz >= 0x1001
-                   : SPY.posZ - (actor->posZ - actor->floorOffset) >= 0x1001)) {
+                   ? dz > CTHROW_LOSE_DZ
+                   : SPY.posZ - (actor->posZ - actor->floorOffset) > CTHROW_LOSE_DZ)) {
             ENTER_POSE(actor, CTHROW_HELD_LOWER);
           }
         }
@@ -2315,11 +2315,11 @@ void Level31_UpdateActors(void) {
         break;
 
       case CTHROW_BARE_WAIT:
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1400) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < CTHROW_NOTICE_RANGE) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
-          if (dz > 0 ? dz < 0xC00
-                     : SPY.posZ - (actor->posZ - actor->floorOffset) < 0xC00) {
+          if (dz > 0 ? dz < CTHROW_NOTICE_DZ
+                     : SPY.posZ - (actor->posZ - actor->floorOffset) < CTHROW_NOTICE_DZ) {
             ENTER_POSE(actor, CTHROW_BARE_RISE);
           }
         }
@@ -2333,17 +2333,17 @@ void Level31_UpdateActors(void) {
         break;
 
       case CTHROW_BARE_READY:
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < CTHROW_BARE_SWING_RANGE) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
-          if (dz > 0 ? dz < 0x800
-                     : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x800) {
+          if (dz > 0 ? dz < CTHROW_SWING_DZ
+                     : SPY.posZ - (actor->posZ - actor->floorOffset) < CTHROW_SWING_DZ) {
             if (st->timer != 0) {
               if (TICK_DOWN(st->timer) != 0) {
                 ENTER_POSE(actor, CTHROW_BARE_SWING);
               }
             } else {
-              st->timer = 0x2D;
+              st->timer = CTHROW_SWING_DELAY;
             }
             break;
           }
@@ -2351,10 +2351,10 @@ void Level31_UpdateActors(void) {
         {
           int dz;
 
-          if (ApproxDist2D(&actor->posX, &SPY.posX) >= 0x1801 ||
+          if (ApproxDist2D(&actor->posX, &SPY.posX) > CTHROW_BARE_LOSE_RANGE ||
               ((dz = (actor->posZ - actor->floorOffset) - SPY.posZ) > 0
-                   ? dz >= 0x1001
-                   : SPY.posZ - (actor->posZ - actor->floorOffset) >= 0x1001)) {
+                   ? dz > CTHROW_LOSE_DZ
+                   : SPY.posZ - (actor->posZ - actor->floorOffset) > CTHROW_LOSE_DZ)) {
             ENTER_POSE(actor, CTHROW_BARE_WAIT);
           }
         }
@@ -2386,10 +2386,10 @@ void Level31_UpdateActors(void) {
         break;
 
       case CTHROW_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, sixteen);
+        DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, CTHROW_KNOCK_DRAG, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x30);
+          BurstActorWithSound(actor, CTHROW_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2413,10 +2413,10 @@ void Level31_UpdateActors(void) {
         RShiftVector3(v201b, 1);
         AddVector(&g_pActorListBase[st->held].posX, v201a, v201b);
         if (thrown) {
-          RaiseSpyroTriggerInRadius(&g_pActorListBase[st->held].posX, 0x200, SPYRO_EV_HIT_PINNED | SPYRO_EV_CHARGE_HIT);
+          RaiseSpyroTriggerInRadius(&g_pActorListBase[st->held].posX, CTHROW_HIT_RADIUS, SPYRO_EV_HIT_PINNED | SPYRO_EV_CHARGE_HIT);
           AddVector(v201a, &g_pActorListBase[st->held].posX, &actor->posX);
           RShiftVector3(v201a, 1);
-          RaiseSpyroTriggerInRadius(v201a, 0x200, SPYRO_EV_HIT_PINNED | SPYRO_EV_CHARGE_HIT);
+          RaiseSpyroTriggerInRadius(v201a, CTHROW_HIT_RADIUS, SPYRO_EV_HIT_PINNED | SPYRO_EV_CHARGE_HIT);
         }
       }
       break;
@@ -2487,7 +2487,7 @@ void Level31_UpdateActors(void) {
             d = g_pfnLevelSpawnActor(ACTOR_TYPE_BOULDER_DEBRIS + 2, actor);
             ds = d->state;
             k = i << 7;
-            d->subMode = (GetRandomU32() & 1) + 0x12;
+            d->subMode = (GetRandomU32() & 1) + SPARK_DEBRIS_LIFE;
             CopyVector(&d->posX, &actor->posX);
             i++;
             sn = (short *)((char *)g_anCosineLut + k);
@@ -2518,7 +2518,7 @@ void Level31_UpdateActors(void) {
             d = g_pfnLevelSpawnActor(ACTOR_TYPE_BOULDER_DEBRIS + 1, actor);
             ds = d->state;
             k = i << 7;
-            d->subMode = (GetRandomU32() & 3) + 0x19;
+            d->subMode = (GetRandomU32() & 3) + CHUNK_DEBRIS_LIFE;
             CopyVector(&d->posX, &actor->posX);
             i++;
             sn = (short *)((char *)g_anCosineLut + k);
@@ -2739,7 +2739,7 @@ void Level31_UpdateActors(void) {
             d = g_pfnLevelSpawnActor(ACTOR_TYPE_BOULDER_DEBRIS + 2, actor);
             ds = d->state;
             k = i << 7;
-            d->subMode = (GetRandomU32() & 1) + 0x12;
+            d->subMode = (GetRandomU32() & 1) + SPARK_DEBRIS_LIFE;
             CopyVector(&d->posX, &actor->posX);
             i++;
             sn = (short *)((char *)g_anCosineLut + k);
@@ -2770,7 +2770,7 @@ void Level31_UpdateActors(void) {
             d = g_pfnLevelSpawnActor(ACTOR_TYPE_BOULDER_DEBRIS + 1, actor);
             ds = d->state;
             k = i << 7;
-            d->subMode = (GetRandomU32() & 3) + 0x19;
+            d->subMode = (GetRandomU32() & 3) + CHUNK_DEBRIS_LIFE;
             CopyVector(&d->posX, &actor->posX);
             i++;
             sn = (short *)((char *)g_anCosineLut + k);
@@ -2915,9 +2915,9 @@ void Level31_UpdateActors(void) {
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
                                   SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         if (actor->flags & ACTOR_HIT_FLAME) {
-          st->knockSpeed = 0xC8;
+          st->knockSpeed = CRITTER_STRONG_FLAME_KNOCK_SPEED;
         } else {
-          st->knockSpeed = 0x190;
+          st->knockSpeed = CRITTER_STRONG_KNOCK_SPEED;
         }
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -2934,13 +2934,13 @@ void Level31_UpdateActors(void) {
         break;
 
       case CRITTER_KNOCKED:
-        if (st->knockSpeed > 0xF) {
-          st->knockSpeed -= 0xF;
-          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, 0x1F4, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        if (st->knockSpeed >= CRITTER_KNOCK_MIN_SPEED) {
+          st->knockSpeed -= CRITTER_KNOCK_DRAG;
+          MoveActorAlongAngle(actor, st->knockHeading, st->knockSpeed, 0, CRITTER_C_MOVE_RADIUS, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x10);
+          BurstActorWithSound(actor, CRITTER_C_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2948,7 +2948,7 @@ void Level31_UpdateActors(void) {
 
       case CRITTER_REST:
         if (g_nActorAnimDone != 0) {
-          st->wait = RandomIntInRange(0x5A, 0x12C);
+          st->wait = RandomIntInRange(CRITTER_C_REST_MIN, CRITTER_C_REST_MAX);
           ENTER_POSE(actor, CRITTER_WANDER);
         }
         break;
@@ -3559,7 +3559,7 @@ void Level31_UpdateActors(void) {
             }
             c = g_pfnLevelSpawnActor(ACTOR_TYPE_BOULDER_DEBRIS + 2, actor);
             cs = c->state;
-            c->subMode = (GetRandomU32() & 1) + 0x12;
+            c->subMode = (GetRandomU32() & 1) + SPARK_DEBRIS_LIFE;
             CopyVector(&c->posX, &actor->posX);
             c->posX += (g_anCosineLut[i * 16] >> 4) + (GetRandomU32() & 0x1F) - 0xF;
             c->posY += (g_anSineLut[i * 16] >> 4) + (GetRandomU32() & 0x1F) - 0xF;
@@ -3581,7 +3581,7 @@ void Level31_UpdateActors(void) {
             }
             c = g_pfnLevelSpawnActor(ACTOR_TYPE_BOULDER_DEBRIS + 1, actor);
             cs = c->state;
-            c->subMode = (GetRandomU32() & 3) + 0x19;
+            c->subMode = (GetRandomU32() & 3) + CHUNK_DEBRIS_LIFE;
             CopyVector(&c->posX, &actor->posX);
             c->posX += (g_anCosineLut[(i << 8) / 12] >> 4) + (GetRandomU32() & 0x3F) - 0x1F;
             c->posY += (g_anSineLut[(i << 8) / 12] >> 4) + (GetRandomU32() & 0x3F) - 0x1F;
@@ -3663,14 +3663,14 @@ void Level31_UpdateActors(void) {
         if (actor->subMode == SEEDPOD_SUB_UNTINTED) {
           *(int *)&actor->tint0 = g_anTintByDropKind[actor->dropKind];
           actor->subMode = SEEDPOD_SUB_TINTED;
-          actor->updateDist = 0x10;
+          actor->updateDist = SEEDPOD_IDLE_UPDATE_DIST;
         }
         if (actor->flags & ACTOR_HITS_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
           st->restZ = actor->posZ;
-          actor->updateDist = 0x40;
+          actor->updateDist = SEEDPOD_OPEN_UPDATE_DIST;
           st->prize = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
           st->prize->subMode = COLLECT_INERT;
           st->prize->cullRadius = ACTOR_CULL_HIDDEN;
@@ -3693,11 +3693,11 @@ void Level31_UpdateActors(void) {
       case SEEDPOD_OPEN: {
         int i;
 
-        st->prize->cullRadius = 0x18;
+        st->prize->cullRadius = SEEDPOD_PRIZE_CULL;
         CopyVector(&st->prize->posX, &actor->posX);
-        st->prize->posZ += LookupSine((st->timer << 11) / 90) / 3 + 0x1A4;
+        st->prize->posZ += LookupSine((st->timer << 11) / 90) / 3 + SEEDPOD_PRIZE_HOVER;
         st->prize->rotZ += g_nFrameStep * 2;
-        if (st->timer < 0x40) {
+        if (st->timer < SEEDPOD_SHAKE_TICKS) {
           int dx;
           int dy;
 
@@ -3714,26 +3714,26 @@ void Level31_UpdateActors(void) {
           dx += dy;
           actor->posZ = st->restZ + dx * 6;
         }
-        if (st->timer < 0x20 &&
+        if (st->timer < SEEDPOD_SPARK_TICKS &&
             (st->timer & 3) <= ((st->timer + g_nFrameStep) & 3)) {
           ZeroVector(v480);
           g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &st->prize->posX, (int)v480);
         }
         if ((ApproxDist2D(&st->prize->posX, &spy->posX) < SEEDPOD_PRIZE_RANGE &&
-             (unsigned int)(SPY.posZ - st->prize->posZ + 0xDF) < 0x2BF) ||
+             (unsigned int)(SPY.posZ - st->prize->posZ + SEEDPOD_PRIZE_DZ_BELOW) < SEEDPOD_PRIZE_DZ_SPAN) ||
             g_nSpyroState == SPYRO_ST_SUPERCHARGE || g_nSpyroState == SPYRO_ST_SUPERCHARGE_AIR ||
             (g_nSpyroState == SPYRO_ST_CHARGE_AIR && (g_nSpyroSubstate & SPYRO_SUB_SUPERCHARGE))) {
           CollectPickupActor(st->prize);
           DespawnActorRecord(st->prize);
           PlayActorMeshVoice(actor, SEEDPOD_VOICE_BURST, 0);
-          for (i = 0; i < 2; i++) {
+          for (i = 0; i < SEEDPOD_SHARD_PAIRS; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
             }
             g_pfnLevelSpawnActor(ACTOR_TYPE_SEED_POD_SHARD, actor);
             g_pfnLevelSpawnActor(ACTOR_TYPE_SEED_POD_SHARD + 1, actor);
           }
-          for (i = 0; i < 6; i++) {
+          for (i = 0; i < SEEDPOD_CHIPS; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
             }
@@ -3747,14 +3747,14 @@ void Level31_UpdateActors(void) {
         if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = COLLECT_BOUNCE;
           PlayActorMeshVoice(actor, SEEDPOD_VOICE_BURST, 0);
-          for (i = 0; i < 2; i++) {
+          for (i = 0; i < SEEDPOD_SHARD_PAIRS; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
             }
             g_pfnLevelSpawnActor(ACTOR_TYPE_SEED_POD_SHARD, actor);
             g_pfnLevelSpawnActor(ACTOR_TYPE_SEED_POD_SHARD + 1, actor);
           }
-          for (i = 0; i < 6; i++) {
+          for (i = 0; i < SEEDPOD_CHIPS; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
             }
@@ -3766,10 +3766,10 @@ void Level31_UpdateActors(void) {
           continue;
         }
         st->timer += g_nFrameStep;
-        if (st->timer >= 0x56) {
+        if (st->timer >= SEEDPOD_OPEN_TICKS) {
           int j;
 
-          for (j = 0; j < 6; j++) {
+          for (j = 0; j < SEEDPOD_RING_SPARKS; j++) {
             CopyVector(v496, &st->prize->posX);
             v496[0] += g_anCosineLut[j * 43] >> 6;
             v496[1] += g_anSineLut[j * 43] >> 6;
@@ -3781,7 +3781,7 @@ void Level31_UpdateActors(void) {
           }
           DespawnActorRecord(st->prize);
           actor->killGroup &= ACTOR_KILL_GROUP_MASK;
-          actor->updateDist = 0x10;
+          actor->updateDist = SEEDPOD_IDLE_UPDATE_DIST;
           actor->rotX = st->rotX;
           actor->rotY = st->rotY;
           actor->posZ = st->restZ;
@@ -4019,7 +4019,7 @@ void Level31_UpdateActors(void) {
       PlayActorMeshVoice(actor, LIFECHEST_VOICE_BREAK, 0);
 
       /* Fragment bursts; each stops early once the dynamic pool is full. */
-      for (i = 0; i < 2; i++) {
+      for (i = 0; i < LIFECHEST_SHARD_PAIRS; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
         }
@@ -4027,14 +4027,14 @@ void Level31_UpdateActors(void) {
         g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_SHARD + 1, actor);
       }
 
-      for (i = 0; i < 6; i++) {
+      for (i = 0; i < LIFECHEST_CHIPS; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
         }
         g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_SHARD + 2, actor);
       }
 
-      for (i = 0; i < 8; i++) {
+      for (i = 0; i < LIFECHEST_SPARK_RING; i++) {
         v480[0] = (g_anCosineLut[i * 32] >> 8) * 3;
         v480[1] = (g_anSineLut[i * 32] >> 8) * 3;
         v480[2] = 0x18;

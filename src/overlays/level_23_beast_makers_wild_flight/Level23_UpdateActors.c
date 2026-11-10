@@ -320,15 +320,15 @@ void Level23_UpdateActors(void) {
           {
             int c = LookupCosine(g_bSpyroPersistentEulerZ << 4);
             int s = LookupSine(g_bSpyroPersistentEulerZ << 4);
-            int cr = c * 724;
-            int sr = s * 724;
+            int cr = c * EGG_APEX_DIAG;
+            int sr = s * EGG_APEX_DIAG;
             svA[0] = svA[0] + ((sr + cr) >> 12);
           }
           {
             int s = LookupSine(g_bSpyroPersistentEulerZ << 4);
             int c = LookupCosine(g_bSpyroPersistentEulerZ << 4);
-            int sr = s * 724;
-            int cr = c * 724;
+            int sr = s * EGG_APEX_DIAG;
+            int cr = c * EGG_APEX_DIAG;
             svA[1] = svA[1] + ((sr - cr) >> 12);
           }
           svA[2] = svA[2] + EGG_APEX_HEIGHT;
@@ -1423,11 +1423,11 @@ void Level23_UpdateActors(void) {
         }
         TallyFlightTarget(st->tally);
         st->zSpeed = 0;
-        st->moveSpeed = 0x15E;
+        st->moveSpeed = BANKER_KNOCK_SPEED;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
-            spy->bodyRotZ, 0x28, 0x40);
-        for (i = 0; i < 3; i++) {
+            spy->bodyRotZ, BANKER_KNOCK_BEND_STEP_WIDE, KNOCK_BEND_FRAC);
+        for (i = 0; i < BANKER_SPARK_TRIPLES; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
@@ -1446,9 +1446,9 @@ void Level23_UpdateActors(void) {
         int d = actor->rotZ;
 
         if (g_nActiveLevelId == LEVEL_SUNNY_FLIGHT || g_nActiveLevelId == LEVEL_WILD_FLIGHT) {
-          TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0xC, TWEEN_FLY);
+          TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, BANKER_FLAT_TWEEN, TWEEN_FLY);
         } else {
-          TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, 0x16, 0);
+          TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, BANKER_TWEEN_SPEED, 0);
         }
         d = (actor->rotZ - d) & 0xFF;
         if (d > 0x80) {
@@ -1459,18 +1459,18 @@ void Level23_UpdateActors(void) {
         if (st->roll > 0x800) {
           st->roll -= 0x1000;
         }
-        if (st->roll < -0x200) {
-          st->roll = -0x200;
+        if (st->roll < -BANKER_MAX_ROLL) {
+          st->roll = -BANKER_MAX_ROLL;
         }
-        if (st->roll > 0x200) {
-          st->roll = 0x200;
+        if (st->roll > BANKER_MAX_ROLL) {
+          st->roll = BANKER_MAX_ROLL;
         }
         actor->rotX = st->roll >> 4;
         break;
       }
       case BANKER_STRUCK:
-        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zSpeed, 0xC,
-                          0xC) == MOVED_LANDED) {
+        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zSpeed, BANKER_KNOCK_DRAG,
+                          BANKER_KNOCK_GRAVITY) == MOVED_LANDED) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
           DespawnActorRecord(actor);
@@ -1482,8 +1482,8 @@ void Level23_UpdateActors(void) {
         }
         break;
       case BANKER_FLEE:
-        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zSpeed, 0xC,
-                          0xC) == MOVED_LANDED) {
+        if (DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zSpeed, BANKER_KNOCK_DRAG,
+                          BANKER_KNOCK_GRAVITY) == MOVED_LANDED) {
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, actor);
           DespawnActorRecord(actor);
@@ -1514,33 +1514,33 @@ void Level23_UpdateActors(void) {
                       4, 0, YAW_HOLD_IN_BAND);
         break;
       case TIMEBONUS_COLLECT:
-        g_nFlightTimeBonus += TIME_BONUS_SECONDS(actor->type) * 60;
+        g_nFlightTimeBonus += TIME_BONUS_SECONDS(actor->type) * TIMEBONUS_FRAMES_PER_SECOND;
         ProjectWorldPointGTEUnscaled(&actor->posX, &actor->posX);
         actor->rotX = 0;
         actor->rotY = 0;
-        actor->rotZ = 0xC0;
+        actor->rotZ = TIMEBONUS_SCREEN_ROLL;
         actor->cullRadius = ACTOR_CULL_ALWAYS;
-        actor->otBias = 0x20;
+        actor->otBias = TIMEBONUS_OT_BIAS;
         actor->mode = TIMEBONUS_TO_HUD;
         PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_COLLECT], actor, SFX_MODE_PANNED, 0);
         break;
       case TIMEBONUS_TO_HUD: {
         int d;
 
-        bonusStep[0] = 0x1A4;
-        bonusStep[1] = 0x30;
-        bonusStep[2] = 0x157C;
+        bonusStep[0] = TIMEBONUS_HUD_X;
+        bonusStep[1] = TIMEBONUS_HUD_Y;
+        bonusStep[2] = TIMEBONUS_HUD_DEPTH;
         SubtractVector(bonusStep, bonusStep, &actor->posX);
         d = VectorLength(bonusStep, VEC_LEN_XYZ);
-        if (d < 0x20) {
+        if (d < TIMEBONUS_ARRIVE_RANGE) {
           actor->mode = TIMEBONUS_ARRIVED;
-          actor->posX = 0x1A4;
-          actor->posY = 0x30;
-          actor->posZ = 0x157C;
-          *st = 0x1E;
+          actor->posX = TIMEBONUS_HUD_X;
+          actor->posY = TIMEBONUS_HUD_Y;
+          actor->posZ = TIMEBONUS_HUD_DEPTH;
+          *st = TIMEBONUS_HOLD_TICKS;
         } else {
-          if (d > 0x80) {
-            ScaleVector3ByRatio(bonusStep, d, 0x80);
+          if (d > TIMEBONUS_FLY_SPEED) {
+            ScaleVector3ByRatio(bonusStep, d, TIMEBONUS_FLY_SPEED);
           }
           AddVector(&actor->posX, &actor->posX, bonusStep);
         }
@@ -1548,7 +1548,7 @@ void Level23_UpdateActors(void) {
       }
       case TIMEBONUS_ARRIVED:
         if (TICK_DOWN(*st) != 0) {
-          g_nFlightTimeRemaining += TIME_BONUS_SECONDS(actor->type) * 60;
+          g_nFlightTimeRemaining += TIME_BONUS_SECONDS(actor->type) * TIMEBONUS_FRAMES_PER_SECOND;
           PlaySoundEffect(g_pLevelSampleBankHeader[SFX_FLIGHT_TIME_ADDED], actor, SFX_MODE_PANNED, 0);
           DespawnActorRecord(actor);
         }

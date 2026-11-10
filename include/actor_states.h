@@ -193,12 +193,26 @@ typedef struct SpinRunState {
 } SpinRunState;
 
 /* Levels 13/14/15 type 295 (ACTOR_TYPE_HOMING_WISP): steers toward its
- * target actor (or Spyro), and bursts into three sparks when it arrives or
- * touches the ground. */
+ * target actor (or Spyro) and bursts into WISP_DEBRIS falling debris on
+ * reaching it; a wall, its timer or leaving the level box just despawns it. */
 typedef struct WispState {
   struct Actor *target; /* 0x00 actor to reach, or null to chase Spyro */
   int timer;            /* 0x04 lifetime */
 } WispState;
+/* A homing wisp flies at WISP_SPEED (contact radius WISP_RADIUS), turning at
+ * most WISP_TURN_STEP a frame toward Spyro or WISP_TARGET_RAISE above its
+ * target, until its timer, a wall or leaving the level floor (any axis under
+ * WISP_MIN_COORD). It hits Spyro within WISP_HIT_RADIUS (a 1/32-unit shove
+ * along its heading), its target within WISP_TARGET_RANGE (2D and height),
+ * bursting into WISP_DEBRIS falling debris. */
+#define WISP_SPEED 0x12C
+#define WISP_RADIUS 0x100
+#define WISP_TURN_STEP 2
+#define WISP_TARGET_RAISE 0x2BC
+#define WISP_MIN_COORD 0x400
+#define WISP_HIT_RADIUS 0x64
+#define WISP_TARGET_RANGE 0x200
+#define WISP_DEBRIS 3
 
 /* Falling debris (ACTOR_TYPE_FALLING_DEBRIS, levels 13/14/15). */
 typedef struct FallingDebrisState {

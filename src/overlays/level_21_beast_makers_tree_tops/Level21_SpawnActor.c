@@ -238,9 +238,9 @@ Actor *Level21_SpawnActor(int type, Actor *parent) {
     rec->tint2 = 0;
     rec->tintMode = TINT_STATUE_SHARD;
     if (g_nDragonRescueSubstate == DRAGON_RESCUE_TURN) {
-      rec->scale = 0x14;
+      rec->scale = STATUE_SHARD_TURN_SCALE;
     } else if (g_nDragonRescueSubstate == DRAGON_RESCUE_SWEEP) {
-      rec->scale = 0x30;
+      rec->scale = STATUE_SHARD_SWEEP_SCALE;
     }
     i = GetRandomU32() & 7;
     dir[0] = g_anLaunchDirTable[i * 2];
@@ -263,7 +263,7 @@ Actor *Level21_SpawnActor(int type, Actor *parent) {
     st->spinY = GetRandomU32() & 0xF;
     st->spinZ = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ;
-    st->life = (GetRandomU32() & 3) + 0x10;
+    st->life = (GetRandomU32() & 3) + STATUE_SHARD_LIFE;
     break;
   }
 

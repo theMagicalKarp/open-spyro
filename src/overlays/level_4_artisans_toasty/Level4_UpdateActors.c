@@ -525,11 +525,11 @@ void Level4_UpdateActors(void) {
           CopyVector(svA, &spy->posX);
           cb = LookupCosine(g_bSpyroPersistentEulerZ * 0x10);
           cs = LookupSine(g_bSpyroPersistentEulerZ * 0x10);
-          x = cb * 0xB5;
-          y = cs * 0xB5;
+          x = cb * EGG_APEX_DIAG_4;
+          y = cs * EGG_APEX_DIAG_4;
           svA[0] += (y + x) * 4 >> 12;
-          svA[1] += (int)((LookupSine(g_bSpyroPersistentEulerZ * 0x10) * 0xB5) -
-                          (LookupCosine(g_bSpyroPersistentEulerZ * 0x10) * 0xB5U)) *
+          svA[1] += (int)((LookupSine(g_bSpyroPersistentEulerZ * 0x10) * EGG_APEX_DIAG_4) -
+                          (LookupCosine(g_bSpyroPersistentEulerZ * 0x10) * (unsigned)EGG_APEX_DIAG_4)) *
                         4 >>
                     12;
           svA[2] += EGG_APEX_HEIGHT;
@@ -1098,16 +1098,16 @@ void Level4_UpdateActors(void) {
                 int *at = &actor->posX;
 
                 st->prompted = 0;
-                actor->posZ = st->baseZ + 0x80;
+                actor->posZ = st->baseZ + SAVEHOST_POP_RAISE;
                 actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                              spy->posY - actor->posY, ATAN_ANGLE8) -
                                0x80;
-                actor->cullRadius = 0x20;
+                actor->cullRadius = SAVEHOST_CULL_RADIUS;
                 actor->mode = SAVEHOST_POP_IN;
-                actor->scale = 0x60;
+                actor->scale = SAVEHOST_POP_SCALE;
                 g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, at, 0xC);
                 RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
-                FindGroundHeightBelow(at, 0x1000);
+                FindGroundHeightBelow(at, SAVEHOST_PROBE_DEPTH);
                 EncodeHitNormalToActorGroundCode(actor);
                 actor->groundCode |= ACTOR_GROUND_VALID;
               }
@@ -1118,8 +1118,8 @@ void Level4_UpdateActors(void) {
 
       case SAVEHOST_POP_IN:
         if (actor->scale > ACTOR_SCALE_UNIT) {
-          actor->scale -= 4;
-          actor->rotZ += 8;
+          actor->scale -= SAVEHOST_SCALE_STEP;
+          actor->rotZ += SAVEHOST_SPIN_STEP;
         } else {
           actor->mode = SAVEHOST_HOVER;
           st->timer = 0;
@@ -1156,7 +1156,7 @@ void Level4_UpdateActors(void) {
 
         st->wanderTimer -= 1;
         if (st->wanderTimer == 0) {
-          int reach = (GetRandomU32() & 0x3F) + 0x140;
+          int reach = (GetRandomU32() & 0x3F) + SAVEHOST_WANDER_DIST;
           int bearing = ArcTan2(spy->posX - anchor->posX,
                                       spy->posY - anchor->posY, ATAN_ANGLE8);
           int aim = (bearing + (GetRandomU32() & 0xF)) - 8;
@@ -1215,7 +1215,7 @@ void Level4_UpdateActors(void) {
           actor->posX += (svF[0] * wSpan) / wDen;
           actor->posY += (svF[1] * wSpan) / wDen;
           actor->rotZ += (turn * wSpan) / wDen;
-          FindGroundHeightBelow(here, 0x1000);
+          FindGroundHeightBelow(here, SAVEHOST_PROBE_DEPTH);
           EncodeHitNormalToActorGroundCode(actor);
 
           if (st->wanderTimer == SAVEHOST_WANDER_FRAMES) {
@@ -1227,9 +1227,9 @@ void Level4_UpdateActors(void) {
       }
 
       case SAVEHOST_POP_OUT:
-        if (actor->scale < 0x60) {
-          actor->scale += 4;
-          actor->rotZ += 8;
+        if (actor->scale < SAVEHOST_POP_SCALE) {
+          actor->scale += SAVEHOST_SCALE_STEP;
+          actor->rotZ += SAVEHOST_SPIN_STEP;
         } else {
           actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;
@@ -1615,14 +1615,14 @@ void Level4_UpdateActors(void) {
       PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
       /* Two of each of the first pair, then six of the third. */
-      for (i = 0; i < 2; i++) {
+      for (i = 0; i < WOODCHEST_SHARD_PAIRS; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
         }
         g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_CHEST_SHARD, actor);
         g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_CHEST_SHARD + 1, actor);
       }
-      for (i = 0; i < 6; i++) {
+      for (i = 0; i < WOODCHEST_CHIPS; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
         }
@@ -1681,7 +1681,7 @@ void Level4_UpdateActors(void) {
         actor->soundRange = 0x20;
         PlayActorMeshVoice(actor, WOBBLECHEST_VOICE_BREAK, 0);
 
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < WOBBLECHEST_SHARD_PAIRS; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
@@ -1689,7 +1689,7 @@ void Level4_UpdateActors(void) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD + 1, actor);
         }
 
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < WOBBLECHEST_CHIPS; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
@@ -2250,7 +2250,7 @@ void Level4_UpdateActors(void) {
           ModifyWorldChunkAnimFlags(APGUARD_STAGE_CHUNK(2), CHUNK_ANIM_RESUME, 0);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorLiveKill(actor);
-          BurstActorWithSound(actor, 0x20);
+          BurstActorWithSound(actor, APGUARD_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2431,7 +2431,7 @@ void Level4_UpdateActors(void) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
         MarkActorLiveKill(actor);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-        BurstActorWithSound(actor, 0x18);
+        BurstActorWithSound(actor, LUNGER_BURST_SPARK_LIFE);
         DespawnActorRecord(actor);
         continue;
       }
@@ -2526,11 +2526,11 @@ void Level4_UpdateActors(void) {
 
       case LUNGER_KNOCKED:
         ANIM_GO(actor, st->anim + 4);
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC,
-                      0xA);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, LUNGER_KNOCK_DRAG,
+                      LUNGER_KNOCK_GRAVITY);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, LUNGER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2543,7 +2543,7 @@ void Level4_UpdateActors(void) {
           ANIM_GO(actor, st->anim + 5);
         }
         if (g_nActorAnimDone != 0) {
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, LUNGER_BURST_SPARK_LIFE);
           SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
           MarkActorLiveKill(actor);
           DespawnActorRecord(actor);
@@ -2635,9 +2635,9 @@ void Level4_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->speed = 0x190;
+        st->speed = REAR_KNOCK_SPEED;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->speed = 0x1F4;
+          st->speed = REAR_CHARGE_KNOCK_SPEED;
         }
         st->spin = RandomIntInRange(2, 5);
         if (GetRandomU32() & 1) {
@@ -2661,7 +2661,7 @@ void Level4_UpdateActors(void) {
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (TICK_DOWN(st->timer) != 0 &&
-            ApproxDist2D(&actor->posX, &SPY.posX) < 0x2000) {
+            ApproxDist2D(&actor->posX, &SPY.posX) < REAR_ROUSE_RANGE) {
           if (actor->anim == REAR_IDLE) {
             ENTER_POSE4(actor, REAR_NOTICE);
           }
@@ -2684,7 +2684,7 @@ void Level4_UpdateActors(void) {
         int dist = ApproxDist2D(&actor->posX, &SPY.posX);
 
         if (g_nActorAnimDone != 0) {
-          if (dist > 0xC00) {
+          if (dist > REAR_FIDGET_RANGE) {
             if (st->count == 0) {
               st->count = RandomIntInRange(3, 6);
               ANIM_GO(actor, REAR_ANIM_REARED_FIDGET);
@@ -2697,15 +2697,15 @@ void Level4_UpdateActors(void) {
           }
         }
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if (dist < 0xBB8) {
+        if (dist < REAR_SHOVE_RANGE) {
           int height = actor->posZ - actor->floorOffset;
           int drop = height - SPY.posZ;
 
-          if (drop > 0 ? drop < 0x4B0 : (SPY.posZ - height) < 0x4B0) {
+          if (drop > 0 ? drop < REAR_SHOVE_DZ : (SPY.posZ - height) < REAR_SHOVE_DZ) {
             ENTER_POSE4(actor, REAR_SHOVE);
           }
         }
-        if (dist > 0x2400) {
+        if (dist > REAR_LOSE_RANGE) {
           ENTER_POSE4(actor, REAR_DROP);
         }
         break;
@@ -2714,7 +2714,7 @@ void Level4_UpdateActors(void) {
       case REAR_SHOVE:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
         if (g_nSpyroState == SPYRO_ST_KNOCKBACK) {
-          st->timer = 0x8C;
+          st->timer = REAR_GLOAT_TICKS;
         }
         if (g_nActorAnimDone != 0) {
           if (st->timer != 0) {
@@ -2734,24 +2734,24 @@ void Level4_UpdateActors(void) {
         break;
 
       case REAR_KNOCKED:
-        if (actor->frame < 0xA) {
+        if (actor->frame < REAR_SPIN_FRAMES) {
           actor->rotZ += st->spin;
         }
-        if (st->speed > 0x1E) {
-          st->speed -= 0x1E;
-          MoveActorAlongAngle(actor, st->knockHeading, st->speed, 0, 0x12C, MOVE_LIFT);
+        if (st->speed > REAR_KNOCK_DRAG) {
+          st->speed -= REAR_KNOCK_DRAG;
+          MoveActorAlongAngle(actor, st->knockHeading, st->speed, 0, REAR_MOVE_RADIUS, MOVE_LIFT);
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x20);
+          BurstActorWithSound(actor, REAR_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
         break;
 
       case REAR_GLOAT:
-        if (actor->frame >= 0x1C && TICK_DOWN(st->timer) != 0) {
-          actor->frame = 0xF;
+        if (actor->frame >= REAR_GLOAT_LOOP_END && TICK_DOWN(st->timer) != 0) {
+          actor->frame = REAR_GLOAT_LOOP_START;
         }
       spin_wait:
         if (g_nActorAnimDone != 0) {

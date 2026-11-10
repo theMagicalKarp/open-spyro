@@ -168,6 +168,13 @@ typedef enum SpyroState
 #define SPYRO_GROUND_PRESS 0xC00     /* walking / standing states: pins Spyro to
                                       * the floor, projected along the slope */
 
+/* g_bSpyroOtBinBias (SpyroObj.otBinBias): ordering-table bins Spyro's model
+ * is pulled toward the camera. SampleSpyroShadowRingHeights resets it to
+ * SPYRO_OT_BIAS_DEFAULT every tick unless it is SPYRO_OT_BIAS_PINNED, which
+ * the portal guides set while Spyro jumps and glides into a portal. */
+#define SPYRO_OT_BIAS_DEFAULT 5
+#define SPYRO_OT_BIAS_PINNED 0x7F
+
 /* g_dwSpyroRequestMask bits (SpyroObj.requestMask): a scripted override of
  * Spyro posted by actors and cutscenes, applied by AdvanceSpyroPhysics while
  * SPYRO_RQ_PENDING is set. */

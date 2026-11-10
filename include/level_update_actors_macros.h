@@ -249,8 +249,8 @@
 #define PATH_NODE_SPEED 0xFFC
 enum PathNodeJump {
   PATH_JUMP_LOW = 1,
-  PATH_JUMP_MID = 2,  /* the path runner's highest */
-  PATH_JUMP_HIGH = 3, /* Gnasty Gnorc only */
+  PATH_JUMP_MID = 2,
+  PATH_JUMP_HIGH = 3, /* Gnasty Gnorc, the path runner's flee */
 };
 
 #define ROCK(st) (*(Actor **)((char *)(st) + 0x40))

@@ -532,11 +532,11 @@ void Level34_UpdateActors(void) {
           CopyVector(apex, &SPY.posX);
           cb = LookupCosine(g_bSpyroPersistentEulerZ * 0x10);
           cs = LookupSine(g_bSpyroPersistentEulerZ * 0x10);
-          x = cb * 0xB5;
-          y = cs * 0xB5;
+          x = cb * EGG_APEX_DIAG_4;
+          y = cs * EGG_APEX_DIAG_4;
           apex[0] += (y + x) * 4 >> 12;
-          apex[1] += (int)((LookupSine(g_bSpyroPersistentEulerZ * 0x10) * 0xB5) -
-                          (LookupCosine(g_bSpyroPersistentEulerZ * 0x10) * 0xB5U)) *
+          apex[1] += (int)((LookupSine(g_bSpyroPersistentEulerZ * 0x10) * EGG_APEX_DIAG_4) -
+                          (LookupCosine(g_bSpyroPersistentEulerZ * 0x10) * (unsigned)EGG_APEX_DIAG_4)) *
                         4 >>
                     12;
           apex[2] += EGG_APEX_HEIGHT;
@@ -1384,7 +1384,7 @@ void Level34_UpdateActors(void) {
         continue;
       }
       AddVector(&actor->posX, &actor->posX, st->vel);
-      st->vel[2] -= 0xC;
+      st->vel[2] -= DEBRIS_FALL_GRAVITY;
       actor->rotX += st->spin[0];
       actor->rotY += st->spin[1];
       actor->rotZ += st->spin[2];
@@ -1765,9 +1765,9 @@ void Level34_UpdateActors(void) {
 
       case LTHIEF_KNOCKED:
         if (DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->knockZSpeed,
-                          0xC, 0xC) == MOVED_LANDED) {
+                          LTHIEF_KNOCK_DRAG, LTHIEF_KNOCK_GRAVITY) == MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, LTHIEF_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -1784,14 +1784,14 @@ void Level34_UpdateActors(void) {
       int turn;
 
       if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != LCRITTER_KNOCKED) {
-        st->knockSpeed = 0x96;
+        st->knockSpeed = LCRITTER_KNOCK_SPEED;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->knockSpeed = 0xE1;
+          st->knockSpeed = LCRITTER_CHARGE_KNOCK_SPEED;
         }
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
             g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->knockZSpeed = 0x80;
+        st->knockZSpeed = LCRITTER_KNOCK_VZ;
         if (actor->dropKind == DROP_GEM_ROLL) {
           actor->dropKind = ACTOR_TYPE_SPARX_FOOD;
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -1829,7 +1829,7 @@ void Level34_UpdateActors(void) {
       switch (actor->mode) {
       case LCRITTER_WATCH:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < LCRITTER_NOTICE_RANGE) {
           actor->subMode = LCRITTER_HOME_ORBIT;
           ENTER_POSE(actor, LCRITTER_FLEE);
         }
@@ -1838,13 +1838,13 @@ void Level34_UpdateActors(void) {
       case LCRITTER_FLEE:
         if (st->hasHome != 0) {
           pos = &actor->posX;
-          speed = 0x154;
+          speed = LCRITTER_FLEE_BASE_SPEED;
           speed -= ApproxDist2D(pos, &SPY.posX) >> 5;
-          if (speed < 0x8C) {
-            speed = 0x8C;
+          if (speed < LCRITTER_FLEE_MIN_SPEED) {
+            speed = LCRITTER_FLEE_MIN_SPEED;
           }
-          if (speed > 0xF0) {
-            speed = 0xF0;
+          if (speed > LCRITTER_FLEE_MAX_SPEED) {
+            speed = LCRITTER_FLEE_MAX_SPEED;
           }
           switch (actor->subMode) {
           case LCRITTER_HOME_ORBIT: {
@@ -1854,7 +1854,7 @@ void Level34_UpdateActors(void) {
             int a;
             int b;
 
-            if (ApproxDist2D(pos, FP_PT(st->path, 0)) < 0x1000) {
+            if (ApproxDist2D(pos, FP_PT(st->path, 0)) < LCRITTER_HOME_NEAR) {
               TurnActorYawTowardAngle(actor,
                             ArcTan2(actor->posX - SPY.posX,
                                           actor->posY - SPY.posY, ATAN_ANGLE8),
@@ -1862,31 +1862,31 @@ void Level34_UpdateActors(void) {
               MoveActorAlongHeading(actor, speed, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
               break;
             }
-            lim = 10;
+            lim = LCRITTER_ORBIT_FACING;
             a = ArcTan2(FP_X(st->path, st->path->cur) - SPY.posX,
                               FP_Y(st->path, st->path->cur) - SPY.posY, ATAN_ANGLE8);
             b = ArcTan2(actor->posX - FP_X(st->path, 0),
                               actor->posY - FP_Y(st->path, 0), ATAN_ANGLE8);
             if (actor->nextAnim == 4) {
-              lim = 0x28;
+              lim = LCRITTER_ORBIT_FACING_WIDE;
             }
             if (AbsAngleDelta8(a, b) > lim &&
-                ApproxDist2D(pos, &SPY.posX) < 0x3000) {
-              turn = SteerActorAroundPoint(actor, FP_PT(st->path, 0), 0x1800, a, 5,
+                ApproxDist2D(pos, &SPY.posX) < LCRITTER_ORBIT_RANGE) {
+              turn = SteerActorAroundPoint(actor, FP_PT(st->path, 0), LCRITTER_ORBIT_RADIUS, a, 5,
                                    speed, 0xE, 0x14, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_FOLLOW_FLOOR);
             }
-            if (turn > 0x5A) {
+            if (turn > LCRITTER_STUCK_TURN) {
               st->stuck++;
             } else {
               st->stuck = 0;
             }
-            if (turn < 0x1E) {
+            if (turn < LCRITTER_ORBIT_SETTLED) {
               ENTER_POSE(actor, LCRITTER_WATCH);
             }
-            if (st->stuck >= 0x1E &&
+            if (st->stuck >= LCRITTER_STUCK_FRAMES &&
                 AbsAngleDelta8(home, ArcTan2(SPY.posX - actor->posX,
                                                   SPY.posY - actor->posY, ATAN_ANGLE8)) >
-                    0x20) {
+                    LCRITTER_BREAKOUT_FACING) {
               actor->subMode = LCRITTER_HOME_BREAKOUT;
             }
             break;
@@ -1900,10 +1900,10 @@ void Level34_UpdateActors(void) {
 
             TurnActorYawTowardAngle(actor, a, 8, 0, YAW_HOLD_IN_BAND);
             MoveActorAlongHeading(actor, speed, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-            if (AbsAngleDelta8(a, b) > 0x50) {
+            if (AbsAngleDelta8(a, b) > LCRITTER_BREAKOUT_TURN) {
               actor->subMode = LCRITTER_HOME_ORBIT;
             }
-            if (ApproxDist2D(pos, FP_PT(st->path, 0)) > 0x1800) {
+            if (ApproxDist2D(pos, FP_PT(st->path, 0)) > LCRITTER_ORBIT_RADIUS) {
               actor->subMode = LCRITTER_HOME_ORBIT;
             }
             break;
@@ -1938,7 +1938,7 @@ void Level34_UpdateActors(void) {
             int dir;
             int r;
 
-            if (FindNearestPathPointToSpyro(st->path, &critterAwayNode) > 0x3000) {
+            if (FindNearestPathPointToSpyro(st->path, &critterAwayNode) > LCRITTER_WANDER_RANGE) {
               st->mode = LCRITTER_RUN_WANDER;
             }
             critterAwayNode = (critterAwayNode + (st->path->count >> 1)) % st->path->count;
@@ -1957,7 +1957,7 @@ void Level34_UpdateActors(void) {
             if (dir != st->path->dir) {
               st->path->dir = dir;
             }
-            r = PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+            r = PivotActorAlongPath(actor, st->path, LCRITTER_PIVOT_THRESH, LCRITTER_WANDER_SPEED, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             if (r & PATH_ARRIVED_FLAG) {
               r &= ~PATH_ARRIVED_FLAG;
               if (st->path->dir == -1) {
@@ -1968,14 +1968,14 @@ void Level34_UpdateActors(void) {
                 ENTER_POSE(actor, LCRITTER_WATCH);
               }
             }
-            if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
+            if (ApproxDist2D(&actor->posX, &SPY.posX) < LCRITTER_NOTICE_RANGE) {
               st->mode = LCRITTER_RUN_PICK;
             }
             break;
           }
 
           case LCRITTER_RUN_WANDER: {
-            int r = PivotActorAlongPath(actor, st->path, 0x200, 0xC8, 0, 8, 0x1E,
+            int r = PivotActorAlongPath(actor, st->path, LCRITTER_PIVOT_THRESH, LCRITTER_WANDER_SPEED, 0, 8, 0x1E,
                                   PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
             if (r & PATH_ARRIVED_FLAG) {
@@ -1988,17 +1988,17 @@ void Level34_UpdateActors(void) {
                 ENTER_POSE(actor, LCRITTER_WATCH);
               }
             }
-            if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x1800) {
+            if (ApproxDist2D(&actor->posX, &SPY.posX) < LCRITTER_NOTICE_RANGE) {
               st->mode = LCRITTER_RUN_PICK;
             }
             break;
           }
 
           case LCRITTER_RUN_DASH:
-            if (ApproxDist2D(&actor->posX, &SPY.posX) > 0x2800) {
+            if (ApproxDist2D(&actor->posX, &SPY.posX) > LCRITTER_CLEAR_RANGE) {
               st->mode = one;
             }
-            PivotActorAlongPath(actor, st->path, 0x200, 0xF0, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+            PivotActorAlongPath(actor, st->path, LCRITTER_PIVOT_THRESH, LCRITTER_DASH_SPEED, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             break;
           }
         }
@@ -2006,10 +2006,10 @@ void Level34_UpdateActors(void) {
 
       case LCRITTER_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed,
-                      0xC, 0x10);
+                      LCRITTER_KNOCK_DRAG, LCRITTER_KNOCK_GRAVITY);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, LCRITTER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2272,14 +2272,14 @@ void Level34_UpdateActors(void) {
       PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
       /* Two of each of the first pair, then six of the third. */
-      for (i = 0; i < 2; i++) {
+      for (i = 0; i < WOODCHEST_SHARD_PAIRS; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
         }
         g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_CHEST_SHARD, actor);
         g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_CHEST_SHARD + 1, actor);
       }
-      for (i = 0; i < 6; i++) {
+      for (i = 0; i < WOODCHEST_CHIPS; i++) {
         if (ACTOR_POOL_LOW()) {
           break;
         }
@@ -2338,7 +2338,7 @@ void Level34_UpdateActors(void) {
         actor->soundRange = 0x20;
         PlayActorMeshVoice(actor, WOBBLECHEST_VOICE_BREAK, 0);
 
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < WOBBLECHEST_SHARD_PAIRS; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
@@ -2346,7 +2346,7 @@ void Level34_UpdateActors(void) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD + 1, actor);
         }
 
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < WOBBLECHEST_CHIPS; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
@@ -2786,7 +2786,7 @@ void Level34_UpdateActors(void) {
             }
             c = g_pfnLevelSpawnActor(ACTOR_TYPE_BOULDER_DEBRIS + 2, actor);
             cs = c->state;
-            c->subMode = (GetRandomU32() & 1) + 0x12;
+            c->subMode = (GetRandomU32() & 1) + SPARK_DEBRIS_LIFE;
             CopyVector(&c->posX, &actor->posX);
             c->posX += (g_anCosineLut[i * 16] >> 4) + (GetRandomU32() & 0x1F) - 0xF;
             c->posY += (g_anSineLut[i * 16] >> 4) + (GetRandomU32() & 0x1F) - 0xF;
@@ -2808,7 +2808,7 @@ void Level34_UpdateActors(void) {
             }
             c = g_pfnLevelSpawnActor(ACTOR_TYPE_BOULDER_DEBRIS + 1, actor);
             cs = c->state;
-            c->subMode = (GetRandomU32() & 3) + 0x19;
+            c->subMode = (GetRandomU32() & 3) + CHUNK_DEBRIS_LIFE;
             CopyVector(&c->posX, &actor->posX);
             c->posX += (g_anCosineLut[(i << 8) / 12] >> 4) + (GetRandomU32() & 0x3F) - 0x1F;
             c->posY += (g_anSineLut[(i << 8) / 12] >> 4) + (GetRandomU32() & 0x3F) - 0x1F;
@@ -2863,14 +2863,14 @@ void Level34_UpdateActors(void) {
         if (actor->subMode == SEEDPOD_SUB_UNTINTED) {
           *(int *)&actor->tint0 = g_anTintByDropKind[actor->dropKind];
           actor->subMode = SEEDPOD_SUB_TINTED;
-          actor->updateDist = 0x10;
+          actor->updateDist = SEEDPOD_IDLE_UPDATE_DIST;
         }
         if (actor->flags & ACTOR_HITS_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
           st->restZ = actor->posZ;
-          actor->updateDist = 0x40;
+          actor->updateDist = SEEDPOD_OPEN_UPDATE_DIST;
           st->prize = SpawnActorDeathDrop(actor, DROP_IN_PLACE, 0, 0);
           st->prize->subMode = COLLECT_INERT;
           st->prize->cullRadius = ACTOR_CULL_HIDDEN;
@@ -2893,11 +2893,11 @@ void Level34_UpdateActors(void) {
       case SEEDPOD_OPEN: {
         int i;
 
-        st->prize->cullRadius = 0x18;
+        st->prize->cullRadius = SEEDPOD_PRIZE_CULL;
         CopyVector(&st->prize->posX, &actor->posX);
-        st->prize->posZ += LookupSine((st->timer << 11) / 90) / 3 + 0x1A4;
+        st->prize->posZ += LookupSine((st->timer << 11) / 90) / 3 + SEEDPOD_PRIZE_HOVER;
         st->prize->rotZ += g_nFrameStep * 2;
-        if (st->timer < 0x40) {
+        if (st->timer < SEEDPOD_SHAKE_TICKS) {
           int dx;
           int dy;
 
@@ -2914,26 +2914,26 @@ void Level34_UpdateActors(void) {
           dx += dy;
           actor->posZ = st->restZ + dx * 6;
         }
-        if (st->timer < 0x20 &&
+        if (st->timer < SEEDPOD_SPARK_TICKS &&
             (st->timer & 3) <= ((st->timer + g_nFrameStep) & 3)) {
           ZeroVector(w416);
           g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, &st->prize->posX, (int)w416);
         }
         if ((ApproxDist2D(&st->prize->posX, &spy->posX) < SEEDPOD_PRIZE_RANGE &&
-             (unsigned int)(SPY.posZ - st->prize->posZ + 0xDF) < 0x2BF) ||
+             (unsigned int)(SPY.posZ - st->prize->posZ + SEEDPOD_PRIZE_DZ_BELOW) < SEEDPOD_PRIZE_DZ_SPAN) ||
             g_nSpyroState == SPYRO_ST_SUPERCHARGE || g_nSpyroState == SPYRO_ST_SUPERCHARGE_AIR ||
             (g_nSpyroState == SPYRO_ST_CHARGE_AIR && (g_nSpyroSubstate & SPYRO_SUB_SUPERCHARGE))) {
           CollectPickupActor(st->prize);
           DespawnActorRecord(st->prize);
           PlayActorMeshVoice(actor, SEEDPOD_VOICE_BURST, 0);
-          for (i = 0; i < 2; i++) {
+          for (i = 0; i < SEEDPOD_SHARD_PAIRS; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
             }
             g_pfnLevelSpawnActor(ACTOR_TYPE_SEED_POD_SHARD, actor);
             g_pfnLevelSpawnActor(ACTOR_TYPE_SEED_POD_SHARD + 1, actor);
           }
-          for (i = 0; i < 6; i++) {
+          for (i = 0; i < SEEDPOD_CHIPS; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
             }
@@ -2947,14 +2947,14 @@ void Level34_UpdateActors(void) {
         if (actor->flags & ACTOR_HIT_SUPER) {
           st->prize->subMode = COLLECT_BOUNCE;
           PlayActorMeshVoice(actor, SEEDPOD_VOICE_BURST, 0);
-          for (i = 0; i < 2; i++) {
+          for (i = 0; i < SEEDPOD_SHARD_PAIRS; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
             }
             g_pfnLevelSpawnActor(ACTOR_TYPE_SEED_POD_SHARD, actor);
             g_pfnLevelSpawnActor(ACTOR_TYPE_SEED_POD_SHARD + 1, actor);
           }
-          for (i = 0; i < 6; i++) {
+          for (i = 0; i < SEEDPOD_CHIPS; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
             }
@@ -2966,10 +2966,10 @@ void Level34_UpdateActors(void) {
           continue;
         }
         st->timer += g_nFrameStep;
-        if (st->timer >= 0x56) {
+        if (st->timer >= SEEDPOD_OPEN_TICKS) {
           int j;
 
-          for (j = 0; j < 6; j++) {
+          for (j = 0; j < SEEDPOD_RING_SPARKS; j++) {
             CopyVector(w432, &st->prize->posX);
             w432[0] += g_anCosineLut[j * 43] >> 6;
             w432[1] += g_anSineLut[j * 43] >> 6;
@@ -2981,7 +2981,7 @@ void Level34_UpdateActors(void) {
           }
           DespawnActorRecord(st->prize);
           actor->killGroup &= ACTOR_KILL_GROUP_MASK;
-          actor->updateDist = 0x10;
+          actor->updateDist = SEEDPOD_IDLE_UPDATE_DIST;
           actor->rotX = st->rotX;
           actor->rotY = st->rotY;
           actor->posZ = st->restZ;
@@ -3117,14 +3117,14 @@ void Level34_UpdateActors(void) {
         }
         if (best != 0) {
           SubtractVector(st->vel, &best->posX, &actor->posX);
-          st->vel[2] += 0x200;
+          st->vel[2] += LID_AIM_RAISE;
           RShiftVector3(st->vel, 7);
         } else {
           SubtractVector(st->vel, &actor->posX, &SPY.posX);
           st->vel[2] = 0;
-          ScaleVector3ByRatio(st->vel, VectorLength(st->vel, VEC_LEN_XY), 0x50);
+          ScaleVector3ByRatio(st->vel, VectorLength(st->vel, VEC_LEN_XY), LID_MISS_SPEED);
         }
-        st->vel[2] += 0xA0;
+        st->vel[2] += LID_LAUNCH_VZ;
         st->timer = 0;
         actor->subMode = LID_FLYING;
         actor->cullRadius = 0x20;
@@ -3137,8 +3137,8 @@ void Level34_UpdateActors(void) {
         continue;
       }
       st->timer += g_nFrameStep;
-      actor->rotZ += g_nFrameStep * 8;
-      if (st->vel[2] >= -0x9F) {
+      actor->rotZ += g_nFrameStep * LID_SPIN_STEP;
+      if (st->vel[2] > -LID_MAX_FALL) {
         st->vel[2] -= (g_nFrameStep * 5) >> 1;
       }
       for (i = 0; i < g_nFrameStep; i++) {
@@ -3147,19 +3147,19 @@ void Level34_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        actor->posZ += 0xB4;
-        if (st->timer >= 5 &&
-            (CollideSphereWithWorldAndActors(&actor->posX, 0xB4, 0xB4) != 0 ||
-             DispatchActorContactAtSphere(&actor->posX, 0x100, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, CONTACT_STOP_AT_SOLID) != 0)) {
-          DispatchActorContactAtSphere(&actor->posX, 0x400, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, CONTACT_STOP_AT_SOLID);
-          for (i = 0; i < 2; i++) {
+        actor->posZ += LID_HIT_RAISE;
+        if (st->timer >= LID_ARM_TICKS &&
+            (CollideSphereWithWorldAndActors(&actor->posX, LID_HIT_RADIUS, LID_HIT_RADIUS) != 0 ||
+             DispatchActorContactAtSphere(&actor->posX, LID_CONTACT_RADIUS, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, CONTACT_STOP_AT_SOLID) != 0)) {
+          DispatchActorContactAtSphere(&actor->posX, LID_BLAST_RADIUS, 0, (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE), actor, CONTACT_STOP_AT_SOLID);
+          for (i = 0; i < LID_SHARD_PAIRS; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
             }
             g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD, actor);
             g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD + 1, actor);
           }
-          for (i = 0; i < 6; i++) {
+          for (i = 0; i < LID_SPARKLES; i++) {
             if (ACTOR_POOL_LOW()) {
               break;
             }
@@ -3170,7 +3170,7 @@ void Level34_UpdateActors(void) {
           DespawnActorRecord(actor);
           continue;
         }
-        actor->posZ -= 0xB4;
+        actor->posZ -= LID_HIT_RAISE;
       }
       continue;
     }
@@ -3253,8 +3253,8 @@ void Level34_UpdateActors(void) {
         SubtractVector(w432, PATH_PT(st->path, 1), PATH_PT(st->path, 0));
         pitch = ArcTan2(VectorLength(w432, VEC_LEN_XY), w432[2], ATAN_ANGLE8);
         actor->rotY = pitch - 0x40;
-        if (((unsigned int)(pitch + 0x40) & 0xFF) < 0x60) {
-          actor->rotY = 0xE0;
+        if (((unsigned int)(pitch + 0x40) & 0xFF) < CANNON_LOW_PITCH_SPAN) {
+          actor->rotY = CANNON_LOW_PITCH;
         }
         actor->rotZ = ArcTan2(w432[0], w432[1], ATAN_ANGLE8);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
@@ -3277,10 +3277,10 @@ void Level34_UpdateActors(void) {
 
       case CANNON_FUSE:
         st->timer += g_nFrameStep;
-        if (st->timer < 0x5A) {
+        if (st->timer < CANNON_SMOKE_TICKS) {
           fusePos[0] = 0;
           fusePos[1] = 0;
-          fusePos[2] = 0x14C;
+          fusePos[2] = CANNON_MUZZLE_LEN;
           RotateVectorByMatrix(actor->mtx, fusePos, fusePos);
           AddVector(fusePos, fusePos, &actor->posX);
           fuseVel[0] = 0;
@@ -3296,26 +3296,26 @@ void Level34_UpdateActors(void) {
           PlayActorMeshVoice(actor, CANNON_VOICE_FUSE, 0);
           continue;
         }
-        if (st->timer < 0xB4 &&
+        if (st->timer < CANNON_FIRE_TICK &&
             (st->timer & 3) <= ((st->timer + g_nFrameStep) & 3)) {
           fusePos[0] = 0;
           fusePos[1] = 0;
-          fusePos[2] = 0x14C;
+          fusePos[2] = CANNON_MUZZLE_LEN;
           RotateVectorByMatrix(actor->mtx, fusePos, fusePos);
           AddVector(fusePos, fusePos, &actor->posX);
           fuseVel[0] = 0;
-          fuseVel[1] = ((st->timer - 0x5A) >> 3) + 9;
-          fuseVel[2] = -0x12 - ((st->timer - 0x5A) >> 2);
+          fuseVel[1] = ((st->timer - CANNON_SMOKE_TICKS) >> 3) + 9;
+          fuseVel[2] = -0x12 - ((st->timer - CANNON_SMOKE_TICKS) >> 2);
           RotateVectorByMatrix(actor->mtx, fuseVel, fuseVel);
           g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, fusePos, (int)fuseVel);
           if (actor->rotX < 0x80) {
-            actor->rotX = -((st->timer - 0x5A) >> 5);
+            actor->rotX = -((st->timer - CANNON_SMOKE_TICKS) >> 5);
           } else {
-            actor->rotX = (st->timer - 0x5A) >> 5;
+            actor->rotX = (st->timer - CANNON_SMOKE_TICKS) >> 5;
           }
           continue;
         }
-        if (st->timer <= 0xB4) {
+        if (st->timer <= CANNON_FIRE_TICK) {
           continue;
         }
         actor->subMode = CANNON_FLIGHT;
@@ -3328,7 +3328,7 @@ void Level34_UpdateActors(void) {
         continue;
 
       case CANNON_FLIGHT:
-        if (st->timer == 4) {
+        if (st->timer == CANNON_LEG_TICKS) {
           SubtractVector(y400, PATH_PT(st->path, st->path->cur), &actor->posX);
           CopyVector(st->vel, y400);
           st->path->cur++;

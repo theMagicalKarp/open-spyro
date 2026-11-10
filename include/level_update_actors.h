@@ -220,7 +220,8 @@ typedef struct {
   int headLook;                   /* 0x1A4 */
   char pad1A8[0x4C];
   int requestMask;               /* 0x1F4 g_dwSpyroRequestMask (SPYRO_RQ_*) */
-  char pad1F8[0x8];
+  int requestTargetX;             /* 0x1F8 g_anSpyroRequestTargetPos[0] */
+  int requestTargetY;             /* 0x1FC g_anSpyroRequestTargetPos[1] */
   int requestTargetZ;             /* 0x200 g_nSpyroRequestTargetZ */
   char pad204[0x2];
   unsigned char requestYaw;       /* 0x206 g_bSpyroRequestYaw */
@@ -348,6 +349,14 @@ typedef struct DebrisFallState {
   int floor;              /* 0x0C */
   unsigned char spin[3];  /* 0x10 */
 } DebrisFallState;
+/* A sparking-debris piece's ->subMode is its life in ticks (it pops when
+ * that runs out or it falls below `floor`, sparking on even ticks): the
+ * bursts that throw it (cracking boulder, floating barrel / mine) give
+ * ACTOR_TYPE_BOULDER_DEBRIS + 2 SPARK_DEBRIS_LIFE + 0..1 and + 1
+ * CHUNK_DEBRIS_LIFE + 0..3. It falls DEBRIS_FALL_GRAVITY faster a tick. */
+#define SPARK_DEBRIS_LIFE 0x12
+#define CHUNK_DEBRIS_LIFE 0x19
+#define DEBRIS_FALL_GRAVITY 0xC
 
 /* Case 312 -- cracking boulder. */
 typedef struct CrackingBoulderState {

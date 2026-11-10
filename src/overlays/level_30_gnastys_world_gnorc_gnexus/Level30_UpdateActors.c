@@ -481,11 +481,11 @@ void Level30_UpdateActors(void) {
           CopyVector(svA, &spy->posX);
           cb = LookupCosine(g_bSpyroPersistentEulerZ * 0x10);
           cs = LookupSine(g_bSpyroPersistentEulerZ * 0x10);
-          x = cb * 0xB5;
-          y = cs * 0xB5;
+          x = cb * EGG_APEX_DIAG_4;
+          y = cs * EGG_APEX_DIAG_4;
           svA[0] += (y + x) * 4 >> 12;
-          svA[1] += (int)((LookupSine(g_bSpyroPersistentEulerZ * 0x10) * 0xB5) -
-                          (LookupCosine(g_bSpyroPersistentEulerZ * 0x10) * 0xB5U)) *
+          svA[1] += (int)((LookupSine(g_bSpyroPersistentEulerZ * 0x10) * EGG_APEX_DIAG_4) -
+                          (LookupCosine(g_bSpyroPersistentEulerZ * 0x10) * (unsigned)EGG_APEX_DIAG_4)) *
                         4 >>
                     12;
           svA[2] += EGG_APEX_HEIGHT;
@@ -1038,16 +1038,16 @@ void Level30_UpdateActors(void) {
                 int *at = &actor->posX;
 
                 st->prompted = 0;
-                actor->posZ = st->baseZ + 0x80;
+                actor->posZ = st->baseZ + SAVEHOST_POP_RAISE;
                 actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                              spy->posY - actor->posY, ATAN_ANGLE8) -
                                0x80;
-                actor->cullRadius = 0x20;
+                actor->cullRadius = SAVEHOST_CULL_RADIUS;
                 actor->mode = SAVEHOST_POP_IN;
-                actor->scale = 0x60;
+                actor->scale = SAVEHOST_POP_SCALE;
                 g_pfnLevelEmitParticles(0x18, EMIT_FALLING_STREAK_BURST, at, 0xC);
                 RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);
-                FindGroundHeightBelow(at, 0x1000);
+                FindGroundHeightBelow(at, SAVEHOST_PROBE_DEPTH);
                 EncodeHitNormalToActorGroundCode(actor);
                 actor->groundCode |= ACTOR_GROUND_VALID;
               }
@@ -1058,8 +1058,8 @@ void Level30_UpdateActors(void) {
 
       case SAVEHOST_POP_IN:
         if (actor->scale > ACTOR_SCALE_UNIT) {
-          actor->scale -= 4;
-          actor->rotZ += 8;
+          actor->scale -= SAVEHOST_SCALE_STEP;
+          actor->rotZ += SAVEHOST_SPIN_STEP;
         } else {
           actor->mode = SAVEHOST_HOVER;
           st->timer = 0;
@@ -1096,7 +1096,7 @@ void Level30_UpdateActors(void) {
 
         st->wanderTimer -= 1;
         if (st->wanderTimer == 0) {
-          int reach = (GetRandomU32() & 0x3F) + 0x140;
+          int reach = (GetRandomU32() & 0x3F) + SAVEHOST_WANDER_DIST;
           int bearing = ArcTan2(spy->posX - anchor->posX,
                                       spy->posY - anchor->posY, ATAN_ANGLE8);
           int aim = (bearing + (GetRandomU32() & 0xF)) - 8;
@@ -1155,7 +1155,7 @@ void Level30_UpdateActors(void) {
         actor->posX += (svF[0] * wSpan) / wDen;
         actor->posY += (svF[1] * wSpan) / wDen;
         actor->rotZ += (turn * wSpan) / wDen;
-        FindGroundHeightBelow(here, 0x1000);
+        FindGroundHeightBelow(here, SAVEHOST_PROBE_DEPTH);
         EncodeHitNormalToActorGroundCode(actor);
 
         if (st->wanderTimer == SAVEHOST_WANDER_FRAMES) {
@@ -1167,9 +1167,9 @@ void Level30_UpdateActors(void) {
       }
 
       case SAVEHOST_POP_OUT:
-        if (actor->scale < 0x60) {
-          actor->scale += 4;
-          actor->rotZ += 8;
+        if (actor->scale < SAVEHOST_POP_SCALE) {
+          actor->scale += SAVEHOST_SCALE_STEP;
+          actor->rotZ += SAVEHOST_SPIN_STEP;
         } else {
           actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->drawn = 0;
@@ -1579,7 +1579,7 @@ void Level30_UpdateActors(void) {
         actor->soundRange = 0x20;
         PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < WOODCHEST_SHARD_PAIRS; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
@@ -1587,7 +1587,7 @@ void Level30_UpdateActors(void) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_CHEST_SHARD + 1, actor);
         }
 
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < WOODCHEST_CHIPS; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
@@ -1649,7 +1649,7 @@ void Level30_UpdateActors(void) {
         actor->soundRange = 0x20;
         PlayActorMeshVoice(actor, WOBBLECHEST_VOICE_BREAK, 0);
 
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < WOBBLECHEST_SHARD_PAIRS; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
@@ -1657,7 +1657,7 @@ void Level30_UpdateActors(void) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_WOOD_SHARD + 1, actor);
         }
 
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < WOBBLECHEST_CHIPS; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
           }
@@ -1746,9 +1746,9 @@ void Level30_UpdateActors(void) {
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         if (actor->flags & ACTOR_HIT_FLAME) {
-          st->speed = 0xC8;
+          st->speed = CRITTER_STRONG_FLAME_KNOCK_SPEED;
         } else {
-          st->speed = 0x190;
+          st->speed = CRITTER_STRONG_KNOCK_SPEED;
         }
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -1773,13 +1773,13 @@ void Level30_UpdateActors(void) {
           break;
 
         case CRITTER_KNOCKED:
-          if (st->speed >= 0x10) {
-            st->speed -= 0xF;
-            MoveActorAlongAngle(actor, st->heading, st->speed, 0, 0x1F4, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          if (st->speed >= CRITTER_KNOCK_MIN_SPEED) {
+            st->speed -= CRITTER_KNOCK_DRAG;
+            MoveActorAlongAngle(actor, st->heading, st->speed, 0, CRITTER_C_MOVE_RADIUS, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           }
           if (g_nActorAnimDone != 0) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-            BurstActorWithSound(actor, 0x10);
+            BurstActorWithSound(actor, CRITTER_C_BURST_SPARK_LIFE);
             DespawnActorRecord(actor);
             continue;
           }
@@ -1788,7 +1788,7 @@ void Level30_UpdateActors(void) {
 
         case CRITTER_REST:
           if (g_nActorAnimDone != 0) {
-            st->rest = RandomIntInRange(0x5A, 0x12C);
+            st->rest = RandomIntInRange(CRITTER_C_REST_MIN, CRITTER_C_REST_MAX);
             actor->mode = CRITTER_WANDER;
             if (actor->nextAnim != CRITTER_WANDER) {
               ANIM_ADVANCE(actor, CRITTER_WANDER);
@@ -2314,9 +2314,9 @@ void Level30_UpdateActors(void) {
         g_nPortalCamPathReverseFlag = actor->subMode;
         EBB_BREAK();
         portal = st->desc;
-        g_nPortalCamPathMaxStep = 0x60;
+        g_nPortalCamPathMaxStep = PORTALGUIDE_PATH_MAX_STEP;
         g_nSpyroRequestState = SPYRO_ST_JUMP;
-        g_bSpyroOtBinBias = 0x7F;
+        g_bSpyroOtBinBias = SPYRO_OT_BIAS_PINNED;
         g_pPortalCamPathData = portal;
         {
           PortalCamPath *pd = *(PortalCamPath **)st;
@@ -2329,8 +2329,8 @@ void Level30_UpdateActors(void) {
         AddVector(aim, aim, st->offset);
         span = VectorLength(aim, VEC_LEN_XYZ);
 
-        if (span >= 0x81) {
-          ScaleVector3ByRatio(aim, span, 0x80);
+        if (span > PORTALGUIDE_JUMP_SPEED) {
+          ScaleVector3ByRatio(aim, span, PORTALGUIDE_JUMP_SPEED);
         } else {
           int more;
 
@@ -2346,7 +2346,7 @@ void Level30_UpdateActors(void) {
           }
         }
 
-        if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
+        if (CollideSphereWithWorldAndActors(&CAM.posX, PORTALGUIDE_CAM_PROBE_RADIUS, PORTALGUIDE_CAM_PROBE_RADIUS) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && *g_pTriggerRegionTable[g_nGroundSurfaceType] == 6) {
           actor->mode = PORTALGUIDE_IDLE;
           AS_I32(g_nCameraNextMode) = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
@@ -2385,12 +2385,12 @@ void Level30_UpdateActors(void) {
 
       case PORTALGUIDE_GLIDE:
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_FREEZE_INPUT | SPYRO_RQ_NO_CLIP);
-        g_nPortalCamPathMaxStep = 0x60;
+        g_nPortalCamPathMaxStep = PORTALGUIDE_PATH_MAX_STEP;
         g_nSpyroRequestState = SPYRO_ST_GLIDE;
-        g_bSpyroOtBinBias = 0x7F;
+        g_bSpyroOtBinBias = SPYRO_OT_BIAS_PINNED;
         g_pPortalCamPathData = st->desc;
 
-        if (CollideSphereWithWorldAndActors(&CAM.posX, 0x300, 0x300) != 0 &&
+        if (CollideSphereWithWorldAndActors(&CAM.posX, PORTALGUIDE_CAM_PROBE_RADIUS, PORTALGUIDE_CAM_PROBE_RADIUS) != 0 &&
             (g_nGroundSurfaceType & 0x3F) < 0x3F && *g_pTriggerRegionTable[g_nGroundSurfaceType] == 6) {
           actor->mode = PORTALGUIDE_IDLE;
           AS_I32(g_nCameraNextMode) = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
