@@ -1241,7 +1241,7 @@ void Level2_UpdateActors(void) {
       GuardPairState *st = actor->state;
 
       if ((actor->flags & (ACTOR_HIT_FLAME | ACTOR_HIT_SUPER)) && actor->mode != GPAIR_KNOCKED) {
-        st->speed = 0xF0;
+        st->speed = GPAIR_KNOCK_SPEED;
         st->knockHeading = SPY.bodyRotZ;
         actor->flags = 0;
         SpawnActorDeathDrop(actor, DROP_SCATTER, 0, 0);
@@ -1254,9 +1254,9 @@ void Level2_UpdateActors(void) {
         int dz;
 
         TrackEntityYawTowardSpyro(actor, 3, 0x10, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2000 &&
-            ((dz = actor->posZ - SPY.posZ) > 0 ? dz < 0x5DC
-                                               : SPY.posZ - actor->posZ < 0x5DC)) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < GPAIR_ROUSE_RANGE &&
+            ((dz = actor->posZ - SPY.posZ) > 0 ? dz < GPAIR_LEVEL_DZ
+                                               : SPY.posZ - actor->posZ < GPAIR_LEVEL_DZ)) {
           st->speed = 0x48;
           ENTER_POSE_B(actor, GPAIR_ROUSE);
         }
@@ -1286,14 +1286,14 @@ void Level2_UpdateActors(void) {
         int dz;
 
         TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
-        if (dist < 0xBB8 &&
-            ((dz = actor->posZ - SPY.posZ) > 0 ? dz < 0x5DC
-                                               : SPY.posZ - actor->posZ < 0x5DC)) {
+        if (dist < GPAIR_SWING_RANGE &&
+            ((dz = actor->posZ - SPY.posZ) > 0 ? dz < GPAIR_LEVEL_DZ
+                                               : SPY.posZ - actor->posZ < GPAIR_LEVEL_DZ)) {
           st->speed = 0x48;
           st->gloatCount = 0;
           ENTER_POSE_B(actor, GPAIR_SWING);
         }
-        if (dist > 0x2400) {
+        if (dist > GPAIR_LOWER_RANGE) {
           ENTER_POSE_B(actor, GPAIR_LOWER);
         }
         break;
@@ -1317,12 +1317,12 @@ void Level2_UpdateActors(void) {
         break;
       case GPAIR_KNOCKED:
         if (st->speed > 0) {
-          MoveActorAlongAngle(actor, st->knockHeading, st->speed, 0x1F4, 0x2BC, 0);
-          st->speed -= 0x10;
+          MoveActorAlongAngle(actor, st->knockHeading, st->speed, GPAIR_KNOCK_CONTACT, GPAIR_MOVE_RADIUS, 0);
+          st->speed -= GPAIR_KNOCK_DRAG;
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x48);
+          BurstActorWithSound(actor, GPAIR_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -1342,7 +1342,7 @@ void Level2_UpdateActors(void) {
           break;
         case GPCUE_SIGNAL:
           ANIM_GO(actor, GPAIR_ANIM_SIGNAL);
-          if (g_nActorAnimNewFrame != 0 && actor->frame == 8) {
+          if (g_nActorAnimNewFrame != 0 && actor->frame == GPAIR_SIGNAL_FRAME) {
             g_pActorListBase[st->partner].mode = 0xD;
             g_pActorListBase[st->partner].anim = 0xD;
             g_pActorListBase[st->partner].nextAnim = 0xD;
@@ -1357,7 +1357,7 @@ void Level2_UpdateActors(void) {
         case GPCUE_LOWER:
           ANIM_GO(actor, GPAIR_LOWER);
           if (g_nActorAnimDone != 0) {
-            st->timer = 0x258;
+            st->timer = GPAIR_CUE_GAP;
             ENTER_POSE_B(actor, GPAIR_IDLE);
           }
           break;

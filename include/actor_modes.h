@@ -1252,6 +1252,16 @@ enum PathGuardMode {
 #define PATHGUARD_KNOCK_SPEED 0xDC
 #define PATHGUARD_CHARGE_KNOCK_BONUS 0x8C
 #define PATHGUARD_THROW_COOLDOWN 0x3C
+/* It walks (and rings) with MOVE_RADIUS, the ring's wall probe WALL_RADIUS;
+ * hit, it slides along Spyro's heading bent KNOCK_BEND_STEP_WIDE /
+ * KNOCK_BEND_FRAC_WIDE toward his yaw, losing KNOCK_DRAG a frame, and
+ * bursts with BURST_SPARK_LIFE sparks. */
+#define PATHGUARD_MOVE_RADIUS 0x180
+#define PATHGUARD_WALL_RADIUS 0x15C
+#define PATHGUARD_KNOCK_BEND_STEP_WIDE 0x20
+#define PATHGUARD_KNOCK_BEND_FRAC_WIDE 0x60
+#define PATHGUARD_KNOCK_DRAG 0xC
+#define PATHGUARD_BURST_SPARK_LIFE 0x18
 
 /* ->mode of a split shot (ACTOR_TYPE_SPLIT_SHOT), set at spawn from the
  * thrower's animation frame; the mode doubles as the animation index. */
@@ -2678,6 +2688,23 @@ enum GuardPairCueStep {
 enum GuardPairAnim {
   GPAIR_ANIM_SIGNAL = 8, /* GPCUE_SIGNAL */
 };
+/* Guard-pair tuning. IDLE rouses with Spyro within ROUSE_RANGE and LEVEL_DZ
+ * and cues its partner every CUE_GAP ticks (the signal lands on frame
+ * SIGNAL_FRAME); WATCH swings within SWING_RANGE and LEVEL_DZ and lowers
+ * beyond LOWER_RANGE. Flamed, it slides off along Spyro's heading from
+ * KNOCK_SPEED losing KNOCK_DRAG a frame (contact KNOCK_CONTACT, radius
+ * MOVE_RADIUS), and bursts with BURST_SPARK_LIFE sparks. */
+#define GPAIR_ROUSE_RANGE 0x2000
+#define GPAIR_LEVEL_DZ 0x5DC
+#define GPAIR_SWING_RANGE 0xBB8
+#define GPAIR_LOWER_RANGE 0x2400
+#define GPAIR_CUE_GAP 0x258
+#define GPAIR_SIGNAL_FRAME 8
+#define GPAIR_KNOCK_SPEED 0xF0
+#define GPAIR_KNOCK_DRAG 0x10
+#define GPAIR_KNOCK_CONTACT 0x1F4
+#define GPAIR_MOVE_RADIUS 0x2BC
+#define GPAIR_BURST_SPARK_LIFE 0x48
 
 /* ->mode of a sweep gunner (ACTOR_TYPE_SWEEP_GUNNER, SweepGunnerState;
  * level 32). */

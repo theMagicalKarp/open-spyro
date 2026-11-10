@@ -3818,7 +3818,7 @@ void Level12_UpdateActors(void) {
           st->knockSpeed = PATHGUARD_KNOCK_SPEED;
           st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
-                                    spy->bodyRotZ, 0x20, 0x60);
+                                    spy->bodyRotZ, PATHGUARD_KNOCK_BEND_STEP_WIDE, PATHGUARD_KNOCK_BEND_FRAC_WIDE);
           if (actor->flags & ACTOR_HIT_CHARGE) {
             st->knockSpeed += PATHGUARD_CHARGE_KNOCK_BONUS;
           }
@@ -3879,8 +3879,8 @@ void Level12_UpdateActors(void) {
             if (ps->heading != 0) {
               st->heading = (ps->heading + 0x80) & 0xFF;
               SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist,
-                            st->heading, 8, PATHGUARD_RING_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0x180,
-                            0x15C, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
+                            st->heading, 8, PATHGUARD_RING_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, PATHGUARD_MOVE_RADIUS,
+                            PATHGUARD_WALL_RADIUS, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
               st->heading = 0;
               ps->heading = 0;
             } else {
@@ -3907,7 +3907,7 @@ void Level12_UpdateActors(void) {
             ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                           st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8),
             8, 0x10, YAW_STEP_IN_BAND);
-        MoveActorAlongHeading(actor, PATHGUARD_WALK_SPEED, 0x180, 0x180, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
+        MoveActorAlongHeading(actor, PATHGUARD_WALK_SPEED, PATHGUARD_MOVE_RADIUS, PATHGUARD_MOVE_RADIUS, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
         break;
 
       case PATHGUARD_THROW:
@@ -3930,10 +3930,10 @@ void Level12_UpdateActors(void) {
         break;
 
       case PATHGUARD_KNOCKED:
-        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
+        DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, PATHGUARD_KNOCK_DRAG, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, PATHGUARD_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
