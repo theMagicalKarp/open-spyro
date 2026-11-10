@@ -538,7 +538,7 @@ void Level3_UpdateActors(void) {
           }
           if (ApproxDist2D(&actor->posX, &SPY.posX) > WARD_DAZE_LEAVE_RANGE) {
             RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-            BurstActorWithSound(actor, 0x20);
+            BurstActorWithSound(actor, WARD_BURST_SPARK_LIFE);
             DespawnActorRecord(actor);
             continue;
           }
@@ -560,7 +560,7 @@ void Level3_UpdateActors(void) {
       case WARD_BURN:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x20);
+          BurstActorWithSound(actor, WARD_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3367,7 +3367,7 @@ void Level3_UpdateActors(void) {
         actor->rotY += st->spinY;
         if (st->vz < -0xB3) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x20);
+          BurstActorWithSound(actor, LFOLLOW_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -3449,7 +3449,7 @@ void Level3_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x10);
+          BurstActorWithSound(actor, GRAZER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

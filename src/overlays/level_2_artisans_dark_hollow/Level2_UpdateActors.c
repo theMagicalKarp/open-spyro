@@ -1867,7 +1867,7 @@ void Level2_UpdateActors(void) {
         }
         if (TICK_DOWN(st->timer)) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x20);
+          BurstActorWithSound(actor, POSTGUARD_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2921,7 +2921,7 @@ void Level2_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, 0, 0xC, 0);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x10);
+          BurstActorWithSound(actor, GRAZER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

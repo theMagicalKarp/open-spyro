@@ -2188,7 +2188,7 @@ void Level28_UpdateActors(void) {
 
       case JACQUES_DEFEATED:
         if (g_nActorAnimDone != 0) {
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, JACQUES_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

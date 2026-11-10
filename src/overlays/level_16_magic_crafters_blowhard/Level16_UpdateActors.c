@@ -3434,7 +3434,7 @@ void Level16_UpdateActors(void) {
           actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->frameRate = 0;
           actor->collision = 0;
-          BurstActorWithSound(actor, 0x20);
+          BurstActorWithSound(actor, HBELL_BURST_SPARK_LIFE);
         }
         switch (st->chunkAnim) {
         case 3:

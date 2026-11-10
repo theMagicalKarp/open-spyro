@@ -2039,6 +2039,7 @@ enum PostGuardAnim {
 #define POSTGUARD_LUNGE_DZ 0x3E8
 #define POSTGUARD_LUNGE_REST 0xB4
 #define POSTGUARD_HOP_LEAVE_RANGE 0x2000
+#define POSTGUARD_BURST_SPARK_LIFE 0x20 /* BurstActorWithSound spark life */
 
 /* ->mode of a patrol ward (ACTOR_TYPE_PATROL_WARD, WardState; level 3).
  * WARD_IDLE runs WardState.mode's role (sentry, node patrol, partner ring);
@@ -2100,6 +2101,7 @@ enum WardAnim {
 #define WARD_KNOCK_DRAG 0xF
 #define WARD_DAZE_MIN 0x40
 #define WARD_DAZE_LEAVE_RANGE 0x2800
+#define WARD_BURST_SPARK_LIFE 0x20 /* BurstActorWithSound spark life */
 
 /* ->mode of a shooter sentry (ACTOR_TYPE_SHOOTER, ShooterState; level 7).
  * Flames bounce off while it hides behind its shield (SHOOTER_SHIELD,
@@ -2491,6 +2493,7 @@ enum GrabberAnim {
 #define GRABBER_RETREAT_SPEED 0xC8
 #define GRABBER_HOME_ARRIVE 0x100
 #define GRABBER_HOME_REST 0x78
+#define GRABBER_BURST_SPARK_LIFE 0x30 /* BurstActorWithSound spark life */
 
 /* ->mode of a sorcerer (ACTOR_TYPE_SORCERER, SorcererState; level 13).
  * Modes below 0x60 double as the pose's animation index; the cue modes
@@ -2607,6 +2610,7 @@ enum JacquesMode {
   JACQUES_DEFEATED = 3,  /* struck at his last stop: bursts */
   JACQUES_HOP = 10,      /* hops along his ring to the next stop, then WATCH */
 };
+#define JACQUES_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of a bolt sentry (ACTOR_TYPE_BOLT_SENTRY, BoltSentryState;
  * level 19); the mode is also the animation index. Its guards are three
@@ -3271,6 +3275,7 @@ enum MountMode {
   MOUNT_REACT = 1,   /* reacts to Spyro, then IDLE */
   MOUNT_KNOCKED = 2, /* struck, or its rider burst or ran: knocked away, then bursts */
 };
+#define MOUNT_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of a hatch carrier (ACTOR_TYPE_HATCH_CARRIER, HatchCarrierState;
  * level 31); the mode is also the animation index. */
@@ -3280,6 +3285,7 @@ enum HatchCarrierMode {
   HCARRIER_THROW = 2,   /* throws it on frame 6, then WAIT */
   HCARRIER_KNOCKED = 3, /* flamed: knocked away, then bursts */
 };
+#define HCARRIER_BURST_SPARK_LIFE 0x30 /* BurstActorWithSound spark life */
 
 /* ->mode of a carried-prop thrower (ACTOR_TYPE_CARRIED_THROWER,
  * CarriedThrowerState; level 31); the mode is also the animation index.
@@ -3457,6 +3463,7 @@ enum ChargingYakMode {
   YAK_KNOCKED = 6,   /* flamed: knocked away, then bursts */
   YAK_BUTT_HOLD = 7, /* holds after pinning Spyro, then GRAZE */
 };
+#define YAK_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* The grazing pair a charging yak alternates in YAK_GRAZE (8 a random 2..4
  * times, then 9); its other animations are its mode indices. */
@@ -3924,6 +3931,7 @@ enum RousedSentryMode {
   RSENTRY_FALL = 3,    /* falls; landed: BURST */
   RSENTRY_BURST = 4,   /* bursts */
 };
+#define RSENTRY_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of a loot critter (ACTOR_TYPE_LOOT_CRITTER, CritterState; level
  * 34); the mode is also the animation index. */
@@ -4203,6 +4211,7 @@ enum PartnerBouncerMode {
   PBOUNCER_THROWN = 2, /* superflamed, or its partner went: thrown off, then FALL */
   PBOUNCER_FALL = 3,   /* falls until it lands (burst) or drops out of the level */
 };
+#define PBOUNCER_BURST_SPARK_LIFE 0x30 /* BurstActorWithSound spark life */
 
 /* ->mode of a fence captain (ACTOR_TYPE_FENCE_CAPTAIN, FenceCaptainState;
  * level 27); the mode is also the animation index. */
@@ -4327,6 +4336,7 @@ enum LinkedFollowerMode {
   LFOLLOW_SET_OFF = 5, /* turns to the leader's heading, then FOLLOW */
   LFOLLOW_TAUNT = 8,   /* faces Spyro, then IDLE */
 };
+#define LFOLLOW_BURST_SPARK_LIFE 0x20 /* BurstActorWithSound spark life */
 
 /* A linked follower's animations besides the poses equal to its mode. */
 enum LinkedFollowerAnim {
@@ -4507,6 +4517,7 @@ enum RunnerSpawnerMode {
   RSPAWNER_RELEASE = 3, /* sends out an ACTOR_TYPE_WAYPOINT_RUNNER on frame 5 */
   RSPAWNER_KNOCKED = 4, /* bursts */
 };
+#define RSPAWNER_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of a waypoint runner (ACTOR_TYPE_WAYPOINT_RUNNER,
  * WaypointRunnerState; level 14). On reaching its target it makes the
@@ -4552,6 +4563,7 @@ enum GrazerMode {
   GRAZER_PAUSE = 1,   /* idle animation, then WANDER */
   GRAZER_KNOCKED = 2, /* hit: bursts */
 };
+#define GRAZER_BURST_SPARK_LIFE 0x10 /* BurstActorWithSound spark life */
 
 /* ->mode of a lobbed bomb (ACTOR_TYPE_LOBBED_BOMB; levels 25/26). */
 enum LobbedBombMode {
@@ -4577,6 +4589,7 @@ enum ChunkOperatorMode {
   CHUNKOP_KNOCKED = 3, /* hit: finishes the chunk's run and bursts */
   CHUNKOP_FLINCH = 4,  /* flamed: flinches, then RUN */
 };
+#define CHUNKOP_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 
 /* ->mode of the overhead thrower (ACTOR_TYPE_OVERHEAD_THROWER; levels 9/10);
  * the mode is also the animation index. */
@@ -4593,6 +4606,7 @@ enum RoamingCritterMode {
   ROAMCRIT_KNOCKED = 5, /* slides along the knock heading, bursts; falls into DYING */
   ROAMCRIT_DYING = 6,   /* death animation 6 (wandering its first frames), then ROAMCRIT_ANIM_DEAD; despawns */
 };
+#define ROAMCRIT_BURST_SPARK_LIFE 0x10 /* BurstActorWithSound spark life */
 
 /* A roaming critter's animations besides the poses equal to its mode. */
 enum RoamingCritterAnim {
@@ -4703,6 +4717,7 @@ enum HummingBellMode {
   HBELL_STRUCK = 1, /* flamed or supercharged: bursts, runs its chunk to step 0, despawns */
   HBELL_HUM = 2,    /* sparks at its target and restarts its chunk every period */
 };
+#define HBELL_BURST_SPARK_LIFE 0x20 /* BurstActorWithSound spark life */
 
 /* ->mode of an attach bead (ACTOR_TYPE_ATTACH_BEAD, AttachBeadState; level
  * 19), one of the three kids a bead sentry keeps streaming between its two

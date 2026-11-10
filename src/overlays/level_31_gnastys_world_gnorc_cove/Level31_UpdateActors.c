@@ -2115,7 +2115,7 @@ void Level31_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, MOUNT_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2197,7 +2197,7 @@ void Level31_UpdateActors(void) {
         DriveActorTrackedMove(actor, &st->speed, st->knockHeading, &st->zSpeed, 0xC, sixteen);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x30);
+          BurstActorWithSound(actor, HCARRIER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

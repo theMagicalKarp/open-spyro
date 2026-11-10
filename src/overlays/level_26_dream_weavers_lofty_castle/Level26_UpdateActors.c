@@ -2703,7 +2703,7 @@ void Level26_UpdateActors(void) {
         if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC,
                           0x10) != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x30);
+          BurstActorWithSound(actor, PBOUNCER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2724,7 +2724,7 @@ void Level26_UpdateActors(void) {
         if (DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xC,
                           0x10) != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x30);
+          BurstActorWithSound(actor, PBOUNCER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

@@ -3971,7 +3971,7 @@ void Level14_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, CHUNKOP_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4052,7 +4052,7 @@ void Level14_UpdateActors(void) {
       case RSPAWNER_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, RSPAWNER_BURST_SPARK_LIFE);
           StopSoundVoicesByOwner(actor, VOICE_STOP_LOOPING);
           DespawnActorRecord(actor);
           continue;

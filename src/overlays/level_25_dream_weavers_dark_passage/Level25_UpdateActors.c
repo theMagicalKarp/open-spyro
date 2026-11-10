@@ -1176,7 +1176,7 @@ void Level25_UpdateActors(void) {
       case RSENTRY_BURST:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, RSENTRY_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

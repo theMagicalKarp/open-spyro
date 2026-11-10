@@ -3539,7 +3539,7 @@ void Level20_UpdateActors(void) {
         actor->rotY += 4;
         if (DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0xE) == MOVED_LANDED) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x30);
+          BurstActorWithSound(actor, GRABBER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

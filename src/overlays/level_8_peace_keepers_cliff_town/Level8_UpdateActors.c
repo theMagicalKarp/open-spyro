@@ -3104,7 +3104,7 @@ void Level8_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x10);
+          BurstActorWithSound(actor, ROAMCRIT_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
