@@ -2053,11 +2053,11 @@ void Level31_UpdateActors(void) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - SPY.posX,
                                                 actor->posY - SPY.posY, ATAN_ANGLE8),
                                   SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
-        st->zSpeed = 0x78;
+        st->zSpeed = MOUNT_KNOCK_VZ;
         if (actor->flags & ACTOR_HIT_CHARGE) {
-          st->speed = 0xF0;
+          st->speed = MOUNT_CHARGE_KNOCK_SPEED;
         } else {
-          st->speed = 0x78;
+          st->speed = MOUNT_KNOCK_SPEED;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
@@ -2069,7 +2069,7 @@ void Level31_UpdateActors(void) {
         if (s == FLOATBARREL_BLAST) {
           st->rider = -1;
           st->speed = 0;
-          st->zSpeed = 0xF0;
+          st->zSpeed = MOUNT_BLAST_VZ;
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorLiveKill(actor);
           ENTER_POSE(actor, MOUNT_KNOCKED);
@@ -2077,27 +2077,27 @@ void Level31_UpdateActors(void) {
         if (s == FLOATBARREL_RUN) {
           st->rider = -1;
           st->speed = 0;
-          st->zSpeed = 0x78;
+          st->zSpeed = MOUNT_KNOCK_VZ;
           SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
           MarkActorLiveKill(actor);
           ENTER_POSE(actor, MOUNT_KNOCKED);
         }
       }
       if (st->init == 0) {
-        g_pActorListBase[st->rider].posZ += 0x1CD;
-        g_pActorListBase[st->rider].rotY = 0x40;
-        actor->posZ += 0x384;
+        g_pActorListBase[st->rider].posZ += MOUNT_RIDER_RAISE;
+        g_pActorListBase[st->rider].rotY = MOUNT_RIDER_PITCH;
+        actor->posZ += MOUNT_RAISE;
         st->init = 1;
       }
 
       switch (actor->mode) {
       case MOUNT_IDLE:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x800) {
+        if (ApproxDist2D(&actor->posX, &SPY.posX) < MOUNT_REACT_RANGE) {
           int dz = (actor->posZ - actor->floorOffset) - SPY.posZ;
 
-          if (dz > 0 ? dz < 0x800
-                     : SPY.posZ - (actor->posZ - actor->floorOffset) < 0x800) {
+          if (dz > 0 ? dz < MOUNT_REACT_DZ
+                     : SPY.posZ - (actor->posZ - actor->floorOffset) < MOUNT_REACT_DZ) {
             ENTER_POSE(actor, MOUNT_REACT);
           }
         }

@@ -3305,6 +3305,20 @@ enum MountMode {
   MOUNT_KNOCKED = 2, /* struck, or its rider burst or ran: knocked away, then bursts */
 };
 #define MOUNT_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
+/* A mount starts RAISE above its spawn, its rider RIDER_RAISE up on its
+ * back (pitched RIDER_PITCH). IDLE reacts to Spyro within REACT_RANGE and
+ * REACT_DZ. Struck, it slides from KNOCK_SPEED (CHARGE_KNOCK_SPEED charged)
+ * with KNOCK_VZ up; its rider bursting pops it BLAST_VZ up, running KNOCK_VZ
+ * up. */
+#define MOUNT_RAISE 0x384
+#define MOUNT_RIDER_RAISE 0x1CD
+#define MOUNT_RIDER_PITCH 0x40
+#define MOUNT_REACT_RANGE 0x800
+#define MOUNT_REACT_DZ 0x800
+#define MOUNT_KNOCK_SPEED 0x78
+#define MOUNT_CHARGE_KNOCK_SPEED 0xF0
+#define MOUNT_KNOCK_VZ 0x78
+#define MOUNT_BLAST_VZ 0xF0
 #define MOUNT_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 
 /* ->mode of a hatch carrier (ACTOR_TYPE_HATCH_CARRIER, HatchCarrierState;
