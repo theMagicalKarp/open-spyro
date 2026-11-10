@@ -3182,7 +3182,7 @@ void Level13_UpdateActors(void) {
           g_nCameraActiveTargetPitchBias = -0xB0;
           g_nCameraActiveTargetRoll = 0;
           g_nCameraActiveTargetYawBias = 0;
-          g_anCameraActiveTargetParams.w[0] = 0x800 - g_bSpyroPersistentEulerZ * 16;
+          g_anCameraActiveTargetParams.w[CAMP_YAW] = 0x800 - g_bSpyroPersistentEulerZ * 16;
         }
         if (st->chunkAnim == -1) {
           break;
@@ -3581,11 +3581,11 @@ void Level13_UpdateActors(void) {
           }
           if (st->sub == SHEPHERD_PAIR_WALK) {
             ANIM_GO(actor, SHEPHERD_ANIM_RUN);
-            PivotActorAlongPath(actor, st->path, 0x100, 0x48, 0xC8, 3, 8,
+            PivotActorAlongPath(actor, st->path, 0x100, SHEPHERD_PAIR_WALK_SPEED, 0xC8, 3, 8,
                           actor->group, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             if (TICK_DOWN(st->timer) && partner->mode < ACTOR_MODE_DORMANT &&
-                ApproxDist2D(&actor->posX, &partner->posX) < 0x8FC) {
-              st->timer = 0x5A;
+                ApproxDist2D(&actor->posX, &partner->posX) < SHEPHERD_PAIR_MEET_RANGE) {
+              st->timer = SHEPHERD_PAIR_MEET_INTERVAL;
               st->sub = one;
             }
           } else if (st->sub == one) {
@@ -3612,7 +3612,7 @@ void Level13_UpdateActors(void) {
             continue;
           }
           ANIM_GO(actor, SHEPHERD_ANIM_RUN);
-          PivotActorAlongPath(actor, st->path, 0x100, 0x78, 0xC8, 6, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+          PivotActorAlongPath(actor, st->path, 0x100, SHEPHERD_PATROL_SPEED, 0xC8, 6, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           break;
 
         case SHEPHERD_POST_WATCH:
@@ -3683,7 +3683,7 @@ void Level13_UpdateActors(void) {
         switch (st->post) {
         case SHEPHERD_POST_RUN_PATH:
           if (st->done == 0 &&
-              PivotActorAlongPath(actor, st->path, 0x100, 0x8C, 0, 0x10, 0x80, PIVOT_TURN_ANY,
+              PivotActorAlongPath(actor, st->path, 0x100, SHEPHERD_RUN_PATH_SPEED, 0, 0x10, 0x80, PIVOT_TURN_ANY,
                             MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(0)) {
             st->done = one;
             *st->doneFlag = one;
@@ -3829,8 +3829,8 @@ void Level13_UpdateActors(void) {
           ANIM_GO(actor, SHEPHERD_IDLE);
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0xC00 &&
-            ABS2(SPY_DZ(actor)) < 0x258) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < SHEPHERD_WATCH_GUARD_RANGE &&
+            ABS2(SPY_DZ(actor)) < SHEPHERD_WATCH_GUARD_DZ) {
           st->post = SHEPHERD_POST_GUARD;
           actor->mode = SHEPHERD_IDLE;
           continue;
@@ -3858,7 +3858,7 @@ void Level13_UpdateActors(void) {
         }
         /* fall through */
       case SHEPHERD_ALERTED:
-        st->flankTimer = 0xB4;
+        st->flankTimer = SHEPHERD_FLANK_FRAMES;
         actor->mode = SHEPHERD_CHASE;
         continue;
 
@@ -3889,17 +3889,17 @@ void Level13_UpdateActors(void) {
         actor->posZ += st->vz;
         st->vz -= SHEPHERD_GRAVITY;
         d = ApproxDist2D(&actor->posX, x272);
-        if (d > 0xC8) {
+        if (d > SHEPHERD_LEAP_STEP) {
           MoveActorAlongAngle(actor,
                         ArcTan2(x272[0] - actor->posX,
                                       x272[1] - actor->posY, ATAN_ANGLE8),
-                        0xC8, 0, 0, 0);
+                        SHEPHERD_LEAP_STEP, 0, 0, 0);
         } else {
           TurnActorYawTowardAngle(actor, partner->rotZ, 6, 0, YAW_HOLD_IN_BAND);
           actor->posX = partner->posX;
           actor->posY = partner->posY;
         }
-        if (d < 0x5DC) {
+        if (d < SHEPHERD_LEAP_ALIGN_RANGE) {
           TurnActorYawTowardAngle(actor, partner->rotZ, 4, 0, YAW_HOLD_IN_BAND);
         }
         break;

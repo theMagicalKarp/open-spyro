@@ -1497,7 +1497,7 @@ void Level34_UpdateActors(void) {
         st->speed = LTHIEF_KNOCK_SPEED;
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
-            g_bSpyroPersistentEulerZ, 0x28, 0x40);
+            g_bSpyroPersistentEulerZ, LTHIEF_KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         for (i = 0; i < 3; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
@@ -1550,8 +1550,8 @@ void Level34_UpdateActors(void) {
             break;
 
           case LTHIEF_LEG_SPUR_IN:
-            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
-                              0) == ((st->curPath->count - 1) | 0x100)) {
+            if (PivotActorAlongPath(actor, st->curPath, LTHIEF_NODE_RANGE, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+                              0) == ((st->curPath->count - 1) | PATH_ARRIVED_FLAG)) {
               if (st->curPath == st->pathB) {
                 st->ring->dir = one;
                 st->ring->cur = st->ring->count - 1;
@@ -1574,11 +1574,11 @@ void Level34_UpdateActors(void) {
             break;
 
           case LTHIEF_LEG_RING:
-            n = 0x100;
+            n = PATH_ARRIVED(0);
             if (st->ring->dir > 0) {
-              n = (st->curPath->count - 1) | 0x100;
+              n = (st->curPath->count - 1) | PATH_ARRIVED_FLAG;
             }
-            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->curPath, LTHIEF_NODE_RANGE, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               0) == n) {
               st->path->dir = -st->ring->dir;
               if (st->path->dir > 0) {
@@ -1607,11 +1607,11 @@ void Level34_UpdateActors(void) {
             break;
 
           case LTHIEF_LEG_CROSS:
-            n = 0x100;
+            n = PATH_ARRIVED(0);
             if (st->ring->dir > 0) {
-              n = (st->curPath->count - 1) | 0x100;
+              n = (st->curPath->count - 1) | PATH_ARRIVED_FLAG;
             }
-            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->curPath, LTHIEF_NODE_RANGE, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               0) == n) {
               st->ring->dir = -st->path->dir;
               if (st->ring->dir > 0) {
@@ -1645,11 +1645,11 @@ void Level34_UpdateActors(void) {
               st->ring->dir = -1;
             }
             st->curPath = st->ring;
-            n = 0x100;
+            n = PATH_ARRIVED(0);
             if (st->ring->dir > 0) {
-              n = (st->curPath->count - 1) | 0x100;
+              n = (st->curPath->count - 1) | PATH_ARRIVED_FLAG;
             }
-            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->curPath, LTHIEF_NODE_RANGE, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               0) == n) {
               if (st->ring->dir > 0) {
                 st->curPath = st->pathA;
@@ -1678,7 +1678,7 @@ void Level34_UpdateActors(void) {
             break;
 
           case LTHIEF_LEG_SPUR_OUT:
-            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->curPath, LTHIEF_NODE_RANGE, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               MOVE_CHECK_Z) == PATH_ARRIVED(0)) {
               st->leg = LTHIEF_LEG_PARKED;
             }
@@ -1702,16 +1702,16 @@ void Level34_UpdateActors(void) {
             if (AbsAngleDelta8(actor->rotZ,
                               ArcTan2(SPY.posX - actor->posX,
                                             SPY.posY - actor->posY, ATAN_ANGLE8)) <
-                0x40) {
+                LTHIEF_DODGE_FACING) {
               d = (LTHIEF_DODGE_Z - actor->posZ) >> 1;
             } else {
               d = (FLY_Z(st->curPath, st->curPath->cur) - actor->posZ) >> 3;
             }
-            if (d > 0x80) {
-              d = 0x80;
+            if (d > LTHIEF_DODGE_CLIMB_STEP) {
+              d = LTHIEF_DODGE_CLIMB_STEP;
             }
-            if (d < -0x80) {
-              d = -0x80;
+            if (d < -LTHIEF_DODGE_CLIMB_STEP) {
+              d = -LTHIEF_DODGE_CLIMB_STEP;
             }
             actor->posZ += d;
             actor->rotY = -ArcTan2(d, 0x400, ATAN_ANGLE8) + 0x40;
@@ -1725,12 +1725,12 @@ void Level34_UpdateActors(void) {
             g_nSpyroSwingEulerTargetY[30] = (int)&g_anCameraActiveTargetParams;
             g_nSpyroSwingEulerTargetY[19] = /* g_dwSpyroRequestMask */
                 (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT | SPYRO_RQ_CAMERA);
-            g_anCameraActiveTargetParams.w[2] = 0xC00;
-            g_anCameraActiveTargetParams.w[1] = 0x80;
-            g_anCameraActiveTargetParams.w[4] = -0x100;
-            g_anCameraActiveTargetParams.w[3] = 0;
-            g_anCameraActiveTargetParams.w[5] = 0;
-            g_anCameraActiveTargetParams.w[0] = 0x800 - g_bSpyroPersistentEulerZ * 16;
+            g_anCameraActiveTargetParams.w[CAMP_DISTANCE] = LTHIEF_INTRO_CAM_DISTANCE;
+            g_anCameraActiveTargetParams.w[CAMP_PITCH] = LTHIEF_INTRO_CAM_PITCH;
+            g_anCameraActiveTargetParams.w[CAMP_PITCH_BIAS] = LTHIEF_INTRO_CAM_PITCH_BIAS;
+            g_anCameraActiveTargetParams.w[CAMP_ROLL] = 0;
+            g_anCameraActiveTargetParams.w[CAMP_YAW_BIAS] = 0;
+            g_anCameraActiveTargetParams.w[CAMP_YAW] = 0x800 - g_bSpyroPersistentEulerZ * 16;
             r = TweenActorAlongPath(actor, st->path, st->look, &st->laps,
                               st->speed, TWEEN_FLY);
             if (r == TWEEN_WRAPPED) {
@@ -1753,11 +1753,11 @@ void Level34_UpdateActors(void) {
           if (st->roll > 0x800) {
             st->roll -= 0x1000;
           }
-          if (st->roll < -0x200) {
-            st->roll = -0x200;
+          if (st->roll < -LTHIEF_MAX_ROLL) {
+            st->roll = -LTHIEF_MAX_ROLL;
           }
-          if (st->roll > 0x200) {
-            st->roll = 0x200;
+          if (st->roll > LTHIEF_MAX_ROLL) {
+            st->roll = LTHIEF_MAX_ROLL;
           }
           actor->rotX = st->roll >> 4;
         }

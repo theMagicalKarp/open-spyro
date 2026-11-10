@@ -7,6 +7,7 @@
 #ifndef OPEN_SPYRO_LEVEL_UPDATE_ACTORS_H
 #define OPEN_SPYRO_LEVEL_UPDATE_ACTORS_H
 
+#include "camera.h"
 #include "sparx.h"
 
 #include "actor_states.h"

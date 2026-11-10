@@ -17,6 +17,19 @@ typedef struct CameraAngles {
   int yawBias;   /* 0x14 */
 } CameraAngles;
 
+/* Word indices of a camera parameter block (g_pCameraTargetParams, the
+ * g_anCameraParam* presets, g_anCameraActiveTargetParams): the CameraAngles
+ * order LoadCameraTargetAnglesFromMode loads them in. The yaw word is
+ * world-space (12-bit); the rest are copied verbatim. */
+enum CameraParamWord {
+  CAMP_YAW = 0,
+  CAMP_PITCH = 1,
+  CAMP_DISTANCE = 2,
+  CAMP_ROLL = 3,
+  CAMP_PITCH_BIAS = 4,
+  CAMP_YAW_BIAS = 5,
+};
+
 /* A scripted-camera vantage (0x38 bytes): where the camera sits and how it
  * is turned, plus the pose Spyro is re-seated in when the record is drawn.
  * g_aScriptedCamViews holds three ROM presets UpdateScriptedCameraView

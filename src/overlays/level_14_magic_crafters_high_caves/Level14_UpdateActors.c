@@ -23,7 +23,7 @@
  *   - Case 109's turn-and-walk idiom reuses `h` and `d`, and its node
  *     searches use `&p->nodes[i].x` (loop.c makes the 8 + 16*i giv) with
  *     `st->cur->cur = i` (one fewer st ref decides st vs which, s5/s4).
- *   - Case 109's camera hold block takes `int *w1 = &g_anCameraActiveTargetParams.w[1]` so
+ *   - Case 109's camera hold block takes `int *w1 = &g_anCameraActiveTargetParams.w[CAMP_PITCH]` so
  *     cse derives &g_anCameraActiveTargetParams as w1 - 4; cases 227/109 read the yaw as
  *     SPY.bodyRotZ (a struct MEM, ordered against the st->cam stores).
  *
@@ -1986,20 +1986,20 @@ void Level14_UpdateActors(void) {
           if (g_nSpyroAirborneFrames != 0) {
             g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
             if (g_nSpyroState == SPYRO_ST_FACE_TARGET) {
-              g_anCameraActiveTargetParams.w[0] = (g_anCameraParamFollowBehind.w[0] - g_nSpyroMoveTargetYaw) & 0xFFF;
+              g_anCameraActiveTargetParams.w[CAMP_YAW] = (g_anCameraParamFollowBehind.w[CAMP_YAW] - g_nSpyroMoveTargetYaw) & 0xFFF;
             } else {
-              g_anCameraActiveTargetParams.w[0] = (g_anCameraParamFollowBehind.w[0] - g_nSpyroBodyYaw) & 0xFFF;
+              g_anCameraActiveTargetParams.w[CAMP_YAW] = (g_anCameraParamFollowBehind.w[CAMP_YAW] - g_nSpyroBodyYaw) & 0xFFF;
             }
             {
-              int *w1 = &g_anCameraActiveTargetParams.w[1];
+              int *w1 = &g_anCameraActiveTargetParams.w[CAMP_PITCH];
 
               g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
-              *w1 = g_anCameraParamFollowBehind.w[1];
+              *w1 = g_anCameraParamFollowBehind.w[CAMP_PITCH];
             }
-            g_nCameraActiveTargetDistance = g_anCameraParamFollowBehind.w[2];
-            g_nCameraActiveTargetRoll = g_anCameraParamFollowBehind.w[3];
-            g_nCameraActiveTargetPitchBias = g_anCameraParamFollowBehind.w[4];
-            g_nCameraActiveTargetYawBias = g_anCameraParamFollowBehind.w[5];
+            g_nCameraActiveTargetDistance = g_anCameraParamFollowBehind.w[CAMP_DISTANCE];
+            g_nCameraActiveTargetRoll = g_anCameraParamFollowBehind.w[CAMP_ROLL];
+            g_nCameraActiveTargetPitchBias = g_anCameraParamFollowBehind.w[CAMP_PITCH_BIAS];
+            g_nCameraActiveTargetYawBias = g_anCameraParamFollowBehind.w[CAMP_YAW_BIAS];
           } else {
             st->mode &= ~CARRIER_F_CAM_HOLD;
           }
@@ -2031,12 +2031,12 @@ void Level14_UpdateActors(void) {
           g_pSpyroRequestCameraAnchor = &SPY.posX;
           g_pScriptedCameraActor = 0;
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
-          g_anCameraActiveTargetParams.w[0] = (g_anCameraParamFollowBehind.w[0] - g_nSpyroBodyYaw) & 0xFFF;
-          g_anCameraActiveTargetParams.w[1] = g_anCameraParamFollowBehind.w[1];
-          g_anCameraActiveTargetParams.w[2] = g_anCameraParamFollowBehind.w[2];
-          g_anCameraActiveTargetParams.w[3] = g_anCameraParamFollowBehind.w[3];
-          g_anCameraActiveTargetParams.w[4] = g_anCameraParamFollowBehind.w[4];
-          g_anCameraActiveTargetParams.w[5] = g_anCameraParamFollowBehind.w[5];
+          g_anCameraActiveTargetParams.w[CAMP_YAW] = (g_anCameraParamFollowBehind.w[CAMP_YAW] - g_nSpyroBodyYaw) & 0xFFF;
+          g_anCameraActiveTargetParams.w[CAMP_PITCH] = g_anCameraParamFollowBehind.w[CAMP_PITCH];
+          g_anCameraActiveTargetParams.w[CAMP_DISTANCE] = g_anCameraParamFollowBehind.w[CAMP_DISTANCE];
+          g_anCameraActiveTargetParams.w[CAMP_ROLL] = g_anCameraParamFollowBehind.w[CAMP_ROLL];
+          g_anCameraActiveTargetParams.w[CAMP_PITCH_BIAS] = g_anCameraParamFollowBehind.w[CAMP_PITCH_BIAS];
+          g_anCameraActiveTargetParams.w[CAMP_YAW_BIAS] = g_anCameraParamFollowBehind.w[CAMP_YAW_BIAS];
         } else if (st->mode & CARRIER_F_PICKUP) {
           int *cf = &g_dwSpyroRequestMask;
 
@@ -2057,12 +2057,12 @@ void Level14_UpdateActors(void) {
           g_pSpyroRequestCameraAnchor = &SPY.posX;
           g_pScriptedCameraActor = 0;
           g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
-          g_anCameraActiveTargetParams.w[0] = (g_anCameraParamFollowBehind.w[0] - g_nSpyroBodyYaw) & 0xFFF;
-          g_anCameraActiveTargetParams.w[1] = g_anCameraParamFollowBehind.w[1];
-          g_anCameraActiveTargetParams.w[2] = g_anCameraParamFollowBehind.w[2];
-          g_anCameraActiveTargetParams.w[3] = g_anCameraParamFollowBehind.w[3];
-          g_anCameraActiveTargetParams.w[4] = g_anCameraParamFollowBehind.w[4];
-          g_anCameraActiveTargetParams.w[5] = g_anCameraParamFollowBehind.w[5];
+          g_anCameraActiveTargetParams.w[CAMP_YAW] = (g_anCameraParamFollowBehind.w[CAMP_YAW] - g_nSpyroBodyYaw) & 0xFFF;
+          g_anCameraActiveTargetParams.w[CAMP_PITCH] = g_anCameraParamFollowBehind.w[CAMP_PITCH];
+          g_anCameraActiveTargetParams.w[CAMP_DISTANCE] = g_anCameraParamFollowBehind.w[CAMP_DISTANCE];
+          g_anCameraActiveTargetParams.w[CAMP_ROLL] = g_anCameraParamFollowBehind.w[CAMP_ROLL];
+          g_anCameraActiveTargetParams.w[CAMP_PITCH_BIAS] = g_anCameraParamFollowBehind.w[CAMP_PITCH_BIAS];
+          g_anCameraActiveTargetParams.w[CAMP_YAW_BIAS] = g_anCameraParamFollowBehind.w[CAMP_YAW_BIAS];
         }
 
         if (st->mode & CARRIER_F_TO_DEST) {
@@ -2978,13 +2978,13 @@ void Level14_UpdateActors(void) {
         st->cam[2] += SFGIVER_CAM_RAISE;
         g_pSpyroRequestCameraAnchor = st->cam;
         g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
-        g_anCameraActiveTargetParams.w[2] = SFGIVER_CAM_DISTANCE;
-        g_anCameraActiveTargetParams.w[1] = 0;
-        g_anCameraActiveTargetParams.w[3] = 0;
-        g_anCameraActiveTargetParams.w[4] = 0;
-        g_anCameraActiveTargetParams.w[5] = 0;
+        g_anCameraActiveTargetParams.w[CAMP_DISTANCE] = SFGIVER_CAM_DISTANCE;
+        g_anCameraActiveTargetParams.w[CAMP_PITCH] = 0;
+        g_anCameraActiveTargetParams.w[CAMP_ROLL] = 0;
+        g_anCameraActiveTargetParams.w[CAMP_PITCH_BIAS] = 0;
+        g_anCameraActiveTargetParams.w[CAMP_YAW_BIAS] = 0;
         SPY.requestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
-        g_anCameraActiveTargetParams.w[0] = -(SPY.bodyRotZ + 0x40) << 4;
+        g_anCameraActiveTargetParams.w[CAMP_YAW] = -(SPY.bodyRotZ + 0x40) << 4;
         switch (actor->subMode) {
         case SFGIVER_SUB_APPROACH:
           if (ApproxDist2D(&actor->posX, aheadOfSpyro) > SFGIVER_ARRIVE_RANGE) {

@@ -1991,13 +1991,13 @@ void Level27_UpdateActors(void) {
         st->cam[2] += SFGIVER_CAM_RAISE;
         g_pSpyroRequestCameraAnchor = st->cam;
         g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
-        g_anCameraActiveTargetParams.w[2] = SFGIVER_CAM_DISTANCE;
-        g_anCameraActiveTargetParams.w[1] = 0;
-        g_anCameraActiveTargetParams.w[3] = 0;
-        g_anCameraActiveTargetParams.w[4] = 0;
-        g_anCameraActiveTargetParams.w[5] = 0;
+        g_anCameraActiveTargetParams.w[CAMP_DISTANCE] = SFGIVER_CAM_DISTANCE;
+        g_anCameraActiveTargetParams.w[CAMP_PITCH] = 0;
+        g_anCameraActiveTargetParams.w[CAMP_ROLL] = 0;
+        g_anCameraActiveTargetParams.w[CAMP_PITCH_BIAS] = 0;
+        g_anCameraActiveTargetParams.w[CAMP_YAW_BIAS] = 0;
         SPY.requestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
-        g_anCameraActiveTargetParams.w[0] = -(SPY.bodyRotZ + 0x40) << 4;
+        g_anCameraActiveTargetParams.w[CAMP_YAW] = -(SPY.bodyRotZ + 0x40) << 4;
         switch (actor->subMode) {
         case SFGIVER_SUB_APPROACH:
           if (ApproxDist2D(&actor->posX, g272) > SFGIVER_ARRIVE_RANGE) {
@@ -3019,7 +3019,7 @@ void Level27_UpdateActors(void) {
           SPY.pCamAnchor = &SPY.posX;
           SPY.pCamTarget = &g_anCameraActiveTargetParams;
           spyro->requestMask |= SPYRO_RQ_CAMERA;
-          g_anCameraActiveTargetParams.w[0] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
+          g_anCameraActiveTargetParams.w[CAMP_YAW] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
         }
         st->timer = WHIRL_IDLE_DELAY;
         break;

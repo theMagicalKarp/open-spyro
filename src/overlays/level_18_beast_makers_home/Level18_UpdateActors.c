@@ -1537,10 +1537,10 @@ void Level18_UpdateActors(void) {
           st->camDist = d;
         }
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
-        g_anCameraActiveTargetParams.w[0] = -ArcTan2(spy->posX - actor->posX,
+        g_anCameraActiveTargetParams.w[CAMP_YAW] = -ArcTan2(spy->posX - actor->posX,
                                          SPY.posY - actor->posY, ATAN_ANGLE8) *
                           16;
-        g_anCameraActiveTargetParams.w[2] = st->camDist;
+        g_anCameraActiveTargetParams.w[CAMP_DISTANCE] = st->camDist;
       }
 
       switch (actor->mode) {
@@ -1776,15 +1776,15 @@ void Level18_UpdateActors(void) {
               SPY.requestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
               SPY.pCamAnchor = &actor->posX;
               SPY.pCamTarget = &g_anCameraActiveTargetParams;
-              g_anCameraActiveTargetParams.w[0] = -ArcTan2(SPY.posX - actor->posX,
+              g_anCameraActiveTargetParams.w[CAMP_YAW] = -ArcTan2(SPY.posX - actor->posX,
                                                SPY.posY - actor->posY, ATAN_ANGLE8) *
                                 16;
-              g_anCameraActiveTargetParams.w[2] =
+              g_anCameraActiveTargetParams.w[CAMP_DISTANCE] =
                   ApproxDist2D(&actor->posX, &SPY.posX) + CHARGER_CAM_HIT_PULLBACK;
-              g_anCameraActiveTargetParams.w[1] = 0x64;
-              g_anCameraActiveTargetParams.w[3] = 0;
-              g_anCameraActiveTargetParams.w[4] = -0xC8;
-              g_anCameraActiveTargetParams.w[5] = 0;
+              g_anCameraActiveTargetParams.w[CAMP_PITCH] = 0x64;
+              g_anCameraActiveTargetParams.w[CAMP_ROLL] = 0;
+              g_anCameraActiveTargetParams.w[CAMP_PITCH_BIAS] = -0xC8;
+              g_anCameraActiveTargetParams.w[CAMP_YAW_BIAS] = 0;
             }
           }
         }
@@ -2664,7 +2664,7 @@ void Level18_UpdateActors(void) {
           SPY.pCamAnchor = &spy->posX;
           SPY.pCamTarget = &g_anCameraActiveTargetParams;
           spyro->requestMask |= SPYRO_RQ_CAMERA;
-          g_anCameraActiveTargetParams.w[0] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
+          g_anCameraActiveTargetParams.w[CAMP_YAW] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
         }
         st->timer = WHIRL_IDLE_DELAY;
         break;

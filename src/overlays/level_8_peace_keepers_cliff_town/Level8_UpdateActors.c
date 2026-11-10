@@ -2637,7 +2637,7 @@ void Level8_UpdateActors(void) {
         }
         SPY.pCamAnchor = &actor->posX;
         SPY.pCamTarget = &g_anCameraActiveTargetParams;
-        g_anCameraActiveTargetParams.w[0] = -ArcTan2(SPY.posX - actor->posX,
+        g_anCameraActiveTargetParams.w[CAMP_YAW] = -ArcTan2(SPY.posX - actor->posX,
                                          SPY.posY - actor->posY, ATAN_ANGLE8)
                           << 4;
         g_nCameraActiveTargetPitch = 0;
@@ -3548,7 +3548,7 @@ void Level8_UpdateActors(void) {
           SPY.pCamAnchor = &spy->posX;
           SPY.pCamTarget = &g_anCameraActiveTargetParams;
           spyro->requestMask |= SPYRO_RQ_CAMERA;
-          g_anCameraActiveTargetParams.w[0] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
+          g_anCameraActiveTargetParams.w[CAMP_YAW] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
         }
         st->timer = WHIRL_IDLE_DELAY;
         break;

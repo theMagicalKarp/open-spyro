@@ -156,7 +156,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_pCameraAnchorPos = g_anSpyroWorldPos;
     g_nCameraCurrentMode = CAM_MODE_STAND;
     g_nCameraNextMode = CAM_MODE_STAND;
-    g_anCameraActiveTargetParams[2] = 0x600;
+    g_anCameraActiveTargetParams[CAMP_DISTANCE] = 0x600;
     g_pCameraTargetParams = g_anCameraActiveTargetParams;
     g_nCameraParamsReferenceYaw = g_nSpyroBodyYaw;
     ResetCameraStateToTarget();

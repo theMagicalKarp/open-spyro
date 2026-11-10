@@ -1467,7 +1467,7 @@ void Level1_UpdateActors(void) {
           st->camDist = cd;
         }
         SPY.requestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
-        g_anCameraActiveTargetParams.w[0] =
+        g_anCameraActiveTargetParams.w[CAMP_YAW] =
             -ArcTan2(spy->posX - actor->posX, SPY.posY - actor->posY, ATAN_ANGLE8)
             << 4;
         g_nCameraActiveTargetDistance = st->camDist;
@@ -1568,7 +1568,7 @@ void Level1_UpdateActors(void) {
             AS_PTRV(g_pSpyroRequestCameraAnchor) = &actor->posX;
             g_pSpyroRequestCameraTargetParams = &g_anCameraActiveTargetParams;
             SPY.requestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
-            g_anCameraActiveTargetParams.w[0] =
+            g_anCameraActiveTargetParams.w[CAMP_YAW] =
                 -ArcTan2(((SpyroObj *)&g_anSpyroWorldPos)->posX - actor->posX,
                                ((SpyroObj *)&g_anSpyroWorldPos)->posY - actor->posY, ATAN_ANGLE8)
                 << 4;
@@ -3481,7 +3481,7 @@ void Level1_UpdateActors(void) {
           SPY.pCamAnchor = &spy->posX;
           SPY.pCamTarget = &g_anCameraActiveTargetParams;
           spyro->requestMask |= SPYRO_RQ_CAMERA;
-          g_anCameraActiveTargetParams.w[0] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
+          g_anCameraActiveTargetParams.w[CAMP_YAW] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
         }
         st->timer = WHIRL_IDLE_DELAY;
         break;

@@ -1146,6 +1146,25 @@ enum ShepherdAnim {
 #define SHEPHERD_HOME_SPEED 0x5A
 #define SHEPHERD_HOME_ARRIVE 0x80
 #define SHEPHERD_HOME_REST 0x3C
+/* Path walking speeds (PivotActorAlongPath): the pair patrol, the plain
+ * patrol, and POST_RUN_PATH's run once roused. A pair walker turns to face
+ * its partner when within PAIR_MEET_RANGE of it, at most every
+ * PAIR_MEET_INTERVAL frames. */
+#define SHEPHERD_PAIR_WALK_SPEED 0x48
+#define SHEPHERD_PATROL_SPEED 0x78
+#define SHEPHERD_RUN_PATH_SPEED 0x8C
+#define SHEPHERD_PAIR_MEET_RANGE 0x8FC
+#define SHEPHERD_PAIR_MEET_INTERVAL 0x5A
+/* SHEPHERD_WATCH goes back to guarding when Spyro comes within
+ * WATCH_GUARD_RANGE and WATCH_GUARD_DZ of its height. */
+#define SHEPHERD_WATCH_GUARD_RANGE 0xC00
+#define SHEPHERD_WATCH_GUARD_DZ 0x258
+/* ShepherdState.flankTimer on an alert. */
+#define SHEPHERD_FLANK_FRAMES 0xB4
+/* SHEPHERD_LEAP_ON closes LEAP_STEP a frame on the partner's attach point
+ * (snapping onto it within that), matching its yaw within LEAP_ALIGN_RANGE. */
+#define SHEPHERD_LEAP_STEP 0xC8
+#define SHEPHERD_LEAP_ALIGN_RANGE 0x5DC
 #define SHEPHERD_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 #define SHEPHERD_KNOCK_DRAG 0x12 /* DriveActorTrackedMove friction */
 #define SHEPHERD_KNOCK_GRAVITY 0xC /* DriveActorTrackedMove gravity */
@@ -4169,6 +4188,21 @@ enum LootThiefLeg {
 #define LTHIEF_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 #define LTHIEF_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 #define LTHIEF_KNOCK_GRAVITY 0xC /* DriveActorTrackedMove gravity */
+/* Knocked, it flies off along Spyro's facing bent toward "away from him" by
+ * at most LTHIEF_KNOCK_BEND_STEP (wider than the shared KNOCK_BEND_STEP). Its ring
+ * and spur legs arrive within NODE_RANGE of a node. On the cross path it
+ * dives for LTHIEF_DODGE_Z while facing within DODGE_FACING of Spyro,
+ * climbing at most DODGE_CLIMB_STEP a frame. It banks into turns, rolling at
+ * most MAX_ROLL (>> 4 into rotX). The intro flight's camera sits at
+ * INTRO_CAM_DISTANCE / INTRO_CAM_PITCH / INTRO_CAM_PITCH_BIAS (CAMP_*). */
+#define LTHIEF_KNOCK_BEND_STEP 0x28
+#define LTHIEF_NODE_RANGE 0x400
+#define LTHIEF_DODGE_FACING 0x40
+#define LTHIEF_DODGE_CLIMB_STEP 0x80
+#define LTHIEF_MAX_ROLL 0x200
+#define LTHIEF_INTRO_CAM_DISTANCE 0xC00
+#define LTHIEF_INTRO_CAM_PITCH 0x80
+#define LTHIEF_INTRO_CAM_PITCH_BIAS (-0x100)
 
 /* ->mode of a two-path runner (ACTOR_TYPE_TWO_PATH_RUNNER, RunnerState; level
  * 8); the mode is also the animation index. With RunnerState.mode TPARM_RUN it runs
