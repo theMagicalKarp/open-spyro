@@ -2827,7 +2827,7 @@ void Level8_UpdateActors(void) {
         int dz = st->home[2] - actor->posZ;
 
         if (dz != 0) {
-          if (dz >= -0x63) {
+          if (dz > -SWOOP_RETURN_CLIMB_STEP) {
             actor->posZ = st->home[2];
           } else {
             actor->posZ -= SWOOP_RETURN_CLIMB_STEP;
@@ -2896,22 +2896,22 @@ void Level8_UpdateActors(void) {
 
         d = ApproxDist2D(&actor->posX, &spy->posX);
         a = ArcTan2(spy->posX - actor->posX, SPY.posY - actor->posY, ATAN_ANGLE8);
-        step = 0xC;
+        step = SWOOP_SWAY_STEP;
 
         if (g_nActorAnimDone == 0 && actor->nextAnim == SWOOP_ANIM_LAUNCH && actor->nextFrame < 0xB) {
           break;
         }
         st->count += g_nFrameStep;
-        actor->posZ += 0x5DC;
-        target = FindGroundHeightBelow(&actor->posX, 0x1000) + SWOOP_DIVE_CLEARANCE;
-        actor->posZ -= 0x5DC;
+        actor->posZ += SWOOP_DIVE_PROBE_RAISE;
+        target = FindGroundHeightBelow(&actor->posX, SWOOP_DIVE_PROBE_DEPTH) + SWOOP_DIVE_CLEARANCE;
+        actor->posZ -= SWOOP_DIVE_PROBE_RAISE;
         if (st->kind == SWOOP_KIND_STRAIGHT) {
           target = SPY.posZ + SWOOP_STRAIGHT_CLEARANCE;
         }
-        if (d < 0xFA0) {
-          step = 0x20;
-        } else if (d < 0x1770) {
-          step = 0x18;
+        if (d < SWOOP_SWAY_NEAR_RANGE) {
+          step = SWOOP_SWAY_STEP_NEAR;
+        } else if (d < SWOOP_SWAY_MID_RANGE) {
+          step = SWOOP_SWAY_STEP_MID;
         }
         if (g_nActorAnimDone != 0) {
           ANIM_GO(actor, SWOOP_ANIM_FLY);
@@ -2925,7 +2925,7 @@ void Level8_UpdateActors(void) {
         if (st->weaving != 0) {
           if (st->swayDir == 1) {
             st->sway += step;
-            if (st->sway >> 4 >= 0x23) {
+            if (st->sway >> 4 >= SWOOP_SWAY_MAX) {
               st->swayDir = -st->swayDir;
             }
           } else if (st->swayDir == -1) {
@@ -2936,7 +2936,7 @@ void Level8_UpdateActors(void) {
           }
         }
         dz = target - actor->posZ;
-        if (ABS(dz) >= 0x47) {
+        if (ABS(dz) >= SWOOP_CLIMB_SNAP) {
           if (dz < 0) {
             actor->posZ -= SWOOP_CLIMB_STEP;
           } else {
@@ -2945,17 +2945,17 @@ void Level8_UpdateActors(void) {
         } else {
           actor->posZ = target;
         }
-        if (d < 0x640 &&
+        if (d < SWOOP_PASS_RANGE &&
             AbsAngleDelta8(actor->rotZ,
                           ArcTan2(spy->posX - actor->posX,
-                                        spy->posY - actor->posY, ATAN_ANGLE8)) >= 0x3D) {
+                                        spy->posY - actor->posY, ATAN_ANGLE8)) >= SWOOP_PASS_ARC) {
           *st->alert = 0;
           actor->mode = SWOOP_RETURN;
           continue;
         }
         if (AbsAngleDelta8(spy->bodyRotZ,
                           ArcTan2(actor->posX - spy->posX,
-                                        actor->posY - spy->posY, ATAN_ANGLE8)) >= 0x51 &&
+                                        actor->posY - spy->posY, ATAN_ANGLE8)) >= SWOOP_PASS_LOST_ARC &&
             actor->drawn == 0) {
           *st->alert = 0;
           actor->mode = SWOOP_RETURN;
@@ -2966,12 +2966,12 @@ void Level8_UpdateActors(void) {
         } else {
           actor->rotZ = WrapAddAngle8(a, -(st->sway >> 4));
         }
-        if (MoveActorAlongHeading(actor, st->speed, 0, 0x15E, MOVE_LIFT) != 0) {
+        if (MoveActorAlongHeading(actor, st->speed, 0, SWOOP_MOVE_RADIUS, MOVE_LIFT) != 0) {
           *st->alert = 0;
           actor->mode = SWOOP_RETURN;
           continue;
         }
-        if (st->count >= 0x3D && d < 0x2710 &&
+        if (st->count >= SWOOP_SIGHT_GRACE && d < SWOOP_SIGHT_RANGE &&
             CheckSpyroLineOfSightTo(&actor->posX) == 0) {
           *st->alert = 0;
           actor->mode = SWOOP_RETURN;
@@ -2996,15 +2996,15 @@ void Level8_UpdateActors(void) {
         floorProbe[0] += g_anCosineLut[actor->rotZ] >> 3;
         floorProbe[1] += g_anSineLut[actor->rotZ] >> 3;
         floorProbe[2] += GROUND_PROBE_LIFT;
-        g1 = FindGroundHeightBelow(floorProbe, 0x800);
+        g1 = FindGroundHeightBelow(floorProbe, SWOOP_PITCH_PROBE_DEPTH);
         CopyVector(floorProbe, &actor->posX);
-        floorProbe[0] += (g_anCosineLut[WrapAddAngle8(actor->rotZ, 0x80)] * 175) >> 10;
-        floorProbe[1] += (g_anSineLut[WrapAddAngle8(actor->rotZ, 0x80)] * 175) >> 10;
+        floorProbe[0] += (g_anCosineLut[WrapAddAngle8(actor->rotZ, 0x80)] * SWOOP_PITCH_PROBE_BACK) >> 10;
+        floorProbe[1] += (g_anSineLut[WrapAddAngle8(actor->rotZ, 0x80)] * SWOOP_PITCH_PROBE_BACK) >> 10;
         floorProbe[2] += GROUND_PROBE_LIFT;
-        g2 = FindGroundHeightBelow(floorProbe, 0x800);
-        if (ABS2(g1 - g2) < 0x200) {
-          actor->rotY = ArcTan2(0x578, g1 - g2, ATAN_ANGLE8);
-          actor->rotY = StepAngle8Toward(actor->rotY, 0, 0x20);
+        g2 = FindGroundHeightBelow(floorProbe, SWOOP_PITCH_PROBE_DEPTH);
+        if (ABS2(g1 - g2) < SWOOP_PITCH_MAX_STEP) {
+          actor->rotY = ArcTan2(SWOOP_PITCH_BASE, g1 - g2, ATAN_ANGLE8);
+          actor->rotY = StepAngle8Toward(actor->rotY, 0, SWOOP_PITCH_EASE);
         }
         break;
       }
@@ -3013,12 +3013,12 @@ void Level8_UpdateActors(void) {
         int a = ArcTan2(st->home[0] - actor->posX,
                               st->home[1] - actor->posY, ATAN_ANGLE8);
         int d = ApproxDist2D(&actor->posX, st->home);
-        int dz = st->home[2] - actor->posZ + 0x200;
+        int dz = st->home[2] - actor->posZ + SWOOP_RETURN_RAISE;
 
-        if (d > 0x1800) {
-          dz = SPY.posZ - actor->posZ + 0x800;
+        if (d > SWOOP_RETURN_FAR) {
+          dz = SPY.posZ - actor->posZ + SWOOP_RETURN_FAR_RAISE;
         }
-        if (ABS(dz) >= 0x3D) {
+        if (ABS(dz) >= SWOOP_RETURN_SNAP) {
           if (dz >= 0) {
             actor->posZ += SWOOP_RETURN_CLIMB_STEP;
           } else {
@@ -3034,7 +3034,7 @@ void Level8_UpdateActors(void) {
           TurnActorYawTowardAngle(actor, a, 2, 0, YAW_HOLD_IN_BAND);
         }
         MoveActorAlongHeading(actor, st->speed, 0, 0, 0);
-        if (d < 0xBB8 && st->speed >= 0x33) {
+        if (d < SWOOP_RETURN_SLOW_RANGE && st->speed >= SWOOP_RETURN_MIN_SPEED) {
           st->speed -= 5;
         }
         if (d < SWOOP_HOME_ARRIVE) {
@@ -3049,13 +3049,13 @@ void Level8_UpdateActors(void) {
           st->speed -= SWOOP_KNOCK_DRAG;
         }
         CopyVector(y320, &actor->posX);
-        y320[2] += 0x3E8;
-        if (FindGroundHeightBelow(y320, 0x800) < actor->posZ) {
+        y320[2] += SWOOP_KNOCK_PROBE_RAISE;
+        if (FindGroundHeightBelow(y320, SWOOP_KNOCK_PROBE_DEPTH) < actor->posZ) {
           actor->posZ -= SWOOP_KNOCK_SINK;
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, SWOOP_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }

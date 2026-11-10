@@ -1705,6 +1705,50 @@ enum SwoopKind {
 #define SWOOP_KNOCK_SPEED 0x12C
 #define SWOOP_KNOCK_DRAG 0x10
 #define SWOOP_KNOCK_SINK 0x32
+/* More of SWOOP_DIVE: it finds the ground from DIVE_PROBE_RAISE up within
+ * DIVE_PROBE_DEPTH, snapping to its target height within CLIMB_SNAP. It sways
+ * up to SWAY_MAX either side by SWAY_STEP a frame (SWAY_STEP_MID within
+ * SWAY_MID_RANGE, SWAY_STEP_NEAR within SWAY_NEAR_RANGE). It gives up once
+ * past Spyro (within PASS_RANGE, PASS_ARC off its heading), once unseen
+ * with him facing PASS_LOST_ARC away, on hitting a wall (radius
+ * MOVE_RADIUS), or once SIGHT_GRACE ticks in he is out of sight within
+ * SIGHT_RANGE. It pitches with the ground between probes PITCH_PROBE_BACK
+ * behind and 1/8 unit ahead (within PITCH_PROBE_DEPTH; slopes under
+ * PITCH_MAX_STEP over PITCH_BASE, eased PITCH_EASE toward level). */
+#define SWOOP_DIVE_PROBE_RAISE 0x5DC
+#define SWOOP_DIVE_PROBE_DEPTH 0x1000
+#define SWOOP_CLIMB_SNAP 0x47
+#define SWOOP_SWAY_MAX 0x23
+#define SWOOP_SWAY_STEP 0xC
+#define SWOOP_SWAY_STEP_MID 0x18
+#define SWOOP_SWAY_STEP_NEAR 0x20
+#define SWOOP_SWAY_MID_RANGE 0x1770
+#define SWOOP_SWAY_NEAR_RANGE 0xFA0
+#define SWOOP_PASS_RANGE 0x640
+#define SWOOP_PASS_ARC 0x3D
+#define SWOOP_PASS_LOST_ARC 0x51
+#define SWOOP_MOVE_RADIUS 0x15E
+#define SWOOP_SIGHT_GRACE 0x3D
+#define SWOOP_SIGHT_RANGE 0x2710
+#define SWOOP_PITCH_PROBE_BACK 175
+#define SWOOP_PITCH_PROBE_DEPTH 0x800
+#define SWOOP_PITCH_MAX_STEP 0x200
+#define SWOOP_PITCH_BASE 0x578
+#define SWOOP_PITCH_EASE 0x20
+/* SWOOP_RETURN aims RETURN_RAISE above home (beyond RETURN_FAR from home,
+ * RETURN_FAR_RAISE above Spyro), holding within RETURN_SNAP; within
+ * RETURN_SLOW_RANGE it slows by 5 a frame down to RETURN_MIN_SPEED. A
+ * knocked swooper sinks while over a floor found KNOCK_PROBE_RAISE up, and
+ * bursts with BURST_SPARK_LIFE sparks. */
+#define SWOOP_RETURN_RAISE 0x200
+#define SWOOP_RETURN_FAR 0x1800
+#define SWOOP_RETURN_FAR_RAISE 0x800
+#define SWOOP_RETURN_SNAP 0x3D
+#define SWOOP_RETURN_SLOW_RANGE 0xBB8
+#define SWOOP_RETURN_MIN_SPEED 0x33
+#define SWOOP_KNOCK_PROBE_RAISE 0x3E8
+#define SWOOP_KNOCK_PROBE_DEPTH 0x800
+#define SWOOP_BURST_SPARK_LIFE 0x18
 
 /* Per-type mesh voice indices: PlayActorMeshVoice's voiceOffset and the
  * matching m_Sounds[] slot of the type's mesh record. */
