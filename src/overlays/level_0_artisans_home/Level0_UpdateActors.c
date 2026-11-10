@@ -458,7 +458,7 @@ void Level0_UpdateActors(void) {
     /* Pressure switch (SwitchState). */
     case ACTOR_TYPE_PRESSURE_SWITCH: {
       SwitchState *st = (SwitchState *)actor->state;
-      int active = g_anLevelKillBitmapTable[0x78] & 1;
+      int active = g_anLevelKillBitmapTable[KILL_ROW(LEVEL_WIZARD_PEAK)] & 1;
 
       switch (actor->subMode) {
       case PSWITCH_CLEAR: {

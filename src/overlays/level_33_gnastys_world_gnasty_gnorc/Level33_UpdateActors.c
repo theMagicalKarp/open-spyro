@@ -25,6 +25,7 @@
 
 #include "actor.h"
 #include "cutscene_id.h"
+#include "level_id.h"
 #include "level_actors.h"
 #include "vecmath.h"
 #include "level_globals.h"
@@ -1640,7 +1641,7 @@ void Level33_UpdateActors(void) {
           st->knockHeading = ArcTan2(actor->posX - SPY.posX,
                                   actor->posY - SPY.posY, ATAN_ANGLE8);
           if (actor->dropKind != DROP_GEM_ROLL) {
-            g_anLevelKillBitmapTable[0xF0] &= ~1;
+            g_anLevelKillBitmapTable[KILL_ROW(LEVEL_GNORC_GNEXUS)] &= ~1;
           }
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           ENTER_POSE(actor, GNASTY_DEFEATED);
