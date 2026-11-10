@@ -871,6 +871,64 @@ enum GnastyAnim {
 #define GNASTY_SWIPE_RANGE 0xE10
 #define GNASTY_BURST_SPARK_LIFE 0x40 /* BurstActorWithSound spark life */
 #define GNASTY_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
+/* Waiting, he sights Spyro from SIGHT_HEIGHT above his feet; flamed into
+ * phase 3 he holds the escape shot ESCAPE_CAM_FRAMES. He starts throwing from
+ * GNASTY_WAIT once the camera looks within WAIT_VIEW_ANGLE of him, Spyro is
+ * within WAIT_HOME_RANGE of home and between THROW_MIN_RANGE and
+ * THROW_MAX_RANGE of him; on the main path he runs off when Spyro is below
+ * and within RUN_OFF_RANGE. Elsewhere he keeps throwing while the camera
+ * stays within THROW_VIEW_ANGLE and Spyro within THROW_KEEP_MIN ..
+ * THROW_KEEP_MAX, resting THROW_REST after a volley; bombs aim at the floor
+ * found BOMB_FLOOR_PROBE below Spyro. At the path end (GNASTY_STAND) he
+ * throws with Spyro within STAND_THROW_BAND past SWIPE_RANGE and rests
+ * SWIPE_REST after a swipe. */
+#define GNASTY_SIGHT_HEIGHT 0x3E8
+#define GNASTY_ESCAPE_CAM_FRAMES 0xA0
+#define GNASTY_WAIT_VIEW_ANGLE 0x1E
+#define GNASTY_WAIT_HOME_RANGE 0x3000
+#define GNASTY_THROW_MIN_RANGE 0x1800
+#define GNASTY_THROW_MAX_RANGE 0x6800
+#define GNASTY_RUN_OFF_RANGE 0x1388
+#define GNASTY_THROW_VIEW_ANGLE 0x28
+#define GNASTY_THROW_KEEP_MIN 0x1770
+#define GNASTY_THROW_KEEP_MAX 0x6D60
+#define GNASTY_THROW_REST 0x96
+#define GNASTY_BOMB_FLOOR_PROBE 0x1000
+#define GNASTY_STAND_THROW_BAND 0x16A8
+#define GNASTY_SWIPE_REST 0x78
+/* GNASTY_LOOKOUT runs on when Spyro is within LOOKOUT_RANGE and no more than
+ * -LOOKOUT_MIN_DZ below him (or within LOOKOUT_NEAR_RANGE at any height),
+ * and skips to his path end once Spyro is within LOOKOUT_RANGE of node 12.
+ * GNASTY_RUN arrives within RUN_NODE_RANGE of a node; from LATE_NODE he runs
+ * LATE_SPEED (LAST_SPEED from LAST_NODE), chased within CHASE_RANGE
+ * (CHASE_RANGE_FAST if last frame's speed was at least FAST_SPEED). Reaching
+ * node 1 with Spyro past LOOKOUT_RANGE he waits again; at the path's end he
+ * turns to throw if Spyro is past REVERSE_THROW_RANGE and nearest a node
+ * past REVERSE_THROW_NODE, else waits PATH_END_FRAMES (waking for Spyro below
+ * within PATH_END_WAKE_RANGE). The escape path arrives within
+ * ESCAPE_NODE_RANGE and stops at the door within DOOR_RANGE of node 6;
+ * GNASTY_TO_ESCAPE arrives within TO_ESCAPE_ARRIVE. */
+#define GNASTY_LOOKOUT_RANGE 0x2000
+#define GNASTY_LOOKOUT_MIN_DZ (-0x6A3)
+#define GNASTY_LOOKOUT_NEAR_RANGE 0x16A8
+#define GNASTY_LATE_NODE 0xE
+#define GNASTY_LAST_NODE 0x1D
+#define GNASTY_FAST_SPEED 0x10F
+#define GNASTY_RUN_NODE_RANGE 0x200
+#define GNASTY_REVERSE_THROW_RANGE 0x4800
+#define GNASTY_REVERSE_THROW_NODE 0x10
+#define GNASTY_PATH_END_FRAMES 0xC8
+#define GNASTY_PATH_END_WAKE_RANGE 0x251C
+#define GNASTY_ESCAPE_NODE_RANGE 0x12C
+#define GNASTY_DOOR_RANGE 0x258
+#define GNASTY_TO_ESCAPE_ARRIVE 0x320
+/* GNASTY_DEFEATED drops his three keys on these frames, swaps Spyro for a
+ * stand-in on STAND_IN_FRAME, then GNASTY_FADE_OUT fades over FADE_FRAMES. */
+#define GNASTY_DROP_KEY1_FRAME 6
+#define GNASTY_DROP_KEY2_FRAME 0xB
+#define GNASTY_DROP_KEY3_FRAME 0x10
+#define GNASTY_STAND_IN_FRAME 0xE
+#define GNASTY_FADE_FRAMES 0x3C
 
 /* ->mode of Blowhard, the level 16 boss (ACTOR_TYPE_BLOWHARD,
  * BlowhardState). Each of its three phases rises (floorZ + 0x578), hovers
