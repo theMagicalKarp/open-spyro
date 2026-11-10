@@ -1171,7 +1171,7 @@ void Level21_UpdateActors(void) {
                    actor->rotZ,
                    ArcTan2(FLY_X(st->path, st->path->cur) - actor->posX,
                                  FLY_Y(st->path, st->path->cur) - actor->posY,
-                                 ATAN_ANGLE8)) >= 0x40) {
+                                 ATAN_ANGLE8)) >= GATEKEEPER_RIDE_AHEAD_ANGLE) {
           st->path->cur++;
         }
         st->command = 0;
@@ -1235,7 +1235,7 @@ void Level21_UpdateActors(void) {
           ENTER_POSE(actor, GATEKEEPER_WATCH);
         }
         if (TICK_DOWN(st->timer) != 0 && d < GATEKEEPER_SWIPE_RANGE &&
-            (unsigned)(dz + 0x577) < 0x4AF) {
+            -GATEKEEPER_SWIPE_MAX_BELOW <= dz && dz < -GATEKEEPER_SWIPE_MIN_BELOW) {
           ENTER_POSE(actor, GATEKEEPER_SWIPE);
         }
         break;
@@ -1245,7 +1245,7 @@ void Level21_UpdateActors(void) {
         int d = ApproxDist2D(&actor->posX, &spy->posX);
 
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if ((unsigned)(actor->nextFrame - 6) < 4) {
+        if (GATEKEEPER_SWIPE_HIT_FIRST_FRAME <= actor->nextFrame && actor->nextFrame <= GATEKEEPER_SWIPE_HIT_LAST_FRAME) {
           int r = (actor->nextFrame - 5) * GATEKEEPER_SWIPE_REACH_STEP;
 
           if (r < GATEKEEPER_SWIPE_REACH_STEP) {
@@ -1254,7 +1254,7 @@ void Level21_UpdateActors(void) {
           if (r > GATEKEEPER_SWIPE_REACH_MAX) {
             r = GATEKEEPER_SWIPE_REACH_MAX;
           }
-          if (d < r && SPY_DZ(actor) < -0xC8) {
+          if (d < r && SPY_DZ(actor) < -GATEKEEPER_SWIPE_MIN_BELOW) {
             g_dwSpyroTriggerEventFlags |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
             g_anSpyroRequestVelocity.x = (LookupCosine(actor->rotZ << 4) * GATEKEEPER_SWIPE_KNOCK_SPEED) >> 12;
             g_nSpyroRequestVelocityY = (LookupSine(actor->rotZ << 4) * GATEKEEPER_SWIPE_KNOCK_SPEED) >> 12;
@@ -1269,7 +1269,7 @@ void Level21_UpdateActors(void) {
       }
 
       case GATEKEEPER_KNOCKED:
-        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0xE, 0xA);
+        DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, GATEKEEPER_KNOCK_DRAG, GATEKEEPER_KNOCK_GRAVITY);
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, GATEKEEPER_BURST_SPARK_LIFE);
@@ -1283,12 +1283,12 @@ void Level21_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (st->idx < st->count &&
             ApproxDist2D(&actor->posX, &spy->posX) <
-                (st->range[0] + 6) << 10 &&
+                (st->range[0] + GATEKEEPER_KEY_ARM_SLACK) << 10 &&
             actor->drawn != 0 &&
             (st->testFacing == -1 ||
              AbsAngleDelta8(st->testFacing,
                            ArcTan2(spy->posX - actor->posX,
-                                         SPY.posY - actor->posY, ATAN_ANGLE8)) < 0x1C)) {
+                                         SPY.posY - actor->posY, ATAN_ANGLE8)) < GATEKEEPER_KEY_ARM_CONE)) {
           g_pActorListBase[st->keys[st->idx]].subMode = 1;
           actor->mode++;
           break;
@@ -1310,7 +1310,7 @@ void Level21_UpdateActors(void) {
         }
         if (AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                           ArcTan2(actor->posX - spy->posX,
-                                        actor->posY - SPY.posY, ATAN_ANGLE8)) >= 0x30) {
+                                        actor->posY - SPY.posY, ATAN_ANGLE8)) >= GATEKEEPER_KEY_FACING) {
           break;
         }
         if (actor->drawn == 0) {
@@ -1328,7 +1328,7 @@ void Level21_UpdateActors(void) {
 
         ANIM_GO(actor, GATEKEEPER_SWIPE);
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if (actor->nextFrame < 6) {
+        if (actor->nextFrame < GATEKEEPER_KEY_RELEASE_FRAME) {
           break;
         }
         k = st->keys[st->idx];
@@ -1348,7 +1348,7 @@ void Level21_UpdateActors(void) {
         int r;
 
         CopyVector(svC, &actor->posX);
-        r = DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0, 0x12);
+        r = DriveActorTrackedMove(actor, &st->speed, st->heading, &st->zSpeed, 0, GATEKEEPER_HURTLE_GRAVITY);
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
         if (r == MOVED_LANDED) {
           st->zSpeed = GATEKEEPER_HURTLE_BOUNCE_VZ;
@@ -1361,7 +1361,7 @@ void Level21_UpdateActors(void) {
                                : -SPY_DZ(actor) < GATEKEEPER_HURTLE_HIT_DZ)) {
           int a = StepAngle8Toward(ArcTan2(spy->posX - actor->posX,
                                               spy->posY - actor->posY, ATAN_ANGLE8),
-                                st->heading, 0x20)
+                                st->heading, GATEKEEPER_HURTLE_KNOCK_BEND)
                   << 4;
 
           spy->triggerEvents |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
@@ -1371,11 +1371,11 @@ void Level21_UpdateActors(void) {
           st->heading = ArcTan2(actor->posX - spy->posX,
                                   actor->posY - spy->posY, ATAN_ANGLE8);
           st->speed = GATEKEEPER_KNOCK_SPEED;
-          st->zSpeed = 0x3C;
+          st->zSpeed = GATEKEEPER_HURTLE_RECOIL_VZ;
           SpawnActorDeathDrop(actor, DROP_TUMBLE, 0, 0);
           ENTER_POSE(actor, GATEKEEPER_KNOCKED);
         }
-        if (TICK_DOWN(st->timer) != 0 || r == 2 ||
+        if (TICK_DOWN(st->timer) != 0 || r == MOVED_BLOCKED ||
             ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) > GATEKEEPER_HURTLE_MAX_RANGE) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           BurstActorWithSound(actor, GATEKEEPER_BURST_SPARK_LIFE);
@@ -1389,14 +1389,14 @@ void Level21_UpdateActors(void) {
 
           while ((o = *lp++) != 0) {
             if (o->type == ACTOR_TYPE_PLATFORM_POD &&
-                (actor->posX - o->posX > 0 ? actor->posX - o->posX < 0xBB8
-                                           : o->posX - actor->posX < 0xBB8) &&
-                (actor->posY - o->posY > 0 ? actor->posY - o->posY < 0xBB8
-                                           : o->posY - actor->posY < 0xBB8) &&
-                ApproxDist2D(&actor->posX, &o->posX) < 0x4B0 &&
+                (actor->posX - o->posX > 0 ? actor->posX - o->posX < GATEKEEPER_POD_BOX
+                                           : o->posX - actor->posX < GATEKEEPER_POD_BOX) &&
+                (actor->posY - o->posY > 0 ? actor->posY - o->posY < GATEKEEPER_POD_BOX
+                                           : o->posY - actor->posY < GATEKEEPER_POD_BOX) &&
+                ApproxDist2D(&actor->posX, &o->posX) < GATEKEEPER_POD_HIT_RANGE &&
                 AbsAngleDelta8(st->heading,
                               ArcTan2(o->posX - actor->posX,
-                                            o->posY - actor->posY, ATAN_ANGLE8)) < 0x28) {
+                                            o->posY - actor->posY, ATAN_ANGLE8)) < GATEKEEPER_POD_HIT_CONE) {
               o->flags |= ACTOR_HIT_BLAST | ACTOR_HIT_SUPER;
             }
           }
@@ -1416,7 +1416,7 @@ void Level21_UpdateActors(void) {
 
       case GATEKEEPER_RIDE_WAIT:
         if (st->partnerSignal != 0) {
-          actor->cullRadius = 0x28;
+          actor->cullRadius = GATEKEEPER_RIDE_CULL_RADIUS;
           actor->mode++;
         }
         break;
@@ -1479,7 +1479,7 @@ void Level21_UpdateActors(void) {
         AddVector(keepCarryMid, svG, keepCarryHand1);
         RShiftVector3(keepCarryMid, 1);
         CopyVector(&actor->posX, keepCarryMid);
-        if (catcher->nextFrame >= 0xE) {
+        if (catcher->nextFrame >= GATEKEEPER_FLING_FRAME) {
           if (st->partner != -1) {
             ((BoulderThrowerState *)g_pActorListBase[st->partner].state)->partnerSignal = 1;
           }

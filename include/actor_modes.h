@@ -3352,6 +3352,35 @@ enum GatekeeperAnim {
 #define GATEKEEPER_RIDE_LEAP_SPEED 0x5A
 #define GATEKEEPER_RIDE_LEAP_VZ 0x78
 #define GATEKEEPER_BURST_SPARK_LIFE 0x34 /* BurstActorWithSound spark life */
+/* It swipes with Spyro more than SWIPE_MIN_BELOW and at most SWIPE_MAX_BELOW
+ * below it; the swipe hits on frames SWIPE_HIT_FIRST_FRAME ..
+ * SWIPE_HIT_LAST_FRAME. Knocked, it slides with KNOCK_DRAG / KNOCK_GRAVITY.
+ * The keys: armed once Spyro is within its first key range + KEY_ARM_SLACK
+ * (both << 10) and inside KEY_ARM_CONE of testFacing; each key goes once he
+ * faces it within KEY_FACING, on the swipe's KEY_RELEASE_FRAME. Its hurtle
+ * and ride mirror the boulder thrower's (BTHROW_*): HURTLE_GRAVITY,
+ * HURTLE_KNOCK_BEND, HURTLE_RECOIL_VZ, the platform-pod blast (POD_BOX,
+ * POD_HIT_RANGE, POD_HIT_CONE), RIDE_AHEAD_ANGLE, RIDE_CULL_RADIUS and
+ * FLING_FRAME. */
+#define GATEKEEPER_SWIPE_MIN_BELOW 0xC8
+#define GATEKEEPER_SWIPE_MAX_BELOW 0x577
+#define GATEKEEPER_SWIPE_HIT_FIRST_FRAME 6
+#define GATEKEEPER_SWIPE_HIT_LAST_FRAME 9
+#define GATEKEEPER_KNOCK_DRAG 0xE
+#define GATEKEEPER_KNOCK_GRAVITY 0xA
+#define GATEKEEPER_KEY_ARM_SLACK 6
+#define GATEKEEPER_KEY_ARM_CONE 0x1C
+#define GATEKEEPER_KEY_FACING 0x30
+#define GATEKEEPER_KEY_RELEASE_FRAME 6
+#define GATEKEEPER_HURTLE_GRAVITY 0x12
+#define GATEKEEPER_HURTLE_KNOCK_BEND 0x20
+#define GATEKEEPER_HURTLE_RECOIL_VZ 0x3C
+#define GATEKEEPER_POD_BOX 0xBB8
+#define GATEKEEPER_POD_HIT_RANGE 0x4B0
+#define GATEKEEPER_POD_HIT_CONE 0x28
+#define GATEKEEPER_RIDE_AHEAD_ANGLE 0x40
+#define GATEKEEPER_RIDE_CULL_RADIUS 0x28
+#define GATEKEEPER_FLING_FRAME 0xE
 
 /* ->mode of a tethered guard (ACTOR_TYPE_TETHERED_GUARD, TetherState; level
  * 15); the mode is also the animation index. TetherState.mode is the TetherCommand
