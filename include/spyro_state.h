@@ -190,6 +190,21 @@ typedef enum SpyroState
 #define SPYRO_CHARGE_STOP_DECEL 0x180
 #define SPYRO_PINNED_FALL_ACCEL 0x600 /* HURT_PINNED / HURT_LONG airborne */
 #define SPYRO_HURT_LONG_SPIN 0x55     /* HURT_LONG: body yaw added per substep */
+/* Glide / flight attitude (12-bit angles). With the stick idle the d-pad
+ * stands in for it: each held direction moves the virtual stick
+ * FLY_DPAD_STEP a substep (to +-0x7F), released it recentres by up to
+ * FLY_DPAD_RECENTRE. Roll is held within +-FLY_MAX_ROLL and pitch within
+ * +-FLY_MAX_PITCH; the R1 / L1 rolls and the levelling turn the body at most
+ * ROLL_RATE a substep, a roll past ROLL_QUARTER counting as banked. Outside a
+ * flight level (Gnasty's Loot's free flight) the speed gets
+ * FREE_FLIGHT_BOOST on top of the cruise speed. */
+#define SPYRO_FLY_DPAD_STEP 0x10
+#define SPYRO_FLY_DPAD_RECENTRE 0x20
+#define SPYRO_FLY_MAX_ROLL 0x320
+#define SPYRO_FLY_MAX_PITCH 0x300
+#define SPYRO_ROLL_RATE 0x1E
+#define SPYRO_ROLL_QUARTER 0x400
+#define SPYRO_FREE_FLIGHT_BOOST 0x41E
 
 /* Gravity per substep: ChangeSpyroState sets g_nSpyroGravityStep to minus
  * one of these on entering a state (LIFT rises at +0x80 instead). */
