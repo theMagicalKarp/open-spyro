@@ -1,6 +1,7 @@
 #include "actor_cutscene.h"
 #include "funcs.h"
 #include "globals.h"
+#include "level_id.h"
 #include "level_sfx.h"
 #include "sample_bank.h"
 
@@ -31,8 +32,8 @@ void ApplyCheatCodeEffect(int code) {
     break;
   case CHEAT_ALL_WORLDS:
     val = 1;
-    n = 0x1F;
-    p = &g_abLevelVisitedFlag[0x1F];
+    n = LEVEL_SLOT(LEVEL_GNORC_COVE); /* every level through Gnorc Cove */
+    p = &g_abLevelVisitedFlag[LEVEL_SLOT(LEVEL_GNORC_COVE)];
     do {
       *p = val;
       n -= 1;
@@ -49,7 +50,7 @@ void ApplyCheatCodeEffect(int code) {
     PlaySoundEffect(LEVEL_SFX(SFX_REWARD), 0, SFX_MODE_PANNED, 0);
     break;
   case CHEAT_99_LIVES:
-    g_nExtraLives = 99;
+    g_nExtraLives = MAX_EXTRA_LIVES;
     break;
   }
 }

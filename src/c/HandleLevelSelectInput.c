@@ -48,7 +48,8 @@ void HandleLevelSelectInput(void) {
       if (g_nNextLevelId % 10 >= 6) {
         g_nNextLevelId = (g_nNextLevelId / 10 + 1) * 10;
       }
-      if ((unsigned int)(g_nNextLevelId - 10) >= 0x37U) {
+      if ((unsigned int)(g_nNextLevelId - LEVEL_ARTISANS) >=
+          LEVEL_GNASTYS_LOOT - LEVEL_ARTISANS + 1U) {
         g_nNextLevelId = LEVEL_ARTISANS;
       }
       g_nLevelSelectWorldIndex = g_nNextLevelId / 10;
@@ -59,7 +60,9 @@ void HandleLevelSelectInput(void) {
       if (g_nLevelSelectWorldIndex != 0) {
         g_nNextLevelId = g_nLevelSelectWorldIndex * 10 + sel;
         g_nLevelSelectSubIndex = sel;
-        if ((unsigned int)(g_nNextLevelId - 10) >= 0x37U || sel >= 6) {
+        if ((unsigned int)(g_nNextLevelId - LEVEL_ARTISANS) >=
+                LEVEL_GNASTYS_LOOT - LEVEL_ARTISANS + 1U ||
+            sel >= 6) {
           g_nNextLevelId = g_nActiveLevelId;
         } else {
           StopAllSoundExceptMask(0);
