@@ -41,4 +41,37 @@ enum DragonRescueStreamState {
   RESCUE_STREAM_DONE = 6,
 };
 
+/* DRAGON_RESCUE_AURA: for AURA_FRAMES the aura star grows RADIUS_STEP and
+ * brightens COLOR_STEP from COLOR_BASE a frame, the screen tinting up
+ * TINT_STEP a frame after TINT_START; then the statue sinks SOURCE_SINK
+ * (restored when it is despawned) and the sweep is timed from the orbit's
+ * angle (>> 4, plus SWEEP_BASE_FRAMES, clamped to SWEEP_MIN..MAX_FRAMES).
+ * DRAGON_RESCUE_SWEEP: the star shrinks back over AURA_FADE_FRAMES; Spyro
+ * plays his stop animation (at LAND_ANIM_RATE) LAND_LEAD_FRAMES before the
+ * sweep ends, and everything settles SETTLE_FRAMES after it. Floors are
+ * probed from FLOOR_PROBE_RAISE above. DRAGON_RESCUE_LOAD_WAIT waits at least
+ * LOAD_MIN_FRAMES, then bursts SHARD_BURST statue shards and spawns the
+ * dragon at START_SCALE (1/3 size); DRAGON_RESCUE_TURN grows it GROW_STEP a
+ * frame while it turns to face its heading over TURN_FRAMES. */
+#define RESCUE_AURA_FRAMES 0x30
+#define RESCUE_AURA_RADIUS_STEP 0x10
+#define RESCUE_AURA_COLOR_BASE 0x40
+#define RESCUE_AURA_COLOR_STEP 4
+#define RESCUE_AURA_TINT_START 0x20
+#define RESCUE_AURA_TINT_STEP 0x10
+#define RESCUE_AURA_FADE_FRAMES 0x20
+#define RESCUE_SOURCE_SINK 0x78
+#define RESCUE_SWEEP_BASE_FRAMES 0x28
+#define RESCUE_SWEEP_MIN_FRAMES 0x40
+#define RESCUE_SWEEP_MAX_FRAMES 0x80
+#define RESCUE_LAND_LEAD_FRAMES 0x10
+#define RESCUE_LAND_ANIM_RATE 0xC
+#define RESCUE_SETTLE_FRAMES 0x20
+#define RESCUE_FLOOR_PROBE_RAISE 0x400
+#define RESCUE_LOAD_MIN_FRAMES 0x10
+#define RESCUE_SHARD_BURST 0x20
+#define RESCUE_DRAGON_START_SCALE 0x60
+#define RESCUE_DRAGON_GROW_STEP 3
+#define RESCUE_TURN_FRAMES 0x18
+
 #endif /* OPEN_SPYRO_DRAGON_RESCUE_H */
