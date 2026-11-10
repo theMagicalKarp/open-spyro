@@ -82,6 +82,14 @@ enum SparxSubMode {
 #define SPARX_CHASE_MIN_FRAMES 150
 #define SPARX_CHASE_MAX_FRAMES 210
 #define SPARX_CATCH_EARLY_FRAMES 80
+/* "Lines up": his heading, led by the butterfly's circleDir * CATCH_LEAD,
+ * within 8 of the camera's reverse yaw. Chasing, he closes CHASE_STEP a
+ * frame (CHASE_STEP_HIGH in the catch animation) on a point just behind the
+ * butterfly, CHASE_STEP_SLACK more while further than that, less once within. */
+#define SPARX_CATCH_LEAD 0x6E
+#define SPARX_CHASE_STEP 0x82
+#define SPARX_CHASE_STEP_HIGH 0x96
+#define SPARX_CHASE_STEP_SLACK 5
 /* With no target Sparx hovers at a random drift HOVER_BEHIND behind Spyro
  * (his body frame), FREE_LOOK_PULLBACK further back under the free-look
  * camera, and at least CHARGE_HOVER_MIN_Z up during a charge; his pitch
@@ -101,6 +109,10 @@ enum SparxSubMode {
 #define SPARX_WING_SPAN 0x64
 #define SPARX_GLOW_START_SIZE 0x40
 #define SPARX_GLOW_GROW 0x20
+/* The gold glow's colour. */
+#define SPARX_GLOW_R 0xC0
+#define SPARX_GLOW_G 0xC0
+#define SPARX_GLOW_B 0x60
 
 /* g_nSfxOverrideVolL/R (of SPU_VOLUME_MAX) for Sparx's buzz when he
  * sets off to fetch, and for the chime when he hands the pickup over. */
