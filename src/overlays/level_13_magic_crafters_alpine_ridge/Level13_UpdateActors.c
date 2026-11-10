@@ -4504,7 +4504,7 @@ void Level13_UpdateActors(void) {
           continue;
         }
       }
-      if (dist > 0x2000) {
+      if (dist > SORCERER_CALM_RANGE) {
         st->angry = 0;
       }
 
@@ -4514,7 +4514,7 @@ void Level13_UpdateActors(void) {
           TrackEntityYawTowardSpyro(actor, 8, 0, YAW_HOLD_IN_BAND);
           if ((TICK_DOWN(st->timer) &&
                ApproxDist2D(&SPY.posX, PATH_PT(st->path, 0)) < st->range) ||
-              ApproxDist2D(&actor->posX, &SPY.posX) < 0x1000) {
+              ApproxDist2D(&actor->posX, &SPY.posX) < SORCERER_NOTICE_RANGE) {
             if (actor->group < 0xFF) {
               SetActorGroupStateExcept(actor, SORCERER_ALERTED, SORCERER_KNOCKED);
             } else {
@@ -4522,18 +4522,18 @@ void Level13_UpdateActors(void) {
             }
           }
         } else if (st->mode == SORCERER_ROLE_CASTER) {
-          if (ApproxDist2D(&actor->posX, &spy->posX) < 0x2800 &&
+          if (ApproxDist2D(&actor->posX, &spy->posX) < SORCERER_BREAK_RANGE &&
               g_nSpyroAirborneFrames == 0 && actor->nextAnim != SORCERER_ANIM_REST) {
             actor->mode = SORCERER_BREAK_LINK;
             continue;
           }
           switch (st->sub) {
           case SORCERER_STEP_WALK: {
-            int r = PivotActorAlongPath(actor, st->path, 0x200, 0x6E, 0, 8, 0x80,
+            int r = PivotActorAlongPath(actor, st->path, SORCERER_PIVOT_THRESH, SORCERER_WALK_SPEED, 0, 8, 0x80,
                                   PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
             ANIM_GO(actor, SORCERER_ANIM_WALK);
-            if (r == PATH_ARRIVED(8)) {
+            if (r == PATH_ARRIVED(SORCERER_CAST_NODE)) {
               st->sub = SORCERER_STEP_CAST;
               st->timer = 0;
               st->count = 0;
@@ -4549,21 +4549,21 @@ void Level13_UpdateActors(void) {
                           ArcTan2(t->posX - actor->posX,
                                         t->posY - actor->posY, ATAN_ANGLE8),
                           6, 0, YAW_HOLD_IN_BAND);
-            if (TICK_DOWN(st->timer) && actor->nextFrame >= 6 &&
-                st->count < 3) {
+            if (TICK_DOWN(st->timer) && actor->nextFrame >= SORCERER_CAST_FRAME &&
+                st->count < SORCERER_WISPS) {
               Actor *b = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_WISP, actor);
               BoltState *bs = b->state;
 
               CopyVector(w408, &t->posX);
-              w408[2] += 0x2BC;
+              w408[2] += WISP_TARGET_RAISE;
               b->rotY = ArcTan2(ApproxDist2D(&actor->posX, w408),
                                        w408[2] - actor->posZ, ATAN_ANGLE8);
               b->rotZ = ArcTan2(w408[0] - actor->posX,
                                        w408[1] - actor->posY, ATAN_ANGLE8);
               b->cullRadius = 0x24;
               bs->target = t;
-              bs->life = 0xF;
-              st->timer = 4;
+              bs->life = SORCERER_WISP_LIFE;
+              st->timer = SORCERER_WISP_GAP;
               st->count++;
             }
             if (g_nActorAnimDone != 0) {
@@ -4616,24 +4616,24 @@ void Level13_UpdateActors(void) {
 
       case SORCERER_CAST:
         TrackEntityYawTowardSpyro(actor, 8, 0, YAW_HOLD_IN_BAND);
-        if (ApproxDist2D(&spy->posX, PATH_PT(st->path, 0)) > st->range + 0x400 &&
-            ApproxDist2D(&actor->posX, &spy->posX) > 0x1800) {
+        if (ApproxDist2D(&spy->posX, PATH_PT(st->path, 0)) > st->range + SORCERER_LOSE_MARGIN &&
+            ApproxDist2D(&actor->posX, &spy->posX) > SORCERER_LOSE_RANGE) {
           if (st->angry != 0) {
-            st->timer = 0x5A;
+            st->timer = SORCERER_RECONJURE_TICKS;
             actor->mode = SORCERER_WAIT_CONJURE;
             continue;
           }
           ENTER_POSE(actor, SORCERER_IDLE);
         }
-        if (TICK_DOWN(st->timer) && actor->nextFrame >= 6 &&
-            st->count < 3) {
+        if (TICK_DOWN(st->timer) && actor->nextFrame >= SORCERER_CAST_FRAME &&
+            st->count < SORCERER_WISPS) {
           Actor *b = g_pfnLevelSpawnActor(ACTOR_TYPE_HOMING_WISP, actor);
 
-          if (ApproxDist2D(&actor->posX, &spy->posX) < 0xA00 &&
-              ABS2(SPY_DZ(actor)) < 0x400) {
+          if (ApproxDist2D(&actor->posX, &spy->posX) < SORCERER_SNAP_RANGE &&
+              ABS2(SPY_DZ(actor)) < SORCERER_SNAP_DZ) {
             CopyVector(&b->posX, &SPY.posX);
           }
-          st->timer = 4;
+          st->timer = SORCERER_WISP_GAP;
           st->count++;
         }
         if (g_nActorAnimDone != 0) {
@@ -4650,7 +4650,7 @@ void Level13_UpdateActors(void) {
       case SORCERER_KNOCKED:
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x30);
+          BurstActorWithSound(actor, SORCERER_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -4666,11 +4666,11 @@ void Level13_UpdateActors(void) {
         int *tri = m->state;
 
         st->mode = SORCERER_ROLE_SENTRY;
-        st->timer = 0x3C;
+        st->timer = SORCERER_BREAK_REST;
         ts->mode = VROLE_CHAT;
-        ts->timerLong = 0x3C;
+        ts->timerLong = SORCERER_BREAK_REST;
         CopyVector(&m->posX, &t->posX);
-        m->posZ += 0x200;
+        m->posZ += SORCERER_MARKER_RAISE;
         *tri = -1;
         actor->mode = SORCERER_SETTLE;
         continue;

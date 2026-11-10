@@ -2434,6 +2434,35 @@ enum SorcererAnim {
   SORCERER_ANIM_WALK = 1,
   SORCERER_ANIM_REST = 7,  /* SORCERER_STEP_REST; a caster resting ignores Spyro */
 };
+/* Sorcerer tuning. It calms down beyond CALM_RANGE. A sentry conjures on
+ * its timer with Spyro within `range` of its post, or within NOTICE_RANGE;
+ * casting stops once he is past `range` + LOSE_MARGIN of the post and
+ * LOSE_RANGE of it (angry: reconjures after RECONJURE_TICKS). A caster
+ * walks its path at WALK_SPEED (nodes within PIVOT_THRESH), casting at its
+ * target from node CAST_NODE, and breaks off with Spyro on the ground
+ * within BREAK_RANGE (resting BREAK_REST ticks; the freed villager's marker
+ * rises MARKER_RAISE). A cast throws WISPS homing wisps WISP_GAP ticks apart
+ * from frame CAST_FRAME: at its target (WISP_TARGET_RAISE up, living
+ * WISP_LIFE) or at Spyro (spawned on him within SNAP_RANGE and SNAP_DZ).
+ * Flamed, it bursts with BURST_SPARK_LIFE sparks. */
+#define SORCERER_CALM_RANGE 0x2000
+#define SORCERER_NOTICE_RANGE 0x1000
+#define SORCERER_LOSE_MARGIN 0x400
+#define SORCERER_LOSE_RANGE 0x1800
+#define SORCERER_RECONJURE_TICKS 0x5A
+#define SORCERER_WALK_SPEED 0x6E
+#define SORCERER_PIVOT_THRESH 0x200
+#define SORCERER_CAST_NODE 8
+#define SORCERER_BREAK_RANGE 0x2800
+#define SORCERER_BREAK_REST 0x3C
+#define SORCERER_MARKER_RAISE 0x200
+#define SORCERER_WISPS 3
+#define SORCERER_WISP_GAP 4
+#define SORCERER_CAST_FRAME 6
+#define SORCERER_WISP_LIFE 0xF
+#define SORCERER_SNAP_RANGE 0xA00
+#define SORCERER_SNAP_DZ 0x400
+#define SORCERER_BURST_SPARK_LIFE 0x30
 
 /* SorcererState.mode: the sorcerer's role, read in SORCERER_IDLE. Flaming a
  * CASTER does not kill it: SORCERER_BREAK_LINK demotes it (and its target)
@@ -3613,8 +3642,31 @@ enum RearingCritterMode {
 /* A rearing critter's idle fidgets: one every 3..6 loops of the pose. */
 enum RearAnim {
   REAR_ANIM_FIDGET = 1,         /* REAR_IDLE */
-  REAR_ANIM_REARED_FIDGET = 10, /* REAR_REARED, Spyro further than 0xC00 */
+  REAR_ANIM_REARED_FIDGET = 10, /* REAR_REARED, Spyro beyond REAR_FIDGET_RANGE */
 };
+/* Rearing-critter tuning. IDLE rears with Spyro within ROUSE_RANGE and
+ * ROUSE_DZ (off cooldown); REARED fidgets beyond FIDGET_RANGE, shoves within
+ * SHOVE_RANGE and SHOVE_DZ, and drops back beyond LOSE_RANGE or LOSE_DZ. A
+ * shove that knocks Spyro back gloats GLOAT_TICKS (looping GLOAT_LOOP_END
+ * back to GLOAT_LOOP_START). Hit, it spins for SPIN_FRAMES and slides from
+ * KNOCK_SPEED (CHARGE_KNOCK_SPEED charged) losing KNOCK_DRAG a frame (radius
+ * MOVE_RADIUS), then bursts with BURST_SPARK_LIFE sparks. */
+#define REAR_ROUSE_RANGE 0x2000
+#define REAR_ROUSE_DZ 0x5DC
+#define REAR_FIDGET_RANGE 0xC00
+#define REAR_SHOVE_RANGE 0xBB8
+#define REAR_SHOVE_DZ 0x4B0
+#define REAR_LOSE_RANGE 0x2400
+#define REAR_LOSE_DZ 0x6A4
+#define REAR_GLOAT_TICKS 0x8C
+#define REAR_GLOAT_LOOP_END 0x1C
+#define REAR_GLOAT_LOOP_START 0xF
+#define REAR_SPIN_FRAMES 0xA
+#define REAR_KNOCK_SPEED 0x190
+#define REAR_CHARGE_KNOCK_SPEED 0x1F4
+#define REAR_KNOCK_DRAG 0x1E
+#define REAR_MOVE_RADIUS 0x12C
+#define REAR_BURST_SPARK_LIFE 0x20
 
 /* ->mode of a sentry (ACTOR_TYPE_SENTRY, SentryState; level 1). Only one
  * sentry engages at a time (*SentryState.alert); it pulls the camera toward
