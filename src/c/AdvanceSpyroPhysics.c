@@ -16,6 +16,7 @@
 #include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "pad_buttons.h"
 #include "sdata.h"
 #include "spyro_block.h"
 #include "spyro_state.h"
@@ -378,11 +379,11 @@ int AdvanceSpyroPhysics(void) {
             if (hit == 0) {
               goto collide;
             }
-            if (g_nPulseRumbleAmount < 0x64) {
-              g_nPulseRumbleAmount = 0x64;
+            if (g_nPulseRumbleAmount < CHARGE_HIT_RUMBLE_AMOUNT) {
+              g_nPulseRumbleAmount = CHARGE_HIT_RUMBLE_AMOUNT;
             }
-            if (g_nPulseRumbleTimer < 0xC) {
-              g_nPulseRumbleTimer = 0xC;
+            if (g_nPulseRumbleTimer < CHARGE_HIT_RUMBLE_FRAMES) {
+              g_nPulseRumbleTimer = CHARGE_HIT_RUMBLE_FRAMES;
             }
             break;
           case SPYRO_ST_SUPERCHARGE_AIR:

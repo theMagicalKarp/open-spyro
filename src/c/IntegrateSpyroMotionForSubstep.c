@@ -1693,15 +1693,16 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     if (g_nSpyroAirborneFrames == 0) {
       AddVector(vel, vel, sp + (SPY_SLOPE_GRAVITY - SPY_SPEED));
     }
-    g_nPulseRumbleAmount = ((sp[0] - SPYRO_CHARGE_MIN_SPEED) >> 7) + 0x14;
-    if (g_nPulseRumbleAmount < 0x50) {
-      g_nPulseRumbleAmount = 0x50;
+    g_nPulseRumbleAmount =
+        ((sp[0] - SPYRO_CHARGE_MIN_SPEED) >> 7) + SUPERCHARGE_RUMBLE_BASE;
+    if (g_nPulseRumbleAmount < SUPERCHARGE_RUMBLE_MIN) {
+      g_nPulseRumbleAmount = SUPERCHARGE_RUMBLE_MIN;
     }
-    if (g_nPulseRumbleAmount > 0xA0) {
-      g_nPulseRumbleAmount = 0xA0;
+    if (g_nPulseRumbleAmount > SUPERCHARGE_RUMBLE_MAX) {
+      g_nPulseRumbleAmount = SUPERCHARGE_RUMBLE_MAX;
     }
-    if (g_nPulseRumbleTimer < 4) {
-      g_nPulseRumbleTimer = 4;
+    if (g_nPulseRumbleTimer < SUPERCHARGE_RUMBLE_FRAMES) {
+      g_nPulseRumbleTimer = SUPERCHARGE_RUMBLE_FRAMES;
     }
     break;
   }

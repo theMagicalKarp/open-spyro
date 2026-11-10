@@ -117,12 +117,12 @@ void DragonRescue_Update(void) {
     } else {
       g_nDragonRescueFullscreenTintLevel = 0;
     }
-    if (g_nPulseRumbleTimer < 8) {
-      g_nPulseRumbleTimer = 8;
+    if (g_nPulseRumbleTimer < RESCUE_RUMBLE_FRAMES) {
+      g_nPulseRumbleTimer = RESCUE_RUMBLE_FRAMES;
     }
     i = (int)&GB[5];
     now = *(int *)i;
-    g_nPulseRumbleAmount = 0x46;
+    g_nPulseRumbleAmount = RESCUE_RUMBLE_AMOUNT;
     if (now >= 0x30) {
       int *rec;
 
@@ -217,10 +217,10 @@ void DragonRescue_Update(void) {
 
       s->rotY = g_abDragonRescueFlickerPairs1Y[s->subMode * 2];
     }
-    if (g_nPulseRumbleTimer < 8) {
-      g_nPulseRumbleTimer = 8;
+    if (g_nPulseRumbleTimer < RESCUE_RUMBLE_FRAMES) {
+      g_nPulseRumbleTimer = RESCUE_RUMBLE_FRAMES;
     }
-    g_nPulseRumbleAmount = 0x46;
+    g_nPulseRumbleAmount = RESCUE_RUMBLE_AMOUNT;
     g_pfnLevelSpawnActor(ACTOR_TYPE_STATUE_SHARD, g_pDragonRescueSourceActor);
     if (g_nDragonRescueTimer < g_nDragonRescueSweepDurationFrames) {
       t = LookupSine((g_nDragonRescueTimer << 11) /
@@ -433,10 +433,10 @@ void DragonRescue_Update(void) {
 
       s->rotY = g_abDragonRescueFlickerPairs2Y[s->subMode * 2];
     }
-    if (g_nPulseRumbleTimer < 8) {
-      g_nPulseRumbleTimer = 8;
+    if (g_nPulseRumbleTimer < RESCUE_RUMBLE_FRAMES) {
+      g_nPulseRumbleTimer = RESCUE_RUMBLE_FRAMES;
     }
-    g_nPulseRumbleAmount = 0x46;
+    g_nPulseRumbleAmount = RESCUE_RUMBLE_AMOUNT;
     g_pfnLevelSpawnActor(ACTOR_TYPE_STATUE_SHARD, g_pDragonRescueSourceActor);
     if (g_nDragonRescueTimer < 0x10 ||
         g_nDragonRescueStreamState < RESCUE_STREAM_RELOAD_LEVEL) {

@@ -30,4 +30,22 @@
  * DualShock rumble (PollPadAndDistributeInput counts it down). */
 #define HIT_RUMBLE_FRAMES 0xF
 
+/* Pulse-rumble top-ups: g_nPulseRumbleAmount strength and g_nPulseRumbleTimer
+ * vblanks (raised to at least these). */
+#define LAND_RUMBLE_AMOUNT 0xA0       /* landing out of a FALL (set outright) */
+#define LAND_RUMBLE_FRAMES 15
+#define BONK_RUMBLE_AMOUNT 0x78       /* a charge bonk */
+#define BONK_RUMBLE_FRAMES 0xF
+#define CHARGE_HIT_RUMBLE_AMOUNT 0x64 /* a charge hitting an actor */
+#define CHARGE_HIT_RUMBLE_FRAMES 0xC
+#define SUPERCHARGE_RUMBLE_BASE 0x14  /* supercharge: BASE + (speed - charge floor) >> 7, */
+#define SUPERCHARGE_RUMBLE_MIN 0x50   /* clamped to MIN..MAX */
+#define SUPERCHARGE_RUMBLE_MAX 0xA0
+#define SUPERCHARGE_RUMBLE_FRAMES 4
+#define RESCUE_RUMBLE_AMOUNT 0x46     /* a dragon rescue's burst (set outright) */
+#define RESCUE_RUMBLE_FRAMES 8
+/* g_nVibrationLevel floors. */
+#define HURT_TINT_VIBRATION 0x2D      /* SPYRO_ST_HURT_TINT */
+#define VIBRATION_TEST_LEVEL 10       /* turning vibration on in the options */
+
 #endif /* OPEN_SPYRO_PAD_BUTTONS_H */

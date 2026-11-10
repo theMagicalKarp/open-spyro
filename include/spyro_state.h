@@ -238,18 +238,26 @@ typedef enum SpyroState
                                          * flame after this many substeps */
 /* CHARGE: a homing target (g_pSpyroHomingTargetActor) pulls his heading for
  * HOMING_TICKS while his heading is at least HOMING_CONE off the camera's and it is
- * within SPYRO_HOMING_CONE of his heading and HOMING_RANGE of him. Off a
+ * within SPYRO_HOMING_CONE of his heading and HOMING_RANGE of him
+ * (ChangeSpyroState picks it on entering CHARGE: the lowest-scoring live
+ * colliding actor in that cone and range). Off a
  * charge-hold strip his carried motion loses CHARGE_DRAG / 4096 a substep
  * and gains CHARGE_THRUST along his heading; letting go of the charge slows
  * him by CHARGE_STOP_DECEL. */
 #define SPYRO_HOMING_TICKS 0x78
 #define SPYRO_HOMING_CONE 0x200
 #define SPYRO_HOMING_RANGE 0x1800
+#define SPYRO_HOMING_QUICK_RANGE 0x4000 /* ChangeSpyroState: |dx|+|dy|+|dz| cull */
+#define SPYRO_HOMING_ANGLE_WEIGHT 4     /* score = distance + angle off * this */
+#define SPYRO_HOMING_NO_SCORE 0x7530    /* worse than any candidate's score */
 #define SPYRO_CHARGE_DRAG 300
 #define SPYRO_CHARGE_THRUST 0x240
 #define SPYRO_CHARGE_STOP_DECEL 0x180
 #define SPYRO_PINNED_FALL_ACCEL 0x600 /* HURT_PINNED / HURT_LONG airborne */
 #define SPYRO_HURT_LONG_SPIN 0x55     /* HURT_LONG: body yaw added per substep */
+#define SPYRO_PINNED_PRESS 0xC00      /* HURT_PINNED: downward velocity on entry */
+#define SPYRO_STOP_MAX_SPEED 0x1400   /* entering STOP caps the speed here */
+#define SPYRO_SCRIPTED_WALK_SPEED 0x280 /* SCRIPTED_WALK's move-target speed */
 /* Glide / flight attitude (12-bit angles). With the stick idle the d-pad
  * stands in for it: each held direction moves the virtual stick
  * FLY_DPAD_STEP a substep (to +-0x7F), released it recentres by up to
