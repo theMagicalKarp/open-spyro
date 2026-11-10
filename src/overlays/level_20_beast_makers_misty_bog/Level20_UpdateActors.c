@@ -239,18 +239,18 @@ void Level20_UpdateActors(void) {
             int *at;
 
             if (TICK_DOWN(st->headingTimer) != 0) {
-              int turn = RandomSignedInRange(0x1E, 0x5A);
+              int turn = RandomSignedInRange(BUTTERFLY_VEER_MIN, BUTTERFLY_VEER_MAX);
 
               if (GetRandomU32() & 1) {
                 turn = -turn;
               }
               st->heading = WrapAddAngle8(st->heading, turn);
-              st->headingTimer = RandomIntInRange(0x3C, 0x8C);
+              st->headingTimer = RandomIntInRange(BUTTERFLY_VEER_MIN_FRAMES, BUTTERFLY_VEER_MAX_FRAMES);
             }
 
             if (TICK_DOWN(st->climbTimer) != 0) {
-              st->vz = RandomSignedInRange(0xA, 0x19);
-              st->climbTimer = RandomIntInRange(0x50, 0x8C);
+              st->vz = RandomSignedInRange(BUTTERFLY_FLUTTER_VZ_MIN, BUTTERFLY_FLUTTER_VZ_MAX);
+              st->climbTimer = RandomIntInRange(BUTTERFLY_FLUTTER_CLIMB_MIN_FRAMES, BUTTERFLY_FLUTTER_CLIMB_MAX_FRAMES);
             }
 
             spd = st->vz;
@@ -264,30 +264,30 @@ void Level20_UpdateActors(void) {
             step = actor->posZ - ProbeActorGroundHeight(actor);
 
             if (step < BUTTERFLY_FLUTTER_MIN_HEIGHT) {
-              st->vz = RandomIntInRange(0xA, 0x19);
-              st->climbTimer = RandomIntInRange(0x50, 0x8C);
+              st->vz = RandomIntInRange(BUTTERFLY_FLUTTER_VZ_MIN, BUTTERFLY_FLUTTER_VZ_MAX);
+              st->climbTimer = RandomIntInRange(BUTTERFLY_FLUTTER_CLIMB_MIN_FRAMES, BUTTERFLY_FLUTTER_CLIMB_MAX_FRAMES);
             }
 
-            if ((unsigned int)(step - 0x401) < 0x3FF) {
-              st->vz = -RandomIntInRange(0xA, 0x19);
-              st->climbTimer = RandomIntInRange(0x50, 0x8C);
+            if (BUTTERFLY_FLUTTER_MAX_HEIGHT < step && step < BUTTERFLY_DROP_HEIGHT) {
+              st->vz = -RandomIntInRange(BUTTERFLY_FLUTTER_VZ_MIN, BUTTERFLY_FLUTTER_VZ_MAX);
+              st->climbTimer = RandomIntInRange(BUTTERFLY_FLUTTER_CLIMB_MIN_FRAMES, BUTTERFLY_FLUTTER_CLIMB_MAX_FRAMES);
             }
 
             moved = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, YAW_STEP_IN_BAND);
-            blocked = MoveActorAlongHeading(actor, 0x1E, 0, 0x32, MOVE_LIFT);
+            blocked = MoveActorAlongHeading(actor, BUTTERFLY_SPEED, 0, BUTTERFLY_RADIUS, MOVE_LIFT);
 
             if (moved != 0) {
               if (blocked != 0) {
                 st->heading =
-                    WrapAddAngle8(st->heading, RandomIntInRange(0x62, 0x9E));
-                st->headingTimer = RandomIntInRange(0x1E, 0x50);
+                    WrapAddAngle8(st->heading, RandomIntInRange(BUTTERFLY_BOUNCE_MIN, BUTTERFLY_BOUNCE_MAX));
+                st->headingTimer = RandomIntInRange(BUTTERFLY_BOUNCE_MIN_FRAMES, BUTTERFLY_BOUNCE_MAX_FRAMES);
               }
             }
 
             if (ApproxDist2D(&actor->posX, st->home) > BUTTERFLY_LEASH) {
               st->heading = ArcTan2(st->home[0] - actor->posX,
                                           st->home[1] - actor->posY, ATAN_ANGLE8);
-              st->headingTimer = 0x28;
+              st->headingTimer = BUTTERFLY_LEASH_TURN_FRAMES;
             }
           } else {
             DespawnActorRecord(actor);
@@ -300,7 +300,7 @@ void Level20_UpdateActors(void) {
                         WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                     actor->posY - spy->posY, ATAN_ANGLE8),
                                       st->circleDir * 8),
-                        8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
+                        8, BUTTERFLY_CIRCLE_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
           if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
             actor->mode = BUTTERFLY_FLUTTER;
@@ -308,8 +308,8 @@ void Level20_UpdateActors(void) {
           }
 
           if (TICK_DOWN(st->climbTimer) != 0) {
-            st->vz = RandomSignedInRange(5, 0x14);
-            st->climbTimer = RandomIntInRange(0x28, 0x50);
+            st->vz = RandomSignedInRange(BUTTERFLY_CIRCLE_VZ_MIN, BUTTERFLY_CIRCLE_VZ_MAX);
+            st->climbTimer = RandomIntInRange(BUTTERFLY_CIRCLE_CLIMB_MIN_FRAMES, BUTTERFLY_CIRCLE_CLIMB_MAX_FRAMES);
           }
 
           {
@@ -328,13 +328,13 @@ void Level20_UpdateActors(void) {
             step = actor->posZ - ProbeActorGroundHeight(actor);
 
             if (step < BUTTERFLY_CIRCLE_MIN_HEIGHT) {
-              st->vz = RandomIntInRange(5, 0x14);
-              st->climbTimer = RandomIntInRange(0x28, 0x50);
+              st->vz = RandomIntInRange(BUTTERFLY_CIRCLE_VZ_MIN, BUTTERFLY_CIRCLE_VZ_MAX);
+              st->climbTimer = RandomIntInRange(BUTTERFLY_CIRCLE_CLIMB_MIN_FRAMES, BUTTERFLY_CIRCLE_CLIMB_MAX_FRAMES);
             }
 
-            if ((unsigned int)(step - 0x3E9) < 0x417) {
-              st->vz = -RandomIntInRange(5, 0x14);
-              st->climbTimer = RandomIntInRange(0x28, 0x50);
+            if (BUTTERFLY_CIRCLE_MAX_HEIGHT < step && step < BUTTERFLY_DROP_HEIGHT) {
+              st->vz = -RandomIntInRange(BUTTERFLY_CIRCLE_VZ_MIN, BUTTERFLY_CIRCLE_VZ_MAX);
+              st->climbTimer = RandomIntInRange(BUTTERFLY_CIRCLE_CLIMB_MIN_FRAMES, BUTTERFLY_CIRCLE_CLIMB_MAX_FRAMES);
             }
           }
           break;

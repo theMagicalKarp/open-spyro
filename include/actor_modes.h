@@ -253,6 +253,8 @@ enum ButterflyMode {
 /* Flutter step: MoveActorAlongHeading speed / radius. */
 #define BUTTERFLY_SPEED 30
 #define BUTTERFLY_RADIUS 50
+/* Circling Spyro (BUTTERFLY_CIRCLE): SteerActorAroundPoint speed. */
+#define BUTTERFLY_CIRCLE_SPEED 0x82
 
 /* ->mode of a seed pod (ACTOR_TYPE_SEED_POD, SeedPodState). */
 enum SeedPodMode {
@@ -575,6 +577,35 @@ enum ThiefMode {
 /* A CIRCLE thief starts circling once Spyro, within THIEF_NEAR_RANGE, is more
  * than this (8-bit) off the far side of its node from it. */
 #define THIEF_CIRCLE_ENTER_ANGLE 0x30
+/* ...and stops (THIEF_IDLE) once it is back within CIRCLE_EXIT_ANGLE. */
+#define THIEF_CIRCLE_EXIT_ANGLE 0x20
+/* A GUARD thief at home steers around it once Spyro's bearing from the
+ * current node and its own bearing from home differ by over ORBIT_SLACK
+ * (ORBIT_TAUNT_SLACK while taunting). A residual steer error over
+ * STEER_STUCK_ERR counts a stuck frame, one under STEER_TAUNT_ERR taunts;
+ * STUCK_FRAMES of them with Spyro over BREAK_ANGLE off its home bearing break
+ * the orbit (THIEFSUB_BREAK); breaking, it rejoins the orbit when
+ * Spyro and it bear more than RETURN_ANGLE apart from home. */
+#define THIEF_ORBIT_SLACK 10
+#define THIEF_ORBIT_TAUNT_SLACK 0x28
+#define THIEF_STEER_STUCK_ERR 0x5A
+#define THIEF_STEER_TAUNT_ERR 0x1E
+#define THIEF_STUCK_FRAMES 0x1E
+#define THIEF_BREAK_ANGLE 0x20
+#define THIEF_RETURN_ANGLE 0x50
+/* A FLEE thief clear of both nodes reverses its ring once when the current
+ * and next nodes bear within FLEE_REVERSE_GAP of each other off Spyro's
+ * bearing; after that it reverses onto the next node when the current one is
+ * FLEE_SKIP_GAP nearer Spyro's bearing, the next is over FLEE_SKIP_CLEAR off
+ * it and the thief faces within FLEE_SKIP_FACING of Spyro. */
+#define THIEF_FLEE_REVERSE_GAP 0x28
+#define THIEF_FLEE_SKIP_GAP 0x1D
+#define THIEF_FLEE_SKIP_CLEAR 0x3C
+#define THIEF_FLEE_SKIP_FACING 0x3C
+/* A LEDGE thief jumps once Spyro is near and at most 0xC7 below it, probing
+ * the floor LEDGE_PROBE_RAISE up while airborne. */
+#define THIEF_LEDGE_JUMP_MIN_DZ (-0xC7)
+#define THIEF_LEDGE_PROBE_RAISE 0x1800
 /* Hit (THIEF_CAUGHT), a thief slides from KNOCK_SPEED (CHARGE_KNOCK_SPEED
  * when charged), losing KNOCK_DRAG a frame, and lets go of its egg on
  * EGG_RELEASE_FRAME of THIEF_ANIM_CAUGHT. */
