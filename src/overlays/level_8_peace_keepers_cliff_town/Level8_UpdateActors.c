@@ -778,7 +778,7 @@ void Level8_UpdateActors(void) {
           g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
           if (actor->nextAnim == THIEF_ANIM_CAUGHT && actor->nextFrame >= THIEF_EGG_RELEASE_FRAME) {
             st->egg->mode = EGG_RELEASED;
-            st->egg->otBias = 4;
+            st->egg->otBias = OT_BIAS_DEFAULT;
             st->egg = 0;
           }
         }

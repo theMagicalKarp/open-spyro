@@ -389,7 +389,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     rec->posY = 0x1E;
     rec->posZ = 0x1000;
     HideActorRenderRecord(rec);
-    rec->otBias = 0x20;
+    rec->otBias = OT_BIAS_SCREEN;
     rec->tint0 = 0;
     rec->tint1 = 0;
     rec->tint2 = 0;
@@ -403,7 +403,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     rec->posY = 0x28;
     rec->posZ = 0x1000;
     HideActorRenderRecord(rec);
-    rec->otBias = 0x20;
+    rec->otBias = OT_BIAS_SCREEN;
     rec->tint0 = 0;
     rec->tint1 = 0;
     rec->tint2 = 0;

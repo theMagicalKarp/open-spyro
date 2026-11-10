@@ -78,7 +78,7 @@ void *BuildTextSprites(char *text, int *pos, int *attr, int spacing,
         r->type = ACTOR_TYPE_GLYPH_COMMA;
         r->posY = (r->posY) - ((attr[0] * 2) / 3);
       }
-      CURSOR_V->otBias = 0x7f;
+      CURSOR_V->otBias = OT_BIAS_SPRITE;
       CURSOR_V->tintMode = flags;
       CURSOR_V->cullRadius = ACTOR_CULL_ALWAYS;
       if (flag != 0) {

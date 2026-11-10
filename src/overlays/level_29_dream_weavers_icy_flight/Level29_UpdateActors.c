@@ -1515,7 +1515,7 @@ void Level29_UpdateActors(void) {
         for (i = 3; i >= 0; i--) {
           st->digit[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_GLYPH_PERIOD, actor);
           st->digit[i]->cullRadius = ACTOR_CULL_ALWAYS;
-          st->digit[i]->otBias = FLIGHT_HUD_OT_BIAS;
+          st->digit[i]->otBias = OT_BIAS_SCREEN;
           st->digit[i]->posZ = FLIGHT_HUD_DEPTH;
           st->digit[i]->rotZ = 0;
         }
@@ -1532,7 +1532,7 @@ void Level29_UpdateActors(void) {
           for (i = 4; i < 8; i++) {
             st->digit[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_GLYPH_PERIOD, actor);
             st->digit[i]->cullRadius = ACTOR_CULL_ALWAYS;
-            st->digit[i]->otBias = FLIGHT_HUD_OT_BIAS;
+            st->digit[i]->otBias = OT_BIAS_SCREEN;
             st->digit[i]->rotZ = 0;
           }
           st->digit[4]->posX = FLIGHT_CLOCK_COLON_X;
@@ -1570,7 +1570,7 @@ void Level29_UpdateActors(void) {
           HideActorRenderRecord(&g_aHudIconActorRecords[i]);
           g_aHudIconActorRecords[i].posY = y;
           y += FLIGHT_CLASS_ICON_DY;
-          g_aHudIconActorRecords[i].otBias = FLIGHT_HUD_OT_BIAS;
+          g_aHudIconActorRecords[i].otBias = OT_BIAS_SCREEN;
           g_aHudIconActorRecords[i].cullRadius = ACTOR_CULL_ALWAYS;
           g_aHudIconActorRecords[i].posX = FLIGHT_CLASS_ICON_X;
           g_aHudIconActorRecords[i].posZ = FLIGHT_HUD_DEPTH;

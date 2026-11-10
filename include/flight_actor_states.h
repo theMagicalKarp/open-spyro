@@ -67,7 +67,7 @@ typedef struct HudState {
 
 /* Flight HUD layout. The HUD actors sit in screen space: posX / posY in
  * pixels, posZ their depth (FLIGHT_HUD_DEPTH, the colon dots further back),
- * all with otBias FLIGHT_HUD_OT_BIAS. The clock runs along FLIGHT_CLOCK_Y
+ * all with otBias OT_BIAS_SCREEN. The clock runs along FLIGHT_CLOCK_Y
  * (time attack's colon is two period glyphs stacked at COLON_LOW_Y /
  * COLON_HIGH_Y); the per-class icons stack down from FLIGHT_CLASS_ICON_Y; the
  * tally row starts at FLIGHT_TALLY_X; a finished row flies to its finish slot
@@ -75,7 +75,6 @@ typedef struct HudState {
  * FLIGHT_TALLY_SPEND_INTERVAL frames, and the four filled slots spiral into
  * the results ring around (FLIGHT_RING_X, FLIGHT_RING_Y). */
 #define FLIGHT_HUD_DEPTH 0x1000
-#define FLIGHT_HUD_OT_BIAS 0x20
 #define FLIGHT_CLOCK_Y 0x1E
 #define FLIGHT_CLOCK_MINS_X 0x170       /* digit[6], time attack */
 #define FLIGHT_CLOCK_COLON_X 0x180      /* digit[4] / digit[5], time attack */

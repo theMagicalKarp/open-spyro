@@ -1634,7 +1634,7 @@ void Level32_UpdateActors(void) {
             Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_HAZARD2_ENTER_FX, actor);
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
-            o->otBias = 0xFE;
+            o->otBias = OT_BIAS_DEEPER;
             st->sinkTimer = BURSTGUN_SINK_TICKS;
             actor->mode = BURSTGUN_SINK;
             continue;
@@ -1801,7 +1801,7 @@ void Level32_UpdateActors(void) {
             Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_HAZARD2_ENTER_FX, actor);
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
-            o->otBias = 0xFE;
+            o->otBias = OT_BIAS_DEEPER;
             st->timer = SWEEPGUN_SINK_TICKS;
             actor->mode = SWEEPGUN_SINK;
             continue;
@@ -1929,7 +1929,7 @@ void Level32_UpdateActors(void) {
             Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_HAZARD2_ENTER_FX, actor);
 
             PlaySoundEffect(g_pLevelSampleBankHeader[SFX_SPLASH], actor, SFX_MODE_3D, &actor->voiceRow);
-            o->otBias = 0xFE;
+            o->otBias = OT_BIAS_DEEPER;
             st->timer = LOBGUN_SINK_TICKS;
             actor->mode = LOBGUN_SINK;
             continue;

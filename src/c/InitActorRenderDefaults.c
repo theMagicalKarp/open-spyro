@@ -10,7 +10,7 @@
 void InitActorRenderDefaults(Actor *actor) {
   actor->cullRadius = 0x10;
   actor->updateDist = ACTOR_UPDATE_ALWAYS;
-  actor->otBias = 4;
+  actor->otBias = OT_BIAS_DEFAULT;
   actor->nextFrame = 1;
   actor->mode = ACTOR_SPAWN_MODE;
   actor->subMode = 0;

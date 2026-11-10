@@ -229,7 +229,7 @@ void DrawLevelTransitionOverlay(void) {
         SPR->r = PARTICLES[i].driftx;
         g_pSpriteRecordWriteCursor->rotY = PARTICLES[i].drifty;
         g_pSpriteRecordWriteCursor->rotZ = PARTICLES[i].spin;
-        g_pSpriteRecordWriteCursor->otBias = 0x7f;
+        g_pSpriteRecordWriteCursor->otBias = OT_BIAS_SPRITE;
         g_pSpriteRecordWriteCursor->tintMode =
             ACTOR_RAW(g_pSpriteRecordWriteCursor, unsigned char, type) -
             (ACTOR_TYPE_GEM_1 - TINT_GEM_1);
@@ -256,7 +256,7 @@ void DrawLevelTransitionOverlay(void) {
     }
     spr->y = y;
     g_pSpriteRecordWriteCursor->rotZ = 0xb0;
-    g_pSpriteRecordWriteCursor->otBias = 0x7f;
+    g_pSpriteRecordWriteCursor->otBias = OT_BIAS_SPRITE;
     g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
     g_pSpriteRecordWriteCursor->cullRadius = ACTOR_CULL_ALWAYS;
   }

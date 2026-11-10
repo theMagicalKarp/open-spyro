@@ -64,7 +64,7 @@ icon_slot:
   CopyVector(pos, HUD_REST_POS(vec));
   pos += sizeof(Actor) / sizeof(int);
   rec += ACTOR_SIZE;
-  HUD_ICON(off)->otBias = 0x20;
+  HUD_ICON(off)->otBias = OT_BIAS_SCREEN;
   HUD_ICON(off)->cullRadius = ff;
   HUD_ICON(off)->subMode = ff;
   HUD_ICON(off)->tintMode = TINT_HUD;

@@ -75,7 +75,7 @@ void Credits_Draw(void) {
       g_pSpriteRecordWriteCursor->type = (unsigned short)glyph->glyph;
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = ACTOR_CULL_ALWAYS;
-      g_pSpriteRecordWriteCursor->otBias = 0x7F;
+      g_pSpriteRecordWriteCursor->otBias = OT_BIAS_SPRITE;
     }
   }
   {
