@@ -300,20 +300,20 @@ void DispatchSpyroPhysicsByState(void) {
     ApplyGravityAlongSpyroSlopeNormal();
     break;
   case SPYRO_ST_HAZARD: {
-    int *timer;
+    int *sink;
     int n;
 
-    timer = &SPY[SPY_HAZARD_SINK];
-    if (*timer != 0) {
-      n = *timer + 8;
-      *timer = n;
+    sink = &SPY[SPY_HAZARD_SINK];
+    if (*sink != 0) {
+      n = *sink + SPYRO_HAZARD_SINK_STEP;
+      *sink = n;
       g_nSpyroWorldPosZ = g_nSpyroTriggerEntryZ + SPYRO_RADIUS;
       if (g_nSparxHealth >= SPARX_GONE) {
-        if (n > 0x96) {
-          *timer = 0x96;
+        if (n > SPYRO_HAZARD_SINK_SURVIVE) {
+          *sink = SPYRO_HAZARD_SINK_SURVIVE;
         }
-      } else if (n > 0x240) {
-        *timer = 0x240;
+      } else if (n > SPYRO_HAZARD_SINK_FATAL) {
+        *sink = SPYRO_HAZARD_SINK_FATAL;
       }
     }
     AdvanceSpyroPhysics();

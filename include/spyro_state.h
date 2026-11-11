@@ -195,6 +195,17 @@ typedef enum SpyroState
                                           * falls on (keeping the fall's timer) */
 #define SPYRO_HAZARD_TICKS 0x3C        /* HAZARD: longer and the hazard claims him */
 #define SPYRO_HAZARD_JUMP_TICKS 0x10   /* HAZARD: Cross jumps out after this */
+#define SPYRO_DEATH_TICKS 0x65         /* DEATH: respawn after this */
+#define SPYRO_DEATH_PINNED_TICKS 0x7D  /* DEATH_PINNED: respawn after this */
+/* HAZARD: once sinking starts, the depth grows SPYRO_HAZARD_SINK_STEP a
+ * substep, up to SPYRO_HAZARD_SINK_SURVIVE while Sparx still has health, or
+ * to SPYRO_HAZARD_SINK_FATAL on the fatal hit, where Spyro respawns (or a
+ * flight level ends the run). */
+#define SPYRO_HAZARD_SINK_STEP 8
+#define SPYRO_HAZARD_SINK_SURVIVE 0x96
+#define SPYRO_HAZARD_SINK_FATAL 0x240
+/* The level box's X / Y edge: Spyro closer than this to 0 falls out. */
+#define SPYRO_WORLD_EDGE_XY 0x800
 #define SPYRO_SUPERCHARGE_MIN_TICKS 0xF /* SUPERCHARGE: letting go of Square
                                          * this early stays supercharged */
 #define SPYRO_SUPERCHARGE_JUMP_HOLD 10 /* SUPERCHARGE: frames Cross is held before
@@ -365,6 +376,22 @@ typedef enum SpyroState
  * actor's facing Spyro is in). */
 #define SPYRO_SUB_ORBIT_NEG 1
 #define SPYRO_SUB_ORBIT_POS 2
+/* SPYRO_ST_IDLE under a scripted move: the scripted flame breath was pressed;
+ * the next tick hands control back. */
+#define SPYRO_SUB_IDLE_FLAMED 1
+/* SPYRO_ST_WALK / RUN / JOG: cleared every substep; ApplyPadInputToSpyroBodyYaw
+ * sets it when the stick asks for a turn sharper than SPYRO_PIVOT_TURN, and
+ * Spyro brakes (SPYRO_GROUND_DECEL) instead of accelerating while he pivots. */
+#define SPYRO_SUB_WALK_PIVOT 1
+#define SPYRO_PIVOT_TURN 0x100
+/* SPYRO_ST_CHARGE: ChangeSpyroState sets bit 0 on every ground-charge entry
+ * and nothing clears it while charging, so the stick-steer / homing branch it
+ * gates always runs (SUPERCHARGE, which shares the latch bits, never sets it). */
+#define SPYRO_SUB_CHARGE_STEER 1
+/* SPYRO_ST_FALL out of the level (below its death plane or off the box's
+ * edge): the substate counts frames, and at SPYRO_DEATH_FALL_FRAMES Spyro
+ * respawns (TickSpyroGameplayFrame). */
+#define SPYRO_DEATH_FALL_FRAMES 0x79
 #define SPYRO_SUB_SUPERCHARGE 0x40    /* charge/charge-air entered from a supercharge */
 #define SPYRO_SUB_CHARGE_LATCHED 0x80 /* charge target speed latched (LATCH_CHARGE_SPEED) */
 /* Glide/fly substates >= 8 are scripted: flight levels stop the clock and the

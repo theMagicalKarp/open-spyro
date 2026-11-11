@@ -221,7 +221,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       if (g_nSpyroSubstate != 0) {
         g_nSpyroScriptedMoveMode = 0;
       } else {
-        g_nSpyroSubstate = 1;
+        g_nSpyroSubstate = SPYRO_SUB_IDLE_FLAMED;
         g_adwPadPressedBlock[0] |= PAD_CIRCLE; /* scripted flame breath */
       }
     }
@@ -257,7 +257,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       }
       r = TurnSpyroTowardMoveTargetWithLean(lean);
     }
-    if (g_nSpyroSubstate != 0) {
+    if (g_nSpyroSubstate != 0) { /* SPYRO_SUB_WALK_PIVOT */
       int s = g_nSpyroMotionSpeed - SPYRO_GROUND_DECEL;
 
       g_nSpyroMotionSpeed = s;
@@ -535,7 +535,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
   }
   case SPYRO_ST_CHARGE:
     LOCKOUT_TICK(&SPY[SPY_LOCKOUT]);
-    if (g_nSpyroSubstate & 1) {
+    if (g_nSpyroSubstate & SPYRO_SUB_CHARGE_STEER) {
       int stickX;
       int stickY;
       int relYaw;

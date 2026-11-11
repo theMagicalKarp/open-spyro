@@ -208,9 +208,9 @@ void ChangeSpyroState(int state) {
       if (!(g_nSpyroSubstate & SPYRO_SUB_CHARGE_LATCHED)) {
         LATCH_CHARGE_SPEED(g_anSpyroCarryMotionVec);
       }
-      g_nSpyroSubstate = SPYRO_SUB_CHARGE_LATCHED | 1;
+      g_nSpyroSubstate = SPYRO_SUB_CHARGE_LATCHED | SPYRO_SUB_CHARGE_STEER;
     } else {
-      g_nSpyroSubstate = 1;
+      g_nSpyroSubstate = SPYRO_SUB_CHARGE_STEER;
     }
     SPY[SPY_BODY_YAW_STEP] = 0;
     g_nSpyroGravityStep = -SPYRO_CHARGE_FALL_ACCEL;
