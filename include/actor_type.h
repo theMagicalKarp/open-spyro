@@ -259,6 +259,12 @@ typedef struct NameLetterState {
 #define ACTOR_ANIM_NEW_FRAME 0x01 /* stepped onto a new frame this tick */
 #define ACTOR_ANIM_DONE 0x02      /* the animation finished (g_nActorAnimDone) */
 #define ACTOR_ANIM_EXTRA_STEP 0x04 /* the long-frame extra pass stepped again */
+/* Actor.frameProgress: TickActorAnims adds frameRate every tick and steps a
+ * frame when the sum reaches ANIM_STEP. ANIM_RATE_TICKS(n) is the rate that
+ * steps every n ticks. A pose change usually seeds frameProgress with the
+ * same value as frameRate, so the blend starts one tick in. */
+#define ANIM_STEP 0x40
+#define ANIM_RATE_TICKS(n) (ANIM_STEP / (n))
 /* TickActorAnims' mode: the low bits shift frameRate down; ANIM_TICK_EXTRA is
  * the extra pass a long frame (g_nFrameStep >= 3) runs after the normal one,
  * at half rate for a 3-tick frame. */

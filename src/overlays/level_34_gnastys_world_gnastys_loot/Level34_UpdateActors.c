@@ -1474,7 +1474,7 @@ void Level34_UpdateActors(void) {
         StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
         if (CHUNK_ANIM_STEP(GetWorldChunkAnimState(st->chunkAnim)) > 0) {
           st->init = one;
-          actor->frameRate = 0x10;
+          actor->frameRate = ANIM_RATE_TICKS(4);
           actor->cullRadius = CULL_RADIUS(0x4000);
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
           ZeroVector(st->look);

@@ -77,8 +77,8 @@ int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed,
         g_nActorAnimDone = 0;
         old = actor->nextAnim;
         oldFrame = actor->nextFrame;
-        actor->frameProgress = 0x10;
-        actor->frameRate = 0x10;
+        actor->frameProgress = ANIM_RATE_TICKS(4);
+        actor->frameRate = ANIM_RATE_TICKS(4);
         actor->nextAnim = animId;
         actor->nextFrame = 0;
         actor->anim = old;
@@ -92,8 +92,8 @@ int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed,
         g_nActorAnimDone = 0;
         old = actor->nextAnim;
         oldFrame = actor->nextFrame;
-        actor->frameProgress = 0x10;
-        actor->frameRate = 0x10;
+        actor->frameProgress = ANIM_RATE_TICKS(4);
+        actor->frameRate = ANIM_RATE_TICKS(4);
         actor->nextAnim = next;
         actor->nextFrame = 0;
         actor->anim = old;

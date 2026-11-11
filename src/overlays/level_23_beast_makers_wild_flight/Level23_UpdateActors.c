@@ -1206,8 +1206,8 @@ void Level23_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           actor->mode = FTARGET_SPENT;
           if (actor->nextAnim != FTARGET_SPENT) {
-            actor->frameProgress = 0x10;
-            actor->frameRate = 0x10;
+            actor->frameProgress = ANIM_RATE_TICKS(4);
+            actor->frameRate = ANIM_RATE_TICKS(4);
             actor->nextAnim = FTARGET_SPENT;
             actor->nextFrame = 0;
             OnActorAnimQueued(actor);

@@ -4214,7 +4214,7 @@ void Level14_UpdateActors(void) {
           ENTER_POSE(actor, FLEEWALK_FLEE);
           continue;
         }
-        actor->frameRate = 0x10;
+        actor->frameRate = ANIM_RATE_TICKS(4);
         if (TICK_DOWN(st->timer) != 0) {
           if (TrackEntityYawTowardSpyro(actor, 8, 0x30, YAW_STEP_IN_BAND) != 0 &&
               MoveActorAlongHeading(actor, st->speed, 0, FWALK_MOVE_RADIUS, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == MOVED_BLOCKED) {
@@ -4241,7 +4241,7 @@ void Level14_UpdateActors(void) {
               ENTER_POSE(actor, FLEEWALK_WALK);
               continue;
             }
-            actor->frameRate = 8;
+            actor->frameRate = ANIM_RATE_TICKS(8);
             if (TurnActorYawTowardAngle(actor,
                               ArcTan2(NODE_PT(st->cur)[0] - actor->posX,
                                             NODE_PT(st->cur)[1] - actor->posY,
@@ -4262,7 +4262,7 @@ void Level14_UpdateActors(void) {
               ENTER_POSE(actor, FLEEWALK_STAND);
               continue;
             }
-            actor->frameRate = 0x10;
+            actor->frameRate = ANIM_RATE_TICKS(4);
           }
         } else {
           TurnActorYawTowardAngle(actor, st->heading, 8, 0x30, YAW_STEP_IN_BAND);
@@ -4282,7 +4282,7 @@ void Level14_UpdateActors(void) {
             ENTER_POSE(actor, FLEEWALK_WALK);
             continue;
           }
-          actor->frameRate = 8;
+          actor->frameRate = ANIM_RATE_TICKS(8);
           if (TICK_DOWN(st->timer) != 0) {
             if (ApproxDist2D(&actor->posX, PATH_CUR(st->cur)) < FWALK_NODE_RANGE) {
               if (st->mode & FWALK_F_REVERSE) {
@@ -4326,7 +4326,7 @@ void Level14_UpdateActors(void) {
             ENTER_POSE(actor, FLEEWALK_WALK);
             continue;
           }
-          actor->frameRate = 8;
+          actor->frameRate = ANIM_RATE_TICKS(8);
           if (TICK_DOWN(st->timer) != 0) {
             if (TurnActorYawTowardAngle(actor,
                               ArcTan2(NODE_PT(st->cur)[0] - actor->posX,
@@ -4352,7 +4352,7 @@ void Level14_UpdateActors(void) {
             ENTER_POSE(actor, FLEEWALK_STAND);
             continue;
           }
-          actor->frameRate = 0x10;
+          actor->frameRate = ANIM_RATE_TICKS(4);
         }
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);

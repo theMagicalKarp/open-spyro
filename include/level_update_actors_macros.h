@@ -94,8 +94,8 @@
 /* An animation change at half speed, keyed on the current animation. */
 #define ANIM_BLEND(a, n)                                                       \
   if ((a)->anim != (n)) {                                                     \
-    (a)->frameProgress = 8;                                                            \
-    (a)->frameRate = 8;                                                            \
+    (a)->frameProgress = ANIM_RATE_TICKS(8);                                                            \
+    (a)->frameRate = ANIM_RATE_TICKS(8);                                                            \
     (a)->anim = (a)->nextAnim;                                                   \
     (a)->nextAnim = (n);                                                          \
     (a)->frame = (a)->nextFrame;                                                   \
@@ -150,8 +150,8 @@
 #define ANIM_GO8(a, n)                                                         \
   if ((a)->nextAnim != (n)) {                                                     \
     g_nActorAnimDone = 0;                                                            \
-    (a)->frameProgress = 8;                                                            \
-    (a)->frameRate = 8;                                                            \
+    (a)->frameProgress = ANIM_RATE_TICKS(8);                                                            \
+    (a)->frameRate = ANIM_RATE_TICKS(8);                                                            \
     (a)->anim = (a)->nextAnim;                                                   \
     (a)->nextAnim = (n);                                                          \
     (a)->frame = (a)->nextFrame;                                                   \

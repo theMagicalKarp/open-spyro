@@ -3086,15 +3086,15 @@ void Level32_UpdateActors(void) {
           actor->rotY = st->savedRotY;
           actor->posZ = st->savedPosZ;
           actor->mode = LIFECHEST_OPEN;
-          actor->frameProgress = 8;
-          actor->frameRate = 8;
+          actor->frameProgress = ANIM_RATE_TICKS(8);
+          actor->frameRate = ANIM_RATE_TICKS(8);
           actor->nextAnim = LIFECHEST_OPEN;
 
           st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;
-          st->passenger->frameRate = 0x10;
+          st->passenger->frameRate = ANIM_RATE_TICKS(4);
           st->passenger->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
           st->passenger->cullRadius = ACTOR_CULL_HIDDEN;
           st->passenger->drawn = 0;
@@ -3136,8 +3136,8 @@ void Level32_UpdateActors(void) {
         if (st->phase >= LIFECHEST_OPEN_FRAMES) {
           DespawnActorRecord(st->passenger);
           st->phase = GetRandomU32() & 0xFF;
-          actor->frameProgress = 8;
-          actor->frameRate = 8;
+          actor->frameProgress = ANIM_RATE_TICKS(8);
+          actor->frameRate = ANIM_RATE_TICKS(8);
           actor->mode = LIFECHEST_CLOSED;
           actor->nextAnim = LIFECHEST_CLOSED;
           if (actor->voiceRow == VOICE_ROW_NONE) {
