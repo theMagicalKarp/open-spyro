@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "libcd.h"
 #include "main_shared.h"
+#include "spu.h"
 
 /* The CdMix attenuation bytes (g_bCdMixLeftToLeft.., 0x800776d0) reached
    from the music-stream block's held base, as the original addresses them. */
@@ -21,8 +22,8 @@ void InitCdSystem(void) {
   g_anMusicStreamBlock[0] = MUSIC_ST_IDLE;
   g_nLastCdMusicCommand = 0;
   g_nPendingMusicCommand = 0;
-  g_bCdMixRightToRight = 0x7F;
-  CD_MIX_ATV[0] = 0x7F; /* g_bCdMixLeftToLeft */
+  g_bCdMixRightToRight = CD_MIX_FULL;
+  CD_MIX_ATV[0] = CD_MIX_FULL; /* g_bCdMixLeftToLeft */
   g_bCdMixRightToLeft = 0;
   g_bCdMixLeftToRight = 0;
   CdMix(CD_MIX_ATV);

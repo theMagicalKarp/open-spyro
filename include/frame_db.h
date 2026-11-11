@@ -31,7 +31,8 @@ typedef struct FrameDB {
  * 0x20-byte records), the depth-bin OT shared by both frames, and the
  * 8-byte merged-chain slot. */
 #define EMIT_LIST_BYTES 0x2000
-#define OT_BIN_BYTES 0x4000
+#define OT_BIN_COUNT 0x800 /* depth bins, 8 bytes each (LinkOTPrimitives walks them all) */
+#define OT_BIN_BYTES (OT_BIN_COUNT * 8)
 #define OT_CHAIN_SLOT_BYTES 8
 
 /* The pause / inventory / flight-results menus freeze the gameplay frame

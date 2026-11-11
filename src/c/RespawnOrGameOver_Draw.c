@@ -63,7 +63,7 @@ void RespawnOrGameOver_Draw(void) {
       VSync(0);
       PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
       PutDrawEnv(g_pActiveFrameDrawEnv);
-      DrawOTag(LinkOTPrimitives(0x800));
+      DrawOTag(LinkOTPrimitives(OT_BIN_COUNT));
       DrawSync(0);
       VSync(0);
       srcY = DRAW_Y;
@@ -89,7 +89,7 @@ void RespawnOrGameOver_Draw(void) {
       VSync(0);
       PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
       PutDrawEnv(g_pActiveFrameDrawEnv);
-      DrawOTag(LinkOTPrimitives(0x800));
+      DrawOTag(LinkOTPrimitives(OT_BIN_COUNT));
       if (g_nRespawnOrGameOverFrame == 0xF) {
         {
           unsigned char *e = Opaque(g_abFrameDrawEnvIsbgBlock);
@@ -186,7 +186,7 @@ void RespawnOrGameOver_Draw(void) {
     VSync(0);
     PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
     PutDrawEnv(g_pActiveFrameDrawEnv);
-    DrawOTag(LinkOTPrimitives(0x800));
+    DrawOTag(LinkOTPrimitives(OT_BIN_COUNT));
   } else {
     if (g_nRespawnOrGameOverFrame == 0) {
       srcY = DRAW_Y;
@@ -212,7 +212,7 @@ void RespawnOrGameOver_Draw(void) {
       VSync(0);
       PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
       PutDrawEnv(g_pActiveFrameDrawEnv);
-      DrawOTag(LinkOTPrimitives(0x800));
+      DrawOTag(LinkOTPrimitives(OT_BIN_COUNT));
       if (g_nRespawnOrGameOverFrame == 0xF) {
         {
           unsigned char *e = Opaque(g_abFrameDrawEnvIsbgBlock);

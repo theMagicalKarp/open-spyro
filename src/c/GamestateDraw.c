@@ -137,6 +137,6 @@ void GamestateDraw(void) {
     g_nVsyncFramePaceAnchor = VSync(-1);
     PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
     PutDrawEnv(g_pActiveFrameDrawEnv);
-    DrawOTag(LinkOTPrimitives(0x800));
+    DrawOTag(LinkOTPrimitives(OT_BIN_COUNT));
   }
 }

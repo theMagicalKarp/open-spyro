@@ -98,7 +98,7 @@ void PauseMenu_Draw(void) {
     KEEP_IN_REG(k18);
     img2 = img - 2;
     PutDrawEnv(g_pActiveFrameDrawEnv);
-    DrawOTag(LinkOTPrimitives(0x800));
+    DrawOTag(LinkOTPrimitives(OT_BIN_COUNT));
     DrawSync(0);
     VSync(0);
     PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
