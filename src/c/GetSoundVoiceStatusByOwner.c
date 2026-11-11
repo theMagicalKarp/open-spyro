@@ -1,3 +1,4 @@
+#include "actor_type.h"
 #include "globals.h"
 #include "spu.h"
 

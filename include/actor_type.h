@@ -629,6 +629,10 @@ enum ActorType {
                              * outside its audible range */
 #define SFX_MODE_PANNED 0x10 /* pan supplied by the caller */
 #define SFX_MODE_MASK 0x1C   /* the mode group within a voice row's nFlags */
+/* GetSoundVoiceStatusByOwner's result for (owner, sample). */
+#define VOICE_OWNER_NONE 0
+#define VOICE_OWNER_PLAYING 1
+#define VOICE_OWNER_LOOPING 2
 
 /* g_nSfxOverrideFlags: one-shot overrides the next PlaySoundEffect consumes
  * (and clears). */

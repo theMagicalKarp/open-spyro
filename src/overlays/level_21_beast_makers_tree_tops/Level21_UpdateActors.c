@@ -2301,7 +2301,7 @@ void Level21_UpdateActors(void) {
               st->target = 0;
               EBB_BREAK();
 
-              if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[SFX_GEM_BOUNCE]) == 0) {
+              if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[SFX_GEM_BOUNCE]) == VOICE_OWNER_NONE) {
                 g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                 g_nSfxOverrideVolR = SPARX_HANDOVER_VOLUME;
                 g_nSfxOverrideVolL = SPARX_HANDOVER_VOLUME;
@@ -2822,7 +2822,7 @@ void Level21_UpdateActors(void) {
           int dx;
           int dy;
 
-          if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[STATUE_VOICE_RATTLE]) == 0) {
+          if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[STATUE_VOICE_RATTLE]) == VOICE_OWNER_NONE) {
             PlayActorMeshVoice(actor, STATUE_VOICE_RATTLE, 0);
           }
 
@@ -3113,11 +3113,11 @@ void Level21_UpdateActors(void) {
 
       if (actor->nextAnim == RUNNER_ANIM_STAND && actor->cullRadius != ACTOR_CULL_HIDDEN) {
         if (actor->nextFrame == 1 && !(GetRandomU32() & 3) &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[RUNNER_VOICE_STAND_EARLY]) == 0) {
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[RUNNER_VOICE_STAND_EARLY]) == VOICE_OWNER_NONE) {
           PlayActorMeshVoice(actor, RUNNER_VOICE_STAND_EARLY, 0);
         }
         if (actor->nextFrame == 10 && !(GetRandomU32() & 3) &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[RUNNER_VOICE_STAND_LATE]) == 0) {
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[RUNNER_VOICE_STAND_LATE]) == VOICE_OWNER_NONE) {
           PlayActorMeshVoice(actor, RUNNER_VOICE_STAND_LATE, 0);
         }
       }

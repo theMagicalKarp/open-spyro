@@ -69,10 +69,6 @@ typedef struct SpuVoiceRow {
 #define SPU_ATTR_ADDR 0x80       /* sample start address */
 #define SPU_ATTR_ADSR 0xFF00     /* the eight envelope fields */
 #define SPU_ATTR_LOOP_ADDR 0x10000
-/* GetSoundVoiceStatusByOwner's result for (owner, sample). */
-#define VOICE_OWNER_NONE 0
-#define VOICE_OWNER_PLAYING 1
-#define VOICE_OWNER_LOOPING 2
 
 /* SPU RAM layout: 512 KB, the level's sample bank uploaded from
  * SPU_SAMPLE_BASE to the end (bank entries hold addresses relative to it,
