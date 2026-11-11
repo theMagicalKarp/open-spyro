@@ -2347,7 +2347,7 @@ void Level30_UpdateActors(void) {
         }
 
         if (CollideSphereWithWorldAndActors(&CAM.posX, PORTALGUIDE_CAM_PROBE_RADIUS, PORTALGUIDE_CAM_PROBE_RADIUS) != 0 &&
-            (g_nGroundSurfaceType & 0x3F) < 0x3F && *g_pTriggerRegionTable[g_nGroundSurfaceType] == 6) {
+            (g_nGroundSurfaceType & TRIGGER_REGION_MASK) < TRIGGER_REGION_NONE && *g_pTriggerRegionTable[g_nGroundSurfaceType] == TRIGGER_PORTAL) {
           actor->mode = PORTALGUIDE_IDLE;
           AS_I32(g_nCameraNextMode) = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
           SPY.requestState = SPYRO_ST_GLIDE;
@@ -2391,7 +2391,7 @@ void Level30_UpdateActors(void) {
         g_pPortalCamPathData = st->desc;
 
         if (CollideSphereWithWorldAndActors(&CAM.posX, PORTALGUIDE_CAM_PROBE_RADIUS, PORTALGUIDE_CAM_PROBE_RADIUS) != 0 &&
-            (g_nGroundSurfaceType & 0x3F) < 0x3F && *g_pTriggerRegionTable[g_nGroundSurfaceType] == 6) {
+            (g_nGroundSurfaceType & TRIGGER_REGION_MASK) < TRIGGER_REGION_NONE && *g_pTriggerRegionTable[g_nGroundSurfaceType] == TRIGGER_PORTAL) {
           actor->mode = PORTALGUIDE_IDLE;
           AS_I32(g_nCameraNextMode) = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
           g_nCdStreamState = LSTREAM_PRESERVE;

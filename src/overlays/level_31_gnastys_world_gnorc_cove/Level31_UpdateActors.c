@@ -2587,7 +2587,7 @@ void Level31_UpdateActors(void) {
             st->sink = -FLOATBARREL_RUN_SINK;
           }
           actor->posZ = actor->posZ + st->sink;
-        } else if ((g_nGroundSurfaceType & 0x3F) == 0) {
+        } else if ((g_nGroundSurfaceType & TRIGGER_REGION_MASK) == 0) {
           BARREL_BURST(actor, st);
         } else {
           st->sink = -0xA;
@@ -2834,7 +2834,7 @@ void Level31_UpdateActors(void) {
         if (st->timer >= FLOATBARREL_RUN_ARM_FRAMES) {
           r = MoveActorAlongAngle(actor, st->heading, FLOATBARREL_RUN_SPEED, 0x200, 0x200, 0);
           if (r != 0) {
-            if (r == MOVED_BLOCKED && (g_nGroundSurfaceType & 0x3F) == 0) {
+            if (r == MOVED_BLOCKED && (g_nGroundSurfaceType & TRIGGER_REGION_MASK) == 0) {
               BARREL_BURST(actor, st);
             }
             actor->mode = FLOATBARREL_BURST;
@@ -2842,7 +2842,7 @@ void Level31_UpdateActors(void) {
         } else {
           r = MoveActorAlongAngle(actor, st->heading, FLOATBARREL_RUN_SPEED, 0, 0x200, 0);
           if (r != 0) {
-            if (r == MOVED_BLOCKED && (g_nGroundSurfaceType & 0x3F) == 0) {
+            if (r == MOVED_BLOCKED && (g_nGroundSurfaceType & TRIGGER_REGION_MASK) == 0) {
               BARREL_BURST(actor, st);
             }
             actor->mode = FLOATBARREL_BURST;
@@ -2872,7 +2872,7 @@ void Level31_UpdateActors(void) {
             st->sink = -FLOATBARREL_RUN_SINK;
           }
           actor->posZ = actor->posZ + st->sink;
-        } else if ((g_nGroundSurfaceType & 0x3F) == 0) {
+        } else if ((g_nGroundSurfaceType & TRIGGER_REGION_MASK) == 0) {
           BARREL_BURST(actor, st);
         } else {
           st->sink = -0xA;

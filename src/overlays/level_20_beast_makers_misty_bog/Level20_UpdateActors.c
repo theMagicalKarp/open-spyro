@@ -459,7 +459,7 @@ void Level20_UpdateActors(void) {
       case GUNNER_KNOCKED: {
         int r = DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, GUNNER_KNOCK_DRAG, sixteen);
 
-        if ((g_nGroundSurfaceType & 0x3F) == 0) {
+        if ((g_nGroundSurfaceType & TRIGGER_REGION_MASK) == 0) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
 
@@ -2883,7 +2883,7 @@ void Level20_UpdateActors(void) {
 
       case LURKER_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, LURKER_KNOCK_DRAG, sixteen);
-        if ((g_nGroundSurfaceType & 0x3F) == 0) {
+        if ((g_nGroundSurfaceType & TRIGGER_REGION_MASK) == 0) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
 

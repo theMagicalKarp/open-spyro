@@ -1618,7 +1618,7 @@ void Level32_UpdateActors(void) {
 
       case BURSTGUN_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, BURSTGUN_KNOCK_DRAG, sixteen);
-        if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
+        if ((unsigned)((g_nGroundSurfaceType & TRIGGER_REGION_MASK) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
 
@@ -1785,7 +1785,7 @@ void Level32_UpdateActors(void) {
 
       case SWEEPGUN_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, SWEEPGUN_KNOCK_DRAG, SWEEPGUN_KNOCK_GRAVITY);
-        if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
+        if ((unsigned)((g_nGroundSurfaceType & TRIGGER_REGION_MASK) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
 
@@ -1913,7 +1913,7 @@ void Level32_UpdateActors(void) {
 
       case LOBGUN_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, LOBGUN_KNOCK_DRAG, 0x16);
-        if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
+        if ((unsigned)((g_nGroundSurfaceType & TRIGGER_REGION_MASK) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
 
