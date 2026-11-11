@@ -226,7 +226,7 @@ void Credits_Update(void) {
     SAMPLE_RAW(g_pLevelSampleBankEntries, short, nPitchSpread) = 0;
     SAMPLE_RAW(g_pLevelSampleBankEntries, short, nPitchStep) = 0;
     g_pCreditsScrollHeader = e4;
-    SAMPLE_RAW(g_pLevelSampleBankEntries, int, nPitchMode) = 0;
+    SAMPLE_RAW(g_pLevelSampleBankEntries, int, nPitchMode) = SAMPLE_PITCH_AROUND;
     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
     g_nSfxOverrideVolL = SPU_VOLUME_MAX;
     g_nSfxOverrideVolR = SPU_VOLUME_MAX;

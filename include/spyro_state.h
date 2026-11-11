@@ -150,6 +150,18 @@ typedef enum SpyroState
                                         * levelling back out to FLY */
 #define SPYRO_STUCK_RESPAWN_TICKS 0x12C /* FALL / SLIDE held this long: respawn,
                                          * refunding the life (or end a flight run) */
+/* TickSpyroFlameAttack's breath, by g_nSpyroFlameTimer: the flame anchor
+ * drops at FLAME_ANCHOR_DROP_FRAME; every FLAME_EMIT_PERIOD frames from
+ * FLAME_EMIT_FIRST to FLAME_EMIT_LAST two flame particles spawn; a fresh
+ * Circle from FLAME_REARM_FRAME starts a second breath, and at
+ * FLAME_END_FRAME the breath ends. */
+#define FLAME_ANCHOR_DROP_FRAME 0x10
+#define FLAME_EMIT_FIRST 0xC
+#define FLAME_EMIT_LAST 0x1C
+#define FLAME_EMIT_PERIOD 4
+#define FLAME_REARM_FRAME 0x2C
+#define FLAME_END_FRAME 0x30
+
 /* TickSpyroAttackEffects. A superflame tints Spyro SUPERFLAME_TINT_R/G/B
  * with a sine alpha (minus TINT_ALPHA_BIAS); under WARN_FRAMES left the tint
  * blinks off from BLINK_OFF of every BLINK_PERIOD frames. Each flame-breath

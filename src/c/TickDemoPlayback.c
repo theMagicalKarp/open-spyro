@@ -6,6 +6,7 @@
 #include "gpu_prim.h"
 #include "main_shared.h"
 #include "sample_bank.h"
+#include "spu.h"
 
 /* The sample-bank stores go through the reloaded global pointer each field
    (the original never proves it points at &g_CutsceneSoundDef); a volatile read
@@ -79,10 +80,10 @@ int TickDemoPlayback(void) {
         SAMPLE_RAW(BANK, short, nPitch) = g_nCutsceneSamplePitch;
         SAMPLE_RAW(BANK, short, nPitchSpread) = 0;
         SAMPLE_RAW(BANK, short, nPitchStep) = 0;
-        SAMPLE_RAW(BANK, int, nPitchMode) = 0;
+        SAMPLE_RAW(BANK, int, nPitchMode) = SAMPLE_PITCH_AROUND;
         g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
-        g_nSfxOverrideVolL = 0x3fff;
-        g_nSfxOverrideVolR = 0x3fff;
+        g_nSfxOverrideVolL = SPU_VOLUME_MAX;
+        g_nSfxOverrideVolR = SPU_VOLUME_MAX;
         PlaySoundEffect(0, 0, SFX_MODE_PANNED, &g_bSceneSfxVoiceMarker);
       } else {
         *(int *)g_pPathTableHead = 0x490;

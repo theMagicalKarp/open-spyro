@@ -40,7 +40,7 @@ void BeginCutscene(void) {
       (&g_nCutsceneSamplePitch)[id];
   SAMPLE_RAW(g_pActiveCutsceneSoundDef, short, nPitchSpread) = 0;
   SAMPLE_RAW(g_pActiveCutsceneSoundDef, short, nPitchStep) = 0;
-  SAMPLE_RAW(g_pActiveCutsceneSoundDef, int, nPitchMode) = 0;
+  SAMPLE_RAW(g_pActiveCutsceneSoundDef, int, nPitchMode) = SAMPLE_PITCH_AROUND;
   g_nSfxOverrideVolL = SPU_VOLUME_MAX;
   g_nSfxOverrideVolR = SPU_VOLUME_MAX;
   g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
