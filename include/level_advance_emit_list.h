@@ -62,6 +62,8 @@ extern int g_nSparxHealth;
 #define COL_R rec[0xC]
 #define COL_G rec[0xD]
 #define COL_B rec[0xE]
+/* All three at once (the fx byte masked off): 0 once faded to black. */
+#define COL_RGB (W(0xC) & 0xFFFFFF)
 /* The line classes' two colours (LINE_G2): COL0 goes with the point at 0x04,
  * COL1 with the one at 0x0A; COL1's top byte (0x17) is the OT-bin bias. */
 #define COL0_R rec[0x10]

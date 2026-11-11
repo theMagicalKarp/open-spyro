@@ -34,7 +34,7 @@
  * walk matched in level_10 / level_15.  Walks the 0x20-byte record stream at
  * g_pEmitListBase and ages one record per iteration: integrates its position, fades
  * its colour, ticks its life counter and, when the record has expired (or its
- * alive byte has been cleared), hands it back with FreeEmitListRecord().  The walk
+ * visible byte has been cleared), hands it back with FreeEmitListRecord().  The walk
  * stops at the terminator record, whose class byte at +0x01 is 0xFF.
  *
  * Field map, in record-relative offsets:
@@ -205,7 +205,7 @@ void Level27_AdvanceEmitList(int step) {
       if (COL_B != 0) {
         COL_B -= 8;
       }
-      if ((W(0xC) & 0xFFFFFF) == 0 || VISIBLE == 0) {
+      if (COL_RGB == 0 || VISIBLE == 0) {
         FreeEmitListRecord(rec);
       }
       break;

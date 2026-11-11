@@ -5,7 +5,7 @@
  * Level33_EmitParticles.  Walks the 0x20-byte record stream at g_pEmitListBase
  * and ages one record per iteration: integrates its position, fades its
  * colour, ticks its life counter and, when the record has expired (or its
- * alive byte has been cleared), hands it back with FreeEmitListRecord().  The
+ * visible byte has been cleared), hands it back with FreeEmitListRecord().  The
  * walk stops at the terminator record, whose class byte at +0x01 is 0xFF.
  *
  * Only `rec` is a real induction variable.  `pos` and `vel` are separate
@@ -129,7 +129,7 @@ void Level33_AdvanceEmitList(int step) {
       if (COL_B != 0) {
         COL_B -= 8;
       }
-      if ((W(0xC) & 0xFFFFFF) == 0 || VISIBLE == 0) {
+      if (COL_RGB == 0 || VISIBLE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -163,7 +163,7 @@ void Level33_AdvanceEmitList(int step) {
       break;
 
     case EMIT_HEAT_SPARK:
-      /* The plain aged spark: no colour ramp, no alive check. */
+      /* The plain aged spark: no colour ramp, no visibility check. */
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
       SIZE += step * 2;

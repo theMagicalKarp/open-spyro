@@ -155,7 +155,7 @@ void Level24_AdvanceEmitList(int step) {
       if (COL_B != 0) {
         COL_B -= 8;
       }
-      if ((W(0xC) & 0xFFFFFF) == 0 || VISIBLE == 0) {
+      if (COL_RGB == 0 || VISIBLE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
