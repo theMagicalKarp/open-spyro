@@ -16,7 +16,7 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     struct {                     /* classes 2 / 3 / 6 -- spark */
       short pos[3];              /* 0x04 */
       unsigned char size;        /* 0x0A billboard half-size (scales the spun corners) */
-      unsigned char seed;        /* 0x0B */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
@@ -30,7 +30,7 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     struct {                     /* class 0 -- dust mote */
       unsigned short pos[3];     /* 0x04 */
       unsigned char depthBias;   /* 0x0A OT depth-bin bias (a dot's) */
-      unsigned char seed;        /* 0x0B */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
@@ -43,7 +43,7 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     struct {                     /* class 2 -- ribbon (2nd point at 0x12) */
       short pos[3];              /* 0x04 */
       unsigned char size;        /* 0x0A billboard half-size (scales the spun corners) */
-      unsigned char seed;        /* 0x0B */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
@@ -57,7 +57,7 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     struct {                     /* class 2 -- band (shorts at 0x18 / 0x1A) */
       short pos[3];              /* 0x04 */
       unsigned char size;        /* 0x0A billboard half-size (scales the spun corners) */
-      unsigned char seed;        /* 0x0B */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
@@ -73,7 +73,7 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     struct {                     /* class 0 -- smear (2nd point at 0x10) */
       short pos[3];              /* 0x04 */
       unsigned char depthBias;   /* 0x0A OT depth-bin bias (a dot's) */
-      unsigned char seed;        /* 0x0B */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
@@ -86,7 +86,7 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     struct {                     /* class 3 -- actor-tracking plume */
       unsigned short pos[3];     /* 0x04 */
       unsigned char size;        /* 0x0A billboard half-size (scales the spun corners) */
-      unsigned char seed;        /* 0x0B */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
@@ -101,7 +101,7 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     struct {                     /* class 3 -- owner-tracked spark */
       unsigned short pos[3];     /* 0x04 */
       unsigned char size;        /* 0x0A billboard half-size (scales the spun corners) */
-      unsigned char seed;        /* 0x0B */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
@@ -122,7 +122,7 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     struct {                     /* class 3 -- owner-tethered spark */
       unsigned short pos[3];     /* 0x04 */
       unsigned char size;        /* 0x0A billboard half-size (scales the spun corners) */
-      unsigned char seed;        /* 0x0B */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
@@ -140,7 +140,7 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     struct {                     /* class 2 -- haze puff (word velocity) */
       unsigned short pos[3];     /* 0x04 */
       unsigned char size;        /* 0x0A billboard half-size (scales the spun corners) */
-      unsigned char seed;        /* 0x0B */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */

@@ -51,7 +51,7 @@ void Level6_AdvanceEmitList(int step) {
     case EMIT_SPARK_VEL:
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step * 2;
+      SIZE += step * 2;
       FADE_COL(step * 4);
       AGE += step;
       if (AGE >= 0x20 || ALIVE == 0) {
@@ -62,7 +62,7 @@ void Level6_AdvanceEmitList(int step) {
     case EMIT_SPARK_VEL_DIM:
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step * 4;
+      SIZE += step * 4;
       FADE_COL(step * 4);
       AGE += step;
       if (AGE >= 0x18 || ALIVE == 0) {
@@ -73,7 +73,7 @@ void Level6_AdvanceEmitList(int step) {
     case EMIT_SPARK_RISE:
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step * 4;
+      SIZE += step * 4;
       FADE_COL(step * 4);
       AGE += step;
       if (AGE >= 0x20 || ALIVE == 0) {
@@ -84,7 +84,7 @@ void Level6_AdvanceEmitList(int step) {
     case EMIT_SUPERCHARGE_TRAIL:
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step * 2;
+      SIZE += step * 2;
       AGE += step;
       if (AGE >= 0x20 || ALIVE == 0) {
         FreeEmitListRecord(rec);
@@ -103,7 +103,7 @@ void Level6_AdvanceEmitList(int step) {
         v[2] += 0x100;
         VectorToSVectorShr2(POS, v);
         HS(0x18) = HU(0x18) + 0x40;
-        rec[0xA] = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
+        SIZE = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
       }
       break;
 
@@ -116,8 +116,8 @@ void Level6_AdvanceEmitList(int step) {
       break;
 
     case EMIT_ACTOR_SPARK:
-      rec[0xB] += 8;
-      rec[0xA] += 2;
+      SPIN += 8;
+      SIZE += 2;
       if (COL_R != 0) {
         COL_R -= 8;
       }
@@ -140,7 +140,7 @@ void Level6_AdvanceEmitList(int step) {
       } else {
         AddSVector(POS, POS, VEL);
         SPARK_Z_CLIMB();
-        rec[0xA] += step * 2;
+        SIZE += step * 2;
         if (AGE >= 0xD) {
           c = 0x80 - (AGE - 0xC) * 8;
           if (c < 0) {
@@ -175,8 +175,8 @@ void Level6_AdvanceEmitList(int step) {
       /* The peace-keepers home banner mote: its blue channel is driven by
        * the record's own phase toggle rather than by the step count. */
       AddSVector(POS, POS, VEL);
-      rec[0xB] += rec[0x1E];
-      rec[0xA] += step * 2;
+      SPIN += rec[0x1E];
+      SIZE += step * 2;
       FADE_COL(step * 2);
       AGE += step;
       if (AGE >= 0x30 || ALIVE == 0) {
@@ -218,7 +218,7 @@ void Level6_AdvanceEmitList(int step) {
       }
       c = COL_R - step;
       HS(0x1E) = 1 - HU(0x1E);
-      rec[0xA] += step * 2;
+      SIZE += step * 2;
       if (c < 0) {
         c = 0;
       }

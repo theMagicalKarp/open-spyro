@@ -49,6 +49,11 @@ extern int g_nSparxHealth;
 #define W(n) (*(int *)(rec + (n)))             /* s32 field at +n */
 #define POS ((short *)(rec + 4))               /* tail point, svector */
 #define VEL ((short *)(rec + 0x18))            /* velocity / spin, svector */
+/* A billboard's half-size and 8-bit spin angle (RasterizeEmitList scales and
+ * turns the quad's corners by them); every arm that touches them is a quad
+ * class. */
+#define SIZE rec[0xA]
+#define SPIN rec[0xB]
 /* The colour bytes of the packed RGB / mode word at 0x0C that
  * RasterizeEmitList lights the prim with (every class but the streaks, whose
  * colours sit at 0x10 / 0x14); fading a record is stepping these down. */

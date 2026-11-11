@@ -56,7 +56,7 @@ void Level23_AdvanceEmitList(int step) {
     case EMIT_SPARK_VEL:
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step * 2;
+      SIZE += step * 2;
       FADE_COL(fade);
       AGE += step;
       if (AGE >= 0x20 || ALIVE == 0) {
@@ -67,7 +67,7 @@ void Level23_AdvanceEmitList(int step) {
     case EMIT_SPARK_VEL_DIM:
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += fade;
+      SIZE += fade;
       FADE_COL(fade);
       AGE += step;
       if (AGE >= 0x18 || ALIVE == 0) {
@@ -78,7 +78,7 @@ void Level23_AdvanceEmitList(int step) {
     case EMIT_SPARK_RISE:
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += fade;
+      SIZE += fade;
       FADE_COL(fade);
       AGE += step;
       if (AGE >= 0x20 || ALIVE == 0) {
@@ -89,7 +89,7 @@ void Level23_AdvanceEmitList(int step) {
     case EMIT_SUPERCHARGE_TRAIL:
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step * 2;
+      SIZE += step * 2;
       AGE += step;
       if (AGE >= 0x20 || ALIVE == 0) {
         FreeEmitListRecord(rec);
@@ -108,7 +108,7 @@ void Level23_AdvanceEmitList(int step) {
         v[2] += 0x100;
         VectorToSVectorShr2(POS, v);
         HS(0x18) = HU(0x18) + 0x40;
-        rec[0xA] = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
+        SIZE = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
       }
       break;
 
@@ -121,8 +121,8 @@ void Level23_AdvanceEmitList(int step) {
       break;
 
     case EMIT_ACTOR_SPARK:
-      rec[0xB] += 8;
-      rec[0xA] += 2;
+      SPIN += 8;
+      SIZE += 2;
       if (COL_R != 0) {
         COL_R -= 8;
       }
@@ -146,7 +146,7 @@ void Level23_AdvanceEmitList(int step) {
 
     case EMIT_FLIGHT_GROUND_WAKE:
       FADE_COL(8);
-      rec[0xA] += 0xC;
+      SIZE += 0xC;
       if (COL_R == 0 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       }
@@ -161,7 +161,7 @@ void Level23_AdvanceEmitList(int step) {
       }
       c = COL_R - step;
       HS(0x1E) = 1 - HU(0x1E);
-      rec[0xA] += step * 2;
+      SIZE += step * 2;
       if (c < 0) {
         c = 0;
       }

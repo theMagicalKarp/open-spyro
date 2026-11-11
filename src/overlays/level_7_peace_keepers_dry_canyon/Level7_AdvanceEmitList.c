@@ -39,7 +39,7 @@
  * That is load-bearing, not decoration: without it sched1 makes the load
  * TRUE-dependent on the `HU(0x4)` store three statements above (a store
  * through `rec` may alias the global), which lifts the whole `* 6` chain to
- * dependence depth 16 -- one above the `rec[0xB] += 4` byte store -- and the
+ * dependence depth 16 -- one above the `SPIN += 4` byte store -- and the
  * two independent chains come out complete-then-complete instead of the
  * original's interleave.  `true_dependence()` returns 0 outright for an
  * unchanging read, so the const drops the chain to depth 2 and the byte
@@ -68,7 +68,7 @@ void Level7_AdvanceEmitList(int step) {
     case EMIT_SPARK_VEL:
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step * 2;
+      SIZE += step * 2;
       FADE_COL(step * 4);
       AGE += step;
       if (AGE >= 0x20 || ALIVE == 0) {
@@ -79,7 +79,7 @@ void Level7_AdvanceEmitList(int step) {
     case EMIT_SPARK_VEL_DIM:
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step * 4;
+      SIZE += step * 4;
       FADE_COL(step * 4);
       AGE += step;
       if (AGE >= 0x18 || ALIVE == 0) {
@@ -90,7 +90,7 @@ void Level7_AdvanceEmitList(int step) {
     case EMIT_SPARK_RISE:
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step * 4;
+      SIZE += step * 4;
       FADE_COL(step * 4);
       AGE += step;
       if (AGE >= 0x20 || ALIVE == 0) {
@@ -101,7 +101,7 @@ void Level7_AdvanceEmitList(int step) {
     case EMIT_SUPERCHARGE_TRAIL:
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step * 2;
+      SIZE += step * 2;
       AGE += step;
       if (AGE >= 0x20 || ALIVE == 0) {
         FreeEmitListRecord(rec);
@@ -120,7 +120,7 @@ void Level7_AdvanceEmitList(int step) {
         v[2] += 0x100;
         VectorToSVectorShr2(POS, v);
         HS(0x18) = HU(0x18) + 0x40;
-        rec[0xA] = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
+        SIZE = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
       }
       break;
 
@@ -133,8 +133,8 @@ void Level7_AdvanceEmitList(int step) {
       break;
 
     case EMIT_ACTOR_SPARK:
-      rec[0xB] += 8;
-      rec[0xA] += 2;
+      SPIN += 8;
+      SIZE += 2;
       if (COL_R != 0) {
         COL_R -= 8;
       }
@@ -157,7 +157,7 @@ void Level7_AdvanceEmitList(int step) {
       } else {
         AddSVector(POS, POS, VEL);
         SPARK_Z_CLIMB();
-        rec[0xA] += step * 2;
+        SIZE += step * 2;
         if (AGE >= 0xD) {
           c = 0x80 - (AGE - 0xC) * 8;
           if (c < 0) {
@@ -193,7 +193,7 @@ void Level7_AdvanceEmitList(int step) {
        * channel bottoms out. */
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step * 2;
+      SIZE += step * 2;
       FADE_COL(4);
       if (COL_R == 0 || ALIVE == 0) {
         FreeEmitListRecord(rec);
@@ -204,7 +204,7 @@ void Level7_AdvanceEmitList(int step) {
       /* The same ember with a late red cut-off at age 9. */
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step * 2;
+      SIZE += step * 2;
       if (AGE >= 9) {
         COL_R -= 0x20;
       }
@@ -224,7 +224,7 @@ void Level7_AdvanceEmitList(int step) {
       HU(0x4) = HU(0x12) + ((g_anCosineLut[rec[0x18]] * rec[0x19]) >> 12);
       s = g_anSineLut[rec[0x18]] * rec[0x19];
       HU(0x8) += *(const int *)&g_nFrameStep * 6;
-      rec[0xB] += 4;
+      SPIN += 4;
       HU(0x6) = HU(0x14) + (s >> 12);
       if (rec[0x19] >= 0xC1) {
         FreeEmitListRecord(rec);
@@ -266,7 +266,7 @@ void Level7_AdvanceEmitList(int step) {
       }
       c = COL_R - step;
       HS(0x1E) = 1 - HU(0x1E);
-      rec[0xA] += step * 2;
+      SIZE += step * 2;
       if (c < 0) {
         c = 0;
       }
