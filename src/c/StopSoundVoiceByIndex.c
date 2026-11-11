@@ -12,7 +12,7 @@ void StopSoundVoiceByIndex(int index, int mode) {
   int off;
   char *cb;
 
-  if (voice < 24) {
+  if (voice < SPU_VOICE_COUNT) {
     unsigned int *keyoff = g_anSpuPendingKeyOffBlock;
     *keyoff |= 1 << voice;
     if (mode == 2 || mode == 4) {

@@ -797,7 +797,7 @@ void SpawnFloatingDigitActors(int value, Actor *src);
 /* 0x8005595c: Top-level music/sound state init called from Initialize after SpuInit. Calls InitSpu (sound channel reset), seeds master volume + CD-DA mix words at g_abSpuCommonAttr..g_nSoundMonoMixFlag, then SetSpuCommonAttr / ApplySpuVoiceAttr / SetSpuKeyMask / SetSpuTransferMode (sound-bank registration), FillWord(g_aSpuVoiceRows, 0, 0x2a0) zeros the channel-state block. */
 void InitSoundEngine(void);
 
-/* 0x80055a78: Starts sample `sampleId` on a free mixer row owned by `owner`. `mode` is SFX_MODE_FLAT / SFX_MODE_3D (positional; dropped outside owner->soundRange) / SFX_MODE_PANNED; FLAT and 3D refuse to retrigger a sample the owner is already playing. The row index (0x7F when dropped) goes to *pPlaying. */
+/* 0x80055a78: Starts sample `sampleId` on a free mixer row owned by `owner`. `mode` is SFX_MODE_FLAT / SFX_MODE_3D (positional; dropped outside owner->soundRange) / SFX_MODE_PANNED; FLAT and 3D refuse to retrigger a looping sample the owner is already playing (GetSoundVoiceStatusByOwner == VOICE_OWNER_LOOPING). The row index (0x7F when dropped) goes to *pPlaying. */
 unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner, unsigned int mode, unsigned char *pPlaying);
 
 /* 0x80056200: Stops SPU voice `index` (low 7 bits, 0..23): sets its bit in g_dwSpuPendingKeyOff, and with mode 2 or 4 also frees its SpuVoiceRow (the caller's pPlaying byte gets VOICE_ROW_NONE, pPlaying / pOwner cleared, nFlags = VOICE_ROW_STOPPED, nSampleId 0xFF). Callers: DragonRescue_Update, Titlescreen_Update and the level 12..16 UpdateActors. */

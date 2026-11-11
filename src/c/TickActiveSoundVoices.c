@@ -77,7 +77,7 @@ int TickActiveSoundVoices(void) {
   bit = 1;
   yc = (int)g_anCameraEulerYawBlock;
   yaw = (unsigned char)((*((volatile unsigned short *)yc)) >> 4);
-  for (; i < 24; i++) {
+  for (; i < SPU_VOICE_COUNT; i++) {
     if (g_aSpuVoiceRows[i].nFlags & VOICE_ROW_STOPPED) {
       g_aSpuVoiceRows[i].nFlags = 0;
       continue;
@@ -108,7 +108,7 @@ int TickActiveSoundVoices(void) {
     mode = g_aSpuVoiceRows[i].nFlags & SFX_MODE_MASK;
     switch (mode) {
     case SFX_MODE_FLAT:
-      yc = 0x2000;
+      yc = SFX_FLAT_VOLUME;
       attr.volR = yc;
       attr.volL = yc;
       break;
@@ -124,7 +124,8 @@ int TickActiveSoundVoices(void) {
       SubtractVector(vec, &((Actor *)owner)->posX, g_anCameraPos);
       dist = VectorLength(vec, VEC_LEN_XYZ);
       if (dist >= range) {
-        far = (SPUFARROW *)((char *)g_aSpuVoiceRows - 0x28 + i * 0x1C);
+        far = (SPUFARROW *)((char *)g_aSpuVoiceRows - 0x28 +
+                            i * VOICE_ROW_STRIDE);
         attr.volR = (far->nVolR = g_aSpuVoiceRows[i].nVolR >> 1);
         vol = g_aSpuVoiceRows[i].nVolL >> 1;
         attr.volL = (far->nVolL = vol);
@@ -170,13 +171,13 @@ int TickActiveSoundVoices(void) {
       break;
     }
 
-    attr.mask = 3;
+    attr.mask = SPU_ATTR_VOLL | SPU_ATTR_VOLR;
     attr.voice = bit << i;
     attr.volL = (attr.volL * g_nSoundMasterVolume) >> 12;
     attr.volR = (attr.volR * g_nSoundMasterVolume) >> 12;
     g_aSpuVoiceRows[i].nPitch += g_aSpuVoiceRows[i].nPitchStep;
     g_aSpuVoiceRows[i].nPitchStep = 0;
-    attr.mask |= 0x10;
+    attr.mask |= SPU_ATTR_PITCH;
     attr.pitch = g_aSpuVoiceRows[i].nPitch;
     ApplySpuVoiceAttr(&attr.voice);
   }

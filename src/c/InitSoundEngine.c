@@ -20,23 +20,23 @@ void InitSoundEngine(void) {
   *(int *)common = 0xC3;
   g_nSfxMixVolume_blk[0] = SPU_VOLUME_MAX;
   g_nSoundMasterVolume = 0x1000;
-  g_anSpuCommonVolAttr[0] = 0x3CCC;
-  g_anSpuCommonVolAttr[1] = 0x3CCC;
-  cd = 0x5000;
+  g_anSpuCommonVolAttr[0] = SPU_MASTER_VOLUME;
+  g_anSpuCommonVolAttr[1] = SPU_MASTER_VOLUME;
+  cd = SPU_CD_VOLUME;
   g_nCdAudioVolume_blk = cd;
   g_anSpuCommonVolAttr[6] = cd;
   g_anSpuCommonVolAttr[7] = cd;
   g_nMusicVolumeFadeTarget = -1;
   SetSpuCommonAttr(common);
 
-  a.mask = 0xFF13;
+  a.mask = SPU_ATTR_VOLL | SPU_ATTR_VOLR | SPU_ATTR_PITCH | SPU_ATTR_ADSR;
   a.volL = 0x2FFF;
   a.volR = 0x2FFF;
   a.pitch = 0x400;
   a.a_mode = 1;
   a.s_mode = 1;
   a.r_mode = 3;
-  a.voice = 0xFFFFFF;
+  a.voice = SPU_VOICE_ALL;
   a.ar = 0;
   a.dr = 0;
   a.sr = 0;
@@ -44,7 +44,7 @@ void InitSoundEngine(void) {
   a.sl = 0xF;
   ApplySpuVoiceAttr((int *)&a);
 
-  SetSpuKeyMask(0, 0xFFFFFF);
+  SetSpuKeyMask(0, SPU_VOICE_ALL);
   SetSpuTransferMode(0);
   FillWord(common + 0x28, 0, 0x2A0);
   g_nSoundMonoMixFlag = 0;

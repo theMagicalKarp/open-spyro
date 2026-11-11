@@ -50,6 +50,29 @@ typedef struct SpuVoiceRow {
 /* Full SPU volume (voice / master / CD volume words, and the SFX override
  * pair g_nSfxOverrideVolL/R). */
 #define SPU_VOLUME_MAX 0x3FFF
+/* InitSoundEngine's master and CD volumes; PlaySoundEffect starts a flat /
+ * panned sound at SFX_FLAT_VOLUME and a positional one at SFX_3D_VOLUME
+ * before its pan and falloff. */
+#define SPU_MASTER_VOLUME 0x3CCC
+#define SPU_CD_VOLUME 0x5000
+#define SFX_FLAT_VOLUME 0x2000
+#define SFX_3D_VOLUME 0x3CCC
+
+/* The SPU's 24 voices, one mixer row each (g_aSpuVoiceRows). */
+#define SPU_VOICE_COUNT 24
+#define SPU_VOICE_ALL 0xFFFFFF /* every voice's key bit */
+#define VOICE_ROW_STRIDE 0x1C  /* sizeof (SPUVOICEROW) */
+/* SPUVOICEATTR.mask bits (the libspu voice-attribute selectors). */
+#define SPU_ATTR_VOLL 0x01
+#define SPU_ATTR_VOLR 0x02
+#define SPU_ATTR_PITCH 0x10
+#define SPU_ATTR_ADDR 0x80       /* sample start address */
+#define SPU_ATTR_ADSR 0xFF00     /* the eight envelope fields */
+#define SPU_ATTR_LOOP_ADDR 0x10000
+/* GetSoundVoiceStatusByOwner's result for (owner, sample). */
+#define VOICE_OWNER_NONE 0
+#define VOICE_OWNER_PLAYING 1
+#define VOICE_OWNER_LOOPING 2
 
 /* SPU RAM layout: 512 KB, the level's sample bank uploaded from
  * SPU_SAMPLE_BASE to the end (bank entries hold addresses relative to it,
